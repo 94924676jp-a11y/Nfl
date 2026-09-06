@@ -306,3 +306,72 @@ The twelve-point proof's point 12 — "demonstrate that a future event-anchored
 execution is scheduled for the required window" — now fails on the plainest
 possible reading: there is no scheduled execution, because the schedule has been
 turned off for cause.
+
+---
+
+## Addendum 2 — the executor test, 2026-09-06 22:56–23:05 UTC
+
+Two attempts had blocked, and I generalised from them that **"scheduled sessions
+in this environment cannot execute unattended at all."** A third attempt, with
+the repository attached as a **source** rather than cloned by the session,
+settles both open questions. One of my claims is withdrawn; the other is upgraded
+from inference to measurement.
+
+### WITHDRAWN — "no unattended executor exists"
+
+`session_01XBkJbuDgGNhCeW1r1VVuB1` **completed both tasks with no permission stop**:
+`status_category: completed`, "network diagnostic + data capture complete; 8 new
+rows, schedules blob written". A second session then cloned the new `nfl` repo
+and ran a five-command diagnostic unattended.
+
+**The two earlier blocks were a repo/auth artefact, not a permissions ceiling.**
+The trigger fires sessions with an empty `sources` list, so each one had to clone
+the repository itself — and *that* is what demanded credentials, an askpass
+helper, and `command -v gh`. Passing `source_url` on session creation makes the
+harness check the branch out before the session starts, and every one of those
+steps disappears.
+
+I had the right observation and the wrong cause, and I stated the wrong cause
+more broadly than two data points could carry.
+
+### VERIFIED — a cloud session cannot reach nfl.com either
+
+Previously DERIVED from environment identity. Now measured, in a separate session:
+
+```
+PROOF="< HTTP/1.1 403 Forbidden" (CONNECT tunnel to www.nfl.com:443 failed, response 403)
+```
+
+Identical to the local class (`LOCAL_PROXY_CONNECT_403`). The proxy policy is
+environment-level, so attaching the repo fixes execution and does nothing for
+egress. They were always two separate failures and only one of them has moved.
+
+*Not claimed:* the full nine-field diagnostic. The session classified the 403 as
+"authentication required" and stopped, so only the `PROOF` line survives into its
+summary. The other four status codes are unread. The proof line is the one that
+decides the question, and I am not going to represent the rest as measured.
+
+### Effect on the verdicts
+
+| | Before | After |
+|---|---|---|
+| Item 1 | **FAIL** | **FAIL** — unchanged |
+| G0A | 11/12 | **11/12** — unchanged |
+| Reason | egress **and** no unattended executor | **egress only** |
+
+The verdict is the same and the reasoning is now narrower and correct. Item 1
+never depended on the executor claim; it fails because the perishable official
+cascade cannot be retrieved from this environment at all.
+
+### The trigger stays disabled, for a different reason than before
+
+Re-enabling it as-is would still fail: **`create_trigger` accepts no
+`source_url`**, so a scheduled firing gets the empty-sources session that blocks
+on cloning. A scheduled, unattended, repo-attached capture **is not expressible
+with the tools available to this session** — `create_session` can attach a source
+but is not recurring; `create_trigger` recurs but cannot attach one.
+
+That is a narrower and more useful statement of the gap than "no unattended
+executor exists", and it names what would close it: a scheduled mechanism that
+attaches a repository source, or a trigger prompt that does not need the
+repository at all.

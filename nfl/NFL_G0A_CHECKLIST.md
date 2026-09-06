@@ -54,6 +54,8 @@ satisfy the requirement.
 `UNMET CAPTURE TARGETS: ['final_status', 'inactives', 'practice']`. The gap is
 machine-readable rather than a footnote.
 
+**Corrected 2026-09-06 23:05Z:** an unattended executor DOES exist when the repository is attached as a source (`create_session(source_url=…)`); the two earlier scheduled blocks were a repo/auth artefact. But a cloud session hits the *same* proxy refusal — `CONNECT www.nfl.com:443` → 403, measured, not inferred. Item 1 therefore fails on **egress alone**, and would still fail with a perfect scheduler.
+
 **The T−90 half is now implemented and no longer part of why item 1 fails.**
 Targets carry one-sided windows; the inactives window is exactly 80 minutes from
 T−90; a 6-hourly poll cannot discharge it, nor can a mirror source. What remains
