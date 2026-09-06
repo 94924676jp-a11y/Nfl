@@ -1,0 +1,32 @@
+{
+  "artifact": "NFL_COLDSTART_SPECIFICATION_FREEZE",
+  "frozen_at_utc": "2026-09-06T19:37:33.073467+00:00",
+  "season_first_kickoff_utc": "2026-09-09",
+  "spec_path": "nfl/research/C3_COLD_START_SPEC.md",
+  "spec_sha256": "b356ecaabd49125b0286b1c16a5a105c547e6c746387adfaf15ec2d81979b9fa",
+  "spec_bytes": 45603,
+  "input_snapshot": {
+    "games_csv_sha256": "c563178ace7c66375e4bce993419cbf4f58b22c65b2cd2df0de7c283ca68fda9",
+    "note": "The spec declares games.csv as its sole data input. This hash pins the snapshot the constants were estimated on."
+  },
+  "git_head_at_freeze": "79583634d3fbe7f8236b7fe06f4646712a45bb79",
+  "what_this_freeze_asserts": "The specification text identified by spec_sha256 existed in this form BEFORE any 2026 NFL result existed. Verified at freeze time: games.csv holds 272 rows for 2026 REG, 272 of 272 with null scores.",
+  "what_this_freeze_does_NOT_assert": [
+    "That the specification has been implemented. It has not.",
+    "That it has been executed or verified against its own worked example. It has not; that is G1's job under predeclared tolerance.",
+    "That it is optimal. The backtest could not rank the candidate families -- the game-clustered CI on r is ~0.21 wide against a 0.018 spread."
+  ],
+  "holdout_property": "A fixed prospective holdout requires one specification frozen before any 2026 outcome. That property derives from THIS freeze timestamp, not from when predictions are executed. Execution after G0A passes preserves it, provided the spec is deterministic and no constant is revised.",
+  "open_owner_ruling": {
+    "id": "T1",
+    "question": "Constant-estimation window floor: 2002 (as specified) vs a recent-era floor.",
+    "effect": "lambda moves 0.43 -> 0.53, h moves 2.19 -> 1.57; scorecards indistinguishable (dRMSE +0.0117, CI [-0.0372, +0.0595]).",
+    "specified_default": "2002 floor",
+    "why_default": "The short window is dominated by 2019-2020 (h = -0.14, +0.05) while the most recent block is +2.15, near the long-run +2.19.",
+    "deadline": "Any change must land BEFORE 2026-09-09. After the first result exists, changing a constant forfeits the fixed-holdout property for the whole season."
+  },
+  "other_open_tradeoffs": {
+    "T3": "The home term h/2 is retained but is the weakest element; its paired CI [-0.0361, +0.1840] does not clear noise. Setting h = 0 requires no other change."
+  },
+  "revision_rule": "The constants are fixed for the entire 2026 season. If any is revised after 2026-09-09, the affected weeks become SEQUENTIAL PROSPECTIVE EVALUATION and must never be reported as a fixed-model holdout."
+}

@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "nfl/schema/draw_archive.schema.json",
+  "title": "NFL joint simulation draw archive",
+  "schema_version": "1.0.0",
+  "frozen": true,
+  "frozen_at_utc": "2026-09-06",
+  "why_this_exists": [
+    "MLB stored nine percentiles. That cannot support exact CRPS, log score, or tail calibration, and it is why board_config's graded_prediction_means requirement is unmet for the MLB development set.",
+    "NFL correlation is mechanically stronger and is checkable rather than argued: passer_player_id, receiver_player_id and td_player_id sit on the SAME play row, so one draw credits two players by construction.",
+    "Independent marginal draws would reproduce every marginal correctly and get the joint wrong. Since correlation is the entire product for stacking and any multi-player question, marginals are not a cheaper version of the right answer.",
+    "Sizing is not a reason to skip it: 540 integers per sim-game over 272 games is ~2.94 GB/season at 10,000 sims, about one fifth of the MLB equivalent."
+  ],
+  "type": "object",
+  "required": [
+    "schema_version",
+    "execution_identity_fingerprint",
+    "game_id",
+    "n_sims",
+    "cross_game_dependence",
+    "seed",
+    "draws"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0.0" },
+    "execution_identity_fingerprint": {
+      "type": "string",
+      "pattern": "^NFLFP-[0-9a-f]{16}$",
+      "description": "Binds the archive to the identity that produced it, INCLUDING the sha256 of every consumed input partition."
+    },
+    "game_id": { "type": "string", "minLength": 1 },
+    "n_sims": { "type": "integer", "minimum": 1 },
+    "seed": {
+      "description": "Required and nullable. null means 'deterministic, no RNG', which is a claim the determinism test checks; omitting the field entirely is not permitted.",
+      "type": ["integer", "string", "null"]
+    },
+    "cross_game_dependence": {
+      "description": "REQUIRED. Whether sim_index i in this archive is aligned with sim_index i in another game's archive. Cross-game sim_index alignment is valid ONLY while games are independent; treating unaligned archives as aligned silently fabricates correlation across games, which is the trap that MLB's experience does not cover.",
+      "type": "object",
+      "required": ["aligned", "basis"],
+      "additionalProperties": false,
+      "properties": {
+        "aligned": { "type": "boolean" },
+        "basis": {
+          "type": "string",
+          "enum": [
+            "INDEPENDENT_GAMES",
+            "SHARED_SLATE_FACTOR",
+            "SHARED_SEED_ONLY",
+            "UNDECLARED"
+          ],
+          "description": "UNDECLARED is permitted in the schema so it can be recorded honestly, and is refused by the consumer. It is not a default."
+        },
+        "note": { "type": "string" }
+      }
+    },
+    "draws": {
+      "type": "array",
+      "minItems": 1,
+      "description": "One row per simulation. Empty is a FAIL, never an empty success.",
+      "items": {
+        "type": "object",
+        "required": ["sim_index", "team_points", "players"],
+        "additionalProperties": false,
+        "properties": {
+          "sim_index": { "type": "integer", "minimum": 0 },
+          "team_points": {
+            "type": "object",
+            "required": ["home", "away"],
+            "additionalProperties": false,
+            "properties": {
+              "home": { "type": "number" },
+              "away": { "type": "number" }
+            }
+          },
+          "players": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": ["gsis_id"],
+              "additionalProperties": true,
+              "properties": {
+                "gsis_id": { "type": "string", "minLength": 1 },
+                "pass_yards": { "type": "number" },
+                "pass_tds": { "type": "integer" },
+                "rush_yards": { "type": "number" },
+                "rush_tds": { "type": "integer" },
+                "targets": { "type": "integer" },
+                "receptions": { "type": "integer" },
+                "rec_yards": { "type": "number" },
+                "rec_tds": { "type": "integer" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "artifact": "NFLVERSE_INJURY_SOURCE_STATUS_CONFLICT_RESOLUTION",
+  "resolves": "nfl/NFLVERSE_INJURY_SOURCE_STATUS_CONFLICT.json",
+  "original_artifact_untouched": true,
+  "original_sha256": "880b1e0b2c16002297ff25d5d35ce4d1e945820dbe713e6aba50986695843539",
+  "original_opened_utc": "2026-09-06T21:55:00Z",
+  "resolved_utc": "2026-09-06T22:24:28.991109+00:00",
+  "resolution": "RESOLVED - DOCUMENTATION STALE / UPSTREAM REPLACED / 2025 ARTIFACT RETROACTIVE",
+  "why_appended_not_rewritten": "The conflict record stated what each side measured and what must not be concluded. Rewriting it would destroy the evidence that the two claims were ever in tension, which is the part a future reader needs in order to trust the resolution.",
+  "both_claims_were_true": "Neither side was wrong, which is why neither could settle it alone. The status page was accurate about the ORIGINAL upstream and stale about the pipeline; the row count was accurate about the FILE and silent about how it came to exist. A status sentence and a row count answer different questions.",
+  "external_findings": [
+    "The nflverse status page still states the injury source died after 2024 and that no 2025 data exists.",
+    "A genuine injuries_2025.csv nevertheless exists with 6,068 rows, matching this repository's independent measurement.",
+    "The historical upstream was NFL GSIS Data Exchange.",
+    "That upstream died.",
+    "nflverse subsequently replaced the scraper with a different upstream/package and restored the pipeline.",
+    "The 2025 artifact appears to be a retroactive completed-season backfill, NOT a sequence of contemporaneous 2025 weekly vintages.",
+    "injuries_2026.csv remained 404 as of 2026-09-06.",
+    "Whether the restored pipeline will produce reliable live 2026 updates remains unverified."
+  ],
+  "what_this_does_NOT_establish": [
+    "That the 2025 artifact has point-in-time integrity. A retroactive backfill of a completed season is a terminal reconstruction; it cannot contain the Wednesday state that was overwritten before it was written.",
+    "That the restored pipeline establishes 2026 live reliability. injuries_2026.csv is still 404 and no live update has been observed.",
+    "That the nflverse mirror may now discharge an intraweek capture obligation. It may not."
+  ],
+  "standing_rule_unchanged": "The nflverse injury mirror remains reconciliation / terminal weekly information and discharges NO intraweek practice, final-status or inactives obligation. Enforced in code, not by convention: registry.can_discharge('injuries', <any intraweek kind>) is False because the spec declares serves_kinds=().",
+  "the_resolution_strengthens_that_rule": "Before the reconciliation, treating the mirror as terminal was a defensible precaution. Now it is the documented shape of the artifact: a retroactive backfill cannot carry vintages it never observed. The rule was right for a better reason than the one it was adopted for.",
+  "registry_effect": {
+    "injuries.authority": "ARCHIVE",
+    "injuries.serves_kinds": [],
+    "injuries.source_status": "VERIFIED_REACHABLE_EXTERNALLY",
+    "note": "2026 file still 404; the source remains DEFERRED / SOURCE_NOT_YET_PUBLISHED on every capture run."
+  },
+  "still_open": [
+    "Whether the restored pipeline emits live 2026 weekly updates, and on what cadence. Observable only when injuries_2026.csv first publishes.",
+    "Whether any future nflverse injury artifact carries a per-row clock. The 2025 schema does not: date_modified was removed and season_type added, with the column count unchanged at 16."
+  ]
+}

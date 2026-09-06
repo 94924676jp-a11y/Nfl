@@ -1,0 +1,37 @@
+{
+  "artifact": "NFLVERSE_INJURY_SOURCE_STATUS_CONFLICT",
+  "opened_utc": "2026-09-06T21:55:00Z",
+  "status": "OPEN",
+  "why_open": "Two sources of evidence disagree about whether the free nflverse injury stream is still being produced. Neither agent may settle it from memory, and the build does not depend on the answer.",
+  "claim_a": {
+    "source": "networked researcher, external evidence dossier",
+    "assertion": "The free nflverse load_injuries() stream is reported by its own status information as having died after the 2024 season.",
+    "basis": "a status/documentation page",
+    "label": "REPORTED"
+  },
+  "claim_b": {
+    "source": "this environment, measured 2026-09-06",
+    "assertion": "injuries_2025.csv is complete: 6,068 rows covering all 18 regular-season weeks.",
+    "command": "python3.12 -c \"import csv,collections; rows=list(csv.DictReader(open('inj2025.csv'))); print(len(rows), sorted({int(r['week']) for r in rows if r['game_type']=='REG'}))\"",
+    "measured": {"rows": 6068, "reg_weeks_present": 18, "max_week": 18},
+    "label": "VERIFIED"
+  },
+  "also_measured": {
+    "injuries_2026_csv": "HTTP 404 as of 2026-09-06",
+    "schema_change_2025": "date_modified removed, season_type added, column count unchanged at 16"
+  },
+  "candidate_resolutions": [
+    "the source died AFTER producing a complete 2025, so the documentation means no data after 2025",
+    "the documentation is stale or refers to a different dataset",
+    "the 2025 file was generated from a different upstream than earlier seasons",
+    "the prior claim was simply incorrect"
+  ],
+  "assigned_to": "networked researcher (Priority 5 of external evidence task 2)",
+  "what_must_not_be_concluded": [
+    "That the measured 2025 file establishes 2026 availability. It does not: injuries_2026.csv is 404 today.",
+    "That the 2025 file should be discarded because a status page says the source died. It is measured, present and complete.",
+    "That either claim settles the other. A status sentence and a row count answer different questions."
+  ],
+  "effect_on_build": "NONE. nfl/capture/registry.py already treats the nflverse injuries mirror as a terminal weekly snapshot that discharges NO intraweek capture target (can_discharge('injuries','inactives') is False). The official cascade is a separate, registered, endpoint-pending source. So the architecture is correct whichever way this resolves, and no decision waits on it.",
+  "closes_when": "The researcher compares documentation, repository/source history and the actually published files, and reports which of the candidate resolutions holds."
+}

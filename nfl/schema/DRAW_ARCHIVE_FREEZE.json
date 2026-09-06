@@ -1,0 +1,13 @@
+{
+  "artifact": "NFL_DRAW_ARCHIVE_SCHEMA_FREEZE",
+  "schema_path": "nfl/schema/draw_archive.schema.json",
+  "schema_sha256": "04114a4f611880af20e71184a8382f5fbe3b2dc023b71cfa86cdb7544211cfa8",
+  "schema_version": "1.0.0",
+  "frozen_at_utc": "2026-09-06T20:30:01.017972+00:00",
+  "required_fields_of_note": [
+    "cross_game_dependence",
+    "execution_identity_fingerprint",
+    "seed"
+  ],
+  "note": "cross_game_dependence is required and its 'basis' enum includes UNDECLARED so an honest recording is possible; the consumer refuses UNDECLARED. It is a permitted value, never a default."
+}

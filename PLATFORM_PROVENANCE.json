@@ -1,0 +1,38 @@
+{
+  "artifact": "PLATFORM_EXTRACTION_PROVENANCE",
+  "extracted_utc": "2026-09-06T23:02:02Z",
+  "source_repository": "94924676jp-a11y/mlb-prop-system-v7",
+  "source_branch": "claude/nfl-greenfield-architecture-stsxmk",
+  "source_commit": "74bfa952703c787082b7ba7b4f2663f954765fca",
+  "extracted_modules": [
+    "v8/governance/outcome.py -> sportsplatform/governance/outcome.py",
+    "v8/governance/provenance.py -> sportsplatform/governance/provenance.py",
+    "v8/governance/scorecard.py -> sportsplatform/governance/scorecard.py",
+    "plus their three replay tests, unmodified"
+  ],
+  "modules_deliberately_not_extracted": {
+    "v8/governance/environment.py": "imports the stdlib 'platform' module; not needed by NFL and its presence is why this package is named sportsplatform rather than platform",
+    "v8/governance/stopping.py": "not consumed by NFL",
+    "v8/governance/v7bridge.py": "MLB-specific by construction"
+  },
+  "package_naming": {
+    "chosen": "sportsplatform",
+    "rejected": "platform",
+    "reason": "A top-level package named 'platform' shadows the Python standard library module of the same name, which v8/governance/environment.py imports. Shadowing a stdlib module is a latent, environment-dependent defect of exactly the class this project's failure taxonomy calls Class D."
+  },
+  "changes_made_during_extraction": [
+    "Import paths rewritten in 16 files: v8.governance -> sportsplatform.governance.",
+    "Prose references updated in 11 files so a reader is not pointed at a path that does not exist in this repository.",
+    "No logic, constant, threshold or test assertion was altered."
+  ],
+  "verification": {
+    "platform_replay_tests": "93 assertions, 0 failing",
+    "nfl_tests": "811 assertions, 0 failing",
+    "capture_tool": "runs and reports the same states as in the source repository"
+  },
+  "drift_hazard": {
+    "statement": "These modules now exist in two repositories and can diverge silently.",
+    "not_yet_addressed": "No mechanism compares this copy against the MLB original. Until one exists, treat sportsplatform/governance as the NFL-side copy of a shared contract, and record any change to it as a change to the platform rather than to NFL.",
+    "source_commit_pinned_above": "is what makes a future diff possible at all"
+  }
+}

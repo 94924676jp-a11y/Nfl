@@ -1,0 +1,24 @@
+{
+  "artifact": "NFL_COLDSTART_FREEZE_CORRECTION",
+  "correction_index": 1,
+  "corrects": "nfl/NFL_COLDSTART_FREEZE.json",
+  "corrected_at_utc": "2026-09-06T20:13:49.061141+00:00",
+  "original_freeze_untouched": true,
+  "original_spec_sha256": "b356ecaabd49125b0286b1c16a5a105c547e6c746387adfaf15ec2d81979b9fa",
+  "original_frozen_at_utc": "2026-09-06T19:37:33.073467+00:00",
+  "why_appended_not_rewritten": "Owner Directive 3 \u00a73: rewriting the freeze record would overwrite historical evidence about what was asserted, and when. The original record stands verbatim and is wrong in one respect; this record says how.",
+  "what_was_wrong": "The original freeze's `holdout_property` field asserted that freezing the specification before any 2026 outcome preserves a fixed prospective holdout for every week the spec is applied to. That is too strong. The frozen transition theta_g = g/(g+M) consumes 2026 results for every week after the first. A frozen formula is not a frozen information set.",
+  "corrected_taxonomy": {
+    "arm_a_static_fixed_prospective_holdout": "Specification AND information set frozen before any 2026 outcome. Consumes no 2026 result at any point. Realised as the frozen spec held at g = 0 for the whole season, which sets theta = 0 exactly and leaves only the prior-season component. Introduces no new constant.",
+    "arm_b_frozen_specification_prequential": "The already-frozen theta_g = g/(g+M) transition. Consumes prior 2026 outcomes, but only by the rule fixed before Week 1, and each forecast uses only information available before its own forecast timestamp. Strong prospective evidence; NOT an untouched 272-game fixed holdout.",
+    "arm_c_sequential_adaptive": "Later versions that changed after observing 2026 outcomes. Sealed pre-kickoff, weakest arm, never pooled with A or B."
+  },
+  "constants_changed": "NONE",
+  "constants_verification": "No value in C3_COLD_START_SPEC.md section 7.2 was altered by this correction. Arm A is the frozen specification evaluated at g = 0, an information state the frozen arithmetic already defines; it is not a re-parameterisation.",
+  "spec_sha256_after_correction": "b356ecaabd49125b0286b1c16a5a105c547e6c746387adfaf15ec2d81979b9fa",
+  "arms_specification": "nfl/NFL_EVALUATION_ARMS.md",
+  "open_owner_rulings_resolved": {
+    "T1": "RESOLVED 2026-09-06 by owner: retain the 2002 estimation floor. Not to be revisited after the first 2026 outcome.",
+    "T3": "RESOLVED 2026-09-06 by owner: retain the frozen home term h. NFL-2 or later may test h = 0 prospectively against the control."
+  }
+}
