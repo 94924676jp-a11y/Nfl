@@ -123,6 +123,43 @@ pre-kickoff. It survives whatever happens to the capture.
 | `NFLVERSE_INJURY_SOURCE_STATUS_CONFLICT` | **RESOLVED** by appended record | — |
 | A3 ffopportunity | **CLOSED** — oracle benchmark, non-deployable | — |
 | T1 / T3 cold-start rulings | **CLOSED** — 2002 floor, home term retained | — |
+| `ARTIFACT_REFERENCE_INTEGRITY` (Rule 006) | **REGISTERED** 2026-09-07 — module + 39 assertions | — |
+
+
+### Appended 2026-09-07 — `ARTIFACT_REFERENCE_INTEGRITY`, a Class-A failure class
+
+Registered as **Rule 006**, `sportsplatform/governance/artifact_reference.py`,
+tested by `test_artifact_reference.py` (39 assertions, 0 failed). Owner ruling
+of 2026-09-07, following the P4E baseline-gate incident.
+
+**The rule.** A validation or reproducibility gate must not compare against a
+manually transcribed approximation of a canonical artifact value when the
+artifact itself is available. A gate must:
+
+1. load its comparison value directly from the canonical artifact;
+2. hash and pin the artifact's identity;
+3. report that hash in the run output;
+4. never take gate truth from a display-rounded rendering — `.log`, `.txt`,
+   `.out`, `.md` and `.rst` are refused at source with
+   `GATE_SOURCE_IS_DISPLAY_ONLY` and cause `GOVERNANCE`;
+5. refuse a comparison value that arrives without artifact provenance
+   (`GATE_VALUE_UNSOURCED`), because a typed float and a loaded float are
+   indistinguishable once both are floats.
+
+**The incident it names.** P4E's baseline gate carried
+`PUBLISHED = {2024: 2.1102566719055176, ...}` as a source literal.
+`p4c_results.json` says `2.110274841594967`. The literal agreed with the
+artifact to **four** decimal places — the precision `run_p4c.log` prints, and
+the precision `predeclaration_p4e.md` §3 quotes — and diverged after it. The
+gate then failed at 1.8e-05 against a 1e-9 tolerance and cost a full diagnostic
+cycle before the answer turned out to be that the number had never been read.
+`transcription_signature()` reports that agreeing-precision as a diagnostic; it
+explains a mismatch and never excuses one.
+
+**Debt this closes, and one it does not.** It closes the class. It does not
+retroactively re-verify every gate already written in this repository; each is
+converted when next touched. `TASK_REPORT_2026-09-07_P4E.md` is left exactly as
+written — this record is the appended correction, not a rewrite of it.
 
 ---
 
