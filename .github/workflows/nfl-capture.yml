@@ -12,11 +12,29 @@ name: NFL vintage capture
 # can -- measured, run 34069329836: nfl.com/injuries 200 with 328,961 bytes and
 # 35 status-word markers, nfl.com/inactives 200 with 417,665 bytes, no JS shell.
 #
-# CADENCE. Every 30 minutes. The inactives window is T-90 to T-10, 80 minutes
-# wide, so a 30-minute cadence lands at least twice inside it even if GitHub
-# delays a scheduled run, which it documents that it may do under load. The
-# kickoff-anchored plan in nfl/capture/schedule.py decides what is DUE; this
-# schedule only guarantees the runner is awake often enough to hit the windows.
+# CADENCE, AND WHAT IT DOES NOT BUY. Every 30 minutes.
+#
+# CORRECTION 2026-09-07. This comment used to argue that a 30-minute cadence
+# "lands at least twice inside" the 80-minute inactives window and treat that as
+# fulfilment of the T-90 obligation. That was a coverage-in-time argument doing
+# duty as a discharge claim, and it is wrong twice over.
+#
+#   1. Landing inside game A's window is not attribution TO game A. This job
+#      fetches league-wide pages and records no game_id, and
+#      schedule._clears correctly refuses an unattributed capture for a
+#      game-specific kind. Measured with nfl/capture/coverage.py: 16 week-1
+#      inactives targets, 0 covered, 0 of 6 captures carrying a game_id.
+#   2. The arithmetic assumes the cron fires. GitHub documents that scheduled
+#      runs may be delayed or dropped under load. Measured base rate here:
+#      n=3 scheduled runs, delays 14.8 / 5.5 / 6.7 minutes, actual gaps 20.7
+#      and 31.2 minutes. n=3 supports no statement about drop probability.
+#
+# So this schedule guarantees only that the runner is awake often enough to have
+# a chance of hitting the windows. It does NOT discharge a T-90 target, and the
+# job now prints the game-anchored coverage answer alongside the source-level
+# one so the two cannot be confused. Closing the gap needs an execution anchored
+# on schedule.next_target and a capture row carrying the game_id it was taken
+# for; that work is not done and is not claimed.
 #
 # It captures bytes and records what arrived. It does not parse, model, project
 # or interpret, and it must not start.

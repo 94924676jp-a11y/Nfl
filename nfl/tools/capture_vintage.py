@@ -502,10 +502,38 @@ def main() -> int:
 
     print(f"\ncapture {capture_id}: {counts}")
     unmet = _registry.unmet_targets(manifest)
+    # SOURCE-LEVEL, and it must be labelled as such wherever it is printed.
+    # It answers "has an authorised source ever been captured for this kind",
+    # which has no time dimension and no game dimension. Read as coverage it
+    # says a Sunday poll discharges a Thursday kickoff's T-90 obligation, and it
+    # did read that way: it reported all three perishable targets met while no
+    # game had reached a window and no capture carried a game_id.
+    print(f"\nSOURCE-LEVEL (has this kind ever been captured at all): "
+          f"met={unmet['met']} unmet={unmet['unmet']}")
+    print("  This is NOT coverage. It carries no window and no game.")
     if unmet["unmet"]:
-        print(f"\nUNMET CAPTURE TARGETS (no reachable source can discharge "
-              f"these): {unmet['unmet']}")
         print(f"  pending endpoint verification: {unmet['pending_sources']}")
+
+    # GAME-LEVEL. The answer that decides whether a perishable window was hit.
+    try:
+        from nfl.capture.coverage import coverage as _coverage
+        cov = _coverage(args.season, 1, manifest_path=manifest)
+        print(f"\nGAME-LEVEL COVERAGE  {cov.state.value}[{cov.code}]")
+        print(f"  {cov.detail.splitlines()[0][:150]}")
+        ev = cov.evidence
+        if "n_targets" in ev:
+            print(f"  targets={ev['n_targets']} covered={ev['covered']} "
+                  f"missed={ev['missed']} not_yet_due={ev['not_yet_due']} "
+                  f"game_attributed_captures={ev['attributed_captures']}"
+                  f"/{ev['total_captures']}")
+        for m in ev.get("missed_detail", [])[:10]:
+            print(f"  MISSED {m['game_id']} {m['label']} "
+                  f"window {m['window_start_utc']}..{m['window_end_utc']}")
+    except Exception as exc:                       # noqa: BLE001
+        # A coverage computation that cannot run is BLOCKED and must say so.
+        # Swallowing it would restore the exact silence this replaces.
+        print(f"\nGAME-LEVEL COVERAGE  BLOCKED[COVERAGE_NOT_COMPUTABLE]: "
+              f"{type(exc).__name__}: {exc}")
     owed = [r for r in rows if r["state"] == "DEFERRED"]
     blocked = [r for r in rows if r["state"] == "BLOCKED"]
     if owed:
