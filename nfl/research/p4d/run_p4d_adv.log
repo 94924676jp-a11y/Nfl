@@ -1,0 +1,16 @@
+R on 2024: n=8831 log loss 0.35913
+
+[PASS]  1 seed_realized_appearance: realised appearance gives log loss 0.000001 against 0.35913 for R. Eligible systems read only the model probability; the oracle is built in a separate pass and is never in SYSTEMS for selection
+[PASS]  2 seed_final_roster_status: no P4D module reads weekly_rosters or a roster status field ([]); the panel itself never loads one
+[PASS]  3 seed_same_game_snap_count: adding THIS game's snap count drops log loss 0.35913 -> 0.03628 (-89.9%). No shipped feature reads a y_* or offense_snaps field
+[PASS]  4 seed_same_game_target_or_carry_evidence: adding this game's targets+carries drops log loss 0.35913 -> 0.17549; the P4D feature builder reads no y_* field (True)
+[PASS]  5 seed_future_appearance_streak: a NEXT-game appearance feature drops log loss 0.35913 -> 0.31825; every P4D block is built from strictly earlier `ord` values only
+[PASS]  6 seed_future_injury_designation: WEAK (next week's Out designation) moves log loss 0.35913 -> 0.35929 -- it does NOT leak, the prior-appearance blocks already carry it. STRONG (games missed over the NEXT THREE weeks) drops it to 0.32989 (-8.1%). Every P4D block is built from strictly earlier `ord` values only
+[PASS]  7 seed_evaluation_season_calibrator_fitting: a calibrator fitted ON 2024 gives log loss 0.35779 against 0.36485 for the shipped out-of-fold calibrator (-1.94%). The shipped pools come from seasons 2021..2023 only
+[PASS]  8 evaluation_season_threshold_tuning: the downstream runner defines no grid of its own and reads P4C's frozen THRESHOLDS (True); every grid matches the P4C values verbatim (True)
+[PASS]  9 p2025_final_file_injury_leakage: 2025 carries 0 injury-report rows against 1577 in 2024, and the 2025 design matrix has 71 columns against 80 for a season with injuries -- the injury block is structurally absent, not zeroed. The 2026 injury artifact is never read
+[PASS] 10 postgame_player_universe: the 2024 candidate set retains 2593 of 8831 (29.4%) player-games in which the player did not appear; a postgame universe would contain none. Rows with no prior game: 0
+[PASS] 11 GUARD_DELETION_calibrator_on_evaluation_season: fitting the calibrator on 2024 drives the worst band gap to 0.0262 against 0.0684 for the shipped out-of-fold calibrator. The nesting in run_p4d_app.oof_pairs is what prevents that circular result
+[PASS] 12 GUARD_DELETION_realized_appearance_downstream: substituting realised appearance improves downstream CRPS in 20/20 class-seasons by 19.98% on average (min 5.78%, max 35.02%). The oracle channel is live and materially large, which is why O is computed in a separate pass and never enters SYSTEMS selection
+
+12 probes, 0 failing: []
