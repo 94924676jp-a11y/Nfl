@@ -1,0 +1,74 @@
+stage A 2022: n_train=16573 n_test=9111 injury_feature=True brier=0.1399 auc=0.8518
+stage A 2023: n_train=25684 n_test=8919 injury_feature=True brier=0.1331 auc=0.8571
+stage A 2024: n_train=34603 n_test=8831 injury_feature=True brier=0.1288 auc=0.8715
+stage A 2025: n_train=43434 n_test=8896 injury_feature=False brier=0.1544 auc=0.8126
+
+=== snap_share
+ 2022 n=  7836 U=0.1516(r=0.701) C=0.2033(r=0.639) AxC=0.1508(r=0.761) | AxC-U -0.00070 [-0.00504,+0.00433] AxC does NOT beat U
+      role=stable    n= 5327 U=0.1222 C=0.1675 AxC=0.1251
+      role=change    n= 2143 U=0.2251 C=0.2758 AxC=0.2108
+ 2023 n=  7578 U=0.1464(r=0.726) C=0.1909(r=0.662) AxC=0.1446(r=0.774) | AxC-U -0.00184 [-0.00639,+0.00250] AxC does NOT beat U
+      role=stable    n= 5410 U=0.1188 C=0.1601 AxC=0.1215
+      role=change    n= 1852 U=0.2271 C=0.2688 AxC=0.2084
+ 2024 n=  7537 U=0.1528(r=0.700) C=0.1936(r=0.647) AxC=0.1450(r=0.776) | AxC-U -0.00776 [-0.01301,-0.00277] AxC BEATS U
+      role=stable    n= 5217 U=0.1231 C=0.1588 AxC=0.1202
+      role=change    n= 1990 U=0.2332 C=0.2700 AxC=0.2083
+ 2025 n=  7436 U=0.1528(r=0.705) C=0.1919(r=0.652) AxC=0.1599(r=0.727) | AxC-U +0.00688 [+0.00279,+0.01085] AxC does NOT beat U
+      role=stable    n= 5116 U=0.1283 C=0.1609 AxC=0.1339
+      role=change    n= 2008 U=0.2183 C=0.2596 AxC=0.2255
+
+=== rpr
+ 2022 n=  8092 U=0.1566(r=0.706) C=0.2049(r=0.658) AxC=0.1558(r=0.767) | AxC-U -0.00059 [-0.00553,+0.00362] AxC does NOT beat U
+      role=stable    n= 5480 U=0.1270 C=0.1671 AxC=0.1284
+      role=change    n= 2159 U=0.2300 C=0.2874 AxC=0.2223
+ 2023 n=  7840 U=0.1506(r=0.734) C=0.1906(r=0.692) AxC=0.1478(r=0.785) | AxC-U -0.00272 [-0.00738,+0.00188] AxC does NOT beat U
+      role=stable    n= 5586 U=0.1240 C=0.1586 AxC=0.1239
+      role=change    n= 1869 U=0.2292 C=0.2756 AxC=0.2145
+ 2024 n=  7743 U=0.1549(r=0.719) C=0.1937(r=0.678) AxC=0.1485(r=0.790) | AxC-U -0.00639 [-0.01189,-0.00112] AxC BEATS U
+      role=stable    n= 5346 U=0.1244 C=0.1572 AxC=0.1219
+      role=change    n= 2019 U=0.2382 C=0.2768 AxC=0.2176
+ 2025 n=  7768 U=0.1564(r=0.712) C=0.1925(r=0.677) AxC=0.1646(r=0.737) | AxC-U +0.00822 [+0.00404,+0.01229] AxC does NOT beat U
+      role=stable    n= 5324 U=0.1313 C=0.1599 AxC=0.1370
+      role=change    n= 2023 U=0.2244 C=0.2699 AxC=0.2377
+
+=== target_share
+ 2022 n=  8092 U=0.0467(r=0.678) C=0.0550(r=0.641) AxC=0.0435(r=0.717) | AxC-U -0.00319 [-0.00397,-0.00251] AxC BEATS U
+      role=stable    n= 5480 U=0.0400 C=0.0470 AxC=0.0385
+      role=change    n= 2159 U=0.0638 C=0.0722 AxC=0.0557
+ 2023 n=  7840 U=0.0453(r=0.710) C=0.0524(r=0.681) AxC=0.0427(r=0.740) | AxC-U -0.00257 [-0.00333,-0.00183] AxC BEATS U
+      role=stable    n= 5586 U=0.0393 C=0.0457 AxC=0.0384
+      role=change    n= 1869 U=0.0628 C=0.0701 AxC=0.0548
+ 2024 n=  7743 U=0.0469(r=0.689) C=0.0541(r=0.659) AxC=0.0434(r=0.741) | AxC-U -0.00343 [-0.00432,-0.00253] AxC BEATS U
+      role=stable    n= 5346 U=0.0403 C=0.0463 AxC=0.0385
+      role=change    n= 2019 U=0.0651 C=0.0720 AxC=0.0563
+ 2025 n=  7768 U=0.0460(r=0.697) C=0.0530(r=0.664) AxC=0.0455(r=0.703) | AxC-U -0.00048 [-0.00091,-0.00004] AxC BEATS U
+      role=stable    n= 5324 U=0.0414 C=0.0471 AxC=0.0416
+      role=change    n= 2023 U=0.0590 C=0.0675 AxC=0.0565
+
+=== carry_share
+ 2022 n=  2365 U=0.1034(r=0.743) C=0.1319(r=0.718) AxC=0.0991(r=0.801) | AxC-U -0.00413 [-0.01022,+0.00171] AxC does NOT beat U
+      role=stable    n= 1745 U=0.0880 C=0.1137 AxC=0.0855
+      role=change    n=  495 U=0.1512 C=0.1849 AxC=0.1374
+ 2023 n=  2255 U=0.1054(r=0.744) C=0.1380(r=0.679) AxC=0.1036(r=0.784) | AxC-U -0.00173 [-0.00666,+0.00367] AxC does NOT beat U
+      role=stable    n= 1698 U=0.0899 C=0.1168 AxC=0.0891
+      role=change    n=  439 U=0.1599 C=0.2105 AxC=0.1531
+ 2024 n=  2166 U=0.1261(r=0.665) C=0.1411(r=0.670) AxC=0.1092(r=0.755) | AxC-U -0.01649 [-0.02311,-0.01051] AxC BEATS U
+      role=stable    n= 1590 U=0.1062 C=0.1200 AxC=0.0930
+      role=change    n=  474 U=0.2005 C=0.2050 AxC=0.1643
+ 2025 n=  2174 U=0.1056(r=0.748) C=0.1278(r=0.738) AxC=0.1044(r=0.789) | AxC-U -0.00121 [-0.00604,+0.00381] AxC does NOT beat U
+      role=stable    n= 1610 U=0.0935 C=0.1100 AxC=0.0910
+      role=change    n=  422 U=0.1528 C=0.1830 AxC=0.1539
+
+=== rz_carry_share
+ 2022 n=  2208 U=0.1628(r=0.558) C=0.1918(r=0.525) AxC=0.1556(r=0.597) | AxC-U -0.00733 [-0.01101,-0.00373] AxC BEATS U
+      role=stable    n= 1627 U=0.1421 C=0.1707 AxC=0.1396
+      role=change    n=  459 U=0.2203 C=0.2486 AxC=0.1967
+ 2023 n=  2105 U=0.1639(r=0.581) C=0.1943(r=0.533) AxC=0.1553(r=0.630) | AxC-U -0.00870 [-0.01327,-0.00410] AxC BEATS U
+      role=stable    n= 1575 U=0.1378 C=0.1664 AxC=0.1368
+      role=change    n=  417 U=0.2519 C=0.2818 AxC=0.2155
+ 2024 n=  2024 U=0.1729(r=0.562) C=0.1957(r=0.542) AxC=0.1633(r=0.605) | AxC-U -0.00943 [-0.01394,-0.00487] AxC BEATS U
+      role=stable    n= 1497 U=0.1513 C=0.1710 AxC=0.1450
+      role=change    n=  431 U=0.2512 C=0.2721 AxC=0.2276
+ 2025 n=  2037 U=0.1631(r=0.600) C=0.1880(r=0.569) AxC=0.1625(r=0.607) | AxC-U -0.00060 [-0.00273,+0.00153] AxC does NOT beat U
+      role=stable    n= 1520 U=0.1521 C=0.1731 AxC=0.1534
+      role=change    n=  387 U=0.2115 C=0.2375 AxC=0.2004
