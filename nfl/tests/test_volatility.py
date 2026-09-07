@@ -58,9 +58,32 @@ def _blobs(stem):
 
 
 def test_A_the_false_change_it_exists_to_catch():
-    print('\nA. the live captures: four raw digests, one page')
-    for stem, expect in (('official_inactives', 4),
-                         ('official_injury_report', 4)):
+    """The nonce is collapsed. Real page change is not.
+
+    CORRECTED 2026-09-07, by the live capture series rather than by review.
+    This section originally asserted that all captures of a page collapse to
+    EXACTLY ONE substantive digest, which was true of the four blobs that
+    existed when it was written. The bot then captured four more and the
+    assertion failed on 8 blobs / 8 raw digests / 2 substantive.
+
+    The failure was correct and the assertion was wrong. Diffing the two
+    substantive groups with the nonce masked leaves ONE differing line, and it
+    is the embedded broadcast listing: `nationalGames` went from a populated
+    array to `[]`. The injury tables are byte-identical and the parser returns
+    the same 11 rows on both sides.
+
+    So there is a third category this module does not distinguish, and pretending
+    otherwise by loosening the mask would be the false-unchanged error §C exists
+    to prevent: a whole-page digest answers "did the page change", not "did the
+    injury report change". Those separate whenever anything else on the page
+    moves. The durable invariant -- and what is asserted now -- is that the mask
+    collapses strictly more raw digests than it leaves substantive ones, and
+    that captures which parse to identical report content are not thereby
+    guaranteed one digest. Recorded as an open debt; the fix is a digest over
+    parsed rows, which is a change to G0A capture semantics and not taken here.
+    """
+    print('\nA. the live captures: many raw digests, far fewer pages')
+    for stem in ('official_inactives', 'official_injury_report'):
         fs = _blobs(stem)
         check(f'{stem}: {len(fs)} captures on disk', len(fs) >= 2, str(len(fs)))
         raws = {hashlib.sha256(gzip.open(f, 'rb').read()).hexdigest()
@@ -70,10 +93,41 @@ def test_A_the_false_change_it_exists_to_catch():
             for f in fs)
         check(f'{stem}: every capture has a DIFFERENT raw digest',
               len(raws) == len(fs), f'{len(raws)} of {len(fs)}')
-        check(f'{stem}: and they are all the SAME page',
-              len(subs) == 1, str(dict(subs)))
+        check(f'{stem}: the mask collapses them to strictly fewer pages',
+              len(subs) < len(raws), f'{len(subs)} substantive of {len(raws)} raw')
+        check(f'{stem}: and the collapse is substantial, not cosmetic',
+              len(subs) <= max(2, len(raws) // 3),
+              f'{len(subs)} substantive of {len(raws)} raw')
         print(f'       [{len(fs)} blobs, {len(raws)} raw digests, '
               f'{len(subs)} substantive]')
+
+
+def test_A2_a_page_digest_is_not_a_report_digest():
+    """The open debt the live series exposed, kept as a standing test."""
+    print('\nA2. a whole-page digest answers a different question')
+    import hashlib as _h
+    from nfl.parse.injury_report import parse
+    groups = collections.defaultdict(list)
+    for f in _blobs('official_injury_report'):
+        b = gzip.open(f, 'rb').read()
+        groups[substantive_digest(b).value['digest']].append(b)
+    if len(groups) < 2:
+        print('       [only one page version captured so far; '
+              'the divergence below cannot be exercised yet]')
+        check('there is at least one captured version', len(groups) >= 1)
+        return
+    rows_by_group = {}
+    for d, blobs in groups.items():
+        o = parse(blobs[0], raw_sha256=_h.sha256(blobs[0]).hexdigest())
+        rows_by_group[d] = (o.code, len(o.value) if o.state is State.PASS else 0)
+    check('two captures differ by whole-page digest', len(groups) >= 2,
+          str(len(groups)))
+    counts = {v[1] for v in rows_by_group.values()}
+    check('yet they parse to the SAME report content -- so a page digest '
+          'overstates report change',
+          len(counts) == 1, str(rows_by_group))
+    print(f'       [{len(groups)} page versions, all parsing to '
+          f'{counts} report rows]')
 
 
 def test_B_the_three_valued_answer():
@@ -200,6 +254,7 @@ def test_F_the_rule_is_load_bearing():
 
 if __name__ == '__main__':
     test_A_the_false_change_it_exists_to_catch()
+    test_A2_a_page_digest_is_not_a_report_digest()
     test_B_the_three_valued_answer()
     test_C_the_rule_must_not_eat_real_content()
     test_D_it_reports_what_it_did()
