@@ -2,7 +2,12 @@ name: NFL T-90 anchored capture
 
 # GENERATED FILE -- do not hand-edit.
 #   nfl/tools/gen_t90_schedule.py --season 2026 --week 1 --write
-#   source snapshot: schedules.ebec1e45d512d89d.csv.gz
+#   schedule identity: SCHED-2a2924d4966fbd3d
+#
+# That identity is a digest over the (game, window) pairs themselves, not over
+# the snapshot file they were read from. A re-captured schedule with unchanged
+# kickoffs leaves it unchanged; a moved kickoff changes it and the drift test
+# in nfl/tests/test_t90_workflow.py fails.
 #
 # Every cron entry below exists because a kickoff time in that snapshot put a
 # capture window there. None is a round-number cadence. That is what makes this

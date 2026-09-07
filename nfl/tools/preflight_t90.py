@@ -46,8 +46,9 @@ def _checks(season: int, week: int) -> list:
                                  "captured schedule; regenerate it.")
                     if drift else Outcome.ok(
                         "WORKFLOW_CURRENT", value=WORKFLOW.name,
-                        detail=f"{r.evidence.get('n_entries')} cron entries "
-                               f"from {r.evidence.get('snapshot')}")))
+                        detail=f"{r.evidence.get('n_entries')} cron entries, "
+                               f"schedule identity "
+                               f"{r.evidence.get('schedule_identity')}")))
 
     # 2. the plan, and the first target still ahead of us
     plan = load_week_plan(season, week)

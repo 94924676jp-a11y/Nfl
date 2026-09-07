@@ -40,6 +40,8 @@ import csv
 import datetime as dt
 import gzip
 import io
+import hashlib
+import json
 import pathlib
 import sys
 
@@ -129,11 +131,33 @@ def cron_entries(lo: dt.datetime, hi: dt.datetime) -> list:
     return out
 
 
+def schedule_identity(windows) -> str:
+    """Digest over the WINDOWS, not over the file they came from.
+
+    The header used to name the source snapshot filename, and the drift test
+    compared the file byte-for-byte. The bot re-captures schedules whenever the
+    upstream bytes change -- which happens for reasons that have nothing to do
+    with kickoff times -- so the guard fired on a new filename while all 16 cron
+    entries were identical. Measured 2026-09-07: snapshot ebec1e45 -> e5d64b69,
+    cron entries identical, two differing lines both in the comment.
+
+    A guard that cries wolf is a guard that gets ignored, and the thing it would
+    then miss is a genuinely moved kickoff. So the identity recorded here is the
+    content the cron actually depends on: every (game, window) pair. It changes
+    when a kickoff moves and not when a file is re-fetched.
+    """
+    blob = json.dumps(
+        [[sorted(g), lo.isoformat(), hi.isoformat()]
+         for (lo, hi), g in windows], sort_keys=True, separators=(",", ":"))
+    return "SCHED-" + hashlib.sha256(blob.encode()).hexdigest()[:16]
+
+
 def render(season: int, week: int) -> Outcome:
     w = _windows(season, week)
     if w.state is not State.PASS:
         return w
     windows = w.value
+    sched_id = schedule_identity(windows)
 
     lines, summary = [], []
     for (lo, hi), gids in windows:
@@ -150,7 +174,12 @@ def render(season: int, week: int) -> Outcome:
 
 # GENERATED FILE -- do not hand-edit.
 #   nfl/tools/gen_t90_schedule.py --season {season} --week {week} --write
-#   source snapshot: {w.evidence['snapshot']}
+#   schedule identity: {sched_id}
+#
+# That identity is a digest over the (game, window) pairs themselves, not over
+# the snapshot file they were read from. A re-captured schedule with unchanged
+# kickoffs leaves it unchanged; a moved kickoff changes it and the drift test
+# in nfl/tests/test_t90_workflow.py fails.
 #
 # Every cron entry below exists because a kickoff time in that snapshot put a
 # capture window there. None is a round-number cadence. That is what makes this
@@ -229,6 +258,7 @@ jobs:
                       detail=f"{n_entries} cron entries over "
                              f"{w.evidence['n_windows']} windows",
                       n_entries=n_entries, windows=summary,
+                      schedule_identity=sched_id,
                       snapshot=w.evidence["snapshot"])
 
 

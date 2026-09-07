@@ -155,11 +155,62 @@ def test_D_the_committed_file_matches_the_current_schedule():
           same,
           'regenerate: python3.12 nfl/tools/gen_t90_schedule.py '
           f'--season {SEASON} --week {WEEK} --write')
-    check('it names the snapshot it was generated from',
-          out.evidence['snapshot'] in WORKFLOW.read_text(),
+    check('it names the SCHEDULE IDENTITY, not the snapshot filename -- the '
+          'filename churns on every re-capture and made this guard cry wolf',
+          out.evidence['schedule_identity'] in WORKFLOW.read_text(),
+          out.evidence['schedule_identity'])
+    check('and the snapshot filename is deliberately NOT in the compared file',
+          out.evidence['snapshot'] not in WORKFLOW.read_text(),
           out.evidence['snapshot'])
     check('and it marks itself generated so nobody hand-edits it',
           'GENERATED FILE' in WORKFLOW.read_text())
+
+
+def test_D2_the_guard_fires_on_a_moved_kickoff_and_not_on_a_recapture():
+    """Both directions, because only one of them was true before.
+
+    The drift guard originally compared the generated file byte-for-byte
+    including a `source snapshot: <filename>` comment. The bot re-captures the
+    schedule whenever the upstream bytes change -- for reasons unrelated to
+    kickoff times -- so on 2026-09-07 the guard failed on snapshot
+    ebec1e45 -> e5d64b69 while all 16 cron entries were identical. A guard that
+    cries wolf gets ignored, and what it would then miss is a real moved
+    kickoff. The header now carries a digest over the (game, window) pairs.
+    """
+    print('\nD2. silent on a re-capture, loud on a moved kickoff')
+    import datetime as _dt
+    import nfl.tools.gen_t90_schedule as G
+    from sportsplatform.governance.outcome import Outcome
+
+    a = render(SEASON, WEEK)
+    check('the committed file matches today', WORKFLOW.read_text() == a.value)
+    check('and its identity is a content digest, not a filename',
+          a.evidence['schedule_identity'].startswith('SCHED-'),
+          a.evidence['schedule_identity'])
+
+    orig = G._windows
+    try:
+        def moved(season, week):
+            o = orig(season, week)
+            v = [((lo + _dt.timedelta(minutes=25), hi + _dt.timedelta(minutes=25)), g)
+                 if i == 0 else (w, g)
+                 for i, (w, g) in enumerate(o.value) for lo, hi in [w]]
+            return Outcome.ok('WINDOWS', value=v, detail=o.detail,
+                              snapshot=o.evidence['snapshot'],
+                              n_games=o.evidence['n_games'],
+                              n_windows=o.evidence['n_windows'])
+        G._windows = moved
+        b = render(SEASON, WEEK)
+    finally:
+        G._windows = orig
+
+    check('a kickoff moving 25 minutes changes the identity',
+          a.evidence['schedule_identity'] != b.evidence['schedule_identity'])
+    check('and changes the cron entries themselves',
+          [l for l in a.value.splitlines() if 'cron' in l]
+          != [l for l in b.value.splitlines() if 'cron' in l])
+    check('so the drift guard would fire on it',
+          WORKFLOW.read_text() != b.value)
 
 
 def test_E_it_does_not_overclaim():
@@ -226,6 +277,7 @@ if __name__ == '__main__':
     test_B_every_window_is_covered_densely()
     test_C_the_generator_handles_the_awkward_windows()
     test_D_the_committed_file_matches_the_current_schedule()
+    test_D2_the_guard_fires_on_a_moved_kickoff_and_not_on_a_recapture()
     test_E_it_does_not_overclaim()
     test_F_the_generator_refuses_rather_than_emitting_an_empty_cron()
     tail = f', {BLOCKED} blocked' if BLOCKED else ''
