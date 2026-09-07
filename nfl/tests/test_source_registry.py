@@ -499,11 +499,26 @@ def test_g_BUG_build_scope_fabricates_for_unverified_sources():
           and built['official_transactions'].state is State.BLOCKED,
           f"resolve={resolve('official_transactions', SEASON).code} "
           f"build_scope={built['official_transactions'].code}")
-    check('the one source that legitimately pins its own instant is the only '
-          'one that SHOULD be source-provided',
-          [s.name for s in REGISTRY
-           if s.source_scope_kind is ScopeKind.EXACT_TIMESTAMP
-           and s.reachability is Reachability.REACHABLE] == ['depth_charts'])
+    # depth_charts pins its own instant via an upstream `dt` column. The two
+    # official pages pin theirs differently but just as legitimately: a rendered
+    # page IS effective at the moment the origin produced it. What none of them
+    # may claim is a week or a team, which is a property of a PARSED ROW and not
+    # of a captured page.
+    stamped = sorted(s.name for s in REGISTRY
+                     if s.source_scope_kind is ScopeKind.EXACT_TIMESTAMP
+                     and s.reachability is Reachability.REACHABLE)
+    check('the sources that pin an instant are exactly the dt series and the '
+          'two rendered official pages',
+          stamped == ['depth_charts', 'official_inactives',
+                      'official_injury_report'], str(stamped))
+    check('and NO source claims a week or a team at capture time, because a '
+          'captured page has neither',
+          not [s.name for s in REGISTRY
+               if s.source_scope_kind in (ScopeKind.WEEK_TEAM,
+                                          ScopeKind.TEAM_GAME)],
+          str([s.name for s in REGISTRY
+               if s.source_scope_kind in (ScopeKind.WEEK_TEAM,
+                                          ScopeKind.TEAM_GAME)]))
     check('and the raising source is the one item 1 depends on, which is why '
           'this is not cosmetic',
           BY_NAME['official_injury_report'].serves_kinds
