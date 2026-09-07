@@ -341,11 +341,93 @@ def fetch(src: Source, season: int, store: pathlib.Path) -> Outcome:
                "source_timestamp_header": src_ts_header,
                "requested_at": requested_at,
                "substantive": _substantive(payload),
+               "discharge_claims": _claims(src.name, retrieved_at, season),
                "content_kind": src.content_kind, **stored,
                "provenance": dataclasses.asdict(prov)},
         detail=f"{src.name}: {n_bytes} bytes, {lines} lines"
                + (" (content unchanged)" if stored["content_unchanged"] else " (NEW)"),
         source=src.name)
+
+
+def _claims(source: str, retrieved_at, season: int) -> dict:
+    """Which game(s) this capture was taken for. A CLAIM, re-verified by
+    coverage; see nfl/capture/attribution.py.
+
+    Recorded on every capture including the ones that claim nothing, because
+    "no window was open" and "nobody asked" have to be distinguishable later.
+    A failure here is recorded as a state, never swallowed: an attribution that
+    could not be computed must not read the same as one that found no targets.
+
+    NO WEEK IS GUESSED. An earlier version selected a "current week" from the
+    schedule and planned only that week -- and it returned None on 2026-09-07, a
+    day on which week 1 practice windows opened at 20:00Z, because it measured
+    proximity to KICKOFF rather than to a window. Worse than being wrong, the
+    approach was unnecessary: a target window is an absolute interval, so the
+    honest question is "which windows contain this instant", and the week the
+    answer happens to belong to is an output, not an input. Guessing a week can
+    attribute a capture to the wrong game; asking about windows cannot.
+    """
+    from nfl.capture.attribution import claims_for
+    try:
+        plan = _nearby_plan(season, retrieved_at)
+        if plan.state is not State.PASS:
+            return {"state": plan.state.value, "code": plan.code,
+                    "detail": plan.detail[:300]}
+        out = claims_for(source, retrieved_at, plan.value)
+        if out.state is not State.PASS:
+            return {"state": out.state.value, "code": out.code,
+                    "detail": out.detail[:300]}
+        return out.value
+    except Exception as exc:                                  # noqa: BLE001
+        return {"state": "BLOCKED", "code": "ATTRIBUTION_FAILED",
+                "detail": f"{type(exc).__name__}: {exc}"}
+
+
+def _nearby_plan(season: int, retrieved_at) -> Outcome:
+    """Capture targets for every game within a week of `retrieved_at`.
+
+    Spans weeks deliberately. The widest window is a practice report at
+    deadline + 20h, so a capture can legitimately sit inside a window belonging
+    to a game several days away, and week boundaries have nothing to do with it.
+    Over-planning is safe: `claims_for` keeps only the windows that actually
+    contain the instant, so extra games cost a little work and can add no claim.
+    """
+    import csv as _csv, gzip as _gzip, io as _io
+    from nfl.capture.schedule import season_plan
+
+    ts = _dt.datetime.fromisoformat(str(retrieved_at).replace("Z", "+00:00"))
+    if ts.tzinfo is None:
+        ts = ts.replace(tzinfo=_dt.timezone.utc)
+
+    snaps = sorted(DURABLE_ROOT.glob("schedules.*.csv.gz"),
+                   key=lambda q: q.stat().st_mtime)
+    if not snaps:
+        return Outcome.blocked(
+            "NO_SCHEDULE_SNAPSHOT",
+            "no schedules artifact captured, so no kickoff time is known and "
+            "no capture can be attributed to a game.", cause=Cause.DEPENDENCY)
+
+    rows, weeks = [], set()
+    for r in _csv.DictReader(_io.StringIO(_gzip.open(snaps[-1], "rt").read())):
+        if r.get("season") != str(season) or r.get("game_type") != "REG":
+            continue
+        try:
+            gd = _dt.date.fromisoformat(r["gameday"])
+        except (ValueError, KeyError, TypeError):
+            continue
+        if abs((gd - ts.date()).days) <= 7:
+            rows.append(r)
+            weeks.add(r.get("week"))
+    if not rows:
+        return Outcome.not_applicable(
+            "NO_GAMES_NEARBY",
+            f"no {season} regular-season game within 7 days of "
+            f"{ts.date().isoformat()}, so no target window can be open.")
+    plan = season_plan(rows)
+    return Outcome.ok("NEARBY_PLAN", value=plan,
+                      detail=f"{len(plan)} targets over {len(rows)} games "
+                             f"in weeks {sorted(weeks)}",
+                      n_games=len(rows), weeks=sorted(weeks))
 
 
 def _substantive(payload: bytes) -> dict:

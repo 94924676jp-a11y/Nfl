@@ -53,6 +53,7 @@ if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
 from sportsplatform.governance.outcome import Cause, Outcome  # noqa: E402
+from nfl.capture.attribution import claimed_game_ids  # noqa: E402
 from nfl.capture.schedule import (GAME_SPECIFIC_KINDS, CaptureDue,  # noqa: E402
                                   season_plan)
 
@@ -116,8 +117,17 @@ def performed_from_manifest(manifest_path) -> Outcome:
         if ts is None:
             undated.append(row.get("source"))
             continue
+        # One entry per claimed game, plus one unattributed entry. The
+        # unattributed entry still clears team-week kinds (a practice report
+        # fetch legitimately serves every game that team plays); the attributed
+        # ones are what _clears needs for a game-specific kind. Each is
+        # re-checked against the plan independently, so a claim cannot let a
+        # capture clear a window it was not inside.
+        claimed = claimed_game_ids(val)
         out.append((ts, row.get("source"),
                     val.get("game_id") or prov.get("game_id")))
+        for gid in claimed:
+            out.append((ts, row.get("source"), gid))
     if undated:
         return Outcome.blocked(
             "CAPTURE_CLOCK_UNREADABLE",

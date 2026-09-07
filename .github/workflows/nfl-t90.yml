@@ -1,0 +1,98 @@
+name: NFL T-90 anchored capture
+
+# GENERATED FILE -- do not hand-edit.
+#   nfl/tools/gen_t90_schedule.py --season 2026 --week 1 --write
+#   source snapshot: schedules.ebec1e45d512d89d.csv.gz
+#
+# Every cron entry below exists because a kickoff time in that snapshot put a
+# capture window there. None is a round-number cadence. That is what makes this
+# event-anchored and the `*/30` baseline in nfl-capture.yml not.
+#
+# 6 distinct windows, 16 games, 16 cron entries, 5-minute step inside each window.
+#
+# WHAT THIS DOES NOT CLAIM. GitHub may delay or drop a scheduled run; no cron
+# arrangement prevents that. This raises the chances inside an 80-minute window
+# from about two to about sixteen. It does not promise any of them.
+#
+# A capture discharges a target on evidence -- retrieved_at inside the window,
+# an authorised source, attributed to the game -- and never because this
+# workflow fired rather than the baseline one.
+
+on:
+  schedule:
+    # 2026-09-09 22:50Z -> 00:10Z  (1 game: 2026_01_NE_SEA)
+    - cron: '50,55 22 9 9 *'
+    - cron: '*/5 23 9 9 *'
+    - cron: '0,5,10 0 10 9 *'
+    # 2026-09-10 23:05Z -> 00:25Z  (1 game: 2026_01_SF_LA)
+    - cron: '5,10,15,20,25,30,35,40,45,50,55 23 10 9 *'
+    - cron: '0,5,10,15,20,25 0 11 9 *'
+    # 2026-09-13 15:30Z -> 16:50Z  (8 games: 2026_01_ATL_PIT, 2026_01_BAL_IND, 2026_01_BUF_HOU, 2026_01_CHI_CAR, 2026_01_CLE_JAX, 2026_01_NO_DET, 2026_01_NYJ_TEN, 2026_01_TB_CIN)
+    - cron: '30,35,40,45,50,55 15 13 9 *'
+    - cron: '0,5,10,15,20,25,30,35,40,45,50 16 13 9 *'
+    # 2026-09-13 18:55Z -> 20:15Z  (4 games: 2026_01_ARI_LAC, 2026_01_GB_MIN, 2026_01_MIA_LV, 2026_01_WAS_PHI)
+    - cron: '55 18 13 9 *'
+    - cron: '*/5 19 13 9 *'
+    - cron: '0,5,10,15 20 13 9 *'
+    # 2026-09-13 22:50Z -> 00:10Z  (1 game: 2026_01_DAL_NYG)
+    - cron: '50,55 22 13 9 *'
+    - cron: '*/5 23 13 9 *'
+    - cron: '0,5,10 0 14 9 *'
+    # 2026-09-14 22:45Z -> 00:05Z  (1 game: 2026_01_DEN_KC)
+    - cron: '45,50,55 22 14 9 *'
+    - cron: '*/5 23 14 9 *'
+    - cron: '0,5 0 15 9 *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nfl-vintage-capture      # shared with the baseline: never race it
+  cancel-in-progress: false
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Capture
+        run: |
+          set +e
+          python3 nfl/tools/capture_vintage.py --season 2026 | tee /tmp/capture.log
+          echo "exit=$?" >> "$GITHUB_OUTPUT"
+
+      - name: Fail only on a real FAIL
+        run: |
+          if grep -qE '^FAIL ' /tmp/capture.log; then
+            grep -E '^FAIL ' /tmp/capture.log
+            exit 1
+          fi
+          echo "no FAIL states"
+
+      - name: Commit anything captured
+        run: |
+          git config user.name  "nfl-capture[bot]"
+          git config user.email "nfl-capture@users.noreply.github.com"
+          git add nfl/vintage nfl/vintage_manifest.jsonl
+          if git diff --cached --quiet; then
+            echo "nothing new captured; not committing"
+            exit 0
+          fi
+          CID=$(grep -oE 'capture [0-9]{8}T[0-9]{6}Z' /tmp/capture.log | head -1 | awk '{print $2}')
+          git commit \
+            -m "NFL T-90 anchored capture ${CID:-unknown}" \
+            -m "GitHub Actions run ${GITHUB_RUN_ID}, T-90 anchored workflow." \
+            -m "Append-only: adds manifest rows and content-addressed blobs."
+          git pull --rebase --autostash origin main
+          git push origin HEAD:main
+
+      - name: Report game-level coverage
+        if: always()
+        run: |
+          grep -A6 'GAME-LEVEL COVERAGE' /tmp/capture.log || \
+            echo "no coverage line -- check the capture output"
