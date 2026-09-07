@@ -131,7 +131,7 @@ def fetch(src: Source, season: int, store: pathlib.Path) -> Outcome:
     tmp = raw_dir / f".incoming.{src.name}"
     hdr_path = raw_dir / f".headers.{src.name}"
 
-    retrieved_at = _now()
+    requested_at = _now()
     cmd = ["curl", "-sS", "-L", "--max-time", str(TIMEOUT_S),
            "-D", str(hdr_path), "-o", str(tmp), "-w", "%{http_code}", src.url]
     try:
@@ -142,6 +142,14 @@ def fetch(src: Source, season: int, store: pathlib.Path) -> Outcome:
                                f"{src.name}: no response in {TIMEOUT_S}s",
                                cause=Cause.NETWORK, source=src.name, url=src.url)
 
+    # Rule 002: "a retrieval timestamp is when the bytes ARRIVED". Stamping it
+    # before the request is when we started ASKING, and for a live origin those
+    # differ enough to matter: the server's own Date header then reads LATER
+    # than our retrieved_at, and provenance.validate correctly refuses the
+    # record as impossible -- you cannot have retrieved data before the source
+    # produced it. That is what CAPTURE_PROVENANCE_INVALID caught on the first
+    # real run against nfl.com.
+    retrieved_at = _now()
     status = (r.stdout or "").strip() or "000"
 
     if status == "000":
@@ -151,7 +159,7 @@ def fetch(src: Source, season: int, store: pathlib.Path) -> Outcome:
             f"about the data. Per DEC-029 it is ASSIGNED to an agent with "
             f"egress, not blocked for the project, and it is never stubbed.",
             cause=Cause.NETWORK, source=src.name, url=src.url,
-            retrieved_at=retrieved_at)
+            requested_at=requested_at, retrieved_at=retrieved_at)
 
     if status == "404":
         if src.required:
@@ -331,6 +339,7 @@ def fetch(src: Source, season: int, store: pathlib.Path) -> Outcome:
                "n_cols": len(header.split(",")), "header": header[:2000],
                "etag": etag, "durability": src.durability,
                "source_timestamp_header": src_ts_header,
+               "requested_at": requested_at,
                "content_kind": src.content_kind, **stored,
                "provenance": dataclasses.asdict(prov)},
         detail=f"{src.name}: {n_bytes} bytes, {lines} lines"
