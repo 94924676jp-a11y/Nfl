@@ -1,0 +1,42 @@
+{
+ "01_seed_realized_team_attempts": {
+  "outcome": "PASS",
+  "detail": "realised team carries improve carry CRPS in 4/4 seasons by 14.50% (range 13.45-16.16%). The baseline reads the P4B predictive draw store[\"B\"], never store[\"realized\"]"
+ },
+ "02_seed_realized_player_share": {
+  "outcome": "PASS",
+  "detail": "realised player shares improve carry CRPS by 41.41% on average -- the largest single channel. The baseline builds weights from prior-game EWMA shares only"
+ },
+ "03_seed_realized_appearance": {
+  "outcome": "PASS",
+  "detail": "realised appearance improves carry CRPS by 21.60%; the baseline draws Bernoulli(p_app) from the incumbent P3 Stage-A model"
+ },
+ "04_seed_realized_carries": {
+  "outcome": "PASS",
+  "detail": "the all-oracle corner reproduces the realised carry count exactly (largest |mean - actual| = 3.81e-06) and improves CRPS by 100.00%. That identity is what makes the decomposition close; it is checked, not asserted"
+ },
+ "05_seed_same_game_rushing_yards": {
+  "outcome": "PASS",
+  "detail": "this game's rushing yards correlate +0.7249 with the realised carry share on 5137 rows, so a weight built from them would leak heavily. rush_yards is read 1 times in P4C-CARRY and only to score the downstream propagation, never inside a weight"
+ },
+ "06_seed_future_carry_share": {
+  "outcome": "PASS",
+  "detail": "the player's NEXT game's carry share correlates +0.6890 with this game's on 7647 rows, so it is a live channel. Every weight in p4c_build advances strictly in `ord` order and the accumulator is read before it is updated"
+ },
+ "07_seed_future_team_volume": {
+  "outcome": "PASS",
+  "detail": "a team's NEXT game carry total correlates +0.1311 with this one on 2046 team-games -- weak, which is itself the P4 finding that team volume is barely autocorrelated. store[\"realized\"] appears 1 times and only on the oracle side"
+ },
+ "08_no_postgame_roster_status_or_market_or_weather": {
+  "outcome": "PASS",
+  "detail": "no P4C-CARRY module reads a roster-status, market or weather field ([]); no artifact names a market or wager ([])"
+ },
+ "09_GUARD_DELETION_oracle_enters_selection": {
+  "outcome": "PASS",
+  "detail": "selection handed a zero-CRPS oracle returns 'B'; with the oracle added to the eligibility tuple it returns 'O_A_S_T'. No corner of this factorial was ever offered to selection -- this task selects nothing"
+ },
+ "10_GUARD_DELETION_frozen_system_is_load_bearing": {
+  "outcome": "PASS",
+  "detail": "the P4C-CARRY baseline reproduces P4C's published carries CRPS to 0.00e+00 in all 4 seasons ({'2022': 0.0, '2023': 0.0, '2024': 0.0, '2025': 0.0}). A 2% perturbation of the frozen appearance probability changes 2000/2000 inputs, so the exact match is evidence the components were not touched, not a coincidence"
+ }
+}
