@@ -141,9 +141,19 @@ def test_A_the_false_change_it_exists_to_catch():
               len(raws) == len(fs), f'{len(raws)} of {len(fs)}')
         check(f'{stem}: the mask collapses them to strictly fewer pages',
               len(subs) < len(raws), f'{len(subs)} substantive of {len(raws)} raw')
-        check(f'{stem}: and the collapse is substantial, not cosmetic',
-              len(subs) <= max(2, len(raws) // 3),
-              f'{len(subs)} substantive of {len(raws)} raw')
+        # WITHDRAWN 2026-09-07, owner directive. This used to assert
+        #     len(subs) <= max(2, len(raws) // 3)
+        # which is a LIVE-DATA RATIO, not an invariant. It was calibrated at 8
+        # blobs and failed at 43/15 for an entirely legitimate reason: as the
+        # season approaches, the page's embedded broadcast listing is edited
+        # ("Week 1 NFL action at" -> "Week 1 NFL at", "NFL Week 3" -> "Week 1"),
+        # so genuine page versions accumulate. Counting them is measuring the
+        # season, not the mask. The ratio is not loosened, incremented, rekeyed
+        # to today's count, deleted or xfailed -- it is replaced by section N,
+        # which tests the property it was standing in for: render-only churn
+        # collapses, genuine content survives.
+        check(f'{stem}: the mask never INCREASES distinctness',
+              len(subs) <= len(raws), f'{len(subs)} vs {len(raws)}')
         print(f'       [{len(fs)} blobs, {len(raws)} raw digests, '
               f'{len(subs)} substantive]')
 
@@ -302,6 +312,302 @@ def test_F_the_rule_is_load_bearing():
           compare(a, b).code == 'CONTENT_IDENTICAL_NONCE_DIFFERS')
 
 
+
+
+# ==========================================================================
+# N. THE INVARIANT THE WITHDRAWN RATIO WAS STANDING IN FOR
+#
+# Owner directive, 2026-09-07: the durable property is not "few substantive
+# digests". It is
+#
+#     presentation/render-only churn collapses under the substantive digest,
+#     while genuine football-content changes remain distinct.
+#
+# Eight required proofs, constructed where a controlled mutation is the only
+# honest way to isolate one variable, and drawn from the live series where a
+# real historical example exists.
+# ==========================================================================
+import random as _random
+import re as _re
+
+_UUID = _re.compile(rb'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-'
+                    rb'[0-9a-fA-F]{4}-[0-9a-fA-F]{12}')
+
+
+def _fresh_uuid(rng):
+    h = '%032x' % rng.getrandbits(128)
+    return f'{h[:8]}-{h[8:12]}-{h[12:16]}-{h[16:20]}-{h[20:32]}'.encode()
+
+
+def _rotate_nonces(raw, seed=7):
+    """Rotate ONLY the UUIDs sitting in the two declared nonce positions."""
+    rng = _random.Random(seed)
+    out = raw
+    for rx in (_re.compile(rb'(data-jsonid=")[0-9a-fA-F-]{36}(")'),
+               _re.compile(rb'(<script id=")[0-9a-fA-F-]{36}(")')):
+        out = rx.sub(lambda m: m.group(1) + _fresh_uuid(rng) + m.group(2), out)
+    return out
+
+
+def _any_blob(stem='official_injury_report'):
+    fs = _blobs(stem)
+    return gzip.open(fs[0], 'rb').read() if fs else None
+
+
+def _dig(b):
+    return substantive_digest(b).value['digest']
+
+
+def _raw(b):
+    return hashlib.sha256(b).hexdigest()
+
+
+def test_N1_nonce_rotation_collapses():
+    print('\nN1. identical content, rotated render nonce -> collapses')
+    b = _any_blob()
+    if b is None:
+        check('a captured page exists to mutate', False, 'no blobs')
+        return
+    r = _rotate_nonces(b)
+    n_before = substantive_digest(b).value['neutralised']
+    check('the rotation actually changed the bytes', r != b)
+    check('the raw digests differ, as they must', _raw(r) != _raw(b))
+    check('the substantive digests are IDENTICAL', _dig(r) == _dig(b),
+          f'{_dig(b)[:12]} vs {_dig(r)[:12]}')
+    o = compare(b, r)
+    check('and compare() names it as the nonce, not a content change',
+          o.value == 'CONTENT_IDENTICAL_NONCE_DIFFERS', str(o)[:90])
+    print(f'       [{sum(n_before.values())} nonce tokens rotated; '
+          f'raw changed, content did not]')
+
+
+def test_N2_the_declared_mask_scope_is_exactly_what_it_claims():
+    """Requirement 2, read honestly.
+
+    "Presentation-only churn collapses WHERE INTENDED." Intent here is the
+    declared rule set, and it is exactly two rules, both anchored to an
+    attribute position. Whitespace and serialization churn are deliberately
+    OUTSIDE it: no rule was ever declared for them and none was measured on
+    these pages. Adding one to make a test pass would be an unmeasured mask,
+    and the module's own bar -- "structurally incapable of expressing an
+    injury, a status or a roster fact" -- is not something whitespace has been
+    shown to meet on a page whose tables are whitespace-formatted. So this
+    section proves the boundary rather than pretending it is elsewhere.
+    """
+    print('\nN2. the declared masking scope, and its deliberate boundary')
+    names = [r[0] for r in VOLATILE_RULES]
+    check('exactly two rules are declared', len(VOLATILE_RULES) == 2, str(names))
+    check('both are anchored to an attribute position, not a bare UUID',
+          all(b'data-jsonid="' in r[1].pattern or b'<script id="' in r[1].pattern
+              for r in VOLATILE_RULES),
+          str([r[1].pattern for r in VOLATILE_RULES]))
+    check('every rule carries a stated reason it cannot express content',
+          all(isinstance(r[3], str) and len(r[3]) > 30 for r in VOLATILE_RULES))
+    b = _any_blob()
+    ws = b.replace(b'\n', b'\n ', 1)
+    check('whitespace churn is NOT collapsed -- no rule is declared for it, '
+          'and inventing one here would be an unmeasured mask',
+          _dig(ws) != _dig(b))
+    check('and the module says so by reporting what it neutralised',
+          set(substantive_digest(b).value['neutralised']) == set(names))
+    # A bare UUID in a data field must survive: this is the 4,821-token defect
+    # the first version of the rule would have caused in weekly_rosters.
+    payload = b'sportradar_id,0ce48193-e2fa-466e-a986-33f751add206,Rodgers'
+    other = b'sportradar_id,11111111-2222-3333-4444-555555555555,Rodgers'
+    check('a UUID in a DATA field is not masked -- it is a player identity',
+          _dig(payload) != _dig(other))
+
+
+def test_N3_genuine_content_changes_survive():
+    print('\nN3. a genuine player/status change does NOT collapse')
+    b = _any_blob()
+    muts = [
+        ('a report status', b'Questionable', b'Out'),
+        ('a practice status', b'Did Not Participate In Practice',
+         b'Full Participation in Practice'),
+        ('an injury text', b'Knee', b'Hamstring'),
+    ]
+    n_applied = 0
+    for label, a, c in muts:
+        if a not in b:
+            print(f'       [{label}: token {a!r} not present in this capture]')
+            continue
+        m = b.replace(a, c, 1)
+        n_applied += 1
+        check(f'{label}: changing it changes the substantive digest',
+              _dig(m) != _dig(b))
+        check(f'{label}: and compare() calls it a real new version',
+              compare(b, m).value == 'CONTENT_CHANGED')
+    check('at least one real content mutation was exercised', n_applied >= 1,
+          str(n_applied))
+    # And the mutation must survive nonce rotation on top of it.
+    for label, a, c in muts:
+        if a in b:
+            m = _rotate_nonces(b.replace(a, c, 1), seed=99)
+            check('a content change plus a nonce rotation is still a content '
+                  'change', compare(b, m).value == 'CONTENT_CHANGED')
+            break
+
+
+def test_N4_raw_sha_stays_distinct():
+    print('\nN4. the raw digest is untouched by any of this')
+    b = _any_blob()
+    r = _rotate_nonces(b)
+    check('different raw bytes give different raw sha256', _raw(r) != _raw(b))
+    check('identical raw bytes give identical raw sha256', _raw(b) == _raw(b))
+    fs = _blobs('official_injury_report')
+    raws = [_raw(gzip.open(f, 'rb').read()) for f in fs]
+    check('and every live capture still has its own raw digest',
+          len(set(raws)) == len(raws), f'{len(set(raws))} of {len(raws)}')
+
+
+def test_N5_the_digest_is_derivative_not_a_replacement():
+    print('\nN5. the substantive digest never replaces raw provenance')
+    b = _any_blob()
+    v = substantive_digest(b).value
+    check('the value carries the raw sha256 alongside it',
+          v['raw_sha256'] == _raw(b))
+    check('and labels itself derived', v['authority'] == 'DERIVED_DETERMINISTIC')
+    check('and carries its own version', v['digest_version'] == DIGEST_VERSION)
+    check('the two digests are different values', v['digest'] != v['raw_sha256'])
+    # Provenance and discharge must key on the RAW digest, never on this one.
+    import inspect
+    from nfl.capture import coverage as _C
+    src = inspect.getsource(_C._blob_ok)
+    check('coverage._blob_ok verifies the RAW sha256, not the substantive one',
+          'sha256' in src and 'substantive' not in src, src[:0] or 'see source')
+    for mod in ('nfl/capture/coverage.py', 'nfl/capture/execution.py'):
+        t = pathlib.Path(_REPO / mod).read_text()
+        check(f'{mod} does not import or key anything on the substantive digest',
+              'substantive_digest' not in t)
+
+
+def test_N6_historical_render_only_duplication_collapses():
+    print('\nN6. real captures that differ ONLY by nonce, from the live series')
+    total_pairs = 0
+    for stem in ('official_inactives', 'official_injury_report'):
+        fs = _blobs(stem)
+        by = collections.defaultdict(list)
+        for f in fs:
+            by[_dig(gzip.open(f, 'rb').read())].append(f)
+        collapsed = [(d, g) for d, g in by.items() if len(g) > 1]
+        check(f'{stem}: at least one group of captures collapses',
+              bool(collapsed), f'{len(by)} groups from {len(fs)} blobs')
+        for _d, g in collapsed:
+            a, c = gzip.open(g[0], 'rb').read(), gzip.open(g[1], 'rb').read()
+            total_pairs += 1
+            check(f'{stem}: {g[0].name[:38]} vs {g[1].name[:38]} -- raw differs',
+                  _raw(a) != _raw(c))
+            check(f'{stem}: and compare() reports the nonce, not a change',
+                  compare(a, c).value == 'CONTENT_IDENTICAL_NONCE_DIFFERS')
+            break
+    check('the live series really does contain render-only duplication',
+          total_pairs >= 1, str(total_pairs))
+
+
+def test_N7_historical_genuine_changes_survive():
+    print('\nN7. real captures that differ for a REAL reason stay distinct')
+    fs = _blobs('official_injury_report')
+    by = collections.defaultdict(list)
+    for f in fs:
+        by[_dig(gzip.open(f, 'rb').read())].append(f)
+    groups = sorted(by.items(), key=lambda kv: -len(kv[1]))
+    if len(groups) < 2:
+        print('       [only one page version captured so far]')
+        check('at least one version exists', len(groups) >= 1)
+        return
+    a = gzip.open(groups[0][1][0], 'rb').read()
+    c = gzip.open(groups[1][1][0], 'rb').read()
+    check('two live captures are substantively different',
+          compare(a, c).value == 'CONTENT_CHANGED')
+
+    def masked(x):
+        for _n, rx, rep, _w in VOLATILE_RULES:
+            x = rx.sub(rep, x)
+        return x
+
+    ma, mc = masked(a), masked(c)
+    check('they still differ AFTER masking -- so it is not the nonce',
+          ma != mc)
+    # The differing region must not itself be UUID-shaped: if it were, the mask
+    # would be leaking a nonce and that WOULD be a production defect. Compared
+    # LINE BY LINE. A byte-level SequenceMatcher over two 200KB pages is
+    # quadratic and hung the suite; line granularity is both fast and what a
+    # human would actually read.
+    la, lc = ma.split(b'\n'), mc.split(b'\n')
+    check('the two masked pages have the same line count -- so the difference '
+          'is a substitution, not a structural rewrite',
+          len(la) == len(lc), f'{len(la)} vs {len(lc)}')
+    difflines = [(i, x, y) for i, (x, y) in enumerate(zip(la, lc)) if x != y]
+    check('only a small number of lines differ', 0 < len(difflines) <= 5,
+          str(len(difflines)))
+    # The test has to isolate the DIFFERING REGION, not the line. The first
+    # version asked whether the differing LINE carried a UUID and failed --
+    # correctly, and for the wrong reason: line 62 is a single 42KB embedded
+    # JSON blob that legitimately contains broadcast UUIDs a long way from
+    # anything that changed. Comparing comma-separated tokens keeps the pieces
+    # small enough to name exactly what moved, and is linear where a byte-level
+    # SequenceMatcher on 42KB is not.
+    import difflib
+    changed_tokens = []
+    for _i, x, y in difflines:
+        tx, ty = x.split(b','), y.split(b',')
+        sm = difflib.SequenceMatcher(None, tx, ty, autojunk=False)
+        for tag, i1, i2, j1, j2 in sm.get_opcodes():
+            if tag != 'equal':
+                changed_tokens.extend(tx[i1:i2] + ty[j1:j2])
+    check('the differing region is a handful of tokens, not the whole line',
+          0 < len(changed_tokens) <= 40, str(len(changed_tokens)))
+    uuidish = [t for t in changed_tokens if _UUID.search(t)]
+    check('and not one CHANGED token is UUID-shaped -- the mask is not '
+          'leaking a nonce', not uuidish, str(uuidish[:3]))
+    print(f'       [{len(changed_tokens)} changed tokens, 0 UUID-shaped; '
+          f'first: {changed_tokens[0][:80]!r}]')
+    i, x, y = difflines[0]
+    lo = next((k for k in range(min(len(x), len(y))) if x[k] != y[k]), 0)
+    print(f'       [line {i} differs from byte {lo}; the difference is '
+          f'editorial page copy, not a token]')
+    print(f'         A: {x[max(0, lo - 45):lo + 45]!r}')
+    print(f'         B: {y[max(0, lo - 45):lo + 45]!r}')
+    ctx = x[max(0, lo - 400):lo + 400]
+    check('the differing text is page prose, not a token',
+          b'NFL' in ctx or b'Description' in ctx,
+          x[max(0, lo - 60):lo + 60].decode('utf8', 'replace'))
+
+
+def test_N8_guard_deletion_collapse_disappears():
+    print('\nN8. GUARD DELETION -- empty the rule set and the nonce reads as a '
+          'content change')
+    import nfl.capture.volatility as VOL
+    b = _any_blob()
+    r = _rotate_nonces(b)
+    check('with the rules: the rotation is recognised as the nonce',
+          compare(b, r).value == 'CONTENT_IDENTICAL_NONCE_DIFFERS')
+    original = VOL.VOLATILE_RULES
+    try:
+        VOL.VOLATILE_RULES = ()
+        leaked = VOL.compare(b, r).value
+    finally:
+        VOL.VOLATILE_RULES = original
+    check('with the rules deleted: the SAME pair reads as CONTENT_CHANGED -- '
+          'so the rule set is what collapses it',
+          leaked == 'CONTENT_CHANGED', str(leaked))
+    # And the second guard: dropping only the script-id rule must still leave
+    # the jsonid rule doing its job on a page that carries both.
+    fs = _blobs('official_inactives')
+    if fs:
+        bb = gzip.open(fs[0], 'rb').read()
+        rr = _rotate_nonces(bb, seed=11)
+        try:
+            VOL.VOLATILE_RULES = original[:1]
+            partial = VOL.compare(bb, rr).value
+        finally:
+            VOL.VOLATILE_RULES = original
+        check('dropping the script-id rule alone breaks the collapse on a page '
+              'that carries both nonce positions',
+              partial == 'CONTENT_CHANGED', str(partial))
+
+
 if __name__ == '__main__':
     test_A_the_false_change_it_exists_to_catch()
     test_A2_a_page_digest_is_not_a_report_digest()
@@ -310,6 +616,14 @@ if __name__ == '__main__':
     test_D_it_reports_what_it_did()
     test_E_empty_is_not_a_digest()
     test_F_the_rule_is_load_bearing()
+    test_N1_nonce_rotation_collapses()
+    test_N2_the_declared_mask_scope_is_exactly_what_it_claims()
+    test_N3_genuine_content_changes_survive()
+    test_N4_raw_sha_stays_distinct()
+    test_N5_the_digest_is_derivative_not_a_replacement()
+    test_N6_historical_render_only_duplication_collapses()
+    test_N7_historical_genuine_changes_survive()
+    test_N8_guard_deletion_collapse_disappears()
     tail = f', {BLOCKED} blocked' if BLOCKED else ''
     print(f'\n{PASSED} passed, {FAILED} failed{tail}')
     sys.exit(1 if FAILED else 0)
