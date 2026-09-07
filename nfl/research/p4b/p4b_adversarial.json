@@ -1,0 +1,58 @@
+{
+ "01_oracle_system_D_cannot_be_selected": {
+  "outcome": "PASS",
+  "detail": "select_system given an unbeatable D returned 'B'; systems ever chosen across 20 target-seasons: ['B', 'C']; ELIGIBLE_SYSTEMS=('A', 'B', 'C'); literals inside select_system: ['Choose among ELIGIBLE systems by CRPS. Coverage is reported but never\\n    selects: a uselessly wide interval hits nominal coverage and CRPS refuses\\n    to reward it.', 'None', 'crps']"
+ },
+ "02_guard_deletion_proof_for_probe_1": {
+  "outcome": "PASS",
+  "detail": "with the eligibility tuple widened, selection returns 'D' -- so probe 1 is load-bearing, not decorative"
+ },
+ "03_volume_residuals_fitted_only_on_prior_seasons": {
+  "outcome": "PASS",
+  "detail": "checked 20 target-seasons; max training season is strictly below the evaluation season in every one; violations=[]"
+ },
+ "04_oracle_identity_realised_x_realised_equals_outcome": {
+  "outcome": "PASS",
+  "detail": "largest |A_real*T_real*S_real - y| over all 20 target-seasons is 7.105e-15 (snaps 2025); the decomposition is exact, so no part of the oracle gap is a construction mismatch"
+ },
+ "05_team_volume_draws_are_shared_within_a_team_game": {
+  "outcome": "PASS",
+  "detail": "store ('team_off_snaps', 2022): two players gathered onto team-game 3 receive byte-identical 1000-draw vectors (True); team-game 4 differs (True)"
+ },
+ "06_reproducible_under_the_declared_seed": {
+  "outcome": "PASS",
+  "detail": "seed 20260907+1009 reproduces exactly; a different stream does not. Max |a-c| = 0.9485"
+ },
+ "07_forbidden_fields_are_never_read": {
+  "outcome": "PASS",
+  "detail": "scanned 7 P4B modules for field ACCESSES (subscript or .get) of 13 forbidden names; hits=[]"
+ },
+ "08_threshold_grid_matches_the_predeclaration": {
+  "outcome": "PASS",
+  "detail": "the code grid equals the pre-declaration text for carries/targets/snaps; rz_carries grid is None because none was pre-declared; problems=[]"
+ },
+ "09_coverage_does_not_select": {
+  "outcome": "PASS",
+  "detail": "a system with exactly nominal 90% coverage and 10x the CRPS is not selected; CRPS decides"
+ },
+ "10_seeded_leak_is_detectable_where_the_guard_is_removed": {
+  "outcome": "PASS",
+  "detail": "substituting the realised team total improves CRPS in 20/20 target-seasons by 11.96% on average (min 5.61%, max 21.81%). A leak of the team total is therefore detectable, so the quarantine is load-bearing"
+ },
+ "11_share_history_uses_only_prior_appeared_games": {
+  "outcome": "PASS",
+  "detail": "replayed 47215 player-games across 1126 players; the stored history at each row equals the list of strictly-earlier APPEARED shares in every case (0 mismatches)"
+ },
+ "12_panel_and_denominator_agree_exactly": {
+  "outcome": "PASS",
+  "detail": "409858 share/denominator pairs checked over 83144 panel rows; largest reconstruction error 7.105e-15"
+ },
+ "13_no_2026_data_entered_this_study": {
+  "outcome": "PASS",
+  "detail": "player panel seasons [2020, 2021, 2022, 2023, 2024, 2025]; volume seasons touched [2020, 2021, 2022, 2023, 2024, 2025]; no 2026 row is reachable from either"
+ },
+ "14_no_market_or_wagering_artifact_was_produced": {
+  "outcome": "PASS",
+  "detail": "18 files in the P4B directory; none names a market, a wager, a lineup or a book ([])"
+ }
+}
