@@ -303,8 +303,8 @@ Its zero difference is arithmetic, not evidence.
 
 **The real result is 2025.** P2 found that mechanical A×C is *worse* than U in
 2025 — the season with no usable injury vintage. `P2_info_quality` uses A×C on
-**0% of 2025 rows**, because the HIGH class requires a chronology-proven
-current-week injury row and 2025 has none. So the policy degenerates to U in
+**0% of 2025 rows**, because the HIGH class requires a current-week injury row
+with a pre-kickoff timestamp and 2025 has none. So the policy degenerates to U in
 exactly the season where A×C hurts, and the 2025 regression disappears:
 
 | | 2025 snap_share | 2025 rpr |
@@ -335,8 +335,11 @@ Reporting the oracle alongside the honest number is the point: a P3 that quoted
 
 ### §12 information-quality stratification
 
-Classes defined structurally in advance: **HIGH** = a chronology-proven
-current-week injury row exists; **MEDIUM** = none for this player but ≥1 for his
+Classes defined structurally in advance: **HIGH** = a current-week injury row
+exists whose own `date_modified` precedes kickoff — **retrospective chronology
+defensibility, not prospective capture integrity**; see
+`NFL_P3_ADDENDUM_R1.md`, which corrects this wording and measures the exposure
+(99.09% of rows stamped >24h before kickoff, none inside the final 90 minutes); **MEDIUM** = none for this player but ≥1 for his
 team this week and ≥4 prior games; **LOW** = neither.
 
 Population: HIGH 7,847 · MEDIUM 31,634 · LOW 12,849.
@@ -462,6 +465,8 @@ trees, joint simulation, DFS, markets.
 ## 26. Markdown task-report path
 
 `TASK_REPORT_2026-09-07_P3.md`, repository root.
+Addendum: `NFL_P3_ADDENDUM_R1.md` — external evidence review, the clock-taxonomy
+correction to my own wording, and the recorded R2/R3/capture backlog.
 
 ---
 

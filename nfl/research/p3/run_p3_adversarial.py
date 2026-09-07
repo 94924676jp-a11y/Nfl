@@ -73,7 +73,9 @@ def main():
     iq_src = collections.Counter()
     for r in te:
         iq_src[r['info_quality']] += 1
-    # HIGH depends only on the existence of a chronology-proven current-week row
+    # HIGH depends only on the existence of a current-week row whose own
+    # date_modified precedes kickoff -- retrospective defensibility, not
+    # prospective capture integrity. See NFL_P3_ADDENDUM_R1.md.
     bad = [r for r in te if r['info_quality'] == 'HIGH'
            and not r.get('f_inj_available')]
     check('every HIGH row is backed by a proven pregame injury row',

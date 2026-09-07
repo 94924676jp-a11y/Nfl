@@ -39,7 +39,9 @@ def short_practice(p):
 
 
 def enrich(rows, inj):
-    """Add P3 features. Every one is prior-game or chronology-proven same-week."""
+    """Add P3 features. Every one is prior-game, or same-week and
+    retrospectively chronology-defensible -- see nfl/research/p2/stage_a.py and
+    NFL_P3_ADDENDUM_R1.md for why that is the narrower and correct claim."""
     by_tw = collections.defaultdict(list)
     for r in rows:
         by_tw[(r['team'], r['ord'])].append(r)

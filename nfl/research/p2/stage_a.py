@@ -44,7 +44,23 @@ def kickoffs():
 
 
 def injuries(kick):
-    """(season, week, team, gsis_id) -> designation, ONLY where provably pregame."""
+    """(season, week, team, gsis_id) -> designation, where the row is
+    RETROSPECTIVELY CHRONOLOGY-DEFENSIBLE.
+
+    Corrected 2026-09-07 (owner qualification, R1 addendum). This used to say
+    "provably pregame", which reads as prospective capture integrity. What is
+    established is narrower and must be named as such: the SURVIVING row's own
+    `date_modified` precedes kickoff IN THE FINAL FILE. It does not prove the
+    artifact was retrievable in that form at forecast time, and the 2024 file
+    contains two player-weeks revised Questionable -> Out mid-week, showing that
+    where a revision happened the file generally keeps only the later state.
+
+    Measured exposure: of 27,600 rows 2020-2024, 99.09% are stamped more than 24
+    hours before kickoff and NONE inside the final 90 minutes, so the
+    retrospective test is strong for a forecast written at T-90. Prospective
+    integrity is a property only a captured artifact with its own retrieved_at
+    can have.
+    """
     out, stats = {}, collections.Counter()
     for y in range(2020, 2026):
         p = f'{P1}/inj_{y}.csv'
