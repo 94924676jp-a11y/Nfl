@@ -35,7 +35,7 @@ from sportsplatform.governance.outcome import Outcome, State  # noqa: E402
 
 VINTAGE = _REPO / 'nfl' / 'vintage'
 RAW = _REPO / 'nfl_vintage' / 'raw'
-PASSED = FAILED = 0
+PASSED = FAILED = BLOCKED = 0
 
 
 def check(label, cond, detail=''):
@@ -48,6 +48,13 @@ def check(label, cond, detail=''):
         print(f'  FAIL {label}  {detail}')
 
 
+def blocked(label, why):
+    """A check that could not run. Counted apart and never as a pass."""
+    global BLOCKED
+    BLOCKED += 1
+    print(f'  BLOCKED {label} -- {why}')
+
+
 def _is(o, state, code=None):
     return (isinstance(o, Outcome) and o.state is state
             and (code is None or o.code == code))
@@ -55,6 +62,45 @@ def _is(o, state, code=None):
 
 def _blobs(stem):
     return sorted(VINTAGE.glob(f'{stem}.*.html.gz'))
+
+
+def _nonce_pair(stem):
+    """Two captures that differ ONLY by the render nonce, chosen by content.
+
+    THIS IS THE THIRD TIME THE GROWING CAPTURE SERIES HAS BROKEN A TEST OF MINE
+    that assumed a fixed snapshot of it. Sections B and F used blobs[0] and
+    blobs[1] -- whichever two sorted first -- and asserted they were the same
+    page. That held for the four blobs that existed when it was written and
+    stopped holding as the bot captured more, because some pairs now differ for
+    real (see A2).
+
+    The property under test was never about those two files; it is that a pair
+    sharing a substantive digest is reported as nonce-differing. So the pair is
+    now SELECTED by that property, and if no such pair exists the test says so
+    rather than passing on whatever happened to sort first.
+    """
+    groups = collections.defaultdict(list)
+    for f in _blobs(stem):
+        b = gzip.open(f, 'rb').read()
+        groups[substantive_digest(b).value['digest']].append(b)
+    for blobs in groups.values():
+        for i in range(len(blobs)):
+            for j in range(i + 1, len(blobs)):
+                if blobs[i] != blobs[j]:
+                    return blobs[i], blobs[j]
+    return None, None
+
+
+def _changed_pair(stem):
+    """Two captures whose substantive content genuinely differs, or (None, None)."""
+    groups = collections.defaultdict(list)
+    for f in _blobs(stem):
+        b = gzip.open(f, 'rb').read()
+        groups[substantive_digest(b).value['digest']].append(b)
+    keys = list(groups)
+    if len(keys) < 2:
+        return None, None
+    return groups[keys[0]][0], groups[keys[1]][0]
 
 
 def test_A_the_false_change_it_exists_to_catch():
@@ -132,10 +178,12 @@ def test_A2_a_page_digest_is_not_a_report_digest():
 
 def test_B_the_three_valued_answer():
     print('\nB. identical / nonce-differs / changed are three answers')
-    fs = _blobs('official_inactives')
-    a = gzip.open(fs[0], 'rb').read()
-    b = gzip.open(fs[1], 'rb').read()
-
+    a, b = _nonce_pair('official_inactives')
+    if a is None:
+        blocked('the nonce-differing comparison',
+                'no two captures of official_inactives currently share a '
+                'substantive digest while differing in bytes')
+        return
     check('the same bytes -> BYTES_IDENTICAL, a repeat observation',
           _is(compare(a, a), State.PASS, 'BYTES_IDENTICAL'))
     check('different bytes, same content -> the middle answer, which a boolean '
@@ -229,9 +277,11 @@ def test_E_empty_is_not_a_digest():
 
 def test_F_the_rule_is_load_bearing():
     print('\nF. guard-deletion -- is the masking what collapses the four blobs?')
-    fs = _blobs('official_inactives')
-    a, b = gzip.open(fs[0], 'rb').read(), gzip.open(fs[1], 'rb').read()
-
+    a, b = _nonce_pair('official_inactives')
+    if a is None:
+        blocked('the guard-deletion proof',
+                'no nonce-only pair currently exists to replay')
+        return
     with_rule = compare(a, b)
     check('with the rules: the two captures read as the same content',
           with_rule.code == 'CONTENT_IDENTICAL_NONCE_DIFFERS')
@@ -260,5 +310,6 @@ if __name__ == '__main__':
     test_D_it_reports_what_it_did()
     test_E_empty_is_not_a_digest()
     test_F_the_rule_is_load_bearing()
-    print(f'\n{PASSED} passed, {FAILED} failed')
+    tail = f', {BLOCKED} blocked' if BLOCKED else ''
+    print(f'\n{PASSED} passed, {FAILED} failed{tail}')
     sys.exit(1 if FAILED else 0)
