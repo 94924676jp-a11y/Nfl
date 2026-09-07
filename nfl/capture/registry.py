@@ -90,6 +90,7 @@ class SourceSpec:
     reduce_cols: tuple = ()
     # What the SOURCE itself pins, and what we may derive from it.
     source_scope_kind: ScopeKind = ScopeKind.SEASON
+    content_kind: str = "csv"
     authority: SourceAuthority = SourceAuthority.ARCHIVE
     source_status: SourceStatus = SourceStatus.UNVERIFIED
     executor_access: ExecutorAccess = ExecutorAccess.UNTESTED
@@ -178,11 +179,16 @@ REGISTRY: tuple = (
     SourceSpec(
         name="official_injury_report",
         url_template="https://www.nfl.com/injuries/",
-        required=True, durability="commit_raw",
-        reachability=Reachability.BLOCKED_NO_EGRESS,
+        required=True, durability="commit_raw", content_kind="html",
+        # REACHABLE means "attempt it", not "we can get it". Executor capability
+        # is not a property of the source and is not knowable here: the same URL
+        # returns 403 at a proxy from one executor and 200 with 328,961 bytes
+        # from a GitHub runner. So the fetch resolves it at runtime and records
+        # what actually happened.
+        reachability=Reachability.REACHABLE,
         authority=SourceAuthority.OFFICIAL, authority_rank=1,
         source_status=SourceStatus.VERIFIED_REACHABLE_EXTERNALLY,
-        executor_access=ExecutorAccess.LOCAL_PROXY_CONNECT_403,
+        executor_access=ExecutorAccess.UNTESTED,
         serves_kinds=("practice", "final_status"),
         source_scope_kind=ScopeKind.WEEK_TEAM,
         note=("THE intraweek cascade. Measured externally 2026-09-06: HTTP 200, "
@@ -194,11 +200,11 @@ REGISTRY: tuple = (
     SourceSpec(
         name="official_inactives",
         url_template="https://www.nfl.com/inactives/",
-        required=True, durability="commit_raw",
-        reachability=Reachability.BLOCKED_NO_EGRESS,
+        required=True, durability="commit_raw", content_kind="html",
+        reachability=Reachability.REACHABLE,
         authority=SourceAuthority.OFFICIAL, authority_rank=1,
         source_status=SourceStatus.VERIFIED_REACHABLE_EXTERNALLY,
-        executor_access=ExecutorAccess.LOCAL_PROXY_CONNECT_403,
+        executor_access=ExecutorAccess.UNTESTED,
         serves_kinds=("inactives",),
         source_scope_kind=ScopeKind.TEAM_GAME,
         note=("Resolves Questionable to 0/1 at ~T-90. The only source that can "
@@ -209,7 +215,7 @@ REGISTRY: tuple = (
         url_template=("https://site.api.espn.com/apis/site/v2/sports/"
                       "football/nfl/injuries"),
         required=False, durability="commit_raw",
-        reachability=Reachability.BLOCKED_NO_EGRESS,
+        reachability=Reachability.REACHABLE, content_kind="json",
         authority=SourceAuthority.CANDIDATE_FALLBACK, authority_rank=9,
         source_status=SourceStatus.VERIFIED_REACHABLE_EXTERNALLY,
         executor_access=ExecutorAccess.LOCAL_PROXY_CONNECT_403,
@@ -295,12 +301,45 @@ def can_discharge(name: str, kind: str) -> bool:
     return bool(spec and kind in spec.serves_kinds)
 
 
-def unmet_targets(season: int = None) -> dict:
-    """Capture kinds no reachable source can currently discharge."""
+def unmet_targets(manifest_path=None) -> dict:
+    """Capture kinds no source has ACTUALLY been captured for.
+
+    Evidence-based, and it has to be. An earlier version computed `met` from the
+    `REACHABLE` flag -- but REACHABLE means "attempt this source", not "this
+    executor can retrieve it". The same URL returns 403 at a proxy from one
+    executor and 200 with 328,961 bytes from a GitHub runner, so a declaration
+    cannot answer the question.
+
+    Computing `met` from the declaration produced a false green immediately:
+    marking the official sources REACHABLE made all three perishable targets
+    report as met while nothing had ever been captured. A target is met when a
+    source authorised to serve it has a recorded successful capture, and not
+    before.
+    """
+    import json as _json
+    import pathlib as _pathlib
     needed = {'practice', 'final_status', 'inactives'}
-    met = {k for s in REGISTRY if s.reachability is Reachability.REACHABLE
-           for k in s.serves_kinds}
+
+    captured: set = set()
+    if manifest_path is not None:
+        mp = _pathlib.Path(manifest_path)
+        if mp.exists():
+            for line in mp.read_text().splitlines():
+                if not line.strip():
+                    continue
+                try:
+                    row = _json.loads(line)
+                except ValueError:
+                    continue
+                if row.get('state') == 'PASS' and row.get('source'):
+                    captured.add(row['source'])
+
+    met = {k for spec in REGISTRY if spec.name in captured
+           for k in spec.serves_kinds}
     return {'unmet': sorted(needed - met), 'met': sorted(needed & met),
+            'captured_sources': sorted(captured),
+            'evidence': ('manifest' if manifest_path is not None
+                         else 'none supplied -- nothing can be claimed met'),
             'pending_sources': sorted(
                 s.name for s in REGISTRY
                 if s.reachability is Reachability.PENDING_ENDPOINT_VERIFICATION)}
@@ -325,13 +364,15 @@ def build_scope(name: str, *, season: int, source_timestamp: str) -> Outcome:
     if spec is None:
         return Outcome.blocked('SOURCE_NOT_IN_REGISTRY', f'{name!r}',
                                cause=Cause.GOVERNANCE)
-    if spec.reachability is not Reachability.REACHABLE:
+    if spec.url_template is None:
+        # The real unverified case: no endpoint exists, so its declared
+        # source_scope_kind is an expectation about bytes nobody has, not a fact
+        # about bytes we hold. Refusing the URL while inventing the semantics
+        # would be the same defect in different clothes.
         return Outcome.blocked(
             'SCOPE_UNAVAILABLE_UNVERIFIED_SOURCE',
-            f'{name}: no effective scope can be built for a source that has '
-            f'never been successfully contacted ({spec.reachability.value}). '
-            f'Its declared source_scope_kind is an expectation about a verified '
-            f'endpoint, not a fact about bytes we hold.',
+            f'{name}: no effective scope can be built for a source with no '
+            f'verified endpoint ({spec.reachability.value}).',
             cause=Cause.DEPENDENCY, source=name,
             reachability=spec.reachability.value)
     try:

@@ -70,6 +70,7 @@ class Source:
     required: bool
     durability: str   # 'commit_raw' | 'reduce' | 'ephemeral'
     reduce_cols: tuple = ()
+    content_kind: str = "csv"   # 'csv' | 'html' | 'json'
     note: str = ""
 
 
@@ -86,7 +87,8 @@ def _sources(season: int) -> list[Source]:
             continue
         out.append(Source(name=spec.name, url=spec.url(season),
                           required=spec.required, durability=spec.durability,
-                          reduce_cols=spec.reduce_cols, note=spec.note))
+                          reduce_cols=spec.reduce_cols,
+                          content_kind=spec.content_kind, note=spec.note))
     return out
 
 
@@ -186,14 +188,35 @@ def fetch(src: Source, season: int, store: pathlib.Path) -> Outcome:
             f"{src.name}: HTTP {status} with zero bytes. An empty result is "
             f"not a result.", source=src.name, http_status=status)
 
-    # Count DATA ROWS, not newlines. Counting newlines let b"a,b,c\n\n\n"
-    # through as three lines: a durable blob written and a manifest row claiming
-    # a real vintage, over zero rows of data. That is the absence-read-as-success
-    # defect reproducing inside the guard written to stop it.
-    _text_lines = payload.decode("utf-8", "replace").splitlines()
+    _text = payload.decode("utf-8", "replace")
+    _text_lines = _text.splitlines()
     _nonblank = [ln for ln in _text_lines if ln.strip()]
     lines = len(_text_lines)
-    n_data_rows = max(0, len(_nonblank) - 1)
+
+    if src.content_kind == "html":
+        # A CSV row count is meaningless here, and "200 with bytes" is not
+        # evidence: a JavaScript shell returns a healthy-looking 200 over a page
+        # containing no injury data at all. Fail closed on the shell.
+        _markers = sum(_text.lower().count(m) for m in
+                       ("questionable", "doubtful", "did not participate",
+                        "limited participation", "full participation"))
+        _shell = any(m in _text for m in ("__NEXT_DATA__", "window.__INITIAL"))
+        if len(payload) < 1000 or _markers == 0:
+            tmp.unlink()
+            return Outcome.fail(
+                "HTML_SHELL_OR_EMPTY",
+                f"{src.name}: HTTP {status} with {len(payload)} bytes but "
+                f"{_markers} status-word markers"
+                f"{' and a JS-shell marker present' if _shell else ''}. A 200 "
+                f"over a page carrying no injury data is not a capture.",
+                source=src.name, n_bytes=n_bytes, n_markers=_markers,
+                js_shell=_shell)
+        n_data_rows = _markers      # the HTML analogue of "rows that mean something"
+    else:
+        # Count DATA ROWS, not newlines. Counting newlines let b"a,b,c\n\n\n"
+        # through as three lines: a durable blob written and a manifest row
+        # claiming a real vintage, over zero rows of data.
+        n_data_rows = max(0, len(_nonblank) - 1)
     if n_data_rows < 1:
         tmp.unlink()
         return Outcome.fail(
@@ -211,7 +234,8 @@ def fetch(src: Source, season: int, store: pathlib.Path) -> Outcome:
     # payload that carried none -- one resource's clock substituted for
     # another's, which is the substitution SOURCE_TIMESTAMP_ABSENT exists to
     # refuse. Only the final response block is read.
-    last_modified = etag = None
+    last_modified = etag = http_date = None
+    src_ts_header = None
     if hdr_path.exists():
         raw_headers = hdr_path.read_text("utf-8", "replace")
         blocks = [b for b in raw_headers.split("\r\n\r\n") if b.strip()]
@@ -221,10 +245,21 @@ def fetch(src: Source, season: int, store: pathlib.Path) -> Outcome:
             low = ln.lower()
             if low.startswith("last-modified:"):
                 last_modified = ln.split(":", 1)[1].strip()
+                src_ts_header = "Last-Modified"
+            elif low.startswith("date:") and not last_modified:
+                # Fallback ONLY. For a dynamically rendered page there is no
+                # Last-Modified to have; Date is the origin's own statement of
+                # when it generated this representation. That is a weaker clock
+                # than Last-Modified and it is recorded as a different one --
+                # never relabelled, and never taken from our own machine.
+                http_date = ln.split(":", 1)[1].strip()
             elif low.startswith("etag:"):
                 etag = ln.split(":", 1)[1].strip()
 
     src_ts = _http_date_to_iso(last_modified)
+    if not src_ts and http_date:
+        src_ts = _http_date_to_iso(http_date)
+        src_ts_header = "Date"
     if not src_ts:
         # No source clock at all. Recorded as such, never backfilled from
         # retrieved_at -- that conflation is the V7 weather defect.
@@ -235,7 +270,8 @@ def fetch(src: Source, season: int, store: pathlib.Path) -> Outcome:
             f"recorded as absent rather than backfilled from retrieved_at; "
             f"substituting one clock for another is how a 30-minute-old "
             f"artifact passed a freshness check in V7.",
-            source=src.name, last_modified_raw=last_modified)
+            source=src.name, last_modified_raw=last_modified,
+            date_raw=http_date)
 
     stored = _persist(src, payload, digest, store)
 
@@ -270,7 +306,9 @@ def fetch(src: Source, season: int, store: pathlib.Path) -> Outcome:
                "sha256": digest, "n_bytes": n_bytes, "n_lines": lines,
                "n_data_rows": n_data_rows,
                "n_cols": len(header.split(",")), "header": header[:2000],
-               "etag": etag, "durability": src.durability, **stored,
+               "etag": etag, "durability": src.durability,
+               "source_timestamp_header": src_ts_header,
+               "content_kind": src.content_kind, **stored,
                "provenance": dataclasses.asdict(prov)},
         detail=f"{src.name}: {n_bytes} bytes, {lines} lines"
                + (" (content unchanged)" if stored["content_unchanged"] else " (NEW)"),
@@ -295,7 +333,8 @@ def _persist(src: Source, payload: bytes, digest: str,
 
     if src.durability == "commit_raw":
         DURABLE_ROOT.mkdir(parents=True, exist_ok=True)
-        blob = DURABLE_ROOT / f"{src.name}.{digest[:16]}.csv.gz"
+        _ext = {"html": "html", "json": "json"}.get(src.content_kind, "csv")
+        blob = DURABLE_ROOT / f"{src.name}.{digest[:16]}.{_ext}.gz"
         unchanged = blob.exists()
         if not unchanged:
             _write_gz(blob, payload)
@@ -430,7 +469,7 @@ def main() -> int:
             fh.write(json.dumps(row, sort_keys=True) + "\n")
 
     print(f"\ncapture {capture_id}: {counts}")
-    unmet = _registry.unmet_targets(args.season)
+    unmet = _registry.unmet_targets(manifest)
     if unmet["unmet"]:
         print(f"\nUNMET CAPTURE TARGETS (no reachable source can discharge "
               f"these): {unmet['unmet']}")

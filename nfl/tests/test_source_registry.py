@@ -200,41 +200,72 @@ def test_d_a_mirror_poll_cannot_discharge_the_cascade():
 
 
 def test_e_unmet_targets_is_the_machine_readable_reason_item_1_fails():
+    """unmet_targets must be EVIDENCE-based, not declaration-based.
+
+    An earlier version computed `met` from the REACHABLE flag. When the official
+    sources were marked REACHABLE -- which means "attempt this", not "this
+    executor can retrieve it" -- all three perishable targets immediately
+    reported as met while nothing had ever been captured. A false green produced
+    by a one-word change, which is exactly what this function exists to prevent.
+    """
     print('\nE. unmet_targets states, in machine-readable form, why item 1 fails')
-    u = unmet_targets(SEASON)
-    check('practice, final_status and inactives are ALL unmet',
-          u['unmet'] == ['final_status', 'inactives', 'practice'], str(u))
-    check('nothing is claimed as met',
-          u['met'] == [], str(u['met']))
-    # The official injury/inactives endpoints are now KNOWN (externally measured
-    # HTTP 200) and blocked by this executor's proxy, so they are no longer
-    # "pending endpoint verification" -- only transactions still is. The targets
-    # stay unmet either way, which is the point: knowing the URL did not make the
-    # capture possible.
+    import json as _json, tempfile as _tempfile, os as _os
+
+    u = unmet_targets()
+    check('with no evidence supplied, NOTHING may be claimed met',
+          u['unmet'] == ['final_status', 'inactives', 'practice']
+          and u['met'] == [], str(u))
+    check('and it says so rather than implying it',
+          'nothing can be claimed met' in u['evidence'], u['evidence'])
+
     check('the one remaining endpoint-unverified source is named',
           u['pending_sources'] == ['official_transactions'],
           str(u['pending_sources']))
     check('unmet and met partition the needed kinds -- no target is unaccounted',
           sorted(u['unmet'] + u['met']) == ['final_status', 'inactives',
                                             'practice'])
-    check('the reachable mirrors do NOT count toward met, because none of them '
-          'serves a target',
-          all(not BY_NAME[n].serves_kinds for n in REACHABLE),
-          str({n: BY_NAME[n].serves_kinds for n in REACHABLE}))
-    # It must be computed from reachability, not written down. Wire one pending
-    # source up as reachable and the answer has to move.
-    patched = tuple(dataclasses.replace(s, reachability=Reachability.REACHABLE,
-                                        url_template='https://example.invalid/x')
-                    if s.name == 'official_inactives' else s
-                    for s in REGISTRY)
-    with guard_bypassed('nfl.capture.registry', 'REGISTRY',
-                        replacement=patched):
-        moved = unmet_targets(SEASON)
-    check('when a source becomes reachable, inactives leaves the unmet list',
-          moved['unmet'] == ['final_status', 'practice']
-          and moved['met'] == ['inactives'], str(moved))
-    check('and the real answer is restored afterwards',
-          unmet_targets(SEASON)['met'] == [])
+    check('a REACHABLE declaration alone moves nothing: the official sources '
+          'are attempted, and still unmet',
+          BY_NAME['official_inactives'].reachability
+          is Reachability.REACHABLE and 'inactives' in u['unmet'],
+          str(u['unmet']))
+
+    # A manifest carrying only mirror captures must still leave every
+    # perishable target unmet, because no mirror serves one.
+    fd, path = _tempfile.mkstemp(suffix='.jsonl'); _os.close(fd)
+    try:
+        with open(path, 'w') as fh:
+            for src in ('schedules', 'depth_charts', 'injuries'):
+                fh.write(_json.dumps({'source': src, 'state': 'PASS'}) + '\n')
+        mirrors = unmet_targets(path)
+        check('mirror captures do NOT discharge a perishable target',
+              mirrors['unmet'] == ['final_status', 'inactives', 'practice'],
+              str(mirrors))
+
+        # Add one real capture of a source that IS authorised to serve
+        # inactives, and only then does the target leave the unmet list.
+        with open(path, 'a') as fh:
+            fh.write(_json.dumps({'source': 'official_inactives',
+                                  'state': 'PASS'}) + '\n')
+        moved = unmet_targets(path)
+        check('an ACTUAL capture of official_inactives clears the inactives '
+              'target, and only that target',
+              moved['unmet'] == ['final_status', 'practice']
+              and moved['met'] == ['inactives'], str(moved))
+
+        # A FAILED capture is not a capture.
+        with open(path, 'w') as fh:
+            fh.write(_json.dumps({'source': 'official_inactives',
+                                  'state': 'BLOCKED'}) + '\n')
+        blocked = unmet_targets(path)
+        check('a BLOCKED capture of the same source discharges nothing',
+              blocked['unmet'] == ['final_status', 'inactives', 'practice'],
+              str(blocked))
+    finally:
+        _os.unlink(path)
+
+    check('and with no evidence the real answer is unchanged',
+          unmet_targets()['met'] == [])
 
 
 def test_f_build_scope_attributes_honestly():
@@ -369,8 +400,7 @@ def test_h_the_registry_guards_are_load_bearing():
           can_discharge('injuries', 'inactives') is False
           and resolve('official_transactions', SEASON).code
           == 'ENDPOINT_NOT_YET_VERIFIED'
-          and resolve('official_inactives', SEASON).code
-          == 'LOCAL_EXECUTOR_NO_EGRESS')
+          and resolve('official_inactives', SEASON).code == 'SOURCE_RESOLVED')
 
     # 4. A REACHABLE source with no template is an inconsistent registration
     #    and must FAIL loudly rather than return None as a URL.
@@ -465,10 +495,10 @@ def test_g_BUG_build_scope_fabricates_for_unverified_sources():
     # different clothes.
     check('resolve() and build_scope() now AGREE: both refuse an unverified '
           'source',
-          resolve('official_inactives', SEASON).state is State.BLOCKED
-          and built['official_inactives'].state is State.BLOCKED,
-          f"resolve={resolve('official_inactives', SEASON).code} "
-          f"build_scope={built['official_inactives'].code}")
+          resolve('official_transactions', SEASON).state is State.BLOCKED
+          and built['official_transactions'].state is State.BLOCKED,
+          f"resolve={resolve('official_transactions', SEASON).code} "
+          f"build_scope={built['official_transactions'].code}")
     check('the one source that legitimately pins its own instant is the only '
           'one that SHOULD be source-provided',
           [s.name for s in REGISTRY
