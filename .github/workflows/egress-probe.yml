@@ -1,0 +1,66 @@
+name: Egress probe
+
+# Answers ONE question, and is deliberately not allowed to do anything else:
+# can a GitHub-hosted runner retrieve bytes from the official NFL sources?
+#
+# Every executor available to the Claude session is refused at a local proxy --
+# DNS resolves to 151.101.65.55 and CONNECT www.nfl.com:443 returns 403 -- while
+# the same URLs answer HTTP 200 from an unrestricted network. That made G0A item
+# 1 fail on egress alone. This probe establishes whether a runner is the missing
+# executor, BEFORE any capture is built on the assumption that it is.
+#
+# It writes nothing to the repository and captures no data. It measures.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: DNS resolution
+        run: |
+          python3 -c "import socket; print('www.nfl.com ->', socket.gethostbyname('www.nfl.com'))"
+
+      - name: Probe each source, recording the failure class not just the code
+        run: |
+          set +e
+          probe () {
+            NAME="$1"; URL="$2"
+            OUT=$(curl -sS -v -o /tmp/body.$$ -w '%{http_code} %{size_download}' \
+                  --max-time 30 "$URL" 2>/tmp/verbose.$$)
+            CODE=$(echo "$OUT" | awk '{print $1}')
+            SIZE=$(echo "$OUT" | awk '{print $2}')
+            if [ "$CODE" = "000" ]; then
+              CLASS=$(grep -iEo "could not resolve host|connect tunnel failed|connection refused|timed out|SSL|TLS" /tmp/verbose.$$ | head -1)
+              echo "$NAME  UNREACHABLE  class=${CLASS:-unclassified}"
+              grep -iE "connect|proxy|HTTP/" /tmp/verbose.$$ | head -3
+            else
+              echo "$NAME  HTTP $CODE  ${SIZE} bytes"
+            fi
+            rm -f /tmp/body.$$ /tmp/verbose.$$
+          }
+          echo "--- official, perishable ---"
+          probe "nfl_injuries      " "https://www.nfl.com/injuries/"
+          probe "nfl_inactives     " "https://www.nfl.com/inactives/"
+          echo "--- candidate fallback ---"
+          probe "espn_injuries_json" "https://site.api.espn.com/apis/site/v2/sports/football/nfl/injuries"
+          echo "--- control (reachable from the Claude session too) ---"
+          probe "nflverse_schedules" "https://github.com/nflverse/nflverse-data/releases/download/schedules/games.csv"
+
+      - name: Is the injury page server-rendered, and does it carry real content?
+        run: |
+          set +e
+          curl -sS --max-time 30 -o /tmp/inj.html https://www.nfl.com/injuries/
+          BYTES=$(wc -c < /tmp/inj.html 2>/dev/null || echo 0)
+          echo "bytes: $BYTES"
+          if [ "$BYTES" -lt 1000 ]; then
+            echo "VERDICT: empty or shell-only response -- a 200 is not a result"
+            exit 0
+          fi
+          echo "team-name occurrences:   $(grep -ioE 'Cardinals|Falcons|Ravens|Bills|Panthers|Bears' /tmp/inj.html | wc -l)"
+          echo "status-word occurrences: $(grep -ioE 'Questionable|Doubtful|Out |Did Not Participate|Limited|Full Participation' /tmp/inj.html | wc -l)"
+          echo "looks like a JS shell:   $(grep -ioE '__NEXT_DATA__|window.__INITIAL' /tmp/inj.html | head -1)"
