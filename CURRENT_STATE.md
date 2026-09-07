@@ -19,11 +19,11 @@ returning empty for the first time.
 | Branch | `main` @ `a559da2` | `claude/nfl-greenfield-architecture-stsxmk` @ `74bfa95` |
 | Role | **Canonical for NFL** | MLB engine; NFL copy now stale |
 | Contents | `sportsplatform/`, `nfl/`, `returns/` | 47k-line MLB system + a duplicate `nfl/` tree |
-| Tests | 904 assertions, 0 failing | same NFL tests, now a second copy |
+| Tests | **1,230 assertions across 19 suites, 0 failing** (re-enumerated 2026-09-07) | retired; see `NFL_MOVED.md` there |
 
-**Live drift.** The MLB repo still holds the full `nfl/` tree. Two sources of
-truth for the same 811 tests, and the corrections made after the migration exist
-only in the new repo. **Retiring it is your call and I have not taken it.**
+**Live drift: RESOLVED.** The MLB repo's duplicate `nfl/` tree was retired on
+2026-09-07 and replaced with `NFL_MOVED.md`. This repository is the only source
+of truth.
 
 ---
 

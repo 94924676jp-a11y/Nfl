@@ -25,11 +25,14 @@ would shadow the Python standard library module of that name, which
 ## Tests
 
 ```
-python3.12 nfl/tests/test_<name>.py          # 811 assertions, 9 files
-cd sportsplatform/governance && python3.12 test_outcome.py   # 93 assertions, 3 files
+python3.12 nfl/tests/test_<name>.py          # 1,137 assertions, 16 files
+cd sportsplatform/governance && python3.12 test_*.py         # 93 assertions, 3 files
 ```
 
-**904 assertions, 0 failing.** Every control carries a positive test, a
+**1,230 assertions across 19 suites, 0 failing** (re-enumerated from the
+filesystem 2026-09-07; the previous 904/811 figures were written before the
+T-90 and parser suites landed, and a count in prose goes stale the moment a
+suite is added). Every control carries a positive test, a
 seeded-violation test, and — for critical guards — a *load-bearing* test proving
 the replay test fails when the guard is bypassed. A guard that passes on
 compliant data has not been demonstrated.
