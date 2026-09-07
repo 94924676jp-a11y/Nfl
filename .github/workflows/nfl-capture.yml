@@ -74,11 +74,10 @@ jobs:
             exit 0
           fi
           CID=$(grep -oE 'capture [0-9]{8}T[0-9]{6}Z' /tmp/capture.log | head -1 | awk '{print $2}')
-          git commit -m "NFL vintage capture ${CID:-unknown}
-
-Captured by GitHub Actions run ${GITHUB_RUN_ID}.
-Append-only: this commit adds manifest rows and content-addressed blobs and
-rewrites nothing."
+          git commit \
+            -m "NFL vintage capture ${CID:-unknown}" \
+            -m "Captured by GitHub Actions run ${GITHUB_RUN_ID}." \
+            -m "Append-only: adds manifest rows and content-addressed blobs, rewrites nothing."
           # Rebase rather than force: a concurrent run's rows are evidence too.
           git pull --rebase --autostash origin main
           git push origin HEAD:main
