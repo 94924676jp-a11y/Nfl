@@ -2,7 +2,13 @@
 
 **Snapshot:** 2026-09-07 · **Week 1 kicks off 2026-09-09** (2 days)
 **Status:** NFL-0 evidence system built. No predictive model. **NFL-1 not authorised.**
-**G0A: 11 PASS / 1 FAIL** — failing on one external dependency.
+**G0A: 11 PASS / 1 FAIL** — and Item 1's blocker is now **resolved in substance**,
+pending the owner's verdict on two remaining points of the twelve-point proof.
+
+**The executor exists.** A GitHub-hosted runner reaches nfl.com and has captured
+the official injury report and inactives page — content-addressed, gzipped,
+committed and pushed by the runner itself at `33c34de`, with `unmet_targets`
+returning empty for the first time.
 
 ---
 

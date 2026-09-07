@@ -42,6 +42,34 @@ that did not write the code under test.
 
 ## The three residuals, named rather than waived
 
+**UPDATE 2026-09-07 00:25Z — the executor exists and the capture is real.**
+
+A GitHub-hosted runner reaches the official sources and has captured them.
+Verified run 34069726496, commit `33c34de` pushed **by the runner itself**:
+
+| Artifact | Evidence |
+|---|---|
+| `official_injury_report.9d7bb2f6479e6402.html.gz` | 328,961 bytes raw; 4 "Did Not Participate", 4 "Limited Participation", 3 "Full Participation", 4 "Questionable"; sha256 matches filename |
+| `official_inactives.2fc477fad9036695.html.gz` | sha256 matches filename |
+| `espn_injuries_json.7d72eba182238d10.json.gz` | captured; discharges no target by design |
+
+`no FAIL states`, and `unmet_targets` returned **empty** — every perishable
+target now has a real capture from a source authorised to serve it.
+
+**This is not yet a self-declared PASS.** Against the owner's twelve-point proof:
+points 1–6 and 8–11 are demonstrated on the live path. **Point 7 (attribute the
+artifact to the correct game/team/week) is only partial** — a captured page is
+file-level and is not attributed to a game, because no parser exists and writing
+one against markup nobody had seen would have been inventing the schema. **Point
+12 is scheduled but unproven against a real kickoff**: the cron is every 30
+minutes, which lands at least twice inside the 80-minute T−90 window, but Week 1
+opens 2026-09-09 and no T−90 window has occurred yet.
+
+The verdict is the owner's, and the two open points are named rather than
+rounded off.
+
+---
+
 **¹ Item 1 — FAIL, per owner override, and correctly.** The perishable official
 cascade — practice participation, final game status, inactives — is what the
 vintage requirement exists to preserve. None of it is captured. `injuries` is
