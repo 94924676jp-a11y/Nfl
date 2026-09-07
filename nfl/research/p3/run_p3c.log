@@ -1,0 +1,27 @@
+§14 zero-history cohort: 1273 player-games (1273 distinct players)
+   by position: {'WR': 505, 'TE': 274, 'RB': 341, 'QB': 153}
+   NOTE: these have no prior game in the panel and are excluded from every model here, which requires f_n_prior >= 1.
+
+=== snap_share  band tuned on [2022, 2023]: [0.3, 0.95]  POLICY CHOSEN ON TUNING: P2_info_quality
+ 2022(tune) n= 8091 U=0.1532 AC=0.1485 P2_info_quality=0.1398 (AC used 17%) | vsU -0.01326[-0.01572,-0.01086] vsAC -0.00881[-0.01195,-0.00559]
+ 2023(tune) n= 7835 U=0.1488 AC=0.1417 P2_info_quality=0.1353 (AC used 18%) | vsU -0.01344[-0.01644,-0.01041] vsAC -0.00646[-0.00961,-0.00325]
+ 2024(TEST) n= 7735 U=0.1544 AC=0.1426 P2_info_quality=0.1389 (AC used 18%) | vsU -0.01518[-0.01795,-0.01240] vsAC -0.00349[-0.00699,+0.00071]
+ 2025(TEST) n= 7755 U=0.1551 AC=0.1574 P2_info_quality=0.1551 (AC used 0%) | vsU +0.00000[+0.00000,+0.00000] vsAC -0.00246[-0.00605,+0.00116]  [oracle would be P4_zero_persistence=0.1508]
+
+=== rpr  band tuned on [2022, 2023]: [0.3, 0.95]  POLICY CHOSEN ON TUNING: P2_info_quality
+ 2022(tune) n= 8092 U=0.1566 AC=0.1534 P2_info_quality=0.1429 (AC used 17%) | vsU -0.01362[-0.01615,-0.01121] vsAC -0.01058[-0.01391,-0.00701]
+ 2023(tune) n= 7840 U=0.1506 AC=0.1445 P2_info_quality=0.1370 (AC used 18%) | vsU -0.01349[-0.01653,-0.01060] vsAC -0.00750[-0.01102,-0.00376]
+ 2024(TEST) n= 7743 U=0.1549 AC=0.1458 P2_info_quality=0.1398 (AC used 18%) | vsU -0.01490[-0.01772,-0.01229] vsAC -0.00579[-0.00992,-0.00161]
+ 2025(TEST) n= 7768 U=0.1564 AC=0.1609 P2_info_quality=0.1564 (AC used 0%) | vsU +0.00000[+0.00000,+0.00000] vsAC -0.00455[-0.00851,-0.00040]  [oracle would be P4_zero_persistence=0.1538]
+
+=== target_share  band tuned on [2022, 2023]: [0.2, 0.95]  POLICY CHOSEN ON TUNING: P5_scale
+ 2022(tune) n= 8092 U=0.0467 AC=0.0434 P5_scale=0.0434 (AC used 100%) | vsU -0.00335[-0.00414,-0.00266] vsAC +0.00000[+0.00000,+0.00000]
+ 2023(tune) n= 7840 U=0.0453 AC=0.0423 P5_scale=0.0423 (AC used 100%) | vsU -0.00301[-0.00379,-0.00232] vsAC +0.00000[+0.00000,+0.00000]
+ 2024(TEST) n= 7743 U=0.0469 AC=0.0431 P5_scale=0.0431 (AC used 100%) | vsU -0.00374[-0.00457,-0.00288] vsAC +0.00000[+0.00000,+0.00000]
+ 2025(TEST) n= 7768 U=0.0460 AC=0.0453 P5_scale=0.0453 (AC used 100%) | vsU -0.00072[-0.00112,-0.00030] vsAC +0.00000[+0.00000,+0.00000]  [oracle would be P3_uncertain_band=0.0453]
+
+=== carry_share  band tuned on [2022, 2023]: [0.05, 0.95]  POLICY CHOSEN ON TUNING: P4_zero_persistence
+ 2022(tune) n= 2365 U=0.1034 AC=0.0983 P4_zero_persistence=0.0930 (AC used 71%) | vsU -0.01017[-0.01436,-0.00598] vsAC -0.00530[-0.00874,-0.00175]
+ 2023(tune) n= 2255 U=0.1054 AC=0.1024 P4_zero_persistence=0.0971 (AC used 71%) | vsU -0.00835[-0.01198,-0.00445] vsAC -0.00544[-0.00946,-0.00190]  [oracle would be P2_info_quality=0.0967]
+ 2024(TEST) n= 2166 U=0.1261 AC=0.1082 P4_zero_persistence=0.1084 (AC used 73%) | vsU -0.01751[-0.02190,-0.01328] vsAC -0.00007[-0.00343,+0.00327]  [oracle would be P5_scale=0.1082]
+ 2025(TEST) n= 2174 U=0.1056 AC=0.1030 P4_zero_persistence=0.0961 (AC used 74%) | vsU -0.00948[-0.01290,-0.00625] vsAC -0.00690[-0.00975,-0.00415]

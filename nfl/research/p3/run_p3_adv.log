@@ -1,0 +1,40 @@
+
+honest P3 Stage A: brier=0.1257 auc=0.8783
+
+§16 probes 1-6 -- seeded positives must light up, pregame must not
+  ok   1 same-game appeared: detected (dAUC +0.1217)
+  ok   2 same-game snap share: detected (dAUC +0.1119)
+  ok   3 post-kickoff injury update (simulated): detected (dAUC +0.1217)
+  ok   4 postgame roster state (simulated): detected (dAUC +0.1217)
+  ok   5 future teammate status (next week vacated snaps): no material gain (dAUC -0.0000)
+  ok   6 pregame prev-game snap: no material gain (dAUC +0.0001)
+
+§16 probe 11 -- information-quality flag must not use future evidence
+  ok   every HIGH row is backed by a proven pregame injury row
+  ok   info quality never reads appearance
+
+§16 probes 7-8 + GUARD-DELETION for the identifier layer
+  ok   the crosswalk loads and reports itself injective
+  ok   an unknown pfr id is refused by name, not guessed
+  ok   an empty pfr id is refused rather than mapped to anything
+  ok   fuzzy name mapping is refused by the module itself
+  ok   with the identifier join: more rows matched than the name join
+  ok   bypassing it to the name join loses rows -- so the identifier layer is what recovered them
+  ok   and where both fire they never disagree, so the old join was incomplete rather than wrong
+
+§16 probes 9-10, 12 + GUARD-DELETION for selective-policy chronology
+  ok   snap_share: band was tuned on [2022, 2023] only
+  ok   snap_share: 2024 is evaluated, never tuned on
+  ok   snap_share: 2025 is evaluated, never tuned on
+  ok   rpr: band was tuned on [2022, 2023] only
+  ok   rpr: 2024 is evaluated, never tuned on
+  ok   rpr: 2025 is evaluated, never tuned on
+  ok   target_share: band was tuned on [2022, 2023] only
+  ok   target_share: 2024 is evaluated, never tuned on
+  ok   target_share: 2025 is evaluated, never tuned on
+  ok   carry_share: band was tuned on [2022, 2023] only
+  ok   carry_share: 2024 is evaluated, never tuned on
+  ok   carry_share: 2025 is evaluated, never tuned on
+  ok   the tuning grid is the predeclared 4x4 and nothing wider
+
+28 passed, 0 failed
