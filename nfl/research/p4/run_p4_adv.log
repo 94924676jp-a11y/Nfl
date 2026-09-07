@@ -1,0 +1,44 @@
+
+honest P4 plays model: MAE=6.6381 r=0.0927
+
+seeded positives -- these MUST light up
+  ok   1 same-game plays: LEAK DETECTED (dMAE -6.6299, r +1.000)
+  ok   2 same-game dropbacks: LEAK DETECTED (dMAE -1.4840, r +0.632)
+  ok   3 realized score differential (postgame): LEAK DETECTED (dMAE -3.7757, r +0.903)
+  ok   4a current-week PROE vs the plays target (weak by construction): no material gain (dMAE -0.0564, r +0.130)
+
+seeded negatives -- these must NOT light up
+  ok   5 future-week pace (next game sec/play): no material gain (dMAE +0.0000, r +0.093)
+  ok   6 prior-game plays (legitimate): no material gain (dMAE -0.0000, r +0.093)
+  ok   7 rest days (pregame schedule fact): no material gain (dMAE -0.0000, r +0.093)
+  ok   8 home indicator (pregame): no material gain (dMAE +0.0000, r +0.093)
+
+probe 4b -- current-week PROE against the PASS RATE target
+  ok   current-week PROE leaks into pass rate (dMAE -0.02511, r 0.307 -> 0.751)
+
+forbidden-field controls -- present in the source, never read
+  ok   spread_line exists in the source and is NOT in the panel
+  ok   total_line exists in the source and is NOT in the panel
+  ok   temp exists in the source and is NOT in the panel
+  ok   wind exists in the source and is NOT in the panel
+  ok   result exists in the source and is NOT in the panel
+  ok   total exists in the source and is NOT in the panel
+  ok   spread_line is never READ in P4 code (comments allowed)
+  ok   total_line is never READ in P4 code (comments allowed)
+  ok   temp is never READ in P4 code (comments allowed)
+  ok   wind is never READ in P4 code (comments allowed)
+  ok   pass_oe is never READ in P4 code (comments allowed)
+  ok   xpass is never READ in P4 code (comments allowed)
+  ok   xpass_features is OUR reconstruction, not the shipped column
+
+GUARD-DELETION 1 -- chronology in attach_history
+  ok   with the guard: MAE is ordinary
+  ok   bypassed (current game in its own history): MAE collapses -- so the chronology guard is what was holding it
+       [bypassed MAE=0.0111 r=1.0000 vs honest MAE=6.6381 r=0.0927]
+
+GUARD-DELETION 2 -- the xPass training window
+  ok   with the guard: xPass is fitted on prior seasons only
+  ok   bypassing it to include the evaluation season improves eval Brier -- which is why the guard exists
+       [prior-only Brier on 2024: 0.20134; including 2024: 0.20128; gap +0.00006]
+
+26 passed, 0 failed
