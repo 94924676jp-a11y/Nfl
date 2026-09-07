@@ -60,14 +60,31 @@ WINDOWS: dict[str, tuple[dt.timedelta, dt.timedelta]] = {
     'unschedulable': (dt.timedelta(0), dt.timedelta(0)),
 }
 
-# Targets that are specific to ONE game rather than to a team-week.
+# ARTIFACT SCOPE, NOT DISCHARGE AUTHORITY. Read the next paragraph before using
+# this constant for anything.
 #
-# A practice report is filed per team per week: a single fetch of it legitimately
-# serves every game that team plays that week. Inactives are not like that --
-# each game has its own list at its own kickoff minus 90. So a capture taken at
-# game B's T-90 must not clear game A's inactives target merely by falling inside
-# a window that happens to overlap.
+# A practice report is filed per team per week; inactives are posted per game at
+# that game's kickoff minus 90. That is a true statement about what the retrieved
+# BYTES cover, and it is why `execution.declare` may legitimately name several
+# targets for one fetch.
+#
+# It is NOT a statement about which targets need an explicitly declared identity.
+# Until 2026-09-07 `_clears` consulted this tuple and let ANY in-window capture
+# discharge a kind that was not listed here, and two practice obligations were
+# duly discharged by the periodic sweep -- unanchored, game_id None, zero
+# attributed captures, coverage PASS. The governing rule is not "only certain
+# source kinds require game identity"; it is:
+#
+#     every event-anchored coverage obligation requires an explicitly declared
+#     target identity and an authorised discharging execution basis.
+#
+# `_clears` therefore no longer reads this constant, and `test_capture_schedule`
+# asserts that it does not.
 GAME_SPECIFIC_KINDS = ('inactives',)
+
+# Kinds that carry a coverage obligation at all. `seal` and `unschedulable` are
+# bookkeeping rows, not evidence deadlines.
+NON_OBLIGATION_KINDS = ('seal', 'unschedulable')
 
 # Day offsets BEFORE the game date on which a practice/status report is due,
 # keyed by the game's weekday. `final` marks the game-status report.
@@ -245,18 +262,54 @@ def season_plan(games: list[dict], through: Optional[dt.datetime] = None
 
 
 def _clears(target: CaptureDue, performed) -> bool:
-    """One performed capture against one target.
+    """One performed capture against one target. The discharge decision.
 
-    `performed` may be a bare timestamp or a `(timestamp, source)` pair. A bare
-    timestamp is judged on timing alone; a pair is judged on timing AND source
-    authority. Attributing a capture can therefore only ever make it clear FEWER
-    targets, never more.
+    THE RULE, AND WHY IT IS UNIVERSAL
+
+    A capture discharges an event-anchored obligation only when the execution
+    DECLARED that exact obligation before it fetched anything. Timing is
+    necessary and never sufficient. Concretely, a `(ts, src, game_id, kind)`
+    tuple clears a target only if:
+
+        game_id == target.game_id      explicit target identity
+        kind    == target.kind         the declared obligation, not a neighbour
+        window + source authority      via `target.discharges`
+
+    and the tuple exists at all only because `execution.eligibility` already
+    passed the declared target on execution basis, window, source authority,
+    persisted bytes, sha and provenance.
+
+    WHAT THIS REPLACED, AND THE DEFECT IT LET THROUGH
+
+    This used to read `GAME_SPECIFIC_KINDS` and require a matching `game_id`
+    only for kinds inside it. `practice` was outside it, so an UNATTRIBUTED
+    capture -- `(ts, src, None)` -- cleared any practice target whose window it
+    happened to fall in. On 2026-09-07 two practice obligations,
+    2026_01_NE_SEA/practice_a and 2026_01_SF_LA/practice_mon, were discharged by
+    the `*/30` periodic sweep at 20:05:40Z and 20:37:36Z: no declaration, no
+    anchored basis, `game_id` None, `attributed_captures: 0`, and coverage
+    nevertheless reported PASS with the first real T-90 window still 49.5 hours
+    away. That is exactly what Directive 7 section 5 forbids, and
+    `nfl/tests/fixtures/regression_2026_09_07_practice_false_cover.json` holds
+    the observed state so the refusal stays testable.
+
+    An unattributed capture is still real evidence and stays in the manifest. It
+    simply is not THIS target's evidence, and nothing about the passage of time
+    can make it so.
     """
     if isinstance(performed, tuple):
-        ts, src, game_id = (performed + (None,))[:3]
-        if target.kind in GAME_SPECIFIC_KINDS and game_id != target.game_id:
-            # Unattributed, or attributed to another game. Either way it does not
-            # clear a per-game target.
+        parts = (tuple(performed) + (None, None))[:4]
+        ts, src, game_id, kind = parts
+        if not game_id:
+            # No declared target identity. Under the universal rule this cannot
+            # discharge anything, whatever its kind and however well timed.
+            return False
+        if game_id != target.game_id:
+            return False
+        if kind is not None and kind != target.kind:
+            # Declared for a different obligation of the same game. Windows for
+            # `practice` and `final_status` overlap, so without this a declared
+            # practice capture would silently clear a final-status deadline.
             return False
         return target.discharges(ts, src)
     return target.satisfied_by(performed)

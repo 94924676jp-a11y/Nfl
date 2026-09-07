@@ -24,14 +24,46 @@ printed, and states plainly what the source-level answer does and does not mean.
 WHAT "COVERED" MEANS HERE AND WHAT IT DOES NOT
 
 Covered: a manifest PASS from a source authorised for that kind, whose
-`retrieved_at` lies inside THIS target's own window, attributed to THIS game.
-Nothing weaker counts, and in particular:
+`retrieved_at` lies inside THIS target's own window, and which the execution
+DECLARED as this exact `(game_id, kind)` obligation before it fetched anything,
+under an authorised discharging basis. Nothing weaker counts, and in particular:
 
   * a capture in the right window from an unauthorised source does not count;
   * a capture from the right source outside the window does not count;
   * a capture of the right kind for another game does not count;
+  * a capture declared for another obligation of the SAME game does not count;
+  * an unattributed capture does not count, whatever its kind;
   * a run of the periodic cron does not count for anything by itself. Being
     awake is not an observation.
+
+THE 2026-09-07 REGRESSION, AND WHY THE RULE IS NOW UNIVERSAL
+
+This module used to emit one UNATTRIBUTED entry per PASS row --
+`(ts, source, None)` -- on the reasoning that a weekly team report legitimately
+serves every game that team plays, and `_clears` accepted it for any kind
+outside `GAME_SPECIFIC_KINDS`. `practice` is outside it.
+
+Measured on 2026-09-07T21:18Z, with the first T-90 window still 49.5 hours
+away: two practice obligations, 2026_01_NE_SEA/practice_a and
+2026_01_SF_LA/practice_mon, were reported COVERED and the whole week flipped
+DEFERRED -> PASS. What discharged them was the `*/30` periodic vintage sweep at
+20:05:40Z and 20:37:36Z -- no declaration, `PERIODIC_SWEEP` basis, `game_id`
+None -- and the very same summary said `attributed_captures: 0`. Four
+repository assertions caught it; `registry.unmet_targets` had said the same
+optimistic thing a week earlier for a different reason.
+
+The reasoning was wrong in the same way twice. Artifact scope -- what the bytes
+cover -- is not discharge authority. The governing rule is:
+
+    every event-anchored coverage obligation requires an explicitly declared
+    target identity and an authorised discharging execution basis.
+
+So a capture is now dischargeable only through `execution.eligible_targets`,
+which exists only where the run declared the target before fetching. The
+unattributed captures are still read, still counted, and still in the manifest;
+they are classified as ineligible to discharge rather than deleted.
+`nfl/tests/fixtures/regression_2026_09_07_practice_false_cover.json` records
+the observed bad state and `test_coverage` replays it.
 
 A window that has not closed yet is DEFERRED, never MISSED. Conflating "not yet"
 with "failed" is the Class B failure and it would make every plan look broken
@@ -54,7 +86,8 @@ if str(_REPO) not in sys.path:
 
 from sportsplatform.governance.outcome import Cause, Outcome  # noqa: E402
 from nfl.capture.execution import eligible_targets  # noqa: E402
-from nfl.capture.schedule import (GAME_SPECIFIC_KINDS, CaptureDue,  # noqa: E402
+from nfl.capture.schedule import (GAME_SPECIFIC_KINDS,  # noqa: E402
+                                  NON_OBLIGATION_KINDS, CaptureDue,
                                   season_plan)
 
 
@@ -127,6 +160,7 @@ def performed_from_manifest(manifest_path, *, verify_artifacts: bool = True
                            f"captures to judge coverage against.")
     out, undated, n_pass, excluded = [], [], 0, []
     legacy = 0
+    unattributed = 0
     for line in mp.read_text().splitlines():
         if not line.strip():
             continue
@@ -146,19 +180,23 @@ def performed_from_manifest(manifest_path, *, verify_artifacts: bool = True
         if val.get("discharge_claims") and not val.get("discharge_eligibility"):
             legacy += 1
 
-        # Unattributed entry: still clears team-week kinds, where one fetch of a
-        # weekly report legitimately serves every game that team plays.
-        out.append((ts, row.get("source"), None))
-
         ok, why = ((True, None) if not verify_artifacts
                    else _blob_ok(val))
         if not ok:
             excluded.append({"source": row.get("source"),
                              "capture_id": row.get("capture_id"),
                              "reason": why})
+            unattributed += 1
             continue
-        for gid, _kind in eligible_targets(val):
-            out.append((ts, row.get("source"), gid))
+        targets = eligible_targets(val)
+        if not targets:
+            # Real evidence, kept in the manifest, discharging nothing. This
+            # line used to append `(ts, source, None)` and that unattributed
+            # entry is what discharged two practice obligations on 2026-09-07.
+            unattributed += 1
+            continue
+        for gid, kind in targets:
+            out.append((ts, row.get("source"), gid, kind))
 
     if undated:
         return Outcome.blocked(
@@ -171,11 +209,14 @@ def performed_from_manifest(manifest_path, *, verify_artifacts: bool = True
             cause=Cause.DATA, undated_sources=sorted(set(undated)),
             n_undated=len(undated), n_pass=n_pass)
     return Outcome.ok("CAPTURES_READ", value=out,
-                      detail=f"{len(out)} dated PASS captures of {n_pass}; "
+                      detail=f"{len(out)} dischargeable captures of {n_pass} "
+                             f"dated PASS rows; {unattributed} carry no "
+                             f"declared eligible target and discharge nothing; "
                              f"{len(excluded)} excluded on artifact "
                              f"verification; {legacy} legacy pre-Directive-7 "
                              f"rows discharge nothing",
                       n_captures=len(out), n_pass_rows=n_pass,
+                      n_unattributed=unattributed,
                       artifact_excluded=excluded, legacy_claim_rows=legacy)
 
 
@@ -236,7 +277,7 @@ def coverage(season: int, week: int, *, manifest_path,
     from nfl.capture.schedule import _clears
     covered, missed, pending = [], [], []
     for c in plan:
-        if c.kind in ("seal", "unschedulable"):
+        if c.kind in NON_OBLIGATION_KINDS:
             continue
         lo, hi = c.window
         hit = [p for p in performed if _clears(c, p)]
@@ -255,6 +296,9 @@ def coverage(season: int, week: int, *, manifest_path,
         "not_yet_due": len(pending),
         "game_specific_kinds": list(GAME_SPECIFIC_KINDS),
         "attributed_captures": sum(1 for p in performed if p[2]),
+        "dischargeable_captures": len(performed),
+        "unattributed_captures": read.evidence.get("n_unattributed", 0),
+        "total_pass_rows": read.evidence.get("n_pass_rows", 0),
         "total_captures": len(performed),
         "artifacts_verified": verify_artifacts,
         "artifact_excluded": read.evidence.get("artifact_excluded", []),
@@ -307,12 +351,16 @@ def event_anchored(plan: list, cadence_minutes: int) -> Outcome:
     So this returns the timing fact and refuses to convert it into a discharge
     claim.
     """
-    windows = [c for c in plan if c.kind in GAME_SPECIFIC_KINDS]
+    # EVERY obligation-bearing kind needs anchoring, not only the per-game
+    # artifact kinds. Restricting this to GAME_SPECIFIC_KINDS understated the
+    # requirement by exactly the set -- practice, final_status -- that the
+    # 2026-09-07 false cover was discharged in.
+    windows = [c for c in plan if c.kind not in NON_OBLIGATION_KINDS]
     if not windows:
         return Outcome.not_applicable(
-            "NO_GAME_SPECIFIC_TARGETS",
-            "this plan carries no per-game targets, so no event anchoring is "
-            "required for it.")
+            "NO_ANCHORED_TARGETS",
+            "this plan carries no coverage obligations, so no event anchoring "
+            "is required for it.")
     widths = {int((c.window[1] - c.window[0]).total_seconds() // 60)
               for c in windows}
     narrowest = min(widths)

@@ -216,14 +216,26 @@ def test_E2_the_reader_must_not_drop_rows():
     """
     print('\nE2. the manifest reader reads both schemas and drops nothing')
     real = performed_from_manifest(MANIFEST)
-    check('every PASS row in the live manifest is dated and kept',
-          _is(real, State.PASS) and
-          real.evidence['n_captures'] == real.evidence['n_pass_rows'],
+    # After the 2026-09-07 discharge repair, `n_captures` counts DISCHARGEABLE
+    # captures -- rows carrying a declared eligible target -- and today that is
+    # legitimately zero. The property this test exists to guard is different and
+    # unchanged: every dated PASS row must be READ. That is now
+    # n_pass_rows == n_captures + n_unattributed, and it is asserted on the
+    # rows, not on the dischargeable subset, so the 54-of-60 drop would still
+    # fail it.
+    ev = real.evidence
+    check('every PASS row in the live manifest is dated and accounted for',
+          _is(real, State.PASS)
+          and ev['n_captures'] + ev['n_unattributed'] == ev['n_pass_rows'],
           str(real)[:130])
     check('and that is materially more than the top-level-only reading found',
-          real.evidence['n_captures'] > 50, str(real.evidence))
-    print(f'       [{real.evidence["n_captures"]} captures read; the broken '
-          f'reader found 6]')
+          ev['n_pass_rows'] > 50, str(ev)[:200])
+    check('none of them is dischargeable, because none declared a target',
+          ev['n_captures'] == 0 and ev['n_unattributed'] == ev['n_pass_rows'],
+          f"{ev['n_captures']}/{ev['n_unattributed']}/{ev['n_pass_rows']}")
+    print(f'       [{ev["n_pass_rows"]} PASS rows read, '
+          f'{ev["n_unattributed"]} unattributed, {ev["n_captures"]} '
+          f'dischargeable; the broken reader found 6]')
 
     nested = {'capture_id': 'x', 'season': 2026, 'source': 'official_inactives',
               'state': 'PASS', 'code': 'CAPTURED',
@@ -232,12 +244,14 @@ def test_E2_the_reader_must_not_drop_rows():
                             'retrieved_at': '2026-09-07T00:00:01+00:00'}}}
     o = performed_from_manifest(_manifest([nested]))
     check('a row with the clock only under provenance is read, not skipped',
-          _is(o, State.PASS) and len(o.value) == 1, str(o)[:110])
+          _is(o, State.PASS) and o.evidence['n_pass_rows'] == 1
+          and o.evidence['n_unattributed'] == 1, str(o)[:110])
 
     flat = dict(nested, value={'retrieved_at': '2026-09-07T00:00:01+00:00'})
     o = performed_from_manifest(_manifest([flat]))
     check('a row with the clock only at the top level is read too',
-          _is(o, State.PASS) and len(o.value) == 1, str(o)[:110])
+          _is(o, State.PASS) and o.evidence['n_pass_rows'] == 1
+          and o.evidence['n_unattributed'] == 1, str(o)[:110])
 
     neither = dict(nested, value={'requested_at': '2026-09-07T00:00:00+00:00'})
     o = performed_from_manifest(_manifest([neither]))
@@ -312,8 +326,20 @@ def test_H_a_periodic_cron_is_not_event_anchoring():
     check('the narrowest per-game window is the 80-minute inactives window',
           o.evidence['narrowest_window_minutes'] == 80,
           str(o.evidence.get('narrowest_window_minutes')))
-    check('all 16 week-1 games carry one',
-          o.evidence['n_windows'] == 16, str(o.evidence.get('n_windows')))
+    # Widened by the 2026-09-07 repair: EVERY obligation-bearing target needs
+    # anchoring, not only the per-game artifact kinds. Restricting this to
+    # GAME_SPECIFIC_KINDS counted 16 and understated the requirement by exactly
+    # the practice and final_status set the false cover was discharged in.
+    plan_obligations = [c for c in plan if c.kind not in ('seal',
+                                                          'unschedulable')]
+    check('every obligation-bearing target needs anchoring, not just the 16 '
+          'per-game ones',
+          o.evidence['n_windows'] == len(plan_obligations)
+          and o.evidence['n_windows'] > 16,
+          f"{o.evidence.get('n_windows')} vs {len(plan_obligations)}")
+    check('and the 16 inactives targets are a strict subset of them',
+          sum(1 for c in plan if c.kind == 'inactives') == 16,
+          str(sum(1 for c in plan if c.kind == 'inactives')))
     check('and a FASTER cadence does not turn it into a discharge -- the '
           'missing thing is attribution, not frequency',
           _is(event_anchored(plan, 1), State.BLOCKED,
@@ -323,39 +349,96 @@ def test_H_a_periodic_cron_is_not_event_anchoring():
 
 
 def test_I_the_control_is_load_bearing():
-    print('\nI. guard-deletion -- is _clears what refuses the unattributed '
-          'capture?')
-    tgt = _inactives_target()
-    lo, hi = tgt.window
+    """GUARD DELETION, end to end, reproducing the 2026-09-07 regression.
+
+    The guard is now TWO layers and deleting either one alone is not enough, so
+    this deletes both and shows the false cover come back through the real code
+    path:
+
+      1. `performed_from_manifest` emits ONLY captures carrying a declared
+         eligible target. Before the repair it also emitted `(ts, source, None)`
+         for every PASS row.
+      2. `_clears` requires an explicit matching `(game_id, kind)` for every
+         kind. Before the repair it required a game_id only for
+         GAME_SPECIFIC_KINDS, and `practice` was outside that tuple.
+
+    Restoring both is exactly the code that reported 2026_01_NE_SEA/practice_a
+    and 2026_01_SF_LA/practice_mon as covered by the periodic sweep.
+    """
+    print('\nI. guard-deletion -- both layers, replaying the real regression')
+    plan = load_week_plan(2026, 1).value
+    prac = next(c for c in plan if c.kind == 'practice')
+    lo, hi = prac.window
     inside = (lo + dt.timedelta(minutes=5)).isoformat()
-    m = _manifest([_pass_row('official_inactives', inside)])   # no game_id
+    m = _manifest([_pass_row('official_injury_report', inside)])   # no game_id
     now = hi + dt.timedelta(minutes=1)
 
-    with_guard = coverage(2026, 1, manifest_path=m, now=now)
-    check('with the guard: the unattributed capture covers nothing',
-          with_guard.evidence['covered'] == 0)
+    with_guard = coverage(2026, 1, manifest_path=m, now=now,
+                          verify_artifacts=False)
+    check('with both guards: the unattributed practice capture covers nothing',
+          with_guard.evidence['covered'] == 0,
+          f"covered={with_guard.evidence['covered']}")
 
     import nfl.capture.schedule as S
-    original = S._clears
+    import nfl.capture.coverage as C
+    orig_clears, orig_reader = S._clears, C.performed_from_manifest
     try:
-        # The deleted guard: timing only, no game attribution and no source
-        # authority -- which is exactly what a "we ran inside the window"
-        # argument amounts to.
-        S._clears = lambda target, performed: target.satisfied_by(
-            performed[0] if isinstance(performed, tuple) else performed)
-        loose = coverage(2026, 1, manifest_path=m, now=now)
-    finally:
-        S._clears = original
+        def legacy_clears(target, performed):
+            if isinstance(performed, tuple):
+                a = (tuple(performed) + (None, None))[:4]
+                if (target.kind in S.GAME_SPECIFIC_KINDS
+                        and a[2] != target.game_id):
+                    return False
+                return target.discharges(a[0], a[1])
+            return target.satisfied_by(performed)
 
-    check('with _clears reduced to a timing check the SAME capture covers '
-          'targets -- so _clears is what was refusing it',
+        def legacy_reader(manifest_path, *, verify_artifacts=True):
+            o = orig_reader(manifest_path, verify_artifacts=verify_artifacts)
+            if o.state is not State.PASS:
+                return o
+            import json as _json, pathlib as _pl
+            extra = []
+            for line in _pl.Path(manifest_path).read_text().splitlines():
+                if not line.strip():
+                    continue
+                row = _json.loads(line)
+                if row.get('state') != 'PASS':
+                    continue
+                v = row.get('value') or {}
+                ts = (v.get('retrieved_at')
+                      or (v.get('provenance') or {}).get('retrieved_at'))
+                if ts:
+                    extra.append((dt.datetime.fromisoformat(
+                        str(ts).replace('Z', '+00:00')), row.get('source'),
+                        None))
+            return Outcome.ok('CAPTURES_READ', value=list(o.value) + extra,
+                              detail=o.detail, **o.evidence)
+
+        S._clears = legacy_clears
+        C.performed_from_manifest = legacy_reader
+        loose = C.coverage(2026, 1, manifest_path=m, now=now,
+                           verify_artifacts=False)
+    finally:
+        S._clears = orig_clears
+        C.performed_from_manifest = orig_reader
+
+    check('with BOTH pre-repair behaviours restored the same capture covers '
+          'practice targets again -- the regression, reproduced',
           loose.evidence['covered'] > 0,
-          f'covered={loose.evidence["covered"]}')
+          f"covered={loose.evidence['covered']}")
     print(f'       [bypassed: covered={loose.evidence["covered"]} '
-          f'missed={loose.evidence["missed"]} -- this is the false green]')
-    check('and restoring it restores the refusal',
-          coverage(2026, 1, manifest_path=m, now=now
-                   ).evidence['covered'] == 0)
+          f'from an unattributed periodic capture]')
+
+    # And each layer alone is insufficient, which is why both are guards.
+    try:
+        S._clears = legacy_clears
+        one = C.coverage(2026, 1, manifest_path=m, now=now,
+                         verify_artifacts=False)
+    finally:
+        S._clears = orig_clears
+    check('deleting only the _clears guard is NOT enough -- the reader no '
+          'longer emits an unattributed capture for it to accept',
+          one.evidence['covered'] == 0, f"covered={one.evidence['covered']}")
 
 
 if __name__ == '__main__':

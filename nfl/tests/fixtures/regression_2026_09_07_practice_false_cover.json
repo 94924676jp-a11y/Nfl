@@ -1,0 +1,63 @@
+{
+ "recorded_at_utc": "2026-09-07T21:18:53Z",
+ "what": "Observed live coverage state BEFORE the repair. Preserved so the refusal stays testable and the regression is not lost from the record.",
+ "observed_summary": {
+  "state": "PASS",
+  "code": "WINDOWS_COVERED",
+  "detail": "2 covered, 61 not yet due, none missed",
+  "n_targets": 63,
+  "covered": 2,
+  "missed": 0,
+  "not_yet_due": 61,
+  "attributed_captures": 0,
+  "total_captures": 309,
+  "game_specific_kinds": [
+   "inactives"
+  ],
+  "legacy_claim_rows": 6
+ },
+ "contradiction": "covered=2 while attributed_captures=0. Two obligations were discharged on the strength of zero game-attributed captures.",
+ "first_real_window_opens_utc": "2026-09-09T22:50:00Z",
+ "hours_until_first_window_at_observation": 49.5,
+ "falsely_covered_targets": [
+  {
+   "game_id": "2026_01_NE_SEA",
+   "label": "practice_a",
+   "kind": "practice",
+   "window_start_utc": "2026-09-07T20:00:00Z",
+   "window_end_utc": "2026-09-08T16:00:00Z",
+   "kickoff_utc": "2026-09-10T00:20:00Z"
+  },
+  {
+   "game_id": "2026_01_SF_LA",
+   "label": "practice_mon",
+   "kind": "practice",
+   "window_start_utc": "2026-09-07T20:00:00Z",
+   "window_end_utc": "2026-09-08T16:00:00Z",
+   "kickoff_utc": "2026-09-11T00:35:00Z"
+  }
+ ],
+ "discharging_captures": [
+  {
+   "source": "official_injury_report",
+   "retrieved_at": "2026-09-07T20:05:40.538181Z",
+   "game_id": null,
+   "basis": "PERIODIC_SWEEP",
+   "commit": "NFL vintage capture 20260907T200538Z"
+  },
+  {
+   "source": "official_injury_report",
+   "retrieved_at": "2026-09-07T20:37:36.546439Z",
+   "game_id": null,
+   "basis": "PERIODIC_SWEEP",
+   "commit": "NFL vintage capture 20260907T203734Z"
+  }
+ ],
+ "mechanism": "coverage.performed_from_manifest emitted (ts, source, None) for every PASS row, and schedule._clears required a matching game_id only for kinds in GAME_SPECIFIC_KINDS = ('inactives',). 'practice' was outside that tuple.",
+ "rule_violated": "Directive 7 section 5 -- a periodic/baseline capture that happens to land inside an obligation window does not discharge an event-anchored target.",
+ "repository_assertions_failing_at_observation": {
+  "test_coverage.py": 1,
+  "test_preflight.py": 3,
+  "total": 4
+ }
+}
