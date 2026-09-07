@@ -340,11 +340,34 @@ def fetch(src: Source, season: int, store: pathlib.Path) -> Outcome:
                "etag": etag, "durability": src.durability,
                "source_timestamp_header": src_ts_header,
                "requested_at": requested_at,
+               "substantive": _substantive(payload),
                "content_kind": src.content_kind, **stored,
                "provenance": dataclasses.asdict(prov)},
         detail=f"{src.name}: {n_bytes} bytes, {lines} lines"
                + (" (content unchanged)" if stored["content_unchanged"] else " (NEW)"),
         source=src.name)
+
+
+def _substantive(payload: bytes) -> dict:
+    """The DERIVED content digest, recorded beside the authoritative sha256.
+
+    Additive and non-authoritative. `sha256` still identifies the bytes and
+    still decides blob storage; this only lets a later reader tell a real
+    content change from a rotated render nonce. Measured 2026-09-07: four
+    captures each of the inactives page and the injury report produced four
+    distinct raw digests apiece and ONE substantive digest apiece, so every
+    `content_unchanged: false` on those rows was a fake new version.
+
+    Blob deduplication is deliberately NOT changed here. That is a change to
+    what the capture system stores and it is the owner's call.
+    """
+    from nfl.capture.volatility import substantive_digest
+    out = substantive_digest(payload)
+    if out.state is not State.PASS:
+        # A digest that could not be computed is recorded as such. Omitting the
+        # key would make "not computed" indistinguishable from "not applicable".
+        return {"state": out.state.value, "code": out.code}
+    return out.value
 
 
 def _persist(src: Source, payload: bytes, digest: str,

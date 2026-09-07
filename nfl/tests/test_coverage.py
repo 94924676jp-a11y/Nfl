@@ -186,13 +186,68 @@ def test_E_a_non_pass_row_is_not_a_capture():
     row = _pass_row('official_inactives', inside, game_id=tgt.game_id)
     del row['value']['retrieved_at']
     m = _manifest([row])
-    check('a PASS with no retrieved_at is not a timed capture and covers '
-          'nothing',
-          coverage(2026, 1, manifest_path=m,
-                   now=hi + dt.timedelta(minutes=1)).evidence['covered'] == 0)
-    check('and a manifest that does not exist yields no captures rather than '
-          'raising',
-          performed_from_manifest('/nonexistent/nope.jsonl') == [])
+    check('a PASS with no retrieved_at anywhere BLOCKS the whole computation '
+          'rather than covering nothing quietly (see E2)',
+          _is(coverage(2026, 1, manifest_path=m,
+                       now=hi + dt.timedelta(minutes=1)), State.BLOCKED,
+              'CAPTURE_CLOCK_UNREADABLE'))
+    o = performed_from_manifest('/nonexistent/nope.jsonl')
+    check('a manifest that does not exist is NOT_APPLICABLE with a reason, '
+          'never an empty list that reads like a clean sheet',
+          _is(o, State.NOT_APPLICABLE, 'NO_MANIFEST'), str(o)[:110])
+
+
+def test_E2_the_reader_must_not_drop_rows():
+    """The defect this module introduced and the live manifest exposed.
+
+    Measured 2026-09-07: 54 of 60 PASS rows nest the clock at
+    value.provenance.retrieved_at and 6 older rows carry value.retrieved_at.
+    The first version of performed_from_manifest read only the top level, kept
+    6 rows, dropped 54, and reported total_captures: 6 without a word. Coverage
+    from a 10%-sampled evidence base, failing safe-looking. Class A, produced by
+    the module written to prevent Class A.
+    """
+    print('\nE2. the manifest reader reads both schemas and drops nothing')
+    real = performed_from_manifest(MANIFEST)
+    check('every PASS row in the live manifest is dated and kept',
+          _is(real, State.PASS) and
+          real.evidence['n_captures'] == real.evidence['n_pass_rows'],
+          str(real)[:130])
+    check('and that is materially more than the top-level-only reading found',
+          real.evidence['n_captures'] > 50, str(real.evidence))
+    print(f'       [{real.evidence["n_captures"]} captures read; the broken '
+          f'reader found 6]')
+
+    nested = {'capture_id': 'x', 'season': 2026, 'source': 'official_inactives',
+              'state': 'PASS', 'code': 'CAPTURED',
+              'value': {'requested_at': '2026-09-07T00:00:00+00:00',
+                        'provenance': {
+                            'retrieved_at': '2026-09-07T00:00:01+00:00'}}}
+    o = performed_from_manifest(_manifest([nested]))
+    check('a row with the clock only under provenance is read, not skipped',
+          _is(o, State.PASS) and len(o.value) == 1, str(o)[:110])
+
+    flat = dict(nested, value={'retrieved_at': '2026-09-07T00:00:01+00:00'})
+    o = performed_from_manifest(_manifest([flat]))
+    check('a row with the clock only at the top level is read too',
+          _is(o, State.PASS) and len(o.value) == 1, str(o)[:110])
+
+    neither = dict(nested, value={'requested_at': '2026-09-07T00:00:00+00:00'})
+    o = performed_from_manifest(_manifest([neither]))
+    check('a PASS row with NO retrieval clock anywhere BLOCKS -- it is not '
+          'quietly dropped, which is the whole defect',
+          _is(o, State.BLOCKED, 'CAPTURE_CLOCK_UNREADABLE'), str(o)[:130])
+    check('and the refusal names the sources whose rows could not be read',
+          o.evidence['undated_sources'] == ['official_inactives'],
+          str(o.evidence))
+    check('requested_at is NOT accepted as a substitute for retrieved_at -- '
+          'that conflation is the V7 weather defect',
+          _is(o, State.BLOCKED))
+
+    o = coverage(2026, 1, manifest_path=_manifest([neither]))
+    check('and coverage propagates the block rather than reporting a clean '
+          'sheet from a manifest it could not read',
+          _is(o, State.BLOCKED, 'CAPTURE_CLOCK_UNREADABLE'), str(o)[:110])
 
 
 def test_F_not_yet_due_is_not_missed_and_not_covered():
@@ -302,6 +357,7 @@ if __name__ == '__main__':
     test_C_unattributed_never_covers_a_game_specific_target()
     test_D_unauthorised_source_never_covers()
     test_E_a_non_pass_row_is_not_a_capture()
+    test_E2_the_reader_must_not_drop_rows()
     test_F_not_yet_due_is_not_missed_and_not_covered()
     test_G_no_plan_means_no_coverage_claim()
     test_H_a_periodic_cron_is_not_event_anchoring()

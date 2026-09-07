@@ -67,8 +67,24 @@ def _parse_ts(v) -> Optional[dt.datetime]:
     return d if d.tzinfo else d.replace(tzinfo=dt.timezone.utc)
 
 
-def performed_from_manifest(manifest_path) -> list:
+def performed_from_manifest(manifest_path) -> Outcome:
     """Every successful capture as `(retrieved_at, source, game_id)`.
+
+    THE MANIFEST HAS TWO SCHEMAS AND THE FIRST VERSION OF THIS FUNCTION READ ONE
+
+    Measured 2026-09-07 on the live manifest: 54 of 60 PASS rows nest the real
+    clock under `value.provenance.retrieved_at`, and 6 older rows carry it at
+    `value.retrieved_at`. This function originally read only the top level, so
+    it silently dropped 54 rows -- 90% of the evidence, including every capture
+    of the official cascade -- and reported `total_captures: 6`. Coverage
+    computed from that would have been confidently wrong in the safe-looking
+    direction, and nothing would have said so.
+
+    That is the Class A failure this repository exists to prevent, introduced by
+    the module written to prevent it. So both locations are read, and a PASS row
+    carrying NEITHER is a refusal rather than a skip: a capture whose retrieval
+    clock cannot be found is not a capture that happened at an unknown time, it
+    is a manifest we cannot reason about.
 
     `game_id` is None for every row today, and that is the honest reading rather
     than a placeholder: the capture tool fetches league-wide pages and records no
@@ -79,8 +95,11 @@ def performed_from_manifest(manifest_path) -> list:
     """
     mp = pathlib.Path(manifest_path)
     if not mp.exists():
-        return []
-    out = []
+        return Outcome.not_applicable(
+            "NO_MANIFEST", f"no manifest at {mp}; nothing has been captured "
+                           f"through this record, so there are no performed "
+                           f"captures to judge coverage against.")
+    out, undated, n_pass = [], [], 0
     for line in mp.read_text().splitlines():
         if not line.strip():
             continue
@@ -90,12 +109,29 @@ def performed_from_manifest(manifest_path) -> list:
             continue
         if row.get("state") != "PASS":
             continue
+        n_pass += 1
         val = row.get("value") or {}
-        ts = _parse_ts(val.get("retrieved_at"))
+        prov = val.get("provenance") or {}
+        ts = _parse_ts(val.get("retrieved_at") or prov.get("retrieved_at"))
         if ts is None:
+            undated.append(row.get("source"))
             continue
-        out.append((ts, row.get("source"), val.get("game_id")))
-    return out
+        out.append((ts, row.get("source"),
+                    val.get("game_id") or prov.get("game_id")))
+    if undated:
+        return Outcome.blocked(
+            "CAPTURE_CLOCK_UNREADABLE",
+            f"{len(undated)} of {n_pass} PASS rows carry no readable "
+            f"retrieved_at at value.retrieved_at or value.provenance."
+            f"retrieved_at: {sorted(set(undated))}. An undated capture cannot "
+            f"be placed inside or outside a window, and skipping it would "
+            f"understate coverage silently. Fix the manifest schema or teach "
+            f"this reader the new location -- do not let it drop rows.",
+            cause=Cause.DATA, undated_sources=sorted(set(undated)),
+            n_undated=len(undated), n_pass=n_pass)
+    return Outcome.ok("CAPTURES_READ", value=out,
+                      detail=f"{len(out)} dated PASS captures of {n_pass}",
+                      n_captures=len(out), n_pass_rows=n_pass)
 
 
 def load_week_plan(season: int, week: int, vintage_dir=None) -> Outcome:
@@ -145,7 +181,10 @@ def coverage(season: int, week: int, *, manifest_path,
     if planned.state is not State.PASS:
         return planned
     plan = planned.value
-    performed = performed_from_manifest(manifest_path)
+    read = performed_from_manifest(manifest_path)
+    if read.state is State.BLOCKED:
+        return read
+    performed = read.value if read.state is State.PASS else []
 
     from nfl.capture.schedule import _clears
     covered, missed, pending = [], [], []
