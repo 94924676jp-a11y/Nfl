@@ -212,6 +212,29 @@ def fetch(src: Source, season: int, store: pathlib.Path) -> Outcome:
                 source=src.name, n_bytes=n_bytes, n_markers=_markers,
                 js_shell=_shell)
         n_data_rows = _markers      # the HTML analogue of "rows that mean something"
+    elif src.content_kind == "json":
+        # A minified JSON document is a single line, so a row count read 8,996,076
+        # bytes of real data as "a header with nothing under it". The question
+        # for JSON is whether it parses and carries entries.
+        import json as _json
+        try:
+            _doc = _json.loads(_text)
+        except ValueError as exc:
+            tmp.unlink()
+            return Outcome.fail(
+                "JSON_UNPARSEABLE",
+                f"{src.name}: HTTP {status}, {n_bytes} bytes that do not parse "
+                f"as JSON ({exc}).", source=src.name, n_bytes=n_bytes)
+        _n = (len(_doc) if isinstance(_doc, list)
+              else sum(len(v) if isinstance(v, list) else 1
+                       for v in _doc.values()) if isinstance(_doc, dict) else 0)
+        if _n < 1:
+            tmp.unlink()
+            return Outcome.fail(
+                "JSON_EMPTY_DOCUMENT",
+                f"{src.name}: parses as JSON but carries no entries. Valid and "
+                f"empty is still empty.", source=src.name, n_bytes=n_bytes)
+        n_data_rows = _n
     else:
         # Count DATA ROWS, not newlines. Counting newlines let b"a,b,c\n\n\n"
         # through as three lines: a durable blob written and a manifest row

@@ -190,7 +190,12 @@ REGISTRY: tuple = (
         source_status=SourceStatus.VERIFIED_REACHABLE_EXTERNALLY,
         executor_access=ExecutorAccess.UNTESTED,
         serves_kinds=("practice", "final_status"),
-        source_scope_kind=ScopeKind.WEEK_TEAM,
+        # The CAPTURE is a whole-page snapshot, effective at the instant the
+        # origin produced it. WEEK_TEAM is what a PARSED ROW would carry, and no
+        # parser exists yet -- declaring it here made scope construction refuse
+        # every capture, because the object had no week and no teams to put in
+        # it. Capture scope and parsed-row scope are different things.
+        source_scope_kind=ScopeKind.EXACT_TIMESTAMP,
         note=("THE intraweek cascade. Measured externally 2026-09-06: HTTP 200, "
               "server-rendered HTML, no CAPTCHA or robots exclusion. Measured "
               "HERE: DNS resolves to 151.101.65.55 and the LOCAL proxy answers "
@@ -206,7 +211,7 @@ REGISTRY: tuple = (
         source_status=SourceStatus.VERIFIED_REACHABLE_EXTERNALLY,
         executor_access=ExecutorAccess.UNTESTED,
         serves_kinds=("inactives",),
-        source_scope_kind=ScopeKind.TEAM_GAME,
+        source_scope_kind=ScopeKind.EXACT_TIMESTAMP,
         note=("Resolves Questionable to 0/1 at ~T-90. The only source that can "
               "discharge an inactives target."),
     ),
