@@ -1,0 +1,99 @@
+== season-to-season persistence (>=50 carries in both seasons) ==
+  ypc    n= 493 r=+0.3429 r_weighted=+0.3435
+  epa    n= 493 r=+0.4840 r_weighted=+0.4539
+  succ   n= 493 r=+0.4834 r_weighted=+0.4537
+  exp    n= 493 r=+0.4854 r_weighted=+0.4666
+  stuff  n= 493 r=+0.2608 r_weighted=+0.2905
+
+== split-half persistence (odd/even carries, >=40 each half) ==
+  ypc    n= 590 r_half=+0.3655 Spearman-Brown full-length=+0.5353
+  epa    n= 590 r_half=+0.4336 Spearman-Brown full-length=+0.6049
+  succ   n= 590 r_half=+0.5317 Spearman-Brown full-length=+0.6943
+  exp    n= 590 r_half=+0.3796 Spearman-Brown full-length=+0.5503
+  stuff  n= 590 r_half=+0.3191 Spearman-Brown full-length=+0.4838
+
+  ypc    2022 n= 2286 pool=4.2907 k_EB=80 k_EB_ewma=40
+      pool      wMSE=7.26007 ( +0.00% vs pool) r=+0.0000
+      raw       wMSE=7.69203 ( +5.95% vs pool) r=+0.1597
+      ewma      wMSE=7.76667 ( +6.98% vs pool) r=+0.1575
+      eb        wMSE=6.94272 ( -4.37% vs pool) r=+0.2009
+      eb_ewma   wMSE=6.98489 ( -3.79% vs pool) r=+0.1845
+
+  ypc    2023 n= 2276 pool=4.3167 k_EB=40 k_EB_ewma=40
+      pool      wMSE=6.09112 ( +0.00% vs pool) r=+0.0000
+      raw       wMSE=6.70469 (+10.07% vs pool) r=+0.1870
+      ewma      wMSE=6.62525 ( +8.77% vs pool) r=+0.1942
+      eb        wMSE=5.97710 ( -1.87% vs pool) r=+0.1874
+      eb_ewma   wMSE=5.89465 ( -3.23% vs pool) r=+0.1914
+
+  ypc    2024 n= 2254 pool=4.3009 k_EB=40 k_EB_ewma=40
+      pool      wMSE=6.15435 ( +0.00% vs pool) r=+0.0000
+      raw       wMSE=6.70616 ( +8.97% vs pool) r=+0.1319
+      ewma      wMSE=6.57425 ( +6.82% vs pool) r=+0.1586
+      eb        wMSE=6.05950 ( -1.54% vs pool) r=+0.1439
+      eb_ewma   wMSE=5.96474 ( -3.08% vs pool) r=+0.1688
+
+  ypc    2025 n= 2253 pool=4.3166 k_EB=80 k_EB_ewma=40
+      pool      wMSE=6.67943 ( +0.00% vs pool) r=+0.0000
+      raw       wMSE=7.03425 ( +5.31% vs pool) r=+0.1386
+      ewma      wMSE=7.04586 ( +5.49% vs pool) r=+0.1462
+      eb        wMSE=6.54381 ( -2.03% vs pool) r=+0.1525
+      eb_ewma   wMSE=6.56398 ( -1.73% vs pool) r=+0.1401
+
+  exp    2022 n= 2286 pool=0.1142 k_EB=80 k_EB_ewma=40
+      pool      wMSE=0.01753 ( +0.00% vs pool) r=+0.0000
+      raw       wMSE=0.01879 ( +7.18% vs pool) r=+0.1528
+      ewma      wMSE=0.01897 ( +8.20% vs pool) r=+0.1488
+      eb        wMSE=0.01674 ( -4.52% vs pool) r=+0.2131
+      eb_ewma   wMSE=0.01685 ( -3.86% vs pool) r=+0.1959
+
+  exp    2023 n= 2276 pool=0.1145 k_EB=80 k_EB_ewma=40
+      pool      wMSE=0.01773 ( +0.00% vs pool) r=+0.0000
+      raw       wMSE=0.01877 ( +5.85% vs pool) r=+0.1809
+      ewma      wMSE=0.01869 ( +5.40% vs pool) r=+0.1894
+      eb        wMSE=0.01719 ( -3.04% vs pool) r=+0.1827
+      eb_ewma   wMSE=0.01702 ( -3.99% vs pool) r=+0.1981
+
+  exp    2024 n= 2254 pool=0.1138 k_EB=80 k_EB_ewma=40
+      pool      wMSE=0.01869 ( +0.00% vs pool) r=+0.0000
+      raw       wMSE=0.01962 ( +4.97% vs pool) r=+0.1793
+      ewma      wMSE=0.01955 ( +4.60% vs pool) r=+0.1909
+      eb        wMSE=0.01820 ( -2.64% vs pool) r=+0.1638
+      eb_ewma   wMSE=0.01805 ( -3.41% vs pool) r=+0.1838
+
+  exp    2025 n= 2253 pool=0.1142 k_EB=80 k_EB_ewma=40
+      pool      wMSE=0.01689 ( +0.00% vs pool) r=+0.0000
+      raw       wMSE=0.01813 ( +7.38% vs pool) r=+0.1410
+      ewma      wMSE=0.01811 ( +7.27% vs pool) r=+0.1474
+      eb        wMSE=0.01657 ( -1.88% vs pool) r=+0.1545
+      eb_ewma   wMSE=0.01655 ( -1.99% vs pool) r=+0.1479
+
+  stuff  2022 n= 2286 pool=0.2050 k_EB=20 k_EB_ewma=10
+      pool      wMSE=0.03325 ( +0.00% vs pool) r=+0.0000
+      raw       wMSE=0.03413 ( +2.66% vs pool) r=+0.2104
+      ewma      wMSE=0.03446 ( +3.66% vs pool) r=+0.2110
+      eb        wMSE=0.03068 ( -7.73% vs pool) r=+0.2726
+      eb_ewma   wMSE=0.03102 ( -6.68% vs pool) r=+0.2563
+
+  stuff  2023 n= 2276 pool=0.2033 k_EB=20 k_EB_ewma=10
+      pool      wMSE=0.03329 ( +0.00% vs pool) r=-0.0000
+      raw       wMSE=0.03262 ( -2.01% vs pool) r=+0.2481
+      ewma      wMSE=0.03298 ( -0.92% vs pool) r=+0.2451
+      eb        wMSE=0.03023 ( -9.18% vs pool) r=+0.3071
+      eb_ewma   wMSE=0.03073 ( -7.68% vs pool) r=+0.2819
+
+  stuff  2024 n= 2254 pool=0.2028 k_EB=20 k_EB_ewma=10
+      pool      wMSE=0.03158 ( +0.00% vs pool) r=+0.0000
+      raw       wMSE=0.03187 ( +0.92% vs pool) r=+0.2032
+      ewma      wMSE=0.03188 ( +0.96% vs pool) r=+0.2212
+      eb        wMSE=0.02970 ( -5.93% vs pool) r=+0.2431
+      eb_ewma   wMSE=0.02982 ( -5.56% vs pool) r=+0.2414
+
+  stuff  2025 n= 2253 pool=0.2018 k_EB=20 k_EB_ewma=10
+      pool      wMSE=0.03273 ( +0.00% vs pool) r=+0.0000
+      raw       wMSE=0.03284 ( +0.33% vs pool) r=+0.2208
+      ewma      wMSE=0.03266 ( -0.22% vs pool) r=+0.2435
+      eb        wMSE=0.02980 ( -8.97% vs pool) r=+0.2939
+      eb_ewma   wMSE=0.02978 ( -9.03% vs pool) r=+0.2944
+
+wrote p5a_skill.json

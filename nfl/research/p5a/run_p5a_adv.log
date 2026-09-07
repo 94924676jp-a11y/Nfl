@@ -1,0 +1,17 @@
+harness: 2024 next-game ypc, n=2254, baseline weighted MSE 6.04358
+
+[PASS]  1 seed_realized_carries: realised carry counts improve downstream CRPS in 4/4 seasons by 50.93% on average. Eligible systems draw the carry count from the accepted P4C allocation and never from the outcome
+[PASS]  2 seed_same_game_rushing_yards: blending in this game's own rushing yards improves weighted MSE by 75.00%; p5a_build reads every accumulator BEFORE updating it (True)
+[PASS]  3 seed_same_game_ypc: using this game's realised yards per carry improves weighted MSE by 100.00% (it is the target). No shipped feature reads rush_yards or ypc of the row
+[PASS]  4 seed_same_game_explosive_run: this game's own explosive-run rate improves weighted MSE by 39.78% (pooled explosive rate 0.1138); the shipped explosive feature is built from prior games only
+[UNRESOLVED]  5 seed_future_player_efficiency: WEAK (50/50 blend with the next four games) makes weighted MSE -3.97% -- it does NOT leak, four games of YPC is too noisy to help. STRONG (the entire future YPC, blend weight fitted, beta=+0.327) improves it by 0.44%. Every accumulator in p5a_build advances strictly in `ord` order
+[PASS]  6 seed_future_team_efficiency: the team's FUTURE rushing efficiency improves weighted MSE by 0.87%; the team accumulator is read before the game is added to it
+[PASS]  7 seed_future_opponent_outcome: the opponent's FUTURE rushing yards allowed improve weighted MSE by 0.50%; the opponent accumulator is also read before update
+[PASS]  8 no_observed_weather_field_is_read: no P5A module reads a weather or surface field ([]); the carry table carries 21 columns and none is weather ([])
+[PASS]  9 no_market_information: no market field is read ([]) and no P5A artifact names a market, wager, book or lineup ([])
+[UNRESOLVED] 10 seed_evaluation_season_fitting: refitting the POOL and the shrinkage constant on 2024 gives k=160 and buys only 0.24% -- that channel is genuinely small, because pooled YPC is 4.29-4.32 across seasons. Refitting the COEFFICIENT on 2024 (beta=+0.685) buys 0.50%. The shipped constants and coefficients are fitted on prior seasons only ({'2022': 80, '2023': 40, '2024': 40, '2025': 80})
+[PASS] 11 no_postgame_roster_status: no P5A module reads a roster-status field ([]); the appearance treatment is P4C/P4D's incumbent, imported unchanged
+[PASS] 12 GUARD_DELETION_oracle_enters_selection: selection handed an unbeatable O_all returns 'E'; adding O_all to the eligibility tuple makes it return 'O_all'. Systems ever chosen: ['C', 'D', 'E']
+[PASS] 13 GUARD_DELETION_history_read_before_update: moving the update above the read raises corr(history, this game's ypc) from 0.1592 to 0.2370 on 1768 rows. The read-then-update ordering in p5a_build.build is the whole chronology guarantee for every player, team and opponent signal
+
+13 probes: 11 PASS, 2 UNRESOLVED ['seed_future_player_efficiency', 'seed_evaluation_season_fitting'], 0 FAIL []
