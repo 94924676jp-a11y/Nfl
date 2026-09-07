@@ -100,6 +100,11 @@ class CaptureDue:
     kind: str            # 'practice' | 'final_status' | 'inactives' | 'seal'
     confirmed: bool
     note: str
+    # Kickoff, carried on every target rather than recomputed. Directive 7 §4
+    # requires it in the manifest, and for a practice target it is NOT
+    # recoverable from due_utc -- that is a filing deadline days earlier, tied
+    # to no fixed offset from the game.
+    kickoff_utc: Optional[dt.datetime] = None
 
     @property
     def window(self) -> tuple:
@@ -139,6 +144,8 @@ class CaptureDue:
                 'due_utc': self.due_utc.isoformat(), 'kind': self.kind,
                 'window_start_utc': lo.isoformat(),
                 'window_end_utc': hi.isoformat(),
+                'kickoff_utc': (self.kickoff_utc.isoformat()
+                                if self.kickoff_utc else None),
                 'cadence_confirmed': self.confirmed, 'note': self.note}
 
 
@@ -181,17 +188,17 @@ def capture_plan(game_id: str, gameday: str,
             game_id=game_id, label=label,
             due_utc=due_local.astimezone(dt.timezone.utc),
             kind='final_status' if label.startswith('final') else 'practice',
-            confirmed=cad['confirmed'], note=cad['note']))
+            confirmed=cad['confirmed'], note=cad['note'], kickoff_utc=kick))
 
     out.append(CaptureDue(
         game_id=game_id, label='inactives',
         due_utc=kick - INACTIVES_LEAD, kind='inactives',
-        confirmed=True,
+        confirmed=True, kickoff_utc=kick,
         note='Official inactives ~90 minutes before kickoff. This is the '
              'capture that resolves Questionable to 0/1.'))
     out.append(CaptureDue(
         game_id=game_id, label='kickoff_seal', due_utc=kick, kind='seal',
-        confirmed=True,
+        confirmed=True, kickoff_utc=kick,
         note='Seals the vintage log for this game. Nothing after this is '
              'pre-kickoff information.'))
     return sorted(out, key=lambda c: c.due_utc)

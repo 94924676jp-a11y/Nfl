@@ -53,7 +53,7 @@ if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
 from sportsplatform.governance.outcome import Cause, Outcome  # noqa: E402
-from nfl.capture.attribution import claimed_game_ids  # noqa: E402
+from nfl.capture.execution import eligible_targets  # noqa: E402
 from nfl.capture.schedule import (GAME_SPECIFIC_KINDS, CaptureDue,  # noqa: E402
                                   season_plan)
 
@@ -68,31 +68,56 @@ def _parse_ts(v) -> Optional[dt.datetime]:
     return d if d.tzinfo else d.replace(tzinfo=dt.timezone.utc)
 
 
-def performed_from_manifest(manifest_path) -> Outcome:
-    """Every successful capture as `(retrieved_at, source, game_id)`.
+def _blob_ok(value: dict) -> tuple:
+    """Does the raw artifact actually exist, and do its bytes hash correctly?
 
-    THE MANIFEST HAS TWO SCHEMAS AND THE FIRST VERSION OF THIS FUNCTION READ ONE
+    Directive 7 §5 requires "a real persisted raw artifact" for discharge, and
+    §9.9/§9.11 require that a persistence failure or a wrong hash PREVENTS
+    coverage. A manifest row is a claim about a file; this opens the file. The
+    two have already disagreed once in this project -- the `.reduced` blobs are
+    named for a digest that is not their own -- so the row's word is not taken.
+    """
+    import gzip as _gzip, hashlib as _hashlib
+    blob = (value or {}).get("blob")
+    sha = (value or {}).get("sha256")
+    if not blob:
+        return False, "RAW_ARTIFACT_NOT_PERSISTED"
+    if not sha or len(sha) != 64:
+        return False, "RAW_SHA256_ABSENT_OR_MALFORMED"
+    path = _REPO / blob
+    if not path.exists():
+        return False, f"RAW_ARTIFACT_MISSING_ON_DISK:{blob}"
+    try:
+        raw = (_gzip.open(path, "rb").read() if str(path).endswith(".gz")
+               else path.read_bytes())
+    except OSError as exc:
+        return False, f"RAW_ARTIFACT_UNREADABLE:{type(exc).__name__}"
+    if _hashlib.sha256(raw).hexdigest() != sha:
+        return False, "RAW_SHA256_MISMATCH"
+    return True, None
+
+
+def performed_from_manifest(manifest_path, *, verify_artifacts: bool = True
+                            ) -> Outcome:
+    """Every capture that may discharge something, as `(retrieved_at, source,
+    game_id)`, with the reasons anything was excluded.
+
+    THE MANIFEST HAS TWO SCHEMAS AND THE FIRST VERSION OF THIS READ ONE
 
     Measured 2026-09-07 on the live manifest: 54 of 60 PASS rows nest the real
     clock under `value.provenance.retrieved_at`, and 6 older rows carry it at
     `value.retrieved_at`. This function originally read only the top level, so
-    it silently dropped 54 rows -- 90% of the evidence, including every capture
-    of the official cascade -- and reported `total_captures: 6`. Coverage
-    computed from that would have been confidently wrong in the safe-looking
-    direction, and nothing would have said so.
+    it silently dropped 54 rows -- 90% of the evidence -- and reported
+    `total_captures: 6`. Both locations are read now, and a PASS row carrying
+    NEITHER is a refusal rather than a skip.
 
-    That is the Class A failure this repository exists to prevent, introduced by
-    the module written to prevent it. So both locations are read, and a PASS row
-    carrying NEITHER is a refusal rather than a skip: a capture whose retrieval
-    clock cannot be found is not a capture that happened at an unknown time, it
-    is a manifest we cannot reason about.
+    WHAT COUNTS AS ATTRIBUTED CHANGED UNDER DIRECTIVE 7
 
-    `game_id` is None for every row today, and that is the honest reading rather
-    than a placeholder: the capture tool fetches league-wide pages and records no
-    game attribution, so no row can claim to be a particular game's T-90 capture.
-    `schedule._clears` turns that None into a refusal for game-specific kinds,
-    which is the correct direction -- unattributed evidence clears fewer targets,
-    never more.
+    Only `discharge_eligibility` entries marked eligible are emitted as
+    attributed captures, and those exist only where the run DECLARED the target
+    before fetching. The older `discharge_claims` field is read for reporting
+    but discharges nothing: it inferred its target set from `retrieved_at` after
+    the fact, which §6 forbids. Those rows stay in the manifest as history.
     """
     mp = pathlib.Path(manifest_path)
     if not mp.exists():
@@ -100,7 +125,8 @@ def performed_from_manifest(manifest_path) -> Outcome:
             "NO_MANIFEST", f"no manifest at {mp}; nothing has been captured "
                            f"through this record, so there are no performed "
                            f"captures to judge coverage against.")
-    out, undated, n_pass = [], [], 0
+    out, undated, n_pass, excluded = [], [], 0, []
+    legacy = 0
     for line in mp.read_text().splitlines():
         if not line.strip():
             continue
@@ -117,17 +143,23 @@ def performed_from_manifest(manifest_path) -> Outcome:
         if ts is None:
             undated.append(row.get("source"))
             continue
-        # One entry per claimed game, plus one unattributed entry. The
-        # unattributed entry still clears team-week kinds (a practice report
-        # fetch legitimately serves every game that team plays); the attributed
-        # ones are what _clears needs for a game-specific kind. Each is
-        # re-checked against the plan independently, so a claim cannot let a
-        # capture clear a window it was not inside.
-        claimed = claimed_game_ids(val)
-        out.append((ts, row.get("source"),
-                    val.get("game_id") or prov.get("game_id")))
-        for gid in claimed:
+        if val.get("discharge_claims") and not val.get("discharge_eligibility"):
+            legacy += 1
+
+        # Unattributed entry: still clears team-week kinds, where one fetch of a
+        # weekly report legitimately serves every game that team plays.
+        out.append((ts, row.get("source"), None))
+
+        ok, why = ((True, None) if not verify_artifacts
+                   else _blob_ok(val))
+        if not ok:
+            excluded.append({"source": row.get("source"),
+                             "capture_id": row.get("capture_id"),
+                             "reason": why})
+            continue
+        for gid, _kind in eligible_targets(val):
             out.append((ts, row.get("source"), gid))
+
     if undated:
         return Outcome.blocked(
             "CAPTURE_CLOCK_UNREADABLE",
@@ -135,13 +167,16 @@ def performed_from_manifest(manifest_path) -> Outcome:
             f"retrieved_at at value.retrieved_at or value.provenance."
             f"retrieved_at: {sorted(set(undated))}. An undated capture cannot "
             f"be placed inside or outside a window, and skipping it would "
-            f"understate coverage silently. Fix the manifest schema or teach "
-            f"this reader the new location -- do not let it drop rows.",
+            f"understate coverage silently.",
             cause=Cause.DATA, undated_sources=sorted(set(undated)),
             n_undated=len(undated), n_pass=n_pass)
     return Outcome.ok("CAPTURES_READ", value=out,
-                      detail=f"{len(out)} dated PASS captures of {n_pass}",
-                      n_captures=len(out), n_pass_rows=n_pass)
+                      detail=f"{len(out)} dated PASS captures of {n_pass}; "
+                             f"{len(excluded)} excluded on artifact "
+                             f"verification; {legacy} legacy pre-Directive-7 "
+                             f"rows discharge nothing",
+                      n_captures=len(out), n_pass_rows=n_pass,
+                      artifact_excluded=excluded, legacy_claim_rows=legacy)
 
 
 def load_week_plan(season: int, week: int, vintage_dir=None) -> Outcome:
@@ -183,7 +218,8 @@ def load_week_plan(season: int, week: int, vintage_dir=None) -> Outcome:
 
 
 def coverage(season: int, week: int, *, manifest_path,
-             now: Optional[dt.datetime] = None, vintage_dir=None) -> Outcome:
+             now: Optional[dt.datetime] = None, vintage_dir=None,
+             verify_artifacts: bool = True) -> Outcome:
     """Per-target coverage for one week. The game-anchored answer."""
     now = now or dt.datetime.now(dt.timezone.utc)
     planned = load_week_plan(season, week, vintage_dir=vintage_dir)
@@ -191,7 +227,8 @@ def coverage(season: int, week: int, *, manifest_path,
     if planned.state is not State.PASS:
         return planned
     plan = planned.value
-    read = performed_from_manifest(manifest_path)
+    read = performed_from_manifest(manifest_path,
+                                   verify_artifacts=verify_artifacts)
     if read.state is State.BLOCKED:
         return read
     performed = read.value if read.state is State.PASS else []
@@ -219,6 +256,9 @@ def coverage(season: int, week: int, *, manifest_path,
         "game_specific_kinds": list(GAME_SPECIFIC_KINDS),
         "attributed_captures": sum(1 for p in performed if p[2]),
         "total_captures": len(performed),
+        "artifacts_verified": verify_artifacts,
+        "artifact_excluded": read.evidence.get("artifact_excluded", []),
+        "legacy_claim_rows": read.evidence.get("legacy_claim_rows", 0),
         "missed_detail": [c.as_dict() for c in missed],
         "next_window": min((c.as_dict() for c in pending),
                            key=lambda d: d["window_start_utc"], default=None),

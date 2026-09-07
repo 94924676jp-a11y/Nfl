@@ -116,13 +116,20 @@ def test_B_out_of_window_never_covers():
         check(f'{label} -> not covered',
               o.evidence['covered'] == 0, str(o)[:110])
 
+    # A bare game_id field is deliberately NOT enough any more. Directive 7 §2:
+    # a row carries a game_id because the EXECUTION declared that obligation
+    # before fetching, so covering now requires a declaration and an
+    # eligibility verdict. The full honest path is exercised in
+    # test_execution_target.py §G; here it is enough to show that the bare
+    # field, which used to work, no longer does.
     inside = lo + dt.timedelta(minutes=5)
     m = _manifest([_pass_row('official_inactives', inside.isoformat(),
                              game_id=tgt.game_id)])
-    o = coverage(2026, 1, manifest_path=m, now=hi + dt.timedelta(minutes=1))
-    check('and a properly attributed in-window capture DOES cover it -- so the '
-          'refusals above are not a module that refuses everything',
-          o.evidence['covered'] == 1, str(o)[:150])
+    o = coverage(2026, 1, manifest_path=m, now=hi + dt.timedelta(minutes=1),
+                 verify_artifacts=False)
+    check('a bare game_id field with no pre-fetch declaration no longer covers '
+          '-- intent cannot be back-filled onto a row',
+          o.evidence['covered'] == 0, str(o)[:150])
 
 
 def test_C_unattributed_never_covers_a_game_specific_target():

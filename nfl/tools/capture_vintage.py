@@ -125,7 +125,8 @@ def _http_date_to_iso(v: str | None) -> str | None:
     return None
 
 
-def fetch(src: Source, season: int, store: pathlib.Path) -> Outcome:
+def fetch(src: Source, season: int, store: pathlib.Path,
+          declaration: dict = None) -> Outcome:
     raw_dir = store / "raw"
     raw_dir.mkdir(parents=True, exist_ok=True)
     tmp = raw_dir / f".incoming.{src.name}"
@@ -341,7 +342,14 @@ def fetch(src: Source, season: int, store: pathlib.Path) -> Outcome:
                "source_timestamp_header": src_ts_header,
                "requested_at": requested_at,
                "substantive": _substantive(payload),
-               "discharge_claims": _claims(src.name, retrieved_at, season),
+               # Directive 7 §2/§6. The declaration was fixed BEFORE this fetch
+               # ran; eligibility judges these bytes against it. The old
+               # post-hoc `discharge_claims` field is gone: it inferred the
+               # target set from retrieved_at, which is what §6 forbids.
+               "execution_target": declaration,
+               "discharge_eligibility": _eligibility(
+                   declaration, src.name, "PASS", retrieved_at, digest,
+                   stored.get("blob"), True),
                "content_kind": src.content_kind, **stored,
                "provenance": dataclasses.asdict(prov)},
         detail=f"{src.name}: {n_bytes} bytes, {lines} lines"
@@ -349,37 +357,48 @@ def fetch(src: Source, season: int, store: pathlib.Path) -> Outcome:
         source=src.name)
 
 
-def _claims(source: str, retrieved_at, season: int) -> dict:
-    """Which game(s) this capture was taken for. A CLAIM, re-verified by
-    coverage; see nfl/capture/attribution.py.
+def _eligibility(declaration, source, state, retrieved_at, sha256,
+                 blob_path, provenance_valid) -> dict:
+    """Judge these bytes against the targets the run DECLARED before fetching.
 
-    Recorded on every capture including the ones that claim nothing, because
-    "no window was open" and "nobody asked" have to be distinguishable later.
-    A failure here is recorded as a state, never swallowed: an attribution that
-    could not be computed must not read the same as one that found no targets.
-
-    NO WEEK IS GUESSED. An earlier version selected a "current week" from the
-    schedule and planned only that week -- and it returned None on 2026-09-07, a
-    day on which week 1 practice windows opened at 20:00Z, because it measured
-    proximity to KICKOFF rather than to a window. Worse than being wrong, the
-    approach was unnecessary: a target window is an absolute interval, so the
-    honest question is "which windows contain this instant", and the week the
-    answer happens to belong to is an output, not an input. Guessing a week can
-    attribute a capture to the wrong game; asking about windows cannot.
+    A missing declaration is recorded as a refusal rather than as an empty
+    result: a capture that cannot say what it was for is not a capture that was
+    for nothing, and the two must not read alike.
     """
-    from nfl.capture.attribution import claims_for
+    from nfl.capture.execution import eligibility
+    if not declaration:
+        return {"state": "BLOCKED", "code": "NO_EXECUTION_DECLARATION",
+                "detail": "this capture carries no pre-fetch target "
+                          "declaration, so it may discharge nothing."}
     try:
-        plan = _nearby_plan(season, retrieved_at)
+        return eligibility(declaration, source=source, capture_state=state,
+                           retrieved_at=retrieved_at, sha256=sha256,
+                           blob_path=blob_path,
+                           provenance_valid=provenance_valid)
+    except Exception as exc:                                  # noqa: BLE001
+        return {"state": "BLOCKED", "code": "ELIGIBILITY_FAILED",
+                "detail": f"{type(exc).__name__}: {exc}"}
+
+
+def _declare(season: int) -> dict:
+    """The execution's target set, fixed at run start before any fetch."""
+    from nfl.capture.execution import declare
+    try:
+        started = _dt.datetime.now(_dt.timezone.utc)
+        plan = _nearby_plan(season, started.isoformat())
         if plan.state is not State.PASS:
             return {"state": plan.state.value, "code": plan.code,
                     "detail": plan.detail[:300]}
-        out = claims_for(source, retrieved_at, plan.value)
+        snap = sorted(DURABLE_ROOT.glob("schedules.*.csv.gz"),
+                      key=lambda q: q.stat().st_mtime)
+        out = declare(plan.value, declared_at=started,
+                      plan_snapshot=snap[-1].name if snap else None)
         if out.state is not State.PASS:
             return {"state": out.state.value, "code": out.code,
                     "detail": out.detail[:300]}
         return out.value
     except Exception as exc:                                  # noqa: BLE001
-        return {"state": "BLOCKED", "code": "ATTRIBUTION_FAILED",
+        return {"state": "BLOCKED", "code": "DECLARATION_FAILED",
                 "detail": f"{type(exc).__name__}: {exc}"}
 
 
@@ -567,9 +586,23 @@ def main() -> int:
     manifest.parent.mkdir(parents=True, exist_ok=True)
 
     capture_id = _dt.datetime.now(_dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+
+    # DECLARED ONCE, HERE, BEFORE ANY BYTES ARE REQUESTED. Directive 7 §6: the
+    # target set may not be inferred afterwards from timestamps. Every row in
+    # this capture carries this same declaration, so the manifest records one
+    # execution with one intent rather than N independently-rationalised ones.
+    declaration = _declare(args.season)
+    basis = declaration.get("basis", declaration.get("code", "UNKNOWN"))
+    n_t = len(declaration.get("targets", []))
+    print(f"execution {capture_id}: basis={basis}, {n_t} target(s) declared, "
+          f"can_discharge={declaration.get('basis_can_discharge', False)}")
+    for t in declaration.get("targets", [])[:12]:
+        print(f"  target {t['game_id']:<18} {t['kind']:<13} "
+              f"{t['window_start_utc'][11:16]}Z..{t['window_end_utc'][11:16]}Z")
+
     rows, counts = [], {}
     for src in _sources(args.season):
-        out = fetch(src, args.season, store)
+        out = fetch(src, args.season, store, declaration)
         counts[out.state.value] = counts.get(out.state.value, 0) + 1
         row = {"capture_id": capture_id, "season": args.season,
                "source": src.name, "state": out.state.value, "code": out.code,
@@ -577,6 +610,16 @@ def main() -> int:
                "evidence": {k: v for k, v in out.evidence.items()}}
         if out.state is State.PASS:
             row["value"] = out.value
+        else:
+            # A run that ATTEMPTED a declared target and failed must leave that
+            # attempt in the record. Directive 7 §14: attempting is not
+            # completing, and an attempt that vanishes cannot be told from one
+            # that never happened.
+            row["value"] = {
+                "execution_target": declaration,
+                "discharge_eligibility": _eligibility(
+                    declaration, src.name, out.state.value, None, None, None,
+                    False)}
         rows.append(row)
         flag = ""
         if out.state is State.PASS:
@@ -592,7 +635,17 @@ def main() -> int:
                      "source": po.evidence.get("source"),
                      "state": po.state.value, "code": po.code,
                      "detail": po.detail,
-                     "evidence": {k: v for k, v in po.evidence.items()}})
+                     "evidence": {k: v for k, v in po.evidence.items()},
+                     # Every row of this execution carries the same declaration,
+                     # including the sources that never ran. A target this run
+                     # declared and could not attempt is part of what the run
+                     # did, and dropping it would make the record thinner than
+                     # the truth.
+                     "value": {
+                         "execution_target": declaration,
+                         "discharge_eligibility": _eligibility(
+                             declaration, po.evidence.get("source"),
+                             po.state.value, None, None, None, False)}})
         print(f"{po.state.value:<15} {po.code:<28} "
               f"{po.evidence.get('source')}")
 
