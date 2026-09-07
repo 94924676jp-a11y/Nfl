@@ -1,0 +1,24 @@
+{
+ "question": "Is the accepted P4C control bit-reproducible, and does P4E reproduce it?",
+ "method": "run_p4c.py re-executed unmodified in an isolated copy (p4c_rerun/), same inputs, compared field-by-field against the published p4c_results.json.",
+ "rerun_seconds": 329,
+ "original_seconds": 336,
+ "scalar_metrics_compared": 1152,
+ "scalar_metrics_bit_identical": 1152,
+ "sha256_published": "5d8d34c22c01203e52534a1281a14bc6f078b59149d56bb28dce43b8e30845c3",
+ "sha256_rerun": "5d8d34c22c01203e52534a1281a14bc6f078b59149d56bb28dce43b8e30845c3",
+ "published_carries_C_crps": {
+  "2022": 1.9295611633207923,
+  "2023": 1.9972817321788165,
+  "2024": 2.110274841594967,
+  "2025": 2.054493485111525
+ },
+ "constant_previously_hardcoded_in_p4e_build": {
+  "2022": 1.929557979106903,
+  "2023": 1.9972707033157349,
+  "2024": 2.1102566719055176,
+  "2025": 2.0544824600219727
+ },
+ "finding": "The four constants agree with the published values to four decimal places -- the precision printed in run_p4c.log -- and disagree beyond it. They were transcribed from the log line, not read from the artifact. The 1e-5 \"baseline reproduction failure\" was a defect in the P4E gate, not in P4C and not in P4E. P4C is bit reproducible and P4E reproduces it exactly.",
+ "remedy": "p4e_build.PUBLISHED now reads p4c_results.json at run time and records its sha256."
+}

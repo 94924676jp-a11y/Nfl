@@ -1,0 +1,21 @@
+== P4E adversarial probes (eval season 2024) ==
+  clean E_ABC CRPS 2.0892
+
+  PASS        future_carry_share                 seeded_crps=2.0327 clean=2.0892 gain=0.0565 note=probe fires; the clean pipeline reads none of these fields
+  PASS        current_game_realised_carries      seeded_crps=1.4171 clean=2.0892 gain=0.6721 note=probe fires; the clean pipeline reads none of these fields
+  PASS        current_game_realised_snaps        seeded_crps=1.6864 clean=2.0892 gain=0.4028 note=probe fires; the clean pipeline reads none of these fields
+  UNRESOLVED  postgame_roster_status             seeded_crps=2.0892 clean=2.0892 gain=0.0 note=seeded leak did NOT move CRPS materially, so this probe has not shown it could catch such a leak. Threshold NOT lowered.
+  PASS        future_teammate_availability       seeded_crps=2.0713 clean=2.0892 gain=0.0179 note=probe fires; the clean pipeline reads none of these fields
+  PASS        current_game_RB_rank               seeded_crps=1.6604 clean=2.0892 gain=0.4289 note=probe fires; the clean pipeline reads none of these fields
+  PASS        postgame_roster_status_strong      seeded_crps=1.7592 clean=2.0892 gain=0.3301 note=the weak version cannot fire because the training set is conditioned on appearance; this is the well-posed form
+  UNRESOLVED  evaluation_season_fitted_prior     seeded_crps=2.0874 clean=2.0892 gain=0.0018
+  PASS        forbidden_identifier_scan          hits=[] files=4
+
+== guard-deletion proofs ==
+  UNRESOLVED  GD1 delete season<ev guard in _train_rows crps_with_guard=2.0892 crps_guard_deleted=2.0876 gain_from_deletion=0.0017 note=the guard is required and is in place, but deleting it does NOT move CRPS materially, so this proof does not establish that it is load-bearing. Coefficient-level contamination is weak here because the features stay prior-only either way. Reported UNRESOLVED; the threshold is NOT lowered to make it pass.
+  PASS        GD2 restore the fixed g_teammate_share_sum leak crps_fixed=2.0892 crps_leaky=1.3132 gain_from_leak=0.7761 note=this is the real defect found on 2026-09-07, replayed. The fix is what stops it
+  PASS        GD3 seed a forbidden identifier past the scan hits=[('_gd3_seeded.py', 'weekly_rosters_status_lookup')] note=the scan rejects a seeded violation, so its clean result above is a measurement rather than a vacuous pass
+  UNRESOLVED  GD4 delete the out-of-fold residual-pool guard crps_with_guard=2.0892 crps_guard_deleted=2.0954 change_from_deletion=-0.0062 note=in-sample residuals give the candidate a predictive spread it has not earned; the sign and size of the change is the measurement of what the guard is worth
+
+13 probes: 9 PASS, 4 UNRESOLVED, 0 FAIL
+done in 17s -> p4e_adversarial.json

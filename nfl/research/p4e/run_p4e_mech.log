@@ -1,0 +1,57 @@
+== rectification diagnosis: E[W] against its own centre C ==
+   (P4C builds W = clip(C + residual, 0, 1); nothing here is fitted)
+   2022  cohort       n  centre C     E[W]  inflation
+   2022  <10        354    0.0378   0.0844    +123.3%
+   2022  10-24      302    0.1001   0.1303     +30.2%
+   2022  25-49      166    0.1547   0.1746     +12.9%
+   2022  50-99      289    0.1723   0.1898     +10.2%
+   2022  100+      1254    0.3710   0.3747      +1.0%
+   2023  <10        225    0.0440   0.0840     +90.8%
+   2023  10-24      279    0.0773   0.1084     +40.3%
+   2023  25-49      237    0.1403   0.1562     +11.4%
+   2023  50-99      277    0.1865   0.1977      +6.0%
+   2023  100+      1237    0.3703   0.3708      +0.1%
+   2024  <10        240    0.0513   0.0891     +73.5%
+   2024  10-24      179    0.0817   0.1104     +35.1%
+   2024  25-49      234    0.1172   0.1386     +18.2%
+   2024  50-99      239    0.1608   0.1729      +7.6%
+   2024  100+      1274    0.3714   0.3728      +0.4%
+   2025  <10        293    0.0582   0.0944     +62.3%
+   2025  10-24      216    0.0992   0.1271     +28.2%
+   2025  25-49      189    0.1267   0.1478     +16.7%
+   2025  50-99      239    0.1896   0.2010      +6.0%
+   2025  100+      1237    0.3601   0.3623      +0.6%
+
+== EXPLORATORY: mean-preserving rectification ==
+
+  2022 n=2365  mean shift applied to low-history rows: +0.19510
+    P4C         CRPS 1.9296  rPIT   10.7  low-hist bias +0.469 (pred 1.600 vs real 1.131)  estab bias -0.180  RB1-RB2 sim -0.479 real -0.552
+    X_mpr       CRPS 1.9174  rPIT   30.0  low-hist bias -0.085 (pred 1.046 vs real 1.131)  estab bias +0.007  RB1-RB2 sim -0.516 real -0.537
+    E_ABC       CRPS 1.9311  rPIT   14.6  low-hist bias +0.648 (pred 1.779 vs real 1.131)  estab bias -0.239  RB1-RB2 sim -0.471 real -0.536
+    X_ABC_mpr   CRPS 1.8953  rPIT   17.9  low-hist bias +0.227 (pred 1.358 vs real 1.131)  estab bias -0.094  RB1-RB2 sim -0.502 real -0.530
+
+  2023 n=2255  mean shift applied to low-history rows: +0.20143
+    P4C         CRPS 1.9973  rPIT   21.3  low-hist bias +0.305 (pred 1.501 vs real 1.196)  estab bias -0.008  RB1-RB2 sim -0.512 real -0.579
+    X_mpr       CRPS 1.9885  rPIT    8.9  low-hist bias -0.247 (pred 0.949 vs real 1.196)  estab bias +0.131  RB1-RB2 sim -0.541 real -0.581
+    E_ABC       CRPS 1.9543  rPIT   22.5  low-hist bias +0.457 (pred 1.654 vs real 1.196)  estab bias -0.047  RB1-RB2 sim -0.508 real -0.586
+    X_ABC_mpr   CRPS 1.9362  rPIT    8.4  low-hist bias +0.040 (pred 1.237 vs real 1.196)  estab bias +0.062  RB1-RB2 sim -0.532 real -0.589
+
+  2024 n=2166  mean shift applied to low-history rows: +0.21864
+    P4C         CRPS 2.1103  rPIT    9.0  low-hist bias +0.132 (pred 1.528 vs real 1.396)  estab bias -0.078  RB1-RB2 sim -0.532 real -0.667
+    X_mpr       CRPS 2.1126  rPIT   15.8  low-hist bias -0.421 (pred 0.976 vs real 1.396)  estab bias +0.026  RB1-RB2 sim -0.558 real -0.672
+    E_ABC       CRPS 2.0892  rPIT    7.1  low-hist bias +0.315 (pred 1.712 vs real 1.396)  estab bias -0.120  RB1-RB2 sim -0.527 real -0.646
+    X_ABC_mpr   CRPS 2.0874  rPIT   11.4  low-hist bias -0.023 (pred 1.373 vs real 1.396)  estab bias -0.055  RB1-RB2 sim -0.546 real -0.650
+
+  2025 n=2174  mean shift applied to low-history rows: +0.21855
+    P4C         CRPS 2.0545  rPIT    9.7  low-hist bias +0.325 (pred 1.637 vs real 1.312)  estab bias -0.102  RB1-RB2 sim -0.539 real -0.575
+    X_mpr       CRPS 2.0441  rPIT   15.1  low-hist bias -0.175 (pred 1.137 vs real 1.312)  estab bias +0.030  RB1-RB2 sim -0.573 real -0.573
+    E_ABC       CRPS 2.0372  rPIT   12.0  low-hist bias +0.507 (pred 1.820 vs real 1.312)  estab bias -0.156  RB1-RB2 sim -0.535 real -0.556
+    X_ABC_mpr   CRPS 2.0231  rPIT   11.4  low-hist bias +0.179 (pred 1.491 vs real 1.312)  estab bias -0.068  RB1-RB2 sim -0.559 real -0.550
+
+== pooled (EXPLORATORY, not promotable under this pre-declaration) ==
+  P4C         pooled 2.0206  delta +0.0000  seasons better 0/4  shapley recovered +0.00%
+  X_mpr       pooled 2.0132  delta -0.0074  seasons better 3/4  shapley recovered +0.73%  95% [-0.0127, -0.0008]
+  E_ABC       pooled 2.0009  delta -0.0197  seasons better 3/4  shapley recovered +1.94%  95% [-0.0268, -0.0119]
+  X_ABC_mpr   pooled 1.9831  delta -0.0376  seasons better 4/4  shapley recovered +3.70%  95% [-0.0452, -0.0293]
+
+done in 27s -> p4e_mechanism.json

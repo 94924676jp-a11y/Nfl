@@ -1,0 +1,222 @@
+{
+ "E_ABC": {
+  "rules": {
+   "1_pooled_crps_beats_P4C": {
+    "pass": true,
+    "value": -0.0197
+   },
+   "2_majority_of_seasons": {
+    "pass": true,
+    "value": 3
+   },
+   "3_pit_not_damaged": {
+    "pass": true,
+    "value": {
+     "candidate_chi2": 23.79,
+     "control_chi2": 22.47,
+     "relative": 0.0587
+    }
+   },
+   "4_low_history_over_allocation_materially_improved": {
+    "pass": false,
+    "value": {
+     "candidate_bias": 0.5009,
+     "control_bias": 0.3265
+    }
+   },
+   "5_competition_realism_not_worsened": {
+    "pass": true,
+    "value": {
+     "seasons_closer_to_realised_RB1_RB2": 3,
+     "candidate_gap": [
+      0.0642,
+      0.0782,
+      0.1183,
+      0.0213
+     ],
+     "control_gap": [
+      0.0729,
+      0.0672,
+      0.1351,
+      0.0366
+     ],
+     "caveat": "the pre-declaration fixed no margin for this rule; \"at minimum does not worsen\" is scored here as at least half the seasons no further from the realised value, and that reading is a debt, not a pre-declared threshold"
+    }
+   },
+   "6_survives_role_change_cohorts": {
+    "pass": true,
+    "value": {
+     "role_change": [
+      0.0014,
+      -0.0487,
+      -0.0419,
+      -0.0359
+     ],
+     "stable_role": [
+      0.0016,
+      -0.0381,
+      -0.0045,
+      -0.0025
+     ]
+    }
+   },
+   "7_survives_adversarial": {
+    "pass": true,
+    "value": {
+     "fail": 0,
+     "unresolved": 4,
+     "guard_deletion_proofs_firing": 2
+    }
+   },
+   "8_recovers_5pct_of_allocation_shapley": {
+    "pass": false,
+    "value": 1.94
+   }
+  },
+  "rules_passed": 6,
+  "promoted": false,
+  "eligible": true
+ },
+ "X_ABC_mpr": {
+  "rules": {
+   "1_pooled_crps_beats_P4C": {
+    "pass": true,
+    "value": -0.03755
+   },
+   "2_majority_of_seasons": {
+    "pass": true,
+    "value": 4
+   },
+   "3_pit_not_damaged": {
+    "pass": true,
+    "value": {
+     "candidate_chi2": 11.2,
+     "control_chi2": 22.47,
+     "relative": -0.5017
+    }
+   },
+   "4_low_history_over_allocation_materially_improved": {
+    "pass": true,
+    "value": {
+     "candidate_bias": 0.1199,
+     "control_bias": 0.3265
+    }
+   },
+   "5_competition_realism_not_worsened": {
+    "pass": true,
+    "value": {
+     "seasons_closer_to_realised_RB1_RB2": 4,
+     "candidate_gap": [
+      0.0277,
+      0.0577,
+      0.1045,
+      0.0083
+     ],
+     "control_gap": [
+      0.0729,
+      0.0672,
+      0.1351,
+      0.0366
+     ],
+     "caveat": "the pre-declaration fixed no margin for this rule; \"at minimum does not worsen\" is scored here as at least half the seasons no further from the realised value, and that reading is a debt, not a pre-declared threshold"
+    }
+   },
+   "6_survives_role_change_cohorts": {
+    "pass": null,
+    "value": "not computed for the exploratory rung"
+   },
+   "7_survives_adversarial": {
+    "pass": true,
+    "value": {
+     "fail": 0,
+     "unresolved": 4,
+     "guard_deletion_proofs_firing": 2
+    }
+   },
+   "8_recovers_5pct_of_allocation_shapley": {
+    "pass": false,
+    "value": 3.7
+   }
+  },
+  "rules_passed": 6,
+  "promoted": false,
+  "eligible": false
+ },
+ "decision": "NO PROMOTION. P4C system C is retained. P4E is reported as negative research under predeclaration_p4e.md section 12.",
+ "pooled_pit": {
+  "P4C": {
+   "hist": [
+    878,
+    891,
+    949,
+    947,
+    970,
+    878,
+    883,
+    891,
+    862,
+    811
+   ],
+   "chi2": 22.470982142857142,
+   "df": 9,
+   "chi2_crit_p001": 27.877,
+   "mean": 0.49200502528234435
+  },
+  "E_ABC": {
+   "hist": [
+    888,
+    926,
+    958,
+    936,
+    911,
+    930,
+    899,
+    882,
+    825,
+    805
+   ],
+   "chi2": 23.79017857142857,
+   "df": 9,
+   "chi2_crit_p001": 27.877,
+   "mean": 0.4893507252973401
+  },
+  "X_ABC_mpr": {
+   "hist": [
+    863,
+    850,
+    934,
+    865,
+    921,
+    872,
+    932,
+    876,
+    921,
+    926
+   ],
+   "chi2": 11.196428571428571,
+   "df": 9,
+   "chi2_crit_p001": 27.877,
+   "mean": 0.5052995246201906
+  }
+ },
+ "low_history_pooled": {
+  "P4C": {
+   "bias": 0.3265481998235397,
+   "pred_mean": 1.5708010733867581,
+   "real_mean": 1.2442528735632183,
+   "n": 2088
+  },
+  "E_ABC": {
+   "bias": 0.5009132729334722,
+   "pred_mean": 1.7451661464966906,
+   "real_mean": 1.2442528735632183,
+   "n": 2088
+  },
+  "X_ABC_mpr": {
+   "bias": 0.1199328236596954,
+   "pred_mean": 1.3641856972229138,
+   "real_mean": 1.2442528735632183,
+   "n": 2088
+  }
+ }
+}

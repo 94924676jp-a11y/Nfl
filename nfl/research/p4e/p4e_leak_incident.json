@@ -1,0 +1,20 @@
+{
+ "incident": "outcome leak in a P4E candidate feature, found by inspection before any candidate was judged",
+ "feature": "g_teammate_share_sum (block C)",
+ "defect": "computed as (previous team-game's total RB carry share) - (the CURRENT game's own realised share). The current-game outcome therefore entered the ridge design linearly.",
+ "how_found": "block C alone improved pooled carry CRPS by 25.9% (2.0206 -> 1.4976) and E_ABC by 37.0%. An allocation-only change cannot plausibly recover that much; the feature was read and the leak was visible on one line.",
+ "contaminated_pooled_crps": {
+  "P4C": 2.0206034152727748,
+  "E_0": 2.030641120028679,
+  "E_A": 2.02733523967715,
+  "E_B": 2.0110700041277103,
+  "E_C": 1.497609217297974,
+  "E_D": 2.0289746305074448,
+  "E_E": 2.030216666971901,
+  "E_AB": 2.007902748880086,
+  "E_ABC": 1.272964450449981,
+  "E_ABCD": 1.2739493017637666,
+  "E_ABCDE": 1.272900544490618
+ },
+ "status": "FIXED. own PREVIOUS-game share is now subtracted. The contaminated numbers above are recorded as an incident and are not results."
+}

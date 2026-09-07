@@ -1,0 +1,33 @@
+== baseline reproduction (P4C system C) ==
+  control artifact /tmp/claude-0/-home-user-mlb-prop-system-v7/8de98087-4781-5a10-ae09-ef74590f8116/scratchpad/p4c/p4c_results.json
+  sha256           5d8d34c22c01203e52534a1281a14bc6f078b59149d56bb28dce43b8e30845c3
+  2022: P4E 1.929561163321  published 1.929561163321  |diff| 0.00e+00
+  2023: P4E 1.997281732179  published 1.997281732179  |diff| 0.00e+00
+  2024: P4E 2.110274841595  published 2.110274841595  |diff| 0.00e+00
+  2025: P4E 2.054493485112  published 2.054493485112  |diff| 0.00e+00
+  reproduces exactly, worst |diff| 0.00e+00
+
+== low-history diagnosis ==
+  <25 prior carries: n=2088  predicted 1.571 vs realised 1.244
+  >=25 prior carries: n=6872 predicted 6.338 vs realised 6.429
+
+  the weight itself, before reconciliation:
+    <25 prior carries: mean C_pre 0.0673  mean W 0.1028  mean p_app 0.6161  mean allocated share 0.0584  mean realised share 0.0462
+    >=25: mean C_pre 0.3110  mean W 0.3168  mean p_app 0.7269  mean allocated share 0.2343  mean realised share 0.2388
+
+  rows with ZERO prior carries: n=239  mean C_pre 0.0045  realised share 0.0119  predicted carries 0.905  realised 0.339
+
+  sub-populations of the low-history cohort (bucket assignment uses the outcome ONLY to LABEL, never to model):
+    bucket                          n   C_pre  p_app   pred   real    bias  S_alloc  S_real
+    established                  6872  0.3110  0.727   6.34   6.43   -0.09   0.2343  0.2388
+    fringe_nonappearance          809  0.0752  0.443   1.10   0.00   +1.10   0.0410  0.0000
+    veteran_low_recent_usage      754  0.0247  0.765   1.42   0.84   +0.58   0.0524  0.0307
+    low_history_other             240  0.0993  0.739   2.38   1.45   +0.93   0.0886  0.0622
+    returning_from_absence        147  0.0776  0.474   1.41   2.63   -1.22   0.0516  0.0995
+    true_emerging                 134  0.1848  0.758   3.95   9.14   -5.20   0.1491  0.3254
+    first_history                   4  0.2661  0.537   2.99   0.25   +2.74   0.1075  0.0192
+
+  where the surplus comes from -- team-game mass accounting:
+    2022: allocated share per team-game  low-history 0.0723 vs realised 0.0516; established 0.7310 vs realised 0.7435
+
+wrote p4e_diag.json

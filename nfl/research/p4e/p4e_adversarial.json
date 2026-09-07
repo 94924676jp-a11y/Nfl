@@ -1,0 +1,111 @@
+{
+ "eval_season": 2024,
+ "material_threshold_crps": 0.01,
+ "clean_crps": 2.0892337331933266,
+ "probes": [
+  {
+   "probe": "future_carry_share",
+   "state": "PASS",
+   "seeded_crps": 2.0327,
+   "clean": 2.0892,
+   "gain": 0.0565,
+   "note": "probe fires; the clean pipeline reads none of these fields"
+  },
+  {
+   "probe": "current_game_realised_carries",
+   "state": "PASS",
+   "seeded_crps": 1.4171,
+   "clean": 2.0892,
+   "gain": 0.6721,
+   "note": "probe fires; the clean pipeline reads none of these fields"
+  },
+  {
+   "probe": "current_game_realised_snaps",
+   "state": "PASS",
+   "seeded_crps": 1.6864,
+   "clean": 2.0892,
+   "gain": 0.4028,
+   "note": "probe fires; the clean pipeline reads none of these fields"
+  },
+  {
+   "probe": "postgame_roster_status",
+   "state": "UNRESOLVED",
+   "seeded_crps": 2.0892,
+   "clean": 2.0892,
+   "gain": 0.0,
+   "note": "seeded leak did NOT move CRPS materially, so this probe has not shown it could catch such a leak. Threshold NOT lowered."
+  },
+  {
+   "probe": "future_teammate_availability",
+   "state": "PASS",
+   "seeded_crps": 2.0713,
+   "clean": 2.0892,
+   "gain": 0.0179,
+   "note": "probe fires; the clean pipeline reads none of these fields"
+  },
+  {
+   "probe": "current_game_RB_rank",
+   "state": "PASS",
+   "seeded_crps": 1.6604,
+   "clean": 2.0892,
+   "gain": 0.4289,
+   "note": "probe fires; the clean pipeline reads none of these fields"
+  },
+  {
+   "probe": "postgame_roster_status_strong",
+   "state": "PASS",
+   "seeded_crps": 1.7592,
+   "clean": 2.0892,
+   "gain": 0.3301,
+   "note": "the weak version cannot fire because the training set is conditioned on appearance; this is the well-posed form"
+  },
+  {
+   "probe": "evaluation_season_fitted_prior",
+   "state": "UNRESOLVED",
+   "seeded_crps": 2.0874,
+   "clean": 2.0892,
+   "gain": 0.0018
+  },
+  {
+   "probe": "forbidden_identifier_scan",
+   "state": "PASS",
+   "hits": [],
+   "files": 4
+  },
+  {
+   "probe": "GD1 delete season<ev guard in _train_rows",
+   "state": "UNRESOLVED",
+   "crps_with_guard": 2.0892,
+   "crps_guard_deleted": 2.0876,
+   "gain_from_deletion": 0.0017,
+   "note": "the guard is required and is in place, but deleting it does NOT move CRPS materially, so this proof does not establish that it is load-bearing. Coefficient-level contamination is weak here because the features stay prior-only either way. Reported UNRESOLVED; the threshold is NOT lowered to make it pass."
+  },
+  {
+   "probe": "GD2 restore the fixed g_teammate_share_sum leak",
+   "state": "PASS",
+   "crps_fixed": 2.0892,
+   "crps_leaky": 1.3132,
+   "gain_from_leak": 0.7761,
+   "note": "this is the real defect found on 2026-09-07, replayed. The fix is what stops it"
+  },
+  {
+   "probe": "GD3 seed a forbidden identifier past the scan",
+   "state": "PASS",
+   "hits": [
+    [
+     "_gd3_seeded.py",
+     "weekly_rosters_status_lookup"
+    ]
+   ],
+   "note": "the scan rejects a seeded violation, so its clean result above is a measurement rather than a vacuous pass"
+  },
+  {
+   "probe": "GD4 delete the out-of-fold residual-pool guard",
+   "state": "UNRESOLVED",
+   "crps_with_guard": 2.0892,
+   "crps_guard_deleted": 2.0954,
+   "change_from_deletion": -0.0062,
+   "note": "in-sample residuals give the candidate a predictive spread it has not earned; the sign and size of the change is the measurement of what the guard is worth"
+  }
+ ]
+}
