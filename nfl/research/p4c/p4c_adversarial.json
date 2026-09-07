@@ -1,0 +1,52 @@
+{
+ "01_seed_same_game_realized_player_share": {
+  "outcome": "PASS",
+  "detail": "appending the same game raises corr(C, realised share) 0.6703 -> 0.7560 and improves CRPS by 12.38%; the shipped prepare_class assigns the history BEFORE appending (True)"
+ },
+ "02_seed_realized_teammate_share": {
+  "outcome": "PASS",
+  "detail": "NAIVE teammate oracle changes CRPS by +3.63% (it does NOT leak -- a realised share and an EWMA are not on the same scale, so the normalisation is corrupted rather than informed). WELL-POSED: teammates plus the modelled mass give the focal share by subtraction and improve CRPS by 60.77%. The weight generators in p4c_build.py never reference a realised share (True)",
+  "naive_gain_pct": 3.6348247895125545,
+  "well_posed_gain_pct": -60.77095578224942
+ },
+ "03_seed_realized_appearance": {
+  "outcome": "PASS",
+  "detail": "realised appearance improves CRPS by 12.27%; the eligible path draws Bernoulli(p_app) from the P3 Stage-A model, never the outcome"
+ },
+ "04_seed_realized_team_total": {
+  "outcome": "PASS",
+  "detail": "realised team total improves CRPS by 5.74%; eligible systems read store[\"B\"], the P4B predictive draw"
+ },
+ "05_seed_future_role_transition": {
+  "outcome": "PASS",
+  "detail": "blending in the NEXT game's share improves CRPS by 1.68%; no shipped feature reads an ord greater than the row's own"
+ },
+ "06_seed_evaluation_season_composition_fitting": {
+  "outcome": "PASS",
+  "detail": "the shipped fit for 2024 uses mass-pool seasons [2021, 2022, 2023] (max strictly below 2024); refitting with the evaluation season included uses [2021, 2022, 2023, 2024] and moves the Dirichlet concentration by +0.55% (17.43 -> 17.53)"
+ },
+ "07_oracle_allocation_cannot_be_selected": {
+  "outcome": "PASS",
+  "detail": "selection handed an unbeatable E returns 'C'; systems ever chosen across all target-seasons: ['A', 'B', 'C', 'C2', 'D_dir']; ELIGIBLE_SYSTEMS=('A', 'B', 'C', 'C2', 'D_dir', 'D_sln', 'D_ln', 'D_emp')"
+ },
+ "08_renormalisation_does_not_use_this_games_excluded_player_opportunity": {
+  "outcome": "PASS",
+  "detail": "reconciling to THIS game's realised modelled mass improves CRPS by 0.31%; the shipped mass pool is built from seasons [2021, 2022, 2023], all strictly before 2024"
+ },
+ "09_player_universe_is_pregame_not_postgame": {
+  "outcome": "PASS",
+  "detail": "the evaluated universe keeps 2158 player-games whose player did NOT appear (27.9%); restricting to them moves CRPS by +24.35% and is a POSTGAME definition of the universe whichever way the number goes. Every evaluated row has at least one PRIOR game (0 rows with none)"
+ },
+ "10_no_roster_status_or_market_or_weather_leak": {
+  "outcome": "PASS",
+  "detail": "scanned 7 P4C modules for ACCESSES of 14 names; hits=[]. The appearance LABEL is used to build the training target and never inside gen_weights (True)"
+ },
+ "11_GUARD_DELETION_oracle_enters_selection_when_eligibility_is_removed": {
+  "outcome": "PASS",
+  "detail": "with E added to the eligibility tuple, selection returns 'E'. Probe 7 is therefore load-bearing: it fails the moment the guard is deleted"
+ },
+ "12_GUARD_DELETION_chronology_breaks_when_same_game_share_is_appended": {
+  "outcome": "PASS",
+  "detail": "moving the append above the assignment raises corr(point forecast, realised share) from 0.6703 to 0.7545 on 7743 rows. The two-line ordering in prepare_class is the whole chronology guarantee for the share history"
+ }
+}
