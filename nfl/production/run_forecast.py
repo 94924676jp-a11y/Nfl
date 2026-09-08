@@ -31,6 +31,8 @@ from nfl.production import pipeline as PL                             # noqa: E4
 from nfl.production import refusal as RF                              # noqa: E402
 from nfl.prospective import artifact as ART                           # noqa: E402
 from nfl.capture import registry as REG                               # noqa: E402
+from nfl.production import qb_accounting as QBACC
+from nfl.production import qb_v1 as QBV1                             # noqa: E402
 
 ARMS = ('A', 'B', 'C')
 
@@ -150,8 +152,12 @@ def build(args, fixtures: dict = None) -> dict:
             ('targets_carries', 'targets_carries', 'P4C system C ACCEPTED'),
             ('conversion', 'conversion', 'RC1 baseline; SIGNAL_WEAK'),
             ('td_layer', 'td', 'TD1 identity; conversion baseline'),
-            ('qb_layer', 'qb', 'QB1 BASELINED -- audit only')):
+            ('qb_layer', 'qb', QBV1.SPEC_VERSION)):
         def _model(_k=key, _s=spec, _st=stage):
+            # ARTIFACT AND HASH CHECKS COME FIRST, ALWAYS. Running the model
+            # before verifying its artifact would let a hash mismatch produce a
+            # forecast and only then be noticed -- and in an earlier draft of
+            # this file the QB branch sat above these and did exactly that.
             if fx.get(f'{_k}_missing'):
                 return RF.refuse('MODEL_ARTIFACT_MISSING', _st,
                                  f'{_k} model artifact is absent', run_id)
@@ -163,6 +169,53 @@ def build(args, fixtures: dict = None) -> dict:
                                  f'{_k} has no production model; a named '
                                  f'refusal is returned rather than a '
                                  f'fabricated forecast', run_id)
+            if _st == 'qb_layer' and (fx.get('qb_rows') is not None
+                                      or fx.get('qb_slate')):
+                # REAL MODEL LOGIC, not a dummy dictionary.
+                fh = QBV1.artifact_hash()
+                if fh.state is not State.PASS:
+                    return RF.refuse('MODEL_ARTIFACT_MISSING', _st,
+                                     fh.detail, run_id)
+                if fx.get('qb_rows') is None:
+                    sl = QBV1.slate(args.season, args.week,
+                                    fx['qb_slate'].get('game_ids'))
+                    if sl.state is not State.PASS:
+                        return sl
+                    fx['qb_rows'], fx['qb_allrows'] = sl.value
+                o = QBV1.forecast(fx['qb_rows'], args.season,
+                                  fx.get('qb_allrows', fx['qb_rows']),
+                                  seed=args.seed, m=fx.get('qb_draws', 200))
+                if o.state is not State.PASS:
+                    return o
+                ident = QBV1.identity_check(o.value)
+                if ident.state is not State.PASS:
+                    return RF.refuse('INCOMPLETE_PLAYER_ACCOUNTING', _st,
+                                     ident.detail, run_id)
+                acct = QBACC.reconcile_draws(o.value)
+                if acct.state is not State.PASS:
+                    return RF.refuse('INCOMPLETE_PLAYER_ACCOUNTING', _st,
+                                     f'{acct.code}: {acct.detail}', run_id)
+                team = QBACC.reconcile_team(
+                    o.value, fx['qb_rows'],
+                    team_rush_draws=fx.get('team_rush_draws'),
+                    team_rushes_realised=fx.get('team_rushes_realised'))
+                if team.state is not State.PASS:
+                    return RF.refuse('INCOMPLETE_PLAYER_ACCOUNTING', _st,
+                                     f'{team.code}: {team.detail}', run_id)
+                fx['_qb_draws_out'] = o.value
+                fx['_qb_accounting'] = {'per_draw': acct.value,
+                                        'team': team.value}
+                return Outcome.ok(
+                    'QB_LAYER_OK', value=o.value,
+                    draw_generation_seconds=o.evidence.get(
+                        'draw_generation_seconds'),
+                    qb_frame_sha256=fh.value,
+                    n_qb_games=o.evidence.get('n_qb_games'),
+                    n_draws=o.evidence.get('n_draws'),
+                    draw_cells=o.evidence.get('draw_cells'),
+                    warnings=[f'known limitation: {k}'
+                              for k in QBV1.KNOWN_LIMITATIONS]
+                    + list(team.evidence.get('warnings') or []))
             return Outcome.ok(f'{_st.upper()}_OK', value=fx.get(_k, {}))
         p.run_stage(stage, _model, declared_inputs=['h_history', 'q_pos_mean'],
                     spec_version=spec)
@@ -177,7 +230,21 @@ def build(args, fixtures: dict = None) -> dict:
             return RF.refuse('INCOMPLETE_PLAYER_ACCOUNTING',
                              'joint_reconciliation',
                              'team and player totals do not reconcile', run_id)
-        return Outcome.ok('JOINT_RECONCILED', value=fx.get('joint', {}))
+        j = dict(fx.get('joint', {}))
+        if fx.get('_qb_draws_out') is not None:
+            x = QBACC.reconcile_cross_layer(
+                fx['_qb_draws_out'], receiving=fx.get('receiving_yard_draws'),
+                receiving_td=fx.get('receiving_td_draws'))
+            if x.state is State.FAIL:
+                return RF.refuse('INCOMPLETE_PLAYER_ACCOUNTING',
+                                 'joint_reconciliation',
+                                 f'{x.code}: {x.detail}', run_id)
+            # DEFERRED is carried into the artifact as OWED, never as passed.
+            j['qb_cross_layer'] = {'state': x.state.value, 'code': x.code,
+                                   'owed': x.evidence.get('owed') if x.state is State.DEFERRED
+                                   else None}
+            j['qb_accounting'] = fx.get('_qb_accounting')
+        return Outcome.ok('JOINT_RECONCILED', value=j)
     p.run_stage('joint_reconciliation', _joint,
                 declared_inputs=['player_draws', 'team_volume'],
                 spec_version='minimum-viable production coupling')

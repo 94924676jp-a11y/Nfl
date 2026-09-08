@@ -59,6 +59,11 @@ class StageResult:
     warnings: list = dataclasses.field(default_factory=list)
     refusal_code: Optional[str] = None
     elapsed_s: float = 0.0
+    # Stage-reported measurements. `elapsed_s` is orchestrator wall clock for
+    # the stage; a stage that generates draws reports the draw-generation time
+    # separately here, because the two are not the same number and reporting
+    # only the first would overstate how much of the run is modelling.
+    metrics: dict = dataclasses.field(default_factory=dict)
     value: object = None
 
     def as_dict(self) -> dict:
@@ -88,6 +93,7 @@ class Pipeline:
         self.written_at = written_at
         self.results: list = []
         self.refusals: list = []
+        self.halted_by = None
         self.started = time.time()
 
     def run_stage(self, stage: str, fn: Callable, declared_inputs=(),
@@ -95,11 +101,30 @@ class Pipeline:
         if stage not in STAGES:
             raise ValueError(f'{stage!r} is not a declared pipeline stage')
         t0 = time.time()
+        # HALT ON THE FIRST REFUSAL. A stage after a refusal must not run: the
+        # pipeline previously recorded IDENTITY_UNRESOLVED and then went on to
+        # execute the QB model on those unresolved players and SEAL an
+        # artifact. The overall status was REFUSED, so nothing published -- but
+        # modelling on inputs that failed validation, and sealing the result,
+        # is exactly the 'prefer NO FORECAST over an unverifiable one' rule
+        # being broken. Every stage still gets a record, so the stage count is
+        # unchanged and the skip is visible rather than silent.
+        if self.halted_by is not None:
+            r = StageResult(
+                stage=stage, state='NOT_APPLICABLE', code='STAGE_NOT_REACHED',
+                detail=f'not run: the pipeline refused at '
+                       f'{self.halted_by[0]} with {self.halted_by[1]}. '
+                       f'Running a model on inputs that failed validation '
+                       f'would produce a number nobody should read.',
+                spec_version=spec_version)
+            self.results.append(r)
+            return r
         pg = assert_no_postgame_inputs(stage, declared_inputs)
         if pg.state is not State.PASS:
             r = StageResult(stage=stage, state='FAIL', code=pg.code,
                             detail=pg.detail, spec_version=spec_version,
                             elapsed_s=time.time() - t0)
+            self.halted_by = (stage, r.code)
             self.results.append(r)
             return r
         try:
@@ -110,6 +135,7 @@ class Pipeline:
                             detail=f'{type(exc).__name__}: {exc}',
                             spec_version=spec_version,
                             elapsed_s=time.time() - t0)
+            self.halted_by = (stage, r.code)
             self.results.append(r)
             return r
         code = getattr(out, 'code', 'OK')
@@ -120,12 +146,18 @@ class Pipeline:
             stage=stage, state=state, code=code,
             detail=(getattr(out, 'detail', '') or '')[:400],
             input_hashes=ev.get('input_hashes', {}),
+            metrics={k: ev[k] for k in
+                     ('draw_generation_seconds', 'n_qb_games', 'n_draws',
+                      'draw_cells', 'qb_frame_sha256')
+                     if ev.get(k) is not None},
             spec_version=spec_version,
             warnings=list(ev.get('warnings', [])),
             refusal_code=(code if state == 'BLOCKED' and code in RF.REFUSALS
                           else None),
             elapsed_s=time.time() - t0,
             value=getattr(out, 'value', None))
+        if r.state in ('FAIL', 'BLOCKED'):
+            self.halted_by = (stage, r.code)
         if r.refusal_code:
             self.refusals.append({'code': r.refusal_code, 'stage': stage,
                                   'detail': r.detail, 'run_id': self.run_id,

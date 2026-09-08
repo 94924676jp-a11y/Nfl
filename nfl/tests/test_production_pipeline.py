@@ -82,9 +82,15 @@ def test_2_qb_change():
                  qb={'starter_changed': True}))
     check('a QB change does not break the run', s['status'] == 'SEALED',
           s['status'])
-    check('  and the QB stage records that it is a BASELINE, not a model',
-          any('BASELINED' in (r['spec_version'] or '')
-              for r in s['stages'] if r['stage'] == 'qb_layer'))
+    # The QB stage is no longer an audit-only placeholder. It carries the V1
+    # spec, and the distinction the packet insists on -- baseline SELECTION
+    # rather than model PROMOTION -- lives in the spec name and the return,
+    # not in a stage string.
+    from nfl.production import qb_v1 as _Q
+    check('  and the QB stage records the real V1 spec version',
+          any(r['spec_version'] == _Q.SPEC_VERSION
+              for r in s['stages'] if r['stage'] == 'qb_layer'),
+          [r['spec_version'] for r in s['stages'] if r['stage'] == 'qb_layer'])
 
 
 def test_3_to_10_adversarial():
