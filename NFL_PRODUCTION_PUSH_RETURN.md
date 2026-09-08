@@ -6,7 +6,7 @@ from mined historical evidence.**
 | | |
 |---|---|
 | **Starting HEAD** | `536fd7a` |
-| **Final HEAD** | see §3 — the capture bot rebases this branch, so commit titles are the stable identity |
+| **Final HEAD** | `ab3a127` at the time of writing — the capture bot rebases this branch, so **commit titles and pre-registration hashes are the stable identity** |
 | **Repository tests** | **302 functions, 0 failures** (from 285) |
 
 ## 1. What changed in posture
