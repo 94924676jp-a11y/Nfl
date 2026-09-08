@@ -38,6 +38,10 @@ K = 4.0
 M_DRAWS = 400
 POSITIONS = ('WR', 'TE', 'RB')
 CV_GRID = (0.00, 0.05, 0.10, 0.15, 0.20, 0.30, 0.40)
+# The redesigned sweep (see addendum_rbb1_defects.md s3): the fraction of the
+# CONTROL architecture's residual error that perfect route knowledge would
+# explain. This is the decision-relevant quantity and it needs no route labels.
+RHO_GRID = (0.00, 0.05, 0.10, 0.20, 0.30, 0.50)
 
 # Published-consensus route participation LEVELS by position. These are not
 # fitted and are not FTN's -- they are the level term, and section 3 of the
@@ -120,9 +124,15 @@ def inject_routes(rows, cv, seed=SEED):
 
 
 def _draw(n_trials, rate, m, rng):
-    """Binomial target draws. The denominator is whatever architecture supplies."""
-    n = np.maximum(np.rint(n_trials), 0).astype(int)
-    return rng.binomial(n, np.clip(rate, 0.0, 1.0))
+    """Binomial target draws. The denominator is whatever architecture supplies.
+
+    size=m IS LOAD-BEARING. Without it numpy returns a scalar which broadcasts
+    across every draw column, every row becomes a point mass, and CRPS silently
+    degenerates to MAE. That is what the first run did. Third occurrence of
+    point-for-distribution in this project; asserted against below.
+    """
+    n = int(max(round(float(n_trials)), 0))
+    return rng.binomial(n, float(np.clip(rate, 0.0, 1.0)), size=m)
 
 
 def run_arm(rows, ev, arm, m=M_DRAWS, seed=SEED):
@@ -141,20 +151,24 @@ def run_arm(rows, ev, arm, m=M_DRAWS, seed=SEED):
              int.from_bytes(str(r['gsis_id']).encode()[-8:], 'little'),
              hash(arm) % 97])
         w = r['h_games'] / (r['h_games'] + K)
-        pool = 0.16
+        POOL_PER_SNAP = 0.16
         if arm == 'control':
             den_now = r['pass_snaps']
             hist_den = r['h_snaps']
+            pool = POOL_PER_SNAP
         elif arm == 'oracle':
             den_now = r['routes_true']
             hist_den = r['h_routes']
+            # UNITS. The prior is a rate PER UNIT OF DENOMINATOR. Reusing the
+            # per-snap constant on a per-route denominator makes the level fail
+            # to cancel and moved point predictions by 1.52 targets.
+            pool = POOL_PER_SNAP / max(BASE_P[r['position']], 1e-9)
         elif arm == 'candidate':
-            # prior-only mean of the player's own route rate; falls back to the
-            # positional level when he has no history of it
             p_hat = (float(np.mean(r['h_p'])) if r['h_p']
                      else BASE_P[r['position']])
             den_now = r['pass_snaps'] * p_hat
             hist_den = r['h_routes']
+            pool = POOL_PER_SNAP / max(p_hat, 1e-9)
         else:
             raise ValueError(arm)
         rate = (w * (r['h_targets'] / max(hist_den, 1e-9))
@@ -200,3 +214,48 @@ def clustered_delta(c_a, c_b, games, reps=400, seed=SEED):
     return {'delta': float(c_a.mean() - c_b.mean()),
             'lo': float(np.quantile(d, 0.025)),
             'hi': float(np.quantile(d, 0.975))}
+
+
+def run_rho(rows, ev, rho, m=M_DRAWS, seed=SEED):
+    """Oracle route arm that explains a fraction `rho` of the control residual.
+
+    Reads: if route knowledge closed `rho` of the gap between the control's
+    prediction and what actually happened, what is that worth in CRPS?
+
+    THE ACCOUNTING CONSTRAINT IS THE POINT, not a nuisance. Explaining the
+    residual implies a route count, and routes can never exceed the dropbacks
+    the player was on the field for. Where the implied count would exceed
+    pass_snaps, route information CANNOT explain that much error -- an upper
+    bound that comes from football rather than from modelling. Both the
+    unconstrained and the constrained gains are returned so the cost of the
+    constraint is visible.
+    """
+    e = [r for r in rows if r['season'] == ev and r['h_games'] >= 1]
+    n = len(e)
+    Du = np.zeros((n, m))
+    Dc = np.zeros((n, m))
+    viol = 0
+    excess = []
+    for i, r in enumerate(e):
+        rng = np.random.default_rng(
+            [seed, int(r['ord']),
+             int.from_bytes(str(r['gsis_id']).encode()[-8:], 'little'),
+             int(rho * 1000) + 7])
+        w = r['h_games'] / (r['h_games'] + K)
+        rate_c = (w * (r['h_targets'] / max(r['h_snaps'], 1e-9))
+                  + (1 - w) * 0.16) if r['h_snaps'] > 0 else 0.16
+        mu_c = r['pass_snaps'] * rate_c
+        mu_r = mu_c + rho * (r['targets'] - mu_c)
+        mu_r = max(mu_r, 0.0)
+        p = BASE_P[r['position']]
+        tpr = rate_c / max(p, 1e-9)                 # targets per route
+        routes_u = mu_r / max(tpr, 1e-9)            # implied routes
+        if routes_u > r['pass_snaps'] + 1e-9:
+            viol += 1
+            excess.append(routes_u - r['pass_snaps'])
+        routes_c = min(routes_u, r['pass_snaps'])   # football-constrained
+        Du[i] = _draw(routes_u, tpr, m, rng)
+        Dc[i] = _draw(routes_c, tpr, m, rng)
+    y = np.array([r['targets'] for r in e], float)
+    return (Du, Dc, y, [r['game_id'] for r in e], [r['position'] for r in e],
+            viol, n, float(np.mean(excess)) if excess else 0.0)

@@ -43,67 +43,87 @@ def main():
           f"[{d_or['lo']:+.6f}, {d_or['hi']:+.6f}]")
     print(f"  candidate - control {d_ca['delta']:+.6f} "
           f"[{d_ca['lo']:+.6f}, {d_ca['hi']:+.6f}]")
-    ident = bool(np.array_equal(acc['oracle']['D'], acc['control']['D']))
-    print(f"  draws bit-identical control vs oracle: {ident}")
+    sd = float(acc['control']['D'].std(1).mean())
+    print(f"  per-row draw SD {sd:.4f} (0.0 would mean point masses again)")
+    assert sd > 0.1, 'DISPERSION DEFECT: draws are point masses'
+    assert abs(acc['control']['s']['crps']
+               - acc['control']['s']['mae']) > 1e-3, \
+        'CRPS equals MAE: the draws carry no spread'
+    mudiff = float(np.abs(acc['oracle']['D'].mean(1)
+                          - acc['control']['D'].mean(1)).mean())
+    print(f"  mean |point-prediction difference| control vs oracle: {mudiff:.4f}")
     OUT['constant_rate_test'] = {
         'base_rates': L.BASE_P,
         'control': acc['control']['s'], 'oracle': acc['oracle']['s'],
         'candidate': acc['candidate']['s'],
         'oracle_minus_control': d_or, 'candidate_minus_control': d_ca,
-        'draws_bit_identical': ident,
+        'per_row_draw_sd': sd,
+        'mean_abs_point_prediction_difference': mudiff,
         'claim': ('a route rate that is a function of position only cancels '
                   'out of the candidate architecture'),
     }
 
-    # ---- the necessity curve --------------------------------------------
-    print('\n== s5: necessity curve -- CRPS vs game-to-game route dispersion ==')
-    print(f"  {'CV':>5} {'control':>9} {'oracle':>9} {'cand':>9} "
-          f"{'or-ctl':>10} {'95% CI':>22} {'cand-ctl':>10}")
+    # ---- the necessity curve, REDESIGNED (see addendum s3) ---------------
+    print('\n== s5: necessity curve -- what would route knowledge be WORTH? ==')
+    print('   rho = fraction of the control architecture\'s residual error that')
+    print('   perfect route knowledge would explain.\n')
+    print(f"  {'rho':>5} {'ctl':>8} {'oracle':>8} {'gain':>8} {'gain%':>7} "
+          f"{'95% CI':>22} {'viol%':>6} {'constr':>8} {'c-gain%':>8}")
+    ctlD, ctly, ctlg, ctlpos = [], [], [], []
+    for ev in L.EVAL:
+        D, y, g, ps = L.run_arm(rows, ev, 'control')
+        ctlD.append(D); ctly.append(y); ctlg += g; ctlpos += ps
+    CD = np.vstack(ctlD); CY = np.concatenate(ctly)
+    CC = crps_matrix(CD, CY); base_crps = float(CC.mean())
     curve = []
-    for cv in L.CV_GRID:
-        rows = L.inject_routes([dict(r) for r in base], cv=cv)
-        L.attach_history(rows)
-        a = {}
-        for arm in ('control', 'oracle', 'candidate'):
-            Ds, ys, gs, ps = [], [], [], []
-            for ev in L.EVAL:
-                D, y, g, p = L.run_arm(rows, ev, arm)
-                Ds.append(D); ys.append(y); gs += g; ps += p
-            D = np.vstack(Ds); y = np.concatenate(ys)
-            a[arm] = {'c': crps_matrix(D, y), 's': L.score(D, y),
-                      'g': gs, 'pos': ps}
-        do = L.clustered_delta(a['oracle']['c'], a['control']['c'], a['control']['g'])
-        dc = L.clustered_delta(a['candidate']['c'], a['control']['c'], a['control']['g'])
-        # realised dispersion, measured rather than assumed to equal the target
-        pv = np.array([r['p_true'] for r in rows if r['season'] in L.EVAL])
-        realised = float(pv.std() / pv.mean()) if pv.mean() else 0.0
+    for rho in L.RHO_GRID:
+        Us, Cs, Ys, Gs, Ps = [], [], [], [], []
+        tv = tn = 0; exc = []
+        for ev in L.EVAL:
+            Du, Dc, y, g, ps, v, n, ex = L.run_rho(rows, ev, rho)
+            Us.append(Du); Cs.append(Dc); Ys.append(y); Gs += g; Ps += ps
+            tv += v; tn += n; exc.append(ex)
+        DU = np.vstack(Us); DC = np.vstack(Cs); Y = np.concatenate(Ys)
+        cu = crps_matrix(DU, Y); cc = crps_matrix(DC, Y)
+        du = L.clustered_delta(cu, CC, ctlg)
+        dc = L.clustered_delta(cc, CC, ctlg)
+        pos = np.array(Ps)
         per_pos = {}
-        pos = np.array(a['control']['pos'])
         for P in L.POSITIONS:
             msk = pos == P
             if msk.sum() < 50:
                 continue
-            per_pos[P] = {
-                'n': int(msk.sum()),
-                'control_crps': float(a['control']['c'][msk].mean()),
-                'oracle_crps': float(a['oracle']['c'][msk].mean()),
-                'oracle_gain': float(a['control']['c'][msk].mean()
-                                     - a['oracle']['c'][msk].mean()),
-                'candidate_gain': float(a['control']['c'][msk].mean()
-                                        - a['candidate']['c'][msk].mean())}
-        row = {'cv_target': cv, 'cv_realised_pooled': realised,
-               'control_crps': a['control']['s']['crps'],
-               'oracle_crps': a['oracle']['s']['crps'],
-               'candidate_crps': a['candidate']['s']['crps'],
-               'oracle_minus_control': do, 'candidate_minus_control': dc,
-               'oracle_gain_pct': 100 * (-do['delta']) / a['control']['s']['crps'],
+            per_pos[P] = {'n': int(msk.sum()),
+                          'control_crps': float(CC[msk].mean()),
+                          'oracle_crps': float(cu[msk].mean()),
+                          'gain': float(CC[msk].mean() - cu[msk].mean()),
+                          'gain_pct': float(100 * (CC[msk].mean()
+                                                   - cu[msk].mean())
+                                            / CC[msk].mean())}
+        row = {'rho': rho, 'control_crps': base_crps,
+               'oracle_unconstrained_crps': float(cu.mean()),
+               'oracle_constrained_crps': float(cc.mean()),
+               'gain': -du['delta'], 'gain_pct': 100 * (-du['delta']) / base_crps,
+               'gain_ci': du,
+               'constrained_gain': -dc['delta'],
+               'constrained_gain_pct': 100 * (-dc['delta']) / base_crps,
+               'constrained_gain_ci': dc,
+               'accounting_violations': tv, 'n': tn,
+               'violation_pct': 100 * tv / max(tn, 1),
+               'mean_excess_routes': float(np.mean(exc)),
                'by_position': per_pos}
         curve.append(row)
-        print(f"  {cv:5.2f} {a['control']['s']['crps']:9.5f} "
-              f"{a['oracle']['s']['crps']:9.5f} {a['candidate']['s']['crps']:9.5f} "
-              f"{do['delta']:+10.5f} [{do['lo']:+.5f},{do['hi']:+.5f}] "
-              f"{dc['delta']:+10.5f}")
-    OUT['necessity_curve'] = curve
+        print(f"  {rho:5.2f} {base_crps:8.5f} {cu.mean():8.5f} "
+              f"{-du['delta']:+8.5f} {100*(-du['delta'])/base_crps:6.2f}% "
+              f"[{-du['hi']:+.5f},{-du['lo']:+.5f}] "
+              f"{100*tv/max(tn,1):5.1f}% {cc.mean():8.5f} "
+              f"{100*(-dc['delta'])/base_crps:7.2f}%")
+    OUT['necessity_curve'] = {
+        'design': ('rho is the fraction of the CONTROL residual that perfect '
+                   'route knowledge explains. Redesigned after the first '
+                   'design was found not to measure information value; see '
+                   'addendum_rbb1_defects.md.'),
+        'control_crps': base_crps, 'rows': curve}
 
     # ---- accounting ------------------------------------------------------
     print('\n== s7: accounting ==')
