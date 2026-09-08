@@ -469,4 +469,5 @@ workflow step ordering changed.
 
 **Final state: `T90_EXECUTION_DEFECT_FOUND`. STOPPING HERE as instructed.**
 
-**Final HEAD:** recorded in the commit that follows this file.
+**Final HEAD:** `c7e61f5435540afad8281cf7250fe75c1bdd43f9` (this file was written
+before that commit; the hash is stamped by the commit that follows it).
