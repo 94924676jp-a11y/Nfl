@@ -1,0 +1,81 @@
+{
+ "artifact": "NFL_TECHNICAL_DEBT_REGISTRY",
+ "updated_utc": "2026-09-08",
+ "severity_scale": ["LOW", "MEDIUM", "HIGH"],
+ "debts": [
+  {"id": "DEBT-RECV-CALIB", "title": "receiving baseline bias and zero-mass",
+   "owner": "research", "severity": "MEDIUM",
+   "blocks_research": false, "blocks_promotion": true, "blocks_nfl1": false,
+   "evidence": "nfl/research/rc2/RC2_FINDING.md; bias +2.18 yards, P(Y=0) predicted 0.3004 against 0.3293 actual",
+   "state": "CALIBRATION_DEFECT_CONFIRMED -- all four predeclared repairs failed their bar",
+   "next_action": "a new pre-registration for a history-cohort centring family; R1 improved CRPS, MAE, r and PIT together but missed |bias| < 1.00",
+   "note": "The reported over-coverage was largely a ZERO-POINT-MASS ARTIFACT, not a width defect. Total predictive SD ratio is 1.0032."},
+
+  {"id": "DEBT-ROUTES", "title": "true routes run absent",
+   "owner": "owner/external", "severity": "HIGH",
+   "blocks_research": true, "blocks_promotion": false, "blocks_nfl1": false,
+   "evidence": "RECEIVING_INFORMATION_GAP_RETURN.md",
+   "state": "BLOCKED on licensing", "next_action": "FTN commercial track, external"},
+
+  {"id": "DEBT-JOINT-TARGETS", "title": "target dependence not well modelled",
+   "owner": "research", "severity": "MEDIUM",
+   "blocks_research": false, "blocks_promotion": true, "blocks_nfl1": false,
+   "evidence": "Stage 3 joint diagnostic; carries benefit from reconciliation more clearly than targets, and target composition can create false negative dependence",
+   "state": "OPEN -- joint simulator v2 NOT built in this session",
+   "next_action": "Stage 6 of the master directive, not reached"},
+
+  {"id": "DEBT-SNAP-IMPOSSIBILITY", "title": "snap/pass occupancy residual impossibilities",
+   "owner": "research", "severity": "MEDIUM",
+   "blocks_research": false, "blocks_promotion": true, "blocks_nfl1": false,
+   "evidence": "Stage 3 joint diagnostic", "state": "OPEN",
+   "next_action": "carry into joint simulator v2"},
+
+  {"id": "DEBT-2024-RB1RB2", "title": "2024 carry rank1<->rank2 anomaly",
+   "owner": "research", "severity": "LOW",
+   "blocks_research": false, "blocks_promotion": false, "blocks_nfl1": false,
+   "evidence": "PATH_C_STATE open question OQ-2024-RB1RB2; realised -0.667 outside every tested band",
+   "state": "REGISTERED, NOT UNDER RESEARCH",
+   "next_action": "none; do not tune to it"},
+
+  {"id": "DEBT-OTHER-MASS", "title": "fifth-skill-player / OTHER bucket",
+   "owner": "research", "severity": "LOW",
+   "blocks_research": false, "blocks_promotion": false, "blocks_nfl1": false,
+   "evidence": "nfl/accounting/accounting_audit.json -- every team/player invariant holds EXACTLY with no OTHER mass needed on targets, receptions, receiving yards, carries or rushing TD",
+   "state": "MEASURED AND CLOSED for these invariants",
+   "next_action": "none"},
+
+  {"id": "DEBT-PASSYDS-LATERAL", "title": "team passing yards != receiving yards on 76 team-games",
+   "owner": "research", "severity": "LOW",
+   "blocks_research": false, "blocks_promotion": false, "blocks_nfl1": false,
+   "evidence": "nfl/accounting/invariants.LATERAL_EXCEPTION -- 75 of 76 are laterals; ONE (IND 2022 wk16, 13.0 against 12.0) is an unexplained upstream inconsistency left VISIBLE",
+   "state": "NAMED AND BOUNDED",
+   "next_action": "none; the exception may never be widened to absorb the unexplained case"},
+
+  {"id": "DEBT-AIRYARDS-RECON", "title": "air-yards/YAC cannot reconstruct the total",
+   "owner": "research", "severity": "LOW",
+   "blocks_research": false, "blocks_promotion": false, "blocks_nfl1": false,
+   "evidence": "RC1 audit -- identity holds on 99.94% of receptions, fails on fumble-adjusted plays",
+   "state": "DESCRIPTIVE USE ONLY", "next_action": "none"},
+
+  {"id": "DEBT-HISTORICAL-VINTAGE", "title": "zero as-of coverage for 2022-2025",
+   "owner": "structural", "severity": "HIGH",
+   "blocks_research": true, "blocks_promotion": true, "blocks_nfl1": false,
+   "evidence": "vintage_manifest.jsonl is 663 rows, ALL season 2026, captures from 2026-09-06",
+   "state": "IRRECOVERABLE -- a final file is never as-of evidence",
+   "next_action": "none; prospective capture is the only path"},
+
+  {"id": "DEBT-QB-LAYER", "title": "QB layer not decomposed",
+   "owner": "research", "severity": "MEDIUM",
+   "blocks_research": false, "blocks_promotion": false, "blocks_nfl1": false,
+   "evidence": "Stage 4 of the master directive, NOT reached this session",
+   "state": "OPEN -- audit groundwork exists (pass_attempt includes sacks on every sack in every season; scrambles carry rusher_player_id on 4,091 of 4,380 and passer_player_id on zero)",
+   "next_action": "Stage 4"},
+
+  {"id": "DEBT-TD-RECOVERABILITY", "title": "TD recoverability ladder and composition not run",
+   "owner": "research", "severity": "MEDIUM",
+   "blocks_research": false, "blocks_promotion": true, "blocks_nfl1": false,
+   "evidence": "nfl/research/td1/TD1_FINDING.md",
+   "state": "DECOMPOSED, not characterised",
+   "next_action": "run the ladder and the composition test before funding any TD conversion modelling"}
+ ]
+}
