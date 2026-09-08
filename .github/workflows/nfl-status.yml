@@ -1,0 +1,104 @@
+name: NFL status anchored capture
+
+# GENERATED FILE -- do not hand-edit.
+#   nfl/tools/gen_status_schedule.py --season 2026 --week 1 --write
+#   schedule identity: SCHEDNG-906facecf4b1f272
+#
+# NON-G0A. This workflow serves ('practice', 'final_status') only. It CANNOT discharge the
+# outstanding G0A `inactives` obligation, and that is enforced in
+# nfl/capture/execution.py rather than by this comment: its runs classify as
+# SCHEDULED_WINDOW_ANCHORED_NON_G0A, and BASIS_KINDS confines that basis to
+# ('practice', 'final_status'). A run of this workflow inside the T-90 window, from an
+# authorised source, records BASIS_NOT_AUTHORISED_FOR_KIND against inactives.
+#
+# The G0A path is .github/workflows/nfl-t90.yml, schedule identity
+# SCHED-2a2924d4966fbd3d, and nothing here touches it.
+#
+# 5 distinct windows, 47 targets,
+# 10 cron entries at an hourly step. These windows are 20 hours wide;
+# the five-minute step used for the 80-minute inactives window would be 240
+# entries each and would buy nothing.
+#
+# WHAT THIS DOES NOT CLAIM. GitHub may delay or drop a scheduled run. A capture
+# discharges a target on evidence -- retrieved_at inside the window, an
+# authorised source, a declared target, an anchored basis -- and never because
+# this workflow fired.
+
+on:
+  schedule:
+    # 2026-09-07 20:00Z -> 09-08 16:00Z  (2 targets, practice)
+    - cron: '0 20-23 7 9 *'
+    - cron: '0 0-16 8 9 *'
+    # 2026-09-08 20:00Z -> 09-09 16:00Z  (2 targets, final_status/practice)
+    - cron: '0 20-23 8 9 *'
+    - cron: '0 0-16 9 9 *'
+    # 2026-09-09 20:00Z -> 09-10 16:00Z  (15 targets, final_status/practice)
+    - cron: '0 20-23 9 9 *'
+    - cron: '0 0-16 10 9 *'
+    # 2026-09-10 20:00Z -> 09-11 16:00Z  (14 targets, practice)
+    - cron: '0 20-23 10 9 *'
+    - cron: '0 0-16 11 9 *'
+    # 2026-09-11 20:00Z -> 09-12 16:00Z  (14 targets, final_status)
+    - cron: '0 20-23 11 9 *'
+    - cron: '0 0-16 12 9 *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nfl-vintage-capture      # shared with the baseline: never race it
+  cancel-in-progress: false
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Capture
+        run: |
+          set +e
+          python3 nfl/tools/capture_vintage.py --season 2026 | tee /tmp/capture.log
+          echo "exit=$?" >> "$GITHUB_OUTPUT"
+
+      # COMMIT BEFORE JUDGING. A failing step skips the rest of the job, so
+      # with the FAIL gate first one misbehaving source discards every other
+      # source's bytes for the run. Measured on the baseline workflow
+      # 2026-09-08: runs 87 and 88 captured six sources and committed none.
+      - name: Commit anything captured
+        if: always()
+        run: |
+          git config user.name  "nfl-capture[bot]"
+          git config user.email "nfl-capture@users.noreply.github.com"
+          git add nfl/vintage nfl/vintage_manifest.jsonl
+          if git diff --cached --quiet; then
+            echo "nothing new captured; not committing"
+            exit 0
+          fi
+          CID=$(grep -oE 'capture [0-9]{8}T[0-9]{6}Z' /tmp/capture.log | head -1 | awk '{print $2}')
+          git commit \
+            -m "NFL status anchored capture ${CID:-unknown}" \
+            -m "GitHub Actions run ${GITHUB_RUN_ID}, NON-G0A anchored workflow." \
+            -m "Append-only: adds manifest rows and content-addressed blobs."
+          git pull --rebase --autostash origin main
+          git push origin HEAD:main
+
+      - name: Fail only on a real FAIL
+        if: always()
+        run: |
+          # Runs AFTER the commit: the signal is kept, and so are the bytes.
+          if grep -qE '^FAIL ' /tmp/capture.log; then
+            grep -E '^FAIL ' /tmp/capture.log
+            exit 1
+          fi
+          echo "no FAIL states"
+
+      - name: Report game-level coverage
+        if: always()
+        run: |
+          grep -A6 'GAME-LEVEL COVERAGE' /tmp/capture.log || \
+            echo "no coverage line -- check the capture output"

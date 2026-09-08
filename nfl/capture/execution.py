@@ -75,9 +75,23 @@ DECLARATION_VERSION = "execution_target/1.0.0"
 # intentionally targeted execution.
 ANCHORED_WORKFLOW = "NFL T-90 anchored capture"
 
+# A SECOND anchored path, deliberately separate, serving the obligations the
+# G0A workflow does not: practice and final_status. It exists because those
+# kinds had no anchored execution at all -- ANCHORED_KINDS is ("inactives",) --
+# so two of them closed unfilled on 2026-09-08 despite an authorised source
+# publishing rows throughout the window. See P3A.
+#
+# IT IS ISOLATED FROM G0A BY CONSTRUCTION, NOT BY CONVENTION. Its basis is a
+# different constant and that constant is restricted to a fixed kind set below,
+# so it cannot discharge `inactives` even if it is fired inside the T-90 window
+# by an authorised source. The G0A obligation is reachable only from
+# ANCHORED_WORKFLOW.
+NON_G0A_ANCHORED_WORKFLOW = "NFL status anchored capture"
+
 # How this run came to be pointed at a target, and whether that basis is capable
 # of discharging one at all.
 BASIS_ANCHORED = "SCHEDULED_WINDOW_ANCHORED"    # cron generated for the window
+BASIS_ANCHORED_NON_G0A = "SCHEDULED_WINDOW_ANCHORED_NON_G0A"
 BASIS_OPERATOR = "OPERATOR_TARGETED"            # a person dispatched it
 BASIS_SWEEP = "PERIODIC_SWEEP"                  # the */30 baseline
 BASIS_LOCAL = "LOCAL_INVOCATION"                # a developer's machine
@@ -86,7 +100,23 @@ BASIS_LOCAL = "LOCAL_INVOCATION"                # a developer's machine
 # says a manually dispatched run is not equivalent proof, and a mechanism that
 # let me dispatch a workflow during a live window and record a discharge would
 # be a way to hand-write the result of the one test this gate exists for.
-DISCHARGING_BASES = (BASIS_ANCHORED,)
+DISCHARGING_BASES = (BASIS_ANCHORED, BASIS_ANCHORED_NON_G0A)
+
+# WHICH KINDS EACH BASIS MAY DISCHARGE. `None` means "no restriction from the
+# basis" -- the source authorisation and the window still apply. This map is
+# the structural isolation: the non-G0A basis is confined to a tuple that does
+# not contain "inactives", so widening it is an explicit, reviewable edit
+# rather than a side effect of adding a cron entry.
+BASIS_KINDS: dict = {
+    BASIS_ANCHORED: None,
+    BASIS_ANCHORED_NON_G0A: ("practice", "final_status"),
+}
+
+# The one obligation kind that carries the outstanding G0A item. Reachable only
+# from ANCHORED_WORKFLOW.
+G0A_KIND = "inactives"
+assert G0A_KIND not in BASIS_KINDS[BASIS_ANCHORED_NON_G0A], (
+    "the non-G0A basis must never be able to discharge the G0A kind")
 
 # The page is what it is regardless of why we fetched it (§2).
 LEAGUE_WIDE = "LEAGUE_WIDE"
@@ -119,6 +149,9 @@ def declaration_basis(ident: dict) -> str:
         return BASIS_LOCAL
     if ident.get("workflow") == ANCHORED_WORKFLOW:
         return (BASIS_ANCHORED if ident.get("event_name") == "schedule"
+                else BASIS_OPERATOR)
+    if ident.get("workflow") == NON_G0A_ANCHORED_WORKFLOW:
+        return (BASIS_ANCHORED_NON_G0A if ident.get("event_name") == "schedule"
                 else BASIS_OPERATOR)
     return BASIS_SWEEP
 
@@ -217,6 +250,13 @@ def eligibility(declaration: dict, *, source: str, capture_state: str,
             reasons.append(
                 "MANUAL_DISPATCH_NOT_SELF_CERTIFYING" if basis == BASIS_OPERATOR
                 else f"BASIS_CANNOT_DISCHARGE:{basis}")
+        else:
+            allowed = BASIS_KINDS.get(basis)
+            if allowed is not None and t["kind"] not in allowed:
+                # The isolation. A non-G0A anchored run fired inside the T-90
+                # window by an authorised source still cannot discharge the
+                # inactives obligation.
+                reasons.append(f"BASIS_NOT_AUTHORISED_FOR_KIND:{basis}")
         if ts is None:
             reasons.append("RETRIEVED_AT_UNREADABLE")
         else:
