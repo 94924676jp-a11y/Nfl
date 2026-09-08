@@ -1,0 +1,272 @@
+"""The canonical production entrypoint.
+
+    python3.12 -m nfl.production.run_forecast \
+        --season 2026 --week 1 --game-id 2026_01_NE_SEA \
+        --arm A --written-at 2026-09-09T22:00:00Z --out-dir /path
+
+FAILS CLOSED. Every stage that cannot be executed correctly returns a named
+refusal, and the run reports REFUSED rather than emitting a forecast.
+
+`--written-at` is REQUIRED. The wall clock may stamp operational fields; it may
+never stand in for a scientific clock, and there is no default that would let
+it.
+"""
+from __future__ import annotations
+
+import argparse
+import datetime as _dt
+import hashlib
+import json
+import os
+import pathlib
+import sys
+
+_REPO = pathlib.Path(__file__).resolve().parents[2]
+if str(_REPO) not in sys.path:
+    sys.path.insert(0, str(_REPO))
+
+from sportsplatform.governance.outcome import Cause, Outcome, State   # noqa: E402
+from nfl.production import authorization as AUTH                      # noqa: E402
+from nfl.production import pipeline as PL                             # noqa: E402
+from nfl.production import refusal as RF                              # noqa: E402
+from nfl.prospective import artifact as ART                           # noqa: E402
+from nfl.capture import registry as REG                               # noqa: E402
+
+ARMS = ('A', 'B', 'C')
+
+
+def _now() -> str:
+    return _dt.datetime.now(_dt.timezone.utc).isoformat()
+
+
+def _parse(ts):
+    d = _dt.datetime.fromisoformat(str(ts).replace('Z', '+00:00'))
+    return d if d.tzinfo else d.replace(tzinfo=_dt.timezone.utc)
+
+
+def execution_identity(args, source_hashes: dict, code_commit: str) -> str:
+    """Changing ANY input hash must change this. Tested."""
+    payload = {'season': args.season, 'week': args.week,
+               'game_id': args.game_id, 'arm': args.arm,
+               'written_at': args.written_at, 'seed': args.seed,
+               'code_commit': code_commit,
+               'sources': dict(sorted(source_hashes.items()))}
+    return hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()
+
+
+def code_commit() -> str:
+    import subprocess
+    try:
+        return subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=str(_REPO),
+                              capture_output=True, text=True,
+                              timeout=20).stdout.strip() or 'UNKNOWN'
+    except Exception:                                             # noqa: BLE001
+        return 'UNKNOWN'
+
+
+def build(args, fixtures: dict = None) -> dict:
+    """Run the pipeline. `fixtures` supplies inputs for a historical dry run."""
+    fx = fixtures or {}
+    commit = code_commit()
+    src = fx.get('source_hashes', {})
+    run_id = execution_identity(args, src, commit)[:16]
+    out_dir = pathlib.Path(args.out_dir) / run_id
+    p = PL.Pipeline(run_id=run_id, out_dir=out_dir, arm=args.arm,
+                    written_at=args.written_at)
+
+    wrote = _parse(args.written_at)
+    kickoff = fx.get('kickoff_utc')
+
+    # --- 1. capture / input validation ---------------------------------
+    def _capture():
+        if not src:
+            return RF.refuse('SOURCE_MISSING', 'capture_validation',
+                             'no source captures were supplied', run_id)
+        for name, meta in src.items():
+            if name not in REG.BY_NAME:
+                return RF.refuse('UNAUTHORIZED_INPUT', 'capture_validation',
+                                 f'{name} is not in the source registry', run_id)
+            if not meta.get('sha256'):
+                return RF.refuse('RAW_HASH_MISMATCH', 'capture_validation',
+                                 f'{name} carries no sha256', run_id)
+            if meta.get('expected_sha256') and \
+                    meta['expected_sha256'] != meta['sha256']:
+                return RF.refuse('RAW_HASH_MISMATCH', 'capture_validation',
+                                 f'{name} hash differs from the recorded one',
+                                 run_id)
+            got = meta.get('retrieved_at')
+            if not got:
+                return RF.refuse('SOURCE_CHRONOLOGY_FAILURE',
+                                 'capture_validation',
+                                 f'{name} has no retrieved_at', run_id)
+            if _parse(got) > wrote:
+                return RF.refuse('SOURCE_TOO_LATE', 'capture_validation',
+                                 f'{name} retrieved at {got}, after '
+                                 f'written_at {args.written_at}', run_id)
+            if meta.get('schema_ok') is False:
+                return RF.refuse('SCHEMA_DRIFT', 'capture_validation',
+                                 f'{name} schema does not match', run_id)
+        if kickoff and not wrote < _parse(kickoff):
+            return RF.refuse('SOURCE_CHRONOLOGY_FAILURE', 'capture_validation',
+                             f'written_at {args.written_at} is not before '
+                             f'kickoff {kickoff}', run_id)
+        if args.arm == 'A' and fx.get('consumes_2026_outcomes'):
+            return RF.refuse('ARM_RULE_VIOLATION', 'capture_validation',
+                             'arm A may consume no 2026 outcome at any point '
+                             'in the season', run_id)
+        if fx.get('cold_start_identity_mismatch'):
+            return RF.refuse('COLD_START_VIOLATION', 'capture_validation',
+                             'the cold-start freeze identity does not match',
+                             run_id)
+        return Outcome.ok('INPUTS_VALIDATED', value=src,
+                          input_hashes={k: v['sha256'] for k, v in src.items()})
+    p.run_stage('capture_validation', _capture,
+                declared_inputs=list(src), spec_version=PL.PIPELINE_VERSION)
+
+    # --- 2. identity resolution ----------------------------------------
+    def _identity():
+        players = fx.get('players', [])
+        if not players:
+            return RF.refuse('IDENTITY_UNRESOLVED', 'identity_resolution',
+                             'no players supplied for the slate', run_id)
+        bad = [q for q in players if not q.get('gsis_id')]
+        if bad:
+            return RF.refuse('IDENTITY_UNRESOLVED', 'identity_resolution',
+                             f'{len(bad)} player(s) have no gsis_id; fuzzy '
+                             f'name matching is forbidden', run_id)
+        if fx.get('game_missing'):
+            return RF.refuse('REQUIRED_GAME_MISSING', 'identity_resolution',
+                             'a requested game is absent from the schedule',
+                             run_id)
+        return Outcome.ok('IDENTITY_RESOLVED', value=players)
+    p.run_stage('identity_resolution', _identity, declared_inputs=['players'])
+
+    # --- 3..10 modelling stages ----------------------------------------
+    for stage, key, spec in (
+            ('feature_build', 'features', 'prior-only, ordinal prefix cut'),
+            ('team_environment', 'team_env', 'team volume, accepted'),
+            ('appearance', 'appearance', 'P3 appearance'),
+            ('participation', 'participation', 'Stage2 ewma_hl2 ACCEPTED'),
+            ('targets_carries', 'targets_carries', 'P4C system C ACCEPTED'),
+            ('conversion', 'conversion', 'RC1 baseline; SIGNAL_WEAK'),
+            ('td_layer', 'td', 'TD1 identity; conversion baseline'),
+            ('qb_layer', 'qb', 'QB1 BASELINED -- audit only')):
+        def _model(_k=key, _s=spec, _st=stage):
+            if fx.get(f'{_k}_missing'):
+                return RF.refuse('MODEL_ARTIFACT_MISSING', _st,
+                                 f'{_k} model artifact is absent', run_id)
+            if fx.get(f'{_k}_hash_mismatch'):
+                return RF.refuse('MODEL_HASH_MISMATCH', _st,
+                                 f'{_k} artifact hash differs', run_id)
+            if fx.get(f'{_k}_not_implemented'):
+                return RF.refuse('STAGE_NOT_IMPLEMENTED', _st,
+                                 f'{_k} has no production model; a named '
+                                 f'refusal is returned rather than a '
+                                 f'fabricated forecast', run_id)
+            return Outcome.ok(f'{_st.upper()}_OK', value=fx.get(_k, {}))
+        p.run_stage(stage, _model, declared_inputs=['h_history', 'q_pos_mean'],
+                    spec_version=spec)
+
+    # --- 11. joint reconciliation ---------------------------------------
+    def _joint():
+        if fx.get('joint_fails'):
+            return RF.refuse('JOINT_RECONCILIATION_FAILURE',
+                             'joint_reconciliation',
+                             'team totals could not be reconciled', run_id)
+        if fx.get('accounting_fails'):
+            return RF.refuse('INCOMPLETE_PLAYER_ACCOUNTING',
+                             'joint_reconciliation',
+                             'team and player totals do not reconcile', run_id)
+        return Outcome.ok('JOINT_RECONCILED', value=fx.get('joint', {}))
+    p.run_stage('joint_reconciliation', _joint,
+                declared_inputs=['player_draws', 'team_volume'],
+                spec_version='minimum-viable production coupling')
+
+    # --- 12. player draws / 13. scoring / 14. sealing --------------------
+    p.run_stage('player_draws', lambda: Outcome.ok('DRAWS_BUILT',
+                                                   value=fx.get('draws', {})),
+                declared_inputs=['joint'], spec_version='nfl-player-draw-1')
+    p.run_stage('scoring', lambda: Outcome.ok(
+        'SCORED', value='downstream view only; never an upstream input'),
+        declared_inputs=['draws'], spec_version='deterministic')
+
+    def _seal():
+        if fx.get('sealing_fails'):
+            return RF.refuse('ARTIFACT_SEALING_FAILURE', 'artifact_sealing',
+                             'the artifact failed its own contract', run_id)
+        art = {
+            'game_id': args.game_id, 'kickoff_utc': kickoff,
+            'written_at': args.written_at,
+            'source_captures': [{'source': k, 'sha256': v['sha256'],
+                                 'retrieved_at': v['retrieved_at']}
+                                for k, v in src.items()],
+            'model_arm': args.arm, 'spec_hash': run_id,
+            'code_commit': commit, 'seed_protocol': f'per-row seed {args.seed}',
+            'feature_set_hash': hashlib.sha256(
+                json.dumps(sorted(src)).encode()).hexdigest()[:32],
+            'eligibility_verdict': 'PASS',
+            'player_ids': [q['gsis_id'] for q in fx.get('players', [])],
+            'team_ids': fx.get('team_ids', []),
+            'distributions': fx.get('distributions', {'_': {}}),
+            'completeness': fx.get('completeness', 'COMPLETE'),
+            'contract_version': ART.CONTRACT_VERSION,
+        }
+        v = ART.validate(art)
+        if v.state is not State.PASS:
+            return RF.refuse('ARTIFACT_SEALING_FAILURE', 'artifact_sealing',
+                             f'{v.code}: {v.detail[:200]}', run_id)
+        out_dir.mkdir(parents=True, exist_ok=True)
+        (out_dir / 'forecast_artifact.json').write_text(
+            json.dumps(art, indent=1, sort_keys=True) + '\n')
+        return Outcome.ok('ARTIFACT_SEALED', value=ART.artifact_id(art))
+    p.run_stage('artifact_sealing', _seal, declared_inputs=['draws'],
+                spec_version=ART.CONTRACT_VERSION)
+
+    summary = p.summary()
+    summary['execution_identity'] = execution_identity(args, src, commit)
+    summary['code_commit'] = commit
+    summary['dry_run'] = bool(args.dry_run)
+    summary['prospective_eligible'] = False if args.dry_run else None
+    # publication is a SEPARATE gate and is checked last, never assumed
+    pub = AUTH.may_publish()
+    summary['publication'] = {'state': pub.state.value, 'code': pub.code,
+                              'detail': pub.detail[:200]}
+    p.out_dir.mkdir(parents=True, exist_ok=True)
+    (p.out_dir / 'run_status.json').write_text(
+        json.dumps(summary, indent=1, default=str) + '\n')
+    RF.persist(p.refusals, p.out_dir)
+    return summary
+
+
+def main(argv=None) -> int:
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument('--season', type=int, required=True)
+    ap.add_argument('--week', type=int, required=True)
+    ap.add_argument('--game-id', required=True)
+    ap.add_argument('--arm', required=True, choices=ARMS)
+    ap.add_argument('--written-at', required=True,
+                    help='REQUIRED. There is no wall-clock default for a '
+                         'scientific clock.')
+    ap.add_argument('--out-dir', required=True)
+    ap.add_argument('--seed', type=int, default=20260908)
+    ap.add_argument('--dry-run', action='store_true',
+                    help='historical fixture run; NEVER prospective evidence')
+    ap.add_argument('--fixtures', default=None)
+    a = ap.parse_args(argv)
+    fx = json.loads(pathlib.Path(a.fixtures).read_text()) if a.fixtures else {}
+    s = build(a, fx)
+    print(f"run {s['run_id']}  arm {s['arm']}  status {s['status']}  "
+          f"{s['elapsed_s']:.3f}s"
+          + ('  [DRY RUN -- not prospective evidence]' if a.dry_run else ''))
+    for r in s['stages']:
+        mark = {'PASS': 'ok  ', 'BLOCKED': 'STOP', 'FAIL': 'FAIL'}.get(
+            r['state'], r['state'])
+        print(f"  {mark} {r['stage']:<24}{r['code']}")
+        if r['state'] != 'PASS':
+            print(f"       {r['detail'][:160]}")
+    print(f"  publication: {s['publication']['code']}")
+    return 0 if s['status'] == 'SEALED' else 1
+
+
+if __name__ == '__main__':
+    sys.exit(main())

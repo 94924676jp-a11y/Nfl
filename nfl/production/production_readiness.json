@@ -1,0 +1,99 @@
+{
+ "artifact": "NFL_PRODUCTION_READINESS_CONTRACT",
+ "version": "1",
+ "updated_utc": "2026-09-08",
+ "definition": "The system can carry an authorized point-in-time input state end to end and produce an immutable forecast artifact, or refuse in writing with a named code. It says nothing about model quality.",
+ "capabilities": [
+  {
+   "id": 1,
+   "name": "identify the game slate",
+   "state": "GREEN",
+   "enforced_by": "nfl/capture/schedule.py + schedules capture"
+  },
+  {
+   "id": 2,
+   "name": "resolve teams and players deterministically",
+   "state": "GREEN",
+   "enforced_by": "nfl/identity",
+   "evidence": "pff_id and nfl_id cover 100% of the 1,126-player WR/TE/RB frame; no fuzzy matching anywhere"
+  },
+  {
+   "id": 3,
+   "name": "retrieve and validate authorized source data",
+   "state": "GREEN",
+   "enforced_by": "nfl/capture/registry.py"
+  },
+  {
+   "id": 4,
+   "name": "verify source timestamps and hashes",
+   "state": "GREEN",
+   "enforced_by": "sportsplatform/governance/provenance.py"
+  },
+  {
+   "id": 5,
+   "name": "build model inputs without leakage",
+   "state": "GREEN",
+   "enforced_by": "ordinal prefix cut; pipeline.assert_no_postgame_inputs"
+  },
+  {
+   "id": 6,
+   "name": "generate player-level football distributions",
+   "state": "PARTIAL",
+   "gap": "QB layer is BASELINED (audited, not decomposed); production uses a shrinkage baseline",
+   "enforced_by": "nfl/research/rc1, p4c, s2, td1"
+  },
+  {
+   "id": 7,
+   "name": "reconcile team/player accounting",
+   "state": "GREEN",
+   "enforced_by": "nfl/accounting/invariants.py"
+  },
+  {
+   "id": 8,
+   "name": "generate joint draw artifacts",
+   "state": "BASELINE",
+   "gap": "dependence structure is neutral where unsupported, by design",
+   "enforced_by": "nfl/production/joint.py"
+  },
+  {
+   "id": 9,
+   "name": "deterministic fantasy scoring as a downstream view",
+   "state": "GREEN",
+   "enforced_by": "nfl/scoring/engine.py"
+  },
+  {
+   "id": 10,
+   "name": "write immutable prospective forecast artifacts",
+   "state": "GREEN",
+   "enforced_by": "nfl/prospective/artifact.py"
+  },
+  {
+   "id": 11,
+   "name": "register in the benchmark/evaluation framework",
+   "state": "GREEN",
+   "enforced_by": "nfl/prospective/registries.py"
+  },
+  {
+   "id": 12,
+   "name": "refuse output on provenance or integrity failure",
+   "state": "GREEN",
+   "enforced_by": "nfl/production/refusal.py",
+   "n_refusal_codes": 17
+  }
+ ],
+ "publication_gate": {
+  "nfl1": "NOT AUTHORIZED",
+  "g0a": "11/12",
+  "may_compute": true,
+  "may_seal_locally": true,
+  "may_publish": false,
+  "enforced_by": "nfl.production.authorization.may_publish",
+  "no_auto_authorization": "There is no path from a green test suite, a discharged checklist, an environment variable or a caller flag to AUTHORIZED."
+ },
+ "does_not_assert": [
+  "that the model is good",
+  "that G0A is discharged",
+  "that any candidate is promoted",
+  "that a dry run is prospective evidence"
+ ]
+}

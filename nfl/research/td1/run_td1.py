@@ -109,7 +109,14 @@ def pools(rs, ev):
     return out
 
 
-def simulate(rs, ev, allrows, oracle=(), seed=L.SEED):
+def simulate(rs, ev, allrows, oracle=(), seed=L.SEED, k_candidate=None):
+    """`k_candidate` maps a row to a candidate OVERALL conversion rate.
+
+    Substitution is DRAW-PRESERVING and mean-shifting: the historical
+    k_rz / k_nrz structure is retained and both are scaled by the single factor
+    that makes the implied overall rate equal the candidate's. Replacing them
+    with a point value would collapse the location structure, which is a
+    different component (Z) and not the candidate's to change."""
     po = pools(allrows, ev)
     out = np.zeros((len(rs), M), float)
     for idx, r in enumerate(rs):
@@ -149,6 +156,14 @@ def simulate(rs, ev, allrows, oracle=(), seed=L.SEED):
             nrz_n = tn - b
             k_nrz = ((w * ((ta - a) / nrz_n) + (1 - w) * q['k_nrz'])
                      if nrz_n > 0 else q['k_nrz'])
+        if k_candidate is not None and 'K' not in oracle:
+            phat = k_candidate(r)
+            if phat is not None:
+                implied = float(np.mean(Z * k_rz + (1 - Z) * k_nrz))
+                if implied > 1e-12:
+                    f = phat / implied
+                    k_rz = k_rz * f
+                    k_nrz = k_nrz * f
         out[idx] = N * (Z * k_rz + (1 - Z) * k_nrz)
     return out
 
