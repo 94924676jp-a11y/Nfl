@@ -1,0 +1,270 @@
+{
+ "target": "2026_01_NE_SEA",
+ "kickoff_utc": "2026-09-10T00:20:00+00:00",
+ "window_utc": [
+  "2026-09-09T22:50:00+00:00",
+  "2026-09-10T00:10:00+00:00"
+ ],
+ "window_et": [
+  "2026-09-09 18:50 ET",
+  "2026-09-09 20:10 ET"
+ ],
+ "items": [
+  {
+   "item": "workflow exists",
+   "state": "READY",
+   "detail": "/home/user/nfl/.github/workflows/nfl-t90.yml"
+  },
+  {
+   "item": "schedule trigger present",
+   "state": "READY",
+   "detail": "16 cron entries"
+  },
+  {
+   "item": "manual dispatcher present",
+   "state": "READY",
+   "detail": ""
+  },
+  {
+   "item": "executor is GitHub Actions",
+   "state": "READY",
+   "detail": ""
+  },
+  {
+   "item": "concurrency shared with baseline, never racing",
+   "state": "READY",
+   "detail": ""
+  },
+  {
+   "item": "failure surfacing: a real FAIL fails the job",
+   "state": "READY",
+   "detail": ""
+  },
+  {
+   "item": "capture output is logged",
+   "state": "READY",
+   "detail": ""
+  },
+  {
+   "item": "the NE@SEA window is covered by cron",
+   "state": "READY",
+   "detail": "3/3 cron lines present"
+  },
+  {
+   "item": "target is in the plan",
+   "state": "READY",
+   "detail": "79 targets in week 1"
+  },
+  {
+   "item": "target identity: game_id",
+   "state": "READY",
+   "detail": "'2026_01_NE_SEA'"
+  },
+  {
+   "item": "target identity: kind",
+   "state": "READY",
+   "detail": "'inactives'"
+  },
+  {
+   "item": "target identity: season and week",
+   "state": "READY",
+   "detail": "derived from game_id -> season 2026, week 1; not separate fields on CaptureDue"
+  },
+  {
+   "item": "target identity: window open",
+   "state": "READY",
+   "detail": "2026-09-09T22:50:00+00:00"
+  },
+  {
+   "item": "target identity: window close",
+   "state": "READY",
+   "detail": "2026-09-10T00:10:00+00:00"
+  },
+  {
+   "item": "target identity: kickoff carried on the target",
+   "state": "READY",
+   "detail": "2026-09-10 00:20:00+00:00"
+  },
+  {
+   "item": "window is exactly T-90 to T-10",
+   "state": "READY",
+   "detail": "80 minutes wide"
+  },
+  {
+   "item": "target identity: cadence confirmed flag is carried",
+   "state": "READY",
+   "detail": "confirmed=True"
+  },
+  {
+   "item": "target serialises with every identity field",
+   "state": "READY",
+   "detail": "9 fields"
+  },
+  {
+   "item": "an authorised source exists for inactives",
+   "state": "READY",
+   "detail": "['official_inactives']"
+  },
+  {
+   "item": "exactly one source may discharge inactives",
+   "state": "READY",
+   "detail": "['official_inactives']"
+  },
+  {
+   "item": "every other registered source is refused for inactives",
+   "state": "READY",
+   "detail": "7 refused: ['injuries', 'schedules', 'depth_charts', 'weekly_rosters', 'official_injury_report', 'espn_injuries_json', 'official_transactions']"
+  },
+  {
+   "item": "source resolves: official_inactives",
+   "state": "READY",
+   "detail": "SOURCE_RESOLVED"
+  },
+  {
+   "item": "anchored basis discharges",
+   "state": "READY",
+   "detail": "SCHEDULED_WINDOW_ANCHORED"
+  },
+  {
+   "item": "a sweep does NOT discharge",
+   "state": "READY",
+   "detail": "PERIODIC_SWEEP"
+  },
+  {
+   "item": "an unknown workflow does NOT discharge",
+   "state": "READY",
+   "detail": "PERIODIC_SWEEP"
+  },
+  {
+   "item": "a MANUAL dispatch of the anchored workflow does NOT discharge",
+   "state": "READY",
+   "detail": "OPERATOR_TARGETED"
+  },
+  {
+   "item": "a LOCAL run does NOT discharge",
+   "state": "READY",
+   "detail": "LOCAL_INVOCATION"
+  },
+  {
+   "item": "a capture inside the window but attributed to ANOTHER game does not discharge",
+   "state": "READY",
+   "detail": ""
+  },
+  {
+   "item": "a capture with NO declared target does not discharge",
+   "state": "READY",
+   "detail": ""
+  },
+  {
+   "item": "a capture of the right game but the WRONG KIND does not discharge",
+   "state": "READY",
+   "detail": ""
+  },
+  {
+   "item": "a correctly declared capture inside the window DOES discharge",
+   "state": "READY",
+   "detail": ""
+  },
+  {
+   "item": "the same capture one minute LATE does not discharge",
+   "state": "READY",
+   "detail": ""
+  },
+  {
+   "item": "the same capture one minute EARLY does not discharge",
+   "state": "READY",
+   "detail": ""
+  },
+  {
+   "item": "manifest persists and is append-only tracked",
+   "state": "READY",
+   "detail": "479 rows"
+  },
+  {
+   "item": "coverage join runs",
+   "state": "READY",
+   "detail": "NO_WINDOW_HAS_CLOSED_YET"
+  },
+  {
+   "item": "coverage reports dischargeable vs unattributed captures",
+   "state": "READY",
+   "detail": "dischargeable=0 unattributed=372"
+  },
+  {
+   "item": "the target is not already covered",
+   "state": "READY",
+   "detail": "covered=0 not_yet_due=63"
+  },
+  {
+   "item": "the historical false-cover regression fixture is preserved",
+   "state": "READY",
+   "detail": "/home/user/nfl/nfl/tests/fixtures/regression_2026_09_07_practice_false_cover.json"
+  },
+  {
+   "item": "manifest rows carry a raw sha256",
+   "state": "READY",
+   "detail": "372 capture rows of 479"
+  },
+  {
+   "item": "blob paths resolve on disk",
+   "state": "READY",
+   "detail": "60 resolve, 0 do not, of the last 60"
+  },
+  {
+   "item": "the five clocks are kept apart on the evidence",
+   "state": "READY",
+   "detail": "5/5 present: ['source_timestamp', 'retrieved_at', 'cache_timestamp', 'generated_at', 'effective_for_date']"
+  },
+  {
+   "item": "requested_at is recorded separately from the source clock",
+   "state": "READY",
+   "detail": ""
+  },
+  {
+   "item": "a cache hit cannot manufacture a new retrieval time",
+   "state": "READY",
+   "detail": "content_unchanged is recorded on repeat captures"
+  },
+  {
+   "item": "every capture row declares its execution target and eligibility",
+   "state": "READY",
+   "detail": ""
+  },
+  {
+   "item": "workflow carries a schedule identity digest",
+   "state": "READY",
+   "detail": "SCHED-2a2924d4966fbd3d"
+  },
+  {
+   "item": "kickoff-change behaviour: a moved kickoff changes that digest and the drift test fails",
+   "state": "READY",
+   "detail": "asserted by nfl/tests/test_t90_workflow.py"
+  },
+  {
+   "item": "retry: 16 firing opportunities inside the 80-minute window",
+   "state": "READY",
+   "detail": "16 cron entries, 5-minute step"
+  },
+  {
+   "item": "duplicate capture is idempotent: content-addressed blobs",
+   "state": "READY",
+   "detail": "blob name is a digest, so a repeat capture rewrites the same path"
+  },
+  {
+   "item": "source outage: the job does not fail on a non-FAIL state",
+   "state": "READY",
+   "detail": "only a real FAIL fails the job; BLOCKED/DEFERRED are logged"
+  },
+  {
+   "item": "nothing is committed when nothing was captured",
+   "state": "READY",
+   "detail": ""
+  }
+ ],
+ "blocked": 0,
+ "partial": 0,
+ "verdict": "READY_FOR_REAL_WINDOW",
+ "G0A": "11/12",
+ "g0a_note": "unchanged. A real qualifying capture inside the real window is required, and this audit is not one.",
+ "NFL_1": "NOT AUTHORIZED"
+}

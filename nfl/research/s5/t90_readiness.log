@@ -1,0 +1,61 @@
+T-90 READINESS AUDIT  2026-09-08T01:12:21.831973+00:00
+  target 2026_01_NE_SEA  kickoff 2026-09-10T00:20:00+00:00
+  window 2026-09-09T22:50:00+00:00 -> 2026-09-10T00:10:00+00:00
+
+  READY     workflow exists                        /home/user/nfl/.github/workflows/nfl-t90.yml
+  READY     schedule trigger present               16 cron entries
+  READY     manual dispatcher present              
+  READY     executor is GitHub Actions             
+  READY     concurrency shared with baseline, never racing 
+  READY     failure surfacing: a real FAIL fails the job 
+  READY     capture output is logged               
+  READY     the NE@SEA window is covered by cron   3/3 cron lines present
+  READY     target is in the plan                  79 targets in week 1
+  READY     target identity: game_id               '2026_01_NE_SEA'
+  READY     target identity: kind                  'inactives'
+  READY     target identity: season and week       derived from game_id -> season 2026, week 1; not separate fields on CaptureDue
+  READY     target identity: window open           2026-09-09T22:50:00+00:00
+  READY     target identity: window close          2026-09-10T00:10:00+00:00
+  READY     target identity: kickoff carried on the target 2026-09-10 00:20:00+00:00
+  READY     window is exactly T-90 to T-10         80 minutes wide
+  READY     target identity: cadence confirmed flag is carried confirmed=True
+  READY     target serialises with every identity field 9 fields
+  READY     an authorised source exists for inactives ['official_inactives']
+  READY     exactly one source may discharge inactives ['official_inactives']
+  READY     every other registered source is refused for inactives 7 refused: ['injuries', 'schedules', 'depth_charts', 'weekly_rosters', 'official_injury_report', 'espn_injuries_json', 'official_transactions']
+  READY     source resolves: official_inactives    SOURCE_RESOLVED
+  READY     anchored basis discharges              SCHEDULED_WINDOW_ANCHORED
+  READY     a sweep does NOT discharge             PERIODIC_SWEEP
+  READY     an unknown workflow does NOT discharge PERIODIC_SWEEP
+  READY     a MANUAL dispatch of the anchored workflow does NOT discharge OPERATOR_TARGETED
+  READY     a LOCAL run does NOT discharge         LOCAL_INVOCATION
+  READY     a capture inside the window but attributed to ANOTHER game does not discharge 
+  READY     a capture with NO declared target does not discharge 
+  READY     a capture of the right game but the WRONG KIND does not discharge 
+  READY     a correctly declared capture inside the window DOES discharge 
+  READY     the same capture one minute LATE does not discharge 
+  READY     the same capture one minute EARLY does not discharge 
+  READY     manifest persists and is append-only tracked 479 rows
+  READY     coverage join runs                     NO_WINDOW_HAS_CLOSED_YET
+  READY     coverage reports dischargeable vs unattributed captures dischargeable=0 unattributed=372
+  READY     the target is not already covered      covered=0 not_yet_due=63
+  READY     the historical false-cover regression fixture is preserved /home/user/nfl/nfl/tests/fixtures/regression_2026_09_07_practice_false_cover.json
+  READY     manifest rows carry a raw sha256       372 capture rows of 479
+  READY     blob paths resolve on disk             60 resolve, 0 do not, of the last 60
+  READY     the five clocks are kept apart on the evidence 5/5 present: ['source_timestamp', 'retrieved_at', 'cache_timestamp', 'generated_at', 'effective_for_date']
+  READY     requested_at is recorded separately from the source clock 
+  READY     a cache hit cannot manufacture a new retrieval time content_unchanged is recorded on repeat captures
+  READY     every capture row declares its execution target and eligibility 
+  READY     workflow carries a schedule identity digest SCHED-2a2924d4966fbd3d
+  READY     kickoff-change behaviour: a moved kickoff changes that digest and the drift test fails asserted by nfl/tests/test_t90_workflow.py
+  READY     retry: 16 firing opportunities inside the 80-minute window 16 cron entries, 5-minute step
+  READY     duplicate capture is idempotent: content-addressed blobs blob name is a digest, so a repeat capture rewrites the same path
+  READY     source outage: the job does not fail on a non-FAIL state only a real FAIL fails the job; BLOCKED/DEFERRED are logged
+  READY     nothing is committed when nothing was captured 
+
+  50 items: 50 READY, 0 PARTIAL, 0 BLOCKED
+
+  VERDICT: READY_FOR_REAL_WINDOW
+  G0A REMAINS 11/12. This audit cannot change it: every check above used
+  a non-dischargeable test target, and a synthetic or preflight run cannot
+  satisfy Item 1.
