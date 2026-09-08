@@ -93,9 +93,18 @@ def test_A_the_two_answers_are_different_questions():
     check('not one capture in the real manifest carries a game_id',
           cov.evidence['attributed_captures'] == 0,
           str(cov.evidence.get('attributed_captures')))
-    check('and the refusal names the source-level report as the thing not to '
-          'read as coverage',
-          'unmet_targets' in cov.detail, cov.detail[:80])
+    # Time-aware. This asserted `'unmet_targets' in cov.detail`, which is the
+    # wording of the DEFERRED branch only. Once a window closed unfilled the
+    # detail became the FAIL branch's and the assertion broke -- again a
+    # snapshot of a transient state rather than the meaning being protected.
+    # The meaning: whichever branch is taken, the answer is a refusal that
+    # names the game-level fact, and it is never a PASS carrying a
+    # source-level count.
+    check('and the refusal names the game-level fact for whichever branch '
+          'the calendar puts us in',
+          ('unmet_targets' in cov.detail if cov.state is State.DEFERRED
+           else 'window close' in cov.detail),
+          f'{cov.state}[{cov.code}] {cov.detail[:80]}')
 
 
 def test_B_out_of_window_never_covers():

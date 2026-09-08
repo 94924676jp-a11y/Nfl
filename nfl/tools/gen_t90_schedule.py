@@ -223,15 +223,14 @@ jobs:
           python3 nfl/tools/capture_vintage.py --season {season} | tee /tmp/capture.log
           echo "exit=$?" >> "$GITHUB_OUTPUT"
 
-      - name: Fail only on a real FAIL
-        run: |
-          if grep -qE '^FAIL ' /tmp/capture.log; then
-            grep -E '^FAIL ' /tmp/capture.log
-            exit 1
-          fi
-          echo "no FAIL states"
-
+      # COMMIT BEFORE JUDGING, and here it matters most. A failing step skips
+      # the rest of the job, so with the FAIL gate first a single misbehaving
+      # source inside the T-90 window would have thrown away the qualifying
+      # inactives capture this workflow exists to take. Measured on the
+      # baseline workflow 2026-09-08: runs 87 and 88 captured six sources and
+      # committed none. The window is 80 minutes and does not come back.
       - name: Commit anything captured
+        if: always()
         run: |
           git config user.name  "nfl-capture[bot]"
           git config user.email "nfl-capture@users.noreply.github.com"
@@ -247,6 +246,16 @@ jobs:
             -m "Append-only: adds manifest rows and content-addressed blobs."
           git pull --rebase --autostash origin main
           git push origin HEAD:main
+
+      - name: Fail only on a real FAIL
+        if: always()
+        run: |
+          # Runs AFTER the commit: the signal is kept, and so are the bytes.
+          if grep -qE '^FAIL ' /tmp/capture.log; then
+            grep -E '^FAIL ' /tmp/capture.log
+            exit 1
+          fi
+          echo "no FAIL states"
 
       - name: Report game-level coverage
         if: always()

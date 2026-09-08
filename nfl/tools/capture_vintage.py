@@ -226,20 +226,46 @@ def fetch(src: Source, season: int, store: pathlib.Path,
         # A CSV row count is meaningless here, and "200 with bytes" is not
         # evidence: a JavaScript shell returns a healthy-looking 200 over a page
         # containing no injury data at all. Fail closed on the shell.
-        _markers = sum(_text.lower().count(m) for m in
-                       ("questionable", "doubtful", "did not participate",
-                        "limited participation", "full participation"))
+        #
+        # THE VOCABULARY IS THE SOURCE'S OWN, NOT ONE SHARED SET.
+        # Sharing the injury-report words across every html source meant the
+        # inactives page -- whose subject word is "inactive" -- was judged by
+        # words it does not use, and passed on 4 incidental "questionable"s
+        # against 21 "inactive"s. When those four left the page it went FAIL
+        # over 419KB of real content. Measured on the committed blobs.
+        _markers_for = src.content_markers or (
+            "questionable", "doubtful", "did not participate",
+            "limited participation", "full participation")
+        _markers = sum(_text.lower().count(m.lower()) for m in _markers_for)
         _shell = any(m in _text for m in ("__NEXT_DATA__", "window.__INITIAL"))
-        if len(payload) < 1000 or _markers == 0:
+        # A SHELL AND AN UNPUBLISHED PAGE ARE DIFFERENT FACTS.
+        # Tiny payload, or a JS shell marker, is a real defect: the page did
+        # not render. A full-size page that simply carries no rows yet is the
+        # source not having published, which is a STATE -- the same state the
+        # 404 sources report -- and calling it FAIL both misnames it and, in
+        # this workflow, discards every other source's evidence for that run.
+        if len(payload) < 1000 or _shell:
             tmp.unlink()
             return Outcome.fail(
                 "HTML_SHELL_OR_EMPTY",
-                f"{src.name}: HTTP {status} with {len(payload)} bytes but "
-                f"{_markers} status-word markers"
+                f"{src.name}: HTTP {status} with {len(payload)} bytes"
                 f"{' and a JS-shell marker present' if _shell else ''}. A 200 "
-                f"over a page carrying no injury data is not a capture.",
+                f"over a page that did not render is not a capture.",
                 source=src.name, n_bytes=n_bytes, n_markers=_markers,
                 js_shell=_shell)
+        if _markers == 0:
+            # NOT a pass: nothing is stored and nothing is discharged. It is a
+            # debt, and it stays owed until a later capture carries rows.
+            tmp.unlink()
+            return Outcome.deferred(
+                "SOURCE_HAS_NO_ROWS_YET",
+                f"{src.name}: HTTP {status}, {len(payload)} bytes that render, "
+                f"carrying 0 of its own subject markers {_markers_for}. The "
+                f"page exists and has not published rows yet. This discharges "
+                f"nothing and is owed until a capture carries rows.",
+                source=src.name, n_bytes=n_bytes, n_markers=0,
+                markers_looked_for=list(_markers_for),
+                owed=f"{src.name}:{url}")
         n_data_rows = _markers      # the HTML analogue of "rows that mean something"
     elif src.content_kind == "json":
         # A minified JSON document is a single line, so a row count read 8,996,076

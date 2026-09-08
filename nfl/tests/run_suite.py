@@ -25,7 +25,15 @@ from contextlib import redirect_stdout
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # Modules whose counters are named something other than PASSED/FAILED.
-_TALLY = (('PASSED', 'FAILED'), ('passed', 'failed'), ('OK', 'BAD'))
+#
+# ('P', 'F') IS NOT OPTIONAL. Three sportsplatform modules count with those
+# names, so without them `tally()` returned None, those modules were judged on
+# exceptions alone, and their `check()` failures were invisible -- the exact
+# defect this runner was written to end, still live in three files. Found by
+# nfl/tests/test_harness_audit.py, which asserts no module reports through a
+# counter this runner cannot read.
+_TALLY = (('PASSED', 'FAILED'), ('passed', 'failed'), ('OK', 'BAD'),
+          ('P', 'F'))
 
 
 def tally(mod):
@@ -36,14 +44,22 @@ def tally(mod):
 
 
 def main(argv=None):
-    argv = argv or sys.argv[1:]
+    argv = argv if argv is not None else sys.argv[1:]
     verbose = '-v' in argv
+    # `--only SUBSTR` restricts discovery. It exists so the harness can prove
+    # itself against a seeded module without a full run, and it never changes
+    # how a discovered module is judged.
+    only = None
+    if '--only' in argv:
+        only = argv[argv.index('--only') + 1]
     os.chdir(ROOT)
     for q in (ROOT, os.path.join(ROOT, 'sportsplatform')):
         if q not in sys.path:
             sys.path.insert(0, q)
     files = (sorted(glob.glob('nfl/tests/test_*.py'))
              + sorted(glob.glob('sportsplatform/**/test_*.py', recursive=True)))
+    if only:
+        files = [f for f in files if only in f]
     n_fn = n_raise = n_check_fail = n_check_ok = 0
     problems = []
     for f in files:

@@ -108,6 +108,17 @@ class SourceSpec:
     # authority, without that convenience letting a periodic poll drift into
     # the event-anchored obligation path.
     watch_only: bool = False
+    # THE SUBJECT VOCABULARY OF THIS SOURCE'S OWN PAGE.
+    #
+    # A single shared marker set was a defect. The injury-report words
+    # ("questionable", "doubtful", "did not participate", ...) were applied to
+    # EVERY html source, including the inactives page, whose subject word is
+    # "inactive". Measured on the committed blobs: the inactives page carries
+    # "inactive" 21 times and, of the injury words, only 4 incidental
+    # "questionable". It was passing its own validity control on that accident,
+    # and when those four dropped off the page on 2026-09-08T17:36Z the control
+    # flipped to FAIL over 419KB of real content.
+    content_markers: tuple = ()
     note: str = ""
 
     def url(self, season: int) -> Optional[str]:
@@ -197,6 +208,8 @@ REGISTRY: tuple = (
         source_status=SourceStatus.VERIFIED_REACHABLE_EXTERNALLY,
         executor_access=ExecutorAccess.UNTESTED,
         serves_kinds=("practice", "final_status"),
+        content_markers=("questionable", "doubtful", "did not participate",
+                         "limited participation", "full participation"),
         # The CAPTURE is a whole-page snapshot, effective at the instant the
         # origin produced it. WEEK_TEAM is what a PARSED ROW would carry, and no
         # parser exists yet -- declaring it here made scope construction refuse
@@ -218,6 +231,7 @@ REGISTRY: tuple = (
         source_status=SourceStatus.VERIFIED_REACHABLE_EXTERNALLY,
         executor_access=ExecutorAccess.UNTESTED,
         serves_kinds=("inactives",),
+        content_markers=("inactive",),
         source_scope_kind=ScopeKind.EXACT_TIMESTAMP,
         note=("Resolves Questionable to 0/1 at ~T-90. The only source that can "
               "discharge an inactives target."),

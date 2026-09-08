@@ -281,19 +281,42 @@ def test_K_live_state_is_repaired():
     cov = C.coverage(2026, 1, manifest_path=man)
     e = cov.evidence
     check("nothing is covered", e["covered"] == 0, str(e.get("covered")))
-    check("nothing is missed either -- no window has closed", e["missed"] == 0)
-    check("the state is DEFERRED, which is a debt and not a pass",
-          cov.state is State.DEFERRED and cov.code == "NO_WINDOW_HAS_CLOSED_YET",
-          f"{cov.state}[{cov.code}]")
+    # TIME-AWARE, and deliberately so. The two assertions here used to read
+    # `missed == 0` and `state is DEFERRED[NO_WINDOW_HAS_CLOSED_YET]`. Both were
+    # true on 2026-09-07 and both are now false, because windows have since
+    # closed unfilled. They were wall-clock-dependent snapshots of a transient
+    # state, not statements of the thing this test exists to protect.
+    #
+    # What it exists to protect is time-invariant: the live manifest must never
+    # FALSELY cover anything. That is asserted below and does not decay.
+    # Whether anything has yet come due is a fact about the calendar, so it is
+    # asserted as a state MACHINE rather than as a value.
+    check("the state is never PASS while nothing is genuinely covered",
+          cov.state is not State.PASS, f"{cov.state}[{cov.code}]")
+    check("and the state matches the calendar: DEFERRED before any window "
+          "closes, FAIL once one closes unfilled",
+          (cov.state is State.DEFERRED
+           and cov.code == "NO_WINDOW_HAS_CLOSED_YET" and e["missed"] == 0)
+          or (cov.state is State.FAIL
+              and cov.code == "PERISHABLE_WINDOWS_MISSED" and e["missed"] > 0),
+          f"{cov.state}[{cov.code}] missed={e['missed']}")
     check("covered and attributed_captures can no longer disagree",
           e["covered"] == 0 and e["attributed_captures"] == 0)
     check("and the historical captures are still read, not deleted",
           e["unattributed_captures"] > 300 and e["total_pass_rows"] > 300,
           f"unattributed={e.get('unattributed_captures')} "
           f"pass_rows={e.get('total_pass_rows')}")
-    check("the real future obligation is still pending",
-          e["not_yet_due"] == e["n_targets"] and e["n_targets"] > 60,
-          f"{e.get('not_yet_due')}/{e.get('n_targets')}")
+    # Also time-aware. `not_yet_due == n_targets` was a snapshot. The
+    # invariant underneath it is that the three buckets partition the target
+    # set exactly -- no target is counted twice and none is dropped, which is
+    # what a silently-shrinking obligation set would look like.
+    check("the three buckets partition the obligations exactly",
+          e["covered"] + e["missed"] + e["not_yet_due"] == e["n_targets"]
+          and e["n_targets"] > 60,
+          f"{e['covered']}+{e['missed']}+{e['not_yet_due']} "
+          f"!= {e['n_targets']}")
+    check("and a real future obligation remains", e["not_yet_due"] > 0,
+          str(e.get("not_yet_due")))
 
 
 def test_L_clears_no_longer_reads_the_scope_constant():
