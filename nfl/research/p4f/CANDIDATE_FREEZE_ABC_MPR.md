@@ -108,10 +108,18 @@ Source files, as frozen:
 | `p4c_lib.py` | `f61f76e53850c1d05f0a02cbdab03d2054d22058a247b2ed3e52b78dfa31195b` |
 | `p4c_results.json` | `5d8d34c22c01203e52534a1281a14bc6f078b59149d56bb28dce43b8e30845c3` |
 
-Input artifacts. **These are not in the repository** — the same debt P4B and
-P4C carry. A prospective run must verify these hashes before it may claim to
-be the same experiment; if it cannot, it is a new input generation and this
-freeze does not describe it.
+Input artifacts.
+
+**Corrected 2026-09-08.** This section previously read "These are not in the
+repository — the same debt P4B and P4C carry." That debt is closed. Both
+artifacts are now **EXACT_REPRODUCIBLE**: byte-identical regeneration from the
+thirteen leaf CSVs committed under `nfl/research/inputs/` plus the already
+committed P1–P4B code, via `nfl/research/repro/regenerate.py` (33s). The
+derived binaries are still not committed, and no longer need to be.
+
+A prospective run must still verify these hashes — through
+`nfl/research/repro/identity.py`, which refuses the frozen label on any
+mismatch and returns `DIFFERENT_INPUT_GENERATION` instead.
 
 | artifact | sha256 | in repository |
 |---|---|---|

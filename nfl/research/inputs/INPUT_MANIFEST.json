@@ -1,0 +1,125 @@
+{
+ "artifact": "RESEARCH_INPUT_CLOSURE",
+ "purpose": "The leaf inputs of the P4B->P4F research chain. Identity is the sha256 of the DECOMPRESSED bytes; the .gz framing is an encoding detail and its own hash is recorded only for convenience. Stored gzipped to match this repository's existing convention for durable evidence (nfl/vintage/*.csv.gz).",
+ "why_committed": "panel_enriched.pkl and volume_store.npy are byte-for-byte regenerable from these files, so the derived binaries are NOT committed -- the generation mechanism plus these leaves is the smaller and more auditable artifact. Committing them is what stops this project repeating the sibling MLB project's v7/corpus loss, where the consumed corpus was never committed and the M0 baseline became permanently non-reproducible.",
+ "gzip": "gzip -9 -n (no name, no timestamp) so the archive is reproducible",
+ "files": {
+  "dc_2020.csv": {
+   "sha256_decompressed": "45a315dd7f3e7837faf06a9c9cf995e1c131017a748482b2caaa111ffa0b9372",
+   "sha256_gz": "1bf4a4ad3e9be338de168975f79ca84724554c5001c4cdf8a9469eabf3663a4a",
+   "bytes_decompressed": 3327076,
+   "bytes_gz": 208702,
+   "stored_as": "nfl/research/inputs/dc_2020.csv.gz",
+   "origin_dir": "p1",
+   "provenance": "nflverse depth charts release, season 2020"
+  },
+  "dc_2021.csv": {
+   "sha256_decompressed": "91e3384ff13146c77f02fed2c3eca163d35868dd62da6b794c5b51df1d15b724",
+   "sha256_gz": "dcaf3ba8a4ab00b203e972367ca699191720e074fdb5d23adb6f08969a8520f1",
+   "bytes_decompressed": 3447809,
+   "bytes_gz": 215767,
+   "stored_as": "nfl/research/inputs/dc_2021.csv.gz",
+   "origin_dir": "p1",
+   "provenance": "nflverse depth charts release, season 2021"
+  },
+  "dc_2022.csv": {
+   "sha256_decompressed": "4c64ee59666431c49cbc0a818cc3165886012cf72b545771a77c0805aa621b9c",
+   "sha256_gz": "db47b71b246504ed6d07de6d29210c9ab396962c36ca632d53fed61fa58391b7",
+   "bytes_decompressed": 3467936,
+   "bytes_gz": 209966,
+   "stored_as": "nfl/research/inputs/dc_2022.csv.gz",
+   "origin_dir": "p1",
+   "provenance": "nflverse depth charts release, season 2022"
+  },
+  "dc_2023.csv": {
+   "sha256_decompressed": "583f83842590e7e7d3417e0cd9c5c9e38f8696353bb754561d80e5583d2a98cf",
+   "sha256_gz": "af839dc64bb8aafe3688bea9268ad3a9c3d2f0974baf8b56e9623bd7f84041f7",
+   "bytes_decompressed": 3426502,
+   "bytes_gz": 203136,
+   "stored_as": "nfl/research/inputs/dc_2023.csv.gz",
+   "origin_dir": "p1",
+   "provenance": "nflverse depth charts release, season 2023"
+  },
+  "dc_2024.csv": {
+   "sha256_decompressed": "f210a33774611f7f78a89af789b61c6289a2631a21227a1a3c63c973c23588b7",
+   "sha256_gz": "dd256724a61d3e3a218b8f0deb60178fcf1068a64e31ec871453fb64aa82a95a",
+   "bytes_decompressed": 3391616,
+   "bytes_gz": 204912,
+   "stored_as": "nfl/research/inputs/dc_2024.csv.gz",
+   "origin_dir": "p1",
+   "provenance": "nflverse depth charts release, season 2024"
+  },
+  "denom_panel.csv": {
+   "sha256_decompressed": "d1df0c119fffc0e826ae095d04e8c3c1ce0a6017cf0dc64d2897e507be407a52",
+   "sha256_gz": "3376b7839037c15e36e707271add40fd9169d6de80b4a5d4629250d1b9f8542b",
+   "bytes_decompressed": 182127,
+   "bytes_gz": 46306,
+   "stored_as": "nfl/research/inputs/denom_panel.csv.gz",
+   "origin_dir": "p4b",
+   "provenance": "derived by p4b/mk_denom.py; the team-game denominators"
+  },
+  "inj_2020.csv": {
+   "sha256_decompressed": "706cca82824214f6b73ba0c6e537d3ee39766a50c644b8974b9fc28d7518de90",
+   "sha256_gz": "52d629dcb867a839a38814a017813db4ca437a0ea1172f14319e96145e5c2b59",
+   "bytes_decompressed": 737474,
+   "bytes_gz": 139162,
+   "stored_as": "nfl/research/inputs/inj_2020.csv.gz",
+   "origin_dir": "p1",
+   "provenance": "nflverse injury report release, season 2020"
+  },
+  "inj_2021.csv": {
+   "sha256_decompressed": "1049fb9ff0fe7cfcf3ba8bfe1f5a35d3aba985c461c8fb7bf5201735b6d34254",
+   "sha256_gz": "b758fef0aa73df842369fb4cd8635ad4a8a0f394714037a042b6458e3e2975d5",
+   "bytes_decompressed": 737083,
+   "bytes_gz": 139494,
+   "stored_as": "nfl/research/inputs/inj_2021.csv.gz",
+   "origin_dir": "p1",
+   "provenance": "nflverse injury report release, season 2021"
+  },
+  "inj_2022.csv": {
+   "sha256_decompressed": "5f0d60324e597edd1a2ced8540b04e40b51dd440591dd1df11b8d96343387c9e",
+   "sha256_gz": "05baa65576e14ca899e565537c179eb2e448b7290b5068fccd38e838ba64918c",
+   "bytes_decompressed": 752433,
+   "bytes_gz": 141851,
+   "stored_as": "nfl/research/inputs/inj_2022.csv.gz",
+   "origin_dir": "p1",
+   "provenance": "nflverse injury report release, season 2022"
+  },
+  "inj_2023.csv": {
+   "sha256_decompressed": "16b04e21da5aa3944cfa9c22cafcc84ed7e6d9866eaddf0344e9b8cbf2f63afe",
+   "sha256_gz": "848ba8f194158759d915ec6d28abc794dbe513c6251885e2598232f5a43a4db7",
+   "bytes_decompressed": 738501,
+   "bytes_gz": 140000,
+   "stored_as": "nfl/research/inputs/inj_2023.csv.gz",
+   "origin_dir": "p1",
+   "provenance": "nflverse injury report release, season 2023"
+  },
+  "inj_2024.csv": {
+   "sha256_decompressed": "498bce8e13cb64b2ab9bb0ad6cb81d0a63c2ddb24016c9fc90c2de2126fae449",
+   "sha256_gz": "c4eb3015d30bd0504268c16befad1f8115712cbce1ba34aa0d5725a110509f62",
+   "bytes_decompressed": 816989,
+   "bytes_gz": 156582,
+   "stored_as": "nfl/research/inputs/inj_2024.csv.gz",
+   "origin_dir": "p1",
+   "provenance": "nflverse injury report release, season 2024"
+  },
+  "inj_2025.csv": {
+   "sha256_decompressed": "15ee790fef634caea988e7b6562fc393a63739dd7ee38229d1b42161427709df",
+   "sha256_gz": "60f0eabbe56e7dbc85226ff8d6b182cd205cb10cbdd825cfc22f5d96b6767e1b",
+   "bytes_decompressed": 695623,
+   "bytes_gz": 126294,
+   "stored_as": "nfl/research/inputs/inj_2025.csv.gz",
+   "origin_dir": "p1",
+   "provenance": "nflverse injury report release, season 2025"
+  },
+  "panel_p3.csv": {
+   "sha256_decompressed": "1b3445034c624983f51bdcde4184024a16bf6f41aa2e66013278c3d4bb851d2a",
+   "sha256_gz": "6cb51092175c7a066ceb937e9443762c10f00150d146b8c9264a6ac5b95ab596",
+   "bytes_decompressed": 6382123,
+   "bytes_gz": 1385355,
+   "stored_as": "nfl/research/inputs/panel_p3.csv.gz",
+   "origin_dir": "p1",
+   "provenance": "derived by p1/build_panel_p3.py from nflverse player/team weekly, participation and snap-count releases; NOT itself regenerated here"
+  }
+ }
+}

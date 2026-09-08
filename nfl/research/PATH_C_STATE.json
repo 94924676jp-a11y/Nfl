@@ -1,0 +1,108 @@
+{
+ "artifact": "PATH_C_STATE",
+ "registered_utc": "2026-09-08T00:45:00Z",
+ "authority": "owner directive 2026-09-08, section 'Register Path C governance state'",
+ "axes": {
+  "knowledge": [
+   "UNEXPLORED",
+   "BASELINED",
+   "DECOMPOSED",
+   "RECOVERABILITY_CHARACTERIZED"
+  ],
+  "action": [
+   "INVESTIGATE",
+   "DEVELOPING",
+   "CANDIDATE",
+   "PROSPECTIVELY_VALIDATED",
+   "PROMOTED",
+   "INFORMATION_CONSTRAINED",
+   "CALIBRATION_DEFECT",
+   "ESTIMATOR_DEFECT",
+   "DATA_BLOCKED",
+   "HOLD_TENTATIVE",
+   "HOLD_CHARACTERIZED"
+  ]
+ },
+ "note_on_reopened": "REOPENED is a transition event, not a steady state, and is not a value of either axis.",
+ "no_numeric_ev_scores": "Research-EV is not scored numerically. Prioritisation is qualitative and uses the directive's five named dimensions.",
+ "subsystems": {
+  "team_volume": {
+   "knowledge": "RECOVERABILITY_CHARACTERIZED",
+   "action": "HOLD_CHARACTERIZED"
+  },
+  "rb_carry_allocation": {
+   "knowledge": "DECOMPOSED",
+   "action": "DEVELOPING",
+   "accepted_architecture": "P4C system C",
+   "information_ceiling": "NOT ESTABLISHED",
+   "note": "A failed model is not an information ceiling. P4E's feature ladder failing does not establish one, and P4F found the low-history defect was an estimator defect rather than missing information."
+  },
+  "abc_mpr": {
+   "knowledge": "DECOMPOSED",
+   "action": "CANDIDATE",
+   "frozen": true,
+   "promoted": false,
+   "freeze_spec": "nfl/research/p4f/CANDIDATE_FREEZE_ABC_MPR.md",
+   "identity_gate": "nfl/research/repro/ABC_MPR_IDENTITY.json",
+   "eligibility": "2022-2025 are heavily mined development data and may never promote it"
+  },
+  "mpr_only": {
+   "knowledge": "DECOMPOSED",
+   "action": "ESTIMATOR_DEFECT",
+   "decision": "REJECTED AS CANDIDATE",
+   "reason": "flattens genuine emerging backs; PIT breach in 2022"
+  },
+  "rushing_conversion": {
+   "knowledge": "RECOVERABILITY_CHARACTERIZED",
+   "action": "HOLD_CHARACTERIZED",
+   "condition_to_reopen": "materially new information"
+  },
+  "appearance": {
+   "knowledge": "DECOMPOSED",
+   "action": "INFORMATION_CONSTRAINED"
+  },
+  "route_participation": {
+   "knowledge": "UNEXPLORED",
+   "action": "INVESTIGATE",
+   "priority": "NEXT"
+  },
+  "target_allocation": {
+   "knowledge": "UNEXPLORED",
+   "action": "DATA_BLOCKED",
+   "blocked_on": "participation adequacy"
+  },
+  "joint_dependence": {
+   "knowledge": "UNEXPLORED",
+   "action": "INVESTIGATE",
+   "scope": "DIAGNOSTIC ONLY"
+  },
+  "td_red_zone": {
+   "knowledge": "UNEXPLORED",
+   "action": "HOLD_TENTATIVE",
+   "note": "LATER"
+  }
+ },
+ "gates": {
+  "G0A": "11/12",
+  "NFL_1": "NOT AUTHORIZED"
+ },
+ "open_questions": [
+  {
+   "id": "OQ-2024-RB1RB2",
+   "statement": "The realised 2024 RB1<->RB2 across-team-game share correlation is -0.667, outside the 95% posterior predictive band of every system tested in P4F (bands top out near -0.63).",
+   "status": "REGISTERED, NOT UNDER RESEARCH",
+   "do_not_research": "2026-09-08 directive: do not research it tonight",
+   "reopen_if": [
+    "a similar prospective misspecification appears",
+    "another position shows analogous structure",
+    "materially new mechanism or data becomes available"
+   ]
+  }
+ ],
+ "reproducibility": {
+  "panel_enriched.pkl": "EXACT_REPRODUCIBLE from nfl/research/inputs + committed code",
+  "volume_store.npy": "EXACT_REPRODUCIBLE from nfl/research/inputs + committed code",
+  "mechanism": "nfl/research/repro/regenerate.py",
+  "identity_gate": "nfl/research/repro/identity.py"
+ }
+}
