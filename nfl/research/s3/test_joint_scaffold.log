@@ -1,0 +1,67 @@
+
+A. physics the draws may never violate
+  ok   carries/pre: no negative share
+  ok   carries/pre: no negative absolute outcome
+  ok   carries/post: no negative share
+  ok   carries/post: no negative absolute outcome
+  ok   carries/post: the harness reports the group-sum maximum
+  ok   carries/post: and the violation rate it reports is the real one
+  ok   carries/post: it also reports the realised maximum, so the model can be compared against physics rather than against itself
+  ok   carries: appearance draws are boolean
+  ok   carries: team volume is SHARED within a team-game
+  ok   carries: a non-appearing draw allocates nothing
+  ok   snaps/pre: no negative share
+  ok   snaps/pre: no negative absolute outcome
+  ok   snaps/post: no negative share
+  ok   snaps/post: no negative absolute outcome
+  ok   snaps/post: the harness reports the group-sum maximum
+  ok   snaps/post: and the violation rate it reports is the real one
+  ok   snaps/post: it also reports the realised maximum, so the model can be compared against physics rather than against itself
+  ok   snaps: appearance draws are boolean
+  ok   snaps: team volume is SHARED within a team-game
+  ok   snaps: a non-appearing draw allocates nothing
+
+B. the report cannot quietly become post-only
+  ok   accounting_coherence carries both stages
+  ok   marginal_calibration carries both stages
+  ok   joint_dependence carries both stages
+  ok   and they are genuinely different numbers, not a copy
+  ok   the three blocks are separate keys, never one score
+  ok   and no function combines the three blocks into one number
+
+C. a swapped marginal must announce itself
+  ok   the draws carry a marginal identity
+  ok     which names the accepted system
+  ok     and hashes the code that produced it
+  ok   a different marginal produces a different identity in the report
+  ok     and the swap changes the pre-reconciliation numbers, so it cannot hide behind the normaliser
+  ok   the identity is deterministic for the same inputs
+
+D. the harness refuses to be used for a decision
+  ok   purpose 'wager sizing' is refused
+  ok   purpose 'DFS lineup' is refused
+  ok   purpose 'ownership projection' is refused
+  ok   purpose 'salary optimisation' is refused
+  ok   purpose 'market price comparison' is refused
+  ok   purpose 'find the edge' is refused
+  ok   purpose 'ROI estimate' is refused
+  ok   purpose 'bankroll' is refused
+  ok   purpose 'parlay' is refused
+  ok   purpose 'prop pricing' is refused
+  ok   a diagnostic purpose is allowed
+  ok   no pricing or lineup identifier appears in the module
+
+E. delete the guards
+  ok   GD-1 with FORBIDDEN_USES emptied, a DFS purpose is accepted
+  ok     and with the guard restored it is refused again
+  ok   GD-2 with the stage argument ignored, pre and post become identical and the pre-reconciliation defect vanishes from the report
+  ok     and with it restored they differ again
+
+F. flagging is not deciding
+  ok   flags were raised
+  ok   every flag says it is not a rejection
+  ok   every flag action is a flag, never a decision
+  ok   and no flag carries a decision field
+  ok   flags are attributed to one of the three blocks
+
+53 passed, 0 failed
