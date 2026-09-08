@@ -1,0 +1,33 @@
+== R1 adversarial (season 2024, materiality 10% rel MAE) ==
+  clean R_ABCD MAE 0.1119
+
+  PASS        current_game_targets                     seeded=0.0868 clean=0.1119 rel_gain=+22.4%
+  PASS        current_game_R                           seeded=0.0001 clean=0.1119 rel_gain=+99.9%
+  UNRESOLVED  current_game_participation               seeded=0.1121 clean=0.1119 rel_gain=-0.2%
+  UNRESOLVED  future_targets                           seeded=0.1117 clean=0.1119 rel_gain=+0.1%
+  UNRESOLVED  future_R                                 seeded=0.1116 clean=0.1119 rel_gain=+0.3%
+  UNRESOLVED  future_participation                     seeded=0.1119 clean=0.1119 rel_gain=-0.0%
+  UNRESOLVED  future_team_target_total                 seeded=0.1119 clean=0.1119 rel_gain=-0.0%
+  UNRESOLVED  postgame_roster_state                    seeded=0.1119 clean=0.1119 rel_gain=+0.0%
+  UNRESOLVED  weekly_rosters_status_proxy              seeded=0.1119 clean=0.1119 rel_gain=-0.0%
+  UNRESOLVED  present_week_depth_chart                 seeded=0.1119 clean=0.1119 rel_gain=+0.0%
+  UNRESOLVED  future_teammate_state                    seeded=0.1119 clean=0.1119 rel_gain=+0.0%
+  UNRESOLVED  identifier_leakage                       seeded=0.1122 clean=0.1119 rel_gain=-0.3%
+  UNRESOLVED  forbidden_market_field                   seeded=0.1119 clean=0.1119 rel_gain=+0.0%
+  UNRESOLVED  observed_weather                         seeded=0.1119 clean=0.1119 rel_gain=+0.0%
+  UNRESOLVED  evaluation_season_fit_leakage            seeded=0.1116 rel_gain=+0.3%
+  UNRESOLVED  posthoc_hyperparameter_selection         best_on_eval=0.1119 honest=0.1119 rel_gain=+0.0%
+  PASS        wrong_denominator                        wrong_den_mae=0.095 correct=0.1119 rel_change=+15.1%
+  UNRESOLVED  zero_NA_conflation                       conflated_mae=0.1077 correct=0.1119 rel_change=+3.7% rows_conflated=13308
+  UNRESOLVED  target_rate_division_instability         unweighted_mae=0.1117 weighted=0.1119 rel_change=-0.2%
+  PASS        manual_rounded_artifact_reference        refused=FAIL code=R1_ROUNDED
+  PASS        same_week_duplicate_chronology           duplicate_player_ordinals=1318 rows_history_changed=620
+  PASS        forbidden_identifier_scan                hits=[] files=5
+
+== guard-deletion proofs ==
+  PASS        GD-1 delete the strictly-earlier-ordinal cut rows_history_changed=620 duplicate_player_ordinals=1318
+  PASS        GD-2 the complexity ceiling refuses an over-wide design at_ceiling_4=True at_real_ceiling=not triggered at ABCDE
+  UNRESOLVED  GD-3 relax the >=1-prior-game training filter relaxed_mae=0.1121 rel_change=-0.2%
+
+25 probes: 8 PASS, 17 UNRESOLVED, 0 FAIL; 2 guard-deletion proofs firing
+done in 82s -> r1_adversarial.json

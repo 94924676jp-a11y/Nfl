@@ -1,0 +1,196 @@
+{
+ "eval_season": 2024,
+ "material_threshold": 0.1,
+ "clean_mae": 0.11191246128683893,
+ "probes": [
+  {
+   "probe": "current_game_targets",
+   "state": "PASS",
+   "seeded": 0.0868,
+   "clean": 0.1119,
+   "rel_gain": "+22.4%",
+   "note": ""
+  },
+  {
+   "probe": "current_game_R",
+   "state": "PASS",
+   "seeded": 0.0001,
+   "clean": 0.1119,
+   "rel_gain": "+99.9%",
+   "note": ""
+  },
+  {
+   "probe": "current_game_participation",
+   "state": "UNRESOLVED",
+   "seeded": 0.1121,
+   "clean": 0.1119,
+   "rel_gain": "-0.2%",
+   "note": "seeded leak did not move MAE materially; this probe has not shown it could catch such a leak. Threshold NOT lowered."
+  },
+  {
+   "probe": "future_targets",
+   "state": "UNRESOLVED",
+   "seeded": 0.1117,
+   "clean": 0.1119,
+   "rel_gain": "+0.1%",
+   "note": "seeded leak did not move MAE materially; this probe has not shown it could catch such a leak. Threshold NOT lowered."
+  },
+  {
+   "probe": "future_R",
+   "state": "UNRESOLVED",
+   "seeded": 0.1116,
+   "clean": 0.1119,
+   "rel_gain": "+0.3%",
+   "note": "seeded leak did not move MAE materially; this probe has not shown it could catch such a leak. Threshold NOT lowered."
+  },
+  {
+   "probe": "future_participation",
+   "state": "UNRESOLVED",
+   "seeded": 0.1119,
+   "clean": 0.1119,
+   "rel_gain": "-0.0%",
+   "note": "seeded leak did not move MAE materially; this probe has not shown it could catch such a leak. Threshold NOT lowered."
+  },
+  {
+   "probe": "future_team_target_total",
+   "state": "UNRESOLVED",
+   "seeded": 0.1119,
+   "clean": 0.1119,
+   "rel_gain": "-0.0%",
+   "note": "seeded leak did not move MAE materially; this probe has not shown it could catch such a leak. Threshold NOT lowered."
+  },
+  {
+   "probe": "postgame_roster_state",
+   "state": "UNRESOLVED",
+   "seeded": 0.1119,
+   "clean": 0.1119,
+   "rel_gain": "+0.0%",
+   "note": "seeded leak did not move MAE materially; this probe has not shown it could catch such a leak. Threshold NOT lowered."
+  },
+  {
+   "probe": "weekly_rosters_status_proxy",
+   "state": "UNRESOLVED",
+   "seeded": 0.1119,
+   "clean": 0.1119,
+   "rel_gain": "-0.0%",
+   "note": "seeded leak did not move MAE materially; this probe has not shown it could catch such a leak. Threshold NOT lowered."
+  },
+  {
+   "probe": "present_week_depth_chart",
+   "state": "UNRESOLVED",
+   "seeded": 0.1119,
+   "clean": 0.1119,
+   "rel_gain": "+0.0%",
+   "note": "seeded leak did not move MAE materially; this probe has not shown it could catch such a leak. Threshold NOT lowered."
+  },
+  {
+   "probe": "future_teammate_state",
+   "state": "UNRESOLVED",
+   "seeded": 0.1119,
+   "clean": 0.1119,
+   "rel_gain": "+0.0%",
+   "note": "seeded leak did not move MAE materially; this probe has not shown it could catch such a leak. Threshold NOT lowered."
+  },
+  {
+   "probe": "identifier_leakage",
+   "state": "UNRESOLVED",
+   "seeded": 0.1122,
+   "clean": 0.1119,
+   "rel_gain": "-0.3%",
+   "note": "seeded leak did not move MAE materially; this probe has not shown it could catch such a leak. Threshold NOT lowered."
+  },
+  {
+   "probe": "forbidden_market_field",
+   "state": "UNRESOLVED",
+   "seeded": 0.1119,
+   "clean": 0.1119,
+   "rel_gain": "+0.0%",
+   "note": "seeded leak did not move MAE materially; this probe has not shown it could catch such a leak. Threshold NOT lowered."
+  },
+  {
+   "probe": "observed_weather",
+   "state": "UNRESOLVED",
+   "seeded": 0.1119,
+   "clean": 0.1119,
+   "rel_gain": "+0.0%",
+   "note": "seeded leak did not move MAE materially; this probe has not shown it could catch such a leak. Threshold NOT lowered."
+  },
+  {
+   "probe": "evaluation_season_fit_leakage",
+   "state": "UNRESOLVED",
+   "seeded": 0.1116,
+   "rel_gain": "+0.3%"
+  },
+  {
+   "probe": "posthoc_hyperparameter_selection",
+   "state": "UNRESOLVED",
+   "best_on_eval": 0.1119,
+   "honest": 0.1119,
+   "rel_gain": "+0.0%",
+   "note": "choosing lambda on the evaluation season instead of the inner validation season"
+  },
+  {
+   "probe": "wrong_denominator",
+   "state": "PASS",
+   "wrong_den_mae": 0.095,
+   "correct": 0.1119,
+   "rel_change": "+15.1%",
+   "note": "team_targets substituted for team_dropbacks as the participation denominator"
+  },
+  {
+   "probe": "zero_NA_conflation",
+   "state": "UNRESOLVED",
+   "conflated_mae": 0.1077,
+   "correct": 0.1119,
+   "rel_change": "+3.7%",
+   "rows_conflated": 13308
+  },
+  {
+   "probe": "target_rate_division_instability",
+   "state": "UNRESOLVED",
+   "unweighted_mae": 0.1117,
+   "weighted": 0.1119,
+   "rel_change": "-0.2%",
+   "note": "participation weighting removed from every history estimator; a rate from one pass snap then counts as much as one from thirty"
+  },
+  {
+   "probe": "manual_rounded_artifact_reference",
+   "state": "PASS",
+   "refused": "FAIL",
+   "code": "R1_ROUNDED",
+   "note": "a 4-decimal rounding of the true value is refused by Rule 006"
+  },
+  {
+   "probe": "same_week_duplicate_chronology",
+   "state": "PASS",
+   "duplicate_player_ordinals": 1318,
+   "rows_history_changed": 620
+  },
+  {
+   "probe": "forbidden_identifier_scan",
+   "state": "PASS",
+   "hits": [],
+   "files": 5
+  },
+  {
+   "probe": "GD-1 delete the strictly-earlier-ordinal cut",
+   "state": "PASS",
+   "rows_history_changed": 620,
+   "duplicate_player_ordinals": 1318,
+   "note": "replayed from the same-week probe above; without the cut a mid-week team change lets a player read his own same-week row"
+  },
+  {
+   "probe": "GD-2 the complexity ceiling refuses an over-wide design",
+   "state": "PASS",
+   "at_ceiling_4": true,
+   "at_real_ceiling": "not triggered at ABCDE"
+  },
+  {
+   "probe": "GD-3 relax the >=1-prior-game training filter",
+   "state": "UNRESOLVED",
+   "relaxed_mae": 0.1121,
+   "rel_change": "-0.2%"
+  }
+ ],
+ "guard_deletion_proofs_firing": 2
+}
