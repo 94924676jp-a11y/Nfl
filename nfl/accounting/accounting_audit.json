@@ -1,0 +1,61 @@
+{
+ "team_targets_eq_sum_player_targets": {
+  "state": "PASS",
+  "code": "INVARIANT_HOLDS_TEAM_TARGETS_EQ_SUM_PLAYER_TARGETS",
+  "detail": "team_targets_eq_sum_player_targets: holds on all 3230 group(s)"
+ },
+ "team_receptions_eq_sum_player_receptions": {
+  "state": "PASS",
+  "code": "INVARIANT_HOLDS_TEAM_RECEPTIONS_EQ_SUM_PLAYER_RECEPTIONS",
+  "detail": "team_receptions_eq_sum_player_receptions: holds on all 3230 group(s)"
+ },
+ "team_recv_yards_eq_sum_player_recv_yards": {
+  "state": "PASS",
+  "code": "INVARIANT_HOLDS_TEAM_RECV_YARDS_EQ_SUM_PLAYER_RECV_YARDS",
+  "detail": "team_recv_yards_eq_sum_player_recv_yards: holds on all 3230 group(s)"
+ },
+ "team_carries_eq_sum_player_carries": {
+  "state": "PASS",
+  "code": "INVARIANT_HOLDS_TEAM_CARRIES_EQ_SUM_PLAYER_CARRIES",
+  "detail": "team_carries_eq_sum_player_carries: holds on all 3230 group(s)"
+ },
+ "team_rush_td_eq_sum_player_rush_td": {
+  "state": "PASS",
+  "code": "INVARIANT_HOLDS_TEAM_RUSH_TD_EQ_SUM_PLAYER_RUSH_TD",
+  "detail": "team_rush_td_eq_sum_player_rush_td: holds on all 3230 group(s)"
+ },
+ "team_pass_yards_eq_team_recv_yards": {
+  "state": "FAIL",
+  "code": "INVARIANT_VIOLATED_TEAM_PASS_YARDS_EQ_TEAM_RECV_YARDS",
+  "detail": "team_pass_yards_eq_team_recv_yards: 76 of 3230 group(s) carry an UNEXPLAINED residual. Worst (2024, 17, 'DET'): lhs 303.0, rhs 262.0, named other 0.0, unexplained 41.0. A residual that is not named is not reconciled, and clipping it would convert a measurable defect into an invisible one."
+ },
+ "team_pass_td_eq_sum_recv_td": {
+  "state": "PASS",
+  "code": "INVARIANT_HOLDS_TEAM_PASS_TD_EQ_SUM_RECV_TD",
+  "detail": "team_pass_td_eq_sum_recv_td: holds on all 3230 group(s)"
+ },
+ "player_receptions_le_targets": {
+  "state": "PASS",
+  "code": "ORDERING_HOLDS_PLAYER_RECEPTIONS_LE_TARGETS"
+ },
+ "player_rz_targets_le_targets": {
+  "state": "PASS",
+  "code": "ORDERING_HOLDS_PLAYER_RZ_TARGETS_LE_TARGETS"
+ },
+ "_edge_cases": {
+  "pass_attempt_no_receiver_no_sack": 4586,
+  "no_play_or_penalty": 14626,
+  "two_point_plays": 794,
+  "lateral_receptions": 82,
+  "lateral_rushes": 15
+ },
+ "_n_team_games": 3230,
+ "_seasons": [
+  2020,
+  2021,
+  2022,
+  2023,
+  2024,
+  2025
+ ]
+}
