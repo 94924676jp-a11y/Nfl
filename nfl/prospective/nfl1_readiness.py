@@ -22,6 +22,12 @@ from sportsplatform.governance.outcome import Cause, Outcome  # noqa: E402
 
 STATE = _REPO / 'nfl' / 'research' / 'PATH_C_STATE.json'
 CHECKLIST = _REPO / 'nfl' / 'NFL_G0A_CHECKLIST.md'
+# The dated correction to item 1's recorded reason. The checklist's own text
+# says item 1 fails on egress alone; P3A measured 168 successful HTTP 200
+# captures of the official sources from the Actions executor, so that reason is
+# stale. History is preserved rather than rewritten, and every machine-readable
+# report points here so the stale explanation is not repeated downstream.
+ITEM1_CORRECTION = _REPO / 'nfl' / 'NFL_G0A_ITEM1_REASON_CORRECTION.json'
 
 
 def assert_no_auto_authorization(transition: dict) -> Outcome:
@@ -109,6 +115,31 @@ def assert_no_artifact_claims_12_of_12() -> Outcome:
                '11/12 and prose mentions of 12/12 are requirements or history')
 
 
+def _item1_correction() -> dict:
+    """Point every report at the dated correction, or say plainly it is gone.
+
+    A missing correction file is reported as missing rather than silently
+    omitted: the failure this guards against is a downstream report quietly
+    reverting to the stale egress explanation.
+    """
+    if not ITEM1_CORRECTION.exists():
+        return {'state': 'MISSING',
+                'path': str(ITEM1_CORRECTION.relative_to(_REPO)),
+                'note': 'the dated correction artifact is absent; item 1\'s '
+                        'recorded reason in the checklist is known stale and '
+                        'must not be quoted without it'}
+    d = json.loads(ITEM1_CORRECTION.read_text())
+    return {
+        'state': 'RECORDED',
+        'path': str(ITEM1_CORRECTION.relative_to(_REPO)),
+        'recorded_utc': d['recorded_utc'],
+        'superseded_reason': d['old_diagnosis']['as_written'],
+        'current_reason': d['current_reason_item_1_remains_incomplete'],
+        'numerical_state_unchanged': d['numerical_state_unchanged']['G0A'],
+        'checklist_rewritten': d['history_preserved']['checklist_file_modified'],
+    }
+
+
 def report() -> dict:
     state = json.loads(STATE.read_text())
     return {
@@ -124,6 +155,7 @@ def report() -> dict:
             'The real event-anchored T-90 capture proof. It requires a capture '
             'taken inside a real acceptance window, attributed to the game it '
             'was taken for, from a source authorized to serve that kind.'),
+        'q4a_item1_reason_correction': _item1_correction(),
         'q5_discharging_event': {
             'game': 'NE @ SEA',
             'kickoff_utc': '2026-09-10T00:20:00Z',

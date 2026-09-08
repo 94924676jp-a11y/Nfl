@@ -105,8 +105,24 @@ def test_B_basis_must_be_anchored():
                            sha256="a" * 64, blob_path="nfl/vintage/x.gz",
                            provenance_valid=True)
         check(f"basis {basis} cannot discharge", e2["n_eligible"] == 0)
-    check("and only the anchored basis is in DISCHARGING_BASES",
-          X.DISCHARGING_BASES == (X.BASIS_ANCHORED,), str(X.DISCHARGING_BASES))
+    # This asserted DISCHARGING_BASES == (BASIS_ANCHORED,). A second anchored
+    # path was added 2026-09-08 for practice/final_status, so the literal
+    # tuple is no longer one element. The MEANING it protects is unchanged and
+    # is asserted directly instead: nothing but an anchored SCHEDULED execution
+    # discharges anything, and the G0A kind is reachable from exactly one
+    # basis. A sweep, a manual dispatch and a local run remain incapable.
+    check("every discharging basis is an anchored scheduled one",
+          all(b.startswith("SCHEDULED_WINDOW_ANCHORED")
+              for b in X.DISCHARGING_BASES), str(X.DISCHARGING_BASES))
+    check("no non-anchored basis is discharging",
+          not ({X.BASIS_SWEEP, X.BASIS_LOCAL, X.BASIS_OPERATOR}
+               & set(X.DISCHARGING_BASES)), str(X.DISCHARGING_BASES))
+    g0a_capable = [b for b in X.DISCHARGING_BASES
+                   if X.BASIS_KINDS.get(b) is None
+                   or X.G0A_KIND in X.BASIS_KINDS[b]]
+    check("and EXACTLY ONE basis can discharge the G0A kind, the original "
+          "anchored one",
+          g0a_capable == [X.BASIS_ANCHORED], str(g0a_capable))
 
 
 def test_C_identity_must_match_exactly():

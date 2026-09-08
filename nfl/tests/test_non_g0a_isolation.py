@@ -179,6 +179,36 @@ def test_F_a_non_g0a_capture_does_not_move_g0a():
           r["q8_can_code_authorize_nfl1_without_owner"] == "NO")
 
 
+def test_F2_the_stale_item1_reason_is_corrected_not_erased():
+    print("\nF2. item 1's reason is corrected by a dated artifact")
+    import json
+    p = _REPO / "nfl" / "NFL_G0A_ITEM1_REASON_CORRECTION.json"
+    check("the correction artifact exists", p.exists())
+    d = json.loads(p.read_text())
+    check("  it is dated", bool(d.get("recorded_utc")))
+    check("  it records the superseded egress diagnosis verbatim",
+          "egress alone" in d["old_diagnosis"]["as_written"])
+    check("  it states the old diagnosis was correct WHEN WRITTEN, rather "
+          "than calling it a mistake",
+          d["old_diagnosis"]["was_correct_when_written"] is True)
+    check("  it carries the measured evidence that superseded it",
+          d["measured_correction"]["evidence"]["official_inactives"][
+              "pass_captures"] > 50)
+    check("  the numerical state is explicitly unchanged",
+          d["numerical_state_unchanged"]["G0A"] == "11/12")
+    check("  and the checklist itself was NOT rewritten -- history preserved",
+          d["history_preserved"]["checklist_file_modified"] is False)
+    chk = (_REPO / "nfl" / "NFL_G0A_CHECKLIST.md").read_text()
+    check("  the original wording is still present in the checklist",
+          "egress alone" in chk)
+    r = RD.report()
+    c = r["q4a_item1_reason_correction"]
+    check("  machine-readable readiness POINTS at the correction",
+          c["state"] == "RECORDED", str(c.get("state")))
+    check("  and carries the current reason, not the stale one",
+          "egress" not in c["current_reason"].lower(), c["current_reason"][:80])
+
+
 def test_G_a_closed_window_cannot_be_rescued_by_the_new_workflow():
     print("\nG. the new workflow cannot backfill the two closed misses")
     # The generator emits the whole week, including the window that already

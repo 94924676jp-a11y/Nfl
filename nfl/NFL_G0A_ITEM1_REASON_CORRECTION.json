@@ -1,0 +1,67 @@
+{
+  "artifact": "NFL_G0A_ITEM1_REASON_CORRECTION",
+  "recorded_utc": "2026-09-08T19:30:00Z",
+  "authority": "owner ruling 2026-09-08, packet P3B section 5",
+  "applies_to": "NFL_G0A_CHECKLIST.md item 1 -- kickoff-anchored capture scheduled and demonstrably running",
+
+  "numerical_state_unchanged": {
+    "G0A": "11/12",
+    "item_1_verdict": "FAIL",
+    "note": "This artifact corrects the RECORDED REASON only. It does not discharge item 1, does not change the count, and does not authorize anything."
+  },
+
+  "old_diagnosis": {
+    "as_written": "Item 1 therefore fails on egress alone, and would still fail with a perfect scheduler.",
+    "also_written": "What remains is the endpoint, which is an external dependency -- more code here moves nothing.",
+    "recorded": "2026-09-06T23:05Z",
+    "was_correct_when_written": true,
+    "why_it_was_correct_then": "The measurement behind it was real: DNS resolves www.nfl.com to 151.101.65.55 and the LOCAL proxy answers 403 to CONNECT www.nfl.com:443. That is still true of the local executor today."
+  },
+
+  "measured_correction": {
+    "measured_utc": "2026-09-08",
+    "by": "P3A investigation, packet P3A sections 3 and 5",
+    "finding": "GitHub Actions egress to the official NFL sources WORKS. The 403 is specific to the local executor, which is a different executor from the one that runs the capture workflows. Those are different facts and the checklist generalised one into the other.",
+    "evidence": {
+      "official_inactives": {
+        "url": "https://www.nfl.com/inactives/",
+        "pass_captures": 84,
+        "http_status": "200",
+        "typical_bytes": 419000,
+        "durable_blobs_committed": true
+      },
+      "official_injury_report": {
+        "url": "https://www.nfl.com/injuries/",
+        "pass_captures": 84,
+        "http_status": "200",
+        "typical_bytes": 329000,
+        "durable_blobs_committed": true
+      },
+      "executor_distinction": {
+        "github_actions": "REACHABLE -- 168 successful captures across the two official sources",
+        "local_container": "403 at the egress proxy; BLOCKED/NO_EGRESS and LOCAL_EXECUTOR_NO_EGRESS rows in the manifest record this honestly"
+      }
+    },
+    "second_error_in_the_old_wording": {
+      "claim": "more code here moves nothing",
+      "correction": "P3A found two code defects that would each have prevented the discharge on their own: the FAIL gate ran before the commit step so a control failure discarded captured bytes, and the html validity control judged the inactives page by the injury report's vocabulary. Both are repaired. Code moved a great deal."
+    }
+  },
+
+  "current_reason_item_1_remains_incomplete": "No legitimate real-event anchored T-90 inactives proof has yet occurred. Week 1 opens 2026-09-09 and the first qualifying window is NE @ SEA, 2026-09-09T22:50:00Z to 2026-09-10T00:10:00Z. The requirement is a capture taken inside that window, attributed to that game, from a source authorized to serve the inactives kind, on an anchored execution basis. It is pending, not blocked.",
+
+  "history_preserved": {
+    "policy": "The original checklist text is NOT rewritten. It stands as the record of what was believed and why, with its own date. This artifact is the dated correction beside it.",
+    "checklist_file_modified": false,
+    "path_c_state_modified": false
+  },
+
+  "what_this_does_not_do": [
+    "does not discharge item 1",
+    "does not change G0A from 11/12",
+    "does not authorize NFL-1",
+    "does not promote any model",
+    "does not alter the inactives schedule identity SCHED-2a2924d4966fbd3d",
+    "does not make the two missed practice obligations recoverable"
+  ]
+}

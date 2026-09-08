@@ -226,8 +226,19 @@ def test_F_6_generic_source_level_pass():
               _elig(_decl(ident=dict(ANCHORED,
                                      event_name='workflow_dispatch')), at=at),
               at)]))
-    check('only the anchored scheduled basis can discharge at all',
-          DISCHARGING_BASES == (BASIS_ANCHORED,), str(DISCHARGING_BASES))
+    # Was `DISCHARGING_BASES == (BASIS_ANCHORED,)`. A second anchored path
+    # (practice/final_status, added 2026-09-08) makes the literal tuple longer
+    # without weakening the rule. The rule asserted directly:
+    check('every discharging basis is an anchored SCHEDULED execution',
+          all(b.startswith('SCHEDULED_WINDOW_ANCHORED')
+              for b in DISCHARGING_BASES), str(DISCHARGING_BASES))
+    check('  a sweep, a local run and an operator dispatch remain incapable',
+          not ({X.BASIS_SWEEP, X.BASIS_LOCAL, X.BASIS_OPERATOR}
+               & set(DISCHARGING_BASES)), str(DISCHARGING_BASES))
+    check('  and only the original anchored basis may serve the G0A kind',
+          [b for b in DISCHARGING_BASES
+           if X.BASIS_KINDS.get(b) is None or X.G0A_KIND in X.BASIS_KINDS[b]]
+          == [BASIS_ANCHORED])
 
 
 def test_G_7_the_honest_case_does_cover():
