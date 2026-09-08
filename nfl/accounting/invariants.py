@@ -13,7 +13,7 @@ WHAT IS AND IS NOT MECHANICALLY TRUE, measured on 2020-2025 pbp:
   team targets    == sum of player targets            EXACT, no residual
   team receptions == sum of player receptions          EXACT
   team recv yards == sum of player receiving yards     EXACT
-  passing yards   == receiving yards, at team level    EXACT except laterals
+  passing yards   == receiving yards, at team level    EXCEPT LATERALS -- see below
   passing TD      == receiving TD                      EXACT
   team carries    == RB + QB + WR/TE/other carries     EXACT, OTHER is real
   receptions      <= targets                           per player, EXACT
@@ -115,3 +115,42 @@ def reconcile_team_player(team_totals: dict, player_rows: list, field: str,
             got[k] += float(r.get(field) or 0.0)
     return {k: (float(v), got.get(k, 0.0), other.get(k, 0.0))
             for k, v in team_totals.items()}
+
+
+# ==========================================================================
+# THE ONE DOCUMENTED EXCEPTION, measured rather than assumed
+# ==========================================================================
+#
+# `passing_yards == receiving_yards` at team level FAILS on 76 of 3,230
+# team-games, 2020-2025. Measured breakdown:
+#
+#     75 of 76 contain a LATERAL RECEPTION.
+#      1 of 76 does not.
+#
+# On a lateral the passer is credited the full advance while `receiving_yards`
+# is charged only to the initial receiver, so the two totals legitimately
+# diverge. Example, LA 2020 week 6: "pass short right to 10-C.Kupp to LA 23 for
+# -5 yards. Lateral to 27-D.Henderson pushed ob at LA 32 for 9 yards" --
+# passing_yards 4.0, receiving_yards 0.0.
+#
+# THE REMAINING ONE IS NOT EXPLAINED AND IS NOT SWEPT UP. IND 2022 week 16:
+# passing_yards 13.0 against receiving_yards 12.0 on a play the description
+# records as a 12-yard completion with no lateral. That is an upstream
+# inconsistency of 1 yard. It is left VISIBLE as an unexplained residual
+# rather than folded into the lateral bucket, because a bucket that absorbs
+# whatever is left over stops being evidence about anything.
+LATERAL_EXCEPTION = {
+    'invariant': 'team_pass_yards_eq_team_recv_yards',
+    'seasons': [2020, 2021, 2022, 2023, 2024, 2025],
+    'n_team_games': 3230,
+    'n_violating': 76,
+    'n_explained_by_lateral': 75,
+    'n_unexplained': 1,
+    'unexplained_example': {'season': 2022, 'week': 16, 'team': 'IND',
+                            'passing_yards': 13.0, 'receiving_yards': 12.0,
+                            'note': 'no lateral on the play; upstream '
+                                    'inconsistency of 1 yard, left visible'},
+    'policy': ('A lateral residual is NAMED and permitted. Anything else is '
+               'an unexplained residual and stays a FAIL. The exception may '
+               'never be widened to make an unexplained case pass.'),
+}
