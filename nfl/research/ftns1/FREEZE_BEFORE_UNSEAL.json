@@ -1,0 +1,39 @@
+{
+  "artifact": "FTN_S1_PRE_UNSEAL_FREEZE",
+  "recorded_utc": "2026-09-08T20:45:00Z",
+  "purpose": "Everything that must not change after the FTN sample is opened, hashed before it was opened. A control model edited after seeing the vendor sample is not a control.",
+
+  "authorization": {
+    "basis": "OWNER DIRECTION, 2026-09-08: 'Use the FTN sample first to answer the only question that matters: does this data materially improve our model?'",
+    "what_the_contract_says": "ROUTE-BB1 s7 found the supplied PDF grants no written permitted use: it is an unsigned draft, s6.1 licenses only a Client under an executed agreement, s5.2 restricts data to Client property, and no evaluation/trial/sample clause exists.",
+    "resolution": "The sample was supplied to the owner by FTN and the owner is the counterparty to that relationship. Evaluating a vendor sample to decide whether to buy is the owner's commercial judgement, not a technical one, and the owner has given it explicitly. That finding is recorded rather than re-argued, so the basis for proceeding is visible in the record.",
+    "unchanged_by_this": ["no purchase", "no promotion", "no production change", "no training on the sample", "no FTN system accessed or scraped"]
+  },
+
+  "sealed_sample_sha256": "56fc32e21cb130c1e14a8b3817f0c43491b310e69cfd4663b5bbd5d973ccffa4",
+  "sample_bytes": 1862143,
+
+  "frozen_control": {
+    "repo_head": "ba2dfffcd84de5a1dc7e936f1a6a6d63dc6f09b9",
+    "working_tree": "clean",
+    "nfl/research/rbb1/rbb1_lib.py": "56eb6a3c21b3c1e95c6bf607dea8f3d8c5704afe42b4bbe928b6625fccb50a6f",
+    "nfl/research/rbb1/predeclaration_rbb1.md": "8d7383bf7f2a7a909f501d9395abf365becb05cdd9d3f243287aa3daa0bc5512",
+    "nfl/research/rbb1/rbb1_results.json": "fbe7ebc541d687a3ed77c2008f9982732dbcf932d848bd71e747c0c882413ac8"
+  },
+
+  "frozen_necessity_curve": {
+    "source": "ROUTE-BB1 s5, computed and committed BEFORE the sample was opened",
+    "control_crps": 0.86268,
+    "gain_pct_by_rho": {"0.00": -0.87, "0.05": 4.72, "0.10": 10.29,
+                        "0.20": 20.67, "0.30": 30.54, "0.50": 47.37},
+    "rule": "rho_FTN is mapped ONTO this curve. The curve is not recomputed, refitted or adjusted after observing FTN."
+  },
+
+  "rules_for_this_packet": [
+    "no parameter is trained, fitted or tuned on the FTN game",
+    "the control architecture is not modified after unsealing",
+    "no threshold or metric is chosen after seeing FTN results",
+    "one game is diagnostic, never confirmatory",
+    "findings are classified OBSERVED_IN_THIS_SAMPLE / PLAUSIBLE_LEAGUE_VALUE / UNPROVEN_WITH_ONE_GAME"
+  ]
+}
