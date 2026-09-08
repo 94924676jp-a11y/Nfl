@@ -1,0 +1,32 @@
+{
+ "artifact": "ALIGN_B1_EXPANSION_ASSESSMENT",
+ "implemented": false,
+ "note": "Assessed only. Nothing here is built, per s.H.",
+ "primitives": {
+  "motion": {
+   "needs": "pre-snap frame SEQUENCE, not one frame; lateral speed is already computed for the abstention rule",
+   "difficulty": "LOW",
+   "same_representation": true,
+   "why": "motion is a property of the frames this module already scans to find the last stable one"
+  },
+  "route_participation": {
+   "needs": "POST-snap frames plus a release/route criterion (downfield displacement vs staying in the pocket)",
+   "difficulty": "MEDIUM",
+   "same_representation": true,
+   "why": "route vs protect is separable by post-snap trajectory, but FTN-S1 measured route participation as worth ~0.6% -- so this is the LEAST valuable expansion despite being technically feasible"
+  },
+  "pass_protection_release": {
+   "needs": "post-snap frames plus proximity to rushers",
+   "difficulty": "MEDIUM",
+   "same_representation": true,
+   "why": "the complement of route participation; same caveat on value"
+  },
+  "matchup_proximity": {
+   "needs": "defensive coordinates in the same frames plus a nearest-defender rule over time",
+   "difficulty": "LOW-MEDIUM",
+   "same_representation": true,
+   "why": "nearest-defender is a distance computation on data the same frames already carry; it approximates FTN matchup, whose value FTN-S2 could not resolve"
+  }
+ },
+ "ordering_implied": "motion and matchup_proximity are the cheap expansions; route participation is technically feasible and empirically the least valuable of the four."
+}
