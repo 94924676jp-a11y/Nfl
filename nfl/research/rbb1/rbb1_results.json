@@ -1,0 +1,354 @@
+{
+ "prereg_sha256": "8d7383bf7f2a7a909f501d9395abf365becb05cdd9d3f243287aa3daa0bc5512",
+ "ftn_sample_sha256": "56fc32e21cb130c1e14a8b3817f0c43491b310e69cfd4663b5bbd5d973ccffa4",
+ "ftn_sample_used": false,
+ "label": "EXPLORATORY build-vs-buy. No FTN observation entered any input, label, threshold or selection decision.",
+ "constant_rate_test": {
+  "base_rates": {
+   "WR": 0.9,
+   "TE": 0.7,
+   "RB": 0.4
+  },
+  "control": {
+   "n": 22348,
+   "crps": 1.6481564345802757,
+   "mae": 1.6481564345802757,
+   "rmse": 2.378504733695504,
+   "bias": 0.04667084302845892,
+   "r": 0.7084141386461792,
+   "cover50": 0.26807768032933593,
+   "cover80": 0.26807768032933593,
+   "cover90": 0.26807768032933593
+  },
+  "oracle": {
+   "n": 22348,
+   "crps": 1.5882853051727224,
+   "mae": 1.5882853051727224,
+   "rmse": 2.3055388129084053,
+   "bias": -0.04550742795775908,
+   "r": 0.7222957071536993,
+   "cover50": 0.2772955074279578,
+   "cover80": 0.2772955074279578,
+   "cover90": 0.2772955074279578
+  },
+  "candidate": {
+   "n": 22348,
+   "crps": 1.611553606586719,
+   "mae": 1.611553606586719,
+   "rmse": 2.34657170844806,
+   "bias": -0.04344907821729014,
+   "r": 0.7121277202124164,
+   "cover50": 0.2758188652228387,
+   "cover80": 0.2758188652228387,
+   "cover90": 0.2758188652228387
+  },
+  "oracle_minus_control": {
+   "delta": -0.05987112940755335,
+   "lo": -0.08121660014318698,
+   "hi": -0.03616594400630862
+  },
+  "candidate_minus_control": {
+   "delta": -0.03660282799355663,
+   "lo": -0.06084335251351892,
+   "hi": -0.013497780909768872
+  },
+  "draws_bit_identical": false,
+  "claim": "a route rate that is a function of position only cancels out of the candidate architecture"
+ },
+ "necessity_curve": [
+  {
+   "cv_target": 0.0,
+   "cv_realised_pooled": 0.29187311648979214,
+   "control_crps": 1.6481564345802757,
+   "oracle_crps": 1.5882853051727224,
+   "candidate_crps": 1.611553606586719,
+   "oracle_minus_control": {
+    "delta": -0.05987112940755335,
+    "lo": -0.08121660014318698,
+    "hi": -0.03616594400630862
+   },
+   "candidate_minus_control": {
+    "delta": -0.03660282799355663,
+    "lo": -0.06084335251351892,
+    "hi": -0.013497780909768872
+   },
+   "oracle_gain_pct": 3.6326120598376512,
+   "by_position": {
+    "WR": {
+     "n": 10066,
+     "control_crps": 1.9502284919531094,
+     "oracle_crps": 1.9032386250745081,
+     "oracle_gain": 0.046989866878601294,
+     "candidate_gain": 0.004569839062189551
+    },
+    "TE": {
+     "n": 6154,
+     "control_crps": 1.4475138121546962,
+     "oracle_crps": 1.412902177445564,
+     "oracle_gain": 0.03461163470913231,
+     "candidate_gain": 0.013487162820929655
+    },
+    "RB": {
+     "n": 6128,
+     "control_crps": 1.3534595300261096,
+     "oracle_crps": 1.2470626631853785,
+     "oracle_gain": 0.10639686684073113,
+     "candidate_gain": 0.11243472584856384
+    }
+   }
+  },
+  {
+   "cv_target": 0.05,
+   "cv_realised_pooled": 0.2965503285377378,
+   "control_crps": 1.6481564345802757,
+   "oracle_crps": 1.5913280830499374,
+   "candidate_crps": 1.6115088598532308,
+   "oracle_minus_control": {
+    "delta": -0.05682835153033827,
+    "lo": -0.07849523863012822,
+    "hi": -0.032039108803843155
+   },
+   "candidate_minus_control": {
+    "delta": -0.03664757472704494,
+    "lo": -0.06108854383172534,
+    "hi": -0.014368585984215608
+   },
+   "oracle_gain_pct": 3.4479950044796777,
+   "by_position": {
+    "WR": {
+     "n": 10066,
+     "control_crps": 1.9502284919531094,
+     "oracle_crps": 1.9098946950129148,
+     "oracle_gain": 0.04033379694019468,
+     "candidate_gain": 0.007053447248162037
+    },
+    "TE": {
+     "n": 6154,
+     "control_crps": 1.4475138121546962,
+     "oracle_crps": 1.4138771530711731,
+     "oracle_gain": 0.03363665908352309,
+     "candidate_gain": 0.014137146571335801
+    },
+    "RB": {
+     "n": 6128,
+     "control_crps": 1.3534595300261096,
+     "oracle_crps": 1.246246736292428,
+     "oracle_gain": 0.10721279373368153,
+     "candidate_gain": 0.10786553524804177
+    }
+   }
+  },
+  {
+   "cv_target": 0.1,
+   "cv_realised_pooled": 0.3047613298595861,
+   "control_crps": 1.6481564345802757,
+   "oracle_crps": 1.603185967424378,
+   "candidate_crps": 1.613119742258815,
+   "oracle_minus_control": {
+    "delta": -0.0449704671558977,
+    "lo": -0.0687103458157713,
+    "hi": -0.020073119244177658
+   },
+   "candidate_minus_control": {
+    "delta": -0.03503669232146067,
+    "lo": -0.05968630898907173,
+    "hi": -0.01257171548138853
+   },
+   "oracle_gain_pct": 2.7285314799229,
+   "by_position": {
+    "WR": {
+     "n": 10066,
+     "control_crps": 1.9502284919531094,
+     "oracle_crps": 1.9207232267037553,
+     "oracle_gain": 0.02950526524935415,
+     "candidate_gain": 0.004371150407311619
+    },
+    "TE": {
+     "n": 6154,
+     "control_crps": 1.4475138121546962,
+     "oracle_crps": 1.4215144621384466,
+     "oracle_gain": 0.025999350016249645,
+     "candidate_gain": 0.012349691257718565
+    },
+    "RB": {
+     "n": 6128,
+     "control_crps": 1.3534595300261096,
+     "oracle_crps": 1.2640339425587468,
+     "oracle_gain": 0.08942558746736284,
+     "candidate_gain": 0.10819190600522188
+    }
+   }
+  },
+  {
+   "cv_target": 0.15,
+   "cv_realised_pooled": 0.31286476141145864,
+   "control_crps": 1.6481564345802757,
+   "oracle_crps": 1.6161177734025416,
+   "candidate_crps": 1.6105691784499732,
+   "oracle_minus_control": {
+    "delta": -0.03203866117773413,
+    "lo": -0.05518137070856993,
+    "hi": -0.007084656289244781
+   },
+   "candidate_minus_control": {
+    "delta": -0.03758725613030256,
+    "lo": -0.062113509981197225,
+    "hi": -0.014843660939270682
+   },
+   "oracle_gain_pct": 1.9439089946515415,
+   "by_position": {
+    "WR": {
+     "n": 10066,
+     "control_crps": 1.9502284919531094,
+     "oracle_crps": 1.937413073713491,
+     "oracle_gain": 0.012815418239618515,
+     "candidate_gain": 0.011225909000595946
+    },
+    "TE": {
+     "n": 6154,
+     "control_crps": 1.4475138121546962,
+     "oracle_crps": 1.445401364965876,
+     "oracle_gain": 0.00211244718882031,
+     "candidate_gain": 0.014299642508937449
+    },
+    "RB": {
+     "n": 6128,
+     "control_crps": 1.3534595300261096,
+     "oracle_crps": 1.2597911227154046,
+     "oracle_gain": 0.09366840731070503,
+     "candidate_gain": 0.10427545691906004
+    }
+   }
+  },
+  {
+   "cv_target": 0.2,
+   "cv_realised_pooled": 0.32570334764277625,
+   "control_crps": 1.6481564345802757,
+   "oracle_crps": 1.6457848577053875,
+   "candidate_crps": 1.6088688025774118,
+   "oracle_minus_control": {
+    "delta": -0.002371576874888204,
+    "lo": -0.02387087813613622,
+    "hi": 0.022870006162604584
+   },
+   "candidate_minus_control": {
+    "delta": -0.03928763200286389,
+    "lo": -0.06301167473298863,
+    "hi": -0.017502308574709215
+   },
+   "oracle_gain_pct": 0.14389270491136094,
+   "by_position": {
+    "WR": {
+     "n": 10066,
+     "control_crps": 1.9502284919531094,
+     "oracle_crps": 1.9562884959268825,
+     "oracle_gain": -0.006060003973773043,
+     "candidate_gain": 0.013312139876813012
+    },
+    "TE": {
+     "n": 6154,
+     "control_crps": 1.4475138121546962,
+     "oracle_crps": 1.478225544361391,
+     "oracle_gain": -0.030711732206694764,
+     "candidate_gain": 0.015599610009749743
+    },
+    "RB": {
+     "n": 6128,
+     "control_crps": 1.3534595300261096,
+     "oracle_crps": 1.3040143603133159,
+     "oracle_gain": 0.04944516971279378,
+     "candidate_gain": 0.10574412532637067
+    }
+   }
+  },
+  {
+   "cv_target": 0.3,
+   "cv_realised_pooled": 0.3544545208283948,
+   "control_crps": 1.6481564345802757,
+   "oracle_crps": 1.687399319849651,
+   "candidate_crps": 1.6103006980490424,
+   "oracle_minus_control": {
+    "delta": 0.03924288526937536,
+    "lo": 0.015584826943072214,
+    "hi": 0.06342395563629327
+   },
+   "candidate_minus_control": {
+    "delta": -0.03785573653123331,
+    "lo": -0.06219458824493269,
+    "hi": -0.01476957511754918
+   },
+   "oracle_gain_pct": -2.381017022778488,
+   "by_position": {
+    "WR": {
+     "n": 10066,
+     "control_crps": 1.9502284919531094,
+     "oracle_crps": 2.0031790184780447,
+     "oracle_gain": -0.05295052652493526,
+     "candidate_gain": 0.014106894496324296
+    },
+    "TE": {
+     "n": 6154,
+     "control_crps": 1.4475138121546962,
+     "oracle_crps": 1.513649658758531,
+     "oracle_gain": -0.06613584660383487,
+     "candidate_gain": 0.016087097822554464
+    },
+    "RB": {
+     "n": 6128,
+     "control_crps": 1.3534595300261096,
+     "oracle_crps": 1.3431788511749347,
+     "oracle_gain": 0.010280678851174896,
+     "candidate_gain": 0.09872715404699739
+    }
+   }
+  },
+  {
+   "cv_target": 0.4,
+   "cv_realised_pooled": 0.387634315148739,
+   "control_crps": 1.6481564345802757,
+   "oracle_crps": 1.7319223196706641,
+   "candidate_crps": 1.6081081081081081,
+   "oracle_minus_control": {
+    "delta": 0.0837658850903884,
+    "lo": 0.061341231829338226,
+    "hi": 0.10825904966094171
+   },
+   "candidate_minus_control": {
+    "delta": -0.040048326472167606,
+    "lo": -0.06566545470615803,
+    "hi": -0.018427683838698024
+   },
+   "oracle_gain_pct": -5.0823989357369745,
+   "by_position": {
+    "WR": {
+     "n": 10066,
+     "control_crps": 1.9502284919531094,
+     "oracle_crps": 2.051361017285913,
+     "oracle_gain": -0.1011325253328037,
+     "candidate_gain": 0.017583945956685776
+    },
+    "TE": {
+     "n": 6154,
+     "control_crps": 1.4475138121546962,
+     "oracle_crps": 1.5349366265843354,
+     "oracle_gain": -0.08742281442963917,
+     "candidate_gain": 0.019012024699382568
+    },
+    "RB": {
+     "n": 6128,
+     "control_crps": 1.3534595300261096,
+     "oracle_crps": 1.4050261096605745,
+     "oracle_gain": -0.05156657963446487,
+     "candidate_gain": 0.09807441253263716
+    }
+   }
+  }
+ ],
+ "accounting": {
+  "n_rows": 33952,
+  "routes_negative": 0,
+  "routes_exceeding_pass_snaps": 0,
+  "rate_clipped_at_1": 4389,
+  "note": "routes <= pass_snaps holds by construction because routes are pass_snaps x p with p <= 1. Clipping at p = 1 is COUNTED and reported rather than hidden."
+ }
+}
