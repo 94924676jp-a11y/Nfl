@@ -265,7 +265,7 @@ published. That is the blocker, it is dated, and it clears itself.
 `nfl/research/*` (read only), `PATH_C_STATE.json`, `NFL_G0A_CHECKLIST.md`,
 `qb_v1.py` model logic.
 
-**Ending HEAD:** stamped by the commit that follows this file.
+**Ending HEAD:** `46452efb738e01d240e6967ff2b52869b37aeafc`
 **G0A remains 11/12. NFL-1 remains NOT AUTHORIZED. Nothing promoted.**
 
 **THEN STOP.**
