@@ -1,0 +1,81 @@
+name: NFL production forecast (BUILT, NOT ACTIVATED)
+
+# THIS WORKFLOW IS DELIBERATELY NOT SCHEDULED.
+#
+# It is capable of a live run and will not perform one. There is no `schedule:`
+# trigger, and the authorization step terminates the job before publication
+# while NFL-1 is NOT AUTHORIZED.
+#
+# THERE IS NO PATH FROM A GREEN TEST SUITE TO AUTHORIZATION. The gate is read
+# from nfl/research/PATH_C_STATE.json plus an owner authorization record, and
+# nfl.production.authorization.may_publish is the only function permitted to
+# say a forecast may be published. A guard-deletion proof in
+# nfl/tests/test_production_pipeline.py shows that bypassing it is what makes
+# an unauthorized run report as publishable.
+#
+# Manual invocation is available and is TAGGED non-prospective. A dry run is
+# never prospective evidence and never discharges anything.
+
+on:
+  workflow_dispatch:
+    inputs:
+      season:
+        required: true
+        default: '2026'
+      week:
+        required: true
+        default: '1'
+      game_id:
+        required: true
+      arm:
+        required: true
+        default: 'A'
+      written_at:
+        description: 'REQUIRED. No wall-clock default for a scientific clock.'
+        required: true
+      dry_run:
+        description: 'true = historical fixture run, tagged non-prospective'
+        required: true
+        default: 'true'
+
+permissions:
+  contents: read
+
+jobs:
+  forecast:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Prove the production guards before anything runs
+        run: |
+          python3 nfl/tests/test_production_pipeline.py
+          python3 nfl/tests/test_prospective_contract.py
+
+      - name: AUTHORIZATION GATE
+        run: |
+          python3 - <<'EOF'
+          import sys
+          sys.path.insert(0, '.')
+          from sportsplatform.governance.outcome import State
+          from nfl.production import authorization as A
+          o = A.may_publish()
+          print(f'{o.state.value}: {o.code}')
+          print(o.detail)
+          if o.state is not State.PASS:
+              print('::notice::Publication is not authorized. The job stops '
+                    'here by design. This is not a failure.')
+              sys.exit(78)
+          EOF
+
+      - name: Forecast (only reached when publication is authorized)
+        run: |
+          echo "This step is unreachable while NFL-1 is NOT AUTHORIZED."
+          python3 -m nfl.production.run_forecast \
+            --season "${{ inputs.season }}" --week "${{ inputs.week }}" \
+            --game-id "${{ inputs.game_id }}" --arm "${{ inputs.arm }}" \
+            --written-at "${{ inputs.written_at }}" \
+            --out-dir "$RUNNER_TEMP/forecast"
