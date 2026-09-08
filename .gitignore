@@ -5,3 +5,9 @@ __pycache__/
 # Ephemeral capture blobs. The append-only manifest in nfl/vintage_manifest.jsonl
 # is tracked and IS the audit trail; durable blobs live gzipped in nfl/vintage/.
 nfl_vintage/
+
+# Derived research artifacts. NOT committed: Stage 1 proved them
+# byte-for-byte regenerable from nfl/research/inputs via
+# nfl/research/repro/regenerate.py --emit. Staging them is a build step.
+nfl/research/p4b/panel_enriched.pkl
+nfl/research/p4b/volume_store.npy

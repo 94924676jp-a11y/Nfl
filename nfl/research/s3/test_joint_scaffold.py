@@ -29,6 +29,34 @@ def check(l, c, d=''):
 
 _CACHE = {}
 
+# panel_enriched.pkl and volume_store.npy are deliberately NOT committed: Stage
+# 1 established they are byte-for-byte regenerable, so the repository carries
+# the leaves and the generator instead. Research code run from the repository
+# therefore has to stage them first. An absent artifact is a NAMED BLOCKED
+# state with the exact command to fix it -- never a crash, and never a silent
+# pass.
+_NEEDED = ('panel_enriched.pkl', 'volume_store.npy')
+_P4B = os.path.abspath(os.path.join(HERE, '..', 'p4b'))
+
+
+def _artifacts_present():
+    return all(os.path.exists(os.path.join(_P4B, n)) for n in _NEEDED)
+
+
+def _blocked_and_exit():
+    missing = [n for n in _NEEDED
+               if not os.path.exists(os.path.join(_P4B, n))]
+    print('\nBLOCKED(cause=DEPENDENCY): the derived research artifacts are '
+          'not staged.')
+    print(f'  missing: {missing}')
+    print('  They are not committed by design -- Stage 1 proved them '
+          'byte-for-byte regenerable.')
+    print('  Stage them with:')
+    print('    python3.12 nfl/research/repro/regenerate.py --emit '
+          'nfl/research/p4b')
+    print('\n0 passed, 0 failed, BLOCKED')
+    sys.exit(3)
+
 
 def cell(cls='carries', ev=2024):
     if not _CACHE:
@@ -217,6 +245,8 @@ def test_the_scaffold_flags_but_does_not_decide():
 
 
 if __name__ == '__main__':
+    if not _artifacts_present():
+        _blocked_and_exit()
     for t in (test_physical_invariants, test_pre_and_post_are_both_reported,
               test_marginals_cannot_be_silently_replaced,
               test_cannot_enter_a_decision_path, test_guard_deletion,
