@@ -85,6 +85,14 @@ def _sources(season: int) -> list[Source]:
     for spec in _registry.REGISTRY:
         if spec.reachability is not _registry.Reachability.REACHABLE:
             continue
+        # WATCH-ONLY sources are never fetched here. They belong to the
+        # periodic availability watch (nfl/tools/watch_availability.py), which
+        # is not event-anchored and discharges nothing. Letting them into this
+        # path would put a routine poll's bytes inside an execution that
+        # declares T-90 targets, and a capture that lands inside a window is
+        # one argument away from being read as satisfying it.
+        if spec.watch_only:
+            continue
         out.append(Source(name=spec.name, url=spec.url(season),
                           required=spec.required, durability=spec.durability,
                           reduce_cols=spec.reduce_cols,
@@ -103,6 +111,18 @@ def pending_sources(season: int) -> list[Outcome]:
     """
     out = []
     for spec in _registry.REGISTRY:
+        if spec.watch_only:
+            # Not a gap, and not silence either. Reported as NOT_APPLICABLE so a
+            # reader of this capture can see the source exists, is reachable,
+            # and is deliberately handled elsewhere -- rather than wondering
+            # why a registered source produced no row.
+            out.append(Outcome.not_applicable(
+                "WATCH_ONLY_SOURCE_NOT_CAPTURED_HERE",
+                f"{spec.name}: registered and reachable, but handled by the "
+                f"periodic availability watch, which is not event-anchored and "
+                f"discharges nothing. Deliberately outside this execution.",
+                source=spec.name, url=spec.url(season)))
+            continue
         if spec.reachability is _registry.Reachability.REACHABLE:
             continue
         out.append(_registry.resolve(spec.name, season))

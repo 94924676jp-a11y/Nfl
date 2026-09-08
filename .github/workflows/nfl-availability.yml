@@ -1,0 +1,116 @@
+name: NFL participation availability watch
+
+# WHAT THIS ANSWERS, AND THE ONLY THING IT ANSWERS
+#
+#   "Has the 2026 pbp_participation or snap_counts source become published,
+#    or changed?"
+#
+# WHY IT EXISTS. The 2026-09-08 receiving information-gap audit found an
+# infrastructure gap, not a data gap: these two files are the inputs the whole
+# P component is built from, neither was in the vintage capture set, and both
+# returned 404 for 2026. So there was no prospective provenance chain for them.
+#
+# WHAT IT IS NOT, AND THIS IS THE LOAD-BEARING PART.
+#
+# It is NOT event-anchored. It is not attributed to a game, it carries no
+# game_id, it declares no targets, and it discharges NO G0A item, NO T-90
+# obligation, and NO injury/inactives capture kind. It must never be confused
+# with nfl-t90.yml, whose cron entries exist because a kickoff time put a
+# capture window there.
+#
+# nfl-capture.yml already had to have exactly this confusion corrected once: a
+# coverage-in-time argument ("*/30 lands twice inside an 80-minute window") was
+# doing duty as a discharge claim. This job is further from an obligation than
+# that one was, and three separate things stop it drifting:
+#
+#   1. the registry marks both sources watch_only, so capture_vintage skips them;
+#   2. their serves_kinds is empty, so registry.can_discharge is False for every
+#      kind;
+#   3. availability.assert_no_discharge FAILS any record that grows a claim,
+#      and nfl/tests/test_availability_watch.py proves that guard is
+#      load-bearing by deleting it.
+#
+# CADENCE. Twice daily. The question is "has an annual artifact appeared yet",
+# which does not change on a 30-minute timescale, and a slower poll keeps this
+# visibly distinct from the perishable cascade. GitHub may delay or drop a
+# scheduled run; nothing here depends on any individual firing, because a
+# missed poll only delays an observation and cannot lose one -- the artifact is
+# still there next time.
+
+on:
+  schedule:
+    - cron: '17 6,18 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  # Append-only: a missed run costs one observation, two racing runners cost a
+  # push conflict and a confusing history.
+  group: nfl-availability-watch
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Prove the separation before probing anything
+        run: |
+          # If this ever fails, the watch does not run. A poll that could
+          # discharge an obligation is worse than no poll.
+          python3 nfl/tests/test_availability_watch.py
+
+      - name: Probe
+        id: probe
+        run: |
+          set +e
+          python3 nfl/tools/watch_availability.py --season 2026 | tee /tmp/avail.log
+          echo "exit=$?" >> "$GITHUB_OUTPUT"
+
+      - name: Fail the run only on a real FAIL
+        run: |
+          # NOT_PUBLISHED is an observed state of the world and the expected
+          # answer today. BLOCKED is a fact about the executor. Neither is a
+          # failed run. Only FAIL means a control caught something wrong --
+          # including SCHEMA_CHANGED, which is exactly when a human should look.
+          if grep -qE '^  FAIL ' /tmp/avail.log; then
+            echo "A source returned FAIL -- a control caught something."
+            grep -E '^  FAIL ' /tmp/avail.log
+            exit 1
+          fi
+          echo "no FAIL states"
+
+      - name: Commit any observation
+        if: always()
+        run: |
+          git config user.name  "nfl-availability[bot]"
+          git config user.email "nfl-availability@users.noreply.github.com"
+          git add nfl/availability_manifest.jsonl nfl/availability_first_seen.json nfl/availability_raw 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "nothing new observed; not committing"
+            exit 0
+          fi
+          WID=$(grep -oE 'availability watch [0-9]{8}T[0-9]{6}Z' /tmp/avail.log | head -1 | awk '{print $3}')
+          git commit \
+            -m "NFL availability watch ${WID:-unknown}" \
+            -m "Periodic probe by GitHub Actions run ${GITHUB_RUN_ID}." \
+            -m "Discharges no G0A item, no T-90 target and no capture kind. Append-only."
+          git pull --rebase --autostash origin main
+          git push origin HEAD:main
+
+      - name: Report first-seen state
+        if: always()
+        run: |
+          if [ -f nfl/availability_first_seen.json ]; then
+            echo "First observed available by this capture system:"
+            cat nfl/availability_first_seen.json
+          else
+            echo "no source has yet been observed available by this capture system"
+          fi

@@ -101,6 +101,13 @@ class SourceSpec:
     narrow_method: Optional[str] = None
     narrow_evidence: Optional[str] = None
     narrow_to_kind: Optional[ScopeKind] = None
+    # A watch-only source is fetched by the AVAILABILITY WATCH and by nothing
+    # else. `capture_vintage._sources()` skips it, so it cannot enter the
+    # vintage capture path, and `can_discharge` refuses it for every kind. The
+    # flag exists so that one registry stays the single truth for URLs and
+    # authority, without that convenience letting a periodic poll drift into
+    # the event-anchored obligation path.
+    watch_only: bool = False
     note: str = ""
 
     def url(self, season: int) -> Optional[str]:
@@ -250,6 +257,59 @@ REGISTRY: tuple = (
         note="Elevations, signings, IR moves. Candidate for closing the "
              "prediction-time eligibility debt.",
     ),
+
+    # --- WATCH ONLY: the participation inputs P is built from ---------------
+    #
+    # Added 2026-09-08 after the receiving information-gap audit found that
+    # neither was in the capture set and both returned 404 for 2026, so the
+    # project had no prospective provenance chain for the inputs the whole P
+    # component rests on.
+    #
+    # `serves_kinds=()` AND `watch_only=True` are both required and neither is
+    # redundant. The first stops them discharging a capture kind; the second
+    # stops the vintage capture path fetching them at all. A source that a
+    # periodic poll retrieves must not be able to reach the event-anchored
+    # obligation machinery even by accident.
+    SourceSpec(
+        name="pbp_participation",
+        authority=SourceAuthority.INDEPENDENT_MIRROR, authority_rank=20,
+        source_status=SourceStatus.VERIFIED_REACHABLE_EXTERNALLY,
+        executor_access=ExecutorAccess.REACHABLE,
+        url_template=f"{NFLVERSE}/pbp_participation/pbp_participation_{{season}}.csv",
+        required=False, durability="commit_raw",
+        reachability=Reachability.REACHABLE,
+        serves_kinds=(), watch_only=True,
+        source_scope_kind=ScopeKind.SEASON,
+        narrow_to_kind=None, narrow_method=None,
+        narrow_evidence=(
+            "NOT NARROWED. The file is season-scoped and its rows carry no "
+            "clock. Its HTTP Last-Modified is a final-write time and Directive "
+            "SS9 forbids treating that as as-of evidence, so no date interval "
+            "is derived from it."),
+        note=("Per-play offensive and defensive participation. The input the P "
+              "component is built from. Measured 2026-09-08: published and "
+              "populated 2016-2025, 404 for 2026. Two accepted schemas -- 20 "
+              "columns 2016-2022, 26 columns 2023-2025. WATCH ONLY: it "
+              "discharges nothing and the vintage capture never fetches it."),
+    ),
+    SourceSpec(
+        name="snap_counts",
+        authority=SourceAuthority.INDEPENDENT_MIRROR, authority_rank=20,
+        source_status=SourceStatus.VERIFIED_REACHABLE_EXTERNALLY,
+        executor_access=ExecutorAccess.REACHABLE,
+        url_template=f"{NFLVERSE}/snap_counts/snap_counts_{{season}}.csv",
+        required=False, durability="commit_raw",
+        reachability=Reachability.REACHABLE,
+        serves_kinds=(), watch_only=True,
+        source_scope_kind=ScopeKind.SEASON,
+        narrow_to_kind=None, narrow_method=None,
+        narrow_evidence=(
+            "NOT NARROWED, same reasoning as pbp_participation."),
+        note=("Per-player game snap counts, PFR-sourced. Measured 2026-09-08: "
+              "published 2016-2025, 404 for 2026, one stable 16-column schema "
+              "throughout. It carries NO pass/run split, so it cannot bound "
+              "pass-play participation on its own. WATCH ONLY."),
+    ),
 )
 
 BY_NAME = {s.name: s for s in REGISTRY}
@@ -303,7 +363,14 @@ def can_discharge(name: str, kind: str) -> bool:
     snapshot, not the intraweek cascade.
     """
     spec = BY_NAME.get(name)
-    return bool(spec and kind in spec.serves_kinds)
+    if spec is None:
+        return False
+    # Belt and braces, and deliberately so. A watch-only source already has an
+    # empty serves_kinds, so this line changes no current answer -- it exists so
+    # that adding a kind to one by mistake cannot silently arm it.
+    if spec.watch_only:
+        return False
+    return kind in spec.serves_kinds
 
 
 def unmet_targets(manifest_path=None) -> dict:
