@@ -1,0 +1,61 @@
+{
+ "artifact": "NFL_PARTICIPATION_RETENTION_DECISION",
+ "decision_id": "RET-001",
+ "decided_by": "owner",
+ "decided_at_utc": "2026-09-08",
+ "recorded_at_utc": "2026-09-08",
+ "supersedes": null,
+ "accepts": {
+  "state": "CAPTURE_PATH_READY_SOURCE_UNPUBLISHED",
+  "return": "PROSPECTIVE_PARTICIPATION_CAPTURE_RETURN.md",
+  "implementation_commit_title": "Prospective participation availability watch and capture path"
+ },
+ "scope": {
+  "sources": ["pbp_participation", "snap_counts"],
+  "applies_to": "every distinct raw version observed PROSPECTIVELY by the availability watch",
+  "does_not_apply_to": "historical final files, which are schema and reproducibility references only and are never prospective vintage evidence"
+ },
+ "policy": "commit_raw",
+ "requirements": [
+  {"id": "R1", "text": "content-address by SHA-256",
+   "enforced_by": "availability.assert_retention_policy + watch_availability._store_raw",
+   "test": "test_availability_watch.test_c_available_is_recorded_but_grants_nothing"},
+  {"id": "R2", "text": "identical bytes must not create another raw blob",
+   "enforced_by": "watch_availability._store_raw (blob.exists() short-circuit)",
+   "test": "test_availability_watch.test_f_duplicate_identical_bytes_and_changed_bytes"},
+  {"id": "R3", "text": "changed bytes must create a new immutable blob",
+   "enforced_by": "watch_availability._store_raw (content-addressed filename)",
+   "test": "test_availability_watch.test_f_duplicate_identical_bytes_and_changed_bytes"},
+  {"id": "R4", "text": "never delete an earlier distinct vintage because a later vintage exists",
+   "enforced_by": "availability.assert_no_vintage_deleted",
+   "test": "test_availability_retention.test_r4_no_vintage_may_be_deleted"},
+  {"id": "R5", "text": "preserve first-seen and every observation manifest row",
+   "enforced_by": "availability.assert_manifest_append_only + record_first_seen write-once",
+   "test": "test_availability_retention.test_r5_manifest_is_append_only"},
+  {"id": "R6", "text": "raw SHA remains authoritative",
+   "enforced_by": "availability.verify_record",
+   "test": "test_availability_watch.test_h_forged_record_and_missing_blob"},
+  {"id": "R7", "text": "no reduction / newest-N retention policy",
+   "enforced_by": "availability.assert_retention_policy (refuses any durability but commit_raw for a watched source)",
+   "test": "test_availability_retention.test_r7_reduction_and_newest_n_are_refused"},
+  {"id": "R8", "text": "no historical backfill masquerading as prospective vintage evidence",
+   "enforced_by": "availability.assert_no_orphan_blobs + first-seen write-once + no Last-Modified narrowing on either source",
+   "test": "test_availability_retention.test_r8_a_dropped_in_blob_is_not_vintage_evidence"}
+ ],
+ "accepted_cost": {
+  "measured_2026_09_08": "one distinct snapshot pair costs 3.4 MB committed: pbp_participation 2.9 MB gzipped from 49,094,943 raw bytes, snap_counts 0.5 MB from 2,401,193.",
+  "repository_git_size_at_decision": "65 MB",
+  "projection_note": "Growth depends on how often upstream rewrites the files in season, which is NOT known and which the watch will measure. Weekly rewrites over an 18-week season is roughly +61 MB; daily is roughly +430 MB. These are projections, not measurements, and neither is a commitment.",
+  "accepted": true,
+  "rationale_recorded_from_owner": "Preserve every distinct prospectively observed raw version. Dropping bytes is the irreversible choice."
+ },
+ "what_this_decision_does_NOT_do": [
+  "It does NOT authorize predictive use of either source.",
+  "It does NOT promote P.",
+  "It does NOT change the receiving architecture.",
+  "It does NOT discharge any T-90 target or any capture kind.",
+  "It does NOT change G0A, which remains 11/12.",
+  "It does NOT authorize NFL-1, which remains NOT AUTHORIZED."
+ ],
+ "revision_rule": "Changing this policy is an owner decision and requires a superseding artifact naming this decision_id. A retention change that would DELETE an already-captured distinct vintage is irreversible and may not be executed on the strength of this file alone."
+}

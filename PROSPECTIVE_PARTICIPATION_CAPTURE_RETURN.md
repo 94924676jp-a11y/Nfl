@@ -324,7 +324,69 @@ recorded as `NOT_PUBLISHED`, which is the expected valid result today.
 
 ---
 
-## OWNER DECISION NEEDED
+## OWNER DECISION — SETTLED
+
+**Decided 2026-09-08. `CAPTURE_PATH_READY_SOURCE_UNPUBLISHED` accepted.
+Retention policy: `commit_raw`.** Recorded as `RET-001` in
+`nfl/NFL_PARTICIPATION_RETENTION_DECISION.json`.
+
+Every distinct **prospectively observed** raw version of both sources is
+preserved. The measured cost — 3.4 MB per distinct snapshot pair against a 65 MB
+`.git` — is accepted. It is the cheap side of the asymmetry: disk is
+recoverable, and a dropped vintage is not, because upstream **overwrites** these
+files, which is the whole reason the watch exists.
+
+The decision's eight requirements are enforced as guards, not recorded as
+prose. Each names its guard and its test inside the artifact, and a test asserts
+that every named test module actually exists — an artifact whose citations do
+not resolve is worse than one that claims nothing.
+
+| # | Requirement | Guard | Refusal |
+|---|---|---|---|
+| R1 | content-address by SHA-256 | `assert_retention_policy` + `_store_raw` | `RETENTION_POLICY_VIOLATED` |
+| R2 | identical bytes create no second blob | `_store_raw` short-circuit | — (one blob for two observations) |
+| R3 | changed bytes create a new immutable blob | content-addressed filename | — |
+| R4 | never delete an earlier vintage for a later one | `assert_no_vintage_deleted` | `VINTAGE_DELETED` |
+| R5 | preserve first-seen and every manifest row | `assert_manifest_append_only`, write-once first-seen | `MANIFEST_ROWS_LOST`, `MANIFEST_ROW_REWRITTEN` |
+| R6 | raw SHA remains authoritative | `verify_record` | `RECORD_DIGEST_MISMATCH` |
+| R7 | no reduction / newest-N | `assert_retention_policy` | `RETENTION_POLICY_VIOLATED` |
+| R8 | no historical backfill posing as prospective vintage | `assert_no_orphan_blobs` + write-once first-seen + no `Last-Modified` narrowing | `ORPHAN_BLOB_NOT_FROM_AN_OBSERVATION` |
+
+Three design points worth stating, because each defeats a check that would have
+looked adequate:
+
+- **R4 is a set-containment test, not a count.** A newest-N policy that swapped
+  one vintage for another leaves the count identical. Asserted directly.
+- **R5 is a prefix test, not a row count.** An in-place edit leaves the count
+  unchanged, and the manifest is the only record of what a source looked like at
+  an instant that will not recur.
+- **R7 is checked before any bytes are requested.** Storing *is* the policy — a
+  `reduce` write has already discarded what it discarded by the time anyone
+  looks. The probe refuses to fetch at all under a wrong durability, and that is
+  asserted for `reduce`, `ephemeral` and `newest_n`.
+
+The policy is also checked in **both** directions: the registry's declared
+durability and the decision artifact must agree with the value the code
+enforces. Reading only the artifact would let the code drift; reading only the
+registry would let the record drift; neither drift is visible from inside the
+other. `RETENTION_DECISION_DISAGREES_WITH_CODE` and
+`RETENTION_DECISION_ARTIFACT_MISSING` cover the two directions.
+
+**Live enforcement.** `nfl/tools/check_retention.py` runs the guards against
+what is actually on disk, before and after each watch firing, and the workflow
+runs it on every run. Fixtures cannot prove a live runner deleted nothing.
+Verified end-to-end here: given a real store with a blob removed, it reports
+`VINTAGE_DELETED` and exits 1.
+
+**Scope, restated from the artifact.** This decision changes retention only. It
+does **not** authorize predictive use, does **not** promote P, does **not**
+change the receiving architecture, does **not** discharge T-90 or any capture
+kind, does **not** change G0A (**11/12**), and does **not** authorize NFL-1
+(**NOT AUTHORIZED**). Asserted as a test section, not just written down.
+
+---
+
+## Superseded — the decision as originally put
 
 **One decision, and it has to be made before the source publishes, because the
 first capture is the one that cannot be redone.**

@@ -176,6 +176,18 @@ def probe(name: str, season: int, root: pathlib.Path,
             f"periodic poll ends up inside an event-anchored execution.",
             source=name)
 
+    # Owner decision RET-001 is checked BEFORE any bytes are requested. If the
+    # retention policy is not the decided one, the right move is not to fetch
+    # and store under the wrong policy and sort it out later -- the storing IS
+    # the policy, and a 'reduce' write has already discarded what it discarded
+    # by the time anyone looks.
+    ret = AV.assert_retention_policy(name)
+    if ret.state is State.FAIL or ret.state is State.BLOCKED:
+        return Outcome.fail(
+            ret.code, ret.detail,
+            availability=AV.Availability.AMBIGUOUS.value,
+            source=name, url=url)
+
     tmp.mkdir(parents=True, exist_ok=True)
     body = tmp / f".body.{name}"
     hdrf = tmp / f".headers.{name}"
@@ -217,6 +229,8 @@ def probe(name: str, season: int, root: pathlib.Path,
             "retrieved_at": retrieved_at,
             "probe_response_date": _http_date_to_iso(hdr["date"]),
             "http": hdr, "watch_kind": WATCH_KIND,
+            "retention_policy": AV.RETENTION_POLICY,
+            "retention_decision_id": "RET-001",
             "discharges": [],
             "discharges_note": "This periodic watch discharges no G0A item, no "
                                "T-90 target and no capture kind.",

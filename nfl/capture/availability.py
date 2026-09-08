@@ -47,6 +47,14 @@ if str(_REPO) not in sys.path:
 
 from sportsplatform.governance.outcome import Cause, Outcome, State  # noqa: E402
 
+RETENTION_DECISION = _REPO / "nfl" / "NFL_PARTICIPATION_RETENTION_DECISION.json"
+
+# Owner decision RET-001, 2026-09-08. Recorded in the artifact above; repeated
+# here as the value the code enforces, so a divergence between the artifact and
+# the running system is itself catchable rather than a matter of reading two
+# files and hoping.
+RETENTION_POLICY = "commit_raw"
+
 FIRST_SEEN = _REPO / "nfl" / "availability_first_seen.json"
 MANIFEST = _REPO / "nfl" / "availability_manifest.jsonl"
 BLOB_ROOT = _REPO / "nfl" / "availability_raw"
@@ -526,3 +534,158 @@ def eligibility_record(record: dict, forecast_written_at=None, kickoff=None,
                retrieved_at=got.isoformat(),
                forecast_written_at=wrote.isoformat(), kickoff=kick.isoformat())
     return out
+
+
+# ==========================================================================
+# RETENTION. Owner decision RET-001: commit_raw, every distinct prospectively
+# observed version preserved. Each requirement below is a guard rather than a
+# sentence, because a retention policy that lives only in prose is one refactor
+# away from being a different policy that nobody noticed changing.
+# ==========================================================================
+
+def assert_retention_policy(name: str, decision_path: pathlib.Path = None) -> Outcome:
+    """R1 and R7. The declared durability must be the decided one.
+
+    Checked against BOTH the registry spec and the decision artifact, and the
+    two must agree. Reading only the artifact would let the code drift; reading
+    only the registry would let the record drift. Neither drift is visible from
+    inside the other.
+    """
+    from nfl.capture import registry as _reg
+    spec = _reg.BY_NAME.get(name)
+    if spec is None:
+        return Outcome.blocked(
+            "SOURCE_NOT_IN_REGISTRY",
+            f"{name!r} is not registered, so no retention policy applies to it.",
+            cause=Cause.GOVERNANCE, source=name)
+    if not spec.watch_only:
+        return Outcome.not_applicable(
+            "NOT_A_WATCHED_SOURCE",
+            f"{name} is not watch-only; RET-001 governs the availability watch "
+            f"only.", source=name)
+    if spec.durability != RETENTION_POLICY:
+        return Outcome.fail(
+            "RETENTION_POLICY_VIOLATED",
+            f"{name}: registry declares durability={spec.durability!r}, but "
+            f"owner decision RET-001 requires {RETENTION_POLICY!r}. A "
+            f"'reduce' or newest-N policy on a watched source discards raw "
+            f"bytes the owner decided to keep, and that discard is "
+            f"irreversible.",
+            source=name, declared=spec.durability, required=RETENTION_POLICY)
+
+    p = pathlib.Path(decision_path or RETENTION_DECISION)
+    if not p.exists():
+        return Outcome.blocked(
+            "RETENTION_DECISION_ARTIFACT_MISSING",
+            f"{name}: the code enforces {RETENTION_POLICY!r} but "
+            f"{p.name} is absent. An enforced policy with no recorded decision "
+            f"behind it is an undeclared policy.",
+            cause=Cause.GOVERNANCE, source=name)
+    try:
+        doc = json.loads(p.read_text())
+    except ValueError as exc:
+        return Outcome.fail("RETENTION_DECISION_UNREADABLE", f"{p.name}: {exc}",
+                            source=name)
+    if doc.get("policy") != RETENTION_POLICY:
+        return Outcome.fail(
+            "RETENTION_DECISION_DISAGREES_WITH_CODE",
+            f"{p.name} records policy={doc.get('policy')!r} while the code "
+            f"enforces {RETENTION_POLICY!r}. The record and the running system "
+            f"disagree and neither is assumed correct.",
+            source=name, recorded=doc.get("policy"), enforced=RETENTION_POLICY)
+    if name not in (doc.get("scope") or {}).get("sources", []):
+        return Outcome.fail(
+            "SOURCE_OUTSIDE_RETENTION_DECISION",
+            f"{name} is watch-only but is not in RET-001's scope, so no owner "
+            f"decision covers what happens to its bytes.",
+            source=name, scope=(doc.get("scope") or {}).get("sources"))
+    return Outcome.ok("RETENTION_POLICY_OK", value=RETENTION_POLICY,
+                      source=name, decision_id=doc.get("decision_id"))
+
+
+def assert_no_vintage_deleted(before: "set|list", after: "set|list") -> Outcome:
+    """R4. An earlier distinct vintage may never be dropped for a later one.
+
+    Takes the blob names present before and after an operation. Deliberately a
+    SET containment test rather than a count: a policy that swapped one vintage
+    for another would keep the count identical, and counting is exactly how a
+    silent newest-N would pass unnoticed.
+    """
+    before, after = set(before), set(after)
+    lost = sorted(before - after)
+    if lost:
+        return Outcome.fail(
+            "VINTAGE_DELETED",
+            f"{len(lost)} previously captured raw vintage(s) are gone: "
+            f"{lost[:5]}{' ...' if len(lost) > 5 else ''}. Owner decision "
+            f"RET-001 preserves every distinct prospectively observed version, "
+            f"and a later vintage existing is never a reason to drop an "
+            f"earlier one. This deletion is not recoverable from upstream, "
+            f"because upstream overwrites.",
+            n_lost=len(lost), lost=lost[:20])
+    return Outcome.ok("NO_VINTAGE_DELETED", value=len(after - before),
+                      detail=f"{len(before)} preserved, {len(after - before)} added")
+
+
+def assert_manifest_append_only(before_lines: list, after_lines: list) -> Outcome:
+    """R5. Existing observation rows are never edited, reordered or removed.
+
+    The earlier content must be a strict PREFIX of the later content. A prefix
+    test catches what a row count cannot: an edit in place leaves the count
+    unchanged, and this manifest is the only record of what the source looked
+    like at a moment that will not come again.
+    """
+    before = [ln for ln in before_lines if ln.strip()]
+    after = [ln for ln in after_lines if ln.strip()]
+    if len(after) < len(before):
+        return Outcome.fail(
+            "MANIFEST_ROWS_LOST",
+            f"the manifest shrank from {len(before)} to {len(after)} rows. "
+            f"Observations are append-only.",
+            n_before=len(before), n_after=len(after))
+    for i, (a, b) in enumerate(zip(before, after)):
+        if a != b:
+            return Outcome.fail(
+                "MANIFEST_ROW_REWRITTEN",
+                f"manifest row {i + 1} changed. An observation records what a "
+                f"source looked like at an instant that will not recur; "
+                f"editing it destroys the only copy.",
+                row=i + 1)
+    return Outcome.ok("MANIFEST_APPEND_ONLY", value=len(after) - len(before),
+                      detail=f"{len(before)} preserved, "
+                             f"{len(after) - len(before)} appended")
+
+
+def assert_no_orphan_blobs(blob_names: "set|list", manifest_lines: list) -> Outcome:
+    """R8. Every stored blob was put there by a recorded observation.
+
+    This is the guard against a historical file being dropped into the
+    prospective store and thereby acquiring the appearance of a captured
+    vintage. A backfilled 2025 file is a perfectly good schema reference and is
+    not evidence about what was retrievable in 2025; the difference is invisible
+    once the bytes sit in the same directory, so it is enforced here rather
+    than trusted.
+    """
+    named = set()
+    for ln in manifest_lines:
+        if not ln.strip():
+            continue
+        try:
+            row = json.loads(ln)
+        except ValueError:
+            continue
+        for key in ("blob", "blob_sidecar"):
+            v = row.get(key)
+            if v:
+                named.add(pathlib.Path(v).name)
+    orphans = sorted(set(blob_names) - named)
+    if orphans:
+        return Outcome.fail(
+            "ORPHAN_BLOB_NOT_FROM_AN_OBSERVATION",
+            f"{len(orphans)} file(s) in the prospective raw store are named by "
+            f"no manifest row: {orphans[:5]}{' ...' if len(orphans) > 5 else ''}. "
+            f"Bytes that no observation produced are not prospective vintage "
+            f"evidence, whatever directory they are sitting in.",
+            n_orphans=len(orphans), orphans=orphans[:20])
+    return Outcome.ok("NO_ORPHAN_BLOBS", value=len(named),
+                      detail=f"every stored blob is named by an observation")

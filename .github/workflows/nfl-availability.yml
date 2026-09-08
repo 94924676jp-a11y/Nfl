@@ -30,6 +30,13 @@ name: NFL participation availability watch
 #      and nfl/tests/test_availability_watch.py proves that guard is
 #      load-bearing by deleting it.
 #
+# RETENTION. Owner decision RET-001, 2026-09-08: `commit_raw`. Every distinct
+# prospectively observed raw version of both sources is preserved. Measured
+# cost, 2026-09-08: 3.4 MB per distinct snapshot pair against a 65 MB .git.
+# That cost is accepted, and it is the cheap side of the asymmetry -- disk is
+# recoverable and a dropped vintage is not, because upstream OVERWRITES these
+# files, which is the whole reason this watch exists.
+#
 # CADENCE. Twice daily. The question is "has an annual artifact appeared yet",
 # which does not change on a 30-minute timescale, and a slower poll keeps this
 # visibly distinct from the perishable cascade. GitHub may delay or drop a
@@ -61,11 +68,21 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Prove the separation before probing anything
+      - name: Prove the separation and the retention policy before probing
         run: |
-          # If this ever fails, the watch does not run. A poll that could
-          # discharge an obligation is worse than no poll.
+          # If either fails, the watch does not run. A poll that could discharge
+          # an obligation is worse than no poll, and a poll running under the
+          # wrong retention policy discards bytes before anyone can object --
+          # the storing IS the policy.
           python3 nfl/tests/test_availability_watch.py
+          python3 nfl/tests/test_availability_retention.py
+
+      - name: Snapshot retention state before the probe
+        run: |
+          # Owner decision RET-001 is checked against what is actually on disk,
+          # not only against what the code declares.
+          git ls-files nfl/availability_raw > /tmp/blobs_before.txt || true
+          cp nfl/availability_manifest.jsonl /tmp/manifest_before.jsonl 2>/dev/null || : > /tmp/manifest_before.jsonl
 
       - name: Probe
         id: probe
@@ -86,6 +103,13 @@ jobs:
             exit 1
           fi
           echo "no FAIL states"
+
+      - name: Enforce RET-001 against what actually happened on disk
+        if: always()
+        run: |
+          python3 nfl/tools/check_retention.py \
+            --before-blobs /tmp/blobs_before.txt \
+            --before-manifest /tmp/manifest_before.jsonl
 
       - name: Commit any observation
         if: always()
