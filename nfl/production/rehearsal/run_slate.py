@@ -96,6 +96,7 @@ def build(season, week, out_dir, written_at):
                   'sha256': 'b' * 64, 'retrieved_at': '2026-09-08T12:00:00Z'}},
               'players': players, 'team_ids': [away, home],
               'qb_slate': {'prospective': True}, 'qb_draws': 200,
+              'team_volume': True,
               'distributions': {}}
         a = argparse.Namespace(season=season, week=week, game_id=gid, arm='A',
                                written_at=written_at, out_dir=out_dir,

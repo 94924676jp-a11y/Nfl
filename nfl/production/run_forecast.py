@@ -32,6 +32,7 @@ from nfl.production import refusal as RF                              # noqa: E4
 from nfl.prospective import artifact as ART                           # noqa: E402
 from nfl.capture import registry as REG                               # noqa: E402
 from nfl.production import qb_accounting as QBACC
+from nfl.production import team_volume_v1 as TV
 from nfl.production import qb_v1 as QBV1                             # noqa: E402
 
 ARMS = ('A', 'B', 'C')
@@ -172,7 +173,7 @@ def build(args, fixtures: dict = None) -> dict:
     # --- 3..10 modelling stages ----------------------------------------
     for stage, key, spec in (
             ('feature_build', 'features', 'prior-only, ordinal prefix cut'),
-            ('team_environment', 'team_env', 'team volume, accepted'),
+            ('team_environment', 'team_env', TV.SPEC_VERSION),
             ('appearance', 'appearance', 'P3 appearance'),
             ('participation', 'participation', 'Stage2 ewma_hl2 ACCEPTED'),
             ('targets_carries', 'targets_carries', 'P4C system C ACCEPTED'),
@@ -251,6 +252,18 @@ def build(args, fixtures: dict = None) -> dict:
             # returning {} and reporting PASS. The accepted research baseline
             # exists; a PRODUCTION IMPLEMENTATION of it does not, and the
             # pipeline said nothing about the difference.
+            if _st == 'team_environment' and fx.get('team_volume'):
+                o = TV.forecast(args.season, args.week, fx.get('team_ids', []),
+                                m=fx.get('qb_draws', 200), seed=args.seed)
+                if o.state is not State.PASS:
+                    return o
+                fx['_team_volume'] = o.value
+                return Outcome.ok(
+                    'TEAM_ENVIRONMENT_OK', value={'n': len(o.value)},
+                    implemented=True, spec_version=TV.SPEC_VERSION,
+                    n_metrics=len(TV.METRICS),
+                    warnings=[f'known limitation: {k}'
+                              for k in TV.KNOWN_LIMITATIONS])
             _v = fx.get(_k)
             if not _v:
                 return Outcome.ok(
