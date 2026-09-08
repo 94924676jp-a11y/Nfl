@@ -121,6 +121,37 @@ def test_f_the_lateral_exception_is_measured_and_bounded():
           'may never be widened' in e['policy'])
 
 
+def test_f2_the_qb_dropback_identity():
+    print('\nF2. the QB dropback identity, and the sack trap')
+    Q = I.QB_DROPBACK_IDENTITY
+    lhs = Q['dropbacks']
+    rhs = Q['pass_attempts'] + Q['scrambles'] - Q['spikes']
+    check(f'dropbacks {lhs} vs attempts + scrambles - spikes {rhs}',
+          rhs - lhs == Q['residual_plays'], f'{rhs - lhs}')
+    check('  the residual is exactly ONE play and it is NAMED',
+          Q['residual_plays'] == 1
+          and Q['residual_named']['game_id'] == '2025_03_LA_PHI',
+          Q['residual_named'])
+    check('  and it is a blocked field goal, an upstream mislabelling',
+          Q['residual_named']['play_type'] == 'field_goal')
+    check('EVERY sack is counted inside pass_attempts',
+          Q['sacks_inside_pass_attempts'] == 5308)
+    check('  and every spike is too', Q['spikes_inside_pass_attempts'] == 278)
+    check('  so the naive form is wrong by exactly their sum',
+          Q['naive_form_error_plays']
+          == Q['sacks_inside_pass_attempts'] + Q['spikes_inside_pass_attempts'],
+          Q['naive_form_error_plays'])
+    naive = Q['dropbacks'] - Q['sacks_inside_pass_attempts'] - Q['scrambles']
+    check(f'  the WRONG identity gives {naive} attempts against the real '
+          f'{Q["pass_attempts"]}', naive != Q['pass_attempts'])
+    check('every sack carries a passer_player_id',
+          Q['passer_id_on_sacks'] == Q['sacks_inside_pass_attempts'])
+    check('  but NO scramble does -- a scramble is charged to the rusher',
+          Q['passer_id_on_scrambles'] == 0)
+    check('  and the policy says so, so a later reader cannot re-derive it '
+          'wrongly', 'wrong by thousands of plays' in Q['policy'])
+
+
 def test_g_guard_deletions():
     print('\nG. guard-deletion proofs')
 
@@ -152,6 +183,7 @@ if __name__ == '__main__':
     test_d_ordering_invariants_do_not_clip()
     test_e_the_real_data_audit()
     test_f_the_lateral_exception_is_measured_and_bounded()
+    test_f2_the_qb_dropback_identity()
     test_g_guard_deletions()
     print(f'\n{PASSED} passed, {FAILED} failed')
     sys.exit(1 if FAILED else 0)

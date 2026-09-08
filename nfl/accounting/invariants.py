@@ -154,3 +154,54 @@ LATERAL_EXCEPTION = {
                'an unexplained residual and stays a FAIL. The exception may '
                'never be widened to make an unexplained case pass.'),
 }
+
+
+# ==========================================================================
+# THE QB DROPBACK IDENTITY, measured 2022-2025 on live REG plays
+# ==========================================================================
+#
+# THE TRAP, and it is worth stating first because a naive version is wrong by
+# thousands of plays: `pass_attempt` INCLUDES SACKS. Measured: 5,308 of 5,308
+# sacks carry pass_attempt == 1. It also includes SPIKES: 278 of 278. So
+#
+#     WRONG   attempts = dropbacks - sacks - scrambles
+#     RIGHT   dropbacks = pass_attempts + scrambles - spikes
+#
+# The wrong form is off by 5,586 plays over four seasons.
+#
+# Measured totals 2022-2025 (REG, non-two-point, play_type != no_play):
+#     dropbacks      80,753
+#     pass_attempts  76,941   (includes 5,308 sacks and 278 spikes)
+#     scrambles       4,091
+#     spikes            278
+#     76,941 + 4,091 - 278 = 80,754, against 80,753 dropbacks.
+#
+# RESIDUAL: exactly ONE play, and it is named rather than absorbed.
+# 2025_03_LA_PHI play 3600, a BLOCKED FIELD GOAL carrying an attempt/scramble
+# flag without a dropback flag. Upstream mislabelling, left visible.
+#
+# PASSER ID: every sack carries a passer_player_id (5,308 of 5,308), but NO
+# scramble does -- 4,091 dropbacks lack one, exactly the scramble count. A
+# scramble is charged to the RUSHER. Attributing it to the passer produced a
+# structurally-zero column once already in this project.
+QB_DROPBACK_IDENTITY = {
+    'identity': 'dropbacks == pass_attempts + scrambles - spikes',
+    'seasons': [2022, 2023, 2024, 2025],
+    'dropbacks': 80753, 'pass_attempts': 76941, 'scrambles': 4091,
+    'spikes': 278,
+    'sacks_inside_pass_attempts': 5308,
+    'spikes_inside_pass_attempts': 278,
+    'residual_plays': 1,
+    'residual_named': {'game_id': '2025_03_LA_PHI', 'play_id': '3600',
+                       'play_type': 'field_goal',
+                       'note': 'blocked field goal flagged as an '
+                               'attempt/scramble without a dropback; upstream '
+                               'mislabelling, left visible'},
+    'passer_id_on_sacks': 5308,
+    'passer_id_on_scrambles': 0,
+    'naive_form_error_plays': 5586,
+    'policy': ('The sack-inside-pass_attempt fact is load-bearing. Any QB '
+               'model that derives attempts by subtracting sacks from '
+               'dropbacks is wrong by thousands of plays, and the residual '
+               'exception may never be widened past the one named play.'),
+}
