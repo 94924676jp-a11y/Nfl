@@ -36,6 +36,8 @@ REFUSALS = {
     'ARTIFACT_SEALING_FAILURE': 'the forecast artifact failed its own contract',
     'NFL1_NOT_AUTHORIZED': 'publication requires an explicit owner authorization',
     'STAGE_NOT_IMPLEMENTED': 'a pipeline stage has no production model yet',
+    'EMPTY_FORECAST_ARTIFACT': 'the artifact would seal carrying no player '
+                               'distributions at all',
 }
 
 

@@ -247,7 +247,23 @@ def test_14_authorization_guard():
     o2 = RF.refuse('MADE_UP_CODE', 'x', 'y', 'r')
     check('an undeclared refusal code is refused -- it could not be audited',
           o2.state is State.FAIL and o2.code == 'UNKNOWN_REFUSAL_CODE', o2.code)
-    check('all seventeen refusal codes are declared', len(RF.REFUSALS) == 17,
+    # This asserted a magic number (17) and broke the moment a genuinely new
+    # refusal was added. The property worth protecting is not the COUNT -- it
+    # is that every code the production path actually raises is declared, so
+    # every refusal can be audited. That is checked directly now, by reading
+    # the source.
+    import re as _re
+    _src = ''
+    for _f in ('run_forecast.py', 'pipeline.py', 'qb_v1.py',
+               'qb_accounting.py', 'joint.py'):
+        _p = pathlib.Path(RF.__file__).with_name(_f)
+        if _p.exists():
+            _src += _p.read_text()
+    _used = set(_re.findall(r"refuse\(\s*'([A-Z0-9_]+)'", _src))
+    _undeclared = sorted(_used - set(RF.REFUSALS))
+    check('every refusal code raised in the production path is declared',
+          not _undeclared, str(_undeclared))
+    check('  and the registry is non-trivial', len(RF.REFUSALS) >= 17,
           len(RF.REFUSALS))
 
 

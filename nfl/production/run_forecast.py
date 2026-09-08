@@ -132,15 +132,41 @@ def build(args, fixtures: dict = None) -> dict:
             return RF.refuse('IDENTITY_UNRESOLVED', 'identity_resolution',
                              'no players supplied for the slate', run_id)
         bad = [q for q in players if not q.get('gsis_id')]
-        if bad:
+        # AN UNIDENTIFIABLE PLAYER IS EXCLUDED AND NAMED, NOT SILENTLY DROPPED
+        # AND NOT GUESSED. The guard's purpose is that we never forecast a
+        # player we cannot identify and never fuzzy-match a name; excluding him
+        # satisfies both. Refusing the whole game does not: measured on the
+        # 2026 week 1 roster, ONE practice-squad NYJ running back with no
+        # gsis_id -- present in all three roster vintages, so upstream rather
+        # than a capture defect -- blocked an entire game's forecast.
+        #
+        # The escape hatch is bounded. Above EXCLUSION_LIMIT the roster feed is
+        # broken rather than merely incomplete, and the run refuses.
+        EXCLUSION_LIMIT = 0.01
+        if players and len(bad) / len(players) > EXCLUSION_LIMIT:
             return RF.refuse('IDENTITY_UNRESOLVED', 'identity_resolution',
-                             f'{len(bad)} player(s) have no gsis_id; fuzzy '
-                             f'name matching is forbidden', run_id)
+                             f'{len(bad)} of {len(players)} player(s) have no '
+                             f'gsis_id, above the {EXCLUSION_LIMIT:.0%} limit; '
+                             f'that is a broken roster feed, not an incomplete '
+                             f'one. Fuzzy name matching is forbidden.', run_id)
+        resolved = [q for q in players if q.get('gsis_id')]
+        if not resolved:
+            return RF.refuse('IDENTITY_UNRESOLVED', 'identity_resolution',
+                             'no player on the slate carries a gsis_id',
+                             run_id)
+        fx['_excluded_unidentified'] = [
+            {'team': q.get('team'), 'position': q.get('position'),
+             'reason': 'NO_GSIS_ID'} for q in bad]
+        players = resolved
         if fx.get('game_missing'):
             return RF.refuse('REQUIRED_GAME_MISSING', 'identity_resolution',
                              'a requested game is absent from the schedule',
                              run_id)
-        return Outcome.ok('IDENTITY_RESOLVED', value=players)
+        return Outcome.ok('IDENTITY_RESOLVED', value=players,
+                          n_resolved=len(players), n_excluded=len(bad),
+                          excluded=fx['_excluded_unidentified'],
+                          warnings=([f'{len(bad)} player(s) excluded: no '
+                                     f'gsis_id'] if bad else []))
     p.run_stage('identity_resolution', _identity, declared_inputs=['players'])
 
     # --- 3..10 modelling stages ----------------------------------------
@@ -177,8 +203,12 @@ def build(args, fixtures: dict = None) -> dict:
                     return RF.refuse('MODEL_ARTIFACT_MISSING', _st,
                                      fh.detail, run_id)
                 if fx.get('qb_rows') is None:
-                    sl = QBV1.slate(args.season, args.week,
-                                    fx['qb_slate'].get('game_ids'))
+                    qbp = [q for q in fx.get('players', [])
+                           if q.get('position') == 'QB' and q.get('gsis_id')]
+                    sl = (QBV1.slate_prospective(args.season, args.week, qbp)
+                          if fx['qb_slate'].get('prospective')
+                          else QBV1.slate(args.season, args.week,
+                                          fx['qb_slate'].get('game_ids')))
                     if sl.state is not State.PASS:
                         return sl
                     fx['qb_rows'], fx['qb_allrows'] = sl.value
@@ -216,7 +246,20 @@ def build(args, fixtures: dict = None) -> dict:
                     warnings=[f'known limitation: {k}'
                               for k in QBV1.KNOWN_LIMITATIONS]
                     + list(team.evidence.get('warnings') or []))
-            return Outcome.ok(f'{_st.upper()}_OK', value=fx.get(_k, {}))
+            # A STAGE MAY NOT CLAIM AN ACCEPTED SPEC AND PRODUCE NOTHING.
+            # Six stages carried strings like 'P4C system C ACCEPTED' while
+            # returning {} and reporting PASS. The accepted research baseline
+            # exists; a PRODUCTION IMPLEMENTATION of it does not, and the
+            # pipeline said nothing about the difference.
+            _v = fx.get(_k)
+            if not _v:
+                return Outcome.ok(
+                    'STAGE_DECLARED_UNIMPLEMENTED', value={},
+                    detail=f'{_st}: the accepted research baseline {_s!r} has '
+                           f'no production implementation. Declared as debt '
+                           f'rather than reported as a successful forecast.',
+                    implemented=False, layer=_k)
+            return Outcome.ok(f'{_st.upper()}_OK', value=_v, implemented=True)
         p.run_stage(stage, _model, declared_inputs=['h_history', 'q_pos_mean'],
                     spec_version=spec)
 
@@ -250,14 +293,66 @@ def build(args, fixtures: dict = None) -> dict:
                 spec_version='minimum-viable production coupling')
 
     # --- 12. player draws / 13. scoring / 14. sealing --------------------
-    p.run_stage('player_draws', lambda: Outcome.ok('DRAWS_BUILT',
-                                                   value=fx.get('draws', {})),
+    def _draws():
+        """Assemble every layer's draws into one player-keyed structure.
+
+        Previously this returned fx['draws'] -- a fixture key nothing ever set
+        -- so the stage passed with {} while the QB layer's real draws were
+        computed and thrown away. The rehearsal sealed 16 artifacts containing
+        zero forecasts and reported PASS on all of them.
+        """
+        import numpy as _np
+        out, produced = {}, {}
+        D = fx.get('_qb_draws_out')
+        rows = fx.get('qb_rows') or []
+        if D is not None and rows:
+            for i, r in enumerate(rows):
+                pid = r['gsis_id']
+                out.setdefault(pid, {})['qb'] = {
+                    f: {'mean': float(D[f][i].mean()),
+                        'p10': float(_np.quantile(D[f][i], 0.10)),
+                        'p50': float(_np.quantile(D[f][i], 0.50)),
+                        'p90': float(_np.quantile(D[f][i], 0.90))}
+                    for f in QBV1.FIELDS}
+            produced['qb_layer'] = len(rows)
+        for _k in ('receiving', 'rushing', 'td', 'team_volume'):
+            v = fx.get(f'{_k}_draws')
+            if v:
+                produced[_k] = len(v)
+        return Outcome.ok('DRAWS_BUILT', value=out,
+                          n_players_with_draws=len(out),
+                          layers_producing_draws=produced,
+                          layers_absent=[k for k in
+                                         ('receiving', 'rushing', 'td',
+                                          'team_volume')
+                                         if k not in produced])
+    p.run_stage('player_draws', _draws,
                 declared_inputs=['joint'], spec_version='nfl-player-draw-1')
     p.run_stage('scoring', lambda: Outcome.ok(
         'SCORED', value='downstream view only; never an upstream input'),
         declared_inputs=['draws'], spec_version='deterministic')
 
     def _seal():
+        # AN ARTIFACT WITH NO FORECASTS IS NOT A FORECAST ARTIFACT. Without
+        # this the pipeline sealed 16 of 16 games carrying `distributions: {}`
+        # and reported PASS -- absence read as success, inside the production
+        # path itself.
+        _dr = next((r for r in p.results if r.stage == 'player_draws'), None)
+        _dist = (_dr.value if _dr is not None and _dr.value
+                 else fx.get('distributions') or {})
+        # Which model layers declared themselves unimplemented. Written
+        # plainly: an earlier one-liner mixed union and difference, where `-`
+        # binds tighter than `|`, so a None survived into sorted() and the
+        # sealing stage raised on all 16 games.
+        _absent = sorted({r.stage for r in p.results
+                          if r.code == 'STAGE_DECLARED_UNIMPLEMENTED'})
+        _completeness = 'COMPLETE' if not _absent else 'PARTIAL_PLAYER_COVERAGE'
+        if not _dist:
+            return RF.refuse('EMPTY_FORECAST_ARTIFACT', 'artifact_sealing',
+                             'no model layer produced a player distribution, '
+                             'so there is nothing to seal. Sealing an empty '
+                             'artifact would report success for a run that '
+                             'forecast nothing.', run_id)
         if fx.get('sealing_fails'):
             return RF.refuse('ARTIFACT_SEALING_FAILURE', 'artifact_sealing',
                              'the artifact failed its own contract', run_id)
@@ -274,8 +369,10 @@ def build(args, fixtures: dict = None) -> dict:
             'eligibility_verdict': 'PASS',
             'player_ids': [q['gsis_id'] for q in fx.get('players', [])],
             'team_ids': fx.get('team_ids', []),
-            'distributions': fx.get('distributions', {'_': {}}),
-            'completeness': fx.get('completeness', 'COMPLETE'),
+            'distributions': _dist,
+            'completeness': _completeness,
+            'absent_layers': _absent,
+            'excluded_unidentified': fx.get('_excluded_unidentified', []),
             'contract_version': ART.CONTRACT_VERSION,
         }
         v = ART.validate(art)

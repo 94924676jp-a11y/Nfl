@@ -130,6 +130,67 @@ def slate(season: int, week: int, game_ids=None) -> Outcome:
                       n_rows=len(rows), n_frame=len(allrows))
 
 
+def slate_prospective(season: int, week: int, qb_players) -> Outcome:
+    """The player set for an UPCOMING game comes from the ROSTER, not history.
+
+    THE DEFECT THIS FIXES, found by the NFL-V1-R1 full-slate rehearsal:
+    `slate()` filters the historical frame by season, so for a season that has
+    not been played it returns nothing and the layer refuses every game
+    (QB_SLATE_EMPTY on 15 of 16). A layer that can only name players already in
+    its history can only ever forecast the past.
+
+    WHY THIS IS SAFE. Every outcome-field reference in `qb2_lib.simulate` sits
+    inside an oracle branch -- verified by reading them all. The candidate path
+    reads history only, so a row with no realised outcomes simulates correctly.
+    The outcome fields are set to zero here and are never read.
+
+    CHRONOLOGY IS NOT REIMPLEMENTED. The prospective rows are appended to the
+    historical frame at their own ordinal and `attach` is re-run over the whole
+    sorted list, so each one inherits exactly the frozen strictly-earlier
+    prefix cut rather than a second copy of that logic.
+    """
+    import qb2_lib as Q
+    allrows = Q.load()
+    ordinal = season * 100 + week
+    if any(r['ord'] >= ordinal for r in allrows):
+        return Outcome.fail(
+            'QB_HISTORY_NOT_STRICTLY_EARLIER',
+            f'the historical frame already contains rows at or after ordinal '
+            f'{ordinal}; forecasting a week the frame has already seen would '
+            f'let the outcome inform its own prediction.')
+    want = {p['gsis_id']: p for p in qb_players if p.get('gsis_id')}
+    if not want:
+        return Outcome.blocked(
+            'QB_SLATE_EMPTY',
+            f'no identified quarterback on the {season} week {week} roster for '
+            f'this game', cause=Cause.DATA, season=season, week=week)
+    fields = ('db', 'team_db', 'att', 'sacks', 'scr', 'spikes', 'cmp', 'pyds',
+              'ptd', 'int', 'drush', 'ryds', 'rtd', 'rush_opp')
+    pros = []
+    for gid, p in want.items():
+        pros.append({'season': season, 'week': week, 'team': p['team'],
+                     'gsis_id': gid, 'position': 'QB', 'ord': ordinal,
+                     'game_id': p.get('game_id', f'{season}_{week:02d}_SLATE'),
+                     **{f: 0 for f in fields}})
+    Q.attach(sorted(allrows + pros,
+                    key=lambda r: (r['ord'], r['team'], r['gsis_id'])))
+    # A quarterback with no prior appearance falls back to the positional pool
+    # rather than to a guessed depth position; he is named, not dropped.
+    rows = [r for r in pros if r['h_games'] >= 1]
+    no_hist = [r['gsis_id'] for r in pros if r['h_games'] < 1]
+    if not rows:
+        return Outcome.blocked(
+            'QB_SLATE_EMPTY',
+            f'{len(pros)} rostered quarterback(s) but none has a prior '
+            f'appearance, so none can be forecast from history',
+            cause=Cause.DATA, no_history=no_hist)
+    return Outcome.ok('QB_SLATE_PROSPECTIVE', value=(rows, allrows),
+                      detail=f'{len(rows)} rostered QB(s) with history, '
+                             f'{len(no_hist)} without',
+                      n_rows=len(rows), n_no_history=len(no_hist),
+                      no_history=no_hist)
+
+
 def forecast(rows, season, allrows, seed=20260908, m=1000) -> Outcome:
     """Run the V1 layer. Returns draw matrices keyed by statistic."""
     import time as _time

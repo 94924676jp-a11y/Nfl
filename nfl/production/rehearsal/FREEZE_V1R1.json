@@ -1,0 +1,41 @@
+{
+ "artifact": "NFL_V1_R1_FREEZE",
+ "recorded_utc": "2026-09-08T23:00:00Z",
+ "repo_head": "91f018dfa45901eb655acc82d7db503748028a09",
+ "tree": "clean",
+ "production_hashes": {
+  "nfl/production/run_forecast.py": "b3b1926f460a907fc9fc243148dcb80e6d1053645fd30415055203596ba0f76e",
+  "nfl/production/pipeline.py": "2083fc4771c3bd03eb6c28c4aac956a59775a47edc4a1f6f87fb425a07a96d6c",
+  "nfl/production/joint.py": "85bb8c1c516c7839f5bbea611178bd6c748e39db4f2db16325f02e93dd2ff8c1",
+  "nfl/production/qb_v1.py": "0f4d15aa26ec3d5d4bb1bde3477e47c0946b06b9ce067425adeee64bf6b07488",
+  "nfl/production/qb_accounting.py": "0d10c607e7fe27607820ad9530b71d4331e2702d6a9281359a5f40d9a29bbc85",
+  "nfl/production/refusal.py": "8b34c09c688515201567e217554c438577ab86242c83cdcce99e37b36eadb686",
+  "nfl/production/authorization.py": "20b9ddceb44a8f88c0a6ee45882b99adf6b08bbb24404ff3fcd8f207d62f5b6c",
+  "nfl/accounting/invariants.py": "9b3f27588e1dce12281e71a36be989ffee37ce743def0b15b37e9b9349022a83",
+  "nfl/schema/player_draw.py": "15e62c14237a898ec0fd3ada452fe1b9930e50c540b11a0ed449c46eb00304b9",
+  "nfl/production/production_readiness.json": "512af796085753d62b51fd163c6c944db2fc97612e8b50a8c581660662dad6b1",
+  "nfl/research/PATH_C_STATE.json": "ebd1274086ec9c81a88576f5f975f80ddafc3dd7a9198051223d53f12ef42959"
+ },
+ "not_to_be_altered": [
+  "nfl/research/alignb1",
+  "nfl/research/ftns1",
+  "nfl/research/ftns2",
+  "nfl/research/rbb1",
+  "nfl/capture",
+  "nfl/tools/gen_t90_schedule.py",
+  ".github/workflows/nfl-t90.yml",
+  ".github/workflows/nfl-status.yml"
+ ],
+ "accepted_components": {
+  "qb": "qb-v1-aggregate-then-allocate-1",
+  "td": "TD1 identity; conversion baseline",
+  "conversion": "RC1 baseline; SIGNAL_WEAK",
+  "targets_carries": "P4C system C ACCEPTED",
+  "participation": "Stage2 ewma_hl2 ACCEPTED",
+  "team_environment": "team volume, accepted"
+ },
+ "gates": {
+  "G0A": "11/12",
+  "NFL_1": "NOT AUTHORIZED"
+ }
+}
