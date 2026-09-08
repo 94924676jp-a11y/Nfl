@@ -1,0 +1,186 @@
+{
+ "eval_season": 2024,
+ "material_threshold": 0.05,
+ "ridge_clean_mae": 0.1277217732234802,
+ "candidate_clean_mae": 0.1263924891807771,
+ "probes": [
+  {
+   "probe": "current_game_P",
+   "state": "PASS",
+   "seeded": 0.0003,
+   "clean": 0.1277,
+   "rel_gain": "+99.7%",
+   "note": ""
+  },
+  {
+   "probe": "current_game_pass_snaps",
+   "state": "PASS",
+   "seeded": 0.0727,
+   "clean": 0.1277,
+   "rel_gain": "+43.1%",
+   "note": ""
+  },
+  {
+   "probe": "current_game_team_dropbacks",
+   "state": "UNRESOLVED",
+   "seeded": 0.1277,
+   "clean": 0.1277,
+   "rel_gain": "+0.0%",
+   "note": "seeded leak did not move MAE materially; threshold NOT lowered"
+  },
+  {
+   "probe": "current_game_targets",
+   "state": "PASS",
+   "seeded": 0.1168,
+   "clean": 0.1277,
+   "rel_gain": "+8.6%",
+   "note": ""
+  },
+  {
+   "probe": "future_P",
+   "state": "PASS",
+   "seeded": 0.1168,
+   "clean": 0.1277,
+   "rel_gain": "+8.5%",
+   "note": ""
+  },
+  {
+   "probe": "future_target_data",
+   "state": "UNRESOLVED",
+   "seeded": 0.1242,
+   "clean": 0.1277,
+   "rel_gain": "+2.8%",
+   "note": "seeded leak did not move MAE materially; threshold NOT lowered"
+  },
+  {
+   "probe": "future_teammate_participation",
+   "state": "UNRESOLVED",
+   "seeded": 0.1227,
+   "clean": 0.1277,
+   "rel_gain": "+3.9%",
+   "note": "seeded leak did not move MAE materially; threshold NOT lowered"
+  },
+  {
+   "probe": "postgame_roster_state",
+   "state": "UNRESOLVED",
+   "seeded": 0.1277,
+   "clean": 0.1277,
+   "rel_gain": "+0.0%",
+   "note": "seeded leak did not move MAE materially; threshold NOT lowered"
+  },
+  {
+   "probe": "weekly_rosters_status_proxy",
+   "state": "UNRESOLVED",
+   "seeded": 0.1277,
+   "clean": 0.1277,
+   "rel_gain": "+0.0%",
+   "note": "seeded leak did not move MAE materially; threshold NOT lowered"
+  },
+  {
+   "probe": "present_week_depth_chart",
+   "state": "UNRESOLVED",
+   "seeded": 0.1278,
+   "clean": 0.1277,
+   "rel_gain": "-0.1%",
+   "note": "seeded leak did not move MAE materially; threshold NOT lowered"
+  },
+  {
+   "probe": "identifier_leakage",
+   "state": "UNRESOLVED",
+   "seeded": 0.1275,
+   "clean": 0.1277,
+   "rel_gain": "+0.2%",
+   "note": "seeded leak did not move MAE materially; threshold NOT lowered"
+  },
+  {
+   "probe": "market_data",
+   "state": "UNRESOLVED",
+   "seeded": 0.1277,
+   "clean": 0.1277,
+   "rel_gain": "+0.0%",
+   "note": "seeded leak did not move MAE materially; threshold NOT lowered"
+  },
+  {
+   "probe": "observed_weather",
+   "state": "UNRESOLVED",
+   "seeded": 0.1277,
+   "clean": 0.1277,
+   "rel_gain": "+0.0%",
+   "note": "seeded leak did not move MAE materially; threshold NOT lowered"
+  },
+  {
+   "probe": "evaluation_season_fit_leakage",
+   "state": "UNRESOLVED",
+   "seeded": 0.1271,
+   "rel_gain": "+0.5%"
+  },
+  {
+   "probe": "posthoc_hyperparameter_selection",
+   "state": "UNRESOLVED",
+   "best_on_eval": 0.1275,
+   "honest": 0.1277,
+   "rel_gain": "+0.2%"
+  },
+  {
+   "probe": "wrong_denominator",
+   "state": "PASS",
+   "wrong": 0.1632,
+   "correct": 0.1264,
+   "rel_change": "+29.1%",
+   "note": "team_targets substituted for team_dropbacks; hits the candidate directly"
+  },
+  {
+   "probe": "zero_NA_conflation",
+   "state": "PASS",
+   "conflated": 0.1494,
+   "correct": 0.1264,
+   "rel_change": "+18.2%",
+   "rows": 13057
+  },
+  {
+   "probe": "future_residual_pool",
+   "state": "UNRESOLVED",
+   "seeded": 0.1279,
+   "rel_gain": "-0.1%",
+   "note": "fit on ALL seasons including the evaluation season"
+  },
+  {
+   "probe": "manual_rounded_artifact_reference",
+   "state": "PASS",
+   "refused": "FAIL",
+   "code": "P_ROUNDED"
+  },
+  {
+   "probe": "same_week_duplicate_chronology",
+   "state": "PASS",
+   "duplicate_player_ordinals": 1318,
+   "rows_history_changed": 625
+  },
+  {
+   "probe": "forbidden_identifier_scan",
+   "state": "PASS",
+   "hits": [],
+   "files": 6
+  },
+  {
+   "probe": "GD-1 delete the strictly-earlier-ordinal cut",
+   "state": "PASS",
+   "rows_history_changed": 625,
+   "duplicate_player_ordinals": 1318,
+   "note": "without the cut a mid-week team change lets a player read his own same-week row"
+  },
+  {
+   "probe": "GD-2 the complexity ceiling refuses an over-wide design",
+   "state": "PASS",
+   "at_ceiling_4": true
+  },
+  {
+   "probe": "GD-3 delete the appeared-only condition on P history",
+   "state": "UNRESOLVED",
+   "without_guard": 0.1266,
+   "with_guard": 0.1264,
+   "rel_change": "+0.2%"
+  }
+ ],
+ "guard_deletion_proofs_firing": 2
+}
