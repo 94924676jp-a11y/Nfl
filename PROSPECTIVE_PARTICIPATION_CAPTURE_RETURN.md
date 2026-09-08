@@ -12,11 +12,13 @@ Executed 2026-09-08.
 | | |
 |---|---|
 | Start HEAD | `a993fa6` — receiving information gap return |
-| Implementation commit | `8e9409a` — all code, tests, workflow and the live preflight row |
-| Final HEAD | the commit stamping these hashes into this table, one commit later |
+| Implementation commit | **`Prospective participation availability watch and capture path`** — `253fe2c` at time of writing |
+| Final HEAD | the commit stamping this table, one commit later |
 | Repository | `94924676jp-a11y/Nfl`, branch `main` |
 | G0A | unchanged, **11/12** |
 | NFL-1 | unchanged, **NOT AUTHORIZED** |
+
+**On the hashes.** `nfl-capture.yml` pushes to `main` every 30 minutes, so this branch is rebased whenever a capture lands between commit and push — it was, once, during this task. A rebase rewrites every hash below it, which means a short hash written into a file the same file is committed in cannot stay true. **The stable identifier is the commit title**, which survives a rebase; the hash is accurate as of the stamping commit and should be re-derived with `git log --grep` rather than trusted after the fact.
 
 Files added:
 
