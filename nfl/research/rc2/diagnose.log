@@ -1,0 +1,35 @@
+== 1. mean-location bias, decomposed by component ==
+   T: pred   3.2648  actual   3.0048  bias  +0.2599  ( +8.65%)  n=22521
+   R: pred   2.2078  actual   2.0318  bias  +0.1759  ( +8.66%)  n=22521
+   V: pred  10.7400  actual  10.6152  bias  +0.1248  ( +1.18%)  n=15247
+   Y: pred  24.3853  actual  22.2052  bias  +2.1801
+
+== 2. dispersion: is the forecast wider than the outcome? ==
+   within-row predictive SD (mean)  23.5587
+   between-row SD of means          18.6274
+   implied total predictive SD      30.0331
+   actual SD of Y                   29.9366
+   ratio total/actual                1.0032
+   residual SD (Y - pred mean)      23.9144
+   within-row SD / residual SD       0.9851   (>1 means the intervals are wider than the errors)
+
+== 3. the pool-mixture hypothesis ==
+   mean weight on the player's own history 0.8288
+   mean weight on the POSITION POOL        0.1712
+     pool weight [0.0,0.1): n=10279  bias  +3.053  nominal-50% coverage 0.612  within-SD  25.34
+     pool weight [0.1,0.2): n= 6777  bias  +0.617  nominal-50% coverage 0.644  within-SD  22.04
+     pool weight [0.2,0.4): n= 3170  bias  +0.708  nominal-50% coverage 0.703  within-SD  20.75
+     pool weight [0.4,1.0): n= 2295  bias  +4.919  nominal-50% coverage 0.764  within-SD  23.92
+
+== 4. zero-target / zero-catch mixture ==
+   P(Y = 0) actual 0.3293   predicted 0.3004   UNDER-predicted
+   P(T = 0) actual 0.2462  P(R = 0) actual 0.3230
+
+== 5. by position and volume ==
+   position RB     n= 6278  bias  +1.160  cov50 0.682  cov90 0.932  withinSD  14.98  residSD  14.78  ratio 1.014
+   position TE     n= 6158  bias  +1.070  cov50 0.681  cov90 0.950  withinSD  19.73  residSD  19.81  ratio 0.996
+   position WR     n=10085  bias  +3.493  cov50 0.611  cov90 0.945  withinSD  31.23  residSD  29.97  ratio 1.042
+   volume   high   n=11642  bias  +1.955  cov50 0.537  cov90 0.934  withinSD  29.81  residSD  29.93  ratio 0.996
+   volume   low    n=10879  bias  +2.421  cov50 0.771  cov90 0.952  withinSD  16.86  residSD  15.00  ratio 1.124
+
+wrote rc2_diagnosis.json
