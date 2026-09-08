@@ -23,6 +23,7 @@ out = {}
 diag = collections.Counter()
 for y in (2020, 2021, 2022, 2023, 2024, 2025):
     plyr = collections.defaultdict(lambda: collections.Counter())
+    per_rec = collections.defaultdict(list)
     with gzip.open(f'pbp{y}.csv.gz', 'rt') as fh:
         for r in csv.DictReader(fh):
             if r.get('season_type') != 'REG':
@@ -51,6 +52,7 @@ for y in (2020, 2021, 2022, 2023, 2024, 2025):
                     p['reception_yards_missing'] += 1
                 else:
                     p['rec_yards'] += ry
+                    per_rec[k].append(ry)
                 if yac is None:
                     p['yac_missing'] += 1
                 else:
@@ -63,7 +65,12 @@ for y in (2020, 2021, 2022, 2023, 2024, 2025):
                 if i(r.get('lateral_reception')):
                     p['lateral_receptions'] += 1
     for k, v in plyr.items():
-        out[k] = dict(v)
+        d = dict(v)
+        # PER-RECEPTION yardage, kept as a list rather than a game mean. A game
+        # mean would flatten exactly the tail this study exists to measure:
+        # one 70-yard catch and four 3-yard catches is not five 14-yard catches.
+        d['rec_yards_list'] = per_rec.get(k, [])
+        out[k] = d
     diag[y] = len(plyr)
     print(f'  {y}: {len(plyr)} player-games with >=1 target')
 pickle.dump(out, open('recv.pkl', 'wb'))
