@@ -1,0 +1,52 @@
+== field inventory ==
+  offense_players (part_*.csv)
+    measures participation: True
+    usable prospectively:   YES as lagged history; NO for the current game
+  pass_snaps (derived)
+    measures participation: PROXY -- an UPPER BOUND on routes run, because a player on the field for a dropback may block
+    usable prospectively:   YES as lagged history
+  route (part_*.csv)
+    measures participation: NO. It is a route LABEL for the targeted player. Calling it routes run would be a relabelling, and it is not done anywhere in this study
+    usable prospectively:   as lagged history only, and NOT as routes run
+  routes run (true)
+    measures participation: would, but IT IS NOT AVAILABLE and is not manufactured
+    usable prospectively:   NO
+  offense_snaps / offense_pct (snap counts)
+    measures participation: YES for snaps, but it does not separate pass from run. offense_pct is ROUNDED TO A WHOLE PERCENT and P4B already had to rebase off it for that reason
+    usable prospectively:   as lagged history
+  offense_formation / offense_personnel
+    measures participation: NO -- context, not player participation. Inventoried, not modelled in Stage 2
+    usable prospectively:   as lagged history
+  ngs receiving (avg_separation, cushion, share of air yards)
+    measures participation: NO
+    usable prospectively:   as lagged history, with an undocumented denominator
+  weekly_rosters.status
+    measures participation: NO
+    usable prospectively:   NO
+  present-week depth chart
+    measures participation: NO
+    usable prospectively:   NO -- quarantined
+
+== the adequacy rule, applied ==
+  PA-1 WR: ewma_hl2 beats position_mean by 52.1% pooled, 4/4 seasons >= 10%  -> PASS
+  PA-1 TE: ewma_hl2 beats position_mean by 54.2% pooled, 4/4 seasons >= 10%  -> PASS
+  PA-1 RB: ewma_hl2 beats position_mean by 42.9% pooled, 4/4 seasons >= 10%  -> PASS
+  PA-2 WR: r 0.795 (>=0.70), sd ratio 0.868 (>=0.50)  -> PASS
+  PA-2 TE: r 0.836 (>=0.70), sd ratio 0.897 (>=0.50)  -> PASS
+  PA-2 RB: r 0.772 (>=0.70), sd ratio 0.854 (>=0.50)  -> PASS
+  PA-3 WR: worst cohort role/role_change at 1.34x pooled (limit 2.5x)  -> PASS
+  PA-3 TE: worst cohort role/role_change at 1.29x pooled (limit 2.5x)  -> PASS
+  PA-3 RB: worst cohort role/role_change at 1.19x pooled (limit 2.5x)  -> PASS
+  PA-4: minimum season coverage 99.807% (>=90%), zero vs N/A distinguished  -> PASS
+  PA-5: masking audit PASS  -> PASS
+
+  FINAL ADEQUACY STATE: ADEQUATE_FOR_TARGET_DECOMPOSITION
+  Stage 4 authorized: True
+
+  MANDATORY LABELLING CONSTRAINT:
+    The participation component is PASS-SNAP PARTICIPATION, an upper bound on route participation.
+    It is not routes run.
+    Any Stage 4 decomposition must label it that way and may not conclude anything about the value of route information as such.
+    The gap between pass-snap participation and true routes run is DIRECTIONAL (pass snaps >= routes) but its MAGNITUDE IS UNBOUNDED from the data available here, and is not assumed to be small.
+
+-> s2_verdict.json

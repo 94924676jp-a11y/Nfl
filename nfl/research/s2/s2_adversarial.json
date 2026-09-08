@@ -1,0 +1,129 @@
+{
+ "material_threshold_relative_mae": 0.1,
+ "clean_mae": 0.12936307420681073,
+ "masking": {
+  "202110": {
+   "rows_blanked": 35864,
+   "values_compared": 4956,
+   "leaking": {}
+  },
+  "202301": {
+   "rows_blanked": 23668,
+   "values_compared": 6888,
+   "leaking": {}
+  },
+  "202410": {
+   "rows_blanked": 11533,
+   "values_compared": 4632,
+   "leaking": {}
+  },
+  "202516": {
+   "rows_blanked": 1317,
+   "values_compared": 5232,
+   "leaking": {}
+  }
+ },
+ "PA_5": "PASS",
+ "probes": [
+  {
+   "probe": "current_game_participation",
+   "state": "PASS",
+   "seeded_mae": 0.0388,
+   "clean": 0.1294,
+   "rel_gain": "+70.0%"
+  },
+  {
+   "probe": "current_game_snap_share",
+   "state": "PASS",
+   "seeded_mae": 0.0714,
+   "clean": 0.1294,
+   "rel_gain": "+44.8%"
+  },
+  {
+   "probe": "current_game_target_data",
+   "state": "UNRESOLVED",
+   "seeded_mae": 0.2743,
+   "clean": 0.1294,
+   "rel_gain": "-112.1%"
+  },
+  {
+   "probe": "future_participation",
+   "state": "UNRESOLVED",
+   "seeded_mae": 0.1313,
+   "clean": 0.1294,
+   "rel_gain": "-1.5%"
+  },
+  {
+   "probe": "postgame_roster_state",
+   "state": "UNRESOLVED",
+   "seeded_mae": 0.3725,
+   "clean": 0.1294,
+   "rel_gain": "-188.0%"
+  },
+  {
+   "probe": "forbidden_status_field",
+   "state": "UNRESOLVED",
+   "seeded_mae": 0.3685,
+   "clean": 0.1294,
+   "rel_gain": "-184.8%"
+  },
+  {
+   "probe": "future_teammate_state",
+   "state": "UNRESOLVED",
+   "seeded_mae": 0.27,
+   "clean": 0.1294,
+   "rel_gain": "-108.7%"
+  },
+  {
+   "probe": "teammate_current_participation",
+   "state": "UNRESOLVED",
+   "seeded_mae": 0.2403,
+   "clean": 0.1294,
+   "rel_gain": "-85.8%"
+  },
+  {
+   "probe": "identifier_leakage",
+   "state": "UNRESOLVED",
+   "seeded_mae": 0.262,
+   "rel_gain": "-102.6%",
+   "note": "a bare identifier carries no participation signal, so this probe is expected not to fire; reported UNRESOLVED, not PASS"
+  },
+  {
+   "probe": "ambiguous_zero_as_real_zero_weak",
+   "state": "UNRESOLVED",
+   "degraded_mae": 0.1294,
+   "clean": 0.1294,
+   "note": "degenerate: eligibility requires the target to be present, so this probe has nothing to substitute and cannot fire"
+  },
+  {
+   "probe": "ambiguous_zero_as_real_zero_in_history",
+   "state": "UNRESOLVED",
+   "degraded_mae": 0.1294,
+   "clean": 0.1294,
+   "rel_change": "+0.1%"
+  },
+  {
+   "probe": "denominator_corruption",
+   "state": "PASS",
+   "corrupted_mae": 0.2042,
+   "clean": 0.1294,
+   "rel_change": "+57.9%"
+  },
+  {
+   "probe": "GD-1 delete the strictly-earlier-ordinal cut",
+   "state": "PASS",
+   "same_week_duplicate_player_ordinals": 1318,
+   "rows_whose_history_changed": 625,
+   "note": "without the cut, a player who changed team mid-week reads his own same-week row as history"
+  },
+  {
+   "probe": "GD-2 delete the appeared-only condition on history",
+   "state": "PASS",
+   "without_guard_mae": 0.1456,
+   "clean": 0.1294,
+   "rel_change": "+12.6%",
+   "note": "a did-not-appear game has participation share 0 by definition; letting it into the history is the classic zero/N-A conflation"
+  }
+ ],
+ "guard_deletion_proofs_firing": 2
+}

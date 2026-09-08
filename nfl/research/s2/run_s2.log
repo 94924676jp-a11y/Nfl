@@ -1,0 +1,95 @@
+== PA-4 coverage and the zero/N-A question ==
+  2022: appeared  5764  present 100.000%  true zeros   44  N/A   0  missing 0
+  2023: appeared  5805  present 100.000%  true zeros   41  N/A   0  missing 0
+  2024: appeared  5694  present 99.824%  true zeros   40  N/A   0  missing 10
+  2025: appeared  5695  present 99.807%  true zeros   52  N/A   0  missing 11
+
+== baselines, next-game participation share, appeared rows ==
+
+  --- WR ---
+    baseline               MAE    RMSE       r      R2  sdratio    bias   per-season MAE
+    position_mean       0.2974  0.3312   0.007  -0.000    0.005 -0.0025   0.3085 0.3001 0.2970 0.2837
+    last_observation    0.1477  0.2221   0.775   0.550    1.000 +0.0009   0.1534 0.1399 0.1461 0.1518
+    ewma_hl2            0.1423  0.2023   0.795   0.627    0.868 +0.0042   0.1512 0.1355 0.1393 0.1436
+    ewma_hl3            0.1465  0.2057   0.787   0.615    0.848 +0.0058   0.1556 0.1403 0.1438 0.1468
+    ewma_hl5            0.1534  0.2119   0.771   0.591    0.827 +0.0079   0.1628 0.1479 0.1514 0.1518
+    expanding_mean      0.1811  0.2417   0.692   0.467    0.795 +0.0071   0.1923 0.1722 0.1833 0.1770
+    prev_season_mean    0.2178  0.2845   0.555   0.263    0.747 +0.0309   0.2422 0.2135 0.2177 0.1980
+
+  --- TE ---
+    baseline               MAE    RMSE       r      R2  sdratio    bias   per-season MAE
+    position_mean       0.2578  0.2968   0.000  -0.000    0.004 -0.0051   0.2495 0.2642 0.2596 0.2581
+    last_observation    0.1258  0.1795   0.817   0.634    1.001 -0.0007   0.1290 0.1231 0.1247 0.1263
+    ewma_hl2            0.1181  0.1637   0.836   0.696    0.897 +0.0005   0.1211 0.1166 0.1176 0.1170
+    ewma_hl3            0.1212  0.1667   0.829   0.685    0.881 +0.0013   0.1238 0.1212 0.1202 0.1194
+    ewma_hl5            0.1262  0.1720   0.816   0.664    0.862 +0.0024   0.1283 0.1279 0.1249 0.1237
+    expanding_mean      0.1509  0.1992   0.745   0.550    0.822 +0.0006   0.1471 0.1535 0.1501 0.1529
+    prev_season_mean    0.1789  0.2337   0.640   0.380    0.804 +0.0142   0.1787 0.1908 0.1772 0.1692
+
+  --- RB ---
+    baseline               MAE    RMSE       r      R2  sdratio    bias   per-season MAE
+    position_mean       0.2096  0.2491   0.014  -0.004    0.013 -0.0153   0.2070 0.2098 0.2097 0.2119
+    last_observation    0.1324  0.1799   0.738   0.476    0.999 -0.0003   0.1356 0.1321 0.1349 0.1269
+    ewma_hl2            0.1196  0.1593   0.772   0.590    0.854 -0.0004   0.1234 0.1188 0.1214 0.1148
+    ewma_hl3            0.1216  0.1612   0.765   0.580    0.833 -0.0005   0.1253 0.1215 0.1228 0.1167
+    ewma_hl5            0.1253  0.1651   0.750   0.559    0.810 -0.0009   0.1287 0.1269 0.1258 0.1198
+    expanding_mean      0.1434  0.1862   0.670   0.439    0.761 -0.0085   0.1410 0.1510 0.1451 0.1365
+    prev_season_mean    0.1688  0.2150   0.547   0.252    0.762 +0.0055   0.1670 0.1853 0.1650 0.1575
+
+  --- ALL ---
+    baseline               MAE    RMSE       r      R2  sdratio    bias   per-season MAE
+    position_mean       0.2621  0.3009   0.285   0.080    0.300 -0.0068   0.2631 0.2656 0.2628 0.2567
+    last_observation    0.1375  0.1998   0.797   0.594    1.001 +0.0001   0.1416 0.1333 0.1371 0.1379
+    ewma_hl2            0.1294  0.1809   0.820   0.668    0.887 +0.0019   0.1350 0.1258 0.1284 0.1283
+    ewma_hl3            0.1327  0.1838   0.813   0.657    0.870 +0.0028   0.1382 0.1300 0.1316 0.1309
+    ewma_hl5            0.1381  0.1892   0.800   0.636    0.852 +0.0039   0.1436 0.1368 0.1371 0.1351
+    expanding_mean      0.1623  0.2161   0.731   0.526    0.821 +0.0010   0.1652 0.1614 0.1637 0.1591
+    prev_season_mean    0.1935  0.2531   0.621   0.349    0.801 +0.0192   0.2032 0.1996 0.1921 0.1788
+
+  best by pooled MAE: {'WR': 'ewma_hl2', 'TE': 'ewma_hl2', 'RB': 'ewma_hl2'}
+
+== cohorts (best method per position) ==
+  RB / appearance_probability   (pooled MAE 0.1196)
+    0.25-0.50    n=  598  MAE 0.1228  (1.03x)  r +0.674  real 0.212
+    0.50-0.80    n= 1530  MAE 0.1184  (0.99x)  r +0.616  real 0.227
+    0.80-0.95    n= 3031  MAE 0.1175  (0.98x)  r +0.708  real 0.380
+    <0.25        n=   37  MAE 0.1022  (0.85x)  r +0.374  real 0.162
+    >=0.95       n= 1075  MAE 0.1262  (1.05x)  r +0.624  real 0.607
+  RB / prior_appeared_games   (pooled MAE 0.1196)
+    10-24        n= 1424  MAE 0.1287  (1.08x)  r +0.733  real 0.328
+    25+          n= 3878  MAE 0.1175  (0.98x)  r +0.772  real 0.409
+    4-9          n=  633  MAE 0.1161  (0.97x)  r +0.712  real 0.253
+    <4           n=  336  MAE 0.1125  (0.94x)  r +0.679  real 0.209
+  RB / role   (pooled MAE 0.1196)
+    role_change  n= 1622  MAE 0.1429  (1.19x)  r +0.691  real 0.416
+    stable       n= 4649  MAE 0.1115  (0.93x)  r +0.795  real 0.346
+  TE / appearance_probability   (pooled MAE 0.1181)
+    0.25-0.50    n=  460  MAE 0.1210  (1.02x)  r +0.765  real 0.265
+    0.50-0.80    n= 1139  MAE 0.1201  (1.02x)  r +0.723  real 0.254
+    0.80-0.95    n= 2950  MAE 0.1203  (1.02x)  r +0.735  real 0.379
+    <0.25        n=   22  MAE 0.1086  (0.92x)  r +0.828  real 0.211
+    >=0.95       n= 1580  MAE 0.1117  (0.95x)  r +0.744  real 0.720
+  TE / prior_appeared_games   (pooled MAE 0.1181)
+    10-24        n= 1277  MAE 0.1252  (1.06x)  r +0.780  real 0.353
+    25+          n= 4046  MAE 0.1167  (0.99x)  r +0.839  real 0.486
+    4-9          n=  538  MAE 0.1147  (0.97x)  r +0.826  real 0.333
+    <4           n=  290  MAE 0.1110  (0.94x)  r +0.774  real 0.256
+  TE / role   (pooled MAE 0.1181)
+    role_change  n= 1490  MAE 0.1517  (1.29x)  r +0.709  real 0.451
+    stable       n= 4661  MAE 0.1073  (0.91x)  r +0.868  real 0.429
+  WR / appearance_probability   (pooled MAE 0.1423)
+    0.25-0.50    n= 1042  MAE 0.1751  (1.23x)  r +0.689  real 0.352
+    0.50-0.80    n= 2233  MAE 0.1620  (1.14x)  r +0.679  real 0.334
+    0.80-0.95    n= 3509  MAE 0.1572  (1.10x)  r +0.680  real 0.557
+    <0.25        n=   99  MAE 0.1800  (1.26x)  r +0.600  real 0.268
+    >=0.95       n= 3195  MAE 0.1004  (0.71x)  r +0.526  real 0.834
+  WR / prior_appeared_games   (pooled MAE 0.1423)
+    10-24        n= 2218  MAE 0.1585  (1.11x)  r +0.756  real 0.508
+    25+          n= 6294  MAE 0.1346  (0.95x)  r +0.791  real 0.636
+    4-9          n= 1012  MAE 0.1596  (1.12x)  r +0.735  real 0.429
+    <4           n=  554  MAE 0.1338  (0.94x)  r +0.776  real 0.343
+  WR / role   (pooled MAE 0.1423)
+    role_change  n= 3073  MAE 0.1907  (1.34x)  r +0.654  real 0.510
+    stable       n= 7005  MAE 0.1211  (0.85x)  r +0.841  real 0.598
+
+done in 10s -> s2_results.json

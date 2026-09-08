@@ -1,0 +1,27 @@
+== PA-5 chronology masking audit ==
+  ord >= 202110: 35864 blanked, 4956 values compared, CLEAN
+  ord >= 202301: 23668 blanked, 6888 values compared, CLEAN
+  ord >= 202410: 11533 blanked, 4632 values compared, CLEAN
+  ord >= 202516: 1317 blanked, 5232 values compared, CLEAN
+  PA-5: PASS
+
+== seeded participation leaks (clean MAE 0.1294) ==
+  PASS        current_game_participation             seeded_mae=0.0388 clean=0.1294 rel_gain=+70.0%
+  PASS        current_game_snap_share                seeded_mae=0.0714 clean=0.1294 rel_gain=+44.8%
+  UNRESOLVED  current_game_target_data               seeded_mae=0.2743 clean=0.1294 rel_gain=-112.1%
+  UNRESOLVED  future_participation                   seeded_mae=0.1313 clean=0.1294 rel_gain=-1.5%
+  UNRESOLVED  postgame_roster_state                  seeded_mae=0.3725 clean=0.1294 rel_gain=-188.0%
+  UNRESOLVED  forbidden_status_field                 seeded_mae=0.3685 clean=0.1294 rel_gain=-184.8%
+  UNRESOLVED  future_teammate_state                  seeded_mae=0.27 clean=0.1294 rel_gain=-108.7%
+  UNRESOLVED  teammate_current_participation         seeded_mae=0.2403 clean=0.1294 rel_gain=-85.8%
+  UNRESOLVED  identifier_leakage                     seeded_mae=0.262 rel_gain=-102.6%
+  UNRESOLVED  ambiguous_zero_as_real_zero_weak       degraded_mae=0.1294 clean=0.1294
+  UNRESOLVED  ambiguous_zero_as_real_zero_in_history degraded_mae=0.1294 clean=0.1294 rel_change=+0.1%
+  PASS        denominator_corruption                 corrupted_mae=0.2042 clean=0.1294 rel_change=+57.9%
+
+== guard-deletion proofs ==
+  PASS        GD-1 delete the strictly-earlier-ordinal cut same_week_duplicate_player_ordinals=1318 rows_whose_history_changed=625
+  PASS        GD-2 delete the appeared-only condition on history without_guard_mae=0.1456 clean=0.1294 rel_change=+12.6%
+
+14 probes: 5 PASS, 9 UNRESOLVED, 0 FAIL; 2 guard-deletion proofs firing
+done in 66s -> s2_adversarial.json
