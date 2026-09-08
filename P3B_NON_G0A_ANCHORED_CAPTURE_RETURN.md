@@ -304,4 +304,5 @@ needs me, and neither can authorize anything.
 Per your instruction I am not touching T−90 code again unless a real defect
 appears. **STOPPING HERE.**
 
-**Final HEAD:** stamped by the commit that follows this file.
+**Final HEAD:** `11dc90e376830196235f41d1edcb36d01541e8a3` (stamped by the commit
+that follows this file).
