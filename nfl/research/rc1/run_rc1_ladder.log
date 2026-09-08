@@ -1,0 +1,21 @@
+== primitive level: can conversion be predicted at all? ==
+  C: n=16976
+     L0  wMAE 0.18513  MAE 0.25191  RMSE 0.31157  bias +0.00190
+     L1  wMAE 0.18387  MAE 0.24975  RMSE 0.31321  bias +0.00389
+     L2  wMAE 0.19914  MAE 0.26193  RMSE 0.33753  bias +0.00183
+     L3  wMAE 0.19373  MAE 0.25762  RMSE 0.32643  bias +0.00251
+     best L1, +0.680% weighted-MAE against L0
+  V: n=15247
+     L0  wMAE 4.04110  MAE 4.88971  RMSE 7.04203  bias +0.10568
+     L1  wMAE 4.03906  MAE 4.88437  RMSE 7.04949  bias +0.12483
+     L2  wMAE 4.41945  MAE 5.24816  RMSE 7.56671  bias +0.05026
+     L3  wMAE 4.26406  MAE 5.07853  RMSE 7.28897  bias +0.06083
+     best L1, +0.050% weighted-MAE against L0
+
+== composition: does a primitive gain survive the simulator? ==
+   target machinery held fixed; substitution is draw-preserving
+   accepted baseline CRPS 11.1798
+   C=L1 V=L1   CRPS 11.1772   +0.0235% vs baseline   improves
+   C=L0 V=L0   CRPS 11.2850   -0.9409% vs baseline   WORSE
+
+wrote rc1_ladder.json

@@ -51,16 +51,30 @@ def simulate(rs, ev, sub, oracle=(), M=L.M_DRAWS, seed=L.SEED,
     """Draw M receiving-yard realisations per row.
 
     `oracle` names components substituted with their realised value.
-    `candidate` optionally supplies (name, fn) replacing a component's
-    ESTIMATE while preserving dispersion -- the composition-test path.
+    `candidate` is a dict {'C': fn, 'V': fn} replacing a component's ESTIMATE
+    while preserving dispersion -- the composition-test path.
     """
     pT, pV, prate = pools(sub, ev)
-    rng = np.random.default_rng(seed)
     n = len(rs)
     out = np.zeros((n, M), float)
 
     for idx, r in enumerate(rs):
         pos = r['position']
+        # PER-ROW INDEPENDENT RNG, keyed on the row's identity rather than on
+        # its position in the list.
+        #
+        # A single shared stream made rows coupled: each row consumes a
+        # variable number of draws (one per simulated reception), so a change
+        # anywhere shifted every LATER row's numbers. The adversarial leakage
+        # probe caught it -- 21 rows moved whose prior-only features had not
+        # moved at all. That is not leakage, but it made the probe unable to
+        # tell leakage from stream drift, and it meant an oracle arm differed
+        # from the baseline partly by reshuffling rather than by information.
+        # Seeding from (seed, ordinal, player) makes every row reproducible on
+        # its own and independent of what any other row did.
+        rng = np.random.default_rng(
+            [seed, int(r['ord']),
+             int.from_bytes(str(r['gsis_id']).encode()[-8:], 'little')])
         w = r['h_n'] / (r['h_n'] + L.K_SHRINK)
 
         # ---- T ------------------------------------------------------------
@@ -83,8 +97,8 @@ def simulate(rs, ev, sub, oracle=(), M=L.M_DRAWS, seed=L.SEED,
             c = (r['R'] / r['T']) if r['T'] > 0 else prate.get(pos, 0.0)
             R = np.rint(T * c).astype(int)
         else:
-            if candidate and candidate[0] == 'C':
-                c = candidate[1](r, prate.get(pos, 0.0), w)
+            if candidate and 'C' in candidate:
+                c = candidate['C'](r, prate.get(pos, 0.0), w)
             else:
                 own_rate = (r['h_rec'] / r['h_tgt']) if r['h_tgt'] > 0 else None
                 c = (w * own_rate + (1 - w) * prate.get(pos, 0.0)
@@ -105,8 +119,6 @@ def simulate(rs, ev, sub, oracle=(), M=L.M_DRAWS, seed=L.SEED,
 
         own_v = np.asarray(r.get('h_V_flat') or [], float)
         pool_v = pV.get(pos, np.array([0.0]))
-        if candidate and candidate[0] == 'V':
-            own_v, pool_v = candidate[1](r, own_v, pool_v, w)
         total = int(R.sum())
         if total == 0:
             continue
@@ -116,10 +128,28 @@ def simulate(rs, ev, sub, oracle=(), M=L.M_DRAWS, seed=L.SEED,
             own_v[rng.integers(0, max(len(own_v), 1), total)] if len(own_v)
             else 0.0,
             pool_v[rng.integers(0, len(pool_v), total)])
-        # split the flat pick vector back into per-draw sums
+        # Split the flat pick vector back into per-draw sums.
+        # np.add.reduceat CANNOT express a zero-length segment -- a draw with
+        # zero receptions produces a repeated index and it raises. A cumulative
+        # sum differenced at the segment bounds handles R = 0 correctly and
+        # returns exactly 0 there, which is the right answer rather than a
+        # borrowed neighbouring value.
+        if candidate and 'V' in candidate:
+            # DRAW-PRESERVING RECENTRING, and this is R1's lesson made
+            # operational. The candidate supplies a MEAN yards-per-reception.
+            # Replacing the picks with that number would collapse the
+            # per-catch spread -- R1 lost CV 0.914 that way and charged the
+            # loss to the candidate. Instead every pick is scaled by
+            # Vhat / mean(picks), which moves the centre and leaves the
+            # coefficient of variation, and therefore the tail, untouched.
+            vhat = candidate['V'](r, float(pool_v.mean()) if len(pool_v) else 0.0, w)
+            mu = float(picks.mean())
+            if abs(mu) > 1e-9:
+                picks = picks * (vhat / mu)
+        cs = np.concatenate([[0.0], np.cumsum(picks)])
         ends = np.cumsum(R)
-        sums = np.add.reduceat(picks, np.r_[0, ends[:-1]])
-        out[idx] = np.where(R > 0, sums, 0.0)
+        starts = ends - R
+        out[idx] = cs[ends] - cs[starts]
     return out
 
 
