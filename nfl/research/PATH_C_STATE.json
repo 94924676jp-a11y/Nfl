@@ -80,6 +80,25 @@
    "knowledge": "UNEXPLORED",
    "action": "HOLD_TENTATIVE",
    "note": "LATER"
+  },
+  "receiving_conversion": {
+   "knowledge": "RECOVERABILITY_CHARACTERIZED",
+   "action": "HOLD_CHARACTERIZED",
+   "state": "SIGNAL_WEAK",
+   "decision": "RC1-ACCEPT-001",
+   "decision_artifact": "nfl/NFL_RC1_ACCEPTANCE_DECISION.json",
+   "oracle_share_pct": 46.14,
+   "recovered_pct_of_oracle": 4.89,
+   "information_ceiling": "NOT ESTABLISHED",
+   "information_ceiling_note": "A four-rung ladder on already-authorized inputs cannot establish a ceiling. Conversion holds 46.14% of the oracle share and almost none of it is reachable from current inputs; that is a statement about the inputs, not about conversion.",
+   "condition_to_reopen": "materially new INFORMATION, not another same-input estimator ladder",
+   "binding_lesson": "RC1-LESSON-PRIMITIVE-REVERSAL -- primitive-level rankings can reverse after composition; composition is mandatory for every future component evaluation"
+  },
+  "receiving_baseline_calibration": {
+   "knowledge": "BASELINED",
+   "action": "CALIBRATION_DEFECT",
+   "evidence": "RC1 measured bias +2.18 yards and over-coverage at all four nominal levels",
+   "note": "RC1 correctly refused to repair this after seeing its own decomposition. Assigned to a separately preregistered estimator-repair study."
   }
  },
  "gates": {
@@ -97,6 +116,12 @@
     "another position shows analogous structure",
     "materially new mechanism or data becomes available"
    ]
+  },
+  {
+   "id": "OQ-RC1-PRIMITIVE-REVERSAL",
+   "statement": "Primitive-level rankings of conversion components reverse under composition: C gains +0.680% as a primitive and costs 0.465% downstream, while V gains +0.050% and costs 0.951%.",
+   "status": "REGISTERED AS A BINDING METHODOLOGICAL CONSTRAINT, not an open research question",
+   "consequence": "Ranking candidates on primitive metrics alone is not an acceptable basis for a priority claim in this project."
   }
  ],
  "reproducibility": {

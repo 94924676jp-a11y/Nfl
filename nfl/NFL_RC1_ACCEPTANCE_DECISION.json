@@ -1,0 +1,65 @@
+{
+ "artifact": "NFL_RC1_ACCEPTANCE_DECISION",
+ "decision_id": "RC1-ACCEPT-001",
+ "decided_by": "owner",
+ "decided_at_utc": "2026-09-08",
+ "accepts": {
+  "study": "RC1 receiving conversion oracle decomposition",
+  "return": "RC1_RECEIVING_CONVERSION_RETURN.md",
+  "preregistration": "nfl/research/rc1/predeclaration_rc1.md",
+  "preregistration_sha256": "34f8ac10be7bc0c5b39ee0e89340a3061ff0910dca803d4975887b8811c02cdd",
+  "state": "SIGNAL_WEAK"
+ },
+ "required_meaning": {
+  "decomposition_accepted": true,
+  "component_promoted": "NONE -- no receiving conversion component is promoted",
+  "information_ceiling_declared": false,
+  "information_ceiling_note": "NO CEILING IS DECLARED. A four-rung ladder on already-authorized inputs cannot establish one. What is established is that the conversion signal reachable from CURRENTLY HELD inputs is small.",
+  "current_input_signal": "WEAK -- the closed ladder recovered 4.89% of the measured conversion oracle opportunity, worth 0.96% of baseline CRPS",
+  "future_priority": "New INFORMATION, not another broad same-input estimator ladder. The honest next question is which information, not which estimator.",
+  "composition_mandatory": "Composition into the downstream outcome distribution remains MANDATORY for every future component evaluation. A primitive-only result is not a result.",
+  "primitive_metrics_insufficient": true
+ },
+ "methodological_lesson_PRESERVED": {
+  "id": "RC1-LESSON-PRIMITIVE-REVERSAL",
+  "statement": "PRIMITIVE-LEVEL RANKINGS CAN REVERSE AFTER COMPOSITION.",
+  "measured_evidence": {
+   "C_catch_conversion": {"primitive_gain_vs_L0_pct": 0.680,
+                          "downstream_cost_of_removal_pct": 0.465},
+   "V_yards_per_reception": {"primitive_gain_vs_L0_pct": 0.050,
+                             "downstream_cost_of_removal_pct": 0.951},
+   "reading": "C is roughly fourteen times the better primitive and contributes half as much downstream."
+  },
+  "mechanism": "Y = T x C x V. An error in V multiplies across every reception; an error in C moves the reception count by a fraction of one catch. A primitive metric measures the estimate; only composition measures what the estimate does.",
+  "related_prior_finding": "R1 found the same failure in the harmful direction -- a better isolated primitive worsening the composed simulator.",
+  "binding_consequence": "Any future work that ranks candidates on primitive metrics alone will get the research priority backwards. Ranking on primitive metrics alone is therefore not an acceptable basis for a priority claim in this project."
+ },
+ "measured_results_NOT_TO_BE_REWRITTEN": {
+  "shapley_pct": {"T_target_volume": 53.86, "C_catch_conversion": 17.22,
+                  "V_yards_per_reception": 28.92},
+  "shapley_ci_pct": {"T": [52.90, 54.82], "C": [16.77, 17.74], "V": [28.20, 29.66]},
+  "conversion_share_pct": 46.14,
+  "recovered_pct_of_conversion_oracle": 4.89,
+  "baseline_crps": 11.1798,
+  "identity_arm_E": "reproduces every realised Y exactly; max |err| 1.4e-14 to 2.8e-14, draw spread exactly 0.0",
+  "shapley_efficiency_gap": 0.0,
+  "n": 22521, "n_games": 1087, "seasons": [2022, 2023, 2024, 2025],
+  "sample_label": "EXPLORATORY -- heavily mined development data, never confirmatory"
+ },
+ "known_baseline_defects_carried_forward": {
+  "bias_yards": 2.18,
+  "coverage_50_80_90_95": [0.650, 0.883, 0.943, 0.969],
+  "reading": "over-predicts, and intervals are too wide at every nominal level",
+  "why_not_fixed_in_RC1": "Repairing the baseline after seeing the decomposition is the result-driven change the RC1 pre-registration section 11 forbids.",
+  "assigned_to": "the separately preregistered calibration-repair study"
+ },
+ "what_this_decision_does_NOT_do": [
+  "It does NOT promote any receiving conversion component.",
+  "It does NOT declare an information ceiling.",
+  "It does NOT alter P4C.",
+  "It does NOT alter ABC_MPR, which stays a frozen prospective candidate, not promoted.",
+  "It does NOT alter Stage 2 ewma_hl2 as the accepted participation model.",
+  "It does NOT change G0A, which remains 11/12.",
+  "It does NOT authorize NFL-1, which remains NOT AUTHORIZED."
+ ]
+}
