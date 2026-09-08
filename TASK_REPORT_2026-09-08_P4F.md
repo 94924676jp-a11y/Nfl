@@ -46,11 +46,21 @@ redirect and succeeds; worth normalising the remote URL at some point.
 | `c66ff89` | Close the volatility-test debt (was `95d2fe7` locally) |
 | `6035ffc` | P4E pre-declaration (was `3716f5a`) |
 | `54158d1` | P4E research, results and report |
-| `7f6c2f2` | Register `ARTIFACT_REFERENCE_INTEGRITY` as Rule 006 |
-| `f78d1f5` | **P4F pre-registration** |
+| `af22183` | *(canonical)* NFL vintage capture 20260908T000848Z |
+| `6d60601` | Register `ARTIFACT_REFERENCE_INTEGRITY` as Rule 006 |
+| `8e2e55d` | **P4F pre-registration** |
+| `dcbba8e` | P4F research, results, freeze and this report |
 
-The three rebased commits carry new SHAs because a rebase re-parents them; the
-trees are unchanged.
+Canonical `main` is at `dcbba8e`.
+
+Rebased commits carry new SHAs because a rebase re-parents them; the trees are
+unchanged. This happened **twice**: canonical gained three vintage-capture
+commits before the first push and a fourth (`af22183`) during the P4F work, and
+each time my commits were replayed on top rather than the captures being
+rewritten. The Rule 006 and P4F pre-registration commits were `7f6c2f2` and
+`f78d1f5` before that second rebase; those SHAs appear in the pre-declaration's
+own header text and in earlier terminal output, and are the same trees under
+different parents.
 
 ## 2. Full-suite green proof
 
