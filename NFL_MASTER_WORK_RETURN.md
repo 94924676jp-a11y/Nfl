@@ -11,7 +11,7 @@ NOT AUTHORIZED.**
 |---|---|
 | Repository | `94924676jp-a11y/Nfl`, branch `main` |
 | **Starting HEAD** | **`0d04119`** (`NFL vintage capture 20260908T160625Z`) |
-| **Final HEAD** | see the last line of this section |
+| **Final HEAD** | `078bd70` at the time of writing — the capture bot rebases this branch, so the stable identifiers are the commit titles below and the pre-registration hashes |
 | Repository-wide tests at start | **256 functions, 0 failures** |
 | **Repository-wide tests at end** | **285 functions, 0 failures** (+29) |
 
