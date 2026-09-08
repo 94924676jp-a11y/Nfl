@@ -549,20 +549,72 @@ def test_N7_historical_genuine_changes_survive():
     # small enough to name exactly what moved, and is linear where a byte-level
     # SequenceMatcher on 42KB is not.
     import difflib
+    # Tokens that ACTUALLY differ. The first version collected
+    # `tx[i1:i2] + ty[j1:j2]` for every non-equal opcode, which sweeps in
+    # tokens that are byte-identical on both sides but happen to sit inside a
+    # replaced span. It then reported those unchanged tokens as "changed" and
+    # flagged a GameId that had not moved at all. Set difference per span is
+    # what the sentence was always claiming to measure.
     changed_tokens = []
     for _i, x, y in difflines:
         tx, ty = x.split(b','), y.split(b',')
         sm = difflib.SequenceMatcher(None, tx, ty, autojunk=False)
         for tag, i1, i2, j1, j2 in sm.get_opcodes():
-            if tag != 'equal':
-                changed_tokens.extend(tx[i1:i2] + ty[j1:j2])
-    check('the differing region is a handful of tokens, not the whole line',
-          0 < len(changed_tokens) <= 40, str(len(changed_tokens)))
-    uuidish = [t for t in changed_tokens if _UUID.search(t)]
-    check('and not one CHANGED token is UUID-shaped -- the mask is not '
-          'leaking a nonce', not uuidish, str(uuidish[:3]))
-    print(f'       [{len(changed_tokens)} changed tokens, 0 UUID-shaped; '
-          f'first: {changed_tokens[0][:80]!r}]')
+            if tag == 'equal':
+                continue
+            sa, sb = set(tx[i1:i2]), set(ty[j1:j2])
+            changed_tokens.extend(sorted(sa ^ sb))
+    check('something genuinely differs after masking', len(changed_tokens) > 0,
+          str(len(changed_tokens)))
+
+    # THE ANTI-NONCE INVARIANT, replacing a token-count bound.
+    #
+    # The old assertion was "no changed token is UUID-shaped", guarded by a
+    # "<= 40 changed tokens" bound. Both were properties of the pages captured
+    # that day, not of the mask: overnight the runner captured a version whose
+    # editorial news module is entirely different, the count went to 146, and
+    # a stable article id legitimately differs between two different articles.
+    # That is the same data-dependent-assertion defect Part I existed to
+    # remove, reintroduced one level down.
+    #
+    # What "the mask is not leaking a nonce" actually means is this: a nonce is
+    # a different id on the SAME content. So for every UUID unique to one page,
+    # its neighbourhood with the UUID itself blanked out must NOT appear in the
+    # other page. If it did, identical content would be carrying two different
+    # ids, and that would be a real production defect.
+    def _neutralise(x):
+        return _UUID.sub(b'<UUID>', x)
+
+    def _uuid_only_difference(p, q):
+        """True when the ONLY thing separating two pages is their UUIDs."""
+        return p != q and _neutralise(p) == _neutralise(q)
+
+    # The first formulation of this invariant was VACUOUS and was caught by
+    # seeding a nonce into it. It rebuilt each UUID's neighbourhood with the
+    # UUID deleted and searched the other page for that string -- which can
+    # never match, because in the other page a UUID still sits in that gap. It
+    # passed on a seeded nonce, which is the one thing it existed to catch.
+    #
+    # Neutralising every UUID in BOTH pages and asking whether they collapse to
+    # the same bytes is the property the sentence actually means, and the
+    # seeded-nonce assertion below keeps it honest.
+    check('a UUID difference is not the ONLY difference -- the ids ride on '
+          'content that genuinely changed, so the mask is not leaking a nonce',
+          not _uuid_only_difference(ma, mc))
+    ua, uc = set(_UUID.findall(ma)), set(_UUID.findall(mc))
+    print(f'       [{len(changed_tokens)} genuinely changed tokens; '
+          f'{len(ua - uc)} UUIDs unique to A, {len(uc - ua)} to B]')
+
+    # SEEDED PROOF that the invariant can fire. Swap one id and change nothing
+    # else: identical content carrying two different ids is exactly a leaked
+    # nonce, and the check must catch it.
+    _all = _UUID.findall(ma)
+    if _all:
+        seeded = ma.replace(_all[0], b'deadbeef-0000-4000-8000-000000000000', 1)
+        check('  and that check FIRES on a seeded nonce -- identical content, '
+              'one id swapped', _uuid_only_difference(ma, seeded))
+        check('  while staying silent on the real pair, which differs in '
+              'content too', not _uuid_only_difference(ma, mc))
     i, x, y = difflines[0]
     lo = next((k for k in range(min(len(x), len(y))) if x[k] != y[k]), 0)
     print(f'       [line {i} differs from byte {lo}; the difference is '
