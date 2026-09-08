@@ -12,8 +12,8 @@ Executed 2026-09-08.
 | | |
 |---|---|
 | Start HEAD | `a993fa6` — receiving information gap return |
-| Implementation commit | `bee5a7f` |
-| Final HEAD | `bee5a7f` |
+| Implementation commit | `8e9409a` — all code, tests, workflow and the live preflight row |
+| Final HEAD | the commit stamping these hashes into this table, one commit later |
 | Repository | `94924676jp-a11y/Nfl`, branch `main` |
 | G0A | unchanged, **11/12** |
 | NFL-1 | unchanged, **NOT AUTHORIZED** |
