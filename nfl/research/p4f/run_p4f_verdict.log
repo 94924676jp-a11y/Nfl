@@ -1,0 +1,24 @@
+== section 9: matched-estimand competition criterion ==
+  MPR_ONLY  RB1-RB2  PASS  |z| no worse in 4/4 (need 3)  inside CI 3 vs control 3
+                     candidate |z| [0.084, 0.669, 2.712, 0.02]  control |z| [1.547, 1.63, 3.392, 1.098]
+  MC_ONLY   RB1-RB2  FAIL  |z| no worse in 2/4 (need 3)  inside CI 1 vs control 3
+                     candidate |z| [1.808, 1.853, 3.378, 1.025]  control |z| [1.547, 1.63, 3.392, 1.098]
+  ABC_ONLY  RB1-RB2  FAIL  |z| no worse in 3/4 (need 3)  inside CI 2 vs control 3
+                     candidate |z| [1.362, 2.027, 2.896, 0.49]  control |z| [1.547, 1.63, 3.392, 1.098]
+  ABC_MPR   RB1-RB2  PASS  |z| no worse in 4/4 (need 3)  inside CI 3 vs control 3
+                     candidate |z| [0.255, 1.295, 2.469, 0.353]  control |z| [1.547, 1.63, 3.392, 1.098]
+
+== verdict ==
+  MPR_ONLY: REJECT
+    - it flattens genuine emerging backs -- predeclaration section 13 names this as a negative result, and the band average must not be presented as the answer instead
+    - randomised PIT exceeds the 27.877 critical value in at least one season
+    NOT PROMOTED. P4C system C remains the accepted architecture.
+  ABC_MPR: RETAIN AS PROSPECTIVE CANDIDATE
+    mechanism achieved (max |mean-C| 5.6e-16), rule 5 PASS, 0 adversarial FAIL, PIT max 18.3 < 27.877
+    NOT PROMOTED. P4C system C remains the accepted architecture.
+
+== section 12: freeze ==
+  ABC_MPR
+  Candidate frozen for prospective evaluation; NOT promoted.
+
+done in 0s -> p4f_verdict.json

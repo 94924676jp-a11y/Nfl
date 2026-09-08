@@ -1,0 +1,94 @@
+
+1. P4C clipping is mean-biased near zero
+  ok   C=0.02: E[clip] 0.04290 vs closed form 0.04291
+  ok     and it exceeds C by +114.5%
+  ok   C=0.05: E[clip] 0.06297 vs closed form 0.06295
+  ok     and it exceeds C by +25.9%
+  ok   C=0.10: E[clip] 0.10411 vs closed form 0.10405
+  ok     and it exceeds C by +4.1%
+  ok   C=0.30: E[clip] 0.30008 vs closed form 0.30000
+  ok     and it exceeds C by +0.0%
+
+2. bias magnitude is monotone with proximity to the boundary
+  ok   sd=0.05: relative bias strictly decreasing as C rises
+  ok   sd=0.05: absolute bias also decreasing
+  ok   sd=0.1: relative bias strictly decreasing as C rises
+  ok   sd=0.1: absolute bias also decreasing
+
+3. the correction restores the requested mean within tolerance
+  ok   sd=0.02 normal: every row within 1e-9
+  ok     state PASS
+  ok     and the mean is C, not merely close
+  ok   sd=0.1 normal: every row within 1e-9
+  ok     state PASS
+  ok     and the mean is C, not merely close
+  ok   sd=0.25 normal: every row within 1e-9
+  ok     state PASS
+  ok     and the mean is C, not merely close
+  ok   sd=0.1 laplace: every row within 1e-9
+  ok     state PASS
+  ok     and the mean is C, not merely close
+
+4. the correction does not change C
+  ok   C is untouched by the call
+  ok   the residual draws are untouched too
+
+5. the correction reads no outcome
+  ok   no outcome identifier appears in the module
+  ok   rectify takes only centre, residuals, range and solver mechanics
+  ok   and the result cannot depend on one, there being no channel for it
+
+6. deterministic given identical inputs
+  ok   draws bit-identical
+  ok   delta bit-identical
+  ok   report identical
+  ok   and identical through an explicit float64 round-trip
+
+7. C = 0
+  ok   the mean is 0 within the declared 1e-9
+  ok     (it is 2.78e-20, not identically zero -- bisection, as pre-declared)
+  ok   every draw sits on the floor to within 1e-15
+  ok   and the degenerate solution set is FLAGGED
+  ok     without being called an error
+
+8. C = 1
+  ok   the mean is exactly 1
+  ok   every draw sits on the ceiling
+  ok   and the degenerate solution set is FLAGGED
+
+9. very small residual variance
+  ok   sd=0.0: mean restored
+  ok     and with no spread at all the shift is ~0
+  ok   sd=1e-12: mean restored
+  ok   sd=1e-08: mean restored
+
+10. large residual variance
+  ok   sd=0.5: mean restored within 1e-9
+  ok     and the draws stay inside [0, 1]
+  ok   sd=2.0: mean restored within 1e-9
+  ok     and the draws stay inside [0, 1]
+  ok   sd=50.0: mean restored within 1e-9
+  ok     and the draws stay inside [0, 1]
+
+11. infeasible and pathological cases are detected, not altered
+  ok   centres outside [0, 1] are counted as infeasible
+  ok     their delta is NaN rather than a silent number
+  ok     and they keep P4C untouched draws
+  ok     the feasible rows are still solved
+  ok   a non-finite residual is refused, not imputed
+  ok   shape mismatch raises a NAMED error
+  ok   an inverted range raises a NAMED error
+
+12. the raw residual identity is recoverable
+  ok   the interior identity eps = W - C + delta holds exactly
+  ok     and reproduces the original residuals there
+  ok     the clipped fraction is itself reportable (19.7%)
+
+X. the MC_ONLY confound control does what it says
+  ok   recentring leaves the rectification bias in place where clipping happens
+  ok     and the bias it leaves is the uncorrected one
+  ok     while a centre far from the boundary has no bias to leave
+  ok     yet its mean still MOVES, which is the confound this control exists to measure
+  ok   whereas rectification removes it entirely
+
+66 passed, 0 failed

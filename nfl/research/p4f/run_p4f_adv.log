@@ -1,0 +1,26 @@
+== P4F adversarial (eval season 2024, materiality 0.01) ==
+  clean ABC_MPR CRPS 2.0874
+
+  PASS        current_game_realised_carry_share        seeded=1.2324 clean=2.0874 gain=0.855
+  PASS        current_game_realised_carries            seeded=1.4086 clean=2.0874 gain=0.6788
+  PASS        current_game_realised_snaps              seeded=1.6813 clean=2.0874 gain=0.4062
+  PASS        future_teammate_availability             seeded=2.0669 clean=2.0874 gain=0.0205
+  UNRESOLVED  postgame_roster_state                    seeded=2.0874 clean=2.0874 gain=-0.0
+  PASS        current_game_RB_rank                     seeded=1.6737 clean=2.0874 gain=0.4137
+  PASS        future_carry_share                       seeded=2.0323 clean=2.0874 gain=0.0551
+  PASS        postgame_roster_state_well_posed         seeded=1.7624 clean=2.0874 gain=0.325
+  PASS        outcome_dependent_delta                  seeded=1.3502 clean=2.0874 gain=0.7372
+  UNRESOLVED  future_residual_pool                     seeded=2.0906 clean=2.0874 gain=-0.0032
+  UNRESOLVED  evaluation_season_fitted_correction      seeded=2.0834 clean=2.0874 gain=0.004
+  UNRESOLVED  evaluation_season_fitted_correction_STRENGTHENED seeded=2.086 clean=2.0874 gain=0.0014
+  PASS        forbidden_identifier_scan                hits=[] files=5
+
+== guard-deletion proofs ==
+  PASS        GD-A delete "the solver targets C, never an outcome" with_guard=2.0874 guard_deleted=1.3502 gain=0.7372
+  UNRESOLVED  GD-B delete the residual-pool chronology guard with_guard=2.0874 guard_deleted=2.0906
+  PASS        GD-C delete the infeasible-centre detector caught_with_guard=50 caught_without=0 rows_silently_wrong_without=50
+  PASS        GD-D seed a forbidden identifier past the scan hits=[('_gdd_seeded.py', 'weekly_rosters_status_lookup')]
+  UNRESOLVED  GD4-retest delete the out-of-fold residual-pool guard with_guard=2.0874 guard_deleted=2.0915 change=-0.004
+
+18 probes: 12 PASS, 6 UNRESOLVED, 0 FAIL; 3 load-bearing guard-deletion proofs firing
+done in 44s -> p4f_adversarial.json

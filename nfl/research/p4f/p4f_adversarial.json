@@ -1,0 +1,140 @@
+{
+ "eval_season": 2024,
+ "material_threshold_crps": 0.01,
+ "clean_crps": 2.087417045955326,
+ "probes": [
+  {
+   "probe": "current_game_realised_carry_share",
+   "state": "PASS",
+   "seeded": 1.2324,
+   "clean": 2.0874,
+   "gain": 0.855
+  },
+  {
+   "probe": "current_game_realised_carries",
+   "state": "PASS",
+   "seeded": 1.4086,
+   "clean": 2.0874,
+   "gain": 0.6788
+  },
+  {
+   "probe": "current_game_realised_snaps",
+   "state": "PASS",
+   "seeded": 1.6813,
+   "clean": 2.0874,
+   "gain": 0.4062
+  },
+  {
+   "probe": "future_teammate_availability",
+   "state": "PASS",
+   "seeded": 2.0669,
+   "clean": 2.0874,
+   "gain": 0.0205
+  },
+  {
+   "probe": "postgame_roster_state",
+   "state": "UNRESOLVED",
+   "seeded": 2.0874,
+   "clean": 2.0874,
+   "gain": -0.0
+  },
+  {
+   "probe": "current_game_RB_rank",
+   "state": "PASS",
+   "seeded": 1.6737,
+   "clean": 2.0874,
+   "gain": 0.4137
+  },
+  {
+   "probe": "future_carry_share",
+   "state": "PASS",
+   "seeded": 2.0323,
+   "clean": 2.0874,
+   "gain": 0.0551
+  },
+  {
+   "probe": "postgame_roster_state_well_posed",
+   "state": "PASS",
+   "seeded": 1.7624,
+   "clean": 2.0874,
+   "gain": 0.325
+  },
+  {
+   "probe": "outcome_dependent_delta",
+   "state": "PASS",
+   "seeded": 1.3502,
+   "clean": 2.0874,
+   "gain": 0.7372,
+   "note": "the solver is retargeted at the realised share instead of C"
+  },
+  {
+   "probe": "future_residual_pool",
+   "state": "UNRESOLVED",
+   "seeded": 2.0906,
+   "clean": 2.0874,
+   "gain": -0.0032,
+   "note": "residual pool built from the evaluation season itself"
+  },
+  {
+   "probe": "evaluation_season_fitted_correction",
+   "state": "UNRESOLVED",
+   "seeded": 2.0834,
+   "clean": 2.0874,
+   "gain": 0.004
+  },
+  {
+   "probe": "evaluation_season_fitted_correction_STRENGTHENED",
+   "state": "UNRESOLVED",
+   "seeded": 2.086,
+   "clean": 2.0874,
+   "gain": 0.0014,
+   "note": "P4E GD1 retested with the evaluation season in the coefficients AND the residual pool"
+  },
+  {
+   "probe": "forbidden_identifier_scan",
+   "state": "PASS",
+   "hits": [],
+   "files": 5
+  },
+  {
+   "probe": "GD-A delete \"the solver targets C, never an outcome\"",
+   "state": "PASS",
+   "with_guard": 2.0874,
+   "guard_deleted": 1.3502,
+   "gain": 0.7372
+  },
+  {
+   "probe": "GD-B delete the residual-pool chronology guard",
+   "state": "UNRESOLVED",
+   "with_guard": 2.0874,
+   "guard_deleted": 2.0906
+  },
+  {
+   "probe": "GD-C delete the infeasible-centre detector",
+   "state": "PASS",
+   "caught_with_guard": 50,
+   "caught_without": 0,
+   "rows_silently_wrong_without": 50,
+   "note": "without the detector 50 impossible centres are solved anyway and land outside tolerance instead of being named"
+  },
+  {
+   "probe": "GD-D seed a forbidden identifier past the scan",
+   "state": "PASS",
+   "hits": [
+    [
+     "_gdd_seeded.py",
+     "weekly_rosters_status_lookup"
+    ]
+   ]
+  },
+  {
+   "probe": "GD4-retest delete the out-of-fold residual-pool guard",
+   "state": "UNRESOLVED",
+   "with_guard": 2.0874,
+   "guard_deleted": 2.0915,
+   "change": -0.004,
+   "note": "P4E left this UNRESOLVED; retested under MPR, where the pool also sets the shift"
+  }
+ ],
+ "guard_deletion_proofs_firing": 3
+}

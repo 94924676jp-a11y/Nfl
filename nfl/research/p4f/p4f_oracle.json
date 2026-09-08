@@ -1,0 +1,703 @@
+{
+ "note": "allocation oracle decomposition recomputed under each system; closes P4E debt #4",
+ "sample_label": "previously exposed development sample -- not confirmatory and not promotion-eligible",
+ "seasons": {
+  "2022": {
+   "_p4cc_gate": {
+    "state": "PASS",
+    "code": "P4F_ORACLE_BASELINE",
+    "detail": "matches p4cc_results.json[2022/corners/A_baseline/crps] sha256:068b9836a867 within 1.0e-09",
+    "evidence": {
+     "observed": 1.9295611633207923,
+     "expected": 1.9295611633207923,
+     "abs_diff": 0.0,
+     "tolerance": 1e-09,
+     "sha256": "068b9836a867da9cf0bcebc42765bfb9d7927a226b7d8b838f0942aa7d14a7e8",
+     "artifact": "/tmp/claude-0/-home-user-mlb-prop-system-v7/8de98087-4781-5a10-ae09-ef74590f8116/scratchpad/p4cc/p4cc_results.json",
+     "selector": [
+      "2022",
+      "corners",
+      "A_baseline",
+      "crps"
+     ]
+    }
+   },
+   "P4C": {
+    "corners_crps": {
+     "A_baseline": 1.9295611633207923,
+     "O_T": 1.617654342863736,
+     "O_S": 1.135776932254501,
+     "O_A": 1.5661122273547217,
+     "O_S_T": 0.3631636661821652,
+     "O_A_T": 1.1988483350605497,
+     "O_A_S": 0.9309198886772375,
+     "O_A_S_T": 1.4927624143959352e-07
+    },
+    "baseline_crps": 1.9295611633207923,
+    "total_reduction": 1.929561014044551,
+    "shapley": {
+     "T": 0.6042550463471021,
+     "S": 0.9791579748433756,
+     "A": 0.34614799285407316
+    },
+    "shapley_pct_of_total": {
+     "T": 31.315674495336314,
+     "S": 50.745115998740225,
+     "A": 17.939209505923458
+    },
+    "residual_allocation_ceiling_crps": 0.9791579748433756,
+    "allocation_only_oracle_gain": 0.7937842310662913,
+    "raw_gain_vs_P4C_crps": 0.0,
+    "old_style_fraction_of_P4C_allocation_shapley": 0.0,
+    "allocation_shapley_reduction_vs_P4C": 0.0
+   },
+   "MPR_ONLY": {
+    "corners_crps": {
+     "A_baseline": 1.9174312669612283,
+     "O_T": 1.5998437128709118,
+     "O_S": 1.135776932254501,
+     "O_A": 1.5645517589839215,
+     "O_S_T": 0.3631636661821652,
+     "O_A_T": 1.1914805251419167,
+     "O_A_S": 0.9309198886772375,
+     "O_A_S_T": 1.4927624143959352e-07
+    },
+    "baseline_crps": 1.9174312669612283,
+    "total_reduction": 1.917431117684987,
+    "shapley": {
+     "T": 0.6071165144828277,
+     "S": 0.9694302230233727,
+     "A": 0.3408843801787866
+    },
+    "shapley_pct_of_total": {
+     "T": 31.66301562977817,
+     "S": 50.55880308200148,
+     "A": 17.778181288220345
+    },
+    "residual_allocation_ceiling_crps": 0.9694302230233727,
+    "allocation_only_oracle_gain": 0.7816543347067273,
+    "raw_gain_vs_P4C_crps": 0.012129896359563963,
+    "old_style_fraction_of_P4C_allocation_shapley": 0.012388089226872956,
+    "allocation_shapley_reduction_vs_P4C": 0.009727751820002961
+   },
+   "MC_ONLY": {
+    "corners_crps": {
+     "A_baseline": 1.9289494223822787,
+     "O_T": 1.616944204327233,
+     "O_S": 1.135776932254501,
+     "O_A": 1.5667862017177872,
+     "O_S_T": 0.3631636661821652,
+     "O_A_T": 1.1993959772496448,
+     "O_A_S": 0.9309198886772375,
+     "O_A_S_T": 1.4927624143959352e-07
+    },
+    "baseline_crps": 1.9289494223822787,
+    "total_reduction": 1.9289492731060374,
+    "shapley": {
+     "T": 0.6043089009087603,
+     "S": 0.9791305812313299,
+     "A": 0.3455097909659471
+    },
+    "shapley_pct_of_total": {
+     "T": 31.32839776214999,
+     "S": 50.7597890148097,
+     "A": 17.91181322304031
+    },
+    "residual_allocation_ceiling_crps": 0.9791305812313299,
+    "allocation_only_oracle_gain": 0.7931724901277777,
+    "raw_gain_vs_P4C_crps": 0.0006117409385135719,
+    "old_style_fraction_of_P4C_allocation_shapley": 0.000624762249024653,
+    "allocation_shapley_reduction_vs_P4C": 2.7393612045734095e-05
+   },
+   "ABC_ONLY": {
+    "corners_crps": {
+     "A_baseline": 1.9310720493321778,
+     "O_T": 1.6204023423514031,
+     "O_S": 1.135776932254501,
+     "O_A": 1.57511592069927,
+     "O_S_T": 0.3631636661821652,
+     "O_A_T": 1.2158320246753496,
+     "O_A_S": 0.9309198886772375,
+     "O_A_S_T": 1.4927624143959352e-07
+    },
+    "baseline_crps": 1.9310720493321778,
+    "total_reduction": 1.9310719000559364,
+    "shapley": {
+     "T": 0.6025126758099663,
+     "S": 0.9872814488574734,
+     "A": 0.3412777753884967
+    },
+    "shapley_pct_of_total": {
+     "T": 31.200944708092617,
+     "S": 51.12608436945695,
+     "A": 17.672970922450432
+    },
+    "residual_allocation_ceiling_crps": 0.9872814488574734,
+    "allocation_only_oracle_gain": 0.7952951170776767,
+    "raw_gain_vs_P4C_crps": -0.0015108860113854927,
+    "old_style_fraction_of_P4C_allocation_shapley": -0.0015430462195103619,
+    "allocation_shapley_reduction_vs_P4C": -0.008123474014097742
+   },
+   "ABC_MPR": {
+    "corners_crps": {
+     "A_baseline": 1.8952955940428415,
+     "O_T": 1.5764370557963285,
+     "O_S": 1.135776932254501,
+     "O_A": 1.5359473829887322,
+     "O_S_T": 0.3631636661821652,
+     "O_A_T": 1.1621509551655114,
+     "O_A_S": 0.9309198886772375,
+     "O_A_S_T": 1.4927624143959352e-07
+    },
+    "baseline_crps": 1.8952955940428415,
+    "total_reduction": 1.8952954447666002,
+    "shapley": {
+     "T": 0.6076610415317625,
+     "S": 0.9436066365468131,
+     "A": 0.34402776668802443
+    },
+    "shapley_pct_of_total": {
+     "T": 32.061547090701424,
+     "S": 49.78678332986841,
+     "A": 18.151669579430155
+    },
+    "residual_allocation_ceiling_crps": 0.9436066365468131,
+    "allocation_only_oracle_gain": 0.7595186617883405,
+    "raw_gain_vs_P4C_crps": 0.03426556927795077,
+    "old_style_fraction_of_P4C_allocation_shapley": 0.034994934584924184,
+    "allocation_shapley_reduction_vs_P4C": 0.03555133829656254
+   }
+  },
+  "2023": {
+   "_p4cc_gate": {
+    "state": "PASS",
+    "code": "P4F_ORACLE_BASELINE",
+    "detail": "matches p4cc_results.json[2023/corners/A_baseline/crps] sha256:068b9836a867 within 1.0e-09",
+    "evidence": {
+     "observed": 1.9972817321788165,
+     "expected": 1.9972817321788165,
+     "abs_diff": 0.0,
+     "tolerance": 1e-09,
+     "sha256": "068b9836a867da9cf0bcebc42765bfb9d7927a226b7d8b838f0942aa7d14a7e8",
+     "artifact": "/tmp/claude-0/-home-user-mlb-prop-system-v7/8de98087-4781-5a10-ae09-ef74590f8116/scratchpad/p4cc/p4cc_results.json",
+     "selector": [
+      "2023",
+      "corners",
+      "A_baseline",
+      "crps"
+     ]
+    }
+   },
+   "P4C": {
+    "corners_crps": {
+     "A_baseline": 1.9972817321788165,
+     "O_T": 1.722678412180363,
+     "O_S": 1.1741342870937437,
+     "O_A": 1.5920081066248448,
+     "O_S_T": 0.4157893330109524,
+     "O_A_T": 1.2485637012592323,
+     "O_A_S": 0.9391030137843216,
+     "O_A_S_T": 1.3847837426974345e-07
+    },
+    "baseline_crps": 1.9972817321788165,
+    "total_reduction": 1.9972815937004422,
+    "shapley": {
+     "T": 0.5882002916762008,
+     "S": 1.017202697956966,
+     "A": 0.3918786040672753
+    },
+    "shapley_pct_of_total": {
+     "T": 29.45004317525497,
+     "S": 50.929358241987025,
+     "A": 19.620598582757996
+    },
+    "residual_allocation_ceiling_crps": 1.017202697956966,
+    "allocation_only_oracle_gain": 0.8231474450850729,
+    "raw_gain_vs_P4C_crps": 0.0,
+    "old_style_fraction_of_P4C_allocation_shapley": 0.0,
+    "allocation_shapley_reduction_vs_P4C": 0.0
+   },
+   "MPR_ONLY": {
+    "corners_crps": {
+     "A_baseline": 1.9885016768265509,
+     "O_T": 1.710287916083202,
+     "O_S": 1.1741342870937437,
+     "O_A": 1.592941041530212,
+     "O_S_T": 0.4157893330109524,
+     "O_A_T": 1.2386202359953944,
+     "O_A_S": 0.9391030137843216,
+     "O_A_S_T": 1.3847837426974345e-07
+    },
+    "baseline_crps": 1.9885016768265509,
+    "total_reduction": 1.9885015383481766,
+    "shapley": {
+     "T": 0.5912165052860335,
+     "S": 1.009051930886299,
+     "A": 0.38823310217584384
+    },
+    "shapley_pct_of_total": {
+     "T": 29.73176001549135,
+     "S": 50.74433745344276,
+     "A": 19.523902531065893
+    },
+    "residual_allocation_ceiling_crps": 1.009051930886299,
+    "allocation_only_oracle_gain": 0.8143673897328072,
+    "raw_gain_vs_P4C_crps": 0.00878005535226567,
+    "old_style_fraction_of_P4C_allocation_shapley": 0.008631569076547142,
+    "allocation_shapley_reduction_vs_P4C": 0.008150767070666864
+   },
+   "MC_ONLY": {
+    "corners_crps": {
+     "A_baseline": 1.999559345443008,
+     "O_T": 1.7267504618927287,
+     "O_S": 1.1741342870937437,
+     "O_A": 1.5944045378006413,
+     "O_S_T": 0.4157893330109524,
+     "O_A_T": 1.253523338391797,
+     "O_A_S": 0.9391030137843216,
+     "O_A_S_T": 1.3847837426974345e-07
+    },
+    "baseline_crps": 1.999559345443008,
+    "total_reduction": 1.9995592069646337,
+    "shapley": {
+     "T": 0.5871749452006814,
+     "S": 1.0206931949039117,
+     "A": 0.39169106686004057
+    },
+    "shapley_pct_of_total": {
+     "T": 29.365219252098232,
+     "S": 51.04591008602051,
+     "A": 19.588870661881252
+    },
+    "residual_allocation_ceiling_crps": 1.0206931949039117,
+    "allocation_only_oracle_gain": 0.8254250583492644,
+    "raw_gain_vs_P4C_crps": -0.0022776132641915137,
+    "old_style_fraction_of_P4C_allocation_shapley": -0.0022390947927744004,
+    "allocation_shapley_reduction_vs_P4C": -0.003490496946945809
+   },
+   "ABC_ONLY": {
+    "corners_crps": {
+     "A_baseline": 1.9543421614444267,
+     "O_T": 1.6721071211262226,
+     "O_S": 1.1741342870937437,
+     "O_A": 1.5515919928241388,
+     "O_S_T": 0.4157893330109524,
+     "O_A_T": 1.198436395690759,
+     "O_A_S": 0.9391030137843216,
+     "O_A_S_T": 1.3847837426974345e-07
+    },
+    "baseline_crps": 1.9543421614444267,
+    "total_reduction": 1.9543420229660524,
+    "shapley": {
+     "T": 0.5923627304107456,
+     "S": 0.9710158383802038,
+     "A": 0.3909634541751029
+    },
+    "shapley_pct_of_total": {
+     "T": 30.31008510535595,
+     "S": 49.685051386579666,
+     "A": 20.004863508064375
+    },
+    "residual_allocation_ceiling_crps": 0.9710158383802038,
+    "allocation_only_oracle_gain": 0.7802078743506831,
+    "raw_gain_vs_P4C_crps": 0.04293957073438981,
+    "old_style_fraction_of_P4C_allocation_shapley": 0.042213386595054456,
+    "allocation_shapley_reduction_vs_P4C": 0.04618685957676216
+   },
+   "ABC_MPR": {
+    "corners_crps": {
+     "A_baseline": 1.9362287454445246,
+     "O_T": 1.6493723866021104,
+     "O_S": 1.1741342870937437,
+     "O_A": 1.536277450425384,
+     "O_S_T": 0.4157893330109524,
+     "O_A_T": 1.171740228522748,
+     "O_A_S": 0.9391030137843216,
+     "O_A_S_T": 1.3847837426974345e-07
+    },
+    "baseline_crps": 1.9362287454445246,
+    "total_reduction": 1.9362286069661503,
+    "shapley": {
+     "T": 0.5958001073803583,
+     "S": 0.9497377645037549,
+     "A": 0.39069073508203694
+    },
+    "shapley_pct_of_total": {
+     "T": 30.771165410778078,
+     "S": 49.050910676910505,
+     "A": 20.17792391231141
+    },
+    "residual_allocation_ceiling_crps": 0.9497377645037549,
+    "allocation_only_oracle_gain": 0.7620944583507809,
+    "raw_gain_vs_P4C_crps": 0.061052986734291936,
+    "old_style_fraction_of_P4C_allocation_shapley": 0.06002047267168659,
+    "allocation_shapley_reduction_vs_P4C": 0.06746493345321103
+   }
+  },
+  "2024": {
+   "_p4cc_gate": {
+    "state": "PASS",
+    "code": "P4F_ORACLE_BASELINE",
+    "detail": "matches p4cc_results.json[2024/corners/A_baseline/crps] sha256:068b9836a867 within 1.0e-09",
+    "evidence": {
+     "observed": 2.110274841594967,
+     "expected": 2.110274841594967,
+     "abs_diff": 0.0,
+     "tolerance": 1e-09,
+     "sha256": "068b9836a867da9cf0bcebc42765bfb9d7927a226b7d8b838f0942aa7d14a7e8",
+     "artifact": "/tmp/claude-0/-home-user-mlb-prop-system-v7/8de98087-4781-5a10-ae09-ef74590f8116/scratchpad/p4cc/p4cc_results.json",
+     "selector": [
+      "2024",
+      "corners",
+      "A_baseline",
+      "crps"
+     ]
+    }
+   },
+   "P4C": {
+    "corners_crps": {
+     "A_baseline": 2.110274841594967,
+     "O_T": 1.8264960737423115,
+     "O_S": 1.2267243561166696,
+     "O_A": 1.6077966005695579,
+     "O_S_T": 0.4576921328083475,
+     "O_A_T": 1.2487299131901932,
+     "O_A_S": 0.9558213407546611,
+     "O_A_S_T": 1.5597374265323825e-07
+    },
+    "baseline_crps": 2.110274841594967,
+    "total_reduction": 2.1102746856212242,
+    "shapley": {
+     "T": 0.6012164693258057,
+     "S": 1.0475566143563926,
+     "A": 0.4615016019390257
+    },
+    "shapley_pct_of_total": {
+     "T": 28.489962630093306,
+     "S": 49.64077053542497,
+     "A": 21.869266834481714
+    },
+    "residual_allocation_ceiling_crps": 1.0475566143563926,
+    "allocation_only_oracle_gain": 0.8835504854782974,
+    "raw_gain_vs_P4C_crps": 0.0,
+    "old_style_fraction_of_P4C_allocation_shapley": 0.0,
+    "allocation_shapley_reduction_vs_P4C": 0.0
+   },
+   "MPR_ONLY": {
+    "corners_crps": {
+     "A_baseline": 2.1125801565018554,
+     "O_T": 1.8337474572928505,
+     "O_S": 1.2267243561166696,
+     "O_A": 1.6138996633199774,
+     "O_S_T": 0.4576921328083475,
+     "O_A_T": 1.2546064372939416,
+     "O_A_S": 0.9558213407546611,
+     "O_A_S_T": 1.5597374265323825e-07
+    },
+    "baseline_crps": 2.1125801565018554,
+    "total_reduction": 2.1125800005281126,
+    "shapley": {
+     "T": 0.599605536219034,
+     "S": 1.0525096350767646,
+     "A": 0.4604648292323138
+    },
+    "shapley_pct_of_total": {
+     "T": 28.38261917035766,
+     "S": 49.821054578461094,
+     "A": 21.79632625118124
+    },
+    "residual_allocation_ceiling_crps": 1.0525096350767646,
+    "allocation_only_oracle_gain": 0.8858558003851857,
+    "raw_gain_vs_P4C_crps": -0.002305314906888345,
+    "old_style_fraction_of_P4C_allocation_shapley": -0.0022006590147919647,
+    "allocation_shapley_reduction_vs_P4C": -0.00495302072037207
+   },
+   "MC_ONLY": {
+    "corners_crps": {
+     "A_baseline": 2.111458320115258,
+     "O_T": 1.8272099995542945,
+     "O_S": 1.2267243561166696,
+     "O_A": 1.6081279371624568,
+     "O_S_T": 0.4576921328083475,
+     "O_A_T": 1.2491315454662901,
+     "O_A_S": 0.9558213407546611,
+     "O_A_S_T": 1.5597374265323825e-07
+    },
+    "baseline_crps": 2.111458320115258,
+    "total_reduction": 2.1114581641415153,
+    "shapley": {
+     "T": 0.601361270948042,
+     "S": 1.048259195022669,
+     "A": 0.4618376981708041
+    },
+    "shapley_pct_of_total": {
+     "T": 28.480851818939342,
+     "S": 49.64622140400656,
+     "A": 21.872926777054087
+    },
+    "residual_allocation_ceiling_crps": 1.048259195022669,
+    "allocation_only_oracle_gain": 0.8847339639985885,
+    "raw_gain_vs_P4C_crps": -0.0011834785202911036,
+    "old_style_fraction_of_P4C_allocation_shapley": -0.0011297513700662565,
+    "allocation_shapley_reduction_vs_P4C": -0.0007025806662763756
+   },
+   "ABC_ONLY": {
+    "corners_crps": {
+     "A_baseline": 2.0892337331933266,
+     "O_T": 1.7996155606588586,
+     "O_S": 1.2267243561166696,
+     "O_A": 1.6029216867916891,
+     "O_S_T": 0.4576921328083475,
+     "O_A_T": 1.2406140591790298,
+     "O_A_S": 0.9558213407546611,
+     "O_A_S_T": 1.5597374265323825e-07
+    },
+    "baseline_crps": 2.0892337331933266,
+    "total_reduction": 2.089233577219584,
+    "shapley": {
+     "T": 0.6037030942586257,
+     "S": 1.0325450557419045,
+     "A": 0.45298542721905355
+    },
+    "shapley_pct_of_total": {
+     "T": 28.895911919147512,
+     "S": 49.4221932387305,
+     "A": 21.681894842121984
+    },
+    "residual_allocation_ceiling_crps": 1.0325450557419045,
+    "allocation_only_oracle_gain": 0.862509377076657,
+    "raw_gain_vs_P4C_crps": 0.021041108401640418,
+    "old_style_fraction_of_P4C_allocation_shapley": 0.020085891409857448,
+    "allocation_shapley_reduction_vs_P4C": 0.015011558614488107
+   },
+   "ABC_MPR": {
+    "corners_crps": {
+     "A_baseline": 2.087417045955326,
+     "O_T": 1.798539903726586,
+     "O_S": 1.2267243561166696,
+     "O_A": 1.605047119048739,
+     "O_S_T": 0.4576921328083475,
+     "O_A_T": 1.2418465952123232,
+     "O_A_S": 0.9558213407546611,
+     "O_A_S_T": 1.5597374265323825e-07
+    },
+    "baseline_crps": 2.087417045955326,
+    "total_reduction": 2.0874168899815833,
+    "shapley": {
+     "T": 0.6036049001940091,
+     "S": 1.0325253012277984,
+     "A": 0.4512866885597757
+    },
+    "shapley_pct_of_total": {
+     "T": 28.91635605187302,
+     "S": 49.464259208753845,
+     "A": 21.619384739373135
+    },
+    "residual_allocation_ceiling_crps": 1.0325253012277984,
+    "allocation_only_oracle_gain": 0.8606926898386564,
+    "raw_gain_vs_P4C_crps": 0.022857795639640965,
+    "old_style_fraction_of_P4C_allocation_shapley": 0.02182010530637005,
+    "allocation_shapley_reduction_vs_P4C": 0.015031313128594181
+   }
+  },
+  "2025": {
+   "_p4cc_gate": {
+    "state": "PASS",
+    "code": "P4F_ORACLE_BASELINE",
+    "detail": "matches p4cc_results.json[2025/corners/A_baseline/crps] sha256:068b9836a867 within 1.0e-09",
+    "evidence": {
+     "observed": 2.054493485111525,
+     "expected": 2.054493485111525,
+     "abs_diff": 0.0,
+     "tolerance": 1e-09,
+     "sha256": "068b9836a867da9cf0bcebc42765bfb9d7927a226b7d8b838f0942aa7d14a7e8",
+     "artifact": "/tmp/claude-0/-home-user-mlb-prop-system-v7/8de98087-4781-5a10-ae09-ef74590f8116/scratchpad/p4cc/p4cc_results.json",
+     "selector": [
+      "2025",
+      "corners",
+      "A_baseline",
+      "crps"
+     ]
+    }
+   },
+   "P4C": {
+    "corners_crps": {
+     "A_baseline": 2.054493485111525,
+     "O_T": 1.753378655723374,
+     "O_S": 1.203649219013267,
+     "O_A": 1.572609602627676,
+     "O_S_T": 0.40708232721493115,
+     "O_A_T": 1.2057562476823258,
+     "O_A_S": 0.9710898099901836,
+     "O_A_S_T": 1.3039544183613514e-07
+    },
+    "baseline_crps": 2.054493485111525,
+    "total_reduction": 2.054493354716083,
+    "shapley": {
+     "T": 0.6179715441182452,
+     "S": 1.0101694813193698,
+     "A": 0.426352329278468
+    },
+    "shapley_pct_of_total": {
+     "T": 30.07902375053652,
+     "S": 49.168787964221394,
+     "A": 20.75218828524208
+    },
+    "residual_allocation_ceiling_crps": 1.0101694813193698,
+    "allocation_only_oracle_gain": 0.850844266098258,
+    "raw_gain_vs_P4C_crps": 0.0,
+    "old_style_fraction_of_P4C_allocation_shapley": 0.0,
+    "allocation_shapley_reduction_vs_P4C": 0.0
+   },
+   "MPR_ONLY": {
+    "corners_crps": {
+     "A_baseline": 2.0440969340661646,
+     "O_T": 1.7492465120173244,
+     "O_S": 1.203649219013267,
+     "O_A": 1.5648135623953556,
+     "O_S_T": 0.40708232721493115,
+     "O_A_T": 1.2018302915171966,
+     "O_A_S": 0.9710898099901836,
+     "O_A_S_T": 1.3039544183613514e-07
+    },
+    "baseline_crps": 2.0440969340661646,
+    "total_reduction": 2.0440968036707226,
+    "shapley": {
+     "T": 0.6152383943272763,
+     "S": 1.0034072815928115,
+     "A": 0.42545112775063454
+    },
+    "shapley_pct_of_total": {
+     "T": 30.09830029685733,
+     "S": 49.08805100575106,
+     "A": 20.813648697391592
+    },
+    "residual_allocation_ceiling_crps": 1.0034072815928115,
+    "allocation_only_oracle_gain": 0.8404477150528975,
+    "raw_gain_vs_P4C_crps": 0.010396551045360525,
+    "old_style_fraction_of_P4C_allocation_shapley": 0.010291887883785322,
+    "allocation_shapley_reduction_vs_P4C": 0.006762199726558338
+   },
+   "MC_ONLY": {
+    "corners_crps": {
+     "A_baseline": 2.056584107259459,
+     "O_T": 1.7559485708886686,
+     "O_S": 1.203649219013267,
+     "O_A": 1.5757976886867429,
+     "O_S_T": 0.40708232721493115,
+     "O_A_T": 1.210528183962788,
+     "O_A_S": 0.9710898099901836,
+     "O_A_S_T": 1.3039544183613514e-07
+    },
+    "baseline_crps": 2.056584107259459,
+    "total_reduction": 2.056583976864017,
+    "shapley": {
+     "T": 0.6175478047422258,
+     "S": 1.0134166676662288,
+     "A": 0.4256195044555625
+    },
+    "shapley_pct_of_total": {
+     "T": 30.027842854435434,
+     "S": 49.276697624161095,
+     "A": 20.695459521403478
+    },
+    "residual_allocation_ceiling_crps": 1.0134166676662288,
+    "allocation_only_oracle_gain": 0.852934888246192,
+    "raw_gain_vs_P4C_crps": -0.002090622147933985,
+    "old_style_fraction_of_P4C_allocation_shapley": -0.002069575637152935,
+    "allocation_shapley_reduction_vs_P4C": -0.0032471863468590545
+   },
+   "ABC_ONLY": {
+    "corners_crps": {
+     "A_baseline": 2.037177952059068,
+     "O_T": 1.7307497837572203,
+     "O_S": 1.203649219013267,
+     "O_A": 1.5624410318894966,
+     "O_S_T": 0.40708232721493115,
+     "O_A_T": 1.188817017936279,
+     "O_A_S": 0.9710898099901836,
+     "O_A_S_T": 1.3039544183613514e-07
+    },
+    "baseline_crps": 2.037177952059068,
+    "total_reduction": 2.037177821663626,
+    "shapley": {
+     "T": 0.6208711002574552,
+     "S": 0.9932849866024795,
+     "A": 0.423021734803691
+    },
+    "shapley_pct_of_total": {
+     "T": 30.477020398269975,
+     "S": 48.75789320106237,
+     "A": 20.76508640066765
+    },
+    "residual_allocation_ceiling_crps": 0.9932849866024795,
+    "allocation_only_oracle_gain": 0.8335287330458008,
+    "raw_gain_vs_P4C_crps": 0.017315533052457255,
+    "old_style_fraction_of_P4C_allocation_shapley": 0.017141215778803426,
+    "allocation_shapley_reduction_vs_P4C": 0.01688449471689024
+   },
+   "ABC_MPR": {
+    "corners_crps": {
+     "A_baseline": 2.023106100839511,
+     "O_T": 1.721192451641464,
+     "O_S": 1.203649219013267,
+     "O_A": 1.547570525394299,
+     "O_S_T": 0.40708232721493115,
+     "O_A_T": 1.1753388517431382,
+     "O_A_S": 0.9710898099901836,
+     "O_A_S_T": 1.3039544183613514e-07
+    },
+    "baseline_crps": 2.023106100839511,
+    "total_reduction": 2.023105970444069,
+    "shapley": {
+     "T": 0.6191342038391788,
+     "S": 0.9800303410297546,
+     "A": 0.42394142557513514
+    },
+    "shapley_pct_of_total": {
+     "T": 30.60315242425387,
+     "S": 48.441868856461305,
+     "A": 20.954978719284814
+    },
+    "residual_allocation_ceiling_crps": 0.9800303410297546,
+    "allocation_only_oracle_gain": 0.8194568818262438,
+    "raw_gain_vs_P4C_crps": 0.03138738427201426,
+    "old_style_fraction_of_P4C_allocation_shapley": 0.031071404207360917,
+    "allocation_shapley_reduction_vs_P4C": 0.030139140289615174
+   }
+  }
+ },
+ "pooled": {
+  "P4C": {
+   "mean_baseline_crps": 2.0229028055515252,
+   "mean_allocation_shapley": 1.013521692119026,
+   "mean_raw_gain_vs_P4C": 0.0,
+   "residual_allocation_ceiling_pct_of_P4C": 100.0
+  },
+  "MPR_ONLY": {
+   "mean_baseline_crps": 2.01565250858895,
+   "mean_allocation_shapley": 1.008599767644812,
+   "mean_raw_gain_vs_P4C": 0.007250296962575453,
+   "residual_allocation_ceiling_pct_of_P4C": 99.51437403733081
+  },
+  "MC_ONLY": {
+   "mean_baseline_crps": 2.024137798800001,
+   "mean_allocation_shapley": 1.015374909706035,
+   "mean_raw_gain_vs_P4C": -0.0012349932484757575,
+   "residual_allocation_ceiling_pct_of_P4C": 100.18284932640508
+  },
+  "ABC_ONLY": {
+   "mean_baseline_crps": 2.0029564740072496,
+   "mean_allocation_shapley": 0.9960318323955153,
+   "mean_raw_gain_vs_P4C": 0.019946331544275497,
+   "residual_allocation_ceiling_pct_of_P4C": 98.27434776586344
+  },
+  "ABC_MPR": {
+   "mean_baseline_crps": 1.9855118715705506,
+   "mean_allocation_shapley": 0.9764750108270304,
+   "mean_raw_gain_vs_P4C": 0.03739093398097448,
+   "residual_allocation_ceiling_pct_of_P4C": 96.34475694205024
+  }
+ },
+ "interpretation": "The recomputed allocation Shapley component is the allocation error that REMAINS under each system. It is reported alongside the raw gain and is NOT used to define a promotion threshold: P4F has no promotion decision, and the 5% rule is neither applied nor relaxed here."
+}

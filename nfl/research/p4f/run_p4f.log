@@ -1,0 +1,57 @@
+== baseline reproduction (Rule 006: value read from the artifact) ==
+  2022: PASS observed 1.929561163321  artifact 1.9295611633207923  sha256 5d8d34c22c01
+  2023: PASS observed 1.997281732179  artifact 1.9972817321788165  sha256 5d8d34c22c01
+  2024: PASS observed 2.110274841595  artifact 2.110274841594967  sha256 5d8d34c22c01
+  2025: PASS observed 2.054493485112  artifact 2.054493485111525  sha256 5d8d34c22c01
+  all four reproduce at tolerance 0.0
+
+== 2022  n=2365  G=542 ==   previously exposed development sample -- not confirmatory and not promotion-eligible
+  residual-draw audit: {'eps_reproduces_P4C_weight': True, 'eps2_reproduces_ABC_weight': True}
+  P4C       CRPS 1.9296  MAE 3.017  rPIT   10.7  lowhist bias +0.469  RB1-RB2 model r -0.498 [-0.560,-0.422] real -0.552 z -1.55 IN
+  MPR_ONLY  CRPS 1.9174  MAE 2.895  rPIT   30.0  lowhist bias -0.085  RB1-RB2 model r -0.540 [-0.600,-0.469] real -0.537 z +0.08 IN
+              solver PASS  max|mean-C| 4.44e-16  degenerate 63  infeasible 0
+  MC_ONLY   CRPS 1.9289  MAE 3.017  rPIT    9.1  lowhist bias +0.467  RB1-RB2 model r -0.499 [-0.561,-0.422] real -0.562 z -1.81 OUT
+  ABC_ONLY  CRPS 1.9311  MAE 3.033  rPIT   14.6  lowhist bias +0.648  RB1-RB2 model r -0.485 [-0.552,-0.407] real -0.536 z -1.36 IN
+  ABC_MPR   CRPS 1.8953  MAE 2.904  rPIT   18.3  lowhist bias +0.227  RB1-RB2 model r -0.521 [-0.584,-0.443] real -0.530 z -0.26 IN
+              solver PASS  max|mean-C| 5.55e-16  degenerate 48  infeasible 0
+== 2023  n=2255  G=544 ==   previously exposed development sample -- not confirmatory and not promotion-eligible
+  residual-draw audit: {'eps_reproduces_P4C_weight': True, 'eps2_reproduces_ABC_weight': True}
+  P4C       CRPS 1.9973  MAE 3.062  rPIT   21.3  lowhist bias +0.305  RB1-RB2 model r -0.521 [-0.582,-0.447] real -0.579 z -1.63 IN
+  MPR_ONLY  CRPS 1.9885  MAE 2.952  rPIT    8.9  lowhist bias -0.247  RB1-RB2 model r -0.558 [-0.620,-0.487] real -0.581 z -0.67 IN
+              solver PASS  max|mean-C| 6.66e-16  degenerate 33  infeasible 0
+  MC_ONLY   CRPS 1.9996  MAE 3.071  rPIT   22.5  lowhist bias +0.330  RB1-RB2 model r -0.518 [-0.580,-0.445] real -0.584 z -1.85 OUT
+  ABC_ONLY  CRPS 1.9543  MAE 3.002  rPIT   22.5  lowhist bias +0.457  RB1-RB2 model r -0.513 [-0.583,-0.440] real -0.586 z -2.03 OUT
+  ABC_MPR   CRPS 1.9362  MAE 2.901  rPIT    8.4  lowhist bias +0.040  RB1-RB2 model r -0.543 [-0.609,-0.467] real -0.589 z -1.30 IN
+              solver PASS  max|mean-C| 4.44e-16  degenerate 114  infeasible 0
+== 2024  n=2166  G=544 ==   previously exposed development sample -- not confirmatory and not promotion-eligible
+  residual-draw audit: {'eps_reproduces_P4C_weight': True, 'eps2_reproduces_ABC_weight': True}
+  P4C       CRPS 2.1103  MAE 3.193  rPIT    9.0  lowhist bias +0.132  RB1-RB2 model r -0.547 [-0.612,-0.477] real -0.667 z -3.39 OUT
+  MPR_ONLY  CRPS 2.1126  MAE 3.099  rPIT   15.8  lowhist bias -0.421  RB1-RB2 model r -0.578 [-0.639,-0.511] real -0.672 z -2.71 OUT
+              solver PASS  max|mean-C| 3.33e-16  degenerate 54  infeasible 0
+  MC_ONLY   CRPS 2.1115  MAE 3.199  rPIT   10.6  lowhist bias +0.157  RB1-RB2 model r -0.547 [-0.610,-0.474] real -0.665 z -3.38 OUT
+  ABC_ONLY  CRPS 2.0892  MAE 3.160  rPIT    7.1  lowhist bias +0.315  RB1-RB2 model r -0.546 [-0.606,-0.475] real -0.646 z -2.90 OUT
+  ABC_MPR   CRPS 2.0874  MAE 3.096  rPIT   11.4  lowhist bias -0.023  RB1-RB2 model r -0.565 [-0.628,-0.495] real -0.650 z -2.47 OUT
+              solver PASS  max|mean-C| 4.44e-16  degenerate 98  infeasible 0
+== 2025  n=2174  G=544 ==   previously exposed development sample -- not confirmatory and not promotion-eligible
+  residual-draw audit: {'eps_reproduces_P4C_weight': True, 'eps2_reproduces_ABC_weight': True}
+  P4C       CRPS 2.0545  MAE 3.131  rPIT    9.7  lowhist bias +0.325  RB1-RB2 model r -0.534 [-0.606,-0.455] real -0.575 z -1.10 IN
+  MPR_ONLY  CRPS 2.0441  MAE 3.010  rPIT   15.1  lowhist bias -0.175  RB1-RB2 model r -0.573 [-0.642,-0.499] real -0.573 z +0.02 IN
+              solver PASS  max|mean-C| 5.55e-16  degenerate 85  infeasible 0
+  MC_ONLY   CRPS 2.0566  MAE 3.138  rPIT    9.0  lowhist bias +0.342  RB1-RB2 model r -0.533 [-0.602,-0.454] real -0.572 z -1.02 IN
+  ABC_ONLY  CRPS 2.0372  MAE 3.087  rPIT   12.0  lowhist bias +0.507  RB1-RB2 model r -0.539 [-0.607,-0.470] real -0.556 z -0.49 IN
+  ABC_MPR   CRPS 2.0231  MAE 2.995  rPIT   11.4  lowhist bias +0.179  RB1-RB2 model r -0.563 [-0.632,-0.491] real -0.550 z +0.35 IN
+              solver PASS  max|mean-C| 4.44e-16  degenerate 107  infeasible 0
+
+== pooled ==   previously exposed development sample -- not confirmatory and not promotion-eligible
+  P4C       pooled 2.0206  delta +0.0000  seasons better 0/4
+  MPR_ONLY  pooled 2.0132  delta -0.0074  seasons better 3/4  95% [-0.0127, -0.0008]
+  MC_ONLY   pooled 2.0218  delta +0.0012  seasons better 1/4  95% [+0.0004, +0.0021]
+  ABC_ONLY  pooled 2.0009  delta -0.0197  seasons better 3/4  95% [-0.0268, -0.0119]
+  ABC_MPR   pooled 1.9831  delta -0.0376  seasons better 4/4  95% [-0.0452, -0.0293]
+
+  mechanism split:
+    Monte-Carlo artifact (MC_ONLY - P4C)      +0.0012
+    bias fix          (MPR_ONLY - MC_ONLY)    -0.0086
+    both              (MPR_ONLY - P4C)        -0.0074
+
+done in 35s -> p4f_results.json
