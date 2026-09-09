@@ -181,15 +181,22 @@ that is the job asked of it, and it is not yet finished.
 
 ---
 
-## 6. Outstanding
+## 6. Verification status
 
-**The full suite has not been re-run since the `qb_v1` / `football_engine`
-change.** The three directly affected modules pass — `test_qb2_production` 40,
-`test_qb3_allocation` 43, `test_xl1_shared_pass` 61, **144 checks, 0 failures** —
-but nine `test_qb2_production` cases could not execute outside the suite harness
-because a derived artifact path is not provisioned there, so this is not a
-substitute for `run_suite.py`. The full-slate Part A at m=400 also did not
-complete. Both are compute, not findings, and both are outstanding.
+**Suite: 42 modules, 447 test functions, 2,593 checks, 0 failing.** Re-run after
+the `qb_v1` / `football_engine` change, and again after adding a guard on the
+promotion surface itself: `include_cold_start` must default **False** in both
+functions, the `h_games` exclusion must still exist, kept rows must carry the
+`cold_start` mark so nothing downstream can mistake one for a QB V1 forecast,
+and the code must name the pre-registration it implements. Seven checks, because
+a flag flipped without a ruling would put an unpromoted candidate into
+production and a code review is not a guard.
+
+**Still outstanding:** full-slate Part A at m=400 did not complete — the gates in
+§2 are verified at the scopes stated in the table, which for gates 3, 4 and 7 is
+8 games / 16 team-games at m=100. That is compute, not a finding, and it does not
+change any verdict here: gate 3 already fails at that scope and §3 gives the
+cause.
 
 ## 7. Recommendation
 

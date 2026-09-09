@@ -320,6 +320,35 @@ def test_I_results_artifact_if_present_agrees_with_the_gates():
               eq.get('PASS') is True, str(eq))
 
 
+def test_L_own3_cold_start_flag_defaults_off():
+    """OWN-3 C0 is a candidate. Production must not be running it by accident.
+
+    The flag is the whole promotion surface: if it ever defaults True without
+    an owner ruling, an unpromoted candidate is live. Guarded here rather than
+    trusted to a code review.
+    """
+    print('\nL. the cold-start flag is a candidate, not the default')
+    import inspect
+    from nfl.production import qb_v1 as QBV1
+    from nfl.production.nonqb import football_engine as FE
+    for mod, fn in ((QBV1, 'slate_prospective'), (FE, 'qb_slate')):
+        sig = inspect.signature(getattr(mod, fn))
+        prm = sig.parameters.get('include_cold_start')
+        check(f'{mod.__name__}.{fn} takes include_cold_start',
+              prm is not None, str(sig))
+        if prm is not None:
+            check(f'{mod.__name__}.{fn} defaults it to False',
+                  prm.default is False, repr(prm.default))
+    src = inspect.getsource(QBV1.slate_prospective)
+    check('the exclusion is still keyed on h_games, not silently removed',
+          "h_games'] >= 1" in src or 'h_games"] >= 1' in src, 'filter absent')
+    check('the kept rows are marked cold_start so nothing downstream can '
+          'confuse them with a QB V1 forecast',
+          "'cold_start'] = True" in src or '"cold_start"] = True' in src)
+    check('the OWN-3 pre-registration is named in the code that implements it',
+          'predeclaration_own3' in src, 'no pre-registration reference')
+
+
 def test_zz_every_check_passed():
     print(f'\n{PASSED} passed, {FAILED} failed')
     if FAILED:

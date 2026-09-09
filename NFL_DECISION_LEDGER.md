@@ -989,7 +989,7 @@ predicted in advance.
 
 ### Outstanding
 
-The **full suite has not been re-run** since the qb_v1/football_engine change.
+The full suite passes after the change: **42 modules, 447 functions, 2,593 checks, 0 failing** — including a new seven-check guard that `include_cold_start` defaults False in both functions.
 The three affected modules pass (144 checks, 0 failures) but nine
 `test_qb2_production` cases cannot execute outside the suite harness. Full-slate
 Part A at m=400 also did not complete. Compute, not findings.
