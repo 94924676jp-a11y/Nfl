@@ -843,3 +843,79 @@ the share to the positional pool — are **cold-start behaviour**, and the
 cold-start freeze is not mine to alter. Flagged rather than walked into.
 
 Reproduced by `audit_ownership.py` section E.
+
+---
+
+## 2026-09-09 — OWN-2: characterising the QB cold-start population
+
+### Owner ruling received
+
+OWN-1 accepted; the 5.3168% unconsumed allocation mass is the highest-priority
+actionable defect. Do not renormalise survivors, do not permanently solve by
+refusing teams. Develop a chronology-clean cold-start state. **Characterise
+first, rule out data/identity defects before calling anything a cold start, and
+preregister any estimator comparison.** Also: D1 disagreement with the
+C3-derived budget must be exposed, not made a hard production refusal — an
+estimator disagreement is not a football invariant violation. Recorded.
+
+### There is no data or identity defect. Zero, on both populations.
+
+| population | n | data/identity defects |
+|---|---|---|
+| 2026 wk1 live slate | 35 | **0** |
+| historical rows 2022–2024 | 275 excluded of 4,414 | **0** |
+
+Every excluded quarterback genuinely has no prior NFL dropback. This is a
+cold-start problem and not an ingestion problem, measured rather than assumed.
+
+### Depth rank carries the signal; the class label does not
+
+| class \| rank | n | P(dropback) | mean db given played |
+|---|---|---|---|
+| ALL \| rank 1 | **6** | **1.0000** | **42.67** |
+| ALL \| rank 2 | 87 | 0.1494 | 13.00 |
+| ALL \| rank 3+ | 182 | 0.0604 | 23.36 |
+| APPEARED_WITHOUT \| rank2 | 20 | 0.1500 | 13.00 |
+| PRIOR_ENTRANT \| rank2 | 57 | 0.1579 | 14.33 |
+| DEBUT_LIKE \| rank2 | 10 | 0.1000 | 1.00 |
+
+Rank moves P(dropback) by **17×**; the class label moves it within noise. The
+samples cannot reject a class difference — what they cannot do is support one.
+**Week 2+, rank 1 is 0 of 1,731**: the starter is never unforecastable after
+week 1.
+
+The whole evidence base is **30 played weeks out of 275**, with **n = 6** in the
+decisive rank-1 cell.
+
+### Pre-game inputs are static career markers only
+
+35/35 have depth rank, entry year, experience. **Only 18 of 35 have a draft
+number**, and the 17 without hold 0.6313 of the 1.7014 lost share. Zero have
+prior NFL performance, by definition. The real causal driver is team-level: the
+injury and practice report for the whole quarterback room.
+
+### Two defects in my own OWN-2 code, both caught before reporting
+
+1. **A file's coverage limit read as an absent attribute.** `weekly_rosters` in
+   this checkout holds only 2026, so a "was he rostered before" branch could
+   never fire; fourteen QBs were bucketed as having no career marker when they
+   had one. Now tested against `panel_p3`, which spans 2020–2025.
+2. **A season-granular history answering a within-season question.** The first
+   pbp scan aggregated to the season and placed each season's total at week 1,
+   so a QB debuting in week 5 was credited with prior dropbacks in weeks 2–4.
+   That version reported **172 of 275 as DATA_OR_IDENTITY_DEFECT (62.5%)**.
+   Keyed by week it is **zero**. Had I reported it, the mission would have been
+   redirected to hunting an ingestion defect that does not exist.
+
+### Constraints on the estimator, fixed before one is built
+
+Two margins (P(dropback) and the distribution given played); rank-conditioned
+and aggressively shrunk; ~30 positive observations so complexity is
+unsupportable; closure is the objective rather than accuracy; a week-1 and
+backup instrument, never a general replacement for QB V1; and any use of draft
+number must say by name what it does for the half that lacks one.
+
+### Next
+
+Pre-register OWN-3, the cold-start estimator comparison. Until it clears,
+`QB_ALLOCATION_SHARE_UNCONSUMED` stays fail-closed.
