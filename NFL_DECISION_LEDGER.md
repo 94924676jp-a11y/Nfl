@@ -517,3 +517,95 @@ within a team, and D1 draws each team independently.
 3. **Within-team player dependence.** RB carries↔targets understated 5.8×.
 4. P5A rectification (retained).
 5. QB3b week-1 incumbency (retained).
+
+---
+
+## 2026-09-09 — NFL-INTEL-1: reconciling an external capability audit
+
+### What was asked
+
+Classify every material capability in a supplied Perplexity report against the
+real system, **trying to falsify it rather than agree with it**, then say
+whether anything in it displaces cross-layer passing ↔ receiving.
+
+Report: `c43a40fb-nflintel1frontiercapabilityaudit.pplx.md`, sha256
+`8d9d1945…`, 484 lines, read in full.
+
+### Nothing displaces cross-layer
+
+The report ranks route/block/release participation **first** and predictive
+dependence structure **ninth**. Route participation is blocked on
+`pbp_participation`, which **404s for 2026** — verified twice daily by our own
+watcher — and its oracle ceiling was already measured by ROUTE-BB1 (pooled
+ρ_max **0.756**, 23.9% of rows unreachable even at routes = pass_snaps).
+Dependence structure is where an exact identity is violated in **93–100% of
+draws by ~45% of the quantity**. The report labels its own table "analyst
+judgments about research order, not measured expected value," which is the
+correct disclaimer and the reason it does not reorder the queue.
+
+### The clearest falsification: H4's baseline does not exist here
+
+The report proposes testing a disjoint multinomial over dropback terminal
+states against "separate marginal models". `qb2_lib.simulate` already draws
+`SACK ~ Binom(DB, ps)` then `SCR ~ Binom(DB−SACK, psc/(pa+psc))` with the rates
+normalised to the simplex first — algebraically a `Multinomial(DB; pa, ps, psc)`
+— and closes it hard in two places (`QB_V1_INCOHERENT_DRAWS`,
+`QB_DROPBACK_IDENTITY_VIOLATED`). The separate-marginal alternative was tried
+and rejected: it broke coverage to **0.715** (sacks) and **0.724** (rush
+opportunities) at nominal 90.
+
+### Where the report caught me, and how I nearly published the wrong refutation
+
+It says receiving yards can accrue without a reception. I added
+`zero_receptions_implies_zero_yards` as a hard identity last session.
+
+Measured in RC1's own frame: **0 of 25,934** player-games violate it. That
+refutation is worthless — `build_recv.py` keys on `receiver_player_id`, so a
+lateral-only receiver is **absent from the frame, not present with zero**.
+Reading it as evidence would have been this project's own worst defect class,
+committed while auditing someone else for it.
+
+Measured on raw pbp, 2020–2025 REG, 25,947 player-games: **82** lateral
+receptions, **13** recipients never targeted themselves, **16 player-games with
+zero receptions and nonzero receiving yards** — **6.17 per 10,000**. The report
+is right. The identity is exact for our generator, which cannot lateral, and
+false of realised football. It matters when the identity is used against
+realised outcomes, which CLAUDE.md rule 6 already forbids. Queued as a small
+separate commit: a named exception mirroring `LATERAL_EXCEPTION`, not a
+loosening.
+
+Second caution, also tested and also correct: targets must sum to **targeted**
+attempts, never attempts. Measured over 3,230 team-games — mean gap **3.7997**,
+median 4, max 13, equal in only **128 (3.96%)**, and targets never exceed
+attempts. We never imposed the equality; it is now quantified, and it is
+load-bearing for the cross-layer work.
+
+### What else was already covered, with the artifact
+
+- Provenance / as-of / definition versioning (report's item 10, ranked last):
+  six separately named clocks, `schema_fingerprint`, two accepted
+  `pbp_participation` schemas, content-addressed vintages. Built before the
+  report was written; the report ranks it least football-relevant.
+- Dynamic role state (item 3): Stage-2's accepted estimator is `ewma_hl2`, a
+  two-game-half-life updating state, not the season-to-date aggregate H2 names
+  as its baseline.
+- Contextual efficiency (item 8): RC1 closed it, and
+  `condition_to_reopen` = "materially new INFORMATION, not another same-input
+  estimator ladder" — which is what the report recommends.
+- Clustered dependence-unit validation (H6): settled practice since C2.
+
+### One genuine new item
+
+The report's three-way availability split — uncertainty about **participating**,
+the distribution **conditional on playing**, and **in-game exit** — is three
+channels, and this system carries one binary. Named here for the first time.
+Not urgent; recorded.
+
+### Queue, unchanged in order
+
+1. Cross-layer passing ↔ receiving.
+2. Opposing-team dependence.
+3. Within-team dependence / role-aware reallocation — adopt the shape of the
+   report's experiment 3, which is the best-designed item it contains.
+4. Lateral exception on the receiving identity.
+5. P5A rectification. 6. QB3b week-1 incumbency.

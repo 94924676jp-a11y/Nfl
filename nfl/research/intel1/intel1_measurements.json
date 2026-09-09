@@ -1,0 +1,46 @@
+{
+  "lateral_receiving_yards": {
+    "raw_pbp": {
+      "lateral_reception_plays": 82,
+      "lateral_recipients_never_targeted_themselves": 13,
+      "player_games": 25947,
+      "player_games_receiving_a_lateral": 82,
+      "rate_per_10000_player_games": 6.1664,
+      "seasons": [
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "verdict": "the report is CORRECT. zero_receptions_implies_zero_yards is exact for our generator, which cannot lateral, and is FALSE of realised football at the measured rate above.",
+      "zero_receptions_with_nonzero_receiving_yards": 16
+    },
+    "rc1_frame": {
+      "player_games": 25934,
+      "player_games_containing_a_lateral": 82,
+      "why_this_reading_is_not_evidence": "build_recv.py keys on receiver_player_id, so a player who gained receiving yards only on a lateral is ABSENT from this frame, not present with zero. Absence read as zero is this project's most expensive defect class and it would have been committed here.",
+      "zero_receptions_with_nonzero_yards": 0
+    }
+  },
+  "pbp_files_used": [
+    "pbp2020.csv.gz",
+    "pbp2021.csv.gz",
+    "pbp2022.csv.gz",
+    "pbp2023.csv.gz",
+    "pbp2024.csv.gz",
+    "pbp2025.csv.gz"
+  ],
+  "targets_versus_attempts": {
+    "equal": 128,
+    "equal_pct": 3.9628,
+    "max": 13,
+    "mean_attempts_minus_targets": 3.7997,
+    "median": 4.0,
+    "min": 0,
+    "targets_exceed_attempts": 0,
+    "team_games": 3230,
+    "verdict": "the caution is CORRECT and this project never imposed the equality; the gap is now quantified"
+  }
+}
