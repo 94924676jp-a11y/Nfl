@@ -39,6 +39,9 @@ SPEC = {
                             'HOLD_CHARACTERIZED + CALIBRATION_DEFECT',
     'td_layer': 'td2-pooled-positional-control-frozen; governance '
                 'HOLD_TENTATIVE',
+    'rushing_td': 'td2-rush|carry-pooled-positional-control-frozen; governance '
+                  'HOLD_TENTATIVE',
+    'rushing_conversion': None,          # NO CONTROL EXISTS -- see D6 below
 }
 
 KNOWN_LIMITATIONS = {
@@ -60,7 +63,8 @@ def _blocked(code, detail, **ev):
 
 
 # ---------------------------------------------------------------- D2
-def appearance(season, week, players, fixture=None, seed=20260908, m=200):
+def appearance(season, week, players, fixture=None, seed=20260908, m=200,
+               teams=None, kickoff_utc=None):
     """Frozen P3 appearance mechanism. Executes only on legitimate input.
 
     THREE PATHS, AND ONLY ONE OF THEM CAN REACH AN ARTIFACT.
@@ -84,12 +88,31 @@ def appearance(season, week, players, fixture=None, seed=20260908, m=200):
         if v.state is not State.PASS:
             # DEFERRED: the source is not usable. No probability is emitted.
             return v
-        rd = RD.report(season, week)
-        if rd['overall_state'] != 'INJURIES_READY':
-            return Outcome.deferred(
-                rd['overall_state'], rd['injuries']['reason'],
-                owed={'next_action': rd['next_action'],
-                      'injuries': rd['injuries']})
+        # READINESS IS A PER-GAME PROPERTY (R4 section G). When the caller
+        # names the two teams, only those two are consulted: thirty unfiled
+        # reports elsewhere on the slate say nothing about this game. Without
+        # teams the slate-wide answer is used, which is strictly more
+        # conservative.
+        if teams:
+            tr = [RD.team_readiness(season, week, t, kickoff_utc=kickoff_utc)
+                  for t in teams]
+            bad = [t for t in tr if not t['state'].startswith('READY')]
+            if bad:
+                worst = bad[0]
+                return Outcome.deferred(
+                    worst['state'], worst['reason'],
+                    owed={'teams': [{'team': t['team'], 'state': t['state']}
+                                    for t in tr],
+                          'blocking_team': worst['team'],
+                          'note': 'a team with no filed report is NOT a team '
+                                  'with no injuries'})
+        else:
+            rd = RD.report(season, week)
+            if rd['overall_state'] != 'INJURIES_READY':
+                return Outcome.deferred(
+                    rd['overall_state'], rd['injuries']['reason'],
+                    owed={'next_action': rd['next_action'],
+                          'injuries': rd['injuries']})
         rows = RD.latest_injuries_rows(season)
         if not rows:
             return Outcome.deferred(
@@ -360,6 +383,118 @@ def td_layer(conv: Outcome, targets_draws, priors, player_ids, positions,
                       per_reception_rate=rates, n_players=len(player_ids),
                       warnings=['known limitation: TD2 pooled positional '
                                 'control, HOLD_TENTATIVE'])
+
+
+# ---------------------------------------------------------------- D5b
+def rushing_td(carries_outcome: Outcome, carry_draws, priors, player_ids,
+               positions, ordinal, m=200, seed=20260908):
+    """TD2 pooled positional control for `rush|carry`. Same shape as receiving.
+
+    THE DENOMINATOR IS THE OPPORTUNITY ITSELF. TD2's primary rushing estimand
+    is touchdowns per CARRY, and carries are what D3 allocates, so this needs
+    none of the per-reception restatement the receiving layer needs: the draw
+    is binomial on the same carry count, on the same draw index.
+
+    A player with no carries in draw j gets no rushing touchdown in draw j,
+    which is the invariant rather than a check applied afterwards.
+    """
+    if carries_outcome.state is not State.PASS:
+        return _blocked('BLOCKED_UPSTREAM_RUSH_OPPORTUNITY',
+                        f'the rushing TD layer needs a carry allocation; '
+                        f'upstream is {carries_outcome.state.value}'
+                        f'[{carries_outcome.code}]')
+    if 'B_pos' not in (priors or {}) or (priors or {}).get('kind') != 'rush':
+        return Outcome.fail(
+            'TD_PRIOR_NOT_FROZEN',
+            'the rushing TD priors are absent or are not the rush estimand. '
+            'This layer implements the TD2 rush|carry control and will not run '
+            'on a caller-supplied rate.')
+    C = np.maximum(np.rint(np.asarray(carry_draws, float)), 0).astype(int)
+    if C.shape != (len(player_ids), m):
+        return Outcome.fail(
+            'CROSS_DRAW_INDEX_MISMATCH',
+            f'carry draws have shape {C.shape} against '
+            f'{(len(player_ids), m)}', got=list(C.shape))
+    TD = np.zeros_like(C)
+    rates = {}
+    for i, pid in enumerate(player_ids):
+        pos = positions[i]
+        rate = float(priors['B_pos'].get(pos, priors['B_league']))
+        if not 0.0 <= rate <= 1.0:
+            return Outcome.fail(
+                'TD_RATE_ABOVE_ONE',
+                f'{pos}: rushing TD rate {rate:.6f} is outside [0, 1]. '
+                f'Refused rather than clipped.', position=pos)
+        rates[pos] = round(rate, 6)
+        TD[i] = _row_rng(seed, ordinal, pid).binomial(C[i], rate)
+    return Outcome.ok('RUSHING_TD_OK', value={'rush_td': TD},
+                      spec_version=SPEC['rushing_td'],
+                      test_only=bool(carries_outcome.evidence.get('test_only')),
+                      governance='HOLD_TENTATIVE', baseline='B_pos',
+                      estimand='rush|carry', per_carry_rate=rates,
+                      n_players=len(player_ids),
+                      warnings=['known limitation: TD2 pooled positional '
+                                'control, HOLD_TENTATIVE'])
+
+
+# ---------------------------------------------------------------- D6
+RUSHING_CONVERSION_DECISIONS = (
+    'RUSH-DECISION-1: which distributional family the control uses for a '
+    'season with no outcomes. P5A selects it by CRPS against the evaluation '
+    "season's own realised yards, so the rule cannot run for 2026, and the "
+    'predeclared inner-validation (Y-1) nesting was never implemented.',
+    'RUSH-DECISION-2: whether promotion criterion 4 (randomised PIT within '
+    '25%) is read per season or pooled. It is the only criterion system B '
+    'breaches, and it breaches in one season of four. Per season, the control '
+    'is the opportunity-only pool A; pooled, a player-shrunk system may be '
+    'promoted instead.',
+    'RUSH-DECISION-3: whether the control is the PREDECLARED '
+    'position-stratified pool (RB versus non-RB) or the UNSTRATIFIED pool that '
+    'was implemented. They are different distributions.',
+)
+
+
+def rushing_conversion(carries_outcome: Outcome, carry_draws=None,
+                       priors=None, player_ids=None, positions=None,
+                       ordinal=None, m=200, seed=20260908):
+    """carry -> rushing yards. NO GOVERNED CONTROL EXISTS, so this refuses.
+
+    P5A is the canonical research module and it ran. What it does not carry is
+    an adjudication: no finding document, no decision artifact, no `decision`
+    field in PATH_C_STATE, and -- decisively -- no chronology-legal rule that
+    names a distributional family for an unplayed season.
+
+    The three open decisions are in RUSHING_CONVERSION_DECISIONS and in
+    nfl/production/nonqb/rushing_inventory.json. They are the owner's, and
+    this packet did not make them.
+
+    THE PROHIBITED IMPLEMENTATION IS NAMED HERE ON PURPOSE. The obvious way to
+    make this layer "work" is rushing_yards = carries x yards_per_carry. That
+    is a point where a distribution belongs -- the defect class this project
+    has now hit four times -- and it would also silently discard the stuff and
+    explosive components that make a rushing distribution what it is. It is
+    refused, not merely discouraged.
+    """
+    if priors:
+        # A caller-supplied efficiency prior is refused BEFORE anything else,
+        # so the refusal is about ownership rather than about absence.
+        return Outcome.fail(
+            'RUSHING_PRIOR_NOT_OWNED_BY_CALLER',
+            'a rushing efficiency prior was supplied by the caller. The frozen '
+            'control owns those priors, and no frozen control exists, so there '
+            'is nothing a caller may stand in for.',
+            supplied=sorted(priors))
+    return Outcome.deferred(
+        'RUSHING_CONVERSION_CONTROL_UNDEFINED',
+        'no defined frozen production control exists for carry -> rushing '
+        'yards. P5A ran and is not adjudicated; three scientific decisions are '
+        'open and they are the owner\'s.',
+        owed={'decisions': list(RUSHING_CONVERSION_DECISIONS),
+              'inventory': 'nfl/production/nonqb/rushing_inventory.json',
+              'research_module': 'nfl/research/p5a/',
+              'unblocks': ['rushing_yards'],
+              'not_blocked': ['carries', 'rushing_td']},
+        spec_version=None, governance='HOLD_CHARACTERIZED')
 
 
 # ---------------------------------------------------------------- gate

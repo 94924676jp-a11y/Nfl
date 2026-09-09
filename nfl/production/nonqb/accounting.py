@@ -217,3 +217,162 @@ def reconcile_chain(team_env, appear, part, tc, conv, td) -> Outcome:
             f'reconcile, which is not the same as reconciled draws.',
             absent=absent)
     return Outcome.ok('NONQB_CHAIN_EXECUTED', value=len(stages))
+
+
+# =====================================================================
+# R4 section F: the identities that span the WHOLE football engine, not just
+# the receiving chain.
+#
+# The load-bearing one is the QB carry containment, and it is load-bearing
+# because it is counter-intuitive. MEASURED on 3,230 team-games in
+# denom_panel against panel_p3:
+#
+#     mean team_carries               26.92
+#     mean RB/WR/TE carries           22.67
+#     mean QB carries                  4.22   (15.68% of team carries)
+#     skill + QB == team_carries      3,148 of 3,230 team-games exactly
+#     mean residual                    0.026
+#
+# So `team_carries` ALREADY CONTAINS QB rushes. The P4C `carries` class
+# allocates RB shares only, and its OTHER mass therefore contains the QB. A
+# consumer that adds the QB layer's own rush_opportunity draw ON TOP of
+# RB carries + OTHER x team_carries counts the quarterback twice.
+#
+# This module refuses that sum rather than reconciling it. The QB rush draw is
+# reported as CONTAINED IN the OTHER mass, and the containment is checked.
+# =====================================================================
+
+QB_CARRY_SHARE_MEASURED = 0.1568        # evidence, not a parameter
+QB_CARRY_MEASUREMENT = (
+    'denom_panel team_carries against panel_p3 position carries, 3,230 '
+    'team-games 2020-2025: QB carries are 15.68% of team_carries and '
+    'skill + QB equals team_carries exactly in 3,148 of 3,230.')
+
+FULL_ENGINE_IDENTITIES = NONQB_IDENTITIES + (
+    ('team_carry_closure',
+     'RB carry shares plus the named OTHER mass are the whole team carry '
+     'count. OTHER is where the quarterback lives.'),
+    ('zero_carries_implies_zero_rushing_yards',
+     'a draw with no carries has rushing yards of exactly zero. It holds '
+     'vacuously while no rushing-yard control exists, and is checked so that '
+     'it cannot be broken by whatever control is eventually defined.'),
+    ('rushing_td_within_carries',
+     'a rushing touchdown requires a carry in the SAME draw. This is what '
+     'stops a touchdown layer becoming an independent oracle.'),
+    ('qb_rush_contained_in_other',
+     'the QB rush-opportunity draw must not exceed the OTHER carry mass it '
+     'sits inside. Exceeding it means the quarterback is being counted twice.'),
+)
+FULL_IDENTITY_NAMES = tuple(n for n, _ in FULL_ENGINE_IDENTITIES)
+
+
+def reconcile_rushing(carry_share, carry_other, team_carries,
+                      player_carries, starts, counts,
+                      rushing_td=None, rushing_yards=None,
+                      qb_rush_opportunity=None) -> Outcome:
+    """The rushing half of the engine, on the same draw index.
+
+    `rushing_yards` is accepted and checked but is expected to be None while
+    RUSHING_CONVERSION_CONTROL_UNDEFINED holds. A vacuous pass is named as
+    such rather than counted as a satisfied identity.
+    """
+    S = np.asarray(carry_share, np.float64)
+    O = np.asarray(carry_other, np.float64)
+    V = np.asarray(team_carries, np.float64)
+    C = np.asarray(player_carries, np.float64)
+    g = _groups(starts, counts)
+    if S.ndim != 2 or S.size == 0 or not g:
+        return Outcome.fail(
+            'NONQB_ACCOUNTING_VACUOUS',
+            f'nothing to reconcile: carry share has shape {S.shape} over '
+            f'{len(g)} group(s)', shape=list(S.shape))
+    n, m = S.shape
+    viol, ev = [], {'n_players': n, 'n_draws': m, 'n_groups': len(g),
+                    'n_cells_checked': int(n * m),
+                    'identities_checked': list(FULL_IDENTITY_NAMES[-4:]),
+                    'qb_carry_measurement': QB_CARRY_MEASUREMENT}
+
+    grp = np.stack([S[a:a + c].sum(0) for a, c in g])
+    d = np.abs(grp + O - 1.0)
+    ev['team_carry_closure_maxdev'] = float(d.max())
+    if d.max() > RELATIVE_TOL:
+        viol.append(('team_carry_closure', int((d > RELATIVE_TOL).sum()),
+                     float(d.max())))
+
+    if rushing_yards is None:
+        ev['zero_carries_implies_zero_rushing_yards'] = 'NOT_APPLICABLE'
+        ev['rushing_yards_reason'] = (
+            'RUSHING_CONVERSION_CONTROL_UNDEFINED -- no rushing-yard draw '
+            'exists to check. Recorded as not applicable, never as satisfied.')
+    else:
+        Y = np.asarray(rushing_yards, np.float64)
+        bad = int(((np.rint(C) <= 0) & (np.abs(Y) > 1e-9)).sum())
+        ev['zero_carries_implies_zero_rushing_yards_violations'] = bad
+        ev['n_negative_rushing_yard_cells'] = int((Y < 0).sum())
+        if bad:
+            viol.append(('zero_carries_implies_zero_rushing_yards', bad,
+                         float(np.abs(Y[np.rint(C) <= 0]).max())))
+
+    if rushing_td is None:
+        ev['rushing_td_within_carries'] = 'NOT_APPLICABLE'
+    else:
+        D = np.asarray(rushing_td, np.float64)
+        bad = int((D > np.rint(C) + 1e-9).sum())
+        ev['rushing_td_within_carries_violations'] = bad
+        ev['n_td_without_a_carry'] = int(((np.rint(C) <= 0) & (D > 0)).sum())
+        if bad:
+            viol.append(('rushing_td_within_carries', bad,
+                         float((D - np.rint(C)).max())))
+
+    if qb_rush_opportunity is None:
+        ev['qb_rush_contained_in_other'] = 'NOT_APPLICABLE'
+    else:
+        Q = np.asarray(qb_rush_opportunity, np.float64)   # (n_groups, m)
+        if Q.shape != (len(g), m):
+            return Outcome.fail(
+                'CROSS_DRAW_INDEX_MISMATCH',
+                f'qb_rush_opportunity has shape {Q.shape} against '
+                f'{(len(g), m)}', got=list(Q.shape))
+        other_carries = O * V
+        over = Q - other_carries
+        bad = int((over > 1e-9).sum())
+        ev['qb_rush_contained_in_other_violations'] = bad
+        ev['qb_rush_mean'] = float(Q.mean())
+        ev['other_carry_mass_mean'] = float(other_carries.mean())
+        ev['qb_share_of_other_mean'] = (
+            float((Q / np.maximum(other_carries, 1e-9)).mean()))
+        if bad:
+            viol.append(('qb_rush_contained_in_other', bad, float(over.max())))
+
+    if viol:
+        return Outcome.fail(
+            'RUSHING_DRAW_ACCOUNTING_VIOLATED',
+            '; '.join(f'{k}: {c} cell(s), worst {w:.6g}' for k, c, w in viol),
+            violations=[{'identity': k, 'cells': c, 'worst': w}
+                        for k, c, w in viol], **ev)
+    return Outcome.ok('RUSHING_DRAW_ACCOUNTING_OK', value=ev, **ev)
+
+
+def assert_no_double_counted_qb_carries(rb_carries, other_carries,
+                                        team_carries, qb_rush) -> Outcome:
+    """The sum a consumer must never form.
+
+    RB + OTHER already IS the team. Adding the QB on top is the double count,
+    and it is refused here rather than reconciled, because reconciling it would
+    mean choosing which of two legitimate draws to shrink.
+    """
+    rb = np.asarray(rb_carries, np.float64).sum(0)
+    oc = np.asarray(other_carries, np.float64)
+    tc = np.asarray(team_carries, np.float64)
+    qb = np.asarray(qb_rush, np.float64)
+    naive = rb + oc + qb
+    excess = naive - tc
+    return Outcome.ok(
+        'QB_CARRY_CONTAINMENT_MEASURED',
+        value={'mean_excess_if_summed': float(excess.mean()),
+               'mean_team_carries': float(tc.mean()),
+               'relative_excess': float(excess.mean() / max(tc.mean(), 1e-9))},
+        detail='RB + OTHER is already the team carry count. This reports what '
+               'adding the QB draw on top would inflate it by; no production '
+               'path forms that sum.',
+        measurement=QB_CARRY_MEASUREMENT)

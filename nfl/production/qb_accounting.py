@@ -328,3 +328,120 @@ def summary() -> dict:
             'qb_dropback_identity': QB_DROPBACK_IDENTITY,
         },
     }
+
+
+# =====================================================================
+# R4: the QB layer against the TEAM VOLUME layer, on one draw index.
+#
+# `reconcile_team` already carries a hard check of QB rush opportunity against
+# a same-draw team rush budget. It has never refused anything, because no
+# production caller has ever passed `team_rush_draws`. A guard that has never
+# been given its input is not a guard -- this repository has the same lesson
+# recorded about `assert_batch_games_are_new`.
+#
+# There was no dropback counterpart at all, and that is where the error lives.
+# MEASURED on the real 2026 week-1 roster, 32 teams x 200 draws:
+#
+#     D1 team dropbacks         36.75
+#     QB-summed dropbacks       79.76      ratio 2.17
+#     cells where the QBs collectively out-drop their own team
+#                               5,930 of 6,400   (92.7%)
+#     teams with exactly one QB row      1 of 32
+#
+# The cause is not a bug in QB V1. It is that the QB layer models a passer's
+# line CONDITIONAL ON BEING THE TEAM'S PRIMARY PASSER, and nothing selects
+# which of a team's 2.62 rostered quarterbacks that is. Every other position
+# passes through the appearance layer; the QB does not.
+#
+# This module does not invent that selection. It makes its absence a NAMED
+# FAILURE instead of an invisible 2.17x.
+# =====================================================================
+
+QB_TEAM_VOLUME_IDENTITIES = (
+    ('qb_dropback_within_team_volume',
+     'the quarterbacks of one team cannot collectively drop back more times '
+     'than their team does, in the same draw.'),
+    ('qb_rush_within_team_carries',
+     'the quarterbacks of one team cannot collectively take more rushing '
+     'opportunities than their team has carries, in the same draw.'),
+)
+
+QB_PRIMARY_PASSER_GAP = (
+    'QB_PRIMARY_PASSER_SELECTION: no model selects which rostered quarterback '
+    'is the team\'s primary passer. Appearance is not the same question -- a '
+    'backup can appear without taking a snap at quarterback -- so the P3 '
+    'appearance mechanism does not answer it. Until it is answered, a '
+    'prospective slate forecasts 2.62 starters per team.')
+
+
+def reconcile_team_volume(D, rows, team_dropback_draws=None,
+                          team_carry_draws=None) -> Outcome:
+    """QB draws against the D1 team volume draws, on the SAME draw index.
+
+    Both arguments map (team) -> a draw vector. A team absent from a map is
+    skipped and counted, never silently treated as satisfied.
+    """
+    n_rows = int(np.asarray(D['db']).shape[0])
+    if len(rows) != n_rows:
+        return Outcome.fail(
+            'QB_ACCOUNTING_SHAPE_MISMATCH',
+            f'{len(rows)} row(s) against {n_rows} draw row(s)')
+    if team_dropback_draws is None and team_carry_draws is None:
+        return Outcome.not_applicable(
+            'QB_TEAM_VOLUME_NOT_SUPPLIED',
+            'neither team dropback nor team carry draws were supplied, so '
+            'nothing was checked. Reported as not applicable rather than as a '
+            'reconciliation that passed.')
+    by = collections.defaultdict(list)
+    for i, r in enumerate(rows):
+        if r.get('team'):
+            by[r['team']].append(i)
+    if not by:
+        return Outcome.fail('QB_ACCOUNTING_EMPTY',
+                            'no QB row carries a team, so nothing can be '
+                            'reconciled against a team quantity')
+    viol, ev = [], {'n_teams': len(by), 'n_qb_rows': n_rows,
+                    'qb_rows_per_team': round(n_rows / max(len(by), 1), 3),
+                    'identities_checked': [n for n, _ in
+                                           QB_TEAM_VOLUME_IDENTITIES]}
+    skipped = []
+    for name, field, budget in (
+            ('qb_dropback_within_team_volume', 'db', team_dropback_draws),
+            ('qb_rush_within_team_carries', 'rush_opp', team_carry_draws)):
+        if budget is None:
+            ev[f'{name}_status'] = 'NOT_SUPPLIED'
+            continue
+        cells = over = 0
+        drawn = tot = 0.0
+        for t, idx in by.items():
+            b = budget.get(t)
+            if b is None:
+                skipped.append(t)
+                continue
+            b = np.asarray(b, float)
+            q = np.asarray(D[field])[idx].sum(0)
+            if q.shape != b.shape:
+                return Outcome.fail(
+                    'CROSS_DRAW_INDEX_MISMATCH',
+                    f'{name}: QB draws have shape {q.shape} against the team '
+                    f'budget {b.shape}. These must share one draw index.')
+            cells += q.size
+            over += int((q > b + 1e-9).sum())
+            drawn += float(q.sum())
+            tot += float(b.sum())
+        ev[f'{name}_cells'] = cells
+        ev[f'{name}_violations'] = over
+        ev[f'{name}_ratio'] = round(drawn / tot, 4) if tot else None
+        if over:
+            viol.append((name, over, cells))
+    if skipped:
+        ev['teams_without_a_budget'] = sorted(set(skipped))
+    if viol:
+        return Outcome.fail(
+            'QB_TEAM_VOLUME_INCOHERENT',
+            '; '.join(f'{k}: {c} of {n} cell(s)' for k, c, n in viol)
+            + '. ' + QB_PRIMARY_PASSER_GAP,
+            violations=[{'identity': k, 'cells': c, 'of': n}
+                        for k, c, n in viol],
+            research_gap=QB_PRIMARY_PASSER_GAP, **ev)
+    return Outcome.ok('QB_TEAM_VOLUME_COHERENT', value=ev, **ev)

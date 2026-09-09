@@ -1,0 +1,438 @@
+{
+ "artifact": "NFL_V1_R4_RUSHING_CONVERSION_INVENTORY",
+ "question": "is there a defined frozen production control for carry -> rushing yards",
+ "verdict": "RUSHING_CONVERSION_CONTROL_UNDEFINED",
+ "method": "read from the repository; nothing inferred from the existence of code",
+ "1_canonical_research_module": {
+  "module": "nfl/research/p5a/",
+  "library": "nfl/research/p5a/p5a_lib.py",
+  "runner": "nfl/research/p5a/run_p5a.py",
+  "predeclaration": "nfl/research/p5a/predeclaration_p5a.md",
+  "artifacts": [
+   "p5a_results.json",
+   "p5a_tail.json",
+   "p5a_skill.json",
+   "p5a_adversarial.json",
+   "p5a_pfr.json",
+   "audit.json"
+  ],
+  "estimand": "predictive distribution of player-game rushing yards, built as a compound: draw the carry count from the accepted P4C joint allocation, then draw that many per-carry outcomes",
+  "finding_document": null,
+  "finding_document_note": "rc1, rc2 and td1 each carry a *_FINDING.md. P5A has none. There is no written adjudication of its own predeclared selection rule."
+ },
+ "2_research_state": {
+  "path_c_state_key": "rushing_conversion",
+  "knowledge": "RECOVERABILITY_CHARACTERIZED",
+  "label_in_artifacts": "EXPLORATORY -- 2022-2025 are heavily mined"
+ },
+ "3_owner_action": {
+  "action": "HOLD_CHARACTERIZED",
+  "condition_to_reopen": "materially new information",
+  "decision_field_present": false,
+  "decision_artifact": null,
+  "contrast": "receiving_conversion carries decision RC1-ACCEPT-001 and decision_artifact nfl/NFL_RC1_ACCEPTANCE_DECISION.json. rushing_conversion carries neither."
+ },
+ "4_historical_inputs": {
+  "carry_table": "per-carry yardage extracted from pbp, 2016 onward (pbp availability), reconciled against the panel",
+  "n_train_carries_2026_equivalent": 126077,
+  "opportunity": "P4C joint allocation (carries class) x team volume",
+  "panel": "panel_enriched.pkl, regenerable from committed leaves"
+ },
+ "5_frozen_parameters": {
+  "pooled_per_carry_mean_ypc_seasons_before_2026": 4.3166,
+  "p_stuff": 0.2018,
+  "p_explosive": 0.1142,
+  "empirical_bayes_k": {
+   "player_ypc": 80,
+   "player_exp": 80,
+   "player_stuff": 20,
+   "team_ypc": 1280,
+   "team_exp": 1280,
+   "team_stuff": 2560,
+   "opp_ypc": 2560,
+   "opp_exp": 1280,
+   "opp_stuff": 640
+  },
+  "note": "these are computed quantities from the 2025 evaluation fold, not a frozen production parameter set. No file in this repository names the parameters a production rushing-conversion control would use."
+ },
+ "6_uncertainty_representation": {
+  "form": "compound sum of per-carry draws; non-positive, ordinary and explosive runs stay distinguishable by construction",
+  "families_implemented": [
+   "emp_shift",
+   "emp_tilt",
+   "mix2",
+   "mix3"
+  ],
+  "negative_outcomes": "PERMITTED -- the pooled per-carry distribution contains stuffs and losses; p_stuff is 0.2018"
+ },
+ "7_player_history_shrinkage": {
+  "form": "empirical-Bayes shrinkage of player yards-per-carry, explosive rate and stuff rate toward the pooled prior",
+  "k_fitted_on_prior_seasons": {
+   "player_ypc": 80,
+   "player_exp": 80,
+   "player_stuff": 20,
+   "team_ypc": 1280,
+   "team_exp": 1280,
+   "team_stuff": 2560,
+   "opp_ypc": 2560,
+   "opp_exp": 1280,
+   "opp_stuff": 640
+  },
+  "appears_in": "system B and above only; the control A carries no player-specific efficiency information of any kind"
+ },
+ "8_position_team_fallback": {
+  "predeclared": "control A stratifies the pooled distribution by position group, RB versus non-RB rusher (predeclaration section 5)",
+  "implemented": "p5a_lib.Pool is built from ALL prior-season carries with no position stratification",
+  "status": "DISCREPANCY -- the implemented control is not the predeclared control"
+ },
+ "9_chronology_rule": {
+  "predeclared": "strict walk-forward; every parameter fitted on seasons < Y; within-season histories from games strictly before the target game; carry history may reach back to 2016",
+  "parameters_implemented_correctly": true,
+  "family_selection_implemented_correctly": false,
+  "family_selection_defect": "predeclaration section 9 requires the family to be chosen by CRPS on an INNER VALIDATION SEASON (Y-1) fitted on seasons before that. run_p5a.py instead scores each family against the EVALUATION season's own realised rushing yards (run_p5a.py: sc = L.score(Y, y, ...) where y is the eval-season truth) and keeps the minimum. No inner-validation code exists anywhere in nfl/research/p5a/."
+ },
+ "10_known_limitations": [
+  "every reported P5A CRPS is a best-of-four minimum taken on the test season, so the figures are optimistic by an unmeasured amount",
+  "the four evaluation seasons are heavily mined development data and the artifacts label themselves EXPLORATORY",
+  "the oracle arms (O_carries CRPS ~5.0 against a control ~10.2) show most of the recoverable signal is in the CARRY COUNT, not in conversion"
+ ],
+ "predeclared_promotion_bar": {
+  "source": "predeclaration_p5a.md section 14",
+  "criteria": [
+   "1. pooled CRPS improves",
+   "2. the team-game block-bootstrap interval on the CRPS difference excludes zero",
+   "3. the direction is consistent in at least 3 of the 4 evaluation seasons",
+   "4. randomised PIT does not worsen by more than 25% relative",
+   "5. tail calibration -- forecast minus observed P(20+ yard rush) -- does not worsen in absolute value"
+  ],
+  "applied_here_for_the_first_time": true,
+  "by_season": {
+   "2022": {
+    "B": {
+     "crps": 10.2007,
+     "crps_improves": true,
+     "bootstrap_ci": [
+      -0.1461,
+      -0.0375
+     ],
+     "ci_excludes_zero": true,
+     "randomised_pit_chi2": 14.0,
+     "pit_relative_change_pct": -6.8,
+     "pit_within_25pct": true,
+     "abs_tail_calibration": 0.00169,
+     "tail_not_worse": true
+    },
+    "C": {
+     "crps": 10.2003,
+     "crps_improves": true,
+     "bootstrap_ci": [
+      -0.147,
+      -0.0377
+     ],
+     "ci_excludes_zero": true,
+     "randomised_pit_chi2": 14.7,
+     "pit_relative_change_pct": -1.8,
+     "pit_within_25pct": true,
+     "abs_tail_calibration": null,
+     "tail_not_worse": null
+    },
+    "D": {
+     "crps": 10.1946,
+     "crps_improves": true,
+     "bootstrap_ci": [
+      -0.1564,
+      -0.0401
+     ],
+     "ci_excludes_zero": true,
+     "randomised_pit_chi2": 16.6,
+     "pit_relative_change_pct": 10.8,
+     "pit_within_25pct": true,
+     "abs_tail_calibration": null,
+     "tail_not_worse": null
+    },
+    "E": {
+     "crps": 10.1942,
+     "crps_improves": true,
+     "bootstrap_ci": [
+      -0.1582,
+      -0.041
+     ],
+     "ci_excludes_zero": true,
+     "randomised_pit_chi2": 15.9,
+     "pit_relative_change_pct": 6.3,
+     "pit_within_25pct": true,
+     "abs_tail_calibration": 0.00157,
+     "tail_not_worse": true
+    },
+    "A": {
+     "crps": 10.299,
+     "randomised_pit_chi2": 15.0,
+     "abs_tail_calibration": 0.00437,
+     "family_selected": "emp_tilt"
+    },
+    "_family_by_system": {
+     "A": "emp_tilt",
+     "B": "emp_shift",
+     "C": "emp_shift",
+     "D": "emp_shift",
+     "E": "emp_shift"
+    },
+    "_chosen_by_crps_argmin": "E"
+   },
+   "2023": {
+    "B": {
+     "crps": 9.981,
+     "crps_improves": true,
+     "bootstrap_ci": [
+      -0.1455,
+      -0.0284
+     ],
+     "ci_excludes_zero": true,
+     "randomised_pit_chi2": 31.0,
+     "pit_relative_change_pct": 13.6,
+     "pit_within_25pct": true,
+     "abs_tail_calibration": 0.00887,
+     "tail_not_worse": true
+    },
+    "C": {
+     "crps": 9.9727,
+     "crps_improves": true,
+     "bootstrap_ci": [
+      -0.156,
+      -0.0351
+     ],
+     "ci_excludes_zero": true,
+     "randomised_pit_chi2": 31.1,
+     "pit_relative_change_pct": 13.8,
+     "pit_within_25pct": true,
+     "abs_tail_calibration": null,
+     "tail_not_worse": null
+    },
+    "D": {
+     "crps": 9.9841,
+     "crps_improves": true,
+     "bootstrap_ci": [
+      -0.1462,
+      -0.0238
+     ],
+     "ci_excludes_zero": true,
+     "randomised_pit_chi2": 32.8,
+     "pit_relative_change_pct": 20.0,
+     "pit_within_25pct": true,
+     "abs_tail_calibration": null,
+     "tail_not_worse": null
+    },
+    "E": {
+     "crps": 9.9753,
+     "crps_improves": true,
+     "bootstrap_ci": [
+      -0.157,
+      -0.0317
+     ],
+     "ci_excludes_zero": true,
+     "randomised_pit_chi2": 31.1,
+     "pit_relative_change_pct": 13.7,
+     "pit_within_25pct": true,
+     "abs_tail_calibration": 0.009,
+     "tail_not_worse": true
+    },
+    "A": {
+     "crps": 10.0703,
+     "randomised_pit_chi2": 27.3,
+     "abs_tail_calibration": 0.01517,
+     "family_selected": "mix3"
+    },
+    "_family_by_system": {
+     "A": "mix3",
+     "B": "emp_shift",
+     "C": "emp_shift",
+     "D": "emp_shift",
+     "E": "emp_shift"
+    },
+    "_chosen_by_crps_argmin": "C"
+   },
+   "2024": {
+    "B": {
+     "crps": 11.1185,
+     "crps_improves": true,
+     "bootstrap_ci": [
+      -0.1646,
+      -0.052
+     ],
+     "ci_excludes_zero": true,
+     "randomised_pit_chi2": 18.0,
+     "pit_relative_change_pct": 31.5,
+     "pit_within_25pct": false,
+     "abs_tail_calibration": 0.00336,
+     "tail_not_worse": true
+    },
+    "C": {
+     "crps": 11.1238,
+     "crps_improves": true,
+     "bootstrap_ci": [
+      -0.1601,
+      -0.0433
+     ],
+     "ci_excludes_zero": true,
+     "randomised_pit_chi2": 18.3,
+     "pit_relative_change_pct": 34.0,
+     "pit_within_25pct": false,
+     "abs_tail_calibration": null,
+     "tail_not_worse": null
+    },
+    "D": {
+     "crps": 11.1165,
+     "crps_improves": true,
+     "bootstrap_ci": [
+      -0.1699,
+      -0.0541
+     ],
+     "ci_excludes_zero": true,
+     "randomised_pit_chi2": 17.5,
+     "pit_relative_change_pct": 27.9,
+     "pit_within_25pct": false,
+     "abs_tail_calibration": null,
+     "tail_not_worse": null
+    },
+    "E": {
+     "crps": 11.1218,
+     "crps_improves": true,
+     "bootstrap_ci": [
+      -0.1659,
+      -0.0441
+     ],
+     "ci_excludes_zero": true,
+     "randomised_pit_chi2": 18.2,
+     "pit_relative_change_pct": 33.0,
+     "pit_within_25pct": false,
+     "abs_tail_calibration": 0.00332,
+     "tail_not_worse": true
+    },
+    "A": {
+     "crps": 11.2331,
+     "randomised_pit_chi2": 13.6,
+     "abs_tail_calibration": 0.00966,
+     "family_selected": "mix3"
+    },
+    "_family_by_system": {
+     "A": "mix3",
+     "B": "emp_shift",
+     "C": "emp_shift",
+     "D": "emp_shift",
+     "E": "emp_shift"
+    },
+    "_chosen_by_crps_argmin": "D"
+   },
+   "2025": {
+    "B": {
+     "crps": 10.8572,
+     "crps_improves": true,
+     "bootstrap_ci": [
+      -0.1534,
+      -0.0339
+     ],
+     "ci_excludes_zero": true,
+     "randomised_pit_chi2": 12.7,
+     "pit_relative_change_pct": 17.9,
+     "pit_within_25pct": true,
+     "abs_tail_calibration": 0.01088,
+     "tail_not_worse": true
+    },
+    "C": {
+     "crps": 10.8538,
+     "crps_improves": true,
+     "bootstrap_ci": [
+      -0.1564,
+      -0.0351
+     ],
+     "ci_excludes_zero": true,
+     "randomised_pit_chi2": 13.0,
+     "pit_relative_change_pct": 20.1,
+     "pit_within_25pct": true,
+     "abs_tail_calibration": null,
+     "tail_not_worse": null
+    },
+    "D": {
+     "crps": 10.8515,
+     "crps_improves": true,
+     "bootstrap_ci": [
+      -0.1613,
+      -0.0389
+     ],
+     "ci_excludes_zero": true,
+     "randomised_pit_chi2": 12.9,
+     "pit_relative_change_pct": 19.4,
+     "pit_within_25pct": true,
+     "abs_tail_calibration": null,
+     "tail_not_worse": null
+    },
+    "E": {
+     "crps": 10.8476,
+     "crps_improves": true,
+     "bootstrap_ci": [
+      -0.1652,
+      -0.0412
+     ],
+     "ci_excludes_zero": true,
+     "randomised_pit_chi2": 14.0,
+     "pit_relative_change_pct": 29.9,
+     "pit_within_25pct": false,
+     "abs_tail_calibration": 0.01075,
+     "tail_not_worse": true
+    },
+    "A": {
+     "crps": 10.9515,
+     "randomised_pit_chi2": 10.8,
+     "abs_tail_calibration": 0.01756,
+     "family_selected": "emp_tilt"
+    },
+    "_family_by_system": {
+     "A": "emp_tilt",
+     "B": "emp_shift",
+     "C": "emp_shift",
+     "D": "emp_shift",
+     "E": "emp_shift"
+    },
+    "_chosen_by_crps_argmin": "E"
+   }
+  },
+  "summary_B_over_A": {
+   "criterion_1": "MET in 4 of 4 seasons",
+   "criterion_2": "MET in 4 of 4 seasons",
+   "criterion_3": "MET, 4 of 4",
+   "criterion_4": "BREACHED in 2024 (+31.5% against a 25% bound); met in 2022 (-6.8%), 2023 (+13.6%) and 2025 (+17.9%)",
+   "criterion_5": "MET in 4 of 4 seasons"
+  }
+ },
+ "missing_scientific_decisions": [
+  {
+   "id": "RUSH-DECISION-1",
+   "question": "Which distributional family does the control use for a season with no outcomes?",
+   "why_it_blocks": "The family is currently selected by CRPS against the evaluation season's own realised yards. That rule cannot run for 2026, and adopting \"the family 2025 chose\" imports a choice made from 2025 outcomes. The predeclared inner-validation nesting (Y-1) was never implemented.",
+   "options_visible_in_the_repository": [
+    "emp_shift",
+    "emp_tilt",
+    "mix2",
+    "mix3"
+   ],
+   "what_would_resolve_it": "implement the predeclared inner-validation selection and re-run P5A, or record a decision fixing one family for production",
+   "owner_decision": true
+  },
+  {
+   "id": "RUSH-DECISION-2",
+   "question": "Is promotion criterion 4 evaluated per season or pooled?",
+   "why_it_blocks": "It is the only criterion B breaches, and it breaches in one season of four. Read per season, no rung is promoted and the control is A. Read pooled, B (and plausibly E) may clear the bar and the control is a player-shrunk system. The predeclaration does not say, and criterion 3 is the only one that names a per-season rule.",
+   "what_would_resolve_it": "an owner reading of section 14, recorded as a decision artifact",
+   "owner_decision": true
+  },
+  {
+   "id": "RUSH-DECISION-3",
+   "question": "Is the production control the predeclared position-stratified pool, or the unstratified pool that was implemented?",
+   "why_it_blocks": "These are different distributions. QB and WR carries sit in the same pool as RB carries in the implementation.",
+   "what_would_resolve_it": "a correction to P5A or a decision adopting the implemented form",
+   "owner_decision": true
+  }
+ ],
+ "what_this_packet_did_instead": "Implemented the rushing-conversion INTERFACE as a named refusal carrying these three decisions, and the structural prohibitions section C asks for (no point yards-per-carry, no caller-supplied efficiency prior). No control was invented.",
+ "what_is_NOT_blocked": "the rushing TOUCHDOWN control is separate and is defined -- see the R4 return section D."
+}

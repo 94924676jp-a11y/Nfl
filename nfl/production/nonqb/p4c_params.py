@@ -36,6 +36,7 @@ for _q in (str(_REPO), str(_REPO / 'nfl' / 'research' / 'p4c')):
 
 from sportsplatform.governance.outcome import (Cause, Outcome,   # noqa: E402
                                                State)
+from nfl.production import derived as D                          # noqa: E402
 
 SPEC = _REPO / 'nfl' / 'research' / 'repro' / 'ABC_MPR_IDENTITY.json'
 REGEN = _REPO / 'nfl' / 'research' / 'repro' / 'regenerate.py'
@@ -55,53 +56,21 @@ def _sha(p):
 
 
 def ensure_artifacts(dest=None, timeout=1800) -> Outcome:
-    """Regenerate the derived artifacts and verify their hashes here too."""
+    """The verified derived artifacts, READ-ONLY, from production's own cache.
+
+    R3 shelled out to `regenerate.py`'s command line here and then restored the
+    one research file it noticed being written. Both halves of that were wrong:
+    a forecast should not invoke a mutating research command at all, and the
+    restore missed the 138 MB of derived artifacts the builders were writing
+    through symlinks into nfl/research/p4b. `nfl.production.derived` does it
+    the other way round -- pure functions, a temp work tree, and a cache
+    outside the research tree.
+    """
     global _DIR
-    if _DIR is not None and dest is None:
-        return Outcome.ok('ARTIFACTS_PRESENT', value=str(_DIR), cached=True)
-    if not SPEC.exists():
-        return Outcome.blocked('REGENERATION_SPEC_ABSENT', str(SPEC),
-                               cause=Cause.DATA)
-    want = {k: v['sha256'] for k, v in
-            json.loads(SPEC.read_text())['derived_artifacts'].items()}
-    import tempfile
-    d = pathlib.Path(dest) if dest else pathlib.Path(
-        tempfile.mkdtemp(prefix='nfl-p4c-'))
-    d.mkdir(parents=True, exist_ok=True)
-    if not all((d / a).exists() for a in ARTIFACTS):
-        # A PRODUCTION RUN MUST NOT MODIFY THE REPOSITORY. regenerate.py
-        # writes its own run report into the research tree, which is correct
-        # when a human runs it and wrong as a side effect of a forecast: the
-        # suite diffs the working tree around every run and would report the
-        # production path dirtying it. The report is the research script's
-        # record, so it is preserved and put back rather than suppressed.
-        report = _REPO / 'nfl' / 'research' / 'repro' / 'regeneration_report.json'
-        before = report.read_bytes() if report.exists() else None
-        r = subprocess.run([sys.executable, str(REGEN), '--emit', str(d)],
-                           capture_output=True, text=True, timeout=timeout)
-        if before is not None:
-            report.write_bytes(before)
-        if r.returncode != 0:
-            return Outcome.fail(
-                'REGENERATION_REFUSED',
-                f'regenerate.py exited {r.returncode}: '
-                f'{(r.stderr or r.stdout)[-400:]}')
-    # VERIFY HERE TOO. The regeneration script checks its own output; a second
-    # independent check is what stops "it said it was fine" from being the
-    # only evidence.
-    for a in ARTIFACTS:
-        p = d / a
-        if not p.exists():
-            return Outcome.fail('REGENERATED_ARTIFACT_MISSING', str(p))
-        got = _sha(p)
-        if want.get(a) and got != want[a]:
-            return Outcome.fail(
-                'REGENERATED_ARTIFACT_HASH_MISMATCH',
-                f'{a} hashes {got[:16]} against the frozen {want[a][:16]}',
-                artifact=a)
-    _DIR = d
-    return Outcome.ok('ARTIFACTS_REGENERATED', value=str(d), cached=False,
-                      artifacts=list(ARTIFACTS))
+    o = D.artifacts()
+    if o.state is State.PASS:
+        _DIR = pathlib.Path(o.value)
+    return o
 
 
 def params(cls: str, season: int) -> Outcome:

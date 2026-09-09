@@ -1,453 +1,342 @@
 {
- "artifact": "NFL_V1_R3_ENGINE_REHEARSAL",
+ "artifact": "NFL_V1_R4_ENGINE_REHEARSAL",
+ "mode": "test_only",
  "TEST_ONLY": true,
+ "engine_version": "nfl-football-engine-v1-r4",
  "season": 2026,
  "week": 1,
- "n_draws": 200,
- "stubbed_input": "injuries_2026 ONLY",
- "everything_else": "real captured inputs and frozen fits",
- "fixture_provenance": "nfl/production/nonqb/engine_rehearsal.py stub_injuries(): every rostered player entered as a full practice participant with no game-status designation. No real 2026 injury information was used or invented.",
- "publication": "IMPOSSIBLE -- assert_publishable refuses any run carrying TEST_ONLY data",
- "g0a_effect": "NONE -- a TEST_ONLY run cannot satisfy G0A",
+ "n_draws": 100,
  "games": [
   {
    "game_id": "2026_01_ARI_LAC",
-   "n_players": 52,
+   "teams": [
+    "ARI",
+    "LAC"
+   ],
    "layers": {
     "team_environment": "PASS[TEAM_VOLUME_OK]",
     "appearance": "PASS[APPEARANCE_OK]",
     "participation": "PASS[PARTICIPATION_OK]",
     "targets_carries": "PASS[TARGETS_CARRIES_OK]",
+    "carries": "PASS[TARGETS_CARRIES_OK]",
     "receiving_conversion": "PASS[CONVERSION_OK]",
-    "td_layer": "PASS[TD_LAYER_OK]"
+    "receiving_td": "PASS[TD_LAYER_OK]",
+    "rushing_td": "PASS[RUSHING_TD_OK]",
+    "rushing_conversion": "DEFERRED[RUSHING_CONVERSION_CONTROL_UNDEFINED]"
    },
-   "accounting": "PASS[NONQB_DRAW_ACCOUNTING_OK]",
-   "accounting_detail": "",
-   "chain": "PASS[NONQB_CHAIN_EXECUTED]",
+   "accounting": {
+    "receiving": "PASS[NONQB_DRAW_ACCOUNTING_OK]",
+    "rushing": "FAIL[RUSHING_DRAW_ACCOUNTING_VIOLATED]",
+    "detail": {
+     "receiving": {
+      "n_players": 52,
+      "n_draws": 100,
+      "n_groups": 2,
+      "n_cells_checked": 5200,
+      "share_simplex_closure_maxdev": 1.5305704437196255e-07,
+      "share_non_negative_violations": 0,
+      "player_opportunity_within_team_maxreldev": 1.5305704427875282e-07,
+      "receptions_within_targets_violations": 0,
+      "receiving_td_within_receptions_violations": 0,
+      "zero_receptions_implies_zero_yards_violations": 0,
+      "n_negative_yard_cells": 58,
+      "min_receiving_yards": -8.0,
+      "allocation_only_when_available_violations": 0,
+      "other_mass_mean": 0.005474826497957111,
+      "identities_checked": [
+       "share_simplex_closure",
+       "share_non_negative",
+       "player_opportunity_within_team",
+       "receptions_within_targets",
+       "receiving_td_within_receptions",
+       "zero_receptions_implies_zero_yards",
+       "allocation_only_when_available"
+      ],
+      "relative_tol": 0.0001
+     },
+     "rushing": {
+      "violations": [
+       {
+        "identity": "qb_rush_contained_in_other",
+        "cells": 145,
+        "worst": 23.76308983345242
+       }
+      ],
+      "n_players": 14,
+      "n_draws": 100,
+      "n_groups": 2,
+      "n_cells_checked": 1400,
+      "identities_checked": [
+       "team_carry_closure",
+       "zero_carries_implies_zero_rushing_yards",
+       "rushing_td_within_carries",
+       "qb_rush_contained_in_other"
+      ],
+      "team_carry_closure_maxdev": 1.2293457984924316e-07,
+      "zero_carries_implies_zero_rushing_yards": "NOT_APPLICABLE",
+      "rushing_yards_reason": "RUSHING_CONVERSION_CONTROL_UNDEFINED -- no rushing-yard draw exists to check. Recorded as not applicable, never as satisfied.",
+      "rushing_td_within_carries_violations": 0,
+      "n_td_without_a_carry": 0,
+      "qb_rush_contained_in_other_violations": 145,
+      "qb_rush_mean": 7.115,
+      "other_carry_mass_mean": 3.1495208857860097,
+      "qb_share_of_other_mean": 340000003.13073695
+     },
+     "qb_team_volume": {
+      "violations": [
+       {
+        "identity": "qb_dropback_within_team_volume",
+        "cells": 167,
+        "of": 200
+       },
+       {
+        "identity": "qb_rush_within_team_carries",
+        "cells": 5,
+        "of": 200
+       }
+      ],
+      "research_gap": "QB_PRIMARY_PASSER_SELECTION: no model selects which rostered quarterback is the team's primary passer. Appearance is not the same question -- a backup can appear without taking a snap at quarterback -- so the P3 appearance mechanism does not answer it. Until it is answered, a prospective slate forecasts 2.62 starters per team.",
+      "n_teams": 2,
+      "n_qb_rows": 4,
+      "qb_rows_per_team": 2.0,
+      "identities_checked": [
+       "qb_dropback_within_team_volume",
+       "qb_rush_within_team_carries"
+      ],
+      "qb_dropback_within_team_volume_cells": 200,
+      "qb_dropback_within_team_volume_violations": 167,
+      "qb_dropback_within_team_volume_ratio": 1.6388,
+      "qb_rush_within_team_carries_cells": 200,
+      "qb_rush_within_team_carries_violations": 5,
+      "qb_rush_within_team_carries_ratio": 0.2741
+     }
+    },
+    "chain": "PASS[NONQB_CHAIN_EXECUTED]",
+    "qb_team_volume": "FAIL[QB_TEAM_VOLUME_INCOHERENT]"
+   },
+   "engine_version": "nfl-football-engine-v1-r4",
+   "n_players": 52,
+   "n_records": 56,
+   "n_qb_records": 4,
+   "player_contract": "PASS[PLAYER_RECORDS_VALID]",
+   "player_contract_evidence": {
+    "n_records": 56,
+    "n_metrics_present": 380,
+    "n_metrics_absent": 14,
+    "by_position": {
+     "WR": 24,
+     "RB": 14,
+     "TE": 14,
+     "QB": 4
+    },
+    "contract_version": "nfl-player-record-1"
+   },
+   "publication_gate": "FAIL[TEST_ONLY_DATA_IN_PRODUCTION_PATH]",
+   "test_only": true,
    "summary": {
-    "mean_targets": 1.2485265974706934,
-    "mean_receptions": 0.8513461538461539,
-    "mean_receiving_yards": 9.304134615384616,
-    "sd_receiving_yards_within_player": 11.873584457276658,
-    "mean_td": 0.058173076923076925,
-    "other_mass_mean": 0.006866069510579109,
-    "appearance_mean": 0.40938955545425415
-   },
-   "publication_gate": "FAIL[TEST_ONLY_DATA_IN_PRODUCTION_PATH]"
+    "targets": {
+     "mean": 1.2304851135678785,
+     "sd_within_player": 0.9383986285602545
+    },
+    "carries": {
+     "mean": 3.258225024977962,
+     "sd_within_player": 2.648695574919067
+    },
+    "receptions": {
+     "mean": 0.8471153846153846,
+     "sd_within_player": 0.8258873606144838
+    },
+    "receiving_yards": {
+     "mean": 9.178269230769232,
+     "sd_within_player": 11.683106624046047
+    },
+    "receiving_td": {
+     "mean": 0.05307692307692308,
+     "sd_within_player": 0.20784788041773142
+    },
+    "rush_td": {
+     "mean": 0.085,
+     "sd_within_player": 0.28227977589428704
+    }
+   }
   },
   {
    "game_id": "2026_01_ATL_PIT",
+   "teams": [
+    "ATL",
+    "PIT"
+   ],
+   "layers": {
+    "team_environment": "PASS[TEAM_VOLUME_OK]",
+    "appearance": "PASS[APPEARANCE_OK]",
+    "participation": "PASS[PARTICIPATION_OK]",
+    "targets_carries": "PASS[TARGETS_CARRIES_OK]",
+    "carries": "PASS[TARGETS_CARRIES_OK]",
+    "receiving_conversion": "PASS[CONVERSION_OK]",
+    "receiving_td": "PASS[TD_LAYER_OK]",
+    "rushing_td": "PASS[RUSHING_TD_OK]",
+    "rushing_conversion": "DEFERRED[RUSHING_CONVERSION_CONTROL_UNDEFINED]"
+   },
+   "accounting": {
+    "receiving": "PASS[NONQB_DRAW_ACCOUNTING_OK]",
+    "rushing": "FAIL[RUSHING_DRAW_ACCOUNTING_VIOLATED]",
+    "detail": {
+     "receiving": {
+      "n_players": 47,
+      "n_draws": 100,
+      "n_groups": 2,
+      "n_cells_checked": 4700,
+      "share_simplex_closure_maxdev": 1.30385160446167e-07,
+      "share_non_negative_violations": 0,
+      "player_opportunity_within_team_maxreldev": 1.303851603782855e-07,
+      "receptions_within_targets_violations": 0,
+      "receiving_td_within_receptions_violations": 0,
+      "zero_receptions_implies_zero_yards_violations": 0,
+      "n_negative_yard_cells": 44,
+      "min_receiving_yards": -12.0,
+      "allocation_only_when_available_violations": 0,
+      "other_mass_mean": 0.005761675785761327,
+      "identities_checked": [
+       "share_simplex_closure",
+       "share_non_negative",
+       "player_opportunity_within_team",
+       "receptions_within_targets",
+       "receiving_td_within_receptions",
+       "zero_receptions_implies_zero_yards",
+       "allocation_only_when_available"
+      ],
+      "relative_tol": 0.0001
+     },
+     "rushing": {
+      "violations": [
+       {
+        "identity": "qb_rush_contained_in_other",
+        "cells": 116,
+        "worst": 8.671674164888614
+       }
+      ],
+      "n_players": 11,
+      "n_draws": 100,
+      "n_groups": 2,
+      "n_cells_checked": 1100,
+      "identities_checked": [
+       "team_carry_closure",
+       "zero_carries_implies_zero_rushing_yards",
+       "rushing_td_within_carries",
+       "qb_rush_contained_in_other"
+      ],
+      "team_carry_closure_maxdev": 1.1920928955078125e-07,
+      "zero_carries_implies_zero_rushing_yards": "NOT_APPLICABLE",
+      "rushing_yards_reason": "RUSHING_CONVERSION_CONTROL_UNDEFINED -- no rushing-yard draw exists to check. Recorded as not applicable, never as satisfied.",
+      "rushing_td_within_carries_violations": 0,
+      "n_td_without_a_carry": 0,
+      "qb_rush_contained_in_other_violations": 116,
+      "qb_rush_mean": 4.025,
+      "other_carry_mass_mean": 3.3182292116210568,
+      "qb_share_of_other_mean": 165000001.7204053
+     },
+     "qb_team_volume": {
+      "violations": [
+       {
+        "identity": "qb_dropback_within_team_volume",
+        "cells": 187,
+        "of": 200
+       }
+      ],
+      "research_gap": "QB_PRIMARY_PASSER_SELECTION: no model selects which rostered quarterback is the team's primary passer. Appearance is not the same question -- a backup can appear without taking a snap at quarterback -- so the P3 appearance mechanism does not answer it. Until it is answered, a prospective slate forecasts 2.62 starters per team.",
+      "n_teams": 2,
+      "n_qb_rows": 5,
+      "qb_rows_per_team": 2.5,
+      "identities_checked": [
+       "qb_dropback_within_team_volume",
+       "qb_rush_within_team_carries"
+      ],
+      "qb_dropback_within_team_volume_cells": 200,
+      "qb_dropback_within_team_volume_violations": 187,
+      "qb_dropback_within_team_volume_ratio": 2.1118,
+      "qb_rush_within_team_carries_cells": 200,
+      "qb_rush_within_team_carries_violations": 0,
+      "qb_rush_within_team_carries_ratio": 0.1397
+     }
+    },
+    "chain": "PASS[NONQB_CHAIN_EXECUTED]",
+    "qb_team_volume": "FAIL[QB_TEAM_VOLUME_INCOHERENT]"
+   },
+   "engine_version": "nfl-football-engine-v1-r4",
    "n_players": 47,
-   "layers": {
-    "team_environment": "PASS[TEAM_VOLUME_OK]",
-    "appearance": "PASS[APPEARANCE_OK]",
-    "participation": "PASS[PARTICIPATION_OK]",
-    "targets_carries": "PASS[TARGETS_CARRIES_OK]",
-    "receiving_conversion": "PASS[CONVERSION_OK]",
-    "td_layer": "PASS[TD_LAYER_OK]"
+   "n_records": 52,
+   "n_qb_records": 5,
+   "player_contract": "PASS[PLAYER_RECORDS_VALID]",
+   "player_contract_evidence": {
+    "n_records": 52,
+    "n_metrics_present": 354,
+    "n_metrics_absent": 11,
+    "by_position": {
+     "TE": 12,
+     "WR": 24,
+     "RB": 11,
+     "QB": 5
+    },
+    "contract_version": "nfl-player-record-1"
    },
-   "accounting": "PASS[NONQB_DRAW_ACCOUNTING_OK]",
-   "accounting_detail": "",
-   "chain": "PASS[NONQB_CHAIN_EXECUTED]",
+   "publication_gate": "FAIL[TEST_ONLY_DATA_IN_PRODUCTION_PATH]",
+   "test_only": true,
    "summary": {
-    "mean_targets": 1.3244494886924985,
-    "mean_receptions": 0.8847872340425532,
-    "mean_receiving_yards": 9.963085106382978,
-    "sd_receiving_yards_within_player": 12.458901300776615,
-    "mean_td": 0.06148936170212766,
-    "other_mass_mean": 0.0063483212143182755,
-    "appearance_mean": 0.4161674976348877
-   },
-   "publication_gate": "FAIL[TEST_ONLY_DATA_IN_PRODUCTION_PATH]"
-  },
-  {
-   "game_id": "2026_01_BAL_IND",
-   "n_players": 54,
-   "layers": {
-    "team_environment": "PASS[TEAM_VOLUME_OK]",
-    "appearance": "PASS[APPEARANCE_OK]",
-    "participation": "PASS[PARTICIPATION_OK]",
-    "targets_carries": "PASS[TARGETS_CARRIES_OK]",
-    "receiving_conversion": "PASS[CONVERSION_OK]",
-    "td_layer": "PASS[TD_LAYER_OK]"
-   },
-   "accounting": "PASS[NONQB_DRAW_ACCOUNTING_OK]",
-   "accounting_detail": "",
-   "chain": "PASS[NONQB_CHAIN_EXECUTED]",
-   "summary": {
-    "mean_targets": 0.9838961322403118,
-    "mean_receptions": 0.647962962962963,
-    "mean_receiving_yards": 7.38712962962963,
-    "sd_receiving_yards_within_player": 10.672197534825454,
-    "mean_td": 0.04555555555555556,
-    "other_mass_mean": 0.0037998748011887074,
-    "appearance_mean": 0.4064140319824219
-   },
-   "publication_gate": "FAIL[TEST_ONLY_DATA_IN_PRODUCTION_PATH]"
-  },
-  {
-   "game_id": "2026_01_BUF_HOU",
-   "n_players": 48,
-   "layers": {
-    "team_environment": "PASS[TEAM_VOLUME_OK]",
-    "appearance": "PASS[APPEARANCE_OK]",
-    "participation": "PASS[PARTICIPATION_OK]",
-    "targets_carries": "PASS[TARGETS_CARRIES_OK]",
-    "receiving_conversion": "PASS[CONVERSION_OK]",
-    "td_layer": "PASS[TD_LAYER_OK]"
-   },
-   "accounting": "PASS[NONQB_DRAW_ACCOUNTING_OK]",
-   "accounting_detail": "",
-   "chain": "PASS[NONQB_CHAIN_EXECUTED]",
-   "summary": {
-    "mean_targets": 1.1711628889468686,
-    "mean_receptions": 0.7784375,
-    "mean_receiving_yards": 8.8790625,
-    "sd_receiving_yards_within_player": 12.112291837852522,
-    "mean_td": 0.05510416666666667,
-    "other_mass_mean": 0.005582810845226049,
-    "appearance_mean": 0.41700810194015503
-   },
-   "publication_gate": "FAIL[TEST_ONLY_DATA_IN_PRODUCTION_PATH]"
-  },
-  {
-   "game_id": "2026_01_CHI_CAR",
-   "n_players": 50,
-   "layers": {
-    "team_environment": "PASS[TEAM_VOLUME_OK]",
-    "appearance": "PASS[APPEARANCE_OK]",
-    "participation": "PASS[PARTICIPATION_OK]",
-    "targets_carries": "PASS[TARGETS_CARRIES_OK]",
-    "receiving_conversion": "PASS[CONVERSION_OK]",
-    "td_layer": "PASS[TD_LAYER_OK]"
-   },
-   "accounting": "PASS[NONQB_DRAW_ACCOUNTING_OK]",
-   "accounting_detail": "",
-   "chain": "PASS[NONQB_CHAIN_EXECUTED]",
-   "summary": {
-    "mean_targets": 1.1158391178580749,
-    "mean_receptions": 0.7336,
-    "mean_receiving_yards": 8.2702,
-    "sd_receiving_yards_within_player": 11.273771548265929,
-    "mean_td": 0.054,
-    "other_mass_mean": 0.003957042936235666,
-    "appearance_mean": 0.39048540592193604
-   },
-   "publication_gate": "FAIL[TEST_ONLY_DATA_IN_PRODUCTION_PATH]"
-  },
-  {
-   "game_id": "2026_01_CLE_JAX",
-   "n_players": 47,
-   "layers": {
-    "team_environment": "PASS[TEAM_VOLUME_OK]",
-    "appearance": "PASS[APPEARANCE_OK]",
-    "participation": "PASS[PARTICIPATION_OK]",
-    "targets_carries": "PASS[TARGETS_CARRIES_OK]",
-    "receiving_conversion": "PASS[CONVERSION_OK]",
-    "td_layer": "PASS[TD_LAYER_OK]"
-   },
-   "accounting": "PASS[NONQB_DRAW_ACCOUNTING_OK]",
-   "accounting_detail": "",
-   "chain": "PASS[NONQB_CHAIN_EXECUTED]",
-   "summary": {
-    "mean_targets": 1.2283683133258396,
-    "mean_receptions": 0.8025531914893617,
-    "mean_receiving_yards": 9.042978723404255,
-    "sd_receiving_yards_within_player": 11.677298326273517,
-    "mean_td": 0.05553191489361702,
-    "other_mass_mean": 0.005913402885198593,
-    "appearance_mean": 0.431101530790329
-   },
-   "publication_gate": "FAIL[TEST_ONLY_DATA_IN_PRODUCTION_PATH]"
-  },
-  {
-   "game_id": "2026_01_DAL_NYG",
-   "n_players": 51,
-   "layers": {
-    "team_environment": "PASS[TEAM_VOLUME_OK]",
-    "appearance": "PASS[APPEARANCE_OK]",
-    "participation": "PASS[PARTICIPATION_OK]",
-    "targets_carries": "PASS[TARGETS_CARRIES_OK]",
-    "receiving_conversion": "PASS[CONVERSION_OK]",
-    "td_layer": "PASS[TD_LAYER_OK]"
-   },
-   "accounting": "PASS[NONQB_DRAW_ACCOUNTING_OK]",
-   "accounting_detail": "",
-   "chain": "PASS[NONQB_CHAIN_EXECUTED]",
-   "summary": {
-    "mean_targets": 1.1966174030237031,
-    "mean_receptions": 0.7916666666666666,
-    "mean_receiving_yards": 8.537647058823529,
-    "sd_receiving_yards_within_player": 11.187132925945068,
-    "mean_td": 0.053431372549019605,
-    "other_mass_mean": 0.005173498298972845,
-    "appearance_mean": 0.3872784674167633
-   },
-   "publication_gate": "FAIL[TEST_ONLY_DATA_IN_PRODUCTION_PATH]"
-  },
-  {
-   "game_id": "2026_01_DEN_KC",
-   "n_players": 52,
-   "layers": {
-    "team_environment": "PASS[TEAM_VOLUME_OK]",
-    "appearance": "PASS[APPEARANCE_OK]",
-    "participation": "PASS[PARTICIPATION_OK]",
-    "targets_carries": "PASS[TARGETS_CARRIES_OK]",
-    "receiving_conversion": "PASS[CONVERSION_OK]",
-    "td_layer": "PASS[TD_LAYER_OK]"
-   },
-   "accounting": "PASS[NONQB_DRAW_ACCOUNTING_OK]",
-   "accounting_detail": "",
-   "chain": "PASS[NONQB_CHAIN_EXECUTED]",
-   "summary": {
-    "mean_targets": 1.1943292256572917,
-    "mean_receptions": 0.8028846153846154,
-    "mean_receiving_yards": 8.726442307692308,
-    "sd_receiving_yards_within_player": 11.761637283167643,
-    "mean_td": 0.06096153846153846,
-    "other_mass_mean": 0.0061896853148937225,
-    "appearance_mean": 0.4208677411079407
-   },
-   "publication_gate": "FAIL[TEST_ONLY_DATA_IN_PRODUCTION_PATH]"
-  },
-  {
-   "game_id": "2026_01_GB_MIN",
-   "n_players": 54,
-   "layers": {
-    "team_environment": "PASS[TEAM_VOLUME_OK]",
-    "appearance": "PASS[APPEARANCE_OK]",
-    "participation": "PASS[PARTICIPATION_OK]",
-    "targets_carries": "PASS[TARGETS_CARRIES_OK]",
-    "receiving_conversion": "PASS[CONVERSION_OK]",
-    "td_layer": "PASS[TD_LAYER_OK]"
-   },
-   "accounting": "PASS[NONQB_DRAW_ACCOUNTING_OK]",
-   "accounting_detail": "",
-   "chain": "PASS[NONQB_CHAIN_EXECUTED]",
-   "summary": {
-    "mean_targets": 0.8881643176678493,
-    "mean_receptions": 0.6034259259259259,
-    "mean_receiving_yards": 6.8079629629629625,
-    "sd_receiving_yards_within_player": 10.036622020146611,
-    "mean_td": 0.03972222222222222,
-    "other_mass_mean": 0.0035046988632529974,
-    "appearance_mean": 0.41847240924835205
-   },
-   "publication_gate": "FAIL[TEST_ONLY_DATA_IN_PRODUCTION_PATH]"
-  },
-  {
-   "game_id": "2026_01_MIA_LV",
-   "n_players": 56,
-   "layers": {
-    "team_environment": "PASS[TEAM_VOLUME_OK]",
-    "appearance": "PASS[APPEARANCE_OK]",
-    "participation": "PASS[PARTICIPATION_OK]",
-    "targets_carries": "PASS[TARGETS_CARRIES_OK]",
-    "receiving_conversion": "PASS[CONVERSION_OK]",
-    "td_layer": "PASS[TD_LAYER_OK]"
-   },
-   "accounting": "PASS[NONQB_DRAW_ACCOUNTING_OK]",
-   "accounting_detail": "",
-   "chain": "PASS[NONQB_CHAIN_EXECUTED]",
-   "summary": {
-    "mean_targets": 0.9253401602623166,
-    "mean_receptions": 0.6161607142857143,
-    "mean_receiving_yards": 6.3219642857142855,
-    "sd_receiving_yards_within_player": 9.399212648590975,
-    "mean_td": 0.03955357142857143,
-    "other_mass_mean": 0.0035464721731841564,
-    "appearance_mean": 0.39181360602378845
-   },
-   "publication_gate": "FAIL[TEST_ONLY_DATA_IN_PRODUCTION_PATH]"
-  },
-  {
-   "game_id": "2026_01_NE_SEA",
-   "n_players": 51,
-   "layers": {
-    "team_environment": "PASS[TEAM_VOLUME_OK]",
-    "appearance": "PASS[APPEARANCE_OK]",
-    "participation": "PASS[PARTICIPATION_OK]",
-    "targets_carries": "PASS[TARGETS_CARRIES_OK]",
-    "receiving_conversion": "PASS[CONVERSION_OK]",
-    "td_layer": "PASS[TD_LAYER_OK]"
-   },
-   "accounting": "PASS[NONQB_DRAW_ACCOUNTING_OK]",
-   "accounting_detail": "",
-   "chain": "PASS[NONQB_CHAIN_EXECUTED]",
-   "summary": {
-    "mean_targets": 1.081854073033885,
-    "mean_receptions": 0.7300980392156863,
-    "mean_receiving_yards": 8.191764705882353,
-    "sd_receiving_yards_within_player": 10.947593601596457,
-    "mean_td": 0.04980392156862745,
-    "other_mass_mean": 0.00531970988959074,
-    "appearance_mean": 0.4001043736934662
-   },
-   "publication_gate": "FAIL[TEST_ONLY_DATA_IN_PRODUCTION_PATH]"
-  },
-  {
-   "game_id": "2026_01_NO_DET",
-   "n_players": 50,
-   "layers": {
-    "team_environment": "PASS[TEAM_VOLUME_OK]",
-    "appearance": "PASS[APPEARANCE_OK]",
-    "participation": "PASS[PARTICIPATION_OK]",
-    "targets_carries": "PASS[TARGETS_CARRIES_OK]",
-    "receiving_conversion": "PASS[CONVERSION_OK]",
-    "td_layer": "PASS[TD_LAYER_OK]"
-   },
-   "accounting": "PASS[NONQB_DRAW_ACCOUNTING_OK]",
-   "accounting_detail": "",
-   "chain": "PASS[NONQB_CHAIN_EXECUTED]",
-   "summary": {
-    "mean_targets": 1.3501725015973591,
-    "mean_receptions": 0.9251,
-    "mean_receiving_yards": 9.9444,
-    "sd_receiving_yards_within_player": 12.060233421446856,
-    "mean_td": 0.0643,
-    "other_mass_mean": 0.003925707191228867,
-    "appearance_mean": 0.4019198715686798
-   },
-   "publication_gate": "FAIL[TEST_ONLY_DATA_IN_PRODUCTION_PATH]"
-  },
-  {
-   "game_id": "2026_01_NYJ_TEN",
-   "n_players": 48,
-   "layers": {
-    "team_environment": "PASS[TEAM_VOLUME_OK]",
-    "appearance": "PASS[APPEARANCE_OK]",
-    "participation": "PASS[PARTICIPATION_OK]",
-    "targets_carries": "PASS[TARGETS_CARRIES_OK]",
-    "receiving_conversion": "PASS[CONVERSION_OK]",
-    "td_layer": "PASS[TD_LAYER_OK]"
-   },
-   "accounting": "PASS[NONQB_DRAW_ACCOUNTING_OK]",
-   "accounting_detail": "",
-   "chain": "PASS[NONQB_CHAIN_EXECUTED]",
-   "summary": {
-    "mean_targets": 1.274084988636768,
-    "mean_receptions": 0.8247916666666667,
-    "mean_receiving_yards": 8.685729166666667,
-    "sd_receiving_yards_within_player": 11.52315181575276,
-    "mean_td": 0.056666666666666664,
-    "other_mass_mean": 0.004794059321284294,
-    "appearance_mean": 0.4369673728942871
-   },
-   "publication_gate": "FAIL[TEST_ONLY_DATA_IN_PRODUCTION_PATH]"
-  },
-  {
-   "game_id": "2026_01_SF_LA",
-   "n_players": 45,
-   "layers": {
-    "team_environment": "PASS[TEAM_VOLUME_OK]",
-    "appearance": "PASS[APPEARANCE_OK]",
-    "participation": "PASS[PARTICIPATION_OK]",
-    "targets_carries": "PASS[TARGETS_CARRIES_OK]",
-    "receiving_conversion": "PASS[CONVERSION_OK]",
-    "td_layer": "PASS[TD_LAYER_OK]"
-   },
-   "accounting": "PASS[NONQB_DRAW_ACCOUNTING_OK]",
-   "accounting_detail": "",
-   "chain": "PASS[NONQB_CHAIN_EXECUTED]",
-   "summary": {
-    "mean_targets": 1.480294099374696,
-    "mean_receptions": 1.013111111111111,
-    "mean_receiving_yards": 11.664666666666667,
-    "sd_receiving_yards_within_player": 13.40717664157005,
-    "mean_td": 0.06844444444444445,
-    "other_mass_mean": 0.005333413369953632,
-    "appearance_mean": 0.43290916085243225
-   },
-   "publication_gate": "FAIL[TEST_ONLY_DATA_IN_PRODUCTION_PATH]"
-  },
-  {
-   "game_id": "2026_01_TB_CIN",
-   "n_players": 47,
-   "layers": {
-    "team_environment": "PASS[TEAM_VOLUME_OK]",
-    "appearance": "PASS[APPEARANCE_OK]",
-    "participation": "PASS[PARTICIPATION_OK]",
-    "targets_carries": "PASS[TARGETS_CARRIES_OK]",
-    "receiving_conversion": "PASS[CONVERSION_OK]",
-    "td_layer": "PASS[TD_LAYER_OK]"
-   },
-   "accounting": "PASS[NONQB_DRAW_ACCOUNTING_OK]",
-   "accounting_detail": "",
-   "chain": "PASS[NONQB_CHAIN_EXECUTED]",
-   "summary": {
-    "mean_targets": 1.4090107395292046,
-    "mean_receptions": 0.9491489361702128,
-    "mean_receiving_yards": 10.548404255319149,
-    "sd_receiving_yards_within_player": 12.763197230080939,
-    "mean_td": 0.06063829787234042,
-    "other_mass_mean": 0.006247343961149454,
-    "appearance_mean": 0.42468470335006714
-   },
-   "publication_gate": "FAIL[TEST_ONLY_DATA_IN_PRODUCTION_PATH]"
-  },
-  {
-   "game_id": "2026_01_WAS_PHI",
-   "n_players": 49,
-   "layers": {
-    "team_environment": "PASS[TEAM_VOLUME_OK]",
-    "appearance": "PASS[APPEARANCE_OK]",
-    "participation": "PASS[PARTICIPATION_OK]",
-    "targets_carries": "PASS[TARGETS_CARRIES_OK]",
-    "receiving_conversion": "PASS[CONVERSION_OK]",
-    "td_layer": "PASS[TD_LAYER_OK]"
-   },
-   "accounting": "PASS[NONQB_DRAW_ACCOUNTING_OK]",
-   "accounting_detail": "",
-   "chain": "PASS[NONQB_CHAIN_EXECUTED]",
-   "summary": {
-    "mean_targets": 0.9988449295601427,
-    "mean_receptions": 0.6622448979591836,
-    "mean_receiving_yards": 6.881428571428572,
-    "sd_receiving_yards_within_player": 10.008474724973741,
-    "mean_td": 0.04724489795918367,
-    "other_mass_mean": 0.004262357484549284,
-    "appearance_mean": 0.36007454991340637
-   },
-   "publication_gate": "FAIL[TEST_ONLY_DATA_IN_PRODUCTION_PATH]"
+    "targets": {
+     "mean": 1.3656827280783823,
+     "sd_within_player": 1.0107817283113625
+    },
+    "carries": {
+     "mean": 4.63492407048633,
+     "sd_within_player": 2.5660336518728353
+    },
+    "receptions": {
+     "mean": 0.9123404255319149,
+     "sd_within_player": 0.861309571881172
+    },
+    "receiving_yards": {
+     "mean": 9.873617021276596,
+     "sd_within_player": 12.307311175078343
+    },
+    "receiving_td": {
+     "mean": 0.05936170212765957,
+     "sd_within_player": 0.2169499692568988
+    },
+    "rush_td": {
+     "mean": 0.12545454545454546,
+     "sd_within_player": 0.3412224227781722
+    }
+   }
   }
  ],
  "layers": {
-  "p4c_params": "PASS[P4C_PARAMS_OK]",
-  "class_point_forecast": "PASS[CLASS_POINT_FORECAST_OK]",
+  "slate_fits": "PASS[SLATE_FITS_OK]",
+  "qb_layer": "PASS[QB_SLATE_OK]"
+ },
+ "stubbed_input": "injuries_2026 ONLY",
+ "everything_else": "real captured inputs and frozen fits",
+ "fixture_provenance": "engine_rehearsal.stub_injuries(): every rostered player entered as a full practice participant with no game-status designation. No real 2026 injury information was used or invented.",
+ "publication": "BLOCKED[NFL1_NOT_AUTHORIZED]",
+ "g0a_effect": "NONE -- a TEST_ONLY run cannot satisfy G0A",
+ "prospective_validation": "NONE -- this is not prospective evidence",
+ "n_players_on_slate": 801,
+ "position_counts": {
+  "WR": 381,
+  "RB": 213,
+  "TE": 207
+ },
+ "fit_states": {
+  "p4c_params_targets": "PASS[P4C_PARAMS_OK]",
+  "p4c_params_carries": "PASS[P4C_PARAMS_OK]",
+  "C_targets": "PASS[CLASS_POINT_FORECAST_OK]",
+  "C_carries": "PASS[CLASS_POINT_FORECAST_OK]",
   "participation_prior": "PASS[PARTICIPATION_PRIOR_OK]",
   "receiving_priors": "PASS[RECEIVING_PRIORS_OK]",
-  "td_priors": "PASS[TD_PRIORS_OK]"
+  "td_priors_rec": "PASS[TD_PRIORS_OK]",
+  "td_priors_rush": "PASS[TD_PRIORS_OK]"
  },
- "accounting": {
-  "n_games_reconciled": 16,
-  "n_games_failing": 0,
-  "worst": {
-   "share_simplex_closure_maxdev": 2.0256265997886658e-07,
-   "player_opportunity_within_team_maxreldev": 2.0256265994741235e-07
-  },
-  "violations": {
-   "share_non_negative_violations": 0,
-   "receptions_within_targets_violations": 0,
-   "receiving_td_within_receptions_violations": 0,
-   "zero_receptions_implies_zero_yards_violations": 0,
-   "allocation_only_when_available_violations": 0
-  },
-  "total_cells_checked": 160200,
-  "n_negative_yard_cells": 1857,
-  "negative_yards_note": "reported, never refused: RC1 resamples real per-catch gains and a reception for a loss is ordinary football",
-  "identities": [
-   "share_simplex_closure",
-   "share_non_negative",
-   "player_opportunity_within_team",
-   "receptions_within_targets",
-   "receiving_td_within_receptions",
-   "zero_receptions_implies_zero_yards",
-   "allocation_only_when_available"
-  ]
- },
- "n_players_on_slate": 801,
  "fit_evidence": {
-  "p4c_params": {
+  "p4c_params_targets": {
    "cached": false,
    "spec_version": "p4c-system-C-frozen-params-1",
    "alloc_class": "targets",
@@ -483,7 +372,35 @@
    },
    "alpha0": 17.67423679991533
   },
-  "class_point_forecast": {
+  "p4c_params_carries": {
+   "cached": false,
+   "spec_version": "p4c-system-C-frozen-params-1",
+   "alloc_class": "carries",
+   "trained_on_seasons_before": 2026,
+   "n_add_pool": {
+    "RB": 9683
+   },
+   "n_mass_pool": 2718,
+   "mass_mean": 0.19887535274028778,
+   "mass_pool_seasons": [
+    2021,
+    2022,
+    2023,
+    2024,
+    2025
+   ],
+   "sigma_lr": {
+    "RB": 0.79282
+   },
+   "sigma_lg": {
+    "RB": 1.083198
+   },
+   "q_zero": {
+    "RB": 0.190024
+   },
+   "alpha0": 6.664756280108605
+  },
+  "C_targets": {
    "spec_version": "p4c-system-C-frozen-params-1",
    "alloc_class": "targets",
    "n_players": 801,
@@ -495,12 +412,23 @@
     "RB": 0.062102
    }
   },
+  "C_carries": {
+   "spec_version": "p4c-system-C-frozen-params-1",
+   "alloc_class": "carries",
+   "n_players": 213,
+   "ordinal_cut": 202601,
+   "n_on_positional_prior": 63,
+   "positional_prior": {
+    "RB": 0.27019
+   }
+  },
   "participation_prior": {
    "spec_version": "participation-s2-ewma_hl2-frozen-1",
    "estimator": "ewma_hl2",
    "n_players": 801,
    "n_history_rows": 34141,
    "ordinal_cut": 202601,
+   "newest_history_ordinal": 202518,
    "n_on_positional_mean": 285,
    "positional_mean": {
     "WR": 0.567803,
@@ -528,7 +456,7 @@
    "k_shrink": 4.0,
    "trained_on_seasons_before": 2026
   },
-  "td_priors": {
+  "td_priors_rec": {
    "cached": false,
    "spec_version": "td2-B_pos-frozen-1",
    "baseline": "B_pos",
@@ -550,17 +478,142 @@
     "TE": 1190
    },
    "trained_on_seasons_before": 2026
+  },
+  "td_priors_rush": {
+   "cached": false,
+   "spec_version": "td2-B_pos-frozen-1",
+   "baseline": "B_pos",
+   "kind": "rush",
+   "B_league": 0.035715,
+   "B_pos": {
+    "RB": 0.031611,
+    "WR": 0.043224,
+    "QB": 0.058481,
+    "TE": 0.086154
+   },
+   "n_opportunities": {
+    "RB": 68742,
+    "WR": 2568,
+    "QB": 10824,
+    "TE": 325
+   },
+   "n_td": {
+    "RB": 2173,
+    "WR": 111,
+    "QB": 633,
+    "TE": 28
+   },
+   "trained_on_seasons_before": 2026
   }
  },
- "layer_state_distribution": {
-  "appearance: PASS[APPEARANCE_OK]": 16,
-  "participation: PASS[PARTICIPATION_OK]": 16,
-  "receiving_conversion: PASS[CONVERSION_OK]": 16,
-  "targets_carries: PASS[TARGETS_CARRIES_OK]": 16,
-  "td_layer: PASS[TD_LAYER_OK]": 16,
-  "team_environment: PASS[TEAM_VOLUME_OK]": 16
+ "n_qb_on_slate": 119,
+ "game_readiness": {
+  "2026_01_ARI_LAC": "INJURY_REPORT_NOT_YET_FILED",
+  "2026_01_ATL_PIT": "INJURY_REPORT_NOT_YET_FILED",
+  "2026_01_BAL_IND": "INJURY_REPORT_NOT_YET_FILED",
+  "2026_01_BUF_HOU": "INJURY_REPORT_NOT_YET_FILED",
+  "2026_01_CHI_CAR": "INJURY_REPORT_NOT_YET_FILED",
+  "2026_01_CLE_JAX": "INJURY_REPORT_NOT_YET_FILED",
+  "2026_01_DAL_NYG": "INJURY_REPORT_NOT_YET_FILED",
+  "2026_01_DEN_KC": "INJURY_REPORT_NOT_YET_FILED",
+  "2026_01_GB_MIN": "INJURY_REPORT_NOT_YET_FILED",
+  "2026_01_MIA_LV": "INJURY_REPORT_NOT_YET_FILED",
+  "2026_01_NE_SEA": "INJURY_REPORT_INCOMPLETE",
+  "2026_01_NO_DET": "INJURY_REPORT_NOT_YET_FILED",
+  "2026_01_NYJ_TEN": "INJURY_REPORT_NOT_YET_FILED",
+  "2026_01_SF_LA": "INJURY_REPORT_NOT_YET_FILED",
+  "2026_01_TB_CIN": "INJURY_REPORT_NOT_YET_FILED",
+  "2026_01_WAS_PHI": "INJURY_REPORT_NOT_YET_FILED"
  },
- "all_games_complete": true,
- "n_games": 16,
- "elapsed_s": 450.7
+ "n_games_ready": 0,
+ "layer_state_distribution": {
+  "appearance: PASS[APPEARANCE_OK]": 2,
+  "carries: PASS[TARGETS_CARRIES_OK]": 2,
+  "participation: PASS[PARTICIPATION_OK]": 2,
+  "receiving_conversion: PASS[CONVERSION_OK]": 2,
+  "receiving_td: PASS[TD_LAYER_OK]": 2,
+  "rushing_conversion: DEFERRED[RUSHING_CONVERSION_CONTROL_UNDEFINED]": 2,
+  "rushing_td: PASS[RUSHING_TD_OK]": 2,
+  "targets_carries: PASS[TARGETS_CARRIES_OK]": 2,
+  "team_environment: PASS[TEAM_VOLUME_OK]": 2
+ },
+ "n_games": 2,
+ "n_player_records": 108,
+ "coverage": {
+  "n_records": 108,
+  "by_position": {
+   "WR": 48,
+   "RB": 25,
+   "TE": 26,
+   "QB": 9
+  },
+  "metrics_present": {
+   "WR": {
+    "appearance": 48,
+    "participation": 48,
+    "targets": 48,
+    "receptions": 48,
+    "receiving_yards": 48,
+    "receiving_td": 48
+   },
+   "RB": {
+    "appearance": 25,
+    "participation": 25,
+    "targets": 25,
+    "receptions": 25,
+    "receiving_yards": 25,
+    "receiving_td": 25,
+    "carries": 25,
+    "rushing_td": 25
+   },
+   "TE": {
+    "appearance": 26,
+    "participation": 26,
+    "targets": 26,
+    "receptions": 26,
+    "receiving_yards": 26,
+    "receiving_td": 26
+   },
+   "QB": {
+    "dropbacks": 9,
+    "attempts": 9,
+    "completions": 9,
+    "passing_yards": 9,
+    "passing_td": 9,
+    "interceptions": 9,
+    "sacks": 9,
+    "rush_opportunity": 9,
+    "rushing_yards": 9,
+    "rushing_td": 9
+   }
+  },
+  "metrics_absent": {
+   "RB": {
+    "rushing_yards": 25
+   }
+  }
+ },
+ "accounting": {
+  "n_games": 2,
+  "receiving_ok": 2,
+  "rushing_ok": 0,
+  "total_cells_checked": 12400,
+  "violations": {
+   "share_non_negative_violations": 0,
+   "receptions_within_targets_violations": 0,
+   "receiving_td_within_receptions_violations": 0,
+   "zero_receptions_implies_zero_yards_violations": 0,
+   "allocation_only_when_available_violations": 0,
+   "rushing_td_within_carries_violations": 0,
+   "n_td_without_a_carry": 0
+  },
+  "worst": {
+   "share_simplex_closure_maxdev": 1.5305704437196255e-07,
+   "player_opportunity_within_team_maxreldev": 1.5305704427875282e-07,
+   "team_carry_closure_maxdev": 1.2293457984924316e-07
+  },
+  "n_negative_receiving_yard_cells": 102,
+  "rushing_yards_status": "NOT_APPLICABLE -- no governed control"
+ },
+ "elapsed_s": 80.5
 }
