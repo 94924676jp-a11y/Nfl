@@ -1302,3 +1302,66 @@ per-draw closure, so it is rejected as a closure mechanism.
 
 **0 production files changed.** Suite 42 modules, 451 functions, 2,638 checks,
 0 failing.
+
+---
+
+## 2026-09-09 — OWN-9: A1 single-owner rushing is valid
+
+**`OWN9_A1_SINGLE_OWNER_RUSHING_VALID`.** Research only, 0 production files
+changed, not promoted.
+
+### Part 0 — an engineering guard, not a convention
+
+`nfl/tools/nflwrite.py` resolves the repo root from its OWN `__file__`, never
+from the shell, requires the NFL markers, refuses a root carrying another
+project's markers, resolves symlinks and `..` before the containment test, and
+refuses a zero-byte payload. Verified from `/tmp`: every escape refused, a
+legitimate write accepted. 21 checks. Every OWN-9 artifact went through it.
+
+### A1 closes; A0 does not
+
+652,000 draws per arm: **A0 violates closure in 535,354 (82.1%), A1 in 0.**
+Zero negatives either arm; designed QB rush exceeds its budget 15 times under
+A0 and 0 under A1. The frozen categories close in the DATA first: 3,230/3,230,
+max residual 0.
+
+### A1 wins CRPS on every category
+
+designed QB rush **1.3790 → 1.0083 (−26.9%)**, RB **1.7227 → 1.3970 (−18.9%)**,
+and small gains on fringe, WR, TE, kneel.
+
+### The sign defect is repaired — the test that mattered
+
+| designed QB rush vs | observed | A0 | A1 |
+|---|---|---|---|
+| team carries | **+0.3140** | **−0.4115** | **+0.5070** |
+| dropbacks | **−0.1521** | **+0.9724** | **−0.2651** |
+
+A0 backwards on both; A1 correct on both. **Caveat: A1 overshoots the
+magnitude** (+0.507 vs +0.314) because it draws designed rushes as a share of
+the budget, so the coupling is mechanical. Right direction, too confident about
+strength — A2's territory.
+
+### Closure did not cost dispersion, it improved it
+
+designed QB rush: observed sd **2.7751**, A0 **1.3574** (half the truth, zero
+mass 0.179 against 0.367), A1 **2.6516** with p95 exact and zero mass 0.398.
+
+**A methodological correction made before reporting:** the first diagnostic
+summarised per-team-game predictive MEANS and compared them to realised
+outcomes — a distribution of means has almost no zero mass and far less spread,
+which would have flattered both arms. Draws are now pooled.
+
+### Part D — kneels are representable
+
+Not `A1_KNEEL_MODEL_UNDEFINED`. The P4C-style mechanism represents them as an
+explicit category: mean 0.8170 against 0.7706, zero mass 0.5971 against 0.5509,
+over-dispersed tail (sd 1.33 against 1.04). No new estimator class.
+
+### Limits that belong with the verdict
+
+Budgets are oracled identically for both arms, so this validates the ALLOCATION
+architecture, not a whole-forecast gain. A1 over-couples. Development evidence
+rejects, never promotes.
+
+Suite 43 modules, 457 functions, 2,659 checks, 0 failing.
