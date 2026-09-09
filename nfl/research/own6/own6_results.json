@@ -1,0 +1,87 @@
+{
+  "A_freeze": {
+    "layers.py": "4d4b609a50f06f0236a549cc2e9c366c",
+    "p4c_build.py": "831cce1a3d68461c9281430e1f7f0f6c",
+    "p4c_lib.py": "f61f76e53850c1d05f0a02cbdab03d20",
+    "p4c_params.py": "6d562a4c968379e669f81d76000ace9a"
+  },
+  "A_rng_reproducibility": {
+    "PYTHONHASHSEED": null,
+    "consequence": "a cross-process \"same seed\" comparison of this layer compares RNG streams, not the thing under test",
+    "finding": "Python randomises str hashing per process and PYTHONHASHSEED is unset, so the allocation draw differs between processes at identical seed. Measured directly: three processes gave three different share matrices and other masses 0.005328 / 0.006891 / 0.004916 on one slate. Every arm here therefore runs in ONE process.",
+    "hash_carries_this_process": 1736,
+    "hash_targets_this_process": 2209,
+    "seed_expression": "np.random.default_rng([seed, hash(cls) % 9973])"
+  },
+  "C_diagnostics": {
+    "carries": {
+      "arms": {
+        "C0": {
+          "closure_exact": true,
+          "max_abs_closure_error": 2.38419e-07,
+          "mean_modelled_mass": 0.891489,
+          "mean_other_mass": 0.108511,
+          "player_share_p99": 0.455835,
+          "zero_share_fraction": 0.170366
+        },
+        "C1": {
+          "closure_exact": true,
+          "max_abs_closure_error": 2.08616e-07,
+          "mean_modelled_mass": 0.811104,
+          "mean_other_mass": 0.188896,
+          "player_share_p99": 0.441828,
+          "zero_share_fraction": 0.170366
+        }
+      },
+      "historical_comparator": {
+        "QB": 0.1568,
+        "TE": 0.0038,
+        "WR": 0.0302,
+        "modelled_RB": 0.8082,
+        "other_non_RB": 0.1918
+      },
+      "n_captures": 4,
+      "per_draw_order_preserved": true
+    },
+    "targets": {
+      "arms": {
+        "C0": {
+          "closure_exact": true,
+          "max_abs_closure_error": 2.38419e-07,
+          "mean_modelled_mass": 0.994712,
+          "mean_other_mass": 0.005288,
+          "player_share_p99": 0.152419,
+          "zero_share_fraction": 0.209841
+        },
+        "C1": {
+          "closure_exact": true,
+          "max_abs_closure_error": 2.68221e-07,
+          "mean_modelled_mass": 0.987748,
+          "mean_other_mass": 0.012252,
+          "player_share_p99": 0.152159,
+          "zero_share_fraction": 0.209841
+        }
+      },
+      "historical_comparator": {
+        "modelled_WR_TE_RB": null,
+        "other": null
+      },
+      "n_captures": 4,
+      "per_draw_order_preserved": true
+    }
+  },
+  "D_qb_rush_containment": {
+    "historical_qb_share_excl_kneels": 0.1333,
+    "historical_qb_share_incl_kneels": 0.1568,
+    "note": "evidence, never a fitting target",
+    "qb_rush_opportunity": 4.2445,
+    "qb_share_of_team_carries": 0.1526,
+    "team_carries": 27.8154,
+    "team_games": 8
+  },
+  "TEST_ONLY": true,
+  "artifact": "OWN6_P4C_UNITS_RECTIFICATION",
+  "games": 4,
+  "n_draws": 100,
+  "production_modified": false
+}

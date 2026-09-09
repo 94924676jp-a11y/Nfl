@@ -1126,3 +1126,69 @@ unreachable and be removed.
 1. Owner decision on the P4C normalisation repair (both simplexes).
 2. Kneels are owned by nobody — 0.7746/team-game inside D1's carry budget.
 3. Then the W1 rehearsal rerun and the passing-TD question.
+
+---
+
+## 2026-09-09 — OWN-6: P4C units, and a seed that is not a seed
+
+**Verdict: `P4C_UNITS_FIX_NO_REFIT_REQUIRED`.** Production untouched (0 files).
+
+### The fit was already written to the corrected contract
+
+`allocate` appears in `p4c_build.py` **once, in a comment**. `fit_params`
+estimates every parameter directly from realised shares — no loss, no
+optimisation, no allocator in the path — so a refit under C1 returns
+byte-identical parameters. **C2 is a formality, not an experiment.**
+
+And `alpha0`, the one fitted quantity that references a normalisation at all, is
+estimated with `scale = (1.0 - mass_mean) / Σ_C` — **that is C1 exactly**,
+written into the frozen fit. The allocator is the piece that diverged.
+
+**`W` did not absorb the dilution.** If it had, C1 would overshoot; it lands.
+
+### Three arms on one captured draw
+
+| carries | C0 | **C1** | historical |
+|---|---|---|---|
+| modelled (RB) mass | 0.891489 | **0.811104** | **0.8082** |
+| other mass | 0.108511 | **0.188896** | **0.1918** |
+
+| targets | C0 | **C1** | fitted mass_mean |
+|---|---|---|---|
+| other mass | 0.005288 | **0.012252** | **0.0113** |
+
+Both arms close exactly; zero-share fractions identical; p99 essentially
+unchanged; **per-draw ordering preserved**. The receiving simplex is diluted by
+the same defect but only by **0.7pp of team targets**, and C1 moves it toward
+its own fit rather than harming it.
+
+QB rush needs **0.1526** of team carries; C0's container holds 0.1085 and cannot
+fit it, C1's holds **0.1889** and does, leaving 0.0363 against a historical
+WR+TE of 0.0340.
+
+### A separate defect that blocks the Part A freeze
+
+`layers.targets_carries:200` seeds with `[seed, hash(cls) % 9973]`. Python
+randomises str hashing per process and `PYTHONHASHSEED` is unset. Three
+processes, identical inputs and seed, gave three different share matrices and
+other masses **0.005328 / 0.006891 / 0.004916**.
+
+**The allocation layer is not reproducible across processes.** Current outputs
+cannot be frozen as numbers, and any cross-process "same seed" comparison of
+this layer compares RNG streams. Every arm here ran in one process for that
+reason. Arguably more urgent than the units fix, because it makes before/after
+evidence about the units fix unverifiable by anyone else.
+
+### My own error, corrected before reporting
+
+The first run split captures by modelled-row count and mislabelled 7 of 8 — a
+game with few receivers can have fewer target rows than another has carry rows.
+The class is now captured from `gen_weights`, which receives it, and paired by
+call order.
+
+### Recommended, not applied
+
+`S = (W*A) * (1 - w_other) / Σ(W*A);  other = w_other`. Not applied: the
+experiment captured production's inputs without modifying it, so the repair is
+not mechanically unavoidable, and `p4c_lib` is frozen. Owner decision, together
+with the RNG defect and the unowned kneels (0.7746/team-game).
