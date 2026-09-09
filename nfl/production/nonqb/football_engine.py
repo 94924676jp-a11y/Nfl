@@ -40,6 +40,7 @@ from nfl.production.nonqb import accounting as ACC                # noqa: E402
 from nfl.production.nonqb import frozen_priors as FP              # noqa: E402
 from nfl.production.nonqb import layers as LY                     # noqa: E402
 from nfl.production.nonqb import p4c_params as P4                 # noqa: E402
+from nfl.production.nonqb import qb_allocation as QA               # noqa: E402
 from nfl.production.nonqb import participation_prior as PP        # noqa: E402
 from nfl.production.nonqb import player_record as PR              # noqa: E402
 
@@ -230,6 +231,42 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
         receiving_yards=cv.value['receiving_yards'])
     g['accounting']['receiving'] = f'{rec_acc.state.value}[{rec_acc.code}]'
     qb_rush, qb_records = None, []
+    if qb is not None and qb.get('allocation'):
+        # THE COMPOSITION W2 SECTION 7.1 ALREADY SPECIFIES:
+        #     QB dropbacks = team dropbacks x QB dropback share
+        # QB V1 forecasts a passer's line CONDITIONAL ON BEING THE PRIMARY
+        # PASSER. The allocation supplies the conditioning it was always
+        # missing. This is composition, not a replacement of a frozen model,
+        # and the rate-type outputs are untouched because every count scales by
+        # the same factor.
+        D = qb['draws']
+        alloc = qb['allocation']
+        scaled = {k: np.array(v, float) for k, v in D.items()}
+        applied = 0
+        for t in teams:
+            a = alloc.get(t)
+            if a is None:
+                continue
+            tdb = np.asarray(tv.value[('team_dropbacks_part', t)], float)
+            pos_in_alloc = {pid: i for i, pid in enumerate(a['pids'])}
+            for i in qb['index_by_team'].get(t, []):
+                pid = qb['rows'][i]['gsis_id']
+                j = pos_in_alloc.get(pid)
+                if j is None:
+                    scaled['db'][i] = 0.0
+                    for f in QBV1.FIELDS:
+                        scaled[f][i] = 0.0
+                    continue
+                target = tdb * a['shares'][j]
+                drawn = np.asarray(D['db'][i], float)
+                with np.errstate(divide='ignore', invalid='ignore'):
+                    fac = np.where(drawn > 0, target / np.maximum(drawn, 1e-9),
+                                   0.0)
+                for f in QBV1.FIELDS:
+                    scaled[f][i] = np.asarray(D[f][i], float) * fac
+                applied += 1
+        qb = dict(qb, draws=scaled)
+        g['qb_allocation_applied'] = applied
     if qb is not None:
         idx = qb['index_by_team']
         D = qb['draws']

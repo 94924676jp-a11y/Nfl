@@ -114,6 +114,17 @@ def run(season=2026, week=1, m=200, seed=20260908, mode='test_only',
     qb = qo.value if qo.state is State.PASS else None
     if qb is None:
         out['qb_layer_detail'] = qo.detail[:250]
+    else:
+        teams_all = sorted({q['team'] for q in qbp})
+        qa = FE.QA.allocate(season, week, teams_all, qbp, m=m, seed=seed)
+        out['layers']['qb_allocation'] = f'{qa.state.value}[{qa.code}]'
+        if qa.state is State.PASS:
+            qb['allocation'] = qa.value
+            out['qb_allocation_evidence'] = {
+                k: v for k, v in qa.evidence.items()
+                if k not in ('value', 'n_qb_by_team', 'warnings')}
+        else:
+            out['qb_allocation_detail'] = qa.detail[:250]
 
     gr = RD.game_readiness(season, week)
     out['game_readiness'] = {g['game_id']: g['state'] for g in gr['games']}

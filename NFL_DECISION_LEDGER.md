@@ -221,3 +221,118 @@ question this sample cannot close.
 Nothing about the NFL engine. This does not displace the QB primary-passer gap,
 which remains the highest-value open item: a 2.17× team dropback error is worth
 more than any receiving-side feature this endpoint could supply.
+
+---
+
+## 2026-09-09 — QB3: the primary-passer defect, followed to its next link
+
+### Owner ruling received
+
+R4 accepted as `RUSHING_CONVERSION_CONTROL_UNDEFINED`; no rushing control to be
+adjudicated from contaminated P5A results. FTN-M10 accepted, not generalised.
+Priority approved: follow the 2.17× QB/team dropback incoherence.
+
+### The estimand was already specified and never built
+
+`W2_QB_PASSING.md` §7.2 names **"dropback share of team dropbacks"**, gives its
+denominator, says shrink toward 1.0 for a listed starter, and records it as
+*not measured here*. §7.1 gives the composition:
+`QB dropbacks = team dropbacks × QB dropback share`. So this was never a
+missing model — it was a specified layer nobody built, and the engine had been
+running without the conditioning its own architecture document requires.
+
+**It is not "pick the starter".** Measured on 3,230 team-games: 83.9% have
+exactly one QB taking a dropback, 72.1% of QB-games are exactly share 1.0 — but
+last game's primary takes **no snap at all in 11.9%** of games. A point
+forecast of 1.0 for the incumbent has MAE 0.155 and assigns probability zero to
+that 11.9%.
+
+### The depth chart: probed for leakage before it was used
+
+Depth charts are a lagging-file risk. Three probes, run before the design was
+fixed:
+
+| probe | result |
+|---|---|
+| week *w+1* chart predicts week *w* primary | 0.907 |
+| week *w* chart | 0.855 |
+| week *w* chart on **planned** primary changes (n=324) | **0.377** |
+| week *w* chart on **midgame** replacements (n=45) | **0.089** |
+
+A post-hoc file would be near 1.0 on the last two. It is genuinely pregame, and
+`w+1 > w` is just next week's chart knowing what happened. Incidental finding:
+`stage_a.build` computes `f_depth` and **no feature vector consumes it**.
+
+### Pre-registration first, then the estimator
+
+`predeclaration_qb3.md`, sha256 `be613926…`, committed before anything was
+built. Cells, mechanism, three baselines (including current production, so the
+size of the defect gets scored), CRPS with team-game clustered intervals, and
+the selection rule all fixed in advance.
+
+### Result — every declared baseline beaten, and closure exact
+
+3,851 QB-games, 3 walk-forward folds:
+
+| arm | CRPS | closure violation rate |
+|---|---|---|
+| **QB3** | **0.0945** | **0.0000** |
+| B0 incumbent at 1.0 | 0.1135 | 0.0288 |
+| B1 depth-chart QB1 at 1.0 | 0.1347 | 0.0080 |
+| B2 **current production** | 0.5842 | **0.9853** |
+
+All three contrasts meet the predeclared rule with clustered CIs excluding zero.
+
+In production, on the real 2026 week-1 slate: **QB-summed ÷ team dropbacks
+2.170 → 0.947**, and **5,930 → 0** violating cells out of 6,400. Across the
+full 16-game engine run, dropback violations are **0 in every game** and 11 of
+16 games now pass the QB team-volume identity outright.
+
+### Two mistakes of mine, both caught by the work
+
+1. **The first fit conditioned on having played.** I built the frame from
+   `panel_p3`, which holds only QBs who took a snap, and it reported
+   P(primary | rank 1, incumbent) = 0.976 against a true 0.905 and drove
+   P(share=0) to nearly zero. The frame has to be the **QB room** — the depth
+   chart — with zeros filled in. Production faces a room, not a list of men who
+   played.
+2. **An empty fold emitted `nan`.** The 2025 evaluation fold has no
+   depth-chart leaf (committed leaves stop at 2024; nflverse moved to daily
+   snapshots for 2025). The runner averaged it in as `nan`. It now refuses the
+   fold by name and the "3 of 4 seasons" the pre-registration asked for is
+   **not claimed** anywhere — it is 3 of 3 folds that exist.
+
+### Recorded but deliberately NOT fixed
+
+**Week 1 is structurally different.** The "previous game" is the prior season's
+week 18, when starters rest, so the incumbency feature disagrees with the depth
+chart on 46.9% of historical week-1 teams and 53.1% of the live 2026 slate,
+against 96.5% in weeks 2–4. Week-1 CRPS is not worse — the layer responds by
+being honestly uncertain — but the uncertainty is partly an artifact of the
+feature definition.
+
+The obvious repair (define the incumbent as the last game QB1 actually started)
+was **not implemented**: changing a feature after seeing results is tuning. It
+is the first candidate for a QB3b pre-registration.
+
+### The next link, and why I stopped at it
+
+**QB rushing opportunity is still not carved out of the team carry budget.**
+The P4C `carries` class allocates RB shares and its OTHER mass is drawn
+independently of the QB layer's rush opportunity. Scaling rush opportunity by
+the dropback factor moved the slate mean from 0.284 to **0.127** against a
+historical **0.157** — closer, but by a different route than the truth, and
+24 cells across 5 of 16 games still have the quarterbacks out-rushing their
+team.
+
+The fix is an **architecture** question, not an estimator one: whether QB rush
+opportunity should be carved out of team carries *before* the RB allocation
+runs, so the RB simplex is over the remaining budget. That changes the carries
+layer, and it is not something to half-implement.
+
+### Priority now
+
+1. **QB rush / team carry coupling** — the next link, above.
+2. **P5A rectification** to the predeclared experiment (owner-authorised as an
+   independent task when it becomes highest-value).
+3. **QB3b**: the week-1 incumbency definition.

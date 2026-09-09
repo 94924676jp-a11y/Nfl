@@ -339,8 +339,18 @@ def reconcile_rushing(carry_share, carry_other, team_carries,
         ev['qb_rush_contained_in_other_violations'] = bad
         ev['qb_rush_mean'] = float(Q.mean())
         ev['other_carry_mass_mean'] = float(other_carries.mean())
+        # A RATIO WITH A NEAR-ZERO DENOMINATOR IS NOT A DIAGNOSTIC. The first
+        # version divided by max(other, 1e-9) and reported 1.18e8, which tells
+        # a reader nothing except that the code did not look. The ratio is
+        # reported only over cells where the denominator is a real carry
+        # count, and the excluded cells are counted.
+        _live = other_carries > 0.5
         ev['qb_share_of_other_mean'] = (
-            float((Q / np.maximum(other_carries, 1e-9)).mean()))
+            float((Q[_live] / other_carries[_live]).mean()) if _live.any()
+            else None)
+        ev['cells_with_negligible_other_mass'] = int((~_live).sum())
+        ev['qb_rush_over_other_mean_excess'] = float(
+            np.maximum(Q - other_carries, 0.0).mean())
         if bad:
             viol.append(('qb_rush_contained_in_other', bad, float(over.max())))
 

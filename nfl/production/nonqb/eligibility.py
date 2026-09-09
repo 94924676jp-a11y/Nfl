@@ -46,6 +46,7 @@ LAYER_SUBSYSTEM = {
     'rushing_conversion': 'rushing_conversion',
     'td_layer': 'td_red_zone',
     'qb_layer': None,                       # QB V1: owner baseline selection
+    'qb_allocation': None,                  # QB3: candidate, not promoted
     'joint_accounting': 'joint_dependence',
 }
 
@@ -62,6 +63,8 @@ REQUIRED_INPUTS = {
     'rushing_conversion': ['targets_carries carry draws'],
     'td_layer': ['targets_carries / conversion opportunity'],
     'qb_layer': ['qb.pkl history', 'weekly_rosters'],
+    'qb_allocation': ['captured depth_charts (QB rank)',
+                      'panel history (previous primary passer)'],
     'joint_accounting': ['every layer above, on one draw index'],
 }
 
@@ -81,6 +84,7 @@ IMPLEMENTATION = {
     'rushing_conversion': ('NOT_IMPLEMENTED', None),
     'td_layer': ('IMPLEMENTED', 'nfl.production.nonqb.frozen_priors'),
     'qb_layer': ('IMPLEMENTED', 'nfl.production.qb_v1'),
+    'qb_allocation': ('IMPLEMENTED', 'nfl.production.nonqb.qb_allocation'),
     'joint_accounting': ('IMPLEMENTED', 'nfl.production.nonqb.accounting'),
 }
 
@@ -108,7 +112,12 @@ def matrix(input_states: dict | None = None) -> dict:
         research = s.get('knowledge')
         needs = REQUIRED_INPUTS.get(layer, [])
         missing = [n for n in needs if inp.get(n) == 'MISSING']
-        if sub is None:
+        if sub is None and layer == 'qb_allocation':
+            owner, publishable = 'CANDIDATE', False
+            reason = ('QB3 dropback allocation: evaluated walk-forward on '
+                      '2022-2024 DEVELOPMENT data. A candidate, not promoted, '
+                      'and PATH_C_STATE carries no subsystem for it.')
+        elif sub is None:
             owner, publishable = 'OWNER_BASELINE_SELECTION', False
             reason = ('QB V1 was accepted by the owner as a production '
                       'baseline selection, explicitly not a promotion')

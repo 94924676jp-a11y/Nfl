@@ -1,0 +1,136 @@
+{
+ "artifact": "QB3_RESULTS",
+ "prereg_sha256": "be61392619d45f3ad1936ef0512d203d9f415ba92e271aa6010281e707f05a9e",
+ "label": "EXPLORATORY -- 2022-2025 are development data. Nothing is promoted.",
+ "frame_rows": 6446,
+ "team_games": 2685,
+ "estimand": "s_dropbacks (QB share of team dropbacks)",
+ "seasons": {
+  "2022": {
+   "n_qb_games": 1280,
+   "n_team_games": 542,
+   "QB3": {
+    "crps": 0.09623502495938693,
+    "closure_error_mean": 3.9124095517233376e-17,
+    "closure_violation_rate": 0.0
+   },
+   "B0_incumbent": {
+    "crps": 0.11845369207674232,
+    "closure_error_mean": 0.023985239852398525,
+    "closure_violation_rate": 0.023985239852398525
+   },
+   "B1_depth_chart": {
+    "crps": 0.13029461857080685,
+    "closure_error_mean": 0.0036900369003690036,
+    "closure_violation_rate": 0.0036900369003690036
+   },
+   "B2_current_production": {
+    "crps": 0.5846724549113947,
+    "closure_error_mean": 1.3616236162361623,
+    "closure_violation_rate": 0.9833948339483395
+   }
+  },
+  "2023": {
+   "n_qb_games": 1290,
+   "n_team_games": 543,
+   "QB3": {
+    "crps": 0.09368573080435036,
+    "closure_error_mean": 5.847583518283513e-17,
+    "closure_violation_rate": 0.0
+   },
+   "B0_incumbent": {
+    "crps": 0.10909762712085083,
+    "closure_error_mean": 0.03130755064456722,
+    "closure_violation_rate": 0.03130755064456722
+   },
+   "B1_depth_chart": {
+    "crps": 0.13080870961181199,
+    "closure_error_mean": 0.009208103130755065,
+    "closure_violation_rate": 0.009208103130755065
+   },
+   "B2_current_production": {
+    "crps": 0.5883992760421642,
+    "closure_error_mean": 1.3756906077348066,
+    "closure_violation_rate": 0.9852670349907919
+   }
+  },
+  "2024": {
+   "n_qb_games": 1281,
+   "n_team_games": 544,
+   "QB3": {
+    "crps": 0.09351788775594574,
+    "closure_error_mean": 3.571489509364015e-17,
+    "closure_violation_rate": 0.0
+   },
+   "B0_incumbent": {
+    "crps": 0.11301392304282733,
+    "closure_error_mean": 0.03125,
+    "closure_violation_rate": 0.03125
+   },
+   "B1_depth_chart": {
+    "crps": 0.143014105408778,
+    "closure_error_mean": 0.011029411764705883,
+    "closure_violation_rate": 0.011029411764705883
+   },
+   "B2_current_production": {
+    "crps": 0.5795306733053749,
+    "closure_error_mean": 1.3547794117647058,
+    "closure_violation_rate": 0.9871323529411765
+   }
+  }
+ },
+ "evaluation_seasons_run": [
+  2022,
+  2023,
+  2024
+ ],
+ "evaluation_seasons_skipped": [
+  {
+   "season": 2025,
+   "cause": "NO_DEPTH_CHART_LEAF_FOR_SEASON",
+   "detail": "nfl/research/inputs/dc_2025.csv.gz does not exist; committed leaves cover 2020-2024"
+  }
+ ],
+ "pooled": {
+  "QB3": 0.09447723679589554,
+  "B0_incumbent": 0.11351012730770955,
+  "B1_depth_chart": 0.13469784892197217,
+  "B2_current_production": 0.5842104910114677
+ },
+ "contrasts": {
+  "QB3_minus_B0_incumbent": {
+   "mean_crps_diff": -0.019032890511814025,
+   "team_game_clustered_ci95": [
+    -0.025690961549518967,
+    -0.01255295865414747
+   ],
+   "ci_excludes_zero": true,
+   "seasons_QB3_better": "3 of 3 folds that ran",
+   "meets_predeclared_rule": true,
+   "rule_note": "the predeclared rule asked for consistency in at least 3 of 4 evaluation seasons. Only 3 folds could run -- see evaluation_seasons_skipped -- so \"3 of 4\" is not claimed and the count is stated against the folds that exist."
+  },
+  "QB3_minus_B1_depth_chart": {
+   "mean_crps_diff": -0.04022061212607663,
+   "team_game_clustered_ci95": [
+    -0.04835597713822562,
+    -0.032225596365430674
+   ],
+   "ci_excludes_zero": true,
+   "seasons_QB3_better": "3 of 3 folds that ran",
+   "meets_predeclared_rule": true,
+   "rule_note": "the predeclared rule asked for consistency in at least 3 of 4 evaluation seasons. Only 3 folds could run -- see evaluation_seasons_skipped -- so \"3 of 4\" is not claimed and the count is stated against the folds that exist."
+  },
+  "QB3_minus_B2_current_production": {
+   "mean_crps_diff": -0.4897332542155722,
+   "team_game_clustered_ci95": [
+    -0.49913908056033524,
+    -0.4807270482201933
+   ],
+   "ci_excludes_zero": true,
+   "seasons_QB3_better": "3 of 3 folds that ran",
+   "meets_predeclared_rule": true,
+   "rule_note": "the predeclared rule asked for consistency in at least 3 of 4 evaluation seasons. Only 3 folds could run -- see evaluation_seasons_skipped -- so \"3 of 4\" is not claimed and the count is stated against the folds that exist."
+  }
+ },
+ "runtime_s": 8.9
+}
