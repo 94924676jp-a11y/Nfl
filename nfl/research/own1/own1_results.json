@@ -1,0 +1,203 @@
+{
+  "A_historical_accounting": {
+    "closure": {
+      "exact_team_games": 3229,
+      "max_abs_residual": 1,
+      "n": 3230,
+      "statement": "targeted == dropbacks - sacks - scrambles + excluded - untargeted"
+    },
+    "excluded_pool_identified": {
+      "field_goal": 1,
+      "nullified": 389,
+      "spike": 429
+    },
+    "excluded_pool_note": "every dropback is a throw, a sack or a scramble (0 unclassified). The excluded pool is the reverse: pass plays qb_dropback does not count, and it is entirely spikes and nullified plays. Named, not absorbed into a residual.",
+    "means": {
+      "dropbacks": 37.6111,
+      "excluded": 0.2536,
+      "rush_attempts": 26.9192,
+      "sacks": 2.3799,
+      "scrambles": 1.9359,
+      "targeted": 32.1294,
+      "throws": 33.5492,
+      "untargeted": 1.4198
+    },
+    "n_team_games": 3230,
+    "throw_share_of_dropbacks": 0.892003
+  },
+  "B_d1_metrics_are_the_pbp_quantities": {
+    "checks": {
+      "team_carries": {
+        "exact": 3230,
+        "max_abs_diff": 0.0,
+        "mean_abs_diff": 0.0,
+        "n": 3230,
+        "pbp_quantity": "rush_attempts"
+      },
+      "team_dropbacks_part": {
+        "exact": 3230,
+        "max_abs_diff": 0.0,
+        "mean_abs_diff": 0.0,
+        "n": 3230,
+        "pbp_quantity": "dropbacks"
+      },
+      "team_targets": {
+        "exact": 3230,
+        "max_abs_diff": 0.0,
+        "mean_abs_diff": 0.0,
+        "n": 3230,
+        "pbp_quantity": "targeted"
+      }
+    },
+    "in_d1_only": 0,
+    "in_pbp_only": 0,
+    "joined_team_games": 3230
+  },
+  "C_terminal_state_mix_chronology_clean": {
+    "chronology": "strictly prior seasons only; no 2026 information of any kind entered this comparison",
+    "dropback_share_weighted_prior": 0.125234,
+    "n_qb_rows": 84,
+    "pooled_prior_sack_plus_scramble_share": 0.115322,
+    "prior_dropbacks_observed": 97761,
+    "reading": "the model reproduces the share-weighted prior rate of the quarterbacks actually on this slate. The population, not the model, explains the gap to the league mean.",
+    "simulator_pre_allocation_share": 0.121512,
+    "simulator_pre_allocation_throw_share": 0.878488,
+    "without_prior_dropbacks": 0
+  },
+  "D_own1_allocation_share_leak": {
+    "fraction_of_dropbacks_lost": 0.053168,
+    "guard_state": "FAIL[QB_ALLOCATION_SHARE_UNCONSUMED]",
+    "leaks": [
+      {
+        "of_mass": 1.0,
+        "share_lost": 0.330707,
+        "team": "MIA",
+        "unforecastable": [
+          "00-0040014",
+          "00-0040222",
+          "00-0041156"
+        ]
+      },
+      {
+        "of_mass": 1.0,
+        "share_lost": 0.303745,
+        "team": "NYJ",
+        "unforecastable": [
+          "00-0041056"
+        ]
+      },
+      {
+        "of_mass": 1.0,
+        "share_lost": 0.19647,
+        "team": "WAS",
+        "unforecastable": [
+          "00-0039677",
+          "00-0041117"
+        ]
+      },
+      {
+        "of_mass": 1.0,
+        "share_lost": 0.099837,
+        "team": "ATL",
+        "unforecastable": [
+          "00-0041194"
+        ]
+      },
+      {
+        "of_mass": 1.0,
+        "share_lost": 0.094268,
+        "team": "TB",
+        "unforecastable": [
+          "00-0040415",
+          "00-0041251"
+        ]
+      },
+      {
+        "of_mass": 1.0,
+        "share_lost": 0.090013,
+        "team": "LA",
+        "unforecastable": [
+          "00-0039107",
+          "00-0041414",
+          "00-0041568"
+        ]
+      },
+      {
+        "of_mass": 1.0,
+        "share_lost": 0.071635,
+        "team": "LV",
+        "unforecastable": [
+          "00-0040996",
+          "00-0041562"
+        ]
+      },
+      {
+        "of_mass": 1.0,
+        "share_lost": 0.048789,
+        "team": "SF",
+        "unforecastable": [
+          "00-0038658",
+          "00-0040589"
+        ]
+      },
+      {
+        "of_mass": 1.0,
+        "share_lost": 0.044767,
+        "team": "CAR",
+        "unforecastable": [
+          "00-0035251",
+          "00-0041149"
+        ]
+      },
+      {
+        "of_mass": 1.0,
+        "share_lost": 0.044591,
+        "team": "PIT",
+        "unforecastable": [
+          "00-0040203",
+          "00-0041565"
+        ]
+      },
+      {
+        "of_mass": 1.0,
+        "share_lost": 0.041125,
+        "team": "JAX",
+        "unforecastable": [
+          "00-0039534",
+          "00-0041203"
+        ]
+      },
+      {
+        "of_mass": 1.0,
+        "share_lost": 0.038166,
+        "team": "BAL",
+        "unforecastable": [
+          "00-0039464",
+          "00-0040981"
+        ]
+      }
+    ],
+    "n_teams": 32,
+    "n_unforecastable_quarterbacks": 35,
+    "teams_leaking": 23,
+    "total_share_lost": 1.701367,
+    "total_share_mass": 32.0
+  },
+  "artifact": "OWN1_TARGET_VOLUME_OWNERSHIP_AUDIT",
+  "seasons": [
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025
+  ],
+  "source_files": [
+    "pbp2020.csv.gz",
+    "pbp2021.csv.gz",
+    "pbp2022.csv.gz",
+    "pbp2023.csv.gz",
+    "pbp2024.csv.gz",
+    "pbp2025.csv.gz"
+  ]
+}

@@ -324,3 +324,55 @@ def test_zz_every_check_passed():
     print(f'\n{PASSED} passed, {FAILED} failed')
     if FAILED:
         raise AssertionError(f'{FAILED} check(s) failed in this module')
+
+
+def test_K_allocation_share_leak_guard():
+    """OWN-1: allocated dropback share that reaches no forecastable passer.
+
+    Found by the target-volume ownership audit. QB V1 correctly refuses a
+    passer with no prior appearance; nothing then noticed that his allocated
+    share had left the system.
+    """
+    print('\nK. allocated dropback share must reach a forecastable passer')
+    from nfl.production import qb_accounting as QBACC
+    alloc = {'AAA': {'pids': ['p1', 'p2'],
+                     'shares': np.array([[0.7] * 20, [0.3] * 20])},
+             'BBB': {'pids': ['q1'], 'shares': np.array([[1.0] * 20])}}
+    ok = QBACC.reconcile_allocation_share(
+        alloc, {'AAA': ['p1', 'p2'], 'BBB': ['q1']})
+    check('a fully consumed allocation passes',
+          ok.state is State.PASS
+          and ok.code == 'QB_ALLOCATION_SHARE_CONSUMED',
+          f'{ok.state.value}[{ok.code}]')
+    check('it reports the mass it checked',
+          abs(ok.evidence.get('total_share_mass', 0) - 2.0) < 1e-9,
+          str(ok.evidence.get('total_share_mass')))
+    # SEEDED VIOLATION: p2 is allocated 0.3 and cannot be forecast.
+    bad = QBACC.reconcile_allocation_share(
+        alloc, {'AAA': ['p1'], 'BBB': ['q1']})
+    check('share allocated to an unforecastable passer is REFUSED',
+          bad.state is State.FAIL
+          and bad.code == 'QB_ALLOCATION_SHARE_UNCONSUMED',
+          f'{bad.state.value}[{bad.code}]')
+    check('the refusal quantifies the leak',
+          abs(bad.evidence.get('total_share_lost', 0) - 0.3) < 1e-9,
+          str(bad.evidence.get('total_share_lost')))
+    check('it names the team and the quarterback',
+          bad.evidence['leaks'][0]['team'] == 'AAA'
+          and bad.evidence['leaks'][0]['unforecastable'] == ['p2'],
+          str(bad.evidence['leaks'][0]))
+    check('it does NOT renormalise the survivors',
+          abs(bad.evidence.get('total_share_mass', 0) - 2.0) < 1e-9,
+          'the mass was rescaled, which would hide the gap')
+    check('no allocation at all is NOT_APPLICABLE, never a pass',
+          QBACC.reconcile_allocation_share({}, {}).state
+          is State.NOT_APPLICABLE)
+    # BYPASS: with the membership test neutered the leak is invisible.
+    empty = QBACC.reconcile_allocation_share(
+        alloc, {'AAA': ['p1', 'p2'], 'BBB': ['q1']})
+    check('BYPASS: told every passer is forecastable, the same allocation '
+          'passes -- so the membership test is what caught it',
+          empty.state is State.PASS, f'{empty.state.value}[{empty.code}]')
+    check('and the real membership still refuses',
+          QBACC.reconcile_allocation_share(
+              alloc, {'AAA': ['p1'], 'BBB': ['q1']}).state is State.FAIL)

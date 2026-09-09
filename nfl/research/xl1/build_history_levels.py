@@ -57,10 +57,20 @@ def main():
                 # A THROW is a pass attempt that is not a sack. nflverse's
                 # pass_attempt includes sacks (W2 section 3.1) and every sack
                 # in 2020-2025 carries pass_attempt == 1.
+                if _i(r.get('qb_dropback')):
+                    c['dropbacks'] += 1
+                if _i(r.get('sack')):
+                    c['sacks'] += 1
+                if _i(r.get('qb_scramble')):
+                    c['scrambles'] += 1
+                if _i(r.get('rush_attempt')):
+                    c['rush_attempts'] += 1
                 if _i(r.get('pass_attempt')) and not _i(r.get('sack')):
                     c['throws'] += 1
                     if r.get('receiver_player_id'):
                         c['targets'] += 1
+                    else:
+                        c['untargeted'] += 1
                     if _i(r.get('complete_pass')):
                         c['completions'] += 1
                         c['passing_yards'] += _f(r.get('passing_yards')) or 0.0
@@ -86,12 +96,45 @@ def main():
 
     lat_closed = [tg[x]['passing_yards'] - tg[x]['receiving_yards']
                   - tg[x]['lateral_yards'] for x in ks]
+
+    # BY SEASON, AND IT IS NOT OPTIONAL.
+    #
+    # Every one of these quantities is in monotonic decline across 2020-2025:
+    # team targets fall 33.81 -> 30.53, completions 22.96 -> 20.62, passing
+    # yards 254.88 -> 225.02. A 2026 forecast compared against the six-season
+    # mean is therefore compared against a baseline that is years stale, and
+    # XL1's return did exactly that -- it reported a 9.2% team_targets error
+    # that is 4.4% against 2025. The pooled mean stays available because the
+    # IDENTITIES are pooled facts, but a LEVEL comparison must name its season.
+    seasons = sorted({x[0] for x in ks})
+    by_season = {}
+    for s_ in seasons:
+        sk = [x for x in ks if x[0] == s_]
+        by_season[str(s_)] = {
+            'n_team_games': len(sk),
+            **{k: round(statistics.mean(tg[x][k] for x in sk), 4)
+               for k in ('throws', 'targets', 'completions', 'passing_yards',
+                         'passing_td', 'dropbacks', 'sacks', 'scrambles',
+                         'untargeted', 'rush_attempts')},
+            'throw_share_of_dropbacks': round(
+                statistics.mean(tg[x]['throws'] for x in sk)
+                / statistics.mean(tg[x]['dropbacks'] for x in sk), 6)}
     out = {
+        'by_season': by_season,
+        'most_recent_season': str(seasons[-1]),
+        'level_comparison_baseline':
+            'USE by_season[most_recent_season] FOR ANY LEVEL COMPARISON. The '
+            'pooled team_game_means below are a six-season average of a '
+            'declining series and are the right baseline only for the '
+            'identities, which do not trend.',
         'artifact': 'XL1_HISTORY_LEVELS', 'seasons': list(SEASONS),
         'source_files': [os.path.basename(p) for p in files],
         'n_team_games': n,
         'team_game_means': {
             'throws': mean('throws'), 'targets': mean('targets'),
+            'dropbacks': mean('dropbacks'), 'sacks': mean('sacks'),
+            'scrambles': mean('scrambles'), 'untargeted': mean('untargeted'),
+            'rush_attempts': mean('rush_attempts'),
             'throws_minus_targets': round(
                 statistics.mean(tg[x]['throws'] - tg[x]['targets']
                                 for x in ks), 4),

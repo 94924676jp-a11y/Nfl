@@ -1,5 +1,91 @@
 {
   "artifact": "XL1_HISTORY_LEVELS",
+  "by_season": {
+    "2020": {
+      "completions": 22.9609,
+      "dropbacks": 38.9297,
+      "n_team_games": 512,
+      "passing_td": 1.7012,
+      "passing_yards": 254.8828,
+      "rush_attempts": 26.9375,
+      "sacks": 2.2168,
+      "scrambles": 1.752,
+      "targets": 33.8066,
+      "throw_share_of_dropbacks": 0.903974,
+      "throws": 35.1914,
+      "untargeted": 1.3848
+    },
+    "2021": {
+      "completions": 22.2812,
+      "dropbacks": 38.2335,
+      "n_team_games": 544,
+      "passing_td": 1.5441,
+      "passing_yards": 244.1176,
+      "rush_attempts": 26.6415,
+      "sacks": 2.2868,
+      "scrambles": 1.7941,
+      "targets": 33.1949,
+      "throw_share_of_dropbacks": 0.899659,
+      "throws": 34.3971,
+      "untargeted": 1.2022
+    },
+    "2022": {
+      "completions": 21.4114,
+      "dropbacks": 37.2878,
+      "n_team_games": 542,
+      "passing_td": 1.3838,
+      "passing_yards": 234.3838,
+      "rush_attempts": 27.2509,
+      "sacks": 2.393,
+      "scrambles": 1.786,
+      "targets": 31.9299,
+      "throw_share_of_dropbacks": 0.894062,
+      "throws": 33.3376,
+      "untargeted": 1.4077
+    },
+    "2023": {
+      "completions": 21.7059,
+      "dropbacks": 38.0386,
+      "n_team_games": 544,
+      "passing_td": 1.386,
+      "passing_yards": 236.3364,
+      "rush_attempts": 26.8493,
+      "sacks": 2.5919,
+      "scrambles": 2.0551,
+      "targets": 32.1379,
+      "throw_share_of_dropbacks": 0.885082,
+      "throws": 33.6673,
+      "untargeted": 1.5294
+    },
+    "2024": {
+      "completions": 21.3768,
+      "dropbacks": 36.9779,
+      "n_team_games": 544,
+      "passing_td": 1.4871,
+      "passing_yards": 233.5,
+      "rush_attempts": 26.9982,
+      "sacks": 2.4154,
+      "scrambles": 2.0846,
+      "targets": 31.2739,
+      "throw_share_of_dropbacks": 0.885415,
+      "throws": 32.7408,
+      "untargeted": 1.4669
+    },
+    "2025": {
+      "completions": 20.6195,
+      "dropbacks": 36.2757,
+      "n_team_games": 544,
+      "passing_td": 1.4908,
+      "passing_yards": 225.0239,
+      "rush_attempts": 26.8401,
+      "sacks": 2.3658,
+      "scrambles": 2.1324,
+      "targets": 30.5312,
+      "throw_share_of_dropbacks": 0.883703,
+      "throws": 32.057,
+      "untargeted": 1.5257
+    }
+  },
   "identities": {
     "completions_equals_receptions_by_construction": "every completion in 2020-2025 carries a receiver_player_id; the count of completions IS the count of receptions",
     "passing_minus_receiving_minus_lateral": {
@@ -23,6 +109,8 @@
     },
     "team_games_with_a_lateral": 81
   },
+  "level_comparison_baseline": "USE by_season[most_recent_season] FOR ANY LEVEL COMPARISON. The pooled team_game_means below are a six-season average of a declining series and are the right baseline only for the identities, which do not trend.",
+  "most_recent_season": "2025",
   "n_team_games": 3230,
   "seasons": [
     2020,
@@ -42,12 +130,17 @@
   ],
   "team_game_means": {
     "completions": 21.7139,
+    "dropbacks": 37.6111,
     "passing_td": 1.4969,
     "passing_yards": 237.8762,
     "receiving_td": 1.4969,
     "receiving_yards": 237.6867,
+    "rush_attempts": 26.9192,
+    "sacks": 2.3799,
+    "scrambles": 1.9359,
     "targets": 32.1294,
     "throws": 33.5492,
-    "throws_minus_targets": 1.4198
+    "throws_minus_targets": 1.4198,
+    "untargeted": 1.4198
   }
 }

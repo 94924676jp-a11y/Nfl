@@ -709,3 +709,105 @@ through the study path (48/48). Suite 42 modules, 445 functions, 2,577 checks,
 3. The dropback attempt share (a lead).
 4. Role-aware reallocation — NFL-INTEL-1's experiment 3 is the right shape.
 5. Lateral exception on the receiving identity. 6. P5A. 7. QB3b.
+
+---
+
+## 2026-09-09 — OWN-1: target-volume ownership audit
+
+### Owner ruling received
+
+XL1 accepted as `C3_SHARED_PASS_REHEARSAL_CANDIDATE`, not promoted. Explicit
+instruction: **do not fit a better D1 team_targets model.** Settle ownership
+first. Diagnose the throw share chronology-cleanly before calling it a defect.
+
+### team_targets is not an independent quantity. It is targeted throws.
+
+Exact in **3,230 of 3,230** team-games. So are the other two: D1's
+`team_dropbacks_part` is the pbp `qb_dropback` count and `team_carries` is the
+`rush_attempt` count, both exact 3,230/3,230. `mk_denom.py:75` builds
+`team_targets` as `+= r['targets']` — a sum of the same player quantity the
+receiving layer allocates.
+
+And it is a deterministic function of the QB chain:
+
+```
+targeted == dropbacks - sacks - scrambles + excluded - untargeted
+   EXACT in 3,229/3,230, worst residual 1
+```
+
+The `excluded` term is fully identified with nothing left over: 819 plays over
+six seasons that are a throw, sack or scramble but carry `qb_dropback == 0` —
+**429 spikes, 389 nullified plays, 1 field goal**. Every dropback is a throw, a
+sack or a scramble; zero unclassified.
+
+**No production component needs D1's drawn team_targets under C3.** The one
+that could have killed C3 does not: the target shares were fitted as
+`y_targets / team_targets`, and since that denominator IS targeted throws, the
+fitted shares stay valid without refitting.
+
+### I was wrong about the -9.2%, and about the level gap generally
+
+Every quantity here is in monotonic decline — targets 33.81 → 30.53,
+completions 22.96 → 20.62, passing yards 254.88 → 225.02. XL1 compared a 2026
+forecast against the **six-season mean**. Against 2025:
+
+| | XL1 said | vs 2025 |
+|---|---|---|
+| D1 team_targets | −9.2% | **−4.4%** |
+| B0 passing yards | −8.0% | **−2.8%** |
+| B0 completions | −9.0% | **−4.2%** |
+| B0 passing TD | −9.0% | **−8.6%** |
+
+**About half the "8–10% level gap" was a stale baseline.** `history_levels.json`
+now carries per-season levels and states that a level comparison must use
+`by_season[most_recent_season]`; only the identities, which do not trend, may
+use the pooled mean. What survives is **passing TD at −8.6%**, the one metric
+not in decline.
+
+### The terminal-state mix is NOT a defect — the owner's warning was right
+
+Chronology-clean, prior-only history of the **84 quarterbacks actually on the
+2026 week-1 slate**, n = **97,761 dropbacks**: pooled sack+scramble share
+**0.1153**, dropback-share-weighted **0.1253**, simulator **0.1215**. The model
+reproduces the share-weighted prior rate of these exact passers to within
+0.004. The population explains the gap to the league mean, not the model. Had I
+inferred from the headline I would have repaired a model that is correct.
+
+### OWN-1: what chasing it actually found, and it is mine
+
+`0.8318 = 0.8785 x 0.9468`. The second factor is a leak.
+
+`run_game` zeroes a forecast row the allocation does not name. It had **no
+counterpart for the reverse**: a quarterback in the QB3 depth-chart allocation
+whom QB V1 refused for having no prior appearance. His allocated dropback share
+was applied to nobody and left the system with no refusal. Real 2026 week-1
+slate, 400 draws:
+
+| | |
+|---|---|
+| unforecastable QBs in the allocation | **35** |
+| teams leaking | **23 of 32** |
+| share reaching nobody | **1.7014 of 32.0000 = 5.3168%** |
+| worst | MIA 33.1%, NYJ 30.4%, WAS 19.6% |
+
+An absence read as success, in code I wrote in R4. It nearly accounts for the
+whole remaining gap: C3's completions are −5.2% against 2025 and the leak is
+−5.32%; removing it would put C3's targeted throws at ~30.8 against 30.53.
+
+**Named, not repaired.** `reconcile_allocation_share` refuses
+`QB_ALLOCATION_SHARE_UNCONSUMED` and is wired into `run_game` at the one place
+holding both sides. It deliberately does **not** renormalise the survivors —
+that would be generating a fallback allocation, and it would erase the number
+that reveals the gap. Three defensible answers (refuse the team, a cold-start
+passer prior, route to the positional pool) and all three are owner decisions.
+
+### Queue
+
+1. **OWN-1** — owner decision. It blocks both studies below, because a 5.3%
+   leak in the throw budget would be scored as a C3 property.
+2. Passing TD −8.6% against 2025 — the only surviving level gap.
+3. **XL2** — derived vs independently forecast target budget. Pre-registration
+   first; development data, so it can only reject.
+4. C3 retrospective falsification (owner-authorized, run after OWN-1).
+5. Opposing-team dependence. 6. Role-aware reallocation. 7. P5A. 8. QB3b.
+9. Lateral realised-outcome exception.

@@ -267,6 +267,20 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
                 applied += 1
         qb = dict(qb, draws=scaled)
         g['qb_allocation_applied'] = applied
+        # FEED THE GUARD ITS INPUT, at the one place that has both sides.
+        # The scaling above zeroes a forecast row that the allocation does not
+        # name. The REVERSE -- an allocation entry naming a quarterback QB V1
+        # never forecast -- had no counterpart at all, and his share left the
+        # system without a refusal. Measured on the real 2026 week-1 slate:
+        # 35 quarterbacks, 5.13% of every team's dropbacks, MIA 33.8%.
+        share_ok = QBACC.reconcile_allocation_share(
+            {t: alloc[t] for t in teams if t in alloc},
+            {t: [qb['rows'][i]['gsis_id'] for i in qb['index_by_team'].get(t, [])]
+             for t in teams})
+        g['accounting']['qb_allocation_share'] = \
+            f'{share_ok.state.value}[{share_ok.code}]'
+        g['accounting']['qb_allocation_share_evidence'] = {
+            k: v for k, v in share_ok.evidence.items() if k != 'value'}
     if qb is not None:
         idx = qb['index_by_team']
         D = qb['draws']

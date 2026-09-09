@@ -445,3 +445,77 @@ def reconcile_team_volume(D, rows, team_dropback_draws=None,
                         for k, c, n in viol],
             research_gap=QB_PRIMARY_PASSER_GAP, **ev)
     return Outcome.ok('QB_TEAM_VOLUME_COHERENT', value=ev, **ev)
+
+
+# --------------------------------------------------------------- XL1 / OWN-1
+QB_ALLOCATION_LEAK = (
+    'A quarterback can be in the depth-chart allocation and absent from QB '
+    'V1s forecast rows: QB V1 refuses a passer with no prior appearance, '
+    'which is correct. What was NOT correct is what happened next -- his '
+    'allocated dropback share was applied to nobody and simply left the '
+    'system. The team budget then silently shrank. This is the projects own '
+    'worst defect class, an absence read as success, and it is named here '
+    'rather than repaired, because deciding what a team does with an '
+    'unforecastable quarterbacks share is a modelling question and not an '
+    'accounting one.')
+
+
+def reconcile_allocation_share(allocation, forecast_ids_by_team,
+                               tolerance=1e-6) -> Outcome:
+    """Every unit of allocated dropback share must reach a forecastable passer.
+
+    `allocation` maps team -> {'pids': [...], 'shares': (n_qb, m)}.
+    `forecast_ids_by_team` maps team -> the gsis_ids QB V1 actually forecast.
+
+    Refuses by name when share mass is allocated to a quarterback nobody can
+    forecast. It does NOT renormalise: generating a fallback allocation is
+    forbidden, and silently rescaling the incumbents would hide the gap in the
+    one number that would otherwise reveal it.
+    """
+    if not allocation:
+        return Outcome.not_applicable(
+            'NO_QB_ALLOCATION',
+            'no allocation was supplied, so there is no share mass to '
+            'reconcile. This is not a pass.')
+    ev, leaks = {}, []
+    total_mass = total_lost = 0.0
+    for team, a in sorted(allocation.items()):
+        have = set(forecast_ids_by_team.get(team) or ())
+        pids = list(a.get('pids') or ())
+        sh = np.asarray(a.get('shares'), float)
+        if sh.ndim != 2 or sh.shape[0] != len(pids):
+            return Outcome.fail(
+                'QB_ALLOCATION_SHAPE_MISMATCH',
+                f'{team}: {len(pids)} pid(s) against shares of shape '
+                f'{sh.shape}; a share cannot be attributed to a passer',
+                team=team)
+        mass = float(sh.sum(0).mean())
+        lost = float(sum(sh[j].mean() for j, p in enumerate(pids)
+                         if p not in have))
+        total_mass += mass
+        total_lost += lost
+        if lost > tolerance:
+            leaks.append({'team': team, 'share_lost': round(lost, 6),
+                          'of_mass': round(mass, 6),
+                          'unforecastable': [p for p in pids
+                                             if p not in have]})
+    ev['n_teams'] = len(allocation)
+    ev['total_share_mass'] = round(total_mass, 6)
+    ev['total_share_lost'] = round(total_lost, 6)
+    ev['fraction_of_dropbacks_lost'] = (
+        round(total_lost / total_mass, 6) if total_mass > 0 else None)
+    ev['teams_leaking'] = len(leaks)
+    if leaks:
+        worst = max(leaks, key=lambda x: x['share_lost'])
+        return Outcome.fail(
+            'QB_ALLOCATION_SHARE_UNCONSUMED',
+            f'{len(leaks)} team(s) allocate dropback share to a quarterback '
+            f'QB V1 did not forecast; {total_lost:.4f} of {total_mass:.4f} '
+            f'share units reach nobody, worst {worst["team"]} at '
+            f'{worst["share_lost"]:.4f}. {QB_ALLOCATION_LEAK}',
+            leaks=sorted(leaks, key=lambda x: -x['share_lost']), **ev)
+    return Outcome.ok(
+        'QB_ALLOCATION_SHARE_CONSUMED', value=ev,
+        detail=f'every unit of allocated dropback share across '
+               f'{len(allocation)} team(s) reaches a forecastable passer',
+        **ev)
