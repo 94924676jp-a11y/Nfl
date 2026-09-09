@@ -35,6 +35,7 @@ from nfl.production import qb_accounting as QBACC
 from nfl.production import team_volume_v1 as TV
 from nfl.production import qb_v1 as QBV1                             # noqa: E402
 from nfl.production import derived as DERIVED                       # noqa: E402
+from nfl.production import candidate_mode as CAND                   # noqa: E402
 from nfl.production import draws_artifact as DA                     # noqa: E402
 
 ARMS = ('A', 'B', 'C')
@@ -78,6 +79,12 @@ def execution_identity(args, source_hashes: dict, code_commit: str) -> str:
                'game_id': args.game_id, 'arm': args.arm,
                'written_at': args.written_at, 'seed': args.seed,
                'code_commit': code_commit,
+               # The configuration is part of the identity. Without it a
+               # candidate run and a baseline run of the same game would share
+               # a run id while containing different numbers.
+               'model_configuration': getattr(
+                   args, 'model_configuration', None)
+               or CAND.PRODUCTION_BASELINE,
                'sources': dict(sorted(source_hashes.items()))}
     return hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()
 
@@ -164,6 +171,111 @@ def build(args, fixtures: dict = None) -> dict:
                              run_id)
         return Outcome.ok('INPUTS_VALIDATED', value=src,
                           input_hashes={k: v['sha256'] for k, v in src.items()})
+    def _candidate_qb():
+        """The QB half of the V1 candidate architecture, from the canonical
+        entrypoint rather than from an internal-only rehearsal path.
+
+        R2, C0 and A3G execute here. C3 and A1 need the receiving and rushing
+        budgets, which the engine builds from the appearance layer -- and that
+        layer is currently DEFERRED on the injury feed, so those two report as
+        not reached rather than as satisfied. That is the honest state and it
+        is written into the artifact; an operator must not read "candidate
+        mode" as "every candidate component ran".
+        """
+        from nfl.production.nonqb import football_engine as FE
+        fl = _mode['flags']
+        qbp = [q for q in fx.get('players', [])
+               if q.get('position') == 'QB' and q.get('gsis_id')]
+        if not qbp:
+            return RF.refuse('QB_SLATE_EMPTY', 'qb_layer',
+                             'no quarterback on the roster for this game',
+                             run_id)
+        teams = list(fx.get('team_ids') or [])
+        m = fx.get('qb_draws', 200)
+        sl = FE.qb_slate(args.season, args.week, qbp, m=m, seed=args.seed,
+                         include_cold_start=bool(fl.get('include_cold_start')))
+        if sl.state is not State.PASS:
+            return sl
+        qb = sl.value
+        qa = FE.QA.allocate(args.season, args.week, teams, qbp, m=m,
+                            seed=args.seed)
+        if qa.state is not State.PASS:
+            return qa
+        qb['allocation'] = qa.value
+        gc = fl.get('game_coupling')
+        tv = (FE.TV.forecast(args.season, args.week, teams, m=m,
+                             seed=args.seed, joint_residuals=True,
+                             game_pairs=[(teams[0], teams[1])],
+                             game_coupling=gc)
+              if gc and gc != 'none' and len(teams) == 2
+              else FE.TV.forecast(args.season, args.week, teams, m=m,
+                                  seed=args.seed))
+        if tv.state is not State.PASS:
+            return tv
+        applied = ['C0'] if fl.get('include_cold_start') else []
+        if gc and gc != 'none' and len(teams) == 2:
+            applied.append('A3G')
+        if fl.get('r2'):
+            r2o = FE.apply_r2_level(qb, qa.value, tv, teams)
+            if r2o.state is not State.PASS:
+                return r2o
+            qb = r2o.value
+            applied.append('R2')
+        # The two that need budgets the appearance layer has not produced.
+        not_reached = [c for c, on in (('C3', fl.get('shared_pass') == 'c3'),
+                                       ('A1', bool(fl.get('rushing_a1'))))
+                       if on]
+        fx['qb_rows'] = qb['rows']
+        fx['_qb_draws_out'] = qb['draws']
+        fx['_candidate_applied'] = sorted(applied)
+        fx['_candidate_not_reached'] = sorted(not_reached)
+        # EVERY DECLARED HARD INVARIANT GETS A VERDICT ON THIS PATH TOO.
+        # The candidate path first shipped without them and the B14 gate
+        # refused all 16 games with INVARIANT_VERDICT_MISSING -- the guard
+        # working, on my own incomplete path. Silence is not a state.
+        _inv = fx.setdefault('_inv', {})
+        ident = QBV1.identity_check(qb['draws'])
+        _inv['qb_dropback_identity'] = ident
+        if ident.state is not State.PASS:
+            return RF.refuse('INCOMPLETE_PLAYER_ACCOUNTING', 'qb_layer',
+                             ident.detail, run_id)
+        acct = QBACC.reconcile_draws(qb['draws'])
+        _inv['qb_per_draw_accounting'] = acct
+        if acct.state is not State.PASS:
+            return RF.refuse('INCOMPLETE_PLAYER_ACCOUNTING', 'qb_layer',
+                             f'{acct.code}: {acct.detail}', run_id)
+        team = QBACC.reconcile_team(
+            qb['draws'], qb['rows'],
+            team_rush_draws=fx.get('team_rush_draws'),
+            team_rushes_realised=fx.get('team_rushes_realised'))
+        _inv['qb_team_accounting'] = team
+        fx['_qb_team_warnings'] = list(team.evidence.get('warnings') or [])
+        if team.state is not State.PASS:
+            return RF.refuse('INCOMPLETE_PLAYER_ACCOUNTING', 'qb_layer',
+                             f'{team.code}: {team.detail}', run_id)
+        fx['_qb_accounting'] = {'per_draw': acct.value, 'team': team.value}
+        return Outcome.ok(
+            'QB_LAYER_OK', value=qb['draws'],
+            model_configuration=_mode['mode'],
+            candidate_components_applied=sorted(applied),
+            candidate_components_not_reached=sorted(not_reached),
+            n_qb_games=len(qb['rows']),
+            qb_level_owner=(qb.get('r2') or {}).get('level_owner'))
+
+    # MODEL CONFIGURATION, RESOLVED ONCE AND CARRIED. An unknown name is a
+    # refusal, never a fall-back to the baseline -- falling back would run the
+    # PROMOTED model while the operator believed they were running the
+    # candidate, which fails in the dangerous direction.
+    _mode_o = CAND.resolve(getattr(args, 'model_configuration', None))
+    if _mode_o.state is not State.PASS:
+        return {'run_id': run_id, 'status': 'REFUSED',
+                'stages': [{'stage': 'capture_validation', 'state': 'FAIL',
+                            'code': _mode_o.code, 'detail': _mode_o.detail}],
+                'publication': {'code': 'NFL1_NOT_AUTHORIZED'},
+                'model_configuration': getattr(
+                    args, 'model_configuration', None)}
+    _mode = _mode_o.value
+
     p.run_stage('capture_validation', _capture,
                 declared_inputs=list(src), spec_version=PL.PIPELINE_VERSION)
 
@@ -334,6 +446,11 @@ def build(args, fixtures: dict = None) -> dict:
                 if da.state is not State.PASS:
                     return RF.refuse('MODEL_ARTIFACT_MISSING', _st,
                                      f'{da.code}: {da.detail}', run_id)
+                if _mode['candidate']:
+                    o = _candidate_qb()
+                    if o.state is not State.PASS:
+                        return o
+                    return o
                 fh = QBV1.artifact_hash()
                 if fh.state is not State.PASS:
                     return RF.refuse('MODEL_ARTIFACT_MISSING', _st,
@@ -695,6 +812,14 @@ def build(args, fixtures: dict = None) -> dict:
                         + '|ABSENT:' + ','.join(_absent))
         if _dist_source != 'MODEL':
             _eligibility = 'TEST_ONLY|DISTRIBUTIONS_FROM_FIXTURE'
+        if _mode['candidate']:
+            # A candidate run says so in the field a reader would use to judge
+            # eligibility, not only in a field they might not look at.
+            _eligibility = (f'{CAND.V1_CANDIDATE}|APPLIED:'
+                            + ','.join(fx.get('_candidate_applied') or [])
+                            + '|NOT_REACHED:'
+                            + ','.join(fx.get('_candidate_not_reached') or [])
+                            + '|' + _eligibility)
         if not _dist:
             return RF.refuse('EMPTY_FORECAST_ARTIFACT', 'artifact_sealing',
                              'no model layer produced a player distribution, '
@@ -798,6 +923,15 @@ def build(args, fixtures: dict = None) -> dict:
             'team_ids': fx.get('team_ids', []),
             'distributions': _dist,
             'distributions_source': _dist_source,
+            # WHICH MODEL PRODUCED THIS NUMBER, answered by the artifact
+            # rather than by reconstructing an invocation.
+            'model_configuration': _mode['mode'],
+            'candidate_components': _mode['components'],
+            'candidate_components_applied': fx.get('_candidate_applied') or [],
+            'candidate_components_not_reached':
+                fx.get('_candidate_not_reached') or [],
+            'promoted': False,
+            'prospective_eligible': False,
             'TEST_ONLY': _dist_source != 'MODEL',
             'completeness': _completeness,
             'absent_layers': _absent,
@@ -811,6 +945,13 @@ def build(args, fixtures: dict = None) -> dict:
             # B14. Every declared invariant's verdict travels WITH the numbers.
             'accounting_verdicts': _verdicts,
         }
+        # A CANDIDATE RUN MAY NOT LOOK LIKE THE PROMOTED MODEL. Checked at the
+        # seal, on the assembled artifact, so it cannot be satisfied by an
+        # invocation-time flag that a later edit forgets to carry.
+        nm = CAND.assert_not_promoted(_mode['mode'], art)
+        if nm.state is State.FAIL:
+            return RF.refuse('ARTIFACT_SEALING_FAILURE', 'artifact_sealing',
+                             f'{nm.code}: {nm.detail[:220]}', run_id)
         v = ART.validate(art)
         if v.state is not State.PASS:
             return RF.refuse('ARTIFACT_SEALING_FAILURE', 'artifact_sealing',
@@ -881,6 +1022,12 @@ def main(argv=None) -> int:
     ap.add_argument('--dry-run', action='store_true',
                     help='historical fixture run; NEVER prospective evidence')
     ap.add_argument('--fixtures', default=None)
+    ap.add_argument('--model-configuration', dest='model_configuration',
+                    default=CAND.PRODUCTION_BASELINE,
+                    help='PRODUCTION_BASELINE (default) or V1_CANDIDATE. '
+                         'The candidate configuration is explicit and '
+                         'never the default; an unknown name is refused '
+                         'rather than falling back to the baseline.')
     a = ap.parse_args(argv)
     fx = json.loads(pathlib.Path(a.fixtures).read_text()) if a.fixtures else {}
     s = build(a, fx)

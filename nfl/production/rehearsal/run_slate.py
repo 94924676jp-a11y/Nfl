@@ -73,7 +73,8 @@ def roster(season, week):
     return os.path.basename(best) if best else None, rows
 
 
-def build(season, week, out_dir, written_at):
+def build(season, week, out_dir, written_at,
+          model_configuration=None):
     plan = C.load_week_plan(season, week)
     if plan.state.name != 'PASS':
         return {'fatal': f'{plan.code}: {plan.detail}'}
@@ -100,7 +101,8 @@ def build(season, week, out_dir, written_at):
               'distributions': {}}
         a = argparse.Namespace(season=season, week=week, game_id=gid, arm='A',
                                written_at=written_at, out_dir=out_dir,
-                               seed=20260908, dry_run=True, fixtures=None)
+                               seed=20260908, dry_run=True, fixtures=None,
+                               model_configuration=model_configuration)
         s = RUN.build(a, fx)
         fails = []
         for st in s['stages']:
@@ -121,6 +123,7 @@ def build(season, week, out_dir, written_at):
                         'publication': s['publication']['code'],
                         'run_id': s['run_id']})
     return {'season': season, 'week': week, 'n_games': len(games),
+            'model_configuration': model_configuration or 'PRODUCTION_BASELINE',
             'roster_source': src_file, 'n_roster_rows': len(rrows),
             'results': results}
 
@@ -131,8 +134,11 @@ if __name__ == '__main__':
     ap.add_argument('--week', type=int, default=1)
     ap.add_argument('--out-dir', default='/tmp/v1r1')
     ap.add_argument('--written-at', default='2026-09-08T23:00:00Z')
+    ap.add_argument('--model-configuration',
+                    dest='model_configuration', default=None)
     a = ap.parse_args()
-    r = build(a.season, a.week, a.out_dir, a.written_at)
+    r = build(a.season, a.week, a.out_dir, a.written_at,
+              a.model_configuration)
     if 'fatal' in r:
         print('FATAL', r['fatal']); sys.exit(1)
     print(f"slate {r['season']} wk{r['week']}: {r['n_games']} games, roster "
