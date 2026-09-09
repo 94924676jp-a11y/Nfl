@@ -175,10 +175,15 @@ def build(args, fixtures: dict = None) -> dict:
             ('feature_build', 'features', 'prior-only, ordinal prefix cut'),
             ('team_environment', 'team_env', TV.SPEC_VERSION),
             ('appearance', 'appearance', 'P3 appearance'),
-            ('participation', 'participation', 'Stage2 ewma_hl2 ACCEPTED'),
-            ('targets_carries', 'targets_carries', 'P4C system C ACCEPTED'),
-            ('conversion', 'conversion', 'RC1 baseline; SIGNAL_WEAK'),
-            ('td_layer', 'td', 'TD1 identity; conversion baseline'),
+            ('participation', 'participation',
+             'Stage2 ewma_hl2; governance INFORMATION_CONSTRAINED'),
+            ('targets_carries', 'targets_carries',
+             'P4C system C; governance DATA_BLOCKED'),
+            ('conversion', 'conversion',
+             'RC1 baseline; SIGNAL_WEAK; governance HOLD_CHARACTERIZED '
+             '+ CALIBRATION_DEFECT'),
+            ('td_layer', 'td',
+             'TD2 pooled positional control; governance HOLD_TENTATIVE'),
             ('qb_layer', 'qb', QBV1.SPEC_VERSION)):
         def _model(_k=key, _s=spec, _st=stage):
             # ARTIFACT AND HASH CHECKS COME FIRST, ALWAYS. Running the model

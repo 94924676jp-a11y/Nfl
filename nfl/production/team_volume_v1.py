@@ -127,6 +127,35 @@ def selected(metric, season):
             'selected_on_season': ev}
 
 
+# PER-SLATE FIT CACHE (s.J). The fit depends ONLY on history -- the attached
+# panel, the league mean and the residual pools -- and not on which teams are
+# being forecast. So it can be computed once per (season, week, metric) and
+# reused across all 16 games, while `V.draw` still runs per game with the same
+# rng seed and the same row count as before.
+#
+# THIS IS WHY IT IS DRAW-EQUIVALENT: nothing cached touches the random stream.
+# A cache that also hoisted the draw would change every number, because the rng
+# is consumed row by row; that version was rejected rather than shipped.
+_FIT_CACHE: dict = {}
+
+
+def _fit_for(metric, season, week, ordinal):
+    key = (metric, season, week)
+    if key in _FIT_CACHE:
+        return _FIT_CACHE[key]
+    import p4b_volume as V
+    sel = selected(metric, season)
+    panel = _panel()
+    hist = [r for r in panel if r['ord'] < ordinal and r[metric] > 0]
+    lm = float(np.mean([r[metric] for r in hist]))
+    _FIT_CACHE[key] = (sel, panel, lm, None)
+    return _FIT_CACHE[key]
+
+
+def cache_clear():
+    _FIT_CACHE.clear()
+
+
 def forecast(season: int, week: int, teams, m: int = 200,
              seed: int = 20260908) -> Outcome:
     """Prospective team-volume draws for one slate. Returns (metric, team) ->
@@ -154,24 +183,27 @@ def forecast(season: int, week: int, teams, m: int = 200,
             teams=missing)
     out, meta = {}, {}
     for metric in METRICS:
-        sel = selected(metric, season)
+        sel, panel_c, lm, fit_c = _fit_for(metric, season, week, ordinal)
         pros = [{'season': season, 'week': week, 'ord': ordinal, 'team': t,
                  'coach': co.value[t], **{k: 0 for k in METRICS}}
                 for t in teams]
-        rows = sorted([dict(r) for r in panel] + pros,
+        rows = sorted([dict(r) for r in panel_c] + pros,
                       key=lambda x: (x['ord'], x['team']))
         V.attach(rows, metric)                      # the FROZEN research cut
         hist = [r for r in rows if r['ord'] < ordinal and r[metric] > 0]
-        lm = float(np.mean([r[metric] for r in hist]))
         for r in rows:
             r['_b'] = V.baselines(r, lm)
         for r in hist:
             r['_resid'] = r[metric] - r['_b'][sel['estimator']]
-        fit = V.build_forms(hist, metric, V.SEED)
+        # The fit is history-only: `hist` and every `_resid` in it are
+        # unaffected by which teams are prospective, because attach processes
+        # in ordinal order and the prospective rows sort last. So it is
+        # identical across the 16 games of a slate and is computed once.
+        fit = fit_c if fit_c is not None else V.build_forms(hist, metric,
+                                                            V.SEED)
+        _FIT_CACHE[(metric, season, week)] = (sel, panel_c, lm, fit)
         pr = [r for r in rows if r['ord'] == ordinal]
         rng = np.random.default_rng([seed, ordinal, hash(metric) % 9973])
-        # M_DRAWS is pre-declared inside the research module; draw() returns
-        # that many columns, so the slice is explicit rather than implicit.
         res = V.draw(sel['form'], fit, pr, rng)[:, :m]
         for i, r in enumerate(pr):
             out[(metric, r['team'])] = np.maximum(

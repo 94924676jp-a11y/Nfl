@@ -111,6 +111,13 @@ def build(season, week, out_dir, written_at):
                               'detail': st['detail'][:200]})
         results.append({'game_id': gid, 'status': s['status'],
                         'n_players': len(players), 'failures': fails,
+                        # Additive: the full per-stage outcome, so a consumer
+                        # need not infer PASS from absence-of-failure. Absence
+                        # read as success is the defect this project pays for
+                        # most often, and inferring it here would be that.
+                        'stages': [{'stage': st['stage'],
+                                    'state': st['state'], 'code': st['code']}
+                                   for st in s['stages']],
                         'publication': s['publication']['code'],
                         'run_id': s['run_id']})
     return {'season': season, 'week': week, 'n_games': len(games),

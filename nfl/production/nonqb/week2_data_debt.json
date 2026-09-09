@@ -1,0 +1,49 @@
+{
+ "artifact": "NONQB_WEEK2_DATA_DEBT",
+ "recorded_utc": "2026-09-09T00:30:00Z",
+ "question": "which frozen mechanisms need pbp_participation and snap_counts, and when",
+ "sources": {
+  "pbp_participation": {
+   "watch_only": true,
+   "required": false,
+   "serves_kinds": [],
+   "note": "Per-play offensive and defensive participation. The input the P component is built from. Measured 2026-09-08: published and populated 2016-2025, 404 for 2026. Two accepted schemas -- 20 columns 2016-2022, 26 columns 2023"
+  },
+  "snap_counts": {
+   "watch_only": true,
+   "required": false,
+   "serves_kinds": [],
+   "note": "Per-player game snap counts, PFR-sourced. Measured 2026-09-08: published 2016-2025, 404 for 2026, one stable 16-column schema throughout. It carries NO pass/run split, so it cannot bound pass-play participation on its ow"
+  }
+ },
+ "findings": {
+  "pbp_participation": {
+   "required_by": [
+    "participation (Stage-2 ewma_hl2 over pass_snaps/team_dropbacks_part)",
+    "targets_carries (the point forecast C is a prior share)",
+    "team_environment (team_dropbacks_part is a P4B metric)"
+   ],
+   "needed_from": "WEEK 2",
+   "why_week_1_is_safe": "a week-1 forecast conditions only on PRIOR seasons. panel_p3 carries 2020-2025 and denom_panel carries team volume through 2025, so week 1 needs no 2026 participation at all.",
+   "why_week_2_is_not": "the accepted estimator is an EWMA with half-life 2 over the most recent games. From week 2 the most recent game is a 2026 game, and its pass_snaps come from pbp_participation_2026.",
+   "current_state": "published 2016-2025, 404 for 2026; WATCH_ONLY in the registry and never fetched by the capture workflow",
+   "if_it_stays_unavailable": "the estimator silently degrades to a stale prior -- last season weighted as if it were last week. That is a DIFFERENT estimator, so the correct behaviour is a named refusal rather than a quiet fallback.",
+   "exact_refusal": "PARTICIPATION_HISTORY_STALE, naming the newest ordinal present against the ordinal required",
+   "alternative_registered_source": "snap_counts is registered but is game-level totals with no play detail, so it cannot produce pass_snaps / team_dropbacks; it is not a substitute"
+  },
+  "snap_counts": {
+   "required_by": [
+    "nothing in the frozen non-QB chain"
+   ],
+   "needed_from": "not required",
+   "current_state": "WATCH_ONLY, never captured",
+   "if_it_stays_unavailable": "no frozen mechanism is affected",
+   "exact_refusal": "none required"
+  }
+ },
+ "answers": {
+  "can_historical_data_support_week_1_only": "YES for week 1, NO from week 2",
+  "is_another_lawful_source_already_registered": "NO substitute for pbp_participation; snap_counts is registered but is the wrong granularity",
+  "policy_change_made": "NONE. The source policy was not altered to make this work; the debt is recorded instead."
+ }
+}
