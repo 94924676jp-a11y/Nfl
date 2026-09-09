@@ -1,0 +1,49 @@
+{
+  "artifact": "OWN5_RUSH_OWNERSHIP_AUDIT",
+  "fitted_other_mass": {
+    "carries": {
+      "mass_mean": 0.198875,
+      "pool_n": 2718,
+      "pool_p50": 0.178571
+    },
+    "construction": "p4c_build: pool = mall[k] - ms[k], where mall is the sum of ALL players' realised shares for that team-game and ms the modelled subset. mall is 1.0 because the panel closes exactly, so the pool is a SHARE on [0,1] -- not a weight.",
+    "consumption": "p4c_lib.allocate(simplex): other = w_other / (sum(W*A) + w_other). sum(W*A) is on the relative-weight scale and is NOT normalised to 1, so a fitted share is diluted by whatever sum(W*A) happens to be.",
+    "targets": {
+      "mass_mean": 0.011282,
+      "pool_n": 2718,
+      "pool_p50": 0.0
+    }
+  },
+  "historical_panel": {
+    "n_team_games": 3230,
+    "shares": {
+      "QB": 0.1568,
+      "RB": 0.8082,
+      "TE": 0.0038,
+      "WR": 0.0302,
+      "non_RB_mass": 0.1918
+    },
+    "team_carries": 26.9192,
+    "unattributed_share": 0.0
+  },
+  "historical_pbp": {
+    "closure_team_eq_qb_plus_nonqb": {
+      "exact": 3230,
+      "max_abs": 0,
+      "n": 3230
+    },
+    "means": {
+      "kneels": 0.7746,
+      "nonqb_rushes": 22.5557,
+      "qb_designed": 1.7734,
+      "qb_rushes": 4.3635,
+      "scrambles": 1.8155,
+      "team_rush_attempts": 26.9192
+    },
+    "n_team_games": 3230,
+    "qb_share_excluding_kneels": 0.1333,
+    "qb_share_of_team_carries": 0.1621
+  },
+  "historical_target_is_evidence_not_a_fitting_target": true,
+  "no_model_searched": true
+}

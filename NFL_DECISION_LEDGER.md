@@ -1062,3 +1062,67 @@ reason to expect them to hold, not evidence that they do. Queued.
 Classified per the ruling as
 `PREEXISTING_SYSTEM_GATE_FAILURE_OUTSIDE_OWN3_CAUSAL_SCOPE`. Fails identically
 under both arms; neither C0 nor OWN-4 causes or cures it; not waived.
+
+---
+
+## 2026-09-09 — OWN-5: C3 clear, and the rushing defect is a units mismatch
+
+**Verdict: `OWN5_C3_CLEAR_RUSH_DEFECT_IDENTIFIED`**
+
+### Part A — C3 re-verified under OWN-4
+
+12 team-games, 200 draws. All three identities **0 of 2,400** violating draws.
+Orchestration equivalence **18/18**. And the OWN-4-specific risk tested
+directly: **13,278** post-composition per-dropback ratios traced, **0** failed
+to appear in that quarterback's own pre-composition draws — no cross-player
+donor contamination. 3 cells repaired in the run.
+
+### Part B — the rushing gate is an accounting defect, and R4's premise is stale
+
+Historical closure is exact, 3,230/3,230:
+`team_rush_attempts 26.9192 = qb_rushes 4.3635 + nonqb_rushes 22.5557`, and
+`qb_rushes = scrambles 1.8155 + kneels 0.7746 + designed 1.7734`. Through the
+panel: RB **0.8082**, QB **0.1568** (this is R4's "0.157"), WR 0.0302, TE
+0.0038, unattributed **0.0000**.
+
+**The quarterback's rushing is now right.** Simulator QB rush / team carries is
+**0.1369** against 0.1333 ex-kneels. **R4's 0.284 is stale — QB3's allocation
+already fixed it and I should not have carried it forward unmeasured.**
+
+**What is wrong is the space left for him.** RB allocated 0.8750 against a
+historical 0.8082; `other` 0.1250 against 0.1918. He needs 0.1369 and has
+0.1250, so the containment guard correctly refuses.
+
+**Mechanism, identified at the source.** `mass_pool` is fitted CORRECTLY as a
+share — `p4c_build:151 pool = mall - ms`, and `mall` is 1.0 because the panel
+closes — with a fitted mean **0.1989** against a historical non-RB mass of
+0.1918. But `p4c_lib.allocate` consumes it as an **unnormalised weight**:
+`other = w_other/(sum(W*A) + w_other)` where `sum(W*A) ≈ 1.286` is on the
+relative-weight scale. A drawn share of 0.1837 is diluted to **0.1250**.
+Normalised, it would be 0.1866.
+
+Not duplicate ownership, not double counting, not an estimator defect: a
+**fitted share consumed as an unnormalised weight**.
+
+**Repair specified, deliberately not applied.** `S_i = (1-w_other)*W_iA_i/ΣWA;
+other = w_other`. Predicted RB 0.8750 → 0.8163, other → 0.1837. Not applied
+because `allocate` is a frozen P4C module that also serves the **targets**
+simplex, which currently passes, and because `W` was fitted with this
+`allocate` in the loop — whether `W` absorbed the dilution is unsettled. An
+owner decision about a frozen fitted artifact, needing gates across both
+simplexes.
+
+### Part C — R2 pre-registered, not implemented
+
+`nfl/research/r2/predeclaration_qb_level_ownership_r2.md`, sha256 `3d7beeb3…`.
+QB V1 owns conditional rates only and never a level; integerisation happens
+AFTER allocation by largest-remainder so `Σ n_j == N_t` exactly by
+construction; the invariant changes from float-exact to integer-exact and that
+is declared rather than discovered; the OWN-4 donor mechanism must become
+unreachable and be removed.
+
+### Queue
+
+1. Owner decision on the P4C normalisation repair (both simplexes).
+2. Kneels are owned by nobody — 0.7746/team-game inside D1's carry budget.
+3. Then the W1 rehearsal rerun and the passing-TD question.
