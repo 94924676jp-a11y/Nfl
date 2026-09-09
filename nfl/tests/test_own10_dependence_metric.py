@@ -27,17 +27,36 @@ for _q in (ROOT, OWN9, OWN10):
 
 PREDECL_SHA = '59ea7fa4363b202899e76f7668d2d3f8e517e2c572e4afd040079dbb14de5954'
 
+PASSED = FAILED = 0
+
+
+def check(label, ok, detail=''):
+    """The suite counts checks through this tally. A module judged on
+    exceptions alone contributes nothing to the count, and `run_suite.py`'s
+    own docstring says a module that measured nothing has not passed."""
+    global PASSED, FAILED
+    if ok:
+        PASSED += 1
+        print(f'  ok   {label}')
+    else:
+        FAILED += 1
+        print(f'  FAIL {label}  {detail}')
+    return bool(ok)
+
 
 def test_predeclaration_is_committed_and_unmodified():
     p = os.path.join(OWN10, 'predeclaration_own10.md')
-    assert os.path.exists(p), 'OWN10_PREDECLARATION_MISSING'
+    assert check('predeclaration exists', os.path.exists(p),
+                 'OWN10_PREDECLARATION_MISSING')
     got = hashlib.sha256(open(p, 'rb').read()).hexdigest()
-    assert got == PREDECL_SHA, f'OWN10_PREDECLARATION_MODIFIED: {got}'
+    assert check('predeclaration unmodified', got == PREDECL_SHA,
+                 f'OWN10_PREDECLARATION_MODIFIED: {got}')
 
 
 def test_runner_pins_the_same_hash():
     src = open(os.path.join(OWN10, 'run_own10.py')).read()
-    assert PREDECL_SHA in src, 'OWN10_RUNNER_DOES_NOT_PIN_PREDECLARATION'
+    assert check('runner pins the predeclaration hash', PREDECL_SHA in src,
+                 'OWN10_RUNNER_DOES_NOT_PIN_PREDECLARATION')
 
 
 def _assigned_calls(path, target_name):
@@ -70,7 +89,8 @@ def test_own9_no_longer_correlates_predictive_means_against_reality():
     tree = ast.parse(src)
     # the corrected runner must expose a per-draw correlation helper
     names = {n.name for n in ast.walk(tree) if isinstance(n, ast.FunctionDef)}
-    assert 'per_draw_corr' in names, 'OWN9_PER_DRAW_CORR_ABSENT'
+    assert check('own9 exposes a per-draw correlation helper',
+                 'per_draw_corr' in names, 'OWN9_PER_DRAW_CORR_ABSENT')
 
     # and every co_movement key that is compared against a realised series must
     # either be per-draw or be NAMED as not comparable
@@ -79,10 +99,12 @@ def test_own9_no_longer_correlates_predictive_means_against_reality():
         for k, v in d.items():
             if 'MEAN_BASED' in k or 'NOT_COMPARABLE' in k:
                 continue
-            assert isinstance(v, dict) and 'per_draw_mean' in v, (
-                f'OWN9_CO_MOVEMENT_NOT_PER_DRAW: {arm}.{k} = {v!r}. A statistic '
-                f'compared against a realised series must be computed one draw '
-                f'per team-game, or be named as not comparable.')
+            assert check(
+                f'own9 co-movement per draw: {arm}.{k}',
+                isinstance(v, dict) and 'per_draw_mean' in v,
+                f'OWN9_CO_MOVEMENT_NOT_PER_DRAW: {v!r}. A statistic compared '
+                f'against a realised series must be computed one draw per '
+                f'team-game, or be named as not comparable.')
 
 
 def test_the_guard_fails_when_bypassed():
@@ -97,7 +119,8 @@ def test_the_guard_fails_when_bypassed():
                 assert isinstance(v, dict) and 'per_draw_mean' in v
     except AssertionError:
         caught = True
-    assert caught, 'OWN10_METRIC_GUARD_IS_INERT'
+    assert check('metric guard rejects the seeded defect', caught,
+                 'OWN10_METRIC_GUARD_IS_INERT')
 
 
 def test_a2_tau_zero_is_exactly_a1_on_a_synthetic_row():
@@ -116,10 +139,11 @@ def test_a2_tau_zero_is_exactly_a1_on_a_synthetic_row():
                      for c in A.CATEGORIES}}
     d1, deg1 = A.draw_a1(row, par, np.random.default_rng(7), 256)
     d2, deg2, floor = A2.draw_a2(row, par, np.random.default_rng(7), 256, 0.0)
-    assert deg1 == deg2
+    assert check('tau=0 degenerate count matches A1', deg1 == deg2)
     for c in A.CATEGORIES:
-        assert np.array_equal(d1[c], d2[c]), f'A2_TAU_ZERO_NOT_A1: {c}'
-    assert floor >= 0
+        assert check(f'tau=0 reproduces A1 exactly: {c}',
+                     np.array_equal(d1[c], d2[c]), f'A2_TAU_ZERO_NOT_A1: {c}')
+    assert check('share-floor binds are counted, not asserted away', floor >= 0)
 
 
 def test_a2_latent_cannot_break_closure():
@@ -137,39 +161,59 @@ def test_a2_latent_cannot_break_closure():
     for tau in A2.TAU_GRID:
         d, deg, floor = A2.draw_a2(row, par, np.random.default_rng(5), 512, tau)
         tot = sum(np.asarray(d[c], np.int64) for c in A.CATEGORIES)
-        assert np.all(tot == row['rush_play_budget']), (
-            f'A2_CLOSURE_VIOLATION at tau={tau}')
+        assert check(f'closure exact at tau={tau:g}',
+                     bool(np.all(tot == row['rush_play_budget'])),
+                     f'A2_CLOSURE_VIOLATION at tau={tau}')
         for c in A.CATEGORIES:
-            assert np.all(np.asarray(d[c]) >= 0), f'A2_NEGATIVE at tau={tau}'
-            assert np.all(np.asarray(d[c]) <= row['rush_play_budget']), (
-                f'A2_CATEGORY_OVERRUN at tau={tau}')
+            assert check(f'non-negative at tau={tau:g}: {c}',
+                         bool(np.all(np.asarray(d[c]) >= 0)),
+                         f'A2_NEGATIVE at tau={tau}')
+            assert check(f'within budget at tau={tau:g}: {c}',
+                         bool(np.all(np.asarray(d[c]) <= row['rush_play_budget'])),
+                         f'A2_CATEGORY_OVERRUN at tau={tau}')
 
 
 def test_tau_grid_is_the_predeclared_one_and_contains_zero():
     import a2_lib as A2
-    assert A2.TAU_GRID[0] == 0.0, 'A2_GRID_MISSING_ITS_NULL'
-    assert list(A2.TAU_GRID) == [0.0, 0.0025, 0.005, 0.01, 0.02, 0.04], (
-        'A2_GRID_CHANGED_AFTER_PREDECLARATION')
+    assert check('the tau grid contains its own null',
+                 A2.TAU_GRID[0] == 0.0, 'A2_GRID_MISSING_ITS_NULL')
+    assert check('tau grid unchanged since predeclaration',
+                 list(A2.TAU_GRID) == [0.0, 0.0025, 0.005, 0.01, 0.02, 0.04],
+                 'A2_GRID_CHANGED_AFTER_PREDECLARATION')
     txt = open(os.path.join(OWN10, 'predeclaration_own10.md')).read()
     for t in A2.TAU_GRID:
-        assert f'{t:g}' in txt, f'A2_TAU_{t}_NOT_PREDECLARED'
+        assert check(f'tau={t:g} was predeclared', f'{t:g}' in txt,
+                     f'A2_TAU_{t}_NOT_PREDECLARED')
 
 
 def test_results_record_the_rejection_and_promote_nothing():
     p = os.path.join(OWN10, 'own10_results.json')
     if not os.path.exists(p):
-        return  # the run needs the corpus; the contract tests above do not
+        # An absent result is DEFERRED, not passed. Say so in the tally rather
+        # than returning silently -- an empty read reported as success is the
+        # defect class this project has spent the most time on.
+        check('own10 results present (needs the pbp corpus)', False,
+              'OWN10_RESULTS_ABSENT: run run_own10.py with INTEL1_PBP_GLOB')
+        return
     d = json.load(open(p))
-    assert d['promoted'] is False, 'OWN10_PROMOTED'
-    assert d['research_only'] is True
-    assert d['production_files_changed'] == 0, 'OWN10_TOUCHED_PRODUCTION'
-    assert d['consumed_2026_outcomes'] is False, 'OWN10_CONSUMED_2026'
-    assert d['predeclaration_sha256'] == PREDECL_SHA
+    assert check('nothing promoted', d['promoted'] is False, 'OWN10_PROMOTED')
+    assert check('research only', d['research_only'] is True)
+    assert check('0 production files changed',
+                 d['production_files_changed'] == 0,
+                 'OWN10_TOUCHED_PRODUCTION')
+    assert check('no 2026 outcome consumed',
+                 d['consumed_2026_outcomes'] is False, 'OWN10_CONSUMED_2026')
+    assert check('results pin the predeclaration',
+                 d['predeclaration_sha256'] == PREDECL_SHA)
     for k, arm in d['arms'].items():
         g = arm['gates']
-        assert g['closure_violations'] == 0, f'OWN10_CLOSURE_VIOLATION in {k}'
-        assert g['negative'] == 0, f'OWN10_NEGATIVE in {k}'
-        assert g['category_budget_overruns'] == 0, f'OWN10_OVERRUN in {k}'
+        assert check(f'0 closure violations in {k}',
+                     g['closure_violations'] == 0,
+                     f'OWN10_CLOSURE_VIOLATION in {k}')
+        assert check(f'0 negative allocations in {k}', g['negative'] == 0,
+                     f'OWN10_NEGATIVE in {k}')
+        assert check(f'0 category overruns in {k}',
+                     g['category_budget_overruns'] == 0, f'OWN10_OVERRUN in {k}')
 
 
 WITHDRAWN_CONTEXT = ('not comparable', 'mean-based', 'artifact', 'ruling',
@@ -203,8 +247,9 @@ def test_the_withdrawn_premise_is_not_quotable_as_a_measurement():
             low = blk.lower()
             # a blockquote is qualified by the paragraph that answers it
             nxt = _blocks(txt)[i + 1].lower() if i + 1 < len(_blocks(txt)) else ''
-            assert any(w in low or w in nxt for w in WITHDRAWN_CONTEXT), (
-                f'OWN10_WITHDRAWN_NUMBER_QUOTED_BARE: {blk!r}')
+            assert check(f'+0.507 is qualified where it appears ({name} #{i})',
+                         any(w in low or w in nxt for w in WITHDRAWN_CONTEXT),
+                         f'OWN10_WITHDRAWN_NUMBER_QUOTED_BARE: {blk!r}')
 
 
 def test_the_withdrawn_number_guard_fails_when_bypassed():
@@ -218,4 +263,5 @@ def test_the_withdrawn_number_guard_fails_when_bypassed():
         nxt = _blocks(bad)[i + 1].lower() if i + 1 < len(_blocks(bad)) else ''
         if not any(w in low or w in nxt for w in WITHDRAWN_CONTEXT):
             caught = True
-    assert caught, 'OWN10_WITHDRAWN_NUMBER_GUARD_IS_INERT'
+    assert check('withdrawn-number guard rejects a bare quotation', caught,
+                 'OWN10_WITHDRAWN_NUMBER_GUARD_IS_INERT')

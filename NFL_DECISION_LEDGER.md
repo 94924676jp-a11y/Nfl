@@ -1448,3 +1448,10 @@ seeds the defect and requires rejection, τ = 0 ≡ A1, closure at every τ.
 Kneel game-state dependence and a multiplicative or logit-scale residual family
 both touch P4C's estimator family, which is production. Pre-registration comes
 before fitting.
+
+**Suite 44 modules, 467 functions, 2,797 checks, 0 failing.** The OWN-10 module
+initially contributed 0 counted checks: it used bare asserts, so `run_suite.py`
+classified it NO TALLY and judged it on exceptions alone — weaker than this
+project's standard, and the runner's own docstring says a module that measured
+nothing has not passed. Converted to the `check()` convention, +138 checks. An
+audit of all 44 modules found no other module in that state.
