@@ -1455,3 +1455,81 @@ classified it NO TALLY and judged it on exceptions alone — weaker than this
 project's standard, and the runner's own docstring says a module that measured
 nothing has not passed. Converted to the `check()` convention, +138 checks. An
 audit of all 44 modules found no other module in that state.
+
+---
+
+## V1 CONVERGENCE — 2026-09-09
+
+**Verdict `V1_REHEARSAL_READY_WITH_NAMED_BLOCKERS`.** Full packet in
+`NFL_V1_CONVERGENCE_RETURN.md`; status list in `NFL_V1_RESEARCH_LEDGER.md`.
+Suite 47 modules, 489 functions, **2,863 checks, 0 failing, 0 raised**.
+G0A 11/12. NFL-1 NOT AUTHORIZED. PATH_C_STATE untouched. Nothing promoted.
+
+### The slate runs now, and this morning it did not
+
+All 16 games refused with `STAGE_RAISED` — `FileNotFoundError` on
+`panel_enriched.pkl`, which is deliberately uncommitted. `football_engine`
+gated on `derived.artifacts()`; the production entrypoint never did. **16 of 16
+now SEAL** with 84 QB forecasts. Found by running the thing, not by reading it.
+
+### Six false greens repaired, each verified by execution
+
+| defect | was | now |
+|---|---|---|
+| implemented layers called "unimplemented", counted PASS | 5 layers × 16 games | per-game `INJURY_REPORT_NOT_YET_FILED` ×15 / `INJURY_REPORT_INCOMPLETE` ×1, still sealing the valid QB forecast |
+| a fixture could seal distributions no model made; `eligibility_verdict` hardcoded `'PASS'` | demonstrated live | `EMPTY_FORECAST_ARTIFACT`; artifact stamps `distributions_source` + `TEST_ONLY`; verdict computed |
+| `code_commit` named code that did not run | clean hash, 125 modified lines | `…+dirty[16]`, inside execution identity |
+| `invariants.check`/`le_check` PASS over zero groups | any zero-row read → green | `INVARIANT_NOT_MEASURED_*` |
+| `reconcile_team` on a key-shape mismatch | checked nothing, PASS, `checked=True` | `QB_TEAM_RUSH_BUDGET_KEY_MISMATCH`; both shapes accepted |
+| `test_nonqb_r3` RAISED on drifted schema | module tally still said 0 failing | schema checked by name; `check()` returns its result |
+
+### Every game on the slate shared one RNG stream
+
+`appearance` was keyed by week only; `targets_carries` by **neither game nor
+week**. Two disjoint games with no player in common correlated at **r = +0.545**
+and the target-mass vectors were bit-identical. That is the mirror of this
+project's usual defect: a dependence of exactly 1.0 invented between independent
+games, making a sixteen-game slate not sixteen games.
+
+`seeds.py` gains a sha256 per-game component — deterministic across processes,
+unlike the `hash()` this project removed in OWN-7, and hashed here only because
+game ids are an open set where the frozen table `stream_id` uses is unavailable.
+Measured after: **0.0634**, sampling noise at m=200; identical `game_id` still
+reproduces bit-for-bit.
+
+### The QB composition emits impossible football, and now says so
+
+`conserve_allocated_mass` justifies itself with *"any non-zero draw of that row
+carries the same rates"*. **That is false for a small draw.** A draw of one
+dropback carries a Bernoulli realisation, not a rate, and `target/drawn`
+multiplies the realisation.
+
+Measured on the real slate: **4.50%** of raw dropback draws are exactly 1, the
+factor reaches **59.85**, **55.8%** of live cells are stretched, and a passer
+whose raw passing-TD draws max at 5 emerges with a composed maximum of
+**49.14** — the NFL single-game record is 7.
+
+The engine reported `PASS[QB_COMPOSITION_MASS_CONSERVED]`. Mass conservation was
+never the property in doubt. The verdict is now
+`FAIL[QB_COMPOSITION_RATE_FIDELITY_UNVERIFIED]` on the parameter-free condition
+`drawn < target`, with the mass statement kept beside it rather than standing in
+for it. **The repair is R2, pre-registered and not authorised — not taken.**
+
+### Four blockers left standing deliberately, with reasons
+
+C3 (one passing event generated twice, identity fails 12,800/12,800 draws) and
+A3-per-game (two teams drawn independently: model +0.015 against a realised
+−0.534; **2.0% of drawn games fall outside the entire 2020–25 range** of total
+plays) are **built candidates whose promotion is an owner decision**. RB1↔RB2 is
+**wrong-signed** (+0.081 against −0.329) and its next step is an ablation, not a
+change. Production emits four quantiles and **no draws**, so no proper score can
+be computed from V1 output at all.
+
+### Method note
+
+Four parallel audits ran read-only; the lead verified every claim that changed
+the plan before acting on one. Two agent findings were about code written
+earlier in the same session, including a `Cause.CODE` that does not exist and
+would have destroyed the named refusal it was meant to produce. One repair
+(wiring the non-QB layers in) initially made all 16 games refuse and discard a
+valid QB forecast; that was caught by re-running the slate, not by review.
