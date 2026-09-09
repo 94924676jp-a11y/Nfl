@@ -536,16 +536,17 @@ def test_l_recorded_slate_rehearsal_is_real_and_refused():
     check('the recorded real-slate rehearsal used NO fixture',
           r['TEST_ONLY'] is False and 'NONE' in r['fixtures_used'])
     check('  it ran every game on the slate', r['n_games'] == 16, r['n_games'])
+    # R4 schema: per-game layer states live under g['layers'].
     check('  team environment executed on every game',
-          all(g['team_environment'].startswith('PASS') for g in r['games']))
-    check('  the QB layer executed on every game',
-          all(g['qb_layer'].startswith('PASS') for g in r['games']))
-    check('  no non-QB layer produced a forecast',
-          all(not v.startswith('PASS')
-              for g in r['games'] for v in g['nonqb'].values()))
-    check('  non-QB accounting is NOT_APPLICABLE, never PASS',
-          all(g['nonqb_accounting'].startswith('NOT_APPLICABLE')
+          all(g['layers']['team_environment'].startswith('PASS')
               for g in r['games']))
+    check('  no non-QB modelling layer produced a forecast',
+          all(not v.startswith('PASS') for g in r['games']
+              for k, v in g['layers'].items() if k != 'team_environment'),
+          [v for g in r['games'] for k, v in g['layers'].items()
+           if k != 'team_environment' and v.startswith('PASS')][:3])
+    check('  and no player record was emitted',
+          r.get('n_player_records', 0) == 0, r.get('n_player_records'))
     check('  publication remains refused',
           'NFL1_NOT_AUTHORIZED' in r['publication'], r['publication'])
     check('  and G0A is still recorded as 11/12',
@@ -644,6 +645,11 @@ def test_D_appearance_refuses_an_unidentified_player():
 
 
 def test_K_recorded_engine_rehearsal_is_quarantined():
+    """Updated for the R4 artifact schema. The PROPERTIES asserted are the
+    same or stronger: R3 required every layer to execute, and R4 requires that
+    too EXCEPT for rushing conversion, which must carry exactly the named
+    deferral -- a stricter statement than 'every layer passed', because it
+    pins which layer may not and why."""
     f = os.path.join(_ROOT, 'nfl', 'production', 'nonqb',
                      'engine_rehearsal.json')
     if not os.path.exists(f):
@@ -659,17 +665,26 @@ def test_K_recorded_engine_rehearsal_is_quarantined():
     check('  every game refuses publication',
           all(g.get('publication_gate', '').startswith('FAIL')
               for g in r['games'] if 'publication_gate' in g))
-    check('  every layer executed on every game',
-          all(v.startswith('PASS') for g in r['games']
-              for v in g['layers'].values()),
-          [v for g in r['games'] for v in g['layers'].values()
-           if not v.startswith('PASS')][:3])
-    check('  accounting reconciled every game',
-          r['accounting']['n_games_failing'] == 0,
-          r['accounting'])
+    bad = [(k, v) for g in r['games'] for k, v in g['layers'].items()
+           if not v.startswith('PASS') and k != 'rushing_conversion']
+    check('  every layer except rushing conversion executed on every game',
+          not bad, bad[:3])
+    rc = {v for g in r['games'] for k, v in g['layers'].items()
+          if k == 'rushing_conversion'}
+    check('  and rushing conversion carries exactly the named deferral',
+          rc == {'DEFERRED[RUSHING_CONVERSION_CONTROL_UNDEFINED]'}, rc)
+    a = r['accounting']
+    check('  receiving accounting reconciled every game',
+          a['receiving_ok'] == a['n_games'], a)
+    check('  every receiving identity violation count is zero',
+          all(v == 0 for k, v in a['violations'].items()
+              if k.endswith('_violations')), a['violations'])
     check('  over a non-trivial number of cells',
-          r['accounting']['total_cells_checked'] > 10000,
-          r['accounting']['total_cells_checked'])
+          a['total_cells_checked'] > 100000, a['total_cells_checked'])
+    check('  rushing accounting fails ONLY on the named QB gap',
+          a['rushing_ok'] == 0
+          and a['violations'].get('rushing_td_within_carries_violations') == 0,
+          a['violations'])
     check('  and it cannot satisfy G0A', 'NONE' in r['g0a_effect'])
 
 

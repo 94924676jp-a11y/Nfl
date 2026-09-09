@@ -1,0 +1,446 @@
+{
+ "artifact": "FTN_M10_RESULTS",
+ "label": "EXPLORATORY. Ten games from four repeated teams are development data. Nothing here is confirmatory and nothing is promoted.",
+ "verdict": "FTN_MATCHUP_NO_DETECTABLE_INCREMENTAL_VALUE",
+ "verdict_scope": "This verdict is about MATCHUP. The endpoint contains a different primitive -- the per-snap ROLE label, which is a direct route-participation observation -- and that one is persistent and is NOT covered by this verdict. See route_participation below.",
+ "endpoint_characterization": {
+  "shape": "one JSON per event: {event, plays[]}; each play is {play, matchups[]}",
+  "play_fields": [
+   "id",
+   "number",
+   "clock",
+   "period",
+   "away_score",
+   "home_score",
+   "description",
+   "points",
+   "defense",
+   "offense",
+   "play_type",
+   "play_clock",
+   "play_duration",
+   "possession_number"
+  ],
+  "matchup_fields": [
+   "offensive_player",
+   "defensive_player"
+  ],
+  "no_outcome_fields": "There is NO target, receiver, yardage or completion field. The only outcome carrier is the gamebook \"description\" string.",
+  "defensive_role_always_null": "6,181 of 6,181 matchup records carry defensive_player.role = null. The field exists and is never populated.",
+  "null_defensive_position": 11,
+  "matchups_per_play": {
+   "5": 1170,
+   "4": 81,
+   "3": 2,
+   "1": 1,
+   "0": 370
+  },
+  "charts_five_eligibles": "On most plays exactly five offensive skill players are charted, not all eleven. The per-route target rate is therefore mechanically near 1/5 in every game, which is why its between-game variance is tiny.",
+  "play_types": {
+   "pass": 676,
+   "rush": 539,
+   "koff": 101,
+   "fgxp": 84,
+   "nopl": 83,
+   "timeout": 73,
+   "punt": 61,
+   "conv": 7
+  },
+  "offensive_positions": {
+   "WR": 2188,
+   "SLT": 1421,
+   "HB": 1178,
+   "H-TE": 648,
+   "Y-TE": 489,
+   "FB": 257
+  },
+  "offensive_roles": {
+   "rte": 3145,
+   "rbl": 1809,
+   "run": 457,
+   "ppro": 224,
+   "brte": 164,
+   "scbl": 155,
+   "fho": 99,
+   "frte": 93,
+   "fpro": 32,
+   "pas": 3
+  },
+  "defensive_positions": {
+   "CB": 2352,
+   "LB": 1906,
+   "SCB": 911,
+   "SS": 347,
+   "OLB": 269,
+   "SLB": 197,
+   "FS": 188,
+   "null": 11
+  }
+ },
+ "comparison_with_the_prior_endpoint": {
+  "headline": "THE \"BETTER ENDPOINT\" IS A STRICT SUBSET OF THE ONE WE ALREADY HAD.",
+  "overlap": "Event 30351 (DAL@PHI, 2025-09-04) is present in BOTH the prior sample (participation_1.json) and this packet.",
+  "matchups_identical_on_the_overlapping_game": true,
+  "matchup_records_old_vs_new": [
+   596,
+   596
+  ],
+  "plays_identical": "156 of 156",
+  "present_in_the_OLD_endpoint_and_ABSENT_here": {
+   "on_field": "offense and defense personnel on every play",
+   "conditions": "30 distinct charting types, pre-snap (box count, db_count, form_align, hash, offensive_line_count, backs, coverage shell, motion) and post-snap (pass rushers, time to pressure, concept, QB pressure/hit/hurry, blitz, stunt, play-action, RPO, first read, scramble)",
+   "advanced_stats": "3,011 participant/stat/value records per game"
+  },
+  "what_is_genuinely_new": "Nine additional games. No new primitive.",
+  "what_is_genuinely_LOST": "For those nine games we have no personnel, no pre-snap or post-snap charting and no advanced stats -- only matchups. Motion, coverage shell and box count, which are the fields most likely to carry pre-snap predictive structure, are not in this packet at all."
+ },
+ "coverage_and_quality": {
+  "route_running_matchup_rows": 2890,
+  "targets_among_them": 563,
+  "vs_ftn_s2_which_used_one_game": {
+   "route_plays": 311,
+   "targets": 53,
+   "multiple": 9.3
+  },
+  "target_parse": {
+   "from": 676,
+   "target": 588,
+   "no_target": 41,
+   "sack": 39,
+   "spike": 3
+  },
+  "target_linked_to_a_charted_player": {
+   "n": 573,
+   "pct": 97.4,
+   "ambiguous_refused": 0,
+   "unlinked": 15
+  },
+  "linking_method": "EXACT first-initial-plus-surname key, restricted to the players charted for that offense in that game, with suffixes dropped deterministically. Any key resolving to other than exactly one charted player is REFUSED. No fuzzy name matching, no scoring, no edit distance.",
+  "refused_examples": "M.Brown in the gamebook against \"Hollywood Brown\" as charted -- a genuine identity mismatch that fuzzy matching would have papered over."
+ },
+ "q1_same_game_descriptive": {
+  "target_rate_by_alignment": {
+   "BACK": {
+    "n": 481,
+    "rate": 0.2308,
+    "ci": [
+     0.198,
+     0.2693
+    ],
+    "ratio": 1.185
+   },
+   "TE_FLEX": {
+    "n": 212,
+    "rate": 0.217,
+    "ci": [
+     0.1759,
+     0.2659
+    ],
+    "ratio": 1.114
+   },
+   "SLOT": {
+    "n": 925,
+    "rate": 0.1935,
+    "ci": [
+     0.1741,
+     0.2192
+    ],
+    "ratio": 0.993
+   },
+   "WIDE": {
+    "n": 1155,
+    "rate": 0.1827,
+    "ci": [
+     0.1629,
+     0.2011
+    ],
+    "ratio": 0.938
+   },
+   "TE_INLINE": {
+    "n": 117,
+    "rate": 0.1368,
+    "ci": [
+     0.0877,
+     0.1917
+    ],
+    "ratio": 0.702
+   },
+   "ALL": {
+    "n": 2890,
+    "rate": 0.1948
+   }
+  },
+  "target_rate_by_defender_class": {
+   "S": {
+    "n": 268,
+    "rate": 0.2425,
+    "ci": [
+     0.1986,
+     0.2957
+    ],
+    "ratio": 1.245
+   },
+   "LB": {
+    "n": 874,
+    "rate": 0.2197,
+    "ci": [
+     0.2004,
+     0.2417
+    ],
+    "ratio": 1.128
+   },
+   "CB": {
+    "n": 1189,
+    "rate": 0.1808,
+    "ci": [
+     0.1613,
+     0.1978
+    ],
+    "ratio": 0.928
+   },
+   "SCB": {
+    "n": 559,
+    "rate": 0.1628,
+    "ci": [
+     0.1268,
+     0.2018
+    ],
+    "ratio": 0.836
+   }
+  },
+  "FTN_S2_ONE_GAME_RATIOS_DO_NOT_REPLICATE": {
+   "alignment": {
+    "WIDE": [
+     0.89,
+     0.938
+    ],
+    "SLOT": [
+     0.79,
+     0.993
+    ],
+    "BACK": [
+     0.82,
+     1.185
+    ],
+    "TE_INLINE": [
+     1.43,
+     0.702
+    ]
+   },
+   "matchup": {
+    "CB": [
+     0.88,
+     0.928
+    ],
+    "SCB": [
+     0.39,
+     0.836
+    ],
+    "LB": [
+     1.18,
+     1.128
+    ],
+    "S": [
+     1.06,
+     1.245
+    ]
+   },
+   "reading": "first value is FTN-S2 on one game, second is this packet on ten. TE_INLINE flipped from 1.43 to 0.70, BACK from 0.82 to 1.19, SLOT from 0.79 to 0.99, and the eye-catching SCB 0.39 is now 0.84. The one-game descriptive ratios were noise."
+  }
+ },
+ "q2_is_matchup_anything_other_than_alignment": {
+  "mutual_information": {
+   "H_defender_class": 1.8255,
+   "H_defender_class_given_alignment": 0.771,
+   "mutual_information_bits": 1.0546,
+   "pct_of_defender_entropy": 57.8
+  },
+  "alignment_x_defender_matrix_is_near_diagonal": {
+   "WIDE_to_CB": "1130 of 1155 (97.8%)",
+   "BACK_to_LB": "454 of 481 (94.4%)",
+   "SLOT_to_SCB": "533 of 925 (57.6%)"
+  },
+  "within_alignment_contrasts": {
+   "WIDE": "only one defender class with n>=40 -- matchup is DETERMINED by alignment",
+   "BACK": "only one defender class with n>=40 -- determined",
+   "TE_INLINE": "only one defender class with n>=40 -- determined",
+   "SLOT_LB_minus_SCB": {
+    "effect": 0.0671,
+    "ci": [
+     -0.044,
+     0.17
+    ],
+    "verdict": "includes zero"
+   },
+   "TE_FLEX_S_minus_LB": {
+    "effect": 0.0768,
+    "ci": [
+     -0.047,
+     0.202
+    ],
+    "verdict": "includes zero"
+   }
+  },
+  "conclusion": "At the class level the matchup label is largely a re-encoding of where the receiver lined up. Where it is not (SLOT, TE_FLEX) the contrast is not distinguishable from zero with game-clustered inference on ten games."
+ },
+ "q3_individual_defender_shadow_effect": {
+  "defenders_with_30plus_charted_route_snaps": 21,
+  "CB": {
+   "n_defenders": 13,
+   "pooled_rate": 0.1943,
+   "observed_variance": 0.0088,
+   "binomial_only_variance": 0.00425,
+   "excess": 0.00455,
+   "game_clustered_ci": [
+    -0.00304,
+    0.00875
+   ],
+   "verdict": "INCLUDES ZERO"
+  },
+  "LB": {
+   "n_defenders": 6,
+   "excess": -0.00063,
+   "verdict": "indistinguishable from noise"
+  },
+  "SCB": "only 2 defenders with n>=30 -- NOT ESTIMABLE",
+  "S": "zero defenders with n>=30 -- NOT ESTIMABLE",
+  "reading": "The naive comparison looks like signal (2.1x binomial variance, implying a between-CB SD of 6.75pp). It does not survive game clustering, because a defender's snaps come from one or two games and a high-target game inflates his rate. This is the same failure mode the sibling MLB project records as naive SEs understating uncertainty roughly threefold."
+ },
+ "q4_between_game_persistence": {
+  "structural_limit": {
+   "offensive_players_charted": 190,
+   "in_2_or_more_games": 38,
+   "in_3_or_more_games": 0,
+   "teams_appearing_twice": [
+    "DET",
+    "HOU",
+    "KC",
+    "IND"
+   ],
+   "reading": "every persistence question is a single lag-1 pair per player, from four teams. No split-half or lag structure is available at all."
+  },
+  "alignment_persistence": {
+   "all_players_wide_share": {
+    "r": 0.8072,
+    "n": 19,
+    "ci": [
+     0.556,
+     0.971
+    ]
+   },
+   "WR_only_wide_share": {
+    "r": 0.7023,
+    "n": 15,
+    "ci": [
+     0.295,
+     0.956
+    ],
+    "verdict": "EXCLUDES ZERO -- survives the position control"
+   },
+   "WR_only_slot_share": {
+    "r": 0.2703,
+    "n": 15,
+    "ci": [
+     -0.387,
+     0.797
+    ],
+    "verdict": "includes zero"
+   }
+  }
+ },
+ "q5_downstream_value_the_decisive_test": {
+  "question": "the only forecastable alignment primitive is a WR wide/slot mix (r=0.70). How much does that move the target rate?",
+  "WR_WIDE_vs_SLOT": {
+   "wide_rate": 0.1835,
+   "n_wide": 1106,
+   "slot_rate": 0.1894,
+   "n_slot": 850,
+   "difference": -0.0064,
+   "ci_width": 0.0633
+  },
+  "conclusion": "About six tenths of one percentage point. A perfectly forecast WR alignment mix moves the per-route target rate by ~0.6pp. That bounds every downstream gain this primitive can produce, and it is why FTN-S2 found alignment WORSE than control: the variable costs degrees of freedom and returns almost nothing.",
+  "the_one_contrast_that_excludes_zero": {
+   "WR_charted_TE_FLEX_minus_TE_INLINE": {
+    "effect": 0.1111,
+    "ci": [
+     0.0418,
+     0.1876
+    ],
+    "n": 169
+   },
+   "caveat": "these are WRs charted at tight-end alignments -- 169 snaps of 2,890, a specific gadget usage rather than a general lever."
+  }
+ },
+ "route_participation_the_other_primitive": {
+  "why_it_matters": "The per-snap ROLE label is a DIRECT observation of whether a player ran a route. That is the quantity ROUTE-BB1 was built around and the one nflverse cannot supply -- its \"route\" field is not routes run.",
+  "measured_on_ten_games": {
+   "WR": 0.9359,
+   "TE": 0.8489,
+   "RB": 0.7677,
+   "ALL": 0.889
+  },
+  "ftn_s1_measured_on_one_game": {
+   "WR": 0.989,
+   "TE": 0.882,
+   "RB": 0.818,
+   "ALL": 0.928
+  },
+  "reading_of_the_difference": "the single game S1 saw was systematically high at every position.",
+  "persistence_by_position": {
+   "WR": {
+    "n_pairs": 13,
+    "r": 0.7974,
+    "ci": [
+     0.431,
+     0.959
+    ],
+    "sd": 0.0774,
+    "verdict": "EXCLUDES ZERO"
+   },
+   "TE": {
+    "n_pairs": 6,
+    "r": 0.843,
+    "ci": [
+     0.354,
+     1.0
+    ],
+    "sd": 0.1652,
+    "verdict": "suggestive, n=6"
+   },
+   "RB": {
+    "n_pairs": 5,
+    "r": 0.6233,
+    "ci": [
+     -1.0,
+     1.0
+    ],
+    "sd": 0.1381,
+    "verdict": "NOT ESTIMABLE"
+   }
+  },
+  "the_problem": "RBB1's frozen ceiling says the addressable share is RB 0.969 > TE 0.813 > WR 0.636. So the position where route information is worth most is the one this sample cannot estimate at all, and the position it CAN estimate is the one where WRs already run routes on 94% of pass snaps."
+ },
+ "sample_size_requirements": {
+  "method": "from the observed game-clustered CI width, which scales as 1/sqrt(games)",
+  "note_on_a_correction": "An earlier calculation in this session derived a \"design effect\" from the MARGINAL per-route target rate and got 0.16x, i.e. clustering apparently helping. That number is meaningless: because exactly five receivers are charted and at most one is targeted, the marginal rate is near-deterministic at ~1/5 in every game, so it has almost no between-game variance. Requirements are derived from the contrasts instead.",
+  "games_for_a_plus_minus_2.5pp_interval": {
+   "WR_wide_vs_slot": 16,
+   "SLOT_LB_vs_SCB": 182,
+   "TE_FLEX_S_vs_LB": 264
+  },
+  "RB_route_persistence_to_plus_minus_0.15": "approximately 68 RB player-pairs. This packet has 5. At the observed rate of ~1.25 RB pairs per repeated team-pair that is on the order of 110+ charted games, and only if teams are deliberately REPEATED.",
+  "the_sampling_recommendation": "ten scattered games produced 38 two-game players and ZERO three-game players. Any future sample should follow a small number of TEAMS across many weeks rather than scattering games across the league."
+ },
+ "diagnosis_states": {
+  "matchup_beyond_alignment": "NO_DETECTABLE_INCREMENTAL_VALUE -- and this is a real negative, not a null from a thin sample: 9.3x the FTN-S2 route-play count, with a structural explanation (the defender class is close to a function of alignment).",
+  "individual_defender_shadow": "SAMPLE_TOO_SMALL -- 13 CBs, excess variance CI includes zero.",
+  "alignment_as_a_feature": "INFORMATION_VALUABLE_BUT_NOT_PREDICTABLE is the wrong label here; alignment IS predictable (WR wide share r=0.70) and the effect it predicts is ~0.6pp. Call it PREDICTABLE_BUT_NEGLIGIBLE.",
+  "route_participation": "SAMPLE_TOO_SMALL where it matters (RB), PROSPECTIVE_SIGNAL where it is estimable (WR r=0.80) but bounded by a 0.636 addressable share.",
+  "endpoint_itself": "DATA_QUALITY_PROBLEM in one specific sense: the defensive role field is null on all 6,181 records, and the endpoint drops the pre-snap and post-snap charting the earlier sample carried."
+ },
+ "what_would_change_the_answer": [
+  "A sample that follows a few TEAMS across many weeks, giving 3+ games per player and a real lag structure.",
+  "The pre-snap conditions block (motion, coverage shell, box count) that the OLD endpoint had and this one does not -- those are the fields most likely to carry structure the matchup label does not.",
+  "RB and TE route participation specifically, where RBB1 says the addressable share is largest."
+ ]
+}

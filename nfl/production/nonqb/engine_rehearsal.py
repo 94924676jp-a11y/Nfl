@@ -146,6 +146,8 @@ def run(season=2026, week=1, m=200, seed=20260908, mode='test_only',
     out['accounting'] = _accounting(accs)
     pub = AUTH.may_publish()
     out['publication'] = f'{pub.state.value}[{pub.code}]'
+    out['gates'] = json.loads(
+        (RD.EL.STATE).read_text())['gates']
     out['elapsed_s'] = round(time.time() - t0, 1)
     return out
 
