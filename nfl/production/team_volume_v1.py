@@ -156,10 +156,28 @@ def cache_clear():
     _FIT_CACHE.clear()
 
 
+# J1: the five metrics were drawn INDEPENDENTLY -- a separate RNG stream per
+# metric -- which reproduced corr(team_carries, team_dropbacks) = -0.004
+# against a historical -0.393. J1 tested four architectures walk-forward over
+# 2,174 team-games and the winner was the cheapest: draw ONE historical
+# team-game index per simulation draw and take every residual from that same
+# game. Marginals are untouched to three decimal places, the accounting
+# invariants go to zero, clipping goes to zero, and the reproduced correlation
+# becomes -0.406.
+#
+# IT IS OFF BY DEFAULT AND THAT IS DELIBERATE. No fit changes, but every drawn
+# number changes, so switching it on is an owner decision rather than an
+# engineering one. See nfl/research/j1/J1_FINDING.md.
+JOINT_RESIDUALS_DEFAULT = False
+
+
 def forecast(season: int, week: int, teams, m: int = 200,
-             seed: int = 20260908) -> Outcome:
+             seed: int = 20260908, joint_residuals: bool = None) -> Outcome:
     """Prospective team-volume draws for one slate. Returns (metric, team) ->
-    an (m,) draw vector."""
+    an (m,) draw vector.
+
+    `joint_residuals` selects the J1 draw mode. None means the module default.
+    """
     import p4b_volume as V
     if not teams:
         return Outcome.blocked('TEAM_VOLUME_NO_TEAMS',
@@ -181,7 +199,10 @@ def forecast(season: int, week: int, teams, m: int = 200,
             'NO_COACH_FOR_SLATE',
             f'no head coach resolved for {missing}', cause=Cause.DATA,
             teams=missing)
+    joint = (JOINT_RESIDUALS_DEFAULT if joint_residuals is None
+             else bool(joint_residuals))
     out, meta = {}, {}
+    fits = {}
     for metric in METRICS:
         sel, panel_c, lm, fit_c = _fit_for(metric, season, week, ordinal)
         pros = [{'season': season, 'week': week, 'ord': ordinal, 'team': t,
@@ -203,6 +224,9 @@ def forecast(season: int, week: int, teams, m: int = 200,
                                                             V.SEED)
         _FIT_CACHE[(metric, season, week)] = (sel, panel_c, lm, fit)
         pr = [r for r in rows if r['ord'] == ordinal]
+        fits[metric] = (sel, fit, pr, hist)
+        if joint:
+            continue                      # assembled jointly, below
         rng = np.random.default_rng([seed, ordinal, hash(metric) % 9973])
         res = V.draw(sel['form'], fit, pr, rng)[:, :m]
         for i, r in enumerate(pr):
@@ -213,9 +237,62 @@ def forecast(season: int, week: int, teams, m: int = 200,
                             (np.array([r['_b'][sel['estimator']]
                                        for r in pr]).reshape(-1, 1)
                              + res < 0).sum())}
+    if joint:
+        # ONE historical team-game per draw, every residual from that game.
+        #
+        # THE INDEX MUST BE DRAWN FROM THE SAME POOL THE FITTED FORM USES.
+        # All five metrics select `coach_empirical`, so the residual for a
+        # prospective row is resampled from THAT COACH's residuals. A first
+        # version of this drew the shared index from the global pool, which is
+        # a different distribution: it moved the team_rz_carries mean by 5.2%
+        # and put 0.49% of its draws on the zero floor, while claiming no
+        # marginal had been touched. Sharing an index across metrics is only
+        # legitimate if each metric still draws from its own fitted pool.
+        keyed = {}
+        for metric, (sel, fit, pr, hist) in fits.items():
+            keyed[metric] = {(h['team'], h['ord']):
+                             h[metric] - h['_b'][sel['estimator']]
+                             for h in hist}
+        common = [k for k in keyed[METRICS[0]]
+                  if all(k in keyed[mm] for mm in METRICS)]
+        if not common:
+            return Outcome.fail(
+                'JOINT_RESIDUAL_POOL_EMPTY',
+                'no historical team-game carries a residual for every metric, '
+                'so a joint resample is impossible')
+        coach_of = {}
+        for _m, (_s, _f, _p, hh) in fits.items():
+            for h in hh:
+                coach_of[(h['team'], h['ord'])] = h.get('coach')
+        by_coach = {}
+        for k in common:
+            by_coach.setdefault(coach_of.get(k), []).append(k)
+        rng = np.random.default_rng([seed, ordinal, 4242])
+        pr0 = fits[METRICS[0]][2]
+        n_fallback = 0
+        for i, r0 in enumerate(pr0):
+            pool_keys = by_coach.get(r0.get('coach'))
+            if not pool_keys:
+                pool_keys = common          # the same fallback V.draw uses
+                n_fallback += 1
+            pick = rng.integers(0, len(pool_keys), m)
+            chosen = [pool_keys[j] for j in pick]
+            for metric in METRICS:
+                sel, fit, pr, _h = fits[metric]
+                res_v = np.array([keyed[metric][k] for k in chosen])
+                out[(metric, pr[i]['team'])] = np.maximum(
+                    pr[i]['_b'][sel['estimator']] + res_v, 0.0)
+        for metric, (sel, fit, pr, hist) in fits.items():
+            meta[metric] = {**sel, 'league_mean': lm, 'n_train': len(hist),
+                            'draw_mode': 'joint_residuals',
+                            'joint_pool_team_games': len(common),
+                            'coaches_with_a_pool': len(by_coach),
+                            'rows_on_global_fallback': n_fallback}
     return Outcome.ok('TEAM_VOLUME_OK', value=out,
                       detail=f'{len(teams)} team(s), {len(METRICS)} metrics, '
                              f'{m} draws',
                       spec_version=SPEC_VERSION, selections=meta,
+                      draw_mode=('joint_residuals' if joint
+                                 else 'independent_per_metric'),
                       coach_snapshot=co.evidence['snapshot'],
                       known_limitations=list(KNOWN_LIMITATIONS))
