@@ -42,16 +42,27 @@ def _appear(test_only=True, m=40):
                       test_only=test_only)
 
 
+# TEST-ONLY stand-ins for the frozen priors. They are the SHAPE the frozen
+# fits return; the layers refuse anything that is not that shape, which is
+# what `test_D_conversion_refuses_a_caller_supplied_prior` checks.
+RECV_PRIORS = {'pos_catch_rate': {'WR': 0.63},
+               'pos_yardage_pool': {'WR': np.array([3.0, 9.0, 14.0, -2.0,
+                                                    27.0])},
+               'own': {}, 'k_shrink': 4.0}
+TD_PRIORS = {'B_pos': {'WR': 0.0489}, 'B_league': 0.0465,
+             'pos_catch_rate': {'WR': 0.63}}
+ORD = 202601
+
+
 def _chain(m=40):
     ap = _appear(m=m)
     pa = LY.participation(ap, {'p1': 0.6, 'p2': 0.3, 'p3': 0.1}, m=m)
     tc = LY.targets_carries(pa, 'targets', [0.6, 0.3, 0.1],
                             ['WR', 'WR', 'WR'], ([0], [3]), IDS, PAR, m=m)
-    cv = LY.receiving_conversion(tc, tc.value['share'][0] * 30,
-                                 {'catch_rate': 0.62,
-                                  'yards_per_reception': 11.0}, m=m)
-    td = LY.td_layer(cv, cv.value['receptions'],
-                     {'td_per_opportunity': 0.05}, m=m)
+    T = tc.value['share'] * 30
+    cv = LY.receiving_conversion(tc, T, RECV_PRIORS, IDS, ['WR'] * 3, ORD,
+                                 m=m)
+    td = LY.td_layer(cv, T, TD_PRIORS, IDS, ['WR'] * 3, ORD, m=m)
     return ap, pa, tc, cv, td
 
 
@@ -121,10 +132,10 @@ def test_D_upstream_gating():
     tc = LY.targets_carries(pa, 'targets', [], [], ([], []), [], PAR)
     check('  targets/carries without participation',
           tc.code == 'BLOCKED_UPSTREAM_APPEARANCE', tc.code)
-    cv = LY.receiving_conversion(tc, [], {})
+    cv = LY.receiving_conversion(tc, [], {}, [], [], ORD)
     check('  conversion without opportunity',
           cv.code == 'BLOCKED_UPSTREAM_OPPORTUNITY', cv.code)
-    td = LY.td_layer(cv, [], {})
+    td = LY.td_layer(cv, [], {}, [], [], ORD)
     check('  TD without conversion', td.code == 'BLOCKED_UPSTREAM_TD_INPUT',
           td.code)
     check('  and none of them produced a value',
@@ -145,8 +156,17 @@ def test_E_allocation_accounting():
           bool((cv.value['receptions'] <= np.rint(S[0] * 30) + 1e-9).all()))
     check('  TD <= receptions on every draw',
           bool((td.value['td'] <= cv.value['receptions']).all()))
-    check('  no negative receiving yards',
-          not bool((cv.value['receiving_yards'] < 0).any()))
+    # NOT "no negative yards": RC1 resamples real per-catch gains and a
+    # reception for a loss is ordinary football. The mechanical identity is
+    # that catching nothing yields exactly nothing.
+    R = cv.value['receptions']
+    Y = cv.value['receiving_yards']
+    check('  zero receptions yields exactly zero yards',
+          not bool((np.abs(Y[R <= 0]) > 1e-9).any()))
+    check('  and the yardage keeps its spread rather than collapsing to a '
+          'per-catch constant',
+          float(np.nanmax(np.where(R > 0, Y / np.maximum(R, 1), np.nan)))
+          > float(np.nanmin(np.where(R > 0, Y / np.maximum(R, 1), np.nan))))
 
 
 def test_F_a_player_without_appearance_is_refused():
@@ -229,6 +249,89 @@ def test_J_readiness_names_the_condition():
           'NONE' in d['answers']['policy_change_made'])
 
 
+def test_B_implementation_claims_are_checked():
+    o = EL.assert_implementations_exist()
+    check('every layer claiming a production implementation has one that '
+          'imports', o.state is State.PASS,
+          f'{o.state.value}[{o.code}] {o.detail[:200]}')
+    m = EL.matrix({})
+    check('  the matrix carries an implementation state per layer',
+          all(v['production_implementation_state'] in
+              ('IMPLEMENTED', 'NOT_IMPLEMENTED') for v in m.values()))
+    check('  rushing_conversion is declared NOT_IMPLEMENTED rather than '
+          'left blank',
+          m['rushing_conversion']['production_implementation_state']
+          == 'NOT_IMPLEMENTED')
+    # A FALSE CLAIM MUST BE CAUGHT. Seed one.
+    old = dict(EL.IMPLEMENTATION)
+    try:
+        EL.IMPLEMENTATION['td_layer'] = ('IMPLEMENTED',
+                                         'nfl.production.nonqb.no_such_module')
+        bad = EL.assert_implementations_exist()
+        check('  a claimed module that does not exist is caught',
+              bad.state is State.FAIL
+              and bad.code == 'IMPLEMENTATION_CLAIM_UNSUPPORTED',
+              f'{bad.state.value}[{bad.code}]')
+    finally:
+        EL.IMPLEMENTATION.clear()
+        EL.IMPLEMENTATION.update(old)
+
+
+def test_B_injuries_rows_for_the_wrong_season_or_week_are_dropped():
+    """A stale or misaddressed injuries row must not reach the mechanism."""
+    from nfl.production.nonqb import appearance_model as AM
+    rows = [{'season': '2025', 'week': '1', 'team': 'NE', 'gsis_id': 'a',
+             'report_status': '', 'practice_status': 'Full'},
+            {'season': '2026', 'week': '1', 'team': 'NE', 'gsis_id': 'b',
+             'report_status': 'Out', 'practice_status': 'Did Not Participate'},
+            {'season': '2026', 'week': '1', 'team': '', 'gsis_id': 'c',
+             'report_status': '', 'practice_status': 'Full'},
+            {'season': '2026', 'week': '1', 'team': 'NE', 'gsis_id': '',
+             'report_status': '', 'practice_status': 'Full'}]
+    got = AM.parse_injuries_rows(rows, 2026)
+    check('a prior-season injuries row is not consumed as this season\'s',
+          (2025, 1, 'NE', 'a') not in got)
+    check('  a row with no team is dropped', not any(k[2] == '' for k in got))
+    check('  a row with no gsis_id is dropped',
+          not any(k[3] == '' for k in got))
+    check('  and the one legitimate row survives',
+          list(got) == [(2026, 1, 'NE', 'b')], list(got))
+
+
+def test_B_participation_prior_is_prior_only():
+    from nfl.production.nonqb import participation_prior as PPX
+    o = PPX.share_prior(2026, 1, [{'gsis_id': 'nobody', 'position': 'WR'}])
+    check('a player with no history falls back to the DECLARED positional '
+          'mean, never zero', o.state is State.PASS
+          and o.evidence['n_on_positional_mean'] == 1,
+          f'{o.state.value}[{o.code}]')
+    check('  and the fallback is a real number, not a silent zero',
+          o.value['nobody'] > 0.0, o.value.get('nobody'))
+    o2 = PPX.share_prior(2026, 1, [{'position': 'WR'}])
+    check('  a player with no gsis_id is refused',
+          o2.state is State.FAIL
+          and o2.code == 'PARTICIPATION_IDENTITY_UNRESOLVED',
+          f'{o2.state.value}[{o2.code}]')
+    o3 = PPX.share_prior(2026, 1, [{'gsis_id': 'q', 'position': 'K'}])
+    check('  and a slate with no modelled position is refused, not emptied',
+          o3.state is State.FAIL and o3.code == 'PARTICIPATION_PRIOR_EMPTY',
+          f'{o3.state.value}[{o3.code}]')
+    # The week-2 debt named this refusal; here it is, firing.
+    o4 = PPX.share_prior(2026, 2, [{'gsis_id': 'x', 'position': 'WR'}])
+    check('  week 2 without any 2026 participation history REFUSES',
+          o4.state is State.BLOCKED
+          and o4.code == 'PARTICIPATION_HISTORY_STALE',
+          f'{o4.state.value}[{o4.code}]')
+    check('  and it names the missing source',
+          o4.evidence.get('missing_source') == 'pbp_participation_2026',
+          o4.evidence.get('missing_source'))
+    debt = json.load(open(os.path.join(_ROOT, 'nfl', 'production', 'nonqb',
+                                       'week2_data_debt.json')))
+    check('  which is exactly the refusal the week-2 debt promised',
+          'PARTICIPATION_HISTORY_STALE'
+          in debt['findings']['pbp_participation']['exact_refusal'])
+
+
 # ---------------------------------------------------------------- G
 def _clean(n=4, m=20, g=2):
     """A draw set that satisfies every non-QB identity by construction."""
@@ -295,8 +398,10 @@ def test_g_nonqb_accounting_is_load_bearing():
     seeds['receiving_td_within_receptions'] = b
 
     b = {k: (x.copy() if hasattr(x, 'copy') else x) for k, x in base.items()}
-    b['receiving_yards'][2, 2] = -1.0
-    seeds['receiving_yards_non_negative'] = b
+    b['receptions'] = b['receptions'].copy()
+    b['receptions'][2, 2] = 0.0
+    b['receiving_yards'][2, 2] = 14.0        # yards with nothing caught
+    seeds['zero_receptions_implies_zero_yards'] = b
 
     b = {k: (x.copy() if hasattr(x, 'copy') else x) for k, x in base.items()}
     b['appearance'][0, :] = 0.0        # did not play, still allocated
@@ -369,6 +474,22 @@ def test_g_accounting_test_fails_when_the_guard_is_bypassed():
           caught.state is State.FAIL and missed.state is State.PASS)
 
 
+def test_g_negative_receiving_yards_are_reported_not_refused():
+    """A reception for a loss is ordinary football. The identity that once
+    forbade it was a property of the placeholder conversion layer."""
+    base = _clean()
+    base['receiving_yards'] = base['receiving_yards'].copy()
+    base['receiving_yards'][0, 0] = -8.0
+    o = ACC.reconcile_nonqb(**base)
+    check('a negative receiving-yard cell does NOT fail accounting',
+          o.state is State.PASS, f'{o.state.value}[{o.code}] {o.detail[:120]}')
+    check('  it is counted and reported instead',
+          o.evidence.get('n_negative_yard_cells') == 1,
+          o.evidence.get('n_negative_yard_cells'))
+    check('  and the minimum is carried',
+          abs(float(o.evidence.get('min_receiving_yards')) + 8.0) < 1e-9)
+
+
 # ---------------------------------------------------------------- L
 def test_l_real_slate_chain_refuses_without_a_fixture():
     from nfl.production.nonqb import slate_rehearsal as SL
@@ -429,6 +550,127 @@ def test_l_recorded_slate_rehearsal_is_real_and_refused():
           'NFL1_NOT_AUTHORIZED' in r['publication'], r['publication'])
     check('  and G0A is still recorded as 11/12',
           r['gates']['G0A'] == '11/12', r['gates'])
+
+
+# ---------------------------------------------------------------- frozen fits
+def test_D_conversion_refuses_a_caller_supplied_prior():
+    """A layer that accepts any prior is not an implementation of RC1."""
+    ap = _appear(m=20)
+    pa = LY.participation(ap, {'p1': 0.6, 'p2': 0.3, 'p3': 0.1}, m=20)
+    tc = LY.targets_carries(pa, 'targets', [0.6, 0.3, 0.1],
+                            ['WR', 'WR', 'WR'], ([0], [3]), IDS, PAR, m=20)
+    T = tc.value['share'] * 30
+    o = LY.receiving_conversion(tc, T, {'catch_rate': 0.62,
+                                        'yards_per_reception': 11.0},
+                                IDS, ['WR'] * 3, ORD, m=20)
+    check('a caller-supplied conversion prior is refused',
+          o.state is State.FAIL and o.code == 'CONVERSION_PRIOR_NOT_FROZEN',
+          f'{o.state.value}[{o.code}]')
+    t = LY.td_layer(_ok_conv(20), T, {'td_per_opportunity': 0.05}, IDS,
+                    ['WR'] * 3, ORD, m=20)
+    check('  and a caller-supplied TD rate is refused',
+          t.state is State.FAIL and t.code == 'TD_PRIOR_NOT_FROZEN',
+          f'{t.state.value}[{t.code}]')
+    bad = dict(TD_PRIORS, B_pos={'WR': 0.9})
+    t2 = LY.td_layer(_ok_conv(20), T, bad, IDS, ['WR'] * 3, ORD, m=20)
+    check('  a per-reception rate above one is refused, never clipped',
+          t2.state is State.FAIL and t2.code == 'TD_RATE_ABOVE_ONE',
+          f'{t2.state.value}[{t2.code}]')
+
+
+def _ok_conv(m):
+    ap = _appear(m=m)
+    pa = LY.participation(ap, {'p1': 0.6, 'p2': 0.3, 'p3': 0.1}, m=m)
+    tc = LY.targets_carries(pa, 'targets', [0.6, 0.3, 0.1],
+                            ['WR', 'WR', 'WR'], ([0], [3]), IDS, PAR, m=m)
+    return LY.receiving_conversion(tc, tc.value['share'] * 30, RECV_PRIORS,
+                                   IDS, ['WR'] * 3, ORD, m=m)
+
+
+def test_D_conversion_is_a_distribution_not_a_point():
+    """The point-for-a-distribution defect, the fourth time it has appeared in
+    this project. A constant yards-per-reception collapses a tail a Normal
+    already understates thirteenfold."""
+    cv = _ok_conv(200)
+    Y, R = cv.value['receiving_yards'], cv.value['receptions']
+    per = np.where(R > 0, Y / np.maximum(R, 1), np.nan)
+    check('per-catch yardage varies within a player',
+          float(np.nanstd(per[0])) > 0.0, float(np.nanstd(per[0])))
+    check('  and the pool\'s negative gains survive into the draws',
+          bool((per < 0).any() or (Y < 0).any()))
+    a = _ok_conv(50).value['receptions']
+    b = _ok_conv(50).value['receptions']
+    check('  the same seed reproduces the same draws exactly',
+          bool((a == b).all()))
+
+
+def test_D_p4c_params_refuse_a_leaked_panel():
+    from nfl.production.nonqb import p4c_params as P4
+    check('the P4C production params name a frozen spec',
+          P4.SPEC_VERSION.startswith('p4c-'), P4.SPEC_VERSION)
+    o = P4.params('not_a_class', 2026)
+    check('  an unknown allocation class is refused',
+          o.state is State.FAIL and o.code == 'UNKNOWN_CLASS',
+          f'{o.state.value}[{o.code}]')
+
+
+def test_D_appearance_walk_matches_the_research_walk():
+    """The production feature walk exists only because stage_a.build loads its
+    own panel. If it ever diverges, production is running a different
+    mechanism under an accepted name."""
+    from nfl.production.nonqb import appearance_model as AM
+    o = AM.assert_walk_matches_research()
+    check('the production walk is identical to the research walk',
+          o.state is State.PASS, f'{o.state.value}[{o.code}] {o.detail[:160]}')
+    check('  over a non-trivial number of comparisons',
+          int(o.evidence.get('n_comparisons') or 0) > 100000,
+          o.evidence.get('n_comparisons'))
+
+
+def test_D_appearance_refuses_an_unidentified_player():
+    from nfl.production.nonqb import appearance_model as AM
+    o = AM.predict(2026, 1, [{'position': 'WR', 'team': 'NE'}],
+                   [{'season': '2026', 'week': '1', 'team': 'NE',
+                     'gsis_id': 'x', 'report_status': '',
+                     'practice_status': 'Full'}])
+    check('a player with no gsis_id is refused, never name-matched',
+          o.state is State.FAIL
+          and o.code == 'APPEARANCE_IDENTITY_UNRESOLVED',
+          f'{o.state.value}[{o.code}]')
+    o2 = AM.predict(2026, 1, [{'gsis_id': 'x', 'position': 'WR',
+                               'team': 'NE'}], [])
+    check('  and an empty injuries feed defers rather than predicting',
+          o2.state is State.DEFERRED, f'{o2.state.value}[{o2.code}]')
+
+
+def test_K_recorded_engine_rehearsal_is_quarantined():
+    f = os.path.join(_ROOT, 'nfl', 'production', 'nonqb',
+                     'engine_rehearsal.json')
+    if not os.path.exists(f):
+        check('the recorded engine rehearsal exists', False, f)
+        return
+    r = json.load(open(f))
+    check('the engine rehearsal is marked TEST_ONLY', r['TEST_ONLY'] is True)
+    check('  it names the ONE stubbed input',
+          'injuries' in r['stubbed_input'] and 'ONLY' in r['stubbed_input'],
+          r['stubbed_input'])
+    check('  it carries fixture provenance',
+          len(r['fixture_provenance']) > 60)
+    check('  every game refuses publication',
+          all(g.get('publication_gate', '').startswith('FAIL')
+              for g in r['games'] if 'publication_gate' in g))
+    check('  every layer executed on every game',
+          all(v.startswith('PASS') for g in r['games']
+              for v in g['layers'].values()),
+          [v for g in r['games'] for v in g['layers'].values()
+           if not v.startswith('PASS')][:3])
+    check('  accounting reconciled every game',
+          r['accounting']['n_games_failing'] == 0,
+          r['accounting'])
+    check('  over a non-trivial number of cells',
+          r['accounting']['total_cells_checked'] > 10000,
+          r['accounting']['total_cells_checked'])
+    check('  and it cannot satisfy G0A', 'NONE' in r['g0a_effect'])
 
 
 def test_zz_every_check_passed():

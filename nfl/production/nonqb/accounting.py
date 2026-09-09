@@ -66,9 +66,14 @@ NONQB_IDENTITIES = (
      'a reception is a target.'),
     ('receiving_td_within_receptions',
      'a receiving touchdown is a reception.'),
-    ('receiving_yards_non_negative',
-     'negative receiving yards are possible in football and not in this '
-     'baseline, which draws yards as receptions times a positive rate.'),
+    ('zero_receptions_implies_zero_yards',
+     'a draw with no receptions has receiving yards of exactly zero. This '
+     'REPLACED an identity asserting yards are non-negative, which was a '
+     'property of the placeholder conversion layer (receptions x a positive '
+     'constant) and is false of the RC1 baseline: it resamples real per-catch '
+     'gains, and a reception for a loss is ordinary football. The rehearsal '
+     'raised 64 such cells at a worst of -8 yards, and the identity was the '
+     'defect, not the draw.'),
     ('allocation_only_when_available',
      'a player who did not appear in draw j may not receive opportunity in '
      'draw j. This is what ties the allocation layer to the appearance layer '
@@ -163,11 +168,14 @@ def reconcile_nonqb(share, other, team_volume, player_opportunity,
                              float((D - R).max())))
         if receiving_yards is not None:
             Y = np.asarray(receiving_yards, np.float64)
-            bad = int((Y < 0).sum())
-            ev['receiving_yards_non_negative_violations'] = bad
+            bad = int(((R <= 0) & (np.abs(Y) > 1e-9)).sum())
+            ev['zero_receptions_implies_zero_yards_violations'] = bad
+            # Reported, never enforced: negative gains are real.
+            ev['n_negative_yard_cells'] = int((Y < 0).sum())
+            ev['min_receiving_yards'] = float(Y.min()) if Y.size else None
             if bad:
-                viol.append(('receiving_yards_non_negative', bad,
-                             float(Y.min())))
+                viol.append(('zero_receptions_implies_zero_yards', bad,
+                             float(np.abs(Y[(R <= 0)]).max())))
 
     bad_avail = int(((A <= 0) & (S > 0)).sum())
     ev['allocation_only_when_available_violations'] = bad_avail

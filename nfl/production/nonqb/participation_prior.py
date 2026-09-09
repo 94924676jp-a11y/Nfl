@@ -91,7 +91,8 @@ def _history(ordinal_cut: int):
         pos_n[pos] += 1
     pos_mean = {p: (pos_sum[p] / pos_n[p]) if pos_n[p] else None
                 for p in POSITIONS}
-    _CACHE[key] = (hist, ords, pos_mean, len(rows))
+    newest = max((o for o, *_ in rows), default=None)
+    _CACHE[key] = (hist, ords, pos_mean, len(rows), newest)
     return _CACHE[key]
 
 
@@ -103,13 +104,30 @@ def share_prior(season: int, week: int, players) -> Outcome:
     """ewma_hl2 of prior appeared pass-snap shares, per player."""
     cut = season * 100 + week
     ew = _ewma()
-    hist, ords, pos_mean, n_rows = _history(cut)
+    hist, ords, pos_mean, n_rows, newest = _history(cut)
     if not n_rows:
         return Outcome.blocked(
             'PARTICIPATION_HISTORY_EMPTY',
             f'no player-game earlier than {season} week {week} carries a '
             f'pass-snap share; an estimator fitted on nothing is not the '
             f'accepted estimator', cause=Cause.DATA)
+    # THE STALENESS REFUSAL PROMISED BY week2_data_debt.json. From week 2 the
+    # accepted ewma_hl2 weights the most recent games hardest, and the most
+    # recent game is a CURRENT-season game. With no current-season history the
+    # estimator silently becomes "last season weighted as if it were last
+    # week" -- a different estimator wearing the accepted one's name. That is
+    # refused, not quietly accepted.
+    if week >= 2 and (newest is None or newest < season * 100):
+        return Outcome.blocked(
+            'PARTICIPATION_HISTORY_STALE',
+            f'the newest participation history is ordinal {newest} and the '
+            f'forecast is {season} week {week}. ewma_hl2 weights the most '
+            f'recent games hardest, so running it with no {season} game would '
+            f'be a different estimator. pbp_participation_{season} is the '
+            f'missing input.', cause=Cause.DATA,
+            newest_ordinal=newest, forecast_ordinal=cut,
+            missing_source=f'pbp_participation_{season}')
+
     out, fell_back, unknown = {}, [], []
     for q in players:
         pid, pos = q.get('gsis_id'), q.get('position')
@@ -147,6 +165,7 @@ def share_prior(season: int, week: int, players) -> Outcome:
         'PARTICIPATION_PRIOR_OK', value=out, spec_version=SPEC_VERSION,
         estimator=f'ewma_hl{HALF_LIFE:g}', n_players=len(out),
         n_history_rows=n_rows, ordinal_cut=cut,
+        newest_history_ordinal=newest,
         n_on_positional_mean=len(fell_back),
         positional_mean={k: (round(v, 6) if v is not None else None)
                          for k, v in pos_mean.items()},

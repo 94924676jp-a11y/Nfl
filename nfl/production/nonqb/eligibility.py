@@ -65,6 +65,25 @@ REQUIRED_INPUTS = {
     'joint_accounting': ['every layer above, on one draw index'],
 }
 
+# WHAT ACTUALLY EXISTS IN PRODUCTION, per layer. This field was `None` with a
+# comment saying the runtime would fill it, which is the same as not having it:
+# a reader learned nothing about whether a governed layer had any code behind
+# it at all. It is now a declared value with the module that implements it, and
+# `assert_implementations_exist` checks that every named module imports.
+IMPLEMENTATION = {
+    'team_environment': ('IMPLEMENTED', 'nfl.production.team_volume_v1'),
+    'appearance': ('IMPLEMENTED', 'nfl.production.nonqb.appearance_model'),
+    'participation': ('IMPLEMENTED',
+                      'nfl.production.nonqb.participation_prior'),
+    'targets_carries': ('IMPLEMENTED', 'nfl.production.nonqb.p4c_params'),
+    'receiving_conversion': ('IMPLEMENTED',
+                             'nfl.production.nonqb.frozen_priors'),
+    'rushing_conversion': ('NOT_IMPLEMENTED', None),
+    'td_layer': ('IMPLEMENTED', 'nfl.production.nonqb.frozen_priors'),
+    'qb_layer': ('IMPLEMENTED', 'nfl.production.qb_v1'),
+    'joint_accounting': ('IMPLEMENTED', 'nfl.production.nonqb.accounting'),
+}
+
 RUNTIME_ROLE = {
     'PRODUCTION': 'may contribute to a forecast artifact',
     'REHEARSAL_ONLY': 'may execute, but the artifact is not publishable',
@@ -111,7 +130,10 @@ def matrix(input_states: dict | None = None) -> dict:
             'subsystem': sub,
             'research_state': research,
             'owner_state': owner,
-            'production_implementation_state': None,   # filled by the runtime
+            'production_implementation_state': IMPLEMENTATION.get(
+                layer, ('UNKNOWN', None))[0],
+            'production_implementation_module': IMPLEMENTATION.get(
+                layer, ('UNKNOWN', None))[1],
             'prospective_validation_state': (
                 'VALIDATED' if action == 'PROSPECTIVELY_VALIDATED'
                 else 'NOT_PROSPECTIVELY_VALIDATED'),
@@ -159,3 +181,38 @@ def assert_no_stale_labels(paths=None) -> Outcome:
     return Outcome.ok('NO_STALE_GOVERNANCE_LABELS', value=len(paths),
                       detail='no production string overstates a governance '
                              'state')
+
+
+def assert_implementations_exist() -> Outcome:
+    """A layer claiming IMPLEMENTED must have a module that imports.
+
+    A claim in a table is not an implementation, and this project has already
+    shipped six stage strings reading `... ACCEPTED` above stages that returned
+    an empty dict.
+    """
+    import importlib
+    bad = []
+    for layer, (state, mod) in IMPLEMENTATION.items():
+        if state != 'IMPLEMENTED':
+            if mod:
+                bad.append({'layer': layer, 'why': 'names a module while '
+                                                   'claiming not implemented'})
+            continue
+        if not mod:
+            bad.append({'layer': layer, 'why': 'claims IMPLEMENTED with no '
+                                               'module'})
+            continue
+        try:
+            importlib.import_module(mod)
+        except Exception as e:                                # noqa: BLE001
+            bad.append({'layer': layer, 'module': mod,
+                        'why': f'{type(e).__name__}: {e}'[:160]})
+    if bad:
+        return Outcome.fail(
+            'IMPLEMENTATION_CLAIM_UNSUPPORTED',
+            f'{len(bad)} layer(s) claim a production implementation that does '
+            f'not import', offences=bad)
+    n = sum(1 for s_, _ in IMPLEMENTATION.values() if s_ == 'IMPLEMENTED')
+    return Outcome.ok('IMPLEMENTATIONS_PRESENT', value=n,
+                      detail=f'{n} of {len(IMPLEMENTATION)} layers have a '
+                             f'production module that imports')

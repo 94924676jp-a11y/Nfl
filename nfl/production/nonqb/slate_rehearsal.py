@@ -43,9 +43,9 @@ def nonqb_chain(season, week, players):
     out['participation'] = pa
     tc = LY.targets_carries(pa, 'targets', [], [], ([], []), [], {})
     out['targets_carries'] = tc
-    cv = LY.receiving_conversion(tc, [], {})
+    cv = LY.receiving_conversion(tc, [], {}, [], [], season * 100 + week)
     out['receiving_conversion'] = cv
-    td = LY.td_layer(cv, [], {})
+    td = LY.td_layer(cv, [], {}, [], [], season * 100 + week)
     out['td_layer'] = td
     return out
 

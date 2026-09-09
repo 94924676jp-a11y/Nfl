@@ -129,7 +129,7 @@ def _run_real(season, week, players, injuries_rows, seed, m, test_only):
     draws = {pid: rng.binomial(1, float(np.clip(pv, 0.0, 1.0)), size=m)
              for pid, pv in o.value.items()}
     ev = {k: v for k, v in o.evidence.items()
-          if k not in ('value', 'test_only')}
+          if k not in ('value', 'test_only', 'spec_version', 'n_players')}
     return Outcome.ok('APPEARANCE_OK', value=draws,
                       spec_version=SPEC['appearance'], test_only=test_only,
                       mechanism='FROZEN_P3_LOGISTIC', n_players=len(draws),
@@ -216,45 +216,148 @@ def targets_carries(part: Outcome, cls, C, positions, groups, player_ids,
 
 
 # ---------------------------------------------------------------- D4
-def receiving_conversion(tc: Outcome, targets_draws, prior, m=200,
-                         seed=20260908):
-    """RC1 baseline. SIGNAL_WEAK, and the governance CALIBRATION_DEFECT is
-    surfaced in metadata rather than left in a document."""
+def _row_rng(seed, ordinal, pid):
+    """RC1's per-row seeding: every row reproducible on its own, independent of
+    what any other row consumed from the stream."""
+    return np.random.default_rng(
+        [seed, int(ordinal),
+         int.from_bytes(str(pid).encode()[-8:], 'little')])
+
+
+def receiving_conversion(tc: Outcome, targets_draws, priors, player_ids,
+                         positions, ordinal, m=200, seed=20260908):
+    """RC1 baseline: shrunk catch rate, and per-catch yardage RESAMPLED.
+
+    T is supplied by D3 rather than drawn, which is the one thing that differs
+    from `rc1_sim.simulate`; C and V follow RC1's scheme exactly, including the
+    shrinkage weight h_n/(h_n+K_SHRINK) and the own-versus-pool mixture.
+
+    THE YARDAGE IS NEVER A CONSTANT PER CATCH. An earlier version of this
+    function multiplied receptions by a fixed yards-per-reception, which
+    collapses a distribution whose tail a Normal already understates
+    thirteenfold. SIGNAL_WEAK, and the governance CALIBRATION_DEFECT is
+    surfaced in metadata rather than left in a document.
+    """
     if tc.state is not State.PASS:
         return _blocked('BLOCKED_UPSTREAM_OPPORTUNITY',
                         f'conversion needs targets; upstream is '
                         f'{tc.state.value}[{tc.code}]')
-    T = np.asarray(targets_draws)
-    rng = np.random.default_rng([seed, 4])
-    pc = np.clip(np.asarray([prior.get('catch_rate', 0.62)]), 0, 1)
-    R = rng.binomial(np.maximum(np.rint(T), 0).astype(int), float(pc[0]))
-    ypr = float(prior.get('yards_per_reception', 11.0))
-    Y = R * ypr
+    need = ('pos_catch_rate', 'pos_yardage_pool', 'own', 'k_shrink')
+    missing = [k for k in need if k not in (priors or {})]
+    if missing:
+        return Outcome.fail(
+            'CONVERSION_PRIOR_NOT_FROZEN',
+            f'the conversion priors omit {missing}. This layer implements the '
+            f'RC1 baseline and will not run on a prior supplied by its '
+            f'caller.', missing=missing)
+    T = np.maximum(np.rint(np.asarray(targets_draws, float)), 0).astype(int)
+    if T.shape != (len(player_ids), m):
+        return Outcome.fail(
+            'CROSS_DRAW_INDEX_MISMATCH',
+            f'target draws have shape {T.shape} against '
+            f'{(len(player_ids), m)}', got=list(T.shape))
+    K = float(priors['k_shrink'])
+    R = np.zeros_like(T)
+    Y = np.zeros(T.shape, float)
+    used_pos_rate = 0
+    for i, pid in enumerate(player_ids):
+        pos = positions[i]
+        rng = _row_rng(seed, ordinal, pid)
+        own = priors['own'].get(pid) or {}
+        h_n = float(own.get('h_n') or 0.0)
+        w = h_n / (h_n + K)
+        pos_rate = float(priors['pos_catch_rate'].get(pos, 0.0))
+        own_rate = ((own.get('h_rec') or 0) / own['h_tgt']
+                    if own.get('h_tgt') else None)
+        if own_rate is None:
+            c = pos_rate
+            used_pos_rate += 1
+        else:
+            c = w * own_rate + (1 - w) * pos_rate
+        c = min(max(c, 0.0), 1.0)
+        R[i] = rng.binomial(T[i], c)
+        own_v = np.asarray(own.get('h_V_flat') or [], float)
+        pool_v = np.asarray(priors['pos_yardage_pool'].get(
+            pos, np.array([0.0])), float)
+        total = int(R[i].sum())
+        if total == 0:
+            continue
+        use_own = (rng.random(total) < w) if len(own_v) else np.zeros(total,
+                                                                      bool)
+        picks = np.where(
+            use_own,
+            own_v[rng.integers(0, max(len(own_v), 1), total)] if len(own_v)
+            else 0.0,
+            pool_v[rng.integers(0, len(pool_v), total)])
+        # A draw with ZERO receptions has to yield exactly 0. np.add.reduceat
+        # cannot express a zero-length segment and raises on it; a cumulative
+        # sum differenced at the segment bounds returns 0 there, which is the
+        # right answer rather than a borrowed neighbouring one.
+        cs = np.concatenate([[0.0], np.cumsum(picks)])
+        ends = np.cumsum(R[i])
+        Y[i] = cs[ends] - cs[ends - R[i]]
     return Outcome.ok('CONVERSION_OK',
                       value={'receptions': R, 'receiving_yards': Y},
                       spec_version=SPEC['receiving_conversion'],
                       test_only=bool(tc.evidence.get('test_only')),
                       governance='HOLD_CHARACTERIZED + CALIBRATION_DEFECT',
+                      n_players=len(player_ids),
+                      n_on_positional_catch_rate=used_pos_rate,
+                      k_shrink=K,
                       warnings=['known limitation: RC1 SIGNAL_WEAK',
                                 'governance: receiving_baseline_calibration '
                                 'CALIBRATION_DEFECT'])
 
 
 # ---------------------------------------------------------------- D5
-def td_layer(conv: Outcome, opportunity, prior, m=200, seed=20260908):
-    """TD2 pooled positional control. HOLD_TENTATIVE, never called promoted."""
+def td_layer(conv: Outcome, targets_draws, priors, player_ids, positions,
+             ordinal, m=200, seed=20260908):
+    """TD2 pooled positional control (B_pos). HOLD_TENTATIVE, never promoted.
+
+    TD2's primary estimand for receiving is touchdowns per TARGET. A receiving
+    touchdown is nevertheless a catch, so drawing per target would let a draw
+    score more touchdowns than it had receptions. The rate is therefore
+    expressed per RECEPTION as B_pos / pos_catch_rate, which leaves the
+    expected touchdown count per target unchanged and keeps the count inside
+    receptions by construction. That is a stated identity, not a fitted
+    constant, and a rate above one is refused rather than clipped.
+    """
     if conv.state is not State.PASS:
         return _blocked('BLOCKED_UPSTREAM_TD_INPUT',
                         f'the TD layer needs conversion; upstream is '
                         f'{conv.state.value}[{conv.code}]')
-    O = np.asarray(opportunity)
-    rng = np.random.default_rng([seed, 5])
-    rate = float(prior.get('td_per_opportunity', 0.05))
-    TD = rng.binomial(np.maximum(np.rint(O), 0).astype(int), min(max(rate, 0), 1))
+    if 'B_pos' not in (priors or {}):
+        return Outcome.fail(
+            'TD_PRIOR_NOT_FROZEN',
+            'the TD priors carry no B_pos. This layer implements the TD2 '
+            'pooled positional control and will not run on a caller-supplied '
+            'rate.')
+    R = np.asarray(conv.value['receptions'], int)
+    catch = priors.get('pos_catch_rate') or {}
+    TD = np.zeros_like(R)
+    rates = {}
+    for i, pid in enumerate(player_ids):
+        pos = positions[i]
+        per_target = float(priors['B_pos'].get(pos, priors['B_league']))
+        c = float(catch.get(pos, 0.0))
+        if c <= 0:
+            return Outcome.fail(
+                'TD_RATE_UNDEFINED',
+                f'no positional catch rate for {pos}, so a per-reception '
+                f'touchdown rate cannot be stated', position=pos)
+        rate = per_target / c
+        if rate > 1.0:
+            return Outcome.fail(
+                'TD_RATE_ABOVE_ONE',
+                f'{pos}: B_pos {per_target:.6f} over catch rate {c:.6f} is '
+                f'{rate:.6f}. Refused rather than clipped.', position=pos)
+        rates[pos] = round(rate, 6)
+        TD[i] = _row_rng(seed, ordinal, pid).binomial(R[i], rate)
     return Outcome.ok('TD_LAYER_OK', value={'td': TD},
                       spec_version=SPEC['td_layer'],
                       test_only=bool(conv.evidence.get('test_only')),
-                      governance='HOLD_TENTATIVE',
+                      governance='HOLD_TENTATIVE', baseline='B_pos',
+                      per_reception_rate=rates, n_players=len(player_ids),
                       warnings=['known limitation: TD2 pooled positional '
                                 'control, HOLD_TENTATIVE'])
 
