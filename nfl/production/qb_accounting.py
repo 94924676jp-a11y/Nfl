@@ -519,3 +519,67 @@ def reconcile_allocation_share(allocation, forecast_ids_by_team,
         detail=f'every unit of allocated dropback share across '
                f'{len(allocation)} team(s) reaches a forecastable passer',
         **ev)
+
+
+# ---------------------------------------------------------------- XL1 / OWN-4
+ZERO_DRAW_ERASURE = (
+    'QB V1 draws its OWN level -- V from the team-dropback pool and S from the '
+    'share pool, DB = rint(V*S) -- which is the quantity D1 and QB3 already '
+    'own. The composition reconciles that duplicate by division, so where QB '
+    'V1s independent level happens to be zero the ratio is undefined and the '
+    'allocated dropbacks were dropped. The zero-denominator behaviour is not '
+    'an edge case; it is the signature of two layers owning one level.')
+
+
+def conserve_allocated_mass(target, drawn, seed_parts) -> Outcome:
+    """Which draw each cell should be composed FROM, so no allocated mass dies.
+
+    Returns a source index per draw. Unaffected cells map to themselves, so
+    their composition is bit-for-bit what it was. A cell holding allocated
+    opportunity whose own level draw is zero borrows a DONOR draw from the same
+    row: every rate in `qb2_lib.simulate` is a row-level scalar, so any
+    non-zero draw of that row carries the same rates, and scaling it to the
+    allocated target reproduces exactly what the composition would have done
+    had the level draw not been zero.
+
+    Nothing is fitted. Nothing is clipped. No survivor is renormalised. If the
+    row has no non-zero draw at all there is nothing to borrow and the caller
+    must REFUSE -- allocated mass may never be silently dropped or reassigned.
+    """
+    t = np.asarray(target, float)
+    d = np.asarray(drawn, float)
+    if t.shape != d.shape:
+        return Outcome.fail(
+            'MASS_CONSERVATION_SHAPE_MISMATCH',
+            f'target {t.shape} against drawn {d.shape}; these must be the '
+            f'same draw index', target_shape=list(t.shape),
+            drawn_shape=list(d.shape))
+    src = np.arange(t.size)
+    need = (d <= 0) & (t > 0)
+    n_need = int(need.sum())
+    ev = {'n_draws': int(t.size), 'cells_needing_repair': n_need,
+          'allocated_dropbacks_at_risk': round(float(t[need].sum()), 6),
+          'max_single_draw_at_risk': (round(float(t[need].max()), 6)
+                                      if n_need else 0.0)}
+    if not n_need:
+        return Outcome.ok('MASS_CONSERVED_NO_REPAIR_NEEDED', value=src,
+                          detail='every cell holding allocated opportunity has '
+                                 'a non-zero level draw of its own', **ev)
+    donor = np.flatnonzero(d > 0)
+    ev['donor_draws_available'] = int(donor.size)
+    if not donor.size:
+        return Outcome.fail(
+            'QB_COMPOSITION_NO_DONOR_DRAW',
+            f'{n_need} draw(s) hold {t[need].sum():.4f} allocated dropbacks '
+            f'and this row drew zero dropbacks in EVERY draw, so no donor '
+            f'exists. Refused: allocated mass may not be dropped and may not '
+            f'be reassigned to anybody else. {ZERO_DRAW_ERASURE}', **ev)
+    rng = np.random.default_rng(list(seed_parts))
+    src[need] = donor[rng.integers(0, donor.size, n_need)]
+    return Outcome.ok(
+        'MASS_CONSERVED_BY_DONOR_DRAW', value=src,
+        detail=f'{n_need} cell(s) borrowed a donor draw from the same row',
+        mechanism='donor draw from the same row, scaled to the allocated '
+                  'target; row-level rates are identical across a row',
+        no_survivor_renormalisation=True, nothing_fitted=True,
+        unaffected_cells_map_to_themselves=True, **ev)

@@ -247,6 +247,8 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
         alloc = qb['allocation']
         scaled = {k: np.array(v, float) for k, v in D.items()}
         applied = 0
+        repaired_cells = repaired_rows = 0
+        at_risk = 0.0
         for t in teams:
             a = alloc.get(t)
             if a is None:
@@ -261,16 +263,61 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
                     for f in QBV1.FIELDS:
                         scaled[f][i] = 0.0
                     continue
-                target = tdb * a['shares'][j]
+                target = np.asarray(tdb * a['shares'][j], float)
                 drawn = np.asarray(D['db'][i], float)
+                # OWN-4. A STOCHASTIC ZERO MUST NOT ERASE ALLOCATED OPPORTUNITY.
+                #
+                # QB V1 draws its OWN level -- V from the team-dropback pool and
+                # S from the share pool, DB = rint(V*S) -- which is the very
+                # quantity D1 and QB3 already own. This composition then
+                # reconciles the duplicate by division, and where QB V1's
+                # independent level happens to be zero the ratio is undefined
+                # and the allocated dropbacks were being dropped: measured at
+                # 20 cells of 47,600, but up to 37.7 dropbacks in a single draw
+                # -- an entire team's passing game for that draw.
+                #
+                # The repair borrows a donor draw FROM THE SAME ROW. Every rate
+                # in qb2_lib.simulate is a row-level scalar, so any non-zero
+                # draw of this row carries the same rates; scaling it to the
+                # allocated target reproduces exactly what the composition
+                # would have done had the level draw not been zero. Nothing is
+                # fitted, nothing is clipped, no survivor is renormalised, and
+                # the terminal-state identity survives because every field of
+                # the donor scales by one factor.
+                cons = QBACC.conserve_allocated_mass(
+                    target, drawn,
+                    [seed, int(season) * 100 + int(week),
+                     int.from_bytes(str(pid).encode()[-8:], 'little'), 0x04])
+                if cons.state is not State.PASS:
+                    g['halted_at'] = 'qb_composition'
+                    g['halt_reason'] = f'{pid} on {t}: {cons.detail[:220]}'
+                    g['accounting']['qb_composition'] = \
+                        f'{cons.state.value}[{cons.code}]'
+                    return g, None
+                src = cons.value
+                repaired_cells += cons.evidence['cells_needing_repair']
+                repaired_rows += int(bool(cons.evidence['cells_needing_repair']))
+                at_risk = max(at_risk,
+                              cons.evidence.get('max_single_draw_at_risk', 0.0))
+                den = drawn[src]
                 with np.errstate(divide='ignore', invalid='ignore'):
-                    fac = np.where(drawn > 0, target / np.maximum(drawn, 1e-9),
-                                   0.0)
+                    fac = np.where((target > 0) & (den > 0),
+                                   target / np.maximum(den, 1e-9), 0.0)
                 for f in QBV1.FIELDS:
-                    scaled[f][i] = np.asarray(D[f][i], float) * fac
+                    scaled[f][i] = np.asarray(D[f][i], float)[src] * fac
                 applied += 1
         qb = dict(qb, draws=scaled)
         g['qb_allocation_applied'] = applied
+        g['accounting']['qb_composition'] = (
+            'PASS[QB_COMPOSITION_MASS_CONSERVED]' if not repaired_cells
+            else f'PASS[QB_COMPOSITION_ZERO_DRAW_REPAIRED]')
+        g['qb_composition_repair'] = {
+            'cells_repaired': repaired_cells, 'rows_repaired': repaired_rows,
+            'max_single_draw_dropbacks_at_risk': round(at_risk, 6),
+            'mechanism': 'donor draw borrowed from the same row and scaled to '
+                         'the allocated target; row-level rates are identical '
+                         'across a row so the donor carries them',
+            'no_survivor_renormalisation': True, 'nothing_fitted': True}
         # FEED THE GUARD ITS INPUT, at the one place that has both sides.
         # The scaling above zeroes a forecast row that the allocation does not
         # name. The REVERSE -- an allocation entry naming a quarterback QB V1

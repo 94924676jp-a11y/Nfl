@@ -1001,3 +1001,64 @@ Part A at m=400 also did not complete. Compute, not findings.
 3. Ruling on the rushing gate.
 4. QB3b, with the participation table.
 5. Then rerun the W1 rehearsal and remeasure.
+
+---
+
+## 2026-09-09 — OWN-4: draw-level mass conservation
+
+### The ruling's first question answers itself: it is the same defect, a third time
+
+`qb2_lib.simulate` draws **V, the team dropback volume, from the team-dropback
+pool and S, the QB's share, from the share pool**, then `DB = rint(V*S)`. Those
+are the two quantities **D1 and QB3 already own**. `run_game` reconciles the
+duplicate by division, `fac = target/drawn`.
+
+**The zero denominator is not an edge case — it is the signature of two layers
+owning one level.** Third instance, after passing↔receiving yards and
+team_targets↔targeted throws.
+
+### The repair needs no estimator, because the rates are row-level scalars
+
+Every rate below the level (`ps`, `psc_c`, `pc`, `ptd`, `pint`, `dpd`) is a
+row-level scalar, so **any non-zero draw of a row carries the same rates**. A
+zero cell borrows a **donor draw from the same row** and is scaled to the
+allocated target — exactly what the composition would have done had the level
+draw not been zero. `qb_accounting.conserve_allocated_mass` returns a per-draw
+source index; unaffected cells map to themselves; a row with no donor anywhere
+**refuses** by name.
+
+Nothing fitted, nothing clipped, no survivor renormalised, QB3 shares untouched,
+per-QB attribution preserved because the donor is that quarterback's own row.
+
+### Result
+
+| gate | before | after |
+|---|---|---|
+| team dropback closure per draw | max abs diff **0.862** | **0.0** |
+| max per-draw shortfall | **37.71 dropbacks** | **0.0000000000** |
+| allocation share closure | 5.3168% lost | **0.000000%** |
+| unaffected draws altered | — | **0 of 924 comparisons** |
+
+Repair fired on 3 cells in 8 games at m=200; 20 of 47,600 across the full slate.
+Suite **42 modules, 448 functions, 2,607 checks, 0 failing**.
+
+### What I did not do, and why it is not caution
+
+**R2 — remove QB V1's level draw entirely** and generate the cascade at the
+allocated level. That removes the cause rather than the symptom, but it changes
+**every** quarterback's draws rather than the 20 affected cells, and it has a
+real tension: the binomial cascade needs an integer level while exact team
+closure currently relies on floats. More than one defensible answer, so it needs
+its own pre-registration. Recorded as OWN-4's successor.
+
+### Outstanding
+
+C3 shared-pass closure not re-verified under the repair. The identities hold **by
+construction** and the repair changes only which draw a QB composes from — a
+reason to expect them to hold, not evidence that they do. Queued.
+
+### Rushing gate
+
+Classified per the ruling as
+`PREEXISTING_SYSTEM_GATE_FAILURE_OUTSIDE_OWN3_CAUSAL_SCOPE`. Fails identically
+under both arms; neither C0 nor OWN-4 causes or cures it; not waived.

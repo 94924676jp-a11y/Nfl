@@ -405,3 +405,77 @@ def test_K_allocation_share_leak_guard():
     check('and the real membership still refuses',
           QBACC.reconcile_allocation_share(
               alloc, {'AAA': ['p1'], 'BBB': ['q1']}).state is State.FAIL)
+
+
+def test_M_own4_allocated_mass_is_conserved_per_draw():
+    """OWN-4: a stochastic zero must never erase allocated opportunity.
+
+    The invariant is per DRAW, not per mean. A single draw losing an entire
+    allocated passing game is the defect, and a mean of 0.05% is not a defence.
+    """
+    print('\nM. allocated dropback mass survives a stochastic zero')
+    from nfl.production import qb_accounting as QBACC
+    seed = [20260908, 202601, 12345, 4]
+    m = 200
+    rng = np.random.default_rng(0)
+    target = np.full(m, 37.0)
+    drawn = rng.integers(1, 45, m).astype(float)
+    o = QBACC.conserve_allocated_mass(target, drawn, seed)
+    check('no repair needed when every cell has its own level draw',
+          o.state is State.PASS
+          and o.code == 'MASS_CONSERVED_NO_REPAIR_NEEDED', o.code)
+    check('and every cell then maps to itself, so nothing is disturbed',
+          bool(np.array_equal(o.value, np.arange(m))))
+    # SEEDED VIOLATION: the primary passer draws zero in three draws while
+    # holding a full allocated game.
+    drawn2 = drawn.copy()
+    drawn2[[7, 88, 191]] = 0.0
+    o2 = QBACC.conserve_allocated_mass(target, drawn2, seed)
+    check('a zero level draw against positive allocation is repaired',
+          o2.state is State.PASS
+          and o2.code == 'MASS_CONSERVED_BY_DONOR_DRAW', o2.code)
+    check('it counts the cells at risk',
+          o2.evidence['cells_needing_repair'] == 3,
+          str(o2.evidence['cells_needing_repair']))
+    check('and reports the TAIL, not just the mean',
+          abs(o2.evidence['max_single_draw_at_risk'] - 37.0) < 1e-9,
+          str(o2.evidence.get('max_single_draw_at_risk')))
+    src = o2.value
+    check('every repaired cell now points at a non-zero donor draw',
+          bool((drawn2[src] > 0).all()), 'a repaired cell still has no level')
+    untouched = [i for i in range(m) if i not in (7, 88, 191)]
+    check('UNAFFECTED cells are untouched -- they still map to themselves',
+          bool(np.array_equal(src[untouched], np.array(untouched))))
+    check('the donor comes from THIS ROW, never from another player',
+          bool(set(np.asarray(src)[[7, 88, 191]]).issubset(
+              set(np.flatnonzero(drawn2 > 0).tolist()))))
+    check('it says it renormalised no survivor and fitted nothing',
+          o2.evidence.get('no_survivor_renormalisation') is True
+          and o2.evidence.get('nothing_fitted') is True)
+    # SEEDED VIOLATION 2: no donor anywhere. Must refuse, never invent.
+    o3 = QBACC.conserve_allocated_mass(target, np.zeros(m), seed)
+    check('a row with no non-zero draw at all is REFUSED by name',
+          o3.state is State.FAIL
+          and o3.code == 'QB_COMPOSITION_NO_DONOR_DRAW',
+          f'{o3.state.value}[{o3.code}]')
+    check('the refusal carries the mass it declined to invent',
+          abs(o3.evidence['allocated_dropbacks_at_risk'] - 37.0 * m) < 1e-6,
+          str(o3.evidence.get('allocated_dropbacks_at_risk')))
+    check('a shape mismatch is refused rather than broadcast',
+          QBACC.conserve_allocated_mass(np.zeros(5), np.zeros(7),
+                                        seed).code
+          == 'MASS_CONSERVATION_SHAPE_MISMATCH')
+    # THE CONSERVATION ITSELF: composing through src must reach the target.
+    fac = np.where((target > 0) & (drawn2[src] > 0),
+                   target / np.maximum(drawn2[src], 1e-9), 0.0)
+    got = drawn2[src] * fac
+    check('composing through the source index reaches the allocated target '
+          'in EVERY draw, including the repaired ones',
+          bool(np.abs(got - target).max() < 1e-9),
+          str(float(np.abs(got - target).max())))
+    # BYPASS: without the repair the same cells lose their whole allocation.
+    fac0 = np.where(drawn2 > 0, target / np.maximum(drawn2, 1e-9), 0.0)
+    lost = target - drawn2 * fac0
+    check('BYPASS: with the repair removed those draws lose 37.0 dropbacks '
+          'each, so the guard is what conserved them',
+          abs(float(lost.max()) - 37.0) < 1e-9, str(float(lost.max())))
