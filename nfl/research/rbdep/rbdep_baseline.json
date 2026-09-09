@@ -1,0 +1,155 @@
+{
+ "inputs": {
+  "state": "PASS",
+  "code": "RBDEP_INPUTS_OK",
+  "detail": "",
+  "evidence": {
+   "panel": "/home/user/nfl/nfl/derived/panel_enriched.pkl",
+   "volume": "/home/user/nfl/nfl/derived/volume_store.npy",
+   "n_rows": 83144,
+   "n_volume_keys": 20
+  }
+ },
+ "seasons": {
+  "state": "PASS",
+  "code": "RBDEP_SEASONS_OK",
+  "detail": "",
+  "evidence": {
+   "seasons": [
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025
+   ],
+   "scored": [
+    2022,
+    2023,
+    2024,
+    2025
+   ],
+   "burn_in_never_scored": [
+    2020,
+    2021
+   ]
+  }
+ },
+ "b11_quoted": {
+  "within_counts": 0.081,
+  "within_shares": -0.179,
+  "between_counts_median": 0.113,
+  "between_counts_p_gt_0": 0.68,
+  "realised_between_counts": -0.329,
+  "team_volume_variance_fraction": 0.287
+ },
+ "historical_half": {
+  "prior_weeks": {
+   "n_team_games": 1662,
+   "LIKE_FOR_LIKE_between_team_game_counts": {
+    "median": -0.35589082150668117,
+    "mean": -0.35562600041403225,
+    "p05": -0.3893957416159679,
+    "p95": -0.3215422421273977,
+    "p_gt_zero": 0.0,
+    "n_draws_used": 1000
+   },
+   "LIKE_FOR_LIKE_between_team_game_shares": {
+    "median": -0.54763833960833,
+    "mean": -0.5483207979551887,
+    "p05": -0.5776121376669079,
+    "p95": -0.5178441751219157,
+    "p_gt_zero": 0.0,
+    "n_draws_used": 1000
+   },
+   "realised_between_team_game_counts": -0.3716099375217268,
+   "realised_between_team_game_shares": -0.5951059908171317,
+   "NOT_COMPARABLE_within_team_game_across_draws_counts": -0.23913685537293025,
+   "NOT_COMPARABLE_within_team_game_across_draws_shares": -0.48013374399182834,
+   "FORBIDDEN_corr_of_predictive_means": -0.6170251468149139,
+   "team_volume_variance_fraction_of_RB1": 0.2772198246575402,
+   "rb1_predicted_mean": 12.182736786506519,
+   "rb2_predicted_mean": 5.460937999489515,
+   "rb1_over_rb2_pooled_mean_ratio": 2.2308872189439533,
+   "rb1_over_rb2_median_ratio_where_rb2_ge_half_carry": 2.47978506759479,
+   "n_team_games_with_rb2_below_half_carry": 61,
+   "sd_across_team_games_of_rb1_predictive_mean": 4.395044843108082,
+   "rank_rule": "prior_weeks"
+  },
+  "model_predicted_mean": {
+   "n_team_games": 2174,
+   "LIKE_FOR_LIKE_between_team_game_counts": {
+    "median": -0.309650106575759,
+    "mean": -0.30910510399449503,
+    "p05": -0.3409766200046548,
+    "p95": -0.2767060248296923,
+    "p_gt_zero": 0.0,
+    "n_draws_used": 1000
+   },
+   "LIKE_FOR_LIKE_between_team_game_shares": {
+    "median": -0.5232709771468821,
+    "mean": -0.5236550662654097,
+    "p05": -0.5518018491436883,
+    "p95": -0.49416085539145876,
+    "p_gt_zero": 0.0,
+    "n_draws_used": 1000
+   },
+   "realised_between_team_game_counts": -0.3330297107796565,
+   "realised_between_team_game_shares": -0.5963968606224771,
+   "NOT_COMPARABLE_within_team_game_across_draws_counts": -0.25626554656620526,
+   "NOT_COMPARABLE_within_team_game_across_draws_shares": -0.5057813620945786,
+   "FORBIDDEN_corr_of_predictive_means": -0.49957268317804343,
+   "team_volume_variance_fraction_of_RB1": 0.2811561956109856,
+   "rb1_predicted_mean": 12.683598317874704,
+   "rb2_predicted_mean": 5.189317085420723,
+   "rb1_over_rb2_pooled_mean_ratio": 2.444174851737044,
+   "rb1_over_rb2_median_ratio_where_rb2_ge_half_carry": 2.4215339517157237,
+   "n_team_games_with_rb2_below_half_carry": 4,
+   "sd_across_team_games_of_rb1_predictive_mean": 3.192387871771854,
+   "rank_rule": "model_predicted_mean"
+  }
+ },
+ "production_half": {
+  "outcome": {
+   "state": "PASS",
+   "code": "RBDEP_PRODUCTION_HALF_REPRODUCED",
+   "detail": "",
+   "evidence": {
+    "n_team_games": 32
+   }
+  },
+  "measured": {
+   "n_team_games": 32,
+   "LIKE_FOR_LIKE_between_team_game_counts": {
+    "median": 0.11315956958080375,
+    "mean": 0.1146850896446481,
+    "p05": -0.26490758329950786,
+    "p95": 0.5233480038100372,
+    "p_gt_zero": 0.68,
+    "n_draws_used": 400
+   },
+   "LIKE_FOR_LIKE_between_team_game_shares": {
+    "median": -0.1085666378691496,
+    "mean": -0.10092171519652414,
+    "p05": -0.4660059216598254,
+    "p95": 0.2847477284900226,
+    "p_gt_zero": 0.33,
+    "n_draws_used": 400
+   },
+   "realised_between_team_game_counts": null,
+   "realised_between_team_game_shares": null,
+   "NOT_COMPARABLE_within_team_game_across_draws_counts": 0.08091355491950566,
+   "NOT_COMPARABLE_within_team_game_across_draws_shares": -0.17916721304856323,
+   "FORBIDDEN_corr_of_predictive_means": 0.39936637469685765,
+   "team_volume_variance_fraction_of_RB1": 0.2867879236576528,
+   "rb1_predicted_mean": 6.950901007578944,
+   "rb2_predicted_mean": 4.357451719211536,
+   "rb1_over_rb2_pooled_mean_ratio": 1.5951756796141123,
+   "rb1_over_rb2_median_ratio_where_rb2_ge_half_carry": 1.522581721241075,
+   "n_team_games_with_rb2_below_half_carry": 0,
+   "sd_across_team_games_of_rb1_predictive_mean": 1.8688094912406252,
+   "rank_rule": "model predicted mean (B11 rule, NOT outcome-free-prior)",
+   "source": "/tmp/claude-0/-home-user-mlb-prop-system-v7/8de98087-4781-5a10-ae09-ef74590f8116/scratchpad/payload_A30.pkl"
+  }
+ }
+}

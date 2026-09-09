@@ -35,8 +35,32 @@ from nfl.production import qb_accounting as QBACC
 from nfl.production import team_volume_v1 as TV
 from nfl.production import qb_v1 as QBV1                             # noqa: E402
 from nfl.production import derived as DERIVED                       # noqa: E402
+from nfl.production import draws_artifact as DA                     # noqa: E402
 
 ARMS = ('A', 'B', 'C')
+
+# B14. WHICH INVARIANT A DRAW-ARTIFACT REFUSAL BELONGS TO.
+#
+# The hard/diagnostic classification itself lives in ONE place --
+# `nfl.prospective.artifact.INVARIANTS` -- and this table only says which
+# declared invariant a given refusal code is evidence about. Keeping the two
+# apart is deliberate: a reader who wants to know what gates reads the
+# registry, and nothing here can change a class.
+DRAW_CODE_INVARIANT = {
+    'DRAW_SET_EMPTY': 'draw_set_non_empty',
+    'DRAW_SET_NO_DRAW_INDEX': 'draw_set_non_empty',
+    'DRAW_LAYER_NO_ROWS': 'draw_set_non_empty',
+    'DRAW_LAYER_NO_METRICS': 'draw_set_non_empty',
+    'DRAW_MATRIX_NO_DRAWS': 'draw_set_non_empty',
+    'DRAW_INDEX_RAGGED': 'draw_index_shared',
+    'DRAW_INDEX_MANIFEST_MISMATCH': 'draw_index_shared',
+    'DRAW_MATRIX_NOT_2D': 'draw_index_shared',
+    'DRAW_MATRIX_ROW_MISMATCH': 'draw_index_shared',
+    'DRAW_ENCODING_LOSSY': 'draw_encoding_lossless',
+    'DRAW_MATRIX_NOT_FINITE': 'draw_encoding_lossless',
+}
+# Anything not named above is evidence about the container itself.
+DRAW_CODE_INVARIANT_DEFAULT = 'draw_artifact_integrity'
 
 
 def _now() -> str:
@@ -329,11 +353,20 @@ def build(args, fixtures: dict = None) -> dict:
                                   seed=args.seed, m=fx.get('qb_draws', 200))
                 if o.state is not State.PASS:
                     return o
+                # B14. THE VERDICT IS KEPT AS AN OUTCOME, NOT A STRING.
+                # These three already refused here, which is right and stays.
+                # What was missing is that the artifact carried no record of
+                # them at all, so a sealed artifact could not be interrogated
+                # about the invariants it claims to satisfy -- only about the
+                # ones that happened to stop the run.
+                _inv = fx.setdefault('_inv', {})
                 ident = QBV1.identity_check(o.value)
+                _inv['qb_dropback_identity'] = ident
                 if ident.state is not State.PASS:
                     return RF.refuse('INCOMPLETE_PLAYER_ACCOUNTING', _st,
                                      ident.detail, run_id)
                 acct = QBACC.reconcile_draws(o.value)
+                _inv['qb_per_draw_accounting'] = acct
                 if acct.state is not State.PASS:
                     return RF.refuse('INCOMPLETE_PLAYER_ACCOUNTING', _st,
                                      f'{acct.code}: {acct.detail}', run_id)
@@ -341,6 +374,9 @@ def build(args, fixtures: dict = None) -> dict:
                     o.value, fx['qb_rows'],
                     team_rush_draws=fx.get('team_rush_draws'),
                     team_rushes_realised=fx.get('team_rushes_realised'))
+                _inv['qb_team_accounting'] = team
+                fx['_qb_team_warnings'] = list(team.evidence.get('warnings')
+                                               or [])
                 if team.state is not State.PASS:
                     return RF.refuse('INCOMPLETE_PLAYER_ACCOUNTING', _st,
                                      f'{team.code}: {team.detail}', run_id)
@@ -445,6 +481,7 @@ def build(args, fixtures: dict = None) -> dict:
                                  'joint_reconciliation',
                                  f'{x.code}: {x.detail}', run_id)
             # DEFERRED is carried into the artifact as OWED, never as passed.
+            fx.setdefault('_inv', {})['qb_cross_layer_reconciliation'] = x
             j['qb_cross_layer'] = {'state': x.state.value, 'code': x.code,
                                    'owed': x.evidence.get('owed') if x.state is State.DEFERRED
                                    else None}
@@ -456,38 +493,163 @@ def build(args, fixtures: dict = None) -> dict:
 
     # --- 12. player draws / 13. scoring / 14. sealing --------------------
     def _draws():
-        """Assemble every layer's draws into one player-keyed structure.
+        """Assemble every layer's draws into ONE joint, replayable draw set.
 
         Previously this returned fx['draws'] -- a fixture key nothing ever set
         -- so the stage passed with {} while the QB layer's real draws were
         computed and thrown away. The rehearsal sealed 16 artifacts containing
         zero forecasts and reported PASS on all of them.
+
+        B13. It then reduced every metric to mean/p10/p50/p90 and threw the
+        draws away a second time. Four quantiles cannot produce CRPS, a log
+        score, a PIT value, coverage at an unstored level, a tail probability
+        or ANY dependence diagnostic -- the last of those is not recoverable by
+        storing more quantiles, because a per-metric marginal summary has
+        already discarded which draw went with which.
+
+        So the draws themselves are written to a sidecar container on a shared
+        draw index and referenced from the artifact by hash, and the quantile
+        view is KEPT alongside as the convenient view it always was. The two
+        are then checked against each other, so they cannot describe different
+        runs.
         """
+        inv = fx.setdefault('_inv', {})
+
+        def _fail(o):
+            """Attribute a draw refusal to the invariant it is evidence about."""
+            inv[DRAW_CODE_INVARIANT.get(o.code, DRAW_CODE_INVARIANT_DEFAULT)] = o
+            return o
+
         import numpy as _np
-        out, produced = {}, {}
+        ds = DA.DrawSet(run_id=run_id, game_id=args.game_id, seed=args.seed,
+                        seed_protocol=f'per-row seed {args.seed}')
+        produced = {}
         D = fx.get('_qb_draws_out')
         rows = fx.get('qb_rows') or []
         if D is not None and rows:
-            for i, r in enumerate(rows):
-                pid = r['gsis_id']
-                out.setdefault(pid, {})['qb'] = {
-                    f: {'mean': float(D[f][i].mean()),
-                        'p10': float(_np.quantile(D[f][i], 0.10)),
-                        'p50': float(_np.quantile(D[f][i], 0.50)),
-                        'p90': float(_np.quantile(D[f][i], 0.90))}
-                    for f in QBV1.FIELDS}
-            produced['qb_layer'] = len(rows)
-        for _k in ('receiving', 'rushing', 'td', 'team_volume'):
+            o = ds.add_layer(
+                'qb', [r['gsis_id'] for r in rows],
+                {f: _np.asarray(D[f]) for f in QBV1.FIELDS},
+                QBV1.SPEC_VERSION,
+                'numpy default_rng([seed, ord, gsis_id]) -- one stream per '
+                'row; columns are aligned, rows are independent')
+            if o.state is not State.PASS:
+                return _fail(o)
+            produced['qb'] = len(rows)
+        tv = fx.get('_team_volume')
+        if tv:
+            teams = sorted({t for (_m, t) in tv})
+            mats = {m: _np.stack([_np.asarray(tv[(m, t)], float)
+                                  for t in teams])
+                    for m in TV.METRICS if all((m, t) in tv for t in teams)}
+            if mats:
+                o = ds.add_layer(
+                    'team_volume', teams, mats, TV.SPEC_VERSION,
+                    'nfl.production.seeds declared streams, per metric',
+                    row_axis='team')
+                if o.state is not State.PASS:
+                    return _fail(o)
+                produced['team_volume'] = len(teams)
+
+        if not ds.arrays:
+            # ABSENCE IS NOT SUCCESS, AND IT IS NAMED.
+            #
+            # Two different situations, and collapsing them would be the same
+            # class of error this whole stage exists to end:
+            #
+            #  * NOTHING AT ALL. No model layer ran and no fixture was
+            #    supplied, so there is no forecast. This is the declared
+            #    refusal EMPTY_FORECAST_ARTIFACT, raised HERE rather than three
+            #    stages later, so no model runs on a run that has already lost
+            #    its forecast.
+            #  * A DECLARED FIXTURE RUN. `fx['distributions']` was supplied,
+            #    the artifact is already stamped TEST_ONLY and
+            #    DISTRIBUTIONS_FROM_FIXTURE, and `artifact.validate` does not
+            #    apply the model gates to it. There is genuinely no model draw
+            #    set to preserve, and saying so is NOT_APPLICABLE with a
+            #    reason -- not PASS, and never a claim that draws were stored.
+            inv['draw_set_non_empty'] = Outcome.fail(
+                'DRAW_SET_EMPTY',
+                'no layer produced a draw matrix, so this run has no '
+                'distribution to preserve. Emitting a quantile summary here '
+                'would be four numbers with nothing behind them.')
+            if not fx.get('distributions'):
+                return RF.refuse(
+                    'EMPTY_FORECAST_ARTIFACT', 'player_draws',
+                    'no model layer produced a draw matrix, so there is no '
+                    'distribution to preserve and nothing to seal.', run_id)
+            return Outcome.not_applicable(
+                'DRAW_SET_NOT_MODEL_PRODUCED',
+                'no model layer produced draws; this run carries fixture '
+                'distributions and its artifact is stamped TEST_ONLY, so '
+                'there is no model draw set to preserve. This is NOT a '
+                'forecast and the model gates do not apply to it.',
+                distributions_source='FIXTURE_TEST_ONLY')
+        inv['draw_set_non_empty'] = Outcome.ok(
+            'DRAW_SET_PRESENT', value=len(ds.arrays),
+            detail=f'{len(ds.arrays)} matrix(es) from {sorted(produced)}',
+            layers=sorted(produced))
+
+        w = ds.write(out_dir)
+        if w.state is not State.PASS:
+            return _fail(w)
+        man = w.value
+        inv['draw_encoding_lossless'] = Outcome.ok(
+            'DRAW_ENCODING_LOSSLESS', value=sorted(
+                {e['dtype'] for e in man['arrays'].values()}),
+            detail='every matrix round-tripped exactly through its stored '
+                   'dtype; nothing was clipped, rounded or rescaled to fit',
+            dtypes=sorted({e['dtype'] for e in man['arrays'].values()}))
+        inv['draw_index_shared'] = Outcome.ok(
+            'DRAW_INDEX_SHARED', value=man['n_draws'],
+            detail=f'all {man["n_matrices"]} matrix(es) share one draw index '
+                   f'of width {man["n_draws"]}')
+        # RE-READ FROM DISK. The write already verified itself; this checks the
+        # file the artifact will actually reference, by the hash it will
+        # actually record.
+        inv['draw_artifact_integrity'] = DA.verify(
+            out_dir / DA.DRAW_FILE_NAME, man)
+        if inv['draw_artifact_integrity'].state is not State.PASS:
+            return inv['draw_artifact_integrity']
+
+        # The quantile view, KEPT -- now with a reference to the draws it came
+        # from, so no number in the artifact is unaccompanied by its
+        # distribution.
+        out, summaries = {}, {}
+        for i, r in enumerate(rows if (D is not None and rows) else []):
+            pid = r['gsis_id']
+            out.setdefault(pid, {})['qb'] = {}
+            for f in QBV1.FIELDS:
+                q = DA.quantile_view(ds.vector('qb', f, i))
+                out[pid]['qb'][f] = dict(
+                    q, draws_ref={'key': f'qb/{f}', 'row': i,
+                                  'n_draws': man['n_draws'],
+                                  'content_digest': man['content_digest']})
+                summaries[f'qb/{f}/{pid}'] = q
+        cons = DA.assert_summary_consistent(summaries, ds)
+        inv['draw_summary_consistency'] = cons
+        if cons.state is not State.PASS:
+            return cons
+
+        fx['_draw_manifest'] = man
+        for _k in ('receiving', 'rushing', 'td'):
             v = fx.get(f'{_k}_draws')
             if v:
                 produced[_k] = len(v)
-        return Outcome.ok('DRAWS_BUILT', value=out,
-                          n_players_with_draws=len(out),
-                          layers_producing_draws=produced,
-                          layers_absent=[k for k in
-                                         ('receiving', 'rushing', 'td',
-                                          'team_volume')
-                                         if k not in produced])
+        return Outcome.ok(
+            'DRAWS_BUILT', value=out,
+            detail=f'{man["n_draw_cells"]} draw cell(s) preserved across '
+                   f'{man["n_matrices"]} matrix(es) on one draw index of '
+                   f'{man["n_draws"]}; {len(out)} player quantile view(s) kept',
+            n_players_with_draws=len(out),
+            layers_producing_draws=produced,
+            draw_artifact_sha256=man['file']['sha256'],
+            draw_content_digest=man['content_digest'],
+            n_draw_cells=man['n_draw_cells'],
+            draw_bytes=man['file']['bytes'],
+            layers_absent=[k for k in
+                           ('receiving', 'rushing', 'td', 'team_volume')
+                           if k not in produced])
     p.run_stage('player_draws', _draws,
                 declared_inputs=['joint'], spec_version='nfl-player-draw-1')
     p.run_stage('scoring', lambda: Outcome.ok(
@@ -542,6 +704,82 @@ def build(args, fixtures: dict = None) -> dict:
         if fx.get('sealing_fails'):
             return RF.refuse('ARTIFACT_SEALING_FAILURE', 'artifact_sealing',
                              'the artifact failed its own contract', run_id)
+
+        # ============================================================
+        # B14. ACCOUNTING VERDICTS, AND THE GATE THEY DRIVE
+        # ============================================================
+        # The defect: verdicts were recorded as display strings and the run
+        # continued, so an artifact could represent itself as a valid forecast
+        # while carrying FAIL on an invariant the layer rests on.
+        #
+        # The three-way split is the owner's and is implemented exactly:
+        #   HARD invariant FAIL/BLOCKED -> refuse to seal
+        #   diagnostic disagreement     -> recorded, not a gate
+        #   partial player coverage     -> `completeness`, which already works
+        #
+        # The classification is NOT decided here. It is read from
+        # `artifact.INVARIANTS`, and `artifact.verdict` refuses to accept a
+        # class from a call site, so no line in this file can promote a
+        # diagnostic or demote an invariant.
+        #
+        # Scope: verdicts are attached when the numbers came from the MODEL. A
+        # fixture-sourced artifact is already stamped TEST_ONLY and is not a
+        # forecast, so gating it would assert something about a thing that is
+        # declared not to be one.
+        _verdicts = None
+        if _dist_source == 'MODEL':
+            # The diagnostics land in the run's own verdict map too, so
+            # run_status.json carries all of them and not only the ones
+            # some earlier stage happened to record.
+            _inv = fx.setdefault('_inv', {})
+            # --- diagnostics: recorded on EVERY run, never gating ---------
+            _lims = sorted(QBV1.KNOWN_LIMITATIONS)
+            _inv['qb_known_limitations'] = (
+                Outcome.fail(
+                    'QB_LAYER_KNOWN_LIMITATIONS',
+                    'characterised weaknesses present in every run of this '
+                    'layer: ' + ', '.join(_lims) + '. Measured and reported, '
+                    'never smoothed away. This is a statement about how good '
+                    'the model is, not about whether its numbers are '
+                    'self-consistent, so it does not gate.',
+                    limitations=_lims)
+                if _lims else
+                Outcome.ok('QB_LAYER_NO_KNOWN_LIMITATIONS', value=[],
+                           detail='the layer declares none'))
+            _warn = fx.get('_qb_team_warnings') or []
+            _inv['qb_allocation_residual'] = (
+                Outcome.fail(
+                    'QB_ALLOCATION_RESIDUAL_PRESENT',
+                    '; '.join(_warn)[:380], warnings=_warn)
+                if _warn else
+                Outcome.ok('QB_ALLOCATION_RESIDUAL_NONE', value=0,
+                           detail='the team reconciliation raised no residual '
+                                  'warning'))
+            _inv['nonqb_layer_availability'] = (
+                Outcome.fail(
+                    'NONQB_LAYERS_UNAVAILABLE',
+                    f'{len(_absent)} completeness layer(s) produced nothing '
+                    f'this run: {_absent}. Carried by `completeness` as '
+                    f'partial coverage; named here so the artifact says WHICH.',
+                    absent=_absent)
+                if _absent else
+                Outcome.ok('NONQB_LAYERS_ALL_PRODUCED', value=[],
+                           detail='every completeness layer produced output'))
+            try:
+                _verdicts = [ART.verdict(k, o) for k, o in sorted(_inv.items())]
+            except (KeyError, TypeError) as exc:
+                return RF.refuse('ARTIFACT_SEALING_FAILURE',
+                                 'artifact_sealing', str(exc)[:300], run_id)
+            _gate = ART.assert_hard_invariants(_verdicts)
+            if _gate.state is not State.PASS:
+                # THE GATE. A hard invariant that did not hold means there is
+                # no valid forecast to publish, whatever else in the run
+                # succeeded.
+                return RF.refuse('ARTIFACT_SEALING_FAILURE', 'artifact_sealing',
+                                 f'{_gate.code}: {_gate.detail}', run_id)
+            fx['_gate'] = _gate
+
+        _man = fx.get('_draw_manifest') or {}
         art = {
             'game_id': args.game_id, 'kickoff_utc': kickoff,
             'written_at': args.written_at,
@@ -565,6 +803,13 @@ def build(args, fixtures: dict = None) -> dict:
             'absent_layers': _absent,
             'excluded_unidentified': fx.get('_excluded_unidentified', []),
             'contract_version': ART.CONTRACT_VERSION,
+            # B13. The distribution itself, by hash. The bytes stay in the
+            # sidecar; the artifact carries the identity that changes if any
+            # single draw changes, plus the manifest a reader needs to open it.
+            'draw_artifact_sha256': (_man.get('file') or {}).get('sha256'),
+            'draw_artifact': _man or None,
+            # B14. Every declared invariant's verdict travels WITH the numbers.
+            'accounting_verdicts': _verdicts,
         }
         v = ART.validate(art)
         if v.state is not State.PASS:
@@ -573,11 +818,40 @@ def build(args, fixtures: dict = None) -> dict:
         out_dir.mkdir(parents=True, exist_ok=True)
         (out_dir / 'forecast_artifact.json').write_text(
             json.dumps(art, indent=1, sort_keys=True) + '\n')
-        return Outcome.ok('ARTIFACT_SEALED', value=ART.artifact_id(art))
+        return Outcome.ok(
+            'ARTIFACT_SEALED', value=ART.artifact_id(art),
+            detail=(f'{(_man.get("n_draw_cells") or 0)} draw cell(s) '
+                    f'referenced by sha256'
+                    + (f'; {fx["_gate"].detail}'
+                       if fx.get('_gate') is not None else '')),
+            draw_artifact_sha256=(_man.get('file') or {}).get('sha256'),
+            n_hard_invariants=len(ART.HARD_INVARIANTS),
+            n_diagnostic_invariants=len(ART.DIAGNOSTIC_INVARIANTS),
+            hard_owed=(fx['_gate'].evidence.get('hard_owed')
+                       if fx.get('_gate') is not None else None),
+            diagnostics_not_clean=(
+                fx['_gate'].evidence.get('diagnostics_not_clean')
+                if fx.get('_gate') is not None else None))
     p.run_stage('artifact_sealing', _seal, declared_inputs=['draws'],
                 spec_version=ART.CONTRACT_VERSION)
 
     summary = p.summary()
+    # The run's own record of the draw set and of every invariant verdict, so
+    # `run_status.json` answers both B13 and B14 questions without opening the
+    # artifact.
+    _m = fx.get('_draw_manifest') or {}
+    summary['draw_artifact'] = ({'sha256': (_m.get('file') or {}).get('sha256'),
+                                 'bytes': (_m.get('file') or {}).get('bytes'),
+                                 'n_draws': _m.get('n_draws'),
+                                 'n_matrices': _m.get('n_matrices'),
+                                 'n_draw_cells': _m.get('n_draw_cells'),
+                                 'content_digest': _m.get('content_digest')}
+                                if _m else None)
+    summary['accounting_verdicts'] = [
+        {'invariant': k, 'class': ART.INVARIANTS[k]['class'],
+         'state': o.state.value, 'code': o.code}
+        for k, o in sorted(fx.get('_inv', {}).items())
+        if k in ART.INVARIANTS]
     summary['execution_identity'] = execution_identity(args, src, commit)
     summary['code_commit'] = commit
     summary['dry_run'] = bool(args.dry_run)

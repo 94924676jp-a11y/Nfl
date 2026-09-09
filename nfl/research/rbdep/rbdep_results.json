@@ -1,0 +1,1827 @@
+{
+ "predeclaration": {
+  "state": "PASS",
+  "code": "RBDEP_PREDECLARATION_VERIFIED",
+  "detail": "",
+  "evidence": {
+   "sha256": "f922f2c30d6d5780158be8551ac448da5506aa2da56db6cae4de5cae96697ee5"
+  }
+ },
+ "inputs": {
+  "state": "PASS",
+  "code": "RBDEP_INPUTS_OK",
+  "detail": "",
+  "evidence": {
+   "panel": "/home/user/nfl/nfl/derived/panel_enriched.pkl",
+   "volume": "/home/user/nfl/nfl/derived/volume_store.npy",
+   "n_rows": 83144,
+   "n_volume_keys": 20
+  }
+ },
+ "seasons": {
+  "state": "PASS",
+  "code": "RBDEP_SEASONS_OK",
+  "detail": "",
+  "evidence": {
+   "seasons": [
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025
+   ],
+   "scored": [
+    2022,
+    2023,
+    2024,
+    2025
+   ],
+   "burn_in_never_scored": [
+    2020,
+    2021
+   ]
+  }
+ },
+ "n_draws": 1000,
+ "exploratory": "EXPLORATORY. The evaluation seasons are the seasons P4B and P4C were selected on. This cannot establish that any variant is better; a confirmatory result needs games no design decision has touched.",
+ "arms": {
+  "INC|lambda=1.0": {
+   "arm": "INC",
+   "lambda": 1.0,
+   "gates": {
+    "n_rows": 8960,
+    "n_team_games": 2174,
+    "n_draws": 4000,
+    "n_cells": 8960000,
+    "n_group_cells": 2174000,
+    "G1_closure_violations": 0,
+    "G1_closure_max_abs_dev": 1.7508864402770996e-07,
+    "G2_budget_violations": 0,
+    "G2_budget_max_abs_dev": 8.654702725152674e-06,
+    "G3_negative_shares": 0,
+    "G3_negative_counts": 0,
+    "G4_waterfill_bind": 0,
+    "G5_weight_floor_cells": 1448467,
+    "G5_weight_floor_rate": 0.16165926339285713,
+    "G6_degenerate_group_cells": 18341,
+    "G6_degenerate_group_rate": 0.008436522539098436
+   },
+   "gate_verdict": {
+    "state": "PASS",
+    "code": "RBDEP_HARD_GATES_PASS",
+    "detail": "",
+    "evidence": {
+     "n_rows": 8960,
+     "n_team_games": 2174,
+     "n_draws": 4000,
+     "n_cells": 8960000,
+     "n_group_cells": 2174000,
+     "G1_closure_violations": 0,
+     "G1_closure_max_abs_dev": 1.7508864402770996e-07,
+     "G2_budget_violations": 0,
+     "G2_budget_max_abs_dev": 8.654702725152674e-06,
+     "G3_negative_shares": 0,
+     "G3_negative_counts": 0,
+     "G4_waterfill_bind": 0,
+     "G5_weight_floor_cells": 1448467,
+     "G5_weight_floor_rate": 0.16165926339285713,
+     "G6_degenerate_group_cells": 18341,
+     "G6_degenerate_group_rate": 0.008436522539098436
+    }
+   },
+   "per_season": {
+    "2022": {
+     "n_rows": 2365,
+     "n_team_games": 542,
+     "gates": {
+      "n_rows": 2365,
+      "n_team_games": 542,
+      "n_draws": 1000,
+      "n_cells": 2365000,
+      "n_group_cells": 542000,
+      "G1_closure_violations": 0,
+      "G1_closure_max_abs_dev": 1.6763806343078613e-07,
+      "G2_budget_violations": 0,
+      "G2_budget_max_abs_dev": 8.654702725152674e-06,
+      "G3_negative_shares": 0,
+      "G3_negative_counts": 0,
+      "G4_waterfill_bind": 0,
+      "G5_weight_floor_cells": 398164,
+      "G5_weight_floor_rate": 0.1683568710359408,
+      "G6_degenerate_group_cells": 4051,
+      "G6_degenerate_group_rate": 0.007474169741697417
+     }
+    },
+    "2023": {
+     "n_rows": 2255,
+     "n_team_games": 544,
+     "gates": {
+      "n_rows": 2255,
+      "n_team_games": 544,
+      "n_draws": 1000,
+      "n_cells": 2255000,
+      "n_group_cells": 544000,
+      "G1_closure_violations": 0,
+      "G1_closure_max_abs_dev": 1.7508864402770996e-07,
+      "G2_budget_violations": 0,
+      "G2_budget_max_abs_dev": 7.724407282694301e-06,
+      "G3_negative_shares": 0,
+      "G3_negative_counts": 0,
+      "G4_waterfill_bind": 0,
+      "G5_weight_floor_cells": 356057,
+      "G5_weight_floor_rate": 0.15789667405764968,
+      "G6_degenerate_group_cells": 4450,
+      "G6_degenerate_group_rate": 0.00818014705882353
+     }
+    },
+    "2024": {
+     "n_rows": 2166,
+     "n_team_games": 544,
+     "gates": {
+      "n_rows": 2166,
+      "n_team_games": 544,
+      "n_draws": 1000,
+      "n_cells": 2166000,
+      "n_group_cells": 544000,
+      "G1_closure_violations": 0,
+      "G1_closure_max_abs_dev": 1.6577541828155518e-07,
+      "G2_budget_violations": 0,
+      "G2_budget_max_abs_dev": 7.206709739193684e-06,
+      "G3_negative_shares": 0,
+      "G3_negative_counts": 0,
+      "G4_waterfill_bind": 0,
+      "G5_weight_floor_cells": 339086,
+      "G5_weight_floor_rate": 0.15654939981532778,
+      "G6_degenerate_group_cells": 6006,
+      "G6_degenerate_group_rate": 0.011040441176470588
+     }
+    },
+    "2025": {
+     "n_rows": 2174,
+     "n_team_games": 544,
+     "gates": {
+      "n_rows": 2174,
+      "n_team_games": 544,
+      "n_draws": 1000,
+      "n_cells": 2174000,
+      "n_group_cells": 544000,
+      "G1_closure_violations": 0,
+      "G1_closure_max_abs_dev": 1.6391277313232422e-07,
+      "G2_budget_violations": 0,
+      "G2_budget_max_abs_dev": 7.214355974838327e-06,
+      "G3_negative_shares": 0,
+      "G3_negative_counts": 0,
+      "G4_waterfill_bind": 0,
+      "G5_weight_floor_cells": 355160,
+      "G5_weight_floor_rate": 0.16336706531738732,
+      "G6_degenerate_group_cells": 3834,
+      "G6_degenerate_group_rate": 0.007047794117647059
+     }
+    }
+   },
+   "dependence": {
+    "n_team_games": 1662,
+    "LIKE_FOR_LIKE_between_team_game_counts": {
+     "median": -0.35589082150668117,
+     "mean": -0.35562600041403225,
+     "p05": -0.3893957416159679,
+     "p95": -0.3215422421273977,
+     "p_gt_zero": 0.0,
+     "n_draws_used": 1000
+    },
+    "LIKE_FOR_LIKE_between_team_game_shares": {
+     "median": -0.54763833960833,
+     "mean": -0.5483207979551887,
+     "p05": -0.5776121376669079,
+     "p95": -0.5178441751219157,
+     "p_gt_zero": 0.0,
+     "n_draws_used": 1000
+    },
+    "realised_between_team_game_counts": -0.3716099375217268,
+    "realised_between_team_game_shares": -0.5951059908171317,
+    "NOT_COMPARABLE_within_team_game_across_draws_counts": -0.23913685537293025,
+    "NOT_COMPARABLE_within_team_game_across_draws_shares": -0.48013374399182834,
+    "FORBIDDEN_corr_of_predictive_means": -0.6170251468149139,
+    "team_volume_variance_fraction_of_RB1": 0.2772198246575402,
+    "rb1_predicted_mean": 12.182736786506519,
+    "rb2_predicted_mean": 5.460937999489515,
+    "rb1_over_rb2_pooled_mean_ratio": 2.2308872189439533,
+    "rb1_over_rb2_median_ratio_where_rb2_ge_half_carry": 2.47978506759479,
+    "n_team_games_with_rb2_below_half_carry": 61,
+    "sd_across_team_games_of_rb1_predictive_mean": 4.395044843108082
+   },
+   "marginals": {
+    "n": 8960,
+    "crps": 2.0206034152727748,
+    "mae": 3.0986582871521295,
+    "rmse": 4.436812436806132,
+    "bias": -0.006006742018820839,
+    "r_pred_vs_actual": 0.7592563044920931,
+    "dist": {
+     "mean": 5.227100372314453,
+     "sd": 6.9134321212768555,
+     "p05": 0.0,
+     "p50": 2.237971782684326,
+     "p95": 19.81576919555664,
+     "zero_mass": 0.42255078125
+    },
+    "actual_dist": {
+     "mean": 5.22109375,
+     "sd": 6.80460154741901,
+     "p05": 0.0,
+     "p50": 2.0,
+     "p95": 19.0,
+     "zero_mass": 0.42667410714285714
+    },
+    "coverage": {
+     "50": 0.7014508928571429,
+     "80": 0.8959821428571428,
+     "90": 0.9541294642857143,
+     "95": 0.98125
+    }
+   }
+  },
+  "SHR|lambda=1.0": {
+   "arm": "SHR",
+   "lambda": 1.0,
+   "gates": {
+    "n_rows": 8960,
+    "n_team_games": 2174,
+    "n_draws": 4000,
+    "n_cells": 8960000,
+    "n_group_cells": 2174000,
+    "G1_closure_violations": 0,
+    "G1_closure_max_abs_dev": 1.825392246246338e-07,
+    "G2_budget_violations": 0,
+    "G2_budget_max_abs_dev": 7.6086292466470695e-06,
+    "G3_negative_shares": 0,
+    "G3_negative_counts": 0,
+    "G4_waterfill_bind": 0,
+    "G5_weight_floor_cells": 1447462,
+    "G5_weight_floor_rate": 0.16154709821428573,
+    "G6_degenerate_group_cells": 31728,
+    "G6_degenerate_group_rate": 0.014594296228150875
+   },
+   "gate_verdict": {
+    "state": "PASS",
+    "code": "RBDEP_HARD_GATES_PASS",
+    "detail": "",
+    "evidence": {
+     "n_rows": 8960,
+     "n_team_games": 2174,
+     "n_draws": 4000,
+     "n_cells": 8960000,
+     "n_group_cells": 2174000,
+     "G1_closure_violations": 0,
+     "G1_closure_max_abs_dev": 1.825392246246338e-07,
+     "G2_budget_violations": 0,
+     "G2_budget_max_abs_dev": 7.6086292466470695e-06,
+     "G3_negative_shares": 0,
+     "G3_negative_counts": 0,
+     "G4_waterfill_bind": 0,
+     "G5_weight_floor_cells": 1447462,
+     "G5_weight_floor_rate": 0.16154709821428573,
+     "G6_degenerate_group_cells": 31728,
+     "G6_degenerate_group_rate": 0.014594296228150875
+    }
+   },
+   "per_season": {
+    "2022": {
+     "n_rows": 2365,
+     "n_team_games": 542,
+     "gates": {
+      "n_rows": 2365,
+      "n_team_games": 542,
+      "n_draws": 1000,
+      "n_cells": 2365000,
+      "n_group_cells": 542000,
+      "G1_closure_violations": 0,
+      "G1_closure_max_abs_dev": 1.7136335372924805e-07,
+      "G2_budget_violations": 0,
+      "G2_budget_max_abs_dev": 7.457253005327402e-06,
+      "G3_negative_shares": 0,
+      "G3_negative_counts": 0,
+      "G4_waterfill_bind": 0,
+      "G5_weight_floor_cells": 398494,
+      "G5_weight_floor_rate": 0.16849640591966172,
+      "G6_degenerate_group_cells": 7979,
+      "G6_degenerate_group_rate": 0.01472140221402214
+     }
+    },
+    "2023": {
+     "n_rows": 2255,
+     "n_team_games": 544,
+     "gates": {
+      "n_rows": 2255,
+      "n_team_games": 544,
+      "n_draws": 1000,
+      "n_cells": 2255000,
+      "n_group_cells": 544000,
+      "G1_closure_violations": 0,
+      "G1_closure_max_abs_dev": 1.7508864402770996e-07,
+      "G2_budget_violations": 0,
+      "G2_budget_max_abs_dev": 7.34581588801575e-06,
+      "G3_negative_shares": 0,
+      "G3_negative_counts": 0,
+      "G4_waterfill_bind": 0,
+      "G5_weight_floor_cells": 356108,
+      "G5_weight_floor_rate": 0.15791929046563194,
+      "G6_degenerate_group_cells": 8057,
+      "G6_degenerate_group_rate": 0.014810661764705883
+     }
+    },
+    "2024": {
+     "n_rows": 2166,
+     "n_team_games": 544,
+     "gates": {
+      "n_rows": 2166,
+      "n_team_games": 544,
+      "n_draws": 1000,
+      "n_cells": 2166000,
+      "n_group_cells": 544000,
+      "G1_closure_violations": 0,
+      "G1_closure_max_abs_dev": 1.825392246246338e-07,
+      "G2_budget_violations": 0,
+      "G2_budget_max_abs_dev": 7.6086292466470695e-06,
+      "G3_negative_shares": 0,
+      "G3_negative_counts": 0,
+      "G4_waterfill_bind": 0,
+      "G5_weight_floor_cells": 337721,
+      "G5_weight_floor_rate": 0.1559192059095106,
+      "G6_degenerate_group_cells": 9373,
+      "G6_degenerate_group_rate": 0.017229779411764706
+     }
+    },
+    "2025": {
+     "n_rows": 2174,
+     "n_team_games": 544,
+     "gates": {
+      "n_rows": 2174,
+      "n_team_games": 544,
+      "n_draws": 1000,
+      "n_cells": 2174000,
+      "n_group_cells": 544000,
+      "G1_closure_violations": 0,
+      "G1_closure_max_abs_dev": 1.7695128917694092e-07,
+      "G2_budget_violations": 0,
+      "G2_budget_max_abs_dev": 7.5406363180263725e-06,
+      "G3_negative_shares": 0,
+      "G3_negative_counts": 0,
+      "G4_waterfill_bind": 0,
+      "G5_weight_floor_cells": 355139,
+      "G5_weight_floor_rate": 0.16335740570377186,
+      "G6_degenerate_group_cells": 6319,
+      "G6_degenerate_group_rate": 0.011615808823529411
+     }
+    }
+   },
+   "dependence": {
+    "n_team_games": 1662,
+    "LIKE_FOR_LIKE_between_team_game_counts": {
+     "median": -0.3696169366107116,
+     "mean": -0.36978683713139626,
+     "p05": -0.40402080727746403,
+     "p95": -0.3344026318304125,
+     "p_gt_zero": 0.0,
+     "n_draws_used": 1000
+    },
+    "LIKE_FOR_LIKE_between_team_game_shares": {
+     "median": -0.5782316595373198,
+     "mean": -0.5779207851364874,
+     "p05": -0.6087548134591916,
+     "p95": -0.54644520408339,
+     "p_gt_zero": 0.0,
+     "n_draws_used": 1000
+    },
+    "realised_between_team_game_counts": -0.3716099375217268,
+    "realised_between_team_game_shares": -0.5951059908171317,
+    "NOT_COMPARABLE_within_team_game_across_draws_counts": -0.2132251644234375,
+    "NOT_COMPARABLE_within_team_game_across_draws_shares": -0.4914829405409468,
+    "FORBIDDEN_corr_of_predictive_means": -0.6631019884445062,
+    "team_volume_variance_fraction_of_RB1": 0.30771244041880264,
+    "rb1_predicted_mean": 12.804532373570758,
+    "rb2_predicted_mean": 5.30790809849458,
+    "rb1_over_rb2_pooled_mean_ratio": 2.4123500512758236,
+    "rb1_over_rb2_median_ratio_where_rb2_ge_half_carry": 2.824465897973079,
+    "n_team_games_with_rb2_below_half_carry": 61,
+    "sd_across_team_games_of_rb1_predictive_mean": 4.605761309892236
+   },
+   "marginals": {
+    "n": 8960,
+    "crps": 2.019756745261695,
+    "mae": 3.0117601647664416,
+    "rmse": 4.426299531983127,
+    "bias": 0.027136111326912474,
+    "r_pred_vs_actual": 0.7596352187028041,
+    "dist": {
+     "mean": 5.193957805633545,
+     "sd": 6.955505847930908,
+     "p05": 0.0,
+     "p50": 2.3090968132019043,
+     "p95": 20.076650619506836,
+     "zero_mass": 0.41943058035714287
+    },
+    "actual_dist": {
+     "mean": 5.22109375,
+     "sd": 6.80460154741901,
+     "p05": 0.0,
+     "p50": 2.0,
+     "p95": 19.0,
+     "zero_mass": 0.42667410714285714
+    },
+    "coverage": {
+     "50": 0.6763392857142857,
+     "80": 0.86953125,
+     "90": 0.9279017857142857,
+     "95": 0.9635044642857142
+    }
+   }
+  },
+  "INC|lambda=0.75": {
+   "arm": "INC",
+   "lambda": 0.75,
+   "gates": {
+    "n_rows": 8960,
+    "n_team_games": 2174,
+    "n_draws": 4000,
+    "n_cells": 8960000,
+    "n_group_cells": 2174000,
+    "G1_closure_violations": 0,
+    "G1_closure_max_abs_dev": 2.0489096641540527e-07,
+    "G2_budget_violations": 0,
+    "G2_budget_max_abs_dev": 7.4574874133759295e-06,
+    "G3_negative_shares": 0,
+    "G3_negative_counts": 0,
+    "G4_waterfill_bind": 0,
+    "G5_weight_floor_cells": 1019317,
+    "G5_weight_floor_rate": 0.11376305803571428,
+    "G6_degenerate_group_cells": 14542,
+    "G6_degenerate_group_rate": 0.006689052437902484
+   },
+   "gate_verdict": {
+    "state": "PASS",
+    "code": "RBDEP_HARD_GATES_PASS",
+    "detail": "",
+    "evidence": {
+     "n_rows": 8960,
+     "n_team_games": 2174,
+     "n_draws": 4000,
+     "n_cells": 8960000,
+     "n_group_cells": 2174000,
+     "G1_closure_violations": 0,
+     "G1_closure_max_abs_dev": 2.0489096641540527e-07,
+     "G2_budget_violations": 0,
+     "G2_budget_max_abs_dev": 7.4574874133759295e-06,
+     "G3_negative_shares": 0,
+     "G3_negative_counts": 0,
+     "G4_waterfill_bind": 0,
+     "G5_weight_floor_cells": 1019317,
+     "G5_weight_floor_rate": 0.11376305803571428,
+     "G6_degenerate_group_cells": 14542,
+     "G6_degenerate_group_rate": 0.006689052437902484
+    }
+   },
+   "per_season": {
+    "2022": {
+     "n_rows": 2365,
+     "n_team_games": 542,
+     "gates": {
+      "n_rows": 2365,
+      "n_team_games": 542,
+      "n_draws": 1000,
+      "n_cells": 2365000,
+      "n_group_cells": 542000,
+      "G1_closure_violations": 0,
+      "G1_closure_max_abs_dev": 2.0489096641540527e-07,
+      "G2_budget_violations": 0,
+      "G2_budget_max_abs_dev": 7.202146008467025e-06,
+      "G3_negative_shares": 0,
+      "G3_negative_counts": 0,
+      "G4_waterfill_bind": 0,
+      "G5_weight_floor_cells": 287579,
+      "G5_weight_floor_rate": 0.12159788583509513,
+      "G6_degenerate_group_cells": 3230,
+      "G6_degenerate_group_rate": 0.0059594095940959406
+     }
+    },
+    "2023": {
+     "n_rows": 2255,
+     "n_team_games": 544,
+     "gates": {
+      "n_rows": 2255,
+      "n_team_games": 544,
+      "n_draws": 1000,
+      "n_cells": 2255000,
+      "n_group_cells": 544000,
+      "G1_closure_violations": 0,
+      "G1_closure_max_abs_dev": 1.862645149230957e-07,
+      "G2_budget_violations": 0,
+      "G2_budget_max_abs_dev": 7.45022123282979e-06,
+      "G3_negative_shares": 0,
+      "G3_negative_counts": 0,
+      "G4_waterfill_bind": 0,
+      "G5_weight_floor_cells": 252427,
+      "G5_weight_floor_rate": 0.1119410199556541,
+      "G6_degenerate_group_cells": 3651,
+      "G6_degenerate_group_rate": 0.006711397058823529
+     }
+    },
+    "2024": {
+     "n_rows": 2166,
+     "n_team_games": 544,
+     "gates": {
+      "n_rows": 2166,
+      "n_team_games": 544,
+      "n_draws": 1000,
+      "n_cells": 2166000,
+      "n_group_cells": 544000,
+      "G1_closure_violations": 0,
+      "G1_closure_max_abs_dev": 1.862645149230957e-07,
+      "G2_budget_violations": 0,
+      "G2_budget_max_abs_dev": 7.43859948215686e-06,
+      "G3_negative_shares": 0,
+      "G3_negative_counts": 0,
+      "G4_waterfill_bind": 0,
+      "G5_weight_floor_cells": 233516,
+      "G5_weight_floor_rate": 0.10780978762696214,
+      "G6_degenerate_group_cells": 4562,
+      "G6_degenerate_group_rate": 0.008386029411764705
+     }
+    },
+    "2025": {
+     "n_rows": 2174,
+     "n_team_games": 544,
+     "gates": {
+      "n_rows": 2174,
+      "n_team_games": 544,
+      "n_draws": 1000,
+      "n_cells": 2174000,
+      "n_group_cells": 544000,
+      "G1_closure_violations": 0,
+      "G1_closure_max_abs_dev": 1.825392246246338e-07,
+      "G2_budget_violations": 0,
+      "G2_budget_max_abs_dev": 7.4574874133759295e-06,
+      "G3_negative_shares": 0,
+      "G3_negative_counts": 0,
+      "G4_waterfill_bind": 0,
+      "G5_weight_floor_cells": 245795,
+      "G5_weight_floor_rate": 0.11306117755289788,
+      "G6_degenerate_group_cells": 3099,
+      "G6_degenerate_group_rate": 0.005696691176470588
+     }
+    }
+   },
+   "dependence": {
+    "n_team_games": 1662,
+    "LIKE_FOR_LIKE_between_team_game_counts": {
+     "median": -0.3096221384345202,
+     "mean": -0.30918347225801823,
+     "p05": -0.3447011953619578,
+     "p95": -0.27405712130687493,
+     "p_gt_zero": 0.0,
+     "n_draws_used": 1000
+    },
+    "LIKE_FOR_LIKE_between_team_game_shares": {
+     "median": -0.49628175755232873,
+     "mean": -0.4963613970863612,
+     "p05": -0.5266557563689207,
+     "p95": -0.4642800766263282,
+     "p_gt_zero": 0.0,
+     "n_draws_used": 1000
+    },
+    "realised_between_team_game_counts": -0.3716099375217268,
+    "realised_between_team_game_shares": -0.5951059908171317,
+    "NOT_COMPARABLE_within_team_game_across_draws_counts": -0.2271787366536174,
+    "NOT_COMPARABLE_within_team_game_across_draws_shares": -0.45663068738003865,
+    "FORBIDDEN_corr_of_predictive_means": -0.511917488168224,
+    "team_volume_variance_fraction_of_RB1": 0.24930021725841428,
+    "rb1_predicted_mean": 11.204316567271647,
+    "rb2_predicted_mean": 5.628496920103947,
+    "rb1_over_rb2_pooled_mean_ratio": 1.9906409697501843,
+    "rb1_over_rb2_median_ratio_where_rb2_ge_half_carry": 2.147563432504837,
+    "n_team_games_with_rb2_below_half_carry": 61,
+    "sd_across_team_games_of_rb1_predictive_mean": 3.991138696271104
+   },
+   "marginals": {
+    "state": "NOT_APPLICABLE",
+    "code": "RBDEP_MARGINALS_NOT_SCORED_ON_FRAME_L",
+    "detail": "lambda=0.75 deliberately degrades the share forecast, so a CRPS computed there measures the degradation and not the model. Section 6 forbids reading quality off Frame L.",
+    "evidence": {}
+   }
+  },
+  "SHR|lambda=0.75": {
+   "arm": "SHR",
+   "lambda": 0.75,
+   "gates": {
+    "n_rows": 8960,
+    "n_team_games": 2174,
+    "n_draws": 4000,
+    "n_cells": 8960000,
+    "n_group_cells": 2174000,
+    "G1_closure_violations": 0,
+    "G1_closure_max_abs_dev": 1.7881393432617188e-07,
+    "G2_budget_violations": 0,
+    "G2_budget_max_abs_dev": 8.351063087275179e-06,
+    "G3_negative_shares": 0,
+    "G3_negative_counts": 0,
+    "G4_waterfill_bind": 0,
+    "G5_weight_floor_cells": 1019214,
+    "G5_weight_floor_rate": 0.1137515625,
+    "G6_degenerate_group_cells": 32495,
+    "G6_degenerate_group_rate": 0.014947102115915363
+   },
+   "gate_verdict": {
+    "state": "PASS",
+    "code": "RBDEP_HARD_GATES_PASS",
+    "detail": "",
+    "evidence": {
+     "n_rows": 8960,
+     "n_team_games": 2174,
+     "n_draws": 4000,
+     "n_cells": 8960000,
+     "n_group_cells": 2174000,
+     "G1_closure_violations": 0,
+     "G1_closure_max_abs_dev": 1.7881393432617188e-07,
+     "G2_budget_violations": 0,
+     "G2_budget_max_abs_dev": 8.351063087275179e-06,
+     "G3_negative_shares": 0,
+     "G3_negative_counts": 0,
+     "G4_waterfill_bind": 0,
+     "G5_weight_floor_cells": 1019214,
+     "G5_weight_floor_rate": 0.1137515625,
+     "G6_degenerate_group_cells": 32495,
+     "G6_degenerate_group_rate": 0.014947102115915363
+    }
+   },
+   "per_season": {
+    "2022": {
+     "n_rows": 2365,
+     "n_team_games": 542,
+     "gates": {
+      "n_rows": 2365,
+      "n_team_games": 542,
+      "n_draws": 1000,
+      "n_cells": 2365000,
+      "n_group_cells": 542000,
+      "G1_closure_violations": 0,
+      "G1_closure_max_abs_dev": 1.7881393432617188e-07,
+      "G2_budget_violations": 0,
+      "G2_budget_max_abs_dev": 7.490501502616098e-06,
+      "G3_negative_shares": 0,
+      "G3_negative_counts": 0,
+      "G4_waterfill_bind": 0,
+      "G5_weight_floor_cells": 288108,
+      "G5_weight_floor_rate": 0.1218215644820296,
+      "G6_degenerate_group_cells": 8477,
+      "G6_degenerate_group_rate": 0.015640221402214022
+     }
+    },
+    "2023": {
+     "n_rows": 2255,
+     "n_team_games": 544,
+     "gates": {
+      "n_rows": 2255,
+      "n_team_games": 544,
+      "n_draws": 1000,
+      "n_cells": 2255000,
+      "n_group_cells": 544000,
+      "G1_closure_violations": 0,
+      "G1_closure_max_abs_dev": 1.7415732145309448e-07,
+      "G2_budget_violations": 0,
+      "G2_budget_max_abs_dev": 7.505698590648535e-06,
+      "G3_negative_shares": 0,
+      "G3_negative_counts": 0,
+      "G4_waterfill_bind": 0,
+      "G5_weight_floor_cells": 252046,
+      "G5_weight_floor_rate": 0.1117720620842572,
+      "G6_degenerate_group_cells": 8521,
+      "G6_degenerate_group_rate": 0.015663602941176472
+     }
+    },
+    "2024": {
+     "n_rows": 2166,
+     "n_team_games": 544,
+     "gates": {
+      "n_rows": 2166,
+      "n_team_games": 544,
+      "n_draws": 1000,
+      "n_cells": 2166000,
+      "n_group_cells": 544000,
+      "G1_closure_violations": 0,
+      "G1_closure_max_abs_dev": 1.7508864402770996e-07,
+      "G2_budget_violations": 0,
+      "G2_budget_max_abs_dev": 8.351063087275179e-06,
+      "G3_negative_shares": 0,
+      "G3_negative_counts": 0,
+      "G4_waterfill_bind": 0,
+      "G5_weight_floor_cells": 233047,
+      "G5_weight_floor_rate": 0.1075932594644506,
+      "G6_degenerate_group_cells": 8940,
+      "G6_degenerate_group_rate": 0.016433823529411765
+     }
+    },
+    "2025": {
+     "n_rows": 2174,
+     "n_team_games": 544,
+     "gates": {
+      "n_rows": 2174,
+      "n_team_games": 544,
+      "n_draws": 1000,
+      "n_cells": 2174000,
+      "n_group_cells": 544000,
+      "G1_closure_violations": 0,
+      "G1_closure_max_abs_dev": 1.6391277313232422e-07,
+      "G2_budget_violations": 0,
+      "G2_budget_max_abs_dev": 7.31216539406887e-06,
+      "G3_negative_shares": 0,
+      "G3_negative_counts": 0,
+      "G4_waterfill_bind": 0,
+      "G5_weight_floor_cells": 246013,
+      "G5_weight_floor_rate": 0.11316145354185833,
+      "G6_degenerate_group_cells": 6557,
+      "G6_degenerate_group_rate": 0.012053308823529412
+     }
+    }
+   },
+   "dependence": {
+    "n_team_games": 1662,
+    "LIKE_FOR_LIKE_between_team_game_counts": {
+     "median": -0.3184598518421965,
+     "mean": -0.31815086780343915,
+     "p05": -0.35483828467340106,
+     "p95": -0.27851140358568544,
+     "p_gt_zero": 0.0,
+     "n_draws_used": 1000
+    },
+    "LIKE_FOR_LIKE_between_team_game_shares": {
+     "median": -0.5260737291547879,
+     "mean": -0.5263551782920135,
+     "p05": -0.5590198831408731,
+     "p95": -0.49188368311868147,
+     "p_gt_zero": 0.0,
+     "n_draws_used": 1000
+    },
+    "realised_between_team_game_counts": -0.3716099375217268,
+    "realised_between_team_game_shares": -0.5951059908171317,
+    "NOT_COMPARABLE_within_team_game_across_draws_counts": -0.18722602048769058,
+    "NOT_COMPARABLE_within_team_game_across_draws_shares": -0.4601889357295748,
+    "FORBIDDEN_corr_of_predictive_means": -0.5888906347015116,
+    "team_volume_variance_fraction_of_RB1": 0.2851839327558128,
+    "rb1_predicted_mean": 11.909609401906168,
+    "rb2_predicted_mean": 5.4502212974560615,
+    "rb1_over_rb2_pooled_mean_ratio": 2.185160703009451,
+    "rb1_over_rb2_median_ratio_where_rb2_ge_half_carry": 2.464916064109837,
+    "n_team_games_with_rb2_below_half_carry": 61,
+    "sd_across_team_games_of_rb1_predictive_mean": 4.237224154770197
+   },
+   "marginals": {
+    "state": "NOT_APPLICABLE",
+    "code": "RBDEP_MARGINALS_NOT_SCORED_ON_FRAME_L",
+    "detail": "lambda=0.75 deliberately degrades the share forecast, so a CRPS computed there measures the degradation and not the model. Section 6 forbids reading quality off Frame L.",
+    "evidence": {}
+   }
+  },
+  "INC|lambda=0.5": {
+   "arm": "INC",
+   "lambda": 0.5,
+   "gates": {
+    "n_rows": 8960,
+    "n_team_games": 2174,
+    "n_draws": 4000,
+    "n_cells": 8960000,
+    "n_group_cells": 2174000,
+    "G1_closure_violations": 0,
+    "G1_closure_max_abs_dev": 1.7508864402770996e-07,
+    "G2_budget_violations": 0,
+    "G2_budget_max_abs_dev": 7.967316946633218e-06,
+    "G3_negative_shares": 0,
+    "G3_negative_counts": 0,
+    "G4_waterfill_bind": 0,
+    "G5_weight_floor_cells": 749041,
+    "G5_weight_floor_rate": 0.08359832589285714,
+    "G6_degenerate_group_cells": 12583,
+    "G6_degenerate_group_rate": 0.005787948482060718
+   },
+   "gate_verdict": {
+    "state": "PASS",
+    "code": "RBDEP_HARD_GATES_PASS",
+    "detail": "",
+    "evidence": {
+     "n_rows": 8960,
+     "n_team_games": 2174,
+     "n_draws": 4000,
+     "n_cells": 8960000,
+     "n_group_cells": 2174000,
+     "G1_closure_violations": 0,
+     "G1_closure_max_abs_dev": 1.7508864402770996e-07,
+     "G2_budget_violations": 0,
+     "G2_budget_max_abs_dev": 7.967316946633218e-06,
+     "G3_negative_shares": 0,
+     "G3_negative_counts": 0,
+     "G4_waterfill_bind": 0,
+     "G5_weight_floor_cells": 749041,
+     "G5_weight_floor_rate": 0.08359832589285714,
+     "G6_degenerate_group_cells": 12583,
+     "G6_degenerate_group_rate": 0.005787948482060718
+    }
+   },
+   "per_season": {
+    "2022": {
+     "n_rows": 2365,
+     "n_team_games": 542,
+     "gates": {
+      "n_rows": 2365,
+      "n_team_games": 542,
+      "n_draws": 1000,
+      "n_cells": 2365000,
+      "n_group_cells": 542000,
+      "G1_closure_violations": 0,
+      "G1_closure_max_abs_dev": 1.6763806343078613e-07,
+      "G2_budget_violations": 0,
+      "G2_budget_max_abs_dev": 7.185132105291814e-06,
+      "G3_negative_shares": 0,
+      "G3_negative_counts": 0,
+      "G4_waterfill_bind": 0,
+      "G5_weight_floor_cells": 218053,
+      "G5_weight_floor_rate": 0.0922,
+      "G6_degenerate_group_cells": 2895,
+      "G6_degenerate_group_rate": 0.005341328413284133
+     }
+    },
+    "2023": {
+     "n_rows": 2255,
+     "n_team_games": 544,
+     "gates": {
+      "n_rows": 2255,
+      "n_team_games": 544,
+      "n_draws": 1000,
+      "n_cells": 2255000,
+      "n_group_cells": 544000,
+      "G1_closure_violations": 0,
+      "G1_closure_max_abs_dev": 1.7136335372924805e-07,
+      "G2_budget_violations": 0,
+      "G2_budget_max_abs_dev": 7.967316946633218e-06,
+      "G3_negative_shares": 0,
+      "G3_negative_counts": 0,
+      "G4_waterfill_bind": 0,
+      "G5_weight_floor_cells": 186321,
+      "G5_weight_floor_rate": 0.08262572062084257,
+      "G6_degenerate_group_cells": 3182,
+      "G6_degenerate_group_rate": 0.005849264705882353
+     }
+    },
+    "2024": {
+     "n_rows": 2166,
+     "n_team_games": 544,
+     "gates": {
+      "n_rows": 2166,
+      "n_team_games": 544,
+      "n_draws": 1000,
+      "n_cells": 2166000,
+      "n_group_cells": 544000,
+      "G1_closure_violations": 0,
+      "G1_closure_max_abs_dev": 1.7508864402770996e-07,
+      "G2_budget_violations": 0,
+      "G2_budget_max_abs_dev": 7.668969956853289e-06,
+      "G3_negative_shares": 0,
+      "G3_negative_counts": 0,
+      "G4_waterfill_bind": 0,
+      "G5_weight_floor_cells": 167522,
+      "G5_weight_floor_rate": 0.07734164358264081,
+      "G6_degenerate_group_cells": 3776,
+      "G6_degenerate_group_rate": 0.006941176470588235
+     }
+    },
+    "2025": {
+     "n_rows": 2174,
+     "n_team_games": 544,
+     "gates": {
+      "n_rows": 2174,
+      "n_team_games": 544,
+      "n_draws": 1000,
+      "n_cells": 2174000,
+      "n_group_cells": 544000,
+      "G1_closure_violations": 0,
+      "G1_closure_max_abs_dev": 1.7136335372924805e-07,
+      "G2_budget_violations": 0,
+      "G2_budget_max_abs_dev": 7.843816433705797e-06,
+      "G3_negative_shares": 0,
+      "G3_negative_counts": 0,
+      "G4_waterfill_bind": 0,
+      "G5_weight_floor_cells": 177145,
+      "G5_weight_floor_rate": 0.08148344066237351,
+      "G6_degenerate_group_cells": 2730,
+      "G6_degenerate_group_rate": 0.005018382352941176
+     }
+    }
+   },
+   "dependence": {
+    "n_team_games": 1662,
+    "LIKE_FOR_LIKE_between_team_game_counts": {
+     "median": -0.25416368988101506,
+     "mean": -0.2548804563961391,
+     "p05": -0.292264781577953,
+     "p95": -0.21895924552329346,
+     "p_gt_zero": 0.0,
+     "n_draws_used": 1000
+    },
+    "LIKE_FOR_LIKE_between_team_game_shares": {
+     "median": -0.42998718858414,
+     "mean": -0.43001644688484414,
+     "p05": -0.46173326992232494,
+     "p95": -0.39708739117975783,
+     "p_gt_zero": 0.0,
+     "n_draws_used": 1000
+    },
+    "realised_between_team_game_counts": -0.3716099375217268,
+    "realised_between_team_game_shares": -0.5951059908171317,
+    "NOT_COMPARABLE_within_team_game_across_draws_counts": -0.21561252744451206,
+    "NOT_COMPARABLE_within_team_game_across_draws_shares": -0.42708380527753687,
+    "FORBIDDEN_corr_of_predictive_means": -0.3410757175567991,
+    "team_volume_variance_fraction_of_RB1": 0.21452054467370424,
+    "rb1_predicted_mean": 10.054663697301228,
+    "rb2_predicted_mean": 5.816022064034248,
+    "rb1_over_rb2_pooled_mean_ratio": 1.7287870621190304,
+    "rb1_over_rb2_median_ratio_where_rb2_ge_half_carry": 1.7993401377656597,
+    "n_team_games_with_rb2_below_half_carry": 60,
+    "sd_across_team_games_of_rb1_predictive_mean": 3.536062183511866
+   },
+   "marginals": {
+    "state": "NOT_APPLICABLE",
+    "code": "RBDEP_MARGINALS_NOT_SCORED_ON_FRAME_L",
+    "detail": "lambda=0.5 deliberately degrades the share forecast, so a CRPS computed there measures the degradation and not the model. Section 6 forbids reading quality off Frame L.",
+    "evidence": {}
+   }
+  },
+  "SHR|lambda=0.5": {
+   "arm": "SHR",
+   "lambda": 0.5,
+   "gates": {
+    "n_rows": 8960,
+    "n_team_games": 2174,
+    "n_draws": 4000,
+    "n_cells": 8960000,
+    "n_group_cells": 2174000,
+    "G1_closure_violations": 0,
+    "G1_closure_max_abs_dev": 1.7508864402770996e-07,
+    "G2_budget_violations": 0,
+    "G2_budget_max_abs_dev": 7.189810276031494e-06,
+    "G3_negative_shares": 0,
+    "G3_negative_counts": 0,
+    "G4_waterfill_bind": 0,
+    "G5_weight_floor_cells": 748134,
+    "G5_weight_floor_rate": 0.08349709821428572,
+    "G6_degenerate_group_cells": 39570,
+    "G6_degenerate_group_rate": 0.018201471941122354
+   },
+   "gate_verdict": {
+    "state": "PASS",
+    "code": "RBDEP_HARD_GATES_PASS",
+    "detail": "",
+    "evidence": {
+     "n_rows": 8960,
+     "n_team_games": 2174,
+     "n_draws": 4000,
+     "n_cells": 8960000,
+     "n_group_cells": 2174000,
+     "G1_closure_violations": 0,
+     "G1_closure_max_abs_dev": 1.7508864402770996e-07,
+     "G2_budget_violations": 0,
+     "G2_budget_max_abs_dev": 7.189810276031494e-06,
+     "G3_negative_shares": 0,
+     "G3_negative_counts": 0,
+     "G4_waterfill_bind": 0,
+     "G5_weight_floor_cells": 748134,
+     "G5_weight_floor_rate": 0.08349709821428572,
+     "G6_degenerate_group_cells": 39570,
+     "G6_degenerate_group_rate": 0.018201471941122354
+    }
+   },
+   "per_season": {
+    "2022": {
+     "n_rows": 2365,
+     "n_team_games": 542,
+     "gates": {
+      "n_rows": 2365,
+      "n_team_games": 542,
+      "n_draws": 1000,
+      "n_cells": 2365000,
+      "n_group_cells": 542000,
+      "G1_closure_violations": 0,
+      "G1_closure_max_abs_dev": 1.7508864402770996e-07,
+      "G2_budget_violations": 0,
+      "G2_budget_max_abs_dev": 7.152557373046875e-06,
+      "G3_negative_shares": 0,
+      "G3_negative_counts": 0,
+      "G4_waterfill_bind": 0,
+      "G5_weight_floor_cells": 218594,
+      "G5_weight_floor_rate": 0.09242875264270613,
+      "G6_degenerate_group_cells": 10649,
+      "G6_degenerate_group_rate": 0.01964760147601476
+     }
+    },
+    "2023": {
+     "n_rows": 2255,
+     "n_team_games": 544,
+     "gates": {
+      "n_rows": 2255,
+      "n_team_games": 544,
+      "n_draws": 1000,
+      "n_cells": 2255000,
+      "n_group_cells": 544000,
+      "G1_closure_violations": 0,
+      "G1_closure_max_abs_dev": 1.695007085800171e-07,
+      "G2_budget_violations": 0,
+      "G2_budget_max_abs_dev": 7.134582077128471e-06,
+      "G3_negative_shares": 0,
+      "G3_negative_counts": 0,
+      "G4_waterfill_bind": 0,
+      "G5_weight_floor_cells": 185696,
+      "G5_weight_floor_rate": 0.08234855875831486,
+      "G6_degenerate_group_cells": 10296,
+      "G6_degenerate_group_rate": 0.018926470588235295
+     }
+    },
+    "2024": {
+     "n_rows": 2166,
+     "n_team_games": 544,
+     "gates": {
+      "n_rows": 2166,
+      "n_team_games": 544,
+      "n_draws": 1000,
+      "n_cells": 2166000,
+      "n_group_cells": 544000,
+      "G1_closure_violations": 0,
+      "G1_closure_max_abs_dev": 1.7136335372924805e-07,
+      "G2_budget_violations": 0,
+      "G2_budget_max_abs_dev": 7.188808694991167e-06,
+      "G3_negative_shares": 0,
+      "G3_negative_counts": 0,
+      "G4_waterfill_bind": 0,
+      "G5_weight_floor_cells": 166934,
+      "G5_weight_floor_rate": 0.0770701754385965,
+      "G6_degenerate_group_cells": 10177,
+      "G6_degenerate_group_rate": 0.018707720588235294
+     }
+    },
+    "2025": {
+     "n_rows": 2174,
+     "n_team_games": 544,
+     "gates": {
+      "n_rows": 2174,
+      "n_team_games": 544,
+      "n_draws": 1000,
+      "n_cells": 2174000,
+      "n_group_cells": 544000,
+      "G1_closure_violations": 0,
+      "G1_closure_max_abs_dev": 1.6391277313232422e-07,
+      "G2_budget_violations": 0,
+      "G2_budget_max_abs_dev": 7.189810276031494e-06,
+      "G3_negative_shares": 0,
+      "G3_negative_counts": 0,
+      "G4_waterfill_bind": 0,
+      "G5_weight_floor_cells": 176910,
+      "G5_weight_floor_rate": 0.08137534498620055,
+      "G6_degenerate_group_cells": 8448,
+      "G6_degenerate_group_rate": 0.015529411764705882
+     }
+    }
+   },
+   "dependence": {
+    "n_team_games": 1662,
+    "LIKE_FOR_LIKE_between_team_game_counts": {
+     "median": -0.24296033623313773,
+     "mean": -0.24270543795092644,
+     "p05": -0.28537453174427496,
+     "p95": -0.19800219190690485,
+     "p_gt_zero": 0.0,
+     "n_draws_used": 1000
+    },
+    "LIKE_FOR_LIKE_between_team_game_shares": {
+     "median": -0.4449102880165029,
+     "mean": -0.44450902491361105,
+     "p05": -0.48153582488568203,
+     "p95": -0.4051468790437958,
+     "p_gt_zero": 0.0,
+     "n_draws_used": 1000
+    },
+    "realised_between_team_game_counts": -0.3716099375217268,
+    "realised_between_team_game_shares": -0.5951059908171317,
+    "NOT_COMPARABLE_within_team_game_across_draws_counts": -0.14804416217513758,
+    "NOT_COMPARABLE_within_team_game_across_draws_shares": -0.4062347708846103,
+    "FORBIDDEN_corr_of_predictive_means": -0.45576886794174093,
+    "team_volume_variance_fraction_of_RB1": 0.2557969671708545,
+    "rb1_predicted_mean": 10.775097224541842,
+    "rb2_predicted_mean": 5.6024243864999095,
+    "rb1_over_rb2_pooled_mean_ratio": 1.923291861021178,
+    "rb1_over_rb2_median_ratio_where_rb2_ge_half_carry": 2.0884966894381054,
+    "n_team_games_with_rb2_below_half_carry": 61,
+    "sd_across_team_games_of_rb1_predictive_mean": 3.7775453582955953
+   },
+   "marginals": {
+    "state": "NOT_APPLICABLE",
+    "code": "RBDEP_MARGINALS_NOT_SCORED_ON_FRAME_L",
+    "detail": "lambda=0.5 deliberately degrades the share forecast, so a CRPS computed there measures the degradation and not the model. Section 6 forbids reading quality off Frame L.",
+    "evidence": {}
+   }
+  },
+  "INC|lambda=0.25": {
+   "arm": "INC",
+   "lambda": 0.25,
+   "gates": {
+    "n_rows": 8960,
+    "n_team_games": 2174,
+    "n_draws": 4000,
+    "n_cells": 8960000,
+    "n_group_cells": 2174000,
+    "G1_closure_violations": 0,
+    "G1_closure_max_abs_dev": 1.862645149230957e-07,
+    "G2_budget_violations": 0,
+    "G2_budget_max_abs_dev": 7.62939453125e-06,
+    "G3_negative_shares": 0,
+    "G3_negative_counts": 0,
+    "G4_waterfill_bind": 0,
+    "G5_weight_floor_cells": 585197,
+    "G5_weight_floor_rate": 0.06531216517857143,
+    "G6_degenerate_group_cells": 11942,
+    "G6_degenerate_group_rate": 0.005493100275988961
+   },
+   "gate_verdict": {
+    "state": "PASS",
+    "code": "RBDEP_HARD_GATES_PASS",
+    "detail": "",
+    "evidence": {
+     "n_rows": 8960,
+     "n_team_games": 2174,
+     "n_draws": 4000,
+     "n_cells": 8960000,
+     "n_group_cells": 2174000,
+     "G1_closure_violations": 0,
+     "G1_closure_max_abs_dev": 1.862645149230957e-07,
+     "G2_budget_violations": 0,
+     "G2_budget_max_abs_dev": 7.62939453125e-06,
+     "G3_negative_shares": 0,
+     "G3_negative_counts": 0,
+     "G4_waterfill_bind": 0,
+     "G5_weight_floor_cells": 585197,
+     "G5_weight_floor_rate": 0.06531216517857143,
+     "G6_degenerate_group_cells": 11942,
+     "G6_degenerate_group_rate": 0.005493100275988961
+    }
+   },
+   "per_season": {
+    "2022": {
+     "n_rows": 2365,
+     "n_team_games": 542,
+     "gates": {
+      "n_rows": 2365,
+      "n_team_games": 542,
+      "n_draws": 1000,
+      "n_cells": 2365000,
+      "n_group_cells": 542000,
+      "G1_closure_violations": 0,
+      "G1_closure_max_abs_dev": 1.7881393432617188e-07,
+      "G2_budget_violations": 0,
+      "G2_budget_max_abs_dev": 7.453087164321914e-06,
+      "G3_negative_shares": 0,
+      "G3_negative_counts": 0,
+      "G4_waterfill_bind": 0,
+      "G5_weight_floor_cells": 175093,
+      "G5_weight_floor_rate": 0.07403509513742072,
+      "G6_degenerate_group_cells": 2774,
+      "G6_degenerate_group_rate": 0.005118081180811808
+     }
+    },
+    "2023": {
+     "n_rows": 2255,
+     "n_team_games": 544,
+     "gates": {
+      "n_rows": 2255,
+      "n_team_games": 544,
+      "n_draws": 1000,
+      "n_cells": 2255000,
+      "n_group_cells": 544000,
+      "G1_closure_violations": 0,
+      "G1_closure_max_abs_dev": 1.73225998878479e-07,
+      "G2_budget_violations": 0,
+      "G2_budget_max_abs_dev": 7.546732746277485e-06,
+      "G3_negative_shares": 0,
+      "G3_negative_counts": 0,
+      "G4_waterfill_bind": 0,
+      "G5_weight_floor_cells": 145959,
+      "G5_weight_floor_rate": 0.06472682926829268,
+      "G6_degenerate_group_cells": 3049,
+      "G6_degenerate_group_rate": 0.0056047794117647055
+     }
+    },
+    "2024": {
+     "n_rows": 2166,
+     "n_team_games": 544,
+     "gates": {
+      "n_rows": 2166,
+      "n_team_games": 544,
+      "n_draws": 1000,
+      "n_cells": 2166000,
+      "n_group_cells": 544000,
+      "G1_closure_violations": 0,
+      "G1_closure_max_abs_dev": 1.862645149230957e-07,
+      "G2_budget_violations": 0,
+      "G2_budget_max_abs_dev": 7.185385868524463e-06,
+      "G3_negative_shares": 0,
+      "G3_negative_counts": 0,
+      "G4_waterfill_bind": 0,
+      "G5_weight_floor_cells": 127851,
+      "G5_weight_floor_rate": 0.059026315789473684,
+      "G6_degenerate_group_cells": 3447,
+      "G6_degenerate_group_rate": 0.006336397058823529
+     }
+    },
+    "2025": {
+     "n_rows": 2174,
+     "n_team_games": 544,
+     "gates": {
+      "n_rows": 2174,
+      "n_team_games": 544,
+      "n_draws": 1000,
+      "n_cells": 2174000,
+      "n_group_cells": 544000,
+      "G1_closure_violations": 0,
+      "G1_closure_max_abs_dev": 1.7136335372924805e-07,
+      "G2_budget_violations": 0,
+      "G2_budget_max_abs_dev": 7.62939453125e-06,
+      "G3_negative_shares": 0,
+      "G3_negative_counts": 0,
+      "G4_waterfill_bind": 0,
+      "G5_weight_floor_cells": 136294,
+      "G5_weight_floor_rate": 0.06269273229070838,
+      "G6_degenerate_group_cells": 2672,
+      "G6_degenerate_group_rate": 0.004911764705882353
+     }
+    }
+   },
+   "dependence": {
+    "n_team_games": 1662,
+    "LIKE_FOR_LIKE_between_team_game_counts": {
+     "median": -0.1980700076301718,
+     "mean": -0.19845873438443176,
+     "p05": -0.23537620529661615,
+     "p95": -0.1609819148191282,
+     "p_gt_zero": 0.0,
+     "n_draws_used": 1000
+    },
+    "LIKE_FOR_LIKE_between_team_game_shares": {
+     "median": -0.35467229424677316,
+     "mean": -0.3538174566329193,
+     "p05": -0.38647153297696313,
+     "p95": -0.3207127796197816,
+     "p_gt_zero": 0.0,
+     "n_draws_used": 1000
+    },
+    "realised_between_team_game_counts": -0.3716099375217268,
+    "realised_between_team_game_shares": -0.5951059908171317,
+    "NOT_COMPARABLE_within_team_game_across_draws_counts": -0.2053303714480234,
+    "NOT_COMPARABLE_within_team_game_across_draws_shares": -0.39267391174238053,
+    "FORBIDDEN_corr_of_predictive_means": -0.09508027730804577,
+    "team_volume_variance_fraction_of_RB1": 0.173670775730278,
+    "rb1_predicted_mean": 8.747691626469594,
+    "rb2_predicted_mean": 6.034996117089714,
+    "rb1_over_rb2_pooled_mean_ratio": 1.4494941598550748,
+    "rb1_over_rb2_median_ratio_where_rb2_ge_half_carry": 1.4725810112693563,
+    "n_team_games_with_rb2_below_half_carry": 59,
+    "sd_across_team_games_of_rb1_predictive_mean": 3.0728600052267376
+   },
+   "marginals": {
+    "state": "NOT_APPLICABLE",
+    "code": "RBDEP_MARGINALS_NOT_SCORED_ON_FRAME_L",
+    "detail": "lambda=0.25 deliberately degrades the share forecast, so a CRPS computed there measures the degradation and not the model. Section 6 forbids reading quality off Frame L.",
+    "evidence": {}
+   }
+  },
+  "SHR|lambda=0.25": {
+   "arm": "SHR",
+   "lambda": 0.25,
+   "gates": {
+    "n_rows": 8960,
+    "n_team_games": 2174,
+    "n_draws": 4000,
+    "n_cells": 8960000,
+    "n_group_cells": 2174000,
+    "G1_closure_violations": 0,
+    "G1_closure_max_abs_dev": 1.6391277313232422e-07,
+    "G2_budget_violations": 0,
+    "G2_budget_max_abs_dev": 8.090423619933063e-06,
+    "G3_negative_shares": 0,
+    "G3_negative_counts": 0,
+    "G4_waterfill_bind": 0,
+    "G5_weight_floor_cells": 583835,
+    "G5_weight_floor_rate": 0.06516015625,
+    "G6_degenerate_group_cells": 61142,
+    "G6_degenerate_group_rate": 0.028124195032198714
+   },
+   "gate_verdict": {
+    "state": "PASS",
+    "code": "RBDEP_HARD_GATES_PASS",
+    "detail": "",
+    "evidence": {
+     "n_rows": 8960,
+     "n_team_games": 2174,
+     "n_draws": 4000,
+     "n_cells": 8960000,
+     "n_group_cells": 2174000,
+     "G1_closure_violations": 0,
+     "G1_closure_max_abs_dev": 1.6391277313232422e-07,
+     "G2_budget_violations": 0,
+     "G2_budget_max_abs_dev": 8.090423619933063e-06,
+     "G3_negative_shares": 0,
+     "G3_negative_counts": 0,
+     "G4_waterfill_bind": 0,
+     "G5_weight_floor_cells": 583835,
+     "G5_weight_floor_rate": 0.06516015625,
+     "G6_degenerate_group_cells": 61142,
+     "G6_degenerate_group_rate": 0.028124195032198714
+    }
+   },
+   "per_season": {
+    "2022": {
+     "n_rows": 2365,
+     "n_team_games": 542,
+     "gates": {
+      "n_rows": 2365,
+      "n_team_games": 542,
+      "n_draws": 1000,
+      "n_cells": 2365000,
+      "n_group_cells": 542000,
+      "G1_closure_violations": 0,
+      "G1_closure_max_abs_dev": 1.564621925354004e-07,
+      "G2_budget_violations": 0,
+      "G2_budget_max_abs_dev": 6.975159237754269e-06,
+      "G3_negative_shares": 0,
+      "G3_negative_counts": 0,
+      "G4_waterfill_bind": 0,
+      "G5_weight_floor_cells": 175424,
+      "G5_weight_floor_rate": 0.07417505285412263,
+      "G6_degenerate_group_cells": 16789,
+      "G6_degenerate_group_rate": 0.0309760147601476
+     }
+    },
+    "2023": {
+     "n_rows": 2255,
+     "n_team_games": 544,
+     "gates": {
+      "n_rows": 2255,
+      "n_team_games": 544,
+      "n_draws": 1000,
+      "n_cells": 2255000,
+      "n_group_cells": 544000,
+      "G1_closure_violations": 0,
+      "G1_closure_max_abs_dev": 1.6391277313232422e-07,
+      "G2_budget_violations": 0,
+      "G2_budget_max_abs_dev": 7.434340545842133e-06,
+      "G3_negative_shares": 0,
+      "G3_negative_counts": 0,
+      "G4_waterfill_bind": 0,
+      "G5_weight_floor_cells": 145546,
+      "G5_weight_floor_rate": 0.06454368070953437,
+      "G6_degenerate_group_cells": 15531,
+      "G6_degenerate_group_rate": 0.028549632352941178
+     }
+    },
+    "2024": {
+     "n_rows": 2166,
+     "n_team_games": 544,
+     "gates": {
+      "n_rows": 2166,
+      "n_team_games": 544,
+      "n_draws": 1000,
+      "n_cells": 2166000,
+      "n_group_cells": 544000,
+      "G1_closure_violations": 0,
+      "G1_closure_max_abs_dev": 1.6391277313232422e-07,
+      "G2_budget_violations": 0,
+      "G2_budget_max_abs_dev": 8.090423619933063e-06,
+      "G3_negative_shares": 0,
+      "G3_negative_counts": 0,
+      "G4_waterfill_bind": 0,
+      "G5_weight_floor_cells": 126921,
+      "G5_weight_floor_rate": 0.058596952908587255,
+      "G6_degenerate_group_cells": 14773,
+      "G6_degenerate_group_rate": 0.02715625
+     }
+    },
+    "2025": {
+     "n_rows": 2174,
+     "n_team_games": 544,
+     "gates": {
+      "n_rows": 2174,
+      "n_team_games": 544,
+      "n_draws": 1000,
+      "n_cells": 2174000,
+      "n_group_cells": 544000,
+      "G1_closure_violations": 0,
+      "G1_closure_max_abs_dev": 1.6391277313232422e-07,
+      "G2_budget_violations": 0,
+      "G2_budget_max_abs_dev": 7.931360642032814e-06,
+      "G3_negative_shares": 0,
+      "G3_negative_counts": 0,
+      "G4_waterfill_bind": 0,
+      "G5_weight_floor_cells": 135944,
+      "G5_weight_floor_rate": 0.06253173873045079,
+      "G6_degenerate_group_cells": 14049,
+      "G6_degenerate_group_rate": 0.025825367647058825
+     }
+    }
+   },
+   "dependence": {
+    "n_team_games": 1662,
+    "LIKE_FOR_LIKE_between_team_game_counts": {
+     "median": -0.12576212737157982,
+     "mean": -0.12481835814660047,
+     "p05": -0.17327034684940926,
+     "p95": -0.07703234840504469,
+     "p_gt_zero": 0.0,
+     "n_draws_used": 1000
+    },
+    "LIKE_FOR_LIKE_between_team_game_shares": {
+     "median": -0.30828152738278336,
+     "mean": -0.3080970138012716,
+     "p05": -0.35363879155435346,
+     "p95": -0.2642532783744213,
+     "p_gt_zero": 0.0,
+     "n_draws_used": 1000
+    },
+    "realised_between_team_game_counts": -0.3716099375217268,
+    "realised_between_team_game_shares": -0.5951059908171317,
+    "NOT_COMPARABLE_within_team_game_across_draws_counts": -0.07748984686249749,
+    "NOT_COMPARABLE_within_team_game_across_draws_shares": -0.30746094667493934,
+    "FORBIDDEN_corr_of_predictive_means": -0.21381081004673233,
+    "team_volume_variance_fraction_of_RB1": 0.2203069157294682,
+    "rb1_predicted_mean": 9.284146219462723,
+    "rb2_predicted_mean": 5.776639836458795,
+    "rb1_over_rb2_pooled_mean_ratio": 1.6071879989585962,
+    "rb1_over_rb2_median_ratio_where_rb2_ge_half_carry": 1.692700047349775,
+    "n_team_games_with_rb2_below_half_carry": 60,
+    "sd_across_team_games_of_rb1_predictive_mean": 3.2243764005388433
+   },
+   "marginals": {
+    "state": "NOT_APPLICABLE",
+    "code": "RBDEP_MARGINALS_NOT_SCORED_ON_FRAME_L",
+    "detail": "lambda=0.25 deliberately degrades the share forecast, so a CRPS computed there measures the degradation and not the model. Section 6 forbids reading quality off Frame L.",
+    "evidence": {}
+   }
+  },
+  "INC|lambda=0.0": {
+   "arm": "INC",
+   "lambda": 0.0,
+   "gates": {
+    "n_rows": 8960,
+    "n_team_games": 2174,
+    "n_draws": 4000,
+    "n_cells": 8960000,
+    "n_group_cells": 2174000,
+    "G1_closure_violations": 0,
+    "G1_closure_max_abs_dev": 1.9371509552001953e-07,
+    "G2_budget_violations": 0,
+    "G2_budget_max_abs_dev": 8.2905811495948e-06,
+    "G3_negative_shares": 0,
+    "G3_negative_counts": 0,
+    "G4_waterfill_bind": 0,
+    "G5_weight_floor_cells": 526604,
+    "G5_weight_floor_rate": 0.05877276785714286,
+    "G6_degenerate_group_cells": 13421,
+    "G6_degenerate_group_rate": 0.006173413063477461
+   },
+   "gate_verdict": {
+    "state": "PASS",
+    "code": "RBDEP_HARD_GATES_PASS",
+    "detail": "",
+    "evidence": {
+     "n_rows": 8960,
+     "n_team_games": 2174,
+     "n_draws": 4000,
+     "n_cells": 8960000,
+     "n_group_cells": 2174000,
+     "G1_closure_violations": 0,
+     "G1_closure_max_abs_dev": 1.9371509552001953e-07,
+     "G2_budget_violations": 0,
+     "G2_budget_max_abs_dev": 8.2905811495948e-06,
+     "G3_negative_shares": 0,
+     "G3_negative_counts": 0,
+     "G4_waterfill_bind": 0,
+     "G5_weight_floor_cells": 526604,
+     "G5_weight_floor_rate": 0.05877276785714286,
+     "G6_degenerate_group_cells": 13421,
+     "G6_degenerate_group_rate": 0.006173413063477461
+    }
+   },
+   "per_season": {
+    "2022": {
+     "n_rows": 2365,
+     "n_team_games": 542,
+     "gates": {
+      "n_rows": 2365,
+      "n_team_games": 542,
+      "n_draws": 1000,
+      "n_cells": 2365000,
+      "n_group_cells": 542000,
+      "G1_closure_violations": 0,
+      "G1_closure_max_abs_dev": 1.7136335372924805e-07,
+      "G2_budget_violations": 0,
+      "G2_budget_max_abs_dev": 8.2905811495948e-06,
+      "G3_negative_shares": 0,
+      "G3_negative_counts": 0,
+      "G4_waterfill_bind": 0,
+      "G5_weight_floor_cells": 158765,
+      "G5_weight_floor_rate": 0.06713107822410148,
+      "G6_degenerate_group_cells": 3313,
+      "G6_degenerate_group_rate": 0.006112546125461254
+     }
+    },
+    "2023": {
+     "n_rows": 2255,
+     "n_team_games": 544,
+     "gates": {
+      "n_rows": 2255,
+      "n_team_games": 544,
+      "n_draws": 1000,
+      "n_cells": 2255000,
+      "n_group_cells": 544000,
+      "G1_closure_violations": 0,
+      "G1_closure_max_abs_dev": 1.6903504729270935e-07,
+      "G2_budget_violations": 0,
+      "G2_budget_max_abs_dev": 7.125786439132753e-06,
+      "G3_negative_shares": 0,
+      "G3_negative_counts": 0,
+      "G4_waterfill_bind": 0,
+      "G5_weight_floor_cells": 132136,
+      "G5_weight_floor_rate": 0.05859689578713969,
+      "G6_degenerate_group_cells": 3432,
+      "G6_degenerate_group_rate": 0.006308823529411764
+     }
+    },
+    "2024": {
+     "n_rows": 2166,
+     "n_team_games": 544,
+     "gates": {
+      "n_rows": 2166,
+      "n_team_games": 544,
+      "n_draws": 1000,
+      "n_cells": 2166000,
+      "n_group_cells": 544000,
+      "G1_closure_violations": 0,
+      "G1_closure_max_abs_dev": 1.73225998878479e-07,
+      "G2_budget_violations": 0,
+      "G2_budget_max_abs_dev": 7.739519901406311e-06,
+      "G3_negative_shares": 0,
+      "G3_negative_counts": 0,
+      "G4_waterfill_bind": 0,
+      "G5_weight_floor_cells": 114389,
+      "G5_weight_floor_rate": 0.05281117266851339,
+      "G6_degenerate_group_cells": 3718,
+      "G6_degenerate_group_rate": 0.0068345588235294115
+     }
+    },
+    "2025": {
+     "n_rows": 2174,
+     "n_team_games": 544,
+     "gates": {
+      "n_rows": 2174,
+      "n_team_games": 544,
+      "n_draws": 1000,
+      "n_cells": 2174000,
+      "n_group_cells": 544000,
+      "G1_closure_violations": 0,
+      "G1_closure_max_abs_dev": 1.9371509552001953e-07,
+      "G2_budget_violations": 0,
+      "G2_budget_max_abs_dev": 8.111994816317747e-06,
+      "G3_negative_shares": 0,
+      "G3_negative_counts": 0,
+      "G4_waterfill_bind": 0,
+      "G5_weight_floor_cells": 121314,
+      "G5_weight_floor_rate": 0.055802207911683534,
+      "G6_degenerate_group_cells": 2958,
+      "G6_degenerate_group_rate": 0.0054375
+     }
+    }
+   },
+   "dependence": {
+    "n_team_games": 1662,
+    "LIKE_FOR_LIKE_between_team_game_counts": {
+     "median": -0.14792084858948318,
+     "mean": -0.14792278668693754,
+     "p05": -0.18526978114036452,
+     "p95": -0.11017343007414719,
+     "p_gt_zero": 0.0,
+     "n_draws_used": 1000
+    },
+    "LIKE_FOR_LIKE_between_team_game_shares": {
+     "median": -0.2773210673440765,
+     "mean": -0.2770499686889901,
+     "p05": -0.310005364252266,
+     "p95": -0.24308983532082074,
+     "p_gt_zero": 0.0,
+     "n_draws_used": 1000
+    },
+    "realised_between_team_game_counts": -0.3716099375217268,
+    "realised_between_team_game_shares": -0.5951059908171317,
+    "NOT_COMPARABLE_within_team_game_across_draws_counts": -0.19504153785571698,
+    "NOT_COMPARABLE_within_team_game_across_draws_shares": -0.35408497237853637,
+    "FORBIDDEN_corr_of_predictive_means": 0.17846436503889965,
+    "team_volume_variance_fraction_of_RB1": 0.13084163595965795,
+    "rb1_predicted_mean": 7.305517249670127,
+    "rb2_predicted_mean": 6.286493250319091,
+    "rb1_over_rb2_pooled_mean_ratio": 1.1620973663336571,
+    "rb1_over_rb2_median_ratio_where_rb2_ge_half_carry": 1.1478916950956013,
+    "n_team_games_with_rb2_below_half_carry": 59,
+    "sd_across_team_games_of_rb1_predictive_mean": 2.690567839013916
+   },
+   "marginals": {
+    "state": "NOT_APPLICABLE",
+    "code": "RBDEP_MARGINALS_NOT_SCORED_ON_FRAME_L",
+    "detail": "lambda=0.0 deliberately degrades the share forecast, so a CRPS computed there measures the degradation and not the model. Section 6 forbids reading quality off Frame L.",
+    "evidence": {}
+   }
+  },
+  "SHR|lambda=0.0": {
+   "arm": "SHR",
+   "lambda": 0.0,
+   "gates": {
+    "n_rows": 8960,
+    "n_team_games": 2174,
+    "n_draws": 4000,
+    "n_cells": 8960000,
+    "n_group_cells": 2174000,
+    "G1_closure_violations": 0,
+    "G1_closure_max_abs_dev": 1.862645149230957e-07,
+    "G2_budget_violations": 0,
+    "G2_budget_max_abs_dev": 8.58342363585507e-06,
+    "G3_negative_shares": 0,
+    "G3_negative_counts": 0,
+    "G4_waterfill_bind": 0,
+    "G5_weight_floor_cells": 525425,
+    "G5_weight_floor_rate": 0.058641183035714285,
+    "G6_degenerate_group_cells": 121826,
+    "G6_degenerate_group_rate": 0.05603771849126035
+   },
+   "gate_verdict": {
+    "state": "PASS",
+    "code": "RBDEP_HARD_GATES_PASS",
+    "detail": "",
+    "evidence": {
+     "n_rows": 8960,
+     "n_team_games": 2174,
+     "n_draws": 4000,
+     "n_cells": 8960000,
+     "n_group_cells": 2174000,
+     "G1_closure_violations": 0,
+     "G1_closure_max_abs_dev": 1.862645149230957e-07,
+     "G2_budget_violations": 0,
+     "G2_budget_max_abs_dev": 8.58342363585507e-06,
+     "G3_negative_shares": 0,
+     "G3_negative_counts": 0,
+     "G4_waterfill_bind": 0,
+     "G5_weight_floor_cells": 525425,
+     "G5_weight_floor_rate": 0.058641183035714285,
+     "G6_degenerate_group_cells": 121826,
+     "G6_degenerate_group_rate": 0.05603771849126035
+    }
+   },
+   "per_season": {
+    "2022": {
+     "n_rows": 2365,
+     "n_team_games": 542,
+     "gates": {
+      "n_rows": 2365,
+      "n_team_games": 542,
+      "n_draws": 1000,
+      "n_cells": 2365000,
+      "n_group_cells": 542000,
+      "G1_closure_violations": 0,
+      "G1_closure_max_abs_dev": 1.862645149230957e-07,
+      "G2_budget_violations": 0,
+      "G2_budget_max_abs_dev": 8.281788836939086e-06,
+      "G3_negative_shares": 0,
+      "G3_negative_counts": 0,
+      "G4_waterfill_bind": 0,
+      "G5_weight_floor_cells": 159640,
+      "G5_weight_floor_rate": 0.06750105708245244,
+      "G6_degenerate_group_cells": 34957,
+      "G6_degenerate_group_rate": 0.06449630996309963
+     }
+    },
+    "2023": {
+     "n_rows": 2255,
+     "n_team_games": 544,
+     "gates": {
+      "n_rows": 2255,
+      "n_team_games": 544,
+      "n_draws": 1000,
+      "n_cells": 2255000,
+      "n_group_cells": 544000,
+      "G1_closure_violations": 0,
+      "G1_closure_max_abs_dev": 1.7881393432617188e-07,
+      "G2_budget_violations": 0,
+      "G2_budget_max_abs_dev": 8.092039138318796e-06,
+      "G3_negative_shares": 0,
+      "G3_negative_counts": 0,
+      "G4_waterfill_bind": 0,
+      "G5_weight_floor_cells": 131592,
+      "G5_weight_floor_rate": 0.058355654101995565,
+      "G6_degenerate_group_cells": 30640,
+      "G6_degenerate_group_rate": 0.0563235294117647
+     }
+    },
+    "2024": {
+     "n_rows": 2166,
+     "n_team_games": 544,
+     "gates": {
+      "n_rows": 2166,
+      "n_team_games": 544,
+      "n_draws": 1000,
+      "n_cells": 2166000,
+      "n_group_cells": 544000,
+      "G1_closure_violations": 0,
+      "G1_closure_max_abs_dev": 1.564621925354004e-07,
+      "G2_budget_violations": 0,
+      "G2_budget_max_abs_dev": 8.279479970951797e-06,
+      "G3_negative_shares": 0,
+      "G3_negative_counts": 0,
+      "G4_waterfill_bind": 0,
+      "G5_weight_floor_cells": 113342,
+      "G5_weight_floor_rate": 0.05232779316712835,
+      "G6_degenerate_group_cells": 27837,
+      "G6_degenerate_group_rate": 0.05117095588235294
+     }
+    },
+    "2025": {
+     "n_rows": 2174,
+     "n_team_games": 544,
+     "gates": {
+      "n_rows": 2174,
+      "n_team_games": 544,
+      "n_draws": 1000,
+      "n_cells": 2174000,
+      "n_group_cells": 544000,
+      "G1_closure_violations": 0,
+      "G1_closure_max_abs_dev": 1.7881393432617188e-07,
+      "G2_budget_violations": 0,
+      "G2_budget_max_abs_dev": 8.58342363585507e-06,
+      "G3_negative_shares": 0,
+      "G3_negative_counts": 0,
+      "G4_waterfill_bind": 0,
+      "G5_weight_floor_cells": 120851,
+      "G5_weight_floor_rate": 0.055589236430542775,
+      "G6_degenerate_group_cells": 28392,
+      "G6_degenerate_group_rate": 0.052191176470588234
+     }
+    }
+   },
+   "dependence": {
+    "n_team_games": 1662,
+    "LIKE_FOR_LIKE_between_team_game_counts": {
+     "median": 0.11124453633295037,
+     "mean": 0.1126651045937177,
+     "p05": 0.04878327466885974,
+     "p95": 0.17421333858486085,
+     "p_gt_zero": 0.999,
+     "n_draws_used": 1000
+    },
+    "LIKE_FOR_LIKE_between_team_game_shares": {
+     "median": -0.02801466833387438,
+     "mean": -0.028586412057323214,
+     "p05": -0.08787607095717845,
+     "p95": 0.03162902346225397,
+     "p_gt_zero": 0.209,
+     "n_draws_used": 1000
+    },
+    "realised_between_team_game_counts": -0.3716099375217268,
+    "realised_between_team_game_shares": -0.5951059908171317,
+    "NOT_COMPARABLE_within_team_game_across_draws_counts": 0.12472701726336331,
+    "NOT_COMPARABLE_within_team_game_across_draws_shares": -0.05403555495782693,
+    "FORBIDDEN_corr_of_predictive_means": 0.22506327385202077,
+    "team_volume_variance_fraction_of_RB1": 0.1989570735744773,
+    "rb1_predicted_mean": 6.98355828247889,
+    "rb2_predicted_mean": 6.011884360719461,
+    "rb1_over_rb2_pooled_mean_ratio": 1.1616255176343988,
+    "rb1_over_rb2_median_ratio_where_rb2_ge_half_carry": 1.1495001083837457,
+    "n_team_games_with_rb2_below_half_carry": 59,
+    "sd_across_team_games_of_rb1_predictive_mean": 2.6863728009268404
+   },
+   "marginals": {
+    "state": "NOT_APPLICABLE",
+    "code": "RBDEP_MARGINALS_NOT_SCORED_ON_FRAME_L",
+    "detail": "lambda=0.0 deliberately degrades the share forecast, so a CRPS computed there measures the degradation and not the model. Section 6 forbids reading quality off Frame L.",
+    "evidence": {}
+   }
+  }
+ },
+ "verdict": "ABLATION_UNNECESSARY_ON_FRAME_H",
+ "notes": [
+  "the incumbent median r is negative at every grid point",
+  "Frame H incumbent median r -0.3559, P(r>0) 0.000: the sign is not materially wrong where outcomes exist, so no fix is warranted there. Frame L verdict SIGN_NEVER_WRONG_ON_GRID.",
+  "Frame H CRPS INC 2.0206 SHR 2.0198 (-0.042%)",
+  "G6 degenerate-group rate SHR/INC = 1.73x (pre-declared threshold 3x)",
+  "TIE by section 5, and the incumbent wins ties"
+ ],
+ "elapsed_s": 67.9
+}

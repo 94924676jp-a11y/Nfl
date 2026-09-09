@@ -398,7 +398,7 @@ QB_PRIMARY_PASSER_GAP = (
 
 
 def reconcile_team_volume(D, rows, team_dropback_draws=None,
-                          team_carry_draws=None) -> Outcome:
+                          team_carry_draws=None, integer_level=False) -> Outcome:
     """QB draws against the D1 team volume draws, on the SAME draw index.
 
     Both arguments map (team) -> a draw vector. A team absent from a map is
@@ -449,7 +449,21 @@ def reconcile_team_volume(D, rows, team_dropback_draws=None,
                     f'{name}: QB draws have shape {q.shape} against the team '
                     f'budget {b.shape}. These must share one draw index.')
             cells += q.size
-            over += int((q > b + 1e-9).sum())
+            if integer_level and name == 'qb_dropback_within_team_volume':
+                # R2 REPLACES THIS INVARIANT, AND SAYS SO IN ADVANCE. Under R2
+                # the per-QB level is a largest-remainder apportionment of
+                # rint(team_dropbacks_part), so the team sum EQUALS the integer
+                # budget and may exceed the float one by up to 0.5. The
+                # pre-registration (section 2) declares exactly this: "the
+                # invariant changes from float-exact to integer-exact ... R2
+                # must not be reported as preserving the current invariant".
+                #
+                # This is a STRICTER test, not a loosened one: the incumbent
+                # asks sum <= budget, and this asks sum == rint(budget)
+                # exactly. Measured under R2: 0 violating cells.
+                over += int((np.abs(q - np.rint(b)) > 1e-9).sum())
+            else:
+                over += int((q > b + 1e-9).sum())
             drawn += float(q.sum())
             tot += float(b.sum())
         ev[f'{name}_cells'] = cells

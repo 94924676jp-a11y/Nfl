@@ -112,15 +112,27 @@ def test_the_engine_consumes_the_guard_and_can_report_FAIL():
     assert check('the engine calls the amplification guard',
                  'measure_composition_amplification' in src,
                  'ENGINE_DOES_NOT_MEASURE_AMPLIFICATION')
-    i = src.find("g['accounting']['qb_composition'] =")
-    assert check('the composition verdict is assigned', i > 0)
+    # THE INCUMBENT BRANCH, not the R2 one. R2 added an earlier assignment of
+    # the same key -- under R2 no ratio is formed, so PASS there is correct --
+    # and a `find` from the top now lands on it. Anchor on the amplification
+    # counter instead, which only the incumbent branch computes.
+    a = src.find('amp_fail += 1')
+    assert check('the incumbent branch still measures amplification', a > 0,
+                 'AMPLIFICATION_COUNTER_GONE')
+    i = src.find("g['accounting']['qb_composition'] =", a)
+    assert check('the incumbent composition verdict is assigned', i > a)
     j = src.find('qb_composition_amplification', i)
     assert check('the verdict block is delimited', j > i)
     window = src[i:j]
-    assert check('the verdict can be FAIL',
+    assert check('the incumbent verdict can be FAIL',
                  'FAIL[QB_COMPOSITION_RATE_FIDELITY_UNVERIFIED]' in window,
                  'COMPOSITION_VERDICT_IS_PASS_ONLY: it reported '
                  'PASS[QB_COMPOSITION_MASS_CONSERVED] whatever happened')
+    # And R2's own branch must claim the RIGHT thing: no ratio, not a
+    # measured-and-clean ratio.
+    r2i = src.find("PASS[QB_LEVEL_OWNED_BY_D1_X_QB3]")
+    assert check('R2 names its own composition verdict', r2i > 0,
+                 'R2_COMPOSITION_VERDICT_MISSING')
     assert check('the mass statement survives beside it, not instead of it',
                  'qb_composition_mass' in src,
                  'MASS_VERDICT_LOST')

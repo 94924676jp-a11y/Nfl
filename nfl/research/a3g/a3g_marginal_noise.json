@@ -1,0 +1,110 @@
+{
+ "artifact": "A3G_MARGINAL_NOISE",
+ "label": "POST-HOC DIAGNOSTIC. Written after the A3G result was seen; carries none of the pre-registration standing and changes no verdict in a3g_results.json.",
+ "seeds": [
+  11,
+  22,
+  33,
+  44,
+  55,
+  66
+ ],
+ "draws_per_team": 4000,
+ "arms": [
+  "none",
+  "off_snaps"
+ ],
+ "clause5_incumbent_against_itself": {
+  "n_seed_pairs": 15,
+  "max_abs_relative_move_min": 0.31022283626420255,
+  "max_abs_relative_move_max": 549382716.049382,
+  "seed_pairs_failing_the_1pct_clause": 15,
+  "worst_example": {
+   "max_abs_relative_move": 549382716.049382,
+   "at": "NE|team_rz_carries",
+   "statistic": "p05",
+   "n_compared": 160
+  }
+ },
+ "clause5_candidate_against_incumbent": {
+  "n_seed_pairs": 36,
+  "max_abs_relative_move_min": 0.1840340909090908,
+  "max_abs_relative_move_max": 549382716.049382,
+  "seed_pairs_failing_the_1pct_clause": 36
+ },
+ "across_seed_z_test": {
+  "note": "across-seed mean of each per-team marginal statistic, candidate vs incumbent, standardised by the seed-to-seed SE. Under an unmoved marginal roughly 5% should exceed 2.",
+  "per_statistic": {
+   "mean": {
+    "n": 160,
+    "max_z": 3.8703324020776892,
+    "share_above_2": 0.05625,
+    "share_above_3": 0.0125
+   },
+   "sd": {
+    "n": 160,
+    "max_z": 4.200052410402198,
+    "share_above_2": 0.09375,
+    "share_above_3": 0.00625
+   },
+   "p05": {
+    "n": 160,
+    "max_z": 3.162277660168388,
+    "share_above_2": 0.00625,
+    "share_above_3": 0.00625
+   },
+   "p50": {
+    "n": 160,
+    "max_z": 3.1622776601707088,
+    "share_above_2": 0.0375,
+    "share_above_3": 0.00625
+   },
+   "p95": {
+    "n": 160,
+    "max_z": 3.1622776601684013,
+    "share_above_2": 0.05,
+    "share_above_3": 0.00625
+   }
+  },
+  "worst": {
+   "z": 4.200052410402198,
+   "at": "TB|team_carries",
+   "stat": "sd",
+   "incumbent_mean": 8.241156987371783,
+   "candidate_mean": 8.123243037945477,
+   "seed_se": 0.028074399532317912
+  },
+  "n_team_metric_cells": 160
+ },
+ "clause6_zero_floor_draws": {
+  "incumbent_by_seed": [
+   1451,
+   1409,
+   1375,
+   1416,
+   1450,
+   1396
+  ],
+  "candidate_by_seed": [
+   1452,
+   1411,
+   1488,
+   1418,
+   1405,
+   1424
+  ],
+  "incumbent_range": [
+   1375,
+   1451
+  ],
+  "candidate_range": [
+   1405,
+   1488
+  ],
+  "incumbent_seed_pairs_where_a_later_seed_exceeds_an_earlier_one": 6,
+  "n_incumbent_seed_pairs": 15,
+  "candidate_mean_minus_incumbent_mean": 16.833333333333258,
+  "seed_se_of_the_difference": 17.767792334571126
+ },
+ "runtime_seconds": 187.9
+}

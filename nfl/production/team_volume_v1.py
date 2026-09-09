@@ -35,9 +35,11 @@ from __future__ import annotations
 import csv
 import gzip
 import json
+import math
 import os
 import pathlib
 import sys
+import zlib
 
 import numpy as np
 
@@ -171,15 +173,269 @@ def cache_clear():
 # engineering one. See nfl/research/j1/J1_FINDING.md.
 JOINT_RESIDUALS_DEFAULT = False
 
+# ---------------------------------------------------------------------------
+# A3G: the GAME-level extension of A3. Owner ruling B10.
+#
+# A3 made the five metrics of ONE TEAM share a historical team-game index. It
+# left the two teams of a game drawn independently, which is what B10 names:
+#
+#     within-game corr(home, away)   historical      A3 as it stands
+#     team_off_snaps                 -0.4647         ~-0.008
+#     team_carries                   -0.5347         ~+0.015
+#
+#     SD(total game plays)           9.265           12.32   (+33%)
+#     drawn games outside the entire 2020-2025 observed range [106, 173]: 2.00%
+#
+# Two percent of simulated games are longer or shorter than any NFL game of the
+# last six seasons. That is not a correlation nicety; it is a distributional
+# impossibility manufactured by drawing two dependent quantities apart.
+#
+# THE MECHANISM IS A RANK COPULA ON THE INDEX, AND IT MOVES NO MARGINAL.
+# Each side still resamples from its OWN coach pool. All that changes is WHICH
+# key each side receives: a bivariate normal (z_A, z_B) with correlation `rho`
+# is mapped to uniforms, and side s takes the pool key at ordinal position
+# floor(u_s * n_s) in its own pool ordered by a coupling score. u_s is exactly
+# Uniform(0,1), so floor(u_s * n_s) is exactly uniform on {0..n_s-1} -- the
+# same law as the incumbent `rng.integers(0, n_s, m)`. The marginal is
+# preserved BY CONSTRUCTION, not by measurement, and nothing is clipped,
+# truncated or renormalised to make that true.
+#
+# `rho` IS ESTIMATED, NEVER CHOSEN. See `coupling_rho`. There is no other
+# parameter in this mechanism.
+#
+# IT IS OFF BY DEFAULT and requires the caller to declare the pairs. A slate is
+# a list of teams; which two of them are playing each other is knowledge this
+# module does not have and must not guess.
+#
+# Pre-registration: nfl/research/a3g/predeclaration_a3g.md
+GAME_COUPLINGS = ('none', 'off_snaps', 'zmean', 'pc1')
+GAME_COUPLING_DEFAULT = 'none'
+
+# A frozen stream integer for the game-coupling normals, in the same spirit as
+# the 4242 above. It is NOT in nfl/production/seeds.py because that table is
+# frozen and append-only and this mode is not yet promoted; if the lead adopts
+# the mode, the id moves there.
+_COUPLING_STREAM = 4243
+
+
+def _pair_stream(lo: str, hi: str) -> int:
+    """A per-game substream integer that is the same in every process.
+
+    Python's builtin `hash()` of a string is randomised per process, which is
+    the exact defect nfl/production/seeds.py exists to end. crc32 is not a
+    hash of convenience here -- it is a fixed, published, deterministic
+    function of the two team codes, so two games on one slate get different
+    normals and the same game gets the same normals on every run.
+    """
+    return int(zlib.crc32(f'{lo}|{hi}'.encode()) & 0x7FFFFFFF)
+
+
+_ERFC = np.frompyfunc(math.erfc, 1, 1)
+
+
+def _norm_cdf(z):
+    """Phi(z), exactly, with no scipy on this box and no approximation."""
+    return _ERFC(-np.asarray(z, float) / math.sqrt(2.0)).astype(float) / 2.0
+
+
+def _rank_avg(x):
+    """Ranks with ties averaged. Spearman needs this and numpy has no rankdata."""
+    x = np.asarray(x, float)
+    order = np.argsort(x, kind='stable')
+    r = np.empty(len(x), float)
+    r[order] = np.arange(len(x), dtype=float)
+    # average the ranks inside each tied run
+    s = x[order]
+    i = 0
+    while i < len(s):
+        j = i
+        while j + 1 < len(s) and s[j + 1] == s[i]:
+            j += 1
+        if j > i:
+            r[order[i:j + 1]] = (i + j) / 2.0
+        i = j + 1
+    return r
+
+
+# ----------------------------------------------------------------- guards
+# Each of these is a module-level function returning an Outcome or None, so
+# nfl/tests/bypass.py can replace it with a permissive stub and prove the
+# refusal came from the guard rather than from something downstream.
+
+def assert_coupling_is_declared(game_coupling):
+    if game_coupling not in GAME_COUPLINGS:
+        return Outcome.fail(
+            'GAME_COUPLING_UNKNOWN',
+            f'{game_coupling!r} is not a declared coupling; the declared ones '
+            f'are {list(GAME_COUPLINGS)}. An unknown name is refused rather '
+            f'than defaulted to none, because a typo that silently disables '
+            f'the coupling would be reported as a run that had it on.')
+    return None
+
+
+def assert_coupling_has_joint_index(game_coupling, joint):
+    if game_coupling != 'none' and not joint:
+        return Outcome.fail(
+            'GAME_COUPLING_WITHOUT_JOINT_INDEX',
+            'game coupling permutes the shared historical team-game index, '
+            'and the independent per-metric mode has no such index. Asking '
+            'for one without the other is a contradiction, not a no-op.')
+    return None
+
+
+def assert_pairs_are_usable(game_coupling, game_pairs, teams):
+    """Pairs must exist, be pairs, name teams on the slate, and not repeat."""
+    if game_coupling == 'none':
+        return None
+    if not game_pairs:
+        return Outcome.fail(
+            'GAME_COUPLING_WITHOUT_PAIRS',
+            'a coupling was requested but no game_pairs were supplied. This '
+            'module is given a list of teams and cannot infer which two of '
+            'them are playing each other. Silently coupling nothing would '
+            'report a coupled run that was not coupled.')
+    seen, tset = set(), set(teams)
+    for pr in game_pairs:
+        if len(tuple(pr)) != 2:
+            return Outcome.fail(
+                'GAME_PAIR_MALFORMED',
+                f'{pr!r} is not a pair of two teams')
+        a, b = tuple(pr)
+        if a == b:
+            return Outcome.fail('GAME_PAIR_SELF',
+                                f'{a} cannot be paired with itself')
+        for t in (a, b):
+            if t not in tset:
+                return Outcome.fail(
+                    'GAME_PAIR_TEAM_NOT_ON_SLATE',
+                    f'{t} appears in game_pairs but not in the teams supplied '
+                    f'to this call')
+            if t in seen:
+                return Outcome.fail(
+                    'GAME_PAIR_TEAM_REPEATED',
+                    f'{t} appears in more than one pair')
+            seen.add(t)
+    return None
+
+
+# ------------------------------------------------------- coupling machinery
+
+def coupling_scores(kind, keyed, common):
+    """One scalar per historical pool key: the axis the coupling acts on.
+
+    The score is a property of a historical team-game, so ordering a pool by it
+    is a permutation of that pool. It moves no mass.
+    """
+    if kind == 'off_snaps':
+        return Outcome.ok('COUPLING_SCORE_OFF_SNAPS',
+                          value={k: float(keyed['team_off_snaps'][k])
+                                 for k in common},
+                          detail='the team_off_snaps residual')
+    Z = np.empty((len(common), len(METRICS)), float)
+    for j, met in enumerate(METRICS):
+        col = np.array([keyed[met][k] for k in common], float)
+        sd = float(col.std(ddof=0))
+        if not np.isfinite(sd) or sd == 0.0:
+            return Outcome.blocked(
+                'COUPLING_SCORE_DEGENERATE',
+                f'{met} has zero spread across the {len(common)} pooled '
+                f'team-games, so it cannot be standardised', cause=Cause.DATA)
+        Z[:, j] = (col - col.mean()) / sd
+    if kind == 'zmean':
+        s = Z.mean(axis=1)
+        ev = {'loadings': {m: 1.0 / len(METRICS) for m in METRICS}}
+    elif kind == 'pc1':
+        C = np.corrcoef(Z, rowvar=False)
+        w, v = np.linalg.eigh(C)
+        vec = v[:, int(np.argmax(w))]
+        if vec[METRICS.index('team_off_snaps')] < 0:
+            vec = -vec
+        s = Z @ vec
+        ev = {'loadings': {m: float(vec[j]) for j, m in enumerate(METRICS)},
+              'explained_variance_share': float(np.max(w) / np.sum(w))}
+    else:
+        return Outcome.fail('COUPLING_SCORE_UNKNOWN', f'{kind!r}')
+    return Outcome.ok(f'COUPLING_SCORE_{kind.upper()}',
+                      value={k: float(s[i]) for i, k in enumerate(common)},
+                      detail=f'{kind} over {len(common)} pooled team-games',
+                      **ev)
+
+
+def coupling_rho(score, common, opponent_of):
+    """Estimate the copula correlation from historical PAIRED games.
+
+    Spearman on the symmetrised sample -- each game contributes (A,B) and
+    (B,A), so the estimate cannot depend on which side is called home -- then
+    the standard Gaussian-copula inversion rho = 2 sin(pi rho_s / 6).
+
+    This is the ONLY parameter of the mechanism and it is read out of history.
+    """
+    have = set(common)
+    x, y = [], []
+    for k in common:
+        opp = opponent_of.get(k)
+        if opp is None:
+            continue
+        k2 = (opp, k[1])
+        if k2 in have:
+            x.append(score[k])
+            y.append(score[k2])
+    n_ordered = len(x)
+    if n_ordered < 2:
+        return Outcome.blocked(
+            'COUPLING_NO_PAIRED_HISTORY',
+            f'only {n_ordered} historical team-game(s) have their opponent in '
+            f'the same residual pool, so the within-game dependence cannot be '
+            f'estimated. An unestimable parameter is a refusal, not a zero.',
+            cause=Cause.DATA)
+    rs = float(np.corrcoef(_rank_avg(x), _rank_avg(y))[0, 1])
+    if not np.isfinite(rs):
+        return Outcome.blocked(
+            'COUPLING_RHO_NOT_FINITE',
+            'the rank correlation of the paired scores is not finite',
+            cause=Cause.DATA)
+    rho = 2.0 * math.sin(math.pi * rs / 6.0)
+    return Outcome.ok('COUPLING_RHO_ESTIMATED', value=rho,
+                      detail=f'rho={rho:.4f} from rho_spearman={rs:.4f} on '
+                             f'{n_ordered // 2} paired games',
+                      rho_spearman=rs, rho_gaussian=rho,
+                      paired_games=n_ordered // 2,
+                      ordered_pairs=n_ordered)
+
+
+def coupled_index(u, pool_keys, score):
+    """The pool position each draw receives: floor(u * n) in score order.
+
+    EXACTLY uniform over the n pool keys because u is exactly Uniform(0,1).
+    The sort key carries the pool key itself so that float ties resolve the
+    same way on every run and in every process.
+    """
+    n = len(pool_keys)
+    order = sorted(range(n), key=lambda j: (score[pool_keys[j]], pool_keys[j]))
+    pos = np.minimum((np.asarray(u, float) * n).astype(np.int64), n - 1)
+    return np.asarray(order, np.int64)[pos]
+
 
 def forecast(season: int, week: int, teams, m: int = 200,
-             seed: int = 20260908, joint_residuals: bool = None) -> Outcome:
+             seed: int = 20260908, joint_residuals: bool = None,
+             game_pairs=None, game_coupling: str = None) -> Outcome:
     """Prospective team-volume draws for one slate. Returns (metric, team) ->
     an (m,) draw vector.
 
     `joint_residuals` selects the J1 draw mode. None means the module default.
+
+    `game_coupling` selects the A3G within-game mode and defaults to `'none'`,
+    which reproduces the previous draws bit for bit. Anything else requires
+    `joint_residuals` and requires `game_pairs` -- an explicit list of
+    `(team, team)` tuples saying which two teams on this slate are playing each
+    other. See GAME_COUPLINGS and the block above.
     """
     import p4b_volume as V
+    game_coupling = (GAME_COUPLING_DEFAULT if game_coupling is None
+                     else game_coupling)
+    _g = assert_coupling_is_declared(game_coupling)
+    if _g is not None:
+        return _g
     if not teams:
         return Outcome.blocked('TEAM_VOLUME_NO_TEAMS',
                                'no teams supplied for the slate',
@@ -202,6 +458,10 @@ def forecast(season: int, week: int, teams, m: int = 200,
             teams=missing)
     joint = (JOINT_RESIDUALS_DEFAULT if joint_residuals is None
              else bool(joint_residuals))
+    for _g in (assert_coupling_has_joint_index(game_coupling, joint),
+               assert_pairs_are_usable(game_coupling, game_pairs, teams)):
+        if _g is not None:
+            return _g
     out, meta = {}, {}
     fits = {}
     for metric in METRICS:
@@ -273,15 +533,53 @@ def forecast(season: int, week: int, teams, m: int = 200,
         by_coach = {}
         for k in common:
             by_coach.setdefault(coach_of.get(k), []).append(k)
+        # A3G. `u_by_team` is empty unless a coupling was asked for, and the
+        # `rng.integers` path below is then reached for every row in the same
+        # order as before, so game_coupling='none' is bit-identical to J1.
+        score, cmeta, u_by_team = None, {}, {}
+        if game_coupling != 'none':
+            opponent_of = {}
+            for _m2, (_s2, _f2, _p2, hh) in fits.items():
+                for h in hh:
+                    opponent_of[(h['team'], h['ord'])] = h.get('opponent')
+            sc = coupling_scores(game_coupling, keyed, common)
+            if sc.state is not State.PASS:
+                return sc
+            score = sc.value
+            rh = coupling_rho(score, common, opponent_of)
+            if rh.state is not State.PASS:
+                return rh
+            rho = float(rh.value)
+            cmeta = {'game_coupling': game_coupling,
+                     'rho_gaussian': rho,
+                     'rho_spearman': rh.evidence['rho_spearman'],
+                     'coupling_paired_games': rh.evidence['paired_games'],
+                     'coupling_score_evidence': {
+                         k: v for k, v in sc.evidence.items()
+                         if k in ('loadings', 'explained_variance_share')}}
+            root = math.sqrt(max(0.0, 1.0 - rho * rho))
+            for _pair in game_pairs:
+                lo, hi = sorted(tuple(_pair))
+                grng = np.random.default_rng(
+                    [seed, ordinal, _COUPLING_STREAM, _pair_stream(lo, hi)])
+                z1 = grng.standard_normal(m)
+                z2 = rho * z1 + root * grng.standard_normal(m)
+                u_by_team[lo] = _norm_cdf(z1)
+                u_by_team[hi] = _norm_cdf(z2)
         rng = np.random.default_rng([seed, ordinal, 4242])
         pr0 = fits[METRICS[0]][2]
-        n_fallback = 0
+        n_fallback = n_coupled = 0
         for i, r0 in enumerate(pr0):
             pool_keys = by_coach.get(r0.get('coach'))
             if not pool_keys:
                 pool_keys = common          # the same fallback V.draw uses
                 n_fallback += 1
-            pick = rng.integers(0, len(pool_keys), m)
+            u = u_by_team.get(r0['team'])
+            if u is None:
+                pick = rng.integers(0, len(pool_keys), m)
+            else:
+                pick = coupled_index(u, pool_keys, score)
+                n_coupled += 1
             chosen = [pool_keys[j] for j in pick]
             for metric in METRICS:
                 sel, fit, pr, _h = fits[metric]
@@ -293,12 +591,16 @@ def forecast(season: int, week: int, teams, m: int = 200,
                             'draw_mode': 'joint_residuals',
                             'joint_pool_team_games': len(common),
                             'coaches_with_a_pool': len(by_coach),
-                            'rows_on_global_fallback': n_fallback}
+                            'rows_on_global_fallback': n_fallback,
+                            'rows_game_coupled': n_coupled,
+                            'rows_not_game_coupled': len(pr0) - n_coupled,
+                            **cmeta}
     return Outcome.ok('TEAM_VOLUME_OK', value=out,
                       detail=f'{len(teams)} team(s), {len(METRICS)} metrics, '
                              f'{m} draws',
                       spec_version=SPEC_VERSION, selections=meta,
                       draw_mode=('joint_residuals' if joint
                                  else 'independent_per_metric'),
+                      game_coupling=game_coupling,
                       coach_snapshot=co.evidence['snapshot'],
                       known_limitations=list(KNOWN_LIMITATIONS))

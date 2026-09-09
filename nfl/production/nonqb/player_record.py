@@ -15,6 +15,20 @@ the reason and the missing decision.
 Every present metric carries: draw count, mean, p10, p50, p90, the spec version
 that produced it, its governance state, and the run identity. A number without
 those is not auditable and this contract will not emit one.
+
+B13: THE FOUR NUMBERS ARE A VIEW, NOT THE FORECAST
+
+`mean/p10/p50/p90` is kept because it is what a reader wants on sight. It is
+NOT sufficient for anything the evaluation programme needs: no CRPS, no log
+score, no PIT, no coverage at a level nobody stored, no tail probability, and
+-- the loss that cannot be repaired by storing more quantiles -- no dependence,
+because a per-metric marginal summary throws away which draw went with which.
+
+So a present metric may now also carry `draws_ref`: where its draw vector lives
+in the run's draw container, by layer, metric, row index and the container's
+content digest. `validate_draws_referenced` is the separate, named check that
+every present metric carries one; it is applied by the production path, which
+supplies draws, and not imposed on callers that legitimately have none.
 """
 from __future__ import annotations
 
@@ -78,19 +92,55 @@ def _governance(metric):
             'publication_eligible': m.get('publication_eligible', False)}
 
 
-def summarise(draws, spec_version, metric, run_id, **extra) -> dict:
-    """One metric's distribution, with everything needed to audit it."""
+def draws_ref(layer: str, metric: str, row: int, n_draws: int,
+              content_digest: str, file_sha256: str = None) -> dict:
+    """Where this metric's actual draw vector lives, so it can be recovered.
+
+    `row` and the shared column axis together are the joint structure: draw j
+    of every metric of this row is one iteration of one stream. A reference is
+    only meaningful if it names the container it points into, so the digest is
+    part of it -- a reference to draws that have since changed would silently
+    resolve to the wrong numbers.
+    """
+    if not layer or not metric or row is None or not n_draws:
+        raise ValueError(
+            'DRAWS_REF_INCOMPLETE: a draw reference that cannot locate its '
+            'vector is worse than none, because it looks like provenance.')
+    r = {'layer': layer, 'metric': metric, 'row': int(row),
+         'n_draws': int(n_draws), 'content_digest': content_digest,
+         'key': f'{layer}/{metric}'}
+    if file_sha256:
+        r['file_sha256'] = file_sha256
+    return r
+
+
+def summarise(draws, spec_version, metric, run_id, draws_ref=None,
+              **extra) -> dict:
+    """One metric's distribution, with everything needed to audit it.
+
+    `draws_ref` is OPTIONAL here and REQUIRED by the production path, checked
+    by `validate_draws_referenced`. It is optional at this level because this
+    contract is also used by callers that hold the draws in memory and never
+    write a container; making it mandatory here would have forced those callers
+    to fabricate a reference, which is worse than not having one.
+    """
     a = np.asarray(draws, float).reshape(-1)
     if a.size == 0:
         raise ValueError(f'{metric}: an empty draw vector is not a '
                          f'distribution')
-    return {'status': 'PRESENT', 'n_draws': int(a.size),
-            'mean': float(a.mean()),
-            'p10': float(np.quantile(a, 0.10)),
-            'p50': float(np.quantile(a, 0.50)),
-            'p90': float(np.quantile(a, 0.90)),
-            'spec_version': spec_version, 'governance': _governance(metric),
-            'run_id': run_id, **extra}
+    out = {'status': 'PRESENT', 'n_draws': int(a.size),
+           'mean': float(a.mean()),
+           'p10': float(np.quantile(a, 0.10)),
+           'p50': float(np.quantile(a, 0.50)),
+           'p90': float(np.quantile(a, 0.90)),
+           'spec_version': spec_version, 'governance': _governance(metric),
+           'run_id': run_id, 'draws_ref': draws_ref, **extra}
+    if draws_ref is not None and int(draws_ref.get('n_draws', 0)) != int(a.size):
+        raise ValueError(
+            f'DRAWS_REF_LENGTH_MISMATCH: {metric} summarises {a.size} draw(s) '
+            f'but its reference names {draws_ref.get("n_draws")}. The summary '
+            f'and the stored draws would describe different objects.')
+    return out
 
 
 def absent(metric, reason, run_id, **extra) -> dict:
@@ -98,7 +148,52 @@ def absent(metric, reason, run_id, **extra) -> dict:
     return {'status': 'ABSENT', 'reason': reason, 'n_draws': 0,
             'mean': None, 'p10': None, 'p50': None, 'p90': None,
             'spec_version': None, 'governance': _governance(metric),
-            'run_id': run_id, **extra}
+            'run_id': run_id, 'draws_ref': None, **extra}
+
+
+def validate_draws_referenced(records) -> Outcome:
+    """Every PRESENT metric must point at the draws behind it.
+
+    Separate from `validate` on purpose. `validate` is the metric contract and
+    is enforced everywhere; this is the B13 storage contract and is enforced on
+    the path that writes a draw container. Folding them together would have
+    made one of the two lie about what it checked.
+    """
+    if not records:
+        return Outcome.fail(
+            'PLAYER_RECORDS_EMPTY',
+            'no player record was produced, so there is nothing whose draws '
+            'could be referenced. An empty set is not a clean set.')
+    thin = []
+    for r in records:
+        for k, m in (r.get('metrics') or {}).items():
+            if m.get('status') != 'PRESENT':
+                continue
+            ref = m.get('draws_ref')
+            if not ref:
+                thin.append({'player': r['gsis_id'], 'metric': k,
+                             'why': 'PRESENT with no draws_ref'})
+                continue
+            if not ref.get('content_digest') or ref.get('row') is None \
+                    or not ref.get('n_draws'):
+                thin.append({'player': r['gsis_id'], 'metric': k,
+                             'why': 'draws_ref cannot locate a vector'})
+            elif int(ref['n_draws']) != int(m['n_draws']):
+                thin.append({'player': r['gsis_id'], 'metric': k,
+                             'why': f'draws_ref names {ref["n_draws"]} draw(s) '
+                                    f'against a summary over {m["n_draws"]}'})
+    if thin:
+        return Outcome.fail(
+            'PLAYER_METRIC_DRAWS_UNREFERENCED',
+            f'{len(thin)} present metric(s) keep only a quantile summary. Four '
+            f'numbers cannot produce a proper score, a PIT value, a tail '
+            f'probability or any dependence diagnostic, so a metric stored '
+            f'that way is not evaluable and must not be reported as one.',
+            offences=thin[:10])
+    n = sum(1 for r in records for m in (r.get('metrics') or {}).values()
+            if m.get('status') == 'PRESENT')
+    return Outcome.ok('PLAYER_METRIC_DRAWS_REFERENCED', value=n,
+                      n_present=n, n_records=len(records))
 
 
 def record(player, position, game_id, run_id, metrics: dict) -> dict:

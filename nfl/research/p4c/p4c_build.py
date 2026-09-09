@@ -184,25 +184,78 @@ def fit_params(sub, cls, ev, rows_all):
 # WEIGHT GENERATORS. Each returns (W, w_other_raw_or_None) for one system.
 # W is (n, M) nonnegative relative weight; allocate() turns it into shares.
 # ---------------------------------------------------------------------------
-def _resample(pool_by_pos, positions, n, m, rng, fallback):
+def _resample(pool_by_pos, positions, n, m, rng, fallback, groups=None):
+    """Draw one residual per (row, draw) from that row's position pool.
+
+    `groups` is the RBDEP opt-in and is None everywhere by default, which is
+    the incumbent: every row resamples INDEPENDENTLY, so two team-mates never
+    see the same residual. Passing an array of one group id per row instead
+    shares ONE resample position across the rows of a group -- the trick A3
+    already uses one level up, moved down to the allocation layer.
+
+    The shared quantity is a UNIFORM, not a raw integer index. For a
+    single-position class (carries: RB only) every row in a group reads the
+    same pool, so a shared uniform IS a shared index and the two are identical.
+    For a mixed-position class (targets: WR/TE/RB) the position pools have
+    different lengths, so a raw index is not defined across them; a shared
+    uniform against each pool's SORTED order is the quantile-level statement of
+    the same idea, and it reduces exactly to a shared index when the pools
+    coincide. The per-row MARGINAL is unchanged either way -- a uniform draw
+    from the same pool -- which is what makes this an ablation of dependence
+    alone and not a change of marginals.
+    """
     W = np.empty((n, m), np.float32)
+    if groups is None:
+        for i, p_ in enumerate(positions):
+            pl = pool_by_pos.get(p_)
+            if pl is None or len(pl) < 30:
+                pl = fallback
+            W[i] = pl[rng.integers(0, len(pl), m)]
+        return W
+    g = np.asarray(groups)
+    if g.ndim != 1 or g.shape[0] != n or not np.issubdtype(g.dtype, np.integer):
+        raise ValueError(
+            f'SHARED_ADD_POOL_GROUP_SHAPE: expected one integer group id per '
+            f'row, shape ({n},); got shape {g.shape} dtype {g.dtype}. Refused '
+            f'rather than broadcast into a silently wrong pairing.')
+    if g.min() < 0:
+        raise ValueError(
+            f'SHARED_ADD_POOL_GROUP_NEGATIVE: group ids index a table of '
+            f'shared draws and cannot be negative; min is {int(g.min())}.')
+    U = rng.random((int(g.max()) + 1, m))
+    srt = {}
     for i, p_ in enumerate(positions):
         pl = pool_by_pos.get(p_)
-        if pl is None or len(pl) < 30:
-            pl = fallback
-        W[i] = pl[rng.integers(0, len(pl), m)]
+        key = p_ if (pl is not None and len(pl) >= 30) else None
+        if key not in srt:
+            srt[key] = np.sort(pl if key is not None else fallback)
+        pl = srt[key]
+        idx = np.minimum((U[g[i]] * len(pl)).astype(np.int64), len(pl) - 1)
+        W[i] = pl[idx]
     return W
 
 
-def gen_weights(system, C, positions, par, cls, n, m, rng):
-    """C is (n,) the marginal point forecast. Nothing here sees the outcome."""
+def gen_weights(system, C, positions, par, cls, n, m, rng,
+                add_pool_groups=None):
+    """C is (n,) the marginal point forecast. Nothing here sees the outcome.
+
+    `add_pool_groups` defaults to None, which is the production default and
+    changes nothing. See `_resample`; it is the RBDEP ablation switch and the
+    lead decides whether it ever becomes a default.
+    """
     c = L.CLASSES[cls]
     allpool = np.concatenate([v for v in par['add_pool'].values()]) \
         if par['add_pool'] else np.zeros(1, np.float32)
     if system in ('A', 'B', 'C', 'C2'):
-        W = C[:, None] + _resample(par['add_pool'], positions, n, m, rng, allpool)
+        W = C[:, None] + _resample(par['add_pool'], positions, n, m, rng,
+                                   allpool, groups=add_pool_groups)
         np.clip(W, 0.0, 1.0, out=W)
         return W
+    if add_pool_groups is not None:
+        raise ValueError(
+            f'SHARED_ADD_POOL_NOT_APPLICABLE: system {system!r} does not draw '
+            f'from add_pool, so a shared add_pool index would be accepted and '
+            f'then silently ignored. Refused.')
     if system == 'D_dir':
         mu = np.maximum(C, EPS)[:, None]
         a = par['alpha0'] * mu

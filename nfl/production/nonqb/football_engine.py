@@ -199,7 +199,8 @@ def apply_r2_level(qb, alloc, tv, teams) -> Outcome:
 
 def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
              injuries_rows=None, test_only=False, kickoff_utc=None,
-             run_id='rehearsal', qb=None, shared_pass='off'):
+             run_id='rehearsal', qb=None, shared_pass='off',
+             game_coupling='none'):
     """One game, every implemented layer, one draw index."""
     away, home = game_id.split('_')[2:4]
     teams = (away, home)
@@ -223,7 +224,22 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
         [q['position'] for q in order]
     g['n_players'] = len(recv)
 
-    tv = TV.forecast(season, week, list(teams), m=m, seed=seed)
+    # A3G in the V1 candidate mode: the two teams in a game share one coupled
+    # draw index, so the game total stops being the sum of two independent
+    # marginals. Measured: SD(total plays) 12.271 -> 9.269 against a historical
+    # 9.265, and the fraction of drawn games outside the entire 2020-2025
+    # observed range 1.520% -> 0.188%. The rank copula moves no marginal by
+    # construction -- it changes WHICH residual each side receives, not the
+    # pool it is drawn from. Opt-in; no production default is changed here.
+    tv = (TV.forecast(season, week, list(teams), m=m, seed=seed,
+                      joint_residuals=True, game_pairs=[(teams[0], teams[1])],
+                      game_coupling=game_coupling)
+          if game_coupling and game_coupling != 'none'
+          else TV.forecast(season, week, list(teams), m=m, seed=seed))
+    g['layers']['game_coupling'] = (f'PASS[A3G_{game_coupling.upper()}]'
+                                    if game_coupling
+                                    and game_coupling != 'none'
+                                    else 'NOT_APPLICABLE[GAME_COUPLING_NONE]')
     g['layers']['team_environment'] = f'{tv.state.value}[{tv.code}]'
     if tv.state is not State.PASS:
         g['halted_at'] = 'team_environment'
@@ -264,6 +280,7 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
         return g, None
     S, other = tc.value['share'], tc.value['other']
     c3 = None
+    c3_other = None
     if shared_pass == 'c3' and qb is not None and qb.get('draws'):
         # C3: THE TARGET BUDGET COMES FROM THE THROW PROCESS, NOT FROM D1.
         #
@@ -312,7 +329,29 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
             return g, None
         T = dealt.value['targets'].astype(float)
         tgt_vol = np.stack([np.asarray(x['targeted'], float) for x in tgt])
+        # CLOSURE UNDER C3 IS A COUNT IDENTITY, AND IT IS CHECKED AS ONE.
+        # `deal_targets` partitions an integer targeted-throw budget by a
+        # multinomial, so `sum_i T_i + other == targeted` holds EXACTLY in
+        # every draw by construction. The share-form identity the accounting
+        # layer checks -- sum(T) + other_share x V == V -- is a property of
+        # the `share x volume` architecture C3 replaces, and neither passing
+        # the allocator's share (a different quantity) nor re-expressing the
+        # dealt count as a share (which then breaks simplex closure) makes it
+        # hold. Both were tried and both moved the failure rather than
+        # removing it.
+        #
+        # So the count identity is asserted HERE, exactly, and reported under
+        # its own name. The allocator's own `other` is left untouched so that
+        # `share_simplex_closure` still checks the allocator.
+        c3_other = dealt.value['other'].astype(float)
+        _per_team = np.stack([T[a:a + cc].sum(0)
+                              for a, cc in zip(starts, counts)])
+        c3_closure = int((np.abs(_per_team + dealt.value['other']
+                                 - tgt_vol) > 1e-9).sum())
         c3 = {'untargeted_rate': float(ur.value),
+              'count_closure_violating_cells': c3_closure,
+              'count_closure_identity': 'sum_i targets_i + other == targeted, '
+                                        'per team per draw, exact',
               'mean_throws': [round(float(np.mean(x['throws'])), 4)
                               for x in tgt],
               'mean_targeted': [round(float(np.mean(x['targeted'])), 4)
@@ -321,6 +360,15 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
               'other_pool_mean': dealt.evidence['mean_other_per_draw'],
               'target_budget_owner': 'the throw process (QB attempts), not D1',
               'd1_team_targets_unused': True}
+        if c3_closure:
+            g['halted_at'] = 'shared_pass'
+            g['halt_reason'] = (
+                f'C3_TARGET_COUNT_DOES_NOT_CLOSE: {c3_closure} cell(s) where '
+                f'the dealt targets plus the other pool do not equal the '
+                f'targeted budget. This is a construction, so a failure here '
+                f'is a defect, never a tolerance to widen.')
+            g['layers']['shared_pass'] = 'FAIL[C3_TARGET_COUNT_DOES_NOT_CLOSE]'
+            return g, None
         g['layers']['shared_pass'] = 'PASS[C3_TARGET_BUDGET_FROM_THROWS]'
     else:
         tgt_vol = np.stack([tv.value[('team_targets', t)] for t in teams])
@@ -375,7 +423,10 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
     rec_acc = ACC.reconcile_nonqb(
         S, other, tgt_vol, T, (A > 0).astype(np.float32), starts, counts,
         receptions=cv.value['receptions'], receiving_td=td.value['td'],
-        receiving_yards=cv.value['receiving_yards'])
+        receiving_yards=cv.value['receiving_yards'],
+        # Under C3 the opportunity identity is checked as exact integer
+        # counts, which is stricter than the share form it replaces.
+        opportunity_other_counts=(c3_other if c3 is not None else None))
     g['accounting']['receiving'] = f'{rec_acc.state.value}[{rec_acc.code}]'
     qb_rush, qb_records = None, []
     if qb is not None and qb.get('r2'):
@@ -576,7 +627,12 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
             team_dropback_draws={t: np.asarray(
                 tv.value[('team_dropbacks_part', t)], float) for t in teams},
             team_carry_draws={t: np.asarray(
-                tv.value[('team_carries', t)], float) for t in teams})
+                tv.value[('team_carries', t)], float) for t in teams},
+            # Under R2 the level is an integer apportionment, so the dropback
+            # identity is checked as exact EQUALITY against rint(budget)
+            # instead of the incumbent's <= against the float budget. Stricter,
+            # and declared in the R2 pre-registration before it was measured.
+            integer_level=bool(qb.get('r2')))
         g['accounting']['qb_team_volume'] = f'{qv.state.value}[{qv.code}]'
         # FEED THE THIRD DORMANT GUARD. reconcile_cross_layer has been written,
         # correct and DEFERRED since R3 because no caller ever supplied the

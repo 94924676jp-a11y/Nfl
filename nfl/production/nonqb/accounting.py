@@ -89,7 +89,7 @@ def _groups(starts, counts):
 def reconcile_nonqb(share, other, team_volume, player_opportunity,
                     appearance, starts, counts,
                     receptions=None, receiving_td=None,
-                    receiving_yards=None) -> Outcome:
+                    receiving_yards=None, opportunity_other_counts=None) -> Outcome:
     """Check every identity in every cell.
 
     share              (n_players, m)   allocation shares
@@ -144,10 +144,36 @@ def reconcile_nonqb(share, other, team_volume, player_opportunity,
         viol.append(('share_non_negative', neg, float(S.min())))
 
     grp_opp = np.stack([T[a:a + c].sum(0) for a, c in g])
+    if opportunity_other_counts is not None:
+        # C3 CHECKS THIS IN COUNTS, AND EXACTLY. Under the shared-pass
+        # architecture the team budget is an integer targeted-throw count and
+        # `deal_targets` partitions it with a multinomial, so
+        # sum_i T_i + other == budget holds cell-for-cell by construction.
+        # The share form -- sum(T) + other_SHARE x V == V -- is a property of
+        # the `share x volume` architecture C3 replaces, and it cannot hold
+        # here because the allocator's share and the dealt count are different
+        # quantities. This is the STRICTER test: exact equality on integers
+        # instead of a relative tolerance on floats.
+        lhs = grp_opp + np.asarray(opportunity_other_counts, float)
+        d2 = np.abs(lhs - V)
+        ev['player_opportunity_within_team_form'] = 'EXACT_COUNTS_C3'
+        ev['player_opportunity_within_team_maxabsdev'] = float(d2.max())
+        ev['player_opportunity_within_team_maxreldev'] = float(
+            d2.max() / max(float(np.abs(V).max()), 1.0))
+        if d2.max() > 1e-9:
+            viol.append(('player_opportunity_within_team',
+                         int((d2 > 1e-9).sum()), float(d2.max())))
+        _skip_share_form = True
+    else:
+        _skip_share_form = False
     lhs, rhs = grp_opp + O * V, V
     scale = np.maximum(np.abs(rhs), 1.0)
     d2 = np.abs(lhs - rhs) / scale
-    ev['player_opportunity_within_team_maxreldev'] = float(d2.max())
+    if _skip_share_form:
+        d2 = np.zeros_like(d2)
+    else:
+        ev['player_opportunity_within_team_form'] = 'SHARE_X_VOLUME'
+        ev['player_opportunity_within_team_maxreldev'] = float(d2.max())
     if d2.max() > RELATIVE_TOL:
         viol.append(('player_opportunity_within_team',
                      int((d2 > RELATIVE_TOL).sum()), float(d2.max())))

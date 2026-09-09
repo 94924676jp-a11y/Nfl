@@ -52,7 +52,7 @@ def stub_injuries(season, week, players):
 
 def run(season=2026, week=1, m=200, seed=20260908, mode='test_only',
         max_games=None, r2=False, include_cold_start=False,
-        shared_pass='off'):
+        shared_pass='off', game_coupling='none'):
     t0 = time.time()
     test_only = (mode == 'test_only')
     out = {'artifact': ('NFL_V1_R4_ENGINE_REHEARSAL' if test_only
@@ -129,8 +129,20 @@ def run(season=2026, week=1, m=200, seed=20260908, mode='test_only',
                 # R2 re-levels the whole slate BEFORE any game runs: the level
                 # belongs to D1 x QB3, so it must exist before QB V1's rates
                 # are applied to it, not be divided into afterwards.
-                tv_all = FE.TV.forecast(season, week, teams_all, m=m,
-                                        seed=seed)
+                # THE SAME BUDGET THE GAMES WILL USE. Applying R2 against an
+                # uncoupled team volume while run_game drew a COUPLED one made
+                # the apportionment close against a budget no game held: 383
+                # of 400 dropback cells then failed exact equality. The
+                # coupling flags must match on both sides or the level is
+                # apportioned from the wrong number.
+                pairs = [tuple(gid.split('_')[2:4]) for gid in games]
+                tv_all = (FE.TV.forecast(
+                    season, week, teams_all, m=m, seed=seed,
+                    joint_residuals=True, game_pairs=pairs,
+                    game_coupling=game_coupling)
+                    if game_coupling and game_coupling != 'none'
+                    else FE.TV.forecast(season, week, teams_all, m=m,
+                                        seed=seed))
                 out['layers']['r2_team_volume'] = \
                     f'{tv_all.state.value}[{tv_all.code}]'
                 if tv_all.state is State.PASS:
@@ -159,7 +171,8 @@ def run(season=2026, week=1, m=200, seed=20260908, mode='test_only',
             injuries_rows=inj, test_only=test_only,
             kickoff_utc=(k.isoformat().replace('+00:00', 'Z')
                          if hasattr(k, 'isoformat') else k),
-            run_id=out['artifact'], qb=qb, shared_pass=shared_pass)
+            run_id=out['artifact'], qb=qb, shared_pass=shared_pass,
+            game_coupling=game_coupling)
         for kk, v in g['layers'].items():
             states[(kk, v)] += 1
         if payload:
