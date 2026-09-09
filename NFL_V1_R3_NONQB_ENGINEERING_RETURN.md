@@ -41,7 +41,7 @@ states.
 
 ## 2. Ending HEAD
 
-`__ENDING_HEAD__`
+`5b116b43e4cc08ede06a09a60e652f76984eee57`
 
 ## 3. Files changed
 
@@ -498,6 +498,11 @@ Recorded because the mistakes are more useful than the successes.
    seconds.
 5. **The freeze recorded a guessed filename** (`td2_results.json`) as a missing
    artifact. TD2's artifacts were there under other names.
+6. **A production run rewrote a research artifact.** Regenerating
+   `panel_enriched.pkl` makes `regenerate.py` write its own run report into the
+   research tree — correct when a human runs it, wrong as a side effect of a
+   forecast. The report is now snapshotted and put back, and the leaked value
+   was restored to what R2 committed.
 
 ## What this return does not claim
 
