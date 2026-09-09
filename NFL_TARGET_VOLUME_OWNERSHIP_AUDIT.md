@@ -305,3 +305,69 @@ budget would contaminate every C3 arm and would be scored as a C3 property.
 | `nfl/production/qb_accounting.py` | `reconcile_allocation_share`, the OWN-1 guard |
 | `nfl/production/nonqb/football_engine.py` | the guard wired in, and its evidence on every game |
 | `nfl/tests/test_xl1_shared_pass.py` | +9 checks for the guard, with the bypass proof |
+
+---
+
+## Addendum — OWN-1 is a week-1 cold-start condition, and it does not block the retrospective
+
+**I said OWN-1 blocks both studies. That was wrong, and it was an assertion
+rather than a measurement.** The claim was that a 5.32% leak in the throw budget
+would contaminate a C3 retrospective and be scored as a C3 property. It would —
+**on week 1**. The retrospective does not run on week 1.
+
+Measured on the historical depth charts (2020–2024 REG) against strictly-prior
+passer appearances in `panel_p3`, split by week and by depth rank, because the
+dropback share sits almost entirely on rank 1 and a third-string backup with no
+history costs nothing:
+
+| segment | n | no prior appearance | rate |
+|---|---|---|---|
+| week 1, **rank 1** | 162 | 41 | 25.31% |
+| week 1, rank 2+ | 232 | 94 | 40.52% |
+| **week 2+, rank 1** | 2,851 | **2** | **0.07%** |
+| week 2+, rank 2+ | 4,179 | 852 | 20.39% |
+
+**The 25.31% is mostly a left-boundary artifact and must not be quoted as a
+defect rate.** `panel_p3` starts in 2020, so every 2020 week-1 quarterback has no
+prior appearance by construction:
+
+| season | week-1 rank-1 rows | no prior | rate |
+|---|---|---|---|
+| 2020 | 32 | 32 | **100.00%** — the panel edge, not a defect |
+| 2021 | 32 | 3 | 9.38% |
+| 2022 | 33 | 0 | 0.00% |
+| 2023 | 33 | 3 | 9.09% |
+| 2024 | 32 | 3 | 9.38% |
+| **2021–2024 pooled** | **130** | **9** | **6.92%** |
+
+Reading the 2020 column as a defect rate would have been the same error this
+audit exists to catch, committed inside the audit.
+
+### What this changes
+
+1. **The 2026 figure is not anomalous.** A 5.32% share loss on a week-1 slate
+   sits inside the historical week-1 range of 6.92% for rank 1. OWN-1 is a
+   **structural cold-start property of week 1**, not a 2026 artifact and not a
+   general defect. It very nearly disappears from week 2 onward — two rank-1
+   rows in 2,851.
+2. **The C3 retrospective is unblocked**, provided it runs from **week 2** and
+   excludes 2020. A strictly chronological forward-chained design excludes both
+   anyway, because a week-1 forecast in the panel's first season has no prior
+   information to forecast from. At a 0.07% rank-1 leak the throw budget is
+   intact and a C3 arm cannot be scored on someone else's defect.
+3. **XL2 is likewise unblocked** on the same segment.
+4. **The guard stays exactly as it is.** It is not a week-1-only guard and must
+   not become one: it refuses whenever share reaches nobody, whichever week
+   that happens in.
+
+### What it does not change
+
+OWN-1 is still real and still needs an owner decision, because **week 1 is the
+slate the system is actually pointed at**. It merely stops being a blocker for
+historical work. And the decision now clearly sits next to a standing
+constraint: two of the three options in §4 — a cold-start passer prior, or
+routing the share to the positional pool — are **cold-start behaviour**, and
+the cold-start freeze is not mine to alter. Flagging that explicitly rather than
+walking into it.
+
+Reproduced by `nfl/research/own1/audit_ownership.py` section E.

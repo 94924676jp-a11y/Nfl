@@ -811,3 +811,35 @@ passer prior, route to the positional pool) and all three are owner decisions.
 4. C3 retrospective falsification (owner-authorized, run after OWN-1).
 5. Opposing-team dependence. 6. Role-aware reallocation. 7. P5A. 8. QB3b.
 9. Lateral realised-outcome exception.
+
+### Addendum — I was wrong that OWN-1 blocks the retrospective
+
+I asserted that the 5.32% leak would contaminate a C3 retrospective. That was an
+assertion, not a measurement. Measured on the historical depth charts against
+strictly-prior passer appearances:
+
+| segment | n | no prior | rate |
+|---|---|---|---|
+| week 1, rank 1 | 162 | 41 | 25.31% |
+| **week 2+, rank 1** | 2,851 | **2** | **0.07%** |
+| week 2+, rank 2+ | 4,179 | 852 | 20.39% |
+
+And the 25.31% is mostly the panel edge: `panel_p3` starts in 2020, so 2020
+week 1 is **32/32 by construction**. Excluding it, 2021–2024 week-1 rank-1 is
+**9/130 = 6.92%**. Reading that 2020 column as a defect rate would have been the
+same error this audit exists to catch, committed inside the audit.
+
+**So OWN-1 is a week-1 cold-start condition, not a general defect.** The 2026
+figure of 5.32% sits inside the historical week-1 range rather than being
+anomalous, and it nearly vanishes from week 2 — two rank-1 rows in 2,851.
+
+**The C3 retrospective and XL2 are unblocked** on week 2 onward, excluding 2020,
+which a strictly chronological forward-chained design excludes anyway. The guard
+stays as written and does not become week-1-only.
+
+OWN-1 still needs the owner decision, because week 1 is the slate the system is
+pointed at. And two of its three options — a cold-start passer prior, or routing
+the share to the positional pool — are **cold-start behaviour**, and the
+cold-start freeze is not mine to alter. Flagged rather than walked into.
+
+Reproduced by `audit_ownership.py` section E.
