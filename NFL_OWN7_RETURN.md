@@ -190,7 +190,7 @@ No estimator was invented.
 
 | | |
 |---|---|
-| HEAD | see the commit adding this file |
+| HEAD | `f0009d544549ca6d77cecd308fe986fe8d91d556` |
 | suite | **42 modules, 451 test functions, 2,638 checks, 0 failing** |
 | cross-process hashes | identical across 5 processes, 4 hash seeds, both orders |
 | C3 | **0 / 2,400** on all three identities |
