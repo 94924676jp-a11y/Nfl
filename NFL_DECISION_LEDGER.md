@@ -919,3 +919,85 @@ number must say by name what it does for the half that lacks one.
 
 Pre-register OWN-3, the cold-start estimator comparison. Until it clears,
 `QB_ALLOCATION_SHARE_UNCONSUMED` stays fail-closed.
+
+---
+
+## 2026-09-09 — OWN-3: the cold-start state, and a second leak
+
+### Pre-registered first
+
+`nfl/research/own3/predeclaration_own3.md`, sha256 `aedced9c…`, committed before
+any candidate existed. `run_own3.py` refuses to run against a modified file.
+
+### The ladder starts below a model
+
+Verified by reading `qb2_lib` BEFORE writing the pre-registration, and declared
+there so it could not be presented as a result: `rung_weight` returns 0 at
+`h_games == 0`, `rung_rate` returns the pool value on an empty `h_seq`, `_mix`
+returns a pure pool resample on an empty own-history array. **QB V1 already
+runs on a zero-history row.** The `h_games >= 1` filter was the only exclusion.
+
+So **C0** is a pool-path passthrough with **zero new parameters**.
+
+### C0 closes the share-level leak and passes the equivalence gate
+
+| gate | B0 | C0 |
+|---|---|---|
+| allocation closure (full slate, m=400) | FAIL 5.3168%, 23/32 teams | **PASS 0.000000%, 0 teams** |
+| no survivor renormalisation | — | **PASS**, mass exactly 32.0000 |
+| terminal-state closure (8 games) | PASS 0/4,300 | **PASS 0/5,800** |
+| dispersion | n/a | **PASS**, 0 of 15 undispersed |
+| no forecastable draw changed | — | **PASS**, 0 diffs in 924 comparisons |
+
+### A second leak, which C0 does NOT fix
+
+`run_game` sets `fac = 0` when a passer's raw QB V1 draw is zero dropbacks, so
+his allocated target is dropped in exactly those draws. Full slate, m=200:
+**14 of 119 rows affected, 0.6063 of 1171.3827 target dropbacks lost =
+0.0518%** — but the **worst per-draw shortfall is PHI 37.71**, NE 33.64. In the
+draws where a team's primary drew zero, the team's whole passing game vanishes
+for that draw. Negligible in the mean, not in the tail.
+
+Same class as OWN-1. **OWN-1's leak had two components**; C0 closes one. The
+other is a composition fix, not a cold-start model, and is out of OWN-3's
+pre-registered scope.
+
+**Correction to my own earlier reading:** on one game I saw team-dropback
+closure become exact under C0 and said so. Over 16 team-games it is not —
+max abs diff **0.862**. One game was not general.
+
+### C1 is not admissible, and the measurement that kills it is the useful part
+
+| cell | n | observed | model | gap |
+|---|---|---|---|---|
+| cold \| rank 1 | 6 | 1.0000 | 0.5887 | −0.4113 |
+| forecastable \| rank 1 | 1,610 | 0.8689 | 0.8863 | +0.0173 |
+| cold \| rank 3+ | 167 | 0.0659 | 0.1930 | **+0.1272** |
+| forecastable \| rank 3+ | 473 | 0.1226 | 0.2376 | **+0.1150** |
+
+At rank 3+ the over-forecast is the same size for quarterbacks the system CAN
+forecast. It is a **QB3 allocation property**, not a cold-start one, measured on
+473 forecastable cases. And 6-of-6 at rank 1 is unremarkable against the general
+0.8689 rate — `0.8689^6 = 0.43`.
+
+Also: any participation correction moves share inside the room, changing a
+forecastable teammate's draw, which pre-registration prohibition 8 rejects. The
+correction belongs to **QB3b**, and now arrives with a number.
+
+**C0 wins by the declared simplest-wins order**, as the pre-registration
+predicted in advance.
+
+### Outstanding
+
+The **full suite has not been re-run** since the qb_v1/football_engine change.
+The three affected modules pass (144 checks, 0 failures) but nine
+`test_qb2_production` cases cannot execute outside the suite harness. Full-slate
+Part A at m=400 also did not complete. Compute, not findings.
+
+### Queue
+
+1. Owner ruling on `include_cold_start`.
+2. The draw-level leak (§3) — a composition fix.
+3. Ruling on the rushing gate.
+4. QB3b, with the participation table.
+5. Then rerun the W1 rehearsal and remeasure.

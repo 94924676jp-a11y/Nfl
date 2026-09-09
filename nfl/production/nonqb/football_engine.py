@@ -76,7 +76,8 @@ def slate_fits(season, week, players) -> Outcome:
                               if kk != 'value'} for k, v in fits.items()})
 
 
-def qb_slate(season, week, qb_players, m=200, seed=20260908) -> Outcome:
+def qb_slate(season, week, qb_players, m=200, seed=20260908,
+             include_cold_start=False) -> Outcome:
     """The QB layer for the whole slate, computed once.
 
     QB rushing yards ARE supported and RB rushing yards are not, which looks
@@ -98,7 +99,8 @@ def qb_slate(season, week, qb_players, m=200, seed=20260908) -> Outcome:
     fh = QBV1.artifact_hash()
     if fh.state is not State.PASS:
         return fh
-    sl = QBV1.slate_prospective(season, week, qb_players)
+    sl = QBV1.slate_prospective(season, week, qb_players,
+                                include_cold_start=include_cold_start)
     if sl.state is not State.PASS:
         return sl
     rows, allrows = sl.value
@@ -111,6 +113,8 @@ def qb_slate(season, week, qb_players, m=200, seed=20260908) -> Outcome:
     return Outcome.ok('QB_SLATE_OK', value={'rows': rows, 'draws': o.value,
                                             'index_by_team': dict(by_team)},
                       spec_version=QBV1.SPEC_VERSION, n_qb=len(rows),
+                      cold_start_included=bool(include_cold_start),
+                      n_cold_start_rows=sl.evidence.get('n_cold_start_rows', 0),
                       qb_frame_sha256=fh.value,
                       warnings=[f'known limitation: {k}'
                                 for k in QBV1.KNOWN_LIMITATIONS])

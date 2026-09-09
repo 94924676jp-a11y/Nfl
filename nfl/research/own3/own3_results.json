@@ -1,0 +1,94 @@
+{
+  "TEST_ONLY": true,
+  "artifact": "OWN3_RESULTS",
+  "governance": "CANDIDATE -- pre-registered, NOT promoted; production default include_cold_start=False",
+  "no_2026_outcomes_used": true,
+  "part_A_gates": {
+    "arms": {
+      "B0_refuse": {
+        "accounting_states": {
+          "chain::PASS[NONQB_CHAIN_EXECUTED]": 8,
+          "qb_allocation_share::FAIL[QB_ALLOCATION_SHARE_UNCONSUMED]": 7,
+          "qb_allocation_share::PASS[QB_ALLOCATION_SHARE_CONSUMED]": 1,
+          "qb_team_volume::FAIL[QB_TEAM_VOLUME_INCOHERENT]": 4,
+          "qb_team_volume::PASS[QB_TEAM_VOLUME_COHERENT]": 4,
+          "receiving::PASS[NONQB_DRAW_ACCOUNTING_OK]": 8,
+          "rushing::FAIL[RUSHING_DRAW_ACCOUNTING_VIOLATED]": 8
+        },
+        "flag": false,
+        "gate1_allocation_closure": "FAIL[QB_ALLOCATION_SHARE_UNCONSUMED]",
+        "gate1_evidence": {
+          "fraction_of_dropbacks_lost": 0.051307,
+          "n_teams": 32,
+          "teams_leaking": 23,
+          "total_share_lost": 1.641822,
+          "total_share_mass": 32.0
+        },
+        "gate3_team_dropback_closure": {
+          "PASS": false,
+          "max_abs_diff_over_team_games": 25.957429,
+          "team_games": 16
+        },
+        "gate4_terminal_state_closure": {
+          "PASS": true,
+          "cells": 4300,
+          "violating_cells": 0
+        },
+        "gate7_dispersion": {
+          "PASS": null,
+          "cold_start_rows_checked": 0,
+          "zero_dispersion_rows": 0
+        },
+        "n_cold_start_rows": 0,
+        "n_rows": 84
+      },
+      "C0_passthrough": {
+        "accounting_states": {
+          "chain::PASS[NONQB_CHAIN_EXECUTED]": 8,
+          "qb_allocation_share::PASS[QB_ALLOCATION_SHARE_CONSUMED]": 8,
+          "qb_team_volume::FAIL[QB_TEAM_VOLUME_INCOHERENT]": 4,
+          "qb_team_volume::PASS[QB_TEAM_VOLUME_COHERENT]": 4,
+          "receiving::PASS[NONQB_DRAW_ACCOUNTING_OK]": 8,
+          "rushing::FAIL[RUSHING_DRAW_ACCOUNTING_VIOLATED]": 8
+        },
+        "flag": true,
+        "gate1_allocation_closure": "PASS[QB_ALLOCATION_SHARE_CONSUMED]",
+        "gate1_evidence": {
+          "fraction_of_dropbacks_lost": 0.0,
+          "n_teams": 32,
+          "teams_leaking": 0,
+          "total_share_lost": 0.0,
+          "total_share_mass": 32.0
+        },
+        "gate3_team_dropback_closure": {
+          "PASS": false,
+          "max_abs_diff_over_team_games": 0.862039,
+          "team_games": 16
+        },
+        "gate4_terminal_state_closure": {
+          "PASS": true,
+          "cells": 5800,
+          "violating_cells": 0
+        },
+        "gate7_dispersion": {
+          "PASS": true,
+          "cold_start_rows_checked": 15,
+          "zero_dispersion_rows": 0
+        },
+        "n_cold_start_rows": 35,
+        "n_rows": 119
+      }
+    },
+    "games": 8,
+    "gate_equivalence_no_forecastable_draw_changed": {
+      "PASS": true,
+      "differing": 0,
+      "examples": [],
+      "field_comparisons": 924,
+      "n_forecastable": 84
+    },
+    "n_draws": 100
+  },
+  "predeclaration": "nfl/research/own3/predeclaration_own3.md",
+  "predeclaration_sha256": "aedced9c82f74b5b406e4658ddf8b435fc1582fdfc0e7d759a5a7ff3b5f07c82"
+}

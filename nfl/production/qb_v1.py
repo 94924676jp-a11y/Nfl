@@ -130,7 +130,8 @@ def slate(season: int, week: int, game_ids=None) -> Outcome:
                       n_rows=len(rows), n_frame=len(allrows))
 
 
-def slate_prospective(season: int, week: int, qb_players) -> Outcome:
+def slate_prospective(season: int, week: int, qb_players,
+                      include_cold_start: bool = False) -> Outcome:
     """The player set for an UPCOMING game comes from the ROSTER, not history.
 
     THE DEFECT THIS FIXES, found by the NFL-V1-R1 full-slate rehearsal:
@@ -176,8 +177,26 @@ def slate_prospective(season: int, week: int, qb_players) -> Outcome:
                     key=lambda r: (r['ord'], r['team'], r['gsis_id'])))
     # A quarterback with no prior appearance falls back to the positional pool
     # rather than to a guessed depth position; he is named, not dropped.
+    #
+    # OWN-3 CANDIDATE C0, DEFAULT OFF. `include_cold_start` keeps the
+    # zero-history rows instead of naming and discarding them. It is safe to do
+    # so because this layer's own machinery already handles them --
+    # `rung_weight` returns 0 at h_games == 0, `rung_rate` returns the pool
+    # value on an empty h_seq, and `_mix` returns a pure pool resample on an
+    # empty own-history array -- so a kept row is forecast entirely from the
+    # positional pool with no new parameter anywhere.
+    #
+    # Excluding them is what made 5.3168% of allocated team dropbacks reach
+    # nobody on the 2026 week-1 slate (OWN-1). Keeping them is pre-registered
+    # under nfl/research/own3/predeclaration_own3.md and is NOT promoted: the
+    # production default is unchanged and the flag is off.
+    cold = [r for r in pros if r['h_games'] < 1]
     rows = [r for r in pros if r['h_games'] >= 1]
-    no_hist = [r['gsis_id'] for r in pros if r['h_games'] < 1]
+    no_hist = [r['gsis_id'] for r in cold]
+    if include_cold_start:
+        for r in cold:
+            r['cold_start'] = True
+        rows = sorted(rows + cold, key=lambda r: (r['team'], r['gsis_id']))
     if not rows:
         return Outcome.blocked(
             'QB_SLATE_EMPTY',
@@ -185,10 +204,15 @@ def slate_prospective(season: int, week: int, qb_players) -> Outcome:
             f'appearance, so none can be forecast from history',
             cause=Cause.DATA, no_history=no_hist)
     return Outcome.ok('QB_SLATE_PROSPECTIVE', value=(rows, allrows),
-                      detail=f'{len(rows)} rostered QB(s) with history, '
-                             f'{len(no_hist)} without',
+                      detail=f'{len(rows)} rostered QB row(s); '
+                             f'{len(no_hist)} without prior history, '
+                             f'{"KEPT on the pool path" if include_cold_start else "excluded"}',
                       n_rows=len(rows), n_no_history=len(no_hist),
-                      no_history=no_hist)
+                      no_history=no_hist,
+                      cold_start_included=bool(include_cold_start),
+                      n_cold_start_rows=len(cold) if include_cold_start else 0,
+                      cold_start_spec=('own3-c0-pool-path-passthrough'
+                                       if include_cold_start else None))
 
 
 def forecast(rows, season, allrows, seed=20260908, m=1000) -> Outcome:
