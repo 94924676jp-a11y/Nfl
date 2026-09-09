@@ -1,0 +1,87 @@
+{
+  "artifact": "OWN8_RUSH_OWNERSHIP_GRAPH",
+  "budget_correlation_carries_vs_dropbacks": -0.404619,
+  "closure_every_carry_exactly_one_category": {
+    "exact": 3230,
+    "max_abs": 0,
+    "n": 3230
+  },
+  "components": {
+    "designed_qb": {
+      "comovement_test_owner": "carry",
+      "corr_with_carries": 0.292068,
+      "corr_with_dropbacks": -0.117369,
+      "cv_test_owner": "carry",
+      "per_carry": {
+        "cv": 1.435245,
+        "mean": 0.063083,
+        "sd": 0.09054
+      },
+      "per_dropback": {
+        "cv": 1.641852,
+        "mean": 0.052449,
+        "sd": 0.086113
+      }
+    },
+    "kneel": {
+      "comovement_test_owner": "carry",
+      "corr_with_carries": 0.334875,
+      "corr_with_dropbacks": -0.240222,
+      "cv_test_owner": "carry",
+      "per_carry": {
+        "cv": 1.352591,
+        "mean": 0.027027,
+        "sd": 0.036557
+      },
+      "per_dropback": {
+        "cv": 1.530761,
+        "mean": 0.023596,
+        "sd": 0.036119
+      }
+    },
+    "nonqb": {
+      "comovement_test_owner": "carry",
+      "corr_with_carries": 0.883148,
+      "corr_with_dropbacks": -0.404091,
+      "cv_test_owner": "carry",
+      "per_carry": {
+        "cv": 0.141019,
+        "mean": 0.840264,
+        "sd": 0.118493
+      },
+      "per_dropback": {
+        "cv": 0.603691,
+        "mean": 0.657299,
+        "sd": 0.396806
+      }
+    },
+    "scramble": {
+      "comovement_test_owner": "dropback",
+      "corr_with_carries": 0.18021,
+      "corr_with_dropbacks": 0.182352,
+      "cv_test_owner": "dropback",
+      "per_carry": {
+        "cv": 0.959796,
+        "mean": 0.069625,
+        "sd": 0.066826
+      },
+      "per_dropback": {
+        "cv": 0.93222,
+        "mean": 0.048901,
+        "sd": 0.045587
+      }
+    }
+  },
+  "historical_shares_are_evidence_not_targets": true,
+  "n_team_games": 3230,
+  "nothing_fitted": true,
+  "reading": "team carries and team dropbacks correlate -0.404619, so the two budgets move in OPPOSITE directions. A component generated on the dropback axis but required to fit inside the carry budget therefore has the wrong sign against its own container. qb2_lib draws designed QB rushes as Binom(dropbacks, drush_per_dropback); historically they correlate positively with carries and negatively with dropbacks. The simulator has the sign backwards.",
+  "source_files": [
+    "pbp2020.csv.gz",
+    "pbp2021.csv.gz",
+    "pbp2022.csv.gz",
+    "pbp2023.csv.gz",
+    "pbp2024.csv.gz",
+    "pbp2025.csv.gz"
+  ]
+}

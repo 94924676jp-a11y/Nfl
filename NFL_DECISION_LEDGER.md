@@ -1247,3 +1247,58 @@ Named in `accounting.UNMODELLED_CARRY_COMPONENTS`: 0.7746 per team-game,
 0.0288 of team carries, inside `other` and claimed by nobody, never
 attributable to RB/WR/TE/scramble/designed, with the invariant future modelling
 must satisfy. No estimator invented.
+
+---
+
+## 2026-09-09 — OWN-8: the rushing collision is a sign error
+
+**`OWN8_RUSHING_ARCHITECTURE_IDENTIFIED_NOT_IMPLEMENTED`**
+
+### The ownership order, proven — and "carve QB first" is NOT it
+
+Two independent tests over 3,230 team-games agree on every component.
+
+| component | CV per db | CV per carry | corr db | corr carry | owner |
+|---|---|---|---|---|---|
+| scramble | **0.932** | 0.960 | **+0.1824** | +0.1802 | **dropback** |
+| designed QB | 1.642 | **1.435** | **−0.1174** | **+0.2921** | **carry** |
+| kneel | 1.531 | **1.353** | −0.2402 | **+0.3349** | **carry** |
+| RB/WR/TE | 0.604 | **0.141** | −0.4041 | **+0.8831** | **carry** |
+
+Every carry lands in exactly one category in **3,230/3,230**, max residual 0.
+
+**The mechanism is a sign error.** Team carries and dropbacks correlate
+**−0.4046** — the budgets move in opposite directions. `qb2_lib` draws designed
+QB rushes as `Binom(dropbacks, drush_per_dropback)`, while historically they
+correlate **+0.2921 with carries and −0.1174 with dropbacks**. In a draw with
+many dropbacks the QB gets *more* carries exactly when the carry budget is
+*smaller*. That is why enlarging the container in OWN-7 (0.1085 → 0.1988) did
+not stop the collisions. The OWN-4 finding again, on the rushing side.
+
+Scrambles are the exception and stay dropback-owned — both tests essentially
+tied, and a scramble is a dropback that ran. **So: option (2) for scrambles,
+option (1) for designed rushes. Neither alone.**
+
+### Kneels do not block it
+
+Carry-owned, 0.7746/team-game, 0.0288 of carries, no governed control. An
+unmodelled *level* inside a *named* category still closes. What would block
+ownership is an anonymous residual others also draw on.
+`KNEEL_MASS_EXPLICIT_UNMODELED` stands; `OWN8_KNEEL_CONTROL_REQUIRED` is not
+the verdict.
+
+### Why A1 is not implemented
+
+It needs a P4C refit and none is authorized: the RB simplex is fitted against a
+denominator that INCLUDES scrambles/kneels/designed runs, so applying it to a
+scramble-reduced budget is a semantic change, not a rescale; and A1 needs
+designed QB rush and kneels as modelled categories, which `pos: ('RB',)` does
+not have. OWN-6's no-refit finding was about units, and does not extend to
+adding categories.
+
+Pre-registered: `nfl/research/own8/predeclaration_own8.md`, sha256 `90f6ecc3…`.
+A2 (common latent) reproduces the budget correlation but cannot guarantee
+per-draw closure, so it is rejected as a closure mechanism.
+
+**0 production files changed.** Suite 42 modules, 451 functions, 2,638 checks,
+0 failing.
