@@ -336,3 +336,32 @@ layer, and it is not something to half-implement.
 2. **P5A rectification** to the predeclared experiment (owner-authorised as an
    independent task when it becomes highest-value).
 3. **QB3b**: the week-1 incumbency definition.
+
+### The boundary, diagnosed rather than merely named
+
+Team carries decompose, 3,230 team-games 2020–2025:
+
+| | mean | share |
+|---|---|---|
+| team_carries | 26.919 | — |
+| RB/FB | 21.757 | 0.8082 |
+| **QB** | 4.221 | **0.1568** |
+| WR/TE | 0.915 | 0.0340 |
+| unattributed | 0.026 | 0.0010 |
+
+P4C's `carries` class is RB-only, so its OTHER mass must cover QB + WR/TE:
+required **0.1918** against a fitted `mass_mean` of **0.1989**. The fitted mass
+is well calibrated *on average*, and the two quantities track through the tail
+(QB p90 0.303 against OTHER p90 0.333). Historically the quarterbacks never
+out-rush `team − RB` — 0 of 3,230, arithmetically impossible in the data.
+
+**So the identity is right and the mean is right. What is wrong is that OTHER
+and the QB rush draw are independent draws of coupled quantities** — the
+owner's own named permanent constraint, one level below the defect just fixed.
+
+The carve-out design (draw QB rush first, allocate the RB simplex over
+`team_carries − QB_rush`) changes the **denominator the frozen P4C carries
+mass_pool was fitted against**. It cannot be done without either refitting that
+accepted artifact or a new pre-registration, and no authorisation covers either.
+
+**This is the boundary. Stopping here.**
