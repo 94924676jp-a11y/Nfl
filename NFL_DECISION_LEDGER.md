@@ -1533,3 +1533,67 @@ earlier in the same session, including a `Cause.CODE` that does not exist and
 would have destroyed the named refusal it was meant to produce. One repair
 (wiring the non-QB layers in) initially made all 16 games refuse and discard a
 valid QB forecast; that was caught by re-running the slate, not by review.
+
+---
+
+## V1 FREEZE ATTEMPT — 2026-09-09
+
+**Verdict `V1_REHEARSAL_READY_WITH_NAMED_BLOCKERS`.** Packet in
+`NFL_V1_FREEZE_RETURN.md`. Suite 50 modules, 527 functions, **3,102 checks,
+0 failing, 0 raised**. Entrypoint 16/16 SEALED. G0A 11/12. NFL-1 NOT
+AUTHORIZED. PATH_C_STATE untouched. Nothing promoted.
+
+### Six of seven authorized repairs landed
+
+| blocker | before | after |
+|---|---|---|
+| B8 composition | passing TD max **49.14**, factor **59.85** | **9.00**, no ratio formed — R2 |
+| B9 duplicate pass event | identity failed **12,800/12,800** draws | **32/32 PASS**, residual **5.9e-15**, corr **1.0000** — C3 |
+| B10 independent teams | SD(total plays) 12.271; **1.520%** impossible | **9.269** (hist 9.265); **0.188%** — A3G |
+| B12 share leak | 2.29% / 6.91% | **0.0%**, 16/16 consumed — C0 |
+| B13 no draws | four quantiles | **216,800 draw cells**, lossless, shared index, sha256 replay id |
+| B14 ungated FAILs | any FAIL could seal | **9 HARD** gate, **3 DIAGNOSTIC** never do |
+
+### B11 was not a defect — its premise was an estimand mismatch
+
+The quoted **+0.081** is a *within*-team-game correlation; the realised
+**−0.329** is a *between*-team-game one. Like-for-like on the historical frame
+with prior-week ranks the incumbent gives **−0.3559** [−0.389, −0.322],
+P(r>0)=0.000, against realised **−0.3716**. The authorized minimal ablation was
+run and **rejected**: at flat week-1 priors sharing one `add_pool` index makes
+every back identical and flips the sign to **+0.1112**.
+
+### R2 alone refuses, and that is the right answer
+
+`APPORTION_SHARE_DOES_NOT_COVER_BUDGET` fires when the allocation names a
+quarterback QB V1 never forecast — OWN-1's leak surfacing as a hard closure
+failure instead of a silent 2.3–6.9% loss. C0 is the declared remedy; no
+survivor is renormalised.
+
+### Two invariants replaced by STRICTER ones, both declared before measurement
+
+R2: `sum == rint(budget)` exactly, replacing `sum <= float budget`. C3:
+`sum_i T_i + other == targeted` in exact integers, replacing a
+relative-tolerance share form the architecture no longer uses. Neither is a
+loosened guard; both refuse by name if they ever fail.
+
+### The one blocker left, and why I stopped
+
+`qb_rush_contained_in_other` FAILs **190 of 2,800** cells, worst **21.6**. That
+is wrong causal ownership. The fix is **A1** — pre-registered in OWN-8,
+validated in OWN-9, and **not authorized to implement**. I did not implement it
+and did not route around it. The V1 candidate mode is also not yet reachable
+from `run_forecast`; that is pure engineering and is the next step.
+
+### Reported against my own interest
+
+The A3G stream's **pre-registered verdict was that no candidate cleared**. Two
+of its clauses reject the incumbent against itself — proved, not asserted — so
+I integrated on the corrected clauses and am recording that the pre-registered
+verdict failed on its own terms.
+
+Three defects I introduced and caught by **re-running, not by review**: R2
+apportioned against an uncoupled volume while games drew a coupled one
+(383/400 cells); C3's integer other-pool count passed where a share was wanted
+(moved the failure rather than removing it); my own composition test anchored a
+`find` that R2's new branch shadowed.
