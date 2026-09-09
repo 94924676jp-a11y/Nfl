@@ -247,6 +247,16 @@ honest count is 1 failing and 1 raised, not 0**, and neither names
 `p4c_build`, `rbdep`, or `test_v1_teammate_dependence`. It is stated rather
 than attributed away.
 
+**CORRECTION, added 2026-09-09 after commit `ca1ad7f`.** The paragraph above
+stands as what was measured when it was written, and it is now out of date. The
+lead's V1 candidate commit repaired the composition-fidelity test that was
+failing (its own `find` anchored from the top of the file, so R2's new PASS
+assignment shadowed the branch the test was written to check). Re-measured
+against `ca1ad7f` by this agent rather than taken from the commit message:
+`python3.12 nfl/tests/run_suite.py` → **modules 50, test functions 527, checks
+3,102, FAILING CHECKS 0, RAISED 0, SUITE PASS.** The suite is clean. The check
+count rose 3,099 → 3,102 through that repair, not through anything in `rbdep`.
+
 ## 9. Files
 
 | file | what |
