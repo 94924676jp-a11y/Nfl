@@ -75,6 +75,23 @@ def corr(a, b):
     return round(float(np.corrcoef(a, b)[0, 1]), 4)
 
 
+def per_draw_corr(X, y):
+    """The statistic reality supplies: ONE draw per team-game, correlated with y.
+
+    Reported as the distribution over draws, so the realised value can be asked
+    whether it is a plausible member of it. A correlation of per-team-game
+    predictive MEANS has no realised counterpart and is not this quantity.
+    """
+    v = np.array([np.corrcoef(X[:, j], y)[0, 1] for j in range(X.shape[1])])
+    v = v[np.isfinite(v)]
+    if v.size == 0:
+        return None
+    return {'per_draw_mean': round(float(v.mean()), 4),
+            'per_draw_sd': round(float(v.std()), 4),
+            'p05': round(float(np.percentile(v, 5)), 4),
+            'p95': round(float(np.percentile(v, 95)), 4)}
+
+
 def main():
     sha = check_predeclaration()
     files = sorted(glob.glob(os.environ.get('INTEL1_PBP_GLOB', '')))
@@ -90,10 +107,19 @@ def main():
 
     per_draw = {arm: collections.Counter() for arm in ('A0', 'A1')}
     dist = {arm: collections.defaultdict(list) for arm in ('A0', 'A1')}
-    # co-movement still uses the per-team-game predictive MEAN, which is the
-    # right object for a correlation against a per-team-game budget.
+    # CO-MOVEMENT IS PER DRAW, NOT PER PREDICTIVE MEAN. Corrected 2026-09-09
+    # by OWN-10. The first version of this file built the co-movement series
+    # from np.mean(draws) and correlated it against a REALISED series. Reality
+    # supplies one draw per team-game carrying its full idiosyncratic noise;
+    # averaging 400 draws removes exactly that noise while leaving the
+    # budget-aligned component intact, so Cov/(SD*SD) is inflated. The two
+    # series were never the same statistic. That artifact is what made A1's
+    # designed-QB/carry coupling read +0.5070 against an observed +0.3140 --
+    # per draw it is +0.3065 [+0.2768,+0.3388] and agrees. The mean-based
+    # number is retained below under a name that says it is not comparable.
     crps_tot = {arm: collections.defaultdict(list) for arm in ('A0', 'A1')}
     co = {arm: collections.defaultdict(list) for arm in ('A0', 'A1')}
+    draws_by_cat = {arm: collections.defaultdict(list) for arm in ('A0', 'A1')}
     n_eval = 0
     degenerate = 0
     for ev in EVAL_SEASONS:
@@ -139,9 +165,9 @@ def main():
                     crps_tot[arm][c].append(A.crps(d[c], r[c]))
                 co[arm]['team_carries'].append(r['team_carries'])
                 co[arm]['dropbacks'].append(r['dropbacks'])
-                co[arm]['designed_qb'].append(float(np.mean(d['designed_qb'])))
-                co[arm]['rb'].append(float(np.mean(d['rb'])))
-                co[arm]['kneel'].append(float(np.mean(d['kneel'])))
+                for c in ('designed_qb', 'rb', 'kneel'):
+                    draws_by_cat[arm][c].append(np.asarray(d[c], np.int64))
+                    co[arm][c].append(float(np.mean(d[c])))
 
     obs = {c: [r[c] for r in frame if r['season'] in EVAL_SEASONS
                and r['rush_play_budget'] > 0] for c in A.CATEGORIES}
@@ -159,15 +185,15 @@ def main():
             c: summarise(np.concatenate(dist[arm][c])) for c in A.CATEGORIES}
         out['crps'][arm] = {c: round(statistics.mean(crps_tot[arm][c]), 5)
                             for c in A.CATEGORIES}
-        out['co_movement'][arm] = {
-            'designed_qb_vs_team_carries': corr(co[arm]['designed_qb'],
-                                                co[arm]['team_carries']),
-            'designed_qb_vs_dropbacks': corr(co[arm]['designed_qb'],
-                                             co[arm]['dropbacks']),
-            'kneel_vs_team_carries': corr(co[arm]['kneel'],
-                                          co[arm]['team_carries']),
-            'rb_vs_team_carries': corr(co[arm]['rb'], co[arm]['team_carries']),
-        }
+        out['co_movement'][arm] = {}
+        for c in ('designed_qb', 'rb', 'kneel'):
+            X = np.vstack([np.asarray(v) for v in draws_by_cat[arm][c]])
+            for nm in ('team_carries', 'dropbacks'):
+                y = np.asarray(co[arm][nm], float)
+                out['co_movement'][arm][f'{c}_vs_{nm}'] = per_draw_corr(X, y)
+            out['co_movement'][arm][f'{c}_vs_team_carries_MEAN_BASED_'
+                                    f'NOT_COMPARABLE'] = corr(
+                co[arm][c], co[arm]['team_carries'])
     out['observed'] = {c: summarise(obs[c]) for c in A.CATEGORIES}
     out['observed_co_movement'] = {
         'designed_qb_vs_team_carries': corr(

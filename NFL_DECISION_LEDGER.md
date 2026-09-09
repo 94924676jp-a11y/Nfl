@@ -1365,3 +1365,86 @@ architecture, not a whole-forecast gain. A1 over-couples. Development evidence
 rejects, never promotes.
 
 Suite 43 modules, 457 functions, 2,659 checks, 0 failing.
+
+---
+
+## OWN-10 — A2 rejected; the premise it was chartered on is withdrawn
+
+**2026-09-09.** Verdict `OWN10_A2_LATENT_DOES_NOT_EARN_ITS_COMPLEXITY`. A1
+retained. Nothing promoted. 0 production files changed. No 2026 outcome read.
+Pre-registration `59ea7fa4363b202899e76f7668d2d3f8e517e2c572e4afd040079dbb14de5954`,
+committed before A2 existed, re-checked by the runner.
+
+### The chartered defect is not in A1 — it was in my reporting code
+
+OWN-10 was authorised on "A1: ≈ +0.507" against an observed +0.314. That +0.507
+was a per-team-game predictive **mean** correlated against a **realised** series.
+Averaging 400 draws strips the idiosyncratic noise reality carries and leaves the
+budget-aligned component, inflating the ratio. Computed identically on model and
+reality — one draw per team-game — A1 gives **+0.3065 [+0.2768, +0.3388]**
+against observed **+0.3140** (z = +0.40), and vs dropbacks −0.1603 against
+−0.1521 (z = +0.42). Inside the band in all three folds. Budget slope 0.1033
+against 0.1039.
+
+**Sixth appearance of the point-for-distribution defect class, and the first to
+reach a headline number in an accepted return.** `run_own9.py` argued the point
+correctly for CRPS eleven lines above the defect and asserted the opposite three
+lines below it.
+
+### A2 built and scored anyway, so the withdrawal is measured not argued
+
+A2(τ) = A1 + `u ~ N(0, τ)` on the designed-QB share. τ = 0 reproduces A1 draw
+for draw (verified exactly, 0 differences over 200 team-games × 400 draws × 6
+categories). Dependence gap |model − observed| pooled: **0.0075** at τ = 0,
+rising monotonically to 0.0136 at τ = 0.04. Per fold the best τ is 0.0025, 0 and
+0.04 — three answers, no consistent sign. Rules 1, 2 and 3 all fire.
+
+**Against my own interest:** designed-QB CRPS is consistently better at τ = 0.01
+in all four folds (1.00826 → 1.00598 pooled, −0.23%). It fails the
+pre-registered conjunction, which needs a dependence improvement too, and rule 4
+resolves equivalence to the simpler arm. Recorded rather than dropped.
+
+Gates, every arm, 652,000 draws: 0 closure violations, 0 negative, 0 overruns,
+0 degenerate.
+
+### What the corrected metric does expose: kneels, not designed QB rush
+
+| statistic | observed | A1 per draw | 90% band | z |
+|---|---|---|---|---|
+| kneel vs team carries | **+0.3009** | +0.1688 | [+0.1302, +0.2040] | **+6.10** |
+| kneel vs dropbacks | **−0.2430** | −0.0653 | [−0.1025, −0.0277] | **−7.49** |
+| kneel vs RB | **+0.1733** | −0.0116 | [−0.0553, +0.0326] | outside |
+
+Same sign in all three folds. A kneel is a game-state play; A1 draws it as an
+exchangeable share, which has no channel for that.
+
+### One mechanism behind the small-category over-dispersion
+
+The additive share residual is resampled from a **league-wide pool per
+category**, so a team with a near-zero centre gets residuals sized for teams
+with a large share. It goes negative and the floor catches it **808,823 times
+out of 3,912,000 share draws (20.68%)** — RB 0.07%, designed QB 19.45%, WR
+23.36%, TE 24.73%, kneel 27.05%, fringe 29.40%. SD ratios track it exactly:
+RB 1.01, WR 1.19, fringe 1.19, kneel 1.28, TE 1.75. The floor moves a
+probability, never a carry, so no gate breaks; but a residual family needing a
+floor one draw in five is mis-specified for every category except the large one.
+Hypothesis with an obvious test, not an established cause.
+
+### Record repaired
+
+`run_own9.py` computes co-movement per draw; the mean-based figure is retained
+under `..._MEAN_BASED_NOT_COMPARABLE`. `own9_results.json` re-recorded. A0's
+OWN-9 headline −0.4115 / +0.9724 was the same artifact and is withdrawn with
+A1's +0.5070; per draw A0 is **−0.1235** and **+0.2918** — still wrong-signed on
+both budgets, so the OWN-9 verdict stands on weaker evidence than reported.
+
+`nfl/tests/test_own10_dependence_metric.py` makes the metric contract
+load-bearing: AST guard (a substring guard would match the comment explaining
+the defect — that already happened once here), schema guard, a bypass test that
+seeds the defect and requires rejection, τ = 0 ≡ A1, closure at every τ.
+
+### Not done, and offered rather than started
+
+Kneel game-state dependence and a multiplicative or logit-scale residual family
+both touch P4C's estimator family, which is production. Pre-registration comes
+before fitting.
