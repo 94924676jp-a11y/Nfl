@@ -7,13 +7,12 @@
     "arms": {
       "B0_refuse": {
         "accounting_states": {
-          "chain::PASS[NONQB_CHAIN_EXECUTED]": 8,
-          "qb_allocation_share::FAIL[QB_ALLOCATION_SHARE_UNCONSUMED]": 7,
-          "qb_allocation_share::PASS[QB_ALLOCATION_SHARE_CONSUMED]": 1,
-          "qb_team_volume::FAIL[QB_TEAM_VOLUME_INCOHERENT]": 4,
-          "qb_team_volume::PASS[QB_TEAM_VOLUME_COHERENT]": 4,
-          "receiving::PASS[NONQB_DRAW_ACCOUNTING_OK]": 8,
-          "rushing::FAIL[RUSHING_DRAW_ACCOUNTING_VIOLATED]": 8
+          "chain::PASS[NONQB_CHAIN_EXECUTED]": 6,
+          "qb_allocation_share::FAIL[QB_ALLOCATION_SHARE_UNCONSUMED]": 6,
+          "qb_team_volume::FAIL[QB_TEAM_VOLUME_INCOHERENT]": 3,
+          "qb_team_volume::PASS[QB_TEAM_VOLUME_COHERENT]": 3,
+          "receiving::PASS[NONQB_DRAW_ACCOUNTING_OK]": 6,
+          "rushing::FAIL[RUSHING_DRAW_ACCOUNTING_VIOLATED]": 6
         },
         "flag": false,
         "gate1_allocation_closure": "FAIL[QB_ALLOCATION_SHARE_UNCONSUMED]",
@@ -27,11 +26,11 @@
         "gate3_team_dropback_closure": {
           "PASS": false,
           "max_abs_diff_over_team_games": 25.957429,
-          "team_games": 16
+          "team_games": 12
         },
         "gate4_terminal_state_closure": {
           "PASS": true,
-          "cells": 4300,
+          "cells": 3100,
           "violating_cells": 0
         },
         "gate7_dispersion": {
@@ -44,12 +43,12 @@
       },
       "C0_passthrough": {
         "accounting_states": {
-          "chain::PASS[NONQB_CHAIN_EXECUTED]": 8,
-          "qb_allocation_share::PASS[QB_ALLOCATION_SHARE_CONSUMED]": 8,
-          "qb_team_volume::FAIL[QB_TEAM_VOLUME_INCOHERENT]": 4,
-          "qb_team_volume::PASS[QB_TEAM_VOLUME_COHERENT]": 4,
-          "receiving::PASS[NONQB_DRAW_ACCOUNTING_OK]": 8,
-          "rushing::FAIL[RUSHING_DRAW_ACCOUNTING_VIOLATED]": 8
+          "chain::PASS[NONQB_CHAIN_EXECUTED]": 6,
+          "qb_allocation_share::PASS[QB_ALLOCATION_SHARE_CONSUMED]": 6,
+          "qb_team_volume::FAIL[QB_TEAM_VOLUME_INCOHERENT]": 3,
+          "qb_team_volume::PASS[QB_TEAM_VOLUME_COHERENT]": 3,
+          "receiving::PASS[NONQB_DRAW_ACCOUNTING_OK]": 6,
+          "rushing::FAIL[RUSHING_DRAW_ACCOUNTING_VIOLATED]": 6
         },
         "flag": true,
         "gate1_allocation_closure": "PASS[QB_ALLOCATION_SHARE_CONSUMED]",
@@ -63,23 +62,23 @@
         "gate3_team_dropback_closure": {
           "PASS": true,
           "max_abs_diff_over_team_games": 0.0,
-          "team_games": 16
+          "team_games": 12
         },
         "gate4_terminal_state_closure": {
           "PASS": true,
-          "cells": 5800,
+          "cells": 4500,
           "violating_cells": 0
         },
         "gate7_dispersion": {
           "PASS": true,
-          "cold_start_rows_checked": 15,
+          "cold_start_rows_checked": 14,
           "zero_dispersion_rows": 0
         },
         "n_cold_start_rows": 35,
         "n_rows": 119
       }
     },
-    "games": 8,
+    "games": 6,
     "gate_equivalence_no_forecastable_draw_changed": {
       "PASS": true,
       "differing": 0,

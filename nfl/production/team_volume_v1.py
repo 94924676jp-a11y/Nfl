@@ -46,7 +46,8 @@ for _q in (str(_REPO), str(_REPO / 'nfl' / 'research' / 'p4b')):
     if _q not in sys.path:
         sys.path.insert(0, _q)
 
-from sportsplatform.governance.outcome import Cause, Outcome      # noqa: E402
+from sportsplatform.governance.outcome import Cause, Outcome, State  # noqa: E402
+from nfl.production import seeds as SEEDS                         # noqa: E402
 
 SPEC_VERSION = 'team-volume-v1-p4b-frozen-1'
 METRICS = ('team_off_snaps', 'team_dropbacks_part', 'team_targets',
@@ -227,7 +228,12 @@ def forecast(season: int, week: int, teams, m: int = 200,
         fits[metric] = (sel, fit, pr, hist)
         if joint:
             continue                      # assembled jointly, below
-        rng = np.random.default_rng([seed, ordinal, hash(metric) % 9973])
+        # STABLE STREAM IDENTITY -- see nfl/production/seeds.py. This was
+        # `hash(metric) % 9973`, which changed every process.
+        _sid = SEEDS.stream_id('team_volume', metric)
+        if _sid.state is not State.PASS:
+            return _sid
+        rng = np.random.default_rng([seed, ordinal, _sid.value])
         res = V.draw(sel['form'], fit, pr, rng)[:, :m]
         for i, r in enumerate(pr):
             out[(metric, r['team'])] = np.maximum(

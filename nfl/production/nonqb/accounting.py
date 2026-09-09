@@ -386,3 +386,54 @@ def assert_no_double_counted_qb_carries(rb_carries, other_carries,
                'adding the QB draw on top would inflate it by; no production '
                'path forms that sum.',
         measurement=QB_CARRY_MEASUREMENT)
+
+
+# --------------------------------------------------------------- OWN-7 PART D
+# NAMED UNMODELLED CARRY MASS. Not an estimator, and deliberately not one.
+#
+# D1's `team_carries` is the play-by-play `rush_attempt` count, which INCLUDES
+# quarterback kneels: 0.7746 per team-game measured over 3,230 team-games,
+# REG 2020-2025 (nfl/research/own5/own5_rush_ownership.json). No layer models
+# them. In the FITTING frame they are inside the quarterback's realised carry
+# share, so they land inside `mass_pool` and therefore inside the allocator's
+# `other` block. In the SIMULATOR the quarterback's rush opportunity is
+# `scrambles + designed runs` and contains no kneel at all, so the kneel mass
+# sits in `other` unclaimed by anybody.
+#
+# Stating it here rather than leaving it to be rediscovered. A residual that
+# nobody has named is how this project loses quantities.
+UNMODELLED_CARRY_COMPONENTS = {
+    'qb_kneels': {
+        'per_team_game': 0.7746,
+        'share_of_team_carries': 0.0288,
+        'source': 'nfl/research/own5/own5_rush_ownership.json, 3,230 '
+                  'team-games, REG 2020-2025',
+        'currently_contained_in': "the allocator's `other` block, unnamed",
+        'modelled_by': None,
+        'must_never_be_attributed_to': ('RB', 'WR', 'TE', 'qb_scramble',
+                                        'qb_designed_rush'),
+        'invariant_future_modelling_must_satisfy':
+            'a kneel is a team carry that consumes clock and produces no '
+            'opportunity. Whatever models it must (a) take its mass FROM the '
+            'team carry budget rather than adding to it, (b) never enter '
+            'qb_rush_opportunity, which is scrambles + designed runs by '
+            'construction, (c) never enter any receiver or running-back '
+            'allocation, and (d) leave the remaining containers smaller by '
+            'exactly its size, so team carries still close.',
+        'status': 'EXPLICIT_UNMODELLED',
+    },
+}
+
+
+def unmodelled_carry_mass() -> Outcome:
+    """The named carry mass no layer owns. NOT_APPLICABLE is not a pass."""
+    tot = sum(v['share_of_team_carries']
+              for v in UNMODELLED_CARRY_COMPONENTS.values())
+    return Outcome.ok(
+        'UNMODELLED_CARRY_MASS_DECLARED',
+        value=dict(UNMODELLED_CARRY_COMPONENTS),
+        detail=f'{len(UNMODELLED_CARRY_COMPONENTS)} named unmodelled carry '
+               f'component(s) totalling {tot:.4f} of team carries',
+        total_share_of_team_carries=round(tot, 6),
+        components=sorted(UNMODELLED_CARRY_COMPONENTS),
+        none_are_modelled=True)

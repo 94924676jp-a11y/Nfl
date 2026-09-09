@@ -479,3 +479,131 @@ def test_M_own4_allocated_mass_is_conserved_per_draw():
     check('BYPASS: with the repair removed those draws lose 37.0 dropbacks '
           'each, so the guard is what conserved them',
           abs(float(lost.max()) - 37.0) < 1e-9, str(float(lost.max())))
+
+
+def test_N_own7_seed_contract_is_stable_and_explicit():
+    """OWN-7: a declared seed must determine the draw.
+
+    Both production layers derived an RNG component from Python `hash()` of a
+    string, which is randomised per process, so an identical declared seed drew
+    a different stream on every run.
+    """
+    print('\nN. the seed contract is explicit and carries no Python hash')
+    import inspect
+    from nfl.production import seeds as SEEDS
+    from nfl.production import team_volume_v1 as TV
+    from nfl.production.nonqb import layers as LY
+    c = SEEDS.contract()
+    check('the contract is versioned', bool(c.get('seed_contract')),
+          str(c.get('seed_contract')))
+    check('it declares it uses no Python hash',
+          c.get('uses_python_hash') is False)
+    check('both namespaces are declared',
+          set(c['streams']) == {'p4c_alloc', 'team_volume'},
+          str(sorted(c['streams'])))
+    for ns, names in c['streams'].items():
+        ids = list(names.values())
+        check(f'{ns}: every stream id is distinct, so no two streams collide',
+              len(set(ids)) == len(ids), str(names))
+    o = SEEDS.stream_id('p4c_alloc', 'carries')
+    check('a declared stream resolves', o.state is State.PASS, o.code)
+    check('targets and carries are DIFFERENT streams by design',
+          SEEDS.stream_id('p4c_alloc', 'targets').value != o.value)
+    check('an undeclared stream is REFUSED, never defaulted',
+          SEEDS.stream_id('p4c_alloc', 'not_a_class').code
+          == 'SEED_STREAM_UNDECLARED')
+    check('an unknown namespace is refused',
+          SEEDS.stream_id('nope', 'carries').code == 'SEED_NAMESPACE_UNKNOWN')
+    # THE REGRESSION GUARD, on the AST rather than the text. A substring test
+    # cannot tell a live call from the comment that explains why the call was
+    # removed -- the first version of this check failed on its own docstring.
+    import ast
+    import textwrap
+    for mod, fn in ((LY, 'targets_carries'), (TV, 'forecast')):
+        src = textwrap.dedent(inspect.getsource(getattr(mod, fn)))
+        tree = ast.parse(src)
+        calls = [n for n in ast.walk(tree)
+                 if isinstance(n, ast.Call)
+                 and isinstance(n.func, ast.Name) and n.func.id == 'hash']
+        check(f'{mod.__name__}.{fn} CALLS Python hash() nowhere',
+              not calls,
+              f'{len(calls)} live hash() call(s) at line(s) '
+              f'{[c.lineno for c in calls]}')
+        names = {n.func.attr for n in ast.walk(tree)
+                 if isinstance(n, ast.Call)
+                 and isinstance(n.func, ast.Attribute)}
+        check(f'{mod.__name__}.{fn} resolves its stream from the registry',
+              'stream_id' in names, str(sorted(names)[:8]))
+
+
+def test_O_own7_simplex_consumes_the_fitted_share_as_a_share():
+    """OWN-7 Part B: the authorised simplex contract, and its refusal."""
+    print('\nO. the simplex consumes w_other as a share')
+    sys.path.insert(0, os.path.join(_ROOT, 'nfl', 'research', 'p4c'))
+    import p4c_lib as L
+    m = 64
+    n, g = 5, 1
+    rng = np.random.default_rng(3)
+    W = rng.random((n, m)).astype(np.float32) * 0.4
+    A = np.ones((n, m), np.float32)
+    w = np.full((g, m), 0.19, np.float32)
+    S, other, nb = L.allocate(W, A, [0], [n], 'simplex', np.ones((g, m)),
+                              w_other=w)
+    check('other IS the drawn mass, not a diluted version of it',
+          bool(np.abs(np.asarray(other) - 0.19).max() < 1e-6),
+          str(float(np.abs(np.asarray(other) - 0.19).max())))
+    check('the modelled block sums to exactly 1 - w_other',
+          bool(np.abs(S.sum(0) - 0.81).max() < 1e-5),
+          str(float(np.abs(S.sum(0) - 0.81).max())))
+    check('the simplex closes',
+          bool(np.abs(S.sum(0) + np.asarray(other)[0] - 1.0).max() < 1e-5))
+    # ORDER: a per-draw positive rescale cannot reorder within a draw.
+    S2, _, _ = L.allocate(W * 3.0, A, [0], [n], 'simplex', np.ones((g, m)),
+                          w_other=w)
+    check('scaling every weight leaves the shares unchanged -- the block is '
+          'normalised, so only RELATIVE weight matters',
+          bool(np.abs(S - S2).max() < 1e-5),
+          str(float(np.abs(S - S2).max())))
+    # SEEDED VIOLATION: a group with no modelled weight at all.
+    Wz = W.copy()
+    Wz[:, 7] = 0.0
+    S3, o3, nb3 = L.allocate(Wz, A, [0], [n], 'simplex', np.ones((g, m)),
+                             w_other=w)
+    check('a draw where no modelled player has weight gives the whole mass to '
+          'the non-modelled block, and closes',
+          abs(float(np.asarray(o3)[0, 7]) - 1.0) < 1e-6
+          and abs(float(S3[:, 7].sum())) < 1e-9,
+          f'other={float(np.asarray(o3)[0, 7])} S={float(S3[:, 7].sum())}')
+    check('and it is COUNTED, not silent', nb3 >= 1, str(nb3))
+    # SEEDED VIOLATION: an other-mass that leaves the block nothing.
+    raised = ''
+    try:
+        L.allocate(W, A, [0], [n], 'simplex', np.ones((g, m)),
+                   w_other=np.full((g, m), 1.0, np.float32))
+    except ValueError as exc:
+        raised = str(exc)
+    check('w_other >= 1 is REFUSED by name, not clipped',
+          raised.startswith('SIMPLEX_OTHER_MASS_NOT_BELOW_ONE'), raised[:70])
+
+
+def test_P_own7_kneel_mass_is_named():
+    """OWN-7 Part D: the carry mass no layer owns is declared, not implied."""
+    print('\nP. unmodelled carry mass is named')
+    from nfl.production.nonqb import accounting as ACC
+    o = ACC.unmodelled_carry_mass()
+    check('it is declared', o.state is State.PASS, o.code)
+    k = o.value.get('qb_kneels')
+    check('kneels are the named component', k is not None)
+    if not k:
+        return
+    check('with the measured rate and its source',
+          abs(k['per_team_game'] - 0.7746) < 1e-9 and 'own5' in k['source'])
+    check('it says no layer models them', k['modelled_by'] is None
+          and k['status'] == 'EXPLICIT_UNMODELLED')
+    check('it names where they currently sit',
+          'other' in k['currently_contained_in'])
+    for bad in ('RB', 'WR', 'TE', 'qb_scramble', 'qb_designed_rush'):
+        check(f'it forbids attributing them to {bad}',
+              bad in k['must_never_be_attributed_to'])
+    check('and states the invariant future modelling must satisfy',
+          len(k['invariant_future_modelling_must_satisfy']) > 200)

@@ -1192,3 +1192,58 @@ call order.
 experiment captured production's inputs without modifying it, so the repair is
 not mechanically unavoidable, and `p4c_lib` is frozen. Owner decision, together
 with the RNG defect and the unowned kneels (0.7746/team-game).
+
+---
+
+## 2026-09-09 — OWN-7: reproducibility, then the units repair
+
+**`OWN7_REPRODUCIBLE_P4C_UNITS_REPAIRED`**
+
+### Part A — and the audit found a SECOND instance
+
+Not just the allocator: **`team_volume_v1.forecast` seeded with
+`hash(metric)` too**, so D1 — every team dropback, target, carry and snap —
+was process-dependent. The whole predictive path, not one layer.
+
+Repair: `nfl/production/seeds.py`, an explicit frozen integer per named stream,
+no hashing of any kind, unknown keys refused rather than defaulted. Five
+independent processes (PYTHONHASHSEED unset/0/1/987654, forward and reversed
+order) produce **identical output hashes** while `pyhash` varies across all
+five. `TARGETS_CARRIES_RNG_REPRODUCIBLE`.
+
+The regression guard walks the **AST**; its first version was a substring test
+and failed on the comment explaining why the call was removed.
+
+Reported not fixed: `hash()` in the seeds of `rbb1_lib.py` and `run_j1.py` —
+those studies' draws are not reproducible. Neither is in the predictive path.
+
+### Part B/C — the contract applied, no refit
+
+| | carries modelled | carries other | targets other |
+|---|---|---|---|
+| before both | 0.891489 | 0.108511 | 0.005288 |
+| contract only, old RNG | 0.811104 | 0.188896 | 0.012252 |
+| **after both** | **0.801160** | **0.198840** | **0.016308** |
+| comparator | 0.8082 | 0.1918 | 0.0113 |
+
+Production's output now reproduces the authorized formula to six decimals.
+C3 **0/2,400** on all three identities; receiving accounting **PASS 6/6**;
+team dropback closure max abs diff **0.0**; 0 of 924 forecastable draws changed.
+Suite **42 modules, 451 functions, 2,638 checks, 0 failing**.
+
+### The rushing gate still fails, for a NEW reason
+
+The container is no longer too small — mean margin **+1.7945 carries** in its
+favour — but **812 of 2,400 draws (33.83%)** still exceed it, worst **44.24**.
+QB carries come from the dropback multinomial and the RB block from the carry
+simplex, and **neither draw knows about the other**. Duplicate ownership one
+level below the units defect, same shape as the passing side before C3. Fixing
+it means carving QB carries from the team budget before the simplex allocates
+the remainder — a rushing architecture change, outside OWN-7's authorization.
+
+### Part D — `KNEEL_MASS_EXPLICIT_UNMODELED`
+
+Named in `accounting.UNMODELLED_CARRY_COMPONENTS`: 0.7746 per team-game,
+0.0288 of team carries, inside `other` and claimed by nobody, never
+attributable to RB/WR/TE/scramble/designed, with the invariant future modelling
+must satisfy. No estimator invented.

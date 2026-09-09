@@ -107,11 +107,36 @@ def allocate(W, A, starts, counts, mode, avail, w_other=None):
     WA = W * A
     tot = gsum(WA, starts)
     if mode == 'simplex':
-        tot = tot + w_other
+        # THE FITTED MASS IS A SHARE AND IS NOW CONSUMED AS ONE (OWN-6/OWN-7).
+        #
+        # This was `S = WA / (sum(WA) + w_other)`, which put a fitted share into
+        # a denominator alongside sum(W*A) -- a quantity on the relative-weight
+        # scale that is NOT normalised to 1. A drawn carry mass of 0.1837 was
+        # diluted to 0.1250 and the modelled block took 0.8915 against a
+        # historical 0.8082, which is what starved the quarterback's rushing of
+        # the only container it can occupy.
+        #
+        # `mass_pool` is built in p4c_build as `mall - ms` where `mall` is the
+        # sum of ALL players' realised shares and is exactly 1.0, so it is a
+        # share on [0,1]. And `alpha0` is fitted with `scale = (1 - mass_mean)
+        # / sum(_C)` -- this contract, already written into the frozen fit. No
+        # parameter is refitted; the allocator is what diverged.
+        w = np.asarray(w_other, np.float32)
+        if float(np.max(w)) >= 1.0:
+            raise ValueError(
+                'SIMPLEX_OTHER_MASS_NOT_BELOW_ONE: a non-modelled mass of '
+                f'{float(np.max(w)):.6f} leaves the modelled block no share. '
+                'Refused rather than clipped.')
         te = gexp(tot, counts)
-        S = np.divide(WA, te, out=np.zeros_like(WA), where=te > 1e-12)
-        other = np.divide(w_other, tot, out=np.zeros_like(tot), where=tot > 1e-12)
-        return S, other, 0
+        scale = gexp(1.0 - w, counts)
+        # A group whose modelled weights are all zero -- every modelled player
+        # unavailable in that draw -- has no block to share out, so the
+        # non-modelled block holds all of it. That is the definition, not a
+        # fallback, and the groups it happened to are counted and returned.
+        degenerate = (tot <= 1e-12)
+        S = np.divide(WA * scale, te, out=np.zeros_like(WA), where=te > 1e-12)
+        other = np.where(degenerate, 1.0, w).astype(np.float32)
+        return S, other, int(degenerate.sum())
     te = gexp(tot, counts)
     S = np.divide(WA * gexp(avail, counts), te,
                   out=np.zeros_like(WA), where=te > 1e-12)

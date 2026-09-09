@@ -26,6 +26,7 @@ for _q in (str(_REPO), str(_REPO / 'nfl' / 'research' / 'p4c'),
         sys.path.insert(0, _q)
 
 from sportsplatform.governance.outcome import Cause, Outcome, State  # noqa: E402
+from nfl.production import seeds as SEEDS                         # noqa: E402
 from nfl.production.nonqb import inputs as IN                     # noqa: E402
 from nfl.production.nonqb import readiness as RD                  # noqa: E402
 
@@ -197,7 +198,14 @@ def targets_carries(part: Outcome, cls, C, positions, groups, player_ids,
     mode = L.CLASSES[cls]['mode']
     starts, counts = groups
     n = len(C)
-    rng = np.random.default_rng([seed, hash(cls) % 9973])
+    # STABLE STREAM IDENTITY. This was `hash(cls) % 9973`, and Python
+    # randomises str hashing per process, so the allocation drew a different
+    # stream on every run at an identical declared seed. See nfl/production/
+    # seeds.py. An undeclared class is refused rather than defaulted.
+    sid = SEEDS.stream_id('p4c_alloc', cls)
+    if sid.state is not State.PASS:
+        return sid
+    rng = np.random.default_rng([seed, sid.value])
     W = B.gen_weights('C', np.asarray(C, np.float32), positions, par, cls, n,
                       m, rng)
     # AVAILABILITY COMES FROM APPEARANCE, per player per draw. A player who did
@@ -228,11 +236,21 @@ def targets_carries(part: Outcome, cls, C, positions, groups, player_ids,
     A = (A > 0).astype(np.float32)
     w_other = B.mass_draws('C', par, len(starts), m, rng)
     avail = np.ones((len(starts), m), np.float32)
-    S, other, nb = L.allocate(W, A, starts, counts, mode, avail,
-                              w_other=w_other if mode == 'simplex' else None)
+    try:
+        S, other, nb = L.allocate(W, A, starts, counts, mode, avail,
+                                  w_other=w_other if mode == 'simplex'
+                                  else None)
+    except ValueError as exc:                                    # noqa: BLE001
+        code, _, detail = str(exc).partition(': ')
+        return Outcome.fail(code or 'ALLOCATION_REFUSED',
+                            detail or str(exc), alloc_class=cls)
     return Outcome.ok('TARGETS_CARRIES_OK',
                       value={'share': S, 'other': other, 'mode': mode,
                              'n_capped': nb},
+                      seed_contract=SEEDS.SEED_CONTRACT,
+                      stream_id=sid.value,
+                      n_groups_with_no_modelled_weight=(
+                          nb if mode == 'simplex' else 0),
                       spec_version=SPEC['targets_carries'],
                       test_only=bool(part.evidence.get('test_only')),
                       alloc_class=cls, n_players=n, n_groups=len(starts))

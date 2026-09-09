@@ -1,16 +1,16 @@
 {
   "A_freeze": {
-    "layers.py": "4d4b609a50f06f0236a549cc2e9c366c",
+    "layers.py": "76ee914d527e4e3ad7675a3b72265976",
     "p4c_build.py": "831cce1a3d68461c9281430e1f7f0f6c",
-    "p4c_lib.py": "f61f76e53850c1d05f0a02cbdab03d20",
+    "p4c_lib.py": "690dff608c2d19a901ee02c45b73885d",
     "p4c_params.py": "6d562a4c968379e669f81d76000ace9a"
   },
   "A_rng_reproducibility": {
     "PYTHONHASHSEED": null,
     "consequence": "a cross-process \"same seed\" comparison of this layer compares RNG streams, not the thing under test",
     "finding": "Python randomises str hashing per process and PYTHONHASHSEED is unset, so the allocation draw differs between processes at identical seed. Measured directly: three processes gave three different share matrices and other masses 0.005328 / 0.006891 / 0.004916 on one slate. Every arm here therefore runs in ONE process.",
-    "hash_carries_this_process": 1736,
-    "hash_targets_this_process": 2209,
+    "hash_carries_this_process": 6083,
+    "hash_targets_this_process": 2963,
     "seed_expression": "np.random.default_rng([seed, hash(cls) % 9973])"
   },
   "C_diagnostics": {
@@ -18,19 +18,19 @@
       "arms": {
         "C0": {
           "closure_exact": true,
-          "max_abs_closure_error": 2.38419e-07,
-          "mean_modelled_mass": 0.891489,
-          "mean_other_mass": 0.108511,
-          "player_share_p99": 0.455835,
-          "zero_share_fraction": 0.170366
+          "max_abs_closure_error": 1.78814e-07,
+          "mean_modelled_mass": 0.80116,
+          "mean_other_mass": 0.19884,
+          "player_share_p99": 0.443884,
+          "zero_share_fraction": 0.175118
         },
         "C1": {
           "closure_exact": true,
-          "max_abs_closure_error": 2.08616e-07,
-          "mean_modelled_mass": 0.811104,
-          "mean_other_mass": 0.188896,
-          "player_share_p99": 0.441828,
-          "zero_share_fraction": 0.170366
+          "max_abs_closure_error": 1.93715e-07,
+          "mean_modelled_mass": 0.80116,
+          "mean_other_mass": 0.19884,
+          "player_share_p99": 0.443884,
+          "zero_share_fraction": 0.175118
         }
       },
       "historical_comparator": {
@@ -48,18 +48,18 @@
         "C0": {
           "closure_exact": true,
           "max_abs_closure_error": 2.38419e-07,
-          "mean_modelled_mass": 0.994712,
-          "mean_other_mass": 0.005288,
-          "player_share_p99": 0.152419,
-          "zero_share_fraction": 0.209841
+          "mean_modelled_mass": 0.983692,
+          "mean_other_mass": 0.016308,
+          "player_share_p99": 0.153782,
+          "zero_share_fraction": 0.209756
         },
         "C1": {
           "closure_exact": true,
-          "max_abs_closure_error": 2.68221e-07,
-          "mean_modelled_mass": 0.987748,
-          "mean_other_mass": 0.012252,
-          "player_share_p99": 0.152159,
-          "zero_share_fraction": 0.209841
+          "max_abs_closure_error": 2.57045e-07,
+          "mean_modelled_mass": 0.983692,
+          "mean_other_mass": 0.016308,
+          "player_share_p99": 0.153782,
+          "zero_share_fraction": 0.209756
         }
       },
       "historical_comparator": {
