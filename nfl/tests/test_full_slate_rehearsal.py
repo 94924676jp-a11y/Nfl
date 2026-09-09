@@ -76,14 +76,41 @@ def test_A_empty_artifact_is_refused():
 
 
 def test_B_a_stage_cannot_claim_a_spec_and_produce_nothing():
-    print('\nB. an unimplemented layer declares itself instead of saying OK')
+    """A layer must declare WHY it produced nothing, and the two reasons are
+    different facts.
+
+    This originally required STAGE_DECLARED_UNIMPLEMENTED for the whole non-QB
+    chain. That label was false: those five layers ARE implemented and are
+    blocked on a captured input, and reporting them as never-built lost the
+    real cause -- `slate_rehearsal` calling the same layers got
+    DEFERRED[INJURY_REPORT_NOT_YET_FILED] while the production entrypoint said
+    "no production implementation" and recorded PASS.
+
+    The check now distinguishes the two, which is the property that matters:
+    an unimplemented stage says so, and an implemented-but-blocked stage names
+    its blocker instead of borrowing the unimplemented label.
+    """
+    print('\nB. a layer that produced nothing declares WHY, and truthfully')
     s = RUN.build(_args(), _fx())
     codes = {r['stage']: r['code'] for r in s['stages']}
-    for stage in ('team_environment', 'participation', 'targets_carries',
+    states = {r['stage']: r['state'] for r in s['stages']}
+
+    check('  team_environment -> STAGE_DECLARED_UNIMPLEMENTED',
+          codes.get('team_environment') == 'STAGE_DECLARED_UNIMPLEMENTED',
+          codes.get('team_environment'))
+
+    # The implemented chain must name a real blocker, never the debt label.
+    for stage in ('appearance', 'participation', 'targets_carries',
                   'conversion', 'td_layer'):
-        check(f'  {stage} -> STAGE_DECLARED_UNIMPLEMENTED',
-              codes.get(stage) == 'STAGE_DECLARED_UNIMPLEMENTED',
-              codes.get(stage))
+        c = codes.get(stage)
+        check(f'  {stage} names its own blocker, not the debt label',
+              c not in (None, 'STAGE_DECLARED_UNIMPLEMENTED')
+              and ('BLOCKED' in c or 'INJURY' in c or 'NOT_YET' in c
+                   or 'INCOMPLETE' in c),
+              c)
+        check(f'  {stage} does not report PASS while producing nothing',
+              states.get(stage) != 'PASS', states.get(stage))
+
     check('  and the QB layer, which IS implemented, still reports OK',
           codes.get('qb_layer') == 'QB_LAYER_OK', codes.get('qb_layer'))
 

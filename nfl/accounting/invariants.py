@@ -48,6 +48,18 @@ def check(name: str, residuals: dict, tol: float = 1e-9,
     explicitly-named residual mass. The invariant holds when
     lhs - rhs - other == 0 for EVERY group.
     """
+    # ZERO GROUPS IS NOT A HOLDING INVARIANT. An empty `residuals` produced
+    # `bad = {}` and returned PASS with 'holds on all 0 group(s)', so any
+    # upstream that yielded no rows -- a season filter that matched nothing, a
+    # renamed column, a moved pbp directory that still parses -- converted a
+    # zero-row read into a green invariant. That is this project's most
+    # expensive defect class sitting inside the guard written to catch it.
+    if not residuals:
+        return Outcome.blocked(
+            f'INVARIANT_NOT_MEASURED_{name.upper()}',
+            f'{name}: zero groups were supplied, so the invariant was not '
+            f'measured. An unmeasured invariant is not a holding one.',
+            cause=Cause.DATA, invariant=name, n_groups=0)
     bad = {}
     total_other = 0.0
     for k, v in residuals.items():
@@ -85,6 +97,12 @@ def check(name: str, residuals: dict, tol: float = 1e-9,
 
 def le_check(name: str, pairs: dict) -> Outcome:
     """A <= B invariant, per group. No clipping: a violation is reported."""
+    if not pairs:
+        return Outcome.blocked(
+            f'ORDERING_NOT_MEASURED_{name.upper()}',
+            f'{name}: zero groups were supplied, so the bound was not '
+            f'measured. Same reason as `check`: absence is not a pass.',
+            cause=Cause.DATA, invariant=name, n_groups=0)
     bad = {str(k): v for k, v in pairs.items() if v[0] > v[1]}
     if bad:
         worst = max(bad.items(), key=lambda kv: kv[1][0] - kv[1][1])

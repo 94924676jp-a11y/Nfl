@@ -34,6 +34,10 @@ def check(label, ok, detail=''):
     else:
         FAILED += 1
         print(f'  FAIL {label}  {detail}')
+    # Returned so a caller can stop rather than index into a shape it has just
+    # recorded as unrecognised. `if not check(...)` was silently always true
+    # while this returned None.
+    return bool(ok)
 
 
 def _appear(test_only=True, m=40):
@@ -536,15 +540,43 @@ def test_l_recorded_slate_rehearsal_is_real_and_refused():
     check('the recorded real-slate rehearsal used NO fixture',
           r['TEST_ONLY'] is False and 'NONE' in r['fixtures_used'])
     check('  it ran every game on the slate', r['n_games'] == 16, r['n_games'])
-    # R4 schema: per-game layer states live under g['layers'].
+
+    # SCHEMA IS CHECKED, NOT ASSUMED. This read g['layers'] directly. The
+    # producer (slate_rehearsal.build) writes the non-QB states under
+    # g['nonqb'] with 'team_environment' and 'qb_layer' as siblings, so the
+    # committed artifact had drifted off the shape the test asserted, and
+    # re-running the producer surfaced it as a KeyError.
+    #
+    # The raise is the point: this function died on its third assertion, so
+    # the checks below it never ran and the module's own tally reported ZERO
+    # failing checks. Only run_suite's separate RAISED counter caught it.
+    # A shape mismatch is now a NAMED failing check.
+    def _layers(g):
+        if 'nonqb' in g:
+            d = dict(g['nonqb'])
+            for k in ('team_environment', 'qb_layer'):
+                if k in g:
+                    d[k] = g[k]
+            return d
+        return g.get('layers') or {}
+
+    bad_shape = [g['game_id'] for g in r['games']
+                 if 'nonqb' not in g and 'layers' not in g]
+    if not check('  every game carries a recognised layer-state shape',
+                 not bad_shape,
+                 f'REHEARSAL_SCHEMA_UNRECOGNISED: {bad_shape[:3]}'):
+        return
     check('  team environment executed on every game',
-          all(g['layers']['team_environment'].startswith('PASS')
-              for g in r['games']))
+          all(_layers(g).get('team_environment', '').startswith('PASS')
+              for g in r['games']),
+          [_layers(g).get('team_environment') for g in r['games'][:3]])
     check('  no non-QB modelling layer produced a forecast',
           all(not v.startswith('PASS') for g in r['games']
-              for k, v in g['layers'].items() if k != 'team_environment'),
-          [v for g in r['games'] for k, v in g['layers'].items()
-           if k != 'team_environment' and v.startswith('PASS')][:3])
+              for k, v in _layers(g).items()
+              if k not in ('team_environment', 'qb_layer')),
+          [v for g in r['games'] for k, v in _layers(g).items()
+           if k not in ('team_environment', 'qb_layer')
+           and v.startswith('PASS')][:3])
     check('  and no player record was emitted',
           r.get('n_player_records', 0) == 0, r.get('n_player_records'))
     check('  publication remains refused',

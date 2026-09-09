@@ -212,10 +212,33 @@ def reconcile_team(D, rows, team_rush_draws=None,
 
     # HARD, and only against a same-draw forecast.
     if team_rush_draws is not None:
+        # THE KEY SHAPE IS CHECKED, NOT ASSUMED. This looked budgets up by the
+        # (season, week, team) tuple and silently `continue`d on a miss. Every
+        # other function in this file -- reconcile_team_volume, and
+        # football_engine's caller -- keys the same map by TEAM alone, so a
+        # caller using the house shape matched nothing, checked zero teams,
+        # and this returned PASS with vs_team_rush_draws_checked: True. The
+        # file's own note already recorded that this guard 'has never refused
+        # anything'. A guard given no input is not a guard.
+        missing = [k for k in keys
+                   if not (hasattr(team_rush_draws, 'get')
+                           and (team_rush_draws.get(k) is not None
+                                or team_rush_draws.get(k[-1]) is not None))]
+        if missing:
+            return Outcome.fail(
+                'QB_TEAM_RUSH_BUDGET_KEY_MISMATCH',
+                f'{len(missing)} of {len(keys)} team-game(s) have no entry in '
+                f'the supplied team_rush_draws map, so the containment check '
+                f'would silently examine nothing. Accepted keys are the '
+                f'(season, week, team) tuple or the bare team. Refusing rather '
+                f'than reporting a check that did not run.',
+                n_missing=len(missing), n_keys=len(keys),
+                examples=[str(k) for k in missing[:5]])
         bad = {}
         for k in keys:
-            budget = team_rush_draws.get(k) if hasattr(
-                team_rush_draws, 'get') else None
+            budget = team_rush_draws.get(k)
+            if budget is None:
+                budget = team_rush_draws.get(k[-1])
             if budget is None:
                 continue
             over = int((D['rush_opp'][by[k]].sum(0)
@@ -583,3 +606,70 @@ def conserve_allocated_mass(target, drawn, seed_parts) -> Outcome:
                   'target; row-level rates are identical across a row',
         no_survivor_renormalisation=True, nothing_fitted=True,
         unaffected_cells_map_to_themselves=True, **ev)
+
+
+def measure_composition_amplification(target, drawn) -> Outcome:
+    """Is the composition STRETCHING a draw beyond its own support?
+
+    `conserve_allocated_mass` says, and the engine relies on it, that "any
+    non-zero draw of that row carries the same rates, so scaling it to the
+    allocated target reproduces exactly what the composition would have done".
+
+    THAT CLAIM IS FALSE FOR A SMALL DRAW, and this function measures how false.
+    The rates in `qb2_lib.simulate` are row-level scalars, but a DRAW of one
+    dropback does not carry a rate -- it carries one Bernoulli realisation of
+    it. Composing by `target / drawn` multiplies that realisation, not the
+    rate. A donor with db = 1 and ptd = 1 allocated 20 dropbacks yields 20
+    passing touchdowns on 20 dropbacks: a 100% touchdown rate that the row's
+    own parameters never contained.
+
+    Measured on the real 2026 week-1 slate, ARI/LAC, m=200: 4.50% of raw
+    dropback draws are exactly 1; the factor reaches 59.85; and a quarterback
+    whose raw passing-TD draw maxes at 5 emerges with a composed maximum of
+    49.14. An NFL record is 7.
+
+    THE CONDITION IS PARAMETER-FREE: `drawn < target` is exactly "this draw is
+    being stretched upward", with nothing fitted and no threshold chosen. The
+    repair is NOT in this function -- removing the duplicate level draw is
+    pre-registered as R2 and is not authorised here. What is fixed is the
+    verdict: the engine reported PASS[QB_COMPOSITION_MASS_CONSERVED] while
+    emitting this, and mass conservation was never the property in doubt.
+    """
+    t = np.asarray(target, float)
+    d = np.asarray(drawn, float)
+    if t.shape != d.shape:
+        return Outcome.fail(
+            'AMPLIFICATION_SHAPE_MISMATCH',
+            f'target {t.shape} against drawn {d.shape}')
+    live = (t > 0) & (d > 0)
+    if not bool(live.any()):
+        return Outcome.not_applicable(
+            'AMPLIFICATION_NOT_APPLICABLE',
+            'no cell carries both allocated mass and a non-zero draw')
+    fac = np.zeros_like(t)
+    fac[live] = t[live] / d[live]
+    stretched = live & (d < t)
+    ev = {'n_cells': int(live.sum()),
+          'n_stretched': int(stretched.sum()),
+          'frac_stretched': round(float(stretched.sum() / live.sum()), 6),
+          'factor_max': round(float(fac.max()), 4),
+          'factor_mean_over_live': round(float(fac[live].mean()), 4),
+          'factor_median_over_live': round(float(np.median(fac[live])), 4),
+          'n_factor_over_3': int((fac > 3).sum()),
+          'n_factor_over_10': int((fac > 10).sum()),
+          'min_denominator': round(float(d[live].min()), 4),
+          'condition': 'drawn < target -- parameter-free, nothing fitted',
+          'repair_is_not_here': 'R2 (remove the duplicate QB level draw); '
+                                'pre-registered, not authorised in this task'}
+    if not int(stretched.sum()):
+        return Outcome.ok('QB_COMPOSITION_RATE_FIDELITY_OK',
+                          value=ev, detail='no draw is stretched upward', **ev)
+    return Outcome.fail(
+        'QB_COMPOSITION_RATE_FIDELITY_UNVERIFIED',
+        f'{ev["n_stretched"]} of {ev["n_cells"]} cell(s) compose by stretching '
+        f'a draw beyond its own support (factor up to {ev["factor_max"]}, '
+        f'smallest denominator {ev["min_denominator"]}). The composed cell '
+        f'carries the donor draw\'s realised rates multiplied, not the row\'s '
+        f'rates, so derived fields inherit amplified sampling noise. Mass is '
+        f'still conserved; rate fidelity is not, and reporting only the former '
+        f'as PASS asserted a property that was never checked.', **ev)

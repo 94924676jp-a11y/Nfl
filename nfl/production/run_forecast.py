@@ -34,6 +34,7 @@ from nfl.capture import registry as REG                               # noqa: E4
 from nfl.production import qb_accounting as QBACC
 from nfl.production import team_volume_v1 as TV
 from nfl.production import qb_v1 as QBV1                             # noqa: E402
+from nfl.production import derived as DERIVED                       # noqa: E402
 
 ARMS = ('A', 'B', 'C')
 
@@ -58,11 +59,27 @@ def execution_identity(args, source_hashes: dict, code_commit: str) -> str:
 
 
 def code_commit() -> str:
+    '''HEAD, plus an explicit dirty marker.
+
+    This returned a bare HEAD with no working-tree check, so an artifact
+    could name a commit while the code that produced it carried
+    uncommitted changes -- observed live: a sealed artifact recorded
+    72f0d13 while run_forecast.py held 125 modified lines. The artifact
+    was not reproducible from the commit it named and said nothing about
+    it. A dirty tree is now part of the identity rather than hidden, so
+    `execution_identity` changes with it too.
+    '''
     import subprocess
     try:
-        return subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=str(_REPO),
-                              capture_output=True, text=True,
-                              timeout=20).stdout.strip() or 'UNKNOWN'
+        h = subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=str(_REPO),
+                           capture_output=True, text=True,
+                           timeout=20).stdout.strip()
+        if not h:
+            return 'UNKNOWN'
+        d = subprocess.run(['git', 'status', '--porcelain'], cwd=str(_REPO),
+                           capture_output=True, text=True, timeout=60).stdout
+        n = len([x for x in d.splitlines() if x.strip()])
+        return h if n == 0 else h + '+dirty[' + str(n) + ']'
     except Exception:                                             # noqa: BLE001
         return 'UNKNOWN'
 
@@ -171,6 +188,77 @@ def build(args, fixtures: dict = None) -> dict:
     p.run_stage('identity_resolution', _identity, declared_inputs=['players'])
 
     # --- 3..10 modelling stages ----------------------------------------
+    # The five layers that exist in nfl/production/nonqb and are gated on a
+    # captured input rather than on being unwritten.
+    NONQB_CHAIN = ('appearance', 'participation', 'targets_carries',
+                   'conversion', 'td_layer')
+
+    def _nonqb_stage(_st):
+        """The real layer's own outcome, or None to fall through.
+
+        Returns whatever the layer returns -- PASS when the input is usable,
+        DEFERRED/BLOCKED with the named condition when it is not. It never
+        converts a block into a pass, and it never invents a probability.
+        """
+        try:
+            from nfl.production.nonqb import layers as LY
+        except Exception as e:                                # noqa: BLE001
+            return Outcome.blocked(
+                # Cause.DEPENDENCY, not Cause.CODE -- there is no CODE
+                # member, and naming one made this handler raise
+                # AttributeError, destroying the named refusal it
+                # exists to produce.
+                'NONQB_LAYER_IMPORT_FAILED', f'{type(e).__name__}: {e}',
+                cause=Cause.DEPENDENCY)
+        if _st == 'appearance':
+            o = LY.appearance(args.season, args.week,
+                              fx.get('players', []), fixture=None,
+                              seed=args.seed, m=fx.get('qb_draws', 200),
+                              teams=fx.get('team_ids'),
+                              kickoff_utc=fx.get('kickoff_utc'),
+                              game_id=args.game_id)
+            fx['_appearance'] = o
+            return o
+        ap = fx.get('_appearance')
+        if ap is None:
+            # Downstream layers are only meaningful given the appearance
+            # outcome. Its absence is reported, not silently skipped.
+            return Outcome.blocked(
+                'BLOCKED_UPSTREAM_APPEARANCE',
+                f'{_st} needs the appearance outcome and it was not produced',
+                cause=Cause.DATA)
+        if _st == 'participation':
+            o = LY.participation(ap, {}, m=fx.get('qb_draws', 200))
+            fx['_participation'] = o
+            return o
+        pa = fx.get('_participation')
+        if pa is None:
+            return Outcome.blocked(
+                'BLOCKED_UPSTREAM_PARTICIPATION',
+                f'{_st} needs the participation outcome', cause=Cause.DATA)
+        if _st == 'targets_carries':
+            o = LY.targets_carries(pa, 'targets', [], [], ([], []), [], {},
+                                   game_id=args.game_id,
+                                   ordinal=args.season * 100 + args.week)
+            fx['_targets_carries'] = o
+            return o
+        tc = fx.get('_targets_carries')
+        if tc is None:
+            return Outcome.blocked(
+                'BLOCKED_UPSTREAM_OPPORTUNITY',
+                f'{_st} needs the targets/carries outcome', cause=Cause.DATA)
+        _ord = args.season * 100 + args.week
+        if _st == 'conversion':
+            o = LY.receiving_conversion(tc, [], {}, [], [], _ord)
+            fx['_conversion'] = o
+            return o
+        cv = fx.get('_conversion')
+        if cv is None:
+            return Outcome.blocked(
+                'BLOCKED_UPSTREAM_TD_INPUT',
+                f'{_st} needs the conversion outcome', cause=Cause.DATA)
+        return LY.td_layer(cv, [], {}, [], [], _ord)
+
     for stage, key, spec in (
             ('feature_build', 'features', 'prior-only, ordinal prefix cut'),
             ('team_environment', 'team_env', TV.SPEC_VERSION),
@@ -204,6 +292,24 @@ def build(args, fixtures: dict = None) -> dict:
             if _st == 'qb_layer' and (fx.get('qb_rows') is not None
                                       or fx.get('qb_slate')):
                 # REAL MODEL LOGIC, not a dummy dictionary.
+                #
+                # DERIVED ARTIFACTS FIRST. `qb2_lib.load()` reads
+                # panel_enriched.pkl through p4c_build, and that artifact is
+                # deliberately NOT committed -- it is regenerated from the
+                # leaves under nfl/research/inputs. In a fresh checkout it is
+                # simply absent, and the loader raised FileNotFoundError, which
+                # the pipeline recorded as STAGE_RAISED. The whole 2026 week 1
+                # slate refused on a Python traceback rather than a named
+                # cause, and a traceback is not a refusal reason.
+                #
+                # `football_engine.qb_slate` already gated on this; the
+                # production entrypoint did not. Same call, same order, so the
+                # QB layer cannot depend on a copy someone happened to leave in
+                # the research tree either.
+                da = DERIVED.artifacts()
+                if da.state is not State.PASS:
+                    return RF.refuse('MODEL_ARTIFACT_MISSING', _st,
+                                     f'{da.code}: {da.detail}', run_id)
                 fh = QBV1.artifact_hash()
                 if fh.state is not State.PASS:
                     return RF.refuse('MODEL_ARTIFACT_MISSING', _st,
@@ -270,6 +376,44 @@ def build(args, fixtures: dict = None) -> dict:
                     warnings=[f'known limitation: {k}'
                               for k in TV.KNOWN_LIMITATIONS])
             _v = fx.get(_k)
+            if not _v and _st in NONQB_CHAIN:
+                # THE NON-QB CHAIN IS IMPLEMENTED. Reporting it as
+                # "no production implementation" was false and it cost the
+                # artifact its true refusal reason: `slate_rehearsal` calls
+                # these same layers and gets
+                # DEFERRED[INJURIES_2026_PUBLISHED_BUT_INSUFFICIENT] with the
+                # cascade named beneath it, while the production entrypoint
+                # said "unimplemented" and recorded PASS. A stage blocked on an
+                # unusable input is not a stage that was never built, and an
+                # operator reading the artifact could not tell which it was.
+                #
+                # Calling the real layer here means the artifact carries the
+                # actual cause today, and that the feed arriving is an input
+                # unblock rather than a code change.
+                o = _nonqb_stage(_st)
+                if o is not None:
+                    if o.state is State.PASS:
+                        return o
+                    # A NON-QB LAYER THAT CANNOT RUN DOES NOT REFUSE THE GAME.
+                    # It is a completeness dimension, not a required input:
+                    # the accepted design seals the QB forecast and declares
+                    # what is missing (`completeness`, `absent_layers`). That
+                    # policy is preserved here and only the REASON improves --
+                    # wiring the real layer in first made a deferred injury
+                    # feed refuse all 16 games, which threw away a valid QB
+                    # forecast over a layer that had never been required.
+                    #
+                    # No probability is emitted either way, so nothing is
+                    # fabricated. The layer's OWN code and detail are kept, so
+                    # the artifact says INJURY_REPORT_NOT_YET_FILED rather than
+                    # the false 'no production implementation'. Required
+                    # stages -- capture, identity, team environment, QB,
+                    # reconciliation, draws, sealing -- keep halting.
+                    return Outcome.not_applicable(
+                        o.code, f'{_st}: {o.detail}'[:400],
+                        implemented=True, layer=_k, blocked_layer=True,
+                        layer_state=o.state.value)
+
             if not _v:
                 return Outcome.ok(
                     'STAGE_DECLARED_UNIMPLEMENTED', value={},
@@ -356,15 +500,39 @@ def build(args, fixtures: dict = None) -> dict:
         # and reported PASS -- absence read as success, inside the production
         # path itself.
         _dr = next((r for r in p.results if r.stage == 'player_draws'), None)
-        _dist = (_dr.value if _dr is not None and _dr.value
-                 else fx.get('distributions') or {})
+        # A FIXTURE MAY NOT MASQUERADE AS MODEL OUTPUT. This fell back to
+        # `fx['distributions']` -- a dict lifted verbatim out of the
+        # --fixtures JSON -- with no trace in the artifact, so a six-line
+        # fixture sealed numbers no model computed, the
+        # EMPTY_FORECAST_ARTIFACT guard saw a non-empty dict and passed, and
+        # eligibility_verdict read 'PASS'. Demonstrated live.
+        #
+        # The fixture path survives, because the stage-11-to-14 tests need it,
+        # but it can no longer be mistaken for a forecast: the artifact
+        # records where its numbers came from and stamps itself TEST_ONLY, so
+        # provenance travels WITH the numbers instead of being inferable only
+        # from how the run was invoked.
+        _dist = _dr.value if _dr is not None and _dr.value else {}
+        _dist_source = 'MODEL'
+        if not _dist and fx.get('distributions'):
+            _dist = fx['distributions']
+            _dist_source = 'FIXTURE_TEST_ONLY'
         # Which model layers declared themselves unimplemented. Written
         # plainly: an earlier one-liner mixed union and difference, where `-`
         # binds tighter than `|`, so a None survived into sorted() and the
         # sealing stage raised on all 16 games.
         _absent = sorted({r.stage for r in p.results
-                          if r.code == 'STAGE_DECLARED_UNIMPLEMENTED'})
+                          if r.code == 'STAGE_DECLARED_UNIMPLEMENTED'
+                          or (r.state == 'NOT_APPLICABLE'
+                              and r.stage in NONQB_CHAIN)})
         _completeness = 'COMPLETE' if not _absent else 'PARTIAL_PLAYER_COVERAGE'
+        _produced = sorted({r.stage for r in p.results if r.state == 'PASS'
+                            and r.stage in ('qb_layer',) + NONQB_CHAIN})
+        _eligibility = ('PASS' if _completeness == 'COMPLETE'
+                        else 'PARTIAL|PRODUCED:' + ','.join(_produced)
+                        + '|ABSENT:' + ','.join(_absent))
+        if _dist_source != 'MODEL':
+            _eligibility = 'TEST_ONLY|DISTRIBUTIONS_FROM_FIXTURE'
         if not _dist:
             return RF.refuse('EMPTY_FORECAST_ARTIFACT', 'artifact_sealing',
                              'no model layer produced a player distribution, '
@@ -384,10 +552,15 @@ def build(args, fixtures: dict = None) -> dict:
             'code_commit': commit, 'seed_protocol': f'per-row seed {args.seed}',
             'feature_set_hash': hashlib.sha256(
                 json.dumps(sorted(src)).encode()).hexdigest()[:32],
-            'eligibility_verdict': 'PASS',
+            # NOT A LITERAL. This read 'PASS' unconditionally, asserting
+            # eligibility for every run that reached sealing regardless
+            # of what the run actually contained.
+            'eligibility_verdict': _eligibility,
             'player_ids': [q['gsis_id'] for q in fx.get('players', [])],
             'team_ids': fx.get('team_ids', []),
             'distributions': _dist,
+            'distributions_source': _dist_source,
+            'TEST_ONLY': _dist_source != 'MODEL',
             'completeness': _completeness,
             'absent_layers': _absent,
             'excluded_unidentified': fx.get('_excluded_unidentified', []),

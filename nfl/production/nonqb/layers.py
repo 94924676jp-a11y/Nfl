@@ -64,8 +64,25 @@ def _blocked(code, detail, **ev):
 
 
 # ---------------------------------------------------------------- D2
+
+def _game_stream(seed_parts, game_id):
+    """Append a stable per-game component, or say plainly that it is absent.
+
+    Without it every game on a slate draws from ONE stream: measured
+    bit-identical target-mass vectors and r = +0.545 appearance correlation
+    between games sharing no player. `game_id=None` keeps the old vector and
+    reports `game_stream_separated: False` in the outcome evidence, so a caller
+    that has not been wired yet is visible rather than silently colliding.
+    """
+    if not game_id:
+        return list(seed_parts), False
+    g = SEEDS.game_component(game_id)
+    if g.state is not State.PASS:
+        return list(seed_parts), False
+    return list(seed_parts) + [int(g.value)], True
+
 def appearance(season, week, players, fixture=None, seed=20260908, m=200,
-               teams=None, kickoff_utc=None):
+               teams=None, kickoff_utc=None, game_id=None):
     """Frozen P3 appearance mechanism. Executes only on legitimate input.
 
     THREE PATHS, AND ONLY ONE OF THEM CAN REACH AN ARTIFACT.
@@ -128,28 +145,32 @@ def appearance(season, week, players, fixture=None, seed=20260908, m=200,
         # The REAL mechanism, on fixture rows. This is the path that proves
         # the unblock: identical code, quarantined data.
         return _run_real(season, week, players, fixture['injuries_rows'],
-                         seed, m, test_only=True)
+                         seed, m, test_only=True, game_id=game_id)
     p = fixture.get('p_appear')
     if p is None:
         return Outcome.fail(
             'FIXTURE_NO_APPEARANCE', 'the TEST-ONLY fixture supplies neither '
             'p_appear nor injuries_rows; this layer will not invent one')
-    rng = np.random.default_rng([seed, season * 100 + week, 11])
+    parts, sep = _game_stream([seed, season * 100 + week, 11], game_id)
+    rng = np.random.default_rng(parts)
     out = {q['gsis_id']: rng.binomial(1, float(np.clip(p.get(q['gsis_id'], 0.0),
                                                        0, 1)), size=m)
            for q in players if q.get('gsis_id')}
     return Outcome.ok('APPEARANCE_OK', value=out, spec_version=SPEC['appearance'],
                       test_only=True, n_players=len(out), mechanism='SHAPE_ONLY',
+                      game_stream_separated=sep,
                       detail=f'{len(out)} player(s), TEST-ONLY fixture')
 
 
-def _run_real(season, week, players, injuries_rows, seed, m, test_only):
+def _run_real(season, week, players, injuries_rows, seed, m, test_only,
+              game_id=None):
     """The frozen mechanism, then per-player appearance draws from it."""
     from nfl.production.nonqb import appearance_model as AM
     o = AM.predict(season, week, players, injuries_rows)
     if o.state is not State.PASS:
         return o
-    rng = np.random.default_rng([seed, season * 100 + week, 11])
+    parts, sep = _game_stream([seed, season * 100 + week, 11], game_id)
+    rng = np.random.default_rng(parts)
     draws = {pid: rng.binomial(1, float(np.clip(pv, 0.0, 1.0)), size=m)
              for pid, pv in o.value.items()}
     ev = {k: v for k, v in o.evidence.items()
@@ -159,6 +180,7 @@ def _run_real(season, week, players, injuries_rows, seed, m, test_only):
                       mechanism='FROZEN_P3_LOGISTIC', n_players=len(draws),
                       p_appear={k: round(v, 6) for k, v in
                                 list(o.value.items())[:5]},
+                      game_stream_separated=sep,
                       **ev)
 
 
@@ -184,7 +206,7 @@ def participation(appear: Outcome, share_prior: dict, m=200):
 
 # ---------------------------------------------------------------- D3
 def targets_carries(part: Outcome, cls, C, positions, groups, player_ids,
-                    par, m=200, seed=20260908):
+                    par, m=200, seed=20260908, game_id=None, ordinal=None):
     """Frozen P4C system C: W = C + resample(add_pool), empirical OTHER mass,
     then the research allocator. Imported, never reimplemented."""
     if part.state is not State.PASS:
@@ -205,7 +227,12 @@ def targets_carries(part: Outcome, cls, C, positions, groups, player_ids,
     sid = SEEDS.stream_id('p4c_alloc', cls)
     if sid.state is not State.PASS:
         return sid
-    rng = np.random.default_rng([seed, sid.value])
+    # THIS VECTOR CARRIED NEITHER GAME NOR WEEK, so every game in every week
+    # drew the identical allocation stream. The stream id alone is a class
+    # identity, not an execution identity.
+    _base = [seed, sid.value] + ([int(ordinal)] if ordinal else [])
+    parts, sep = _game_stream(_base, game_id)
+    rng = np.random.default_rng(parts)
     W = B.gen_weights('C', np.asarray(C, np.float32), positions, par, cls, n,
                       m, rng)
     # AVAILABILITY COMES FROM APPEARANCE, per player per draw. A player who did

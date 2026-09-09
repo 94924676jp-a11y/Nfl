@@ -34,14 +34,17 @@ CHAIN = ('appearance', 'participation', 'targets_carries',
          'receiving_conversion', 'td_layer')
 
 
-def nonqb_chain(season, week, players):
+def nonqb_chain(season, week, players, game_id=None):
     """Run D2-D5 with fixture=None. Every stop is named."""
     out = collections.OrderedDict()
-    ap = LY.appearance(season, week, players, fixture=None)
+    ap = LY.appearance(season, week, players, fixture=None,
+                       game_id=game_id)
     out['appearance'] = ap
     pa = LY.participation(ap, {})
     out['participation'] = pa
-    tc = LY.targets_carries(pa, 'targets', [], [], ([], []), [], {})
+    tc = LY.targets_carries(pa, 'targets', [], [], ([], []), [], {},
+                            game_id=game_id,
+                            ordinal=season * 100 + week)
     out['targets_carries'] = tc
     cv = LY.receiving_conversion(tc, [], {}, [], [], season * 100 + week)
     out['receiving_conversion'] = cv
@@ -67,7 +70,7 @@ def build(season=2026, week=1, out_dir='/tmp/v1r3-slate',
         players = [{'gsis_id': r['gsis_id'], 'position': r['position'],
                     'team': r['team']}
                    for t in (away, home) for r in by_team.get(t, [])]
-        ch = nonqb_chain(season, week, players)
+        ch = nonqb_chain(season, week, players, g['game_id'])
         chain = ACC.reconcile_chain(
             _stage(slate, g, 'team_environment'), ch['appearance'],
             ch['participation'], ch['targets_carries'],

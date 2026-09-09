@@ -1,633 +1,328 @@
 {
- "artifact": "NFL_V1_R4_REAL_SLATE",
- "mode": "real",
+ "artifact": "NFL_V1_R3_REAL_SLATE_REHEARSAL",
  "TEST_ONLY": false,
- "engine_version": "nfl-football-engine-v1-r4",
+ "fixtures_used": "NONE -- every non-QB layer was called with fixture=None",
  "season": 2026,
  "week": 1,
- "n_draws": 200,
+ "n_games": 16,
+ "written_at": "2026-09-08T23:00:00Z",
+ "roster_source": "weekly_rosters.0b005c45d924a541.reduced.csv.gz",
+ "n_roster_rows": 2955,
+ "readiness_state": "INJURIES_2026_PUBLISHED_BUT_INSUFFICIENT",
+ "readiness_next_action": "none in code. The feed covers 2 of 32 slate teams; the remaining teams file their reports later in the game week and the periodic capture will pick them up. Re-run readiness then.",
+ "injuries": {
+  "retrieved_at": "2026-09-08T17:06:04.361385+00:00",
+  "n_rows": 11,
+  "teams_covered": 2,
+  "teams_required": 32,
+  "teams_absent": [
+   "ARI",
+   "ATL",
+   "BAL",
+   "BUF",
+   "CAR",
+   "CHI",
+   "CIN",
+   "CLE",
+   "DAL",
+   "DEN",
+   "DET",
+   "GB",
+   "HOU",
+   "IND",
+   "JAX",
+   "KC",
+   "LA",
+   "LAC",
+   "LV",
+   "MIA",
+   "MIN",
+   "NO",
+   "NYG",
+   "NYJ",
+   "PHI",
+   "PIT",
+   "SF",
+   "TB",
+   "TEN",
+   "WAS"
+  ],
+  "column_population": {
+   "report_status": 0,
+   "practice_status": 11,
+   "practice_primary_injury": 11
+  },
+  "state": "INJURIES_2026_PUBLISHED_BUT_INSUFFICIENT",
+  "reason": "the feed is published and parses, but covers 2 of 32 slate teams. teammate_availability is a team-level feature, so a team with no rows cannot be distinguished from a team with nobody injured."
+ },
  "games": [
   {
    "game_id": "2026_01_ARI_LAC",
-   "teams": [
-    "ARI",
-    "LAC"
-   ],
-   "layers": {
-    "team_environment": "PASS[TEAM_VOLUME_OK]",
-    "appearance": "DEFERRED[INJURY_REPORT_NOT_YET_FILED]",
-    "participation": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "targets_carries": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "carries": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "receiving_conversion": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "receiving_td": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "rushing_td": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "rushing_conversion": "DEFERRED[RUSHING_CONVERSION_CONTROL_UNDEFINED]"
+   "status": "SEALED",
+   "n_players": 184,
+   "qb_layer": "PASS[QB_LAYER_OK]",
+   "team_environment": "PASS[TEAM_ENVIRONMENT_OK]",
+   "nonqb": {
+    "appearance": "DEFERRED[INJURIES_2026_PUBLISHED_BUT_INSUFFICIENT]",
+    "participation": "BLOCKED[BLOCKED_UPSTREAM_APPEARANCE]",
+    "targets_carries": "BLOCKED[BLOCKED_UPSTREAM_APPEARANCE]",
+    "receiving_conversion": "BLOCKED[BLOCKED_UPSTREAM_OPPORTUNITY]",
+    "td_layer": "BLOCKED[BLOCKED_UPSTREAM_TD_INPUT]"
    },
-   "accounting": {},
-   "engine_version": "nfl-football-engine-v1-r4",
-   "n_players": 52,
-   "halted_at": "appearance",
-   "halt_reason": "no injuries row for ARI in any capture for 2026 week 1. This is ABSENCE OF A REPORT and is never read as absence of injury."
+   "nonqb_accounting": "NOT_APPLICABLE[NONQB_ACCOUNTING_NOT_REACHED]",
+   "publication": "NFL1_NOT_AUTHORIZED"
   },
   {
    "game_id": "2026_01_ATL_PIT",
-   "teams": [
-    "ATL",
-    "PIT"
-   ],
-   "layers": {
-    "team_environment": "PASS[TEAM_VOLUME_OK]",
-    "appearance": "DEFERRED[INJURY_REPORT_NOT_YET_FILED]",
-    "participation": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "targets_carries": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "carries": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "receiving_conversion": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "receiving_td": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "rushing_td": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "rushing_conversion": "DEFERRED[RUSHING_CONVERSION_CONTROL_UNDEFINED]"
+   "status": "SEALED",
+   "n_players": 181,
+   "qb_layer": "PASS[QB_LAYER_OK]",
+   "team_environment": "PASS[TEAM_ENVIRONMENT_OK]",
+   "nonqb": {
+    "appearance": "DEFERRED[INJURIES_2026_PUBLISHED_BUT_INSUFFICIENT]",
+    "participation": "BLOCKED[BLOCKED_UPSTREAM_APPEARANCE]",
+    "targets_carries": "BLOCKED[BLOCKED_UPSTREAM_APPEARANCE]",
+    "receiving_conversion": "BLOCKED[BLOCKED_UPSTREAM_OPPORTUNITY]",
+    "td_layer": "BLOCKED[BLOCKED_UPSTREAM_TD_INPUT]"
    },
-   "accounting": {},
-   "engine_version": "nfl-football-engine-v1-r4",
-   "n_players": 47,
-   "halted_at": "appearance",
-   "halt_reason": "no injuries row for ATL in any capture for 2026 week 1. This is ABSENCE OF A REPORT and is never read as absence of injury."
+   "nonqb_accounting": "NOT_APPLICABLE[NONQB_ACCOUNTING_NOT_REACHED]",
+   "publication": "NFL1_NOT_AUTHORIZED"
   },
   {
    "game_id": "2026_01_BAL_IND",
-   "teams": [
-    "BAL",
-    "IND"
-   ],
-   "layers": {
-    "team_environment": "PASS[TEAM_VOLUME_OK]",
-    "appearance": "DEFERRED[INJURY_REPORT_NOT_YET_FILED]",
-    "participation": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "targets_carries": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "carries": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "receiving_conversion": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "receiving_td": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "rushing_td": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "rushing_conversion": "DEFERRED[RUSHING_CONVERSION_CONTROL_UNDEFINED]"
+   "status": "SEALED",
+   "n_players": 184,
+   "qb_layer": "PASS[QB_LAYER_OK]",
+   "team_environment": "PASS[TEAM_ENVIRONMENT_OK]",
+   "nonqb": {
+    "appearance": "DEFERRED[INJURIES_2026_PUBLISHED_BUT_INSUFFICIENT]",
+    "participation": "BLOCKED[BLOCKED_UPSTREAM_APPEARANCE]",
+    "targets_carries": "BLOCKED[BLOCKED_UPSTREAM_APPEARANCE]",
+    "receiving_conversion": "BLOCKED[BLOCKED_UPSTREAM_OPPORTUNITY]",
+    "td_layer": "BLOCKED[BLOCKED_UPSTREAM_TD_INPUT]"
    },
-   "accounting": {},
-   "engine_version": "nfl-football-engine-v1-r4",
-   "n_players": 54,
-   "halted_at": "appearance",
-   "halt_reason": "no injuries row for BAL in any capture for 2026 week 1. This is ABSENCE OF A REPORT and is never read as absence of injury."
+   "nonqb_accounting": "NOT_APPLICABLE[NONQB_ACCOUNTING_NOT_REACHED]",
+   "publication": "NFL1_NOT_AUTHORIZED"
   },
   {
    "game_id": "2026_01_BUF_HOU",
-   "teams": [
-    "BUF",
-    "HOU"
-   ],
-   "layers": {
-    "team_environment": "PASS[TEAM_VOLUME_OK]",
-    "appearance": "DEFERRED[INJURY_REPORT_NOT_YET_FILED]",
-    "participation": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "targets_carries": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "carries": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "receiving_conversion": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "receiving_td": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "rushing_td": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "rushing_conversion": "DEFERRED[RUSHING_CONVERSION_CONTROL_UNDEFINED]"
+   "status": "SEALED",
+   "n_players": 180,
+   "qb_layer": "PASS[QB_LAYER_OK]",
+   "team_environment": "PASS[TEAM_ENVIRONMENT_OK]",
+   "nonqb": {
+    "appearance": "DEFERRED[INJURIES_2026_PUBLISHED_BUT_INSUFFICIENT]",
+    "participation": "BLOCKED[BLOCKED_UPSTREAM_APPEARANCE]",
+    "targets_carries": "BLOCKED[BLOCKED_UPSTREAM_APPEARANCE]",
+    "receiving_conversion": "BLOCKED[BLOCKED_UPSTREAM_OPPORTUNITY]",
+    "td_layer": "BLOCKED[BLOCKED_UPSTREAM_TD_INPUT]"
    },
-   "accounting": {},
-   "engine_version": "nfl-football-engine-v1-r4",
-   "n_players": 48,
-   "halted_at": "appearance",
-   "halt_reason": "no injuries row for BUF in any capture for 2026 week 1. This is ABSENCE OF A REPORT and is never read as absence of injury."
+   "nonqb_accounting": "NOT_APPLICABLE[NONQB_ACCOUNTING_NOT_REACHED]",
+   "publication": "NFL1_NOT_AUTHORIZED"
   },
   {
    "game_id": "2026_01_CHI_CAR",
-   "teams": [
-    "CHI",
-    "CAR"
-   ],
-   "layers": {
-    "team_environment": "PASS[TEAM_VOLUME_OK]",
-    "appearance": "DEFERRED[INJURY_REPORT_NOT_YET_FILED]",
-    "participation": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "targets_carries": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "carries": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "receiving_conversion": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "receiving_td": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "rushing_td": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "rushing_conversion": "DEFERRED[RUSHING_CONVERSION_CONTROL_UNDEFINED]"
+   "status": "SEALED",
+   "n_players": 187,
+   "qb_layer": "PASS[QB_LAYER_OK]",
+   "team_environment": "PASS[TEAM_ENVIRONMENT_OK]",
+   "nonqb": {
+    "appearance": "DEFERRED[INJURIES_2026_PUBLISHED_BUT_INSUFFICIENT]",
+    "participation": "BLOCKED[BLOCKED_UPSTREAM_APPEARANCE]",
+    "targets_carries": "BLOCKED[BLOCKED_UPSTREAM_APPEARANCE]",
+    "receiving_conversion": "BLOCKED[BLOCKED_UPSTREAM_OPPORTUNITY]",
+    "td_layer": "BLOCKED[BLOCKED_UPSTREAM_TD_INPUT]"
    },
-   "accounting": {},
-   "engine_version": "nfl-football-engine-v1-r4",
-   "n_players": 50,
-   "halted_at": "appearance",
-   "halt_reason": "no injuries row for CHI in any capture for 2026 week 1. This is ABSENCE OF A REPORT and is never read as absence of injury."
+   "nonqb_accounting": "NOT_APPLICABLE[NONQB_ACCOUNTING_NOT_REACHED]",
+   "publication": "NFL1_NOT_AUTHORIZED"
   },
   {
    "game_id": "2026_01_CLE_JAX",
-   "teams": [
-    "CLE",
-    "JAX"
-   ],
-   "layers": {
-    "team_environment": "PASS[TEAM_VOLUME_OK]",
-    "appearance": "DEFERRED[INJURY_REPORT_NOT_YET_FILED]",
-    "participation": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "targets_carries": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "carries": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "receiving_conversion": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "receiving_td": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "rushing_td": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "rushing_conversion": "DEFERRED[RUSHING_CONVERSION_CONTROL_UNDEFINED]"
+   "status": "SEALED",
+   "n_players": 190,
+   "qb_layer": "PASS[QB_LAYER_OK]",
+   "team_environment": "PASS[TEAM_ENVIRONMENT_OK]",
+   "nonqb": {
+    "appearance": "DEFERRED[INJURIES_2026_PUBLISHED_BUT_INSUFFICIENT]",
+    "participation": "BLOCKED[BLOCKED_UPSTREAM_APPEARANCE]",
+    "targets_carries": "BLOCKED[BLOCKED_UPSTREAM_APPEARANCE]",
+    "receiving_conversion": "BLOCKED[BLOCKED_UPSTREAM_OPPORTUNITY]",
+    "td_layer": "BLOCKED[BLOCKED_UPSTREAM_TD_INPUT]"
    },
-   "accounting": {},
-   "engine_version": "nfl-football-engine-v1-r4",
-   "n_players": 47,
-   "halted_at": "appearance",
-   "halt_reason": "no injuries row for CLE in any capture for 2026 week 1. This is ABSENCE OF A REPORT and is never read as absence of injury."
+   "nonqb_accounting": "NOT_APPLICABLE[NONQB_ACCOUNTING_NOT_REACHED]",
+   "publication": "NFL1_NOT_AUTHORIZED"
   },
   {
    "game_id": "2026_01_DAL_NYG",
-   "teams": [
-    "DAL",
-    "NYG"
-   ],
-   "layers": {
-    "team_environment": "PASS[TEAM_VOLUME_OK]",
-    "appearance": "DEFERRED[INJURY_REPORT_NOT_YET_FILED]",
-    "participation": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "targets_carries": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "carries": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "receiving_conversion": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "receiving_td": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "rushing_td": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "rushing_conversion": "DEFERRED[RUSHING_CONVERSION_CONTROL_UNDEFINED]"
+   "status": "SEALED",
+   "n_players": 180,
+   "qb_layer": "PASS[QB_LAYER_OK]",
+   "team_environment": "PASS[TEAM_ENVIRONMENT_OK]",
+   "nonqb": {
+    "appearance": "DEFERRED[INJURIES_2026_PUBLISHED_BUT_INSUFFICIENT]",
+    "participation": "BLOCKED[BLOCKED_UPSTREAM_APPEARANCE]",
+    "targets_carries": "BLOCKED[BLOCKED_UPSTREAM_APPEARANCE]",
+    "receiving_conversion": "BLOCKED[BLOCKED_UPSTREAM_OPPORTUNITY]",
+    "td_layer": "BLOCKED[BLOCKED_UPSTREAM_TD_INPUT]"
    },
-   "accounting": {},
-   "engine_version": "nfl-football-engine-v1-r4",
-   "n_players": 51,
-   "halted_at": "appearance",
-   "halt_reason": "no injuries row for DAL in any capture for 2026 week 1. This is ABSENCE OF A REPORT and is never read as absence of injury."
+   "nonqb_accounting": "NOT_APPLICABLE[NONQB_ACCOUNTING_NOT_REACHED]",
+   "publication": "NFL1_NOT_AUTHORIZED"
   },
   {
    "game_id": "2026_01_DEN_KC",
-   "teams": [
-    "DEN",
-    "KC"
-   ],
-   "layers": {
-    "team_environment": "PASS[TEAM_VOLUME_OK]",
-    "appearance": "DEFERRED[INJURY_REPORT_NOT_YET_FILED]",
-    "participation": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "targets_carries": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "carries": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "receiving_conversion": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "receiving_td": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "rushing_td": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "rushing_conversion": "DEFERRED[RUSHING_CONVERSION_CONTROL_UNDEFINED]"
+   "status": "SEALED",
+   "n_players": 180,
+   "qb_layer": "PASS[QB_LAYER_OK]",
+   "team_environment": "PASS[TEAM_ENVIRONMENT_OK]",
+   "nonqb": {
+    "appearance": "DEFERRED[INJURIES_2026_PUBLISHED_BUT_INSUFFICIENT]",
+    "participation": "BLOCKED[BLOCKED_UPSTREAM_APPEARANCE]",
+    "targets_carries": "BLOCKED[BLOCKED_UPSTREAM_APPEARANCE]",
+    "receiving_conversion": "BLOCKED[BLOCKED_UPSTREAM_OPPORTUNITY]",
+    "td_layer": "BLOCKED[BLOCKED_UPSTREAM_TD_INPUT]"
    },
-   "accounting": {},
-   "engine_version": "nfl-football-engine-v1-r4",
-   "n_players": 52,
-   "halted_at": "appearance",
-   "halt_reason": "no injuries row for DEN in any capture for 2026 week 1. This is ABSENCE OF A REPORT and is never read as absence of injury."
+   "nonqb_accounting": "NOT_APPLICABLE[NONQB_ACCOUNTING_NOT_REACHED]",
+   "publication": "NFL1_NOT_AUTHORIZED"
   },
   {
    "game_id": "2026_01_GB_MIN",
-   "teams": [
-    "GB",
-    "MIN"
-   ],
-   "layers": {
-    "team_environment": "PASS[TEAM_VOLUME_OK]",
-    "appearance": "DEFERRED[INJURY_REPORT_NOT_YET_FILED]",
-    "participation": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "targets_carries": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "carries": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "receiving_conversion": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "receiving_td": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "rushing_td": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "rushing_conversion": "DEFERRED[RUSHING_CONVERSION_CONTROL_UNDEFINED]"
+   "status": "SEALED",
+   "n_players": 188,
+   "qb_layer": "PASS[QB_LAYER_OK]",
+   "team_environment": "PASS[TEAM_ENVIRONMENT_OK]",
+   "nonqb": {
+    "appearance": "DEFERRED[INJURIES_2026_PUBLISHED_BUT_INSUFFICIENT]",
+    "participation": "BLOCKED[BLOCKED_UPSTREAM_APPEARANCE]",
+    "targets_carries": "BLOCKED[BLOCKED_UPSTREAM_APPEARANCE]",
+    "receiving_conversion": "BLOCKED[BLOCKED_UPSTREAM_OPPORTUNITY]",
+    "td_layer": "BLOCKED[BLOCKED_UPSTREAM_TD_INPUT]"
    },
-   "accounting": {},
-   "engine_version": "nfl-football-engine-v1-r4",
-   "n_players": 54,
-   "halted_at": "appearance",
-   "halt_reason": "no injuries row for GB in any capture for 2026 week 1. This is ABSENCE OF A REPORT and is never read as absence of injury."
+   "nonqb_accounting": "NOT_APPLICABLE[NONQB_ACCOUNTING_NOT_REACHED]",
+   "publication": "NFL1_NOT_AUTHORIZED"
   },
   {
    "game_id": "2026_01_MIA_LV",
-   "teams": [
-    "MIA",
-    "LV"
-   ],
-   "layers": {
-    "team_environment": "PASS[TEAM_VOLUME_OK]",
-    "appearance": "DEFERRED[INJURY_REPORT_NOT_YET_FILED]",
-    "participation": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "targets_carries": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "carries": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "receiving_conversion": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "receiving_td": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "rushing_td": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "rushing_conversion": "DEFERRED[RUSHING_CONVERSION_CONTROL_UNDEFINED]"
+   "status": "SEALED",
+   "n_players": 197,
+   "qb_layer": "PASS[QB_LAYER_OK]",
+   "team_environment": "PASS[TEAM_ENVIRONMENT_OK]",
+   "nonqb": {
+    "appearance": "DEFERRED[INJURIES_2026_PUBLISHED_BUT_INSUFFICIENT]",
+    "participation": "BLOCKED[BLOCKED_UPSTREAM_APPEARANCE]",
+    "targets_carries": "BLOCKED[BLOCKED_UPSTREAM_APPEARANCE]",
+    "receiving_conversion": "BLOCKED[BLOCKED_UPSTREAM_OPPORTUNITY]",
+    "td_layer": "BLOCKED[BLOCKED_UPSTREAM_TD_INPUT]"
    },
-   "accounting": {},
-   "engine_version": "nfl-football-engine-v1-r4",
-   "n_players": 56,
-   "halted_at": "appearance",
-   "halt_reason": "no injuries row for MIA in any capture for 2026 week 1. This is ABSENCE OF A REPORT and is never read as absence of injury."
+   "nonqb_accounting": "NOT_APPLICABLE[NONQB_ACCOUNTING_NOT_REACHED]",
+   "publication": "NFL1_NOT_AUTHORIZED"
   },
   {
    "game_id": "2026_01_NE_SEA",
-   "teams": [
-    "NE",
-    "SEA"
-   ],
-   "layers": {
-    "team_environment": "PASS[TEAM_VOLUME_OK]",
-    "appearance": "DEFERRED[INJURY_REPORT_INCOMPLETE]",
-    "participation": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "targets_carries": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "carries": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "receiving_conversion": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "receiving_td": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "rushing_td": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "rushing_conversion": "DEFERRED[RUSHING_CONVERSION_CONTROL_UNDEFINED]"
+   "status": "SEALED",
+   "n_players": 189,
+   "qb_layer": "PASS[QB_LAYER_OK]",
+   "team_environment": "PASS[TEAM_ENVIRONMENT_OK]",
+   "nonqb": {
+    "appearance": "DEFERRED[INJURIES_2026_PUBLISHED_BUT_INSUFFICIENT]",
+    "participation": "BLOCKED[BLOCKED_UPSTREAM_APPEARANCE]",
+    "targets_carries": "BLOCKED[BLOCKED_UPSTREAM_APPEARANCE]",
+    "receiving_conversion": "BLOCKED[BLOCKED_UPSTREAM_OPPORTUNITY]",
+    "td_layer": "BLOCKED[BLOCKED_UPSTREAM_TD_INPUT]"
    },
-   "accounting": {},
-   "engine_version": "nfl-football-engine-v1-r4",
-   "n_players": 51,
-   "halted_at": "appearance",
-   "halt_reason": "NE has 3 row(s) but report_status is unfilled on every one. teammate_availability reads it, and an unfiled designation is not an absence of injury."
+   "nonqb_accounting": "NOT_APPLICABLE[NONQB_ACCOUNTING_NOT_REACHED]",
+   "publication": "NFL1_NOT_AUTHORIZED"
   },
   {
    "game_id": "2026_01_NO_DET",
-   "teams": [
-    "NO",
-    "DET"
-   ],
-   "layers": {
-    "team_environment": "PASS[TEAM_VOLUME_OK]",
-    "appearance": "DEFERRED[INJURY_REPORT_NOT_YET_FILED]",
-    "participation": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "targets_carries": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "carries": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "receiving_conversion": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "receiving_td": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "rushing_td": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "rushing_conversion": "DEFERRED[RUSHING_CONVERSION_CONTROL_UNDEFINED]"
+   "status": "SEALED",
+   "n_players": 187,
+   "qb_layer": "PASS[QB_LAYER_OK]",
+   "team_environment": "PASS[TEAM_ENVIRONMENT_OK]",
+   "nonqb": {
+    "appearance": "DEFERRED[INJURIES_2026_PUBLISHED_BUT_INSUFFICIENT]",
+    "participation": "BLOCKED[BLOCKED_UPSTREAM_APPEARANCE]",
+    "targets_carries": "BLOCKED[BLOCKED_UPSTREAM_APPEARANCE]",
+    "receiving_conversion": "BLOCKED[BLOCKED_UPSTREAM_OPPORTUNITY]",
+    "td_layer": "BLOCKED[BLOCKED_UPSTREAM_TD_INPUT]"
    },
-   "accounting": {},
-   "engine_version": "nfl-football-engine-v1-r4",
-   "n_players": 50,
-   "halted_at": "appearance",
-   "halt_reason": "no injuries row for NO in any capture for 2026 week 1. This is ABSENCE OF A REPORT and is never read as absence of injury."
+   "nonqb_accounting": "NOT_APPLICABLE[NONQB_ACCOUNTING_NOT_REACHED]",
+   "publication": "NFL1_NOT_AUTHORIZED"
   },
   {
    "game_id": "2026_01_NYJ_TEN",
-   "teams": [
-    "NYJ",
-    "TEN"
-   ],
-   "layers": {
-    "team_environment": "PASS[TEAM_VOLUME_OK]",
-    "appearance": "DEFERRED[INJURY_REPORT_NOT_YET_FILED]",
-    "participation": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "targets_carries": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "carries": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "receiving_conversion": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "receiving_td": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "rushing_td": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "rushing_conversion": "DEFERRED[RUSHING_CONVERSION_CONTROL_UNDEFINED]"
+   "status": "SEALED",
+   "n_players": 187,
+   "qb_layer": "PASS[QB_LAYER_OK]",
+   "team_environment": "PASS[TEAM_ENVIRONMENT_OK]",
+   "nonqb": {
+    "appearance": "DEFERRED[INJURIES_2026_PUBLISHED_BUT_INSUFFICIENT]",
+    "participation": "BLOCKED[BLOCKED_UPSTREAM_APPEARANCE]",
+    "targets_carries": "BLOCKED[BLOCKED_UPSTREAM_APPEARANCE]",
+    "receiving_conversion": "BLOCKED[BLOCKED_UPSTREAM_OPPORTUNITY]",
+    "td_layer": "BLOCKED[BLOCKED_UPSTREAM_TD_INPUT]"
    },
-   "accounting": {},
-   "engine_version": "nfl-football-engine-v1-r4",
-   "n_players": 48,
-   "halted_at": "appearance",
-   "halt_reason": "no injuries row for NYJ in any capture for 2026 week 1. This is ABSENCE OF A REPORT and is never read as absence of injury."
+   "nonqb_accounting": "NOT_APPLICABLE[NONQB_ACCOUNTING_NOT_REACHED]",
+   "publication": "NFL1_NOT_AUTHORIZED"
   },
   {
    "game_id": "2026_01_SF_LA",
-   "teams": [
-    "SF",
-    "LA"
-   ],
-   "layers": {
-    "team_environment": "PASS[TEAM_VOLUME_OK]",
-    "appearance": "DEFERRED[INJURY_REPORT_NOT_YET_FILED]",
-    "participation": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "targets_carries": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "carries": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "receiving_conversion": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "receiving_td": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "rushing_td": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "rushing_conversion": "DEFERRED[RUSHING_CONVERSION_CONTROL_UNDEFINED]"
+   "status": "SEALED",
+   "n_players": 182,
+   "qb_layer": "PASS[QB_LAYER_OK]",
+   "team_environment": "PASS[TEAM_ENVIRONMENT_OK]",
+   "nonqb": {
+    "appearance": "DEFERRED[INJURIES_2026_PUBLISHED_BUT_INSUFFICIENT]",
+    "participation": "BLOCKED[BLOCKED_UPSTREAM_APPEARANCE]",
+    "targets_carries": "BLOCKED[BLOCKED_UPSTREAM_APPEARANCE]",
+    "receiving_conversion": "BLOCKED[BLOCKED_UPSTREAM_OPPORTUNITY]",
+    "td_layer": "BLOCKED[BLOCKED_UPSTREAM_TD_INPUT]"
    },
-   "accounting": {},
-   "engine_version": "nfl-football-engine-v1-r4",
-   "n_players": 45,
-   "halted_at": "appearance",
-   "halt_reason": "no injuries row for SF in any capture for 2026 week 1. This is ABSENCE OF A REPORT and is never read as absence of injury."
+   "nonqb_accounting": "NOT_APPLICABLE[NONQB_ACCOUNTING_NOT_REACHED]",
+   "publication": "NFL1_NOT_AUTHORIZED"
   },
   {
    "game_id": "2026_01_TB_CIN",
-   "teams": [
-    "TB",
-    "CIN"
-   ],
-   "layers": {
-    "team_environment": "PASS[TEAM_VOLUME_OK]",
-    "appearance": "DEFERRED[INJURY_REPORT_NOT_YET_FILED]",
-    "participation": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "targets_carries": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "carries": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "receiving_conversion": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "receiving_td": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "rushing_td": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "rushing_conversion": "DEFERRED[RUSHING_CONVERSION_CONTROL_UNDEFINED]"
+   "status": "SEALED",
+   "n_players": 180,
+   "qb_layer": "PASS[QB_LAYER_OK]",
+   "team_environment": "PASS[TEAM_ENVIRONMENT_OK]",
+   "nonqb": {
+    "appearance": "DEFERRED[INJURIES_2026_PUBLISHED_BUT_INSUFFICIENT]",
+    "participation": "BLOCKED[BLOCKED_UPSTREAM_APPEARANCE]",
+    "targets_carries": "BLOCKED[BLOCKED_UPSTREAM_APPEARANCE]",
+    "receiving_conversion": "BLOCKED[BLOCKED_UPSTREAM_OPPORTUNITY]",
+    "td_layer": "BLOCKED[BLOCKED_UPSTREAM_TD_INPUT]"
    },
-   "accounting": {},
-   "engine_version": "nfl-football-engine-v1-r4",
-   "n_players": 47,
-   "halted_at": "appearance",
-   "halt_reason": "no injuries row for TB in any capture for 2026 week 1. This is ABSENCE OF A REPORT and is never read as absence of injury."
+   "nonqb_accounting": "NOT_APPLICABLE[NONQB_ACCOUNTING_NOT_REACHED]",
+   "publication": "NFL1_NOT_AUTHORIZED"
   },
   {
    "game_id": "2026_01_WAS_PHI",
-   "teams": [
-    "WAS",
-    "PHI"
-   ],
-   "layers": {
-    "team_environment": "PASS[TEAM_VOLUME_OK]",
-    "appearance": "DEFERRED[INJURY_REPORT_NOT_YET_FILED]",
-    "participation": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "targets_carries": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "carries": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "receiving_conversion": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "receiving_td": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "rushing_td": "NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]",
-    "rushing_conversion": "DEFERRED[RUSHING_CONVERSION_CONTROL_UNDEFINED]"
+   "status": "SEALED",
+   "n_players": 179,
+   "qb_layer": "PASS[QB_LAYER_OK]",
+   "team_environment": "PASS[TEAM_ENVIRONMENT_OK]",
+   "nonqb": {
+    "appearance": "DEFERRED[INJURIES_2026_PUBLISHED_BUT_INSUFFICIENT]",
+    "participation": "BLOCKED[BLOCKED_UPSTREAM_APPEARANCE]",
+    "targets_carries": "BLOCKED[BLOCKED_UPSTREAM_APPEARANCE]",
+    "receiving_conversion": "BLOCKED[BLOCKED_UPSTREAM_OPPORTUNITY]",
+    "td_layer": "BLOCKED[BLOCKED_UPSTREAM_TD_INPUT]"
    },
-   "accounting": {},
-   "engine_version": "nfl-football-engine-v1-r4",
-   "n_players": 49,
-   "halted_at": "appearance",
-   "halt_reason": "no injuries row for WAS in any capture for 2026 week 1. This is ABSENCE OF A REPORT and is never read as absence of injury."
+   "nonqb_accounting": "NOT_APPLICABLE[NONQB_ACCOUNTING_NOT_REACHED]",
+   "publication": "NFL1_NOT_AUTHORIZED"
   }
  ],
- "layers": {
-  "slate_fits": "PASS[SLATE_FITS_OK]",
-  "qb_layer": "PASS[QB_SLATE_OK]",
-  "qb_allocation": "PASS[QB_ALLOCATION_OK]"
- },
- "stubbed_input": "NONE",
- "fixtures_used": "NONE -- every layer called with fixture=None",
- "n_players_on_slate": 801,
- "position_counts": {
-  "WR": 381,
-  "RB": 213,
-  "TE": 207
- },
- "fit_states": {
-  "p4c_params_targets": "PASS[P4C_PARAMS_OK]",
-  "p4c_params_carries": "PASS[P4C_PARAMS_OK]",
-  "C_targets": "PASS[CLASS_POINT_FORECAST_OK]",
-  "C_carries": "PASS[CLASS_POINT_FORECAST_OK]",
-  "participation_prior": "PASS[PARTICIPATION_PRIOR_OK]",
-  "receiving_priors": "PASS[RECEIVING_PRIORS_OK]",
-  "td_priors_rec": "PASS[TD_PRIORS_OK]",
-  "td_priors_rush": "PASS[TD_PRIORS_OK]"
- },
- "fit_evidence": {
-  "p4c_params_targets": {
-   "cached": false,
-   "spec_version": "p4c-system-C-frozen-params-1",
-   "alloc_class": "targets",
-   "trained_on_seasons_before": 2026,
-   "n_add_pool": {
-    "WR": 15297,
-    "TE": 9224,
-    "RB": 9683
-   },
-   "n_mass_pool": 2718,
-   "mass_mean": 0.01128152385354042,
-   "mass_pool_seasons": [
-    2021,
-    2022,
-    2023,
-    2024,
-    2025
-   ],
-   "sigma_lr": {
-    "WR": 0.675007,
-    "TE": 0.743923,
-    "RB": 0.763732
-   },
-   "sigma_lg": {
-    "WR": 0.754668,
-    "TE": 0.799744,
-    "RB": 0.815156
-   },
-   "q_zero": {
-    "WR": 0.171275,
-    "TE": 0.306158,
-    "RB": 0.309305
-   },
-   "alpha0": 17.67423679991533
-  },
-  "p4c_params_carries": {
-   "cached": false,
-   "spec_version": "p4c-system-C-frozen-params-1",
-   "alloc_class": "carries",
-   "trained_on_seasons_before": 2026,
-   "n_add_pool": {
-    "RB": 9683
-   },
-   "n_mass_pool": 2718,
-   "mass_mean": 0.19887535274028778,
-   "mass_pool_seasons": [
-    2021,
-    2022,
-    2023,
-    2024,
-    2025
-   ],
-   "sigma_lr": {
-    "RB": 0.79282
-   },
-   "sigma_lg": {
-    "RB": 1.083198
-   },
-   "q_zero": {
-    "RB": 0.190024
-   },
-   "alpha0": 6.664756280108605
-  },
-  "C_targets": {
-   "spec_version": "p4c-system-C-frozen-params-1",
-   "alloc_class": "targets",
-   "n_players": 801,
-   "ordinal_cut": 202601,
-   "n_on_positional_prior": 283,
-   "positional_prior": {
-    "WR": 0.125263,
-    "TE": 0.076495,
-    "RB": 0.062102
-   }
-  },
-  "C_carries": {
-   "spec_version": "p4c-system-C-frozen-params-1",
-   "alloc_class": "carries",
-   "n_players": 213,
-   "ordinal_cut": 202601,
-   "n_on_positional_prior": 63,
-   "positional_prior": {
-    "RB": 0.27019
-   }
-  },
-  "participation_prior": {
-   "spec_version": "participation-s2-ewma_hl2-frozen-1",
-   "estimator": "ewma_hl2",
-   "n_players": 801,
-   "n_history_rows": 34141,
-   "ordinal_cut": 202601,
-   "newest_history_ordinal": 202518,
-   "n_on_positional_mean": 285,
-   "positional_mean": {
-    "WR": 0.567803,
-    "TE": 0.431755,
-    "RB": 0.35492
-   },
-   "warnings": [
-    "known limitation: pass_snaps / team_dropbacks_part is an UPPER BOUND on route participation, not routes run"
-   ]
-  },
-  "receiving_priors": {
-   "cached": false,
-   "spec_version": "rc1-baseline-frozen-1",
-   "pos_catch_rate": {
-    "WR": 0.634513,
-    "TE": 0.702383,
-    "RB": 0.776153
-   },
-   "n_yardage_pool": {
-    "WR": 39126,
-    "TE": 15831,
-    "RB": 15024
-   },
-   "n_players_with_history": 1126,
-   "k_shrink": 4.0,
-   "trained_on_seasons_before": 2026
-  },
-  "td_priors_rec": {
-   "cached": false,
-   "spec_version": "td2-B_pos-frozen-1",
-   "baseline": "B_pos",
-   "kind": "rec",
-   "B_league": 0.04648,
-   "B_pos": {
-    "WR": 0.048872,
-    "RB": 0.030431,
-    "TE": 0.053669
-   },
-   "n_opportunities": {
-    "WR": 60362,
-    "RB": 18928,
-    "TE": 22173
-   },
-   "n_td": {
-    "WR": 2950,
-    "RB": 576,
-    "TE": 1190
-   },
-   "trained_on_seasons_before": 2026
-  },
-  "td_priors_rush": {
-   "cached": false,
-   "spec_version": "td2-B_pos-frozen-1",
-   "baseline": "B_pos",
-   "kind": "rush",
-   "B_league": 0.035715,
-   "B_pos": {
-    "RB": 0.031611,
-    "WR": 0.043224,
-    "QB": 0.058481,
-    "TE": 0.086154
-   },
-   "n_opportunities": {
-    "RB": 68742,
-    "WR": 2568,
-    "QB": 10824,
-    "TE": 325
-   },
-   "n_td": {
-    "RB": 2173,
-    "WR": 111,
-    "QB": 633,
-    "TE": 28
-   },
-   "trained_on_seasons_before": 2026
-  }
- },
- "n_qb_on_slate": 119,
- "qb_allocation_evidence": {
-  "spec_version": "qb3-dropback-allocation-candidate-1",
-  "governance": "CANDIDATE -- evaluated on 2022-2024 development data, NOT promoted",
-  "n_teams": 32,
-  "closure_max_dev": 2.220446049250313e-16,
-  "depth_chart_blob": "depth_charts.f57ef0724d907160.reduced.csv.gz",
-  "depth_chart_retrieved_at": "2026-09-08T11:56:57Z",
-  "cells_fitted": 5,
-  "trained_on_seasons_before": 2026
- },
- "game_readiness": {
-  "2026_01_ARI_LAC": "INJURY_REPORT_NOT_YET_FILED",
-  "2026_01_ATL_PIT": "INJURY_REPORT_NOT_YET_FILED",
-  "2026_01_BAL_IND": "INJURY_REPORT_NOT_YET_FILED",
-  "2026_01_BUF_HOU": "INJURY_REPORT_NOT_YET_FILED",
-  "2026_01_CHI_CAR": "INJURY_REPORT_NOT_YET_FILED",
-  "2026_01_CLE_JAX": "INJURY_REPORT_NOT_YET_FILED",
-  "2026_01_DAL_NYG": "INJURY_REPORT_NOT_YET_FILED",
-  "2026_01_DEN_KC": "INJURY_REPORT_NOT_YET_FILED",
-  "2026_01_GB_MIN": "INJURY_REPORT_NOT_YET_FILED",
-  "2026_01_MIA_LV": "INJURY_REPORT_NOT_YET_FILED",
-  "2026_01_NE_SEA": "INJURY_REPORT_INCOMPLETE",
-  "2026_01_NO_DET": "INJURY_REPORT_NOT_YET_FILED",
-  "2026_01_NYJ_TEN": "INJURY_REPORT_NOT_YET_FILED",
-  "2026_01_SF_LA": "INJURY_REPORT_NOT_YET_FILED",
-  "2026_01_TB_CIN": "INJURY_REPORT_NOT_YET_FILED",
-  "2026_01_WAS_PHI": "INJURY_REPORT_NOT_YET_FILED"
- },
- "n_games_ready": 0,
  "layer_state_distribution": {
-  "appearance: DEFERRED[INJURY_REPORT_INCOMPLETE]": 1,
-  "appearance: DEFERRED[INJURY_REPORT_NOT_YET_FILED]": 15,
-  "carries: NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]": 16,
-  "participation: NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]": 16,
-  "receiving_conversion: NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]": 16,
-  "receiving_td: NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]": 16,
-  "rushing_conversion: DEFERRED[RUSHING_CONVERSION_CONTROL_UNDEFINED]": 16,
-  "rushing_td: NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]": 16,
-  "targets_carries: NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]": 16,
-  "team_environment: PASS[TEAM_VOLUME_OK]": 16
- },
- "n_games": 16,
- "n_player_records": 0,
- "coverage": {
-  "n_records": 0,
-  "by_position": {},
-  "metrics_present": {},
-  "metrics_absent": {}
- },
- "accounting": {
-  "n_games": 0,
-  "note": "no game produced draws, so nothing was reconciled. This is NOT a passing accounting result."
+  "appearance: DEFERRED[INJURIES_2026_PUBLISHED_BUT_INSUFFICIENT]": 16,
+  "participation: BLOCKED[BLOCKED_UPSTREAM_APPEARANCE]": 16,
+  "receiving_conversion: BLOCKED[BLOCKED_UPSTREAM_OPPORTUNITY]": 16,
+  "targets_carries: BLOCKED[BLOCKED_UPSTREAM_APPEARANCE]": 16,
+  "td_layer: BLOCKED[BLOCKED_UPSTREAM_TD_INPUT]": 16
  },
  "publication": "BLOCKED[NFL1_NOT_AUTHORIZED]",
  "gates": {
   "G0A": "11/12",
   "NFL_1": "NOT AUTHORIZED"
- },
- "elapsed_s": 50.6
+ }
 }

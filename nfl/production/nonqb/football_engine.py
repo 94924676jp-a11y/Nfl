@@ -157,8 +157,11 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
         fixture = {'_test_only': True, 'practice_progression': {},
                    'teammate_availability': {},
                    'injuries_rows': injuries_rows}
+    # game_id separates this game's streams from every other game on the
+    # slate. Without it a sixteen-game slate is not sixteen games.
     ap = LY.appearance(season, week, recv, fixture=fixture, m=m, seed=seed,
-                       teams=teams, kickoff_utc=kickoff_utc)
+                       teams=teams, kickoff_utc=kickoff_utc,
+                       game_id=game_id)
     g['layers']['appearance'] = f'{ap.state.value}[{ap.code}]'
     if ap.state is not State.PASS:
         g['halted_at'] = 'appearance'
@@ -176,7 +179,8 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
     # ---- targets (WR/TE/RB, simplex) ------------------------------------
     Ct = [fits['C_targets'].value.get(p, 0.0) for p in ids]
     tc = LY.targets_carries(pa, 'targets', Ct, pos, (starts, counts), ids,
-                            fits['p4c_params_targets'].value, m=m, seed=seed)
+                            fits['p4c_params_targets'].value, m=m, seed=seed,
+                            game_id=game_id, ordinal=season * 100 + week)
     g['layers']['targets_carries'] = f'{tc.state.value}[{tc.code}]'
     if tc.state is not State.PASS:
         g['halted_at'] = 'targets_carries'
@@ -196,7 +200,8 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
     car = LY.targets_carries(
         pa, 'carries', [fits['C_carries'].value.get(p, 0.0) for p in rb_ids],
         rb_pos, (rb_starts, rb_counts), rb_ids,
-        fits['p4c_params_carries'].value, m=m, seed=seed)
+        fits['p4c_params_carries'].value, m=m, seed=seed,
+        game_id=game_id, ordinal=season * 100 + week)
     g['layers']['carries'] = f'{car.state.value}[{car.code}]'
     if car.state is not State.PASS:
         g['halted_at'] = 'carries'
@@ -249,6 +254,8 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
         applied = 0
         repaired_cells = repaired_rows = 0
         at_risk = 0.0
+        amp_worst = 0.0
+        amp_stretched = amp_cells = amp_fail = 0
         for t in teams:
             a = alloc.get(t)
             if a is None:
@@ -299,6 +306,14 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
                 repaired_rows += int(bool(cons.evidence['cells_needing_repair']))
                 at_risk = max(at_risk,
                               cons.evidence.get('max_single_draw_at_risk', 0.0))
+                amp = QBACC.measure_composition_amplification(target,
+                                                              drawn[src])
+                amp_worst = max(amp_worst,
+                                float(amp.evidence.get('factor_max') or 0.0))
+                amp_stretched += int(amp.evidence.get('n_stretched') or 0)
+                amp_cells += int(amp.evidence.get('n_cells') or 0)
+                if amp.state is State.FAIL:
+                    amp_fail += 1
                 den = drawn[src]
                 with np.errstate(divide='ignore', invalid='ignore'):
                     fac = np.where((target > 0) & (den > 0),
@@ -308,9 +323,27 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
                 applied += 1
         qb = dict(qb, draws=scaled)
         g['qb_allocation_applied'] = applied
+        # MASS CONSERVATION WAS NEVER THE PROPERTY IN DOUBT. This reported
+        # PASS[QB_COMPOSITION_MASS_CONSERVED] while composing quarterbacks by
+        # stretching a one-dropback donor draw up to the allocated level --
+        # measured factor 59.85, producing a 49.14 passing-touchdown tail for a
+        # passer whose raw draws max at 5. The verdict now names what actually
+        # failed, and the mass statement is kept beside it rather than standing
+        # in for it. The repair is R2 and is not authorised here.
+        _mass = ('QB_COMPOSITION_MASS_CONSERVED' if not repaired_cells
+                 else 'QB_COMPOSITION_ZERO_DRAW_REPAIRED')
         g['accounting']['qb_composition'] = (
-            'PASS[QB_COMPOSITION_MASS_CONSERVED]' if not repaired_cells
-            else f'PASS[QB_COMPOSITION_ZERO_DRAW_REPAIRED]')
+            f'PASS[{_mass}]' if not amp_fail
+            else f'FAIL[QB_COMPOSITION_RATE_FIDELITY_UNVERIFIED]')
+        g['accounting']['qb_composition_mass'] = f'PASS[{_mass}]'
+        g['accounting']['qb_composition_amplification'] = {
+            'rows_failing_rate_fidelity': amp_fail,
+            'cells_stretched': amp_stretched, 'cells_live': amp_cells,
+            'frac_stretched': (round(amp_stretched / amp_cells, 6)
+                               if amp_cells else None),
+            'factor_max': round(amp_worst, 4),
+            'condition': 'drawn < target -- parameter-free, nothing fitted',
+            'repair': 'R2, pre-registered, not authorised in this task'}
         g['qb_composition_repair'] = {
             'cells_repaired': repaired_cells, 'rows_repaired': repaired_rows,
             'max_single_draw_dropbacks_at_risk': round(at_risk, 6),

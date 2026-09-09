@@ -34,6 +34,7 @@ contract version below travels in execution identity.
 """
 from __future__ import annotations
 
+import hashlib
 import sys
 import pathlib
 
@@ -100,3 +101,48 @@ def contract() -> dict:
             'uses_python_hash': False,
             'stable_across': ['process', 'machine', 'invocation order',
                               'PYTHONHASHSEED']}
+
+
+def game_component(game_id: str) -> Outcome:
+    '''A stable per-GAME integer, so two games never share one stream.
+
+    THE DEFECT THIS CLOSES. Three seeded sites carried no game identity at all:
+
+        layers.appearance        [seed, season * 100 + week, 11]
+        layers._run_real         [seed, season * 100 + week, 11]
+        layers.targets_carries   [seed, stream_id]        -- not even the week
+
+    Every game on a slate therefore drew from the SAME stream. Measured on two
+    disjoint synthetic games with equal player counts, the non-modelled target
+    mass vectors were bit-identical (r = 1.000) and the appearance draw rows
+    correlated at r = +0.545 ACROSS GAMES THAT SHARE NO PLAYER.
+
+    That is the mirror image of the project's usual dependence defect: not a
+    dependence missing where football has one, but a dependence of exactly 1.0
+    invented between games that are independent. A slate of sixteen such games
+    is not sixteen games, and any across-game aggregate carries the wrong
+    dispersion with an unstable sign.
+
+    WHY A HASH HERE, WHEN `stream_id` REFUSES ONE. `stream_id` enumerates a
+    small closed set that a reader should be able to check by eye. Game ids are
+    an open set -- one per matchup per week forever -- so a table is not
+    available. What the seed contract actually requires is determinism across
+    processes, which `hash()` violated and sha256 does not: the same game_id
+    yields the same integer on every machine, every process and every value of
+    PYTHONHASHSEED. Nothing is fitted and no marginal moves; only the stream a
+    game draws from changes.
+    '''
+    if not game_id or not isinstance(game_id, str):
+        return Outcome.fail(
+            'SEED_GAME_ID_MISSING',
+            f'a per-game stream component needs a game id; got {game_id!r}. '
+            f'Refusing rather than defaulting to a shared stream, which is '
+            f'exactly the collision this function exists to remove.',
+            game_id=game_id)
+    d = hashlib.sha256(f'{SEED_CONTRACT}|{game_id}'.encode()).digest()
+    return Outcome.ok(
+        'SEED_GAME_COMPONENT',
+        value=int.from_bytes(d[:4], 'big'),
+        detail=f'{game_id} -> stable 32-bit component',
+        seed_contract=SEED_CONTRACT, derived_from_python_hash=False,
+        stable_across_processes=True)
