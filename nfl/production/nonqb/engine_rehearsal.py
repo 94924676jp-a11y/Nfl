@@ -51,7 +51,8 @@ def stub_injuries(season, week, players):
 
 
 def run(season=2026, week=1, m=200, seed=20260908, mode='test_only',
-        max_games=None):
+        max_games=None, r2=False, include_cold_start=False,
+        shared_pass='off'):
     t0 = time.time()
     test_only = (mode == 'test_only')
     out = {'artifact': ('NFL_V1_R4_ENGINE_REHEARSAL' if test_only
@@ -109,7 +110,8 @@ def run(season=2026, week=1, m=200, seed=20260908, mode='test_only',
             'team': r['team']} for r in rrows
            if r['gsis_id'] and r['position'] == 'QB']
     out['n_qb_on_slate'] = len(qbp)
-    qo = FE.qb_slate(season, week, qbp, m=m, seed=seed)
+    qo = FE.qb_slate(season, week, qbp, m=m, seed=seed,
+                     include_cold_start=include_cold_start)
     out['layers']['qb_layer'] = f'{qo.state.value}[{qo.code}]'
     qb = qo.value if qo.state is State.PASS else None
     if qb is None:
@@ -123,6 +125,23 @@ def run(season=2026, week=1, m=200, seed=20260908, mode='test_only',
             out['qb_allocation_evidence'] = {
                 k: v for k, v in qa.evidence.items()
                 if k not in ('value', 'n_qb_by_team', 'warnings')}
+            if r2:
+                # R2 re-levels the whole slate BEFORE any game runs: the level
+                # belongs to D1 x QB3, so it must exist before QB V1's rates
+                # are applied to it, not be divided into afterwards.
+                tv_all = FE.TV.forecast(season, week, teams_all, m=m,
+                                        seed=seed)
+                out['layers']['r2_team_volume'] = \
+                    f'{tv_all.state.value}[{tv_all.code}]'
+                if tv_all.state is State.PASS:
+                    r2o = FE.apply_r2_level(qb, qa.value, tv_all, teams_all)
+                    out['layers']['qb_level_r2'] = \
+                        f'{r2o.state.value}[{r2o.code}]'
+                    if r2o.state is State.PASS:
+                        qb = r2o.value
+                        out['r2'] = qb['r2']
+                    else:
+                        out['r2_detail'] = r2o.detail[:250]
         else:
             out['qb_allocation_detail'] = qa.detail[:250]
 
@@ -140,7 +159,7 @@ def run(season=2026, week=1, m=200, seed=20260908, mode='test_only',
             injuries_rows=inj, test_only=test_only,
             kickoff_utc=(k.isoformat().replace('+00:00', 'Z')
                          if hasattr(k, 'isoformat') else k),
-            run_id=out['artifact'], qb=qb)
+            run_id=out['artifact'], qb=qb, shared_pass=shared_pass)
         for kk, v in g['layers'].items():
             states[(kk, v)] += 1
         if payload:

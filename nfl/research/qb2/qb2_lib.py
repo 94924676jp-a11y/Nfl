@@ -196,8 +196,27 @@ def _mix(rng, own, pool, w, m, ewma=False):
     return np.where(use, own[pick], pool[rng.integers(0, len(pool), m)])
 
 
-def simulate(rs, ev, allrows, oracle=(), seed=SEED, m=M_DRAWS, rung='L1'):
-    """Team-aggregate-then-allocate. Returns a dict of (n, m) draw matrices."""
+def simulate(rs, ev, allrows, oracle=(), seed=SEED, m=M_DRAWS, rung='L1',
+             db_external=None):
+    """Team-aggregate-then-allocate. Returns a dict of (n, m) draw matrices.
+
+    `db_external` is R2: an (n_rows, m) INTEGER dropback level supplied by the
+    caller, in which case this layer draws NO level at all and supplies
+    conditional rates only. See
+    nfl/research/r2/predeclaration_qb_level_ownership_r2.md
+    (sha256 3d7beeb39f32da11623ac2be178ca4b764ecf314a5a55515b0d45c0e3d4f323c).
+
+    Under R2 the team dropback volume `V` and the quarterback share `S` are
+    owned by D1 and QB3 respectively. Drawing them here made this layer a
+    SECOND owner of both, and `football_engine` reconciled the duplicate by
+    division -- which is what produced composition factors to 59.85 and a
+    49.14 passing-touchdown tail off a one-dropback donor draw.
+
+    The V and S draws are SKIPPED, not drawn-and-discarded, so the per-row RNG
+    stream differs from the incumbent. That is expected and is stated rather
+    than discovered: R2 is a different generator, and its comparator is
+    same-seed-same-slate, not draw-for-draw identity.
+    """
     po = pools(allrows, ev)
     n = len(rs)
     out = {k: np.zeros((n, m), float) for k in
@@ -213,16 +232,28 @@ def simulate(rs, ev, allrows, oracle=(), seed=SEED, m=M_DRAWS, rung='L1'):
         w = rung_weight(r, rung)
         ew = rung in ('L2', 'L3')
 
-        # V: team dropback volume
-        V = (np.full(m, r['team_db'], float) if 'V' in oracle
-             else _mix(rng, r['h_team_db_series'], po['team_db'], w, m, ew))
-        # S: this QB's share of it
-        S = (np.full(m, (r['db'] / r['team_db']) if r['team_db'] > 0 else 1.0,
-                     float) if 'S' in oracle
-             else np.clip(_mix(rng, r['h_share'], po['share'], w, m, ew), 0, 1))
-        DB = np.maximum(np.rint(V * S), 0).astype(int)
-        if 'V' in oracle and 'S' in oracle:
-            DB = np.full(m, r['db'], int)
+        if db_external is not None:
+            # R2: THE LEVEL IS NOT THIS LAYER'S TO DRAW. It arrives already
+            # apportioned from D1 x QB3 by largest remainder, so team closure
+            # is integer-exact by construction and there is no denominator for
+            # the composition to divide by.
+            DB = np.maximum(np.asarray(db_external[idx], np.int64), 0)
+            if DB.shape[0] != m:
+                raise ValueError(
+                    f'R2_DB_EXTERNAL_SHAPE: row {idx} got {DB.shape[0]} '
+                    f'dropback draws for m={m}')
+        else:
+            # V: team dropback volume
+            V = (np.full(m, r['team_db'], float) if 'V' in oracle
+                 else _mix(rng, r['h_team_db_series'], po['team_db'], w, m, ew))
+            # S: this QB's share of it
+            S = (np.full(m, (r['db'] / r['team_db']) if r['team_db'] > 0
+                         else 1.0, float) if 'S' in oracle
+                 else np.clip(_mix(rng, r['h_share'], po['share'], w, m, ew),
+                              0, 1))
+            DB = np.maximum(np.rint(V * S), 0).astype(int)
+            if 'V' in oracle and 'S' in oracle:
+                DB = np.full(m, r['db'], int)
 
         # M: dropback outcome mix -- attempt / sack / scramble
         if 'M' in oracle:

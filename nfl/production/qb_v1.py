@@ -215,8 +215,14 @@ def slate_prospective(season: int, week: int, qb_players,
                                        if include_cold_start else None))
 
 
-def forecast(rows, season, allrows, seed=20260908, m=1000) -> Outcome:
-    """Run the V1 layer. Returns draw matrices keyed by statistic."""
+def forecast(rows, season, allrows, seed=20260908, m=1000,
+             db_external=None) -> Outcome:
+    """Run the V1 layer. Returns draw matrices keyed by statistic.
+
+    `db_external` is R2: an (n_rows, m) integer dropback level owned by
+    D1 x QB3 and apportioned by largest remainder. When supplied this layer
+    draws no level of its own and contributes conditional rates only.
+    """
     import time as _time
     import qb2_lib as Q
     if not rows:
@@ -226,7 +232,8 @@ def forecast(rows, season, allrows, seed=20260908, m=1000) -> Outcome:
             'rather than a fabricated forecast', cause=Cause.DEPENDENCY)
     t0 = _time.perf_counter()
     try:
-        D = Q.simulate(rows, season, allrows, seed=seed, m=m)
+        D = Q.simulate(rows, season, allrows, seed=seed, m=m,
+                       db_external=db_external)
     except Exception as exc:                                     # noqa: BLE001
         return Outcome.fail('QB_V1_RAISED', f'{type(exc).__name__}: {exc}')
     # ACTUAL DRAW GENERATION, timed around the simulate call alone. Orchestrator

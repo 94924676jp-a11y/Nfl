@@ -40,6 +40,8 @@ from nfl.production.nonqb import accounting as ACC                # noqa: E402
 from nfl.production.nonqb import frozen_priors as FP              # noqa: E402
 from nfl.production.nonqb import layers as LY                     # noqa: E402
 from nfl.production.nonqb import p4c_params as P4                 # noqa: E402
+from nfl.production.nonqb import shared_pass as SP                # noqa: E402
+from nfl.production import seeds as SEEDS                         # noqa: E402
 from nfl.production.nonqb import qb_allocation as QA               # noqa: E402
 from nfl.production.nonqb import participation_prior as PP        # noqa: E402
 from nfl.production.nonqb import player_record as PR              # noqa: E402
@@ -111,7 +113,13 @@ def qb_slate(season, week, qb_players, m=200, seed=20260908,
     for i, r in enumerate(rows):
         by_team[r.get('team')].append(i)
     return Outcome.ok('QB_SLATE_OK', value={'rows': rows, 'draws': o.value,
-                                            'index_by_team': dict(by_team)},
+                                            'index_by_team': dict(by_team),
+                                            # kept so R2 can re-run the layer
+                                            # at the allocated level without
+                                            # reloading the frame
+                                            'allrows': allrows,
+                                            'season': season, 'm': m,
+                                            'seed': seed},
                       spec_version=QBV1.SPEC_VERSION, n_qb=len(rows),
                       cold_start_included=bool(include_cold_start),
                       n_cold_start_rows=sl.evidence.get('n_cold_start_rows', 0),
@@ -120,9 +128,78 @@ def qb_slate(season, week, qb_players, m=200, seed=20260908,
                                 for k in QBV1.KNOWN_LIMITATIONS])
 
 
+
+def apply_r2_level(qb, alloc, tv, teams) -> Outcome:
+    """R2: re-run QB V1 at the level D1 x QB3 already own.
+
+    Pre-registered in nfl/research/r2/predeclaration_qb_level_ownership_r2.md,
+    sha256 3d7beeb39f32da11623ac2be178ca4b764ecf314a5a55515b0d45c0e3d4f323c.
+
+    THE DEFECT R2 REMOVES. QB V1 drew its own level, `DB = rint(V x S)`, from
+    the same two pools D1 and QB3 own. `run_game` reconciled the duplicate by
+    dividing one level by the other, and dividing by a small draw is what
+    produced composition factors to 59.85 and a 49.14 passing-touchdown tail
+    off a one-dropback donor. R2 deletes the duplicate instead of bounding the
+    ratio: the level is apportioned from the team budget by largest remainder,
+    and QB V1 supplies conditional rates at that level.
+
+    After this, team dropback closure is INTEGER-exact by construction rather
+    than float-exact through a division, which the pre-registration declares in
+    advance as the invariant R2 replaces rather than preserves. There is no
+    denominator, so the OWN-4 donor mechanism has nothing to repair.
+    """
+    if not qb or 'rows' not in qb:
+        return Outcome.fail('R2_NO_QB_SLATE',
+                            'R2 needs the QB slate it is re-levelling')
+    rows = qb['rows']
+    idx_by_team = qb['index_by_team']
+    ext = np.zeros((len(rows), int(qb['m'])), np.int64)
+    named = set()
+    ev = {}
+    for t in teams:
+        a = alloc.get(t)
+        if a is None:
+            continue
+        tdb = np.asarray(tv.value[('team_dropbacks_part', t)], float)
+        pids = list(a['pids'])
+        rows_for = {rows[i]['gsis_id']: i for i in idx_by_team.get(t, [])}
+        keep = [(j, p) for j, p in enumerate(pids) if p in rows_for]
+        if not keep:
+            # Allocated mass with no modelled quarterback to receive it. This
+            # is OWN-1's leak, and it is refused by name rather than shared out
+            # among the survivors.
+            return Outcome.fail(
+                'R2_ALLOCATED_MASS_HAS_NO_MODELLED_QB',
+                f'{t}: the allocation names {len(pids)} quarterback(s), none '
+                f'of whom QB V1 forecast. No survivor renormalisation.',
+                team=t, pids=pids)
+        sub = np.stack([np.asarray(a['shares'][j], float) for j, _ in keep])
+        ap = QBACC.apportion_dropbacks(tdb, sub, [p for _, p in keep])
+        if ap.state is not State.PASS:
+            return ap
+        for k, (_, p) in enumerate(keep):
+            ext[rows_for[p]] = ap.value[k]
+            named.add(p)
+        ev[t] = {'n_qb_levelled': len(keep),
+                 'team_budget_mean': ap.evidence['team_budget_mean'],
+                 'closes_exactly': True}
+    o = QBV1.forecast(rows, qb['season'], qb['allrows'],
+                      seed=qb['seed'], m=qb['m'], db_external=ext)
+    if o.state is not State.PASS:
+        return o
+    out = dict(qb)
+    out['draws'] = o.value
+    out['r2'] = {'applied': True, 'per_team': ev,
+                 'level_owner': 'D1 x QB3, apportioned by largest remainder',
+                 'qb_v1_draws_no_level': True,
+                 'donor_mechanism_reachable': False,
+                 'closure': 'integer-exact by construction'}
+    return Outcome.ok('QB_LEVEL_R2_APPLIED', value=out,
+                      n_qb_levelled=len(named), **{'teams': list(ev)})
+
 def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
              injuries_rows=None, test_only=False, kickoff_utc=None,
-             run_id='rehearsal', qb=None):
+             run_id='rehearsal', qb=None, shared_pass='off'):
     """One game, every implemented layer, one draw index."""
     away, home = game_id.split('_')[2:4]
     teams = (away, home)
@@ -186,8 +263,69 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
         g['halted_at'] = 'targets_carries'
         return g, None
     S, other = tc.value['share'], tc.value['other']
-    tgt_vol = np.stack([tv.value[('team_targets', t)] for t in teams])
-    T = S * np.repeat(tgt_vol, counts, axis=0)
+    c3 = None
+    if shared_pass == 'c3' and qb is not None and qb.get('draws'):
+        # C3: THE TARGET BUDGET COMES FROM THE THROW PROCESS, NOT FROM D1.
+        #
+        # `T = share x D1.team_targets` multiplied a share by a SEPARATELY
+        # DRAWN count of the same football quantity -- two owners of one
+        # number -- and then treated a continuous product as a count. The
+        # audit measured the consequence: corr(team passing yards, team
+        # receiving yards) = +0.001 under the production default, with the
+        # yard identity violated in 12,800 of 12,800 draws.
+        #
+        # Under C3 the quarterbacks' attempts ARE the throw budget, a named
+        # untargeted pool is drawn from it, and every remaining throw is dealt
+        # to exactly one receiver by the SAME simplex. Receiver competition is
+        # untouched; only the denominator changes, and it changes to the one
+        # the football event actually has.
+        ur = SP.untargeted_rate()
+        if ur.state is not State.PASS:
+            g['halted_at'] = 'shared_pass'
+            g['halt_reason'] = f'{ur.code}: {ur.detail[:180]}'
+            return g, None
+        att_by_team = [np.stack([np.asarray(qb['draws']['att'][i], float)
+                                 for i in qb['index_by_team'].get(t, [])])
+                       if qb['index_by_team'].get(t) else None for t in teams]
+        if any(a is None for a in att_by_team):
+            g['halted_at'] = 'shared_pass'
+            g['halt_reason'] = ('C3_TEAM_HAS_NO_QUARTERBACK_ROW: the throw '
+                                'budget is the quarterbacks\' attempts, so a '
+                                'team with no modelled passer has no budget')
+            return g, None
+        rng_c3 = np.random.default_rng(
+            [seed, season * 100 + week,
+             int(SEEDS.game_component(game_id).value), 0xC3])
+        tgt = []
+        for a in att_by_team:
+            t_o = SP.targeted_throws(a, ur.value, rng_c3)
+            if t_o.state is not State.PASS:
+                g['halted_at'] = 'shared_pass'
+                g['halt_reason'] = f'{t_o.code}: {t_o.detail[:180]}'
+                return g, None
+            tgt.append(t_o.value)
+        dealt = SP.deal_targets(S, other, [x['targeted'] for x in tgt],
+                                starts, counts, rng_c3)
+        if dealt.state is not State.PASS:
+            g['halted_at'] = 'shared_pass'
+            g['halt_reason'] = f'{dealt.code}: {dealt.detail[:180]}'
+            return g, None
+        T = dealt.value['targets'].astype(float)
+        tgt_vol = np.stack([np.asarray(x['targeted'], float) for x in tgt])
+        c3 = {'untargeted_rate': float(ur.value),
+              'mean_throws': [round(float(np.mean(x['throws'])), 4)
+                              for x in tgt],
+              'mean_targeted': [round(float(np.mean(x['targeted'])), 4)
+                                for x in tgt],
+              'targets_dealt_mean': dealt.evidence['mean_targets_per_draw'],
+              'other_pool_mean': dealt.evidence['mean_other_per_draw'],
+              'target_budget_owner': 'the throw process (QB attempts), not D1',
+              'd1_team_targets_unused': True}
+        g['layers']['shared_pass'] = 'PASS[C3_TARGET_BUDGET_FROM_THROWS]'
+    else:
+        tgt_vol = np.stack([tv.value[('team_targets', t)] for t in teams])
+        T = S * np.repeat(tgt_vol, counts, axis=0)
+        g['layers']['shared_pass'] = f'NOT_APPLICABLE[SHARED_PASS_{shared_pass.upper()}]'
 
     # ---- carries (RB only, simplex, its own group layout) ----------------
     rb = [q for q in recv if q['position'] in CARRY_POS]
@@ -240,7 +378,30 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
         receiving_yards=cv.value['receiving_yards'])
     g['accounting']['receiving'] = f'{rec_acc.state.value}[{rec_acc.code}]'
     qb_rush, qb_records = None, []
-    if qb is not None and qb.get('allocation'):
+    if qb is not None and qb.get('r2'):
+        # R2: THERE IS NOTHING TO COMPOSE. The level was apportioned from
+        # D1 x QB3 before QB V1 ran, so the draws already sit at the allocated
+        # level. The division that produced factors to 59.85 does not execute,
+        # and the OWN-4 donor mechanism has no denominator to repair -- both
+        # are unreachable rather than merely unused.
+        g['accounting']['qb_composition'] = 'PASS[QB_LEVEL_OWNED_BY_D1_X_QB3]'
+        g['accounting']['qb_composition_mass'] = \
+            'PASS[QB_COMPOSITION_NO_DIVISION_PERFORMED]'
+        g['accounting']['qb_composition_amplification'] = {
+            'rows_failing_rate_fidelity': 0, 'cells_stretched': 0,
+            'cells_live': 0, 'frac_stretched': 0.0, 'factor_max': 0.0,
+            'condition': 'R2 -- no ratio is formed, so none can be extreme',
+            'repair': 'R2 applied'}
+        g['r2'] = qb['r2']
+        share_ok = QBACC.reconcile_allocation_share(
+            {t: qb['allocation'][t] for t in teams if t in qb['allocation']},
+            {t: [qb['rows'][i]['gsis_id'] for i in
+                 qb['index_by_team'].get(t, [])] for t in teams})
+        g['accounting']['qb_allocation_share'] = \
+            f'{share_ok.state.value}[{share_ok.code}]'
+        g['accounting']['qb_allocation_share_evidence'] = {
+            k: v for k, v in share_ok.evidence.items() if k != 'value'}
+    elif qb is not None and qb.get('allocation'):
         # THE COMPOSITION W2 SECTION 7.1 ALREADY SPECIFIES:
         #     QB dropbacks = team dropbacks x QB dropback share
         # QB V1 forecasts a passer's line CONDITIONAL ON BEING THE PRIMARY
@@ -423,6 +584,45 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
         # passing yards and team receiving yards are the SAME quantity:
         # r = 0.9996, mean |difference| 0.26 yards, exact in 3,154 of 3,230
         # team-games, the residue being the named lateral exception.
+        if c3 is not None:
+            # C3, SECOND HALF: THE PASSER'S LINE IS A CREDIT FROM THE EVENT.
+            # Completions, passing yards and passing touchdowns are no longer
+            # drawn independently by QB V1 -- they ARE the receiving totals,
+            # attributed back to the quarterbacks on the targeted-throw share.
+            # One event, generated once, credited to both sides.
+            rngc = np.random.default_rng(
+                [seed, season * 100 + week,
+                 int(SEEDS.game_component(game_id).value), 0xC301])
+            cred_ok = True
+            for k, t in enumerate(teams):
+                sel = list(qb['index_by_team'].get(t, []))
+                ri = [i for i, q in enumerate(recv) if q['team'] == t]
+                if not sel or not ri:
+                    continue
+                A = np.stack([np.asarray(qb['draws']['att'][i], float)
+                              for i in sel])
+                # These layers return ROW-INDEXED arrays, not player-keyed
+                # dicts; `ri` already holds the row indices for this team.
+                R = np.asarray(cv.value['receptions'], float)[ri].sum(0)
+                Y = np.asarray(cv.value['receiving_yards'], float)[ri].sum(0)
+                TD = np.asarray(td.value['td'], float)[ri].sum(0)
+                cr = SP.credit_to_passers(A, R, Y, TD, rngc)
+                if cr.state is not State.PASS:
+                    g['accounting']['shared_pass_credit'] = \
+                        f'{cr.state.value}[{cr.code}]'
+                    cred_ok = False
+                    break
+                for n, i in enumerate(sel):
+                    qb['draws']['cmp'][i] = cr.value['cmp'][n]
+                    qb['draws']['pyds'][i] = cr.value['pyds'][n]
+                    qb['draws']['ptd'][i] = cr.value['ptd'][n]
+            if cred_ok:
+                g['accounting']['shared_pass_credit'] = \
+                    'PASS[PASSING_LINE_CREDITED_FROM_THE_RECEIVING_EVENT]'
+                c3['passer_line_owner'] = ('the receiving event; QB V1 no '
+                                           'longer draws cmp/pyds/ptd')
+            g['c3'] = c3
+
         xl = {}
         for t in teams:
             qi = [n for n, tt in enumerate(

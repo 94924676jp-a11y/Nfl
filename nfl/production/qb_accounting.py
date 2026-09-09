@@ -673,3 +673,112 @@ def measure_composition_amplification(target, drawn) -> Outcome:
         f'rates, so derived fields inherit amplified sampling noise. Mass is '
         f'still conserved; rate fidelity is not, and reporting only the former '
         f'as PASS asserted a property that was never checked.', **ev)
+
+
+def apportion_dropbacks(team_dropbacks, shares, pids) -> Outcome:
+    """R2 step 2: split an INTEGER team dropback budget across quarterbacks.
+
+    Largest-remainder (Hamilton), exactly as pre-registered in
+    `nfl/research/r2/predeclaration_qb_level_ownership_r2.md` sha256
+    3d7beeb39f32da11623ac2be178ca4b764ecf314a5a55515b0d45c0e3d4f323c section 2.
+
+    WHY THIS EXISTS. QB V1 draws its own level -- `DB = rint(V x S)` from the
+    team-dropback pool and the share pool -- which is the quantity D1 and QB3
+    already own. `run_game` reconciled the duplicate by dividing one level by
+    the other, and dividing by a small draw is what produced composition
+    factors up to 59.85 and a 49.14 passing-touchdown tail. R2 removes the
+    duplicate rather than bounding the ratio.
+
+    WHY LARGEST REMAINDER, AND WHY AFTER ALLOCATION. Integerising each
+    quarterback independently (`rint(share_j x N_t)`) does not sum to `N_t`;
+    the rounding residual is exactly the silent mass loss OWN-4 exists to
+    prevent. Largest remainder gives the residual to the largest fractional
+    parts and closes EXACTLY, by construction, in every draw. Nothing is
+    fitted and no parameter is introduced.
+
+    TIE-BREAK, DECLARED IN THE PRE-REGISTRATION AND NOT CHOSEN HERE: descending
+    share, then gsis_id ascending. Deterministic, so the apportionment is
+    reproducible across processes.
+
+    `team_dropbacks` is (m,), `shares` is (n_qb, m) summing to 1 per draw,
+    `pids` is the n_qb gsis ids in the same row order. Returns (n_qb, m) ints
+    with column sums exactly rint(team_dropbacks).
+    """
+    N = np.maximum(np.rint(np.asarray(team_dropbacks, float)), 0).astype(np.int64)
+    S = np.asarray(shares, float)
+    if S.ndim != 2 or S.shape[1] != N.shape[0]:
+        return Outcome.fail(
+            'APPORTION_SHAPE_MISMATCH',
+            f'shares {S.shape} against a team budget of {N.shape}; these must '
+            f'agree on the draw axis')
+    if len(pids) != S.shape[0]:
+        return Outcome.fail(
+            'APPORTION_PID_MISMATCH',
+            f'{len(pids)} pid(s) for {S.shape[0]} share row(s)')
+    if S.shape[0] == 0:
+        return Outcome.fail(
+            'APPORTION_NO_QUARTERBACK',
+            'a team budget was supplied with no quarterback to receive it. '
+            'Allocated mass may never be silently dropped, so this refuses '
+            'rather than returning an empty apportionment.')
+    neg = int((S < -1e-9).sum())
+    if neg:
+        return Outcome.fail('APPORTION_NEGATIVE_SHARE',
+                            f'{neg} negative share cell(s)', n_negative=neg)
+    # THE SHARES MUST ACCOUNT FOR THE WHOLE BUDGET BEFORE IT IS APPORTIONED.
+    # If the rows supplied cover only part of the allocated share -- OWN-1's
+    # `QB_ALLOCATION_SHARE_UNCONSUMED` leak, where the allocation names a
+    # quarterback QB V1 never forecast -- then no apportionment of these rows
+    # can close, and saying only "does not close" would hide a cause the
+    # project already has a name and a fix for (C0).
+    colsum = S.sum(0)
+    deficit = 1.0 - colsum
+    worst = float(np.max(np.abs(deficit)))
+    if worst > 1e-6:
+        j = int(np.argmax(np.abs(deficit)))
+        return Outcome.fail(
+            'APPORTION_SHARE_DOES_NOT_COVER_BUDGET',
+            f'the supplied shares sum to {colsum[j]:.6f} in the worst draw, '
+            f'not 1. {worst * 100:.4f}% of the team dropback budget is '
+            f'allocated to a quarterback that is not among these rows, so no '
+            f'apportionment of these rows can close. This is the OWN-1 '
+            f'unconsumed-share leak surfacing as a hard failure instead of a '
+            f'silent loss; the declared remedy is C0, and the mass is NOT '
+            f'shared out among the survivors.',
+            worst_share_deficit=round(worst, 8),
+            worst_draw=j, n_qb=int(S.shape[0]),
+            no_survivor_renormalisation=True)
+    exact = S * N[None, :]
+    base = np.floor(exact).astype(np.int64)
+    rem = exact - base
+    short = N - base.sum(0)
+    # Order once: descending remainder, then the declared tie-break. A stable
+    # sort over pre-sorted keys applies them in reverse priority order.
+    out = base.copy()
+    for j in range(N.shape[0]):
+        k = int(short[j])
+        if k <= 0:
+            continue
+        # Sorted by (-remainder, -share, pid): exactly the declared tie-break,
+        # written so it cannot be misread.
+        idx = sorted(range(S.shape[0]),
+                     key=lambda i: (-rem[i, j], -S[i, j], str(pids[i])))
+        for i in idx[:k]:
+            out[i, j] += 1
+    closes = bool(np.all(out.sum(0) == N))
+    if not closes:
+        worst = int(np.max(np.abs(out.sum(0) - N)))
+        return Outcome.fail(
+            'APPORTION_DOES_NOT_CLOSE',
+            f'largest remainder failed to close; worst draw off by {worst}. '
+            f'This is a construction, so a failure here is a defect in the '
+            f'apportionment itself, never a tolerance to widen.', worst=worst)
+    return Outcome.ok(
+        'QB_DROPBACKS_APPORTIONED', value=out,
+        detail=f'{S.shape[0]} quarterback(s) over {N.shape[0]} draw(s), '
+               f'integer-exact in every draw',
+        n_qb=int(S.shape[0]), n_draws=int(N.shape[0]),
+        team_budget_mean=round(float(N.mean()), 4),
+        closes_exactly=True, method='largest_remainder_hamilton',
+        tie_break='descending share, then gsis_id ascending',
+        nothing_fitted=True)
