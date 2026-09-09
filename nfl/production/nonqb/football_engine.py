@@ -423,6 +423,13 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
                   'recv_team': [q['team'] for q in recv],
                   'rb_ids': rb_ids, 'rb_team': [q['team'] for q in rb],
                   'teams': list(teams)},
+        # The ALLOCATION LAYER's own outputs, so a study can re-run the
+        # conversion chain on a different opportunity budget without
+        # reimplementing the layers that produced the competition. Additive:
+        # nothing downstream reads these and B0 is unchanged by their presence.
+        'allocation': {'share': S, 'other': other, 'starts': starts,
+                       'counts': counts, 'tc': tc,
+                       'team_target_volume': tgt_vol},
         'team_draws': {t: {k: np.asarray(tv.value[(k, t)], float)
                            for k in TV.METRICS} for t in teams},
         'qb': ({'ids': [qb['rows'][i]['gsis_id']

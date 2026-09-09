@@ -609,3 +609,103 @@ Not urgent; recorded.
    report's experiment 3, which is the best-designed item it contains.
 4. Lateral exception on the receiving identity.
 5. P5A rectification. 6. QB3b week-1 incumbency.
+
+---
+
+## 2026-09-09 — XL1: the shared passing event, generated once
+
+### The defect was not the defect it was reported as
+
+The previous entry recorded cross-layer passing ↔ receiving as violated "by ~45%
+of the quantity". That figure was a **per-draw absolute difference read as a
+level error**. Measured on the full slate, 32 team-games × 400 draws, against
+3,230 historical team-games: the receiving side gives 212.90 team passing yards,
+the QB side 218.75, history 237.88. The two sides are **within 2.7% of each
+other**. Correcting my own number.
+
+It is a **pure dependence defect**. For independent X, Y,
+`E|X−Y| = sqrt(2/pi)*sqrt(sx^2+sy^2)` predicts 7.46 / 103.9 / 2.03 against
+observed 5.42 / 85.4 / 1.52 — the shortfall being exactly the correlations
+(0.522 / 0.343 / 0.060) that A3 and the shared team volume induce. The identity
+held in **0 of 12,800 draws**.
+
+That changed the design: a candidate repairing the identity by moving one side's
+level onto the other trades a dependence defect for a level defect, so Gate 2
+scored levels with margins fixed before the candidates ran.
+
+### Pre-registered first
+
+`nfl/research/xl1/predeclaration_xl1.md`, sha256 `60fe3fbc…`, committed before
+any candidate existed. `run_xl1.py` refuses to run against a modified file.
+
+### Ownership, and the interception that needed nothing
+
+A completion is one event producing a completion, a reception, one gain credited
+to both, and possibly one touchdown credited to both. The throw budget is the
+passer's; the assignment is the competition's; the gain belongs to the
+completion. Historical decomposition: 33.55 throws = 32.13 targeted + 1.42
+untargeted, so the identity uses **targeted throws**, never attempts.
+
+Interceptions need no separate handling and it looks like they should: an
+intercepted pass carries a `receiver_player_id` with `complete_pass == 0`, so
+RC1's catch rate already has them inside its incompletion mass. Modelling them
+would double-count.
+
+### Result
+
+C3 deals the QB's targeted throws to receivers by the existing simplex and then
+runs RC1 and TD2 **unmodified**. Gate 1, 12,800 draws per link:
+
+| arm | completions | passing yards | passing TD |
+|---|---|---|---|
+| B0 | 12,800 violate | 12,800 violate | 11,948 violate |
+| C1 | **0** | **0** | **0** |
+| C3 | **0** | **0** | **0** |
+
+Exact by construction, no clipping. Gate 2 team level: both inside the 5%
+margin, and **C3 beats C1 on all three**, so the simplest-wins ordering resolves
+to C3 — which also credits each completion to the passer who threw it, the thing
+C1 can only approximate through an allocation.
+
+C3's player displacement is **dispersion, not level**: median mean displacement
+**+0.008** overall and **−0.001** for players with mean ≥ 3, against a median
+p95 lift of **+0.171**. B0 computed `T = share × volume`, treating a count as
+deterministic given the share; C3 deals them, restoring the multinomial term.
+The arithmetic predicts a ~20% p95 lift against 17% observed. Whether the wider
+tail is better calibrated is **not established** — no outcomes exist.
+
+### The successor problem, localised
+
+Every arm sits 8–10% below history on the whole passing chain, and neither
+candidate touches it. Measured straight from D1:
+
+| metric | sim | history | rel |
+|---|---|---|---|
+| team_carries | 27.70 | 26.92 | +2.9% |
+| team_dropbacks_part | 36.53 | 37.61 | −2.9% |
+| **team_targets** | **29.19** | **32.13** | **−9.2%** |
+
+**One D1 metric is wrong, not the volume layer.** C3 does not consume
+`team_targets` at all, so it routes around this — a consequence, not an
+intention.
+
+Second, stated as a **lead and not a diagnosis**: attempts over dropbacks is
+0.833 in the simulator against 0.892 historically, so sacks plus scrambles take
+6.10 dropbacks against 4.32. It compares a 2026 week-1 roster against a
+2020–2025 realised mean, which are different populations.
+
+### Governance
+
+Nothing promoted. `SHARED_PASS_DEFAULT` is 'off'; production runs B0. One
+additive production change: the engine payload now carries the allocation
+layer's outputs, and an equivalence gate verifies B0 reproduces byte-identically
+through the study path (48/48). Suite 42 modules, 445 functions, 2,577 checks,
+0 failing. PATH_C_STATE untouched, G0A 11/12, NFL-1 NOT AUTHORIZED.
+
+### Queue
+
+1. **D1's team_targets, 9.2% low on its own.** Largest measured level defect.
+2. Opposing-team dependence.
+3. The dropback attempt share (a lead).
+4. Role-aware reallocation — NFL-INTEL-1's experiment 3 is the right shape.
+5. Lateral exception on the receiving identity. 6. P5A. 7. QB3b.
