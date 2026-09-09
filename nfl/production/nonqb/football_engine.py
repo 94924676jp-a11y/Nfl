@@ -319,6 +319,47 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
             team_carry_draws={t: np.asarray(
                 tv.value[('team_carries', t)], float) for t in teams})
         g['accounting']['qb_team_volume'] = f'{qv.state.value}[{qv.code}]'
+        # FEED THE THIRD DORMANT GUARD. reconcile_cross_layer has been written,
+        # correct and DEFERRED since R3 because no caller ever supplied the
+        # receiving draws. They are in this run. Measured on the panel, team
+        # passing yards and team receiving yards are the SAME quantity:
+        # r = 0.9996, mean |difference| 0.26 yards, exact in 3,154 of 3,230
+        # team-games, the residue being the named lateral exception.
+        xl = {}
+        for t in teams:
+            qi = [n for n, tt in enumerate(
+                [qb['rows'][i]['team'] for tt2 in teams
+                 for i in qb['index_by_team'].get(tt2, [])]) if tt == t]
+            sel_t = [i for i in qb['index_by_team'].get(t, [])]
+            ri = [i for i, tt in enumerate(
+                [q['team'] for q in recv]) if tt == t]
+            if not sel_t or not ri:
+                continue
+            # The guard compares TEAM TOTALS -- it forms py.sum(0) - ry.sum(0)
+            # -- but enforces row alignment, and a QB room and a receiver room
+            # have different row counts. Summing to (1, m) first is
+            # mathematically identical to what the guard computes and satisfies
+            # its shape contract honestly. The guard is NOT loosened.
+            Dt = {'pyds': np.stack([np.asarray(qb['draws']['pyds'][i], float)
+                                    for i in sel_t]).sum(0)[None, :],
+                  'ptd': np.stack([np.asarray(qb['draws']['ptd'][i], float)
+                                   for i in sel_t]).sum(0)[None, :]}
+            RY = np.stack([cv.value['receiving_yards'][i]
+                           for i in ri]).sum(0)[None, :]
+            RT = np.stack([td.value['td'][i] for i in ri]).sum(0)[None, :]
+            o = QBACC.reconcile_cross_layer(Dt, receiving=RY, receiving_td=RT)
+            xl[t] = {'state': f'{o.state.value}[{o.code}]',
+                     **{k: v for k, v in o.evidence.items()
+                        if k in ('violating_draws', 'td_violating_draws',
+                                 'worst_abs_residual', 'n_draws')}}
+            xl[t]['mean_abs_yard_residual'] = float(
+                np.abs(Dt['pyds'].sum(0) - RY.sum(0)).mean())
+            xl[t]['mean_team_passing_yards'] = float(Dt['pyds'].sum(0).mean())
+            xl[t]['corr_passing_receiving'] = (
+                float(np.corrcoef(Dt['pyds'].sum(0), RY.sum(0))[0, 1])
+                if Dt['pyds'].sum(0).std() > 0 and RY.sum(0).std() > 0
+                else None)
+        g['accounting']['cross_layer'] = xl
         g['accounting']['detail']['qb_team_volume'] = {
             k: v for k, v in qv.evidence.items() if k != 'value'}
 
@@ -370,8 +411,26 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
     pub = LY.assert_publishable(ap, pa, tc, car, cv, td, rtd)
     g['publication_gate'] = f'{pub.state.value}[{pub.code}]'
     g['test_only'] = bool(test_only or ap.evidence.get('test_only'))
+    # The IDENTITY of every draw row travels with the draws. A covariance
+    # diagnostic needs to know which player and which team a row is, and
+    # reconstructing that from a parallel list is how a mismatch happens.
     return g, {'records': records, 'draws': {
         'targets': T, 'carries': C, 'receptions': cv.value['receptions'],
         'receiving_yards': cv.value['receiving_yards'],
         'receiving_td': td.value['td'], 'rush_td': rtd.value['rush_td']},
-        'accounting': (rec_acc, rush_acc)}
+        'accounting': (rec_acc, rush_acc),
+        'index': {'recv_ids': ids, 'recv_pos': pos,
+                  'recv_team': [q['team'] for q in recv],
+                  'rb_ids': rb_ids, 'rb_team': [q['team'] for q in rb],
+                  'teams': list(teams)},
+        'team_draws': {t: {k: np.asarray(tv.value[(k, t)], float)
+                           for k in TV.METRICS} for t in teams},
+        'qb': ({'ids': [qb['rows'][i]['gsis_id']
+                        for t in teams for i in qb['index_by_team'].get(t, [])],
+                'team': [t for t in teams
+                         for i in qb['index_by_team'].get(t, [])],
+                'draws': {f: np.stack([np.asarray(qb['draws'][f][i], float)
+                                       for t in teams
+                                       for i in qb['index_by_team'].get(t, [])])
+                          for f in QBV1.FIELDS}}
+               if qb is not None else None)}

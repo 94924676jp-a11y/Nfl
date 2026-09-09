@@ -446,3 +446,74 @@ cache-equivalence property is preserved and now tested under both modes.
 1. **Owner decision:** turn `joint_residuals` on by default.
 2. P5A rectification (retained).
 3. QB3b week-1 incumbency (retained).
+
+---
+
+## 2026-09-09 — J1 downstream: A3 on inside the full engine
+
+### Owner ruling
+
+J1 accepted as an EXPLORATORY REHEARSAL candidate; A3 preferred; authorised to
+turn `joint_residuals=True` on in rehearsal and inspect the downstream system as
+a joint object. Explicitly: do not stop at "A3 integrates successfully."
+
+### It integrates, and the marginals held
+
+Full engine, 16 games, 400 draws, identical seeds. Team carries↔dropbacks moved
++0.002 → **−0.373** (historical −0.393) and carries↔targets +0.002 → **−0.352**
+(−0.388), *through the full non-linear composition*. Every player marginal moved
+by ≤2.5%, the p99 receiving-yard tail by **0.1%**, accounting unchanged, no
+clipping. The owner's warning was the right check and the answer was that the
+marginals survive.
+
+### What it exposed is the actual result
+
+Restoring one dependence made the absence of the others measurable. Benchmarks
+from 3,230 historical team-games:
+
+| dependence | simulator (A3) | historical |
+|---|---|---|
+| **team passing TD ↔ receiving TD** | **+0.055** | **1.000000, exact 3,230/3,230** |
+| team passing yards ↔ receiving yards | +0.334 | **0.9996**, mean diff **0.26 yd** |
+| opposing teams' carries | +0.001 | **−0.535** |
+| opposing teams' snaps | +0.012 | **−0.464** |
+| RB carries ↔ own targets | +0.053 | +0.308 |
+| competing receivers' targets | +0.207 | +0.584 |
+
+**Passing and receiving yards are the same quantity.** The simulator draws them
+in two independent layers and they disagree by ~100 yards on ~230 — about 45% —
+in **every** draw, while the touchdown identity, which has no lateral exception
+at all, fails in 89–99% of draws.
+
+### A third dormant guard
+
+`qb_accounting.reconcile_cross_layer` has been written, correct and `DEFERRED`
+since R3 because no caller ever handed it the receiving draws. They were in the
+same run the whole time. Now fed, and it fails loudly. That is three dormant
+guards in this project — after `assert_batch_games_are_new` and
+`reconcile_team`'s rush check. **A guard that has never been given its input is
+not a guard**, and this project keeps writing them and not wiring them.
+
+Fed honestly: the guard enforces row alignment while comparing team totals, so
+each side is summed to `(1, m)` first — mathematically identical to the
+`py.sum(0) - ry.sum(0)` it computes internally. The guard was not loosened.
+
+### A3's own verdict
+
+It moved passing↔receiving from +0.005 to +0.334 because both layers now inherit
+the same team draws. It gets nowhere near 0.9996 because the two layers still
+draw the shared quantity independently. **A3 is a partial mitigation of a bigger
+defect**, and it earned its place mostly by making that defect visible.
+
+Opposing-team dependence is structurally out of A3's reach: it couples metrics
+within a team, and D1 draws each team independently.
+
+### Revised priority — this supersedes the queue
+
+1. **Cross-layer passing ↔ receiving.** An exact identity, violated in ~100% of
+   draws by ~45% of the quantity, with a written guard already waiting.
+2. **Opposing-team dependence.** Needs a game-level play-budget object that does
+   not exist.
+3. **Within-team player dependence.** RB carries↔targets understated 5.8×.
+4. P5A rectification (retained).
+5. QB3b week-1 incumbency (retained).

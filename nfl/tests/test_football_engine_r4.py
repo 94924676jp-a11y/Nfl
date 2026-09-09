@@ -436,6 +436,51 @@ def test_I_same_seed_reproduces_and_different_seed_does_not():
           not bool((a.value['rush_td'] == c.value['rush_td']).all()))
 
 
+def test_J_cross_layer_identity_is_measured_and_currently_fails():
+    """Passing yards and receiving yards are the SAME quantity.
+
+    Measured on 3,230 historical team-games: correlation 0.9996, mean absolute
+    difference 0.26 yards, and for touchdowns exact equality in 3,230 of 3,230
+    with no lateral exception at all. The simulator draws them in two
+    independent layers.
+
+    This test PINS the defect. It asserts the check runs, is recorded, and
+    currently fails -- so the failure cannot quietly become a pass without
+    someone changing this test, and cannot be forgotten either.
+    """
+    print('\nJ. the cross-layer passing/receiving identity')
+    f = os.path.join(_ROOT, 'nfl', 'production', 'nonqb',
+                     'engine_rehearsal.json')
+    if not os.path.exists(f):
+        check('the recorded rehearsal exists', False, f)
+        return
+    r = json.load(open(f))
+    xl = [v for g in r['games']
+          for v in (g['accounting'].get('cross_layer') or {}).values()]
+    check('the cross-layer check ran for every team on the slate',
+          len(xl) == 2 * r['n_games'], len(xl))
+    check('  it is no longer DEFERRED -- it was handed the receiving draws',
+          all('CROSS_LAYER_RECONCILIATION_NOT_RUN' not in v['state']
+              for v in xl))
+    check('  and it is not a shape error either',
+          all('SHAPE_MISMATCH' not in v['state'] for v in xl))
+    fails = [v for v in xl if v['state'].startswith('FAIL')]
+    check('  it currently FAILS, which is the honest state', len(fails) == len(xl),
+          f'{len(fails)} of {len(xl)}')
+    resid = np.mean([v['mean_abs_yard_residual'] for v in xl])
+    pyds = np.mean([v['mean_team_passing_yards'] for v in xl])
+    check(f'  the residual is large, not marginal ({resid:.1f} yd on {pyds:.1f})',
+          resid > 0.3 * pyds, resid / pyds)
+    td = sum(v.get('td_violating_draws', 0) for v in xl)
+    nd = sum(v.get('n_draws', 0) for v in xl)
+    check(f'  and the TD identity, which has NO exception, fails in most draws '
+          f'({td} of {nd})', td > 0.5 * nd, td / max(nd, 1))
+    check('  the historical truth is recorded in the finding',
+          '0.9996' in open(os.path.join(
+              _ROOT, 'nfl', 'research', 'j1',
+              'J1_DOWNSTREAM_FINDING.md')).read())
+
+
 def test_zz_every_check_passed():
     if FAILED:
         raise AssertionError(f'{FAILED} check(s) failed in this module')

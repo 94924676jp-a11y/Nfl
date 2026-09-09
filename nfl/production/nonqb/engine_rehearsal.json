@@ -33,16 +33,16 @@
       "n_draws": 200,
       "n_groups": 2,
       "n_cells_checked": 10400,
-      "share_simplex_closure_maxdev": 1.6833655536174774e-07,
+      "share_simplex_closure_maxdev": 1.7369166016578674e-07,
       "share_non_negative_violations": 0,
-      "player_opportunity_within_team_maxreldev": 1.6833655538916135e-07,
+      "player_opportunity_within_team_maxreldev": 1.7369166001838072e-07,
       "receptions_within_targets_violations": 0,
       "receiving_td_within_receptions_violations": 0,
       "zero_receptions_implies_zero_yards_violations": 0,
-      "n_negative_yard_cells": 100,
-      "min_receiving_yards": -10.0,
+      "n_negative_yard_cells": 114,
+      "min_receiving_yards": -8.0,
       "allocation_only_when_available_violations": 0,
-      "other_mass_mean": 0.0049800125812180344,
+      "other_mass_mean": 0.005379165546037257,
       "identities_checked": [
        "share_simplex_closure",
        "share_non_negative",
@@ -58,8 +58,8 @@
       "violations": [
        {
         "identity": "qb_rush_contained_in_other",
-        "cells": 225,
-        "worst": 57.37639371733238
+        "cells": 242,
+        "worst": 45.44298934523835
        }
       ],
       "n_players": 14,
@@ -77,18 +77,18 @@
       "rushing_yards_reason": "RUSHING_CONVERSION_CONTROL_UNDEFINED -- no rushing-yard draw exists to check. Recorded as not applicable, never as satisfied.",
       "rushing_td_within_carries_violations": 0,
       "n_td_without_a_carry": 0,
-      "qb_rush_contained_in_other_violations": 225,
-      "qb_rush_mean": 4.811120632941953,
-      "other_carry_mass_mean": 2.9244810074151557,
-      "qb_share_of_other_mean": 2.3241067281537973,
-      "cells_with_negligible_other_mass": 22,
-      "qb_rush_over_other_mean_excess": 2.911082894757592
+      "qb_rush_contained_in_other_violations": 242,
+      "qb_rush_mean": 4.848508926443796,
+      "other_carry_mass_mean": 2.9887880915858567,
+      "qb_share_of_other_mean": 2.2159541621751075,
+      "cells_with_negligible_other_mass": 24,
+      "qb_rush_over_other_mean_excess": 2.8532492024380223
      },
      "qb_team_volume": {
       "violations": [
        {
         "identity": "qb_rush_within_team_carries",
-        "cells": 10,
+        "cells": 4,
         "of": 400
        }
       ],
@@ -102,14 +102,36 @@
       ],
       "qb_dropback_within_team_volume_cells": 400,
       "qb_dropback_within_team_volume_violations": 0,
-      "qb_dropback_within_team_volume_ratio": 0.9763,
+      "qb_dropback_within_team_volume_ratio": 0.9765,
       "qb_rush_within_team_carries_cells": 400,
-      "qb_rush_within_team_carries_violations": 10,
-      "qb_rush_within_team_carries_ratio": 0.1933
+      "qb_rush_within_team_carries_violations": 4,
+      "qb_rush_within_team_carries_ratio": 0.1838
      }
     },
     "chain": "PASS[NONQB_CHAIN_EXECUTED]",
-    "qb_team_volume": "FAIL[QB_TEAM_VOLUME_INCOHERENT]"
+    "qb_team_volume": "FAIL[QB_TEAM_VOLUME_INCOHERENT]",
+    "cross_layer": {
+     "ARI": {
+      "state": "FAIL[PASSING_TD_RECEIVING_TD_MISMATCH]",
+      "n_draws": 200,
+      "violating_draws": 200,
+      "worst_abs_residual": 622.606640965054,
+      "td_violating_draws": 181,
+      "mean_abs_yard_residual": 116.15041903313839,
+      "mean_team_passing_yards": 256.18979648938983,
+      "corr_passing_receiving": 0.021653864541048506
+     },
+     "LAC": {
+      "state": "FAIL[PASSING_TD_RECEIVING_TD_MISMATCH]",
+      "n_draws": 200,
+      "violating_draws": 200,
+      "worst_abs_residual": 627.6855203619908,
+      "td_violating_draws": 189,
+      "mean_abs_yard_residual": 117.1798141945211,
+      "mean_team_passing_yards": 228.04833526672087,
+      "corr_passing_receiving": -0.1188716015663639
+     }
+    }
    },
    "engine_version": "nfl-football-engine-v1-r4",
    "n_players": 52,
@@ -133,28 +155,28 @@
    "test_only": true,
    "summary": {
     "targets": {
-     "mean": 1.2454812179193735,
-     "sd_within_player": 0.9560500859131525
+     "mean": 1.2331144812790256,
+     "sd_within_player": 0.9643637661961839
     },
     "carries": {
-     "mean": 3.1375252465299908,
-     "sd_within_player": 2.4162106829616294
+     "mean": 3.340678829934902,
+     "sd_within_player": 2.550341573545023
     },
     "receptions": {
-     "mean": 0.8471153846153846,
-     "sd_within_player": 0.8323375222912416
+     "mean": 0.8379807692307693,
+     "sd_within_player": 0.8382587229087197
     },
     "receiving_yards": {
-     "mean": 9.382403846153846,
-     "sd_within_player": 11.96386195113472
+     "mean": 9.225480769230769,
+     "sd_within_player": 11.974993963484037
     },
     "receiving_td": {
-     "mean": 0.057596153846153846,
-     "sd_within_player": 0.22373374287616213
+     "mean": 0.05673076923076923,
+     "sd_within_player": 0.21577090843505944
     },
     "rush_td": {
-     "mean": 0.09678571428571428,
-     "sd_within_player": 0.3022136631714686
+     "mean": 0.09928571428571428,
+     "sd_within_player": 0.30865072164214336
     }
    }
   },
@@ -184,16 +206,16 @@
       "n_draws": 200,
       "n_groups": 2,
       "n_cells_checked": 9400,
-      "share_simplex_closure_maxdev": 1.5925616025924683e-07,
+      "share_simplex_closure_maxdev": 1.7811544239521027e-07,
       "share_non_negative_violations": 0,
-      "player_opportunity_within_team_maxreldev": 1.592561603080001e-07,
+      "player_opportunity_within_team_maxreldev": 1.781154423630508e-07,
       "receptions_within_targets_violations": 0,
       "receiving_td_within_receptions_violations": 0,
       "zero_receptions_implies_zero_yards_violations": 0,
-      "n_negative_yard_cells": 90,
-      "min_receiving_yards": -10.0,
+      "n_negative_yard_cells": 105,
+      "min_receiving_yards": -8.0,
       "allocation_only_when_available_violations": 0,
-      "other_mass_mean": 0.005857624062336982,
+      "other_mass_mean": 0.004630270542111248,
       "identities_checked": [
        "share_simplex_closure",
        "share_non_negative",
@@ -209,8 +231,8 @@
       "violations": [
        {
         "identity": "qb_rush_contained_in_other",
-        "cells": 97,
-        "worst": 9.302127876332559
+        "cells": 106,
+        "worst": 9.443583811984446
        }
       ],
       "n_players": 11,
@@ -223,17 +245,17 @@
        "rushing_td_within_carries",
        "qb_rush_contained_in_other"
       ],
-      "team_carry_closure_maxdev": 1.5622936189174652e-07,
+      "team_carry_closure_maxdev": 1.4528632164001465e-07,
       "zero_carries_implies_zero_rushing_yards": "NOT_APPLICABLE",
       "rushing_yards_reason": "RUSHING_CONVERSION_CONTROL_UNDEFINED -- no rushing-yard draw exists to check. Recorded as not applicable, never as satisfied.",
       "rushing_td_within_carries_violations": 0,
       "n_td_without_a_carry": 0,
-      "qb_rush_contained_in_other_violations": 97,
-      "qb_rush_mean": 1.588280527810097,
-      "other_carry_mass_mean": 3.3668019409021928,
-      "qb_share_of_other_mean": 0.6592189792957432,
-      "cells_with_negligible_other_mass": 19,
-      "qb_rush_over_other_mean_excess": 0.3553830463614932
+      "qb_rush_contained_in_other_violations": 106,
+      "qb_rush_mean": 1.6387564358202307,
+      "other_carry_mass_mean": 3.2263763745533596,
+      "qb_share_of_other_mean": 0.7215541145643685,
+      "cells_with_negligible_other_mass": 17,
+      "qb_rush_over_other_mean_excess": 0.4106927213155871
      },
      "qb_team_volume": {
       "n_teams": 2,
@@ -245,14 +267,36 @@
       ],
       "qb_dropback_within_team_volume_cells": 400,
       "qb_dropback_within_team_volume_violations": 0,
-      "qb_dropback_within_team_volume_ratio": 0.9307,
+      "qb_dropback_within_team_volume_ratio": 0.9315,
       "qb_rush_within_team_carries_cells": 400,
       "qb_rush_within_team_carries_violations": 0,
-      "qb_rush_within_team_carries_ratio": 0.0553
+      "qb_rush_within_team_carries_ratio": 0.0585
      }
     },
     "chain": "PASS[NONQB_CHAIN_EXECUTED]",
-    "qb_team_volume": "PASS[QB_TEAM_VOLUME_COHERENT]"
+    "qb_team_volume": "PASS[QB_TEAM_VOLUME_COHERENT]",
+    "cross_layer": {
+     "ATL": {
+      "state": "FAIL[PASSING_TD_RECEIVING_TD_MISMATCH]",
+      "n_draws": 200,
+      "violating_draws": 200,
+      "worst_abs_residual": 391.12486772486784,
+      "td_violating_draws": 187,
+      "mean_abs_yard_residual": 95.06505689553178,
+      "mean_team_passing_yards": 214.2063710398583,
+      "corr_passing_receiving": 0.04643992137240793
+     },
+     "PIT": {
+      "state": "FAIL[PASSING_TD_RECEIVING_TD_MISMATCH]",
+      "n_draws": 200,
+      "violating_draws": 200,
+      "worst_abs_residual": 393.9173711755234,
+      "td_violating_draws": 194,
+      "mean_abs_yard_residual": 109.64267352655322,
+      "mean_team_passing_yards": 250.13103987721968,
+      "corr_passing_receiving": -0.03865008672818106
+     }
+    }
    },
    "engine_version": "nfl-football-engine-v1-r4",
    "n_players": 47,
@@ -276,28 +320,28 @@
    "test_only": true,
    "summary": {
     "targets": {
-     "mean": 1.339944580274093,
-     "sd_within_player": 0.9862535555259563
+     "mean": 1.3260247508163834,
+     "sd_within_player": 0.9826534524669724
     },
     "carries": {
-     "mean": 4.614387939811613,
-     "sd_within_player": 2.6068537575115016
+     "mean": 4.509654949567855,
+     "sd_within_player": 2.5042317924903554
     },
     "receptions": {
-     "mean": 0.9002127659574468,
-     "sd_within_player": 0.8635383733278119
+     "mean": 0.885,
+     "sd_within_player": 0.854197384624315
     },
     "receiving_yards": {
-     "mean": 10.042127659574469,
-     "sd_within_player": 12.743622645360874
+     "mean": 9.930851063829786,
+     "sd_within_player": 12.755129833339168
     },
     "receiving_td": {
-     "mean": 0.06148936170212766,
-     "sd_within_player": 0.22645510372514238
+     "mean": 0.06021276595744681,
+     "sd_within_player": 0.22285102702735443
     },
     "rush_td": {
-     "mean": 0.14363636363636365,
-     "sd_within_player": 0.37097317841680705
+     "mean": 0.14136363636363636,
+     "sd_within_player": 0.3529532377212035
     }
    }
   },
@@ -327,16 +371,16 @@
       "n_draws": 200,
       "n_groups": 2,
       "n_cells_checked": 10800,
-      "share_simplex_closure_maxdev": 1.8766149878501892e-07,
+      "share_simplex_closure_maxdev": 1.6961712390184402e-07,
       "share_non_negative_violations": 0,
-      "player_opportunity_within_team_maxreldev": 1.8766149886083411e-07,
+      "player_opportunity_within_team_maxreldev": 1.6961712385930084e-07,
       "receptions_within_targets_violations": 0,
       "receiving_td_within_receptions_violations": 0,
       "zero_receptions_implies_zero_yards_violations": 0,
-      "n_negative_yard_cells": 116,
+      "n_negative_yard_cells": 110,
       "min_receiving_yards": -13.0,
       "allocation_only_when_available_violations": 0,
-      "other_mass_mean": 0.003920665276236832,
+      "other_mass_mean": 0.006208777085412294,
       "identities_checked": [
        "share_simplex_closure",
        "share_non_negative",
@@ -353,7 +397,7 @@
        {
         "identity": "qb_rush_contained_in_other",
         "cells": 303,
-        "worst": 31.362664491660404
+        "worst": 35.97308095525754
        }
       ],
       "n_players": 14,
@@ -366,23 +410,23 @@
        "rushing_td_within_carries",
        "qb_rush_contained_in_other"
       ],
-      "team_carry_closure_maxdev": 1.30385160446167e-07,
+      "team_carry_closure_maxdev": 1.6344711184501648e-07,
       "zero_carries_implies_zero_rushing_yards": "NOT_APPLICABLE",
       "rushing_yards_reason": "RUSHING_CONVERSION_CONTROL_UNDEFINED -- no rushing-yard draw exists to check. Recorded as not applicable, never as satisfied.",
       "rushing_td_within_carries_violations": 0,
       "n_td_without_a_carry": 0,
       "qb_rush_contained_in_other_violations": 303,
-      "qb_rush_mean": 5.976693779053529,
-      "other_carry_mass_mean": 2.7295900056029776,
-      "qb_share_of_other_mean": 2.950444170044523,
-      "cells_with_negligible_other_mass": 21,
-      "qb_rush_over_other_mean_excess": 3.722858176609851
+      "qb_rush_mean": 6.232406701202899,
+      "other_carry_mass_mean": 2.5833455816918103,
+      "qb_share_of_other_mean": 3.178538332981296,
+      "cells_with_negligible_other_mass": 23,
+      "qb_rush_over_other_mean_excess": 4.1226709899206035
      },
      "qb_team_volume": {
       "violations": [
        {
         "identity": "qb_rush_within_team_carries",
-        "cells": 4,
+        "cells": 5,
         "of": 400
        }
       ],
@@ -396,14 +440,36 @@
       ],
       "qb_dropback_within_team_volume_cells": 400,
       "qb_dropback_within_team_volume_violations": 0,
-      "qb_dropback_within_team_volume_ratio": 0.9744,
+      "qb_dropback_within_team_volume_ratio": 0.9757,
       "qb_rush_within_team_carries_cells": 400,
-      "qb_rush_within_team_carries_violations": 4,
-      "qb_rush_within_team_carries_ratio": 0.2187
+      "qb_rush_within_team_carries_violations": 5,
+      "qb_rush_within_team_carries_ratio": 0.2325
      }
     },
     "chain": "PASS[NONQB_CHAIN_EXECUTED]",
-    "qb_team_volume": "FAIL[QB_TEAM_VOLUME_INCOHERENT]"
+    "qb_team_volume": "FAIL[QB_TEAM_VOLUME_INCOHERENT]",
+    "cross_layer": {
+     "BAL": {
+      "state": "FAIL[PASSING_TD_RECEIVING_TD_MISMATCH]",
+      "n_draws": 200,
+      "violating_draws": 200,
+      "worst_abs_residual": 575.9166944510597,
+      "td_violating_draws": 188,
+      "mean_abs_yard_residual": 126.44539942345631,
+      "mean_team_passing_yards": 242.91326193943507,
+      "corr_passing_receiving": -0.023825841512409244
+     },
+     "IND": {
+      "state": "FAIL[PASSING_TD_RECEIVING_TD_MISMATCH]",
+      "n_draws": 200,
+      "violating_draws": 200,
+      "worst_abs_residual": 620.7887365472506,
+      "td_violating_draws": 184,
+      "mean_abs_yard_residual": 104.70210103307767,
+      "mean_team_passing_yards": 201.7014961315685,
+      "corr_passing_receiving": 0.09040520678141806
+     }
+    }
    },
    "engine_version": "nfl-football-engine-v1-r4",
    "n_players": 54,
@@ -427,28 +493,28 @@
    "test_only": true,
    "summary": {
     "targets": {
-     "mean": 0.974460460623535,
-     "sd_within_player": 0.7645397338948371
+     "mean": 0.9800300344302433,
+     "sd_within_player": 0.7627398162516417
     },
     "carries": {
-     "mean": 3.514229691773038,
-     "sd_within_player": 2.1275425216922526
+     "mean": 3.460598355679709,
+     "sd_within_player": 2.055835504942812
     },
     "receptions": {
-     "mean": 0.637962962962963,
-     "sd_within_player": 0.6910157769746113
+     "mean": 0.6446296296296297,
+     "sd_within_player": 0.6884536180687618
     },
     "receiving_yards": {
-     "mean": 7.257962962962963,
-     "sd_within_player": 10.500077410974551
+     "mean": 7.337962962962963,
+     "sd_within_player": 10.557252808350563
     },
     "receiving_td": {
-     "mean": 0.04657407407407407,
-     "sd_within_player": 0.19583783113385841
+     "mean": 0.04527777777777778,
+     "sd_within_player": 0.19274332057995322
     },
     "rush_td": {
-     "mean": 0.10857142857142857,
-     "sd_within_player": 0.3043735822858781
+     "mean": 0.10535714285714286,
+     "sd_within_player": 0.3059483621817078
     }
    }
   },
@@ -478,16 +544,16 @@
       "n_draws": 200,
       "n_groups": 2,
       "n_cells_checked": 9600,
-      "share_simplex_closure_maxdev": 1.648440957069397e-07,
+      "share_simplex_closure_maxdev": 1.9068102119490504e-07,
       "share_non_negative_violations": 0,
-      "player_opportunity_within_team_maxreldev": 1.6484409573030746e-07,
+      "player_opportunity_within_team_maxreldev": 1.906810212246362e-07,
       "receptions_within_targets_violations": 0,
       "receiving_td_within_receptions_violations": 0,
       "zero_receptions_implies_zero_yards_violations": 0,
-      "n_negative_yard_cells": 118,
+      "n_negative_yard_cells": 128,
       "min_receiving_yards": -7.0,
       "allocation_only_when_available_violations": 0,
-      "other_mass_mean": 0.004889259558403865,
+      "other_mass_mean": 0.005220373312477022,
       "identities_checked": [
        "share_simplex_closure",
        "share_non_negative",
@@ -503,8 +569,8 @@
       "violations": [
        {
         "identity": "qb_rush_contained_in_other",
-        "cells": 192,
-        "worst": 10.586813529790199
+        "cells": 204,
+        "worst": 12.656391381047664
        }
       ],
       "n_players": 12,
@@ -517,17 +583,17 @@
        "rushing_td_within_carries",
        "qb_rush_contained_in_other"
       ],
-      "team_carry_closure_maxdev": 1.4156103134155273e-07,
+      "team_carry_closure_maxdev": 1.341104507446289e-07,
       "zero_carries_implies_zero_rushing_yards": "NOT_APPLICABLE",
       "rushing_yards_reason": "RUSHING_CONVERSION_CONTROL_UNDEFINED -- no rushing-yard draw exists to check. Recorded as not applicable, never as satisfied.",
       "rushing_td_within_carries_violations": 0,
       "n_td_without_a_carry": 0,
-      "qb_rush_contained_in_other_violations": 192,
-      "qb_rush_mean": 3.5201744617137867,
-      "other_carry_mass_mean": 3.481389770756159,
-      "qb_share_of_other_mean": 1.3317664060615864,
-      "cells_with_negligible_other_mass": 16,
-      "qb_rush_over_other_mean_excess": 1.2714024304623885
+      "qb_rush_contained_in_other_violations": 204,
+      "qb_rush_mean": 3.4724810700458915,
+      "other_carry_mass_mean": 3.264559731887307,
+      "qb_share_of_other_mean": 1.5143890138433795,
+      "cells_with_negligible_other_mass": 20,
+      "qb_rush_over_other_mean_excess": 1.384197920028535
      },
      "qb_team_volume": {
       "n_teams": 2,
@@ -539,14 +605,36 @@
       ],
       "qb_dropback_within_team_volume_cells": 400,
       "qb_dropback_within_team_volume_violations": 0,
-      "qb_dropback_within_team_volume_ratio": 0.983,
+      "qb_dropback_within_team_volume_ratio": 0.9825,
       "qb_rush_within_team_carries_cells": 400,
       "qb_rush_within_team_carries_violations": 0,
-      "qb_rush_within_team_carries_ratio": 0.122
+      "qb_rush_within_team_carries_ratio": 0.1232
      }
     },
     "chain": "PASS[NONQB_CHAIN_EXECUTED]",
-    "qb_team_volume": "PASS[QB_TEAM_VOLUME_COHERENT]"
+    "qb_team_volume": "PASS[QB_TEAM_VOLUME_COHERENT]",
+    "cross_layer": {
+     "BUF": {
+      "state": "FAIL[PASSING_TD_RECEIVING_TD_MISMATCH]",
+      "n_draws": 200,
+      "violating_draws": 200,
+      "worst_abs_residual": 538.2256684491978,
+      "td_violating_draws": 187,
+      "mean_abs_yard_residual": 100.65746433150674,
+      "mean_team_passing_yards": 241.08160880171087,
+      "corr_passing_receiving": 0.021267063466525127
+     },
+     "HOU": {
+      "state": "FAIL[PASSING_TD_RECEIVING_TD_MISMATCH]",
+      "n_draws": 200,
+      "violating_draws": 200,
+      "worst_abs_residual": 333.7156072106262,
+      "td_violating_draws": 187,
+      "mean_abs_yard_residual": 89.03638696147354,
+      "mean_team_passing_yards": 246.24995746242385,
+      "corr_passing_receiving": -0.00911444363454437
+     }
+    }
    },
    "engine_version": "nfl-football-engine-v1-r4",
    "n_players": 48,
@@ -570,28 +658,28 @@
    "test_only": true,
    "summary": {
     "targets": {
-     "mean": 1.1396561239171645,
-     "sd_within_player": 0.9097715408990928
+     "mean": 1.1842494790621303,
+     "sd_within_player": 0.9363742102310502
     },
     "carries": {
-     "mean": 4.230191760145855,
-     "sd_within_player": 2.640272056055371
+     "mean": 4.154037080630748,
+     "sd_within_player": 2.6853263019724314
     },
     "receptions": {
-     "mean": 0.7539583333333333,
-     "sd_within_player": 0.8010332181365943
+     "mean": 0.7907291666666667,
+     "sd_within_player": 0.8177422535519662
     },
     "receiving_yards": {
-     "mean": 8.663020833333333,
-     "sd_within_player": 12.051506955871872
+     "mean": 9.012604166666666,
+     "sd_within_player": 12.05878517815043
     },
     "receiving_td": {
-     "mean": 0.0534375,
-     "sd_within_player": 0.21608452542368325
+     "mean": 0.05604166666666666,
+     "sd_within_player": 0.22058378109835008
     },
     "rush_td": {
-     "mean": 0.13125,
-     "sd_within_player": 0.3422729357612791
+     "mean": 0.1325,
+     "sd_within_player": 0.34967257406717783
     }
    }
   },
@@ -621,16 +709,16 @@
       "n_draws": 200,
       "n_groups": 2,
       "n_cells_checked": 10000,
-      "share_simplex_closure_maxdev": 1.3023964129388332e-07,
+      "share_simplex_closure_maxdev": 1.387670636177063e-07,
       "share_non_negative_violations": 0,
-      "player_opportunity_within_team_maxreldev": 1.3023964116681586e-07,
+      "player_opportunity_within_team_maxreldev": 1.3876706360573854e-07,
       "receptions_within_targets_violations": 0,
       "receiving_td_within_receptions_violations": 0,
       "zero_receptions_implies_zero_yards_violations": 0,
-      "n_negative_yard_cells": 108,
+      "n_negative_yard_cells": 105,
       "min_receiving_yards": -11.0,
       "allocation_only_when_available_violations": 0,
-      "other_mass_mean": 0.006386402843054384,
+      "other_mass_mean": 0.004053518590517342,
       "identities_checked": [
        "share_simplex_closure",
        "share_non_negative",
@@ -646,8 +734,8 @@
       "violations": [
        {
         "identity": "qb_rush_contained_in_other",
-        "cells": 168,
-        "worst": 7.93390927133607
+        "cells": 175,
+        "worst": 11.542658845870266
        }
       ],
       "n_players": 13,
@@ -660,17 +748,17 @@
        "rushing_td_within_carries",
        "qb_rush_contained_in_other"
       ],
-      "team_carry_closure_maxdev": 1.30385160446167e-07,
+      "team_carry_closure_maxdev": 1.3224780559539795e-07,
       "zero_carries_implies_zero_rushing_yards": "NOT_APPLICABLE",
       "rushing_yards_reason": "RUSHING_CONVERSION_CONTROL_UNDEFINED -- no rushing-yard draw exists to check. Recorded as not applicable, never as satisfied.",
       "rushing_td_within_carries_violations": 0,
       "n_td_without_a_carry": 0,
-      "qb_rush_contained_in_other_violations": 168,
-      "qb_rush_mean": 2.9529998843892207,
-      "other_carry_mass_mean": 3.674880598615118,
-      "qb_share_of_other_mean": 1.1056620518381284,
-      "cells_with_negligible_other_mass": 13,
-      "qb_rush_over_other_mean_excess": 0.8414778003135978
+      "qb_rush_contained_in_other_violations": 175,
+      "qb_rush_mean": 3.0186745404503057,
+      "other_carry_mass_mean": 3.5119897817794157,
+      "qb_share_of_other_mean": 1.210497552058026,
+      "cells_with_negligible_other_mass": 23,
+      "qb_rush_over_other_mean_excess": 0.9627964231877891
      },
      "qb_team_volume": {
       "n_teams": 2,
@@ -682,14 +770,36 @@
       ],
       "qb_dropback_within_team_volume_cells": 400,
       "qb_dropback_within_team_volume_violations": 0,
-      "qb_dropback_within_team_volume_ratio": 0.9686,
+      "qb_dropback_within_team_volume_ratio": 0.9695,
       "qb_rush_within_team_carries_cells": 400,
       "qb_rush_within_team_carries_violations": 0,
-      "qb_rush_within_team_carries_ratio": 0.1077
+      "qb_rush_within_team_carries_ratio": 0.1094
      }
     },
     "chain": "PASS[NONQB_CHAIN_EXECUTED]",
-    "qb_team_volume": "PASS[QB_TEAM_VOLUME_COHERENT]"
+    "qb_team_volume": "PASS[QB_TEAM_VOLUME_COHERENT]",
+    "cross_layer": {
+     "CHI": {
+      "state": "FAIL[PASSING_TD_RECEIVING_TD_MISMATCH]",
+      "n_draws": 200,
+      "violating_draws": 200,
+      "worst_abs_residual": 344.5259335038363,
+      "td_violating_draws": 190,
+      "mean_abs_yard_residual": 83.0571068449485,
+      "mean_team_passing_yards": 217.9148620852455,
+      "corr_passing_receiving": 0.06971830199477774
+     },
+     "CAR": {
+      "state": "FAIL[PASSING_TD_RECEIVING_TD_MISMATCH]",
+      "n_draws": 200,
+      "violating_draws": 200,
+      "worst_abs_residual": 400.7574331550802,
+      "td_violating_draws": 175,
+      "mean_abs_yard_residual": 82.79422264273508,
+      "mean_team_passing_yards": 174.80095744565543,
+      "corr_passing_receiving": 0.06063685632095646
+     }
+    }
    },
    "engine_version": "nfl-football-engine-v1-r4",
    "n_players": 50,
@@ -713,28 +823,28 @@
    "test_only": true,
    "summary": {
     "targets": {
-     "mean": 1.1283459393884627,
-     "sd_within_player": 0.9008640976219812
+     "mean": 1.1295996425828168,
+     "sd_within_player": 0.8959287428474063
     },
     "carries": {
-     "mean": 3.6520049875309235,
-     "sd_within_player": 2.6589336105931043
+     "mean": 3.705582683684829,
+     "sd_within_player": 2.655423567998533
     },
     "receptions": {
-     "mean": 0.7471,
-     "sd_within_player": 0.8005272242422735
+     "mean": 0.7443,
+     "sd_within_player": 0.7899079079922295
     },
     "receiving_yards": {
-     "mean": 8.4045,
-     "sd_within_player": 11.4137520657219
+     "mean": 8.3768,
+     "sd_within_player": 11.441991961316681
     },
     "receiving_td": {
-     "mean": 0.0563,
-     "sd_within_player": 0.2149241582669335
+     "mean": 0.0551,
+     "sd_within_player": 0.20850379230885424
     },
     "rush_td": {
-     "mean": 0.11461538461538462,
-     "sd_within_player": 0.31470620246546815
+     "mean": 0.11423076923076923,
+     "sd_within_player": 0.3181900766530833
     }
    }
   },
@@ -764,16 +874,16 @@
       "n_draws": 200,
       "n_groups": 2,
       "n_cells_checked": 9400,
-      "share_simplex_closure_maxdev": 1.955777406692505e-07,
+      "share_simplex_closure_maxdev": 2.0116567611694336e-07,
       "share_non_negative_violations": 0,
-      "player_opportunity_within_team_maxreldev": 1.9557774060777975e-07,
+      "player_opportunity_within_team_maxreldev": 2.0116567615568066e-07,
       "receptions_within_targets_violations": 0,
       "receiving_td_within_receptions_violations": 0,
       "zero_receptions_implies_zero_yards_violations": 0,
       "n_negative_yard_cells": 101,
-      "min_receiving_yards": -10.0,
+      "min_receiving_yards": -11.0,
       "allocation_only_when_available_violations": 0,
-      "other_mass_mean": 0.005762878326931968,
+      "other_mass_mean": 0.004671178453136236,
       "identities_checked": [
        "share_simplex_closure",
        "share_non_negative",
@@ -789,8 +899,8 @@
       "violations": [
        {
         "identity": "qb_rush_contained_in_other",
-        "cells": 163,
-        "worst": 10.782886948567745
+        "cells": 160,
+        "worst": 8.89026740626291
        }
       ],
       "n_players": 10,
@@ -808,12 +918,12 @@
       "rushing_yards_reason": "RUSHING_CONVERSION_CONTROL_UNDEFINED -- no rushing-yard draw exists to check. Recorded as not applicable, never as satisfied.",
       "rushing_td_within_carries_violations": 0,
       "n_td_without_a_carry": 0,
-      "qb_rush_contained_in_other_violations": 163,
-      "qb_rush_mean": 3.3535552124770915,
-      "other_carry_mass_mean": 4.670127909357342,
-      "qb_share_of_other_mean": 1.0981779710302009,
-      "cells_with_negligible_other_mass": 16,
-      "qb_rush_over_other_mean_excess": 0.8927225115014159
+      "qb_rush_contained_in_other_violations": 160,
+      "qb_rush_mean": 3.526834098358182,
+      "other_carry_mass_mean": 4.646233092201965,
+      "qb_share_of_other_mean": 1.100493386498255,
+      "cells_with_negligible_other_mass": 13,
+      "qb_rush_over_other_mean_excess": 0.8699625737758835
      },
      "qb_team_volume": {
       "n_teams": 2,
@@ -825,14 +935,36 @@
       ],
       "qb_dropback_within_team_volume_cells": 400,
       "qb_dropback_within_team_volume_violations": 0,
-      "qb_dropback_within_team_volume_ratio": 0.9699,
+      "qb_dropback_within_team_volume_ratio": 0.9711,
       "qb_rush_within_team_carries_cells": 400,
       "qb_rush_within_team_carries_violations": 0,
-      "qb_rush_within_team_carries_ratio": 0.1218
+      "qb_rush_within_team_carries_ratio": 0.1276
      }
     },
     "chain": "PASS[NONQB_CHAIN_EXECUTED]",
-    "qb_team_volume": "PASS[QB_TEAM_VOLUME_COHERENT]"
+    "qb_team_volume": "PASS[QB_TEAM_VOLUME_COHERENT]",
+    "cross_layer": {
+     "CLE": {
+      "state": "FAIL[PASSING_TD_RECEIVING_TD_MISMATCH]",
+      "n_draws": 200,
+      "violating_draws": 200,
+      "worst_abs_residual": 371.66177089477156,
+      "td_violating_draws": 189,
+      "mean_abs_yard_residual": 89.40742953614489,
+      "mean_team_passing_yards": 227.22105770054827,
+      "corr_passing_receiving": 0.019160029755037104
+     },
+     "JAX": {
+      "state": "FAIL[PASSING_TD_RECEIVING_TD_MISMATCH]",
+      "n_draws": 200,
+      "violating_draws": 200,
+      "worst_abs_residual": 358.1214172566639,
+      "td_violating_draws": 191,
+      "mean_abs_yard_residual": 84.73877254475427,
+      "mean_team_passing_yards": 229.75472168307718,
+      "corr_passing_receiving": 0.18220314142118588
+     }
+    }
    },
    "engine_version": "nfl-football-engine-v1-r4",
    "n_players": 47,
@@ -856,28 +988,28 @@
    "test_only": true,
    "summary": {
     "targets": {
-     "mean": 1.2219564435660757,
-     "sd_within_player": 0.9330822876935903
+     "mean": 1.2078437965064548,
+     "sd_within_player": 0.8868956141834992
     },
     "carries": {
-     "mean": 4.570937091840002,
-     "sd_within_player": 3.566460015951543
+     "mean": 4.596887679361171,
+     "sd_within_player": 3.572951847635435
     },
     "receptions": {
-     "mean": 0.799468085106383,
-     "sd_within_player": 0.8134267932082716
+     "mean": 0.7846808510638298,
+     "sd_within_player": 0.786477128226814
     },
     "receiving_yards": {
-     "mean": 8.903829787234043,
-     "sd_within_player": 11.771740093070138
+     "mean": 8.852021276595744,
+     "sd_within_player": 11.7143685116193
     },
     "receiving_td": {
-     "mean": 0.056914893617021275,
-     "sd_within_player": 0.21916776018097464
+     "mean": 0.05702127659574468,
+     "sd_within_player": 0.21742015071466883
     },
     "rush_td": {
-     "mean": 0.1435,
-     "sd_within_player": 0.3795104498262449
+     "mean": 0.143,
+     "sd_within_player": 0.38534320052404514
     }
    }
   },
@@ -907,16 +1039,16 @@
       "n_draws": 200,
       "n_groups": 2,
       "n_cells_checked": 10200,
-      "share_simplex_closure_maxdev": 1.4156103134155273e-07,
+      "share_simplex_closure_maxdev": 1.5366822481155396e-07,
       "share_non_negative_violations": 0,
-      "player_opportunity_within_team_maxreldev": 1.4156103130346412e-07,
+      "player_opportunity_within_team_maxreldev": 1.536682247922703e-07,
       "receptions_within_targets_violations": 0,
       "receiving_td_within_receptions_violations": 0,
       "zero_receptions_implies_zero_yards_violations": 0,
-      "n_negative_yard_cells": 132,
+      "n_negative_yard_cells": 127,
       "min_receiving_yards": -9.0,
       "allocation_only_when_available_violations": 0,
-      "other_mass_mean": 0.005896075177006423,
+      "other_mass_mean": 0.0036368272290565073,
       "identities_checked": [
        "share_simplex_closure",
        "share_non_negative",
@@ -932,8 +1064,8 @@
       "violations": [
        {
         "identity": "qb_rush_contained_in_other",
-        "cells": 253,
-        "worst": 22.085765913836802
+        "cells": 256,
+        "worst": 22.124344188556584
        }
       ],
       "n_players": 15,
@@ -946,27 +1078,19 @@
        "rushing_td_within_carries",
        "qb_rush_contained_in_other"
       ],
-      "team_carry_closure_maxdev": 1.4156103134155273e-07,
+      "team_carry_closure_maxdev": 1.8632272258400917e-07,
       "zero_carries_implies_zero_rushing_yards": "NOT_APPLICABLE",
       "rushing_yards_reason": "RUSHING_CONVERSION_CONTROL_UNDEFINED -- no rushing-yard draw exists to check. Recorded as not applicable, never as satisfied.",
       "rushing_td_within_carries_violations": 0,
       "n_td_without_a_carry": 0,
-      "qb_rush_contained_in_other_violations": 253,
-      "qb_rush_mean": 4.7228306358851695,
-      "other_carry_mass_mean": 3.368014734490074,
-      "qb_share_of_other_mean": 2.1369523038210225,
+      "qb_rush_contained_in_other_violations": 256,
+      "qb_rush_mean": 4.890278124891431,
+      "other_carry_mass_mean": 3.3773813918533597,
+      "qb_share_of_other_mean": 2.107345951107163,
       "cells_with_negligible_other_mass": 17,
-      "qb_rush_over_other_mean_excess": 2.3930165492308744
+      "qb_rush_over_other_mean_excess": 2.495803674717521
      },
      "qb_team_volume": {
-      "violations": [
-       {
-        "identity": "qb_rush_within_team_carries",
-        "cells": 3,
-        "of": 400
-       }
-      ],
-      "research_gap": "QB_PRIMARY_PASSER_SELECTION: no model selects which rostered quarterback is the team's primary passer. Appearance is not the same question -- a backup can appear without taking a snap at quarterback -- so the P3 appearance mechanism does not answer it. Until it is answered, a prospective slate forecasts 2.62 starters per team.",
       "n_teams": 2,
       "n_qb_rows": 6,
       "qb_rows_per_team": 3.0,
@@ -978,12 +1102,34 @@
       "qb_dropback_within_team_volume_violations": 0,
       "qb_dropback_within_team_volume_ratio": 1.0,
       "qb_rush_within_team_carries_cells": 400,
-      "qb_rush_within_team_carries_violations": 3,
-      "qb_rush_within_team_carries_ratio": 0.1622
+      "qb_rush_within_team_carries_violations": 0,
+      "qb_rush_within_team_carries_ratio": 0.1679
      }
     },
     "chain": "PASS[NONQB_CHAIN_EXECUTED]",
-    "qb_team_volume": "FAIL[QB_TEAM_VOLUME_INCOHERENT]"
+    "qb_team_volume": "PASS[QB_TEAM_VOLUME_COHERENT]",
+    "cross_layer": {
+     "DAL": {
+      "state": "FAIL[PASSING_TD_RECEIVING_TD_MISMATCH]",
+      "n_draws": 200,
+      "violating_draws": 200,
+      "worst_abs_residual": 990.9884416924665,
+      "td_violating_draws": 187,
+      "mean_abs_yard_residual": 105.43731055961912,
+      "mean_team_passing_yards": 276.46073546316353,
+      "corr_passing_receiving": 0.07550020191193674
+     },
+     "NYG": {
+      "state": "FAIL[PASSING_TD_RECEIVING_TD_MISMATCH]",
+      "n_draws": 200,
+      "violating_draws": 200,
+      "worst_abs_residual": 683.7049230874644,
+      "td_violating_draws": 182,
+      "mean_abs_yard_residual": 100.26442253733258,
+      "mean_team_passing_yards": 204.82545162892205,
+      "corr_passing_receiving": -0.04378860020885937
+     }
+    }
    },
    "engine_version": "nfl-football-engine-v1-r4",
    "n_players": 51,
@@ -1007,28 +1153,28 @@
    "test_only": true,
    "summary": {
     "targets": {
-     "mean": 1.2006949592665632,
-     "sd_within_player": 0.930678690755271
+     "mean": 1.1830832870650703,
+     "sd_within_player": 0.9073957660876186
     },
     "carries": {
-     "mean": 3.433040004755186,
-     "sd_within_player": 2.582244827391498
+     "mean": 3.4339817276878906,
+     "sd_within_player": 2.533780116607277
     },
     "receptions": {
-     "mean": 0.7984313725490196,
-     "sd_within_player": 0.8128226812425593
+     "mean": 0.7874509803921569,
+     "sd_within_player": 0.8053401402195407
     },
     "receiving_yards": {
-     "mean": 8.667058823529413,
-     "sd_within_player": 11.361598581134658
+     "mean": 8.516764705882354,
+     "sd_within_player": 11.353684842065428
     },
     "receiving_td": {
-     "mean": 0.053431372549019605,
-     "sd_within_player": 0.20713537814456542
+     "mean": 0.055392156862745096,
+     "sd_within_player": 0.21459079358967909
     },
     "rush_td": {
-     "mean": 0.115,
-     "sd_within_player": 0.33591410913033487
+     "mean": 0.117,
+     "sd_within_player": 0.32764303216894003
     }
    }
   },
@@ -1058,16 +1204,16 @@
       "n_draws": 200,
       "n_groups": 2,
       "n_cells_checked": 10400,
-      "share_simplex_closure_maxdev": 1.825392246246338e-07,
+      "share_simplex_closure_maxdev": 1.7369166016578674e-07,
       "share_non_negative_violations": 0,
-      "player_opportunity_within_team_maxreldev": 1.825392245634781e-07,
+      "player_opportunity_within_team_maxreldev": 1.7369165995987632e-07,
       "receptions_within_targets_violations": 0,
       "receiving_td_within_receptions_violations": 0,
       "zero_receptions_implies_zero_yards_violations": 0,
-      "n_negative_yard_cells": 127,
-      "min_receiving_yards": -13.0,
+      "n_negative_yard_cells": 135,
+      "min_receiving_yards": -8.0,
       "allocation_only_when_available_violations": 0,
-      "other_mass_mean": 0.004658375573344528,
+      "other_mass_mean": 0.005261399139417335,
       "identities_checked": [
        "share_simplex_closure",
        "share_non_negative",
@@ -1083,8 +1229,8 @@
       "violations": [
        {
         "identity": "qb_rush_contained_in_other",
-        "cells": 242,
-        "worst": 10.207740541001268
+        "cells": 262,
+        "worst": 11.640542625691142
        }
       ],
       "n_players": 13,
@@ -1097,17 +1243,17 @@
        "rushing_td_within_carries",
        "qb_rush_contained_in_other"
       ],
-      "team_carry_closure_maxdev": 1.1920928955078125e-07,
+      "team_carry_closure_maxdev": 1.2293457984924316e-07,
       "zero_carries_implies_zero_rushing_yards": "NOT_APPLICABLE",
       "rushing_yards_reason": "RUSHING_CONVERSION_CONTROL_UNDEFINED -- no rushing-yard draw exists to check. Recorded as not applicable, never as satisfied.",
       "rushing_td_within_carries_violations": 0,
       "n_td_without_a_carry": 0,
-      "qb_rush_contained_in_other_violations": 242,
-      "qb_rush_mean": 3.8914709790841657,
-      "other_carry_mass_mean": 3.078087243748405,
-      "qb_share_of_other_mean": 1.7772399318038663,
-      "cells_with_negligible_other_mass": 19,
-      "qb_rush_over_other_mean_excess": 1.5954392956492662
+      "qb_rush_contained_in_other_violations": 262,
+      "qb_rush_mean": 3.872785233559659,
+      "other_carry_mass_mean": 2.7480860842037464,
+      "qb_share_of_other_mean": 1.8668635141496117,
+      "cells_with_negligible_other_mass": 23,
+      "qb_rush_over_other_mean_excess": 1.7280050495800032
      },
      "qb_team_volume": {
       "n_teams": 2,
@@ -1119,14 +1265,36 @@
       ],
       "qb_dropback_within_team_volume_cells": 400,
       "qb_dropback_within_team_volume_violations": 0,
-      "qb_dropback_within_team_volume_ratio": 0.9864,
+      "qb_dropback_within_team_volume_ratio": 0.9865,
       "qb_rush_within_team_carries_cells": 400,
       "qb_rush_within_team_carries_violations": 0,
-      "qb_rush_within_team_carries_ratio": 0.1451
+      "qb_rush_within_team_carries_ratio": 0.149
      }
     },
     "chain": "PASS[NONQB_CHAIN_EXECUTED]",
-    "qb_team_volume": "PASS[QB_TEAM_VOLUME_COHERENT]"
+    "qb_team_volume": "PASS[QB_TEAM_VOLUME_COHERENT]",
+    "cross_layer": {
+     "DEN": {
+      "state": "FAIL[PASSING_TD_RECEIVING_TD_MISMATCH]",
+      "n_draws": 200,
+      "violating_draws": 200,
+      "worst_abs_residual": 290.92519934971233,
+      "td_violating_draws": 197,
+      "mean_abs_yard_residual": 85.81693508354105,
+      "mean_team_passing_yards": 220.20883611817408,
+      "corr_passing_receiving": 0.020550404992900683
+     },
+     "KC": {
+      "state": "FAIL[PASSING_TD_RECEIVING_TD_MISMATCH]",
+      "n_draws": 200,
+      "violating_draws": 200,
+      "worst_abs_residual": 390.9874495514068,
+      "td_violating_draws": 189,
+      "mean_abs_yard_residual": 99.33505174456262,
+      "mean_team_passing_yards": 223.41733322612112,
+      "corr_passing_receiving": -0.026425097474507445
+     }
+    }
    },
    "engine_version": "nfl-football-engine-v1-r4",
    "n_players": 52,
@@ -1150,28 +1318,28 @@
    "test_only": true,
    "summary": {
     "targets": {
-     "mean": 1.2090458769145769,
-     "sd_within_player": 0.898489258315514
+     "mean": 1.1902942967274042,
+     "sd_within_player": 0.893636285992739
     },
     "carries": {
-     "mean": 3.6512584491331683,
-     "sd_within_player": 2.353655486354258
+     "mean": 3.575119742241398,
+     "sd_within_player": 2.3990146241753334
     },
     "receptions": {
-     "mean": 0.8044230769230769,
-     "sd_within_player": 0.7993478409272275
+     "mean": 0.7859615384615385,
+     "sd_within_player": 0.7869938942877212
     },
     "receiving_yards": {
-     "mean": 8.773365384615385,
-     "sd_within_player": 11.816158643305725
+     "mean": 8.565192307692307,
+     "sd_within_player": 11.4869175353613
     },
     "receiving_td": {
-     "mean": 0.057692307692307696,
-     "sd_within_player": 0.2235728689300726
+     "mean": 0.05721153846153846,
+     "sd_within_player": 0.22287554658513015
     },
     "rush_td": {
-     "mean": 0.11923076923076924,
-     "sd_within_player": 0.3293176945557955
+     "mean": 0.11961538461538461,
+     "sd_within_player": 0.34002647183725215
     }
    }
   },
@@ -1201,16 +1369,16 @@
       "n_draws": 200,
       "n_groups": 2,
       "n_cells_checked": 10800,
-      "share_simplex_closure_maxdev": 1.9581057131290436e-07,
+      "share_simplex_closure_maxdev": 1.6391277313232422e-07,
       "share_non_negative_violations": 0,
-      "player_opportunity_within_team_maxreldev": 1.9581057136167167e-07,
+      "player_opportunity_within_team_maxreldev": 1.6391277310564962e-07,
       "receptions_within_targets_violations": 0,
       "receiving_td_within_receptions_violations": 0,
       "zero_receptions_implies_zero_yards_violations": 0,
-      "n_negative_yard_cells": 105,
-      "min_receiving_yards": -8.0,
+      "n_negative_yard_cells": 111,
+      "min_receiving_yards": -9.0,
       "allocation_only_when_available_violations": 0,
-      "other_mass_mean": 0.0037259201565757395,
+      "other_mass_mean": 0.006119087981060148,
       "identities_checked": [
        "share_simplex_closure",
        "share_non_negative",
@@ -1227,7 +1395,7 @@
        {
         "identity": "qb_rush_contained_in_other",
         "cells": 199,
-        "worst": 11.387083275751829
+        "worst": 14.8111700613795
        }
       ],
       "n_players": 14,
@@ -1240,17 +1408,17 @@
        "rushing_td_within_carries",
        "qb_rush_contained_in_other"
       ],
-      "team_carry_closure_maxdev": 1.4901161193847656e-07,
+      "team_carry_closure_maxdev": 1.2153759598731995e-07,
       "zero_carries_implies_zero_rushing_yards": "NOT_APPLICABLE",
       "rushing_yards_reason": "RUSHING_CONVERSION_CONTROL_UNDEFINED -- no rushing-yard draw exists to check. Recorded as not applicable, never as satisfied.",
       "rushing_td_within_carries_violations": 0,
       "n_td_without_a_carry": 0,
       "qb_rush_contained_in_other_violations": 199,
-      "qb_rush_mean": 3.4066788685657365,
-      "other_carry_mass_mean": 3.477051769117285,
-      "qb_share_of_other_mean": 1.4417976315111076,
-      "cells_with_negligible_other_mass": 18,
-      "qb_rush_over_other_mean_excess": 1.3419101279948007
+      "qb_rush_mean": 3.4070350753547234,
+      "other_carry_mass_mean": 3.422345504966281,
+      "qb_share_of_other_mean": 1.3487748134267286,
+      "cells_with_negligible_other_mass": 25,
+      "qb_rush_over_other_mean_excess": 1.3413558975661817
      },
      "qb_team_volume": {
       "n_teams": 2,
@@ -1262,14 +1430,36 @@
       ],
       "qb_dropback_within_team_volume_cells": 400,
       "qb_dropback_within_team_volume_violations": 0,
-      "qb_dropback_within_team_volume_ratio": 0.9989,
+      "qb_dropback_within_team_volume_ratio": 0.9983,
       "qb_rush_within_team_carries_cells": 400,
       "qb_rush_within_team_carries_violations": 0,
-      "qb_rush_within_team_carries_ratio": 0.1289
+      "qb_rush_within_team_carries_ratio": 0.1284
      }
     },
     "chain": "PASS[NONQB_CHAIN_EXECUTED]",
-    "qb_team_volume": "PASS[QB_TEAM_VOLUME_COHERENT]"
+    "qb_team_volume": "PASS[QB_TEAM_VOLUME_COHERENT]",
+    "cross_layer": {
+     "GB": {
+      "state": "FAIL[PASSING_TD_RECEIVING_TD_MISMATCH]",
+      "n_draws": 200,
+      "violating_draws": 200,
+      "worst_abs_residual": 409.40033519710425,
+      "td_violating_draws": 180,
+      "mean_abs_yard_residual": 94.96717670004105,
+      "mean_team_passing_yards": 203.27373682231627,
+      "corr_passing_receiving": 0.10969137924031729
+     },
+     "MIN": {
+      "state": "FAIL[PASSING_TD_RECEIVING_TD_MISMATCH]",
+      "n_draws": 200,
+      "violating_draws": 200,
+      "worst_abs_residual": 353.8925077399381,
+      "td_violating_draws": 191,
+      "mean_abs_yard_residual": 92.38796292593725,
+      "mean_team_passing_yards": 221.6898599938964,
+      "corr_passing_receiving": 0.05392105563050342
+     }
+    }
    },
    "engine_version": "nfl-football-engine-v1-r4",
    "n_players": 54,
@@ -1293,28 +1483,28 @@
    "test_only": true,
    "summary": {
     "targets": {
-     "mean": 0.8937584407375572,
-     "sd_within_player": 0.6976077242741122
+     "mean": 0.848054149247958,
+     "sd_within_player": 0.6712426729310119
     },
     "carries": {
-     "mean": 3.2789877490800317,
-     "sd_within_player": 2.6978753875535615
+     "mean": 3.3023124869340044,
+     "sd_within_player": 2.6997903420295724
     },
     "receptions": {
-     "mean": 0.6017592592592592,
-     "sd_within_player": 0.6689681243007692
+     "mean": 0.5675,
+     "sd_within_player": 0.6478028817184637
     },
     "receiving_yards": {
-     "mean": 6.7636111111111115,
-     "sd_within_player": 9.923107895358838
+     "mean": 6.339166666666666,
+     "sd_within_player": 9.589850009118386
     },
     "receiving_td": {
-     "mean": 0.040462962962962964,
-     "sd_within_player": 0.1792407800961841
+     "mean": 0.038425925925925926,
+     "sd_within_player": 0.1736975723509989
     },
     "rush_td": {
-     "mean": 0.09392857142857143,
-     "sd_within_player": 0.28805745327538873
+     "mean": 0.09642857142857143,
+     "sd_within_player": 0.29569289811787114
     }
    }
   },
@@ -1344,16 +1534,16 @@
       "n_draws": 200,
       "n_groups": 2,
       "n_cells_checked": 11200,
-      "share_simplex_closure_maxdev": 1.8719583749771118e-07,
+      "share_simplex_closure_maxdev": 2.05356627702713e-07,
       "share_non_negative_violations": 0,
-      "player_opportunity_within_team_maxreldev": 1.871958374626152e-07,
+      "player_opportunity_within_team_maxreldev": 2.0535662778930598e-07,
       "receptions_within_targets_violations": 0,
       "receiving_td_within_receptions_violations": 0,
       "zero_receptions_implies_zero_yards_violations": 0,
       "n_negative_yard_cells": 144,
-      "min_receiving_yards": -12.0,
+      "min_receiving_yards": -11.0,
       "allocation_only_when_available_violations": 0,
-      "other_mass_mean": 0.005006425785832107,
+      "other_mass_mean": 0.003951229500817135,
       "identities_checked": [
        "share_simplex_closure",
        "share_non_negative",
@@ -1369,8 +1559,8 @@
       "violations": [
        {
         "identity": "qb_rush_contained_in_other",
-        "cells": 162,
-        "worst": 25.6059727272519
+        "cells": 177,
+        "worst": 48.63709158879382
        }
       ],
       "n_players": 16,
@@ -1383,23 +1573,23 @@
        "rushing_td_within_carries",
        "qb_rush_contained_in_other"
       ],
-      "team_carry_closure_maxdev": 1.380685716867447e-07,
+      "team_carry_closure_maxdev": 1.4156103134155273e-07,
       "zero_carries_implies_zero_rushing_yards": "NOT_APPLICABLE",
       "rushing_yards_reason": "RUSHING_CONVERSION_CONTROL_UNDEFINED -- no rushing-yard draw exists to check. Recorded as not applicable, never as satisfied.",
       "rushing_td_within_carries_violations": 0,
       "n_td_without_a_carry": 0,
-      "qb_rush_contained_in_other_violations": 162,
-      "qb_rush_mean": 3.5549720516546075,
-      "other_carry_mass_mean": 2.329957910767285,
-      "qb_share_of_other_mean": 2.0065090377834607,
+      "qb_rush_contained_in_other_violations": 177,
+      "qb_rush_mean": 3.64243836202873,
+      "other_carry_mass_mean": 2.255186973237568,
+      "qb_share_of_other_mean": 2.2301784220395655,
       "cells_with_negligible_other_mass": 26,
-      "qb_rush_over_other_mean_excess": 2.4219426139187616
+      "qb_rush_over_other_mean_excess": 2.468382267713099
      },
      "qb_team_volume": {
       "violations": [
        {
         "identity": "qb_rush_within_team_carries",
-        "cells": 5,
+        "cells": 4,
         "of": 400
        }
       ],
@@ -1413,14 +1603,36 @@
       ],
       "qb_dropback_within_team_volume_cells": 400,
       "qb_dropback_within_team_volume_violations": 0,
-      "qb_dropback_within_team_volume_ratio": 0.7981,
+      "qb_dropback_within_team_volume_ratio": 0.8026,
       "qb_rush_within_team_carries_cells": 400,
-      "qb_rush_within_team_carries_violations": 5,
-      "qb_rush_within_team_carries_ratio": 0.1336
+      "qb_rush_within_team_carries_violations": 4,
+      "qb_rush_within_team_carries_ratio": 0.1364
      }
     },
     "chain": "PASS[NONQB_CHAIN_EXECUTED]",
-    "qb_team_volume": "FAIL[QB_TEAM_VOLUME_INCOHERENT]"
+    "qb_team_volume": "FAIL[QB_TEAM_VOLUME_INCOHERENT]",
+    "cross_layer": {
+     "MIA": {
+      "state": "FAIL[PASSING_TD_RECEIVING_TD_MISMATCH]",
+      "n_draws": 200,
+      "violating_draws": 200,
+      "worst_abs_residual": 579.7894736842105,
+      "td_violating_draws": 158,
+      "mean_abs_yard_residual": 134.6397569783582,
+      "mean_team_passing_yards": 152.66654848905236,
+      "corr_passing_receiving": -0.017869959906602017
+     },
+     "LV": {
+      "state": "FAIL[PASSING_TD_RECEIVING_TD_MISMATCH]",
+      "n_draws": 200,
+      "violating_draws": 200,
+      "worst_abs_residual": 350.7142857142858,
+      "td_violating_draws": 178,
+      "mean_abs_yard_residual": 91.7975519977454,
+      "mean_team_passing_yards": 223.9648833738266,
+      "corr_passing_receiving": -0.0436474093577769
+     }
+    }
    },
    "engine_version": "nfl-football-engine-v1-r4",
    "n_players": 56,
@@ -1444,28 +1656,28 @@
    "test_only": true,
    "summary": {
     "targets": {
-     "mean": 0.918809888153689,
-     "sd_within_player": 0.7706778117422414
+     "mean": 0.9062847078712808,
+     "sd_within_player": 0.7327178351357085
     },
     "carries": {
-     "mean": 3.0340125033954632,
-     "sd_within_player": 1.9128871168004817
+     "mean": 3.05659113019565,
+     "sd_within_player": 1.869326837848838
     },
     "receptions": {
-     "mean": 0.6148214285714285,
-     "sd_within_player": 0.7047848867748396
+     "mean": 0.6080357142857142,
+     "sd_within_player": 0.6790261107308028
     },
     "receiving_yards": {
-     "mean": 6.283660714285714,
-     "sd_within_player": 9.625416368026348
+     "mean": 6.230535714285714,
+     "sd_within_player": 9.461786802632087
     },
     "receiving_td": {
-     "mean": 0.039910714285714285,
-     "sd_within_player": 0.182744276982879
+     "mean": 0.038035714285714284,
+     "sd_within_player": 0.17936758036224124
     },
     "rush_td": {
      "mean": 0.10375,
-     "sd_within_player": 0.30962637740196924
+     "sd_within_player": 0.31079355129721825
     }
    }
   },
@@ -1495,16 +1707,16 @@
       "n_draws": 200,
       "n_groups": 2,
       "n_cells_checked": 10200,
-      "share_simplex_closure_maxdev": 1.541338860988617e-07,
+      "share_simplex_closure_maxdev": 1.51805579662323e-07,
       "share_non_negative_violations": 0,
-      "player_opportunity_within_team_maxreldev": 1.5413388597041487e-07,
+      "player_opportunity_within_team_maxreldev": 1.5180557954772325e-07,
       "receptions_within_targets_violations": 0,
       "receiving_td_within_receptions_violations": 0,
       "zero_receptions_implies_zero_yards_violations": 0,
-      "n_negative_yard_cells": 125,
-      "min_receiving_yards": -9.0,
+      "n_negative_yard_cells": 134,
+      "min_receiving_yards": -11.0,
       "allocation_only_when_available_violations": 0,
-      "other_mass_mean": 0.005896401873324067,
+      "other_mass_mean": 0.0036174987233243885,
       "identities_checked": [
        "share_simplex_closure",
        "share_non_negative",
@@ -1520,8 +1732,8 @@
       "violations": [
        {
         "identity": "qb_rush_contained_in_other",
-        "cells": 200,
-        "worst": 15.602638352638351
+        "cells": 217,
+        "worst": 13.778040626337603
        }
       ],
       "n_players": 18,
@@ -1534,17 +1746,17 @@
        "rushing_td_within_carries",
        "qb_rush_contained_in_other"
       ],
-      "team_carry_closure_maxdev": 1.4901161193847656e-07,
+      "team_carry_closure_maxdev": 1.7136335372924805e-07,
       "zero_carries_implies_zero_rushing_yards": "NOT_APPLICABLE",
       "rushing_yards_reason": "RUSHING_CONVERSION_CONTROL_UNDEFINED -- no rushing-yard draw exists to check. Recorded as not applicable, never as satisfied.",
       "rushing_td_within_carries_violations": 0,
       "n_td_without_a_carry": 0,
-      "qb_rush_contained_in_other_violations": 200,
-      "qb_rush_mean": 3.030330687043589,
-      "other_carry_mass_mean": 2.8361977516294536,
-      "qb_share_of_other_mean": 1.5445820996078945,
-      "cells_with_negligible_other_mass": 16,
-      "qb_rush_over_other_mean_excess": 1.275756305300498
+      "qb_rush_contained_in_other_violations": 217,
+      "qb_rush_mean": 3.0145608393455365,
+      "other_carry_mass_mean": 2.826803806119168,
+      "qb_share_of_other_mean": 1.5012235474634361,
+      "cells_with_negligible_other_mass": 22,
+      "qb_rush_over_other_mean_excess": 1.2018461733331187
      },
      "qb_team_volume": {
       "n_teams": 2,
@@ -1556,14 +1768,36 @@
       ],
       "qb_dropback_within_team_volume_cells": 400,
       "qb_dropback_within_team_volume_violations": 0,
-      "qb_dropback_within_team_volume_ratio": 0.9633,
+      "qb_dropback_within_team_volume_ratio": 0.964,
       "qb_rush_within_team_carries_cells": 400,
       "qb_rush_within_team_carries_violations": 0,
-      "qb_rush_within_team_carries_ratio": 0.1065
+      "qb_rush_within_team_carries_ratio": 0.1052
      }
     },
     "chain": "PASS[NONQB_CHAIN_EXECUTED]",
-    "qb_team_volume": "PASS[QB_TEAM_VOLUME_COHERENT]"
+    "qb_team_volume": "PASS[QB_TEAM_VOLUME_COHERENT]",
+    "cross_layer": {
+     "NE": {
+      "state": "FAIL[PASSING_TD_RECEIVING_TD_MISMATCH]",
+      "n_draws": 200,
+      "violating_draws": 200,
+      "worst_abs_residual": 349.09989648033127,
+      "td_violating_draws": 182,
+      "mean_abs_yard_residual": 90.67324187455196,
+      "mean_team_passing_yards": 203.6971580955715,
+      "corr_passing_receiving": 0.1968188658188685
+     },
+     "SEA": {
+      "state": "FAIL[PASSING_TD_RECEIVING_TD_MISMATCH]",
+      "n_draws": 200,
+      "violating_draws": 200,
+      "worst_abs_residual": 398.0,
+      "td_violating_draws": 177,
+      "mean_abs_yard_residual": 89.06510754175021,
+      "mean_team_passing_yards": 188.02032108011633,
+      "corr_passing_receiving": 0.025377725411744045
+     }
+    }
    },
    "engine_version": "nfl-football-engine-v1-r4",
    "n_players": 51,
@@ -1587,28 +1821,28 @@
    "test_only": true,
    "summary": {
     "targets": {
-     "mean": 1.0577347207871237,
-     "sd_within_player": 0.8276406225083435
+     "mean": 1.0695174047391012,
+     "sd_within_player": 0.8386900451279887
     },
     "carries": {
-     "mean": 2.8463906436049404,
-     "sd_within_player": 1.985807644170948
+     "mean": 2.8692583027842535,
+     "sd_within_player": 1.9147300095026099
     },
     "receptions": {
-     "mean": 0.7112745098039216,
-     "sd_within_player": 0.7350970413630077
+     "mean": 0.7236274509803922,
+     "sd_within_player": 0.7442525783644828
     },
     "receiving_yards": {
-     "mean": 7.967156862745098,
-     "sd_within_player": 10.792509562684996
+     "mean": 8.09813725490196,
+     "sd_within_player": 10.91154205571745
     },
     "receiving_td": {
-     "mean": 0.04696078431372549,
-     "sd_within_player": 0.19120299022165893
+     "mean": 0.0488235294117647,
+     "sd_within_player": 0.19043048308894278
     },
     "rush_td": {
-     "mean": 0.095,
-     "sd_within_player": 0.28607547959863355
+     "mean": 0.0961111111111111,
+     "sd_within_player": 0.28830929633849106
     }
    }
   },
@@ -1638,16 +1872,16 @@
       "n_draws": 200,
       "n_groups": 2,
       "n_cells_checked": 10000,
-      "share_simplex_closure_maxdev": 1.73225998878479e-07,
+      "share_simplex_closure_maxdev": 1.7505954019725323e-07,
       "share_non_negative_violations": 0,
-      "player_opportunity_within_team_maxreldev": 1.7322599881837426e-07,
+      "player_opportunity_within_team_maxreldev": 1.7505954034200134e-07,
       "receptions_within_targets_violations": 0,
       "receiving_td_within_receptions_violations": 0,
       "zero_receptions_implies_zero_yards_violations": 0,
-      "n_negative_yard_cells": 106,
-      "min_receiving_yards": -8.0,
+      "n_negative_yard_cells": 103,
+      "min_receiving_yards": -11.0,
       "allocation_only_when_available_violations": 0,
-      "other_mass_mean": 0.006229319744743406,
+      "other_mass_mean": 0.003936671244446188,
       "identities_checked": [
        "share_simplex_closure",
        "share_non_negative",
@@ -1663,8 +1897,8 @@
       "violations": [
        {
         "identity": "qb_rush_contained_in_other",
-        "cells": 170,
-        "worst": 14.36652343317787
+        "cells": 174,
+        "worst": 10.329109403314282
        }
       ],
       "n_players": 14,
@@ -1682,12 +1916,12 @@
       "rushing_yards_reason": "RUSHING_CONVERSION_CONTROL_UNDEFINED -- no rushing-yard draw exists to check. Recorded as not applicable, never as satisfied.",
       "rushing_td_within_carries_violations": 0,
       "n_td_without_a_carry": 0,
-      "qb_rush_contained_in_other_violations": 170,
-      "qb_rush_mean": 2.316535734534295,
-      "other_carry_mass_mean": 2.6881105046134817,
-      "qb_share_of_other_mean": 1.2973223100542812,
-      "cells_with_negligible_other_mass": 26,
-      "qb_rush_over_other_mean_excess": 1.0191632346502322
+      "qb_rush_contained_in_other_violations": 174,
+      "qb_rush_mean": 2.3072415191055815,
+      "other_carry_mass_mean": 2.794783969966817,
+      "qb_share_of_other_mean": 1.3092823389983625,
+      "cells_with_negligible_other_mass": 29,
+      "qb_rush_over_other_mean_excess": 0.9972469497647991
      },
      "qb_team_volume": {
       "n_teams": 2,
@@ -1699,14 +1933,36 @@
       ],
       "qb_dropback_within_team_volume_cells": 400,
       "qb_dropback_within_team_volume_violations": 0,
-      "qb_dropback_within_team_volume_ratio": 0.9806,
+      "qb_dropback_within_team_volume_ratio": 0.9798,
       "qb_rush_within_team_carries_cells": 400,
       "qb_rush_within_team_carries_violations": 0,
-      "qb_rush_within_team_carries_ratio": 0.0871
+      "qb_rush_within_team_carries_ratio": 0.0828
      }
     },
     "chain": "PASS[NONQB_CHAIN_EXECUTED]",
-    "qb_team_volume": "PASS[QB_TEAM_VOLUME_COHERENT]"
+    "qb_team_volume": "PASS[QB_TEAM_VOLUME_COHERENT]",
+    "cross_layer": {
+     "NO": {
+      "state": "FAIL[PASSING_TD_RECEIVING_TD_MISMATCH]",
+      "n_draws": 200,
+      "violating_draws": 200,
+      "worst_abs_residual": 778.9167862266859,
+      "td_violating_draws": 187,
+      "mean_abs_yard_residual": 96.57488144651066,
+      "mean_team_passing_yards": 244.60063242430996,
+      "corr_passing_receiving": 0.02426247640430736
+     },
+     "DET": {
+      "state": "FAIL[PASSING_TD_RECEIVING_TD_MISMATCH]",
+      "n_draws": 200,
+      "violating_draws": 200,
+      "worst_abs_residual": 362.50657013574664,
+      "td_violating_draws": 195,
+      "mean_abs_yard_residual": 88.46101438073923,
+      "mean_team_passing_yards": 252.77143640366003,
+      "corr_passing_receiving": 0.1064769739210633
+     }
+    }
    },
    "engine_version": "nfl-football-engine-v1-r4",
    "n_players": 50,
@@ -1730,28 +1986,28 @@
    "test_only": true,
    "summary": {
     "targets": {
-     "mean": 1.3598341186395504,
-     "sd_within_player": 1.020283797397237
+     "mean": 1.3285099153471154,
+     "sd_within_player": 0.9769494286724273
     },
     "carries": {
-     "mean": 3.4148077544799875,
-     "sd_within_player": 2.0901407063316526
+     "mean": 3.5804183360542057,
+     "sd_within_player": 2.1429363278497466
     },
     "receptions": {
-     "mean": 0.9293,
-     "sd_within_player": 0.8859237267291385
+     "mean": 0.9103,
+     "sd_within_player": 0.8479354592190164
     },
     "receiving_yards": {
-     "mean": 10.0784,
-     "sd_within_player": 12.337145753461057
+     "mean": 9.8448,
+     "sd_within_player": 11.96411840046494
     },
     "receiving_td": {
-     "mean": 0.0616,
-     "sd_within_player": 0.22201545240133008
+     "mean": 0.0605,
+     "sd_within_player": 0.21460608526706604
     },
     "rush_td": {
-     "mean": 0.10821428571428572,
-     "sd_within_player": 0.305489954549744
+     "mean": 0.10607142857142857,
+     "sd_within_player": 0.3114202796305598
     }
    }
   },
@@ -1781,16 +2037,16 @@
       "n_draws": 200,
       "n_groups": 2,
       "n_cells_checked": 9600,
-      "share_simplex_closure_maxdev": 1.5832483768463135e-07,
+      "share_simplex_closure_maxdev": 1.541338860988617e-07,
       "share_non_negative_violations": 0,
-      "player_opportunity_within_team_maxreldev": 1.583248376814049e-07,
+      "player_opportunity_within_team_maxreldev": 1.541338858930981e-07,
       "receptions_within_targets_violations": 0,
       "receiving_td_within_receptions_violations": 0,
       "zero_receptions_implies_zero_yards_violations": 0,
-      "n_negative_yard_cells": 146,
-      "min_receiving_yards": -8.0,
+      "n_negative_yard_cells": 139,
+      "min_receiving_yards": -13.0,
       "allocation_only_when_available_violations": 0,
-      "other_mass_mean": 0.004160111753735691,
+      "other_mass_mean": 0.004744034908944741,
       "identities_checked": [
        "share_simplex_closure",
        "share_non_negative",
@@ -1806,8 +2062,8 @@
       "violations": [
        {
         "identity": "qb_rush_contained_in_other",
-        "cells": 158,
-        "worst": 22.133772743265006
+        "cells": 167,
+        "worst": 21.485248772874698
        }
       ],
       "n_players": 13,
@@ -1820,23 +2076,23 @@
        "rushing_td_within_carries",
        "qb_rush_contained_in_other"
       ],
-      "team_carry_closure_maxdev": 1.2200325727462769e-07,
+      "team_carry_closure_maxdev": 1.341104507446289e-07,
       "zero_carries_implies_zero_rushing_yards": "NOT_APPLICABLE",
       "rushing_yards_reason": "RUSHING_CONVERSION_CONTROL_UNDEFINED -- no rushing-yard draw exists to check. Recorded as not applicable, never as satisfied.",
       "rushing_td_within_carries_violations": 0,
       "n_td_without_a_carry": 0,
-      "qb_rush_contained_in_other_violations": 158,
-      "qb_rush_mean": 2.297378956651498,
-      "other_carry_mass_mean": 2.8652169868735995,
-      "qb_share_of_other_mean": 1.134210998997377,
-      "cells_with_negligible_other_mass": 21,
-      "qb_rush_over_other_mean_excess": 0.9181347165981214
+      "qb_rush_contained_in_other_violations": 167,
+      "qb_rush_mean": 2.2690572685226247,
+      "other_carry_mass_mean": 2.6192519094819953,
+      "qb_share_of_other_mean": 1.2042369043701207,
+      "cells_with_negligible_other_mass": 25,
+      "qb_rush_over_other_mean_excess": 0.940012878753958
      },
      "qb_team_volume": {
       "violations": [
        {
         "identity": "qb_rush_within_team_carries",
-        "cells": 2,
+        "cells": 1,
         "of": 400
        }
       ],
@@ -1850,14 +2106,36 @@
       ],
       "qb_dropback_within_team_volume_cells": 400,
       "qb_dropback_within_team_volume_violations": 0,
-      "qb_dropback_within_team_volume_ratio": 0.8345,
+      "qb_dropback_within_team_volume_ratio": 0.8247,
       "qb_rush_within_team_carries_cells": 400,
-      "qb_rush_within_team_carries_violations": 2,
-      "qb_rush_within_team_carries_ratio": 0.0937
+      "qb_rush_within_team_carries_violations": 1,
+      "qb_rush_within_team_carries_ratio": 0.0932
      }
     },
     "chain": "PASS[NONQB_CHAIN_EXECUTED]",
-    "qb_team_volume": "FAIL[QB_TEAM_VOLUME_INCOHERENT]"
+    "qb_team_volume": "FAIL[QB_TEAM_VOLUME_INCOHERENT]",
+    "cross_layer": {
+     "NYJ": {
+      "state": "FAIL[PASSING_TD_RECEIVING_TD_MISMATCH]",
+      "n_draws": 200,
+      "violating_draws": 200,
+      "worst_abs_residual": 365.9125303741672,
+      "td_violating_draws": 180,
+      "mean_abs_yard_residual": 106.96549159265625,
+      "mean_team_passing_yards": 146.3697629505092,
+      "corr_passing_receiving": 0.0028256964231469055
+     },
+     "TEN": {
+      "state": "FAIL[PASSING_TD_RECEIVING_TD_MISMATCH]",
+      "n_draws": 200,
+      "violating_draws": 200,
+      "worst_abs_residual": 673.3743235711997,
+      "td_violating_draws": 190,
+      "mean_abs_yard_residual": 106.52194754079919,
+      "mean_team_passing_yards": 227.08548339896208,
+      "corr_passing_receiving": -0.10038154028213027
+     }
+    }
    },
    "engine_version": "nfl-football-engine-v1-r4",
    "n_players": 48,
@@ -1881,28 +2159,28 @@
    "test_only": true,
    "summary": {
     "targets": {
-     "mean": 1.2382256933390832,
-     "sd_within_player": 0.9518394191851597
+     "mean": 1.2564538194232524,
+     "sd_within_player": 0.9524372571321139
     },
     "carries": {
-     "mean": 3.330972238681339,
-     "sd_within_player": 2.3582752031870124
+     "mean": 3.3424745668856235,
+     "sd_within_player": 2.3307887535091947
     },
     "receptions": {
-     "mean": 0.8002083333333333,
-     "sd_within_player": 0.8192588386381584
+     "mean": 0.809375,
+     "sd_within_player": 0.8155403138227912
     },
     "receiving_yards": {
-     "mean": 8.278645833333334,
-     "sd_within_player": 11.273276434748704
+     "mean": 8.3865625,
+     "sd_within_player": 11.291156969188057
     },
     "receiving_td": {
-     "mean": 0.05458333333333333,
-     "sd_within_player": 0.2115326362839595
+     "mean": 0.05510416666666667,
+     "sd_within_player": 0.21267310858801414
     },
     "rush_td": {
-     "mean": 0.10230769230769231,
-     "sd_within_player": 0.30317397053128137
+     "mean": 0.10961538461538461,
+     "sd_within_player": 0.31279573001103067
     }
    }
   },
@@ -1932,16 +2210,16 @@
       "n_draws": 200,
       "n_groups": 2,
       "n_cells_checked": 9000,
-      "share_simplex_closure_maxdev": 1.8067657947540283e-07,
+      "share_simplex_closure_maxdev": 1.8296123016625643e-07,
       "share_non_negative_violations": 0,
-      "player_opportunity_within_team_maxreldev": 1.806765798714354e-07,
+      "player_opportunity_within_team_maxreldev": 1.8296123032963034e-07,
       "receptions_within_targets_violations": 0,
       "receiving_td_within_receptions_violations": 0,
       "zero_receptions_implies_zero_yards_violations": 0,
-      "n_negative_yard_cells": 102,
-      "min_receiving_yards": -8.0,
+      "n_negative_yard_cells": 107,
+      "min_receiving_yards": -11.0,
       "allocation_only_when_available_violations": 0,
-      "other_mass_mean": 0.005671993028372526,
+      "other_mass_mean": 0.005586723075248301,
       "identities_checked": [
        "share_simplex_closure",
        "share_non_negative",
@@ -1957,8 +2235,8 @@
       "violations": [
        {
         "identity": "qb_rush_contained_in_other",
-        "cells": 127,
-        "worst": 11.234031925344626
+        "cells": 126,
+        "worst": 7.621483680745008
        }
       ],
       "n_players": 11,
@@ -1971,17 +2249,17 @@
        "rushing_td_within_carries",
        "qb_rush_contained_in_other"
       ],
-      "team_carry_closure_maxdev": 1.4156103134155273e-07,
+      "team_carry_closure_maxdev": 1.5273690223693848e-07,
       "zero_carries_implies_zero_rushing_yards": "NOT_APPLICABLE",
       "rushing_yards_reason": "RUSHING_CONVERSION_CONTROL_UNDEFINED -- no rushing-yard draw exists to check. Recorded as not applicable, never as satisfied.",
       "rushing_td_within_carries_violations": 0,
       "n_td_without_a_carry": 0,
-      "qb_rush_contained_in_other_violations": 127,
-      "qb_rush_mean": 1.8648453988779403,
-      "other_carry_mass_mean": 2.9225064829623704,
-      "qb_share_of_other_mean": 0.8652764077758632,
-      "cells_with_negligible_other_mass": 23,
-      "qb_rush_over_other_mean_excess": 0.5734988901023247
+      "qb_rush_contained_in_other_violations": 126,
+      "qb_rush_mean": 1.915180859915436,
+      "other_carry_mass_mean": 2.8343945473866743,
+      "qb_share_of_other_mean": 0.9062080847077496,
+      "cells_with_negligible_other_mass": 18,
+      "qb_rush_over_other_mean_excess": 0.5636429265365953
      },
      "qb_team_volume": {
       "n_teams": 2,
@@ -1993,14 +2271,36 @@
       ],
       "qb_dropback_within_team_volume_cells": 400,
       "qb_dropback_within_team_volume_violations": 0,
-      "qb_dropback_within_team_volume_ratio": 0.9398,
+      "qb_dropback_within_team_volume_ratio": 0.9441,
       "qb_rush_within_team_carries_cells": 400,
       "qb_rush_within_team_carries_violations": 0,
-      "qb_rush_within_team_carries_ratio": 0.0677
+      "qb_rush_within_team_carries_ratio": 0.0704
      }
     },
     "chain": "PASS[NONQB_CHAIN_EXECUTED]",
-    "qb_team_volume": "PASS[QB_TEAM_VOLUME_COHERENT]"
+    "qb_team_volume": "PASS[QB_TEAM_VOLUME_COHERENT]",
+    "cross_layer": {
+     "SF": {
+      "state": "FAIL[PASSING_TD_RECEIVING_TD_MISMATCH]",
+      "n_draws": 200,
+      "violating_draws": 200,
+      "worst_abs_residual": 662.9805026656512,
+      "td_violating_draws": 193,
+      "mean_abs_yard_residual": 96.04962305861521,
+      "mean_team_passing_yards": 255.4454992985104,
+      "corr_passing_receiving": 0.05646225002954103
+     },
+     "LA": {
+      "state": "FAIL[PASSING_TD_RECEIVING_TD_MISMATCH]",
+      "n_draws": 200,
+      "violating_draws": 200,
+      "worst_abs_residual": 391.0,
+      "td_violating_draws": 189,
+      "mean_abs_yard_residual": 98.12963425732116,
+      "mean_team_passing_yards": 245.53225966151774,
+      "corr_passing_receiving": 0.033202624909333366
+     }
+    }
    },
    "engine_version": "nfl-football-engine-v1-r4",
    "n_players": 45,
@@ -2024,28 +2324,28 @@
    "test_only": true,
    "summary": {
     "targets": {
-     "mean": 1.457309584618234,
-     "sd_within_player": 1.0332421726641643
+     "mean": 1.456666079765073,
+     "sd_within_player": 1.0327357736931249
     },
     "carries": {
-     "mean": 4.4747592729254455,
-     "sd_within_player": 2.6263259379145327
+     "mean": 4.427843811951625,
+     "sd_within_player": 2.581119973397291
     },
     "receptions": {
-     "mean": 0.9956666666666667,
-     "sd_within_player": 0.8919380666075774
+     "mean": 0.9946666666666667,
+     "sd_within_player": 0.8901548400301172
     },
     "receiving_yards": {
-     "mean": 11.422888888888888,
-     "sd_within_player": 13.474778848773523
+     "mean": 11.482111111111111,
+     "sd_within_player": 13.407235466830866
     },
     "receiving_td": {
-     "mean": 0.067,
-     "sd_within_player": 0.2357366238628179
+     "mean": 0.06622222222222222,
+     "sd_within_player": 0.23227652811165594
     },
     "rush_td": {
-     "mean": 0.15,
-     "sd_within_player": 0.3854314875963215
+     "mean": 0.14454545454545453,
+     "sd_within_player": 0.36957738372397464
     }
    }
   },
@@ -2075,16 +2375,16 @@
       "n_draws": 200,
       "n_groups": 2,
       "n_cells_checked": 9400,
-      "share_simplex_closure_maxdev": 2.7008354663848877e-07,
+      "share_simplex_closure_maxdev": 1.6670674085617065e-07,
       "share_non_negative_violations": 0,
-      "player_opportunity_within_team_maxreldev": 2.7008354676325773e-07,
+      "player_opportunity_within_team_maxreldev": 1.667067407207228e-07,
       "receptions_within_targets_violations": 0,
       "receiving_td_within_receptions_violations": 0,
       "zero_receptions_implies_zero_yards_violations": 0,
-      "n_negative_yard_cells": 109,
-      "min_receiving_yards": -11.0,
+      "n_negative_yard_cells": 96,
+      "min_receiving_yards": -17.0,
       "allocation_only_when_available_violations": 0,
-      "other_mass_mean": 0.00564586790278554,
+      "other_mass_mean": 0.004914826918393373,
       "identities_checked": [
        "share_simplex_closure",
        "share_non_negative",
@@ -2100,8 +2400,8 @@
       "violations": [
        {
         "identity": "qb_rush_contained_in_other",
-        "cells": 161,
-        "worst": 11.546653679672714
+        "cells": 176,
+        "worst": 7.888018416705864
        }
       ],
       "n_players": 11,
@@ -2114,17 +2414,17 @@
        "rushing_td_within_carries",
        "qb_rush_contained_in_other"
       ],
-      "team_carry_closure_maxdev": 1.1920928955078125e-07,
+      "team_carry_closure_maxdev": 1.341104507446289e-07,
       "zero_carries_implies_zero_rushing_yards": "NOT_APPLICABLE",
       "rushing_yards_reason": "RUSHING_CONVERSION_CONTROL_UNDEFINED -- no rushing-yard draw exists to check. Recorded as not applicable, never as satisfied.",
       "rushing_td_within_carries_violations": 0,
       "n_td_without_a_carry": 0,
-      "qb_rush_contained_in_other_violations": 161,
-      "qb_rush_mean": 2.4901883245890666,
-      "other_carry_mass_mean": 3.018254029412938,
-      "qb_share_of_other_mean": 1.2092859297285734,
-      "cells_with_negligible_other_mass": 21,
-      "qb_rush_over_other_mean_excess": 0.8084307486516411
+      "qb_rush_contained_in_other_violations": 176,
+      "qb_rush_mean": 2.575029115243303,
+      "other_carry_mass_mean": 3.022913005737223,
+      "qb_share_of_other_mean": 1.1808134695382502,
+      "cells_with_negligible_other_mass": 18,
+      "qb_rush_over_other_mean_excess": 0.7613976634297183
      },
      "qb_team_volume": {
       "n_teams": 2,
@@ -2136,14 +2436,36 @@
       ],
       "qb_dropback_within_team_volume_cells": 400,
       "qb_dropback_within_team_volume_violations": 0,
-      "qb_dropback_within_team_volume_ratio": 0.9507,
+      "qb_dropback_within_team_volume_ratio": 0.9489,
       "qb_rush_within_team_carries_cells": 400,
       "qb_rush_within_team_carries_violations": 0,
-      "qb_rush_within_team_carries_ratio": 0.099
+      "qb_rush_within_team_carries_ratio": 0.1014
      }
     },
     "chain": "PASS[NONQB_CHAIN_EXECUTED]",
-    "qb_team_volume": "PASS[QB_TEAM_VOLUME_COHERENT]"
+    "qb_team_volume": "PASS[QB_TEAM_VOLUME_COHERENT]",
+    "cross_layer": {
+     "TB": {
+      "state": "FAIL[PASSING_TD_RECEIVING_TD_MISMATCH]",
+      "n_draws": 200,
+      "violating_draws": 200,
+      "worst_abs_residual": 439.5757746334723,
+      "td_violating_draws": 192,
+      "mean_abs_yard_residual": 98.84308783734734,
+      "mean_team_passing_yards": 223.7575170130837,
+      "corr_passing_receiving": -0.10892580260977314
+     },
+     "CIN": {
+      "state": "FAIL[PASSING_TD_RECEIVING_TD_MISMATCH]",
+      "n_draws": 200,
+      "violating_draws": 200,
+      "worst_abs_residual": 276.15658648985436,
+      "td_violating_draws": 193,
+      "mean_abs_yard_residual": 94.29934366182016,
+      "mean_team_passing_yards": 269.81179712508214,
+      "corr_passing_receiving": -0.006061092460346949
+     }
+    }
    },
    "engine_version": "nfl-football-engine-v1-r4",
    "n_players": 47,
@@ -2167,28 +2489,28 @@
    "test_only": true,
    "summary": {
     "targets": {
-     "mean": 1.4059000753961346,
-     "sd_within_player": 0.997621498134196
+     "mean": 1.3692477940321028,
+     "sd_within_player": 0.9747201811349621
     },
     "carries": {
-     "mean": 4.022339987725643,
-     "sd_within_player": 2.396460972088277
+     "mean": 4.067975086270932,
+     "sd_within_player": 2.4431582690578435
     },
     "receptions": {
-     "mean": 0.9525531914893617,
-     "sd_within_player": 0.8738578842925616
+     "mean": 0.9295744680851064,
+     "sd_within_player": 0.8545015284725721
     },
     "receiving_yards": {
-     "mean": 10.54468085106383,
-     "sd_within_player": 12.92992925806615
+     "mean": 10.19372340425532,
+     "sd_within_player": 12.341605320085787
     },
     "receiving_td": {
-     "mean": 0.060851063829787236,
-     "sd_within_player": 0.2238939643434775
+     "mean": 0.06095744680851064,
+     "sd_within_player": 0.2257206831358755
     },
     "rush_td": {
-     "mean": 0.12545454545454546,
-     "sd_within_player": 0.33645421076552207
+     "mean": 0.12727272727272726,
+     "sd_within_player": 0.3373897552763602
     }
    }
   },
@@ -2218,16 +2540,16 @@
       "n_draws": 200,
       "n_groups": 2,
       "n_cells_checked": 9800,
-      "share_simplex_closure_maxdev": 1.7881393432617188e-07,
+      "share_simplex_closure_maxdev": 1.5832483768463135e-07,
       "share_non_negative_violations": 0,
-      "player_opportunity_within_team_maxreldev": 1.788139342087082e-07,
+      "player_opportunity_within_team_maxreldev": 1.583248378062666e-07,
       "receptions_within_targets_violations": 0,
       "receiving_td_within_receptions_violations": 0,
       "zero_receptions_implies_zero_yards_violations": 0,
-      "n_negative_yard_cells": 109,
-      "min_receiving_yards": -11.0,
+      "n_negative_yard_cells": 94,
+      "min_receiving_yards": -8.0,
       "allocation_only_when_available_violations": 0,
-      "other_mass_mean": 0.0052418930339626964,
+      "other_mass_mean": 0.005406135956291109,
       "identities_checked": [
        "share_simplex_closure",
        "share_non_negative",
@@ -2243,8 +2565,8 @@
       "violations": [
        {
         "identity": "qb_rush_contained_in_other",
-        "cells": 253,
-        "worst": 18.92793353870643
+        "cells": 277,
+        "worst": 15.285002964479986
        }
       ],
       "n_players": 14,
@@ -2257,17 +2579,17 @@
        "rushing_td_within_carries",
        "qb_rush_contained_in_other"
       ],
-      "team_carry_closure_maxdev": 1.3969838619232178e-07,
+      "team_carry_closure_maxdev": 1.6333069652318954e-07,
       "zero_carries_implies_zero_rushing_yards": "NOT_APPLICABLE",
       "rushing_yards_reason": "RUSHING_CONVERSION_CONTROL_UNDEFINED -- no rushing-yard draw exists to check. Recorded as not applicable, never as satisfied.",
       "rushing_td_within_carries_violations": 0,
       "n_td_without_a_carry": 0,
-      "qb_rush_contained_in_other_violations": 253,
-      "qb_rush_mean": 5.129197039608767,
-      "other_carry_mass_mean": 3.5514318357036028,
-      "qb_share_of_other_mean": 2.216993720096074,
-      "cells_with_negligible_other_mass": 21,
-      "qb_rush_over_other_mean_excess": 2.530974054893317
+      "qb_rush_contained_in_other_violations": 277,
+      "qb_rush_mean": 5.162015543485913,
+      "other_carry_mass_mean": 3.322081596061849,
+      "qb_share_of_other_mean": 2.146389105152788,
+      "cells_with_negligible_other_mass": 19,
+      "qb_rush_over_other_mean_excess": 2.674106462184394
      },
      "qb_team_volume": {
       "n_teams": 2,
@@ -2279,14 +2601,36 @@
       ],
       "qb_dropback_within_team_volume_cells": 400,
       "qb_dropback_within_team_volume_violations": 0,
-      "qb_dropback_within_team_volume_ratio": 0.8921,
+      "qb_dropback_within_team_volume_ratio": 0.8977,
       "qb_rush_within_team_carries_cells": 400,
       "qb_rush_within_team_carries_violations": 0,
-      "qb_rush_within_team_carries_ratio": 0.1683
+      "qb_rush_within_team_carries_ratio": 0.1694
      }
     },
     "chain": "PASS[NONQB_CHAIN_EXECUTED]",
-    "qb_team_volume": "PASS[QB_TEAM_VOLUME_COHERENT]"
+    "qb_team_volume": "PASS[QB_TEAM_VOLUME_COHERENT]",
+    "cross_layer": {
+     "WAS": {
+      "state": "FAIL[PASSING_TD_RECEIVING_TD_MISMATCH]",
+      "n_draws": 200,
+      "violating_draws": 200,
+      "worst_abs_residual": 357.8652363509506,
+      "td_violating_draws": 180,
+      "mean_abs_yard_residual": 86.34285057644348,
+      "mean_team_passing_yards": 169.14670186272306,
+      "corr_passing_receiving": -0.007903739745020982
+     },
+     "PHI": {
+      "state": "FAIL[PASSING_TD_RECEIVING_TD_MISMATCH]",
+      "n_draws": 200,
+      "violating_draws": 200,
+      "worst_abs_residual": 559.5564152092835,
+      "td_violating_draws": 187,
+      "mean_abs_yard_residual": 89.7396491010964,
+      "mean_team_passing_yards": 211.99634498611275,
+      "corr_passing_receiving": -0.08644104073411195
+     }
+    }
    },
    "engine_version": "nfl-football-engine-v1-r4",
    "n_players": 49,
@@ -2310,28 +2654,28 @@
    "test_only": true,
    "summary": {
     "targets": {
-     "mean": 0.9947873456881241,
-     "sd_within_player": 0.8855009422210799
+     "mean": 1.0096747426592172,
+     "sd_within_player": 0.8912165321761423
     },
     "carries": {
-     "mean": 3.8468767594933113,
-     "sd_within_player": 2.745725710014316
+     "mean": 3.8783542187777753,
+     "sd_within_player": 2.753605525126354
     },
     "receptions": {
-     "mean": 0.655,
-     "sd_within_player": 0.7508142937111548
+     "mean": 0.6676530612244898,
+     "sd_within_player": 0.755584099537414
     },
     "receiving_yards": {
-     "mean": 6.851734693877551,
-     "sd_within_player": 10.126680491381018
+     "mean": 6.969795918367347,
+     "sd_within_player": 10.112440833769545
     },
     "receiving_td": {
-     "mean": 0.04561224489795918,
-     "sd_within_player": 0.1891684326200843
+     "mean": 0.04724489795918367,
+     "sd_within_player": 0.19636517431843029
     },
     "rush_td": {
-     "mean": 0.11392857142857143,
-     "sd_within_player": 0.3200304399536941
+     "mean": 0.11964285714285715,
+     "sd_within_player": 0.33503714581137467
     }
    }
   }
@@ -2646,16 +2990,16 @@
    "n_td_without_a_carry": 0
   },
   "worst": {
-   "share_simplex_closure_maxdev": 2.7008354663848877e-07,
-   "player_opportunity_within_team_maxreldev": 2.7008354676325773e-07,
-   "team_carry_closure_maxdev": 1.5622936189174652e-07
+   "share_simplex_closure_maxdev": 2.05356627702713e-07,
+   "player_opportunity_within_team_maxreldev": 2.0535662778930598e-07,
+   "team_carry_closure_maxdev": 1.8632272258400917e-07
   },
-  "n_negative_receiving_yard_cells": 1838,
+  "n_negative_receiving_yard_cells": 1853,
   "rushing_yards_status": "NOT_APPLICABLE -- no governed control"
  },
  "gates": {
   "G0A": "11/12",
   "NFL_1": "NOT AUTHORIZED"
  },
- "elapsed_s": 425.8
+ "elapsed_s": 418.0
 }
