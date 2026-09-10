@@ -3,7 +3,7 @@
  "game_id": "2026_01_SF_LA",
  "kickoff_utc": "2026-09-11T00:35:00Z",
  "state": "PRE_INACTIVES",
- "as_of_utc": "2026-09-10T22:26:00Z",
+ "as_of_utc": "2026-09-10T23:07:00Z",
  "meaning": "Every board in this directory was sealed BEFORE the official inactive lists published. None of them is governed by an official game-day active/inactive source, and none may be described as post-inactives.",
  "written_at_common": "2026-09-10T21:18:56Z",
  "boards": [
@@ -14,12 +14,33 @@
   "pre_inactives_V1_CANDIDATE_R8"
  ],
  "post_inactives_present": false,
- "why_not": "official_inactives is BLOCKED[NO_EGRESS] from this executor; nfl.com returns HTTP 000. Requested as OUT-007. If the authoritative bytes never arrive these boards stand as they are and nothing is substituted for the list.",
+ "why_not": "official_inactives is BLOCKED[NO_EGRESS] and the block is at the gateway, not the origin: www.nfl.com and site.api.espn.com are denied at CONNECT while github.com and raw.githubusercontent.com are reached in the same breath. Confirmed on three independent channels (curl, the agent WebFetch tool, and the proxy status endpoint). Requested as OUT-007. Nothing is substituted for the list.",
  "forbidden_substitutes": [
   "sportsbook prices",
   "reporter summaries",
   "inferred dress status",
   "retrospective weekly_rosters.status INA"
  ],
- "ingestion_entrypoint": "nfl/tools/ingest_inactives.py"
+ "ingestion_entrypoint": "nfl/tools/ingest_inactives.py",
+ "window_checks": [
+  {
+   "at_utc": "2026-09-10T23:05:00Z",
+   "window": "T-90 open",
+   "official_inactives": "BLOCKED[NO_EGRESS]",
+   "http_status_direct": "000",
+   "delivery_from_networked_agent": null,
+   "origin_main_head": "c37d7b4 (2026-09-10T17:05:29Z, capture bot)",
+   "outcome": "no authoritative bytes"
+  }
+ ],
+ "parser_readiness": {
+  "machine_parse": "has never seen a populated inactives page; every one of the 83 captures in nfl/vintage/ is the empty state, so it refuses conservatively rather than segment a format it has not observed",
+  "guards": [
+   "INACTIVES_PAGE_EMPTY_STATE",
+   "INACTIVES_TEAM_HAS_NO_NAMES",
+   "INACTIVES_BLOCK_IMPLAUSIBLY_LARGE"
+  ],
+  "assisted_path": "verify_supplied_names / --names-json; every supplied name must occur verbatim in the stored official bytes, so the operator supplies the segmentation and never the information",
+  "suite": "64 modules, 714 test functions, 3775 checks, 0 failing"
+ }
 }
