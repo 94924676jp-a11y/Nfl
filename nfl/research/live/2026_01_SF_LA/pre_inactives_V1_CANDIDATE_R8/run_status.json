@@ -1,0 +1,296 @@
+{
+ "run_id": "7e6a57e748975203",
+ "arm": "A",
+ "written_at": "2026-09-10T21:18:56Z",
+ "pipeline_version": "nfl-production-pipeline-1",
+ "status": "SEALED",
+ "elapsed_s": 43.0507,
+ "stages": [
+  {
+   "stage": "capture_validation",
+   "state": "PASS",
+   "code": "INPUTS_VALIDATED",
+   "detail": "",
+   "input_hashes": {
+    "depth_charts": "db0a09454965e6fcd4d7378a19381fa53f251432f80f09ebdcc45f78f5e1bc9f",
+    "espn_injuries_json": "217444ecc1559baaf163e4d6dc9ad3ed63074060950d13acf6120821af9e5632",
+    "injuries": "96dcc98e297a38ecb8edcc7ab8864260b2899e24604f60c2a9514498ea53c2fb",
+    "official_inactives": "88a19528350ea23f34804a73a92bc09b3d525cd7704348a165c345d2cdd96aa2",
+    "official_injury_report": "3aa790936d7e96f79865d26f6a683c4b862693e519af5539568aba54a1cc273d",
+    "schedules": "566d12fdc0fd173aef7901e3d7b1f87f86acea889e4989e9656e965d0fd1d490",
+    "weekly_rosters": "3b0d5d40dc7816f78c1854f3bdd21ad439c780aa77e767be0b6c11396f4527ee"
+   },
+   "spec_version": "nfl-production-pipeline-1",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 2.9325485229492188e-05,
+   "metrics": {}
+  },
+  {
+   "stage": "identity_resolution",
+   "state": "PASS",
+   "code": "IDENTITY_RESOLVED",
+   "detail": "",
+   "input_hashes": {},
+   "spec_version": null,
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 6.389617919921875e-05,
+   "metrics": {}
+  },
+  {
+   "stage": "feature_build",
+   "state": "PASS",
+   "code": "STAGE_DECLARED_UNIMPLEMENTED",
+   "detail": "feature_build: the accepted research baseline 'prior-only, ordinal prefix cut' has no production implementation. Declared as debt rather than reported as a successful forecast.",
+   "input_hashes": {},
+   "spec_version": "prior-only, ordinal prefix cut",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 1.1444091796875e-05,
+   "metrics": {}
+  },
+  {
+   "stage": "team_environment",
+   "state": "PASS",
+   "code": "TEAM_ENVIRONMENT_OK",
+   "detail": "",
+   "input_hashes": {},
+   "spec_version": "team-volume-v1-p4b-frozen-1",
+   "warnings": [
+    "known limitation: team_volume_is_near_unforecastable"
+   ],
+   "refusal_code": null,
+   "elapsed_s": 0.7756698131561279,
+   "metrics": {}
+  },
+  {
+   "stage": "appearance",
+   "state": "PASS",
+   "code": "APPEARANCE_OK",
+   "detail": "",
+   "input_hashes": {},
+   "spec_version": "P3 appearance",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 42.12972378730774,
+   "metrics": {}
+  },
+  {
+   "stage": "participation",
+   "state": "PASS",
+   "code": "PARTICIPATION_OK",
+   "detail": "",
+   "input_hashes": {},
+   "spec_version": "Stage2 ewma_hl2; governance INFORMATION_CONSTRAINED",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 2.4557113647460938e-05,
+   "metrics": {}
+  },
+  {
+   "stage": "targets_carries",
+   "state": "PASS",
+   "code": "TARGETS_CARRIES_OK",
+   "detail": "",
+   "input_hashes": {},
+   "spec_version": "P4C system C; governance DATA_BLOCKED",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 1.8358230590820312e-05,
+   "metrics": {}
+  },
+  {
+   "stage": "conversion",
+   "state": "PASS",
+   "code": "CONVERSION_OK",
+   "detail": "",
+   "input_hashes": {},
+   "spec_version": "RC1 baseline; SIGNAL_WEAK; governance HOLD_CHARACTERIZED + CALIBRATION_DEFECT",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 1.1920928955078125e-05,
+   "metrics": {}
+  },
+  {
+   "stage": "td_layer",
+   "state": "PASS",
+   "code": "TD_LAYER_OK",
+   "detail": "",
+   "input_hashes": {},
+   "spec_version": "TD2 pooled positional control; governance HOLD_TENTATIVE",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 1.33514404296875e-05,
+   "metrics": {}
+  },
+  {
+   "stage": "qb_layer",
+   "state": "PASS",
+   "code": "QB_LAYER_OK",
+   "detail": "",
+   "input_hashes": {},
+   "spec_version": "qb-v1-aggregate-then-allocate-1",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 1.9788742065429688e-05,
+   "metrics": {
+    "n_qb_games": 8
+   }
+  },
+  {
+   "stage": "joint_reconciliation",
+   "state": "PASS",
+   "code": "JOINT_RECONCILED",
+   "detail": "",
+   "input_hashes": {},
+   "spec_version": "minimum-viable production coupling",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 1.6927719116210938e-05,
+   "metrics": {}
+  },
+  {
+   "stage": "player_draws",
+   "state": "PASS",
+   "code": "DRAWS_BUILT",
+   "detail": "224000 draw cell(s) preserved across 22 matrix(es) on one draw index of 1000; 36 player quantile view(s) kept",
+   "input_hashes": {},
+   "spec_version": "nfl-player-draw-1",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 0.1384575366973877,
+   "metrics": {}
+  },
+  {
+   "stage": "scoring",
+   "state": "PASS",
+   "code": "SCORED",
+   "detail": "",
+   "input_hashes": {},
+   "spec_version": "deterministic",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 1.33514404296875e-05,
+   "metrics": {}
+  },
+  {
+   "stage": "artifact_sealing",
+   "state": "PASS",
+   "code": "ARTIFACT_SEALED",
+   "detail": "224000 draw cell(s) referenced by sha256; 11 hard invariant(s) hold; 1 carried as OWED: ['qb_cross_layer_reconciliation']; 2 diagnostic(s) not clean (recorded, not gating): ['nonqb_layer_availability', 'qb_known_limitations']",
+   "input_hashes": {},
+   "spec_version": "nfl-forecast-artifact-1",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 0.006453037261962891,
+   "metrics": {}
+  }
+ ],
+ "n_refusals": 0,
+ "refusals": [],
+ "first_failure": null,
+ "draw_artifact": {
+  "sha256": "b4b135117bff90d1c99872e4fecfe1361ad9b59db9337f32a1d278bc0509e723",
+  "bytes": 139032,
+  "n_draws": 1000,
+  "n_matrices": 22,
+  "n_draw_cells": 224000,
+  "content_digest": "0f5e50a3713f57e5f40dc7e59fdd519c4ac2bea3a8d2694f2c90fec8cc814686"
+ },
+ "accounting_verdicts": [
+  {
+   "invariant": "draw_artifact_integrity",
+   "class": "HARD",
+   "state": "PASS",
+   "code": "DRAW_ARTIFACT_VERIFIED"
+  },
+  {
+   "invariant": "draw_encoding_lossless",
+   "class": "HARD",
+   "state": "PASS",
+   "code": "DRAW_ENCODING_LOSSLESS"
+  },
+  {
+   "invariant": "draw_index_shared",
+   "class": "HARD",
+   "state": "PASS",
+   "code": "DRAW_INDEX_SHARED"
+  },
+  {
+   "invariant": "draw_set_non_empty",
+   "class": "HARD",
+   "state": "PASS",
+   "code": "DRAW_SET_PRESENT"
+  },
+  {
+   "invariant": "draw_summary_consistency",
+   "class": "HARD",
+   "state": "PASS",
+   "code": "SUMMARY_MATCHES_DRAWS"
+  },
+  {
+   "invariant": "nonqb_layer_availability",
+   "class": "DIAGNOSTIC",
+   "state": "FAIL",
+   "code": "NONQB_LAYERS_UNAVAILABLE"
+  },
+  {
+   "invariant": "qb_allocation_residual",
+   "class": "DIAGNOSTIC",
+   "state": "PASS",
+   "code": "QB_ALLOCATION_RESIDUAL_NONE"
+  },
+  {
+   "invariant": "qb_cross_layer_reconciliation",
+   "class": "HARD",
+   "state": "DEFERRED",
+   "code": "CROSS_LAYER_RECONCILIATION_NOT_RUN"
+  },
+  {
+   "invariant": "qb_dropback_identity",
+   "class": "HARD",
+   "state": "PASS",
+   "code": "QB_DROPBACK_IDENTITY_HOLDS"
+  },
+  {
+   "invariant": "qb_known_limitations",
+   "class": "DIAGNOSTIC",
+   "state": "FAIL",
+   "code": "QB_LAYER_KNOWN_LIMITATIONS"
+  },
+  {
+   "invariant": "qb_per_draw_accounting",
+   "class": "HARD",
+   "state": "PASS",
+   "code": "QB_DRAW_ACCOUNTING_HOLDS"
+  },
+  {
+   "invariant": "qb_team_accounting",
+   "class": "HARD",
+   "state": "PASS",
+   "code": "QB_TEAM_ACCOUNTING_MEASURED"
+  },
+  {
+   "invariant": "rushing_single_owner",
+   "class": "HARD",
+   "state": "PASS",
+   "code": "A1_RUSH_ALLOCATION"
+  },
+  {
+   "invariant": "scramble_carry_coherence",
+   "class": "HARD",
+   "state": "PASS",
+   "code": "SC1_COHERENT"
+  }
+ ],
+ "execution_identity": "7e6a57e7489752038d478ca8892a19cdb9a2d77bea07908962b34e3133a3c5d8",
+ "code_commit": "ee6fdbb9b11069dfeb20959459de0fcc1f967e4f+dirty[12]",
+ "dry_run": true,
+ "prospective_eligible": false,
+ "publication": {
+  "state": "BLOCKED",
+  "code": "NFL1_NOT_AUTHORIZED",
+  "detail": "NFL-1 is 'NOT AUTHORIZED' and G0A is '11/12'. A forecast may be COMPUTED and SEALED locally, but it may not be published. No test result, checklist state or caller flag can change this -- only an owne"
+ }
+}
