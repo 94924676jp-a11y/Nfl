@@ -1792,3 +1792,50 @@ later game went silently unchecked.
 rules and the capture workflows unchanged. NFL-1 NOT AUTHORIZED, G0A 11/12.
 
 **Detail:** `NFL_BOARD_AUTOMATION.md`.
+
+---
+
+## 2026-09-10 — MKT1 market-disagreement diagnostic (no tuning)
+
+**Decision:** compare the sealed SF@LA forecast against an independently
+produced external market snapshot, as a diagnostic only. No price used as a
+label, target or fit input. V1 unchanged; all 18 frozen production hashes
+identical.
+
+**Placed in `nfl/research/mkt1/`, never `nfl/product/`** — the product layer has
+a tested boundary that no sportsbook number may cross.
+
+**Result:** 19 of 23 markets comparable. Median disagreement **−25.3 pp**, model
+below market in **18 of 19**. Ordered by metric: carries −44.9 pp (z +2.11),
+receptions −33.0, receiving yards −30.1, QB attempts −22.1, passing yards −16.8,
+passing TD −15.2, **interceptions −1.9 and split 1/1**. Opportunity markets
+8 of 8 one-directional; conversion markets 10 of 11 and inherited.
+
+**One mechanism explains most of it, and it is not team volume.** Team totals
+are ordinary (SF 36.0 dropbacks / 36.2 targets / 26.6 carries). The internal
+control is decisive: in the same run, the QB allocation mechanism gives the
+starters 88–91% of their team's attempts while the P4C simplex gives the WR1
+15.9% of targets and the lead back 38% of carries. Same data, same game,
+different mechanism.
+
+**Earliest causal layer:** `p4c_params.class_point_forecast` feeding the P4C
+simplex. The weight vector does not sum to one over the players who will play —
+23 LA pass-catchers carry weights summing to 2.04 — so normalisation roughly
+halves every real share. Contributing upstream: `run_game` selects the pool on
+position alone, with the captured depth-chart rank unused; and
+`participation` weights by pass-snap participation, which the layer itself
+declares is "an upper bound on routes run".
+
+**Not repaired. `POST_V1_REFINEMENT`.** Not a new finding either — the ledger
+already carries `RB1↔RB2 at flat week-1 priors` and the 20.68% share-residual
+floor. The market sized the defect; it did not discover it.
+
+**Pre-registered before kickoff** in `nfl/research/mkt1/predeclaration_mkt1.md`
+(sha256 `3d298170a2a7da55…`) with falsifiable thresholds from the model's own
+intervals, plus the declared uncontrolled factor that this game is at the
+Melbourne Cricket Ground and V1 has no venue or travel feature.
+
+**Bar unchanged:** four distinct games before any refinement candidate. One
+game raises a hypothesis.
+
+**Detail:** `NFL_MKT1_MARKET_DIAGNOSTIC.md`.
