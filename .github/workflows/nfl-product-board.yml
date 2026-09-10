@@ -1,0 +1,122 @@
+name: NFL pregame board refresh
+
+# PRODUCT ORCHESTRATION. This workflow renders boards; it captures nothing,
+# governs nothing, and decides nothing about authorization.
+#
+# IT CANNOT INTERFERE WITH CAPTURE OR G0A, and the isolation is structural
+# rather than promised:
+#
+#   * it runs ONE command, `nfl/tools/refresh_boards.py`, which imports no
+#     capture tool and writes only under `nfl/product/boards/`;
+#   * it stages ONLY that directory, so a bug here cannot stage a manifest
+#     row, a vintage blob or a governance artifact even by accident;
+#   * its `concurrency` group is its own, so it never queues behind or blocks
+#     the capture workflow;
+#   * it reads the vintage manifest and never writes it.
+#
+# A FAILURE HERE IS A PRODUCT OUTAGE, NOT A DATA LOSS. The perishable official
+# cascade is captured by `nfl-capture.yml` and `nfl-t90.yml`; if this workflow
+# is broken for a week, every input it would have consumed is still on disk and
+# every board it would have written can be generated afterwards from the stored
+# vintages. That is the whole reason it is a separate workflow.
+#
+# CADENCE. Every 20 minutes, offset from the capture cadence so the two are
+# rarely pushing at the same moment. A tighter schedule buys nothing: the run
+# writes a board only when the stored input vintages actually CHANGE, so firing
+# more often produces the same boards, not more of them.
+#
+# THIS FILE ONLY FIRES FROM THE DEFAULT BRANCH. GitHub runs scheduled workflows
+# from the default branch alone, so until the product layer is merged to main
+# this workflow is inert -- present and correct, and not running. Said here
+# because a scheduled workflow that silently never fires is exactly the kind of
+# absence this project keeps paying for.
+
+on:
+  schedule:
+    - cron: '7,27,47 * * * *'
+  workflow_dispatch:
+    inputs:
+      game_id:
+        description: 'One game id, or blank for every upcoming game this week'
+        required: false
+
+concurrency:
+  group: nfl-product-board
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  board:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install numpy
+        run: python3 -m pip install --quiet numpy
+
+      - name: Refresh boards
+        id: refresh
+        run: |
+          set +e
+          if [ -n "${{ github.event.inputs.game_id }}" ]; then
+            python3 nfl/tools/refresh_boards.py \
+              --game-id "${{ github.event.inputs.game_id }}" | tee /tmp/board.log
+          else
+            python3 nfl/tools/refresh_boards.py --all-upcoming | tee /tmp/board.log
+          fi
+          echo "exit=${PIPESTATUS[0]}" >> "$GITHUB_OUTPUT"
+
+      # COMMIT ONLY THE BOARD DIRECTORY. Naming the path explicitly is what
+      # makes the isolation real: `git add -A` here would eventually stage
+      # somebody else's work-in-progress and push it under a product commit.
+      - name: Commit any board written
+        if: always()
+        run: |
+          git config user.name  "nfl-product[bot]"
+          git config user.email "nfl-product@users.noreply.github.com"
+          git add nfl/product/boards
+          if git diff --cached --quiet; then
+            echo "no new board this pass; not committing"
+            exit 0
+          fi
+          git commit \
+            -m "NFL pregame board refresh" \
+            -m "Rendered by GitHub Actions run ${GITHUB_RUN_ID}." \
+            -m "Append-only under nfl/product/boards: adds immutable board directories and index rows, rewrites no forecast."
+          # Rebase, never force. A concurrent capture commit is evidence and
+          # our paths are disjoint from its, so this resolves cleanly.
+          for i in 1 2 3 4; do
+            git pull --rebase --autostash origin main && \
+              git push origin HEAD:main && exit 0
+            sleep $((2 ** i))
+          done
+          echo "PUSH_FAILED after 4 attempts"
+          exit 1
+
+      # A PASS THAT WROTE NOTHING IS A SUCCESSFUL PASS, and must not page
+      # anyone. Only a crash or a pipeline refusal is a real failure.
+      - name: Judge the pass
+        if: always()
+        run: |
+          if grep -q 'Traceback (most recent call last)' /tmp/board.log; then
+            echo "BOARD_REFRESH_RAISED: unhandled exception"
+            grep -A15 'Traceback (most recent call last)' /tmp/board.log | tail -20
+            exit 1
+          fi
+          if grep -qE '^\S+ +(REFUSED|ERROR)' /tmp/board.log; then
+            echo "BOARD_REFRESH_REFUSED: a game could not be rendered"
+            grep -E '^\S+ +(REFUSED|ERROR)' /tmp/board.log
+            exit 1
+          fi
+          if ! grep -qE '^-- [0-9]+ board\(s\) written' /tmp/board.log; then
+            echo "BOARD_REFRESH_WROTE_NO_SUMMARY: the pass did not complete"
+            tail -30 /tmp/board.log
+            exit 1
+          fi
+          tail -5 /tmp/board.log

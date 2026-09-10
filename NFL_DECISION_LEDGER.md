@@ -1749,3 +1749,46 @@ a label applied afterwards.
 infrastructure unchanged. NFL-1 remains NOT AUTHORIZED, G0A 11/12.
 
 **Detail:** `NFL_PRODUCT_LAYER.md`.
+
+---
+
+## 2026-09-10 — pregame board refresh automated
+
+**Decision:** product orchestration only. A scheduled pass consumes the latest
+chronology-valid stored vintages, runs the frozen `V1_CANDIDATE`, renders the
+accepted board format, and seals it immutably.
+
+**Cadence, and an honest limit.** `.github/workflows/nfl-product-board.yml`
+runs `7,27,47 * * * *` but is **inert until the branch merges to main** —
+GitHub fires scheduled workflows from the default branch only, and main does
+not carry the product layer. Routine `trig_01H9EQHMbCodyy8sFUyz4ukL` covers
+tonight, hourly at `:41`. Stated rather than left to be discovered.
+
+**Storage:** `nfl/product/boards/<game_id>/<written_at>__<run_id>/`, never
+overwritten (`BoardExists` is a named refusal), with an append-only
+`INDEX.jsonl` and a `LATEST.json` pointer that a test proves is rebuildable
+from the index and therefore holds nothing unique.
+
+**Refresh is decided by input fingerprint, never by the clock** — content hash
+AND observation time per source — so a scheduler firing more often cannot
+restamp stale inputs as fresh. Four outcomes; three write nothing; a pass that
+writes nothing exits 0.
+
+**Five proofs, all in `test_product_orchestration.py`:** identical inputs
+reproduce identical draws (and did, in production: 22/22 arrays bit-identical
+to the manually sealed board, same digest); only genuinely newer vintages
+change a board; post-kickoff data cannot enter (checked twice, including
+between plan and execution); SHADOW cannot masquerade as AUTHORIZED (both gate
+branches driven); product failure cannot touch capture or G0A (every capture
+and governance file hashed before and after a failing pass).
+
+**Defect found and fixed:** `run()` caught `Exception`, but `SystemExit` is a
+`BaseException`, so one bad game id killed the whole scheduled pass and every
+later game went silently unchecked.
+
+**Suite:** 58 modules, 631 test functions, 3,466 checks, 0 failing, 0 raised.
+
+**Untouched:** all 18 frozen production hashes identical; `PATH_C_STATE`, G0A
+rules and the capture workflows unchanged. NFL-1 NOT AUTHORIZED, G0A 11/12.
+
+**Detail:** `NFL_BOARD_AUTOMATION.md`.
