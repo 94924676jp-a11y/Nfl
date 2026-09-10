@@ -498,9 +498,18 @@ def test_N_own7_seed_contract_is_stable_and_explicit():
           str(c.get('seed_contract')))
     check('it declares it uses no Python hash',
           c.get('uses_python_hash') is False)
-    check('both namespaces are declared',
-          set(c['streams']) == {'p4c_alloc', 'team_volume'},
+    # THE TWO REPAIRED NAMESPACES MUST STILL BE THERE. This asserted set
+    # EQUALITY against exactly those two, so declaring a NEW namespace -- the
+    # append-only operation seeds.py documents and requires -- failed the
+    # suite. What this check exists to protect is that the namespaces which
+    # carried the Python-hash defect are still explicitly declared, not that
+    # nothing may ever be added beside them.
+    check('the two repaired namespaces are still declared',
+          {'p4c_alloc', 'team_volume'} <= set(c['streams']),
           str(sorted(c['streams'])))
+    check('every declared namespace is non-empty',
+          all(v for v in c['streams'].values()),
+          str({k: len(v) for k, v in c['streams'].items()}))
     for ns, names in c['streams'].items():
         ids = list(names.values())
         check(f'{ns}: every stream id is distinct, so no two streams collide',

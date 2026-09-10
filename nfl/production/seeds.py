@@ -62,6 +62,15 @@ STREAMS = {
         'team_carries': 4,
         'team_rz_carries': 5,
     },
+    # A1 single-owner rushing. One stream: the multinomial that partitions the
+    # rush-play budget across kneel / designed QB / RB / WR / TE / fringe.
+    # Declared here rather than left to the sha256 fallback -- the fallback is
+    # deterministic across processes and was never a correctness problem, but a
+    # closed set belongs in the readable table, which is the whole point of
+    # this module.
+    'rushing_a1': {
+        'rush_play_budget_partition': 1,
+    },
 }
 
 

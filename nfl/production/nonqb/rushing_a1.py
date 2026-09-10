@@ -567,10 +567,25 @@ def params(season: int, week: int = 0, *, path=None, **kw) -> Outcome:
         cand.append(pathlib.Path(os.environ[PARAMS_ENV]))
     cand.append(DERIVED.cache_dir()
                 / f'rushing_a1_params_{season}w{int(week):02d}.json')
+    # COMMITTED FALLBACK. `derived.cache_dir()` is gitignored and the six pbp
+    # files a refit needs are not in this repository, so on a fresh checkout
+    # both the parameters AND the means of rebuilding them were absent -- the
+    # shape of the failure that left the sibling project's M0 baseline
+    # permanently non-reproducible. The frozen file is committed gzipped
+    # beside this module so a checkout can FORECAST and can verify what
+    # produced the parameters. A refit still needs pbp and `pbp_sources()`
+    # still BLOCKS by name without it: that debt is real and is reported, not
+    # papered over by this fallback.
+    cand.append(pathlib.Path(__file__).resolve().parent / 'frozen'
+                / f'rushing_a1_params_{season}w{int(week):02d}.json.gz')
     for c in cand:
         if not c.exists():
             continue
-        d = json.loads(c.read_text())
+        if c.suffix == '.gz':
+            import gzip as _gz
+            d = json.loads(_gz.decompress(c.read_bytes()).decode())
+        else:
+            d = json.loads(c.read_text())
         if int(d.get('season', -1)) != int(season):
             return Outcome.fail(
                 'A1_PARAMS_SEASON_MISMATCH',

@@ -95,6 +95,25 @@ Also repaired: `test_preflight` asserted the literal `2026_01_NE_SEA` as the
 first upcoming game, so the suite began failing on the passage of time once
 that game kicked off. It now asserts the property, not the calendar.
 
+## Two debts the A1 module declared, both closed
+
+1. **Seed registry.** `rushing_a1` was not a declared namespace in `seeds.py`,
+   so the stream fell back to a sha256 derivation — deterministic across
+   processes, never a correctness problem, but a closed set belongs in the
+   readable table. Declared; `registry_debt()` now returns
+   `PASS[A1_SEED_NAMESPACE_DECLARED]`.
+
+2. **Parameter reproducibility.** The frozen parameters lived only in the
+   gitignored `nfl/derived/`, and the six pbp files a refit needs are **not in
+   this repository** — so a fresh checkout had neither the parameters nor the
+   means of rebuilding them. That is the shape of the failure that left the
+   sibling project's M0 baseline permanently non-reproducible. The frozen file
+   is now committed gzipped (193 KB, json sha256 `9d56c260…`) beside the
+   module, and `params()` falls back to it: verified by removing the cache and
+   loading from the committed copy. **A refit still needs pbp**, and
+   `pbp_sources()` still BLOCKS by name without it — that debt is real,
+   remains open, and is not papered over by the fallback.
+
 ## What would close V1
 
 One thing: **couple the QB scramble count to the carry budget it must fit
