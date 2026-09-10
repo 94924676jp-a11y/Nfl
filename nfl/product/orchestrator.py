@@ -86,7 +86,7 @@ def plan(game_id, season=2026, week=1, now=None):
                 'detail': 'pregame is over; a pregame board written now would '
                           'carry a post-kickoff clock'}
 
-    info = IS.build(ko)
+    info = IS.build(ko, observed_before=_iso(now))
     fp = ST.input_fingerprint(info)
     prev = ST.latest(game_id)
     if prev and prev.get('input_fingerprint') == fp:

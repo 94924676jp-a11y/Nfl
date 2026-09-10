@@ -83,7 +83,8 @@ def _game_stream(seed_parts, game_id):
 
 def appearance(season, week, players, fixture=None, seed=20260908, m=200,
                teams=None, kickoff_utc=None, game_id=None,
-               appearance_spec='frozen', observed_before=None):
+               appearance_spec='frozen', observed_before=None,
+               inactive_ids=None):
     """Frozen P3 appearance mechanism. Executes only on legitimate input.
 
     THREE PATHS, AND ONLY ONE OF THEM CAN REACH AN ARTIFACT.
@@ -141,7 +142,7 @@ def appearance(season, week, players, fixture=None, seed=20260908, m=200,
         return _run_real(season, week, players, rows, seed, m,
                          test_only=False, appearance_spec=appearance_spec,
                          observed_before=observed_before,
-                         kickoff_utc=kickoff_utc)
+                         kickoff_utc=kickoff_utc, inactive_ids=inactive_ids)
 
     # ---- TEST-ONLY fixture ------------------------------------------------
     if fixture.get('injuries_rows'):
@@ -151,7 +152,7 @@ def appearance(season, week, players, fixture=None, seed=20260908, m=200,
                          seed, m, test_only=True, game_id=game_id,
                          appearance_spec=appearance_spec,
                          observed_before=observed_before,
-                         kickoff_utc=kickoff_utc)
+                         kickoff_utc=kickoff_utc, inactive_ids=inactive_ids)
     p = fixture.get('p_appear')
     if p is None:
         return Outcome.fail(
@@ -170,7 +171,7 @@ def appearance(season, week, players, fixture=None, seed=20260908, m=200,
 
 def _run_real(season, week, players, injuries_rows, seed, m, test_only,
               game_id=None, appearance_spec='frozen', observed_before=None,
-              kickoff_utc=None):
+              kickoff_utc=None, inactive_ids=None):
     """The named appearance mechanism, then per-player draws from it.
 
     `appearance_spec` selects WHICH mechanism, and 'frozen' is the only value
@@ -211,8 +212,28 @@ def _run_real(season, week, players, injuries_rows, seed, m, test_only,
     rng = np.random.default_rng(parts)
     draws = {pid: rng.binomial(1, float(np.clip(pv, 0.0, 1.0)), size=m)
              for pid, pv in o.value.items()}
+    # OFFICIAL INACTIVES, APPLIED LAST AND ADDING NOTHING.
+    #
+    # The list is the highest-authority statement about who plays tonight
+    # (registry authority_rank 1), so it overrides the model's own estimate
+    # rather than being blended with it. Zeroing the appearance draws is the
+    # whole intervention: `accounting.reconcile_nonqb` already enforces
+    # `share == 0 wherever appearance == 0` per cell, and the P4C simplex
+    # renormalises over the survivors, so the opportunity is redistributed by
+    # the configuration's own declared mechanism.
+    ina_ev = None
+    if inactive_ids:
+        from nfl.production.nonqb import inactives as INA
+        ao = INA.apply_to_appearance(draws, inactive_ids)
+        if ao.state is State.PASS:
+            draws = ao.value
+            ina_ev = {k: v for k, v in ao.evidence.items() if k != 'value'}
+        else:
+            ina_ev = {'state': ao.state.value, 'code': ao.code}
     ev = {k: v for k, v in o.evidence.items()
           if k not in ('value', 'test_only', 'spec_version', 'n_players')}
+    if ina_ev is not None:
+        ev['official_inactives'] = ina_ev
     return Outcome.ok('APPEARANCE_OK', value=draws,
                       spec_version=spec, test_only=test_only,
                       mechanism=mech, appearance_spec=appearance_spec,

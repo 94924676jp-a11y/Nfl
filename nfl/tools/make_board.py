@@ -57,8 +57,28 @@ def build_one(season, week, game_id, written_at, out_dir, draws=1000,
         raise SystemExit(
             f'WRITTEN_AT_NOT_BEFORE_KICKOFF: {written_at} >= {ko}. A pregame '
             f'board cannot be built from a post-kickoff clock.')
+    # A WRITTEN_AT IN THE FUTURE IS NEVER RIGHT, AND NOTHING CHECKED IT.
+    #
+    # Every other clock in this function was guarded -- written_at against
+    # kickoff, each source against written_at -- and the one clock nobody
+    # compared to the wall was written_at itself. Measured 2026-09-10T21:19:30Z:
+    # a tournament was sealed claiming written_at 21:30:00Z, eleven minutes
+    # ahead. Nothing objected, and the artifact asserted a provenance that had
+    # not happened yet. Worse, a future cutoff silently WIDENS the information
+    # set: any capture landing between now and it would be admitted as though
+    # it had been available at write time.
+    now = dt.datetime.now(dt.timezone.utc)
+    if wrote > now:
+        raise SystemExit(
+            f'WRITTEN_AT_IN_THE_FUTURE: {written_at} is after the current '
+            f'clock {now.isoformat().replace("+00:00", "Z")}. A forecast '
+            f'cannot have been written at a time that has not happened, and a '
+            f'cutoff ahead of now would admit captures that do not exist yet.')
 
-    info = IS.build(ko)
+    # SELECT AGAINST THE CLOCK THE FORECAST CONSUMES, then verify. The check
+    # below is kept -- it is now a proof that selection did its job rather than
+    # a refusal triggered by an ordinary newer capture.
+    info = IS.build(ko, observed_before=written_at)
     for name, rec in info['sources'].items():
         if rec['observed_at'] >= written_at:
             raise SystemExit(

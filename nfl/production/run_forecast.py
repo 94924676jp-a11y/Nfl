@@ -708,7 +708,8 @@ def build(args, fixtures: dict = None) -> dict:
                 team_carries_override=fx.get('_coupled_team_carries'),
                 tv=_team_volume(),
                 appearance_spec=_appearance_spec(fl),
-                observed_before=args.written_at)
+                observed_before=args.written_at,
+                inactive_ids=fx.get('official_inactive_ids'))
         except Exception as e:                                # noqa: BLE001
             o = Outcome.fail(
                 'NONQB_ENGINE_RAISED',

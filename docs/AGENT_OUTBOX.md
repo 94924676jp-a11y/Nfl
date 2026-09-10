@@ -113,3 +113,56 @@ begins 2026-09-06. That is true of OUR capture and false of the source: the
 upstream 2025 release carries the vendor's own daily `dt` series back to
 2025-08-03, and the 2020–2024 weekly leaves are already committed. The registry
 entry has been corrected rather than left standing.
+
+---
+
+## 2026-09-10 21:15Z — OUT-007: **TIME-CRITICAL.** SF@LA official inactives, T-90
+
+**Deadline.** Kickoff `2026-09-11T00:35:00Z`. The lists publish at about
+**`2026-09-10T23:05:00Z`**. Anything delivered after kickoff is worthless for
+tonight, and the page is not recoverable later.
+
+**Why it is yours and not mine.** Measured from this container at 21:08Z, this
+capture and a direct probe:
+
+| endpoint | result |
+|---|---|
+| `https://www.nfl.com/inactives/` | HTTP **000**, connection refused by the local proxy |
+| `https://www.nfl.com/injuries/` | HTTP **000** |
+| `https://site.api.espn.com/apis/site/v2/.../teams` | HTTP **000** |
+| `https://github.com/nflverse/nflverse-data/...` | HTTP **200** |
+
+Egress is host-restricted, not absent. `capture_vintage.py` records
+`official_inactives`, `official_injury_report` and `espn_injuries_json` as
+`BLOCKED[NO_EGRESS]` on every capture. Those are the only three sources in the
+registry with `authority_rank` 1 and 9; **everything the model consumes tonight
+is `authority_rank` 99 ARCHIVE.**
+
+**Exactly what is needed.**
+
+1. `https://www.nfl.com/inactives/` — the **raw bytes**, saved before any
+   parsing, for the 2026 week 1 SF@LA game. Both clubs must be present.
+2. The **publication clock** if the page carries one, and your **retrieval
+   clock** in UTC, to the second. Both, kept apart.
+3. The same for `https://www.nfl.com/injuries/` (the club report) if it is
+   cheap — second priority, it does not block.
+
+**Format.** Anything that preserves the bytes: the HTML file itself plus a
+sidecar JSON carrying `retrieved_at`, `source_url`, `http_status`, and the
+sha256 of the bytes. Do not send a summary, a table you typed out, or a
+paraphrase — the whole point is the artifact.
+
+**What I will do with it.** Hash it, store it immutably under
+`nfl/vintage/official_inactives.<sha16>.html.gz`, append a manifest row, verify
+both teams are represented, map every player to a `gsis_id` deterministically,
+emit explicit ACTIVE / INACTIVE sets, propagate them into the appearance layer,
+re-run all five candidates at one cutoff, and seal a new artifact. The
+propagation machinery and its seeded tests are already built and passing
+(`nfl/tests/test_inactives_propagation.py`); what is missing is only the bytes.
+
+**If it does not arrive.** I will not label any run `POST_INACTIVES_COMPLETE`.
+The pregame board stands as the pre-inactives shadow board, labelled as such,
+and the gap is reported rather than filled from a reporter or a price.
+
+**Do not send me a sportsbook line or a reporter's expectation as a substitute
+for the official list.** Those are comparators. They are not the list.

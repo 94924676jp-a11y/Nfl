@@ -49,6 +49,27 @@ EXCLUDED = {'DEV': 'practice squad / developmental',
             'CUT': 'released',
             'EXE': 'exempt list'}
 
+# POST-HOC, AND IT MUST NEVER REACH A PREGAME POOL.
+#
+# `weekly_rosters.status` is quarantined in nfl/ingest/allowlist.py as POSTHOC
+# because INA is a GAMEDAY OUTCOME: measured ACT -> 0.9715 snap rate, INA -> 0
+# of 3,438. This module's use of the field is lawful only for the codes that
+# describe roster membership BEFORE the game -- DEV, RES, CUT, EXE -- and INA
+# is not one of them.
+#
+# Measured on the live mirror at 2026-09-10T21:08Z, three and a half hours
+# before the SF@LA kickoff: 14 INA rows league-wide in week 1, all belonging to
+# teams whose games had ALREADY been played, and ZERO for SF or LA. So an INA
+# row for a team in scope is not merely undesirable data -- it is proof that
+# the capture is post-kickoff for that team.
+#
+# Before this guard, `active_pool` dropped any non-ACT code and labelled it
+# "not on the active roster", so an INA player would have been filtered out
+# silently, under a generic label, using the outcome. It did not bite tonight
+# only because SF and LA have not played yet.
+POSTHOC = {'INA': 'inactive for a game that has already been played -- a '
+                  'gameday outcome, not roster membership'}
+
 SPEC_VERSION = 'roster-status-active-pool-r5'
 
 
@@ -114,6 +135,18 @@ def status_map(season: int, week: int, teams, observed_before=None) -> Outcome:
             'ROSTER_STATUS_EMPTY',
             f'{chosen.name} carries no {season} week {week} rows for '
             f'{sorted(teams)}', cause=Cause.DATA, spec_version=SPEC_VERSION)
+    contaminated = {st: n for st, n in counts.items() if st in POSTHOC}
+    if contaminated:
+        who = sorted(pid for pid, st in out.items() if st in POSTHOC)
+        return Outcome.fail(
+            'ROSTER_STATUS_POSTHOC_CONTAMINATION',
+            f'{chosen.name} carries {contaminated} for {sorted(teams)}. That '
+            f'status is assigned AFTER a game is played, so this capture is '
+            f'not pregame information for these teams and using it would put '
+            f'the outcome into the pool. Refusing rather than filtering.',
+            statuses=counts, posthoc=contaminated,
+            posthoc_meaning={k: POSTHOC[k] for k in contaminated},
+            players=who[:10], observed_at=chosen_at, source=chosen.name)
     if ACTIVE not in counts:
         return Outcome.fail(
             'ROSTER_STATUS_NO_ACTIVE_PLAYERS',
@@ -130,6 +163,7 @@ def active_pool(players, statuses) -> Outcome:
     """Keep the players on the active roster. Everyone else is NAMED."""
     keep, dropped = [], {}
     unknown = []
+    unrecognised = {}
     for q in players:
         st = statuses.get(q.get('gsis_id'))
         if st is None:
@@ -142,8 +176,18 @@ def active_pool(players, statuses) -> Outcome:
             continue
         if st == ACTIVE:
             keep.append(q)
-        else:
+        elif st in EXCLUDED:
             dropped.setdefault(st, []).append(q.get('gsis_id'))
+        else:
+            # A CODE THIS MODULE DOES NOT RECOGNISE IS NOT AN EXCLUSION.
+            # `dropped_meaning` used to fall back to "not on the active roster"
+            # for anything unlisted, which turned every future or unexpected
+            # code -- INA among them -- into a silent removal justified by a
+            # sentence rather than by knowing what the code meant. Keeping him
+            # and naming the code is the conservative direction: this repair
+            # exists to remove contamination, not to force concentration.
+            unrecognised.setdefault(st, []).append(q.get('gsis_id'))
+            keep.append(q)
     if not keep:
         return Outcome.fail(
             'ACTIVE_POOL_EMPTY',
@@ -154,5 +198,7 @@ def active_pool(players, statuses) -> Outcome:
         n_in=len(players), n_kept=len(keep),
         n_unknown_status_kept=len(unknown),
         dropped_by_status={k: len(v) for k, v in sorted(dropped.items())},
-        dropped_meaning={k: EXCLUDED.get(k, 'not on the active roster')
-                         for k in sorted(dropped)})
+        dropped_meaning={k: EXCLUDED[k] for k in sorted(dropped)},
+        kept_unrecognised_status={k: len(v)
+                                  for k, v in sorted(unrecognised.items())},
+        only_declared_codes_are_dropped=sorted(EXCLUDED))

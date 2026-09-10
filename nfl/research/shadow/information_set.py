@@ -101,8 +101,21 @@ def blob_for(source: str, sha256: str):
     return hits[0] if hits else None
 
 
-def build(kickoff_utc, sources=None) -> dict:
-    """The latest pre-kickoff observation of each source.
+def build(kickoff_utc, sources=None, observed_before=None) -> dict:
+    """The latest observation of each source before the CONSUMED CLOCK.
+
+    `observed_before` is the forecast's own `written_at`. It defaults to
+    kickoff, which is what every caller got before this parameter existed.
+
+    WHY IT HAD TO BECOME A PARAMETER. Selection was bounded by kickoff and the
+    caller then REFUSED if the selected observation turned out to be later than
+    `written_at` (`make_board`'s SOURCE_AFTER_WRITTEN_AT). That conflates two
+    different situations: "no lawful vintage exists at this cutoff", which is a
+    genuine refusal, and "a newer capture landed between written_at and
+    kickoff", which is ordinary and for which the correct earlier vintage is
+    sitting right there. On a night when captures are still running, the second
+    case refuses a board it should have produced -- and the fix is not to relax
+    the check but to select against the clock the forecast actually consumes.
 
     Returns a descriptor carrying, per source, the content hash, the
     observation time, the observation basis, the on-disk blob, and the blob's
@@ -112,9 +125,12 @@ def build(kickoff_utc, sources=None) -> dict:
     on an empty read.
     """
     ko = _parse(kickoff_utc)
+    cut = _parse(observed_before) if observed_before else ko
+    if cut > ko:
+        cut = ko
     latest = {}
     for o in first_observation().values():
-        if o['observed_at'] >= ko:
+        if o['observed_at'] >= cut:
             continue
         s = o['source']
         if s not in latest or o['observed_at'] > latest[s]['observed_at']:
@@ -165,9 +181,13 @@ def build(kickoff_utc, sources=None) -> dict:
 
     return {
         'kickoff_utc': ko.isoformat().replace('+00:00', 'Z'),
-        'selection_rule': 'latest content observed strictly before kickoff; '
+        'observed_before': cut.isoformat().replace('+00:00', 'Z'),
+        'selection_rule': 'latest content observed strictly before the '
+                          'consumed clock, which is min(written_at, kickoff); '
                           'observation time is retrieved_at when recorded and '
-                          'the earliest capture_id carrying the hash otherwise',
+                          'the earliest capture_id carrying the hash '
+                          'otherwise, so a refetch returning identical bytes '
+                          'never moves a source forward',
         'sources': chosen,
         'absent': absent,
         'newest_observation': max(r['observed_at'] for r in chosen.values()),

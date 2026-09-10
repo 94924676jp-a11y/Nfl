@@ -209,7 +209,8 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
              run_id='rehearsal', qb=None, shared_pass='off',
              game_coupling='none', rushing_budget=None,
              team_carries_override=None, tv=None,
-             appearance_spec='frozen', observed_before=None):
+             appearance_spec='frozen', observed_before=None,
+             inactive_ids=None):
     """One game, every implemented layer, one draw index.
 
     `rushing_budget` is A1's `rb` category carries, {team: (m,) counts}.
@@ -313,7 +314,8 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
     ap = LY.appearance(season, week, recv, fixture=fixture, m=m, seed=seed,
                        teams=teams, kickoff_utc=kickoff_utc,
                        game_id=game_id, appearance_spec=appearance_spec,
-                       observed_before=observed_before)
+                       observed_before=observed_before,
+                       inactive_ids=inactive_ids)
     _lay('appearance', ap)
     if ap.state is not State.PASS:
         g['halted_at'] = 'appearance'
