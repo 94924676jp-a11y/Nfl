@@ -164,50 +164,292 @@ def store(raw: bytes, *, retrieved_at, source_url, game_id,
 _NAME = re.compile(r"[A-Z][A-Za-z.'\-]+(?:[ ]+[A-Z][A-Za-z.'\-]+)+")
 
 
+# A REAL INACTIVE LIST IS SHORT, AND A PAGE OF NEWS PROMOS IS NOT.
+#
+# The captured 2026-09-08 page (sha 88a19528350ea23f) is the empty state:
+# its main content reads "Please check back soon for NFL Inactive Reports for
+# this Season" and it carries NO inactive list at all. Fed to the first version
+# of this parser with team tokens '49ers'/'Rams' it returned PASS with 311
+# "names" -- 'NFL Week', 'Lumen Field', 'Americano NFL', 'The Seattle Seahawks'
+# -- swept out of the navigation and the news tray, all attributed to one club
+# and none to the other. That is the project's signature defect exactly: an
+# empty result read as a populated one. Four guards below, each independent.
+_EMPTY_STATE = (
+    'check back soon',
+    'no inactives',
+    'inactives are not yet',
+    'not yet available',
+)
+
+# Club identifiers, matched as WHOLE PHRASES and never as loose tokens.
+#
+# The first version of this rejected any candidate containing a club or city
+# WORD, and the drill caught it immediately: its synthetic Rams player is
+# called "Rams Runner". The real-world version of that mistake is worse --
+# Justin Houston, A.J. Green, Dwayne Washington and Marshawn Lynch are all
+# players whose names collide with a club token, so a token-level filter
+# silently drops real inactives. Only a complete club phrase is a label.
+_CLUB_PHRASES = tuple(sorted((
+    'Arizona Cardinals', 'Atlanta Falcons', 'Baltimore Ravens',
+    'Buffalo Bills', 'Carolina Panthers', 'Chicago Bears',
+    'Cincinnati Bengals', 'Cleveland Browns', 'Dallas Cowboys',
+    'Denver Broncos', 'Detroit Lions', 'Green Bay Packers',
+    'Houston Texans', 'Indianapolis Colts', 'Jacksonville Jaguars',
+    'Kansas City Chiefs', 'Las Vegas Raiders', 'Los Angeles Chargers',
+    'Los Angeles Rams', 'Miami Dolphins', 'Minnesota Vikings',
+    'New England Patriots', 'New Orleans Saints', 'New York Giants',
+    'New York Jets', 'Philadelphia Eagles', 'Pittsburgh Steelers',
+    'San Francisco 49ers', 'Seattle Seahawks', 'Tampa Bay Buccaneers',
+    'Tennessee Titans', 'Washington Commanders',
+    # Multi-word city names standing alone are labels too. Single-word cities
+    # are NOT listed: "Houston" and "Washington" are surnames.
+    'Green Bay', 'Kansas City', 'Las Vegas', 'Los Angeles', 'New England',
+    'New Orleans', 'New York', 'San Francisco', 'Tampa Bay',
+), key=len, reverse=True))
+
+# Site chrome. Same idea, different vocabulary.
+_CHROME_WORDS = frozenset("""
+NFL Week Field Stadium News Video Videos Podcast Fantasy Tickets Shop Watch
+Standings Schedule Scores Stats Players Teams Draft Super Bowl Network Game
+Games Season Report Reports Inactive Inactives League Football Sunday Monday
+Thursday Saturday Friday Tuesday Wednesday Live Highlights Analysis Top Best
+Free Agents Coach Head Injury Preseason Playoffs Roster Depth Chart Sign
+Subscribe Privacy Terms Policy Cookie Copyright Rights Reserved More About
+Contact Careers Help Search Menu Home Latest Trending Desde Americano Ver
+""".split())
+
+# THE PAGE DOES NOT SPELL CLUBS THE WAY OUR GAME IDS DO.
+#
+# Our game id is 2026_01_SF_LA, so the codes handed to parse() are 'SF' and
+# 'LA'. The real captured page never writes either: it writes "49ers" and
+# "Rams". Matching on the code alone meant a POPULATED page would have been
+# refused as INACTIVES_TEAM_NOT_REPRESENTED -- a refusal, so not a silent
+# wrong answer, but it would still have cost the whole T-90 window.
+_TEAM_ALIASES = {
+    'ARI': ('Cardinals', 'Arizona'), 'ATL': ('Falcons', 'Atlanta'),
+    'BAL': ('Ravens', 'Baltimore'), 'BUF': ('Bills', 'Buffalo'),
+    'CAR': ('Panthers', 'Carolina'), 'CHI': ('Bears', 'Chicago'),
+    'CIN': ('Bengals', 'Cincinnati'), 'CLE': ('Browns', 'Cleveland'),
+    'DAL': ('Cowboys', 'Dallas'), 'DEN': ('Broncos', 'Denver'),
+    'DET': ('Lions', 'Detroit'), 'GB': ('Packers', 'Green Bay'),
+    'HOU': ('Texans', 'Houston'), 'IND': ('Colts', 'Indianapolis'),
+    'JAX': ('Jaguars', 'Jacksonville'), 'KC': ('Chiefs', 'Kansas City'),
+    'LV': ('Raiders', 'Las Vegas'), 'LAC': ('Chargers',),
+    'LA': ('Rams', 'Los Angeles Rams'), 'LAR': ('Rams', 'Los Angeles Rams'),
+    'MIA': ('Dolphins', 'Miami'), 'MIN': ('Vikings', 'Minnesota'),
+    'NE': ('Patriots', 'New England'), 'NO': ('Saints', 'New Orleans'),
+    'NYG': ('Giants', 'New York Giants'), 'NYJ': ('Jets', 'New York Jets'),
+    'PHI': ('Eagles', 'Philadelphia'), 'PIT': ('Steelers', 'Pittsburgh'),
+    'SF': ('49ers', 'San Francisco'), 'SEA': ('Seahawks', 'Seattle'),
+    'TB': ('Buccaneers', 'Tampa Bay'), 'TEN': ('Titans', 'Tennessee'),
+    'WAS': ('Commanders', 'Washington'),
+}
+
+
+def _team_tokens(team: str):
+    """The code itself first, then the spellings the page actually uses."""
+    return (team,) + tuple(_TEAM_ALIASES.get(team.upper(), ()))
+
+
+def _marks(teams, lines):
+    """First line mentioning each club, under any spelling it may use."""
+    marks = {}
+    for i, ln in enumerate(lines):
+        for t in teams:
+            if t in marks:
+                continue
+            if any(re.search(rf'\b{re.escape(tok)}\b', ln)
+                   for tok in _team_tokens(t)):
+                marks[t] = i
+    return marks
+
+
+# The rule the league itself imposes: a club dresses 48 of a 53-man roster, so
+# an inactive list is about 5 to 8 names. Anything past a dozen is not a list,
+# it is a page.
+_MAX_PER_TEAM = 12
+
+
+def _plausible_person(name: str) -> bool:
+    """Is this candidate shaped like a player's name rather than a label?
+
+    Deliberately permissive about people and strict about labels. A real
+    inactive wrongly dropped here is invisible downstream; a label wrongly
+    kept is caught by the size ceiling and again by identity resolution.
+    """
+    toks = name.split()
+    if not 2 <= len(toks) <= 4:
+        return False
+    if len(name) > 32:
+        return False
+    if any(ch.isdigit() for ch in name):
+        return False
+    bare = re.sub(r'^The\s+', '', name).strip()
+    for phrase in _CLUB_PHRASES:
+        if phrase in bare:
+            return False
+    stripped = [t.strip(".,'-") for t in toks]
+    if any(t in _CHROME_WORDS for t in stripped):
+        return False
+    return True
+
+
 def parse(html: str, teams) -> Outcome:
     """team -> [name, ...]. Conservative, and every step re-checked downstream.
 
-    The official page's markup is not stable enough to be worth a clever
-    parser, and a clever parser that silently returns an empty list for one
-    club is worse than a plain one that says so. Tags are stripped, the
-    document is cut into per-team blocks at the team tokens themselves, and
-    capitalised names are read a line at a time.
+    THIS PARSER HAS NEVER SEEN A POPULATED PAGE, AND SAYS SO BY REFUSING.
+
+    Every captured example in this repository is the empty state. The markup
+    of a populated list is therefore unknown, and a segmenter tuned against a
+    document I wrote myself would be fitted to my own assumptions rather than
+    to the league's HTML. So this reads the plain shape -- tags stripped, the
+    document cut at the club tokens, capitalised names a line at a time -- and
+    leans hard on refusing. A refusal is cheap and recoverable; a list
+    assembled out of page furniture is neither.
+
+    When it refuses on bytes that plainly do carry the lists, the operator
+    path is `verify_supplied_names`, which takes the names explicitly and
+    checks every one of them back against these same stored bytes.
     """
     if not html or not html.strip():
         return Outcome.fail('INACTIVES_EMPTY_DOCUMENT',
                             'the stored document is empty')
     lines = [ln.strip() for ln in re.sub(r'<[^>]+>', '\n', html).splitlines()]
     lines = [ln for ln in lines if ln]
-    marks = {}
-    for i, ln in enumerate(lines):
-        for t in teams:
-            if re.search(rf'\b{re.escape(t)}\b', ln) and t not in marks:
-                marks[t] = i
+
+    # GUARD 1 -- the page's own empty state. It says so; believe it.
+    flat = ' '.join(lines).lower()
+    for marker in _EMPTY_STATE:
+        if marker in flat:
+            return Outcome.deferred(
+                'INACTIVES_PAGE_EMPTY_STATE',
+                f'the captured page carries its own empty-state text '
+                f'({marker!r}), so it publishes no inactive list yet. This is '
+                f'a real page and a real fetch; it simply has no content, and '
+                f'reading names out of its navigation would manufacture a list',
+                owed={'empty_state_marker': marker, 'n_lines': len(lines)})
+
+    marks = _marks(teams, lines)
     missing = [t for t in teams if t not in marks]
     if missing:
         return Outcome.deferred(
             'INACTIVES_TEAM_NOT_REPRESENTED',
             f'{missing} do(es) not appear in the captured document, so this '
             f'capture cannot describe both clubs',
-            owed={'teams_missing': missing, 'teams_found': sorted(marks)})
+            owed={'teams_missing': missing, 'teams_found': sorted(marks),
+                  'tokens_tried': {t: list(_team_tokens(t)) for t in teams}})
+
     order = sorted(marks.items(), key=lambda kv: kv[1])
-    found = {}
+    found, rejected = {}, {}
     for j, (t, start) in enumerate(order):
         end = order[j + 1][1] if j + 1 < len(order) else len(lines)
-        names = []
+        names, drops = [], []
         for ln in lines[start:end]:
             for m in _NAME.finditer(ln):
                 n = m.group(0).strip()
-                if n not in names:
-                    names.append(n)
-        found[t] = names
+                if n in names or n in drops:
+                    continue
+                (names if _plausible_person(n) else drops).append(n)
+        found[t], rejected[t] = names, drops
+
+    # GUARD 2 -- a club with no names is not an answer for that club.
+    empty = [t for t, v in found.items() if not v]
+    if empty:
+        return Outcome.deferred(
+            'INACTIVES_TEAM_HAS_NO_NAMES',
+            f'the club(s) {empty} appear in the captured document but no '
+            f'player-shaped name was found in their block, so this capture '
+            f'does not carry a list for them',
+            owed={'teams_without_names': empty,
+                  'n_names': {t: len(v) for t, v in found.items()},
+                  'n_rejected_as_labels': {t: len(v)
+                                           for t, v in rejected.items()}})
+
+    # GUARD 3 -- an implausibly long block means chrome was swept in.
+    oversize = {t: len(v) for t, v in found.items() if len(v) > _MAX_PER_TEAM}
+    if oversize:
+        return Outcome.deferred(
+            'INACTIVES_BLOCK_IMPLAUSIBLY_LARGE',
+            f'{oversize} name(s) were read for those clubs against a ceiling '
+            f'of {_MAX_PER_TEAM}. A club dresses 48 of 53, so a real inactive '
+            f'list is roughly 5 to 8 names; a block this size means the '
+            f'document was swept rather than parsed',
+            owed={'n_names': {t: len(v) for t, v in found.items()},
+                  'ceiling': _MAX_PER_TEAM,
+                  'sample': {t: v[:10] for t, v in found.items()}})
+
     return Outcome.ok('INACTIVES_PARSED', value=found,
                       spec_version=SPEC_VERSION,
+                      segmentation='machine_read_from_bytes',
                       n_names={t: len(v) for t, v in found.items()},
+                      n_rejected_as_labels={t: len(v)
+                                            for t, v in rejected.items()},
+                      rejected_sample={t: v[:8] for t, v in rejected.items()},
                       block_bounds={t: [marks[t], (order[j + 1][1]
                                                    if j + 1 < len(order)
                                                    else len(lines))]
                                     for j, (t, _) in enumerate(order)})
+
+
+def verify_supplied_names(html: str, names_by_team) -> Outcome:
+    """Accept per-club names given explicitly, but only if the BYTES say so.
+
+    WHY THIS EXISTS, AND WHY IT IS NOT A BACK DOOR.
+
+    `parse()` refuses on any document whose shape it cannot read, and it has
+    never seen a populated page, so it may well refuse bytes that plainly do
+    carry both lists. Without a path forward that would mean the window closes
+    on a parser limitation rather than on missing information.
+
+    The path is not "type in what you believe". Every supplied name must occur
+    VERBATIM in the stored official document. A name that is not in the bytes
+    is rejected by code, so a reporter's expectation, a sportsbook's implied
+    starter or a remembered list cannot be entered here -- they would have to
+    already be in the league's own page to pass, and if they are in the page
+    they are the league's words and not the operator's.
+
+    What the operator supplies is the SEGMENTATION -- which names belong to
+    which club -- not the information. The artifact records it as such, so a
+    later reader can tell a machine reading from an assisted one and can
+    re-check every name against the same stored hash.
+    """
+    if not html or not html.strip():
+        return Outcome.fail('INACTIVES_EMPTY_DOCUMENT',
+                            'the stored document is empty')
+    if not names_by_team or not all(names_by_team.get(t)
+                                    for t in names_by_team):
+        return Outcome.fail(
+            'INACTIVES_SUPPLIED_LIST_INCOMPLETE',
+            'every club must be given at least one name; a club with an '
+            'empty list is a missing answer, not an empty one',
+            owed={'supplied': {t: len(v or [])
+                               for t, v in (names_by_team or {}).items()}})
+    absent = {}
+    for team, names in names_by_team.items():
+        gone = [n for n in names if n not in html]
+        if gone:
+            absent[team] = gone
+    if absent:
+        return Outcome.fail(
+            'INACTIVES_SUPPLIED_NAME_NOT_IN_BYTES',
+            f'{sum(len(v) for v in absent.values())} supplied name(s) do not '
+            f'occur in the stored official document, so they did not come '
+            f'from it. Nothing is accepted from this call',
+            owed={'names_not_in_document': absent})
+    oversize = {t: len(v) for t, v in names_by_team.items()
+                if len(v) > _MAX_PER_TEAM}
+    if oversize:
+        return Outcome.fail(
+            'INACTIVES_BLOCK_IMPLAUSIBLY_LARGE',
+            f'{oversize} against a ceiling of {_MAX_PER_TEAM}',
+            owed={'ceiling': _MAX_PER_TEAM})
+    return Outcome.ok(
+        'INACTIVES_PARSED', value={t: list(v) for t, v in
+                                   names_by_team.items()},
+        spec_version=SPEC_VERSION,
+        segmentation='operator_supplied_verified_against_bytes',
+        n_names={t: len(v) for t, v in names_by_team.items()},
+        every_name_found_verbatim_in_document=True)
 
 
 # --------------------------------------------------------------- identity

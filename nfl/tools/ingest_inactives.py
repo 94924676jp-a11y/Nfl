@@ -106,6 +106,13 @@ def main(argv=None) -> int:
     ap.add_argument('--published-at', default=None)
     ap.add_argument('--http-status', default=None)
     ap.add_argument('--out', required=True)
+    ap.add_argument('--names-json', default=None,
+                    help='JSON {"SF": ["First Last", ...], "LA": [...]} used '
+                         'ONLY when the parser cannot read the page it was '
+                         'given. Every name must occur verbatim in the stored '
+                         'official bytes or the whole call is refused, so '
+                         'this supplies the segmentation, never the '
+                         'information.')
     ap.add_argument('--season', type=int, default=2026)
     ap.add_argument('--week', type=int, default=1)
     ap.add_argument('--draws', type=int, default=1000)
@@ -164,11 +171,23 @@ def main(argv=None) -> int:
         return _finish(rec, a, 2)
 
     # ---- 2. both teams ---------------------------------------------------
-    pa = INA.parse(raw.decode('utf-8', 'replace'), list(teams))
+    doc = raw.decode('utf-8', 'replace')
+    pa = INA.parse(doc, list(teams))
+    if pa.state is not State.PASS and a.names_json:
+        # THE OPERATOR SUPPLIES THE SEGMENTATION, NOT THE INFORMATION.
+        # Every name is checked back against the bytes just stored, so a
+        # name that is not in the league's own document cannot get in here.
+        supplied = json.loads(pathlib.Path(a.names_json).read_text())
+        supplied = {t: supplied[t] for t in teams if t in supplied}
+        rec['machine_parse_refused'] = {'code': pa.code,
+                                        'detail': pa.detail[:300]}
+        pa = INA.verify_supplied_names(doc, supplied)
     if not step('2. both clubs represented', pa.state is State.PASS,
                 code=pa.code, n_names=pa.evidence.get('n_names'),
+                segmentation=pa.evidence.get('segmentation'),
                 detail=str(pa.evidence.get('n_names') or pa.detail[:120])):
         return _finish(rec, a, 2)
+    rec['segmentation'] = pa.evidence.get('segmentation')
 
     # ---- 3. identity before any projection moves -------------------------
     # THE REDUCED VINTAGE CARRIES NO NAME, SO IT CANNOT RESOLVE AN IDENTITY.

@@ -219,3 +219,113 @@ So the turnaround once bytes land is minutes, not hours. **Send the file.**
 table, or a retrospective `weekly_rosters.status == INA`. The last one is
 especially tempting and especially wrong: that vendor field is re-partitioned
 *after* the game, so using it pregame is reading tomorrow's paper.
+
+---
+
+## 2026-09-10 22:45Z — OUT-007 CORRECTION: check the bytes carry a list before you send them
+
+I found 83 real captures of `https://www.nfl.com/inactives/` already in this
+repository under `nfl/vintage/official_inactives.*.html.gz`, taken 2026-09-07
+00:25Z through 2026-09-08 17:28Z, back when egress to nfl.com still worked.
+They are genuine 72 KB nfl.com pages, not error bodies. **I had not looked at
+them.** They change the request.
+
+**What they show.** Every one is the page's EMPTY STATE. Strip the tags and the
+main content reads, in full:
+
+> NFL Inactive Reports — Please check back soon for NFL Inactive Reports for
+> this Season
+
+No table, no player, no club block. Two useful things follow. First, the page
+**is server-rendered** — the empty-state sentence is in the served HTML, so
+when the lists publish they will very probably be in the served HTML too, and
+plain bytes should be enough. Second, and this is the part that would have
+cost us tonight: **a successful fetch of that URL is not the same as a fetch
+that contains a list.**
+
+**What it did to my parser, and why I am telling you rather than quietly
+fixing it.** I fed one of those real captures to the parser that was going to
+consume tonight's bytes. With team tokens `SF`/`LA` it refused. With `49ers`/
+`Rams` — the spelling a rendered page is likelier to use — it returned
+**PASS with 311 "names"**:
+
+    'NFL Week', 'Lumen Field', 'Americano NFL', 'The Seattle Seahawks',
+    'New England Patriots', 'San Francisco', 'The New York Giants', ...
+
+all 311 assigned to one club and **zero to the other**, harvested out of the
+navigation and the news tray. The page also carries promo headlines reading
+*"Rams HC Sean McVay expects WR Puka Nacua … to play in Week 1 vs. 49ers"* and
+*"TE George Kittle trending in right direction"* — so the failure mode was not
+abstract. It was a parser one team-token spelling away from **manufacturing an
+official inactive list out of reporter headlines**, which is the precise thing
+the owner's ruling forbids. Nothing but luck stood in the way.
+
+Three independent guards now sit in `parse()`, each verified to fire on its own
+with the earlier ones deliberately defeated: the page's own empty-state text;
+a club that yields no names; and a size ceiling of 12, since a club dresses 48
+of 53 and a real list is 5 to 8 names. The real capture is now a permanent
+fixture in `test_inactives_drill.py` — the only adversarial input in that file
+the site actually served rather than one I wrote. 78 checks, 0 failing.
+
+One of those guards was itself wrong on its first pass, and the drill caught
+it: rejecting any candidate containing a club word also rejects **Justin
+Houston, A.J. Green, Dwayne Washington** and the drill's own synthetic "Rams
+Runner". Club matching is now whole-phrase only.
+
+**So, concretely, before you send anything:**
+
+1. Grep the bytes for `check back soon`. If it is there, **the page has no
+   list** — do not send it, wait and re-fetch. Sending it costs us a cycle we
+   do not have at T-90.
+2. Confirm the bytes contain **both** clubs with player names under each. A
+   page naming only one club is not tonight's answer.
+3. Send it the moment both are there, with your retrieval clock to the second.
+   Do not tidy, extract, or summarise — the guards need the original document.
+
+If the lists turn out to be injected client-side after all and the served HTML
+stays empty, say so and send the **rendered DOM** or the JSON the page fetches,
+labelled as such so it is stored for what it is. What I cannot use is a typed
+table, and what I will not accept is a headline.
+
+---
+
+## 2026-09-10 22:50Z — OUT-007 ADDENDUM: a parser refusal is not a lost window
+
+Closing a gap I left open an hour ago. I hardened the parser to refuse
+anything it cannot read, which is right, but it means the reverse risk is now
+the live one: **the parser has never seen a populated inactives page**, every
+capture in this repository is the empty state, so it may well refuse bytes
+that plainly do carry both clubs' lists. I tried building a segmenter that
+would handle a populated page and stopped, because the only populated examples
+available were ones I wrote myself, and a segmenter fitted to my own mock-up
+is fitted to my assumptions rather than to the league's HTML. I would rather
+say that than ship a guess with a confident name on it.
+
+So there is a second path, and it is now tested (`--names-json`):
+
+    python3.12 nfl/tools/ingest_inactives.py --game-id 2026_01_SF_LA \
+        --bytes <file> --source-url <url> --retrieved-at <iso8601Z> \
+        --names-json <file> --out nfl/research/live/2026_01_SF_LA
+
+The rule that makes it safe: **every supplied name must occur verbatim in the
+stored official bytes**, checked in code against the same document that was
+hashed at step 1. A name that is not in the league's own page is refused and
+nothing from that call is accepted, not even the names that did match. So what
+the operator supplies is the *segmentation* — which name belongs to which club
+— and never the information. The artifact records
+`segmentation: operator_supplied_verified_against_bytes` alongside the machine
+parse's refusal code, so a later reader can tell an assisted reading from a
+machine one and re-check every name against the stored hash.
+
+That check is necessary and not sufficient, and I want the limitation on the
+record rather than buried: the captured page's news promos contain "George
+Kittle" and "Puka Nacua", so a substring test alone would accept those from
+*any* nfl.com page. It is the pairing that carries the weight — bytes that are
+a real fetch of the real inactives page, **plus** every name traceable into
+them. Neither half stands alone.
+
+**What this means for you: send the bytes even if you are unsure.** If the
+parser reads them, we are done in minutes. If it refuses, I can still complete
+the chain from the same bytes, with the refusal recorded, provided you also
+tell me which names sat under which club heading. What I still cannot use is a
+list without the bytes behind it.

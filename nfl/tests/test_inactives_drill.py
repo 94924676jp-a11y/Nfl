@@ -242,6 +242,155 @@ def test_the_pre_inactives_artifacts_are_immutable():
     check('every sealed pre-inactives board was inspected', seen == 5, str(seen))
 
 
+# The fixture is a REAL nfl.com capture that lives in this repository, taken
+# 2026-09-08 while egress to nfl.com still worked. Its main content reads
+# "Please check back soon for NFL Inactive Reports for this Season" -- a real
+# fetch of a real page carrying no list at all. Every synthetic document in
+# this module was written by me and shares my assumptions; this one does not,
+# and it is the only adversarial input here that the site actually served.
+REAL_EMPTY_PAGE = (LIVE / 'vintage'
+                   / 'official_inactives.88a19528350ea23f.html.gz')
+
+
+def _real_empty_page():
+    import gzip
+    return gzip.open(REAL_EMPTY_PAGE, 'rb').read().decode('utf-8', 'replace')
+
+
+def test_the_real_empty_page_is_refused_under_every_team_spelling():
+    """The defect this fixture caught, and the reason it is now a fixture.
+
+    Before the guards, this page parsed to State.PASS with 311 "names" --
+    'NFL Week', 'Lumen Field', 'Americano NFL', 'The Seattle Seahawks' --
+    swept out of the navigation and the news tray, every one of them assigned
+    to a single club and none to the other. The team-token spelling was all
+    that stood between that and an inactive list fabricated out of headlines.
+    """
+    if not REAL_EMPTY_PAGE.exists():
+        print('  ..   real capture fixture absent; skipped')
+        return
+    html = _real_empty_page()
+    check('the fixture really is the empty state, not a populated list',
+          'check back soon' in html.lower())
+    check('and it really does carry the news promos that fooled the parser',
+          'Nacua' in html and 'Kittle' in html)
+    for teams in (['SF', 'LA'], ['49ers', 'Rams'],
+                  ['San Francisco', 'Los Angeles']):
+        o = INA.parse(html, teams)
+        check(f'  {teams} -> refused, not parsed', o.state is not State.PASS,
+              f'{o.state.name} {o.code}')
+        check('    and no names escaped', not o.value)
+
+
+def test_each_guard_is_load_bearing_on_its_own():
+    """A guard masked by an earlier guard is not evidence that it works.
+
+    Guard 1 is defeated deliberately so guards 2 and 3 are exercised on the
+    real document rather than on my idea of one.
+    """
+    if not REAL_EMPTY_PAGE.exists():
+        print('  ..   real capture fixture absent; skipped')
+        return
+    import re as _re
+    html = _re.sub(r'(?i)check back soon', 'XXXX', _real_empty_page())
+
+    o = INA.parse(html, ['49ers', 'Rams'])
+    check('guard 1 defeated: a later guard still refuses',
+          o.state is not State.PASS, f'{o.state.name} {o.code}')
+    check('  and it is the empty-club guard that fires',
+          o.code == 'INACTIVES_TEAM_HAS_NO_NAMES', o.code)
+    owed = (o.evidence or {}).get('owed', {})
+    check('  which names the club that got nothing',
+          owed.get('teams_without_names') == ['49ers'], str(owed.get(
+              'teams_without_names')))
+    check('  and the label filter did real work',
+          (owed.get('n_rejected_as_labels') or {}).get('Rams', 0) > 100,
+          str(owed.get('n_rejected_as_labels')))
+
+    # Guards 1 and 2 both defeated: the size ceiling must still hold.
+    many = ''.join(f'<li>Alpha Player{chr(65 + i)}</li>' for i in range(20))
+    doc = f'<html><body><h2>SF</h2><ul>{many}</ul>' \
+          f'<h2>LA</h2><ul>{many}</ul></body></html>'
+    o3 = INA.parse(doc, ['SF', 'LA'])
+    check('guards 1 and 2 defeated: the size ceiling refuses',
+          o3.code == 'INACTIVES_BLOCK_IMPLAUSIBLY_LARGE', o3.code)
+
+    # And the ceiling must not be so tight that a real list trips it.
+    six = ''.join(f'<li>Alpha Player{chr(65 + i)}</li>' for i in range(6))
+    doc2 = f'<html><body><h2>SF</h2><ul>{six}</ul>' \
+           f'<h2>LA</h2><ul>{six}</ul></body></html>'
+    o4 = INA.parse(doc2, ['SF', 'LA'])
+    check('a realistic 6-and-6 list still passes',
+          o4.state is State.PASS and {t: len(v) for t, v in o4.value.items()}
+          == {'SF': 6, 'LA': 6}, f'{o4.state.name} {o4.code}')
+
+
+def test_club_and_chrome_labels_are_not_people():
+    """The exact strings the real page produced, asserted one by one."""
+    for label in ('The Seattle Seahawks', 'New England Patriots', 'NFL Week',
+                  'Lumen Field', 'Americano NFL', 'San Francisco',
+                  'Los Angeles Rams', 'The New York Giants'):
+        check(f'  {label!r} is not read as a player',
+              not INA._plausible_person(label))
+    # These are the ones that matter. A token-level club filter rejected
+    # every one of them, including the drill's own "Rams Runner", and would
+    # have silently dropped a real inactive whose surname is a club word.
+    for person in ('Wide Starter', 'Brock Purdy', "De'Von Achane",
+                   'Amon-Ra St. Brown', 'Puka Nacua', 'Rams Runner',
+                   'Justin Houston', 'A.J. Green', 'Dwayne Washington'):
+        check(f'  {person!r} still is', INA._plausible_person(person))
+
+
+def test_a_supplied_name_must_come_from_the_stored_bytes():
+    """The operator path, and the reason it cannot become a back door.
+
+    parse() has never seen a populated inactives page, so it may refuse bytes
+    that plainly carry both lists. verify_supplied_names() is the way through,
+    and its whole discipline is one rule: a name that does not occur verbatim
+    in the stored official document is refused by code. That is what stops a
+    reporter's expectation or a remembered list from being typed in -- to pass
+    this check a name must already be the league's own words.
+    """
+    if not REAL_EMPTY_PAGE.exists():
+        print('  ..   real capture fixture absent; skipped')
+        return
+    html = _real_empty_page()
+
+    # 'George Kittle' and 'Puka Nacua' really are in this document -- in its
+    # news promos. That is exactly why the substring check is necessary but
+    # NOT sufficient on its own, and why it is paired with a real fetch of a
+    # real inactives page rather than any page at all.
+    ok = INA.verify_supplied_names(html, {'SF': ['George Kittle'],
+                                          'LA': ['Puka Nacua']})
+    check('names that occur in the document are accepted',
+          ok.state is State.PASS, f'{ok.state.name} {ok.code}')
+    check('  and the artifact says the segmentation was assisted',
+          ok.evidence.get('segmentation')
+          == 'operator_supplied_verified_against_bytes',
+          str(ok.evidence.get('segmentation')))
+
+    bad = INA.verify_supplied_names(html, {'SF': ['George Kittle'],
+                                           'LA': ['Fabricated Person']})
+    check('a name absent from the document is refused',
+          bad.state is State.FAIL, f'{bad.state.name} {bad.code}')
+    check('  under a named code',
+          bad.code == 'INACTIVES_SUPPLIED_NAME_NOT_IN_BYTES', bad.code)
+    check('  and it names the offending entry',
+          (bad.evidence.get('owed') or {}).get('names_not_in_document')
+          == {'LA': ['Fabricated Person']})
+    check('  and NOTHING is accepted from a partly-bad call',
+          not bad.value, str(bad.value))
+
+    empty = INA.verify_supplied_names(html, {'SF': ['George Kittle'],
+                                             'LA': []})
+    check('a club supplied with no names is refused',
+          empty.code == 'INACTIVES_SUPPLIED_LIST_INCOMPLETE', empty.code)
+
+    big = INA.verify_supplied_names(
+        html, {'SF': ['George Kittle'], 'LA': ['Puka Nacua'] * 1})
+    check('a plausible pair still passes', big.state is State.PASS, big.code)
+
+
 def test_zz_every_check_passed():
     if FAILED:
         raise AssertionError(f'{FAILED} check(s) failed in this module')
