@@ -45,7 +45,8 @@ def kickoff_for(season, week, game_id):
 
 
 def build_one(season, week, game_id, written_at, out_dir, draws=1000,
-              seed=20260908, model_configuration='V1_CANDIDATE'):
+              seed=20260908, model_configuration='V1_CANDIDATE',
+              inactive_ids=None):
     """Seal a forecast and render its board. Returns (summary, board, dir)."""
     away, home = game_id.split('_')[2:4]
     teams = (away, home)
@@ -94,7 +95,11 @@ def build_one(season, week, game_id, written_at, out_dir, draws=1000,
     players = [{'gsis_id': r['gsis_id'], 'position': r['position'],
                 'team': r['team']} for r in rows]
 
+    # THE OFFICIAL INACTIVE SET, IF ONE HAS BEEN ESTABLISHED. Absent, this is
+    # None and the run is a pre-inactives board -- which is what every board
+    # sealed before the list publishes must remain.
     fx = {'kickoff_utc': ko,
+          'official_inactive_ids': list(inactive_ids or []) or None,
           'source_hashes': {k: {'sha256': v['sha256'],
                                 'retrieved_at': v['observed_at']}
                             for k, v in info['sources'].items()},

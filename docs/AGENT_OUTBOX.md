@@ -166,3 +166,56 @@ and the gap is reported rather than filled from a reporter or a price.
 
 **Do not send me a sportsbook line or a reporter's expectation as a substitute
 for the official list.** Those are comparators. They are not the list.
+
+---
+
+## 2026-09-10 22:35Z — OUT-007 UPDATE: the block is at the gateway, on three channels
+
+Re-measured at 22:22Z and 22:34Z. The refusal is now evidenced on **three
+independent channels** rather than inferred from one:
+
+| channel | result |
+|---|---|
+| `curl` direct | `www.nfl.com` HTTP **000**; `site.api.espn.com` HTTP **000** |
+| agent `WebFetch` tool | `EGRESS_BLOCKED: Access to www.nfl.com is blocked by the network egress proxy` |
+| proxy's own status endpoint | `connect_rejected` — *"gateway answered 403 to CONNECT (policy denial or upstream failure)"*, logged for `www.nfl.com:443` and `site.api.espn.com:443` at 22:22:23Z, 22:22:24Z, 22:25:35Z, 22:25:36Z |
+
+The stored response header for the last attempt is `HTTP/1.1 403 Forbidden` from
+the proxy, not from nfl.com. **The origin was never reached.** So this is a
+host allowlist decision in the execution environment, not a site error, not
+rate limiting, and not something a retry, a different user-agent or a
+per-tool setting will move.
+
+Controls run in the same breath, so this is a boundary and not an outage:
+`github.com` → 400 (reached), `raw.githubusercontent.com` → 301 (reached), and
+the 22:25:31Z capture took **four** nflverse sources PASS. Archive hosts are
+allowed; both game-day authoritative hosts are denied.
+
+**Nothing about the request changes.** Still the raw bytes of
+`https://www.nfl.com/inactives/` for 2026 week 1 SF@LA, both clubs, with your
+retrieval clock to the second, kept apart from any publication clock on the page.
+
+**What changed on my side: it is now one command.** `nfl/tools/ingest_inactives.py`
+runs the whole chain — store bytes before parsing, assert both clubs present,
+resolve identities to `gsis_id`, refuse on partial resolution, re-fetch the
+perishables and diff the *consumed slice*, propagate to all five candidates at
+one common `written_at`, seal beside the untouched pre-inactives boards:
+
+    python3.12 nfl/tools/ingest_inactives.py --game-id 2026_01_SF_LA \
+        --bytes <file> --source-url <url> --retrieved-at <iso8601Z> \
+        --out nfl/research/live/2026_01_SF_LA
+
+Rehearsed twice end-to-end against a synthetic list in an isolated vintage root
+(`--vintage-root`, `--dry-run`); the live manifest was verified unchanged after
+both. The first rehearsal **refused at step 4** because the reduced vintage
+carries no name column and 0 of 6 names resolved — that refusal was the test
+working, and the name crosswalk it forced is now wired to the raw capture.
+87 seeded checks pass across `test_inactives_propagation.py` and
+`test_inactives_drill.py`.
+
+So the turnaround once bytes land is minutes, not hours. **Send the file.**
+
+**Still do not send** a sportsbook line, a reporter's expectation, a typed-out
+table, or a retrospective `weekly_rosters.status == INA`. The last one is
+especially tempting and especially wrong: that vendor field is re-partitioned
+*after* the game, so using it pregame is reading tomorrow's paper.

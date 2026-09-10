@@ -1,0 +1,25 @@
+{
+ "artifact": "NFL_SFLA_BOARD_STATE",
+ "game_id": "2026_01_SF_LA",
+ "kickoff_utc": "2026-09-11T00:35:00Z",
+ "state": "PRE_INACTIVES",
+ "as_of_utc": "2026-09-10T22:26:00Z",
+ "meaning": "Every board in this directory was sealed BEFORE the official inactive lists published. None of them is governed by an official game-day active/inactive source, and none may be described as post-inactives.",
+ "written_at_common": "2026-09-10T21:18:56Z",
+ "boards": [
+  "pre_inactives_V1_CANDIDATE",
+  "pre_inactives_V1_CANDIDATE_R5",
+  "pre_inactives_V1_CANDIDATE_R6",
+  "pre_inactives_V1_CANDIDATE_R7",
+  "pre_inactives_V1_CANDIDATE_R8"
+ ],
+ "post_inactives_present": false,
+ "why_not": "official_inactives is BLOCKED[NO_EGRESS] from this executor; nfl.com returns HTTP 000. Requested as OUT-007. If the authoritative bytes never arrive these boards stand as they are and nothing is substituted for the list.",
+ "forbidden_substitutes": [
+  "sportsbook prices",
+  "reporter summaries",
+  "inferred dress status",
+  "retrospective weekly_rosters.status INA"
+ ],
+ "ingestion_entrypoint": "nfl/tools/ingest_inactives.py"
+}

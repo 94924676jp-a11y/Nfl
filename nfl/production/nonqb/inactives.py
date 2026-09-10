@@ -258,7 +258,22 @@ def _key(n):
 # ------------------------------------------------------------------ sets
 def sets(resolved, roster, teams, *, retrieved_at, kickoff_utc,
          game_id) -> Outcome:
-    """Explicit ACTIVE and INACTIVE sets, and the completeness label.
+    """The OFFICIAL_INACTIVE set, and what the source does NOT establish.
+
+    OWNER RULING 2026-09-10 item 4, and the reason this function no longer
+    returns anything called `active`.
+
+    The inactives publication is an assertion about who is OUT. It is not an
+    assertion that everybody else is dressing. A roster carries 52-53 names,
+    about 48 dress, and roughly 7 are listed inactive -- so "not on the list"
+    covers players who will dress AND practice-squad members who were never
+    going to, and the page does not distinguish them. Returning a set called
+    `active` invited exactly the inference the ruling forbids: that a pregame
+    `ACT` plus an absence from the list equals GAME_ACTIVE.
+
+    So the second set is named `not_listed_inactive` and carries no positive
+    claim. Its members keep whatever status the roster gave them --
+    ROSTER_ACTIVE for `ACT`, and nothing stronger.
 
     Chronology first: a list retrieved at or after kickoff is not pregame
     information about who would dress, and is refused rather than used.
@@ -278,14 +293,20 @@ def sets(resolved, roster, teams, *, retrieved_at, kickoff_utc,
     flagged = set()
     for t in teams:
         flagged.update(resolved.get(t) or [])
-    inactive, active = {}, {}
+    inactive, not_listed = {}, {}
     for pid, r in roster.items():
         if r.get('team') not in teams:
             continue
-        (inactive if pid in flagged else active)[pid] = r.get('team')
+        (inactive if pid in flagged else not_listed)[pid] = r.get('team')
     label = INCOMPLETE if missing else COMPLETE
     ev = {'game_id': game_id, 'label': label,
-          'n_inactive': len(inactive), 'n_active': len(active),
+          'n_official_inactive': len(inactive),
+          'n_not_listed_inactive': len(not_listed),
+          'what_not_listed_means':
+              'ABSENCE FROM THE LIST, AND NOTHING MORE. The publication says '
+              'who is out; it does not say the rest are dressing. These '
+              'players keep the status the roster gave them and receive no '
+              'GAME_ACTIVE designation from this source.',
           'inactive_by_team': {t: sorted(p for p, tt in inactive.items()
                                          if tt == t) for t in teams},
           'n_inactive_by_team': {t: sum(1 for tt in inactive.values()
@@ -302,8 +323,12 @@ def sets(resolved, roster, teams, *, retrieved_at, kickoff_utc,
             f'covered on both sides and the run may not be labelled '
             f'{COMPLETE}. Half a governed forecast is not a governed forecast.',
             owed={'teams': missing}, **ev)
-    return Outcome.ok(COMPLETE, value={'inactive': inactive, 'active': active},
-                      **ev)
+    return Outcome.ok(
+        COMPLETE,
+        value={'inactive': inactive, 'not_listed_inactive': not_listed,
+               'states': {**{p: OFFICIAL_INACTIVE for p in inactive},
+                          **{p: ROSTER_ACTIVE for p in not_listed}}},
+        **ev)
 
 
 # ------------------------------------------------------------- propagation

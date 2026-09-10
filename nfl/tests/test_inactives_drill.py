@@ -134,6 +134,16 @@ def test_the_drill_runs_end_to_end_on_a_synthetic_root():
     check('   SF has three inactive, LA one',
           se.evidence['n_inactive_by_team'] == {'SF': 3, 'LA': 1},
           str(se.evidence['n_inactive_by_team']))
+    # OWNER RULING item 4: absence from the list is not a positive claim.
+    st_map = se.value['states']
+    check('   every listed player is OFFICIAL_INACTIVE',
+          all(st_map[p] == INA.OFFICIAL_INACTIVE for p in se.value['inactive']))
+    check('   and NO player is designated GAME_ACTIVE by this source',
+          not any(v == INA.GAME_ACTIVE for v in st_map.values()),
+          str({k: v for k, v in st_map.items() if v == INA.GAME_ACTIVE}))
+    check('   the unlisted keep only ROSTER_ACTIVE',
+          all(st_map[p] == INA.ROSTER_ACTIVE
+              for p in se.value['not_listed_inactive']))
     check('   and the list is timed before kickoff',
           se.evidence['hours_before_kickoff'] == 1.5,
           str(se.evidence['hours_before_kickoff']))
