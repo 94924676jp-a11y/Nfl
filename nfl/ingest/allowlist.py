@@ -118,6 +118,14 @@ QUARANTINE: Mapping[str, Mapping[str, Category]] = {
     'schedules': {**{c: Category.MARKET for c in _SCH_MARKET},
                   **{c: Category.OUTCOME for c in _SCH_OUTCOME},
                   **{c: Category.POSTHOC for c in _SCH_POSTHOC}},
+    # QUARANTINE STANDS. One narrow exemption is recorded 2026-09-10 in
+    # NFL_ROSTER_STATUS_GOVERNANCE.md (ruling B): the field carries the 53-man
+    # roster before a team's kickoff and the 48 who DRESSED after it, measured
+    # in one file -- SF 53 / LA 52 pregame against NE 48+7 / SEA 48+7 played.
+    # nfl/production/nonqb/roster_status.py may read it for POOL CONSTRUCTION
+    # only, under two independent guards (observation strictly before kickoff,
+    # and no post-hoc code for the teams in scope). Every other reader is
+    # refused, and ACT may never become GAME_ACTIVE.
     'weekly_rosters': {'status': Category.POSTHOC},
     'injuries': {},
     'depth_charts': {},

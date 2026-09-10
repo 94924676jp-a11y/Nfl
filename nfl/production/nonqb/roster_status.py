@@ -1,5 +1,35 @@
 """Active-roster status for the allocation pool. R5.
 
+GOVERNANCE, SETTLED 2026-09-10 BY MEASUREMENT (ruling B, see
+NFL_ROSTER_STATUS_GOVERNANCE.md).
+
+`weekly_rosters.status` is quarantined POSTHOC in nfl/ingest/allowlist.py on the
+measurement "ACT -> 0.9715 snap rate, INA -> 0 of 3,438. A near-perfect
+predictor of playing, available only afterwards." That measurement is correct
+and it is a measurement of a RETROSPECTIVE file.
+
+The field carries two different quantities under one label, and which one you
+get depends on whether the capture precedes the team's kickoff. Measured in ONE
+capture on 2026-09-10T12:07:17Z:
+
+    SF   ACT 53   (had not played)      <- the 53-man active roster
+    LA   ACT 52   (had not played)
+    NE   ACT 48 + INA 7 = 55 (had played)   <- the 48 who DRESSED
+    SEA  ACT 48 + INA 7 = 55 (had played)
+
+After a team plays, the vendor RE-PARTITIONS the roster into who dressed and
+who did not. 48 is the league gameday active limit. So a retrospective ACT is
+"was active for that game", which is why it predicts snaps almost perfectly --
+close to a tautology rather than a forecast.
+
+R5 uses the PREGAME quantity, which is roster membership, and it is guarded on
+two independent conditions: the capture must be observed strictly before
+kickoff for the teams in scope (a clock check), and it must carry no POSTHOC
+code for them (a content check). Neither alone is sufficient -- the vendor took
+about twelve hours to populate INA after the NE/SEA kickoff, so a capture inside
+that window would be post-game and INA-free.
+
+
 THE DEFECT THIS EXISTS FOR, MEASURED RATHER THAN ARGUED.
 
 The P4C weight `C` is an EWMA of a player's prior **appeared** class shares --
@@ -77,7 +107,8 @@ def _raw_rosters():
     return sorted(RAW.glob('weekly_rosters.*.csv'))
 
 
-def status_map(season: int, week: int, teams, observed_before=None) -> Outcome:
+def status_map(season: int, week: int, teams, observed_before=None,
+               kickoff_utc=None) -> Outcome:
     """gsis_id -> roster status, from a raw roster capture.
 
     `observed_before` is the chronology cut. A status read from a capture taken
@@ -135,6 +166,34 @@ def status_map(season: int, week: int, teams, observed_before=None) -> Outcome:
             'ROSTER_STATUS_EMPTY',
             f'{chosen.name} carries no {season} week {week} rows for '
             f'{sorted(teams)}', cause=Cause.DATA, spec_version=SPEC_VERSION)
+    # THE CLOCK CHECK, WHICH THE CONTENT CHECK CANNOT REPLACE.
+    #
+    # Measured 2026-09-10: the vendor populated INA for NE and SEA within about
+    # twelve hours of their kickoff. A capture taken in the gap between kickoff
+    # and that update would be post-game for those teams and carry NO INA row,
+    # so the content check below would pass it. The observation clock is what
+    # closes that window, and it is checked FIRST because it does not depend on
+    # the vendor having got round to updating anything.
+    if kickoff_utc is not None and chosen_at is not None:
+        import datetime as _dt
+
+        def _p(t):
+            d = _dt.datetime.fromisoformat(str(t).replace('Z', '+00:00'))
+            return d if d.tzinfo else d.replace(tzinfo=_dt.timezone.utc)
+        if _p(chosen_at) >= _p(kickoff_utc):
+            return Outcome.fail(
+                'ROSTER_STATUS_OBSERVED_AFTER_KICKOFF',
+                f'{chosen.name} was observed at {chosen_at}, at or after the '
+                f'{kickoff_utc} kickoff for {sorted(teams)}. After a team '
+                f'plays, the vendor RE-PARTITIONS its 53-man roster into the '
+                f'48 who dressed (ACT) and the 7 who did not (INA), so ACT '
+                f'stops meaning roster membership and starts meaning a '
+                f'gameday outcome. Measured in one file on 2026-09-10: SF 53 '
+                f'and LA 52 ACT before their game, NE 48 and SEA 48 ACT with '
+                f'7 INA each after theirs.',
+                observed_at=chosen_at, kickoff_utc=str(kickoff_utc),
+                source=chosen.name)
+
     contaminated = {st: n for st, n in counts.items() if st in POSTHOC}
     if contaminated:
         who = sorted(pid for pid, st in out.items() if st in POSTHOC)

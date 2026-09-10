@@ -154,44 +154,60 @@ def store(raw: bytes, *, retrieved_at, source_url, game_id,
 
 
 # ------------------------------------------------------------------ parse
-_NAME = re.compile(r'[A-Z][A-Za-z.\'\-]+(?:\s+[A-Z][A-Za-z.\'\-]+)+')
+# NAMES DO NOT SPAN LINE BREAKS, AND THE FIRST VERSION OF THIS LET THEM.
+#
+# `\s+` matches a newline, so `[A-Z]\w+(\s+[A-Z]\w+)+` over a stripped list
+# happily matched "Wide Starter Back Starter End Starter Ghost Player" as ONE
+# name, and every real player then failed to resolve. The synthetic drill found
+# it before the real list arrived, which is the whole reason the drill exists.
+# Matching is line by line, and the separator is a literal space.
+_NAME = re.compile(r"[A-Z][A-Za-z.'\-]+(?:[ ]+[A-Z][A-Za-z.'\-]+)+")
 
 
 def parse(html: str, teams) -> Outcome:
-    """team -> [name, ...]. Deliberately conservative; ambiguity is refused later.
+    """team -> [name, ...]. Conservative, and every step re-checked downstream.
 
     The official page's markup is not stable enough to be worth a clever
     parser, and a clever parser that silently returns an empty list for one
-    club is worse than a plain one that says so. This extracts a per-team block
-    and the capitalised names inside it, and every downstream step re-checks
-    what it got.
+    club is worse than a plain one that says so. Tags are stripped, the
+    document is cut into per-team blocks at the team tokens themselves, and
+    capitalised names are read a line at a time.
     """
     if not html or not html.strip():
         return Outcome.fail('INACTIVES_EMPTY_DOCUMENT',
                             'the stored document is empty')
-    text = re.sub(r'<[^>]+>', '\n', html)
-    found, missing = {}, []
-    for t in teams:
-        idx = [m.start() for m in re.finditer(rf'\b{re.escape(t)}\b', text)]
-        if not idx:
-            missing.append(t)
-            continue
-        block = text[idx[0]: idx[0] + 4000]
-        names = []
-        for m in _NAME.finditer(block):
-            n = m.group(0).strip()
-            if n not in names:
-                names.append(n)
-        found[t] = names
+    lines = [ln.strip() for ln in re.sub(r'<[^>]+>', '\n', html).splitlines()]
+    lines = [ln for ln in lines if ln]
+    marks = {}
+    for i, ln in enumerate(lines):
+        for t in teams:
+            if re.search(rf'\b{re.escape(t)}\b', ln) and t not in marks:
+                marks[t] = i
+    missing = [t for t in teams if t not in marks]
     if missing:
         return Outcome.deferred(
             'INACTIVES_TEAM_NOT_REPRESENTED',
             f'{missing} do(es) not appear in the captured document, so this '
             f'capture cannot describe both clubs',
-            owed={'teams_missing': missing, 'teams_found': sorted(found)})
+            owed={'teams_missing': missing, 'teams_found': sorted(marks)})
+    order = sorted(marks.items(), key=lambda kv: kv[1])
+    found = {}
+    for j, (t, start) in enumerate(order):
+        end = order[j + 1][1] if j + 1 < len(order) else len(lines)
+        names = []
+        for ln in lines[start:end]:
+            for m in _NAME.finditer(ln):
+                n = m.group(0).strip()
+                if n not in names:
+                    names.append(n)
+        found[t] = names
     return Outcome.ok('INACTIVES_PARSED', value=found,
                       spec_version=SPEC_VERSION,
-                      n_names={t: len(v) for t, v in found.items()})
+                      n_names={t: len(v) for t, v in found.items()},
+                      block_bounds={t: [marks[t], (order[j + 1][1]
+                                                   if j + 1 < len(order)
+                                                   else len(lines))]
+                                    for j, (t, _) in enumerate(order)})
 
 
 # --------------------------------------------------------------- identity

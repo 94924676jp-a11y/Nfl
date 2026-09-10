@@ -557,7 +557,8 @@ def build(args, fixtures: dict = None) -> dict:
         if fl.get('active_roster_only'):
             from nfl.production.nonqb import roster_status as RS
             st = RS.status_map(args.season, args.week, teams,
-                               observed_before=args.written_at)
+                               observed_before=args.written_at,
+                               kickoff_utc=fx.get('kickoff_utc'))
             if st.state is not State.PASS:
                 fx['_nonqb'] = {'fatal': st}
                 return fx['_nonqb']

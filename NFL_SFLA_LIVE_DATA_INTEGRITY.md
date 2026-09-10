@@ -15,7 +15,7 @@ observed strictly before `written_at`.
 
 | source | authority rank | vintage (sha16) | observed_at | basis | age at kickoff | refetches returning identical bytes | consumer | freshness verdict |
 |---|--:|---|---|---|--:|--:|---|---|
-| `schedules` | 99 ARCHIVE | `566d12fdc0fd173a` | 2026-09-10T21:08:02Z | capture_id | 3.45 h | 0 | kickoff, venue, team identity | **FRESH** — genuinely new bytes |
+| `schedules` | 99 ARCHIVE | `566d12fdc0fd173a` | 2026-09-10T21:08:02Z | capture_id | 3.45 h | 0 | kickoff, venue, team identity | **CORRECTED — see below. New bytes, unchanged game row.** |
 | `espn_injuries_json` | 9 FALLBACK | `217444ecc1559baa` | 2026-09-10T17:05:23Z | capture_id | 7.49 h | 1 | not consumed by the model | stale but unused |
 | `depth_charts` | 99 ARCHIVE | `db0a09454965e6fc` | 2026-09-10T12:07:17Z | capture_id | 12.46 h | **16** | R6 tier fallback, R7/R8 depth block | **CURRENT** — unchanged, not unfetched |
 | `injuries` | 99 ARCHIVE | `96dcc98e297a38ec` | 2026-09-10T12:07:17Z | capture_id | 12.46 h | **16** | appearance injury features | **CURRENT** |
@@ -36,8 +36,26 @@ three moved forward, and the freshness column above says 12:07 rather than
 21:08. The 16 refetches are a *measurement* that the football has not changed,
 not evidence that it has.
 
-`schedules` did change, so it is timed at 21:08. That is the contrast that makes
-the rule visible.
+`schedules` did change, **and I called it FRESH, which was wrong.** Its file
+hash moves on nearly every capture because other games' rows churn. Hashing the
+slice the model actually consumes — the single `2026_01_SF_LA` row — gives
+`262533af14c12aec` across **all eight** captures from 15:11:56Z to 21:53:57Z:
+same gameday, same 20:35 kickoff, same Melbourne Cricket Ground, same dome, same
+matrixturf. The bytes moved eight times and the football did not move once.
+
+The same slice test applied to every source the model reads:
+
+| source | file hash moved | SF@LA consumed slice | rows | moved |
+|---|--:|---|--:|---|
+| `schedules` | **8×** | `262533af14c12aec` | 1 | **no** |
+| `weekly_rosters` | 0 | `fe00c25f08623c12` | 181 | no |
+| `injuries` | 0 | `4cdf7f67265e0b24` | 18 | no |
+| `depth_charts` | 0 | `62652f7f9b0eb85d` | 140 | no |
+
+**No new football information about SF@LA has arrived since 2026-09-10T15:11:56Z**,
+about 9.4 hours before kickoff. A file hash answers "did the vendor's bytes
+move"; only the consumed slice answers "did our football move", and for a
+league-wide file those are different questions.
 
 ### The selection bound was wrong and is repaired
 
