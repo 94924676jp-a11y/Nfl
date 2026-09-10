@@ -34,7 +34,9 @@ PRODUCTION_BASELINE = 'PRODUCTION_BASELINE'
 V1_CANDIDATE = 'V1_CANDIDATE'
 V1_CANDIDATE_R5 = 'V1_CANDIDATE_R5'
 V1_CANDIDATE_R6 = 'V1_CANDIDATE_R6'
-MODES = (PRODUCTION_BASELINE, V1_CANDIDATE, V1_CANDIDATE_R5, V1_CANDIDATE_R6)
+V1_CANDIDATE_R7 = 'V1_CANDIDATE_R7'
+MODES = (PRODUCTION_BASELINE, V1_CANDIDATE, V1_CANDIDATE_R5, V1_CANDIDATE_R6,
+         V1_CANDIDATE_R7)
 
 # component -> what it does, what governs it, and what it changes.
 # `engine_flag` is the argument football_engine.run_game receives.
@@ -200,6 +202,35 @@ R6_REPAIR = {
 }
 
 
+R7_FLAGS = dict(R6_FLAGS)
+R7_FLAGS['appearance_r7'] = True
+
+R7_REPAIR = {
+    'component': 'R7',
+    'what': 'the appearance mechanism is refitted on the panel UNIONED with the '
+            'point-in-time depth listing, with depth rank as a feature, the '
+            'absence streak reset at the season boundary, and the '
+            'no-history-and-unlisted cell declined rather than scored',
+    'replaces': 'a fit whose training frame drops a player after four missed '
+                'games, so long absence is a marker of having played',
+    'defect': 'appearance rate by consecutive games missed on the frozen panel '
+              'is 0.825 / 0.406 / 0.201 / 0.165 and then 0.958 at four, where '
+              '2,454 of 2,563 rows are appearances. The censoring point is '
+              'model.LOOKBACK_CANDIDATE = 4 and it sits inside the range the '
+              'featuriser encodes',
+    'evidence': 'forward-chained, identical rows, 2022-2025: Brier '
+                '0.13701->0.11730, 0.12806->0.10833, 0.12503->0.10864, '
+                '0.15114->0.13646; team-week-blocked 95% intervals on the '
+                'difference exclude zero in all four seasons',
+    'declines': 'no prior frame row AND no depth listing -- appearance rate '
+                '1.0000 with zero variance, which is a construction, not an '
+                'estimate',
+    'governance': 'REHEARSAL_ONLY',
+    'introduces_no_constant': True,
+    'inherits': 'R6',
+}
+
+
 def resolve(mode: str) -> Outcome:
     """The flags and the component manifest for a named mode, or a refusal.
 
@@ -215,6 +246,14 @@ def resolve(mode: str) -> Outcome:
             value={'mode': PRODUCTION_BASELINE, 'flags': {},
                    'components': [], 'candidate': False},
             detail='no candidate component is active')
+    if mode == V1_CANDIDATE_R7:
+        return Outcome.ok(
+            'MODE_V1_CANDIDATE_R7',
+            value={'mode': V1_CANDIDATE_R7, 'flags': dict(R7_FLAGS),
+                   'components': manifest() + [R5_REPAIR, R6_REPAIR,
+                                               R7_REPAIR],
+                   'candidate': True},
+            detail='R6 plus the R7 appearance-frame and depth repair')
     if mode == V1_CANDIDATE_R6:
         return Outcome.ok(
             'MODE_V1_CANDIDATE_R6',
@@ -253,12 +292,14 @@ def manifest() -> list:
 def assert_not_promoted(mode: str, artifact: dict) -> Outcome:
     """A candidate artifact must say so, in every field that could be read as
     a promotion claim. Called by the sealer; tested with the guard stubbed."""
-    if mode not in (V1_CANDIDATE, V1_CANDIDATE_R5, V1_CANDIDATE_R6):
+    if mode not in (V1_CANDIDATE, V1_CANDIDATE_R5, V1_CANDIDATE_R6,
+                    V1_CANDIDATE_R7):
         return Outcome.not_applicable('NOT_A_CANDIDATE_RUN',
                                       f'mode is {mode!r}')
     bad = []
     if artifact.get('model_configuration') not in (
-            V1_CANDIDATE, V1_CANDIDATE_R5, V1_CANDIDATE_R6):
+            V1_CANDIDATE, V1_CANDIDATE_R5, V1_CANDIDATE_R6,
+            V1_CANDIDATE_R7):
         bad.append('model_configuration does not name the candidate mode')
     if not artifact.get('candidate_components'):
         bad.append('candidate_components is empty on a candidate run')

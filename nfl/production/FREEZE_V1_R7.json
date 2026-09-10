@@ -1,0 +1,47 @@
+{
+ "artifact": "NFL_V1_R7_FREEZE",
+ "date_utc": "2026-09-10",
+ "configuration": "V1_CANDIDATE_R7",
+ "inherits": "V1_CANDIDATE_R6",
+ "promoted": false,
+ "prospective_eligible": false,
+ "governance": "REHEARSAL_ONLY",
+ "what_moved": [
+  "nfl/production/nonqb/depth_vintage.py  (NEW) point-in-time depth selection",
+  "nfl/production/nonqb/appearance_r7.py  (NEW) union-frame appearance fit",
+  "nfl/production/nonqb/layers.py         appearance_spec seam, default frozen",
+  "nfl/production/nonqb/football_engine.py  threads appearance_spec/observed_before",
+  "nfl/production/run_forecast.py         the appearance_r7 flag and its marker",
+  "nfl/production/candidate_mode.py       V1_CANDIDATE_R7 identity and R7_REPAIR",
+  "nfl/research/inputs/dc25_daily.csv.gz  (NEW) 2025 daily depth leaf",
+  "nfl/research/inputs/INPUT_MANIFEST.json  the leaf entry",
+  "nfl/tests/test_r7_appearance_frame.py  (NEW) 67 checks"
+ ],
+ "what_did_not_move": [
+  "QB allocation, efficiency, conversion, team volume, A1, A3G, C0, C3, R2, SC1",
+  "the R5 pool repair and the R6 role prior, both inherited unchanged",
+  "the frozen research modules under nfl/research/p1, p2 and p3 -- R7 wraps them, it does not edit them",
+  "capture, G0A and the product path"
+ ],
+ "introduces_no_constant": true,
+ "default_is_still_the_control": "layers.appearance(appearance_spec='frozen') and football_engine.run_game(appearance_spec='frozen'), so V1, R5 and R6 produce the draws they produced before this parameter existed",
+ "evidence": "nfl/research/r7/R7_EVIDENCE.json",
+ "sealed_run": "nfl/research/r7/sf_la_candidate/ (run f26af9a43f5adaf3)",
+ "suite": "61 modules, 667 test functions, 3,578 checks, 0 failing, 0 raised",
+ "the_result_that_decides_the_recommendation": "R7 is decisively better EARLY and slightly worse LATE. Forward-chained 2022-2025 on identical rows, Brier: week 1 0.24667 -> 0.10966 (delta +0.13702, 95% team-week-blocked [+0.12729, +0.14636]); weeks 2-4 0.18146 -> 0.11510; weeks 5-9 0.11213 -> 0.11814 (delta -0.00601); weeks 10-18 0.10975 -> 0.11989 (delta -0.01014). AUC at week 1 0.7261 -> 0.9376.",
+ "declared_unrepaired": [
+  "the leakage guard in appearance_model.fit is vacuous by construction",
+  "R7 over-predicts appearance in the thin-information cells",
+  "residual censoring for players both off the chart and absent from the panel",
+  "the two depth vendors do not overlap, so rank comparability is unproven",
+  "per-team QB dropback ownership drift, inherited from V1"
+ ],
+ "control_is_bit_identical": {
+  "test": "the R6 candidate was re-run on identical inputs, seed and written_at AFTER the appearance_spec seam was added, and its draw artifact was hashed against the run sealed before the seam existed",
+  "draw_artifact_sha256_before": "8cc1787e1ceb351f94a65441109020fdaaa80de8cba3f763ca01a95252d536e6",
+  "draw_artifact_sha256_after": "8cc1787e1ceb351f94a65441109020fdaaa80de8cba3f763ca01a95252d536e6",
+  "identical": true,
+  "distribution_means_compared": 218,
+  "differing": 0
+ }
+}

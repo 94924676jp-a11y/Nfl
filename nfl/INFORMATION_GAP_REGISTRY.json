@@ -1,6 +1,6 @@
 {
  "artifact": "NFL_INFORMATION_GAP_REGISTRY",
- "updated_utc": "2026-09-08",
+ "updated_utc": "2026-09-10",
  "action_states": ["BLOCKED", "HOLD", "CHEAP_PROBE", "INVEST", "PROSPECTIVE_ONLY"],
  "rule": "An unavailable input is recorded as unavailable. It is never substituted with guessed data, a near-miss field, or a final file dressed as a point-in-time capture.",
  "gaps": [
@@ -20,7 +20,7 @@
    "why_it_matters": "The P control's residual sits in role transitions: R2 0.753 stable against 0.496/0.498 up/down, lag bias -0.027 rising and +0.038 falling.",
    "current_proxy": "prior-only participation history",
    "proxy_adequacy": "cannot see a role change before it shows up in play",
-   "evidence_status": "UNTESTABLE on 2022-2025 -- the project's entire vintage record begins 2026-09-06",
+   "evidence_status": "PARTLY TESTABLE, corrected 2026-09-10. Role CHANGE within a week still needs our own capture; role LEVEL does not -- the upstream daily depth series predates our capture and gives a pregame role signal for 2025, which R7 consumes.",
    "source_candidate": "the project's own vintage capture, running since 2026-09-06",
    "licensing_status": "CC BY 4.0, clear", "pit_status": "PROSPECTIVE ONLY",
    "action": "PROSPECTIVE_ONLY"},
@@ -66,10 +66,12 @@
   {"id": "GAP-DEPTH-CHART-PIT", "causal_layer": "appearance and role",
    "why_it_matters": "depth_charts is the one source with a genuine per-row effective instant (dt).",
    "current_proxy": "depth_charts dt series, captured prospectively since 2026-09-06",
-   "proxy_adequacy": "good prospectively; ZERO historical as-of depth",
-   "evidence_status": "capture running", "source_candidate": "nflverse depth_charts",
-   "licensing_status": "CC BY 4.0", "pit_status": "PROSPECTIVE ONLY",
-   "action": "PROSPECTIVE_ONLY"},
+   "proxy_adequacy": "CORRECTED 2026-09-10. Previously 'good prospectively; ZERO historical as-of depth', which was true of OUR capture and false of the source. The 2020-2024 weekly charts are committed and hash-verified (152,246 skill entries) and the 2025+ release carries the vendor's own daily dt series from 2025-08-03, so all 544 team-weeks of the 2025 regular season resolve to a snapshot 6.3-18.7 hours before kickoff, median 10.8.",
+   "evidence_status": "CONSUMED by R7. depth_vintage.py selects point-in-time and appearance_r7.py fits on the result. Before R7 the feature was computed on 57,160 of 83,144 panel rows and read by NEITHER featuriser.",
+   "source_candidate": "nflverse depth_charts",
+   "licensing_status": "CC BY 4.0", "pit_status": "HISTORICAL 2020-2025 AND PROSPECTIVE",
+   "residual": "the two schemas do not overlap in time, so no measurement here can equate a 2024 rank with a 2026 one: appearance at rank 1 is 0.707-0.812 weekly against 0.895-0.923 daily, consistent with either a vendor difference or a fresher chart",
+   "action": "CHEAP_PROBE"},
 
   {"id": "GAP-INJURY-VINTAGE", "causal_layer": "appearance",
    "why_it_matters": "The weekly injury cascade cannot be reconstructed after the fact -- the archive keeps one row per player-week and 2025+ dropped date_modified.",

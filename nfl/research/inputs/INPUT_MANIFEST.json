@@ -120,6 +120,22 @@
    "stored_as": "nfl/research/inputs/panel_p3.csv.gz",
    "origin_dir": "p1",
    "provenance": "derived by p1/build_panel_p3.py from nflverse player/team weekly, participation and snap-count releases; NOT itself regenerated here"
+  },
+  "dc25_daily.csv": {
+   "sha256_decompressed": "c80bc32f67c2dfe4250de76ee4fbd0e9e3fb9d3be04e31b65a4e11c9df30f698",
+   "sha256_gz": "5e0eba5bac4743348b99903045201c26f7427664470aa4a04338d18cffdc612d",
+   "bytes_decompressed": 5961632,
+   "bytes_gz": 604671,
+   "stored_as": "nfl/research/inputs/dc25_daily.csv.gz",
+   "origin_dir": "network",
+   "provenance": "nflverse depth charts release, season 2025. Upstream is the ESPN DAILY-SNAPSHOT schema (dt/team/gsis_id/pos_abb/pos_rank), not the 2020-2024 weekly schema. Retrieved 2026-09-10T18:42:54Z",
+   "upstream_url": "https://github.com/nflverse/nflverse-data/releases/download/depth_charts/depth_charts_2025.csv",
+   "upstream_sha256_full_file": "f5a4aa3fa70150e810b2255200c8735a6c1cc8ff77361308ce39149345b39b4a",
+   "upstream_bytes": 52917870,
+   "reduction": "COLUMN reduction only, applied to the five columns above and to rows whose pos_abb is one of QB/RB/WR/TE/FB with a non-empty gsis_id. The dt series is kept in full: every daily snapshot survives, so any game can still be given a point-in-time chart. No row was dropped on a time basis.",
+   "reduction_rows_kept": 146246,
+   "reproducible_from_committed_bytes": false,
+   "reproducible_note": "Re-deriving this leaf needs the upstream file, whose sha256 is recorded above. nflverse rebuilds its releases, so a later fetch may not match that hash; the committed leaf is the identity that the fit consumes."
   }
  }
 }

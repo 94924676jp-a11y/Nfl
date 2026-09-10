@@ -1,0 +1,1249 @@
+{
+ "artifact": "NFL_R7_APPEARANCE_FRAME_EVIDENCE",
+ "date_utc": "2026-09-10",
+ "model_configuration": "V1_CANDIDATE_R7",
+ "promoted": false,
+ "prospective_eligible": false,
+ "governance": "REHEARSAL_ONLY. No sportsbook price was used as a label, a fit target or a model input anywhere in this work.",
+ "run": {
+  "game_id": "2026_01_SF_LA",
+  "run_id": "f26af9a43f5adaf3",
+  "written_at": "2026-09-10T17:10:46Z",
+  "kickoff_utc": "2026-09-11T00:35:00Z",
+  "seed": 20260908,
+  "n_draws": 1000,
+  "sealed_at": "nfl/research/r7/sf_la_candidate/"
+ },
+ "defect_1_depth_computed_then_discarded": {
+  "f_depth_non_null_rows": 57160,
+  "panel_rows": 83144,
+  "pct": 68.75,
+  "coverage_by_season": {
+   "2020": 88.6,
+   "2021": 80.1,
+   "2022": 80.8,
+   "2023": 82.0,
+   "2024": 81.6,
+   "2025": 0.0
+  },
+  "design_matrix_columns": 49,
+  "occurrences_of_f_depth_in_either_featuriser": 0,
+  "features_compared_by_assert_walk_matches_research": 14,
+  "f_depth_among_them": false,
+  "proof": "featurise_p3 returns an identical row for f_depth 1, 99 and None"
+ },
+ "defect_2_the_2025_hole": {
+  "stage_a_depth_default_y_range": "2020..2024",
+  "rows_2025_with_depth": 0,
+  "rows_2025_total": 13813,
+  "reported_anywhere": false
+ },
+ "defect_3_vendor_schema_break_unmapped": {
+  "weekly_schema": "season, week, club_code, depth_team, position, depth_position",
+  "daily_schema": "dt, team, gsis_id, pos_abb, pos_slot, pos_rank",
+  "captured_2026_vintage_is": "daily",
+  "adapter_before_r7": null
+ },
+ "defect_4_the_one_2026_consumer_read_it_unlawfully": {
+  "callee": "nfl/product/board.py:depth_rank(season, week, teams, blob)",
+  "uses_season": false,
+  "uses_week": false,
+  "selection": "newest dt in the vintage, whatever the forecast week",
+  "call_site_guard": "except Exception: dr = {}",
+  "consequence": "a total failure to load depth was indistinguishable from no player having a depth rank"
+ },
+ "defect_5_the_leakage_guard_cannot_fire": {
+  "where": "appearance_model.fit",
+  "code": "train = [r for r in rows if season(r) < season]; late = [r for r in rows if season(r) >= season]; if any(r in train for r in late): FAIL",
+  "why_vacuous": "the two lists are disjoint by construction, so the guard has never made a single true comparison",
+  "cost": "O(|train| x |late|) dict comparisons; vacuous in production only because the panel holds no forecast-season row",
+  "status": "REPORTED, NOT REPAIRED -- it is inside the frozen mechanism and repairing it is not this mission"
+ },
+ "the_censoring": {
+  "cause": "model.LOOKBACK_CANDIDATE = 4",
+  "frozen_panel": {
+   "0": [
+    59318,
+    0.8253
+   ],
+   "1": [
+    10254,
+    0.406
+   ],
+   "2": [
+    6027,
+    0.2014
+   ],
+   "3": [
+    4776,
+    0.1652
+   ],
+   "4": [
+    2563,
+    0.9575
+   ],
+   "5": [
+    103,
+    0.4272
+   ]
+  },
+  "non_appearing_rows_at_streak_4": 109,
+  "union_frame": {
+   "0": [
+    26221,
+    0.7373
+   ],
+   "1": [
+    6913,
+    0.5546
+   ],
+   "2": [
+    3072,
+    0.252
+   ],
+   "3": [
+    2300,
+    0.1691
+   ],
+   "4": [
+    1657,
+    0.3627
+   ],
+   "5": [
+    824,
+    0.4175
+   ],
+   "8plus": [
+    1655,
+    0.1335
+   ]
+  },
+  "non_appearing_rows_at_streak_4_union": 1056,
+  "residual": "a player off the chart AND absent from the panel still produces no row, so the tail is reduced, not eliminated"
+ },
+ "season_boundary": {
+  "within_season_streak": {
+   "0": 0.7219,
+   "1": 0.5038,
+   "2": 0.206,
+   "3": 0.1777
+  },
+  "week1_carried_streak_at_depth_rank_1": {
+   "streak_0": [
+    85,
+    0.7765
+   ],
+   "streak_1_2": [
+    722,
+    0.9515
+   ],
+   "streak_3plus": [
+    126,
+    0.9048
+   ]
+  },
+  "reading": "the sign flips across the boundary: within season the streak predicts absence, carried across the offseason at rank 1 it predicts PRESENCE, because resting a week-18 starter marks a good team rather than an injury",
+  "decay_supported": false,
+  "flat_reset_supported": false,
+  "repair": "reset within-season, keep the carried value as its own feature, and expose the boundary crossing and the week-1 indicator"
+ },
+ "cold_start": {
+  "panel_cold_start_appearance_rate": 1.0,
+  "panel_cold_start_n": 839,
+  "why": "a zero row requires a prior appearance, so f_n_prior == 0 implies appeared == 1 by construction",
+  "union_frame_cold_start_listed": {
+   "WR1": [
+    35,
+    0.7714
+   ],
+   "WR2": [
+    77,
+    0.5714
+   ],
+   "WR3": [
+    38,
+    0.3684
+   ],
+   "RB1": [
+    25,
+    0.64
+   ],
+   "RB2": [
+    28,
+    0.6071
+   ],
+   "RB3": [
+    56,
+    0.375
+   ],
+   "TE2": [
+    27,
+    0.6296
+   ],
+   "TE3": [
+    53,
+    0.4906
+   ]
+  },
+  "union_frame_cold_start_unlisted": {
+   "RB": [
+    30,
+    1.0
+   ],
+   "WR": [
+    69,
+    1.0
+   ],
+   "TE": [
+    33,
+    1.0
+   ]
+  },
+  "refused_cell": "no_history_and_not_depth_listed",
+  "refusal_is": "rows dropped from the fit; players declined at prediction time by name, never scored from a degenerate estimator"
+ },
+ "forward_chained_whole_season": {
+  "note": "identical rows only. R7 is not credited for rows the frozen model cannot see.",
+  "seasons": {
+   "2022": {
+    "V1_own_panel": {
+     "n": 14399,
+     "brier": 0.13186,
+     "logloss": 0.40542,
+     "auc": 0.8753,
+     "mean_p": 0.6795,
+     "base": 0.6719
+    },
+    "R7_full_frame": {
+     "n": 10008,
+     "brier": 0.11645,
+     "logloss": 0.37632,
+     "auc": 0.9033,
+     "mean_p": 0.6365,
+     "base": 0.6357
+    },
+    "V1_shared": {
+     "n": 9198,
+     "brier": 0.13701,
+     "logloss": 0.41891,
+     "auc": 0.8588,
+     "mean_p": 0.701,
+     "base": 0.6917
+    },
+    "R7_shared": {
+     "n": 9198,
+     "brier": 0.1173,
+     "logloss": 0.37713,
+     "auc": 0.8911,
+     "mean_p": 0.6682,
+     "base": 0.6917
+    },
+    "n_frame_rows_V1_cannot_see": 810,
+    "n_panel_rows_not_in_frame": 5201,
+    "rel_V1_shared": [
+     {
+      "bin": "0.0-0.1",
+      "n": 373,
+      "pred": 0.0082,
+      "obs": 0.008
+     },
+     {
+      "bin": "0.1-0.2",
+      "n": 103,
+      "pred": 0.1667,
+      "obs": 0.233
+     },
+     {
+      "bin": "0.2-0.3",
+      "n": 289,
+      "pred": 0.252,
+      "obs": 0.3564
+     },
+     {
+      "bin": "0.3-0.4",
+      "n": 690,
+      "pred": 0.3571,
+      "obs": 0.3551
+     },
+     {
+      "bin": "0.4-0.5",
+      "n": 856,
+      "pred": 0.4448,
+      "obs": 0.3119
+     },
+     {
+      "bin": "0.5-0.6",
+      "n": 611,
+      "pred": 0.5501,
+      "obs": 0.4877
+     },
+     {
+      "bin": "0.6-0.7",
+      "n": 748,
+      "pred": 0.6513,
+      "obs": 0.6591
+     },
+     {
+      "bin": "0.7-0.8",
+      "n": 1066,
+      "pred": 0.7542,
+      "obs": 0.7383
+     },
+     {
+      "bin": "0.8-0.9",
+      "n": 1547,
+      "pred": 0.8533,
+      "obs": 0.8662
+     },
+     {
+      "bin": "0.9-1.0",
+      "n": 2915,
+      "pred": 0.9537,
+      "obs": 0.9612
+     }
+    ],
+    "rel_R7_shared": [
+     {
+      "bin": "0.0-0.1",
+      "n": 497,
+      "pred": 0.0266,
+      "obs": 0.0543
+     },
+     {
+      "bin": "0.1-0.2",
+      "n": 720,
+      "pred": 0.1506,
+      "obs": 0.2375
+     },
+     {
+      "bin": "0.2-0.3",
+      "n": 558,
+      "pred": 0.2439,
+      "obs": 0.233
+     },
+     {
+      "bin": "0.3-0.4",
+      "n": 450,
+      "pred": 0.3491,
+      "obs": 0.3289
+     },
+     {
+      "bin": "0.4-0.5",
+      "n": 427,
+      "pred": 0.4496,
+      "obs": 0.4496
+     },
+     {
+      "bin": "0.5-0.6",
+      "n": 486,
+      "pred": 0.5503,
+      "obs": 0.465
+     },
+     {
+      "bin": "0.6-0.7",
+      "n": 545,
+      "pred": 0.6515,
+      "obs": 0.6826
+     },
+     {
+      "bin": "0.7-0.8",
+      "n": 698,
+      "pred": 0.7556,
+      "obs": 0.7908
+     },
+     {
+      "bin": "0.8-0.9",
+      "n": 1690,
+      "pred": 0.8633,
+      "obs": 0.9071
+     },
+     {
+      "bin": "0.9-1.0",
+      "n": 3127,
+      "pred": 0.9372,
+      "obs": 0.9629
+     }
+    ],
+    "rel_R7_full": [
+     {
+      "bin": "0.0-0.1",
+      "n": 539,
+      "pred": 0.0282,
+      "obs": 0.0501
+     },
+     {
+      "bin": "0.1-0.2",
+      "n": 1032,
+      "pred": 0.1525,
+      "obs": 0.1657
+     },
+     {
+      "bin": "0.2-0.3",
+      "n": 774,
+      "pred": 0.2439,
+      "obs": 0.168
+     },
+     {
+      "bin": "0.3-0.4",
+      "n": 536,
+      "pred": 0.3487,
+      "obs": 0.2761
+     },
+     {
+      "bin": "0.4-0.5",
+      "n": 473,
+      "pred": 0.4484,
+      "obs": 0.4059
+     },
+     {
+      "bin": "0.5-0.6",
+      "n": 528,
+      "pred": 0.5505,
+      "obs": 0.428
+     },
+     {
+      "bin": "0.6-0.7",
+      "n": 586,
+      "pred": 0.6515,
+      "obs": 0.6348
+     },
+     {
+      "bin": "0.7-0.8",
+      "n": 715,
+      "pred": 0.7557,
+      "obs": 0.772
+     },
+     {
+      "bin": "0.8-0.9",
+      "n": 1696,
+      "pred": 0.8633,
+      "obs": 0.9039
+     },
+     {
+      "bin": "0.9-1.0",
+      "n": 3129,
+      "pred": 0.9372,
+      "obs": 0.9623
+     }
+    ],
+    "v1_fit_rows": 26868
+   },
+   "2023": {
+    "V1_own_panel": {
+     "n": 14005,
+     "brier": 0.12621,
+     "logloss": 0.39133,
+     "auc": 0.8787,
+     "mean_p": 0.6949,
+     "base": 0.6958
+    },
+    "R7_full_frame": {
+     "n": 9727,
+     "brier": 0.10838,
+     "logloss": 0.35533,
+     "auc": 0.9089,
+     "mean_p": 0.6623,
+     "base": 0.6649
+    },
+    "V1_shared": {
+     "n": 9015,
+     "brier": 0.12806,
+     "logloss": 0.3958,
+     "auc": 0.8681,
+     "mean_p": 0.7155,
+     "base": 0.7174
+    },
+    "R7_shared": {
+     "n": 9015,
+     "brier": 0.10833,
+     "logloss": 0.35366,
+     "auc": 0.8971,
+     "mean_p": 0.6925,
+     "base": 0.7174
+    },
+    "n_frame_rows_V1_cannot_see": 712,
+    "n_panel_rows_not_in_frame": 4990,
+    "rel_V1_shared": [
+     {
+      "bin": "0.0-0.1",
+      "n": 314,
+      "pred": 0.0103,
+      "obs": 0.0223
+     },
+     {
+      "bin": "0.1-0.2",
+      "n": 117,
+      "pred": 0.1632,
+      "obs": 0.2222
+     },
+     {
+      "bin": "0.2-0.3",
+      "n": 322,
+      "pred": 0.254,
+      "obs": 0.3447
+     },
+     {
+      "bin": "0.3-0.4",
+      "n": 674,
+      "pred": 0.3564,
+      "obs": 0.3561
+     },
+     {
+      "bin": "0.4-0.5",
+      "n": 716,
+      "pred": 0.4447,
+      "obs": 0.3156
+     },
+     {
+      "bin": "0.5-0.6",
+      "n": 523,
+      "pred": 0.55,
+      "obs": 0.5163
+     },
+     {
+      "bin": "0.6-0.7",
+      "n": 615,
+      "pred": 0.6526,
+      "obs": 0.6911
+     },
+     {
+      "bin": "0.7-0.8",
+      "n": 1019,
+      "pred": 0.7533,
+      "obs": 0.7419
+     },
+     {
+      "bin": "0.8-0.9",
+      "n": 1653,
+      "pred": 0.8542,
+      "obs": 0.8717
+     },
+     {
+      "bin": "0.9-1.0",
+      "n": 3062,
+      "pred": 0.9534,
+      "obs": 0.9683
+     }
+    ],
+    "rel_R7_shared": [
+     {
+      "bin": "0.0-0.1",
+      "n": 523,
+      "pred": 0.0351,
+      "obs": 0.0669
+     },
+     {
+      "bin": "0.1-0.2",
+      "n": 614,
+      "pred": 0.1499,
+      "obs": 0.2182
+     },
+     {
+      "bin": "0.2-0.3",
+      "n": 505,
+      "pred": 0.2473,
+      "obs": 0.2436
+     },
+     {
+      "bin": "0.3-0.4",
+      "n": 360,
+      "pred": 0.3501,
+      "obs": 0.4056
+     },
+     {
+      "bin": "0.4-0.5",
+      "n": 404,
+      "pred": 0.45,
+      "obs": 0.3985
+     },
+     {
+      "bin": "0.5-0.6",
+      "n": 405,
+      "pred": 0.5484,
+      "obs": 0.5284
+     },
+     {
+      "bin": "0.6-0.7",
+      "n": 439,
+      "pred": 0.6459,
+      "obs": 0.6788
+     },
+     {
+      "bin": "0.7-0.8",
+      "n": 567,
+      "pred": 0.7546,
+      "obs": 0.7919
+     },
+     {
+      "bin": "0.8-0.9",
+      "n": 1489,
+      "pred": 0.8606,
+      "obs": 0.8993
+     },
+     {
+      "bin": "0.9-1.0",
+      "n": 3709,
+      "pred": 0.9395,
+      "obs": 0.962
+     }
+    ],
+    "rel_R7_full": [
+     {
+      "bin": "0.0-0.1",
+      "n": 558,
+      "pred": 0.036,
+      "obs": 0.0627
+     },
+     {
+      "bin": "0.1-0.2",
+      "n": 858,
+      "pred": 0.1517,
+      "obs": 0.1562
+     },
+     {
+      "bin": "0.2-0.3",
+      "n": 729,
+      "pred": 0.2476,
+      "obs": 0.1687
+     },
+     {
+      "bin": "0.3-0.4",
+      "n": 443,
+      "pred": 0.3497,
+      "obs": 0.3296
+     },
+     {
+      "bin": "0.4-0.5",
+      "n": 444,
+      "pred": 0.4495,
+      "obs": 0.3626
+     },
+     {
+      "bin": "0.5-0.6",
+      "n": 428,
+      "pred": 0.5481,
+      "obs": 0.5
+     },
+     {
+      "bin": "0.6-0.7",
+      "n": 470,
+      "pred": 0.645,
+      "obs": 0.634
+     },
+     {
+      "bin": "0.7-0.8",
+      "n": 589,
+      "pred": 0.7545,
+      "obs": 0.7623
+     },
+     {
+      "bin": "0.8-0.9",
+      "n": 1497,
+      "pred": 0.8605,
+      "obs": 0.8945
+     },
+     {
+      "bin": "0.9-1.0",
+      "n": 3711,
+      "pred": 0.9395,
+      "obs": 0.9615
+     }
+    ],
+    "v1_fit_rows": 41267
+   },
+   "2024": {
+    "V1_own_panel": {
+     "n": 14059,
+     "brier": 0.12426,
+     "logloss": 0.38552,
+     "auc": 0.8867,
+     "mean_p": 0.6915,
+     "base": 0.6848
+    },
+    "R7_full_frame": {
+     "n": 9662,
+     "brier": 0.10913,
+     "logloss": 0.35455,
+     "auc": 0.913,
+     "mean_p": 0.6593,
+     "base": 0.6548
+    },
+    "V1_shared": {
+     "n": 8920,
+     "brier": 0.12503,
+     "logloss": 0.38758,
+     "auc": 0.8786,
+     "mean_p": 0.7152,
+     "base": 0.7093
+    },
+    "R7_shared": {
+     "n": 8920,
+     "brier": 0.10864,
+     "logloss": 0.35179,
+     "auc": 0.9033,
+     "mean_p": 0.6898,
+     "base": 0.7093
+    },
+    "n_frame_rows_V1_cannot_see": 742,
+    "n_panel_rows_not_in_frame": 5139,
+    "rel_V1_shared": [
+     {
+      "bin": "0.0-0.1",
+      "n": 310,
+      "pred": 0.0108,
+      "obs": 0.0065
+     },
+     {
+      "bin": "0.1-0.2",
+      "n": 156,
+      "pred": 0.1629,
+      "obs": 0.2179
+     },
+     {
+      "bin": "0.2-0.3",
+      "n": 303,
+      "pred": 0.2549,
+      "obs": 0.2871
+     },
+     {
+      "bin": "0.3-0.4",
+      "n": 713,
+      "pred": 0.3576,
+      "obs": 0.3184
+     },
+     {
+      "bin": "0.4-0.5",
+      "n": 676,
+      "pred": 0.449,
+      "obs": 0.3121
+     },
+     {
+      "bin": "0.5-0.6",
+      "n": 545,
+      "pred": 0.5506,
+      "obs": 0.5321
+     },
+     {
+      "bin": "0.6-0.7",
+      "n": 580,
+      "pred": 0.6513,
+      "obs": 0.6379
+     },
+     {
+      "bin": "0.7-0.8",
+      "n": 883,
+      "pred": 0.755,
+      "obs": 0.7327
+     },
+     {
+      "bin": "0.8-0.9",
+      "n": 1647,
+      "pred": 0.8554,
+      "obs": 0.8804
+     },
+     {
+      "bin": "0.9-1.0",
+      "n": 3107,
+      "pred": 0.9532,
+      "obs": 0.9685
+     }
+    ],
+    "rel_R7_shared": [
+     {
+      "bin": "0.0-0.1",
+      "n": 597,
+      "pred": 0.0403,
+      "obs": 0.0938
+     },
+     {
+      "bin": "0.1-0.2",
+      "n": 624,
+      "pred": 0.1483,
+      "obs": 0.2099
+     },
+     {
+      "bin": "0.2-0.3",
+      "n": 501,
+      "pred": 0.2456,
+      "obs": 0.2575
+     },
+     {
+      "bin": "0.3-0.4",
+      "n": 372,
+      "pred": 0.3486,
+      "obs": 0.3898
+     },
+     {
+      "bin": "0.4-0.5",
+      "n": 327,
+      "pred": 0.4536,
+      "obs": 0.3945
+     },
+     {
+      "bin": "0.5-0.6",
+      "n": 408,
+      "pred": 0.552,
+      "obs": 0.4706
+     },
+     {
+      "bin": "0.6-0.7",
+      "n": 428,
+      "pred": 0.6484,
+      "obs": 0.6472
+     },
+     {
+      "bin": "0.7-0.8",
+      "n": 518,
+      "pred": 0.7525,
+      "obs": 0.7799
+     },
+     {
+      "bin": "0.8-0.9",
+      "n": 1311,
+      "pred": 0.8621,
+      "obs": 0.8848
+     },
+     {
+      "bin": "0.9-1.0",
+      "n": 3834,
+      "pred": 0.9423,
+      "obs": 0.9661
+     }
+    ],
+    "rel_R7_full": [
+     {
+      "bin": "0.0-0.1",
+      "n": 627,
+      "pred": 0.0401,
+      "obs": 0.0893
+     },
+     {
+      "bin": "0.1-0.2",
+      "n": 882,
+      "pred": 0.1506,
+      "obs": 0.1485
+     },
+     {
+      "bin": "0.2-0.3",
+      "n": 666,
+      "pred": 0.2457,
+      "obs": 0.1937
+     },
+     {
+      "bin": "0.3-0.4",
+      "n": 483,
+      "pred": 0.3482,
+      "obs": 0.3002
+     },
+     {
+      "bin": "0.4-0.5",
+      "n": 401,
+      "pred": 0.4513,
+      "obs": 0.3217
+     },
+     {
+      "bin": "0.5-0.6",
+      "n": 471,
+      "pred": 0.5525,
+      "obs": 0.4076
+     },
+     {
+      "bin": "0.6-0.7",
+      "n": 450,
+      "pred": 0.6481,
+      "obs": 0.6156
+     },
+     {
+      "bin": "0.7-0.8",
+      "n": 530,
+      "pred": 0.7528,
+      "obs": 0.7623
+     },
+     {
+      "bin": "0.8-0.9",
+      "n": 1317,
+      "pred": 0.862,
+      "obs": 0.8808
+     },
+     {
+      "bin": "0.9-1.0",
+      "n": 3835,
+      "pred": 0.9423,
+      "obs": 0.9658
+     }
+    ],
+    "v1_fit_rows": 55272
+   },
+   "2025": {
+    "V1_own_panel": {
+     "n": 13813,
+     "brier": 0.15097,
+     "logloss": 0.46173,
+     "auc": 0.8262,
+     "mean_p": 0.6999,
+     "base": 0.6977
+    },
+    "R7_full_frame": {
+     "n": 11196,
+     "brier": 0.13062,
+     "logloss": 0.42102,
+     "auc": 0.8914,
+     "mean_p": 0.6215,
+     "base": 0.5689
+    },
+    "V1_shared": {
+     "n": 9023,
+     "brier": 0.15114,
+     "logloss": 0.46199,
+     "auc": 0.8198,
+     "mean_p": 0.7153,
+     "base": 0.7066
+    },
+    "R7_shared": {
+     "n": 9023,
+     "brier": 0.13646,
+     "logloss": 0.43085,
+     "auc": 0.8428,
+     "mean_p": 0.7024,
+     "base": 0.7066
+    },
+    "n_frame_rows_V1_cannot_see": 2173,
+    "n_panel_rows_not_in_frame": 4790,
+    "rel_V1_shared": [
+     {
+      "bin": "0.1-0.2",
+      "n": 154,
+      "pred": 0.1635,
+      "obs": 0.1818
+     },
+     {
+      "bin": "0.2-0.3",
+      "n": 388,
+      "pred": 0.2561,
+      "obs": 0.3402
+     },
+     {
+      "bin": "0.3-0.4",
+      "n": 807,
+      "pred": 0.3545,
+      "obs": 0.3606
+     },
+     {
+      "bin": "0.4-0.5",
+      "n": 871,
+      "pred": 0.4472,
+      "obs": 0.3662
+     },
+     {
+      "bin": "0.5-0.6",
+      "n": 646,
+      "pred": 0.5492,
+      "obs": 0.5372
+     },
+     {
+      "bin": "0.6-0.7",
+      "n": 621,
+      "pred": 0.6517,
+      "obs": 0.6876
+     },
+     {
+      "bin": "0.7-0.8",
+      "n": 938,
+      "pred": 0.7555,
+      "obs": 0.7249
+     },
+     {
+      "bin": "0.8-0.9",
+      "n": 1728,
+      "pred": 0.8549,
+      "obs": 0.8391
+     },
+     {
+      "bin": "0.9-1.0",
+      "n": 2852,
+      "pred": 0.9493,
+      "obs": 0.946
+     }
+    ],
+    "rel_R7_shared": [
+     {
+      "bin": "0.0-0.1",
+      "n": 216,
+      "pred": 0.0671,
+      "obs": 0.0926
+     },
+     {
+      "bin": "0.1-0.2",
+      "n": 575,
+      "pred": 0.1471,
+      "obs": 0.2
+     },
+     {
+      "bin": "0.2-0.3",
+      "n": 352,
+      "pred": 0.2509,
+      "obs": 0.2869
+     },
+     {
+      "bin": "0.3-0.4",
+      "n": 470,
+      "pred": 0.3494,
+      "obs": 0.3809
+     },
+     {
+      "bin": "0.4-0.5",
+      "n": 471,
+      "pred": 0.4534,
+      "obs": 0.397
+     },
+     {
+      "bin": "0.5-0.6",
+      "n": 612,
+      "pred": 0.5529,
+      "obs": 0.4918
+     },
+     {
+      "bin": "0.6-0.7",
+      "n": 627,
+      "pred": 0.6504,
+      "obs": 0.5981
+     },
+     {
+      "bin": "0.7-0.8",
+      "n": 759,
+      "pred": 0.7519,
+      "obs": 0.7576
+     },
+     {
+      "bin": "0.8-0.9",
+      "n": 1836,
+      "pred": 0.862,
+      "obs": 0.8932
+     },
+     {
+      "bin": "0.9-1.0",
+      "n": 3105,
+      "pred": 0.9254,
+      "obs": 0.9285
+     }
+    ],
+    "rel_R7_full": [
+     {
+      "bin": "0.0-0.1",
+      "n": 355,
+      "pred": 0.0725,
+      "obs": 0.0563
+     },
+     {
+      "bin": "0.1-0.2",
+      "n": 1074,
+      "pred": 0.1459,
+      "obs": 0.1071
+     },
+     {
+      "bin": "0.2-0.3",
+      "n": 1094,
+      "pred": 0.2534,
+      "obs": 0.0923
+     },
+     {
+      "bin": "0.3-0.4",
+      "n": 929,
+      "pred": 0.3454,
+      "obs": 0.1884
+     },
+     {
+      "bin": "0.4-0.5",
+      "n": 637,
+      "pred": 0.4512,
+      "obs": 0.2889
+     },
+     {
+      "bin": "0.5-0.6",
+      "n": 679,
+      "pred": 0.5521,
+      "obs": 0.4433
+     },
+     {
+      "bin": "0.6-0.7",
+      "n": 652,
+      "pred": 0.6509,
+      "obs": 0.5752
+     },
+     {
+      "bin": "0.7-0.8",
+      "n": 784,
+      "pred": 0.7518,
+      "obs": 0.7334
+     },
+     {
+      "bin": "0.8-0.9",
+      "n": 1868,
+      "pred": 0.8619,
+      "obs": 0.8779
+     },
+     {
+      "bin": "0.9-1.0",
+      "n": 3124,
+      "pred": 0.9255,
+      "obs": 0.9229
+     }
+    ],
+    "v1_fit_rows": 69331
+   }
+  },
+  "blocked_delta_brier": {
+   "2022": {
+    "delta_brier_V1_minus_R7": 0.01971,
+    "ci95_blocked_by_team_week": [
+     0.0144,
+     0.02509
+    ],
+    "n_clusters": 542,
+    "n_rows": 9198,
+    "share_of_clusters_where_R7_better": 0.5756
+   },
+   "2023": {
+    "delta_brier_V1_minus_R7": 0.01973,
+    "ci95_blocked_by_team_week": [
+     0.01422,
+     0.02523
+    ],
+    "n_clusters": 544,
+    "n_rows": 9015,
+    "share_of_clusters_where_R7_better": 0.5496
+   },
+   "2024": {
+    "delta_brier_V1_minus_R7": 0.01638,
+    "ci95_blocked_by_team_week": [
+     0.01074,
+     0.02211
+    ],
+    "n_clusters": 544,
+    "n_rows": 8920,
+    "share_of_clusters_where_R7_better": 0.5423
+   },
+   "2025": {
+    "delta_brier_V1_minus_R7": 0.01468,
+    "ci95_blocked_by_team_week": [
+     0.0094,
+     0.01966
+    ],
+    "n_clusters": 544,
+    "n_rows": 9023,
+    "share_of_clusters_where_R7_better": 0.511
+   }
+  }
+ },
+ "by_week_bucket": {
+  "w1": {
+   "n": 2568,
+   "v_brier": 0.24667,
+   "r7_brier": 0.10966,
+   "delta": 0.13702,
+   "ci": [
+    0.12729,
+    0.14636
+   ],
+   "v_auc": 0.7261,
+   "r7_auc": 0.9376,
+   "n_clusters": 128
+  },
+  "w2-4": {
+   "n": 7709,
+   "v_brier": 0.18146,
+   "r7_brier": 0.1151,
+   "delta": 0.06636,
+   "ci": [
+    0.06209,
+    0.07059
+   ],
+   "v_auc": 0.8055,
+   "r7_auc": 0.9167,
+   "n_clusters": 384
+  },
+  "w5-9": {
+   "n": 8907,
+   "v_brier": 0.11213,
+   "r7_brier": 0.11814,
+   "delta": -0.00601,
+   "ci": [
+    -0.00933,
+    -0.0028
+   ],
+   "v_auc": 0.8826,
+   "r7_auc": 0.8632,
+   "n_clusters": 578
+  },
+  "w10-18": {
+   "n": 16972,
+   "v_brier": 0.10975,
+   "r7_brier": 0.11989,
+   "delta": -0.01014,
+   "ci": [
+    -0.01235,
+    -0.00802
+   ],
+   "v_auc": 0.8886,
+   "r7_auc": 0.8665,
+   "n_clusters": 1084
+  }
+ },
+ "within_season_split_controls": {
+  "note": "train strictly before week 10, evaluate weeks 10-18. Both eras behave the same way, so the reversal is about WHERE IN THE SEASON the evaluation sits, not about which vendor supplied the chart.",
+  "2025_daily_vendor": {
+   "V1_brier": 0.13225,
+   "R7_brier": 0.13792,
+   "delta": -0.00567,
+   "ci95": [
+    -0.01013,
+    -0.0014
+   ]
+  },
+  "2024_weekly_vendor": {
+   "V1_brier": 0.0968,
+   "R7_brier": 0.10733,
+   "delta": -0.01053,
+   "ci95": [
+    -0.01475,
+    -0.00615
+   ]
+  }
+ },
+ "market_diagnostic": {
+  "note": "BENCHMARK ONLY. The market side is the sealed MKT1 snapshot, carried over unchanged. No price entered any fit.",
+  "n_comparable": 19,
+  "median_abs_gap_pp": {
+   "V1": 25.3,
+   "R5": 18.71,
+   "R6": 17.4,
+   "R7": 14.62
+  },
+  "mean_gap_pp": {
+   "V1": -24.27,
+   "R5": -15.92,
+   "R6": -13.35,
+   "R7": -12.36
+  }
+ },
+ "invariance": {
+  "team_volume_layer": "bit-identical across V1/R5/R6/R7, max |delta mean| 0.0000000000 on all ten team-metric draws",
+  "qb_pass_attempts": "delta 0.000000 across all four on all eight passers",
+  "modelled_player_sums_are_NOT_invariant": "SF carries 18.30 -> 17.51 and LA 18.35 -> 17.90; targets move by <= 0.07. Appearance decides who is in the modelled pool per draw, so the modelled share of a fixed team budget moves and the balance sits in the named OTHER mass that accounting checks."
+ },
+ "suite": {
+  "modules": 61,
+  "test_functions": 667,
+  "checks": 3578,
+  "failing": 0,
+  "raised": 0,
+  "interpreter": "python3.12"
+ },
+ "declared_unrepaired": [
+  "the leakage guard in appearance_model.fit cannot fire (defect 5)",
+  "R7 over-predicts appearance where information is thin: cold-start listed +13.4 pp (n=432), UNKNOWN_STATUS +8.4 pp (n=6,198), within-season streak 2/3/5+ +10.3/+9.1/+11.0 pp",
+  "the union frame still censors a player who is both off the chart and absent from the panel",
+  "the two depth vendors do not overlap in time, so their rank scales cannot be shown equivalent from this repository",
+  "per-team QB dropback ownership drift (SF 0.942, LA 1.060), inherited"
+ ]
+}

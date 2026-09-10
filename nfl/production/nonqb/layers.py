@@ -82,7 +82,8 @@ def _game_stream(seed_parts, game_id):
     return list(seed_parts) + [int(g.value)], True
 
 def appearance(season, week, players, fixture=None, seed=20260908, m=200,
-               teams=None, kickoff_utc=None, game_id=None):
+               teams=None, kickoff_utc=None, game_id=None,
+               appearance_spec='frozen', observed_before=None):
     """Frozen P3 appearance mechanism. Executes only on legitimate input.
 
     THREE PATHS, AND ONLY ONE OF THEM CAN REACH AN ARTIFACT.
@@ -138,14 +139,19 @@ def appearance(season, week, players, fixture=None, seed=20260908, m=200,
                 'readiness reports the feed ready but no row could be read '
                 'from the captured blob', owed={'source': f'injuries_{season}'})
         return _run_real(season, week, players, rows, seed, m,
-                         test_only=False)
+                         test_only=False, appearance_spec=appearance_spec,
+                         observed_before=observed_before,
+                         kickoff_utc=kickoff_utc)
 
     # ---- TEST-ONLY fixture ------------------------------------------------
     if fixture.get('injuries_rows'):
         # The REAL mechanism, on fixture rows. This is the path that proves
         # the unblock: identical code, quarantined data.
         return _run_real(season, week, players, fixture['injuries_rows'],
-                         seed, m, test_only=True, game_id=game_id)
+                         seed, m, test_only=True, game_id=game_id,
+                         appearance_spec=appearance_spec,
+                         observed_before=observed_before,
+                         kickoff_utc=kickoff_utc)
     p = fixture.get('p_appear')
     if p is None:
         return Outcome.fail(
@@ -163,10 +169,35 @@ def appearance(season, week, players, fixture=None, seed=20260908, m=200,
 
 
 def _run_real(season, week, players, injuries_rows, seed, m, test_only,
-              game_id=None):
-    """The frozen mechanism, then per-player appearance draws from it."""
-    from nfl.production.nonqb import appearance_model as AM
-    o = AM.predict(season, week, players, injuries_rows)
+              game_id=None, appearance_spec='frozen', observed_before=None,
+              kickoff_utc=None):
+    """The named appearance mechanism, then per-player draws from it.
+
+    `appearance_spec` selects WHICH mechanism, and 'frozen' is the only value
+    V1, R5 and R6 ever pass, so their draws are bit-identical to what they were
+    before this parameter existed. 'r7' is the union-frame repair and carries
+    its own spec_version into the artifact; an unrecognised name is a FAIL, not
+    a quiet fallback to the frozen path.
+    """
+    if appearance_spec == 'frozen':
+        from nfl.production.nonqb import appearance_model as AM
+        o = AM.predict(season, week, players, injuries_rows)
+        mech = 'FROZEN_P3_LOGISTIC'
+        spec = SPEC['appearance']
+    elif appearance_spec == 'r7':
+        from nfl.production.nonqb import appearance_r7 as AR7
+        o = AR7.predict(season, week, players, injuries_rows,
+                        observed_before=observed_before,
+                        kickoff_utc=kickoff_utc)
+        mech = 'R7_UNION_FRAME_LOGISTIC'
+        spec = AR7.SPEC_VERSION
+    else:
+        return Outcome.fail(
+            'APPEARANCE_SPEC_UNKNOWN',
+            f'appearance_spec={appearance_spec!r} names no mechanism this '
+            f'layer implements; falling back to the frozen one would put an '
+            f'unrequested model behind a requested name',
+            appearance_spec=appearance_spec)
     if o.state is not State.PASS:
         return o
     parts, sep = _game_stream([seed, season * 100 + week, 11], game_id)
@@ -176,8 +207,9 @@ def _run_real(season, week, players, injuries_rows, seed, m, test_only,
     ev = {k: v for k, v in o.evidence.items()
           if k not in ('value', 'test_only', 'spec_version', 'n_players')}
     return Outcome.ok('APPEARANCE_OK', value=draws,
-                      spec_version=SPEC['appearance'], test_only=test_only,
-                      mechanism='FROZEN_P3_LOGISTIC', n_players=len(draws),
+                      spec_version=spec, test_only=test_only,
+                      mechanism=mech, appearance_spec=appearance_spec,
+                      n_players=len(draws),
                       p_appear={k: round(v, 6) for k, v in
                                 list(o.value.items())[:5]},
                       game_stream_separated=sep,

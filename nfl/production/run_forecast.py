@@ -587,6 +587,17 @@ def build(args, fixtures: dict = None) -> dict:
             fx['_r6']['tier_basis'] = dict(_c.Counter(at['basis'].values()))
             fx['_r6_applied'] = True
 
+        # R7. THE APPEARANCE FRAME REPAIR. Nothing is computed here: the flag
+        # selects which mechanism `layers.appearance` runs, and the evidence
+        # comes back on the layer outcome. Recorded now so the marker survives
+        # a halt before the engine reaches the appearance layer.
+        if fl.get('appearance_r7'):
+            from nfl.production.nonqb import appearance_r7 as _AR7
+            fx['_r7'] = {'spec_version': _AR7.SPEC_VERSION,
+                         'unsupported_cell': _AR7.UNSUPPORTED_CELL,
+                         'observed_before': str(args.written_at)}
+            fx['_r7_applied'] = True
+
         try:
             fits = FE.slate_fits(args.season, args.week, players,
                                  role_priors=role_priors, tiers=tiers)
@@ -654,7 +665,9 @@ def build(args, fixtures: dict = None) -> dict:
                 shared_pass=shared_pass, game_coupling=game_coupling,
                 rushing_budget=rushing_budget,
                 team_carries_override=fx.get('_coupled_team_carries'),
-                tv=_team_volume())
+                tv=_team_volume(),
+                appearance_spec=('r7' if fl.get('appearance_r7') else 'frozen'),
+                observed_before=args.written_at)
         except Exception as e:                                # noqa: BLE001
             o = Outcome.fail(
                 'NONQB_ENGINE_RAISED',
@@ -683,6 +696,8 @@ def build(args, fixtures: dict = None) -> dict:
             applied.append('R5')
         if fx.get('_r6_applied'):
             applied.append('R6')
+        if fx.get('_r7_applied'):
+            applied.append('R7')
         fx['_candidate_applied'] = sorted(set(applied))
         fx['_candidate_not_reached'] = sorted(set(not_reached))
         return fx['_nonqb']
