@@ -1,0 +1,46 @@
+{
+ "artifact": "NFL_V1_R8_FREEZE",
+ "date_utc": "2026-09-10",
+ "configuration": "V1_CANDIDATE_R8",
+ "inherits": "V1_CANDIDATE_R6",
+ "supersedes_mechanism_of": "V1_CANDIDATE_R7",
+ "promoted": false,
+ "prospective_eligible": false,
+ "governance": "REHEARSAL_ONLY",
+ "what_moved": [
+  "nfl/production/qb_accounting.py       the dropback residual is MEASURED, not asserted",
+  "nfl/production/run_forecast.py        budgets supplied, team row index bound, closure sealed",
+  "nfl/production/nonqb/appearance_model.py  the prospective walk extracted and shared",
+  "nfl/production/nonqb/appearance_r8.py (NEW) the reliability-weighted model",
+  "nfl/production/nonqb/layers.py        the r8 mechanism behind the same seam",
+  "nfl/production/candidate_mode.py      V1_CANDIDATE_R8 identity and R8_REPAIR",
+  "nfl/tests/test_r8_synthesis.py        (NEW) 69 checks",
+  "nfl/production/FREEZE_V1_R6.json      a wrong figure withdrawn",
+  "nfl/production/FREEZE_V1_R7.json      a wrong figure withdrawn"
+ ],
+ "what_did_not_move": [
+  "team-volume marginals -- the layer is untouched and its draws are the same object every configuration consumes",
+  "QB allocation, efficiency, conversion, A1, A3G, C0, C3, R2, SC1",
+  "R5 and R6, both inherited unchanged",
+  "game state, defence, substitution, weather and efficiency work, none of which this mission was authorised to implement",
+  "capture, G0A and the product path"
+ ],
+ "introduces_no_constant": true,
+ "no_week_number_in_the_design": true,
+ "controls_are_bit_identical": {
+  "V1_CANDIDATE": "39576c0d74ce5f66f0977e37dee538f1e944d124cd4b752535b5c293b1a30161",
+  "V1_CANDIDATE_R7": "61ea1e94ced093a9d6bc671e9fca05bdbfd06602fb09ec20f5669357fa053cca",
+  "measured": "draw artifact sha256, before and after the appearance_model refactor, on identical inputs and seed"
+ },
+ "evidence": "nfl/research/r8/R8_EVIDENCE.json",
+ "sealed_run": "nfl/research/r8/sf_la_candidate/ (run 1e585fb7e4adf2b7)",
+ "the_result": "forward-chained 2022-2025 on identical rows, Brier V1 / R7 / R8: week 1 0.24667 / 0.10966 / 0.06321; weeks 2-4 0.18146 / 0.11510 / 0.10049; weeks 5-9 0.11213 / 0.11814 / 0.10345; weeks 10-18 0.10975 / 0.11989 / 0.10611. R8 beats both in every regime, every blocked interval excluding zero.",
+ "qb_closure": "CLOSES, 2000 draw cells, 0 violating, worst deviation 0.0, on all five configurations",
+ "declared_unrepaired": [
+  "the long-absence residual moves rather than shrinking (streak 3 +16.56 pp)",
+  "UNKNOWN_STATUS still over-predicted by +6.15 pp",
+  "residual censoring for players both off the chart and absent from the panel",
+  "depth-vendor rank comparability unproven across the 2024/2025 schema break"
+ ],
+ "reseal_note": "the sealed run was regenerated after the final code change of this mission, so the artifact matches the committed source rather than an intermediate state"
+}

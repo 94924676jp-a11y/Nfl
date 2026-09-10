@@ -1,0 +1,267 @@
+{
+ "artifact": "NFL_R8_FOUNDATION_AND_SYNTHESIS_EVIDENCE",
+ "date_utc": "2026-09-10",
+ "model_configuration": "V1_CANDIDATE_R8",
+ "promoted": false,
+ "prospective_eligible": false,
+ "governance": "REHEARSAL_ONLY. No sportsbook price was used as a label, a fit target or a model input anywhere in this work.",
+ "run": {
+  "game_id": "2026_01_SF_LA",
+  "run_id": "1e585fb7e4adf2b7",
+  "written_at": "2026-09-10T17:10:46Z",
+  "kickoff_utc": "2026-09-11T00:35:00Z",
+  "seed": 20260908,
+  "n_draws": 1000,
+  "sealed_at": "nfl/research/r8/sf_la_candidate/"
+ },
+ "part_a_qb_dropback_ownership": {
+  "headline": "THERE IS NO LEAK. Per-team closure is integer-exact in every draw and always was. Two separate defects were behind the reported figure, and neither is what was reported.",
+  "defect_1_the_measurement_was_wrong": {
+   "reported_in": [
+    "NFL_R6_ROLE_APPEARANCE_AUDIT.md",
+    "NFL_R7_APPEARANCE_FRAME_AUDIT.md",
+    "nfl/production/FREEZE_V1_R6.json",
+    "nfl/production/FREEZE_V1_R7.json"
+   ],
+   "reported_figure": {
+    "SF": 0.9423,
+    "LA": 1.0598,
+    "game": 0.9993
+   },
+   "cause": "the team_volume draw matrix was indexed by the artifact top-level `team_ids` (away, home = SF, LA) when the layer stacks its rows in SORTED team order (LA, SF), which the draw manifest records as that layer's own row_ids",
+   "proof_it_was_a_transposition": {
+    "SF_qb_sum_vs_SF_budget": {
+     "exact_per_draw": false,
+     "max_abs_diff": 44.0
+    },
+    "SF_qb_sum_vs_LA_budget": {
+     "exact_per_draw": true,
+     "max_abs_diff": 0.0
+    },
+    "LA_qb_sum_vs_LA_budget": {
+     "exact_per_draw": false,
+     "max_abs_diff": 44.0
+    },
+    "LA_qb_sum_vs_SF_budget": {
+     "exact_per_draw": true,
+     "max_abs_diff": 0.0
+    }
+   },
+   "why_nothing_broke_in_production": "no production consumer indexes the team_volume matrix positionally against team_ids. The only reader who did was an audit, and the wrong number then entered two freeze records as an inherited unrepaired defect."
+  },
+  "defect_2_a_verdict_that_could_not_be_false": {
+   "where": "qb_accounting.reconcile_team",
+   "what": "the function returned the literal warning \"sum of QB dropbacks does not equal team dropbacks\" from a hard-coded list in its return statement, on every call, having measured nothing. run_forecast turned any warning into the FAIL verdict QB_ALLOCATION_RESIDUAL_PRESENT, so every sealed artifact this project has produced carries a failing invariant that was a string rather than a finding.",
+   "why_it_is_false_under_r2": "R2 apportions rint(team_dropbacks_part) by largest remainder; apportion_dropbacks REFUSES outright if the shares do not cover the budget; closure is integer-exact by construction in every draw",
+   "verdict_before": "FAIL QB_ALLOCATION_RESIDUAL_PRESENT",
+   "verdict_after": "PASS QB_ALLOCATION_RESIDUAL_NONE"
+  },
+  "repair": [
+   "reconcile_team now takes team_dropback_draws and integer_level and MEASURES per-team closure, warning only when it actually fails",
+   "run_forecast supplies the budgets at both call sites, keyed by bare team, and a team with no budget is a named refusal rather than a skipped check",
+   "the artifact records `team_draw_row_index`, binding the two orderings, and refuses if the matrix and the artifact ever cover different teams",
+   "the artifact records `qb_team_dropback_closure` with its cell counts, so the proof is readable without re-deriving it from the draw matrices"
+  ],
+  "closure_proof": {
+   "status": "CLOSES",
+   "draw_cells": 2000,
+   "violating_cells": 0,
+   "worst_absolute_deviation": 0.0,
+   "integer_level": true,
+   "holds_for": [
+    "V1_CANDIDATE",
+    "V1_CANDIDATE_R5",
+    "V1_CANDIDATE_R6",
+    "V1_CANDIDATE_R7",
+    "V1_CANDIDATE_R8"
+   ],
+   "no_cross_team_compensation": true
+  },
+  "guard_test": "test_r8_synthesis.test_cross_team_compensation_can_never_hide_a_defect seeds SF over by one and LA under by one, so the GAME total is exactly right, and requires the check to fail anyway"
+ },
+ "part_b_synthesis": {
+  "hypothesis": "the V1/R7 transition can emerge from information availability rather than a week cutoff",
+  "structure": "w = n_cur / (n_cur + k) on every current-season participation quantity, with the depth block interacted with (1 - w). n_cur is the player's own count of prior current-season frame rows. No week cutoff and no threshold.",
+  "k": {
+   "value": 1.217589,
+   "within_player_variance": 0.13952,
+   "between_player_variance": 0.114588,
+   "n_player_seasons": 4073,
+   "min_games_per_player_season": 4,
+   "estimated_not_chosen": true,
+   "weights": {
+    "n=0": 0.0,
+    "n=1": 0.451,
+    "n=3": 0.711,
+    "n=8": 0.868
+   }
+  },
+  "forward_chained_2022_2025_identical_rows": {
+   "w1": {
+    "n": 2568,
+    "base": 0.5763,
+    "brier": {
+     "V1": 0.24667,
+     "R7": 0.10966,
+     "R8": 0.06321
+    },
+    "logloss": {
+     "V1": 0.71809,
+     "R7": 0.37567,
+     "R8": 0.22597
+    },
+    "auc": {
+     "V1": 0.7261,
+     "R7": 0.9376,
+     "R8": 0.9654
+    },
+    "delta_brier_V1_minus_R8": 0.18346,
+    "ci_R8": [
+     0.17239,
+     0.19418
+    ],
+    "delta_brier_V1_minus_R7": 0.13702,
+    "ci_R7": [
+     0.12765,
+     0.1464
+    ],
+    "n_clusters": 128
+   },
+   "w2-4": {
+    "n": 7709,
+    "base": 0.581,
+    "brier": {
+     "V1": 0.18146,
+     "R7": 0.1151,
+     "R8": 0.10049
+    },
+    "logloss": {
+     "V1": 0.52708,
+     "R7": 0.37292,
+     "R8": 0.3242
+    },
+    "auc": {
+     "V1": 0.8055,
+     "R7": 0.9167,
+     "R8": 0.939
+    },
+    "delta_brier_V1_minus_R8": 0.08097,
+    "ci_R8": [
+     0.07715,
+     0.08483
+    ],
+    "delta_brier_V1_minus_R7": 0.06636,
+    "ci_R7": [
+     0.06207,
+     0.07052
+    ],
+    "n_clusters": 384
+   },
+   "w5-9": {
+    "n": 8907,
+    "base": 0.7604,
+    "brier": {
+     "V1": 0.11213,
+     "R7": 0.11814,
+     "R8": 0.10345
+    },
+    "logloss": {
+     "V1": 0.35595,
+     "R7": 0.37822,
+     "R8": 0.3306
+    },
+    "auc": {
+     "V1": 0.8826,
+     "R7": 0.8632,
+     "R8": 0.8972
+    },
+    "delta_brier_V1_minus_R8": 0.00868,
+    "ci_R8": [
+     0.0063,
+     0.01101
+    ],
+    "delta_brier_V1_minus_R7": -0.00601,
+    "ci_R7": [
+     -0.00935,
+     -0.0026
+    ],
+    "n_clusters": 578
+   },
+   "w10-18": {
+    "n": 16972,
+    "base": 0.7542,
+    "brier": {
+     "V1": 0.10975,
+     "R7": 0.11989,
+     "R8": 0.10611
+    },
+    "logloss": {
+     "V1": 0.35171,
+     "R7": 0.38147,
+     "R8": 0.33778
+    },
+    "auc": {
+     "V1": 0.8886,
+     "R7": 0.8665,
+     "R8": 0.8947
+    },
+    "delta_brier_V1_minus_R8": 0.00364,
+    "ci_R8": [
+     0.00204,
+     0.00528
+    ],
+    "delta_brier_V1_minus_R7": -0.01014,
+    "ci_R7": [
+     -0.01225,
+     -0.00804
+    ],
+    "n_clusters": 1084
+   }
+  },
+  "answer": "YES. R8 beats BOTH V1 and R7 in every regime, and every team-week-blocked interval excludes zero. It does not average them: it exceeds R7 early (week 1 Brier 0.06321 against 0.10966) and beats V1 late (weeks 10-18 0.10611 against 0.10975).",
+  "why_it_took_two_attempts": "a first version carried only the reliability-weighted current-season block and matched R7 late (0.11909 against 0.11989) without recovering V1 (0.10975). V1's late-season advantage is its whole P2/P3 feature block -- vacated share, practice progression, absence workload, role volatility -- not just a current-season rate. Adding that block is what closed the gap."
+ },
+ "defects_found_and_fixed_during_r8": {
+  "leaked_label": {
+   "what": "this game's snap share entered the design",
+   "symptom": "in-sample Brier 0.04101 at AUC 0.9895 -- good enough to be the bug report",
+   "why_it_leaks": "a player has a snap share if and only if he appeared, so the column AND its own missingness flag both carry the label",
+   "fix": "the value is kept on the row because LATER rows need it to build snap_ewma_cur from PRIOR games, and is never featurised for the row it belongs to",
+   "guard": "test_this_games_snap_share_is_not_a_feature"
+  },
+  "train_serve_skew": {
+   "what": "the V1 feature block was populated in training and empty at prediction time",
+   "symptom": "the \"v1 block absent\" flag fires on 6,158 training rows, all depth-listed players who did not appear, so its coefficient is strongly negative. With the block unpopulated every forecast player tripped it and the first R8 board returned SF's modelled targets at 1.41 against 28.71",
+   "fix": "appearance_model.predict was refactored so the prospective walk it already ran is exposed as prospective_feature_rows and CONSUMED by both predict and R8, rather than copied",
+   "control_unchanged": "V1 and R7 draw artifacts hash identically before and after the refactor"
+  }
+ },
+ "invariance": {
+  "team_volume_marginals": "unchanged. The team-volume layer is not touched by R8 and its draws are the same object every configuration consumes.",
+  "qb_pass_attempts": "delta 0.000000 across all five configurations, all eight passers",
+  "control_draw_artifacts_bit_identical_after_the_refactor": {
+   "V1_CANDIDATE": "39576c0d74ce5f66f0977e37dee538f1e944d124cd4b752535b5c293b1a30161",
+   "V1_CANDIDATE_R7": "61ea1e94ced093a9d6bc671e9fca05bdbfd06602fb09ec20f5669357fa053cca"
+  },
+  "modelled_player_sums": "R8 recovers most of the modelled mass R7 shed: SF carries 18.30 (V1) / 17.51 (R7) / 18.10 (R8); SF targets 28.77 / 28.71 / 28.73"
+ },
+ "market_diagnostic": {
+  "note": "BENCHMARK ONLY, sealed MKT1 snapshot carried over unchanged.",
+  "median_abs_gap_pp": {
+   "V1": 25.3,
+   "R5": 18.71,
+   "R6": 17.4,
+   "R7": 14.62,
+   "R8": 17.9
+  },
+  "reading": "R8 beats R7 on realised appearance in all four regimes while sitting FURTHER from the book. That is the comparator doing its job: closeness to the market is not the objective and was never a fit target."
+ },
+ "declared_unrepaired": [
+  "the long-absence residual is not fixed by R8 either, and moves rather than shrinking: within-season streak 2 and 3 are over-predicted by +12.86 and +16.56 pp (R7: +10.31, +9.08), streak 4 under-predicted by -13.33 pp",
+  "UNKNOWN_STATUS is still over-predicted, +6.15 pp on n=6,198 (R7 +8.40)",
+  "the union frame still censors a player who is both off the depth chart and absent from the panel",
+  "the two depth vendors do not overlap in time, so their rank scales cannot be shown equivalent from this repository",
+  "the ALLOCATION_RESIDUAL measurement of the PRE-R2 layer stands as history; the multi-QB share over-allocation it describes is a property of a configuration the candidates no longer run"
+ ],
+ "reseal_note": "the sealed run was regenerated after the final code change of this mission, so the artifact matches the committed source rather than an intermediate state"
+}

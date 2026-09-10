@@ -223,8 +223,43 @@ def prospective_rows(season, week, players, template_by_team):
     return out
 
 
+def prospective_feature_rows(season, week, players, injuries_rows) -> Outcome:
+    """The frozen mechanism's PROSPECTIVE rows, with every P2/P3 feature on them.
+
+    EXTRACTED, NOT RE-IMPLEMENTED. `predict` used to compute these inline and
+    then throw the rows away, keeping only the probabilities. R8 needs the same
+    feature block for the same players, and a second copy of this walk is
+    exactly how a production model quietly stops being the accepted one -- the
+    lesson `assert_walk_matches_research` exists to enforce. So `predict` now
+    calls this and nothing about its own behaviour changes.
+    """
+    return _prospective(season, week, players, injuries_rows)
+
+
 def predict(season, week, players, injuries_rows) -> Outcome:
     """p(appear) for each rostered player, from the frozen mechanism."""
+    pr = _prospective(season, week, players, injuries_rows)
+    if pr.state is not State.PASS:
+        return pr
+    target = pr.value['target']
+    f = pr.value['fit']
+    M, A, F = _frozen()
+    X = [F.featurise_p3(r, True, f.value['groups']) for r in target]
+    p = A.predict(f.value['model'], X)
+    out = {r['gsis_id']: float(v) for r, v in zip(target, p)}
+    cold = pr.value['cold']
+    with_inj = sum(1 for r in target if r.get('f_inj_available'))
+    return Outcome.ok(
+        'APPEARANCE_PREDICTED', value=out, spec_version=SPEC_VERSION,
+        test_only=False, n_players=len(out),
+        n_without_prior_history=len(cold),
+        n_with_an_injuries_row=with_inj,
+        coef_sha256=f.value['coef_sha256'],
+        p_mean=float(np.mean(p)), p_min=float(np.min(p)),
+        p_max=float(np.max(p)), **f.value['evidence'])
+
+
+def _prospective(season, week, players, injuries_rows) -> Outcome:
     inj26 = parse_injuries_rows(injuries_rows, season)
     if not inj26:
         return Outcome.deferred(
@@ -274,19 +309,11 @@ def predict(season, week, players, injuries_rows) -> Outcome:
             'APPEARANCE_NO_PROSPECTIVE_ROWS',
             f'no row was built for {season} week {week}; a prediction over '
             f'zero players is not a prediction')
-    X = [F.featurise_p3(r, True, f.value['groups']) for r in target]
-    p = A.predict(f.value['model'], X)
-    out = {r['gsis_id']: float(v) for r, v in zip(target, p)}
     cold = [r['gsis_id'] for r in target if r['gsis_id'] not in known]
-    with_inj = sum(1 for r in target if r.get('f_inj_available'))
     return Outcome.ok(
-        'APPEARANCE_PREDICTED', value=out, spec_version=SPEC_VERSION,
-        test_only=False, n_players=len(out),
-        n_without_prior_history=len(cold),
-        n_with_an_injuries_row=with_inj,
-        coef_sha256=f.value['coef_sha256'],
-        p_mean=float(np.mean(p)), p_min=float(np.min(p)),
-        p_max=float(np.max(p)), **f.value['evidence'])
+        'APPEARANCE_PROSPECTIVE_ROWS', value={'target': target, 'fit': f,
+                                              'cold': cold},
+        spec_version=SPEC_VERSION, n_rows=len(target), n_cold=len(cold))
 
 
 def _typed(r):

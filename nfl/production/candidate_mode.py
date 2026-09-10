@@ -35,8 +35,9 @@ V1_CANDIDATE = 'V1_CANDIDATE'
 V1_CANDIDATE_R5 = 'V1_CANDIDATE_R5'
 V1_CANDIDATE_R6 = 'V1_CANDIDATE_R6'
 V1_CANDIDATE_R7 = 'V1_CANDIDATE_R7'
+V1_CANDIDATE_R8 = 'V1_CANDIDATE_R8'
 MODES = (PRODUCTION_BASELINE, V1_CANDIDATE, V1_CANDIDATE_R5, V1_CANDIDATE_R6,
-         V1_CANDIDATE_R7)
+         V1_CANDIDATE_R7, V1_CANDIDATE_R8)
 
 # component -> what it does, what governs it, and what it changes.
 # `engine_flag` is the argument football_engine.run_game receives.
@@ -231,6 +232,46 @@ R7_REPAIR = {
 }
 
 
+# R8 REPLACES R7's MECHANISM RATHER THAN STACKING ON IT. Two appearance
+# mechanisms in one configuration would be two answers to one question, so the
+# R7 flag is removed rather than left set, and run_forecast refuses outright if
+# both ever appear together.
+R8_FLAGS = {k: v for k, v in R7_FLAGS.items() if k != 'appearance_r7'}
+R8_FLAGS['appearance_r8'] = True
+
+R8_REPAIR = {
+    'component': 'R8',
+    'what': 'one appearance model whose regime moves with the evidence: every '
+            'current-season participation quantity enters weighted by '
+            'w = n_cur / (n_cur + k), and the depth block is interacted with '
+            '(1 - w), so depth carries the cold start and participation takes '
+            'over as a player accumulates games',
+    'replaces': 'choosing between two models by week number',
+    'defect': 'R7 beat the frozen mechanism in weeks 1-4 and lost to it from '
+              'week 5. A calendar switch would reproduce that table and learn '
+              'nothing, and would hand the wrong model to a player who signs '
+              'in week 9 with as little current-season evidence as one in '
+              'week 1',
+    'k': 'ESTIMATED, never chosen: within-player over between-player variance '
+         'of player-season appearance rates. 4,073 player-seasons with at '
+         'least four games give within 0.139520, between 0.114588, k = 1.2176',
+    'evidence': 'forward-chained 2022-2025 on identical rows, Brier by regime '
+                'V1 / R7 / R8: week 1 0.24667 / 0.10966 / 0.06321; weeks 2-4 '
+                '0.18146 / 0.11510 / 0.10049; weeks 5-9 0.11213 / 0.11814 / '
+                '0.10345; weeks 10-18 0.10975 / 0.11989 / 0.10611. R8 beats '
+                'both in every regime and every team-week-blocked interval '
+                'excludes zero',
+    'no_week_number_in_the_design': True,
+    'inherits_every_r7_refusal': (
+        'point-in-time depth selection, no today-chart substitution, the '
+        'three-state appearance vocabulary, the explicit season boundary, and '
+        'the declined no_history_and_not_depth_listed cell'),
+    'governance': 'REHEARSAL_ONLY',
+    'introduces_no_constant': True,
+    'inherits': 'R7',
+}
+
+
 def resolve(mode: str) -> Outcome:
     """The flags and the component manifest for a named mode, or a refusal.
 
@@ -246,6 +287,15 @@ def resolve(mode: str) -> Outcome:
             value={'mode': PRODUCTION_BASELINE, 'flags': {},
                    'components': [], 'candidate': False},
             detail='no candidate component is active')
+    if mode == V1_CANDIDATE_R8:
+        return Outcome.ok(
+            'MODE_V1_CANDIDATE_R8',
+            value={'mode': V1_CANDIDATE_R8, 'flags': dict(R8_FLAGS),
+                   'components': manifest() + [R5_REPAIR, R6_REPAIR,
+                                               R8_REPAIR],
+                   'candidate': True},
+            detail='R6 plus the R8 reliability-weighted appearance model, '
+                   'which supersedes R7 rather than stacking on it')
     if mode == V1_CANDIDATE_R7:
         return Outcome.ok(
             'MODE_V1_CANDIDATE_R7',
@@ -293,13 +343,13 @@ def assert_not_promoted(mode: str, artifact: dict) -> Outcome:
     """A candidate artifact must say so, in every field that could be read as
     a promotion claim. Called by the sealer; tested with the guard stubbed."""
     if mode not in (V1_CANDIDATE, V1_CANDIDATE_R5, V1_CANDIDATE_R6,
-                    V1_CANDIDATE_R7):
+                    V1_CANDIDATE_R7, V1_CANDIDATE_R8):
         return Outcome.not_applicable('NOT_A_CANDIDATE_RUN',
                                       f'mode is {mode!r}')
     bad = []
     if artifact.get('model_configuration') not in (
             V1_CANDIDATE, V1_CANDIDATE_R5, V1_CANDIDATE_R6,
-            V1_CANDIDATE_R7):
+            V1_CANDIDATE_R7, V1_CANDIDATE_R8):
         bad.append('model_configuration does not name the candidate mode')
     if not artifact.get('candidate_components'):
         bad.append('candidate_components is empty on a candidate run')

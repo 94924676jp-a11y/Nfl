@@ -58,5 +58,8 @@
   "A.depth() returns an empty dict so f_depth is null on every row",
   "QB dropback ownership closes at game level but not per team"
  ],
- "why_they_moved": "R6 adds a role-conditional class prior. p4c_params and football_engine gained an optional role_prior argument that is None on the V1 and R5 paths; candidate_mode and run_forecast gained the R6 identity and its wiring."
+ "why_they_moved": "R6 adds a role-conditional class prior. p4c_params and football_engine gained an optional role_prior argument that is None on the V1 and R5 paths; candidate_mode and run_forecast gained the R6 identity and its wiring.",
+ "corrections": [
+  "CORRECTED 2026-09-10 by R8. This entry read \"per-team QB dropback ownership drift (SF 0.942, LA 1.060)\". There is no drift: per-team closure is integer-exact in every draw and always was. The figure came from indexing the team_volume draw matrix by the artifact's `team_ids` (away, home) when the layer stacks its rows in sorted team order. SF's quarterbacks sum EXACTLY to LA's dropback draw and vice versa, max|diff| 0.0 over 1,000 draws. See nfl/research/r8/R8_EVIDENCE.json."
+ ]
 }

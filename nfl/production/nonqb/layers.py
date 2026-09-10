@@ -184,6 +184,13 @@ def _run_real(season, week, players, injuries_rows, seed, m, test_only,
         o = AM.predict(season, week, players, injuries_rows)
         mech = 'FROZEN_P3_LOGISTIC'
         spec = SPEC['appearance']
+    elif appearance_spec == 'r8':
+        from nfl.production.nonqb import appearance_r8 as AR8
+        o = AR8.predict(season, week, players, injuries_rows,
+                        observed_before=observed_before,
+                        kickoff_utc=kickoff_utc)
+        mech = 'R8_RELIABILITY_WEIGHTED_LOGISTIC'
+        spec = AR8.SPEC_VERSION
     elif appearance_spec == 'r7':
         from nfl.production.nonqb import appearance_r7 as AR7
         o = AR7.predict(season, week, players, injuries_rows,

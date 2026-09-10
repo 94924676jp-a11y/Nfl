@@ -34,7 +34,7 @@
   "R7 over-predicts appearance in the thin-information cells",
   "residual censoring for players both off the chart and absent from the panel",
   "the two depth vendors do not overlap, so rank comparability is unproven",
-  "per-team QB dropback ownership drift, inherited from V1"
+  "CORRECTED 2026-09-10 by R8. This entry read \"per-team QB dropback ownership drift (SF 0.942, LA 1.060)\". There is no drift: per-team closure is integer-exact in every draw and always was. The figure came from indexing the team_volume draw matrix by the artifact's `team_ids` (away, home) when the layer stacks its rows in sorted team order. SF's quarterbacks sum EXACTLY to LA's dropback draw and vice versa, max|diff| 0.0 over 1,000 draws. See nfl/research/r8/R8_EVIDENCE.json."
  ],
  "control_is_bit_identical": {
   "test": "the R6 candidate was re-run on identical inputs, seed and written_at AFTER the appearance_spec seam was added, and its draw artifact was hashed against the run sealed before the seam existed",
@@ -43,5 +43,8 @@
   "identical": true,
   "distribution_means_compared": 218,
   "differing": 0
- }
+ },
+ "corrections": [
+  "the QB dropback ownership entry was withdrawn; see the entry text"
+ ]
 }

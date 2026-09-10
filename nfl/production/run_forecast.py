@@ -173,6 +173,34 @@ def build(args, fixtures: dict = None) -> dict:
                              run_id)
         return Outcome.ok('INPUTS_VALIDATED', value=src,
                           input_hashes={k: v['sha256'] for k, v in src.items()})
+    def _appearance_spec(flags):
+        """Which appearance mechanism this configuration names. Exactly one.
+
+        Two mechanisms set at once would be two answers to one question, and
+        picking the first in some arbitrary order is how a configuration ends
+        up running a model nobody asked for. It raises instead.
+        """
+        named = [n for n, k in (('r7', 'appearance_r7'), ('r8', 'appearance_r8'))
+                 if flags.get(k)]
+        if len(named) > 1:
+            raise ValueError(
+                'APPEARANCE_SPEC_AMBIGUOUS: this configuration names '
+                f'{named}. One appearance mechanism per configuration.')
+        return named[0] if named else 'frozen'
+
+    def _qb_dropback_budgets():
+        """{team: dropback draw} for the closure test, or None.
+
+        Keyed by BARE TEAM, which is one of the two shapes `reconcile_team`
+        accepts, and a team it cannot find is a refusal there rather than a
+        silently skipped check.
+        """
+        tv = fx.get('_team_volume')
+        if not tv:
+            return None
+        out = {t: v for (m, t), v in tv.items() if m == 'team_dropbacks_part'}
+        return out or None
+
     def _team_volume():
         """THE team-volume draw for this run. One owner, one draw.
 
@@ -346,7 +374,9 @@ def build(args, fixtures: dict = None) -> dict:
         team = QBACC.reconcile_team(
             qb['draws'], qb['rows'],
             team_rush_draws=fx.get('team_rush_draws'),
-            team_rushes_realised=fx.get('team_rushes_realised'))
+            team_rushes_realised=fx.get('team_rushes_realised'),
+            team_dropback_draws=_qb_dropback_budgets(),
+            integer_level=bool(fl.get('r2')))
         _inv['qb_team_accounting'] = team
         fx['_qb_team_warnings'] = list(team.evidence.get('warnings') or [])
         if team.state is not State.PASS:
@@ -597,6 +627,17 @@ def build(args, fixtures: dict = None) -> dict:
                          'unsupported_cell': _AR7.UNSUPPORTED_CELL,
                          'observed_before': str(args.written_at)}
             fx['_r7_applied'] = True
+        if fl.get('appearance_r8'):
+            from nfl.production.nonqb import appearance_r8 as _AR8
+            _k = _AR8.reliability_k(_AR8.enriched_frame().value,
+                                    cut=args.season * 100)
+            fx['_r8'] = {'spec_version': _AR8.SPEC_VERSION,
+                         'unsupported_cell': _AR8.UNSUPPORTED_CELL,
+                         'observed_before': str(args.written_at),
+                         'k': (round(_k.value, 6)
+                               if _k.state is State.PASS else None),
+                         'k_state': f'{_k.state.value}[{_k.code}]'}
+            fx['_r8_applied'] = True
 
         try:
             fits = FE.slate_fits(args.season, args.week, players,
@@ -666,7 +707,7 @@ def build(args, fixtures: dict = None) -> dict:
                 rushing_budget=rushing_budget,
                 team_carries_override=fx.get('_coupled_team_carries'),
                 tv=_team_volume(),
-                appearance_spec=('r7' if fl.get('appearance_r7') else 'frozen'),
+                appearance_spec=_appearance_spec(fl),
                 observed_before=args.written_at)
         except Exception as e:                                # noqa: BLE001
             o = Outcome.fail(
@@ -698,6 +739,8 @@ def build(args, fixtures: dict = None) -> dict:
             applied.append('R6')
         if fx.get('_r7_applied'):
             applied.append('R7')
+        if fx.get('_r8_applied'):
+            applied.append('R8')
         fx['_candidate_applied'] = sorted(set(applied))
         fx['_candidate_not_reached'] = sorted(set(not_reached))
         return fx['_nonqb']
@@ -903,7 +946,14 @@ def build(args, fixtures: dict = None) -> dict:
                 team = QBACC.reconcile_team(
                     o.value, fx['qb_rows'],
                     team_rush_draws=fx.get('team_rush_draws'),
-                    team_rushes_realised=fx.get('team_rushes_realised'))
+                    team_rushes_realised=fx.get('team_rushes_realised'),
+                    team_dropback_draws=_qb_dropback_budgets(),
+                    # `_mode` is what this scope holds; `fl` is bound in the
+                    # other stage runner and reaching for it here raised
+                    # NameError inside the qb_layer, which the pipeline
+                    # correctly recorded as STAGE_RAISED and the suite caught.
+                    integer_level=bool(
+                        (_mode.get('flags') or {}).get('r2')))
                 _inv['qb_team_accounting'] = team
                 fx['_qb_team_warnings'] = list(team.evidence.get('warnings')
                                                or [])
@@ -1114,6 +1164,22 @@ def build(args, fixtures: dict = None) -> dict:
                 if o.state is not State.PASS:
                     return _fail(o)
                 produced['team_volume'] = len(teams)
+                # THE BINDING. `teams` here is the matrix row order; the
+                # artifact's `team_ids` is a different order of the same set.
+                # Record the map so no consumer has to infer it, and refuse if
+                # the two ever stop describing the same teams -- a matrix that
+                # covers different teams from the artifact is not a reordering,
+                # it is a different run.
+                fx['_team_draw_row_index'] = {t: i for i, t in enumerate(teams)}
+                _declared = set(fx.get('team_ids') or [])
+                if _declared and _declared != set(teams):
+                    return _fail(Outcome.fail(
+                        'TEAM_DRAW_ROWS_DISAGREE_WITH_TEAM_IDS',
+                        f'the team_volume draw matrix covers {sorted(teams)} '
+                        f'while the artifact declares {sorted(_declared)}. '
+                        f'A row order may differ; the SET may not.',
+                        matrix_teams=sorted(teams),
+                        declared_teams=sorted(_declared)))
 
         if not ds.arrays:
             # ABSENCE IS NOT SUCCESS, AND IT IS NAMED.
@@ -1393,6 +1459,27 @@ def build(args, fixtures: dict = None) -> dict:
             'eligibility_verdict': _eligibility,
             'player_ids': [q['gsis_id'] for q in fx.get('players', [])],
             'team_ids': fx.get('team_ids', []),
+            # TWO ORDERINGS OF "TEAM" LIVE IN ONE ARTIFACT AND THEY DIFFER.
+            # `team_ids` is away-then-home, from the game id. The team_volume
+            # draw matrices are stacked in SORTED team order, which is the
+            # layer's own `row_ids` in the draw manifest. Both are correct and
+            # neither is wrong to hold; what was missing was anything binding
+            # them, so a reader who indexed the matrix by `team_ids` got the
+            # other team's numbers and no check anywhere objected. That is
+            # exactly how the "SF 0.942 / LA 1.060 QB ownership leak" was
+            # reported in the R6 and R7 audits for a quantity that in fact
+            # closes exactly. The map is now written down.
+            'team_draw_row_index': fx.get('_team_draw_row_index') or {},
+            # THE CLOSURE PROOF, QUANTIFIED, IN THE ARTIFACT ITSELF. Every team
+            # dropback belongs to exactly one quarterback on that team, and a
+            # reader should not have to re-derive that from the draw matrices
+            # -- which is where the transposition above came from in the first
+            # place.
+            'qb_team_dropback_closure':
+                ((fx.get('_qb_accounting') or {}).get('team') or {}).get(
+                    'per_team_dropback_closure') or
+                {'status': 'NOT_MEASURED',
+                 'why': 'the QB team reconciliation did not run in this run'},
             'distributions': _dist,
             'distributions_source': _dist_source,
             # WHICH MODEL PRODUCED THIS NUMBER, answered by the artifact

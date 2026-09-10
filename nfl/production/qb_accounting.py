@@ -164,11 +164,21 @@ ALLOCATION_RESIDUAL = {
                       'CAPTURE_PATH_READY_SOURCE_UNPUBLISHED and depth-chart '
                       'guesswork is forbidden by prereg s3.'),
     'policy': 'reported on every run, never clipped and never smoothed away',
+    'superseded_by_r2': (
+        'CORRECTED 2026-09-10. The measurement above is of the PRE-R2 layer, '
+        'where QB V1 drew its own level. Under R2 the level is a '
+        'largest-remainder apportionment of rint(team_dropbacks_part) and '
+        'closure is integer-exact by construction, so `holds: False` describes '
+        'a configuration the candidate no longer runs. reconcile_team now '
+        'MEASURES closure per team per draw instead of asserting it fails.'),
+    'holds_under_r2': True,
 }
 
 
 def reconcile_team(D, rows, team_rush_draws=None,
-                   team_rushes_realised: dict | None = None) -> Outcome:
+                   team_rushes_realised: dict | None = None,
+                   team_dropback_draws: dict | None = None,
+                   integer_level: bool = False) -> Outcome:
     """Team-level checks. The allocation residual is measured, not enforced.
 
     TWO DIFFERENT QUESTIONS, AND THEY MUST NOT BE MERGED.
@@ -275,18 +285,98 @@ def reconcile_team(D, rows, team_rush_draws=None,
                                   'coherence defect. Defining a defect against '
                                   'a realised outcome manufactures one for any '
                                   'forecaster, including a correct one.'}
+    # ------------------------------------------------------------------
+    # THE RESIDUAL IS NOW MEASURED. IT USED TO BE ASSERTED.
+    #
+    # This function returned the literal warning "sum of QB dropbacks does not
+    # equal team dropbacks" on EVERY call, from a hard-coded list in the return
+    # statement, having measured nothing of the kind. `run_forecast` turned any
+    # warning into the FAIL verdict QB_ALLOCATION_RESIDUAL_PRESENT, so every
+    # sealed artifact this project has ever produced carries a failing
+    # invariant that was a string rather than a finding.
+    #
+    # Under R2 the assertion is FALSE. The per-quarterback level is a
+    # largest-remainder apportionment of rint(team_dropbacks_part);
+    # `apportion_dropbacks` refuses outright if the shares do not cover the
+    # budget, and closure is integer-exact by construction in every draw.
+    #
+    # So the warning is now raised only when a supplied team dropback budget
+    # actually fails to close, and the closure is reported with its cell counts
+    # either way. A caller that supplies no budget gets NOT_MEASURED -- not a
+    # pass, and not the old unconditional failure.
+    closure = {'status': 'NOT_MEASURED',
+               'why': 'no team dropback draw was supplied to this call, so '
+                      'closure was not examined. This is not evidence that it '
+                      'holds.'}
+    warnings = []
+    if team_dropback_draws is not None:
+        cells = bad = 0
+        worst = 0.0
+        per_team, skipped = {}, []
+        for k in keys:
+            b = team_dropback_draws.get(k)
+            if b is None:
+                b = team_dropback_draws.get(k[-1])
+            if b is None:
+                skipped.append(str(k))
+                continue
+            b = np.asarray(b, float)
+            q = np.asarray(D['db'])[by[k]].sum(0)
+            if q.shape != b.shape:
+                return Outcome.fail(
+                    'CROSS_DRAW_INDEX_MISMATCH',
+                    f'{k}: QB dropback draws have shape {q.shape} against a '
+                    f'team budget of {b.shape}. These must share one draw '
+                    f'index, and comparing them across two would be '
+                    f'meaningless rather than merely wrong.')
+            target = np.rint(b) if integer_level else b
+            d = np.abs(q - target) if integer_level else np.maximum(q - b, 0.0)
+            n_bad = int((d > 1e-9).sum())
+            cells += int(q.size)
+            bad += n_bad
+            worst = max(worst, float(d.max()) if d.size else 0.0)
+            per_team[str(k)] = {'cells': int(q.size), 'violating': n_bad,
+                                'qb_sum_mean': round(float(q.mean()), 6),
+                                'budget_mean': round(float(b.mean()), 6)}
+        if skipped:
+            return Outcome.fail(
+                'QB_TEAM_DROPBACK_BUDGET_KEY_MISMATCH',
+                f'{len(skipped)} of {len(keys)} team-game(s) have no entry in '
+                f'the supplied team_dropback_draws map, so closure would be '
+                f'reported from a check that examined nothing. Accepted keys '
+                f'are the (season, week, team) tuple or the bare team.',
+                n_missing=len(skipped), examples=skipped[:5])
+        closure = {
+            'status': 'CLOSES' if bad == 0 else 'DOES_NOT_CLOSE',
+            'test': ('sum of QB dropbacks == rint(team dropback draw), per '
+                     'team per draw' if integer_level else
+                     'sum of QB dropbacks <= team dropback draw, per team '
+                     'per draw'),
+            'integer_level': bool(integer_level),
+            'draw_cells': cells, 'violating_cells': bad,
+            'worst_absolute_deviation': round(worst, 9),
+            'per_team': per_team,
+            'no_cross_team_compensation': ('each team is compared only against '
+                                           'its own budget; a surplus on one '
+                                           'team can never offset a shortfall '
+                                           'on the other')}
+        if bad:
+            warnings.append(
+                f'sum of QB dropbacks does not equal team dropbacks in '
+                f'{bad} of {cells} draw cell(s); worst deviation {worst:.6f}. '
+                f'See ALLOCATION_RESIDUAL.')
     return Outcome.ok(
         'QB_TEAM_ACCOUNTING_MEASURED',
         value={'n_team_games': len(keys),
                'single_qb': _bias(single), 'multi_qb': _bias(multi),
                'vs_team_rush_draws_checked': team_rush_draws is not None,
                'vs_realised_team_rushes': diag,
+               'per_team_dropback_closure': closure,
                'named_residual': ALLOCATION_RESIDUAL},
         detail=f'{len(keys)} team-game(s), {len(multi)} with more than one '
-               f'quarterback. The share-allocation residual is NAMED and '
-               f'quantified, not clipped.',
-        warnings=['sum of QB dropbacks does not equal team dropbacks; see '
-                  'ALLOCATION_RESIDUAL'])
+               f'quarterback; per-team dropback closure {closure["status"]}.',
+        per_team_dropback_closure=closure,
+        warnings=warnings)
 
 
 def reconcile_cross_layer(D, receiving=None, receiving_td=None) -> Outcome:
