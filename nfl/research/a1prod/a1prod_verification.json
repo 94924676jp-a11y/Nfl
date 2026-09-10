@@ -1,0 +1,408 @@
+{
+ "artifact": "A1PROD_VERIFICATION",
+ "burn_in": [
+  2020,
+  2021
+ ],
+ "degenerate_draws_named_and_given_to_fringe": 0,
+ "estimator_identity": {
+  "a2_latent_rejected": true,
+  "categories": [
+   "kneel",
+   "designed_qb",
+   "rb",
+   "wr",
+   "te",
+   "fringe"
+  ],
+  "clipping": "none",
+  "dropback_owned": [
+   "scramble"
+  ],
+  "ewma_halflife": 2.0,
+  "family": "league share + additive residual pool + team ewma shrunk by n/(n+K)",
+  "fitted_here": [],
+  "k_shrink": 4.0,
+  "post_hoc_repair": "none",
+  "predeclaration_sha256": "90f6ecc37bcee427177f183be03374c13ec87fe1e14d667a4457c797748789db",
+  "reference_implementation": "nfl/research/own9/a1_lib.py",
+  "reference_sha256": "b20091a6f65f1b8f933286411f016a894496ab5e0042224ae85476f1cbc15537",
+  "spec_version": "rushing-a1-production-v1",
+  "survivor_renormalisation": "none"
+ },
+ "eval_seasons": [
+  2022,
+  2023,
+  2024
+ ],
+ "forecast_freeze": {
+  "code": "A1_PARAMS_FROZEN",
+  "detail": "743202 bytes",
+  "evidence": {
+   "consumed_outcome_at_or_after_cut": false,
+   "highest_history_ord": 202518,
+   "history_cut_ord": 202601,
+   "n_teams_with_history": 32,
+   "n_train": 3230,
+   "resid_pool_sizes": {
+    "designed_qb": 3198,
+    "fringe": 3198,
+    "kneel": 3198,
+    "rb": 3198,
+    "te": 3198,
+    "wr": 3198
+   },
+   "seasons_used": [
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025
+   ],
+   "sha256": "9d56c2604832cff7c76b6bb20cc32eea98ea59d048f56e8289b25805ee3920d2"
+  },
+  "state": "PASS"
+ },
+ "frame": {
+  "closure_exact": 3230,
+  "closure_max_abs": 0,
+  "n_team_games": 3230,
+  "seasons": [
+   2020,
+   2021,
+   2022,
+   2023,
+   2024,
+   2025
+  ]
+ },
+ "hard_requirements": {
+  "carries_with_no_owner": 0,
+  "carries_with_two_owners": 0,
+  "category_budget_overruns": 0,
+  "closure_violations": 0,
+  "draws": 652000,
+  "ledger_violations": 0,
+  "negative_allocations": 0
+ },
+ "m": 400,
+ "n_team_games": 1630,
+ "path_c_state_touched": false,
+ "per_draw_dependence": {
+  "OBSERVED_designed_qb_vs_dropbacks": -0.1521,
+  "OBSERVED_designed_qb_vs_team_carries": 0.314,
+  "OBSERVED_kneel_vs_dropbacks": -0.243,
+  "OBSERVED_kneel_vs_team_carries": 0.3009,
+  "OBSERVED_rb_vs_dropbacks": -0.3843,
+  "OBSERVED_rb_vs_team_carries": 0.8502,
+  "designed_qb_vs_dropbacks": {
+   "n_draws_used": 400,
+   "p05": -0.1900227040571465,
+   "p95": -0.1283797075893392,
+   "per_draw_mean": -0.1598066952288076,
+   "per_draw_sd": 0.019232932707536433
+  },
+  "designed_qb_vs_team_carries": {
+   "n_draws_used": 400,
+   "p05": 0.278038097326202,
+   "p95": 0.33621936600019237,
+   "per_draw_mean": 0.30651226893222994,
+   "per_draw_sd": 0.018120182890262366
+  },
+  "designed_qb_vs_team_carries_MEAN_BASED_NOT_COMPARABLE": 0.505104057632122,
+  "kneel_vs_dropbacks": {
+   "n_draws_used": 400,
+   "p05": -0.10774075564020637,
+   "p95": -0.032232301197646605,
+   "per_draw_mean": -0.06870326837002452,
+   "per_draw_sd": 0.02296873845941398
+  },
+  "kneel_vs_team_carries": {
+   "n_draws_used": 400,
+   "p05": 0.1330491746284053,
+   "p95": 0.2056401356083117,
+   "per_draw_mean": 0.170527058815542,
+   "per_draw_sd": 0.022785916364679137
+  },
+  "rb_vs_dropbacks": {
+   "n_draws_used": 400,
+   "p05": -0.40816968246130925,
+   "p95": -0.37813979801950187,
+   "per_draw_mean": -0.3929571293075868,
+   "per_draw_sd": 0.009430051752838016
+  },
+  "rb_vs_team_carries": {
+   "n_draws_used": 400,
+   "p05": 0.8331805215314594,
+   "p95": 0.8582049649936307,
+   "per_draw_mean": 0.8463570898006145,
+   "per_draw_sd": 0.007659310473203036
+  }
+ },
+ "per_fold": {
+  "2022": {
+   "designed_qb_vs_dropbacks": {
+    "n_draws_used": 400,
+    "p05": -0.23682823119725543,
+    "p95": -0.1286784195488016,
+    "per_draw_mean": -0.1831512562705272,
+    "per_draw_sd": 0.03333555103047354
+   },
+   "designed_qb_vs_team_carries": {
+    "n_draws_used": 400,
+    "p05": 0.24796876381193528,
+    "p95": 0.3507167138490269,
+    "per_draw_mean": 0.3001119283810067,
+    "per_draw_sd": 0.031827204921891256
+   },
+   "hard": {
+    "carries_with_no_owner": 0,
+    "carries_with_two_owners": 0,
+    "category_budget_overruns": 0,
+    "closure_violations": 0,
+    "draws": 216800,
+    "ledger_violations": 0,
+    "negative_allocations": 0
+   },
+   "kneel_vs_dropbacks": {
+    "n_draws_used": 400,
+    "p05": -0.12454626023437629,
+    "p95": 0.010457708445631079,
+    "per_draw_mean": -0.06186218139751199,
+    "per_draw_sd": 0.03989346736391605
+   },
+   "kneel_vs_team_carries": {
+    "n_draws_used": 400,
+    "p05": 0.07554311331105598,
+    "p95": 0.20558885590876474,
+    "per_draw_mean": 0.14281636645069062,
+    "per_draw_sd": 0.03995738400645472
+   },
+   "n_team_games": 542,
+   "rb_vs_dropbacks": {
+    "n_draws_used": 400,
+    "p05": -0.42941676949786345,
+    "p95": -0.37443876982847807,
+    "per_draw_mean": -0.4038629850795584,
+    "per_draw_sd": 0.016656445370073818
+   },
+   "rb_vs_team_carries": {
+    "n_draws_used": 400,
+    "p05": 0.8039305849040597,
+    "p95": 0.8501385472774957,
+    "per_draw_mean": 0.8289603803168453,
+    "per_draw_sd": 0.01420230279842202
+   }
+  },
+  "2023": {
+   "designed_qb_vs_dropbacks": {
+    "n_draws_used": 400,
+    "p05": -0.1543185571636957,
+    "p95": -0.046688342116767215,
+    "per_draw_mean": -0.09994581298476991,
+    "per_draw_sd": 0.034210955929294004
+   },
+   "designed_qb_vs_team_carries": {
+    "n_draws_used": 400,
+    "p05": 0.21545669970614692,
+    "p95": 0.33273644964545485,
+    "per_draw_mean": 0.27335629959936497,
+    "per_draw_sd": 0.035084361054546626
+   },
+   "hard": {
+    "carries_with_no_owner": 0,
+    "carries_with_two_owners": 0,
+    "category_budget_overruns": 0,
+    "closure_violations": 0,
+    "draws": 217600,
+    "ledger_violations": 0,
+    "negative_allocations": 0
+   },
+   "kneel_vs_dropbacks": {
+    "n_draws_used": 400,
+    "p05": -0.1269233289612241,
+    "p95": 0.0027489601474625872,
+    "per_draw_mean": -0.06142079922742724,
+    "per_draw_sd": 0.038686471493383875
+   },
+   "kneel_vs_team_carries": {
+    "n_draws_used": 400,
+    "p05": 0.11132623716767173,
+    "p95": 0.24456934168938155,
+    "per_draw_mean": 0.1795454716967073,
+    "per_draw_sd": 0.041845542376202784
+   },
+   "n_team_games": 544,
+   "rb_vs_dropbacks": {
+    "n_draws_used": 400,
+    "p05": -0.39088856095277896,
+    "p95": -0.33895710765365433,
+    "per_draw_mean": -0.36569677529782113,
+    "per_draw_sd": 0.015597878241642138
+   },
+   "rb_vs_team_carries": {
+    "n_draws_used": 400,
+    "p05": 0.8337377324881409,
+    "p95": 0.8763641485337692,
+    "per_draw_mean": 0.8568203104444686,
+    "per_draw_sd": 0.012983322132116353
+   }
+  },
+  "2024": {
+   "designed_qb_vs_dropbacks": {
+    "n_draws_used": 400,
+    "p05": -0.23887233157264529,
+    "p95": -0.13599833244316936,
+    "per_draw_mean": -0.18555622402109273,
+    "per_draw_sd": 0.030920931454491804
+   },
+   "designed_qb_vs_team_carries": {
+    "n_draws_used": 400,
+    "p05": 0.2965256347263496,
+    "p95": 0.3928265766946558,
+    "per_draw_mean": 0.34393953430675517,
+    "per_draw_sd": 0.030423167641157253
+   },
+   "hard": {
+    "carries_with_no_owner": 0,
+    "carries_with_two_owners": 0,
+    "category_budget_overruns": 0,
+    "closure_violations": 0,
+    "draws": 217600,
+    "ledger_violations": 0,
+    "negative_allocations": 0
+   },
+   "kneel_vs_dropbacks": {
+    "n_draws_used": 400,
+    "p05": -0.15488837756111307,
+    "p95": -0.018077135422904858,
+    "per_draw_mean": -0.08578052603492015,
+    "per_draw_sd": 0.04184903570443505
+   },
+   "kneel_vs_team_carries": {
+    "n_draws_used": 400,
+    "p05": 0.11883045605269754,
+    "p95": 0.25703998765124375,
+    "per_draw_mean": 0.19076094508306263,
+    "per_draw_sd": 0.04100749564034018
+   },
+   "n_team_games": 544,
+   "rb_vs_dropbacks": {
+    "n_draws_used": 400,
+    "p05": -0.4345263098024417,
+    "p95": -0.37905592176639546,
+    "per_draw_mean": -0.40771278921020454,
+    "per_draw_sd": 0.01634125073186059
+   },
+   "rb_vs_team_carries": {
+    "n_draws_used": 400,
+    "p05": 0.8277784337783787,
+    "p95": 0.8777402622785104,
+    "per_draw_mean": 0.8551407966063296,
+    "per_draw_sd": 0.01483653138917123
+   }
+  }
+ },
+ "pooled_category_distributions": {
+  "designed_qb": {
+   "model_mean": 2.0196,
+   "model_p95": 7.0,
+   "model_sd": 2.6688,
+   "model_zero_mass": 0.3965,
+   "observed_mean": 1.9,
+   "observed_p95": 7.0,
+   "observed_sd": 2.7751,
+   "observed_zero_mass": 0.3669
+  },
+  "fringe": {
+   "model_mean": 0.1575,
+   "model_p95": 1.0,
+   "model_sd": 0.6246,
+   "model_zero_mass": 0.9089,
+   "observed_mean": 0.0908,
+   "observed_p95": 1.0,
+   "observed_sd": 0.5292,
+   "observed_zero_mass": 0.9485
+  },
+  "kneel": {
+   "model_mean": 0.8212,
+   "model_p95": 4.0,
+   "model_sd": 1.339,
+   "model_zero_mass": 0.5961,
+   "observed_mean": 0.7706,
+   "observed_p95": 3.0,
+   "observed_sd": 1.0433,
+   "observed_zero_mass": 0.5509
+  },
+  "rb": {
+   "model_mean": 20.9958,
+   "model_p95": 33.0,
+   "model_sd": 6.8343,
+   "model_zero_mass": 0.0008,
+   "observed_mean": 21.4301,
+   "observed_p95": 33.0,
+   "observed_sd": 6.7517,
+   "observed_zero_mass": 0.0
+  },
+  "te": {
+   "model_mean": 0.0849,
+   "model_p95": 1.0,
+   "model_sd": 0.3831,
+   "model_zero_mass": 0.9386,
+   "observed_mean": 0.0472,
+   "observed_p95": 0.0,
+   "observed_sd": 0.2179,
+   "observed_zero_mass": 0.954
+  },
+  "wr": {
+   "model_mean": 1.1118,
+   "model_p95": 4.0,
+   "model_sd": 1.8526,
+   "model_zero_mass": 0.5382,
+   "observed_mean": 0.9521,
+   "observed_p95": 4.0,
+   "observed_sd": 1.5627,
+   "observed_zero_mass": 0.4969
+  }
+ },
+ "positions": {
+  "n_rows": 83144,
+  "source": "/home/user/nfl/nfl/derived/panel_enriched.pkl",
+  "source_sha256": "7bbc8cb255dc0c0e"
+ },
+ "predeclaration": {
+  "code": "A1_PREDECLARATION_UNMODIFIED",
+  "detail": "ownership graph frozen by OWN-8",
+  "evidence": {},
+  "state": "PASS"
+ },
+ "promoted": false,
+ "registry_debt": {
+  "code": "A1_SEED_NAMESPACE_NOT_IN_REGISTRY",
+  "detail": "'rushing_a1' is not a declared namespace in nfl/production/seeds.py (SEED_NAMESPACE_UNKNOWN). The component is derived deterministically by sha256 over the seed contract, exactly as seeds.game_component derives an open-set id, so no draw depends on Python hash(). The debt is the registry entry itself.",
+  "evidence": {
+   "owed": "add STREAMS['rushing_a1'] = {'rush_play_budget_partition': 1} to nfl/production/seeds.py, appending the next free integer",
+   "probe_code": "SEED_NAMESPACE_UNKNOWN",
+   "uses_python_hash": false
+  },
+  "state": "DEFERRED"
+ },
+ "seed": 20260909,
+ "seed_contract": {
+  "declared_in_seeds_registry": false,
+  "namespace": "rushing_a1",
+  "seed_contract": "nfl-stream-seed-v1",
+  "stable_across": [
+   "process",
+   "machine",
+   "invocation order",
+   "PYTHONHASHSEED"
+  ],
+  "streams": {
+   "rush_play_budget_partition": 1
+  },
+  "uses_python_hash": false
+ },
+ "share_floor_binds": 807712
+}

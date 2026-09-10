@@ -45,8 +45,15 @@ def test_A_it_is_clear_right_now():
     check('every check passes today', not fails, str(fails))
     check('and there are enough of them to be worth running', len(r) >= 8,
           str(len(r)))
-    check('the first target is NE@SEA', by(r, 'first upcoming').value
-          == '2026_01_NE_SEA')
+    # THE PROPERTY, NOT THE CALENDAR. This asserted the literal
+    # '2026_01_NE_SEA', which was the first upcoming game on the day the test
+    # was written and stopped being so the moment that game kicked off -- the
+    # suite then failed on the passage of time rather than on a defect. What
+    # preflight must actually guarantee is that it names A first upcoming
+    # target and that the target is genuinely still ahead.
+    _first = by(r, 'first upcoming').value
+    check('preflight names a first upcoming target',
+          isinstance(_first, str) and _first.count('_') >= 3, repr(_first))
     check('and it is reported as not yet covered',
           by(r, 'not already covered').code == 'TARGET_OPEN')
 

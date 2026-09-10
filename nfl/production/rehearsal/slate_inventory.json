@@ -2,6 +2,7 @@
  "season": 2026,
  "week": 1,
  "n_games": 16,
+ "model_configuration": "V1_CANDIDATE",
  "roster_source": "weekly_rosters.0b005c45d924a541.reduced.csv.gz",
  "n_roster_rows": 2955,
  "results": [
@@ -83,7 +84,7 @@
     }
    ],
    "publication": "NFL1_NOT_AUTHORIZED",
-   "run_id": "875ce1009e98714d"
+   "run_id": "c72e22fc698f15eb"
   },
   {
    "game_id": "2026_01_ATL_PIT",
@@ -163,7 +164,7 @@
     }
    ],
    "publication": "NFL1_NOT_AUTHORIZED",
-   "run_id": "8ed0b707407370c6"
+   "run_id": "2f10dc079877e867"
   },
   {
    "game_id": "2026_01_BAL_IND",
@@ -243,7 +244,7 @@
     }
    ],
    "publication": "NFL1_NOT_AUTHORIZED",
-   "run_id": "50f48de10eb59005"
+   "run_id": "1b144d25cc360c7e"
   },
   {
    "game_id": "2026_01_BUF_HOU",
@@ -323,7 +324,7 @@
     }
    ],
    "publication": "NFL1_NOT_AUTHORIZED",
-   "run_id": "ab5b9906fd7f29ee"
+   "run_id": "d14ef26be737031b"
   },
   {
    "game_id": "2026_01_CHI_CAR",
@@ -403,7 +404,7 @@
     }
    ],
    "publication": "NFL1_NOT_AUTHORIZED",
-   "run_id": "e2492b2c02bf4baa"
+   "run_id": "b391870113370eab"
   },
   {
    "game_id": "2026_01_CLE_JAX",
@@ -483,7 +484,7 @@
     }
    ],
    "publication": "NFL1_NOT_AUTHORIZED",
-   "run_id": "5d3880c0abb8e94a"
+   "run_id": "c1da79377e1184bf"
   },
   {
    "game_id": "2026_01_DAL_NYG",
@@ -563,7 +564,7 @@
     }
    ],
    "publication": "NFL1_NOT_AUTHORIZED",
-   "run_id": "67d8732b8abc3237"
+   "run_id": "58cb0070a279b8a0"
   },
   {
    "game_id": "2026_01_DEN_KC",
@@ -643,7 +644,7 @@
     }
    ],
    "publication": "NFL1_NOT_AUTHORIZED",
-   "run_id": "23f1d7d7a4a23569"
+   "run_id": "b2eff459b3c1a8fd"
   },
   {
    "game_id": "2026_01_GB_MIN",
@@ -723,7 +724,7 @@
     }
    ],
    "publication": "NFL1_NOT_AUTHORIZED",
-   "run_id": "57f453068eea72b6"
+   "run_id": "f0ee12e4a627a5c5"
   },
   {
    "game_id": "2026_01_MIA_LV",
@@ -803,87 +804,94 @@
     }
    ],
    "publication": "NFL1_NOT_AUTHORIZED",
-   "run_id": "55a2c7cbfa32dbe7"
+   "run_id": "2ee9f6fd674542bd"
   },
   {
    "game_id": "2026_01_NE_SEA",
-   "status": "SEALED",
+   "status": "REFUSED",
    "n_players": 189,
-   "failures": [],
+   "failures": [
+    {
+     "stage": "capture_validation",
+     "code": "SOURCE_CHRONOLOGY_FAILURE",
+     "category": "CHRONOLOGY",
+     "detail": "capture_validation: written_at 2026-09-10T12:00:00Z is not before kickoff 2026-09-10T00:20:00Z"
+    }
+   ],
    "stages": [
     {
      "stage": "capture_validation",
-     "state": "PASS",
-     "code": "INPUTS_VALIDATED"
+     "state": "BLOCKED",
+     "code": "SOURCE_CHRONOLOGY_FAILURE"
     },
     {
      "stage": "identity_resolution",
-     "state": "PASS",
-     "code": "IDENTITY_RESOLVED"
+     "state": "NOT_APPLICABLE",
+     "code": "STAGE_NOT_REACHED"
     },
     {
      "stage": "feature_build",
-     "state": "PASS",
-     "code": "STAGE_DECLARED_UNIMPLEMENTED"
+     "state": "NOT_APPLICABLE",
+     "code": "STAGE_NOT_REACHED"
     },
     {
      "stage": "team_environment",
-     "state": "PASS",
-     "code": "TEAM_ENVIRONMENT_OK"
+     "state": "NOT_APPLICABLE",
+     "code": "STAGE_NOT_REACHED"
     },
     {
      "stage": "appearance",
      "state": "NOT_APPLICABLE",
-     "code": "INJURY_REPORT_INCOMPLETE"
+     "code": "STAGE_NOT_REACHED"
     },
     {
      "stage": "participation",
      "state": "NOT_APPLICABLE",
-     "code": "BLOCKED_UPSTREAM_APPEARANCE"
+     "code": "STAGE_NOT_REACHED"
     },
     {
      "stage": "targets_carries",
      "state": "NOT_APPLICABLE",
-     "code": "BLOCKED_UPSTREAM_APPEARANCE"
+     "code": "STAGE_NOT_REACHED"
     },
     {
      "stage": "conversion",
      "state": "NOT_APPLICABLE",
-     "code": "BLOCKED_UPSTREAM_OPPORTUNITY"
+     "code": "STAGE_NOT_REACHED"
     },
     {
      "stage": "td_layer",
      "state": "NOT_APPLICABLE",
-     "code": "BLOCKED_UPSTREAM_TD_INPUT"
+     "code": "STAGE_NOT_REACHED"
     },
     {
      "stage": "qb_layer",
-     "state": "PASS",
-     "code": "QB_LAYER_OK"
+     "state": "NOT_APPLICABLE",
+     "code": "STAGE_NOT_REACHED"
     },
     {
      "stage": "joint_reconciliation",
-     "state": "PASS",
-     "code": "JOINT_RECONCILED"
+     "state": "NOT_APPLICABLE",
+     "code": "STAGE_NOT_REACHED"
     },
     {
      "stage": "player_draws",
-     "state": "PASS",
-     "code": "DRAWS_BUILT"
+     "state": "NOT_APPLICABLE",
+     "code": "STAGE_NOT_REACHED"
     },
     {
      "stage": "scoring",
-     "state": "PASS",
-     "code": "SCORED"
+     "state": "NOT_APPLICABLE",
+     "code": "STAGE_NOT_REACHED"
     },
     {
      "stage": "artifact_sealing",
-     "state": "PASS",
-     "code": "ARTIFACT_SEALED"
+     "state": "NOT_APPLICABLE",
+     "code": "STAGE_NOT_REACHED"
     }
    ],
    "publication": "NFL1_NOT_AUTHORIZED",
-   "run_id": "e5f5eaf7ea6cdb38"
+   "run_id": "08ce9e2fd4f55ffa"
   },
   {
    "game_id": "2026_01_NO_DET",
@@ -963,7 +971,7 @@
     }
    ],
    "publication": "NFL1_NOT_AUTHORIZED",
-   "run_id": "793c29c304d8f0c3"
+   "run_id": "751bd86791bcf3a0"
   },
   {
    "game_id": "2026_01_NYJ_TEN",
@@ -1043,7 +1051,7 @@
     }
    ],
    "publication": "NFL1_NOT_AUTHORIZED",
-   "run_id": "385399cb05955050"
+   "run_id": "a5dcd6db6615799e"
   },
   {
    "game_id": "2026_01_SF_LA",
@@ -1123,13 +1131,20 @@
     }
    ],
    "publication": "NFL1_NOT_AUTHORIZED",
-   "run_id": "0316dc97d70426df"
+   "run_id": "7d237119215afa97"
   },
   {
    "game_id": "2026_01_TB_CIN",
-   "status": "SEALED",
+   "status": "REFUSED",
    "n_players": 180,
-   "failures": [],
+   "failures": [
+    {
+     "stage": "qb_layer",
+     "code": "A1_SCRAMBLES_EXCEED_TEAM_CARRIES",
+     "category": "OTHER_NAMED",
+     "detail": "1 draw cell(s) across 1 team(s) have more scrambles than team carries, so the rush-play budget is negative and there is nothing to partition. Refused by name rather than clipped: clipping would silent"
+    }
+   ],
    "stages": [
     {
      "stage": "capture_validation",
@@ -1178,32 +1193,32 @@
     },
     {
      "stage": "qb_layer",
-     "state": "PASS",
-     "code": "QB_LAYER_OK"
+     "state": "FAIL",
+     "code": "A1_SCRAMBLES_EXCEED_TEAM_CARRIES"
     },
     {
      "stage": "joint_reconciliation",
-     "state": "PASS",
-     "code": "JOINT_RECONCILED"
+     "state": "NOT_APPLICABLE",
+     "code": "STAGE_NOT_REACHED"
     },
     {
      "stage": "player_draws",
-     "state": "PASS",
-     "code": "DRAWS_BUILT"
+     "state": "NOT_APPLICABLE",
+     "code": "STAGE_NOT_REACHED"
     },
     {
      "stage": "scoring",
-     "state": "PASS",
-     "code": "SCORED"
+     "state": "NOT_APPLICABLE",
+     "code": "STAGE_NOT_REACHED"
     },
     {
      "stage": "artifact_sealing",
-     "state": "PASS",
-     "code": "ARTIFACT_SEALED"
+     "state": "NOT_APPLICABLE",
+     "code": "STAGE_NOT_REACHED"
     }
    ],
    "publication": "NFL1_NOT_AUTHORIZED",
-   "run_id": "9cdc2e852e114664"
+   "run_id": "f37a55d391296fe9"
   },
   {
    "game_id": "2026_01_WAS_PHI",
@@ -1283,7 +1298,7 @@
     }
    ],
    "publication": "NFL1_NOT_AUTHORIZED",
-   "run_id": "9c6f5ace646fe79a"
+   "run_id": "84ce905162a772fd"
   }
  ]
 }

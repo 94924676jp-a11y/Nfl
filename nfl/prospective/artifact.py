@@ -121,6 +121,17 @@ INVARIANTS = {
         'asserts': 'attempts + sacks + scrambles == dropbacks, per draw cell',
         'why_hard': 'the identity the entire QB layer is built on; a violation '
                     'means the components do not describe one football game.'},
+    'rushing_single_owner': {
+        'class': HARD,
+        'evaluator': 'nfl.production.nonqb.rushing_a1.allocate',
+        'asserts': 'one multinomial partitions the rush-play budget across '
+                   'kneel / designed QB / RB / WR / TE / fringe, so every '
+                   'carry has exactly one owner and the six categories close '
+                   'to the budget exactly in every draw',
+        'why_hard': 'the incumbent let a QB rush draw exceed the carry pool it '
+                    'sat inside -- the quarterback counted twice. Duplicate '
+                    'ownership of a finite budget is not a calibration '
+                    'question and cannot be averaged away.'},
     'qb_per_draw_accounting': {
         'class': HARD,
         'evaluator': 'nfl.production.qb_accounting.reconcile_draws',

@@ -21,6 +21,8 @@ import os
 import pathlib
 import sys
 
+import numpy as np
+
 _REPO = pathlib.Path(__file__).resolve().parents[2]
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
@@ -187,9 +189,17 @@ def build(args, fixtures: dict = None) -> dict:
         qbp = [q for q in fx.get('players', [])
                if q.get('position') == 'QB' and q.get('gsis_id')]
         if not qbp:
-            return RF.refuse('QB_SLATE_EMPTY', 'qb_layer',
-                             'no quarterback on the roster for this game',
-                             run_id)
+            # The LAYER's own block, not a production refusal. QB_SLATE_EMPTY
+            # is not in refusal.REFUSALS, and routing it through RF.refuse
+            # invented an undeclared production refusal code -- caught by the
+            # suite's own "every refusal code raised in the production path is
+            # declared" check. The baseline path returns the layer outcome
+            # here too, so the two paths now agree.
+            return Outcome.blocked(
+                'QB_SLATE_EMPTY',
+                'no quarterback on the roster for this game; an empty slate '
+                'is a refusal, not a forecast of nothing',
+                cause=Cause.DATA)
         teams = list(fx.get('team_ids') or [])
         m = fx.get('qb_draws', 200)
         sl = FE.qb_slate(args.season, args.week, qbp, m=m, seed=args.seed,
@@ -221,10 +231,31 @@ def build(args, fixtures: dict = None) -> dict:
                 return r2o
             qb = r2o.value
             applied.append('R2')
-        # The two that need budgets the appearance layer has not produced.
-        not_reached = [c for c, on in (('C3', fl.get('shared_pass') == 'c3'),
-                                       ('A1', bool(fl.get('rushing_a1'))))
-                       if on]
+        # A1 NEEDS ONLY THE CARRY BUDGET AND THE SCRAMBLES, both of which
+        # exist here, so it runs on this path even while the appearance layer
+        # is deferred. C3 does need the receiving budget and does not.
+        not_reached = []
+        if fl.get('rushing_a1'):
+            from nfl.production.nonqb import rushing_a1 as RA1
+            scr = {t: np.asarray(
+                [qb['draws']['scr'][i] for i in
+                 qb['index_by_team'].get(t, [])], float).sum(0)
+                if qb['index_by_team'].get(t) else np.zeros(m)
+                for t in teams}
+            a1 = RA1.allocate(
+                args.season, args.week, teams,
+                {t: np.asarray(tv.value[('team_carries', t)], float)
+                 for t in teams},
+                scr, m=m, seed=args.seed, game_id=args.game_id,
+                level_rounding='round_half_even')
+            if a1.state is not State.PASS:
+                return a1
+            fx['_rushing_a1'] = a1
+            _inv_a1 = fx.setdefault('_inv', {})
+            _inv_a1['rushing_single_owner'] = a1
+            applied.append('A1')
+        if fl.get('shared_pass') == 'c3':
+            not_reached.append('C3')
         fx['qb_rows'] = qb['rows']
         fx['_qb_draws_out'] = qb['draws']
         fx['_candidate_applied'] = sorted(applied)
@@ -477,6 +508,18 @@ def build(args, fixtures: dict = None) -> dict:
                 # about the invariants it claims to satisfy -- only about the
                 # ones that happened to stop the run.
                 _inv = fx.setdefault('_inv', {})
+                # A DECLARED INVARIANT THAT THIS CONFIGURATION CANNOT EVALUATE
+                # STILL GETS A VERDICT. Single-owner rushing is an A1 property
+                # and A1 is a candidate component, so the baseline has nothing
+                # to evaluate -- but declaring it HARD and then saying nothing
+                # made every baseline run refuse with INVARIANT_VERDICT_MISSING.
+                # "Not applicable in this configuration, and here is why" is an
+                # answer; silence is not.
+                _inv['rushing_single_owner'] = Outcome.not_applicable(
+                    'RUSHING_SINGLE_OWNER_NOT_IN_THIS_CONFIGURATION',
+                    'A1 is a V1 candidate component and this run is '
+                    'PRODUCTION_BASELINE, which has no single-owner rushing '
+                    'allocation to check. Recorded rather than left silent.')
                 ident = QBV1.identity_check(o.value)
                 _inv['qb_dropback_identity'] = ident
                 if ident.state is not State.PASS:
