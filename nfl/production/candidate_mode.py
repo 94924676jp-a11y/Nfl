@@ -83,6 +83,19 @@ COMPONENTS = {
                       'predeclaration_a3g_addendum_01.md',
         'engine_flag': 'game_coupling',
     },
+    'SC1': {
+        'what': 'the scramble/carry joint state is made coherent by permuting '
+                'which draw index receives which carry value, so team carries '
+                '>= QB scrambles in every draw',
+        'replaces': 'two levels drawn on one index from independent '
+                    'randomness, whose tails crossed into a negative '
+                    'rush-play budget',
+        'predeclaration': 'nfl/research/sc1/predeclaration_sc1.md',
+        'predeclaration_sha256':
+            'b62e48f23b5f3a16fb633e5286e575f23d7de3e07c8ebf923255d8d565e76729',
+        'governance': 'REHEARSAL_ONLY',
+        'engine_flag': 'rushing_a1',
+    },
     'A1': {
         'what': 'single-owner rushing: one multinomial partitions the '
                 'rush-play budget across kneel / designed QB / RB / WR / TE / '

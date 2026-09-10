@@ -121,6 +121,16 @@ INVARIANTS = {
         'asserts': 'attempts + sacks + scrambles == dropbacks, per draw cell',
         'why_hard': 'the identity the entire QB layer is built on; a violation '
                     'means the components do not describe one football game.'},
+    'scramble_carry_coherence': {
+        'class': HARD,
+        'evaluator': 'nfl.production.nonqb.scramble_coherence.couple',
+        'asserts': 'team carries >= total QB scrambles in every draw, reached '
+                   'by permuting which draw index receives which carry value '
+                   'rather than by changing any value',
+        'why_hard': 'a scramble IS a rush attempt -- the identity holds in '
+                    '3,230 of 3,230 historical team-games. A draw that '
+                    'violates it is an impossible football state and gives A1 '
+                    'a negative budget to partition.'},
     'rushing_single_owner': {
         'class': HARD,
         'evaluator': 'nfl.production.nonqb.rushing_a1.allocate',

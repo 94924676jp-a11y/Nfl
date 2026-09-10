@@ -237,15 +237,41 @@ def build(args, fixtures: dict = None) -> dict:
         not_reached = []
         if fl.get('rushing_a1'):
             from nfl.production.nonqb import rushing_a1 as RA1
+            from nfl.production.nonqb import scramble_coherence as SC1
             scr = {t: np.asarray(
                 [qb['draws']['scr'][i] for i in
                  qb['index_by_team'].get(t, [])], float).sum(0)
                 if qb['index_by_team'].get(t) else np.zeros(m)
                 for t in teams}
+            # SC1. A scramble IS a rush attempt, so carries >= scrambles holds
+            # in 3,230 of 3,230 historical team-games. The model draws the two
+            # on one index from independent randomness, so their tails can
+            # cross. SC1 chooses WHICH DRAW INDEX RECEIVES WHICH CARRY VALUE --
+            # a permutation, so the carry marginal is invariant element for
+            # element and the scramble draw is not touched at all. Minimal
+            # swaps, so A3G's pairing survives wherever it was not the problem.
+            car, sc1 = {}, {}
+            for t in teams:
+                o = SC1.couple(scr[t],
+                               np.asarray(tv.value[('team_carries', t)],
+                                          float))
+                if o.state is not State.PASS:
+                    return o
+                car[t] = o.value
+                sc1[t] = {k: v for k, v in o.evidence.items()
+                          if k != 'value'}
+            fx['_sc1'] = sc1
+            _inv_sc1 = fx.setdefault('_inv', {})
+            _inv_sc1['scramble_carry_coherence'] = Outcome.ok(
+                'SC1_COHERENT', value=True,
+                detail='carries >= scrambles in every draw, by permutation of '
+                       'the carry draw index; no value changed',
+                total_swaps=sum(int(v.get('n_swaps', 0))
+                                for v in sc1.values()),
+                teams=len(sc1))
+            applied.append('SC1')
             a1 = RA1.allocate(
-                args.season, args.week, teams,
-                {t: np.asarray(tv.value[('team_carries', t)], float)
-                 for t in teams},
+                args.season, args.week, teams, car,
                 scr, m=m, seed=args.seed, game_id=args.game_id,
                 level_rounding='round_half_even')
             if a1.state is not State.PASS:
@@ -520,6 +546,11 @@ def build(args, fixtures: dict = None) -> dict:
                     'A1 is a V1 candidate component and this run is '
                     'PRODUCTION_BASELINE, which has no single-owner rushing '
                     'allocation to check. Recorded rather than left silent.')
+                _inv['scramble_carry_coherence'] = Outcome.not_applicable(
+                    'SCRAMBLE_CARRY_COHERENCE_NOT_IN_THIS_CONFIGURATION',
+                    'SC1 is a V1 candidate component and this run is '
+                    'PRODUCTION_BASELINE, which forms no rush-play budget '
+                    'from carries and scrambles. Recorded, not left silent.')
                 ident = QBV1.identity_check(o.value)
                 _inv['qb_dropback_identity'] = ident
                 if ident.state is not State.PASS:
