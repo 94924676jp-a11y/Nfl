@@ -1597,3 +1597,55 @@ apportioned against an uncoupled volume while games drew a coupled one
 (383/400 cells); C3's integer other-pool count passed where a share was wanted
 (moved the failure rather than removing it); my own composition test anchored a
 `find` that R2's new branch shadowed.
+
+---
+
+## 2026-09-10 — Game 1 shadow evaluation, NE @ SEA (exploratory)
+
+**Decision:** run the frozen `V1_CANDIDATE` against a strictly pre-kickoff
+information set for `2026_01_NE_SEA`, seal the forecast to git before opening
+the outcome, then score. Owner-directed, parallel to the SF@LA G0A wait.
+
+**Order established, not asserted.** Outcome file downloaded and hashed
+(`ca02541038a1519d28a862157b031b6bc98f1ebb0b5d21341ac40cfcc22a582b`) with only
+an identity-level row count read; forecast sealed and committed at `bba6f0b`;
+outcome opened after. `score.py` refuses unless every sealed file still hashes
+to its recorded value.
+
+**Information set:** latest content observed strictly before the
+2026-09-10T00:20:00Z kickoff, selected by observation time. Newest is
+2026-09-08T17:06:03Z — **T−31.2h**, not T−90m, because no capture exists
+anywhere on 2026-09-09. No official inactives for this game.
+
+**Result:** SEALED. Team-level QB aggregate 21/22 quantities inside 90%;
+Seattle's whole QB room inside the 50% interval. Three `MODEL_MISS` rows over
+two distinct events — New England's zero red-zone carries, and Maye's three
+interceptions at a priced 2.4%. The Darnold/Lock individual errors are an
+in-game injury recorded in the play-by-play text, classified by a tested
+predicate rather than by judgement.
+
+**Not forecast at all:** every player-level receiving and rushing quantity, and
+C3. `readiness.team_report_history` has no vintage cut, so it took each team's
+injury block from a post-kickoff capture and the chronology guard correctly
+refused — while a legitimate pre-kickoff report for exactly these two teams sat
+unused. 95 of 193 ledger rows are `NO_FORECAST_MISSING_PREGAME_INPUT`.
+
+**Nothing changed in `nfl/production`.** V1 remains frozen, G0A remains 11/12,
+NFL-1 remains NOT AUTHORIZED, `PATH_C_STATE` untouched. No threshold was
+altered after the outcome was seen and nothing was promoted. All observations
+classified `POST_V1_REFINEMENT`; they are listed in
+`NFL_SHADOW_G1_NE_SEA_RETURN.md` §7 and none was acted on.
+
+**Reversibility:** the whole evaluation lives under `nfl/research/shadow/` and
+`NFL_SHADOW_G1_NE_SEA_RETURN.md`. Deleting that directory removes it entirely.
+
+**Suite state at the end of this task: FAIL** — 55 modules, 591 test functions,
+3322 checks, 3 failing, 2 raised. Both failing modules reproduce identically at
+`34b59a2` in a clean worktree, before any shadow work; neither is caused by this
+task and neither is repaired here, because the task forbids modifying V1. They
+are (a) `targets_carries` raising `KeyError: 'add_pool'` because
+`run_forecast.py:433` passes empty placeholder parameters to a chain that has
+never executed, now reached for the first time as the injury feed became
+complete — in substance a V1 blocker, owner call; and (b)
+`test_football_engine_r4` hardcoding a transient ARI readiness state. Detail in
+`NFL_SHADOW_G1_NE_SEA_RETURN.md`, appendix.
