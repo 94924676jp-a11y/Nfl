@@ -513,6 +513,42 @@ def build(args, fixtures: dict = None) -> dict:
                 'MODEL_ARTIFACT_MISSING', 'appearance',
                 f'{_da.code}: {_da.detail}'[:300], run_id)}
             return fx['_nonqb']
+        # R5. THE ALLOCATION POOL, FILTERED TO THE ACTIVE ROSTER.
+        #
+        # Applied HERE, before slate_fits and before the engine, because it is
+        # a statement about who is eligible to receive opportunity at all --
+        # not a correction to an allocation already made. A downstream
+        # reweighting would be compensating for an upstream error.
+        #
+        # The QB pool is untouched: quarterback allocation does not run through
+        # the P4C simplex, its shares are already correct (the starters hold
+        # 88-91% of their teams' attempts), and changing it would disturb the
+        # control this repair is measured against.
+        if fl.get('active_roster_only'):
+            from nfl.production.nonqb import roster_status as RS
+            st = RS.status_map(args.season, args.week, teams,
+                               observed_before=args.written_at)
+            if st.state is not State.PASS:
+                fx['_nonqb'] = {'fatal': st}
+                return fx['_nonqb']
+            nonqb = [q for q in players if q.get('position') != 'QB']
+            qbs = [q for q in players if q.get('position') == 'QB']
+            pool = RS.active_pool(nonqb, st.value)
+            if pool.state is not State.PASS:
+                fx['_nonqb'] = {'fatal': pool}
+                return fx['_nonqb']
+            players = qbs + pool.value
+            fx['_r5'] = {k: v for k, v in pool.evidence.items()
+                         if k != 'value'}
+            fx['_r5']['roster_status_source'] = st.evidence.get('source')
+            fx['_r5']['roster_status_observed_at'] = st.evidence.get(
+                'observed_at')
+            # RECORDED ON A KEY THE QB HALF CANNOT OVERWRITE. `_candidate_qb`
+            # rewrites `_candidate_applied` wholesale when it runs, which is
+            # after this, so a marker written there is silently lost and the
+            # artifact then claims R5 was not applied on a run where it was.
+            fx['_r5_applied'] = True
+
         try:
             fits = FE.slate_fits(args.season, args.week, players)
         except Exception as e:                                # noqa: BLE001
@@ -604,6 +640,8 @@ def build(args, fixtures: dict = None) -> dict:
             else:
                 not_reached.append('C3')
             fx['_c3_state'] = sp
+        if fx.get('_r5_applied'):
+            applied.append('R5')
         fx['_candidate_applied'] = sorted(set(applied))
         fx['_candidate_not_reached'] = sorted(set(not_reached))
         return fx['_nonqb']

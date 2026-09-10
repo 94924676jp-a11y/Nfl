@@ -32,7 +32,8 @@ from sportsplatform.governance.outcome import Outcome            # noqa: E402
 # default and contains no candidate component.
 PRODUCTION_BASELINE = 'PRODUCTION_BASELINE'
 V1_CANDIDATE = 'V1_CANDIDATE'
-MODES = (PRODUCTION_BASELINE, V1_CANDIDATE)
+V1_CANDIDATE_R5 = 'V1_CANDIDATE_R5'
+MODES = (PRODUCTION_BASELINE, V1_CANDIDATE, V1_CANDIDATE_R5)
 
 # component -> what it does, what governs it, and what it changes.
 # `engine_flag` is the argument football_engine.run_game receives.
@@ -121,6 +122,49 @@ V1_CANDIDATE_FLAGS = {
 }
 
 
+# R5. THE ACTIVE-ROSTER POOL, AS A SEPARATE CONFIGURATION IDENTITY.
+#
+# V1_CANDIDATE is the immutable control and is unchanged, flag for flag. R5 is
+# V1_CANDIDATE plus one repair, so any difference between the two runs is
+# attributable to that repair and to nothing else.
+#
+# THE DEFECT, MEASURED. `p4c_params.class_point_forecast` returns an EWMA of a
+# player's prior APPEARED class shares -- a share conditional on him playing --
+# and the allocator uses it as a relative weight over whatever roster it is
+# handed. The fitting panel holds 14.6 WR/TE/RB per team-game with C summing to
+# 1.24. The prospective entrypoint hands it the full weekly roster: 22 and 23
+# players for SF@LA, C summing to 2.25 and 2.04. The simplex divides by that
+# sum, halving every real starter share.
+#
+# Of the 45 SF/LA WR/TE/RB roster rows, 29 are ACT, 10 DEV (practice squad),
+# 3 RES and 3 CUT. Filtering to ACT restores the pool to 14 and 15 -- the size
+# the estimator was fitted for -- without removing a single player who could
+# take a snap.
+#
+# NO CONSTANT IS INTRODUCED AND NOTHING IS TUNED. The filter is a roster fact.
+R5_FLAGS = dict(
+    r2=True, include_cold_start=True, shared_pass='c3',
+    game_coupling='off_snaps', rushing_a1=True,
+    active_roster_only=True,
+)
+
+R5_REPAIR = {
+    'component': 'R5',
+    'what': 'restrict the non-QB allocation pool to players whose roster '
+            'status is ACT',
+    'replaces': 'an unfiltered weekly-roster pool that included practice '
+                'squad, reserve and released players',
+    'defect': 'P4C weights are conditional-on-appearing shares consumed as '
+              'unconditional weights over an unfiltered roster, so the vector '
+              'is not a partition and normalisation halves every starter',
+    'evidence': 'historical pool 14.6/team-game with sum(C)=1.24; unfiltered '
+                '2026 pool 22.5 with sum(C)=2.14; ACT-filtered 14.5 with '
+                'sum(C)=1.46',
+    'governance': 'REHEARSAL_ONLY',
+    'introduces_no_constant': True,
+}
+
+
 def resolve(mode: str) -> Outcome:
     """The flags and the component manifest for a named mode, or a refusal.
 
@@ -136,6 +180,12 @@ def resolve(mode: str) -> Outcome:
             value={'mode': PRODUCTION_BASELINE, 'flags': {},
                    'components': [], 'candidate': False},
             detail='no candidate component is active')
+    if mode == V1_CANDIDATE_R5:
+        return Outcome.ok(
+            'MODE_V1_CANDIDATE_R5',
+            value={'mode': V1_CANDIDATE_R5, 'flags': dict(R5_FLAGS),
+                   'components': manifest() + [R5_REPAIR], 'candidate': True},
+            detail='V1_CANDIDATE plus the R5 active-roster pool repair')
     if mode != V1_CANDIDATE:
         return Outcome.fail(
             'MODEL_CONFIGURATION_UNKNOWN',
@@ -161,11 +211,12 @@ def manifest() -> list:
 def assert_not_promoted(mode: str, artifact: dict) -> Outcome:
     """A candidate artifact must say so, in every field that could be read as
     a promotion claim. Called by the sealer; tested with the guard stubbed."""
-    if mode != V1_CANDIDATE:
+    if mode not in (V1_CANDIDATE, V1_CANDIDATE_R5):
         return Outcome.not_applicable('NOT_A_CANDIDATE_RUN',
                                       f'mode is {mode!r}')
     bad = []
-    if artifact.get('model_configuration') != V1_CANDIDATE:
+    if artifact.get('model_configuration') not in (V1_CANDIDATE,
+                                                   V1_CANDIDATE_R5):
         bad.append('model_configuration does not name the candidate mode')
     if not artifact.get('candidate_components'):
         bad.append('candidate_components is empty on a candidate run')
@@ -174,7 +225,7 @@ def assert_not_promoted(mode: str, artifact: dict) -> Outcome:
     if artifact.get('prospective_eligible') is not False:
         bad.append('prospective_eligible is not explicitly False')
     ev = str(artifact.get('eligibility_verdict', ''))
-    if V1_CANDIDATE not in ev:
+    if not any(m in ev for m in (V1_CANDIDATE, V1_CANDIDATE_R5)):
         bad.append('eligibility_verdict does not carry the candidate mode')
     if bad:
         return Outcome.fail(

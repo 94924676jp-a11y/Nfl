@@ -1,0 +1,59 @@
+{
+ "artifact": "NFL_V1_R5_CANDIDATE_FREEZE",
+ "candidate": {
+  "differs_from_V1_CANDIDATE_by": [
+   "active_roster_only"
+  ],
+  "governance": "REHEARSAL_ONLY",
+  "identity": "V1_CANDIDATE_R5",
+  "introduces_constant": false,
+  "promoted": false,
+  "prospective_eligible": false
+ },
+ "files_that_moved_since_the_V1_freeze": [
+  "nfl/production/candidate_mode.py",
+  "nfl/production/run_forecast.py"
+ ],
+ "production_hashes": {
+  "nfl/accounting/invariants.py": "62c9d3b06d038b32478915063fe1e4ab51e4e7b49ec9ce4a9502fe51414e9d95",
+  "nfl/production/authorization.py": "20b9ddceb44a8f88c0a6ee45882b99adf6b08bbb24404ff3fcd8f207d62f5b6c",
+  "nfl/production/candidate_mode.py": "a91030559fd69757b8fc446f24a70fe37db0a55746e95e87a56083914bf9ecf9",
+  "nfl/production/draws_artifact.py": "3dd5ee00138f4b06b442bf7814ec6534339aface49517686cc4b191884b61d3c",
+  "nfl/production/joint.py": "85bb8c1c516c7839f5bbea611178bd6c748e39db4f2db16325f02e93dd2ff8c1",
+  "nfl/production/nonqb/football_engine.py": "efa5a4b10fa5234424dac4f5ed053da754daefb800b2b16bbacbe7a5c03e9c9d",
+  "nfl/production/nonqb/layers.py": "4c3c42a2f04d5bb37e3eec541ca36241e2fcf534263c3fc16dba30c42bb5871d",
+  "nfl/production/nonqb/readiness.py": "fd5640a57f89fa3c440679e43f68104f907c20d2c85f8f7c8ed2c3e5d7e86fe9",
+  "nfl/production/nonqb/roster_status.py": "a3757727ac565697efee80a7b36c7786271c857039560919c0759af15d430dec",
+  "nfl/production/nonqb/rushing_a1.py": "9356bdfda6290bf434a3bf9a59653ee40ed89f649ba75a33d05c31e7d220be47",
+  "nfl/production/nonqb/scramble_coherence.py": "517baf847524d4a95f172ecfa19a417ac540fa3a4312a044f6a4bd2e50e2d069",
+  "nfl/production/nonqb/shared_pass.py": "2eec86e740f9dc02a68bd5d1901f77413215d606ceda2b9c8d7cabc8753fb9d4",
+  "nfl/production/pipeline.py": "2083fc4771c3bd03eb6c28c4aac956a59775a47edc4a1f6f87fb425a07a96d6c",
+  "nfl/production/qb_accounting.py": "cf70c5b2a1525030b9c7af9684005717aaf91b73838f8de0e05964a33b1822a8",
+  "nfl/production/qb_v1.py": "aedb5a9959ecb6c198851eca0ed1e31cc95b5bd98ab56da4c99b43761877fd2f",
+  "nfl/production/refusal.py": "88e6501f2a690389cbc649206da1df3ea05e1ae3fa7e17d7a598e973dbbbf9e6",
+  "nfl/production/run_forecast.py": "972d34af67ae85dcd2ca228c3adf3e78d9560f82ed86207415f5b01b9ed847a2",
+  "nfl/production/team_volume_v1.py": "1bae36386fd3daf7dab68eb0c5833173f2c39e74274cbfda90afab40c52b7160",
+  "nfl/research/PATH_C_STATE.json": "ebd1274086ec9c81a88576f5f975f80ddafc3dd7a9198051223d53f12ef42959"
+ },
+ "recorded_utc": "2026-09-10T17:40:00Z",
+ "repo_head_at_record": "8cb02f5c1466aba5f61b464bd9c72284c5d2f0a7",
+ "suite": {
+  "checks": 3487,
+  "failing_checks": 0,
+  "interpreter": "python3.12",
+  "modules": 59,
+  "raised": 0,
+  "result": "PASS",
+  "test_functions": 639
+ },
+ "supersedes_nothing": "FREEZE_V1_PRODUCT_PATH.json stays as the historical record of the V1 engineering freeze and is not edited",
+ "v1_candidate_invariance_proof": {
+  "components_applied_identical": true,
+  "draw_arrays_compared": 22,
+  "draw_arrays_identical": 22,
+  "method": "V1_CANDIDATE run on pre-R5 code (worktree at 8cb02f5) and on current code, at one identical written_at clock 2026-09-10T17:10:46Z, same seed, same vintages",
+  "n_players_identical": 53,
+  "verdict": "V1_CANDIDATE IS AN UNTOUCHED CONTROL"
+ },
+ "why_they_moved": "adding V1_CANDIDATE_R5 as a separate configuration identity requires a new mode in candidate_mode.py and the pool filter in run_forecast.py. Neither changes V1_CANDIDATE."
+}

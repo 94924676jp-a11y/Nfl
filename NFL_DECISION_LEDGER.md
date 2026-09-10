@@ -1839,3 +1839,51 @@ Melbourne Cricket Ground and V1 has no venue or travel feature.
 game raises a hypothesis.
 
 **Detail:** `NFL_MKT1_MARKET_DIAGNOSTIC.md`.
+
+---
+
+## 2026-09-10 — R5 root-cause audit and candidate repair
+
+**Diagnosis.** The dominant defect is the ALLOCATION POOL, not team volume.
+`class_point_forecast` returns a share conditional on appearing; the P4C
+simplex consumes it as an unconditional weight over the roster it is handed
+and normalises by the sum. Historical panel: 14.6 WR/TE/RB per team-game,
+sum(C)=1.24. Prospective SF@LA: 22.5 players, sum(C)=2.14 — halving every
+starter share. Of 45 SF/LA WR/TE/RB roster rows, 29 ACT, 10 DEV, 3 RES, 3 CUT;
+released players were competing for targets. Enabled by the vintage reduction
+dropping `status` and `depth_chart_position`, which the raw download carries.
+
+Ranked: (1) pool contamination; (2) appearance anti-correlated with role
+(Adams 0.538, Pearsall 0.395, unlisted players 0.998); (3) participation prior
+too flat, 1.4:1 top-to-fringe; (4) QB dropback ownership closes at game level
+but not per team (SF 0.942, LA 1.060); (5) team volume, backtested unbiased to
+1-2% on 3,230 team-games and NOT a material cause.
+
+**Evidence is realised football, not the market.** Historical rank-1 target
+share 29.3% (V1 15.9%), top-3 65.5% (V1 30.8%), distinct targeted 8.0
+(V1 11.9); rank-1 carry share 70.3% (V1 36.4%).
+
+**Repair: `V1_CANDIDATE_R5`**, a new configuration identity differing from
+`V1_CANDIDATE` by exactly one flag — restrict the non-QB pool to roster status
+ACT. No constant introduced. Unknown status is KEPT. Missing status refuses by
+name rather than running unfiltered. QB pool untouched.
+
+**Result:** every concentration metric moves toward realised history; pool size
+14/15 vs historical 14.6 and players-targeted 7.9/8.4 vs 8.0 land essentially
+on it. **Team totals bit-identical (delta 0.000)** — the split changed, not the
+pie. Closes roughly half the gap; causes 2-4 remain unbundled.
+
+**Not claimed:** a per-game held-out CRPS/PIT comparison. The historical corpus
+holds only players who appeared, so R5's counterfactual cannot be constructed
+without historical roster vintages carrying `status` — filed as OUT-002.
+
+**SF@LA outcome was not used:** the game is unplayed, no outcome file exists,
+and the candidate is sealed with a pre-kickoff `written_at`.
+
+**Suite:** 59 modules, 639 test functions, 3,487 checks, 0 failing, 0 raised.
+
+**Integration:** product path merged to main at `7118a33` with a normal
+non-force merge; 10 capture-bot commits and 7 product commits, disjoint paths,
+all verified as ancestors. `nfl-product-board.yml` is now on default main.
+
+**Detail:** `NFL_R5_ROOT_CAUSE_AUDIT.md`, `docs/AGENT_OUTBOX.md`.
