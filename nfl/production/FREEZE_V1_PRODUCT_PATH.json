@@ -1,0 +1,64 @@
+{
+ "artifact": "NFL_V1_PRODUCT_PATH_FREEZE",
+ "closure_evidence": "nfl/research/shadow/V1_CLOSURE_EVIDENCE.json",
+ "determinism": {
+  "checked_on_clean_tree": true,
+  "draw_arrays_bit_identical_on_rerun": 22
+ },
+ "production_hashes": {
+  "nfl/accounting/invariants.py": "62c9d3b06d038b32478915063fe1e4ab51e4e7b49ec9ce4a9502fe51414e9d95",
+  "nfl/production/authorization.py": "20b9ddceb44a8f88c0a6ee45882b99adf6b08bbb24404ff3fcd8f207d62f5b6c",
+  "nfl/production/candidate_mode.py": "97c66c6e8a2be702e264ffe254e1c2732adbe78b2b8da258d0ad8e58478359ca",
+  "nfl/production/draws_artifact.py": "3dd5ee00138f4b06b442bf7814ec6534339aface49517686cc4b191884b61d3c",
+  "nfl/production/joint.py": "85bb8c1c516c7839f5bbea611178bd6c748e39db4f2db16325f02e93dd2ff8c1",
+  "nfl/production/nonqb/football_engine.py": "efa5a4b10fa5234424dac4f5ed053da754daefb800b2b16bbacbe7a5c03e9c9d",
+  "nfl/production/nonqb/layers.py": "4c3c42a2f04d5bb37e3eec541ca36241e2fcf534263c3fc16dba30c42bb5871d",
+  "nfl/production/nonqb/readiness.py": "fd5640a57f89fa3c440679e43f68104f907c20d2c85f8f7c8ed2c3e5d7e86fe9",
+  "nfl/production/nonqb/rushing_a1.py": "9356bdfda6290bf434a3bf9a59653ee40ed89f649ba75a33d05c31e7d220be47",
+  "nfl/production/nonqb/scramble_coherence.py": "517baf847524d4a95f172ecfa19a417ac540fa3a4312a044f6a4bd2e50e2d069",
+  "nfl/production/nonqb/shared_pass.py": "2eec86e740f9dc02a68bd5d1901f77413215d606ceda2b9c8d7cabc8753fb9d4",
+  "nfl/production/pipeline.py": "2083fc4771c3bd03eb6c28c4aac956a59775a47edc4a1f6f87fb425a07a96d6c",
+  "nfl/production/qb_accounting.py": "cf70c5b2a1525030b9c7af9684005717aaf91b73838f8de0e05964a33b1822a8",
+  "nfl/production/qb_v1.py": "aedb5a9959ecb6c198851eca0ed1e31cc95b5bd98ab56da4c99b43761877fd2f",
+  "nfl/production/refusal.py": "88e6501f2a690389cbc649206da1df3ea05e1ae3fa7e17d7a598e973dbbbf9e6",
+  "nfl/production/run_forecast.py": "98a56940bfd18041eb562ceef971b1546e9981fbc35e08c2835dca0c2c41bc96",
+  "nfl/production/team_volume_v1.py": "1bae36386fd3daf7dab68eb0c5833173f2c39e74274cbfda90afab40c52b7160",
+  "nfl/research/PATH_C_STATE.json": "ebd1274086ec9c81a88576f5f975f80ddafc3dd7a9198051223d53f12ef42959"
+ },
+ "promotion": {
+  "g0a": "11/12",
+  "nfl1": "NOT AUTHORIZED",
+  "promoted": false,
+  "prospective_eligible": false
+ },
+ "recorded_utc": "2026-09-10T16:20:00Z",
+ "repo_head": "638080cc3fc0ba5eef7601e4d6457e3a91157f4c",
+ "return": "NFL_V1_PRODUCT_PATH_CLOSURE.md",
+ "run_A_immutable": "nfl/research/shadow/g1_ne_sea",
+ "run_B_engineering_repair": "nfl/research/shadow/g1_ne_sea_runB",
+ "suite": {
+  "checks": 3362,
+  "failing_checks": 0,
+  "interpreter": "python3.12",
+  "modules": 56,
+  "raised": 0,
+  "result": "PASS",
+  "test_functions": 600
+ },
+ "supersedes": "NFL_V1_R1_FREEZE (engineering only; the accepted components and the not_to_be_altered list are unchanged)",
+ "verdict": "V1_PRODUCT_PATH_ENGINEERING_READY",
+ "what_changed": [
+  "run_forecast delegates the non-QB chain to football_engine.run_game instead of calling the layers with empty placeholder arguments",
+  "the QB half is memoised so it runs before C3 and A1, which consume it",
+  "A1 is the sole rushing-opportunity partition owner via rushing_budget",
+  "readiness applies retrieved_at <= written_at < kickoff at selection",
+  "team volume has one memoised owner instead of three call sites"
+ ],
+ "what_did_not_change": [
+  "every estimator, prior and threshold",
+  "R2, C0, A3G and SC1 -- QB draws are bit-identical across the repair",
+  "PATH_C_STATE",
+  "G0A rules",
+  "capture infrastructure"
+ ]
+}

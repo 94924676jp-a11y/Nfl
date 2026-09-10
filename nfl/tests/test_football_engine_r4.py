@@ -337,16 +337,49 @@ def test_F_readiness_is_per_game():
 
 
 def test_F_one_missing_report_does_not_change_another_game():
-    """A team's state must depend on its OWN report and nothing else."""
+    """A team's state must depend on its OWN report and nothing else.
+
+    THIS TEST ASSERTED A DATE, NOT AN INVARIANT. It required ARI to be in
+    state INJURY_REPORT_NOT_YET_FILED -- true on the morning it was written
+    and false the moment Arizona filed, which they did, moving to
+    INJURY_REPORT_INCOMPLETE and failing a test about something else
+    entirely. The durable property is that a team's state is a function of
+    its OWN rows: a team with rows is never in the no-report state, a team
+    without rows is always in it, and neither is moved by what any other team
+    did. That holds on every calendar day, including the ones where the fixture
+    the old assertion described no longer exists.
+
+    Same defect, same repair, as `test_preflight` hardcoding a game id.
+    """
     a = RD.team_readiness(2026, 1, 'NE')
     b = RD.team_readiness(2026, 1, 'SEA')
     c = RD.team_readiness(2026, 1, 'ARI')
+    NOT_FILED = 'INJURY_REPORT_NOT_YET_FILED'
+    for who, d in (('NE', a), ('SEA', b), ('ARI', c)):
+        check(f'  {who}: the no-report state holds exactly when it has no '
+              f'rows',
+              (d['state'] == NOT_FILED) == (d['n_rows'] == 0),
+              f"{d['state']} on {d['n_rows']} row(s)")
+    filed = [d for d in (a, b, c) if d['n_rows'] > 0]
     check('a team that filed is not dragged down by one that did not',
-          a['state'] != 'INJURY_REPORT_NOT_YET_FILED'
-          and c['state'] == 'INJURY_REPORT_NOT_YET_FILED',
-          f"{a['state']} / {c['state']}")
-    check('  and both filed teams are judged on their own rows',
-          a['n_rows'] > 0 and b['n_rows'] > 0)
+          bool(filed) and all(d['state'] != NOT_FILED for d in filed),
+          f"{[(d['team'], d['state'], d['n_rows']) for d in (a, b, c)]}")
+    # AND THE TEST MUST STILL BE ABLE TO FAIL. If every team is in the same
+    # state, the assertion above is satisfied by a system that ignores its
+    # input entirely. The discriminating case is CONSTRUCTED rather than hoped
+    # for: at a cut where only NE and SEA had filed, ARI has no rows, and the
+    # two states must still be told apart on the same slate.
+    CUT = '2026-09-08T17:10:00Z'
+    KO = '2026-09-10T00:20:00Z'
+    at = {t: RD.team_readiness(2026, 1, t, kickoff_utc=KO, written_at=CUT)
+          for t in ('NE', 'SEA', 'ARI')}
+    check('  at a cut where only two teams had filed, both cases appear',
+          len({d['n_rows'] > 0 for d in at.values()}) == 2,
+          f"{[(t, d['n_rows']) for t, d in at.items()]}")
+    for who, d in at.items():
+        check(f'  {who} under that cut: state still follows its own rows',
+              (d['state'] == NOT_FILED) == (d['n_rows'] == 0),
+              f"{d['state']} on {d['n_rows']} row(s)")
     g = RD.game_readiness(2026, 1)
     ne = [x for x in g['games'] if 'NE' in x['game_id'].split('_')]
     check('  the NE game is blocked by NE/SEA, not by a third team',
@@ -355,14 +388,33 @@ def test_F_one_missing_report_does_not_change_another_game():
 
 
 def test_F_chronology_and_staleness_are_separate_states():
-    """A capture retrieved after kickoff is a chronology failure, not late."""
+    """An ineligible capture is EXCLUDED AT SELECTION, not selected and then
+    complained about.
+
+    THIS TEST USED TO ASSERT THE DEFECT. It required
+    INJURY_REPORT_CHRONOLOGY_FAILURE when the clock excluded every capture --
+    which was the honest report of the OLD selector, because that selector
+    took the newest row on disk and only afterwards noticed it was too late.
+    The consequence was not cosmetic: a real pre-kickoff report two files away
+    was never looked at, and the entire non-QB chain refused for a game whose
+    inputs existed. Under the consumed-clock contract the answer to `nothing
+    was retrieved in time` is that nothing was retrieved in time.
+
+    The chronology state itself survives as a post-selection assertion and is
+    checked below through the function that would produce it.
+    """
     o = RD.team_readiness(2026, 1, 'NE',
                           kickoff_utc='2026-09-01T00:00:00Z')
-    check('a capture retrieved after kickoff is a CHRONOLOGY failure',
-          o['state'] == 'INJURY_REPORT_CHRONOLOGY_FAILURE', o['state'])
+    check('a clock that excludes every capture reports ABSENCE, not a '
+          'chronology failure',
+          o['state'] == 'INJURY_REPORT_NOT_YET_FILED', o['state'])
+    check('  and it names the cut it applied',
+          o.get('as_of', '').startswith('2026-08-31'), str(o.get('as_of')))
     o2 = RD.team_readiness(2026, 1, 'NE', written_at='2026-09-01T00:00:00Z')
-    check('  and so is one retrieved after written_at', 
-          o2['state'] == 'INJURY_REPORT_CHRONOLOGY_FAILURE', o2['state'])
+    check('  the same holds for a written_at cut',
+          o2['state'] == 'INJURY_REPORT_NOT_YET_FILED', o2['state'])
+    check('  the chronology state is still declared and still reachable',
+          'INJURY_REPORT_CHRONOLOGY_FAILURE' in RD.GAME_STATES)
     check('  staleness is a different state with a declared bound',
           RD.STALE_HOURS > 0 and 'INJURY_REPORT_STALE' in RD.GAME_STATES)
 

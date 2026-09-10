@@ -86,18 +86,63 @@ def test_derived_gate_returns_a_named_refusal_not_a_raise():
 
 
 def test_nonqb_layers_are_not_described_as_unimplemented():
-    """They are implemented. Saying otherwise hid the real cause."""
+    """They are implemented. Saying otherwise hid the real cause.
+
+    THE MECHANISM THIS ASSERTED HAS CHANGED, AND THE INTENT HAS NOT.
+
+    It used to require `from nfl.production.nonqb import layers` in the
+    entrypoint -- calling the layer functions directly. That is exactly what
+    was wrong: calling them directly meant assembling their arguments here,
+    and those arguments were assembled as `[]`, `([], [])` and `{}`. The
+    chain could only ever raise, and did, the first time an injury feed was
+    complete enough to reach it.
+
+    `football_engine` owns that composition. The entrypoint now delegates to
+    it, so the property worth asserting is that the real chain is reached
+    through its real owner -- not that a particular import line is present.
+    """
     src = open(RUN).read()
     assert check('the non-QB chain is declared',
                  'NONQB_CHAIN' in src, 'NONQB_CHAIN_ABSENT')
-    assert check('the entrypoint calls the real layers module',
-                 'from nfl.production.nonqb import layers' in src,
-                 'NONQB_LAYERS_NOT_CALLED: the entrypoint cannot report a '
-                 'layer\'s true cause without calling it')
+    assert check('the entrypoint reaches the real chain through its owner',
+                 'football_engine' in src and 'run_game(' in src,
+                 'NONQB_ENGINE_NOT_CALLED: the entrypoint cannot report a '
+                 'layer\'s true cause without running it')
+    # AND IT MUST NOT GO BACK TO HAND-ASSEMBLING THE ARGUMENTS.
+    #
+    # READ THE CODE, NOT THE FILE. A first version of this check searched the
+    # source text and fired on the docstring that DOCUMENTS the old
+    # placeholder calls -- flagging the explanation of the defect as the
+    # defect. Comments and docstrings are where a repair explains itself and
+    # must never be what a guard matches on. So the call sites are found in
+    # the AST, and an empty literal in an argument position is what fails.
+    empty_arg_calls = []
+    for node in ast.walk(_tree(RUN)):
+        if not isinstance(node, ast.Call):
+            continue
+        fn = node.func
+        name = getattr(fn, 'attr', None)
+        if name not in ('targets_carries', 'receiving_conversion',
+                        'td_layer', 'appearance', 'participation'):
+            continue
+
+        def _empty(a):
+            if isinstance(a, (ast.List, ast.Dict, ast.Tuple)) and not (
+                    getattr(a, 'elts', None) or getattr(a, 'keys', None)):
+                return True
+            return (isinstance(a, ast.Tuple)
+                    and all(_empty(e) for e in a.elts))
+        if any(_empty(a) for a in node.args):
+            empty_arg_calls.append(f'{name} at line {node.lineno}')
+    assert check('no layer is called with an empty placeholder argument',
+                 not empty_arg_calls,
+                 f'PLACEHOLDER_PRODUCTION_INPUT_RETURNED: {empty_arg_calls}')
     tree = _tree(RUN)
     names = {n.name for n in ast.walk(tree) if isinstance(n, ast.FunctionDef)}
     assert check('the non-QB stage dispatcher exists',
                  '_nonqb_stage' in names, 'NONQB_DISPATCHER_ABSENT')
+    assert check('  and the chain it dispatches to runs once, memoised',
+                 '_nonqb_chain' in names, 'NONQB_CHAIN_FUNCTION_ABSENT')
 
 
 def test_a_blocked_nonqb_layer_does_not_refuse_the_whole_game():

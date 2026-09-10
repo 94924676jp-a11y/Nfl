@@ -1597,3 +1597,245 @@ apportioned against an uncoupled volume while games drew a coupled one
 (383/400 cells); C3's integer other-pool count passed where a share was wanted
 (moved the failure rather than removing it); my own composition test anchored a
 `find` that R2's new branch shadowed.
+
+---
+
+## 2026-09-10 — Game 1 shadow evaluation, NE @ SEA (exploratory)
+
+**Decision:** run the frozen `V1_CANDIDATE` against a strictly pre-kickoff
+information set for `2026_01_NE_SEA`, seal the forecast to git before opening
+the outcome, then score. Owner-directed, parallel to the SF@LA G0A wait.
+
+**Order established, not asserted.** Outcome file downloaded and hashed
+(`ca02541038a1519d28a862157b031b6bc98f1ebb0b5d21341ac40cfcc22a582b`) with only
+an identity-level row count read; forecast sealed and committed at `bba6f0b`;
+outcome opened after. `score.py` refuses unless every sealed file still hashes
+to its recorded value.
+
+**Information set:** latest content observed strictly before the
+2026-09-10T00:20:00Z kickoff, selected by observation time. Newest is
+2026-09-08T17:06:03Z — **T−31.2h**, not T−90m, because no capture exists
+anywhere on 2026-09-09. No official inactives for this game.
+
+**Result:** SEALED. Team-level QB aggregate 21/22 quantities inside 90%;
+Seattle's whole QB room inside the 50% interval. Three `MODEL_MISS` rows over
+two distinct events — New England's zero red-zone carries, and Maye's three
+interceptions at a priced 2.4%. The Darnold/Lock individual errors are an
+in-game injury recorded in the play-by-play text, classified by a tested
+predicate rather than by judgement.
+
+**Not forecast at all:** every player-level receiving and rushing quantity, and
+C3. `readiness.team_report_history` has no vintage cut, so it took each team's
+injury block from a post-kickoff capture and the chronology guard correctly
+refused — while a legitimate pre-kickoff report for exactly these two teams sat
+unused. 95 of 193 ledger rows are `NO_FORECAST_MISSING_PREGAME_INPUT`.
+
+**Nothing changed in `nfl/production`.** V1 remains frozen, G0A remains 11/12,
+NFL-1 remains NOT AUTHORIZED, `PATH_C_STATE` untouched. No threshold was
+altered after the outcome was seen and nothing was promoted. All observations
+classified `POST_V1_REFINEMENT`; they are listed in
+`NFL_SHADOW_G1_NE_SEA_RETURN.md` §7 and none was acted on.
+
+**Reversibility:** the whole evaluation lives under `nfl/research/shadow/` and
+`NFL_SHADOW_G1_NE_SEA_RETURN.md`. Deleting that directory removes it entirely.
+
+**Suite state at the end of this task: FAIL** — 55 modules, 591 test functions,
+3322 checks, 3 failing, 2 raised. Both failing modules reproduce identically at
+`34b59a2` in a clean worktree, before any shadow work; neither is caused by this
+task and neither is repaired here, because the task forbids modifying V1. They
+are (a) `targets_carries` raising `KeyError: 'add_pool'` because
+`run_forecast.py:433` passes empty placeholder parameters to a chain that has
+never executed, now reached for the first time as the injury feed became
+complete — in substance a V1 blocker, owner call; and (b)
+`test_football_engine_r4` hardcoding a transient ARI readiness state. Detail in
+`NFL_SHADOW_G1_NE_SEA_RETURN.md`, appendix.
+
+---
+
+## 2026-09-10 — V1 product-path engineering closure (narrow, authorised)
+
+**Decision:** owner reopened V1 for two named execution defects only, explicitly
+not for model research. Both repaired; a third was found by the repair and
+repaired with them.
+
+1. **Non-QB production chain placeholders.** `run_forecast` called
+   `targets_carries` / `receiving_conversion` / `td_layer` with `[]`,
+   `([], [])` and `{}`. Repaired by delegating the chain to
+   `football_engine.run_game`, which already owns the composition — filling the
+   placeholders in the entrypoint would have given every input two owners. The
+   QB half is memoised so it runs before C3 and A1, which depend on it; the
+   declared stage order reported `qb_layer` last, which is why C3 could never be
+   reached. A1 is now the sole rushing-opportunity partition owner via
+   `rushing_budget`.
+2. **Injury/readiness vintage cut.** `retrieved_at <= written_at < kickoff`
+   applied at selection, part of the cache key, with a bare call bounded by the
+   team's own kickoff instead of reading everything on disk.
+3. **Team volume had two owners** (found during the repair): the
+   `team_environment` stage drew uncoupled while the candidate path and engine
+   drew coupled. Run A's artifact provably stored draws its own QB layer had not
+   used. One memoised owner now.
+
+**Closure test.** SF@LA, a real chronology-valid pre-kickoff game: the full
+chain executes in both configurations, all six candidate components applied,
+C3 closes with receiver targets ≤ QB attempts in every draw. Run A preserved
+immutable; Run B from the identical cutoff has **bit-identical QB draws**, so
+R2/C0/A3G/SC1 are unchanged. NE@SEA's chain still does not run — correctly, and
+now for the true reason: no pre-kickoff capture carries a filled
+`report_status`, because nothing was captured on 2026-09-09. That is the G0A
+item-1 gap showing up as a product consequence.
+
+**Suite:** 56 modules, 600 test functions, 3,362 checks, 0 failing, 0 raised.
+
+**Verdict:** `V1_PRODUCT_PATH_ENGINEERING_READY`.
+
+**Unchanged:** every estimator, every prior, every threshold. `PATH_C_STATE`,
+G0A rules and capture infrastructure untouched. Nothing promoted; NFL-1 remains
+NOT AUTHORIZED and G0A remains 11/12. No 2026 outcome entered any fit.
+
+**Recorded, not acted on:** the baseline allocation's incoherence, measurable
+for the first time now the chain runs — 1,453 of 9,000 cells with receptions
+above targets (max excess exactly 0.500, the `rint` signature) and 14 of 200
+draws dealing more targets than there were throws. C3 reduces both to zero.
+Repairing the baseline is model work and was not authorised.
+
+**Detail:** `NFL_V1_PRODUCT_PATH_CLOSURE.md`,
+`nfl/research/shadow/V1_CLOSURE_EVIDENCE.json`.
+
+---
+
+## 2026-09-10 — game-day product layer built
+
+**Decision:** productization and evaluation only, on top of the frozen V1
+engine. `nfl/product/` is read-only over it: no estimator, no prior, no
+parameter, no projection computed anywhere in the package.
+
+**Built:** pregame player board (53 players, SF@LA) with mean/median/P10-P90
+per metric, opportunity shares, data freshness, per-team status confidence and
+per-layer modelled/provisional/unavailable state; threshold probabilities from
+stored draws on ladders fixed in advance; a five-dimension model-confidence
+ranking; and a permanent postgame evaluator with a cumulative ledger.
+
+**Anti-fabrication is the spine.** RB/WR/TE rushing yards do not exist in V1
+and are shown as UNAVAILABLE with the open-decision code, never estimated;
+`carries x yards_per_carry` is the implementation `layers.py` prohibits and is
+the number a product layer would otherwise print. Tests assert every rendered
+column and every threshold ladder names a declared V1 output, and grep the
+whole package for eleven market terms.
+
+**Two defects found in my own product code, both by its own tests.** The first
+confidence board ranked four backup quarterbacks and two fifth receivers above
+both starters, because a distribution that is zero in three quarters of its
+draws has a zero IQR, which scored as perfect narrowness. Second,
+`verify_seal` resolved repo-relative paths first, so scoring a COPY verified
+the ORIGINAL — a guard reporting success while checking the wrong file. Both
+fixed and pinned.
+
+**NE@SEA scored into the permanent ledger:** 33 QB rows, mean CRPS 13.94,
+coverage 33.3/60.6/81.8/81.8%, 6 TAIL_MISS. **Zero refinement candidates** —
+six metrics sit on the watchlist at one game each against a bar of four
+distinct games, declared before any data arrived. Nothing about V1 changed.
+
+**SF@LA sealed** at `nfl/research/shadow/sf_la_pregame/`, run
+`e3e2bc8a1f043abf`, written 2026-09-10T16:07:43Z, 8.45h before kickoff, all six
+candidate components applied, labelled SHADOW / NOT AUTHORIZED. If G0A clears
+before kickoff this artifact stays SHADOW and a new forecast is written under
+the open gate; authorization is a property of when a forecast was written, not
+a label applied afterwards.
+
+**Suite:** 57 modules, 617 test functions, 3,416 checks, 0 failing, 0 raised.
+
+**Untouched:** all 18 frozen production files hash identical to
+`FREEZE_V1_PRODUCT_PATH.json`; `PATH_C_STATE`, G0A rules and capture
+infrastructure unchanged. NFL-1 remains NOT AUTHORIZED, G0A 11/12.
+
+**Detail:** `NFL_PRODUCT_LAYER.md`.
+
+---
+
+## 2026-09-10 — pregame board refresh automated
+
+**Decision:** product orchestration only. A scheduled pass consumes the latest
+chronology-valid stored vintages, runs the frozen `V1_CANDIDATE`, renders the
+accepted board format, and seals it immutably.
+
+**Cadence, and an honest limit.** `.github/workflows/nfl-product-board.yml`
+runs `7,27,47 * * * *` but is **inert until the branch merges to main** —
+GitHub fires scheduled workflows from the default branch only, and main does
+not carry the product layer. Routine `trig_01H9EQHMbCodyy8sFUyz4ukL` covers
+tonight, hourly at `:41`. Stated rather than left to be discovered.
+
+**Storage:** `nfl/product/boards/<game_id>/<written_at>__<run_id>/`, never
+overwritten (`BoardExists` is a named refusal), with an append-only
+`INDEX.jsonl` and a `LATEST.json` pointer that a test proves is rebuildable
+from the index and therefore holds nothing unique.
+
+**Refresh is decided by input fingerprint, never by the clock** — content hash
+AND observation time per source — so a scheduler firing more often cannot
+restamp stale inputs as fresh. Four outcomes; three write nothing; a pass that
+writes nothing exits 0.
+
+**Five proofs, all in `test_product_orchestration.py`:** identical inputs
+reproduce identical draws (and did, in production: 22/22 arrays bit-identical
+to the manually sealed board, same digest); only genuinely newer vintages
+change a board; post-kickoff data cannot enter (checked twice, including
+between plan and execution); SHADOW cannot masquerade as AUTHORIZED (both gate
+branches driven); product failure cannot touch capture or G0A (every capture
+and governance file hashed before and after a failing pass).
+
+**Defect found and fixed:** `run()` caught `Exception`, but `SystemExit` is a
+`BaseException`, so one bad game id killed the whole scheduled pass and every
+later game went silently unchecked.
+
+**Suite:** 58 modules, 631 test functions, 3,466 checks, 0 failing, 0 raised.
+
+**Untouched:** all 18 frozen production hashes identical; `PATH_C_STATE`, G0A
+rules and the capture workflows unchanged. NFL-1 NOT AUTHORIZED, G0A 11/12.
+
+**Detail:** `NFL_BOARD_AUTOMATION.md`.
+
+---
+
+## 2026-09-10 — MKT1 market-disagreement diagnostic (no tuning)
+
+**Decision:** compare the sealed SF@LA forecast against an independently
+produced external market snapshot, as a diagnostic only. No price used as a
+label, target or fit input. V1 unchanged; all 18 frozen production hashes
+identical.
+
+**Placed in `nfl/research/mkt1/`, never `nfl/product/`** — the product layer has
+a tested boundary that no sportsbook number may cross.
+
+**Result:** 19 of 23 markets comparable. Median disagreement **−25.3 pp**, model
+below market in **18 of 19**. Ordered by metric: carries −44.9 pp (z +2.11),
+receptions −33.0, receiving yards −30.1, QB attempts −22.1, passing yards −16.8,
+passing TD −15.2, **interceptions −1.9 and split 1/1**. Opportunity markets
+8 of 8 one-directional; conversion markets 10 of 11 and inherited.
+
+**One mechanism explains most of it, and it is not team volume.** Team totals
+are ordinary (SF 36.0 dropbacks / 36.2 targets / 26.6 carries). The internal
+control is decisive: in the same run, the QB allocation mechanism gives the
+starters 88–91% of their team's attempts while the P4C simplex gives the WR1
+15.9% of targets and the lead back 38% of carries. Same data, same game,
+different mechanism.
+
+**Earliest causal layer:** `p4c_params.class_point_forecast` feeding the P4C
+simplex. The weight vector does not sum to one over the players who will play —
+23 LA pass-catchers carry weights summing to 2.04 — so normalisation roughly
+halves every real share. Contributing upstream: `run_game` selects the pool on
+position alone, with the captured depth-chart rank unused; and
+`participation` weights by pass-snap participation, which the layer itself
+declares is "an upper bound on routes run".
+
+**Not repaired. `POST_V1_REFINEMENT`.** Not a new finding either — the ledger
+already carries `RB1↔RB2 at flat week-1 priors` and the 20.68% share-residual
+floor. The market sized the defect; it did not discover it.
+
+**Pre-registered before kickoff** in `nfl/research/mkt1/predeclaration_mkt1.md`
+(sha256 `3d298170a2a7da55…`) with falsifiable thresholds from the model's own
+intervals, plus the declared uncontrolled factor that this game is at the
+Melbourne Cricket Ground and V1 has no venue or travel feature.
+
+**Bar unchanged:** four distinct games before any refinement candidate. One
+game raises a hypothesis.
+
+**Detail:** `NFL_MKT1_MARKET_DIAGNOSTIC.md`.

@@ -200,12 +200,55 @@ def apply_r2_level(qb, alloc, tv, teams) -> Outcome:
 def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
              injuries_rows=None, test_only=False, kickoff_utc=None,
              run_id='rehearsal', qb=None, shared_pass='off',
-             game_coupling='none'):
-    """One game, every implemented layer, one draw index."""
+             game_coupling='none', rushing_budget=None,
+             team_carries_override=None, tv=None):
+    """One game, every implemented layer, one draw index.
+
+    `rushing_budget` is A1's `rb` category carries, {team: (m,) counts}.
+
+    A1 IS THE SOLE OWNER OF THE RUSHING-OPPORTUNITY PARTITION, and supplying
+    it here is what makes that true rather than merely stated. Without it the
+    running-back pool is `share x D1.team_carries` -- the whole team carry
+    count, kneels and quarterback runs and receiver runs included -- so the
+    backs compete for carries that were never theirs and A1's partition is
+    computed beside a second, different answer to the same question. Passing
+    the budget in replaces the denominator with the one A1 owns; nothing else
+    about the allocation changes, and with `rushing_budget=None` this function
+    is bit-for-bit what it was.
+
+    `team_carries_override` is {team: (m,)} replacing D1's team-carry draw.
+
+    SC1 PERMUTES THE CARRY DRAW INDEX, so after it runs the carry level on
+    draw j is no longer `tv[('team_carries', t)][j]`. A1 partitions the
+    PERMUTED vector; anything downstream that reaches for the original is
+    reading a second, differently-indexed answer to the same question. That
+    is not hypothetical -- it fired on the first real run, as 9 cells where
+    A1's running-back budget sat above a team-carry level A1 had never seen.
+    Supplying the coupled level here keeps one carry number in the game.
+
+    `g['layer_outcomes']` carries each layer's real Outcome alongside the
+    display string in `g['layers']`. A caller that has to report a per-stage
+    state cannot get one by parsing `'PASS[CODE]'` back apart, and inventing a
+    state where the string is unparseable is how a refusal becomes a pass.
+    """
     away, home = game_id.split('_')[2:4]
     teams = (away, home)
     g = {'game_id': game_id, 'teams': list(teams), 'layers': {},
-         'accounting': {}, 'engine_version': ENGINE_VERSION}
+         'layer_outcomes': {}, 'accounting': {},
+         'engine_version': ENGINE_VERSION}
+
+    def _lay(name, outcome):
+        """Record a layer's state ONCE, in both forms, from one source."""
+        g['layers'][name] = f'{outcome.state.value}[{outcome.code}]'
+        g['layer_outcomes'][name] = outcome
+        return outcome
+
+    def _team_carries(t):
+        """THE team-carry draw for `t` -- one accessor, so the coupled level
+        and the raw D1 level can never both be live in the same game."""
+        if team_carries_override is not None and t in team_carries_override:
+            return np.asarray(team_carries_override[t], float).reshape(-1)
+        return np.asarray(tv.value[('team_carries', t)], float).reshape(-1)
 
     recv = [q for q in players if q.get('position') in RECEIVING_POS]
     ids = [q['gsis_id'] for q in recv]
@@ -231,16 +274,23 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
     # observed range 1.520% -> 0.188%. The rank copula moves no marginal by
     # construction -- it changes WHICH residual each side receives, not the
     # pool it is drawn from. Opt-in; no production default is changed here.
-    tv = (TV.forecast(season, week, list(teams), m=m, seed=seed,
-                      joint_residuals=True, game_pairs=[(teams[0], teams[1])],
-                      game_coupling=game_coupling)
-          if game_coupling and game_coupling != 'none'
-          else TV.forecast(season, week, list(teams), m=m, seed=seed))
+    # A CALLER THAT ALREADY HOLDS THIS DRAW MUST BE ABLE TO HAND IT OVER.
+    # Redrawing it here gave the same quantity two owners: the entrypoint's
+    # `team_environment` stage stored one vector and the game ran on another,
+    # and under A3G they are genuinely different because that stage drew
+    # uncoupled. Same call, same defaults, when nothing is supplied.
+    if tv is None:
+        tv = (TV.forecast(season, week, list(teams), m=m, seed=seed,
+                          joint_residuals=True,
+                          game_pairs=[(teams[0], teams[1])],
+                          game_coupling=game_coupling)
+              if game_coupling and game_coupling != 'none'
+              else TV.forecast(season, week, list(teams), m=m, seed=seed))
     g['layers']['game_coupling'] = (f'PASS[A3G_{game_coupling.upper()}]'
                                     if game_coupling
                                     and game_coupling != 'none'
                                     else 'NOT_APPLICABLE[GAME_COUPLING_NONE]')
-    g['layers']['team_environment'] = f'{tv.state.value}[{tv.code}]'
+    _lay('team_environment', tv)
     if tv.state is not State.PASS:
         g['halted_at'] = 'team_environment'
         return g, None
@@ -255,7 +305,7 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
     ap = LY.appearance(season, week, recv, fixture=fixture, m=m, seed=seed,
                        teams=teams, kickoff_utc=kickoff_utc,
                        game_id=game_id)
-    g['layers']['appearance'] = f'{ap.state.value}[{ap.code}]'
+    _lay('appearance', ap)
     if ap.state is not State.PASS:
         g['halted_at'] = 'appearance'
         g['halt_reason'] = ap.detail[:200]
@@ -266,15 +316,15 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
             'DEFERRED[RUSHING_CONVERSION_CONTROL_UNDEFINED]'
         return g, None
 
-    pa = LY.participation(ap, fits['participation_prior'].value, m=m)
-    g['layers']['participation'] = f'{pa.state.value}[{pa.code}]'
+    pa = _lay('participation',
+                  LY.participation(ap, fits['participation_prior'].value, m=m))
 
     # ---- targets (WR/TE/RB, simplex) ------------------------------------
     Ct = [fits['C_targets'].value.get(p, 0.0) for p in ids]
     tc = LY.targets_carries(pa, 'targets', Ct, pos, (starts, counts), ids,
                             fits['p4c_params_targets'].value, m=m, seed=seed,
                             game_id=game_id, ordinal=season * 100 + week)
-    g['layers']['targets_carries'] = f'{tc.state.value}[{tc.code}]'
+    _lay('targets_carries', tc)
     if tc.state is not State.PASS:
         g['halted_at'] = 'targets_carries'
         return g, None
@@ -388,28 +438,83 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
         rb_pos, (rb_starts, rb_counts), rb_ids,
         fits['p4c_params_carries'].value, m=m, seed=seed,
         game_id=game_id, ordinal=season * 100 + week)
-    g['layers']['carries'] = f'{car.state.value}[{car.code}]'
+    _lay('carries', car)
     if car.state is not State.PASS:
         g['halted_at'] = 'carries'
         g['halt_reason'] = car.detail[:200]
         return g, None
     Sc, other_c = car.value['share'], car.value['other']
-    car_vol = np.stack([tv.value[('team_carries', t)] for t in teams])
+    # WHOSE CARRIES ARE THE BACKS COMPETING FOR? Exactly one layer may answer.
+    if rushing_budget is None:
+        car_vol = np.stack([_team_carries(t) for t in teams])
+        g['layers']['rushing_budget_owner'] = \
+            'NOT_APPLICABLE[D1_TEAM_CARRIES]'
+    else:
+        missing = [t for t in teams if t not in rushing_budget]
+        if missing:
+            o = Outcome.fail(
+                'RUSHING_BUDGET_TEAM_MISSING',
+                f'A1 supplied no running-back carry budget for {missing}. A '
+                f'missing budget is refused rather than silently falling back '
+                f'to the D1 team-carry level, because the fallback is the '
+                f'duplicate owner this argument exists to remove.',
+                missing=missing)
+            _lay('rushing_budget', o)
+            g['halted_at'] = 'rushing_budget'
+            g['halt_reason'] = o.detail[:200]
+            return g, None
+        car_vol = np.stack([np.asarray(rushing_budget[t], float).reshape(-1)
+                            for t in teams])
+        if car_vol.shape != (len(teams), m):
+            o = Outcome.fail(
+                'RUSHING_BUDGET_DRAW_MISMATCH',
+                f'the A1 carry budget has shape {list(car_vol.shape)} against '
+                f'{[len(teams), m]}. These layers share one draw index, so a '
+                f'mismatch is refused rather than reshaped.',
+                got=list(car_vol.shape))
+            _lay('rushing_budget', o)
+            g['halted_at'] = 'rushing_budget'
+            g['halt_reason'] = o.detail[:200]
+            return g, None
+        # A1's budget can never exceed the team carry level it partitions.
+        # Checked rather than assumed: if it did, the backs would be dealt
+        # carries the game did not contain.
+        tc_lvl = np.stack([np.asarray(_team_carries(t), float)
+                           for t in teams])
+        over = int((car_vol > tc_lvl + 1e-9).sum())
+        if over:
+            o = Outcome.fail(
+                'RUSHING_BUDGET_EXCEEDS_TEAM_CARRIES',
+                f'{over} cell(s) where the A1 running-back budget is above '
+                f'the D1 team-carry level it is a partition of. A partition '
+                f'cannot exceed the thing partitioned.', n_cells=over)
+            _lay('rushing_budget', o)
+            g['halted_at'] = 'rushing_budget'
+            g['halt_reason'] = o.detail[:200]
+            return g, None
+        _lay('rushing_budget', Outcome.ok(
+            'RUSHING_BUDGET_FROM_A1', value=True,
+            detail='the running-back pool is A1\'s `rb` category, not the '
+                   'whole D1 team-carry level; A1 is the sole owner of the '
+                   'rushing-opportunity partition',
+            mean_rb_budget=[round(float(x.mean()), 4) for x in car_vol],
+            mean_team_carries=[round(float(x.mean()), 4) for x in tc_lvl]))
+        g['layers']['rushing_budget_owner'] = 'PASS[A1_RB_CATEGORY]'
     C = Sc * np.repeat(car_vol, rb_counts, axis=0)
 
     ordinal = season * 100 + week
     cv = LY.receiving_conversion(tc, T, fits['receiving_priors'].value, ids,
                                  pos, ordinal, m=m, seed=seed)
-    g['layers']['receiving_conversion'] = f'{cv.state.value}[{cv.code}]'
+    _lay('receiving_conversion', cv)
     tdp = dict(fits['td_priors_rec'].value)
     tdp['pos_catch_rate'] = fits['receiving_priors'].value['pos_catch_rate']
     td = LY.td_layer(cv, T, tdp, ids, pos, ordinal, m=m, seed=seed)
-    g['layers']['receiving_td'] = f'{td.state.value}[{td.code}]'
+    _lay('receiving_td', td)
     rtd = LY.rushing_td(car, C, fits['td_priors_rush'].value, rb_ids, rb_pos,
                         ordinal, m=m, seed=seed)
-    g['layers']['rushing_td'] = f'{rtd.state.value}[{rtd.code}]'
+    _lay('rushing_td', rtd)
     ry = LY.rushing_conversion(car)
-    g['layers']['rushing_conversion'] = f'{ry.state.value}[{ry.code}]'
+    _lay('rushing_conversion', ry)
 
     for o in (cv, td, rtd):
         if o.state is not State.PASS:
@@ -626,8 +731,11 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
             Dsub, rows_here,
             team_dropback_draws={t: np.asarray(
                 tv.value[('team_dropbacks_part', t)], float) for t in teams},
-            team_carry_draws={t: np.asarray(
-                tv.value[('team_carries', t)], float) for t in teams},
+            # SC1's coupled level where it is live. This check asks whether
+            # the quarterbacks' rush opportunity fits inside the team's
+            # carries; asking it against a carry vector on a different draw
+            # index is the same mismatch SC1 exists to remove.
+            team_carry_draws={t: _team_carries(t) for t in teams},
             # Under R2 the level is an integer apportionment, so the dropback
             # identity is checked as exact EQUALITY against rint(budget)
             # instead of the incumbent's <= against the float budget. Stricter,
@@ -784,7 +892,11 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
         'allocation': {'share': S, 'other': other, 'starts': starts,
                        'counts': counts, 'tc': tc,
                        'team_target_volume': tgt_vol},
-        'team_draws': {t: {k: np.asarray(tv.value[(k, t)], float)
+        # The level the GAME used, not the level D1 drew: with SC1 live they
+        # are different vectors and storing the unused one would make every
+        # downstream dependence diagnostic read the wrong carry index.
+        'team_draws': {t: {k: (_team_carries(t) if k == 'team_carries'
+                               else np.asarray(tv.value[(k, t)], float))
                            for k in TV.METRICS} for t in teams},
         'qb': ({'ids': [qb['rows'][i]['gsis_id']
                         for t in teams for i in qb['index_by_team'].get(t, [])],

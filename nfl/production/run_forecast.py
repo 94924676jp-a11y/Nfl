@@ -173,17 +173,60 @@ def build(args, fixtures: dict = None) -> dict:
                              run_id)
         return Outcome.ok('INPUTS_VALIDATED', value=src,
                           input_hashes={k: v['sha256'] for k, v in src.items()})
+    def _team_volume():
+        """THE team-volume draw for this run. One owner, one draw.
+
+        It was drawn twice: the `team_environment` stage called `TV.forecast`
+        with NO coupling flags while the candidate path and the engine each
+        drew their own COUPLED version. Same quantity, three call sites, and
+        under A3G the uncoupled one is a different vector -- so the artifact
+        stored team-volume draws the game had never used, and the R2
+        apportionment defect (a level apportioned from a budget no game held)
+        had a second home one layer up. Memoised here so the number has a
+        single owner and every consumer reads the same draw.
+        """
+        if '_tv_outcome' in fx:
+            return fx['_tv_outcome']
+        teams = list(fx.get('team_ids') or [])
+        m = fx.get('qb_draws', 200)
+        gc = (_mode['flags'].get('game_coupling')
+              if _mode.get('candidate') else None)
+        o = (TV.forecast(args.season, args.week, teams, m=m, seed=args.seed,
+                         joint_residuals=True,
+                         game_pairs=[(teams[0], teams[1])], game_coupling=gc)
+             if gc and gc != 'none' and len(teams) == 2
+             else TV.forecast(args.season, args.week, teams, m=m,
+                              seed=args.seed))
+        fx['_tv_outcome'] = o
+        if o.state is State.PASS:
+            fx['_team_volume'] = o.value
+        return o
+
     def _candidate_qb():
         """The QB half of the V1 candidate architecture, from the canonical
         entrypoint rather than from an internal-only rehearsal path.
 
-        R2, C0 and A3G execute here. C3 and A1 need the receiving and rushing
-        budgets, which the engine builds from the appearance layer -- and that
-        layer is currently DEFERRED on the injury feed, so those two report as
-        not reached rather than as satisfied. That is the honest state and it
-        is written into the artifact; an operator must not read "candidate
-        mode" as "every candidate component ran".
+        R2, C0, A3G, SC1 and A1 execute here.
+
+        THIS RUNS BEFORE THE LAYERS THAT DEPEND ON IT, WHICH IS WHY IT IS
+        MEMOISED. The declared stage list reports `qb_layer` LAST -- after
+        targets_carries, conversion and td_layer -- while C3 needs the
+        quarterbacks' throws to form a target budget and A1 needs their
+        scrambles to partition the rush plays. Reporting order and dependency
+        order are not the same thing, and running the QB half in reporting
+        order meant C3 could never be reached from this entrypoint however
+        healthy its inputs were. So the result is computed once, on first
+        demand, and every later caller -- including the `qb_layer` stage that
+        reports it -- receives the same Outcome. Computing it twice would draw
+        two different quarterback lines from one declared seed.
         """
+        if '_qb_outcome' in fx:
+            return fx['_qb_outcome']
+        o = _candidate_qb_compute()
+        fx['_qb_outcome'] = o
+        return o
+
+    def _candidate_qb_compute():
         from nfl.production.nonqb import football_engine as FE
         fl = _mode['flags']
         qbp = [q for q in fx.get('players', [])
@@ -213,13 +256,7 @@ def build(args, fixtures: dict = None) -> dict:
             return qa
         qb['allocation'] = qa.value
         gc = fl.get('game_coupling')
-        tv = (FE.TV.forecast(args.season, args.week, teams, m=m,
-                             seed=args.seed, joint_residuals=True,
-                             game_pairs=[(teams[0], teams[1])],
-                             game_coupling=gc)
-              if gc and gc != 'none' and len(teams) == 2
-              else FE.TV.forecast(args.season, args.week, teams, m=m,
-                                  seed=args.seed))
+        tv = _team_volume()
         if tv.state is not State.PASS:
             return tv
         applied = ['C0'] if fl.get('include_cold_start') else []
@@ -280,10 +317,15 @@ def build(args, fixtures: dict = None) -> dict:
             _inv_a1 = fx.setdefault('_inv', {})
             _inv_a1['rushing_single_owner'] = a1
             applied.append('A1')
-        if fl.get('shared_pass') == 'c3':
-            not_reached.append('C3')
+        # C3 IS NOT ADJUDICATED HERE. It is reached inside the non-QB chain
+        # or it is not, and only that chain can say which; this used to record
+        # `not reached` unconditionally, which was accurate only for as long
+        # as the chain could not run at all.
         fx['qb_rows'] = qb['rows']
         fx['_qb_draws_out'] = qb['draws']
+        # THE QB OBJECT ITSELF, because C3 needs the throws and the engine
+        # needs the object rather than the draws alone.
+        fx['_qb_object'] = qb
         fx['_candidate_applied'] = sorted(applied)
         fx['_candidate_not_reached'] = sorted(not_reached)
         # EVERY DECLARED HARD INVARIANT GETS A VERDICT ON THIS PATH TOO.
@@ -386,71 +428,274 @@ def build(args, fixtures: dict = None) -> dict:
     NONQB_CHAIN = ('appearance', 'participation', 'targets_carries',
                    'conversion', 'td_layer')
 
-    def _nonqb_stage(_st):
-        """The real layer's own outcome, or None to fall through.
+    def _nonqb_chain():
+        """The whole non-QB chain, from the ONE layer that owns its wiring.
 
-        Returns whatever the layer returns -- PASS when the input is usable,
-        DEFERRED/BLOCKED with the named condition when it is not. It never
-        converts a block into a pass, and it never invents a probability.
+        THIS USED TO CALL EACH LAYER WITH EMPTY PLACEHOLDERS:
+
+            LY.targets_carries(pa, 'targets', [], [], ([], []), [], {}, ...)
+            LY.receiving_conversion(tc, [], {}, [], [], _ord)
+            LY.td_layer(cv, [], {}, [], [], _ord)
+
+        Every one of those arguments has an owner. `{}` is the frozen P4C
+        parameter block, `[]` the class point forecast, `([], [])` the group
+        layout the allocator partitions over, and the later `{}` are the RC1
+        and TD2 priors. Supplied empty, the chain could only ever raise -- and
+        it did, `KeyError: 'add_pool'`, the first time an injury feed was
+        complete enough for `appearance` to pass and the stage to be reached
+        at all. Until then it was NOT_APPLICABLE for an unrelated upstream
+        reason, so a chain that could not run looked wired for as long as it
+        was never asked to.
+
+        The fix is not to fill the placeholders here. `football_engine`
+        already owns this composition -- it is the accepted V1 architecture,
+        it is what the rehearsal exercises, and it resolves each argument from
+        `slate_fits`, the appearance layer and the team-volume layer. Building
+        a second copy of that wiring in the entrypoint would give every one of
+        these inputs two owners, which is the defect this project pays for
+        most. So the entrypoint delegates and reports.
+
+        Runs once; every stage then reports its own layer's real Outcome.
         """
+        if '_nonqb' in fx:
+            return fx['_nonqb']
         try:
-            from nfl.production.nonqb import layers as LY
+            from nfl.production.nonqb import football_engine as FE
         except Exception as e:                                # noqa: BLE001
-            return Outcome.blocked(
-                # Cause.DEPENDENCY, not Cause.CODE -- there is no CODE
-                # member, and naming one made this handler raise
-                # AttributeError, destroying the named refusal it
-                # exists to produce.
+            o = Outcome.blocked(
                 'NONQB_LAYER_IMPORT_FAILED', f'{type(e).__name__}: {e}',
                 cause=Cause.DEPENDENCY)
-        if _st == 'appearance':
-            o = LY.appearance(args.season, args.week,
-                              fx.get('players', []), fixture=None,
-                              seed=args.seed, m=fx.get('qb_draws', 200),
-                              teams=fx.get('team_ids'),
-                              kickoff_utc=fx.get('kickoff_utc'),
-                              game_id=args.game_id)
-            fx['_appearance'] = o
+            fx['_nonqb'] = {'fatal': o}
+            return fx['_nonqb']
+
+        players = fx.get('players') or []
+        teams = list(fx.get('team_ids') or [])
+        m = fx.get('qb_draws', 200)
+        fl = _mode['flags']
+
+        if not players:
+            o = Outcome.blocked(
+                'NONQB_PLAYER_SET_EMPTY',
+                'no player was supplied for this game, so there is no one to '
+                'allocate opportunity among. An empty roster is a refusal, '
+                'not an allocation of nothing.', cause=Cause.DATA)
+            fx['_nonqb'] = {'fatal': o}
+            return fx['_nonqb']
+
+        # THE FRAME IS CHECKED BEFORE THE ENGINE IS ASKED TO USE IT.
+        # Allocation partitions opportunity BY POSITION WITHIN A TEAM, so a
+        # player carrying neither is not a player this chain can place. Left
+        # unchecked the engine reaches them deep inside a grouping step and
+        # raises a KeyError, which is the same unnamed-crash shape this whole
+        # repair exists to remove -- one layer further in.
+        need = ('gsis_id', 'position', 'team')
+        thin = [q for q in players if not all(q.get(k) for k in need)]
+        if thin:
+            o = Outcome.blocked(
+                'NONQB_PLAYER_FRAME_INCOMPLETE',
+                f'{len(thin)} of {len(players)} player(s) carry no '
+                f'{"/".join(need)}, so they cannot be grouped by team or '
+                f'given a positional weight. Named here rather than raised '
+                f'inside the allocator.',
+                cause=Cause.DATA,
+                n_incomplete=len(thin), n_players=len(players),
+                example=[{k: q.get(k) for k in need} for q in thin[:3]])
+            fx['_nonqb'] = {'fatal': o}
+            return fx['_nonqb']
+
+        # THE DERIVED ARTIFACTS FIRST, through their declared owner. The QB
+        # stage already gated on this; the non-QB chain reached the same
+        # artifacts through `p4c_params` and got a FileNotFoundError instead
+        # of a named refusal.
+        _da = DERIVED.artifacts()
+        if _da.state is not State.PASS:
+            fx['_nonqb'] = {'fatal': RF.refuse(
+                'MODEL_ARTIFACT_MISSING', 'appearance',
+                f'{_da.code}: {_da.detail}'[:300], run_id)}
+            return fx['_nonqb']
+        try:
+            fits = FE.slate_fits(args.season, args.week, players)
+        except Exception as e:                                # noqa: BLE001
+            fits = Outcome.fail(
+                'SLATE_FITS_RAISED', f'{type(e).__name__}: {e}'[:400])
+        if fits.state is not State.PASS:
+            # NAMED, and it names WHICH fit. `slate_fits` already refuses with
+            # the failing artifact in its detail; passing it straight through
+            # keeps that rather than flattening it to "inputs unavailable".
+            fx['_nonqb'] = {'fatal': fits}
+            return fx['_nonqb']
+
+        # THE QB HALF FIRST, because C3 and A1 consume it. In the baseline
+        # configuration there is no QB object to pass and the engine's own
+        # defaults apply unchanged.
+        qb = None
+        rushing_budget = None
+        shared_pass = 'off'
+        game_coupling = 'none'
+        if _mode['mode'] != 'PRODUCTION_BASELINE':
+            qo = _candidate_qb()
+            if qo.state is not State.PASS:
+                fx['_nonqb'] = {'fatal': qo}
+                return fx['_nonqb']
+            qb = fx.get('_qb_object')
+            shared_pass = fl.get('shared_pass') or 'off'
+            game_coupling = fl.get('game_coupling') or 'none'
+            a1 = fx.get('_rushing_a1')
+            if a1 is not None and a1.state is State.PASS:
+                # A1's OWN carry level is the SC1-coupled one it partitioned.
+                # Handing the engine the budget without the level it came from
+                # would leave the game holding two carry vectors on different
+                # draw indices.
+                team_carries = dict(a1.value['team_carries'])
+                # A1's `rb` CATEGORY IS THE RUNNING-BACK BUDGET. Handing the
+                # engine the whole team-carry level instead would leave A1's
+                # partition sitting beside a second answer to the same
+                # question.
+                rushing_budget = {
+                    t: a1.value['carries'][(t, 'rb')] for t in teams
+                    if (t, 'rb') in a1.value['carries']}
+                if len(rushing_budget) != len(teams):
+                    o = Outcome.fail(
+                        'A1_RB_BUDGET_INCOMPLETE',
+                        f'A1 returned no `rb` carry budget for '
+                        f'{[t for t in teams if t not in rushing_budget]}. '
+                        f'Refused rather than falling back to the team level.')
+                    fx['_nonqb'] = {'fatal': o}
+                    return fx['_nonqb']
+                fx['_coupled_team_carries'] = team_carries
+
+        # NO EXCEPTION MAY ESCAPE THIS CHAIN. Every stage in this pipeline
+        # owes a NAMED outcome; a traceback is the one thing it may not
+        # return. The engine is a large composition over real artifacts, so
+        # the honest assumption is that it can raise on an input nobody
+        # anticipated -- and when it does, the run must still say what
+        # happened in the pipeline's own vocabulary.
+        try:
+            g, payload = FE.run_game(
+                args.season, args.week, args.game_id, players, fits.value,
+                m=m, seed=args.seed, injuries_rows=None,
+                test_only=bool(getattr(args, 'dry_run', False)),
+                kickoff_utc=fx.get('kickoff_utc'), run_id=run_id, qb=qb,
+                shared_pass=shared_pass, game_coupling=game_coupling,
+                rushing_budget=rushing_budget,
+                team_carries_override=fx.get('_coupled_team_carries'),
+                tv=_team_volume())
+        except Exception as e:                                # noqa: BLE001
+            o = Outcome.fail(
+                'NONQB_ENGINE_RAISED',
+                f'{type(e).__name__}: {e}'[:400],
+                engine_version=getattr(FE, 'ENGINE_VERSION', None))
+            fx['_nonqb'] = {'fatal': o}
+            return fx['_nonqb']
+        fx['_nonqb'] = {'g': g, 'payload': payload,
+                        'outcomes': g.get('layer_outcomes') or {}}
+        if payload:
+            fx['_nonqb_payload'] = payload
+        # C3 IS REACHED OR IT IS NOT, AND THE ENGINE SAYS WHICH. This was
+        # hard-coded as "not reached" on the QB path, which was true only
+        # because the chain never ran.
+        sp = g['layers'].get('shared_pass') or ''
+        applied = list(fx.get('_candidate_applied') or [])
+        not_reached = [c for c in (fx.get('_candidate_not_reached') or [])
+                       if c != 'C3']
+        if shared_pass == 'c3':
+            if sp.startswith('PASS'):
+                applied.append('C3')
+            else:
+                not_reached.append('C3')
+            fx['_c3_state'] = sp
+        fx['_candidate_applied'] = sorted(set(applied))
+        fx['_candidate_not_reached'] = sorted(set(not_reached))
+        return fx['_nonqb']
+
+    # Which engine layer answers for which declared pipeline stage. The two
+    # vocabularies are not identical -- the engine runs receiving and rushing
+    # opportunity as separate layers where the pipeline declares one
+    # `targets_carries` stage -- so the mapping is written down rather than
+    # inferred from a name match.
+    STAGE_LAYERS = {
+        'appearance': ('appearance',),
+        'participation': ('participation',),
+        'targets_carries': ('targets_carries', 'carries', 'shared_pass',
+                            'rushing_budget'),
+        'conversion': ('receiving_conversion',),
+        'td_layer': ('receiving_td', 'rushing_td'),
+    }
+    # Engine layers that no declared stage answers for. They are LISTED, not
+    # ignored: a layer absent from both this set and STAGE_LAYERS is a layer
+    # nobody reports, and `_nonqb_stage` refuses rather than letting it pass
+    # unseen. Caught the moment it happened -- `rushing_budget` failed
+    # RUSHING_BUDGET_EXCEEDS_TEAM_CARRIES, no stage was mapped to it, and the
+    # run sealed anyway. A failing layer that no stage owns is exactly the
+    # absence-read-as-success defect, and mapping the layers I happened to
+    # think of is not a fix for it.
+    UNREPORTED_LAYERS = frozenset({
+        'game_coupling',             # reported via candidate_components
+        'rushing_budget_owner',      # a label, not an outcome
+        'rushing_conversion',        # DEFERRED by declared open decision
+        'team_environment',          # its own declared stage owns this
+    })
+
+    def _assert_every_layer_is_reported(g):
+        """No engine layer may go unreported. Returns an Outcome or None."""
+        known = set(UNREPORTED_LAYERS)
+        for names in STAGE_LAYERS.values():
+            known.update(names)
+        orphan = sorted(set(g.get('layers') or {}) - known)
+        if orphan:
+            return Outcome.fail(
+                'ENGINE_LAYER_NOT_REPORTED',
+                f'the engine ran layer(s) {orphan} that no declared stage '
+                f'answers for, so their state would never reach the '
+                f'artifact. A layer nobody reports is a layer whose failure '
+                f'is invisible.', orphan=orphan)
+        return None
+
+    def _nonqb_stage(_st):
+        """One declared stage's real outcome, from the engine that ran it."""
+        res = _nonqb_chain()
+        if 'fatal' in res:
+            return res['fatal']
+        unreported = _assert_every_layer_is_reported(res['g'])
+        if unreported is not None:
+            return unreported
+        outs = res['outcomes']
+        names = STAGE_LAYERS[_st]
+        got = [(n, outs[n]) for n in names if n in outs]
+        if not got:
+            # THE ENGINE HALTED BEFORE THIS STAGE, AND THE CODE SAYS WHERE.
+            #
+            # A generic UPSTREAM_LAYER_NOT_EXECUTED is only marginally better
+            # than the STAGE_DECLARED_UNIMPLEMENTED label this pipeline was
+            # already caught using: both tell an operator that nothing ran and
+            # neither tells them what to go and fix. The halting layer's name
+            # and its own refusal code travel with the refusal instead.
+            g = res['g']
+            at = g.get('halted_at') or 'an_earlier_layer'
+            up = outs.get(at)
+            return Outcome.not_applicable(
+                f'BLOCKED_UPSTREAM_{at.upper()}',
+                f'{_st} was not reached: the engine halted at {at}'
+                + (f' with {up.code}' if up is not None else '')
+                + (f' -- {g.get("halt_reason")}' if g.get('halt_reason')
+                   else ''),
+                halted_at=at,
+                upstream_code=(up.code if up is not None else None))
+        bad = [(n, o) for n, o in got if o.state is not State.PASS]
+        if bad:
+            # The WORST layer answers for the stage, and it answers in its own
+            # words. Collapsing two layers into one invented code would lose
+            # which of them refused.
+            n, o = bad[0]
             return o
-        ap = fx.get('_appearance')
-        if ap is None:
-            # Downstream layers are only meaningful given the appearance
-            # outcome. Its absence is reported, not silently skipped.
-            return Outcome.blocked(
-                'BLOCKED_UPSTREAM_APPEARANCE',
-                f'{_st} needs the appearance outcome and it was not produced',
-                cause=Cause.DATA)
-        if _st == 'participation':
-            o = LY.participation(ap, {}, m=fx.get('qb_draws', 200))
-            fx['_participation'] = o
-            return o
-        pa = fx.get('_participation')
-        if pa is None:
-            return Outcome.blocked(
-                'BLOCKED_UPSTREAM_PARTICIPATION',
-                f'{_st} needs the participation outcome', cause=Cause.DATA)
-        if _st == 'targets_carries':
-            o = LY.targets_carries(pa, 'targets', [], [], ([], []), [], {},
-                                   game_id=args.game_id,
-                                   ordinal=args.season * 100 + args.week)
-            fx['_targets_carries'] = o
-            return o
-        tc = fx.get('_targets_carries')
-        if tc is None:
-            return Outcome.blocked(
-                'BLOCKED_UPSTREAM_OPPORTUNITY',
-                f'{_st} needs the targets/carries outcome', cause=Cause.DATA)
-        _ord = args.season * 100 + args.week
-        if _st == 'conversion':
-            o = LY.receiving_conversion(tc, [], {}, [], [], _ord)
-            fx['_conversion'] = o
-            return o
-        cv = fx.get('_conversion')
-        if cv is None:
-            return Outcome.blocked(
-                'BLOCKED_UPSTREAM_TD_INPUT',
-                f'{_st} needs the conversion outcome', cause=Cause.DATA)
-        return LY.td_layer(cv, [], {}, [], [], _ord)
+        return Outcome.ok(
+            f'{_st.upper()}_OK',
+            value={n: (o.evidence.get('n_players') or o.value)
+                   for n, o in got},
+            layers={n: f'{o.state.value}[{o.code}]' for n, o in got},
+            spec_versions={n: o.evidence.get('spec_version') for n, o in got},
+            test_only=any(bool(o.evidence.get('test_only')) for _n, o in got))
+
 
     for stage, key, spec in (
             ('feature_build', 'features', 'prior-only, ordinal prefix cut'),
@@ -591,11 +836,9 @@ def build(args, fixtures: dict = None) -> dict:
             # exists; a PRODUCTION IMPLEMENTATION of it does not, and the
             # pipeline said nothing about the difference.
             if _st == 'team_environment' and fx.get('team_volume'):
-                o = TV.forecast(args.season, args.week, fx.get('team_ids', []),
-                                m=fx.get('qb_draws', 200), seed=args.seed)
+                o = _team_volume()
                 if o.state is not State.PASS:
                     return o
-                fx['_team_volume'] = o.value
                 return Outcome.ok(
                     'TEAM_ENVIRONMENT_OK', value={'n': len(o.value)},
                     implemented=True, spec_version=TV.SPEC_VERSION,
@@ -727,6 +970,42 @@ def build(args, fixtures: dict = None) -> dict:
             if o.state is not State.PASS:
                 return _fail(o)
             produced['qb'] = len(rows)
+        # THE NON-QB CHAIN'S DRAWS. Without this the chain could execute,
+        # pass every accounting check, and have its output thrown away at the
+        # sidecar -- which is the same defect B13 was written for, one layer
+        # further along. `absent_layers` in the artifact would then say
+        # `receiving` and `rushing` were absent on a run where they ran.
+        pay = fx.get('_nonqb_payload')
+        if pay:
+            idx = pay['index']
+            rec_ids = idx['recv_ids']
+            if rec_ids:
+                o = ds.add_layer(
+                    'receiving', rec_ids,
+                    {'targets': _np.asarray(pay['draws']['targets']),
+                     'receptions': _np.asarray(pay['draws']['receptions']),
+                     'receiving_yards':
+                         _np.asarray(pay['draws']['receiving_yards']),
+                     'receiving_td': _np.asarray(
+                         pay['draws']['receiving_td'])},
+                    'nfl-nonqb-receiving-1',
+                    'P4C simplex allocation and RC1 conversion on the shared '
+                    'game draw index')
+                if o.state is not State.PASS:
+                    return _fail(o)
+                produced['receiving'] = len(rec_ids)
+            rb_ids = idx['rb_ids']
+            if rb_ids:
+                o = ds.add_layer(
+                    'rushing', rb_ids,
+                    {'carries': _np.asarray(pay['draws']['carries']),
+                     'rushing_td': _np.asarray(pay['draws']['rush_td'])},
+                    'nfl-nonqb-rushing-1',
+                    'P4C simplex allocation over the A1 running-back budget '
+                    'on the shared game draw index')
+                if o.state is not State.PASS:
+                    return _fail(o)
+                produced['rushing'] = len(rb_ids)
         tv = fx.get('_team_volume')
         if tv:
             teams = sorted({t for (_m, t) in tv})
@@ -817,16 +1096,41 @@ def build(args, fixtures: dict = None) -> dict:
                                   'n_draws': man['n_draws'],
                                   'content_digest': man['content_digest']})
                 summaries[f'qb/{f}/{pid}'] = q
+        # THE NON-QB PLAYERS TOO. The sidecar held 45 receivers and 11 backs
+        # while `distributions` carried 8 quarterbacks, so the artifact's own
+        # per-player view omitted most of the players it had just forecast. A
+        # draw stored but never surfaced is the B13 defect with the sidecar
+        # written: the numbers exist and nothing reads them.
+        _pay = fx.get('_nonqb_payload')
+        if _pay:
+            _idx = _pay['index']
+            for _layer, _ids, _fields in (
+                    ('receiving', _idx['recv_ids'],
+                     ('targets', 'receptions', 'receiving_yards',
+                      'receiving_td')),
+                    ('rushing', _idx['rb_ids'], ('carries', 'rushing_td'))):
+                if _layer not in produced:
+                    continue
+                for i, pid in enumerate(_ids):
+                    blk = out.setdefault(pid, {}).setdefault(_layer, {})
+                    for f in _fields:
+                        q = DA.quantile_view(ds.vector(_layer, f, i))
+                        blk[f] = dict(
+                            q, draws_ref={'key': f'{_layer}/{f}', 'row': i,
+                                          'n_draws': man['n_draws'],
+                                          'content_digest':
+                                              man['content_digest']})
+                        summaries[f'{_layer}/{f}/{pid}'] = q
         cons = DA.assert_summary_consistent(summaries, ds)
         inv['draw_summary_consistency'] = cons
         if cons.state is not State.PASS:
             return cons
 
         fx['_draw_manifest'] = man
-        for _k in ('receiving', 'rushing', 'td'):
-            v = fx.get(f'{_k}_draws')
-            if v:
-                produced[_k] = len(v)
+        # `produced` is filled where each layer is actually added, above. It
+        # used to be topped up here from `fx['receiving_draws']` and two
+        # siblings -- fixture keys nothing in this file ever sets -- so the
+        # layer inventory could only ever have been populated by a fixture.
         return Outcome.ok(
             'DRAWS_BUILT', value=out,
             detail=f'{man["n_draw_cells"]} draw cell(s) preserved across '

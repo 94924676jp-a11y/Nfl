@@ -1,0 +1,296 @@
+{
+ "run_id": "ce7d9ae1de9e77ce",
+ "arm": "A",
+ "written_at": "2026-09-08T17:10:00Z",
+ "pipeline_version": "nfl-production-pipeline-1",
+ "status": "SEALED",
+ "elapsed_s": 47.2858,
+ "stages": [
+  {
+   "stage": "capture_validation",
+   "state": "PASS",
+   "code": "INPUTS_VALIDATED",
+   "detail": "",
+   "input_hashes": {
+    "depth_charts": "f57ef0724d907160f94dbfb1f1b9c90047035296908d6a51ba98f15dde9ee413",
+    "espn_injuries_json": "4ec7db5bf8c58acf3d8cfbe55703e1c708d390c937f7c5d8c990176abfc65534",
+    "injuries": "1bf460ad261559a806ad801857a03451b3e51ada3a64dfefc93515dd6ee7f848",
+    "official_inactives": "88a19528350ea23f34804a73a92bc09b3d525cd7704348a165c345d2cdd96aa2",
+    "official_injury_report": "3aa790936d7e96f79865d26f6a683c4b862693e519af5539568aba54a1cc273d",
+    "schedules": "bf5296675da15a13ddd5e8743e8ba927180584d9f0f298a901965d0ed22ac161",
+    "weekly_rosters": "125c300ff066d314cba7cabd36bdca1dbbd62ec104c370e1873bbeaf07ecabec"
+   },
+   "spec_version": "nfl-production-pipeline-1",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 4.076957702636719e-05,
+   "metrics": {}
+  },
+  {
+   "stage": "identity_resolution",
+   "state": "PASS",
+   "code": "IDENTITY_RESOLVED",
+   "detail": "",
+   "input_hashes": {},
+   "spec_version": null,
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 5.555152893066406e-05,
+   "metrics": {}
+  },
+  {
+   "stage": "feature_build",
+   "state": "PASS",
+   "code": "STAGE_DECLARED_UNIMPLEMENTED",
+   "detail": "feature_build: the accepted research baseline 'prior-only, ordinal prefix cut' has no production implementation. Declared as debt rather than reported as a successful forecast.",
+   "input_hashes": {},
+   "spec_version": "prior-only, ordinal prefix cut",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 1.2874603271484375e-05,
+   "metrics": {}
+  },
+  {
+   "stage": "team_environment",
+   "state": "PASS",
+   "code": "TEAM_ENVIRONMENT_OK",
+   "detail": "",
+   "input_hashes": {},
+   "spec_version": "team-volume-v1-p4b-frozen-1",
+   "warnings": [
+    "known limitation: team_volume_is_near_unforecastable"
+   ],
+   "refusal_code": null,
+   "elapsed_s": 0.8741509914398193,
+   "metrics": {}
+  },
+  {
+   "stage": "appearance",
+   "state": "NOT_APPLICABLE",
+   "code": "INJURY_REPORT_INCOMPLETE",
+   "detail": "appearance: NE has 3 row(s) but report_status is unfilled on every one. teammate_availability reads it, and an unfiled designation is not an absence of injury.",
+   "input_hashes": {},
+   "spec_version": "P3 appearance",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 46.35693907737732,
+   "metrics": {}
+  },
+  {
+   "stage": "participation",
+   "state": "NOT_APPLICABLE",
+   "code": "UPSTREAM_LAYER_NOT_EXECUTED",
+   "detail": "participation: participation was not reached: the engine halted at appearance -- NE has 3 row(s) but report_status is unfilled on every one. teammate_availability reads it, and an unfiled designation is not an absence of injury.",
+   "input_hashes": {},
+   "spec_version": "Stage2 ewma_hl2; governance INFORMATION_CONSTRAINED",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 2.6226043701171875e-05,
+   "metrics": {}
+  },
+  {
+   "stage": "targets_carries",
+   "state": "NOT_APPLICABLE",
+   "code": "UPSTREAM_LAYER_NOT_EXECUTED",
+   "detail": "targets_carries: targets_carries was not reached: the engine halted at appearance -- NE has 3 row(s) but report_status is unfilled on every one. teammate_availability reads it, and an unfiled designation is not an absence of injury.",
+   "input_hashes": {},
+   "spec_version": "P4C system C; governance DATA_BLOCKED",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 1.430511474609375e-05,
+   "metrics": {}
+  },
+  {
+   "stage": "conversion",
+   "state": "NOT_APPLICABLE",
+   "code": "UPSTREAM_LAYER_NOT_EXECUTED",
+   "detail": "conversion: conversion was not reached: the engine halted at appearance -- NE has 3 row(s) but report_status is unfilled on every one. teammate_availability reads it, and an unfiled designation is not an absence of injury.",
+   "input_hashes": {},
+   "spec_version": "RC1 baseline; SIGNAL_WEAK; governance HOLD_CHARACTERIZED + CALIBRATION_DEFECT",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 1.049041748046875e-05,
+   "metrics": {}
+  },
+  {
+   "stage": "td_layer",
+   "state": "NOT_APPLICABLE",
+   "code": "UPSTREAM_LAYER_NOT_EXECUTED",
+   "detail": "td_layer: td_layer was not reached: the engine halted at appearance -- NE has 3 row(s) but report_status is unfilled on every one. teammate_availability reads it, and an unfiled designation is not an absence of injury.",
+   "input_hashes": {},
+   "spec_version": "TD2 pooled positional control; governance HOLD_TENTATIVE",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 1.0251998901367188e-05,
+   "metrics": {}
+  },
+  {
+   "stage": "qb_layer",
+   "state": "PASS",
+   "code": "QB_LAYER_OK",
+   "detail": "",
+   "input_hashes": {},
+   "spec_version": "qb-v1-aggregate-then-allocate-1",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 1.811981201171875e-05,
+   "metrics": {
+    "n_qb_games": 6
+   }
+  },
+  {
+   "stage": "joint_reconciliation",
+   "state": "PASS",
+   "code": "JOINT_RECONCILED",
+   "detail": "",
+   "input_hashes": {},
+   "spec_version": "minimum-viable production coupling",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 1.7642974853515625e-05,
+   "metrics": {}
+  },
+  {
+   "stage": "player_draws",
+   "state": "PASS",
+   "code": "DRAWS_BUILT",
+   "detail": "76000 draw cell(s) preserved across 16 matrix(es) on one draw index of 1000; 6 player quantile view(s) kept",
+   "input_hashes": {},
+   "spec_version": "nfl-player-draw-1",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 0.051152944564819336,
+   "metrics": {}
+  },
+  {
+   "stage": "scoring",
+   "state": "PASS",
+   "code": "SCORED",
+   "detail": "",
+   "input_hashes": {},
+   "spec_version": "deterministic",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 1.6450881958007812e-05,
+   "metrics": {}
+  },
+  {
+   "stage": "artifact_sealing",
+   "state": "PASS",
+   "code": "ARTIFACT_SEALED",
+   "detail": "76000 draw cell(s) referenced by sha256; 11 hard invariant(s) hold; 1 carried as OWED: ['qb_cross_layer_reconciliation']; 3 diagnostic(s) not clean (recorded, not gating): ['nonqb_layer_availability', 'qb_allocation_residual', 'qb_known_limitations']",
+   "input_hashes": {},
+   "spec_version": "nfl-forecast-artifact-1",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 0.0031321048736572266,
+   "metrics": {}
+  }
+ ],
+ "n_refusals": 0,
+ "refusals": [],
+ "first_failure": null,
+ "draw_artifact": {
+  "sha256": "f18bafac36100cb9f84a32fb34c21275be3af9e08a512791f78d231ff43ca8a9",
+  "bytes": 53394,
+  "n_draws": 1000,
+  "n_matrices": 16,
+  "n_draw_cells": 76000,
+  "content_digest": "075d1a259ee76bfe1176c20961def11034534e53ea27711cdf3afde4ce8e710d"
+ },
+ "accounting_verdicts": [
+  {
+   "invariant": "draw_artifact_integrity",
+   "class": "HARD",
+   "state": "PASS",
+   "code": "DRAW_ARTIFACT_VERIFIED"
+  },
+  {
+   "invariant": "draw_encoding_lossless",
+   "class": "HARD",
+   "state": "PASS",
+   "code": "DRAW_ENCODING_LOSSLESS"
+  },
+  {
+   "invariant": "draw_index_shared",
+   "class": "HARD",
+   "state": "PASS",
+   "code": "DRAW_INDEX_SHARED"
+  },
+  {
+   "invariant": "draw_set_non_empty",
+   "class": "HARD",
+   "state": "PASS",
+   "code": "DRAW_SET_PRESENT"
+  },
+  {
+   "invariant": "draw_summary_consistency",
+   "class": "HARD",
+   "state": "PASS",
+   "code": "SUMMARY_MATCHES_DRAWS"
+  },
+  {
+   "invariant": "nonqb_layer_availability",
+   "class": "DIAGNOSTIC",
+   "state": "FAIL",
+   "code": "NONQB_LAYERS_UNAVAILABLE"
+  },
+  {
+   "invariant": "qb_allocation_residual",
+   "class": "DIAGNOSTIC",
+   "state": "FAIL",
+   "code": "QB_ALLOCATION_RESIDUAL_PRESENT"
+  },
+  {
+   "invariant": "qb_cross_layer_reconciliation",
+   "class": "HARD",
+   "state": "DEFERRED",
+   "code": "CROSS_LAYER_RECONCILIATION_NOT_RUN"
+  },
+  {
+   "invariant": "qb_dropback_identity",
+   "class": "HARD",
+   "state": "PASS",
+   "code": "QB_DROPBACK_IDENTITY_HOLDS"
+  },
+  {
+   "invariant": "qb_known_limitations",
+   "class": "DIAGNOSTIC",
+   "state": "FAIL",
+   "code": "QB_LAYER_KNOWN_LIMITATIONS"
+  },
+  {
+   "invariant": "qb_per_draw_accounting",
+   "class": "HARD",
+   "state": "PASS",
+   "code": "QB_DRAW_ACCOUNTING_HOLDS"
+  },
+  {
+   "invariant": "qb_team_accounting",
+   "class": "HARD",
+   "state": "PASS",
+   "code": "QB_TEAM_ACCOUNTING_MEASURED"
+  },
+  {
+   "invariant": "rushing_single_owner",
+   "class": "HARD",
+   "state": "PASS",
+   "code": "A1_RUSH_ALLOCATION"
+  },
+  {
+   "invariant": "scramble_carry_coherence",
+   "class": "HARD",
+   "state": "PASS",
+   "code": "SC1_COHERENT"
+  }
+ ],
+ "execution_identity": "ce7d9ae1de9e77ceb4f2492cc78a4ff2eece312546e0014f416b0a88815bcb72",
+ "code_commit": "604eaac32ab77b5925f81852031ab30f482f6ecf+dirty[4]",
+ "dry_run": true,
+ "prospective_eligible": false,
+ "publication": {
+  "state": "BLOCKED",
+  "code": "NFL1_NOT_AUTHORIZED",
+  "detail": "NFL-1 is 'NOT AUTHORIZED' and G0A is '11/12'. A forecast may be COMPUTED and SEALED locally, but it may not be published. No test result, checklist state or caller flag can change this -- only an owne"
+ }
+}
