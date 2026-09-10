@@ -1,0 +1,62 @@
+{
+ "artifact": "NFL_V1_R6_CANDIDATE_FREEZE",
+ "candidate": {
+  "differs_from_R5_by": [
+   "role_prior"
+  ],
+  "governance": "REHEARSAL_ONLY",
+  "identity": "V1_CANDIDATE_R6",
+  "inherits": "V1_CANDIDATE_R5",
+  "introduces_constant": false,
+  "promoted": false,
+  "prospective_eligible": false,
+  "shrinkage_k_estimated": {
+   "RB_carries": 0.74,
+   "RB_targets": 1.54,
+   "TE": 0.78,
+   "WR": 0.87
+  }
+ },
+ "files_that_moved_since_the_R5_record": [
+  "nfl/production/candidate_mode.py",
+  "nfl/production/nonqb/football_engine.py",
+  "nfl/production/run_forecast.py"
+ ],
+ "invariance": {
+  "measured_on": "2026_01_SF_LA at 1000 draws, one written_at clock",
+  "note": "V1 and R5 call class_point_forecast with role_prior=None, which is the identical code path they had before R6.",
+  "qb_pool_delta_v1_to_r6": 0.0,
+  "team_totals_delta_v1_to_r6": 0.0
+ },
+ "production_hashes": {
+  "nfl/accounting/invariants.py": "62c9d3b06d038b32478915063fe1e4ab51e4e7b49ec9ce4a9502fe51414e9d95",
+  "nfl/production/authorization.py": "20b9ddceb44a8f88c0a6ee45882b99adf6b08bbb24404ff3fcd8f207d62f5b6c",
+  "nfl/production/candidate_mode.py": "935137e13b0cc6b5a10e894ef142d6ea25e36cd4b9a52ff6c6a50b55fd6535a2",
+  "nfl/production/draws_artifact.py": "3dd5ee00138f4b06b442bf7814ec6534339aface49517686cc4b191884b61d3c",
+  "nfl/production/joint.py": "85bb8c1c516c7839f5bbea611178bd6c748e39db4f2db16325f02e93dd2ff8c1",
+  "nfl/production/nonqb/football_engine.py": "dfb18d4600990d4302d731d4cca6557af0e5bdf44e8e27e7116c35d7ae7eace1",
+  "nfl/production/nonqb/layers.py": "4c3c42a2f04d5bb37e3eec541ca36241e2fcf534263c3fc16dba30c42bb5871d",
+  "nfl/production/nonqb/p4c_params.py": "c952513c052faddd0cd0f852890003b3a14ad70243858c1f62fc72968ff56018",
+  "nfl/production/nonqb/readiness.py": "fd5640a57f89fa3c440679e43f68104f907c20d2c85f8f7c8ed2c3e5d7e86fe9",
+  "nfl/production/nonqb/role_prior.py": "bb8f469c50251448188128c87007cf70a3e709e65cc93938c6226a38bc2b25ef",
+  "nfl/production/nonqb/roster_status.py": "a3757727ac565697efee80a7b36c7786271c857039560919c0759af15d430dec",
+  "nfl/production/nonqb/rushing_a1.py": "9356bdfda6290bf434a3bf9a59653ee40ed89f649ba75a33d05c31e7d220be47",
+  "nfl/production/nonqb/scramble_coherence.py": "517baf847524d4a95f172ecfa19a417ac540fa3a4312a044f6a4bd2e50e2d069",
+  "nfl/production/nonqb/shared_pass.py": "2eec86e740f9dc02a68bd5d1901f77413215d606ceda2b9c8d7cabc8753fb9d4",
+  "nfl/production/pipeline.py": "2083fc4771c3bd03eb6c28c4aac956a59775a47edc4a1f6f87fb425a07a96d6c",
+  "nfl/production/qb_accounting.py": "cf70c5b2a1525030b9c7af9684005717aaf91b73838f8de0e05964a33b1822a8",
+  "nfl/production/qb_v1.py": "aedb5a9959ecb6c198851eca0ed1e31cc95b5bd98ab56da4c99b43761877fd2f",
+  "nfl/production/refusal.py": "88e6501f2a690389cbc649206da1df3ea05e1ae3fa7e17d7a598e973dbbbf9e6",
+  "nfl/production/run_forecast.py": "7a1bc50c05b10c79ccebddce642eb7356fed9fb97fa01e7cd00257fdeeb89f7a",
+  "nfl/production/team_volume_v1.py": "1bae36386fd3daf7dab68eb0c5833173f2c39e74274cbfda90afab40c52b7160",
+  "nfl/research/PATH_C_STATE.json": "ebd1274086ec9c81a88576f5f975f80ddafc3dd7a9198051223d53f12ef42959"
+ },
+ "recorded_utc": "2026-09-10T18:30:00Z",
+ "repo_head_at_record": "e8fd2c031c10f64e93156816954b2a21f29a9d03",
+ "unrepaired_and_declared": [
+  "appearance inversion: cross-season absence carry-over, and cold start scored as a clean attendance record",
+  "A.depth() returns an empty dict so f_depth is null on every row",
+  "QB dropback ownership closes at game level but not per team"
+ ],
+ "why_they_moved": "R6 adds a role-conditional class prior. p4c_params and football_engine gained an optional role_prior argument that is None on the V1 and R5 paths; candidate_mode and run_forecast gained the R6 identity and its wiring."
+}

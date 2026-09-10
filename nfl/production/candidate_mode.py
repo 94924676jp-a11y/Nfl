@@ -33,7 +33,8 @@ from sportsplatform.governance.outcome import Outcome            # noqa: E402
 PRODUCTION_BASELINE = 'PRODUCTION_BASELINE'
 V1_CANDIDATE = 'V1_CANDIDATE'
 V1_CANDIDATE_R5 = 'V1_CANDIDATE_R5'
-MODES = (PRODUCTION_BASELINE, V1_CANDIDATE, V1_CANDIDATE_R5)
+V1_CANDIDATE_R6 = 'V1_CANDIDATE_R6'
+MODES = (PRODUCTION_BASELINE, V1_CANDIDATE, V1_CANDIDATE_R5, V1_CANDIDATE_R6)
 
 # component -> what it does, what governs it, and what it changes.
 # `engine_flag` is the argument football_engine.run_game receives.
@@ -165,6 +166,40 @@ R5_REPAIR = {
 }
 
 
+# R6. THE ROLE-CONDITIONAL PRIOR, INHERITING R5.
+#
+# R6 = R5 + one thing: the P4C class weight becomes a player's own history
+# shrunk toward his POINT-IN-TIME DEPTH TIER, instead of falling back to a
+# positional mean that prices a team's second option and its ninth alike.
+#
+# Historical realised target share by tier, 2020-2025: WR1 22.7%, WR2 18.3%,
+# WR3 13.3%, WR4+ 6.1% -- a 3.7:1 spread the positional mean collapses to 1:1.
+# The participation prior it competes with runs at 1.39:1 where the realised
+# snap ratio is 2.5:1, so it is too flat even as a snap quantity.
+#
+# NO CONSTANT IS CHOSEN. The shrinkage weight is n/(n+k) with k estimated from
+# the panel as within-player over between-player variance: WR 0.87, TE 0.78,
+# RB-targets 1.54, RB-carries 0.74. With a long history the weight goes to one
+# and a player's own value is returned untouched.
+R6_FLAGS = dict(R5_FLAGS)
+R6_FLAGS['role_prior'] = True
+
+R6_REPAIR = {
+    'component': 'R6',
+    'what': 'class weight = own history shrunk toward point-in-time depth tier',
+    'replaces': 'a positional-mean fallback that is blind to role',
+    'defect': 'the weight is role-blind where it has no history, and the '
+              'participation prior it competes with is flat at 1.39:1 against '
+              'a realised 2.5:1 in snaps and 3.7:1 in targets',
+    'evidence': 'realised target share by point-in-time tier over 3,230 '
+                'team-games: WR1 22.7 / WR2 18.3 / WR3 13.3 / WR4+ 6.1 pct',
+    'shrinkage': 'n/(n+k), k estimated from within/between player variance',
+    'governance': 'REHEARSAL_ONLY',
+    'introduces_no_constant': True,
+    'inherits': 'R5',
+}
+
+
 def resolve(mode: str) -> Outcome:
     """The flags and the component manifest for a named mode, or a refusal.
 
@@ -180,6 +215,13 @@ def resolve(mode: str) -> Outcome:
             value={'mode': PRODUCTION_BASELINE, 'flags': {},
                    'components': [], 'candidate': False},
             detail='no candidate component is active')
+    if mode == V1_CANDIDATE_R6:
+        return Outcome.ok(
+            'MODE_V1_CANDIDATE_R6',
+            value={'mode': V1_CANDIDATE_R6, 'flags': dict(R6_FLAGS),
+                   'components': manifest() + [R5_REPAIR, R6_REPAIR],
+                   'candidate': True},
+            detail='R5 plus the R6 role-conditional class prior')
     if mode == V1_CANDIDATE_R5:
         return Outcome.ok(
             'MODE_V1_CANDIDATE_R5',
@@ -211,12 +253,12 @@ def manifest() -> list:
 def assert_not_promoted(mode: str, artifact: dict) -> Outcome:
     """A candidate artifact must say so, in every field that could be read as
     a promotion claim. Called by the sealer; tested with the guard stubbed."""
-    if mode not in (V1_CANDIDATE, V1_CANDIDATE_R5):
+    if mode not in (V1_CANDIDATE, V1_CANDIDATE_R5, V1_CANDIDATE_R6):
         return Outcome.not_applicable('NOT_A_CANDIDATE_RUN',
                                       f'mode is {mode!r}')
     bad = []
-    if artifact.get('model_configuration') not in (V1_CANDIDATE,
-                                                   V1_CANDIDATE_R5):
+    if artifact.get('model_configuration') not in (
+            V1_CANDIDATE, V1_CANDIDATE_R5, V1_CANDIDATE_R6):
         bad.append('model_configuration does not name the candidate mode')
     if not artifact.get('candidate_components'):
         bad.append('candidate_components is empty on a candidate run')
@@ -225,7 +267,8 @@ def assert_not_promoted(mode: str, artifact: dict) -> Outcome:
     if artifact.get('prospective_eligible') is not False:
         bad.append('prospective_eligible is not explicitly False')
     ev = str(artifact.get('eligibility_verdict', ''))
-    if not any(m in ev for m in (V1_CANDIDATE, V1_CANDIDATE_R5)):
+    if not any(m in ev for m in (V1_CANDIDATE, V1_CANDIDATE_R5,
+                                 V1_CANDIDATE_R6)):
         bad.append('eligibility_verdict does not carry the candidate mode')
     if bad:
         return Outcome.fail(

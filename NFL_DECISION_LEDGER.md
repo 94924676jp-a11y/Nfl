@@ -1887,3 +1887,59 @@ non-force merge; 10 capture-bot commits and 7 product commits, disjoint paths,
 all verified as ancestors. `nfl-product-board.yml` is now on default main.
 
 **Detail:** `NFL_R5_ROOT_CAUSE_AUDIT.md`, `docs/AGENT_OUTBOX.md`.
+
+---
+
+## 2026-09-10 — R6 role/appearance refinement (evidence, not promotion)
+
+**Appearance inversion, root cause.** The frozen P3 logistic reads absence
+history and that history carries across the offseason. Adams shows
+`f_consec_missed=3` — he missed the last three games of 2025 — and prices at
+0.532 eight months later with no injury entry; Pearsall 0.384. Cold-start
+players (`f_n_prior=0`) present as having no absences, so unknown reads as
+near-certain: 0.998. Absence of evidence read as evidence of availability.
+Third finding: `A.depth()` returns an EMPTY dict, so `f_depth` is null on every
+row and the appearance model has never received the depth feature it carries.
+The cold-start training bucket (94.8–98.0%) is survivorship-filtered: a camp
+receiver who never dresses never enters the panel.
+
+**Flat prior, root cause.** `share_prior` is a pass-snap participation rate
+(top-to-fringe 1.39:1) used to weight target allocation, where realised spread
+is 2.5:1 in snaps and 3.7:1 in targets. `class_point_forecast` then falls back
+to the positional mean for no-history players — a 3.7:1 spread collapsed to
+1:1.
+
+**Historical calibration by point-in-time depth tier (2020-2025).** Appearance
+falls monotonically with depth: WR1 88.6 / WR2 81.9 / WR3 80.1 / WR4+ 61.1;
+RB1 84.6 / RB4+ 50.5; TE1 87.3 / TE4+ 49.2. The model runs the other way.
+Target share by tier: WR1 22.7 / WR2 18.3 / WR3 13.3 / WR4+ 6.1. Carry share:
+RB1 50.5 / RB2 26.4 / RB3 14.0.
+
+**R6 = R5 + one flag.** The class weight becomes a player's own history shrunk
+toward his point-in-time depth tier. Tier from trailing snap-share rank, the
+captured depth chart as named fallback, lowest tier recorded where neither
+exists. Shrinkage n/(n+k) with k ESTIMATED from within/between player variance
+(WR 0.87, TE 0.78, RB-targets 1.54, RB-carries 0.74). A long history is never
+overwritten; no player or team is named; both asserted by tests.
+
+**Result.** Ten of twelve concentration metrics improve on R5. Largest: SF lead
+back carry share 52.6% → 67.6% against a realised 70.3%. Two moved the wrong
+way and are reported: SF players-targeted 7.9 → 7.4 overshoots 8.0, and SF
+carries top-3 95.9% → 94.7% against 99.8%. **Team totals and the QB pool are
+bit-identical across V1/R5/R6, delta 0.0000.**
+
+**Not repaired:** the appearance inversion itself. R6 softens its consequence
+(a cold-start player now prices at his tier mean) without touching the cause,
+and that distinction is stated rather than allowed to pass as a fix.
+
+**Not claimed:** per-game CRPS/PIT. Neither candidate's counterfactual exists
+in a corpus that holds only players who appeared. Blocked on OUT-002.
+
+**Suite:** 60 modules, 647 test functions, 3,511 checks, 0 failing, 0 raised.
+Two of my own tests had hard-coded `V1_CANDIDATE_R6`/`R7` as the "unknown"
+mode; R6 shipping made one real and it failed. Both now assert the property.
+
+**Recommendation:** shadow-evaluate R5 and R6 beside V1 and let the four-game
+bar decide. Nothing promoted.
+
+**Detail:** `NFL_R6_ROLE_APPEARANCE_AUDIT.md`.

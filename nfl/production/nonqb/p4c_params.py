@@ -127,7 +127,8 @@ def cache_clear():
     _CACHE.clear()
 
 
-def class_point_forecast(cls: str, season: int, week: int, players) -> Outcome:
+def class_point_forecast(cls: str, season: int, week: int, players,
+                        role_prior=None, tiers=None) -> Outcome:
     """`C`, the per-player point forecast of the class share.
 
     This is `_C` in `p4c_build.fit_params`: the frozen ewma over the player's
@@ -178,7 +179,18 @@ def class_point_forecast(cls: str, season: int, week: int, players) -> Outcome:
         if pos not in L.CLASSES[cls]['pos'] or not pid:
             continue
         h = hist.get(pid)
-        v = B.ewma(h) if h else pri.get(pos)
+        if role_prior is not None:
+            # R6. The player's own history shrunk toward his POINT-IN-TIME
+            # TIER, instead of a positional mean that treats a team's second
+            # option and its ninth as the same player. With a long history the
+            # shrinkage weight goes to one and this returns his own value
+            # unchanged, so it cannot overwrite an established starter.
+            from nfl.production.nonqb import role_prior as RP
+            t = (tiers or {}).get(pid, RP.MAX_TIER)
+            v = RP.weight(pid, pos, B.ewma(h) if h else None,
+                          len(h) if h else 0, t, role_prior)
+        else:
+            v = B.ewma(h) if h else pri.get(pos)
         if v is None:
             return Outcome.fail(
                 'CLASS_POINT_FORECAST_UNAVAILABLE',
@@ -194,5 +206,6 @@ def class_point_forecast(cls: str, season: int, week: int, players) -> Outcome:
                       spec_version=SPEC_VERSION, alloc_class=cls,
                       n_players=len(out), ordinal_cut=cut,
                       n_on_positional_prior=len(fell_back),
+                      role_prior_applied=role_prior is not None,
                       positional_prior={k: round(v, 6)
                                         for k, v in pri.items()})

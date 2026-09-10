@@ -549,8 +549,47 @@ def build(args, fixtures: dict = None) -> dict:
             # artifact then claims R5 was not applied on a run where it was.
             fx['_r5_applied'] = True
 
+        # R6. THE ROLE-CONDITIONAL PRIOR, built from history strictly earlier
+        # than this week and handed to the class point forecast. Absent -- the
+        # V1 and R5 path -- slate_fits is called exactly as before.
+        role_priors, tiers = None, None
+        if fl.get('role_prior'):
+            from nfl.production.nonqb import role_prior as RP
+            import p4c_build as _PB
+            import p4c_lib as _PL
+            panel = _PB.load_panel()
+            cut = args.season * 100 + args.week
+            role_priors = {}
+            for _cls, _share in (('targets', 'target_share'),
+                                 ('carries', 'carry_share')):
+                o = RP.build(panel, _share, _PL.CLASSES[_cls]['pos'], cut)
+                if o.state is not State.PASS:
+                    fx['_nonqb'] = {'fatal': o}
+                    return fx['_nonqb']
+                role_priors[_cls] = o.value
+                fx.setdefault('_r6', {})[_cls] = {
+                    k: v for k, v in o.evidence.items() if k != 'value'}
+            # Tier from trailing snap share, with the captured depth chart as
+            # the named fallback for players who have none.
+            dr = {}
+            try:
+                from nfl.product import board as _PBRD
+                for k, v in _PBRD.depth_rank(args.season, args.week,
+                                             teams).items():
+                    dr[k] = v[1]
+            except Exception:                                 # noqa: BLE001
+                dr = {}
+            at = RP.assign_tiers(
+                [q for q in players if q.get('position') != 'QB'],
+                role_priors['targets'], depth_rank=dr)
+            tiers = at['tier']
+            import collections as _c
+            fx['_r6']['tier_basis'] = dict(_c.Counter(at['basis'].values()))
+            fx['_r6_applied'] = True
+
         try:
-            fits = FE.slate_fits(args.season, args.week, players)
+            fits = FE.slate_fits(args.season, args.week, players,
+                                 role_priors=role_priors, tiers=tiers)
         except Exception as e:                                # noqa: BLE001
             fits = Outcome.fail(
                 'SLATE_FITS_RAISED', f'{type(e).__name__}: {e}'[:400])
@@ -642,6 +681,8 @@ def build(args, fixtures: dict = None) -> dict:
             fx['_c3_state'] = sp
         if fx.get('_r5_applied'):
             applied.append('R5')
+        if fx.get('_r6_applied'):
+            applied.append('R6')
         fx['_candidate_applied'] = sorted(set(applied))
         fx['_candidate_not_reached'] = sorted(set(not_reached))
         return fx['_nonqb']

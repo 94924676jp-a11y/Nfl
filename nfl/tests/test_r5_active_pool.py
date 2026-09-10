@@ -38,8 +38,15 @@ def test_v1_candidate_is_an_untouched_control():
     check('  and R5 is a separate declared identity',
           CM.V1_CANDIDATE_R5 in CM.MODES and
           CM.V1_CANDIDATE_R5 != CM.V1_CANDIDATE)
+    # NAMING THE NEXT CANDIDATE AS THE "UNKNOWN" ONE IS A DATED ASSERTION.
+    # This read `V1_CANDIDATE_R6`, which was unknown when it was written and
+    # became a real mode the moment R6 shipped -- so a test about refusing
+    # typos started failing because the project made progress. The durable
+    # property is that a name NOT in MODES is refused, whatever the modes are.
+    unknown = 'V1_CANDIDATE_' + 'X' * 8
     check('  an unknown configuration is still refused, not defaulted',
-          CM.resolve('V1_CANDIDATE_R6').state is State.FAIL)
+          unknown not in CM.MODES
+          and CM.resolve(unknown).state is State.FAIL, unknown)
 
 
 def test_neither_candidate_can_be_called_promoted():
