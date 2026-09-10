@@ -1700,3 +1700,52 @@ Repairing the baseline is model work and was not authorised.
 
 **Detail:** `NFL_V1_PRODUCT_PATH_CLOSURE.md`,
 `nfl/research/shadow/V1_CLOSURE_EVIDENCE.json`.
+
+---
+
+## 2026-09-10 — game-day product layer built
+
+**Decision:** productization and evaluation only, on top of the frozen V1
+engine. `nfl/product/` is read-only over it: no estimator, no prior, no
+parameter, no projection computed anywhere in the package.
+
+**Built:** pregame player board (53 players, SF@LA) with mean/median/P10-P90
+per metric, opportunity shares, data freshness, per-team status confidence and
+per-layer modelled/provisional/unavailable state; threshold probabilities from
+stored draws on ladders fixed in advance; a five-dimension model-confidence
+ranking; and a permanent postgame evaluator with a cumulative ledger.
+
+**Anti-fabrication is the spine.** RB/WR/TE rushing yards do not exist in V1
+and are shown as UNAVAILABLE with the open-decision code, never estimated;
+`carries x yards_per_carry` is the implementation `layers.py` prohibits and is
+the number a product layer would otherwise print. Tests assert every rendered
+column and every threshold ladder names a declared V1 output, and grep the
+whole package for eleven market terms.
+
+**Two defects found in my own product code, both by its own tests.** The first
+confidence board ranked four backup quarterbacks and two fifth receivers above
+both starters, because a distribution that is zero in three quarters of its
+draws has a zero IQR, which scored as perfect narrowness. Second,
+`verify_seal` resolved repo-relative paths first, so scoring a COPY verified
+the ORIGINAL — a guard reporting success while checking the wrong file. Both
+fixed and pinned.
+
+**NE@SEA scored into the permanent ledger:** 33 QB rows, mean CRPS 13.94,
+coverage 33.3/60.6/81.8/81.8%, 6 TAIL_MISS. **Zero refinement candidates** —
+six metrics sit on the watchlist at one game each against a bar of four
+distinct games, declared before any data arrived. Nothing about V1 changed.
+
+**SF@LA sealed** at `nfl/research/shadow/sf_la_pregame/`, run
+`e3e2bc8a1f043abf`, written 2026-09-10T16:07:43Z, 8.45h before kickoff, all six
+candidate components applied, labelled SHADOW / NOT AUTHORIZED. If G0A clears
+before kickoff this artifact stays SHADOW and a new forecast is written under
+the open gate; authorization is a property of when a forecast was written, not
+a label applied afterwards.
+
+**Suite:** 57 modules, 617 test functions, 3,416 checks, 0 failing, 0 raised.
+
+**Untouched:** all 18 frozen production files hash identical to
+`FREEZE_V1_PRODUCT_PATH.json`; `PATH_C_STATE`, G0A rules and capture
+infrastructure unchanged. NFL-1 remains NOT AUTHORIZED, G0A 11/12.
+
+**Detail:** `NFL_PRODUCT_LAYER.md`.
