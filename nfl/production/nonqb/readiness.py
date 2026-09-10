@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import collections
 import csv
+import datetime as _dt
 import gzip
 import json
 import pathlib
@@ -193,6 +194,10 @@ GAME_STATES = (
     'INJURY_REPORT_INCOMPLETE',        # rows exist, a contract field is unfilled
     'INJURY_REPORT_STALE',             # the feed moved on, this block did not
     'INJURY_REPORT_CHRONOLOGY_FAILURE',  # the capture is not before kickoff
+    # No clock could be resolved, so no observation set can be bounded. It is
+    # the WORST state deliberately: an unbounded read is more dangerous than a
+    # missing report, because it looks like an answer.
+    'READINESS_CLOCK_UNRESOLVED',
 )
 # Worst-first: a game takes the worst state of its two teams.
 _SEVERITY = {s: i for i, s in enumerate(reversed(GAME_STATES))}
@@ -209,12 +214,49 @@ def _parse_ts(t):
     return d if d.tzinfo else d.replace(tzinfo=dt.timezone.utc)
 
 
-def _all_injury_captures(season: int):
-    """Every successful injuries capture, newest first, with its rows.
+def as_of_cut(kickoff_utc=None, written_at=None):
+    """The latest instant whose observations this run is allowed to consume.
 
-    Per-team staleness cannot be read off the newest capture alone: it is a
-    statement about WHEN a team's block last changed, so every capture has to
-    be opened.
+    THE CONSUMED-CLOCK CONTRACT: `retrieved_at <= written_at < kickoff`.
+
+    A forecast written at T may consume an observation retrieved at or before
+    T, and nothing else. Kickoff bounds it further: a capture at or after
+    kickoff is never pre-kickoff information whatever `written_at` says, so
+    both bounds are applied and the tighter one wins. Returns None only when
+    the caller supplied neither clock, which means "no cut" and is the
+    operational `what is true now` reading rather than a replay.
+    """
+    w = _parse_ts(written_at)
+    k = _parse_ts(kickoff_utc)
+    if w is None and k is None:
+        return None
+    if w is None:
+        # Strictly before kickoff. One microsecond is the resolution the
+        # timestamps carry, so it expresses `<` without inventing a tolerance.
+        return k - _dt.timedelta(microseconds=1)
+    if k is None:
+        return w
+    return min(w, k - _dt.timedelta(microseconds=1))
+
+
+def _all_injury_captures(season: int, as_of=None):
+    """Every successful injuries capture ELIGIBLE AT `as_of`, newest first.
+
+    THE CUT IS APPLIED HERE, AT SELECTION, AND NOT AFTERWARDS.
+
+    This function used to return every capture on disk and let the caller
+    notice afterwards that the newest one was too late. That is not the same
+    thing: `team_report_history` takes each team's block from the FIRST
+    capture that carries it, so a post-kickoff capture became the team's block
+    and every historical replay then refused with
+    INJURY_REPORT_CHRONOLOGY_FAILURE -- while a perfectly good pre-kickoff
+    report sat unused two files away. The guard was right and the selector
+    never looked. Measured on 2026_01_NE_SEA: the pre-kickoff report exists in
+    `injuries.1bf460ad261559a8.csv.gz`, retrieved 2026-09-08T16:06:25Z, 32.2
+    hours before kickoff, carrying 11 rows for exactly NE and SEA.
+
+    Selection is by `retrieved_at` and by nothing else -- never by filesystem
+    order, file size, row count, or position in the manifest.
     """
     man = _REPO / 'nfl' / 'vintage_manifest.jsonl'
     if not man.exists():
@@ -235,6 +277,10 @@ def _all_injury_captures(season: int):
         path = _REPO / blob
         if not path.exists():
             continue
+        if as_of is not None:
+            got = _parse_ts(ts)
+            if got is None or got > as_of:
+                continue
         out.append((ts, path))
     out.sort(key=lambda x: x[0], reverse=True)
     return out
@@ -243,13 +289,20 @@ def _all_injury_captures(season: int):
 _CAPTURE_CACHE: dict = {}
 
 
-def team_report_history(season: int, week: int):
-    """team -> {newest_capture_with_rows, n_rows, column population}."""
-    key = (season, week)
+def team_report_history(season: int, week: int, as_of=None):
+    """team -> {newest_capture_with_rows, n_rows, column population}.
+
+    `as_of` is part of the answer, so it is part of the CACHE KEY. Keying on
+    (season, week) alone would let the first caller's clock decide what every
+    later caller sees -- a replay served the operational `now` view, or worse,
+    the operational view served a replay's cut and silently under-reported.
+    A cache that restamps a hit under a different clock is not a cache.
+    """
+    key = (season, week, as_of.isoformat() if as_of is not None else None)
     if key in _CAPTURE_CACHE:
         return _CAPTURE_CACHE[key]
     seen, newest_overall = {}, None
-    for ts, path in _all_injury_captures(season):
+    for ts, path in _all_injury_captures(season, as_of=as_of):
         if newest_overall is None:
             newest_overall = ts
         txt = (gzip.open(path, 'rt').read() if str(path).endswith('.gz')
@@ -277,33 +330,99 @@ def cache_clear():
     _CAPTURE_CACHE.clear()
 
 
+_KICKOFF_CACHE: dict = {}
+
+
+def team_kickoff(season: int, week: int, team: str):
+    """The team's own kickoff for this week, from the capture week plan.
+
+    A team plays once a week, so `no clock supplied` has a correct answer and
+    does not need to be guessed at. Returns None only when the plan itself
+    cannot be loaded or does not contain the team.
+    """
+    key = (season, week)
+    if key not in _KICKOFF_CACHE:
+        table = {}
+        try:
+            from nfl.capture import coverage as C
+            plan = C.load_week_plan(season, week)
+            if plan.state.name == 'PASS':
+                for c in plan.value:
+                    for t in c.game_id.split('_')[2:4]:
+                        ko = c.kickoff_utc
+                        table[t] = (ko.isoformat().replace('+00:00', 'Z')
+                                    if hasattr(ko, 'isoformat') else ko)
+        except Exception:                                     # noqa: BLE001
+            table = {}
+        _KICKOFF_CACHE[key] = table
+    return _KICKOFF_CACHE[key].get(team)
+
+
 def team_readiness(season: int, week: int, team: str, kickoff_utc=None,
                    written_at=None) -> dict:
-    """One team's state against the frozen input contract."""
-    seen, newest_overall = team_report_history(season, week)
+    """One team's state against the frozen input contract.
+
+    NO CLOCK IS NOT `ANY CLOCK`. Called bare, this used to apply no cut at
+    all, so the newest capture on disk answered -- and after a game has been
+    played that capture is post-kickoff, which is how a team whose report was
+    never filed in time reads READY. The team's own kickoff is resolved from
+    the week plan instead, so the default is the safe reading rather than the
+    unbounded one. If the plan cannot supply it, that is said out loud
+    (`READINESS_CLOCK_UNRESOLVED`) rather than silently treated as no bound.
+    """
+    resolved_ko = kickoff_utc or team_kickoff(season, week, team)
+    if resolved_ko is None and written_at is None:
+        return {'team': team, 'state': 'READINESS_CLOCK_UNRESOLVED',
+                'reason': f'no kickoff could be resolved for {team} in '
+                          f'{season} week {week} and no written_at was '
+                          f'supplied, so there is no clock to judge which '
+                          f'observations existed yet. Refusing to answer is '
+                          f'not the same as answering from everything on '
+                          f'disk.',
+                'n_rows': 0, 'newest_capture': None, 'as_of': None}
+    kickoff_utc = resolved_ko
+    cut = as_of_cut(kickoff_utc, written_at)
+    seen, newest_overall = team_report_history(season, week, as_of=cut)
     d = seen.get(team)
     if d is None:
         # ABSENCE IS ABSENCE. A team with no filed report is NOT a team with
         # nobody injured, and teammate_availability is a team-level feature, so
         # the two cannot be told apart from the data.
+        # ABSENCE UNDER A CUT IS STILL ABSENCE, and it is reported honestly
+        # rather than by reaching past the cut for something newer. Naming the
+        # cut in the reason is what stops `not yet filed` being read as `this
+        # team has nobody injured` when the truth is `nothing had been filed
+        # YET at the moment this forecast was written`.
         return {'team': team, 'state': 'INJURY_REPORT_NOT_YET_FILED',
                 'reason': f'no injuries row for {team} in any capture for '
-                          f'{season} week {week}. This is ABSENCE OF A REPORT '
-                          f'and is never read as absence of injury.',
-                'n_rows': 0, 'newest_capture': None}
+                          f'{season} week {week}'
+                          + (f' retrieved at or before {cut.isoformat()}'
+                             if cut is not None else '')
+                          + '. This is ABSENCE OF A REPORT '
+                            'and is never read as absence of injury.',
+                'n_rows': 0, 'newest_capture': None,
+                'as_of': cut.isoformat() if cut is not None else None}
     got = _parse_ts(d['newest_capture'])
     ko = _parse_ts(kickoff_utc)
     wr = _parse_ts(written_at)
     if (ko and got and got >= ko) or (wr and got and got > wr):
+        # POST-SELECTION ASSERTION. Selection now applies the cut, so reaching
+        # here means the selector handed back something it was told to
+        # exclude. It is kept precisely because it is meant to be unreachable:
+        # a guard removed once it stops firing is a guard that cannot tell you
+        # when the thing it guarded against comes back.
         return {'team': team, 'state': 'INJURY_REPORT_CHRONOLOGY_FAILURE',
-                'reason': f'the capture carrying {team}\'s rows was retrieved '
-                          f'at {d["newest_capture"]}, which is not strictly '
+                'reason': f'SELECTOR_RETURNED_INELIGIBLE_CAPTURE: the capture '
+                          f'carrying {team}\'s rows was retrieved at '
+                          f'{d["newest_capture"]}, which is not strictly '
                           f'before kickoff {kickoff_utc} / written_at '
-                          f'{written_at}',
-                **d}
+                          f'{written_at}. The as-of cut was '
+                          f'{cut.isoformat() if cut else "none"}.',
+                'as_of': cut.isoformat() if cut is not None else None, **d}
     newest = _parse_ts(newest_overall)
     if got and newest and (newest - got).total_seconds() > STALE_HOURS * 3600:
         return {'team': team, 'state': 'INJURY_REPORT_STALE',
+                'as_of': cut.isoformat() if cut is not None else None,
                 'reason': f'the feed was refreshed at {newest_overall} but '
                           f'{team}\'s block has not changed since '
                           f'{d["newest_capture"]}, more than {STALE_HOURS:g}h '
@@ -312,6 +431,7 @@ def team_readiness(season: int, week: int, team: str, kickoff_utc=None,
     pop = d['population']
     if NEEDS_REPORT_STATUS and pop['report_status'] == 0:
         return {'team': team, 'state': 'INJURY_REPORT_INCOMPLETE',
+                'as_of': cut.isoformat() if cut is not None else None,
                 'reason': f'{team} has {d["n_rows"]} row(s) but report_status '
                           f'is unfilled on every one. teammate_availability '
                           f'reads it, and an unfiled designation is not an '
@@ -320,16 +440,23 @@ def team_readiness(season: int, week: int, team: str, kickoff_utc=None,
     complete = all(pop[c] == d['n_rows'] for c in
                    ('report_status', 'practice_status'))
     return {'team': team,
+            'as_of': cut.isoformat() if cut is not None else None,
             'state': 'READY_WITH_COMPLETE_INPUT' if complete else 'READY',
             'reason': 'the team satisfies the frozen input contract',
             **d}
 
 
-def game_readiness(season: int = 2026, week: int = 1, games=None) -> dict:
+def game_readiness(season: int = 2026, week: int = 1, games=None,
+                   written_at=None) -> dict:
     """Per-game execution readiness. A game is ready only if BOTH teams are.
 
     Each game is judged on its OWN two teams. A missing report elsewhere on the
     slate changes nothing here, and the suite checks that.
+
+    `written_at` is the consumed clock. Omitted, each game is judged strictly
+    before its OWN kickoff, which is the operational reading. Supplied, it
+    bounds every game as well -- that is the historical-replay reading, and
+    without it a replay would silently consume whatever has landed since.
     """
     from nfl.capture import coverage as C
     if games is None:
@@ -344,7 +471,8 @@ def game_readiness(season: int = 2026, week: int = 1, games=None) -> dict:
         away, home = gid.split('_')[2:4]
         ko_s = (ko.isoformat().replace('+00:00', 'Z')
                 if hasattr(ko, 'isoformat') else ko)
-        tr = [team_readiness(season, week, t, kickoff_utc=ko_s)
+        tr = [team_readiness(season, week, t, kickoff_utc=ko_s,
+                             written_at=written_at)
               for t in (away, home)]
         worst = min(tr, key=lambda d: _SEVERITY[d['state']])
         ready = all(t['state'].startswith('READY') for t in tr)
@@ -359,6 +487,7 @@ def game_readiness(season: int = 2026, week: int = 1, games=None) -> dict:
                                if ready else worst['reason']),
                     'teams': tr})
     return {'artifact': 'NONQB_GAME_READINESS', 'season': season, 'week': week,
+            'written_at': written_at,
             'n_games': len(out),
             'n_executable': sum(1 for g in out if g['may_execute_d2']),
             'state_counts': dict(counts),

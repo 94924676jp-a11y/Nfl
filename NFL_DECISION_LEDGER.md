@@ -1649,3 +1649,54 @@ never executed, now reached for the first time as the injury feed became
 complete — in substance a V1 blocker, owner call; and (b)
 `test_football_engine_r4` hardcoding a transient ARI readiness state. Detail in
 `NFL_SHADOW_G1_NE_SEA_RETURN.md`, appendix.
+
+---
+
+## 2026-09-10 — V1 product-path engineering closure (narrow, authorised)
+
+**Decision:** owner reopened V1 for two named execution defects only, explicitly
+not for model research. Both repaired; a third was found by the repair and
+repaired with them.
+
+1. **Non-QB production chain placeholders.** `run_forecast` called
+   `targets_carries` / `receiving_conversion` / `td_layer` with `[]`,
+   `([], [])` and `{}`. Repaired by delegating the chain to
+   `football_engine.run_game`, which already owns the composition — filling the
+   placeholders in the entrypoint would have given every input two owners. The
+   QB half is memoised so it runs before C3 and A1, which depend on it; the
+   declared stage order reported `qb_layer` last, which is why C3 could never be
+   reached. A1 is now the sole rushing-opportunity partition owner via
+   `rushing_budget`.
+2. **Injury/readiness vintage cut.** `retrieved_at <= written_at < kickoff`
+   applied at selection, part of the cache key, with a bare call bounded by the
+   team's own kickoff instead of reading everything on disk.
+3. **Team volume had two owners** (found during the repair): the
+   `team_environment` stage drew uncoupled while the candidate path and engine
+   drew coupled. Run A's artifact provably stored draws its own QB layer had not
+   used. One memoised owner now.
+
+**Closure test.** SF@LA, a real chronology-valid pre-kickoff game: the full
+chain executes in both configurations, all six candidate components applied,
+C3 closes with receiver targets ≤ QB attempts in every draw. Run A preserved
+immutable; Run B from the identical cutoff has **bit-identical QB draws**, so
+R2/C0/A3G/SC1 are unchanged. NE@SEA's chain still does not run — correctly, and
+now for the true reason: no pre-kickoff capture carries a filled
+`report_status`, because nothing was captured on 2026-09-09. That is the G0A
+item-1 gap showing up as a product consequence.
+
+**Suite:** 56 modules, 600 test functions, 3,362 checks, 0 failing, 0 raised.
+
+**Verdict:** `V1_PRODUCT_PATH_ENGINEERING_READY`.
+
+**Unchanged:** every estimator, every prior, every threshold. `PATH_C_STATE`,
+G0A rules and capture infrastructure untouched. Nothing promoted; NFL-1 remains
+NOT AUTHORIZED and G0A remains 11/12. No 2026 outcome entered any fit.
+
+**Recorded, not acted on:** the baseline allocation's incoherence, measurable
+for the first time now the chain runs — 1,453 of 9,000 cells with receptions
+above targets (max excess exactly 0.500, the `rint` signature) and 14 of 200
+draws dealing more targets than there were throws. C3 reduces both to zero.
+Repairing the baseline is model work and was not authorised.
+
+**Detail:** `NFL_V1_PRODUCT_PATH_CLOSURE.md`,
+`nfl/research/shadow/V1_CLOSURE_EVIDENCE.json`.

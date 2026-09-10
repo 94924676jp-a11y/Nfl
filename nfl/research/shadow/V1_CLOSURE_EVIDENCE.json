@@ -1,0 +1,97 @@
+{
+ "defect_1_non_qb_placeholders": {
+  "baseline_incoherence_now_measurable": {
+   "baseline_draws_total": 200,
+   "baseline_draws_where_targets_exceed_qb_attempts": 14,
+   "baseline_max_excess": 0.5,
+   "baseline_max_excess_is_the_rint_signature": true,
+   "baseline_receptions_exceed_targets_cells": 1453,
+   "baseline_receptions_exceed_targets_of_total": 9000,
+   "baseline_targets_are_a_continuous_product": true,
+   "candidate_c3_draws_where_targets_exceed_qb_attempts": 0,
+   "candidate_c3_receptions_exceed_targets_cells": 0,
+   "not_repaired_here": "repairing the baseline allocation is model work and was not authorised by this ruling",
+   "note": "PRE-EXISTING, not introduced. These are the defects C3 was written to fix; they were unmeasurable while the chain could not run."
+  },
+  "controlled_chronology_valid_test": {
+   "all_inputs_pre_kickoff": true,
+   "baseline": {
+    "coherence": {
+     "n_backs": 11,
+     "n_draws": 200,
+     "n_receivers": 45,
+     "rb_carries_le_team_carries": true,
+     "receiving_td_le_receptions": true,
+     "receptions_le_targets": false,
+     "targets_le_qb_attempts": false
+    },
+    "components_applied": [],
+    "players_in_distributions": 48,
+    "status": "SEALED"
+   },
+   "candidate": {
+    "coherence": {
+     "n_backs": 11,
+     "n_draws": 200,
+     "n_receivers": 45,
+     "rb_carries_le_team_carries": true,
+     "receiving_td_le_receptions": true,
+     "receptions_le_targets": true,
+     "targets_le_qb_attempts": true
+    },
+    "components_applied": [
+     "A1",
+     "A3G",
+     "C0",
+     "C3",
+     "R2",
+     "SC1"
+    ],
+    "components_not_reached": [],
+    "players_in_distributions": 53,
+    "status": "SEALED"
+   },
+   "game_id": "2026_01_SF_LA",
+   "kickoff_utc": "2026-09-11T00:35:00Z",
+   "written_at": "2026-09-10T14:00:00Z"
+  },
+  "repair": "the entrypoint delegates the whole non-QB chain to football_engine.run_game, which already owns the composition; every argument keeps its existing single owner",
+  "was": "run_forecast called LY.targets_carries/receiving_conversion/td_layer with [], ([], []) and {} placeholder arguments; raised KeyError: 'add_pool' the first time appearance passed"
+ },
+ "defect_2_injury_vintage_cut": {
+  "repair": "retrieved_at <= written_at < kickoff applied AT SELECTION; the cut is part of the cache key; a bare call resolves the team own kickoff rather than reading everything on disk",
+  "was": "readiness.team_report_history took each team block from the newest capture on disk with no as-of cut, so a post-kickoff capture became the block and every historical replay refused with INJURY_REPORT_CHRONOLOGY_FAILURE"
+ },
+ "defect_3_found_during_repair_team_volume_two_owners": {
+  "evidence": {
+   "runA_team_volume_equals_uncoupled": true,
+   "runB_team_volume_equals_coupled": true,
+   "team_volume_arrays_changed": [
+    "team_volume__team_carries",
+    "team_volume__team_dropbacks_part",
+    "team_volume__team_off_snaps",
+    "team_volume__team_rz_carries",
+    "team_volume__team_targets"
+   ]
+  },
+  "repair": "one memoised _team_volume() owner, handed to every consumer",
+  "was": "the team_environment stage drew team volume UNCOUPLED while the candidate path and the engine each drew a COUPLED one; the sealed artifact stored draws no layer had used"
+ },
+ "exploratory": true,
+ "promoted": false,
+ "prospective_eligible": false,
+ "run_A_vs_run_B": {
+  "identical_information_cutoff": true,
+  "interpretation": "R2, C0, A3G and SC1 are unchanged by the repair. The team-volume arrays differ because Run A stored the uncoupled draw its own QB layer had not used.",
+  "kickoff_utc": "2026-09-10T00:20:00Z",
+  "not_a_predictive_comparison": "A and B are compared only to document the effect of repairing execution. No score, no promotion, no tuning from the outcome.",
+  "qb_draws_bit_identical": true,
+  "run_A_appearance": "NOT_APPLICABLE[INJURY_REPORT_CHRONOLOGY_FAILURE]",
+  "run_A_immutable": "nfl/research/shadow/g1_ne_sea",
+  "run_B": "nfl/research/shadow/g1_ne_sea_runB",
+  "run_B_appearance": "NOT_APPLICABLE[INJURY_REPORT_INCOMPLETE]",
+  "why_the_chain_still_does_not_run_for_NE_SEA": "the only NE/SEA injury captures before the 2026-09-10T00:20:00Z kickoff are 2026-09-07T13:06Z and 2026-09-08T16:06Z, and report_status is unfilled on all 11 rows in both. The filled game-designation report first appears in the 2026-09-10T05:05Z capture, AFTER kickoff, because no capture ran anywhere on 2026-09-09 -- the same gap that leaves G0A at 11/12. The refusal is now true and correctly named instead of false and misattributed.",
+  "written_at": "2026-09-08T17:10:00Z"
+ },
+ "what": "V1 product-path engineering closure evidence"
+}
