@@ -53,6 +53,7 @@ knows something a forecast cannot know.
 | "The goal-line back" | own goal-line share adds **+0.5%** over overall carry share; goal-to-go adds 0.0% | W3 |
 | Free-standing red-zone target rate | partial r = 0.126; overall target share predicts next-half red-zone share better than red-zone share predicts itself | W4 |
 | Charged drop rate | r = 0.020 (WR), 0.008 (QB) | W4, W2 |
+| **Neutral pass rate as an INCREMENTAL split predictor** | **repeatable but redundant.** Split-half 0.532 (W5) is repeatability, not incremental value. Forward-chained 2022-2025, n=2,173: coach_prior MAE 0.07995, coach+neutral 0.07994 (delta **+0.00001**), and the incremental slope flips sign across seasons (+0.034, +0.062, -0.048, -0.095). No stratum pays, including coach-change (n=525, delta +0.00003). | Track 2, `nfl/research/prereg/TRACK2_NEUTRAL_PASS_RATE_RESULT.md` |
 | Interception rate as QB skill | within-season 0.212 [−0.168, +0.530]; YoY intervals all cover zero | W2 |
 | Blitz-faced rate as QB trait | r = 0.020 | W2 |
 | Defensive sack rate as a team trait | reliability **0.000**; a sack is definitionally a pressure | W6 |
