@@ -525,6 +525,59 @@ def test_g_BUG_build_scope_fabricates_for_unverified_sources():
           == ('practice', 'final_status'))
 
 
+
+def test_i_the_capture_source_carries_the_content_markers_it_is_judged_by():
+    """The guard the egress block hid, and the executor that found it.
+
+    registry.SourceSpec defines content_markers and both official sources set
+    it, but capture_vintage.Source -- a SEPARATE dataclass -- did not declare
+    the field and _sources() did not copy it, so the html content check read
+    an attribute that was not there. In this executor nfl.com is unreachable,
+    so the fetch failed long before the guard ran and every capture reported a
+    clean BLOCKED[NO_EGRESS] over a broken guard. The executor that CAN fetch
+    hit it instead: official_inactives and official_injury_report both came
+    back FAIL[SOURCE_RAISED] with "AttributeError: 'Source' object has no
+    attribute 'content_markers'" at 2026-09-10T23:04Z, inside the T-90 window.
+
+    An unreachable code path is not a working one. This test runs the wiring
+    with no network at all, which is the only reason it can stand here.
+    """
+    from nfl.tools import capture_vintage as CV
+
+    check('capture_vintage.Source declares content_markers at all',
+          'content_markers' in
+          {f.name for f in dataclasses.fields(CV.Source)})
+
+    built = {s.name: s for s in CV._sources(2026)}
+    spec_by_name = {sp.name: sp for sp in REGISTRY}
+    checked = 0
+    for name, src in built.items():
+        spec = spec_by_name.get(name)
+        want = tuple(getattr(spec, 'content_markers', ()) or ())
+        check(f'  {name}: markers carried across from the registry',
+              tuple(src.content_markers) == want,
+              f'{src.content_markers!r} != {want!r}')
+        checked += 1
+    check('every built source was compared', checked > 0, str(checked))
+
+    check('and the inactives page is judged by its OWN subject word',
+          built['official_inactives'].content_markers == ('inactive',)
+          if 'official_inactives' in built else True,
+          str(built.get('official_inactives')))
+
+    # THE GUARD MUST ALSO RUN, not merely be populated. Reaching the attribute
+    # is what raised in production, so reach it the same way the html branch
+    # does and require no exception.
+    for name, src in built.items():
+        if src.content_kind != 'html':
+            continue
+        markers = src.content_markers or ('questionable',)
+        check(f'  {name}: the html content check can read its vocabulary',
+              isinstance(markers, tuple) and len(markers) >= 1,
+              repr(markers))
+
+
+
 if __name__ == '__main__':
     test_a_a_reachable_source_resolves_to_a_url()
     test_b_a_pending_endpoint_blocks_and_invents_nothing()
@@ -534,5 +587,6 @@ if __name__ == '__main__':
     test_f_build_scope_attributes_honestly()
     test_h_the_registry_guards_are_load_bearing()
     test_g_BUG_build_scope_fabricates_for_unverified_sources()
+    test_i_the_capture_source_carries_the_content_markers_it_is_judged_by()
     print(f'\n{PASSED} passed, {FAILED} failed')
     sys.exit(1 if FAILED else 0)

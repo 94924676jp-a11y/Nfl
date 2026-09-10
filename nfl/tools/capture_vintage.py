@@ -72,6 +72,21 @@ class Source:
     reduce_cols: tuple = ()
     content_kind: str = "csv"   # 'csv' | 'html' | 'json'
     note: str = ""
+    # THE FIELD THE CONTENT GUARD READS, AND IT WAS NEVER CARRIED HERE.
+    #
+    # registry.SourceSpec defines content_markers and both official sources
+    # set it, but this local Source did not declare it and _sources() did not
+    # copy it across, so the content check at the html branch raised
+    # AttributeError instead of running. The egress block hid that completely:
+    # in an executor that cannot reach nfl.com the fetch fails long before the
+    # guard is reached, so every run here reported a clean BLOCKED[NO_EGRESS]
+    # while the guard underneath was broken. The executor that CAN fetch found
+    # it instead -- official_inactives and official_injury_report both came
+    # back FAIL[SOURCE_RAISED] on 2026-09-10T23:04Z, in the T-90 window.
+    #
+    # An unreachable code path is not a working one, and a guard is not
+    # verified by an environment that never executes it.
+    content_markers: tuple = ()
 
 
 def _sources(season: int) -> list[Source]:
@@ -96,7 +111,9 @@ def _sources(season: int) -> list[Source]:
         out.append(Source(name=spec.name, url=spec.url(season),
                           required=spec.required, durability=spec.durability,
                           reduce_cols=spec.reduce_cols,
-                          content_kind=spec.content_kind, note=spec.note))
+                          content_kind=spec.content_kind, note=spec.note,
+                          content_markers=tuple(
+                              getattr(spec, 'content_markers', ()) or ())))
     return out
 
 
