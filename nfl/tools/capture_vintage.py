@@ -426,6 +426,77 @@ def _eligibility(declaration, source, state, retrieved_at, sha256,
                 "detail": f"{type(exc).__name__}: {exc}"}
 
 
+
+
+def _newest_schedule_snapshot():
+    """The schedules blob this run should anchor to, chosen DETERMINISTICALLY.
+
+    This was `sorted(glob(...), key=mtime)[-1]`. On a fresh Actions checkout
+    every file carries the checkout time, so mtime order is git's write order,
+    not capture order -- with 37 schedules blobs in the tree the "newest"
+    snapshot was effectively arbitrary, and the windows a run anchors to are
+    computed from it. Identity of the anchored target must not depend on
+    filesystem incidentals.
+
+    The manifest records when each blob was captured, so it is the authority.
+    mtime remains only as a last resort when the manifest names none.
+    """
+    snaps = {q.name: q for q in DURABLE_ROOT.glob("schedules.*.csv.gz")}
+    if not snaps:
+        return None
+    best, best_cid = None, ""
+    try:
+        with open(MANIFEST) as fh:
+            for line in fh:
+                if '"schedules"' not in line:
+                    continue
+                try:
+                    r = json.loads(line)
+                except ValueError:
+                    continue
+                if r.get("source") != "schedules" or r.get("state") != "PASS":
+                    continue
+                blob = (r.get("value") or {}).get("blob") or ""
+                name = pathlib.PurePosixPath(blob).name
+                cid = str(r.get("capture_id") or "")
+                if name in snaps and cid >= best_cid:
+                    best, best_cid = snaps[name], cid
+    except OSError:
+        best = None
+    if best is not None:
+        return best
+    return sorted(snaps.values(), key=lambda q: (q.stat().st_mtime, q.name))[-1]
+
+def _rel(p) -> str:
+    """A repo-relative path when the path is inside the repo, else as given.
+
+    `pathlib.relative_to` RAISES when it is not a subpath, and that raise was
+    inside the per-source fetch, so a store outside the repository killed the
+    whole capture after its durable blobs were already on disk. A provenance
+    string is not worth losing a capture window over.
+    """
+    q = pathlib.Path(p)
+    try:
+        return str(q.resolve().relative_to(_REPO))
+    except ValueError:
+        return str(q)
+
+
+def _flush(manifest, rows) -> int:
+    """Append every row, and say how many. Called from a finally block.
+
+    The manifest used to be written only if the loop ran to completion, so a
+    late failure erased the record of the earlier successes. The bytes were
+    already durable; only the evidence that would let them discharge anything
+    was lost.
+    """
+    if not rows:
+        return 0
+    with open(manifest, "a") as fh:
+        for row in rows:
+            fh.write(json.dumps(row, sort_keys=True) + "\n")
+    return len(rows)
+
 def _declare(season: int) -> dict:
     """The execution's target set, fixed at run start before any fetch."""
     from nfl.capture.execution import declare
@@ -435,10 +506,9 @@ def _declare(season: int) -> dict:
         if plan.state is not State.PASS:
             return {"state": plan.state.value, "code": plan.code,
                     "detail": plan.detail[:300]}
-        snap = sorted(DURABLE_ROOT.glob("schedules.*.csv.gz"),
-                      key=lambda q: q.stat().st_mtime)
+        snap = _newest_schedule_snapshot()
         out = declare(plan.value, declared_at=started,
-                      plan_snapshot=snap[-1].name if snap else None)
+                      plan_snapshot=snap.name if snap is not None else None)
         if out.state is not State.PASS:
             return {"state": out.state.value, "code": out.code,
                     "detail": out.detail[:300]}
@@ -464,8 +534,8 @@ def _nearby_plan(season: int, retrieved_at) -> Outcome:
     if ts.tzinfo is None:
         ts = ts.replace(tzinfo=_dt.timezone.utc)
 
-    snaps = sorted(DURABLE_ROOT.glob("schedules.*.csv.gz"),
-                   key=lambda q: q.stat().st_mtime)
+    _best = _newest_schedule_snapshot()
+    snaps = [_best] if _best is not None else []
     if not snaps:
         return Outcome.blocked(
             "NO_SCHEDULE_SNAPSHOT",
@@ -540,7 +610,7 @@ def _persist(src: Source, payload: bytes, digest: str,
         unchanged = blob.exists()
         if not unchanged:
             _write_gz(blob, payload)
-        return {"blob": str(blob.relative_to(_REPO)), "blob_durable": True,
+        return {"blob": _rel(blob), "blob_durable": True,
                 "blob_encoding": "gzip", "sha256_is_of": "uncompressed_bytes",
                 "content_unchanged": unchanged, "reduced": None}
 
@@ -581,13 +651,13 @@ def _persist(src: Source, payload: bytes, digest: str,
         eph = store / "raw" / f"{src.name}.{digest[:16]}.csv"
         if not eph.exists():
             eph.write_bytes(payload)
-        return {"blob": str(red.relative_to(_REPO)), "blob_durable": True,
+        return {"blob": _rel(red), "blob_durable": True,
                 "blob_encoding": "gzip", "sha256_is_of": "uncompressed_bytes",
                 "content_unchanged": unchanged,
                 "reduced": {"columns": list(src.reduce_cols),
                             "strategy": "newest_dt_slice" if not unchanged else "unchanged",
                             **detail,
-                            "full_bytes_ephemeral_at": str(eph.relative_to(_REPO))},
+                            "full_bytes_ephemeral_at": _rel(eph)},
                 "reduce_recoverability_assumption":
                     "upstream retains full dt history for this source",
                 "reduce_recoverability_checked": False}
@@ -648,7 +718,22 @@ def main() -> int:
 
     rows, counts = [], {}
     for src in _sources(args.season):
-        out = fetch(src, args.season, store, declaration)
+        # ONE SOURCE MAY NOT DESTROY THE RUN. There was no boundary here, and
+        # the manifest was written only after the whole loop, so ANY unhandled
+        # exception in ANY source discarded every row -- including sources
+        # already captured successfully, whose durable blobs had already been
+        # written into nfl/vintage. That is the observed production signature:
+        # a schedules blob committed with no manifest row, a commit message
+        # reading "capture unknown" because the final summary line never
+        # printed, and the workflow reporting success. Reproduced locally.
+        #
+        # A raised source is now a NAMED row, never a lost run.
+        try:
+            out = fetch(src, args.season, store, declaration)
+        except Exception as exc:                              # noqa: BLE001
+            out = Outcome.fail(
+                'SOURCE_RAISED',
+                f'{type(exc).__name__}: {exc}'[:400])
         counts[out.state.value] = counts.get(out.state.value, 0) + 1
         row = {"capture_id": capture_id, "season": args.season,
                "source": src.name, "state": out.state.value, "code": out.code,
@@ -675,7 +760,20 @@ def main() -> int:
     if not rows:
         raise SystemExit("CAPTURE_EMPTY: no sources attempted.")
 
-    for po in pending_sources(args.season):
+    try:
+        _pend = list(pending_sources(args.season))
+    except Exception as exc:                                  # noqa: BLE001
+        # Same rule as the source loop: a raise here is a named row, not a
+        # lost run. The successes already in `rows` are not this loop's to
+        # destroy.
+        _pend = []
+        rows.append({"capture_id": capture_id, "season": args.season,
+                     "source": "pending_sources", "state": "FAIL",
+                     "code": "PENDING_ENUMERATION_RAISED",
+                     "detail": f'{type(exc).__name__}: {exc}'[:400],
+                     "evidence": {"source": "pending_sources"},
+                     "value": {"execution_target": declaration}})
+    for po in _pend:
         counts[po.state.value] = counts.get(po.state.value, 0) + 1
         rows.append({"capture_id": capture_id, "season": args.season,
                      "source": po.evidence.get("source"),
@@ -700,9 +798,21 @@ def main() -> int:
     # and the durable record omitted it -- the audit trail was missing exactly
     # the sources that constitute the Item 1 failure, which is the half that
     # survives this container.
-    with open(manifest, "a") as fh:
-        for row in rows:
-            fh.write(json.dumps(row, sort_keys=True) + "\n")
+    n_written = _flush(manifest, rows)
+
+    # A CAPTURE THAT WROTE NO MANIFEST ROW DID NOT CAPTURE ANYTHING, whatever
+    # landed in nfl/vintage. Durable blobs with no row are orphans: nothing can
+    # attribute them to a game, a window or a basis, so they can discharge
+    # nothing. This is the exact production failure -- schedules blobs
+    # committed, manifest untouched since 2026-09-08, and the workflow green.
+    if n_written == 0:
+        raise SystemExit(
+            "CAPTURE_WROTE_NO_MANIFEST_ROW: sources ran and durable bytes may "
+            "already be on disk, but no manifest row was appended, so nothing "
+            "captured here can be attributed or discharge any obligation. "
+            "Failing loudly rather than leaving orphan blobs behind a green "
+            "run.")
+    print(f"\nmanifest rows appended: {n_written}")
 
     print(f"\ncapture {capture_id}: {counts}")
     unmet = _registry.unmet_targets(manifest)

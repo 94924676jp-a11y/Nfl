@@ -96,6 +96,25 @@ jobs:
           git pull --rebase --autostash origin main
           git push origin HEAD:main
 
+      # Same gate as the anchored workflow: durable bytes with no manifest row
+      # are orphans -- nothing attributes them to a game, a window or a basis,
+      # so they discharge nothing. This workflow produced exactly that on
+      # 2026-09-09/10: schedules blobs committed, manifest untouched, green.
+      - name: Assert the capture produced a manifest row
+        if: always()
+        run: |
+          if grep -q 'Traceback (most recent call last)' /tmp/capture.log; then
+            echo "CAPTURE_RAISED: unhandled exception during capture"
+            grep -A15 'Traceback (most recent call last)' /tmp/capture.log | tail -20
+            exit 1
+          fi
+          if ! grep -qE '^manifest rows appended: [1-9]' /tmp/capture.log; then
+            echo "CAPTURE_WROTE_NO_MANIFEST_ROW: nothing dischargeable recorded"
+            tail -30 /tmp/capture.log
+            exit 1
+          fi
+          grep -E '^manifest rows appended:' /tmp/capture.log
+
       - name: Fail the run only on a real FAIL
         if: always()
         run: |
