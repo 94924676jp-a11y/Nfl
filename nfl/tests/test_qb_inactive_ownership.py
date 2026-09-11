@@ -149,10 +149,15 @@ def test_c_the_assertion_rejects_a_seeded_violation():
           (bad.evidence.get('offenders') or {}).get('B', {}).get('db') == 1.0,
           str(bad.evidence.get('offenders')))
 
-    # NO LIST IS NOT A PASS, and the code says so rather than returning OK.
+    # NO LIST IS NOT A PASS. It is DEFERRED: as a HARD invariant that is
+    # carried as `hard_owed` rather than refusing the seal, so an ordinary
+    # game with no published list still seals while recording plainly that
+    # this was never established.
     na = QBACC.assert_inactive_qbs_own_nothing(clean, rows, [])
-    check('no inactive list reports NOT_APPLICABLE, never a pass',
-          na.code == 'QB_INACTIVE_OWNERSHIP_NOT_APPLICABLE', na.code)
+    check('no inactive list DEFERS rather than passing',
+          na.state is State.DEFERRED
+          and na.code == 'QB_INACTIVE_OWNERSHIP_NOT_ESTABLISHED',
+          f'{na.state.name}[{na.code}]')
 
 
 def test_d_a_team_with_no_dressed_quarterback_refuses():

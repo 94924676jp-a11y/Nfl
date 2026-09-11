@@ -796,12 +796,18 @@ def assert_inactive_qbs_own_nothing(draws, rows, inactive_ids) -> Outcome:
     """
     inact = set(inactive_ids or ())
     if not inact:
-        return Outcome.ok(
-            'QB_INACTIVE_OWNERSHIP_NOT_APPLICABLE',
-            value={}, n_inactive=0,
-            detail='no official inactive list was supplied for this game, so '
-                   'there is nothing to assert. This is NOT a pass on the '
-                   'question; it is the absence of the question.')
+        # DEFERRED, NOT PASS. Without an official list the question cannot be
+        # answered, and answering it OK would record a pass on a check that
+        # never ran -- the exact defect this project keeps paying for. As a
+        # HARD invariant, DEFERRED is carried as `hard_owed` and does not
+        # refuse the seal, so an ordinary game with no published list still
+        # seals while saying plainly that this was not established.
+        return Outcome.deferred(
+            'QB_INACTIVE_OWNERSHIP_NOT_ESTABLISHED',
+            'no official inactive list was supplied for this game, so no '
+            'quarterback can be checked against one. This is the absence of '
+            'the question, not an answer to it.',
+            owed={'needs': 'official_inactive_ids for this game'})
     offenders, checked = {}, 0
     for i, r in enumerate(rows):
         pid = r.get('gsis_id') if isinstance(r, dict) else None

@@ -121,6 +121,22 @@ INVARIANTS = {
         'asserts': 'attempts + sacks + scrambles == dropbacks, per draw cell',
         'why_hard': 'the identity the entire QB layer is built on; a violation '
                     'means the components do not describe one football game.'},
+    'qb_inactive_owns_nothing': {
+        'class': HARD,
+        'evaluator':
+            'nfl.production.qb_accounting.assert_inactive_qbs_own_nothing',
+        'asserts': 'every quarterback on the official inactive list holds '
+                   'exactly zero dropbacks and zero attempts in EVERY draw, '
+                   'checked on the maximum over draws rather than the mean',
+        'why_hard': 'a quarterback who is not dressed cannot take a snap, so '
+                    'share allocated to him is share taken from the men who '
+                    'are. It was not hypothetical: on the sealed SF@LA board '
+                    'Kurtis Rourke held 0.90 dropbacks and Ty Simpson 0.73, '
+                    'and Rourke peaked at 22.6% of his team in some draws. '
+                    'The mean hid that, which is why the maximum is the test. '
+                    'DEFERRED, not violated, when no official list exists for '
+                    'the game -- the absence of the question is not an '
+                    'answer to it.'},
     'scramble_carry_coherence': {
         'class': HARD,
         'evaluator': 'nfl.production.nonqb.scramble_coherence.couple',
