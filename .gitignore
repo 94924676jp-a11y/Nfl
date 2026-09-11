@@ -15,3 +15,8 @@ nfl/research/p4b/volume_store.npy
 # Production's read-only cache of the derived research artifacts. Byte-for-byte
 # regenerable from nfl/research/inputs; see nfl/production/derived.py.
 nfl/derived/
+
+# Track 1 raw seasonal play-by-play. 19MB per season and re-fetchable from the
+# url and hash recorded in nfl/research/track1/RAW_PROVENANCE.json, which IS
+# the audit trail. The reduced state panels built from it ARE committed.
+nfl/research/track1/raw/

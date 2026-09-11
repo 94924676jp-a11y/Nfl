@@ -1,0 +1,1878 @@
+{
+ "artifact": "NFL_TRACK1_FORWARD_CHAIN_RESULTS",
+ "spec_version": "track1-analysis-1",
+ "response_spec": "track1-response-1",
+ "state_spec": "track1-state-1",
+ "chain_spec": "track1-forward-chain-1",
+ "arms": [
+  "BASELINE",
+  "TRACK1",
+  "TRACK1_MEAN"
+ ],
+ "promoted": false,
+ "is_research_only": true,
+ "market_inputs_used": [],
+ "n_scored_rows": 10727,
+ "eval_seasons": [
+  2022,
+  2023,
+  2024,
+  2025
+ ],
+ "metrics": {
+  "team_carries": {
+   "n": 2174,
+   "estimator": [
+    "coach_prior"
+   ],
+   "is_treated": true,
+   "mean_crps": {
+    "BASELINE": 4.25382,
+    "TRACK1": 4.22784,
+    "TRACK1_MEAN": 4.22202
+   },
+   "discrimination_pearson_r": {
+    "BASELINE": 0.18059,
+    "TRACK1": 0.20914,
+    "TRACK1_MEAN": 0.21021
+   },
+   "sd_of_point": {
+    "BASELINE": 2.47117,
+    "TRACK1": 2.69862,
+    "TRACK1_MEAN": 2.69808
+   },
+   "sd_of_actual": 7.5424,
+   "pit_chi2": {
+    "BASELINE": {
+     "hist": [
+      211,
+      224,
+      205,
+      212,
+      234,
+      203,
+      232,
+      237,
+      202,
+      214
+     ],
+     "expected_per_bin": 217.4,
+     "chi2": 7.343,
+     "df": 9
+    },
+    "TRACK1": {
+     "hist": [
+      176,
+      220,
+      225,
+      210,
+      256,
+      238,
+      235,
+      214,
+      210,
+      190
+     ],
+     "expected_per_bin": 217.4,
+     "chi2": 22.421,
+     "df": 9
+    },
+    "TRACK1_MEAN": {
+     "hist": [
+      202,
+      223,
+      206,
+      220,
+      232,
+      219,
+      232,
+      219,
+      215,
+      206
+     ],
+     "expected_per_bin": 217.4,
+     "chi2": 4.473,
+     "df": 9
+    }
+   },
+   "coverage": {
+    "BASELINE": {
+     "50": 0.5051,
+     "80": 0.804,
+     "90": 0.902,
+     "95": 0.9517
+    },
+    "TRACK1": {
+     "50": 0.5327,
+     "80": 0.8312,
+     "90": 0.9246,
+     "95": 0.9687
+    },
+    "TRACK1_MEAN": {
+     "50": 0.5051,
+     "80": 0.8119,
+     "90": 0.8997,
+     "95": 0.9531
+    }
+   },
+   "paired_crps_delta_vs_baseline": {
+    "TRACK1": {
+     "delta_mean": -0.02599,
+     "delta_pct_of_baseline": -0.6109,
+     "block_bootstrap_by_game": {
+      "mean": -0.025987811115066484,
+      "ci_lo": -0.04933312308257571,
+      "ci_hi": -0.002686841656678798,
+      "n_clusters": 1087,
+      "n_rows": 2174,
+      "excludes_zero": true
+     },
+     "block_bootstrap_by_week": {
+      "mean": -0.025987811115066484,
+      "ci_lo": -0.04751797603670769,
+      "ci_hi": -0.005056110528259487,
+      "n_clusters": 72,
+      "n_rows": 2174,
+      "excludes_zero": true
+     },
+     "n_rows_improved": 994,
+     "n_rows_worsened": 1180
+    },
+    "TRACK1_MEAN": {
+     "delta_mean": -0.03181,
+     "delta_pct_of_baseline": -0.7477,
+     "block_bootstrap_by_game": {
+      "mean": -0.031806185456893336,
+      "ci_lo": -0.05473330145147336,
+      "ci_hi": -0.009294359463102378,
+      "n_clusters": 1087,
+      "n_rows": 2174,
+      "excludes_zero": true
+     },
+     "block_bootstrap_by_week": {
+      "mean": -0.031806185456893336,
+      "ci_lo": -0.05251295585506379,
+      "ci_hi": -0.011615089718827592,
+      "n_clusters": 72,
+      "n_rows": 2174,
+      "excludes_zero": true
+     },
+     "n_rows_improved": 1194,
+     "n_rows_worsened": 980
+    }
+   },
+   "by_season": {
+    "2022": {
+     "n": 542,
+     "mean_crps": {
+      "BASELINE": 4.42618,
+      "TRACK1": 4.44416,
+      "TRACK1_MEAN": 4.44171
+     },
+     "TRACK1_delta_pct": 0.4063,
+     "TRACK1_improves": false,
+     "TRACK1_MEAN_delta_pct": 0.3508,
+     "TRACK1_MEAN_improves": false
+    },
+    "2023": {
+     "n": 544,
+     "mean_crps": {
+      "BASELINE": 4.21777,
+      "TRACK1": 4.17843,
+      "TRACK1_MEAN": 4.17085
+     },
+     "TRACK1_delta_pct": -0.9327,
+     "TRACK1_improves": true,
+     "TRACK1_MEAN_delta_pct": -1.1124,
+     "TRACK1_MEAN_improves": true
+    },
+    "2024": {
+     "n": 544,
+     "mean_crps": {
+      "BASELINE": 4.21264,
+      "TRACK1": 4.14294,
+      "TRACK1_MEAN": 4.13808
+     },
+     "TRACK1_delta_pct": -1.6545,
+     "TRACK1_improves": true,
+     "TRACK1_MEAN_delta_pct": -1.7699,
+     "TRACK1_MEAN_improves": true
+    },
+    "2025": {
+     "n": 544,
+     "mean_crps": {
+      "BASELINE": 4.15934,
+      "TRACK1": 4.1466,
+      "TRACK1_MEAN": 4.13824
+     },
+     "TRACK1_delta_pct": -0.3062,
+     "TRACK1_improves": true,
+     "TRACK1_MEAN_delta_pct": -0.5073,
+     "TRACK1_MEAN_improves": true
+    }
+   },
+   "mechanism_calibration": {
+    "coef_on_state_contribution": 1.2365,
+    "se": 0.2015,
+    "ci95": [
+     0.8415,
+     1.6315
+    ],
+    "reads": "1.0 means correctly scaled; below 1 over-applied; above 1 under-applied"
+   },
+   "channel_diagnostics": {
+    "corr_baseline_point_with_multiplier": 0.14249,
+    "corr_own_expected_margin_with_actual": 0.15308,
+    "corr_own_expected_margin_with_multiplier": 0.999,
+    "reads": "if the first correlation is near zero the pregame margin carries no net signal for this metric and any multiplier is noise; if it has the OPPOSITE sign to the second, the between-team quality channel outweighs the within-game script channel and the state response points the wrong way"
+   },
+   "multiplier_sd": 0.028898
+  },
+  "team_dropbacks_part": {
+   "n": 2174,
+   "estimator": [
+    "coach_prior"
+   ],
+   "is_treated": true,
+   "mean_crps": {
+    "BASELINE": 4.68416,
+    "TRACK1": 4.72261,
+    "TRACK1_MEAN": 4.69892
+   },
+   "discrimination_pearson_r": {
+    "BASELINE": 0.18911,
+    "TRACK1": 0.19265,
+    "TRACK1_MEAN": 0.19244
+   },
+   "sd_of_point": {
+    "BASELINE": 2.76289,
+    "TRACK1": 3.01083,
+    "TRACK1_MEAN": 3.01062
+   },
+   "sd_of_actual": 8.3715,
+   "pit_chi2": {
+    "BASELINE": {
+     "hist": [
+      226,
+      245,
+      217,
+      221,
+      241,
+      218,
+      213,
+      225,
+      182,
+      186
+     ],
+     "expected_per_bin": 217.4,
+     "chi2": 17.122,
+     "df": 9
+    },
+    "TRACK1": {
+     "hist": [
+      156,
+      254,
+      219,
+      276,
+      231,
+      252,
+      250,
+      212,
+      178,
+      146
+     ],
+     "expected_per_bin": 217.4,
+     "chi2": 81.281,
+     "df": 9
+    },
+    "TRACK1_MEAN": {
+     "hist": [
+      226,
+      233,
+      218,
+      254,
+      201,
+      230,
+      212,
+      219,
+      197,
+      184
+     ],
+     "expected_per_bin": 217.4,
+     "chi2": 16.782,
+     "df": 9
+    }
+   },
+   "coverage": {
+    "BASELINE": {
+     "50": 0.512,
+     "80": 0.8105,
+     "90": 0.9025,
+     "95": 0.9471
+    },
+    "TRACK1": {
+     "50": 0.5635,
+     "80": 0.8611,
+     "90": 0.9365,
+     "95": 0.9683
+    },
+    "TRACK1_MEAN": {
+     "50": 0.5179,
+     "80": 0.8105,
+     "90": 0.9066,
+     "95": 0.9494
+    }
+   },
+   "paired_crps_delta_vs_baseline": {
+    "TRACK1": {
+     "delta_mean": 0.03846,
+     "delta_pct_of_baseline": 0.821,
+     "block_bootstrap_by_game": {
+      "mean": 0.038458100523397244,
+      "ci_lo": 0.008342320397983546,
+      "ci_hi": 0.06813063802470988,
+      "n_clusters": 1087,
+      "n_rows": 2174,
+      "excludes_zero": true
+     },
+     "block_bootstrap_by_week": {
+      "mean": 0.038458100523397244,
+      "ci_lo": 0.007149014788830354,
+      "ci_hi": 0.07010637817693006,
+      "n_clusters": 72,
+      "n_rows": 2174,
+      "excludes_zero": true
+     },
+     "n_rows_improved": 855,
+     "n_rows_worsened": 1319
+    },
+    "TRACK1_MEAN": {
+     "delta_mean": 0.01476,
+     "delta_pct_of_baseline": 0.3152,
+     "block_bootstrap_by_game": {
+      "mean": 0.014763315512089661,
+      "ci_lo": -0.014991446161297205,
+      "ci_hi": 0.04511256977097399,
+      "n_clusters": 1087,
+      "n_rows": 2174,
+      "excludes_zero": false
+     },
+     "block_bootstrap_by_week": {
+      "mean": 0.014763315512089661,
+      "ci_lo": -0.01554709750586404,
+      "ci_hi": 0.04583224358937813,
+      "n_clusters": 72,
+      "n_rows": 2174,
+      "excludes_zero": false
+     },
+     "n_rows_improved": 1101,
+     "n_rows_worsened": 1073
+    }
+   },
+   "by_season": {
+    "2022": {
+     "n": 542,
+     "mean_crps": {
+      "BASELINE": 4.7921,
+      "TRACK1": 4.85334,
+      "TRACK1_MEAN": 4.83285
+     },
+     "TRACK1_delta_pct": 1.278,
+     "TRACK1_improves": false,
+     "TRACK1_MEAN_delta_pct": 0.8504,
+     "TRACK1_MEAN_improves": false
+    },
+    "2023": {
+     "n": 544,
+     "mean_crps": {
+      "BASELINE": 4.45565,
+      "TRACK1": 4.48411,
+      "TRACK1_MEAN": 4.44685
+     },
+     "TRACK1_delta_pct": 0.6389,
+     "TRACK1_improves": false,
+     "TRACK1_MEAN_delta_pct": -0.1974,
+     "TRACK1_MEAN_improves": true
+    },
+    "2024": {
+     "n": 544,
+     "mean_crps": {
+      "BASELINE": 4.80503,
+      "TRACK1": 4.818,
+      "TRACK1_MEAN": 4.79846
+     },
+     "TRACK1_delta_pct": 0.2701,
+     "TRACK1_improves": false,
+     "TRACK1_MEAN_delta_pct": -0.1367,
+     "TRACK1_MEAN_improves": true
+    },
+    "2025": {
+     "n": 544,
+     "mean_crps": {
+      "BASELINE": 4.68425,
+      "TRACK1": 4.73548,
+      "TRACK1_MEAN": 4.71802
+     },
+     "TRACK1_delta_pct": 1.0936,
+     "TRACK1_improves": false,
+     "TRACK1_MEAN_delta_pct": 0.7208,
+     "TRACK1_MEAN_improves": false
+    }
+   },
+   "mechanism_calibration": {
+    "coef_on_state_contribution": 0.3285,
+    "se": 0.1501,
+    "ci95": [
+     0.0343,
+     0.6226
+    ],
+    "reads": "1.0 means correctly scaled; below 1 over-applied; above 1 under-applied"
+   },
+   "channel_diagnostics": {
+    "corr_baseline_point_with_multiplier": 0.01684,
+    "corr_own_expected_margin_with_actual": -0.04826,
+    "corr_own_expected_margin_with_multiplier": -0.99877,
+    "reads": "if the first correlation is near zero the pregame margin carries no net signal for this metric and any multiplier is noise; if it has the OPPOSITE sign to the second, the between-team quality channel outweighs the within-game script channel and the state response points the wrong way"
+   },
+   "multiplier_sd": 0.031051
+  },
+  "team_off_snaps": {
+   "n": 2174,
+   "estimator": [
+    "coach_prior",
+    "league_mean"
+   ],
+   "is_treated": true,
+   "mean_crps": {
+    "BASELINE": 5.00799,
+    "TRACK1": 5.03431,
+    "TRACK1_MEAN": 5.03474
+   },
+   "discrimination_pearson_r": {
+    "BASELINE": 0.04135,
+    "TRACK1": 0.00657,
+    "TRACK1_MEAN": 0.00596
+   },
+   "sd_of_point": {
+    "BASELINE": 1.17451,
+    "TRACK1": 1.22586,
+    "TRACK1_MEAN": 1.227
+   },
+   "sd_of_actual": 8.8433,
+   "pit_chi2": {
+    "BASELINE": {
+     "hist": [
+      246,
+      236,
+      248,
+      219,
+      215,
+      225,
+      237,
+      178,
+      192,
+      178
+     ],
+     "expected_per_bin": 217.4,
+     "chi2": 28.981,
+     "df": 9
+    },
+    "TRACK1": {
+     "hist": [
+      241,
+      231,
+      241,
+      226,
+      224,
+      225,
+      234,
+      194,
+      190,
+      168
+     ],
+     "expected_per_bin": 217.4,
+     "chi2": 25.246,
+     "df": 9
+    },
+    "TRACK1_MEAN": {
+     "hist": [
+      251,
+      227,
+      248,
+      218,
+      219,
+      222,
+      232,
+      191,
+      193,
+      173
+     ],
+     "expected_per_bin": 217.4,
+     "chi2": 26.028,
+     "df": 9
+    }
+   },
+   "coverage": {
+    "BASELINE": {
+     "50": 0.5382,
+     "80": 0.8151,
+     "90": 0.9071,
+     "95": 0.9545
+    },
+    "TRACK1": {
+     "50": 0.5216,
+     "80": 0.8109,
+     "90": 0.9052,
+     "95": 0.9526
+    },
+    "TRACK1_MEAN": {
+     "50": 0.5138,
+     "80": 0.804,
+     "90": 0.9016,
+     "95": 0.9485
+    }
+   },
+   "paired_crps_delta_vs_baseline": {
+    "TRACK1": {
+     "delta_mean": 0.02632,
+     "delta_pct_of_baseline": 0.5256,
+     "block_bootstrap_by_game": {
+      "mean": 0.026320761265390416,
+      "ci_lo": 0.011608183692157865,
+      "ci_hi": 0.04041587585905428,
+      "n_clusters": 1087,
+      "n_rows": 2174,
+      "excludes_zero": true
+     },
+     "block_bootstrap_by_week": {
+      "mean": 0.026320761265390416,
+      "ci_lo": 0.010254473716707421,
+      "ci_hi": 0.04348628710398212,
+      "n_clusters": 72,
+      "n_rows": 2174,
+      "excludes_zero": true
+     },
+     "n_rows_improved": 876,
+     "n_rows_worsened": 1298
+    },
+    "TRACK1_MEAN": {
+     "delta_mean": 0.02675,
+     "delta_pct_of_baseline": 0.5341,
+     "block_bootstrap_by_game": {
+      "mean": 0.026749839367882392,
+      "ci_lo": 0.012012300200025184,
+      "ci_hi": 0.04088000719312361,
+      "n_clusters": 1087,
+      "n_rows": 2174,
+      "excludes_zero": true
+     },
+     "block_bootstrap_by_week": {
+      "mean": 0.026749839367882392,
+      "ci_lo": 0.01117688734834903,
+      "ci_hi": 0.044140105245121734,
+      "n_clusters": 72,
+      "n_rows": 2174,
+      "excludes_zero": true
+     },
+     "n_rows_improved": 948,
+     "n_rows_worsened": 1226
+    }
+   },
+   "by_season": {
+    "2022": {
+     "n": 542,
+     "mean_crps": {
+      "BASELINE": 4.92227,
+      "TRACK1": 4.94201,
+      "TRACK1_MEAN": 4.94072
+     },
+     "TRACK1_delta_pct": 0.401,
+     "TRACK1_improves": false,
+     "TRACK1_MEAN_delta_pct": 0.3749,
+     "TRACK1_MEAN_improves": false
+    },
+    "2023": {
+     "n": 544,
+     "mean_crps": {
+      "BASELINE": 4.98362,
+      "TRACK1": 4.99722,
+      "TRACK1_MEAN": 4.99953
+     },
+     "TRACK1_delta_pct": 0.2727,
+     "TRACK1_improves": false,
+     "TRACK1_MEAN_delta_pct": 0.3191,
+     "TRACK1_MEAN_improves": false
+    },
+    "2024": {
+     "n": 544,
+     "mean_crps": {
+      "BASELINE": 4.91796,
+      "TRACK1": 4.96249,
+      "TRACK1_MEAN": 4.96242
+     },
+     "TRACK1_delta_pct": 0.9054,
+     "TRACK1_improves": false,
+     "TRACK1_MEAN_delta_pct": 0.904,
+     "TRACK1_MEAN_improves": false
+    },
+    "2025": {
+     "n": 544,
+     "mean_crps": {
+      "BASELINE": 5.20779,
+      "TRACK1": 5.23519,
+      "TRACK1_MEAN": 5.23594
+     },
+     "TRACK1_delta_pct": 0.5261,
+     "TRACK1_improves": false,
+     "TRACK1_MEAN_delta_pct": 0.5406,
+     "TRACK1_MEAN_improves": false
+    }
+   },
+   "mechanism_calibration": {
+    "coef_on_state_contribution": -1.4683,
+    "se": 0.3928,
+    "ci95": [
+     -2.2382,
+     -0.6984
+    ],
+    "reads": "1.0 means correctly scaled; below 1 over-applied; above 1 under-applied"
+   },
+   "channel_diagnostics": {
+    "corr_baseline_point_with_multiplier": -0.09613,
+    "corr_own_expected_margin_with_actual": 0.0864,
+    "corr_own_expected_margin_with_multiplier": -0.99762,
+    "reads": "if the first correlation is near zero the pregame margin carries no net signal for this metric and any multiplier is noise; if it has the OPPOSITE sign to the second, the between-team quality channel outweighs the within-game script channel and the state response points the wrong way"
+   },
+   "multiplier_sd": 0.007293
+  },
+  "team_rz_carries": {
+   "n": 2031,
+   "estimator": [
+    "coach_prior",
+    "league_mean"
+   ],
+   "is_treated": false,
+   "mean_crps": {
+    "BASELINE": 1.71477,
+    "TRACK1": 1.71477,
+    "TRACK1_MEAN": 1.71477
+   },
+   "discrimination_pearson_r": {
+    "BASELINE": 0.05606,
+    "TRACK1": 0.05606,
+    "TRACK1_MEAN": 0.05606
+   },
+   "sd_of_point": {
+    "BASELINE": 0.60563,
+    "TRACK1": 0.60563,
+    "TRACK1_MEAN": 0.60563
+   },
+   "sd_of_actual": 3.0835,
+   "pit_chi2": {
+    "BASELINE": {
+     "hist": [
+      203,
+      246,
+      150,
+      195,
+      224,
+      223,
+      199,
+      172,
+      223,
+      196
+     ],
+     "expected_per_bin": 203.1,
+     "chi2": 34.411,
+     "df": 9
+    },
+    "TRACK1": {
+     "hist": [
+      203,
+      246,
+      150,
+      195,
+      224,
+      223,
+      199,
+      172,
+      223,
+      196
+     ],
+     "expected_per_bin": 203.1,
+     "chi2": 34.411,
+     "df": 9
+    },
+    "TRACK1_MEAN": {
+     "hist": [
+      203,
+      246,
+      150,
+      195,
+      224,
+      223,
+      199,
+      172,
+      223,
+      196
+     ],
+     "expected_per_bin": 203.1,
+     "chi2": 34.411,
+     "df": 9
+    }
+   },
+   "coverage": {
+    "BASELINE": {
+     "50": 0.5313,
+     "80": 0.8252,
+     "90": 0.9217,
+     "95": 0.9586
+    },
+    "TRACK1": {
+     "50": 0.5313,
+     "80": 0.8252,
+     "90": 0.9217,
+     "95": 0.9586
+    },
+    "TRACK1_MEAN": {
+     "50": 0.5313,
+     "80": 0.8252,
+     "90": 0.9217,
+     "95": 0.9586
+    }
+   },
+   "paired_crps_delta_vs_baseline": {
+    "TRACK1": {
+     "delta_mean": 0.0,
+     "delta_pct_of_baseline": 0.0,
+     "block_bootstrap_by_game": {
+      "mean": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.0,
+      "n_clusters": 1085,
+      "n_rows": 2031,
+      "excludes_zero": false
+     },
+     "block_bootstrap_by_week": {
+      "mean": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.0,
+      "n_clusters": 72,
+      "n_rows": 2031,
+      "excludes_zero": false
+     },
+     "n_rows_improved": 0,
+     "n_rows_worsened": 0
+    },
+    "TRACK1_MEAN": {
+     "delta_mean": 0.0,
+     "delta_pct_of_baseline": 0.0,
+     "block_bootstrap_by_game": {
+      "mean": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.0,
+      "n_clusters": 1085,
+      "n_rows": 2031,
+      "excludes_zero": false
+     },
+     "block_bootstrap_by_week": {
+      "mean": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.0,
+      "n_clusters": 72,
+      "n_rows": 2031,
+      "excludes_zero": false
+     },
+     "n_rows_improved": 0,
+     "n_rows_worsened": 0
+    }
+   },
+   "by_season": {
+    "2022": {
+     "n": 507,
+     "mean_crps": {
+      "BASELINE": 1.74555,
+      "TRACK1": 1.74555,
+      "TRACK1_MEAN": 1.74555
+     },
+     "TRACK1_delta_pct": 0.0,
+     "TRACK1_improves": false,
+     "TRACK1_MEAN_delta_pct": 0.0,
+     "TRACK1_MEAN_improves": false
+    },
+    "2023": {
+     "n": 506,
+     "mean_crps": {
+      "BASELINE": 1.70661,
+      "TRACK1": 1.70661,
+      "TRACK1_MEAN": 1.70661
+     },
+     "TRACK1_delta_pct": 0.0,
+     "TRACK1_improves": false,
+     "TRACK1_MEAN_delta_pct": 0.0,
+     "TRACK1_MEAN_improves": false
+    },
+    "2024": {
+     "n": 509,
+     "mean_crps": {
+      "BASELINE": 1.69416,
+      "TRACK1": 1.69416,
+      "TRACK1_MEAN": 1.69416
+     },
+     "TRACK1_delta_pct": 0.0,
+     "TRACK1_improves": false,
+     "TRACK1_MEAN_delta_pct": 0.0,
+     "TRACK1_MEAN_improves": false
+    },
+    "2025": {
+     "n": 509,
+     "mean_crps": {
+      "BASELINE": 1.71282,
+      "TRACK1": 1.71282,
+      "TRACK1_MEAN": 1.71282
+     },
+     "TRACK1_delta_pct": 0.0,
+     "TRACK1_improves": false,
+     "TRACK1_MEAN_delta_pct": 0.0,
+     "TRACK1_MEAN_improves": false
+    }
+   },
+   "mechanism_calibration": null,
+   "channel_diagnostics": {
+    "corr_own_expected_margin_with_actual": 0.1537,
+    "corr_own_expected_margin_with_multiplier": null,
+    "multiplier_is_constant": true,
+    "reads": "if the first correlation is near zero the pregame margin carries no net signal for this metric and any multiplier is noise; if it has the OPPOSITE sign to the second, the between-team quality channel outweighs the within-game script channel and the state response points the wrong way"
+   },
+   "multiplier_sd": 0.0
+  },
+  "team_targets": {
+   "n": 2174,
+   "estimator": [
+    "coach_prior",
+    "ewma"
+   ],
+   "is_treated": true,
+   "mean_crps": {
+    "BASELINE": 4.27195,
+    "TRACK1": 4.33682,
+    "TRACK1_MEAN": 4.32122
+   },
+   "discrimination_pearson_r": {
+    "BASELINE": 0.26672,
+    "TRACK1": 0.25533,
+    "TRACK1_MEAN": 0.25511
+   },
+   "sd_of_point": {
+    "BASELINE": 3.57614,
+    "TRACK1": 3.77056,
+    "TRACK1_MEAN": 3.76743
+   },
+   "sd_of_actual": 7.7332,
+   "pit_chi2": {
+    "BASELINE": {
+     "hist": [
+      195,
+      250,
+      213,
+      267,
+      196,
+      219,
+      221,
+      227,
+      195,
+      191
+     ],
+     "expected_per_bin": 217.4,
+     "chi2": 26.718,
+     "df": 9
+    },
+    "TRACK1": {
+     "hist": [
+      155,
+      228,
+      248,
+      249,
+      241,
+      238,
+      227,
+      248,
+      189,
+      151
+     ],
+     "expected_per_bin": 217.4,
+     "chi2": 60.563,
+     "df": 9
+    },
+    "TRACK1_MEAN": {
+     "hist": [
+      195,
+      234,
+      236,
+      241,
+      222,
+      211,
+      216,
+      223,
+      207,
+      189
+     ],
+     "expected_per_bin": 217.4,
+     "chi2": 12.375,
+     "df": 9
+    }
+   },
+   "coverage": {
+    "BASELINE": {
+     "50": 0.5069,
+     "80": 0.822,
+     "90": 0.9098,
+     "95": 0.9554
+    },
+    "TRACK1": {
+     "50": 0.5552,
+     "80": 0.8579,
+     "90": 0.9361,
+     "95": 0.9696
+    },
+    "TRACK1_MEAN": {
+     "50": 0.5023,
+     "80": 0.8234,
+     "90": 0.9126,
+     "95": 0.9531
+    }
+   },
+   "paired_crps_delta_vs_baseline": {
+    "TRACK1": {
+     "delta_mean": 0.06487,
+     "delta_pct_of_baseline": 1.5185,
+     "block_bootstrap_by_game": {
+      "mean": 0.06486988133318716,
+      "ci_lo": 0.04008463544189401,
+      "ci_hi": 0.08901018954086783,
+      "n_clusters": 1087,
+      "n_rows": 2174,
+      "excludes_zero": true
+     },
+     "block_bootstrap_by_week": {
+      "mean": 0.06486988133318716,
+      "ci_lo": 0.03907086641389243,
+      "ci_hi": 0.09059113933073819,
+      "n_clusters": 72,
+      "n_rows": 2174,
+      "excludes_zero": true
+     },
+     "n_rows_improved": 812,
+     "n_rows_worsened": 1362
+    },
+    "TRACK1_MEAN": {
+     "delta_mean": 0.04927,
+     "delta_pct_of_baseline": 1.1533,
+     "block_bootstrap_by_game": {
+      "mean": 0.04926646176890311,
+      "ci_lo": 0.02461485912795026,
+      "ci_hi": 0.0731614279185699,
+      "n_clusters": 1087,
+      "n_rows": 2174,
+      "excludes_zero": true
+     },
+     "block_bootstrap_by_week": {
+      "mean": 0.04926646176890311,
+      "ci_lo": 0.024306891753872368,
+      "ci_hi": 0.07457129092102639,
+      "n_clusters": 72,
+      "n_rows": 2174,
+      "excludes_zero": true
+     },
+     "n_rows_improved": 984,
+     "n_rows_worsened": 1190
+    }
+   },
+   "by_season": {
+    "2022": {
+     "n": 542,
+     "mean_crps": {
+      "BASELINE": 4.49607,
+      "TRACK1": 4.56772,
+      "TRACK1_MEAN": 4.55668
+     },
+     "TRACK1_delta_pct": 1.5936,
+     "TRACK1_improves": false,
+     "TRACK1_MEAN_delta_pct": 1.348,
+     "TRACK1_MEAN_improves": false
+    },
+    "2023": {
+     "n": 544,
+     "mean_crps": {
+      "BASELINE": 4.13389,
+      "TRACK1": 4.20227,
+      "TRACK1_MEAN": 4.18012
+     },
+     "TRACK1_delta_pct": 1.6542,
+     "TRACK1_improves": false,
+     "TRACK1_MEAN_delta_pct": 1.1182,
+     "TRACK1_MEAN_improves": false
+    },
+    "2024": {
+     "n": 544,
+     "mean_crps": {
+      "BASELINE": 4.27843,
+      "TRACK1": 4.31928,
+      "TRACK1_MEAN": 4.30696
+     },
+     "TRACK1_delta_pct": 0.9547,
+     "TRACK1_improves": false,
+     "TRACK1_MEAN_delta_pct": 0.6667,
+     "TRACK1_MEAN_improves": false
+    },
+    "2025": {
+     "n": 544,
+     "mean_crps": {
+      "BASELINE": 4.18024,
+      "TRACK1": 4.25887,
+      "TRACK1_MEAN": 4.24199
+     },
+     "TRACK1_delta_pct": 1.881,
+     "TRACK1_improves": false,
+     "TRACK1_MEAN_delta_pct": 1.4772,
+     "TRACK1_MEAN_improves": false
+    }
+   },
+   "mechanism_calibration": {
+    "coef_on_state_contribution": -0.0882,
+    "se": 0.1644,
+    "ci95": [
+     -0.4104,
+     0.2341
+    ],
+    "reads": "1.0 means correctly scaled; below 1 over-applied; above 1 under-applied"
+   },
+   "channel_diagnostics": {
+    "corr_baseline_point_with_multiplier": 0.06613,
+    "corr_own_expected_margin_with_actual": -0.00594,
+    "corr_own_expected_margin_with_multiplier": -0.99878,
+    "reads": "if the first correlation is near zero the pregame margin carries no net signal for this metric and any multiplier is noise; if it has the OPPOSITE sign to the second, the between-team quality channel outweighs the within-game script channel and the state response points the wrong way"
+   },
+   "multiplier_sd": 0.030539
+  }
+ },
+ "untreated_metrics": [
+  "team_rz_carries"
+ ],
+ "clustering_note": "the two sides of a game share one simulated score path, so a team-game is not an independent observation. Every interval is a block bootstrap over whole games and, separately, whole weeks.",
+ "downstream_qb_propagation": {
+  "harness_note": "a fixed forward-chained room-share and efficiency model, byte-identical across arms including its random indices. It measures propagation of a team budget change. It is NOT the production quarterback layer and is never reported as its quality.",
+  "unit": "QB ROOM per team-game, not the individual quarterback",
+  "why_the_room": "the split inside a room is not pregame-observable when a starter is replaced in game; charging that to a volume experiment would measure the wrong thing",
+  "n_team_games": 2174,
+  "by_arm": {
+   "BASELINE": {
+    "mean_crps_room_dropbacks": 4.62425,
+    "mean_crps_room_attempts": 4.43929,
+    "mean_crps_room_pass_yards": 40.47239,
+    "mean_err_volume_dropbacks": 0.6782,
+    "mean_err_volume_attempts": 0.7587,
+    "mean_err_efficiency_ypa": 0.04994,
+    "mean_err_final_pass_yards": 9.992
+   },
+   "TRACK1": {
+    "mean_crps_room_dropbacks": 4.65077,
+    "delta_pct_room_dropbacks": 0.5734,
+    "block_bootstrap_by_game_room_dropbacks": {
+     "mean": 0.02651423183072677,
+     "ci_lo": -0.0024491862925482824,
+     "ci_hi": 0.05492234556117752,
+     "n_clusters": 1087,
+     "n_rows": 2174,
+     "excludes_zero": false
+    },
+    "mean_crps_room_attempts": 4.48019,
+    "delta_pct_room_attempts": 0.9213,
+    "block_bootstrap_by_game_room_attempts": {
+     "mean": 0.04089701931922724,
+     "ci_lo": 0.014260818767249316,
+     "ci_hi": 0.06720319445722173,
+     "n_clusters": 1087,
+     "n_rows": 2174,
+     "excludes_zero": true
+    },
+    "mean_crps_room_pass_yards": 41.45188,
+    "delta_pct_room_pass_yards": 2.4202,
+    "block_bootstrap_by_game_room_pass_yards": {
+     "mean": 0.9794971297148113,
+     "ci_lo": 0.812332097976081,
+     "ci_hi": 1.141939515064397,
+     "n_clusters": 1087,
+     "n_rows": 2174,
+     "excludes_zero": true
+    },
+    "mean_err_volume_dropbacks": 0.6785,
+    "mean_err_volume_attempts": 0.7589,
+    "mean_err_efficiency_ypa": 0.04994,
+    "mean_err_final_pass_yards": 9.9907
+   },
+   "TRACK1_MEAN": {
+    "mean_crps_room_dropbacks": 4.63432,
+    "delta_pct_room_dropbacks": 0.2176,
+    "block_bootstrap_by_game_room_dropbacks": {
+     "mean": 0.0100638730450782,
+     "ci_lo": -0.018524690317387273,
+     "ci_hi": 0.03898809878104875,
+     "n_clusters": 1087,
+     "n_rows": 2174,
+     "excludes_zero": false
+    },
+    "mean_crps_room_attempts": 4.46711,
+    "delta_pct_room_attempts": 0.6266,
+    "block_bootstrap_by_game_room_attempts": {
+     "mean": 0.027816255749770025,
+     "ci_lo": 0.0016865520929163083,
+     "ci_hi": 0.054586925022999076,
+     "n_clusters": 1087,
+     "n_rows": 2174,
+     "excludes_zero": true
+    },
+    "mean_crps_room_pass_yards": 41.31246,
+    "delta_pct_room_pass_yards": 2.0757,
+    "block_bootstrap_by_game_room_pass_yards": {
+     "mean": 0.8400690708371665,
+     "ci_lo": 0.6740425231140753,
+     "ci_hi": 1.0049451715731368,
+     "n_clusters": 1087,
+     "n_rows": 2174,
+     "excludes_zero": true
+    },
+    "mean_err_volume_dropbacks": 0.6754,
+    "mean_err_volume_attempts": 0.7562,
+    "mean_err_efficiency_ypa": 0.04994,
+    "mean_err_final_pass_yards": 9.9755
+   }
+  },
+  "offsetting_error_rate": {
+   "BASELINE": 0.557,
+   "TRACK1": 0.5446,
+   "TRACK1_MEAN": 0.5446
+  },
+  "offsetting_note": "the share of team-games whose volume error and efficiency error have OPPOSITE signs, so the final yardage error is smaller than either component. A good final number produced this way is not mechanistic success and is not counted as one."
+ },
+ "half_life_by_season": {
+  "2022": {
+   "half_life": 4.0,
+   "basis": "LEAVE_ONE_SEASON_OUT_RMSE",
+   "n_seasons": 2,
+   "scores": {
+    "2.0": 14.01767,
+    "4.0": 13.88984,
+    "8.0": 13.90714,
+    "16.0": 13.94033
+   }
+  },
+  "2023": {
+   "half_life": 4.0,
+   "basis": "LEAVE_ONE_SEASON_OUT_RMSE",
+   "n_seasons": 3,
+   "scores": {
+    "2.0": 13.29998,
+    "4.0": 13.17174,
+    "8.0": 13.19747,
+    "16.0": 13.27956
+   }
+  },
+  "2024": {
+   "half_life": 8.0,
+   "basis": "LEAVE_ONE_SEASON_OUT_RMSE",
+   "n_seasons": 4,
+   "scores": {
+    "2.0": 13.44439,
+    "4.0": 13.26744,
+    "8.0": 13.25738,
+    "16.0": 13.3372
+   }
+  },
+  "2025": {
+   "half_life": 4.0,
+   "basis": "LEAVE_ONE_SEASON_OUT_RMSE",
+   "n_seasons": 5,
+   "scores": {
+    "2.0": 13.42866,
+    "4.0": 13.26727,
+    "8.0": 13.27504,
+    "16.0": 13.37904
+   }
+  }
+ },
+ "fit_log": [
+  {
+   "season": 2022,
+   "week": 1,
+   "n_train_team_quarters": 4281,
+   "n_train_games": 528,
+   "half_life": 4.0,
+   "home_field_advantage": 1.1061,
+   "strength_slope": 0.5563
+  },
+  {
+   "season": 2022,
+   "week": 2,
+   "n_train_team_quarters": 4413,
+   "n_train_games": 544,
+   "half_life": 4.0,
+   "home_field_advantage": 1.0474,
+   "strength_slope": 0.5487
+  },
+  {
+   "season": 2022,
+   "week": 3,
+   "n_train_team_quarters": 4543,
+   "n_train_games": 560,
+   "half_life": 4.0,
+   "home_field_advantage": 1.2158,
+   "strength_slope": 0.545
+  },
+  {
+   "season": 2022,
+   "week": 4,
+   "n_train_team_quarters": 4671,
+   "n_train_games": 576,
+   "half_life": 4.0,
+   "home_field_advantage": 1.1239,
+   "strength_slope": 0.5361
+  },
+  {
+   "season": 2022,
+   "week": 5,
+   "n_train_team_quarters": 4801,
+   "n_train_games": 592,
+   "half_life": 4.0,
+   "home_field_advantage": 1.1337,
+   "strength_slope": 0.5362
+  },
+  {
+   "season": 2022,
+   "week": 6,
+   "n_train_team_quarters": 4931,
+   "n_train_games": 608,
+   "half_life": 4.0,
+   "home_field_advantage": 1.1869,
+   "strength_slope": 0.5423
+  },
+  {
+   "season": 2022,
+   "week": 7,
+   "n_train_team_quarters": 5045,
+   "n_train_games": 622,
+   "half_life": 4.0,
+   "home_field_advantage": 1.1942,
+   "strength_slope": 0.5368
+  },
+  {
+   "season": 2022,
+   "week": 8,
+   "n_train_team_quarters": 5157,
+   "n_train_games": 636,
+   "half_life": 4.0,
+   "home_field_advantage": 1.2034,
+   "strength_slope": 0.5289
+  },
+  {
+   "season": 2022,
+   "week": 9,
+   "n_train_team_quarters": 5279,
+   "n_train_games": 651,
+   "half_life": 4.0,
+   "home_field_advantage": 1.2433,
+   "strength_slope": 0.5721
+  },
+  {
+   "season": 2022,
+   "week": 10,
+   "n_train_team_quarters": 5385,
+   "n_train_games": 664,
+   "half_life": 4.0,
+   "home_field_advantage": 1.3139,
+   "strength_slope": 0.5349
+  },
+  {
+   "season": 2022,
+   "week": 11,
+   "n_train_team_quarters": 5501,
+   "n_train_games": 678,
+   "half_life": 4.0,
+   "home_field_advantage": 1.3042,
+   "strength_slope": 0.5655
+  },
+  {
+   "season": 2022,
+   "week": 12,
+   "n_train_team_quarters": 5614,
+   "n_train_games": 692,
+   "half_life": 4.0,
+   "home_field_advantage": 1.1653,
+   "strength_slope": 0.5721
+  },
+  {
+   "season": 2022,
+   "week": 13,
+   "n_train_team_quarters": 5746,
+   "n_train_games": 708,
+   "half_life": 4.0,
+   "home_field_advantage": 1.2966,
+   "strength_slope": 0.5317
+  },
+  {
+   "season": 2022,
+   "week": 14,
+   "n_train_team_quarters": 5868,
+   "n_train_games": 723,
+   "half_life": 4.0,
+   "home_field_advantage": 1.3773,
+   "strength_slope": 0.5407
+  },
+  {
+   "season": 2022,
+   "week": 15,
+   "n_train_team_quarters": 5972,
+   "n_train_games": 736,
+   "half_life": 4.0,
+   "home_field_advantage": 1.3487,
+   "strength_slope": 0.5433
+  },
+  {
+   "season": 2022,
+   "week": 16,
+   "n_train_team_quarters": 6106,
+   "n_train_games": 752,
+   "half_life": 4.0,
+   "home_field_advantage": 1.3626,
+   "strength_slope": 0.5372
+  },
+  {
+   "season": 2022,
+   "week": 17,
+   "n_train_team_quarters": 6236,
+   "n_train_games": 768,
+   "half_life": 4.0,
+   "home_field_advantage": 1.3685,
+   "strength_slope": 0.5405
+  },
+  {
+   "season": 2022,
+   "week": 18,
+   "n_train_team_quarters": 6358,
+   "n_train_games": 783,
+   "half_life": 4.0,
+   "home_field_advantage": 1.4161,
+   "strength_slope": 0.5472
+  },
+  {
+   "season": 2023,
+   "week": 1,
+   "n_train_team_quarters": 6488,
+   "n_train_games": 799,
+   "half_life": 4.0,
+   "home_field_advantage": 1.4749,
+   "strength_slope": 0.5472
+  },
+  {
+   "season": 2023,
+   "week": 2,
+   "n_train_team_quarters": 6617,
+   "n_train_games": 815,
+   "half_life": 4.0,
+   "home_field_advantage": 1.4066,
+   "strength_slope": 0.5494
+  },
+  {
+   "season": 2023,
+   "week": 3,
+   "n_train_team_quarters": 6748,
+   "n_train_games": 831,
+   "half_life": 4.0,
+   "home_field_advantage": 1.4026,
+   "strength_slope": 0.5535
+  },
+  {
+   "season": 2023,
+   "week": 4,
+   "n_train_team_quarters": 6878,
+   "n_train_games": 847,
+   "half_life": 4.0,
+   "home_field_advantage": 1.4497,
+   "strength_slope": 0.5592
+  },
+  {
+   "season": 2023,
+   "week": 5,
+   "n_train_team_quarters": 7009,
+   "n_train_games": 863,
+   "half_life": 4.0,
+   "home_field_advantage": 1.4831,
+   "strength_slope": 0.5603
+  },
+  {
+   "season": 2023,
+   "week": 6,
+   "n_train_team_quarters": 7121,
+   "n_train_games": 877,
+   "half_life": 4.0,
+   "home_field_advantage": 1.4455,
+   "strength_slope": 0.5594
+  },
+  {
+   "season": 2023,
+   "week": 7,
+   "n_train_team_quarters": 7241,
+   "n_train_games": 892,
+   "half_life": 4.0,
+   "home_field_advantage": 1.4702,
+   "strength_slope": 0.5572
+  },
+  {
+   "season": 2023,
+   "week": 8,
+   "n_train_team_quarters": 7345,
+   "n_train_games": 905,
+   "half_life": 4.0,
+   "home_field_advantage": 1.5334,
+   "strength_slope": 0.5951
+  },
+  {
+   "season": 2023,
+   "week": 9,
+   "n_train_team_quarters": 7475,
+   "n_train_games": 921,
+   "half_life": 4.0,
+   "home_field_advantage": 1.543,
+   "strength_slope": 0.5925
+  },
+  {
+   "season": 2023,
+   "week": 10,
+   "n_train_team_quarters": 7587,
+   "n_train_games": 935,
+   "half_life": 4.0,
+   "home_field_advantage": 1.617,
+   "strength_slope": 0.5976
+  },
+  {
+   "season": 2023,
+   "week": 11,
+   "n_train_team_quarters": 7699,
+   "n_train_games": 949,
+   "half_life": 4.0,
+   "home_field_advantage": 1.6019,
+   "strength_slope": 0.6008
+  },
+  {
+   "season": 2023,
+   "week": 12,
+   "n_train_team_quarters": 7811,
+   "n_train_games": 963,
+   "half_life": 4.0,
+   "home_field_advantage": 1.6201,
+   "strength_slope": 0.6073
+  },
+  {
+   "season": 2023,
+   "week": 13,
+   "n_train_team_quarters": 7941,
+   "n_train_games": 979,
+   "half_life": 4.0,
+   "home_field_advantage": 1.591,
+   "strength_slope": 0.6163
+  },
+  {
+   "season": 2023,
+   "week": 14,
+   "n_train_team_quarters": 8049,
+   "n_train_games": 992,
+   "half_life": 4.0,
+   "home_field_advantage": 1.5256,
+   "strength_slope": 0.6182
+  },
+  {
+   "season": 2023,
+   "week": 15,
+   "n_train_team_quarters": 8171,
+   "n_train_games": 1007,
+   "half_life": 4.0,
+   "home_field_advantage": 1.58,
+   "strength_slope": 0.6149
+  },
+  {
+   "season": 2023,
+   "week": 16,
+   "n_train_team_quarters": 8303,
+   "n_train_games": 1023,
+   "half_life": 4.0,
+   "home_field_advantage": 1.6785,
+   "strength_slope": 0.6187
+  },
+  {
+   "season": 2023,
+   "week": 17,
+   "n_train_team_quarters": 8431,
+   "n_train_games": 1039,
+   "half_life": 4.0,
+   "home_field_advantage": 1.6956,
+   "strength_slope": 0.6151
+  },
+  {
+   "season": 2023,
+   "week": 18,
+   "n_train_team_quarters": 8559,
+   "n_train_games": 1055,
+   "half_life": 4.0,
+   "home_field_advantage": 1.7461,
+   "strength_slope": 0.6171
+  },
+  {
+   "season": 2024,
+   "week": 1,
+   "n_train_team_quarters": 8687,
+   "n_train_games": 1071,
+   "half_life": 8.0,
+   "home_field_advantage": 1.7629,
+   "strength_slope": 0.6171
+  },
+  {
+   "season": 2024,
+   "week": 2,
+   "n_train_team_quarters": 8816,
+   "n_train_games": 1087,
+   "half_life": 8.0,
+   "home_field_advantage": 1.7757,
+   "strength_slope": 0.6231
+  },
+  {
+   "season": 2024,
+   "week": 3,
+   "n_train_team_quarters": 8946,
+   "n_train_games": 1103,
+   "half_life": 8.0,
+   "home_field_advantage": 1.717,
+   "strength_slope": 0.6192
+  },
+  {
+   "season": 2024,
+   "week": 4,
+   "n_train_team_quarters": 9074,
+   "n_train_games": 1119,
+   "half_life": 8.0,
+   "home_field_advantage": 1.7219,
+   "strength_slope": 0.613
+  },
+  {
+   "season": 2024,
+   "week": 5,
+   "n_train_team_quarters": 9202,
+   "n_train_games": 1135,
+   "half_life": 8.0,
+   "home_field_advantage": 1.7238,
+   "strength_slope": 0.6094
+  },
+  {
+   "season": 2024,
+   "week": 6,
+   "n_train_team_quarters": 9317,
+   "n_train_games": 1149,
+   "half_life": 8.0,
+   "home_field_advantage": 1.7693,
+   "strength_slope": 0.6058
+  },
+  {
+   "season": 2024,
+   "week": 7,
+   "n_train_team_quarters": 9429,
+   "n_train_games": 1163,
+   "half_life": 8.0,
+   "home_field_advantage": 1.664,
+   "strength_slope": 0.6099
+  },
+  {
+   "season": 2024,
+   "week": 8,
+   "n_train_team_quarters": 9549,
+   "n_train_games": 1178,
+   "half_life": 8.0,
+   "home_field_advantage": 1.6457,
+   "strength_slope": 0.6159
+  },
+  {
+   "season": 2024,
+   "week": 9,
+   "n_train_team_quarters": 9677,
+   "n_train_games": 1194,
+   "half_life": 8.0,
+   "home_field_advantage": 1.6659,
+   "strength_slope": 0.6194
+  },
+  {
+   "season": 2024,
+   "week": 10,
+   "n_train_team_quarters": 9802,
+   "n_train_games": 1209,
+   "half_life": 8.0,
+   "home_field_advantage": 1.7097,
+   "strength_slope": 0.6182
+  },
+  {
+   "season": 2024,
+   "week": 11,
+   "n_train_team_quarters": 9916,
+   "n_train_games": 1223,
+   "half_life": 8.0,
+   "home_field_advantage": 1.6705,
+   "strength_slope": 0.6164
+  },
+  {
+   "season": 2024,
+   "week": 12,
+   "n_train_team_quarters": 10028,
+   "n_train_games": 1237,
+   "half_life": 8.0,
+   "home_field_advantage": 1.7656,
+   "strength_slope": 0.5671
+  },
+  {
+   "season": 2024,
+   "week": 13,
+   "n_train_team_quarters": 10134,
+   "n_train_games": 1250,
+   "half_life": 8.0,
+   "home_field_advantage": 1.7475,
+   "strength_slope": 0.5659
+  },
+  {
+   "season": 2024,
+   "week": 14,
+   "n_train_team_quarters": 10264,
+   "n_train_games": 1266,
+   "half_life": 8.0,
+   "home_field_advantage": 1.7547,
+   "strength_slope": 0.5666
+  },
+  {
+   "season": 2024,
+   "week": 15,
+   "n_train_team_quarters": 10369,
+   "n_train_games": 1279,
+   "half_life": 8.0,
+   "home_field_advantage": 1.7746,
+   "strength_slope": 0.5664
+  },
+  {
+   "season": 2024,
+   "week": 16,
+   "n_train_team_quarters": 10497,
+   "n_train_games": 1295,
+   "half_life": 8.0,
+   "home_field_advantage": 1.7183,
+   "strength_slope": 0.5742
+  },
+  {
+   "season": 2024,
+   "week": 17,
+   "n_train_team_quarters": 10627,
+   "n_train_games": 1311,
+   "half_life": 8.0,
+   "home_field_advantage": 1.7977,
+   "strength_slope": 0.5772
+  },
+  {
+   "season": 2024,
+   "week": 18,
+   "n_train_team_quarters": 10758,
+   "n_train_games": 1327,
+   "half_life": 8.0,
+   "home_field_advantage": 1.7974,
+   "strength_slope": 0.5895
+  },
+  {
+   "season": 2025,
+   "week": 1,
+   "n_train_team_quarters": 10889,
+   "n_train_games": 1343,
+   "half_life": 4.0,
+   "home_field_advantage": 1.8373,
+   "strength_slope": 0.5812
+  },
+  {
+   "season": 2025,
+   "week": 2,
+   "n_train_team_quarters": 11017,
+   "n_train_games": 1359,
+   "half_life": 4.0,
+   "home_field_advantage": 1.8646,
+   "strength_slope": 0.5768
+  },
+  {
+   "season": 2025,
+   "week": 3,
+   "n_train_team_quarters": 11147,
+   "n_train_games": 1375,
+   "half_life": 4.0,
+   "home_field_advantage": 1.8321,
+   "strength_slope": 0.5822
+  },
+  {
+   "season": 2025,
+   "week": 4,
+   "n_train_team_quarters": 11275,
+   "n_train_games": 1391,
+   "half_life": 4.0,
+   "home_field_advantage": 1.9015,
+   "strength_slope": 0.5778
+  },
+  {
+   "season": 2025,
+   "week": 5,
+   "n_train_team_quarters": 11405,
+   "n_train_games": 1407,
+   "half_life": 4.0,
+   "home_field_advantage": 1.937,
+   "strength_slope": 0.6487
+  },
+  {
+   "season": 2025,
+   "week": 6,
+   "n_train_team_quarters": 11519,
+   "n_train_games": 1421,
+   "half_life": 4.0,
+   "home_field_advantage": 1.9343,
+   "strength_slope": 0.5735
+  },
+  {
+   "season": 2025,
+   "week": 7,
+   "n_train_team_quarters": 11639,
+   "n_train_games": 1436,
+   "half_life": 4.0,
+   "home_field_advantage": 1.9625,
+   "strength_slope": 0.5681
+  },
+  {
+   "season": 2025,
+   "week": 8,
+   "n_train_team_quarters": 11759,
+   "n_train_games": 1451,
+   "half_life": 4.0,
+   "home_field_advantage": 1.9877,
+   "strength_slope": 0.5689
+  },
+  {
+   "season": 2025,
+   "week": 9,
+   "n_train_team_quarters": 11863,
+   "n_train_games": 1464,
+   "half_life": 4.0,
+   "home_field_advantage": 1.9541,
+   "strength_slope": 0.6481
+  },
+  {
+   "season": 2025,
+   "week": 10,
+   "n_train_team_quarters": 11977,
+   "n_train_games": 1478,
+   "half_life": 4.0,
+   "home_field_advantage": 1.9034,
+   "strength_slope": 0.6485
+  },
+  {
+   "season": 2025,
+   "week": 11,
+   "n_train_team_quarters": 12091,
+   "n_train_games": 1492,
+   "half_life": 4.0,
+   "home_field_advantage": 1.891,
+   "strength_slope": 0.6485
+  },
+  {
+   "season": 2025,
+   "week": 12,
+   "n_train_team_quarters": 12215,
+   "n_train_games": 1507,
+   "half_life": 4.0,
+   "home_field_advantage": 1.9095,
+   "strength_slope": 0.6464
+  },
+  {
+   "season": 2025,
+   "week": 13,
+   "n_train_team_quarters": 12333,
+   "n_train_games": 1521,
+   "half_life": 4.0,
+   "home_field_advantage": 1.974,
+   "strength_slope": 0.575
+  },
+  {
+   "season": 2025,
+   "week": 14,
+   "n_train_team_quarters": 12463,
+   "n_train_games": 1537,
+   "half_life": 4.0,
+   "home_field_advantage": 1.9385,
+   "strength_slope": 0.5748
+  },
+  {
+   "season": 2025,
+   "week": 15,
+   "n_train_team_quarters": 12577,
+   "n_train_games": 1551,
+   "half_life": 4.0,
+   "home_field_advantage": 1.9072,
+   "strength_slope": 0.5792
+  },
+  {
+   "season": 2025,
+   "week": 16,
+   "n_train_team_quarters": 12705,
+   "n_train_games": 1567,
+   "half_life": 4.0,
+   "home_field_advantage": 1.9291,
+   "strength_slope": 0.585
+  },
+  {
+   "season": 2025,
+   "week": 17,
+   "n_train_team_quarters": 12837,
+   "n_train_games": 1583,
+   "half_life": 4.0,
+   "home_field_advantage": 1.8847,
+   "strength_slope": 0.5816
+  },
+  {
+   "season": 2025,
+   "week": 18,
+   "n_train_team_quarters": 12965,
+   "n_train_games": 1599,
+   "half_life": 4.0,
+   "home_field_advantage": 1.8535,
+   "strength_slope": 0.5868
+  }
+ ],
+ "n_draws": 1000,
+ "decision": {
+  "decision": "REJECT",
+  "treated_metrics": [
+   "team_carries",
+   "team_dropbacks_part",
+   "team_off_snaps",
+   "team_targets"
+  ],
+  "metrics_improved": [
+   "team_carries"
+  ],
+  "metrics_significantly_better_by_game_cluster": [
+   "team_carries"
+  ],
+  "metrics_significantly_worse_by_game_cluster": [
+   "team_dropbacks_part",
+   "team_off_snaps",
+   "team_targets"
+  ],
+  "metric_seasons_improved": 3,
+  "metric_seasons_total": 16,
+  "rule": "SUPPORT / WEAK_SUPPORT / REJECT, against a rule stated before the run.\n\n    The rule, from the directive: support requires BROAD forward-chain\n    improvement, not one era or one metric. Operationalised as:\n\n      SUPPORT       every treated metric improves overall, a majority of\n                    treated metric-seasons improve, and at least one primary\n                    metric's improvement survives the game-clustered bootstrap.\n      WEAK_SUPPORT  some treated metric improves and no treated metric is\n                    significantly worse under the game-clustered bootstrap.\n      REJECT        otherwise."
+ }
+}

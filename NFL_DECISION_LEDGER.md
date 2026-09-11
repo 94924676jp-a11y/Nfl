@@ -1943,3 +1943,61 @@ mode; R6 shipping made one real and it failed. Both now assert the property.
 bar decide. Nothing promoted.
 
 **Detail:** `NFL_R6_ROLE_APPEARANCE_AUDIT.md`.
+
+---
+
+## 2026-09-11 — Track 1: game-state-conditioned offense. REJECT.
+
+**The question.** Does a game state simulated from pregame information improve
+team offensive volume and the quarterback distributions downstream of it.
+Forward-chained 2022-2025, refit weekly on everything strictly earlier,
+training from 2020. 10,727 scored team-games, 72 weekly refits, one change
+between the arms, common random numbers across them.
+
+**The response curve is real and was never in doubt.** Estimated on 13,093
+team-quarters conditioned on the differential ENTERING the quarter -- a
+within-quarter differential is partly caused by the plays being counted.
+Fourth-quarter dropback rate is 1.305x the quarter mean entering two scores
+down and 0.584x entering two scores up. Designed rush runs the other way,
+0.537 to 1.640. Empirical-Bayes shrinkage does visible work: weight 0.04 where
+there is no signal, 0.998 where there is.
+
+**The result.** team_carries improves 0.611% of CRPS, game-clustered interval
+[-0.0493, -0.0027], three seasons of four, r 0.181 -> 0.210, mechanism
+coefficient 1.24 [0.84, 1.63]. team_dropbacks_part +0.821%, team_off_snaps
++0.526%, team_targets +1.518%, all significantly WORSE. Downstream QB-room
+passing yards +2.42%. Predeclared rule gives REJECT, and it is REJECT.
+
+**Why, and it is not the obvious reason.** A simulated pregame differential
+conflates two channels. Within a game, trailing raises plays and pass rate.
+Across games, a favourite is a BETTER TEAM and better teams sustain more
+drives whatever the script. Correlation of a team's own expected margin with
+what it actually did: carries +0.153, snaps +0.086, dropbacks -0.048, targets
+-0.006. The multiplier points the trailing-team way in all four. For carries
+the channels agree; for snaps they oppose and the quality channel is larger,
+so the mechanism coefficient is -1.47 [-2.24, -0.70] -- significantly
+wrong-signed out of sample from a curve that is correct in game.
+
+**A hypothesis withdrawn.** I expected double counting -- the baseline already
+encoding script. corr(baseline point, multiplier) is 0.14, 0.02, -0.10, 0.07.
+It does not. That explanation is wrong and is withdrawn rather than kept
+beside the one the data support.
+
+**Mean versus width, separated.** A third diagnostic arm using the expected
+multiplier shows team_dropbacks_part's mean shift alone is +0.315% with CI
+[-0.015, +0.045], not distinguishable from zero; the per-draw arm's +0.821% is
+added predictive width, and coverage says so (50% intervals cover 56.4%).
+
+**Kept regardless.** 55.7% of team-games have volume error and efficiency
+error of opposite sign, so a majority of good final passing-yardage numbers
+are produced by cancellation. Now measured on every propagation row.
+
+**Boundary, not averaged away.** The rushing-volume channel works. Nothing
+promoted, R8 untouched, no market quantity an input at any layer, no threshold
+moved.
+
+**Suite:** 74 modules, 812 test functions, 4,410 checks, 0 failing, 0 raised.
+
+**Detail:** `nfl/research/track1/TRACK1_SPEC.md`, `TRACK1_DECISION.md`,
+`TRACK1_FORWARD_CHAIN_RESULTS.json`, `TRACK1_DIAGNOSTICS.csv`.
+
