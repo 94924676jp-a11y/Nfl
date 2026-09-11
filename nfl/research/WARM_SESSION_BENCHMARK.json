@@ -1,0 +1,101 @@
+{
+ "artifact": "NFL_WARM_SESSION_BENCHMARK",
+ "spec_version": "warm-session-1",
+ "date": "2026-09-13",
+ "candidate": "R8",
+ "n_games": 12,
+ "target": "one changed game in a warm session should cost approximately one game's real forecast time, not the fresh-process setup",
+ "cases": [
+  {
+   "case": "A_cold_12_game_slate",
+   "initialization_seconds": 1.869,
+   "forecast_seconds": 208.1521,
+   "export_seconds": 0.4607,
+   "total_seconds": 210.5463,
+   "wall_seconds": 210.55,
+   "models_recomputed": 12,
+   "games_reused": 0,
+   "shared_state_cache": "MISS",
+   "completeness": {
+    "full": 0,
+    "partial": 0,
+    "qb_only": 12,
+    "unusable": 0
+   }
+  },
+  {
+   "case": "B_warm_no_change",
+   "initialization_seconds": 1.804,
+   "forecast_seconds": 0.0,
+   "export_seconds": 0.4478,
+   "total_seconds": 2.3016,
+   "wall_seconds": 2.31,
+   "models_recomputed": 0,
+   "games_reused": 12,
+   "shared_state_cache": "HIT",
+   "completeness": {
+    "full": 0,
+    "partial": 0,
+    "qb_only": 12,
+    "unusable": 0
+   }
+  },
+  {
+   "case": "C_warm_one_changed",
+   "initialization_seconds": 1.766,
+   "forecast_seconds": 11.7815,
+   "export_seconds": 0.4435,
+   "total_seconds": 14.0389,
+   "wall_seconds": 14.04,
+   "models_recomputed": 1,
+   "games_reused": 11,
+   "shared_state_cache": "HIT",
+   "completeness": {
+    "full": 0,
+    "partial": 0,
+    "qb_only": 12,
+    "unusable": 0
+   }
+  },
+  {
+   "case": "D_fresh_process_one_changed",
+   "initialization_seconds": 1.866,
+   "forecast_seconds": 72.3368,
+   "export_seconds": 0.4337,
+   "total_seconds": 74.6898,
+   "wall_seconds": 74.69,
+   "models_recomputed": 1,
+   "games_reused": 11,
+   "shared_state_cache": "MISS",
+   "completeness": {
+    "full": 0,
+    "partial": 0,
+    "qb_only": 12,
+    "unusable": 0
+   }
+  }
+ ],
+ "headline": {
+  "C_total": 14.0389,
+  "D_total": 74.6898,
+  "speedup_C_over_D": 5.32,
+  "C_forecast_seconds": 11.7815,
+  "measured_steady_state_per_game_seconds": 10.7,
+  "target_met": true
+ },
+ "what_is_cached": "appearance_r7.build_frame and appearance_r8.enriched_frame only -- a pure function of the twelve hash-checked historical leaves and dc25_daily.csv.gz. No 2026 vintage feeds them.",
+ "what_is_not_cached": "every forecast output, team volume, QB allocation and per-slate appearance. A game whose consumed slice moved is recomputed in full.",
+ "identity_evidence": "2026_01_BUF_HOU was sealed cold and again warm; all three seals carry draw_content_digest 62ea6b7bf077e13ce4beb5a2 while written_at differs, so the football is byte-identical and only metadata moved.",
+ "session_summary": {
+  "n_refreshes": 3,
+  "cache_hits": 2,
+  "cache_misses": 1,
+  "warm_seconds": null,
+  "fingerprint": null,
+  "per_refresh_wall_seconds": [
+   210.5487,
+   2.3028,
+   14.0406
+  ]
+ }
+}

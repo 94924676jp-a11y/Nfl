@@ -1,0 +1,7883 @@
+{
+ "artifact": "NFL_V1_PREGAME_PLAYER_BOARD",
+ "authorization": {
+  "code": "NFL1_NOT_AUTHORIZED",
+  "detail": "NFL-1 is 'NOT AUTHORIZED' and G0A is '11/12'. A forecast may be COMPUTED and SEALED locally, but it may not be published. No test result, checklist state or caller flag can change this -- only an owner authorization record.",
+  "label": "SHADOW / NOT AUTHORIZED",
+  "may_be_called_published": false,
+  "nfl1": "NOT AUTHORIZED",
+  "note": "This forecast is not published, not prospective evidence and not production output. It was executed internally under a frozen candidate configuration.",
+  "promoted": false,
+  "prospective_eligible": false,
+  "test_only": false
+ },
+ "code_commit": "620e6a3b82a5997e5745ed9cfbab0ba370c7e32a+dirty[17]",
+ "completeness": "PARTIAL_PLAYER_COVERAGE",
+ "component_manifest": {
+  "applied": [
+   "A1",
+   "A3G",
+   "C0",
+   "R2",
+   "SC1"
+  ],
+  "not_reached": []
+ },
+ "confidence_board": {
+  "dimensions": [
+   "input_completeness",
+   "role_certainty",
+   "distribution_width",
+   "status_certainty",
+   "layer_completeness"
+  ],
+  "highest_confidence": [
+   {
+    "confidence": {
+     "means": "confidence in the model and its inputs, NOT in the outcome. A high-confidence projection can still miss.",
+     "parts": {
+      "distribution_width": 0.0,
+      "input_completeness": 1.0,
+      "layer_completeness": 0.8636,
+      "role_certainty": 0.369,
+      "status_certainty": 0.4
+     },
+     "primary_metric": "qb/pyds",
+     "reasons": {
+      "distribution_width": "IQR/median 1.74",
+      "input_completeness": "7 source capture(s) validated",
+      "layer_completeness": "1/1 layer(s); 8/11 metric(s) fully modelled, the rest provisional; 1 named absence(s)",
+      "role_certainty": "30% of the game's quarterback dropbacks",
+      "status_certainty": "rows filed but report_status unfilled -- the game-designation report was never captured"
+     },
+     "score": 0.5265
+    },
+    "depth_chart": "QB1",
+    "gsis_id": "00-0040676",
+    "layers": [
+     "qb"
+    ],
+    "metrics": {
+     "qb/att": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Pass attempts",
+      "mean": 19.2,
+      "median": 23.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 23.0,
+      "p75": 34.0,
+      "p90": 40.0,
+      "sd": 17.13,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.475,
+        "threshold": "24.5+"
+       },
+       {
+        "p": 0.363,
+        "threshold": "29.5+"
+       },
+       {
+        "p": 0.233,
+        "threshold": "34.5+"
+       },
+       {
+        "p": 0.117,
+        "threshold": "39.5+"
+       }
+      ]
+     },
+     "qb/cmp": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Completions",
+      "mean": 11.76,
+      "median": 13.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 13.0,
+      "p75": 21.0,
+      "p90": 26.0,
+      "sd": 10.74,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.463,
+        "threshold": "14.5+"
+       },
+       {
+        "p": 0.287,
+        "threshold": "19.5+"
+       },
+       {
+        "p": 0.131,
+        "threshold": "24.5+"
+       },
+       {
+        "p": 0.038,
+        "threshold": "29.5+"
+       }
+      ]
+     },
+     "qb/db": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Dropbacks",
+      "mean": 21.92,
+      "median": 28.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 28.0,
+      "p75": 39.0,
+      "p90": 46.0,
+      "sd": 19.45,
+      "status": "MODELED",
+      "thresholds": []
+     },
+     "qb/int": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Interceptions",
+      "mean": 0.29,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 1.0,
+      "sd": 0.6,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.221,
+        "threshold": "1+"
+       },
+       {
+        "p": 0.057,
+        "threshold": "2+"
+       }
+      ]
+     },
+     "qb/ptd": {
+      "caveat": "TD2 pooled positional control, governance HOLD_TENTATIVE",
+      "kind": "count",
+      "label": "Passing TD",
+      "mean": 0.64,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 1.0,
+      "p90": 2.0,
+      "sd": 1.05,
+      "status": "PROVISIONAL",
+      "thresholds": [
+       {
+        "p": 0.37,
+        "threshold": "1+"
+       },
+       {
+        "p": 0.165,
+        "threshold": "2+"
+       },
+       {
+        "p": 0.066,
+        "threshold": "3+"
+       }
+      ]
+     },
+     "qb/pyds": {
+      "caveat": null,
+      "kind": "yards",
+      "label": "Passing yards",
+      "mean": 123.5,
+      "median": 123.58,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 123.58,
+      "p75": 215.44,
+      "p90": 283.5,
+      "sd": 120.26,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.354,
+        "threshold": "175.5+"
+       },
+       {
+        "p": 0.292,
+        "threshold": "200.5+"
+       },
+       {
+        "p": 0.219,
+        "threshold": "225.5+"
+       },
+       {
+        "p": 0.154,
+        "threshold": "250.5+"
+       },
+       {
+        "p": 0.112,
+        "threshold": "275.5+"
+       },
+       {
+        "p": 0.076,
+        "threshold": "300.5+"
+       }
+      ]
+     },
+     "qb/rtd": {
+      "caveat": "TD2 pooled positional control, governance HOLD_TENTATIVE",
+      "kind": "count",
+      "label": "Rushing TD",
+      "mean": 0.09,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 0.0,
+      "sd": 0.33,
+      "status": "PROVISIONAL",
+      "thresholds": []
+     },
+     "qb/rush_opp": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Rush attempts",
+      "mean": 1.35,
+      "median": 1.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 1.0,
+      "p75": 2.0,
+      "p90": 4.0,
+      "sd": 1.64,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.389,
+        "threshold": "2+"
+       },
+       {
+        "p": 0.118,
+        "threshold": "4+"
+       },
+       {
+        "p": 0.015,
+        "threshold": "6+"
+       }
+      ]
+     },
+     "qb/ryds": {
+      "caveat": "QB V1 draws yards per rush from the passer's own history mixed with the positional pool. It is adjudicated, unlike the RB control.",
+      "kind": "yards",
+      "label": "Rushing yards",
+      "mean": 6.55,
+      "median": 2.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 2.0,
+      "p75": 10.0,
+      "p90": 21.0,
+      "sd": 9.97,
+      "status": "PROVISIONAL",
+      "thresholds": [
+       {
+        "p": 0.262,
+        "threshold": "9.5+"
+       },
+       {
+        "p": 0.11,
+        "threshold": "19.5+"
+       },
+       {
+        "p": 0.048,
+        "threshold": "29.5+"
+       },
+       {
+        "p": 0.02,
+        "threshold": "39.5+"
+       }
+      ]
+     },
+     "qb/sacks": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Sacks taken",
+      "mean": 1.82,
+      "median": 1.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 1.0,
+      "p75": 3.0,
+      "p90": 5.0,
+      "sd": 2.03,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.57,
+        "threshold": "1+"
+       },
+       {
+        "p": 0.479,
+        "threshold": "2+"
+       },
+       {
+        "p": 0.346,
+        "threshold": "3+"
+       }
+      ]
+     },
+     "qb/scr": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Scrambles",
+      "mean": 0.89,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 2.0,
+      "p90": 3.0,
+      "sd": 1.21,
+      "status": "MODELED",
+      "thresholds": []
+     }
+    },
+    "opportunity_share": {
+     "qb/db": {
+      "basis": "mean of the player's draws over the mean of the game-wide pool on the same draw index",
+      "share_of_game_pool": 0.2952
+     }
+    },
+    "position": "QB",
+    "team": "TEN",
+    "touchdown": {
+     "anytime": 0.083,
+     "basis": "fraction of draws with at least one scoring play, summed within each draw rather than multiplied across marginals",
+     "components": {
+      "qb/ptd": 0.37,
+      "qb/rtd": 0.083
+     },
+     "two_plus": 0.011
+    },
+    "unavailable": [
+     {
+      "affects": [
+       "QB"
+      ],
+      "code": "NO_RATE_COMPOSITE_LAYER",
+      "label": "Passer rating",
+      "metric": "qb/rating",
+      "reason": "A composite of forecast components is not itself a forecast distribution and would misstate its own uncertainty.",
+      "status": "UNAVAILABLE"
+     }
+    ]
+   },
+   {
+    "confidence": {
+     "means": "confidence in the model and its inputs, NOT in the outcome. A high-confidence projection can still miss.",
+     "parts": {
+      "distribution_width": 0.0,
+      "input_completeness": 1.0,
+      "layer_completeness": 0.8636,
+      "role_certainty": 0.3299,
+      "status_certainty": 0.4
+     },
+     "primary_metric": "qb/pyds",
+     "reasons": {
+      "distribution_width": "IQR/median 1.71",
+      "input_completeness": "7 source capture(s) validated",
+      "layer_completeness": "1/1 layer(s); 8/11 metric(s) fully modelled, the rest provisional; 1 named absence(s)",
+      "role_certainty": "26% of the game's quarterback dropbacks",
+      "status_certainty": "rows filed but report_status unfilled -- the game-designation report was never captured"
+     },
+     "score": 0.5187
+    },
+    "depth_chart": "QB1",
+    "gsis_id": "00-0030565",
+    "layers": [
+     "qb"
+    ],
+    "metrics": {
+     "qb/att": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Pass attempts",
+      "mean": 17.26,
+      "median": 20.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 20.0,
+      "p75": 31.0,
+      "p90": 37.0,
+      "sd": 15.59,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.433,
+        "threshold": "24.5+"
+       },
+       {
+        "p": 0.32,
+        "threshold": "29.5+"
+       },
+       {
+        "p": 0.162,
+        "threshold": "34.5+"
+       },
+       {
+        "p": 0.054,
+        "threshold": "39.5+"
+       }
+      ]
+     },
+     "qb/cmp": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Completions",
+      "mean": 11.81,
+      "median": 13.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 13.0,
+      "p75": 21.0,
+      "p90": 26.0,
+      "sd": 10.85,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.47,
+        "threshold": "14.5+"
+       },
+       {
+        "p": 0.33,
+        "threshold": "19.5+"
+       },
+       {
+        "p": 0.137,
+        "threshold": "24.5+"
+       },
+       {
+        "p": 0.034,
+        "threshold": "29.5+"
+       }
+      ]
+     },
+     "qb/db": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Dropbacks",
+      "mean": 19.59,
+      "median": 23.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 23.0,
+      "p75": 35.0,
+      "p90": 42.0,
+      "sd": 17.65,
+      "status": "MODELED",
+      "thresholds": []
+     },
+     "qb/int": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Interceptions",
+      "mean": 0.41,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 1.0,
+      "p90": 1.0,
+      "sd": 0.71,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.301,
+        "threshold": "1+"
+       },
+       {
+        "p": 0.087,
+        "threshold": "2+"
+       }
+      ]
+     },
+     "qb/ptd": {
+      "caveat": "TD2 pooled positional control, governance HOLD_TENTATIVE",
+      "kind": "count",
+      "label": "Passing TD",
+      "mean": 0.77,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 1.0,
+      "p90": 2.0,
+      "sd": 1.09,
+      "status": "PROVISIONAL",
+      "thresholds": [
+       {
+        "p": 0.428,
+        "threshold": "1+"
+       },
+       {
+        "p": 0.221,
+        "threshold": "2+"
+       },
+       {
+        "p": 0.08,
+        "threshold": "3+"
+       }
+      ]
+     },
+     "qb/pyds": {
+      "caveat": null,
+      "kind": "yards",
+      "label": "Passing yards",
+      "mean": 126.84,
+      "median": 130.35,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 130.35,
+      "p75": 222.56,
+      "p90": 286.96,
+      "sd": 122.57,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.395,
+        "threshold": "175.5+"
+       },
+       {
+        "p": 0.318,
+        "threshold": "200.5+"
+       },
+       {
+        "p": 0.241,
+        "threshold": "225.5+"
+       },
+       {
+        "p": 0.175,
+        "threshold": "250.5+"
+       },
+       {
+        "p": 0.118,
+        "threshold": "275.5+"
+       },
+       {
+        "p": 0.08,
+        "threshold": "300.5+"
+       }
+      ]
+     },
+     "qb/rtd": {
+      "caveat": "TD2 pooled positional control, governance HOLD_TENTATIVE",
+      "kind": "count",
+      "label": "Rushing TD",
+      "mean": 0.04,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 0.0,
+      "sd": 0.2,
+      "status": "PROVISIONAL",
+      "thresholds": []
+     },
+     "qb/rush_opp": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Rush attempts",
+      "mean": 1.39,
+      "median": 1.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 1.0,
+      "p75": 2.25,
+      "p90": 4.0,
+      "sd": 1.7,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.394,
+        "threshold": "2+"
+       },
+       {
+        "p": 0.12,
+        "threshold": "4+"
+       },
+       {
+        "p": 0.025,
+        "threshold": "6+"
+       }
+      ]
+     },
+     "qb/ryds": {
+      "caveat": "QB V1 draws yards per rush from the passer's own history mixed with the positional pool. It is adjudicated, unlike the RB control.",
+      "kind": "yards",
+      "label": "Rushing yards",
+      "mean": 7.8,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 12.0,
+      "p90": 24.0,
+      "sd": 13.48,
+      "status": "PROVISIONAL",
+      "thresholds": [
+       {
+        "p": 0.292,
+        "threshold": "9.5+"
+       },
+       {
+        "p": 0.148,
+        "threshold": "19.5+"
+       },
+       {
+        "p": 0.078,
+        "threshold": "29.5+"
+       },
+       {
+        "p": 0.035,
+        "threshold": "39.5+"
+       }
+      ]
+     },
+     "qb/sacks": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Sacks taken",
+      "mean": 1.53,
+      "median": 1.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 1.0,
+      "p75": 3.0,
+      "p90": 4.0,
+      "sd": 1.83,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.544,
+        "threshold": "1+"
+       },
+       {
+        "p": 0.418,
+        "threshold": "2+"
+       },
+       {
+        "p": 0.273,
+        "threshold": "3+"
+       }
+      ]
+     },
+     "qb/scr": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Scrambles",
+      "mean": 0.8,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 1.0,
+      "p90": 2.0,
+      "sd": 1.15,
+      "status": "MODELED",
+      "thresholds": []
+     }
+    },
+    "opportunity_share": {
+     "qb/db": {
+      "basis": "mean of the player's draws over the mean of the game-wide pool on the same draw index",
+      "share_of_game_pool": 0.2639
+     }
+    },
+    "position": "QB",
+    "team": "NYJ",
+    "touchdown": {
+     "anytime": 0.039,
+     "basis": "fraction of draws with at least one scoring play, summed within each draw rather than multiplied across marginals",
+     "components": {
+      "qb/ptd": 0.428,
+      "qb/rtd": 0.039
+     },
+     "two_plus": 0.001
+    },
+    "unavailable": [
+     {
+      "affects": [
+       "QB"
+      ],
+      "code": "NO_RATE_COMPOSITE_LAYER",
+      "label": "Passer rating",
+      "metric": "qb/rating",
+      "reason": "A composite of forecast components is not itself a forecast distribution and would misstate its own uncertainty.",
+      "status": "UNAVAILABLE"
+     }
+    ]
+   },
+   {
+    "confidence": {
+     "means": "confidence in the model and its inputs, NOT in the outcome. A high-confidence projection can still miss.",
+     "parts": {
+      "distribution_width": 0.0,
+      "input_completeness": 1.0,
+      "layer_completeness": 0.8636,
+      "role_certainty": 0.1827,
+      "status_certainty": 0.4
+     },
+     "primary_metric": "qb/pyds",
+     "reasons": {
+      "distribution_width": "IQR/median 13.64",
+      "input_completeness": "7 source capture(s) validated",
+      "layer_completeness": "1/1 layer(s); 8/11 metric(s) fully modelled, the rest provisional; 1 named absence(s)",
+      "role_certainty": "15% of the game's quarterback dropbacks",
+      "status_certainty": "rows filed but report_status unfilled -- the game-designation report was never captured"
+     },
+     "score": 0.4893
+    },
+    "depth_chart": "QB2",
+    "gsis_id": "00-0041056",
+    "layers": [
+     "qb"
+    ],
+    "metrics": {
+     "qb/att": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Pass attempts",
+      "mean": 9.74,
+      "median": 2.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 2.0,
+      "p75": 21.0,
+      "p90": 27.0,
+      "sd": 11.44,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.161,
+        "threshold": "24.5+"
+       },
+       {
+        "p": 0.036,
+        "threshold": "29.5+"
+       },
+       {
+        "p": 0.007,
+        "threshold": "34.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "39.5+"
+       }
+      ]
+     },
+     "qb/cmp": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Completions",
+      "mean": 6.32,
+      "median": 1.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 1.0,
+      "p75": 13.0,
+      "p90": 18.0,
+      "sd": 7.56,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.204,
+        "threshold": "14.5+"
+       },
+       {
+        "p": 0.061,
+        "threshold": "19.5+"
+       },
+       {
+        "p": 0.001,
+        "threshold": "24.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "29.5+"
+       }
+      ]
+     },
+     "qb/db": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Dropbacks",
+      "mean": 10.85,
+      "median": 2.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 2.0,
+      "p75": 24.0,
+      "p90": 30.0,
+      "sd": 12.7,
+      "status": "MODELED",
+      "thresholds": []
+     },
+     "qb/int": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Interceptions",
+      "mean": 0.24,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 1.0,
+      "sd": 0.53,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.19,
+        "threshold": "1+"
+       },
+       {
+        "p": 0.043,
+        "threshold": "2+"
+       }
+      ]
+     },
+     "qb/ptd": {
+      "caveat": "TD2 pooled positional control, governance HOLD_TENTATIVE",
+      "kind": "count",
+      "label": "Passing TD",
+      "mean": 0.43,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 1.0,
+      "p90": 2.0,
+      "sd": 0.8,
+      "status": "PROVISIONAL",
+      "thresholds": [
+       {
+        "p": 0.287,
+        "threshold": "1+"
+       },
+       {
+        "p": 0.102,
+        "threshold": "2+"
+       },
+       {
+        "p": 0.032,
+        "threshold": "3+"
+       }
+      ]
+     },
+     "qb/pyds": {
+      "caveat": null,
+      "kind": "yards",
+      "label": "Passing yards",
+      "mean": 69.19,
+      "median": 10.13,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 10.13,
+      "p75": 138.23,
+      "p90": 192.93,
+      "sd": 87.34,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.147,
+        "threshold": "175.5+"
+       },
+       {
+        "p": 0.089,
+        "threshold": "200.5+"
+       },
+       {
+        "p": 0.052,
+        "threshold": "225.5+"
+       },
+       {
+        "p": 0.029,
+        "threshold": "250.5+"
+       },
+       {
+        "p": 0.022,
+        "threshold": "275.5+"
+       },
+       {
+        "p": 0.015,
+        "threshold": "300.5+"
+       }
+      ]
+     },
+     "qb/rtd": {
+      "caveat": "TD2 pooled positional control, governance HOLD_TENTATIVE",
+      "kind": "count",
+      "label": "Rushing TD",
+      "mean": 0.05,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 0.0,
+      "sd": 0.24,
+      "status": "PROVISIONAL",
+      "thresholds": []
+     },
+     "qb/rush_opp": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Rush attempts",
+      "mean": 0.9,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 2.0,
+      "p90": 3.0,
+      "sd": 1.4,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.254,
+        "threshold": "2+"
+       },
+       {
+        "p": 0.07,
+        "threshold": "4+"
+       },
+       {
+        "p": 0.009,
+        "threshold": "6+"
+       }
+      ]
+     },
+     "qb/ryds": {
+      "caveat": "QB V1 draws yards per rush from the passer's own history mixed with the positional pool. It is adjudicated, unlike the RB control.",
+      "kind": "yards",
+      "label": "Rushing yards",
+      "mean": 4.85,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 6.26,
+      "p90": 16.0,
+      "sd": 9.85,
+      "status": "PROVISIONAL",
+      "thresholds": [
+       {
+        "p": 0.179,
+        "threshold": "9.5+"
+       },
+       {
+        "p": 0.075,
+        "threshold": "19.5+"
+       },
+       {
+        "p": 0.03,
+        "threshold": "29.5+"
+       },
+       {
+        "p": 0.015,
+        "threshold": "39.5+"
+       }
+      ]
+     },
+     "qb/sacks": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Sacks taken",
+      "mean": 0.65,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 1.0,
+      "p90": 2.0,
+      "sd": 1.08,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.344,
+        "threshold": "1+"
+       },
+       {
+        "p": 0.19,
+        "threshold": "2+"
+       },
+       {
+        "p": 0.083,
+        "threshold": "3+"
+       }
+      ]
+     },
+     "qb/scr": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Scrambles",
+      "mean": 0.46,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 1.0,
+      "p90": 2.0,
+      "sd": 0.87,
+      "status": "MODELED",
+      "thresholds": []
+     }
+    },
+    "opportunity_share": {
+     "qb/db": {
+      "basis": "mean of the player's draws over the mean of the game-wide pool on the same draw index",
+      "share_of_game_pool": 0.1461
+     }
+    },
+    "position": "QB",
+    "team": "NYJ",
+    "touchdown": {
+     "anytime": 0.048,
+     "basis": "fraction of draws with at least one scoring play, summed within each draw rather than multiplied across marginals",
+     "components": {
+      "qb/ptd": 0.287,
+      "qb/rtd": 0.048
+     },
+     "two_plus": 0.004
+    },
+    "unavailable": [
+     {
+      "affects": [
+       "QB"
+      ],
+      "code": "NO_RATE_COMPOSITE_LAYER",
+      "label": "Passer rating",
+      "metric": "qb/rating",
+      "reason": "A composite of forecast components is not itself a forecast distribution and would misstate its own uncertainty.",
+      "status": "UNAVAILABLE"
+     }
+    ]
+   },
+   {
+    "confidence": {
+     "means": "confidence in the model and its inputs, NOT in the outcome. A high-confidence projection can still miss.",
+     "parts": {
+      "distribution_width": 0.0,
+      "input_completeness": 1.0,
+      "layer_completeness": 0.8636,
+      "role_certainty": 0.1619,
+      "status_certainty": 0.4
+     },
+     "primary_metric": "qb/pyds",
+     "reasons": {
+      "distribution_width": "IQR/median 6.78",
+      "input_completeness": "7 source capture(s) validated",
+      "layer_completeness": "1/1 layer(s); 8/11 metric(s) fully modelled, the rest provisional; 1 named absence(s)",
+      "role_certainty": "13% of the game's quarterback dropbacks",
+      "status_certainty": "rows filed but report_status unfilled -- the game-designation report was never captured"
+     },
+     "score": 0.4851
+    },
+    "depth_chart": "QB2",
+    "gsis_id": "00-0033869",
+    "layers": [
+     "qb"
+    ],
+    "metrics": {
+     "qb/att": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Pass attempts",
+      "mean": 8.7,
+      "median": 4.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 4.0,
+      "p75": 18.0,
+      "p90": 22.0,
+      "sd": 9.8,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.056,
+        "threshold": "24.5+"
+       },
+       {
+        "p": 0.018,
+        "threshold": "29.5+"
+       },
+       {
+        "p": 0.003,
+        "threshold": "34.5+"
+       },
+       {
+        "p": 0.001,
+        "threshold": "39.5+"
+       }
+      ]
+     },
+     "qb/cmp": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Completions",
+      "mean": 5.72,
+      "median": 2.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 2.0,
+      "p75": 12.0,
+      "p90": 15.0,
+      "sd": 6.57,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.127,
+        "threshold": "14.5+"
+       },
+       {
+        "p": 0.018,
+        "threshold": "19.5+"
+       },
+       {
+        "p": 0.003,
+        "threshold": "24.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "29.5+"
+       }
+      ]
+     },
+     "qb/db": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Dropbacks",
+      "mean": 9.62,
+      "median": 4.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 4.0,
+      "p75": 21.0,
+      "p90": 25.0,
+      "sd": 10.76,
+      "status": "MODELED",
+      "thresholds": []
+     },
+     "qb/int": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Interceptions",
+      "mean": 0.23,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 1.0,
+      "sd": 0.52,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.183,
+        "threshold": "1+"
+       },
+       {
+        "p": 0.04,
+        "threshold": "2+"
+       }
+      ]
+     },
+     "qb/ptd": {
+      "caveat": "TD2 pooled positional control, governance HOLD_TENTATIVE",
+      "kind": "count",
+      "label": "Passing TD",
+      "mean": 0.41,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 1.0,
+      "p90": 1.0,
+      "sd": 0.78,
+      "status": "PROVISIONAL",
+      "thresholds": [
+       {
+        "p": 0.272,
+        "threshold": "1+"
+       },
+       {
+        "p": 0.092,
+        "threshold": "2+"
+       },
+       {
+        "p": 0.029,
+        "threshold": "3+"
+       }
+      ]
+     },
+     "qb/pyds": {
+      "caveat": null,
+      "kind": "yards",
+      "label": "Passing yards",
+      "mean": 67.73,
+      "median": 16.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 16.0,
+      "p75": 108.41,
+      "p90": 175.54,
+      "sd": 123.33,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.101,
+        "threshold": "175.5+"
+       },
+       {
+        "p": 0.064,
+        "threshold": "200.5+"
+       },
+       {
+        "p": 0.042,
+        "threshold": "225.5+"
+       },
+       {
+        "p": 0.034,
+        "threshold": "250.5+"
+       },
+       {
+        "p": 0.028,
+        "threshold": "275.5+"
+       },
+       {
+        "p": 0.023,
+        "threshold": "300.5+"
+       }
+      ]
+     },
+     "qb/rtd": {
+      "caveat": "TD2 pooled positional control, governance HOLD_TENTATIVE",
+      "kind": "count",
+      "label": "Rushing TD",
+      "mean": 0.07,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 0.0,
+      "sd": 0.28,
+      "status": "PROVISIONAL",
+      "thresholds": []
+     },
+     "qb/rush_opp": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Rush attempts",
+      "mean": 0.94,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 2.0,
+      "p90": 3.0,
+      "sd": 1.42,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.255,
+        "threshold": "2+"
+       },
+       {
+        "p": 0.069,
+        "threshold": "4+"
+       },
+       {
+        "p": 0.013,
+        "threshold": "6+"
+       }
+      ]
+     },
+     "qb/ryds": {
+      "caveat": "QB V1 draws yards per rush from the passer's own history mixed with the positional pool. It is adjudicated, unlike the RB control.",
+      "kind": "yards",
+      "label": "Rushing yards",
+      "mean": 6.2,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 6.0,
+      "p90": 16.58,
+      "sd": 17.15,
+      "status": "PROVISIONAL",
+      "thresholds": [
+       {
+        "p": 0.18,
+        "threshold": "9.5+"
+       },
+       {
+        "p": 0.077,
+        "threshold": "19.5+"
+       },
+       {
+        "p": 0.037,
+        "threshold": "29.5+"
+       },
+       {
+        "p": 0.03,
+        "threshold": "39.5+"
+       }
+      ]
+     },
+     "qb/sacks": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Sacks taken",
+      "mean": 0.48,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 1.0,
+      "p90": 2.0,
+      "sd": 0.86,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.299,
+        "threshold": "1+"
+       },
+       {
+        "p": 0.129,
+        "threshold": "2+"
+       },
+       {
+        "p": 0.039,
+        "threshold": "3+"
+       }
+      ]
+     },
+     "qb/scr": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Scrambles",
+      "mean": 0.43,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 1.0,
+      "p90": 2.0,
+      "sd": 0.81,
+      "status": "MODELED",
+      "thresholds": []
+     }
+    },
+    "opportunity_share": {
+     "qb/db": {
+      "basis": "mean of the player's draws over the mean of the game-wide pool on the same draw index",
+      "share_of_game_pool": 0.1295
+     }
+    },
+    "position": "QB",
+    "team": "TEN",
+    "touchdown": {
+     "anytime": 0.058,
+     "basis": "fraction of draws with at least one scoring play, summed within each draw rather than multiplied across marginals",
+     "components": {
+      "qb/ptd": 0.272,
+      "qb/rtd": 0.058
+     },
+     "two_plus": 0.008
+    },
+    "unavailable": [
+     {
+      "affects": [
+       "QB"
+      ],
+      "code": "NO_RATE_COMPOSITE_LAYER",
+      "label": "Passer rating",
+      "metric": "qb/rating",
+      "reason": "A composite of forecast components is not itself a forecast distribution and would misstate its own uncertainty.",
+      "status": "UNAVAILABLE"
+     }
+    ]
+   },
+   {
+    "confidence": {
+     "means": "confidence in the model and its inputs, NOT in the outcome. A high-confidence projection can still miss.",
+     "parts": {
+      "distribution_width": 0.0,
+      "input_completeness": 1.0,
+      "layer_completeness": 0.8636,
+      "role_certainty": 0.075,
+      "status_certainty": 0.4
+     },
+     "primary_metric": "qb/pyds",
+     "reasons": {
+      "distribution_width": "IQR/median 6.55",
+      "input_completeness": "7 source capture(s) validated",
+      "layer_completeness": "1/1 layer(s); 8/11 metric(s) fully modelled, the rest provisional; 1 named absence(s)",
+      "role_certainty": "6% of the game's quarterback dropbacks",
+      "status_certainty": "rows filed but report_status unfilled -- the game-designation report was never captured"
+     },
+     "score": 0.4677
+    },
+    "depth_chart": null,
+    "gsis_id": "00-0038108",
+    "layers": [
+     "qb"
+    ],
+    "metrics": {
+     "qb/att": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Pass attempts",
+      "mean": 3.96,
+      "median": 1.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 1.0,
+      "p75": 9.0,
+      "p90": 11.0,
+      "sd": 4.63,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.0,
+        "threshold": "24.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "29.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "34.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "39.5+"
+       }
+      ]
+     },
+     "qb/cmp": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Completions",
+      "mean": 2.51,
+      "median": 1.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 1.0,
+      "p75": 5.0,
+      "p90": 7.0,
+      "sd": 3.08,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.0,
+        "threshold": "14.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "19.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "24.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "29.5+"
+       }
+      ]
+     },
+     "qb/db": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Dropbacks",
+      "mean": 4.45,
+      "median": 2.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 2.0,
+      "p75": 10.0,
+      "p90": 12.0,
+      "sd": 5.17,
+      "status": "MODELED",
+      "thresholds": []
+     },
+     "qb/int": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Interceptions",
+      "mean": 0.15,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 1.0,
+      "sd": 0.4,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.131,
+        "threshold": "1+"
+       },
+       {
+        "p": 0.014,
+        "threshold": "2+"
+       }
+      ]
+     },
+     "qb/ptd": {
+      "caveat": "TD2 pooled positional control, governance HOLD_TENTATIVE",
+      "kind": "count",
+      "label": "Passing TD",
+      "mean": 0.15,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 1.0,
+      "sd": 0.41,
+      "status": "PROVISIONAL",
+      "thresholds": [
+       {
+        "p": 0.134,
+        "threshold": "1+"
+       },
+       {
+        "p": 0.016,
+        "threshold": "2+"
+       },
+       {
+        "p": 0.001,
+        "threshold": "3+"
+       }
+      ]
+     },
+     "qb/pyds": {
+      "caveat": null,
+      "kind": "yards",
+      "label": "Passing yards",
+      "mean": 26.39,
+      "median": 7.83,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 7.83,
+      "p75": 51.24,
+      "p90": 78.38,
+      "sd": 34.13,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.0,
+        "threshold": "175.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "200.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "225.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "250.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "275.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "300.5+"
+       }
+      ]
+     },
+     "qb/rtd": {
+      "caveat": "TD2 pooled positional control, governance HOLD_TENTATIVE",
+      "kind": "count",
+      "label": "Rushing TD",
+      "mean": 0.01,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 0.0,
+      "sd": 0.11,
+      "status": "PROVISIONAL",
+      "thresholds": []
+     },
+     "qb/rush_opp": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Rush attempts",
+      "mean": 0.26,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 1.0,
+      "sd": 0.6,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.048,
+        "threshold": "2+"
+       },
+       {
+        "p": 0.002,
+        "threshold": "4+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "6+"
+       }
+      ]
+     },
+     "qb/ryds": {
+      "caveat": "QB V1 draws yards per rush from the passer's own history mixed with the positional pool. It is adjudicated, unlike the RB control.",
+      "kind": "yards",
+      "label": "Rushing yards",
+      "mean": 0.98,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 4.0,
+      "sd": 2.81,
+      "status": "PROVISIONAL",
+      "thresholds": [
+       {
+        "p": 0.017,
+        "threshold": "9.5+"
+       },
+       {
+        "p": 0.001,
+        "threshold": "19.5+"
+       },
+       {
+        "p": 0.001,
+        "threshold": "29.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "39.5+"
+       }
+      ]
+     },
+     "qb/sacks": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Sacks taken",
+      "mean": 0.34,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 1.0,
+      "sd": 0.68,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.246,
+        "threshold": "1+"
+       },
+       {
+        "p": 0.081,
+        "threshold": "2+"
+       },
+       {
+        "p": 0.015,
+        "threshold": "3+"
+       }
+      ]
+     },
+     "qb/scr": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Scrambles",
+      "mean": 0.14,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 1.0,
+      "sd": 0.4,
+      "status": "MODELED",
+      "thresholds": []
+     }
+    },
+    "opportunity_share": {
+     "qb/db": {
+      "basis": "mean of the player's draws over the mean of the game-wide pool on the same draw index",
+      "share_of_game_pool": 0.06
+     }
+    },
+    "position": "QB",
+    "team": "NYJ",
+    "touchdown": {
+     "anytime": 0.013,
+     "basis": "fraction of draws with at least one scoring play, summed within each draw rather than multiplied across marginals",
+     "components": {
+      "qb/ptd": 0.134,
+      "qb/rtd": 0.013
+     },
+     "two_plus": 0.0
+    },
+    "unavailable": [
+     {
+      "affects": [
+       "QB"
+      ],
+      "code": "NO_RATE_COMPOSITE_LAYER",
+      "label": "Passer rating",
+      "metric": "qb/rating",
+      "reason": "A composite of forecast components is not itself a forecast distribution and would misstate its own uncertainty.",
+      "status": "UNAVAILABLE"
+     }
+    ]
+   },
+   {
+    "confidence": {
+     "means": "confidence in the model and its inputs, NOT in the outcome. A high-confidence projection can still miss.",
+     "parts": {
+      "distribution_width": 0.0,
+      "input_completeness": 1.0,
+      "layer_completeness": 0.8636,
+      "role_certainty": 0.0679,
+      "status_certainty": 0.4
+     },
+     "primary_metric": "qb/pyds",
+     "reasons": {
+      "distribution_width": "IQR/median 3.83",
+      "input_completeness": "7 source capture(s) validated",
+      "layer_completeness": "1/1 layer(s); 8/11 metric(s) fully modelled, the rest provisional; 1 named absence(s)",
+      "role_certainty": "5% of the game's quarterback dropbacks",
+      "status_certainty": "rows filed but report_status unfilled -- the game-designation report was never captured"
+     },
+     "score": 0.4663
+    },
+    "depth_chart": null,
+    "gsis_id": "00-0038550",
+    "layers": [
+     "qb"
+    ],
+    "metrics": {
+     "qb/att": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Pass attempts",
+      "mean": 3.44,
+      "median": 2.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 2.0,
+      "p75": 7.0,
+      "p90": 9.0,
+      "sd": 3.8,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.0,
+        "threshold": "24.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "29.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "34.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "39.5+"
+       }
+      ]
+     },
+     "qb/cmp": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Completions",
+      "mean": 2.26,
+      "median": 1.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 1.0,
+      "p75": 4.0,
+      "p90": 6.0,
+      "sd": 2.63,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.0,
+        "threshold": "14.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "19.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "24.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "29.5+"
+       }
+      ]
+     },
+     "qb/db": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Dropbacks",
+      "mean": 4.03,
+      "median": 2.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 2.0,
+      "p75": 9.0,
+      "p90": 10.0,
+      "sd": 4.36,
+      "status": "MODELED",
+      "thresholds": []
+     },
+     "qb/int": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Interceptions",
+      "mean": 0.06,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 0.0,
+      "sd": 0.24,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.052,
+        "threshold": "1+"
+       },
+       {
+        "p": 0.003,
+        "threshold": "2+"
+       }
+      ]
+     },
+     "qb/ptd": {
+      "caveat": "TD2 pooled positional control, governance HOLD_TENTATIVE",
+      "kind": "count",
+      "label": "Passing TD",
+      "mean": 0.1,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 0.0,
+      "sd": 0.33,
+      "status": "PROVISIONAL",
+      "thresholds": [
+       {
+        "p": 0.095,
+        "threshold": "1+"
+       },
+       {
+        "p": 0.008,
+        "threshold": "2+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "3+"
+       }
+      ]
+     },
+     "qb/pyds": {
+      "caveat": null,
+      "kind": "yards",
+      "label": "Passing yards",
+      "mean": 25.27,
+      "median": 11.63,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 11.63,
+      "p75": 44.5,
+      "p90": 74.0,
+      "sd": 32.62,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.001,
+        "threshold": "175.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "200.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "225.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "250.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "275.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "300.5+"
+       }
+      ]
+     },
+     "qb/rtd": {
+      "caveat": "TD2 pooled positional control, governance HOLD_TENTATIVE",
+      "kind": "count",
+      "label": "Rushing TD",
+      "mean": 0.02,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 0.0,
+      "sd": 0.13,
+      "status": "PROVISIONAL",
+      "thresholds": []
+     },
+     "qb/rush_opp": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Rush attempts",
+      "mean": 0.49,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 1.0,
+      "p90": 2.0,
+      "sd": 0.88,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.125,
+        "threshold": "2+"
+       },
+       {
+        "p": 0.009,
+        "threshold": "4+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "6+"
+       }
+      ]
+     },
+     "qb/ryds": {
+      "caveat": "QB V1 draws yards per rush from the passer's own history mixed with the positional pool. It is adjudicated, unlike the RB control.",
+      "kind": "yards",
+      "label": "Rushing yards",
+      "mean": 2.2,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 2.5,
+      "p90": 7.03,
+      "sd": 5.71,
+      "status": "PROVISIONAL",
+      "thresholds": [
+       {
+        "p": 0.062,
+        "threshold": "9.5+"
+       },
+       {
+        "p": 0.023,
+        "threshold": "19.5+"
+       },
+       {
+        "p": 0.008,
+        "threshold": "29.5+"
+       },
+       {
+        "p": 0.002,
+        "threshold": "39.5+"
+       }
+      ]
+     },
+     "qb/sacks": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Sacks taken",
+      "mean": 0.34,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 1.0,
+      "p90": 1.0,
+      "sd": 0.63,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.257,
+        "threshold": "1+"
+       },
+       {
+        "p": 0.07,
+        "threshold": "2+"
+       },
+       {
+        "p": 0.008,
+        "threshold": "3+"
+       }
+      ]
+     },
+     "qb/scr": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Scrambles",
+      "mean": 0.26,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 1.0,
+      "sd": 0.57,
+      "status": "MODELED",
+      "thresholds": []
+     }
+    },
+    "opportunity_share": {
+     "qb/db": {
+      "basis": "mean of the player's draws over the mean of the game-wide pool on the same draw index",
+      "share_of_game_pool": 0.0543
+     }
+    },
+    "position": "QB",
+    "team": "TEN",
+    "touchdown": {
+     "anytime": 0.017,
+     "basis": "fraction of draws with at least one scoring play, summed within each draw rather than multiplied across marginals",
+     "components": {
+      "qb/ptd": 0.095,
+      "qb/rtd": 0.017
+     },
+     "two_plus": 0.0
+    },
+    "unavailable": [
+     {
+      "affects": [
+       "QB"
+      ],
+      "code": "NO_RATE_COMPOSITE_LAYER",
+      "label": "Passer rating",
+      "metric": "qb/rating",
+      "reason": "A composite of forecast components is not itself a forecast distribution and would misstate its own uncertainty.",
+      "status": "UNAVAILABLE"
+     }
+    ]
+   },
+   {
+    "confidence": {
+     "means": "confidence in the model and its inputs, NOT in the outcome. A high-confidence projection can still miss.",
+     "parts": {
+      "distribution_width": 0.0,
+      "input_completeness": 1.0,
+      "layer_completeness": 0.8636,
+      "role_certainty": 0.0636,
+      "status_certainty": 0.4
+     },
+     "primary_metric": "qb/pyds",
+     "reasons": {
+      "distribution_width": "IQR/median 4.00",
+      "input_completeness": "7 source capture(s) validated",
+      "layer_completeness": "1/1 layer(s); 8/11 metric(s) fully modelled, the rest provisional; 1 named absence(s)",
+      "role_certainty": "5% of the game's quarterback dropbacks",
+      "status_certainty": "rows filed but report_status unfilled -- the game-designation report was never captured"
+     },
+     "score": 0.4655
+    },
+    "depth_chart": null,
+    "gsis_id": "00-0039152",
+    "layers": [
+     "qb"
+    ],
+    "metrics": {
+     "qb/att": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Pass attempts",
+      "mean": 3.23,
+      "median": 2.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 2.0,
+      "p75": 7.0,
+      "p90": 9.0,
+      "sd": 3.62,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.0,
+        "threshold": "24.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "29.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "34.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "39.5+"
+       }
+      ]
+     },
+     "qb/cmp": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Completions",
+      "mean": 2.02,
+      "median": 1.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 1.0,
+      "p75": 4.0,
+      "p90": 6.0,
+      "sd": 2.41,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.0,
+        "threshold": "14.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "19.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "24.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "29.5+"
+       }
+      ]
+     },
+     "qb/db": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Dropbacks",
+      "mean": 3.78,
+      "median": 2.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 2.0,
+      "p75": 8.0,
+      "p90": 10.0,
+      "sd": 4.15,
+      "status": "MODELED",
+      "thresholds": []
+     },
+     "qb/int": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Interceptions",
+      "mean": 0.09,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 0.0,
+      "sd": 0.32,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.082,
+        "threshold": "1+"
+       },
+       {
+        "p": 0.007,
+        "threshold": "2+"
+       }
+      ]
+     },
+     "qb/ptd": {
+      "caveat": "TD2 pooled positional control, governance HOLD_TENTATIVE",
+      "kind": "count",
+      "label": "Passing TD",
+      "mean": 0.14,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 1.0,
+      "sd": 0.4,
+      "status": "PROVISIONAL",
+      "thresholds": [
+       {
+        "p": 0.121,
+        "threshold": "1+"
+       },
+       {
+        "p": 0.015,
+        "threshold": "2+"
+       },
+       {
+        "p": 0.002,
+        "threshold": "3+"
+       }
+      ]
+     },
+     "qb/pyds": {
+      "caveat": null,
+      "kind": "yards",
+      "label": "Passing yards",
+      "mean": 23.85,
+      "median": 10.47,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 10.47,
+      "p75": 41.89,
+      "p90": 69.41,
+      "sd": 30.61,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.0,
+        "threshold": "175.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "200.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "225.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "250.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "275.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "300.5+"
+       }
+      ]
+     },
+     "qb/rtd": {
+      "caveat": "TD2 pooled positional control, governance HOLD_TENTATIVE",
+      "kind": "count",
+      "label": "Rushing TD",
+      "mean": 0.01,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 0.0,
+      "sd": 0.08,
+      "status": "PROVISIONAL",
+      "thresholds": []
+     },
+     "qb/rush_opp": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Rush attempts",
+      "mean": 0.35,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 1.0,
+      "p90": 1.0,
+      "sd": 0.67,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.069,
+        "threshold": "2+"
+       },
+       {
+        "p": 0.002,
+        "threshold": "4+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "6+"
+       }
+      ]
+     },
+     "qb/ryds": {
+      "caveat": "QB V1 draws yards per rush from the passer's own history mixed with the positional pool. It is adjudicated, unlike the RB control.",
+      "kind": "yards",
+      "label": "Rushing yards",
+      "mean": 1.47,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 6.0,
+      "sd": 3.69,
+      "status": "PROVISIONAL",
+      "thresholds": [
+       {
+        "p": 0.032,
+        "threshold": "9.5+"
+       },
+       {
+        "p": 0.009,
+        "threshold": "19.5+"
+       },
+       {
+        "p": 0.001,
+        "threshold": "29.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "39.5+"
+       }
+      ]
+     },
+     "qb/sacks": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Sacks taken",
+      "mean": 0.38,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 1.0,
+      "p90": 1.0,
+      "sd": 0.72,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.275,
+        "threshold": "1+"
+       },
+       {
+        "p": 0.08,
+        "threshold": "2+"
+       },
+       {
+        "p": 0.015,
+        "threshold": "3+"
+       }
+      ]
+     },
+     "qb/scr": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Scrambles",
+      "mean": 0.17,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 1.0,
+      "sd": 0.43,
+      "status": "MODELED",
+      "thresholds": []
+     }
+    },
+    "opportunity_share": {
+     "qb/db": {
+      "basis": "mean of the player's draws over the mean of the game-wide pool on the same draw index",
+      "share_of_game_pool": 0.0509
+     }
+    },
+    "position": "QB",
+    "team": "TEN",
+    "touchdown": {
+     "anytime": 0.007,
+     "basis": "fraction of draws with at least one scoring play, summed within each draw rather than multiplied across marginals",
+     "components": {
+      "qb/ptd": 0.121,
+      "qb/rtd": 0.007
+     },
+     "two_plus": 0.0
+    },
+    "unavailable": [
+     {
+      "affects": [
+       "QB"
+      ],
+      "code": "NO_RATE_COMPOSITE_LAYER",
+      "label": "Passer rating",
+      "metric": "qb/rating",
+      "reason": "A composite of forecast components is not itself a forecast distribution and would misstate its own uncertainty.",
+      "status": "UNAVAILABLE"
+     }
+    ]
+   }
+  ],
+  "means": "model and data confidence, never outcome certainty",
+  "no_market_feed": "ranking by sportsbook edge is not possible and is not attempted; no price exists in this system",
+  "weights": {
+   "distribution_width": 0.2,
+   "input_completeness": 0.2,
+   "layer_completeness": 0.2,
+   "role_certainty": 0.2,
+   "status_certainty": 0.2
+  },
+  "weights_note": "flat by design: no evidence yet says which dimension predicts a miss, and a fitted weighting with nothing behind it would be a silent constant",
+  "widest_uncertainty": [
+   {
+    "confidence": {
+     "means": "confidence in the model and its inputs, NOT in the outcome. A high-confidence projection can still miss.",
+     "parts": {
+      "distribution_width": 0.0,
+      "input_completeness": 1.0,
+      "layer_completeness": 0.8636,
+      "role_certainty": 0.369,
+      "status_certainty": 0.4
+     },
+     "primary_metric": "qb/pyds",
+     "reasons": {
+      "distribution_width": "IQR/median 1.74",
+      "input_completeness": "7 source capture(s) validated",
+      "layer_completeness": "1/1 layer(s); 8/11 metric(s) fully modelled, the rest provisional; 1 named absence(s)",
+      "role_certainty": "30% of the game's quarterback dropbacks",
+      "status_certainty": "rows filed but report_status unfilled -- the game-designation report was never captured"
+     },
+     "score": 0.5265
+    },
+    "depth_chart": "QB1",
+    "gsis_id": "00-0040676",
+    "layers": [
+     "qb"
+    ],
+    "metrics": {
+     "qb/att": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Pass attempts",
+      "mean": 19.2,
+      "median": 23.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 23.0,
+      "p75": 34.0,
+      "p90": 40.0,
+      "sd": 17.13,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.475,
+        "threshold": "24.5+"
+       },
+       {
+        "p": 0.363,
+        "threshold": "29.5+"
+       },
+       {
+        "p": 0.233,
+        "threshold": "34.5+"
+       },
+       {
+        "p": 0.117,
+        "threshold": "39.5+"
+       }
+      ]
+     },
+     "qb/cmp": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Completions",
+      "mean": 11.76,
+      "median": 13.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 13.0,
+      "p75": 21.0,
+      "p90": 26.0,
+      "sd": 10.74,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.463,
+        "threshold": "14.5+"
+       },
+       {
+        "p": 0.287,
+        "threshold": "19.5+"
+       },
+       {
+        "p": 0.131,
+        "threshold": "24.5+"
+       },
+       {
+        "p": 0.038,
+        "threshold": "29.5+"
+       }
+      ]
+     },
+     "qb/db": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Dropbacks",
+      "mean": 21.92,
+      "median": 28.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 28.0,
+      "p75": 39.0,
+      "p90": 46.0,
+      "sd": 19.45,
+      "status": "MODELED",
+      "thresholds": []
+     },
+     "qb/int": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Interceptions",
+      "mean": 0.29,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 1.0,
+      "sd": 0.6,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.221,
+        "threshold": "1+"
+       },
+       {
+        "p": 0.057,
+        "threshold": "2+"
+       }
+      ]
+     },
+     "qb/ptd": {
+      "caveat": "TD2 pooled positional control, governance HOLD_TENTATIVE",
+      "kind": "count",
+      "label": "Passing TD",
+      "mean": 0.64,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 1.0,
+      "p90": 2.0,
+      "sd": 1.05,
+      "status": "PROVISIONAL",
+      "thresholds": [
+       {
+        "p": 0.37,
+        "threshold": "1+"
+       },
+       {
+        "p": 0.165,
+        "threshold": "2+"
+       },
+       {
+        "p": 0.066,
+        "threshold": "3+"
+       }
+      ]
+     },
+     "qb/pyds": {
+      "caveat": null,
+      "kind": "yards",
+      "label": "Passing yards",
+      "mean": 123.5,
+      "median": 123.58,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 123.58,
+      "p75": 215.44,
+      "p90": 283.5,
+      "sd": 120.26,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.354,
+        "threshold": "175.5+"
+       },
+       {
+        "p": 0.292,
+        "threshold": "200.5+"
+       },
+       {
+        "p": 0.219,
+        "threshold": "225.5+"
+       },
+       {
+        "p": 0.154,
+        "threshold": "250.5+"
+       },
+       {
+        "p": 0.112,
+        "threshold": "275.5+"
+       },
+       {
+        "p": 0.076,
+        "threshold": "300.5+"
+       }
+      ]
+     },
+     "qb/rtd": {
+      "caveat": "TD2 pooled positional control, governance HOLD_TENTATIVE",
+      "kind": "count",
+      "label": "Rushing TD",
+      "mean": 0.09,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 0.0,
+      "sd": 0.33,
+      "status": "PROVISIONAL",
+      "thresholds": []
+     },
+     "qb/rush_opp": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Rush attempts",
+      "mean": 1.35,
+      "median": 1.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 1.0,
+      "p75": 2.0,
+      "p90": 4.0,
+      "sd": 1.64,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.389,
+        "threshold": "2+"
+       },
+       {
+        "p": 0.118,
+        "threshold": "4+"
+       },
+       {
+        "p": 0.015,
+        "threshold": "6+"
+       }
+      ]
+     },
+     "qb/ryds": {
+      "caveat": "QB V1 draws yards per rush from the passer's own history mixed with the positional pool. It is adjudicated, unlike the RB control.",
+      "kind": "yards",
+      "label": "Rushing yards",
+      "mean": 6.55,
+      "median": 2.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 2.0,
+      "p75": 10.0,
+      "p90": 21.0,
+      "sd": 9.97,
+      "status": "PROVISIONAL",
+      "thresholds": [
+       {
+        "p": 0.262,
+        "threshold": "9.5+"
+       },
+       {
+        "p": 0.11,
+        "threshold": "19.5+"
+       },
+       {
+        "p": 0.048,
+        "threshold": "29.5+"
+       },
+       {
+        "p": 0.02,
+        "threshold": "39.5+"
+       }
+      ]
+     },
+     "qb/sacks": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Sacks taken",
+      "mean": 1.82,
+      "median": 1.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 1.0,
+      "p75": 3.0,
+      "p90": 5.0,
+      "sd": 2.03,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.57,
+        "threshold": "1+"
+       },
+       {
+        "p": 0.479,
+        "threshold": "2+"
+       },
+       {
+        "p": 0.346,
+        "threshold": "3+"
+       }
+      ]
+     },
+     "qb/scr": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Scrambles",
+      "mean": 0.89,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 2.0,
+      "p90": 3.0,
+      "sd": 1.21,
+      "status": "MODELED",
+      "thresholds": []
+     }
+    },
+    "opportunity_share": {
+     "qb/db": {
+      "basis": "mean of the player's draws over the mean of the game-wide pool on the same draw index",
+      "share_of_game_pool": 0.2952
+     }
+    },
+    "position": "QB",
+    "team": "TEN",
+    "touchdown": {
+     "anytime": 0.083,
+     "basis": "fraction of draws with at least one scoring play, summed within each draw rather than multiplied across marginals",
+     "components": {
+      "qb/ptd": 0.37,
+      "qb/rtd": 0.083
+     },
+     "two_plus": 0.011
+    },
+    "unavailable": [
+     {
+      "affects": [
+       "QB"
+      ],
+      "code": "NO_RATE_COMPOSITE_LAYER",
+      "label": "Passer rating",
+      "metric": "qb/rating",
+      "reason": "A composite of forecast components is not itself a forecast distribution and would misstate its own uncertainty.",
+      "status": "UNAVAILABLE"
+     }
+    ]
+   },
+   {
+    "confidence": {
+     "means": "confidence in the model and its inputs, NOT in the outcome. A high-confidence projection can still miss.",
+     "parts": {
+      "distribution_width": 0.0,
+      "input_completeness": 1.0,
+      "layer_completeness": 0.8636,
+      "role_certainty": 0.3299,
+      "status_certainty": 0.4
+     },
+     "primary_metric": "qb/pyds",
+     "reasons": {
+      "distribution_width": "IQR/median 1.71",
+      "input_completeness": "7 source capture(s) validated",
+      "layer_completeness": "1/1 layer(s); 8/11 metric(s) fully modelled, the rest provisional; 1 named absence(s)",
+      "role_certainty": "26% of the game's quarterback dropbacks",
+      "status_certainty": "rows filed but report_status unfilled -- the game-designation report was never captured"
+     },
+     "score": 0.5187
+    },
+    "depth_chart": "QB1",
+    "gsis_id": "00-0030565",
+    "layers": [
+     "qb"
+    ],
+    "metrics": {
+     "qb/att": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Pass attempts",
+      "mean": 17.26,
+      "median": 20.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 20.0,
+      "p75": 31.0,
+      "p90": 37.0,
+      "sd": 15.59,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.433,
+        "threshold": "24.5+"
+       },
+       {
+        "p": 0.32,
+        "threshold": "29.5+"
+       },
+       {
+        "p": 0.162,
+        "threshold": "34.5+"
+       },
+       {
+        "p": 0.054,
+        "threshold": "39.5+"
+       }
+      ]
+     },
+     "qb/cmp": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Completions",
+      "mean": 11.81,
+      "median": 13.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 13.0,
+      "p75": 21.0,
+      "p90": 26.0,
+      "sd": 10.85,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.47,
+        "threshold": "14.5+"
+       },
+       {
+        "p": 0.33,
+        "threshold": "19.5+"
+       },
+       {
+        "p": 0.137,
+        "threshold": "24.5+"
+       },
+       {
+        "p": 0.034,
+        "threshold": "29.5+"
+       }
+      ]
+     },
+     "qb/db": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Dropbacks",
+      "mean": 19.59,
+      "median": 23.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 23.0,
+      "p75": 35.0,
+      "p90": 42.0,
+      "sd": 17.65,
+      "status": "MODELED",
+      "thresholds": []
+     },
+     "qb/int": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Interceptions",
+      "mean": 0.41,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 1.0,
+      "p90": 1.0,
+      "sd": 0.71,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.301,
+        "threshold": "1+"
+       },
+       {
+        "p": 0.087,
+        "threshold": "2+"
+       }
+      ]
+     },
+     "qb/ptd": {
+      "caveat": "TD2 pooled positional control, governance HOLD_TENTATIVE",
+      "kind": "count",
+      "label": "Passing TD",
+      "mean": 0.77,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 1.0,
+      "p90": 2.0,
+      "sd": 1.09,
+      "status": "PROVISIONAL",
+      "thresholds": [
+       {
+        "p": 0.428,
+        "threshold": "1+"
+       },
+       {
+        "p": 0.221,
+        "threshold": "2+"
+       },
+       {
+        "p": 0.08,
+        "threshold": "3+"
+       }
+      ]
+     },
+     "qb/pyds": {
+      "caveat": null,
+      "kind": "yards",
+      "label": "Passing yards",
+      "mean": 126.84,
+      "median": 130.35,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 130.35,
+      "p75": 222.56,
+      "p90": 286.96,
+      "sd": 122.57,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.395,
+        "threshold": "175.5+"
+       },
+       {
+        "p": 0.318,
+        "threshold": "200.5+"
+       },
+       {
+        "p": 0.241,
+        "threshold": "225.5+"
+       },
+       {
+        "p": 0.175,
+        "threshold": "250.5+"
+       },
+       {
+        "p": 0.118,
+        "threshold": "275.5+"
+       },
+       {
+        "p": 0.08,
+        "threshold": "300.5+"
+       }
+      ]
+     },
+     "qb/rtd": {
+      "caveat": "TD2 pooled positional control, governance HOLD_TENTATIVE",
+      "kind": "count",
+      "label": "Rushing TD",
+      "mean": 0.04,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 0.0,
+      "sd": 0.2,
+      "status": "PROVISIONAL",
+      "thresholds": []
+     },
+     "qb/rush_opp": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Rush attempts",
+      "mean": 1.39,
+      "median": 1.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 1.0,
+      "p75": 2.25,
+      "p90": 4.0,
+      "sd": 1.7,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.394,
+        "threshold": "2+"
+       },
+       {
+        "p": 0.12,
+        "threshold": "4+"
+       },
+       {
+        "p": 0.025,
+        "threshold": "6+"
+       }
+      ]
+     },
+     "qb/ryds": {
+      "caveat": "QB V1 draws yards per rush from the passer's own history mixed with the positional pool. It is adjudicated, unlike the RB control.",
+      "kind": "yards",
+      "label": "Rushing yards",
+      "mean": 7.8,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 12.0,
+      "p90": 24.0,
+      "sd": 13.48,
+      "status": "PROVISIONAL",
+      "thresholds": [
+       {
+        "p": 0.292,
+        "threshold": "9.5+"
+       },
+       {
+        "p": 0.148,
+        "threshold": "19.5+"
+       },
+       {
+        "p": 0.078,
+        "threshold": "29.5+"
+       },
+       {
+        "p": 0.035,
+        "threshold": "39.5+"
+       }
+      ]
+     },
+     "qb/sacks": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Sacks taken",
+      "mean": 1.53,
+      "median": 1.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 1.0,
+      "p75": 3.0,
+      "p90": 4.0,
+      "sd": 1.83,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.544,
+        "threshold": "1+"
+       },
+       {
+        "p": 0.418,
+        "threshold": "2+"
+       },
+       {
+        "p": 0.273,
+        "threshold": "3+"
+       }
+      ]
+     },
+     "qb/scr": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Scrambles",
+      "mean": 0.8,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 1.0,
+      "p90": 2.0,
+      "sd": 1.15,
+      "status": "MODELED",
+      "thresholds": []
+     }
+    },
+    "opportunity_share": {
+     "qb/db": {
+      "basis": "mean of the player's draws over the mean of the game-wide pool on the same draw index",
+      "share_of_game_pool": 0.2639
+     }
+    },
+    "position": "QB",
+    "team": "NYJ",
+    "touchdown": {
+     "anytime": 0.039,
+     "basis": "fraction of draws with at least one scoring play, summed within each draw rather than multiplied across marginals",
+     "components": {
+      "qb/ptd": 0.428,
+      "qb/rtd": 0.039
+     },
+     "two_plus": 0.001
+    },
+    "unavailable": [
+     {
+      "affects": [
+       "QB"
+      ],
+      "code": "NO_RATE_COMPOSITE_LAYER",
+      "label": "Passer rating",
+      "metric": "qb/rating",
+      "reason": "A composite of forecast components is not itself a forecast distribution and would misstate its own uncertainty.",
+      "status": "UNAVAILABLE"
+     }
+    ]
+   },
+   {
+    "confidence": {
+     "means": "confidence in the model and its inputs, NOT in the outcome. A high-confidence projection can still miss.",
+     "parts": {
+      "distribution_width": 0.0,
+      "input_completeness": 1.0,
+      "layer_completeness": 0.8636,
+      "role_certainty": 0.1827,
+      "status_certainty": 0.4
+     },
+     "primary_metric": "qb/pyds",
+     "reasons": {
+      "distribution_width": "IQR/median 13.64",
+      "input_completeness": "7 source capture(s) validated",
+      "layer_completeness": "1/1 layer(s); 8/11 metric(s) fully modelled, the rest provisional; 1 named absence(s)",
+      "role_certainty": "15% of the game's quarterback dropbacks",
+      "status_certainty": "rows filed but report_status unfilled -- the game-designation report was never captured"
+     },
+     "score": 0.4893
+    },
+    "depth_chart": "QB2",
+    "gsis_id": "00-0041056",
+    "layers": [
+     "qb"
+    ],
+    "metrics": {
+     "qb/att": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Pass attempts",
+      "mean": 9.74,
+      "median": 2.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 2.0,
+      "p75": 21.0,
+      "p90": 27.0,
+      "sd": 11.44,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.161,
+        "threshold": "24.5+"
+       },
+       {
+        "p": 0.036,
+        "threshold": "29.5+"
+       },
+       {
+        "p": 0.007,
+        "threshold": "34.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "39.5+"
+       }
+      ]
+     },
+     "qb/cmp": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Completions",
+      "mean": 6.32,
+      "median": 1.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 1.0,
+      "p75": 13.0,
+      "p90": 18.0,
+      "sd": 7.56,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.204,
+        "threshold": "14.5+"
+       },
+       {
+        "p": 0.061,
+        "threshold": "19.5+"
+       },
+       {
+        "p": 0.001,
+        "threshold": "24.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "29.5+"
+       }
+      ]
+     },
+     "qb/db": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Dropbacks",
+      "mean": 10.85,
+      "median": 2.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 2.0,
+      "p75": 24.0,
+      "p90": 30.0,
+      "sd": 12.7,
+      "status": "MODELED",
+      "thresholds": []
+     },
+     "qb/int": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Interceptions",
+      "mean": 0.24,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 1.0,
+      "sd": 0.53,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.19,
+        "threshold": "1+"
+       },
+       {
+        "p": 0.043,
+        "threshold": "2+"
+       }
+      ]
+     },
+     "qb/ptd": {
+      "caveat": "TD2 pooled positional control, governance HOLD_TENTATIVE",
+      "kind": "count",
+      "label": "Passing TD",
+      "mean": 0.43,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 1.0,
+      "p90": 2.0,
+      "sd": 0.8,
+      "status": "PROVISIONAL",
+      "thresholds": [
+       {
+        "p": 0.287,
+        "threshold": "1+"
+       },
+       {
+        "p": 0.102,
+        "threshold": "2+"
+       },
+       {
+        "p": 0.032,
+        "threshold": "3+"
+       }
+      ]
+     },
+     "qb/pyds": {
+      "caveat": null,
+      "kind": "yards",
+      "label": "Passing yards",
+      "mean": 69.19,
+      "median": 10.13,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 10.13,
+      "p75": 138.23,
+      "p90": 192.93,
+      "sd": 87.34,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.147,
+        "threshold": "175.5+"
+       },
+       {
+        "p": 0.089,
+        "threshold": "200.5+"
+       },
+       {
+        "p": 0.052,
+        "threshold": "225.5+"
+       },
+       {
+        "p": 0.029,
+        "threshold": "250.5+"
+       },
+       {
+        "p": 0.022,
+        "threshold": "275.5+"
+       },
+       {
+        "p": 0.015,
+        "threshold": "300.5+"
+       }
+      ]
+     },
+     "qb/rtd": {
+      "caveat": "TD2 pooled positional control, governance HOLD_TENTATIVE",
+      "kind": "count",
+      "label": "Rushing TD",
+      "mean": 0.05,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 0.0,
+      "sd": 0.24,
+      "status": "PROVISIONAL",
+      "thresholds": []
+     },
+     "qb/rush_opp": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Rush attempts",
+      "mean": 0.9,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 2.0,
+      "p90": 3.0,
+      "sd": 1.4,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.254,
+        "threshold": "2+"
+       },
+       {
+        "p": 0.07,
+        "threshold": "4+"
+       },
+       {
+        "p": 0.009,
+        "threshold": "6+"
+       }
+      ]
+     },
+     "qb/ryds": {
+      "caveat": "QB V1 draws yards per rush from the passer's own history mixed with the positional pool. It is adjudicated, unlike the RB control.",
+      "kind": "yards",
+      "label": "Rushing yards",
+      "mean": 4.85,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 6.26,
+      "p90": 16.0,
+      "sd": 9.85,
+      "status": "PROVISIONAL",
+      "thresholds": [
+       {
+        "p": 0.179,
+        "threshold": "9.5+"
+       },
+       {
+        "p": 0.075,
+        "threshold": "19.5+"
+       },
+       {
+        "p": 0.03,
+        "threshold": "29.5+"
+       },
+       {
+        "p": 0.015,
+        "threshold": "39.5+"
+       }
+      ]
+     },
+     "qb/sacks": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Sacks taken",
+      "mean": 0.65,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 1.0,
+      "p90": 2.0,
+      "sd": 1.08,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.344,
+        "threshold": "1+"
+       },
+       {
+        "p": 0.19,
+        "threshold": "2+"
+       },
+       {
+        "p": 0.083,
+        "threshold": "3+"
+       }
+      ]
+     },
+     "qb/scr": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Scrambles",
+      "mean": 0.46,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 1.0,
+      "p90": 2.0,
+      "sd": 0.87,
+      "status": "MODELED",
+      "thresholds": []
+     }
+    },
+    "opportunity_share": {
+     "qb/db": {
+      "basis": "mean of the player's draws over the mean of the game-wide pool on the same draw index",
+      "share_of_game_pool": 0.1461
+     }
+    },
+    "position": "QB",
+    "team": "NYJ",
+    "touchdown": {
+     "anytime": 0.048,
+     "basis": "fraction of draws with at least one scoring play, summed within each draw rather than multiplied across marginals",
+     "components": {
+      "qb/ptd": 0.287,
+      "qb/rtd": 0.048
+     },
+     "two_plus": 0.004
+    },
+    "unavailable": [
+     {
+      "affects": [
+       "QB"
+      ],
+      "code": "NO_RATE_COMPOSITE_LAYER",
+      "label": "Passer rating",
+      "metric": "qb/rating",
+      "reason": "A composite of forecast components is not itself a forecast distribution and would misstate its own uncertainty.",
+      "status": "UNAVAILABLE"
+     }
+    ]
+   },
+   {
+    "confidence": {
+     "means": "confidence in the model and its inputs, NOT in the outcome. A high-confidence projection can still miss.",
+     "parts": {
+      "distribution_width": 0.0,
+      "input_completeness": 1.0,
+      "layer_completeness": 0.8636,
+      "role_certainty": 0.1619,
+      "status_certainty": 0.4
+     },
+     "primary_metric": "qb/pyds",
+     "reasons": {
+      "distribution_width": "IQR/median 6.78",
+      "input_completeness": "7 source capture(s) validated",
+      "layer_completeness": "1/1 layer(s); 8/11 metric(s) fully modelled, the rest provisional; 1 named absence(s)",
+      "role_certainty": "13% of the game's quarterback dropbacks",
+      "status_certainty": "rows filed but report_status unfilled -- the game-designation report was never captured"
+     },
+     "score": 0.4851
+    },
+    "depth_chart": "QB2",
+    "gsis_id": "00-0033869",
+    "layers": [
+     "qb"
+    ],
+    "metrics": {
+     "qb/att": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Pass attempts",
+      "mean": 8.7,
+      "median": 4.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 4.0,
+      "p75": 18.0,
+      "p90": 22.0,
+      "sd": 9.8,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.056,
+        "threshold": "24.5+"
+       },
+       {
+        "p": 0.018,
+        "threshold": "29.5+"
+       },
+       {
+        "p": 0.003,
+        "threshold": "34.5+"
+       },
+       {
+        "p": 0.001,
+        "threshold": "39.5+"
+       }
+      ]
+     },
+     "qb/cmp": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Completions",
+      "mean": 5.72,
+      "median": 2.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 2.0,
+      "p75": 12.0,
+      "p90": 15.0,
+      "sd": 6.57,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.127,
+        "threshold": "14.5+"
+       },
+       {
+        "p": 0.018,
+        "threshold": "19.5+"
+       },
+       {
+        "p": 0.003,
+        "threshold": "24.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "29.5+"
+       }
+      ]
+     },
+     "qb/db": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Dropbacks",
+      "mean": 9.62,
+      "median": 4.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 4.0,
+      "p75": 21.0,
+      "p90": 25.0,
+      "sd": 10.76,
+      "status": "MODELED",
+      "thresholds": []
+     },
+     "qb/int": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Interceptions",
+      "mean": 0.23,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 1.0,
+      "sd": 0.52,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.183,
+        "threshold": "1+"
+       },
+       {
+        "p": 0.04,
+        "threshold": "2+"
+       }
+      ]
+     },
+     "qb/ptd": {
+      "caveat": "TD2 pooled positional control, governance HOLD_TENTATIVE",
+      "kind": "count",
+      "label": "Passing TD",
+      "mean": 0.41,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 1.0,
+      "p90": 1.0,
+      "sd": 0.78,
+      "status": "PROVISIONAL",
+      "thresholds": [
+       {
+        "p": 0.272,
+        "threshold": "1+"
+       },
+       {
+        "p": 0.092,
+        "threshold": "2+"
+       },
+       {
+        "p": 0.029,
+        "threshold": "3+"
+       }
+      ]
+     },
+     "qb/pyds": {
+      "caveat": null,
+      "kind": "yards",
+      "label": "Passing yards",
+      "mean": 67.73,
+      "median": 16.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 16.0,
+      "p75": 108.41,
+      "p90": 175.54,
+      "sd": 123.33,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.101,
+        "threshold": "175.5+"
+       },
+       {
+        "p": 0.064,
+        "threshold": "200.5+"
+       },
+       {
+        "p": 0.042,
+        "threshold": "225.5+"
+       },
+       {
+        "p": 0.034,
+        "threshold": "250.5+"
+       },
+       {
+        "p": 0.028,
+        "threshold": "275.5+"
+       },
+       {
+        "p": 0.023,
+        "threshold": "300.5+"
+       }
+      ]
+     },
+     "qb/rtd": {
+      "caveat": "TD2 pooled positional control, governance HOLD_TENTATIVE",
+      "kind": "count",
+      "label": "Rushing TD",
+      "mean": 0.07,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 0.0,
+      "sd": 0.28,
+      "status": "PROVISIONAL",
+      "thresholds": []
+     },
+     "qb/rush_opp": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Rush attempts",
+      "mean": 0.94,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 2.0,
+      "p90": 3.0,
+      "sd": 1.42,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.255,
+        "threshold": "2+"
+       },
+       {
+        "p": 0.069,
+        "threshold": "4+"
+       },
+       {
+        "p": 0.013,
+        "threshold": "6+"
+       }
+      ]
+     },
+     "qb/ryds": {
+      "caveat": "QB V1 draws yards per rush from the passer's own history mixed with the positional pool. It is adjudicated, unlike the RB control.",
+      "kind": "yards",
+      "label": "Rushing yards",
+      "mean": 6.2,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 6.0,
+      "p90": 16.58,
+      "sd": 17.15,
+      "status": "PROVISIONAL",
+      "thresholds": [
+       {
+        "p": 0.18,
+        "threshold": "9.5+"
+       },
+       {
+        "p": 0.077,
+        "threshold": "19.5+"
+       },
+       {
+        "p": 0.037,
+        "threshold": "29.5+"
+       },
+       {
+        "p": 0.03,
+        "threshold": "39.5+"
+       }
+      ]
+     },
+     "qb/sacks": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Sacks taken",
+      "mean": 0.48,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 1.0,
+      "p90": 2.0,
+      "sd": 0.86,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.299,
+        "threshold": "1+"
+       },
+       {
+        "p": 0.129,
+        "threshold": "2+"
+       },
+       {
+        "p": 0.039,
+        "threshold": "3+"
+       }
+      ]
+     },
+     "qb/scr": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Scrambles",
+      "mean": 0.43,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 1.0,
+      "p90": 2.0,
+      "sd": 0.81,
+      "status": "MODELED",
+      "thresholds": []
+     }
+    },
+    "opportunity_share": {
+     "qb/db": {
+      "basis": "mean of the player's draws over the mean of the game-wide pool on the same draw index",
+      "share_of_game_pool": 0.1295
+     }
+    },
+    "position": "QB",
+    "team": "TEN",
+    "touchdown": {
+     "anytime": 0.058,
+     "basis": "fraction of draws with at least one scoring play, summed within each draw rather than multiplied across marginals",
+     "components": {
+      "qb/ptd": 0.272,
+      "qb/rtd": 0.058
+     },
+     "two_plus": 0.008
+    },
+    "unavailable": [
+     {
+      "affects": [
+       "QB"
+      ],
+      "code": "NO_RATE_COMPOSITE_LAYER",
+      "label": "Passer rating",
+      "metric": "qb/rating",
+      "reason": "A composite of forecast components is not itself a forecast distribution and would misstate its own uncertainty.",
+      "status": "UNAVAILABLE"
+     }
+    ]
+   },
+   {
+    "confidence": {
+     "means": "confidence in the model and its inputs, NOT in the outcome. A high-confidence projection can still miss.",
+     "parts": {
+      "distribution_width": 0.0,
+      "input_completeness": 1.0,
+      "layer_completeness": 0.8636,
+      "role_certainty": 0.075,
+      "status_certainty": 0.4
+     },
+     "primary_metric": "qb/pyds",
+     "reasons": {
+      "distribution_width": "IQR/median 6.55",
+      "input_completeness": "7 source capture(s) validated",
+      "layer_completeness": "1/1 layer(s); 8/11 metric(s) fully modelled, the rest provisional; 1 named absence(s)",
+      "role_certainty": "6% of the game's quarterback dropbacks",
+      "status_certainty": "rows filed but report_status unfilled -- the game-designation report was never captured"
+     },
+     "score": 0.4677
+    },
+    "depth_chart": null,
+    "gsis_id": "00-0038108",
+    "layers": [
+     "qb"
+    ],
+    "metrics": {
+     "qb/att": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Pass attempts",
+      "mean": 3.96,
+      "median": 1.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 1.0,
+      "p75": 9.0,
+      "p90": 11.0,
+      "sd": 4.63,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.0,
+        "threshold": "24.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "29.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "34.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "39.5+"
+       }
+      ]
+     },
+     "qb/cmp": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Completions",
+      "mean": 2.51,
+      "median": 1.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 1.0,
+      "p75": 5.0,
+      "p90": 7.0,
+      "sd": 3.08,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.0,
+        "threshold": "14.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "19.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "24.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "29.5+"
+       }
+      ]
+     },
+     "qb/db": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Dropbacks",
+      "mean": 4.45,
+      "median": 2.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 2.0,
+      "p75": 10.0,
+      "p90": 12.0,
+      "sd": 5.17,
+      "status": "MODELED",
+      "thresholds": []
+     },
+     "qb/int": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Interceptions",
+      "mean": 0.15,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 1.0,
+      "sd": 0.4,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.131,
+        "threshold": "1+"
+       },
+       {
+        "p": 0.014,
+        "threshold": "2+"
+       }
+      ]
+     },
+     "qb/ptd": {
+      "caveat": "TD2 pooled positional control, governance HOLD_TENTATIVE",
+      "kind": "count",
+      "label": "Passing TD",
+      "mean": 0.15,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 1.0,
+      "sd": 0.41,
+      "status": "PROVISIONAL",
+      "thresholds": [
+       {
+        "p": 0.134,
+        "threshold": "1+"
+       },
+       {
+        "p": 0.016,
+        "threshold": "2+"
+       },
+       {
+        "p": 0.001,
+        "threshold": "3+"
+       }
+      ]
+     },
+     "qb/pyds": {
+      "caveat": null,
+      "kind": "yards",
+      "label": "Passing yards",
+      "mean": 26.39,
+      "median": 7.83,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 7.83,
+      "p75": 51.24,
+      "p90": 78.38,
+      "sd": 34.13,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.0,
+        "threshold": "175.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "200.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "225.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "250.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "275.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "300.5+"
+       }
+      ]
+     },
+     "qb/rtd": {
+      "caveat": "TD2 pooled positional control, governance HOLD_TENTATIVE",
+      "kind": "count",
+      "label": "Rushing TD",
+      "mean": 0.01,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 0.0,
+      "sd": 0.11,
+      "status": "PROVISIONAL",
+      "thresholds": []
+     },
+     "qb/rush_opp": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Rush attempts",
+      "mean": 0.26,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 1.0,
+      "sd": 0.6,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.048,
+        "threshold": "2+"
+       },
+       {
+        "p": 0.002,
+        "threshold": "4+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "6+"
+       }
+      ]
+     },
+     "qb/ryds": {
+      "caveat": "QB V1 draws yards per rush from the passer's own history mixed with the positional pool. It is adjudicated, unlike the RB control.",
+      "kind": "yards",
+      "label": "Rushing yards",
+      "mean": 0.98,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 4.0,
+      "sd": 2.81,
+      "status": "PROVISIONAL",
+      "thresholds": [
+       {
+        "p": 0.017,
+        "threshold": "9.5+"
+       },
+       {
+        "p": 0.001,
+        "threshold": "19.5+"
+       },
+       {
+        "p": 0.001,
+        "threshold": "29.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "39.5+"
+       }
+      ]
+     },
+     "qb/sacks": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Sacks taken",
+      "mean": 0.34,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 1.0,
+      "sd": 0.68,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.246,
+        "threshold": "1+"
+       },
+       {
+        "p": 0.081,
+        "threshold": "2+"
+       },
+       {
+        "p": 0.015,
+        "threshold": "3+"
+       }
+      ]
+     },
+     "qb/scr": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Scrambles",
+      "mean": 0.14,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 1.0,
+      "sd": 0.4,
+      "status": "MODELED",
+      "thresholds": []
+     }
+    },
+    "opportunity_share": {
+     "qb/db": {
+      "basis": "mean of the player's draws over the mean of the game-wide pool on the same draw index",
+      "share_of_game_pool": 0.06
+     }
+    },
+    "position": "QB",
+    "team": "NYJ",
+    "touchdown": {
+     "anytime": 0.013,
+     "basis": "fraction of draws with at least one scoring play, summed within each draw rather than multiplied across marginals",
+     "components": {
+      "qb/ptd": 0.134,
+      "qb/rtd": 0.013
+     },
+     "two_plus": 0.0
+    },
+    "unavailable": [
+     {
+      "affects": [
+       "QB"
+      ],
+      "code": "NO_RATE_COMPOSITE_LAYER",
+      "label": "Passer rating",
+      "metric": "qb/rating",
+      "reason": "A composite of forecast components is not itself a forecast distribution and would misstate its own uncertainty.",
+      "status": "UNAVAILABLE"
+     }
+    ]
+   },
+   {
+    "confidence": {
+     "means": "confidence in the model and its inputs, NOT in the outcome. A high-confidence projection can still miss.",
+     "parts": {
+      "distribution_width": 0.0,
+      "input_completeness": 1.0,
+      "layer_completeness": 0.8636,
+      "role_certainty": 0.0679,
+      "status_certainty": 0.4
+     },
+     "primary_metric": "qb/pyds",
+     "reasons": {
+      "distribution_width": "IQR/median 3.83",
+      "input_completeness": "7 source capture(s) validated",
+      "layer_completeness": "1/1 layer(s); 8/11 metric(s) fully modelled, the rest provisional; 1 named absence(s)",
+      "role_certainty": "5% of the game's quarterback dropbacks",
+      "status_certainty": "rows filed but report_status unfilled -- the game-designation report was never captured"
+     },
+     "score": 0.4663
+    },
+    "depth_chart": null,
+    "gsis_id": "00-0038550",
+    "layers": [
+     "qb"
+    ],
+    "metrics": {
+     "qb/att": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Pass attempts",
+      "mean": 3.44,
+      "median": 2.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 2.0,
+      "p75": 7.0,
+      "p90": 9.0,
+      "sd": 3.8,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.0,
+        "threshold": "24.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "29.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "34.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "39.5+"
+       }
+      ]
+     },
+     "qb/cmp": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Completions",
+      "mean": 2.26,
+      "median": 1.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 1.0,
+      "p75": 4.0,
+      "p90": 6.0,
+      "sd": 2.63,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.0,
+        "threshold": "14.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "19.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "24.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "29.5+"
+       }
+      ]
+     },
+     "qb/db": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Dropbacks",
+      "mean": 4.03,
+      "median": 2.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 2.0,
+      "p75": 9.0,
+      "p90": 10.0,
+      "sd": 4.36,
+      "status": "MODELED",
+      "thresholds": []
+     },
+     "qb/int": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Interceptions",
+      "mean": 0.06,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 0.0,
+      "sd": 0.24,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.052,
+        "threshold": "1+"
+       },
+       {
+        "p": 0.003,
+        "threshold": "2+"
+       }
+      ]
+     },
+     "qb/ptd": {
+      "caveat": "TD2 pooled positional control, governance HOLD_TENTATIVE",
+      "kind": "count",
+      "label": "Passing TD",
+      "mean": 0.1,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 0.0,
+      "sd": 0.33,
+      "status": "PROVISIONAL",
+      "thresholds": [
+       {
+        "p": 0.095,
+        "threshold": "1+"
+       },
+       {
+        "p": 0.008,
+        "threshold": "2+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "3+"
+       }
+      ]
+     },
+     "qb/pyds": {
+      "caveat": null,
+      "kind": "yards",
+      "label": "Passing yards",
+      "mean": 25.27,
+      "median": 11.63,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 11.63,
+      "p75": 44.5,
+      "p90": 74.0,
+      "sd": 32.62,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.001,
+        "threshold": "175.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "200.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "225.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "250.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "275.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "300.5+"
+       }
+      ]
+     },
+     "qb/rtd": {
+      "caveat": "TD2 pooled positional control, governance HOLD_TENTATIVE",
+      "kind": "count",
+      "label": "Rushing TD",
+      "mean": 0.02,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 0.0,
+      "sd": 0.13,
+      "status": "PROVISIONAL",
+      "thresholds": []
+     },
+     "qb/rush_opp": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Rush attempts",
+      "mean": 0.49,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 1.0,
+      "p90": 2.0,
+      "sd": 0.88,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.125,
+        "threshold": "2+"
+       },
+       {
+        "p": 0.009,
+        "threshold": "4+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "6+"
+       }
+      ]
+     },
+     "qb/ryds": {
+      "caveat": "QB V1 draws yards per rush from the passer's own history mixed with the positional pool. It is adjudicated, unlike the RB control.",
+      "kind": "yards",
+      "label": "Rushing yards",
+      "mean": 2.2,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 2.5,
+      "p90": 7.03,
+      "sd": 5.71,
+      "status": "PROVISIONAL",
+      "thresholds": [
+       {
+        "p": 0.062,
+        "threshold": "9.5+"
+       },
+       {
+        "p": 0.023,
+        "threshold": "19.5+"
+       },
+       {
+        "p": 0.008,
+        "threshold": "29.5+"
+       },
+       {
+        "p": 0.002,
+        "threshold": "39.5+"
+       }
+      ]
+     },
+     "qb/sacks": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Sacks taken",
+      "mean": 0.34,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 1.0,
+      "p90": 1.0,
+      "sd": 0.63,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.257,
+        "threshold": "1+"
+       },
+       {
+        "p": 0.07,
+        "threshold": "2+"
+       },
+       {
+        "p": 0.008,
+        "threshold": "3+"
+       }
+      ]
+     },
+     "qb/scr": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Scrambles",
+      "mean": 0.26,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 1.0,
+      "sd": 0.57,
+      "status": "MODELED",
+      "thresholds": []
+     }
+    },
+    "opportunity_share": {
+     "qb/db": {
+      "basis": "mean of the player's draws over the mean of the game-wide pool on the same draw index",
+      "share_of_game_pool": 0.0543
+     }
+    },
+    "position": "QB",
+    "team": "TEN",
+    "touchdown": {
+     "anytime": 0.017,
+     "basis": "fraction of draws with at least one scoring play, summed within each draw rather than multiplied across marginals",
+     "components": {
+      "qb/ptd": 0.095,
+      "qb/rtd": 0.017
+     },
+     "two_plus": 0.0
+    },
+    "unavailable": [
+     {
+      "affects": [
+       "QB"
+      ],
+      "code": "NO_RATE_COMPOSITE_LAYER",
+      "label": "Passer rating",
+      "metric": "qb/rating",
+      "reason": "A composite of forecast components is not itself a forecast distribution and would misstate its own uncertainty.",
+      "status": "UNAVAILABLE"
+     }
+    ]
+   },
+   {
+    "confidence": {
+     "means": "confidence in the model and its inputs, NOT in the outcome. A high-confidence projection can still miss.",
+     "parts": {
+      "distribution_width": 0.0,
+      "input_completeness": 1.0,
+      "layer_completeness": 0.8636,
+      "role_certainty": 0.0636,
+      "status_certainty": 0.4
+     },
+     "primary_metric": "qb/pyds",
+     "reasons": {
+      "distribution_width": "IQR/median 4.00",
+      "input_completeness": "7 source capture(s) validated",
+      "layer_completeness": "1/1 layer(s); 8/11 metric(s) fully modelled, the rest provisional; 1 named absence(s)",
+      "role_certainty": "5% of the game's quarterback dropbacks",
+      "status_certainty": "rows filed but report_status unfilled -- the game-designation report was never captured"
+     },
+     "score": 0.4655
+    },
+    "depth_chart": null,
+    "gsis_id": "00-0039152",
+    "layers": [
+     "qb"
+    ],
+    "metrics": {
+     "qb/att": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Pass attempts",
+      "mean": 3.23,
+      "median": 2.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 2.0,
+      "p75": 7.0,
+      "p90": 9.0,
+      "sd": 3.62,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.0,
+        "threshold": "24.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "29.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "34.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "39.5+"
+       }
+      ]
+     },
+     "qb/cmp": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Completions",
+      "mean": 2.02,
+      "median": 1.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 1.0,
+      "p75": 4.0,
+      "p90": 6.0,
+      "sd": 2.41,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.0,
+        "threshold": "14.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "19.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "24.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "29.5+"
+       }
+      ]
+     },
+     "qb/db": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Dropbacks",
+      "mean": 3.78,
+      "median": 2.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 2.0,
+      "p75": 8.0,
+      "p90": 10.0,
+      "sd": 4.15,
+      "status": "MODELED",
+      "thresholds": []
+     },
+     "qb/int": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Interceptions",
+      "mean": 0.09,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 0.0,
+      "sd": 0.32,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.082,
+        "threshold": "1+"
+       },
+       {
+        "p": 0.007,
+        "threshold": "2+"
+       }
+      ]
+     },
+     "qb/ptd": {
+      "caveat": "TD2 pooled positional control, governance HOLD_TENTATIVE",
+      "kind": "count",
+      "label": "Passing TD",
+      "mean": 0.14,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 1.0,
+      "sd": 0.4,
+      "status": "PROVISIONAL",
+      "thresholds": [
+       {
+        "p": 0.121,
+        "threshold": "1+"
+       },
+       {
+        "p": 0.015,
+        "threshold": "2+"
+       },
+       {
+        "p": 0.002,
+        "threshold": "3+"
+       }
+      ]
+     },
+     "qb/pyds": {
+      "caveat": null,
+      "kind": "yards",
+      "label": "Passing yards",
+      "mean": 23.85,
+      "median": 10.47,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 10.47,
+      "p75": 41.89,
+      "p90": 69.41,
+      "sd": 30.61,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.0,
+        "threshold": "175.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "200.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "225.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "250.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "275.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "300.5+"
+       }
+      ]
+     },
+     "qb/rtd": {
+      "caveat": "TD2 pooled positional control, governance HOLD_TENTATIVE",
+      "kind": "count",
+      "label": "Rushing TD",
+      "mean": 0.01,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 0.0,
+      "sd": 0.08,
+      "status": "PROVISIONAL",
+      "thresholds": []
+     },
+     "qb/rush_opp": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Rush attempts",
+      "mean": 0.35,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 1.0,
+      "p90": 1.0,
+      "sd": 0.67,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.069,
+        "threshold": "2+"
+       },
+       {
+        "p": 0.002,
+        "threshold": "4+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "6+"
+       }
+      ]
+     },
+     "qb/ryds": {
+      "caveat": "QB V1 draws yards per rush from the passer's own history mixed with the positional pool. It is adjudicated, unlike the RB control.",
+      "kind": "yards",
+      "label": "Rushing yards",
+      "mean": 1.47,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 6.0,
+      "sd": 3.69,
+      "status": "PROVISIONAL",
+      "thresholds": [
+       {
+        "p": 0.032,
+        "threshold": "9.5+"
+       },
+       {
+        "p": 0.009,
+        "threshold": "19.5+"
+       },
+       {
+        "p": 0.001,
+        "threshold": "29.5+"
+       },
+       {
+        "p": 0.0,
+        "threshold": "39.5+"
+       }
+      ]
+     },
+     "qb/sacks": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Sacks taken",
+      "mean": 0.38,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 1.0,
+      "p90": 1.0,
+      "sd": 0.72,
+      "status": "MODELED",
+      "thresholds": [
+       {
+        "p": 0.275,
+        "threshold": "1+"
+       },
+       {
+        "p": 0.08,
+        "threshold": "2+"
+       },
+       {
+        "p": 0.015,
+        "threshold": "3+"
+       }
+      ]
+     },
+     "qb/scr": {
+      "caveat": null,
+      "kind": "count",
+      "label": "Scrambles",
+      "mean": 0.17,
+      "median": 0.0,
+      "n_draws": 1000,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 1.0,
+      "sd": 0.43,
+      "status": "MODELED",
+      "thresholds": []
+     }
+    },
+    "opportunity_share": {
+     "qb/db": {
+      "basis": "mean of the player's draws over the mean of the game-wide pool on the same draw index",
+      "share_of_game_pool": 0.0509
+     }
+    },
+    "position": "QB",
+    "team": "TEN",
+    "touchdown": {
+     "anytime": 0.007,
+     "basis": "fraction of draws with at least one scoring play, summed within each draw rather than multiplied across marginals",
+     "components": {
+      "qb/ptd": 0.121,
+      "qb/rtd": 0.007
+     },
+     "two_plus": 0.0
+    },
+    "unavailable": [
+     {
+      "affects": [
+       "QB"
+      ],
+      "code": "NO_RATE_COMPOSITE_LAYER",
+      "label": "Passer rating",
+      "metric": "qb/rating",
+      "reason": "A composite of forecast components is not itself a forecast distribution and would misstate its own uncertainty.",
+      "status": "UNAVAILABLE"
+     }
+    ]
+   }
+  ]
+ },
+ "draw_content_digest": "a783852909016299322bb5c2e178dc9915956ffff8390ca5871e454b33fc530f",
+ "draws_file": "player_draws.npz",
+ "draws_sha256": "d911601dfed802fbab1014ed9d708dbf686daffe5383be004941d96adead7212",
+ "eligibility_verdict": "V1_CANDIDATE|APPLIED:A1,A3G,C0,R2,SC1|NOT_REACHED:|PARTIAL|PRODUCED:qb_layer|ABSENT:appearance,conversion,feature_build,participation,targets_carries,td_layer",
+ "freshness": {
+  "kickoff_utc": "2026-09-13T17:00:00Z",
+  "lead_time_hours": 47.1,
+  "oldest_input_hours_before_kickoff": 76.88,
+  "sources": [
+   {
+    "hours_before_kickoff": 76.88,
+    "hours_before_written_at": 29.78,
+    "retrieved_at": "2026-09-10T12:07:17Z",
+    "sha256_16": "db0a09454965e6fc",
+    "source": "depth_charts"
+   },
+   {
+    "hours_before_kickoff": 64.27,
+    "hours_before_written_at": 17.17,
+    "retrieved_at": "2026-09-11T00:43:57Z",
+    "sha256_16": "0cd99d47b1cc389f",
+    "source": "espn_injuries_json"
+   },
+   {
+    "hours_before_kickoff": 52.68,
+    "hours_before_written_at": 5.58,
+    "retrieved_at": "2026-09-11T12:19:21Z",
+    "sha256_16": "cd7338473dd852d0",
+    "source": "injuries"
+   },
+   {
+    "hours_before_kickoff": 64.27,
+    "hours_before_written_at": 17.17,
+    "retrieved_at": "2026-09-11T00:43:57Z",
+    "sha256_16": "67511bb2cfc1e9f3",
+    "source": "official_inactives"
+   },
+   {
+    "hours_before_kickoff": 64.27,
+    "hours_before_written_at": 17.17,
+    "retrieved_at": "2026-09-11T00:43:57Z",
+    "sha256_16": "ec99910f37f94bb8",
+    "source": "official_injury_report"
+   },
+   {
+    "hours_before_kickoff": 52.68,
+    "hours_before_written_at": 5.58,
+    "retrieved_at": "2026-09-11T12:19:21Z",
+    "sha256_16": "224b38fb539045bd",
+    "source": "schedules"
+   },
+   {
+    "hours_before_kickoff": 52.68,
+    "hours_before_written_at": 5.58,
+    "retrieved_at": "2026-09-11T12:19:21Z",
+    "sha256_16": "fb79560b5c4738a2",
+    "source": "weekly_rosters"
+   }
+  ],
+  "written_at": "2026-09-11T17:53:58Z"
+ },
+ "game_id": "2026_01_NYJ_TEN",
+ "information_set": {
+  "absent": [
+   "official_transactions",
+   "pbp_participation",
+   "snap_counts"
+  ],
+  "kickoff_utc": "2026-09-13T17:00:00Z",
+  "newest_observation": "2026-09-11T12:19:21Z",
+  "observed_before": "2026-09-11T17:53:58Z",
+  "oldest_observation": "2026-09-10T12:07:17Z",
+  "selection_rule": "latest content observed strictly before the consumed clock, which is min(written_at, kickoff); observation time is retrieved_at when recorded and the earliest capture_id carrying the hash otherwise, so a refetch returning identical bytes never moves a source forward",
+  "sources": {
+   "depth_charts": {
+    "blob": "nfl/vintage/depth_charts.db0a09454965e6fc.reduced.csv.gz",
+    "blob_is_derived": true,
+    "blob_sha256": "9c264b63fa83e53bcc131f4fac1ad52de031b9824001733dbc3766a1e9c8ae72",
+    "capture_id": "20260910T120717Z",
+    "hours_before_kickoff": 76.879,
+    "observed_at": "2026-09-10T12:07:17Z",
+    "observed_basis": "capture_id",
+    "sha256": "db0a09454965e6fcd4d7378a19381fa53f251432f80f09ebdcc45f78f5e1bc9f",
+    "source": "depth_charts"
+   },
+   "espn_injuries_json": {
+    "blob": "nfl/vintage/espn_injuries_json.0cd99d47b1cc389f.json.gz",
+    "blob_is_derived": true,
+    "blob_sha256": "6378e0da4952be831992720b234406c4fed06271aa92ed2dc5323d2fe1a99e1b",
+    "capture_id": "20260911T004357Z",
+    "hours_before_kickoff": 64.267,
+    "observed_at": "2026-09-11T00:43:57Z",
+    "observed_basis": "capture_id",
+    "sha256": "0cd99d47b1cc389f6f09973bed503eac54e90f1a701b34de2b690e9a90febc95",
+    "source": "espn_injuries_json"
+   },
+   "injuries": {
+    "blob": "nfl/vintage/injuries.cd7338473dd852d0.csv.gz",
+    "blob_is_derived": true,
+    "blob_sha256": "1808fd3b428208070f4252c97602f5741947482e217b4a8b4bfd1bed746a1ff5",
+    "capture_id": "20260911T121921Z",
+    "hours_before_kickoff": 52.678,
+    "observed_at": "2026-09-11T12:19:21Z",
+    "observed_basis": "capture_id",
+    "sha256": "cd7338473dd852d02c6986663addb31431609946fa8756d0460bf2e98d3501a9",
+    "source": "injuries"
+   },
+   "official_inactives": {
+    "blob": "nfl/vintage/official_inactives.67511bb2cfc1e9f3.html.gz",
+    "blob_is_derived": true,
+    "blob_sha256": "54673a376f5fb3a3c36a700976c725b819c27c7793fd343ec8cbc9918a45d642",
+    "capture_id": "20260911T004357Z",
+    "hours_before_kickoff": 64.267,
+    "observed_at": "2026-09-11T00:43:57Z",
+    "observed_basis": "capture_id",
+    "sha256": "67511bb2cfc1e9f35b11a4eba503f4bce67e51bc8cb1252c52e8b8f6ffd9e1aa",
+    "source": "official_inactives"
+   },
+   "official_injury_report": {
+    "blob": "nfl/vintage/official_injury_report.ec99910f37f94bb8.html.gz",
+    "blob_is_derived": true,
+    "blob_sha256": "047f9be935f241c907a82eea37ca92d28557d1b1516c4668c0f51ae7ae4c15de",
+    "capture_id": "20260911T004357Z",
+    "hours_before_kickoff": 64.267,
+    "observed_at": "2026-09-11T00:43:57Z",
+    "observed_basis": "capture_id",
+    "sha256": "ec99910f37f94bb89872633001a811546258bc0ebd452666d6f2037ac38f9040",
+    "source": "official_injury_report"
+   },
+   "schedules": {
+    "blob": "nfl/vintage/schedules.224b38fb539045bd.csv.gz",
+    "blob_is_derived": true,
+    "blob_sha256": "2279f0b58dfb5dea9d9b09b205dbe376b341f21839d3af2eb9ea67e4250c69c9",
+    "capture_id": "20260911T121921Z",
+    "hours_before_kickoff": 52.678,
+    "observed_at": "2026-09-11T12:19:21Z",
+    "observed_basis": "capture_id",
+    "sha256": "224b38fb539045bd3679655c02bee6e282bbef7d74e99cf5d34ce42915c6725d",
+    "source": "schedules"
+   },
+   "weekly_rosters": {
+    "blob": "nfl/vintage/weekly_rosters.fb79560b5c4738a2.reduced.csv.gz",
+    "blob_is_derived": true,
+    "blob_sha256": "1530de2f1a46ae2afff1151dfa1a2ecdfbab77a4fe12ec7b81f74114c77e4e3c",
+    "capture_id": "20260911T121921Z",
+    "hours_before_kickoff": 52.678,
+    "observed_at": "2026-09-11T12:19:21Z",
+    "observed_basis": "capture_id",
+    "sha256": "fb79560b5c4738a284e4b37f49759cdceaa461eee6f41ea0840e7d0d9eb17026",
+    "source": "weekly_rosters"
+   }
+  }
+ },
+ "layer_governance": [
+  {
+   "code": "INPUTS_VALIDATED",
+   "spec_version": "nfl-production-pipeline-1",
+   "stage": "capture_validation",
+   "state": "PASS",
+   "warnings": []
+  },
+  {
+   "code": "IDENTITY_RESOLVED",
+   "spec_version": "",
+   "stage": "identity_resolution",
+   "state": "PASS",
+   "warnings": [
+    "1 player(s) excluded: no gsis_id"
+   ]
+  },
+  {
+   "code": "STAGE_DECLARED_UNIMPLEMENTED",
+   "spec_version": "prior-only, ordinal prefix cut",
+   "stage": "feature_build",
+   "state": "PASS",
+   "warnings": []
+  },
+  {
+   "code": "TEAM_ENVIRONMENT_OK",
+   "spec_version": "team-volume-v1-p4b-frozen-1",
+   "stage": "team_environment",
+   "state": "PASS",
+   "warnings": [
+    "known limitation: team_volume_is_near_unforecastable"
+   ]
+  },
+  {
+   "code": "NONQB_PLAYER_FRAME_INCOMPLETE",
+   "spec_version": "P3 appearance",
+   "stage": "appearance",
+   "state": "NOT_APPLICABLE",
+   "warnings": []
+  },
+  {
+   "code": "NONQB_PLAYER_FRAME_INCOMPLETE",
+   "spec_version": "Stage2 ewma_hl2; governance INFORMATION_CONSTRAINED",
+   "stage": "participation",
+   "state": "NOT_APPLICABLE",
+   "warnings": []
+  },
+  {
+   "code": "NONQB_PLAYER_FRAME_INCOMPLETE",
+   "spec_version": "P4C system C; governance DATA_BLOCKED",
+   "stage": "targets_carries",
+   "state": "NOT_APPLICABLE",
+   "warnings": []
+  },
+  {
+   "code": "NONQB_PLAYER_FRAME_INCOMPLETE",
+   "spec_version": "RC1 baseline; SIGNAL_WEAK; governance HOLD_CHARACTERIZED + CALIBRATION_DEFECT",
+   "stage": "conversion",
+   "state": "NOT_APPLICABLE",
+   "warnings": []
+  },
+  {
+   "code": "NONQB_PLAYER_FRAME_INCOMPLETE",
+   "spec_version": "TD2 pooled positional control; governance HOLD_TENTATIVE",
+   "stage": "td_layer",
+   "state": "NOT_APPLICABLE",
+   "warnings": []
+  },
+  {
+   "code": "QB_LAYER_OK",
+   "spec_version": "qb-v1-aggregate-then-allocate-1",
+   "stage": "qb_layer",
+   "state": "PASS",
+   "warnings": []
+  },
+  {
+   "code": "JOINT_RECONCILED",
+   "spec_version": "minimum-viable production coupling",
+   "stage": "joint_reconciliation",
+   "state": "PASS",
+   "warnings": []
+  },
+  {
+   "code": "DRAWS_BUILT",
+   "spec_version": "nfl-player-draw-1",
+   "stage": "player_draws",
+   "state": "PASS",
+   "warnings": []
+  },
+  {
+   "code": "SCORED",
+   "spec_version": "deterministic",
+   "stage": "scoring",
+   "state": "PASS",
+   "warnings": []
+  },
+  {
+   "code": "ARTIFACT_SEALED",
+   "spec_version": "nfl-forecast-artifact-1",
+   "stage": "artifact_sealing",
+   "state": "PASS",
+   "warnings": []
+  }
+ ],
+ "model_configuration": "V1_CANDIDATE_R8",
+ "n_draws": 1000,
+ "n_players": 7,
+ "pipeline_status": "SEALED",
+ "players": [
+  {
+   "confidence": {
+    "means": "confidence in the model and its inputs, NOT in the outcome. A high-confidence projection can still miss.",
+    "parts": {
+     "distribution_width": 0.0,
+     "input_completeness": 1.0,
+     "layer_completeness": 0.8636,
+     "role_certainty": 0.369,
+     "status_certainty": 0.4
+    },
+    "primary_metric": "qb/pyds",
+    "reasons": {
+     "distribution_width": "IQR/median 1.74",
+     "input_completeness": "7 source capture(s) validated",
+     "layer_completeness": "1/1 layer(s); 8/11 metric(s) fully modelled, the rest provisional; 1 named absence(s)",
+     "role_certainty": "30% of the game's quarterback dropbacks",
+     "status_certainty": "rows filed but report_status unfilled -- the game-designation report was never captured"
+    },
+    "score": 0.5265
+   },
+   "depth_chart": "QB1",
+   "gsis_id": "00-0040676",
+   "layers": [
+    "qb"
+   ],
+   "metrics": {
+    "qb/att": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Pass attempts",
+     "mean": 19.2,
+     "median": 23.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 23.0,
+     "p75": 34.0,
+     "p90": 40.0,
+     "sd": 17.13,
+     "status": "MODELED",
+     "thresholds": [
+      {
+       "p": 0.475,
+       "threshold": "24.5+"
+      },
+      {
+       "p": 0.363,
+       "threshold": "29.5+"
+      },
+      {
+       "p": 0.233,
+       "threshold": "34.5+"
+      },
+      {
+       "p": 0.117,
+       "threshold": "39.5+"
+      }
+     ]
+    },
+    "qb/cmp": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Completions",
+     "mean": 11.76,
+     "median": 13.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 13.0,
+     "p75": 21.0,
+     "p90": 26.0,
+     "sd": 10.74,
+     "status": "MODELED",
+     "thresholds": [
+      {
+       "p": 0.463,
+       "threshold": "14.5+"
+      },
+      {
+       "p": 0.287,
+       "threshold": "19.5+"
+      },
+      {
+       "p": 0.131,
+       "threshold": "24.5+"
+      },
+      {
+       "p": 0.038,
+       "threshold": "29.5+"
+      }
+     ]
+    },
+    "qb/db": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Dropbacks",
+     "mean": 21.92,
+     "median": 28.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 28.0,
+     "p75": 39.0,
+     "p90": 46.0,
+     "sd": 19.45,
+     "status": "MODELED",
+     "thresholds": []
+    },
+    "qb/int": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Interceptions",
+     "mean": 0.29,
+     "median": 0.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 0.0,
+     "p75": 0.0,
+     "p90": 1.0,
+     "sd": 0.6,
+     "status": "MODELED",
+     "thresholds": [
+      {
+       "p": 0.221,
+       "threshold": "1+"
+      },
+      {
+       "p": 0.057,
+       "threshold": "2+"
+      }
+     ]
+    },
+    "qb/ptd": {
+     "caveat": "TD2 pooled positional control, governance HOLD_TENTATIVE",
+     "kind": "count",
+     "label": "Passing TD",
+     "mean": 0.64,
+     "median": 0.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 0.0,
+     "p75": 1.0,
+     "p90": 2.0,
+     "sd": 1.05,
+     "status": "PROVISIONAL",
+     "thresholds": [
+      {
+       "p": 0.37,
+       "threshold": "1+"
+      },
+      {
+       "p": 0.165,
+       "threshold": "2+"
+      },
+      {
+       "p": 0.066,
+       "threshold": "3+"
+      }
+     ]
+    },
+    "qb/pyds": {
+     "caveat": null,
+     "kind": "yards",
+     "label": "Passing yards",
+     "mean": 123.5,
+     "median": 123.58,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 123.58,
+     "p75": 215.44,
+     "p90": 283.5,
+     "sd": 120.26,
+     "status": "MODELED",
+     "thresholds": [
+      {
+       "p": 0.354,
+       "threshold": "175.5+"
+      },
+      {
+       "p": 0.292,
+       "threshold": "200.5+"
+      },
+      {
+       "p": 0.219,
+       "threshold": "225.5+"
+      },
+      {
+       "p": 0.154,
+       "threshold": "250.5+"
+      },
+      {
+       "p": 0.112,
+       "threshold": "275.5+"
+      },
+      {
+       "p": 0.076,
+       "threshold": "300.5+"
+      }
+     ]
+    },
+    "qb/rtd": {
+     "caveat": "TD2 pooled positional control, governance HOLD_TENTATIVE",
+     "kind": "count",
+     "label": "Rushing TD",
+     "mean": 0.09,
+     "median": 0.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 0.0,
+     "p75": 0.0,
+     "p90": 0.0,
+     "sd": 0.33,
+     "status": "PROVISIONAL",
+     "thresholds": []
+    },
+    "qb/rush_opp": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Rush attempts",
+     "mean": 1.35,
+     "median": 1.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 1.0,
+     "p75": 2.0,
+     "p90": 4.0,
+     "sd": 1.64,
+     "status": "MODELED",
+     "thresholds": [
+      {
+       "p": 0.389,
+       "threshold": "2+"
+      },
+      {
+       "p": 0.118,
+       "threshold": "4+"
+      },
+      {
+       "p": 0.015,
+       "threshold": "6+"
+      }
+     ]
+    },
+    "qb/ryds": {
+     "caveat": "QB V1 draws yards per rush from the passer's own history mixed with the positional pool. It is adjudicated, unlike the RB control.",
+     "kind": "yards",
+     "label": "Rushing yards",
+     "mean": 6.55,
+     "median": 2.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 2.0,
+     "p75": 10.0,
+     "p90": 21.0,
+     "sd": 9.97,
+     "status": "PROVISIONAL",
+     "thresholds": [
+      {
+       "p": 0.262,
+       "threshold": "9.5+"
+      },
+      {
+       "p": 0.11,
+       "threshold": "19.5+"
+      },
+      {
+       "p": 0.048,
+       "threshold": "29.5+"
+      },
+      {
+       "p": 0.02,
+       "threshold": "39.5+"
+      }
+     ]
+    },
+    "qb/sacks": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Sacks taken",
+     "mean": 1.82,
+     "median": 1.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 1.0,
+     "p75": 3.0,
+     "p90": 5.0,
+     "sd": 2.03,
+     "status": "MODELED",
+     "thresholds": [
+      {
+       "p": 0.57,
+       "threshold": "1+"
+      },
+      {
+       "p": 0.479,
+       "threshold": "2+"
+      },
+      {
+       "p": 0.346,
+       "threshold": "3+"
+      }
+     ]
+    },
+    "qb/scr": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Scrambles",
+     "mean": 0.89,
+     "median": 0.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 0.0,
+     "p75": 2.0,
+     "p90": 3.0,
+     "sd": 1.21,
+     "status": "MODELED",
+     "thresholds": []
+    }
+   },
+   "opportunity_share": {
+    "qb/db": {
+     "basis": "mean of the player's draws over the mean of the game-wide pool on the same draw index",
+     "share_of_game_pool": 0.2952
+    }
+   },
+   "position": "QB",
+   "team": "TEN",
+   "touchdown": {
+    "anytime": 0.083,
+    "basis": "fraction of draws with at least one scoring play, summed within each draw rather than multiplied across marginals",
+    "components": {
+     "qb/ptd": 0.37,
+     "qb/rtd": 0.083
+    },
+    "two_plus": 0.011
+   },
+   "unavailable": [
+    {
+     "affects": [
+      "QB"
+     ],
+     "code": "NO_RATE_COMPOSITE_LAYER",
+     "label": "Passer rating",
+     "metric": "qb/rating",
+     "reason": "A composite of forecast components is not itself a forecast distribution and would misstate its own uncertainty.",
+     "status": "UNAVAILABLE"
+    }
+   ]
+  },
+  {
+   "confidence": {
+    "means": "confidence in the model and its inputs, NOT in the outcome. A high-confidence projection can still miss.",
+    "parts": {
+     "distribution_width": 0.0,
+     "input_completeness": 1.0,
+     "layer_completeness": 0.8636,
+     "role_certainty": 0.3299,
+     "status_certainty": 0.4
+    },
+    "primary_metric": "qb/pyds",
+    "reasons": {
+     "distribution_width": "IQR/median 1.71",
+     "input_completeness": "7 source capture(s) validated",
+     "layer_completeness": "1/1 layer(s); 8/11 metric(s) fully modelled, the rest provisional; 1 named absence(s)",
+     "role_certainty": "26% of the game's quarterback dropbacks",
+     "status_certainty": "rows filed but report_status unfilled -- the game-designation report was never captured"
+    },
+    "score": 0.5187
+   },
+   "depth_chart": "QB1",
+   "gsis_id": "00-0030565",
+   "layers": [
+    "qb"
+   ],
+   "metrics": {
+    "qb/att": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Pass attempts",
+     "mean": 17.26,
+     "median": 20.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 20.0,
+     "p75": 31.0,
+     "p90": 37.0,
+     "sd": 15.59,
+     "status": "MODELED",
+     "thresholds": [
+      {
+       "p": 0.433,
+       "threshold": "24.5+"
+      },
+      {
+       "p": 0.32,
+       "threshold": "29.5+"
+      },
+      {
+       "p": 0.162,
+       "threshold": "34.5+"
+      },
+      {
+       "p": 0.054,
+       "threshold": "39.5+"
+      }
+     ]
+    },
+    "qb/cmp": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Completions",
+     "mean": 11.81,
+     "median": 13.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 13.0,
+     "p75": 21.0,
+     "p90": 26.0,
+     "sd": 10.85,
+     "status": "MODELED",
+     "thresholds": [
+      {
+       "p": 0.47,
+       "threshold": "14.5+"
+      },
+      {
+       "p": 0.33,
+       "threshold": "19.5+"
+      },
+      {
+       "p": 0.137,
+       "threshold": "24.5+"
+      },
+      {
+       "p": 0.034,
+       "threshold": "29.5+"
+      }
+     ]
+    },
+    "qb/db": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Dropbacks",
+     "mean": 19.59,
+     "median": 23.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 23.0,
+     "p75": 35.0,
+     "p90": 42.0,
+     "sd": 17.65,
+     "status": "MODELED",
+     "thresholds": []
+    },
+    "qb/int": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Interceptions",
+     "mean": 0.41,
+     "median": 0.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 0.0,
+     "p75": 1.0,
+     "p90": 1.0,
+     "sd": 0.71,
+     "status": "MODELED",
+     "thresholds": [
+      {
+       "p": 0.301,
+       "threshold": "1+"
+      },
+      {
+       "p": 0.087,
+       "threshold": "2+"
+      }
+     ]
+    },
+    "qb/ptd": {
+     "caveat": "TD2 pooled positional control, governance HOLD_TENTATIVE",
+     "kind": "count",
+     "label": "Passing TD",
+     "mean": 0.77,
+     "median": 0.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 0.0,
+     "p75": 1.0,
+     "p90": 2.0,
+     "sd": 1.09,
+     "status": "PROVISIONAL",
+     "thresholds": [
+      {
+       "p": 0.428,
+       "threshold": "1+"
+      },
+      {
+       "p": 0.221,
+       "threshold": "2+"
+      },
+      {
+       "p": 0.08,
+       "threshold": "3+"
+      }
+     ]
+    },
+    "qb/pyds": {
+     "caveat": null,
+     "kind": "yards",
+     "label": "Passing yards",
+     "mean": 126.84,
+     "median": 130.35,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 130.35,
+     "p75": 222.56,
+     "p90": 286.96,
+     "sd": 122.57,
+     "status": "MODELED",
+     "thresholds": [
+      {
+       "p": 0.395,
+       "threshold": "175.5+"
+      },
+      {
+       "p": 0.318,
+       "threshold": "200.5+"
+      },
+      {
+       "p": 0.241,
+       "threshold": "225.5+"
+      },
+      {
+       "p": 0.175,
+       "threshold": "250.5+"
+      },
+      {
+       "p": 0.118,
+       "threshold": "275.5+"
+      },
+      {
+       "p": 0.08,
+       "threshold": "300.5+"
+      }
+     ]
+    },
+    "qb/rtd": {
+     "caveat": "TD2 pooled positional control, governance HOLD_TENTATIVE",
+     "kind": "count",
+     "label": "Rushing TD",
+     "mean": 0.04,
+     "median": 0.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 0.0,
+     "p75": 0.0,
+     "p90": 0.0,
+     "sd": 0.2,
+     "status": "PROVISIONAL",
+     "thresholds": []
+    },
+    "qb/rush_opp": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Rush attempts",
+     "mean": 1.39,
+     "median": 1.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 1.0,
+     "p75": 2.25,
+     "p90": 4.0,
+     "sd": 1.7,
+     "status": "MODELED",
+     "thresholds": [
+      {
+       "p": 0.394,
+       "threshold": "2+"
+      },
+      {
+       "p": 0.12,
+       "threshold": "4+"
+      },
+      {
+       "p": 0.025,
+       "threshold": "6+"
+      }
+     ]
+    },
+    "qb/ryds": {
+     "caveat": "QB V1 draws yards per rush from the passer's own history mixed with the positional pool. It is adjudicated, unlike the RB control.",
+     "kind": "yards",
+     "label": "Rushing yards",
+     "mean": 7.8,
+     "median": 0.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 0.0,
+     "p75": 12.0,
+     "p90": 24.0,
+     "sd": 13.48,
+     "status": "PROVISIONAL",
+     "thresholds": [
+      {
+       "p": 0.292,
+       "threshold": "9.5+"
+      },
+      {
+       "p": 0.148,
+       "threshold": "19.5+"
+      },
+      {
+       "p": 0.078,
+       "threshold": "29.5+"
+      },
+      {
+       "p": 0.035,
+       "threshold": "39.5+"
+      }
+     ]
+    },
+    "qb/sacks": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Sacks taken",
+     "mean": 1.53,
+     "median": 1.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 1.0,
+     "p75": 3.0,
+     "p90": 4.0,
+     "sd": 1.83,
+     "status": "MODELED",
+     "thresholds": [
+      {
+       "p": 0.544,
+       "threshold": "1+"
+      },
+      {
+       "p": 0.418,
+       "threshold": "2+"
+      },
+      {
+       "p": 0.273,
+       "threshold": "3+"
+      }
+     ]
+    },
+    "qb/scr": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Scrambles",
+     "mean": 0.8,
+     "median": 0.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 0.0,
+     "p75": 1.0,
+     "p90": 2.0,
+     "sd": 1.15,
+     "status": "MODELED",
+     "thresholds": []
+    }
+   },
+   "opportunity_share": {
+    "qb/db": {
+     "basis": "mean of the player's draws over the mean of the game-wide pool on the same draw index",
+     "share_of_game_pool": 0.2639
+    }
+   },
+   "position": "QB",
+   "team": "NYJ",
+   "touchdown": {
+    "anytime": 0.039,
+    "basis": "fraction of draws with at least one scoring play, summed within each draw rather than multiplied across marginals",
+    "components": {
+     "qb/ptd": 0.428,
+     "qb/rtd": 0.039
+    },
+    "two_plus": 0.001
+   },
+   "unavailable": [
+    {
+     "affects": [
+      "QB"
+     ],
+     "code": "NO_RATE_COMPOSITE_LAYER",
+     "label": "Passer rating",
+     "metric": "qb/rating",
+     "reason": "A composite of forecast components is not itself a forecast distribution and would misstate its own uncertainty.",
+     "status": "UNAVAILABLE"
+    }
+   ]
+  },
+  {
+   "confidence": {
+    "means": "confidence in the model and its inputs, NOT in the outcome. A high-confidence projection can still miss.",
+    "parts": {
+     "distribution_width": 0.0,
+     "input_completeness": 1.0,
+     "layer_completeness": 0.8636,
+     "role_certainty": 0.1827,
+     "status_certainty": 0.4
+    },
+    "primary_metric": "qb/pyds",
+    "reasons": {
+     "distribution_width": "IQR/median 13.64",
+     "input_completeness": "7 source capture(s) validated",
+     "layer_completeness": "1/1 layer(s); 8/11 metric(s) fully modelled, the rest provisional; 1 named absence(s)",
+     "role_certainty": "15% of the game's quarterback dropbacks",
+     "status_certainty": "rows filed but report_status unfilled -- the game-designation report was never captured"
+    },
+    "score": 0.4893
+   },
+   "depth_chart": "QB2",
+   "gsis_id": "00-0041056",
+   "layers": [
+    "qb"
+   ],
+   "metrics": {
+    "qb/att": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Pass attempts",
+     "mean": 9.74,
+     "median": 2.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 2.0,
+     "p75": 21.0,
+     "p90": 27.0,
+     "sd": 11.44,
+     "status": "MODELED",
+     "thresholds": [
+      {
+       "p": 0.161,
+       "threshold": "24.5+"
+      },
+      {
+       "p": 0.036,
+       "threshold": "29.5+"
+      },
+      {
+       "p": 0.007,
+       "threshold": "34.5+"
+      },
+      {
+       "p": 0.0,
+       "threshold": "39.5+"
+      }
+     ]
+    },
+    "qb/cmp": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Completions",
+     "mean": 6.32,
+     "median": 1.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 1.0,
+     "p75": 13.0,
+     "p90": 18.0,
+     "sd": 7.56,
+     "status": "MODELED",
+     "thresholds": [
+      {
+       "p": 0.204,
+       "threshold": "14.5+"
+      },
+      {
+       "p": 0.061,
+       "threshold": "19.5+"
+      },
+      {
+       "p": 0.001,
+       "threshold": "24.5+"
+      },
+      {
+       "p": 0.0,
+       "threshold": "29.5+"
+      }
+     ]
+    },
+    "qb/db": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Dropbacks",
+     "mean": 10.85,
+     "median": 2.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 2.0,
+     "p75": 24.0,
+     "p90": 30.0,
+     "sd": 12.7,
+     "status": "MODELED",
+     "thresholds": []
+    },
+    "qb/int": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Interceptions",
+     "mean": 0.24,
+     "median": 0.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 0.0,
+     "p75": 0.0,
+     "p90": 1.0,
+     "sd": 0.53,
+     "status": "MODELED",
+     "thresholds": [
+      {
+       "p": 0.19,
+       "threshold": "1+"
+      },
+      {
+       "p": 0.043,
+       "threshold": "2+"
+      }
+     ]
+    },
+    "qb/ptd": {
+     "caveat": "TD2 pooled positional control, governance HOLD_TENTATIVE",
+     "kind": "count",
+     "label": "Passing TD",
+     "mean": 0.43,
+     "median": 0.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 0.0,
+     "p75": 1.0,
+     "p90": 2.0,
+     "sd": 0.8,
+     "status": "PROVISIONAL",
+     "thresholds": [
+      {
+       "p": 0.287,
+       "threshold": "1+"
+      },
+      {
+       "p": 0.102,
+       "threshold": "2+"
+      },
+      {
+       "p": 0.032,
+       "threshold": "3+"
+      }
+     ]
+    },
+    "qb/pyds": {
+     "caveat": null,
+     "kind": "yards",
+     "label": "Passing yards",
+     "mean": 69.19,
+     "median": 10.13,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 10.13,
+     "p75": 138.23,
+     "p90": 192.93,
+     "sd": 87.34,
+     "status": "MODELED",
+     "thresholds": [
+      {
+       "p": 0.147,
+       "threshold": "175.5+"
+      },
+      {
+       "p": 0.089,
+       "threshold": "200.5+"
+      },
+      {
+       "p": 0.052,
+       "threshold": "225.5+"
+      },
+      {
+       "p": 0.029,
+       "threshold": "250.5+"
+      },
+      {
+       "p": 0.022,
+       "threshold": "275.5+"
+      },
+      {
+       "p": 0.015,
+       "threshold": "300.5+"
+      }
+     ]
+    },
+    "qb/rtd": {
+     "caveat": "TD2 pooled positional control, governance HOLD_TENTATIVE",
+     "kind": "count",
+     "label": "Rushing TD",
+     "mean": 0.05,
+     "median": 0.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 0.0,
+     "p75": 0.0,
+     "p90": 0.0,
+     "sd": 0.24,
+     "status": "PROVISIONAL",
+     "thresholds": []
+    },
+    "qb/rush_opp": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Rush attempts",
+     "mean": 0.9,
+     "median": 0.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 0.0,
+     "p75": 2.0,
+     "p90": 3.0,
+     "sd": 1.4,
+     "status": "MODELED",
+     "thresholds": [
+      {
+       "p": 0.254,
+       "threshold": "2+"
+      },
+      {
+       "p": 0.07,
+       "threshold": "4+"
+      },
+      {
+       "p": 0.009,
+       "threshold": "6+"
+      }
+     ]
+    },
+    "qb/ryds": {
+     "caveat": "QB V1 draws yards per rush from the passer's own history mixed with the positional pool. It is adjudicated, unlike the RB control.",
+     "kind": "yards",
+     "label": "Rushing yards",
+     "mean": 4.85,
+     "median": 0.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 0.0,
+     "p75": 6.26,
+     "p90": 16.0,
+     "sd": 9.85,
+     "status": "PROVISIONAL",
+     "thresholds": [
+      {
+       "p": 0.179,
+       "threshold": "9.5+"
+      },
+      {
+       "p": 0.075,
+       "threshold": "19.5+"
+      },
+      {
+       "p": 0.03,
+       "threshold": "29.5+"
+      },
+      {
+       "p": 0.015,
+       "threshold": "39.5+"
+      }
+     ]
+    },
+    "qb/sacks": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Sacks taken",
+     "mean": 0.65,
+     "median": 0.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 0.0,
+     "p75": 1.0,
+     "p90": 2.0,
+     "sd": 1.08,
+     "status": "MODELED",
+     "thresholds": [
+      {
+       "p": 0.344,
+       "threshold": "1+"
+      },
+      {
+       "p": 0.19,
+       "threshold": "2+"
+      },
+      {
+       "p": 0.083,
+       "threshold": "3+"
+      }
+     ]
+    },
+    "qb/scr": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Scrambles",
+     "mean": 0.46,
+     "median": 0.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 0.0,
+     "p75": 1.0,
+     "p90": 2.0,
+     "sd": 0.87,
+     "status": "MODELED",
+     "thresholds": []
+    }
+   },
+   "opportunity_share": {
+    "qb/db": {
+     "basis": "mean of the player's draws over the mean of the game-wide pool on the same draw index",
+     "share_of_game_pool": 0.1461
+    }
+   },
+   "position": "QB",
+   "team": "NYJ",
+   "touchdown": {
+    "anytime": 0.048,
+    "basis": "fraction of draws with at least one scoring play, summed within each draw rather than multiplied across marginals",
+    "components": {
+     "qb/ptd": 0.287,
+     "qb/rtd": 0.048
+    },
+    "two_plus": 0.004
+   },
+   "unavailable": [
+    {
+     "affects": [
+      "QB"
+     ],
+     "code": "NO_RATE_COMPOSITE_LAYER",
+     "label": "Passer rating",
+     "metric": "qb/rating",
+     "reason": "A composite of forecast components is not itself a forecast distribution and would misstate its own uncertainty.",
+     "status": "UNAVAILABLE"
+    }
+   ]
+  },
+  {
+   "confidence": {
+    "means": "confidence in the model and its inputs, NOT in the outcome. A high-confidence projection can still miss.",
+    "parts": {
+     "distribution_width": 0.0,
+     "input_completeness": 1.0,
+     "layer_completeness": 0.8636,
+     "role_certainty": 0.1619,
+     "status_certainty": 0.4
+    },
+    "primary_metric": "qb/pyds",
+    "reasons": {
+     "distribution_width": "IQR/median 6.78",
+     "input_completeness": "7 source capture(s) validated",
+     "layer_completeness": "1/1 layer(s); 8/11 metric(s) fully modelled, the rest provisional; 1 named absence(s)",
+     "role_certainty": "13% of the game's quarterback dropbacks",
+     "status_certainty": "rows filed but report_status unfilled -- the game-designation report was never captured"
+    },
+    "score": 0.4851
+   },
+   "depth_chart": "QB2",
+   "gsis_id": "00-0033869",
+   "layers": [
+    "qb"
+   ],
+   "metrics": {
+    "qb/att": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Pass attempts",
+     "mean": 8.7,
+     "median": 4.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 4.0,
+     "p75": 18.0,
+     "p90": 22.0,
+     "sd": 9.8,
+     "status": "MODELED",
+     "thresholds": [
+      {
+       "p": 0.056,
+       "threshold": "24.5+"
+      },
+      {
+       "p": 0.018,
+       "threshold": "29.5+"
+      },
+      {
+       "p": 0.003,
+       "threshold": "34.5+"
+      },
+      {
+       "p": 0.001,
+       "threshold": "39.5+"
+      }
+     ]
+    },
+    "qb/cmp": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Completions",
+     "mean": 5.72,
+     "median": 2.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 2.0,
+     "p75": 12.0,
+     "p90": 15.0,
+     "sd": 6.57,
+     "status": "MODELED",
+     "thresholds": [
+      {
+       "p": 0.127,
+       "threshold": "14.5+"
+      },
+      {
+       "p": 0.018,
+       "threshold": "19.5+"
+      },
+      {
+       "p": 0.003,
+       "threshold": "24.5+"
+      },
+      {
+       "p": 0.0,
+       "threshold": "29.5+"
+      }
+     ]
+    },
+    "qb/db": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Dropbacks",
+     "mean": 9.62,
+     "median": 4.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 4.0,
+     "p75": 21.0,
+     "p90": 25.0,
+     "sd": 10.76,
+     "status": "MODELED",
+     "thresholds": []
+    },
+    "qb/int": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Interceptions",
+     "mean": 0.23,
+     "median": 0.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 0.0,
+     "p75": 0.0,
+     "p90": 1.0,
+     "sd": 0.52,
+     "status": "MODELED",
+     "thresholds": [
+      {
+       "p": 0.183,
+       "threshold": "1+"
+      },
+      {
+       "p": 0.04,
+       "threshold": "2+"
+      }
+     ]
+    },
+    "qb/ptd": {
+     "caveat": "TD2 pooled positional control, governance HOLD_TENTATIVE",
+     "kind": "count",
+     "label": "Passing TD",
+     "mean": 0.41,
+     "median": 0.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 0.0,
+     "p75": 1.0,
+     "p90": 1.0,
+     "sd": 0.78,
+     "status": "PROVISIONAL",
+     "thresholds": [
+      {
+       "p": 0.272,
+       "threshold": "1+"
+      },
+      {
+       "p": 0.092,
+       "threshold": "2+"
+      },
+      {
+       "p": 0.029,
+       "threshold": "3+"
+      }
+     ]
+    },
+    "qb/pyds": {
+     "caveat": null,
+     "kind": "yards",
+     "label": "Passing yards",
+     "mean": 67.73,
+     "median": 16.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 16.0,
+     "p75": 108.41,
+     "p90": 175.54,
+     "sd": 123.33,
+     "status": "MODELED",
+     "thresholds": [
+      {
+       "p": 0.101,
+       "threshold": "175.5+"
+      },
+      {
+       "p": 0.064,
+       "threshold": "200.5+"
+      },
+      {
+       "p": 0.042,
+       "threshold": "225.5+"
+      },
+      {
+       "p": 0.034,
+       "threshold": "250.5+"
+      },
+      {
+       "p": 0.028,
+       "threshold": "275.5+"
+      },
+      {
+       "p": 0.023,
+       "threshold": "300.5+"
+      }
+     ]
+    },
+    "qb/rtd": {
+     "caveat": "TD2 pooled positional control, governance HOLD_TENTATIVE",
+     "kind": "count",
+     "label": "Rushing TD",
+     "mean": 0.07,
+     "median": 0.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 0.0,
+     "p75": 0.0,
+     "p90": 0.0,
+     "sd": 0.28,
+     "status": "PROVISIONAL",
+     "thresholds": []
+    },
+    "qb/rush_opp": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Rush attempts",
+     "mean": 0.94,
+     "median": 0.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 0.0,
+     "p75": 2.0,
+     "p90": 3.0,
+     "sd": 1.42,
+     "status": "MODELED",
+     "thresholds": [
+      {
+       "p": 0.255,
+       "threshold": "2+"
+      },
+      {
+       "p": 0.069,
+       "threshold": "4+"
+      },
+      {
+       "p": 0.013,
+       "threshold": "6+"
+      }
+     ]
+    },
+    "qb/ryds": {
+     "caveat": "QB V1 draws yards per rush from the passer's own history mixed with the positional pool. It is adjudicated, unlike the RB control.",
+     "kind": "yards",
+     "label": "Rushing yards",
+     "mean": 6.2,
+     "median": 0.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 0.0,
+     "p75": 6.0,
+     "p90": 16.58,
+     "sd": 17.15,
+     "status": "PROVISIONAL",
+     "thresholds": [
+      {
+       "p": 0.18,
+       "threshold": "9.5+"
+      },
+      {
+       "p": 0.077,
+       "threshold": "19.5+"
+      },
+      {
+       "p": 0.037,
+       "threshold": "29.5+"
+      },
+      {
+       "p": 0.03,
+       "threshold": "39.5+"
+      }
+     ]
+    },
+    "qb/sacks": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Sacks taken",
+     "mean": 0.48,
+     "median": 0.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 0.0,
+     "p75": 1.0,
+     "p90": 2.0,
+     "sd": 0.86,
+     "status": "MODELED",
+     "thresholds": [
+      {
+       "p": 0.299,
+       "threshold": "1+"
+      },
+      {
+       "p": 0.129,
+       "threshold": "2+"
+      },
+      {
+       "p": 0.039,
+       "threshold": "3+"
+      }
+     ]
+    },
+    "qb/scr": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Scrambles",
+     "mean": 0.43,
+     "median": 0.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 0.0,
+     "p75": 1.0,
+     "p90": 2.0,
+     "sd": 0.81,
+     "status": "MODELED",
+     "thresholds": []
+    }
+   },
+   "opportunity_share": {
+    "qb/db": {
+     "basis": "mean of the player's draws over the mean of the game-wide pool on the same draw index",
+     "share_of_game_pool": 0.1295
+    }
+   },
+   "position": "QB",
+   "team": "TEN",
+   "touchdown": {
+    "anytime": 0.058,
+    "basis": "fraction of draws with at least one scoring play, summed within each draw rather than multiplied across marginals",
+    "components": {
+     "qb/ptd": 0.272,
+     "qb/rtd": 0.058
+    },
+    "two_plus": 0.008
+   },
+   "unavailable": [
+    {
+     "affects": [
+      "QB"
+     ],
+     "code": "NO_RATE_COMPOSITE_LAYER",
+     "label": "Passer rating",
+     "metric": "qb/rating",
+     "reason": "A composite of forecast components is not itself a forecast distribution and would misstate its own uncertainty.",
+     "status": "UNAVAILABLE"
+    }
+   ]
+  },
+  {
+   "confidence": {
+    "means": "confidence in the model and its inputs, NOT in the outcome. A high-confidence projection can still miss.",
+    "parts": {
+     "distribution_width": 0.0,
+     "input_completeness": 1.0,
+     "layer_completeness": 0.8636,
+     "role_certainty": 0.075,
+     "status_certainty": 0.4
+    },
+    "primary_metric": "qb/pyds",
+    "reasons": {
+     "distribution_width": "IQR/median 6.55",
+     "input_completeness": "7 source capture(s) validated",
+     "layer_completeness": "1/1 layer(s); 8/11 metric(s) fully modelled, the rest provisional; 1 named absence(s)",
+     "role_certainty": "6% of the game's quarterback dropbacks",
+     "status_certainty": "rows filed but report_status unfilled -- the game-designation report was never captured"
+    },
+    "score": 0.4677
+   },
+   "depth_chart": null,
+   "gsis_id": "00-0038108",
+   "layers": [
+    "qb"
+   ],
+   "metrics": {
+    "qb/att": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Pass attempts",
+     "mean": 3.96,
+     "median": 1.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 1.0,
+     "p75": 9.0,
+     "p90": 11.0,
+     "sd": 4.63,
+     "status": "MODELED",
+     "thresholds": [
+      {
+       "p": 0.0,
+       "threshold": "24.5+"
+      },
+      {
+       "p": 0.0,
+       "threshold": "29.5+"
+      },
+      {
+       "p": 0.0,
+       "threshold": "34.5+"
+      },
+      {
+       "p": 0.0,
+       "threshold": "39.5+"
+      }
+     ]
+    },
+    "qb/cmp": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Completions",
+     "mean": 2.51,
+     "median": 1.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 1.0,
+     "p75": 5.0,
+     "p90": 7.0,
+     "sd": 3.08,
+     "status": "MODELED",
+     "thresholds": [
+      {
+       "p": 0.0,
+       "threshold": "14.5+"
+      },
+      {
+       "p": 0.0,
+       "threshold": "19.5+"
+      },
+      {
+       "p": 0.0,
+       "threshold": "24.5+"
+      },
+      {
+       "p": 0.0,
+       "threshold": "29.5+"
+      }
+     ]
+    },
+    "qb/db": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Dropbacks",
+     "mean": 4.45,
+     "median": 2.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 2.0,
+     "p75": 10.0,
+     "p90": 12.0,
+     "sd": 5.17,
+     "status": "MODELED",
+     "thresholds": []
+    },
+    "qb/int": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Interceptions",
+     "mean": 0.15,
+     "median": 0.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 0.0,
+     "p75": 0.0,
+     "p90": 1.0,
+     "sd": 0.4,
+     "status": "MODELED",
+     "thresholds": [
+      {
+       "p": 0.131,
+       "threshold": "1+"
+      },
+      {
+       "p": 0.014,
+       "threshold": "2+"
+      }
+     ]
+    },
+    "qb/ptd": {
+     "caveat": "TD2 pooled positional control, governance HOLD_TENTATIVE",
+     "kind": "count",
+     "label": "Passing TD",
+     "mean": 0.15,
+     "median": 0.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 0.0,
+     "p75": 0.0,
+     "p90": 1.0,
+     "sd": 0.41,
+     "status": "PROVISIONAL",
+     "thresholds": [
+      {
+       "p": 0.134,
+       "threshold": "1+"
+      },
+      {
+       "p": 0.016,
+       "threshold": "2+"
+      },
+      {
+       "p": 0.001,
+       "threshold": "3+"
+      }
+     ]
+    },
+    "qb/pyds": {
+     "caveat": null,
+     "kind": "yards",
+     "label": "Passing yards",
+     "mean": 26.39,
+     "median": 7.83,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 7.83,
+     "p75": 51.24,
+     "p90": 78.38,
+     "sd": 34.13,
+     "status": "MODELED",
+     "thresholds": [
+      {
+       "p": 0.0,
+       "threshold": "175.5+"
+      },
+      {
+       "p": 0.0,
+       "threshold": "200.5+"
+      },
+      {
+       "p": 0.0,
+       "threshold": "225.5+"
+      },
+      {
+       "p": 0.0,
+       "threshold": "250.5+"
+      },
+      {
+       "p": 0.0,
+       "threshold": "275.5+"
+      },
+      {
+       "p": 0.0,
+       "threshold": "300.5+"
+      }
+     ]
+    },
+    "qb/rtd": {
+     "caveat": "TD2 pooled positional control, governance HOLD_TENTATIVE",
+     "kind": "count",
+     "label": "Rushing TD",
+     "mean": 0.01,
+     "median": 0.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 0.0,
+     "p75": 0.0,
+     "p90": 0.0,
+     "sd": 0.11,
+     "status": "PROVISIONAL",
+     "thresholds": []
+    },
+    "qb/rush_opp": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Rush attempts",
+     "mean": 0.26,
+     "median": 0.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 0.0,
+     "p75": 0.0,
+     "p90": 1.0,
+     "sd": 0.6,
+     "status": "MODELED",
+     "thresholds": [
+      {
+       "p": 0.048,
+       "threshold": "2+"
+      },
+      {
+       "p": 0.002,
+       "threshold": "4+"
+      },
+      {
+       "p": 0.0,
+       "threshold": "6+"
+      }
+     ]
+    },
+    "qb/ryds": {
+     "caveat": "QB V1 draws yards per rush from the passer's own history mixed with the positional pool. It is adjudicated, unlike the RB control.",
+     "kind": "yards",
+     "label": "Rushing yards",
+     "mean": 0.98,
+     "median": 0.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 0.0,
+     "p75": 0.0,
+     "p90": 4.0,
+     "sd": 2.81,
+     "status": "PROVISIONAL",
+     "thresholds": [
+      {
+       "p": 0.017,
+       "threshold": "9.5+"
+      },
+      {
+       "p": 0.001,
+       "threshold": "19.5+"
+      },
+      {
+       "p": 0.001,
+       "threshold": "29.5+"
+      },
+      {
+       "p": 0.0,
+       "threshold": "39.5+"
+      }
+     ]
+    },
+    "qb/sacks": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Sacks taken",
+     "mean": 0.34,
+     "median": 0.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 0.0,
+     "p75": 0.0,
+     "p90": 1.0,
+     "sd": 0.68,
+     "status": "MODELED",
+     "thresholds": [
+      {
+       "p": 0.246,
+       "threshold": "1+"
+      },
+      {
+       "p": 0.081,
+       "threshold": "2+"
+      },
+      {
+       "p": 0.015,
+       "threshold": "3+"
+      }
+     ]
+    },
+    "qb/scr": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Scrambles",
+     "mean": 0.14,
+     "median": 0.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 0.0,
+     "p75": 0.0,
+     "p90": 1.0,
+     "sd": 0.4,
+     "status": "MODELED",
+     "thresholds": []
+    }
+   },
+   "opportunity_share": {
+    "qb/db": {
+     "basis": "mean of the player's draws over the mean of the game-wide pool on the same draw index",
+     "share_of_game_pool": 0.06
+    }
+   },
+   "position": "QB",
+   "team": "NYJ",
+   "touchdown": {
+    "anytime": 0.013,
+    "basis": "fraction of draws with at least one scoring play, summed within each draw rather than multiplied across marginals",
+    "components": {
+     "qb/ptd": 0.134,
+     "qb/rtd": 0.013
+    },
+    "two_plus": 0.0
+   },
+   "unavailable": [
+    {
+     "affects": [
+      "QB"
+     ],
+     "code": "NO_RATE_COMPOSITE_LAYER",
+     "label": "Passer rating",
+     "metric": "qb/rating",
+     "reason": "A composite of forecast components is not itself a forecast distribution and would misstate its own uncertainty.",
+     "status": "UNAVAILABLE"
+    }
+   ]
+  },
+  {
+   "confidence": {
+    "means": "confidence in the model and its inputs, NOT in the outcome. A high-confidence projection can still miss.",
+    "parts": {
+     "distribution_width": 0.0,
+     "input_completeness": 1.0,
+     "layer_completeness": 0.8636,
+     "role_certainty": 0.0679,
+     "status_certainty": 0.4
+    },
+    "primary_metric": "qb/pyds",
+    "reasons": {
+     "distribution_width": "IQR/median 3.83",
+     "input_completeness": "7 source capture(s) validated",
+     "layer_completeness": "1/1 layer(s); 8/11 metric(s) fully modelled, the rest provisional; 1 named absence(s)",
+     "role_certainty": "5% of the game's quarterback dropbacks",
+     "status_certainty": "rows filed but report_status unfilled -- the game-designation report was never captured"
+    },
+    "score": 0.4663
+   },
+   "depth_chart": null,
+   "gsis_id": "00-0038550",
+   "layers": [
+    "qb"
+   ],
+   "metrics": {
+    "qb/att": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Pass attempts",
+     "mean": 3.44,
+     "median": 2.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 2.0,
+     "p75": 7.0,
+     "p90": 9.0,
+     "sd": 3.8,
+     "status": "MODELED",
+     "thresholds": [
+      {
+       "p": 0.0,
+       "threshold": "24.5+"
+      },
+      {
+       "p": 0.0,
+       "threshold": "29.5+"
+      },
+      {
+       "p": 0.0,
+       "threshold": "34.5+"
+      },
+      {
+       "p": 0.0,
+       "threshold": "39.5+"
+      }
+     ]
+    },
+    "qb/cmp": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Completions",
+     "mean": 2.26,
+     "median": 1.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 1.0,
+     "p75": 4.0,
+     "p90": 6.0,
+     "sd": 2.63,
+     "status": "MODELED",
+     "thresholds": [
+      {
+       "p": 0.0,
+       "threshold": "14.5+"
+      },
+      {
+       "p": 0.0,
+       "threshold": "19.5+"
+      },
+      {
+       "p": 0.0,
+       "threshold": "24.5+"
+      },
+      {
+       "p": 0.0,
+       "threshold": "29.5+"
+      }
+     ]
+    },
+    "qb/db": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Dropbacks",
+     "mean": 4.03,
+     "median": 2.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 2.0,
+     "p75": 9.0,
+     "p90": 10.0,
+     "sd": 4.36,
+     "status": "MODELED",
+     "thresholds": []
+    },
+    "qb/int": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Interceptions",
+     "mean": 0.06,
+     "median": 0.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 0.0,
+     "p75": 0.0,
+     "p90": 0.0,
+     "sd": 0.24,
+     "status": "MODELED",
+     "thresholds": [
+      {
+       "p": 0.052,
+       "threshold": "1+"
+      },
+      {
+       "p": 0.003,
+       "threshold": "2+"
+      }
+     ]
+    },
+    "qb/ptd": {
+     "caveat": "TD2 pooled positional control, governance HOLD_TENTATIVE",
+     "kind": "count",
+     "label": "Passing TD",
+     "mean": 0.1,
+     "median": 0.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 0.0,
+     "p75": 0.0,
+     "p90": 0.0,
+     "sd": 0.33,
+     "status": "PROVISIONAL",
+     "thresholds": [
+      {
+       "p": 0.095,
+       "threshold": "1+"
+      },
+      {
+       "p": 0.008,
+       "threshold": "2+"
+      },
+      {
+       "p": 0.0,
+       "threshold": "3+"
+      }
+     ]
+    },
+    "qb/pyds": {
+     "caveat": null,
+     "kind": "yards",
+     "label": "Passing yards",
+     "mean": 25.27,
+     "median": 11.63,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 11.63,
+     "p75": 44.5,
+     "p90": 74.0,
+     "sd": 32.62,
+     "status": "MODELED",
+     "thresholds": [
+      {
+       "p": 0.001,
+       "threshold": "175.5+"
+      },
+      {
+       "p": 0.0,
+       "threshold": "200.5+"
+      },
+      {
+       "p": 0.0,
+       "threshold": "225.5+"
+      },
+      {
+       "p": 0.0,
+       "threshold": "250.5+"
+      },
+      {
+       "p": 0.0,
+       "threshold": "275.5+"
+      },
+      {
+       "p": 0.0,
+       "threshold": "300.5+"
+      }
+     ]
+    },
+    "qb/rtd": {
+     "caveat": "TD2 pooled positional control, governance HOLD_TENTATIVE",
+     "kind": "count",
+     "label": "Rushing TD",
+     "mean": 0.02,
+     "median": 0.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 0.0,
+     "p75": 0.0,
+     "p90": 0.0,
+     "sd": 0.13,
+     "status": "PROVISIONAL",
+     "thresholds": []
+    },
+    "qb/rush_opp": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Rush attempts",
+     "mean": 0.49,
+     "median": 0.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 0.0,
+     "p75": 1.0,
+     "p90": 2.0,
+     "sd": 0.88,
+     "status": "MODELED",
+     "thresholds": [
+      {
+       "p": 0.125,
+       "threshold": "2+"
+      },
+      {
+       "p": 0.009,
+       "threshold": "4+"
+      },
+      {
+       "p": 0.0,
+       "threshold": "6+"
+      }
+     ]
+    },
+    "qb/ryds": {
+     "caveat": "QB V1 draws yards per rush from the passer's own history mixed with the positional pool. It is adjudicated, unlike the RB control.",
+     "kind": "yards",
+     "label": "Rushing yards",
+     "mean": 2.2,
+     "median": 0.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 0.0,
+     "p75": 2.5,
+     "p90": 7.03,
+     "sd": 5.71,
+     "status": "PROVISIONAL",
+     "thresholds": [
+      {
+       "p": 0.062,
+       "threshold": "9.5+"
+      },
+      {
+       "p": 0.023,
+       "threshold": "19.5+"
+      },
+      {
+       "p": 0.008,
+       "threshold": "29.5+"
+      },
+      {
+       "p": 0.002,
+       "threshold": "39.5+"
+      }
+     ]
+    },
+    "qb/sacks": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Sacks taken",
+     "mean": 0.34,
+     "median": 0.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 0.0,
+     "p75": 1.0,
+     "p90": 1.0,
+     "sd": 0.63,
+     "status": "MODELED",
+     "thresholds": [
+      {
+       "p": 0.257,
+       "threshold": "1+"
+      },
+      {
+       "p": 0.07,
+       "threshold": "2+"
+      },
+      {
+       "p": 0.008,
+       "threshold": "3+"
+      }
+     ]
+    },
+    "qb/scr": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Scrambles",
+     "mean": 0.26,
+     "median": 0.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 0.0,
+     "p75": 0.0,
+     "p90": 1.0,
+     "sd": 0.57,
+     "status": "MODELED",
+     "thresholds": []
+    }
+   },
+   "opportunity_share": {
+    "qb/db": {
+     "basis": "mean of the player's draws over the mean of the game-wide pool on the same draw index",
+     "share_of_game_pool": 0.0543
+    }
+   },
+   "position": "QB",
+   "team": "TEN",
+   "touchdown": {
+    "anytime": 0.017,
+    "basis": "fraction of draws with at least one scoring play, summed within each draw rather than multiplied across marginals",
+    "components": {
+     "qb/ptd": 0.095,
+     "qb/rtd": 0.017
+    },
+    "two_plus": 0.0
+   },
+   "unavailable": [
+    {
+     "affects": [
+      "QB"
+     ],
+     "code": "NO_RATE_COMPOSITE_LAYER",
+     "label": "Passer rating",
+     "metric": "qb/rating",
+     "reason": "A composite of forecast components is not itself a forecast distribution and would misstate its own uncertainty.",
+     "status": "UNAVAILABLE"
+    }
+   ]
+  },
+  {
+   "confidence": {
+    "means": "confidence in the model and its inputs, NOT in the outcome. A high-confidence projection can still miss.",
+    "parts": {
+     "distribution_width": 0.0,
+     "input_completeness": 1.0,
+     "layer_completeness": 0.8636,
+     "role_certainty": 0.0636,
+     "status_certainty": 0.4
+    },
+    "primary_metric": "qb/pyds",
+    "reasons": {
+     "distribution_width": "IQR/median 4.00",
+     "input_completeness": "7 source capture(s) validated",
+     "layer_completeness": "1/1 layer(s); 8/11 metric(s) fully modelled, the rest provisional; 1 named absence(s)",
+     "role_certainty": "5% of the game's quarterback dropbacks",
+     "status_certainty": "rows filed but report_status unfilled -- the game-designation report was never captured"
+    },
+    "score": 0.4655
+   },
+   "depth_chart": null,
+   "gsis_id": "00-0039152",
+   "layers": [
+    "qb"
+   ],
+   "metrics": {
+    "qb/att": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Pass attempts",
+     "mean": 3.23,
+     "median": 2.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 2.0,
+     "p75": 7.0,
+     "p90": 9.0,
+     "sd": 3.62,
+     "status": "MODELED",
+     "thresholds": [
+      {
+       "p": 0.0,
+       "threshold": "24.5+"
+      },
+      {
+       "p": 0.0,
+       "threshold": "29.5+"
+      },
+      {
+       "p": 0.0,
+       "threshold": "34.5+"
+      },
+      {
+       "p": 0.0,
+       "threshold": "39.5+"
+      }
+     ]
+    },
+    "qb/cmp": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Completions",
+     "mean": 2.02,
+     "median": 1.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 1.0,
+     "p75": 4.0,
+     "p90": 6.0,
+     "sd": 2.41,
+     "status": "MODELED",
+     "thresholds": [
+      {
+       "p": 0.0,
+       "threshold": "14.5+"
+      },
+      {
+       "p": 0.0,
+       "threshold": "19.5+"
+      },
+      {
+       "p": 0.0,
+       "threshold": "24.5+"
+      },
+      {
+       "p": 0.0,
+       "threshold": "29.5+"
+      }
+     ]
+    },
+    "qb/db": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Dropbacks",
+     "mean": 3.78,
+     "median": 2.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 2.0,
+     "p75": 8.0,
+     "p90": 10.0,
+     "sd": 4.15,
+     "status": "MODELED",
+     "thresholds": []
+    },
+    "qb/int": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Interceptions",
+     "mean": 0.09,
+     "median": 0.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 0.0,
+     "p75": 0.0,
+     "p90": 0.0,
+     "sd": 0.32,
+     "status": "MODELED",
+     "thresholds": [
+      {
+       "p": 0.082,
+       "threshold": "1+"
+      },
+      {
+       "p": 0.007,
+       "threshold": "2+"
+      }
+     ]
+    },
+    "qb/ptd": {
+     "caveat": "TD2 pooled positional control, governance HOLD_TENTATIVE",
+     "kind": "count",
+     "label": "Passing TD",
+     "mean": 0.14,
+     "median": 0.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 0.0,
+     "p75": 0.0,
+     "p90": 1.0,
+     "sd": 0.4,
+     "status": "PROVISIONAL",
+     "thresholds": [
+      {
+       "p": 0.121,
+       "threshold": "1+"
+      },
+      {
+       "p": 0.015,
+       "threshold": "2+"
+      },
+      {
+       "p": 0.002,
+       "threshold": "3+"
+      }
+     ]
+    },
+    "qb/pyds": {
+     "caveat": null,
+     "kind": "yards",
+     "label": "Passing yards",
+     "mean": 23.85,
+     "median": 10.47,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 10.47,
+     "p75": 41.89,
+     "p90": 69.41,
+     "sd": 30.61,
+     "status": "MODELED",
+     "thresholds": [
+      {
+       "p": 0.0,
+       "threshold": "175.5+"
+      },
+      {
+       "p": 0.0,
+       "threshold": "200.5+"
+      },
+      {
+       "p": 0.0,
+       "threshold": "225.5+"
+      },
+      {
+       "p": 0.0,
+       "threshold": "250.5+"
+      },
+      {
+       "p": 0.0,
+       "threshold": "275.5+"
+      },
+      {
+       "p": 0.0,
+       "threshold": "300.5+"
+      }
+     ]
+    },
+    "qb/rtd": {
+     "caveat": "TD2 pooled positional control, governance HOLD_TENTATIVE",
+     "kind": "count",
+     "label": "Rushing TD",
+     "mean": 0.01,
+     "median": 0.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 0.0,
+     "p75": 0.0,
+     "p90": 0.0,
+     "sd": 0.08,
+     "status": "PROVISIONAL",
+     "thresholds": []
+    },
+    "qb/rush_opp": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Rush attempts",
+     "mean": 0.35,
+     "median": 0.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 0.0,
+     "p75": 1.0,
+     "p90": 1.0,
+     "sd": 0.67,
+     "status": "MODELED",
+     "thresholds": [
+      {
+       "p": 0.069,
+       "threshold": "2+"
+      },
+      {
+       "p": 0.002,
+       "threshold": "4+"
+      },
+      {
+       "p": 0.0,
+       "threshold": "6+"
+      }
+     ]
+    },
+    "qb/ryds": {
+     "caveat": "QB V1 draws yards per rush from the passer's own history mixed with the positional pool. It is adjudicated, unlike the RB control.",
+     "kind": "yards",
+     "label": "Rushing yards",
+     "mean": 1.47,
+     "median": 0.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 0.0,
+     "p75": 0.0,
+     "p90": 6.0,
+     "sd": 3.69,
+     "status": "PROVISIONAL",
+     "thresholds": [
+      {
+       "p": 0.032,
+       "threshold": "9.5+"
+      },
+      {
+       "p": 0.009,
+       "threshold": "19.5+"
+      },
+      {
+       "p": 0.001,
+       "threshold": "29.5+"
+      },
+      {
+       "p": 0.0,
+       "threshold": "39.5+"
+      }
+     ]
+    },
+    "qb/sacks": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Sacks taken",
+     "mean": 0.38,
+     "median": 0.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 0.0,
+     "p75": 1.0,
+     "p90": 1.0,
+     "sd": 0.72,
+     "status": "MODELED",
+     "thresholds": [
+      {
+       "p": 0.275,
+       "threshold": "1+"
+      },
+      {
+       "p": 0.08,
+       "threshold": "2+"
+      },
+      {
+       "p": 0.015,
+       "threshold": "3+"
+      }
+     ]
+    },
+    "qb/scr": {
+     "caveat": null,
+     "kind": "count",
+     "label": "Scrambles",
+     "mean": 0.17,
+     "median": 0.0,
+     "n_draws": 1000,
+     "p10": 0.0,
+     "p25": 0.0,
+     "p50": 0.0,
+     "p75": 0.0,
+     "p90": 1.0,
+     "sd": 0.43,
+     "status": "MODELED",
+     "thresholds": []
+    }
+   },
+   "opportunity_share": {
+    "qb/db": {
+     "basis": "mean of the player's draws over the mean of the game-wide pool on the same draw index",
+     "share_of_game_pool": 0.0509
+    }
+   },
+   "position": "QB",
+   "team": "TEN",
+   "touchdown": {
+    "anytime": 0.007,
+    "basis": "fraction of draws with at least one scoring play, summed within each draw rather than multiplied across marginals",
+    "components": {
+     "qb/ptd": 0.121,
+     "qb/rtd": 0.007
+    },
+    "two_plus": 0.0
+   },
+   "unavailable": [
+    {
+     "affects": [
+      "QB"
+     ],
+     "code": "NO_RATE_COMPOSITE_LAYER",
+     "label": "Passer rating",
+     "metric": "qb/rating",
+     "reason": "A composite of forecast components is not itself a forecast distribution and would misstate its own uncertainty.",
+     "status": "UNAVAILABLE"
+    }
+   ]
+  }
+ ],
+ "readiness": {
+  "NYJ": {
+   "as_of": "2026-09-11T17:53:58+00:00",
+   "blob": "nfl/vintage/injuries.cd7338473dd852d0.csv.gz",
+   "n_rows": 6,
+   "newest_capture": "2026-09-11T12:19:54.130521+00:00",
+   "population": {
+    "practice_primary_injury": 6,
+    "practice_status": 6,
+    "report_status": 0
+   },
+   "reason": "NYJ has 6 row(s) but report_status is unfilled on every one. teammate_availability reads it, and an unfiled designation is not an absence of injury.",
+   "state": "INJURY_REPORT_INCOMPLETE",
+   "team": "NYJ"
+  },
+  "TEN": {
+   "as_of": "2026-09-11T17:53:58+00:00",
+   "blob": "nfl/vintage/injuries.cd7338473dd852d0.csv.gz",
+   "n_rows": 2,
+   "newest_capture": "2026-09-11T12:19:54.130521+00:00",
+   "population": {
+    "practice_primary_injury": 2,
+    "practice_status": 2,
+    "report_status": 0
+   },
+   "reason": "TEN has 2 row(s) but report_status is unfilled on every one. teammate_availability reads it, and an unfiled designation is not an absence of injury.",
+   "state": "INJURY_REPORT_INCOMPLETE",
+   "team": "TEN"
+  }
+ },
+ "run_id": "233cce327e918f35",
+ "season": 2026,
+ "teams": [
+  "NYJ",
+  "TEN"
+ ],
+ "threshold_disclaimer": "Model probabilities from stored simulation draws. No sportsbook line, implied probability or edge appears here, because no market feed exists in this system. Not a wager recommendation.",
+ "unavailable_metrics": [
+  {
+   "affects": [
+    "QB"
+   ],
+   "code": "NO_RATE_COMPOSITE_LAYER",
+   "label": "Passer rating",
+   "metric": "qb/rating",
+   "reason": "A composite of forecast components is not itself a forecast distribution and would misstate its own uncertainty.",
+   "status": "UNAVAILABLE"
+  },
+  {
+   "affects": [
+    "WR",
+    "TE",
+    "RB"
+   ],
+   "code": "NO_AIR_YARDS_LAYER",
+   "label": "Air yards / aDOT",
+   "metric": "receiving/air_yards",
+   "reason": "V1 forecasts no air-yards distribution.",
+   "status": "UNAVAILABLE"
+  },
+  {
+   "affects": [
+    "RB",
+    "WR",
+    "TE"
+   ],
+   "code": "RUSHING_CONVERSION_CONTROL_UNDEFINED",
+   "label": "Rushing yards (RB/WR/TE)",
+   "metric": "rushing/rushing_yards",
+   "reason": "No governed control exists for carry -> rushing yards. Three owner decisions are open (see nfl/production/nonqb/rushing_inventory.json). The obvious substitute, carries x yards-per-carry, is named in layers.py as the prohibited implementation and is not computed here.",
+   "status": "UNAVAILABLE"
+  }
+ ],
+ "week": 1
+}

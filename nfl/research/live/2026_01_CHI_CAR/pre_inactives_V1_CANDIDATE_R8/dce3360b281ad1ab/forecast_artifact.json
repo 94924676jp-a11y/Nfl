@@ -1,0 +1,1844 @@
+{
+ "TEST_ONLY": false,
+ "absent_layers": [
+  "appearance",
+  "conversion",
+  "feature_build",
+  "participation",
+  "targets_carries",
+  "td_layer"
+ ],
+ "accounting_verdicts": [
+  {
+   "class": "HARD",
+   "code": "DRAW_ARTIFACT_VERIFIED",
+   "detail": "16 matrix(es) re-read and hashed, one shared draw index of 1000",
+   "evaluator": "nfl.production.draws_artifact.verify",
+   "invariant": "draw_artifact_integrity",
+   "state": "PASS"
+  },
+  {
+   "class": "HARD",
+   "code": "DRAW_ENCODING_LOSSLESS",
+   "detail": "every matrix round-tripped exactly through its stored dtype; nothing was clipped, rounded or rescaled to fit",
+   "evaluator": "nfl.production.draws_artifact.DrawSet.write",
+   "invariant": "draw_encoding_lossless",
+   "state": "PASS"
+  },
+  {
+   "class": "HARD",
+   "code": "DRAW_INDEX_SHARED",
+   "detail": "all 16 matrix(es) share one draw index of width 1000",
+   "evaluator": "nfl.production.draws_artifact.verify",
+   "invariant": "draw_index_shared",
+   "state": "PASS"
+  },
+  {
+   "class": "HARD",
+   "code": "DRAW_SET_PRESENT",
+   "detail": "16 matrix(es) from ['qb', 'team_volume']",
+   "evaluator": "nfl.production.draws_artifact.DrawSet",
+   "invariant": "draw_set_non_empty",
+   "state": "PASS"
+  },
+  {
+   "class": "HARD",
+   "code": "SUMMARY_MATCHES_DRAWS",
+   "detail": "all 88 summary(ies) recomputed exactly from the stored draws",
+   "evaluator": "nfl.production.draws_artifact.assert_summary_consistent",
+   "invariant": "draw_summary_consistency",
+   "state": "PASS"
+  },
+  {
+   "class": "DIAGNOSTIC",
+   "code": "NONQB_LAYERS_UNAVAILABLE",
+   "detail": "6 completeness layer(s) produced nothing this run: ['appearance', 'conversion', 'feature_build', 'participation', 'targets_carries', 'td_layer']. Carried by `completeness` as partial coverage; named here so the artifact says WHICH.",
+   "evaluator": "nfl.production.run_forecast (non-QB chain states)",
+   "invariant": "nonqb_layer_availability",
+   "state": "FAIL"
+  },
+  {
+   "class": "DIAGNOSTIC",
+   "code": "QB_ALLOCATION_RESIDUAL_NONE",
+   "detail": "the team reconciliation raised no residual warning",
+   "evaluator": "nfl.production.qb_accounting.reconcile_team (warnings)",
+   "invariant": "qb_allocation_residual",
+   "state": "PASS"
+  },
+  {
+   "class": "HARD",
+   "code": "CROSS_LAYER_RECONCILIATION_NOT_RUN",
+   "detail": "the receiving draw set was not supplied to this run, so team passing yards against player receiving yards and passing TD against receiving TD could not be reconciled. This is recorded as owed rather than reported as satisfied.",
+   "evaluator": "nfl.production.qb_accounting.reconcile_cross_layer",
+   "invariant": "qb_cross_layer_reconciliation",
+   "owed": {
+    "blocking_stage": "conversion (RC1 baseline; SIGNAL_WEAK)",
+    "exception_to_preserve": {
+     "invariant": "team_pass_yards_eq_team_recv_yards",
+     "n_explained_by_lateral": 75,
+     "n_team_games": 3230,
+     "n_unexplained": 1,
+     "n_violating": 76,
+     "policy": "A lateral residual is NAMED and permitted. Anything else is an unexplained residual and stays a FAIL. The exception may never be widened to make an unexplained case pass.",
+     "seasons": [
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+     ],
+     "unexplained_example": {
+      "note": "no lateral on the play; upstream inconsistency of 1 yard, left visible",
+      "passing_yards": 13.0,
+      "receiving_yards": 12.0,
+      "season": 2022,
+      "team": "IND",
+      "week": 16
+     }
+    },
+    "needs": [
+     "receiving yard draws aligned to the same team-games and draw indices",
+     "receiving TD draws"
+    ]
+   },
+   "state": "DEFERRED"
+  },
+  {
+   "class": "HARD",
+   "code": "QB_DROPBACK_IDENTITY_HOLDS",
+   "detail": "holds on all 8000 draw cells",
+   "evaluator": "nfl.production.qb_v1.identity_check",
+   "invariant": "qb_dropback_identity",
+   "state": "PASS"
+  },
+  {
+   "class": "HARD",
+   "code": "QB_INACTIVE_OWNERSHIP_NOT_ESTABLISHED",
+   "detail": "no official inactive list was supplied for this game, so no quarterback can be checked against one. This is the absence of the question, not an answer to it.",
+   "evaluator": "nfl.production.qb_accounting.assert_inactive_qbs_own_nothing",
+   "invariant": "qb_inactive_owns_nothing",
+   "owed": {
+    "needs": "official_inactive_ids for this game"
+   },
+   "state": "DEFERRED"
+  },
+  {
+   "class": "DIAGNOSTIC",
+   "code": "QB_LAYER_KNOWN_LIMITATIONS",
+   "detail": "characterised weaknesses present in every run of this layer: discrete_low_count_intervals, int_discrimination, multi_qb_over_prediction. Measured and reported, never smoothed away. This is a statement about how good the model is, not about whether its numbers are self-consistent, so it does not gate.",
+   "evaluator": "nfl.production.qb_v1.KNOWN_LIMITATIONS",
+   "invariant": "qb_known_limitations",
+   "state": "FAIL"
+  },
+  {
+   "class": "HARD",
+   "code": "QB_DRAW_ACCOUNTING_HOLDS",
+   "detail": "all 7 identities hold on every one of 8000 draw cells",
+   "evaluator": "nfl.production.qb_accounting.reconcile_draws",
+   "invariant": "qb_per_draw_accounting",
+   "state": "PASS"
+  },
+  {
+   "class": "HARD",
+   "code": "QB_TEAM_ACCOUNTING_MEASURED",
+   "detail": "2 team-game(s), 2 with more than one quarterback; per-team dropback closure CLOSES.",
+   "evaluator": "nfl.production.qb_accounting.reconcile_team",
+   "invariant": "qb_team_accounting",
+   "state": "PASS"
+  },
+  {
+   "class": "HARD",
+   "code": "A1_RUSH_ALLOCATION",
+   "detail": "2 team(s) x 1000 draws partitioned into 6 categories; every carry has exactly one owner in every draw",
+   "evaluator": "nfl.production.nonqb.rushing_a1.allocate",
+   "invariant": "rushing_single_owner",
+   "state": "PASS"
+  },
+  {
+   "class": "HARD",
+   "code": "SC1_COHERENT",
+   "detail": "carries >= scrambles in every draw, by permutation of the carry draw index; no value changed",
+   "evaluator": "nfl.production.nonqb.scramble_coherence.couple",
+   "invariant": "scramble_carry_coherence",
+   "state": "PASS"
+  }
+ ],
+ "candidate_components": [
+  {
+   "component": "A1",
+   "engine_flag": "rushing_a1",
+   "governance": "REHEARSAL_ONLY",
+   "predeclaration": "nfl/research/own8/predeclaration_own8.md",
+   "predeclaration_sha256": "90f6ecc37bcee427177f183be03374c13ec87fe1e14d667a4457c797748789db",
+   "replaces": "a QB rush draw that could exceed the carry pool it sits inside",
+   "what": "single-owner rushing: one multinomial partitions the rush-play budget across kneel / designed QB / RB / WR / TE / fringe, so every carry has exactly one owner"
+  },
+  {
+   "component": "A3G",
+   "engine_flag": "game_coupling",
+   "governance": "REHEARSAL_ONLY -- its own pre-registered verdict did NOT clear; integrated on corrected clauses recorded in predeclaration_a3g_addendum_01.md",
+   "predeclaration": "nfl/research/a3g/predeclaration_a3g.md",
+   "predeclaration_sha256": "d3620883e52fd6d2da9b56403a219210e82e52d5a65bf73cbd23f1d13d4e78ea",
+   "replaces": "two independently drawn teams, and game totals whose spread was the sum of independent marginals",
+   "what": "the two teams in a game share one coupled draw index; marginals unmoved by construction"
+  },
+  {
+   "component": "C0",
+   "engine_flag": "include_cold_start",
+   "governance": "REHEARSAL_ONLY",
+   "predeclaration": "nfl/research/own3/predeclaration_own3.md",
+   "predeclaration_sha256": "aedced9c82f74b5b406e4658ddf8b435fc1582fdfc0e7d759a5a7ff3b5f07c82",
+   "replaces": "a 2.3-6.9% dropback share leaving the system",
+   "what": "cold-start quarterbacks kept in the slate so allocated share reaches a modelled QB state"
+  },
+  {
+   "component": "C3",
+   "engine_flag": "shared_pass",
+   "governance": "REHEARSAL_ONLY",
+   "predeclaration": "nfl/research/xl1/predeclaration_xl1.md",
+   "predeclaration_sha256": "60fe3fbc0f35933e7bd4b43c56fb0afb68d95de67b4f51699a878ceb488d94da",
+   "replaces": "passing and receiving yards/TDs drawn independently",
+   "what": "one passing event: the target budget comes from the throw process and the passer line is credited from the receiving event"
+  },
+  {
+   "component": "R2",
+   "engine_flag": "r2",
+   "governance": "REHEARSAL_ONLY -- engineering integration, not prospective validation",
+   "predeclaration": "nfl/research/r2/predeclaration_qb_level_ownership_r2.md",
+   "predeclaration_sha256": "3d7beeb39f32da11623ac2be178ca4b764ecf314a5a55515b0d45c0e3d4f323c",
+   "replaces": "the composition that divided one level by another",
+   "what": "QB dropback level owned by D1 x QB3 and apportioned by largest remainder; QB V1 supplies conditional rates only"
+  },
+  {
+   "component": "SC1",
+   "engine_flag": "rushing_a1",
+   "governance": "REHEARSAL_ONLY",
+   "predeclaration": "nfl/research/sc1/predeclaration_sc1.md",
+   "predeclaration_sha256": "b62e48f23b5f3a16fb633e5286e575f23d7de3e07c8ebf923255d8d565e76729",
+   "replaces": "two levels drawn on one index from independent randomness, whose tails crossed into a negative rush-play budget",
+   "what": "the scramble/carry joint state is made coherent by permuting which draw index receives which carry value, so team carries >= QB scrambles in every draw"
+  },
+  {
+   "component": "R5",
+   "defect": "P4C weights are conditional-on-appearing shares consumed as unconditional weights over an unfiltered roster, so the vector is not a partition and normalisation halves every starter",
+   "evidence": "historical pool 14.6/team-game with sum(C)=1.24; unfiltered 2026 pool 22.5 with sum(C)=2.14; ACT-filtered 14.5 with sum(C)=1.46",
+   "governance": "REHEARSAL_ONLY",
+   "introduces_no_constant": true,
+   "replaces": "an unfiltered weekly-roster pool that included practice squad, reserve and released players",
+   "what": "restrict the non-QB allocation pool to players whose roster status is ACT"
+  },
+  {
+   "component": "R6",
+   "defect": "the weight is role-blind where it has no history, and the participation prior it competes with is flat at 1.39:1 against a realised 2.5:1 in snaps and 3.7:1 in targets",
+   "evidence": "realised target share by point-in-time tier over 3,230 team-games: WR1 22.7 / WR2 18.3 / WR3 13.3 / WR4+ 6.1 pct",
+   "governance": "REHEARSAL_ONLY",
+   "inherits": "R5",
+   "introduces_no_constant": true,
+   "replaces": "a positional-mean fallback that is blind to role",
+   "shrinkage": "n/(n+k), k estimated from within/between player variance",
+   "what": "class weight = own history shrunk toward point-in-time depth tier"
+  },
+  {
+   "component": "R8",
+   "defect": "R7 beat the frozen mechanism in weeks 1-4 and lost to it from week 5. A calendar switch would reproduce that table and learn nothing, and would hand the wrong model to a player who signs in week 9 with as little current-season evidence as one in week 1",
+   "evidence": "forward-chained 2022-2025 on identical rows, Brier by regime V1 / R7 / R8: week 1 0.24667 / 0.10966 / 0.06321; weeks 2-4 0.18146 / 0.11510 / 0.10049; weeks 5-9 0.11213 / 0.11814 / 0.10345; weeks 10-18 0.10975 / 0.11989 / 0.10611. R8 beats both in every regime and every team-week-blocked interval excludes zero",
+   "governance": "REHEARSAL_ONLY",
+   "inherits": "R7",
+   "inherits_every_r7_refusal": "point-in-time depth selection, no today-chart substitution, the three-state appearance vocabulary, the explicit season boundary, and the declined no_history_and_not_depth_listed cell",
+   "introduces_no_constant": true,
+   "k": "ESTIMATED, never chosen: within-player over between-player variance of player-season appearance rates. 4,073 player-seasons with at least four games give within 0.139520, between 0.114588, k = 1.2176",
+   "no_week_number_in_the_design": true,
+   "replaces": "choosing between two models by week number",
+   "what": "one appearance model whose regime moves with the evidence: every current-season participation quantity enters weighted by w = n_cur / (n_cur + k), and the depth block is interacted with (1 - w), so depth carries the cold start and participation takes over as a player accumulates games"
+  }
+ ],
+ "candidate_components_applied": [
+  "A1",
+  "A3G",
+  "C0",
+  "R2",
+  "R5",
+  "R6",
+  "R8",
+  "SC1"
+ ],
+ "candidate_components_not_reached": [
+  "C3"
+ ],
+ "code_commit": "620e6a3b82a5997e5745ed9cfbab0ba370c7e32a+dirty[12]",
+ "completeness": "PARTIAL_PLAYER_COVERAGE",
+ "contract_version": "nfl-forecast-artifact-1",
+ "distributions": {
+  "00-0028986": {
+   "qb": {
+    "att": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/att",
+      "n_draws": 1000,
+      "row": 4
+     },
+     "mean": 0.926,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 2.0
+    },
+    "cmp": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/cmp",
+      "n_draws": 1000,
+      "row": 4
+     },
+     "mean": 0.607,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 1.1000000000000227
+    },
+    "db": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/db",
+      "n_draws": 1000,
+      "row": 4
+     },
+     "mean": 1.009,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 3.0
+    },
+    "int": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/int",
+      "n_draws": 1000,
+      "row": 4
+     },
+     "mean": 0.023,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "ptd": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/ptd",
+      "n_draws": 1000,
+      "row": 4
+     },
+     "mean": 0.037,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "pyds": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/pyds",
+      "n_draws": 1000,
+      "row": 4
+     },
+     "mean": 5.841081359344183,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 13.356818181818205
+    },
+    "rtd": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/rtd",
+      "n_draws": 1000,
+      "row": 4
+     },
+     "mean": 0.002,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "rush_opp": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/rush_opp",
+      "n_draws": 1000,
+      "row": 4
+     },
+     "mean": 0.076,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "ryds": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/ryds",
+      "n_draws": 1000,
+      "row": 4
+     },
+     "mean": 0.2356365800865801,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "sacks": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/sacks",
+      "n_draws": 1000,
+      "row": 4
+     },
+     "mean": 0.056,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "scr": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/scr",
+      "n_draws": 1000,
+      "row": 4
+     },
+     "mean": 0.027,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    }
+   }
+  },
+  "00-0035251": {
+   "qb": {
+    "att": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/att",
+      "n_draws": 1000,
+      "row": 0
+     },
+     "mean": 0.759,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 2.0
+    },
+    "cmp": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/cmp",
+      "n_draws": 1000,
+      "row": 0
+     },
+     "mean": 0.489,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 1.0
+    },
+    "db": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/db",
+      "n_draws": 1000,
+      "row": 0
+     },
+     "mean": 0.851,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 2.0
+    },
+    "int": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/int",
+      "n_draws": 1000,
+      "row": 0
+     },
+     "mean": 0.012,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "ptd": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/ptd",
+      "n_draws": 1000,
+      "row": 0
+     },
+     "mean": 0.035,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "pyds": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/pyds",
+      "n_draws": 1000,
+      "row": 0
+     },
+     "mean": 5.603083791040529,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 13.75166666666667
+    },
+    "rtd": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/rtd",
+      "n_draws": 1000,
+      "row": 0
+     },
+     "mean": 0.005,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "rush_opp": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/rush_opp",
+      "n_draws": 1000,
+      "row": 0
+     },
+     "mean": 0.087,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "ryds": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/ryds",
+      "n_draws": 1000,
+      "row": 0
+     },
+     "mean": 0.4669611111111111,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "sacks": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/sacks",
+      "n_draws": 1000,
+      "row": 0
+     },
+     "mean": 0.055,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "scr": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/scr",
+      "n_draws": 1000,
+      "row": 0
+     },
+     "mean": 0.037,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    }
+   }
+  },
+  "00-0038102": {
+   "qb": {
+    "att": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/att",
+      "n_draws": 1000,
+      "row": 1
+     },
+     "mean": 1.552,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 4.0
+    },
+    "cmp": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/cmp",
+      "n_draws": 1000,
+      "row": 1
+     },
+     "mean": 0.98,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 2.1000000000000227
+    },
+    "db": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/db",
+      "n_draws": 1000,
+      "row": 1
+     },
+     "mean": 1.753,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 4.0
+    },
+    "int": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/int",
+      "n_draws": 1000,
+      "row": 1
+     },
+     "mean": 0.033,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "ptd": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/ptd",
+      "n_draws": 1000,
+      "row": 1
+     },
+     "mean": 0.033,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "pyds": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/pyds",
+      "n_draws": 1000,
+      "row": 1
+     },
+     "mean": 9.966573463124805,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 24.313286713286715
+    },
+    "rtd": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/rtd",
+      "n_draws": 1000,
+      "row": 1
+     },
+     "mean": 0.006,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "rush_opp": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/rush_opp",
+      "n_draws": 1000,
+      "row": 1
+     },
+     "mean": 0.142,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "ryds": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/ryds",
+      "n_draws": 1000,
+      "row": 1
+     },
+     "mean": 0.6932285714285714,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "sacks": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/sacks",
+      "n_draws": 1000,
+      "row": 1
+     },
+     "mean": 0.125,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "scr": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/scr",
+      "n_draws": 1000,
+      "row": 1
+     },
+     "mean": 0.076,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    }
+   }
+  },
+  "00-0038416": {
+   "qb": {
+    "att": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/att",
+      "n_draws": 1000,
+      "row": 5
+     },
+     "mean": 2.0,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 7.0
+    },
+    "cmp": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/cmp",
+      "n_draws": 1000,
+      "row": 5
+     },
+     "mean": 1.35,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 4.0
+    },
+    "db": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/db",
+      "n_draws": 1000,
+      "row": 5
+     },
+     "mean": 2.233,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 7.0
+    },
+    "int": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/int",
+      "n_draws": 1000,
+      "row": 5
+     },
+     "mean": 0.067,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "ptd": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/ptd",
+      "n_draws": 1000,
+      "row": 5
+     },
+     "mean": 0.058,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "pyds": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/pyds",
+      "n_draws": 1000,
+      "row": 5
+     },
+     "mean": 13.771045613678213,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 40.0
+    },
+    "rtd": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/rtd",
+      "n_draws": 1000,
+      "row": 5
+     },
+     "mean": 0.019,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "rush_opp": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/rush_opp",
+      "n_draws": 1000,
+      "row": 5
+     },
+     "mean": 0.264,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 1.0
+    },
+    "ryds": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/ryds",
+      "n_draws": 1000,
+      "row": 5
+     },
+     "mean": 1.3003019480519482,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 3.0
+    },
+    "sacks": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/sacks",
+      "n_draws": 1000,
+      "row": 5
+     },
+     "mean": 0.087,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "scr": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/scr",
+      "n_draws": 1000,
+      "row": 5
+     },
+     "mean": 0.146,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    }
+   }
+  },
+  "00-0039150": {
+   "qb": {
+    "att": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/att",
+      "n_draws": 1000,
+      "row": 2
+     },
+     "mean": 26.542,
+     "p10": 16.0,
+     "p50": 28.0,
+     "p90": 37.0
+    },
+    "cmp": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/cmp",
+      "n_draws": 1000,
+      "row": 2
+     },
+     "mean": 16.547,
+     "p10": 9.0,
+     "p50": 17.0,
+     "p90": 24.0
+    },
+    "db": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/db",
+      "n_draws": 1000,
+      "row": 2
+     },
+     "mean": 30.651,
+     "p10": 19.0,
+     "p50": 33.0,
+     "p90": 40.0
+    },
+    "int": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/int",
+      "n_draws": 1000,
+      "row": 2
+     },
+     "mean": 0.541,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 2.0
+    },
+    "ptd": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/ptd",
+      "n_draws": 1000,
+      "row": 2
+     },
+     "mean": 0.981,
+     "p10": 0.0,
+     "p50": 1.0,
+     "p90": 2.0
+    },
+    "pyds": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/pyds",
+      "n_draws": 1000,
+      "row": 2
+     },
+     "mean": 157.6844383700028,
+     "p10": 45.93214285714288,
+     "p50": 160.82,
+     "p90": 257.831884057971
+    },
+    "rtd": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/rtd",
+      "n_draws": 1000,
+      "row": 2
+     },
+     "mean": 0.157,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 1.0
+    },
+    "rush_opp": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/rush_opp",
+      "n_draws": 1000,
+      "row": 2
+     },
+     "mean": 2.22,
+     "p10": 0.0,
+     "p50": 2.0,
+     "p90": 4.0
+    },
+    "ryds": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/ryds",
+      "n_draws": 1000,
+      "row": 2
+     },
+     "mean": 14.608304545454544,
+     "p10": 0.0,
+     "p50": 10.0,
+     "p90": 34.05000000000001
+    },
+    "sacks": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/sacks",
+      "n_draws": 1000,
+      "row": 2
+     },
+     "mean": 2.189,
+     "p10": 0.0,
+     "p50": 2.0,
+     "p90": 5.0
+    },
+    "scr": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/scr",
+      "n_draws": 1000,
+      "row": 2
+     },
+     "mean": 1.92,
+     "p10": 0.0,
+     "p50": 2.0,
+     "p90": 4.0
+    }
+   }
+  },
+  "00-0039918": {
+   "qb": {
+    "att": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/att",
+      "n_draws": 1000,
+      "row": 6
+     },
+     "mean": 29.124,
+     "p10": 19.0,
+     "p50": 32.0,
+     "p90": 38.0
+    },
+    "cmp": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/cmp",
+      "n_draws": 1000,
+      "row": 6
+     },
+     "mean": 17.778,
+     "p10": 10.0,
+     "p50": 19.0,
+     "p90": 25.0
+    },
+    "db": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/db",
+      "n_draws": 1000,
+      "row": 6
+     },
+     "mean": 33.749,
+     "p10": 23.0,
+     "p50": 37.0,
+     "p90": 43.0
+    },
+    "int": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/int",
+      "n_draws": 1000,
+      "row": 6
+     },
+     "mean": 0.385,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 1.0
+    },
+    "ptd": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/ptd",
+      "n_draws": 1000,
+      "row": 6
+     },
+     "mean": 1.254,
+     "p10": 0.0,
+     "p50": 1.0,
+     "p90": 3.0
+    },
+    "pyds": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/pyds",
+      "n_draws": 1000,
+      "row": 6
+     },
+     "mean": 194.48279242091957,
+     "p10": 98.96666666666667,
+     "p50": 197.1657754010695,
+     "p90": 294.0
+    },
+    "rtd": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/rtd",
+      "n_draws": 1000,
+      "row": 6
+     },
+     "mean": 0.101,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "rush_opp": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/rush_opp",
+      "n_draws": 1000,
+      "row": 6
+     },
+     "mean": 3.491,
+     "p10": 0.0,
+     "p50": 3.0,
+     "p90": 6.0
+    },
+    "ryds": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/ryds",
+      "n_draws": 1000,
+      "row": 6
+     },
+     "mean": 20.7690489729225,
+     "p10": 0.0,
+     "p50": 17.0,
+     "p90": 44.400000000000006
+    },
+    "sacks": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/sacks",
+      "n_draws": 1000,
+      "row": 6
+     },
+     "mean": 2.386,
+     "p10": 0.0,
+     "p50": 2.0,
+     "p90": 5.0
+    },
+    "scr": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/scr",
+      "n_draws": 1000,
+      "row": 6
+     },
+     "mean": 2.239,
+     "p10": 0.0,
+     "p50": 2.0,
+     "p90": 4.0
+    }
+   }
+  },
+  "00-0041149": {
+   "qb": {
+    "att": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/att",
+      "n_draws": 1000,
+      "row": 3
+     },
+     "mean": 0.709,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 1.0
+    },
+    "cmp": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/cmp",
+      "n_draws": 1000,
+      "row": 3
+     },
+     "mean": 0.474,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 1.0
+    },
+    "db": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/db",
+      "n_draws": 1000,
+      "row": 3
+     },
+     "mean": 0.807,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 2.0
+    },
+    "int": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/int",
+      "n_draws": 1000,
+      "row": 3
+     },
+     "mean": 0.025,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "ptd": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/ptd",
+      "n_draws": 1000,
+      "row": 3
+     },
+     "mean": 0.044,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "pyds": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/pyds",
+      "n_draws": 1000,
+      "row": 3
+     },
+     "mean": 5.323742639175969,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 12.836666666666675
+    },
+    "rtd": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/rtd",
+      "n_draws": 1000,
+      "row": 3
+     },
+     "mean": 0.001,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "rush_opp": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/rush_opp",
+      "n_draws": 1000,
+      "row": 3
+     },
+     "mean": 0.064,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "ryds": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/ryds",
+      "n_draws": 1000,
+      "row": 3
+     },
+     "mean": 0.3193988095238095,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "sacks": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/sacks",
+      "n_draws": 1000,
+      "row": 3
+     },
+     "mean": 0.055,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "scr": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/scr",
+      "n_draws": 1000,
+      "row": 3
+     },
+     "mean": 0.043,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    }
+   }
+  },
+  "00-0041172": {
+   "qb": {
+    "att": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/att",
+      "n_draws": 1000,
+      "row": 7
+     },
+     "mean": 0.807,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 2.0
+    },
+    "cmp": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/cmp",
+      "n_draws": 1000,
+      "row": 7
+     },
+     "mean": 0.496,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 1.0
+    },
+    "db": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/db",
+      "n_draws": 1000,
+      "row": 7
+     },
+     "mean": 0.897,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 2.1000000000000227
+    },
+    "int": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/int",
+      "n_draws": 1000,
+      "row": 7
+     },
+     "mean": 0.018,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "ptd": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/ptd",
+      "n_draws": 1000,
+      "row": 7
+     },
+     "mean": 0.034,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "pyds": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/pyds",
+      "n_draws": 1000,
+      "row": 7
+     },
+     "mean": 5.841413912220391,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 15.003703703703705
+    },
+    "rtd": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/rtd",
+      "n_draws": 1000,
+      "row": 7
+     },
+     "mean": 0.005,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "rush_opp": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/rush_opp",
+      "n_draws": 1000,
+      "row": 7
+     },
+     "mean": 0.082,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "ryds": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/ryds",
+      "n_draws": 1000,
+      "row": 7
+     },
+     "mean": 0.5130541847041847,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "sacks": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/sacks",
+      "n_draws": 1000,
+      "row": 7
+     },
+     "mean": 0.05,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "scr": {
+     "draws_ref": {
+      "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+      "key": "qb/scr",
+      "n_draws": 1000,
+      "row": 7
+     },
+     "mean": 0.04,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    }
+   }
+  }
+ },
+ "distributions_source": "MODEL",
+ "draw_artifact": {
+  "arrays": {
+   "qb/att": {
+    "dtype": "int16",
+    "sha256": "0718cdb6f1db4f7ba3c1780890ab1a0b34acbc0c6e96948b2092448a83c9d78e",
+    "shape": [
+     8,
+     1000
+    ]
+   },
+   "qb/cmp": {
+    "dtype": "int16",
+    "sha256": "6557c75822fa75c2c188a20a145f03fee1c7372975a1dbf308190d7851b9967d",
+    "shape": [
+     8,
+     1000
+    ]
+   },
+   "qb/db": {
+    "dtype": "int16",
+    "sha256": "134ad9cbf9ab97cb6f1c3372c696c7993275c6e6c4e4fd2ab350d9140503c474",
+    "shape": [
+     8,
+     1000
+    ]
+   },
+   "qb/int": {
+    "dtype": "int16",
+    "sha256": "752bcbb8ce722d2c66f285ac999ef08da0107da5a14039ba70a36ede45590705",
+    "shape": [
+     8,
+     1000
+    ]
+   },
+   "qb/ptd": {
+    "dtype": "int16",
+    "sha256": "9f269ad10b4332610d03a19fccb80e70d905149b7c71b370fc4b1333891d4f22",
+    "shape": [
+     8,
+     1000
+    ]
+   },
+   "qb/pyds": {
+    "dtype": "float64",
+    "sha256": "52c28f8366e50d0d91bfe9c91fb07e4429c94ac9bed102d233a828b11da273c6",
+    "shape": [
+     8,
+     1000
+    ]
+   },
+   "qb/rtd": {
+    "dtype": "int16",
+    "sha256": "93f3c7bd548a2e955347de0389dd1322a701ccbb84cc0e00d4d4d4010b7019c4",
+    "shape": [
+     8,
+     1000
+    ]
+   },
+   "qb/rush_opp": {
+    "dtype": "int16",
+    "sha256": "623106cef86292f42baedca461bc87155d0a453ecd67933b9e52bc6d8a1d2f3c",
+    "shape": [
+     8,
+     1000
+    ]
+   },
+   "qb/ryds": {
+    "dtype": "float64",
+    "sha256": "78a1ad70684c11f55e98771bbfff623b85564768bb6cef9db19689051de84af4",
+    "shape": [
+     8,
+     1000
+    ]
+   },
+   "qb/sacks": {
+    "dtype": "int16",
+    "sha256": "8ee59e1a087c8892bade3f4f996089190057f3e1176c2f200359c766501e71df",
+    "shape": [
+     8,
+     1000
+    ]
+   },
+   "qb/scr": {
+    "dtype": "int16",
+    "sha256": "e956703ba7b5e73754851deaba476d73c3104656c61e9393d589b36b62491efd",
+    "shape": [
+     8,
+     1000
+    ]
+   },
+   "team_volume/team_carries": {
+    "dtype": "float64",
+    "sha256": "05f91e3a29751748ec81ece8b9f72394a062d5b12e58c5b3410662267ce517b8",
+    "shape": [
+     2,
+     1000
+    ]
+   },
+   "team_volume/team_dropbacks_part": {
+    "dtype": "float64",
+    "sha256": "336f59b673971d00ee9ebde654d90bcff8147fcf65426ea436870506eed5e1b6",
+    "shape": [
+     2,
+     1000
+    ]
+   },
+   "team_volume/team_off_snaps": {
+    "dtype": "int16",
+    "sha256": "24ba324a471612f35b4a9e7bb38a4fef074a4804cf14e67a757fe86d375b9e94",
+    "shape": [
+     2,
+     1000
+    ]
+   },
+   "team_volume/team_rz_carries": {
+    "dtype": "float64",
+    "sha256": "481e5e65a9e290b1528427e04a95b72dd87625f7e17e9ae24673680e21ee53c7",
+    "shape": [
+     2,
+     1000
+    ]
+   },
+   "team_volume/team_targets": {
+    "dtype": "float64",
+    "sha256": "294ce61226e7b8d862411e63d3495929101e137ed5aa3512087d9fdc281d4d95",
+    "shape": [
+     2,
+     1000
+    ]
+   }
+  },
+  "content_digest": "4e5aba6869bc3252ab5cc4d3469157acfd0c1d9f7b1f1bec2b09b69f5e4b0a10",
+  "draw_artifact_version": "nfl-draw-artifact-1",
+  "draw_index_semantics": {
+   "across_rows": "INDEPENDENT_STREAMS_COLUMN_ALIGNED",
+   "note": "column j is the same iteration of one row's stream for every metric of that row, so cross-metric dependence on this axis is real. Rows are seeded independently, so a CROSS-ROW correlation read off the same axis measures the generator's lack of coupling, not a football quantity.",
+   "within_row_across_metrics": "SAME_SIMULATED_WORLD"
+  },
+  "file": {
+   "bytes": 52893,
+   "name": "player_draws.npz",
+   "sha256": "83015395e7a9cc2b6166721e2077f0c3575ece749ab7cd4ef3233b1147856bcd"
+  },
+  "game_id": "2026_01_CHI_CAR",
+  "layers": {
+   "qb": {
+    "metrics": [
+     "att",
+     "cmp",
+     "db",
+     "int",
+     "ptd",
+     "pyds",
+     "rtd",
+     "rush_opp",
+     "ryds",
+     "sacks",
+     "scr"
+    ],
+    "rng_stream": "numpy default_rng([seed, ord, gsis_id]) -- one stream per row; columns are aligned, rows are independent",
+    "row_axis": "gsis_id",
+    "row_ids": [
+     "00-0035251",
+     "00-0038102",
+     "00-0039150",
+     "00-0041149",
+     "00-0028986",
+     "00-0038416",
+     "00-0039918",
+     "00-0041172"
+    ],
+    "shape": [
+     8,
+     1000
+    ],
+    "spec_version": "qb-v1-aggregate-then-allocate-1"
+   },
+   "team_volume": {
+    "metrics": [
+     "team_carries",
+     "team_dropbacks_part",
+     "team_off_snaps",
+     "team_rz_carries",
+     "team_targets"
+    ],
+    "rng_stream": "nfl.production.seeds declared streams, per metric",
+    "row_axis": "team",
+    "row_ids": [
+     "CAR",
+     "CHI"
+    ],
+    "shape": [
+     2,
+     1000
+    ],
+    "spec_version": "team-volume-v1-p4b-frozen-1"
+   }
+  },
+  "n_draw_cells": 98000,
+  "n_draws": 1000,
+  "n_layers": 2,
+  "n_matrices": 16,
+  "rng": {
+   "generator": "numpy.random.default_rng (PCG64)",
+   "seed": 20260908,
+   "seed_protocol": "per-row seed 20260908"
+  },
+  "run_id": "dce3360b281ad1ab"
+ },
+ "draw_artifact_sha256": "83015395e7a9cc2b6166721e2077f0c3575ece749ab7cd4ef3233b1147856bcd",
+ "eligibility_verdict": "V1_CANDIDATE|APPLIED:A1,A3G,C0,R2,R5,R6,R8,SC1|NOT_REACHED:C3|PARTIAL|PRODUCED:qb_layer|ABSENT:appearance,conversion,feature_build,participation,targets_carries,td_layer",
+ "excluded_unidentified": [],
+ "feature_set_hash": "4d2eda3e88818e2ad5a78e146c4e2f48",
+ "game_id": "2026_01_CHI_CAR",
+ "kickoff_utc": "2026-09-13T17:00:00Z",
+ "model_arm": "A",
+ "model_configuration": "V1_CANDIDATE_R8",
+ "player_ids": [
+  "00-0026027",
+  "00-0028986",
+  "00-0030092",
+  "00-0031203",
+  "00-0031583",
+  "00-0031610",
+  "00-0032391",
+  "00-0032464",
+  "00-0033284",
+  "00-0033579",
+  "00-0033589",
+  "00-0034320",
+  "00-0034344",
+  "00-0034407",
+  "00-0035039",
+  "00-0035251",
+  "00-0035277",
+  "00-0035298",
+  "00-0035352",
+  "00-0035357",
+  "00-0035386",
+  "00-0035525",
+  "00-0035588",
+  "00-0035647",
+  "00-0035669",
+  "00-0035687",
+  "00-0035890",
+  "00-0036020",
+  "00-0036045",
+  "00-0036220",
+  "00-0036239",
+  "00-0036258",
+  "00-0036265",
+  "00-0036275",
+  "00-0036290",
+  "00-0036292",
+  "00-0036305",
+  "00-0036325",
+  "00-0036337",
+  "00-0036356",
+  "00-0036366",
+  "00-0036417",
+  "00-0036480",
+  "00-0036555",
+  "00-0036634",
+  "00-0036653",
+  "00-0036795",
+  "00-0036825",
+  "00-0036870",
+  "00-0036903",
+  "00-0036934",
+  "00-0036944",
+  "00-0036962",
+  "00-0036968",
+  "00-0037005",
+  "00-0037007",
+  "00-0037031",
+  "00-0037081",
+  "00-0037096",
+  "00-0037106",
+  "00-0037109",
+  "00-0037129",
+  "00-0037179",
+  "00-0037196",
+  "00-0037203",
+  "00-0037229",
+  "00-0037244",
+  "00-0037271",
+  "00-0037329",
+  "00-0037380",
+  "00-0037395",
+  "00-0037544",
+  "00-0037614",
+  "00-0037708",
+  "00-0037814",
+  "00-0037843",
+  "00-0038101",
+  "00-0038102",
+  "00-0038111",
+  "00-0038136",
+  "00-0038390",
+  "00-0038411",
+  "00-0038416",
+  "00-0038440",
+  "00-0038493",
+  "00-0038536",
+  "00-0038568",
+  "00-0038595",
+  "00-0038667",
+  "00-0038696",
+  "00-0038716",
+  "00-0038791",
+  "00-0038840",
+  "00-0038932",
+  "00-0039021",
+  "00-0039042",
+  "00-0039071",
+  "00-0039150",
+  "00-0039242",
+  "00-0039342",
+  "00-0039344",
+  "00-0039356",
+  "00-0039378",
+  "00-0039380",
+  "00-0039382",
+  "00-0039394",
+  "00-0039454",
+  "00-0039459",
+  "00-0039461",
+  "00-0039491",
+  "00-0039586",
+  "00-0039587",
+  "00-0039601",
+  "00-0039624",
+  "00-0039637",
+  "00-0039745",
+  "00-0039783",
+  "00-0039840",
+  "00-0039843",
+  "00-0039918",
+  "00-0039919",
+  "00-0039946",
+  "00-0040044",
+  "00-0040124",
+  "00-0040126",
+  "00-0040136",
+  "00-0040159",
+  "00-0040167",
+  "00-0040174",
+  "00-0040187",
+  "00-0040210",
+  "00-0040218",
+  "00-0040236",
+  "00-0040260",
+  "00-0040265",
+  "00-0040275",
+  "00-0040277",
+  "00-0040279",
+  "00-0040289",
+  "00-0040296",
+  "00-0040392",
+  "00-0040394",
+  "00-0040458",
+  "00-0040531",
+  "00-0040541",
+  "00-0040550",
+  "00-0040644",
+  "00-0040735",
+  "00-0040740",
+  "00-0040741",
+  "00-0040746",
+  "00-0040763",
+  "00-0041021",
+  "00-0041034",
+  "00-0041047",
+  "00-0041051",
+  "00-0041060",
+  "00-0041063",
+  "00-0041071",
+  "00-0041076",
+  "00-0041085",
+  "00-0041110",
+  "00-0041119",
+  "00-0041138",
+  "00-0041146",
+  "00-0041148",
+  "00-0041149",
+  "00-0041150",
+  "00-0041151",
+  "00-0041153",
+  "00-0041154",
+  "00-0041164",
+  "00-0041167",
+  "00-0041168",
+  "00-0041169",
+  "00-0041170",
+  "00-0041171",
+  "00-0041172",
+  "00-0041175",
+  "00-0041265",
+  "00-0041283",
+  "00-0041300",
+  "00-0041408",
+  "00-0041478",
+  "00-0041485",
+  "00-0041487",
+  "00-0041538",
+  "00-0041539",
+  "00-0041558"
+ ],
+ "promoted": false,
+ "prospective_eligible": false,
+ "qb_team_dropback_closure": {
+  "draw_cells": 2000,
+  "integer_level": true,
+  "no_cross_team_compensation": "each team is compared only against its own budget; a surplus on one team can never offset a shortfall on the other",
+  "per_team": {
+   "(2026, 1, 'CAR')": {
+    "budget_mean": 33.996317,
+    "cells": 1000,
+    "qb_sum_mean": 34.062,
+    "violating": 0
+   },
+   "(2026, 1, 'CHI')": {
+    "budget_mean": 37.966495,
+    "cells": 1000,
+    "qb_sum_mean": 37.888,
+    "violating": 0
+   }
+  },
+  "status": "CLOSES",
+  "test": "sum of QB dropbacks == rint(team dropback draw), per team per draw",
+  "violating_cells": 0,
+  "worst_absolute_deviation": 0.0
+ },
+ "seed_protocol": "per-row seed 20260908",
+ "source_captures": [
+  {
+   "retrieved_at": "2026-09-10T12:07:17Z",
+   "sha256": "db0a09454965e6fcd4d7378a19381fa53f251432f80f09ebdcc45f78f5e1bc9f",
+   "source": "depth_charts"
+  },
+  {
+   "retrieved_at": "2026-09-11T00:43:57Z",
+   "sha256": "0cd99d47b1cc389f6f09973bed503eac54e90f1a701b34de2b690e9a90febc95",
+   "source": "espn_injuries_json"
+  },
+  {
+   "retrieved_at": "2026-09-11T12:19:21Z",
+   "sha256": "cd7338473dd852d02c6986663addb31431609946fa8756d0460bf2e98d3501a9",
+   "source": "injuries"
+  },
+  {
+   "retrieved_at": "2026-09-11T00:43:57Z",
+   "sha256": "67511bb2cfc1e9f35b11a4eba503f4bce67e51bc8cb1252c52e8b8f6ffd9e1aa",
+   "source": "official_inactives"
+  },
+  {
+   "retrieved_at": "2026-09-11T00:43:57Z",
+   "sha256": "ec99910f37f94bb89872633001a811546258bc0ebd452666d6f2037ac38f9040",
+   "source": "official_injury_report"
+  },
+  {
+   "retrieved_at": "2026-09-11T12:19:21Z",
+   "sha256": "224b38fb539045bd3679655c02bee6e282bbef7d74e99cf5d34ce42915c6725d",
+   "source": "schedules"
+  },
+  {
+   "retrieved_at": "2026-09-11T12:19:21Z",
+   "sha256": "fb79560b5c4738a284e4b37f49759cdceaa461eee6f41ea0840e7d0d9eb17026",
+   "source": "weekly_rosters"
+  }
+ ],
+ "spec_hash": "dce3360b281ad1ab",
+ "team_draw_row_index": {
+  "CAR": 0,
+  "CHI": 1
+ },
+ "team_ids": [
+  "CHI",
+  "CAR"
+ ],
+ "written_at": "2026-09-11T17:53:58Z"
+}

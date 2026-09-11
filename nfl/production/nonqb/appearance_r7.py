@@ -116,6 +116,20 @@ def _parse(t):
     return d if d.tzinfo else d.replace(tzinfo=dt.timezone.utc)
 
 
+
+def _dependency_fingerprint():
+    """Content hash of everything build_frame reads. Cheap: two files."""
+    import hashlib as _h
+    out = _h.sha256()
+    for p in (AM.MANIFEST, DAILY_LEAF):
+        try:
+            out.update(_h.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+                       .encode())
+        except OSError:
+            out.update(b'MISSING')
+    return out.hexdigest()[:32]
+
+
 # ------------------------------------------------------------------ frame
 def build_frame() -> Outcome:
     """Panel UNION point-in-time depth listing, walked chronologically.
@@ -124,10 +138,20 @@ def build_frame() -> Outcome:
     evidence: how many rows the panel contributed, how many the depth chart
     added, and how many team-weeks could not be given a lawful chart.
     """
-    if _FRAME.get('rows'):
+    # THE CACHE IS KEYED ON ITS DEPENDENCIES, NOT ON NOTHING.
+    #
+    # This dict was served for the life of the process regardless of what
+    # happened underneath it, so a restaged leaf or an edited daily file
+    # would have been ignored until the process died. The frame reads only
+    # immutable history -- the twelve staged leaves and dc25_daily -- so it
+    # is genuinely reusable, but only while those are unchanged.
+    _fp = _dependency_fingerprint()
+    if _FRAME.get('rows') and _FRAME.get('fingerprint') == _fp:
         return Outcome.ok('R7_FRAME_CACHED', value=_FRAME['rows'],
                           spec_version=SPEC_VERSION, cached=True,
-                          **_FRAME['evidence'])
+                          fingerprint=_fp, **_FRAME['evidence'])
+    if _FRAME.get('rows'):
+        _FRAME.clear()
     st = AM.stage_inputs()
     if st.state is not State.PASS:
         return st
@@ -218,6 +242,7 @@ def build_frame() -> Outcome:
                                           if r['vendor'] == DV.DAILY_VENDOR}),
           'n_unlisted': sum(1 for r in rows if r['rank'] is None)}
     _FRAME['rows'], _FRAME['evidence'], _FRAME['inj'] = rows, ev, inj
+    _FRAME['fingerprint'] = _fp
     return Outcome.ok('R7_FRAME_OK', value=rows, spec_version=SPEC_VERSION,
                       cached=False, **ev)
 

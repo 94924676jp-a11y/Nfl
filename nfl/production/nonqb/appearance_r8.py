@@ -141,10 +141,16 @@ def _panel_snap_shares() -> dict:
 
 def enriched_frame() -> Outcome:
     """R7's frame, plus each player's CURRENT-SEASON evidence to date."""
-    if _ENRICHED.get('rows'):
+    # Keyed on the same dependency fingerprint as R7's frame: this is R7's
+    # frame plus current-season evidence, so it inherits exactly the same
+    # reusability and exactly the same staleness risk.
+    _fp = R7._dependency_fingerprint()
+    if _ENRICHED.get('rows') and _ENRICHED.get('fingerprint') == _fp:
         return Outcome.ok('R8_FRAME_CACHED', value=_ENRICHED['rows'],
                           spec_version=SPEC_VERSION, cached=True,
-                          **_ENRICHED['evidence'])
+                          fingerprint=_fp, **_ENRICHED['evidence'])
+    if _ENRICHED.get('rows'):
+        _ENRICHED.clear()
     fr = R7.build_frame()
     if fr.state is not State.PASS:
         return fr
@@ -195,6 +201,7 @@ def enriched_frame() -> Outcome:
     ev['n_rows_with_the_v1_feature_block'] = n_v1
     ev['n_rows_without_the_v1_feature_block'] = len(rows) - n_v1
     _ENRICHED['rows'], _ENRICHED['evidence'] = rows, ev
+    _ENRICHED['fingerprint'] = _fp
     return Outcome.ok('R8_FRAME_OK', value=rows, spec_version=SPEC_VERSION,
                       cached=False, **ev)
 
