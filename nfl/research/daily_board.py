@@ -46,6 +46,7 @@ if str(_REPO) not in sys.path:
 
 from sportsplatform.governance.outcome import Cause, Outcome, State   # noqa: E402
 from nfl.product import daily_board as PB                             # noqa: E402
+from nfl.research import completeness as CP                           # noqa: E402
 
 SPEC_VERSION = 'research-daily-board-1'
 
@@ -147,7 +148,16 @@ def rows_for(entry, market, names, teams, inactive_ids):
     rows = PB.build_rows(entry['game_id'], _idx_row(entry), entry['board'],
                          entry['manifest'], draws, market, names, teams,
                          inactive_ids)
+    matrix = CP.layer_matrix(entry['board'], entry['manifest'], draws)
     for r in rows:
+        # COMPLETENESS IS PER MARKET, NOT PER GAME. A quarterback's passing
+        # yards can stand in a game whose carry allocation never ran, because
+        # the causal path behind THAT market is intact. Making it binary per
+        # game would throw away usable forecasts for no reason.
+        ok, miss = CP.market_rankable(r['metric'], matrix)
+        r['causal_path_complete'] = ok
+        r['causal_layers_missing'] = miss
+        r['forecast_completeness'] = CP.forecast_completeness(matrix)
         r['candidate'] = entry['candidate']
         r['cutoff'] = entry['cutoff']
         r['research_label'] = f"{entry['cutoff']}_{entry['candidate']}"
@@ -226,7 +236,10 @@ def comparison_rows(all_rows, actuals_by_game):
 
 # ------------------------------------------------- reduced candidate set
 PRIORITY_COLS = PB._MARKET_COLS + ['candidate', 'cutoff', 'namespace',
-                                   'source_freshness', 'promoted']
+                                   'source_freshness', 'promoted',
+                                   'forecast_completeness',
+                                   'causal_path_complete',
+                                   'causal_layers_missing']
 
 
 def priority_rows(rows, max_input_age_hours=None):
@@ -258,6 +271,12 @@ def priority_rows(rows, max_input_age_hours=None):
                for f in (r.get('known_defect_flags') or [])):
             dropped['known_defect_contaminates_metric'] += 1
             continue
+        # THE CAUSAL LAYER BEHIND THIS MARKET MUST HAVE RUN.
+        # A receiving-yards row whose targets layer deferred is not a
+        # forecast of receiving yards; it is the absence of one.
+        if not r.get('causal_path_complete', True):
+            dropped['causal_layer_incomplete'] += 1
+            continue
         age = r.get('source_freshness')
         if (max_input_age_hours is not None and age is not None
                 and float(age) > float(max_input_age_hours)):
@@ -269,7 +288,9 @@ def priority_rows(rows, max_input_age_hours=None):
 
 # ----------------------------------------------------------------- main
 RESEARCH_COLS = PB._CSV_COLS + ['candidate', 'cutoff', 'research_label',
-                                'namespace']
+                                'namespace', 'forecast_completeness',
+                                'causal_path_complete',
+                                'causal_layers_missing']
 
 
 def build(date_str, candidate='R8', market_path=None, out_dir=None,

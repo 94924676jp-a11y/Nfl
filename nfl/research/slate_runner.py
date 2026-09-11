@@ -45,6 +45,7 @@ if str(_REPO) not in sys.path:
 
 from sportsplatform.governance.outcome import Cause, Outcome, State   # noqa: E402
 from nfl.capture import coverage as COV                               # noqa: E402
+from nfl.research import completeness as CP                           # noqa: E402
 from nfl.research import daily_board as RB                            # noqa: E402
 from nfl.product import daily_board as PB                             # noqa: E402
 from nfl.tools import ingest_inactives as II                          # noqa: E402
@@ -295,6 +296,39 @@ def _information_set(game, written_at):
     return info.get('sources') or {}
 
 
+def assess(game, candidate):
+    """The board's ACTUAL layer completeness, read from its distributions.
+
+    Independent of whether orchestration succeeded. A board that sealed
+    perfectly and modelled only quarterbacks is EXECUTED and QB_ONLY, and
+    both halves of that are reported.
+    """
+    import json as _json
+    for cutoff in ('post_inactives', 'pre_inactives'):
+        label = ('V1_CANDIDATE' if candidate == 'V1'
+                 else f'V1_CANDIDATE_{candidate}')
+        d = RB.LIVE / game['game_id'] / f'{cutoff}_{label}'
+        if not d.exists():
+            continue
+        bj = list(d.glob('**/board.json'))
+        if not bj:
+            continue
+        bd = bj[0].parent
+        board = _json.load(open(bj[0]))
+        mj = list(bd.glob('player_draws_manifest.json'))
+        manifest = _json.load(open(mj[0])) if mj else None
+        draws = PB._load_draws(bd)
+        mx = CP.layer_matrix(board, manifest, draws)
+        return {'layer_matrix': mx,
+                'forecast_completeness': CP.forecast_completeness(mx),
+                'n_players': board.get('n_players'),
+                'board_completeness_field': board.get('completeness'),
+                'cutoff': cutoff}
+    return {'layer_matrix': {k: 'NOT_MODELED' for k in CP.LAYER_NAMES},
+            'forecast_completeness': 'NO_USABLE_FORECAST',
+            'n_players': 0, 'cutoff': None}
+
+
 def run_game(game, candidate, prev_state, timer, written_at, dry_run=False,
              draws=1000, seed=20260908):
     """One game, start to finish, never raising into the slate.
@@ -321,6 +355,9 @@ def run_game(game, candidate, prev_state, timer, written_at, dry_run=False,
 
         if not srcs:
             rec['action'] = 'BLOCKED_NO_LAWFUL_INFORMATION_SET'
+            rec['execution_state'] = rec['action']
+            rec['forecast_completeness'] = 'NO_USABLE_FORECAST'
+            rec['layer_matrix'] = {k: 'NOT_MODELED' for k in CP.LAYER_NAMES}
             rec['reason'] = ('no source resolves strictly before the cutoff, '
                              'so there is nothing lawful to forecast from')
             return rec, rec['action']
@@ -338,16 +375,19 @@ def run_game(game, candidate, prev_state, timer, written_at, dry_run=False,
         sealed = prev_state.get('sealed')
         if not changed and sealed and pathlib.Path(sealed).exists():
             rec['action'] = 'UNCHANGED_REUSED'
+            rec['execution_state'] = 'REUSED'
             rec['reason'] = ('every consumed slice is byte-identical to the '
                              'one this game was last forecast from')
             rec['sealed'] = sealed
             rec['recomputed'] = False
             rec['timing_seconds']['forecasting'] = 0.0
+            rec.update(assess(game, candidate))
             return rec, rec['action']
 
         if dry_run:
             rec['action'] = ('NEW_FORECAST' if not sealed
                              else 'REFRESHED_INFORMATION_CHANGED')
+            rec['execution_state'] = 'EXECUTED'
             rec['reason'] = 'dry run: nothing was computed or sealed'
             rec['recomputed'] = False
             rec['dry_run'] = True
@@ -362,17 +402,21 @@ def run_game(game, candidate, prev_state, timer, written_at, dry_run=False,
         rec['recomputed'] = True
         rec['action'] = ('REFRESHED_INFORMATION_CHANGED' if sealed
                          else 'NEW_FORECAST')
+        rec['execution_state'] = 'EXECUTED'
         rec['reason'] = (f'consumed slice(s) moved: {moved}' if sealed
                          else 'no prior sealed forecast for this game')
+        rec.update(assess(game, candidate))
         return rec, rec['action']
     except SystemExit as e:
         # make_board refuses by raising SystemExit with a named code.
         rec['action'] = f'BLOCKED_{str(e).split(":")[0][:60]}'
+        rec['execution_state'] = rec['action']
         rec['reason'] = str(e)[:300]
         rec['recomputed'] = False
         return rec, rec['action']
     except Exception as e:                                   # noqa: BLE001
         rec['action'] = f'BLOCKED_{type(e).__name__.upper()}'
+        rec['execution_state'] = rec['action']
         rec['reason'] = f'{type(e).__name__}: {e}'[:300]
         rec['traceback_tail'] = traceback.format_exc()[-400:]
         rec['recomputed'] = False
@@ -492,8 +536,24 @@ def run(date_str, candidate='R8', market=None, external_status=None,
         'generated_at_utc': dt.datetime.now(dt.timezone.utc).isoformat(),
         'information_cutoff': written_at,
         'games_total': len(records),
-        'games_ready': len(complete),
+        # ORCHESTRATION AND FOOTBALL ARE REPORTED APART.
+        #
+        # games_executed counts boards that sealed. It is NOT a count of
+        # usable forecasts, and reporting only that pair is how twelve
+        # QB-only boards were once described as "12 complete / 0 blocked".
+        'games_executed': sum(1 for r in records
+                              if r.get('execution_state') == 'EXECUTED'),
+        'games_reused': sum(1 for r in records
+                            if r.get('execution_state') == 'REUSED'),
         'games_blocked': len(blocked),
+        'orchestration_note': ('games_executed counts boards that sealed. '
+                               'Forecast usability is the completeness block '
+                               'below and is an independent question.'),
+        **CP.summarise({r['game_id']: r for r in records}),
+        'completeness_by_game': {r['game_id']: r.get('forecast_completeness')
+                                 for r in records},
+        'layer_matrix_by_game': {r['game_id']: r.get('layer_matrix')
+                                 for r in records},
         'games_awaiting_inactives': len(awaiting),
         'games_refreshed': sum(1 for r in records
                                if r['action'] == 'REFRESHED_INFORMATION_CHANGED'),
@@ -541,6 +601,15 @@ def run(date_str, candidate='R8', market=None, external_status=None,
     return Outcome.ok(
         'SLATE_RUN_COMPLETE', value=str(out), spec_version=SPEC_VERSION,
         games_total=len(records), games_ready=len(complete),
+        games_executed=status['games_executed'],
+        games_reused=status['games_reused'],
+        games_fully_modeled=status['games_fully_modeled'],
+        games_partially_modeled=status['games_partially_modeled'],
+        games_qb_only=status['games_qb_only'],
+        games_unusable=status['games_unusable'],
+        games_awaiting_injury_information=status[
+            'games_awaiting_injury_information'],
+        games_awaiting_inactives=status['games_awaiting_inactives'],
         games_blocked=len(blocked), models_recomputed=status['models_recomputed'],
         runtime_seconds=status['runtime_seconds'],
         total_modeled_markets=status['total_modeled_markets'],
@@ -569,8 +638,15 @@ def main(argv=None):
         print(f'{o.state.name}[{o.code}] {o.detail[:200]}')
         return 1
     e = o.evidence
-    print(f'{e["games_ready"]} games complete / {e["games_blocked"]} blocked '
+    print(f'EXECUTION   : {e["games_executed"]} executed / '
+          f'{e["games_reused"]} reused / {e["games_blocked"]} blocked '
           f'({e["games_total"]} on the slate)')
+    print(f'COMPLETENESS: {e["games_fully_modeled"]} full / '
+          f'{e["games_partially_modeled"]} partial / '
+          f'{e["games_qb_only"]} QB-only / '
+          f'{e["games_unusable"]} unusable')
+    print(f'  awaiting injury info   : {e["games_awaiting_injury_information"]}')
+    print(f'  awaiting official inactives: {e["games_awaiting_inactives"]}')
     print(f'  models recomputed      : {e["models_recomputed"]}')
     print(f'  modeled markets        : {e["total_modeled_markets"]}')
     print(f'  ranking-eligible       : {e["total_ranking_eligible_markets"]}')
