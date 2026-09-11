@@ -329,3 +329,57 @@ parser reads them, we are done in minutes. If it refuses, I can still complete
 the chain from the same bytes, with the refusal recorded, provided you also
 tell me which names sat under which club heading. What I still cannot use is a
 list without the bytes behind it.
+
+---
+
+## 2026-09-11 03:40Z — OUT-008: SF@LA actuals, for the postgame scoring row
+
+The owner has asked for a full postgame postmortem of SF@LA: distributional
+scoring (PIT, interval coverage, CRPS), a team/QB/player breakdown, a
+V1→R8 architecture comparison on the realised game, a market comparison and a
+top-10 plays grade. **None of it can be produced here, because no actuals
+exist in this checkout and I cannot fetch any.** Measured, not assumed:
+
+| what I need | what is here |
+|---|---|
+| play-by-play for 2026_01_SF_LA | `pbp_participation` is `DEFERRED[SOURCE_NOT_YET_PUBLISHED]` in `nfl/availability_manifest.jsonl` |
+| snap counts | `snap_counts_2026.3e40ec0361391e8c.csv.gz` holds 93 rows, **0 for SF or LA**, first retrieved 2026-09-10T18:31:04Z — before kickoff |
+| a box score of any kind | no `pbp`/`snap`/`boxscore`/`actual` blob on `origin/main` at `568d012` |
+| fetching it myself | HTTP 000, gateway CONNECT denial |
+
+`nfl/research/shadow/actuals.py` is already written and takes a play-by-play
+file: `load(pbp_gz, game_id)`, then `team_actuals`, `qb_actuals`,
+`receiving_rushing_actuals`, `qb_timeline`. It raises `OUTCOME_EMPTY` on a
+file with no rows for the game rather than returning an empty result, so the
+scoring path is ready the moment the bytes land.
+
+**What I need, in priority order.**
+
+1. **nflverse play-by-play for 2026 week 1**, once published, filtered to or
+   containing `game_id` 2026_01_SF_LA. This is the one that unlocks almost
+   everything: team plays, dropbacks, carries, pass/run split, sacks, QB
+   attempts/completions/yards/INTs, player carries, targets, receptions,
+   receiving yards and touchdowns.
+2. **snap counts for 2026 week 1** including SF and LA. Needed for the
+   appearance-layer check and for `team_off_snaps`, which `actuals.py` notes
+   is NOT derivable from play-by-play.
+3. **The final score and team totals**, if they are cheap and arrive sooner
+   than 1 and 2. They let me do the team-environment layer early.
+
+Raw bytes plus your retrieval clock, as always. Do not type out a stat line.
+
+**What I am NOT asking for and will not accept as a substitute:** a
+journalist's game recap, a fantasy-points summary, a betting-results page, or
+any human-written table of who did what. Those are the same category error as
+a reporter's inactive list, and the whole point of the scoring row is that it
+is re-derivable from the same bytes by someone else.
+
+**What is already done and does not wait on you.** The information-set
+integrity layer is verified (delivery and seal both pregame, 11 of 11
+identities resolved, 0 sources retrieved after kickoff, all 7 consumed source
+blobs re-hash to their recorded digests). The QB-inactive accounting
+counterfactual is complete, because it is a forecast-versus-forecast
+comparison that needs no outcome at all. The prospective scoring row is open
+at `nfl/research/live/2026_01_SF_LA/PROSPECTIVE_SCORING_ROW.json` with
+`status: AWAITING_ACTUALS`; actuals attach to it and never modify a sealed
+board.

@@ -1,0 +1,169 @@
+{
+ "artifact": "NFL_PROSPECTIVE_SCORING_ROW",
+ "game_id": "2026_01_SF_LA",
+ "kickoff_utc": "2026-09-11T00:35:00Z",
+ "written_at": "2026-09-11T00:13:09.885625Z",
+ "status": "AWAITING_ACTUALS",
+ "sealed_runs": {
+  "post_inactives_V1_CANDIDATE": {
+   "run_id": "f6c8251583500e35",
+   "board_sha256": "20986775d79a4776add45a48e3e0bde9fc9fc9f100a29ffa8c47d938470a6d1b",
+   "model_configuration": "V1_CANDIDATE",
+   "components": [
+    "A1",
+    "A3G",
+    "C0",
+    "C3",
+    "R2",
+    "SC1"
+   ],
+   "n_draws": 1000,
+   "n_players": 53,
+   "draw_content_digest": "0f89ddbc648aaab36a8756e8d5898312105ba022b38e1ab286caf58884fa9dbe"
+  },
+  "post_inactives_V1_CANDIDATE_R5": {
+   "run_id": "ee1c94270bb53963",
+   "board_sha256": "c0a8dc666828c57328a1828a6604d289e5c43b0dc7035efabc3dbcd174f25593",
+   "model_configuration": "V1_CANDIDATE_R5",
+   "components": [
+    "A1",
+    "A3G",
+    "C0",
+    "C3",
+    "R2",
+    "R5",
+    "SC1"
+   ],
+   "n_draws": 1000,
+   "n_players": 36,
+   "draw_content_digest": "76f43200c277fc360e7ee989953ff951867ac1d95d5c2cbb844fb790e1f412b8"
+  },
+  "post_inactives_V1_CANDIDATE_R6": {
+   "run_id": "155b47697c211ae8",
+   "board_sha256": "7f9f87ac867bb4c4bd991463f0694a33742e75a447932d48942e538177fc81a5",
+   "model_configuration": "V1_CANDIDATE_R6",
+   "components": [
+    "A1",
+    "A3G",
+    "C0",
+    "C3",
+    "R2",
+    "R5",
+    "R6",
+    "SC1"
+   ],
+   "n_draws": 1000,
+   "n_players": 36,
+   "draw_content_digest": "41e9cec1cc48b8b67a26485b07e8032878d32b03073fb03ed1926b6f31ef8797"
+  },
+  "post_inactives_V1_CANDIDATE_R7": {
+   "run_id": "e264f9c6b84837d9",
+   "board_sha256": "fc3e8dbbdd60a90a598f97795ad9ba11f8307216f113a8b22b6c02c649a5e864",
+   "model_configuration": "V1_CANDIDATE_R7",
+   "components": [
+    "A1",
+    "A3G",
+    "C0",
+    "C3",
+    "R2",
+    "R5",
+    "R6",
+    "R7",
+    "SC1"
+   ],
+   "n_draws": 1000,
+   "n_players": 36,
+   "draw_content_digest": "dfe82a1de55cbdba170e2609026bcc3b134e7413db7173fff7e9b150924d51d7"
+  },
+  "post_inactives_V1_CANDIDATE_R8": {
+   "run_id": "5e70d8847e32c7ae",
+   "board_sha256": "3225b8cf12d0e9a47c72cd4434727121b0c51bbe41711f766a34396d2c1f4686",
+   "model_configuration": "V1_CANDIDATE_R8",
+   "components": [
+    "A1",
+    "A3G",
+    "C0",
+    "C3",
+    "R2",
+    "R5",
+    "R6",
+    "R8",
+    "SC1"
+   ],
+   "n_draws": 1000,
+   "n_players": 36,
+   "draw_content_digest": "51c8b8792931c4ea7484d39c0029ffb931f94d156ea8d1a2426019b1832c88b1"
+  }
+ },
+ "pre_inactives_runs": {
+  "pre_inactives_V1_CANDIDATE": "sealed 2026-09-10T21:18:56Z",
+  "pre_inactives_V1_CANDIDATE_R5": "sealed 2026-09-10T21:18:56Z",
+  "pre_inactives_V1_CANDIDATE_R6": "sealed 2026-09-10T21:18:56Z",
+  "pre_inactives_V1_CANDIDATE_R7": "sealed 2026-09-10T21:18:56Z",
+  "pre_inactives_V1_CANDIDATE_R8": "sealed 2026-09-10T21:18:56Z"
+ },
+ "information_set": {
+  "official_inactives_delivery_sha256": "91bdf335602a7475b0ccd39637195d030f5ea6b18127adcdde36be95b5bc3a73",
+  "official_published_at": "2026-09-10T23:26:21.831Z",
+  "delivery_retrieved_at": "2026-09-10T23:44:20.399Z",
+  "provenance_kind": "EXTERNAL_AUTHORITATIVE_DELIVERY",
+  "n_resolved": {
+   "SF": 6,
+   "LA": 5
+  },
+  "n_unmapped": 0,
+  "sources_retrieved_after_kickoff": 0,
+  "all_consumed_source_hashes_reverify": true
+ },
+ "known_defects_at_forecast_time": [
+  {
+   "id": "QB_INACTIVE_NOT_CONSUMED",
+   "detail": "run_forecast.py:713 passes official_inactive_ids to the non-QB engine only. The QB dropback allocation never receives it, so officially inactive quarterbacks retain share.",
+   "measured_here": {
+    "SF": {
+     "qb": "Kurtis Rourke",
+     "dropbacks": 0.9,
+     "pct_of_team": 2.65
+    },
+    "LA": {
+     "qb": "Ty Simpson",
+     "dropbacks": 0.73,
+     "pct_of_team": 2.03
+    }
+   }
+  },
+  {
+   "id": "G0A_ITEM1_DISCHARGE_WITHOUT_CONTENT",
+   "detail": "_clears() discharges an inactives obligation on source + game attribution + in-window timing, with no check that the document carries a list. All 10 bot captures in the window were the placeholder; the obligation still reads COVERED."
+  }
+ ],
+ "actuals": null,
+ "actuals_blocked": {
+  "cause": "DATA",
+  "pbp_participation": "DEFERRED[SOURCE_NOT_YET_PUBLISHED]",
+  "snap_counts_2026": "93 rows, 0 for SF or LA, retrieved 2026-09-10T18:31:04Z (before kickoff)",
+  "egress": "HTTP 000 from this executor",
+  "requested_as": "OUT-008"
+ },
+ "scoring_metrics": null,
+ "posthoc_accounting_correction": {
+  "label": "POSTHOC_ACCOUNTING_CORRECTION - NOT THE PREGAME FORECAST",
+  "method": "drop the officially-inactive QB share row, renormalise remaining shares over the same team dropback budget (R2 largest-remainder, pre-registered). No refit, no new parameter, outcome not used.",
+  "deltas": {
+   "Matthew Stafford": {
+    "att": 0.63,
+    "cmp": 0.4,
+    "pyds": 4.6,
+    "ptd": 0.03
+   },
+   "Brock Purdy": {
+    "att": 0.73,
+    "cmp": 0.49,
+    "pyds": 5.73,
+    "ptd": 0.03
+   }
+  },
+  "stored_separately_from_sealed_forecast": true
+ },
+ "never_overwrite": "The sealed pregame forecasts above are immutable. Actuals and scoring attach to this row; they never modify a board."
+}
