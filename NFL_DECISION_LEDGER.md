@@ -2001,3 +2001,69 @@ moved.
 **Detail:** `nfl/research/track1/TRACK1_SPEC.md`, `TRACK1_DECISION.md`,
 `TRACK1_FORWARD_CHAIN_RESULTS.json`, `TRACK1_DIAGNOSTICS.csv`.
 
+---
+
+## 2026-09-11 — Q6: appearance probability and conditional role. WEAK_SUPPORT.
+
+**The question.** Can pregame information improve player appearance
+probability and conditional role allocation without leaking post-kickoff or
+post-hoc roster status. Forward-chained 2022-2025 on R8's union frame,
+34,621 player-games across 2,174 team-games, RB/WR/TE, 89 declined by name
+into the unsupported cell. `weekly_rosters.status` never read.
+
+**Two hypotheses died in the audit before anything was built.** The engine
+does NOT collapse appearance into an unconditional share --
+`layers.appearance` draws a Bernoulli per player per simulation draw and
+`layers.participation` multiplies that 0/1 by the share. And the share is
+already conditional on appearing: `participation_prior.share_prior` is an
+EWMA of prior APPEARED shares. The directive's first requirement was already
+satisfied structurally. R8 also already carries the game-status designation,
+already restricted to rows timestamped before kickoff.
+
+**What worked.** R8 carries the designation and the depth rank as separate
+main effects, so it cannot say that a questionable starter and a questionable
+fifth receiver are different events. Adding that interaction plus the
+practice-status ordinal gives Brier -0.632%, team-game-clustered CI
+[-0.000771, -0.000391], improving 8 of 9 position-by-role-class cells, five
+significantly, none significantly worse. Downstream it is worth -0.256% target
+CRPS and -0.553% carry CRPS, both significant, and the whole downstream gain
+comes from the appearance layer.
+
+**What did not.** Role-class Platt recalibration gives the best calibration of
+any arm (ECE 0.0158 against R8's 0.0207) and a worse log loss, all of it in
+2022 where the nested chain had one season to fit on. The boundary is training
+depth, not the mechanism.
+
+**What failed.** The vacancy correction is significantly WORSE on carry role
+CRPS (+0.251%). The misallocation it aimed at is real -- on team-weeks whose
+starter was absent, proportional renormalisation over-feeds the surviving
+starter by 19% and under-feeds replacements by 7-12% -- but the correction was
+estimated on share-among-present and applied to counts under simulated
+appearance, and moves three to six times too little. Two estimator faults were
+found and fixed first: a denominator that normalised within position against a
+team-wide realised share, and a mean-of-ratios that let near-zero denominators
+produce carry ratios of 4 to 8.
+
+**Missing data.** On the 4,364 player-games that had a filed report, blanking
+it more than doubles Brier. The model's own missing-block fallback is the
+LESS honest answer: ECE 0.170 against the flat role-class rate's 0.081, and a
+worse log loss. HARD_DEFER refuses 4,364 players across 1,496 team-weeks.
+Recommendation for a later decision, not taken here: emit the role-class rate
+under LOW_CONFIDENCE_ROLE_CLASS_ONLY when the report is unfiled, never without
+the label.
+
+**Headline arm fixed before the run.** Q6_CALIBRATED gives WEAK_SUPPORT;
+Q6_FEATURES reaches SUPPORT under the same rule. Both verdicts are published;
+adopting the better one afterwards would be selection on the outcome.
+
+**Composition reconciles exactly** -- maximum team-total error 0.0 over every
+draw, both metrics. Zero-inflation error is -2.68 points on targets and -1.24
+on carries.
+
+**Nothing promoted. R8 untouched.**
+
+**Suite:** 75 modules, 826 test functions, 4,492 checks, 0 failing, 0 raised.
+
+**Detail:** `nfl/research/q6/Q6_SPEC.md`, `Q6_DECISION.md`,
+`Q6_FORWARD_CHAIN_RESULTS.json`.
+

@@ -1,0 +1,7755 @@
+{
+ "artifact": "NFL_Q6_FORWARD_CHAIN_RESULTS",
+ "spec_version": "q6-analysis-1",
+ "chain_spec": "q6-forward-chain-1",
+ "frame_spec": "q6-frame-1",
+ "promoted": false,
+ "is_research_only": true,
+ "market_inputs_used": [],
+ "roster_status_inputs_used": [],
+ "live_2026_rows_used": 0,
+ "appearance_arms": [
+  "ROLE_CLASS_FLAT",
+  "R8",
+  "Q6_FEATURES",
+  "Q6_CALIBRATED"
+ ],
+ "role_arms": [
+  "TIER_PRIOR",
+  "Q6_VACANCY"
+ ],
+ "composition_arms": [
+  "BASELINE",
+  "Q6_APPEARANCE_ONLY",
+  "Q6_ROLE_ONLY",
+  "Q6_BOTH"
+ ],
+ "eval_seasons": [
+  2022,
+  2023,
+  2024,
+  2025
+ ],
+ "n_appearance_rows": 34621,
+ "n_role_rows": 91476,
+ "n_composition_rows": 276968,
+ "clustering": "block bootstrap over whole team-games",
+ "held_fixed": [
+  "the team total is the realised one, identical in every arm",
+  "the conditional-role arms are scored against the realised appearance set",
+  "team volume, efficiency and touchdown layers are untouched"
+ ],
+ "appearance": {
+  "overall": {
+   "ROLE_CLASS_FLAT": {
+    "n": 34621,
+    "brier": 0.193892,
+    "log_loss": 0.570236,
+    "expected_calibration_error": 0.020324,
+    "mean_predicted": 0.67824,
+    "observed_rate": 0.66055,
+    "calibration_bins": [
+     {
+      "bin": "0.0-0.1",
+      "n": 0,
+      "mean_predicted": null,
+      "observed_rate": null
+     },
+     {
+      "bin": "0.1-0.2",
+      "n": 0,
+      "mean_predicted": null,
+      "observed_rate": null
+     },
+     {
+      "bin": "0.2-0.3",
+      "n": 0,
+      "mean_predicted": null,
+      "observed_rate": null
+     },
+     {
+      "bin": "0.3-0.4",
+      "n": 0,
+      "mean_predicted": null,
+      "observed_rate": null
+     },
+     {
+      "bin": "0.4-0.5",
+      "n": 5898,
+      "mean_predicted": 0.43721,
+      "observed_rate": 0.38708,
+      "gap": 0.05013
+     },
+     {
+      "bin": "0.5-0.6",
+      "n": 8930,
+      "mean_predicted": 0.56994,
+      "observed_rate": 0.52956,
+      "gap": 0.04038
+     },
+     {
+      "bin": "0.6-0.7",
+      "n": 0,
+      "mean_predicted": null,
+      "observed_rate": null
+     },
+     {
+      "bin": "0.7-0.8",
+      "n": 8862,
+      "mean_predicted": 0.73366,
+      "observed_rate": 0.73347,
+      "gap": 0.00019
+     },
+     {
+      "bin": "0.8-0.9",
+      "n": 10931,
+      "mean_predicted": 0.85183,
+      "observed_rate": 0.85601,
+      "gap": -0.00417
+     },
+     {
+      "bin": "0.9-1.0",
+      "n": 0,
+      "mean_predicted": null,
+      "observed_rate": null
+     }
+    ]
+   },
+   "R8": {
+    "n": 34621,
+    "brier": 0.090724,
+    "log_loss": 0.293054,
+    "expected_calibration_error": 0.020746,
+    "mean_predicted": 0.66724,
+    "observed_rate": 0.66055,
+    "calibration_bins": [
+     {
+      "bin": "0.0-0.1",
+      "n": 5048,
+      "mean_predicted": 0.01964,
+      "observed_rate": 0.01129,
+      "gap": 0.00835
+     },
+     {
+      "bin": "0.1-0.2",
+      "n": 1611,
+      "mean_predicted": 0.14602,
+      "observed_rate": 0.09435,
+      "gap": 0.05167
+     },
+     {
+      "bin": "0.2-0.3",
+      "n": 1085,
+      "mean_predicted": 0.24484,
+      "observed_rate": 0.25438,
+      "gap": -0.00953
+     },
+     {
+      "bin": "0.3-0.4",
+      "n": 880,
+      "mean_predicted": 0.35135,
+      "observed_rate": 0.34205,
+      "gap": 0.0093
+     },
+     {
+      "bin": "0.4-0.5",
+      "n": 1181,
+      "mean_predicted": 0.45401,
+      "observed_rate": 0.41321,
+      "gap": 0.0408
+     },
+     {
+      "bin": "0.5-0.6",
+      "n": 1495,
+      "mean_predicted": 0.55115,
+      "observed_rate": 0.50903,
+      "gap": 0.04212
+     },
+     {
+      "bin": "0.6-0.7",
+      "n": 1783,
+      "mean_predicted": 0.65059,
+      "observed_rate": 0.5659,
+      "gap": 0.08469
+     },
+     {
+      "bin": "0.7-0.8",
+      "n": 2438,
+      "mean_predicted": 0.75396,
+      "observed_rate": 0.72149,
+      "gap": 0.03246
+     },
+     {
+      "bin": "0.8-0.9",
+      "n": 4899,
+      "mean_predicted": 0.85725,
+      "observed_rate": 0.87201,
+      "gap": -0.01477
+     },
+     {
+      "bin": "0.9-1.0",
+      "n": 14201,
+      "mean_predicted": 0.96003,
+      "observed_rate": 0.97134,
+      "gap": -0.01131
+     }
+    ]
+   },
+   "Q6_FEATURES": {
+    "n": 34621,
+    "brier": 0.09015,
+    "log_loss": 0.291345,
+    "expected_calibration_error": 0.018181,
+    "mean_predicted": 0.66668,
+    "observed_rate": 0.66055,
+    "calibration_bins": [
+     {
+      "bin": "0.0-0.1",
+      "n": 5063,
+      "mean_predicted": 0.019,
+      "observed_rate": 0.01007,
+      "gap": 0.00893
+     },
+     {
+      "bin": "0.1-0.2",
+      "n": 1613,
+      "mean_predicted": 0.14562,
+      "observed_rate": 0.09485,
+      "gap": 0.05077
+     },
+     {
+      "bin": "0.2-0.3",
+      "n": 1042,
+      "mean_predicted": 0.24389,
+      "observed_rate": 0.23608,
+      "gap": 0.00781
+     },
+     {
+      "bin": "0.3-0.4",
+      "n": 917,
+      "mean_predicted": 0.35063,
+      "observed_rate": 0.34351,
+      "gap": 0.00712
+     },
+     {
+      "bin": "0.4-0.5",
+      "n": 1226,
+      "mean_predicted": 0.45357,
+      "observed_rate": 0.43964,
+      "gap": 0.01393
+     },
+     {
+      "bin": "0.5-0.6",
+      "n": 1520,
+      "mean_predicted": 0.55172,
+      "observed_rate": 0.50066,
+      "gap": 0.05106
+     },
+     {
+      "bin": "0.6-0.7",
+      "n": 1762,
+      "mean_predicted": 0.65068,
+      "observed_rate": 0.57889,
+      "gap": 0.07179
+     },
+     {
+      "bin": "0.7-0.8",
+      "n": 2431,
+      "mean_predicted": 0.75435,
+      "observed_rate": 0.73056,
+      "gap": 0.02379
+     },
+     {
+      "bin": "0.8-0.9",
+      "n": 4818,
+      "mean_predicted": 0.8568,
+      "observed_rate": 0.87007,
+      "gap": -0.01327
+     },
+     {
+      "bin": "0.9-1.0",
+      "n": 14229,
+      "mean_predicted": 0.9608,
+      "observed_rate": 0.97097,
+      "gap": -0.01017
+     }
+    ]
+   },
+   "Q6_CALIBRATED": {
+    "n": 34621,
+    "brier": 0.090465,
+    "log_loss": 0.293967,
+    "expected_calibration_error": 0.015804,
+    "mean_predicted": 0.6634,
+    "observed_rate": 0.66055,
+    "calibration_bins": [
+     {
+      "bin": "0.0-0.1",
+      "n": 4972,
+      "mean_predicted": 0.01761,
+      "observed_rate": 0.00965,
+      "gap": 0.00796
+     },
+     {
+      "bin": "0.1-0.2",
+      "n": 1622,
+      "mean_predicted": 0.14625,
+      "observed_rate": 0.09494,
+      "gap": 0.0513
+     },
+     {
+      "bin": "0.2-0.3",
+      "n": 1130,
+      "mean_predicted": 0.24652,
+      "observed_rate": 0.21327,
+      "gap": 0.03325
+     },
+     {
+      "bin": "0.3-0.4",
+      "n": 1007,
+      "mean_predicted": 0.35108,
+      "observed_rate": 0.35452,
+      "gap": -0.00344
+     },
+     {
+      "bin": "0.4-0.5",
+      "n": 1307,
+      "mean_predicted": 0.45334,
+      "observed_rate": 0.43994,
+      "gap": 0.0134
+     },
+     {
+      "bin": "0.5-0.6",
+      "n": 1640,
+      "mean_predicted": 0.5514,
+      "observed_rate": 0.5189,
+      "gap": 0.0325
+     },
+     {
+      "bin": "0.6-0.7",
+      "n": 1855,
+      "mean_predicted": 0.65215,
+      "observed_rate": 0.6027,
+      "gap": 0.04945
+     },
+     {
+      "bin": "0.7-0.8",
+      "n": 2538,
+      "mean_predicted": 0.75437,
+      "observed_rate": 0.76556,
+      "gap": -0.0112
+     },
+     {
+      "bin": "0.8-0.9",
+      "n": 4433,
+      "mean_predicted": 0.85484,
+      "observed_rate": 0.88495,
+      "gap": -0.03012
+     },
+     {
+      "bin": "0.9-1.0",
+      "n": 14117,
+      "mean_predicted": 0.96339,
+      "observed_rate": 0.96756,
+      "gap": -0.00417
+     }
+    ]
+   }
+  },
+  "by_position": {
+   "RB": {
+    "ROLE_CLASS_FLAT": {
+     "n": 10202,
+     "brier": 0.196308,
+     "log_loss": 0.577664,
+     "expected_calibration_error": 0.024752,
+     "mean_predicted": 0.64318,
+     "observed_rate": 0.62586,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 3615,
+       "mean_predicted": 0.42521,
+       "observed_rate": 0.37151,
+       "gap": 0.05371
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 4397,
+       "mean_predicted": 0.71901,
+       "observed_rate": 0.71435,
+       "gap": 0.00466
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 2190,
+       "mean_predicted": 0.85073,
+       "observed_rate": 0.86804,
+       "gap": -0.0173
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      }
+     ]
+    },
+    "R8": {
+     "n": 10202,
+     "brier": 0.090408,
+     "log_loss": 0.289896,
+     "expected_calibration_error": 0.031916,
+     "mean_predicted": 0.62718,
+     "observed_rate": 0.62586,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 1812,
+       "mean_predicted": 0.01738,
+       "observed_rate": 0.00773,
+       "gap": 0.00965
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 484,
+       "mean_predicted": 0.14417,
+       "observed_rate": 0.09504,
+       "gap": 0.04913
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 287,
+       "mean_predicted": 0.24581,
+       "observed_rate": 0.29268,
+       "gap": -0.04687
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 273,
+       "mean_predicted": 0.35152,
+       "observed_rate": 0.32967,
+       "gap": 0.02185
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 413,
+       "mean_predicted": 0.4544,
+       "observed_rate": 0.38741,
+       "gap": 0.06699
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 498,
+       "mean_predicted": 0.55058,
+       "observed_rate": 0.49799,
+       "gap": 0.05259
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 513,
+       "mean_predicted": 0.64943,
+       "observed_rate": 0.5809,
+       "gap": 0.06854
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 750,
+       "mean_predicted": 0.75374,
+       "observed_rate": 0.70933,
+       "gap": 0.04441
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 1684,
+       "mean_predicted": 0.85847,
+       "observed_rate": 0.89311,
+       "gap": -0.03464
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 3488,
+       "mean_predicted": 0.95319,
+       "observed_rate": 0.97735,
+       "gap": -0.02416
+      }
+     ]
+    },
+    "Q6_FEATURES": {
+     "n": 10202,
+     "brier": 0.089639,
+     "log_loss": 0.287553,
+     "expected_calibration_error": 0.027414,
+     "mean_predicted": 0.6265,
+     "observed_rate": 0.62586,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 1817,
+       "mean_predicted": 0.017,
+       "observed_rate": 0.00605,
+       "gap": 0.01095
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 481,
+       "mean_predicted": 0.14396,
+       "observed_rate": 0.10395,
+       "gap": 0.04001
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 290,
+       "mean_predicted": 0.24611,
+       "observed_rate": 0.25862,
+       "gap": -0.01251
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 287,
+       "mean_predicted": 0.35141,
+       "observed_rate": 0.34146,
+       "gap": 0.00995
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 406,
+       "mean_predicted": 0.45431,
+       "observed_rate": 0.42611,
+       "gap": 0.0282
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 507,
+       "mean_predicted": 0.54933,
+       "observed_rate": 0.46943,
+       "gap": 0.0799
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 511,
+       "mean_predicted": 0.64962,
+       "observed_rate": 0.59295,
+       "gap": 0.05666
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 751,
+       "mean_predicted": 0.75394,
+       "observed_rate": 0.72703,
+       "gap": 0.0269
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 1653,
+       "mean_predicted": 0.85841,
+       "observed_rate": 0.8899,
+       "gap": -0.03149
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 3499,
+       "mean_predicted": 0.95431,
+       "observed_rate": 0.97742,
+       "gap": -0.02312
+      }
+     ]
+    },
+    "Q6_CALIBRATED": {
+     "n": 10202,
+     "brier": 0.089638,
+     "log_loss": 0.288521,
+     "expected_calibration_error": 0.024071,
+     "mean_predicted": 0.62357,
+     "observed_rate": 0.62586,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 1800,
+       "mean_predicted": 0.0157,
+       "observed_rate": 0.00722,
+       "gap": 0.00848
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 484,
+       "mean_predicted": 0.14436,
+       "observed_rate": 0.10537,
+       "gap": 0.03899
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 330,
+       "mean_predicted": 0.24747,
+       "observed_rate": 0.21515,
+       "gap": 0.03231
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 300,
+       "mean_predicted": 0.35382,
+       "observed_rate": 0.37667,
+       "gap": -0.02284
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 450,
+       "mean_predicted": 0.45387,
+       "observed_rate": 0.43111,
+       "gap": 0.02276
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 510,
+       "mean_predicted": 0.54928,
+       "observed_rate": 0.49804,
+       "gap": 0.05124
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 533,
+       "mean_predicted": 0.65089,
+       "observed_rate": 0.59475,
+       "gap": 0.05615
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 759,
+       "mean_predicted": 0.75489,
+       "observed_rate": 0.7668,
+       "gap": -0.0119
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 1424,
+       "mean_predicted": 0.85623,
+       "observed_rate": 0.89466,
+       "gap": -0.03843
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 3612,
+       "mean_predicted": 0.95574,
+       "observed_rate": 0.97342,
+       "gap": -0.01768
+      }
+     ]
+    }
+   },
+   "TE": {
+    "ROLE_CLASS_FLAT": {
+     "n": 8932,
+     "brier": 0.179833,
+     "log_loss": 0.539723,
+     "expected_calibration_error": 0.013682,
+     "mean_predicted": 0.70744,
+     "observed_rate": 0.69839,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 2283,
+       "mean_predicted": 0.45621,
+       "observed_rate": 0.41174,
+       "gap": 0.04447
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 4465,
+       "mean_predicted": 0.7481,
+       "observed_rate": 0.7523,
+       "gap": -0.0042
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 2184,
+       "mean_predicted": 0.88694,
+       "observed_rate": 0.88782,
+       "gap": -0.00088
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      }
+     ]
+    },
+    "R8": {
+     "n": 8932,
+     "brier": 0.083543,
+     "log_loss": 0.275086,
+     "expected_calibration_error": 0.018987,
+     "mean_predicted": 0.70357,
+     "observed_rate": 0.69839,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 1165,
+       "mean_predicted": 0.02005,
+       "observed_rate": 0.01288,
+       "gap": 0.00718
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 351,
+       "mean_predicted": 0.14757,
+       "observed_rate": 0.09117,
+       "gap": 0.0564
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 242,
+       "mean_predicted": 0.24696,
+       "observed_rate": 0.2314,
+       "gap": 0.01556
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 181,
+       "mean_predicted": 0.35223,
+       "observed_rate": 0.34807,
+       "gap": 0.00417
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 241,
+       "mean_predicted": 0.45388,
+       "observed_rate": 0.43983,
+       "gap": 0.01405
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 338,
+       "mean_predicted": 0.54854,
+       "observed_rate": 0.49704,
+       "gap": 0.0515
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 419,
+       "mean_predicted": 0.65161,
+       "observed_rate": 0.57995,
+       "gap": 0.07165
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 542,
+       "mean_predicted": 0.75456,
+       "observed_rate": 0.73432,
+       "gap": 0.02024
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 1214,
+       "mean_predicted": 0.85872,
+       "observed_rate": 0.84761,
+       "gap": 0.01111
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 4239,
+       "mean_predicted": 0.95927,
+       "observed_rate": 0.97381,
+       "gap": -0.01454
+      }
+     ]
+    },
+    "Q6_FEATURES": {
+     "n": 8932,
+     "brier": 0.082877,
+     "log_loss": 0.273078,
+     "expected_calibration_error": 0.017357,
+     "mean_predicted": 0.70281,
+     "observed_rate": 0.69839,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 1168,
+       "mean_predicted": 0.01927,
+       "observed_rate": 0.01284,
+       "gap": 0.00643
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 357,
+       "mean_predicted": 0.14656,
+       "observed_rate": 0.08683,
+       "gap": 0.05973
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 230,
+       "mean_predicted": 0.24581,
+       "observed_rate": 0.22174,
+       "gap": 0.02408
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 190,
+       "mean_predicted": 0.35206,
+       "observed_rate": 0.33158,
+       "gap": 0.02048
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 257,
+       "mean_predicted": 0.45286,
+       "observed_rate": 0.46693,
+       "gap": -0.01406
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 342,
+       "mean_predicted": 0.55084,
+       "observed_rate": 0.49415,
+       "gap": 0.05668
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 404,
+       "mean_predicted": 0.65115,
+       "observed_rate": 0.58911,
+       "gap": 0.06204
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 556,
+       "mean_predicted": 0.75517,
+       "observed_rate": 0.7464,
+       "gap": 0.00876
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 1195,
+       "mean_predicted": 0.85915,
+       "observed_rate": 0.85105,
+       "gap": 0.0081
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 4233,
+       "mean_predicted": 0.96027,
+       "observed_rate": 0.97307,
+       "gap": -0.01279
+      }
+     ]
+    },
+    "Q6_CALIBRATED": {
+     "n": 8932,
+     "brier": 0.082933,
+     "log_loss": 0.274843,
+     "expected_calibration_error": 0.012352,
+     "mean_predicted": 0.70074,
+     "observed_rate": 0.69839,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 1158,
+       "mean_predicted": 0.01782,
+       "observed_rate": 0.01123,
+       "gap": 0.00659
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 369,
+       "mean_predicted": 0.14787,
+       "observed_rate": 0.09485,
+       "gap": 0.05302
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 235,
+       "mean_predicted": 0.24678,
+       "observed_rate": 0.21277,
+       "gap": 0.03401
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 213,
+       "mean_predicted": 0.35093,
+       "observed_rate": 0.35211,
+       "gap": -0.00118
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 268,
+       "mean_predicted": 0.45289,
+       "observed_rate": 0.43284,
+       "gap": 0.02006
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 373,
+       "mean_predicted": 0.55109,
+       "observed_rate": 0.51743,
+       "gap": 0.03366
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 401,
+       "mean_predicted": 0.65226,
+       "observed_rate": 0.62095,
+       "gap": 0.03131
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 570,
+       "mean_predicted": 0.75434,
+       "observed_rate": 0.76842,
+       "gap": -0.01408
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 1076,
+       "mean_predicted": 0.85571,
+       "observed_rate": 0.87082,
+       "gap": -0.01511
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 4269,
+       "mean_predicted": 0.96319,
+       "observed_rate": 0.96791,
+       "gap": -0.00471
+      }
+     ]
+    }
+   },
+   "WR": {
+    "ROLE_CLASS_FLAT": {
+     "n": 15487,
+     "brier": 0.200409,
+     "log_loss": 0.582941,
+     "expected_calibration_error": 0.023659,
+     "mean_predicted": 0.6845,
+     "observed_rate": 0.66159,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 8930,
+       "mean_predicted": 0.56994,
+       "observed_rate": 0.52956,
+       "gap": 0.04038
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 6557,
+       "mean_predicted": 0.8405,
+       "observed_rate": 0.84139,
+       "gap": -0.00089
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      }
+     ]
+    },
+    "R8": {
+     "n": 15487,
+     "brier": 0.095072,
+     "log_loss": 0.305498,
+     "expected_calibration_error": 0.01663,
+     "mean_predicted": 0.67267,
+     "observed_rate": 0.66159,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 2071,
+       "mean_predicted": 0.02138,
+       "observed_rate": 0.01352,
+       "gap": 0.00786
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 776,
+       "mean_predicted": 0.14648,
+       "observed_rate": 0.09536,
+       "gap": 0.05112
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 556,
+       "mean_predicted": 0.24342,
+       "observed_rate": 0.2446,
+       "gap": -0.00118
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 426,
+       "mean_predicted": 0.35086,
+       "observed_rate": 0.34742,
+       "gap": 0.00344
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 527,
+       "mean_predicted": 0.45375,
+       "observed_rate": 0.42125,
+       "gap": 0.0325
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 659,
+       "mean_predicted": 0.55292,
+       "observed_rate": 0.52352,
+       "gap": 0.0294
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 851,
+       "mean_predicted": 0.6508,
+       "observed_rate": 0.54994,
+       "gap": 0.10085
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 1146,
+       "mean_predicted": 0.75381,
+       "observed_rate": 0.72339,
+       "gap": 0.03042
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 2001,
+       "mean_predicted": 0.85531,
+       "observed_rate": 0.86907,
+       "gap": -0.01375
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 6474,
+       "mean_predicted": 0.9642,
+       "observed_rate": 0.96648,
+       "gap": -0.00228
+      }
+     ]
+    },
+    "Q6_FEATURES": {
+     "n": 15487,
+     "brier": 0.094681,
+     "log_loss": 0.304379,
+     "expected_calibration_error": 0.014786,
+     "mean_predicted": 0.67231,
+     "observed_rate": 0.66159,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 2078,
+       "mean_predicted": 0.02059,
+       "observed_rate": 0.01203,
+       "gap": 0.00856
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 775,
+       "mean_predicted": 0.14621,
+       "observed_rate": 0.0929,
+       "gap": 0.05331
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 522,
+       "mean_predicted": 0.24181,
+       "observed_rate": 0.22989,
+       "gap": 0.01193
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 440,
+       "mean_predicted": 0.34951,
+       "observed_rate": 0.35,
+       "gap": -0.00049
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 563,
+       "mean_predicted": 0.45335,
+       "observed_rate": 0.43694,
+       "gap": 0.01641
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 671,
+       "mean_predicted": 0.55398,
+       "observed_rate": 0.52757,
+       "gap": 0.02641
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 847,
+       "mean_predicted": 0.65109,
+       "observed_rate": 0.56553,
+       "gap": 0.08556
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 1124,
+       "mean_predicted": 0.75422,
+       "observed_rate": 0.72509,
+       "gap": 0.02913
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 1970,
+       "mean_predicted": 0.85404,
+       "observed_rate": 0.86497,
+       "gap": -0.01094
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 6497,
+       "mean_predicted": 0.96464,
+       "observed_rate": 0.96614,
+       "gap": -0.0015
+      }
+     ]
+    },
+    "Q6_CALIBRATED": {
+     "n": 15487,
+     "brier": 0.095354,
+     "log_loss": 0.308585,
+     "expected_calibration_error": 0.016065,
+     "mean_predicted": 0.66811,
+     "observed_rate": 0.66159,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 2014,
+       "mean_predicted": 0.01921,
+       "observed_rate": 0.01092,
+       "gap": 0.00828
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 769,
+       "mean_predicted": 0.14666,
+       "observed_rate": 0.08843,
+       "gap": 0.05823
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 565,
+       "mean_predicted": 0.24586,
+       "observed_rate": 0.21239,
+       "gap": 0.03347
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 494,
+       "mean_predicted": 0.34948,
+       "observed_rate": 0.34211,
+       "gap": 0.00738
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 589,
+       "mean_predicted": 0.45313,
+       "observed_rate": 0.44992,
+       "gap": 0.00322
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 757,
+       "mean_predicted": 0.55298,
+       "observed_rate": 0.53369,
+       "gap": 0.01929
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 921,
+       "mean_predicted": 0.65283,
+       "observed_rate": 0.59935,
+       "gap": 0.05348
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 1209,
+       "mean_predicted": 0.75405,
+       "observed_rate": 0.76344,
+       "gap": -0.00939
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 1933,
+       "mean_predicted": 0.85332,
+       "observed_rate": 0.88567,
+       "gap": -0.03235
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 6236,
+       "mean_predicted": 0.96795,
+       "observed_rate": 0.96392,
+       "gap": 0.00403
+      }
+     ]
+    }
+   }
+  },
+  "by_role_class": {
+   "fringe": {
+    "ROLE_CLASS_FLAT": {
+     "n": 14828,
+     "brier": 0.246137,
+     "log_loss": 0.685401,
+     "expected_calibration_error": 0.04426,
+     "mean_predicted": 0.51715,
+     "observed_rate": 0.47289,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 5898,
+       "mean_predicted": 0.43721,
+       "observed_rate": 0.38708,
+       "gap": 0.05013
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 8930,
+       "mean_predicted": 0.56994,
+       "observed_rate": 0.52956,
+       "gap": 0.04038
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      }
+     ]
+    },
+    "R8": {
+     "n": 14828,
+     "brier": 0.121179,
+     "log_loss": 0.371765,
+     "expected_calibration_error": 0.026294,
+     "mean_predicted": 0.48639,
+     "observed_rate": 0.47289,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 3610,
+       "mean_predicted": 0.02041,
+       "observed_rate": 0.01302,
+       "gap": 0.00739
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 1251,
+       "mean_predicted": 0.14568,
+       "observed_rate": 0.09672,
+       "gap": 0.04896
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 770,
+       "mean_predicted": 0.24411,
+       "observed_rate": 0.27662,
+       "gap": -0.03252
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 593,
+       "mean_predicted": 0.35093,
+       "observed_rate": 0.38786,
+       "gap": -0.03693
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 793,
+       "mean_predicted": 0.45394,
+       "observed_rate": 0.41362,
+       "gap": 0.04032
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 953,
+       "mean_predicted": 0.5519,
+       "observed_rate": 0.50577,
+       "gap": 0.04613
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 1093,
+       "mean_predicted": 0.6497,
+       "observed_rate": 0.56908,
+       "gap": 0.08062
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 1416,
+       "mean_predicted": 0.75502,
+       "observed_rate": 0.72458,
+       "gap": 0.03044
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 2359,
+       "mean_predicted": 0.85321,
+       "observed_rate": 0.86138,
+       "gap": -0.00817
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 1990,
+       "mean_predicted": 0.94593,
+       "observed_rate": 0.9603,
+       "gap": -0.01438
+      }
+     ]
+    },
+    "Q6_FEATURES": {
+     "n": 14828,
+     "brier": 0.120538,
+     "log_loss": 0.370085,
+     "expected_calibration_error": 0.022104,
+     "mean_predicted": 0.48516,
+     "observed_rate": 0.47289,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 3621,
+       "mean_predicted": 0.02043,
+       "observed_rate": 0.01188,
+       "gap": 0.00855
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 1255,
+       "mean_predicted": 0.14502,
+       "observed_rate": 0.09482,
+       "gap": 0.0502
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 731,
+       "mean_predicted": 0.24282,
+       "observed_rate": 0.26539,
+       "gap": -0.02257
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 631,
+       "mean_predicted": 0.34957,
+       "observed_rate": 0.3851,
+       "gap": -0.03553
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 820,
+       "mean_predicted": 0.45366,
+       "observed_rate": 0.43902,
+       "gap": 0.01464
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 962,
+       "mean_predicted": 0.55225,
+       "observed_rate": 0.5,
+       "gap": 0.05225
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 1068,
+       "mean_predicted": 0.64962,
+       "observed_rate": 0.58989,
+       "gap": 0.05973
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 1411,
+       "mean_predicted": 0.75464,
+       "observed_rate": 0.72998,
+       "gap": 0.02466
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 2314,
+       "mean_predicted": 0.85192,
+       "observed_rate": 0.85653,
+       "gap": -0.0046
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 2015,
+       "mean_predicted": 0.94623,
+       "observed_rate": 0.95782,
+       "gap": -0.01159
+      }
+     ]
+    },
+    "Q6_CALIBRATED": {
+     "n": 14828,
+     "brier": 0.121099,
+     "log_loss": 0.37309,
+     "expected_calibration_error": 0.021004,
+     "mean_predicted": 0.47852,
+     "observed_rate": 0.47289,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 3442,
+       "mean_predicted": 0.01857,
+       "observed_rate": 0.00901,
+       "gap": 0.00956
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 1279,
+       "mean_predicted": 0.14587,
+       "observed_rate": 0.08991,
+       "gap": 0.05596
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 819,
+       "mean_predicted": 0.2453,
+       "observed_rate": 0.23565,
+       "gap": 0.00964
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 700,
+       "mean_predicted": 0.35028,
+       "observed_rate": 0.37,
+       "gap": -0.01972
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 894,
+       "mean_predicted": 0.45287,
+       "observed_rate": 0.4396,
+       "gap": 0.01328
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 1089,
+       "mean_predicted": 0.55171,
+       "observed_rate": 0.5124,
+       "gap": 0.03931
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 1174,
+       "mean_predicted": 0.65113,
+       "observed_rate": 0.62521,
+       "gap": 0.02592
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 1595,
+       "mean_predicted": 0.75417,
+       "observed_rate": 0.77179,
+       "gap": -0.01761
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 2130,
+       "mean_predicted": 0.85024,
+       "observed_rate": 0.87887,
+       "gap": -0.02863
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 1706,
+       "mean_predicted": 0.94661,
+       "observed_rate": 0.95311,
+       "gap": -0.00649
+      }
+     ]
+    }
+   },
+   "rotational": {
+    "ROLE_CLASS_FLAT": {
+     "n": 13221,
+     "brier": 0.181748,
+     "log_loss": 0.548895,
+     "expected_calibration_error": 0.003184,
+     "mean_predicted": 0.76175,
+     "observed_rate": 0.75857,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 8862,
+       "mean_predicted": 0.73366,
+       "observed_rate": 0.73347,
+       "gap": 0.00019
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 4359,
+       "mean_predicted": 0.81885,
+       "observed_rate": 0.80959,
+       "gap": 0.00926
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      }
+     ]
+    },
+    "R8": {
+     "n": 13221,
+     "brier": 0.080645,
+     "log_loss": 0.27045,
+     "expected_calibration_error": 0.026889,
+     "mean_predicted": 0.75497,
+     "observed_rate": 0.75857,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 1167,
+       "mean_predicted": 0.01705,
+       "observed_rate": 0.00686,
+       "gap": 0.0102
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 305,
+       "mean_predicted": 0.14868,
+       "observed_rate": 0.0918,
+       "gap": 0.05688
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 285,
+       "mean_predicted": 0.24675,
+       "observed_rate": 0.20702,
+       "gap": 0.03973
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 233,
+       "mean_predicted": 0.3524,
+       "observed_rate": 0.27897,
+       "gap": 0.07343
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 348,
+       "mean_predicted": 0.45486,
+       "observed_rate": 0.42816,
+       "gap": 0.0267
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 490,
+       "mean_predicted": 0.54993,
+       "observed_rate": 0.52449,
+       "gap": 0.02544
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 596,
+       "mean_predicted": 0.65154,
+       "observed_rate": 0.56711,
+       "gap": 0.08442
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 880,
+       "mean_predicted": 0.75249,
+       "observed_rate": 0.725,
+       "gap": 0.02749
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 2282,
+       "mean_predicted": 0.8612,
+       "observed_rate": 0.89439,
+       "gap": -0.03319
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 6635,
+       "mean_predicted": 0.95255,
+       "observed_rate": 0.97151,
+       "gap": -0.01896
+      }
+     ]
+    },
+    "Q6_FEATURES": {
+     "n": 13221,
+     "brier": 0.08006,
+     "log_loss": 0.268776,
+     "expected_calibration_error": 0.025081,
+     "mean_predicted": 0.75498,
+     "observed_rate": 0.75857,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 1166,
+       "mean_predicted": 0.01562,
+       "observed_rate": 0.00515,
+       "gap": 0.01048
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 306,
+       "mean_predicted": 0.14895,
+       "observed_rate": 0.10131,
+       "gap": 0.04764
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 282,
+       "mean_predicted": 0.24638,
+       "observed_rate": 0.17376,
+       "gap": 0.07262
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 230,
+       "mean_predicted": 0.35298,
+       "observed_rate": 0.28261,
+       "gap": 0.07037
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 365,
+       "mean_predicted": 0.45384,
+       "observed_rate": 0.45479,
+       "gap": -0.00095
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 502,
+       "mean_predicted": 0.55085,
+       "observed_rate": 0.50996,
+       "gap": 0.04089
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 599,
+       "mean_predicted": 0.65204,
+       "observed_rate": 0.56594,
+       "gap": 0.08609
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 876,
+       "mean_predicted": 0.75404,
+       "observed_rate": 0.74658,
+       "gap": 0.00746
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 2252,
+       "mean_predicted": 0.8615,
+       "observed_rate": 0.89298,
+       "gap": -0.03148
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 6643,
+       "mean_predicted": 0.95345,
+       "observed_rate": 0.97125,
+       "gap": -0.0178
+      }
+     ]
+    },
+    "Q6_CALIBRATED": {
+     "n": 13221,
+     "brier": 0.080491,
+     "log_loss": 0.27049,
+     "expected_calibration_error": 0.01527,
+     "mean_predicted": 0.75917,
+     "observed_rate": 0.75857,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 1227,
+       "mean_predicted": 0.0154,
+       "observed_rate": 0.00978,
+       "gap": 0.00562
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 301,
+       "mean_predicted": 0.14906,
+       "observed_rate": 0.12625,
+       "gap": 0.02282
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 255,
+       "mean_predicted": 0.24895,
+       "observed_rate": 0.16078,
+       "gap": 0.08816
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 260,
+       "mean_predicted": 0.3539,
+       "observed_rate": 0.31923,
+       "gap": 0.03467
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 361,
+       "mean_predicted": 0.45467,
+       "observed_rate": 0.45152,
+       "gap": 0.00314
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 470,
+       "mean_predicted": 0.55015,
+       "observed_rate": 0.53191,
+       "gap": 0.01823
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 584,
+       "mean_predicted": 0.65403,
+       "observed_rate": 0.56849,
+       "gap": 0.08553
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 798,
+       "mean_predicted": 0.7545,
+       "observed_rate": 0.7594,
+       "gap": -0.0049
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 1921,
+       "mean_predicted": 0.85798,
+       "observed_rate": 0.89016,
+       "gap": -0.03219
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 7044,
+       "mean_predicted": 0.96007,
+       "observed_rate": 0.96451,
+       "gap": -0.00443
+      }
+     ]
+    }
+   },
+   "starter": {
+    "ROLE_CLASS_FLAT": {
+     "n": 6572,
+     "brier": 0.100446,
+     "log_loss": 0.353329,
+     "expected_calibration_error": 0.013085,
+     "mean_predicted": 0.87371,
+     "observed_rate": 0.88679,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 6572,
+       "mean_predicted": 0.87371,
+       "observed_rate": 0.88679,
+       "gap": -0.01309
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      }
+     ]
+    },
+    "R8": {
+     "n": 6572,
+     "brier": 0.042283,
+     "log_loss": 0.160937,
+     "expected_calibration_error": 0.013897,
+     "mean_predicted": 0.89879,
+     "observed_rate": 0.88679,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 271,
+       "mean_predicted": 0.02051,
+       "observed_rate": 0.00738,
+       "gap": 0.01313
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 55,
+       "mean_predicted": 0.139,
+       "observed_rate": 0.05455,
+       "gap": 0.08445
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 30,
+       "mean_predicted": 0.24565,
+       "observed_rate": 0.13333,
+       "gap": 0.11232
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 54,
+       "mean_predicted": 0.35137,
+       "observed_rate": 0.11111,
+       "gap": 0.24026
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 40,
+       "mean_predicted": 0.44793,
+       "observed_rate": 0.275,
+       "gap": 0.17293
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 52,
+       "mean_predicted": 0.54902,
+       "observed_rate": 0.42308,
+       "gap": 0.12595
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 94,
+       "mean_predicted": 0.65507,
+       "observed_rate": 0.52128,
+       "gap": 0.13379
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 142,
+       "mean_predicted": 0.75241,
+       "observed_rate": 0.66901,
+       "gap": 0.08339
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 258,
+       "mean_predicted": 0.8591,
+       "observed_rate": 0.77132,
+       "gap": 0.08778
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 5576,
+       "mean_predicted": 0.97395,
+       "observed_rate": 0.97507,
+       "gap": -0.00112
+      }
+     ]
+    },
+    "Q6_FEATURES": {
+     "n": 6572,
+     "brier": 0.041886,
+     "log_loss": 0.159093,
+     "expected_calibration_error": 0.012763,
+     "mean_predicted": 0.89859,
+     "observed_rate": 0.88679,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 276,
+       "mean_predicted": 0.01452,
+       "observed_rate": 0.00725,
+       "gap": 0.00727
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 52,
+       "mean_predicted": 0.14041,
+       "observed_rate": 0.05769,
+       "gap": 0.08271
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 29,
+       "mean_predicted": 0.24668,
+       "observed_rate": 0.10345,
+       "gap": 0.14323
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 56,
+       "mean_predicted": 0.35296,
+       "observed_rate": 0.125,
+       "gap": 0.22796
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 41,
+       "mean_predicted": 0.44923,
+       "observed_rate": 0.31707,
+       "gap": 0.13215
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 56,
+       "mean_predicted": 0.55034,
+       "observed_rate": 0.42857,
+       "gap": 0.12177
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 95,
+       "mean_predicted": 0.65402,
+       "observed_rate": 0.53684,
+       "gap": 0.11718
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 144,
+       "mean_predicted": 0.75337,
+       "observed_rate": 0.63889,
+       "gap": 0.11448
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 252,
+       "mean_predicted": 0.85967,
+       "observed_rate": 0.78968,
+       "gap": 0.06998
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 5571,
+       "mean_predicted": 0.97484,
+       "observed_rate": 0.97541,
+       "gap": -0.00057
+      }
+     ]
+    },
+    "Q6_CALIBRATED": {
+     "n": 6572,
+     "brier": 0.041412,
+     "log_loss": 0.162677,
+     "expected_calibration_error": 0.009454,
+     "mean_predicted": 0.88789,
+     "observed_rate": 0.88679,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 303,
+       "mean_predicted": 0.01571,
+       "observed_rate": 0.0165,
+       "gap": -0.00079
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 42,
+       "mean_predicted": 0.13755,
+       "observed_rate": 0.02381,
+       "gap": 0.11374
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 56,
+       "mean_predicted": 0.25336,
+       "observed_rate": 0.125,
+       "gap": 0.12836
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 47,
+       "mean_predicted": 0.34742,
+       "observed_rate": 0.31915,
+       "gap": 0.02827
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 52,
+       "mean_predicted": 0.45212,
+       "observed_rate": 0.36538,
+       "gap": 0.08674
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 81,
+       "mean_predicted": 0.55451,
+       "observed_rate": 0.53086,
+       "gap": 0.02365
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 97,
+       "mean_predicted": 0.65318,
+       "observed_rate": 0.53608,
+       "gap": 0.1171
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 145,
+       "mean_predicted": 0.75571,
+       "observed_rate": 0.73103,
+       "gap": 0.02468
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 382,
+       "mean_predicted": 0.86466,
+       "observed_rate": 0.89267,
+       "gap": -0.02801
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 5367,
+       "mean_predicted": 0.97307,
+       "observed_rate": 0.97615,
+       "gap": -0.00308
+      }
+     ]
+    }
+   }
+  },
+  "by_position_and_role_class": {
+   "RB|fringe": {
+    "ROLE_CLASS_FLAT": {
+     "n": 3615,
+     "brier": 0.236104,
+     "log_loss": 0.665178,
+     "expected_calibration_error": 0.053707,
+     "mean_predicted": 0.42521,
+     "observed_rate": 0.37151,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 3615,
+       "mean_predicted": 0.42521,
+       "observed_rate": 0.37151,
+       "gap": 0.05371
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      }
+     ]
+    },
+    "R8": {
+     "n": 3615,
+     "brier": 0.119307,
+     "log_loss": 0.359804,
+     "expected_calibration_error": 0.036635,
+     "mean_predicted": 0.39839,
+     "observed_rate": 0.37151,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 1209,
+       "mean_predicted": 0.01763,
+       "observed_rate": 0.00827,
+       "gap": 0.00936
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 335,
+       "mean_predicted": 0.14293,
+       "observed_rate": 0.08955,
+       "gap": 0.05338
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 163,
+       "mean_predicted": 0.24578,
+       "observed_rate": 0.29448,
+       "gap": -0.0487
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 145,
+       "mean_predicted": 0.35385,
+       "observed_rate": 0.42069,
+       "gap": -0.06684
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 227,
+       "mean_predicted": 0.45489,
+       "observed_rate": 0.37004,
+       "gap": 0.08485
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 230,
+       "mean_predicted": 0.55167,
+       "observed_rate": 0.45652,
+       "gap": 0.09515
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 263,
+       "mean_predicted": 0.64926,
+       "observed_rate": 0.57795,
+       "gap": 0.07131
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 338,
+       "mean_predicted": 0.75471,
+       "observed_rate": 0.68639,
+       "gap": 0.06832
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 475,
+       "mean_predicted": 0.85189,
+       "observed_rate": 0.84842,
+       "gap": 0.00347
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 230,
+       "mean_predicted": 0.95202,
+       "observed_rate": 0.94783,
+       "gap": 0.0042
+      }
+     ]
+    },
+    "Q6_FEATURES": {
+     "n": 3615,
+     "brier": 0.118525,
+     "log_loss": 0.357508,
+     "expected_calibration_error": 0.032808,
+     "mean_predicted": 0.39738,
+     "observed_rate": 0.37151,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 1212,
+       "mean_predicted": 0.0177,
+       "observed_rate": 0.00578,
+       "gap": 0.01192
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 334,
+       "mean_predicted": 0.14249,
+       "observed_rate": 0.0988,
+       "gap": 0.04368
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 162,
+       "mean_predicted": 0.24519,
+       "observed_rate": 0.28395,
+       "gap": -0.03876
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 155,
+       "mean_predicted": 0.35319,
+       "observed_rate": 0.39355,
+       "gap": -0.04035
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 213,
+       "mean_predicted": 0.4542,
+       "observed_rate": 0.41784,
+       "gap": 0.03636
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 238,
+       "mean_predicted": 0.54897,
+       "observed_rate": 0.43697,
+       "gap": 0.11199
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 260,
+       "mean_predicted": 0.64781,
+       "observed_rate": 0.57692,
+       "gap": 0.07088
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 331,
+       "mean_predicted": 0.75327,
+       "observed_rate": 0.70997,
+       "gap": 0.0433
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 474,
+       "mean_predicted": 0.85053,
+       "observed_rate": 0.83333,
+       "gap": 0.0172
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 236,
+       "mean_predicted": 0.95216,
+       "observed_rate": 0.94492,
+       "gap": 0.00724
+      }
+     ]
+    },
+    "Q6_CALIBRATED": {
+     "n": 3615,
+     "brier": 0.11866,
+     "log_loss": 0.35942,
+     "expected_calibration_error": 0.025206,
+     "mean_predicted": 0.39232,
+     "observed_rate": 0.37151,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 1157,
+       "mean_predicted": 0.016,
+       "observed_rate": 0.00432,
+       "gap": 0.01168
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 345,
+       "mean_predicted": 0.14227,
+       "observed_rate": 0.08406,
+       "gap": 0.05821
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 190,
+       "mean_predicted": 0.24571,
+       "observed_rate": 0.24737,
+       "gap": -0.00166
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 167,
+       "mean_predicted": 0.35449,
+       "observed_rate": 0.38922,
+       "gap": -0.03473
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 245,
+       "mean_predicted": 0.4535,
+       "observed_rate": 0.40816,
+       "gap": 0.04534
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 260,
+       "mean_predicted": 0.55005,
+       "observed_rate": 0.47692,
+       "gap": 0.07312
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 279,
+       "mean_predicted": 0.64937,
+       "observed_rate": 0.58781,
+       "gap": 0.06155
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 377,
+       "mean_predicted": 0.75261,
+       "observed_rate": 0.75597,
+       "gap": -0.00336
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 391,
+       "mean_predicted": 0.84767,
+       "observed_rate": 0.8491,
+       "gap": -0.00144
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 204,
+       "mean_predicted": 0.95242,
+       "observed_rate": 0.94118,
+       "gap": 0.01124
+      }
+     ]
+    }
+   },
+   "RB|rotational": {
+    "ROLE_CLASS_FLAT": {
+     "n": 4397,
+     "brier": 0.204126,
+     "log_loss": 0.59839,
+     "expected_calibration_error": 0.004657,
+     "mean_predicted": 0.71901,
+     "observed_rate": 0.71435,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 4397,
+       "mean_predicted": 0.71901,
+       "observed_rate": 0.71435,
+       "gap": 0.00466
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      }
+     ]
+    },
+    "R8": {
+     "n": 4397,
+     "brier": 0.090189,
+     "log_loss": 0.298156,
+     "expected_calibration_error": 0.036952,
+     "mean_predicted": 0.69203,
+     "observed_rate": 0.71435,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 512,
+       "mean_predicted": 0.01636,
+       "observed_rate": 0.00781,
+       "gap": 0.00855
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 121,
+       "mean_predicted": 0.14903,
+       "observed_rate": 0.12397,
+       "gap": 0.02507
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 108,
+       "mean_predicted": 0.24532,
+       "observed_rate": 0.2963,
+       "gap": -0.05098
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 97,
+       "mean_predicted": 0.34967,
+       "observed_rate": 0.27835,
+       "gap": 0.07132
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 162,
+       "mean_predicted": 0.45419,
+       "observed_rate": 0.43827,
+       "gap": 0.01591
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 242,
+       "mean_predicted": 0.54949,
+       "observed_rate": 0.54959,
+       "gap": -9e-05
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 199,
+       "mean_predicted": 0.64915,
+       "observed_rate": 0.60302,
+       "gap": 0.04614
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 365,
+       "mean_predicted": 0.75365,
+       "observed_rate": 0.73699,
+       "gap": 0.01666
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 1108,
+       "mean_predicted": 0.86082,
+       "observed_rate": 0.92058,
+       "gap": -0.05976
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 1483,
+       "mean_predicted": 0.93826,
+       "observed_rate": 0.97775,
+       "gap": -0.03949
+      }
+     ]
+    },
+    "Q6_FEATURES": {
+     "n": 4397,
+     "brier": 0.089329,
+     "log_loss": 0.295841,
+     "expected_calibration_error": 0.033536,
+     "mean_predicted": 0.69147,
+     "observed_rate": 0.71435,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 512,
+       "mean_predicted": 0.01562,
+       "observed_rate": 0.00781,
+       "gap": 0.00781
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 121,
+       "mean_predicted": 0.14901,
+       "observed_rate": 0.13223,
+       "gap": 0.01678
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 111,
+       "mean_predicted": 0.24639,
+       "observed_rate": 0.23423,
+       "gap": 0.01215
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 99,
+       "mean_predicted": 0.35012,
+       "observed_rate": 0.33333,
+       "gap": 0.01678
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 169,
+       "mean_predicted": 0.4547,
+       "observed_rate": 0.46746,
+       "gap": -0.01276
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 237,
+       "mean_predicted": 0.54956,
+       "observed_rate": 0.50211,
+       "gap": 0.04745
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 206,
+       "mean_predicted": 0.65116,
+       "observed_rate": 0.63592,
+       "gap": 0.01523
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 373,
+       "mean_predicted": 0.75558,
+       "observed_rate": 0.75603,
+       "gap": -0.00046
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 1080,
+       "mean_predicted": 0.86132,
+       "observed_rate": 0.9213,
+       "gap": -0.05998
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 1489,
+       "mean_predicted": 0.9396,
+       "observed_rate": 0.97784,
+       "gap": -0.03824
+      }
+     ]
+    },
+    "Q6_CALIBRATED": {
+     "n": 4397,
+     "brier": 0.089655,
+     "log_loss": 0.295371,
+     "expected_calibration_error": 0.026838,
+     "mean_predicted": 0.69581,
+     "observed_rate": 0.71435,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 536,
+       "mean_predicted": 0.01445,
+       "observed_rate": 0.01306,
+       "gap": 0.00139
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 119,
+       "mean_predicted": 0.15119,
+       "observed_rate": 0.17647,
+       "gap": -0.02528
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 104,
+       "mean_predicted": 0.24965,
+       "observed_rate": 0.19231,
+       "gap": 0.05734
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 108,
+       "mean_predicted": 0.3552,
+       "observed_rate": 0.37963,
+       "gap": -0.02443
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 173,
+       "mean_predicted": 0.45496,
+       "observed_rate": 0.47399,
+       "gap": -0.01903
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 214,
+       "mean_predicted": 0.54753,
+       "observed_rate": 0.52336,
+       "gap": 0.02417
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 215,
+       "mean_predicted": 0.65287,
+       "observed_rate": 0.62326,
+       "gap": 0.02962
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 332,
+       "mean_predicted": 0.75738,
+       "observed_rate": 0.78313,
+       "gap": -0.02576
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 865,
+       "mean_predicted": 0.85797,
+       "observed_rate": 0.90983,
+       "gap": -0.05185
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 1731,
+       "mean_predicted": 0.94719,
+       "observed_rate": 0.9688,
+       "gap": -0.02162
+      }
+     ]
+    }
+   },
+   "RB|starter": {
+    "ROLE_CLASS_FLAT": {
+     "n": 2190,
+     "brier": 0.114922,
+     "log_loss": 0.391594,
+     "expected_calibration_error": 0.017302,
+     "mean_predicted": 0.85073,
+     "observed_rate": 0.86804,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 2190,
+       "mean_predicted": 0.85073,
+       "observed_rate": 0.86804,
+       "gap": -0.0173
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      }
+     ]
+    },
+    "R8": {
+     "n": 2190,
+     "brier": 0.043147,
+     "log_loss": 0.157915,
+     "expected_calibration_error": 0.030967,
+     "mean_predicted": 0.87464,
+     "observed_rate": 0.86804,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 91,
+       "mean_predicted": 0.01965,
+       "observed_rate": 0.0,
+       "gap": 0.01965
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 28,
+       "mean_predicted": 0.13806,
+       "observed_rate": 0.03571,
+       "gap": 0.10235
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 16,
+       "mean_predicted": 0.24939,
+       "observed_rate": 0.25,
+       "gap": -0.00061
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 31,
+       "mean_predicted": 0.3464,
+       "observed_rate": 0.06452,
+       "gap": 0.28188
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 24,
+       "mean_predicted": 0.45123,
+       "observed_rate": 0.20833,
+       "gap": 0.24289
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 26,
+       "mean_predicted": 0.55101,
+       "observed_rate": 0.38462,
+       "gap": 0.1664
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 51,
+       "mean_predicted": 0.65141,
+       "observed_rate": 0.5098,
+       "gap": 0.14161
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 47,
+       "mean_predicted": 0.74757,
+       "observed_rate": 0.65957,
+       "gap": 0.08799
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 101,
+       "mean_predicted": 0.86372,
+       "observed_rate": 0.80198,
+       "gap": 0.06174
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 1775,
+       "mean_predicted": 0.96582,
+       "observed_rate": 0.98085,
+       "gap": -0.01502
+      }
+     ]
+    },
+    "Q6_FEATURES": {
+     "n": 2190,
+     "brier": 0.04258,
+     "log_loss": 0.155441,
+     "expected_calibration_error": 0.029654,
+     "mean_predicted": 0.87426,
+     "observed_rate": 0.86804,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 93,
+       "mean_predicted": 0.01551,
+       "observed_rate": 0.0,
+       "gap": 0.01551
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 26,
+       "mean_predicted": 0.13947,
+       "observed_rate": 0.03846,
+       "gap": 0.10101
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 17,
+       "mean_predicted": 0.25312,
+       "observed_rate": 0.17647,
+       "gap": 0.07665
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 33,
+       "mean_predicted": 0.34693,
+       "observed_rate": 0.12121,
+       "gap": 0.22571
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 24,
+       "mean_predicted": 0.45254,
+       "observed_rate": 0.20833,
+       "gap": 0.24421
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 32,
+       "mean_predicted": 0.55029,
+       "observed_rate": 0.46875,
+       "gap": 0.08154
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 45,
+       "mean_predicted": 0.65305,
+       "observed_rate": 0.48889,
+       "gap": 0.16416
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 47,
+       "mean_predicted": 0.74558,
+       "observed_rate": 0.61702,
+       "gap": 0.12855
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 99,
+       "mean_predicted": 0.86434,
+       "observed_rate": 0.81818,
+       "gap": 0.04615
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 1774,
+       "mean_predicted": 0.96694,
+       "observed_rate": 0.9814,
+       "gap": -0.01446
+      }
+     ]
+    },
+    "Q6_CALIBRATED": {
+     "n": 2190,
+     "brier": 0.041697,
+     "log_loss": 0.157735,
+     "expected_calibration_error": 0.026942,
+     "mean_predicted": 0.86023,
+     "observed_rate": 0.86804,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 107,
+       "mean_predicted": 0.01877,
+       "observed_rate": 0.00935,
+       "gap": 0.00943
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 20,
+       "mean_predicted": 0.13993,
+       "observed_rate": 0.05,
+       "gap": 0.08993
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 36,
+       "mean_predicted": 0.25042,
+       "observed_rate": 0.11111,
+       "gap": 0.13931
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 25,
+       "mean_predicted": 0.34343,
+       "observed_rate": 0.28,
+       "gap": 0.06343
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 32,
+       "mean_predicted": 0.45086,
+       "observed_rate": 0.375,
+       "gap": 0.07586
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 36,
+       "mean_predicted": 0.55413,
+       "observed_rate": 0.5,
+       "gap": 0.05413
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 39,
+       "mean_predicted": 0.6509,
+       "observed_rate": 0.48718,
+       "gap": 0.16372
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 50,
+       "mean_predicted": 0.75566,
+       "observed_rate": 0.74,
+       "gap": 0.01566
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 168,
+       "mean_predicted": 0.86717,
+       "observed_rate": 0.92262,
+       "gap": -0.05544
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 1677,
+       "mean_predicted": 0.96498,
+       "observed_rate": 0.98211,
+       "gap": -0.01713
+      }
+     ]
+    }
+   },
+   "TE|fringe": {
+    "ROLE_CLASS_FLAT": {
+     "n": 2283,
+     "brier": 0.243675,
+     "log_loss": 0.680462,
+     "expected_calibration_error": 0.044472,
+     "mean_predicted": 0.45621,
+     "observed_rate": 0.41174,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 2283,
+       "mean_predicted": 0.45621,
+       "observed_rate": 0.41174,
+       "gap": 0.04447
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      }
+     ]
+    },
+    "R8": {
+     "n": 2283,
+     "brier": 0.123185,
+     "log_loss": 0.375326,
+     "expected_calibration_error": 0.031754,
+     "mean_predicted": 0.43231,
+     "observed_rate": 0.41174,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 655,
+       "mean_predicted": 0.02261,
+       "observed_rate": 0.01985,
+       "gap": 0.00276
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 228,
+       "mean_predicted": 0.14777,
+       "observed_rate": 0.08772,
+       "gap": 0.06006
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 129,
+       "mean_predicted": 0.24654,
+       "observed_rate": 0.28682,
+       "gap": -0.04028
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 95,
+       "mean_predicted": 0.35079,
+       "observed_rate": 0.34737,
+       "gap": 0.00342
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 118,
+       "mean_predicted": 0.45321,
+       "observed_rate": 0.41525,
+       "gap": 0.03796
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 149,
+       "mean_predicted": 0.54881,
+       "observed_rate": 0.48993,
+       "gap": 0.05887
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 177,
+       "mean_predicted": 0.64814,
+       "observed_rate": 0.53672,
+       "gap": 0.11142
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 211,
+       "mean_predicted": 0.75482,
+       "observed_rate": 0.77251,
+       "gap": -0.0177
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 310,
+       "mean_predicted": 0.85136,
+       "observed_rate": 0.81613,
+       "gap": 0.03524
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 211,
+       "mean_predicted": 0.94863,
+       "observed_rate": 0.96682,
+       "gap": -0.0182
+      }
+     ]
+    },
+    "Q6_FEATURES": {
+     "n": 2283,
+     "brier": 0.122875,
+     "log_loss": 0.374606,
+     "expected_calibration_error": 0.03049,
+     "mean_predicted": 0.4299,
+     "observed_rate": 0.41174,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 657,
+       "mean_predicted": 0.02255,
+       "observed_rate": 0.01979,
+       "gap": 0.00276
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 230,
+       "mean_predicted": 0.14623,
+       "observed_rate": 0.08261,
+       "gap": 0.06362
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 124,
+       "mean_predicted": 0.24526,
+       "observed_rate": 0.29032,
+       "gap": -0.04506
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 104,
+       "mean_predicted": 0.34964,
+       "observed_rate": 0.33654,
+       "gap": 0.0131
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 122,
+       "mean_predicted": 0.4536,
+       "observed_rate": 0.44262,
+       "gap": 0.01097
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 153,
+       "mean_predicted": 0.5519,
+       "observed_rate": 0.48366,
+       "gap": 0.06824
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 167,
+       "mean_predicted": 0.64818,
+       "observed_rate": 0.56886,
+       "gap": 0.07932
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 211,
+       "mean_predicted": 0.75435,
+       "observed_rate": 0.77725,
+       "gap": -0.0229
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 303,
+       "mean_predicted": 0.85048,
+       "observed_rate": 0.80858,
+       "gap": 0.0419
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 212,
+       "mean_predicted": 0.94974,
+       "observed_rate": 0.96698,
+       "gap": -0.01725
+      }
+     ]
+    },
+    "Q6_CALIBRATED": {
+     "n": 2283,
+     "brier": 0.123129,
+     "log_loss": 0.376169,
+     "expected_calibration_error": 0.020805,
+     "mean_predicted": 0.42377,
+     "observed_rate": 0.41174,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 618,
+       "mean_predicted": 0.01983,
+       "observed_rate": 0.01133,
+       "gap": 0.00851
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 245,
+       "mean_predicted": 0.1475,
+       "observed_rate": 0.09388,
+       "gap": 0.05362
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 134,
+       "mean_predicted": 0.24522,
+       "observed_rate": 0.25373,
+       "gap": -0.00851
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 114,
+       "mean_predicted": 0.34744,
+       "observed_rate": 0.33333,
+       "gap": 0.0141
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 135,
+       "mean_predicted": 0.45038,
+       "observed_rate": 0.42963,
+       "gap": 0.02075
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 181,
+       "mean_predicted": 0.55027,
+       "observed_rate": 0.48619,
+       "gap": 0.06408
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 179,
+       "mean_predicted": 0.65023,
+       "observed_rate": 0.64246,
+       "gap": 0.00777
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 241,
+       "mean_predicted": 0.75436,
+       "observed_rate": 0.78838,
+       "gap": -0.03403
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 255,
+       "mean_predicted": 0.84582,
+       "observed_rate": 0.83922,
+       "gap": 0.00661
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 181,
+       "mean_predicted": 0.95206,
+       "observed_rate": 0.9558,
+       "gap": -0.00375
+      }
+     ]
+    }
+   },
+   "TE|rotational": {
+    "ROLE_CLASS_FLAT": {
+     "n": 4465,
+     "brier": 0.186435,
+     "log_loss": 0.560034,
+     "expected_calibration_error": 0.0042,
+     "mean_predicted": 0.7481,
+     "observed_rate": 0.7523,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 4465,
+       "mean_predicted": 0.7481,
+       "observed_rate": 0.7523,
+       "gap": -0.0042
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      }
+     ]
+    },
+    "R8": {
+     "n": 4465,
+     "brier": 0.082891,
+     "log_loss": 0.277211,
+     "expected_calibration_error": 0.023779,
+     "mean_predicted": 0.74563,
+     "observed_rate": 0.7523,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 415,
+       "mean_predicted": 0.01651,
+       "observed_rate": 0.00241,
+       "gap": 0.0141
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 107,
+       "mean_predicted": 0.14889,
+       "observed_rate": 0.09346,
+       "gap": 0.05543
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 105,
+       "mean_predicted": 0.24811,
+       "observed_rate": 0.18095,
+       "gap": 0.06716
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 73,
+       "mean_predicted": 0.35371,
+       "observed_rate": 0.38356,
+       "gap": -0.02986
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 115,
+       "mean_predicted": 0.45535,
+       "observed_rate": 0.46957,
+       "gap": -0.01421
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 175,
+       "mean_predicted": 0.54812,
+       "observed_rate": 0.52571,
+       "gap": 0.02241
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 216,
+       "mean_predicted": 0.65337,
+       "observed_rate": 0.625,
+       "gap": 0.02837
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 275,
+       "mean_predicted": 0.75391,
+       "observed_rate": 0.72,
+       "gap": 0.03391
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 812,
+       "mean_predicted": 0.86197,
+       "observed_rate": 0.87192,
+       "gap": -0.00996
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 2172,
+       "mean_predicted": 0.94748,
+       "observed_rate": 0.9733,
+       "gap": -0.02581
+      }
+     ]
+    },
+    "Q6_FEATURES": {
+     "n": 4465,
+     "brier": 0.081979,
+     "log_loss": 0.274964,
+     "expected_calibration_error": 0.02267,
+     "mean_predicted": 0.74553,
+     "observed_rate": 0.7523,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 414,
+       "mean_predicted": 0.01548,
+       "observed_rate": 0.00242,
+       "gap": 0.01306
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 111,
+       "mean_predicted": 0.14888,
+       "observed_rate": 0.09009,
+       "gap": 0.05879
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 100,
+       "mean_predicted": 0.24764,
+       "observed_rate": 0.15,
+       "gap": 0.09764
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 73,
+       "mean_predicted": 0.35456,
+       "observed_rate": 0.36986,
+       "gap": -0.0153
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 126,
+       "mean_predicted": 0.45265,
+       "observed_rate": 0.48413,
+       "gap": -0.03148
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 175,
+       "mean_predicted": 0.54959,
+       "observed_rate": 0.53143,
+       "gap": 0.01816
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 210,
+       "mean_predicted": 0.65287,
+       "observed_rate": 0.60952,
+       "gap": 0.04335
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 279,
+       "mean_predicted": 0.75455,
+       "observed_rate": 0.7491,
+       "gap": 0.00545
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 806,
+       "mean_predicted": 0.86239,
+       "observed_rate": 0.87469,
+       "gap": -0.0123
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 2171,
+       "mean_predicted": 0.94854,
+       "observed_rate": 0.9719,
+       "gap": -0.02336
+      }
+     ]
+    },
+    "Q6_CALIBRATED": {
+     "n": 4465,
+     "brier": 0.082331,
+     "log_loss": 0.276589,
+     "expected_calibration_error": 0.01356,
+     "mean_predicted": 0.74975,
+     "observed_rate": 0.7523,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 434,
+       "mean_predicted": 0.01571,
+       "observed_rate": 0.00691,
+       "gap": 0.0088
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 113,
+       "mean_predicted": 0.1508,
+       "observed_rate": 0.10619,
+       "gap": 0.0446
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 88,
+       "mean_predicted": 0.24815,
+       "observed_rate": 0.15909,
+       "gap": 0.08906
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 88,
+       "mean_predicted": 0.35446,
+       "observed_rate": 0.375,
+       "gap": -0.02054
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 122,
+       "mean_predicted": 0.45514,
+       "observed_rate": 0.46721,
+       "gap": -0.01207
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 167,
+       "mean_predicted": 0.55074,
+       "observed_rate": 0.55689,
+       "gap": -0.00614
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 182,
+       "mean_predicted": 0.65327,
+       "observed_rate": 0.60989,
+       "gap": 0.04338
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 275,
+       "mean_predicted": 0.75443,
+       "observed_rate": 0.76,
+       "gap": -0.00557
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 691,
+       "mean_predicted": 0.85757,
+       "observed_rate": 0.88133,
+       "gap": -0.02376
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 2305,
+       "mean_predicted": 0.95631,
+       "observed_rate": 0.96226,
+       "gap": -0.00595
+      }
+     ]
+    }
+   },
+   "TE|starter": {
+    "ROLE_CLASS_FLAT": {
+     "n": 2184,
+     "brier": 0.099602,
+     "log_loss": 0.351081,
+     "expected_calibration_error": 0.000879,
+     "mean_predicted": 0.88694,
+     "observed_rate": 0.88782,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 2184,
+       "mean_predicted": 0.88694,
+       "observed_rate": 0.88782,
+       "gap": -0.00088
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      }
+     ]
+    },
+    "R8": {
+     "n": 2184,
+     "brier": 0.043437,
+     "log_loss": 0.16596,
+     "expected_calibration_error": 0.014919,
+     "mean_predicted": 0.90115,
+     "observed_rate": 0.88782,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 95,
+       "mean_predicted": 0.01787,
+       "observed_rate": 0.01053,
+       "gap": 0.00734
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 16,
+       "mean_predicted": 0.13578,
+       "observed_rate": 0.125,
+       "gap": 0.01078
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 8,
+       "mean_predicted": 0.23874,
+       "observed_rate": 0.0,
+       "gap": 0.23874
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 13,
+       "mean_predicted": 0.3545,
+       "observed_rate": 0.15385,
+       "gap": 0.20065
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 8,
+       "mean_predicted": 0.44251,
+       "observed_rate": 0.375,
+       "gap": 0.06751
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 14,
+       "mean_predicted": 0.55088,
+       "observed_rate": 0.21429,
+       "gap": 0.3366
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 26,
+       "mean_predicted": 0.66048,
+       "observed_rate": 0.5,
+       "gap": 0.16048
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 56,
+       "mean_predicted": 0.75675,
+       "observed_rate": 0.66071,
+       "gap": 0.09604
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 92,
+       "mean_predicted": 0.85491,
+       "observed_rate": 0.73913,
+       "gap": 0.11578
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 1856,
+       "mean_predicted": 0.97428,
+       "observed_rate": 0.97522,
+       "gap": -0.00094
+      }
+     ]
+    },
+    "Q6_FEATURES": {
+     "n": 2184,
+     "brier": 0.042903,
+     "log_loss": 0.163091,
+     "expected_calibration_error": 0.013845,
+     "mean_predicted": 0.90076,
+     "observed_rate": 0.88782,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 97,
+       "mean_predicted": 0.01326,
+       "observed_rate": 0.01031,
+       "gap": 0.00295
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 16,
+       "mean_predicted": 0.13528,
+       "observed_rate": 0.125,
+       "gap": 0.01028
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 6,
+       "mean_predicted": 0.22692,
+       "observed_rate": 0.0,
+       "gap": 0.22692
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 13,
+       "mean_predicted": 0.35736,
+       "observed_rate": 0.07692,
+       "gap": 0.28044
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 9,
+       "mean_predicted": 0.44587,
+       "observed_rate": 0.55556,
+       "gap": -0.10968
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 14,
+       "mean_predicted": 0.55485,
+       "observed_rate": 0.14286,
+       "gap": 0.41199
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 27,
+       "mean_predicted": 0.65613,
+       "observed_rate": 0.55556,
+       "gap": 0.10058
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 66,
+       "mean_predicted": 0.76037,
+       "observed_rate": 0.63636,
+       "gap": 0.12401
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 86,
+       "mean_predicted": 0.8593,
+       "observed_rate": 0.77907,
+       "gap": 0.08023
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 1850,
+       "mean_predicted": 0.97526,
+       "observed_rate": 0.97514,
+       "gap": 0.00012
+      }
+     ]
+    },
+    "Q6_CALIBRATED": {
+     "n": 2184,
+     "brier": 0.042146,
+     "log_loss": 0.165356,
+     "expected_calibration_error": 0.010277,
+     "mean_predicted": 0.89007,
+     "observed_rate": 0.88782,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 106,
+       "mean_predicted": 0.01467,
+       "observed_rate": 0.0283,
+       "gap": -0.01363
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 11,
+       "mean_predicted": 0.12587,
+       "observed_rate": 0.0,
+       "gap": 0.12587
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 13,
+       "mean_predicted": 0.25346,
+       "observed_rate": 0.15385,
+       "gap": 0.09962
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 11,
+       "mean_predicted": 0.359,
+       "observed_rate": 0.36364,
+       "gap": -0.00464
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 11,
+       "mean_predicted": 0.45872,
+       "observed_rate": 0.09091,
+       "gap": 0.36781
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 25,
+       "mean_predicted": 0.55928,
+       "observed_rate": 0.48,
+       "gap": 0.07928
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 40,
+       "mean_predicted": 0.65679,
+       "observed_rate": 0.575,
+       "gap": 0.08179
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 54,
+       "mean_predicted": 0.7538,
+       "observed_rate": 0.72222,
+       "gap": 0.03158
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 130,
+       "mean_predicted": 0.86521,
+       "observed_rate": 0.87692,
+       "gap": -0.01171
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 1783,
+       "mean_predicted": 0.97322,
+       "observed_rate": 0.97644,
+       "gap": -0.00322
+      }
+     ]
+    }
+   },
+   "WR|fringe": {
+    "ROLE_CLASS_FLAT": {
+     "n": 8930,
+     "brier": 0.250828,
+     "log_loss": 0.69485,
+     "expected_calibration_error": 0.040381,
+     "mean_predicted": 0.56994,
+     "observed_rate": 0.52956,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 8930,
+       "mean_predicted": 0.56994,
+       "observed_rate": 0.52956,
+       "gap": 0.04038
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      }
+     ]
+    },
+    "R8": {
+     "n": 8930,
+     "brier": 0.121425,
+     "log_loss": 0.375696,
+     "expected_calibration_error": 0.024653,
+     "mean_predicted": 0.53585,
+     "observed_rate": 0.52956,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 1746,
+       "mean_predicted": 0.0215,
+       "observed_rate": 0.01375,
+       "gap": 0.00775
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 688,
+       "mean_predicted": 0.14633,
+       "observed_rate": 0.1032,
+       "gap": 0.04314
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 478,
+       "mean_predicted": 0.24288,
+       "observed_rate": 0.26778,
+       "gap": -0.02491
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 353,
+       "mean_predicted": 0.34977,
+       "observed_rate": 0.38527,
+       "gap": -0.0355
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 448,
+       "mean_predicted": 0.45364,
+       "observed_rate": 0.43527,
+       "gap": 0.01837
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 574,
+       "mean_predicted": 0.55279,
+       "observed_rate": 0.52962,
+       "gap": 0.02317
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 653,
+       "mean_predicted": 0.65029,
+       "observed_rate": 0.57427,
+       "gap": 0.07602
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 867,
+       "mean_predicted": 0.75519,
+       "observed_rate": 0.7278,
+       "gap": 0.02739
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 1574,
+       "mean_predicted": 0.85398,
+       "observed_rate": 0.87421,
+       "gap": -0.02023
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 1549,
+       "mean_predicted": 0.94465,
+       "observed_rate": 0.96127,
+       "gap": -0.01661
+      }
+     ]
+    },
+    "Q6_FEATURES": {
+     "n": 8930,
+     "brier": 0.120756,
+     "log_loss": 0.37402,
+     "expected_calibration_error": 0.022066,
+     "mean_predicted": 0.53482,
+     "observed_rate": 0.52956,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 1752,
+       "mean_predicted": 0.02152,
+       "observed_rate": 0.01313,
+       "gap": 0.00839
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 691,
+       "mean_predicted": 0.14585,
+       "observed_rate": 0.09696,
+       "gap": 0.04889
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 445,
+       "mean_predicted": 0.24128,
+       "observed_rate": 0.25169,
+       "gap": -0.01041
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 372,
+       "mean_predicted": 0.34805,
+       "observed_rate": 0.39516,
+       "gap": -0.04712
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 485,
+       "mean_predicted": 0.45344,
+       "observed_rate": 0.44742,
+       "gap": 0.00602
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 571,
+       "mean_predicted": 0.55372,
+       "observed_rate": 0.53065,
+       "gap": 0.02307
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 641,
+       "mean_predicted": 0.65072,
+       "observed_rate": 0.60062,
+       "gap": 0.0501
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 869,
+       "mean_predicted": 0.75524,
+       "observed_rate": 0.72612,
+       "gap": 0.02911
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 1537,
+       "mean_predicted": 0.85264,
+       "observed_rate": 0.87313,
+       "gap": -0.02049
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 1567,
+       "mean_predicted": 0.94486,
+       "observed_rate": 0.95852,
+       "gap": -0.01366
+      }
+     ]
+    },
+    "Q6_CALIBRATED": {
+     "n": 8930,
+     "brier": 0.121568,
+     "log_loss": 0.377837,
+     "expected_calibration_error": 0.021388,
+     "mean_predicted": 0.52742,
+     "observed_rate": 0.52956,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 1667,
+       "mean_predicted": 0.01989,
+       "observed_rate": 0.0114,
+       "gap": 0.00849
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 689,
+       "mean_predicted": 0.1471,
+       "observed_rate": 0.09144,
+       "gap": 0.05566
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 495,
+       "mean_predicted": 0.24516,
+       "observed_rate": 0.22626,
+       "gap": 0.0189
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 419,
+       "mean_predicted": 0.34938,
+       "observed_rate": 0.37232,
+       "gap": -0.02294
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 514,
+       "mean_predicted": 0.45323,
+       "observed_rate": 0.4572,
+       "gap": -0.00397
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 648,
+       "mean_predicted": 0.55277,
+       "observed_rate": 0.53395,
+       "gap": 0.01882
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 716,
+       "mean_predicted": 0.65204,
+       "observed_rate": 0.63547,
+       "gap": 0.01657
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 977,
+       "mean_predicted": 0.75473,
+       "observed_rate": 0.7738,
+       "gap": -0.01906
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 1484,
+       "mean_predicted": 0.85168,
+       "observed_rate": 0.89353,
+       "gap": -0.04185
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 1321,
+       "mean_predicted": 0.94497,
+       "observed_rate": 0.95458,
+       "gap": -0.00961
+      }
+     ]
+    }
+   },
+   "WR|rotational": {
+    "ROLE_CLASS_FLAT": {
+     "n": 4359,
+     "brier": 0.154375,
+     "log_loss": 0.487559,
+     "expected_calibration_error": 0.009263,
+     "mean_predicted": 0.81885,
+     "observed_rate": 0.80959,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 4359,
+       "mean_predicted": 0.81885,
+       "observed_rate": 0.80959,
+       "gap": 0.00926
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      }
+     ]
+    },
+    "R8": {
+     "n": 4359,
+     "brier": 0.068717,
+     "log_loss": 0.235578,
+     "expected_calibration_error": 0.02421,
+     "mean_predicted": 0.82801,
+     "observed_rate": 0.80959,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 240,
+       "mean_predicted": 0.01947,
+       "observed_rate": 0.0125,
+       "gap": 0.00697
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 77,
+       "mean_predicted": 0.14784,
+       "observed_rate": 0.03896,
+       "gap": 0.10888
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 72,
+       "mean_predicted": 0.24692,
+       "observed_rate": 0.11111,
+       "gap": 0.13581
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 63,
+       "mean_predicted": 0.35509,
+       "observed_rate": 0.15873,
+       "gap": 0.19636
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 71,
+       "mean_predicted": 0.45561,
+       "observed_rate": 0.33803,
+       "gap": 0.11758
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 73,
+       "mean_predicted": 0.55569,
+       "observed_rate": 0.43836,
+       "gap": 0.11733
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 181,
+       "mean_predicted": 0.65197,
+       "observed_rate": 0.45856,
+       "gap": 0.1934
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 240,
+       "mean_predicted": 0.74911,
+       "observed_rate": 0.7125,
+       "gap": 0.03661
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 362,
+       "mean_predicted": 0.86069,
+       "observed_rate": 0.86464,
+       "gap": -0.00395
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 2980,
+       "mean_predicted": 0.96336,
+       "observed_rate": 0.96711,
+       "gap": -0.00375
+      }
+     ]
+    },
+    "Q6_FEATURES": {
+     "n": 4359,
+     "brier": 0.068745,
+     "log_loss": 0.235136,
+     "expected_calibration_error": 0.023999,
+     "mean_predicted": 0.82873,
+     "observed_rate": 0.80959,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 240,
+       "mean_predicted": 0.01588,
+       "observed_rate": 0.00417,
+       "gap": 0.01171
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 74,
+       "mean_predicted": 0.14895,
+       "observed_rate": 0.06757,
+       "gap": 0.08138
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 71,
+       "mean_predicted": 0.2446,
+       "observed_rate": 0.11268,
+       "gap": 0.13192
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 58,
+       "mean_predicted": 0.35589,
+       "observed_rate": 0.08621,
+       "gap": 0.26968
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 70,
+       "mean_predicted": 0.45391,
+       "observed_rate": 0.37143,
+       "gap": 0.08248
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 90,
+       "mean_predicted": 0.55673,
+       "observed_rate": 0.48889,
+       "gap": 0.06784
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 183,
+       "mean_predicted": 0.65206,
+       "observed_rate": 0.43716,
+       "gap": 0.21491
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 224,
+       "mean_predicted": 0.75083,
+       "observed_rate": 0.72768,
+       "gap": 0.02315
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 366,
+       "mean_predicted": 0.86007,
+       "observed_rate": 0.84973,
+       "gap": 0.01035
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 2983,
+       "mean_predicted": 0.96393,
+       "observed_rate": 0.96748,
+       "gap": -0.00355
+      }
+     ]
+    },
+    "Q6_CALIBRATED": {
+     "n": 4359,
+     "brier": 0.069362,
+     "log_loss": 0.239146,
+     "expected_calibration_error": 0.023387,
+     "mean_predicted": 0.83272,
+     "observed_rate": 0.80959,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 257,
+       "mean_predicted": 0.01685,
+       "observed_rate": 0.00778,
+       "gap": 0.00907
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 69,
+       "mean_predicted": 0.14256,
+       "observed_rate": 0.07246,
+       "gap": 0.0701
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 63,
+       "mean_predicted": 0.24891,
+       "observed_rate": 0.11111,
+       "gap": 0.1378
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 64,
+       "mean_predicted": 0.35094,
+       "observed_rate": 0.14062,
+       "gap": 0.21032
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 66,
+       "mean_predicted": 0.45303,
+       "observed_rate": 0.36364,
+       "gap": 0.08939
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 89,
+       "mean_predicted": 0.55531,
+       "observed_rate": 0.50562,
+       "gap": 0.04969
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 187,
+       "mean_predicted": 0.65609,
+       "observed_rate": 0.46524,
+       "gap": 0.19085
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 191,
+       "mean_predicted": 0.74962,
+       "observed_rate": 0.71728,
+       "gap": 0.03234
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 365,
+       "mean_predicted": 0.85874,
+       "observed_rate": 0.86027,
+       "gap": -0.00153
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 3008,
+       "mean_predicted": 0.97037,
+       "observed_rate": 0.96376,
+       "gap": 0.00661
+      }
+     ]
+    }
+   },
+   "WR|starter": {
+    "ROLE_CLASS_FLAT": {
+     "n": 2198,
+     "brier": 0.08686,
+     "log_loss": 0.317437,
+     "expected_calibration_error": 0.021012,
+     "mean_predicted": 0.88345,
+     "observed_rate": 0.90446,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 2198,
+       "mean_predicted": 0.88345,
+       "observed_rate": 0.90446,
+       "gap": -0.02101
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      }
+     ]
+    },
+    "R8": {
+     "n": 2198,
+     "brier": 0.040276,
+     "log_loss": 0.158958,
+     "expected_calibration_error": 0.018306,
+     "mean_predicted": 0.9205,
+     "observed_rate": 0.90446,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 85,
+       "mean_predicted": 0.0244,
+       "observed_rate": 0.01176,
+       "gap": 0.01263
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 11,
+       "mean_predicted": 0.14608,
+       "observed_rate": 0.0,
+       "gap": 0.14608
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 6,
+       "mean_predicted": 0.24487,
+       "observed_rate": 0.0,
+       "gap": 0.24487
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 10,
+       "mean_predicted": 0.36272,
+       "observed_rate": 0.2,
+       "gap": 0.16272
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 8,
+       "mean_predicted": 0.44347,
+       "observed_rate": 0.375,
+       "gap": 0.06847
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 12,
+       "mean_predicted": 0.54254,
+       "observed_rate": 0.75,
+       "gap": -0.20746
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 17,
+       "mean_predicted": 0.65774,
+       "observed_rate": 0.58824,
+       "gap": 0.06951
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 39,
+       "mean_predicted": 0.752,
+       "observed_rate": 0.69231,
+       "gap": 0.05969
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 65,
+       "mean_predicted": 0.85783,
+       "observed_rate": 0.76923,
+       "gap": 0.0886
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 1945,
+       "mean_predicted": 0.98106,
+       "observed_rate": 0.96967,
+       "gap": 0.01139
+      }
+     ]
+    },
+    "Q6_FEATURES": {
+     "n": 2198,
+     "brier": 0.040183,
+     "log_loss": 0.158759,
+     "expected_calibration_error": 0.017641,
+     "mean_predicted": 0.92068,
+     "observed_rate": 0.90446,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 86,
+       "mean_predicted": 0.01487,
+       "observed_rate": 0.01163,
+       "gap": 0.00324
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 10,
+       "mean_predicted": 0.15103,
+       "observed_rate": 0.0,
+       "gap": 0.15103
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 6,
+       "mean_predicted": 0.24816,
+       "observed_rate": 0.0,
+       "gap": 0.24816
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 10,
+       "mean_predicted": 0.36712,
+       "observed_rate": 0.2,
+       "gap": 0.16712
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 8,
+       "mean_predicted": 0.44305,
+       "observed_rate": 0.375,
+       "gap": 0.06805
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 10,
+       "mean_predicted": 0.5442,
+       "observed_rate": 0.7,
+       "gap": -0.1558
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 23,
+       "mean_predicted": 0.65344,
+       "observed_rate": 0.6087,
+       "gap": 0.04474
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 31,
+       "mean_predicted": 0.75029,
+       "observed_rate": 0.67742,
+       "gap": 0.07287
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 67,
+       "mean_predicted": 0.85323,
+       "observed_rate": 0.76119,
+       "gap": 0.09203
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 1947,
+       "mean_predicted": 0.98165,
+       "observed_rate": 0.97021,
+       "gap": 0.01144
+      }
+     ]
+    },
+    "Q6_CALIBRATED": {
+     "n": 2198,
+     "brier": 0.040399,
+     "log_loss": 0.16494,
+     "expected_calibration_error": 0.012613,
+     "mean_predicted": 0.91326,
+     "observed_rate": 0.90446,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 90,
+       "mean_predicted": 0.01328,
+       "observed_rate": 0.01111,
+       "gap": 0.00217
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 11,
+       "mean_predicted": 0.1449,
+       "observed_rate": 0.0,
+       "gap": 0.1449
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 7,
+       "mean_predicted": 0.26831,
+       "observed_rate": 0.14286,
+       "gap": 0.12545
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 11,
+       "mean_predicted": 0.34489,
+       "observed_rate": 0.36364,
+       "gap": -0.01874
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 9,
+       "mean_predicted": 0.44855,
+       "observed_rate": 0.66667,
+       "gap": -0.21812
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 20,
+       "mean_predicted": 0.54925,
+       "observed_rate": 0.65,
+       "gap": -0.10075
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 18,
+       "mean_predicted": 0.6501,
+       "observed_rate": 0.55556,
+       "gap": 0.09454
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 41,
+       "mean_predicted": 0.75829,
+       "observed_rate": 0.73171,
+       "gap": 0.02658
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 84,
+       "mean_predicted": 0.85877,
+       "observed_rate": 0.85714,
+       "gap": 0.00163
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 1907,
+       "mean_predicted": 0.98004,
+       "observed_rate": 0.97063,
+       "gap": 0.00941
+      }
+     ]
+    }
+   }
+  },
+  "by_season": {
+   "2022": {
+    "ROLE_CLASS_FLAT": {
+     "n": 8571,
+     "brier": 0.196355,
+     "log_loss": 0.576193,
+     "expected_calibration_error": 0.015163,
+     "mean_predicted": 0.68073,
+     "observed_rate": 0.66795,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 1479,
+       "mean_predicted": 0.44289,
+       "observed_rate": 0.43137,
+       "gap": 0.01152
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 2165,
+       "mean_predicted": 0.57856,
+       "observed_rate": 0.53626,
+       "gap": 0.0423
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 2197,
+       "mean_predicted": 0.73045,
+       "observed_rate": 0.73509,
+       "gap": -0.00464
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 2730,
+       "mean_predicted": 0.85061,
+       "observed_rate": 0.84652,
+       "gap": 0.00409
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      }
+     ]
+    },
+    "R8": {
+     "n": 8571,
+     "brier": 0.09369,
+     "log_loss": 0.300558,
+     "expected_calibration_error": 0.025681,
+     "mean_predicted": 0.66644,
+     "observed_rate": 0.66795,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 1052,
+       "mean_predicted": 0.02494,
+       "observed_rate": 0.01901,
+       "gap": 0.00593
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 458,
+       "mean_predicted": 0.14843,
+       "observed_rate": 0.0917,
+       "gap": 0.05673
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 359,
+       "mean_predicted": 0.2453,
+       "observed_rate": 0.21727,
+       "gap": 0.02803
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 296,
+       "mean_predicted": 0.34913,
+       "observed_rate": 0.37162,
+       "gap": -0.02249
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 312,
+       "mean_predicted": 0.45189,
+       "observed_rate": 0.47756,
+       "gap": -0.02568
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 407,
+       "mean_predicted": 0.55104,
+       "observed_rate": 0.52826,
+       "gap": 0.02279
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 430,
+       "mean_predicted": 0.65302,
+       "observed_rate": 0.5814,
+       "gap": 0.07163
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 689,
+       "mean_predicted": 0.75213,
+       "observed_rate": 0.72134,
+       "gap": 0.0308
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 1205,
+       "mean_predicted": 0.85699,
+       "observed_rate": 0.88548,
+       "gap": -0.02848
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 3363,
+       "mean_predicted": 0.96029,
+       "observed_rate": 0.98037,
+       "gap": -0.02009
+      }
+     ]
+    },
+    "Q6_FEATURES": {
+     "n": 8571,
+     "brier": 0.093766,
+     "log_loss": 0.300446,
+     "expected_calibration_error": 0.023714,
+     "mean_predicted": 0.6666,
+     "observed_rate": 0.66795,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 1051,
+       "mean_predicted": 0.02374,
+       "observed_rate": 0.01713,
+       "gap": 0.00661
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 466,
+       "mean_predicted": 0.14726,
+       "observed_rate": 0.10086,
+       "gap": 0.0464
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 354,
+       "mean_predicted": 0.24404,
+       "observed_rate": 0.21469,
+       "gap": 0.02935
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 302,
+       "mean_predicted": 0.34829,
+       "observed_rate": 0.38079,
+       "gap": -0.0325
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 318,
+       "mean_predicted": 0.45404,
+       "observed_rate": 0.48113,
+       "gap": -0.02709
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 399,
+       "mean_predicted": 0.55255,
+       "observed_rate": 0.52381,
+       "gap": 0.02874
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 443,
+       "mean_predicted": 0.65305,
+       "observed_rate": 0.60045,
+       "gap": 0.0526
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 652,
+       "mean_predicted": 0.75325,
+       "observed_rate": 0.71933,
+       "gap": 0.03393
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 1194,
+       "mean_predicted": 0.85691,
+       "observed_rate": 0.88023,
+       "gap": -0.02332
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 3392,
+       "mean_predicted": 0.96105,
+       "observed_rate": 0.97907,
+       "gap": -0.01802
+      }
+     ]
+    },
+    "Q6_CALIBRATED": {
+     "n": 8571,
+     "brier": 0.096078,
+     "log_loss": 0.314539,
+     "expected_calibration_error": 0.047849,
+     "mean_predicted": 0.64293,
+     "observed_rate": 0.66795,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 816,
+       "mean_predicted": 0.0163,
+       "observed_rate": 0.00368,
+       "gap": 0.01262
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 469,
+       "mean_predicted": 0.15008,
+       "observed_rate": 0.07676,
+       "gap": 0.07332
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 491,
+       "mean_predicted": 0.24851,
+       "observed_rate": 0.15479,
+       "gap": 0.09372
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 379,
+       "mean_predicted": 0.35021,
+       "observed_rate": 0.34565,
+       "gap": 0.00457
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 398,
+       "mean_predicted": 0.45439,
+       "observed_rate": 0.49246,
+       "gap": -0.03807
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 542,
+       "mean_predicted": 0.55055,
+       "observed_rate": 0.54059,
+       "gap": 0.00996
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 633,
+       "mean_predicted": 0.65516,
+       "observed_rate": 0.66351,
+       "gap": -0.00834
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 901,
+       "mean_predicted": 0.75449,
+       "observed_rate": 0.82131,
+       "gap": -0.06682
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 1460,
+       "mean_predicted": 0.8545,
+       "observed_rate": 0.94795,
+       "gap": -0.09344
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 2482,
+       "mean_predicted": 0.94714,
+       "observed_rate": 0.9855,
+       "gap": -0.03836
+      }
+     ]
+    }
+   },
+   "2023": {
+    "ROLE_CLASS_FLAT": {
+     "n": 8265,
+     "brier": 0.187164,
+     "log_loss": 0.555291,
+     "expected_calibration_error": 0.016105,
+     "mean_predicted": 0.68598,
+     "observed_rate": 0.7003,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 1207,
+       "mean_predicted": 0.43858,
+       "observed_rate": 0.43248,
+       "gap": 0.0061
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 2066,
+       "mean_predicted": 0.56317,
+       "observed_rate": 0.59439,
+       "gap": -0.03121
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 2249,
+       "mean_predicted": 0.73245,
+       "observed_rate": 0.74033,
+       "gap": -0.00788
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 2743,
+       "mean_predicted": 0.84924,
+       "observed_rate": 0.86511,
+       "gap": -0.01587
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      }
+     ]
+    },
+    "R8": {
+     "n": 8265,
+     "brier": 0.086548,
+     "log_loss": 0.282338,
+     "expected_calibration_error": 0.019142,
+     "mean_predicted": 0.69176,
+     "observed_rate": 0.7003,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 984,
+       "mean_predicted": 0.02725,
+       "observed_rate": 0.01728,
+       "gap": 0.00997
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 427,
+       "mean_predicted": 0.14896,
+       "observed_rate": 0.1171,
+       "gap": 0.03186
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 286,
+       "mean_predicted": 0.24191,
+       "observed_rate": 0.27972,
+       "gap": -0.03781
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 214,
+       "mean_predicted": 0.35026,
+       "observed_rate": 0.39252,
+       "gap": -0.04227
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 266,
+       "mean_predicted": 0.45283,
+       "observed_rate": 0.43609,
+       "gap": 0.01674
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 321,
+       "mean_predicted": 0.55325,
+       "observed_rate": 0.57632,
+       "gap": -0.02307
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 370,
+       "mean_predicted": 0.65116,
+       "observed_rate": 0.60811,
+       "gap": 0.04305
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 530,
+       "mean_predicted": 0.75446,
+       "observed_rate": 0.76038,
+       "gap": -0.00592
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 1301,
+       "mean_predicted": 0.85844,
+       "observed_rate": 0.87241,
+       "gap": -0.01396
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 3566,
+       "mean_predicted": 0.96107,
+       "observed_rate": 0.97953,
+       "gap": -0.01846
+      }
+     ]
+    },
+    "Q6_FEATURES": {
+     "n": 8265,
+     "brier": 0.085555,
+     "log_loss": 0.279374,
+     "expected_calibration_error": 0.018273,
+     "mean_predicted": 0.69217,
+     "observed_rate": 0.7003,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 984,
+       "mean_predicted": 0.02593,
+       "observed_rate": 0.01728,
+       "gap": 0.00866
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 427,
+       "mean_predicted": 0.14902,
+       "observed_rate": 0.10773,
+       "gap": 0.04129
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 275,
+       "mean_predicted": 0.24148,
+       "observed_rate": 0.25818,
+       "gap": -0.0167
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 217,
+       "mean_predicted": 0.35063,
+       "observed_rate": 0.38249,
+       "gap": -0.03185
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 270,
+       "mean_predicted": 0.45135,
+       "observed_rate": 0.47037,
+       "gap": -0.01902
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 330,
+       "mean_predicted": 0.55247,
+       "observed_rate": 0.55758,
+       "gap": -0.0051
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 380,
+       "mean_predicted": 0.65194,
+       "observed_rate": 0.61053,
+       "gap": 0.04141
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 513,
+       "mean_predicted": 0.7556,
+       "observed_rate": 0.77973,
+       "gap": -0.02413
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 1266,
+       "mean_predicted": 0.85703,
+       "observed_rate": 0.87046,
+       "gap": -0.01342
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 3603,
+       "mean_predicted": 0.96158,
+       "observed_rate": 0.97863,
+       "gap": -0.01705
+      }
+     ]
+    },
+    "Q6_CALIBRATED": {
+     "n": 8265,
+     "brier": 0.085264,
+     "log_loss": 0.276817,
+     "expected_calibration_error": 0.014127,
+     "mean_predicted": 0.69418,
+     "observed_rate": 0.7003,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 1059,
+       "mean_predicted": 0.02551,
+       "observed_rate": 0.02361,
+       "gap": 0.0019
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 444,
+       "mean_predicted": 0.14746,
+       "observed_rate": 0.12162,
+       "gap": 0.02584
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 239,
+       "mean_predicted": 0.24348,
+       "observed_rate": 0.29289,
+       "gap": -0.0494
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 221,
+       "mean_predicted": 0.34968,
+       "observed_rate": 0.44344,
+       "gap": -0.09376
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 256,
+       "mean_predicted": 0.45191,
+       "observed_rate": 0.46875,
+       "gap": -0.01684
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 307,
+       "mean_predicted": 0.55099,
+       "observed_rate": 0.57003,
+       "gap": -0.01904
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 351,
+       "mean_predicted": 0.6513,
+       "observed_rate": 0.59544,
+       "gap": 0.05586
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 472,
+       "mean_predicted": 0.75568,
+       "observed_rate": 0.7839,
+       "gap": -0.02822
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 1050,
+       "mean_predicted": 0.85689,
+       "observed_rate": 0.86476,
+       "gap": -0.00787
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 3866,
+       "mean_predicted": 0.9673,
+       "observed_rate": 0.97232,
+       "gap": -0.00502
+      }
+     ]
+    }
+   },
+   "2024": {
+    "ROLE_CLASS_FLAT": {
+     "n": 8229,
+     "brier": 0.187748,
+     "log_loss": 0.556734,
+     "expected_calibration_error": 0.016364,
+     "mean_predicted": 0.69132,
+     "observed_rate": 0.6883,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 1146,
+       "mean_predicted": 0.43862,
+       "observed_rate": 0.40489,
+       "gap": 0.03373
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 2087,
+       "mean_predicted": 0.57121,
+       "observed_rate": 0.55151,
+       "gap": 0.01971
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 2258,
+       "mean_predicted": 0.73427,
+       "observed_rate": 0.75155,
+       "gap": -0.01728
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 2738,
+       "mean_predicted": 0.85323,
+       "observed_rate": 0.85902,
+       "gap": -0.00579
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      }
+     ]
+    },
+    "R8": {
+     "n": 8229,
+     "brier": 0.084553,
+     "log_loss": 0.274075,
+     "expected_calibration_error": 0.024691,
+     "mean_predicted": 0.68564,
+     "observed_rate": 0.6883,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 1025,
+       "mean_predicted": 0.02463,
+       "observed_rate": 0.01756,
+       "gap": 0.00707
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 465,
+       "mean_predicted": 0.14486,
+       "observed_rate": 0.11828,
+       "gap": 0.02658
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 311,
+       "mean_predicted": 0.24607,
+       "observed_rate": 0.32154,
+       "gap": -0.07548
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 200,
+       "mean_predicted": 0.34733,
+       "observed_rate": 0.34,
+       "gap": 0.00733
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 262,
+       "mean_predicted": 0.45586,
+       "observed_rate": 0.3855,
+       "gap": 0.07036
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 308,
+       "mean_predicted": 0.54878,
+       "observed_rate": 0.50325,
+       "gap": 0.04553
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 360,
+       "mean_predicted": 0.64963,
+       "observed_rate": 0.57778,
+       "gap": 0.07185
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 497,
+       "mean_predicted": 0.75504,
+       "observed_rate": 0.73239,
+       "gap": 0.02265
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 1044,
+       "mean_predicted": 0.8583,
+       "observed_rate": 0.87548,
+       "gap": -0.01718
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 3757,
+       "mean_predicted": 0.96084,
+       "observed_rate": 0.97977,
+       "gap": -0.01893
+      }
+     ]
+    },
+    "Q6_FEATURES": {
+     "n": 8229,
+     "brier": 0.083434,
+     "log_loss": 0.27045,
+     "expected_calibration_error": 0.021024,
+     "mean_predicted": 0.68673,
+     "observed_rate": 0.6883,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 1029,
+       "mean_predicted": 0.02326,
+       "observed_rate": 0.01361,
+       "gap": 0.00965
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 462,
+       "mean_predicted": 0.14432,
+       "observed_rate": 0.11472,
+       "gap": 0.02961
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 290,
+       "mean_predicted": 0.24539,
+       "observed_rate": 0.28621,
+       "gap": -0.04082
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 206,
+       "mean_predicted": 0.34678,
+       "observed_rate": 0.35922,
+       "gap": -0.01244
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 276,
+       "mean_predicted": 0.45447,
+       "observed_rate": 0.43116,
+       "gap": 0.02331
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 303,
+       "mean_predicted": 0.54735,
+       "observed_rate": 0.47855,
+       "gap": 0.06881
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 352,
+       "mean_predicted": 0.64886,
+       "observed_rate": 0.59943,
+       "gap": 0.04943
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 510,
+       "mean_predicted": 0.75445,
+       "observed_rate": 0.73137,
+       "gap": 0.02307
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 1013,
+       "mean_predicted": 0.85806,
+       "observed_rate": 0.87167,
+       "gap": -0.01361
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 3788,
+       "mean_predicted": 0.96205,
+       "observed_rate": 0.97914,
+       "gap": -0.0171
+      }
+     ]
+    },
+    "Q6_CALIBRATED": {
+     "n": 8229,
+     "brier": 0.083156,
+     "log_loss": 0.26766,
+     "expected_calibration_error": 0.016133,
+     "mean_predicted": 0.69408,
+     "observed_rate": 0.6883,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 1083,
+       "mean_predicted": 0.02355,
+       "observed_rate": 0.0157,
+       "gap": 0.00785
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 448,
+       "mean_predicted": 0.14502,
+       "observed_rate": 0.12723,
+       "gap": 0.01778
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 270,
+       "mean_predicted": 0.24488,
+       "observed_rate": 0.28148,
+       "gap": -0.0366
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 195,
+       "mean_predicted": 0.34616,
+       "observed_rate": 0.38462,
+       "gap": -0.03846
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 256,
+       "mean_predicted": 0.45334,
+       "observed_rate": 0.42969,
+       "gap": 0.02366
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 296,
+       "mean_predicted": 0.54849,
+       "observed_rate": 0.48311,
+       "gap": 0.06538
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 323,
+       "mean_predicted": 0.65137,
+       "observed_rate": 0.59133,
+       "gap": 0.06004
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 437,
+       "mean_predicted": 0.75432,
+       "observed_rate": 0.70709,
+       "gap": 0.04723
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 829,
+       "mean_predicted": 0.85558,
+       "observed_rate": 0.8456,
+       "gap": 0.00998
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 4092,
+       "mean_predicted": 0.96769,
+       "observed_rate": 0.97385,
+       "gap": -0.00616
+      }
+     ]
+    }
+   },
+   "2025": {
+    "ROLE_CLASS_FLAT": {
+     "n": 9556,
+     "brier": 0.202794,
+     "log_loss": 0.589446,
+     "expected_calibration_error": 0.0624,
+     "mean_predicted": 0.65805,
+     "observed_rate": 0.59565,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 2066,
+       "mean_predicted": 0.43157,
+       "observed_rate": 0.31897,
+       "gap": 0.1126
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 2612,
+       "mean_predicted": 0.56714,
+       "observed_rate": 0.45521,
+       "gap": 0.11194
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 2158,
+       "mean_predicted": 0.73756,
+       "observed_rate": 0.70575,
+       "gap": 0.03182
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 2720,
+       "mean_predicted": 0.85427,
+       "observed_rate": 0.85331,
+       "gap": 0.00096
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 0,
+       "mean_predicted": null,
+       "observed_rate": null
+      }
+     ]
+    },
+    "R8": {
+     "n": 9556,
+     "brier": 0.096988,
+     "log_loss": 0.311936,
+     "expected_calibration_error": 0.035663,
+     "mean_predicted": 0.63091,
+     "observed_rate": 0.59565,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 1987,
+       "mean_predicted": 0.01048,
+       "observed_rate": 0.00101,
+       "gap": 0.00948
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 261,
+       "mean_predicted": 0.13907,
+       "observed_rate": 0.01916,
+       "gap": 0.11991
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 129,
+       "mean_predicted": 0.24713,
+       "observed_rate": 0.13953,
+       "gap": 0.10759
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 170,
+       "mean_predicted": 0.3613,
+       "observed_rate": 0.22941,
+       "gap": 0.13189
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 341,
+       "mean_predicted": 0.45544,
+       "observed_rate": 0.35777,
+       "gap": 0.09767
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 459,
+       "mean_predicted": 0.55137,
+       "observed_rate": 0.4488,
+       "gap": 0.10257
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 623,
+       "mean_predicted": 0.64914,
+       "observed_rate": 0.52327,
+       "gap": 0.12587
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 722,
+       "mean_predicted": 0.75458,
+       "observed_rate": 0.6856,
+       "gap": 0.06899
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 1349,
+       "mean_predicted": 0.8555,
+       "observed_rate": 0.85693,
+       "gap": -0.00143
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 3515,
+       "mean_predicted": 0.95785,
+       "observed_rate": 0.94538,
+       "gap": 0.01247
+      }
+     ]
+    },
+    "Q6_FEATURES": {
+     "n": 9556,
+     "brier": 0.096665,
+     "log_loss": 0.311529,
+     "expected_calibration_error": 0.032894,
+     "mean_predicted": 0.62743,
+     "observed_rate": 0.59565,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 1999,
+       "mean_predicted": 0.0109,
+       "observed_rate": 0.001,
+       "gap": 0.0099
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 258,
+       "mean_predicted": 0.13935,
+       "observed_rate": 0.02713,
+       "gap": 0.11222
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 123,
+       "mean_predicted": 0.24531,
+       "observed_rate": 0.13008,
+       "gap": 0.11523
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 192,
+       "mean_predicted": 0.35845,
+       "observed_rate": 0.22396,
+       "gap": 0.13449
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 362,
+       "mean_predicted": 0.45411,
+       "observed_rate": 0.38674,
+       "gap": 0.06737
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 488,
+       "mean_predicted": 0.55325,
+       "observed_rate": 0.45697,
+       "gap": 0.09628
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 587,
+       "mean_predicted": 0.64916,
+       "observed_rate": 0.52981,
+       "gap": 0.11934
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 756,
+       "mean_predicted": 0.75438,
+       "observed_rate": 0.70635,
+       "gap": 0.04803
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 1345,
+       "mean_predicted": 0.85555,
+       "observed_rate": 0.85948,
+       "gap": -0.00393
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 3446,
+       "mean_predicted": 0.95838,
+       "observed_rate": 0.94602,
+       "gap": 0.01235
+      }
+     ]
+    },
+    "Q6_CALIBRATED": {
+     "n": 9556,
+     "brier": 0.096223,
+     "log_loss": 0.313004,
+     "expected_calibration_error": 0.033076,
+     "mean_predicted": 0.62872,
+     "observed_rate": 0.59565,
+     "calibration_bins": [
+      {
+       "bin": "0.0-0.1",
+       "n": 2014,
+       "mean_predicted": 0.0108,
+       "observed_rate": 0.00149,
+       "gap": 0.00931
+      },
+      {
+       "bin": "0.1-0.2",
+       "n": 261,
+       "mean_predicted": 0.13942,
+       "observed_rate": 0.02682,
+       "gap": 0.1126
+      },
+      {
+       "bin": "0.2-0.3",
+       "n": 130,
+       "mean_predicted": 0.24803,
+       "observed_rate": 0.14615,
+       "gap": 0.10187
+      },
+      {
+       "bin": "0.3-0.4",
+       "n": 212,
+       "mean_predicted": 0.35863,
+       "observed_rate": 0.25,
+       "gap": 0.10863
+      },
+      {
+       "bin": "0.4-0.5",
+       "n": 397,
+       "mean_predicted": 0.4532,
+       "observed_rate": 0.37531,
+       "gap": 0.07789
+      },
+      {
+       "bin": "0.5-0.6",
+       "n": 495,
+       "mean_predicted": 0.55432,
+       "observed_rate": 0.48485,
+       "gap": 0.06947
+      },
+      {
+       "bin": "0.6-0.7",
+       "n": 548,
+       "mean_predicted": 0.64967,
+       "observed_rate": 0.5438,
+       "gap": 0.10588
+      },
+      {
+       "bin": "0.7-0.8",
+       "n": 728,
+       "mean_predicted": 0.75339,
+       "observed_rate": 0.71978,
+       "gap": 0.03361
+      },
+      {
+       "bin": "0.8-0.9",
+       "n": 1094,
+       "mean_predicted": 0.85275,
+       "observed_rate": 0.85009,
+       "gap": 0.00265
+      },
+      {
+       "bin": "0.9-1.0",
+       "n": 3677,
+       "mean_predicted": 0.96545,
+       "observed_rate": 0.94343,
+       "gap": 0.02202
+      }
+     ]
+    }
+   }
+  },
+  "paired_vs_R8": {
+   "ROLE_CLASS_FLAT": {
+    "brier_delta": 0.10316869,
+    "brier_delta_pct": 113.7176,
+    "block_bootstrap_by_team_game": {
+     "mean": 0.103169,
+     "ci_lo": 0.100687,
+     "ci_hi": 0.105465,
+     "n_clusters": 2174,
+     "n_rows": 34621,
+     "excludes_zero": true
+    }
+   },
+   "Q6_FEATURES": {
+    "brier_delta": -0.00057346,
+    "brier_delta_pct": -0.6321,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.000573,
+     "ci_lo": -0.000771,
+     "ci_hi": -0.000391,
+     "n_clusters": 2174,
+     "n_rows": 34621,
+     "excludes_zero": true
+    }
+   },
+   "Q6_CALIBRATED": {
+    "brier_delta": -0.00025855,
+    "brier_delta_pct": -0.285,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.000259,
+     "ci_lo": -0.000557,
+     "ci_hi": 8e-06,
+     "n_clusters": 2174,
+     "n_rows": 34621,
+     "excludes_zero": false
+    }
+   }
+  }
+ },
+ "appearance_cells": {
+  "Q6_FEATURES": {
+   "RB|fringe": {
+    "n": 3615,
+    "brier_R8": 0.119307,
+    "brier_Q6_FEATURES": 0.118525,
+    "delta": -0.00078155,
+    "improves": true,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.000782,
+     "ci_lo": -0.001452,
+     "ci_hi": -0.000215,
+     "n_clusters": 1780,
+     "n_rows": 3615,
+     "excludes_zero": true
+    }
+   },
+   "RB|rotational": {
+    "n": 4397,
+    "brier_R8": 0.090189,
+    "brier_Q6_FEATURES": 0.089329,
+    "delta": -0.00085997,
+    "improves": true,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.00086,
+     "ci_lo": -0.00143,
+     "ci_hi": -0.000328,
+     "n_clusters": 2174,
+     "n_rows": 4397,
+     "excludes_zero": true
+    }
+   },
+   "RB|starter": {
+    "n": 2190,
+    "brier_R8": 0.043147,
+    "brier_Q6_FEATURES": 0.04258,
+    "delta": -0.00056739,
+    "improves": true,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.000567,
+     "ci_lo": -0.001209,
+     "ci_hi": 5e-06,
+     "n_clusters": 2174,
+     "n_rows": 2190,
+     "excludes_zero": false
+    }
+   },
+   "TE|fringe": {
+    "n": 2283,
+    "brier_R8": 0.123185,
+    "brier_Q6_FEATURES": 0.122875,
+    "delta": -0.00031053,
+    "improves": true,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.000311,
+     "ci_lo": -0.001036,
+     "ci_hi": 0.000408,
+     "n_clusters": 1503,
+     "n_rows": 2283,
+     "excludes_zero": false
+    }
+   },
+   "TE|rotational": {
+    "n": 4465,
+    "brier_R8": 0.082891,
+    "brier_Q6_FEATURES": 0.081979,
+    "delta": -0.00091236,
+    "improves": true,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.000912,
+     "ci_lo": -0.001412,
+     "ci_hi": -0.000444,
+     "n_clusters": 2174,
+     "n_rows": 4465,
+     "excludes_zero": true
+    }
+   },
+   "TE|starter": {
+    "n": 2184,
+    "brier_R8": 0.043437,
+    "brier_Q6_FEATURES": 0.042903,
+    "delta": -0.00053383,
+    "improves": true,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.000534,
+     "ci_lo": -0.000957,
+     "ci_hi": -0.000119,
+     "n_clusters": 2174,
+     "n_rows": 2184,
+     "excludes_zero": true
+    }
+   },
+   "WR|fringe": {
+    "n": 8930,
+    "brier_R8": 0.121425,
+    "brier_Q6_FEATURES": 0.120756,
+    "delta": -0.00066891,
+    "improves": true,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.000669,
+     "ci_lo": -0.001139,
+     "ci_hi": -0.000201,
+     "n_clusters": 2174,
+     "n_rows": 8930,
+     "excludes_zero": true
+    }
+   },
+   "WR|rotational": {
+    "n": 4359,
+    "brier_R8": 0.068717,
+    "brier_Q6_FEATURES": 0.068745,
+    "delta": 2.808e-05,
+    "improves": false,
+    "block_bootstrap_by_team_game": {
+     "mean": 2.8e-05,
+     "ci_lo": -0.000542,
+     "ci_hi": 0.000553,
+     "n_clusters": 2174,
+     "n_rows": 4359,
+     "excludes_zero": false
+    }
+   },
+   "WR|starter": {
+    "n": 2198,
+    "brier_R8": 0.040276,
+    "brier_Q6_FEATURES": 0.040183,
+    "delta": -9.331e-05,
+    "improves": true,
+    "block_bootstrap_by_team_game": {
+     "mean": -9.3e-05,
+     "ci_lo": -0.000417,
+     "ci_hi": 0.000203,
+     "n_clusters": 2174,
+     "n_rows": 2198,
+     "excludes_zero": false
+    }
+   }
+  },
+  "Q6_CALIBRATED": {
+   "RB|fringe": {
+    "n": 3615,
+    "brier_R8": 0.119307,
+    "brier_Q6_CALIBRATED": 0.11866,
+    "delta": -0.00064654,
+    "improves": true,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.000647,
+     "ci_lo": -0.001552,
+     "ci_hi": 0.000191,
+     "n_clusters": 1780,
+     "n_rows": 3615,
+     "excludes_zero": false
+    }
+   },
+   "RB|rotational": {
+    "n": 4397,
+    "brier_R8": 0.090189,
+    "brier_Q6_CALIBRATED": 0.089655,
+    "delta": -0.00053363,
+    "improves": true,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.000534,
+     "ci_lo": -0.001339,
+     "ci_hi": 0.000173,
+     "n_clusters": 2174,
+     "n_rows": 4397,
+     "excludes_zero": false
+    }
+   },
+   "RB|starter": {
+    "n": 2190,
+    "brier_R8": 0.043147,
+    "brier_Q6_CALIBRATED": 0.041697,
+    "delta": -0.00145014,
+    "improves": true,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.00145,
+     "ci_lo": -0.002693,
+     "ci_hi": -0.000143,
+     "n_clusters": 2174,
+     "n_rows": 2190,
+     "excludes_zero": true
+    }
+   },
+   "TE|fringe": {
+    "n": 2283,
+    "brier_R8": 0.123185,
+    "brier_Q6_CALIBRATED": 0.123129,
+    "delta": -5.637e-05,
+    "improves": true,
+    "block_bootstrap_by_team_game": {
+     "mean": -5.6e-05,
+     "ci_lo": -0.001135,
+     "ci_hi": 0.001039,
+     "n_clusters": 1503,
+     "n_rows": 2283,
+     "excludes_zero": false
+    }
+   },
+   "TE|rotational": {
+    "n": 4465,
+    "brier_R8": 0.082891,
+    "brier_Q6_CALIBRATED": 0.082331,
+    "delta": -0.00056069,
+    "improves": true,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.000561,
+     "ci_lo": -0.00124,
+     "ci_hi": 0.000166,
+     "n_clusters": 2174,
+     "n_rows": 4465,
+     "excludes_zero": false
+    }
+   },
+   "TE|starter": {
+    "n": 2184,
+    "brier_R8": 0.043437,
+    "brier_Q6_CALIBRATED": 0.042146,
+    "delta": -0.00129085,
+    "improves": true,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.001291,
+     "ci_lo": -0.002423,
+     "ci_hi": -0.000193,
+     "n_clusters": 2174,
+     "n_rows": 2184,
+     "excludes_zero": true
+    }
+   },
+   "WR|fringe": {
+    "n": 8930,
+    "brier_R8": 0.121425,
+    "brier_Q6_CALIBRATED": 0.121568,
+    "delta": 0.00014323,
+    "improves": false,
+    "block_bootstrap_by_team_game": {
+     "mean": 0.000143,
+     "ci_lo": -0.000484,
+     "ci_hi": 0.000712,
+     "n_clusters": 2174,
+     "n_rows": 8930,
+     "excludes_zero": false
+    }
+   },
+   "WR|rotational": {
+    "n": 4359,
+    "brier_R8": 0.068717,
+    "brier_Q6_CALIBRATED": 0.069362,
+    "delta": 0.00064465,
+    "improves": false,
+    "block_bootstrap_by_team_game": {
+     "mean": 0.000645,
+     "ci_lo": -7.1e-05,
+     "ci_hi": 0.001366,
+     "n_clusters": 2174,
+     "n_rows": 4359,
+     "excludes_zero": false
+    }
+   },
+   "WR|starter": {
+    "n": 2198,
+    "brier_R8": 0.040276,
+    "brier_Q6_CALIBRATED": 0.040399,
+    "delta": 0.00012303,
+    "improves": false,
+    "block_bootstrap_by_team_game": {
+     "mean": 0.000123,
+     "ci_lo": -0.000631,
+     "ci_hi": 0.000887,
+     "n_clusters": 2174,
+     "n_rows": 2198,
+     "excludes_zero": false
+    }
+   }
+  }
+ },
+ "role": {
+  "targets": {
+   "n_paired": 22869,
+   "mean_crps_TIER_PRIOR": 0.0338982,
+   "mean_abs_error_TIER_PRIOR": 0.0480916,
+   "mean_crps_Q6_VACANCY": 0.033944,
+   "mean_abs_error_Q6_VACANCY": 0.0481096,
+   "delta_pct": 0.1352,
+   "block_bootstrap_by_team_game": {
+    "mean": 4.6e-05,
+    "ci_lo": -9e-06,
+    "ci_hi": 0.000101,
+    "n_clusters": 2174,
+    "n_rows": 22869,
+    "excludes_zero": false
+   }
+  },
+  "carries": {
+   "n_paired": 22869,
+   "mean_crps_TIER_PRIOR": 0.0271713,
+   "mean_abs_error_TIER_PRIOR": 0.0370765,
+   "mean_crps_Q6_VACANCY": 0.0272396,
+   "mean_abs_error_Q6_VACANCY": 0.0370926,
+   "delta_pct": 0.2513,
+   "block_bootstrap_by_team_game": {
+    "mean": 6.8e-05,
+    "ci_lo": 3e-06,
+    "ci_hi": 0.000135,
+    "n_clusters": 2174,
+    "n_rows": 22869,
+    "excludes_zero": true
+   }
+  }
+ },
+ "composition": {
+  "targets": {
+   "n_paired": 34621,
+   "by_arm": {
+    "BASELINE": {
+     "mean_crps": 0.776946,
+     "zero_inflation": {
+      "predicted_zero_rate": 0.47734,
+      "observed_zero_rate": 0.50412,
+      "error": -0.02678,
+      "by_role_class": {
+       "fringe": {
+        "predicted": 0.68251,
+        "observed": 0.71635,
+        "error": -0.03383,
+        "n": 14828
+       },
+       "rotational": {
+        "predicted": 0.41162,
+        "observed": 0.43022,
+        "error": -0.01861,
+        "n": 13221
+       },
+       "starter": {
+        "predicted": 0.14664,
+        "observed": 0.17392,
+        "error": -0.02728,
+        "n": 6572
+       }
+      }
+     },
+     "starter_dilution": {
+      "starter": {
+       "n": 6572,
+       "mean_predicted": 4.42067,
+       "mean_actual": 4.34784,
+       "ratio": 1.01675
+      },
+      "rotational": {
+       "n": 13221,
+       "mean_predicted": 2.09179,
+       "mean_actual": 2.10703,
+       "ratio": 0.99277
+      },
+      "fringe": {
+       "n": 14828,
+       "mean_predicted": 0.77973,
+       "mean_actual": 0.79438,
+       "ratio": 0.98156
+      },
+      "reads": "below 1 is dilution -- the class is being given less than it takes; above 1 is the opposite"
+     },
+     "replacement_misallocation": {
+      "starter": {
+       "n": 1995,
+       "mean_predicted": 3.87868,
+       "mean_actual": 3.27068,
+       "ratio": 1.1859,
+       "mean_abs_error": 1.99157
+      },
+      "rotational": {
+       "n": 3983,
+       "mean_predicted": 2.18867,
+       "mean_actual": 2.34622,
+       "ratio": 0.93285,
+       "mean_abs_error": 1.44092
+      },
+      "fringe": {
+       "n": 4869,
+       "mean_predicted": 0.85204,
+       "mean_actual": 0.96611,
+       "ratio": 0.88192,
+       "mean_abs_error": 0.84155
+      },
+      "reads": "measured only on team-weeks whose starter was absent. Below 1 means the replacement is under-fed relative to what he actually took"
+     }
+    },
+    "Q6_APPEARANCE_ONLY": {
+     "mean_crps": 0.774957,
+     "zero_inflation": {
+      "predicted_zero_rate": 0.47987,
+      "observed_zero_rate": 0.50412,
+      "error": -0.02425,
+      "by_role_class": {
+       "fringe": {
+        "predicted": 0.68714,
+        "observed": 0.71635,
+        "error": -0.02921,
+        "n": 14828
+       },
+       "rotational": {
+        "predicted": 0.40806,
+        "observed": 0.43022,
+        "error": -0.02216,
+        "n": 13221
+       },
+       "starter": {
+        "predicted": 0.15668,
+        "observed": 0.17392,
+        "error": -0.01724,
+        "n": 6572
+       }
+      }
+     },
+     "starter_dilution": {
+      "starter": {
+       "n": 6572,
+       "mean_predicted": 4.38964,
+       "mean_actual": 4.34784,
+       "ratio": 1.00961
+      },
+      "rotational": {
+       "n": 13221,
+       "mean_predicted": 2.11494,
+       "mean_actual": 2.10703,
+       "ratio": 1.00376
+      },
+      "fringe": {
+       "n": 14828,
+       "mean_predicted": 0.77284,
+       "mean_actual": 0.79438,
+       "ratio": 0.97289
+      },
+      "reads": "below 1 is dilution -- the class is being given less than it takes; above 1 is the opposite"
+     },
+     "replacement_misallocation": {
+      "starter": {
+       "n": 1995,
+       "mean_predicted": 3.81947,
+       "mean_actual": 3.27068,
+       "ratio": 1.16779,
+       "mean_abs_error": 1.94072
+      },
+      "rotational": {
+       "n": 3983,
+       "mean_predicted": 2.21965,
+       "mean_actual": 2.34622,
+       "ratio": 0.94605,
+       "mean_abs_error": 1.43923
+      },
+      "fringe": {
+       "n": 4869,
+       "mean_predicted": 0.85096,
+       "mean_actual": 0.96611,
+       "ratio": 0.88081,
+       "mean_abs_error": 0.84725
+      },
+      "reads": "measured only on team-weeks whose starter was absent. Below 1 means the replacement is under-fed relative to what he actually took"
+     },
+     "delta_pct_vs_baseline": -0.256,
+     "block_bootstrap_by_team_game": {
+      "mean": -0.001989,
+      "ci_lo": -0.00355,
+      "ci_hi": -0.000563,
+      "n_clusters": 2174,
+      "n_rows": 34621,
+      "excludes_zero": true
+     }
+    },
+    "Q6_ROLE_ONLY": {
+     "mean_crps": 0.776824,
+     "zero_inflation": {
+      "predicted_zero_rate": 0.47678,
+      "observed_zero_rate": 0.50412,
+      "error": -0.02734,
+      "by_role_class": {
+       "fringe": {
+        "predicted": 0.68199,
+        "observed": 0.71635,
+        "error": -0.03436,
+        "n": 14828
+       },
+       "rotational": {
+        "predicted": 0.4104,
+        "observed": 0.43022,
+        "error": -0.01983,
+        "n": 13221
+       },
+       "starter": {
+        "predicted": 0.14732,
+        "observed": 0.17392,
+        "error": -0.0266,
+        "n": 6572
+       }
+      }
+     },
+     "starter_dilution": {
+      "starter": {
+       "n": 6572,
+       "mean_predicted": 4.37592,
+       "mean_actual": 4.34784,
+       "ratio": 1.00646
+      },
+      "rotational": {
+       "n": 13221,
+       "mean_predicted": 2.10899,
+       "mean_actual": 2.10703,
+       "ratio": 1.00093
+      },
+      "fringe": {
+       "n": 14828,
+       "mean_predicted": 0.78422,
+       "mean_actual": 0.79438,
+       "ratio": 0.98722
+      },
+      "reads": "below 1 is dilution -- the class is being given less than it takes; above 1 is the opposite"
+     },
+     "replacement_misallocation": {
+      "starter": {
+       "n": 1995,
+       "mean_predicted": 3.77082,
+       "mean_actual": 3.27068,
+       "ratio": 1.15292,
+       "mean_abs_error": 1.98109
+      },
+      "rotational": {
+       "n": 3983,
+       "mean_predicted": 2.22979,
+       "mean_actual": 2.34622,
+       "ratio": 0.95037,
+       "mean_abs_error": 1.44215
+      },
+      "fringe": {
+       "n": 4869,
+       "mean_predicted": 0.86259,
+       "mean_actual": 0.96611,
+       "ratio": 0.89285,
+       "mean_abs_error": 0.84708
+      },
+      "reads": "measured only on team-weeks whose starter was absent. Below 1 means the replacement is under-fed relative to what he actually took"
+     },
+     "delta_pct_vs_baseline": -0.0156,
+     "block_bootstrap_by_team_game": {
+      "mean": -0.000121,
+      "ci_lo": -0.001494,
+      "ci_hi": 0.001176,
+      "n_clusters": 2174,
+      "n_rows": 34621,
+      "excludes_zero": false
+     }
+    },
+    "Q6_BOTH": {
+     "mean_crps": 0.775315,
+     "zero_inflation": {
+      "predicted_zero_rate": 0.47875,
+      "observed_zero_rate": 0.50412,
+      "error": -0.02536,
+      "by_role_class": {
+       "fringe": {
+        "predicted": 0.68594,
+        "observed": 0.71635,
+        "error": -0.0304,
+        "n": 14828
+       },
+       "rotational": {
+        "predicted": 0.40626,
+        "observed": 0.43022,
+        "error": -0.02397,
+        "n": 13221
+       },
+       "starter": {
+        "predicted": 0.15712,
+        "observed": 0.17392,
+        "error": -0.0168,
+        "n": 6572
+       }
+      }
+     },
+     "starter_dilution": {
+      "starter": {
+       "n": 6572,
+       "mean_predicted": 4.33825,
+       "mean_actual": 4.34784,
+       "ratio": 0.99779
+      },
+      "rotational": {
+       "n": 13221,
+       "mean_predicted": 2.13413,
+       "mean_actual": 2.10703,
+       "ratio": 1.01287
+      },
+      "fringe": {
+       "n": 14828,
+       "mean_predicted": 0.7785,
+       "mean_actual": 0.79438,
+       "ratio": 0.98002
+      },
+      "reads": "below 1 is dilution -- the class is being given less than it takes; above 1 is the opposite"
+     },
+     "replacement_misallocation": {
+      "starter": {
+       "n": 1995,
+       "mean_predicted": 3.7099,
+       "mean_actual": 3.27068,
+       "ratio": 1.13429,
+       "mean_abs_error": 1.93598
+      },
+      "rotational": {
+       "n": 3983,
+       "mean_predicted": 2.26239,
+       "mean_actual": 2.34622,
+       "ratio": 0.96427,
+       "mean_abs_error": 1.44633
+      },
+      "fringe": {
+       "n": 4869,
+       "mean_predicted": 0.86089,
+       "mean_actual": 0.96611,
+       "ratio": 0.89108,
+       "mean_abs_error": 0.84688
+      },
+      "reads": "measured only on team-weeks whose starter was absent. Below 1 means the replacement is under-fed relative to what he actually took"
+     },
+     "delta_pct_vs_baseline": -0.2099,
+     "block_bootstrap_by_team_game": {
+      "mean": -0.001631,
+      "ci_lo": -0.00319,
+      "ci_hi": -6.8e-05,
+      "n_clusters": 2174,
+      "n_rows": 34621,
+      "excludes_zero": true
+     }
+    }
+   },
+   "team_reconciliation_error_max": 0.0
+  },
+  "carries": {
+   "n_paired": 34621,
+   "by_arm": {
+    "BASELINE": {
+     "mean_crps": 0.47468,
+     "zero_inflation": {
+      "predicted_zero_rate": 0.79494,
+      "observed_zero_rate": 0.80737,
+      "error": -0.01243,
+      "by_role_class": {
+       "fringe": {
+        "predicted": 0.88554,
+        "observed": 0.89951,
+        "error": -0.01398,
+        "n": 14828
+       },
+       "rotational": {
+        "predicted": 0.76331,
+        "observed": 0.77521,
+        "error": -0.0119,
+        "n": 13221
+       },
+       "starter": {
+        "predicted": 0.65416,
+        "observed": 0.66418,
+        "error": -0.01002,
+        "n": 6572
+       }
+      }
+     },
+     "starter_dilution": {
+      "starter": {
+       "n": 6572,
+       "mean_predicted": 3.99196,
+       "mean_actual": 3.91099,
+       "ratio": 1.0207
+      },
+      "rotational": {
+       "n": 13221,
+       "mean_predicted": 1.32584,
+       "mean_actual": 1.38295,
+       "ratio": 0.95871
+      },
+      "fringe": {
+       "n": 14828,
+       "mean_predicted": 0.37341,
+       "mean_actual": 0.35473,
+       "ratio": 1.05263
+      },
+      "reads": "below 1 is dilution -- the class is being given less than it takes; above 1 is the opposite"
+     },
+     "replacement_misallocation": {
+      "starter": {
+       "n": 1995,
+       "mean_predicted": 3.10974,
+       "mean_actual": 2.5193,
+       "ratio": 1.23437,
+       "mean_abs_error": 1.37916
+      },
+      "rotational": {
+       "n": 3983,
+       "mean_predicted": 1.56047,
+       "mean_actual": 1.82676,
+       "ratio": 0.85423,
+       "mean_abs_error": 1.03816
+      },
+      "fringe": {
+       "n": 4869,
+       "mean_predicted": 0.43781,
+       "mean_actual": 0.45533,
+       "ratio": 0.96153,
+       "mean_abs_error": 0.44389
+      },
+      "reads": "measured only on team-weeks whose starter was absent. Below 1 means the replacement is under-fed relative to what he actually took"
+     }
+    },
+    "Q6_APPEARANCE_ONLY": {
+     "mean_crps": 0.472054,
+     "zero_inflation": {
+      "predicted_zero_rate": 0.79577,
+      "observed_zero_rate": 0.80737,
+      "error": -0.0116,
+      "by_role_class": {
+       "fringe": {
+        "predicted": 0.88692,
+        "observed": 0.89951,
+        "error": -0.01259,
+        "n": 14828
+       },
+       "rotational": {
+        "predicted": 0.76167,
+        "observed": 0.77521,
+        "error": -0.01354,
+        "n": 13221
+       },
+       "starter": {
+        "predicted": 0.65872,
+        "observed": 0.66418,
+        "error": -0.00546,
+        "n": 6572
+       }
+      }
+     },
+     "starter_dilution": {
+      "starter": {
+       "n": 6572,
+       "mean_predicted": 3.93438,
+       "mean_actual": 3.91099,
+       "ratio": 1.00598
+      },
+      "rotational": {
+       "n": 13221,
+       "mean_predicted": 1.35416,
+       "mean_actual": 1.38295,
+       "ratio": 0.97918
+      },
+      "fringe": {
+       "n": 14828,
+       "mean_predicted": 0.37368,
+       "mean_actual": 0.35473,
+       "ratio": 1.0534
+      },
+      "reads": "below 1 is dilution -- the class is being given less than it takes; above 1 is the opposite"
+     },
+     "replacement_misallocation": {
+      "starter": {
+       "n": 1995,
+       "mean_predicted": 3.01359,
+       "mean_actual": 2.5193,
+       "ratio": 1.1962,
+       "mean_abs_error": 1.32889
+      },
+      "rotational": {
+       "n": 3983,
+       "mean_predicted": 1.60381,
+       "mean_actual": 1.82676,
+       "ratio": 0.87795,
+       "mean_abs_error": 1.02218
+      },
+      "fringe": {
+       "n": 4869,
+       "mean_predicted": 0.44176,
+       "mean_actual": 0.45533,
+       "ratio": 0.9702,
+       "mean_abs_error": 0.44577
+      },
+      "reads": "measured only on team-weeks whose starter was absent. Below 1 means the replacement is under-fed relative to what he actually took"
+     },
+     "delta_pct_vs_baseline": -0.5533,
+     "block_bootstrap_by_team_game": {
+      "mean": -0.002626,
+      "ci_lo": -0.004832,
+      "ci_hi": -0.000619,
+      "n_clusters": 2174,
+      "n_rows": 34621,
+      "excludes_zero": true
+     }
+    },
+    "Q6_ROLE_ONLY": {
+     "mean_crps": 0.475133,
+     "zero_inflation": {
+      "predicted_zero_rate": 0.79484,
+      "observed_zero_rate": 0.80737,
+      "error": -0.01253,
+      "by_role_class": {
+       "fringe": {
+        "predicted": 0.88551,
+        "observed": 0.89951,
+        "error": -0.014,
+        "n": 14828
+       },
+       "rotational": {
+        "predicted": 0.7628,
+        "observed": 0.77521,
+        "error": -0.01241,
+        "n": 13221
+       },
+       "starter": {
+        "predicted": 0.65474,
+        "observed": 0.66418,
+        "error": -0.00945,
+        "n": 6572
+       }
+      }
+     },
+     "starter_dilution": {
+      "starter": {
+       "n": 6572,
+       "mean_predicted": 3.98392,
+       "mean_actual": 3.91099,
+       "ratio": 1.01865
+      },
+      "rotational": {
+       "n": 13221,
+       "mean_predicted": 1.32983,
+       "mean_actual": 1.38295,
+       "ratio": 0.96159
+      },
+      "fringe": {
+       "n": 14828,
+       "mean_predicted": 0.37341,
+       "mean_actual": 0.35473,
+       "ratio": 1.05266
+      },
+      "reads": "below 1 is dilution -- the class is being given less than it takes; above 1 is the opposite"
+     },
+     "replacement_misallocation": {
+      "starter": {
+       "n": 1995,
+       "mean_predicted": 3.10128,
+       "mean_actual": 2.5193,
+       "ratio": 1.23101,
+       "mean_abs_error": 1.37993
+      },
+      "rotational": {
+       "n": 3983,
+       "mean_predicted": 1.56386,
+       "mean_actual": 1.82676,
+       "ratio": 0.85608,
+       "mean_abs_error": 1.03889
+      },
+      "fringe": {
+       "n": 4869,
+       "mean_predicted": 0.43851,
+       "mean_actual": 0.45533,
+       "ratio": 0.96306,
+       "mean_abs_error": 0.44311
+      },
+      "reads": "measured only on team-weeks whose starter was absent. Below 1 means the replacement is under-fed relative to what he actually took"
+     },
+     "delta_pct_vs_baseline": 0.0954,
+     "block_bootstrap_by_team_game": {
+      "mean": 0.000453,
+      "ci_lo": -0.001038,
+      "ci_hi": 0.001956,
+      "n_clusters": 2174,
+      "n_rows": 34621,
+      "excludes_zero": false
+     }
+    },
+    "Q6_BOTH": {
+     "mean_crps": 0.472129,
+     "zero_inflation": {
+      "predicted_zero_rate": 0.79572,
+      "observed_zero_rate": 0.80737,
+      "error": -0.01165,
+      "by_role_class": {
+       "fringe": {
+        "predicted": 0.88685,
+        "observed": 0.89951,
+        "error": -0.01266,
+        "n": 14828
+       },
+       "rotational": {
+        "predicted": 0.76145,
+        "observed": 0.77521,
+        "error": -0.01376,
+        "n": 13221
+       },
+       "starter": {
+        "predicted": 0.65904,
+        "observed": 0.66418,
+        "error": -0.00514,
+        "n": 6572
+       }
+      }
+     },
+     "starter_dilution": {
+      "starter": {
+       "n": 6572,
+       "mean_predicted": 3.93189,
+       "mean_actual": 3.91099,
+       "ratio": 1.00535
+      },
+      "rotational": {
+       "n": 13221,
+       "mean_predicted": 1.35435,
+       "mean_actual": 1.38295,
+       "ratio": 0.97932
+      },
+      "fringe": {
+       "n": 14828,
+       "mean_predicted": 0.37461,
+       "mean_actual": 0.35473,
+       "ratio": 1.05604
+      },
+      "reads": "below 1 is dilution -- the class is being given less than it takes; above 1 is the opposite"
+     },
+     "replacement_misallocation": {
+      "starter": {
+       "n": 1995,
+       "mean_predicted": 3.01089,
+       "mean_actual": 2.5193,
+       "ratio": 1.19513,
+       "mean_abs_error": 1.32899
+      },
+      "rotational": {
+       "n": 3983,
+       "mean_predicted": 1.60451,
+       "mean_actual": 1.82676,
+       "ratio": 0.87833,
+       "mean_abs_error": 1.0236
+      },
+      "fringe": {
+       "n": 4869,
+       "mean_predicted": 0.44229,
+       "mean_actual": 0.45533,
+       "ratio": 0.97137,
+       "mean_abs_error": 0.44488
+      },
+      "reads": "measured only on team-weeks whose starter was absent. Below 1 means the replacement is under-fed relative to what he actually took"
+     },
+     "delta_pct_vs_baseline": -0.5374,
+     "block_bootstrap_by_team_game": {
+      "mean": -0.002551,
+      "ci_lo": -0.004692,
+      "ci_hi": -0.000365,
+      "n_clusters": 2174,
+      "n_rows": 34621,
+      "excludes_zero": true
+     }
+    }
+   },
+   "team_reconciliation_error_max": 0.0
+  }
+ },
+ "missing_data_policy": {
+  "n_rows": 34621,
+  "n_rows_that_had_a_filed_report": 4364,
+  "note": "scored on the rows that DID have a report, with the block blanked, so the informed number and the fallback numbers are on identical players",
+  "policies": {
+   "INFORMED": {
+    "brier": 0.086877,
+    "log_loss": 0.273049,
+    "expected_calibration_error": 0.032646,
+    "declares_confidence": "FULL",
+    "coverage": 1.0,
+    "n_players_forecast": 4364
+   },
+   "PROBABILISTIC_FALLBACK": {
+    "brier": 0.222179,
+    "log_loss": 0.705658,
+    "expected_calibration_error": 0.169982,
+    "declares_confidence": "REDUCED_CONFIDENCE_NO_INJURY_REPORT",
+    "coverage": 1.0,
+    "n_players_forecast": 4364,
+    "brier_cost_vs_informed": 0.13530126,
+    "block_bootstrap_by_team_game": {
+     "mean": 0.135301,
+     "ci_lo": 0.125713,
+     "ci_hi": 0.14477,
+     "n_clusters": 1496,
+     "n_rows": 4364,
+     "excludes_zero": true
+    }
+   },
+   "HISTORICAL_ROLE_FALLBACK": {
+    "brier": 0.226535,
+    "log_loss": 0.65479,
+    "expected_calibration_error": 0.080994,
+    "declares_confidence": "LOW_CONFIDENCE_ROLE_CLASS_ONLY",
+    "coverage": 1.0,
+    "n_players_forecast": 4364,
+    "brier_cost_vs_informed": 0.13965717,
+    "block_bootstrap_by_team_game": {
+     "mean": 0.139657,
+     "ci_lo": 0.131701,
+     "ci_hi": 0.147596,
+     "n_clusters": 1496,
+     "n_rows": 4364,
+     "excludes_zero": true
+    }
+   },
+   "HARD_DEFER": {
+    "brier": null,
+    "log_loss": null,
+    "expected_calibration_error": null,
+    "declares_confidence": "n/a -- it emits nothing",
+    "coverage": 0.0,
+    "n_players_forecast": 0,
+    "n_players_refused": 4364,
+    "n_team_weeks_refused": 1496,
+    "cost": "every player on an affected team-week disappears from the board, which is a forecast of nothing rather than a cautious forecast"
+   }
+  }
+ },
+ "fit_log": [
+  {
+   "eval_season": 2022,
+   "n_train": 16111,
+   "n_test": 8571,
+   "n_declined_unsupported_cell": 39,
+   "reliability_k": 1.56925,
+   "role_share_k": {
+    "targets": {
+     "basis": "WITHIN_OVER_BETWEEN_PLAYER_VARIANCE",
+     "within": 0.00343919,
+     "between": 0.00457429,
+     "k": 0.75185,
+     "n_players": 581
+    },
+    "carries": {
+     "basis": "WITHIN_OVER_BETWEEN_PLAYER_VARIANCE",
+     "within": 0.00972586,
+     "between": 0.03063862,
+     "k": 0.31744,
+     "n_players": 581
+    }
+   },
+   "vacancy": {
+    "targets": {
+     "fringe": {
+      "n": 1310,
+      "raw": 1.03693,
+      "shrunk": 1.01167,
+      "shrinkage_weight": 0.31612,
+      "se": 0.03054
+     },
+     "rotational": {
+      "n": 1722,
+      "raw": 1.03594,
+      "shrunk": 1.02796,
+      "shrinkage_weight": 0.77791,
+      "se": 0.016939
+     },
+     "starter": {
+      "n": 731,
+      "raw": 0.93143,
+      "shrunk": 0.93616,
+      "shrinkage_weight": 0.93105,
+      "se": 0.018006
+     }
+    },
+    "carries": {
+     "fringe": {
+      "n": 1310,
+      "raw": 1.01711,
+      "shrunk": 1.0,
+      "shrinkage_weight": 0.0,
+      "se": 0.048841
+     },
+     "rotational": {
+      "n": 1722,
+      "raw": 1.0192,
+      "shrunk": 1.0,
+      "shrinkage_weight": 0.0,
+      "se": 0.025037
+     },
+     "starter": {
+      "n": 731,
+      "raw": 0.95649,
+      "shrunk": 0.97341,
+      "shrinkage_weight": 0.61117,
+      "se": 0.027129
+     }
+    }
+   },
+   "calibration_basis": "NESTED_FORWARD_CHAIN"
+  },
+  {
+   "eval_season": 2023,
+   "n_train": 24682,
+   "n_test": 8265,
+   "n_declined_unsupported_cell": 17,
+   "reliability_k": 1.48032,
+   "role_share_k": {
+    "targets": {
+     "basis": "WITHIN_OVER_BETWEEN_PLAYER_VARIANCE",
+     "within": 0.00345818,
+     "between": 0.00433916,
+     "k": 0.79697,
+     "n_players": 685
+    },
+    "carries": {
+     "basis": "WITHIN_OVER_BETWEEN_PLAYER_VARIANCE",
+     "within": 0.0094301,
+     "between": 0.02869267,
+     "k": 0.32866,
+     "n_players": 685
+    }
+   },
+   "vacancy": {
+    "targets": {
+     "fringe": {
+      "n": 1990,
+      "raw": 1.03939,
+      "shrunk": 1.02475,
+      "shrinkage_weight": 0.62823,
+      "se": 0.024019
+     },
+     "rotational": {
+      "n": 2488,
+      "raw": 1.03006,
+      "shrunk": 1.02337,
+      "shrinkage_weight": 0.77757,
+      "se": 0.014176
+     },
+     "starter": {
+      "n": 1056,
+      "raw": 0.93584,
+      "shrunk": 0.93945,
+      "shrinkage_weight": 0.94378,
+      "se": 0.015212
+     }
+    },
+    "carries": {
+     "fringe": {
+      "n": 1990,
+      "raw": 1.00002,
+      "shrunk": 1.0,
+      "shrinkage_weight": 0.0,
+      "se": 0.04025
+     },
+     "rotational": {
+      "n": 2488,
+      "raw": 1.01878,
+      "shrunk": 1.0,
+      "shrinkage_weight": 0.0,
+      "se": 0.020628
+     },
+     "starter": {
+      "n": 1056,
+      "raw": 0.97073,
+      "shrunk": 0.98449,
+      "shrinkage_weight": 0.52981,
+      "se": 0.020074
+     }
+    }
+   },
+   "calibration_basis": "NESTED_FORWARD_CHAIN"
+  },
+  {
+   "eval_season": 2024,
+   "n_train": 32947,
+   "n_test": 8229,
+   "n_declined_unsupported_cell": 30,
+   "reliability_k": 1.3996,
+   "role_share_k": {
+    "targets": {
+     "basis": "WITHIN_OVER_BETWEEN_PLAYER_VARIANCE",
+     "within": 0.00340122,
+     "between": 0.00410544,
+     "k": 0.82847,
+     "n_players": 783
+    },
+    "carries": {
+     "basis": "WITHIN_OVER_BETWEEN_PLAYER_VARIANCE",
+     "within": 0.00976996,
+     "between": 0.02660236,
+     "k": 0.36726,
+     "n_players": 783
+    }
+   },
+   "vacancy": {
+    "targets": {
+     "fringe": {
+      "n": 2579,
+      "raw": 1.0285,
+      "shrunk": 1.01316,
+      "shrinkage_weight": 0.46177,
+      "se": 0.020911
+     },
+     "rotational": {
+      "n": 3275,
+      "raw": 1.02794,
+      "shrunk": 1.02213,
+      "shrinkage_weight": 0.79214,
+      "se": 0.012738
+     },
+     "starter": {
+      "n": 1367,
+      "raw": 0.9449,
+      "shrunk": 0.94808,
+      "shrinkage_weight": 0.94236,
+      "se": 0.013227
+     }
+    },
+    "carries": {
+     "fringe": {
+      "n": 2579,
+      "raw": 0.97259,
+      "shrunk": 1.0,
+      "shrinkage_weight": 0.0,
+      "se": 0.035115
+     },
+     "rotational": {
+      "n": 3275,
+      "raw": 1.01431,
+      "shrunk": 1.0,
+      "shrinkage_weight": 0.0,
+      "se": 0.017973
+     },
+     "starter": {
+      "n": 1367,
+      "raw": 0.99278,
+      "shrunk": 1.0,
+      "shrinkage_weight": 0.0,
+      "se": 0.017467
+     }
+    }
+   },
+   "calibration_basis": "NESTED_FORWARD_CHAIN"
+  },
+  {
+   "eval_season": 2025,
+   "n_train": 41176,
+   "n_test": 9556,
+   "n_declined_unsupported_cell": 3,
+   "reliability_k": 1.37053,
+   "role_share_k": {
+    "targets": {
+     "basis": "WITHIN_OVER_BETWEEN_PLAYER_VARIANCE",
+     "within": 0.00346334,
+     "between": 0.00410438,
+     "k": 0.84382,
+     "n_players": 866
+    },
+    "carries": {
+     "basis": "WITHIN_OVER_BETWEEN_PLAYER_VARIANCE",
+     "within": 0.0098022,
+     "between": 0.02543243,
+     "k": 0.38542,
+     "n_players": 866
+    }
+   },
+   "vacancy": {
+    "targets": {
+     "fringe": {
+      "n": 3201,
+      "raw": 1.01864,
+      "shrunk": 1.00003,
+      "shrinkage_weight": 0.00185,
+      "se": 0.018624
+     },
+     "rotational": {
+      "n": 4107,
+      "raw": 1.03334,
+      "shrunk": 1.02951,
+      "shrinkage_weight": 0.88497,
+      "se": 0.011309
+     },
+     "starter": {
+      "n": 1696,
+      "raw": 0.94346,
+      "shrunk": 0.94601,
+      "shrinkage_weight": 0.95494,
+      "se": 0.012
+     }
+    },
+    "carries": {
+     "fringe": {
+      "n": 3201,
+      "raw": 0.96359,
+      "shrunk": 0.98948,
+      "shrinkage_weight": 0.28894,
+      "se": 0.0307
+     },
+     "rotational": {
+      "n": 4107,
+      "raw": 1.02802,
+      "shrunk": 1.01931,
+      "shrinkage_weight": 0.689,
+      "se": 0.015626
+     },
+     "starter": {
+      "n": 1696,
+      "raw": 0.97625,
+      "shrunk": 0.98652,
+      "shrinkage_weight": 0.56734,
+      "se": 0.015624
+     }
+    }
+   },
+   "calibration_basis": "NESTED_FORWARD_CHAIN"
+  }
+ ],
+ "opportunity_evidence": {
+  "n_rows_with_a_panel_opportunity_row": 34224,
+  "n_rows_zero_by_absence": 16741
+ },
+ "role_significantly_worse": [
+  "carries"
+ ],
+ "decision_by_arm": {
+  "Q6_FEATURES": {
+   "decision": "SUPPORT",
+   "arm": "Q6_FEATURES",
+   "overall_brier_improves": true,
+   "overall_log_loss_improves": true,
+   "cells_improved": 8,
+   "cells_total": 9,
+   "cells_significantly_better": [
+    "RB|fringe",
+    "RB|rotational",
+    "TE|rotational",
+    "TE|starter",
+    "WR|fringe"
+   ],
+   "cells_significantly_worse": [],
+   "composition_metrics_significantly_worse": [],
+   "conditional_role_metrics_significantly_worse": [
+    "carries"
+   ],
+   "rule": "SUPPORT / WEAK_SUPPORT / REJECT, against a rule fixed before the run.\n\n    From the specification:\n\n      SUPPORT       the candidate improves appearance Brier AND log loss\n                    overall, improves in a majority of position-by-role-class\n                    cells, at least one improvement survives the\n                    team-game-clustered bootstrap, and no cell is\n                    significantly worse; and the conditional-role or\n                    composition metrics do not degrade.\n      WEAK_SUPPORT  some primary metric improves and none is significantly\n                    worse.\n      REJECT        otherwise.",
+   "rule_note": "the rule's last clause reads \"the conditional-role OR composition metrics do not degrade\", so a degraded role metric does not on its own block support while the composition holds. It is reported here either way rather than left out because the clause did not require it."
+  },
+  "Q6_CALIBRATED": {
+   "decision": "WEAK_SUPPORT",
+   "arm": "Q6_CALIBRATED",
+   "overall_brier_improves": true,
+   "overall_log_loss_improves": false,
+   "cells_improved": 6,
+   "cells_total": 9,
+   "cells_significantly_better": [
+    "RB|starter",
+    "TE|starter"
+   ],
+   "cells_significantly_worse": [],
+   "composition_metrics_significantly_worse": [],
+   "conditional_role_metrics_significantly_worse": [
+    "carries"
+   ],
+   "rule": "SUPPORT / WEAK_SUPPORT / REJECT, against a rule fixed before the run.\n\n    From the specification:\n\n      SUPPORT       the candidate improves appearance Brier AND log loss\n                    overall, improves in a majority of position-by-role-class\n                    cells, at least one improvement survives the\n                    team-game-clustered bootstrap, and no cell is\n                    significantly worse; and the conditional-role or\n                    composition metrics do not degrade.\n      WEAK_SUPPORT  some primary metric improves and none is significantly\n                    worse.\n      REJECT        otherwise.",
+   "rule_note": "the rule's last clause reads \"the conditional-role OR composition metrics do not degrade\", so a degraded role metric does not on its own block support while the composition holds. It is reported here either way rather than left out because the clause did not require it."
+  }
+ },
+ "decision": {
+  "decision": "WEAK_SUPPORT",
+  "arm": "Q6_CALIBRATED",
+  "overall_brier_improves": true,
+  "overall_log_loss_improves": false,
+  "cells_improved": 6,
+  "cells_total": 9,
+  "cells_significantly_better": [
+   "RB|starter",
+   "TE|starter"
+  ],
+  "cells_significantly_worse": [],
+  "composition_metrics_significantly_worse": [],
+  "conditional_role_metrics_significantly_worse": [
+   "carries"
+  ],
+  "rule": "SUPPORT / WEAK_SUPPORT / REJECT, against a rule fixed before the run.\n\n    From the specification:\n\n      SUPPORT       the candidate improves appearance Brier AND log loss\n                    overall, improves in a majority of position-by-role-class\n                    cells, at least one improvement survives the\n                    team-game-clustered bootstrap, and no cell is\n                    significantly worse; and the conditional-role or\n                    composition metrics do not degrade.\n      WEAK_SUPPORT  some primary metric improves and none is significantly\n                    worse.\n      REJECT        otherwise.",
+  "rule_note": "the rule's last clause reads \"the conditional-role OR composition metrics do not degrade\", so a degraded role metric does not on its own block support while the composition holds. It is reported here either way rather than left out because the clause did not require it.",
+  "headline_arm_note": "the headline arm was fixed before the numbers were read. The other arm's verdict is published beside it in decision_by_arm; adopting whichever scored better afterwards would be selection on the outcome."
+ },
+ "n_draws": 200
+}
