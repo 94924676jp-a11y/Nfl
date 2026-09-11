@@ -1,0 +1,1564 @@
+{
+ "TEST_ONLY": false,
+ "absent_layers": [
+  "appearance",
+  "conversion",
+  "feature_build",
+  "participation",
+  "targets_carries",
+  "td_layer"
+ ],
+ "accounting_verdicts": [
+  {
+   "class": "HARD",
+   "code": "DRAW_ARTIFACT_VERIFIED",
+   "detail": "16 matrix(es) re-read and hashed, one shared draw index of 1000",
+   "evaluator": "nfl.production.draws_artifact.verify",
+   "invariant": "draw_artifact_integrity",
+   "state": "PASS"
+  },
+  {
+   "class": "HARD",
+   "code": "DRAW_ENCODING_LOSSLESS",
+   "detail": "every matrix round-tripped exactly through its stored dtype; nothing was clipped, rounded or rescaled to fit",
+   "evaluator": "nfl.production.draws_artifact.DrawSet.write",
+   "invariant": "draw_encoding_lossless",
+   "state": "PASS"
+  },
+  {
+   "class": "HARD",
+   "code": "DRAW_INDEX_SHARED",
+   "detail": "all 16 matrix(es) share one draw index of width 1000",
+   "evaluator": "nfl.production.draws_artifact.verify",
+   "invariant": "draw_index_shared",
+   "state": "PASS"
+  },
+  {
+   "class": "HARD",
+   "code": "DRAW_SET_PRESENT",
+   "detail": "16 matrix(es) from ['qb', 'team_volume']",
+   "evaluator": "nfl.production.draws_artifact.DrawSet",
+   "invariant": "draw_set_non_empty",
+   "state": "PASS"
+  },
+  {
+   "class": "HARD",
+   "code": "SUMMARY_MATCHES_DRAWS",
+   "detail": "all 66 summary(ies) recomputed exactly from the stored draws",
+   "evaluator": "nfl.production.draws_artifact.assert_summary_consistent",
+   "invariant": "draw_summary_consistency",
+   "state": "PASS"
+  },
+  {
+   "class": "DIAGNOSTIC",
+   "code": "NONQB_LAYERS_UNAVAILABLE",
+   "detail": "6 completeness layer(s) produced nothing this run: ['appearance', 'conversion', 'feature_build', 'participation', 'targets_carries', 'td_layer']. Carried by `completeness` as partial coverage; named here so the artifact says WHICH.",
+   "evaluator": "nfl.production.run_forecast (non-QB chain states)",
+   "invariant": "nonqb_layer_availability",
+   "state": "FAIL"
+  },
+  {
+   "class": "DIAGNOSTIC",
+   "code": "QB_ALLOCATION_RESIDUAL_NONE",
+   "detail": "the team reconciliation raised no residual warning",
+   "evaluator": "nfl.production.qb_accounting.reconcile_team (warnings)",
+   "invariant": "qb_allocation_residual",
+   "state": "PASS"
+  },
+  {
+   "class": "HARD",
+   "code": "CROSS_LAYER_RECONCILIATION_NOT_RUN",
+   "detail": "the receiving draw set was not supplied to this run, so team passing yards against player receiving yards and passing TD against receiving TD could not be reconciled. This is recorded as owed rather than reported as satisfied.",
+   "evaluator": "nfl.production.qb_accounting.reconcile_cross_layer",
+   "invariant": "qb_cross_layer_reconciliation",
+   "owed": {
+    "blocking_stage": "conversion (RC1 baseline; SIGNAL_WEAK)",
+    "exception_to_preserve": {
+     "invariant": "team_pass_yards_eq_team_recv_yards",
+     "n_explained_by_lateral": 75,
+     "n_team_games": 3230,
+     "n_unexplained": 1,
+     "n_violating": 76,
+     "policy": "A lateral residual is NAMED and permitted. Anything else is an unexplained residual and stays a FAIL. The exception may never be widened to make an unexplained case pass.",
+     "seasons": [
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+     ],
+     "unexplained_example": {
+      "note": "no lateral on the play; upstream inconsistency of 1 yard, left visible",
+      "passing_yards": 13.0,
+      "receiving_yards": 12.0,
+      "season": 2022,
+      "team": "IND",
+      "week": 16
+     }
+    },
+    "needs": [
+     "receiving yard draws aligned to the same team-games and draw indices",
+     "receiving TD draws"
+    ]
+   },
+   "state": "DEFERRED"
+  },
+  {
+   "class": "HARD",
+   "code": "QB_DROPBACK_IDENTITY_HOLDS",
+   "detail": "holds on all 6000 draw cells",
+   "evaluator": "nfl.production.qb_v1.identity_check",
+   "invariant": "qb_dropback_identity",
+   "state": "PASS"
+  },
+  {
+   "class": "HARD",
+   "code": "QB_INACTIVE_OWNERSHIP_NOT_ESTABLISHED",
+   "detail": "no official inactive list was supplied for this game, so no quarterback can be checked against one. This is the absence of the question, not an answer to it.",
+   "evaluator": "nfl.production.qb_accounting.assert_inactive_qbs_own_nothing",
+   "invariant": "qb_inactive_owns_nothing",
+   "owed": {
+    "needs": "official_inactive_ids for this game"
+   },
+   "state": "DEFERRED"
+  },
+  {
+   "class": "DIAGNOSTIC",
+   "code": "QB_LAYER_KNOWN_LIMITATIONS",
+   "detail": "characterised weaknesses present in every run of this layer: discrete_low_count_intervals, int_discrimination, multi_qb_over_prediction. Measured and reported, never smoothed away. This is a statement about how good the model is, not about whether its numbers are self-consistent, so it does not gate.",
+   "evaluator": "nfl.production.qb_v1.KNOWN_LIMITATIONS",
+   "invariant": "qb_known_limitations",
+   "state": "FAIL"
+  },
+  {
+   "class": "HARD",
+   "code": "QB_DRAW_ACCOUNTING_HOLDS",
+   "detail": "all 7 identities hold on every one of 6000 draw cells",
+   "evaluator": "nfl.production.qb_accounting.reconcile_draws",
+   "invariant": "qb_per_draw_accounting",
+   "state": "PASS"
+  },
+  {
+   "class": "HARD",
+   "code": "QB_TEAM_ACCOUNTING_MEASURED",
+   "detail": "2 team-game(s), 2 with more than one quarterback; per-team dropback closure CLOSES.",
+   "evaluator": "nfl.production.qb_accounting.reconcile_team",
+   "invariant": "qb_team_accounting",
+   "state": "PASS"
+  },
+  {
+   "class": "HARD",
+   "code": "A1_RUSH_ALLOCATION",
+   "detail": "2 team(s) x 1000 draws partitioned into 6 categories; every carry has exactly one owner in every draw",
+   "evaluator": "nfl.production.nonqb.rushing_a1.allocate",
+   "invariant": "rushing_single_owner",
+   "state": "PASS"
+  },
+  {
+   "class": "HARD",
+   "code": "SC1_COHERENT",
+   "detail": "carries >= scrambles in every draw, by permutation of the carry draw index; no value changed",
+   "evaluator": "nfl.production.nonqb.scramble_coherence.couple",
+   "invariant": "scramble_carry_coherence",
+   "state": "PASS"
+  }
+ ],
+ "candidate_components": [
+  {
+   "component": "A1",
+   "engine_flag": "rushing_a1",
+   "governance": "REHEARSAL_ONLY",
+   "predeclaration": "nfl/research/own8/predeclaration_own8.md",
+   "predeclaration_sha256": "90f6ecc37bcee427177f183be03374c13ec87fe1e14d667a4457c797748789db",
+   "replaces": "a QB rush draw that could exceed the carry pool it sits inside",
+   "what": "single-owner rushing: one multinomial partitions the rush-play budget across kneel / designed QB / RB / WR / TE / fringe, so every carry has exactly one owner"
+  },
+  {
+   "component": "A3G",
+   "engine_flag": "game_coupling",
+   "governance": "REHEARSAL_ONLY -- its own pre-registered verdict did NOT clear; integrated on corrected clauses recorded in predeclaration_a3g_addendum_01.md",
+   "predeclaration": "nfl/research/a3g/predeclaration_a3g.md",
+   "predeclaration_sha256": "d3620883e52fd6d2da9b56403a219210e82e52d5a65bf73cbd23f1d13d4e78ea",
+   "replaces": "two independently drawn teams, and game totals whose spread was the sum of independent marginals",
+   "what": "the two teams in a game share one coupled draw index; marginals unmoved by construction"
+  },
+  {
+   "component": "C0",
+   "engine_flag": "include_cold_start",
+   "governance": "REHEARSAL_ONLY",
+   "predeclaration": "nfl/research/own3/predeclaration_own3.md",
+   "predeclaration_sha256": "aedced9c82f74b5b406e4658ddf8b435fc1582fdfc0e7d759a5a7ff3b5f07c82",
+   "replaces": "a 2.3-6.9% dropback share leaving the system",
+   "what": "cold-start quarterbacks kept in the slate so allocated share reaches a modelled QB state"
+  },
+  {
+   "component": "C3",
+   "engine_flag": "shared_pass",
+   "governance": "REHEARSAL_ONLY",
+   "predeclaration": "nfl/research/xl1/predeclaration_xl1.md",
+   "predeclaration_sha256": "60fe3fbc0f35933e7bd4b43c56fb0afb68d95de67b4f51699a878ceb488d94da",
+   "replaces": "passing and receiving yards/TDs drawn independently",
+   "what": "one passing event: the target budget comes from the throw process and the passer line is credited from the receiving event"
+  },
+  {
+   "component": "R2",
+   "engine_flag": "r2",
+   "governance": "REHEARSAL_ONLY -- engineering integration, not prospective validation",
+   "predeclaration": "nfl/research/r2/predeclaration_qb_level_ownership_r2.md",
+   "predeclaration_sha256": "3d7beeb39f32da11623ac2be178ca4b764ecf314a5a55515b0d45c0e3d4f323c",
+   "replaces": "the composition that divided one level by another",
+   "what": "QB dropback level owned by D1 x QB3 and apportioned by largest remainder; QB V1 supplies conditional rates only"
+  },
+  {
+   "component": "SC1",
+   "engine_flag": "rushing_a1",
+   "governance": "REHEARSAL_ONLY",
+   "predeclaration": "nfl/research/sc1/predeclaration_sc1.md",
+   "predeclaration_sha256": "b62e48f23b5f3a16fb633e5286e575f23d7de3e07c8ebf923255d8d565e76729",
+   "replaces": "two levels drawn on one index from independent randomness, whose tails crossed into a negative rush-play budget",
+   "what": "the scramble/carry joint state is made coherent by permuting which draw index receives which carry value, so team carries >= QB scrambles in every draw"
+  },
+  {
+   "component": "R5",
+   "defect": "P4C weights are conditional-on-appearing shares consumed as unconditional weights over an unfiltered roster, so the vector is not a partition and normalisation halves every starter",
+   "evidence": "historical pool 14.6/team-game with sum(C)=1.24; unfiltered 2026 pool 22.5 with sum(C)=2.14; ACT-filtered 14.5 with sum(C)=1.46",
+   "governance": "REHEARSAL_ONLY",
+   "introduces_no_constant": true,
+   "replaces": "an unfiltered weekly-roster pool that included practice squad, reserve and released players",
+   "what": "restrict the non-QB allocation pool to players whose roster status is ACT"
+  },
+  {
+   "component": "R6",
+   "defect": "the weight is role-blind where it has no history, and the participation prior it competes with is flat at 1.39:1 against a realised 2.5:1 in snaps and 3.7:1 in targets",
+   "evidence": "realised target share by point-in-time tier over 3,230 team-games: WR1 22.7 / WR2 18.3 / WR3 13.3 / WR4+ 6.1 pct",
+   "governance": "REHEARSAL_ONLY",
+   "inherits": "R5",
+   "introduces_no_constant": true,
+   "replaces": "a positional-mean fallback that is blind to role",
+   "shrinkage": "n/(n+k), k estimated from within/between player variance",
+   "what": "class weight = own history shrunk toward point-in-time depth tier"
+  },
+  {
+   "component": "R8",
+   "defect": "R7 beat the frozen mechanism in weeks 1-4 and lost to it from week 5. A calendar switch would reproduce that table and learn nothing, and would hand the wrong model to a player who signs in week 9 with as little current-season evidence as one in week 1",
+   "evidence": "forward-chained 2022-2025 on identical rows, Brier by regime V1 / R7 / R8: week 1 0.24667 / 0.10966 / 0.06321; weeks 2-4 0.18146 / 0.11510 / 0.10049; weeks 5-9 0.11213 / 0.11814 / 0.10345; weeks 10-18 0.10975 / 0.11989 / 0.10611. R8 beats both in every regime and every team-week-blocked interval excludes zero",
+   "governance": "REHEARSAL_ONLY",
+   "inherits": "R7",
+   "inherits_every_r7_refusal": "point-in-time depth selection, no today-chart substitution, the three-state appearance vocabulary, the explicit season boundary, and the declined no_history_and_not_depth_listed cell",
+   "introduces_no_constant": true,
+   "k": "ESTIMATED, never chosen: within-player over between-player variance of player-season appearance rates. 4,073 player-seasons with at least four games give within 0.139520, between 0.114588, k = 1.2176",
+   "no_week_number_in_the_design": true,
+   "replaces": "choosing between two models by week number",
+   "what": "one appearance model whose regime moves with the evidence: every current-season participation quantity enters weighted by w = n_cur / (n_cur + k), and the depth block is interacted with (1 - w), so depth carries the cold start and participation takes over as a player accumulates games"
+  }
+ ],
+ "candidate_components_applied": [
+  "A1",
+  "A3G",
+  "C0",
+  "R2",
+  "R5",
+  "R6",
+  "R8",
+  "SC1"
+ ],
+ "candidate_components_not_reached": [
+  "C3"
+ ],
+ "code_commit": "e2ca5557bb4f9b268ad5b5349fb2fa525a5f821c+dirty[5]",
+ "completeness": "PARTIAL_PLAYER_COVERAGE",
+ "contract_version": "nfl-forecast-artifact-1",
+ "distributions": {
+  "00-0033119": {
+   "qb": {
+    "att": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/att",
+      "n_draws": 1000,
+      "row": 0
+     },
+     "mean": 32.77,
+     "p10": 20.0,
+     "p50": 34.0,
+     "p90": 47.0
+    },
+    "cmp": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/cmp",
+      "n_draws": 1000,
+      "row": 0
+     },
+     "mean": 20.905,
+     "p10": 12.0,
+     "p50": 22.0,
+     "p90": 31.0
+    },
+    "db": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/db",
+      "n_draws": 1000,
+      "row": 0
+     },
+     "mean": 37.175,
+     "p10": 23.0,
+     "p50": 39.0,
+     "p90": 54.0
+    },
+    "int": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/int",
+      "n_draws": 1000,
+      "row": 0
+     },
+     "mean": 0.539,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 2.0
+    },
+    "ptd": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/ptd",
+      "n_draws": 1000,
+      "row": 0
+     },
+     "mean": 1.214,
+     "p10": 0.0,
+     "p50": 1.0,
+     "p90": 3.0
+    },
+    "pyds": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/pyds",
+      "n_draws": 1000,
+      "row": 0
+     },
+     "mean": 217.62763933298774,
+     "p10": 69.57272727272732,
+     "p50": 212.16081871345028,
+     "p90": 343.4117647058823
+    },
+    "rtd": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/rtd",
+      "n_draws": 1000,
+      "row": 0
+     },
+     "mean": 0.171,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 1.0
+    },
+    "rush_opp": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/rush_opp",
+      "n_draws": 1000,
+      "row": 0
+     },
+     "mean": 2.905,
+     "p10": 0.0,
+     "p50": 3.0,
+     "p90": 6.0
+    },
+    "ryds": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/ryds",
+      "n_draws": 1000,
+      "row": 0
+     },
+     "mean": 14.222678968253968,
+     "p10": 0.0,
+     "p50": 10.0,
+     "p90": 33.10000000000002
+    },
+    "sacks": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/sacks",
+      "n_draws": 1000,
+      "row": 0
+     },
+     "mean": 2.649,
+     "p10": 0.0,
+     "p50": 3.0,
+     "p90": 5.0
+    },
+    "scr": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/scr",
+      "n_draws": 1000,
+      "row": 0
+     },
+     "mean": 1.756,
+     "p10": 0.0,
+     "p50": 2.0,
+     "p90": 4.0
+    }
+   }
+  },
+  "00-0035289": {
+   "qb": {
+    "att": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/att",
+      "n_draws": 1000,
+      "row": 1
+     },
+     "mean": 2.607,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 9.0
+    },
+    "cmp": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/cmp",
+      "n_draws": 1000,
+      "row": 1
+     },
+     "mean": 1.679,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 5.100000000000023
+    },
+    "db": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/db",
+      "n_draws": 1000,
+      "row": 1
+     },
+     "mean": 2.966,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 10.0
+    },
+    "int": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/int",
+      "n_draws": 1000,
+      "row": 1
+     },
+     "mean": 0.066,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "ptd": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/ptd",
+      "n_draws": 1000,
+      "row": 1
+     },
+     "mean": 0.107,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "pyds": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/pyds",
+      "n_draws": 1000,
+      "row": 1
+     },
+     "mean": 18.878848067142673,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 60.03000000000001
+    },
+    "rtd": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/rtd",
+      "n_draws": 1000,
+      "row": 1
+     },
+     "mean": 0.016,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "rush_opp": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/rush_opp",
+      "n_draws": 1000,
+      "row": 1
+     },
+     "mean": 0.185,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "ryds": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/ryds",
+      "n_draws": 1000,
+      "row": 1
+     },
+     "mean": 0.7021666666666667,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "sacks": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/sacks",
+      "n_draws": 1000,
+      "row": 1
+     },
+     "mean": 0.217,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 1.0
+    },
+    "scr": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/scr",
+      "n_draws": 1000,
+      "row": 1
+     },
+     "mean": 0.142,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    }
+   }
+  },
+  "00-0036355": {
+   "qb": {
+    "att": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/att",
+      "n_draws": 1000,
+      "row": 3
+     },
+     "mean": 13.457,
+     "p10": 0.0,
+     "p50": 1.0,
+     "p90": 36.0
+    },
+    "cmp": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/cmp",
+      "n_draws": 1000,
+      "row": 3
+     },
+     "mean": 8.91,
+     "p10": 0.0,
+     "p50": 0.5,
+     "p90": 25.0
+    },
+    "db": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/db",
+      "n_draws": 1000,
+      "row": 3
+     },
+     "mean": 15.117,
+     "p10": 0.0,
+     "p50": 1.0,
+     "p90": 41.0
+    },
+    "int": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/int",
+      "n_draws": 1000,
+      "row": 3
+     },
+     "mean": 0.242,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 1.0
+    },
+    "ptd": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/ptd",
+      "n_draws": 1000,
+      "row": 3
+     },
+     "mean": 0.653,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 2.0
+    },
+    "pyds": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/pyds",
+      "n_draws": 1000,
+      "row": 3
+     },
+     "mean": 98.40860439867043,
+     "p10": 0.0,
+     "p50": 3.7413793103448274,
+     "p90": 273.0777777777778
+    },
+    "rtd": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/rtd",
+      "n_draws": 1000,
+      "row": 3
+     },
+     "mean": 0.057,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "rush_opp": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/rush_opp",
+      "n_draws": 1000,
+      "row": 3
+     },
+     "mean": 1.192,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 4.0
+    },
+    "ryds": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/ryds",
+      "n_draws": 1000,
+      "row": 3
+     },
+     "mean": 6.952480952380952,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 21.64000000000001
+    },
+    "sacks": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/sacks",
+      "n_draws": 1000,
+      "row": 3
+     },
+     "mean": 0.877,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 3.0
+    },
+    "scr": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/scr",
+      "n_draws": 1000,
+      "row": 3
+     },
+     "mean": 0.783,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 3.0
+    }
+   }
+  },
+  "00-0037012": {
+   "qb": {
+    "att": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/att",
+      "n_draws": 1000,
+      "row": 4
+     },
+     "mean": 18.753,
+     "p10": 0.0,
+     "p50": 22.0,
+     "p90": 37.0
+    },
+    "cmp": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/cmp",
+      "n_draws": 1000,
+      "row": 4
+     },
+     "mean": 10.703,
+     "p10": 0.0,
+     "p50": 12.0,
+     "p90": 22.0
+    },
+    "db": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/db",
+      "n_draws": 1000,
+      "row": 4
+     },
+     "mean": 22.349,
+     "p10": 0.0,
+     "p50": 27.0,
+     "p90": 43.0
+    },
+    "int": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/int",
+      "n_draws": 1000,
+      "row": 4
+     },
+     "mean": 0.5,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 2.0
+    },
+    "ptd": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/ptd",
+      "n_draws": 1000,
+      "row": 4
+     },
+     "mean": 0.54,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 2.0
+    },
+    "pyds": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/pyds",
+      "n_draws": 1000,
+      "row": 4
+     },
+     "mean": 117.29332985985562,
+     "p10": 0.0,
+     "p50": 98.19047619047619,
+     "p90": 285.3750000000001
+    },
+    "rtd": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/rtd",
+      "n_draws": 1000,
+      "row": 4
+     },
+     "mean": 0.085,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "rush_opp": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/rush_opp",
+      "n_draws": 1000,
+      "row": 4
+     },
+     "mean": 5.923,
+     "p10": 0.0,
+     "p50": 6.0,
+     "p90": 13.0
+    },
+    "ryds": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/ryds",
+      "n_draws": 1000,
+      "row": 4
+     },
+     "mean": 28.367628603341103,
+     "p10": 0.0,
+     "p50": 13.0,
+     "p90": 77.55000000000001
+    },
+    "sacks": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/sacks",
+      "n_draws": 1000,
+      "row": 4
+     },
+     "mean": 1.494,
+     "p10": 0.0,
+     "p50": 1.0,
+     "p90": 4.0
+    },
+    "scr": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/scr",
+      "n_draws": 1000,
+      "row": 4
+     },
+     "mean": 2.102,
+     "p10": 0.0,
+     "p50": 2.0,
+     "p90": 5.0
+    }
+   }
+  },
+  "00-0040464": {
+   "qb": {
+    "att": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/att",
+      "n_draws": 1000,
+      "row": 5
+     },
+     "mean": 0.691,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 2.0
+    },
+    "cmp": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/cmp",
+      "n_draws": 1000,
+      "row": 5
+     },
+     "mean": 0.436,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 2.0
+    },
+    "db": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/db",
+      "n_draws": 1000,
+      "row": 5
+     },
+     "mean": 0.774,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 2.0
+    },
+    "int": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/int",
+      "n_draws": 1000,
+      "row": 5
+     },
+     "mean": 0.02,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "ptd": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/ptd",
+      "n_draws": 1000,
+      "row": 5
+     },
+     "mean": 0.029,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "pyds": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/pyds",
+      "n_draws": 1000,
+      "row": 5
+     },
+     "mean": 4.7747651190557265,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 18.508823529411767
+    },
+    "rtd": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/rtd",
+      "n_draws": 1000,
+      "row": 5
+     },
+     "mean": 0.004,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "rush_opp": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/rush_opp",
+      "n_draws": 1000,
+      "row": 5
+     },
+     "mean": 0.082,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "ryds": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/ryds",
+      "n_draws": 1000,
+      "row": 5
+     },
+     "mean": 0.38778044733044736,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "sacks": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/sacks",
+      "n_draws": 1000,
+      "row": 5
+     },
+     "mean": 0.037,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "scr": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/scr",
+      "n_draws": 1000,
+      "row": 5
+     },
+     "mean": 0.046,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    }
+   }
+  },
+  "00-0041561": {
+   "qb": {
+    "att": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/att",
+      "n_draws": 1000,
+      "row": 2
+     },
+     "mean": 1.003,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 3.0
+    },
+    "cmp": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/cmp",
+      "n_draws": 1000,
+      "row": 2
+     },
+     "mean": 0.664,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 2.0
+    },
+    "db": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/db",
+      "n_draws": 1000,
+      "row": 2
+     },
+     "mean": 1.121,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 3.0
+    },
+    "int": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/int",
+      "n_draws": 1000,
+      "row": 2
+     },
+     "mean": 0.021,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "ptd": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/ptd",
+      "n_draws": 1000,
+      "row": 2
+     },
+     "mean": 0.048,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "pyds": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/pyds",
+      "n_draws": 1000,
+      "row": 2
+     },
+     "mean": 7.317487793240627,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 21.772727272727284
+    },
+    "rtd": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/rtd",
+      "n_draws": 1000,
+      "row": 2
+     },
+     "mean": 0.008,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "rush_opp": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/rush_opp",
+      "n_draws": 1000,
+      "row": 2
+     },
+     "mean": 0.092,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "ryds": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/ryds",
+      "n_draws": 1000,
+      "row": 2
+     },
+     "mean": 0.5173363664113665,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "sacks": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/sacks",
+      "n_draws": 1000,
+      "row": 2
+     },
+     "mean": 0.069,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "scr": {
+     "draws_ref": {
+      "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+      "key": "qb/scr",
+      "n_draws": 1000,
+      "row": 2
+     },
+     "mean": 0.049,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    }
+   }
+  }
+ },
+ "distributions_source": "MODEL",
+ "draw_artifact": {
+  "arrays": {
+   "qb/att": {
+    "dtype": "int16",
+    "sha256": "a7de7ca1d39640fba558afbe6f8f37dce36dcc5d66689f4a12de43223aa26339",
+    "shape": [
+     6,
+     1000
+    ]
+   },
+   "qb/cmp": {
+    "dtype": "int16",
+    "sha256": "5938b951cbf2945edaeaa4fc9411a4a72d1aa0cfec296eaf882d1b64c3c7af1c",
+    "shape": [
+     6,
+     1000
+    ]
+   },
+   "qb/db": {
+    "dtype": "int16",
+    "sha256": "966eb9d9c7c5a05a5da43c45ebfc4fe5f77d07403e478f3993b99c6a41a787fa",
+    "shape": [
+     6,
+     1000
+    ]
+   },
+   "qb/int": {
+    "dtype": "int16",
+    "sha256": "aa54970f29882ae17f4052f198bdcf01425f4d23df375e96e88c628c868dd941",
+    "shape": [
+     6,
+     1000
+    ]
+   },
+   "qb/ptd": {
+    "dtype": "int16",
+    "sha256": "e6ad3591ea24ca89af8ef4a8fba8db7747459e98da385f9994bffcfa1d2467ce",
+    "shape": [
+     6,
+     1000
+    ]
+   },
+   "qb/pyds": {
+    "dtype": "float64",
+    "sha256": "79392f5cfe910d13d98325bafdbc8e9f84b3e279ba486037aba16759e77e6607",
+    "shape": [
+     6,
+     1000
+    ]
+   },
+   "qb/rtd": {
+    "dtype": "int16",
+    "sha256": "29115111a6585a9e4ef44fb87add85cea95ee10b363647957b4933219846deb9",
+    "shape": [
+     6,
+     1000
+    ]
+   },
+   "qb/rush_opp": {
+    "dtype": "int16",
+    "sha256": "5361312c733c47fdd186a4d07d2685a495e6fbd427cf83dd4500166ad97b9da5",
+    "shape": [
+     6,
+     1000
+    ]
+   },
+   "qb/ryds": {
+    "dtype": "float64",
+    "sha256": "c30b330f0e07453c170fbd8c2fa2967b100d856f0affb84c6aee6992595247cd",
+    "shape": [
+     6,
+     1000
+    ]
+   },
+   "qb/sacks": {
+    "dtype": "int16",
+    "sha256": "b1f8b02c3e2e5e37b1ea9d3d01115c0a5accc4dc70558f5a95e067bece004225",
+    "shape": [
+     6,
+     1000
+    ]
+   },
+   "qb/scr": {
+    "dtype": "int16",
+    "sha256": "a2de874d09295df345fe404b42e9b06853153df1a5d41723cfcfa3ebba089cc5",
+    "shape": [
+     6,
+     1000
+    ]
+   },
+   "team_volume/team_carries": {
+    "dtype": "float64",
+    "sha256": "0a792ef8e62fca9bb81799a718cb9fc01b8d86355064113c977f9294c43b8d95",
+    "shape": [
+     2,
+     1000
+    ]
+   },
+   "team_volume/team_dropbacks_part": {
+    "dtype": "float64",
+    "sha256": "d252107b7acc95ef47779e1de0e1e02ccf85da5713a4bbd7577a7438cc75c95a",
+    "shape": [
+     2,
+     1000
+    ]
+   },
+   "team_volume/team_off_snaps": {
+    "dtype": "int16",
+    "sha256": "6d805ab1938f4347a6d3f7aae37e3c661da3b5a366a471d37da467ff96fffd89",
+    "shape": [
+     2,
+     1000
+    ]
+   },
+   "team_volume/team_rz_carries": {
+    "dtype": "float64",
+    "sha256": "85855083aa9355fbe05bf8a7d9ab32a4ac906670f3704289c392096af4454b53",
+    "shape": [
+     2,
+     1000
+    ]
+   },
+   "team_volume/team_targets": {
+    "dtype": "float64",
+    "sha256": "91c2625865995d24db7a0dc4b366a87e50ad262531b0e4dc251b09c20d4b7b33",
+    "shape": [
+     2,
+     1000
+    ]
+   }
+  },
+  "content_digest": "8e989a9edfe0acc01256a6a2e15a887b082c6051cd3baed0400dbfe8e0712cca",
+  "draw_artifact_version": "nfl-draw-artifact-1",
+  "draw_index_semantics": {
+   "across_rows": "INDEPENDENT_STREAMS_COLUMN_ALIGNED",
+   "note": "column j is the same iteration of one row's stream for every metric of that row, so cross-metric dependence on this axis is real. Rows are seeded independently, so a CROSS-ROW correlation read off the same axis measures the generator's lack of coupling, not a football quantity.",
+   "within_row_across_metrics": "SAME_SIMULATED_WORLD"
+  },
+  "file": {
+   "bytes": 54631,
+   "name": "player_draws.npz",
+   "sha256": "bddc15550d1bd1ab2bcffecebd8b4710545cdb4b3016120d0b61a523e2031663"
+  },
+  "game_id": "2026_01_ARI_LAC",
+  "layers": {
+   "qb": {
+    "metrics": [
+     "att",
+     "cmp",
+     "db",
+     "int",
+     "ptd",
+     "pyds",
+     "rtd",
+     "rush_opp",
+     "ryds",
+     "sacks",
+     "scr"
+    ],
+    "rng_stream": "numpy default_rng([seed, ord, gsis_id]) -- one stream per row; columns are aligned, rows are independent",
+    "row_axis": "gsis_id",
+    "row_ids": [
+     "00-0033119",
+     "00-0035289",
+     "00-0041561",
+     "00-0036355",
+     "00-0037012",
+     "00-0040464"
+    ],
+    "shape": [
+     6,
+     1000
+    ],
+    "spec_version": "qb-v1-aggregate-then-allocate-1"
+   },
+   "team_volume": {
+    "metrics": [
+     "team_carries",
+     "team_dropbacks_part",
+     "team_off_snaps",
+     "team_rz_carries",
+     "team_targets"
+    ],
+    "rng_stream": "nfl.production.seeds declared streams, per metric",
+    "row_axis": "team",
+    "row_ids": [
+     "ARI",
+     "LAC"
+    ],
+    "shape": [
+     2,
+     1000
+    ],
+    "spec_version": "team-volume-v1-p4b-frozen-1"
+   }
+  },
+  "n_draw_cells": 76000,
+  "n_draws": 1000,
+  "n_layers": 2,
+  "n_matrices": 16,
+  "rng": {
+   "generator": "numpy.random.default_rng (PCG64)",
+   "seed": 20260908,
+   "seed_protocol": "per-row seed 20260908"
+  },
+  "run_id": "7486f607b2f5352e"
+ },
+ "draw_artifact_sha256": "bddc15550d1bd1ab2bcffecebd8b4710545cdb4b3016120d0b61a523e2031663",
+ "eligibility_verdict": "V1_CANDIDATE|APPLIED:A1,A3G,C0,R2,R5,R6,R8,SC1|NOT_REACHED:C3|PARTIAL|PRODUCED:qb_layer|ABSENT:appearance,conversion,feature_build,participation,targets_carries,td_layer",
+ "excluded_unidentified": [],
+ "feature_set_hash": "4d2eda3e88818e2ad5a78e146c4e2f48",
+ "game_id": "2026_01_ARI_LAC",
+ "kickoff_utc": "2026-09-13T20:25:00Z",
+ "model_arm": "A",
+ "model_configuration": "V1_CANDIDATE_R8",
+ "player_ids": [
+  "00-0028845",
+  "00-0030294",
+  "00-0030957",
+  "00-0031040",
+  "00-0032103",
+  "00-0032146",
+  "00-0032954",
+  "00-0033066",
+  "00-0033119",
+  "00-0033307",
+  "00-0033546",
+  "00-0033553",
+  "00-0033676",
+  "00-0033885",
+  "00-0033890",
+  "00-0034162",
+  "00-0034356",
+  "00-0034381",
+  "00-0034417",
+  "00-0034790",
+  "00-0035125",
+  "00-0035144",
+  "00-0035202",
+  "00-0035258",
+  "00-0035289",
+  "00-0035378",
+  "00-0035589",
+  "00-0035636",
+  "00-0035688",
+  "00-0035859",
+  "00-0036181",
+  "00-0036331",
+  "00-0036338",
+  "00-0036355",
+  "00-0036376",
+  "00-0036568",
+  "00-0036635",
+  "00-0036646",
+  "00-0036736",
+  "00-0036933",
+  "00-0036992",
+  "00-0036995",
+  "00-0037004",
+  "00-0037009",
+  "00-0037012",
+  "00-0037141",
+  "00-0037157",
+  "00-0037224",
+  "00-0037241",
+  "00-0037242",
+  "00-0037263",
+  "00-0037277",
+  "00-0037320",
+  "00-0037596",
+  "00-0037744",
+  "00-0037804",
+  "00-0038046",
+  "00-0038103",
+  "00-0038397",
+  "00-0038414",
+  "00-0038454",
+  "00-0038540",
+  "00-0038544",
+  "00-0038553",
+  "00-0038559",
+  "00-0038567",
+  "00-0038571",
+  "00-0038573",
+  "00-0038614",
+  "00-0038623",
+  "00-0038640",
+  "00-0038663",
+  "00-0038782",
+  "00-0038792",
+  "00-0038801",
+  "00-0038851",
+  "00-0038877",
+  "00-0038939",
+  "00-0038984",
+  "00-0039007",
+  "00-0039041",
+  "00-0039111",
+  "00-0039155",
+  "00-0039239",
+  "00-0039268",
+  "00-0039346",
+  "00-0039366",
+  "00-0039369",
+  "00-0039391",
+  "00-0039477",
+  "00-0039521",
+  "00-0039526",
+  "00-0039550",
+  "00-0039722",
+  "00-0039737",
+  "00-0039743",
+  "00-0039767",
+  "00-0039807",
+  "00-0039808",
+  "00-0039835",
+  "00-0039849",
+  "00-0039854",
+  "00-0039864",
+  "00-0039897",
+  "00-0039915",
+  "00-0039921",
+  "00-0039932",
+  "00-0039956",
+  "00-0040039",
+  "00-0040046",
+  "00-0040065",
+  "00-0040137",
+  "00-0040144",
+  "00-0040161",
+  "00-0040184",
+  "00-0040189",
+  "00-0040195",
+  "00-0040212",
+  "00-0040219",
+  "00-0040221",
+  "00-0040230",
+  "00-0040283",
+  "00-0040299",
+  "00-0040311",
+  "00-0040331",
+  "00-0040382",
+  "00-0040460",
+  "00-0040464",
+  "00-0040467",
+  "00-0040468",
+  "00-0040471",
+  "00-0040473",
+  "00-0040479",
+  "00-0040517",
+  "00-0040526",
+  "00-0040576",
+  "00-0040629",
+  "00-0040645",
+  "00-0040666",
+  "00-0040706",
+  "00-0040712",
+  "00-0040727",
+  "00-0040751",
+  "00-0040765",
+  "00-0041027",
+  "00-0041058",
+  "00-0041064",
+  "00-0041070",
+  "00-0041072",
+  "00-0041093",
+  "00-0041105",
+  "00-0041107",
+  "00-0041113",
+  "00-0041364",
+  "00-0041366",
+  "00-0041367",
+  "00-0041368",
+  "00-0041369",
+  "00-0041370",
+  "00-0041371",
+  "00-0041372",
+  "00-0041373",
+  "00-0041374",
+  "00-0041375",
+  "00-0041376",
+  "00-0041377",
+  "00-0041378",
+  "00-0041380",
+  "00-0041381",
+  "00-0041383",
+  "00-0041384",
+  "00-0041386",
+  "00-0041387",
+  "00-0041392",
+  "00-0041452",
+  "00-0041468",
+  "00-0041544",
+  "00-0041550",
+  "00-0041555",
+  "00-0041561",
+  "00-0041571",
+  "00-0041594",
+  "00-0041597"
+ ],
+ "promoted": false,
+ "prospective_eligible": false,
+ "qb_team_dropback_closure": {
+  "draw_cells": 2000,
+  "integer_level": true,
+  "no_cross_team_compensation": "each team is compared only against its own budget; a surplus on one team can never offset a shortfall on the other",
+  "per_team": {
+   "(2026, 1, 'ARI')": {
+    "budget_mean": 41.35885,
+    "cells": 1000,
+    "qb_sum_mean": 41.262,
+    "violating": 0
+   },
+   "(2026, 1, 'LAC')": {
+    "budget_mean": 38.185752,
+    "cells": 1000,
+    "qb_sum_mean": 38.24,
+    "violating": 0
+   }
+  },
+  "status": "CLOSES",
+  "test": "sum of QB dropbacks == rint(team dropback draw), per team per draw",
+  "violating_cells": 0,
+  "worst_absolute_deviation": 0.0
+ },
+ "seed_protocol": "per-row seed 20260908",
+ "source_captures": [
+  {
+   "retrieved_at": "2026-09-10T12:07:17Z",
+   "sha256": "db0a09454965e6fcd4d7378a19381fa53f251432f80f09ebdcc45f78f5e1bc9f",
+   "source": "depth_charts"
+  },
+  {
+   "retrieved_at": "2026-09-11T00:43:57Z",
+   "sha256": "0cd99d47b1cc389f6f09973bed503eac54e90f1a701b34de2b690e9a90febc95",
+   "source": "espn_injuries_json"
+  },
+  {
+   "retrieved_at": "2026-09-11T12:19:21Z",
+   "sha256": "cd7338473dd852d02c6986663addb31431609946fa8756d0460bf2e98d3501a9",
+   "source": "injuries"
+  },
+  {
+   "retrieved_at": "2026-09-11T00:43:57Z",
+   "sha256": "67511bb2cfc1e9f35b11a4eba503f4bce67e51bc8cb1252c52e8b8f6ffd9e1aa",
+   "source": "official_inactives"
+  },
+  {
+   "retrieved_at": "2026-09-11T00:43:57Z",
+   "sha256": "ec99910f37f94bb89872633001a811546258bc0ebd452666d6f2037ac38f9040",
+   "source": "official_injury_report"
+  },
+  {
+   "retrieved_at": "2026-09-11T12:19:21Z",
+   "sha256": "224b38fb539045bd3679655c02bee6e282bbef7d74e99cf5d34ce42915c6725d",
+   "source": "schedules"
+  },
+  {
+   "retrieved_at": "2026-09-11T12:19:21Z",
+   "sha256": "fb79560b5c4738a284e4b37f49759cdceaa461eee6f41ea0840e7d0d9eb17026",
+   "source": "weekly_rosters"
+  }
+ ],
+ "spec_hash": "7486f607b2f5352e",
+ "team_draw_row_index": {
+  "ARI": 0,
+  "LAC": 1
+ },
+ "team_ids": [
+  "ARI",
+  "LAC"
+ ],
+ "written_at": "2026-09-11T15:41:57Z"
+}
