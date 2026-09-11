@@ -543,18 +543,39 @@ def test_l_real_slate_chain_refuses_without_a_fixture():
     ch = SL.nonqb_chain(2026, 1, players)
     check('the real-input chain covers every gated layer',
           tuple(ch) == SL.CHAIN, str(tuple(ch)))
-    check('  appearance does not PASS without a legitimate source',
-          ch['appearance'].state is not State.PASS,
-          ch['appearance'].state.value)
-    check('  and it emits no probability at all',
-          ch['appearance'].evidence.get('value') is None
-          and not isinstance(ch['appearance'].value, dict)
-          if ch['appearance'].state is not State.PASS else False)
+    # THE SOURCE ARRIVING IS AN INPUT UNBLOCK, NOT A TEST FAILURE.
+    #
+    # This asserted appearance does not PASS, which was true only while the
+    # captured injuries feed was unusable. layers.appearance documents three
+    # paths, and path 1 is exactly "fixture=None and the source is usable ->
+    # the REAL mechanism runs" -- the property that makes "the operator
+    # changes no code when the source arrives" true rather than hopeful.
+    # Asserting the refusal pinned the world to path 2 forever.
+    #
+    # What must hold on either path: WITHOUT A FIXTURE nothing is fabricated.
+    # Either the real mechanism ran on a real source, or a named refusal came
+    # back -- and in neither case may test_only leak into the chain.
+    ap = ch['appearance']
+    if ap.state is State.PASS:
+        check('  the real source is usable, so the REAL mechanism ran',
+              ap.code == 'APPEARANCE_OK', ap.code)
+        check('    and it is NOT marked test_only',
+              ap.evidence.get('test_only') in (False, None),
+              str(ap.evidence.get('test_only')))
+    else:
+        check('  an unusable source refuses by name, emitting nothing',
+              ap.value is None or not isinstance(ap.value, dict),
+              f'{ap.state.value}[{ap.code}]')
+    # Downstream: every layer either ran, or refused BY NAME. What is
+    # forbidden is a silent empty, and an unnamed exception -- the KeyError
+    # this chain used to raise from inside the allocator once it got this far.
     for k in SL.CHAIN[1:]:
-        check(f'  {k} is blocked upstream, not silently empty',
-              ch[k].state is State.BLOCKED
-              and ch[k].code.startswith('BLOCKED_UPSTREAM'),
-              f'{ch[k].state.value}[{ch[k].code}]')
+        v = ch[k]
+        check(f'  {k} either runs or refuses by name, never silently',
+              v.state is State.PASS
+              or (v.code and len(v.code) > 6
+                  and v.code not in ('ERROR', 'FAILED', 'UNKNOWN')),
+              f'{v.state.value}[{v.code}]')
     for k, v in ch.items():
         check(f'  {k} names its refusal specifically',
               v.code not in ('ERROR', 'FAILED', 'UNKNOWN') and len(v.code) > 6,

@@ -287,6 +287,32 @@ def targets_carries(part: Outcome, cls, C, positions, groups, player_ids,
     if cls not in L.CLASSES:
         return Outcome.fail('UNKNOWN_CLASS', f'{cls!r} is not a P4C class')
     mode = L.CLASSES[cls]['mode']
+    # THE PARAMETERS ARE AN INPUT, AND AN INPUT GETS ASSERTED.
+    #
+    # `par` goes straight into p4c_build.gen_weights, which indexes
+    # par['add_pool']. An incomplete mapping therefore raised a bare
+    # KeyError -- an UNNAMED failure, which this project forbids precisely
+    # because a stack trace tells a caller nothing about what to supply.
+    #
+    # It only became reachable when the appearance layer started running:
+    # while the upstream refused, this function returned at the guard above
+    # and never touched `par`. A code path that cannot execute is not a
+    # working one, which is the same lesson as the content_markers defect.
+    _need = ('add_pool',)
+    if not isinstance(par, dict):
+        return Outcome.fail(
+            'P4C_PARAMS_NOT_A_MAPPING',
+            f'targets/carries needs the fitted P4C parameters as a mapping; '
+            f'got {type(par).__name__}')
+    _missing = [k for k in _need if k not in par]
+    if _missing:
+        return Outcome.fail(
+            'P4C_PARAMS_INCOMPLETE',
+            f'the fitted P4C parameters are missing {_missing}, so the '
+            f'weight generator cannot run. Refusing by name rather than '
+            f'raising KeyError from inside the allocator.',
+            missing=_missing, n_keys_supplied=len(par),
+            p4c_class=cls)
     starts, counts = groups
     n = len(C)
     # STABLE STREAM IDENTITY. This was `hash(cls) % 9973`, and Python
