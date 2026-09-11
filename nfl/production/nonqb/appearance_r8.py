@@ -146,9 +146,13 @@ def enriched_frame() -> Outcome:
     # reusability and exactly the same staleness risk.
     _fp = R7._dependency_fingerprint()
     if _ENRICHED.get('rows') and _ENRICHED.get('fingerprint') == _fp:
+        # The stored evidence may already carry a `fingerprint` key, so it
+        # is merged rather than passed twice -- Outcome.ok refuses a
+        # duplicate keyword, which is the right behaviour and was the bug.
+        _ev = dict(_ENRICHED['evidence'])
+        _ev['fingerprint'] = _fp
         return Outcome.ok('R8_FRAME_CACHED', value=_ENRICHED['rows'],
-                          spec_version=SPEC_VERSION, cached=True,
-                          fingerprint=_fp, **_ENRICHED['evidence'])
+                          spec_version=SPEC_VERSION, cached=True, **_ev)
     if _ENRICHED.get('rows'):
         _ENRICHED.clear()
     fr = R7.build_frame()

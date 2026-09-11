@@ -147,9 +147,13 @@ def build_frame() -> Outcome:
     # is genuinely reusable, but only while those are unchanged.
     _fp = _dependency_fingerprint()
     if _FRAME.get('rows') and _FRAME.get('fingerprint') == _fp:
+        # The stored evidence may already carry a `fingerprint` key, so it
+        # is merged rather than passed twice -- Outcome.ok refuses a
+        # duplicate keyword, which is the right behaviour and was the bug.
+        _ev = dict(_FRAME['evidence'])
+        _ev['fingerprint'] = _fp
         return Outcome.ok('R7_FRAME_CACHED', value=_FRAME['rows'],
-                          spec_version=SPEC_VERSION, cached=True,
-                          fingerprint=_fp, **_FRAME['evidence'])
+                          spec_version=SPEC_VERSION, cached=True, **_ev)
     if _FRAME.get('rows'):
         _FRAME.clear()
     st = AM.stage_inputs()
