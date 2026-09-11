@@ -278,8 +278,11 @@ def build(args, fixtures: dict = None) -> dict:
         if sl.state is not State.PASS:
             return sl
         qb = sl.value
+        # THE ARGUMENT WHOSE ABSENCE WAS THE DEFECT. official_inactive_ids
+        # reached the non-QB engine only; the QB share pool never saw it.
         qa = FE.QA.allocate(args.season, args.week, teams, qbp, m=m,
-                            seed=args.seed)
+                            seed=args.seed,
+                            inactive_ids=fx.get('official_inactive_ids'))
         if qa.state is not State.PASS:
             return qa
         qb['allocation'] = qa.value
@@ -378,6 +381,13 @@ def build(args, fixtures: dict = None) -> dict:
             team_dropback_draws=_qb_dropback_budgets(),
             integer_level=bool(fl.get('r2')))
         _inv['qb_team_accounting'] = team
+        _inv['qb_inactive_owns_nothing'] = QBACC.assert_inactive_qbs_own_nothing(
+            qb['draws'], qb['rows'], fx.get('official_inactive_ids'))
+        if _inv['qb_inactive_owns_nothing'].state is State.FAIL:
+            return RF.refuse('INCOMPLETE_PLAYER_ACCOUNTING', 'qb_layer',
+                             f"{_inv['qb_inactive_owns_nothing'].code}: "
+                             f"{_inv['qb_inactive_owns_nothing'].detail}",
+                             run_id)
         fx['_qb_team_warnings'] = list(team.evidence.get('warnings') or [])
         if team.state is not State.PASS:
             return RF.refuse('INCOMPLETE_PLAYER_ACCOUNTING', 'qb_layer',
@@ -957,6 +967,15 @@ def build(args, fixtures: dict = None) -> dict:
                     integer_level=bool(
                         (_mode.get('flags') or {}).get('r2')))
                 _inv['qb_team_accounting'] = team
+                _inv['qb_inactive_owns_nothing'] = (
+                    QBACC.assert_inactive_qbs_own_nothing(
+                        o.value, fx['qb_rows'],
+                        fx.get('official_inactive_ids')))
+                if _inv['qb_inactive_owns_nothing'].state is State.FAIL:
+                    return RF.refuse(
+                        'INCOMPLETE_PLAYER_ACCOUNTING', _st,
+                        f"{_inv['qb_inactive_owns_nothing'].code}: "
+                        f"{_inv['qb_inactive_owns_nothing'].detail}", run_id)
                 fx['_qb_team_warnings'] = list(team.evidence.get('warnings')
                                                or [])
                 if team.state is not State.PASS:

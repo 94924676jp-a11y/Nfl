@@ -779,6 +779,59 @@ def measure_composition_amplification(target, drawn) -> Outcome:
         f'as PASS asserted a property that was never checked.', **ev)
 
 
+def assert_inactive_qbs_own_nothing(draws, rows, inactive_ids) -> Outcome:
+    """Every officially inactive quarterback owns EXACTLY zero, in every draw.
+
+    This is the assertion the SF@LA board did not have. The allocation repair
+    lives in qb_allocation.allocate, and a repair without an assertion is a
+    repair that can silently regress the next time the argument stops being
+    threaded through -- which is exactly how the defect arose. So this checks
+    the OUTPUT, not the intention: it reads the realised per-draw dropbacks
+    and attempts of every inactive quarterback and requires the maximum over
+    all draws to be zero.
+
+    Checking the max rather than the mean is deliberate. A mean of 0.0004 over
+    a thousand draws is one draw holding a dropback, and that is still a
+    quarterback who was not dressed taking a snap in a simulated world.
+    """
+    inact = set(inactive_ids or ())
+    if not inact:
+        return Outcome.ok(
+            'QB_INACTIVE_OWNERSHIP_NOT_APPLICABLE',
+            value={}, n_inactive=0,
+            detail='no official inactive list was supplied for this game, so '
+                   'there is nothing to assert. This is NOT a pass on the '
+                   'question; it is the absence of the question.')
+    offenders, checked = {}, 0
+    for i, r in enumerate(rows):
+        pid = r.get('gsis_id') if isinstance(r, dict) else None
+        if pid not in inact:
+            continue
+        checked += 1
+        for metric in ('db', 'att'):
+            if metric not in draws:
+                continue
+            arr = np.asarray(draws[metric], float)
+            if i >= arr.shape[0]:
+                continue
+            mx = float(np.max(np.abs(arr[i])))
+            if mx > 0.0:
+                offenders.setdefault(pid, {})[metric] = mx
+    if offenders:
+        return Outcome.fail(
+            'QB_INACTIVE_STILL_OWNS_DROPBACKS',
+            f'{len(offenders)} officially inactive quarterback(s) hold a '
+            f'non-zero dropback or attempt in at least one draw. An inactive '
+            f'quarterback owning share is allocated mass taken from the men '
+            f'who are dressed.',
+            offenders=offenders, n_inactive_rows_checked=checked)
+    return Outcome.ok(
+        'QB_INACTIVE_OWNS_NOTHING', value={'n_checked': checked},
+        n_inactive=len(inact), n_inactive_rows_checked=checked,
+        detail=f'{checked} officially inactive quarterback row(s) hold '
+               f'exactly zero dropbacks and zero attempts in every draw')
+
+
 def apportion_dropbacks(team_dropbacks, shares, pids) -> Outcome:
     """R2 step 2: split an INTEGER team dropback budget across quarterbacks.
 

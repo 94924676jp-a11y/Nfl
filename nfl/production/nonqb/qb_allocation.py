@@ -134,8 +134,26 @@ def previous_primary(season: int, week: int) -> dict:
 
 
 def allocate(season, week, teams, qb_players, m=200, seed=20260908,
-             kickoff_utc=None, written_at=None) -> Outcome:
-    """team -> (pids, shares (n_qb, m)). Shares sum to 1 in every draw."""
+             kickoff_utc=None, written_at=None, inactive_ids=None) -> Outcome:
+    """team -> (pids, shares (n_qb, m)). Shares sum to 1 in every draw.
+
+    OFFICIALLY INACTIVE QUARTERBACKS OWN NOTHING, AND THIS IS WHERE THAT IS
+    ENFORCED.
+
+    `official_inactive_ids` used to reach the non-QB engine only
+    (run_forecast.py:713). The QB path never saw it, so on the sealed SF@LA
+    board Kurtis Rourke held 0.90 dropbacks and Ty Simpson 0.73 while both
+    were on the league's inactive list -- about 2.5% of each team's dropbacks
+    allocated to quarterbacks who were not dressed, and not redistributed to
+    the men who actually played.
+
+    The repair is here rather than downstream because this is the earliest
+    causal point: the share is the thing that is wrong. Zeroing the inactive
+    rows and renormalising the remainder leaves R2's largest-remainder
+    apportionment completely untouched -- it simply receives the correct pool.
+    A downstream subtraction would have been a second mechanism papering over
+    the first.
+    """
     f = _fit_for(season)
     if f is None:
         return Outcome.blocked(
@@ -159,6 +177,8 @@ def allocate(season, week, teams, qb_players, m=200, seed=20260908,
     for q in qb_players:
         if q.get('gsis_id'):
             by_team[q.get('team')].append(q['gsis_id'])
+    inact = set(inactive_ids or ())
+    zeroed = {}
     out, ev = {}, {'teams_without_a_depth_chart': [],
                    'n_qb_by_team': {}, 'unranked_players': 0}
     for t in teams:
@@ -179,7 +199,33 @@ def allocate(season, week, teams, qb_players, m=200, seed=20260908,
             continue
         S = Q.allocate(par, trip, m=m, seed=seed, ordinal=season * 100 + week,
                        team=t)
-        out[t] = {'pids': [x[0] for x in trip], 'shares': S,
+        pid_list = [x[0] for x in trip]
+        if inact:
+            mask = np.array([p in inact for p in pid_list])
+            if mask.any():
+                if mask.all():
+                    return Outcome.fail(
+                        'QB_ALLOCATION_ALL_QUARTERBACKS_INACTIVE',
+                        f'{t}: every rostered quarterback is on the official '
+                        f'inactive list, so there is nobody to receive the '
+                        f'team dropback share. Refusing rather than dividing '
+                        f'by zero or leaving the share with a player who is '
+                        f'not dressed.',
+                        team=t, n_qb=len(pid_list))
+                S = S.copy()
+                S[mask, :] = 0.0
+                col = S.sum(0)
+                if float(np.min(col)) <= 0.0:
+                    return Outcome.fail(
+                        'QB_ALLOCATION_ZERO_ACTIVE_SHARE',
+                        f'{t}: after removing officially inactive '
+                        f'quarterbacks at least one draw has no share left to '
+                        f'renormalise. Allocated mass may never be dropped.',
+                        team=t)
+                S = S / col
+                zeroed.setdefault(t, []).extend(
+                    [p for p, mk in zip(pid_list, mask) if mk])
+        out[t] = {'pids': pid_list, 'shares': S,
                   'ranks': [x[1] for x in trip],
                   'was_prev_primary': [x[2] for x in trip]}
         ev['n_qb_by_team'][t] = len(trip)
@@ -197,6 +243,8 @@ def allocate(season, week, teams, qb_players, m=200, seed=20260908,
             f'Closure is the property this layer exists for.')
     return Outcome.ok('QB_ALLOCATION_OK', value=out,
                       spec_version=SPEC_VERSION, governance=GOVERNANCE,
+                      n_inactive_qb_zeroed=sum(len(v) for v in zeroed.values()),
+                      inactive_qb_zeroed=zeroed,
                       n_teams=len(out), closure_max_dev=worst,
                       depth_chart_blob=dc.evidence['blob'],
                       depth_chart_retrieved_at=got,
