@@ -1,0 +1,210 @@
+{
+ "artifact": "NFL_OFFICIAL_INACTIVES_INGESTION",
+ "game_id": "2026_01_SF_LA",
+ "teams": [
+  "SF",
+  "LA"
+ ],
+ "parser_version": "official-inactives-1",
+ "steps": [
+  {
+   "step": "1. bytes stored before parsing",
+   "ok": true,
+   "code": "INACTIVES_STORED",
+   "sha256": "91bdf335602a7475b0ccd39637195d030f5ea6b18127adcdde36be95b5bc3a73",
+   "n_bytes": 70098,
+   "blob": "nfl/vintage/official_inactives.91bdf335602a7475.html.gz",
+   "retrieved_at": "2026-09-10T23:44:20.399Z",
+   "published_at": null,
+   "source_url": "https://www.nfl.com/news/australia-game-inactives-san-francisco-49ers-at-los-angeles-rams",
+   "detail": "70098 bytes, sha 91bdf335602a7475"
+  },
+  {
+   "step": "2. both clubs represented",
+   "ok": true,
+   "code": "INACTIVES_PARSED",
+   "n_names": {
+    "SF": 6,
+    "LA": 5
+   },
+   "segmentation": "operator_supplied_verified_against_bytes",
+   "detail": "{'SF': 6, 'LA': 5}"
+  },
+  {
+   "step": "3. identity resolved",
+   "ok": true,
+   "code": "INACTIVES_RESOLVED",
+   "roster_blob": "nfl/vintage/weekly_rosters.3b0d5d40dc7816f7.reduced.csv.gz",
+   "n_roster": 181,
+   "n_roster_with_a_name": 181,
+   "n_resolved": {
+    "SF": 6,
+    "LA": 5
+   },
+   "n_unmapped": 0,
+   "unmapped": [],
+   "detail": "{'SF': 6, 'LA': 5} resolved, 0 unmapped"
+  },
+  {
+   "step": "4. POST_INACTIVES_COMPLETE",
+   "ok": true,
+   "code": "POST_INACTIVES_COMPLETE",
+   "n_inactive_by_team": {
+    "SF": 6,
+    "LA": 5
+   },
+   "inactive_by_team": {
+    "SF": [
+     "00-0039435",
+     "00-0040172",
+     "00-0040177",
+     "00-0040589",
+     "00-0041068",
+     "00-0041090"
+    ],
+    "LA": [
+     "00-0036093",
+     "00-0036849",
+     "00-0041399",
+     "00-0041510",
+     "00-0041568"
+    ]
+   },
+   "hours_before_kickoff": 0.844,
+   "teams_without_a_list": [],
+   "detail": "{'SF': 6, 'LA': 5}"
+  },
+  {
+   "step": "4b. no player promoted to GAME_ACTIVE",
+   "ok": true,
+   "n_official_inactive": 11,
+   "n_not_listed": 170,
+   "detail": "absence from the list carries no positive claim"
+  },
+  {
+   "step": "5. perishables re-fetched, consumed slice compared",
+   "ok": true,
+   "slices": {
+    "depth_charts": {
+     "file_before": "db0a09454965e6fc",
+     "file_after": "db0a09454965e6fc",
+     "file_moved": false,
+     "slice_before": "62652f7f9b0eb85d",
+     "slice_after": "62652f7f9b0eb85d",
+     "slice_moved": false,
+     "rows": 140,
+     "observed_at": "2026-09-10T12:07:17Z"
+    },
+    "injuries": {
+     "file_before": "96dcc98e297a38ec",
+     "file_after": "96dcc98e297a38ec",
+     "file_moved": false,
+     "slice_before": "4cdf7f67265e0b24",
+     "slice_after": "4cdf7f67265e0b24",
+     "slice_moved": false,
+     "rows": 18,
+     "observed_at": "2026-09-10T12:07:17Z"
+    },
+    "schedules": {
+     "file_before": "135fcc9341866637",
+     "file_after": "135fcc9341866637",
+     "file_moved": false,
+     "slice_before": "262533af14c12aec",
+     "slice_after": "262533af14c12aec",
+     "slice_moved": false,
+     "rows": 1,
+     "observed_at": "2026-09-11T00:08:49Z"
+    },
+    "weekly_rosters": {
+     "file_before": "3b0d5d40dc7816f7",
+     "file_after": "3b0d5d40dc7816f7",
+     "file_moved": false,
+     "slice_before": "fe00c25f08623c12",
+     "slice_after": "fe00c25f08623c12",
+     "slice_moved": false,
+     "rows": 181,
+     "observed_at": "2026-09-10T12:07:17Z"
+    }
+   },
+   "slices_moved": [],
+   "detail": "0 consumed slice(s) moved: none"
+  },
+  {
+   "step": "6. V1_CANDIDATE",
+   "ok": true,
+   "detail": "f6c8251583500e35"
+  },
+  {
+   "step": "6. V1_CANDIDATE_R5",
+   "ok": true,
+   "detail": "ee1c94270bb53963"
+  },
+  {
+   "step": "6. V1_CANDIDATE_R6",
+   "ok": true,
+   "detail": "155b47697c211ae8"
+  },
+  {
+   "step": "6. V1_CANDIDATE_R7",
+   "ok": true,
+   "detail": "e264f9c6b84837d9"
+  },
+  {
+   "step": "6. V1_CANDIDATE_R8",
+   "ok": true,
+   "detail": "5e70d8847e32c7ae"
+  },
+  {
+   "step": "7. pre-inactives boards untouched",
+   "ok": true,
+   "detail": "every pre-inactives artifact still promoted=False"
+  }
+ ],
+ "vintage_root": "LIVE",
+ "provenance": {
+  "kind": "EXTERNAL_AUTHORITATIVE_DELIVERY",
+  "official_source_url": "https://www.nfl.com/news/australia-game-inactives-san-francisco-49ers-at-los-angeles-rams",
+  "official_published_at": "2026-09-10T23:26:21.831Z",
+  "delivered_by": "Perplexity (networked agent), OUT-007 fulfilment",
+  "delivered_artifact_sha256": "91bdf335602a7475b0ccd39637195d030f5ea6b18127adcdde36be95b5bc3a73",
+  "retrieved_at": "2026-09-10T23:44:20.399Z",
+  "what_this_is": "Every name below occurs verbatim in the delivered artifact, whose bytes are stored and hashed. That is a real check and it is NOT the same as holding the official page: this executor could not fetch the game-specific announcement (HTTP 000, gateway CONNECT denial), so the chain of custody runs official page -> networked agent -> this artifact.",
+  "what_this_is_not": "This is NOT a capture of nfl.com, and these names were NOT verified against the generic /inactives/ page, which is a placeholder carrying no list and is the wrong document."
+ },
+ "segmentation": "operator_supplied_verified_against_bytes",
+ "name_crosswalk": {
+  "raw_blob": "weekly_rosters.3b0d5d40dc7816f7.csv",
+  "exists": true,
+  "same_content_hash_as_the_pool_vintage": true
+ },
+ "written_at": "2026-09-11T00:13:09.885625Z",
+ "kickoff_utc": "2026-09-11T00:35:00Z",
+ "sealed": {
+  "V1_CANDIDATE": {
+   "run_id": "f6c8251583500e35",
+   "draw_artifact_sha256": "1edf723f3d6c83d5a85a8605f21eed892b25ebd9da6cfdf0d3bb41cd8b1a335d",
+   "dir": "nfl/research/live/2026_01_SF_LA/post_inactives_V1_CANDIDATE/f6c8251583500e35"
+  },
+  "V1_CANDIDATE_R5": {
+   "run_id": "ee1c94270bb53963",
+   "draw_artifact_sha256": "f35150dbc3ddb8bcfa40a922b5669c0c2fdb91e8d0549d892f74caea5cf935e4",
+   "dir": "nfl/research/live/2026_01_SF_LA/post_inactives_V1_CANDIDATE_R5/ee1c94270bb53963"
+  },
+  "V1_CANDIDATE_R6": {
+   "run_id": "155b47697c211ae8",
+   "draw_artifact_sha256": "5b3cc724a56398cf9cc1e6044ec51b48882f74930f266c5773d9b1b9bc094d0a",
+   "dir": "nfl/research/live/2026_01_SF_LA/post_inactives_V1_CANDIDATE_R6/155b47697c211ae8"
+  },
+  "V1_CANDIDATE_R7": {
+   "run_id": "e264f9c6b84837d9",
+   "draw_artifact_sha256": "58e87fa6cd18b205f7a29f3639d9b39fb561059e4d334e9fd08efe493ea6bdf8",
+   "dir": "nfl/research/live/2026_01_SF_LA/post_inactives_V1_CANDIDATE_R7/e264f9c6b84837d9"
+  },
+  "V1_CANDIDATE_R8": {
+   "run_id": "5e70d8847e32c7ae",
+   "draw_artifact_sha256": "3632e6808cf5e12589415d20add978853efa1f57dd11432d61f6b1acdad0a0f2",
+   "dir": "nfl/research/live/2026_01_SF_LA/post_inactives_V1_CANDIDATE_R8/5e70d8847e32c7ae"
+  }
+ },
+ "result": "COMPLETE"
+}

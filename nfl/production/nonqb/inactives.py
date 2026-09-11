@@ -460,19 +460,37 @@ def resolve(names_by_team, roster) -> Outcome:
     forecast consumed, so an inactive list cannot silently describe a different
     roster from the projections it is about to zero.
     """
-    idx = {}
+    idx, sidx = {}, {}
     for pid, r in roster.items():
         nm = (r.get('name') or '').strip()
         if not nm:
             continue
         idx.setdefault((r.get('team'), _key(nm)), []).append(pid)
-    out, unmapped, ambiguous = {}, [], {}
+        sidx.setdefault((r.get('team'), _suffixless(nm)), []).append(pid)
+    out, unmapped, ambiguous, by_suffix = {}, [], {}, []
     for t, names in names_by_team.items():
         got = []
         for n in names:
             hits = idx.get((t, _key(n)), [])
+            how = 'exact'
+            if not hits:
+                # THE OFFICIAL LIST AND THE VENDOR DISAGREE ABOUT SUFFIXES.
+                # The league wrote "Enrique Cruz Jr."; the roster vintage has
+                # him as "Enrique Cruz", gsis 00-0041090. _key keeps the 'jr',
+                # so the exact match missed a player who was plainly there,
+                # and the first run of the real delivery claimed COMPLETE on
+                # 10 of 11 names because an unmapped name was only reported
+                # rather than refused.
+                #
+                # Stripping a GENERATIONAL SUFFIX is a rule about how names
+                # are written, not a similarity score: no edit distance, no
+                # nicknames, no initials, and still a unique match or nothing.
+                hits = sidx.get((t, _suffixless(n)), [])
+                how = 'suffix_normalised'
             if len(hits) == 1:
                 got.append(hits[0])
+                if how == 'suffix_normalised':
+                    by_suffix.append(f'{t}:{n}->{hits[0]}')
             elif len(hits) > 1:
                 ambiguous[f'{t}:{n}'] = hits
             else:
@@ -489,12 +507,22 @@ def resolve(names_by_team, roster) -> Outcome:
                       spec_version=SPEC_VERSION,
                       n_resolved={t: len(v) for t, v in out.items()},
                       n_unmapped=len(unmapped), unmapped=unmapped[:20],
+                      n_matched_by_suffix_normalisation=len(by_suffix),
+                      matched_by_suffix_normalisation=by_suffix[:20],
                       unmapped_meaning='a name on the page with no rostered '
                                        'match. Reported, never guessed.')
 
 
 def _key(n):
     return re.sub(r'[^a-z]', '', (n or '').lower())
+
+
+# Generational suffixes only. Not nicknames, not initials, not edit distance.
+_SUFFIX = re.compile(r'(jr|sr|ii|iii|iv|v)$')
+
+
+def _suffixless(n):
+    return _SUFFIX.sub('', _key(n))
 
 
 # ------------------------------------------------------------------ sets

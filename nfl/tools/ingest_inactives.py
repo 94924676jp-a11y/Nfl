@@ -106,6 +106,21 @@ def main(argv=None) -> int:
     ap.add_argument('--published-at', default=None)
     ap.add_argument('--http-status', default=None)
     ap.add_argument('--out', required=True)
+    ap.add_argument('--delivery', action='store_true',
+                    help='the --bytes file is an EXTERNAL AUTHORITATIVE '
+                         'DELIVERY (a networked agent\'s artifact citing the '
+                         'official announcement), NOT the official page '
+                         'itself. Names are verified verbatim against the '
+                         'delivered artifact and the provenance is recorded '
+                         'as such, so no reader can mistake it for a capture '
+                         'of nfl.com.')
+    ap.add_argument('--delivery-source-url', default=None,
+                    help='the official URL the delivery cites.')
+    ap.add_argument('--delivery-published-at', default=None,
+                    help='publication time the official source itself '
+                         'carried, kept apart from any retrieval clock.')
+    ap.add_argument('--delivered-by', default=None,
+                    help='who produced the delivered artifact.')
     ap.add_argument('--names-json', default=None,
                     help='JSON {"SF": ["First Last", ...], "LA": [...]} used '
                          'ONLY when the parser cannot read the page it was '
@@ -172,8 +187,48 @@ def main(argv=None) -> int:
 
     # ---- 2. both teams ---------------------------------------------------
     doc = raw.decode('utf-8', 'replace')
-    pa = INA.parse(doc, list(teams))
-    if pa.state is not State.PASS and a.names_json:
+    if a.delivery:
+        # THE DELIVERED ARTIFACT IS NOT THE OFFICIAL PAGE, AND IS NOT FILED AS
+        # THOUGH IT WERE.
+        #
+        # This executor cannot reach the game-specific announcement; the
+        # generic /inactives/ page it CAN reach is a placeholder carrying no
+        # list, and verifying these names against that page would be checking
+        # them against the wrong document. So the delivery itself is the
+        # artifact of record: its bytes are hashed and stored before anything
+        # is parsed, every supplied name must occur verbatim inside it, and
+        # the provenance says plainly that the chain of custody runs through a
+        # networked agent rather than through bytes we hold from nfl.com.
+        if not a.names_json:
+            step('2. both clubs represented', False,
+                 code='DELIVERY_WITHOUT_NAMES',
+                 detail='--delivery requires --names-json')
+            return _finish(rec, a, 2)
+        supplied = json.loads(pathlib.Path(a.names_json).read_text())
+        supplied = {t: supplied[t] for t in teams if t in supplied}
+        pa = INA.verify_supplied_names(doc, supplied)
+        rec['provenance'] = {
+            'kind': 'EXTERNAL_AUTHORITATIVE_DELIVERY',
+            'official_source_url': a.delivery_source_url,
+            'official_published_at': a.delivery_published_at,
+            'delivered_by': a.delivered_by,
+            'delivered_artifact_sha256': st.evidence.get('sha256'),
+            'retrieved_at': a.retrieved_at,
+            'what_this_is': (
+                'Every name below occurs verbatim in the delivered artifact, '
+                'whose bytes are stored and hashed. That is a real check and '
+                'it is NOT the same as holding the official page: this '
+                'executor could not fetch the game-specific announcement '
+                '(HTTP 000, gateway CONNECT denial), so the chain of custody '
+                'runs official page -> networked agent -> this artifact.'),
+            'what_this_is_not': (
+                'This is NOT a capture of nfl.com, and these names were NOT '
+                'verified against the generic /inactives/ page, which is a '
+                'placeholder carrying no list and is the wrong document.'),
+        }
+    else:
+        pa = INA.parse(doc, list(teams))
+    if not a.delivery and pa.state is not State.PASS and a.names_json:
         # THE OPERATOR SUPPLIES THE SEGMENTATION, NOT THE INFORMATION.
         # Every name is checked back against the bytes just stored, so a
         # name that is not in the league's own document cannot get in here.
