@@ -1,0 +1,166 @@
+{
+ "artifact": "NFL_RESEARCH_PRIORITY_QUEUE",
+ "spec_version": "live-review-1",
+ "basis": "2026_01_NE_SEA and 2026_01_SF_LA, plus the 2026-09-13 sealed slate",
+ "standing_rule": "No modeling item is promoted on two games. Every P1 requires multi-game prospective evidence, pre-registered, decided out of sample. The P0 items are correctness and infrastructure and need no predictive evidence at all.",
+ "ordering_rationale": "P0 first because a system that can silently skip a game, or model only quarterbacks, or score only by hand, cannot generate the evidence every P1 item needs. Q4 in particular BLOCKS Q5, Q6 and Q7: without automatic scoring there is no path to the sample floors.",
+ "n_items": 11,
+ "queue": [
+  {
+   "rank": "P0",
+   "id": "Q1",
+   "title": "Every game on a slate must be forecast or named",
+   "defects": [
+    "D01"
+   ],
+   "kind": "ENGINEERING",
+   "why": "NE@SEA -- the first live game of the season -- was never forecast and nothing objected. A prediction system that can silently skip a game has no denominator, and every downstream sample floor is unreachable if games can vanish.",
+   "work": "A pre-kickoff slate assertion: for each game either a sealed board or a NAMED refusal. Absence is a failure, not a gap.",
+   "evidence_required": "None. This is correctness, not modeling.",
+   "blocks_promotion_of": []
+  },
+  {
+   "rank": "P0",
+   "id": "Q2",
+   "title": "Injury report completeness must be visible and actionable",
+   "defects": [
+    "D03",
+    "D06"
+   ],
+   "kind": "DATA/ENGINEERING",
+   "why": "Twelve of twelve Sunday games are QB-only because report_status is unfilled. This is the single largest coverage loss in the system and it was invisible until completeness was computed from distributions.",
+   "work": "Report per-club filing state on every slate run; request the missing reports through the networked agent; assert that an all-unfilled injuries capture is INCOMPLETE rather than PASS.",
+   "evidence_required": "None for visibility. A DEGRADED appearance mode is a modeling change and needs >=3 games scored both ways.",
+   "blocks_promotion_of": [
+    "Q5"
+   ]
+  },
+  {
+   "rank": "P0",
+   "id": "Q3",
+   "title": "Canonical player eligibility across every allocation layer",
+   "defects": [
+    "D04",
+    "D05"
+   ],
+   "kind": "ENGINEERING",
+   "status": "LARGELY REPAIRED",
+   "why": "The QB path ignored the official inactive list while the non-QB path honoured it. One eligibility fact must reach every allocator or the layers describe different games.",
+   "work": "Audit the remaining allocators -- rushing_a1, targets_carries, td_layer -- for the same missing argument, and add one shared eligibility assertion covering all of them rather than one per layer.",
+   "evidence_required": "None. Correctness.",
+   "blocks_promotion_of": []
+  },
+  {
+   "rank": "P0",
+   "id": "Q4",
+   "title": "Automatic authoritative postgame ingestion",
+   "defects": [
+    "D14"
+   ],
+   "kind": "ENGINEERING",
+   "why": "Scoring is manual, so it happens rarely, so the 300-graded-unit floor is unreachable in practice. NE@SEA play-by-play was available and went unused while SF@LA was scored from a transcription.",
+   "work": "Poll nflverse pbp -- reachable from this executor -- hash it, store it, and score every sealed board automatically into the prospective ledger. Re-score SF@LA from authoritative bytes when published and keep both rows.",
+   "evidence_required": "None. Infrastructure.",
+   "blocks_promotion_of": [
+    "Q6",
+    "Q7",
+    "Q8"
+   ]
+  },
+  {
+   "rank": "P1",
+   "id": "Q5",
+   "title": "Game-state-conditioned team volume (Track 1)",
+   "defects": [
+    "D08",
+    "D09"
+   ],
+   "kind": "MODELING",
+   "why": "The clearest predictive signal in two games. LA ran 57 plays against 65.65 while losing 27-7; NE ran 67 to SEA 47 in a 13-10 game. Model and market missed the SAME direction on 6 of 8 markets, which points at environment rather than player share.",
+   "work": "Pre-register a game-state conditioning design with a sealed holdout.",
+   "evidence_required": ">=20 prospective games, CRPS with clustering by date and team, decided out of sample. TWO GAMES CANNOT PROMOTE THIS and must not be used to tune it.",
+   "blocks_promotion_of": []
+  },
+  {
+   "rank": "P1",
+   "id": "Q6",
+   "title": "Appearance and role certainty",
+   "defects": [
+    "D06",
+    "D11"
+   ],
+   "kind": "MODELING",
+   "why": "Appearance is the gate on five of nine layers, and inactive redistribution helped receivers while hurting the lead back (McCaffrey CRPS 1.48 -> 2.14).",
+   "work": "Study role certainty as a separate quantity from appearance probability; pre-register before changing any allocation.",
+   "evidence_required": ">=20 games, by position group, out of sample.",
+   "blocks_promotion_of": []
+  },
+  {
+   "rank": "P1",
+   "id": "Q7",
+   "title": "Receiving-conversion calibration",
+   "defects": [
+    "D12",
+    "D13"
+   ],
+   "kind": "MODELING",
+   "why": "Purdy 34 attempts vs 26.71 forecast yet 205 yards vs 210.50 -- offsetting errors that look like accuracy. Interval coverage 10/16 at 50% hints at width problems.",
+   "work": "Decompose yards into volume x efficiency and score the parts separately.",
+   "evidence_required": ">=300 graded metrics for any calibration claim, per this project own floors. Sixteen correlated metrics from one game support nothing.",
+   "blocks_promotion_of": []
+  },
+  {
+   "rank": "P2",
+   "id": "Q8",
+   "title": "Incomplete-layer visibility",
+   "status": "DONE THIS SESSION",
+   "defects": [
+    "D06"
+   ],
+   "kind": "ENGINEERING",
+   "why": "\"12 complete / 0 blocked\" described twelve QB-only boards as complete.",
+   "work": "Shipped: EXECUTION_STATE and FORECAST_COMPLETENESS are independent, the nine-layer matrix is computed from stored distributions, and ranking eligibility is per market causal path.",
+   "evidence_required": "None.",
+   "blocks_promotion_of": []
+  },
+  {
+   "rank": "P2",
+   "id": "Q9",
+   "title": "Pregame data capture resilience",
+   "defects": [
+    "D02",
+    "D01"
+   ],
+   "kind": "ENGINEERING",
+   "why": "The content_markers defect hid behind an egress block for days, and the executor that could fetch found it inside the one window that mattered.",
+   "work": "Assert that a capture whose parse yields an empty-state page cannot discharge its obligation; alert on a window closing unfilled rather than recording it silently.",
+   "evidence_required": "None.",
+   "blocks_promotion_of": []
+  },
+  {
+   "rank": "P2",
+   "id": "Q10",
+   "title": "Operational latency: warm session",
+   "defects": [
+    "D15"
+   ],
+   "kind": "ENGINEERING",
+   "status": "NOT DONE -- OWED",
+   "why": "A fresh process pays ~65s before the first forecast, so a one-game refresh costs 81s instead of ~11s.",
+   "work": "Diagnosis complete: slate_fits 53.9s, enriched_frame 51.1s within it. A warm-session mode reusing immutable, content-hash-keyed state across refreshes is designed but NOT BUILT.",
+   "evidence_required": "Benchmarks A-D, with C near the 10.7s marginal cost.",
+   "blocks_promotion_of": []
+  },
+  {
+   "rank": "P3",
+   "id": "Q11",
+   "title": "Remaining intentionally unmodeled markets",
+   "defects": [],
+   "kind": "MODELING",
+   "why": "RB/WR/TE rushing yards remain unavailable pending RUSHING_CONVERSION_CONTROL_UNDEFINED, and no aging curve or handedness split exists anywhere.",
+   "work": "Leave unmodeled. They are declared absences, not defects, and the board marks them NOT_MODELED rather than guessing.",
+   "evidence_required": "A resolution of the rushing conversion control comes first; carries x YPC is explicitly forbidden.",
+   "blocks_promotion_of": []
+  }
+ ]
+}

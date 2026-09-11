@@ -1,0 +1,245 @@
+{
+ "artifact": "NFL_OPEN_DEFECTS",
+ "spec_version": "live-review-1",
+ "games_reviewed": [
+  "2026_01_NE_SEA",
+  "2026_01_SF_LA"
+ ],
+ "slate_reviewed": "2026-09-13 (12 games, sealed but QB-only)",
+ "scope_note": "NE@SEA has ACTUALS but NO FORECAST, so it can support data and operational findings only -- no prediction-quality lesson can be drawn from it. SF@LA is the only genuine prospective case study, n=1.",
+ "promotion_rule": "No modeling item may be promoted on this evidence. Every MODELING defect below requires multi-game prospective evidence and a pre-registration before any change is scored as an improvement.",
+ "n_defects": 16,
+ "defects": [
+  {
+   "id": "D01",
+   "category": "DATA_CAPTURE",
+   "games": [
+    "2026_01_NE_SEA"
+   ],
+   "symptom": "The first live game of the season was NEVER FORECAST. No board exists for NE@SEA in the product index or nfl/research/live, and its practice_a, final_status_b and inactives obligations all closed MISSED. Its actuals are now available (SEA 13 NE 10, NE 67 plays / 31 rush, SEA 47 / 21 rush) and there is nothing to score them against.",
+   "earliest_layer": "capture/scheduling",
+   "kind": "ENGINEERING",
+   "repaired": false,
+   "blast_radius": "SYSTEMIC: any game whose capture windows close unfilled is silently un-forecast; nothing raised an alarm at the time",
+   "impact": "Total for that game. One of two live games this season produced no prediction at all, halving the prospective evidence base.",
+   "test_required": "A slate-level pre-kickoff assertion that every game on the date has either a sealed board or a NAMED refusal, failing if any game is simply absent."
+  },
+  {
+   "id": "D02",
+   "category": "DATA_CAPTURE",
+   "games": [
+    "2026_01_SF_LA"
+   ],
+   "symptom": "official_inactives was BLOCKED[NO_EGRESS] for days because capture_vintage.Source never carried content_markers, raising AttributeError in the one executor that could fetch. Once fixed, all ten window captures of /inactives/ were the site placeholder; the list only ever arrived by external delivery.",
+   "earliest_layer": "capture",
+   "kind": "ENGINEERING",
+   "repaired": true,
+   "repaired_by": "content_markers carried onto Source (commit 8d4ab78)",
+   "blast_radius": "SYSTEMIC while unrepaired: every game, every week",
+   "impact": "No official inactive information would have reached any forecast. Repaired, but the generic page still never published, so the external delivery path remains load-bearing.",
+   "test_required": "Already added: test_source_registry asserts every html source carries the markers it is judged by, with no network. Still needed: an assertion that a capture whose parse yields INACTIVES_PAGE_EMPTY_STATE cannot discharge the obligation."
+  },
+  {
+   "id": "D03",
+   "category": "DATA_CAPTURE",
+   "games": [
+    "2026-09-13 slate (12 games)"
+   ],
+   "symptom": "Twelve of twelve Sunday clubs filed injury rows with report_status unset, so team_readiness returns INJURY_REPORT_INCOMPLETE and the appearance layer defers.",
+   "earliest_layer": "capture/source completeness",
+   "kind": "DATA",
+   "repaired": false,
+   "blast_radius": "SYSTEMIC: it is the direct cause of every QB-only board on the slate",
+   "impact": "Catastrophic for coverage: no RB, WR or TE market is modelled at all for those twelve games. 1012 modelled markets, 0 rankable.",
+   "test_required": "A capture-time assertion that an injuries capture with report_status unfilled on every row is recorded as INCOMPLETE rather than PASS, plus a slate report of which clubs have filed."
+  },
+  {
+   "id": "D04",
+   "category": "PLAYER_ELIGIBILITY",
+   "games": [
+    "2026_01_SF_LA"
+   ],
+   "symptom": "official_inactive_ids reached the non-QB engine only, so officially inactive quarterbacks kept dropback share: Rourke 0.90 and Simpson 0.73 on the sealed board, with Rourke PEAKING at 22.6% of his team in some draws.",
+   "earliest_layer": "qb_allocation",
+   "kind": "ENGINEERING",
+   "repaired": true,
+   "repaired_by": "inactive rows zeroed and renormalised before R2/Hamilton, plus a HARD invariant checking the max over draws (622fdd5)",
+   "blast_radius": "SYSTEMIC: fires for any inactive QB in any game, and the emergency third QB is routinely inactive",
+   "impact": "Small in the mean (about 2.5% of team dropbacks) but wrong in kind, and the mean hid a 22.6% tail.",
+   "test_required": "Done: 17 checks including mass conservation to 1e-9. Still needed: a post-repair board for a game with an inactive QB to confirm end to end, which the pregame guard correctly prevented for SF@LA."
+  },
+  {
+   "id": "D05",
+   "category": "PLAYER_ELIGIBILITY",
+   "games": [
+    "2026_01_SF_LA"
+   ],
+   "symptom": "\"Enrique Cruz Jr.\" on the league list did not match \"Enrique Cruz\" in the roster vintage, and the first run claimed POST_INACTIVES_COMPLETE on 10 of 11 names because resolve() reported an unmapped name rather than refusing.",
+   "earliest_layer": "identity resolution",
+   "kind": "ENGINEERING",
+   "repaired": true,
+   "repaired_by": "generational-suffix normalisation, unique match or nothing",
+   "blast_radius": "RECURRING: any player with a generational suffix",
+   "impact": "Low on projections here (an offensive lineman, unmodelled) but the overclaim was the real defect.",
+   "test_required": "Done: a genuine suffix collision still returns AMBIGUOUS."
+  },
+  {
+   "id": "D06",
+   "category": "APPEARANCE",
+   "games": [
+    "2026-09-13 slate"
+   ],
+   "symptom": "One deferred upstream removes FIVE downstream layers at once: carries, targets, receptions, receiving_yards and td_allocation are all absent whenever appearance defers.",
+   "earliest_layer": "appearance",
+   "kind": "MODELING",
+   "repaired": false,
+   "blast_radius": "SYSTEMIC",
+   "impact": "The single highest-leverage coverage issue in the system. Fixing D03 or giving appearance a documented degraded mode would restore every non-QB market on a full slate.",
+   "test_required": "A prospective comparison on >=3 games where a degraded appearance path is scored against the full path, before any degraded mode is allowed to seal."
+  },
+  {
+   "id": "D07",
+   "category": "APPEARANCE",
+   "games": [
+    "all"
+   ],
+   "symptom": "layers.appearance compared readiness against INJURIES_READY when the ready state is ENGINE_INPUTS_READY, so the slate-wide path deferred precisely when inputs WERE ready.",
+   "earliest_layer": "appearance",
+   "kind": "ENGINEERING",
+   "repaired": true,
+   "repaired_by": "constant corrected (571fb9c)",
+   "blast_radius": "Latent: production always names teams and took the other branch, so it never fired in a real run",
+   "impact": "None observed in production; it masked itself behind a stale test.",
+   "test_required": "Done: the test now asserts BOTH directions."
+  },
+  {
+   "id": "D08",
+   "category": "TEAM_VOLUME",
+   "games": [
+    "2026_01_SF_LA",
+    "2026_01_NE_SEA"
+   ],
+   "symptom": "SF@LA: LA ran 57 plays against a forecast mean of 65.65 (PIT 0.18, CRPS 5.04) while losing 27-7; SF 64 against 64.50 (PIT 0.48). NE@SEA: NE 67 plays vs SEA 47, a 20-play asymmetry in a 13-10 game.",
+   "earliest_layer": "team_volume",
+   "kind": "MODELING",
+   "repaired": false,
+   "blast_radius": "SYSTEMIC: every player market inherits team volume",
+   "impact": "Large and directional. Stafford -66.6 passing yards is mostly downstream of LA running 8.7 fewer plays than forecast.",
+   "test_required": "Pre-registered: does conditioning team volume on game state improve CRPS out of sample across >=20 games, with clustering by date and team? Two games cannot answer it."
+  },
+  {
+   "id": "D09",
+   "category": "GAME_STATE",
+   "games": [
+    "2026_01_SF_LA",
+    "2026_01_NE_SEA"
+   ],
+   "symptom": "The engine has no game-state conditioning at all, so it cannot represent a team trailing by three scores throwing more and running less, or a leading team draining clock.",
+   "earliest_layer": "team_volume / pass_run_split",
+   "kind": "MODELING",
+   "repaired": false,
+   "blast_radius": "SYSTEMIC",
+   "impact": "Both live games show the signature: the losing side in SF@LA under-ran its forecast volume, and both model and market missed the same direction on 6 of 8 markets, which points at environment rather than player share.",
+   "test_required": "Track 1 pre-registration with a holdout; multi-game evidence required before any promotion."
+  },
+  {
+   "id": "D10",
+   "category": "PASS_RUN_SPLIT",
+   "games": [
+    "2026_01_SF_LA"
+   ],
+   "symptom": "Carries were forecast well on both sides (SF 30 actual vs 28.35, LA 29 vs 26.59) while pass volume missed, so the miss is not symmetric across the split.",
+   "earliest_layer": "pass_run_split",
+   "kind": "MODELING",
+   "repaired": false,
+   "blast_radius": "Unknown on one game",
+   "impact": "Moderate; currently confounded with D08.",
+   "test_required": "Separate the volume miss from the split miss over >=20 games before treating them as different defects."
+  },
+  {
+   "id": "D11",
+   "category": "PLAYER_SHARE",
+   "games": [
+    "2026_01_SF_LA"
+   ],
+   "symptom": "The official inactive list moved McCaffrey UP to 13.64 carries when he took 10; his CRPS got WORSE post-inactives (1.48 -> 2.14). Receivers moved correctly (Nacua 64.74 -> 71.00 against 74 actual).",
+   "earliest_layer": "player_share / redistribution",
+   "kind": "MODELING",
+   "repaired": false,
+   "blast_radius": "Isolated so far",
+   "impact": "Net information value was only -0.99 CRPS over 10 metrics, about 1%. Redistribution helped receivers and hurt the lead back.",
+   "test_required": "Does inactive redistribution improve CRPS by position group across >=20 games? One game cannot separate signal from noise."
+  },
+  {
+   "id": "D12",
+   "category": "EFFICIENCY",
+   "games": [
+    "2026_01_SF_LA"
+   ],
+   "symptom": "Purdy threw 34 times against a 26.71 forecast yet finished with 205 yards against 210.50 -- volume badly under-forecast, yards almost exactly right, so yards-per-attempt was over-forecast by roughly 1.7.",
+   "earliest_layer": "qb efficiency",
+   "kind": "MODELING",
+   "repaired": false,
+   "blast_radius": "Unknown",
+   "impact": "Offsetting errors can look like accuracy; worth watching.",
+   "test_required": "Decompose yards into attempts x efficiency across >=20 games rather than reading one cancellation."
+  },
+  {
+   "id": "D13",
+   "category": "CALIBRATION",
+   "games": [
+    "2026_01_SF_LA"
+   ],
+   "symptom": "Interval coverage was 10/16 at 50%, 16/16 at 80% and 16/16 at 90% on sixteen scored metrics.",
+   "earliest_layer": "distribution width",
+   "kind": "MODELING",
+   "repaired": false,
+   "blast_radius": "SYSTEMIC if real",
+   "impact": "Suggestive of intervals being too WIDE at the 80/90 level, but sixteen metrics from one game cannot support that claim, and the metrics are not independent.",
+   "test_required": "PIT histogram and coverage over >=300 graded metrics with clustering by game, per this project own sample floors."
+  },
+  {
+   "id": "D14",
+   "category": "POSTGAME_SCORING",
+   "games": [
+    "2026_01_SF_LA"
+   ],
+   "symptom": "No automatic authoritative postgame ingestion exists. SF@LA was scored from an owner-supplied transcription because nflverse had not yet published that game, while NE@SEA pbp WAS available and unused.",
+   "earliest_layer": "postgame capture",
+   "kind": "ENGINEERING",
+   "repaired": false,
+   "blast_radius": "SYSTEMIC",
+   "impact": "Scoring is manual and therefore rare, which is fatal to reaching any of the 300-unit sample floors.",
+   "test_required": "An automated poll that fetches nflverse pbp when published, hashes it, and scores every sealed board against it with no human step. github.com IS reachable from this executor, so this is buildable now."
+  },
+  {
+   "id": "D15",
+   "category": "OPERATIONAL_LATENCY",
+   "games": [
+    "2026-09-13 slate"
+   ],
+   "symptom": "A fresh process pays a fixed ~65s before the first forecast (first game 75.7s, median of the rest 10.7s). slate_fits is 53.9s of it, dominated by appearance_r8.enriched_frame at 51.1s.",
+   "earliest_layer": "process initialisation",
+   "kind": "ENGINEERING",
+   "repaired": false,
+   "blast_radius": "Operational only; no effect on any number",
+   "impact": "A one-game refresh costs 81s instead of ~11s. Incrementality already removes eleven games of work; it cannot remove setup.",
+   "test_required": "Benchmark C -- warm one-game-changed -- must land near the marginal 10.7s, with a test that shared cached state is immutable or content-hash keyed."
+  },
+  {
+   "id": "D16",
+   "category": "POSTGAME_SCORING",
+   "games": [
+    "2026_01_SF_LA"
+   ],
+   "symptom": "Nine stored percentiles cannot support exact CRPS; the 1000 stored draws can, and were used. But the pre-inactives boards store draws gzipped and the post ones plain, and the reader had to handle both.",
+   "earliest_layer": "artifact storage",
+   "kind": "ENGINEERING",
+   "repaired": true,
+   "repaired_by": "both forms handled; a manifest/array mismatch now returns no vector rather than raising IndexError",
+   "blast_radius": "Isolated",
+   "impact": "None on numbers.",
+   "test_required": "Done."
+  }
+ ]
+}
