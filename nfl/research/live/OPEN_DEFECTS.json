@@ -2,27 +2,35 @@
  "artifact": "NFL_OPEN_DEFECTS",
  "spec_version": "live-review-1",
  "games_reviewed": [
-  "2026_01_NE_SEA",
+  "2026_01_NE_SEA (sealed shadow forecast, T-31h)",
   "2026_01_SF_LA"
  ],
  "slate_reviewed": "2026-09-13 (12 games, sealed but QB-only)",
- "scope_note": "NE@SEA has ACTUALS but NO FORECAST, so it can support data and operational findings only -- no prediction-quality lesson can be drawn from it. SF@LA is the only genuine prospective case study, n=1.",
+ "scope_note": "CORRECTED 2026-09-11. An earlier version of this ledger asserted NE@SEA was never forecast. It was: a V1_CANDIDATE forecast was sealed at a T-31h information set and scored against the realised game. BOTH games are genuine prospective case studies, n=2, with different limitations rather than one being unusable.",
  "promotion_rule": "No modeling item may be promoted on this evidence. Every MODELING defect below requires multi-game prospective evidence and a pre-registration before any change is scored as an improvement.",
- "n_defects": 16,
+ "n_defects": 18,
  "defects": [
   {
    "id": "D01",
-   "category": "DATA_CAPTURE",
+   "category": "POSTGAME_SCORING",
    "games": [
     "2026_01_NE_SEA"
    ],
-   "symptom": "The first live game of the season was NEVER FORECAST. No board exists for NE@SEA in the product index or nfl/research/live, and its practice_a, final_status_b and inactives obligations all closed MISSED. Its actuals are now available (SEA 13 NE 10, NE 67 plays / 31 rush, SEA 47 / 21 rush) and there is nothing to score them against.",
-   "earliest_layer": "capture/scheduling",
+   "symptom": "THE PROSPECTIVE LEDGER COULD NOT SEE A SEALED FORECAST THAT EXISTS. nfl/research/shadow/g1_ne_sea/ holds a V1_CANDIDATE forecast sealed before the outcome was opened (bba6f0b) and scored against the realised game (604eaac). Both were committed and both were in the working tree. research.daily_board.discover hard-codes one root (nfl/research/live/) and one label grammar ({pre,post}_inactives_V1_CANDIDATE[_R<n>]); the shadow artifact matched neither, so a review reported its absence as the fact \"NE@SEA was NEVER FORECAST\". A second seal, g1_ne_sea_runB, was also invisible.",
+   "earliest_layer": "artifact discovery / indexing",
    "kind": "ENGINEERING",
-   "repaired": false,
-   "blast_radius": "SYSTEMIC: any game whose capture windows close unfilled is silently un-forecast; nothing raised an alarm at the time",
-   "impact": "Total for that game. One of two live games this season produced no prediction at all, halving the prospective evidence base.",
-   "test_required": "A slate-level pre-kickoff assertion that every game on the date has either a sealed board or a NAMED refusal, failing if any game is simply absent."
+   "repaired": true,
+   "repaired_by": "nfl/research/sealed_index.py discovers by CONTENT across every historical namespace; regression test test_sealed_index.py",
+   "root_cause_classification": {
+    "discovery_indexing": "YES -- the whole cause. Hard-coded root plus a label grammar the artifact does not match.",
+    "namespace_migration": "CONTRIBUTING -- research/shadow predates research/live and no index spanned both.",
+    "artifact_retention": "NO -- every file present on disk.",
+    "branch_history": "NO -- present in the working tree on this branch.",
+    "other": "NO"
+   },
+   "blast_radius": "SYSTEMIC and silent: one of two live games vanished from the evidence base, and every future namespace change would do the same",
+   "impact": "Severe and second-order. It did not corrupt a number; it corrupted a CONCLUSION, and led to a written claim that was false. Halved the apparent prospective evidence base.",
+   "test_required": "Done: a historically sealed forecast must remain discoverable when namespaces change (20 checks)."
   },
   {
    "id": "D02",
@@ -119,7 +127,7 @@
     "2026_01_SF_LA",
     "2026_01_NE_SEA"
    ],
-   "symptom": "SF@LA: LA ran 57 plays against a forecast mean of 65.65 (PIT 0.18, CRPS 5.04) while losing 27-7; SF 64 against 64.50 (PIT 0.48). NE@SEA: NE 67 plays vs SEA 47, a 20-play asymmetry in a 13-10 game.",
+   "symptom": "SF@LA: LA ran 57 plays against 65.65 forecast (PIT 0.18, CRPS 5.04) while losing 27-7; SF 64 against 64.50. NE@SEA, now scored from the sealed shadow forecast: NE 42 dropbacks against 33.69 and 31 carries; SEA 27 dropbacks against 30.97 and 22 carries. Both games show the losing or trailing side diverging from forecast volume.",
    "earliest_layer": "team_volume",
    "kind": "MODELING",
    "repaired": false,
@@ -240,6 +248,43 @@
    "blast_radius": "Isolated",
    "impact": "None on numbers.",
    "test_required": "Done."
+  },
+  {
+   "id": "D17",
+   "category": "PLAYER_ELIGIBILITY",
+   "games": [
+    "2026_01_NE_SEA"
+   ],
+   "symptom": "Darnold was forecast 24.48 attempts and threw 2 (PIT 0.066); Lock was forecast 2.10 and threw 22 (PIT 0.981). Darnold was injured early and Lock replaced him. The SEA QB-ROOM AGGREGATE was nearly exact: 200 passing yards actual against 197.46 forecast, 24 attempts against 27.44.",
+   "earliest_layer": "qb allocation / in-game injury",
+   "kind": "MODELING",
+   "repaired": false,
+   "blast_radius": "RECURRING across the league",
+   "impact": "Decisive for how per-QB markets are scored. The room aggregate was forecastable and was forecast well; the split was not knowable from any pregame information set. Scoring per-QB markets without separating these will keep charging irreducible in-game variance to the model.",
+   "test_required": "Score the QB-ROOM AGGREGATE alongside the per-QB split on every game, and report them apart. Before any allocation change, show across >=20 games that per-QB CRPS is improvable at all given that mid-game replacement is unobservable pregame."
+  },
+  {
+   "id": "D18",
+   "category": "EFFICIENCY",
+   "games": [
+    "2026_01_NE_SEA",
+    "2026_01_SF_LA"
+   ],
+   "symptom": "NE: 42 dropbacks against 33.69 forecast (+8.31) but 178 passing yards against 212.46 (-34.46). SF@LA: Purdy 34 attempts against 26.71 but 205 yards against 210.50. In both games the team that threw more than forecast gained fewer yards per attempt than forecast.",
+   "earliest_layer": "qb efficiency",
+   "kind": "MODELING",
+   "repaired": false,
+   "blast_radius": "Possibly systemic; TWO observations",
+   "impact": "Offsetting errors make yardage look accurate while both components are wrong. If real, it is a volume/efficiency coupling the model lacks.",
+   "test_required": "Decompose yards into attempts x efficiency and test the coupling across >=20 games. TWO GAMES IS A HYPOTHESIS, NOT A FINDING."
   }
- ]
+ ],
+ "ne_sea_limitations": [
+  "information set T-31h (newest observation 2026-09-08T17:06:03Z against a 2026-09-10T00:20:00Z kickoff), NOT T-90m",
+  "no official inactives existed at seal time",
+  "no player-level receiving or rushing forecast was produced",
+  "C3 not reached; components applied were A1, A3G, C0, R2, SC1",
+  "many rows carry NO_FORECAST_MISSING_PREGAME_INPUT and are scored as such"
+ ],
+ "comparability_note": "NE@SEA and SF@LA are comparable ONLY on team volume and QB quantities. SF@LA carries receiving and rushing layers that NE@SEA never produced, and the two information sets differ by ~30 hours, so any difference between them confounds architecture, cutoff and opponent."
 }

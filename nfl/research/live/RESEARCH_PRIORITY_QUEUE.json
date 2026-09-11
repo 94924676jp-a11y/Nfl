@@ -1,23 +1,26 @@
 {
  "artifact": "NFL_RESEARCH_PRIORITY_QUEUE",
  "spec_version": "live-review-1",
- "basis": "2026_01_NE_SEA and 2026_01_SF_LA, plus the 2026-09-13 sealed slate",
+ "basis": "2026_01_NE_SEA (sealed shadow forecast, T-31h, scored) and 2026_01_SF_LA (T-18m, scored), plus the 2026-09-13 sealed slate",
  "standing_rule": "No modeling item is promoted on two games. Every P1 requires multi-game prospective evidence, pre-registered, decided out of sample. The P0 items are correctness and infrastructure and need no predictive evidence at all.",
  "ordering_rationale": "P0 first because a system that can silently skip a game, or model only quarterbacks, or score only by hand, cannot generate the evidence every P1 item needs. Q4 in particular BLOCKS Q5, Q6 and Q7: without automatic scoring there is no path to the sample floors.",
- "n_items": 11,
+ "n_items": 12,
  "queue": [
   {
    "rank": "P0",
    "id": "Q1",
-   "title": "Every game on a slate must be forecast or named",
+   "title": "Sealed forecasts must stay discoverable across namespaces",
    "defects": [
     "D01"
    ],
    "kind": "ENGINEERING",
-   "why": "NE@SEA -- the first live game of the season -- was never forecast and nothing objected. A prediction system that can silently skip a game has no denominator, and every downstream sample floor is unreachable if games can vanish.",
-   "work": "A pre-kickoff slate assertion: for each game either a sealed board or a NAMED refusal. Absence is a failure, not a gap.",
-   "evidence_required": "None. This is correctness, not modeling.",
-   "blocks_promotion_of": []
+   "status": "REPAIRED THIS SESSION",
+   "why": "The ledger could not see a sealed, scored, git-tracked NE@SEA forecast, so a review reported its absence as a fact and halved the apparent evidence base. This is worse than a missing forecast: it corrupts conclusions rather than numbers, and it silently recurs on every namespace change.",
+   "work": "Shipped: sealed_index discovers by CONTENT across live, shadow and product namespaces, with an append-only namespace list and a regression test. Remaining: point the prospective scoring row and the research export at it so scoring, not just discovery, spans namespaces.",
+   "evidence_required": "None. Infrastructure.",
+   "blocks_promotion_of": [
+    "Q4"
+   ]
   },
   {
    "rank": "P0",
@@ -69,6 +72,19 @@
   },
   {
    "rank": "P1",
+   "id": "Q12",
+   "title": "Score the QB room aggregate apart from the per-QB split",
+   "defects": [
+    "D17"
+   ],
+   "kind": "MODELING",
+   "why": "NE@SEA is the cleanest evidence either game produced. The Seattle room aggregate was nearly exact -- 200 passing yards against 197.46, 24 attempts against 27.44 -- while the split was maximally wrong, Darnold forecast 24.48 attempts and throwing 2, Lock forecast 2.10 and throwing 22, because Darnold was injured early. No pregame information set could have known that.",
+   "work": "Report the room aggregate as a first-class estimand beside the per-QB numbers, so irreducible in-game replacement variance stops being charged to the model as allocation error.",
+   "evidence_required": "The reporting change needs none. Any ALLOCATION change needs >=20 games showing per-QB CRPS is improvable at all given that mid-game replacement is unobservable pregame.",
+   "blocks_promotion_of": []
+  },
+  {
+   "rank": "P1",
    "id": "Q5",
    "title": "Game-state-conditioned team volume (Track 1)",
    "defects": [
@@ -76,7 +92,7 @@
     "D09"
    ],
    "kind": "MODELING",
-   "why": "The clearest predictive signal in two games. LA ran 57 plays against 65.65 while losing 27-7; NE ran 67 to SEA 47 in a 13-10 game. Model and market missed the SAME direction on 6 of 8 markets, which points at environment rather than player share.",
+   "why": "The clearest predictive signal across BOTH games. SF@LA: LA ran 57 plays against 65.65 while losing 27-7. NE@SEA: NE took 42 dropbacks against 33.69 while trailing. Model and market also missed the same direction on 6 of 8 SF@LA markets, which points at environment rather than player share.",
    "work": "Pre-register a game-state conditioning design with a sealed holdout.",
    "evidence_required": ">=20 prospective games, CRPS with clustering by date and team, decided out of sample. TWO GAMES CANNOT PROMOTE THIS and must not be used to tune it.",
    "blocks_promotion_of": []
@@ -101,10 +117,11 @@
    "title": "Receiving-conversion calibration",
    "defects": [
     "D12",
-    "D13"
+    "D13",
+    "D18"
    ],
    "kind": "MODELING",
-   "why": "Purdy 34 attempts vs 26.71 forecast yet 205 yards vs 210.50 -- offsetting errors that look like accuracy. Interval coverage 10/16 at 50% hints at width problems.",
+   "why": "TWO games now show the same shape: the team that threw more than forecast gained fewer yards per attempt than forecast. NE 42 dropbacks (+8.31) but 178 yards (-34.46); Purdy 34 attempts vs 26.71 but 205 yards vs 210.50. Offsetting errors make yardage look accurate while both components are wrong.",
    "work": "Decompose yards into volume x efficiency and score the parts separately.",
    "evidence_required": ">=300 graded metrics for any calibration claim, per this project own floors. Sixteen correlated metrics from one game support nothing.",
    "blocks_promotion_of": []
@@ -162,5 +179,6 @@
    "evidence_required": "A resolution of the rushing conversion control comes first; carries x YPC is explicitly forbidden.",
    "blocks_promotion_of": []
   }
- ]
+ ],
+ "correction_note": "CORRECTED 2026-09-11. The previous version was built on the false premise that NE@SEA had never been forecast. It had. Both games are prospective case studies and the queue is rebuilt on n=2."
 }
