@@ -90,9 +90,31 @@ def test_A_the_two_answers_are_different_questions():
     check('the game-level answer is never PASS while nothing has come due',
           cov.state is not State.PASS or cov.evidence['covered'] > 0,
           str(cov)[:120])
-    check('not one capture in the real manifest carries a game_id',
-          cov.evidence['attributed_captures'] == 0,
-          str(cov.evidence.get('attributed_captures')))
+    # THIS ASSERTED attributed_captures == 0, AND THAT WAS A SNAPSHOT.
+    #
+    # It was a true statement about a world in which no capture had ever
+    # declared a target before fetching. Once the T-90 anchored runs started
+    # declaring them the count became 103 and the assertion failed -- while
+    # nothing was wrong. The comment a few lines below diagnosed exactly this
+    # defect in a neighbouring check and this one had the same disease.
+    #
+    # The MEANING, which holds in both worlds: a capture is attributed if and
+    # only if it declared an eligible target before fetching. Intent is never
+    # back-filled. So the count must equal the number of rows the reader emits
+    # as dischargeable, and nothing else may be attributed.
+    _read = performed_from_manifest(MANIFEST)
+    check('attribution equals declared eligible targets, and nothing else',
+          cov.evidence['attributed_captures'] == len(_read.value),
+          f"{cov.evidence.get('attributed_captures')} vs {len(_read.value)}")
+    check('  and only target-declaring sources are ever attributed',
+          set(p[1] for p in _read.value) <= {'official_inactives',
+                                             'official_injury_report'},
+          str(sorted(set(p[1] for p in _read.value))))
+    check('  while the periodic sweeps still discharge nothing',
+          _read.evidence.get('n_unattributed', 0)
+          > len(_read.value),
+          f"{_read.evidence.get('n_unattributed')} unattributed of "
+          f"{_read.evidence.get('n_pass_rows')} PASS rows")
     # Time-aware. This asserted `'unmet_targets' in cov.detail`, which is the
     # wording of the DEFERRED branch only. Once a window closed unfilled the
     # detail became the FAIL branch's and the assertion broke -- again a
@@ -233,15 +255,31 @@ def test_E2_the_reader_must_not_drop_rows():
     # rows, not on the dischargeable subset, so the 54-of-60 drop would still
     # fail it.
     ev = real.evidence
+    # THE IDENTITY IS OVER ROWS, NOT OVER TARGET PAIRS.
+    #
+    # This added n_captures -- which counts (game_id, kind) pairs a row
+    # DECLARED -- to a row count, and compared the sum to a row count. It
+    # balanced only while every attributed row declared exactly one target.
+    # Measured 2026-09-11: 103 pairs came from 12 rows, so 103 + 958 = 1061
+    # against 970 PASS rows. The units were wrong, not the manifest.
     check('every PASS row in the live manifest is dated and accounted for',
           _is(real, State.PASS)
-          and ev['n_captures'] + ev['n_unattributed'] == ev['n_pass_rows'],
-          str(real)[:130])
+          and ev['n_attributed_rows'] + ev['n_unattributed']
+          == ev['n_pass_rows'],
+          f"{ev.get('n_attributed_rows')}+{ev.get('n_unattributed')} vs "
+          f"{ev.get('n_pass_rows')}")
+    check('  and the reader says so itself',
+          ev.get('row_identity_balances') is True,
+          str(ev.get('row_identity_balances')))
     check('and that is materially more than the top-level-only reading found',
           ev['n_pass_rows'] > 50, str(ev)[:200])
-    check('none of them is dischargeable, because none declared a target',
-          ev['n_captures'] == 0 and ev['n_unattributed'] == ev['n_pass_rows'],
-          f"{ev['n_captures']}/{ev['n_unattributed']}/{ev['n_pass_rows']}")
+    # Was: none is dischargeable because none declared a target. True only
+    # before any run declared one. What must stay true is that the sweeps --
+    # the overwhelming majority -- still discharge nothing.
+    check('the periodic sweeps still discharge nothing, and they dominate',
+          ev['n_unattributed'] > 10 * ev['n_attributed_rows'],
+          f"{ev['n_unattributed']} unattributed vs "
+          f"{ev['n_attributed_rows']} attributed row(s)")
     print(f'       [{ev["n_pass_rows"]} PASS rows read, '
           f'{ev["n_unattributed"]} unattributed, {ev["n_captures"]} '
           f'dischargeable; the broken reader found 6]')

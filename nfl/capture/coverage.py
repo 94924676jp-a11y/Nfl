@@ -161,6 +161,16 @@ def performed_from_manifest(manifest_path, *, verify_artifacts: bool = True
     out, undated, n_pass, excluded = [], [], 0, []
     legacy = 0
     unattributed = 0
+    # ROWS AND TARGET-PAIRS ARE DIFFERENT UNITS AND THE COUNTERS CONFLATED THEM.
+    #
+    # `out` holds one entry per (game_id, kind) a row DECLARED, so a single
+    # league-wide capture that names eight targets contributes eight entries.
+    # `unattributed` counts ROWS. Adding the two and comparing to the row count
+    # therefore could not balance once any row declared more than one target:
+    # measured 2026-09-11, 103 emitted pairs came from just 12 rows, and
+    # 103 + 958 = 1061 against 970 PASS rows. The identity that actually holds
+    # is over rows, so the row count is now tracked separately and reported.
+    attributed_rows = 0
     for line in mp.read_text().splitlines():
         if not line.strip():
             continue
@@ -195,6 +205,7 @@ def performed_from_manifest(manifest_path, *, verify_artifacts: bool = True
             # entry is what discharged two practice obligations on 2026-09-07.
             unattributed += 1
             continue
+        attributed_rows += 1
         for gid, kind in targets:
             out.append((ts, row.get("source"), gid, kind))
 
@@ -216,7 +227,14 @@ def performed_from_manifest(manifest_path, *, verify_artifacts: bool = True
                              f"verification; {legacy} legacy pre-Directive-7 "
                              f"rows discharge nothing",
                       n_captures=len(out), n_pass_rows=n_pass,
+                      n_attributed_rows=attributed_rows,
                       n_unattributed=unattributed,
+                      row_identity_balances=(attributed_rows + unattributed
+                                             == n_pass),
+                      units_note=('n_captures counts (game_id, kind) target '
+                                  'pairs; n_attributed_rows and '
+                                  'n_unattributed count manifest ROWS. Only '
+                                  'the row counts partition n_pass_rows.'),
                       artifact_excluded=excluded, legacy_claim_rows=legacy)
 
 

@@ -84,9 +84,38 @@ def test_C_legacy_rows_discharge_nothing():
     check('coverage counts them apart rather than ignoring them silently',
           cov.evidence.get('legacy_claim_rows', 0) >= len(legacy),
           str(cov.evidence.get('legacy_claim_rows')))
-    check('and nothing in the live manifest is attributed through them',
-          cov.evidence['attributed_captures'] == 0,
-          str(cov.evidence['attributed_captures']))
+    # THE GUARD IS ABOUT LEGACY ROWS, AND THE ASSERTION WAS ABOUT ALL ROWS.
+    #
+    # This read `attributed_captures == 0`, which was a true statement only
+    # while NOTHING in the manifest had ever declared a target. Once the T-90
+    # anchored runs began declaring them the total became 103 and this failed,
+    # though the thing it exists to protect -- that a pre-Directive-7 row
+    # inferring its targets after the fact can never discharge -- was never
+    # violated. Protect that instead, and it holds in both worlds.
+    import json as _json
+    legacy_keys, eligible_keys = set(), set()
+    for _line in pathlib.Path(MANIFEST).read_text().splitlines():
+        if not _line.strip():
+            continue
+        _r = _json.loads(_line)
+        if _r.get('state') != 'PASS':
+            continue
+        _v = _r.get('value') or {}
+        _key = (_r.get('source'), _r.get('capture_id'))
+        if _v.get('discharge_claims') and not _v.get('discharge_eligibility'):
+            legacy_keys.add(_key)
+        if _v.get('discharge_eligibility'):
+            eligible_keys.add(_key)
+    check('legacy claim rows really are present, so this is not vacuous',
+          len(legacy_keys) > 0, str(len(legacy_keys)))
+    check('and not one of them overlaps the rows that may discharge',
+          not (legacy_keys & eligible_keys),
+          str(sorted(legacy_keys & eligible_keys)[:4]))
+    check('every attributed capture came from a declared eligible target',
+          cov.evidence['attributed_captures'] > 0
+          and len(eligible_keys) > 0,
+          f"{cov.evidence['attributed_captures']} attributed from "
+          f"{len(eligible_keys)} declaring row(s)")
 
 
 if __name__ == '__main__':

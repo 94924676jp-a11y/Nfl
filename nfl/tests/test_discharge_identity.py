@@ -296,7 +296,20 @@ def test_K_live_state_is_repaired():
     man = _REPO / "nfl" / "vintage_manifest.jsonl"
     cov = C.coverage(2026, 1, manifest_path=man)
     e = cov.evidence
-    check("nothing is covered", e["covered"] == 0, str(e.get("covered")))
+    # THIS SAID "nothing is covered" AND MEANT "no sweep sneaks a cover".
+    #
+    # Written when no capture had ever declared a target, so covered == 0 was
+    # both true and a fair proxy for the guard. It is no longer true: the T-90
+    # anchored runs legitimately cover 15 obligations. The guard itself is
+    # untouched -- a periodic sweep still discharges nothing -- so assert THAT,
+    # which distinguishes a real cover from a sneaked one in either world.
+    check("coverage is whatever the declared targets earned, no more",
+          e["covered"] + e["missed"] + e["not_yet_due"] == e["n_targets"],
+          f'{e["covered"]}+{e["missed"]}+{e["not_yet_due"]} vs {e["n_targets"]}')
+    check("  and every cover traces to a target-declaring source",
+          set(p[1] for p in C.performed_from_manifest(man).value)
+          <= {"official_inactives", "official_injury_report"},
+          str(sorted(set(p[1] for p in C.performed_from_manifest(man).value))))
     # TIME-AWARE, and deliberately so. The two assertions here used to read
     # `missed == 0` and `state is DEFERRED[NO_WINDOW_HAS_CLOSED_YET]`. Both were
     # true on 2026-09-07 and both are now false, because windows have since
@@ -316,8 +329,19 @@ def test_K_live_state_is_repaired():
           or (cov.state is State.FAIL
               and cov.code == "PERISHABLE_WINDOWS_MISSED" and e["missed"] > 0),
           f"{cov.state}[{cov.code}] missed={e['missed']}")
-    check("covered and attributed_captures can no longer disagree",
-          e["covered"] == 0 and e["attributed_captures"] == 0)
+    # The label already states the meaning: the two must not DISAGREE. The
+    # body asserted both were zero, which is a much narrower claim and one
+    # that only held while nothing had ever declared a target. Coverage
+    # without an attributed capture is the contradiction worth forbidding,
+    # and it is forbidden in both directions here.
+    check("covered and attributed_captures cannot disagree",
+          (e["covered"] == 0) == (e["attributed_captures"] == 0)
+          if e["covered"] == 0 or e["attributed_captures"] == 0
+          else True,
+          f'covered={e["covered"]} attributed={e["attributed_captures"]}')
+    check("  no obligation is covered without a capture behind it",
+          e["covered"] == 0 or e["attributed_captures"] > 0,
+          f'covered={e["covered"]} attributed={e["attributed_captures"]}')
     check("and the historical captures are still read, not deleted",
           e["unattributed_captures"] > 300 and e["total_pass_rows"] > 300,
           f"unattributed={e.get('unattributed_captures')} "

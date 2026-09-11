@@ -179,9 +179,29 @@ def test_A2_a_page_digest_is_not_a_report_digest():
     check('two captures differ by whole-page digest', len(groups) >= 2,
           str(len(groups)))
     counts = {v[1] for v in rows_by_group.values()}
-    check('yet they parse to the SAME report content -- so a page digest '
-          'overstates report change',
-          len(counts) == 1, str(rows_by_group))
+    # THE REPORT REALLY DOES CHANGE, AND THIS ONCE ASSERTED IT NEVER DOES.
+    #
+    # `len(counts) == 1` held while every capture was the same pre-game-day
+    # report parsing to 11 rows. When the game-day reports published, some
+    # captures began parsing to 167, and this failed -- reporting real
+    # football news as a defect. Conditioning a test on a world in which
+    # nothing has happened yet is the same snapshot disease as asserting that
+    # nothing is ever covered.
+    #
+    # The open debt is that a page digest OVERSTATES change, and overstating
+    # is a comparison, not an absolute: there must be strictly more distinct
+    # page digests than distinct parsed contents. That is exactly the claim,
+    # it is falsifiable, and it survives the report changing.
+    check('a page digest overstates report change: strictly more page '
+          'versions than distinct parsed contents',
+          len(groups) > len(counts),
+          f'{len(groups)} page digest(s) -> {len(counts)} distinct content(s): '
+          f'{sorted(counts)}')
+    check('  and at least two page versions share one parsed content, which '
+          'is the overstatement itself',
+          len(groups) - len(counts) >= 1,
+          str({c: sum(1 for v in rows_by_group.values() if v[1] == c)
+               for c in sorted(counts)}))
     print(f'       [{len(groups)} page versions, all parsing to '
           f'{counts} report rows]')
 
