@@ -275,6 +275,45 @@ def test_tonights_roster_capture_is_free_of_posthoc_contamination():
           f"46 will dress")
 
 
+def test_that_leak_guard_actually_catches_a_leak():
+    """A guard is not demonstrated by compliant data passing it.
+
+    The narrowed guard must still reject the thing it exists to reject, so a
+    rehearsal row is seeded into an in-memory copy of the live manifest and
+    the detector is required to name it. Without this, narrowing the guard
+    could have quietly turned it off.
+    """
+    man = pathlib.Path(_ROOT) / 'nfl' / 'vintage_manifest.jsonl'
+    lines = man.read_text().splitlines()
+
+    def detect(rows):
+        bad = []
+        for line in rows:
+            if not line.strip():
+                continue
+            r = json.loads(line)
+            v = r.get('value') or {}
+            if (r.get('source') == INA.SOURCE
+                    and v.get('spec_version') == INA.SPEC_VERSION
+                    and v.get('isolated_root')):
+                bad.append(r['capture_id'])
+        return bad
+
+    check('the real manifest is clean under the detector', not detect(lines))
+    seeded = json.dumps({
+        'capture_id': 'SEEDED_LEAK', 'source': INA.SOURCE, 'state': 'PASS',
+        'value': {'spec_version': INA.SPEC_VERSION,
+                  'isolated_root': '/tmp/rehearsal'}})
+    check('and a seeded rehearsal row IS caught',
+          detect(lines + [seeded]) == ['SEEDED_LEAK'])
+    real = json.dumps({
+        'capture_id': 'REAL_LIVE', 'source': INA.SOURCE, 'state': 'PASS',
+        'value': {'spec_version': INA.SPEC_VERSION, 'isolated_root': None,
+                  'game_id': '2026_01_SF_LA'}})
+    check('while a genuine live capture is NOT',
+          detect(lines + [real]) == [])
+
+
 def test_the_live_vintage_was_not_touched_by_this_module():
     """THE GUARD ON THE GUARD. If a test ever writes a synthetic inactives
     capture into the live vintage again, this fails."""
@@ -285,8 +324,24 @@ def test_the_live_vintage_was_not_touched_by_this_module():
             continue
         r = json.loads(line)
         v = r.get('value') or {}
+        # WHAT THIS GUARD IS FOR, AND WHAT IT IS NOT FOR.
+        #
+        # It was written when the official source was unreachable, so the ONLY
+        # way an inactives capture could appear in the live manifest was a
+        # test writing a synthetic one -- and one did. Flagging every
+        # inactives row was therefore a sound proxy for "a rehearsal leaked".
+        #
+        # It stopped being sound the moment a REAL list was ingested. On
+        # 2026-09-11 the genuine delivery wrote two live rows and this guard
+        # called them contamination, while they were in fact the only
+        # game-attributed captures in the whole manifest. A guard that fires
+        # on success is not protecting anything.
+        #
+        # The leak itself is what to test for: a capture written under a
+        # caller-supplied root is a rehearsal and must never appear here.
         if (r.get('source') == INA.SOURCE
-                and v.get('spec_version') == INA.SPEC_VERSION):
+                and v.get('spec_version') == INA.SPEC_VERSION
+                and v.get('isolated_root')):
             bad.append(r['capture_id'])
     check('no synthetic inactives capture is in the live manifest',
           not bad, str(bad[:5]))

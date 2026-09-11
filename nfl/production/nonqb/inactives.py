@@ -138,6 +138,10 @@ def store(raw: bytes, *, retrieved_at, source_url, game_id,
                      'source_url': source_url, 'game_id': game_id,
                      'http_status': http_status,
                      'blob': str(blob.relative_to(base)),
+                     # A capture written under a caller-supplied root
+                     # is a REHEARSAL. It must never reach the live
+                     # manifest, and this is how the guard tells.
+                     'isolated_root': str(root) if root else None,
                      'content_unchanged': unchanged,
                      'spec_version': SPEC_VERSION}}
     with open(manifest, 'a') as fh:

@@ -2,19 +2,23 @@
  "artifact": "NFL_SFLA_BOARD_STATE",
  "game_id": "2026_01_SF_LA",
  "kickoff_utc": "2026-09-11T00:35:00Z",
- "state": "PRE_INACTIVES",
- "as_of_utc": "2026-09-10T23:07:00Z",
- "meaning": "Every board in this directory was sealed BEFORE the official inactive lists published. None of them is governed by an official game-day active/inactive source, and none may be described as post-inactives.",
+ "state": "POST_INACTIVES_COMPLETE",
+ "as_of_utc": "2026-09-11T00:16:27Z",
+ "meaning": "This directory now holds TWO tournaments and they must never be conflated. The pre_inactives_* boards were sealed at 2026-09-10T21:18:56Z, before any official inactive information existed, and they stand unchanged. The post_inactives_* boards were sealed at 2026-09-11T00:16:27Z, 18 minutes before kickoff, governed by the official inactive lists for both clubs.",
  "written_at_common": "2026-09-10T21:18:56Z",
  "boards": [
+  "post_inactives_V1_CANDIDATE",
+  "post_inactives_V1_CANDIDATE_R5",
+  "post_inactives_V1_CANDIDATE_R6",
+  "post_inactives_V1_CANDIDATE_R7",
+  "post_inactives_V1_CANDIDATE_R8",
   "pre_inactives_V1_CANDIDATE",
   "pre_inactives_V1_CANDIDATE_R5",
   "pre_inactives_V1_CANDIDATE_R6",
   "pre_inactives_V1_CANDIDATE_R7",
   "pre_inactives_V1_CANDIDATE_R8"
  ],
- "post_inactives_present": false,
- "why_not": "official_inactives is BLOCKED[NO_EGRESS] and the block is at the gateway, not the origin: www.nfl.com and site.api.espn.com are denied at CONNECT while github.com and raw.githubusercontent.com are reached in the same breath. Confirmed on three independent channels (curl, the agent WebFetch tool, and the proxy status endpoint). Requested as OUT-007. Nothing is substituted for the list.",
+ "post_inactives_present": true,
  "forbidden_substitutes": [
   "sportsbook prices",
   "reporter summaries",
@@ -31,6 +35,12 @@
    "delivery_from_networked_agent": null,
    "origin_main_head": "c37d7b4 (2026-09-10T17:05:29Z, capture bot)",
    "outcome": "no authoritative bytes"
+  },
+  {
+   "at_utc": "2026-09-11T00:16:27Z",
+   "window": "T-18",
+   "official_inactives": "INGESTED via external authoritative delivery",
+   "outcome": "POST_INACTIVES_COMPLETE, all 11 names resolved"
   }
  ],
  "parser_readiness": {
@@ -42,5 +52,18 @@
   ],
   "assisted_path": "verify_supplied_names / --names-json; every supplied name must occur verbatim in the stored official bytes, so the operator supplies the segmentation and never the information",
   "suite": "64 modules, 714 test functions, 3775 checks, 0 failing"
- }
+ },
+ "official_inactives": {
+  "n_resolved": {
+   "SF": 6,
+   "LA": 5
+  },
+  "n_unmapped": 0,
+  "provenance_kind": "EXTERNAL_AUTHORITATIVE_DELIVERY",
+  "official_source_url": "https://www.nfl.com/news/australia-game-inactives-san-francisco-49ers-at-los-angeles-rams",
+  "official_published_at": "2026-09-10T23:26:21.831Z",
+  "delivered_artifact_sha256": "91bdf335602a7475",
+  "not_a_capture_of_nfl_com": "This executor never reached the announcement (HTTP 000, gateway CONNECT denial). The chain of custody runs official page -> networked agent -> delivered artifact -> here. The generic /inactives/ page this executor COULD reach carried its placeholder through the entire window and is the wrong document to verify against."
+ },
+ "known_defect_at_seal": "The QB layer does not consume official_inactive_ids. Kurtis Rourke retains 0.90 dropbacks and Ty Simpson 0.73 on the post-inactives boards while both are officially inactive, so roughly 2.5% of team dropbacks stay allocated to quarterbacks who are not dressed rather than redistributing to Purdy and Stafford. The receiving layer consumes the same list correctly. Found 9 minutes before kickoff and recorded rather than patched; it belongs to the QB accounting track."
 }
