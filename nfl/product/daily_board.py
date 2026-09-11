@@ -325,7 +325,16 @@ def _vector(draws, manifest, metric, pid):
     key = metric.replace('/', '__')
     if key not in draws:
         return None
-    return np.asarray(draws[key][ids.index(pid)], float)
+    i = ids.index(pid)
+    arr = draws[key]
+    # THE MANIFEST AND THE ARRAY MUST AGREE, AND WHEN THEY DO NOT, SAY SO.
+    # Indexing blind raised IndexError from inside the reader -- an unnamed
+    # failure. A disagreement here means the manifest describes a different
+    # draw set from the one on disk, so no vector is returned and the row
+    # becomes NO_DISTRIBUTION_ONLY_A_POINT_MEAN: visible, not silent.
+    if i >= arr.shape[0]:
+        return None
+    return np.asarray(arr[i], float)
 
 
 def _attach_market(row, market, player, metric, vec, kickoff):
