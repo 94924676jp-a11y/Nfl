@@ -1,0 +1,78 @@
+{
+ "artifact": "NFL_SFLA_REALIZED_OUTCOMES",
+ "final": {
+  "LA": 7,
+  "SF": 27
+ },
+ "game_id": "2026_01_SF_LA",
+ "not_supplied": [
+  "George Kittle receptions and receiving yards (priority player)",
+  "targets for every player",
+  "sacks (team or individual)",
+  "full TD attribution beyond Purdy 3 pass TD and Kyren 1 rush TD",
+  "complete player list (needed to verify no inactive recorded production)",
+  "play-by-play / event log"
+ ],
+ "passing": {
+  "Brock Purdy": {
+   "att": 34,
+   "cmp": 25,
+   "int": 1,
+   "ptd": 3,
+   "pyds": 205
+  },
+  "Matthew Stafford": {
+   "att": 25,
+   "cmp": 15,
+   "int": 1,
+   "ptd": 0,
+   "pyds": 155
+  }
+ },
+ "provenance": {
+  "kind": "OWNER_SUPPLIED_SUMMARY",
+  "normal_source_attempted_first": {
+   "nflverse_play_by_play_2026": "FETCHED OK (HTTP 200, 65119 bytes) from github.com/nflverse/nflverse-data releases; contains 166 rows for 2026_01_NE_SEA ONLY. 2026_01_SF_LA is not yet ingested.",
+   "note": "github.com and raw.githubusercontent.com ARE reachable from this executor, so the authoritative pbp can be fetched here once nflverse publishes it. www.nfl.com and site.api.espn.com remain blocked.",
+   "pbp_participation": "DEFERRED[SOURCE_NOT_YET_PUBLISHED]",
+   "snap_counts_2026": "93 rows, 0 for SF or LA"
+  },
+  "supersede_when": "Replace with nflverse pbp for 2026_01_SF_LA when published; re-score and keep both rows.",
+  "what_this_is": "Realized outcomes transcribed by the owner from a completed-game feed, with AP cited for Purdy 205 passing yards / 3 TD and Stafford 155. Treated as realized outcome data only.",
+  "what_this_is_NOT": "NOT a fetched, hashed artifact from a named endpoint. No raw bytes of a box score exist in this repository. The hash below is of THIS transcription, so it pins what was reviewed; it does not establish the upstream source."
+ },
+ "receiving": {
+  "Kyren Williams": {
+   "receiving_yards": 24,
+   "receptions": 3
+  },
+  "Puka Nacua": {
+   "receiving_yards": 74,
+   "receptions": 5
+  }
+ },
+ "rushing": {
+  "Christian McCaffrey": {
+   "carries": 10,
+   "rushing_yards": 68
+  },
+  "Kyren Williams": {
+   "carries": 11,
+   "rushing_td": 1,
+   "rushing_yards": 41
+  }
+ },
+ "self_sha256": "b1b3c9a62599b7cb2626d754f19ba9611aa54e41c47a7b313971d06408296795",
+ "team": {
+  "LA": {
+   "plays": 57,
+   "rush_attempts": 29,
+   "total_yards": 291
+  },
+  "SF": {
+   "plays": 64,
+   "rush_attempts": 30,
+   "total_yards": 379
+  }
+ }
+}
