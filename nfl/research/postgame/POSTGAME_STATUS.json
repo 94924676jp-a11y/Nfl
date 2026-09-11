@@ -1,7 +1,7 @@
 {
  "artifact": "NFL_POSTGAME_STATUS",
  "spec_version": "postgame-ingestion-1",
- "generated_at_utc": "2026-09-11T19:16:01.662842+00:00",
+ "generated_at_utc": "2026-09-11T19:45:43.970828+00:00",
  "season": 2026,
  "promoted": false,
  "completed_games_discovered": [
@@ -12,7 +12,7 @@
  "n_sealed_forecasts_found": 19,
  "outcome_source": {
   "state": "PASS",
-  "code": "POSTGAME_OUTCOME_STORED",
+  "code": "POSTGAME_OUTCOME_REUSED",
   "sha256": "d9e442ae17ba88e70c6df6ed15e4f0ce54c9ff63a607de54f62cb7ed4f016e39",
   "games": [
    "2026_01_NE_SEA",
@@ -176,8 +176,9 @@
  ],
  "games_deferred": [],
  "games_refused": [],
- "scoring_rows_added": 3230,
- "duplicate_rows_avoided": 0,
+ "games_not_final": [],
+ "scoring_rows_added": 0,
+ "duplicate_rows_avoided": 3230,
  "estimands_refused_by_name": [
   "receiving/receiving_td",
   "rushing/rushing_td",
@@ -187,7 +188,73 @@
   "team_volume/team_rz_carries",
   "team_volume/team_targets"
  ],
+ "finality_signals_required": [
+  "END_GAME_MARKER_PRESENT",
+  "GAME_CLOCK_EXPIRED",
+  "REGULATION_OR_LATER_COMPLETE",
+  "FINAL_RESULT_POPULATED",
+  "SCOREBOARD_AGREES_WITH_RESULT"
+ ],
  "n_games_scored": 2,
  "n_games_deferred": 0,
- "n_games_refused": 0
+ "n_games_refused": 0,
+ "n_games_not_final": 0,
+ "evidence": {
+  "scoring_rows": 3230,
+  "graded_metrics": 12,
+  "distinct_games": 2,
+  "distinct_player_games": 59,
+  "distinct_candidate_forecasts": 19,
+  "games": [
+   "2026_01_NE_SEA",
+   "2026_01_SF_LA"
+  ],
+  "units": {
+   "scoring_rows": "ROW -- one metric x one sealed forecast x one outcome version. This is a bookkeeping count and is NEVER a prospective sample size.",
+   "graded_metrics": "METRIC -- a distinct forecast quantity that produced at least one scored row.",
+   "distinct_games": "GAME -- the independent unit. Two candidates of one game are one game.",
+   "distinct_player_games": "PLAYER-GAME -- one player in one game. Not independent across players within a game: teammates share the same game state.",
+   "distinct_candidate_forecasts": "CANDIDATE FORECAST -- one sealed forecast. Variants of the same game are PAIRED comparisons on that game, not independent games."
+  },
+  "floor_unit": "distinct_games",
+  "paired_note": "Candidate variants from the same game are paired comparisons, not independent games. Pooling them inflates an apparent sample by the number of variants run and narrows every interval computed from it.",
+  "prospective_sample_size": {
+   "value": 2,
+   "unit": "GAME",
+   "note": "the sample size for an evidence floor. scoring_rows is not this number and must never be reported as it."
+  }
+ },
+ "evidence_all_versions": {
+  "scoring_rows": 3230,
+  "graded_metrics": 12,
+  "distinct_games": 2,
+  "distinct_player_games": 59,
+  "distinct_candidate_forecasts": 19,
+  "games": [
+   "2026_01_NE_SEA",
+   "2026_01_SF_LA"
+  ],
+  "units": {
+   "scoring_rows": "ROW -- one metric x one sealed forecast x one outcome version. This is a bookkeeping count and is NEVER a prospective sample size.",
+   "graded_metrics": "METRIC -- a distinct forecast quantity that produced at least one scored row.",
+   "distinct_games": "GAME -- the independent unit. Two candidates of one game are one game.",
+   "distinct_player_games": "PLAYER-GAME -- one player in one game. Not independent across players within a game: teammates share the same game state.",
+   "distinct_candidate_forecasts": "CANDIDATE FORECAST -- one sealed forecast. Variants of the same game are PAIRED comparisons on that game, not independent games."
+  },
+  "floor_unit": "distinct_games",
+  "paired_note": "Candidate variants from the same game are paired comparisons, not independent games. Pooling them inflates an apparent sample by the number of variants run and narrows every interval computed from it.",
+  "prospective_sample_size": {
+   "value": 2,
+   "unit": "GAME",
+   "note": "the sample size for an evidence floor. scoring_rows is not this number and must never be reported as it."
+  }
+ },
+ "supersession": {
+  "n_rows_total": 3230,
+  "n_rows_current": 3230,
+  "n_rows_superseded": 0,
+  "n_identities": 3230,
+  "n_identities_revised": 0,
+  "rule": "one CURRENT version per forecast_id + game_id + entity + metric + player_id + team. Older versions are preserved verbatim and never deleted."
+ }
 }

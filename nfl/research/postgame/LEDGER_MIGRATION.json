@@ -1,0 +1,53 @@
+{
+ "artifact": "NFL_PROSPECTIVE_LEDGER_MIGRATION",
+ "spec_version": "postgame-ingestion-1",
+ "ran_at_utc": "2026-09-11T19:45:38.808495+00:00",
+ "reason": "the v1 ledger could not identify which sealed forecast a row came from, so rows could not be counted in any unit other than rows",
+ "predecessor_preserved": "nfl/research/postgame/PROSPECTIVE_LEDGER.v1.jsonl",
+ "predecessor_rows": 3230,
+ "regenerated_rows": 3230,
+ "outcome_artifact": "nfl/research/postgame/pbp_2026.d9e442ae17ba88e7.csv.gz",
+ "v1_rows_not_reproduced": [],
+ "n_v1_rows_not_reproduced": 0,
+ "v1_rows_whose_values_changed": [],
+ "n_v1_rows_whose_values_changed": 0,
+ "deliberate_field_changes": {
+  "sealed_dir": "absolute path -> repository-relative path"
+ },
+ "fields_added": [
+  "candidate",
+  "cutoff_basis",
+  "cutoff_regime",
+  "cutoff_utc",
+  "forecast_id",
+  "outcome_hash",
+  "player_id",
+  "run_id"
+ ],
+ "evidence_after": {
+  "scoring_rows": 3230,
+  "graded_metrics": 12,
+  "distinct_games": 2,
+  "distinct_player_games": 59,
+  "distinct_candidate_forecasts": 19,
+  "games": [
+   "2026_01_NE_SEA",
+   "2026_01_SF_LA"
+  ],
+  "units": {
+   "scoring_rows": "ROW -- one metric x one sealed forecast x one outcome version. This is a bookkeeping count and is NEVER a prospective sample size.",
+   "graded_metrics": "METRIC -- a distinct forecast quantity that produced at least one scored row.",
+   "distinct_games": "GAME -- the independent unit. Two candidates of one game are one game.",
+   "distinct_player_games": "PLAYER-GAME -- one player in one game. Not independent across players within a game: teammates share the same game state.",
+   "distinct_candidate_forecasts": "CANDIDATE FORECAST -- one sealed forecast. Variants of the same game are PAIRED comparisons on that game, not independent games."
+  },
+  "floor_unit": "distinct_games",
+  "paired_note": "Candidate variants from the same game are paired comparisons, not independent games. Pooling them inflates an apparent sample by the number of variants run and narrows every interval computed from it.",
+  "prospective_sample_size": {
+   "value": 2,
+   "unit": "GAME",
+   "note": "the sample size for an evidence floor. scoring_rows is not this number and must never be reported as it."
+  }
+ },
+ "lossless": true
+}
