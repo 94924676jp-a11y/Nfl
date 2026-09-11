@@ -219,8 +219,17 @@ def test_no_rule_was_loosened_and_week1_is_not_backfilled():
                 yield from walk(v)
 
     missed = [r for r in walk(d) if r['status'] == 'MISSED']
-    assert check('the Week 1 misses are still MISSED', len(missed) == 5,
-                 f'{len(missed)} -- WEEK1_BACKFILLED')
+    # BACKFILLING MAKES MISSES DISAPPEAR; IT DOES NOT MULTIPLY THEM.
+    #
+    # This pinned the count at exactly 5, which was the number of Week 1
+    # windows that had closed unfilled on the day it was written. By
+    # 2026-09-11 twenty had closed, and the test reported WEEK1_BACKFILLED --
+    # naming the calendar advancing as the one thing it exists to forbid.
+    # A backfill converts a MISS into a COVER, so the count can only fall.
+    # Assert the direction, and assert that the named obligations are still
+    # individually missed, which is what "not backfilled" actually means.
+    assert check('no Week 1 miss was converted into a cover',
+                 len(missed) >= 5, f'{len(missed)} -- WEEK1_BACKFILLED')
     ne = [r for r in missed
           if r.get('game_id') == '2026_01_NE_SEA' and r.get('kind') == 'inactives']
     assert check('  including the item-1 obligation', len(ne) == 1)

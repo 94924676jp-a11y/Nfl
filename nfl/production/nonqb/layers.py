@@ -128,7 +128,16 @@ def appearance(season, week, players, fixture=None, seed=20260908, m=200,
                                   'with no injuries'})
         else:
             rd = RD.report(season, week)
-            if rd['overall_state'] != 'INJURIES_READY':
+            # THE READY STATE IS ENGINE_INPUTS_READY, NOT INJURIES_READY.
+            #
+            # readiness.report sets overall_state to ENGINE_INPUTS_READY when
+            # nothing is blocking, and to the injuries sub-state only when
+            # something IS. Comparing against 'INJURIES_READY' therefore
+            # deferred precisely when the inputs were ready -- the ready
+            # answer read as a refusal. It stayed hidden because every
+            # production caller names `teams` and takes the per-game branch
+            # above; only the slate-wide path could reach it.
+            if rd['overall_state'] != 'ENGINE_INPUTS_READY':
                 return Outcome.deferred(
                     rd['overall_state'], rd['injuries']['reason'],
                     owed={'next_action': rd['next_action'],

@@ -94,13 +94,45 @@ def test_A_governance_is_authoritative():
 
 
 def test_B_appearance_without_injuries_refuses():
+    """SEEDED, because the world stopped supplying the condition.
+
+    This used to call the real path and rely on the captured injuries feed
+    being unusable. Once the feed became usable the call PASSED, and the test
+    reported working inputs as a failure -- a test conditioned on an empty
+    world rather than on the behaviour it means to protect.
+
+    Worse, it was masking a real defect while it did so: readiness reports
+    ENGINE_INPUTS_READY when nothing blocks, and layers.appearance compared
+    against 'INJURIES_READY', so the slate-wide path deferred exactly when
+    the inputs were ready. That is fixed; this now seeds the not-ready state
+    directly and requires the refusal to name it.
+    """
     print('\nB. appearance without a usable injuries feed emits nothing')
-    o = LY.appearance(2026, 1, [{'gsis_id': 'x'}])
+    real = LY.RD.report
+
+    def _blocked(season, week, *a, **k):
+        d = dict(real(season, week, *a, **k))
+        d['overall_state'] = 'INJURIES_NOT_FILED'
+        d['injuries'] = dict(d.get('injuries') or {},
+                             reason='seeded: no club filed a report')
+        return d
+
+    LY.RD.report = _blocked
+    try:
+        o = LY.appearance(2026, 1, [{'gsis_id': 'x'}])
+    finally:
+        LY.RD.report = real
     check('the real path does not PASS', o.state is not State.PASS, o.code)
     check('  it names the exact condition, not a generic failure',
           'INJURIES' in o.code, o.code)
     check('  and emits no probabilities at all', o.value is None
           or not isinstance(o.value, dict) or not o.value, str(o.value)[:60])
+
+    # AND THE OTHER SIDE OF IT: with the feed ready, the layer must actually
+    # run. Without this, restoring the stale constant would pass the suite.
+    ok = LY.appearance(2026, 1, [{'gsis_id': 'x'}])
+    check('  while a READY feed lets the real mechanism run',
+          ok.state is State.PASS, f'{ok.state.name}[{ok.code}]')
 
 
 def test_C_fixture_quarantine():
@@ -128,8 +160,18 @@ def test_C_fixture_quarantine():
 
 def test_D_upstream_gating():
     print('\nD. every layer refuses when its upstream is absent')
-    blocked = Outcome.blocked('UPSTREAM', 'x', cause=None) if False else \
-        LY.appearance(2026, 1, [{'gsis_id': 'x'}])
+    # CONSTRUCT the blocked upstream instead of hoping the real one fails.
+    #
+    # This called LY.appearance and relied on it refusing because the captured
+    # injuries feed was unusable. Once the feed became usable, appearance
+    # PASSED, participation ran, and this test reported the cascade WORKING as
+    # a failure. What it means to protect is downstream gating: given a
+    # refused upstream, every layer below refuses and emits nothing. That is
+    # deterministic, so seed it.
+    blocked = Outcome.deferred(
+        'INJURIES_NOT_FILED',
+        'seeded upstream refusal: no club filed a report',
+        owed={'source': 'injuries_2026'})
     pa = LY.participation(blocked, {})
     check('participation without appearance',
           pa.code == 'BLOCKED_UPSTREAM_APPEARANCE', pa.code)
