@@ -2128,3 +2128,66 @@ fit.
 **Detail:** `nfl/research/q7/Q7_SPEC.md`, `Q7_DECISION.md`,
 `Q7_FORWARD_CHAIN_RESULTS.json`.
 
+---
+
+## 2026-09-12 — Q8: receiving opportunity and target allocation. Audit decisive; repair REJECT.
+
+**The audit came first, as directed, and it is the deliverable.** Exact
+Shapley over all 32 subsets of the five sources, using the repository's own
+`qb2_lib.shapley`, forward-chained 2022-2025 over 34,710 player-games. Every
+attribution adds up to the total movement exactly.
+
+**Ranking.** Receiving-yard BIAS: APPEAR +2.118 (112.3%), BUDGET -0.200,
+SHRINK -0.029, REDIST -0.006, CLASS +0.003. Player-target CRPS: BUDGET -0.084
+(91.5%), APPEAR -0.006, SHRINK -0.002, REDIST -0.000, CLASS +0.000. Two value
+functions, two different winners, and that is the finding.
+
+**The class prior, the shrinkage weight and the redistribution rule -- the
+directive's candidates 2, 3 and 5 -- carry under 5% of the movement on every
+value function.** None was repaired.
+
+**Headline: most of the bias is a selection artefact.** Same model, same
+draws: bias -1.998 on appeared players with prior history (RC2's and Q7's
+population) against +0.139 on the whole union frame the model actually
+forecasts. Scoring a marginal forecast on a population selected by the outcome
+manufactures the gap. RC2 measured what it measured on a declared population;
+what changes is that "fix the bias" cannot mean fitting to the appeared-only
+number.
+
+**One harness defect caught before it invented a result.** The first audit
+handed every draw the same integer budget -- a point with no spread, which
+under-disperses player targets and hands the whole inflation to the BUDGET
+oracle. Rebuilt with P4B's own residual pool, BUDGET's share of target-CRPS
+movement went 96.9% -> 91.5%. The ranking survives for a stated reason.
+
+**The one licensed repair.** The budget's calibration slope is below 1 in
+every season, so p' = m + beta(p - m), beta fitted by OLS on strictly earlier
+seasons: 0.654, 0.606, 0.569, 0.566. It does what it was aimed at -- budget
+slope 0.575 -> 0.954, RMSE 7.607 -> 7.496, CRPS -1.67% with the interval
+excluding zero.
+
+**Downstream it splits, significantly, both ways.** By target regime:
+0 +2.572%, 1-2 +1.398% (both significantly worse); 3-5 -0.643%, 6-9 -2.165%,
+10+ -1.428% (all significantly better). A better-calibrated team budget helps
+every player who gets targets and hurts every player who gets none. Overall
+player-target CRPS -0.074% with the interval spanning zero; receiving-yard
+CRPS -0.230% with it excluding zero. Four strata better, four worse -> REJECT
+by the frozen rule.
+
+**Also measured.** Replacement misallocation persists unchanged: on team-weeks
+with an absent starter the surviving starter is predicted 3.800 against 3.271
+realised, ratio 1.162, matching Q6 -- and the audit says correcting it is
+worth 0.4% of the movement. Starter dilution mild (1.018/1.010/0.991).
+Zero-target probability under-predicted by 2.5 points and unmoved by the
+repair. Target-share calibration slope 1.077, consistent with the share layer
+not being where the error is. The fitted share k is 0.75-0.84 against an
+evaluation-optimal 4.0 -- a five-fold error worth 1.8% of the movement. Being
+wrong and mattering are different things.
+
+**Nothing promoted. R8 untouched. No RC2 repair arm reopened.**
+
+**Suite:** 77 modules, 851 test functions, 4,657 checks, 0 failing, 0 raised.
+
+**Detail:** `nfl/research/q8/Q8_ATTRIBUTION_AUDIT.md`, `Q8_REPAIR_SPEC.md`,
+`Q8_DECISION.md`, `Q8_FORWARD_CHAIN_RESULTS.json`.
+

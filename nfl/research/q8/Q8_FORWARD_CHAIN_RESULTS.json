@@ -1,0 +1,1750 @@
+{
+ "artifact": "NFL_Q8_FORWARD_CHAIN_RESULTS",
+ "spec_version": "q8-repair-budget-shrink-1",
+ "promoted": false,
+ "is_research_only": true,
+ "market_inputs_used": [],
+ "live_2026_rows_used": 0,
+ "arms": [
+  "BASELINE",
+  "Q8_BUDGET_SHRINK"
+ ],
+ "n_rows": 69420,
+ "n_rows_rc2_population": 45042,
+ "eval_seasons": [
+  2022,
+  2023,
+  2024,
+  2025
+ ],
+ "held_fixed": [
+  "production R8 appearance, read from the committed Q6 chain",
+  "the class-level target-share prior",
+  "the player-level shrinkage weight",
+  "the redistribution rule after an absence",
+  "receiving efficiency: one catch rate and one per-catch pool",
+  "the touchdown layer"
+ ],
+ "the_one_change": "the frozen P4B team-target point is shrunk toward the training league mean by an OLS slope fitted on strictly earlier seasons, with the residual pool recomputed around the new centre",
+ "clustering": "block bootstrap over whole team-games",
+ "overall": {
+  "BASELINE": {
+   "n": 34710,
+   "target_crps": 0.825199,
+   "target_bias": 0.01953,
+   "rec_yard_crps": 7.625033,
+   "rec_yard_bias": 0.1311,
+   "coverage": {
+    "50": 0.7602,
+    "80": 0.9003,
+    "90": 0.9431,
+    "95": 0.9636
+   },
+   "pit": {
+    "hist": [
+     1494,
+     2932,
+     3670,
+     4666,
+     7611,
+     4625,
+     1911,
+     1989,
+     2286,
+     3526
+    ],
+    "chi2": 8693.508,
+    "df": 9
+   },
+   "zero_target_probability": {
+    "predicted": 0.47905,
+    "observed": 0.50438
+   },
+   "target_share_calibration": {
+    "intercept": -0.004799,
+    "slope": 1.07662,
+    "reads": "slope 1 and intercept 0 is calibrated in the mean"
+   },
+   "rc2_population": {
+    "n": 22521,
+    "target_crps": 1.123049,
+    "target_bias": -0.2673,
+    "rec_yard_crps": 10.883789,
+    "rec_yard_bias": -2.01896,
+    "coverage": {
+     "50": 0.6619,
+     "80": 0.8595,
+     "90": 0.9195,
+     "95": 0.9486
+    },
+    "pit": {
+     "hist": [
+      1047,
+      2141,
+      2527,
+      2882,
+      2624,
+      1718,
+      1896,
+      1979,
+      2267,
+      3440
+     ],
+     "chi2": 1764.24,
+     "df": 9
+    },
+    "zero_target_probability": {
+     "predicted": 0.30841,
+     "observed": 0.24621
+    },
+    "target_share_calibration": {
+     "intercept": 0.00988,
+     "slope": 1.16639,
+     "reads": "slope 1 and intercept 0 is calibrated in the mean"
+    }
+   }
+  },
+  "Q8_BUDGET_SHRINK": {
+   "n": 34710,
+   "target_crps": 0.824589,
+   "target_bias": 0.05089,
+   "rec_yard_crps": 7.607485,
+   "rec_yard_bias": 0.36163,
+   "coverage": {
+    "50": 0.7611,
+    "80": 0.9013,
+    "90": 0.9438,
+    "95": 0.965
+   },
+   "pit": {
+    "hist": [
+     1577,
+     2983,
+     3766,
+     4701,
+     7546,
+     4630,
+     1862,
+     1954,
+     2281,
+     3410
+    ],
+    "chi2": 8552.061,
+    "df": 9
+   },
+   "zero_target_probability": {
+    "predicted": 0.47541,
+    "observed": 0.50438
+   },
+   "target_share_calibration": {
+    "intercept": -0.004799,
+    "slope": 1.07662,
+    "reads": "slope 1 and intercept 0 is calibrated in the mean"
+   },
+   "rc2_population": {
+    "n": 22521,
+    "target_crps": 1.118993,
+    "target_bias": -0.22417,
+    "rec_yard_crps": 10.837704,
+    "rec_yard_bias": -1.70215,
+    "coverage": {
+     "50": 0.6639,
+     "80": 0.8612,
+     "90": 0.9209,
+     "95": 0.9508
+    },
+    "pit": {
+     "hist": [
+      1117,
+      2189,
+      2615,
+      2882,
+      2614,
+      1730,
+      1842,
+      1946,
+      2261,
+      3325
+     ],
+     "chi2": 1615.176,
+     "df": 9
+    },
+    "zero_target_probability": {
+     "predicted": 0.30376,
+     "observed": 0.24621
+    },
+    "target_share_calibration": {
+     "intercept": 0.00988,
+     "slope": 1.16639,
+     "reads": "slope 1 and intercept 0 is calibrated in the mean"
+    }
+   },
+   "paired_target_crps_delta": {
+    "delta_mean": -0.00061,
+    "delta_pct": -0.0739,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.00061,
+     "ci_lo": -0.001639,
+     "ci_hi": 0.000459,
+     "n_clusters": 2174,
+     "n_rows": 34710,
+     "excludes_zero": false
+    }
+   },
+   "paired_rec_yard_crps_delta": {
+    "delta_mean": -0.017548,
+    "delta_pct": -0.2301,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.017548,
+     "ci_lo": -0.026786,
+     "ci_hi": -0.00824,
+     "n_clusters": 2174,
+     "n_rows": 34710,
+     "excludes_zero": true
+    }
+   }
+  }
+ },
+ "by_position": {
+  "RB": {
+   "BASELINE": {
+    "n": 10223,
+    "target_crps": 0.602641,
+    "target_bias": -0.00491,
+    "rec_yard_crps": 4.50205,
+    "rec_yard_bias": 1.9939,
+    "coverage": {
+     "50": 0.7971,
+     "80": 0.9165,
+     "90": 0.9512,
+     "95": 0.9679
+    },
+    "pit": {
+     "hist": [
+      288,
+      765,
+      1031,
+      1498,
+      2411,
+      1560,
+      509,
+      527,
+      630,
+      1004
+     ],
+     "chi2": 3631.427,
+     "df": 9
+    },
+    "zero_target_probability": {
+     "predicted": 0.5546,
+     "observed": 0.57126
+    },
+    "target_share_calibration": {
+     "intercept": -0.003062,
+     "slope": 1.02103,
+     "reads": "slope 1 and intercept 0 is calibrated in the mean"
+    }
+   },
+   "Q8_BUDGET_SHRINK": {
+    "n": 10223,
+    "target_crps": 0.602981,
+    "target_bias": 0.01454,
+    "rec_yard_crps": 4.520067,
+    "rec_yard_bias": 2.1521,
+    "coverage": {
+     "50": 0.7983,
+     "80": 0.9177,
+     "90": 0.9519,
+     "95": 0.9691
+    },
+    "pit": {
+     "hist": [
+      301,
+      774,
+      1049,
+      1522,
+      2378,
+      1563,
+      506,
+      516,
+      635,
+      979
+     ],
+     "chi2": 3558.055,
+     "df": 9
+    },
+    "zero_target_probability": {
+     "predicted": 0.55069,
+     "observed": 0.57126
+    },
+    "target_share_calibration": {
+     "intercept": -0.003062,
+     "slope": 1.02103,
+     "reads": "slope 1 and intercept 0 is calibrated in the mean"
+    },
+    "delta_pct": 0.0564,
+    "improves": false,
+    "block_bootstrap_by_team_game": {
+     "mean": 0.00034,
+     "ci_lo": -0.000869,
+     "ci_hi": 0.001529,
+     "n_clusters": 2174,
+     "n_rows": 10223,
+     "excludes_zero": false
+    }
+   }
+  },
+  "TE": {
+   "BASELINE": {
+    "n": 8955,
+    "target_crps": 0.733929,
+    "target_bias": 0.00906,
+    "rec_yard_crps": 6.516324,
+    "rec_yard_bias": 0.2201,
+    "coverage": {
+     "50": 0.7711,
+     "80": 0.905,
+     "90": 0.9437,
+     "95": 0.9638
+    },
+    "pit": {
+     "hist": [
+      356,
+      728,
+      966,
+      1177,
+      2062,
+      1143,
+      482,
+      529,
+      610,
+      902
+     ],
+     "chi2": 2470.312,
+     "df": 9
+    },
+    "zero_target_probability": {
+     "predicted": 0.49421,
+     "observed": 0.51468
+    },
+    "target_share_calibration": {
+     "intercept": -0.000438,
+     "slope": 1.05702,
+     "reads": "slope 1 and intercept 0 is calibrated in the mean"
+    }
+   },
+   "Q8_BUDGET_SHRINK": {
+    "n": 8955,
+    "target_crps": 0.733553,
+    "target_bias": 0.03664,
+    "rec_yard_crps": 6.498697,
+    "rec_yard_bias": 0.42511,
+    "coverage": {
+     "50": 0.773,
+     "80": 0.9045,
+     "90": 0.9437,
+     "95": 0.9646
+    },
+    "pit": {
+     "hist": [
+      383,
+      736,
+      1009,
+      1170,
+      2045,
+      1144,
+      465,
+      530,
+      601,
+      872
+     ],
+     "chi2": 2418.352,
+     "df": 9
+    },
+    "zero_target_probability": {
+     "predicted": 0.49047,
+     "observed": 0.51468
+    },
+    "target_share_calibration": {
+     "intercept": -0.000438,
+     "slope": 1.05702,
+     "reads": "slope 1 and intercept 0 is calibrated in the mean"
+    },
+    "delta_pct": -0.0513,
+    "improves": true,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.000377,
+     "ci_lo": -0.002105,
+     "ci_hi": 0.001454,
+     "n_clusters": 2174,
+     "n_rows": 8955,
+     "excludes_zero": false
+    }
+   }
+  },
+  "WR": {
+   "BASELINE": {
+    "n": 15532,
+    "target_crps": 1.024306,
+    "target_bias": 0.04165,
+    "rec_yard_crps": 10.319776,
+    "rec_yard_bias": -1.14628,
+    "coverage": {
+     "50": 0.7297,
+     "80": 0.8871,
+     "90": 0.9374,
+     "95": 0.9606
+    },
+    "pit": {
+     "hist": [
+      850,
+      1439,
+      1673,
+      1991,
+      3138,
+      1922,
+      920,
+      933,
+      1046,
+      1620
+     ],
+     "chi2": 2838.309,
+     "df": 9
+    },
+    "zero_target_probability": {
+     "predicted": 0.4206,
+     "observed": 0.45442
+    },
+    "target_share_calibration": {
+     "intercept": -0.008625,
+     "slope": 1.10378,
+     "reads": "slope 1 and intercept 0 is calibrated in the mean"
+    }
+   },
+   "Q8_BUDGET_SHRINK": {
+    "n": 15532,
+    "target_crps": 1.022937,
+    "target_bias": 0.08304,
+    "rec_yard_crps": 10.278865,
+    "rec_yard_bias": -0.85344,
+    "coverage": {
+     "50": 0.7298,
+     "80": 0.8887,
+     "90": 0.9385,
+     "95": 0.9625
+    },
+    "pit": {
+     "hist": [
+      893,
+      1473,
+      1708,
+      2009,
+      3123,
+      1923,
+      891,
+      908,
+      1045,
+      1559
+     ],
+     "chi2": 2825.219,
+     "df": 9
+    },
+    "zero_target_probability": {
+     "predicted": 0.41718,
+     "observed": 0.45442
+    },
+    "target_share_calibration": {
+     "intercept": -0.008625,
+     "slope": 1.10378,
+     "reads": "slope 1 and intercept 0 is calibrated in the mean"
+    },
+    "delta_pct": -0.1337,
+    "improves": true,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.001369,
+     "ci_lo": -0.00335,
+     "ci_hi": 0.000581,
+     "n_clusters": 2174,
+     "n_rows": 15532,
+     "excludes_zero": false
+    }
+   }
+  }
+ },
+ "by_role_class": {
+  "fringe": {
+   "BASELINE": {
+    "n": 14917,
+    "target_crps": 0.480264,
+    "target_bias": -0.00726,
+    "rec_yard_crps": 4.037385,
+    "rec_yard_bias": 0.06661,
+    "coverage": {
+     "50": 0.8494,
+     "80": 0.9286,
+     "90": 0.9534,
+     "95": 0.965
+    },
+    "pit": {
+     "hist": [
+      191,
+      854,
+      1496,
+      2166,
+      4533,
+      2649,
+      490,
+      580,
+      668,
+      1290
+     ],
+     "chi2": 10522.085,
+     "df": 9
+    },
+    "zero_target_probability": {
+     "predicted": 0.6841,
+     "observed": 0.71569
+    },
+    "target_share_calibration": {
+     "intercept": -0.002211,
+     "slope": 0.78797,
+     "reads": "slope 1 and intercept 0 is calibrated in the mean"
+    }
+   },
+   "Q8_BUDGET_SHRINK": {
+    "n": 14917,
+    "target_crps": 0.480843,
+    "target_bias": 0.00452,
+    "rec_yard_crps": 4.040015,
+    "rec_yard_bias": 0.14979,
+    "coverage": {
+     "50": 0.8496,
+     "80": 0.9302,
+     "90": 0.9536,
+     "95": 0.9663
+    },
+    "pit": {
+     "hist": [
+      212,
+      872,
+      1515,
+      2186,
+      4498,
+      2639,
+      490,
+      558,
+      674,
+      1273
+     ],
+     "chi2": 10357.347,
+     "df": 9
+    },
+    "zero_target_probability": {
+     "predicted": 0.681,
+     "observed": 0.71569
+    },
+    "target_share_calibration": {
+     "intercept": -0.002211,
+     "slope": 0.78797,
+     "reads": "slope 1 and intercept 0 is calibrated in the mean"
+    },
+    "delta_pct": 0.1204,
+    "improves": false,
+    "block_bootstrap_by_team_game": {
+     "mean": 0.000578,
+     "ci_lo": -0.000188,
+     "ci_hi": 0.001395,
+     "n_clusters": 2174,
+     "n_rows": 14917,
+     "excludes_zero": false
+    }
+   }
+  },
+  "rotational": {
+   "BASELINE": {
+    "n": 13221,
+    "target_crps": 0.909301,
+    "target_bias": 0.0208,
+    "rec_yard_crps": 8.308798,
+    "rec_yard_bias": 0.38512,
+    "coverage": {
+     "50": 0.7352,
+     "80": 0.8939,
+     "90": 0.9395,
+     "95": 0.9635
+    },
+    "pit": {
+     "hist": [
+      636,
+      1345,
+      1519,
+      1840,
+      2243,
+      1395,
+      888,
+      881,
+      1001,
+      1473
+     ],
+     "chi2": 1619.02,
+     "df": 9
+    },
+    "zero_target_probability": {
+     "predicted": 0.41118,
+     "observed": 0.43022
+    },
+    "target_share_calibration": {
+     "intercept": 0.002832,
+     "slope": 0.98321,
+     "reads": "slope 1 and intercept 0 is calibrated in the mean"
+    }
+   },
+   "Q8_BUDGET_SHRINK": {
+    "n": 13221,
+    "target_crps": 0.907588,
+    "target_bias": 0.05604,
+    "rec_yard_crps": 8.286267,
+    "rec_yard_bias": 0.64582,
+    "coverage": {
+     "50": 0.7366,
+     "80": 0.8952,
+     "90": 0.9412,
+     "95": 0.9651
+    },
+    "pit": {
+     "hist": [
+      667,
+      1365,
+      1565,
+      1849,
+      2215,
+      1412,
+      859,
+      870,
+      1015,
+      1404
+     ],
+     "chi2": 1582.972,
+     "df": 9
+    },
+    "zero_target_probability": {
+     "predicted": 0.40691,
+     "observed": 0.43022
+    },
+    "target_share_calibration": {
+     "intercept": 0.002832,
+     "slope": 0.98321,
+     "reads": "slope 1 and intercept 0 is calibrated in the mean"
+    },
+    "delta_pct": -0.1883,
+    "improves": true,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.001712,
+     "ci_lo": -0.003482,
+     "ci_hi": 5.9e-05,
+     "n_clusters": 2174,
+     "n_rows": 13221,
+     "excludes_zero": false
+    }
+   }
+  },
+  "starter": {
+   "BASELINE": {
+    "n": 6572,
+    "target_crps": 1.438936,
+    "target_bias": 0.07778,
+    "rec_yard_crps": 14.392668,
+    "rec_yard_bias": -0.23351,
+    "coverage": {
+     "50": 0.6082,
+     "80": 0.8492,
+     "90": 0.9268,
+     "95": 0.9604
+    },
+    "pit": {
+     "hist": [
+      667,
+      733,
+      655,
+      660,
+      835,
+      581,
+      533,
+      528,
+      617,
+      763
+     ],
+     "chi2": 134.208,
+     "df": 9
+    },
+    "zero_target_probability": {
+     "predicted": 0.15019,
+     "observed": 0.17392
+    },
+    "target_share_calibration": {
+     "intercept": 0.01328,
+     "slope": 1.04109,
+     "reads": "slope 1 and intercept 0 is calibrated in the mean"
+    }
+   },
+   "Q8_BUDGET_SHRINK": {
+    "n": 6572,
+    "target_crps": 1.437848,
+    "target_bias": 0.1458,
+    "rec_yard_crps": 14.339342,
+    "rec_yard_bias": 0.27074,
+    "coverage": {
+     "50": 0.6096,
+     "80": 0.848,
+     "90": 0.9268,
+     "95": 0.9617
+    },
+    "pit": {
+     "hist": [
+      698,
+      746,
+      686,
+      666,
+      833,
+      579,
+      513,
+      526,
+      592,
+      733
+     ],
+     "chi2": 145.285,
+     "df": 9
+    },
+    "zero_target_probability": {
+     "predicted": 0.14658,
+     "observed": 0.17392
+    },
+    "target_share_calibration": {
+     "intercept": 0.01328,
+     "slope": 1.04109,
+     "reads": "slope 1 and intercept 0 is calibrated in the mean"
+    },
+    "delta_pct": -0.0757,
+    "improves": true,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.001089,
+     "ci_lo": -0.005292,
+     "ci_hi": 0.002911,
+     "n_clusters": 2174,
+     "n_rows": 6572,
+     "excludes_zero": false
+    }
+   }
+  }
+ },
+ "by_target_regime": {
+  "0": {
+   "BASELINE": {
+    "n": 17507,
+    "target_crps": 0.321737,
+    "target_bias": 0.70599,
+    "rec_yard_crps": 1.730385,
+    "rec_yard_bias": 5.20549,
+    "coverage": {
+     "50": 0.9188,
+     "80": 0.9769,
+     "90": 0.991,
+     "95": 0.9961
+    },
+    "pit": {
+     "hist": [
+      1010,
+      1932,
+      2507,
+      3158,
+      6011,
+      2889,
+      0,
+      0,
+      0,
+      0
+     ],
+     "chi2": 19900.425,
+     "df": 9
+    },
+    "zero_target_probability": {
+     "predicted": 0.72087,
+     "observed": 1.0
+    },
+    "target_share_calibration": {
+     "intercept": 0.0,
+     "slope": 0.0,
+     "reads": "slope 1 and intercept 0 is calibrated in the mean"
+    }
+   },
+   "Q8_BUDGET_SHRINK": {
+    "n": 17507,
+    "target_crps": 0.330012,
+    "target_bias": 0.71852,
+    "rec_yard_crps": 1.777731,
+    "rec_yard_bias": 5.29805,
+    "coverage": {
+     "50": 0.9156,
+     "80": 0.9752,
+     "90": 0.9902,
+     "95": 0.9961
+    },
+    "pit": {
+     "hist": [
+      1058,
+      1948,
+      2524,
+      3161,
+      5929,
+      2887,
+      0,
+      0,
+      0,
+      0
+     ],
+     "chi2": 19486.417,
+     "df": 9
+    },
+    "zero_target_probability": {
+     "predicted": 0.71788,
+     "observed": 1.0
+    },
+    "target_share_calibration": {
+     "intercept": 0.0,
+     "slope": 0.0,
+     "reads": "slope 1 and intercept 0 is calibrated in the mean"
+    },
+    "delta_pct": 2.572,
+    "improves": false,
+    "block_bootstrap_by_team_game": {
+     "mean": 0.008275,
+     "ci_lo": 0.007178,
+     "ci_hi": 0.009446,
+     "n_clusters": 2174,
+     "n_rows": 17507,
+     "excludes_zero": true
+    }
+   }
+  },
+  "1-2": {
+   "BASELINE": {
+    "n": 7137,
+    "target_crps": 0.759098,
+    "target_bias": 0.40289,
+    "rec_yard_crps": 7.339359,
+    "rec_yard_bias": 3.97562,
+    "coverage": {
+     "50": 0.7139,
+     "80": 0.9155,
+     "90": 0.9644,
+     "95": 0.9823
+    },
+    "pit": {
+     "hist": [
+      363,
+      602,
+      650,
+      790,
+      834,
+      843,
+      861,
+      757,
+      795,
+      642
+     ],
+     "chi2": 296.848,
+     "df": 9
+    },
+    "zero_target_probability": {
+     "predicted": 0.36128,
+     "observed": 0.0
+    },
+    "target_share_calibration": {
+     "intercept": 0.040838,
+     "slope": 0.16858,
+     "reads": "slope 1 and intercept 0 is calibrated in the mean"
+    }
+   },
+   "Q8_BUDGET_SHRINK": {
+    "n": 7137,
+    "target_crps": 0.769706,
+    "target_bias": 0.43755,
+    "rec_yard_crps": 7.378522,
+    "rec_yard_bias": 4.2399,
+    "coverage": {
+     "50": 0.7143,
+     "80": 0.9137,
+     "90": 0.9636,
+     "95": 0.9823
+    },
+    "pit": {
+     "hist": [
+      387,
+      623,
+      669,
+      800,
+      841,
+      831,
+      836,
+      744,
+      777,
+      629
+     ],
+     "chi2": 254.205,
+     "df": 9
+    },
+    "zero_target_probability": {
+     "predicted": 0.35597,
+     "observed": 0.0
+    },
+    "target_share_calibration": {
+     "intercept": 0.040838,
+     "slope": 0.16858,
+     "reads": "slope 1 and intercept 0 is calibrated in the mean"
+    },
+    "delta_pct": 1.3975,
+    "improves": false,
+    "block_bootstrap_by_team_game": {
+     "mean": 0.010608,
+     "ci_lo": 0.008398,
+     "ci_hi": 0.012902,
+     "n_clusters": 2130,
+     "n_rows": 7137,
+     "excludes_zero": true
+    }
+   }
+  },
+  "10+": {
+   "BASELINE": {
+    "n": 1090,
+    "target_crps": 3.710883,
+    "target_bias": -4.87415,
+    "rec_yard_crps": 35.609936,
+    "rec_yard_bias": -40.98598,
+    "coverage": {
+     "50": 0.1872,
+     "80": 0.489,
+     "90": 0.6468,
+     "95": 0.756
+    },
+    "pit": {
+     "hist": [
+      0,
+      0,
+      1,
+      9,
+      22,
+      29,
+      73,
+      90,
+      238,
+      628
+     ],
+     "chi2": 3183.982,
+     "df": 9
+    },
+    "zero_target_probability": {
+     "predicted": 0.05581,
+     "observed": 0.0
+    },
+    "target_share_calibration": {
+     "intercept": 0.255995,
+     "slope": 0.36902,
+     "reads": "slope 1 and intercept 0 is calibrated in the mean"
+    }
+   },
+   "Q8_BUDGET_SHRINK": {
+    "n": 1090,
+    "target_crps": 3.657879,
+    "target_bias": -4.83121,
+    "rec_yard_crps": 35.209208,
+    "rec_yard_bias": -40.70351,
+    "coverage": {
+     "50": 0.1936,
+     "80": 0.4899,
+     "90": 0.6569,
+     "95": 0.7661
+    },
+    "pit": {
+     "hist": [
+      0,
+      0,
+      1,
+      7,
+      18,
+      31,
+      69,
+      105,
+      245,
+      614
+     ],
+     "chi2": 3076.44,
+     "df": 9
+    },
+    "zero_target_probability": {
+     "predicted": 0.05427,
+     "observed": 0.0
+    },
+    "target_share_calibration": {
+     "intercept": 0.255995,
+     "slope": 0.36902,
+     "reads": "slope 1 and intercept 0 is calibrated in the mean"
+    },
+    "delta_pct": -1.4283,
+    "improves": true,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.053004,
+     "ci_lo": -0.070235,
+     "ci_hi": -0.035532,
+     "n_clusters": 896,
+     "n_rows": 1090,
+     "excludes_zero": true
+    }
+   }
+  },
+  "3-5": {
+   "BASELINE": {
+    "n": 5687,
+    "target_crps": 1.262812,
+    "target_bias": -0.50438,
+    "rec_yard_crps": 13.282158,
+    "rec_yard_bias": -3.23393,
+    "coverage": {
+     "50": 0.5935,
+     "80": 0.8155,
+     "90": 0.8892,
+     "95": 0.9261
+    },
+    "pit": {
+     "hist": [
+      113,
+      337,
+      396,
+      535,
+      478,
+      583,
+      605,
+      684,
+      706,
+      1250
+     ],
+     "chi2": 1403.855,
+     "df": 9
+    },
+    "zero_target_probability": {
+     "predicted": 0.18704,
+     "observed": 0.0
+    },
+    "target_share_calibration": {
+     "intercept": 0.102434,
+     "slope": 0.30181,
+     "reads": "slope 1 and intercept 0 is calibrated in the mean"
+    }
+   },
+   "Q8_BUDGET_SHRINK": {
+    "n": 5687,
+    "target_crps": 1.254699,
+    "target_bias": -0.44317,
+    "rec_yard_crps": 13.20829,
+    "rec_yard_bias": -2.79057,
+    "coverage": {
+     "50": 0.5986,
+     "80": 0.8231,
+     "90": 0.8941,
+     "95": 0.9309
+    },
+    "pit": {
+     "hist": [
+      123,
+      352,
+      457,
+      528,
+      489,
+      566,
+      602,
+      666,
+      703,
+      1201
+     ],
+     "chi2": 1221.235,
+     "df": 9
+    },
+    "zero_target_probability": {
+     "predicted": 0.18254,
+     "observed": 0.0
+    },
+    "target_share_calibration": {
+     "intercept": 0.102434,
+     "slope": 0.30181,
+     "reads": "slope 1 and intercept 0 is calibrated in the mean"
+    },
+    "delta_pct": -0.6425,
+    "improves": true,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.008113,
+     "ci_lo": -0.011011,
+     "ci_hi": -0.005304,
+     "n_clusters": 2078,
+     "n_rows": 5687,
+     "excludes_zero": true
+    }
+   }
+  },
+  "6-9": {
+   "BASELINE": {
+    "n": 3289,
+    "target_crps": 1.935499,
+    "target_bias": -1.93863,
+    "rec_yard_crps": 20.565396,
+    "rec_yard_bias": -15.77675,
+    "coverage": {
+     "50": 0.495,
+     "80": 0.7428,
+     "90": 0.8328,
+     "95": 0.8836
+    },
+    "pit": {
+     "hist": [
+      8,
+      61,
+      116,
+      174,
+      266,
+      281,
+      372,
+      458,
+      547,
+      1006
+     ],
+     "chi2": 2355.959,
+     "df": 9
+    },
+    "zero_target_probability": {
+     "predicted": 0.09263,
+     "observed": 0.0
+    },
+    "target_share_calibration": {
+     "intercept": 0.177365,
+     "slope": 0.34836,
+     "reads": "slope 1 and intercept 0 is calibrated in the mean"
+    }
+   },
+   "Q8_BUDGET_SHRINK": {
+    "n": 3289,
+    "target_crps": 1.893591,
+    "target_bias": -1.86956,
+    "rec_yard_crps": 20.303732,
+    "rec_yard_bias": -15.27037,
+    "coverage": {
+     "50": 0.5093,
+     "80": 0.7528,
+     "90": 0.8349,
+     "95": 0.8866
+    },
+    "pit": {
+     "hist": [
+      9,
+      60,
+      115,
+      205,
+      269,
+      315,
+      355,
+      439,
+      556,
+      966
+     ],
+     "chi2": 2158.112,
+     "df": 9
+    },
+    "zero_target_probability": {
+     "predicted": 0.08993,
+     "observed": 0.0
+    },
+    "target_share_calibration": {
+     "intercept": 0.177365,
+     "slope": 0.34836,
+     "reads": "slope 1 and intercept 0 is calibrated in the mean"
+    },
+    "delta_pct": -2.1652,
+    "improves": true,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.041908,
+     "ci_lo": -0.048289,
+     "ci_hi": -0.035819,
+     "n_clusters": 1822,
+     "n_rows": 3289,
+     "excludes_zero": true
+    }
+   }
+  }
+ },
+ "by_appearance_certainty": {
+  "doubtful": {
+   "BASELINE": {
+    "n": 8713,
+    "target_crps": 0.109385,
+    "target_bias": 0.06181,
+    "rec_yard_crps": 0.778262,
+    "rec_yard_bias": 0.51199,
+    "coverage": {
+     "50": 0.9571,
+     "80": 0.9754,
+     "90": 0.9836,
+     "95": 0.9879
+    },
+    "pit": {
+     "hist": [
+      0,
+      0,
+      7,
+      750,
+      4639,
+      2886,
+      12,
+      48,
+      111,
+      260
+     ],
+     "chi2": 26285.548,
+     "df": 9
+    },
+    "zero_target_probability": {
+     "predicted": 0.93227,
+     "observed": 0.95053
+    },
+    "target_share_calibration": {
+     "intercept": 0.001448,
+     "slope": 0.05252,
+     "reads": "slope 1 and intercept 0 is calibrated in the mean"
+    }
+   },
+   "Q8_BUDGET_SHRINK": {
+    "n": 8713,
+    "target_crps": 0.10966,
+    "target_bias": 0.06445,
+    "rec_yard_crps": 0.77823,
+    "rec_yard_bias": 0.52828,
+    "coverage": {
+     "50": 0.9574,
+     "80": 0.9764,
+     "90": 0.9836,
+     "95": 0.9882
+    },
+    "pit": {
+     "hist": [
+      0,
+      0,
+      9,
+      765,
+      4625,
+      2883,
+      14,
+      49,
+      113,
+      255
+     ],
+     "chi2": 26140.68,
+     "df": 9
+    },
+    "zero_target_probability": {
+     "predicted": 0.93156,
+     "observed": 0.95053
+    },
+    "target_share_calibration": {
+     "intercept": 0.001448,
+     "slope": 0.05252,
+     "reads": "slope 1 and intercept 0 is calibrated in the mean"
+    },
+    "delta_pct": 0.2519,
+    "improves": false,
+    "block_bootstrap_by_team_game": {
+     "mean": 0.000275,
+     "ci_lo": 6.7e-05,
+     "ci_hi": 0.000481,
+     "n_clusters": 2099,
+     "n_rows": 8713,
+     "excludes_zero": true
+    }
+   }
+  },
+  "likely": {
+   "BASELINE": {
+    "n": 7337,
+    "target_crps": 0.834353,
+    "target_bias": 0.08087,
+    "rec_yard_crps": 6.720724,
+    "rec_yard_bias": 1.49894,
+    "coverage": {
+     "50": 0.7661,
+     "80": 0.9111,
+     "90": 0.9392,
+     "95": 0.955
+    },
+    "pit": {
+     "hist": [
+      185,
+      1064,
+      1245,
+      1181,
+      818,
+      456,
+      468,
+      510,
+      545,
+      865
+     ],
+     "chi2": 1539.3,
+     "df": 9
+    },
+    "zero_target_probability": {
+     "predicted": 0.45433,
+     "observed": 0.49571
+    },
+    "target_share_calibration": {
+     "intercept": 0.008178,
+     "slope": 0.82971,
+     "reads": "slope 1 and intercept 0 is calibrated in the mean"
+    }
+   },
+   "Q8_BUDGET_SHRINK": {
+    "n": 7337,
+    "target_crps": 0.835421,
+    "target_bias": 0.10456,
+    "rec_yard_crps": 6.725312,
+    "rec_yard_bias": 1.67965,
+    "coverage": {
+     "50": 0.7678,
+     "80": 0.9132,
+     "90": 0.94,
+     "95": 0.9573
+    },
+    "pit": {
+     "hist": [
+      193,
+      1094,
+      1252,
+      1172,
+      807,
+      469,
+      462,
+      499,
+      546,
+      843
+     ],
+     "chi2": 1546.185,
+     "df": 9
+    },
+    "zero_target_probability": {
+     "predicted": 0.44939,
+     "observed": 0.49571
+    },
+    "target_share_calibration": {
+     "intercept": 0.008178,
+     "slope": 0.82971,
+     "reads": "slope 1 and intercept 0 is calibrated in the mean"
+    },
+    "delta_pct": 0.128,
+    "improves": false,
+    "block_bootstrap_by_team_game": {
+     "mean": 0.001068,
+     "ci_lo": -0.000511,
+     "ci_hi": 0.002803,
+     "n_clusters": 2131,
+     "n_rows": 7337,
+     "excludes_zero": false
+    }
+   }
+  },
+  "near_certain": {
+   "BASELINE": {
+    "n": 14201,
+    "target_crps": 1.33517,
+    "target_bias": -0.10635,
+    "rec_yard_crps": 13.325912,
+    "rec_yard_bias": -1.44387,
+    "coverage": {
+     "50": 0.6003,
+     "80": 0.8363,
+     "90": 0.9147,
+     "95": 0.9504
+    },
+    "pit": {
+     "hist": [
+      1309,
+      1638,
+      1454,
+      1460,
+      1311,
+      1148,
+      1243,
+      1210,
+      1379,
+      2049
+     ],
+     "chi2": 437.446,
+     "df": 9
+    },
+    "zero_target_probability": {
+     "predicted": 0.16427,
+     "observed": 0.16499
+    },
+    "target_share_calibration": {
+     "intercept": 0.019114,
+     "slope": 1.08731,
+     "reads": "slope 1 and intercept 0 is calibrated in the mean"
+    }
+   },
+   "Q8_BUDGET_SHRINK": {
+    "n": 14201,
+    "target_crps": 1.332343,
+    "target_bias": -0.04881,
+    "rec_yard_crps": 13.280099,
+    "rec_yard_bias": -1.01792,
+    "coverage": {
+     "50": 0.6007,
+     "80": 0.8364,
+     "90": 0.9161,
+     "95": 0.9521
+    },
+    "pit": {
+     "hist": [
+      1384,
+      1649,
+      1528,
+      1467,
+      1309,
+      1138,
+      1195,
+      1188,
+      1380,
+      1963
+     ],
+     "chi2": 394.587,
+     "df": 9
+    },
+    "zero_target_probability": {
+     "predicted": 0.15952,
+     "observed": 0.16499
+    },
+    "target_share_calibration": {
+     "intercept": 0.019114,
+     "slope": 1.08731,
+     "reads": "slope 1 and intercept 0 is calibrated in the mean"
+    },
+    "delta_pct": -0.2118,
+    "improves": true,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.002827,
+     "ci_lo": -0.005396,
+     "ci_hi": -0.000331,
+     "n_clusters": 2174,
+     "n_rows": 14201,
+     "excludes_zero": true
+    }
+   }
+  },
+  "uncertain": {
+   "BASELINE": {
+    "n": 4459,
+    "target_crps": 0.5847,
+    "target_bias": 0.23684,
+    "rec_yard_crps": 4.335654,
+    "rec_yard_bias": 2.15213,
+    "coverage": {
+     "50": 0.8753,
+     "80": 0.9397,
+     "90": 0.9605,
+     "95": 0.972
+    },
+    "pit": {
+     "hist": [
+      0,
+      230,
+      964,
+      1275,
+      843,
+      135,
+      188,
+      221,
+      251,
+      352
+     ],
+     "chi2": 3632.018,
+     "df": 9
+    },
+    "zero_target_probability": {
+     "predicted": 0.63665,
+     "observed": 0.72774
+    },
+    "target_share_calibration": {
+     "intercept": 0.001716,
+     "slope": 0.53104,
+     "reads": "slope 1 and intercept 0 is calibrated in the mean"
+    }
+   },
+   "Q8_BUDGET_SHRINK": {
+    "n": 4459,
+    "target_crps": 0.586663,
+    "target_bias": 0.25364,
+    "rec_yard_crps": 4.337471,
+    "rec_yard_bias": 2.26085,
+    "coverage": {
+     "50": 0.8773,
+     "80": 0.9419,
+     "90": 0.9605,
+     "95": 0.9731
+    },
+    "pit": {
+     "hist": [
+      0,
+      240,
+      977,
+      1297,
+      805,
+      140,
+      191,
+      218,
+      242,
+      349
+     ],
+     "chi2": 3673.615,
+     "df": 9
+    },
+    "zero_target_probability": {
+     "predicted": 0.63294,
+     "observed": 0.72774
+    },
+    "target_share_calibration": {
+     "intercept": 0.001716,
+     "slope": 0.53104,
+     "reads": "slope 1 and intercept 0 is calibrated in the mean"
+    },
+    "delta_pct": 0.3357,
+    "improves": false,
+    "block_bootstrap_by_team_game": {
+     "mean": 0.001963,
+     "ci_lo": 0.000459,
+     "ci_hi": 0.003425,
+     "n_clusters": 1864,
+     "n_rows": 4459,
+     "excludes_zero": true
+    }
+   }
+  }
+ },
+ "team_budget": {
+  "BASELINE": {
+   "n": 2174,
+   "bias": 0.45877,
+   "rmse": 7.60737,
+   "crps": 4.27169,
+   "calibration": {
+    "intercept": 13.093346,
+    "slope": 0.57466,
+    "reads": "slope 1 and intercept 0 is calibrated in the mean"
+   }
+  },
+  "Q8_BUDGET_SHRINK": {
+   "n": 2174,
+   "bias": 0.95757,
+   "rmse": 7.49632,
+   "crps": 4.20043,
+   "calibration": {
+    "intercept": 0.534975,
+    "slope": 0.95388,
+    "reads": "slope 1 and intercept 0 is calibrated in the mean"
+   },
+   "paired_crps_delta_pct": -1.6682,
+   "block_bootstrap_by_team_game": {
+    "mean": -0.071262,
+    "ci_lo": -0.107309,
+    "ci_hi": -0.035079,
+    "n_clusters": 2174,
+    "n_rows": 2174,
+    "excludes_zero": true
+   }
+  }
+ },
+ "fit_log": [
+  {
+   "eval_season": 2022,
+   "n_test": 8610,
+   "budget": {
+    "basis": "OLS_SLOPE_ON_STRICTLY_EARLIER_SEASONS",
+    "beta": 0.65428,
+    "league_mean": 33.5739,
+    "intercept": 11.5248,
+    "estimator": "coach_prior",
+    "n_training_team_games": 1056,
+    "residual_sd_baseline": 8.0799,
+    "residual_sd_shrunk": 8.0174
+   },
+   "k_fitted": 0.75329,
+   "catch_rate": 0.67144
+  },
+  {
+   "eval_season": 2023,
+   "n_test": 8282,
+   "budget": {
+    "basis": "OLS_SLOPE_ON_STRICTLY_EARLIER_SEASONS",
+    "beta": 0.6063,
+    "league_mean": 33.2048,
+    "intercept": 12.8296,
+    "estimator": "ewma",
+    "n_training_team_games": 1598,
+    "residual_sd_baseline": 8.0791,
+    "residual_sd_shrunk": 7.8822
+   },
+   "k_fitted": 0.80378,
+   "catch_rate": 0.67008
+  },
+  {
+   "eval_season": 2024,
+   "n_test": 8259,
+   "budget": {
+    "basis": "OLS_SLOPE_ON_STRICTLY_EARLIER_SEASONS",
+    "beta": 0.56857,
+    "league_mean": 32.9212,
+    "intercept": 14.0346,
+    "estimator": "ewma",
+    "n_training_team_games": 2142,
+    "residual_sd_baseline": 7.9073,
+    "residual_sd_shrunk": 7.6884
+   },
+   "k_fitted": 0.83376,
+   "catch_rate": 0.67069
+  },
+  {
+   "eval_season": 2025,
+   "n_test": 9559,
+   "budget": {
+    "basis": "OLS_SLOPE_ON_STRICTLY_EARLIER_SEASONS",
+    "beta": 0.5656,
+    "league_mean": 32.5636,
+    "intercept": 14.0351,
+    "estimator": "ewma",
+    "n_training_team_games": 2686,
+    "residual_sd_baseline": 7.8534,
+    "residual_sd_shrunk": 7.6408
+   },
+   "k_fitted": 0.84328,
+   "catch_rate": 0.67249
+  }
+ ],
+ "receiving_join_evidence": {
+  "n_rows_joined_to_receiver_panel": 25795,
+  "n_rows_zero_by_absence": 25170
+ },
+ "starter_dilution": {
+  "BASELINE": {
+   "starter": {
+    "n": 6572,
+    "mean_predicted": 4.42562,
+    "mean_actual": 4.34784,
+    "ratio": 1.01789
+   },
+   "rotational": {
+    "n": 13221,
+    "mean_predicted": 2.12782,
+    "mean_actual": 2.10703,
+    "ratio": 1.00987
+   },
+   "fringe": {
+    "n": 14917,
+    "mean_predicted": 0.7864,
+    "mean_actual": 0.79366,
+    "ratio": 0.99085
+   }
+  },
+  "Q8_BUDGET_SHRINK": {
+   "starter": {
+    "n": 6572,
+    "mean_predicted": 4.49364,
+    "mean_actual": 4.34784,
+    "ratio": 1.03353
+   },
+   "rotational": {
+    "n": 13221,
+    "mean_predicted": 2.16307,
+    "mean_actual": 2.10703,
+    "ratio": 1.0266
+   },
+   "fringe": {
+    "n": 14917,
+    "mean_predicted": 0.79818,
+    "mean_actual": 0.79366,
+    "ratio": 1.00569
+   }
+  },
+  "reads": "below 1 is dilution: the class is given less than it takes"
+ },
+ "replacement": {
+  "n_team_games_with_an_absent_starter": 652,
+  "BASELINE": {
+   "starter": {
+    "n": 1995,
+    "mean_predicted": 3.79956,
+    "mean_actual": 3.27068,
+    "ratio": 1.1617
+   },
+   "rotational": {
+    "n": 3983,
+    "mean_predicted": 2.23227,
+    "mean_actual": 2.34622,
+    "ratio": 0.95143
+   },
+   "fringe": {
+    "n": 4910,
+    "mean_predicted": 0.85978,
+    "mean_actual": 0.96415,
+    "ratio": 0.89175
+   }
+  },
+  "Q8_BUDGET_SHRINK": {
+   "starter": {
+    "n": 1995,
+    "mean_predicted": 3.85864,
+    "mean_actual": 3.27068,
+    "ratio": 1.17977
+   },
+   "rotational": {
+    "n": 3983,
+    "mean_predicted": 2.26635,
+    "mean_actual": 2.34622,
+    "ratio": 0.96596
+   },
+   "fringe": {
+    "n": 4910,
+    "mean_predicted": 0.87308,
+    "mean_actual": 0.96415,
+    "ratio": 0.90553
+   }
+  },
+  "reads": "measured only where a starter was absent; below 1 means the replacement is under-fed relative to what he took"
+ },
+ "decision": {
+  "decision": "REJECT",
+  "arm": "Q8_BUDGET_SHRINK",
+  "overall_target_crps_delta_pct": -0.0739,
+  "overall_target_crps_significant": false,
+  "downstream_receiving_yard_crps_degrades": false,
+  "strata_improved": 8,
+  "strata_total": 15,
+  "strata_significantly_better": [
+   "by_appearance_certainty:near_certain",
+   "by_target_regime:10+",
+   "by_target_regime:3-5",
+   "by_target_regime:6-9"
+  ],
+  "strata_significantly_worse": [
+   "by_appearance_certainty:doubtful",
+   "by_appearance_certainty:uncertain",
+   "by_target_regime:0",
+   "by_target_regime:1-2"
+  ],
+  "coverage_or_bias_cannot_rescue": true,
+  "rule": "SUPPORT / WEAK_SUPPORT / REJECT, against the rule frozen in the spec.\n\n      SUPPORT       player-target CRPS improves overall and in a majority of\n                    strata, at least one improvement survives the\n                    team-game-clustered bootstrap, no stratum is significantly\n                    worse, and downstream receiving-yard CRPS does not degrade.\n      WEAK_SUPPORT  player-target CRPS improves overall and nothing is\n                    significantly worse.\n      REJECT        otherwise.\n\n    A GAIN IN COVERAGE OR BIAS IS NOT SUPPORT. The audit showed that bias on\n    the appeared-only population is substantially a selection artefact, so the\n    proper score is the only thing that counts and this function enforces it."
+ },
+ "n_draws": 400
+}
