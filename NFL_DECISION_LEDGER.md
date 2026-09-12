@@ -2254,3 +2254,79 @@ rather than this harness, and an operational ruling on a 0.25% fallback rate.
 **Detail:** `nfl/research/q9/Q9_SPEC.md`, `Q9_DECISION.md`,
 `Q9_FORWARD_CHAIN_RESULTS.json`.
 
+---
+
+## 2026-09-12 — Q9B: promotion-readiness audit. PROMOTION_READY_FOR_PROSPECTIVE_TEST.
+
+**Q9 stayed frozen** -- allocator, one-target floor, predictors, fallbacks and
+thresholds imported and called, never reimplemented or refitted.
+
+**Identifiability: the hurdle IS structural.** 22,958 appearing player-games.
+Under a multinomial the implied zero mass is exactly (1-pi)^N, so the observed
+0.25089 decomposes: 0.22410 is ordinary multinomial sampling at the CORRECT
+share (89.3%), -0.01224 is mis-estimated share, and **+0.02679 is structural
+excess** -- 10.68% of the zero mass, unreachable by any share. Against a rule
+fixed in code before the numbers were read (>=2pp AND >=5%), identified. pi*
+is a PARAMETER oracle, the player's season-average share, never that game's
+own -- which would predict a zero-target player's zero with certainty.
+
+**The plain family cannot recover it.** MNL_PLUS, a conditional logit given
+the hurdle's OWN covariates plus the log production share, closes **-63.4%**
+of the zero-mass shortfall: it moves zero mass FURTHER from the observation
+(gap -0.0249 -> -0.0407). Q9 closes **+81.5%** (gap -0.0046). Both improve
+marginal CRPS by almost the same amount (-0.565% vs -0.616%), so the CRPS gain
+IS recoverable by a better share and the zero-mass gain is NOT. Only the
+hurdle does both.
+
+**A prediction withdrawn.** The audit's mis-estimation component was -0.01224,
+so I predicted a better-share arm would RAISE zero mass by about a point. It
+lowered it by 1.6. "Better by multinomial likelihood" is not "correct" in the
+audit's sense: maximising the allocation likelihood concentrates shares and a
+concentrated share produces fewer zeros. The qualitative conclusion survives;
+the quantitative prediction is withdrawn rather than retrofitted.
+
+**No Dirichlet-multinomial arm.** Median variance ratio 1.193 at the CORRECT
+share against a threshold of 1.25 fixed in code before the number was read.
+This system does not exhibit the overdispersion DM exists to model; the
+external scan is prior art, not a reason.
+
+**Fallback audit -- located, bounded, benign.**
+HURDLE_MORE_CLEARERS_THAN_BUDGET, 2,141 in 869,600 draws (0.246%): EVERY event
+in the `<25` budget band, mean drawn budget 5.61, max 13, against 11.1
+appearing and 8.7 clearers. It fires only in the low tail of the budget's own
+residual pool. Selection rates rise monotonically with the declared
+probability (0.150 at p~0.2 to 0.839 at p~1.0); the weighting is by base
+share, and the gradient is their correlation, not an inversion. Affected
+team-games score BETTER (CRPS 0.8104 vs 0.8307 elsewhere). HURDLE_NO_CLEARERS
+fired 0 times. Nothing changed, as directed.
+
+**PIT diagnosis -- it is the one-target floor.** chi2 per row, Q9 minus
+baseline: actual=0 -0.0509 better, 1-2 **+0.0543 worse**, 3-6 -0.0449 better,
+7+ +0.0409 worse; starter better, rotational and fringe worse; prior depth 0
+**+0.3763, worst by an order of magnitude**, and every depth cell from 4 games
+up improves. Cold start is where Q9's CRPS gain is largest (-7.30%) and where
+its PIT is worst. Diagnosed, never optimised; no decision reads it.
+
+**Production parity -- bit-for-bit.** Twelve frozen 2024 team-weeks through
+the real `layers.appearance` interface, its Outcome contract and its
+`_game_stream` seeding, then the frozen allocator via an adapter that CONSUMES
+the appearance draws. All eight invariants hold, zero differing cells.
+`test_only` propagates and that is the guard working: the run produces no
+artifact. What it cannot claim is "the promoted pipeline ran" -- Q9 has no
+promoted path, and the limit is stated.
+
+**Prospective freeze recorded, nothing consumed.** Module source hashes, the
+25-feature schema in order (f620eeed09d0dd6e), hurdle coefficients
+(9491bb9f4b09b6a2), standardiser, class prior, shrinkage constant, budget
+estimator and residual pool, interface version, both fallback counters and the
+decision metrics. No 2026 outcome read. A refit is declared a different
+candidate needing its own freeze.
+
+**Status: PROMOTION_READY_FOR_PROSPECTIVE_TEST. Nothing promoted.**
+
+**Suite:** 79 modules, 873 test functions, 4,834 checks, 0 failing, 0 raised.
+
+**Detail:** `nfl/research/q9b/Q9_MODEL_FAMILY_AUDIT.md`,
+`Q9B_PREREGISTRATION.md`, `Q9_FALLBACK_AUDIT.json`,
+`Q9_PRODUCTION_PARITY.json`, `Q9_PROSPECTIVE_FREEZE.json`.
+

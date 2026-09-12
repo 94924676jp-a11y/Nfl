@@ -1,0 +1,310 @@
+{
+ "artifact": "NFL_Q9B_IDENTIFIABILITY_AUDIT",
+ "spec_version": "q9b-identifiability-1",
+ "promoted": false,
+ "is_research_only": true,
+ "market_inputs_used": [],
+ "live_2026_rows_used": 0,
+ "n_rows": 22958,
+ "eval_seasons": [
+  2022,
+  2023,
+  2024,
+  2025
+ ],
+ "population": "appearing players in team-weeks with a positive budget",
+ "oracle_kind": "pi* is a PARAMETER oracle -- the player's realised share averaged over his appearing games in the evaluation season, renormalised within the team-week. It is never that game's own share, which would predict a zero-target player's zero with certainty and prove nothing.",
+ "overall": {
+  "n": 22958,
+  "observed_zero_rate": 0.250893,
+  "implied_zero_production_share": 0.211863,
+  "implied_zero_correct_share": 0.224104,
+  "multinomial_sampling_zero": 0.224104,
+  "mis_estimated_share_component": -0.012241,
+  "structural_excess": 0.026789,
+  "structural_excess_share_of_total_zero": 0.10677,
+  "production_shortfall_vs_observed": -0.03903,
+  "reads": "structural excess near zero means a correctly-shared multinomial already produces the observed zero mass and the hurdle is not identified; a large positive excess means there is zero mass no multinomial with a correct share can produce"
+ },
+ "by_position": {
+  "RB": {
+   "n": 6406,
+   "observed_zero_rate": 0.315798,
+   "implied_zero_production_share": 0.280877,
+   "implied_zero_correct_share": 0.29157,
+   "multinomial_sampling_zero": 0.29157,
+   "mis_estimated_share_component": -0.010693,
+   "structural_excess": 0.024227,
+   "structural_excess_share_of_total_zero": 0.07672,
+   "production_shortfall_vs_observed": -0.03492,
+   "reads": "structural excess near zero means a correctly-shared multinomial already produces the observed zero mass and the hurdle is not identified; a large positive excess means there is zero mass no multinomial with a correct share can produce"
+  },
+  "TE": {
+   "n": 6261,
+   "observed_zero_rate": 0.305862,
+   "implied_zero_production_share": 0.278614,
+   "implied_zero_correct_share": 0.282606,
+   "multinomial_sampling_zero": 0.282606,
+   "mis_estimated_share_component": -0.003991,
+   "structural_excess": 0.023256,
+   "structural_excess_share_of_total_zero": 0.07603,
+   "production_shortfall_vs_observed": -0.027247,
+   "reads": "structural excess near zero means a correctly-shared multinomial already produces the observed zero mass and the hurdle is not identified; a large positive excess means there is zero mass no multinomial with a correct share can produce"
+  },
+  "WR": {
+   "n": 10291,
+   "observed_zero_rate": 0.177048,
+   "implied_zero_production_share": 0.128291,
+   "implied_zero_correct_share": 0.146515,
+   "multinomial_sampling_zero": 0.146515,
+   "mis_estimated_share_component": -0.018224,
+   "structural_excess": 0.030533,
+   "structural_excess_share_of_total_zero": 0.17246,
+   "production_shortfall_vs_observed": -0.048757,
+   "reads": "structural excess near zero means a correctly-shared multinomial already produces the observed zero mass and the hurdle is not identified; a large positive excess means there is zero mass no multinomial with a correct share can produce"
+  }
+ },
+ "by_role_class": {
+  "fringe": {
+   "n": 7101,
+   "observed_zero_rate": 0.403464,
+   "implied_zero_production_share": 0.327475,
+   "implied_zero_correct_share": 0.351712,
+   "multinomial_sampling_zero": 0.351712,
+   "mis_estimated_share_component": -0.024237,
+   "structural_excess": 0.051752,
+   "structural_excess_share_of_total_zero": 0.12827,
+   "production_shortfall_vs_observed": -0.075989,
+   "reads": "structural excess near zero means a correctly-shared multinomial already produces the observed zero mass and the hurdle is not identified; a large positive excess means there is zero mass no multinomial with a correct share can produce"
+  },
+  "rotational": {
+   "n": 10029,
+   "observed_zero_rate": 0.248878,
+   "implied_zero_production_share": 0.222312,
+   "implied_zero_correct_share": 0.228776,
+   "multinomial_sampling_zero": 0.228776,
+   "mis_estimated_share_component": -0.006464,
+   "structural_excess": 0.020102,
+   "structural_excess_share_of_total_zero": 0.08077,
+   "production_shortfall_vs_observed": -0.026567,
+   "reads": "structural excess near zero means a correctly-shared multinomial already produces the observed zero mass and the hurdle is not identified; a large positive excess means there is zero mass no multinomial with a correct share can produce"
+  },
+  "starter": {
+   "n": 5828,
+   "observed_zero_rate": 0.068463,
+   "implied_zero_production_share": 0.053018,
+   "implied_zero_correct_share": 0.060583,
+   "multinomial_sampling_zero": 0.060583,
+   "mis_estimated_share_component": -0.007565,
+   "structural_excess": 0.00788,
+   "structural_excess_share_of_total_zero": 0.1151,
+   "production_shortfall_vs_observed": -0.015445,
+   "reads": "structural excess near zero means a correctly-shared multinomial already produces the observed zero mass and the hurdle is not identified; a large positive excess means there is zero mass no multinomial with a correct share can produce"
+  }
+ },
+ "by_prior_depth": {
+  "0": {
+   "n": 437,
+   "observed_zero_rate": 0.491991,
+   "implied_zero_production_share": 0.236944,
+   "implied_zero_correct_share": 0.41563,
+   "multinomial_sampling_zero": 0.41563,
+   "mis_estimated_share_component": -0.178687,
+   "structural_excess": 0.076361,
+   "structural_excess_share_of_total_zero": 0.15521,
+   "production_shortfall_vs_observed": -0.255047,
+   "reads": "structural excess near zero means a correctly-shared multinomial already produces the observed zero mass and the hurdle is not identified; a large positive excess means there is zero mass no multinomial with a correct share can produce"
+  },
+  "1-3": {
+   "n": 1180,
+   "observed_zero_rate": 0.433051,
+   "implied_zero_production_share": 0.351427,
+   "implied_zero_correct_share": 0.361993,
+   "multinomial_sampling_zero": 0.361993,
+   "mis_estimated_share_component": -0.010566,
+   "structural_excess": 0.071058,
+   "structural_excess_share_of_total_zero": 0.16409,
+   "production_shortfall_vs_observed": -0.081624,
+   "reads": "structural excess near zero means a correctly-shared multinomial already produces the observed zero mass and the hurdle is not identified; a large positive excess means there is zero mass no multinomial with a correct share can produce"
+  },
+  "17+": {
+   "n": 16724,
+   "observed_zero_rate": 0.210954,
+   "implied_zero_production_share": 0.180806,
+   "implied_zero_correct_share": 0.190282,
+   "multinomial_sampling_zero": 0.190282,
+   "mis_estimated_share_component": -0.009476,
+   "structural_excess": 0.020672,
+   "structural_excess_share_of_total_zero": 0.09799,
+   "production_shortfall_vs_observed": -0.030148,
+   "reads": "structural excess near zero means a correctly-shared multinomial already produces the observed zero mass and the hurdle is not identified; a large positive excess means there is zero mass no multinomial with a correct share can produce"
+  },
+  "4-8": {
+   "n": 1831,
+   "observed_zero_rate": 0.357182,
+   "implied_zero_production_share": 0.329336,
+   "implied_zero_correct_share": 0.321519,
+   "multinomial_sampling_zero": 0.321519,
+   "mis_estimated_share_component": 0.007817,
+   "structural_excess": 0.035662,
+   "structural_excess_share_of_total_zero": 0.09984,
+   "production_shortfall_vs_observed": -0.027845,
+   "reads": "structural excess near zero means a correctly-shared multinomial already produces the observed zero mass and the hurdle is not identified; a large positive excess means there is zero mass no multinomial with a correct share can produce"
+  },
+  "9-16": {
+   "n": 2786,
+   "observed_zero_rate": 0.305815,
+   "implied_zero_production_share": 0.258043,
+   "implied_zero_correct_share": 0.274664,
+   "multinomial_sampling_zero": 0.274664,
+   "mis_estimated_share_component": -0.016621,
+   "structural_excess": 0.03115,
+   "structural_excess_share_of_total_zero": 0.10186,
+   "production_shortfall_vs_observed": -0.047771,
+   "reads": "structural excess near zero means a correctly-shared multinomial already produces the observed zero mass and the hurdle is not identified; a large positive excess means there is zero mass no multinomial with a correct share can produce"
+  }
+ },
+ "by_appearance_certainty": {
+  "doubtful": {
+   "n": 875,
+   "observed_zero_rate": 0.513143,
+   "implied_zero_production_share": 0.350845,
+   "implied_zero_correct_share": 0.461895,
+   "multinomial_sampling_zero": 0.461895,
+   "mis_estimated_share_component": -0.11105,
+   "structural_excess": 0.051248,
+   "structural_excess_share_of_total_zero": 0.09987,
+   "production_shortfall_vs_observed": -0.162298,
+   "reads": "structural excess near zero means a correctly-shared multinomial already produces the observed zero mass and the hurdle is not identified; a large positive excess means there is zero mass no multinomial with a correct share can produce"
+  },
+  "likely": {
+   "n": 6031,
+   "observed_zero_rate": 0.386503,
+   "implied_zero_production_share": 0.330506,
+   "implied_zero_correct_share": 0.337361,
+   "multinomial_sampling_zero": 0.337361,
+   "mis_estimated_share_component": -0.006856,
+   "structural_excess": 0.049142,
+   "structural_excess_share_of_total_zero": 0.12714,
+   "production_shortfall_vs_observed": -0.055997,
+   "reads": "structural excess near zero means a correctly-shared multinomial already produces the observed zero mass and the hurdle is not identified; a large positive excess means there is zero mass no multinomial with a correct share can produce"
+  },
+  "near_certain": {
+   "n": 13794,
+   "observed_zero_rate": 0.140351,
+   "implied_zero_production_share": 0.128952,
+   "implied_zero_correct_share": 0.132232,
+   "multinomial_sampling_zero": 0.132232,
+   "mis_estimated_share_component": -0.003279,
+   "structural_excess": 0.008119,
+   "structural_excess_share_of_total_zero": 0.05785,
+   "production_shortfall_vs_observed": -0.011399,
+   "reads": "structural excess near zero means a correctly-shared multinomial already produces the observed zero mass and the hurdle is not identified; a large positive excess means there is zero mass no multinomial with a correct share can produce"
+  },
+  "uncertain": {
+   "n": 2258,
+   "observed_zero_rate": 0.462356,
+   "implied_zero_production_share": 0.347616,
+   "implied_zero_correct_share": 0.390696,
+   "multinomial_sampling_zero": 0.390696,
+   "mis_estimated_share_component": -0.04308,
+   "structural_excess": 0.07166,
+   "structural_excess_share_of_total_zero": 0.15499,
+   "production_shortfall_vs_observed": -0.11474,
+   "reads": "structural excess near zero means a correctly-shared multinomial already produces the observed zero mass and the hurdle is not identified; a large positive excess means there is zero mass no multinomial with a correct share can produce"
+  }
+ },
+ "by_team_budget_band": {
+  "25-32": {
+   "n": 9510,
+   "observed_zero_rate": 0.260568,
+   "implied_zero_production_share": 0.21508,
+   "implied_zero_correct_share": 0.227035,
+   "multinomial_sampling_zero": 0.227035,
+   "mis_estimated_share_component": -0.011955,
+   "structural_excess": 0.033533,
+   "structural_excess_share_of_total_zero": 0.12869,
+   "production_shortfall_vs_observed": -0.045488,
+   "reads": "structural excess near zero means a correctly-shared multinomial already produces the observed zero mass and the hurdle is not identified; a large positive excess means there is zero mass no multinomial with a correct share can produce"
+  },
+  "33-39": {
+   "n": 6073,
+   "observed_zero_rate": 0.223613,
+   "implied_zero_production_share": 0.208636,
+   "implied_zero_correct_share": 0.220756,
+   "multinomial_sampling_zero": 0.220756,
+   "mis_estimated_share_component": -0.01212,
+   "structural_excess": 0.002856,
+   "structural_excess_share_of_total_zero": 0.01277,
+   "production_shortfall_vs_observed": -0.014976,
+   "reads": "structural excess near zero means a correctly-shared multinomial already produces the observed zero mass and the hurdle is not identified; a large positive excess means there is zero mass no multinomial with a correct share can produce"
+  },
+  "40+": {
+   "n": 3241,
+   "observed_zero_rate": 0.201481,
+   "implied_zero_production_share": 0.198609,
+   "implied_zero_correct_share": 0.211025,
+   "multinomial_sampling_zero": 0.211025,
+   "mis_estimated_share_component": -0.012416,
+   "structural_excess": -0.009544,
+   "structural_excess_share_of_total_zero": -0.04737,
+   "production_shortfall_vs_observed": -0.002872,
+   "reads": "structural excess near zero means a correctly-shared multinomial already produces the observed zero mass and the hurdle is not identified; a large positive excess means there is zero mass no multinomial with a correct share can produce"
+  },
+  "<25": {
+   "n": 4134,
+   "observed_zero_rate": 0.30745,
+   "implied_zero_production_share": 0.219593,
+   "implied_zero_correct_share": 0.232532,
+   "multinomial_sampling_zero": 0.232532,
+   "mis_estimated_share_component": -0.012939,
+   "structural_excess": 0.074918,
+   "structural_excess_share_of_total_zero": 0.24368,
+   "production_shortfall_vs_observed": -0.087857,
+   "reads": "structural excess near zero means a correctly-shared multinomial already produces the observed zero mass and the hurdle is not identified; a large positive excess means there is zero mass no multinomial with a correct share can produce"
+  }
+ },
+ "dispersion_audit": {
+  "n_players": 668,
+  "min_games_per_player": 8,
+  "variance_ratio_median": 1.19253,
+  "variance_ratio_mean": 1.26119,
+  "variance_ratio_p25": 0.95128,
+  "variance_ratio_p75": 1.46279,
+  "share_above_1": 0.71108,
+  "predeclared_threshold": 1.25,
+  "verdict": "NOT_MEANINGFULLY_OVERDISPERSED_DM_REFUSED",
+  "reads": "the ratio of realised variance to the multinomial variance at the CORRECT share. Above 1 is overdispersion a multinomial cannot produce; the threshold was fixed before the number was read."
+ },
+ "fit_log": [
+  {
+   "eval_season": 2022,
+   "n_rows": 5764,
+   "n_players_with_a_season_mean_share": 546
+  },
+  {
+   "eval_season": 2023,
+   "n_rows": 11569,
+   "n_players_with_a_season_mean_share": 516
+  },
+  {
+   "eval_season": 2024,
+   "n_rows": 17263,
+   "n_players_with_a_season_mean_share": 530
+  },
+  {
+   "eval_season": 2025,
+   "n_rows": 22958,
+   "n_players_with_a_season_mean_share": 533
+  }
+ ],
+ "verdict": {
+  "structural_excess": 0.026789,
+  "structural_excess_fraction_of_zero_mass": 0.10677,
+  "mis_estimated_share_component": -0.012241,
+  "multinomial_sampling_zero": 0.224104,
+  "hurdle_identified_as_structural": true,
+  "predeclared_rule": "a structural excess of at least 2 percentage points AND at least 5% of the observed zero mass, both fixed before the numbers were read",
+  "means": "IDENTIFIED: there is zero mass a correctly-shared multinomial cannot produce, so a hurdle is a mechanism. NOT IDENTIFIED: a better share model should recover Q9's gain and the plain family is the right one."
+ }
+}

@@ -1,0 +1,3138 @@
+{
+ "artifact": "NFL_Q9B_MODEL_FAMILY_RESULTS",
+ "spec_version": "q9b-family-1",
+ "promoted": false,
+ "is_research_only": true,
+ "market_inputs_used": [],
+ "live_2026_rows_used": 0,
+ "q8_budget_repair_applied": false,
+ "arms": [
+  "BASELINE",
+  "MNL_PLUS",
+  "Q9_HURDLE"
+ ],
+ "dirichlet_multinomial_arm": {
+  "included": false,
+  "reason": "the dispersion audit measured a median variance ratio of 1.193 at the CORRECT share against a threshold of 1.25 fixed in code before the number was read. This system does not exhibit the overdispersion a Dirichlet-multinomial exists to model."
+ },
+ "q9_is_frozen": "the hurdle allocator, the one-target floor and both fallbacks are imported from nfl.research.q9.hurdle and called, never reimplemented or refitted here",
+ "n_rows": 104130,
+ "eval_seasons": [
+  2022,
+  2023,
+  2024,
+  2025
+ ],
+ "clustering": "block bootstrap over whole team-games",
+ "by_arm": {
+  "BASELINE": {
+   "zero_target_probability": {
+    "n": 34710,
+    "brier": 0.131875,
+    "log_loss": 0.424528,
+    "predicted_zero_rate": 0.47948,
+    "observed_zero_rate": 0.50438,
+    "zero_rate_gap": -0.0249,
+    "abs_zero_rate_gap": 0.0249
+   },
+   "positive_target_distribution": {
+    "n": 17166,
+    "mean_crps": 1.189573
+   },
+   "full_marginal_target_distribution": {
+    "n": 34710,
+    "mean_crps": 0.825816,
+    "bias": 0.01992,
+    "pit": {
+     "n": 34710,
+     "hist": [
+      1503,
+      2866,
+      3708,
+      4701,
+      7651,
+      4569,
+      1905,
+      1955,
+      2299,
+      3553
+     ],
+     "chi2": 8820.813,
+     "chi2_per_row": 0.25412887
+    }
+   },
+   "downstream_receiving_yards": {
+    "mean_crps": 7.623291
+   }
+  },
+  "MNL_PLUS": {
+   "zero_target_probability": {
+    "n": 34710,
+    "brier": 0.131242,
+    "log_loss": 0.419551,
+    "predicted_zero_rate": 0.4637,
+    "observed_zero_rate": 0.50438,
+    "zero_rate_gap": -0.04068,
+    "abs_zero_rate_gap": 0.04068
+   },
+   "positive_target_distribution": {
+    "n": 17168,
+    "mean_crps": 1.184246
+   },
+   "full_marginal_target_distribution": {
+    "n": 34710,
+    "mean_crps": 0.821149,
+    "bias": 0.01947,
+    "pit": {
+     "n": 34710,
+     "hist": [
+      1464,
+      3119,
+      4035,
+      4836,
+      6616,
+      5037,
+      1985,
+      2001,
+      2314,
+      3303
+     ],
+     "chi2": 7033.311,
+     "chi2_per_row": 0.2026307
+    }
+   },
+   "downstream_receiving_yards": {
+    "mean_crps": 7.597193
+   }
+  },
+  "Q9_HURDLE": {
+   "zero_target_probability": {
+    "n": 34710,
+    "brier": 0.130107,
+    "log_loss": 0.417118,
+    "predicted_zero_rate": 0.49978,
+    "observed_zero_rate": 0.50438,
+    "zero_rate_gap": -0.0046,
+    "abs_zero_rate_gap": 0.0046
+   },
+   "positive_target_distribution": {
+    "n": 17168,
+    "mean_crps": 1.193159
+   },
+   "full_marginal_target_distribution": {
+    "n": 34710,
+    "mean_crps": 0.820727,
+    "bias": 0.01896,
+    "pit": {
+     "n": 34710,
+     "hist": [
+      1017,
+      2514,
+      4066,
+      5324,
+      6958,
+      5184,
+      2062,
+      2137,
+      2381,
+      3067
+     ],
+     "chi2": 8912.501,
+     "chi2_per_row": 0.2567704
+    }
+   },
+   "downstream_receiving_yards": {
+    "mean_crps": 7.619459
+   }
+  }
+ },
+ "paired": {
+  "MNL_PLUS": {
+   "marginal_crps": {
+    "delta_pct": -0.5651,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.004667,
+     "ci_lo": -0.006595,
+     "ci_hi": -0.002754,
+     "n_clusters": 2174,
+     "n_rows": 34710,
+     "excludes_zero": true
+    }
+   },
+   "receiving_yard_crps": {
+    "delta_pct": -0.3424,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.026099,
+     "ci_lo": -0.041012,
+     "ci_hi": -0.011154,
+     "n_clusters": 2174,
+     "n_rows": 34710,
+     "excludes_zero": true
+    }
+   },
+   "zero_brier": {
+    "delta_mean": -0.00063237,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.000632,
+     "ci_lo": -0.001118,
+     "ci_hi": -0.000159,
+     "n_clusters": 2174,
+     "n_rows": 34710,
+     "excludes_zero": true
+    }
+   }
+  },
+  "Q9_HURDLE": {
+   "marginal_crps": {
+    "delta_pct": -0.6162,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.005089,
+     "ci_lo": -0.006615,
+     "ci_hi": -0.003558,
+     "n_clusters": 2174,
+     "n_rows": 34710,
+     "excludes_zero": true
+    }
+   },
+   "receiving_yard_crps": {
+    "delta_pct": -0.0503,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.003832,
+     "ci_lo": -0.015566,
+     "ci_hi": 0.007674,
+     "n_clusters": 2174,
+     "n_rows": 34710,
+     "excludes_zero": false
+    }
+   },
+   "zero_brier": {
+    "delta_mean": -0.00176741,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.001767,
+     "ci_lo": -0.002407,
+     "ci_hi": -0.001092,
+     "n_clusters": 2174,
+     "n_rows": 34710,
+     "excludes_zero": true
+    }
+   }
+  }
+ },
+ "falsifiable_check": {
+  "baseline_zero_shortfall": 0.0249,
+  "audit_predicted_share_recoverable": 0.01224,
+  "audit_production_shortfall": 0.03903,
+  "by_arm": {
+   "MNL_PLUS": {
+    "predicted_zero_rate": 0.4637,
+    "moved_toward_observed": -0.01578,
+    "fraction_of_shortfall_closed": -0.63373,
+    "abs_gap": 0.04068
+   },
+   "Q9_HURDLE": {
+    "predicted_zero_rate": 0.49978,
+    "moved_toward_observed": 0.0203,
+    "fraction_of_shortfall_closed": 0.81526,
+    "abs_gap": 0.0046
+   }
+  },
+  "reads": "the fraction of the baseline's zero-mass shortfall each arm closes. The identifiability audit predicted a plain better-share arm could close about a third; an arm that closes all of it would mean the hurdle is a reparameterisation"
+ },
+ "fallback_audit": {
+  "n_hurdle_draws": 869600,
+  "states": {
+   "HURDLE_NO_CLEARERS": {
+    "n": 0,
+    "rate": 0.0
+   },
+   "HURDLE_MORE_CLEARERS_THAN_BUDGET": {
+    "n": 2141,
+    "rate": 0.00246205
+   }
+  },
+  "more_clearers_than_budget": {
+   "n_events": 2141,
+   "by_budget_band": {
+    "<25": 2141
+   },
+   "mean_team_budget_drawn": 5.6142,
+   "mean_n_appearing": 11.1369,
+   "mean_n_clearers": 8.7109,
+   "max_team_budget_drawn": 13,
+   "concentrated_in_low_budgets": true
+  },
+  "selection_distortion": {
+   "n_clearer_observations": 18650,
+   "by_declared_hurdle_probability": {
+    "0.2": {
+     "n": 80,
+     "selected_rate": 0.15
+    },
+    "0.3": {
+     "n": 462,
+     "selected_rate": 0.21645
+    },
+    "0.4": {
+     "n": 901,
+     "selected_rate": 0.32852
+    },
+    "0.5": {
+     "n": 1154,
+     "selected_rate": 0.38302
+    },
+    "0.6": {
+     "n": 1490,
+     "selected_rate": 0.48792
+    },
+    "0.7": {
+     "n": 1876,
+     "selected_rate": 0.52719
+    },
+    "0.8": {
+     "n": 2748,
+     "selected_rate": 0.62482
+    },
+    "0.9": {
+     "n": 4950,
+     "selected_rate": 0.71778
+    },
+    "1.0": {
+     "n": 4987,
+     "selected_rate": 0.83858
+    }
+   },
+   "note": "inside an affected draw the clearer set is already conditioned on clearing, so a selection rate below 1 is the subsample doing its job. What would be a defect is the rate depending on the DECLARED probability in a way the weighting did not intend -- the weighting is by the base share, not by p_hurdle, so a strong gradient here is the distortion to look for."
+  },
+  "contribution": {
+   "n_rows_in_affected_team_games": 17058,
+   "n_rows_elsewhere": 17652,
+   "marginal_crps_affected": 0.810405,
+   "marginal_crps_elsewhere": 0.830703,
+   "zero_gap_affected": -0.00943,
+   "zero_gap_elsewhere": 6e-05
+  }
+ },
+ "pit_diagnosis": {
+  "note": "PIT is diagnosed here and read by no decision. An arm selected on its rank histogram would be an arm selected on something that is not a proper score.",
+  "by_actual_target_band": {
+   "low_1_2": {
+    "BASELINE": {
+     "n": 7137,
+     "hist": [
+      366,
+      590,
+      640,
+      790,
+      839,
+      835,
+      860,
+      767,
+      777,
+      673
+     ],
+     "chi2": 291.12,
+     "chi2_per_row": 0.0407902
+    },
+    "MNL_PLUS": {
+     "n": 7137,
+     "hist": [
+      335,
+      592,
+      732,
+      830,
+      897,
+      960,
+      898,
+      739,
+      738,
+      416
+     ],
+     "chi2": 546.686,
+     "chi2_per_row": 0.07659891
+    },
+    "Q9_HURDLE": {
+     "n": 7137,
+     "hist": [
+      246,
+      574,
+      674,
+      799,
+      906,
+      964,
+      910,
+      827,
+      803,
+      434
+     ],
+     "chi2": 678.602,
+     "chi2_per_row": 0.09508222
+    },
+    "chi2_per_row_delta": 0.05429202,
+    "worsens": true
+   },
+   "mid_3_6": {
+    "BASELINE": {
+     "n": 6909,
+     "hist": [
+      133,
+      350,
+      505,
+      609,
+      599,
+      663,
+      743,
+      821,
+      920,
+      1566
+     ],
+     "chi2": 1904.592,
+     "chi2_per_row": 0.27566832
+    },
+    "MNL_PLUS": {
+     "n": 6909,
+     "hist": [
+      120,
+      327,
+      458,
+      552,
+      641,
+      624,
+      815,
+      880,
+      1011,
+      1481
+     ],
+     "chi2": 1905.823,
+     "chi2_per_row": 0.27584639
+    },
+    "Q9_HURDLE": {
+     "n": 6909,
+     "hist": [
+      79,
+      312,
+      486,
+      658,
+      644,
+      732,
+      851,
+      882,
+      927,
+      1338
+     ],
+     "chi2": 1594.406,
+     "chi2_per_row": 0.23077228
+    },
+    "chi2_per_row_delta": -0.04489604,
+    "worsens": false
+   },
+   "upper_tail_7plus": {
+    "BASELINE": {
+     "n": 3157,
+     "hist": [
+      1,
+      26,
+      48,
+      96,
+      181,
+      220,
+      302,
+      367,
+      602,
+      1314
+     ],
+     "chi2": 4471.29,
+     "chi2_per_row": 1.41630963
+    },
+    "MNL_PLUS": {
+     "n": 3157,
+     "hist": [
+      1,
+      24,
+      46,
+      78,
+      164,
+      219,
+      272,
+      382,
+      565,
+      1406
+     ],
+     "chi2": 5077.409,
+     "chi2_per_row": 1.60830195
+    },
+    "Q9_HURDLE": {
+     "n": 3157,
+     "hist": [
+      1,
+      9,
+      39,
+      80,
+      131,
+      222,
+      301,
+      428,
+      651,
+      1295
+     ],
+     "chi2": 4600.551,
+     "chi2_per_row": 1.45725419
+    },
+    "chi2_per_row_delta": 0.04094456,
+    "worsens": true
+   },
+   "zero": {
+    "BASELINE": {
+     "n": 17507,
+     "hist": [
+      1003,
+      1900,
+      2515,
+      3206,
+      6032,
+      2851,
+      0,
+      0,
+      0,
+      0
+     ],
+     "chi2": 20039.636,
+     "chi2_per_row": 1.14466417
+    },
+    "MNL_PLUS": {
+     "n": 17507,
+     "hist": [
+      1008,
+      2176,
+      2799,
+      3376,
+      4914,
+      3234,
+      0,
+      0,
+      0,
+      0
+     ],
+     "chi2": 16530.225,
+     "chi2_per_row": 0.94420658
+    },
+    "Q9_HURDLE": {
+     "n": 17507,
+     "hist": [
+      691,
+      1619,
+      2867,
+      3787,
+      5277,
+      3266,
+      0,
+      0,
+      0,
+      0
+     ],
+     "chi2": 19148.729,
+     "chi2_per_row": 1.09377558
+    },
+    "chi2_per_row_delta": -0.05088859,
+    "worsens": false
+   }
+  },
+  "by_role_class": {
+   "fringe": {
+    "BASELINE": {
+     "n": 14917,
+     "hist": [
+      187,
+      823,
+      1516,
+      2191,
+      4536,
+      2615,
+      505,
+      549,
+      679,
+      1316
+     ],
+     "chi2": 10539.78,
+     "chi2_per_row": 0.70656165
+    },
+    "MNL_PLUS": {
+     "n": 14917,
+     "hist": [
+      155,
+      920,
+      1657,
+      2387,
+      4062,
+      2716,
+      540,
+      548,
+      725,
+      1207
+     ],
+     "chi2": 9058.814,
+     "chi2_per_row": 0.60728119
+    },
+    "Q9_HURDLE": {
+     "n": 14917,
+     "hist": [
+      69,
+      569,
+      1505,
+      2540,
+      4393,
+      2770,
+      560,
+      585,
+      768,
+      1158
+     ],
+     "chi2": 10961.601,
+     "chi2_per_row": 0.73483951
+    },
+    "chi2_per_row_delta": 0.02827786,
+    "worsens": true
+   },
+   "rotational": {
+    "BASELINE": {
+     "n": 13221,
+     "hist": [
+      616,
+      1322,
+      1529,
+      1847,
+      2257,
+      1374,
+      878,
+      884,
+      1018,
+      1496
+     ],
+     "chi2": 1668.188,
+     "chi2_per_row": 0.12617712
+    },
+    "MNL_PLUS": {
+     "n": 13221,
+     "hist": [
+      619,
+      1469,
+      1730,
+      1822,
+      1795,
+      1617,
+      920,
+      915,
+      987,
+      1347
+     ],
+     "chi2": 1273.08,
+     "chi2_per_row": 0.09629225
+    },
+    "Q9_HURDLE": {
+     "n": 13221,
+     "hist": [
+      369,
+      1144,
+      1885,
+      2070,
+      1828,
+      1694,
+      963,
+      1005,
+      1009,
+      1254
+     ],
+     "chi2": 1923.265,
+     "chi2_per_row": 0.14547048
+    },
+    "chi2_per_row_delta": 0.01929336,
+    "worsens": true
+   },
+   "starter": {
+    "BASELINE": {
+     "n": 6572,
+     "hist": [
+      700,
+      721,
+      663,
+      663,
+      858,
+      580,
+      522,
+      522,
+      602,
+      741
+     ],
+     "chi2": 150.453,
+     "chi2_per_row": 0.02289301
+    },
+    "MNL_PLUS": {
+     "n": 6572,
+     "hist": [
+      690,
+      730,
+      648,
+      627,
+      759,
+      704,
+      525,
+      538,
+      602,
+      749
+     ],
+     "chi2": 95.991,
+     "chi2_per_row": 0.01460613
+    },
+    "Q9_HURDLE": {
+     "n": 6572,
+     "hist": [
+      579,
+      801,
+      676,
+      714,
+      737,
+      720,
+      539,
+      547,
+      604,
+      655
+     ],
+     "chi2": 105.958,
+     "chi2_per_row": 0.01612264
+    },
+    "chi2_per_row_delta": -0.00677037,
+    "worsens": false
+   }
+  },
+  "by_prior_depth": {
+   "0": {
+    "BASELINE": {
+     "n": 1369,
+     "hist": [
+      62,
+      71,
+      55,
+      26,
+      175,
+      852,
+      15,
+      12,
+      17,
+      84
+     ],
+     "chi2": 4305.427,
+     "chi2_per_row": 3.14494272
+    },
+    "MNL_PLUS": {
+     "n": 1369,
+     "hist": [
+      11,
+      89,
+      65,
+      10,
+      171,
+      871,
+      20,
+      15,
+      17,
+      100
+     ],
+     "chi2": 4556.223,
+     "chi2_per_row": 3.32813936
+    },
+    "Q9_HURDLE": {
+     "n": 1369,
+     "hist": [
+      3,
+      40,
+      118,
+      12,
+      155,
+      894,
+      31,
+      14,
+      19,
+      83
+     ],
+     "chi2": 4820.518,
+     "chi2_per_row": 3.52119642
+    },
+    "chi2_per_row_delta": 0.3762537,
+    "worsens": true
+   },
+   "1-3": {
+    "BASELINE": {
+     "n": 2446,
+     "hist": [
+      28,
+      85,
+      220,
+      409,
+      882,
+      340,
+      64,
+      86,
+      97,
+      235
+     ],
+     "chi2": 2432.741,
+     "chi2_per_row": 0.99457923
+    },
+    "MNL_PLUS": {
+     "n": 2446,
+     "hist": [
+      27,
+      110,
+      250,
+      488,
+      740,
+      355,
+      75,
+      80,
+      105,
+      216
+     ],
+     "chi2": 1874.54,
+     "chi2_per_row": 0.76636944
+    },
+    "Q9_HURDLE": {
+     "n": 2446,
+     "hist": [
+      17,
+      76,
+      177,
+      456,
+      881,
+      354,
+      64,
+      89,
+      115,
+      217
+     ],
+     "chi2": 2538.211,
+     "chi2_per_row": 1.03769867
+    },
+    "chi2_per_row_delta": 0.04311944,
+    "worsens": true
+   },
+   "17+": {
+    "BASELINE": {
+     "n": 23334,
+     "hist": [
+      1210,
+      2188,
+      2629,
+      3116,
+      4655,
+      2453,
+      1476,
+      1475,
+      1727,
+      2405
+     ],
+     "chi2": 3956.447,
+     "chi2_per_row": 0.16955719
+    },
+    "MNL_PLUS": {
+     "n": 23334,
+     "hist": [
+      1217,
+      2331,
+      2814,
+      3144,
+      4058,
+      2789,
+      1518,
+      1510,
+      1705,
+      2248
+     ],
+     "chi2": 3026.17,
+     "chi2_per_row": 0.12968928
+    },
+    "Q9_HURDLE": {
+     "n": 23334,
+     "hist": [
+      864,
+      1983,
+      2904,
+      3513,
+      4168,
+      2887,
+      1585,
+      1623,
+      1734,
+      2073
+     ],
+     "chi2": 3926.908,
+     "chi2_per_row": 0.16829124
+    },
+    "chi2_per_row_delta": -0.00126595,
+    "worsens": false
+   },
+   "4-8": {
+    "BASELINE": {
+     "n": 3123,
+     "hist": [
+      64,
+      170,
+      307,
+      501,
+      887,
+      384,
+      134,
+      156,
+      179,
+      341
+     ],
+     "chi2": 1689.952,
+     "chi2_per_row": 0.54113106
+    },
+    "MNL_PLUS": {
+     "n": 3123,
+     "hist": [
+      70,
+      196,
+      347,
+      576,
+      736,
+      397,
+      147,
+      159,
+      194,
+      301
+     ],
+     "chi2": 1263.593,
+     "chi2_per_row": 0.40460872
+    },
+    "Q9_HURDLE": {
+     "n": 3123,
+     "hist": [
+      47,
+      138,
+      306,
+      623,
+      802,
+      409,
+      141,
+      164,
+      205,
+      288
+     ],
+     "chi2": 1632.841,
+     "chi2_per_row": 0.52284359
+    },
+    "chi2_per_row_delta": -0.01828747,
+    "worsens": false
+   },
+   "9-16": {
+    "BASELINE": {
+     "n": 4438,
+     "hist": [
+      139,
+      352,
+      497,
+      649,
+      1052,
+      540,
+      216,
+      226,
+      279,
+      488
+     ],
+     "chi2": 1473.347,
+     "chi2_per_row": 0.33198455
+    },
+    "MNL_PLUS": {
+     "n": 4438,
+     "hist": [
+      139,
+      393,
+      559,
+      618,
+      911,
+      625,
+      225,
+      237,
+      293,
+      438
+     ],
+     "chi2": 1134.799,
+     "chi2_per_row": 0.25570044
+    },
+    "Q9_HURDLE": {
+     "n": 4438,
+     "hist": [
+      86,
+      277,
+      561,
+      720,
+      952,
+      640,
+      241,
+      247,
+      308,
+      406
+     ],
+     "chi2": 1447.399,
+     "chi2_per_row": 0.32613764
+    },
+    "chi2_per_row_delta": -0.00584691,
+    "worsens": false
+   }
+  }
+ },
+ "reconciliation": {
+  "BASELINE": {
+   "max_absolute_error": 0.0
+  },
+  "MNL_PLUS": {
+   "max_absolute_error": 0.0
+  },
+  "Q9_HURDLE": {
+   "max_absolute_error": 0.0
+  }
+ },
+ "by_position": {
+  "RB": {
+   "BASELINE": {
+    "zero_target_probability": {
+     "n": 10223,
+     "brier": 0.136834,
+     "log_loss": 0.435175,
+     "predicted_zero_rate": 0.55535,
+     "observed_zero_rate": 0.57126,
+     "zero_rate_gap": -0.01591,
+     "abs_zero_rate_gap": 0.01591
+    },
+    "positive_target_distribution": {
+     "n": 4373,
+     "mean_crps": 0.930043
+    },
+    "full_marginal_target_distribution": {
+     "n": 10223,
+     "mean_crps": 0.603826,
+     "bias": -0.00368,
+     "pit": {
+      "n": 10223,
+      "hist": [
+       293,
+       750,
+       1029,
+       1516,
+       2416,
+       1547,
+       512,
+       531,
+       621,
+       1008
+      ],
+      "chi2": 3649.172,
+      "chi2_per_row": 0.35695702
+     }
+    },
+    "downstream_receiving_yards": {
+     "mean_crps": 4.512612
+    }
+   },
+   "MNL_PLUS": {
+    "zero_target_probability": {
+     "n": 10223,
+     "brier": 0.136072,
+     "log_loss": 0.429468,
+     "predicted_zero_rate": 0.53779,
+     "observed_zero_rate": 0.57126,
+     "zero_rate_gap": -0.03347,
+     "abs_zero_rate_gap": 0.03347
+    },
+    "positive_target_distribution": {
+     "n": 4374,
+     "mean_crps": 0.917739
+    },
+    "full_marginal_target_distribution": {
+     "n": 10223,
+     "mean_crps": 0.597775,
+     "bias": -0.00035,
+     "pit": {
+      "n": 10223,
+      "hist": [
+       282,
+       792,
+       1191,
+       1600,
+       2048,
+       1677,
+       514,
+       539,
+       649,
+       931
+      ],
+      "chi2": 3016.344,
+      "chi2_per_row": 0.29505465
+     }
+    },
+    "downstream_receiving_yards": {
+     "mean_crps": 4.462635
+    },
+    "marginal_delta_pct": -1.002,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.00605,
+     "ci_lo": -0.008693,
+     "ci_hi": -0.003304,
+     "n_clusters": 2174,
+     "n_rows": 10223,
+     "excludes_zero": true
+    }
+   },
+   "Q9_HURDLE": {
+    "zero_target_probability": {
+     "n": 10223,
+     "brier": 0.135025,
+     "log_loss": 0.427682,
+     "predicted_zero_rate": 0.57037,
+     "observed_zero_rate": 0.57126,
+     "zero_rate_gap": -0.00089,
+     "abs_zero_rate_gap": 0.00089
+    },
+    "positive_target_distribution": {
+     "n": 4374,
+     "mean_crps": 0.935721
+    },
+    "full_marginal_target_distribution": {
+     "n": 10223,
+     "mean_crps": 0.59867,
+     "bias": 0.04189,
+     "pit": {
+      "n": 10223,
+      "hist": [
+       194,
+       650,
+       1162,
+       1756,
+       2203,
+       1673,
+       528,
+       582,
+       658,
+       817
+      ],
+      "chi2": 3729.866,
+      "chi2_per_row": 0.36485044
+     }
+    },
+    "downstream_receiving_yards": {
+     "mean_crps": 4.517928
+    },
+    "marginal_delta_pct": -0.8538,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.005155,
+     "ci_lo": -0.007429,
+     "ci_hi": -0.002909,
+     "n_clusters": 2174,
+     "n_rows": 10223,
+     "excludes_zero": true
+    }
+   }
+  },
+  "TE": {
+   "BASELINE": {
+    "zero_target_probability": {
+     "n": 8955,
+     "brier": 0.141507,
+     "log_loss": 0.44657,
+     "predicted_zero_rate": 0.4948,
+     "observed_zero_rate": 0.51468,
+     "zero_rate_gap": -0.01989,
+     "abs_zero_rate_gap": 0.01989
+    },
+    "positive_target_distribution": {
+     "n": 4338,
+     "mean_crps": 1.040054
+    },
+    "full_marginal_target_distribution": {
+     "n": 8955,
+     "mean_crps": 0.734243,
+     "bias": 0.01301,
+     "pit": {
+      "n": 8955,
+      "hist": [
+       369,
+       709,
+       973,
+       1203,
+       2056,
+       1117,
+       469,
+       532,
+       624,
+       903
+      ],
+      "chi2": 2452.454,
+      "chi2_per_row": 0.2738642
+     }
+    },
+    "downstream_receiving_yards": {
+     "mean_crps": 6.513233
+    }
+   },
+   "MNL_PLUS": {
+    "zero_target_probability": {
+     "n": 8955,
+     "brier": 0.139724,
+     "log_loss": 0.437859,
+     "predicted_zero_rate": 0.46941,
+     "observed_zero_rate": 0.51468,
+     "zero_rate_gap": -0.04527,
+     "abs_zero_rate_gap": 0.04527
+    },
+    "positive_target_distribution": {
+     "n": 4339,
+     "mean_crps": 1.040061
+    },
+    "full_marginal_target_distribution": {
+     "n": 8955,
+     "mean_crps": 0.72952,
+     "bias": -0.0101,
+     "pit": {
+      "n": 8955,
+      "hist": [
+       356,
+       796,
+       1047,
+       1272,
+       1749,
+       1230,
+       526,
+       543,
+       611,
+       825
+      ],
+      "chi2": 1845.577,
+      "chi2_per_row": 0.20609462
+     }
+    },
+    "downstream_receiving_yards": {
+     "mean_crps": 6.496059
+    },
+    "marginal_delta_pct": -0.6432,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.004723,
+     "ci_lo": -0.008244,
+     "ci_hi": -0.001109,
+     "n_clusters": 2174,
+     "n_rows": 8955,
+     "excludes_zero": true
+    }
+   },
+   "Q9_HURDLE": {
+    "zero_target_probability": {
+     "n": 8955,
+     "brier": 0.138425,
+     "log_loss": 0.434714,
+     "predicted_zero_rate": 0.51792,
+     "observed_zero_rate": 0.51468,
+     "zero_rate_gap": 0.00324,
+     "abs_zero_rate_gap": 0.00324
+    },
+    "positive_target_distribution": {
+     "n": 4339,
+     "mean_crps": 1.045593
+    },
+    "full_marginal_target_distribution": {
+     "n": 8955,
+     "mean_crps": 0.728413,
+     "bias": 0.01272,
+     "pit": {
+      "n": 8955,
+      "hist": [
+       227,
+       596,
+       1065,
+       1448,
+       1805,
+       1290,
+       552,
+       596,
+       610,
+       766
+      ],
+      "chi2": 2411.36,
+      "chi2_per_row": 0.26927522
+     }
+    },
+    "downstream_receiving_yards": {
+     "mean_crps": 6.490474
+    },
+    "marginal_delta_pct": -0.794,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.00583,
+     "ci_lo": -0.00878,
+     "ci_hi": -0.003364,
+     "n_clusters": 2174,
+     "n_rows": 8955,
+     "excludes_zero": true
+    }
+   }
+  },
+  "WR": {
+   "BASELINE": {
+    "zero_target_probability": {
+     "n": 15532,
+     "brier": 0.123057,
+     "log_loss": 0.404813,
+     "predicted_zero_rate": 0.42072,
+     "observed_zero_rate": 0.45442,
+     "zero_rate_gap": -0.0337,
+     "abs_zero_rate_gap": 0.0337
+    },
+    "positive_target_distribution": {
+     "n": 8455,
+     "mean_crps": 1.400518
+    },
+    "full_marginal_target_distribution": {
+     "n": 15532,
+     "mean_crps": 1.024725,
+     "bias": 0.03943,
+     "pit": {
+      "n": 15532,
+      "hist": [
+       841,
+       1407,
+       1706,
+       1982,
+       3179,
+       1905,
+       924,
+       892,
+       1054,
+       1642
+      ],
+      "chi2": 2957.104,
+      "chi2_per_row": 0.19038783
+     }
+    },
+    "downstream_receiving_yards": {
+     "mean_crps": 10.310713
+    }
+   },
+   "MNL_PLUS": {
+    "zero_target_probability": {
+     "n": 15532,
+     "brier": 0.123174,
+     "log_loss": 0.402469,
+     "predicted_zero_rate": 0.41163,
+     "observed_zero_rate": 0.45442,
+     "zero_rate_gap": -0.04278,
+     "abs_zero_rate_gap": 0.04278
+    },
+    "positive_target_distribution": {
+     "n": 8455,
+     "mean_crps": 1.396111
+    },
+    "full_marginal_target_distribution": {
+     "n": 15532,
+     "mean_crps": 1.021,
+     "bias": 0.04957,
+     "pit": {
+      "n": 15532,
+      "hist": [
+       826,
+       1531,
+       1797,
+       1964,
+       2819,
+       2130,
+       945,
+       919,
+       1054,
+       1547
+      ],
+      "chi2": 2391.071,
+      "chi2_per_row": 0.15394483
+     }
+    },
+    "downstream_receiving_yards": {
+     "mean_crps": 10.295186
+    },
+    "marginal_delta_pct": -0.3635,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.003725,
+     "ci_lo": -0.006969,
+     "ci_hi": -0.000379,
+     "n_clusters": 2174,
+     "n_rows": 15532,
+     "excludes_zero": true
+    }
+   },
+   "Q9_HURDLE": {
+    "zero_target_probability": {
+     "n": 15532,
+     "brier": 0.122075,
+     "log_loss": 0.400019,
+     "predicted_zero_rate": 0.44285,
+     "observed_zero_rate": 0.45442,
+     "zero_rate_gap": -0.01156,
+     "abs_zero_rate_gap": 0.01156
+    },
+    "positive_target_distribution": {
+     "n": 8455,
+     "mean_crps": 1.402068
+    },
+    "full_marginal_target_distribution": {
+     "n": 15532,
+     "mean_crps": 1.020107,
+     "bias": 0.00747,
+     "pit": {
+      "n": 15532,
+      "hist": [
+       596,
+       1268,
+       1839,
+       2120,
+       2950,
+       2221,
+       982,
+       959,
+       1113,
+       1484
+      ],
+      "chi2": 3010.192,
+      "chi2_per_row": 0.19380579
+     }
+    },
+    "downstream_receiving_yards": {
+     "mean_crps": 10.311772
+    },
+    "marginal_delta_pct": -0.4507,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.004618,
+     "ci_lo": -0.007249,
+     "ci_hi": -0.001976,
+     "n_clusters": 2174,
+     "n_rows": 15532,
+     "excludes_zero": true
+    }
+   }
+  }
+ },
+ "by_role_class": {
+  "fringe": {
+   "BASELINE": {
+    "zero_target_probability": {
+     "n": 14917,
+     "brier": 0.137049,
+     "log_loss": 0.45507,
+     "predicted_zero_rate": 0.68453,
+     "observed_zero_rate": 0.71569,
+     "zero_rate_gap": -0.03116,
+     "abs_zero_rate_gap": 0.03116
+    },
+    "positive_target_distribution": {
+     "n": 4205,
+     "mean_crps": 0.981447
+    },
+    "full_marginal_target_distribution": {
+     "n": 14917,
+     "mean_crps": 0.480686,
+     "bias": -0.0117,
+     "pit": {
+      "n": 14917,
+      "hist": [
+       187,
+       823,
+       1516,
+       2191,
+       4536,
+       2615,
+       505,
+       549,
+       679,
+       1316
+      ],
+      "chi2": 10539.78,
+      "chi2_per_row": 0.70656165
+     }
+    },
+    "downstream_receiving_yards": {
+     "mean_crps": 4.031841
+    }
+   },
+   "MNL_PLUS": {
+    "zero_target_probability": {
+     "n": 14917,
+     "brier": 0.13674,
+     "log_loss": 0.451656,
+     "predicted_zero_rate": 0.66896,
+     "observed_zero_rate": 0.71569,
+     "zero_rate_gap": -0.04674,
+     "abs_zero_rate_gap": 0.04674
+    },
+    "positive_target_distribution": {
+     "n": 4206,
+     "mean_crps": 0.975395
+    },
+    "full_marginal_target_distribution": {
+     "n": 14917,
+     "mean_crps": 0.478395,
+     "bias": -0.00807,
+     "pit": {
+      "n": 14917,
+      "hist": [
+       155,
+       920,
+       1657,
+       2387,
+       4062,
+       2716,
+       540,
+       548,
+       725,
+       1207
+      ],
+      "chi2": 9058.814,
+      "chi2_per_row": 0.60728119
+     }
+    },
+    "downstream_receiving_yards": {
+     "mean_crps": 4.030313
+    },
+    "marginal_delta_pct": -0.4767,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.002291,
+     "ci_lo": -0.0044,
+     "ci_hi": -0.000203,
+     "n_clusters": 2174,
+     "n_rows": 14917,
+     "excludes_zero": true
+    }
+   },
+   "Q9_HURDLE": {
+    "zero_target_probability": {
+     "n": 14917,
+     "brier": 0.135023,
+     "log_loss": 0.447779,
+     "predicted_zero_rate": 0.70663,
+     "observed_zero_rate": 0.71569,
+     "zero_rate_gap": -0.00907,
+     "abs_zero_rate_gap": 0.00907
+    },
+    "positive_target_distribution": {
+     "n": 4206,
+     "mean_crps": 0.980566
+    },
+    "full_marginal_target_distribution": {
+     "n": 14917,
+     "mean_crps": 0.476272,
+     "bias": -0.01448,
+     "pit": {
+      "n": 14917,
+      "hist": [
+       69,
+       569,
+       1505,
+       2540,
+       4393,
+       2770,
+       560,
+       585,
+       768,
+       1158
+      ],
+      "chi2": 10961.601,
+      "chi2_per_row": 0.73483951
+     }
+    },
+    "downstream_receiving_yards": {
+     "mean_crps": 4.01349
+    },
+    "marginal_delta_pct": -0.9182,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.004414,
+     "ci_lo": -0.006125,
+     "ci_hi": -0.002598,
+     "n_clusters": 2174,
+     "n_rows": 14917,
+     "excludes_zero": true
+    }
+   }
+  },
+  "rotational": {
+   "BASELINE": {
+    "zero_target_probability": {
+     "n": 13221,
+     "brier": 0.148537,
+     "log_loss": 0.451583,
+     "predicted_zero_rate": 0.41241,
+     "observed_zero_rate": 0.43022,
+     "zero_rate_gap": -0.01782,
+     "abs_zero_rate_gap": 0.01782
+    },
+    "positive_target_distribution": {
+     "n": 7532,
+     "mean_crps": 1.119594
+    },
+    "full_marginal_target_distribution": {
+     "n": 13221,
+     "mean_crps": 0.909453,
+     "bias": 0.00326,
+     "pit": {
+      "n": 13221,
+      "hist": [
+       616,
+       1322,
+       1529,
+       1847,
+       2257,
+       1374,
+       878,
+       884,
+       1018,
+       1496
+      ],
+      "chi2": 1668.188,
+      "chi2_per_row": 0.12617712
+     }
+    },
+    "downstream_receiving_yards": {
+     "mean_crps": 8.311631
+    }
+   },
+   "MNL_PLUS": {
+    "zero_target_probability": {
+     "n": 13221,
+     "brier": 0.147559,
+     "log_loss": 0.446418,
+     "predicted_zero_rate": 0.39021,
+     "observed_zero_rate": 0.43022,
+     "zero_rate_gap": -0.04001,
+     "abs_zero_rate_gap": 0.04001
+    },
+    "positive_target_distribution": {
+     "n": 7533,
+     "mean_crps": 1.111874
+    },
+    "full_marginal_target_distribution": {
+     "n": 13221,
+     "mean_crps": 0.903256,
+     "bias": 0.02619,
+     "pit": {
+      "n": 13221,
+      "hist": [
+       619,
+       1469,
+       1730,
+       1822,
+       1795,
+       1617,
+       920,
+       915,
+       987,
+       1347
+      ],
+      "chi2": 1273.08,
+      "chi2_per_row": 0.09629225
+     }
+    },
+    "downstream_receiving_yards": {
+     "mean_crps": 8.280424
+    },
+    "marginal_delta_pct": -0.6814,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.006197,
+     "ci_lo": -0.009311,
+     "ci_hi": -0.003419,
+     "n_clusters": 2174,
+     "n_rows": 13221,
+     "excludes_zero": true
+    }
+   },
+   "Q9_HURDLE": {
+    "zero_target_probability": {
+     "n": 13221,
+     "brier": 0.146892,
+     "log_loss": 0.445867,
+     "predicted_zero_rate": 0.43482,
+     "observed_zero_rate": 0.43022,
+     "zero_rate_gap": 0.0046,
+     "abs_zero_rate_gap": 0.0046
+    },
+    "positive_target_distribution": {
+     "n": 7533,
+     "mean_crps": 1.123182
+    },
+    "full_marginal_target_distribution": {
+     "n": 13221,
+     "mean_crps": 0.903339,
+     "bias": 0.00646,
+     "pit": {
+      "n": 13221,
+      "hist": [
+       369,
+       1144,
+       1885,
+       2070,
+       1828,
+       1694,
+       963,
+       1005,
+       1009,
+       1254
+      ],
+      "chi2": 1923.265,
+      "chi2_per_row": 0.14547048
+     }
+    },
+    "downstream_receiving_yards": {
+     "mean_crps": 8.2851
+    },
+    "marginal_delta_pct": -0.6722,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.006113,
+     "ci_lo": -0.008684,
+     "ci_hi": -0.00368,
+     "n_clusters": 2174,
+     "n_rows": 13221,
+     "excludes_zero": true
+    }
+   }
+  },
+  "starter": {
+   "BASELINE": {
+    "zero_target_probability": {
+     "n": 6572,
+     "brier": 0.086611,
+     "log_loss": 0.300779,
+     "predicted_zero_rate": 0.14899,
+     "observed_zero_rate": 0.17392,
+     "zero_rate_gap": -0.02493,
+     "abs_zero_rate_gap": 0.02493
+    },
+    "positive_target_distribution": {
+     "n": 5429,
+     "mean_crps": 1.447863
+    },
+    "full_marginal_target_distribution": {
+     "n": 6572,
+     "mean_crps": 1.440934,
+     "bias": 0.12521,
+     "pit": {
+      "n": 6572,
+      "hist": [
+       700,
+       721,
+       663,
+       663,
+       858,
+       580,
+       522,
+       522,
+       602,
+       741
+      ],
+      "chi2": 150.453,
+      "chi2_per_row": 0.02289301
+     }
+    },
+    "downstream_receiving_yards": {
+     "mean_crps": 14.390351
+    }
+   },
+   "MNL_PLUS": {
+    "zero_target_probability": {
+     "n": 6572,
+     "brier": 0.085939,
+     "log_loss": 0.292631,
+     "predicted_zero_rate": 0.14563,
+     "observed_zero_rate": 0.17392,
+     "zero_rate_gap": -0.02829,
+     "abs_zero_rate_gap": 0.02829
+    },
+    "positive_target_distribution": {
+     "n": 5429,
+     "mean_crps": 1.446469
+    },
+    "full_marginal_target_distribution": {
+     "n": 6572,
+     "mean_crps": 1.433952,
+     "bias": 0.06845,
+     "pit": {
+      "n": 6572,
+      "hist": [
+       690,
+       730,
+       648,
+       627,
+       759,
+       704,
+       525,
+       538,
+       602,
+       749
+      ],
+      "chi2": 95.991,
+      "chi2_per_row": 0.01460613
+     }
+    },
+    "downstream_receiving_yards": {
+     "mean_crps": 14.318759
+    },
+    "marginal_delta_pct": -0.4845,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.006982,
+     "ci_lo": -0.013215,
+     "ci_hi": -0.000365,
+     "n_clusters": 2174,
+     "n_rows": 6572,
+     "excludes_zero": true
+    }
+   },
+   "Q9_HURDLE": {
+    "zero_target_probability": {
+     "n": 6572,
+     "brier": 0.085184,
+     "log_loss": 0.289688,
+     "predicted_zero_rate": 0.16095,
+     "observed_zero_rate": 0.17392,
+     "zero_rate_gap": -0.01297,
+     "abs_zero_rate_gap": 0.01297
+    },
+    "positive_target_distribution": {
+     "n": 5429,
+     "mean_crps": 1.454957
+    },
+    "full_marginal_target_distribution": {
+     "n": 6572,
+     "mean_crps": 1.436373,
+     "bias": 0.12,
+     "pit": {
+      "n": 6572,
+      "hist": [
+       579,
+       801,
+       676,
+       714,
+       737,
+       720,
+       539,
+       547,
+       604,
+       655
+      ],
+      "chi2": 105.958,
+      "chi2_per_row": 0.01612264
+     }
+    },
+    "downstream_receiving_yards": {
+     "mean_crps": 14.465136
+    },
+    "marginal_delta_pct": -0.3165,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.00456,
+     "ci_lo": -0.009364,
+     "ci_hi": 9.2e-05,
+     "n_clusters": 2174,
+     "n_rows": 6572,
+     "excludes_zero": false
+    }
+   }
+  }
+ },
+ "by_appearance_certainty": {
+  "doubtful": {
+   "BASELINE": {
+    "zero_target_probability": {
+     "n": 8713,
+     "brier": 0.044931,
+     "log_loss": 0.232019,
+     "predicted_zero_rate": 0.93208,
+     "observed_zero_rate": 0.95053,
+     "zero_rate_gap": -0.01845,
+     "abs_zero_rate_gap": 0.01845
+    },
+    "positive_target_distribution": {
+     "n": 396,
+     "mean_crps": 0.837338
+    },
+    "full_marginal_target_distribution": {
+     "n": 8713,
+     "mean_crps": 0.109945,
+     "bias": 0.06212,
+     "pit": {
+      "n": 8713,
+      "hist": [
+       0,
+       0,
+       9,
+       744,
+       4682,
+       2847,
+       9,
+       50,
+       117,
+       255
+      ],
+      "chi2": 26477.457,
+      "chi2_per_row": 3.03884503
+     }
+    },
+    "downstream_receiving_yards": {
+     "mean_crps": 0.781764
+    }
+   },
+   "MNL_PLUS": {
+    "zero_target_probability": {
+     "n": 8713,
+     "brier": 0.044758,
+     "log_loss": 0.231338,
+     "predicted_zero_rate": 0.92991,
+     "observed_zero_rate": 0.95053,
+     "zero_rate_gap": -0.02062,
+     "abs_zero_rate_gap": 0.02062
+    },
+    "positive_target_distribution": {
+     "n": 396,
+     "mean_crps": 0.828658
+    },
+    "full_marginal_target_distribution": {
+     "n": 8713,
+     "mean_crps": 0.108684,
+     "bias": 0.05481,
+     "pit": {
+      "n": 8713,
+      "hist": [
+       0,
+       0,
+       8,
+       747,
+       4293,
+       3234,
+       9,
+       46,
+       123,
+       253
+      ],
+      "chi2": 25176.605,
+      "chi2_per_row": 2.88954495
+     }
+    },
+    "downstream_receiving_yards": {
+     "mean_crps": 0.771811
+    },
+    "marginal_delta_pct": -1.1467,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.001261,
+     "ci_lo": -0.001909,
+     "ci_hi": -0.000601,
+     "n_clusters": 2099,
+     "n_rows": 8713,
+     "excludes_zero": true
+    }
+   },
+   "Q9_HURDLE": {
+    "zero_target_probability": {
+     "n": 8713,
+     "brier": 0.044523,
+     "log_loss": 0.229847,
+     "predicted_zero_rate": 0.93835,
+     "observed_zero_rate": 0.95053,
+     "zero_rate_gap": -0.01218,
+     "abs_zero_rate_gap": 0.01218
+    },
+    "positive_target_distribution": {
+     "n": 396,
+     "mean_crps": 0.880307
+    },
+    "full_marginal_target_distribution": {
+     "n": 8713,
+     "mean_crps": 0.109045,
+     "bias": 0.05564,
+     "pit": {
+      "n": 8713,
+      "hist": [
+       0,
+       0,
+       4,
+       554,
+       4458,
+       3266,
+       6,
+       38,
+       126,
+       261
+      ],
+      "chi2": 26789.042,
+      "chi2_per_row": 3.07460597
+     }
+    },
+    "downstream_receiving_yards": {
+     "mean_crps": 0.775027
+    },
+    "marginal_delta_pct": -0.8179,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.000899,
+     "ci_lo": -0.001587,
+     "ci_hi": -0.000197,
+     "n_clusters": 2099,
+     "n_rows": 8713,
+     "excludes_zero": true
+    }
+   }
+  },
+  "likely": {
+   "BASELINE": {
+    "zero_target_probability": {
+     "n": 7337,
+     "brier": 0.229757,
+     "log_loss": 0.657916,
+     "predicted_zero_rate": 0.45553,
+     "observed_zero_rate": 0.49571,
+     "zero_rate_gap": -0.04017,
+     "abs_zero_rate_gap": 0.04017
+    },
+    "positive_target_distribution": {
+     "n": 3699,
+     "mean_crps": 0.913055
+    },
+    "full_marginal_target_distribution": {
+     "n": 7337,
+     "mean_crps": 0.833711,
+     "bias": 0.07422,
+     "pit": {
+      "n": 7337,
+      "hist": [
+       180,
+       1053,
+       1240,
+       1198,
+       826,
+       439,
+       485,
+       484,
+       555,
+       877
+      ],
+      "chi2": 1570.789,
+      "chi2_per_row": 0.21409149
+     }
+    },
+    "downstream_receiving_yards": {
+     "mean_crps": 6.715394
+    }
+   },
+   "MNL_PLUS": {
+    "zero_target_probability": {
+     "n": 7337,
+     "brier": 0.230129,
+     "log_loss": 0.652849,
+     "predicted_zero_rate": 0.42121,
+     "observed_zero_rate": 0.49571,
+     "zero_rate_gap": -0.0745,
+     "abs_zero_rate_gap": 0.0745
+    },
+    "positive_target_distribution": {
+     "n": 3700,
+     "mean_crps": 0.902352
+    },
+    "full_marginal_target_distribution": {
+     "n": 7337,
+     "mean_crps": 0.830184,
+     "bias": 0.11423,
+     "pit": {
+      "n": 7337,
+      "hist": [
+       178,
+       1205,
+       1433,
+       1136,
+       546,
+       498,
+       539,
+       484,
+       558,
+       760
+      ],
+      "chi2": 1914.131,
+      "chi2_per_row": 0.26088745
+     }
+    },
+    "downstream_receiving_yards": {
+     "mean_crps": 6.697574
+    },
+    "marginal_delta_pct": -0.423,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.003527,
+     "ci_lo": -0.007357,
+     "ci_hi": 0.000328,
+     "n_clusters": 2131,
+     "n_rows": 7337,
+     "excludes_zero": false
+    }
+   },
+   "Q9_HURDLE": {
+    "zero_target_probability": {
+     "n": 7337,
+     "brier": 0.225171,
+     "log_loss": 0.641648,
+     "predicted_zero_rate": 0.47462,
+     "observed_zero_rate": 0.49571,
+     "zero_rate_gap": -0.02109,
+     "abs_zero_rate_gap": 0.02109
+    },
+    "positive_target_distribution": {
+     "n": 3700,
+     "mean_crps": 0.926407
+    },
+    "full_marginal_target_distribution": {
+     "n": 7337,
+     "mean_crps": 0.828324,
+     "bias": 0.10143,
+     "pit": {
+      "n": 7337,
+      "hist": [
+       87,
+       806,
+       1496,
+       1536,
+       516,
+       510,
+       528,
+       561,
+       583,
+       714
+      ],
+      "chi2": 2509.072,
+      "chi2_per_row": 0.34197519
+     }
+    },
+    "downstream_receiving_yards": {
+     "mean_crps": 6.684368
+    },
+    "marginal_delta_pct": -0.6461,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.005386,
+     "ci_lo": -0.008736,
+     "ci_hi": -0.001864,
+     "n_clusters": 2131,
+     "n_rows": 7337,
+     "excludes_zero": true
+    }
+   }
+  },
+  "near_certain": {
+   "BASELINE": {
+    "zero_target_probability": {
+     "n": 14201,
+     "brier": 0.114145,
+     "log_loss": 0.371909,
+     "predicted_zero_rate": 0.16457,
+     "observed_zero_rate": 0.16499,
+     "zero_rate_gap": -0.00042,
+     "abs_zero_rate_gap": 0.00042
+    },
+    "positive_target_distribution": {
+     "n": 11858,
+     "mean_crps": 1.319172
+    },
+    "full_marginal_target_distribution": {
+     "n": 14201,
+     "mean_crps": 1.336737,
+     "bias": -0.10081,
+     "pit": {
+      "n": 14201,
+      "hist": [
+       1323,
+       1600,
+       1493,
+       1457,
+       1314,
+       1152,
+       1216,
+       1208,
+       1378,
+       2060
+      ],
+      "chi2": 443.272,
+      "chi2_per_row": 0.03121416
+     }
+    },
+    "downstream_receiving_yards": {
+     "mean_crps": 13.325433
+    }
+   },
+   "MNL_PLUS": {
+    "zero_target_probability": {
+     "n": 14201,
+     "brier": 0.111927,
+     "log_loss": 0.362804,
+     "predicted_zero_rate": 0.1517,
+     "observed_zero_rate": 0.16499,
+     "zero_rate_gap": -0.01329,
+     "abs_zero_rate_gap": 0.01329
+    },
+    "positive_target_distribution": {
+     "n": 11858,
+     "mean_crps": 1.315751
+    },
+    "full_marginal_target_distribution": {
+     "n": 14201,
+     "mean_crps": 1.329159,
+     "bias": -0.11736,
+     "pit": {
+      "n": 14201,
+      "hist": [
+       1286,
+       1717,
+       1550,
+       1342,
+       1315,
+       1198,
+       1221,
+       1234,
+       1370,
+       1968
+      ],
+      "chi2": 398.887,
+      "chi2_per_row": 0.02808863
+     }
+    },
+    "downstream_receiving_yards": {
+     "mean_crps": 13.285309
+    },
+    "marginal_delta_pct": -0.5668,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.007577,
+     "ci_lo": -0.011627,
+     "ci_hi": -0.003673,
+     "n_clusters": 2174,
+     "n_rows": 14201,
+     "excludes_zero": true
+    }
+   },
+   "Q9_HURDLE": {
+    "zero_target_probability": {
+     "n": 14201,
+     "brier": 0.113717,
+     "log_loss": 0.367759,
+     "predicted_zero_rate": 0.19487,
+     "observed_zero_rate": 0.16499,
+     "zero_rate_gap": 0.02988,
+     "abs_zero_rate_gap": 0.02988
+    },
+    "positive_target_distribution": {
+     "n": 11858,
+     "mean_crps": 1.316984
+    },
+    "full_marginal_target_distribution": {
+     "n": 14201,
+     "mean_crps": 1.329837,
+     "bias": -0.11333,
+     "pit": {
+      "n": 14201,
+      "hist": [
+       930,
+       1578,
+       1781,
+       1591,
+       1243,
+       1306,
+       1315,
+       1299,
+       1377,
+       1781
+      ],
+      "chi2": 441.368,
+      "chi2_per_row": 0.03108007
+     }
+    },
+    "downstream_receiving_yards": {
+     "mean_crps": 13.350332
+    },
+    "marginal_delta_pct": -0.5161,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.006899,
+     "ci_lo": -0.010103,
+     "ci_hi": -0.00394,
+     "n_clusters": 2174,
+     "n_rows": 14201,
+     "excludes_zero": true
+    }
+   }
+  },
+  "uncertain": {
+   "BASELINE": {
+    "zero_target_probability": {
+     "n": 4459,
+     "brier": 0.197174,
+     "log_loss": 0.584256,
+     "predicted_zero_rate": 0.63744,
+     "observed_zero_rate": 0.72774,
+     "zero_rate_gap": -0.0903,
+     "abs_zero_rate_gap": 0.0903
+    },
+    "positive_target_distribution": {
+     "n": 1213,
+     "mean_crps": 0.880867
+    },
+    "full_marginal_target_distribution": {
+     "n": 4459,
+     "mean_crps": 0.584481,
+     "bias": 0.23263,
+     "pit": {
+      "n": 4459,
+      "hist": [
+       0,
+       213,
+       966,
+       1302,
+       829,
+       131,
+       195,
+       213,
+       249,
+       361
+      ],
+      "chi2": 3735.319,
+      "chi2_per_row": 0.83770338
+     }
+    },
+    "downstream_receiving_yards": {
+     "mean_crps": 4.325544
+    }
+   },
+   "MNL_PLUS": {
+    "zero_target_probability": {
+     "n": 4459,
+     "brier": 0.199038,
+     "log_loss": 0.584174,
+     "predicted_zero_rate": 0.61625,
+     "observed_zero_rate": 0.72774,
+     "zero_rate_gap": -0.11149,
+     "abs_zero_rate_gap": 0.11149
+    },
+    "positive_target_distribution": {
+     "n": 1214,
+     "mean_crps": 0.874886
+    },
+    "full_marginal_target_distribution": {
+     "n": 4459,
+     "mean_crps": 0.58055,
+     "bias": 0.23028,
+     "pit": {
+      "n": 4459,
+      "hist": [
+       0,
+       197,
+       1044,
+       1611,
+       462,
+       107,
+       216,
+       237,
+       263,
+       322
+      ],
+      "chi2": 5015.405,
+      "chi2_per_row": 1.12478237
+     }
+    },
+    "downstream_receiving_yards": {
+     "mean_crps": 4.298943
+    },
+    "marginal_delta_pct": -0.6726,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.003931,
+     "ci_lo": -0.00731,
+     "ci_hi": -0.000142,
+     "n_clusters": 1864,
+     "n_rows": 4459,
+     "excludes_zero": true
+    }
+   },
+   "Q9_HURDLE": {
+    "zero_target_probability": {
+     "n": 4459,
+     "brier": 0.193123,
+     "log_loss": 0.570796,
+     "predicted_zero_rate": 0.65525,
+     "observed_zero_rate": 0.72774,
+     "zero_rate_gap": -0.07249,
+     "abs_zero_rate_gap": 0.07249
+    },
+    "positive_target_distribution": {
+     "n": 1214,
+     "mean_crps": 0.898721
+    },
+    "full_marginal_target_distribution": {
+     "n": 4459,
+     "mean_crps": 0.577461,
+     "bias": 0.23292,
+     "pit": {
+      "n": 4459,
+      "hist": [
+       0,
+       130,
+       785,
+       1643,
+       741,
+       102,
+       213,
+       239,
+       295,
+       311
+      ],
+      "chi2": 4911.475,
+      "chi2_per_row": 1.10147465
+     }
+    },
+    "downstream_receiving_yards": {
+     "mean_crps": 4.280632
+    },
+    "marginal_delta_pct": -1.2012,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.007021,
+     "ci_lo": -0.010232,
+     "ci_hi": -0.003915,
+     "n_clusters": 1864,
+     "n_rows": 4459,
+     "excludes_zero": true
+    }
+   }
+  }
+ },
+ "by_prior_depth": {
+  "0": {
+   "BASELINE": {
+    "zero_target_probability": {
+     "n": 1369,
+     "brier": 0.098238,
+     "log_loss": 0.750882,
+     "predicted_zero_rate": 0.80835,
+     "observed_zero_rate": 0.83784,
+     "zero_rate_gap": -0.02949,
+     "abs_zero_rate_gap": 0.02949
+    },
+    "positive_target_distribution": {
+     "n": 187,
+     "mean_crps": 1.34334
+    },
+    "full_marginal_target_distribution": {
+     "n": 1369,
+     "mean_crps": 0.345452,
+     "bias": 0.02075,
+     "pit": {
+      "n": 1369,
+      "hist": [
+       62,
+       71,
+       55,
+       26,
+       175,
+       852,
+       15,
+       12,
+       17,
+       84
+      ],
+      "chi2": 4305.427,
+      "chi2_per_row": 3.14494272
+     }
+    },
+    "downstream_receiving_yards": {
+     "mean_crps": 2.36865
+    }
+   },
+   "MNL_PLUS": {
+    "zero_target_probability": {
+     "n": 1369,
+     "brier": 0.089992,
+     "log_loss": 0.710469,
+     "predicted_zero_rate": 0.83373,
+     "observed_zero_rate": 0.83784,
+     "zero_rate_gap": -0.00411,
+     "abs_zero_rate_gap": 0.00411
+    },
+    "positive_target_distribution": {
+     "n": 187,
+     "mean_crps": 1.372223
+    },
+    "full_marginal_target_distribution": {
+     "n": 1369,
+     "mean_crps": 0.320911,
+     "bias": -0.12975,
+     "pit": {
+      "n": 1369,
+      "hist": [
+       11,
+       89,
+       65,
+       10,
+       171,
+       871,
+       20,
+       15,
+       17,
+       100
+      ],
+      "chi2": 4556.223,
+      "chi2_per_row": 3.32813936
+     }
+    },
+    "downstream_receiving_yards": {
+     "mean_crps": 2.192366
+    },
+    "marginal_delta_pct": -7.104,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.024541,
+     "ci_lo": -0.041324,
+     "ci_hi": -0.008706,
+     "n_clusters": 883,
+     "n_rows": 1369,
+     "excludes_zero": true
+    }
+   },
+   "Q9_HURDLE": {
+    "zero_target_probability": {
+     "n": 1369,
+     "brier": 0.08746,
+     "log_loss": 0.703208,
+     "predicted_zero_rate": 0.85656,
+     "observed_zero_rate": 0.83784,
+     "zero_rate_gap": 0.01872,
+     "abs_zero_rate_gap": 0.01872
+    },
+    "positive_target_distribution": {
+     "n": 187,
+     "mean_crps": 1.343014
+    },
+    "full_marginal_target_distribution": {
+     "n": 1369,
+     "mean_crps": 0.322044,
+     "bias": -0.05468,
+     "pit": {
+      "n": 1369,
+      "hist": [
+       3,
+       40,
+       118,
+       12,
+       155,
+       894,
+       31,
+       14,
+       19,
+       83
+      ],
+      "chi2": 4820.518,
+      "chi2_per_row": 3.52119642
+     }
+    },
+    "downstream_receiving_yards": {
+     "mean_crps": 2.249473
+    },
+    "marginal_delta_pct": -6.776,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.023408,
+     "ci_lo": -0.032974,
+     "ci_hi": -0.014821,
+     "n_clusters": 883,
+     "n_rows": 1369,
+     "excludes_zero": true
+    }
+   }
+  },
+  "1-3": {
+   "BASELINE": {
+    "zero_target_probability": {
+     "n": 2446,
+     "brier": 0.12405,
+     "log_loss": 0.382195,
+     "predicted_zero_rate": 0.70092,
+     "observed_zero_rate": 0.72649,
+     "zero_rate_gap": -0.02557,
+     "abs_zero_rate_gap": 0.02557
+    },
+    "positive_target_distribution": {
+     "n": 669,
+     "mean_crps": 1.055344
+    },
+    "full_marginal_target_distribution": {
+     "n": 2446,
+     "mean_crps": 0.463946,
+     "bias": -0.08561,
+     "pit": {
+      "n": 2446,
+      "hist": [
+       28,
+       85,
+       220,
+       409,
+       882,
+       340,
+       64,
+       86,
+       97,
+       235
+      ],
+      "chi2": 2432.741,
+      "chi2_per_row": 0.99457923
+     }
+    },
+    "downstream_receiving_yards": {
+     "mean_crps": 3.908954
+    }
+   },
+   "MNL_PLUS": {
+    "zero_target_probability": {
+     "n": 2446,
+     "brier": 0.125713,
+     "log_loss": 0.386132,
+     "predicted_zero_rate": 0.6763,
+     "observed_zero_rate": 0.72649,
+     "zero_rate_gap": -0.0502,
+     "abs_zero_rate_gap": 0.0502
+    },
+    "positive_target_distribution": {
+     "n": 669,
+     "mean_crps": 1.035372
+    },
+    "full_marginal_target_distribution": {
+     "n": 2446,
+     "mean_crps": 0.464565,
+     "bias": -0.03632,
+     "pit": {
+      "n": 2446,
+      "hist": [
+       27,
+       110,
+       250,
+       488,
+       740,
+       355,
+       75,
+       80,
+       105,
+       216
+      ],
+      "chi2": 1874.54,
+      "chi2_per_row": 0.76636944
+     }
+    },
+    "downstream_receiving_yards": {
+     "mean_crps": 3.911928
+    },
+    "marginal_delta_pct": 0.1334,
+    "block_bootstrap_by_team_game": {
+     "mean": 0.000619,
+     "ci_lo": -0.003587,
+     "ci_hi": 0.004922,
+     "n_clusters": 1414,
+     "n_rows": 2446,
+     "excludes_zero": false
+    }
+   },
+   "Q9_HURDLE": {
+    "zero_target_probability": {
+     "n": 2446,
+     "brier": 0.122488,
+     "log_loss": 0.378954,
+     "predicted_zero_rate": 0.71662,
+     "observed_zero_rate": 0.72649,
+     "zero_rate_gap": -0.00987,
+     "abs_zero_rate_gap": 0.00987
+    },
+    "positive_target_distribution": {
+     "n": 669,
+     "mean_crps": 1.052399
+    },
+    "full_marginal_target_distribution": {
+     "n": 2446,
+     "mean_crps": 0.464279,
+     "bias": -0.07094,
+     "pit": {
+      "n": 2446,
+      "hist": [
+       17,
+       76,
+       177,
+       456,
+       881,
+       354,
+       64,
+       89,
+       115,
+       217
+      ],
+      "chi2": 2538.211,
+      "chi2_per_row": 1.03769867
+     }
+    },
+    "downstream_receiving_yards": {
+     "mean_crps": 3.920424
+    },
+    "marginal_delta_pct": 0.0719,
+    "block_bootstrap_by_team_game": {
+     "mean": 0.000334,
+     "ci_lo": -0.003165,
+     "ci_hi": 0.003829,
+     "n_clusters": 1414,
+     "n_rows": 2446,
+     "excludes_zero": false
+    }
+   }
+  },
+  "17+": {
+   "BASELINE": {
+    "zero_target_probability": {
+     "n": 23334,
+     "brier": 0.131641,
+     "log_loss": 0.408823,
+     "predicted_zero_rate": 0.4101,
+     "observed_zero_rate": 0.43426,
+     "zero_rate_gap": -0.02416,
+     "abs_zero_rate_gap": 0.02416
+    },
+    "positive_target_distribution": {
+     "n": 13199,
+     "mean_crps": 1.226642
+    },
+    "full_marginal_target_distribution": {
+     "n": 23334,
+     "mean_crps": 0.948416,
+     "bias": 0.0567,
+     "pit": {
+      "n": 23334,
+      "hist": [
+       1210,
+       2188,
+       2629,
+       3116,
+       4655,
+       2453,
+       1476,
+       1475,
+       1727,
+       2405
+      ],
+      "chi2": 3956.447,
+      "chi2_per_row": 0.16955719
+     }
+    },
+    "downstream_receiving_yards": {
+     "mean_crps": 8.969092
+    }
+   },
+   "MNL_PLUS": {
+    "zero_target_probability": {
+     "n": 23334,
+     "brier": 0.130737,
+     "log_loss": 0.402936,
+     "predicted_zero_rate": 0.39483,
+     "observed_zero_rate": 0.43426,
+     "zero_rate_gap": -0.03943,
+     "abs_zero_rate_gap": 0.03943
+    },
+    "positive_target_distribution": {
+     "n": 13201,
+     "mean_crps": 1.221417
+    },
+    "full_marginal_target_distribution": {
+     "n": 23334,
+     "mean_crps": 0.943108,
+     "bias": 0.05396,
+     "pit": {
+      "n": 23334,
+      "hist": [
+       1217,
+       2331,
+       2814,
+       3144,
+       4058,
+       2789,
+       1518,
+       1510,
+       1705,
+       2248
+      ],
+      "chi2": 3026.17,
+      "chi2_per_row": 0.12968928
+     }
+    },
+    "downstream_receiving_yards": {
+     "mean_crps": 8.943584
+    },
+    "marginal_delta_pct": -0.5597,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.005308,
+     "ci_lo": -0.007646,
+     "ci_hi": -0.002841,
+     "n_clusters": 2174,
+     "n_rows": 23334,
+     "excludes_zero": true
+    }
+   },
+   "Q9_HURDLE": {
+    "zero_target_probability": {
+     "n": 23334,
+     "brier": 0.129889,
+     "log_loss": 0.401278,
+     "predicted_zero_rate": 0.42959,
+     "observed_zero_rate": 0.43426,
+     "zero_rate_gap": -0.00467,
+     "abs_zero_rate_gap": 0.00467
+    },
+    "positive_target_distribution": {
+     "n": 13201,
+     "mean_crps": 1.234172
+    },
+    "full_marginal_target_distribution": {
+     "n": 23334,
+     "mean_crps": 0.943582,
+     "bias": 0.05127,
+     "pit": {
+      "n": 23334,
+      "hist": [
+       864,
+       1983,
+       2904,
+       3513,
+       4168,
+       2887,
+       1585,
+       1623,
+       1734,
+       2073
+      ],
+      "chi2": 3926.908,
+      "chi2_per_row": 0.16829124
+     }
+    },
+    "downstream_receiving_yards": {
+     "mean_crps": 8.972992
+    },
+    "marginal_delta_pct": -0.5098,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.004835,
+     "ci_lo": -0.006741,
+     "ci_hi": -0.00285,
+     "n_clusters": 2174,
+     "n_rows": 23334,
+     "excludes_zero": true
+    }
+   }
+  },
+  "4-8": {
+   "BASELINE": {
+    "zero_target_probability": {
+     "n": 3123,
+     "brier": 0.138945,
+     "log_loss": 0.422011,
+     "predicted_zero_rate": 0.60724,
+     "observed_zero_rate": 0.62312,
+     "zero_rate_gap": -0.01588,
+     "abs_zero_rate_gap": 0.01588
+    },
+    "positive_target_distribution": {
+     "n": 1177,
+     "mean_crps": 1.002629
+    },
+    "full_marginal_target_distribution": {
+     "n": 3123,
+     "mean_crps": 0.586217,
+     "bias": -0.08263,
+     "pit": {
+      "n": 3123,
+      "hist": [
+       64,
+       170,
+       307,
+       501,
+       887,
+       384,
+       134,
+       156,
+       179,
+       341
+      ],
+      "chi2": 1689.952,
+      "chi2_per_row": 0.54113106
+     }
+    },
+    "downstream_receiving_yards": {
+     "mean_crps": 5.251203
+    }
+   },
+   "MNL_PLUS": {
+    "zero_target_probability": {
+     "n": 3123,
+     "brier": 0.139842,
+     "log_loss": 0.423899,
+     "predicted_zero_rate": 0.58212,
+     "observed_zero_rate": 0.62312,
+     "zero_rate_gap": -0.041,
+     "abs_zero_rate_gap": 0.041
+    },
+    "positive_target_distribution": {
+     "n": 1177,
+     "mean_crps": 1.000027
+    },
+    "full_marginal_target_distribution": {
+     "n": 3123,
+     "mean_crps": 0.585743,
+     "bias": -0.05507,
+     "pit": {
+      "n": 3123,
+      "hist": [
+       70,
+       196,
+       347,
+       576,
+       736,
+       397,
+       147,
+       159,
+       194,
+       301
+      ],
+      "chi2": 1263.593,
+      "chi2_per_row": 0.40460872
+     }
+    },
+    "downstream_receiving_yards": {
+     "mean_crps": 5.25119
+    },
+    "marginal_delta_pct": -0.0808,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.000474,
+     "ci_lo": -0.004905,
+     "ci_hi": 0.003974,
+     "n_clusters": 1648,
+     "n_rows": 3123,
+     "excludes_zero": false
+    }
+   },
+   "Q9_HURDLE": {
+    "zero_target_probability": {
+     "n": 3123,
+     "brier": 0.140262,
+     "log_loss": 0.425761,
+     "predicted_zero_rate": 0.61967,
+     "observed_zero_rate": 0.62312,
+     "zero_rate_gap": -0.00345,
+     "abs_zero_rate_gap": 0.00345
+    },
+    "positive_target_distribution": {
+     "n": 1177,
+     "mean_crps": 0.988244
+    },
+    "full_marginal_target_distribution": {
+     "n": 3123,
+     "mean_crps": 0.584371,
+     "bias": -0.05073,
+     "pit": {
+      "n": 3123,
+      "hist": [
+       47,
+       138,
+       306,
+       623,
+       802,
+       409,
+       141,
+       164,
+       205,
+       288
+      ],
+      "chi2": 1632.841,
+      "chi2_per_row": 0.52284359
+     }
+    },
+    "downstream_receiving_yards": {
+     "mean_crps": 5.25576
+    },
+    "marginal_delta_pct": -0.3149,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.001846,
+     "ci_lo": -0.005507,
+     "ci_hi": 0.00161,
+     "n_clusters": 1648,
+     "n_rows": 3123,
+     "excludes_zero": false
+    }
+   }
+  },
+  "9-16": {
+   "BASELINE": {
+    "zero_target_probability": {
+     "n": 4438,
+     "brier": 0.142818,
+     "log_loss": 0.431537,
+     "predicted_zero_rate": 0.53091,
+     "observed_zero_rate": 0.56422,
+     "zero_rate_gap": -0.03331,
+     "abs_zero_rate_gap": 0.03331
+    },
+    "positive_target_distribution": {
+     "n": 1934,
+     "mean_crps": 1.081921
+    },
+    "full_marginal_target_distribution": {
+     "n": 4438,
+     "mean_crps": 0.697441,
+     "bias": -0.04338,
+     "pit": {
+      "n": 4438,
+      "hist": [
+       139,
+       352,
+       497,
+       649,
+       1052,
+       540,
+       216,
+       226,
+       279,
+       488
+      ],
+      "chi2": 1473.347,
+      "chi2_per_row": 0.33198455
+     }
+    },
+    "downstream_receiving_yards": {
+     "mean_crps": 5.884669
+    }
+   },
+   "MNL_PLUS": {
+    "zero_target_probability": {
+     "n": 4438,
+     "brier": 0.143623,
+     "log_loss": 0.432529,
+     "predicted_zero_rate": 0.51115,
+     "observed_zero_rate": 0.56422,
+     "zero_rate_gap": -0.05307,
+     "abs_zero_rate_gap": 0.05307
+    },
+    "positive_target_distribution": {
+     "n": 1934,
+     "mean_crps": 1.075963
+    },
+    "full_marginal_target_distribution": {
+     "n": 4438,
+     "mean_crps": 0.69641,
+     "bias": -0.03263,
+     "pit": {
+      "n": 4438,
+      "hist": [
+       139,
+       393,
+       559,
+       618,
+       911,
+       625,
+       225,
+       237,
+       293,
+       438
+      ],
+      "chi2": 1134.799,
+      "chi2_per_row": 0.25570044
+     }
+    },
+    "downstream_receiving_yards": {
+     "mean_crps": 5.86741
+    },
+    "marginal_delta_pct": -0.1479,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.001032,
+     "ci_lo": -0.005108,
+     "ci_hi": 0.003382,
+     "n_clusters": 1888,
+     "n_rows": 4438,
+     "excludes_zero": false
+    }
+   },
+   "Q9_HURDLE": {
+    "zero_target_probability": {
+     "n": 4438,
+     "brier": 0.141467,
+     "log_loss": 0.427098,
+     "predicted_zero_rate": 0.55486,
+     "observed_zero_rate": 0.56422,
+     "zero_rate_gap": -0.00936,
+     "abs_zero_rate_gap": 0.00936
+    },
+    "positive_target_distribution": {
+     "n": 1934,
+     "mean_crps": 1.072129
+    },
+    "full_marginal_target_distribution": {
+     "n": 4438,
+     "mean_crps": 0.691396,
+     "bias": -0.02962,
+     "pit": {
+      "n": 4438,
+      "hist": [
+       86,
+       277,
+       561,
+       720,
+       952,
+       640,
+       241,
+       247,
+       308,
+       406
+      ],
+      "chi2": 1447.399,
+      "chi2_per_row": 0.32613764
+     }
+    },
+    "downstream_receiving_yards": {
+     "mean_crps": 5.861421
+    },
+    "marginal_delta_pct": -0.8667,
+    "block_bootstrap_by_team_game": {
+     "mean": -0.006045,
+     "ci_lo": -0.00938,
+     "ci_hi": -0.002388,
+     "n_clusters": 1888,
+     "n_rows": 4438,
+     "excludes_zero": true
+    }
+   }
+  }
+ },
+ "fit_log": [
+  {
+   "eval_season": 2022,
+   "n_test": 8610,
+   "budget_estimator": "coach_prior",
+   "q8_budget_repair_applied": false,
+   "n_mnl_training_groups": 1056,
+   "mnl_n_features": 26
+  },
+  {
+   "eval_season": 2023,
+   "n_test": 8282,
+   "budget_estimator": "ewma",
+   "q8_budget_repair_applied": false,
+   "n_mnl_training_groups": 1598,
+   "mnl_n_features": 26
+  },
+  {
+   "eval_season": 2024,
+   "n_test": 8259,
+   "budget_estimator": "ewma",
+   "q8_budget_repair_applied": false,
+   "n_mnl_training_groups": 2142,
+   "mnl_n_features": 26
+  },
+  {
+   "eval_season": 2025,
+   "n_test": 9559,
+   "budget_estimator": "ewma",
+   "q8_budget_repair_applied": false,
+   "n_mnl_training_groups": 2686,
+   "mnl_n_features": 26
+  }
+ ],
+ "n_draws": 400
+}

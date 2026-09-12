@@ -1,0 +1,76 @@
+{
+ "artifact": "NFL_Q9_FALLBACK_AUDIT",
+ "spec_version": "q9b-family-1",
+ "n_hurdle_draws": 869600,
+ "states": {
+  "HURDLE_NO_CLEARERS": {
+   "n": 0,
+   "rate": 0.0
+  },
+  "HURDLE_MORE_CLEARERS_THAN_BUDGET": {
+   "n": 2141,
+   "rate": 0.00246205
+  }
+ },
+ "more_clearers_than_budget": {
+  "n_events": 2141,
+  "by_budget_band": {
+   "<25": 2141
+  },
+  "mean_team_budget_drawn": 5.6142,
+  "mean_n_appearing": 11.1369,
+  "mean_n_clearers": 8.7109,
+  "max_team_budget_drawn": 13,
+  "concentrated_in_low_budgets": true
+ },
+ "selection_distortion": {
+  "n_clearer_observations": 18650,
+  "by_declared_hurdle_probability": {
+   "0.2": {
+    "n": 80,
+    "selected_rate": 0.15
+   },
+   "0.3": {
+    "n": 462,
+    "selected_rate": 0.21645
+   },
+   "0.4": {
+    "n": 901,
+    "selected_rate": 0.32852
+   },
+   "0.5": {
+    "n": 1154,
+    "selected_rate": 0.38302
+   },
+   "0.6": {
+    "n": 1490,
+    "selected_rate": 0.48792
+   },
+   "0.7": {
+    "n": 1876,
+    "selected_rate": 0.52719
+   },
+   "0.8": {
+    "n": 2748,
+    "selected_rate": 0.62482
+   },
+   "0.9": {
+    "n": 4950,
+    "selected_rate": 0.71778
+   },
+   "1.0": {
+    "n": 4987,
+    "selected_rate": 0.83858
+   }
+  },
+  "note": "inside an affected draw the clearer set is already conditioned on clearing, so a selection rate below 1 is the subsample doing its job. What would be a defect is the rate depending on the DECLARED probability in a way the weighting did not intend -- the weighting is by the base share, not by p_hurdle, so a strong gradient here is the distortion to look for."
+ },
+ "contribution": {
+  "n_rows_in_affected_team_games": 17058,
+  "n_rows_elsewhere": 17652,
+  "marginal_crps_affected": 0.810405,
+  "marginal_crps_elsewhere": 0.830703,
+  "zero_gap_affected": -0.00943,
+  "zero_gap_elsewhere": 6e-05
+ }
+}

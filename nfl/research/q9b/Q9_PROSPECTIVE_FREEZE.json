@@ -1,0 +1,171 @@
+{
+ "artifact": "NFL_Q9_PROSPECTIVE_FREEZE",
+ "spec_version": "q9b-prospective-freeze-1",
+ "frozen_at_season": 2026,
+ "promoted": false,
+ "no_future_outcome_consumed": true,
+ "consumption_note": "this artifact records what WOULD be evaluated and against what. No 2026 outcome is read to compute any number in it; doing so would make the freeze a post-hoc description of a result.",
+ "candidate_identity": {
+  "mechanism_spec_version": "q9-target-hurdle-1",
+  "module_source_sha16": {
+   "nfl.research.q9.hurdle": "bb51133641338547",
+   "nfl.research.q9b.family": "5b411b4f00e28e6f",
+   "nfl.research.q9b.production_parity": "1f320b1ee3170e64",
+   "nfl.production.nonqb.layers": "481f005f682cd721"
+  },
+  "allocator": "nfl.research.q9.hurdle.allocate_hurdle",
+  "one_target_floor": true,
+  "named_fallbacks": [
+   "HURDLE_NO_CLEARERS",
+   "HURDLE_MORE_CLEARERS_THAN_BUDGET"
+  ]
+ },
+ "feature_schema": {
+  "stage_1_features_in_order": [
+   "intercept",
+   "prior_target_frequency",
+   "prior_target_frequency_missing",
+   "prior_zero_target_frequency",
+   "recent_participation_ewma",
+   "recent_participation_missing",
+   "prior_share_given_positive",
+   "prior_share_given_positive_missing",
+   "prior_opportunity_depth_capped",
+   "is_cold_start",
+   "role_starter",
+   "role_rotational",
+   "role_fringe",
+   "rank_r1",
+   "rank_r23",
+   "rank_r4plus_or_unlisted",
+   "pos_RB",
+   "pos_WR",
+   "pos_TE",
+   "inj_Out",
+   "inj_Doubtful",
+   "inj_Questionable",
+   "inj_did_not_practise",
+   "inj_report_available",
+   "expected_team_budget_standardised"
+  ],
+  "n_features": 25,
+  "schema_sha16": "f620eeed09d0dd6e",
+  "refused_inputs": [
+   "realized",
+   "realised",
+   "actual_targets",
+   "weekly_rosters",
+   "roster_status",
+   "inactive_list",
+   "spread",
+   "vegas",
+   "total_line",
+   "odds",
+   "postgame",
+   "final_"
+  ],
+  "appearance_is_upstream_and_separate": true
+ },
+ "parameter_hashes": {
+  "training_seasons": [
+   2020,
+   2021,
+   2022,
+   2023,
+   2024,
+   2025
+  ],
+  "n_training_rows": 50965,
+  "n_appeared_training_rows": 34204,
+  "hurdle_coefficients_sha16": "9491bb9f4b09b6a2",
+  "hurdle_standardiser_mu_sha16": "9bc34ec6da42b07f",
+  "hurdle_standardiser_sd_sha16": "69307c2004799e0a",
+  "class_prior_sha16": "171212d5426ea16a",
+  "share_shrinkage_k": 0.86686141,
+  "share_shrinkage_basis": "WITHIN_OVER_BETWEEN_PLAYER_VARIANCE",
+  "budget_estimator": "ewma",
+  "budget_point_sha16": "05529fbf227b2f06",
+  "budget_residual_pool_sha16": "62282e58a2292701",
+  "budget_residual_pool_size": 3230,
+  "q8_budget_repair_applied": false
+ },
+ "production_interface": {
+  "version_sha16": "481f005f682cd721",
+  "interfaces": [
+   "nfl.production.nonqb.layers.appearance",
+   "nfl.production.nonqb.inputs.validate_appearance_inputs",
+   "nfl.production.nonqb.layers._game_stream",
+   "sportsplatform.governance.outcome.Outcome"
+  ],
+  "parity_status": "PARITY_HOLDS",
+  "invariants": {
+   "RECONCILES_EXACTLY": true,
+   "SAME_UPSTREAM_BUDGET": true,
+   "SAME_R8_APPEARANCE_DRAWS": true,
+   "NO_MARKET_INPUTS": true,
+   "NO_2026_FITTING": true,
+   "NO_Q8_BUDGET_REPAIR": true,
+   "DETERMINISTIC_REPRODUCIBLE": true,
+   "RESEARCH_HARNESS_PARITY": true
+  }
+ },
+ "fallback_counters_at_freeze": {
+  "HURDLE_NO_CLEARERS": {
+   "n": 0,
+   "rate": 0.0
+  },
+  "HURDLE_MORE_CLEARERS_THAN_BUDGET": {
+   "n": 2141,
+   "rate": 0.00246205
+  }
+ },
+ "decision_metrics_at_freeze": {
+  "zero_brier": [
+   0.131875,
+   0.130107
+  ],
+  "zero_log_loss": [
+   0.424528,
+   0.417118
+  ],
+  "zero_rate_gap": [
+   -0.0249,
+   -0.0046
+  ],
+  "marginal_crps": [
+   0.825816,
+   0.820727
+  ],
+  "marginal_crps_delta_pct": -0.6162,
+  "q9_own_run_decision": "SUPPORT",
+  "identifiability_structural_excess": 0.026789,
+  "hurdle_identified_as_structural": true,
+  "plain_family_closed_fraction_of_zero_shortfall": -0.63373,
+  "hurdle_closed_fraction_of_zero_shortfall": 0.81526
+ },
+ "prospective_plan": {
+  "unit": "player-game on unseen 2026 regular-season games",
+  "arms": [
+   "BASELINE",
+   "Q9_HURDLE"
+  ],
+  "primary": [
+   "zero-target Brier and log loss",
+   "zero-rate gap against observed",
+   "full marginal target CRPS"
+  ],
+  "secondary": [
+   "positive-target CRPS",
+   "downstream receiving-yard CRPS with efficiency held fixed"
+  ],
+  "strata": [
+   "RB/WR/TE",
+   "starter/rotational/fringe",
+   "appearance certainty",
+   "prior opportunity depth"
+  ],
+  "clustering": "block bootstrap over whole team-games",
+  "refit_policy": "the frozen parameter hashes above are what a prospective run must reproduce. A refit is a different candidate and needs its own freeze.",
+  "what_would_falsify": "the zero-rate gap failing to narrow on unseen games, or the marginal CRPS gain not reproducing outside the seasons that selected it"
+ }
+}

@@ -1,0 +1,186 @@
+{
+ "artifact": "NFL_Q9_PRODUCTION_PARITY",
+ "spec_version": "q9b-production-parity-1",
+ "q9_spec_version": "q9-target-hurdle-1",
+ "promoted": false,
+ "is_research_only": true,
+ "slice_season": 2024,
+ "n_games_tested": 12,
+ "n_draws": 200,
+ "seed": 20260925,
+ "budget_estimator": "ewma",
+ "interfaces_exercised": [
+  "nfl.production.nonqb.layers.appearance",
+  "nfl.production.nonqb.inputs.validate_appearance_inputs",
+  "nfl.production.nonqb.layers._game_stream",
+  "sportsplatform.governance.outcome.Outcome"
+ ],
+ "test_only_note": "the slice is historical so the fixture path is used and test_only propagates. That is the production guard working: this run produces no artifact and the sealer would refuse it. A parity test that quietly produced a publishable artifact would be the defect.",
+ "invariants": {
+  "RECONCILES_EXACTLY": true,
+  "SAME_UPSTREAM_BUDGET": true,
+  "SAME_R8_APPEARANCE_DRAWS": true,
+  "NO_MARKET_INPUTS": true,
+  "NO_2026_FITTING": true,
+  "NO_Q8_BUDGET_REPAIR": true,
+  "DETERMINISTIC_REPRODUCIBLE": true,
+  "RESEARCH_HARNESS_PARITY": true
+ },
+ "status": "PARITY_HOLDS",
+ "mismatches": [],
+ "fallback_states": {
+  "DRAWS": 2400,
+  "HURDLE_MORE_CLEARERS_THAN_BUDGET": 6
+ },
+ "games": [
+  {
+   "game_id": "2024_01_ARI",
+   "n_players": 19,
+   "team_budget_actual": 31,
+   "mean_budget_drawn": 32.07,
+   "max_reconciliation_error": 0.0,
+   "parity_with_research_harness": true,
+   "upstream_test_only": true,
+   "fallback_states": {
+    "DRAWS": 200
+   }
+  },
+  {
+   "game_id": "2024_01_ATL",
+   "n_players": 20,
+   "team_budget_actual": 23,
+   "mean_budget_drawn": 29.37,
+   "max_reconciliation_error": 0.0,
+   "parity_with_research_harness": true,
+   "upstream_test_only": true,
+   "fallback_states": {
+    "DRAWS": 200,
+    "HURDLE_MORE_CLEARERS_THAN_BUDGET": 1
+   }
+  },
+  {
+   "game_id": "2024_01_BAL",
+   "n_players": 18,
+   "team_budget_actual": 40,
+   "mean_budget_drawn": 26.94,
+   "max_reconciliation_error": 0.0,
+   "parity_with_research_harness": true,
+   "upstream_test_only": true,
+   "fallback_states": {
+    "DRAWS": 200,
+    "HURDLE_MORE_CLEARERS_THAN_BUDGET": 1
+   }
+  },
+  {
+   "game_id": "2024_01_BUF",
+   "n_players": 18,
+   "team_budget_actual": 23,
+   "mean_budget_drawn": 28.67,
+   "max_reconciliation_error": 0.0,
+   "parity_with_research_harness": true,
+   "upstream_test_only": true,
+   "fallback_states": {
+    "DRAWS": 200
+   }
+  },
+  {
+   "game_id": "2024_01_CAR",
+   "n_players": 18,
+   "team_budget_actual": 29,
+   "mean_budget_drawn": 27.77,
+   "max_reconciliation_error": 0.0,
+   "parity_with_research_harness": true,
+   "upstream_test_only": true,
+   "fallback_states": {
+    "DRAWS": 200,
+    "HURDLE_MORE_CLEARERS_THAN_BUDGET": 2
+   }
+  },
+  {
+   "game_id": "2024_01_CHI",
+   "n_players": 20,
+   "team_budget_actual": 29,
+   "mean_budget_drawn": 26.35,
+   "max_reconciliation_error": 0.0,
+   "parity_with_research_harness": true,
+   "upstream_test_only": true,
+   "fallback_states": {
+    "DRAWS": 200,
+    "HURDLE_MORE_CLEARERS_THAN_BUDGET": 1
+   }
+  },
+  {
+   "game_id": "2024_01_CIN",
+   "n_players": 19,
+   "team_budget_actual": 29,
+   "mean_budget_drawn": 33.035,
+   "max_reconciliation_error": 0.0,
+   "parity_with_research_harness": true,
+   "upstream_test_only": true,
+   "fallback_states": {
+    "DRAWS": 200
+   }
+  },
+  {
+   "game_id": "2024_01_CLE",
+   "n_players": 15,
+   "team_budget_actual": 43,
+   "mean_budget_drawn": 35.515,
+   "max_reconciliation_error": 0.0,
+   "parity_with_research_harness": true,
+   "upstream_test_only": true,
+   "fallback_states": {
+    "DRAWS": 200
+   }
+  },
+  {
+   "game_id": "2024_01_DAL",
+   "n_players": 17,
+   "team_budget_actual": 31,
+   "mean_budget_drawn": 36.0,
+   "max_reconciliation_error": 0.0,
+   "parity_with_research_harness": true,
+   "upstream_test_only": true,
+   "fallback_states": {
+    "DRAWS": 200
+   }
+  },
+  {
+   "game_id": "2024_01_DEN",
+   "n_players": 21,
+   "team_budget_actual": 42,
+   "mean_budget_drawn": 29.355,
+   "max_reconciliation_error": 0.0,
+   "parity_with_research_harness": true,
+   "upstream_test_only": true,
+   "fallback_states": {
+    "DRAWS": 200
+   }
+  },
+  {
+   "game_id": "2024_01_DET",
+   "n_players": 17,
+   "team_budget_actual": 28,
+   "mean_budget_drawn": 32.855,
+   "max_reconciliation_error": 0.0,
+   "parity_with_research_harness": true,
+   "upstream_test_only": true,
+   "fallback_states": {
+    "DRAWS": 200,
+    "HURDLE_MORE_CLEARERS_THAN_BUDGET": 1
+   }
+  },
+  {
+   "game_id": "2024_01_GB",
+   "n_players": 18,
+   "team_budget_actual": 32,
+   "mean_budget_drawn": 32.585,
+   "max_reconciliation_error": 0.0,
+   "parity_with_research_harness": true,
+   "upstream_test_only": true,
+   "fallback_states": {
+    "DRAWS": 200
+   }
+  }
+ ]
+}
