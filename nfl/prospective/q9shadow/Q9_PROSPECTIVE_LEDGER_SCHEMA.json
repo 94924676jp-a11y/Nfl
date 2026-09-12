@@ -1,0 +1,136 @@
+{
+ "artifact": "NFL_Q9_PROSPECTIVE_LEDGER_SCHEMA",
+ "spec_version": "q9-prospective-ledger-1",
+ "candidate": "Q9_TARGET_HURDLE",
+ "promoted": false,
+ "shadow_only": true,
+ "ledger_path": "nfl/prospective/q9shadow/Q9_PROSPECTIVE_LEDGER.jsonl",
+ "append_only": true,
+ "row_fields": {
+  "candidate": "which candidate. Without it two candidates of one game merge into one series.",
+  "arm": "which arm of the side-by-side. R8_PRODUCTION and Q9_HURDLE are a PAIRED comparison on the same player-game, never two samples.",
+  "forecast_id": "which sealed forecast. This is what stops five sealed variants of one game from counting as five games.",
+  "artifact_id": "the content hash of the sealed artifact, so a mutated artifact cannot be scored as the sealed one.",
+  "game_id": "the GAME unit, and the floor unit.",
+  "team": "the TEAM_GAME unit: the budget this allocation partitions.",
+  "entity": "player / team / room. Part of the version identity, because a team row and a room row can share a team code.",
+  "player_id": "the PLAYER_GAME unit.",
+  "position": "the stratum protocol section 7 requires, with its own floor.",
+  "metric": "the forecast quantity. One row per metric per arm.",
+  "cutoff_utc": "the consumed clock. A pre- and a post-inactives board of one game are different forecasts and are never pooled.",
+  "cutoff_basis": "which field the cutoff came from, so a reader never has to guess which clock was enforced.",
+  "written_at": "when the forecast was written. With kickoff, this is the claim the whole protocol rests on.",
+  "kickoff_utc": "the deadline written_at had to precede.",
+  "outcome_hash": "which realisation this row was scored against. This is what makes an outcome revision detectable rather than silent.",
+  "outcome_source": "which authority supplied it. Only rank-1 sources are scoreable.",
+  "finality_code": "the proof of completion, or POSTGAME_NOT_FINAL.",
+  "prospective_evidence": "false for a dry-run row. A false row is stored and never counted.",
+  "promoted": "always false. Recorded so the artifact asserts it rather than a reader assuming it.",
+  "zero_probability": "P(zero targets) as SEALED, not as recomputed later.",
+  "mean_targets": "the predictive mean as sealed.",
+  "n_draws": "the draw count the numbers came from.",
+  "actual_targets": "the realised count from the CURRENT outcome version.",
+  "is_zero_actual": "1 if the player recorded no target.",
+  "zero_brier": "the squared error of the zero probability.",
+  "zero_log_loss": "the log score of the zero probability, clipped and the clip declared.",
+  "marginal_crps": "CRPS of the full marginal target distribution.",
+  "positive_crps": "CRPS of the positive-target conditional distribution, empty when the realisation is zero -- conditioning on a positive outcome is not defined at zero.",
+  "randomized_pit": "the randomized PIT value, which is what protocol section 9.6 names.",
+  "mid_pit": "the mid-PIT value, recorded beside it so the two statistics are never mistaken for each other.",
+  "pit_seed": "the deterministic seed the randomisation used, so the randomized PIT reproduces exactly.",
+  "rec_yard_crps": "downstream receiving-yard CRPS. DIAGNOSTIC ONLY and never a promotion criterion.",
+  "actual_rec_yds": "the realised receiving yards, empty when the outcome version does not carry them. Never defaulted to zero."
+ },
+ "version_identity": [
+  "forecast_id",
+  "game_id",
+  "entity",
+  "metric",
+  "player_id",
+  "team",
+  "arm"
+ ],
+ "version_identity_note": "one outcome version per identity may be CURRENT. A revision is a NEW row; the older one is never deleted or rewritten, and its label is DERIVED from ledger order by postgame.versioned.",
+ "evidence_units": {
+  "scoring_rows": "ROW -- one metric x one sealed forecast x one outcome version. This is a bookkeeping count and is NEVER a prospective sample size.",
+  "graded_metrics": "METRIC -- a distinct forecast quantity that produced at least one scored row.",
+  "distinct_games": "GAME -- the independent unit. Two candidates of one game are one game.",
+  "distinct_team_games": "TEAM-GAME -- one team in one game. The unit a target budget, a play count and a snap total are allocated within, so it is the unit a within-team allocation error is shared across. Two teams in one game are NOT independent of each other either -- they share the clock and the score -- which is why GAME remains the floor unit.",
+  "distinct_player_games": "PLAYER-GAME -- one player in one game. Not independent across players within a game: teammates share the same game state.",
+  "distinct_candidate_forecasts": "CANDIDATE FORECAST -- one sealed forecast. Variants of the same game are PAIRED comparisons on that game, not independent games."
+ },
+ "floor_unit": "distinct_games",
+ "required_counts": [
+  "scoring_rows",
+  "distinct_player_games",
+  "distinct_team_games",
+  "distinct_games"
+ ],
+ "paired_note": "Candidate variants from the same game are paired comparisons, not independent games. Pooling them inflates an apparent sample by the number of variants run and narrows every interval computed from it.",
+ "arm_pairing_note": "R8_PRODUCTION and Q9_HURDLE rows for one player-game are a paired comparison on shared upstream draws. They add one player-game to the sample, not two.",
+ "primary_metrics": [
+  "zero_brier",
+  "zero_log_loss",
+  "zero_mass_calibration_gap",
+  "marginal_crps",
+  "positive_crps"
+ ],
+ "diagnostic_metrics": [
+  "randomized_pit",
+  "mid_pit",
+  "rec_yard_crps"
+ ],
+ "log_loss_clip": 1e-06,
+ "floors": {
+  "any_reported_metric": {
+   "n_forecasts": 200,
+   "n_weeks": null,
+   "unit": "eligible player-game forecasts"
+  },
+  "any_benchmark_comparison": {
+   "n_forecasts": 400,
+   "n_weeks": 8,
+   "unit": "eligible player-game forecasts and eligible weeks"
+  },
+  "any_promotion_decision": {
+   "n_forecasts": 800,
+   "n_weeks": 12,
+   "unit": "eligible player-game forecasts and eligible weeks"
+  },
+  "any_position_stratified_claim": {
+   "n_forecasts": 200,
+   "n_weeks": null,
+   "unit": "eligible player-game forecasts within that position"
+  }
+ },
+ "floor_source": "nfl/prospective/PROSPECTIVE_EVALUATION_PROTOCOL.md section 4",
+ "below_floor_state": "UNDERPOWERED",
+ "below_floor_note": "below a floor a comparison is not a small result -- it is not a result. The protocol says so and this module reports UNDERPOWERED rather than a number with a wide interval.",
+ "clustering": {
+  "method": "paired block bootstrap over whole units",
+  "units": [
+   "game_id",
+   "team_game"
+  ],
+  "n_resamples": 1000,
+  "seed": 20260913,
+  "naive_intervals": "FORBIDDEN by protocol section 6"
+ },
+ "finality": {
+  "gate": "nfl.research.postgame.game_finality",
+  "signals": [
+   "END_GAME_MARKER_PRESENT",
+   "GAME_CLOCK_EXPIRED",
+   "REGULATION_OR_LATER_COMPLETE",
+   "FINAL_RESULT_POPULATED",
+   "SCOREBOARD_AGREES_WITH_RESULT"
+  ],
+  "not_final_state": "POSTGAME_NOT_FINAL",
+  "note": "a game that cannot prove finality produces zero scored rows. Kickoff having passed is not completion."
+ },
+ "dry_run_rows": "stored, and never counted as evidence",
+ "governance_conflicts_open": {
+  "protocol_section_2_completeness": "an eligible forecast requires completeness == COMPLETE; a single-layer receiving-target artifact is truthfully PARTIAL_PLAYER_COVERAGE. Owner ruling needed; not resolved by relabelling.",
+  "G0A": "G0A stands at 11/12 and protocol section 1 says no forecast written before G0A is discharged counts toward promotion."
+ }
+}

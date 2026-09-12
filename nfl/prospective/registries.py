@@ -132,6 +132,53 @@ def check_benchmark(name: str) -> Outcome:
 # ==========================================================================
 
 CANDIDATES = {
+    'Q9_TARGET_HURDLE': {
+        'status': 'FROZEN PROSPECTIVE CANDIDATE -- SHADOW ONLY',
+        'promoted': False,
+        'prospective_candidate': True,
+        'shadow_only': True,
+        'frozen_prospective': True,
+        'freeze_artifact': 'nfl/research/q9b/Q9_PROSPECTIVE_FREEZE.json',
+        'identity_gate': ('nfl/prospective/q9shadow/'
+                          'Q9_PROSPECTIVE_CANDIDATE.json'),
+        'mechanism': ('two-stage target hurdle: P(targeted | appears) from a '
+                      'pregame-only logistic stage, then a one-target floor '
+                      'and a multinomial remainder that reconciles exactly '
+                      'to the team target budget'),
+        'allowed_inputs': ('those named in nfl.research.q9.hurdle.FEATURE_NAMES '
+                           'and no others; appearance is UPSTREAM and separate'),
+        # WRITTEN OUT RATHER THAN IMPORTED, DELIBERATELY. This is a
+        # governance module and importing the research stack into it to read
+        # one tuple would drag numpy and the whole panel loader behind it.
+        # The copy is kept honest by a test that asserts it equals
+        # `nfl.research.q9.hurdle.FORBIDDEN_INPUTS` exactly, so drift is a
+        # failing check rather than a stale comment.
+        'prohibited_inputs': ['realized', 'realised', 'actual_targets',
+                              'weekly_rosters', 'roster_status',
+                              'inactive_list', 'spread', 'vegas',
+                              'total_line', 'odds', 'postgame', 'final_'],
+        'prohibited_inputs_source': 'nfl.research.q9.hurdle.FORBIDDEN_INPUTS',
+        'first_admissible_evaluation': (
+            'the first shadow forecast sealed under '
+            'nfl.prospective.q9shadow.seal for a 2026 REG game whose kickoff '
+            'is after G0A is discharged, with written_at strictly before that '
+            'kickoff'),
+        'may_promote_on_2022_2025': False,
+        'why_not': ('2022-2025 selected this mechanism: the Q8 attribution '
+                    'audit, the zero-mass decomposition and the Q9 ordering '
+                    'all came out of those seasons. They cannot confirm it.'),
+        'shadow_only_means': (
+            'the candidate is evaluated alongside production and influences '
+            'no published number, no board and no decision. It has no '
+            'production call site outside nfl/prospective/q9shadow.'),
+        'promotion_rulebook': 'nfl/prospective/PROSPECTIVE_EVALUATION_PROTOCOL.md',
+        'known_conflict_to_resolve_before_promotion': (
+            'protocol S9.6 requires RANDOMIZED PIT not worse. Q9B measured '
+            'MID-PIT (chi2 8821 -> 8913, worse). Mid-PIT is not the quantity '
+            'the rule names, so the rule is not yet evaluable on the measured '
+            'evidence; the prospective harness emits randomized PIT so that '
+            'it becomes evaluable.'),
+    },
     'ABC_MPR': {
         'status': 'FROZEN PROSPECTIVE CANDIDATE',
         'promoted': False,
@@ -184,4 +231,21 @@ def check_candidate(name: str) -> Outcome:
             'MINED_DATA_PROMOTION_PATH',
             f'{name} declares it may promote on 2022-2025, which are heavily '
             f'mined development data.')
+    # A SHADOW CANDIDATE MUST STAY SHADOW. `shadow_only` is not decoration:
+    # it is the claim that the candidate influences no published number, and a
+    # registry that let it sit beside `promoted` or beside a missing
+    # `prospective_candidate` flag would make the phrase unfalsifiable.
+    if c.get('shadow_only') and not c.get('prospective_candidate'):
+        return Outcome.fail(
+            'SHADOW_WITHOUT_PROSPECTIVE_STATUS',
+            f'{name} is marked shadow_only but not prospective_candidate. A '
+            f'shadow arm that is not registered as a prospective candidate is '
+            f'running without the rulebook that makes its evidence countable.')
+    if c.get('prospective_candidate') and not c.get('freeze_artifact'):
+        return Outcome.fail(
+            'PROSPECTIVE_CANDIDATE_WITHOUT_FREEZE',
+            f'{name} is a prospective candidate with no freeze artifact. A '
+            f'candidate whose identity was not frozen before the first '
+            f'forecast cannot be shown later to be the thing that was '
+            f'evaluated.')
     return Outcome.ok('CANDIDATE_OK', value=c['status'], detail=name)

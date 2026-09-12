@@ -383,3 +383,47 @@ comparison that needs no outcome at all. The prospective scoring row is open
 at `nfl/research/live/2026_01_SF_LA/PROSPECTIVE_SCORING_ROW.json` with
 `status: AWAITING_ACTUALS`; actuals attach to it and never modify a sealed
 board.
+
+---
+
+# Q9 prospective shadow deployment — the one thing I need from outside
+
+Written 2026-09-12. The frozen Q9 target-hurdle candidate is now integrated
+into the prospective shadow-forecast path: registered in
+`nfl/prospective/registries.py`, identity-gated against the pre-season freeze,
+and provable end to end — the dry-run proof at
+`nfl/prospective/q9shadow/Q9_PROSPECTIVE_DRYRUN_PROOF.json` passes 10 of 10
+checks, including determinism and inability to read an outcome.
+
+**It has sealed zero live forecasts, and three named things stand in the way.
+Exactly one of them is yours.**
+
+| blocker | whose | state |
+|---|---|---|
+| `INJURY_REPORT_INCOMPLETE` | **yours — needs bytes** | the 2026 injury captures carry rows whose `report_status` is unfilled on every row for the team. `nfl/production/nonqb/inputs.py` refuses that by name, so the appearance layer never runs and neither arm gets an availability draw. Measured on 2026-09-12: 12 of the 13 week-1 games still ahead of the clock carry `NOT_APPLICABLE[INJURY_REPORT_INCOMPLETE]` at the appearance stage; the thirteenth (`2026_01_NYJ_TEN`) carries `NOT_APPLICABLE[NONQB_PLAYER_FRAME_INCOMPLETE]` |
+| `LIVE_PREGAME_FEATURE_BUILD_UNIMPLEMENTED` | mine | `nfl/research/q6/frame.py` refuses 2026 rows by design (`Q9_LIVE_SEASON_IN_FRAME`) and production reports `feature_build: STAGE_DECLARED_UNIMPLEMENTED`. This is test-first work inside the repository and I am not marking it blocked |
+| `G0A_11_OF_12` | governance | protocol §1: no forecast written before G0A is discharged counts toward promotion |
+
+**What I need.** The **official NFL injury report for 2026 week 1 with the
+game-status designations filled in** — the Friday/Saturday practice report
+carrying `Out` / `Doubtful` / `Questionable` per player, not the Wednesday
+participation-only rows. Raw bytes plus your retrieval clock. It feeds
+`inj_status`, `inj_practice` and `inj_available`, which are 5 of the 25
+declared stage-1 features, and it unblocks the upstream appearance layer that
+both arms consume.
+
+I also need, less urgently, **snap counts for 2026 week 1** — same reason as
+the earlier request on this page.
+
+**What I am not asking for.** A reporter's list of who is expected to play, a
+fantasy site's status column, or anything derived from `weekly_rosters.status`.
+`weekly_rosters` is already in the bundle and is marked RESTRICTED: `status ==
+INA` is game-day information, so it is structurally kept out of stage 1 by a
+ten-key projection derived from the featuriser's own source. Substituting a
+transcription for the official designation would put that back.
+
+**What does not wait on you.** The sealing path, the ledger schema, the
+four-unit accounting, the §4 floor evaluation, the randomized-PIT emission and
+the dry-run proof are all complete and green. The pregame feature builder is
+mine and is next. When your bytes land, the live path runs with no code change
+on my side: `python3.12 -m nfl.prospective.q9shadow.seal --season 2026`.

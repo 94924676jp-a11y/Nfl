@@ -365,8 +365,27 @@ def test_i_supersession_is_per_forecast_metric_and_subject():
           str([r['version_status'] for r in v]))
     check('the identity is named in full',
           set(PG.VERSION_IDENTITY) == {'forecast_id', 'game_id', 'entity',
-                                       'metric', 'player_id', 'team'},
+                                       'metric', 'player_id', 'team', 'arm'},
           str(PG.VERSION_IDENTITY))
+    # `arm` JOINED THE IDENTITY BECAUSE LEAVING IT OUT LOST AN ARM. Two arms
+    # of one side-by-side forecast share forecast_id, game, entity, metric,
+    # player and team, so without `arm` the second arm was read as a revision
+    # of the first and marked SUPERSEDED.
+    two_arms = PG.versioned([_row(arm='R8_PRODUCTION'),
+                             _row(arm='Q9_HURDLE')])
+    check('two arms of one forecast are not revisions of each other',
+          all(r['version_status'] == 'CURRENT' for r in two_arms),
+          str([r['version_status'] for r in two_arms]))
+    revised = PG.versioned([_row(arm='R8_PRODUCTION'),
+                            _row(arm='R8_PRODUCTION',
+                                 outcome_hash='e' * 64)])
+    check('  but a restated outcome for ONE arm still supersedes',
+          [r['version_status'] for r in revised]
+          == ['SUPERSEDED', 'CURRENT'],
+          str([r['version_status'] for r in revised]))
+    legacy = PG.versioned([_row(), _row(outcome_hash='e' * 64)])
+    check('  and a row with no arm key keeps the identity it always had',
+          [r['version_status'] for r in legacy] == ['SUPERSEDED', 'CURRENT'])
     idx = PG.supersession_index([a, _row(outcome_hash='z' * 64)])
     check('the index counts revised identities', idx['n_identities_revised'] == 1,
           str(idx['n_identities_revised']))

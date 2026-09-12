@@ -1,0 +1,206 @@
+{
+ "artifact": "NFL_Q9_PROSPECTIVE_DRYRUN_PROOF",
+ "spec_version": "q9-shadow-dryrun-proof-1",
+ "candidate": "Q9_TARGET_HURDLE",
+ "promoted": false,
+ "shadow_only": true,
+ "is_evidence_about_accuracy": false,
+ "slice": {
+  "season": 2024,
+  "n_games": 1,
+  "n_draws": 120,
+  "written_at": "2026-09-12T12:00:00Z",
+  "feature_source": "HISTORICAL_FRAME",
+  "note": "frozen historical features, labelled synthetic kickoff, written under dryrun/ and never under sealed/"
+ },
+ "checks": {
+  "DETERMINISTIC": {
+   "state": "PASS",
+   "n_forecasts": 2,
+   "identity_keys_compared": [
+    "artifact_id",
+    "spec_hash",
+    "draw_artifact_sha256",
+    "draw_content_sha256",
+    "feature_set_hash",
+    "forecast_id",
+    "seal_payload_sha256",
+    "identity_fingerprint"
+   ],
+   "run1": [
+    {
+     "artifact_id": "5d9816f0e297b3bd86470a98a78d6748a5f0ee7d171c72bc85e7db452852d1de",
+     "spec_hash": "82c8b52699bbeb00e656a3d543f995bac7034e9a89ff2a8d783e27b6fdc8422e",
+     "draw_artifact_sha256": "b370646ba04674c8cabce44470d5747a69fd3ed0d0b4d923aa892e8ed07c63ae",
+     "draw_content_sha256": "8c19543182ab87ec84fd55141b96e01df6cd5538e3ac2d570a440046bead6043",
+     "feature_set_hash": "f620eeed09d0dd6e",
+     "forecast_id": "Q9SH-e3409bbd50a1ff42",
+     "seal_payload_sha256": "e3409bbd50a1ff42abc6d4d9f029276c0fb852372baee3c03ed58bccd094d219",
+     "identity_fingerprint": "NFLFP-06081ed8e38ddd22",
+     "team": "ARI"
+    },
+    {
+     "artifact_id": "bc562ce2222f4fe7d1b871f26ddfb80cd8fefa5cbc6416354a03e6c3b6f72727",
+     "spec_hash": "82c8b52699bbeb00e656a3d543f995bac7034e9a89ff2a8d783e27b6fdc8422e",
+     "draw_artifact_sha256": "58b74c59ec8d25b359b4aab797ebe2cb8cc162d07db8898ec4e4a31a1d59cd39",
+     "draw_content_sha256": "9ff7c5e688c82b4db3567cd67175c560b4528436e73cf54deb9cbffead79d834",
+     "feature_set_hash": "f620eeed09d0dd6e",
+     "forecast_id": "Q9SH-f8df992212a4d4d6",
+     "seal_payload_sha256": "f8df992212a4d4d6de2229464e94ef90ec3b572e6e79b6031ced4bccb5bd6b28",
+     "identity_fingerprint": "NFLFP-06081ed8e38ddd22",
+     "team": "BUF"
+    }
+   ],
+   "run2": [
+    {
+     "artifact_id": "5d9816f0e297b3bd86470a98a78d6748a5f0ee7d171c72bc85e7db452852d1de",
+     "spec_hash": "82c8b52699bbeb00e656a3d543f995bac7034e9a89ff2a8d783e27b6fdc8422e",
+     "draw_artifact_sha256": "b370646ba04674c8cabce44470d5747a69fd3ed0d0b4d923aa892e8ed07c63ae",
+     "draw_content_sha256": "8c19543182ab87ec84fd55141b96e01df6cd5538e3ac2d570a440046bead6043",
+     "feature_set_hash": "f620eeed09d0dd6e",
+     "forecast_id": "Q9SH-e3409bbd50a1ff42",
+     "seal_payload_sha256": "e3409bbd50a1ff42abc6d4d9f029276c0fb852372baee3c03ed58bccd094d219",
+     "identity_fingerprint": "NFLFP-06081ed8e38ddd22",
+     "team": "ARI"
+    },
+    {
+     "artifact_id": "bc562ce2222f4fe7d1b871f26ddfb80cd8fefa5cbc6416354a03e6c3b6f72727",
+     "spec_hash": "82c8b52699bbeb00e656a3d543f995bac7034e9a89ff2a8d783e27b6fdc8422e",
+     "draw_artifact_sha256": "58b74c59ec8d25b359b4aab797ebe2cb8cc162d07db8898ec4e4a31a1d59cd39",
+     "draw_content_sha256": "9ff7c5e688c82b4db3567cd67175c560b4528436e73cf54deb9cbffead79d834",
+     "feature_set_hash": "f620eeed09d0dd6e",
+     "forecast_id": "Q9SH-f8df992212a4d4d6",
+     "seal_payload_sha256": "f8df992212a4d4d6de2229464e94ef90ec3b572e6e79b6031ced4bccb5bd6b28",
+     "identity_fingerprint": "NFLFP-06081ed8e38ddd22",
+     "team": "BUF"
+    }
+   ],
+   "detail": "two seals of identical inputs are identical on every compared hash"
+  },
+  "OUTCOME_READERS_POISONED": {
+   "state": "PASS",
+   "n_readers_poisoned": 6,
+   "readers": [
+    "nfl.research.postgame.fetch_outcomes",
+    "nfl.research.postgame.stored_outcome",
+    "nfl.research.postgame._rows",
+    "nfl.research.postgame.load_ledger",
+    "nfl.research.postgame.score_game",
+    "nfl.research.shadow.actuals.team_actuals",
+    "nfl.research.shadow.actuals.player_actuals"
+   ],
+   "detail": "6 reader(s) poisoned; the seal completed without calling any of them"
+  },
+  "OUTCOME_SHAPED_INPUT_REFUSED": {
+   "state": "PASS",
+   "outcome_source": "FAIL[Q9_SHADOW_OUTCOME_SHAPED_INPUT]",
+   "outcome_shaped_key": "FAIL[Q9_SHADOW_OUTCOME_SHAPED_INPUT]",
+   "clean_bundle_with_restricted_source": "PASS[Q9_SHADOW_INPUTS_PREGAME_ONLY]",
+   "restricted_from_stage_1": [
+    "weekly_rosters"
+   ],
+   "detail": "a play-by-play source and a realised key are each refused; a bundle carrying only a RESTRICTED source passes and records the restriction"
+  },
+  "SCHEDULE_PROJECTED": {
+   "state": "PASS",
+   "banned_columns_present_in_raw_capture": [
+    "away_moneyline",
+    "away_score",
+    "home_moneyline",
+    "home_score",
+    "overtime",
+    "result",
+    "spread_line",
+    "total",
+    "total_line"
+   ],
+   "banned_columns_surviving_projection": [],
+   "projected_columns": [
+    "away_team",
+    "game_id",
+    "game_type",
+    "gameday",
+    "gametime",
+    "home_team",
+    "kickoff_offset_hours_from_eastern",
+    "kickoff_utc",
+    "location",
+    "roof",
+    "season",
+    "stadium_id",
+    "surface",
+    "week"
+   ],
+   "detail": "the raw capture carries 9 outcome or market column(s) and the projection carries 0. The first number is what makes the second meaningful"
+  },
+  "FEATURE_PROJECTED": {
+   "state": "PASS",
+   "realised_keys_on_the_panel_row": [
+    "appeared",
+    "carries",
+    "q7_yds",
+    "share_targets",
+    "snap",
+    "targets"
+   ],
+   "realised_keys_surviving_projection": [],
+   "feature_row_keys": [
+    "h_appeared_games",
+    "h_participation_ewma",
+    "h_share_given_positive",
+    "h_target_freq",
+    "inj_available",
+    "inj_practice",
+    "inj_status",
+    "pos",
+    "rank",
+    "role_class"
+   ],
+   "derived_from": "nfl.research.q9.hurdle.featurise source",
+   "detail": "the panel row carries 6 realised column(s); the projected row carries 0"
+  },
+  "NO_READER_IN_NAMESPACE": {
+   "state": "PASS",
+   "modules": {
+    "nfl.prospective.q9shadow.seal": "PASS[Q9_SEAL_PATH_HAS_NO_OUTCOME_READER]",
+    "nfl.prospective.q9shadow.shadow": "PASS[Q9_SEAL_PATH_HAS_NO_OUTCOME_READER]",
+    "nfl.prospective.q9shadow.inputs": "PASS[Q9_SEAL_PATH_HAS_NO_OUTCOME_READER]",
+    "nfl.prospective.q9shadow.candidate": "PASS[Q9_SEAL_PATH_HAS_NO_OUTCOME_READER]"
+   },
+   "outcome_reader_modules": [
+    "nfl.research.postgame",
+    "nfl.research.shadow.actuals"
+   ],
+   "detail": "the sealing modules cannot reach an outcome reader even by mistake, because none is bound in them"
+  },
+  "MUTATION_REFUSED": {
+   "state": "PASS",
+   "edited_in_place": "FAIL[ARTIFACT_MUTATED]",
+   "lawful_correction": "PASS[ARTIFACT_SUPERSEDED]",
+   "detail": "an in-place edit is refused; a NEW artifact naming what it supersedes is the only lawful correction"
+  },
+  "RESEAL_REFUSED": {
+   "state": "PASS",
+   "first": "PASS[SEAL_APPENDED]",
+   "identical_again": "NOT_APPLICABLE[SEAL_ALREADY_RECORDED]",
+   "different_content": "FAIL[SEAL_IMMUTABLE_VIOLATION]",
+   "detail": "an identical re-record adds nothing and says so; a different one under the same forecast_id is refused"
+  },
+  "POST_KICKOFF_REFUSED": {
+   "state": "PASS",
+   "written_at_equals_kickoff": "FAIL[WRITTEN_AFTER_KICKOFF]",
+   "input_retrieved_after_write": "FAIL[INPUT_RETRIEVED_AFTER_FORECAST]",
+   "detail": "retrieved_at <= written_at < kickoff, both halves, enforced by the contract and not by this proof"
+  },
+  "DRY_RUN_NOT_EVIDENCE": {
+   "state": "PASS",
+   "dry_run_row": "NOT_APPLICABLE[Q9_LEDGER_DRY_RUN_ROW_NOT_EVIDENCE]",
+   "prospective_row": "PASS[Q9_LEDGER_ROW_IS_PROSPECTIVE]",
+   "detail": "the ledger refuses a dry-run row as evidence by reading the same two flags the seal stamps"
+  }
+ },
+ "n_checks": 10,
+ "n_failed": 0,
+ "failed": [],
+ "status": "DRY_RUN_PROOF_HOLDS"
+}

@@ -1,0 +1,144 @@
+{
+ "artifact": "NFL_Q9_PROSPECTIVE_LEDGER_STATE",
+ "spec_version": "q9-prospective-ledger-1",
+ "candidate": "Q9_TARGET_HURDLE",
+ "promoted": false,
+ "prospective_candidate": true,
+ "shadow_only": true,
+ "season": 2026,
+ "ledger_path": "nfl/prospective/q9shadow/Q9_PROSPECTIVE_LEDGER.jsonl",
+ "schema": "nfl/prospective/q9shadow/Q9_PROSPECTIVE_LEDGER_SCHEMA.json",
+ "accounting": {
+  "scoring_rows": 0,
+  "graded_metrics": 0,
+  "distinct_games": 0,
+  "distinct_team_games": 0,
+  "distinct_player_games": 0,
+  "distinct_candidate_forecasts": 0,
+  "games": [],
+  "units": {
+   "scoring_rows": "ROW -- one metric x one sealed forecast x one outcome version. This is a bookkeeping count and is NEVER a prospective sample size.",
+   "graded_metrics": "METRIC -- a distinct forecast quantity that produced at least one scored row.",
+   "distinct_games": "GAME -- the independent unit. Two candidates of one game are one game.",
+   "distinct_team_games": "TEAM-GAME -- one team in one game. The unit a target budget, a play count and a snap total are allocated within, so it is the unit a within-team allocation error is shared across. Two teams in one game are NOT independent of each other either -- they share the clock and the score -- which is why GAME remains the floor unit.",
+   "distinct_player_games": "PLAYER-GAME -- one player in one game. Not independent across players within a game: teammates share the same game state.",
+   "distinct_candidate_forecasts": "CANDIDATE FORECAST -- one sealed forecast. Variants of the same game are PAIRED comparisons on that game, not independent games."
+  },
+  "floor_unit": "distinct_games",
+  "paired_note": "Candidate variants from the same game are paired comparisons, not independent games. Pooling them inflates an apparent sample by the number of variants run and narrows every interval computed from it.",
+  "prospective_sample_size": {
+   "value": 0,
+   "unit": "GAME",
+   "note": "the sample size for an evidence floor. scoring_rows is not this number and must never be reported as it."
+  },
+  "scoring_rows_including_non_evidence": 0,
+  "rows_excluded_as_non_evidence": 0,
+  "distinct_arms": [],
+  "arm_pairing_note": "R8_PRODUCTION and Q9_HURDLE rows for one player-game are a paired comparison on shared upstream draws. They add one player-game to the sample, not two.",
+  "eligible_player_game_forecasts": 0,
+  "eligible_weeks": 0
+ },
+ "floors": {
+  "any_reported_metric": {
+   "floor": {
+    "n_forecasts": 200,
+    "n_weeks": null,
+    "unit": "eligible player-game forecasts"
+   },
+   "have_forecasts": 0,
+   "have_weeks": 0,
+   "state": "UNDERPOWERED",
+   "shortfall_forecasts": 200,
+   "shortfall_weeks": null,
+   "source": "nfl/prospective/PROSPECTIVE_EVALUATION_PROTOCOL.md section 4"
+  },
+  "any_benchmark_comparison": {
+   "floor": {
+    "n_forecasts": 400,
+    "n_weeks": 8,
+    "unit": "eligible player-game forecasts and eligible weeks"
+   },
+   "have_forecasts": 0,
+   "have_weeks": 0,
+   "state": "UNDERPOWERED",
+   "shortfall_forecasts": 400,
+   "shortfall_weeks": 8,
+   "source": "nfl/prospective/PROSPECTIVE_EVALUATION_PROTOCOL.md section 4"
+  },
+  "any_promotion_decision": {
+   "floor": {
+    "n_forecasts": 800,
+    "n_weeks": 12,
+    "unit": "eligible player-game forecasts and eligible weeks"
+   },
+   "have_forecasts": 0,
+   "have_weeks": 0,
+   "state": "UNDERPOWERED",
+   "shortfall_forecasts": 800,
+   "shortfall_weeks": 12,
+   "source": "nfl/prospective/PROSPECTIVE_EVALUATION_PROTOCOL.md section 4"
+  },
+  "any_position_stratified_claim": {
+   "floor": {
+    "n_forecasts": 200,
+    "n_weeks": null,
+    "unit": "eligible player-game forecasts within that position"
+   },
+   "have_forecasts": 0,
+   "have_weeks": 0,
+   "state": "UNDERPOWERED",
+   "shortfall_forecasts": 200,
+   "shortfall_weeks": null,
+   "source": "nfl/prospective/PROSPECTIVE_EVALUATION_PROTOCOL.md section 4"
+  }
+ },
+ "floor_source": "nfl/prospective/PROSPECTIVE_EVALUATION_PROTOCOL.md section 4",
+ "sample_governed": true,
+ "sample_governed_note": "the repository contains a governed prospective-evidence threshold (protocol section 4), so this work uses it. PROSPECTIVE_SAMPLE_NOT_YET_GOVERNED is NOT the applicable state and is not reported.",
+ "live_eligibility": {
+  "status": "BLOCKED[Q9_LIVE_PREGAME_FEATURE_BUILD_UNIMPLEMENTED]",
+  "candidate_gate": "PASS[Q9_CANDIDATE_MATCHES_FREEZE]",
+  "n_games_ahead_of_clock": 270,
+  "n_sealed": 0,
+  "refusal_census": {
+   "BLOCKED[Q9_LIVE_PREGAME_FEATURE_BUILD_UNIMPLEMENTED]": 270
+  },
+  "refusal_detail": "there is no pregame feature builder for the live season. The Q6 frame refuses 2026 rows by design, production declares feature_build STAGE_DECLARED_UNIMPLEMENTED, and the appearance layer refuses on an incomplete injury report. Refused by name with the requirement list attached rather than stubbed: a stub returning plausible features would produce a sealed forecast that looks prospective and measures nothing.",
+  "requirements_for_the_live_path": {
+   "prior_appeared_game_history": "h_target_freq, h_participation_ewma, h_share_given_positive and h_appeared_games over strictly earlier APPEARED games. Available from seasons <= 2025 in the committed panel.",
+   "point_in_time_role_class": "role_class from trailing snap share, or from the lawful depth-chart vintage when no trail exists. The 2026 depth-chart captures exist.",
+   "depth_chart_rank": "rank, from the same lawful vintage.",
+   "position_and_team": "pos and team, from the roster/depth-chart vintage.",
+   "official_injury_report": "inj_status, inj_practice and inj_available. BLOCKED: the 2026 captures carry rows whose report_status is unfilled, which nfl.production.nonqb.inputs refuses by name as INJURY_REPORT_INCOMPLETE. An unfiled designation is not an absence of injury and may not be defaulted to healthy.",
+   "upstream_appearance_probability": "p_appear per player. Production R8 supplies it, and the committed p_R8 table covers 2020-2025 only; a live game needs the appearance layer to run, which is blocked by the same injury report.",
+   "team_target_budget": "the frozen P4B point forecast and residual pool for the team-week. Estimated from seasons strictly earlier, so a 2026 week-1 budget is obtainable."
+  }
+ },
+ "blockers": {
+  "LIVE_PREGAME_FEATURE_BUILD_UNIMPLEMENTED": {
+   "owner": "this repository",
+   "what": "there is no pregame feature builder for the live season. nfl.research.q6.frame.load_frame refuses 2026 rows by design and production reports feature_build STAGE_DECLARED_UNIMPLEMENTED.",
+   "blocks": "every 2026 seal, for both arms",
+   "needs_bytes_from_outside": false
+  },
+  "INJURY_REPORT_INCOMPLETE": {
+   "owner": "the agent that holds network egress",
+   "what": "the 2026 injury captures carry rows whose report_status is unfilled, and nfl.production.nonqb.inputs refuses that by name. An unfiled designation is not an absence of injury and may not be defaulted to healthy.",
+   "blocks": "the upstream appearance layer, and therefore both arms",
+   "needs_bytes_from_outside": true,
+   "measured": "12 of the 13 week-1 games still ahead of the clock on 2026-09-12 carry NOT_APPLICABLE[INJURY_REPORT_INCOMPLETE] at the appearance stage; the thirteenth carries NOT_APPLICABLE[NONQB_PLAYER_FRAME_INCOMPLETE]."
+  },
+  "G0A_11_OF_12": {
+   "owner": "governance",
+   "what": "protocol section 1 says no forecast written before G0A is discharged counts toward promotion. nfl.production.authorization.gate_state reports G0A 11/12.",
+   "blocks": "the countability of any seal, even a valid one",
+   "needs_bytes_from_outside": true
+  }
+ },
+ "stop_rule": {
+  "source": "nfl/prospective/PROSPECTIVE_EVALUATION_PROTOCOL.md section 4 and protocol section 9",
+  "rule": "no promotion on one or two favourable games. The prospective ledger is built first, and promotion requires every section-9 condition including an explicit owner decision.",
+  "improvised_minimum": false,
+  "improvised_minimum_note": "no numeric minimum was invented here. The floors are transcribed from the protocol, which predates any 2026 result."
+ }
+}

@@ -654,6 +654,12 @@ EVIDENCE_UNITS = {
     'distinct_games': (
         'GAME -- the independent unit. Two candidates of one game are one '
         'game.'),
+    'distinct_team_games': (
+        'TEAM-GAME -- one team in one game. The unit a target budget, a play '
+        'count and a snap total are allocated within, so it is the unit a '
+        'within-team allocation error is shared across. Two teams in one game '
+        'are NOT independent of each other either -- they share the clock and '
+        'the score -- which is why GAME remains the floor unit.'),
     'distinct_player_games': (
         'PLAYER-GAME -- one player in one game. Not independent across '
         'players within a game: teammates share the same game state.'),
@@ -686,6 +692,9 @@ def accounting(rows):
         'graded_metrics': len({r.get('metric') for r in rows
                                if r.get('metric')}),
         'distinct_games': len(games),
+        'distinct_team_games': len(
+            {(r.get('game_id'), r.get('team')) for r in rows
+             if r.get('game_id') and r.get('team')}),
         'distinct_player_games': len(
             {(r.get('game_id'), r.get('player_id')) for r in rows
              if r.get('player_id')}),
@@ -705,8 +714,20 @@ def accounting(rows):
 # One outcome version per forecast x metric x subject may be CURRENT. The
 # subject is the player, the team, or the quarterback room -- entity is part
 # of the identity because a team row and a room row share a team code.
+# `arm` IS PART OF THE SUBJECT, AND LEAVING IT OUT WAS A DEFECT.
+#
+# Found by the Q9 prospective harness, which seals BOTH arms of a side-by-side
+# comparison inside ONE forecast artifact. Both arms then shared all six
+# fields, so `versioned` read the second arm as a REVISION of the first and
+# marked it SUPERSEDED: of four rows -- two arms x two outcome versions --
+# only one came back CURRENT. The scoring machinery would have silently
+# discarded one arm of every paired comparison.
+#
+# It never surfaced before because each candidate variant had its own
+# `forecast_id`. A row with no `arm` key resolves to the empty string exactly
+# as it did, so every ledger row already on disk keeps the identity it had.
 VERSION_IDENTITY = ('forecast_id', 'game_id', 'entity', 'metric', 'player_id',
-                    'team')
+                    'team', 'arm')
 
 
 def _version_identity(r):

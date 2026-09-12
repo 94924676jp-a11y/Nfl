@@ -1,0 +1,128 @@
+{
+ "artifact": "NFL_Q9_PROSPECTIVE_CANDIDATE",
+ "spec_version": "q9-prospective-candidate-1",
+ "candidate_name": "Q9_TARGET_HURDLE",
+ "promoted": false,
+ "prospective_candidate": true,
+ "shadow_only": true,
+ "registry": {
+  "home": "nfl/prospective/registries.py::CANDIDATES",
+  "state": "PASS[CANDIDATE_OK]",
+  "status": "FROZEN PROSPECTIVE CANDIDATE -- SHADOW ONLY",
+  "prohibited_inputs_match_module": true,
+  "promotion_rulebook": "nfl/prospective/PROSPECTIVE_EVALUATION_PROTOCOL.md",
+  "may_promote_on_2022_2025": false
+ },
+ "freeze": {
+  "artifact": "nfl/research/q9b/Q9_PROSPECTIVE_FREEZE.json",
+  "comparison": "PASS[Q9_CANDIDATE_MATCHES_FREEZE]",
+  "detail": "all 17 identity fields reproduce the freeze; candidate sha 6310f67ccb8b0edf; 3 module hash(es) added beyond the freeze",
+  "identity_fields_compared": [
+   "candidate_name",
+   "mechanism_spec_version",
+   "module_source_sha16",
+   "feature_schema_sha16",
+   "n_features",
+   "coefficient_sha16",
+   "standardiser_sha16",
+   "class_prior_sha16",
+   "share_shrinkage_k",
+   "budget_point_sha16",
+   "budget_residual_pool_sha16",
+   "budget_estimator",
+   "appearance_artifact",
+   "appearance_spec_sha16",
+   "one_target_floor",
+   "named_fallbacks",
+   "production_interface_sha16"
+  ]
+ },
+ "identity": {
+  "candidate_name": "Q9_TARGET_HURDLE",
+  "mechanism_spec_version": "q9-target-hurdle-1",
+  "module_source_sha16": {
+   "nfl.research.q9.hurdle": "bb51133641338547",
+   "nfl.production.nonqb.layers": "481f005f682cd721",
+   "nfl.research.q9b.family": "5b411b4f00e28e6f",
+   "nfl.research.q9b.production_parity": "1f320b1ee3170e64",
+   "nfl.research.q8.audit": "556fe1a7cbc641a5",
+   "nfl.research.q6.frame": "4d9d10e3ce4b665d",
+   "nfl.research.q6.forward_chain": "c7dab79ba2ac751a"
+  },
+  "feature_schema_sha16": "f620eeed09d0dd6e",
+  "n_features": 25,
+  "coefficient_sha16": "9491bb9f4b09b6a2",
+  "standardiser_sha16": "9bc34ec6da42b07f:69307c2004799e0a",
+  "class_prior_sha16": "171212d5426ea16a",
+  "share_shrinkage_k": 0.86686141,
+  "budget_point_sha16": "05529fbf227b2f06",
+  "budget_residual_pool_sha16": "62282e58a2292701",
+  "budget_estimator": "ewma",
+  "appearance_artifact": "nfl.production.nonqb.layers.appearance (R8)",
+  "appearance_spec_sha16": "1835bc9f5ac5d06a",
+  "one_target_floor": true,
+  "named_fallbacks": [
+   "HURDLE_NO_CLEARERS",
+   "HURDLE_MORE_CLEARERS_THAN_BUDGET"
+  ],
+  "production_interface_sha16": "481f005f682cd721",
+  "seed_protocol": {
+   "seed": 20260912,
+   "n_draws": 1000,
+   "policy": "shared upstream draws, per-arm allocation stream keyed by arm name via crc32, never Python hash()"
+  },
+  "training_seasons": [
+   2020,
+   2021,
+   2022,
+   2023,
+   2024,
+   2025
+  ],
+  "n_training_rows": 50965,
+  "q8_budget_repair_applied": false
+ },
+ "identity_sha256": "6310f67ccb8b0edf7190c367505da1e8e1fb8b57726058a5f6befb28d606d7dc",
+ "frozen_prohibitions": {
+  "no_coefficient_refit": "coefficient_sha16 is compared to the freeze on every seal",
+  "no_feature_change": "feature_schema_sha16 is compared on every seal",
+  "no_floor_change": "one_target_floor is part of the identity",
+  "no_fallback_change": "named_fallbacks is part of the identity",
+  "no_threshold_change": "the thresholds live inside the hashed module source",
+  "no_2026_tuning": "every fitted block is estimated on seasons strictly before the forecast season, and the training season list is recorded above",
+  "consequence": "any such change is a NEW candidate requiring a NEW freeze; it cannot inherit this standing"
+ },
+ "arms": {
+  "production": "R8_PRODUCTION",
+  "candidate": "Q9_HURDLE",
+  "never_pooled": true,
+  "shared": [
+   "upstream appearance draws",
+   "team budget draws",
+   "draw index",
+   "player frame",
+   "input captures"
+  ],
+  "differs": [
+   "the allocation mechanism, and nothing else"
+  ]
+ },
+ "primary_metrics": [
+  "zero-target Brier",
+  "zero-target log loss",
+  "zero-mass calibration gap",
+  "marginal target CRPS",
+  "positive-target CRPS"
+ ],
+ "secondary_metrics": [
+  "downstream receiving-yard CRPS, preserved for diagnosis and NOT a promotion criterion",
+  "randomized PIT, emitted so protocol S9.6 is evaluable"
+ ],
+ "evidence_units": [
+  "ROW",
+  "PLAYER_GAME",
+  "TEAM_GAME",
+  "GAME"
+ ],
+ "no_future_outcome_consumed": true
+}

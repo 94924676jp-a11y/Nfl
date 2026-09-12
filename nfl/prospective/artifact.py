@@ -342,18 +342,31 @@ def assert_hard_invariants(verdicts) -> Outcome:
               'sealed as valid, whatever else in the run succeeded.',
             offences=failed)
     owed = [k for k in HARD_INVARIANTS if seen[k]['state'] == 'DEFERRED']
+    # NOT_APPLICABLE IS A LAWFUL ANSWER AND IS REPORTED AS ONE. An artifact
+    # that runs only some layers cannot answer another layer's invariant, and
+    # that is not a debt. But it is also not a pass, so it is counted and
+    # named here: otherwise an artifact could mark every hard invariant
+    # NOT_APPLICABLE and its verdict would read exactly like a clean run.
+    na = [k for k in HARD_INVARIANTS if seen[k]['state'] == 'NOT_APPLICABLE']
+    held = [k for k in HARD_INVARIANTS if seen[k]['state'] == 'PASS']
     diag = [k for k in DIAGNOSTIC_INVARIANTS
             if seen[k]['state'] in ('FAIL', 'BLOCKED')]
     return Outcome.ok(
         'HARD_INVARIANTS_HOLD',
         value={'n_hard': len(HARD_INVARIANTS),
                'n_diagnostic': len(DIAGNOSTIC_INVARIANTS),
-               'hard_owed': owed, 'diagnostics_not_clean': diag},
-        detail=f'{len(HARD_INVARIANTS)} hard invariant(s) hold'
+               'hard_owed': owed, 'hard_not_applicable': na,
+               'hard_evaluated_and_held': held,
+               'diagnostics_not_clean': diag},
+        detail=f'{len(held)} of {len(HARD_INVARIANTS)} hard invariant(s) were '
+               f'evaluated and hold'
                + (f'; {len(owed)} carried as OWED: {owed}' if owed else '')
+               + (f'; {len(na)} NOT_APPLICABLE to this artifact: {na}'
+                  if na else '')
                + (f'; {len(diag)} diagnostic(s) not clean (recorded, not '
                   f'gating): {diag}' if diag else ''),
-        hard_owed=owed, diagnostics_not_clean=diag)
+        hard_owed=owed, hard_not_applicable=na,
+        hard_evaluated_and_held=held, diagnostics_not_clean=diag)
 
 
 def _p(ts):
