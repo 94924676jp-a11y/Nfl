@@ -2067,3 +2067,64 @@ on carries.
 **Detail:** `nfl/research/q6/Q6_SPEC.md`, `Q6_DECISION.md`,
 `Q6_FORWARD_CHAIN_RESULTS.json`.
 
+---
+
+## 2026-09-12 — Q7: efficiency calibration. REJECT the repairs; the diagnosis stands.
+
+**The question.** Are the passing and receiving efficiency distributions
+systematically biased or miscalibrated AFTER conditioning on opportunity.
+Forward-chained 2022-2025, 93,961 scored rows over 2,653 QB-games and 17,323
+receiver-games, intervals clustered on 1,087 games. Every arm received the
+REALISED attempts, completions, targets and receptions, so no volume error
+existed to disguise an efficiency error.
+
+**Answer: yes, decisively, and the defect is in the MEAN not the width.**
+`pyds|cmp` by attempt regime: bias +0.89 / -3.92 / +4.50 / **+19.80** and
+calibration slope 1.029 / 0.990 / **0.755** / **0.728**. A twenty-yard
+over-prediction at 40+ attempts with a slope a quarter below one.
+
+**The width defect is real and was predicted from the mechanism before the
+run.** A whole-game yards-per-completion is resampled and multiplied by the
+completion count, so per-completion spread does not depend on completion
+count. RMSE/SD by regime: 1.460 / 0.879 / 0.738 / 0.710 -- under-dispersed at
+low volume (90% intervals cover 0.704), over-dispersed at high. The repair
+collapses that 2.06-fold spread to 1.09 and lifts `<20` coverage to 0.945.
+
+**And it buys nothing on a proper score.** Overall dCRPS -0.143% with the
+interval spanning zero; `20-29` significantly WORSE. A wider interval is not
+an improvement, the decision function refuses to treat it as one, and that is
+what produced REJECT. All three arms REJECT.
+
+**Shrinkage tested and left alone.** K=4.0 and half-life 2 are, in QB2's own
+words, "inherited constants" with no grid search. Estimated forward-chained by
+the repo's within/between-player estimator: 4.74 for the completion rate, 3.32
+for yards per completion -- the inherited value sits between them, and
+Q7_SHRINK is significantly worse on `pyds|cmp` (+0.300%). Missing provenance
+is a documentation defect, not an accuracy one. Do not re-estimate it.
+
+**Passing TD is the worst-calibrated QB quantity**: slope 0.812, PIT chi2 267,
+50% intervals covering 0.794. The only estimand where a candidate improvement
+survives the bootstrap. Receiving and rushing TD efficiency refused by name,
+citing the governed list's ESTIMAND_UNVERIFIED.
+
+**RC2's confirmed receiving defect is mostly NOT an efficiency error.** RC2
+measured +2.1801 unconditional. Conditional on realised targets it is +0.779;
+on realised receptions, **+0.602**. About 72% lives in the opportunity layer.
+That is a better explanation of why three of RC2's four repair arms failed than
+"the repairs were badly chosen", and it says where to look next. What
+efficiency defect remains is concentrated at 10+ targets: bias +2.538, slope
+0.855. No repair arm was run there -- RC2 closed that family.
+
+**Decomposition, composed condition, n=2,653:** mean |opportunity error| 8.73
+attempts, mean |efficiency error| 2.17 yards per attempt, mean |combined
+error| 71.0 yards; 50.9% offsetting, 46.8% same sign. Track 1's 55.7% is a
+different layer and a different quantity, motivated asking, and appears in no
+fit.
+
+**Nothing promoted.**
+
+**Suite:** 76 modules, 839 test functions, 4,569 checks, 0 failing, 0 raised.
+
+**Detail:** `nfl/research/q7/Q7_SPEC.md`, `Q7_DECISION.md`,
+`Q7_FORWARD_CHAIN_RESULTS.json`.
+
