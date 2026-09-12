@@ -2191,3 +2191,66 @@ wrong and mattering are different things.
 **Detail:** `nfl/research/q8/Q8_ATTRIBUTION_AUDIT.md`, `Q8_REPAIR_SPEC.md`,
 `Q8_DECISION.md`, `Q8_FORWARD_CHAIN_RESULTS.json`.
 
+---
+
+## 2026-09-12 — Q9: target hurdle / zero-opportunity architecture. SUPPORT.
+
+**The question.** Can target allocation be improved by separating P(targets>0)
+from the positive-target allocation, preserving team totals exactly and
+without reusing outcome-conditioned information. Forward-chained 2022-2025,
+69,420 scored rows over 34,710 player-games, intervals clustered on 2,174
+team-games. The only change is stage 1 and a one-target floor.
+
+**The stages are not collapsed.** P(appears) is production R8, unchanged.
+P(targeted | appears) is fitted on APPEARED rows only. The marginal zero
+probability is composed at draw time as 1 - p_appear * p_hurdle and is never
+fitted as one quantity, because a player who is out and a player who dressed
+and was ignored are different events with different predictors.
+
+**Zero-target calibration, the thing it was built for.** Brier 0.131861 ->
+0.130193, log loss 0.422519 -> 0.417337, ECE 0.02604 -> 0.01565. Predicted
+zero rate 0.4797 -> 0.5000 against an observed 0.5044: the ~2.5-point
+under-prediction Q8 recorded falls to 0.44 points. The paired Brier difference
+is -0.00167 with a team-game-clustered CI of [-0.00229, -0.00100].
+
+**Marginal target CRPS -0.591%**, CI [-0.00644, -0.00338], excluding zero, and
+it improves in all 14 strata, 11 significantly. Largest gain is cold start
+(no prior appeared game) at -7.30%; smallest is the established starter, who
+was never the problem. **Positive-target CRPS +0.286% with the interval
+spanning zero** -- not materially degraded -- while its conditional bias
+improves from -0.1343 to +0.0204. Receiving-yard CRPS is neutral and the
+decision function never reads it, because the directive says a yardage gain
+alone is insufficient.
+
+**Coherence is exact.** Maximum absolute reconciliation error 0.0 on every
+draw in both arms, by construction: every clearer receives one target and the
+remainder is drawn among the clearers.
+
+**Both fallbacks named, governed and measured** over 869,600 hurdle draws.
+HURDLE_NO_CLEARERS fired ONCE (0.00012%) and degraded that draw to the
+baseline mechanism -- budget never dropped, no player forced active.
+HURDLE_MORE_CLEARERS_THAN_BUDGET fired 2,210 times (0.254%) and drew the
+budget's worth of clearers without replacement weighted by each clearer's own
+hurdle probability, preserving the declared probabilities in proportion rather
+than truncating the tail arbitrarily.
+
+**Reported rather than buried.** Marginal PIT chi2 rises 8,824 -> 9,040: the
+distribution is better on CRPS and zero mass while its rank histogram is
+marginally worse. Prior depth 4-8 is the one cell where zero Brier does not
+improve; near-certain appearance the one where the zero-rate gap does not
+narrow. Neither is significant.
+
+**No gate was tuned from Q8's strata and no decision stratum is defined from
+the realised target count.** The realised-volume breakdown sits in a block
+named `diagnostic_not_read_by_the_decision` and `decide` does not read it.
+The Q8 budget repair is absent from the experiment entirely.
+
+**Nothing promoted.** Before promotion could be discussed this needs a
+prospective result on unseen games, a run through the production interfaces
+rather than this harness, and an operational ruling on a 0.25% fallback rate.
+
+**Suite:** 78 modules, 862 test functions, 4,766 checks, 0 failing, 0 raised.
+
+**Detail:** `nfl/research/q9/Q9_SPEC.md`, `Q9_DECISION.md`,
+`Q9_FORWARD_CHAIN_RESULTS.json`.
+
