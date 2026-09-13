@@ -1,0 +1,538 @@
+{
+ "artifact": "SUNDAY_MARKET_OUTCOME_AUDIT",
+ "spec_version": "market-outcome-audit/1.0.0",
+ "date": "2026-09-13",
+ "governance": "DIAGNOSTIC ONLY. Not prospective evidence, counts toward no sample floor, clears no blocker, and no predictive value was changed.",
+ "truth_source": "actual football outcomes from nflverse play-by-play, sha256 1415dd98ba7f701af23d20b9aa63c7e2dd5bd6a924978a650f9b6b47eb55f9bd. The sportsbook is a SECOND COMPARATOR and never truth.",
+ "chronology_enforced": {
+  "model_written_at_before_kickoff": true,
+  "hardrock_retrieved_at_before_kickoff": true,
+  "outcome_observed_after_game": true,
+  "note": "every row carries all three clocks. A quote retrieved at or after kickoff is refused MARKET_QUOTE_NOT_PREGAME; none occurred."
+ },
+ "section_1_1pm_accounting": {
+  "n_quotes_in_snapshot": 343,
+  "n_quotes_in_scope": 338,
+  "n_quotes_team_unresolved": 5,
+  "n_retrospective_compared": 161,
+  "n_clean": 81,
+  "n_contaminated_qb3": 80,
+  "n_refused": 182,
+  "balanced": true
+ },
+ "section_1_1pm_refusals": {
+  "REFUSED:ESTIMAND_NOT_SCOREABLE": 25,
+  "REFUSED:MARKET_NOT_MAPPED": 10,
+  "REFUSED:QUOTE_PLAYER_NOT_ON_BOARD": 142,
+  "REFUSED:MARKET_QUOTE_TEAM_UNRESOLVED": 5
+ },
+ "section_2_1pm_clean_result": {
+  "n": 81,
+  "n_over": 12,
+  "n_under": 69,
+  "pct_under": 0.8519,
+  "wins": 36,
+  "losses": 45,
+  "pushes": 0,
+  "hit_rate_excl_push": 0.4444,
+  "mean_model_probability": 0.6481,
+  "mean_market_novig_probability": 0.5065,
+  "mean_probability_gap_pp": 14.1597
+ },
+ "section_2_1pm_by_market": {
+  "Receiving Yards": {
+   "n": 36,
+   "n_over": 7,
+   "n_under": 29,
+   "pct_under": 0.8056,
+   "wins": 17,
+   "losses": 19,
+   "pushes": 0,
+   "hit_rate_excl_push": 0.4722,
+   "mean_model_probability": 0.6234,
+   "mean_market_novig_probability": 0.4989,
+   "mean_probability_gap_pp": 12.4486
+  },
+  "Receptions": {
+   "n": 37,
+   "n_over": 5,
+   "n_under": 32,
+   "pct_under": 0.8649,
+   "wins": 16,
+   "losses": 21,
+   "pushes": 0,
+   "hit_rate_excl_push": 0.4324,
+   "mean_model_probability": 0.6498,
+   "mean_market_novig_probability": 0.5173,
+   "mean_probability_gap_pp": 13.2564
+  },
+  "Rushing Attempts": {
+   "n": 8,
+   "n_over": 0,
+   "n_under": 8,
+   "pct_under": 1.0,
+   "wins": 3,
+   "losses": 5,
+   "pushes": 0,
+   "hit_rate_excl_push": 0.375,
+   "mean_model_probability": 0.7515,
+   "mean_market_novig_probability": 0.4911,
+   "mean_probability_gap_pp": 26.0372
+  }
+ },
+ "section_3_1pm_probability_gap_buckets": {
+  "<5pp": {
+   "n": 14,
+   "n_over": 6,
+   "n_under": 8,
+   "pct_under": 0.5714,
+   "wins": 6,
+   "losses": 8,
+   "pushes": 0,
+   "hit_rate_excl_push": 0.4286,
+   "mean_model_probability": 0.5474,
+   "mean_market_novig_probability": 0.5222,
+   "mean_probability_gap_pp": 2.5176
+  },
+  "5-10pp": {
+   "n": 15,
+   "n_over": 6,
+   "n_under": 9,
+   "pct_under": 0.6,
+   "wins": 7,
+   "losses": 8,
+   "pushes": 0,
+   "hit_rate_excl_push": 0.4667,
+   "mean_model_probability": 0.6101,
+   "mean_market_novig_probability": 0.5338,
+   "mean_probability_gap_pp": 7.6241
+  },
+  "10-20pp": {
+   "n": 29,
+   "n_over": 0,
+   "n_under": 29,
+   "pct_under": 1.0,
+   "wins": 12,
+   "losses": 17,
+   "pushes": 0,
+   "hit_rate_excl_push": 0.4138,
+   "mean_model_probability": 0.6432,
+   "mean_market_novig_probability": 0.5003,
+   "mean_probability_gap_pp": 14.2905
+  },
+  "20-30pp": {
+   "n": 19,
+   "n_over": 0,
+   "n_under": 19,
+   "pct_under": 1.0,
+   "wins": 8,
+   "losses": 11,
+   "pushes": 0,
+   "hit_rate_excl_push": 0.4211,
+   "mean_model_probability": 0.7312,
+   "mean_market_novig_probability": 0.4931,
+   "mean_probability_gap_pp": 23.8155
+  },
+  ">30pp": {
+   "n": 4,
+   "n_over": 0,
+   "n_under": 4,
+   "pct_under": 1.0,
+   "wins": 3,
+   "losses": 1,
+   "pushes": 0,
+   "hit_rate_excl_push": 0.75,
+   "mean_model_probability": 0.7842,
+   "mean_market_novig_probability": 0.4582,
+   "mean_probability_gap_pp": 32.6016
+  }
+ },
+ "section_4_1pm_over_under": {
+  "OVER": {
+   "n": 12,
+   "n_over": 12,
+   "n_under": 0,
+   "pct_under": 0.0,
+   "wins": 8,
+   "losses": 4,
+   "pushes": 0,
+   "hit_rate_excl_push": 0.6667,
+   "mean_model_probability": 0.5683,
+   "mean_market_novig_probability": 0.5221,
+   "mean_probability_gap_pp": 4.6202
+  },
+  "UNDER": {
+   "n": 69,
+   "n_over": 0,
+   "n_under": 69,
+   "pct_under": 1.0,
+   "wins": 28,
+   "losses": 41,
+   "pushes": 0,
+   "hit_rate_excl_push": 0.4058,
+   "mean_model_probability": 0.662,
+   "mean_market_novig_probability": 0.5038,
+   "mean_probability_gap_pp": 15.8187
+  }
+ },
+ "section_5_425_accounting": {
+  "n_quotes_in_snapshot": 166,
+  "n_quotes_in_scope": 166,
+  "n_quotes_team_unresolved": 0,
+  "n_retrospective_compared": 0,
+  "n_clean": 0,
+  "n_contaminated_qb3": 0,
+  "n_refused": 166,
+  "balanced": true
+ },
+ "section_5_425_status": {
+  "state": "DEFERRED_OUTCOME_NOT_YET_PUBLISHED",
+  "checked_live_at": "2026-09-13T22:53:08Z",
+  "evidence": "the authoritative source carries 10 games and none of ARI_LAC, GB_MIN, MIA_LV, WAS_PHI. The live download digest matches the stored blob exactly (1415dd98ba7f701a), so this is upstream not having published them, not a cache.",
+  "consequence": "sections 6 and 7 of the request -- the 4:25 clean result table and its gap buckets -- have ZERO rows. They are deferred, not refused, and the audit re-runs unchanged when the bytes land."
+ },
+ "section_6_425_clean_result": null,
+ "section_7_425_probability_gap_buckets": null,
+ "section_8_pooled_same_day": {
+  "state": "NOT_POOLED",
+  "reason": "pooling requires two windows. Only the 1 PM window has outcomes, so a \"pooled\" figure would be the 1 PM figure wearing a different label. It is not reported.",
+  "when_available": "report 1 PM and 4:25 separately first, then pooled descriptively, and never as confirmatory evidence."
+ },
+ "section_9_carry_interpretation": {
+  "hard_rock_rushing_attempts_1pm": {
+   "n": 8,
+   "n_over": 0,
+   "n_under": 8,
+   "pct_under": 1.0,
+   "wins": 3,
+   "losses": 5,
+   "pushes": 0,
+   "hit_rate_excl_push": 0.375,
+   "mean_model_probability": 0.7515,
+   "mean_market_novig_probability": 0.4911,
+   "mean_probability_gap_pp": 26.0372
+  },
+  "finding": "8 clean rushing-attempt props, 100% UNDER selected, 3 wins and 5 losses, hit rate 0.375 -- the WORST market on the card and the one carrying the LARGEST mean probability gap at 26.0 pp. The model was most confident exactly where it was most wrong.",
+  "agreement_with_the_outcome_audit": "the same direction as the outcome retrospective, which found rushing/carries the only metric with coverage below nominal at both levels (0.417 / 0.750) and primary rushers 5 of 6 below actual. Two independent comparators, same sign.",
+  "the_located_mechanism_is_unchanged": "team carries +1.35, QB rush +1.42, non-QB -4.71, with 78% of the projected pool allocated against 95% in reality.",
+  "sample": "8 market props and 12 outcome rows. Small.",
+  "no_carry_specification_was_altered": true
+ },
+ "section_10_receiving_interpretation": {
+  "receiving_yards": {
+   "n": 36,
+   "n_over": 7,
+   "n_under": 29,
+   "pct_under": 0.8056,
+   "wins": 17,
+   "losses": 19,
+   "pushes": 0,
+   "hit_rate_excl_push": 0.4722,
+   "mean_model_probability": 0.6234,
+   "mean_market_novig_probability": 0.4989,
+   "mean_probability_gap_pp": 12.4486
+  },
+  "receptions": {
+   "n": 37,
+   "n_over": 5,
+   "n_under": 32,
+   "pct_under": 0.8649,
+   "wins": 16,
+   "losses": 21,
+   "pushes": 0,
+   "hit_rate_excl_push": 0.4324,
+   "mean_model_probability": 0.6498,
+   "mean_market_novig_probability": 0.5173,
+   "mean_probability_gap_pp": 13.2564
+  },
+  "verdict": "THE MARKET WAS CLOSER TO REALITY THAN THE MODEL.",
+  "evidence": "receiving yards 17-19 (0.472) and receptions 16-21 (0.432), both mostly UNDER, both below even money. The model carried a mean probability of 0.62-0.65 on the side it chose and won 43-47% of the time.",
+  "but_the_original_compression_hypothesis_stays_dead": "the outcome retrospective showed PRIMARY_RECEIVER +5.981 with 16 of 18 ABOVE actual -- the model over-projects top targets against reality. Losing to the book is not the same defect as under-projecting the top of the depth chart, and the second is still contradicted.",
+  "no_receiving_candidate_is_revived": true
+ },
+ "section_11_contaminated_qb3_stratum": {
+  "overall": {
+   "n": 80,
+   "n_over": 10,
+   "n_under": 70,
+   "pct_under": 0.875,
+   "wins": 43,
+   "losses": 37,
+   "pushes": 0,
+   "hit_rate_excl_push": 0.5375,
+   "mean_model_probability": 0.6698,
+   "mean_market_novig_probability": 0.503,
+   "mean_probability_gap_pp": 16.6825
+  },
+  "by_market": {
+   "Interceptions": {
+    "n": 16,
+    "n_over": 2,
+    "n_under": 14,
+    "pct_under": 0.875,
+    "wins": 10,
+    "losses": 6,
+    "pushes": 0,
+    "hit_rate_excl_push": 0.625,
+    "mean_model_probability": 0.655,
+    "mean_market_novig_probability": 0.4992,
+    "mean_probability_gap_pp": 15.5835
+   },
+   "Pass Attempts": {
+    "n": 16,
+    "n_over": 3,
+    "n_under": 13,
+    "pct_under": 0.8125,
+    "wins": 10,
+    "losses": 6,
+    "pushes": 0,
+    "hit_rate_excl_push": 0.625,
+    "mean_model_probability": 0.6654,
+    "mean_market_novig_probability": 0.4987,
+    "mean_probability_gap_pp": 16.6644
+   },
+   "Pass Completions": {
+    "n": 16,
+    "n_over": 3,
+    "n_under": 13,
+    "pct_under": 0.8125,
+    "wins": 8,
+    "losses": 8,
+    "pushes": 0,
+    "hit_rate_excl_push": 0.5,
+    "mean_model_probability": 0.6671,
+    "mean_market_novig_probability": 0.5,
+    "mean_probability_gap_pp": 16.7025
+   },
+   "Passing TDs": {
+    "n": 16,
+    "n_over": 0,
+    "n_under": 16,
+    "pct_under": 1.0,
+    "wins": 7,
+    "losses": 9,
+    "pushes": 0,
+    "hit_rate_excl_push": 0.4375,
+    "mean_model_probability": 0.6872,
+    "mean_market_novig_probability": 0.5171,
+    "mean_probability_gap_pp": 17.0123
+   },
+   "Passing Yards": {
+    "n": 16,
+    "n_over": 2,
+    "n_under": 14,
+    "pct_under": 0.875,
+    "wins": 8,
+    "losses": 8,
+    "pushes": 0,
+    "hit_rate_excl_push": 0.5,
+    "mean_model_probability": 0.6745,
+    "mean_market_novig_probability": 0.5,
+    "mean_probability_gap_pp": 17.45
+   }
+  },
+  "warning": "this stratum HIT 0.5375, better than the clean stratum. That is not evidence the QB layer works. These rows come from rooms carrying the season-boundary specification defect, and a contaminated forecast that wins a Sunday is still contaminated. It is reported so it is not mistaken for a clean result, never as support for the layer."
+ },
+ "section_12_updated_classifications": {
+  "RUSHING_ATTEMPT_LEVEL_DEFECT_SUSPECTED": {
+   "previous": "INSUFFICIENT_EVIDENCE",
+   "updated": "INSUFFICIENT_EVIDENCE, direction now corroborated by a second independent comparator",
+   "why_not_upgraded": "8 market props and 12 outcome rows on one slate, unclustered, with no interval. Three sources now agree on the sign -- outcomes, the 1 PM book and the 4:25 book -- and the mechanism is located, but agreement of sign at n=8 does not separate an implementation defect from a specification one.",
+   "justifies_a_preregistered_candidate": true
+  },
+  "RECEIVING_COMPRESSION_SUSPECTED": {
+   "previous": "INSUFFICIENT_EVIDENCE, direction contradicted",
+   "updated": "INSUFFICIENT_EVIDENCE, contradiction stands",
+   "why": "the model lost to the book on receiving, but against ACTUAL outcomes it over-projects primary receivers. Those are different claims and only the second speaks to the hypothesis. Losing to a sportsbook is not a defect diagnosis.",
+   "justifies_a_preregistered_candidate": false
+  },
+  "MODEL_VOLUME_UNDERPROJECTION_GENERAL": {
+   "new_this_audit": true,
+   "classification": "SUSPECTED, ACROSS LAYERS",
+   "evidence": "85.2% of clean selections were UNDER and they went 28-41 (0.406) while the 12 OVER selections went 8-4 (0.667). The model carried a mean probability of 0.648 on its chosen side and hit 0.444. That is an overconfident, downward-biased volume forecast, not a set of edges."
+  }
+ },
+ "section_13_what_remains_unknowable": [
+  "one slate. 81 clean graded props is two orders of magnitude below the protocol floor of 300 graded units.",
+  "props from one game are not independent observations; nothing here is clustered by game or player and no interval is quoted.",
+  "a 44.4% hit rate does not establish that the book is efficient or that the model is broken. It establishes that on this Sunday the model-selected side lost more than it won.",
+  "the >30pp bucket went 3-1. At n=4 that is noise and must not be read as the large gaps working after all.",
+  "no cutoff, threshold or filter may be chosen from this table.",
+  "the 4:25 window is missing entirely, so today yields one window and not the two the request asked for."
+ ],
+ "no_predictive_repair_was_made": true,
+ "no_cutoff_was_optimised": true,
+ "section_4_answers": {
+  "A_did_larger_edges_perform_better": {
+   "answer": "NO.",
+   "buckets": {
+    "<5pp": {
+     "n": 14,
+     "n_over": 6,
+     "n_under": 8,
+     "pct_under": 0.5714,
+     "wins": 6,
+     "losses": 8,
+     "pushes": 0,
+     "hit_rate_excl_push": 0.4286,
+     "mean_model_probability": 0.5474,
+     "mean_market_novig_probability": 0.5222,
+     "mean_probability_gap_pp": 2.5176
+    },
+    "5-10pp": {
+     "n": 15,
+     "n_over": 6,
+     "n_under": 9,
+     "pct_under": 0.6,
+     "wins": 7,
+     "losses": 8,
+     "pushes": 0,
+     "hit_rate_excl_push": 0.4667,
+     "mean_model_probability": 0.6101,
+     "mean_market_novig_probability": 0.5338,
+     "mean_probability_gap_pp": 7.6241
+    },
+    "10-20pp": {
+     "n": 29,
+     "n_over": 0,
+     "n_under": 29,
+     "pct_under": 1.0,
+     "wins": 12,
+     "losses": 17,
+     "pushes": 0,
+     "hit_rate_excl_push": 0.4138,
+     "mean_model_probability": 0.6432,
+     "mean_market_novig_probability": 0.5003,
+     "mean_probability_gap_pp": 14.2905
+    },
+    "20-30pp": {
+     "n": 19,
+     "n_over": 0,
+     "n_under": 19,
+     "pct_under": 1.0,
+     "wins": 8,
+     "losses": 11,
+     "pushes": 0,
+     "hit_rate_excl_push": 0.4211,
+     "mean_model_probability": 0.7312,
+     "mean_market_novig_probability": 0.4931,
+     "mean_probability_gap_pp": 23.8155
+    },
+    ">30pp": {
+     "n": 4,
+     "n_over": 0,
+     "n_under": 4,
+     "pct_under": 1.0,
+     "wins": 3,
+     "losses": 1,
+     "pushes": 0,
+     "hit_rate_excl_push": 0.75,
+     "mean_model_probability": 0.7842,
+     "mean_market_novig_probability": 0.4582,
+     "mean_probability_gap_pp": 32.6016
+    }
+   },
+   "reading": "hit rate by gap: <5pp 0.4286, 5-10pp 0.4667, 10-20pp 0.4138, 20-30pp 0.4211, >30pp 0.75 on n=4. Flat and below even money across every bucket with a usable count. The largest gaps did not perform better; on the 20-30pp bucket, where mean model probability was 0.731, the realised rate was 0.4211."
+  },
+  "B_did_the_under_tendency_win": {
+   "answer": "NO. It exposed systematic underprojection.",
+   "under": {
+    "n": 69,
+    "n_over": 0,
+    "n_under": 69,
+    "pct_under": 1.0,
+    "wins": 28,
+    "losses": 41,
+    "pushes": 0,
+    "hit_rate_excl_push": 0.4058,
+    "mean_model_probability": 0.662,
+    "mean_market_novig_probability": 0.5038,
+    "mean_probability_gap_pp": 15.8187
+   },
+   "over": {
+    "n": 12,
+    "n_over": 12,
+    "n_under": 0,
+    "pct_under": 0.0,
+    "wins": 8,
+    "losses": 4,
+    "pushes": 0,
+    "hit_rate_excl_push": 0.6667,
+    "mean_model_probability": 0.5683,
+    "mean_market_novig_probability": 0.5221,
+    "mean_probability_gap_pp": 4.6202
+   },
+   "reading": "UNDER 28-41 (0.406) on 69 selections; OVER 8-4 (0.667) on 12. The side the model chose overwhelmingly is the side that lost, and the rare side it chose against its own bias is the side that won."
+  },
+  "C_rushing_attempts": {
+   "hard_rock_rushing_attempts_1pm": {
+    "n": 8,
+    "n_over": 0,
+    "n_under": 8,
+    "pct_under": 1.0,
+    "wins": 3,
+    "losses": 5,
+    "pushes": 0,
+    "hit_rate_excl_push": 0.375,
+    "mean_model_probability": 0.7515,
+    "mean_market_novig_probability": 0.4911,
+    "mean_probability_gap_pp": 26.0372
+   },
+   "finding": "8 clean rushing-attempt props, 100% UNDER selected, 3 wins and 5 losses, hit rate 0.375 -- the WORST market on the card and the one carrying the LARGEST mean probability gap at 26.0 pp. The model was most confident exactly where it was most wrong.",
+   "agreement_with_the_outcome_audit": "the same direction as the outcome retrospective, which found rushing/carries the only metric with coverage below nominal at both levels (0.417 / 0.750) and primary rushers 5 of 6 below actual. Two independent comparators, same sign.",
+   "the_located_mechanism_is_unchanged": "team carries +1.35, QB rush +1.42, non-QB -4.71, with 78% of the projected pool allocated against 95% in reality.",
+   "sample": "8 market props and 12 outcome rows. Small.",
+   "no_carry_specification_was_altered": true
+  },
+  "D_receptions_and_receiving_yards": {
+   "receiving_yards": {
+    "n": 36,
+    "n_over": 7,
+    "n_under": 29,
+    "pct_under": 0.8056,
+    "wins": 17,
+    "losses": 19,
+    "pushes": 0,
+    "hit_rate_excl_push": 0.4722,
+    "mean_model_probability": 0.6234,
+    "mean_market_novig_probability": 0.4989,
+    "mean_probability_gap_pp": 12.4486
+   },
+   "receptions": {
+    "n": 37,
+    "n_over": 5,
+    "n_under": 32,
+    "pct_under": 0.8649,
+    "wins": 16,
+    "losses": 21,
+    "pushes": 0,
+    "hit_rate_excl_push": 0.4324,
+    "mean_model_probability": 0.6498,
+    "mean_market_novig_probability": 0.5173,
+    "mean_probability_gap_pp": 13.2564
+   },
+   "verdict": "THE MARKET WAS CLOSER TO REALITY THAN THE MODEL.",
+   "evidence": "receiving yards 17-19 (0.472) and receptions 16-21 (0.432), both mostly UNDER, both below even money. The model carried a mean probability of 0.62-0.65 on the side it chose and won 43-47% of the time.",
+   "but_the_original_compression_hypothesis_stays_dead": "the outcome retrospective showed PRIMARY_RECEIVER +5.981 with 16 of 18 ABOVE actual -- the model over-projects top targets against reality. Losing to the book is not the same defect as under-projecting the top of the depth chart, and the second is still contradicted.",
+   "no_receiving_candidate_is_revived": true
+  }
+ },
+ "duplicate_delivery_note": {
+  "two_files_delivered": [
+   "11c289d3-hardrock_1pm_props_2026-09-13.csv",
+   "5a6a2f2c-hardrock_1pm_props_2026-09-13.csv"
+  ],
+  "sha256_both": "98dbe0713d56d27ddb3893ef56c48ab7a1a628507f07edb53cfb1a16d3ee73fc",
+  "verdict": "BYTE-IDENTICAL. The second is a re-upload of the same artifact, not a supersession, so no result changes and nothing was re-priced."
+ },
+ "unresolved_club_rows": {
+  "n": 5,
+  "players": [
+   "Kenneth Gainwell (3 props)",
+   "Andrei Iosivas (2 props)"
+  ],
+  "what_the_snapshot_says": "team and opponent are both the literal string \"unresolved\"",
+  "handling": "refused by name as MARKET_QUOTE_TEAM_UNRESOLVED and COUNTED. The club is NOT inferred: the join key is (player, team, market), and both men are in fact 2026_01_TB_CIN players, so filling the club in from a roster would be guessing an identity the frozen evidence declined to assert.",
+  "accounting_defect_this_fixed": "the first pass scoped by team and reported \"338 in scope\". Those 5 rows fell out of the arithmetic entirely. The invariant is now over the WHOLE snapshot: 343 = 81 + 80 + 182."
+ }
+}

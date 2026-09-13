@@ -78,7 +78,11 @@ SNAPSHOT_COLUMNS = ('player', 'team', 'opponent', 'market', 'line',
 REQUIRED_AVAILABILITY = 'TWO_SIDED_OPEN'
 
 # canonical name -> the alias a delivery is allowed to use instead. Closed set.
-COLUMN_ALIASES = {'source_url': 'event_url'}
+COLUMN_ALIASES = {'source_url': 'event_url',
+                  'market': 'hrb_market_name',
+                  'over_price': 'over_odds',
+                  'under_price': 'under_odds',
+                  'retrieval_time_utc': 'retrieval_timestamp_utc'}
 
 
 def load_frozen_snapshot(path):
