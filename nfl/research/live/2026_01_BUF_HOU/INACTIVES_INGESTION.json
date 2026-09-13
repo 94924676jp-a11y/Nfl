@@ -1,0 +1,213 @@
+{
+ "artifact": "NFL_OFFICIAL_INACTIVES_INGESTION",
+ "game_id": "2026_01_BUF_HOU",
+ "teams": [
+  "BUF",
+  "HOU"
+ ],
+ "parser_version": "official-inactives-1",
+ "steps": [
+  {
+   "step": "1. bytes stored before parsing",
+   "ok": true,
+   "code": "INACTIVES_STORED",
+   "sha256": "3fc8c4f13968d02334d23fc5d9cf7f55735fe92cab5d3bfc9e0001ff6e7d832c",
+   "n_bytes": 889867,
+   "blob": "nfl/vintage/official_inactives.3fc8c4f13968d023.html.gz",
+   "retrieved_at": "2026-09-13T16:00:17.149276+00:00",
+   "published_at": "2026-09-13T15:46:51.760Z",
+   "source_url": "https://www.nfl.com/news/inactive-reports-sunday-week-1-2026-nfl-season",
+   "detail": "889867 bytes, sha 3fc8c4f13968d023"
+  },
+  {
+   "step": "2. both clubs represented",
+   "ok": true,
+   "code": "INACTIVES_PARSED",
+   "n_names": {
+    "BUF": 7,
+    "HOU": 6
+   },
+   "segmentation": "operator_supplied_verified_against_bytes",
+   "detail": "{'BUF': 7, 'HOU': 6}"
+  },
+  {
+   "step": "3. identity resolved",
+   "ok": true,
+   "code": "INACTIVES_RESOLVED",
+   "roster_blob": "nfl/vintage/weekly_rosters.cef497eaeddef07b.reduced.csv.gz",
+   "n_roster": 182,
+   "n_roster_with_a_name": 182,
+   "n_resolved": {
+    "BUF": 5,
+    "HOU": 5
+   },
+   "n_unmapped": 3,
+   "unmapped": [
+    "BUF:Jalen Kilgore",
+    "BUF:Mike Danna",
+    "HOU:Nate Thomas"
+   ],
+   "detail": "{'BUF': 5, 'HOU': 5} resolved, 3 unmapped"
+  },
+  {
+   "step": "4. POST_INACTIVES_COMPLETE",
+   "ok": true,
+   "code": "POST_INACTIVES_COMPLETE",
+   "n_inactive_by_team": {
+    "BUF": 5,
+    "HOU": 5
+   },
+   "inactive_by_team": {
+    "BUF": [
+     "00-0035537",
+     "00-0040724",
+     "00-0041128",
+     "00-0041443",
+     "00-0041548"
+    ],
+    "HOU": [
+     "00-0036556",
+     "00-0039402",
+     "00-0041313",
+     "00-0041449",
+     "00-0041559"
+    ]
+   },
+   "hours_before_kickoff": 0.995,
+   "teams_without_a_list": [],
+   "detail": "{'BUF': 5, 'HOU': 5}"
+  },
+  {
+   "step": "4b. no player promoted to GAME_ACTIVE",
+   "ok": true,
+   "n_official_inactive": 10,
+   "n_not_listed": 172,
+   "detail": "absence from the list carries no positive claim"
+  },
+  {
+   "step": "5. perishables re-fetched, consumed slice compared",
+   "ok": true,
+   "slices": {
+    "depth_charts": {
+     "file_before": "a14e8dfe865a4b03",
+     "file_after": "a14e8dfe865a4b03",
+     "file_moved": false,
+     "slice_before": "a355a87dfc2bb004",
+     "slice_after": "a355a87dfc2bb004",
+     "slice_moved": false,
+     "rows": 146,
+     "observed_at": "2026-09-13T15:45:56Z"
+    },
+    "injuries": {
+     "file_before": "66e960ec81fccc6e",
+     "file_after": "66e960ec81fccc6e",
+     "file_moved": false,
+     "slice_before": "549523e9e15e1926",
+     "slice_after": "549523e9e15e1926",
+     "slice_moved": false,
+     "rows": 7,
+     "observed_at": "2026-09-13T15:45:56Z"
+    },
+    "schedules": {
+     "file_before": "362e468dfb185c36",
+     "file_after": "1c5da90bf0d3356c",
+     "file_moved": true,
+     "slice_before": "bdf74081ddc82245",
+     "slice_after": "bdf74081ddc82245",
+     "slice_moved": false,
+     "rows": 1,
+     "observed_at": "2026-09-13T16:07:51Z"
+    },
+    "weekly_rosters": {
+     "file_before": "cef497eaeddef07b",
+     "file_after": "cef497eaeddef07b",
+     "file_moved": false,
+     "slice_before": "549ba5250a412269",
+     "slice_after": "549ba5250a412269",
+     "slice_moved": false,
+     "rows": 182,
+     "observed_at": "2026-09-13T15:45:56Z"
+    }
+   },
+   "slices_moved": [],
+   "detail": "0 consumed slice(s) moved: none"
+  },
+  {
+   "step": "6. V1_CANDIDATE",
+   "ok": true,
+   "detail": "5394d58e10cfd1d3"
+  },
+  {
+   "step": "6. V1_CANDIDATE_R5",
+   "ok": true,
+   "detail": "9b106b98b8ff960b"
+  },
+  {
+   "step": "6. V1_CANDIDATE_R6",
+   "ok": true,
+   "detail": "9bee34a0bcad2c96"
+  },
+  {
+   "step": "6. V1_CANDIDATE_R7",
+   "ok": true,
+   "detail": "f401f7cd59664193"
+  },
+  {
+   "step": "6. V1_CANDIDATE_R8",
+   "ok": true,
+   "detail": "6c3a051960274146"
+  },
+  {
+   "step": "7. pre-inactives boards untouched",
+   "ok": true,
+   "detail": "every pre-inactives artifact still promoted=False"
+  }
+ ],
+ "vintage_root": "LIVE",
+ "provenance": {
+  "kind": "EXTERNAL_AUTHORITATIVE_DELIVERY",
+  "official_source_url": "https://www.nfl.com/news/inactive-reports-sunday-week-1-2026-nfl-season",
+  "official_published_at": "2026-09-13T15:46:51.760Z",
+  "delivered_by": "networked agent (Sunday inactives acquisition 2026-09-13T16:00:17Z)",
+  "delivered_artifact_sha256": "3fc8c4f13968d02334d23fc5d9cf7f55735fe92cab5d3bfc9e0001ff6e7d832c",
+  "retrieved_at": "2026-09-13T16:00:17.149276+00:00",
+  "what_this_is": "Every name below occurs verbatim in the delivered artifact, whose bytes are stored and hashed. That is a real check and it is NOT the same as holding the official page: this executor could not fetch the game-specific announcement (HTTP 000, gateway CONNECT denial), so the chain of custody runs official page -> networked agent -> this artifact.",
+  "what_this_is_not": "This is NOT a capture of nfl.com, and these names were NOT verified against the generic /inactives/ page, which is a placeholder carrying no list and is the wrong document."
+ },
+ "segmentation": "operator_supplied_verified_against_bytes",
+ "name_crosswalk": {
+  "raw_blob": "weekly_rosters.cef497eaeddef07b.csv",
+  "exists": true,
+  "same_content_hash_as_the_pool_vintage": true
+ },
+ "written_at": "2026-09-13T16:07:31.584827Z",
+ "kickoff_utc": "2026-09-13T17:00:00Z",
+ "sealed": {
+  "V1_CANDIDATE": {
+   "run_id": "5394d58e10cfd1d3",
+   "draw_artifact_sha256": "11bb397501ad8641419b996d8d721a57402077c79c2bf690170809a7ceb6c017",
+   "dir": "nfl/research/live/2026_01_BUF_HOU/post_inactives_V1_CANDIDATE/5394d58e10cfd1d3"
+  },
+  "V1_CANDIDATE_R5": {
+   "run_id": "9b106b98b8ff960b",
+   "draw_artifact_sha256": "11bb397501ad8641419b996d8d721a57402077c79c2bf690170809a7ceb6c017",
+   "dir": "nfl/research/live/2026_01_BUF_HOU/post_inactives_V1_CANDIDATE_R5/9b106b98b8ff960b"
+  },
+  "V1_CANDIDATE_R6": {
+   "run_id": "9bee34a0bcad2c96",
+   "draw_artifact_sha256": "11bb397501ad8641419b996d8d721a57402077c79c2bf690170809a7ceb6c017",
+   "dir": "nfl/research/live/2026_01_BUF_HOU/post_inactives_V1_CANDIDATE_R6/9bee34a0bcad2c96"
+  },
+  "V1_CANDIDATE_R7": {
+   "run_id": "f401f7cd59664193",
+   "draw_artifact_sha256": "11bb397501ad8641419b996d8d721a57402077c79c2bf690170809a7ceb6c017",
+   "dir": "nfl/research/live/2026_01_BUF_HOU/post_inactives_V1_CANDIDATE_R7/f401f7cd59664193"
+  },
+  "V1_CANDIDATE_R8": {
+   "run_id": "6c3a051960274146",
+   "draw_artifact_sha256": "11bb397501ad8641419b996d8d721a57402077c79c2bf690170809a7ceb6c017",
+   "dir": "nfl/research/live/2026_01_BUF_HOU/post_inactives_V1_CANDIDATE_R8/6c3a051960274146"
+  }
+ },
+ "result": "COMPLETE"
+}

@@ -1,0 +1,213 @@
+{
+ "run_id": "6c5edbd5d66671c2",
+ "arm": "A",
+ "written_at": "2026-09-13T16:11:19.530637Z",
+ "pipeline_version": "nfl-production-pipeline-1",
+ "status": "REFUSED",
+ "elapsed_s": 36.0656,
+ "stages": [
+  {
+   "stage": "capture_validation",
+   "state": "PASS",
+   "code": "INPUTS_VALIDATED",
+   "detail": "",
+   "input_hashes": {
+    "depth_charts": "a14e8dfe865a4b03ec6fb9598b8eb13074cf92130d878b80ed29dd82e066b4b2",
+    "espn_injuries_json": "0cd99d47b1cc389f6f09973bed503eac54e90f1a701b34de2b690e9a90febc95",
+    "injuries": "66e960ec81fccc6e5f95d23644de3ab58255af6682ec4fee0a12d8fc14f86865",
+    "official_inactives": "3fc8c4f13968d02334d23fc5d9cf7f55735fe92cab5d3bfc9e0001ff6e7d832c",
+    "official_injury_report": "ec99910f37f94bb89872633001a811546258bc0ebd452666d6f2037ac38f9040",
+    "schedules": "1c5da90bf0d3356cc1685da3437c8f3b14a3ea203da339b0cdfaee35439f1918",
+    "weekly_rosters": "cef497eaeddef07ba2b080da811518b235fc07bbd6aaecb61b003e73d3607df7"
+   },
+   "spec_version": "nfl-production-pipeline-1",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 4.982948303222656e-05,
+   "metrics": {}
+  },
+  {
+   "stage": "identity_resolution",
+   "state": "PASS",
+   "code": "IDENTITY_RESOLVED",
+   "detail": "",
+   "input_hashes": {},
+   "spec_version": null,
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 6.413459777832031e-05,
+   "metrics": {}
+  },
+  {
+   "stage": "feature_build",
+   "state": "PASS",
+   "code": "STAGE_DECLARED_UNIMPLEMENTED",
+   "detail": "feature_build: the accepted research baseline 'prior-only, ordinal prefix cut' has no production implementation. Declared as debt rather than reported as a successful forecast.",
+   "input_hashes": {},
+   "spec_version": "prior-only, ordinal prefix cut",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 1.6927719116210938e-05,
+   "metrics": {}
+  },
+  {
+   "stage": "team_environment",
+   "state": "PASS",
+   "code": "TEAM_ENVIRONMENT_OK",
+   "detail": "",
+   "input_hashes": {},
+   "spec_version": "team-volume-v1-p4b-frozen-1",
+   "warnings": [
+    "known limitation: team_volume_is_near_unforecastable"
+   ],
+   "refusal_code": null,
+   "elapsed_s": 0.6607623100280762,
+   "metrics": {}
+  },
+  {
+   "stage": "appearance",
+   "state": "NOT_APPLICABLE",
+   "code": "QB_ALLOCATION_ZERO_ACTIVE_SHARE",
+   "detail": "appearance: CHI: after removing officially inactive quarterbacks at least one draw has no share left to renormalise. Allocated mass may never be dropped.",
+   "input_hashes": {},
+   "spec_version": "P3 appearance",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 35.404412508010864,
+   "metrics": {}
+  },
+  {
+   "stage": "participation",
+   "state": "NOT_APPLICABLE",
+   "code": "QB_ALLOCATION_ZERO_ACTIVE_SHARE",
+   "detail": "participation: CHI: after removing officially inactive quarterbacks at least one draw has no share left to renormalise. Allocated mass may never be dropped.",
+   "input_hashes": {},
+   "spec_version": "Stage2 ewma_hl2; governance INFORMATION_CONSTRAINED",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 2.6464462280273438e-05,
+   "metrics": {}
+  },
+  {
+   "stage": "targets_carries",
+   "state": "NOT_APPLICABLE",
+   "code": "QB_ALLOCATION_ZERO_ACTIVE_SHARE",
+   "detail": "targets_carries: CHI: after removing officially inactive quarterbacks at least one draw has no share left to renormalise. Allocated mass may never be dropped.",
+   "input_hashes": {},
+   "spec_version": "P4C system C; governance DATA_BLOCKED",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 7.62939453125e-06,
+   "metrics": {}
+  },
+  {
+   "stage": "conversion",
+   "state": "NOT_APPLICABLE",
+   "code": "QB_ALLOCATION_ZERO_ACTIVE_SHARE",
+   "detail": "conversion: CHI: after removing officially inactive quarterbacks at least one draw has no share left to renormalise. Allocated mass may never be dropped.",
+   "input_hashes": {},
+   "spec_version": "RC1 baseline; SIGNAL_WEAK; governance HOLD_CHARACTERIZED + CALIBRATION_DEFECT",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 5.245208740234375e-06,
+   "metrics": {}
+  },
+  {
+   "stage": "td_layer",
+   "state": "NOT_APPLICABLE",
+   "code": "QB_ALLOCATION_ZERO_ACTIVE_SHARE",
+   "detail": "td_layer: CHI: after removing officially inactive quarterbacks at least one draw has no share left to renormalise. Allocated mass may never be dropped.",
+   "input_hashes": {},
+   "spec_version": "TD2 pooled positional control; governance HOLD_TENTATIVE",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 5.4836273193359375e-06,
+   "metrics": {}
+  },
+  {
+   "stage": "qb_layer",
+   "state": "FAIL",
+   "code": "QB_ALLOCATION_ZERO_ACTIVE_SHARE",
+   "detail": "CHI: after removing officially inactive quarterbacks at least one draw has no share left to renormalise. Allocated mass may never be dropped.",
+   "input_hashes": {},
+   "spec_version": "qb-v1-aggregate-then-allocate-1",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 2.0503997802734375e-05,
+   "metrics": {}
+  },
+  {
+   "stage": "joint_reconciliation",
+   "state": "NOT_APPLICABLE",
+   "code": "STAGE_NOT_REACHED",
+   "detail": "not run: the pipeline refused at qb_layer with QB_ALLOCATION_ZERO_ACTIVE_SHARE. Running a model on inputs that failed validation would produce a number nobody should read.",
+   "input_hashes": {},
+   "spec_version": "minimum-viable production coupling",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 0.0,
+   "metrics": {}
+  },
+  {
+   "stage": "player_draws",
+   "state": "NOT_APPLICABLE",
+   "code": "STAGE_NOT_REACHED",
+   "detail": "not run: the pipeline refused at qb_layer with QB_ALLOCATION_ZERO_ACTIVE_SHARE. Running a model on inputs that failed validation would produce a number nobody should read.",
+   "input_hashes": {},
+   "spec_version": "nfl-player-draw-1",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 0.0,
+   "metrics": {}
+  },
+  {
+   "stage": "scoring",
+   "state": "NOT_APPLICABLE",
+   "code": "STAGE_NOT_REACHED",
+   "detail": "not run: the pipeline refused at qb_layer with QB_ALLOCATION_ZERO_ACTIVE_SHARE. Running a model on inputs that failed validation would produce a number nobody should read.",
+   "input_hashes": {},
+   "spec_version": "deterministic",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 0.0,
+   "metrics": {}
+  },
+  {
+   "stage": "artifact_sealing",
+   "state": "NOT_APPLICABLE",
+   "code": "STAGE_NOT_REACHED",
+   "detail": "not run: the pipeline refused at qb_layer with QB_ALLOCATION_ZERO_ACTIVE_SHARE. Running a model on inputs that failed validation would produce a number nobody should read.",
+   "input_hashes": {},
+   "spec_version": "nfl-forecast-artifact-1",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 0.0,
+   "metrics": {}
+  }
+ ],
+ "n_refusals": 0,
+ "refusals": [],
+ "first_failure": {
+  "stage": "qb_layer",
+  "state": "FAIL",
+  "code": "QB_ALLOCATION_ZERO_ACTIVE_SHARE",
+  "detail": "CHI: after removing officially inactive quarterbacks at least one draw has no share left to renormalise. Allocated mass may never be dropped.",
+  "input_hashes": {},
+  "spec_version": "qb-v1-aggregate-then-allocate-1",
+  "warnings": [],
+  "refusal_code": null,
+  "elapsed_s": 2.0503997802734375e-05,
+  "metrics": {}
+ },
+ "draw_artifact": null,
+ "accounting_verdicts": [],
+ "execution_identity": "6c5edbd5d66671c24a50dd3f38c720cc752b57d72f5f541d028109bd64e15675",
+ "code_commit": "410daf59e30af7d47f0c7d567a21a77e4d5b3c45+dirty[43]",
+ "dry_run": true,
+ "prospective_eligible": false,
+ "publication": {
+  "state": "BLOCKED",
+  "code": "NFL1_NOT_AUTHORIZED",
+  "detail": "NFL-1 is 'NOT AUTHORIZED' and G0A is '11/12'. A forecast may be COMPUTED and SEALED locally, but it may not be published. No test result, checklist state or caller flag can change this -- only an owne"
+ }
+}

@@ -1,0 +1,161 @@
+{
+ "artifact": "NFL_OFFICIAL_INACTIVES_INGESTION",
+ "game_id": "2026_01_BAL_IND",
+ "teams": [
+  "BAL",
+  "IND"
+ ],
+ "parser_version": "official-inactives-1",
+ "steps": [
+  {
+   "step": "1. bytes stored before parsing",
+   "ok": true,
+   "code": "INACTIVES_STORED",
+   "sha256": "3fc8c4f13968d02334d23fc5d9cf7f55735fe92cab5d3bfc9e0001ff6e7d832c",
+   "n_bytes": 889867,
+   "blob": "nfl/vintage/official_inactives.3fc8c4f13968d023.html.gz",
+   "retrieved_at": "2026-09-13T16:00:17.149276+00:00",
+   "published_at": "2026-09-13T15:46:51.760Z",
+   "source_url": "https://www.nfl.com/news/inactive-reports-sunday-week-1-2026-nfl-season",
+   "detail": "889867 bytes, sha 3fc8c4f13968d023"
+  },
+  {
+   "step": "2. both clubs represented",
+   "ok": true,
+   "code": "INACTIVES_PARSED",
+   "n_names": {
+    "BAL": 7,
+    "IND": 6
+   },
+   "segmentation": "operator_supplied_verified_against_bytes",
+   "detail": "{'BAL': 7, 'IND': 6}"
+  },
+  {
+   "step": "3. identity resolved",
+   "ok": true,
+   "code": "INACTIVES_RESOLVED",
+   "roster_blob": "nfl/vintage/weekly_rosters.cef497eaeddef07b.reduced.csv.gz",
+   "n_roster": 184,
+   "n_roster_with_a_name": 184,
+   "n_resolved": {
+    "BAL": 7,
+    "IND": 5
+   },
+   "n_unmapped": 1,
+   "unmapped": [
+    "IND:Jonathan Edwards"
+   ],
+   "detail": "{'BAL': 7, 'IND': 5} resolved, 1 unmapped"
+  },
+  {
+   "step": "4. POST_INACTIVES_COMPLETE",
+   "ok": true,
+   "code": "POST_INACTIVES_COMPLETE",
+   "n_inactive_by_team": {
+    "BAL": 7,
+    "IND": 5
+   },
+   "inactive_by_team": {
+    "BAL": [
+     "00-0036130",
+     "00-0039792",
+     "00-0040068",
+     "00-0040069",
+     "00-0040876",
+     "00-0040885",
+     "00-0040981"
+    ],
+    "IND": [
+     "00-0039178",
+     "00-0039578",
+     "00-0040179",
+     "00-0040206",
+     "00-0041080"
+    ]
+   },
+   "hours_before_kickoff": 0.995,
+   "teams_without_a_list": [],
+   "detail": "{'BAL': 7, 'IND': 5}"
+  },
+  {
+   "step": "4b. no player promoted to GAME_ACTIVE",
+   "ok": true,
+   "n_official_inactive": 12,
+   "n_not_listed": 172,
+   "detail": "absence from the list carries no positive claim"
+  },
+  {
+   "step": "5. perishables re-fetched, consumed slice compared",
+   "ok": true,
+   "slices": {
+    "depth_charts": {
+     "file_before": "a14e8dfe865a4b03",
+     "file_after": "a14e8dfe865a4b03",
+     "file_moved": false,
+     "slice_before": "f499cb896b90643b",
+     "slice_after": "f499cb896b90643b",
+     "slice_moved": false,
+     "rows": 134,
+     "observed_at": "2026-09-13T15:45:56Z"
+    },
+    "injuries": {
+     "file_before": "66e960ec81fccc6e",
+     "file_after": "66e960ec81fccc6e",
+     "file_moved": false,
+     "slice_before": "632b1287c2047eb0",
+     "slice_after": "632b1287c2047eb0",
+     "slice_moved": false,
+     "rows": 14,
+     "observed_at": "2026-09-13T15:45:56Z"
+    },
+    "schedules": {
+     "file_before": "1c5da90bf0d3356c",
+     "file_after": "1c5da90bf0d3356c",
+     "file_moved": false,
+     "slice_before": "bcda485bc96672df",
+     "slice_after": "bcda485bc96672df",
+     "slice_moved": false,
+     "rows": 1,
+     "observed_at": "2026-09-13T16:07:51Z"
+    },
+    "weekly_rosters": {
+     "file_before": "cef497eaeddef07b",
+     "file_after": "cef497eaeddef07b",
+     "file_moved": false,
+     "slice_before": "65d8e6d7fb5a6a2d",
+     "slice_after": "65d8e6d7fb5a6a2d",
+     "slice_moved": false,
+     "rows": 184,
+     "observed_at": "2026-09-13T15:45:56Z"
+    }
+   },
+   "slices_moved": [],
+   "detail": "0 consumed slice(s) moved: none"
+  },
+  {
+   "step": "6. V1_CANDIDATE",
+   "ok": false,
+   "detail": "qb_layer: QB_ALLOCATION_ZERO_ACTIVE_SHARE"
+  }
+ ],
+ "vintage_root": "LIVE",
+ "provenance": {
+  "kind": "EXTERNAL_AUTHORITATIVE_DELIVERY",
+  "official_source_url": "https://www.nfl.com/news/inactive-reports-sunday-week-1-2026-nfl-season",
+  "official_published_at": "2026-09-13T15:46:51.760Z",
+  "delivered_by": "networked agent (Sunday inactives acquisition 2026-09-13T16:00:17Z)",
+  "delivered_artifact_sha256": "3fc8c4f13968d02334d23fc5d9cf7f55735fe92cab5d3bfc9e0001ff6e7d832c",
+  "retrieved_at": "2026-09-13T16:00:17.149276+00:00",
+  "what_this_is": "Every name below occurs verbatim in the delivered artifact, whose bytes are stored and hashed. That is a real check and it is NOT the same as holding the official page: this executor could not fetch the game-specific announcement (HTTP 000, gateway CONNECT denial), so the chain of custody runs official page -> networked agent -> this artifact.",
+  "what_this_is_not": "This is NOT a capture of nfl.com, and these names were NOT verified against the generic /inactives/ page, which is a placeholder carrying no list and is the wrong document."
+ },
+ "segmentation": "operator_supplied_verified_against_bytes",
+ "name_crosswalk": {
+  "raw_blob": "weekly_rosters.cef497eaeddef07b.csv",
+  "exists": true,
+  "same_content_hash_as_the_pool_vintage": true
+ },
+ "written_at": "2026-09-13T16:12:48.574938Z",
+ "kickoff_utc": "2026-09-13T17:00:00Z",
+ "result": "REFUSED"
+}
