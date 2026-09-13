@@ -113,6 +113,65 @@ def load_frozen_snapshot(path):
             'n_quotes': len(by), 'skipped': skipped, 'path': str(p)}
 
 
+
+class DrawIdentityError(RuntimeError):
+    """Raised when a draw matrix cannot be joined to a player by identity."""
+
+
+IDENTITY_ABSENT = 'PLAYER_DRAW_ROW_IDENTITY_ABSENT'
+
+
+def draw_row_for(manifest, draws, metric, gsis_id):
+    """THE row for this player, by declared identity. Never by position.
+
+    MEASURED 2026-09-13. This tool originally did `draws[key][i]` with `i` the
+    player's position in board.json's player list. That is not the draw
+    matrix's row order: on 2026_01_ARI_LAC it put Justin Herbert's
+    distribution on Gardner Minshew and Trey Lance's on Carson Beck, crossed
+    two players to the opposing club, and made the team dropback totals read
+    74.6 / 4.9 against a true 41.3 / 38.2.
+
+    THE ARTIFACT WAS NEVER AT FAULT, and saying so matters because it was
+    briefly reported as the defect. `manifest['layers'][layer]['row_ids']` has
+    declared the row axis as gsis_id all along, and the production board
+    builder has always joined through it. This function does what that builder
+    does. Every way the join can fail is a named refusal rather than a
+    silently wrong row.
+    """
+    lay = str(metric).split('/')[0]
+    layer = ((manifest or {}).get('layers') or {}).get(lay) or {}
+    ids = layer.get('row_ids')
+    if not ids:
+        raise DrawIdentityError(
+            f'{IDENTITY_ABSENT}: layer {lay!r} declares no row_ids, so no row '
+            f'can be attributed to a player. A legacy artifact stays readable '
+            f'and is never eligible for player-level comparison.')
+    if layer.get('row_axis') != 'gsis_id':
+        raise DrawIdentityError(
+            f'DRAW_ROW_AXIS_NOT_GSIS_ID: layer {lay!r} declares row_axis '
+            f'{layer.get("row_axis")!r}; this join requires gsis_id.')
+    if len(set(ids)) != len(ids):
+        dup = sorted({x for x in ids if ids.count(x) > 1})
+        raise DrawIdentityError(
+            f'DRAW_ROW_IDENTITY_DUPLICATE: {dup[:5]} appear more than once in '
+            f'layer {lay!r}. An ambiguous identity is refused, never resolved '
+            f'to the first match.')
+    key = str(metric).replace('/', '__')
+    if key not in draws.files:
+        raise DrawIdentityError(f'DRAW_MATRIX_ABSENT: {key}')
+    arr = draws[key]
+    if arr.ndim != 2 or int(arr.shape[0]) != len(ids):
+        raise DrawIdentityError(
+            f'DRAW_ROW_COUNT_MISMATCH: {key} has shape {tuple(arr.shape)} '
+            f'against {len(ids)} declared identities. The manifest and the '
+            f'array disagree about how many players exist.')
+    if gsis_id not in ids:
+        raise DrawIdentityError(
+            f'DRAW_ROW_IDENTITY_UNKNOWN: {gsis_id} is not among the '
+            f'{len(ids)} identities of layer {lay!r}.')
+    return arr[ids.index(gsis_id)]
+
+
 def _draw_key(metric):
     return str(metric).replace('/', '__')
 
@@ -139,6 +198,12 @@ def rows_for_game(gid, cfg_dir, quotes, names):
     draws = PB._load_draws(bd)
     if draws is None:
         return rows, [{'game': gid, 'reason': 'NO_STORED_DRAWS'}]
+    mp = bd / 'player_draws_manifest.json'
+    if not mp.exists():
+        return rows, [{'game': gid, 'reason': IDENTITY_ABSENT,
+                       'detail': 'no player_draws_manifest.json beside the '
+                                 'draws, so no row can be attributed'}]
+    man = json.loads(mp.read_text())
     fresh = board.get('freshness') or {}
     info_ts = max((s.get('retrieved_at') or '')
                   for s in (fresh.get('sources') or [])) or None
@@ -171,14 +236,13 @@ def rows_for_game(gid, cfg_dir, quotes, names):
                                 'reason': 'CONTAMINATING_DEFECT',
                                 'detail': ','.join(bad)})
                 continue
-            k = _draw_key(metric)
-            if k not in draws.files:
-                refused.append({'game': gid, 'player': nm, 'market': metric,
-                                'reason': 'METRIC_HAS_NO_STORED_DRAWS',
-                                'detail': k})
+            try:
+                d = draw_row_for(man, draws, metric, pid)
+            except DrawIdentityError as e:
+                refused.append({'game': gid, 'player': nm, 'market': qmarket,
+                                'reason': str(e).split(':')[0],
+                                'detail': str(e)[:220]})
                 continue
-            arr = draws[k]
-            d = arr[i] if arr.ndim == 2 else arr
             quote = {'line': q['line'], 'over_price': q.get('over_price'),
                      'under_price': q.get('under_price'),
                      'retrieved_at': q.get('timestamp'),
