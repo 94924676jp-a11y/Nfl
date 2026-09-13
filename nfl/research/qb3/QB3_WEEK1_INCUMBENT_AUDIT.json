@@ -1,0 +1,505 @@
+{
+ "artifact": "QB3_WEEK1_INCUMBENT_AUDIT",
+ "governance": "DIAGNOSIS ONLY -- no production value is changed",
+ "contract_sha256": "be61392619d45f3ad1936ef0512d203d9f415ba92e271aa6010281e707f05a9e",
+ "contract_path": "nfl/research/qb3/predeclaration_qb3.md",
+ "cells": {
+  "('2+', 1)": {
+   "n": 240,
+   "p_primary": 0.6167,
+   "pool_mean": 0.5979,
+   "P_share_eq_1": 0.5083,
+   "P_share_eq_0": 0.3458
+  },
+  "(1, 0)": {
+   "n": 321,
+   "p_primary": 0.4922,
+   "pool_mean": 0.4946,
+   "P_share_eq_1": 0.4424,
+   "P_share_eq_0": 0.4735
+  },
+  "(1, 1)": {
+   "n": 2349,
+   "p_primary": 0.9046,
+   "pool_mean": 0.8919,
+   "P_share_eq_1": 0.7765,
+   "P_share_eq_0": 0.0736
+  },
+  "(2, 0)": {
+   "n": 2436,
+   "p_primary": 0.0686,
+   "pool_mean": 0.0794,
+   "P_share_eq_1": 0.0435,
+   "P_share_eq_0": 0.812
+  },
+  "(3, 0)": {
+   "n": 1100,
+   "p_primary": 0.0282,
+   "pool_mean": 0.0323,
+   "P_share_eq_1": 0.0173,
+   "P_share_eq_0": 0.9318
+  }
+ },
+ "room_normalisation": {
+  "DISAGREE_top_vs_incumbent": [
+   0.4439,
+   0.5561
+  ],
+  "AGREE_top_vs_backup": [
+   0.9296,
+   0.0704
+  ]
+ },
+ "summaries": [
+  {
+   "label": "all weeks",
+   "n_team_games": 2158,
+   "strata": {
+    "AGREE": {
+     "all": {
+      "n": 1892,
+      "actual_P_top_is_primary": 0.9049,
+      "predicted_mean_share": 0.8911,
+      "actual_mean_share": 0.8937,
+      "bias_pred_minus_actual": -0.0025,
+      "mean_abs_error": 0.1756
+     },
+     "clean": {
+      "n": 1619,
+      "actual_P_top_is_primary": 0.9179,
+      "predicted_mean_share": 0.8913,
+      "actual_mean_share": 0.9175,
+      "bias_pred_minus_actual": -0.0262,
+      "mean_abs_error": 0.1725
+     },
+     "replacement": {
+      "n": 273,
+      "actual_P_top_is_primary": 0.8278,
+      "predicted_mean_share": 0.8901,
+      "actual_mean_share": 0.7524,
+      "bias_pred_minus_actual": 0.1377,
+      "mean_abs_error": 0.1938
+     },
+     "clean_bias_team_clustered_95": [
+      -0.0438,
+      -0.0079
+     ],
+     "n_clusters": 32
+    },
+    "DISAGREE": {
+     "all": {
+      "n": 205,
+      "actual_P_top_is_primary": 0.3171,
+      "predicted_mean_share": 0.5462,
+      "actual_mean_share": 0.3243,
+      "bias_pred_minus_actual": 0.222,
+      "mean_abs_error": 0.4938
+     },
+     "clean": {
+      "n": 180,
+      "actual_P_top_is_primary": 0.3333,
+      "predicted_mean_share": 0.5453,
+      "actual_mean_share": 0.335,
+      "bias_pred_minus_actual": 0.2103,
+      "mean_abs_error": 0.5035
+     },
+     "replacement": {
+      "n": 25,
+      "actual_P_top_is_primary": 0.2,
+      "predicted_mean_share": 0.5532,
+      "actual_mean_share": 0.247,
+      "bias_pred_minus_actual": 0.3062,
+      "mean_abs_error": 0.4238
+     },
+     "clean_bias_team_clustered_95": [
+      0.1259,
+      0.2775
+     ],
+     "n_clusters": 30
+    },
+    "NO_PREV_PRIMARY_IN_ROOM": {
+     "all": {
+      "n": 61,
+      "actual_P_top_is_primary": 0.8197,
+      "predicted_mean_share": 0.6701,
+      "actual_mean_share": 0.8205,
+      "bias_pred_minus_actual": -0.1504,
+      "mean_abs_error": 0.4151
+     },
+     "clean": {
+      "n": 53,
+      "actual_P_top_is_primary": 0.8302,
+      "predicted_mean_share": 0.6688,
+      "actual_mean_share": 0.8327,
+      "bias_pred_minus_actual": -0.1638,
+      "mean_abs_error": 0.4323
+     },
+     "replacement": {
+      "n": 8,
+      "actual_P_top_is_primary": 0.75,
+      "predicted_mean_share": 0.6785,
+      "actual_mean_share": 0.7396,
+      "bias_pred_minus_actual": -0.0611,
+      "mean_abs_error": 0.3014
+     },
+     "clean_bias_team_clustered_95": [
+      -0.2594,
+      -0.0785
+     ],
+     "n_clusters": 27
+    }
+   }
+  },
+  {
+   "label": "week 1 only",
+   "n_team_games": 128,
+   "strata": {
+    "AGREE": {
+     "all": {
+      "n": 59,
+      "actual_P_top_is_primary": 1.0,
+      "predicted_mean_share": 0.8907,
+      "actual_mean_share": 0.9839,
+      "bias_pred_minus_actual": -0.0932,
+      "mean_abs_error": 0.1056
+     },
+     "clean": {
+      "n": 50,
+      "actual_P_top_is_primary": 1.0,
+      "predicted_mean_share": 0.8902,
+      "actual_mean_share": 1.0,
+      "bias_pred_minus_actual": -0.1098,
+      "mean_abs_error": 0.1098
+     },
+     "replacement": {
+      "n": 9,
+      "actual_P_top_is_primary": 1.0,
+      "predicted_mean_share": 0.8937,
+      "actual_mean_share": 0.8943,
+      "bias_pred_minus_actual": -0.0006,
+      "mean_abs_error": 0.0818
+     },
+     "clean_bias_team_clustered_95": [
+      -0.1144,
+      -0.1054
+     ],
+     "n_clusters": 25
+    },
+    "DISAGREE": {
+     "all": {
+      "n": 21,
+      "actual_P_top_is_primary": 1.0,
+      "predicted_mean_share": 0.5546,
+      "actual_mean_share": 0.9978,
+      "bias_pred_minus_actual": -0.4432,
+      "mean_abs_error": 0.4432
+     },
+     "clean": {
+      "n": 20,
+      "actual_P_top_is_primary": 1.0,
+      "predicted_mean_share": 0.558,
+      "actual_mean_share": 1.0,
+      "bias_pred_minus_actual": -0.442,
+      "mean_abs_error": 0.442
+     },
+     "replacement": {
+      "n": 1,
+      "actual_P_top_is_primary": 1.0,
+      "predicted_mean_share": 0.4855,
+      "actual_mean_share": 0.9535,
+      "bias_pred_minus_actual": -0.468,
+      "mean_abs_error": 0.468
+     },
+     "clean_bias_team_clustered_95": [
+      -0.4711,
+      -0.4128
+     ],
+     "n_clusters": 16
+    },
+    "NO_PREV_PRIMARY_IN_ROOM": {
+     "all": {
+      "n": 48,
+      "actual_P_top_is_primary": 0.9583,
+      "predicted_mean_share": 0.6471,
+      "actual_mean_share": 0.9572,
+      "bias_pred_minus_actual": -0.3101,
+      "mean_abs_error": 0.3502
+     },
+     "clean": {
+      "n": 41,
+      "actual_P_top_is_primary": 1.0,
+      "predicted_mean_share": 0.6389,
+      "actual_mean_share": 1.0,
+      "bias_pred_minus_actual": -0.3611,
+      "mean_abs_error": 0.3611
+     },
+     "replacement": {
+      "n": 7,
+      "actual_P_top_is_primary": 0.7143,
+      "predicted_mean_share": 0.6948,
+      "actual_mean_share": 0.7064,
+      "bias_pred_minus_actual": -0.0116,
+      "mean_abs_error": 0.2863
+     },
+     "clean_bias_team_clustered_95": [
+      -0.3846,
+      -0.3347
+     ],
+     "n_clusters": 27
+    }
+   }
+  },
+  {
+   "label": "weeks 2+",
+   "n_team_games": 2030,
+   "strata": {
+    "AGREE": {
+     "all": {
+      "n": 1833,
+      "actual_P_top_is_primary": 0.9018,
+      "predicted_mean_share": 0.8912,
+      "actual_mean_share": 0.8908,
+      "bias_pred_minus_actual": 0.0004,
+      "mean_abs_error": 0.1778
+     },
+     "clean": {
+      "n": 1569,
+      "actual_P_top_is_primary": 0.9152,
+      "predicted_mean_share": 0.8914,
+      "actual_mean_share": 0.9149,
+      "bias_pred_minus_actual": -0.0235,
+      "mean_abs_error": 0.1745
+     },
+     "replacement": {
+      "n": 264,
+      "actual_P_top_is_primary": 0.822,
+      "predicted_mean_share": 0.8899,
+      "actual_mean_share": 0.7475,
+      "bias_pred_minus_actual": 0.1424,
+      "mean_abs_error": 0.1976
+     },
+     "clean_bias_team_clustered_95": [
+      -0.0414,
+      -0.0049
+     ],
+     "n_clusters": 32
+    },
+    "DISAGREE": {
+     "all": {
+      "n": 184,
+      "actual_P_top_is_primary": 0.2391,
+      "predicted_mean_share": 0.5453,
+      "actual_mean_share": 0.2474,
+      "bias_pred_minus_actual": 0.2979,
+      "mean_abs_error": 0.4995
+     },
+     "clean": {
+      "n": 160,
+      "actual_P_top_is_primary": 0.25,
+      "predicted_mean_share": 0.5437,
+      "actual_mean_share": 0.2519,
+      "bias_pred_minus_actual": 0.2918,
+      "mean_abs_error": 0.5112
+     },
+     "replacement": {
+      "n": 24,
+      "actual_P_top_is_primary": 0.1667,
+      "predicted_mean_share": 0.556,
+      "actual_mean_share": 0.2175,
+      "bias_pred_minus_actual": 0.3385,
+      "mean_abs_error": 0.422
+     },
+     "clean_bias_team_clustered_95": [
+      0.2264,
+      0.3413
+     ],
+     "n_clusters": 28
+    },
+    "NO_PREV_PRIMARY_IN_ROOM": {
+     "all": {
+      "n": 13,
+      "actual_P_top_is_primary": 0.3077,
+      "predicted_mean_share": 0.7552,
+      "actual_mean_share": 0.3157,
+      "bias_pred_minus_actual": 0.4395,
+      "mean_abs_error": 0.6551
+     },
+     "clean": {
+      "n": 12,
+      "actual_P_top_is_primary": 0.25,
+      "predicted_mean_share": 0.7711,
+      "actual_mean_share": 0.261,
+      "bias_pred_minus_actual": 0.5101,
+      "mean_abs_error": 0.6757
+     },
+     "replacement": {
+      "n": 1,
+      "actual_P_top_is_primary": 1.0,
+      "predicted_mean_share": 0.5646,
+      "actual_mean_share": 0.9722,
+      "bias_pred_minus_actual": -0.4077,
+      "mean_abs_error": 0.4077
+     },
+     "clean_bias_team_clustered_95": [
+      0.2946,
+      0.763
+     ],
+     "n_clusters": 9
+    }
+   }
+  }
+ ],
+ "configuration_counts": {
+  "all weeks": {
+   "DISAGREE": 205,
+   "AGREE": 1892,
+   "NO_PREV_PRIMARY_IN_ROOM": 61
+  },
+  "week 1 only": {
+   "DISAGREE": 21,
+   "AGREE": 59,
+   "NO_PREV_PRIMARY_IN_ROOM": 48
+  },
+  "weeks 2+": {
+   "AGREE": 1833,
+   "DISAGREE": 184,
+   "NO_PREV_PRIMARY_IN_ROOM": 13
+  }
+ },
+ "audit_date": "2026-09-13",
+ "scope": "DIAGNOSIS ONLY. No production value, parameter, artifact or forecast was changed by this audit.",
+ "contract_verified": {
+  "path": "nfl/research/qb3/predeclaration_qb3.md",
+  "sha256_expected_by_code": "be61392619d45f3ad1936ef0512d203d9f415ba92e271aa6010281e707f05a9e",
+  "sha256_measured": "be61392619d45f3ad1936ef0512d203d9f415ba92e271aa6010281e707f05a9e",
+  "match": true,
+  "relevant_clauses": {
+   "s3B": "pregame input B is \"last game\u2019s primary passer, from panel history, strictly earlier ordinal\" -- no season-boundary term",
+   "s4": "cells are rank in {1,2,3+} x was_prev_primary in {yes,no}; rank 2 and 3+ pooled when was_prev_primary is yes. NO WEEK TERM EXISTS.",
+   "s5": "draw the primary identity from the cell probabilities NORMALISED ACROSS THE TEAM\u2019S CHARTED QUARTERBACKS, then resample his share from his cell\u2019s empirical pool, then allocate the remainder"
+  }
+ },
+ "implementation_conformance": {
+  "verdict": "CONFORMS",
+  "path": "nfl/production/nonqb/qb_allocation.allocate -> qb3_lib.allocate",
+  "checked": [
+   "s5 step 1: rng.choice(n, p=pp/pp.sum()) where pp is each QB\u2019s cell p_primary -- this is exactly \"normalised across the team\u2019s charted quarterbacks\"",
+   "s5 step 2: S[i,sel] = pool[rng.integers(...)] -- resampled, never a point estimate",
+   "s5 step 3: remainder allocated in proportion to the other QBs\u2019 cell weight",
+   "s4: cell_of() pools rank>=2 with was_prev=1 into (\u20182+\u2019,1) as declared",
+   "s7 chronology: production _fit_for(2026) trains on seasons < 2026 only"
+  ],
+  "reading": "the code does what the pre-registration says. The defect is therefore NOT in the implementation."
+ },
+ "week1_vs_rest_key_facts": {
+  "depth_chart_QB1_is_actual_primary_week1": "158/160 = 0.9875",
+  "depth_chart_QB1_is_actual_primary_weeks2plus": "2125/2510 = 0.8466",
+  "chart_QB1_equals_prior_season_FINAL_game_primary_week1": "59/160 = 0.3688",
+  "chart_QB1_equals_prior_season_MODAL_primary_week1": "77/160 = 0.4813",
+  "team_seasons_whose_final_game_primary_is_not_that_season_modal": "77/192 = 0.4010",
+  "reading": "in week 1 the depth chart is very nearly sufficient on its own, and the incumbent signal is close to uninformative because the prior season\u2019s LAST game is disproportionately a rested or already-replaced starter. The allocation weights the two signals the other way round."
+ },
+ "production_room_configurations_2026_week1": {
+  "ARI": {
+   "cfg": "AGREE",
+   "prev_primary": "Jacoby Brissett",
+   "top": "Jacoby Brissett (rank1, cell (1,1) p=0.9046)",
+   "modelled_top_share": 0.904
+  },
+  "LAC": {
+   "cfg": "DISAGREE",
+   "prev_primary": "Trey Lance",
+   "top": "Justin Herbert (rank1, cell (1,0) p=0.4922)",
+   "incumbent": "Trey Lance (rank2, cell (2+,1) p=0.6167)",
+   "modelled_top_share": 0.585
+  },
+  "MIN": {
+   "cfg": "DISAGREE",
+   "prev_primary": "J.J. McCarthy",
+   "top": "Kyler Murray (rank1, cell (1,0))",
+   "modelled_top_share": 0.517
+  },
+  "PHI": {
+   "cfg": "DISAGREE",
+   "prev_primary": "Tanner McKee",
+   "top": "Jalen Hurts (rank1, cell (1,0))",
+   "modelled_top_share": 0.559
+  },
+  "LV": {
+   "cfg": "DISAGREE",
+   "prev_primary": "Aidan O'Connell",
+   "top": "Kirk Cousins (rank1, cell (1,0))",
+   "modelled_top_share": 0.565
+  },
+  "MIA": {
+   "cfg": "NO_PREV_PRIMARY_IN_ROOM",
+   "prev_primary": "Quinn Ewers",
+   "top": "Malik Willis (rank1, cell (1,0))",
+   "modelled_top_share": 0.557
+  },
+  "GB": {
+   "cfg": "NO_PREV_PRIMARY_IN_ROOM",
+   "top": "Jordan Love (rank1, cell (1,0))",
+   "modelled_top_share": 0.534
+  },
+  "WAS": {
+   "cfg": "NO_PREV_PRIMARY_IN_ROOM",
+   "prev_primary": "Josh Johnson",
+   "top": "Jayden Daniels (rank1, cell (1,0))",
+   "modelled_top_share": 0.574
+  }
+ },
+ "lac_specific_diagnosis": {
+  "observed": "Trey Lance 22.35 modelled dropbacks against Justin Herbert 15.12",
+  "cause": "Los Angeles\u2019 primary passer in its LAST 2025 game was Trey Lance. Week-1 prev-primary therefore resolves to Lance, putting him in cell (2+,1) at p_primary 0.6167 against Herbert\u2019s (1,0) at 0.4922. Normalised across the room that is 0.556 Lance / 0.444 Herbert -- the incumbent outranks the charted starter.",
+  "contract_conformance": "CONFORMANT. This is precisely what s.4 and s.5 specify. It is not an implementation error and not a wiring error.",
+  "second_stage": "even in the draws where Herbert IS selected primary, his share is resampled from the (1,0) pool, which has 47.35% of its mass at exactly 0. Both stages of the mechanism are mis-celled for a week-1 room."
+ },
+ "zero_mass_note": "cell (1,0) share pool: mean 0.4946, P(share=1)=0.4424, P(share=0)=0.4735. In the 20 clean week-1 DISAGREE team-games observed historically the chart QB1\u2019s realised share was 1.0000 in every one.",
+ "classification": {
+  "verdict": "SPECIFICATION_DEFECT",
+  "why_not_IMPLEMENTATION_DEFECT": "the code conforms clause by clause to the frozen pre-registration, whose sha256 matches the value the production module cites.",
+  "why_not_EXPECTED_AND_EMPIRICALLY_SUPPORTED": "the data rejects the prediction in week 1 in all three room configurations, each with a team-clustered 95% interval excluding zero: DISAGREE bias -0.4420 [-0.4711,-0.4128] (n=20 clean, 16 clusters); NO_PREV bias -0.3611 [-0.3846,-0.3347] (n=41 clean, 27 clusters); AGREE bias -0.1098 [-0.1144,-0.1054] (n=50 clean, 25 clusters). The direction reverses between week 1 and weeks 2+ in the DISAGREE stratum (+0.2918 [0.2264,0.3413]), so a single pooled cell cannot be right for both.",
+  "the_defect_in_one_sentence": "the cell definition in s.4 has no season-boundary term, so a week-1 room and a mid-season room with identical (rank, was_prev_primary) receive the same probabilities even though the historical outcome differs in the opposite direction.",
+  "origin_is_declared_not_hidden": "qb_allocation.KNOWN_LIMITATIONS[\"week_1_incumbent\"] already states that for week 1 the previous primary comes from the last game of the prior season and that this is \"the hardest case this layer faces and is not separately modelled.\" The audit confirms the limitation is real and measures its size.",
+  "mechanism_confirmed_at_source": "the defect is not an abstract pooling concern. It is that s.3B\u2019s \"last game\" resolves, at a season boundary, to week 18 -- the game whose starter is least representative of the season that follows."
+ },
+ "smallest_repair_candidate": {
+  "status": "PROPOSED FOR OWNER DECISION ONLY. NOT BUILT, NOT FITTED, NOT APPLIED.",
+  "shape": "add a season-boundary term to the cell definition in s.4 so that week-1 rooms are celled separately from mid-season rooms. Nothing else in the mechanism changes: identity draw, empirical share resampling and remainder allocation stay exactly as s.5 fixes them.",
+  "explicitly_rejected_alternatives": [
+   "replacing last-game prev-primary with the prior season MODAL primary: tested, and it raises agreement with the chart QB1 only from 0.3688 to 0.4813. It does not repair the signal and would be a change with a small measured benefit.",
+   "any floor, clip, plausibility bound or manual rebalance of the starter share: these treat the symptom and destroy the closure property the layer exists for."
+  ],
+  "what_would_be_needed_before_it_could_be_accepted": [
+   "a NEW pre-registration, since this changes s.4 of a frozen contract",
+   "the week-1 strata are small (20 clean DISAGREE team-games across 16 clusters, 41 clean NO_PREV across 27) and 2020-2024 is DEVELOPMENT data, so any result on it is EXPLORATORY",
+   "a confirmatory design on games not used to find this, since the finding itself was selected by inspecting these seasons",
+   "an owner decision, because it alters an accepted predictive model"
+  ]
+ },
+ "effect_on_the_4_25_slate": {
+  "statement": "every quarterback volume market on the 2026-09-13 4:25 slate is contaminated by this defect. Seven of eight clubs are in a DISAGREE or NO_PREV configuration; only Arizona is in AGREE, and Arizona is the one club whose modelled starter share (90.4%) matches the historical week-1 rate.",
+  "admissibility": "NO MARKET ADMISSIBLE. NO WAGER."
+ },
+ "what_this_audit_did_not_establish": [
+  "that a week-1 cell would forecast better -- only that the current pooled cell forecasts badly in week 1",
+  "anything about 2026 outcomes: no 2026 game has been scored and none was used",
+  "anything confirmatory: 2020-2024 are development seasons and this finding was selected by looking at them"
+ ],
+ "week18_rest_evidence": {
+  "what_this_is": "the raw panel dropback counts of each club\u2019s LAST 2025 game, which is the game week-1 prev-primary resolves to. Verified from panel_p3 rather than taken from previous_primary\u2019s return value.",
+  "all_clubs_last_game_ordinal": 202518,
+  "counts": {
+   "LAC": "Trey Lance 45 dropbacks; Justin Herbert 0 (rested)",
+   "PHI": "Tanner McKee 43; Jalen Hurts 0 (rested)",
+   "WAS": "Josh Johnson 21; Jayden Daniels 0 (rested). Johnson is not in the 2026 room, which is why WAS reads NO_PREV rather than DISAGREE.",
+   "LV": "Aidan O'Connell 23, Kenny Pickett 6",
+   "MIN": "J.J. McCarthy 23, Max Brosmer 10",
+   "MIA": "Quinn Ewers 27, Zach Wilson 2 (Ewers not in the 2026 room -> NO_PREV)",
+   "GB": "00-0038582 15 (not Jordan Love -> NO_PREV)",
+   "ARI": "Jacoby Brissett 37 -- the ONLY club of the eight that played its 2026 starter in week 18"
+  },
+  "reading": "week-1 prev-primary is, for seven of these eight clubs, a week-18 rest-game backup. The signal is not merely noisy in week 1; it is systematically the wrong man, because the last game of a season is the game a playoff-bound club is most likely to rest its starter in. Arizona is the single AGREE club and the single club whose modelled starter share is plausible. That is one fact, not two."
+ }
+}
