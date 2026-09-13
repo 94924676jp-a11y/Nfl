@@ -177,13 +177,16 @@ def _load_draws(board_dir: pathlib.Path):
 
 
 def _board_files(board_dir: pathlib.Path):
-    b = list(board_dir.glob('**/board.json'))
-    m = list(board_dir.glob('**/player_draws_manifest.json'))
-    if not b:
+    # THE NEWEST BOARD, NOT THE FIRST GLOB HIT. See
+    # nfl/research/board_select.py for the Sunday slate this cost.
+    from nfl.research import board_select as BS
+    rdir, _ = BS.newest_board_dir(board_dir)
+    if rdir is None:
         return None, None, None
-    return (json.load(open(b[0])),
+    m = list(rdir.glob('player_draws_manifest.json'))
+    return (json.load(open(rdir / 'board.json')),
             json.load(open(m[0])) if m else None,
-            _load_draws(board_dir))
+            _load_draws(rdir))
 
 
 def games_on(date_str: str, index_rows):

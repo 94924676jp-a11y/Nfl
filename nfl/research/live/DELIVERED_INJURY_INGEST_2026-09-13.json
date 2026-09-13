@@ -1,0 +1,504 @@
+{
+ "artifact": "DELIVERED_INJURY_INGEST",
+ "blob": "/home/user/nfl/nfl/vintage/injuries.0bc645a4b9aa6255.csv.gz",
+ "clocks": {
+  "cache_timestamp": null,
+  "effective_for_date": "2026-09-13",
+  "effective_time": null,
+  "generated_at": "2026-09-13T15:14:38.703610+00:00",
+  "publication_time": "2026-09-11T21:02:00Z",
+  "requested_at": "2026-09-13T12:46:53.674810+00:00",
+  "retrieved_at": "2026-09-13T12:47:00.990929+00:00",
+  "source_timestamp": "2026-09-12T23:07:53.998Z"
+ },
+ "csv_sha256": "0bc645a4b9aa625586dd5e42e6eb3a153c63909d469203d2a34123daf8501208",
+ "delivered_by": "networked agent (Sunday evidence operation 2026-09-13)",
+ "dry_run": false,
+ "exit_code": 0,
+ "ingested_at": "2026-09-13T15:14:38.703610+00:00",
+ "manifest_row": {
+  "capture_id": "20260913T124700Z",
+  "code": "CAPTURED_BY_DELIVERY",
+  "detail": "injuries: 4023 bytes, 48 data rows from EXTERNAL_AUTHORITATIVE_DELIVERY (NFL_final_report)",
+  "evidence": {
+   "acquisition": "EXTERNAL_AUTHORITATIVE_DELIVERY",
+   "source": "injuries"
+  },
+  "season": 2026,
+  "source": "injuries",
+  "state": "PASS",
+  "value": {
+   "acquisition": "EXTERNAL_AUTHORITATIVE_DELIVERY",
+   "blob": "nfl/vintage/injuries.0bc645a4b9aa6255.csv.gz",
+   "blob_durable": true,
+   "blob_encoding": "gzip",
+   "content_kind": "csv",
+   "content_unchanged": false,
+   "delivery": {
+    "delivered_by": "networked agent (Sunday evidence operation 2026-09-13)",
+    "delivered_package_sha256": "954392bd78b99ae57af405113681e881cc5fcb7627ab376094d5e6de655c3c77",
+    "kind": "EXTERNAL_AUTHORITATIVE_DELIVERY",
+    "not": "NATIVE_NETWORK_CAPTURE",
+    "primary_content_sha256": "df1dd90380b8d720ef61790a40a96e3bdaf535b6bd7ea5af9bcde184aa212ac9",
+    "primary_source_id": "NFL_final_report",
+    "primary_source_url": "https://www.nfl.com/news/nfl-week-1-injury-report-2026-season",
+    "raw_evidence_blobs": [
+     "nfl/vintage/delivered_injury_evidence.df1dd90380b8d720.html.gz"
+    ],
+    "what_this_is": "Official league game-status evidence retrieved by a networked agent, delivered as bytes with its own manifest and checksums, verified here against both before a single row was parsed out of it.",
+    "what_this_is_not": "NOT a network capture performed by this executor, and NOT a game-day inactive list. The chain of custody runs official source -> delivering agent -> this artifact, and every clock above is the delivering agent's, not this run's."
+   },
+   "durability": "commit_raw",
+   "effective_scope": {
+    "authority": "DELIVERED_EXPLICIT",
+    "derivation": {
+     "evidence": "every row carries its own season, week and team from the delivered evidence; the boundary is not inferred from a file clock"
+    },
+    "scope": "SEASON_WEEK_TEAMS",
+    "teams": [
+     "ARI",
+     "ATL",
+     "BAL",
+     "BUF",
+     "CAR",
+     "CHI",
+     "CIN",
+     "CLE",
+     "DAL",
+     "GB",
+     "JAX",
+     "LAC",
+     "LV",
+     "NO",
+     "NYG",
+     "NYJ",
+     "PHI",
+     "PIT",
+     "TB",
+     "TEN"
+    ]
+   },
+   "explicit_no_designations": [
+    {
+     "clears_a_readiness_gate": false,
+     "content_sha256": "df1dd90380b8d720ef61790a40a96e3bdaf535b6bd7ea5af9bcde184aa212ac9",
+     "effective_time": null,
+     "evidence_text": "No injury designations",
+     "game_date": "2026-09-13",
+     "kind": "EXPLICIT_TEAM_NO_INJURY_DESIGNATIONS",
+     "locator": "/html/body/div[2]/main/section/div[2]/div/div[10]/div/div/p[2]",
+     "publication_time": "2026-09-11T21:02:00Z",
+     "report_period": "2026 REG Week 1 game-status report; explicit game date",
+     "retrieved_at": "2026-09-13T12:47:00.990929+00:00",
+     "source_id": "NFL_final_report",
+     "source_modified_time": "2026-09-12T23:07:53.998Z",
+     "source_team_code": "HOU",
+     "source_url": "https://www.nfl.com/news/nfl-week-1-injury-report-2026-season",
+     "team": "HOU",
+     "why_not": "the appearance contract has no representation for an explicit no-designation state. Recorded as evidence; changing what the gate accepts is a governance decision, not an ingestion repair."
+    },
+    {
+     "clears_a_readiness_gate": false,
+     "content_sha256": "df1dd90380b8d720ef61790a40a96e3bdaf535b6bd7ea5af9bcde184aa212ac9",
+     "effective_time": null,
+     "evidence_text": "No injury designations",
+     "game_date": "2026-09-13",
+     "kind": "EXPLICIT_TEAM_NO_INJURY_DESIGNATIONS",
+     "locator": "/html/body/div[2]/main/section/div[2]/div/div[23]/div/div/p",
+     "publication_time": "2026-09-11T21:02:00Z",
+     "report_period": "2026 REG Week 1 game-status report; explicit game date",
+     "retrieved_at": "2026-09-13T12:47:00.990929+00:00",
+     "source_id": "NFL_final_report",
+     "source_modified_time": "2026-09-12T23:07:53.998Z",
+     "source_team_code": "MIA",
+     "source_url": "https://www.nfl.com/news/nfl-week-1-injury-report-2026-season",
+     "team": "MIA",
+     "why_not": "the appearance contract has no representation for an explicit no-designation state. Recorded as evidence; changing what the gate accepts is a governance decision, not an ingestion repair."
+    },
+    {
+     "clears_a_readiness_gate": false,
+     "content_sha256": "df1dd90380b8d720ef61790a40a96e3bdaf535b6bd7ea5af9bcde184aa212ac9",
+     "effective_time": null,
+     "evidence_text": "No injury designations",
+     "game_date": "2026-09-13",
+     "kind": "EXPLICIT_TEAM_NO_INJURY_DESIGNATIONS",
+     "locator": "/html/body/div[2]/main/section/div[2]/div/div[25]/div/div/p",
+     "publication_time": "2026-09-11T21:02:00Z",
+     "report_period": "2026 REG Week 1 game-status report; explicit game date",
+     "retrieved_at": "2026-09-13T12:47:00.990929+00:00",
+     "source_id": "NFL_final_report",
+     "source_modified_time": "2026-09-12T23:07:53.998Z",
+     "source_team_code": "MIN",
+     "source_url": "https://www.nfl.com/news/nfl-week-1-injury-report-2026-season",
+     "team": "MIN",
+     "why_not": "the appearance contract has no representation for an explicit no-designation state. Recorded as evidence; changing what the gate accepts is a governance decision, not an ingestion repair."
+    },
+    {
+     "clears_a_readiness_gate": false,
+     "content_sha256": "df1dd90380b8d720ef61790a40a96e3bdaf535b6bd7ea5af9bcde184aa212ac9",
+     "effective_time": null,
+     "evidence_text": "No injury designations",
+     "game_date": "2026-09-13",
+     "kind": "EXPLICIT_TEAM_NO_INJURY_DESIGNATIONS",
+     "locator": "/html/body/div[2]/main/section/div[2]/div/div[27]/div/div/p",
+     "publication_time": "2026-09-11T21:02:00Z",
+     "report_period": "2026 REG Week 1 game-status report; explicit game date",
+     "retrieved_at": "2026-09-13T12:47:00.990929+00:00",
+     "source_id": "NFL_final_report",
+     "source_modified_time": "2026-09-12T23:07:53.998Z",
+     "source_team_code": "WAS",
+     "source_url": "https://www.nfl.com/news/nfl-week-1-injury-report-2026-season",
+     "team": "WAS",
+     "why_not": "the appearance contract has no representation for an explicit no-designation state. Recorded as evidence; changing what the gate accepts is a governance decision, not an ingestion repair."
+    },
+    {
+     "clears_a_readiness_gate": false,
+     "content_sha256": "df1dd90380b8d720ef61790a40a96e3bdaf535b6bd7ea5af9bcde184aa212ac9",
+     "effective_time": null,
+     "evidence_text": "No injury designations",
+     "game_date": "2026-09-14",
+     "kind": "EXPLICIT_TEAM_NO_INJURY_DESIGNATIONS",
+     "locator": "/html/body/div[2]/main/section/div[2]/div/div[32]/div/div/p",
+     "publication_time": "2026-09-11T21:02:00Z",
+     "report_period": "2026 REG Week 1 game-status report; explicit game date",
+     "retrieved_at": "2026-09-13T12:47:00.990929+00:00",
+     "source_id": "NFL_final_report",
+     "source_modified_time": "2026-09-12T23:07:53.998Z",
+     "source_team_code": "DEN",
+     "source_url": "https://www.nfl.com/news/nfl-week-1-injury-report-2026-season",
+     "team": "DEN",
+     "why_not": "the appearance contract has no representation for an explicit no-designation state. Recorded as evidence; changing what the gate accepts is a governance decision, not an ingestion repair."
+    }
+   ],
+   "header": "season,season_type,game_type,team,week,gsis_id,position,full_name,first_name,last_name,report_primary_injury,report_status,practice_primary_injury,practice_secondary_injury,practice_status",
+   "http_status": "200",
+   "n_bytes": 4023,
+   "n_cols": 15,
+   "n_data_rows": 48,
+   "n_lines": 49,
+   "provenance": {
+    "acquisition": "EXTERNAL_AUTHORITATIVE_DELIVERY",
+    "cache_timestamp": null,
+    "cache_timestamp_note": "null by construction. A delivered artifact is never restamped with the ingestion clock.",
+    "effective_for_date": "2026-09-13",
+    "effective_time": null,
+    "generated_at": "2026-09-13T15:14:38.703610+00:00",
+    "publication_time": "2026-09-11T21:02:00Z",
+    "requested_at": "2026-09-13T12:46:53.674810+00:00",
+    "retrieved_at": "2026-09-13T12:47:00.990929+00:00",
+    "schema_note": "the nflverse injuries schema, unchanged, so the downstream selector and parser consume this exactly as they consume a native capture",
+    "schema_version": "nflverse-release-1",
+    "source": "delivered:NFL_final_report",
+    "source_timestamp": "2026-09-12T23:07:53.998Z",
+    "url": "https://www.nfl.com/news/nfl-week-1-injury-report-2026-season"
+   },
+   "quarantined_evidence": [
+    {
+     "classification": "SOURCE_TYPO_NOT_NORMALISED",
+     "game_date": "2026-09-13",
+     "player": "Christian Izien",
+     "reason": "raw status 'QUESTIONBLE' is not in ('Out', 'Doubtful', 'Questionable'). Refused, never corrected.",
+     "report_status": null,
+     "report_status_raw": "QUESTIONBLE",
+     "resolved_by_this_module": false,
+     "source_id": "NFL_final_report",
+     "team": "DET"
+    },
+    {
+     "classification": "OFFICIAL_DISCREPANCY_TEMPORAL_UNALIGNED",
+     "game_date": "2026-09-13",
+     "player": "Austin Ajiake",
+     "reason": "Same target game; table revision/report period not established. No same-period conflict asserted.",
+     "report_status": "Questionable",
+     "report_status_raw": "QUESTIONABLE",
+     "resolved_by_this_module": false,
+     "source_id": "NFL_final_report",
+     "team": "IND"
+    },
+    {
+     "classification": "OFFICIAL_DISCREPANCY_TEMPORAL_UNALIGNED",
+     "game_date": "2026-09-13",
+     "player": "Kene Nwangwu",
+     "reason": "Same target game; table revision/report period not established. No same-period conflict asserted.",
+     "report_status": "Out",
+     "report_status_raw": "OUT",
+     "resolved_by_this_module": false,
+     "source_id": "NFL_final_report",
+     "team": "NYJ"
+    },
+    {
+     "classification": "NOT_PROMOTED_BY_DELIVERY",
+     "game_date": "2026-09-14",
+     "player": "Josh Simmons",
+     "reason": "present in the evidence set, absent from the candidates",
+     "report_status": "Out",
+     "report_status_raw": "OUT",
+     "resolved_by_this_module": false,
+     "source_id": "NFL_final_report",
+     "team": "KC"
+    },
+    {
+     "classification": "NOT_PROMOTED_BY_DELIVERY",
+     "game_date": "2026-09-14",
+     "player": "Chamarri Conner",
+     "reason": "present in the evidence set, absent from the candidates",
+     "report_status": "Out",
+     "report_status_raw": "OUT",
+     "resolved_by_this_module": false,
+     "source_id": "NFL_final_report",
+     "team": "KC"
+    }
+   ],
+   "reduced": null,
+   "requested_at": "2026-09-13T12:46:53.674810+00:00",
+   "retrieved_at": "2026-09-13T12:47:00.990929+00:00",
+   "sha256": "0bc645a4b9aa625586dd5e42e6eb3a153c63909d469203d2a34123daf8501208",
+   "sha256_is_of": "uncompressed_bytes",
+   "source": "injuries",
+   "source_timestamp_header": "delivered:source_modified_time",
+   "spec_version": "delivered_injuries/1.0.0",
+   "substantive": {
+    "authority": "DERIVED_DETERMINISTIC",
+    "bytes_after": 4023,
+    "bytes_before": 4023,
+    "digest": "0bc645a4b9aa625586dd5e42e6eb3a153c63909d469203d2a34123daf8501208",
+    "digest_version": "substantive/1.0.0",
+    "raw_sha256": "0bc645a4b9aa625586dd5e42e6eb3a153c63909d469203d2a34123daf8501208"
+   },
+   "url": "https://www.nfl.com/news/nfl-week-1-injury-report-2026-season"
+  }
+ },
+ "package": "/tmp/claude-0/-home-user-mlb-prop-system-v7/8de98087-4781-5a10-ae09-ef74590f8116/scratchpad/sunday_pkg/sunday",
+ "package_counts": {
+  "candidates": 48,
+  "manifest_entries": 32,
+  "observations": 53,
+  "team_statements": 5
+ },
+ "quarantined": [
+  {
+   "classification": "SOURCE_TYPO_NOT_NORMALISED",
+   "game_date": "2026-09-13",
+   "player": "Christian Izien",
+   "reason": "raw status 'QUESTIONBLE' is not in ('Out', 'Doubtful', 'Questionable'). Refused, never corrected.",
+   "report_status": null,
+   "report_status_raw": "QUESTIONBLE",
+   "resolved_by_this_module": false,
+   "source_id": "NFL_final_report",
+   "team": "DET"
+  },
+  {
+   "classification": "OFFICIAL_DISCREPANCY_TEMPORAL_UNALIGNED",
+   "game_date": "2026-09-13",
+   "player": "Austin Ajiake",
+   "reason": "Same target game; table revision/report period not established. No same-period conflict asserted.",
+   "report_status": "Questionable",
+   "report_status_raw": "QUESTIONABLE",
+   "resolved_by_this_module": false,
+   "source_id": "NFL_final_report",
+   "team": "IND"
+  },
+  {
+   "classification": "OFFICIAL_DISCREPANCY_TEMPORAL_UNALIGNED",
+   "game_date": "2026-09-13",
+   "player": "Kene Nwangwu",
+   "reason": "Same target game; table revision/report period not established. No same-period conflict asserted.",
+   "report_status": "Out",
+   "report_status_raw": "OUT",
+   "resolved_by_this_module": false,
+   "source_id": "NFL_final_report",
+   "team": "NYJ"
+  },
+  {
+   "classification": "NOT_PROMOTED_BY_DELIVERY",
+   "game_date": "2026-09-14",
+   "player": "Josh Simmons",
+   "reason": "present in the evidence set, absent from the candidates",
+   "report_status": "Out",
+   "report_status_raw": "OUT",
+   "resolved_by_this_module": false,
+   "source_id": "NFL_final_report",
+   "team": "KC"
+  },
+  {
+   "classification": "NOT_PROMOTED_BY_DELIVERY",
+   "game_date": "2026-09-14",
+   "player": "Chamarri Conner",
+   "reason": "present in the evidence set, absent from the candidates",
+   "report_status": "Out",
+   "report_status_raw": "OUT",
+   "resolved_by_this_module": false,
+   "source_id": "NFL_final_report",
+   "team": "KC"
+  }
+ ],
+ "row_build": {
+  "code": "DELIVERED_ROWS_BUILT",
+  "detail": "",
+  "evidence": {
+   "matched_by_suffix_normalisation": [
+    "JAX:LeQuint Allen->00-0040238"
+   ],
+   "n_matched_by_suffix_normalisation": 1,
+   "n_refused": 0,
+   "n_rows": 48,
+   "n_teams": 20,
+   "refusals": [],
+   "spec_version": "delivered_injuries/1.0.0",
+   "teams": [
+    "ARI",
+    "ATL",
+    "BAL",
+    "BUF",
+    "CAR",
+    "CHI",
+    "CIN",
+    "CLE",
+    "DAL",
+    "GB",
+    "JAX",
+    "LAC",
+    "LV",
+    "NO",
+    "NYG",
+    "NYJ",
+    "PHI",
+    "PIT",
+    "TB",
+    "TEN"
+   ]
+  },
+  "state": "PASS"
+ },
+ "season": 2026,
+ "spec_version": "delivered_injuries/1.0.0",
+ "steps": [
+  {
+   "code": "DELIVERED_PACKAGE_VERIFIED",
+   "detail": "30 raw + 112 checksums",
+   "n_checksums_verified": 112,
+   "n_fetch_errors": 2,
+   "n_raw_verified": 30,
+   "ok": true,
+   "step": "1. package verified against manifest and checksums"
+  },
+  {
+   "detail": "48 candidates, 53 observations, 5 team statements",
+   "ok": true,
+   "step": "1b. evidence sets present"
+  },
+  {
+   "cited": [
+    "NFL_final_report"
+   ],
+   "detail": "1 cited source(s)",
+   "mismatched": [],
+   "ok": true,
+   "step": "1c. every cited source hash matches the package manifest"
+  },
+  {
+   "blobs": [
+    {
+     "blob": "nfl/vintage/delivered_injury_evidence.df1dd90380b8d720.html.gz",
+     "deduplicated": false,
+     "n_bytes": 991654,
+     "sha256": "df1dd90380b8d720ef61790a40a96e3bdaf535b6bd7ea5af9bcde184aa212ac9",
+     "source_id": "NFL_final_report"
+    }
+   ],
+   "detail": "1 document(s)",
+   "ok": true,
+   "step": "2. raw bytes preserved before parse"
+  },
+  {
+   "columns_read": [
+    "season",
+    "week",
+    "team",
+    "gsis_id",
+    "full_name",
+    "football_name",
+    "first_name",
+    "last_name",
+    "position"
+   ],
+   "columns_refused": [
+    "status",
+    "game_type_status",
+    "status_description_abbr"
+   ],
+   "detail": "2962 players, 32 clubs",
+   "n_players": 2962,
+   "n_teams": 32,
+   "ok": true,
+   "roster_csv": "/home/user/nfl/nfl_vintage/raw/weekly_rosters.fb79560b5c4738a2.csv",
+   "step": "3. roster identity vintage resolves"
+  },
+  {
+   "code": "DELIVERED_ROWS_BUILT",
+   "detail": "48 rows across 20 clubs, 0 refused",
+   "n_refused": 0,
+   "n_rows": 48,
+   "ok": true,
+   "step": "4. delivered rows built",
+   "unmapped": null
+  },
+  {
+   "detail": "5 club(s): DEN,HOU,MIA,MIN,WAS -- recorded as evidence, NOT converted to rows and NOT clearing any gate",
+   "n_refused": 0,
+   "n_statements": 5,
+   "ok": true,
+   "step": "5. explicit no-designation statements recorded",
+   "teams": [
+    "DEN",
+    "HOU",
+    "MIA",
+    "MIN",
+    "WAS"
+   ]
+  },
+  {
+   "detail": "5 observation(s) held back",
+   "n_quarantined": 5,
+   "ok": true,
+   "step": "6. quarantined evidence recorded, not adjudicated",
+   "teams": [
+    "DET",
+    "IND",
+    "KC",
+    "NYJ"
+   ]
+  },
+  {
+   "clocks": {
+    "cache_timestamp": null,
+    "effective_for_date": "2026-09-13",
+    "effective_time": null,
+    "generated_at": "2026-09-13T15:14:38.703610+00:00",
+    "publication_time": "2026-09-11T21:02:00Z",
+    "requested_at": "2026-09-13T12:46:53.674810+00:00",
+    "retrieved_at": "2026-09-13T12:47:00.990929+00:00",
+    "source_timestamp": "2026-09-12T23:07:53.998Z"
+   },
+   "detail": "4 distinct",
+   "ok": true,
+   "step": "7a. the four populated clocks are distinct"
+  },
+  {
+   "blob": "/home/user/nfl/nfl/vintage/injuries.0bc645a4b9aa6255.csv.gz",
+   "deduplicated": false,
+   "detail": "4023 bytes, sha 0bc645a4b9aa6255",
+   "ok": true,
+   "sha256": "0bc645a4b9aa625586dd5e42e6eb3a153c63909d469203d2a34123daf8501208",
+   "step": "7b. injuries blob written and reads back identical"
+  },
+  {
+   "capture_id": "20260913T124700Z",
+   "detail": "capture 20260913T124700Z -> /home/user/nfl/nfl/vintage_manifest.jsonl",
+   "ok": true,
+   "step": "7c. manifest row appended"
+  }
+ ],
+ "terminal_state": "DELIVERED_INJURY_INGEST_READY",
+ "week": 1
+}

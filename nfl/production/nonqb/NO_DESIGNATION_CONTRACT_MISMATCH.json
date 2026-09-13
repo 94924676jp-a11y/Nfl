@@ -1,0 +1,198 @@
+{
+ "answer": "NO -- the hypothesis is FALSE, and it is falsified by measurement",
+ "artifact": "NO_DESIGNATION_CONTRACT_MISMATCH",
+ "clubs_blocked_today_and_why": {
+  "DET": {
+   "n_rows": 8,
+   "newest_capture": "2026-09-11T12:19:54.130521+00:00",
+   "rows_with_report_status": 0,
+   "state": "INJURY_REPORT_STALE"
+  },
+  "HOU": {
+   "n_rows": 4,
+   "newest_capture": "2026-09-11T12:19:54.130521+00:00",
+   "rows_with_report_status": 0,
+   "state": "INJURY_REPORT_STALE"
+  },
+  "IND": {
+   "n_rows": 6,
+   "newest_capture": "2026-09-11T12:19:54.130521+00:00",
+   "rows_with_report_status": 0,
+   "state": "INJURY_REPORT_STALE"
+  },
+  "MIA": {
+   "n_rows": 3,
+   "newest_capture": "2026-09-11T12:19:54.130521+00:00",
+   "rows_with_report_status": 0,
+   "state": "INJURY_REPORT_STALE"
+  },
+  "MIN": {
+   "n_rows": 3,
+   "newest_capture": "2026-09-11T12:19:54.130521+00:00",
+   "rows_with_report_status": 0,
+   "state": "INJURY_REPORT_STALE"
+  },
+  "WAS": {
+   "n_rows": 10,
+   "newest_capture": "2026-09-11T12:19:54.130521+00:00",
+   "rows_with_report_status": 0,
+   "state": "INJURY_REPORT_STALE"
+  }
+ },
+ "clubs_in_state_C_today": [
+  "HOU",
+  "MIA",
+  "MIN",
+  "WAS"
+ ],
+ "generated_at": "2026-09-13T15:26:52.160811+00:00",
+ "question": "does the appearance completeness contract incorrectly require EVERY injury-report row to carry Out/Doubtful/Questionable?",
+ "the_real_mismatch": {
+  "states": [
+   {
+    "id": "A",
+    "meaning": "rows filed, at least one designation present",
+    "representable": true,
+    "spelled_as": "READY / READY_WITH_COMPLETE_INPUT"
+   },
+   {
+    "id": "B",
+    "meaning": "rows filed, no designation filed YET",
+    "representable": true,
+    "spelled_as": "INJURY_REPORT_INCOMPLETE"
+   },
+   {
+    "id": "C",
+    "meaning": "the club has EXPLICITLY STATED it has no injury designations",
+    "representable": false,
+    "spelled_as": "nothing. There is no field in the nflverse injuries schema, no value in the report_status vocabulary, and no state in readiness.GAME_STATES that can carry it. It is therefore indistinguishable from B, and B is correctly refused."
+   }
+  ],
+  "summary": "the contract distinguishes two team states and there are three",
+  "why_the_gate_is_right_given_its_input": "C and B differ only in evidence that the injuries feed does not carry. teammate_availability is a team-level feature, so reading an unfiled designation as an absence of injury would put a fabricated availability into every vacated-share calculation for that club. The refusal is the correct behaviour for the input it has."
+ },
+ "what_a_governance_change_would_have_to_decide": [
+  "whether an explicit club statement of no designations is EQUIVALENT to a filed designation for teammate_availability, or merely permits a zero-vacated-share prior",
+  "which authorities may issue such a statement, and how a later revision supersedes it",
+  "what happens when a club states no designations and a league table later shows one -- the same temporal-alignment problem already quarantined for Ajiake and Nwangwu",
+  "whether the new state is its own GAME_STATES member (auditable) or folded into READY (not auditable)"
+ ],
+ "what_was_done_and_not_done": {
+  "done": "the explicit statements are now INGESTED and PRESERVED as their own record kind on the vintage manifest, with source hash, source url and all five clocks, under value.explicit_no_designations. They exist, hashed and clocked, instead of being discarded for want of a field.",
+  "not_done": "the gate was NOT changed. No no-designation statement clears INJURY_REPORT_INCOMPLETE, and every such record carries clears_a_readiness_gate: false and the reason why.",
+  "why_not": "teaching the appearance contract to accept a new CLASS of evidence changes what counts as a complete injury report. That is a governance decision reserved to the owner, not an ingestion repair, and the directive said to stop and report the mismatch rather than change governance."
+ },
+ "why": {
+  "falsifying_measurement": {
+   "test_1_executable_one_designation_in_three_rows": {
+    "block": "ZZZ, 3 rows, report_status filed on exactly 1",
+    "conclusion": "READY. The gate does NOT require every row to carry a designation; it requires at least one. The hypothesis is false.",
+    "population": {
+     "practice_primary_injury": 0,
+     "practice_status": 0,
+     "report_status": 1
+    },
+    "verdict_from_the_module_rule": "READY"
+   },
+   "test_2_live_a_ready_club_may_have_a_contract_field_unfilled_on_every_row": {
+    "clubs_ready_today_with_practice_status_unfilled_on_every_row": {
+     "ARI": {
+      "practice_status_filled": 0,
+      "rows": 4,
+      "state": "READY"
+     },
+     "ATL": {
+      "practice_status_filled": 0,
+      "rows": 5,
+      "state": "READY"
+     },
+     "BAL": {
+      "practice_status_filled": 0,
+      "rows": 3,
+      "state": "READY"
+     },
+     "BUF": {
+      "practice_status_filled": 0,
+      "rows": 3,
+      "state": "READY"
+     },
+     "CAR": {
+      "practice_status_filled": 0,
+      "rows": 1,
+      "state": "READY"
+     },
+     "CHI": {
+      "practice_status_filled": 0,
+      "rows": 4,
+      "state": "READY"
+     },
+     "CIN": {
+      "practice_status_filled": 0,
+      "rows": 1,
+      "state": "READY"
+     },
+     "CLE": {
+      "practice_status_filled": 0,
+      "rows": 2,
+      "state": "READY"
+     },
+     "GB": {
+      "practice_status_filled": 0,
+      "rows": 4,
+      "state": "READY"
+     },
+     "JAX": {
+      "practice_status_filled": 0,
+      "rows": 1,
+      "state": "READY"
+     },
+     "LAC": {
+      "practice_status_filled": 0,
+      "rows": 2,
+      "state": "READY"
+     },
+     "LV": {
+      "practice_status_filled": 0,
+      "rows": 1,
+      "state": "READY"
+     },
+     "NO": {
+      "practice_status_filled": 0,
+      "rows": 4,
+      "state": "READY"
+     },
+     "NYJ": {
+      "practice_status_filled": 0,
+      "rows": 3,
+      "state": "READY"
+     },
+     "PHI": {
+      "practice_status_filled": 0,
+      "rows": 2,
+      "state": "READY"
+     },
+     "PIT": {
+      "practice_status_filled": 0,
+      "rows": 1,
+      "state": "READY"
+     },
+     "TB": {
+      "practice_status_filled": 0,
+      "rows": 4,
+      "state": "READY"
+     },
+     "TEN": {
+      "practice_status_filled": 0,
+      "rows": 1,
+      "state": "READY"
+     }
+    },
+    "conclusion": "every club that cleared today did so with practice_status empty on 100% of its rows. A contract that demanded every field on every row would have cleared none of them. READY_WITH_COMPLETE_INPUT exists as a SEPARATE, stronger state precisely because \"all rows, all fields\" is a different claim from \"this club filed a report\".",
+    "n": 18
+   },
+   "what_this_does_not_show": "it does not show the gate is right about state C. It shows the gate is not wrong in the way the directive asked about."
+  },
+  "the_rule_as_written": "readiness.team_readiness refuses INJURY_REPORT_INCOMPLETE only when population[\"report_status\"] == 0, i.e. when NOT ONE row on the team carries a designation. It has never required all rows to carry one."
+ },
+ "written_at_used": "2026-09-13T15:24:35Z"
+}

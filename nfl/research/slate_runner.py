@@ -296,7 +296,28 @@ def _information_set(game, written_at):
     return info.get('sources') or {}
 
 
-def assess(game, candidate):
+def _board_written_at(bd):
+    """The clock the board in this directory was sealed at, or None."""
+    from nfl.research import board_select as BS
+    return BS.board_written_at(bd)
+
+
+def _pick_board_dir(d, sealed=None):
+    """THE board this run produced, never merely A board in the directory.
+
+    MEASURED 2026-09-13, AND IT COST THE FIRST PRODUCTION SLATE. This used to
+    be `list(d.glob('**/board.json'))[0]`; a game accumulates one sealed
+    directory per run, so ATL_PIT held three, and glob order is filesystem
+    order rather than chronology. The slate read a board sealed on September
+    11 and reported DEFERRED_INJURY_REPORT_INCOMPLETE for five layers that had
+    just executed and passed. The rule now lives in one place, because the
+    export and the product board both got it wrong the same way.
+    """
+    from nfl.research import board_select as BS
+    return BS.newest_board_dir(d, sealed=sealed)
+
+
+def assess(game, candidate, sealed=None):
     """The board's ACTUAL layer completeness, read from its distributions.
 
     Independent of whether orchestration succeeded. A board that sealed
@@ -310,11 +331,10 @@ def assess(game, candidate):
         d = RB.LIVE / game['game_id'] / f'{cutoff}_{label}'
         if not d.exists():
             continue
-        bj = list(d.glob('**/board.json'))
-        if not bj:
+        bd, how = _pick_board_dir(d, sealed=sealed)
+        if bd is None:
             continue
-        bd = bj[0].parent
-        board = _json.load(open(bj[0]))
+        board = _json.load(open(bd / 'board.json'))
         mj = list(bd.glob('player_draws_manifest.json'))
         manifest = _json.load(open(mj[0])) if mj else None
         draws = PB._load_draws(bd)
@@ -323,6 +343,9 @@ def assess(game, candidate):
                 'forecast_completeness': CP.forecast_completeness(mx),
                 'n_players': board.get('n_players'),
                 'board_completeness_field': board.get('completeness'),
+                'assessed_board_dir': str(bd),
+                'assessed_board_selected_by': how,
+                'assessed_board_written_at': _board_written_at(bd),
                 'cutoff': cutoff}
     return {'layer_matrix': {k: 'NOT_MODELED' for k in CP.LAYER_NAMES},
             'forecast_completeness': 'NO_USABLE_FORECAST',
@@ -381,7 +404,7 @@ def run_game(game, candidate, prev_state, timer, written_at, dry_run=False,
             rec['sealed'] = sealed
             rec['recomputed'] = False
             rec['timing_seconds']['forecasting'] = 0.0
-            rec.update(assess(game, candidate))
+            rec.update(assess(game, candidate, sealed=sealed))
             return rec, rec['action']
 
         if dry_run:
@@ -405,7 +428,7 @@ def run_game(game, candidate, prev_state, timer, written_at, dry_run=False,
         rec['execution_state'] = 'EXECUTED'
         rec['reason'] = (f'consumed slice(s) moved: {moved}' if sealed
                          else 'no prior sealed forecast for this game')
-        rec.update(assess(game, candidate))
+        rec.update(assess(game, candidate, sealed=out.get('sealed')))
         return rec, rec['action']
     except SystemExit as e:
         # make_board refuses by raising SystemExit with a named code.
@@ -413,6 +436,7 @@ def run_game(game, candidate, prev_state, timer, written_at, dry_run=False,
         rec['execution_state'] = rec['action']
         rec['reason'] = str(e)[:300]
         rec['recomputed'] = False
+        _mark_no_forecast(rec)
         return rec, rec['action']
     except Exception as e:                                   # noqa: BLE001
         rec['action'] = f'BLOCKED_{type(e).__name__.upper()}'
@@ -420,10 +444,33 @@ def run_game(game, candidate, prev_state, timer, written_at, dry_run=False,
         rec['reason'] = f'{type(e).__name__}: {e}'[:300]
         rec['traceback_tail'] = traceback.format_exc()[-400:]
         rec['recomputed'] = False
+        _mark_no_forecast(rec)
         return rec, rec['action']
     finally:
         rec['timing_seconds']['game_total'] = round(
             time.perf_counter() - t_game, 4)
+
+
+
+def _mark_no_forecast(rec):
+    """A refused game still has to say what it produced: nothing.
+
+    MEASURED 2026-09-13. Every game on the first Sunday slate reused a prior
+    seal, so every record reached `assess()` and carried
+    `forecast_completeness`. The first slate that actually recomputed hit a
+    refusal inside `_seal`, and the two exception handlers set `action`,
+    `execution_state` and `reason` but no completeness -- so `CP.summarise`
+    raised KeyError and the WHOLE SLATE died, taking six perfectly good
+    forecasts with it. A refusal that destroys the other eleven answers is a
+    reporting defect, not a governance one.
+
+    This does not soften the refusal: `action`, `reason` and any
+    `traceback_tail` are left exactly as the handler set them. It only states
+    the consequence the summary needs -- no usable forecast, nothing modelled.
+    """
+    rec.setdefault('forecast_completeness', 'NO_USABLE_FORECAST')
+    rec.setdefault('layer_matrix', {k: 'NOT_MODELED' for k in CP.LAYER_NAMES})
+    return rec
 
 
 def _seal(game, candidate, written_at, draws, seed):

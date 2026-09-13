@@ -22,6 +22,7 @@ import datetime as dt
 import json
 import os
 import pathlib
+import re
 import sys
 import tempfile
 
@@ -242,11 +243,28 @@ def test_h_latency_is_measured_not_described():
 
 
 def test_i_orchestration_only_no_tiers_picks_or_ev():
+    # WHOLE WORDS, NOT SUBSTRINGS. Measured 2026-09-13: a comment explaining a
+    # board-selection bug used the word "mistake", which contains "stake", and
+    # this check failed on prose while the runner had no staking concept
+    # anywhere. That is the substring-guard trap this repository has now hit
+    # three times. The ban is unchanged and keeps every tooth it had -- `stake`
+    # as a word, an identifier or an attribute is still refused; what it no
+    # longer does is fire on the middle of an unrelated English word.
     src = pathlib.Path(_ROOT, 'nfl', 'research', 'slate_runner.py').read_text()
     lowered = src.lower()
     for banned in ('tier_a', 'tier a', 'bankroll', 'stake', 'kelly',
                    'min_disagreement', 'threshold_disagreement'):
-        check(f'  the runner has no {banned!r}', banned not in lowered)
+        hit = re.search(rf'(?<![0-9a-z_]){re.escape(banned)}(?![0-9a-z_])',
+                        lowered)
+        check(f'  the runner has no {banned!r}', hit is None,
+              '' if hit is None else
+              repr(lowered[max(0, hit.start() - 40):hit.end() + 40]))
+    check('  and the guard would still catch a real one',
+          re.search(r'(?<![0-9a-z_])stake(?![0-9a-z_])',
+                    'rec[\'stake\'] = 1.0') is not None)
+    check('  while ignoring the same letters inside a word',
+          re.search(r'(?<![0-9a-z_])stake(?![0-9a-z_])',
+                    'the identical mistake') is None)
     check('  and nothing it emits is promoted',
           "'promoted': False" in src)
     check('  phases are exactly the four information states',

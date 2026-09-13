@@ -50,6 +50,8 @@ from nfl.research import completeness as CP                           # noqa: E4
 
 SPEC_VERSION = 'research-daily-board-1'
 
+from nfl.research import board_select as BS        # noqa: E402
+
 LIVE = _REPO / 'nfl' / 'research' / 'live'
 OUT_ROOT = _REPO / 'nfl' / 'research' / 'daily'
 
@@ -102,20 +104,25 @@ def discover(date_str):
             cutoff, cand = parse_label(bdir.name)
             if cutoff is None:
                 continue
-            bj = list(bdir.glob('**/board.json'))
-            if not bj:
+            # THE NEWEST BOARD, NOT THE FIRST ONE GLOB HAPPENS TO RETURN.
+            # See nfl/research/board_select.py: this export carried a
+            # two-day-old `forecast_written_at` through a fully re-forecast
+            # slate because filesystem order was standing in for chronology.
+            rdir, selected_by = BS.newest_board_dir(bdir)
+            if rdir is None:
                 continue
-            board = json.load(open(bj[0]))
+            board = json.load(open(rdir / 'board.json'))
             fresh = board.get('freshness') or {}
             ko = str(fresh.get('kickoff_utc') or '')
             if ko[:10] != date_str:
                 continue
-            mj = list(bdir.glob('**/player_draws_manifest.json'))
+            mj = list(rdir.glob('player_draws_manifest.json'))
             found[(gdir.name, cutoff, cand)] = {
                 'game_id': gdir.name, 'cutoff': cutoff, 'candidate': cand,
-                'dir': bj[0].parent, 'board': board,
+                'dir': rdir, 'board': board,
                 'manifest': json.load(open(mj[0])) if mj else None,
-                'run_id': bj[0].parent.name if bj[0].parent != bdir else None,
+                'board_selected_by': selected_by,
+                'run_id': rdir.name if rdir != bdir else None,
                 'written_at': str(fresh.get('written_at') or ''),
                 'kickoff_utc': ko,
             }
