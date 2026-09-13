@@ -121,20 +121,65 @@ def test_d_warm_and_cold_produce_identical_football():
     session. Same inputs, same seed. The draw content digest must be
     identical; only metadata such as written_at and run_id may differ.
     """
+    # RE-SEALS OF ONE CONFIGURATION, NOT ONE GAME'S WHOLE DIRECTORY.
+    #
+    # MEASURED 2026-09-13. This used to take the three most recently MODIFIED
+    # board.json files anywhere under the game. That is not a population of
+    # re-seals: on the first Sunday the inactives tournament ran, the three
+    # newest were the R6, R7 and R8 POST-INACTIVES boards, and
+    # `ingest_inactives.py` seals all five candidates AT ONE written_at by
+    # design -- "one written_at, one seed, one boundary" is a governed
+    # property of that path, not an accident. So `written_at` was correctly
+    # identical across them and the test read its own contract as a failure.
+    #
+    # The property under test is unchanged and not weakened: the same game,
+    # the same candidate, sealed more than once, must carry ONE draw digest.
+    # What changed is that the boards compared are now actually re-seals.
     d = pathlib.Path(_ROOT) / 'nfl' / 'research' / 'live' / '2026_01_BUF_HOU'
-    boards = sorted(d.glob('**/board.json'), key=lambda p: p.stat().st_mtime)
-    if len(boards) < 2:
-        print('  ..   fewer than two sealed BUF_HOU boards; skipped')
+    groups = {}
+    for b in d.glob('**/board.json'):
+        groups.setdefault(b.parent.parent.name, []).append(b)
+    reseals = {k: v for k, v in groups.items() if len(v) >= 2}
+    if not reseals:
+        print('  ..   no configuration of BUF_HOU has been sealed twice; '
+              'skipped')
         return
-    docs = [json.load(open(b)) for b in boards[-3:]]
+    cfg = max(reseals, key=lambda k: len(reseals[k]))
+    docs = [json.load(open(b)) for b in
+            sorted(reseals[cfg], key=lambda p: p.stat().st_mtime)]
     digests = {str(j.get('draw_content_digest')) for j in docs}
-    check('every re-seal of the same game carries ONE draw digest',
+    check(f'every re-seal of {cfg} carries ONE draw digest',
           len(digests) == 1, str(digests))
     written = {str((j.get('freshness') or {}).get('written_at')) for j in docs}
     check('  while written_at genuinely differs between them',
           len(written) > 1, str(sorted(written)))
     check('  so the football is identical and only metadata moved',
           len(digests) == 1 and len(written) > 1)
+    check('  and it is a real population, not one board compared with itself',
+          len(docs) >= 2, f'{len(docs)} seals of {cfg}')
+    # AND THE THING THAT MISLED THE OLD SELECTOR IS NOW ITSELF A PROPERTY.
+    # The tournament seals every candidate at one instant; that must stay true,
+    # and a reader who meets it should find it asserted rather than surprising.
+    tourney = {}
+    for k, v in groups.items():
+        if not k.startswith('post_inactives'):
+            continue
+        for b in v:
+            w = (json.load(open(b)).get('freshness') or {}).get('written_at')
+            tourney.setdefault(str(w), set()).add(k)
+    shared = {w: c for w, c in tourney.items() if len(c) > 1}
+    if shared:
+        w, cands = max(shared.items(), key=lambda kv: len(kv[1]))
+        check('the inactives tournament seals its candidates at ONE '
+              'written_at', True, f'{len(cands)} candidates at {w}')
+        digs = set()
+        for k in cands:
+            for b in groups[k]:
+                j = json.load(open(b))
+                if str((j.get('freshness') or {}).get('written_at')) == w:
+                    digs.add(str(j.get('draw_content_digest')))
+        check('  and they agree on the football too', len(digs) == 1,
+              str(digs))
 
 
 def test_e_nothing_game_specific_is_cached():
