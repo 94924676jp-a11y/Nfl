@@ -44,6 +44,44 @@ def kickoff_for(season, week, game_id):
     raise SystemExit(f'GAME_NOT_IN_WEEK_PLAN: {game_id}')
 
 
+
+def _inactive_provenance(game_id, teams, inactive_ids):
+    """What the ownership verdict is allowed to judge itself on.
+
+    Read from the governed ingestion record written by
+    `nfl/tools/ingest_inactives.py`, never assembled from the caller's
+    intentions. Absent the record there is no provenance and the verdict
+    fails closed -- which is the correct reading of a board sealed before any
+    list was consumed.
+    """
+    if not inactive_ids:
+        return None
+    rec = _REPO / 'nfl' / 'research' / 'live' / game_id / 'INACTIVES_INGESTION.json'
+    if not rec.exists():
+        return {'game_id': game_id, 'teams': list(teams),
+                'post_inactives_complete': False,
+                'n_unmapped': None,
+                'why': 'no INACTIVES_INGESTION.json for this game'}
+    try:
+        d = json.loads(rec.read_text())
+    except (ValueError, OSError):
+        return {'game_id': game_id, 'teams': list(teams),
+                'post_inactives_complete': False, 'n_unmapped': None,
+                'why': 'the ingestion record could not be read'}
+    steps = {s['step'][:3].strip(): s for s in (d.get('steps') or [])}
+    ident, complete = steps.get('3.'), steps.get('4.')
+    return {
+        'game_id': game_id,
+        'teams': list(teams),
+        'post_inactives_complete': bool(complete and complete.get('ok')),
+        'n_unmapped': (ident or {}).get('n_unmapped'),
+        'unmapped': (ident or {}).get('unmapped'),
+        'segmentation': d.get('segmentation'),
+        'provenance_kind': (d.get('provenance') or {}).get('kind'),
+        'record': str(rec.relative_to(_REPO)),
+    }
+
+
 def build_one(season, week, game_id, written_at, out_dir, draws=1000,
               seed=20260908, model_configuration='V1_CANDIDATE',
               inactive_ids=None):
@@ -100,6 +138,8 @@ def build_one(season, week, game_id, written_at, out_dir, draws=1000,
     # sealed before the list publishes must remain.
     fx = {'kickoff_utc': ko,
           'official_inactive_ids': list(inactive_ids or []) or None,
+          'official_inactive_provenance': _inactive_provenance(
+              game_id, teams, inactive_ids),
           'source_hashes': {k: {'sha256': v['sha256'],
                                 'retrieved_at': v['observed_at']}
                             for k, v in info['sources'].items()},
@@ -124,6 +164,15 @@ def build_one(season, week, game_id, written_at, out_dir, draws=1000,
                  roster_blob=roster_blob, depth_blob=depth_blob)
     bd['information_set'] = info
     bd['pipeline_status'] = summary['status']
+    # THE GOVERNED OWNERSHIP STATE, CARRIED NOT RE-DERIVED. The product board
+    # reads `qb_inactive_ownership_enforced` to decide whether
+    # QB_INACTIVE_NOT_CONSUMED still applies. Until 2026-09-13 nothing in the
+    # repository wrote it, so the flag could never clear even on a board that
+    # had demonstrably consumed the official list. It now comes from the
+    # allocation layer that actually enforced it, through run_status.
+    bd['qb_inactive_ownership'] = summary.get('qb_inactive_ownership')
+    bd['qb_inactive_ownership_enforced'] = bool(
+        summary.get('qb_inactive_ownership_enforced'))
 
     (run_dir / 'board.json').write_text(
         json.dumps(bd, indent=1, sort_keys=True, default=str))

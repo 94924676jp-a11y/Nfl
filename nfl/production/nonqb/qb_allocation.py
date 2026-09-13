@@ -133,8 +133,88 @@ def previous_primary(season: int, week: int) -> dict:
     return out
 
 
+# The six conditions, named, so a reader can see WHICH one failed rather than
+# only that something did. Owner ruling 2026-09-13.
+OWNERSHIP_CONDITIONS = (
+    'official_inactive_evidence_ingested',
+    'evidence_tied_to_this_game_and_team',
+    'all_resolved_inactive_qbs_excluded',
+    'no_unresolved_identity',
+    'allocation_passes_accounting',
+    'forecast_generated_after_enforcement',
+)
+
+
+def ownership_verdict(teams, out, inact, zeroed, closure_dev,
+                      provenance=None) -> dict:
+    """May this allocation claim `qb_inactive_ownership_enforced`?
+
+    THE FLAG THIS REPLACES HAD NO WRITER. `qb_inactive_ownership_enforced` was
+    READ in nfl/product/daily_board.py and SET NOWHERE in the repository, so
+    QB_INACTIVE_NOT_CONSUMED could never clear on any board -- before or after
+    consuming an official list. Measured 2026-09-13: New Orleans consumed the
+    league's list, Zach Wilson's projection went to exactly zero, his share
+    redistributed, and every row still carried the contamination flag.
+
+    The answer is a governed STATE, not a suppression. All six conditions must
+    hold and each is recorded with what it was judged on, so "true" is always
+    auditable and "false" always names the reason. Nothing here can be set by a
+    caller: the verdict is computed from the allocation that just ran.
+
+    CONSERVATIVE ON IDENTITY, DELIBERATELY. An official name that resolved to
+    no rostered player might be a quarterback this roster vintage does not
+    carry. We cannot tell from a name alone, so an unresolved name refuses
+    enforcement for that game rather than being assumed harmless. Reported,
+    never guessed.
+    """
+    prov = dict(provenance or {})
+    c = {}
+    c['official_inactive_evidence_ingested'] = bool(inact) or bool(
+        prov.get('post_inactives_complete'))
+    c['evidence_tied_to_this_game_and_team'] = bool(
+        prov.get('game_id') and prov.get('teams')
+        and set(teams) <= set(prov.get('teams') or ()))
+    in_room = {t: [p for p in v['pids'] if p in inact] for t, v in out.items()}
+    excluded = {t: sorted(zeroed.get(t, [])) for t in out}
+    c['all_resolved_inactive_qbs_excluded'] = all(
+        sorted(in_room[t]) == excluded[t] for t in out)
+    n_unmapped = prov.get('n_unmapped')
+    c['no_unresolved_identity'] = (n_unmapped == 0)
+    c['allocation_passes_accounting'] = bool(
+        out) and float(closure_dev) <= 1e-6
+    # The enforcement ran inside THIS allocation, so any forecast built from
+    # its value is built after it by construction. It is stated rather than
+    # assumed because a later reader cannot re-derive it from the board alone.
+    c['forecast_generated_after_enforcement'] = True
+    enforced = all(c[k] for k in OWNERSHIP_CONDITIONS)
+    return {
+        'enforced': enforced,
+        'conditions': {k: bool(c[k]) for k in OWNERSHIP_CONDITIONS},
+        'failed_conditions': [k for k in OWNERSHIP_CONDITIONS if not c[k]],
+        'inactive_qbs_in_modelled_room': {t: sorted(v) for t, v in
+                                          in_room.items() if v},
+        'inactive_qbs_excluded': {t: v for t, v in excluded.items() if v},
+        'n_unmapped_official_names': n_unmapped,
+        'unmapped_official_names': prov.get('unmapped'),
+        'closure_max_dev': float(closure_dev),
+        'game_id': prov.get('game_id'),
+        'spec_version': SPEC_VERSION,
+        'what_true_means': (
+            'the official list for BOTH clubs was ingested and tied to this '
+            'game, every officially inactive quarterback the model carries was '
+            'excluded from the allocation BEFORE the draw, no official name '
+            'went unresolved, the shares close, and the forecast was built '
+            'from this allocation.'),
+        'what_true_does_not_mean': (
+            'it does not mean no quarterback is inactive, and it does not '
+            'mean the projection is right. It means the inactive evidence was '
+            'consumed by the mechanism that owns the share.'),
+    }
+
+
 def allocate(season, week, teams, qb_players, m=200, seed=20260908,
-             kickoff_utc=None, written_at=None, inactive_ids=None) -> Outcome:
+             kickoff_utc=None, written_at=None, inactive_ids=None,
+             inactive_provenance=None) -> Outcome:
     """team -> (pids, shares (n_qb, m)). Shares sum to 1 in every draw.
 
     OFFICIALLY INACTIVE QUARTERBACKS OWN NOTHING, AND THIS IS WHERE THAT IS
@@ -197,34 +277,72 @@ def allocate(season, week, teams, qb_players, m=200, seed=20260908,
             trip.append((pid, min(int(r), 3), int(prev.get(t) == pid)))
         if not trip:
             continue
-        S = Q.allocate(par, trip, m=m, seed=seed, ordinal=season * 100 + week,
-                       team=t)
         pid_list = [x[0] for x in trip]
-        if inact:
-            mask = np.array([p in inact for p in pid_list])
-            if mask.any():
-                if mask.all():
-                    return Outcome.fail(
-                        'QB_ALLOCATION_ALL_QUARTERBACKS_INACTIVE',
-                        f'{t}: every rostered quarterback is on the official '
-                        f'inactive list, so there is nobody to receive the '
-                        f'team dropback share. Refusing rather than dividing '
-                        f'by zero or leaving the share with a player who is '
-                        f'not dressed.',
-                        team=t, n_qb=len(pid_list))
-                S = S.copy()
-                S[mask, :] = 0.0
-                col = S.sum(0)
-                if float(np.min(col)) <= 0.0:
-                    return Outcome.fail(
-                        'QB_ALLOCATION_ZERO_ACTIVE_SHARE',
-                        f'{t}: after removing officially inactive '
-                        f'quarterbacks at least one draw has no share left to '
-                        f'renormalise. Allocated mass may never be dropped.',
-                        team=t)
-                S = S / col
-                zeroed.setdefault(t, []).extend(
-                    [p for p, mk in zip(pid_list, mask) if mk])
+        mask = np.array([p in inact for p in pid_list]) if inact \
+            else np.zeros(len(pid_list), bool)
+        if mask.all() and len(pid_list):
+            return Outcome.fail(
+                'QB_ALLOCATION_ALL_QUARTERBACKS_INACTIVE',
+                f'{t}: every rostered quarterback is on the official '
+                f'inactive list, so there is nobody to receive the '
+                f'team dropback share. Refusing rather than dividing '
+                f'by zero or leaving the share with a player who is '
+                f'not dressed.',
+                team=t, n_qb=len(pid_list))
+        # ELIGIBILITY CONDITIONS THE DRAW. IT DOES NOT EDIT ITS RESULT.
+        #
+        # MEASURED 2026-09-13, ON THE FIRST SUNDAY THIS PATH CARRIED A REAL
+        # INACTIVE LIST. The previous wiring drew the room UNCONDITIONED, then
+        # zeroed the inactive rows and renormalised what was left. That cannot
+        # work, and not at the margin: `Q.allocate` samples the primary's share
+        # from an empirical pool whose modal value is exactly 1.0 -- 77.7% of
+        # the (rank 1, previous primary) pool and 44.2% of (rank 1, not
+        # previous primary). Those draws are ONE-HOT. If the drawn primary is
+        # the inactive quarterback, zeroing his row leaves the column at
+        # exactly zero and the renormalisation is 0/0.
+        #
+        # Indianapolis measured 20.8% of draws in that state with Riley Leonard
+        # inactive, so the refusal was certain. New Orleans measured 0.0% with
+        # Zach Wilson inactive AT THIS SEED and would have refused on 13 of 40
+        # seeds -- the board that survived did so by luck, which is the part
+        # worth saying out loud.
+        #
+        # THIS IS A WIRING REPAIR, NOT A NEW MODEL. `p_primary` is the
+        # probability that a quarterback is the game's primary passer. A player
+        # who is not dressed cannot be the primary passer, so that probability
+        # is zero by the definition of the event rather than by any modelling
+        # choice -- the old code asserted exactly that, it just asserted it
+        # after sampling, where it is arithmetically undefined. Restricting a
+        # categorical to a subset of its support IS conditioning it: no
+        # parameter is refit, no coefficient is added, no distributional family
+        # changes, and the primary's empirical share pool is untouched.
+        #
+        # PARITY IS STRUCTURAL. With no inactive quarterback the eligible room
+        # IS the room, the same call is made with the same arguments, and the
+        # output is bit-identical. The suite asserts it.
+        elig = [x for x in trip if not (inact and x[0] in inact)]
+        S_e = Q.allocate(par, elig, m=m, seed=seed,
+                         ordinal=season * 100 + week, team=t)
+        if mask.any():
+            pos = {pid: i for i, (pid, _, _) in enumerate(trip)}
+            S = np.zeros((len(trip), m))
+            for j, (pid, _, _) in enumerate(elig):
+                S[pos[pid], :] = S_e[j, :]
+            zeroed.setdefault(t, []).extend(
+                [p for p, mk in zip(pid_list, mask) if mk])
+            # RETAINED, AND MEANT TO BE UNREACHABLE. A guard removed once it
+            # stops firing cannot tell you when the thing it guarded against
+            # comes back.
+            col = S.sum(0)
+            if float(np.min(col)) <= 0.0:
+                return Outcome.fail(
+                    'QB_ALLOCATION_ZERO_ACTIVE_SHARE',
+                    f'{t}: after conditioning on the officially eligible '
+                    f'quarterback room at least one draw still has no share. '
+                    f'Allocated mass may never be dropped.',
+                    team=t)
+        else:
+            S = S_e
         out[t] = {'pids': pid_list, 'shares': S,
                   'ranks': [x[1] for x in trip],
                   'was_prev_primary': [x[2] for x in trip]}
@@ -241,8 +359,12 @@ def allocate(season, week, teams, qb_players, m=200, seed=20260908,
             'QB_ALLOCATION_DOES_NOT_CLOSE',
             f'the shares of some team do not sum to 1 (worst {worst:.2e}). '
             f'Closure is the property this layer exists for.')
+    own = ownership_verdict(teams, out, inact, zeroed, worst,
+                            inactive_provenance)
     return Outcome.ok('QB_ALLOCATION_OK', value=out,
                       spec_version=SPEC_VERSION, governance=GOVERNANCE,
+                      qb_inactive_ownership_enforced=own['enforced'],
+                      qb_inactive_ownership=own,
                       n_inactive_qb_zeroed=sum(len(v) for v in zeroed.values()),
                       inactive_qb_zeroed=zeroed,
                       n_teams=len(out), closure_max_dev=worst,

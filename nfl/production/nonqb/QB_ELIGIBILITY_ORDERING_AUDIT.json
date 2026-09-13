@@ -1,0 +1,107 @@
+{
+ "artifact": "QB_ALLOCATION_ELIGIBILITY_ORDERING_AUDIT",
+ "does_the_repair_preserve_the_accepted_mechanism": {
+  "answer": "YES -- it is wiring, not a new model",
+  "parity": "with no officially inactive quarterback the eligible room IS the room, the same call is made with the same arguments, and the output is BIT-IDENTICAL. Asserted in nfl/tests/test_qb_inactive_ownership.py::test_g_parity_with_no_inactive_qb_is_bit_identical.",
+  "what_does_change": "a team WITH an inactive quarterback necessarily gets a different allocation from the old code -- but the old code's output in those cases was either a refusal or a seed-lucky renormalisation, so there is no valid prior result being overwritten.",
+  "why": [
+   "restricting a categorical to a subset of its support IS conditioning it; p_primary is renormalised over the eligible members by the same expression that already normalised it over the full room",
+   "no parameter is refit, no coefficient is added, no distributional family changes",
+   "the primary's empirical share pool is untouched, so the starter's share distribution is the same distribution it always was",
+   "the remainder rule and the closure/residual rule are unchanged",
+   "NOTHING IN nfl/research/qb3 WAS EDITED. The repair passes the eligible room to the existing frozen function."
+  ]
+ },
+ "exact_current_ordering_before_the_repair": [
+  "1. qb_allocation.allocate builds, per team, a triple (gsis_id, depth rank capped at 3, was_previous_primary) from the captured depth chart and the strictly-earlier previous primary.",
+  "2. qb3_lib.allocate draws the room UNCONDITIONED: who = rng.choice(n, size=m, p=p_primary/sum) selects the primary passer per draw; the primary's share is RESAMPLED from his cell's empirical pool; the remainder is spread over the others in proportion to their cell weight; rounding residue is placed on the drawn primary.",
+  "3. BACK IN PRODUCTION: rows of officially inactive quarterbacks are set to zero.",
+  "4. column sums are taken; if any draw sums to <= 0 the run refuses with QB_ALLOCATION_ZERO_ACTIVE_SHARE.",
+  "5. otherwise the matrix is renormalised by the column sums."
+ ],
+ "generated_at": "2026-09-13T17:24:02.296309+00:00",
+ "is_eligibility_conditioning_already_implied_by_the_accepted_model": {
+  "answer": "YES",
+  "reasoning": "p_primary is the probability that a given quarterback is the game's PRIMARY PASSER. A player who is not dressed cannot take a dropback, so P(primary = X | X is not dressed) = 0 by the definition of the event, not by any modelling choice. The pre-repair code asserted exactly that when it zeroed the inactive rows -- it simply asserted it AFTER sampling, at the one point where the arithmetic is undefined.",
+  "what_the_fit_does_not_contain": "game-day eligibility is not a fitted covariate and is not being made one. No cell, coefficient or pool changes."
+ },
+ "measured_result_of_the_repair_2026_09_13": {
+  "BAL_IND": {
+   "Riley_Leonard_share": 0.0,
+   "enforced": true,
+   "now": "PASS",
+   "previously": "REFUSED QB_ALLOCATION_ZERO_ACTIVE_SHARE",
+   "room_after": {
+    "Anthony Richardson": 0.462,
+    "Daniel Jones": 0.538
+   }
+  },
+  "NO_DET": {
+   "Zach_Wilson_share": 0.0,
+   "enforced": true,
+   "room_after": {
+    "Hunter Dekkers": 0.03,
+    "Spencer Rattler": 0.073,
+    "Tyler Shough": 0.897
+   }
+  },
+  "TB_CIN": {
+   "enforced": true,
+   "inactive_qbs": "none",
+   "note": "complete list consumed, no quarterback named"
+  }
+ },
+ "question": "should the model order be: official active QB room -> appearance/share conditional on the eligible room -> team QB allocation, rather than unconditioned draw -> remove inactive afterwards?",
+ "residual_limitation_stated_plainly": "conditioning changes WHICH cell's share pool is sampled, because the drawn primary changes. That is a consequence of conditioning and not a new assumption, but it does mean the marginal distribution of a backup who inherits a starter's absence is governed by the backup's own cell pool, which was fit on games where he was primary. Whether that is the right pool for \"started because the incumbent was scratched\" is a modelling question this repair does not answer and does not pretend to.",
+ "spec_version": "qb-eligibility-ordering-audit-1",
+ "verdict": "THE ACCEPTED MECHANISM ALREADY REQUIRES ELIGIBILITY CONDITIONING. The production wiring applied it in the wrong place. This is a wiring repair, not a new predictive model.",
+ "what_was_NOT_done": [
+  "no ad hoc redistribution of stranded mass",
+  "no renormalising away of zero-active-share draws",
+  "no change to any QB projection made in order to clear a flag",
+  "no edit to nfl/research/qb3 or to any frozen artifact",
+  "the QB_ALLOCATION_ZERO_ACTIVE_SHARE guard is RETAINED and is now meant to be unreachable; a guard deleted once it stops firing cannot tell you when the thing it guarded against comes back"
+ ],
+ "why_zero_active_share_draws_arise": {
+  "conclusion": "the old ordering is not merely fragile for a high-share inactive quarterback -- it is unsound for ANY inactive quarterback, and its successes were seed-dependent.",
+  "measured_live_2026_09_13": {
+   "IND_with_Riley_Leonard_inactive": {
+    "note": "Leonard held 51% of the pre-inactives dropbacks and is the emergency third quarterback on the official list. The refusal was certain, not marginal.",
+    "zero_active_share_draws": 0.208
+   },
+   "NO_with_Zach_Wilson_inactive": {
+    "note": "THE BOARD THAT SURVIVED DID SO BY LUCK. Wilson sits in a low p_primary cell, so the joint probability of him being drawn primary AND drawing a 1.0 share is small but not negligible at m=1000. A different seed refuses.",
+    "would_have_refused_on": "13 of 40 seeds",
+    "zero_active_share_draws_at_the_production_seed": 0.0
+   }
+  },
+  "measured_pool_atoms_at_exactly_1_0": {
+   "(rank 1, not previous primary)": {
+    "frac_share_eq_1": 0.4424,
+    "n": 321,
+    "p_primary": 0.4922
+   },
+   "(rank 1, was previous primary)": {
+    "frac_share_eq_1": 0.7765,
+    "n": 2349,
+    "p_primary": 0.9046
+   },
+   "(rank 2+, was previous primary)": {
+    "frac_share_eq_1": 0.5083,
+    "n": 240,
+    "p_primary": 0.6167
+   },
+   "(rank 2, not previous primary)": {
+    "frac_share_eq_1": 0.0435,
+    "n": 2436,
+    "p_primary": 0.0686
+   },
+   "(rank 3, not previous primary)": {
+    "frac_share_eq_1": 0.0173,
+    "n": 1100,
+    "p_primary": 0.0282
+   }
+  },
+  "mechanism": "step 2 resamples the primary's share from an EMPIRICAL POOL whose modal value is exactly 1.0. Those draws are one-hot: the primary holds the entire room. If that primary is the officially inactive quarterback, step 3 zeroes the only non-zero entry and step 5 is 0/0."
+ }
+}

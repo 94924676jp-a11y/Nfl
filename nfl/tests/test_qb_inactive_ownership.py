@@ -1,28 +1,26 @@
-"""The QB-inactive ownership repair, and the assertion that keeps it repaired.
+"""QB inactive ownership: the governed state, and the draw that conditions on it.
 
-THE DEFECT THIS FILE EXISTS FOR.
+WHAT THESE TESTS PROTECT.
 
-`official_inactive_ids` reached the non-QB engine only -- one argument at
-run_forecast.py:713 -- so the QB share pool never saw it. On the sealed SF@LA
-board of 2026-09-11, Kurtis Rourke held 0.90 dropbacks and Ty Simpson 0.73
-while both were on the league's published inactive list.
+  * A SENTINEL WITH NO WRITER IS NOT A CONTROL. `qb_inactive_ownership_enforced`
+    was READ by the product board and SET NOWHERE in the repository, so
+    QB_INACTIVE_NOT_CONSUMED could never clear -- not even on the 2026-09-13
+    New Orleans board that had demonstrably consumed the league's list and
+    zeroed Zach Wilson. The field is now computed by the layer that owns the
+    share, from six named conditions, and no caller can assert it.
 
-The mean understated it badly. Measured on the real 2026 week-1 SF/LA pool,
-Rourke's share PEAKED at 0.2256 -- in some simulated worlds an inactive third
-quarterback took nearly a quarter of his team's dropbacks. That is why the
-assertion below checks the maximum over draws and not the mean: a mean of
-0.0004 is one draw holding a snap for a man who was not dressed.
+  * ELIGIBILITY CONDITIONS THE DRAW; IT DOES NOT EDIT THE RESULT. The old
+    wiring drew the room unconditioned and zeroed inactive rows afterwards.
+    `Q.allocate` samples the primary's share from an empirical pool whose modal
+    value is exactly 1.0, so those draws are one-hot and the renormalisation is
+    0/0. Indianapolis measured 20.8% of draws in that state.
 
-WHY THE REPAIR IS IN THE ALLOCATION AND NOT DOWNSTREAM. The share is the thing
-that is wrong, so zeroing the inactive rows and renormalising the remainder is
-the earliest causal repair. R2's largest-remainder apportionment is untouched;
-it simply receives the correct pool. Subtracting afterwards would have been a
-second mechanism compensating for the first, which this project forbids.
+  * PARITY IS THE PROOF THAT THIS IS WIRING AND NOT A NEW MODEL. With no
+    inactive quarterback the eligible room IS the room and the output must be
+    bit-identical, draw for draw.
 """
 from __future__ import annotations
 
-import csv
-import glob
 import os
 import sys
 
@@ -31,14 +29,15 @@ import numpy as np
 _ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 if _ROOT not in sys.path:
     sys.path.insert(0, _ROOT)
+_Q3 = os.path.join(_ROOT, 'nfl', 'research', 'qb3')
+if _Q3 not in sys.path:
+    sys.path.insert(0, _Q3)
 
 from sportsplatform.governance.outcome import State                  # noqa: E402
-from nfl.production import qb_accounting as QBACC                    # noqa: E402
 from nfl.production.nonqb import qb_allocation as QA                 # noqa: E402
+from nfl.product import daily_board as PBD                           # noqa: E402
 
 PASSED = FAILED = 0
-ROURKE = '00-0040589'
-SIMPSON = '00-0041568'
 
 
 def check(label, ok, detail=''):
@@ -51,127 +50,195 @@ def check(label, ok, detail=''):
         print(f'  FAIL {label}' + (f'  {detail}' if detail else ''))
 
 
-def _real_pool():
-    """The actual 2026 week-1 SF/LA quarterback pool from the roster vintage."""
-    out = []
-    for r in sorted(glob.glob(os.path.join(_ROOT, 'nfl_vintage', 'raw',
-                                           'weekly_rosters.*.csv'))):
-        for row in csv.DictReader(open(r)):
-            if (row.get('season') == '2026' and row.get('week') == '1'
-                    and row.get('team') in ('SF', 'LA')
-                    and row.get('position') == 'QB' and row.get('gsis_id')):
-                if not any(q['gsis_id'] == row['gsis_id'] for q in out):
-                    out.append({'gsis_id': row['gsis_id'],
-                                'team': row.get('team'),
-                                'full_name': row.get('full_name')})
-    return out
+# --------------------------------------------------------------- fixtures
+# A room shaped like a real one: a rank-1 incumbent, a rank-2 and two rank-3s.
+ROOM = [{'gsis_id': 'QB1', 'team': 'ZZ', 'position': 'QB'},
+        {'gsis_id': 'QB2', 'team': 'ZZ', 'position': 'QB'},
+        {'gsis_id': 'QB3', 'team': 'ZZ', 'position': 'QB'}]
+PROV = {'game_id': '2026_01_YY_ZZ', 'teams': ['ZZ'],
+        'post_inactives_complete': True, 'n_unmapped': 0}
 
 
-def test_a_an_inactive_quarterback_owns_exactly_zero_in_every_draw():
-    pool = _real_pool()
-    if not pool:
-        print('  ..   roster vintage unavailable; skipped')
-        return
-    base = QA.allocate(2026, 1, ['SF', 'LA'], pool, m=200, seed=20260908)
-    fixed = QA.allocate(2026, 1, ['SF', 'LA'], pool, m=200, seed=20260908,
-                        inactive_ids=[ROURKE, SIMPSON])
-    check('both allocations succeed',
-          base.state is State.PASS and fixed.state is State.PASS,
-          f'{base.code} / {fixed.code}')
-    check('the repair reports what it zeroed',
-          fixed.evidence.get('n_inactive_qb_zeroed') == 2,
-          str(fixed.evidence.get('n_inactive_qb_zeroed')))
-    for team, pid, who in (('SF', ROURKE, 'Rourke'), ('LA', SIMPSON, 'Simpson')):
-        b, f = base.value[team], fixed.value[team]
-        if pid not in b['pids']:
-            continue
-        i = b['pids'].index(pid)
-        check(f'  {who} held share BEFORE the repair',
-              float(b['shares'][i].max()) > 0.0,
-              f"peak {float(b['shares'][i].max()):.4f}")
-        check(f'  {who} holds EXACTLY zero in every draw after it',
-              float(np.abs(f['shares'][i]).max()) == 0.0,
-              f"max {float(np.abs(f['shares'][i]).max()):.12f}")
-        col = f['shares'].sum(0)
-        check(f'  {team} shares still close to 1 in every draw',
-              float(np.abs(col - 1.0).max()) < 1e-12,
-              f'worst deviation {float(np.abs(col - 1.0).max()):.2e}')
-        check(f'  {team} mass went to the dressed quarterbacks, not nowhere',
-              float(f['shares'].sum(0).min()) > 0.999999)
+def _alloc(**kw):
+    return QA.allocate(2026, 1, ['ZZ'], ROOM, m=400, seed=20260908, **kw)
 
 
-def test_b_the_mass_is_redistributed_rather_than_discarded():
-    """The removed share must reappear on the remaining quarterbacks."""
-    pool = _real_pool()
-    if not pool:
-        print('  ..   roster vintage unavailable; skipped')
-        return
-    base = QA.allocate(2026, 1, ['SF', 'LA'], pool, m=200, seed=20260908)
-    fixed = QA.allocate(2026, 1, ['SF', 'LA'], pool, m=200, seed=20260908,
-                        inactive_ids=[ROURKE, SIMPSON])
-    for team, pid in (('SF', ROURKE), ('LA', SIMPSON)):
-        b, f = base.value[team], fixed.value[team]
-        if pid not in b['pids']:
-            continue
-        i = b['pids'].index(pid)
-        others = [j for j in range(len(b['pids'])) if j != i]
-        gained = float(f['shares'][others].sum(0).mean()
-                       - b['shares'][others].sum(0).mean())
-        lost = float(b['shares'][i].mean())
-        check(f'  {team}: what the inactive QB lost, the others gained',
-              abs(gained - lost) < 1e-9,
-              f'lost {lost:.6f} gained {gained:.6f}')
+def _shares(o, team='ZZ'):
+    return o.value[team]['shares'], o.value[team]['pids']
 
 
-def test_c_the_assertion_rejects_a_seeded_violation():
-    """A repair with no assertion is a repair that regresses silently.
-
-    This is exactly how the defect arose in the first place: the argument
-    simply stopped being threaded through, and nothing objected.
-    """
-    rows = [{'gsis_id': 'A', 'season': 2026, 'week': 1, 'team': 'SF'},
-            {'gsis_id': 'B', 'season': 2026, 'week': 1, 'team': 'SF'}]
-    clean = {'db': np.array([[10, 11, 9], [0, 0, 0]]),
-             'att': np.array([[9, 10, 8], [0, 0, 0]])}
-    o = QBACC.assert_inactive_qbs_own_nothing(clean, rows, ['B'])
-    check('a clean allocation passes the assertion',
-          o.state is State.PASS and o.code == 'QB_INACTIVE_OWNS_NOTHING', o.code)
-
-    # ONE dropback in ONE draw out of three. A mean test would call this 0.33
-    # and shrug; it is a quarterback who was not dressed taking a snap.
-    seeded = {'db': np.array([[10, 11, 9], [0, 1, 0]]),
-              'att': np.array([[9, 10, 8], [0, 0, 0]])}
-    bad = QBACC.assert_inactive_qbs_own_nothing(seeded, rows, ['B'])
-    check('a single seeded draw IS caught',
-          bad.state is State.FAIL
-          and bad.code == 'QB_INACTIVE_STILL_OWNS_DROPBACKS', bad.code)
-    check('  and the offender is named with its magnitude',
-          (bad.evidence.get('offenders') or {}).get('B', {}).get('db') == 1.0,
-          str(bad.evidence.get('offenders')))
-
-    # NO LIST IS NOT A PASS. It is DEFERRED: as a HARD invariant that is
-    # carried as `hard_owed` rather than refusing the seal, so an ordinary
-    # game with no published list still seals while recording plainly that
-    # this was never established.
-    na = QBACC.assert_inactive_qbs_own_nothing(clean, rows, [])
-    check('no inactive list DEFERS rather than passing',
-          na.state is State.DEFERRED
-          and na.code == 'QB_INACTIVE_OWNERSHIP_NOT_ESTABLISHED',
-          f'{na.state.name}[{na.code}]')
+# ----------------------------------------------------------------- A - F
+def test_a_inactive_qb_removed_field_true_contamination_clears():
+    o = _alloc(inactive_ids=['QB3'], inactive_provenance=PROV)
+    check('an allocation with an inactive QB passes', o.state is State.PASS,
+          o.code)
+    own = o.evidence['qb_inactive_ownership']
+    check('  the ownership field is TRUE', own['enforced'] is True,
+          str(own['failed_conditions']))
+    S, pids = _shares(o)
+    check('  the inactive QB holds exactly zero in EVERY draw',
+          float(S[pids.index('QB3')].max()) == 0.0,
+          f'max {float(S[pids.index("QB3")].max()):.3e}')
+    check('  and the shares still close in every draw',
+          float(np.abs(S.sum(0) - 1.0).max()) <= 1e-9)
+    check('  the excluded QB is named', own['inactive_qbs_excluded']
+          .get('ZZ') == ['QB3'])
+    board = {'component_manifest': {'applied': ['R2']},
+             'qb_inactive_ownership_enforced': own['enforced']}
+    flags = PBD._defect_flags(board, 'qb/pyds')
+    check('  so the product board raises NO contamination flag',
+          not any(f['id'] == 'QB_INACTIVE_NOT_CONSUMED' for f in flags),
+          str([f['id'] for f in flags]))
 
 
-def test_d_a_team_with_no_dressed_quarterback_refuses():
-    """Renormalising over an empty pool would divide by zero. Refuse instead."""
-    pool = _real_pool()
-    if not pool:
-        print('  ..   roster vintage unavailable; skipped')
-        return
-    all_sf = [q['gsis_id'] for q in pool if q['team'] == 'SF']
-    o = QA.allocate(2026, 1, ['SF', 'LA'], pool, m=50, seed=20260908,
-                    inactive_ids=all_sf)
-    check('every SF quarterback inactive -> a named refusal',
-          o.state is State.FAIL
-          and o.code == 'QB_ALLOCATION_ALL_QUARTERBACKS_INACTIVE', o.code)
+def test_b_no_qb_inactive_but_complete_list_consumed_is_still_enforced():
+    # The official list was consumed; it simply names no quarterback. That is
+    # ENFORCEMENT, not an absence of it, and conflating the two is how a clean
+    # room keeps a contamination flag forever.
+    o = _alloc(inactive_ids=['SOME_WR', 'SOME_LB'], inactive_provenance=PROV)
+    check('a list naming no QB still passes', o.state is State.PASS, o.code)
+    own = o.evidence['qb_inactive_ownership']
+    check('  the ownership field is TRUE', own['enforced'] is True,
+          str(own['failed_conditions']))
+    check('  and no QB is recorded as excluded',
+          own['inactive_qbs_excluded'] == {})
+    flags = PBD._defect_flags(
+        {'component_manifest': {'applied': ['R2']},
+         'qb_inactive_ownership_enforced': True}, 'qb/pyds')
+    check('  contamination clears', not flags, str(flags))
+
+
+def test_c_absent_inactive_evidence_keeps_the_flag():
+    o = _alloc()
+    check('an allocation with no list passes', o.state is State.PASS, o.code)
+    own = o.evidence['qb_inactive_ownership']
+    check('  the ownership field is FALSE', own['enforced'] is False)
+    check('  and names WHICH condition failed',
+          'official_inactive_evidence_ingested' in own['failed_conditions'],
+          str(own['failed_conditions']))
+    flags = PBD._defect_flags(
+        {'component_manifest': {'applied': ['R2']},
+         'qb_inactive_ownership_enforced': False}, 'qb/pyds')
+    check('  so the contamination flag REMAINS',
+          any(f['id'] == 'QB_INACTIVE_NOT_CONSUMED' for f in flags))
+    check('  and it says it contaminates a QB metric',
+          flags[0]['contaminates_this_metric'] is True)
+
+
+def test_d_unresolved_official_identity_refuses_enforcement():
+    prov = dict(PROV, n_unmapped=2, unmapped=['ZZ:Someone Unknown',
+                                              'ZZ:Another Name'])
+    o = _alloc(inactive_ids=['QB3'], inactive_provenance=prov)
+    check('the allocation itself still runs', o.state is State.PASS, o.code)
+    own = o.evidence['qb_inactive_ownership']
+    check('  but ownership is NOT claimed', own['enforced'] is False)
+    check('  because an official name went unresolved',
+          own['failed_conditions'] == ['no_unresolved_identity'],
+          str(own['failed_conditions']))
+    check('  and the unresolved names are carried, not dropped',
+          own['unmapped_official_names'] == prov['unmapped'])
+    S, pids = _shares(o)
+    check('  the resolved inactive QB is STILL excluded from the draw',
+          float(S[pids.index('QB3')].max()) == 0.0)
+
+
+def test_e_a_pre_inactives_artifact_is_false():
+    o = _alloc(inactive_ids=None, inactive_provenance=None)
+    own = o.evidence['qb_inactive_ownership']
+    check('a pre-inactives allocation is not enforced',
+          own['enforced'] is False)
+    check('  and three conditions fail, not one',
+          set(own['failed_conditions']) == {
+              'official_inactive_evidence_ingested',
+              'evidence_tied_to_this_game_and_team',
+              'no_unresolved_identity'},
+          str(own['failed_conditions']))
+    check('the product board keeps the flag on a pre-inactives board',
+          any(f['id'] == 'QB_INACTIVE_NOT_CONSUMED' for f in PBD._defect_flags(
+              {'component_manifest': {'applied': ['R2']}}, 'qb/att')))
+
+
+def test_f_a_forged_flag_cannot_make_a_row_admissible():
+    # A board can CLAIM the field. What it cannot do is claim it with no
+    # governed provenance behind it: the verdict is computed from the run, and
+    # the evidence block travels with it, so a forged boolean is detectable.
+    o = _alloc(inactive_ids=['QB3'], inactive_provenance=None)
+    own = o.evidence['qb_inactive_ownership']
+    check('inactive ids WITHOUT provenance do not enforce',
+          own['enforced'] is False, str(own['failed_conditions']))
+    check('  the missing link is named',
+          'evidence_tied_to_this_game_and_team' in own['failed_conditions'])
+    check('  and no game id is claimed', own['game_id'] is None)
+    forged = {'component_manifest': {'applied': ['R2']},
+              'qb_inactive_ownership_enforced': True}
+    check('a board asserting the boolean with no evidence block is detectable',
+          forged.get('qb_inactive_ownership') is None)
+    # the caller cannot inject the verdict: allocate() computes it and the
+    # keyword does not exist.
+    import inspect
+    sig = set(inspect.signature(QA.allocate).parameters)
+    check('allocate() has no parameter that could set the verdict',
+          'qb_inactive_ownership_enforced' not in sig and
+          'enforced' not in sig, str(sorted(sig)))
+
+
+# ------------------------------------------- the mechanism, not the flag
+def test_g_parity_with_no_inactive_qb_is_bit_identical():
+    a = _alloc()
+    b = _alloc(inactive_ids=['SOME_WR'], inactive_provenance=PROV)
+    Sa, _ = _shares(a)
+    Sb, _ = _shares(b)
+    check('a list naming no quarterback changes NOTHING in the draw',
+          np.array_equal(Sa, Sb),
+          f'max |diff| {float(np.abs(Sa - Sb).max()):.3e}')
+    check('  bit-identical, not merely close',
+          Sa.tobytes() == Sb.tobytes())
+
+
+def test_h_conditioning_beats_post_hoc_removal_where_it_used_to_refuse():
+    import qb3_lib as Q
+    par, _ = QA._fit_for(2026)
+    # rank-1 incumbent + two others: the primary's share pool is modal at 1.0,
+    # so post-hoc removal of the incumbent leaves whole draws at zero.
+    trip = [('A', 1, 1), ('B', 2, 0), ('C', 3, 0)]
+    S = Q.allocate(par, trip, m=1000, seed=20260908, ordinal=202601, team='ZZ')
+    post = S.copy()
+    post[0, :] = 0.0
+    zero_frac = float((post.sum(0) <= 0).mean())
+    check('post-hoc removal DOES strand whole draws at zero share',
+          zero_frac > 0.0, f'{zero_frac:.1%} of draws')
+    cond = Q.allocate(par, trip[1:], m=1000, seed=20260908, ordinal=202601,
+                      team='ZZ')
+    check('  conditioning on the eligible room leaves none',
+          float((cond.sum(0) <= 0).mean()) == 0.0)
+    check('  and the conditioned draw closes to 1 everywhere',
+          float(np.abs(cond.sum(0) - 1.0).max()) <= 1e-9)
+    # and the production path agrees
+    o = _alloc(inactive_ids=['QB1'], inactive_provenance=PROV)
+    check('the production allocation no longer refuses that case',
+          o.state is State.PASS, f'{o.state.value}:{o.code}')
+
+
+def test_i_every_quarterback_inactive_still_refuses():
+    o = _alloc(inactive_ids=['QB1', 'QB2', 'QB3'], inactive_provenance=PROV)
+    check('a room with nobody dressed is REFUSED, not divided by zero',
+          o.state is State.FAIL, f'{o.state.value}:{o.code}')
+    check('  with the named code',
+          o.code == 'QB_ALLOCATION_ALL_QUARTERBACKS_INACTIVE')
+
+
+def test_j_the_zero_share_guard_is_retained():
+    # It is meant to be unreachable now. A guard deleted once it stops firing
+    # cannot tell you when the thing it guarded against comes back.
+    src = open(os.path.join(_ROOT, 'nfl', 'production', 'nonqb',
+                            'qb_allocation.py')).read()
+    check('QB_ALLOCATION_ZERO_ACTIVE_SHARE is still raised somewhere',
+          "'QB_ALLOCATION_ZERO_ACTIVE_SHARE'," in src)
+    check('the six conditions are declared as data, not prose',
+          len(QA.OWNERSHIP_CONDITIONS) == 6, str(QA.OWNERSHIP_CONDITIONS))
+    v = QA.ownership_verdict(['ZZ'], {}, set(), {}, 0.0, None)
+    check('an empty allocation cannot claim accounting passed',
+          v['conditions']['allocation_passes_accounting'] is False)
 
 
 def test_zz_every_check_passed():
@@ -181,6 +248,7 @@ def test_zz_every_check_passed():
 
 if __name__ == '__main__':
     for fn in sorted(k for k in dict(globals()) if k.startswith('test_')):
+        print(f'\n{fn}')
         globals()[fn]()
     print(f'\n{PASSED} passed, {FAILED} failed')
     sys.exit(1 if FAILED else 0)

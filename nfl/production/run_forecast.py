@@ -282,9 +282,17 @@ def build(args, fixtures: dict = None) -> dict:
         # reached the non-QB engine only; the QB share pool never saw it.
         qa = FE.QA.allocate(args.season, args.week, teams, qbp, m=m,
                             seed=args.seed,
-                            inactive_ids=fx.get('official_inactive_ids'))
+                            inactive_ids=fx.get('official_inactive_ids'),
+                            inactive_provenance=fx.get(
+                                'official_inactive_provenance'))
         if qa.state is not State.PASS:
             return qa
+        # THE VERDICT TRAVELS WITH THE RUN, because the board cannot re-derive
+        # it. `qb_inactive_ownership_enforced` used to be read by the product
+        # board and written by nobody, so QB_INACTIVE_NOT_CONSUMED could never
+        # clear. It is now computed by the layer that owns the share and
+        # carried forward from there, never asserted by a caller.
+        fx['_qb_ownership'] = qa.evidence.get('qb_inactive_ownership')
         qb['allocation'] = qa.value
         gc = fl.get('game_coupling')
         tv = _team_volume()
@@ -1573,6 +1581,10 @@ def build(args, fixtures: dict = None) -> dict:
          'state': o.state.value, 'code': o.code}
         for k, o in sorted(fx.get('_inv', {}).items())
         if k in ART.INVARIANTS]
+    _own = fx.get('_qb_ownership')
+    summary['qb_inactive_ownership'] = _own
+    summary['qb_inactive_ownership_enforced'] = bool(
+        (_own or {}).get('enforced'))
     summary['execution_identity'] = execution_identity(args, src, commit)
     summary['code_commit'] = commit
     summary['dry_run'] = bool(args.dry_run)
