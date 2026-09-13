@@ -1,0 +1,86 @@
+{
+ "answer": "NO. The blocker is retained for all three clubs.",
+ "artifact": "STATUS_EVIDENCE_CONTRACT_EVALUATION",
+ "consequence_for_the_afternoon_board": {
+  "ARI_LAC": "both clubs READY -> can be full",
+  "GB_MIN": "MIN blocked -> QB-only",
+  "MIA_LV": "MIA blocked -> QB-only",
+  "WAS_PHI": "WAS blocked -> QB-only"
+ },
+ "contract_1_readiness_team_gate": {
+  "measured": {
+   "MIA": {
+    "n_rows": 4,
+    "rows_with_report_status": 0,
+    "state": "INJURY_REPORT_INCOMPLETE"
+   },
+   "MIN": {
+    "n_rows": 5,
+    "rows_with_report_status": 0,
+    "state": "INJURY_REPORT_INCOMPLETE"
+   },
+   "WAS": {
+    "n_rows": 10,
+    "rows_with_report_status": 0,
+    "state": "INJURY_REPORT_INCOMPLETE"
+   }
+  },
+  "requirement": "at least one row for the club carries a report_status (NEEDS_REPORT_STATUS is True)",
+  "verdict": "NOT SATISFIED -- report_status is filled on zero rows for all three clubs",
+  "where": "nfl/production/nonqb/readiness.team_readiness"
+ },
+ "contract_2_governed_designation_vocabulary": {
+  "blank_in_vocabulary": false,
+  "executed_not_asserted": {
+   "call": "delivered_injuries.rows_from_candidates over all 19 rows",
+   "code": "DELIVERED_NO_ADMISSIBLE_ROWS",
+   "n_refused": 19,
+   "refusal_codes": {
+    "STATUS_NOT_IN_GOVERNED_VOCABULARY": 19
+   },
+   "state": "BLOCKED"
+  },
+  "unspecified_in_vocabulary": false,
+  "verdict": "NOT SATISFIED -- every row is refused, and refused rather than corrected",
+  "vocabulary": [
+   "Out",
+   "Doubtful",
+   "Questionable"
+  ],
+  "where": "nfl/capture/delivered_injuries.REPORT_STATUS_VOCAB"
+ },
+ "contract_3_explicit_no_designation_statement": {
+  "verdict": "NOT SATISFIED, and it could not be satisfied even if it were such a statement: the contract mismatch recorded in NO_DESIGNATION_CONTRACT_MISMATCH.json is that the appearance contract has NO representation for an explicit no-designation state. That is unchanged and remains the owner's decision.",
+  "what_it_is": "a TEAM-LEVEL statement by the authoritative source that the club has no injury designations, e.g. the league report printing \"No injury designations\" beside a club",
+  "what_this_file_is": "PER-PLAYER rows whose game_status field is absent or explicitly unspecified. An empty field on a player row is not a club-level statement about the club.",
+  "where": "nfl/capture/delivered_injuries.EXPLICIT_NO_DESIGNATIONS"
+ },
+ "generated_at": "2026-09-13T18:32:33.255995+00:00",
+ "nothing_was_changed": [
+  "no gate weakened",
+  "no vocabulary widened",
+  "no status inferred",
+  "no mapping invented",
+  "no predictive mechanism touched"
+ ],
+ "question": "do these rows satisfy any existing readiness contract AS WRITTEN, such that the injury-report blocker could be released for MIN, MIA or WAS?",
+ "semantics_preserved_exactly": {
+  "BLANK": "an ABSENT game status. Not a designation, not an active status, and never inferred into one.",
+  "UNSPECIFIED": "an explicitly unspecified game status. Not a designation, not an active status, and never inferred into one.",
+  "what_would_have_been_wrong": "reading either value as \"this player is available\" would manufacture an availability the source never asserted, and teammate_availability is a team-level feature, so one invented availability contaminates every vacated-share calculation for that club."
+ },
+ "source_file": {
+  "name": "status.csv",
+  "preserved_as": "nfl/vintage/official_status_evidence.22b3b1c5e26e69ac.csv.gz",
+  "sha256": "22b3b1c5e26e69ac30881a94452acbd538dd4d2d462a7277579c2644606b08fc"
+ },
+ "spec_version": "status-evidence-contract-1",
+ "what_the_file_DOES_carry": {
+  "note": "practice participation is real information and is preserved. It is not what the gate reads: the gate reads report_status, because teammate_availability needs to know who is OUT, and a full practice on Saturday is not a game-status designation.",
+  "practice_status": {
+   "DNP": 1,
+   "FP": 13,
+   "LP": 5
+  }
+ }
+}

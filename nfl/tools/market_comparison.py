@@ -26,6 +26,7 @@ from __future__ import annotations
 import argparse
 import collections
 import csv
+import hashlib
 import json
 import pathlib
 import sys
@@ -37,16 +38,79 @@ if str(_REPO) not in sys.path:
 from sportsplatform.governance.outcome import State              # noqa: E402
 from nfl.product import daily_board as PB                        # noqa: E402
 from nfl.product import market_cdf as MC                         # noqa: E402
+from nfl.product import market_names as MN                       # noqa: E402
 from nfl.research import board_select as BS                      # noqa: E402
 from nfl.research import daily_board as RB                       # noqa: E402
 
-COLUMNS = ('game', 'player', 'market', 'line', 'over_price', 'under_price',
+COLUMNS = ('game', 'player', 'market', 'metric', 'line', 'over_price',
+           'under_price',
            'r8_mean', 'r8_median', 'r8_p_over', 'r8_p_under', 'r8_p_push',
            'no_vig_p_over', 'no_vig_p_under', 'edge_over', 'edge_under',
            'completeness', 'defects', 'information_timestamp',
            'market_timestamp', 'sportsbook', 'n_draws', 'n_over', 'n_under',
            'n_push', 'probability_method', 'cutoff',
            'qb_inactive_ownership_enforced')
+
+
+
+SNAPSHOT_COLUMNS = ('player', 'team', 'opponent', 'market', 'line',
+                    'over_price', 'under_price', 'sportsbook',
+                    'retrieval_time_utc', 'availability', 'source_url')
+REQUIRED_AVAILABILITY = 'TWO_SIDED_OPEN'
+
+
+def load_frozen_snapshot(path):
+    """A frozen book snapshot, keyed by (player, team, market).
+
+    THE TEAM IS PART OF THE KEY AND THAT IS NOT PEDANTRY. Two different
+    players share a name across clubs in this very week: the Vikings' Justin
+    Jefferson is a receiver and the Browns listed a linebacker of the same
+    name on their inactive report. A (player, market) key would have joined a
+    receiving line onto whichever one it met first.
+
+    NOTHING IS REFRESHED AND NOTHING IS RESTAMPED. The file is read, its
+    digest is recorded, and every clock in it is carried through exactly as
+    written.
+    """
+    p = pathlib.Path(path)
+    raw = p.read_bytes()
+    digest = hashlib.sha256(raw).hexdigest()
+    rows = list(csv.DictReader(raw.decode().splitlines()))
+    if not rows:
+        raise ValueError('MARKET_SNAPSHOT_EMPTY: an empty snapshot is an '
+                         'error, not an absence of quotes')
+    missing = [c for c in SNAPSHOT_COLUMNS if c not in rows[0]]
+    if missing:
+        raise ValueError(f'MARKET_SNAPSHOT_SCHEMA: missing {missing}')
+    by, skipped = {}, []
+    for r in rows:
+        if (r.get('availability') or '').strip() != REQUIRED_AVAILABILITY:
+            skipped.append({'player': r.get('player'),
+                            'market': r.get('market'),
+                            'reason': 'NOT_TWO_SIDED_OPEN',
+                            'detail': r.get('availability')})
+            continue
+        try:
+            line = float(r['line'])
+        except (TypeError, ValueError):
+            skipped.append({'player': r.get('player'),
+                            'market': r.get('market'),
+                            'reason': 'UNPARSEABLE_LINE',
+                            'detail': r.get('line')})
+            continue
+        key = (r['player'].strip(), r['team'].strip(), r['market'].strip())
+        if key in by:
+            raise ValueError(f'MARKET_SNAPSHOT_DUPLICATE: {key} appears more '
+                             f'than once; a duplicate quote is an ambiguity, '
+                             f'not a choice this tool may make')
+        by[key] = {'line': line, 'over_price': r['over_price'],
+                   'under_price': r['under_price'],
+                   'sportsbook': r['sportsbook'],
+                   'timestamp': r['retrieval_time_utc'],
+                   'source_url': r['source_url'],
+                   'opponent': r['opponent']}
+    return {'quotes': by, 'sha256': digest, 'n_rows': len(rows),
+            'n_quotes': len(by), 'skipped': skipped, 'path': str(p)}
 
 
 def _draw_key(metric):
@@ -85,9 +149,20 @@ def rows_for_game(gid, cfg_dir, quotes, names):
             refused.append({'game': gid, 'player': nm,
                             'reason': 'PLAYER_MAPPING_INVALID'})
             continue
-        for metric in (p.get('metrics') or {}):
-            q = quotes.get((nm, metric)) or quotes.get((pid, metric))
-            if not q:
+        for (qn, qt, qmarket), q in quotes.items():
+            if qn != nm or qt != team:
+                continue
+            metric, basis = MN.metric_for(qmarket, p.get('position'))
+            if metric is None:
+                refused.append({'game': gid, 'player': nm,
+                                'market': qmarket,
+                                'reason': 'MARKET_NOT_MAPPED',
+                                'detail': basis[:200]})
+                continue
+            if metric not in (p.get('metrics') or {}):
+                refused.append({'game': gid, 'player': nm, 'market': qmarket,
+                                'reason': 'METRIC_NOT_ON_THIS_BOARD',
+                                'detail': metric})
                 continue
             flags = PB._defect_flags(board, metric)
             bad = [f['id'] for f in flags if f.get('contaminates_this_metric')]
@@ -119,8 +194,8 @@ def rows_for_game(gid, cfg_dir, quotes, names):
             e = c['exact_probability']
             nv = c['no_vig']
             rows.append({
-                'game': gid, 'player': nm, 'market': metric,
-                'line': q['line'], 'over_price': q.get('over_price'),
+                'game': gid, 'player': nm, 'market': qmarket,
+                'metric': metric, 'line': q['line'], 'over_price': q.get('over_price'),
                 'under_price': q.get('under_price'),
                 'r8_mean': round(c['model']['mean'], 4),
                 'r8_median': round(c['model']['median'], 4),
@@ -157,13 +232,12 @@ def main(argv=None):
     ap.add_argument('--games', default=None)
     a = ap.parse_args(argv)
 
-    mk = PB.load_market(a.market)
-    if mk.state is not State.PASS:
-        print(f'{mk.state.value}[{mk.code}]: {mk.detail}')
-        return 2
-    quotes = {k: PB.consensus_quote(v) for k, v in mk.value.items()}
-    print(f'market: {mk.evidence["n_rows"]} row(s), {len(quotes)} '
-          f'player/market key(s)')
+    snap = load_frozen_snapshot(a.market)
+    quotes = snap['quotes']
+    print(f'frozen snapshot {snap["path"]}')
+    print(f'  sha256 {snap["sha256"]}')
+    print(f'  {snap["n_rows"]} row(s), {snap["n_quotes"]} '
+          f'(player, team, market) quote(s), {len(snap["skipped"])} skipped')
 
     want = set(a.games.split(',')) if a.games else None
     label = ('V1_CANDIDATE' if a.candidate == 'V1'
@@ -191,6 +265,9 @@ def main(argv=None):
     ref = out.with_suffix('.refusals.json')
     ref.write_text(json.dumps(
         {'n_rows': len(rows), 'n_refused': len(refused),
+         'market_snapshot_sha256': snap['sha256'],
+         'market_snapshot_path': snap['path'],
+         'market_rows_skipped': snap['skipped'],
          'by_reason': dict(collections.Counter(
              x['reason'] for x in refused)),
          'refusals': refused}, indent=1) + '\n')

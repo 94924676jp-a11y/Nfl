@@ -111,21 +111,53 @@ def empirical_cdf_at(draws, line, metric) -> dict:
     assert n_over + n_under + n_push == n, 'draw partition does not close'
     whole = float(L).is_integer()
     discrete = _is_discrete(metric)
-    if not whole and n_push:
-        raise ValueError(f'PUSH_ON_A_HALF_LINE: {n_push} draw(s) equal a '
-                         f'non-integer line {L}, which cannot happen for an '
-                         f'integer-valued metric')
+    # A DRAW EXACTLY ON THE LINE IS NOT ALWAYS A PUSH, AND THE TWO MUST NOT BE
+    # THE SAME NUMBER.
+    #
+    # MEASURED 2026-09-13 on real qb/pyds draws: one draw equalled exactly
+    # 214.5 against a 214.5 line. Passing yards are integers in the world, so
+    # a half-point line can never push -- but these draws are NOT integers.
+    # The R2 composition scales each draw by a continuous factor, so the
+    # stored values are real-valued and can land on a half point. That is a
+    # property of the model's arithmetic, not a settleable outcome.
+    #
+    # So two different quantities are reported. `p_push` is a SETTLEMENT
+    # statement and is non-zero only where a push can actually occur: a whole
+    # line on a discrete metric. `p_model_equals_line` is an ARITHMETIC fact
+    # about the draw set, always reported, never silently folded into a side.
+    # This used to raise. Raising discarded a real forecast over a 1-in-1000
+    # float coincidence, and a refusal that destroys the answer is worse than
+    # a number that explains itself.
+    push_possible = bool(whole and discrete)
+    n_settle_push = n_push if push_possible else 0
+    collision = bool(n_push and not push_possible)
     return {
         'n_draws': n,
-        'n_over': n_over, 'n_under': n_under, 'n_push': n_push,
-        'p_over': n_over / n, 'p_under': n_under / n, 'p_push': n_push / n,
-        # F(line) = P(X <= line): the CDF proper, push included.
+        'n_over': n_over, 'n_under': n_under,
+        'n_push': n_settle_push,
+        'n_model_equals_line': n_push,
+        'p_over': n_over / n, 'p_under': n_under / n,
+        'p_push': n_settle_push / n,
+        'p_model_equals_line': n_push / n,
+        # F(line) = P(X <= line): the CDF proper, draws on the line included.
         'model_cdf_at_line': (n_under + n_push) / n,
         'model_percentile_of_line': 100.0 * (n_under + n_push) / n,
-        'push_possible': bool(whole and discrete),
+        'push_possible': push_possible,
         'line_is_whole_number': whole,
         'metric_is_discrete': discrete,
-        'partition_closes': True,
+        'draw_on_a_non_pushable_line': collision,
+        'draw_on_a_non_pushable_line_note': (
+            (f'{n_push} draw(s) equal the line {L} exactly, on a line where a '
+             f'push cannot settle. These draws are counted in '
+             f'p_model_equals_line and in the CDF, and are NOT counted as a '
+             f'push and NOT assigned to either side. Cause: the stored draws '
+             f'are real-valued because the composition scales them by a '
+             f'continuous factor.') if collision else None),
+        'partition_closes': (n_over + n_under + n_push) == n,
+        'partition_note': ('p_over + p_under + p_model_equals_line == 1 '
+                           'exactly; p_push is a subset of '
+                           'p_model_equals_line and is zero unless a push '
+                           'can settle'),
         'method': 'EMPIRICAL_COUNT_OVER_STORED_DRAWS',
         'not_method': 'no Normal was fitted and no quantile was interpolated',
     }

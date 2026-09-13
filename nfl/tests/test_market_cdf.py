@@ -19,6 +19,7 @@ WHAT THESE TESTS PROTECT.
 from __future__ import annotations
 
 import os
+import pathlib
 import sys
 
 import numpy as np
@@ -207,6 +208,114 @@ def test_h_an_empty_draw_set_is_an_error_not_a_probability():
     except ValueError as e:
         ok = 'EMPTY_DRAW_SET' in str(e)
     check('an empty draw set refuses rather than returning 0.0', ok)
+
+
+def test_i_the_frozen_snapshot_is_read_and_never_rewritten():
+    """The afternoon comparator is immutable by contract. Measure it."""
+    import hashlib
+    from nfl.tools import market_comparison as MCMP
+    blob = pathlib.Path(_ROOT, 'nfl', 'vintage',
+                        'hardrock_market_snapshot.3d9b22dc39e12e54.csv.gz')
+    if not blob.exists():
+        print('  ..   the frozen snapshot is not preserved here; skipped')
+        return
+    import gzip
+    raw = gzip.open(blob, 'rb').read()
+    check('the preserved snapshot hashes to its content-addressed name',
+          hashlib.sha256(raw).hexdigest().startswith('3d9b22dc39e12e54'))
+    tmp = pathlib.Path(_ROOT) / '.snapshot_readback.csv'
+    try:
+        tmp.write_bytes(raw)
+        before = hashlib.sha256(tmp.read_bytes()).hexdigest()
+        s1 = MCMP.load_frozen_snapshot(tmp)
+        s2 = MCMP.load_frozen_snapshot(tmp)
+        after = hashlib.sha256(tmp.read_bytes()).hexdigest()
+        check('reading it twice changes not one byte', before == after)
+        check('  and both reads agree on the digest',
+              s1['sha256'] == s2['sha256'] == before)
+        check('every row is a usable two-sided quote',
+              s1['n_rows'] == s1['n_quotes'] == 166 and not s1['skipped'],
+              f'{s1["n_rows"]} rows, {s1["n_quotes"]} quotes')
+        stamps = {q['timestamp'] for q in s1['quotes'].values()}
+        check('the retrieval clocks are carried through unchanged',
+              len(stamps) == 19 and
+              min(stamps) == '2026-09-13T18:11:57.608Z' and
+              max(stamps) == '2026-09-13T18:13:12.712Z',
+              f'{len(stamps)} distinct')
+        lines = [q['line'] for q in s1['quotes'].values()]
+        check('EVERY line is a half point, so no push is possible anywhere '
+              'in this snapshot', not any(float(x).is_integer()
+                                          for x in lines))
+    finally:
+        tmp.unlink(missing_ok=True)
+
+
+def test_j_the_join_key_includes_the_club():
+    """A name is not an identity. Measured on this very week.
+
+    The Vikings' Justin Jefferson is a receiver; Cleveland listed a linebacker
+    of the same name on their inactive report. A (player, market) key would
+    have joined a receiving line onto whichever one it met first.
+    """
+    from nfl.tools import market_comparison as MCMP
+    import hashlib
+    tmp = pathlib.Path(_ROOT) / '.collide.csv'
+    hdr = ','.join(MCMP.SNAPSHOT_COLUMNS)
+    body = [
+        "Justin Jefferson,MIN,GB,Receiving Yards,75.5,-115,-115,Book,"
+        "2026-09-13T18:00:00Z,TWO_SIDED_OPEN,https://x.invalid",
+        "Justin Jefferson,CLE,JAX,Receiving Yards,10.5,-115,-115,Book,"
+        "2026-09-13T18:00:00Z,TWO_SIDED_OPEN,https://x.invalid",
+    ]
+    try:
+        tmp.write_text(hdr + '\n' + '\n'.join(body) + '\n')
+        s = MCMP.load_frozen_snapshot(tmp)
+        check('two same-named players at different clubs are TWO quotes',
+              s['n_quotes'] == 2, str(s['n_quotes']))
+        check('  and each keeps its own line',
+              s['quotes'][('Justin Jefferson', 'MIN', 'Receiving Yards')]
+              ['line'] == 75.5 and
+              s['quotes'][('Justin Jefferson', 'CLE', 'Receiving Yards')]
+              ['line'] == 10.5)
+        # a genuine duplicate is an ambiguity and is refused, not resolved
+        tmp.write_text(hdr + '\n' + body[0] + '\n' + body[0] + '\n')
+        try:
+            MCMP.load_frozen_snapshot(tmp)
+            ok = False
+        except ValueError as e:
+            ok = 'MARKET_SNAPSHOT_DUPLICATE' in str(e)
+        check('a true duplicate quote is REFUSED, not silently deduplicated',
+              ok)
+    finally:
+        tmp.unlink(missing_ok=True)
+
+
+def test_k_market_names_are_declared_not_inferred():
+    from nfl.product import market_names as MN
+    m, basis = MN.metric_for('Passing Yards', 'QB')
+    check('a quarterback passing-yards market maps', m == 'qb/pyds', str(m))
+    m, basis = MN.metric_for('Rushing Yards', 'QB')
+    check('a quarterback rushing-yards market maps', m == 'qb/ryds', str(m))
+    m, basis = MN.metric_for('Rushing Yards', 'RB')
+    check('a RUNNING BACK rushing-yards market does NOT map', m is None)
+    check('  and says why, naming the gap',
+          'NOT_MODELLED' in basis and 'Carries are not yards' in basis)
+    m, basis = MN.metric_for('Rushing Attempts', 'RB')
+    check('a running back rushing-attempts market maps to carries',
+          m == 'rushing/carries')
+    m, basis = MN.metric_for('Rushing Attempts', 'QB')
+    check('a quarterback rushing-attempts market maps to rush_opp',
+          m == 'qb/rush_opp')
+    check('  and the definitional basis is stated, with its caveat',
+          'scrambles + designed runs' in basis and 'kneel' in basis.lower())
+    m, basis = MN.metric_for('Anytime Touchdown', 'WR')
+    check('an undeclared market is REFUSED, not fuzzy-matched', m is None)
+    check('  with a named reason',
+          'MARKET_NOT_IN_DECLARED_MAPPING' in basis)
+    check('the table is keyed by (market, is_quarterback), so one name can '
+          'mean two metrics',
+          MN.metric_for('Rushing Yards', 'QB')[0] !=
+          MN.metric_for('Rushing Yards', 'RB')[0])
 
 
 def test_zz_every_check_passed():
