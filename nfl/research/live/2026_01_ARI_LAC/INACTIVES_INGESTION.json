@@ -1,0 +1,229 @@
+{
+ "artifact": "NFL_OFFICIAL_INACTIVES_INGESTION",
+ "game_id": "2026_01_ARI_LAC",
+ "teams": [
+  "ARI",
+  "LAC"
+ ],
+ "parser_version": "official-inactives-1",
+ "steps": [
+  {
+   "step": "1. bytes stored before parsing",
+   "ok": true,
+   "code": "INACTIVES_STORED",
+   "sha256": "423d0c34811cd6d63b6eab66f5178e957c8a2e2647e8636815a83128d3625161",
+   "n_bytes": 904425,
+   "blob": "nfl/vintage/official_inactives.423d0c34811cd6d6.html.gz",
+   "retrieved_at": "2026-09-13T19:14:00Z",
+   "published_at": "2026-09-13T19:03:50.46Z",
+   "source_url": "https://www.nfl.com/news/inactive-reports-sunday-week-1-2026-nfl-season",
+   "detail": "904425 bytes, sha 423d0c34811cd6d6"
+  },
+  {
+   "step": "2. both clubs represented",
+   "ok": true,
+   "code": "INACTIVES_PARSED",
+   "n_names": {
+    "ARI": 6,
+    "LAC": 5
+   },
+   "segmentation": "operator_supplied_verified_against_bytes",
+   "detail": "{'ARI': 6, 'LAC': 5}"
+  },
+  {
+   "step": "3. identity resolved",
+   "ok": true,
+   "code": "INACTIVES_RESOLVED",
+   "roster_blob": "nfl/vintage/weekly_rosters.cef497eaeddef07b.reduced.csv.gz",
+   "n_roster": 183,
+   "n_roster_with_a_name": 183,
+   "n_resolved": {
+    "ARI": 5,
+    "LAC": 5
+   },
+   "n_unmapped": 1,
+   "unmapped": [
+    "ARI:Dadrian Taylor-Demerson"
+   ],
+   "unmapped_detail": [
+    {
+     "team": "ARI",
+     "name": "Dadrian Taylor-Demerson",
+     "source_position": "S",
+     "resolved": false,
+     "position_source": "AUTHORITATIVE_DOCUMENT"
+    }
+   ],
+   "detail": "{'ARI': 5, 'LAC': 5} resolved, 1 unmapped"
+  },
+  {
+   "step": "4. POST_INACTIVES_COMPLETE",
+   "ok": true,
+   "code": "POST_INACTIVES_COMPLETE",
+   "n_inactive_by_team": {
+    "ARI": 5,
+    "LAC": 5
+   },
+   "inactive_by_team": {
+    "ARI": [
+     "00-0033066",
+     "00-0039007",
+     "00-0039808",
+     "00-0041070",
+     "00-0041561"
+    ],
+    "LAC": [
+     "00-0037241",
+     "00-0037320",
+     "00-0040221",
+     "00-0041105",
+     "00-0041107"
+    ]
+   },
+   "hours_before_kickoff": 1.183,
+   "teams_without_a_list": [],
+   "detail": "{'ARI': 5, 'LAC': 5}"
+  },
+  {
+   "step": "4b. no player promoted to GAME_ACTIVE",
+   "ok": true,
+   "n_official_inactive": 10,
+   "n_not_listed": 173,
+   "detail": "absence from the list carries no positive claim"
+  },
+  {
+   "step": "5. perishables re-fetched, consumed slice compared",
+   "ok": true,
+   "slices": {
+    "depth_charts": {
+     "file_before": "a14e8dfe865a4b03",
+     "file_after": "a14e8dfe865a4b03",
+     "file_moved": false,
+     "slice_before": "cd0461cbfce97b79",
+     "slice_after": "cd0461cbfce97b79",
+     "slice_moved": false,
+     "rows": 137,
+     "observed_at": "2026-09-13T15:45:56Z"
+    },
+    "injuries": {
+     "file_before": "66e960ec81fccc6e",
+     "file_after": "66e960ec81fccc6e",
+     "file_moved": false,
+     "slice_before": "b56245e6b040d656",
+     "slice_after": "b56245e6b040d656",
+     "slice_moved": false,
+     "rows": 13,
+     "observed_at": "2026-09-13T15:45:56Z"
+    },
+    "schedules": {
+     "file_before": "730cc3e8d044efc7",
+     "file_after": "51f2018fd5aca0df",
+     "file_moved": true,
+     "slice_before": "2d46a3dd3eec8d13",
+     "slice_after": "2d46a3dd3eec8d13",
+     "slice_moved": false,
+     "rows": 1,
+     "observed_at": "2026-09-13T19:40:46Z"
+    },
+    "weekly_rosters": {
+     "file_before": "cef497eaeddef07b",
+     "file_after": "cef497eaeddef07b",
+     "file_moved": false,
+     "slice_before": "c15484956d68a431",
+     "slice_after": "c15484956d68a431",
+     "slice_moved": false,
+     "rows": 183,
+     "observed_at": "2026-09-13T15:45:56Z"
+    }
+   },
+   "slices_moved": [],
+   "detail": "0 consumed slice(s) moved: none"
+  },
+  {
+   "step": "6. V1_CANDIDATE",
+   "ok": true,
+   "detail": "5025e9d4e92a447c"
+  },
+  {
+   "step": "6. V1_CANDIDATE_R5",
+   "ok": true,
+   "detail": "cb882552260d6a00"
+  },
+  {
+   "step": "6. V1_CANDIDATE_R6",
+   "ok": true,
+   "detail": "b94761b2d925cd60"
+  },
+  {
+   "step": "6. V1_CANDIDATE_R7",
+   "ok": true,
+   "detail": "592e3bcb69517972"
+  },
+  {
+   "step": "6. V1_CANDIDATE_R8",
+   "ok": true,
+   "detail": "797eed72f07fbd9b"
+  },
+  {
+   "step": "7. pre-inactives boards untouched",
+   "ok": true,
+   "detail": "every pre-inactives artifact still promoted=False"
+  }
+ ],
+ "vintage_root": "LIVE",
+ "provenance": {
+  "kind": "EXTERNAL_AUTHORITATIVE_DELIVERY",
+  "official_source_url": "https://www.nfl.com/news/inactive-reports-sunday-week-1-2026-nfl-season",
+  "official_published_at": "2026-09-13T19:03:50.46Z",
+  "delivered_by": "networked agent (4:25 inactives acquisition 2026-09-13T19:14Z)",
+  "delivered_artifact_sha256": "423d0c34811cd6d63b6eab66f5178e957c8a2e2647e8636815a83128d3625161",
+  "retrieved_at": "2026-09-13T19:14:00Z",
+  "what_this_is": "Every name below occurs verbatim in the delivered artifact, whose bytes are stored and hashed. That is a real check and it is NOT the same as holding the official page: this executor could not fetch the game-specific announcement (HTTP 000, gateway CONNECT denial), so the chain of custody runs official page -> networked agent -> this artifact.",
+  "what_this_is_not": "This is NOT a capture of nfl.com, and these names were NOT verified against the generic /inactives/ page, which is a placeholder carrying no list and is the wrong document."
+ },
+ "segmentation": "operator_supplied_verified_against_bytes",
+ "name_crosswalk": {
+  "raw_blob": "weekly_rosters.cef497eaeddef07b.csv",
+  "exists": true,
+  "same_content_hash_as_the_pool_vintage": true
+ },
+ "unmapped_detail": [
+  {
+   "team": "ARI",
+   "name": "Dadrian Taylor-Demerson",
+   "source_position": "S",
+   "resolved": false,
+   "position_source": "AUTHORITATIVE_DOCUMENT"
+  }
+ ],
+ "written_at": "2026-09-13T19:40:23.515868Z",
+ "kickoff_utc": "2026-09-13T20:25:00Z",
+ "result": "COMPLETE",
+ "sealed": {
+  "V1_CANDIDATE": {
+   "run_id": "5025e9d4e92a447c",
+   "draw_artifact_sha256": "caf2ac0f213dc53e3fad22917dec8456a55521c6ac6d8cc9853a749c27493514",
+   "dir": "nfl/research/live/2026_01_ARI_LAC/post_inactives_V1_CANDIDATE/5025e9d4e92a447c"
+  },
+  "V1_CANDIDATE_R5": {
+   "run_id": "cb882552260d6a00",
+   "draw_artifact_sha256": "2a920884726283c78ec671d580e835e859e1213968954146b0a0adedd9070fa0",
+   "dir": "nfl/research/live/2026_01_ARI_LAC/post_inactives_V1_CANDIDATE_R5/cb882552260d6a00"
+  },
+  "V1_CANDIDATE_R6": {
+   "run_id": "b94761b2d925cd60",
+   "draw_artifact_sha256": "d3c2c575d38e7f4aaa6e91a061fa8bee1233b048bc79667c21d35b7078c1c889",
+   "dir": "nfl/research/live/2026_01_ARI_LAC/post_inactives_V1_CANDIDATE_R6/b94761b2d925cd60"
+  },
+  "V1_CANDIDATE_R7": {
+   "run_id": "592e3bcb69517972",
+   "draw_artifact_sha256": "0d55fd0bebca9f3c7b6ab464f595d4c7c07d3133162847a780e9851d2af41c9b",
+   "dir": "nfl/research/live/2026_01_ARI_LAC/post_inactives_V1_CANDIDATE_R7/592e3bcb69517972"
+  },
+  "V1_CANDIDATE_R8": {
+   "run_id": "797eed72f07fbd9b",
+   "draw_artifact_sha256": "a6b7d5e54218ed7d346553797fa014f01c5603876c871f91df90691d4bdd1366",
+   "dir": "nfl/research/live/2026_01_ARI_LAC/post_inactives_V1_CANDIDATE_R8/797eed72f07fbd9b"
+  }
+ }
+}

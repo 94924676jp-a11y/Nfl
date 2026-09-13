@@ -207,6 +207,7 @@ def rows_for_game(gid, cfg_dir, quotes, names):
     fresh = board.get('freshness') or {}
     info_ts = max((s.get('retrieved_at') or '')
                   for s in (fresh.get('sources') or [])) or None
+    seen = set()
     for i, p in enumerate(board.get('players') or []):
         pid, team = p.get('gsis_id'), p.get('team')
         nm = names.get(pid, pid)
@@ -217,6 +218,7 @@ def rows_for_game(gid, cfg_dir, quotes, names):
         for (qn, qt, qmarket), q in quotes.items():
             if qn != nm or qt != team:
                 continue
+            seen.add((qn, qt, qmarket))
             metric, basis = MN.metric_for(qmarket, p.get('position'))
             if metric is None:
                 refused.append({'game': gid, 'player': nm,
@@ -284,6 +286,50 @@ def rows_for_game(gid, cfg_dir, quotes, names):
                 'probability_method': e['method'], 'cutoff': cutoff,
                 'qb_inactive_ownership_enforced': enforced,
             })
+    # EVERY QUOTE FOR THIS GAME'S CLUBS IS ACCOUNTED FOR, COMPARED OR REFUSED.
+    #
+    # This loop walks BOARD PLAYERS and looks for their quotes, so until now a
+    # quote whose player the board does not carry was never visited at all --
+    # no row, no refusal, no count. Measured 2026-09-13 against the frozen
+    # 4:25 Hard Rock snapshot: 166 quotes went in, 76 rows and 3 refusals came
+    # out, and 87 quotes simply were not there. That is the defect class this
+    # project loses the most work to: a step that returned nothing read as a
+    # step that succeeded. A quote the engine cannot price is a REFUSAL with a
+    # reason, never an absence.
+    tset = set(board.get('teams') or ()) or {t for t in (gid.split('_')[2:4])}
+    # WHY a club has no non-QB rows is a governed fact on the board itself, and
+    # the refusal must carry it. `appearance` NOT_APPLICABLE means the layer
+    # that would have produced those players REFUSED -- it is not a coverage
+    # accident and must not read as one.
+    stages = {s['stage']: s for s in (board.get('layer_governance') or [])}
+    app = stages.get('appearance') or {}
+    app_off = app.get('state') not in (None, 'PASS')
+    on_board = {(names.get(p.get('gsis_id'), p.get('gsis_id')), p.get('team'))
+                for p in (board.get('players') or [])}
+    nonqb_clubs = {p.get('team') for p in (board.get('players') or [])
+                   if p.get('position') != 'QB'}
+    for (qn, qt, qmarket) in sorted(quotes):
+        if qt not in tset or (qn, qt, qmarket) in seen:
+            continue
+        if app_off and qt not in nonqb_clubs and (qn, qt) not in on_board:
+            refused.append({'game': gid, 'player': qn, 'market': qmarket,
+                            'reason': 'APPEARANCE_LAYER_NOT_APPLICABLE',
+                            'detail': f'the appearance stage is '
+                                      f'{app.get("state")} with code '
+                                      f'{app.get("code")}, so this board '
+                                      f'carries no non-quarterback for {qt} '
+                                      f'and the engine has no distribution to '
+                                      f'compare. A governed refusal upstream, '
+                                      f'not a missing player.'})
+        else:
+            refused.append({'game': gid, 'player': qn, 'market': qmarket,
+                            'reason': 'QUOTE_PLAYER_NOT_ON_BOARD',
+                            'detail': f'the frozen snapshot quotes {qn} '
+                                      f'({qt}) but no player on this sealed '
+                                      f'board carries that name and club, '
+                                      f'even though the layers that would '
+                                      f'produce one ran. Not priced, not '
+                                      f'dropped.'})
     return rows, refused
 
 
@@ -319,6 +365,18 @@ def main(argv=None):
                 rows += r
                 refused += x
                 break
+    # THE ACCOUNTING IS ASSERTED, NOT ASSUMED. Rows plus refusals must equal
+    # the quotes in scope. A shortfall means quotes went missing between the
+    # snapshot and the table, and a table that silently drops the book's
+    # quotes is not a comparison against the book.
+    scope = {t for g in (want or set())
+             for t in g.split('_')[2:4]} if want else None
+    in_scope = [k for k in quotes if scope is None or k[1] in scope]
+    n_acc = len(rows) + len(refused)
+    accounting = {'n_quotes_in_snapshot': len(quotes),
+                  'n_quotes_in_scope': len(in_scope),
+                  'n_rows': len(rows), 'n_refusals': len(refused),
+                  'balanced': n_acc == len(in_scope)}
     out = pathlib.Path(a.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     with open(out, 'w', newline='') as f:
@@ -329,6 +387,7 @@ def main(argv=None):
     ref = out.with_suffix('.refusals.json')
     ref.write_text(json.dumps(
         {'n_rows': len(rows), 'n_refused': len(refused),
+         'accounting': accounting,
          'market_snapshot_sha256': snap['sha256'],
          'market_snapshot_path': snap['path'],
          'market_rows_skipped': snap['skipped'],
@@ -339,6 +398,14 @@ def main(argv=None):
     print(f'{len(refused)} refusal(s) -> {ref}')
     for k, v in collections.Counter(x['reason'] for x in refused).items():
         print(f'   {k}: {v}')
+    print(f'accounting: {len(in_scope)} quote(s) in scope = {len(rows)} row(s) '
+          f'+ {len(refused)} refusal(s) -> '
+          f'{"BALANCED" if accounting["balanced"] else "UNBALANCED"}')
+    if not accounting['balanced']:
+        print(f'MARKET_QUOTE_ACCOUNTING_UNBALANCED: {len(in_scope)} quote(s) '
+              f'in scope produced {n_acc} outcome(s). Every quote must be '
+              f'compared or refused by name.')
+        return 2
     return 0
 
 

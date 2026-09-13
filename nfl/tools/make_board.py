@@ -70,6 +70,25 @@ def _inactive_provenance(game_id, teams, inactive_ids):
                 'why': 'the ingestion record could not be read'}
     steps = {s['step'][:3].strip(): s for s in (d.get('steps') or [])}
     ident, complete = steps.get('3.'), steps.get('4.')
+    # THE RECORD MUST DESCRIBE *THIS* INACTIVE SET, NOT A PREVIOUS ONE.
+    #
+    # `INACTIVES_INGESTION.json` is written by a tool that also seals these
+    # boards, so a run reads whatever the PREVIOUS run left behind unless the
+    # record is checkpointed first. On a first ingestion that is no file at
+    # all; on a re-ingestion it is a record of different bytes, which is the
+    # worse failure because it looks populated. Tie it to the set being sealed
+    # and fail closed on any mismatch rather than describing the wrong list.
+    by_team = (complete or {}).get('inactive_by_team') or {}
+    in_rec = {p for v in by_team.values() for p in (v or [])}
+    if in_rec != set(inactive_ids or ()):
+        return {'game_id': game_id, 'teams': list(teams),
+                'post_inactives_complete': False, 'n_unmapped': None,
+                'why': 'INACTIVES_INGESTION_RECORD_DOES_NOT_DESCRIBE_THIS_SET: '
+                       f'the record lists {len(in_rec)} inactive player(s) and '
+                       f'this seal carries {len(set(inactive_ids or ()))}. A '
+                       f'record of a different ingestion is not provenance for '
+                       f'this one.',
+                'record': str(rec.relative_to(_REPO))}
     return {
         'game_id': game_id,
         'teams': list(teams),

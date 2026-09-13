@@ -1,0 +1,115 @@
+{
+ "artifact": "NFL_425_READINESS_FINDINGS",
+ "date": "2026-09-13",
+ "slate": "4:25 PM ET",
+ "candidate": "V1_CANDIDATE_R8",
+ "games": [
+  "2026_01_ARI_LAC",
+  "2026_01_MIA_LV",
+  "2026_01_GB_MIN",
+  "2026_01_WAS_PHI"
+ ],
+ "defect_1_read_before_write": {
+  "what": "ingest_inactives.py wrote INACTIVES_INGESTION.json only in _finish(), after step 6 sealed the boards. make_board._inactive_provenance reads that file, so every board read the PREVIOUS run\u2019s record, or on a first ingestion no record at all.",
+  "observed": "all four afternoon boards carried n_unmapped=null and failed no_unresolved_identity, including GB_MIN and WAS_PHI whose ingestions resolved every official name (0 unmapped).",
+  "why_it_hid": "official_inactive_evidence_ingested read `bool(inact) or post_inactives_complete`, so passing an inactive id satisfied it. A board asserted the evidence was ingested while its own provenance block said no record existed.",
+  "repair": [
+   "_checkpoint() writes the record (result=IN_PROGRESS) before step 6",
+   "_inactive_provenance refuses a record describing a different inactive set, by name",
+   "official_inactive_evidence_ingested now reads provenance only"
+  ],
+  "status": "REPAIRED, all four games resealed and enforcing"
+ },
+ "defect_2_silent_quote_loss": {
+  "what": "market_comparison walked board players and looked up their quotes, so a quote whose player the board does not carry produced no row, no refusal and no count.",
+  "observed": "166 quotes in, 76 rows + 3 refusals out; 87 quotes absent from both outputs.",
+  "repair": [
+   "every quote for the game\u2019s clubs is now compared or refused by name",
+   "APPEARANCE_LAYER_NOT_APPLICABLE names the governed upstream refusal",
+   "main() asserts rows + refusals == quotes in scope and exits 2 otherwise"
+  ],
+  "status": "REPAIRED, accounting BALANCED at 166 = 76 + 90"
+ },
+ "ownership_enforcement": {
+  "2026_01_ARI_LAC": true,
+  "2026_01_MIA_LV": true,
+  "2026_01_GB_MIN": true,
+  "2026_01_WAS_PHI": true
+ },
+ "quote_accounting": {
+  "n_quotes": 166,
+  "n_rows": 76,
+  "n_refusals": 90,
+  "by_reason": {
+   "APPEARANCE_LAYER_NOT_APPLICABLE": 85,
+   "MARKET_NOT_MAPPED": 3,
+   "QUOTE_PLAYER_NOT_ON_BOARD": 2
+  }
+ },
+ "open_defect_qb_volume_level": {
+  "what": "the top quarterback receives only 52-58% of his club\u2019s modelled dropbacks on seven of eight clubs. Closure is exact (ratio 1.000) and team dropbacks are plausible (33-41), so this is primary-share dilution inside the QB3 allocation, not an accounting error.",
+  "consequence": "every quarterback volume market reads roughly half the book\u2019s line (e.g. Jordan Love passing yards: ours 124.7 against 238.5). 74 of 76 comparable rows disagree in the same direction. These are NOT edges; they are a level defect.",
+  "attribution": "qb_allocation.KNOWN_LIMITATIONS[\"week_1_incumbent\"]: for week 1 the previous primary comes from the last game of the PRIOR season. Where that disagrees with the depth chart, p_primary splits the room near evenly. ARI is the one club where the two agree, and its top QB takes 90.4%.",
+  "related": "LAC remains inverted (Lance 22.35 / Herbert 15.12). Neither is on the official inactive list, so the inactive path did not cause it.",
+  "action": "NOT FIXED TODAY. A same-day change here would alter the accepted predictive model. Classified as a predictive-model defect for the incumbent audit, not clipped, rebalanced or floored."
+ },
+ "admissibility": "No market on this slate is admissible. The QB volume level defect contaminates every quarterback row, and the graded ledger is orders of magnitude below the sample floors. No wager is recommended.",
+ "team_dropback_audit": {
+  "2026_01_ARI_LAC:ARI": {
+   "team_dropbacks": 41.36,
+   "qb_room_sum": 41.26,
+   "closure_ratio": 0.9977,
+   "top_qb_dropbacks": 37.39,
+   "top_qb_share_of_team": 0.904
+  },
+  "2026_01_ARI_LAC:LAC": {
+   "team_dropbacks": 38.19,
+   "qb_room_sum": 38.24,
+   "closure_ratio": 1.0014,
+   "top_qb_dropbacks": 22.35,
+   "top_qb_share_of_team": 0.5853
+  },
+  "2026_01_MIA_LV:MIA": {
+   "team_dropbacks": 36.77,
+   "qb_room_sum": 36.78,
+   "closure_ratio": 1.0001,
+   "top_qb_dropbacks": 20.47,
+   "top_qb_share_of_team": 0.5565
+  },
+  "2026_01_MIA_LV:LV": {
+   "team_dropbacks": 37.23,
+   "qb_room_sum": 37.23,
+   "closure_ratio": 1.0001,
+   "top_qb_dropbacks": 21.02,
+   "top_qb_share_of_team": 0.5648
+  },
+  "2026_01_GB_MIN:GB": {
+   "team_dropbacks": 33.34,
+   "qb_room_sum": 33.35,
+   "closure_ratio": 1.0004,
+   "top_qb_dropbacks": 17.82,
+   "top_qb_share_of_team": 0.5343
+  },
+  "2026_01_GB_MIN:MIN": {
+   "team_dropbacks": 36.55,
+   "qb_room_sum": 36.51,
+   "closure_ratio": 0.9988,
+   "top_qb_dropbacks": 18.91,
+   "top_qb_share_of_team": 0.5174
+  },
+  "2026_01_WAS_PHI:WAS": {
+   "team_dropbacks": 34.93,
+   "qb_room_sum": 34.91,
+   "closure_ratio": 0.9994,
+   "top_qb_dropbacks": 20.05,
+   "top_qb_share_of_team": 0.5738
+  },
+  "2026_01_WAS_PHI:PHI": {
+   "team_dropbacks": 34.58,
+   "qb_room_sum": 34.59,
+   "closure_ratio": 1.0004,
+   "top_qb_dropbacks": 19.33,
+   "top_qb_share_of_team": 0.559
+  }
+ }
+}

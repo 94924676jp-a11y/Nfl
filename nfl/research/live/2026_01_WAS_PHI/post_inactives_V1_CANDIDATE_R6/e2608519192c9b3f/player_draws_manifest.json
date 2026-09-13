@@ -1,0 +1,209 @@
+{
+ "arrays": {
+  "qb/att": {
+   "dtype": "int16",
+   "sha256": "5c78c5e5c0fd3d9d33673173ce97d21b4236e7ffc32ced41063dafe63de55750",
+   "shape": [
+    8,
+    1000
+   ]
+  },
+  "qb/cmp": {
+   "dtype": "int16",
+   "sha256": "0554f168b9e21a7dfee431086c7ff413606a0734d37044c6d817b0071e24b216",
+   "shape": [
+    8,
+    1000
+   ]
+  },
+  "qb/db": {
+   "dtype": "int16",
+   "sha256": "f18d094de6e3798dba697e177d24668f9dc98b49693db4e2be06fb2b9669d6d7",
+   "shape": [
+    8,
+    1000
+   ]
+  },
+  "qb/int": {
+   "dtype": "int16",
+   "sha256": "4eba05fc12cc0c297b89b03f7403c113428b962b7b44da8058820cc1cb5fcc29",
+   "shape": [
+    8,
+    1000
+   ]
+  },
+  "qb/ptd": {
+   "dtype": "int16",
+   "sha256": "e644943f623b0d09ab1e04a2760221cee9c4f3dec93943f680fab7a39dbb2da5",
+   "shape": [
+    8,
+    1000
+   ]
+  },
+  "qb/pyds": {
+   "dtype": "float64",
+   "sha256": "5b41ca4e0e0ea82f19c17b819c77bf84cce01833eaf98dd81b9450b7dbc5a500",
+   "shape": [
+    8,
+    1000
+   ]
+  },
+  "qb/rtd": {
+   "dtype": "int16",
+   "sha256": "25c6d229ecfe0b0741a98b8b210bdb99db524bcee6ce97bcc429ac749273777e",
+   "shape": [
+    8,
+    1000
+   ]
+  },
+  "qb/rush_opp": {
+   "dtype": "int16",
+   "sha256": "713ce258bcf81c66582cc07fcde365229ca99ffa7f238aab54470ef244bcbda9",
+   "shape": [
+    8,
+    1000
+   ]
+  },
+  "qb/ryds": {
+   "dtype": "float64",
+   "sha256": "61657e803253d4ee9924cb65a99b78de6cb5bc2eddb8d7ae432ac394625021d6",
+   "shape": [
+    8,
+    1000
+   ]
+  },
+  "qb/sacks": {
+   "dtype": "int16",
+   "sha256": "129ededf446776998491ad1f57a6f571e3445eb06caf2ba10f588a0b143f7970",
+   "shape": [
+    8,
+    1000
+   ]
+  },
+  "qb/scr": {
+   "dtype": "int16",
+   "sha256": "593a53d9578276fe732db046597bced7efab1db6fa1ed55c1e43cacd4a926ee0",
+   "shape": [
+    8,
+    1000
+   ]
+  },
+  "team_volume/team_carries": {
+   "dtype": "float64",
+   "sha256": "0167b4491753d8840dbed34a0dbce2a0449b0bff6eb8a6dd8c2b1d1efdef144c",
+   "shape": [
+    2,
+    1000
+   ]
+  },
+  "team_volume/team_dropbacks_part": {
+   "dtype": "float64",
+   "sha256": "d59683d23130706b5177da5d02a98a67bdec001eaca6fe9276d7f7c4d948ba6e",
+   "shape": [
+    2,
+    1000
+   ]
+  },
+  "team_volume/team_off_snaps": {
+   "dtype": "int16",
+   "sha256": "d2f9bdf91f5f2b6ceb0b9d91e9b477e8bbe61a8d46b4a55f35d8524a5d501341",
+   "shape": [
+    2,
+    1000
+   ]
+  },
+  "team_volume/team_rz_carries": {
+   "dtype": "float64",
+   "sha256": "7df3120ddafaa3e31f8d7bd555d6eb12f73eb16db84bc4efa2f07a79daccd734",
+   "shape": [
+    2,
+    1000
+   ]
+  },
+  "team_volume/team_targets": {
+   "dtype": "float64",
+   "sha256": "c26150922e55c2db37259e30c9f532d07600fd1794bf28bf9b34c389e62b9d15",
+   "shape": [
+    2,
+    1000
+   ]
+  }
+ },
+ "content_digest": "09539a91f849ff52845c5f398480e3192a0543602a64703400458be4c5a085ee",
+ "draw_artifact_version": "nfl-draw-artifact-1",
+ "draw_index_semantics": {
+  "across_rows": "INDEPENDENT_STREAMS_COLUMN_ALIGNED",
+  "note": "column j is the same iteration of one row's stream for every metric of that row, so cross-metric dependence on this axis is real. Rows are seeded independently, so a CROSS-ROW correlation read off the same axis measures the generator's lack of coupling, not a football quantity.",
+  "within_row_across_metrics": "SAME_SIMULATED_WORLD"
+ },
+ "file": {
+  "bytes": 59600,
+  "name": "player_draws.npz",
+  "sha256": "5518e928e2442ee2a1504bdd3af67f8141a01e310d3829ff2b4a5b9431b565f6"
+ },
+ "game_id": "2026_01_WAS_PHI",
+ "layers": {
+  "qb": {
+   "metrics": [
+    "att",
+    "cmp",
+    "db",
+    "int",
+    "ptd",
+    "pyds",
+    "rtd",
+    "rush_opp",
+    "ryds",
+    "sacks",
+    "scr"
+   ],
+   "rng_stream": "numpy default_rng([seed, ord, gsis_id]) -- one stream per row; columns are aligned, rows are independent",
+   "row_axis": "gsis_id",
+   "row_ids": [
+    "00-0027973",
+    "00-0036389",
+    "00-0038400",
+    "00-0040891",
+    "00-0032268",
+    "00-0039677",
+    "00-0039910",
+    "00-0041117"
+   ],
+   "shape": [
+    8,
+    1000
+   ],
+   "spec_version": "qb-v1-aggregate-then-allocate-1"
+  },
+  "team_volume": {
+   "metrics": [
+    "team_carries",
+    "team_dropbacks_part",
+    "team_off_snaps",
+    "team_rz_carries",
+    "team_targets"
+   ],
+   "rng_stream": "nfl.production.seeds declared streams, per metric",
+   "row_axis": "team",
+   "row_ids": [
+    "PHI",
+    "WAS"
+   ],
+   "shape": [
+    2,
+    1000
+   ],
+   "spec_version": "team-volume-v1-p4b-frozen-1"
+  }
+ },
+ "n_draw_cells": 98000,
+ "n_draws": 1000,
+ "n_layers": 2,
+ "n_matrices": 16,
+ "rng": {
+  "generator": "numpy.random.default_rng (PCG64)",
+  "seed": 20260908,
+  "seed_protocol": "per-row seed 20260908"
+ },
+ "run_id": "e2608519192c9b3f"
+}

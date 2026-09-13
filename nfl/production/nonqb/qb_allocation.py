@@ -273,7 +273,16 @@ def ownership_verdict(teams, out, inact, zeroed, closure_dev,
     """
     prov = dict(provenance or {})
     c = {}
-    c['official_inactive_evidence_ingested'] = bool(inact) or bool(
+    # READ FROM THE PROVENANCE ONLY, AND THIS IS A TIGHTENING.
+    #
+    # It previously read `bool(inact) or bool(post_inactives_complete)`, so a
+    # caller who merely PASSED an inactive id satisfied it without any record
+    # that the list had been ingested. That masked a real defect on
+    # 2026-09-13: all four afternoon boards asserted
+    # `official_inactive_evidence_ingested: true` while their provenance block
+    # said `no INACTIVES_INGESTION.json for this game`. The condition is about
+    # EVIDENCE, and an argument is not evidence of its own provenance.
+    c['official_inactive_evidence_ingested'] = bool(
         prov.get('post_inactives_complete'))
     c['evidence_tied_to_this_game_and_team'] = bool(
         prov.get('game_id') and prov.get('teams')

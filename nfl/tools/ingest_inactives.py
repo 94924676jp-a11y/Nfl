@@ -380,6 +380,18 @@ def main(argv=None) -> int:
         return _finish(rec, a, 0)
     from nfl.tools.make_board import build_one
     fx_ids = sorted(se.value['inactive'])
+    # CHECKPOINT BEFORE SEALING, BECAUSE THE SEAL READS THIS FILE.
+    #
+    # `make_board._inactive_provenance` opens INACTIVES_INGESTION.json to
+    # learn what the ingestion resolved. Writing the record only in _finish()
+    # meant every board sealed in step 6 read the PREVIOUS run's record -- or,
+    # on a first ingestion, no record at all. Measured 2026-09-13: all four
+    # afternoon boards carried `n_unmapped: null` and failed
+    # `no_unresolved_identity` even for the two games with zero unresolved
+    # names, because the file they read did not yet exist. Steps 1-5 are
+    # complete here and steps 6-7 are the sealing itself, so the record
+    # written now is exactly the provenance those boards must consume.
+    _checkpoint(rec, a)
     sealed = {}
     for mode in MODES:
         d = out / f'post_inactives_{mode}'
@@ -414,11 +426,26 @@ def main(argv=None) -> int:
     return _finish(rec, a, 0)
 
 
-def _finish(rec, a, code):
-    rec['result'] = 'COMPLETE' if code == 0 else 'REFUSED'
+def _write_record(rec, a):
     p = pathlib.Path(a.out) / 'INACTIVES_INGESTION.json'
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_text(json.dumps(rec, indent=1) + '\n')
+    return p
+
+
+def _checkpoint(rec, a):
+    """Put steps 1-5 on disk so the seal in step 6 can read them.
+
+    `result` says IN_PROGRESS so a record interrupted here is never mistaken
+    for a completed ingestion. _finish() overwrites it either way.
+    """
+    rec['result'] = 'IN_PROGRESS'
+    return _write_record(rec, a)
+
+
+def _finish(rec, a, code):
+    rec['result'] = 'COMPLETE' if code == 0 else 'REFUSED'
+    p = _write_record(rec, a)
     print(f'{rec["result"]}  record written to {p}')
     return code
 
