@@ -133,6 +133,110 @@ def previous_primary(season: int, week: int) -> dict:
     return out
 
 
+# WHAT AN UNRESOLVED OFFICIAL NAME CAN AND CANNOT TELL US.
+#
+# Owner ruling 2026-09-13, narrowing `no_unresolved_identity` from "no
+# unresolved inactive name of any position" to "no unresolved identity capable
+# of affecting the QB room". A defensive tackle the roster vintage does not
+# carry cannot hold a dropback, and refusing QB enforcement over him was
+# conservative past the point of being informative.
+#
+# THE SOURCE'S POSITION IS USED FOR EXACTLY ONE DECISION: can this unresolved
+# name touch the quarterback room? It is NEVER used to invent a gsis_id, never
+# used to resolve the name, and never used to satisfy non-QB completeness --
+# the name stays unresolved everywhere it was unresolved before.
+QB_POSITION_TOKENS = frozenset({'QB'})
+
+# Positions the official reports actually use. Membership is EXACT and
+# uppercase: a token that is not in either set is UNKNOWN, and unknown fails
+# closed. This is a frozenset and not a substring test because 'QB' sits
+# inside strings like 'QB/WR' that are genuinely ambiguous and must not be
+# read as either one.
+KNOWN_NON_QB_POSITIONS = frozenset({
+    'RB', 'FB', 'F', 'HB', 'WR', 'TE',
+    'OL', 'OT', 'OG', 'G', 'C', 'T',
+    'DL', 'DE', 'DT', 'NT', 'EDGE',
+    'LB', 'ILB', 'MLB', 'OLB',
+    'CB', 'S', 'SS', 'FS', 'DB',
+    'K', 'P', 'LS',
+})
+
+UNRESOLVED_CLASSES = ('EXPLICIT_NON_QB', 'EXPLICIT_QB', 'UNKNOWN_POSITION',
+                      'AMBIGUOUS_POSITION')
+
+
+def classify_unresolved_position(pos) -> str:
+    """One unresolved official name -> may it touch the quarterback room?
+
+    EXPLICIT_NON_QB    the source named a position, and it is not a QB one
+    EXPLICIT_QB        the source named QB
+    UNKNOWN_POSITION   no position, or one this vocabulary does not know
+    AMBIGUOUS_POSITION more than one position, e.g. 'QB/WR'
+
+    Only EXPLICIT_NON_QB clears. The other three fail closed, because "we do
+    not know what he plays" and "he plays quarterback" have the same
+    consequence for a quarterback-room claim.
+    """
+    if pos is None:
+        return 'UNKNOWN_POSITION'
+    s = str(pos).strip().upper()
+    if not s:
+        return 'UNKNOWN_POSITION'
+    if any(ch in s for ch in '/,|&+') or len(s.split()) > 1:
+        return 'AMBIGUOUS_POSITION'
+    if s in QB_POSITION_TOKENS:
+        return 'EXPLICIT_QB'
+    if s in KNOWN_NON_QB_POSITIONS:
+        return 'EXPLICIT_NON_QB'
+    return 'UNKNOWN_POSITION'
+
+
+def unresolved_qb_room_risk(provenance) -> dict:
+    """Do any unresolved official names put the QB room in doubt?
+
+    Reads `unmapped_detail` -- a list of {name, team, source_position} kept by
+    the ingestion artifact. When the artifact records unresolved names but no
+    per-name detail, every one of them is UNKNOWN_POSITION and enforcement
+    fails closed: an older artifact that cannot answer the question is not an
+    artifact that answers it favourably.
+    """
+    prov = dict(provenance or {})
+    n_unmapped = prov.get('n_unmapped')
+    detail = prov.get('unmapped_detail')
+    if n_unmapped in (None, 0) and not detail:
+        return {'blocks_qb_enforcement': n_unmapped is None,
+                'n_unresolved': 0 if n_unmapped == 0 else None,
+                'blocking': [], 'cleared': [],
+                'reason': ('no unresolved official name' if n_unmapped == 0
+                           else 'the artifact does not report whether any '
+                                'official name went unresolved')}
+    if detail is None:
+        names = list(prov.get('unmapped') or [])
+        detail = [{'name': n, 'source_position': None} for n in names] or             [{'name': None, 'source_position': None}] * int(n_unmapped or 0)
+    blocking, cleared = [], []
+    for e in detail:
+        cls = classify_unresolved_position(
+            (e or {}).get('source_position'))
+        row = {'name': (e or {}).get('name'), 'team': (e or {}).get('team'),
+               'source_position': (e or {}).get('source_position'),
+               'classification': cls}
+        (cleared if cls == 'EXPLICIT_NON_QB' else blocking).append(row)
+    return {
+        'blocks_qb_enforcement': bool(blocking),
+        'n_unresolved': len(detail),
+        'blocking': blocking, 'cleared': cleared,
+        'reason': ('every unresolved official name is explicitly a non-QB '
+                   'position and cannot touch the quarterback room'
+                   if not blocking else
+                   f'{len(blocking)} unresolved official name(s) could affect '
+                   f'the quarterback room'),
+        'position_used_only_for': ('deciding whether an unresolved name can '
+                                   'affect the QB room. It never resolves an '
+                                   'identity and never satisfies non-QB '
+                                   'completeness.'),
+    }
+
+
 # The six conditions, named, so a reader can see WHICH one failed rather than
 # only that something did. Owner ruling 2026-09-13.
 OWNERSHIP_CONDITIONS = (
@@ -179,7 +283,14 @@ def ownership_verdict(teams, out, inact, zeroed, closure_dev,
     c['all_resolved_inactive_qbs_excluded'] = all(
         sorted(in_room[t]) == excluded[t] for t in out)
     n_unmapped = prov.get('n_unmapped')
-    c['no_unresolved_identity'] = (n_unmapped == 0)
+    # NARROWED 2026-09-13 BY OWNER RULING, AND NARROWED IN ONE DIRECTION ONLY.
+    # The condition is about identities that could affect the QUARTERBACK
+    # ROOM, not about every unresolved name on the official list. An
+    # unresolved name the source explicitly calls a non-QB position cannot
+    # hold a dropback; an unresolved QB, or one whose position is missing,
+    # unknown or ambiguous, still refuses.
+    risk = unresolved_qb_room_risk(prov)
+    c['no_unresolved_identity'] = not risk['blocks_qb_enforcement']
     c['allocation_passes_accounting'] = bool(
         out) and float(closure_dev) <= 1e-6
     # The enforcement ran inside THIS allocation, so any forecast built from
@@ -196,6 +307,7 @@ def ownership_verdict(teams, out, inact, zeroed, closure_dev,
         'inactive_qbs_excluded': {t: v for t, v in excluded.items() if v},
         'n_unmapped_official_names': n_unmapped,
         'unmapped_official_names': prov.get('unmapped'),
+        'unresolved_qb_room_risk': risk,
         'closure_max_dev': float(closure_dev),
         'game_id': prov.get('game_id'),
         'spec_version': SPEC_VERSION,

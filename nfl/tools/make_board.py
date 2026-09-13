@@ -76,6 +76,10 @@ def _inactive_provenance(game_id, teams, inactive_ids):
         'post_inactives_complete': bool(complete and complete.get('ok')),
         'n_unmapped': (ident or {}).get('n_unmapped'),
         'unmapped': (ident or {}).get('unmapped'),
+        # Per-name detail when the ingestion recorded it. Absent, every
+        # unresolved name is UNKNOWN_POSITION and QB enforcement fails closed.
+        'unmapped_detail': ((ident or {}).get('unmapped_detail')
+                            or d.get('unmapped_detail')),
         'segmentation': d.get('segmentation'),
         'provenance_kind': (d.get('provenance') or {}).get('kind'),
         'record': str(rec.relative_to(_REPO)),

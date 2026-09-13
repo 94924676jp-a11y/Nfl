@@ -241,6 +241,122 @@ def test_j_the_zero_share_guard_is_retained():
           v['conditions']['allocation_passes_accounting'] is False)
 
 
+def test_k_unresolved_non_qb_does_not_invalidate_qb_enforcement():
+    """Owner ruling 2026-09-13: the condition is about the QB ROOM.
+
+    A defensive tackle the roster vintage does not carry cannot hold a
+    dropback. Refusing QB enforcement over him was conservative past the point
+    of being informative.
+    """
+    prov = dict(PROV, n_unmapped=2, unmapped=['ZZ:Some Lineman',
+                                              'ZZ:Some Corner'],
+                unmapped_detail=[
+                    {'team': 'ZZ', 'name': 'Some Lineman',
+                     'source_position': 'DT'},
+                    {'team': 'ZZ', 'name': 'Some Corner',
+                     'source_position': 'CB'}])
+    o = _alloc(inactive_ids=['QB3'], inactive_provenance=prov)
+    check('the allocation passes', o.state is State.PASS, o.code)
+    own = o.evidence['qb_inactive_ownership']
+    check('  QB ownership IS enforced', own['enforced'] is True,
+          str(own['failed_conditions']))
+    risk = own['unresolved_qb_room_risk']
+    check('  both unresolved names are cleared as non-QB',
+          len(risk['cleared']) == 2 and not risk['blocking'])
+    check('  and each is classified explicitly',
+          all(r['classification'] == 'EXPLICIT_NON_QB'
+              for r in risk['cleared']))
+    check('THE UNRESOLVED NAMES ARE STILL UNRESOLVED AND STILL REPORTED',
+          own['n_unmapped_official_names'] == 2 and
+          own['unmapped_official_names'] == prov['unmapped'])
+    check('  no gsis_id was invented for either',
+          all('gsis_id' not in r for r in risk['cleared']))
+    S, pids = _shares(o)
+    check('  and the resolved inactive QB is still excluded',
+          float(S[pids.index('QB3')].max()) == 0.0)
+
+
+def test_l_unresolved_quarterback_fails_enforcement():
+    prov = dict(PROV, n_unmapped=1, unmapped=['ZZ:Some Passer'],
+                unmapped_detail=[{'team': 'ZZ', 'name': 'Some Passer',
+                                  'source_position': 'QB'}])
+    o = _alloc(inactive_ids=['QB3'], inactive_provenance=prov)
+    own = o.evidence['qb_inactive_ownership']
+    check('an unresolved QB REFUSES enforcement', own['enforced'] is False)
+    check('  on the identity condition and only that one',
+          own['failed_conditions'] == ['no_unresolved_identity'],
+          str(own['failed_conditions']))
+    risk = own['unresolved_qb_room_risk']
+    check('  the blocking name is named',
+          [r['name'] for r in risk['blocking']] == ['Some Passer'])
+    check('  and classified EXPLICIT_QB',
+          risk['blocking'][0]['classification'] == 'EXPLICIT_QB')
+    check('  the contamination flag therefore REMAINS',
+          any(f['id'] == 'QB_INACTIVE_NOT_CONSUMED' for f in PBD._defect_flags(
+              {'component_manifest': {'applied': ['R2']},
+               'qb_inactive_ownership_enforced': own['enforced']}, 'qb/pyds')))
+
+
+def test_m_missing_unknown_or_ambiguous_position_fails_closed():
+    cases = [
+        ('a missing position', None, 'UNKNOWN_POSITION'),
+        ('an empty position', '', 'UNKNOWN_POSITION'),
+        ('a position this vocabulary does not know', 'XYZ',
+         'UNKNOWN_POSITION'),
+        ('a two-way listing', 'QB/WR', 'AMBIGUOUS_POSITION'),
+        ('a comma listing', 'RB,WR', 'AMBIGUOUS_POSITION'),
+    ]
+    for label, pos, want in cases:
+        prov = dict(PROV, n_unmapped=1, unmapped=['ZZ:Someone'],
+                    unmapped_detail=[{'team': 'ZZ', 'name': 'Someone',
+                                      'source_position': pos}])
+        o = _alloc(inactive_ids=['QB3'], inactive_provenance=prov)
+        own = o.evidence['qb_inactive_ownership']
+        check(f'{label} fails closed', own['enforced'] is False,
+              str(own['failed_conditions']))
+        check(f'  classified {want}',
+              own['unresolved_qb_room_risk']['blocking'][0]['classification']
+              == want)
+    check('AMBIGUOUS is kept apart from UNKNOWN, not merged into it',
+          QA.classify_unresolved_position('QB/WR') !=
+          QA.classify_unresolved_position('XYZ'))
+    # An artifact predating the detail cannot answer the question, and must
+    # not be read as answering it favourably.
+    prov = dict(PROV, n_unmapped=3, unmapped=['ZZ:A', 'ZZ:B', 'ZZ:C'],
+                unmapped_detail=None)
+    own = _alloc(inactive_ids=['QB3'],
+                 inactive_provenance=prov).evidence['qb_inactive_ownership']
+    check('an ingestion artifact with no per-name detail fails closed',
+          own['enforced'] is False)
+    check('  and all three are treated as unknown, not waved through',
+          len(own['unresolved_qb_room_risk']['blocking']) == 3)
+
+
+def test_n_the_position_cannot_be_used_for_anything_else():
+    # It decides QB-room reachability and nothing else: it never resolves an
+    # identity, never invents a roster id, never satisfies completeness.
+    prov = dict(PROV, n_unmapped=1, unmapped=['ZZ:Some Runner'],
+                unmapped_detail=[{'team': 'ZZ', 'name': 'Some Runner',
+                                  'source_position': 'RB'}])
+    o = _alloc(inactive_ids=['QB3'], inactive_provenance=prov)
+    own = o.evidence['qb_inactive_ownership']
+    check('QB enforcement clears', own['enforced'] is True)
+    check('  but the name is STILL counted as unresolved',
+          own['n_unmapped_official_names'] == 1)
+    S, pids = _shares(o)
+    check('  and no extra player entered the allocation',
+          set(pids) == {'QB1', 'QB2', 'QB3'}, str(sorted(pids)))
+    check('  the verdict exposes what the position was used for',
+          'never resolves an identity' in
+          own['unresolved_qb_room_risk']['position_used_only_for'])
+    check('exact membership, never a substring: QB inside QB/WR is ambiguous',
+          QA.classify_unresolved_position('QB/WR') == 'AMBIGUOUS_POSITION')
+    check('  and FB is not read as containing a QB token',
+          QA.classify_unresolved_position('FB') == 'EXPLICIT_NON_QB')
+    check('the two vocabularies are disjoint',
+          not (QA.QB_POSITION_TOKENS & QA.KNOWN_NON_QB_POSITIONS))
+
+
 def test_zz_every_check_passed():
     if FAILED:
         raise AssertionError(f'{FAILED} check(s) failed in this module')

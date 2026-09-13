@@ -121,6 +121,13 @@ def main(argv=None) -> int:
                          'carried, kept apart from any retrieval clock.')
     ap.add_argument('--delivered-by', default=None,
                     help='who produced the delivered artifact.')
+    ap.add_argument('--positions-json', default=None,
+                    help='OPTIONAL {"TEAM": {"First Last": "RB", ...}} giving '
+                         'the position the AUTHORITATIVE SOURCE printed beside '
+                         'each name. Used for ONE thing: deciding whether an '
+                         'unresolved name could affect the quarterback room. '
+                         'It never resolves an identity, never invents a '
+                         'gsis_id, and never satisfies non-QB completeness.')
     ap.add_argument('--names-json', default=None,
                     help='JSON {"SF": ["First Last", ...], "LA": [...]} used '
                          'ONLY when the parser cannot read the page it was '
@@ -287,12 +294,32 @@ def main(argv=None) -> int:
              'Refusing rather than guessing.')
         return _finish(rec, a, 2)
     rs = INA.resolve(pa.value, roster)
+    # EVERY UNRESOLVED IDENTITY IS PRESERVED, WITH WHAT THE SOURCE SAID ABOUT
+    # IT. The name list alone cannot answer "could this one have been a
+    # quarterback?", and an artifact that cannot answer that question must not
+    # be read as answering it favourably. No mapping is guessed here: the
+    # position is recorded exactly as the authoritative document printed it,
+    # or as null when it printed none.
+    _pos = {}
+    if a.positions_json:
+        _pos = json.loads(pathlib.Path(a.positions_json).read_text())
+    _detail = []
+    for u in (rs.evidence.get('unmapped') or []):
+        _t, _, _n = str(u).partition(':')
+        _detail.append({'team': _t, 'name': _n,
+                        'source_position': (_pos.get(_t) or {}).get(_n),
+                        'resolved': False,
+                        'position_source': ('AUTHORITATIVE_DOCUMENT'
+                                            if (_pos.get(_t) or {}).get(_n)
+                                            else None)})
+    rec['unmapped_detail'] = _detail
     if not step('3. identity resolved', rs.state is State.PASS,
                 code=rs.code, roster_blob=rblob, n_roster=len(roster),
                 n_roster_with_a_name=named,
                 n_resolved=rs.evidence.get('n_resolved'),
                 n_unmapped=rs.evidence.get('n_unmapped'),
                 unmapped=rs.evidence.get('unmapped'),
+                unmapped_detail=_detail,
                 detail=(f'{rs.evidence.get("n_resolved")} resolved, '
                         f'{rs.evidence.get("n_unmapped")} unmapped'
                         if rs.state is State.PASS else rs.detail[:150])):
