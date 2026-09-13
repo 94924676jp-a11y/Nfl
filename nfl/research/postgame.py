@@ -76,6 +76,7 @@ from sportsplatform.governance.outcome import Cause, Outcome, State   # noqa: E4
 from nfl.research import sealed_index as SI                           # noqa: E402
 from nfl.research.shadow import actuals as ACT                        # noqa: E402
 from nfl.research.shadow import score as SC                           # noqa: E402
+from nfl.prospective.q9shadow import reuse as REUSE                   # noqa: E402
 
 SPEC_VERSION = 'postgame-ingestion-1'
 
@@ -272,7 +273,10 @@ FINALITY_SIGNALS = (
      'the source carries an END GAME play row. An in-progress, suspended, '
      'abandoned or partially-published game does not have one.'),
     ('GAME_CLOCK_EXPIRED',
-     'game_seconds_remaining is 0 on that row.'),
+     'game_seconds_remaining is 0 on that row IN REGULATION. An overtime '
+     'game ends on sudden death with time still showing, so for qtr >= 5 the '
+     'signal requires only that the clock is readable; the END GAME marker '
+     'carries the proof that it stopped.'),
     ('REGULATION_OR_LATER_COMPLETE',
      'the quarter on that row is 4 or later, so the game did not stop early.'),
     ('FINAL_RESULT_POPULATED',
@@ -285,6 +289,24 @@ FINALITY_SIGNALS = (
 )
 
 NOT_FINAL = 'POSTGAME_NOT_FINAL'
+
+# A sealed forecast that is FINAL but not admissible under the CURRENT
+# governance contract. Distinct from NOT_FINAL because the two are different
+# facts: one says the outcome is not settled, the other says the forecast may
+# not be counted.
+POSTGAME_INADMISSIBLE = 'POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE'
+
+
+def _artifact_of(sealed):
+    """The sealed artifact document, or an empty dict. Never inferred."""
+    for name in ('forecast_artifact.json', 'SEALED_FORECAST.json'):
+        q = pathlib.Path(sealed['dir']) / name
+        if q.exists():
+            try:
+                return json.loads(q.read_text())
+            except (ValueError, OSError):
+                return {}
+    return {}
 
 
 def _num(v):
@@ -331,7 +353,24 @@ def game_finality(rows):
     sig.update({'game_seconds_remaining': gsr, 'qtr': qtr, 'result': res,
                 'total_home_score': home, 'total_away_score': away,
                 'last_desc': (last.get('desc') or '').strip()[:60]})
-    if gsr is None or gsr != 0:
+    # OVERTIME ENDS WITH TIME ON THE CLOCK, AND THAT IS NOT AN UNFINISHED GAME.
+    #
+    # Sudden death stops the moment the score changes, so the END GAME row of
+    # an overtime game legitimately carries game_seconds_remaining > 0.
+    # Requiring 0 unconditionally refused EVERY overtime game as NOT FINAL --
+    # measured on the seasons in the store: 2021_01_BAL_LV, 2021_02_TEN_SEA,
+    # 2021_04_NYG_NO, 2021_04_TEN_NYJ and 2026_01_NO_DET among them. That is
+    # not a conservative guard, it is a systematic exclusion of the
+    # highest-volume games in the sample, which biases anything scored on what
+    # remains.
+    #
+    # The signal it was reaching for is "the clock cannot still be running".
+    # In regulation that means expired. In overtime it means the game reached
+    # overtime and ended there, which the END GAME marker already establishes.
+    if qtr is not None and qtr >= 5:
+        if gsr is None:
+            unmet.append('GAME_CLOCK_EXPIRED')
+    elif gsr is None or gsr != 0:
         unmet.append('GAME_CLOCK_EXPIRED')
     if qtr is None or qtr < 4:
         unmet.append('REGULATION_OR_LATER_COMPLETE')
@@ -424,6 +463,10 @@ def identity_of(sealed, outcome_sha):
         'run_id': sealed.get('run_id'),
         'outcome_hash': outcome_sha,
         'outcome_sha16': outcome_sha[:16],
+        # STAMPED AT SCORING TIME, under the contract then in force. Read by
+        # `accounting`, so a row can never be counted on a verdict it does
+        # not carry.
+        'currently_admissible': True,
         # RELATIVE, not absolute: an absolute path is a property of the
         # machine that happened to run the scoring, not of the evidence.
         'sealed_dir': sealed.get('rel_dir') or str(sealed['dir']),
@@ -445,6 +488,31 @@ def score_game(sealed, rows, outcome_sha, finality=None) -> Outcome:
             NOT_FINAL, fin['detail'], cause=Cause.DATA,
             game_id=sealed.get('game_id'), unmet=fin['unmet'],
             signals=fin['signals'], n_scored=0)
+    # ---- CURRENT-CONTRACT ADMISSIBILITY. FINALITY WAS NEVER ENOUGH.
+    #
+    # This gate read FINALITY ALONE -- not `seal_path`, not `readiness_gate`,
+    # not `completeness`, not even the artifact's own `prospective_eligible`
+    # flag. So a forecast the artifact itself declared ineligible was scored
+    # into the prospective ledger anyway.
+    #
+    # Measured before the fix: 3,230 rows across 2 games, every source
+    # artifact carrying `prospective_eligible: false`, and `accounting`
+    # reporting `prospective_sample_size = 2 GAME` -- the unit the section-4
+    # floors are counted in.
+    #
+    # Scoring is where an artifact becomes evidence, so admissibility is
+    # re-evaluated HERE, on every call, against TODAY's contract. A cache hit
+    # on unchanged inputs may skip recomputing the numbers; it may not skip
+    # this.
+    adm = REUSE.assert_currently_admissible(_artifact_of(sealed))
+    if adm.state is not State.PASS:
+        return Outcome.blocked(
+            POSTGAME_INADMISSIBLE, adm.detail, cause=Cause.GOVERNANCE,
+            game_id=sealed.get('game_id'),
+            disposition=adm.evidence.get('disposition'),
+            admissibility_code=adm.code,
+            controls=adm.evidence.get('controls'), n_scored=0)
+
     ident = identity_of(sealed, outcome_sha)
     d = pathlib.Path(sealed['dir'])
     man_p = d / 'player_draws_manifest.json'
@@ -685,9 +753,24 @@ def accounting(rows):
     games produced thousands of scoring rows. Reported as a single number,
     that reads as a large prospective sample. It is two games.
     """
-    rows = list(rows or [])
+    allrows = list(rows or [])
+    # ROWS SEALED UNDER AN EARLIER CONTRACT ARE NOT COUNTED.
+    #
+    # `currently_admissible` is stamped by `score_game` at scoring time. A row
+    # written before that stamp existed carries no verdict, and no verdict is
+    # not a pass: it stays on the append-only ledger and counts toward no
+    # evidence unit.
+    rows = [r for r in allrows if r.get('currently_admissible') is True]
     games = {r.get('game_id') for r in rows if r.get('game_id')}
     return {
+        'rows_on_ledger': len(allrows),
+        'rows_without_admissibility_verdict': sum(
+            1 for r in allrows if r.get('currently_admissible') is not True),
+        'admissibility_note': (
+            'a row is counted only when score_game stamped it '
+            'currently_admissible under the contract in force at scoring '
+            'time. Rows predating that stamp remain on the ledger and count '
+            'toward no evidence unit.'),
         'scoring_rows': len(rows),
         'graded_metrics': len({r.get('metric') for r in rows
                                if r.get('metric')}),

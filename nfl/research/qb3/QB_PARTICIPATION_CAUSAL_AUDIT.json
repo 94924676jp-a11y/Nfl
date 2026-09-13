@@ -1,0 +1,124 @@
+{
+ "artifact": "QB_PARTICIPATION_CAUSAL_AUDIT",
+ "spec_version": "qb-participation-causal-audit/1.0.0",
+ "governance": "DIAGNOSIS ONLY. No predictive value is changed.",
+ "seasons": [
+  2021,
+  2022,
+  2023,
+  2024
+ ],
+ "outcome_provenance": {
+  "2021": {
+   "sha256": "e8743a568f99667a8bdcd29ba12224ee1782ad2b7916bee78ee335c099383739",
+   "n_games": 285,
+   "blob": "/home/user/nfl/nfl/research/postgame/pbp_2021.e8743a568f99667a.csv.gz"
+  },
+  "2022": {
+   "sha256": "0c69a71eb39498956c7b1d5c1ca52ce7fe679934a95d1af249facb5ea9829ea4",
+   "n_games": 284,
+   "blob": "/home/user/nfl/nfl/research/postgame/pbp_2022.0c69a71eb3949895.csv.gz"
+  },
+  "2023": {
+   "sha256": "4649804ee0f0a40b41e51ec75a1ce921949d7fab5459213488656b92f78560e8",
+   "n_games": 285,
+   "blob": "/home/user/nfl/nfl/research/postgame/pbp_2023.4649804ee0f0a40b.csv.gz"
+  },
+  "2024": {
+   "sha256": "23370d5d10f8104d80d46a1fc5e61f4f6f5a3263fe96fe2dd629913cfcb08c06",
+   "n_games": 285,
+   "blob": "/home/user/nfl/nfl/research/postgame/pbp_2024.23370d5d10f8104d.csv.gz"
+  }
+ },
+ "n_team_games": 2278,
+ "n_backup_appearances": 548,
+ "predeclared_thresholds": {
+  "blowout_margin": 17,
+  "late_seconds_remaining": 900,
+  "rotation_max_share": 0.35
+ },
+ "classification_counts": {
+  "PLANNED_ROTATION_OR_PACKAGE": 250,
+  "REPLACEMENT_NO_RETURN": 142,
+  "BLOWOUT_RELIEF": 149,
+  "UNCLASSIFIED": 6,
+  "KNEEL_OR_SPECIAL": 1
+ },
+ "what_play_by_play_cannot_do": "an injury and a benching are identical in these bytes: the starter stops taking snaps and does not return. They are reported together as REPLACEMENT_NO_RETURN and are NOT split on a guess.",
+ "conditional_on_established_incumbent_no_rotation": {
+  "n_team_games": 1700,
+  "p_qb2_any_dropback": 0.1312,
+  "p_qb2_share_ge_10pct": 0.0853,
+  "p_qb2_share_ge_25pct": 0.0541,
+  "p_qb2_share_ge_50pct": 0.0265,
+  "starter_share_mean": 0.9641,
+  "starter_share_median": 1.0,
+  "p_starter_share_eq_1": 0.8682,
+  "p_starter_share_eq_0": 0.0,
+  "n_starter_finished": 1477,
+  "p_starter_finished": 0.8688,
+  "starter_share_given_finished_mean": 1.0,
+  "p_replacement_no_return": 0.0576,
+  "p_blowout_relief": 0.0718
+ },
+ "qb3_current_allocation_same_population": {
+  "cell": "(rank 1, was_prev_primary yes)",
+  "n": 2349,
+  "p_primary": 0.9046,
+  "pool_mean": 0.8919,
+  "pool_median": 1.0,
+  "P_share_eq_1": 0.7765,
+  "P_share_eq_0": 0.0736,
+  "P_share_le_0.5": 0.0966
+ },
+ "hard_rock_backup_qb_markets": "NOT USED. Not a feature, not a rule, not a filter, not a conditioning variable anywhere in this module.",
+ "the_comparison": {
+  "p_starter_takes_every_dropback_REALITY": 0.8682,
+  "p_starter_takes_every_dropback_QB3": 0.7765,
+  "p_starter_takes_zero_REALITY": 0.0,
+  "p_starter_takes_zero_QB3": 0.0736,
+  "starter_share_mean_REALITY": 0.9641,
+  "starter_share_mean_QB3": 0.8919
+ },
+ "verdict": {
+  "question": "Does the QB allocation architecture improperly mix planned pregame participation with contingent in-game replacement?",
+  "answer": "YES. The two are estimated as one unconditional quantity.",
+  "the_single_decisive_number": {
+   "p_starter_takes_zero_dropbacks_REALITY": 0.0,
+   "p_starter_takes_zero_dropbacks_QB3": 0.0736,
+   "reality_n": 1700,
+   "statement": "conditional on an established incumbent starting and no planned rotation, the starter took ZERO dropbacks in 0 of 1,700 team-games across 2021-2024. QB3 assigns that event 7.36% of the probability mass in its cleanest cell, (rank 1, was_prev_primary yes)."
+  },
+  "why_the_mass_is_there": "qb3_lib.build_frame builds the frame from the DEPTH CHART, not from who took the first snap -- deliberately, and for a good reason: production faces a QB room, not a list of men who played. The consequence is that cell (1, yes) pools two categorically different events. One is PREGAME: the charted QB1 does not start at all, because he is inactive, was replaced before kickoff, or the chart is simply wrong about him. The other is IN-GAME: given that he started, how the game unfolded. The zero mass comes almost entirely from the first. Conditioning on him actually starting removes it completely.",
+  "the_decomposition_the_product_needs": {
+   "stage_1_planned_participation": "P(the planned starter actually starts). A PREGAME question answerable with pregame evidence -- depth chart, injury report, official inactives. This is where the 7.36% belongs, and it is exactly the evidence the two-stage forecast product now ingests.",
+   "stage_2_contingent_replacement_risk": {
+    "p_starter_finished_the_game": 0.8688,
+    "p_replacement_starter_never_returned": 0.0576,
+    "p_blowout_relief": 0.0718,
+    "starter_mean_share_given_he_started": 0.9641,
+    "starter_median_share": 1.0,
+    "note": "these are IN-GAME hazards. No pregame evidence resolves them, and they should be carried as a contingent risk rather than subtracted from the starter projection in advance."
+   },
+   "why_separating_them_matters": "as one pooled number the starter is charged in advance for events that have not happened and that pregame evidence could have ruled out. QB3 gives him a mean share of 0.8919 where reality, conditional on his starting, is 0.9641 -- 7.2 points of his projection spent on a mixture the product should have split."
+  },
+  "backup_participation_conditional_on_an_established_starter": {
+   "p_any_dropback": 0.1312,
+   "p_ge_10pct": 0.0853,
+   "p_ge_25pct": 0.0541,
+   "p_ge_50pct": 0.0265,
+   "reading": "a backup appears in roughly one game in eight, and takes a quarter of the snaps in one in twenty. QB3s normalised identity draw gives the backup far more than that in every configuration except AGREE."
+  },
+  "classification": "SPECIFICATION_DEFECT",
+  "why_specification_not_implementation": "qb3_lib implements its pre-registration faithfully -- this was verified clause by clause in QB3_WEEK1_INCUMBENT_AUDIT.json against a contract whose sha256 matches the value the production module cites. The pre-registration defines ONE estimand, s_dropbacks, and one cell structure. It never separates planned participation from contingent replacement, so the code cannot either. The defect is in what was specified.",
+  "relationship_to_the_week1_finding": "the same root. The week-1 season-boundary defect is this mixing problem at its worst: the incumbent signal names a week-18 rest-game quarterback, and the unconditional pool then spends half the starters projection on him. Repairing the cell definition without separating the two quantities would narrow the symptom and leave the cause.",
+  "hard_rock_backup_qb_markets": "NOT USED anywhere in this audit -- not as a feature, a rule, a filter or a conditioning variable. If such availability is ever recorded it is an external diagnostic only and must never enter training or a participation rule.",
+  "what_this_audit_cannot_establish": [
+   "play-by-play cannot separate an injury from a benching: both appear as the starter ceasing to take snaps and not returning. The 5.76% is REPLACEMENT_NO_RETURN, not an injury rate.",
+   "the classification rules are deterministic and predeclared, but they are rules, not ground truth. A designed two-quarterback package that never alternates would read as a replacement.",
+   "\"established incumbent\" here means only that the same man started the club previous game. It is not a health status and uses no injury report.",
+   "no interval is quoted and nothing is clustered by team or week. These are descriptive rates over 2021-2024, which are development seasons."
+  ],
+  "no_repair_was_made": true
+ }
+}

@@ -293,6 +293,11 @@ def build(args, fixtures: dict = None) -> dict:
         # clear. It is now computed by the layer that owns the share and
         # carried forward from there, never asserted by a caller.
         fx['_qb_ownership'] = qa.evidence.get('qb_inactive_ownership')
+        # The room configuration travels with the run for the same
+        # reason the ownership verdict does: the board cannot
+        # re-derive it, and a reader needs to know whether a QB
+        # projection came out of a season-boundary room.
+        fx['_qb3_config'] = qa.evidence.get('qb3_configuration')
         qb['allocation'] = qa.value
         gc = fl.get('game_coupling')
         tv = _team_volume()
@@ -1583,6 +1588,7 @@ def build(args, fixtures: dict = None) -> dict:
         if k in ART.INVARIANTS]
     _own = fx.get('_qb_ownership')
     summary['qb_inactive_ownership'] = _own
+    summary['qb3_configuration'] = fx.get('_qb3_config')
     summary['qb_inactive_ownership_enforced'] = bool(
         (_own or {}).get('enforced'))
     summary['execution_identity'] = execution_identity(args, src, commit)

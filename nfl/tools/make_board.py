@@ -194,6 +194,7 @@ def build_one(season, week, game_id, written_at, out_dir, draws=1000,
     # had demonstrably consumed the official list. It now comes from the
     # allocation layer that actually enforced it, through run_status.
     bd['qb_inactive_ownership'] = summary.get('qb_inactive_ownership')
+    bd['qb3_configuration'] = summary.get('qb3_configuration')
     bd['qb_inactive_ownership_enforced'] = bool(
         summary.get('qb_inactive_ownership_enforced'))
 

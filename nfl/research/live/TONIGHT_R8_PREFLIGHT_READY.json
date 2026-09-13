@@ -1,0 +1,267 @@
+{
+ "artifact": "TONIGHT_R8_PREFLIGHT_READY",
+ "prepared_at": "2026-09-13T21:20:25Z",
+ "game": {
+  "game_id": "2026_01_DAL_NYG",
+  "kickoff_utc": "2026-09-14T00:20:00Z",
+  "note": "Sunday night. DEN_KC is Monday 2026-09-15T00:15:00Z and is NOT tonight."
+ },
+ "board_built": {
+  "cut": "pre_inactives",
+  "candidate": "V1_CANDIDATE_R8",
+  "run_id": "bc42f90fc7da8335",
+  "dir": "nfl/research/live/2026_01_DAL_NYG/pre_inactives_V1_CANDIDATE_R8/bc42f90fc7da8335",
+  "completeness": "PARTIAL_PLAYER_COVERAGE",
+  "n_players": 36,
+  "positions": {
+   "QB": 6,
+   "RB": 9,
+   "WR": 14,
+   "TE": 7
+  }
+ },
+ "readiness_matrix": {
+  "authoritative_injury_evidence": {
+   "state": "READY",
+   "detail": "DAL and NYG both satisfy the frozen input contract. Newest capture 2026-09-13T19:46:12Z, blob nfl/vintage/injuries.66e960ec81fccc6e.csv.gz. DAL 4 rows, NYG 6 rows.",
+   "caveat": "only 1 row per club carries a report_status; practice_status is populated on all. This is reported, not hidden, and it is why appearance runs tonight where it refused for the 4:25 clubs."
+  },
+  "roster_membership": {
+   "state": "READY",
+   "detail": "36 players: 6 QB, 9 RB, 14 WR, 7 TE. NYG 19, DAL 17."
+  },
+  "appearance": {
+   "state": "PASS",
+   "code": "APPEARANCE_OK",
+   "detail": "runs for BOTH clubs. The 4:25 slate had NOT_APPLICABLE/INJURY_REPORT_INCOMPLETE on six of eight clubs, so those boards carried quarterbacks only. Tonight the full non-QB stack runs."
+  },
+  "team_volume": {
+   "state": "PASS",
+   "code": "TEAM_ENVIRONMENT_OK",
+   "detail": "DAL 41.2 mean dropbacks, NYG 32.82.",
+   "known_limitation": "team_volume_is_near_unforecastable (declared warning on the layer)"
+  },
+  "qb_allocation": {
+   "state": "PASS_BUT_CONTAMINATED",
+   "code": "QB_LAYER_OK",
+   "detail": "the layer runs and closes exactly, but see qb3_configuration: DAL is inverted by the week-1 specification defect."
+  },
+  "carries": {
+   "state": "PASS",
+   "code": "TARGETS_CARRIES_OK",
+   "modelled_for": 9,
+   "metric": "rushing/carries"
+  },
+  "targets": {
+   "state": "PASS",
+   "code": "TARGETS_CARRIES_OK",
+   "modelled_for": 30,
+   "metric": "receiving/targets"
+  },
+  "receiving_efficiency": {
+   "state": "PASS",
+   "code": "CONVERSION_OK",
+   "modelled_for": 30,
+   "metrics": [
+    "receiving/receptions",
+    "receiving/receiving_yards"
+   ]
+  },
+  "td_opportunity": {
+   "state": "PASS",
+   "code": "TD_LAYER_OK"
+  },
+  "official_inactives": {
+   "state": "NOT_YET_AVAILABLE",
+   "detail": "no list published for this game yet. Kickoff 00:20Z, so publication is expected about 22:50Z. The comparator REFUSES a pre-inactives board (NOT_POST_INACTIVES), so this is a hard gate, by design."
+  },
+  "hard_rock_comparator": {
+   "state": "NOT_YET_DELIVERED",
+   "detail": "no frozen Hard Rock snapshot for DAL_NYG has been delivered. The route is built and proven end to end against a synthetic probe of all nine markets; it needs real bytes."
+  }
+ },
+ "qb3_configuration": {
+  "DAL": {
+   "qb3_configuration": "DISAGREE",
+   "team_mean_dropbacks": 41.2,
+   "prev_primary": "Joe Milton III",
+   "room": [
+    {
+     "player": "Joe Milton III",
+     "gsis_id": "00-0039398",
+     "depth_rank": 3,
+     "was_prev_primary": true,
+     "cell": "('2+', 1)",
+     "p_primary_cell": 0.6167,
+     "mean_dropbacks": 21.511,
+     "share_of_team": 0.5222,
+     "mean_passing_yards": 141.37
+    },
+    {
+     "player": "Dak Prescott",
+     "gsis_id": "00-0033077",
+     "depth_rank": 1,
+     "was_prev_primary": false,
+     "cell": "(1, 0)",
+     "p_primary_cell": 0.4922,
+     "mean_dropbacks": 17.354,
+     "share_of_team": 0.4213,
+     "mean_passing_yards": 113.5
+    },
+    {
+     "player": "Sam Howell",
+     "gsis_id": "00-0037077",
+     "depth_rank": 2,
+     "was_prev_primary": false,
+     "cell": "(2, 0)",
+     "p_primary_cell": 0.0686,
+     "mean_dropbacks": 2.082,
+     "share_of_team": 0.0505,
+     "mean_passing_yards": 12.81
+    }
+   ],
+   "depth_chart_qb1": "Dak Prescott",
+   "depth_chart_qb1_share": 0.4213,
+   "inverted": true
+  },
+  "NYG": {
+   "qb3_configuration": "AGREE",
+   "team_mean_dropbacks": 32.82,
+   "prev_primary": "Jaxson Dart",
+   "room": [
+    {
+     "player": "Jaxson Dart",
+     "gsis_id": "00-0040691",
+     "depth_rank": 1,
+     "was_prev_primary": true,
+     "cell": "(1, 1)",
+     "p_primary_cell": 0.9046,
+     "mean_dropbacks": 29.584,
+     "share_of_team": 0.9014,
+     "mean_passing_yards": 161.15
+    },
+    {
+     "player": "Jameis Winston",
+     "gsis_id": "00-0031503",
+     "depth_rank": 2,
+     "was_prev_primary": false,
+     "cell": "(2, 0)",
+     "p_primary_cell": 0.0686,
+     "mean_dropbacks": 2.205,
+     "share_of_team": 0.0672,
+     "mean_passing_yards": 12.89
+    },
+    {
+     "player": "Jake Haener",
+     "gsis_id": "00-0038998",
+     "depth_rank": 3,
+     "was_prev_primary": false,
+     "cell": "(3, 0)",
+     "p_primary_cell": 0.0282,
+     "mean_dropbacks": 0.931,
+     "share_of_team": 0.0284,
+     "mean_passing_yards": 4.85
+    }
+   ],
+   "depth_chart_qb1": "Jaxson Dart",
+   "depth_chart_qb1_share": 0.9014,
+   "inverted": false
+  }
+ },
+ "market_coverage_expected": {
+  "Passing Yards": {
+   "metric": "qb/pyds",
+   "players": 6,
+   "admissible_tonight": false
+  },
+  "Pass Attempts": {
+   "metric": "qb/att",
+   "players": 6,
+   "admissible_tonight": false
+  },
+  "Pass Completions": {
+   "metric": "qb/cmp",
+   "players": 6,
+   "admissible_tonight": false
+  },
+  "Interceptions": {
+   "metric": "qb/int",
+   "players": 6,
+   "admissible_tonight": false
+  },
+  "Passing TDs": {
+   "metric": "qb/ptd",
+   "players": 6,
+   "admissible_tonight": false
+  },
+  "Rushing Attempts (QB)": {
+   "metric": "qb/rush_opp",
+   "players": 6,
+   "admissible_tonight": false
+  },
+  "Rushing Yards (QB)": {
+   "metric": "qb/ryds",
+   "players": 6,
+   "admissible_tonight": false
+  },
+  "Rushing Attempts (non-QB)": {
+   "metric": "rushing/carries",
+   "players": 9,
+   "admissible_tonight": true
+  },
+  "Receptions": {
+   "metric": "receiving/receptions",
+   "players": 30,
+   "admissible_tonight": true
+  },
+  "Receiving Yards": {
+   "metric": "receiving/receiving_yards",
+   "players": 30,
+   "admissible_tonight": true
+  },
+  "Rushing Yards (non-QB)": {
+   "metric": null,
+   "players": 0,
+   "admissible_tonight": false,
+   "reason": "NOT_MODELLED. The engine governs no non-quarterback rushing-yards estimand; rushing/rushing_yards is declared unavailable with code RUSHING_CONVERSION_CONTROL_UNDEFINED. The carries x YPC shortcut is prohibited and is NOT used."
+  }
+ },
+ "modelable_non_qb_players": 30,
+ "engineering_repairs_made_now": [
+  "market_comparison: a QB-room governance state no longer suppresses the whole game. QB metrics are refused individually by name; carries, receptions and receiving yards flow. No QB row is made admissible.",
+  "market_comparison: closed the hole that scoping opened -- daily_board._defect_flags raises QB_INACTIVE_NOT_CONSUMED only when R2 is in the component manifest, so a board without R2 and without enforced ownership produced no flag at all and a QB quote would have been PRICED. The ownership verdict now refuses qb/ metrics on its own authority.",
+  "market_comparison: every game-level refusal (NO_SEALED_BOARD, NOT_POST_INACTIVES, NO_STORED_DRAWS, PLAYER_DRAW_ROW_IDENTITY_ABSENT) is expanded to one refusal per affected quote. A whole-game refusal previously answered 1 quote out of 162.",
+  "q9shadow/armpolicy.py: the expected arm now comes from an external (game_id, team) policy instead of the artifact own model_arm field."
+ ],
+ "no_predictive_specification_was_changed": true,
+ "unresolved_blockers": [
+  {
+   "id": "OFFICIAL_INACTIVES_NOT_PUBLISHED",
+   "blocks": "the entire comparison",
+   "owner": "networked agent",
+   "needed": "raw authoritative bytes for DAL and NYG inactives"
+  },
+  {
+   "id": "HARD_ROCK_SNAPSHOT_NOT_DELIVERED",
+   "blocks": "the comparison",
+   "owner": "networked agent",
+   "needed": "frozen Hard Rock DAL_NYG snapshot with player, team, opponent, market, line, over_price, under_price, sportsbook, retrieval_time_utc, availability, source_url"
+  },
+  {
+   "id": "QB3_WEEK1_SPECIFICATION_DEFECT",
+   "blocks": "every QB market on BOTH clubs",
+   "detail": "DAL is inverted: Joe Milton III 52.2% against Dak Prescott 42.1%, because Milton out-dropped Prescott 13-11 in week 18. NYG is the AGREE configuration at 90.1% for Jaxson Dart, which is the mild case but still carries the week-1 AGREE bias of -0.1098.",
+   "action": "NOT repaired today. Owner decision pending on the preregistration."
+  }
+ ],
+ "estimated_rerun_after_inactives_seconds": {
+  "one_board": 89,
+  "five_modes": 445,
+  "detail": "measured, not estimated: one V1_CANDIDATE_R8 board for this game sealed in 89.0s. ingest_inactives seals five modes, so about 7.5 minutes, plus ingestion and comparison of under a minute."
+ },
+ "can_we_produce_a_trustworthy_ranked_board_before_kickoff": {
+  "non_qb": "YES, conditional on the two deliveries above. 30 receivers and 9 rushers have governed draws and an identity-joined row.",
+  "qb": "NO. Every QB market on both clubs is contaminated by the week-1 specification defect, and DAL is outright inverted.",
+  "overall": "A PARTIAL board is producible and honest: non-QB markets ranked, every QB market refused by name. No wager is recommended; the graded ledger remains orders of magnitude below the protocol sample floors."
+ }
+}

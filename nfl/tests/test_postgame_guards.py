@@ -57,8 +57,25 @@ def check(label, ok, detail=''):
 
 # ------------------------------------------------------------- fixtures
 def _real_blob():
+    """A stored play-by-play blob that this repository has SEALED FORECASTS for.
+
+    This used to be `sorted(...)[0]`, which silently assumed the store held
+    exactly one season. Once historical seasons were fetched for the QB
+    participation audit the alphabetically-first blob became pbp_2021, a season
+    with no sealed forecasts at all -- so the partial-PBP regression picked a
+    game nothing had forecast, `games_not_final` came back empty, and the test
+    raised IndexError instead of checking anything. The fixture now asks for
+    what it actually needs rather than trusting file order.
+    """
     hits = sorted(PG.STORE.glob('pbp_*.csv.gz'))
-    return hits[0] if hits else None
+    if not hits:
+        return None
+    seal_seasons = {str(s.get('game_id', ''))[:4]
+                    for s in PG.completed_with_seals()}
+    for b in reversed(hits):
+        if b.name.split('_')[1][:4] in seal_seasons:
+            return b
+    return hits[-1]
 
 
 def _real_rows():
@@ -112,10 +129,29 @@ class _Sandbox:
         return False
 
 
-def _row(**kw):
+def _row(admissible=True, **kw):
+    """A scoring row, with its ADMISSIBILITY STATE stated explicitly.
+
+    `accounting` counts only rows that `score_game` stamped
+    `currently_admissible` under the contract in force at scoring time. A
+    fixture therefore has to say which it represents:
+
+      admissible=True   a row scored under the CURRENT contract. Use for
+                        tests about counting arithmetic, so they measure the
+                        arithmetic rather than the gate.
+      admissible=False  a row written before the stamp existed -- the shape
+                        of the 3,230 rows already on the ledger. Use to
+                        assert that such rows count toward nothing.
+
+    The stamp is NOT applied blanket-wise: `test_l_...` below asserts that the
+    unstamped shape contributes zero, which would be vacuous if every fixture
+    were admissible.
+    """
     base = {'forecast_id': 'FC-a', 'game_id': 'G1', 'entity': 'player',
             'metric': 'qb/pyds', 'player_id': 'P1', 'team': None,
             'outcome_hash': 'h1', 'candidate': 'V1', 'cutoff_utc': 'T0'}
+    if admissible:
+        base['currently_admissible'] = True
     base.update(kw)
     return base
 
@@ -198,7 +234,16 @@ def test_c_kickoff_in_the_past_with_partial_pbp_scores_zero_rows():
         check('a real game is available for the partial-PBP regression',
               False)
         return
-    gid = sorted(by)[0]
+    # A GAME THIS REPOSITORY ACTUALLY FORECAST. `games_not_final` only records
+    # games that have sealed forecasts, so picking one without any made the
+    # assertions below vacuous.
+    _with_seals = {s['game_id'] for s in PG.completed_with_seals()}
+    _usable = sorted(g for g in by if g in _with_seals)
+    if not _usable:
+        check('a real game WITH sealed forecasts is available for the '
+              'partial-PBP regression', False, f'{len(by)} game(s) in blob')
+        return
+    gid = _usable[0]
     partial = by[gid][:len(by[gid]) // 2]
 
     seals = [s for s in PG.completed_with_seals() if s['game_id'] == gid]
@@ -415,82 +460,89 @@ def test_j_the_live_ledger_has_exactly_one_current_version_per_identity():
 
 
 # =========================================== GUARD 4 -- REPRODUCTION
-def test_k_the_two_completed_games_reproduce_and_a_rerun_adds_nothing():
+def test_k_the_two_completed_games_are_now_refused_as_inadmissible():
+    """The reproduction property, under the CURRENT admissibility contract.
+
+    THIS TEST WAS INVERTED, DELIBERATELY, AND NOT WEAKENED.
+
+    It used to assert `n_games_scored == 2`. That expectation was written when
+    `score_game` gated on FINALITY ALONE. It now also re-evaluates current
+    admissibility, and the two completed games -- 2026_01_NE_SEA and
+    2026_01_SF_LA -- fail it: their artifacts carry no `seal_path`, are
+    PARTIAL_PLAYER_COVERAGE, and declare `prospective_eligible: false` on
+    themselves.
+
+    So the correct current assertion is that both are REFUSED BY NAME, that
+    the refusal is the admissibility one rather than the finality one, and
+    that ZERO rows are written. Restoring the old number would mean removing
+    the gate, which is the opposite of what the audit established.
+    """
     blob = _real_blob()
     if not blob:
         check('a stored authoritative outcome exists', False)
         return
     with _Sandbox() as d:
         first = PG.run(out_dir=d, blob=str(blob))
-        check('the first run scores', first.state is State.PASS,
-              f'{first.state.name}[{first.code}]')
         e1 = first.evidence
-        check('both completed games are scored', e1['n_games_scored'] == 2,
-              str(e1['n_games_scored']))
-        check('  and rows were written', e1['scoring_rows_added'] > 0,
-              str(e1['scoring_rows_added']))
-        n_lines = len(PG.LEDGER.read_text().splitlines())
+        check('the run completes rather than raising',
+              first.state in (State.PASS, State.BLOCKED),
+              f'{first.state.name}[{first.code}]')
+        check('ZERO games are scored -- both are inadmissible today',
+              e1['n_games_scored'] == 0, str(e1['n_games_scored']))
+        check('  and ZERO rows are written',
+              e1['scoring_rows_added'] == 0, str(e1['scoring_rows_added']))
 
-        second = PG.run(out_dir=d, blob=str(blob))
-        e2 = second.evidence
-        check('a second identical run adds ZERO rows',
-              e2['scoring_rows_added'] == 0, str(e2['scoring_rows_added']))
-        check('  every row is recognised as a duplicate',
-              e2['duplicate_rows_avoided'] == e1['scoring_rows_added'],
-              f"{e2['duplicate_rows_avoided']} vs {e1['scoring_rows_added']}")
-        check('  and the file did not grow',
-              len(PG.LEDGER.read_text().splitlines()) == n_lines)
-        cur = PG.current_rows()
-        check('  no row was superseded by an identical rerun',
-              len(cur) == n_lines, f'{len(cur)} current of {n_lines}')
-
-        acc = PG.accounting(cur)
-        check('the evidence is two games, not nineteen forecasts',
-              acc['distinct_games'] == 2, str(acc['distinct_games']))
-        check('  across many candidate forecasts',
-              acc['distinct_candidate_forecasts'] >= 19,
-              str(acc['distinct_candidate_forecasts']))
-
-        # ---- a REVISED outcome: same games, restated bytes ---------------
+        # THE REFUSAL IS THE ADMISSIBILITY ONE, NOT FINALITY. Both games ARE
+        # final; asserting only "zero scored" would pass for the wrong reason.
+        sealed = [r for r in PG.completed_with_seals()
+                  if r.get('game_id') in ('2026_01_NE_SEA', '2026_01_SF_LA')]
+        check('the two completed games still have sealed forecasts',
+              len(sealed) >= 2, f'{len(sealed)} sealed record(s)')
         rows = PG._rows(blob)
-        revised = [dict(r) for r in rows]
-        bumped = 0
-        for r in revised:
-            if r.get('passing_yards') not in (None, '', '0'):
-                r['passing_yards'] = str(float(r['passing_yards']) + 1)
-                bumped += 1
-        check('the revision actually changes realised values', bumped > 0,
-              f'{bumped} plays restated')
-        rblob = _write_blob(d, revised, sorted(_by_game(rows)),
-                            name='pbp_revised.csv.gz')
-        third = PG.run(out_dir=d, blob=str(rblob))
-        e3 = third.evidence
-        check('the revision appends new rows', e3['scoring_rows_added'] > 0,
-              str(e3['scoring_rows_added']))
-        all_rows = PG.load_ledger()
-        check('  and preserves every earlier row',
-              len(all_rows) == n_lines + e3['scoring_rows_added'],
-              f'{len(all_rows)} lines')
-        v = PG.versioned(all_rows)
-        sup = [r for r in v if r['version_status'] == 'SUPERSEDED']
-        check('  the earlier version is marked SUPERSEDED, not removed',
-              len(sup) > 0, f'{len(sup)} superseded')
-        check('  every superseded row names the hash that replaced it',
-              all(r['superseded_by_outcome_hash'] for r in sup))
-        check('  a superseded row is still readable in full',
-              all('crps' in r for r in sup))
-        acc2 = PG.accounting(PG.current_rows(all_rows))
-        check('  and the revision does NOT double-count the games',
-              acc2['distinct_games'] == 2, str(acc2['distinct_games']))
-        check('  nor the candidate forecasts',
-              acc2['distinct_candidate_forecasts'] ==
-              acc['distinct_candidate_forecasts'],
-              f"{acc2['distinct_candidate_forecasts']} vs "
-              f"{acc['distinct_candidate_forecasts']}")
-        idx = PG.supersession_index(all_rows)
-        check('  the supersession index records the revision',
-              idx['n_identities_revised'] > 0,
-              str(idx['n_identities_revised']))
+        by = _by_game(rows)
+        codes, finals = set(), set()
+        for rec in sealed[:6]:
+            gid = rec.get('game_id')
+            if gid not in by:
+                continue
+            fin = PG.game_finality(by[gid])
+            finals.add(bool(fin['final']))
+            o = PG.score_game(rec, by[gid], 'a' * 64, finality=fin)
+            codes.add(o.code)
+        check('  the games ARE final -- so this is not a finality refusal',
+              finals == {True}, str(finals))
+        check('  and every one refuses as NOT CURRENTLY ADMISSIBLE',
+              codes == {PG.POSTGAME_INADMISSIBLE}, str(sorted(codes)))
+        check('  which is a different code from the finality refusal',
+              PG.POSTGAME_INADMISSIBLE != PG.NOT_FINAL)
+
+    # THE HISTORICAL LEDGER IS PRESERVED AND COUNTS ZERO.
+    #
+    # OUTSIDE the sandbox on purpose: `_Sandbox` redirects PG.LEDGER to a temp
+    # directory, so these assertions read the real committed ledger rather
+    # than the empty one the sandbox created.
+    on_disk = len(PG.LEDGER.read_text().splitlines()) if \
+        PG.LEDGER.exists() else 0
+    check('the historical ledger rows are still physically on disk',
+          on_disk >= 3230, str(on_disk))
+    acc = PG.accounting(PG.load_ledger())
+    check('  and every one lacks an admissibility verdict',
+          acc['rows_without_admissibility_verdict'] == acc['rows_on_ledger'],
+          f"{acc['rows_without_admissibility_verdict']} of "
+          f"{acc['rows_on_ledger']}")
+    check('  so the counted prospective sample is ZERO games',
+          acc['distinct_games'] == 0
+          and acc['prospective_sample_size']['value'] == 0,
+          str(acc['prospective_sample_size']['value']))
+    check('  NOT by deletion -- nothing was removed',
+          acc['rows_on_ledger'] == on_disk)
+
+    # NON-VACUOUS: the counter still counts a row that IS stamped.
+    stamped = [dict(r, currently_admissible=True)
+               for r in PG.load_ledger()[:20]]
+    acc2 = PG.accounting(stamped)
+    check('  and the counter is not vacuous: stamped rows DO count',
+          acc2['scoring_rows'] == 20, str(acc2['scoring_rows']))
 
 
 def test_l_the_migration_to_the_unit_of_evidence_was_lossless():

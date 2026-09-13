@@ -114,6 +114,82 @@ def captured_depth_chart() -> Outcome:
                       n_qb_rows=len(qb), retrieved_at=(dts[-1] if dts else None))
 
 
+def previous_primary_detail(season: int, week: int) -> dict:
+    """team -> {'pid', 'ordinal', 'is_season_opener'}.
+
+    THE SEASON BOUNDARY IS A FACT ABOUT THE GAP, NOT ABOUT `week == 1`.
+    A club whose previous ordinal belongs to an earlier season is crossing the
+    boundary whether or not this game is labelled week 1 -- postponements and
+    international openers both break that equivalence. The audit
+    (QB3_WEEK1_INCUMBENT_AUDIT.json) measured what crossing it costs: the
+    previous primary is then a week-18 quarterback, and 40.1% of team-seasons
+    end with a primary who is not that season's modal starter.
+
+    This is DIAGNOSIS CARRIED ONTO THE ARTIFACT. It changes no probability and
+    no draw; it records which configuration produced them so a reader, and the
+    market comparator, can tell a contaminated room from a clean one.
+    """
+    import qb3_lib as Q
+    rows = Q.load_qb_panel()
+    tg = Q.team_games(rows)
+    prim, by_team = {}, collections.defaultdict(list)
+    for (t, o), v in tg.items():
+        prim[(t, o)] = Q.primary_of(v)
+        by_team[t].append(o)
+    cut = season * 100 + week
+    out = {}
+    for t, oo in by_team.items():
+        oo.sort()
+        i = bisect.bisect_left(oo, cut)
+        if i <= 0:
+            out[t] = {'pid': None, 'ordinal': None, 'is_season_opener': None}
+            continue
+        po = oo[i - 1]
+        out[t] = {'pid': prim.get((t, po)), 'ordinal': po,
+                  'is_season_opener': (po // 100) != season}
+    return out
+
+
+QB3_CONFIGURATIONS = ('AGREE', 'DISAGREE', 'NO_PREV_PRIMARY_IN_ROOM')
+
+
+def qb3_configuration(trip, prev_detail) -> dict:
+    """How the depth chart and the incumbent signal stand to each other.
+
+    `trip` is the production room: [(pid, rank, was_prev_primary)].
+    """
+    top = [x for x in trip if x[1] == 1]
+    if any(x[2] for x in top):
+        cfg = 'AGREE'
+    elif any(x[2] for x in trip if x[1] != 1):
+        cfg = 'DISAGREE'
+    else:
+        cfg = 'NO_PREV_PRIMARY_IN_ROOM'
+    d = prev_detail or {}
+    opener = d.get('is_season_opener')
+    return {
+        'configuration': cfg,
+        'is_season_opener': opener,
+        'prev_primary_pid': d.get('pid'),
+        'prev_primary_ordinal': d.get('ordinal'),
+        'depth_chart_qb1': top[0][0] if top else None,
+        'n_qb_in_room': len(trip),
+        # THE CONTAMINATION CONDITION, STATED ONCE AND NAMED.
+        # Measured week-1 bias of the chart QB1's share against realised, all
+        # three configurations, team-clustered and all excluding zero:
+        # AGREE -0.1098, DISAGREE -0.4420, NO_PREV -0.3611. Every week-1 room
+        # is affected; DISAGREE and NO_PREV are affected severely.
+        'week1_specification_defect': bool(opener),
+        'defect_id': 'QB3_WEEK1_SEASON_BOUNDARY' if opener else None,
+        'defect_basis': (
+            'nfl/research/qb3/QB3_WEEK1_INCUMBENT_AUDIT.json. The previous '
+            'primary comes from the prior season\'s final game, which is the '
+            'game a club is most likely to rest its starter in, so the '
+            'incumbent signal can name a rested or replaced quarterback and '
+            'dilute the current QB1.' if opener else None),
+    }
+
+
 def previous_primary(season: int, week: int) -> dict:
     """team -> the gsis_id of the primary passer of its last game, strictly
     earlier by ordinal and spanning seasons."""
@@ -373,7 +449,9 @@ def allocate(season, week, teams, qb_players, m=200, seed=20260908,
                 f'the depth chart was retrieved at {got}, which is not '
                 f'strictly before {label} {bound}')
     import qb3_lib as Q
-    prev = previous_primary(season, week)
+    prev_detail = previous_primary_detail(season, week)
+    prev = {k: v.get('pid') for k, v in prev_detail.items()}
+    qb3_cfg = {}
     by_team = collections.defaultdict(list)
     for q in qb_players:
         if q.get('gsis_id'):
@@ -467,6 +545,7 @@ def allocate(season, week, teams, qb_players, m=200, seed=20260908,
         out[t] = {'pids': pid_list, 'shares': S,
                   'ranks': [x[1] for x in trip],
                   'was_prev_primary': [x[2] for x in trip]}
+        qb3_cfg[t] = qb3_configuration(trip, prev_detail.get(t))
         ev['n_qb_by_team'][t] = len(trip)
     if not out:
         return Outcome.fail(
@@ -486,6 +565,7 @@ def allocate(season, week, teams, qb_players, m=200, seed=20260908,
                       spec_version=SPEC_VERSION, governance=GOVERNANCE,
                       qb_inactive_ownership_enforced=own['enforced'],
                       qb_inactive_ownership=own,
+                      qb3_configuration=qb3_cfg,
                       n_inactive_qb_zeroed=sum(len(v) for v in zeroed.values()),
                       inactive_qb_zeroed=zeroed,
                       n_teams=len(out), closure_max_dev=worst,

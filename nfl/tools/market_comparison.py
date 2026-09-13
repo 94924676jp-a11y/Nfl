@@ -28,6 +28,7 @@ import collections
 import csv
 import hashlib
 import json
+
 import pathlib
 import sys
 
@@ -37,19 +38,37 @@ if str(_REPO) not in sys.path:
 
 from sportsplatform.governance.outcome import State              # noqa: E402
 from nfl.product import daily_board as PB                        # noqa: E402
-from nfl.product import market_cdf as MC                         # noqa: E402
+from nfl.product import market_cdf as MC
+import numpy as np
+from nfl.product import forecast_stage as FS                         # noqa: E402
 from nfl.product import market_names as MN                       # noqa: E402
 from nfl.research import board_select as BS                      # noqa: E402
 from nfl.research import daily_board as RB                       # noqa: E402
 
-COLUMNS = ('game', 'player', 'market', 'metric', 'line', 'over_price',
-           'under_price',
-           'r8_mean', 'r8_median', 'r8_p_over', 'r8_p_under', 'r8_p_push',
-           'no_vig_p_over', 'no_vig_p_under', 'edge_over', 'edge_under',
-           'completeness', 'defects', 'information_timestamp',
-           'market_timestamp', 'sportsbook', 'n_draws', 'n_over', 'n_under',
-           'n_push', 'probability_method', 'cutoff',
-           'qb_inactive_ownership_enforced')
+# THE EXPORT CONTRACT. Every compared quote carries all of it; a column that
+# cannot be computed is empty, never silently dropped and never invented.
+QUANTILES = (0.05, 0.10, 0.25, 0.50, 0.75, 0.90, 0.95)
+
+COLUMNS = ('game', 'player', 'team', 'market', 'metric', 'forecast_stage',
+           'r8_mean', 'r8_median',
+           'q05', 'q10', 'q25', 'q50', 'q75', 'q90', 'q95',
+           'line', 'over_price', 'under_price',
+           'projection_minus_line', 'projection_minus_line_pct',
+           'r8_p_over', 'r8_p_under', 'r8_p_push',
+           'no_vig_p_over', 'no_vig_p_under',
+           'selected_side', 'probability_gap_pp',
+           'edge_over', 'edge_under',
+           'data_status', 'completeness', 'defects',
+           'written_at', 'information_timestamp',
+           'hard_rock_retrieved_at', 'market_timestamp', 'sportsbook',
+           'n_draws', 'n_over', 'n_under', 'n_push', 'probability_method',
+           'cutoff', 'qb_inactive_ownership_enforced')
+
+# The ranked candidate table the product contract asks for, in its order.
+TOP_COLUMNS = ('rank', 'play', 'model_projection', 'hard_rock_line',
+               'difference', 'difference_pct', 'model_probability',
+               'hard_rock_no_vig_probability', 'probability_gap_pp',
+               'hard_rock_odds', 'forecast_stage', 'data_status')
 
 
 
@@ -57,6 +76,9 @@ SNAPSHOT_COLUMNS = ('player', 'team', 'opponent', 'market', 'line',
                     'over_price', 'under_price', 'sportsbook',
                     'retrieval_time_utc', 'availability', 'source_url')
 REQUIRED_AVAILABILITY = 'TWO_SIDED_OPEN'
+
+# canonical name -> the alias a delivery is allowed to use instead. Closed set.
+COLUMN_ALIASES = {'source_url': 'event_url'}
 
 
 def load_frozen_snapshot(path):
@@ -79,6 +101,27 @@ def load_frozen_snapshot(path):
     if not rows:
         raise ValueError('MARKET_SNAPSHOT_EMPTY: an empty snapshot is an '
                          'error, not an absence of quotes')
+    # A DELIVERED SNAPSHOT MAY NAME ITS COLUMNS DIFFERENTLY. Each accepted
+    # alias is written down here, once, so the mapping is reviewable rather
+    # than guessed per delivery. Guessing field names is exactly how an export
+    # once wrote 7,926 rows with every meaningful column blank.
+    adapted, derived = [], []
+    for r in rows:
+        r = dict(r)
+        for canon, alias in COLUMN_ALIASES.items():
+            if canon not in r and alias in r:
+                r[canon] = r[alias]
+        if 'availability' not in r:
+            # DERIVED, AND NAMED AS DERIVED. Two-sided means BOTH prices are
+            # present. A row missing either is NOT promoted to open -- the
+            # absence of the column is never read as the absence of a problem.
+            both = bool((r.get('over_price') or '').strip()
+                        and (r.get('under_price') or '').strip())
+            r['availability'] = (REQUIRED_AVAILABILITY if both
+                                 else 'NOT_TWO_SIDED_DERIVED')
+            derived.append(both)
+        adapted.append(r)
+    rows = adapted
     missing = [c for c in SNAPSHOT_COLUMNS if c not in rows[0]]
     if missing:
         raise ValueError(f'MARKET_SNAPSHOT_SCHEMA: missing {missing}')
@@ -110,7 +153,9 @@ def load_frozen_snapshot(path):
                    'source_url': r['source_url'],
                    'opponent': r['opponent']}
     return {'quotes': by, 'sha256': digest, 'n_rows': len(rows),
-            'n_quotes': len(by), 'skipped': skipped, 'path': str(p)}
+            'n_quotes': len(by), 'skipped': skipped, 'path': str(p),
+            'availability_derived': bool(derived),
+            'n_availability_derived_two_sided': sum(1 for x in derived if x)}
 
 
 
@@ -176,37 +221,166 @@ def _draw_key(metric):
     return str(metric).replace('/', '__')
 
 
+def _refuse_every_quote(gid, quotes, reason, detail=None, teams=None):
+    """A game-level refusal, expanded to one refusal per affected quote.
+
+    ZERO SILENT LOSS MEANS ZERO, INCLUDING HERE. A single {'game': gid,
+    'reason': ...} row is honest about the game and silent about the quotes:
+    162 quotes for 2026_01_DAL_NYG produced exactly one refusal, and the
+    accounting guard correctly called that unbalanced. A refusal that applies
+    to the whole game applies to every quote in it, so it is recorded against
+    every quote in it. The reason is identical on each row; what changes is
+    that the book's quote is now individually answered.
+    """
+    tset = set(teams or ()) or set(str(gid).split('_')[2:4])
+    out = []
+    for (qn, qt, qmarket) in sorted(quotes):
+        if qt in tset:
+            out.append({'game': gid, 'player': qn, 'market': qmarket,
+                        'reason': reason, 'detail': detail,
+                        'scope': 'WHOLE_GAME'})
+    if not out:
+        out.append({'game': gid, 'reason': reason, 'detail': detail,
+                    'scope': 'WHOLE_GAME',
+                    'note': 'the snapshot carries no quote for this game'})
+    return out
+
+
+DATA_STATUS = ('COMPLETE', 'PARTIAL_PLAYER_COVERAGE',
+               'PRE_INACTIVES_AVAILABILITY_UNRESOLVED', 'DEFECT_FLAGGED')
+
+
+def _data_status(board, stage, flags):
+    """One word for how much to trust this row's inputs. Never 'ok'.
+
+    Ordered most severe first: a flagged defect outranks an unresolved
+    availability, which outranks a partial roster. A row is never labelled
+    COMPLETE while any of the three applies.
+
+    ONLY FLAGS THAT CONTAMINATE *THIS* METRIC COUNT. `_defect_flags` returns
+    every known defect on the board and marks which ones touch the metric in
+    hand -- QB_INACTIVE_NOT_CONSUMED appears on a receiver's row with
+    `contaminates_this_metric: False`. Reading the list's mere length labelled
+    all 69 pre-inactives rows DEFECT_FLAGGED and emptied the ranked table,
+    which is the same collateral-damage error as the whole-game gate, one
+    layer up.
+    """
+    if [f for f in (flags or []) if f.get('contaminates_this_metric')]:
+        return 'DEFECT_FLAGGED'
+    if stage == FS.PRE:
+        return 'PRE_INACTIVES_AVAILABILITY_UNRESOLVED'
+    c = board.get('completeness')
+    return c if c else 'COMPLETE'
+
+
+def rank_candidates(rows, limit=10):
+    """The ranked candidate table. NEVER padded to `limit`.
+
+    "Do not force ten candidates" is the whole point: a table padded to a round
+    number invites the reader to treat row 10 as comparable to row 1 when it
+    may be the only thing left after filtering. If N rows qualify, N rows are
+    returned, and the count is reported.
+
+    Ranking is by the absolute model-versus-market probability gap in
+    percentage points. That is a DISAGREEMENT ordering, not an expected-value
+    ordering and not a recommendation: a large gap means the model and the book
+    differ, which is equally consistent with the model being wrong.
+    """
+    ok = [r for r in rows
+          if r.get('selected_side') and r.get('probability_gap_pp') != ''
+          and r.get('data_status') != 'DEFECT_FLAGGED']
+    ok.sort(key=lambda r: -abs(float(r['probability_gap_pp'])))
+    out = []
+    for i, r in enumerate(ok[:limit], 1):
+        odds = (r['over_price'] if r['selected_side'] == 'OVER'
+                else r['under_price'])
+        mp = (r['r8_p_over'] if r['selected_side'] == 'OVER'
+              else r['r8_p_under'])
+        nvp = (r['no_vig_p_over'] if r['selected_side'] == 'OVER'
+               else r['no_vig_p_under'])
+        out.append({
+            'rank': i,
+            'play': f"{r['player']} {r['market']} {r['selected_side']} "
+                    f"{r['line']}",
+            'model_projection': r['r8_mean'],
+            'hard_rock_line': r['line'],
+            'difference': r['projection_minus_line'],
+            'difference_pct': r['projection_minus_line_pct'],
+            'model_probability': mp,
+            'hard_rock_no_vig_probability': nvp,
+            'probability_gap_pp': r['probability_gap_pp'],
+            'hard_rock_odds': odds,
+            'forecast_stage': r['forecast_stage'],
+            'data_status': r['data_status'],
+        })
+    return out, len(ok)
+
+
 def rows_for_game(gid, cfg_dir, quotes, names):
     """(rows, refusals) for one sealed board against the frozen snapshot."""
     rows, refused = [], []
     bd, how = BS.newest_board_dir(cfg_dir)
     if bd is None:
-        return rows, [{'game': gid, 'reason': 'NO_SEALED_BOARD'}]
+        return rows, _refuse_every_quote(gid, quotes, 'NO_SEALED_BOARD',
+                                        'no sealed board directory for this '
+                                        'game and candidate')
     board = json.load(open(bd / 'board.json'))
-    cutoff = 'post_inactives' if 'post_inactives' in cfg_dir.name else \
-        'pre_inactives'
-    if cutoff != 'post_inactives':
-        return rows, [{'game': gid, 'reason': 'NOT_POST_INACTIVES',
-                       'detail': cfg_dir.name}]
+    # THE STAGE IS A LABEL, NOT A GATE.
+    #
+    # This used to refuse any board that was not post-inactives, so no
+    # projection existed until the official list published -- roughly ninety
+    # minutes before kickoff -- even though roster, depth chart, injury report,
+    # workload history and team environment were all known hours earlier. The
+    # missing list is a reason to be uncertain about availability, not a reason
+    # to have no forecast. A stage that cannot be NAMED is still refused.
+    so = FS.resolve_stage(cfg_dir)
+    if so.state is not State.PASS:
+        return rows, _refuse_every_quote(gid, quotes, so.code, so.detail)
+    stage = so.value
+    cutoff = 'post_inactives' if stage == FS.POST else 'pre_inactives'
     enforced = bool(board.get('qb_inactive_ownership_enforced'))
-    if not enforced:
-        own = board.get('qb_inactive_ownership') or {}
-        return rows, [{'game': gid,
-                       'reason': 'QB_INACTIVE_OWNERSHIP_NOT_ENFORCED',
-                       'detail': ','.join(own.get('failed_conditions') or
-                                          ['no ownership block on the board'])}]
+    own = board.get('qb_inactive_ownership') or {}
+    # A QB DEFECT SUPPRESSES QB MARKETS, NOT THE GAME.
+    #
+    # This used to return early for the WHOLE game whenever QB ownership was
+    # unenforced, so one quarterback-room governance state silenced every
+    # running back, receiver and tight end on the card -- players whose
+    # carries, targets and receptions the QB allocation never touches.
+    # `daily_board._defect_flags` already scopes the contamination correctly
+    # (`contaminates_this_metric` is true only for `qb/` metrics), and the
+    # per-quote CONTAMINATING_DEFECT refusal below acts on it. So each QB
+    # quote is now refused BY NAME, with the failed conditions attached, and
+    # the independently valid non-QB markets flow.
+    #
+    # This widens what is published, so it is worth being exact about what it
+    # does NOT do: no QB row becomes admissible, and nothing is relabelled.
+    # A refused quote is still refused; it is simply refused individually
+    # rather than by collateral damage.
+    unenforced_detail = ','.join(
+        own.get('failed_conditions') or ['no ownership block on the board'])
     draws = PB._load_draws(bd)
     if draws is None:
-        return rows, [{'game': gid, 'reason': 'NO_STORED_DRAWS'}]
+        return rows, _refuse_every_quote(
+            gid, quotes, 'NO_STORED_DRAWS',
+            'the sealed board carries no player_draws, so no exact empirical '
+            'CDF can be computed', teams=board.get('teams'))
     mp = bd / 'player_draws_manifest.json'
     if not mp.exists():
-        return rows, [{'game': gid, 'reason': IDENTITY_ABSENT,
-                       'detail': 'no player_draws_manifest.json beside the '
-                                 'draws, so no row can be attributed'}]
+        return rows, _refuse_every_quote(
+            gid, quotes, IDENTITY_ABSENT,
+            'no player_draws_manifest.json beside the draws, so no row can be '
+            'attributed to a player', teams=board.get('teams'))
     man = json.loads(mp.read_text())
     fresh = board.get('freshness') or {}
     info_ts = max((s.get('retrieved_at') or '')
                   for s in (fresh.get('sources') or [])) or None
+    # THE FORECAST'S OWN CLOCK, READ FROM WHERE IT ACTUALLY LIVES.
+    # `board['written_at']` does not exist; the sealed clock is
+    # `board['freshness']['written_at']`, and falling back to the newest
+    # source retrieval silently reported a DIFFERENT clock under the name
+    # written_at -- an input time presented as a forecast time. The two are
+    # exported side by side and never substituted for one another.
+    written_at = fresh.get('written_at') or None
     seen = set()
     for i, p in enumerate(board.get('players') or []):
         pid, team = p.get('gsis_id'), p.get('team')
@@ -233,10 +407,36 @@ def rows_for_game(gid, cfg_dir, quotes, names):
                 continue
             flags = PB._defect_flags(board, metric)
             bad = [f['id'] for f in flags if f.get('contaminates_this_metric')]
+            # THE OWNERSHIP STATE REFUSES QB METRICS ON ITS OWN AUTHORITY.
+            #
+            # `_defect_flags` raises QB_INACTIVE_NOT_CONSUMED only when 'R2' is
+            # in the board's component manifest, so a board WITHOUT R2 and
+            # WITHOUT enforced ownership produced no flag at all. The old
+            # whole-game early return hid that; scoping the gate to QB metrics
+            # exposed it, and a QB quote would have been priced off a board
+            # whose QB allocation never consumed an official inactive list.
+            # The ownership verdict is the authority on QB admissibility, so it
+            # is read directly rather than only through a component-conditional
+            # flag.
+            if str(metric).startswith('qb/'):
+                # STAGE, SPECIFICATION AND ENFORCEMENT ARE THREE DIFFERENT
+                # CLAIMS AND EACH IS NAMED SEPARATELY. A season-boundary
+                # defect does NOT clear when the inactive list arrives, and
+                # an arriving list does not repair a cell definition.
+                bad = bad + [b for b in FS.qb_metric_blockers(board, stage)
+                             if b not in bad]
             if bad:
-                refused.append({'game': gid, 'player': nm, 'market': metric,
+                refused.append({'game': gid, 'player': nm, 'market': qmarket,
+                                'metric': metric,
                                 'reason': 'CONTAMINATING_DEFECT',
-                                'detail': ','.join(bad)})
+                                'forecast_stage': stage,
+                                'detail': (
+                                    f'{",".join(bad)}; stage={stage}; '
+                                    f'qb_inactive_ownership_enforced='
+                                    f'{enforced}; failed_conditions='
+                                    f'[{unenforced_detail}]; '
+                                    f'qb3_rooms: '
+                                    f'{FS.qb_blocker_detail(board, stage)}')})
                 continue
             try:
                 d = draw_row_for(man, draws, metric, pid)
@@ -259,12 +459,30 @@ def rows_for_game(gid, cfg_dir, quotes, names):
                 continue
             e = c['exact_probability']
             nv = c['no_vig']
-            rows.append({
-                'game': gid, 'player': nm, 'market': qmarket,
-                'metric': metric, 'line': q['line'], 'over_price': q.get('over_price'),
+            mean = float(c['model']['mean'])
+            line = float(q['line'])
+            qs = np.quantile(np.asarray(d, float), QUANTILES)
+            # THE SIDE IS CHOSEN BY THE MODEL'S OWN DISAGREEMENT, and the gap
+            # is reported in percentage points because that is the unit a
+            # reader compares across markets. It is a DISAGREEMENT with the
+            # book, never an edge estimate and never a recommendation.
+            do, du = c['disagreement_over'], c['disagreement_under']
+            if do is None or du is None:
+                side, gap = '', ''
+            elif do >= du:
+                side, gap = 'OVER', round(do * 100.0, 4)
+            else:
+                side, gap = 'UNDER', round(du * 100.0, 4)
+            row = {
+                'game': gid, 'player': nm, 'team': team, 'market': qmarket,
+                'metric': metric, 'forecast_stage': stage,
+                'r8_mean': round(mean, 4),
+                'r8_median': round(float(c['model']['median']), 4),
+                'line': line, 'over_price': q.get('over_price'),
                 'under_price': q.get('under_price'),
-                'r8_mean': round(c['model']['mean'], 4),
-                'r8_median': round(c['model']['median'], 4),
+                'projection_minus_line': round(mean - line, 4),
+                'projection_minus_line_pct': (round((mean - line) / line * 100.0, 4)
+                                              if line else ''),
                 'r8_p_over': round(e['p_over'], 6),
                 'r8_p_under': round(e['p_under'], 6),
                 'r8_p_push': round(e['p_push'], 6),
@@ -272,20 +490,28 @@ def rows_for_game(gid, cfg_dir, quotes, names):
                                   if nv['no_vig_over'] is not None else ''),
                 'no_vig_p_under': (round(nv['no_vig_under'], 6)
                                    if nv['no_vig_under'] is not None else ''),
-                'edge_over': (round(c['disagreement_over'], 6)
-                              if c['disagreement_over'] is not None else ''),
-                'edge_under': (round(c['disagreement_under'], 6)
-                               if c['disagreement_under'] is not None else ''),
+                'selected_side': side, 'probability_gap_pp': gap,
+                'edge_over': (round(do, 6) if do is not None else ''),
+                'edge_under': (round(du, 6) if du is not None else ''),
+                'data_status': _data_status(board, stage, flags),
                 'completeness': board.get('completeness'),
-                'defects': ','.join(f['id'] for f in flags) or '',
+                'defects': ','.join(
+                    f'{f["id"]}{"" if f.get("contaminates_this_metric") else "(other-metric)"}'
+                    for f in flags) or '',
+                'written_at': written_at,
                 'information_timestamp': info_ts,
+                'hard_rock_retrieved_at': q.get('timestamp'),
                 'market_timestamp': q.get('timestamp'),
                 'sportsbook': q.get('sportsbook'),
                 'n_draws': e['n_draws'], 'n_over': e['n_over'],
                 'n_under': e['n_under'], 'n_push': e['n_push'],
                 'probability_method': e['method'], 'cutoff': cutoff,
                 'qb_inactive_ownership_enforced': enforced,
-            })
+            }
+            for lab, v in zip(('q05', 'q10', 'q25', 'q50', 'q75', 'q90',
+                               'q95'), qs):
+                row[lab] = round(float(v), 4)
+            rows.append(row)
     # EVERY QUOTE FOR THIS GAME'S CLUBS IS ACCOUNTED FOR, COMPARED OR REFUSED.
     #
     # This loop walks BOARD PLAYERS and looks for their quotes, so until now a
@@ -340,6 +566,14 @@ def main(argv=None):
     ap.add_argument('--market', required=True)
     ap.add_argument('--out', required=True)
     ap.add_argument('--games', default=None)
+    ap.add_argument('--stage', default='auto',
+                    choices=('auto', 'pre', 'post', 'both'),
+                    help='auto: newest post-inactives board, falling back to '
+                         'pre-inactives. pre/post: that stage only. both: '
+                         'every stage that exists, each labelled.')
+    ap.add_argument('--top', type=int, default=10,
+                    help='size CAP for the ranked candidate table. It is '
+                         'never padded: if fewer qualify, fewer are returned.')
     a = ap.parse_args(argv)
 
     snap = load_frozen_snapshot(a.market)
@@ -355,15 +589,22 @@ def main(argv=None):
     from nfl.product import names as NM
     names = NM.lookup(None) if hasattr(NM, 'lookup') else {}
     rows, refused = [], []
+    order = {'auto': ('post_inactives', 'pre_inactives'),
+             'post': ('post_inactives',), 'pre': ('pre_inactives',),
+             'both': ('post_inactives', 'pre_inactives')}[a.stage]
+    stages_seen = collections.Counter()
     for gdir in sorted((RB.LIVE).iterdir()):
         if not gdir.is_dir() or (want and gdir.name not in want):
             continue
-        for cut in ('post_inactives', 'pre_inactives'):
+        for cut in order:
             d = gdir / f'{cut}_{label}'
-            if d.exists():
-                r, x = rows_for_game(gdir.name, d, quotes, names)
-                rows += r
-                refused += x
+            if not d.exists():
+                continue
+            r, x = rows_for_game(gdir.name, d, quotes, names)
+            rows += r
+            refused += x
+            stages_seen[FS.stage_of_dirname(cut)] += len(r)
+            if a.stage != 'both':
                 break
     # THE ACCOUNTING IS ASSERTED, NOT ASSUMED. Rows plus refusals must equal
     # the quotes in scope. A shortfall means quotes went missing between the
@@ -373,10 +614,21 @@ def main(argv=None):
              for t in g.split('_')[2:4]} if want else None
     in_scope = [k for k in quotes if scope is None or k[1] in scope]
     n_acc = len(rows) + len(refused)
+    # IN 'both' EACH QUOTE IS ANSWERED ONCE PER STAGE, ON PURPOSE. The
+    # invariant is then per stage, not over the union, and it is stated that
+    # way rather than quietly relaxed.
+    n_stages = max(1, len({FS.stage_of_dirname(c) for c in order
+                           if any((g / f'{c}_{label}').exists()
+                                  for g in RB.LIVE.iterdir() if g.is_dir()
+                                  and (not want or g.name in want))}))
+    expected = len(in_scope) * (n_stages if a.stage == 'both' else 1)
     accounting = {'n_quotes_in_snapshot': len(quotes),
                   'n_quotes_in_scope': len(in_scope),
+                  'n_stages_compared': n_stages,
+                  'n_outcomes_expected': expected,
                   'n_rows': len(rows), 'n_refusals': len(refused),
-                  'balanced': n_acc == len(in_scope)}
+                  'rows_by_stage': dict(stages_seen),
+                  'balanced': n_acc == expected}
     out = pathlib.Path(a.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     with open(out, 'w', newline='') as f:
@@ -398,13 +650,49 @@ def main(argv=None):
     print(f'{len(refused)} refusal(s) -> {ref}')
     for k, v in collections.Counter(x['reason'] for x in refused).items():
         print(f'   {k}: {v}')
-    print(f'accounting: {len(in_scope)} quote(s) in scope = {len(rows)} row(s) '
-          f'+ {len(refused)} refusal(s) -> '
+    # ---- the ranked candidate table, and the data a visual needs ----
+    top, n_qualified = rank_candidates(rows, a.top)
+    tp = out.with_suffix('.top.csv')
+    with open(tp, 'w', newline='') as f:
+        w = csv.DictWriter(f, fieldnames=list(TOP_COLUMNS))
+        w.writeheader()
+        for r in top:
+            w.writerow(r)
+    vp = out.with_suffix('.top_visual.json')
+    vp.write_text(json.dumps({
+        'artifact': 'MODEL_VS_HARD_ROCK_TOP_N',
+        'chart': 'model minus Hard Rock, in percentage points of probability',
+        'n_qualified': n_qualified, 'n_returned': len(top),
+        'cap_requested': a.top,
+        'not_padded': ('the table is never padded to the cap. If fewer '
+                       'markets satisfy the data-quality requirements, fewer '
+                       'are returned.'),
+        'ordering': ('absolute model-versus-market probability gap. A '
+                     'DISAGREEMENT ordering: a large gap is equally '
+                     'consistent with the model being wrong.'),
+        'market_snapshot_sha256': snap['sha256'],
+        'series': [{'label': r['play'], 'probability_gap_pp':
+                    r['probability_gap_pp'],
+                    'difference_pct': r['difference_pct'],
+                    'model_probability': r['model_probability'],
+                    'hard_rock_no_vig_probability':
+                        r['hard_rock_no_vig_probability'],
+                    'forecast_stage': r['forecast_stage'],
+                    'data_status': r['data_status']} for r in top],
+    }, indent=1) + '\n')
+    print(f'{len(top)} ranked candidate(s) of {n_qualified} qualified -> {tp}')
+    print(f'visual series -> {vp}')
+    if stages_seen:
+        print('rows by stage: ' + ', '.join(f'{k}={v}'
+                                            for k, v in stages_seen.items()))
+    print(f'accounting: {len(in_scope)} quote(s) in scope x '
+          f'{accounting["n_stages_compared"]} stage(s) = {expected} expected, '
+          f'{len(rows)} row(s) + {len(refused)} refusal(s) -> '
           f'{"BALANCED" if accounting["balanced"] else "UNBALANCED"}')
     if not accounting['balanced']:
-        print(f'MARKET_QUOTE_ACCOUNTING_UNBALANCED: {len(in_scope)} quote(s) '
-              f'in scope produced {n_acc} outcome(s). Every quote must be '
-              f'compared or refused by name.')
+        print(f'MARKET_QUOTE_ACCOUNTING_UNBALANCED: expected {expected} '
+              f'outcome(s), got {n_acc}. Every quote must be compared or '
+              f'refused by name.')
         return 2
     return 0
 
