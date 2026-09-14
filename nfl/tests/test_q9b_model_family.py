@@ -18,7 +18,11 @@ WHAT THESE TESTS PROTECT.
     own covariates; if it matched, the hurdle would be a reparameterisation.
 
   * PARITY IS BIT-FOR-BIT, and the TEST_ONLY mark propagating is the
-    production guard working, not a defect.
+    production guard working, not a defect. IT IS RE-RUN HERE, not read off
+    a stored file: `PAR.run()` is called and the invariants are asserted on
+    what it computed. Whether the committed artifact still agrees with that
+    is a separate, named question, asked in its own function, and answered
+    by failing rather than by rewriting the artifact.
 
   * THE FREEZE CONSUMES NO FUTURE OUTCOME.
 """
@@ -235,28 +239,117 @@ def test_h_the_pit_deterioration_is_located():
 
 
 # ================================================== parity and the freeze
-def test_i_parity_is_bit_for_bit_and_the_guard_fires():
-    p = _load('Q9_PRODUCTION_PARITY.json')
-    if p is None:
-        check('the parity artifact exists', False)
-        return
-    check('every invariant is checked',
+# WHY THE NEXT TWO FUNCTIONS ARE TWO FUNCTIONS.
+#
+# Until 2026-09-14 there was one, `test_i_parity_is_bit_for_bit_and_the_guard
+# _fires`, and it read `Q9_PRODUCTION_PARITY.json` and asserted that the file
+# said every invariant was true. `PAR` was imported, but only `PAR.INVARIANTS`
+# -- a tuple of names -- was ever touched. `PAR.run()` had no call site in any
+# of the 90 test modules.
+#
+# So the suite's only evidence that the production layer and the research
+# allocator still reconcile bit-for-bit was a JSON file, and a JSON file cannot
+# notice that `layers.appearance` changed. Any edit to `layers.appearance`,
+# `layers.targets_carries` or `hurdle.allocate_hurdle` that broke
+# reconciliation, dropped the shared upstream budget, or stopped propagating
+# TEST_ONLY would have left this module green.
+#
+# The repair is the one `test_product_orchestration` already uses: RUN IT, and
+# ask the drift-from-record question separately and out loud.
+#
+#   test_i_..._is_bit_for_bit_when_it_is_run  calls PAR.run() and asserts on
+#                                             what today's code computed.
+#   test_i2_..._artifact_agrees_with_the_run  ARTIFACT_CONTENT_ASSERTION. The
+#                                             record is kept, and it is asked
+#                                             whether it still describes the
+#                                             behaviour. A disagreement is
+#                                             reported as a disagreement; the
+#                                             behaviour is the truth and the
+#                                             artifact is never rewritten to
+#                                             make this green.
+#
+# Cost: PAR.run() is ~39s at the frozen slice (2024, 12 games, 200 draws). That
+# is the price of the claim being true, and it is the only proof of this seam
+# in the repository.
+_PARITY_RUN = {}
+
+
+def _parity_run():
+    """PAR.run() once per process, at the module's frozen configuration."""
+    if not _PARITY_RUN:
+        _PARITY_RUN['out'] = PAR.run(PAR.SLICE_SEASON, PAR.N_DRAWS, PAR.SEED,
+                                     n_games=12)
+    return _PARITY_RUN['out']
+
+
+def test_i_parity_is_bit_for_bit_when_it_is_run():
+    print('\n-- production/research parity, RE-RUN --')
+    p = _parity_run()
+    check('every invariant PAR declares was actually measured',
           set(p['invariants']) == set(PAR.INVARIANTS),
           str(sorted(p['invariants'])))
-    for k, v in p['invariants'].items():
-        check(f'{k} holds', v is True)
-    check('the status matches the invariants',
-          (p['status'] == 'PARITY_HOLDS') == all(p['invariants'].values()))
-    check('no mismatch was recorded', p['mismatches'] == [],
+    for k in PAR.INVARIANTS:
+        check(f'{k} holds when the run is made now',
+              p['invariants'].get(k) is True,
+              str(p['mismatches'][:2]) if p['invariants'].get(k) is not True
+              else '')
+    check('the status matches the invariants it just computed',
+          (p['status'] == 'PARITY_HOLDS') == all(p['invariants'].values()),
+          p['status'])
+    check('no mismatch was produced', p['mismatches'] == [],
           str(p['mismatches'][:2]))
     check('the real production interfaces were exercised',
           'nfl.production.nonqb.layers.appearance'
           in p['interfaces_exercised'])
     check('the TEST_ONLY mark propagated, which is the guard working',
-          all(g['upstream_test_only'] for g in p['games'])
+          bool(p['games'])
+          and all(g['upstream_test_only'] for g in p['games'])
           and 'produces no artifact' in p['test_only_note'])
-    check('more than one game was tested', p['n_games_tested'] > 1,
-          str(p['n_games_tested']))
+    check('more than one game was tested, so the parity is not one draw',
+          p['n_games_tested'] > 1, str(p['n_games_tested']))
+    check('  and the reconciliation error is exactly zero on every game',
+          all(g['max_reconciliation_error'] == 0.0 for g in p['games']),
+          str(sorted({g['max_reconciliation_error'] for g in p['games']})))
+    check('  and every game reconciled with the research harness',
+          all(g['parity_with_research_harness'] for g in p['games']))
+    check('the run produced no artifact of its own -- it is research only',
+          p['promoted'] is False and p['is_research_only'] is True)
+
+
+def test_i2_the_parity_artifact_agrees_with_the_run():
+    """ARTIFACT_CONTENT_ASSERTION, and declared as one.
+
+    The stored file is evidence of what was measured when it was written. It
+    is kept. What it may not do is stand in for the property, so the only
+    question asked of it here is whether it still describes the behaviour the
+    function above just produced. If the two disagree, the behaviour is the
+    truth, this check fails, and the artifact is left exactly as it is.
+    """
+    print('\n-- the stored parity record, against the re-run --')
+    a = _load('Q9_PRODUCTION_PARITY.json')
+    check('the parity artifact exists', a is not None)
+    if a is None:
+        return
+    p = _parity_run()
+    check('the record and the run agree on the slice and the seed',
+          (a['slice_season'], a['n_draws'], a['seed'])
+          == (p['slice_season'], p['n_draws'], p['seed']),
+          f"record {(a['slice_season'], a['n_draws'], a['seed'])} "
+          f"vs run {(p['slice_season'], p['n_draws'], p['seed'])}")
+    check('the record and the run agree on the spec version',
+          a['spec_version'] == p['spec_version'])
+    check('the record and the run agree on every invariant',
+          {k: bool(v) for k, v in a['invariants'].items()} == p['invariants'],
+          f"record {a['invariants']} vs run {p['invariants']}")
+    check('the record and the run agree on the status',
+          a['status'] == p['status'], f"{a['status']} vs {p['status']}")
+    check('the record and the run agree on the budget estimator',
+          a['budget_estimator'] == p['budget_estimator'])
+    n = min(a['n_games_tested'], p['n_games_tested'])
+    check('  and on the per-game reconciliation, game for game',
+          [g['max_reconciliation_error'] for g in a['games'][:n]]
+          == [g['max_reconciliation_error'] for g in p['games'][:n]],
+          f'compared {n} game(s)')
 
 
 def test_j_the_freeze_records_identity_and_consumes_no_future():

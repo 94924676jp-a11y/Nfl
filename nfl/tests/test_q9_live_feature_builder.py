@@ -18,9 +18,14 @@ WHAT THESE TESTS PROTECT.
     schema is building for a different candidate.
 
   * PARITY IS EXACT WHERE BOTH BUILDERS ARE DEFINED, and outside that window
-    the divergence is confined to the features the history walk drives. The
-    containment check is asserted non-vacuous: if every feature counted as a
-    history feature it would pass on anything.
+    the divergence is confined to the features the history walk drives. THE
+    COMPARISON IS RE-RUN HERE -- `LF.parity()` is called and the result is
+    asserted on -- because the property is about code that is running today
+    and a stored file cannot know that. The containment check is proven
+    non-vacuous by counting the 13 non-history features from the schema
+    itself, not by reading the producer's own flag: if every feature counted
+    as a history feature the containment would pass on anything, and a
+    producer that says "I was not vacuous" proves nothing to a reader.
 
   * COMPLETENESS IS COMPUTED, NOT DECLARED, AND HAS NO Q9 EXEMPTION. The
     nine required layers come from the governed module, the shared/arm
@@ -188,19 +193,59 @@ def test_04b_no_forecast_season_row_in_any_upstream_source():
           f'{o2.state.value}[{o2.code}]')
 
 
-def test_05_the_parity_artifact():
-    print('\n-- builder parity --')
-    d = _load('Q9_LIVE_FEATURE_PARITY.json')
-    check('the parity artifact exists', d is not None)
-    if not d:
-        return
+# WHY THE NEXT TWO FUNCTIONS ARE TWO FUNCTIONS.
+#
+# Until 2026-09-14 there was one, `test_05_the_parity_artifact`, and every
+# claim in it was read out of `Q9_LIVE_FEATURE_PARITY.json` -- including
+# `wd['containment_check_is_not_vacuous'] is True`, which is the PRODUCER's
+# own statement that its check was not vacuous. A non-vacuity flag that the
+# producer writes cannot prove non-vacuity to a consumer that never re-runs
+# the producer. `LF.parity()` had no call site in any of the 90 test modules,
+# and `test_06` calls `LF.build_team_week` but only asks whether the Outcome
+# is PASS -- it never compares the vector to the historical builder.
+#
+# So nothing in the suite would have noticed `build`, `live_rows` or `_vector`
+# silently diverging from `_historical`. The repair is to re-run the
+# comparison and assert on what it computed.
+#
+# THE CONFIGURATION IS DECLARED, AND IT IS NOT THE ARTIFACT'S. The committed
+# artifact was produced at 96 team-games; this runs 48, which is the smallest
+# span that still covers all 32 week-1 team-games (so the in-window comparison
+# is the same 482 players) AND reaches into week 2 (so the out-of-window
+# divergence is measured on something rather than asserted on an empty set).
+# Measured 2026-09-14: 108s. Quantities that depend on the span -- the
+# out-of-window counts, the duplicate-exclusion count -- are therefore NOT
+# compared against the artifact, and that is said out loud below rather than
+# being quietly skipped.
+_LIVE_PARITY = {}
+_PARITY_TEAM_GAMES = 48
+_PARITY_SEASON = 2024
+
+
+def _live_parity():
+    """LF.parity() once per process, at the declared configuration."""
+    if not _LIVE_PARITY:
+        _LIVE_PARITY['out'] = LF.parity(_PARITY_SEASON, _PARITY_TEAM_GAMES)
+    return _LIVE_PARITY['out']
+
+
+def test_05_builder_parity_when_the_comparison_is_re_run():
+    print('\n-- builder parity, RE-RUN against the historical builder --')
+    d = _live_parity()
     check('parity is EXACT inside the window where both are defined',
           d['builder_parity'] == 'EXACT',
           f"{d['n_players_compared']} compared, "
           f"{d['n_players_differing']} differing")
     check('  and the comparison is not empty',
           d['n_players_compared'] >= 200, str(d['n_players_compared']))
+    check('  not one player differed on any of the 25 features',
+          d['n_players_differing'] == 0 and d['mismatches'] == [],
+          str(d['mismatches'][:1]))
     check('the window is week 1', d['parity_window_weeks'] == [1])
+    check('the emitted schema is the frozen 25', d['n_features'] == 25
+          and d['feature_schema_sha16']
+          == CAND.freeze_identity()['feature_schema_sha16'],
+          d['feature_schema_sha16'])
     wd = d['window_divergence']
     check('outside the window the divergence is confined to history features',
           wd['confined_to_history_features'] is True,
@@ -209,9 +254,16 @@ def test_05_the_parity_artifact():
           wd['n_differing_outside_window'] > 0,
           f"{wd['n_differing_outside_window']} of "
           f"{wd['n_compared_outside_window']}")
-    check('  the containment check is declared non-vacuous',
+    check('  the containment check is not vacuous -- MEASURED, not declared',
+          len(LF.SOURCE_FEATURES) == 13
+          and not (set(LF.SOURCE_FEATURES) & set(LF.HISTORY_FEATURES))
+          and set(LF.SOURCE_FEATURES) | set(LF.HISTORY_FEATURES)
+          == set(Q9.FEATURE_NAMES),
+          f'{len(LF.SOURCE_FEATURES)} features are outside the history set, '
+          f'so containment could have failed')
+    check('  and the run reports the same non-vacuity it was asked about',
           wd['containment_check_is_not_vacuous'] is True
-          and wd['n_non_history_features'] == 13)
+          and wd['n_non_history_features'] == len(LF.SOURCE_FEATURES))
     check('the cause is named, not shrugged at',
           'earlier weeks of the same season' in wd['cause'])
     check('widening the window is refused, with the reason',
@@ -228,8 +280,48 @@ def test_05_the_parity_artifact():
           'candidate mutation' in
           d['same_week_duplicate_players']['not_repaired_because'])
     check('source agreement is reported SEPARATELY from builder parity',
-          'source_agreement' in d and 'DATA' in
-          d['source_agreement'].get('note', '') + 'DATA')
+          'source_agreement' in d
+          and d['source_agreement'].get('state') != 'NOT_MEASURED',
+          str(d['source_agreement'].get('state')))
+
+
+def test_05b_the_parity_artifact_agrees_with_the_run():
+    """ARTIFACT_CONTENT_ASSERTION, and declared as one.
+
+    The committed artifact stays. The only thing asked of it is whether it
+    still describes the behaviour the re-run above produced, on the quantities
+    that do not depend on how many team-games were walked. A disagreement
+    fails here; it is never repaired by rewriting the file.
+    """
+    print('\n-- the stored parity record, against the re-run --')
+    a = _load('Q9_LIVE_FEATURE_PARITY.json')
+    check('the parity artifact exists', a is not None)
+    if a is None:
+        return
+    d = _live_parity()
+    check('the record and the run agree on the spec version',
+          a['spec_version'] == d['spec_version'])
+    check('the record and the run agree on the feature schema',
+          (a['feature_schema_sha16'], a['n_features'])
+          == (d['feature_schema_sha16'], d['n_features']))
+    check('the record and the run agree on the parity window',
+          a['parity_window_weeks'] == d['parity_window_weeks'])
+    check('the record and the run agree on the verdict',
+          a['builder_parity'] == d['builder_parity'],
+          f"{a['builder_parity']} vs {d['builder_parity']}")
+    check('  and on the in-window comparison, which both spans cover whole',
+          a['n_players_compared'] == d['n_players_compared']
+          and a['n_players_differing'] == d['n_players_differing'],
+          f"record {a['n_players_compared']}/{a['n_players_differing']} vs "
+          f"run {d['n_players_compared']}/{d['n_players_differing']}")
+    check('the record and the run agree on containment outside the window',
+          a['window_divergence']['confined_to_history_features']
+          == d['window_divergence']['confined_to_history_features'])
+    check('the span-dependent counts are NOT compared, and the reason is here',
+          a['n_team_games'] != d['n_team_games'],
+          f"record walked {a['n_team_games']} team-games, this run "
+          f"{d['n_team_games']}; out-of-window and duplicate counts scale "
+          f"with the span and comparing them would manufacture a defect")
 
 
 def test_06_the_builder_runs_on_a_real_live_game():
