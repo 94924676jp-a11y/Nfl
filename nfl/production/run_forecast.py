@@ -39,6 +39,8 @@ from nfl.production import qb_v1 as QBV1                             # noqa: E40
 from nfl.production import derived as DERIVED                       # noqa: E402
 from nfl.production import candidate_mode as CAND                   # noqa: E402
 from nfl.production import draws_artifact as DA                     # noqa: E402
+from nfl.identity import code_identity as CI                       # noqa: E402
+from nfl.production import draw_coherence as DC                     # noqa: E402
 
 # THE ONE BOUND ON EVERY PLAYER-SCOPED EXCLUSION, declared once.
 #
@@ -101,36 +103,114 @@ def execution_identity(args, source_hashes: dict, code_commit: str) -> str:
     return hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()
 
 
-def code_commit() -> str:
-    '''HEAD, plus an explicit dirty marker.
+# Evidence keys a layer uses to say something about its own governance. A key
+# absent from a layer's evidence is not defaulted: severity in particular is
+# transported only where a layer already declares one, because inventing a
+# severity would put an unowned judgement next to a governed value and the two
+# would be indistinguishable in the artifact.
+_GOVERNANCE_EVIDENCE_KEYS = ('governance', 'warnings', 'spec_version',
+                             'severity')
 
-    This returned a bare HEAD with no working-tree check, so an artifact
-    could name a commit while the code that produced it carried
-    uncommitted changes -- observed live: a sealed artifact recorded
-    72f0d13 while run_forecast.py held 125 modified lines. The artifact
-    was not reproducible from the commit it named and said nothing about
-    it. A dirty tree is now part of the identity rather than hidden, so
-    `execution_identity` changes with it too.
+
+def _governance_facts(got) -> dict:
+    """Everything the layers said about their own governance, kept verbatim.
+
+    `got` is [(layer_name, Outcome)] for the layers one declared pipeline
+    stage aggregates. The aggregation used to return the layers' values, their
+    states and their spec versions and NOT their warnings or their governance,
+    so a stage composed of a layer that had raised
+    `known limitation: RC1 SIGNAL_WEAK` reported `warnings: []`.
+
+    This function decides nothing. It does not rank a warning, does not judge
+    whether one blocks publication, does not merge two layers that said the
+    same thing, and does not translate prose into a code. It attaches the name
+    of the layer that spoke -- the one fact the aggregation genuinely knows
+    and the layer cannot -- and passes the rest through unchanged.
+
+    The composed `spec_version` is derived, not retyped: it is built from the
+    spec strings the layers published, so it cannot drift from them. Where no
+    layer published one the key is omitted entirely and the pipeline keeps the
+    caller's label rather than replacing it with a blank.
+    """
+    warnings, detail, governance, specs = [], [], [], []
+    for n, o in got:
+        ev = o.evidence or {}
+        for w in (ev.get('warnings') or []):
+            # The string stays exactly as the layer wrote it; the layer name
+            # is a prefix so two layers raising the same sentence remain two
+            # distinguishable facts in the flat list the renderers read.
+            warnings.append(f'{n}: {w}')
+            rec = {'layer': n, 'warning': w}
+            if ev.get('severity') is not None:
+                rec['severity'] = ev['severity']
+            detail.append(rec)
+        if ev.get('governance') is not None:
+            rec = {'layer': n, 'governance': ev['governance']}
+            if ev.get('severity') is not None:
+                rec['severity'] = ev['severity']
+            governance.append(rec)
+        if ev.get('spec_version'):
+            specs.append(f'{n}={ev["spec_version"]}'
+                         if len(got) > 1 else str(ev['spec_version']))
+    out = {'warnings': warnings, 'warnings_detail': detail,
+           'governance': governance}
+    if specs:
+        out['spec_version'] = '; '.join(specs)
+    return out
+
+
+def code_identity() -> Outcome:
+    """A + B + C for this run, from the repository-wide identity module."""
+    return CI.code_identity()
+
+
+def code_commit() -> str:
+    '''HEAD and the CONTENT of any dirty source, as one code version string.
+
+    This returned a bare HEAD with no working-tree check, so an artifact could
+    name a commit while the code that produced it carried uncommitted changes.
+    The first repair added a dirty marker -- `<sha>+dirty[<N>]`, N being the
+    line count of `git status --porcelain` -- and got the intent right and the
+    mechanism wrong in two opposite directions:
+
+      A COUNT IDENTIFIES NOTHING. Two working trees with the same NUMBER of
+      dirty paths produce the same string, so a tree with an edited layers.py
+      and a tree with a scratch note were indistinguishable in the sealed
+      bytes.
+
+      A RUN MOVED ITS OWN IDENTITY BY WRITING ITS OWN OUTPUTS. Porcelain names
+      generated files, so the count rose as the run wrote. WS-E measured it on
+      this checkout: +dirty[30] -> 31 -> 32 -> back to 30, with nothing about
+      the forecast different across the four calls. That is dF/dD != 0, and it
+      gave two bit-identical draw sets two different execution identities.
+
+    `nfl.identity.code_identity` is the repository-wide repair: it hashes the
+    CONTENT of the dirty SOURCE files, with the scope declaration inside the
+    digest, and excludes every subtree a run writes into. One format whether
+    the tree is clean or dirty -- a clean tree is the computed empty-set
+    digest, not a second branch -- so no parser needs an unexercised branch.
+
+    A refusal is NAMED rather than flattened to the old bare 'UNKNOWN'. It
+    still returns a string, because this function is consumed as one and
+    hardening the caller into a refusal is a governance decision, not a
+    transport one; what changes here is that the string says which refusal it
+    was instead of asserting an identity the run does not have.
     '''
-    import subprocess
-    try:
-        h = subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=str(_REPO),
-                           capture_output=True, text=True,
-                           timeout=20).stdout.strip()
-        if not h:
-            return 'UNKNOWN'
-        d = subprocess.run(['git', 'status', '--porcelain'], cwd=str(_REPO),
-                           capture_output=True, text=True, timeout=60).stdout
-        n = len([x for x in d.splitlines() if x.strip()])
-        return h if n == 0 else h + '+dirty[' + str(n) + ']'
-    except Exception:                                             # noqa: BLE001
-        return 'UNKNOWN'
+    o = code_identity()
+    if o.state is State.PASS:
+        return CI.code_version(o.value)
+    return f'UNRESOLVED[{o.code}]'
 
 
 def build(args, fixtures: dict = None) -> dict:
     """Run the pipeline. `fixtures` supplies inputs for a historical dry run."""
     fx = fixtures or {}
-    commit = code_commit()
+    # RESOLVED ONCE, BEFORE THE RUN WRITES ANYTHING. Resolving it twice would
+    # reintroduce the defect it replaces in a smaller form: the second call
+    # would read a tree this run had already written into.
+    fx['_code_identity'] = _ci = code_identity()
+    commit = (CI.code_version(_ci.value) if _ci.state is State.PASS
+              else f'UNRESOLVED[{_ci.code}]')
     src = fx.get('source_hashes', {})
     run_id = execution_identity(args, src, commit)[:16]
     out_dir = pathlib.Path(args.out_dir) / run_id
@@ -422,7 +502,24 @@ def build(args, fixtures: dict = None) -> dict:
             candidate_components_applied=sorted(applied),
             candidate_components_not_reached=sorted(not_reached),
             n_qb_games=len(qb['rows']),
-            qb_level_owner=(qb.get('r2') or {}).get('level_owner'))
+            qb_level_owner=(qb.get('r2') or {}).get('level_owner'),
+            # THE SAME LAYER'S LIMITATIONS ON BOTH PATHS.
+            #
+            # The BASELINE return below carries
+            # `warnings=[f'known limitation: {k}' for k in
+            # QBV1.KNOWN_LIMITATIONS]` and this candidate return carried none,
+            # so the stage table read "no warnings" for the LESS validated of
+            # the two configurations. Both paths run QB V1, so both paths
+            # declare QB V1's limitations; the list is read from the layer,
+            # not restated here.
+            warnings=[f'known limitation: {k}'
+                      for k in QBV1.KNOWN_LIMITATIONS]
+            + list(team.evidence.get('warnings') or []),
+            warnings_detail=(
+                [{'layer': 'qb_v1', 'warning': f'known limitation: {k}'}
+                 for k in QBV1.KNOWN_LIMITATIONS]
+                + [{'layer': 'qb_team_accounting', 'warning': w}
+                   for w in (team.evidence.get('warnings') or [])]))
 
     # MODEL CONFIGURATION, RESOLVED ONCE AND CARRIED. An unknown name is a
     # refusal, never a fall-back to the baseline -- falling back would run the
@@ -911,7 +1008,8 @@ def build(args, fixtures: dict = None) -> dict:
                    for n, o in got},
             layers={n: f'{o.state.value}[{o.code}]' for n, o in got},
             spec_versions={n: o.evidence.get('spec_version') for n, o in got},
-            test_only=any(bool(o.evidence.get('test_only')) for _n, o in got))
+            test_only=any(bool(o.evidence.get('test_only')) for _n, o in got),
+            **_governance_facts(got))
 
 
     for stage, key, spec in (
@@ -1062,7 +1160,13 @@ def build(args, fixtures: dict = None) -> dict:
                     draw_cells=o.evidence.get('draw_cells'),
                     warnings=[f'known limitation: {k}'
                               for k in QBV1.KNOWN_LIMITATIONS]
-                    + list(team.evidence.get('warnings') or []))
+                    + list(team.evidence.get('warnings') or []),
+                    warnings_detail=(
+                        [{'layer': 'qb_v1',
+                          'warning': f'known limitation: {k}'}
+                         for k in QBV1.KNOWN_LIMITATIONS]
+                        + [{'layer': 'qb_team_accounting', 'warning': w}
+                           for w in (team.evidence.get('warnings') or [])]))
             # A STAGE MAY NOT CLAIM AN ACCEPTED SPEC AND PRODUCE NOTHING.
             # Six stages carried strings like 'P4C system C ACCEPTED' while
             # returning {} and reporting PASS. The accepted research baseline
@@ -1077,7 +1181,10 @@ def build(args, fixtures: dict = None) -> dict:
                     implemented=True, spec_version=TV.SPEC_VERSION,
                     n_metrics=len(TV.METRICS),
                     warnings=[f'known limitation: {k}'
-                              for k in TV.KNOWN_LIMITATIONS])
+                              for k in TV.KNOWN_LIMITATIONS],
+                    warnings_detail=[{'layer': 'team_volume',
+                                      'warning': f'known limitation: {k}'}
+                                     for k in TV.KNOWN_LIMITATIONS])
             _v = fx.get(_k)
             if not _v and _st in NONQB_CHAIN:
                 # THE NON-QB CHAIN IS IMPLEMENTED. Reporting it as
@@ -1115,7 +1222,16 @@ def build(args, fixtures: dict = None) -> dict:
                     return Outcome.not_applicable(
                         o.code, f'{_st}: {o.detail}'[:400],
                         implemented=True, layer=_k, blocked_layer=True,
-                        layer_state=o.state.value)
+                        layer_state=o.state.value,
+                        # A LAYER THAT COULD NOT RUN STILL SAID THINGS.
+                        # Rewrapping its Outcome here dropped whatever
+                        # governance and warnings it had already declared, so
+                        # the refusing case lost exactly what the passing case
+                        # lost. Carried through unchanged, same as above.
+                        **{k: v for k, v in (o.evidence or {}).items()
+                           if k in ('warnings', 'warnings_detail',
+                                    'governance', 'spec_version',
+                                    'spec_versions') and v})
 
             if not _v:
                 return Outcome.ok(
@@ -1190,6 +1306,48 @@ def build(args, fixtures: dict = None) -> dict:
         import numpy as _np
         ds = DA.DrawSet(run_id=run_id, game_id=args.game_id, seed=args.seed,
                         seed_protocol=f'per-row seed {args.seed}')
+        # P2 -- THE MATRICES THAT ARE ACTUALLY SEALED.
+        #
+        # The coherence checks may not run inside the engine. The engine reads
+        # the SC1-coupled carry vector and this stage seals D1's raw one, so
+        # an engine-side carry check attests to a vector nobody publishes --
+        # which is how `SC1_COHERENT` reads PASS in nine sealed runs whose
+        # published scramble total exceeds their published carry total.
+        #
+        # `_p2` therefore collects exactly what is handed to `add_layer`, by
+        # the same `<layer>/<key>` names the checks address, and `_p2_rows`
+        # collects each team's ROW INDICES per layer. Row identity is resolved
+        # here and never joined positionally across layers.
+        _p2, _p2_rows = {}, {}
+
+        def _p2_add(layer, row_ids, mats, team_of, scalar_row=False):
+            """Record one layer's published matrices and its team row map.
+
+            `scalar_row` is the team_volume shape and is passed explicitly,
+            not inferred from the layer name. A team-keyed matrix has ONE row
+            per team, and `draw_coherence.carry_containment` indexes it as a
+            scalar; handing it a one-element list raised TypeError inside the
+            check and refused the whole draws stage. The two shapes are the
+            caller's to get right, so they are declared here.
+            """
+            for k, v in mats.items():
+                _p2[f'{layer}/{k}'] = v
+            for i, rid in enumerate(row_ids):
+                t = team_of(rid)
+                if not t:
+                    continue
+                if scalar_row:
+                    _p2_rows.setdefault(t, {})[layer] = i
+                else:
+                    _p2_rows.setdefault(t, {}).setdefault(layer, []).append(i)
+
+        _team_of_player = {q['gsis_id']: q.get('team')
+                           for q in (fx.get('players') or [])
+                           if q.get('gsis_id')}
+        for _r in (fx.get('qb_rows') or []):
+            if _r.get('gsis_id') and _r.get('team'):
+                _team_of_player.setdefault(_r['gsis_id'], _r['team'])
+
         produced = {}
         D = fx.get('_qb_draws_out')
         rows = fx.get('qb_rows') or []
@@ -1203,6 +1361,9 @@ def build(args, fixtures: dict = None) -> dict:
             if o.state is not State.PASS:
                 return _fail(o)
             produced['qb'] = len(rows)
+            _p2_add('qb', [r['gsis_id'] for r in rows],
+                    {f: _np.asarray(D[f]) for f in QBV1.FIELDS},
+                    lambda pid: _team_of_player.get(pid))
         # THE NON-QB CHAIN'S DRAWS. Without this the chain could execute,
         # pass every accounting check, and have its output thrown away at the
         # sidecar -- which is the same defect B13 was written for, one layer
@@ -1227,6 +1388,15 @@ def build(args, fixtures: dict = None) -> dict:
                 if o.state is not State.PASS:
                     return _fail(o)
                 produced['receiving'] = len(rec_ids)
+                _p2_add('receiving', rec_ids,
+                        {'targets': _np.asarray(pay['draws']['targets']),
+                         'receptions': _np.asarray(
+                             pay['draws']['receptions']),
+                         'receiving_yards': _np.asarray(
+                             pay['draws']['receiving_yards']),
+                         'receiving_td': _np.asarray(
+                             pay['draws']['receiving_td'])},
+                        lambda pid: _team_of_player.get(pid))
             rb_ids = idx['rb_ids']
             if rb_ids:
                 o = ds.add_layer(
@@ -1239,6 +1409,11 @@ def build(args, fixtures: dict = None) -> dict:
                 if o.state is not State.PASS:
                     return _fail(o)
                 produced['rushing'] = len(rb_ids)
+                _p2_add('rushing', rb_ids,
+                        {'carries': _np.asarray(pay['draws']['carries']),
+                         'rushing_td': _np.asarray(
+                             pay['draws']['rush_td'])},
+                        lambda pid: _team_of_player.get(pid))
         tv = fx.get('_team_volume')
         if tv:
             teams = sorted({t for (_m, t) in tv})
@@ -1253,6 +1428,8 @@ def build(args, fixtures: dict = None) -> dict:
                 if o.state is not State.PASS:
                     return _fail(o)
                 produced['team_volume'] = len(teams)
+                _p2_add('team_volume', teams, mats, lambda t: t,
+                        scalar_row=True)
                 # THE BINDING. `teams` here is the matrix row order; the
                 # artifact's `team_ids` is a different order of the same set.
                 # Record the map so no consumer has to infer it, and refuse if
@@ -1308,6 +1485,26 @@ def build(args, fixtures: dict = None) -> dict:
             'DRAW_SET_PRESENT', value=len(ds.arrays),
             detail=f'{len(ds.arrays)} matrix(es) from {sorted(produced)}',
             layers=sorted(produced))
+
+        # P2 -- DRAW COHERENCE, ON THE PUBLISHED MATRICES.
+        #
+        # `include_carries=True` is the declaration this call site is entitled
+        # to make and the engine is not: `_p2['team_volume/team_carries']` is
+        # the vector that gets sealed, not the SC1-coupled one the engine
+        # reads. `shared_pass_live` is READ FROM THE RUN'S COMPONENT LIST, not
+        # inferred from the numbers -- three of the closures hold only where
+        # the passing line was credited from the receiving event, and guessing
+        # the regime from the arrays would be asserting the conclusion.
+        #
+        # The verdict is stored WHOLE. `assert_draw_coherence` already returns
+        # NOT_APPLICABLE for a layer this run does not carry, which is 68 of
+        # the 101 sealed runs, and collapsing that to PASS or FAIL is the one
+        # thing that would break them: PASS asserts a check that never ran and
+        # silence refuses the run with INVARIANT_VERDICT_MISSING.
+        fx['_draw_coherence'] = DC.assert_draw_coherence(
+            _p2, team_rows=_p2_rows,
+            shared_pass_live='C3' in (fx.get('_candidate_applied') or []),
+            include_carries='team_volume/team_carries' in _p2)
 
         w = ds.write(out_dir)
         if w.state is not State.PASS:
@@ -1484,6 +1681,23 @@ def build(args, fixtures: dict = None) -> dict:
             # run_status.json carries all of them and not only the ones
             # some earlier stage happened to record.
             _inv = fx.setdefault('_inv', {})
+            # --- P2 draw coherence ----------------------------------------
+            #
+            # The verdict was computed at `_draws()` on the matrices that are
+            # sealed. It is FILED as an invariant only while
+            # `artifact.INVARIANTS` declares the key, because `ART.verdict`
+            # refuses a key it does not know and would refuse every artifact
+            # this repository can produce. `artifact.py` carries the entry in
+            # `PENDING_INVARIANT_REGISTRATION` with that hand-off written down
+            # and is owned by another workstream; when the key moves into
+            # `INVARIANTS` this emitter feeds it with no further change.
+            #
+            # It is NEVER silent in the meantime. The state and code go into
+            # `run_status.json` either way, so a run whose coherence check
+            # failed cannot look like a run that passed one.
+            _dcoh = fx.get('_draw_coherence')
+            if _dcoh is not None and 'draw_coherence' in ART.INVARIANTS:
+                _inv['draw_coherence'] = _dcoh
             # --- diagnostics: recorded on EVERY run, never gating ---------
             _lims = sorted(QBV1.KNOWN_LIMITATIONS)
             _inv['qb_known_limitations'] = (
@@ -1642,12 +1856,56 @@ def build(args, fixtures: dict = None) -> dict:
         for k, o in sorted(fx.get('_inv', {}).items())
         if k in ART.INVARIANTS]
     _own = fx.get('_qb_ownership')
+    # P2 COHERENCE, RECORDED WHETHER OR NOT IT IS YET AN INVARIANT KEY.
+    # `accounting_verdicts` above can only carry keys `artifact.INVARIANTS`
+    # declares; this says what the check found regardless, so the period
+    # before the registration lands is visible rather than blank.
+    _dc = fx.get('_draw_coherence')
+    summary['draw_coherence'] = (
+        None if _dc is None else
+        {'state': _dc.state.value, 'code': _dc.code,
+         'detail': _dc.detail[:400],
+         'spec_version': _dc.evidence.get('spec_version'),
+         'components': _dc.evidence.get('components'),
+         'registered_as_invariant': 'draw_coherence' in ART.INVARIANTS,
+         'gating': ('draw_coherence' in ART.INVARIANTS
+                    and ART.INVARIANTS.get('draw_coherence', {}).get('class')
+                    == 'HARD')})
+    # THE CONFIDENCE INPUTS THAT EXIST BEFORE THE SEAL, SEALED WITH IT.
+    #
+    # `run_status.json` is one of the files the seal manifest hashes, so a
+    # value recorded here is fixed at forecast time and cannot be restored
+    # afterwards from knowledge of the outcome. `readiness` is the input
+    # `confidence.score_player` consumes for `status_certainty`, and it is the
+    # one dimension NOT recoverable from the seal: the other four are
+    # recomputable from the sealed draws and the artifact's source captures.
+    # The contract pins the dimensions and weights in force at forecast time,
+    # so a later reweighting cannot silently reinterpret a stored row.
+    #
+    # Both are supplied by the caller, from captures and the chronology cut.
+    # Neither reads anything this run wrote. A run sealed before this change
+    # carries neither key -- absence stays absence and is not backfilled.
+    summary['readiness'] = fx.get('readiness')
+    summary['confidence_contract'] = fx.get('confidence_contract')
     summary['qb_inactive_ownership'] = _own
     summary['qb3_configuration'] = fx.get('_qb3_config')
     summary['qb_inactive_ownership_enforced'] = bool(
         (_own or {}).get('enforced'))
     summary['execution_identity'] = execution_identity(args, src, commit)
     summary['code_commit'] = commit
+    # THE MATERIAL BEHIND THE DIGEST, not only the digest. A digest nobody can
+    # reconstruct is a number a reader can compare and cannot audit, and that
+    # is what made working-tree state NOT_RECOVERABLE on every sealed run
+    # tested. Source content only: `code_identity` excludes every subtree a
+    # run writes into, so nothing recorded here reads this run's own outputs.
+    summary['code_identity'] = (
+        fx['_code_identity'].value
+        if fx.get('_code_identity') is not None
+        and fx['_code_identity'].state is State.PASS
+        else {'state': fx['_code_identity'].state.value,
+              'code': fx['_code_identity'].code,
+              'detail': fx['_code_identity'].detail[:300]}
+        if fx.get('_code_identity') is not None else None)
     summary['dry_run'] = bool(args.dry_run)
     summary['prospective_eligible'] = False if args.dry_run else None
     # publication is a SEPARATE gate and is checked last, never assumed

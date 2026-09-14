@@ -26,6 +26,7 @@ if str(_REPO) not in sys.path:
 from nfl.production import run_forecast as RUN                    # noqa: E402
 from nfl.production.nonqb import readiness as RD                  # noqa: E402
 from nfl.product import board as B                                # noqa: E402
+from nfl.product import confidence as CONF                        # noqa: E402
 from nfl.product import names as NM                               # noqa: E402
 from nfl.product import render as R                               # noqa: E402
 from nfl.research.shadow import information_set as IS             # noqa: E402
@@ -169,6 +170,36 @@ def build_one(season, week, game_id, written_at, out_dir, draws=1000,
           'players': players, 'team_ids': [away, home],
           'qb_slate': {'prospective': True}, 'qb_draws': draws,
           'team_volume': True, 'distributions': {}}
+    # READINESS IS RESOLVED BEFORE THE FORECAST, SO IT CAN BE SEALED WITH IT.
+    #
+    # `confidence.score_player` reads `readiness` for its `status_certainty`
+    # dimension, and readiness was computed AFTER the run and written only
+    # into `board.json`. The one graded game in this repository --
+    # 2026_01_NE_SEA, 33 rows in EVALUATION_LEDGER.jsonl -- was sealed by a
+    # path that writes no board at all, so its confidence values were never
+    # recorded, and `status_certainty` cannot be recomputed from the seal
+    # because the sealed artifact carries no readiness. Reconstructing a
+    # pregame field once the outcome is known is exactly what the seal
+    # discipline exists to prevent, so it is sealed at forecast time instead.
+    #
+    # FORWARD ONLY. Nothing historical is backfilled, and a run sealed before
+    # this change carries no `readiness` key rather than an invented one.
+    # These values come from captures and the chronology cut, never from
+    # anything this run writes.
+    RD.cache_clear()
+    ready = {t: RD.team_readiness(season, week, t, kickoff_utc=ko,
+                                  written_at=written_at) for t in teams}
+    fx['readiness'] = ready
+    # THE SCORING RULE IN FORCE AT FORECAST TIME, pinned with the row. Without
+    # it a later reweighting silently reinterprets every stored confidence
+    # value, and the ledger would carry numbers whose meaning had changed.
+    fx['confidence_contract'] = {
+        'module': 'nfl.product.confidence',
+        'dimensions': list(CONF.DIMENSIONS),
+        'weights': dict(CONF.WEIGHTS),
+        'weights_note': CONF.WEIGHTS_NOTE,
+        'means': 'confidence in the model and its inputs, NOT in the outcome',
+    }
     args = argparse.Namespace(
         season=season, week=week, game_id=game_id, arm='A',
         written_at=written_at, out_dir=out_dir, seed=seed,
@@ -180,9 +211,9 @@ def build_one(season, week, game_id, written_at, out_dir, draws=1000,
     if summary['status'] != 'SEALED':
         return summary, None, run_dir
 
-    RD.cache_clear()
-    ready = {t: RD.team_readiness(season, week, t, kickoff_utc=ko,
-                                 written_at=written_at) for t in teams}
+    # The SAME readiness object that was sealed with the forecast. Recomputing
+    # it here would let the board score against a state the seal does not
+    # carry, which is the join this change exists to make possible.
     bd = B.build(run_dir, season, week, readiness_by_team=ready,
                  roster_blob=roster_blob, depth_blob=depth_blob)
     bd['information_set'] = info

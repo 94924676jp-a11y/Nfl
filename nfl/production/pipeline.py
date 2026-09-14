@@ -64,12 +64,56 @@ class StageResult:
     # separately here, because the two are not the same number and reporting
     # only the first would overstate how much of the run is modelling.
     metrics: dict = dataclasses.field(default_factory=dict)
+    # GOVERNANCE THE STAGE REPORTED, NOT GOVERNANCE THIS CLASS DECIDED.
+    #
+    # A stage that composes several engine layers returns their governance
+    # values and their per-layer spec versions in its evidence, and every one
+    # of them used to be dropped here, because this class copied `warnings`
+    # and a metrics whitelist and nothing else. The sealed run then showed
+    # `"warnings": []` on four stages whose layers had raised warnings naming
+    # SIGNAL_WEAK and CALIBRATION_DEFECT by name, and the only surviving copy
+    # of those states was a sentence a human had retyped into `spec_version`
+    # at the call site -- where the two copies had already drifted.
+    #
+    # These three fields are TRANSPORT. Nothing here reads them, ranks them or
+    # decides what any of them means for publication: they carry what the
+    # producing layer said, with the layer's name attached, so the question
+    # can be put to the artifact instead of to the source code.
+    governance: list = dataclasses.field(default_factory=list)
+    spec_versions: dict = dataclasses.field(default_factory=dict)
+    warnings_detail: list = dataclasses.field(default_factory=list)
     value: object = None
 
     def as_dict(self) -> dict:
         d = dataclasses.asdict(self)
         d.pop('value', None)
         return d
+
+
+def _governance_records(evidence) -> list:
+    """A stage's declared governance values, as records, never summarised.
+
+    Two shapes arrive here and both are the producer's, not this function's.
+    A stage that aggregates several engine layers reports a LIST of records
+    that already name the layer each value came from. A single layer reports a
+    BARE value -- `layers.receiving_conversion` returns
+    `governance='HOLD_CHARACTERIZED + CALIBRATION_DEFECT'` -- and there is no
+    layer name to attach to it, so `layer` is recorded as None rather than
+    guessed from the stage name. A guess here would be indistinguishable from
+    a fact once it is in the artifact.
+
+    Nothing is merged, ordered by severity, or dropped. Two layers declaring
+    the same value stay two records, because "both said it" and "one said it"
+    are different facts.
+    """
+    gov = (evidence or {}).get('governance')
+    if gov is None:
+        return []
+    if isinstance(gov, list):
+        return list(gov)
+    if isinstance(gov, dict):
+        return [{'layer': k, 'governance': v} for k, v in sorted(gov.items())]
+    return [{'layer': None, 'governance': gov}]
 
 
 def assert_no_postgame_inputs(stage: str, declared_inputs) -> Outcome:
@@ -150,8 +194,23 @@ class Pipeline:
                      ('draw_generation_seconds', 'n_qb_games', 'n_draws',
                       'draw_cells', 'qb_frame_sha256')
                      if ev.get(k) is not None},
-            spec_version=spec_version,
+            # THE STAGE'S OWN SPEC VERSION OUTRANKS THE CALLER'S LABEL.
+            #
+            # `spec_version` is a caller-supplied string, stored verbatim, and
+            # for five stages the caller's string was a hand-typed paraphrase
+            # of a constant the layer already publishes. `layers.SPEC` records
+            # the appearance layer as `governance INFORMATION_CONSTRAINED`
+            # while the call site passed the literal `'P3 appearance'`, so the
+            # appearance layer's governance state reached neither the run
+            # status nor the board. The caller's label is kept as the fallback
+            # -- a stage that did not run has reported nothing, and a label is
+            # better than a null there -- but where the stage answered for
+            # itself, its answer is what is recorded.
+            spec_version=(ev.get('spec_version') or spec_version),
+            spec_versions=dict(ev.get('spec_versions') or {}),
+            governance=_governance_records(ev),
             warnings=list(ev.get('warnings', [])),
+            warnings_detail=list(ev.get('warnings_detail') or []),
             refusal_code=(code if state == 'BLOCKED' and code in RF.REFUSALS
                           else None),
             elapsed_s=time.time() - t0,
