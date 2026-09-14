@@ -71,6 +71,11 @@ from sportsplatform.governance.outcome import Cause, Outcome
 _REPO = pathlib.Path(__file__).resolve().parents[3]
 RAW = _REPO / 'nfl_vintage' / 'raw'
 
+import sys                                                      # noqa: E402
+if str(_REPO) not in sys.path:
+    sys.path.insert(0, str(_REPO))
+from nfl.production.nonqb import vintage_selector as VS          # noqa: E402
+
 # nflverse roster status codes. ACT is the active roster; everything else is a
 # player who cannot take an offensive snap this week.
 ACTIVE = 'ACT'
@@ -125,33 +130,48 @@ def status_map(season: int, week: int, teams, observed_before=None,
             'capture-layer change and is not made from here.',
             cause=Cause.DATA, spec_version=SPEC_VERSION)
 
-    from nfl.research.shadow import information_set as IS
+    # SELECTION MOVED TO THE CANONICAL SELECTOR. This module's rule was already
+    # the right one -- observation time, never filename or size -- and WS12
+    # scored it the only PROVEN_CLEAN family in the tree. What it did NOT have
+    # was a shared implementation, so the rule lived in four places and three
+    # of them drifted. It now delegates, and the two guards below (clock first,
+    # then content) are unchanged: they are what makes this family clean and
+    # they are the reference design the other selectors were built from.
+    #
+    # E4, WHILE WE ARE HERE. The bound used to be `at >= observed_before` on
+    # two ISO STRINGS. That is correct only while both carry the same `...Z`
+    # shape: a caller supplying `2026-09-10T16:00:00+00:00` sorts `'+'` below
+    # `'Z'` and mis-orders same-second comparisons. The selector compares
+    # parsed instants.
+    cut = VS.as_of_cut(kickoff_utc=kickoff_utc, written_at=observed_before)
+    if cut is None:
+        return Outcome.blocked(
+            'ROSTER_STATUS_NO_CLOCK',
+            'status_map was given neither observed_before nor kickoff_utc, so '
+            'there is no cutoff to select against. Selecting without one means '
+            'taking the newest capture on disk, and after a team plays that '
+            'capture describes who DRESSED rather than who is rostered.',
+            cause=Cause.GOVERNANCE, spec_version=SPEC_VERSION)
     try:
-        first = IS.first_observation()
-    except Exception:                                        # noqa: BLE001
-        first = {}
-    by_sha = {sha: o for (src, sha), o in first.items()
-              if src == 'weekly_rosters'}
-
-    chosen, chosen_at = None, None
-    for f in files:
-        stem = f.name.split('.')[1]
-        obs = next((o for sha, o in by_sha.items() if sha.startswith(stem)),
-                   None)
-        if obs is None:
-            continue
-        at = obs['observed_at'].isoformat().replace('+00:00', 'Z')
-        if observed_before and at >= observed_before:
-            continue
-        if chosen_at is None or at > chosen_at:
-            chosen, chosen_at = f, at
-    if chosen is None:
+        lawful, rejected = VS.raw_candidates('weekly_rosters', as_of=cut)
+    except VS.NoLawfulVintage as e:
+        return Outcome.blocked(
+            'ROSTER_STATUS_OBSERVATIONS_UNAVAILABLE', str(e),
+            cause=Cause.DATA, spec_version=SPEC_VERSION)
+    if not lawful:
         return Outcome.blocked(
             'ROSTER_STATUS_NO_ELIGIBLE_VINTAGE',
-            f'no raw roster capture was observed before {observed_before}. A '
-            f'later capture exists but using it would put post-cut information '
-            f'into a pregame pool.',
-            cause=Cause.DATA, spec_version=SPEC_VERSION)
+            f'no raw roster capture was observed at or before '
+            f'{cut.isoformat()} (observed_before={observed_before}, '
+            f'kickoff={kickoff_utc}). {len(rejected)} capture(s) exist and '
+            f'every one is later or unplaceable in time; using one would put '
+            f'post-cut information into a pregame pool.',
+            cause=Cause.DATA, spec_version=SPEC_VERSION,
+            as_of=cut.isoformat(), n_rejected=len(rejected),
+            rejected=[r.record() for r in rejected[:8]])
+    chosen = pathlib.Path(lawful[0].blob)
+    chosen_at = lawful[0].retrieved_at
+    chosen_sha = lawful[0].content_sha256
 
     out, counts = {}, {}
     for r in csv.DictReader(open(chosen, 'rt')):
@@ -175,12 +195,7 @@ def status_map(season: int, week: int, teams, observed_before=None,
     # closes that window, and it is checked FIRST because it does not depend on
     # the vendor having got round to updating anything.
     if kickoff_utc is not None and chosen_at is not None:
-        import datetime as _dt
-
-        def _p(t):
-            d = _dt.datetime.fromisoformat(str(t).replace('Z', '+00:00'))
-            return d if d.tzinfo else d.replace(tzinfo=_dt.timezone.utc)
-        if _p(chosen_at) >= _p(kickoff_utc):
+        if VS.parse_ts(chosen_at) >= VS.parse_ts(kickoff_utc):
             return Outcome.fail(
                 'ROSTER_STATUS_OBSERVED_AFTER_KICKOFF',
                 f'{chosen.name} was observed at {chosen_at}, at or after the '
@@ -215,6 +230,10 @@ def status_map(season: int, week: int, teams, observed_before=None,
     return Outcome.ok('ROSTER_STATUS_OK', value=out,
                       spec_version=SPEC_VERSION,
                       source=chosen.name, observed_at=chosen_at,
+                      content_sha256=chosen_sha,
+                      as_of=cut.isoformat(),
+                      vintage=lawful[0].record(),
+                      selector_spec_version=VS.SPEC_VERSION,
                       status_counts=counts)
 
 

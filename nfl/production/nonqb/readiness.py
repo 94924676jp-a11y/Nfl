@@ -12,6 +12,7 @@ need different names, because the first clears itself and the second may not.
 from __future__ import annotations
 
 import collections
+import contextvars
 import csv
 import datetime as _dt
 import gzip
@@ -23,8 +24,10 @@ _REPO = pathlib.Path(__file__).resolve().parents[3]
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
-from sportsplatform.governance.outcome import Outcome             # noqa: E402
+from sportsplatform.governance.outcome import (Cause, Outcome,    # noqa: E402
+                                               State)
 from nfl.production.nonqb import eligibility as EL                # noqa: E402
+from nfl.production.nonqb import vintage_selector as VS           # noqa: E402
 
 # What the frozen appearance mechanism needs, and the minimum that makes it
 # runnable at all. These are structural requirements of the mechanism, not
@@ -33,39 +36,241 @@ MIN_TEAMS_COVERED = 32          # every team on the slate must appear
 NEEDS_REPORT_STATUS = True      # teammate_availability reads it
 
 
-def _latest_injuries(season: int):
-    man = _REPO / 'nfl' / 'vintage_manifest.jsonl'
-    if not man.exists():
+# A cut that admits everything, used ONLY where "no bound" is the declared
+# answer. Named so that a reader can grep for every place the bound is off.
+_UNBOUNDED = _dt.datetime.max.replace(tzinfo=_dt.timezone.utc)
+
+
+# =====================================================================
+# THE GATE HANDS ITS CUT TO THE FEED. TRANSITIONAL, AND MARKED AS SUCH.
+#
+# WS12's finding is that the gate and the feed are two selectors and only one
+# has a clock. The permanent repair is for the caller to declare the cut once
+# with `vintage_selector.clock(...)`, which `football_engine.run_game` should
+# do -- that patch is written and handed to the owning workstream, and it is
+# the C1 pattern.
+#
+# It cannot be applied from here, and until it lands the production path has no
+# declared clock at all, so the feed would refuse every game. Refusing is the
+# right direction and the wrong outcome: the information needed is already in
+# the process. `layers.py:117` evaluates the GATE two lines before it reads the
+# feed, on the same season, week and kickoff. So the gate publishes the cut it
+# used and the feed consumes it.
+#
+# THE DISCIPLINE THAT MAKES THIS SAFE, AND IT IS THE WHOLE DESIGN:
+#   * the feed CONSUMES the handoff -- a second read without a fresh gate
+#     evaluation refuses, so a cut cannot be reused across games;
+#   * where several gate evaluations are outstanding (the slate-wide branch),
+#     the MINIMUM is taken, which is lawful for every game judged;
+#   * an explicit `as_of`, and a declared `vintage_selector.clock(...)`, both
+#     BEAT the handoff, so wiring the caller properly retires this path;
+#   * every feed answer records which of the three resolved it, so
+#     `GATE_HANDOFF` is visible in the artifact and cannot be mistaken for the
+#     call site having been fixed.
+# =====================================================================
+_GATE_CUTS: contextvars.ContextVar = contextvars.ContextVar(
+    'nfl_readiness_gate_cuts', default=())
+
+
+def _publish_gate_cut(cut, origin: str):
+    """Record the cut a gate evaluation used, for the feed that follows it."""
+    if cut is None:
+        return
+    _GATE_CUTS.set(tuple(_GATE_CUTS.get()) + ((cut, origin),))
+
+
+def _consume_gate_cut():
+    """The most conservative outstanding gate cut, and then forget it."""
+    cuts = _GATE_CUTS.get()
+    _GATE_CUTS.set(())
+    if not cuts:
         return None, None
-    best = None
-    for line in man.read_text().splitlines():
-        if not line.strip():
-            continue
-        r = json.loads(line)
-        if r.get('source') != 'injuries' or r.get('state') != 'PASS':
-            continue
-        v = r.get('value') or {}
-        p = v.get('provenance') or {}
-        ts = v.get('retrieved_at') or p.get('retrieved_at')
-        if ts and (best is None or ts > best[0]):
-            best = (ts, v.get('blob'))
-    if best is None:
-        return None, None
-    path = _REPO / best[1] if best[1] else None
-    if not path or not path.exists():
-        return best[0], None
+    best = min(c for c, _o in cuts)
+    origins = sorted({o for _c, o in cuts})
+    return best, {'n_gate_evaluations': len(cuts),
+                  'n_distinct_cuts': len({c for c, _o in cuts}),
+                  'origins': origins}
+
+
+def gate_cuts_clear():
+    """Drop any outstanding handoff. For tests and for a caller that wants the
+    feed to refuse rather than inherit a gate it did not intend."""
+    _GATE_CUTS.set(())
+
+
+def _read_rows(path):
     txt = (gzip.open(path, 'rt').read() if str(path).endswith('.gz')
            else path.read_text())
-    return best[0], list(csv.DictReader(txt.splitlines()))
+    return list(csv.DictReader(txt.splitlines()))
 
 
-def latest_injuries_rows(season: int):
-    """The rows of the newest successful injuries capture, or None."""
-    return _latest_injuries(season)[1]
+def _latest_injuries(season: int, as_of=VS.UNSET):
+    """(retrieved_at, rows) of the newest injuries capture lawful at the cut.
+
+    THE OPERATOR VIEW, AND IT IS LABELLED AS ONE. Called with an explicit
+    `as_of=None` this enumerates without a bound, which is the honest answer to
+    "what does the feed look like right now" that `report()` exists to give an
+    operator. It is NOT a model feed and nothing in the forecast path may take
+    its rows: `latest_injuries_rows` below is the feed, and it refuses without
+    a clock.
+    """
+    cut = (None if as_of is None
+           else VS.resolve_as_of(as_of, caller='readiness._latest_injuries'))
+    lawful = VS.lawful_paths('injuries', as_of=cut or _UNBOUNDED)
+    if not lawful:
+        return None, None
+    ts, path = lawful[0]
+    if path is None or not path.exists():
+        return ts, None
+    return ts, _read_rows(path)
 
 
-def injuries_readiness(season: int, week: int, teams) -> dict:
-    ts, rows = _latest_injuries(season)
+def lawful_injuries_rows(season: int, as_of=VS.UNSET,
+                         clock_basis='EXPLICIT',
+                         handoff=None) -> Outcome:
+    """THE FEED. Every team's newest injury block that is lawful at the cut.
+
+    L1, AND WHY THE REPAIR IS A COMPOSITION RATHER THAN A FILTER.
+
+    The old feed took the single newest capture on disk. Bounding that to the
+    cut is necessary and not sufficient, because THE FEED IS NOT MONOTONE.
+    Measured over the seven 2026 injuries blobs, week 1 only:
+
+        2026-09-07T13:06Z   2 teams,  11 rows
+        2026-09-08T17:06Z   2 teams,  11 rows
+        2026-09-10T05:05Z   4 teams,  29 rows
+        2026-09-10T12:07Z  30 teams, 139 rows
+        2026-09-11T12:19Z  32 teams, 167 rows
+        2026-09-13T12:47Z  20 teams,  48 rows   <- SHRINKS
+        2026-09-13T15:45Z  32 teams, 182 rows
+
+    A team filed on the 11th and absent from the 12:47 capture on the 13th is
+    not a team with nobody injured, and `readiness` has said so since R4. So
+    "the newest lawful FILE" and "each team's newest lawful BLOCK" are
+    different answers, and the gate (`team_report_history`) has always used the
+    second. Taking the first in the feed is how the gate and the feed came to
+    disagree even inside the lawful window.
+
+    This composes exactly the gate's rule, generalised over weeks so it needs
+    no week argument: for each (team, week), the rows from the newest capture
+    retrieved at or before the cut that carries that block. Gate and feed then
+    resolve to the same vintage per team BY CONSTRUCTION, not by coincidence.
+
+    The composition is itself a vintage: the contributing blobs are listed and
+    a composite content hash is computed over them, so "which bytes" still has
+    one answer.
+    """
+    if as_of is VS.UNSET or as_of is None:
+        cut, clock_basis, handoff = _resolve_feed_cut(as_of)
+    else:
+        cut = VS.resolve_as_of(as_of, caller='readiness.lawful_injuries_rows')
+    lawful = VS.lawful_paths('injuries', as_of=cut)
+    if not lawful:
+        sel = VS.select('injuries', as_of=cut)
+        return sel
+    rows, seen, parts, prov = [], {}, set(), {}
+    for ts, path in lawful:                       # newest-first
+        for r in _read_rows(path):
+            if r.get('season') != str(season) or not r.get('team'):
+                continue
+            key = (r.get('team'), r.get('week'))
+            if key in seen and seen[key] != ts:
+                continue                          # an older block, superseded
+            seen[key] = ts
+            rows.append(r)
+            parts.add((f'{key[0]}:{key[1]}', str(path.name)))
+            # PER-BLOCK PROVENANCE, so "gate and feed chose the same vintage"
+            # is a checkable claim rather than an argument about two code
+            # paths that happen to be written the same way.
+            prov[f'{key[0]}:{key[1]}'] = {
+                'retrieved_at': ts,
+                'blob': str(path.relative_to(_REPO))}
+    if not rows:
+        return Outcome.blocked(
+            'INJURIES_NO_LAWFUL_ROWS',
+            f'{len(lawful)} injuries capture(s) are lawful at '
+            f'{cut.isoformat()} and none carries a {season} row. An empty '
+            f'feed is a refusal, not an empty injury list.',
+            cause=Cause.DATA, as_of=cut.isoformat(), n_lawful=len(lawful))
+    blobs = sorted({p for _k, p in parts})
+    return Outcome.ok(
+        'INJURIES_LAWFUL_FEED', value=rows, spec_version=VS.SPEC_VERSION,
+        as_of=cut.isoformat(), n_rows=len(rows),
+        n_blocks=len(seen), n_teams=len({t for t, _w in seen}),
+        n_captures_lawful=len(lawful), contributing_blobs=blobs,
+        composite_sha256=VS.composite_hash(parts)[:16],
+        block_provenance=prov,
+        clock_basis=clock_basis, clock_handoff=handoff,
+        newest_lawful_retrieved_at=lawful[0][0],
+        selection_rule='per (team, week): the newest capture retrieved at or '
+                       'before the cut that carries that block')
+
+
+def latest_injuries_rows(season: int, as_of=VS.UNSET):
+    """The rows the appearance mechanism eats. NEVER selected without a clock.
+
+    KEPT AT THIS NAME AND THIS ARITY ON PURPOSE. The call site is
+    `nfl/production/nonqb/layers.py:145`, which is hashed by Q9's frozen
+    candidate identity `481f005f682cd721` and may not be edited. So the repair
+    cannot add an argument there; it changes what this function does when it is
+    called with one argument, and it declines to answer at all unless an
+    upstream caller has declared the cut with `vintage_selector.clock(...)`.
+    That is the C1 pattern: the corrected behaviour is placed upstream of the
+    frozen module, not inside it.
+
+    Raises rather than returning None, and the two failures are different
+    exceptions because they need different responses:
+
+        VintageClockUnresolved  the call site was never wired to a clock.
+                                A defect in us. Fix the wiring.
+        NoLawfulVintage         a clock exists and nothing predates it.
+                                A true statement about the world. Refuse the
+                                forecast; do not widen the cut.
+
+    Returning None here would have reached `layers.py:148`, which reports
+    DEFERRED[INJURIES_BLOB_MISSING] -- "the blob is missing" -- for what is
+    actually "no lawful vintage at this cutoff" or "nobody gave me a clock".
+    A refusal filed under the wrong name sends the reader to the wrong place,
+    so this refuses under its own.
+    """
+    cut, basis, handoff = _resolve_feed_cut(as_of)
+    o = lawful_injuries_rows(season, as_of=cut, clock_basis=basis,
+                             handoff=handoff)
+    if o.state is not State.PASS:
+        raise VS.NoLawfulVintage(
+            f'{o.code}: {o.detail} (as_of={cut.isoformat()}, '
+            f'clock_basis={basis})')
+    return o.value
+
+
+def _resolve_feed_cut(as_of):
+    """EXPLICIT, then DECLARED CONTEXT, then the GATE HANDOFF, then refuse.
+
+    The order is the point. Wiring a caller properly retires the handoff
+    without anyone having to remove it, and the basis travels with the answer
+    so `GATE_HANDOFF` cannot be read as "the call site was fixed".
+    """
+    if as_of is not VS.UNSET and as_of is not None:
+        return (VS.resolve_as_of(as_of, caller='readiness feed'), 'EXPLICIT',
+                None)
+    cur = VS.current_clock()
+    if cur is not None:
+        gate_cuts_clear()
+        return cur.as_of, 'DECLARED_CONTEXT', cur.record()
+    cut, info = _consume_gate_cut()
+    if cut is not None:
+        return cut, 'GATE_HANDOFF', info
+    raise VS.VintageClockUnresolved(
+        'VINTAGE_CLOCK_UNRESOLVED: the injuries feed was read with no as_of, '
+        'no declared vintage_selector.clock(...) context, and no gate '
+        'evaluation to inherit a cut from. Selecting without a clock means '
+        'taking the newest capture on disk, which at HEAD 837d52f was '
+        'post-kickoff for 28 of 32 week-1 teams. Refusing rather than '
+        'guessing a cutoff.')
+
+
+def injuries_readiness(season: int, week: int, teams, as_of=None) -> dict:
+    ts, rows = _latest_injuries(season, as_of=as_of)
     if ts is None:
         return {'state': f'WAITING_FOR_INJURIES_{season}',
                 'reason': 'no injuries capture has ever succeeded',
@@ -110,10 +315,27 @@ def injuries_readiness(season: int, week: int, teams) -> dict:
     return d
 
 
-def report(season: int = 2026, week: int = 1, teams=None) -> dict:
-    """The single call an operator makes to learn what is blocking."""
+def report(season: int = 2026, week: int = 1, teams=None,
+           as_of=VS.UNSET) -> dict:
+    """The single call an operator makes to learn what is blocking.
+
+    TWO VIEWS, NAMED. With a clock -- passed, or declared by an upstream
+    `vintage_selector.clock(...)` -- this is the replay view and answers what
+    was knowable at that cutoff. With none it is the operator dashboard and
+    answers what the feed looks like right now, which is the question an
+    operator is actually asking. The returned dict says which, because
+    `layers.py:130` reaches this on the slate-wide branch and a dashboard
+    answer must never be mistaken there for a bounded one.
+    """
+    cut = None
+    if as_of is not VS.UNSET and as_of is not None:
+        cut = VS.parse_ts(as_of)
+    else:
+        _amb = VS.current_clock()
+        if _amb is not None:
+            cut = _amb.as_of
     teams = sorted(teams) if teams else _slate_teams(season, week)
-    inj = injuries_readiness(season, week, teams)
+    inj = injuries_readiness(season, week, teams, as_of=cut)
     inputs = {}
     for layer, needs in EL.REQUIRED_INPUTS.items():
         for n in needs:
@@ -126,6 +348,9 @@ def report(season: int = 2026, week: int = 1, teams=None) -> dict:
     return {
         'artifact': 'NONQB_READINESS',
         'season': season, 'week': week, 'n_teams': len(teams),
+        'as_of': cut.isoformat() if cut is not None else None,
+        'clock_view': ('BOUNDED_REPLAY' if cut is not None
+                       else 'UNBOUNDED_OPERATOR_DASHBOARD'),
         'overall_state': (inj['state'] if blocking else 'ENGINE_INPUTS_READY'),
         'blocking_layers': blocking,
         'injuries': inj,
@@ -204,14 +429,8 @@ _SEVERITY = {s: i for i, s in enumerate(reversed(GAME_STATES))}
 
 
 def _parse_ts(t):
-    import datetime as dt
-    if not t:
-        return None
-    try:
-        d = dt.datetime.fromisoformat(str(t).replace('Z', '+00:00'))
-    except ValueError:
-        return None
-    return d if d.tzinfo else d.replace(tzinfo=dt.timezone.utc)
+    """Delegates to the canonical parser. One clock parser, not two."""
+    return VS.parse_ts(t)
 
 
 def as_of_cut(kickoff_utc=None, written_at=None):
@@ -226,17 +445,10 @@ def as_of_cut(kickoff_utc=None, written_at=None):
     the caller supplied neither clock, which means "no cut" and is the
     operational `what is true now` reading rather than a replay.
     """
-    w = _parse_ts(written_at)
-    k = _parse_ts(kickoff_utc)
-    if w is None and k is None:
-        return None
-    if w is None:
-        # Strictly before kickoff. One microsecond is the resolution the
-        # timestamps carry, so it expresses `<` without inventing a tolerance.
-        return k - _dt.timedelta(microseconds=1)
-    if k is None:
-        return w
-    return min(w, k - _dt.timedelta(microseconds=1))
+    # DELEGATED, NOT DUPLICATED. The gate and the feed drifted apart once by
+    # each holding its own copy of this rule; there is now one copy, in
+    # vintage_selector, and this name is kept because callers and tests use it.
+    return VS.as_of_cut(kickoff_utc=kickoff_utc, written_at=written_at)
 
 
 def _all_injury_captures(season: int, as_of=None):
@@ -258,32 +470,16 @@ def _all_injury_captures(season: int, as_of=None):
     Selection is by `retrieved_at` and by nothing else -- never by filesystem
     order, file size, row count, or position in the manifest.
     """
-    man = _REPO / 'nfl' / 'vintage_manifest.jsonl'
-    if not man.exists():
-        return []
-    out = []
-    for line in man.read_text().splitlines():
-        if not line.strip():
-            continue
-        r = json.loads(line)
-        if r.get('source') != 'injuries' or r.get('state') != 'PASS':
-            continue
-        v = r.get('value') or {}
-        p = v.get('provenance') or {}
-        ts = v.get('retrieved_at') or p.get('retrieved_at')
-        blob = v.get('blob')
-        if not ts or not blob:
-            continue
-        path = _REPO / blob
-        if not path.exists():
-            continue
-        if as_of is not None:
-            got = _parse_ts(ts)
-            if got is None or got > as_of:
-                continue
-        out.append((ts, path))
-    out.sort(key=lambda x: x[0], reverse=True)
-    return out
+    # DELEGATED to vintage_selector, which applies the same cut, rejects a
+    # capture with no clock or no blob by name, and orders by
+    # (retrieved_at, content_sha256) -- never by filesystem order, file size or
+    # position in the manifest.
+    #
+    # `as_of=None` here means ENUMERATE EVERYTHING and is used by the suite to
+    # show the cut is load-bearing. It is not a feed: the feed is
+    # `lawful_injuries_rows`, which has no such mode.
+    return VS.lawful_paths('injuries', as_of=(as_of if as_of is not None
+                                              else _UNBOUNDED))
 
 
 _CAPTURE_CACHE: dict = {}
@@ -370,6 +566,27 @@ def team_readiness(season: int, week: int, team: str, kickoff_utc=None,
     unbounded one. If the plan cannot supply it, that is said out loud
     (`READINESS_CLOCK_UNRESOLVED`) rather than silently treated as no bound.
     """
+    # L2. THE SECOND HALF OF THE CONTRACT, AND THE ONE THAT WAS MISSING.
+    #
+    # `layers.py:117` calls this with `kickoff_utc` and never with
+    # `written_at`, although `observed_before` -- which IS the forecast's
+    # written_at -- is a parameter of the enclosing function. `as_of_cut` then
+    # resolved to `kickoff - 1us` instead of `written_at`, admitting every
+    # capture retrieved between the forecast's own cutoff and kickoff.
+    # Measured at HEAD 837d52f over the 20 teams of the 10 executable week-1
+    # games, at a written_at of kickoff minus 24 hours: 85 player-rows differ,
+    # almost all of them the Friday game-status filing landing after a Thursday
+    # cutoff ('' -> 'Out', '' -> 'Questionable', '' -> 'Doubtful').
+    #
+    # layers.py is hashed by Q9's frozen candidate identity and may not be
+    # edited, so the bound is taken from the clock an upstream caller declared.
+    # Only `written_at` is taken from the context: `as_of` already carries the
+    # declaring game's kickoff, and this team may belong to a different game
+    # whose own kickoff bound is applied below.
+    if written_at is None:
+        _amb = VS.current_clock()
+        if _amb is not None and _amb.written_at:
+            written_at = _amb.written_at
     resolved_ko = kickoff_utc or team_kickoff(season, week, team)
     if resolved_ko is None and written_at is None:
         return {'team': team, 'state': 'READINESS_CLOCK_UNRESOLVED',
@@ -382,6 +599,7 @@ def team_readiness(season: int, week: int, team: str, kickoff_utc=None,
                 'n_rows': 0, 'newest_capture': None, 'as_of': None}
     kickoff_utc = resolved_ko
     cut = as_of_cut(kickoff_utc, written_at)
+    _publish_gate_cut(cut, f'team_readiness:{season}w{week}:{team}')
     seen, newest_overall = team_report_history(season, week, as_of=cut)
     d = seen.get(team)
     if d is None:
@@ -459,6 +677,10 @@ def game_readiness(season: int = 2026, week: int = 1, games=None,
     without it a replay would silently consume whatever has landed since.
     """
     from nfl.capture import coverage as C
+    if written_at is None:
+        _amb = VS.current_clock()
+        if _amb is not None and _amb.written_at:
+            written_at = _amb.written_at
     if games is None:
         p = C.load_week_plan(season, week)
         if p.state.name != 'PASS':
@@ -486,8 +708,21 @@ def game_readiness(season: int = 2026, week: int = 1, games=None,
                     'reason': ('both teams satisfy the frozen input contract'
                                if ready else worst['reason']),
                     'teams': tr})
+    # ONE CUT FOR A SLATE-WIDE ANSWER, AND IT IS THE EARLIEST KICKOFF'S.
+    #
+    # The per-game gates above published sixteen different cuts. A slate-wide
+    # consumer has no single game, so the only cut lawful for ALL of them is
+    # the tightest -- anything later is post-kickoff for whichever game starts
+    # first. The per-game publishes are replaced rather than added to.
+    slate_cuts = [as_of_cut(g['kickoff_utc'], written_at) for g in out]
+    slate_cuts = [c for c in slate_cuts if c is not None]
+    _GATE_CUTS.set(())
+    if slate_cuts:
+        _publish_gate_cut(min(slate_cuts), f'game_readiness:{season}w{week}')
     return {'artifact': 'NONQB_GAME_READINESS', 'season': season, 'week': week,
             'written_at': written_at,
+            'slate_as_of': (min(slate_cuts).isoformat() if slate_cuts
+                            else None),
             'n_games': len(out),
             'n_executable': sum(1 for g in out if g['may_execute_d2']),
             'state_counts': dict(counts),

@@ -63,6 +63,19 @@ from sportsplatform.governance.outcome import Cause, Outcome, State  # noqa: E40
 
 SPEC_VERSION = 'depth-vintage-pit-1'
 
+# WHAT THIS SELECTOR CANNOT ANSWER, STATED WHERE IT IS SELECTED. The capture
+# reducer keeps one `dt` slice per blob and the rest of the series is not
+# persisted, so point-in-time resolution is only as dense as the six blobs
+# that survive. Two missing slices, 2026-09-11T12:21:50Z and
+# 2026-09-12T11:36:06Z, are still inside a retained RAW file and recoverable
+# without a fetch -- that is a retention job, not a selection one, and this
+# module does not reach past its own evidence to fill the gap.
+DURABILITY_CEILING = (
+    '171 of 177 captured depth `dt` slices are persisted nowhere (WS-L); only '
+    '6 reduced blobs survive, one `dt` each. For most historical cutoffs '
+    'there is no stored chart to select, and the correct answer is this '
+    'ceiling rather than the nearest chart that does exist.')
+
 SKILL = ('QB', 'RB', 'WR', 'TE', 'FB', 'HB')
 _NORM = {'FB': 'RB', 'HB': 'RB'}
 
@@ -144,7 +157,38 @@ def weekly(stage, seasons=range(2020, 2025)) -> Outcome:
 
 
 # ---------------------------------------------------------------- daily
+# RL-10. `pos_slot` IS NOT IN THE PERSISTED BLOB, AND THE OLD CODE DID NOT
+# SAY SO.
+#
+# This function read `int(r.get('pos_slot') or 0)` against a reduced blob whose
+# header is `dt,team,gsis_id,pos_abb,pos_rank` -- the reduce step drops
+# `pos_slot` entirely. So the expression evaluated to 0 on every row of every
+# run the system has ever done, and a missing column was indistinguishable from
+# a real slot of 0. That is the project's Class A failure inside a tiebreak:
+# a read that returned nothing, used as a value.
+#
+# MEASURED HARM TODAY IS ZERO, AND THIS IS NOT A BUG FIX WITH AN OUTCOME.
+# Independently reproduced here on all six persisted reduced blobs
+# (2,176-2,222 rows each, one `dt` slice each): 0 tie groups on
+# (dt, team, pos_abb, pos_rank). WS-L measured the same on the three surviving
+# RAW files across 170/174/177 `dt` slices: 0 tie groups. The tiebreak
+# `pos_slot` exists to perform has therefore never been needed, so no number in
+# this repository moves because of this change. What is unknowable is the three
+# LOST vintages, and a silent 0 could not have told anyone.
+#
+# THE REPAIR IS A REFUSAL AT THE POINT THE MISSING COLUMN WOULD DECIDE
+# SOMETHING, not a blanket refusal. Refusing every blob that lacks `pos_slot`
+# would refuse every blob in the tree and take the depth feature out of R7, R8
+# and the product board, for a defect with measured-zero effect. The honest
+# scope is: absence is recorded and declared; a tie that the absent column
+# would have broken is a named FAIL; and where there is no tie, the column
+# cannot change an answer and its absence is stated rather than defaulted.
+SLOT_ABSENT = None
+
+
 def _daily_rows(text):
+    """Yields (dt, team, gsis_id, pos, rank, slot). `slot` is None when the
+    column is absent or unparseable -- NEVER 0, which is a real slot value."""
     for r in csv.DictReader(io.StringIO(text)):
         pos = (r.get('pos_abb') or '').upper()
         if pos not in SKILL or not r.get('gsis_id'):
@@ -153,27 +197,99 @@ def _daily_rows(text):
             rk = int(r['pos_rank'])
         except (TypeError, ValueError, KeyError):
             continue
-        yield (r['dt'], r['team'], r['gsis_id'], _NORM.get(pos, pos), rk,
-               int(r.get('pos_slot') or 0))
+        if 'pos_slot' in r:
+            try:
+                slot = int(r['pos_slot'])
+            except (TypeError, ValueError):
+                slot = SLOT_ABSENT
+        else:
+            slot = SLOT_ABSENT
+        # `pos` is the RAW vendor position and `_NORM.get(pos, pos)` the
+        # normalised one. Both are carried because the two tie kinds below are
+        # different facts and only one of them is pos_slot's business.
+        yield (r['dt'], r['team'], r['gsis_id'], _NORM.get(pos, pos), rk, slot,
+               pos)
+
+
+def _slot_sort(slot):
+    """A sort position for a row whose slot is unknown.
+
+    It is a CONSTANT across every row that lacks the column, so when the column
+    is absent from a whole file -- which is every persisted file -- it cannot
+    change any ordering: the sort falls through to the next key, `gsis_id`,
+    exactly as it did when the old code wrote 0 into every row. That identity
+    is deliberate. This repair is about the missing column being VISIBLE and
+    about refusing where it would decide something; it is not a re-ranking, and
+    no depth rank in this repository moves because of it.
+
+    -1 rather than 0 because 0 is a real slot value and this is not one.
+    """
+    return -1 if slot is SLOT_ABSENT else slot
 
 
 def daily(text) -> Outcome:
     """Daily-schema text -> {team: [(dt, {pid: (rank, pos)}), ...]} in dt order."""
     snap = collections.defaultdict(dict)
-    n = 0
-    for d, team, pid, pos, rk, slot in _daily_rows(text):
+    vendor_groups = collections.defaultdict(set)
+    norm_groups = collections.defaultdict(set)
+    n = n_slot_absent = 0
+    for d, team, pid, pos, rk, slot, pos_raw in _daily_rows(text):
         cur = snap[(team, d)].get(pid)
-        if cur is None or (rk, slot) < (cur[0], cur[2]):
+        if (cur is None
+                or (rk, _slot_sort(slot)) < (cur[0], _slot_sort(cur[2]))):
             snap[(team, d)][pid] = (rk, pos, slot)
+        vendor_groups[(team, d, pos_raw, rk)].add(pid)
+        norm_groups[(team, d, pos, rk)].add(pid)
+        if slot is SLOT_ABSENT:
+            n_slot_absent += 1
         n += 1
     if not snap:
         return Outcome.fail(
             'DEPTH_DAILY_EMPTY',
             'the daily depth source carried no skill-position row with a '
             'resolvable gsis_id and pos_rank')
+    # RL-10. THE TIE THAT THE ABSENT COLUMN WOULD HAVE BROKEN -- AND THE ONE
+    # IT WOULD NOT HAVE.
+    #
+    # These are different facts and collapsing them is what produces either a
+    # silent default or a refusal that takes out the whole feature.
+    #
+    #   VENDOR TIE: two players at the same (team, dt, RAW pos_abb, pos_rank).
+    #   This is what `pos_slot` exists to order -- it ranks within `pos_abb`
+    #   across the formation's slots -- so without it the order is genuinely
+    #   unknown and inventing one is the defect. Measured on all six persisted
+    #   reduced blobs: 0 of 586 groups. It has never fired.
+    #
+    #   NORMALISATION TIE: two players at the same (team, dt, NORMALISED pos,
+    #   pos_rank) but DIFFERENT raw positions, because `_NORM` folds FB and HB
+    #   into RB. Measured on depth_charts.a14e8dfe865a4b03: 14 of 572 groups,
+    #   13 of them {FB, RB} and one {FB, KR, RB}. `pos_slot` would not have
+    #   resolved these even if it were present -- it orders within a single
+    #   `pos_abb`, and these rows come from different ones. This module's own
+    #   normalisation created the collision, so the tiebreak is this module's
+    #   to declare: `gsis_id`, which is what the old `or 0` produced by
+    #   accident. It is recorded rather than left implicit, and no rank moves.
+    contested = sorted(k for k, pids in vendor_groups.items()
+                       if len(pids) > 1
+                       and any(snap[(k[0], k[1])][p][2] is SLOT_ABSENT
+                               for p in pids))
+    if contested:
+        return Outcome.fail(
+            'DEPTH_DAILY_POS_SLOT_REQUIRED_AND_ABSENT',
+            f'{len(contested)} (team, dt, pos_abb, pos_rank) group(s) list '
+            f'more than one player at the SAME vendor position and carry no '
+            f'pos_slot to order them by. pos_slot is dropped by the capture '
+            f'reduction, and the previous code read it as `int(... or 0)`, '
+            f'which made "the column is not in this file" and "this player is '
+            f'in slot 0" the same observation. Refusing to invent the order.',
+            n_contested_groups=len(contested), examples=contested[:5],
+            n_rows_without_pos_slot=n_slot_absent, n_rows=n,
+            remedy='retain pos_slot in the capture reduction for depth_charts '
+                   '(a capture-layer change, not made from here)')
+    collisions = sorted(k for k, pids in norm_groups.items() if len(pids) > 1)
     by_team = collections.defaultdict(list)
     for (team, d), players in snap.items():
-        ranked = _ordinal([((v[0], v[2], pid), pid)
+        ranked = _ordinal([((v[0], _slot_sort(v[2]), pid), pid)
                            for pid, v in players.items()])
         by_team[team].append(
             (d, {pid: (ranked[pid], players[pid][1]) for pid in players}))
@@ -183,6 +299,22 @@ def daily(text) -> Outcome:
                       spec_version=SPEC_VERSION, vendor=DAILY_VENDOR,
                       n_rows=n, n_teams=len(by_team),
                       n_snapshots=sum(len(v) for v in by_team.values()),
+                      # DECLARED, NOT DEFAULTED. A consumer can now see that
+                      # the tiebreak column was absent and that it did not
+                      # matter, instead of seeing a column of zeroes.
+                      n_rows_without_pos_slot=n_slot_absent,
+                      pos_slot_available=(n_slot_absent == 0),
+                      n_vendor_rank_groups=len(vendor_groups),
+                      n_vendor_rank_ties=0,
+                      n_normalisation_rank_collisions=len(collisions),
+                      normalisation_collision_examples=collisions[:5],
+                      normalisation_tiebreak=(
+                          'gsis_id, declared. _NORM folds FB/HB into RB, '
+                          'which '
+                          'can put two players at one normalised rank; '
+                          'pos_slot orders within a single pos_abb and cannot '
+                          'resolve a cross-position collision even when it is '
+                          'present.'),
                       first_dt=min(d for t in by_team for d, _ in by_team[t]),
                       last_dt=max(d for t in by_team for d, _ in by_team[t]))
 
@@ -205,7 +337,8 @@ def daily_point_in_time(by_team, team, before) -> Outcome:
             f'not evidence about an earlier game',
             owed={'team': team, 'before': before.isoformat(),
                   'n_snapshots_held': len(have),
-                  'earliest_held': have[0][0] if have else None})
+                  'earliest_held': have[0][0] if have else None,
+                  'evidence_ceiling': DURABILITY_CEILING})
     d, m = ok[-1]
     return Outcome.ok('DEPTH_PIT_OK', value=m, spec_version=SPEC_VERSION,
                       vendor=DAILY_VENDOR, team=team, chosen_dt=d,
@@ -267,9 +400,14 @@ def captured(teams, observed_before, blobs=None) -> Outcome:
             f'{len(missing)} of {len(teams)} team(s) have no captured depth '
             f'chart predating {observed_before}; the depth feature is refused '
             f'for the slate rather than filled from a later capture',
-            owed={'teams': missing, 'observed_before': str(observed_before)})
+            owed={'teams': missing, 'observed_before': str(observed_before),
+                  'evidence_ceiling': DURABILITY_CEILING})
     return Outcome.ok('DEPTH_CAPTURE_OK', value=out, spec_version=SPEC_VERSION,
                       vendor=DAILY_VENDOR, n_players=len(out),
                       observed_before=str(observed_before), chosen=chosen,
                       n_blobs=len(paths),
+                      evidence_ceiling=DURABILITY_CEILING,
+                      pos_slot_available=d.evidence.get('pos_slot_available'),
+                      n_normalisation_rank_collisions=d.evidence.get(
+                          'n_normalisation_rank_collisions'),
                       blobs=[str(p.relative_to(_REPO)) for p in paths])

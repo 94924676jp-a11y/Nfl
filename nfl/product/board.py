@@ -17,12 +17,15 @@ import gzip
 import json
 import pathlib
 
+from sportsplatform.governance.outcome import Cause, Outcome, State
 from nfl.product import confidence as CONF
 from nfl.product import distributions as D
 from nfl.product import metrics as M
 from nfl.product import thresholds as TH
 
 _REPO = pathlib.Path(__file__).resolve().parents[2]
+
+from nfl.production.nonqb import vintage_selector as VS       # noqa: E402
 
 
 def _parse(t):
@@ -32,14 +35,45 @@ def _parse(t):
     return d if d.tzinfo else d.replace(tzinfo=dt.timezone.utc)
 
 
-def roster_identity(season, week, teams, blob=None):
-    """gsis_id -> position/team, from the same vintage the forecast used."""
+def _sha16_of(path) -> str:
+    """The content hash the capture layer put in the filename. Not a guess.
+
+    Used ONLY as a deterministic tiebreak between two blobs carrying the same
+    vendor `dt`. It is never a selection criterion on its own -- ordering by a
+    content hash is exactly what `team_volume_v1.coaches` does, and WS12 lists
+    that as a selector with no clock.
+    """
+    parts = pathlib.Path(path).name.split('.')
+    return parts[1] if len(parts) > 1 else ''
+
+
+def roster_identity_outcome(season, week, teams, blob=None,
+                            as_of=VS.UNSET) -> Outcome:
+    """gsis_id -> position/team, from the vintage lawful at the cut.
+
+    The old form globbed every reduced roster blob and merged them in filename
+    order, `setdefault` letting whichever file sorted first win. That is the
+    same defect class as L3: a selection resolved by filesystem ordering. The
+    reduced roster carries no row-level clock (season, week, team, gsis_id,
+    position and nothing else), so the capture's `retrieved_at` is the only
+    clock available and the canonical selector applies it.
+    """
+    cut = VS.resolve_as_of(as_of, caller='board.roster_identity')
+    if blob:
+        paths = [_REPO / blob]
+        chosen = {'blob': str(blob), 'basis': 'CALLER_SUPPLIED_BLOB'}
+    else:
+        sel = VS.select('weekly_rosters', as_of=cut)
+        if sel.state is not State.PASS:
+            return sel
+        paths = [sel.value.path()]
+        chosen = {'blob': sel.value.blob,
+                  'retrieved_at': sel.value.retrieved_at,
+                  'content_sha256': sel.value.content_sha256,
+                  'basis': 'VINTAGE_SELECTOR'}
     out = {}
-    paths = ([_REPO / blob] if blob else
-             sorted((_REPO / 'nfl' / 'vintage').glob(
-                 'weekly_rosters.*.reduced.csv.gz')))
     for p in paths:
-        if not p.exists():
+        if not p or not p.exists():
             continue
         for r in csv.DictReader(gzip.open(p, 'rt')):
             if (r.get('season') == str(season) and r.get('week') == str(week)
@@ -47,35 +81,152 @@ def roster_identity(season, week, teams, blob=None):
                 out.setdefault(r['gsis_id'],
                                {'position': r.get('position'),
                                 'team': r.get('team')})
-        if blob:
-            break
-    return out
+    if not out:
+        return Outcome.blocked(
+            'ROSTER_IDENTITY_EMPTY',
+            f'the roster vintage lawful at {cut.isoformat()} carries no '
+            f'{season} week {week} row for {sorted(teams)}. An empty identity '
+            f'map is a refusal, not a board with no players.',
+            cause=Cause.DATA, as_of=cut.isoformat(), chosen=chosen)
+    return Outcome.ok('ROSTER_IDENTITY_OK', value=out,
+                      spec_version=VS.SPEC_VERSION, as_of=cut.isoformat(),
+                      n_players=len(out), chosen=chosen)
 
 
-def depth_rank(season, week, teams, blob=None):
-    """gsis_id -> (pos_abb, rank) from the newest depth chart in the vintage."""
-    out = {}
-    paths = ([_REPO / blob] if blob else
-             sorted((_REPO / 'nfl' / 'vintage').glob(
-                 'depth_charts.*.reduced.csv.gz')))
+def roster_identity(season, week, teams, blob=None, as_of=VS.UNSET):
+    """The dict form. Raises rather than returning a silent empty."""
+    o = roster_identity_outcome(season, week, teams, blob, as_of)
+    if o.state is not State.PASS:
+        raise VS.NoLawfulVintage(f'{o.code}: {o.detail}')
+    return o.value
+
+
+def depth_rank_outcome(season, week, teams, blob=None,
+                       as_of=VS.UNSET) -> Outcome:
+    """gsis_id -> (pos_abb, rank), from the newest chart LAWFUL AT THE CUT.
+
+    L3. WHAT WAS WRONG.
+
+    The old form accepted `season` and `week` and used neither. With
+    `blob=None` it globbed every reduced depth blob, iterated in filename
+    order and did NOT break, so the answer came from the LAST blob in
+    content-hash order that carried rows for those teams. Measured at HEAD
+    837d52f for DAL/NYG, the six blobs carry max `dt` of 2026-09-06, -07, -08,
+    -09, -10 and -13, and the one that answered was 2026-09-08 -- neither the
+    newest nor the point-in-time one. Which error you got depended on a
+    content hash. `run_forecast.py:679` wraps the call in
+    `except Exception: dr = {}`, so a total failure was indistinguishable from
+    every player lacking a rank.
+
+    WHAT CHANGED, AND WHAT DELIBERATELY DID NOT.
+
+    Changed: WHICH chart. The candidate blobs come from the canonical selector
+    rather than from a glob, rows are bounded by the vendor `dt` inside them
+    -- a real publication clock, preferred over retrieval for this family --
+    and the newest lawful `dt` is taken PER TEAM, which is how
+    `depth_vintage.daily_point_in_time` already does it, so the two selectors
+    agree by construction.
+
+    Not changed: HOW a rank is read. This still returns the vendor's raw
+    `pos_abb` and `pos_rank`. `depth_vintage` re-ranks onto a common ordinal
+    scale to bridge the 2020-2024 / 2025-2026 vendor break, and swapping that
+    in here would move R6 tier assignments for a reason that has nothing to do
+    with chronology. One repair, one effect.
+    """
+    cut = VS.resolve_as_of(as_of, caller='board.depth_rank')
+    if blob:
+        paths = [_REPO / blob]
+    else:
+        lawful, rejected = VS.candidates('depth_charts', as_of=cut)
+        if not lawful:
+            return Outcome.blocked(
+                'DEPTH_RANK_CAPTURE_ABSENT',
+                f'no depth capture is lawful at {cut.isoformat()}; '
+                f'{len(rejected)} capture(s) exist and every one is later, '
+                f'unclocked or missing from disk. A later chart is not '
+                f'evidence about an earlier game.',
+                cause=Cause.DATA, as_of=cut.isoformat(),
+                n_rejected=len(rejected),
+                evidence_ceiling=VS.FAMILIES['depth_charts']['ceiling'])
+        paths = [v.path() for v in lawful]
+    # (dt, blob sha16) per team. The sha is a tiebreak between two blobs
+    # carrying the same dt and is never the primary key.
+    best, rows_by_team = {}, {}
+    seen_dt = 0
     for p in paths:
-        if not p.exists():
+        if not p or not p.exists():
             continue
-        rows = [r for r in csv.DictReader(gzip.open(p, 'rt'))
-                if r.get('team') in teams and r.get('gsis_id')]
-        if not rows:
-            continue
-        newest = max(r['dt'] for r in rows)
-        for r in rows:
-            if r['dt'] != newest:
+        sha = _sha16_of(p)
+        for r in csv.DictReader(gzip.open(p, 'rt')):
+            t = r.get('team')
+            if t not in teams or not r.get('gsis_id'):
                 continue
+            d = _parse(r.get('dt'))
+            if d is None:
+                continue
+            seen_dt += 1
+            if d >= cut:                 # STRICTLY before the cut, as
+                continue                 # depth_vintage.daily_point_in_time
+            k = (d, sha)
+            if t not in best or k > best[t]:
+                best[t] = k
+                rows_by_team[t] = []
+            if k == best[t]:
+                rows_by_team[t].append(r)
+    missing = [t for t in teams if t not in best]
+    if missing:
+        return Outcome.deferred(
+            'DEPTH_RANK_NOT_POINT_IN_TIME',
+            f'{len(missing)} of {len(teams)} team(s) have no depth chart '
+            f'stamped before {cut.isoformat()}; {seen_dt} dated row(s) were '
+            f'read and all of them for these teams are later. The rank is '
+            f'refused rather than filled from a later chart.',
+            owed={'teams': sorted(missing), 'as_of': cut.isoformat(),
+                  'n_dated_rows_considered': seen_dt})
+    out, chosen = {}, {}
+    for t, (d, sha) in sorted(best.items()):
+        chosen[t] = {'dt': d.isoformat().replace('+00:00', 'Z'),
+                     'blob_sha16': sha,
+                     'hours_before_cut': round(
+                         (cut - d).total_seconds() / 3600.0, 2),
+                     'n_listed': len(rows_by_team[t])}
+        for r in rows_by_team[t]:
             try:
                 out[r['gsis_id']] = (r['pos_abb'], int(r['pos_rank']))
-            except (TypeError, ValueError):
+            except (TypeError, ValueError, KeyError):
                 continue
-        if blob:
-            break
-    return out
+    if not out:
+        return Outcome.blocked(
+            'DEPTH_RANK_EMPTY',
+            f'a lawful chart was found for every team at {cut.isoformat()} '
+            f'and no row carried a usable pos_abb/pos_rank pair',
+            cause=Cause.DATA, as_of=cut.isoformat(), chosen=chosen)
+    return Outcome.ok(
+        'DEPTH_RANK_OK', value=out, spec_version=VS.SPEC_VERSION,
+        as_of=cut.isoformat(), n_players=len(out), chosen=chosen,
+        n_blobs_considered=len(paths),
+        composite_sha256=VS.composite_hash(
+            {(t, f'{v["dt"]}:{v["blob_sha16"]}') for t, v in chosen.items()}
+        )[:16],
+        selection_rule='per team: max(vendor dt strictly before the cut), '
+                       'tiebroken by blob content hash. Never glob order, '
+                       'never filesystem mtime.')
+
+
+def depth_rank(season, week, teams, blob=None, as_of=VS.UNSET):
+    """The dict form, kept for callers that hold one.
+
+    IT RAISES. A dict cannot express "no lawful chart exists", and the one
+    production caller wrapped this in `except Exception: dr = {}` -- so under
+    the old code a refusal and a chart full of unranked players were the same
+    observation. `depth_rank_outcome` is the governed form and new callers
+    should take it; this one refuses loudly so that the failure-open wrapper
+    at least records something rather than silently ranking nobody.
+    """
+    o = depth_rank_outcome(season, week, teams, blob, as_of)
+    if o.state is not State.PASS:
+        raise VS.NoLawfulVintage(f'{o.code}: {o.detail}')
+    return o.value
 
 
 def freshness(artifact) -> dict:
@@ -165,8 +316,33 @@ def build(directory, season, week, readiness_by_team=None,
     fc = D.Forecast(directory)
     art = fc.artifact
     teams = art.get('team_ids') or []
-    ident = roster_identity(season, week, teams, roster_blob)
-    depth = depth_rank(season, week, teams, depth_blob)
+    # THE BOARD'S CUT COMES FROM THE FORECAST IT IS RENDERING, not from the
+    # clock on the wall. A board re-rendered a week later must show the
+    # information set the forecast was written against, or it is describing
+    # the reader's afternoon -- the same argument `freshness()` already makes
+    # for ages, applied to selection.
+    as_of = VS.as_of_cut(art.get('kickoff_utc'), art.get('written_at'))
+    vintage_refusals = []
+    if as_of is None:
+        vintage_refusals.append(
+            {'input': 'ALL', 'code': 'BOARD_CLOCK_UNRESOLVED',
+             'detail': 'the sealed artifact carries neither written_at nor '
+                       'kickoff_utc, so no cutoff can be derived and no '
+                       'perishable input may be selected'})
+        ident, depth = {}, {}
+    else:
+        io_ = roster_identity_outcome(season, week, teams, roster_blob, as_of)
+        ident = io_.value if io_.state is State.PASS else {}
+        if io_.state is not State.PASS:
+            vintage_refusals.append({'input': 'weekly_rosters',
+                                     'code': io_.code,
+                                     'detail': io_.detail[:300]})
+        do_ = depth_rank_outcome(season, week, teams, depth_blob, as_of)
+        depth = do_.value if do_.state is State.PASS else {}
+        if do_.state is not State.PASS:
+            vintage_refusals.append({'input': 'depth_charts',
+                                     'code': do_.code,
+                                     'detail': do_.detail[:300]})
     ready = readiness_by_team or {}
 
     players = []
@@ -230,6 +406,20 @@ def build(directory, season, week, readiness_by_team=None,
         'eligibility_verdict': art.get('eligibility_verdict'),
         'authorization': authorization_state(art),
         'freshness': freshness(art),
+        'vintage_selection': {
+            'as_of': as_of.isoformat() if as_of is not None else None,
+            'basis': 'min(written_at, kickoff - 1us) from the sealed artifact',
+            'spec_version': VS.SPEC_VERSION,
+            'roster': (io_.evidence.get('chosen')
+                       if as_of is not None and io_.state is State.PASS
+                       else None),
+            'depth': (do_.evidence.get('chosen')
+                      if as_of is not None and do_.state is State.PASS
+                      else None),
+            # NAMED, NOT ABSENT. A board that could not select a perishable
+            # input says so on its face; the column going blank is not the
+            # report.
+            'refusals': vintage_refusals},
         'readiness': ready,
         'players': players,
         'n_players': len(players),
