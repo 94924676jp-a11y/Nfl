@@ -1,0 +1,324 @@
+"""PROPOSED, NOT APPLIED. Q9 sealing determinism, proved by re-running it.
+
+    python3.12 nfl/tests/test_q9_seal_determinism.py
+
+This file is deliberately named `.py.proposed` under
+`nfl/research/parallel_pass/ws01/` so `run_suite.py` cannot collect it. To adopt
+it, move it to `nfl/tests/test_q9_seal_determinism.py` -- and only together with
+the `_code_commit` repair in WS01_Q9_DETERMINISM.md, because WITHOUT that repair
+test_01 FAILS. That is the point: this test has to be able to fail.
+
+WHY THIS EXISTS, AND WHAT IT REPLACES
+
+`test_q9_prospective_shadow.test_21_the_dry_run_proof_holds` reads
+`Q9_PROSPECTIVE_DRYRUN_PROOF.json` and asserts `pr['n_failed'] == 0`. It never
+re-runs anything. It was green on this tree while two seals of identical inputs
+differed on artifact_id, forecast_id, seal_payload_sha256 and
+identity_fingerprint. A test that asserts a stored file contains a zero proves
+that a file contains a zero.
+
+THE DEFECT THIS TEST IS SHAPED AGAINST
+
+`seal._code_commit()` appended `+dirty[n]`, where n counted EVERY line of
+`git status --porcelain`. That count is inside `code_commit`, which is inside
+the sealed payload, inside `artifact.REQUIRED`, and inside
+`ExecutionIdentity.code_version`. And `seal_team_game` samples it BEFORE it
+writes the draws, so sealing one forecast changed the identity recorded by the
+next one. A forecast's identity was a function of that forecast having been
+written.
+
+So test_01 does not merely seal twice. It WRITES A FILE INTO THE REPOSITORY
+BETWEEN THE TWO SEALS, which is precisely what the old implementation could not
+survive. Sealing twice without that write would pass even against the defect, as
+long as no new untracked path appeared -- which is exactly how the committed
+proof came to say PASS.
+
+WHAT THIS TEST WRITES, AND WHERE. Nothing outside a temporary directory, except
+one deliberate scratch file whose only purpose is to perturb `git status`, which
+is deleted in a `finally`. The seal ledger is rebound to a temp path so no
+repository ledger is appended to.
+"""
+from __future__ import annotations
+
+import hashlib
+import json
+import os
+import pathlib
+import shutil
+import subprocess
+import sys
+import tempfile
+
+import numpy as np
+
+_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if _ROOT not in sys.path:
+    sys.path.insert(0, _ROOT)
+
+from nfl.prospective.q9shadow import seal as SEAL                      # noqa: E402
+from nfl.prospective.q9shadow import shadow as SH                      # noqa: E402
+
+PASSED = FAILED = 0
+
+# The proof's own frozen slice, so this test and the dry-run proof are talking
+# about the same thing rather than about two conveniently chosen runs.
+SEASON, N_GAMES, N_DRAWS = 2024, 1, 120
+WRITTEN_AT = '2026-09-12T12:00:00Z'
+
+# Every field whose equality IS the determinism claim. `code_commit` is in the
+# list on purpose: when it is the thing that moved, the failure should name it
+# rather than print two unexplained hashes.
+IDENTITY_KEYS = ('code_commit', 'spec_hash', 'feature_set_hash',
+                 'draw_artifact_sha256', 'draw_content_sha256',
+                 'forecast_id', 'artifact_id')
+
+# `draw_artifact` is the OUTPUT LOCATION and must never be an identity field.
+# It is asserted to differ between the two runs, which is what makes test_01's
+# agreement on everything else non-vacuous: if the two runs wrote to the same
+# directory the comparison would prove much less.
+LOCATION_KEY = 'draw_artifact'
+
+
+def _status_lines():
+    """How many paths `git status --porcelain` reports. Whole tree, on purpose."""
+    out = subprocess.run(['git', 'status', '--porcelain'], cwd=str(SEAL._REPO),
+                         capture_output=True, text=True, timeout=20).stdout
+    return len([x for x in out.splitlines() if x.strip()])
+
+
+def check(label, ok, detail=''):
+    """Record one check and RETURN the verdict.
+
+    Returning it is load-bearing: several checks below are written
+    `if not check(...): return`, to stop a test rather than cascade twenty
+    failures off one refused seal. A `check` that returned None made every one
+    of those an unconditional early return, so the tests printed one green line
+    each and exercised nothing. Found by running it.
+    """
+    global PASSED, FAILED
+    ok = bool(ok)
+    if ok:
+        PASSED += 1
+        print(f'  ok   {label}' + (f'  {detail}' if detail else ''))
+    else:
+        FAILED += 1
+        print(f'  FAIL {label}' + (f'  {detail}' if detail else ''))
+    return ok
+
+
+def _seal(out_root):
+    """One dry-run seal of the frozen slice. Identical arguments every time."""
+    return SEAL.seal_season(
+        SEASON, source=SH.HISTORICAL_FRAME, n_games=N_GAMES,
+        out_root=out_root, n_draws=N_DRAWS, written_at=WRITTEN_AT,
+        dry_run=True)
+
+
+def _ident(out):
+    """The identity rows of a seal result, keyed by team, in a stable order."""
+    return {s.value['team']: {k: s.value.get(k) for k in IDENTITY_KEYS}
+            | {'seal_payload_sha256': s.value['seal']['payload_sha256'],
+               'identity_fingerprint': s.value['seal']['identity_fingerprint'],
+               LOCATION_KEY: s.value.get(LOCATION_KEY)}
+            for s in out['sealed']}
+
+
+# ============================================================== test 01
+def test_01_two_seals_agree_across_a_repository_write():
+    """The load-bearing test. Seal, DIRTY THE TREE, seal again, compare.
+
+    `out_root` must be inside the repository because `seal_team_game` calls
+    `draws_path.relative_to(_REPO)`. Both roots are removed in the `finally`.
+    """
+    print('\n-- two seals of identical inputs, with a repository write between --')
+    scratch = pathlib.Path(SEAL._REPO) / 'nfl' / 'prospective' / 'q9shadow' \
+        / 'dryrun' / '_determinism_probe'
+    perturb = scratch / 'perturbs_git_status.json'
+    ledger_was = SEAL.DRYRUN_SEAL_LEDGER
+    tmpled = pathlib.Path(tempfile.mkdtemp(prefix='q9det-')) / 'ledger.jsonl'
+    SEAL.DRYRUN_SEAL_LEDGER = tmpled
+    try:
+        shutil.rmtree(scratch, ignore_errors=True)
+        a = _seal(scratch / 'run1')
+        if not check('the first seal produced forecasts',
+                     a['status'] == 'OK' and a['sealed'],
+                     f"{a['status']} {str(a.get('detail'))[:120]}"):
+            return
+
+        # THE PERTURBATION. A NEW untracked path, created between the two
+        # seals, exactly as the first seal's own output used to be. Against the
+        # unrepaired `_code_commit` this alone moves every id below.
+        n0 = _status_lines()
+        perturb.parent.mkdir(parents=True, exist_ok=True)
+        perturb.write_text('{"why": "a non-source write must not move a '
+                           'forecast identity"}\n')
+        n1 = _status_lines()
+        # NON-VACUITY, AND IT IS NOT OPTIONAL. `git status --porcelain`
+        # COLLAPSES an untracked directory to ONE line, so a scratch path that
+        # happens to sit inside an already-untracked parent adds nothing to the
+        # count and this whole test degrades into a silent pass. That is
+        # exactly how the committed dry-run proof came to report PASS while the
+        # property was false. If this check fails, MOVE the scratch directory
+        # to a path whose creation produces a new status line -- do not delete
+        # the check.
+        check('  the perturbation produced a NEW git status line '
+              '(non-vacuity: without this the test cannot detect the defect '
+              'it exists for)',
+              n1 > n0, f'{n0} -> {n1} status line(s); scratch={scratch}')
+
+        b = _seal(scratch / 'run2')
+        if not check('the second seal produced forecasts',
+                     b['status'] == 'OK' and b['sealed'],
+                     f"{b['status']} {str(b.get('detail'))[:120]}"):
+            return
+
+        ia, ib = _ident(a), _ident(b)
+        check('both runs sealed the same team-games',
+              sorted(ia) == sorted(ib), f'{sorted(ia)} vs {sorted(ib)}')
+        check('  more than one team-game was sealed (non-vacuity)',
+              len(ia) >= 2, str(len(ia)))
+
+        for team in sorted(set(ia) & set(ib)):
+            x, y = ia[team], ib[team]
+            # The location MUST differ, or the comparison below is weaker
+            # than it looks.
+            check(f'  {team}: the two runs wrote to different locations',
+                  x[LOCATION_KEY] != y[LOCATION_KEY],
+                  str(x[LOCATION_KEY])[-60:])
+            for k in list(IDENTITY_KEYS) + ['seal_payload_sha256',
+                                            'identity_fingerprint']:
+                check(f'  {team}: {k} is identical across the two seals',
+                      x[k] == y[k],
+                      '' if x[k] == y[k] else f'{x[k]} != {y[k]}')
+    finally:
+        SEAL.DRYRUN_SEAL_LEDGER = ledger_was
+        shutil.rmtree(scratch, ignore_errors=True)
+        shutil.rmtree(tmpled.parent, ignore_errors=True)
+
+
+# ============================================================== test 02
+def test_02_the_draws_are_bit_identical():
+    """Separate the model from the metadata. The DRAWS are the forecast."""
+    print('\n-- the predictive draws, byte for byte --')
+    scratch = pathlib.Path(SEAL._REPO) / 'nfl' / 'prospective' / 'q9shadow' \
+        / 'dryrun' / '_determinism_probe_draws'
+    ledger_was = SEAL.DRYRUN_SEAL_LEDGER
+    tmpled = pathlib.Path(tempfile.mkdtemp(prefix='q9det-')) / 'ledger.jsonl'
+    SEAL.DRYRUN_SEAL_LEDGER = tmpled
+    try:
+        shutil.rmtree(scratch, ignore_errors=True)
+        a = _seal(scratch / 'run1')
+        b = _seal(scratch / 'run2')
+        if not check('both seals produced forecasts',
+                     a['status'] == 'OK' and b['status'] == 'OK'
+                     and a['sealed'] and b['sealed']):
+            return
+        repo = pathlib.Path(SEAL._REPO)
+        for sa, sb in zip(a['sealed'], b['sealed']):
+            team = sa.value['team']
+            p1 = repo / sa.value['draw_artifact']
+            p2 = repo / sb.value['draw_artifact']
+            check(f'  {team}: the two draw files are at different paths',
+                  p1 != p2)
+            check(f'  {team}: the .npz containers are byte-identical',
+                  p1.read_bytes() == p2.read_bytes(),
+                  f'{hashlib.sha256(p1.read_bytes()).hexdigest()[:16]} vs '
+                  f'{hashlib.sha256(p2.read_bytes()).hexdigest()[:16]}')
+            z1, z2 = np.load(p1), np.load(p2)
+            names = sorted(z1.files)
+            check(f'  {team}: the same arrays are present',
+                  names == sorted(z2.files))
+            # NOT `==`, and not `allclose`. Equal VALUES and equal DTYPES, so
+            # a float32/float64 change cannot pass as "identical".
+            check(f'  {team}: every array is equal in value and in dtype',
+                  all(np.array_equal(z1[k], z2[k])
+                      and z1[k].dtype == z2[k].dtype for k in names),
+                  f'{len(names)} array(s)')
+            check(f'  {team}: there are arrays to compare (non-vacuity)',
+                  len(names) >= 4, str(len(names)))
+            check(f'  {team}: draw_content_sha256 matches the file hash claim',
+                  sa.value['draw_content_sha256']
+                  == sb.value['draw_content_sha256'])
+    finally:
+        SEAL.DRYRUN_SEAL_LEDGER = ledger_was
+        shutil.rmtree(scratch, ignore_errors=True)
+        shutil.rmtree(tmpled.parent, ignore_errors=True)
+
+
+# ============================================================== test 03
+def test_03_code_commit_is_a_function_of_source_only():
+    """The narrow unit check, so a regression names the FIELD not a hash.
+
+    Without this, a future reintroduction of the whole-tree count shows up only
+    as two differing 64-character strings in test_01, and whoever reads that
+    has to redo this entire investigation.
+    """
+    print('\n-- code_commit must not move when a non-source file appears --')
+    repo = pathlib.Path(SEAL._REPO)
+    scratch = repo / 'nfl' / 'prospective' / 'q9shadow' / 'dryrun' \
+        / '_codecommit_probe'
+    f = scratch / 'not_source.json'
+    try:
+        before = SEAL._code_commit()
+        check('code_commit names the HEAD commit',
+              len(str(before).split('+')[0]) == 40, str(before)[:60])
+        scratch.mkdir(parents=True, exist_ok=True)
+        f.write_text('{"kind": "artifact, not code"}\n')
+        after = SEAL._code_commit()
+        check('creating a NEW untracked non-source file does not move it',
+              before == after, '' if before == after else f'{before} != {after}')
+        # And the deletion must not move it either, or the value depends on
+        # the order in which a run happens to clean up after itself.
+        f.unlink()
+        scratch.rmdir()
+        check('  removing it again does not move it either',
+              SEAL._code_commit() == before)
+    finally:
+        if f.exists():
+            f.unlink()
+        shutil.rmtree(scratch, ignore_errors=True)
+
+
+# ============================================================== test 04
+def test_04_the_identity_survives_the_seals_own_side_effects():
+    """The self-reference, checked directly rather than through a hash.
+
+    `seal_team_game` samples `_code_commit()` and THEN writes the draws. This
+    asserts the sample is stable across exactly that sequence.
+    """
+    print('\n-- the seal must not change its own code version --')
+    scratch = pathlib.Path(SEAL._REPO) / 'nfl' / 'prospective' / 'q9shadow' \
+        / 'dryrun' / '_selfref_probe'
+    ledger_was = SEAL.DRYRUN_SEAL_LEDGER
+    tmpled = pathlib.Path(tempfile.mkdtemp(prefix='q9det-')) / 'ledger.jsonl'
+    SEAL.DRYRUN_SEAL_LEDGER = tmpled
+    seen = []
+    real = SEAL._code_commit
+    SEAL._code_commit = lambda: (lambda v: (seen.append(v), v)[1])(real())
+    try:
+        shutil.rmtree(scratch, ignore_errors=True)
+        out = _seal(scratch / 'run1')
+        if not check('the seal produced forecasts', out['status'] == 'OK'):
+            return
+        check('  _code_commit was sampled once per team-game (non-vacuity)',
+              len(seen) >= 2, str(len(seen)))
+        check('every sample inside one run is the same value',
+              len(set(seen)) == 1, str(sorted(set(seen))))
+    finally:
+        SEAL._code_commit = real
+        SEAL.DRYRUN_SEAL_LEDGER = ledger_was
+        shutil.rmtree(scratch, ignore_errors=True)
+        shutil.rmtree(tmpled.parent, ignore_errors=True)
+
+
+def main():
+    test_01_two_seals_agree_across_a_repository_write()
+    test_02_the_draws_are_bit_identical()
+    test_03_code_commit_is_a_function_of_source_only()
+    test_04_the_identity_survives_the_seals_own_side_effects()
+    print(f'\n{PASSED} passed, {FAILED} failed')
+    return 1 if FAILED else 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())

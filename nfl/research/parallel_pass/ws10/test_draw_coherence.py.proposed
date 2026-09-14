@@ -1,0 +1,395 @@
+#!/usr/bin/env python3.12
+"""WS10 PROPOSED invariants: per-draw coherence of sealed draw artifacts.
+
+NOT COLLECTED BY THE SUITE. Saved as `.py.proposed` on purpose. Run it by hand:
+
+    python3.12 nfl/research/parallel_pass/ws10/test_draw_coherence.py.proposed
+
+WHAT AN INVARIANT IS HERE
+
+Every check below asserts something that is OBJECTIVELY IMPOSSIBLE in a real
+football game -- not unlikely, not undesirable, not a calibration preference. A
+check that merely encodes what a good forecast ought to look like is NOT in
+this file; the ones considered and rejected are listed in REJECTED_INVARIANTS
+at the bottom with the reason each was rejected.
+
+ROW ACCESS. Rows are keyed by `manifest['layers'][layer]['row_ids']` and joined
+to a team through `board.json['players']`. Nothing here indexes a row by
+position. A prior defect in this project crossed two players' distributions
+exactly that way, so the helper `_rows_for_team` is the only path to a row set
+and it takes gsis ids, never integers.
+
+A CHECK OVER ZERO CELLS HAS NOT PASSED. `main` refuses if it scanned no run,
+no draw, or no cell, and each invariant carries its own cells-checked count.
+This mirrors nfl/production/nonqb/accounting.py's NONQB_ACCOUNTING_VACUOUS.
+
+STATUS AS MEASURED 2026-09-14 over 101 sealed runs / 115,000 draws:
+    I1  qb_completions_within_attempts ......... FAILS   5,278 cells, 33 runs
+    I2  qb_passing_td_within_completions ....... FAILS     731 cells, 33 runs
+    I3  qb_zero_completions_zero_passing_yards . FAILS  11,616 cells, 33 runs
+    I4  qb_dropback_identity .................... HOLDS 838,000 cells
+    I5  counts_non_negative ..................... HOLDS
+    I6  receptions_within_targets ............... HOLDS 1,396,000 cells
+    I7  receiving_td_within_receptions .......... HOLDS 1,396,000 cells
+    I8  zero_receptions_zero_receiving_yards .... HOLDS 1,396,000 cells
+    I9  rushing_td_within_carries ............... HOLDS 381,000 cells
+    I10 team_targets_within_team_attempts ....... HOLDS  94,000 team-draws
+    I11 qb_dropbacks_close_on_team_budget ....... HOLDS 230,000 team-draws
+    I12 team_scrambles_within_team_carries ...... FAILS       9 cells,  9 runs
+    I13 rb_plus_qb_carries_within_team_carries .. FAILS   6,186 cells, 33 runs
+    I14 inactive_non_qb_owns_nothing ............ HOLDS (post-inactives runs)
+
+I12 and I13 are STORED-ARTIFACT checks and both are confounded by finding F1
+(the artifact stores the raw D1 carry vector, not the SC1-coupled one the game
+actually partitioned). They are still invariants -- a scramble is a rush
+attempt -- but a failure of either cannot today be attributed between "the
+allocation double-counts a carry" and "the artifact stored the wrong vector".
+F1 must be closed before either can be read as an allocation defect.
+
+CODE CHANGED: NO. This file reads sealed artifacts and nothing else.
+"""
+from __future__ import annotations
+
+import glob
+import json
+import os
+import sys
+
+import numpy as np
+
+REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..'))
+LIVE = os.path.join(REPO, 'nfl', 'research', 'live')
+GLOB = '2026_01_*/*/*/player_draws.npz'
+
+# Integer float32/float64 accumulation allowance. NOT a modelling allowance:
+# no invariant here is given a tolerance chosen to make a run pass.
+TOL = 1e-6
+
+
+class Result:
+    def __init__(self, name, why_impossible):
+        self.name = name
+        self.why = why_impossible
+        self.cells_checked = 0
+        self.violations = 0
+        self.runs = set()
+        self.worst = None
+
+    def record(self, run, mask, severity, rows, describe, checked):
+        self.cells_checked += int(checked)
+        n = int(np.count_nonzero(mask))
+        if not n:
+            return
+        self.violations += n
+        self.runs.add(run)
+        sev = np.where(mask, severity, -np.inf)
+        idx = np.unravel_index(int(np.argmax(sev)), sev.shape)
+        i, j = (idx if sev.ndim == 2 else (0, idx[0]))
+        who = rows[i] if sev.ndim == 2 else rows
+        mag = float(sev[idx])
+        if self.worst is None or mag > self.worst['magnitude']:
+            self.worst = {'magnitude': mag, 'run': run, 'row': who,
+                          'draw': int(j), 'values': describe(i, j)}
+
+    def report(self):
+        state = 'PASS' if self.violations == 0 else 'FAIL'
+        if self.cells_checked == 0:
+            state = 'VACUOUS'
+        line = (f'{state:7s} {self.name:42s} '
+                f'{self.violations:>8,} / {self.cells_checked:>10,} cell(s)'
+                f'  runs={len(self.runs)}')
+        if self.worst:
+            w = self.worst
+            line += (f'\n         worst: {w["run"]} row={w["row"]} '
+                     f'draw={w["draw"]} {w["values"]} (excess {w["magnitude"]:g})')
+        return state, line
+
+
+def _load(run_dir):
+    man = json.load(open(os.path.join(run_dir, 'player_draws_manifest.json')))
+    z = np.load(os.path.join(run_dir, 'player_draws.npz'))
+    board = json.load(open(os.path.join(run_dir, 'board.json')))
+    return man, z, board
+
+
+def _rows_for_team(man, layer, team_of, team):
+    """Row INDICES for one team, resolved through gsis ids. Never positional."""
+    ids = man['layers'].get(layer, {}).get('row_ids', [])
+    return [i for i, g in enumerate(ids) if team_of.get(g) == team], ids
+
+
+def _official_inactives(game_dir):
+    p = os.path.join(game_dir, 'INACTIVES_INGESTION.json')
+    if not os.path.exists(p):
+        return None
+    for s in json.load(open(p)).get('steps', []):
+        if s.get('code') == 'POST_INACTIVES_COMPLETE':
+            return {g: t for t, ids in (s.get('inactive_by_team') or {}).items()
+                    for g in ids}
+    return None
+
+
+def main() -> int:
+    R = {
+        'I1': Result('qb_completions_within_attempts',
+                     'a completion IS a pass attempt. Every completed forward '
+                     'pass is scored as an attempt by the same passer, so '
+                     'cmp > att describes a completion that was never thrown.'),
+        'I2': Result('qb_passing_td_within_completions',
+                     'a passing touchdown requires a completed pass into the '
+                     'end zone, so it is a completion. ptd > cmp is a scoring '
+                     'play with no pass to score on.'),
+        'I3': Result('qb_zero_completions_zero_passing_yards',
+                     'passing yards accrue only on completed passes. A passer '
+                     'with no completion in a draw gained exactly zero passing '
+                     'yards in that draw; any other value is yardage from a '
+                     'play that did not happen.'),
+        'I4': Result('qb_dropback_identity',
+                     'the layer defines db == att + sacks + scr. A dropback '
+                     'ends in exactly one of those three, so the identity is '
+                     'a partition, not an approximation.'),
+        'I5': Result('counts_non_negative',
+                     'a negative count of attempts, catches or carries is not '
+                     'a small count, it is an impossible one.'),
+        'I6': Result('receptions_within_targets',
+                     'a reception IS a target. Catching a pass not thrown at '
+                     'you is not a football event.'),
+        'I7': Result('receiving_td_within_receptions',
+                     'a receiving touchdown is a reception.'),
+        'I8': Result('zero_receptions_zero_receiving_yards',
+                     'receiving yards accrue on catches. No catch in the draw '
+                     'means exactly zero receiving yards -- note this is the '
+                     'ZERO identity, NOT yards >= 0: a catch for a loss is '
+                     'ordinary football and negative yards are legitimate.'),
+        'I9': Result('rushing_td_within_carries',
+                     'a rushing touchdown requires a carry in the SAME draw.'),
+        'I10': Result('team_targets_within_team_attempts',
+                      'every target is a pass thrown by that team in that '
+                      'draw, so the team target count cannot exceed the team '
+                      'attempt count. This is the budget C3 actually consumes.'),
+        'I11': Result('qb_dropbacks_close_on_team_budget',
+                      'under R2 the team dropback level is an integer '
+                      'apportioned across the QB room. Every dropback belongs '
+                      'to exactly one passer, so the room sums to the budget.'),
+        'I12': Result('team_scrambles_within_team_carries',
+                      'a scramble IS a rush attempt (repo measurement: '
+                      'team_carries >= scrambles in 3,230 of 3,230 historical '
+                      'team-games). A team cannot scramble more often than it '
+                      'ran the ball.'),
+        'I13': Result('rb_plus_qb_carries_within_team_carries',
+                      'running-back carries and quarterback rush attempts are '
+                      'DISJOINT subsets of the team rush-attempt count, which '
+                      'also contains WR/TE carries and kneels. Their sum '
+                      'exceeding the team total means one carry was credited '
+                      'twice. The check is conservative: WR/TE carries and '
+                      'kneels are on the right-hand side only.'),
+        'I14': Result('inactive_non_qb_owns_nothing',
+                      'a player on the official gameday inactive list cannot '
+                      'take a snap. QUARTERBACKS ARE EXCLUDED from this '
+                      'invariant: the NFL emergency-third-QB rule lets a '
+                      'designated inactive quarterback enter, so an inactive '
+                      'QB with volume is extraordinarily improbable but not '
+                      'impossible. No such rule exists for any other position.'),
+    }
+
+    runs = sorted(glob.glob(os.path.join(LIVE, GLOB)))
+    n_runs = n_draws = 0
+    for npz in runs:
+        run_dir = os.path.dirname(npz)
+        cfg = os.path.basename(os.path.dirname(run_dir))
+        game_dir = os.path.dirname(os.path.dirname(run_dir))
+        tag = os.path.relpath(run_dir, LIVE)
+        man, z, board = _load(run_dir)
+        team_of = {p['gsis_id']: p.get('team') for p in board['players']}
+        pos_of = {p['gsis_id']: p.get('position') for p in board['players']}
+        m = int(man['n_draws'])
+        n_runs += 1
+        n_draws += m
+        L = man['layers']
+
+        if 'qb' in L:
+            q = L['qb']['row_ids']
+            att = z['qb__att'].astype(np.int64)
+            cmp_ = z['qb__cmp'].astype(np.int64)
+            db = z['qb__db'].astype(np.int64)
+            sk = z['qb__sacks'].astype(np.int64)
+            scr = z['qb__scr'].astype(np.int64)
+            ptd = z['qb__ptd'].astype(np.int64)
+            pyds = z['qb__pyds'].astype(np.float64)
+            R['I1'].record(tag, cmp_ > att, cmp_ - att, q,
+                           lambda i, j: f'cmp={cmp_[i, j]} att={att[i, j]}',
+                           att.size)
+            R['I2'].record(tag, ptd > cmp_, ptd - cmp_, q,
+                           lambda i, j: f'ptd={ptd[i, j]} cmp={cmp_[i, j]}',
+                           att.size)
+            R['I3'].record(tag, (cmp_ == 0) & (np.abs(pyds) > TOL), np.abs(pyds), q,
+                           lambda i, j: f'cmp=0 pyds={pyds[i, j]:.4f} att={att[i, j]}',
+                           att.size)
+            lhs = att + sk + scr
+            R['I4'].record(tag, lhs != db, np.abs(lhs - db), q,
+                           lambda i, j: f'att+sacks+scr={lhs[i, j]} db={db[i, j]}',
+                           att.size)
+
+        if 'receiving' in L:
+            r = L['receiving']['row_ids']
+            tg = z['receiving__targets'].astype(np.int64)
+            rc = z['receiving__receptions'].astype(np.int64)
+            ry = z['receiving__receiving_yards'].astype(np.int64)
+            rtd = z['receiving__receiving_td'].astype(np.int64)
+            R['I6'].record(tag, rc > tg, rc - tg, r,
+                           lambda i, j: f'rec={rc[i, j]} tgt={tg[i, j]}', tg.size)
+            R['I7'].record(tag, rtd > rc, rtd - rc, r,
+                           lambda i, j: f'rec_td={rtd[i, j]} rec={rc[i, j]}', tg.size)
+            R['I8'].record(tag, (rc == 0) & (ry != 0), np.abs(ry), r,
+                           lambda i, j: f'rec=0 yds={ry[i, j]}', tg.size)
+
+        if 'rushing' in L:
+            u = L['rushing']['row_ids']
+            ca = z['rushing__carries'].astype(np.float64)
+            ci = np.rint(ca)
+            rd = z['rushing__rushing_td'].astype(np.int64)
+            R['I9'].record(tag, rd > ci + TOL, rd - ci, u,
+                           lambda i, j: f'rush_td={rd[i, j]} carries={ca[i, j]:.4f}',
+                           ca.size)
+
+        # I5 -- every COUNT matrix. Yardage matrices are excluded on purpose:
+        # negative receiving and rushing yards are ordinary football.
+        for key, rows in (('qb__att', 'qb'), ('qb__cmp', 'qb'), ('qb__db', 'qb'),
+                          ('qb__sacks', 'qb'), ('qb__scr', 'qb'), ('qb__int', 'qb'),
+                          ('qb__ptd', 'qb'), ('qb__rtd', 'qb'), ('qb__rush_opp', 'qb'),
+                          ('receiving__targets', 'receiving'),
+                          ('receiving__receptions', 'receiving'),
+                          ('receiving__receiving_td', 'receiving'),
+                          ('rushing__carries', 'rushing'),
+                          ('rushing__rushing_td', 'rushing'),
+                          ('team_volume__team_carries', 'team_volume'),
+                          ('team_volume__team_targets', 'team_volume'),
+                          ('team_volume__team_off_snaps', 'team_volume'),
+                          ('team_volume__team_dropbacks_part', 'team_volume'),
+                          ('team_volume__team_rz_carries', 'team_volume')):
+            if rows not in L or key not in z.files:
+                continue
+            a = z[key].astype(np.float64)
+            R['I5'].record(tag, a < 0, -a, L[rows]['row_ids'],
+                           lambda i, j, a=a, key=key: f'{key}={a[i, j]}', a.size)
+
+        if 'team_volume' in L:
+            tids = L['team_volume']['row_ids']
+            tc = z['team_volume__team_carries'].astype(np.float64)
+            tdb = z['team_volume__team_dropbacks_part'].astype(np.float64)
+            for ti, t in enumerate(tids):
+                qr, _ = _rows_for_team(man, 'qb', team_of, t)
+                rr, _ = _rows_for_team(man, 'receiving', team_of, t)
+                ur, _ = _rows_for_team(man, 'rushing', team_of, t)
+                lab = [f'TEAM {t}']
+                if qr and rr:
+                    st = z['receiving__targets'].astype(np.int64)[rr].sum(0)
+                    sa = z['qb__att'].astype(np.int64)[qr].sum(0)
+                    R['I10'].record(tag, (st > sa)[None, :], (st - sa)[None, :], lab,
+                                    lambda i, j: f'targets={st[j]} attempts={sa[j]}', m)
+                if qr:
+                    sd = z['qb__db'].astype(np.float64)[qr].sum(0)
+                    bud = np.rint(tdb[ti])
+                    R['I11'].record(tag, (np.abs(sd - bud) > TOL)[None, :],
+                                    np.abs(sd - bud)[None, :], lab,
+                                    lambda i, j: f'sum_db={sd[j]:.0f} budget={bud[j]:.0f}', m)
+                    ss = z['qb__scr'].astype(np.float64)[qr].sum(0)
+                    R['I12'].record(tag, (ss > tc[ti] + TOL)[None, :],
+                                    (ss - tc[ti])[None, :], lab,
+                                    lambda i, j: f'scrambles={ss[j]:.0f} team_carries={tc[ti][j]:.4f}', m)
+                if qr and ur:
+                    sc = z['rushing__carries'].astype(np.float64)[ur].sum(0)
+                    sq = z['qb__rush_opp'].astype(np.float64)[qr].sum(0)
+                    tot = sc + sq
+                    R['I13'].record(tag, (tot > tc[ti] + TOL)[None, :],
+                                    (tot - tc[ti])[None, :], lab,
+                                    lambda i, j: (f'rb={sc[j]:.4f} qb_rush={sq[j]:.0f} '
+                                                  f'team_carries={tc[ti][j]:.4f}'), m)
+
+        # I14 -- post-inactives runs only. A pre-inactives run projecting a
+        # player who is later declared inactive is the information set working
+        # correctly, not a defect, so those runs are not examined here.
+        inact = _official_inactives(game_dir) if cfg.startswith('post_inactives') else None
+        if inact:
+            for lay, keys in (('receiving', ['receiving__targets']),
+                              ('rushing', ['rushing__carries'])):
+                if lay not in L:
+                    continue
+                ids = L[lay]['row_ids']
+                for i, g in enumerate(ids):
+                    if g not in inact or pos_of.get(g) == 'QB':
+                        continue
+                    vol = sum(np.rint(z[k].astype(np.float64)[i]) for k in keys)
+                    R['I14'].record(tag, (vol > 0)[None, :], vol[None, :], [g],
+                                    lambda a, j, g=g, lay=lay, vol=vol:
+                                        f'{g} pos={pos_of.get(g)} layer={lay} volume={vol[j]:.0f}',
+                                    m)
+
+    if n_runs == 0 or n_draws == 0:
+        print('VACUOUS: no sealed run matched '
+              f'{os.path.join(LIVE, GLOB)}. A check that examined no cell has '
+              'not passed.')
+        return 2
+
+    print(f'scanned {n_runs} sealed run(s), {n_draws:,} draw(s)\n')
+    failed = vacuous = 0
+    for k in sorted(R, key=lambda s: (len(s), s)):
+        state, line = R[k].report()
+        print(f'{k:4s} {line}')
+        failed += state == 'FAIL'
+        vacuous += state == 'VACUOUS'
+    print()
+    for k in sorted(R, key=lambda s: (len(s), s)):
+        if R[k].violations:
+            print(f'{k} WHY IMPOSSIBLE: {R[k].why}')
+    print(f'\n{failed} invariant(s) violated, {vacuous} vacuous.')
+    return 1 if (failed or vacuous) else 0
+
+
+# ---------------------------------------------------------------------------
+# CONSIDERED AND REJECTED. Each of these would be a preference dressed as an
+# invariant, and none is in the checks above.
+REJECTED_INVARIANTS = {
+    'sum_player_targets_within_D1_team_targets': (
+        'REJECTED. Violated in 38,464 of 94,000 team-draws, but the C3 shared-'
+        'pass architecture declares `d1_team_targets_unused: True` -- the '
+        'target budget is the quarterbacks attempts, not the D1 '
+        '`team_volume/team_targets` level. The consumed budget closure is I10 '
+        'and it holds. The disagreement is an artifact-hygiene defect (F2), '
+        'not a broken identity.'),
+    'receiving_yards_non_negative': (
+        'REJECTED. nfl/production/nonqb/accounting.py already records that '
+        'this identity WAS the defect: RC1 resamples real per-catch gains and '
+        'a reception for a loss is ordinary football. 8,213 negative cells are '
+        'legitimate. I8 -- the zero identity -- is the correct form.'),
+    'qb_passing_yards_integer_valued': (
+        'REJECTED as an invariant. Realised passing yards are integers and '
+        '22.75% of stored qb/pyds cells are not, because credit_to_passers '
+        'splits the team total by a continuous attempt share. A continuous '
+        'predictive representation of an integer quantity is a legitimate '
+        'modelling choice, so this is reported as finding F4 rather than '
+        'enforced.'),
+    'team_carries_integer_valued': (
+        'REJECTED. The D1 level is continuous by declaration and rushing_a1 '
+        'REFUSES a non-integer budget unless the caller declares '
+        '`level_rounding`. Rounding is a declared decision, not an invariant.'),
+    'wr1_receives_at_least_one_target': (
+        'REJECTED -- a calibration preference, not an impossibility. 72 '
+        'receiving rows are identically zero across every draw and all are '
+        'WR3-WR7, TE3-TE4, RB2-RB3. Zero targets for a deep-depth player is a '
+        'legitimate forecast, and no depth rank makes a target compulsory.'),
+    'officially_inactive_qb_owns_nothing': (
+        'REJECTED as an absolute invariant, kept as a DIAGNOSTIC. The NFL '
+        'emergency-third-QB rule lets a club designate a quarterback who is ON '
+        'the inactive list and may enter the game. Both observed violators '
+        '(SF 00-0040589, LA 00-0041568, 5 sealed SF@LA runs) are QB3. This is '
+        'defect D04 in nfl/research/live/OPEN_DEFECTS.json, recorded as '
+        'repaired at 622fdd5 AFTER these boards were sealed. I14 covers every '
+        'other position, where no such rule exists.'),
+    'predicted_team_total_matches_the_book': (
+        'REJECTED and named so it is never added. A sportsbook line is an '
+        'external comparison, not a coherence constraint.'),
+}
+
+if __name__ == '__main__':
+    sys.exit(main())

@@ -1,0 +1,295 @@
+#!/usr/bin/env python3.12
+"""WS18 REGRESSION TEST -- reproducibility of the simulation path.
+
+PROPOSED, NOT INSTALLED. Saved as `.py.proposed` so the suite does not collect
+it. WS18 changed no repository file.
+
+    python3.12 nfl/research/parallel_pass/ws18/test_ws18_reproducibility.py.proposed
+
+WHAT IT LOCKS, AND WHY EACH PART EXISTS
+
+1.  FUNCTION LEVEL, IN PROCESS. Every draw-producing function in the predictive
+    path is called twice with identical arguments and the arrays compared
+    BITWISE, not by moments. A mean that matches to six places is not the same
+    draw.
+
+2.  FUNCTION LEVEL, ACROSS PROCESSES AND ACROSS PYTHONHASHSEED. The same
+    digests are recomputed in child processes at PYTHONHASHSEED=0 and
+    PYTHONHASHSEED=12345. This is the defect `nfl/production/seeds.py` was
+    written to end (`hash(cls) % 9973`, randomised per process), and a test
+    that only repeats a call inside ONE process cannot see it -- the whole
+    point of the defect is that the stream is fixed for the life of a process.
+
+3.  A POSITIVE CONTROL, WHICH IS THE PART THAT MAKES 2 EVIDENCE. The child
+    processes also report `hash('targets') % 9973`. If that does NOT differ
+    across them, the harness is not sensitive to per-process hash
+    randomisation and every pass above is vacuous. A guard is not demonstrated
+    because compliant data passes it.
+
+4.  A SOURCE SCAN for Python `hash()` inside a seed vector anywhere under
+    nfl/production and nfl/prospective, by AST rather than by grep, so a
+    comment mentioning hash() does not trip it and a real call cannot hide
+    behind one.
+
+5.  TWO CHARACTERISATION LOCKS on behaviour WS18 measured and did not fix.
+    They assert what the code does today, so that a silent change is visible.
+    They are not endorsements of the behaviour -- see WS18_REPRODUCIBILITY.md
+    sections F2 and F3.
+"""
+from __future__ import annotations
+
+import ast
+import hashlib
+import json
+import os
+import pathlib
+import subprocess
+import sys
+
+import numpy as np
+
+_REPO = pathlib.Path(__file__).resolve().parents[4]
+for _p in (str(_REPO), str(_REPO / 'nfl' / 'research' / 'p4c'),
+           str(_REPO / 'nfl' / 'research' / 'qb3')):
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
+
+PASSED = FAILED = 0
+
+
+def check(label, ok, detail=''):
+    global PASSED, FAILED
+    if ok:
+        PASSED += 1
+        print(f'  ok   {label}')
+    else:
+        FAILED += 1
+        print(f'  FAIL {label}  {detail}')
+    return bool(ok)
+
+
+# ====================================================================== probe
+IDS = ['p1', 'p2', 'p3']
+PAR = {'add_pool': {'WR': np.array([0.0, 0.01, -0.01], np.float32)},
+       'mass_pool': np.array([0.01, 0.02], np.float32), 'mass_mean': 0.011}
+RECV = {'pos_catch_rate': {'WR': 0.63},
+        'pos_yardage_pool': {'WR': np.array([3., 9., 14., -2., 27.])},
+        'own': {}, 'k_shrink': 4.0}
+TD = {'B_pos': {'WR': 0.0489}, 'B_league': 0.0465,
+      'pos_catch_rate': {'WR': 0.63}}
+ORD = 202601
+M = 64
+GID = '2026_01_ATL_PIT'
+
+
+def _h(a):
+    a = np.ascontiguousarray(a)
+    return f'{hashlib.sha256(a.tobytes()).hexdigest()[:16]}|{a.dtype}|{a.shape}'
+
+
+def probe():
+    """Every draw this test compares, as {name: digest}. Pure; no I/O."""
+    from nfl.production import seeds as SEEDS
+    from nfl.production.nonqb import layers as LY
+    from nfl.production.nonqb import rushing_a1 as A1
+    import p4c_build as PB
+    import p4c_lib as PL
+    import qb3_lib as Q3
+
+    out = {}
+    for ns, names in SEEDS.STREAMS.items():
+        for n in names:
+            out[f'seeds.stream_id/{ns}/{n}'] = SEEDS.stream_id(ns, n).value
+    for g in (GID, '2026_01_SF_LA', '2026_18_NYJ_BUF'):
+        out[f'seeds.game_component/{g}'] = SEEDS.game_component(g).value
+    for t in ('ATL', 'PIT', 'SF', 'LA'):
+        out[f'a1.team_component/{t}'] = A1.team_component(t).value
+    for s in A1.STREAMS:
+        out[f'a1.stream_component/{s}'] = A1.stream_component(s).value
+    # THE POSITIVE CONTROL. Must VARY across processes, or this probe is blind.
+    out['CONTROL_builtin_hash'] = hash('targets') % 9973
+
+    fx = {'_test_only': True, 'practice_progression': True,
+          'teammate_availability': True,
+          'p_appear': {'p1': 0.9, 'p2': 0.55, 'p3': 0.2}}
+    ap = LY.appearance(2026, 1, [{'gsis_id': i} for i in IDS], fixture=fx,
+                       m=M, game_id=GID)
+    assert ap.state.name == 'PASS', ap.code
+    for k, v in ap.value.items():
+        out[f'layers.appearance/{k}'] = _h(v)
+    pa = LY.participation(ap, {'p1': 0.6, 'p2': 0.3, 'p3': 0.1}, m=M)
+    out['layers.participation'] = _h(np.stack([np.asarray(pa.value[i])
+                                               for i in IDS]))
+    for cls in ('targets', 'carries'):
+        tc = LY.targets_carries(pa, cls, [0.6, 0.3, 0.1], ['WR'] * 3,
+                                ([0], [3]), IDS, PAR, m=M, game_id=GID,
+                                ordinal=ORD)
+        assert tc.state.name == 'PASS', (cls, tc.code)
+        out[f'layers.targets_carries/{cls}/share'] = _h(tc.value['share'])
+        out[f'layers.targets_carries/{cls}/other'] = _h(tc.value['other'])
+        if cls != 'targets':
+            continue
+        T = tc.value['share'] * 30
+        cv = LY.receiving_conversion(tc, T, RECV, IDS, ['WR'] * 3, ORD, m=M)
+        for k in sorted(cv.value):
+            out[f'layers.receiving_conversion/{k}'] = _h(np.asarray(cv.value[k]))
+        tdo = LY.td_layer(cv, T, TD, IDS, ['WR'] * 3, ORD, m=M)
+        for k in sorted(tdo.value):
+            out[f'layers.td_layer/{k}'] = _h(np.asarray(tdo.value[k]))
+
+    rng = np.random.default_rng([20260908, 3, ORD])
+    out['p4c_build.gen_weights'] = _h(PB.gen_weights(
+        'C', np.asarray([0.6, 0.3, 0.1], np.float32), ['WR'] * 3, PAR,
+        'targets', 3, M, rng))
+    out['p4c_build.mass_draws'] = _h(np.asarray(PB.mass_draws('C', PAR, 1, M,
+                                                              rng)))
+    a = np.arange(40) % 7
+    b = (np.arange(40) * 3) % 5
+    out['p4c_lib.block_boot'] = json.dumps(
+        PL.block_boot(a, b, [f'g{i % 9}' for i in range(40)]), sort_keys=True)
+
+    cells = [Q3.cell_of(1, True), Q3.cell_of(2, False)]
+    q_par = {'p_primary': {cells[0]: 0.9, cells[1]: 0.1},
+             'share_pool': {cells[0]: np.array([0.8, 0.9, 0.95]),
+                            cells[1]: np.array([0.4, 0.5])}}
+    out['qb3_lib.allocate'] = _h(Q3.allocate(
+        q_par, [('q1', 1, True), ('q2', 2, False)], m=M, ordinal=ORD,
+        team='ATL'))
+    return {k: str(v) for k, v in out.items()}
+
+
+# ============================================================== 1. in process
+def test_1_function_level_in_process():
+    print('\n1. FUNCTION LEVEL -- two identical calls, one process, bitwise')
+    r1, r2 = probe(), probe()
+    diff = sorted(k for k in r1 if r1[k] != r2[k])
+    check(f'{len(r1)} draw/stream digests reproduce inside one process',
+          not diff, f'differing: {diff}')
+    check('the probe actually produced draws (empties are errors)',
+          len(r1) >= 30 and all(r1.values()), f'n={len(r1)}')
+    return r1
+
+
+# ================================================== 2+3. across process / seed
+def _child(hashseed):
+    env = dict(os.environ)
+    env['PYTHONHASHSEED'] = str(hashseed)
+    code = (f'import sys; sys.path.insert(0, {str(_REPO)!r});'
+            f'sys.argv=[{str(__file__)!r}];'
+            f'import json,runpy;'
+            f'm=runpy.run_path({str(__file__)!r}, run_name="_ws18_child");'
+            f'print(json.dumps(m["probe"](), sort_keys=True))')
+    r = subprocess.run([sys.executable, '-c', code], capture_output=True,
+                       text=True, env=env, cwd=str(_REPO), timeout=600)
+    if r.returncode != 0:
+        raise SystemExit(f'WS18_CHILD_FAILED (PYTHONHASHSEED={hashseed}):\n'
+                         f'{r.stderr[-2000:]}')
+    return json.loads(r.stdout.strip().splitlines()[-1])
+
+
+def test_2_across_processes_and_hashseeds(base):
+    print('\n2. FUNCTION LEVEL -- child processes at PYTHONHASHSEED 0 / 12345')
+    # A LIST, NOT A DICT. Keyed by hashseed, the repeat of 0 collapses onto
+    # the first and the stability half of the control silently disappears.
+    kids = [(hs, _child(hs)) for hs in (0, 12345, 0)]
+    draws = [k for k in base if k != 'CONTROL_builtin_hash']
+    for hs, r in kids[:2]:
+        d = sorted(k for k in draws if r.get(k) != base[k])
+        check(f'every draw identical at PYTHONHASHSEED={hs}', not d,
+              f'differing: {d[:8]}')
+    print('\n3. THE POSITIVE CONTROL -- without it the above is vacuous')
+    ctrl = [r['CONTROL_builtin_hash'] for _, r in kids]
+    check('builtin hash() DOES vary with PYTHONHASHSEED, so the probe can see '
+          'per-process hash randomisation',
+          len(set(ctrl[:2])) == 2, f'control values {ctrl}')
+    check('and is stable at a FIXED PYTHONHASHSEED, so the control is a '
+          'control and not noise', ctrl[0] == ctrl[2], f'{ctrl[0]} vs {ctrl[2]}')
+
+
+# ======================================================== 4. AST scan for hash
+def test_4_no_python_hash_in_a_seed_vector():
+    print('\n4. Python hash() reaches no seed vector in production')
+    roots = [_REPO / 'nfl' / 'production', _REPO / 'nfl' / 'prospective']
+    hits = []
+    for root in roots:
+        for p in sorted(root.rglob('*.py')):
+            try:
+                tree = ast.parse(p.read_text())
+            except SyntaxError as exc:                          # noqa: PERF203
+                hits.append(f'{p}: UNPARSEABLE {exc}')
+                continue
+            for node in ast.walk(tree):
+                if (isinstance(node, ast.Call)
+                        and isinstance(node.func, ast.Name)
+                        and node.func.id == 'hash'):
+                    hits.append(f'{p.relative_to(_REPO)}:{node.lineno}')
+    check('no live hash() call under nfl/production or nfl/prospective',
+          not hits, f'{hits}')
+    # The scanner must be able to SEE one, or its silence means nothing.
+    seeded = ast.parse("rng = default_rng([s, hash('carries') % 9973])")
+    found = [n for n in ast.walk(seeded)
+             if isinstance(n, ast.Call) and isinstance(n.func, ast.Name)
+             and n.func.id == 'hash']
+    check('the AST scanner detects a seeded hash() call when one is present',
+          len(found) == 1, f'found {len(found)}')
+
+
+# ============================================ 5. characterisations, not fixes
+def test_5_characterisations():
+    print('\n5. CHARACTERISATION LOCKS -- what the code does today, unfixed')
+    from nfl.production import run_forecast as RUN
+    import argparse
+    args = argparse.Namespace(season=2026, week=1, game_id=GID, arm='A',
+                              written_at='2026-09-13T15:46:51Z', seed=20260908,
+                              model_configuration='V1_CANDIDATE_R8')
+    src = {'a': {'sha256': 'x'}}
+    i31 = RUN.execution_identity(args, src, 'abc+dirty[31]')
+    i31b = RUN.execution_identity(args, src, 'abc+dirty[31]')
+    i32 = RUN.execution_identity(args, src, 'abc+dirty[32]')
+    # F3: the dirty marker is a COUNT. Two different working trees carrying the
+    # same NUMBER of modified files produce the same execution identity, and a
+    # tree that gains one unrelated file produces a different one. Both halves
+    # are recorded so a repair to either is visible here.
+    check('execution identity is stable at a fixed code_commit string',
+          i31 == i31b)
+    check('execution identity CHANGES when the dirty COUNT changes -- so a '
+          'run id moves for reasons unrelated to the model (WS18 F3)',
+          i31 != i32)
+
+    from nfl.production import team_volume_v1 as TV
+    o2 = TV.forecast(2026, 1, ['ATL', 'PIT'], m=64,
+                     game_pairs=[('ATL', 'PIT')])
+    o4 = TV.forecast(2026, 1, ['ATL', 'PIT', 'SF', 'LA'], m=64,
+                     game_pairs=[('ATL', 'PIT'), ('SF', 'LA')])
+    if o2.state.name != 'PASS' or o4.state.name != 'PASS':
+        check('team_volume slate-composition characterisation ran', False,
+              f'{o2.code} / {o4.code}')
+        return
+    def dg(o):
+        return {k: _h(np.asarray(v)) for k, v in o.value.items()}
+    d2, d4 = dg(o2), dg(o4)
+    first = [k for k in d2 if k[1] == 'ATL']
+    later = [k for k in d2 if k[1] == 'PIT']
+    # F2: team_volume_v1 seeds [seed, ordinal, stream_id] with NO game
+    # component and consumes one stream row by row in sorted team order, so a
+    # team's draws depend on WHICH OTHER TEAMS are on the slate. ATL sorts
+    # first and is unaffected; PIT is not.
+    check('team_volume: the first team in sorted order is composition-'
+          'invariant', all(d2[k] == d4[k] for k in first))
+    check('team_volume: a later team CHANGES with slate composition -- the '
+          'documented WS18 F2 dependence', all(d2[k] != d4[k] for k in later),
+          'F2 appears to have been repaired; update WS18_REPRODUCIBILITY.md '
+          'rather than deleting this check')
+
+
+def main():
+    base = test_1_function_level_in_process()
+    test_2_across_processes_and_hashseeds(base)
+    test_4_no_python_hash_in_a_seed_vector()
+    test_5_characterisations()
+    print(f'\n{PASSED} passed, {FAILED} failed')
+    return 1 if FAILED else 0
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())
