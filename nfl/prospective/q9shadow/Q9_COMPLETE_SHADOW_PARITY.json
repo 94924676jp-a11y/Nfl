@@ -1,0 +1,203 @@
+{
+ "artifact": "NFL_Q9_COMPLETE_SHADOW_PARITY",
+ "spec_version": "q9-complete-paired-shadow-1",
+ "candidate": "Q9_TARGET_HURDLE",
+ "promoted": false,
+ "shadow_only": true,
+ "season": 2024,
+ "n_team_games_built": 3,
+ "n_draws": 150,
+ "owner_ruling_implemented": {
+  "protocol_section_2": "UNCHANGED",
+  "partial_artifacts": "scored diagnostically; no section-4 credit; cannot support promotion",
+  "relabelling": "REFUSED -- a single-layer artifact is not called COMPLETE",
+  "route": "a paired R8-vs-Q9 artifact that is complete, or a truthful partial state"
+ },
+ "required_layers": [
+  "team_volume",
+  "qb_attempts",
+  "qb_passing_yards",
+  "qb_td",
+  "carries",
+  "targets",
+  "receptions",
+  "receiving_yards",
+  "td_allocation"
+ ],
+ "required_layers_source": "nfl.research.completeness.LAYERS",
+ "layer_partition": {
+  "shared": {
+   "team_volume": "the team-volume layer is upstream of every allocation and is drawn once; Q9 consumes its budget and does not change it",
+   "qb_attempts": "the quarterback layer is a different allocation entirely",
+   "qb_passing_yards": "downstream of the QB layer, not of target allocation",
+   "qb_td": "downstream of the QB layer, not of target allocation",
+   "carries": "the accepted P4C carry allocation. Q9 changes TARGET allocation only, and the Q8 budget repair was REJECTED, so the carry path is unchanged"
+  },
+  "arm": {
+   "targets": "the divergence point itself",
+   "receptions": "drawn from each arm's own target draws",
+   "receiving_yards": "drawn from each arm's own receptions",
+   "td_allocation": "drawn from each arm's own receptions"
+  },
+  "check": "PASS[Q9_LAYER_PARTITION_COVERS_REQUIRED]",
+  "detail": "5 shared + 4 arm = 9 required layer(s)"
+ },
+ "divergence_point": "receiving target allocation (nfl.research.q9.hurdle)",
+ "completeness_gate": {
+  "full_matrix_reads": "COMPLETE",
+  "one_layer_dropped_reads": {
+   "team_volume": "PARTIAL_PLAYER_COVERAGE",
+   "qb_attempts": "PARTIAL_PLAYER_COVERAGE",
+   "qb_passing_yards": "PARTIAL_PLAYER_COVERAGE",
+   "qb_td": "PARTIAL_PLAYER_COVERAGE",
+   "carries": "PARTIAL_PLAYER_COVERAGE",
+   "targets": "PARTIAL_PLAYER_COVERAGE",
+   "receptions": "PARTIAL_PLAYER_COVERAGE",
+   "receiving_yards": "PARTIAL_PLAYER_COVERAGE",
+   "td_allocation": "PARTIAL_PLAYER_COVERAGE"
+  },
+  "gate_is_not_vacuous": true,
+  "note": "a synthetic all-PASS matrix reads COMPLETE and dropping any single required layer takes it away. Both directions are checked because only one of them is the failure mode."
+ },
+ "shared_layers_not_run_here": {
+  "team_volume": "NOT_MODELED_IN_PAIRED_RESEARCH_SLICE",
+  "qb_attempts": "NOT_MODELED_IN_PAIRED_RESEARCH_SLICE",
+  "qb_passing_yards": "NOT_MODELED_IN_PAIRED_RESEARCH_SLICE",
+  "qb_td": "NOT_MODELED_IN_PAIRED_RESEARCH_SLICE",
+  "carries": "NOT_MODELED_IN_PAIRED_RESEARCH_SLICE"
+ },
+ "arm_chain_blocker": {
+  "code": [
+   "RECEIVING_FRAME_CARRIES_FORECAST_SEASON"
+  ],
+  "measured_priors_availability": {
+   "2026": "PASS",
+   "2025": "FAIL",
+   "2024": "FAIL"
+  },
+  "why": "frozen_priors.receiving_priors refuses whenever the committed RC1 frame holds a row from the forecast season or later, because pools() would train on the season being forecast. The frame runs through 2025, so the priors exist for 2026 and for no historical slice. That is a leakage guard working, and it is the reason the downstream receiving layers are BLOCKED here rather than produced from a refused prior.",
+  "consequence": "the arm chain is demonstrable on the LIVE season and not on a historical one. The same code produces all four arm layers there with no change."
+ },
+ "team_games": [
+  {
+   "game_id": "2024_01_ARI",
+   "team": "ARI",
+   "n_players": 19,
+   "n_draws": 150,
+   "layer_matrix": {
+    "team_volume": "NOT_MODELED_IN_PAIRED_RESEARCH_SLICE",
+    "qb_attempts": "NOT_MODELED_IN_PAIRED_RESEARCH_SLICE",
+    "qb_passing_yards": "NOT_MODELED_IN_PAIRED_RESEARCH_SLICE",
+    "qb_td": "NOT_MODELED_IN_PAIRED_RESEARCH_SLICE",
+    "carries": "NOT_MODELED_IN_PAIRED_RESEARCH_SLICE",
+    "targets": "PASS",
+    "receptions": "BLOCKED:RECEIVING_FRAME_CARRIES_FORECAST_SEASON:R8_PRODUCTION",
+    "receiving_yards": "BLOCKED:RECEIVING_FRAME_CARRIES_FORECAST_SEASON:R8_PRODUCTION",
+    "td_allocation": "BLOCKED:RECEIVING_FRAME_CARRIES_FORECAST_SEASON:R8_PRODUCTION"
+   },
+   "governed_verdict": "PARTIAL",
+   "contract_completeness": "PARTIAL_PLAYER_COVERAGE",
+   "single_divergence": "PASS[Q9_COMPLETE_SINGLE_DIVERGENCE]",
+   "arm_layers_differing": [
+    "targets"
+   ],
+   "shared_upstream_identical": [
+    "appearance_draws",
+    "p_hurdle",
+    "team_budget_draws"
+   ],
+   "mean_targets": {
+    "R8_PRODUCTION": 1.70947,
+    "Q9_HURDLE": 1.70947
+   },
+   "receiving_chain_blocked_by": "RECEIVING_FRAME_CARRIES_FORECAST_SEASON",
+   "mean_receptions": null,
+   "mean_receiving_yards": null
+  },
+  {
+   "game_id": "2024_01_ATL",
+   "team": "ATL",
+   "n_players": 20,
+   "n_draws": 150,
+   "layer_matrix": {
+    "team_volume": "NOT_MODELED_IN_PAIRED_RESEARCH_SLICE",
+    "qb_attempts": "NOT_MODELED_IN_PAIRED_RESEARCH_SLICE",
+    "qb_passing_yards": "NOT_MODELED_IN_PAIRED_RESEARCH_SLICE",
+    "qb_td": "NOT_MODELED_IN_PAIRED_RESEARCH_SLICE",
+    "carries": "NOT_MODELED_IN_PAIRED_RESEARCH_SLICE",
+    "targets": "PASS",
+    "receptions": "BLOCKED:RECEIVING_FRAME_CARRIES_FORECAST_SEASON:R8_PRODUCTION",
+    "receiving_yards": "BLOCKED:RECEIVING_FRAME_CARRIES_FORECAST_SEASON:R8_PRODUCTION",
+    "td_allocation": "BLOCKED:RECEIVING_FRAME_CARRIES_FORECAST_SEASON:R8_PRODUCTION"
+   },
+   "governed_verdict": "PARTIAL",
+   "contract_completeness": "PARTIAL_PLAYER_COVERAGE",
+   "single_divergence": "PASS[Q9_COMPLETE_SINGLE_DIVERGENCE]",
+   "arm_layers_differing": [
+    "targets"
+   ],
+   "shared_upstream_identical": [
+    "appearance_draws",
+    "p_hurdle",
+    "team_budget_draws"
+   ],
+   "mean_targets": {
+    "R8_PRODUCTION": 1.53267,
+    "Q9_HURDLE": 1.53267
+   },
+   "receiving_chain_blocked_by": "RECEIVING_FRAME_CARRIES_FORECAST_SEASON",
+   "mean_receptions": null,
+   "mean_receiving_yards": null
+  },
+  {
+   "game_id": "2024_01_BAL",
+   "team": "BAL",
+   "n_players": 18,
+   "n_draws": 150,
+   "layer_matrix": {
+    "team_volume": "NOT_MODELED_IN_PAIRED_RESEARCH_SLICE",
+    "qb_attempts": "NOT_MODELED_IN_PAIRED_RESEARCH_SLICE",
+    "qb_passing_yards": "NOT_MODELED_IN_PAIRED_RESEARCH_SLICE",
+    "qb_td": "NOT_MODELED_IN_PAIRED_RESEARCH_SLICE",
+    "carries": "NOT_MODELED_IN_PAIRED_RESEARCH_SLICE",
+    "targets": "PASS",
+    "receptions": "BLOCKED:RECEIVING_FRAME_CARRIES_FORECAST_SEASON:R8_PRODUCTION",
+    "receiving_yards": "BLOCKED:RECEIVING_FRAME_CARRIES_FORECAST_SEASON:R8_PRODUCTION",
+    "td_allocation": "BLOCKED:RECEIVING_FRAME_CARRIES_FORECAST_SEASON:R8_PRODUCTION"
+   },
+   "governed_verdict": "PARTIAL",
+   "contract_completeness": "PARTIAL_PLAYER_COVERAGE",
+   "single_divergence": "PASS[Q9_COMPLETE_SINGLE_DIVERGENCE]",
+   "arm_layers_differing": [
+    "targets"
+   ],
+   "shared_upstream_identical": [
+    "appearance_draws",
+    "p_hurdle",
+    "team_budget_draws"
+   ],
+   "mean_targets": {
+    "R8_PRODUCTION": 1.52889,
+    "Q9_HURDLE": 1.52889
+   },
+   "receiving_chain_blocked_by": "RECEIVING_FRAME_CARRIES_FORECAST_SEASON",
+   "mean_receptions": null,
+   "mean_receiving_yards": null
+  }
+ ],
+ "problems": [],
+ "contract_completeness_today": "PARTIAL_PLAYER_COVERAGE",
+ "is_eligible_forecast_under_section_2": false,
+ "status": "PAIRED_BUILD_OK",
+ "what_is_still_needed_for_COMPLETE": {
+  "layers": [
+   "carries",
+   "qb_attempts",
+   "qb_passing_yards",
+   "qb_td",
+   "team_volume"
+  ],
+  "owner": "the production forecast path (nfl/production/run_forecast.py) already produces team_volume and the three QB layers on the live slate; `carries` needs the non-QB chain, which is blocked at appearance by INJURY_REPORT_INCOMPLETE",
+  "composition": "the complete artifact composes a production forecast (shared layers) with the two target-allocation arms (arm layers) on one set of upstream draws. Nothing about that composition is blocked by Q9"
+ }
+}

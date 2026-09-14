@@ -9,6 +9,9 @@
  "ledger_path": "nfl/prospective/q9shadow/Q9_PROSPECTIVE_LEDGER.jsonl",
  "schema": "nfl/prospective/q9shadow/Q9_PROSPECTIVE_LEDGER_SCHEMA.json",
  "accounting": {
+  "rows_on_ledger": 0,
+  "rows_without_admissibility_verdict": 0,
+  "admissibility_note": "a row is counted only when score_game stamped it currently_admissible under the contract in force at scoring time. Rows predating that stamp remain on the ledger and count toward no evidence unit.",
   "scoring_rows": 0,
   "graded_metrics": 0,
   "distinct_games": 0,
@@ -33,6 +36,9 @@
   },
   "scoring_rows_including_non_evidence": 0,
   "rows_excluded_as_non_evidence": 0,
+  "rows_excluded_by_evidence_flag": 0,
+  "rows_excluded_by_seal_path": 0,
+  "exclusion_note": "a row must carry BOTH prospective_evidence and seal_path_governed to be counted. The two exclusions overlap and are reported separately so neither can be assumed from the other.",
   "distinct_arms": [],
   "arm_pairing_note": "R8_PRODUCTION and Q9_HURDLE rows for one player-game are a paired comparison on shared upstream draws. They add one player-game to the sample, not two.",
   "eligible_player_game_forecasts": 0,
@@ -96,14 +102,19 @@
  "sample_governed": true,
  "sample_governed_note": "the repository contains a governed prospective-evidence threshold (protocol section 4), so this work uses it. PROSPECTIVE_SAMPLE_NOT_YET_GOVERNED is NOT the applicable state and is not reported.",
  "live_eligibility": {
-  "status": "BLOCKED[Q9_LIVE_PREGAME_FEATURE_BUILD_UNIMPLEMENTED]",
+  "status": "NOTHING_SEALED",
+  "census_scope": {
+   "n_games_attempted": 16,
+   "note": "a bounded REPORTING scope covering the next eligible kickoffs, not the whole season. Bounding the census changes which games are listed, never whether any would pass."
+  },
   "candidate_gate": "PASS[Q9_CANDIDATE_MATCHES_FREEZE]",
-  "n_games_ahead_of_clock": 270,
+  "n_games_ahead_of_clock": 16,
   "n_sealed": 0,
   "refusal_census": {
-   "BLOCKED[Q9_LIVE_PREGAME_FEATURE_BUILD_UNIMPLEMENTED]": 270
+   "DEFERRED[INJURY_REPORT_INCOMPLETE]": 28,
+   "DEFERRED[INJURY_REPORT_NOT_YET_FILED]": 4
   },
-  "refusal_detail": "there is no pregame feature builder for the live season. The Q6 frame refuses 2026 rows by design, production declares feature_build STAGE_DECLARED_UNIMPLEMENTED, and the appearance layer refuses on an incomplete injury report. Refused by name with the requirement list attached rather than stubbed: a stub returning plausible features would produce a sealed forecast that looks prospective and measures nothing.",
+  "refusal_detail": "",
   "requirements_for_the_live_path": {
    "prior_appeared_game_history": "h_target_freq, h_participation_ewma, h_share_given_positive and h_appeared_games over strictly earlier APPEARED games. Available from seasons <= 2025 in the committed panel.",
    "point_in_time_role_class": "role_class from trailing snap share, or from the lawful depth-chart vintage when no trail exists. The 2026 depth-chart captures exist.",
@@ -115,14 +126,23 @@
   }
  },
  "blockers": {
-  "LIVE_PREGAME_FEATURE_BUILD_UNIMPLEMENTED": {
-   "owner": "this repository",
-   "what": "there is no pregame feature builder for the live season. nfl.research.q6.frame.load_frame refuses 2026 rows by design and production reports feature_build STAGE_DECLARED_UNIMPLEMENTED.",
-   "blocks": "every 2026 seal, for both arms",
-   "needs_bytes_from_outside": false
+  "COMPLETE_ARTIFACT_LAYERS_ABSENT": {
+   "owner": "the production forecast path",
+   "what": "protocol section 2 requires completeness == COMPLETE for an eligible forecast, and that means all nine required layers from nfl.research.completeness.LAYERS. The paired shadow build currently carries the target layer; team_volume, the three QB layers and carries come from the production run, and the downstream receiving layers need frozen_priors.receiving_priors, which refuses on any historical slice by its own leakage guard (RECEIVING_FRAME_CARRIES_FORECAST_SEASON; measured: 2026 PASS, 2025 FAIL, 2024 FAIL).",
+   "blocks": "section-4 credit and any promotion evidence",
+   "needs_bytes_from_outside": false,
+   "independent_of": [
+    "INJURY_REPORT_INCOMPLETE",
+    "G0A_11_OF_12"
+   ],
+   "artifact": "nfl/prospective/q9shadow/Q9_COMPLETE_SHADOW_PARITY.json"
   },
   "INJURY_REPORT_INCOMPLETE": {
    "owner": "the agent that holds network egress",
+   "independent_of": [
+    "G0A_11_OF_12",
+    "COMPLETE_ARTIFACT_LAYERS_ABSENT"
+   ],
    "what": "the 2026 injury captures carry rows whose report_status is unfilled, and nfl.production.nonqb.inputs refuses that by name. An unfiled designation is not an absence of injury and may not be defaulted to healthy.",
    "blocks": "the upstream appearance layer, and therefore both arms",
    "needs_bytes_from_outside": true,
@@ -130,10 +150,109 @@
   },
   "G0A_11_OF_12": {
    "owner": "governance",
+   "independent_of": [
+    "INJURY_REPORT_INCOMPLETE",
+    "COMPLETE_ARTIFACT_LAYERS_ABSENT"
+   ],
+   "remaining_item_artifact": "nfl/prospective/q9shadow/Q9_G0A_REMAINING_ITEM.json",
+   "remaining_item": "item 1 -- kickoff-anchored vintage capture scheduled and demonstrably running. Root cause EGRESS. No waiver requested.",
    "what": "protocol section 1 says no forecast written before G0A is discharged counts toward promotion. nfl.production.authorization.gate_state reports G0A 11/12.",
    "blocks": "the countability of any seal, even a valid one",
    "needs_bytes_from_outside": true
   }
+ },
+ "blocker_states": {
+  "COMPLETE_ARTIFACT_LAYERS_ABSENT": {
+   "state": "BLOCKED",
+   "detail": "completeness is PARTIAL_PLAYER_COVERAGE",
+   "evaluator": "_eval_complete_layers"
+  },
+  "INJURY_REPORT_INCOMPLETE": {
+   "state": "BLOCKED",
+   "detail": "159 captured row(s) carry no report_status",
+   "evaluator": "_eval_injury_report"
+  },
+  "G0A_11_OF_12": {
+   "state": "BLOCKED",
+   "detail": "G0A_ITEM_NOT_CLEARED",
+   "evaluator": "_eval_g0a"
+  }
+ },
+ "blocker_independence": {
+  "state": "PASS[Q9_BLOCKERS_MECHANICALLY_INDEPENDENT]",
+  "detail": "3 blocker(s), 3 distinct evaluator(s); forcing each CLEARED in turn moved no other",
+  "n_blockers": 3,
+  "n_perturbations": 3,
+  "method": "each blocker forced CLEARED in turn; every other recomputed from its own evaluator and required to be unchanged"
+ },
+ "resolved_blockers": {
+  "LIVE_PREGAME_FEATURE_BUILD_UNIMPLEMENTED": {
+   "resolved_on": "2026-09-12",
+   "resolved_by": "nfl/prospective/q9shadow/live_features.py",
+   "was": "no pregame feature builder for the live season. nfl.research.q6.frame.load_frame refuses 2026 rows by design and production reports feature_build STAGE_DECLARED_UNIMPLEMENTED.",
+   "evidence": {
+    "artifact": "nfl/prospective/q9shadow/Q9_LIVE_FEATURE_PARITY.json",
+    "builder_parity": "EXACT",
+    "n_players_compared": 482,
+    "n_players_differing": 0,
+    "window": "week 1 -- the window in which both builders are defined",
+    "runs_on_a_live_game": true
+   },
+   "did_not_clear": [
+    "INJURY_REPORT_INCOMPLETE",
+    "COMPLETE_ARTIFACT_LAYERS_ABSENT",
+    "G0A_11_OF_12"
+   ],
+   "note": "this resolution is the worked example of blocker independence: the builder exists and a live COMPLETE seal is still impossible."
+  }
+ },
+ "excluded_seals": {
+  "reason": "SEAL_PATH_BYPASSED_APPEARANCE_INPUT_VALIDATION",
+  "defect": "the seal called nfl.production.nonqb.appearance_r8.predict directly, which skips nfl.production.nonqb.inputs.validate_appearance_inputs",
+  "discovered_on": "2026-09-12",
+  "n_artifacts": 6,
+  "permanently_excluded": true,
+  "may_ever_count_as_evidence": false,
+  "disposition": "deleted from disk and from the seal ledger before any was counted; no metric, no accounting unit and no floor ever included one",
+  "recoverable_forecast_ids": [
+   "Q9SH-fc559f3700c426cc",
+   "Q9SH-a62e9d18be8e7dcc",
+   "Q9SH-caccdcddef4f421d"
+  ],
+  "unrecoverable_forecast_ids": {
+   "n": 3,
+   "team_games": [
+    "2026_01_BAL_IND / IND",
+    "2026_01_BUF_HOU / BUF",
+    "2026_01_BUF_HOU / HOU"
+   ],
+   "why": "the run printed only the first three ids and the artifacts were deleted. Recorded as unrecoverable rather than guessed."
+  },
+  "the_actual_control": "assert_seal_path_governed -- a field check on every artifact, complete by construction where an id list cannot be"
+ },
+ "blockers_are_independent": "clearing one blocker does not clear any other. Each carries its own owner, its own remedy and an explicit independent_of list, and the live feature builder landing is the worked example: it is implemented, and a live seal is still blocked.",
+ "owner_rulings": {
+  "randomized_pit": {
+   "ruling": "protocol section 9.6 UNCHANGED. Randomized PIT is the governing prospective promotion statistic.",
+   "q9b_mid_pit": "DIAGNOSTIC ONLY. It does not satisfy section 9.6.",
+   "implementation": "this module emits the randomized statistic, seeded per row through crc32 so it reproduces, and records mid-PIT beside it.",
+   "protocol_modified": false
+  },
+  "completeness": {
+   "ruling": "protocol section 2 UNCHANGED. A PARTIAL_PLAYER_COVERAGE artifact may be scored diagnostically, counts toward no section-4 floor, and cannot support promotion.",
+   "relabelling": "REFUSED. A single-layer Q9 artifact is not called COMPLETE.",
+   "route": "nfl/prospective/q9shadow/complete.py builds the paired R8-versus-Q9 artifact across all nine required layers on one set of upstream draws, with the target allocation as the only divergence. completeness is COMPUTED from nfl.research.completeness.forecast_completeness; there is no Q9 exemption.",
+   "protocol_modified": false
+  }
+ },
+ "evidence_state": {
+  "forecasts_may_be": [
+   "DRY_RUN",
+   "DIAGNOSTIC"
+  ],
+  "section_4_credit": "NONE",
+  "promotion_evidence_accruing": false,
+  "condition": "all three original blockers satisfied AND a truthful COMPLETE pre-kickoff artifact sealed. Until then nothing accrues, whatever the numbers look like."
  },
  "stop_rule": {
   "source": "nfl/prospective/PROSPECTIVE_EVALUATION_PROTOCOL.md section 4 and protocol section 9",

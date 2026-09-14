@@ -1,0 +1,902 @@
+{
+ "artifact": "NFL_Q9_REUSE_DISPOSITION",
+ "spec_version": "q9-reuse-admissibility-1",
+ "evaluated_at": "2026-09-12T20:57:01+00:00",
+ "rule": "reuse may preserve model output when governed inputs are unchanged, but admissibility must be re-evaluated under the current seal/governance contract",
+ "mandatory_controls": [
+  "governed_appearance_interface",
+  "per_team_readiness_gate",
+  "time_basis",
+  "completeness_evidence_class",
+  "current_blocker_state",
+  "candidate_freeze_identity",
+  "prospective_evidence_eligibility"
+ ],
+ "n_evaluated": 12,
+ "tally": {
+  "ADMISSIBLE": 0,
+  "LEGACY_UNVERIFIED": 0,
+  "REFUSED": 12
+ },
+ "n_admissible": 0,
+ "history_mutated": false,
+ "history_note": "the historical artifacts are untouched. Their original fields and original classification stand; this is a separate current-run disposition.",
+ "records": [
+  {
+   "game_id": "2026_01_ARI_LAC",
+   "team_ids": [
+    "ARI",
+    "LAC"
+   ],
+   "rel_dir": "nfl/research/live/2026_01_ARI_LAC/pre_inactives_V1_CANDIDATE_R8/468445a2b19cb89f",
+   "original_run_id": "468445a2b19cb89f",
+   "original_seal_timestamp": "2026-09-11T17:53:58Z",
+   "original_information_timestamp": "2026-09-11T12:19:21Z",
+   "original_seal_path": null,
+   "original_readiness_gate": null,
+   "original_completeness": "PARTIAL_PLAYER_COVERAGE",
+   "original_prospective_eligible": false,
+   "original_model_configuration": "V1_CANDIDATE_R8",
+   "original_candidate": "V1_CANDIDATE_R8",
+   "satisfies_governed_appearance_interface": false,
+   "readiness_gate_is_per_team": false,
+   "predates_mandatory_seal_controls": [
+    "seal_path",
+    "time_basis"
+   ],
+   "disposition": "REFUSED",
+   "code": "REUSE_INADMISSIBLE",
+   "detail": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; its admissibility is not.",
+   "controls": {
+    "governed_appearance_interface": {
+     "disposition": "LEGACY_UNVERIFIED",
+     "code": "SEAL_PATH_UNRECORDED",
+     "detail": "the artifact records no seal_path, so which appearance interface produced it cannot be established"
+    },
+    "per_team_readiness_gate": {
+     "disposition": "LEGACY_UNVERIFIED",
+     "code": "READINESS_GATE_UNRECORDED",
+     "detail": "no seal_path, so no readiness-gate provenance exists"
+    },
+    "time_basis": {
+     "disposition": "ADMISSIBLE",
+     "code": "TIME_BASIS_PROSPECTIVE_ORDER_HOLDS",
+     "detail": "retrieved_at <= written_at < kickoff on UTC; sealed 50.52h before kickoff, newest input 5.58h before the write"
+    },
+    "completeness_evidence_class": {
+     "disposition": "REFUSED",
+     "code": "COMPLETENESS_NOT_COMPLETE",
+     "detail": "completeness=PARTIAL_PLAYER_COVERAGE; protocol section 2 admits only COMPLETE as an eligible forecast"
+    },
+    "current_blocker_state": {
+     "disposition": "REFUSED",
+     "code": "BLOCKERS_NOT_CLEARED",
+     "detail": "{\"COMPLETE_ARTIFACT_LAYERS_ABSENT\": \"BLOCKED\", \"G0A_11_OF_12\": \"BLOCKED\", \"INJURY_REPORT_INCOMPLETE\": \"BLOCKED\"}"
+    },
+    "candidate_freeze_identity": {
+     "disposition": "LEGACY_UNVERIFIED",
+     "code": "NOT_A_CANDIDATE_ARTIFACT",
+     "detail": "carries no candidate identity block; the freeze comparison does not apply to it"
+    },
+    "prospective_evidence_eligibility": {
+     "disposition": "REFUSED",
+     "code": "ARTIFACT_DECLARES_ITSELF_INELIGIBLE",
+     "detail": "prospective_eligible is false on the artifact itself"
+    }
+   },
+   "payload_identity": {
+    "draw_artifact_sha256": "bddc15550d1bd1ab2bcffecebd8b4710545cdb4b3016120d0b61a523e2031663",
+    "draw_content_sha256": null,
+    "spec_hash": "468445a2b19cb89f",
+    "feature_set_hash": "4d2eda3e88818e2ad5a78e146c4e2f48",
+    "n_players": 183,
+    "written_at": "2026-09-11T17:53:58Z",
+    "is_predictive_payload_only": true,
+    "note": "unchanged here means the NUMBERS are unchanged. It says nothing about whether they may be counted."
+   }
+  },
+  {
+   "game_id": "2026_01_ATL_PIT",
+   "team_ids": [
+    "ATL",
+    "PIT"
+   ],
+   "rel_dir": "nfl/research/live/2026_01_ATL_PIT/pre_inactives_V1_CANDIDATE_R8/5d2ad3f2964ee3ad",
+   "original_run_id": "5d2ad3f2964ee3ad",
+   "original_seal_timestamp": "2026-09-11T17:53:58Z",
+   "original_information_timestamp": "2026-09-11T12:19:21Z",
+   "original_seal_path": null,
+   "original_readiness_gate": null,
+   "original_completeness": "PARTIAL_PLAYER_COVERAGE",
+   "original_prospective_eligible": false,
+   "original_model_configuration": "V1_CANDIDATE_R8",
+   "original_candidate": "V1_CANDIDATE_R8",
+   "satisfies_governed_appearance_interface": false,
+   "readiness_gate_is_per_team": false,
+   "predates_mandatory_seal_controls": [
+    "seal_path",
+    "time_basis"
+   ],
+   "disposition": "REFUSED",
+   "code": "REUSE_INADMISSIBLE",
+   "detail": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; its admissibility is not.",
+   "controls": {
+    "governed_appearance_interface": {
+     "disposition": "LEGACY_UNVERIFIED",
+     "code": "SEAL_PATH_UNRECORDED",
+     "detail": "the artifact records no seal_path, so which appearance interface produced it cannot be established"
+    },
+    "per_team_readiness_gate": {
+     "disposition": "LEGACY_UNVERIFIED",
+     "code": "READINESS_GATE_UNRECORDED",
+     "detail": "no seal_path, so no readiness-gate provenance exists"
+    },
+    "time_basis": {
+     "disposition": "ADMISSIBLE",
+     "code": "TIME_BASIS_PROSPECTIVE_ORDER_HOLDS",
+     "detail": "retrieved_at <= written_at < kickoff on UTC; sealed 47.10h before kickoff, newest input 5.58h before the write"
+    },
+    "completeness_evidence_class": {
+     "disposition": "REFUSED",
+     "code": "COMPLETENESS_NOT_COMPLETE",
+     "detail": "completeness=PARTIAL_PLAYER_COVERAGE; protocol section 2 admits only COMPLETE as an eligible forecast"
+    },
+    "current_blocker_state": {
+     "disposition": "REFUSED",
+     "code": "BLOCKERS_NOT_CLEARED",
+     "detail": "{\"COMPLETE_ARTIFACT_LAYERS_ABSENT\": \"BLOCKED\", \"G0A_11_OF_12\": \"BLOCKED\", \"INJURY_REPORT_INCOMPLETE\": \"BLOCKED\"}"
+    },
+    "candidate_freeze_identity": {
+     "disposition": "LEGACY_UNVERIFIED",
+     "code": "NOT_A_CANDIDATE_ARTIFACT",
+     "detail": "carries no candidate identity block; the freeze comparison does not apply to it"
+    },
+    "prospective_evidence_eligibility": {
+     "disposition": "REFUSED",
+     "code": "ARTIFACT_DECLARES_ITSELF_INELIGIBLE",
+     "detail": "prospective_eligible is false on the artifact itself"
+    }
+   },
+   "payload_identity": {
+    "draw_artifact_sha256": "374f683963b6ac93723ae866c72385733080bff89c2a115861252af30b2edad5",
+    "draw_content_sha256": null,
+    "spec_hash": "5d2ad3f2964ee3ad",
+    "feature_set_hash": "4d2eda3e88818e2ad5a78e146c4e2f48",
+    "n_players": 180,
+    "written_at": "2026-09-11T17:53:58Z",
+    "is_predictive_payload_only": true,
+    "note": "unchanged here means the NUMBERS are unchanged. It says nothing about whether they may be counted."
+   }
+  },
+  {
+   "game_id": "2026_01_BAL_IND",
+   "team_ids": [
+    "BAL",
+    "IND"
+   ],
+   "rel_dir": "nfl/research/live/2026_01_BAL_IND/pre_inactives_V1_CANDIDATE_R8/09692deb0ad3adcf",
+   "original_run_id": "09692deb0ad3adcf",
+   "original_seal_timestamp": "2026-09-11T17:53:58Z",
+   "original_information_timestamp": "2026-09-11T12:19:21Z",
+   "original_seal_path": null,
+   "original_readiness_gate": null,
+   "original_completeness": "PARTIAL_PLAYER_COVERAGE",
+   "original_prospective_eligible": false,
+   "original_model_configuration": "V1_CANDIDATE_R8",
+   "original_candidate": "V1_CANDIDATE_R8",
+   "satisfies_governed_appearance_interface": false,
+   "readiness_gate_is_per_team": false,
+   "predates_mandatory_seal_controls": [
+    "seal_path",
+    "time_basis"
+   ],
+   "disposition": "REFUSED",
+   "code": "REUSE_INADMISSIBLE",
+   "detail": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; its admissibility is not.",
+   "controls": {
+    "governed_appearance_interface": {
+     "disposition": "LEGACY_UNVERIFIED",
+     "code": "SEAL_PATH_UNRECORDED",
+     "detail": "the artifact records no seal_path, so which appearance interface produced it cannot be established"
+    },
+    "per_team_readiness_gate": {
+     "disposition": "LEGACY_UNVERIFIED",
+     "code": "READINESS_GATE_UNRECORDED",
+     "detail": "no seal_path, so no readiness-gate provenance exists"
+    },
+    "time_basis": {
+     "disposition": "ADMISSIBLE",
+     "code": "TIME_BASIS_PROSPECTIVE_ORDER_HOLDS",
+     "detail": "retrieved_at <= written_at < kickoff on UTC; sealed 47.10h before kickoff, newest input 5.58h before the write"
+    },
+    "completeness_evidence_class": {
+     "disposition": "REFUSED",
+     "code": "COMPLETENESS_NOT_COMPLETE",
+     "detail": "completeness=PARTIAL_PLAYER_COVERAGE; protocol section 2 admits only COMPLETE as an eligible forecast"
+    },
+    "current_blocker_state": {
+     "disposition": "REFUSED",
+     "code": "BLOCKERS_NOT_CLEARED",
+     "detail": "{\"COMPLETE_ARTIFACT_LAYERS_ABSENT\": \"BLOCKED\", \"G0A_11_OF_12\": \"BLOCKED\", \"INJURY_REPORT_INCOMPLETE\": \"BLOCKED\"}"
+    },
+    "candidate_freeze_identity": {
+     "disposition": "LEGACY_UNVERIFIED",
+     "code": "NOT_A_CANDIDATE_ARTIFACT",
+     "detail": "carries no candidate identity block; the freeze comparison does not apply to it"
+    },
+    "prospective_evidence_eligibility": {
+     "disposition": "REFUSED",
+     "code": "ARTIFACT_DECLARES_ITSELF_INELIGIBLE",
+     "detail": "prospective_eligible is false on the artifact itself"
+    }
+   },
+   "payload_identity": {
+    "draw_artifact_sha256": "a9a21e9dbfb0f0c1cc8592b8d57ef52f32b498c474018f57e4e1ec6dba0be7f6",
+    "draw_content_sha256": null,
+    "spec_hash": "09692deb0ad3adcf",
+    "feature_set_hash": "4d2eda3e88818e2ad5a78e146c4e2f48",
+    "n_players": 184,
+    "written_at": "2026-09-11T17:53:58Z",
+    "is_predictive_payload_only": true,
+    "note": "unchanged here means the NUMBERS are unchanged. It says nothing about whether they may be counted."
+   }
+  },
+  {
+   "game_id": "2026_01_BUF_HOU",
+   "team_ids": [
+    "BUF",
+    "HOU"
+   ],
+   "rel_dir": "nfl/research/live/2026_01_BUF_HOU/pre_inactives_V1_CANDIDATE_R8/c710a15e7a046b8f",
+   "original_run_id": "c710a15e7a046b8f",
+   "original_seal_timestamp": "2026-09-11T17:57:59Z",
+   "original_information_timestamp": "2026-09-11T12:19:21Z",
+   "original_seal_path": null,
+   "original_readiness_gate": null,
+   "original_completeness": "PARTIAL_PLAYER_COVERAGE",
+   "original_prospective_eligible": false,
+   "original_model_configuration": "V1_CANDIDATE_R8",
+   "original_candidate": "V1_CANDIDATE_R8",
+   "satisfies_governed_appearance_interface": false,
+   "readiness_gate_is_per_team": false,
+   "predates_mandatory_seal_controls": [
+    "seal_path",
+    "time_basis"
+   ],
+   "disposition": "REFUSED",
+   "code": "REUSE_INADMISSIBLE",
+   "detail": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; its admissibility is not.",
+   "controls": {
+    "governed_appearance_interface": {
+     "disposition": "LEGACY_UNVERIFIED",
+     "code": "SEAL_PATH_UNRECORDED",
+     "detail": "the artifact records no seal_path, so which appearance interface produced it cannot be established"
+    },
+    "per_team_readiness_gate": {
+     "disposition": "LEGACY_UNVERIFIED",
+     "code": "READINESS_GATE_UNRECORDED",
+     "detail": "no seal_path, so no readiness-gate provenance exists"
+    },
+    "time_basis": {
+     "disposition": "ADMISSIBLE",
+     "code": "TIME_BASIS_PROSPECTIVE_ORDER_HOLDS",
+     "detail": "retrieved_at <= written_at < kickoff on UTC; sealed 47.03h before kickoff, newest input 5.64h before the write"
+    },
+    "completeness_evidence_class": {
+     "disposition": "REFUSED",
+     "code": "COMPLETENESS_NOT_COMPLETE",
+     "detail": "completeness=PARTIAL_PLAYER_COVERAGE; protocol section 2 admits only COMPLETE as an eligible forecast"
+    },
+    "current_blocker_state": {
+     "disposition": "REFUSED",
+     "code": "BLOCKERS_NOT_CLEARED",
+     "detail": "{\"COMPLETE_ARTIFACT_LAYERS_ABSENT\": \"BLOCKED\", \"G0A_11_OF_12\": \"BLOCKED\", \"INJURY_REPORT_INCOMPLETE\": \"BLOCKED\"}"
+    },
+    "candidate_freeze_identity": {
+     "disposition": "LEGACY_UNVERIFIED",
+     "code": "NOT_A_CANDIDATE_ARTIFACT",
+     "detail": "carries no candidate identity block; the freeze comparison does not apply to it"
+    },
+    "prospective_evidence_eligibility": {
+     "disposition": "REFUSED",
+     "code": "ARTIFACT_DECLARES_ITSELF_INELIGIBLE",
+     "detail": "prospective_eligible is false on the artifact itself"
+    }
+   },
+   "payload_identity": {
+    "draw_artifact_sha256": "11bb397501ad8641419b996d8d721a57402077c79c2bf690170809a7ceb6c017",
+    "draw_content_sha256": null,
+    "spec_hash": "c710a15e7a046b8f",
+    "feature_set_hash": "4d2eda3e88818e2ad5a78e146c4e2f48",
+    "n_players": 181,
+    "written_at": "2026-09-11T17:57:59Z",
+    "is_predictive_payload_only": true,
+    "note": "unchanged here means the NUMBERS are unchanged. It says nothing about whether they may be counted."
+   }
+  },
+  {
+   "game_id": "2026_01_CHI_CAR",
+   "team_ids": [
+    "CHI",
+    "CAR"
+   ],
+   "rel_dir": "nfl/research/live/2026_01_CHI_CAR/pre_inactives_V1_CANDIDATE_R8/dce3360b281ad1ab",
+   "original_run_id": "dce3360b281ad1ab",
+   "original_seal_timestamp": "2026-09-11T17:53:58Z",
+   "original_information_timestamp": "2026-09-11T12:19:21Z",
+   "original_seal_path": null,
+   "original_readiness_gate": null,
+   "original_completeness": "PARTIAL_PLAYER_COVERAGE",
+   "original_prospective_eligible": false,
+   "original_model_configuration": "V1_CANDIDATE_R8",
+   "original_candidate": "V1_CANDIDATE_R8",
+   "satisfies_governed_appearance_interface": false,
+   "readiness_gate_is_per_team": false,
+   "predates_mandatory_seal_controls": [
+    "seal_path",
+    "time_basis"
+   ],
+   "disposition": "REFUSED",
+   "code": "REUSE_INADMISSIBLE",
+   "detail": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; its admissibility is not.",
+   "controls": {
+    "governed_appearance_interface": {
+     "disposition": "LEGACY_UNVERIFIED",
+     "code": "SEAL_PATH_UNRECORDED",
+     "detail": "the artifact records no seal_path, so which appearance interface produced it cannot be established"
+    },
+    "per_team_readiness_gate": {
+     "disposition": "LEGACY_UNVERIFIED",
+     "code": "READINESS_GATE_UNRECORDED",
+     "detail": "no seal_path, so no readiness-gate provenance exists"
+    },
+    "time_basis": {
+     "disposition": "ADMISSIBLE",
+     "code": "TIME_BASIS_PROSPECTIVE_ORDER_HOLDS",
+     "detail": "retrieved_at <= written_at < kickoff on UTC; sealed 47.10h before kickoff, newest input 5.58h before the write"
+    },
+    "completeness_evidence_class": {
+     "disposition": "REFUSED",
+     "code": "COMPLETENESS_NOT_COMPLETE",
+     "detail": "completeness=PARTIAL_PLAYER_COVERAGE; protocol section 2 admits only COMPLETE as an eligible forecast"
+    },
+    "current_blocker_state": {
+     "disposition": "REFUSED",
+     "code": "BLOCKERS_NOT_CLEARED",
+     "detail": "{\"COMPLETE_ARTIFACT_LAYERS_ABSENT\": \"BLOCKED\", \"G0A_11_OF_12\": \"BLOCKED\", \"INJURY_REPORT_INCOMPLETE\": \"BLOCKED\"}"
+    },
+    "candidate_freeze_identity": {
+     "disposition": "LEGACY_UNVERIFIED",
+     "code": "NOT_A_CANDIDATE_ARTIFACT",
+     "detail": "carries no candidate identity block; the freeze comparison does not apply to it"
+    },
+    "prospective_evidence_eligibility": {
+     "disposition": "REFUSED",
+     "code": "ARTIFACT_DECLARES_ITSELF_INELIGIBLE",
+     "detail": "prospective_eligible is false on the artifact itself"
+    }
+   },
+   "payload_identity": {
+    "draw_artifact_sha256": "83015395e7a9cc2b6166721e2077f0c3575ece749ab7cd4ef3233b1147856bcd",
+    "draw_content_sha256": null,
+    "spec_hash": "dce3360b281ad1ab",
+    "feature_set_hash": "4d2eda3e88818e2ad5a78e146c4e2f48",
+    "n_players": 189,
+    "written_at": "2026-09-11T17:53:58Z",
+    "is_predictive_payload_only": true,
+    "note": "unchanged here means the NUMBERS are unchanged. It says nothing about whether they may be counted."
+   }
+  },
+  {
+   "game_id": "2026_01_CLE_JAX",
+   "team_ids": [
+    "CLE",
+    "JAX"
+   ],
+   "rel_dir": "nfl/research/live/2026_01_CLE_JAX/pre_inactives_V1_CANDIDATE_R8/f70cfd7e157f3f99",
+   "original_run_id": "f70cfd7e157f3f99",
+   "original_seal_timestamp": "2026-09-11T17:53:58Z",
+   "original_information_timestamp": "2026-09-11T12:19:21Z",
+   "original_seal_path": null,
+   "original_readiness_gate": null,
+   "original_completeness": "PARTIAL_PLAYER_COVERAGE",
+   "original_prospective_eligible": false,
+   "original_model_configuration": "V1_CANDIDATE_R8",
+   "original_candidate": "V1_CANDIDATE_R8",
+   "satisfies_governed_appearance_interface": false,
+   "readiness_gate_is_per_team": false,
+   "predates_mandatory_seal_controls": [
+    "seal_path",
+    "time_basis"
+   ],
+   "disposition": "REFUSED",
+   "code": "REUSE_INADMISSIBLE",
+   "detail": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; its admissibility is not.",
+   "controls": {
+    "governed_appearance_interface": {
+     "disposition": "LEGACY_UNVERIFIED",
+     "code": "SEAL_PATH_UNRECORDED",
+     "detail": "the artifact records no seal_path, so which appearance interface produced it cannot be established"
+    },
+    "per_team_readiness_gate": {
+     "disposition": "LEGACY_UNVERIFIED",
+     "code": "READINESS_GATE_UNRECORDED",
+     "detail": "no seal_path, so no readiness-gate provenance exists"
+    },
+    "time_basis": {
+     "disposition": "ADMISSIBLE",
+     "code": "TIME_BASIS_PROSPECTIVE_ORDER_HOLDS",
+     "detail": "retrieved_at <= written_at < kickoff on UTC; sealed 47.10h before kickoff, newest input 5.58h before the write"
+    },
+    "completeness_evidence_class": {
+     "disposition": "REFUSED",
+     "code": "COMPLETENESS_NOT_COMPLETE",
+     "detail": "completeness=PARTIAL_PLAYER_COVERAGE; protocol section 2 admits only COMPLETE as an eligible forecast"
+    },
+    "current_blocker_state": {
+     "disposition": "REFUSED",
+     "code": "BLOCKERS_NOT_CLEARED",
+     "detail": "{\"COMPLETE_ARTIFACT_LAYERS_ABSENT\": \"BLOCKED\", \"G0A_11_OF_12\": \"BLOCKED\", \"INJURY_REPORT_INCOMPLETE\": \"BLOCKED\"}"
+    },
+    "candidate_freeze_identity": {
+     "disposition": "LEGACY_UNVERIFIED",
+     "code": "NOT_A_CANDIDATE_ARTIFACT",
+     "detail": "carries no candidate identity block; the freeze comparison does not apply to it"
+    },
+    "prospective_evidence_eligibility": {
+     "disposition": "REFUSED",
+     "code": "ARTIFACT_DECLARES_ITSELF_INELIGIBLE",
+     "detail": "prospective_eligible is false on the artifact itself"
+    }
+   },
+   "payload_identity": {
+    "draw_artifact_sha256": "652897fb0a978b1e942f8265622add820e1247e634ba969d94f59739044cf5f0",
+    "draw_content_sha256": null,
+    "spec_hash": "f70cfd7e157f3f99",
+    "feature_set_hash": "4d2eda3e88818e2ad5a78e146c4e2f48",
+    "n_players": 193,
+    "written_at": "2026-09-11T17:53:58Z",
+    "is_predictive_payload_only": true,
+    "note": "unchanged here means the NUMBERS are unchanged. It says nothing about whether they may be counted."
+   }
+  },
+  {
+   "game_id": "2026_01_GB_MIN",
+   "team_ids": [
+    "GB",
+    "MIN"
+   ],
+   "rel_dir": "nfl/research/live/2026_01_GB_MIN/pre_inactives_V1_CANDIDATE_R8/6cb9a26ca24d950e",
+   "original_run_id": "6cb9a26ca24d950e",
+   "original_seal_timestamp": "2026-09-11T17:53:58Z",
+   "original_information_timestamp": "2026-09-11T12:19:21Z",
+   "original_seal_path": null,
+   "original_readiness_gate": null,
+   "original_completeness": "PARTIAL_PLAYER_COVERAGE",
+   "original_prospective_eligible": false,
+   "original_model_configuration": "V1_CANDIDATE_R8",
+   "original_candidate": "V1_CANDIDATE_R8",
+   "satisfies_governed_appearance_interface": false,
+   "readiness_gate_is_per_team": false,
+   "predates_mandatory_seal_controls": [
+    "seal_path",
+    "time_basis"
+   ],
+   "disposition": "REFUSED",
+   "code": "REUSE_INADMISSIBLE",
+   "detail": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; its admissibility is not.",
+   "controls": {
+    "governed_appearance_interface": {
+     "disposition": "LEGACY_UNVERIFIED",
+     "code": "SEAL_PATH_UNRECORDED",
+     "detail": "the artifact records no seal_path, so which appearance interface produced it cannot be established"
+    },
+    "per_team_readiness_gate": {
+     "disposition": "LEGACY_UNVERIFIED",
+     "code": "READINESS_GATE_UNRECORDED",
+     "detail": "no seal_path, so no readiness-gate provenance exists"
+    },
+    "time_basis": {
+     "disposition": "ADMISSIBLE",
+     "code": "TIME_BASIS_PROSPECTIVE_ORDER_HOLDS",
+     "detail": "retrieved_at <= written_at < kickoff on UTC; sealed 50.52h before kickoff, newest input 5.58h before the write"
+    },
+    "completeness_evidence_class": {
+     "disposition": "REFUSED",
+     "code": "COMPLETENESS_NOT_COMPLETE",
+     "detail": "completeness=PARTIAL_PLAYER_COVERAGE; protocol section 2 admits only COMPLETE as an eligible forecast"
+    },
+    "current_blocker_state": {
+     "disposition": "REFUSED",
+     "code": "BLOCKERS_NOT_CLEARED",
+     "detail": "{\"COMPLETE_ARTIFACT_LAYERS_ABSENT\": \"BLOCKED\", \"G0A_11_OF_12\": \"BLOCKED\", \"INJURY_REPORT_INCOMPLETE\": \"BLOCKED\"}"
+    },
+    "candidate_freeze_identity": {
+     "disposition": "LEGACY_UNVERIFIED",
+     "code": "NOT_A_CANDIDATE_ARTIFACT",
+     "detail": "carries no candidate identity block; the freeze comparison does not apply to it"
+    },
+    "prospective_evidence_eligibility": {
+     "disposition": "REFUSED",
+     "code": "ARTIFACT_DECLARES_ITSELF_INELIGIBLE",
+     "detail": "prospective_eligible is false on the artifact itself"
+    }
+   },
+   "payload_identity": {
+    "draw_artifact_sha256": "75245abd78db828936b6e7968de316301549dcb94ab80cdf8033877ae71a0d7f",
+    "draw_content_sha256": null,
+    "spec_hash": "6cb9a26ca24d950e",
+    "feature_set_hash": "4d2eda3e88818e2ad5a78e146c4e2f48",
+    "n_players": 190,
+    "written_at": "2026-09-11T17:53:58Z",
+    "is_predictive_payload_only": true,
+    "note": "unchanged here means the NUMBERS are unchanged. It says nothing about whether they may be counted."
+   }
+  },
+  {
+   "game_id": "2026_01_MIA_LV",
+   "team_ids": [
+    "MIA",
+    "LV"
+   ],
+   "rel_dir": "nfl/research/live/2026_01_MIA_LV/pre_inactives_V1_CANDIDATE_R8/c35a296476a86e90",
+   "original_run_id": "c35a296476a86e90",
+   "original_seal_timestamp": "2026-09-11T17:53:58Z",
+   "original_information_timestamp": "2026-09-11T12:19:21Z",
+   "original_seal_path": null,
+   "original_readiness_gate": null,
+   "original_completeness": "PARTIAL_PLAYER_COVERAGE",
+   "original_prospective_eligible": false,
+   "original_model_configuration": "V1_CANDIDATE_R8",
+   "original_candidate": "V1_CANDIDATE_R8",
+   "satisfies_governed_appearance_interface": false,
+   "readiness_gate_is_per_team": false,
+   "predates_mandatory_seal_controls": [
+    "seal_path",
+    "time_basis"
+   ],
+   "disposition": "REFUSED",
+   "code": "REUSE_INADMISSIBLE",
+   "detail": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; its admissibility is not.",
+   "controls": {
+    "governed_appearance_interface": {
+     "disposition": "LEGACY_UNVERIFIED",
+     "code": "SEAL_PATH_UNRECORDED",
+     "detail": "the artifact records no seal_path, so which appearance interface produced it cannot be established"
+    },
+    "per_team_readiness_gate": {
+     "disposition": "LEGACY_UNVERIFIED",
+     "code": "READINESS_GATE_UNRECORDED",
+     "detail": "no seal_path, so no readiness-gate provenance exists"
+    },
+    "time_basis": {
+     "disposition": "ADMISSIBLE",
+     "code": "TIME_BASIS_PROSPECTIVE_ORDER_HOLDS",
+     "detail": "retrieved_at <= written_at < kickoff on UTC; sealed 50.52h before kickoff, newest input 5.58h before the write"
+    },
+    "completeness_evidence_class": {
+     "disposition": "REFUSED",
+     "code": "COMPLETENESS_NOT_COMPLETE",
+     "detail": "completeness=PARTIAL_PLAYER_COVERAGE; protocol section 2 admits only COMPLETE as an eligible forecast"
+    },
+    "current_blocker_state": {
+     "disposition": "REFUSED",
+     "code": "BLOCKERS_NOT_CLEARED",
+     "detail": "{\"COMPLETE_ARTIFACT_LAYERS_ABSENT\": \"BLOCKED\", \"G0A_11_OF_12\": \"BLOCKED\", \"INJURY_REPORT_INCOMPLETE\": \"BLOCKED\"}"
+    },
+    "candidate_freeze_identity": {
+     "disposition": "LEGACY_UNVERIFIED",
+     "code": "NOT_A_CANDIDATE_ARTIFACT",
+     "detail": "carries no candidate identity block; the freeze comparison does not apply to it"
+    },
+    "prospective_evidence_eligibility": {
+     "disposition": "REFUSED",
+     "code": "ARTIFACT_DECLARES_ITSELF_INELIGIBLE",
+     "detail": "prospective_eligible is false on the artifact itself"
+    }
+   },
+   "payload_identity": {
+    "draw_artifact_sha256": "2f9a81fe682b0b4698fee6a0dc27b53d9671ca7ebae2d4f22347340bc2366864",
+    "draw_content_sha256": null,
+    "spec_hash": "c35a296476a86e90",
+    "feature_set_hash": "4d2eda3e88818e2ad5a78e146c4e2f48",
+    "n_players": 197,
+    "written_at": "2026-09-11T17:53:58Z",
+    "is_predictive_payload_only": true,
+    "note": "unchanged here means the NUMBERS are unchanged. It says nothing about whether they may be counted."
+   }
+  },
+  {
+   "game_id": "2026_01_NO_DET",
+   "team_ids": [
+    "NO",
+    "DET"
+   ],
+   "rel_dir": "nfl/research/live/2026_01_NO_DET/pre_inactives_V1_CANDIDATE_R8/3f53f7d1745602b3",
+   "original_run_id": "3f53f7d1745602b3",
+   "original_seal_timestamp": "2026-09-11T17:53:58Z",
+   "original_information_timestamp": "2026-09-11T12:19:21Z",
+   "original_seal_path": null,
+   "original_readiness_gate": null,
+   "original_completeness": "PARTIAL_PLAYER_COVERAGE",
+   "original_prospective_eligible": false,
+   "original_model_configuration": "V1_CANDIDATE_R8",
+   "original_candidate": "V1_CANDIDATE_R8",
+   "satisfies_governed_appearance_interface": false,
+   "readiness_gate_is_per_team": false,
+   "predates_mandatory_seal_controls": [
+    "seal_path",
+    "time_basis"
+   ],
+   "disposition": "REFUSED",
+   "code": "REUSE_INADMISSIBLE",
+   "detail": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; its admissibility is not.",
+   "controls": {
+    "governed_appearance_interface": {
+     "disposition": "LEGACY_UNVERIFIED",
+     "code": "SEAL_PATH_UNRECORDED",
+     "detail": "the artifact records no seal_path, so which appearance interface produced it cannot be established"
+    },
+    "per_team_readiness_gate": {
+     "disposition": "LEGACY_UNVERIFIED",
+     "code": "READINESS_GATE_UNRECORDED",
+     "detail": "no seal_path, so no readiness-gate provenance exists"
+    },
+    "time_basis": {
+     "disposition": "ADMISSIBLE",
+     "code": "TIME_BASIS_PROSPECTIVE_ORDER_HOLDS",
+     "detail": "retrieved_at <= written_at < kickoff on UTC; sealed 47.10h before kickoff, newest input 5.58h before the write"
+    },
+    "completeness_evidence_class": {
+     "disposition": "REFUSED",
+     "code": "COMPLETENESS_NOT_COMPLETE",
+     "detail": "completeness=PARTIAL_PLAYER_COVERAGE; protocol section 2 admits only COMPLETE as an eligible forecast"
+    },
+    "current_blocker_state": {
+     "disposition": "REFUSED",
+     "code": "BLOCKERS_NOT_CLEARED",
+     "detail": "{\"COMPLETE_ARTIFACT_LAYERS_ABSENT\": \"BLOCKED\", \"G0A_11_OF_12\": \"BLOCKED\", \"INJURY_REPORT_INCOMPLETE\": \"BLOCKED\"}"
+    },
+    "candidate_freeze_identity": {
+     "disposition": "LEGACY_UNVERIFIED",
+     "code": "NOT_A_CANDIDATE_ARTIFACT",
+     "detail": "carries no candidate identity block; the freeze comparison does not apply to it"
+    },
+    "prospective_evidence_eligibility": {
+     "disposition": "REFUSED",
+     "code": "ARTIFACT_DECLARES_ITSELF_INELIGIBLE",
+     "detail": "prospective_eligible is false on the artifact itself"
+    }
+   },
+   "payload_identity": {
+    "draw_artifact_sha256": "1df87a7a4b69640470e0a16d0195273c94385fa54e24c98afd78d245c21f69e3",
+    "draw_content_sha256": null,
+    "spec_hash": "3f53f7d1745602b3",
+    "feature_set_hash": "4d2eda3e88818e2ad5a78e146c4e2f48",
+    "n_players": 189,
+    "written_at": "2026-09-11T17:53:58Z",
+    "is_predictive_payload_only": true,
+    "note": "unchanged here means the NUMBERS are unchanged. It says nothing about whether they may be counted."
+   }
+  },
+  {
+   "game_id": "2026_01_NYJ_TEN",
+   "team_ids": [
+    "NYJ",
+    "TEN"
+   ],
+   "rel_dir": "nfl/research/live/2026_01_NYJ_TEN/pre_inactives_V1_CANDIDATE_R8/233cce327e918f35",
+   "original_run_id": "233cce327e918f35",
+   "original_seal_timestamp": "2026-09-11T17:53:58Z",
+   "original_information_timestamp": "2026-09-11T12:19:21Z",
+   "original_seal_path": null,
+   "original_readiness_gate": null,
+   "original_completeness": "PARTIAL_PLAYER_COVERAGE",
+   "original_prospective_eligible": false,
+   "original_model_configuration": "V1_CANDIDATE_R8",
+   "original_candidate": "V1_CANDIDATE_R8",
+   "satisfies_governed_appearance_interface": false,
+   "readiness_gate_is_per_team": false,
+   "predates_mandatory_seal_controls": [
+    "seal_path",
+    "time_basis"
+   ],
+   "disposition": "REFUSED",
+   "code": "REUSE_INADMISSIBLE",
+   "detail": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; its admissibility is not.",
+   "controls": {
+    "governed_appearance_interface": {
+     "disposition": "LEGACY_UNVERIFIED",
+     "code": "SEAL_PATH_UNRECORDED",
+     "detail": "the artifact records no seal_path, so which appearance interface produced it cannot be established"
+    },
+    "per_team_readiness_gate": {
+     "disposition": "LEGACY_UNVERIFIED",
+     "code": "READINESS_GATE_UNRECORDED",
+     "detail": "no seal_path, so no readiness-gate provenance exists"
+    },
+    "time_basis": {
+     "disposition": "ADMISSIBLE",
+     "code": "TIME_BASIS_PROSPECTIVE_ORDER_HOLDS",
+     "detail": "retrieved_at <= written_at < kickoff on UTC; sealed 47.10h before kickoff, newest input 5.58h before the write"
+    },
+    "completeness_evidence_class": {
+     "disposition": "REFUSED",
+     "code": "COMPLETENESS_NOT_COMPLETE",
+     "detail": "completeness=PARTIAL_PLAYER_COVERAGE; protocol section 2 admits only COMPLETE as an eligible forecast"
+    },
+    "current_blocker_state": {
+     "disposition": "REFUSED",
+     "code": "BLOCKERS_NOT_CLEARED",
+     "detail": "{\"COMPLETE_ARTIFACT_LAYERS_ABSENT\": \"BLOCKED\", \"G0A_11_OF_12\": \"BLOCKED\", \"INJURY_REPORT_INCOMPLETE\": \"BLOCKED\"}"
+    },
+    "candidate_freeze_identity": {
+     "disposition": "LEGACY_UNVERIFIED",
+     "code": "NOT_A_CANDIDATE_ARTIFACT",
+     "detail": "carries no candidate identity block; the freeze comparison does not apply to it"
+    },
+    "prospective_evidence_eligibility": {
+     "disposition": "REFUSED",
+     "code": "ARTIFACT_DECLARES_ITSELF_INELIGIBLE",
+     "detail": "prospective_eligible is false on the artifact itself"
+    }
+   },
+   "payload_identity": {
+    "draw_artifact_sha256": "d911601dfed802fbab1014ed9d708dbf686daffe5383be004941d96adead7212",
+    "draw_content_sha256": null,
+    "spec_hash": "233cce327e918f35",
+    "feature_set_hash": "4d2eda3e88818e2ad5a78e146c4e2f48",
+    "n_players": 189,
+    "written_at": "2026-09-11T17:53:58Z",
+    "is_predictive_payload_only": true,
+    "note": "unchanged here means the NUMBERS are unchanged. It says nothing about whether they may be counted."
+   }
+  },
+  {
+   "game_id": "2026_01_TB_CIN",
+   "team_ids": [
+    "TB",
+    "CIN"
+   ],
+   "rel_dir": "nfl/research/live/2026_01_TB_CIN/pre_inactives_V1_CANDIDATE_R8/54f32af8a301e606",
+   "original_run_id": "54f32af8a301e606",
+   "original_seal_timestamp": "2026-09-11T17:53:58Z",
+   "original_information_timestamp": "2026-09-11T12:19:21Z",
+   "original_seal_path": null,
+   "original_readiness_gate": null,
+   "original_completeness": "PARTIAL_PLAYER_COVERAGE",
+   "original_prospective_eligible": false,
+   "original_model_configuration": "V1_CANDIDATE_R8",
+   "original_candidate": "V1_CANDIDATE_R8",
+   "satisfies_governed_appearance_interface": false,
+   "readiness_gate_is_per_team": false,
+   "predates_mandatory_seal_controls": [
+    "seal_path",
+    "time_basis"
+   ],
+   "disposition": "REFUSED",
+   "code": "REUSE_INADMISSIBLE",
+   "detail": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; its admissibility is not.",
+   "controls": {
+    "governed_appearance_interface": {
+     "disposition": "LEGACY_UNVERIFIED",
+     "code": "SEAL_PATH_UNRECORDED",
+     "detail": "the artifact records no seal_path, so which appearance interface produced it cannot be established"
+    },
+    "per_team_readiness_gate": {
+     "disposition": "LEGACY_UNVERIFIED",
+     "code": "READINESS_GATE_UNRECORDED",
+     "detail": "no seal_path, so no readiness-gate provenance exists"
+    },
+    "time_basis": {
+     "disposition": "ADMISSIBLE",
+     "code": "TIME_BASIS_PROSPECTIVE_ORDER_HOLDS",
+     "detail": "retrieved_at <= written_at < kickoff on UTC; sealed 47.10h before kickoff, newest input 5.58h before the write"
+    },
+    "completeness_evidence_class": {
+     "disposition": "REFUSED",
+     "code": "COMPLETENESS_NOT_COMPLETE",
+     "detail": "completeness=PARTIAL_PLAYER_COVERAGE; protocol section 2 admits only COMPLETE as an eligible forecast"
+    },
+    "current_blocker_state": {
+     "disposition": "REFUSED",
+     "code": "BLOCKERS_NOT_CLEARED",
+     "detail": "{\"COMPLETE_ARTIFACT_LAYERS_ABSENT\": \"BLOCKED\", \"G0A_11_OF_12\": \"BLOCKED\", \"INJURY_REPORT_INCOMPLETE\": \"BLOCKED\"}"
+    },
+    "candidate_freeze_identity": {
+     "disposition": "LEGACY_UNVERIFIED",
+     "code": "NOT_A_CANDIDATE_ARTIFACT",
+     "detail": "carries no candidate identity block; the freeze comparison does not apply to it"
+    },
+    "prospective_evidence_eligibility": {
+     "disposition": "REFUSED",
+     "code": "ARTIFACT_DECLARES_ITSELF_INELIGIBLE",
+     "detail": "prospective_eligible is false on the artifact itself"
+    }
+   },
+   "payload_identity": {
+    "draw_artifact_sha256": "4ad9049ff1ad86d5cdb7af5815c772c8b5583e45da9e952cb30509278d6ea82c",
+    "draw_content_sha256": null,
+    "spec_hash": "54f32af8a301e606",
+    "feature_set_hash": "4d2eda3e88818e2ad5a78e146c4e2f48",
+    "n_players": 179,
+    "written_at": "2026-09-11T17:53:58Z",
+    "is_predictive_payload_only": true,
+    "note": "unchanged here means the NUMBERS are unchanged. It says nothing about whether they may be counted."
+   }
+  },
+  {
+   "game_id": "2026_01_WAS_PHI",
+   "team_ids": [
+    "WAS",
+    "PHI"
+   ],
+   "rel_dir": "nfl/research/live/2026_01_WAS_PHI/pre_inactives_V1_CANDIDATE_R8/b30c49d9189ece81",
+   "original_run_id": "b30c49d9189ece81",
+   "original_seal_timestamp": "2026-09-11T17:53:58Z",
+   "original_information_timestamp": "2026-09-11T12:19:21Z",
+   "original_seal_path": null,
+   "original_readiness_gate": null,
+   "original_completeness": "PARTIAL_PLAYER_COVERAGE",
+   "original_prospective_eligible": false,
+   "original_model_configuration": "V1_CANDIDATE_R8",
+   "original_candidate": "V1_CANDIDATE_R8",
+   "satisfies_governed_appearance_interface": false,
+   "readiness_gate_is_per_team": false,
+   "predates_mandatory_seal_controls": [
+    "seal_path",
+    "time_basis"
+   ],
+   "disposition": "REFUSED",
+   "code": "REUSE_INADMISSIBLE",
+   "detail": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; its admissibility is not.",
+   "controls": {
+    "governed_appearance_interface": {
+     "disposition": "LEGACY_UNVERIFIED",
+     "code": "SEAL_PATH_UNRECORDED",
+     "detail": "the artifact records no seal_path, so which appearance interface produced it cannot be established"
+    },
+    "per_team_readiness_gate": {
+     "disposition": "LEGACY_UNVERIFIED",
+     "code": "READINESS_GATE_UNRECORDED",
+     "detail": "no seal_path, so no readiness-gate provenance exists"
+    },
+    "time_basis": {
+     "disposition": "ADMISSIBLE",
+     "code": "TIME_BASIS_PROSPECTIVE_ORDER_HOLDS",
+     "detail": "retrieved_at <= written_at < kickoff on UTC; sealed 50.52h before kickoff, newest input 5.58h before the write"
+    },
+    "completeness_evidence_class": {
+     "disposition": "REFUSED",
+     "code": "COMPLETENESS_NOT_COMPLETE",
+     "detail": "completeness=PARTIAL_PLAYER_COVERAGE; protocol section 2 admits only COMPLETE as an eligible forecast"
+    },
+    "current_blocker_state": {
+     "disposition": "REFUSED",
+     "code": "BLOCKERS_NOT_CLEARED",
+     "detail": "{\"COMPLETE_ARTIFACT_LAYERS_ABSENT\": \"BLOCKED\", \"G0A_11_OF_12\": \"BLOCKED\", \"INJURY_REPORT_INCOMPLETE\": \"BLOCKED\"}"
+    },
+    "candidate_freeze_identity": {
+     "disposition": "LEGACY_UNVERIFIED",
+     "code": "NOT_A_CANDIDATE_ARTIFACT",
+     "detail": "carries no candidate identity block; the freeze comparison does not apply to it"
+    },
+    "prospective_evidence_eligibility": {
+     "disposition": "REFUSED",
+     "code": "ARTIFACT_DECLARES_ITSELF_INELIGIBLE",
+     "detail": "prospective_eligible is false on the artifact itself"
+    }
+   },
+   "payload_identity": {
+    "draw_artifact_sha256": "71ed4672dc533559e3d140b5bfc0de9b91a80ce6ac92581df0fac41902e69bca",
+    "draw_content_sha256": null,
+    "spec_hash": "b30c49d9189ece81",
+    "feature_set_hash": "4d2eda3e88818e2ad5a78e146c4e2f48",
+    "n_players": 180,
+    "written_at": "2026-09-11T17:53:58Z",
+    "is_predictive_payload_only": true,
+    "note": "unchanged here means the NUMBERS are unchanged. It says nothing about whether they may be counted."
+   }
+  }
+ ]
+}

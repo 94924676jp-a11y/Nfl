@@ -80,6 +80,10 @@ FEATURE_SOURCES = (HISTORICAL_FRAME, LIVE_PREGAME)
 # out because "the live path is not implemented" is not an actionable
 # statement and because the next person to attempt it should not have to
 # re-derive the list from `Q9.featurise`.
+# WHAT THE LIVE PATH NEEDS, ITEMISED, AND WHAT NOW SUPPLIES EACH. Kept as a
+# requirement list rather than deleted, because the two entries that are still
+# blocked are the reason a live seal does not happen, and a list that only
+# recorded the solved half would read as though the path were ready.
 LIVE_PREGAME_REQUIREMENTS = {
     'prior_appeared_game_history': (
         'h_target_freq, h_participation_ewma, h_share_given_positive and '
@@ -108,23 +112,36 @@ LIVE_PREGAME_REQUIREMENTS = {
 
 
 def feature_rows(source=HISTORICAL_FRAME, season=None, week=None,
-                 game_id=None) -> Outcome:
-    """The pregame feature rows for a slate, or a named refusal."""
+                 game_id=None, team=None, observed_before=None,
+                 kickoff_utc=None) -> Outcome:
+    """The pregame feature rows for a slate or a team-week, or a refusal."""
     if source not in FEATURE_SOURCES:
         return Outcome.fail('Q9_UNKNOWN_FEATURE_SOURCE',
                             f'{source!r} not in {FEATURE_SOURCES}')
     if source == LIVE_PREGAME:
-        return Outcome.blocked(
-            'Q9_LIVE_PREGAME_FEATURE_BUILD_UNIMPLEMENTED',
-            'there is no pregame feature builder for the live season. The Q6 '
-            'frame refuses 2026 rows by design, production declares '
-            'feature_build STAGE_DECLARED_UNIMPLEMENTED, and the appearance '
-            'layer refuses on an incomplete injury report. Refused by name '
-            'with the requirement list attached rather than stubbed: a stub '
-            'returning plausible features would produce a sealed forecast '
-            'that looks prospective and measures nothing.',
-            cause=Cause.DEPENDENCY, requirements=LIVE_PREGAME_REQUIREMENTS,
-            season=season, week=week, game_id=game_id)
+        # IMPLEMENTED 2026-09-12. This used to refuse with
+        # Q9_LIVE_PREGAME_FEATURE_BUILD_UNIMPLEMENTED. The builder now exists
+        # in `live_features`, is parity-checked against the historical
+        # builder, and is addressed per TEAM-WEEK rather than per slate --
+        # because a live pool comes from one team's depth-chart vintage.
+        #
+        # So this entry point refuses for a DIFFERENT and smaller reason: it
+        # needs to be told which team and at what instant. Routing a slate
+        # request to the newest capture by default is exactly the
+        # point-in-time defect `DV.captured` exists to prevent.
+        from nfl.prospective.q9shadow import live_features as LF
+        if not (week and team and observed_before):
+            return Outcome.blocked(
+                'Q9_LIVE_PREGAME_NEEDS_TEAM_AND_CLOCK',
+                'the live builder is addressed per team-week and needs '
+                '`week`, `team` and `observed_before`. It will not default '
+                'the clock to the newest capture, which would silently read '
+                'a depth chart published after the forecast.',
+                cause=Cause.DEPENDENCY,
+                requirements=LIVE_PREGAME_REQUIREMENTS,
+                season=season, week=week, game_id=game_id, team=team)
+        return LF.build_team_week(season, week, team, observed_before,
+                                  kickoff_utc)
     rows, ev = Q6F.load_frame()
     rows = Q6F.attach_role_class(rows)
     rows, _ = Q6F.attach_opportunity(rows)
@@ -185,8 +202,16 @@ def _base_share(g, fit):
 
 
 def forecast_team_game(g, fit, p_appear, game_id, seed=CAND.SEED,
-                       n_draws=CAND.N_DRAWS) -> Outcome:
-    """Both arms for one team-game, on one shared set of upstream draws."""
+                       n_draws=CAND.N_DRAWS, appearance=None) -> Outcome:
+    """Both arms for one team-game, on one shared set of upstream draws.
+
+    `appearance` is the upstream Outcome from `layers.appearance`. A LIVE seal
+    MUST supply the real one -- built with `fixture=None`, so
+    `inputs.validate_appearance_inputs` runs and can refuse. When it is not
+    supplied this falls back to the layer's own TEST_ONLY fixture path, which
+    is correct for a historical slice and is stamped `test_only` so the
+    artifact cannot pretend otherwise.
+    """
     season, week, team = g[0]['s'], g[0]['w'], g[0]['t']
     pid_list = [r['pid'] for r in g]
 
@@ -202,7 +227,7 @@ def forecast_team_game(g, fit, p_appear, game_id, seed=CAND.SEED,
 
     players = [{'gsis_id': r['pid'], 'position': r['pos'], 'team': r['t']}
                for r in g]
-    ap = LAYERS.appearance(
+    ap = appearance if appearance is not None else LAYERS.appearance(
         season, week, players,
         fixture={'_test_only': True, 'practice_progression': {},
                  'teammate_availability': {}, 'p_appear': p_appear},

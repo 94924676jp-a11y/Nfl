@@ -425,3 +425,197 @@ and starts sealing.
 | `nfl/tests/test_q9_prospective_shadow.py` | 207 checks |
 | `nfl/tests/test_postgame_guards.py` | +3 checks for the `arm` identity repair |
 | `docs/AGENT_OUTBOX.md` | the one request that needs bytes from outside |
+
+---
+
+# Appendix A — owner rulings of 2026-09-12, and what they changed
+
+`da58aec` accepted. Two rulings, both **keeping the protocol unchanged**, and
+both now implemented rather than noted.
+
+## A.1 Randomized PIT — §9.6 stands
+
+Randomized PIT is the governing prospective promotion statistic. Q9B's
+mid-PIT is **diagnostic only** and does not satisfy §9.6. The ledger emits the
+randomized statistic, seeded per row through crc32 so it reproduces exactly,
+and records mid-PIT beside it. **The protocol was not modified.**
+
+Recorded in `ledger.OWNER_RULINGS['randomized_pit']` with
+`protocol_modified: false`, and asserted by the suite.
+
+## A.2 Completeness — §2 stands, and the label was not moved
+
+A `PARTIAL_PLAYER_COVERAGE` artifact may be scored diagnostically, counts
+toward **no** §4 floor, and cannot support promotion. A single-layer Q9
+artifact is **not** relabelled `COMPLETE`.
+
+Three things changed so this is enforced rather than remembered:
+
+1. **`completeness` is computed, not written.** `seal_team_game` no longer
+   carries a literal. It calls `complete.completeness_value`, which runs the
+   governed `nfl.research.completeness.forecast_completeness` over a
+   nine-layer matrix and maps `FULL` → `COMPLETE`. There is no argument by
+   which Q9 gets a different answer, and the gate is tested in both
+   directions: an all-PASS matrix reads COMPLETE, and dropping **any one** of
+   the nine takes it away.
+
+2. **`prospective_evidence` now means "may be counted", not "is live".** It
+   was `True` for every non-dry-run seal. Under the ruling a live, genuinely
+   pre-kickoff, genuinely non-fixture artifact that is PARTIAL is
+   **DIAGNOSTIC** — so the flag is now `completeness == COMPLETE`, and
+   `ledger.accounting` reads that exact flag. The ruling is enforced by the
+   counter.
+
+3. **The paired route is built.** `nfl/prospective/q9shadow/complete.py`
+   composes R8 and frozen Q9 across all nine required layers on one set of
+   upstream draws, with the target allocation as the only divergence.
+
+### The layer partition, and the guard that makes it complete
+
+The nine required layers come from `nfl.research.completeness.LAYERS` — the
+module that exists because a twelve-game slate once reported "complete" while
+carrying only the quarterback layer. Each is assigned to exactly one side:
+
+| side | layers | why |
+|---|---|---|
+| **SHARED** — both arms must carry identical numbers | `team_volume`, `qb_attempts`, `qb_passing_yards`, `qb_td`, `carries` | Q9 changes **target** allocation only; the Q8 budget repair was REJECTED, so the carry path is untouched |
+| **ARM** — the arms legitimately differ | `targets`, `receptions`, `receiving_yards`, `td_allocation` | downstream of the divergence point |
+
+`assert_partition_covers_required` refuses if the two sets do not cover the
+nine **exactly** — a layer owned twice, or owned by neither. An unowned layer
+is how "complete" comes to mean "complete apart from the bit nobody assigned".
+
+### Only the target allocation differs — both halves checked
+
+`assert_single_divergence` refuses if a **shared** input differs between arms
+(the arms would not be comparable) *and* if an **arm** layer does **not**
+differ (the candidate would be doing nothing and the comparison would be
+measuring Monte Carlo noise). A layer that was never produced is **skipped**,
+not compared — two `None`s compare equal, and the first version failed every
+game by reporting "this arm layer is identical" about a layer that did not
+exist.
+
+### Where the paired build stands today
+
+`Q9_COMPLETE_SHADOW_PARITY.json`: `PAIRED_BUILD_OK`, single divergence on
+every team-game, differing layer `['targets']`, and
+`contract_completeness_today = PARTIAL_PLAYER_COVERAGE` —
+`is_eligible_forecast_under_section_2: false`.
+
+The five shared layers are not run by a research-slice paired build, and the
+three downstream receiving layers are blocked by a **leakage guard doing its
+job**: `frozen_priors.receiving_priors(Y)` refuses whenever the committed RC1
+frame holds a row from `Y` or later, because `pools()` would train on the
+season being forecast. Measured: **2026 PASS, 2025 FAIL, 2024 FAIL**. So the
+arm chain is demonstrable on the live season and on no historical one, and the
+same code produces all four arm layers there with no change.
+
+---
+
+# Appendix B — the live pregame feature builder
+
+Full report: `Q9_LIVE_FEATURE_BUILDER.md`. In brief:
+
+- **Implemented.** `nfl/prospective/q9shadow/live_features.py`. It runs on a
+  real 2026 game today (ATL/PIT/BAL week 1).
+- **Parity EXACT** where both builders are defined: 2024, 96 team-games,
+  **482 players compared, 0 differing**.
+- **Outside that window** (weeks ≥ 2) 634 of 947 differ, and the divergence is
+  **confined to the 12 features the history walk drives** — none of the 13
+  driven by the live sources differs anywhere. The containment check is
+  asserted non-vacuous.
+- **Why the window is week 1:** the historical builder's history includes
+  earlier weeks of the same season; the live builder's does not, because the
+  requirement is *no 2026 outcomes* and an earlier 2026 week is one. Widening
+  the window to obtain parity would consume forecast-season outcomes.
+- **No coefficient is fitted and the candidate is untouched.** The schema
+  hashes `f620eeed09d0dd6e` and is checked against the freeze on every build.
+- **Arm corrected A, from B.** `fit_for` trains on strictly prior *seasons*
+  for every week, and the feature window is the same set, so no 2026 result
+  ever enters. That is arm A's definition, and A is the stronger status.
+
+## An open decision for the owner
+
+- **Arm A (implemented):** prior-seasons-only all season. Features go stale as
+  the season progresses; parity holds at week 1 only.
+- **Arm B (not implemented):** a frozen prequential rule admitting
+  strictly-earlier weeks of the forecast season. Features stay current, parity
+  holds every week — and it consumes forecast-season outcomes.
+
+Recorded in the parity artifact as `decided_by: OWNER`.
+
+---
+
+# Appendix C — the remaining G0A item
+
+`Q9_G0A_REMAINING_ITEM.json`, generated from the repository rather than typed:
+the twelve requirements are parsed from the roadmap's own exit-gate table and
+each verdict from the checklist's own verdict table.
+
+**Item 1 — "Kickoff-anchored vintage capture scheduled and demonstrably
+running" — FAIL.** 11 of 12 pass; the gate reads `11/12` and agrees.
+
+| sub-point of the owner's twelve-point discharge proof | state | blocks item 1 now |
+|---|---|---|
+| 7 — attribute the capture to a game/team/week | PROVEN on captured bytes (85 adversarial assertions, 4 guard-deletion proofs) | **no** |
+| 12 — event-anchored execution against a real T−90 window | **NOT DISCHARGED** | **yes** |
+
+**Root cause: EGRESS**, measured not inferred — `CONNECT www.nfl.com:443` →
+403 from the agent proxy and from a cloud session. Item 1 fails on the
+endpoint and would still fail with a perfect scheduler; more code here moves
+nothing.
+
+Current reconciliation (`nfl/capture/t90_obligation_reconciliation.json`,
+2026-09-11): `MISSED 20 / NOT_APPLICABLE 16 / COVERED 15 / NOT_YET_DUE 28` of
+63 obligations. The failing predicate is `qualifying_captures == 0` on every
+MISSED obligation — and `nonqualifying_in_window_captures == 0` too, so this
+is not a capture taken and rejected on a technicality. `registry.unmet_targets`
+still reports `['final_status', 'inactives', 'practice']`.
+
+**`waiver_requested: false`, and this module has no code path that can set it
+true.** A passing test suite is not a discharge.
+
+---
+
+# Appendix D — the four blockers are independent, and one clearing proves it
+
+The live feature builder landed. A live COMPLETE seal is still not possible.
+Nothing about the first fact clears the second, and each blocker now carries an
+explicit `independent_of` list:
+
+| blocker | state | needs bytes from outside |
+|---|---|---|
+| `LIVE_PREGAME_FEATURE_BUILD_UNIMPLEMENTED` | **implemented** | no |
+| `COMPLETE_ARTIFACT_LAYERS_ABSENT` | unchanged | no |
+| `INJURY_REPORT_INCOMPLETE` | unchanged | **yes** |
+| `G0A_11_OF_12` | unchanged | **yes** |
+
+## One thing found while wiring the live path, and it is worth naming
+
+The first version of the live seal called `appearance_r8.predict` **directly**
+and produced six sealed live forecasts. That skips
+`inputs.validate_appearance_inputs` — the gate that refuses
+`INJURY_REPORT_INCOMPLETE`. It was routing around a constraint, and the six
+artifacts were **discarded before any was counted**.
+
+The seal now goes through `layers.appearance` with `fixture=None`, so the gate
+runs and a `test_only` upstream is refused by name
+(`Q9_LIVE_SEAL_TEST_ONLY_UPSTREAM`). It turns out that gate refuses **per
+team**, not per slate — a team whose injury rows are all unfilled is refused
+and its opponent may pass — so the refusal census reports which teams are
+sealable rather than asserting that none is.
+
+---
+
+# Appendix E — evidence state
+
+Per the ruling, until all three original blockers are satisfied **and** a
+truthful COMPLETE pre-kickoff artifact is sealed:
+
+- forecasts may be **DRY_RUN** or **DIAGNOSTIC**
+- §4 credit: **NONE**
+- promotion evidence accruing: **false**
+
+This is enforced by `prospective_evidence = (completeness == COMPLETE)` and by
+`ledger.accounting`, which counts only rows carrying that flag — not by a
+reader remembering the rule.

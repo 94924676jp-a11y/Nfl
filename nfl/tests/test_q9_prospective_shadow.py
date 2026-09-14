@@ -19,7 +19,11 @@ WHAT THESE TESTS PROTECT.
   * THE SEALING PATH CANNOT READ AN OUTCOME. Three independent guards: no
     outcome reader in any sealing module's namespace, an outcome-shaped input
     refused by name, and the feature row projected onto the ten keys the
-    frozen featuriser actually reads.
+    frozen featuriser actually reads. ALL TEN DRY-RUN PROOFS ARE RE-RUN HERE
+    rather than read off the stored proof artifact -- `dryrun.run()` is
+    called and its result is asserted on. The stored proof is kept and asked
+    a different question: does it still describe the behaviour. On
+    2026-09-14 it does not, on DETERMINISTIC, and both functions say so.
 
   * SUBSTRING GUARDS ARE MATCHED EXACTLY. `weekly_rosters` must not be
     refused as a play-by-play source. The first draft of this module's guard
@@ -53,6 +57,7 @@ from sportsplatform.governance.outcome import State                    # noqa: E
 from nfl.prospective import artifact as ART                            # noqa: E402
 from nfl.prospective import registries as REG                          # noqa: E402
 from nfl.prospective.q9shadow import candidate as CAND                 # noqa: E402
+from nfl.prospective.q9shadow import dryrun as DR                      # noqa: E402
 from nfl.prospective.q9shadow import inputs as IN                      # noqa: E402
 from nfl.prospective.q9shadow import ledger as LED                     # noqa: E402
 from nfl.prospective.q9shadow import seal as SEAL                      # noqa: E402
@@ -312,14 +317,36 @@ def test_09_eligibility_never_admits_a_played_game():
 
 def test_10_live_path_refuses_rather_than_stubbing():
     print('\n-- the live feature source --')
+    # THE OLD ASSERTION WAS THAT THIS RETURNED
+    # Q9_LIVE_PREGAME_FEATURE_BUILD_UNIMPLEMENTED. The builder now exists, so
+    # that code is gone and asserting it would be asserting a stale state.
+    # What survives is the narrower refusal: it will not default a clock.
     o = SH.feature_rows(SH.LIVE_PREGAME, season=2026, week=1)
     check('the live pregame source refuses by name',
           o.state is State.BLOCKED
-          and o.code == 'Q9_LIVE_PREGAME_FEATURE_BUILD_UNIMPLEMENTED',
+          and o.code == 'Q9_LIVE_PREGAME_NEEDS_TEAM_AND_CLOCK',
           f'{o.state.value}[{o.code}]')
-    check('  and it itemises what it would need',
+    # TESTED AS BEHAVIOUR, NOT AS SOURCE TEXT. The first version grepped the
+    # whole module and matched its own COMMENT explaining that the code was
+    # removed -- a check that fails on the documentation of the fix. What is
+    # actually claimed is that no code path can still RETURN that code, so
+    # that is what is asserted: the live source is reachable and returns a
+    # different, narrower refusal, and no module-level symbol carries the old
+    # name.
+    codes = {SH.feature_rows(SH.LIVE_PREGAME, season=2026, week=1).code,
+             SH.feature_rows(SH.LIVE_PREGAME, season=2026, week=1,
+                             team='ATL',
+                             observed_before='2026-09-12T00:00:00Z',
+                             kickoff_utc='2026-09-13T17:00:00Z').code}
+    check('  no live-source call returns the stale UNIMPLEMENTED code',
+          'Q9_LIVE_PREGAME_FEATURE_BUILD_UNIMPLEMENTED' not in codes,
+          str(sorted(codes)))
+    check('  and no module symbol carries the stale name',
+          not [n for n in dir(SH)
+               if 'FEATURE_BUILD_UNIMPLEMENTED' in n])
+    check('  and it itemises what a live build needs',
           len(o.evidence.get('requirements') or {}) >= 6)
-    check('  including the blocked official injury report',
+    check('  including the official injury report',
           'official_injury_report' in (o.evidence.get('requirements') or {}))
     o = SH.feature_rows('NOT_A_SOURCE')
     check('an unknown feature source is refused', o.state is State.FAIL)
@@ -378,8 +405,41 @@ def test_12_streams_use_crc32_not_python_hash():
 
 
 # ======================================================= the ledger
-def _art(dry=False, game='2026_01_AA_BB', team='AA', fid='FC-1'):
-    return {
+def _art(dry=False, game='2026_01_AA_BB', team='AA', fid='FC-1',
+         seal_path='governed'):
+    """A test artifact, with its GOVERNANCE STATE stated explicitly.
+
+    `seal_path` says which governance state this fixture represents, because
+    a fixture that does not say is a fixture nobody can reason about:
+
+      'governed'  the minimum valid CURRENT provenance -- the governed
+                  appearance interface and the PER_TEAM readiness gate. Use
+                  for fixtures that are SUPPOSED to be admissible.
+      'legacy'    no seal_path at all, exactly as the pre-control artifacts on
+                  disk. Use to assert the LEGACY/refusal behaviour. It is
+                  preserved, never back-filled.
+      'slate'     a seal_path that names the governed interface but records
+                  the SLATE_WIDE readiness branch -- the shape of the 26
+                  quarantined artifacts.
+
+    The default is 'governed' so that tests about scoring arithmetic are not
+    silently also testing the gate; tests about the gate pass 'legacy' or
+    'slate' deliberately.
+    """
+    paths = {
+        'governed': {'appearance_interface':
+                     'nfl.production.nonqb.layers.appearance',
+                     'readiness_gate': 'PER_TEAM',
+                     'upstream_test_only': False},
+        'slate': {'appearance_interface':
+                  'nfl.production.nonqb.layers.appearance',
+                  'readiness_gate': 'SLATE_WIDE',
+                  'upstream_test_only': False},
+        'legacy': None,
+    }
+    if seal_path not in paths:
+        raise ValueError(f'unknown fixture governance state {seal_path!r}')
+    art = {
         'forecast_id': fid, 'artifact_id': 'a' * 64, 'game_id': game,
         'team': team, 'kickoff_utc': '2026-11-01T18:00:00Z',
         'written_at': '2026-11-01T12:00:00Z',
@@ -394,7 +454,11 @@ def _art(dry=False, game='2026_01_AA_BB', team='AA', fid='FC-1'):
                             (CAND.ARM_CANDIDATE, 0.55, 3.0))
             for p, pos in (('p1', 'WR'), ('p2', 'TE'))],
         'eligibility_verdict': 'test',
+        'fixture_governance_state': seal_path,
     }
+    if paths[seal_path] is not None:
+        art['seal_path'] = paths[seal_path]
+    return art
 
 
 def _draws(n=200):
@@ -602,34 +666,220 @@ def test_20_the_comparison_is_paired_and_clustered():
 
 
 # ======================================================= the proof
-def test_21_the_dry_run_proof_holds():
-    print('\n-- the dry-run proof artifact --')
-    pr = _load('Q9_PROSPECTIVE_DRYRUN_PROOF.json')
-    check('the proof artifact exists', pr is not None)
-    if not pr:
-        return
+#
+# WHY THE NEXT TWO FUNCTIONS ARE TWO FUNCTIONS.
+#
+# Until 2026-09-14 there was one, `test_21_the_dry_run_proof_holds`, and it
+# read `Q9_PROSPECTIVE_DRYRUN_PROOF.json` and asserted that the file said
+# `n_failed: 0, n_checks: 10`. It named determinism, outcome-blindness,
+# mutation refusal, reseal refusal and post-kickoff refusal, and it executed
+# none of them. `dryrun.run()` had no call site in any of the 90 test modules.
+#
+# THAT IS NOT A HYPOTHETICAL RISK HERE. The producer was re-run on 2026-09-14
+# and disagrees with the artifact the test reads:
+#
+#     DETERMINISTIC   FAIL -- two seals of identical inputs DIFFER
+#     status          DRY_RUN_PROOF_FAILED (9/10)
+#
+# while the stored file still reads PASS on ten of ten. The sealing path had
+# already regressed and this module was green.
+#
+# What moved is narrow and worth writing down, because it says where NOT to
+# look. `draw_artifact_sha256` and `draw_content_sha256` reproduce exactly
+# across runs, and so do `spec_hash` and `feature_set_hash` -- THE MODEL IS
+# DETERMINISTIC. What differs is `artifact_id`, `forecast_id`,
+# `seal_payload_sha256` and `identity_fingerprint`, and they differ between
+# two runs of one invocation rather than merely from the record. The execution
+# identity is what is unstable, not the football.
+#
+# Measured mechanism, offered as a lead and not as a diagnosis (seal.py is not
+# this workstream's to edit): `seal._code_commit()` returns
+# `<rev>+dirty[<n>]` where n is the number of lines `git status --porcelain`
+# prints. The run's OWN outputs are new untracked paths, so n changes underneath
+# it: run1's first team is sealed at n, its second at n+1 because writing the
+# first team's draws added a line, and run2's first team is sealed at n+1 and
+# therefore matches run1's SECOND team rather than its first. That is exactly
+# the pattern observed. A code version that counts the artifacts the run is
+# producing is not a code version.
+#
+# The function below was therefore written EXPECTING TO FAIL, and it was left
+# failing rather than skipped, softened or marked expected-fail. WS-E's repair
+# to `_code_commit()` landed later the same day -- the dirty-file COUNT is gone
+# and `code_version` now carries a content digest over in-scope dirty source.
+# Measured three times on 2026-09-14, and the three readings are the whole
+# argument for writing it this way:
+#
+#   11:47  before the repair     FAIL   run1 ARI != run1 BUF
+#                                       -- the run's OWN outputs moved the
+#                                          count, mid-run
+#   12:12  after, tree churning  FAIL   run1 ARI == run1 BUF, run2 pair
+#                                       identical to each other and different
+#                                       from run1's
+#   12:22  after, tree quiet     PASS   every compared hash identical
+#
+# The shape of the failure is the diagnosis. The first is a run changing its
+# own identity, which is the defect. The second is two INTERNALLY CONSISTENT
+# runs that executed different source, which is the first row of the table
+# below and a property of a checkout twenty-four workstreams are writing to --
+# not evidence that the repair failed. The third is the repair working on a
+# quiet tree.
+#
+# So this check is sensitive to tree churn and will read red sometimes for a
+# reason that is not a defect in the sealing path. THAT IS NOT A LICENCE TO
+# SOFTEN IT. The test is right both times: the two runs really were not
+# identical. What the reader needs is not a weaker check but a correct
+# attribution, which is why it classifies its own failure below.
+#
+# ONE MORE THING BELONGS HERE, AND IT IS THE SAME DEFECT CLASS THIS FUNCTION IS
+# ABOUT. WS-E measured that the pre-repair DETERMINISTIC check was itself
+# INERT against the defect it appeared to cover: `git status --porcelain`
+# collapses an untracked directory to a single line, so writing a second file
+# into `dryrun/proof/` often did not move the count, and the check passed while
+# the defect was live. It was not wrong; it was not measuring. A false green
+# nested inside the proof that this test used to assert about.
+#
+# HOW TO READ A FAILURE HERE, from WS-E's identity contract
+# (`nfl/research/remediation/ws_e/WS_E_IDENTITY_CONTRACT.md` section on
+# quiescence). `code_version` now moves when in-scope source changes, which is
+# the point and which costs something in a checkout many workstreams write to
+# at once:
+#
+#   artifact_id AND identity_fingerprint AND forecast_id all differ
+#       -> in-scope SOURCE changed between the two seals. A property of the
+#          checkout, not of the sealing path. Re-run on a quiescent tree.
+#   forecast_id / seal_payload_sha256 differ ALONE
+#       -> something in the sealed body reads state outside the identity.
+#          That is a real defect in the sealing path.
+#   draw_content_sha256 / draw_artifact_sha256 differ
+#       -> genuine predictive nondeterminism. Never yet observed.
+#
+# The function classifies its own failure against that table rather than
+# leaving the reader to do it. Note that `nfl/tests/**` is deliberately OUT of
+# WS-E's dirty-source scope, so editing this file cannot move a run id and a
+# failure here is never caused by the test's own edits.
+#
+# Cost: DR.run() is ~62s unloaded. It performs two full seals plus the
+# mutation, reseal and post-kickoff probes, and it writes only under
+# dryrun/proof, which it removes again.
+_DRYRUN = {}
+
+
+def _dryrun():
+    """dryrun.run() once per process. It writes no artifact of its own."""
+    if not _DRYRUN:
+        _DRYRUN['out'] = DR.run()
+    return _DRYRUN['out']
+
+
+def test_21_the_dry_run_proof_holds_when_it_is_run():
+    print('\n-- the dry-run proof, RE-RUN --')
+    pr = _dryrun()
     check('it is not evidence about accuracy',
           pr['is_evidence_about_accuracy'] is False)
     check('nothing is promoted', pr['promoted'] is False)
-    check('all ten checks hold', pr['n_failed'] == 0 and pr['n_checks'] == 10,
-          f"{pr['n_checks'] - pr['n_failed']}/{pr['n_checks']} "
-          f"{pr['failed']}")
-    c = pr['checks']
-    check('determinism compared the draw CONTENT hash',
-          'draw_content_sha256' in
-          c['DETERMINISTIC'].get('identity_keys_compared', []))
-    check('every named outcome reader was poisoned',
-          c['OUTCOME_READERS_POISONED']['n_readers_poisoned'] >= 6,
-          str(c['OUTCOME_READERS_POISONED']['n_readers_poisoned']))
-    check('the schedule check is not vacuous: the raw capture DOES carry '
-          'outcome columns',
-          len(c['SCHEDULE_PROJECTED']['banned_columns_present_in_raw_capture'])
-          >= 4)
-    check('the feature check is not vacuous: the panel row DOES carry '
-          'realised columns',
-          len(c['FEATURE_PROJECTED']['realised_keys_on_the_panel_row']) >= 4)
     check('the proof ran on a historical slice, not on 2026',
           pr['slice']['season'] <= 2025, str(pr['slice']['season']))
+    check('all ten checks were attempted', pr['n_checks'] == 10,
+          str(pr['n_checks']))
+    for name in DR.CHECKS:
+        st = pr['checks'][name]
+        check(f'{name} passes when it is run now',
+              st.get('state') == 'PASS',
+              f"{st.get('state')} -- {(st.get('detail') or '')[:160]}")
+    check('all ten hold', pr['n_failed'] == 0,
+          f"{pr['n_checks'] - pr['n_failed']}/{pr['n_checks']} "
+          f"failed: {pr['failed']}")
+
+    # The determinism check, opened up. `n_failed == 0` above would already
+    # have caught this, but a bare count does not say WHAT was compared, and
+    # a determinism proof that quietly stopped comparing the draw content
+    # would still report zero failures.
+    d = pr['checks']['DETERMINISTIC']
+    keys = d.get('identity_keys_compared', [])
+    check('determinism compared the draw CONTENT hash, not just the file hash',
+          'draw_content_sha256' in keys and 'draw_artifact_sha256' in keys)
+    check('  and the seal payload and the execution fingerprint as well',
+          {'seal_payload_sha256', 'identity_fingerprint'} <= set(keys),
+          str(keys))
+    check('  the comparison is not vacuous: it sealed something',
+          d.get('n_forecasts', 0) > 0, str(d.get('n_forecasts')))
+    r1, r2 = d.get('run1') or [], d.get('run2') or []
+    check('  the second run produced as many forecasts as the first',
+          len(r1) == len(r2) and bool(r1), f'{len(r1)} vs {len(r2)}')
+    moved = set()
+    for a, b in zip(r1, r2):
+        for k in keys:
+            same = a.get(k) == b.get(k)
+            if not same:
+                moved.add(k)
+            check(f"  {a.get('team')} {k} is identical across two runs",
+                  same, f'{a.get(k)} vs {b.get(k)}')
+    if moved:
+        # Classified against WS-E's table rather than reported as one
+        # undifferentiated "not deterministic". The three diagnoses have
+        # different owners and only one of them is a defect in this path.
+        draws = {'draw_content_sha256', 'draw_artifact_sha256'} & moved
+        ids = {'artifact_id', 'identity_fingerprint', 'forecast_id'} <= moved
+        if draws:
+            why = ('PREDICTIVE NONDETERMINISM -- the draws themselves moved. '
+                   'Never previously observed and the most serious of the '
+                   'three.')
+        elif ids:
+            why = ('IN-SCOPE SOURCE CHANGED BETWEEN THE TWO SEALS. A property '
+                   'of a shared checkout, not of the sealing path. Re-run on '
+                   'a quiescent tree before reporting a defect.')
+        else:
+            why = ('THE SEALED BODY READS STATE OUTSIDE THE IDENTITY -- '
+                   'forecast_id / seal_payload moved while the ids that '
+                   'depend only on source did not. This one is a real defect '
+                   'in the sealing path.')
+        check(f'  the failure is classified: {why}', False, str(sorted(moved)))
+    check('every named outcome reader was poisoned',
+          pr['checks']['OUTCOME_READERS_POISONED']['n_readers_poisoned'] >= 6,
+          str(pr['checks']['OUTCOME_READERS_POISONED']
+              ['n_readers_poisoned']))
+    check('the schedule check is not vacuous: the raw capture DOES carry '
+          'outcome columns',
+          len(pr['checks']['SCHEDULE_PROJECTED']
+              ['banned_columns_present_in_raw_capture']) >= 4)
+    check('the feature check is not vacuous: the panel row DOES carry '
+          'realised columns',
+          len(pr['checks']['FEATURE_PROJECTED']
+              ['realised_keys_on_the_panel_row']) >= 4)
+
+
+def test_21b_the_stored_dry_run_proof_agrees_with_the_run():
+    """ARTIFACT_CONTENT_ASSERTION, and declared as one.
+
+    The committed proof is kept. It is evidence of what was measured on the
+    day it was written and it is not rewritten to make anything green. The
+    only question asked of it here is whether it still describes the sealing
+    path's behaviour, check by check. On the morning of 2026-09-14 it did not,
+    on DETERMINISTIC -- the stored proof read PASS while the re-run read FAIL,
+    and this function is what would have said so. Saying so is the point of
+    it: a disagreement is reported, never repaired by rewriting the file.
+    """
+    print('\n-- the stored dry-run proof, against the re-run --')
+    a = _load('Q9_PROSPECTIVE_DRYRUN_PROOF.json')
+    check('the proof artifact exists', a is not None)
+    if a is None:
+        return
+    pr = _dryrun()
+    check('the record and the run agree on the spec version',
+          a['spec_version'] == pr['spec_version'])
+    check('the record and the run agree on the slice',
+          a['slice']['season'] == pr['slice']['season']
+          and a['slice']['n_games'] == pr['slice']['n_games']
+          and a['slice']['n_draws'] == pr['slice']['n_draws'])
+    check('the record and the run agree on the check list',
+          set(a['checks']) == set(pr['checks']))
+    for name in DR.CHECKS:
+        rec = a['checks'].get(name, {}).get('state')
+        now = pr['checks'][name].get('state')
+        check(f'{name}: the record still describes the behaviour',
+              rec == now, f'record {rec}, run {now}')
+    check('the record and the run agree on the overall status',
+          a['status'] == pr['status'], f"{a['status']} vs {pr['status']}")
 
 
 def test_22_the_sealed_artifact_passes_the_governed_contract():
@@ -696,18 +946,25 @@ def test_23_nothing_here_is_promoted():
             check(f'    and reports promoted False', a.get('promoted') is False)
     st = _load('Q9_PROSPECTIVE_LEDGER_STATE.json')
     if st:
-        check('the ledger state names all three blockers',
+        check('the ledger state names the three LIVE blockers',
               set(st['blockers']) == {
-                  'LIVE_PREGAME_FEATURE_BUILD_UNIMPLEMENTED',
-                  'INJURY_REPORT_INCOMPLETE', 'G0A_11_OF_12'})
+                  'COMPLETE_ARTIFACT_LAYERS_ABSENT',
+                  'INJURY_REPORT_INCOMPLETE', 'G0A_11_OF_12'},
+              str(sorted(st['blockers'])))
         check('  and says which one needs bytes from outside',
               st['blockers']['INJURY_REPORT_INCOMPLETE'][
                   'needs_bytes_from_outside'] is True)
-        check('  and that the feature build does not',
-              st['blockers']['LIVE_PREGAME_FEATURE_BUILD_UNIMPLEMENTED'][
+        check('  and that the completeness blocker does not',
+              st['blockers']['COMPLETE_ARTIFACT_LAYERS_ABSENT'][
                   'needs_bytes_from_outside'] is False)
-        check('zero live forecasts are sealed, and that is reported',
-              st['live_eligibility']['n_sealed'] == 0)
+        check('the resolved blocker is recorded separately, not in the list',
+              'LIVE_PREGAME_FEATURE_BUILD_UNIMPLEMENTED'
+              in st['resolved_blockers']
+              and 'LIVE_PREGAME_FEATURE_BUILD_UNIMPLEMENTED'
+              not in st['blockers'])
+        check('the live eligibility census is reported',
+              'n_sealed' in st['live_eligibility'],
+              str(st['live_eligibility']['n_sealed']))
 
 
 def test_zz_every_check_passed():

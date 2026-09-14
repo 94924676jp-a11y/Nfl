@@ -56,7 +56,7 @@ _REPO = pathlib.Path(__file__).resolve().parents[3]
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
-from sportsplatform.governance.outcome import Outcome                 # noqa: E402
+from sportsplatform.governance.outcome import Cause, Outcome, State   # noqa: E402
 from nfl.prospective.q9shadow import candidate as CAND                # noqa: E402
 from nfl.research import postgame as PG                               # noqa: E402
 from nfl.research.shadow import score as SC                           # noqa: E402
@@ -281,6 +281,16 @@ def score_rows(art, draws, actuals, outcome_hash, outcome_source,
     that exact substitution -- a missing key defaulted to zero -- is what
     turned a 74-yard game into a scored zero once already.
     """
+    # THE SEAL-PATH GATE, AT THE POINT ROWS ARE CREATED.
+    #
+    # Scoring is where an artifact turns into evidence, so it is where the
+    # bypass check belongs. An artifact that did not come through the governed
+    # appearance interface produces ZERO rows -- not rows marked non-evidence,
+    # zero -- because a row that exists can be miscounted and a row that was
+    # never created cannot.
+    gate = assert_seal_path_governed(art)
+    if gate.state is not State.PASS:
+        return []
     rows = []
     pids = list(art['player_ids'])
     summary = {(r['arm'], r['player_id']): r for r in art['player_summary']}
@@ -318,6 +328,24 @@ def score_rows(art, draws, actuals, outcome_hash, outcome_source,
                 'finality_code': finality_code,
                 'prospective_evidence': bool(
                     art.get('prospective_evidence', False)),
+                # STAMPED ON THE ROW, NOT ONLY CHECKED AT CREATION.
+                # `score_rows` is not the only way a row can reach the
+                # ledger -- `append_rows` takes whatever it is given -- so
+                # the verdict travels with the row and `accounting` reads it.
+                'seal_path_governed': True,
+                # THE SHARED COUNTING STAMP, and the reason it is separate
+                # from `seal_path_governed`.
+                #
+                # `accounting` delegates to `postgame.accounting`, which
+                # counts only rows stamped `currently_admissible`. Stamping
+                # only the q9shadow-specific field silently zeroed every Q9
+                # count the moment the postgame gate landed -- the two layers
+                # agreed on the policy and disagreed on the field name.
+                # `currently_admissible` is the shared gate; `seal_path_
+                # governed` records WHY this row earned it.
+                'currently_admissible': True,
+                'readiness_gate': (art.get('seal_path') or {}).get(
+                    'readiness_gate'),
                 'promoted': False,
                 'zero_probability': s.get('zero_probability'),
                 'mean_targets': s.get('mean_targets'),
@@ -344,11 +372,31 @@ def score_rows(art, draws, actuals, outcome_hash, outcome_source,
 
 # -------------------------------------------------------- the accounting
 def accounting(rows):
-    """The four counts, from the governed counter, plus the arm pairing."""
-    counted = [r for r in rows if r.get('prospective_evidence')]
+    """The four counts, from the governed counter, plus the arm pairing.
+
+    TWO INDEPENDENT EXCLUSIONS, APPLIED AT THE COUNTER.
+      * `prospective_evidence` -- the owner's evidence ruling.
+      * `seal_path_governed` -- a row whose artifact did not come through the
+        governed appearance interface AND the per-team readiness gate. A row
+        that predates the stamp has no verdict, and no verdict is not a pass.
+    Both are enforced here as well as at `score_rows`, because a row can
+    reach the ledger through `append_rows` without passing `score_rows` at
+    all.
+    """
+    counted = [r for r in rows if r.get('prospective_evidence')
+               and r.get('seal_path_governed') is True]
     acc = PG.accounting(counted)
     acc['scoring_rows_including_non_evidence'] = len(list(rows))
-    acc['rows_excluded_as_non_evidence'] = len(list(rows)) - len(counted)
+    allrows = list(rows)
+    acc['rows_excluded_as_non_evidence'] = len(allrows) - len(counted)
+    acc['rows_excluded_by_evidence_flag'] = sum(
+        1 for r in allrows if not r.get('prospective_evidence'))
+    acc['rows_excluded_by_seal_path'] = sum(
+        1 for r in allrows if r.get('seal_path_governed') is not True)
+    acc['exclusion_note'] = (
+        'a row must carry BOTH prospective_evidence and '
+        'seal_path_governed to be counted. The two exclusions overlap and '
+        'are reported separately so neither can be assumed from the other.')
     acc['distinct_arms'] = sorted({r.get('arm') for r in counted
                                    if r.get('arm')})
     acc['arm_pairing_note'] = schema()['arm_pairing_note']
@@ -493,7 +541,18 @@ def _pit_chi2(pits, bins=10):
 LEDGER_STATE = HERE / 'Q9_PROSPECTIVE_LEDGER_STATE.json'
 
 
-def state(season=2026, now=None):
+# HOW MANY GAMES THE CENSUS COVERS.
+#
+# `state()` used to attempt every eligible game -- 270 of them, each needing a
+# full live feature build before the readiness gate is even reached. That is
+# minutes of work to produce a census, and it timed out in practice. The
+# census is a REPORTING scope, not a governance one: bounding it changes which
+# games are listed, never whether any of them would pass. `census_scope` is
+# recorded on the artifact so a bounded census is never read as the season.
+CENSUS_GAMES = 16
+
+
+def state(season=2026, now=None, n_games=CENSUS_GAMES):
     """The ledger as it actually stands, with the reason it stands there.
 
     AN EMPTY LEDGER IS NOT REPORTED AS A ZERO AND LEFT THERE. This project's
@@ -507,7 +566,7 @@ def state(season=2026, now=None):
     from nfl.prospective.q9shadow import shadow as SH
     rows = current()
     acc = accounting(rows)
-    live = SEAL.seal_season(season, now, SH.LIVE_PREGAME)
+    live = SEAL.seal_season(season, now, SH.LIVE_PREGAME, n_games=n_games)
     census = collections.Counter(
         f'{r["state"]}[{r["code"]}]' for r in (live.get('refusals') or []))
     return {
@@ -530,6 +589,12 @@ def state(season=2026, now=None):
             'and is not reported.'),
         'live_eligibility': {
             'status': live.get('status'),
+            'census_scope': {
+                'n_games_attempted': n_games,
+                'note': 'a bounded REPORTING scope covering the next '
+                        'eligible kickoffs, not the whole season. Bounding '
+                        'the census changes which games are listed, never '
+                        'whether any would pass.'},
             'candidate_gate': live.get('candidate_gate'),
             'n_games_ahead_of_clock': live.get('n_eligible_games'),
             'n_sealed': len(live.get('sealed') or []),
@@ -539,25 +604,123 @@ def state(season=2026, now=None):
                 SH.LIVE_PREGAME_REQUIREMENTS,
         },
         'blockers': BLOCKERS,
+        'blocker_states': blocker_states(),
+        'blocker_independence': (lambda o: {
+            'state': f'{o.state.value}[{o.code}]', 'detail': o.detail,
+            'n_blockers': o.evidence.get('n_blockers'),
+            'n_perturbations': o.evidence.get('n_perturbations'),
+            'method': 'each blocker forced CLEARED in turn; every other '
+                      'recomputed from its own evaluator and required to be '
+                      'unchanged',
+        })(assert_blockers_independent()),
+        'resolved_blockers': RESOLVED_BLOCKERS,
+        'excluded_seals': EXCLUDED_SEALS,
+        'blockers_are_independent': (
+            'clearing one blocker does not clear any other. Each carries its '
+            'own owner, its own remedy and an explicit independent_of list, '
+            'and the live feature builder landing is the worked example: it '
+            'is implemented, and a live seal is still blocked.'),
+        'owner_rulings': OWNER_RULINGS,
+        'evidence_state': {
+            'forecasts_may_be': ['DRY_RUN', 'DIAGNOSTIC'],
+            'section_4_credit': 'NONE',
+            'promotion_evidence_accruing': False,
+            'condition': ('all three original blockers satisfied AND a '
+                          'truthful COMPLETE pre-kickoff artifact sealed. '
+                          'Until then nothing accrues, whatever the numbers '
+                          'look like.'),
+        },
         'stop_rule': STOP_RULE,
     }
 
 
-# The three things standing between this integration and a countable
-# prospective row. Each is named, each is upstream of Q9, and none is
-# something this task may route around.
-BLOCKERS = {
+# THE OWNER RULINGS THIS LAYER IMPLEMENTS, recorded so the reasoning cannot
+# be reconstructed wrongly later.
+OWNER_RULINGS = {
+    'randomized_pit': {
+        'ruling': 'protocol section 9.6 UNCHANGED. Randomized PIT is the '
+                  'governing prospective promotion statistic.',
+        'q9b_mid_pit': 'DIAGNOSTIC ONLY. It does not satisfy section 9.6.',
+        'implementation': 'this module emits the randomized statistic, seeded '
+                          'per row through crc32 so it reproduces, and '
+                          'records mid-PIT beside it.',
+        'protocol_modified': False,
+    },
+    'completeness': {
+        'ruling': 'protocol section 2 UNCHANGED. A PARTIAL_PLAYER_COVERAGE '
+                  'artifact may be scored diagnostically, counts toward no '
+                  'section-4 floor, and cannot support promotion.',
+        'relabelling': 'REFUSED. A single-layer Q9 artifact is not called '
+                       'COMPLETE.',
+        'route': 'nfl/prospective/q9shadow/complete.py builds the paired '
+                 'R8-versus-Q9 artifact across all nine required layers on '
+                 'one set of upstream draws, with the target allocation as '
+                 'the only divergence. completeness is COMPUTED from '
+                 'nfl.research.completeness.forecast_completeness; there is '
+                 'no Q9 exemption.',
+        'protocol_modified': False,
+    },
+}
+
+# The things standing between this integration and a countable prospective
+# row. Each is named, each is upstream of Q9, and none is something this task
+# may route around. THEY ARE INDEPENDENT: clearing one does not imply any
+# other is cleared, and `independent_of` on each says so explicitly.
+# RESOLVED, AND MOVED OUT OF THE LIVE LIST RATHER THAN LEFT THERE WITH A
+# "status: IMPLEMENTED" STRING.
+#
+# A blocker list whose entries can say "actually this one is done" is not a
+# blocker list -- a reader has to parse prose to learn the state, and the
+# stale name (`..._UNIMPLEMENTED`) keeps asserting the opposite of the truth.
+# So it is recorded here, with its evidence, and `BLOCKERS` holds only what
+# actually blocks.
+RESOLVED_BLOCKERS = {
     'LIVE_PREGAME_FEATURE_BUILD_UNIMPLEMENTED': {
-        'owner': 'this repository',
-        'what': 'there is no pregame feature builder for the live season. '
-                'nfl.research.q6.frame.load_frame refuses 2026 rows by '
-                'design and production reports feature_build '
-                'STAGE_DECLARED_UNIMPLEMENTED.',
-        'blocks': 'every 2026 seal, for both arms',
+        'resolved_on': '2026-09-12',
+        'resolved_by': 'nfl/prospective/q9shadow/live_features.py',
+        'was': 'no pregame feature builder for the live season. '
+               'nfl.research.q6.frame.load_frame refuses 2026 rows by design '
+               'and production reports feature_build '
+               'STAGE_DECLARED_UNIMPLEMENTED.',
+        'evidence': {
+            'artifact': 'nfl/prospective/q9shadow/Q9_LIVE_FEATURE_PARITY.json',
+            'builder_parity': 'EXACT',
+            'n_players_compared': 482,
+            'n_players_differing': 0,
+            'window': 'week 1 -- the window in which both builders are '
+                      'defined',
+            'runs_on_a_live_game': True,
+        },
+        'did_not_clear': ['INJURY_REPORT_INCOMPLETE',
+                          'COMPLETE_ARTIFACT_LAYERS_ABSENT', 'G0A_11_OF_12'],
+        'note': 'this resolution is the worked example of blocker '
+                'independence: the builder exists and a live COMPLETE seal is '
+                'still impossible.',
+    },
+}
+
+BLOCKERS = {
+    'COMPLETE_ARTIFACT_LAYERS_ABSENT': {
+        'owner': 'the production forecast path',
+        'what': 'protocol section 2 requires completeness == COMPLETE for an '
+                'eligible forecast, and that means all nine required layers '
+                'from nfl.research.completeness.LAYERS. The paired shadow '
+                'build currently carries the target layer; team_volume, the '
+                'three QB layers and carries come from the production run, '
+                'and the downstream receiving layers need '
+                'frozen_priors.receiving_priors, which refuses on any '
+                'historical slice by its own leakage guard '
+                '(RECEIVING_FRAME_CARRIES_FORECAST_SEASON; measured: 2026 '
+                'PASS, 2025 FAIL, 2024 FAIL).',
+        'blocks': 'section-4 credit and any promotion evidence',
         'needs_bytes_from_outside': False,
+        'independent_of': ['INJURY_REPORT_INCOMPLETE', 'G0A_11_OF_12'],
+        'artifact': 'nfl/prospective/q9shadow/Q9_COMPLETE_SHADOW_PARITY.json',
     },
     'INJURY_REPORT_INCOMPLETE': {
         'owner': 'the agent that holds network egress',
+        'independent_of': ['G0A_11_OF_12',
+                           'COMPLETE_ARTIFACT_LAYERS_ABSENT'],
         'what': 'the 2026 injury captures carry rows whose report_status is '
                 'unfilled, and nfl.production.nonqb.inputs refuses that by '
                 'name. An unfiled designation is not an absence of injury '
@@ -571,6 +734,13 @@ BLOCKERS = {
     },
     'G0A_11_OF_12': {
         'owner': 'governance',
+        'independent_of': ['INJURY_REPORT_INCOMPLETE',
+                           'COMPLETE_ARTIFACT_LAYERS_ABSENT'],
+        'remaining_item_artifact':
+            'nfl/prospective/q9shadow/Q9_G0A_REMAINING_ITEM.json',
+        'remaining_item': 'item 1 -- kickoff-anchored vintage capture '
+                          'scheduled and demonstrably running. Root cause '
+                          'EGRESS. No waiver requested.',
         'what': 'protocol section 1 says no forecast written before G0A is '
                 'discharged counts toward promotion. '
                 'nfl.production.authorization.gate_state reports G0A 11/12.',
@@ -589,6 +759,360 @@ STOP_RULE = {
         'no numeric minimum was invented here. The floors are transcribed '
         'from the protocol, which predates any 2026 result.'),
 }
+
+
+# ==================================================================
+# PERMANENT EXCLUSION OF THE GUARD-BYPASS SEALS
+# ==================================================================
+#
+# Six live artifacts were produced by a seal path that called
+# `appearance_r8.predict` DIRECTLY, skipping
+# `inputs.validate_appearance_inputs` -- the gate that refuses
+# INJURY_REPORT_INCOMPLETE. They were deleted from disk and their ledger was
+# removed before any was counted.
+#
+# AN ID BLACKLIST CANNOT BE THE GUARD, AND SAYING SO IS THE POINT. The run log
+# printed only the first three forecast_ids and the artifacts are gone, so
+# three of the six ids are UNRECOVERABLE. A list that is knowingly incomplete
+# must not be presented as the control.
+#
+# The control is structural instead: every sealed artifact records the
+# appearance interface it came through, and `assert_seal_path_governed`
+# refuses any artifact that did not come through the governed one -- whatever
+# its id, including the three whose ids are lost, and including any future
+# bypass nobody has thought of yet. The id list below is an AUDIT RECORD, not
+# the mechanism.
+EXCLUDED_SEAL_BATCHES = ()          # populated below; see EXCLUDED_SEALS
+
+EXCLUDED_SEALS = {
+    'reason': 'SEAL_PATH_BYPASSED_APPEARANCE_INPUT_VALIDATION',
+    'defect': 'the seal called nfl.production.nonqb.appearance_r8.predict '
+              'directly, which skips '
+              'nfl.production.nonqb.inputs.validate_appearance_inputs',
+    'discovered_on': '2026-09-12',
+    'n_artifacts': 6,
+    'permanently_excluded': True,
+    'may_ever_count_as_evidence': False,
+    'disposition': 'deleted from disk and from the seal ledger before any was '
+                   'counted; no metric, no accounting unit and no floor ever '
+                   'included one',
+    'recoverable_forecast_ids': [
+        'Q9SH-fc559f3700c426cc',        # 2026_01_ATL_PIT / ATL
+        'Q9SH-a62e9d18be8e7dcc',        # 2026_01_ATL_PIT / PIT
+        'Q9SH-caccdcddef4f421d',        # 2026_01_BAL_IND / BAL
+    ],
+    'unrecoverable_forecast_ids': {
+        'n': 3,
+        'team_games': ['2026_01_BAL_IND / IND', '2026_01_BUF_HOU / BUF',
+                       '2026_01_BUF_HOU / HOU'],
+        'why': 'the run printed only the first three ids and the artifacts '
+               'were deleted. Recorded as unrecoverable rather than guessed.',
+    },
+    'the_actual_control': 'assert_seal_path_governed -- a field check on every '
+                          'artifact, complete by construction where an id '
+                          'list cannot be',
+}
+
+# A SECOND BATCH, FOUND BY AUDITING THE FIRST FIX.
+#
+# The id lists in both batches are HISTORICAL AUDIT EVIDENCE. They are
+# explicitly NON-EXHAUSTIVE (batch 1 is missing three ids that cannot be
+# recovered) and NON-AUTHORITATIVE. The authoritative control is
+# `assert_seal_path_governed`, a field check that does not depend on anyone
+# having written an id down.
+EXCLUDED_SEALS_2 = {'defect': 'nfl.production.nonqb.layers.appearance consults per-team '
+           'readiness ONLY when `teams` is supplied. The seal called '
+           'it without `teams`, so it took the slate-wide branch -- '
+           'which returned ENGINE_INPUTS_READY while 28 of 32 teams '
+           'had every injury row unfilled. Per-team readiness refuses '
+           'those teams by name with INJURY_REPORT_INCOMPLETE. '
+           'Omitting an argument is not a lighter version of calling '
+           'the wrong function; the guard did not run either way.',
+ 'discovered_by': 'the audit of the live-seal terminal state: 26 of 26 '
+                  'team-games sealed with 0 refusals while the injury '
+                  'feed carried 159 of 167 rows without a '
+                  'report_status',
+ 'discovered_on': '2026-09-12',
+ 'disposition': 'deleted from disk and from the seal ledger before any '
+                'was counted; every one carried '
+                'prospective_evidence=false and entered no metric, '
+                'accounting unit or floor',
+ 'may_ever_count_as_evidence': False,
+ 'n_artifacts': 26,
+ 'permanently_excluded': True,
+ 'reason': 'SEAL_PATH_SKIPPED_PER_TEAM_READINESS_GATE',
+ 'recoverable_forecast_ids': ['Q9SH-181f9ab1c271d7d0',
+                              'Q9SH-a89fe6a34ef8420d',
+                              'Q9SH-5a825f68a09f4533',
+                              'Q9SH-6dbde3189dc9d335',
+                              'Q9SH-5d9b539a48a3a1e0',
+                              'Q9SH-979c28f6d8a5c482',
+                              'Q9SH-10cf6c9e9ce0b487',
+                              'Q9SH-3c110a96a79a752f',
+                              'Q9SH-5cc2612eef7536f0',
+                              'Q9SH-dd71e69cbc4e0c39',
+                              'Q9SH-ddabbff169afd4c3',
+                              'Q9SH-cc477d7e0e7e8e5e',
+                              'Q9SH-8d7c397191958df0',
+                              'Q9SH-5d7006bf14b0d92d',
+                              'Q9SH-d0922be3004654d8',
+                              'Q9SH-1e3edf9595057481',
+                              'Q9SH-100419f74de2eb6c',
+                              'Q9SH-b2f2f7405362da1a',
+                              'Q9SH-6c2a75d12c019222',
+                              'Q9SH-bf7bdc52fad0991b',
+                              'Q9SH-ae993c26d891b7b7',
+                              'Q9SH-5916e6ff1cd27ac7',
+                              'Q9SH-97d343e3e60f685c',
+                              'Q9SH-e93a54cb102b89d6',
+                              'Q9SH-7e0b63f382042800',
+                              'Q9SH-8cfdaea03fa025f3'],
+ 'the_actual_control': 'assert_seal_path_governed now also requires '
+                       'seal_path.readiness_gate == PER_TEAM, so an '
+                       'artifact built through the slate-wide branch '
+                       'is refused by a field check rather than by an '
+                       'id list',
+ 'unrecoverable_forecast_ids': {'n': 0,
+                                'team_games': [],
+                                'why': 'the ledger was intact, so all '
+                                       '26 ids are recorded'}}
+
+EXCLUDED_SEAL_BATCHES = (EXCLUDED_SEALS, EXCLUDED_SEALS_2)
+
+GOVERNED_APPEARANCE_INTERFACE = 'nfl.production.nonqb.layers.appearance'
+PER_TEAM_READINESS_GATE = 'PER_TEAM'
+
+
+def assert_seal_path_governed(art) -> Outcome:
+    """Refuse an artifact that did not come through the governed appearance
+    interface, whatever its forecast_id.
+
+    An artifact with NO `seal_path` is refused too. It predates the field, so
+    nothing establishes which interface produced it -- and "we cannot tell" is
+    not one of the permitted answers for something that would be counted.
+    """
+    sp = art.get('seal_path')
+    if not sp:
+        return Outcome.fail(
+            'Q9_SEAL_PATH_UNRECORDED',
+            f'{art.get("forecast_id")} carries no seal_path, so which '
+            f'appearance interface produced it cannot be established. An '
+            f'artifact that cannot say how it was built may not be counted.')
+    got = sp.get('appearance_interface')
+    if got != GOVERNED_APPEARANCE_INTERFACE:
+        return Outcome.fail(
+            'Q9_SEAL_PATH_NOT_GOVERNED',
+            f'{art.get("forecast_id")} came through {got!r} rather than '
+            f'{GOVERNED_APPEARANCE_INTERFACE!r}, which skips '
+            f'inputs.validate_appearance_inputs. '
+            f'{EXCLUDED_SEALS["disposition"]}.',
+            appearance_interface=got)
+    if sp.get('upstream_test_only'):
+        return Outcome.fail(
+            'Q9_SEAL_PATH_TEST_ONLY_UPSTREAM',
+            f'{art.get("forecast_id")} was built on a TEST_ONLY appearance '
+            f'fixture. A fixture-sourced forecast is not a forecast.')
+    # THE PER-TEAM READINESS GATE MUST HAVE RUN.
+    #
+    # Calling the governed interface is necessary and NOT sufficient:
+    # `layers.appearance` consults per-team readiness only when `teams` is
+    # supplied, and the slate-wide branch it falls back to returned
+    # ENGINE_INPUTS_READY on a slate where 28 of 32 teams had every injury row
+    # unfilled. Twenty-six artifacts sealed through that branch.
+    if sp.get('readiness_gate') != PER_TEAM_READINESS_GATE:
+        return Outcome.fail(
+            'Q9_SEAL_PATH_READINESS_GATE_NOT_PER_TEAM',
+            f'{art.get("forecast_id")} records readiness_gate='
+            f'{sp.get("readiness_gate")!r}. The per-team gate is the one that '
+            f'refuses INJURY_REPORT_INCOMPLETE; the slate-wide branch does '
+            f'not, despite a comment claiming it is more conservative.',
+            readiness_gate=sp.get('readiness_gate'))
+    return Outcome.ok('Q9_SEAL_PATH_GOVERNED', value=got)
+
+
+# ==================================================================
+# BLOCKER INDEPENDENCE, EVALUATED RATHER THAN DECLARED
+# ==================================================================
+#
+# Each blocker is computed from its OWN source by its own evaluator. Two
+# blockers sharing an evaluator would move together, and a declared
+# `independent_of` list would then be a claim the code contradicts.
+def _eval_complete_layers():
+    art = HERE / 'Q9_COMPLETE_SHADOW_PARITY.json'
+    if not art.exists():
+        return 'BLOCKED', 'no paired-build artifact'
+    d = json.loads(art.read_text())
+    return (('CLEARED', 'all nine required layers present')
+            if d.get('is_eligible_forecast_under_section_2')
+            else ('BLOCKED', f'completeness is '
+                             f'{d.get("contract_completeness_today")}'))
+
+
+def _eval_injury_report():
+    from nfl.prospective.q9shadow import live_features as LF
+    import datetime as _dt
+    now = _dt.datetime.now(_dt.timezone.utc).isoformat()
+    o = LF.injury_rows(2026, now)
+    if o.state is not State.PASS:
+        return 'BLOCKED', f'{o.code}'
+    n = o.evidence.get('n_without_report_status') or 0
+    return (('CLEARED', 'every captured row carries a report_status')
+            if n == 0 else
+            ('BLOCKED', f'{n} captured row(s) carry no report_status'))
+
+
+def _eval_g0a():
+    from nfl.prospective.q9shadow import g0a as G0A
+    o = G0A.check()
+    return (('CLEARED', o.detail) if o.state is State.PASS
+            else ('BLOCKED', f'{o.code}'))
+
+
+BLOCKER_EVALUATORS = {
+    'COMPLETE_ARTIFACT_LAYERS_ABSENT': _eval_complete_layers,
+    'INJURY_REPORT_INCOMPLETE': _eval_injury_report,
+    'G0A_11_OF_12': _eval_g0a,
+}
+
+
+def blocker_states():
+    """Every blocker's state, each from its own source."""
+    out = {}
+    for name, fn in BLOCKER_EVALUATORS.items():
+        try:
+            state, detail = fn()
+        except Exception as exc:                              # noqa: BLE001
+            # AN EVALUATOR THAT CRASHED IS NOT A BLOCKED BLOCKER.
+            #
+            # The first version returned 'BLOCKED' here, and a missing `State`
+            # import then made two of the three blockers read BLOCKED for a
+            # NameError -- a code defect wearing a governance state. EVALUATOR
+            # _ERROR is its own state so a crash can never be mistaken for a
+            # measurement, in either direction.
+            state, detail = 'EVALUATOR_ERROR', f'{type(exc).__name__}: {exc}'
+        out[name] = {'state': state, 'detail': str(detail)[:300],
+                     'evaluator': fn.__name__}
+    return out
+
+
+def assert_blockers_independent() -> Outcome:
+    """Clearing one blocker must not change any other's computed state.
+
+    NOT A DECLARATION. Each blocker is forced CLEARED in turn and every OTHER
+    blocker is recomputed; a state that moves means the two share a cause and
+    the `independent_of` lists are lying. The evaluators are also required to
+    be distinct functions, because two names pointing at one evaluator would
+    pass the perturbation test while being the same blocker twice.
+    """
+    names = sorted(BLOCKER_EVALUATORS)
+    fns = [BLOCKER_EVALUATORS[n] for n in names]
+    # SHARING IS DETECTED BY IDENTITY, NEVER BY VALUE.
+    #
+    # Two evaluators that happen to return the same answer today are not the
+    # same evaluator, and two that return different answers may still be one
+    # function behind a wrapper. So three identity tests, each catching a
+    # different aliasing shape, and no comparison of returned values anywhere:
+    #   id()        the same function object registered twice
+    #   __code__    a different wrapper object around the same code
+    #   __name__    a rename that leaves both pointing at one definition
+    for label, key in (('object identity', id),
+                       ('code object', lambda f: f.__code__),
+                       ('name', lambda f: f.__name__)):
+        seen = {}
+        for nm, f in zip(names, fns):
+            k = key(f)
+            if k in seen:
+                return Outcome.fail(
+                    'Q9_BLOCKERS_SHARE_AN_EVALUATOR',
+                    f'{seen[k]!r} and {nm!r} share an evaluator by {label}. '
+                    f'They would move together, so they are one blocker under '
+                    f'two names -- regardless of whether their current '
+                    f'answers agree.',
+                    aliased=[seen[k], nm], by=label)
+            seen[k] = nm
+    declared = {n: set(BLOCKERS[n]['independent_of']) for n in names
+                if n in BLOCKERS}
+    incomplete = {n: sorted(set(names) - {n} - d)
+                  for n, d in declared.items() if set(names) - {n} - d}
+    if incomplete:
+        return Outcome.fail(
+            'Q9_BLOCKER_INDEPENDENCE_NOT_DECLARED',
+            f'{incomplete} are not named in the corresponding '
+            f'independent_of lists.', missing=incomplete)
+
+    base = blocker_states()
+    broken = {n: v['detail'] for n, v in base.items()
+              if v['state'] == 'EVALUATOR_ERROR'}
+    if broken:
+        return Outcome.fail(
+            'Q9_BLOCKER_EVALUATOR_ERROR',
+            f'{len(broken)} blocker evaluator(s) raised: {broken}. An '
+            f'independence result computed over crashed evaluators would be '
+            f'a statement about the crash, not about the blockers.',
+            broken=broken)
+    moved = []
+    saved = dict(BLOCKER_EVALUATORS)
+    try:
+        for n in names:
+            BLOCKER_EVALUATORS[n] = lambda: ('CLEARED', 'forced for the test')
+            after = blocker_states()
+            for other in names:
+                if other == n:
+                    continue
+                if after[other]['state'] != base[other]['state']:
+                    moved.append({'cleared': n, 'also_moved': other,
+                                  'from': base[other]['state'],
+                                  'to': after[other]['state']})
+            BLOCKER_EVALUATORS[n] = saved[n]
+    finally:
+        BLOCKER_EVALUATORS.clear()
+        BLOCKER_EVALUATORS.update(saved)
+    if moved:
+        return Outcome.fail(
+            'Q9_BLOCKERS_NOT_INDEPENDENT',
+            f'clearing one blocker moved another: {moved}. They share a '
+            f'cause, so clearing one would silently appear to clear the '
+            f'other.', moved=moved)
+    return Outcome.ok(
+        'Q9_BLOCKERS_MECHANICALLY_INDEPENDENT',
+        value={'n_blockers': len(names), 'states': base},
+        detail=f'{len(names)} blocker(s), {len(set(fns))} distinct '
+               f'evaluator(s); forcing each CLEARED in turn moved no other',
+        n_blockers=len(names), n_perturbations=len(names))
+
+
+NON_CLEARED_BLOCKER_STATES = ('BLOCKED', 'EVALUATOR_ERROR')
+
+
+def promotion_gate() -> Outcome:
+    """May promotion or a COMPLETE declaration proceed? Today: no.
+
+    REFUSES ON BOTH NON-CLEARED STATES. `BLOCKED` means the blocker was
+    measured and holds; `EVALUATOR_ERROR` means it could not be measured. A
+    gate that refused only the first would let a crashed evaluator read as
+    permission, which is the same defect as an unfilled injury designation
+    read as an absence of injury.
+
+    This function cannot return PASS while any blocker is non-cleared, and it
+    has no argument, flag or override that changes that.
+    """
+    st = blocker_states()
+    bad = {n: v['state'] for n, v in st.items()
+           if v['state'] in NON_CLEARED_BLOCKER_STATES}
+    if bad:
+        return Outcome.blocked(
+            'Q9_PROMOTION_REFUSED_BLOCKERS_NOT_CLEARED',
+            f'{len(bad)} blocker(s) are not cleared: {bad}. '
+            f'BLOCKED means measured and holding; EVALUATOR_ERROR means not '
+            f'measured at all. Neither is permission.',
+            cause=Cause.GOVERNANCE, blockers=bad, states=st)
+    return Outcome.blocked(
+        'Q9_PROMOTION_STILL_REQUIRES_AN_OWNER_DECISION',
+        'every blocker is cleared, and that is not promotion. Protocol '
+        'section 9 requires the section-4 floors, a Holm-Bonferroni-corrected '
+        'CRPS win, randomized PIT not worse, and an explicit owner decision '
+        'that no code path can produce.',
+        cause=Cause.GOVERNANCE, states=st)
 
 
 def append_rows(rows, path=None):

@@ -1,0 +1,769 @@
+{
+ "artifact": "NFL_Q9_LIVE_FEATURE_PARITY",
+ "spec_version": "q9-live-pregame-feature-builder-1",
+ "season": 2024,
+ "n_team_games": 96,
+ "n_players_compared": 482,
+ "n_players_differing": 0,
+ "same_week_duplicate_players": {
+  "n_excluded": 348,
+  "n_in_season": 259,
+  "why": "the union frame carries a player under both teams in a transaction week, and the frozen history walk counts the first row as prior history for the second IN THE SAME WEEK. A per-team-game live builder cannot see the other team's row, so these are outside \"where both are defined\".",
+  "not_repaired_because": "attach_hurdle_history is inside the frozen candidate's hashed module; changing it would be a candidate mutation.",
+  "examples": [
+   {
+    "team_game": "2024-1-ARI",
+    "pid": "00-0032398",
+    "historical_h_appeared_games": 45,
+    "live_h_appeared_games": 45
+   },
+   {
+    "team_game": "2024-1-ARI",
+    "pid": "00-0035662",
+    "historical_h_appeared_games": 58,
+    "live_h_appeared_games": 58
+   },
+   {
+    "team_game": "2024-1-ARI",
+    "pid": "00-0036425",
+    "historical_h_appeared_games": 45,
+    "live_h_appeared_games": 45
+   },
+   {
+    "team_game": "2024-1-ATL",
+    "pid": "00-0030578",
+    "historical_h_appeared_games": 58,
+    "live_h_appeared_games": 58
+   },
+   {
+    "team_game": "2024-1-ATL",
+    "pid": "00-0031585",
+    "historical_h_appeared_games": 57,
+    "live_h_appeared_games": 57
+   },
+   {
+    "team_game": "2024-1-ATL",
+    "pid": "00-0033555",
+    "historical_h_appeared_games": 59,
+    "live_h_appeared_games": 59
+   },
+   {
+    "team_game": "2024-1-ATL",
+    "pid": "00-0033858",
+    "historical_h_appeared_games": 62,
+    "live_h_appeared_games": 62
+   },
+   {
+    "team_game": "2024-1-ATL",
+    "pid": "00-0034407",
+    "historical_h_appeared_games": 54,
+    "live_h_appeared_games": 54
+   },
+   {
+    "team_game": "2024-1-ATL",
+    "pid": "00-0035298",
+    "historical_h_appeared_games": 55,
+    "live_h_appeared_games": 55
+   },
+   {
+    "team_game": "2024-1-ATL",
+    "pid": "00-0036309",
+    "historical_h_appeared_games": 60,
+    "live_h_appeared_games": 60
+   },
+   {
+    "team_game": "2024-1-ATL",
+    "pid": "00-0036415",
+    "historical_h_appeared_games": 60,
+    "live_h_appeared_games": 60
+   },
+   {
+    "team_game": "2024-1-ATL",
+    "pid": "00-0036429",
+    "historical_h_appeared_games": 53,
+    "live_h_appeared_games": 53
+   },
+   {
+    "team_game": "2024-1-BAL",
+    "pid": "00-0032764",
+    "historical_h_appeared_games": 57,
+    "live_h_appeared_games": 57
+   },
+   {
+    "team_game": "2024-1-BAL",
+    "pid": "00-0034184",
+    "historical_h_appeared_games": 42,
+    "live_h_appeared_games": 42
+   },
+   {
+    "team_game": "2024-1-BAL",
+    "pid": "00-0035215",
+    "historical_h_appeared_games": 42,
+    "live_h_appeared_games": 42
+   },
+   {
+    "team_game": "2024-1-BUF",
+    "pid": "00-0031588",
+    "historical_h_appeared_games": 66,
+    "live_h_appeared_games": 66
+   },
+   {
+    "team_game": "2024-1-BUF",
+    "pid": "00-0033282",
+    "historical_h_appeared_games": 53,
+    "live_h_appeared_games": 53
+   },
+   {
+    "team_game": "2024-1-BUF",
+    "pid": "00-0033555",
+    "historical_h_appeared_games": 59,
+    "live_h_appeared_games": 59
+   },
+   {
+    "team_game": "2024-1-BUF",
+    "pid": "00-0034272",
+    "historical_h_appeared_games": 60,
+    "live_h_appeared_games": 60
+   },
+   {
+    "team_game": "2024-1-BUF",
+    "pid": "00-0034487",
+    "historical_h_appeared_games": 56,
+    "live_h_appeared_games": 56
+   }
+  ]
+ },
+ "builder_parity": "EXACT",
+ "parity_window_weeks": [
+  1
+ ],
+ "window_divergence": {
+  "n_compared_outside_window": 947,
+  "n_differing_outside_window": 634,
+  "differing_features": {
+   "prior_target_frequency": 433,
+   "prior_zero_target_frequency": 419,
+   "recent_participation_ewma": 435,
+   "prior_share_given_positive": 462,
+   "role_rotational": 156,
+   "role_fringe": 122,
+   "role_starter": 58,
+   "prior_opportunity_depth_capped": 255,
+   "prior_target_frequency_missing": 94,
+   "recent_participation_missing": 94,
+   "is_cold_start": 94,
+   "prior_share_given_positive_missing": 63
+  },
+  "confined_to_history_features": true,
+  "history_features": [
+   "prior_target_frequency",
+   "prior_target_frequency_missing",
+   "prior_zero_target_frequency",
+   "recent_participation_ewma",
+   "recent_participation_missing",
+   "prior_share_given_positive",
+   "prior_share_given_positive_missing",
+   "prior_opportunity_depth_capped",
+   "is_cold_start",
+   "role_starter",
+   "role_rotational",
+   "role_fringe"
+  ],
+  "non_history_features_that_differed": [],
+  "containment_check_is_not_vacuous": true,
+  "n_non_history_features": 13,
+  "cause": "the historical builder's history window includes earlier weeks of the same season; the live builder's is seasons strictly before the forecast season, because an earlier week of the forecast season is an outcome of the forecast season.",
+  "not_a_defect_because": "the live window is the SMALLER one and is required to be. Widening it to obtain parity would consume the forecast season's outcomes, which this task forbids.",
+  "decided_by": "OWNER",
+  "open_owner_decision": "prior-seasons-only all season (arm A, features go stale as the season progresses) versus a frozen prequential rule admitting strictly-earlier weeks of the forecast season (arm B, parity at every week). Implemented as arm A per the directive; recorded as a decision rather than chosen here."
+ },
+ "feature_schema_sha16": "f620eeed09d0dd6e",
+ "n_features": 25,
+ "mismatches": [],
+ "team_games": [
+  {
+   "team_game": "2024-1-ARI",
+   "n_players": 19,
+   "n_compared": 19,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-1-ATL",
+   "n_players": 20,
+   "n_compared": 20,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-1-BAL",
+   "n_players": 18,
+   "n_compared": 18,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-1-BUF",
+   "n_players": 18,
+   "n_compared": 18,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-1-CAR",
+   "n_players": 18,
+   "n_compared": 18,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-1-CHI",
+   "n_players": 20,
+   "n_compared": 20,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-1-CIN",
+   "n_players": 19,
+   "n_compared": 19,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-1-CLE",
+   "n_players": 15,
+   "n_compared": 15,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-1-DAL",
+   "n_players": 17,
+   "n_compared": 17,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-1-DEN",
+   "n_players": 21,
+   "n_compared": 21,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-1-DET",
+   "n_players": 17,
+   "n_compared": 17,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-1-GB",
+   "n_players": 18,
+   "n_compared": 18,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-1-HOU",
+   "n_players": 20,
+   "n_compared": 20,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-1-IND",
+   "n_players": 16,
+   "n_compared": 16,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-1-JAX",
+   "n_players": 16,
+   "n_compared": 16,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-1-KC",
+   "n_players": 22,
+   "n_compared": 22,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-1-LA",
+   "n_players": 19,
+   "n_compared": 19,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-1-LAC",
+   "n_players": 22,
+   "n_compared": 22,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-1-LV",
+   "n_players": 20,
+   "n_compared": 20,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-1-MIA",
+   "n_players": 20,
+   "n_compared": 20,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-1-MIN",
+   "n_players": 18,
+   "n_compared": 18,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-1-NE",
+   "n_players": 19,
+   "n_compared": 19,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-1-NO",
+   "n_players": 19,
+   "n_compared": 19,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-1-NYG",
+   "n_players": 18,
+   "n_compared": 18,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-1-NYJ",
+   "n_players": 18,
+   "n_compared": 18,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-1-PHI",
+   "n_players": 17,
+   "n_compared": 17,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-1-PIT",
+   "n_players": 15,
+   "n_compared": 15,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-1-SEA",
+   "n_players": 16,
+   "n_compared": 16,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-1-SF",
+   "n_players": 20,
+   "n_compared": 20,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-1-TB",
+   "n_players": 16,
+   "n_compared": 16,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-1-TEN",
+   "n_players": 22,
+   "n_compared": 22,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-1-WAS",
+   "n_players": 23,
+   "n_compared": 23,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-2-ARI",
+   "n_players": 17,
+   "n_compared": 17,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-2-ATL",
+   "n_players": 19,
+   "n_compared": 19,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-2-BAL",
+   "n_players": 17,
+   "n_compared": 17,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-2-BUF",
+   "n_players": 18,
+   "n_compared": 18,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-2-CAR",
+   "n_players": 18,
+   "n_compared": 18,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-2-CHI",
+   "n_players": 19,
+   "n_compared": 19,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-2-CIN",
+   "n_players": 18,
+   "n_compared": 18,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-2-CLE",
+   "n_players": 16,
+   "n_compared": 16,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-2-DAL",
+   "n_players": 17,
+   "n_compared": 17,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-2-DEN",
+   "n_players": 22,
+   "n_compared": 22,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-2-DET",
+   "n_players": 18,
+   "n_compared": 18,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-2-GB",
+   "n_players": 17,
+   "n_compared": 17,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-2-HOU",
+   "n_players": 20,
+   "n_compared": 20,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-2-IND",
+   "n_players": 16,
+   "n_compared": 16,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-2-JAX",
+   "n_players": 16,
+   "n_compared": 16,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-2-KC",
+   "n_players": 20,
+   "n_compared": 20,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-2-LA",
+   "n_players": 19,
+   "n_compared": 19,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-2-LAC",
+   "n_players": 24,
+   "n_compared": 24,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-2-LV",
+   "n_players": 20,
+   "n_compared": 20,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-2-MIA",
+   "n_players": 19,
+   "n_compared": 19,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-2-MIN",
+   "n_players": 17,
+   "n_compared": 17,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-2-NE",
+   "n_players": 19,
+   "n_compared": 19,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-2-NO",
+   "n_players": 18,
+   "n_compared": 18,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-2-NYG",
+   "n_players": 18,
+   "n_compared": 18,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-2-NYJ",
+   "n_players": 18,
+   "n_compared": 18,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-2-PHI",
+   "n_players": 19,
+   "n_compared": 19,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-2-PIT",
+   "n_players": 16,
+   "n_compared": 16,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-2-SEA",
+   "n_players": 16,
+   "n_compared": 16,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-2-SF",
+   "n_players": 20,
+   "n_compared": 20,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-2-TB",
+   "n_players": 16,
+   "n_compared": 16,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-2-TEN",
+   "n_players": 22,
+   "n_compared": 22,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-2-WAS",
+   "n_players": 22,
+   "n_compared": 22,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-3-ARI",
+   "n_players": 16,
+   "n_compared": 16,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-3-ATL",
+   "n_players": 20,
+   "n_compared": 20,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-3-BAL",
+   "n_players": 17,
+   "n_compared": 17,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-3-BUF",
+   "n_players": 18,
+   "n_compared": 18,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-3-CAR",
+   "n_players": 18,
+   "n_compared": 18,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-3-CHI",
+   "n_players": 18,
+   "n_compared": 18,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-3-CIN",
+   "n_players": 17,
+   "n_compared": 17,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-3-CLE",
+   "n_players": 17,
+   "n_compared": 17,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-3-DAL",
+   "n_players": 17,
+   "n_compared": 17,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-3-DEN",
+   "n_players": 22,
+   "n_compared": 22,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-3-DET",
+   "n_players": 18,
+   "n_compared": 18,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-3-GB",
+   "n_players": 18,
+   "n_compared": 18,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-3-HOU",
+   "n_players": 21,
+   "n_compared": 21,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-3-IND",
+   "n_players": 15,
+   "n_compared": 15,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-3-JAX",
+   "n_players": 17,
+   "n_compared": 17,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-3-KC",
+   "n_players": 19,
+   "n_compared": 19,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-3-LA",
+   "n_players": 19,
+   "n_compared": 19,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-3-LAC",
+   "n_players": 24,
+   "n_compared": 24,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-3-LV",
+   "n_players": 20,
+   "n_compared": 20,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-3-MIA",
+   "n_players": 21,
+   "n_compared": 21,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-3-MIN",
+   "n_players": 16,
+   "n_compared": 16,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-3-NE",
+   "n_players": 19,
+   "n_compared": 19,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-3-NO",
+   "n_players": 18,
+   "n_compared": 18,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-3-NYG",
+   "n_players": 19,
+   "n_compared": 19,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-3-NYJ",
+   "n_players": 17,
+   "n_compared": 17,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-3-PHI",
+   "n_players": 19,
+   "n_compared": 19,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-3-PIT",
+   "n_players": 17,
+   "n_compared": 17,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-3-SEA",
+   "n_players": 15,
+   "n_compared": 15,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-3-SF",
+   "n_players": 19,
+   "n_compared": 19,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-3-TB",
+   "n_players": 17,
+   "n_compared": 17,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-3-TEN",
+   "n_players": 22,
+   "n_compared": 22,
+   "n_differing": 0
+  },
+  {
+   "team_game": "2024-3-WAS",
+   "n_players": 20,
+   "n_compared": 20,
+   "n_differing": 0
+  }
+ ],
+ "source_agreement": {
+  "state": "MEASURED",
+  "n_in_both": 291,
+  "n_agreeing": 27,
+  "agreement_rate": 0.0928,
+  "note": "the 2026 depth vintage against a historical panel rank is a DATA comparison across seasons and is expected to disagree. It is reported so a feed difference is never read as a builder defect."
+ },
+ "what_is_claimed": "given the SAME pregame inputs, the live builder reproduces the historical builder exactly. That is a statement about code. Whether the live feed agrees with the panel is a separate, measured question reported under source_agreement."
+}

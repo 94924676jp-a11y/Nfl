@@ -55,7 +55,6 @@ import gzip
 import hashlib
 import json
 import pathlib
-import subprocess
 import sys
 import zoneinfo
 
@@ -67,13 +66,16 @@ if str(_REPO) not in sys.path:
 
 from sportsplatform.governance.outcome import Cause, Outcome, State   # noqa: E402
 from sportsplatform.governance import provenance as PROV              # noqa: E402
+from nfl.identity import code_identity as CI                          # noqa: E402
 from nfl.identity import seal as ISEAL                                # noqa: E402
 from nfl.identity.execution_identity import ExecutionIdentity         # noqa: E402
 from nfl.prospective import artifact as ART                           # noqa: E402
 from nfl.prospective import registries as REG                         # noqa: E402
 from nfl.prospective.q9shadow import candidate as CAND                # noqa: E402
+from nfl.prospective.q9shadow import complete as COMPLETE             # noqa: E402
 from nfl.prospective.q9shadow import inputs as IN                     # noqa: E402
 from nfl.prospective.q9shadow import shadow as SH                     # noqa: E402
+from nfl.prospective.q9shadow import timebasis as TB                  # noqa: E402
 
 SPEC_VERSION = 'q9-shadow-seal-1'
 
@@ -118,12 +120,25 @@ SCHEDULE_PREGAME_COLUMNS = ('game_id', 'season', 'game_type', 'week',
                             'location', 'roof', 'surface', 'stadium_id')
 
 # The arm this candidate is registered under in the artifact contract.
-# B: frozen-spec prequential. The hurdle's stage-1 coefficients are fitted on
-# seasons strictly earlier than the forecast season by a rule frozen before
-# the season, which is exactly what arm B describes. It is NOT arm A: arm A
-# consumes no 2026 outcome all season, and a week-8 forecast under this rule
-# would have weeks 1-7 in its training window.
-MODEL_ARM = 'B'
+#
+# A: static pre-2026 benchmark -- consumes NO 2026 outcome at any point in the
+# season. CORRECTED from B, and the correction matters because A is the
+# STRONGER evidentiary status, not a convenience.
+#
+# The earlier reasoning was that a week-8 forecast "would have weeks 1-7 in
+# its training window". It would not. `shadow.fit_for` trains on
+# `r['s'] < season` -- strictly prior SEASONS, for every week of the year --
+# and the live feature builder's history window is the same set, because the
+# owner's requirement for it is "no 2026 outcomes" and an earlier 2026 week is
+# a 2026 outcome. Neither the coefficients nor the features ever see a 2026
+# result, which is arm A's definition exactly.
+#
+# The cost of that is real and is recorded in
+# `live_features.PARITY_WINDOW_WEEKS`: features built on prior seasons only
+# go stale as the season progresses, and parity with the historical builder
+# holds at week 1 and cannot hold later. Whether to stay at A or adopt a
+# frozen prequential rule (arm B) is an owner decision, not a code choice.
+MODEL_ARM = 'A'
 
 # Which accounting invariants this artifact can actually answer. The Q9 shadow
 # forecast allocates receiving targets and nothing else, so the QB-layer
@@ -144,20 +159,39 @@ def _now():
         timespec='seconds').replace('+00:00', 'Z')
 
 
-def _code_commit():
-    try:
-        out = subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=str(_REPO),
-                             capture_output=True, text=True, timeout=20)
-        rev = out.stdout.strip() or 'UNKNOWN'
-    except (OSError, subprocess.SubprocessError):
-        return 'UNKNOWN'
-    try:
-        st = subprocess.run(['git', 'status', '--porcelain'], cwd=str(_REPO),
-                            capture_output=True, text=True, timeout=20)
-        n = len([x for x in st.stdout.splitlines() if x.strip()])
-    except (OSError, subprocess.SubprocessError):
-        n = -1
-    return rev + (f'+dirty[{n}]' if n else '')
+# WS-E 2026-09-14. WHAT USED TO BE HERE, AND WHY IT IS GONE.
+#
+#     def _code_commit():
+#         rev = git rev-parse HEAD
+#         n   = len(git status --porcelain)
+#         return rev + (f'+dirty[{n}]' if n else '')
+#
+# That `n` is a COUNT OF LINES describing the working tree at the instant of the
+# call, and THE SEALING PATH'S OWN OUTPUTS CHANGE IT. Run 1 writes
+# `dryrun/proof/run1/`, which adds an untracked entry, so run 2 -- and, when the
+# outputs land in fresh directories, the second team of run 1 -- observes a
+# different count and therefore a different `code_commit`. `code_commit` sits
+# inside the sealed body, inside `artifact_id`'s REQUIRED list, and inside
+# `ExecutionIdentity.code_version`, so it moved `forecast_id`,
+# `seal_payload_sha256`, `artifact_id` and `identity_fingerprint` together. The
+# identity of a forecast was a function of that forecast's own side effects.
+#
+# Measured on this checkout at HEAD 837d52f before the repair:
+#
+#     before writing anything          ...+dirty[30]
+#     after one output directory       ...+dirty[31]
+#     after a second output directory  ...+dirty[32]
+#     after deleting both              ...+dirty[30]
+#
+# The replacement is NOT a better count. `nfl.identity.code_identity` separates
+# six identities -- committed source (A), dirty source CONTENT (B), runtime (C),
+# generated artifact state (D), predictive candidate (E), execution (F) -- and
+# holds one invariant: a run must not change its own identity by writing its own
+# outputs. D is excluded from A, B and C by a declared scope, so dF/dD = 0.
+# Contract: nfl/research/remediation/ws_e/WS_E_IDENTITY_CONTRACT.md.
+def _code_identity() -> Outcome:
+    """A + B + C for this run, or a named refusal. Never a fabricated string."""
+    return CI.code_identity()
 
 
 def schedule_pregame(season) -> Outcome:
@@ -297,9 +331,23 @@ def _verdicts(draws_path, n_draws, arms, summary_ok) -> list:
     return vs
 
 
+# THE GOVERNED APPEARANCE INTERFACE. An artifact that did not come through
+# this one is not a valid seal, and `ledger.assert_seal_path_governed` refuses
+# it. Recorded on every artifact so the check reads a field rather than
+# trusting that nobody took a shortcut.
+GOVERNED_APPEARANCE_INTERFACE = 'nfl.production.nonqb.layers.appearance'
+
+# Which readiness branch inside that interface actually ran. PER_TEAM is the
+# only one that refuses INJURY_REPORT_INCOMPLETE; the slate-wide branch a
+# call omitting `teams` falls back to does not.
+PER_TEAM_READINESS_GATE = 'PER_TEAM'
+
+
 def seal_team_game(res, ident, bundle_out, written_at, kickoff_utc, game,
                    out_dir=None, season=None, dry_run=False,
-                   freeze_comparison=None) -> Outcome:
+                   freeze_comparison=None,
+                   appearance_interface=GOVERNED_APPEARANCE_INTERFACE,
+                   readiness_gate=None) -> Outcome:
     """Build, validate, seal and write one team-game shadow forecast."""
     ev = res.evidence
     team, gid = ev['team'], ev['game_id']
@@ -321,11 +369,28 @@ def seal_team_game(res, ident, bundle_out, written_at, kickoff_utc, game,
             f'information from on or after the game date: {leaks}',
             leaks=leaks)
 
+    # WS-E: A, B and C are RESOLVED, and a run that cannot resolve them is
+    # refused rather than sealed under a fabricated code version. The old path
+    # returned the literal 'UNKNOWN' when git was unavailable and sealed anyway,
+    # which produced an artifact asserting an identity it did not have.
+    cio = _code_identity()
+    if cio.state is not State.PASS:
+        return Outcome.fail(
+            f'Q9_SHADOW_CODE_IDENTITY_UNRESOLVED:{cio.code}',
+            f'{gid}/{team}: {cio.detail}',
+            **{k: x for k, x in dict(cio.evidence).items()})
+    ci = cio.value
+
     identity = ExecutionIdentity(
         spec_id=f'{CAND.CANDIDATE_NAME}/{SPEC_VERSION}',
         spec_sha256=CAND.identity_sha256(ident),
-        code_version=_code_commit(),
-        interpreter=f'python{sys.version_info.major}.{sys.version_info.minor}',
+        # A + B. Commit sha, plus a digest of the CONTENT of dirty source.
+        code_version=ci['code_version'],
+        # C. WS19 read every sealed run in the tree and classified interpreter
+        # and library versions NOT_RECOVERABLE. This field already existed and
+        # held `python3.12`, which is too coarse to answer the question; it now
+        # carries the declared hashed runtime keys.
+        interpreter=ci['runtime_token'],
         seed={'seed': ev['seed'], 'n_draws': ev['n_draws'],
               'policy': ev['rng_policy']},
         partitions=tuple(parts))
@@ -345,6 +410,16 @@ def seal_team_game(res, ident, bundle_out, written_at, kickoff_utc, game,
     payload['base_share'] = res.value['base_share']
     np.savez_compressed(draws_path, **payload)
     draws_sha = hashlib.sha256(draws_path.read_bytes()).hexdigest()
+
+    # THE LAYER MATRIX AND THE COMPLETENESS VALUE, BEFORE THE ARTIFACT IS
+    # ASSEMBLED. A single-layer target forecast carries `targets` and nothing
+    # else, so the governed verdict is PARTIAL and the contract value follows
+    # it. Passing the produced arm layers in means this same call returns
+    # COMPLETE once the paired build carries all nine.
+    arm_layers_present = {a: {'targets': res.value['arms'][a]['targets']}
+                          for a in CAND.ARMS}
+    layer_matrix = COMPLETE.matrix(arm_layers_present, {})
+    completeness, governed_verdict = COMPLETE.completeness_value(layer_matrix)
 
     players = SH.summarise_players(res.value)
     # The stored summary must recompute from the stored draws, exactly. This
@@ -366,6 +441,13 @@ def seal_team_game(res, ident, bundle_out, written_at, kickoff_utc, game,
         'model_arm': MODEL_ARM,
         'spec_hash': CAND.identity_sha256(ident),
         'code_commit': identity.code_version,
+        # WS-E: THE MATERIAL, NOT ONLY THE DIGEST. `code_commit` is a rolled-up
+        # value; on its own it is a number a reader can compare and cannot
+        # audit, which is what WS19 meant by NOT_RECOVERABLE. This block carries
+        # every dirty source path with its own sha256, the scope rule that
+        # selected them, and the runtime versions -- enough to recompute
+        # `source_scope_sha256` and to see what the tree actually held.
+        'code_identity': ci,
         'seed_protocol': identity.seed,
         'feature_set_hash': ident['feature_schema_sha16'],
         'eligibility_verdict': 'SHADOW_ONLY -- NOT PROMOTED, NOT PUBLISHED',
@@ -382,7 +464,12 @@ def seal_team_game(res, ident, bundle_out, written_at, kickoff_utc, game,
                 'p90_targets', 'mean_targets_given_positive',
                 'n_positive_draws')},
         }} for r in players if r['arm'] == CAND.ARM_CANDIDATE},
-        'completeness': 'PARTIAL_PLAYER_COVERAGE',
+        # COMPUTED, NEVER DECLARED. `complete.completeness_value` runs the
+        # governed `forecast_completeness` over the nine-layer matrix and maps
+        # FULL to COMPLETE. A single-layer artifact gets
+        # PARTIAL_PLAYER_COVERAGE from the gate, not from a literal here --
+        # which is what stops a later edit from relabelling it.
+        'completeness': completeness,
         'distributions_source': 'MODEL',
         'draw_artifact': str(draws_path.relative_to(_REPO)),
         'draw_artifact_sha256': draws_sha,
@@ -432,17 +519,78 @@ def seal_team_game(res, ident, bundle_out, written_at, kickoff_utc, game,
                 'forecast.'),
         }
     else:
+        # THE OWNER'S EVIDENCE RULING, MADE STRUCTURAL RATHER THAN NOTED.
+        #
+        # "Until all three conditions are satisfied and a truthful COMPLETE
+        # pre-kickoff artifact is sealed: forecasts may be dry-run or
+        # diagnostic; they do not count toward section 4; no promotion
+        # evidence accrues."
+        #
+        # So `prospective_evidence` is not "is this a live seal" -- it is "may
+        # this be COUNTED". A live, genuinely pre-kickoff, genuinely
+        # non-fixture artifact that is PARTIAL_PLAYER_COVERAGE is DIAGNOSTIC,
+        # and `ledger.accounting` reads this exact flag, so the ruling is
+        # enforced by the counter rather than by a reader remembering it.
         art['dry_run'] = False
-        art['prospective_evidence'] = True
+        art['prospective_evidence'] = bool(
+            completeness == COMPLETE.CONTRACT_COMPLETE)
+        if not art['prospective_evidence']:
+            art['eligibility_verdict'] = (
+                f'DIAGNOSTIC -- live and pre-kickoff, and NOT evidence: '
+                f'completeness is {completeness}, so protocol section 2 '
+                f'makes it not an eligible forecast. No section-4 credit, no '
+                f'promotion evidence.')
+            art['diagnostic_reason'] = {
+                'completeness': completeness,
+                'governed_verdict': governed_verdict,
+                'absent_layers': sorted(k for k, v in layer_matrix.items()
+                                        if v != 'PASS'),
+                'ruling': 'owner ruling 2026-09-12: PARTIAL_PLAYER_COVERAGE '
+                          'artifacts may be scored diagnostically, count '
+                          'toward no section-4 floor, and cannot support '
+                          'promotion.',
+            }
+    art['layer_matrix'] = layer_matrix
+    art['governed_completeness_verdict'] = governed_verdict
     art['governance_notes'] = {
         'completeness_vs_protocol_section_2': (
-            'section 2 requires completeness == COMPLETE for an eligible '
-            'forecast; this artifact is a single-layer receiving-target '
-            'forecast and is truthfully PARTIAL_PLAYER_COVERAGE. Whether a '
-            'single-layer artifact can be an eligible forecast for a '
-            'single-layer candidate is an owner ruling, not a label choice.'),
-        'absent_layers': ['qb', 'rushing', 'td', 'other non-QB layers'],
+            'OWNER RULING: section 2 stands unchanged. A '
+            'PARTIAL_PLAYER_COVERAGE artifact may be scored diagnostically, '
+            'counts toward no section-4 floor, and cannot support promotion. '
+            'It is NOT relabelled COMPLETE. The route to an eligible forecast '
+            'is the paired build in nfl/prospective/q9shadow/complete.py, '
+            'which carries all nine required layers on one set of upstream '
+            'draws with the target allocation as the only divergence.'),
+        'completeness_is_computed_by':
+            'nfl.prospective.q9shadow.complete.completeness_value over '
+            'nfl.research.completeness.forecast_completeness',
+        'absent_layers': sorted(k for k, v in layer_matrix.items()
+                                if v != 'PASS'),
         'declared_scope': 'RB/WR/TE receiving targets for one team-game',
+        'section_4_credit': 'NONE while completeness != COMPLETE',
+    }
+
+    # THE TIME BASIS, BEFORE THE CONTRACT VALIDATOR.
+    #
+    # `artifact.validate` compares these same three clocks, but it parses each
+    # with its own `fromisoformat` and silently assumes UTC for a naive value.
+    # That assumption is right often enough to hide the case where it is
+    # wrong, so the ordering is established here first, on one declared basis,
+    # with naive/aware mixing and uncontracted naive values refused by name.
+    tb = TB.assert_prospective_order(
+        [c['retrieved_at'] for c in art['source_captures']],
+        art['written_at'], art['kickoff_utc'])
+    if tb.state is not State.PASS:
+        return Outcome.fail(
+            f'Q9_SHADOW_TIME_BASIS:{tb.code}', tb.detail,
+            **{k: x for k, x in dict(tb.evidence).items()})
+    art['time_basis'] = {
+        'canonical_tz': TB.CANONICAL_TZ_NAME,
+        'verdict': f'{tb.state.value}[{tb.code}]',
+        'bases': tb.evidence.get('bases'),
+        'hours_before_kickoff': tb.evidence.get('hours_before_kickoff'),
+        'newest_retrieved_at': tb.value['newest_retrieved_at'],
+        'n_inputs': tb.evidence.get('n_inputs'),
     }
 
     v = ART.validate(art)
@@ -519,6 +667,31 @@ def seal_team_game(res, ident, bundle_out, written_at, kickoff_utc, game,
                    'rng_policy': ev['rng_policy']}
     art['fallback_counters'] = ev['fallback_states']
     art['reconciliation'] = ev['max_absolute_reconciliation_error']
+    # WHICH UPSTREAM INTERFACE THIS FORECAST CAME THROUGH.
+    #
+    # Six live artifacts were once produced by calling `appearance_r8.predict`
+    # directly, which skips `inputs.validate_appearance_inputs`. They were
+    # discarded, but three of their forecast_ids are unrecoverable from the
+    # run log, so an id blacklist could never be complete. This field is the
+    # complete guard instead: the ledger refuses any artifact whose
+    # appearance interface is not the governed one, whatever its id.
+    art['seal_path'] = {
+        'appearance_interface': appearance_interface,
+        'governed_appearance_interface': GOVERNED_APPEARANCE_INTERFACE,
+        'is_governed': bool(
+            appearance_interface == GOVERNED_APPEARANCE_INTERFACE),
+        'validates_inputs_via':
+            'nfl.production.nonqb.inputs.validate_appearance_inputs',
+        'upstream_test_only': bool(ev.get('upstream_test_only')),
+        # WHICH READINESS BRANCH RAN. A dry-run seal uses the TEST_ONLY
+        # fixture path and reaches no readiness branch at all, so it records
+        # None and is refused as evidence on that ground too.
+        'readiness_gate': readiness_gate,
+        'readiness_gate_note':
+            'PER_TEAM is the branch that refuses INJURY_REPORT_INCOMPLETE. '
+            'layers.appearance reaches it only when `teams` is supplied; '
+            'without it the slate-wide branch runs and does not refuse.',
+    }
     art['input_bundle_sha256'] = IN.bundle_sha256(iset)
     art['absent_input_sources'] = sorted(iset.get('absent') or [])
     art['player_summary'] = players
@@ -539,6 +712,146 @@ def seal_team_game(res, ident, bundle_out, written_at, kickoff_utc, game,
         identity_fingerprint=s.identity_fingerprint,
         ledger=f'{app.state.value}[{app.code}]',
         out_dir=str(out_dir.relative_to(_REPO)))
+
+
+def _seal_live(season, games, written_at, gate_label, el_label, ident,
+               n_draws=None, out_root=None) -> dict:
+    """The LIVE path: real depth vintage, real injury vintage, real appearance.
+
+    Each game gets its ACTUAL refusal rather than a single blanket one. The
+    point of running this while it cannot succeed is that the refusal census
+    says which blocker is live, per game, from the production layers
+    themselves -- so when one clears, the census changes without anybody
+    editing a status string.
+    """
+    from nfl.production.nonqb import layers as PL
+    from nfl.prospective.q9shadow import live_features as LF
+    from nfl.research.q7 import panel as Q7P
+    from nfl.research.q8 import audit as AUD
+
+    # THE COEFFICIENTS. Fitted on seasons strictly before the forecast season,
+    # which for a 2026 forecast is every historical season this repository
+    # holds. No row of the forecast season is read.
+    hf = SH.feature_rows(SH.HISTORICAL_FRAME, season=season)
+    if hf.state is not State.PASS:
+        return {'status': f'{hf.state.value}[{hf.code}]', 'detail': hf.detail,
+                'season': season, 'sealed': [], 'feature_source':
+                    SH.LIVE_PREGAME, 'refusals': []}
+    q7 = Q7P.load_recv()
+    hist, _ = AUD.attach_receiving(hf.value, q7)
+    fit = SH.fit_for(hist, season, q7)
+    if fit.state is not State.PASS:
+        return {'status': f'{fit.state.value}[{fit.code}]',
+                'detail': fit.detail, 'season': season, 'sealed': [],
+                'feature_source': SH.LIVE_PREGAME, 'refusals': []}
+
+    inj = LF.injury_rows(season, written_at)
+    sealed, refusals = [], []
+    bundles = {}
+    for g in games:
+        ko = g['kickoff_utc']
+        if inj.state is not State.PASS:
+            refusals.append({'game_id': g['game_id'],
+                             'state': inj.state.value, 'code': inj.code,
+                             'stage': 'injury_vintage'})
+            continue
+        if ko not in bundles:
+            bundles[ko] = IN.bundle(ko, written_at)
+        b = bundles[ko]
+        if b.state is not State.PASS:
+            refusals.append({'game_id': g['game_id'], 'state': b.state.value,
+                             'code': b.code, 'stage': 'input_bundle'})
+            continue
+        for team in (g['away_team'], g['home_team']):
+            lf = LF.build_team_week(season, int(g['week']), team, written_at,
+                                    ko)
+            if lf.state is not State.PASS:
+                refusals.append({'game_id': g['game_id'], 'team': team,
+                                 'state': lf.state.value, 'code': lf.code,
+                                 'stage': 'live_features'})
+                continue
+            rows = lf.value
+            players = [{'gsis_id': r['pid'], 'position': r['pos'],
+                        'team': team} for r in rows]
+            # THE GOVERNED APPEARANCE INTERFACE, WITH NO FIXTURE.
+            #
+            # `fixture=None` is the load-bearing argument. The first version
+            # called `appearance_r8.predict` directly, which produced six
+            # sealed live forecasts -- and skipped
+            # `inputs.validate_appearance_inputs`, the gate that refuses
+            # INJURY_REPORT_INCOMPLETE. That is routing around a constraint,
+            # and the six artifacts were discarded before any was counted.
+            #
+            # Through `layers.appearance` the gate runs. It turns out to
+            # refuse PER TEAM rather than per slate -- a team whose injury
+            # rows are all unfilled is refused and its opponent may pass --
+            # so the census below says which teams are sealable rather than
+            # asserting that none is.
+            # `teams` IS THE LOAD-BEARING ARGUMENT, AND OMITTING IT COST 26
+            # ARTIFACTS.
+            #
+            # `layers.appearance` consults PER-TEAM readiness only when
+            # `teams` is supplied. Without it, it falls back to the slate-wide
+            # `readiness.report`, which returned ENGINE_INPUTS_READY --
+            # claiming "all slate teams covered and report_status filed" -- on
+            # a slate where 28 of 32 teams had every injury row unfilled.
+            # Per-team readiness refuses each of those by name.
+            #
+            # BOTH teams are passed because readiness is a per-GAME property:
+            # a game is ready only if both are.
+            ap = PL.appearance(season, int(g['week']), players, fixture=None,
+                               seed=CAND.SEED, m=n_draws or CAND.N_DRAWS,
+                               game_id=g['game_id'],
+                               teams=[g['away_team'], g['home_team']],
+                               kickoff_utc=ko, observed_before=written_at)
+            if ap.state is not State.PASS:
+                refusals.append({'game_id': g['game_id'], 'team': team,
+                                 'state': ap.state.value, 'code': ap.code,
+                                 'stage': 'layers.appearance',
+                                 'detail': (ap.detail or '')[:200]})
+                continue
+            if ap.evidence.get('test_only'):
+                refusals.append({
+                    'game_id': g['game_id'], 'team': team,
+                    'state': 'FAIL', 'code': 'Q9_LIVE_SEAL_TEST_ONLY_UPSTREAM',
+                    'stage': 'layers.appearance',
+                    'detail': 'the appearance layer returned a TEST_ONLY '
+                              'result on a live seal. A fixture-sourced '
+                              'forecast is not a forecast and may not be '
+                              'sealed as one.'})
+                continue
+            res = SH.forecast_team_game(
+                rows, fit.value, None, g['game_id'], CAND.SEED,
+                n_draws or CAND.N_DRAWS, appearance=ap)
+            if res.state is not State.PASS:
+                refusals.append({'game_id': g['game_id'], 'team': team,
+                                 'state': res.state.value, 'code': res.code,
+                                 'stage': 'shadow_forecast'})
+                continue
+            root = pathlib.Path(out_root) if out_root else SEALED
+            sl = seal_team_game(res, ident, b, written_at, ko, g,
+                                root / g['game_id'] / team, season,
+                                dry_run=False, freeze_comparison=gate_label,
+                                readiness_gate=PER_TEAM_READINESS_GATE)
+            if sl.state is not State.PASS:
+                refusals.append({'game_id': g['game_id'], 'team': team,
+                                 'state': sl.state.value, 'code': sl.code,
+                                 'stage': 'seal',
+                                 'detail': (sl.detail or '')[:300]})
+                continue
+            sealed.append(sl)
+    return {'status': 'OK' if sealed else 'NOTHING_SEALED', 'season': season,
+            'written_at': written_at, 'feature_source': SH.LIVE_PREGAME,
+            'dry_run': False, 'candidate_gate': gate_label,
+            'eligibility': el_label,
+            'candidate_identity_sha256': CAND.identity_sha256(ident),
+            'n_eligible_games': len(games), 'sealed': sealed,
+            'injury_vintage': (f'{inj.state.value}[{inj.code}]'
+                               + (f' -- {inj.evidence.get("n_rows")} row(s), '
+                                  f'{inj.evidence.get("n_without_report_status")} '
+                                  f'without report_status'
+                                  if inj.state is State.PASS else '')),
+            'refusals': refusals}
 
 
 def seal_season(season, now=None, source=SH.HISTORICAL_FRAME, n_games=None,
@@ -584,6 +897,10 @@ def seal_season(season, now=None, source=SH.HISTORICAL_FRAME, n_games=None,
                     'feature_source': source, 'candidate_gate': gate_label}
         games = el.value
     games = games[:n_games] if n_games else games
+
+    if source == SH.LIVE_PREGAME:
+        return _seal_live(season, games, written_at, gate_label, el_label,
+                          ident, n_draws, out_root)
 
     fr = SH.feature_rows(source, season=season)
     if fr.state is not State.PASS:
