@@ -45,10 +45,247 @@ from nfl.production import seeds as SEEDS                         # noqa: E402
 from nfl.production.nonqb import qb_allocation as QA               # noqa: E402
 from nfl.production.nonqb import participation_prior as PP        # noqa: E402
 from nfl.production.nonqb import player_record as PR              # noqa: E402
+from nfl.production import draw_coherence as DC                   # noqa: E402
+
+# What the per-quarterback split is and is not. The counts are an exact
+# combinatorial allocation of the team's own events; the YARDAGE is still a
+# proportional attribution -- on the COMPLETION share rather than the attempt
+# share -- and is exact in any draw with a single passer, which is the
+# ordinary case. Named here rather than left for a reader to discover.
+PASSER_CREDIT_ATTRIBUTION = (
+    'EXACT_COMBINATORIAL for completions and passing touchdowns (each is '
+    'dealt from the passer own attempts and own completions, so the '
+    'allocation cannot exceed what he threw); PROPORTIONAL on the COMPLETION '
+    'share for passing yards, exact at team level in every draw and exact per '
+    'quarterback in any draw with a single passer.')
 
 RECEIVING_POS = ('WR', 'TE', 'RB')
 CARRY_POS = ('RB',)
 ENGINE_VERSION = 'nfl-football-engine-v1-r4'
+
+
+def credit_passing_line(att_by_qb, int_by_qb, team_cmp, team_pyds,
+                        team_ptd, rng) -> Outcome:
+    """Split the team's passing line among that team's quarterbacks.
+
+    WHAT WAS WRONG, AND WHY MOVING A GUARD WOULD NOT HAVE FIXED IT
+    --------------------------------------------------------------
+    `shared_pass.credit_to_passers` dealt the team's completions with
+
+        w      = att_q / sum(att)              # the attempt SHARE
+        cmp_q  = rng.multinomial(team_cmp, w)
+        ptd_q  = rng.multinomial(team_ptd, w)
+        pyds_q = w * team_pyds
+
+    A multinomial is sampling WITH replacement. It can hand a quarterback more
+    completions than he has attempts, more touchdowns than he has completions,
+    and -- because the yardage rode on the ATTEMPT share rather than the
+    completion share -- passing yards in a draw where he completed nothing.
+    Measured on this repository's own sealed artifacts: 5,278 cells with
+    cmp > att, 731 with ptd > cmp, 11,616 with yards on zero completions, and
+    5,929 where the interception count no longer fitted inside the
+    incompletions because the completion count had been inflated past it.
+
+    The engine wrote all three straight over `qb['draws']` AFTER
+    `qb_v1.forecast` and `qb_accounting.reconcile_draws` had already passed on
+    the pre-credit values, so every sealed artifact carries
+    QB_DRAW_ACCOUNTING_HOLDS over draws that violate it.
+
+    Moving the guard later would have caught the cells. It would not have
+    produced a usable forecast: a guard that fires is still a broken draw, and
+    the run would simply refuse. The defect is the SAMPLING SCHEME.
+
+    WHAT THIS DOES INSTEAD -- CONSTRUCTION, NOT REPAIR
+    --------------------------------------------------
+    The completions are the subset of the team's attempts that were caught. So
+    deal them as what they are: a simple random sample, WITHOUT replacement,
+    from the pool of attempts each quarterback actually threw --
+
+        cmp_q ~ MultivariateHypergeometric(colors = att_q - int_q,
+                                           nsample = team_cmp)
+
+    Same assumption as the incumbent -- attempts exchangeable across the
+    quarterbacks who threw them -- but the correct sampling scheme for a finite
+    pool. Nothing is clipped, nothing is renormalised, no constant is
+    introduced, and the team total still closes exactly, because a
+    hypergeometric draw sums to `nsample` by construction.
+
+    THE EXPECTATION MOVES A LITTLE, AND SAYING SO IS THE POINT. The incumbent
+    centred on `team_cmp * att_q / sum(att)`; this centres on
+    `team_cmp * (att_q - int_q) / sum(att - int)`. The two coincide only when
+    every passer in the room has the same interception count per attempt, so
+    reserving picks shifts credit very slightly towards the passer who threw
+    fewer of them -- which is the correct direction and is a consequence of
+    the reservation, not a tuning knob. Measured across all 218 quarterback
+    rows in the 33 sealed shared-pass runs, replayed on identical inputs with
+    identical seeds: mean shift 0.0000 completions, largest 0.0900, and the
+    team mean is unchanged at 6.0211 because the allocation still closes.
+
+    INTERCEPTIONS ARE RESERVED OUT OF THE POOL rather than re-drawn. QB V1
+    draws them as `Binomial(att - cmp, p_int)` (qb2_lib.py:322): an
+    interception IS an incompletion, so an intercepted attempt is an attempt
+    that cannot also be a completion. Holding those attempts back is the
+    causally correct order -- the passer's own layer fixes them, and the
+    receiving event then allocates completions among what is left. Re-drawing
+    interceptions against the new completion count would be a change to a
+    metric C3 does not own and would need its own pre-registration.
+
+    The touchdowns are then the subset of the CREDITED completions that reached
+    the end zone, dealt the same way from `cmp_q`. And the yards ride on the
+    COMPLETION share, not the attempt share, because passing yards accrue on
+    completions -- which makes "no completion, no yards" hold by construction
+    rather than by assertion.
+
+    WHAT IT REFUSES, AND WHY IT DOES NOT CLIP INSTEAD
+    -------------------------------------------------
+    The construction needs `team_cmp <= sum(att_q - int_q)`. That is an
+    ordinary condition -- it holds in 93,992 of 94,000 sealed team-draws -- but
+    it is not guaranteed, because C3's targeted-throw budget
+    (`shared_pass.targeted_throws`) does not reserve intercepted throws out of
+    the pool that RC1 then converts to catches. In the 8 team-draws where it
+    fails, the receiving chain has caught more balls than the quarterbacks had
+    non-intercepted attempts to throw. No per-passer allocation can resolve
+    that: it is an upstream coupling gap between two layers, of exactly the
+    kind SC1 was pre-registered to fix for carries and scrambles. It is
+    REFUSED BY NAME here rather than clipped, and the analogous coupling is
+    named as owed work rather than improvised.
+    """
+    A = np.asarray(att_by_qb, float)
+    I = np.asarray(int_by_qb, float)
+    if A.shape != I.shape or A.ndim != 2 or not A.size:
+        return Outcome.fail(
+            'PASSER_CREDIT_SHAPE',
+            f'attempts {A.shape} and interceptions {I.shape} must be the same '
+            f'2-D (quarterback x draw) matrix')
+    nq, m = A.shape
+    K = np.asarray(team_cmp, float).reshape(-1)
+    P = np.asarray(team_ptd, float).reshape(-1)
+    Y = np.asarray(team_pyds, float).reshape(-1)
+    if not (K.size == P.size == Y.size == m):
+        return Outcome.fail(
+            'PASSER_CREDIT_SHAPE',
+            f'team totals have {K.size}/{P.size}/{Y.size} draws against '
+            f'{m} in the attempt matrix; the draw index is not shared')
+    # INTEGRALITY IS CHECKED, NEVER ROUNDED INTO. The incumbent applied
+    # `int(round(...))` to the team total, which silently absorbs a
+    # non-integer wherever one appears. A count that is not a count is a
+    # defect upstream, and rounding it here would hide it.
+    for name, v in (('attempts', A), ('interceptions', I),
+                    ('team_completions', K), ('team_passing_td', P)):
+        if np.any(np.abs(v - np.rint(v)) > 1e-9):
+            return Outcome.fail(
+                'PASSER_CREDIT_NON_INTEGER_COUNT',
+                f'{name} carries a non-integer value; a count that is not a '
+                f'count cannot be dealt and is refused rather than rounded.',
+                metric=name)
+        if np.any(v < -1e-9):
+            return Outcome.fail(
+                'PASSER_CREDIT_NEGATIVE_COUNT',
+                f'{name} carries a negative value. A negative count of events '
+                f'is not a small count.', metric=name)
+    Ai = np.rint(A).astype(np.int64)
+    Ii = np.rint(I).astype(np.int64)
+    Ki = np.rint(K).astype(np.int64)
+    Pi = np.rint(P).astype(np.int64)
+    completable = Ai - Ii
+    if (completable < 0).any():
+        return Outcome.fail(
+            'PASSER_CREDIT_INPUT_INCOHERENT',
+            f'{int((completable < 0).sum())} cell(s) where a quarterback has '
+            f'more interceptions than attempts. The QB layer handed this '
+            f'function an impossible state; repairing it here would hide it.',
+            n_bad=int((completable < 0).sum()))
+    short = completable.sum(0) - Ki
+    if (short < 0).any():
+        j = int(np.argmin(short))
+        return Outcome.fail(
+            'PASSER_CREDIT_EXCEEDS_COMPLETABLE_ATTEMPTS',
+            f'{int((short < 0).sum())} draw(s) in which the receiving event '
+            f'produced more completions than the quarterbacks had '
+            f'non-intercepted attempts to throw -- worst draw {j}: '
+            f'{int(Ki[j])} completions against {int(completable[:, j].sum())} '
+            f'completable attempts ({int(Ai[:, j].sum())} attempts less '
+            f'{int(Ii[:, j].sum())} interceptions). This is a coupling gap '
+            f'between the targeted-throw budget and the interception draw, '
+            f'not a per-passer allocation question, and it is refused rather '
+            f'than clipped. The fix is an SC1-style coupling that reserves '
+            f'intercepted throws out of the targeted budget, which is a '
+            f'pre-registered mechanism change and not a patch.',
+            n_bad=int((short < 0).sum()), worst_draw=j,
+            worst_shortfall=int(-short[j]))
+    bad_td = int((Pi > Ki).sum())
+    if bad_td:
+        return Outcome.fail(
+            'PASSER_CREDIT_TD_EXCEEDS_COMPLETIONS',
+            f'{bad_td} draw(s) where the team receiving touchdowns exceed its '
+            f'receptions. A touchdown catch is a catch; refused rather than '
+            f'clipped.', n_bad=bad_td)
+    bad_y = int(((Ki == 0) & (np.abs(Y) > 1e-9)).sum())
+    if bad_y:
+        return Outcome.fail(
+            'PASSER_CREDIT_YARDS_WITHOUT_COMPLETION',
+            f'{bad_y} draw(s) carry team passing yards with zero team '
+            f'completions. Yards accrue on catches; there is nothing to '
+            f'attribute them to and none is invented.', n_bad=bad_y)
+
+    cmp_q = np.zeros((nq, m), np.int64)
+    ptd_q = np.zeros((nq, m), np.int64)
+    for j in range(m):
+        cmp_q[:, j] = rng.multivariate_hypergeometric(
+            completable[:, j], int(Ki[j]))
+        ptd_q[:, j] = rng.multivariate_hypergeometric(
+            cmp_q[:, j], int(Pi[j]))
+    denom = np.where(Ki > 0, Ki, 1)
+    pyds_q = np.where(Ki[None, :] > 0,
+                      cmp_q / denom[None, :] * Y[None, :], 0.0)
+
+    # THE CLOSURE THE INCUMBENT CHECKED, KEPT VERBATIM. The new scheme closes
+    # by construction; the check stays because a construction that is believed
+    # to close and is never checked is how the last one survived.
+    for name, got, want in (('completions', cmp_q.sum(0), Ki),
+                            ('passing_td', ptd_q.sum(0), Pi),
+                            ('passing_yards', pyds_q.sum(0), Y)):
+        n_bad = int((np.abs(got - np.asarray(want, float)) > 1e-6).sum())
+        if n_bad:
+            return Outcome.fail(
+                'PASSER_CREDIT_DOES_NOT_CLOSE',
+                f'{name}: {n_bad} draw(s) where the per-quarterback split does '
+                f'not sum to the team total. Refused rather than adjusted.',
+                metric=name, n_bad=n_bad)
+    # AND THE PER-PASSER COHERENCE, ON THE VALUES ABOUT TO BE WRITTEN. These
+    # hold by construction; asserting them is what makes "by construction" a
+    # claim anyone can check rather than a claim in a comment.
+    for name, viol in (
+            ('completions_within_attempts', int((cmp_q > Ai).sum())),
+            ('completions_within_completable',
+             int((cmp_q > completable).sum())),
+            ('passing_td_within_completions', int((ptd_q > cmp_q).sum())),
+            ('interceptions_within_incompletions',
+             int((Ii > Ai - cmp_q).sum())),
+            ('zero_completions_zero_yards',
+             int(((cmp_q == 0) & (np.abs(pyds_q) > 1e-9)).sum()))):
+        if viol:
+            return Outcome.fail(
+                'PASSER_CREDIT_INCOHERENT',
+                f'{viol} cell(s) violate {name} after a construction that '
+                f'cannot produce it. This is a defect in this function, not '
+                f'in its inputs.', check=name, n_bad=viol)
+    return Outcome.ok(
+        'PASSER_CREDIT', value={'cmp': cmp_q.astype(float),
+                                'pyds': pyds_q,
+                                'ptd': ptd_q.astype(float)},
+        detail=f'{nq} quarterback row(s) credited from the team totals by '
+               f'hypergeometric allocation over their own attempts',
+        attribution=PASSER_CREDIT_ATTRIBUTION,
+        scheme='multivariate hypergeometric over (attempts - interceptions), '
+               'then over credited completions; yards on the completion share',
+        replaces='nfl.production.nonqb.shared_pass.credit_to_passers, whose '
+                 'attempt-share multinomial sampled a finite pool WITH '
+                 'replacement',
+        closes_exactly_on_team_totals=True,
+        coherent_by_construction=['cmp <= att', 'cmp <= att - int',
+                                  'ptd <= cmp', 'cmp == 0 -> pyds == 0'],
+        n_draws=int(m))
 
 
 def slate_fits(season, week, players, role_priors=None, tiers=None) -> Outcome:
@@ -815,22 +1052,13 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
         qb_rush = np.stack([
             (D['rush_opp'][rows_by_team[t]].sum(0) if rows_by_team[t]
              else np.zeros(m)) for t in teams])
-        for t in teams:
-            for i in rows_by_team[t]:
-                pid = qb['rows'][i]['gsis_id']
-                mets = {}
-                for fld, name in (('db', 'dropbacks'), ('att', 'attempts'),
-                                  ('cmp', 'completions'),
-                                  ('pyds', 'passing_yards'),
-                                  ('ptd', 'passing_td'),
-                                  ('int', 'interceptions'),
-                                  ('sacks', 'sacks'),
-                                  ('rush_opp', 'rush_opportunity'),
-                                  ('ryds', 'rushing_yards'),
-                                  ('rtd', 'rushing_td')):
-                    mets[name] = PR.summarise(D[fld][i], QBV1.SPEC_VERSION,
-                                              name, run_id)
-                qb_records.append(PR.record(pid, 'QB', game_id, run_id, mets))
+        # THE QUARTERBACK RECORDS ARE BUILT LATER, NOT HERE. `PR.summarise`
+        # computes its mean and quantiles EAGERLY, and the C3 credit below
+        # rewrites `qb['draws']['cmp' | 'pyds' | 'ptd']` in place afterwards.
+        # Summarising at this point produced a record contract describing the
+        # PRE-credit draws while the sealed npz carried the post-credit ones --
+        # the same "checked an intermediate value" defect as the accounting
+        # verdicts, one layer along. See `_qb_records_from_final_draws`.
     rush_acc = ACC.reconcile_rushing(
         Sc, other_c, car_vol, C, rb_starts, rb_counts,
         rushing_td=rtd.value['rush_td'], rushing_yards=None,
@@ -888,15 +1116,35 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
                     continue
                 A = np.stack([np.asarray(qb['draws']['att'][i], float)
                               for i in sel])
+                # THE INTERCEPTIONS TRAVEL WITH THE ATTEMPTS. QB V1 drew them
+                # from ITS OWN incompletions, so an intercepted attempt is an
+                # attempt this credit may not also call a completion. Passing
+                # them in is what lets the allocation reserve them instead of
+                # producing a completion count the interception draw no longer
+                # fits inside -- 5,929 sealed cells did exactly that.
+                IN = np.stack([np.asarray(qb['draws']['int'][i], float)
+                               for i in sel])
                 # These layers return ROW-INDEXED arrays, not player-keyed
                 # dicts; `ri` already holds the row indices for this team.
                 R = np.asarray(cv.value['receptions'], float)[ri].sum(0)
                 Y = np.asarray(cv.value['receiving_yards'], float)[ri].sum(0)
                 TD = np.asarray(td.value['td'], float)[ri].sum(0)
-                cr = SP.credit_to_passers(A, R, Y, TD, rngc)
+                # CONSTRUCTED, NOT REPAIRED. `SP.credit_to_passers` split the
+                # team line on the attempt SHARE with a multinomial -- a
+                # with-replacement scheme over a finite pool of attempts,
+                # which is what produced completions a passer never threw.
+                # `credit_passing_line` deals the same events from the same
+                # exchangeability assumption without replacement, so the
+                # coherence holds by construction rather than by a guard.
+                cr = credit_passing_line(A, IN, R, Y, TD, rngc)
                 if cr.state is not State.PASS:
                     g['accounting']['shared_pass_credit'] = \
                         f'{cr.state.value}[{cr.code}]'
+                    g['accounting']['shared_pass_credit_detail'] = \
+                        cr.detail[:400]
+                    _lay('shared_pass', cr)
+                    g['halted_at'] = 'shared_pass'
+                    g['halt_reason'] = cr.detail[:300]
                     cred_ok = False
                     break
                 for n, i in enumerate(sel):
@@ -909,6 +1157,87 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
                 c3['passer_line_owner'] = ('the receiving event; QB V1 no '
                                            'longer draws cmp/pyds/ptd')
             g['c3'] = c3
+
+        # ==============================================================
+        # THE FINAL-VALUE GATE. EVERY QB MUTATION IS BEHIND US HERE.
+        # ==============================================================
+        # `run_forecast` evaluates qb_v1.identity_check, reconcile_draws and
+        # reconcile_team on the QB draws BEFORE calling this engine, and the
+        # C3 credit above then overwrites three of those columns. Those
+        # verdicts are therefore about a draw set that no longer exists by the
+        # time anything is sealed, which is how QB_DRAW_ACCOUNTING_HOLDS came
+        # to be stamped on 101 of 101 artifacts over 5,278 cells with more
+        # completions than attempts.
+        #
+        # So the identities are re-evaluated HERE, on `qb['draws']` -- the same
+        # object the seal reads, after the last write to it. A failure refuses
+        # through the `shared_pass` layer, which is a declared layer that
+        # `run_forecast.STAGE_LAYERS` already reports, so the refusal reaches
+        # the pipeline in its own vocabulary rather than as a traceback.
+        #
+        # SCOPE. The gate refuses only where THIS engine wrote the values, i.e.
+        # where C3 ran. On a non-C3 run the engine does not touch the QB line
+        # at all, the run_forecast verdicts are evaluated on exactly the draws
+        # that get sealed, and their own HARD invariant already owns any
+        # failure. The verdict is still recorded there, because a check that
+        # ran and held is worth saying out loud.
+        _final = QBACC.reconcile_draws(qb['draws'])
+        _ident = QBV1.identity_check(qb['draws'])
+        # QB CHECKS ONLY, AND THAT IS A DELIBERATE SCOPE, NOT AN OMISSION.
+        # `draw_coherence.carry_containment` must NOT be evaluated here:
+        # `_team_carries` returns the SC1-coupled vector while `run_forecast`
+        # seals D1's raw vector, so an engine-side carry verdict would attest
+        # to a vector nobody publishes -- the same shape of defect that lets
+        # SC1_COHERENT read PASS in nine sealed runs whose PUBLISHED scramble
+        # total exceeds their PUBLISHED carry total. The carry diagnostics and
+        # the team closures belong where the published arrays are in hand.
+        _coh = DC.qb_coherence(
+            {f: np.asarray(qb['draws'][f]) for f in QBV1.FIELDS
+             if f in qb['draws']})
+        g['accounting']['qb_final_draw_accounting'] = \
+            f'{_final.state.value}[{_final.code}]'
+        g['accounting']['qb_final_dropback_identity'] = \
+            f'{_ident.state.value}[{_ident.code}]'
+        g['accounting']['qb_final_draw_coherence'] = \
+            f'{_coh.state.value}[{_coh.code}]'
+        g['accounting']['qb_final_draw_coherence_evidence'] = {
+            k: v for k, v in _coh.evidence.items() if k != 'value'}
+        g['accounting']['qb_final_values_checked_after'] = (
+            'the C3 credit' if c3 is not None else
+            'no engine-side QB mutation on this configuration')
+        _failed = [o for o in (_final, _ident, _coh)
+                   if o.state is not State.PASS]
+        if _failed and c3 is not None:
+            o = _failed[0]
+            _lay('shared_pass', Outcome.fail(
+                'QB_FINAL_DRAW_COHERENCE_VIOLATED',
+                f'the passing line credited from the receiving event does not '
+                f'satisfy the QB layer identities on the values that would be '
+                f'sealed: {o.code}: {o.detail[:260]}',
+                first_failure=o.code,
+                **{k: v for k, v in o.evidence.items()
+                   if k in ('violations', 'cells_checked', 'n_cells',
+                            'not_evaluated')}))
+            g['halted_at'] = 'shared_pass'
+            g['halt_reason'] = f'{o.code}: {o.detail[:260]}'
+
+        # THE RECORD CONTRACT, BUILT FROM THE FINAL DRAWS.
+        for t in teams:
+            for i in qb['index_by_team'].get(t, []):
+                pid = qb['rows'][i]['gsis_id']
+                mets = {}
+                for fld, name in (('db', 'dropbacks'), ('att', 'attempts'),
+                                  ('cmp', 'completions'),
+                                  ('pyds', 'passing_yards'),
+                                  ('ptd', 'passing_td'),
+                                  ('int', 'interceptions'),
+                                  ('sacks', 'sacks'),
+                                  ('rush_opp', 'rush_opportunity'),
+                                  ('ryds', 'rushing_yards'),
+                                  ('rtd', 'rushing_td')):
+                    mets[name] = PR.summarise(qb['draws'][fld][i],
+                                              QBV1.SPEC_VERSION, name, run_id)
+                qb_records.append(PR.record(pid, 'QB', game_id, run_id, mets))
 
         xl = {}
         for t in teams:

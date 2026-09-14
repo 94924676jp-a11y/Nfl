@@ -241,6 +241,85 @@ INVARIANTS = {
                         'here so the artifact says WHICH, not only HOW MANY.'},
 }
 
+# =====================================================================
+# B15: PER-DRAW COHERENCE OF THE FINAL, PUBLISHED DRAWS
+# =====================================================================
+#
+# THE DEFECT THIS ENTRY EXISTS TO CLOSE. Every QB invariant above was in fact
+# evaluated on an INTERMEDIATE draw set. `run_forecast` calls
+# `qb_v1.identity_check` and `qb_accounting.reconcile_draws` while the
+# quarterback's completions, passing yards and passing touchdowns are still QB
+# V1's own draws, and `football_engine` then overwrites all three from the
+# receiving event before anything is sealed. So `QB_DRAW_ACCOUNTING_HOLDS`
+# appears in 101 of 101 sealed artifacts while 5,278 of the sealed cells have
+# more completions than attempts, 5,929 have completions plus interceptions
+# exceeding attempts, and 11,616 carry passing yards on zero completions.
+# A verdict about a value that was replaced afterwards is not a verdict about
+# the forecast.
+#
+# The checks themselves live in `nfl.production.draw_coherence` -- pure
+# functions over arrays, no I/O -- so the engine, the production seal path and
+# a test on a months-old artifact all run the identical code and cannot drift.
+# That module carries the class of each check and the impossibility that
+# justifies it.
+#
+# NOT YET A KEY IN `INVARIANTS`, AND THE REASON IS WRITTEN DOWN RATHER THAN
+# LEFT FOR SOMEONE TO REDISCOVER.
+#
+# `assert_hard_invariants` refuses an artifact in which a DECLARED invariant
+# carries no verdict -- correctly, because silence is not a pass. The verdict
+# map is assembled in `nfl/production/run_forecast.py`. Adding a key here
+# without the matching emitter there would refuse every artifact the
+# repository can currently produce, which is not a repair. So the entry is
+# declared below and the hand-off is named exactly.
+#
+# TWO WIRING TRAPS FOR WHOEVER ADDS THE EMITTER, BOTH ALREADY PAID FOR ONCE:
+#
+#   1. The receiving and rushing components MUST file NOT_APPLICABLE on a run
+#      without those layers -- 68 of the 101 sealed runs, because defect D03
+#      deferred the appearance layer for the twelve-game slate. Filing nothing
+#      refuses all 68 with INVARIANT_VERDICT_MISSING; filing PASS asserts a
+#      check that never ran. `draw_coherence` already returns NOT_APPLICABLE
+#      with a reason for exactly this case.
+#   2. The carry components are DIAGNOSTIC in `draw_coherence` and must stay
+#      so. They may also only be evaluated where the PUBLISHED team carry
+#      vector is in hand; `run_forecast` has it at the seal and the engine
+#      does not.
+#
+# And one that is NOT a trap and must not be treated as one: an officially
+# inactive quarterback holding dropbacks is already `qb_inactive_owns_nothing`
+# above, already HARD, and already gating. It is contract-dependent rather
+# than absolutely impossible -- the emergency third-quarterback rule -- and
+# that is handled there, by the guard that owns the official list. Restating
+# it as a diagnostic would trip INVARIANT_MISCLASSIFIED and reopen D04.
+PENDING_INVARIANT_REGISTRATION = {
+    'draw_coherence': {
+        'class': HARD,
+        'evaluator': 'nfl.production.draw_coherence.assert_draw_coherence',
+        'asserts': 'the per-draw impossibility checks declared in '
+                   'nfl.production.draw_coherence.COHERENCE, evaluated on the '
+                   'matrices that are actually sealed',
+        'why_hard': 'each one names a rule of the game or an arithmetic '
+                    'identity that makes the state unreachable in any real '
+                    'football game. None is justified by football '
+                    'plausibility, and negative YARDAGE is deliberately '
+                    'excluded because a loss is lawful.',
+        'blocked_on': 'nfl/production/run_forecast.py assembles the verdict '
+                      'map and is owned by another workstream. The emitter '
+                      'and this registration must land in one change, or '
+                      'every artifact refuses with INVARIANT_VERDICT_MISSING.',
+        'call_site': "_inv['draw_coherence'] = "
+                     'DC.assert_draw_coherence(arrays, team_rows, '
+                     'shared_pass_live=..., include_carries=True), beside the '
+                     'other _inv[...] assignments, at the seal where the '
+                     'published arrays exist',
+        'enforced_meanwhile_by':
+            'nfl.production.nonqb.football_engine.run_game, which runs '
+            'draw_coherence.qb_coherence on the QB matrices after its own '
+            'last write to them and refuses to emit an incoherent draw set, '
+            'so the seal is prevented one step earlier.'},
+}
+
 HARD_INVARIANTS = tuple(sorted(k for k, v in INVARIANTS.items()
                                if v['class'] == HARD))
 DIAGNOSTIC_INVARIANTS = tuple(sorted(k for k, v in INVARIANTS.items()

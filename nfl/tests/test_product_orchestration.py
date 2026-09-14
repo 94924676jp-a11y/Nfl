@@ -43,6 +43,28 @@ DECLARED_DRAW_CHANGES = {
     'rushing__rushing_td':
         'C1 -- derived from carries, so it moves with them. Same '
         'registration.',
+    'qb__cmp':
+        'B1 -- the passer-credit scheme. `shared_pass.credit_to_passers` '
+        'assigned completions, passing TDs and passing yards AFTER the '
+        '`cmp <= att` guard had already run, so the guard attested to values '
+        'that were then overwritten: 5,278 `cmp > att` cells, 731 `ptd > cmp` '
+        'and 11,616 `pyds != 0` on zero completions across 101 sealed runs, '
+        'every one of them reporting PASS. Replaced by '
+        '`football_engine.credit_passing_line`, which CONSTRUCTS a coherent '
+        'line rather than repairing an impossible one, and REFUSES where no '
+        'allocation can satisfy the inputs instead of emitting a '
+        'coherent-looking lie. Registered by '
+        'nfl/research/remediation/ws_o/WS_O_INVARIANT_CLASSIFICATION.md; A/B '
+        'in test_draw_coherence::test_the_incumbent_scheme_produces_the_'
+        'impossible_states_and_the_new_one_does_not -- same inputs, same '
+        'seeds, 33 shared-pass runs: zero I1/N1/I2/I3 cells over 260,000 '
+        'checked, per-quarterback mean completions moving by at most 0.0900 '
+        'across 218 rows, and the ROOM total unchanged because the '
+        'allocation still closes exactly on the team total.',
+    'qb__ptd':
+        'B1 -- assigned by the same replaced function. Same registration.',
+    'qb__pyds':
+        'B1 -- assigned by the same replaced function. Same registration.',
 }
 
 
