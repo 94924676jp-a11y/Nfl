@@ -296,6 +296,216 @@ NOT_FINAL = 'POSTGAME_NOT_FINAL'
 # not be counted.
 POSTGAME_INADMISSIBLE = 'POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE'
 
+# ------------------------------------------- PREGAME ROOM MEMBERSHIP (WS-G)
+#
+# THE DEFECT THIS REPLACES, stated plainly.
+#
+# `qb_room_aggregate` used to compose each team's quarterback room by asking
+# the realised play-by-play who threw a pass:
+#
+#     def _team_of(rows, pid):
+#         for r in rows:
+#             if r.get('passer_player_id') == pid:
+#                 return r.get('posteam')
+#         return None
+#
+# and then `by_team[_team_of(rows, pid) or 'UNKNOWN'].append(pid)` with
+# 'UNKNOWN' skipped. A quarterback who was forecast to play and recorded zero
+# attempts has no `passer_player_id` row, resolves to 'UNKNOWN', and is
+# deleted from his own team's room. The FORECAST population is therefore
+# chosen after the result is known. That is selection on the outcome: the
+# realised value of a dropped row is a known zero, not an unknown, and
+# deleting known zeros is the same class of defect as dropping them from a
+# per-player scorer.
+#
+# It also destroys the property the room row was created for. The row exists
+# because the ROOM is forecastable pregame while the SPLIT inside it is not
+# when a quarterback is replaced mid-game (see `qb_room_aggregate`). A room
+# composed postgame is not a pregame-forecastable object at all.
+#
+# THE REPAIR. Membership comes from the SEALED PREGAME BYTES and from nothing
+# else. Every sealed forecast in this repository carries one, and they are
+# read here in full rather than by precedence, so a disagreement between two
+# pregame sources is a NAMED REFUSAL rather than a silent winner:
+#
+#   SEALED_FORECAST.json -> depth_chart   keys 'TEAM|POS|rank' -> gsis_id,
+#                                         stamped with depth_chart_as_of
+#   board.json           -> players[*]    {'gsis_id': ..., 'team': ...}
+#
+# EVALUATION-ONLY. No projection and no price moves. This code runs after the
+# outcome exists and changes only WHICH forecasts are graded and how they are
+# grouped -- never any forecast number.
+PREGAME_ROOM_SOURCES = (
+    ('SEALED_FORECAST.json', 'depth_chart',
+     "keys are 'TEAM|POSITION|rank' and the value is the gsis_id. Carries "
+     "depth_chart_as_of, an explicit pregame clock."),
+    ('board.json', 'players',
+     "each entry carries gsis_id and team as published on the pregame "
+     "board. This is the population the draw matrix rows were built from."),
+)
+
+ROOM_NO_PREGAME_SOURCE = 'PREGAME_ROOM_MEMBERSHIP_SOURCE_ABSENT'
+ROOM_MEMBER_UNRESOLVED = 'PREGAME_ROOM_MEMBER_TEAM_UNRESOLVED'
+ROOM_MEMBERSHIP_CONFLICT = 'PREGAME_ROOM_MEMBERSHIP_CONFLICT'
+# The two halves of what used to be one unexplained `continue` on the team
+# rows. They are different facts and a reader cannot tell them apart from a
+# vanished row.
+TEAM_CODE_UNJOINED = 'TEAM_CODE_NOT_IN_REALISED_OUTCOME'
+TEAM_NO_FORECAST = 'NO_FORECAST_MISSING_PREGAME_INPUT'
+
+
+def _pregame_team_claims(seal_dir):
+    """Every (pid -> team) claim the SEALED bytes make, with its source named.
+
+    Returns {pid: {team: [source, ...]}}. No precedence is applied here on
+    purpose: a precedence rule silently resolves a disagreement, and a
+    disagreement between two pregame sources about which team a quarterback
+    belongs to is a fact the caller must refuse on, not a tie to break.
+    """
+    d = pathlib.Path(seal_dir)
+    claims = collections.defaultdict(lambda: collections.defaultdict(list))
+    seen = []
+    for fname, key, _why in PREGAME_ROOM_SOURCES:
+        p = d / fname
+        if not p.exists():
+            continue
+        try:
+            doc = json.loads(p.read_text())
+        except Exception:                                    # noqa: BLE001
+            continue
+        blob = doc.get(key)
+        if not blob:
+            continue
+        if key == 'depth_chart':
+            for k, pid in dict(blob).items():
+                parts = str(k).split('|')
+                if len(parts) < 2 or not pid:
+                    continue
+                claims[pid][parts[0]].append(f'{fname}:depth_chart')
+            seen.append(f'{fname}:depth_chart')
+        elif key == 'players':
+            for rec in list(blob):
+                pid, t = rec.get('gsis_id'), rec.get('team')
+                if pid and t:
+                    claims[pid][t].append(f'{fname}:players[].team')
+            seen.append(f'{fname}:players[].team')
+    return claims, seen
+
+
+def pregame_room_membership(seal_dir, manifest, layer='qb') -> Outcome:
+    """Room membership for one sealed forecast, from SEALED BYTES ALONE.
+
+    THE ARGUMENT LIST IS THE GUARANTEE. This function cannot see the outcome,
+    because the outcome is not one of its arguments. Composition is therefore
+    a pure function of the seal directory and the sealed draw manifest, and
+    the realised play-by-play cannot reach it by any path. That is a
+    structural property, not a property of one slate.
+
+    The row axis is `gsis_id` (`manifest.layers[<layer>].row_axis`) and every
+    member is addressed by id, never by position, so a reordered manifest
+    cannot silently re-assign a quarterback to another team.
+
+    A member whose team cannot be resolved from the seal is a NAMED REFUSAL
+    of the whole room, not a dropped row: a room missing a member it was
+    forecast with is a different estimand from the room that was forecast,
+    and scoring it as though it were the same is the defect this replaces.
+    """
+    lay = ((manifest.get('layers') or {}).get(layer) or {})
+    ids = list(lay.get('row_ids') or [])
+    axis = lay.get('row_axis')
+    if not ids:
+        return Outcome.ok('PREGAME_ROOM_EMPTY_LAYER',
+                          value={'membership': {}, 'row_ids': [],
+                                 'sources': [], 'row_axis': axis,
+                                 'layer': layer},
+                          layer=layer, n_members=0)
+    claims, seen = _pregame_team_claims(seal_dir)
+    if not seen:
+        return Outcome.blocked(
+            ROOM_NO_PREGAME_SOURCE,
+            f'{seal_dir} carries none of '
+            f'{[f + ":" + k for f, k, _ in PREGAME_ROOM_SOURCES]}, so the '
+            f'{layer} room cannot be composed from pregame bytes. It is NOT '
+            f'composed from the realised play-by-play instead.',
+            cause=Cause.DATA, layer=layer, seal_dir=str(seal_dir),
+            n_members=0)
+    membership, conflicts, unresolved = {}, [], []
+    for pid in ids:
+        by_team = claims.get(pid) or {}
+        if not by_team:
+            unresolved.append(pid)
+        elif len(by_team) > 1:
+            conflicts.append({'gsis_id': pid,
+                              'claims': {t: sorted(set(v))
+                                         for t, v in by_team.items()}})
+        else:
+            membership[pid] = next(iter(by_team))
+    if conflicts:
+        return Outcome.blocked(
+            ROOM_MEMBERSHIP_CONFLICT,
+            f'{len(conflicts)} member(s) of the {layer} room are claimed by '
+            f'more than one team by the sealed pregame sources. No precedence '
+            f'is applied and no team is guessed.',
+            cause=Cause.DATA, layer=layer, seal_dir=str(seal_dir),
+            conflicts=conflicts, n_members=0)
+    if unresolved:
+        return Outcome.blocked(
+            ROOM_MEMBER_UNRESOLVED,
+            f'{len(unresolved)} member(s) of the {layer} room have no team in '
+            f'any sealed pregame source ({", ".join(seen)}). The room is '
+            f'refused whole rather than scored without them, because a room '
+            f'missing a forecast member is a different quantity from the room '
+            f'that was forecast.',
+            cause=Cause.DATA, layer=layer, seal_dir=str(seal_dir),
+            unresolved=sorted(unresolved), n_members=0)
+    return Outcome.ok(
+        'PREGAME_ROOM_COMPOSED',
+        value={'membership': membership, 'row_ids': ids, 'sources': seen,
+               'row_axis': axis, 'layer': layer,
+               'digest': room_digest(membership)},
+        layer=layer, n_members=len(membership), sources=seen,
+        digest=room_digest(membership))
+
+
+def room_digest(membership):
+    """A stable hash of a room composition, so two compositions are comparable.
+
+    Sorted by team then by id, so it is invariant to dict ordering and to the
+    order the manifest happens to list its rows in.
+    """
+    by_team = collections.defaultdict(list)
+    for pid, t in (membership or {}).items():
+        by_team[t].append(pid)
+    payload = '|'.join(f'{t}:' + ','.join(sorted(by_team[t]))
+                       for t in sorted(by_team))
+    return hashlib.sha256(payload.encode()).hexdigest()[:16]
+
+
+def pregame_room_from_seal(seal_dir, layer='qb') -> Outcome:
+    """The room recovered from a sealed directory ALONE -- no outcome, no caller.
+
+    This is the recoverability proof in executable form: given only the bytes
+    inside the seal, the forecast room reconstructs. If this function needs
+    anything the seal does not contain, the seal is not self-describing and
+    the refusal says so by name.
+    """
+    d = pathlib.Path(seal_dir)
+    man = d / 'player_draws_manifest.json'
+    if not man.exists():
+        return Outcome.blocked(
+            'PREGAME_ROOM_NO_DRAW_MANIFEST',
+            f'{d} carries no player_draws_manifest.json, so the sealed row '
+            f'axis is unknown and no room can be reconstructed from it.',
+            cause=Cause.DATA, seal_dir=str(d))
+    try:
+        manifest = json.loads(man.read_text())
+    except Exception as e:                                   # noqa: BLE001
+        return Outcome.fail(
+            'PREGAME_ROOM_MANIFEST_UNREADABLE',
+            f'{man} could not be parsed: {type(e).__name__}')
+    return pregame_room_membership(d, manifest, layer=layer)
+
+
 
 def _artifact_of(sealed):
     """The sealed artifact document, or an empty dict. Never inferred."""
@@ -590,7 +800,31 @@ def score_game(sealed, rows, outcome_sha, finality=None) -> Outcome:
         for t in t_ids:
             x = _vec(draws, manifest, metric, t)
             got = (team.get(t) or {}).get(field)
-            if x is None or got is None:
+            # TWO DIFFERENT FACTS, PREVIOUSLY ONE UNEXPLAINED `continue`.
+            #
+            # `x is None` means the seal carries no forecast for this team
+            # and metric. `got is None` means the team code on the sealed row
+            # axis does not join to any `posteam` in the realised outcome --
+            # a relocation or abbreviation change (LA/LAR, OAK/LV, SD/LAC) is
+            # exactly how that happens, and it silently deletes an entire
+            # team's rows while every count downstream still reads as a
+            # success. Both are now named. Neither vanishes.
+            if got is None:
+                refused.append({
+                    'game_id': sealed['game_id'], 'team': t,
+                    'metric': metric, 'code': TEAM_CODE_UNJOINED,
+                    'detail': f'team code {t!r} is on the sealed row axis but '
+                              f'appears as no posteam in the realised '
+                              f'outcome; the row is refused by name rather '
+                              f'than dropped',
+                    'realised_team_codes': sorted(team)})
+                continue
+            if x is None:
+                no_forecast.append({
+                    'game_id': sealed['game_id'], 'team': t,
+                    'metric': metric, 'code': TEAM_NO_FORECAST,
+                    'detail': f'the seal carries no {metric} draw row for '
+                              f'{t!r}'})
                 continue
             if got.get('basis') != 'EXACT':
                 refused.append({'game_id': sealed['game_id'], 'team': t,
@@ -608,8 +842,10 @@ def score_game(sealed, rows, outcome_sha, finality=None) -> Outcome:
         refused.append({'game_id': sealed['game_id'], 'metric': metric,
                         'code': why.split(':')[0], 'detail': why})
 
-    agg = qb_room_aggregate(sealed, manifest, draws, qb, rows, ident)
+    agg, agg_refused = qb_room_aggregate(
+        sealed, manifest, draws, qb, rows, ident)
     scored.extend(agg)
+    refused.extend(agg_refused)
     return Outcome.ok(
         'POSTGAME_GAME_SCORED',
         value={'scored': scored, 'refused': refused,
@@ -636,22 +872,56 @@ def qb_room_aggregate(sealed, manifest, draws, qb_act, rows, ident):
     room's joint distribution rather than pretending the quarterbacks are
     independent.
     """
-    ids = ((manifest.get('layers') or {}).get('qb') or {}).get('row_ids') or []
+    # ---- COMPOSITION, FROM THE SEAL. NOTHING BELOW THIS BLOCK MAY CHANGE IT.
+    #
+    # `rows` -- the realised play-by-play -- is deliberately NOT consulted
+    # here. It is read further down only to LABEL a room that changed passer
+    # mid-game, and a label cannot add or remove a member.
+    comp = pregame_room_membership(sealed['dir'], manifest, layer='qb')
+    if comp.state is not State.PASS:
+        return [], [{'game_id': sealed.get('game_id'), 'entity': 'qb_room',
+                     'metric': 'qb/room', 'code': comp.code,
+                     'detail': comp.detail,
+                     'evidence': {k: v for k, v in comp.evidence.items()
+                                  if k in ('unresolved', 'conflicts',
+                                           'seal_dir', 'layer')}}]
+    membership = comp.value['membership']
+    ids = comp.value['row_ids']
     if not ids:
-        return []
+        return [], []
     by_team = collections.defaultdict(list)
     for pid in ids:
-        by_team[_team_of(rows, pid) or 'UNKNOWN'].append(pid)
+        by_team[membership[pid]].append(pid)
+    digest = comp.value['digest']
+    # DIAGNOSTIC ONLY, and it is the defect made visible rather than acted on.
+    # This counts how many members WOULD have survived the old
+    # realised-play-by-play composition. It is stamped on the row so the
+    # correction is auditable; it never enters `by_team`.
+    realised_passer_team = {pid: _team_of(rows, pid) for pid in ids}
     changes = _replacement_flags(rows)
-    out = []
+    out, refused = [], []
     for team, pids in sorted(by_team.items()):
-        if team == 'UNKNOWN':
-            continue
+        n_with_attempt = sum(1 for p in pids
+                             if realised_passer_team.get(p) == team)
         for metric, field in (('qb/att', 'att'), ('qb/pyds', 'pyds'),
                               ('qb/db', 'db')):
-            vecs = [_vec(draws, manifest, metric, p) for p in pids]
-            vecs = [v for v in vecs if v is not None and len(v)]
-            if not vecs:
+            vecs = [(p, _vec(draws, manifest, metric, p)) for p in pids]
+            missing = [p for p, v in vecs if v is None or not len(v)]
+            vecs = [v for _p, v in vecs if v is not None and len(v)]
+            if missing:
+                # A ROOM WITH A MEMBER MISSING IS NOT THE ROOM THAT WAS
+                # FORECAST. Summing the survivors would silently redefine the
+                # estimand, which is the same substitution this repair exists
+                # to end -- so the room is refused by name instead.
+                refused.append({
+                    'game_id': sealed['game_id'], 'entity': 'qb_room',
+                    'team': team, 'metric': metric,
+                    'code': 'ROOM_MEMBER_MISSING_FROM_SEALED_DRAWS',
+                    'detail': f'{len(missing)} sealed room member(s) have no '
+                              f'{metric} draw row; the room is refused rather '
+                              f'than summed over the survivors',
+                    'missing': sorted(missing),
+                    'room_composition_digest': digest})
                 continue
             n = min(len(v) for v in vecs)
             total = np.sum([np.asarray(v[:n], float) for v in vecs], axis=0)
@@ -664,6 +934,21 @@ def qb_room_aggregate(sealed, manifest, draws, qb_act, rows, ident):
                 'team': team, 'player_id': None, 'metric': metric,
                 'actual': actual,
                 'estimand': 'EXACT', 'n_quarterbacks': len(pids),
+                # ---- composition provenance, stamped on every room row
+                'room_composition_source': 'PREGAME_SEAL',
+                'room_composition_inputs': comp.value['sources'],
+                'room_composition_digest': digest,
+                'room_row_axis': comp.value['row_axis'],
+                'room_members': sorted(pids),
+                'n_quarterbacks_with_realised_attempt': n_with_attempt,
+                'n_quarterbacks_zero_attempt_retained':
+                    len(pids) - n_with_attempt,
+                'composition_note': (
+                    'membership is read from the sealed pregame bytes named '
+                    'in room_composition_inputs. A member who recorded no '
+                    'pass attempt is RETAINED and contributes his forecast '
+                    'to the room and a realised zero to the actual; the '
+                    'realised play-by-play cannot add or remove a member.'),
                 'in_game_replacement': bool(changes.get(team)),
                 'replacement_detail': changes.get(team),
                 'why_this_row_exists': (
@@ -671,7 +956,7 @@ def qb_room_aggregate(sealed, manifest, draws, qb_act, rows, ident):
                     'inside it is not when a quarterback is replaced mid-game'),
             })
             out.append(row)
-    return out
+    return out, refused
 
 
 def _team_of(rows, pid):
