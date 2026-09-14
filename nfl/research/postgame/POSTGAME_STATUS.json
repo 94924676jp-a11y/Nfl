@@ -1,184 +1,522 @@
 {
  "artifact": "NFL_POSTGAME_STATUS",
  "spec_version": "postgame-ingestion-1",
- "generated_at_utc": "2026-09-11T19:45:43.970828+00:00",
+ "generated_at_utc": "2026-09-14T00:25:14.101127+00:00",
  "season": 2026,
  "promoted": false,
  "completed_games_discovered": [
+  "2026_01_ARI_LAC",
+  "2026_01_ATL_PIT",
+  "2026_01_BAL_IND",
+  "2026_01_BUF_HOU",
+  "2026_01_CHI_CAR",
+  "2026_01_CLE_JAX",
+  "2026_01_DAL_NYG",
+  "2026_01_GB_MIN",
+  "2026_01_MIA_LV",
   "2026_01_NE_SEA",
-  "2026_01_SF_LA"
+  "2026_01_NO_DET",
+  "2026_01_NYJ_TEN",
+  "2026_01_SF_LA",
+  "2026_01_TB_CIN",
+  "2026_01_WAS_PHI"
  ],
- "n_completed_games_discovered": 2,
- "n_sealed_forecasts_found": 19,
+ "n_completed_games_discovered": 15,
+ "n_sealed_forecasts_found": 115,
  "outcome_source": {
   "state": "PASS",
-  "code": "POSTGAME_OUTCOME_REUSED",
-  "sha256": "d9e442ae17ba88e70c6df6ed15e4f0ce54c9ff63a607de54f62cb7ed4f016e39",
+  "code": "POSTGAME_OUTCOME_STORED",
+  "sha256": "1415dd98ba7f701af23d20b9aa63c7e2dd5bd6a924978a650f9b6b47eb55f9bd",
   "games": [
+   "2026_01_ATL_PIT",
+   "2026_01_BAL_IND",
+   "2026_01_BUF_HOU",
+   "2026_01_CHI_CAR",
+   "2026_01_CLE_JAX",
    "2026_01_NE_SEA",
-   "2026_01_SF_LA"
+   "2026_01_NO_DET",
+   "2026_01_NYJ_TEN",
+   "2026_01_SF_LA",
+   "2026_01_TB_CIN"
   ],
   "already_present": true
  },
- "games_scored": [
+ "games_scored": [],
+ "games_deferred": [
+  {
+   "game_id": "2026_01_ARI_LAC",
+   "code": "OUTCOME_NOT_YET_PUBLISHED",
+   "reason": "the game is complete and has a sealed forecast, but the authoritative source does not carry it yet. Deferred, not refused."
+  },
+  {
+   "game_id": "2026_01_ATL_PIT",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_ATL_PIT/pre_inactives_V1_CANDIDATE_R8/5d2ad3f2964ee3ad",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_ATL_PIT",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_ATL_PIT/pre_inactives_V1_CANDIDATE_R8/a78cc577bf84e394",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_ATL_PIT",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_ATL_PIT/pre_inactives_V1_CANDIDATE_R8/f1111b7baef2756a",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_ATL_PIT",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_ATL_PIT/pre_inactives_V1_CANDIDATE_R8/f67d72ab0701d211",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_BAL_IND",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_BAL_IND/pre_inactives_V1_CANDIDATE_R8/09692deb0ad3adcf",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_BAL_IND",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_BAL_IND/pre_inactives_V1_CANDIDATE_R8/1cc3d29d797c0f53",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_BAL_IND",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_BAL_IND/pre_inactives_V1_CANDIDATE_R8/369ae5908fd96b6f",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_BAL_IND",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_BAL_IND/pre_inactives_V1_CANDIDATE_R8/bee85f326a3fde5c",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_BUF_HOU",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_BUF_HOU/post_inactives_V1_CANDIDATE/5394d58e10cfd1d3",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_BUF_HOU",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_BUF_HOU/post_inactives_V1_CANDIDATE_R5/9b106b98b8ff960b",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_BUF_HOU",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_BUF_HOU/post_inactives_V1_CANDIDATE_R6/9bee34a0bcad2c96",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_BUF_HOU",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_BUF_HOU/post_inactives_V1_CANDIDATE_R7/f401f7cd59664193",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_BUF_HOU",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_BUF_HOU/post_inactives_V1_CANDIDATE_R8/6c3a051960274146",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_BUF_HOU",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_BUF_HOU/pre_inactives_V1_CANDIDATE_R8/2ce43ff12bbf7b1d",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_BUF_HOU",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_BUF_HOU/pre_inactives_V1_CANDIDATE_R8/32e66cc07c76b261",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_BUF_HOU",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_BUF_HOU/pre_inactives_V1_CANDIDATE_R8/4e951a4492bd12af",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_BUF_HOU",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_BUF_HOU/pre_inactives_V1_CANDIDATE_R8/5ff531a870852355",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_BUF_HOU",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_BUF_HOU/pre_inactives_V1_CANDIDATE_R8/7128bc33f2444273",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_BUF_HOU",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_BUF_HOU/pre_inactives_V1_CANDIDATE_R8/c710a15e7a046b8f",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_BUF_HOU",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_BUF_HOU/pre_inactives_V1_CANDIDATE_R8/deb2ec5060a66642",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_CHI_CAR",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_CHI_CAR/pre_inactives_V1_CANDIDATE_R8/09013c5d1e1ecdde",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_CHI_CAR",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_CHI_CAR/pre_inactives_V1_CANDIDATE_R8/85f35340243980ec",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_CHI_CAR",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_CHI_CAR/pre_inactives_V1_CANDIDATE_R8/ae39f504f406a0ec",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_CHI_CAR",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_CHI_CAR/pre_inactives_V1_CANDIDATE_R8/dce3360b281ad1ab",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_CLE_JAX",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_CLE_JAX/pre_inactives_V1_CANDIDATE_R8/45fb8cae60946a84",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_CLE_JAX",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_CLE_JAX/pre_inactives_V1_CANDIDATE_R8/4f94ad6efc224b4b",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_CLE_JAX",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_CLE_JAX/pre_inactives_V1_CANDIDATE_R8/8b2cda99a690c4da",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_CLE_JAX",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_CLE_JAX/pre_inactives_V1_CANDIDATE_R8/f70cfd7e157f3f99",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_DAL_NYG",
+   "code": "OUTCOME_NOT_YET_PUBLISHED",
+   "reason": "the game is complete and has a sealed forecast, but the authoritative source does not carry it yet. Deferred, not refused."
+  },
+  {
+   "game_id": "2026_01_GB_MIN",
+   "code": "OUTCOME_NOT_YET_PUBLISHED",
+   "reason": "the game is complete and has a sealed forecast, but the authoritative source does not carry it yet. Deferred, not refused."
+  },
+  {
+   "game_id": "2026_01_MIA_LV",
+   "code": "OUTCOME_NOT_YET_PUBLISHED",
+   "reason": "the game is complete and has a sealed forecast, but the authoritative source does not carry it yet. Deferred, not refused."
+  },
   {
    "game_id": "2026_01_NE_SEA",
    "sealed_dir": "/home/user/nfl/nfl/research/shadow/g1_ne_sea",
-   "namespace": "shadow",
-   "n_scored": 50,
-   "n_refused_estimands": 7,
-   "n_no_forecast": 0
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
   },
   {
    "game_id": "2026_01_NE_SEA",
    "sealed_dir": "/home/user/nfl/nfl/research/shadow/g1_ne_sea_runB",
-   "namespace": "shadow",
-   "n_scored": 50,
-   "n_refused_estimands": 7,
-   "n_no_forecast": 0
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_NO_DET",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_NO_DET/post_inactives_V1_CANDIDATE/d681253b529be2e3",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_NO_DET",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_NO_DET/post_inactives_V1_CANDIDATE_R5/863e3c361ef00559",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_NO_DET",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_NO_DET/post_inactives_V1_CANDIDATE_R6/e29bedc52145eaaf",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_NO_DET",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_NO_DET/post_inactives_V1_CANDIDATE_R7/caa861cdb290fe8c",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_NO_DET",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_NO_DET/post_inactives_V1_CANDIDATE_R8/b5b02f6365ead28f",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_NO_DET",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_NO_DET/pre_inactives_V1_CANDIDATE_R8/21f36729bc1f6b96",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_NO_DET",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_NO_DET/pre_inactives_V1_CANDIDATE_R8/3f53f7d1745602b3",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_NO_DET",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_NO_DET/pre_inactives_V1_CANDIDATE_R8/61e7754d93c72ec1",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_NO_DET",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_NO_DET/pre_inactives_V1_CANDIDATE_R8/d3569241864f4a62",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_NYJ_TEN",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_NYJ_TEN/post_inactives_V1_CANDIDATE/92f38ed242a4bace",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_NYJ_TEN",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_NYJ_TEN/post_inactives_V1_CANDIDATE_R5/4c0bcdc7d11d211e",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_NYJ_TEN",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_NYJ_TEN/post_inactives_V1_CANDIDATE_R6/52a571afd33656f8",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_NYJ_TEN",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_NYJ_TEN/post_inactives_V1_CANDIDATE_R7/a8a415a7c5ef06a2",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_NYJ_TEN",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_NYJ_TEN/post_inactives_V1_CANDIDATE_R8/6b868707173828c2",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_NYJ_TEN",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_NYJ_TEN/pre_inactives_V1_CANDIDATE_R8/233cce327e918f35",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_NYJ_TEN",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_NYJ_TEN/pre_inactives_V1_CANDIDATE_R8/404e83e45638d8b0",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_NYJ_TEN",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_NYJ_TEN/pre_inactives_V1_CANDIDATE_R8/42bdd7004410ff46",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_NYJ_TEN",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_NYJ_TEN/pre_inactives_V1_CANDIDATE_R8/8101cf22fe197299",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
   },
   {
    "game_id": "2026_01_SF_LA",
    "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_SF_LA/post_inactives_V1_CANDIDATE/f6c8251583500e35",
-   "namespace": "live",
-   "n_scored": 210,
-   "n_refused_estimands": 7,
-   "n_no_forecast": 0
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
   },
   {
    "game_id": "2026_01_SF_LA",
    "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_SF_LA/post_inactives_V1_CANDIDATE_R5/ee1c94270bb53963",
-   "namespace": "live",
-   "n_scored": 155,
-   "n_refused_estimands": 7,
-   "n_no_forecast": 0
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
   },
   {
    "game_id": "2026_01_SF_LA",
    "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_SF_LA/post_inactives_V1_CANDIDATE_R6/155b47697c211ae8",
-   "namespace": "live",
-   "n_scored": 155,
-   "n_refused_estimands": 7,
-   "n_no_forecast": 0
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
   },
   {
    "game_id": "2026_01_SF_LA",
    "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_SF_LA/post_inactives_V1_CANDIDATE_R7/e264f9c6b84837d9",
-   "namespace": "live",
-   "n_scored": 155,
-   "n_refused_estimands": 7,
-   "n_no_forecast": 0
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
   },
   {
    "game_id": "2026_01_SF_LA",
    "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_SF_LA/post_inactives_V1_CANDIDATE_R8/5e70d8847e32c7ae",
-   "namespace": "live",
-   "n_scored": 155,
-   "n_refused_estimands": 7,
-   "n_no_forecast": 0
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
   },
   {
    "game_id": "2026_01_SF_LA",
    "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_SF_LA/pre_inactives_V1_CANDIDATE",
-   "namespace": "live",
-   "n_scored": 210,
-   "n_refused_estimands": 7,
-   "n_no_forecast": 0
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
   },
   {
    "game_id": "2026_01_SF_LA",
    "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_SF_LA/pre_inactives_V1_CANDIDATE_R5",
-   "namespace": "live",
-   "n_scored": 155,
-   "n_refused_estimands": 7,
-   "n_no_forecast": 0
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
   },
   {
    "game_id": "2026_01_SF_LA",
    "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_SF_LA/pre_inactives_V1_CANDIDATE_R6",
-   "namespace": "live",
-   "n_scored": 155,
-   "n_refused_estimands": 7,
-   "n_no_forecast": 0
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
   },
   {
    "game_id": "2026_01_SF_LA",
    "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_SF_LA/pre_inactives_V1_CANDIDATE_R7",
-   "namespace": "live",
-   "n_scored": 155,
-   "n_refused_estimands": 7,
-   "n_no_forecast": 0
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
   },
   {
    "game_id": "2026_01_SF_LA",
    "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_SF_LA/pre_inactives_V1_CANDIDATE_R8",
-   "namespace": "live",
-   "n_scored": 155,
-   "n_refused_estimands": 7,
-   "n_no_forecast": 0
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
   },
   {
    "game_id": "2026_01_SF_LA",
    "sealed_dir": "/home/user/nfl/nfl/research/shadow/sf_la_pregame",
-   "namespace": "shadow",
-   "n_scored": 210,
-   "n_refused_estimands": 7,
-   "n_no_forecast": 0
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
   },
   {
    "game_id": "2026_01_SF_LA",
    "sealed_dir": "/home/user/nfl/nfl/product/boards/2026_01_SF_LA/20260910T163449Z__bc8d60ac093c4a25",
-   "namespace": "product",
-   "n_scored": 210,
-   "n_refused_estimands": 7,
-   "n_no_forecast": 0
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
   },
   {
    "game_id": "2026_01_SF_LA",
    "sealed_dir": "/home/user/nfl/nfl/product/boards/2026_01_SF_LA/20260910T172118Z__63fdd5d6e8e7974c",
-   "namespace": "product",
-   "n_scored": 210,
-   "n_refused_estimands": 7,
-   "n_no_forecast": 0
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
   },
   {
    "game_id": "2026_01_SF_LA",
    "sealed_dir": "/home/user/nfl/nfl/product/boards/2026_01_SF_LA/20260910T213053Z__53093e4e0eaad93b",
-   "namespace": "product",
-   "n_scored": 210,
-   "n_refused_estimands": 7,
-   "n_no_forecast": 0
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
   },
   {
    "game_id": "2026_01_SF_LA",
    "sealed_dir": "/home/user/nfl/nfl/product/boards/2026_01_SF_LA/20260910T220155Z__5b83297d27f19eac",
-   "namespace": "product",
-   "n_scored": 210,
-   "n_refused_estimands": 7,
-   "n_no_forecast": 0
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
   },
   {
    "game_id": "2026_01_SF_LA",
    "sealed_dir": "/home/user/nfl/nfl/product/boards/2026_01_SF_LA/20260910T233231Z__86451540567dce07",
-   "namespace": "product",
-   "n_scored": 210,
-   "n_refused_estimands": 7,
-   "n_no_forecast": 0
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
   },
   {
    "game_id": "2026_01_SF_LA",
    "sealed_dir": "/home/user/nfl/nfl/product/boards/2026_01_SF_LA/20260911T002550Z__fec4038e15735841",
-   "namespace": "product",
-   "n_scored": 210,
-   "n_refused_estimands": 7,
-   "n_no_forecast": 0
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_TB_CIN",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_TB_CIN/post_inactives_V1_CANDIDATE/811718e6e7eca2a5",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_TB_CIN",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_TB_CIN/post_inactives_V1_CANDIDATE_R5/819a8eba1596697d",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_TB_CIN",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_TB_CIN/post_inactives_V1_CANDIDATE_R6/35c0c1c10aadf799",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_TB_CIN",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_TB_CIN/post_inactives_V1_CANDIDATE_R7/c92e797ec27b82a1",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_TB_CIN",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_TB_CIN/post_inactives_V1_CANDIDATE_R8/e92b9e19466d27bd",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_TB_CIN",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_TB_CIN/pre_inactives_V1_CANDIDATE_R8/34f993a6de29d926",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_TB_CIN",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_TB_CIN/pre_inactives_V1_CANDIDATE_R8/54f32af8a301e606",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_TB_CIN",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_TB_CIN/pre_inactives_V1_CANDIDATE_R8/ef626fb6f3d93b60",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_TB_CIN",
+   "sealed_dir": "/home/user/nfl/nfl/research/live/2026_01_TB_CIN/pre_inactives_V1_CANDIDATE_R8/f593e33a99b390d6",
+   "code": "POSTGAME_ARTIFACT_NOT_CURRENTLY_ADMISSIBLE",
+   "reason": "3 mandatory control(s) refuse this artifact for current reuse: ['completeness_evidence_class', 'current_blocker_state', 'prospective_evidence_eligibility']. Its predictive payload may be unchanged; it"
+  },
+  {
+   "game_id": "2026_01_WAS_PHI",
+   "code": "OUTCOME_NOT_YET_PUBLISHED",
+   "reason": "the game is complete and has a sealed forecast, but the authoritative source does not carry it yet. Deferred, not refused."
   }
  ],
- "games_deferred": [],
  "games_refused": [],
  "games_not_final": [],
  "scoring_rows_added": 0,
- "duplicate_rows_avoided": 3230,
+ "duplicate_rows_avoided": 0,
  "estimands_refused_by_name": [
   "receiving/receiving_td",
   "rushing/rushing_td",
@@ -195,56 +533,60 @@
   "FINAL_RESULT_POPULATED",
   "SCOREBOARD_AGREES_WITH_RESULT"
  ],
- "n_games_scored": 2,
- "n_games_deferred": 0,
+ "n_games_scored": 0,
+ "n_games_deferred": 79,
  "n_games_refused": 0,
  "n_games_not_final": 0,
  "evidence": {
-  "scoring_rows": 3230,
-  "graded_metrics": 12,
-  "distinct_games": 2,
-  "distinct_player_games": 59,
-  "distinct_candidate_forecasts": 19,
-  "games": [
-   "2026_01_NE_SEA",
-   "2026_01_SF_LA"
-  ],
+  "rows_on_ledger": 3230,
+  "rows_without_admissibility_verdict": 3230,
+  "admissibility_note": "a row is counted only when score_game stamped it currently_admissible under the contract in force at scoring time. Rows predating that stamp remain on the ledger and count toward no evidence unit.",
+  "scoring_rows": 0,
+  "graded_metrics": 0,
+  "distinct_games": 0,
+  "distinct_team_games": 0,
+  "distinct_player_games": 0,
+  "distinct_candidate_forecasts": 0,
+  "games": [],
   "units": {
    "scoring_rows": "ROW -- one metric x one sealed forecast x one outcome version. This is a bookkeeping count and is NEVER a prospective sample size.",
    "graded_metrics": "METRIC -- a distinct forecast quantity that produced at least one scored row.",
    "distinct_games": "GAME -- the independent unit. Two candidates of one game are one game.",
+   "distinct_team_games": "TEAM-GAME -- one team in one game. The unit a target budget, a play count and a snap total are allocated within, so it is the unit a within-team allocation error is shared across. Two teams in one game are NOT independent of each other either -- they share the clock and the score -- which is why GAME remains the floor unit.",
    "distinct_player_games": "PLAYER-GAME -- one player in one game. Not independent across players within a game: teammates share the same game state.",
    "distinct_candidate_forecasts": "CANDIDATE FORECAST -- one sealed forecast. Variants of the same game are PAIRED comparisons on that game, not independent games."
   },
   "floor_unit": "distinct_games",
   "paired_note": "Candidate variants from the same game are paired comparisons, not independent games. Pooling them inflates an apparent sample by the number of variants run and narrows every interval computed from it.",
   "prospective_sample_size": {
-   "value": 2,
+   "value": 0,
    "unit": "GAME",
    "note": "the sample size for an evidence floor. scoring_rows is not this number and must never be reported as it."
   }
  },
  "evidence_all_versions": {
-  "scoring_rows": 3230,
-  "graded_metrics": 12,
-  "distinct_games": 2,
-  "distinct_player_games": 59,
-  "distinct_candidate_forecasts": 19,
-  "games": [
-   "2026_01_NE_SEA",
-   "2026_01_SF_LA"
-  ],
+  "rows_on_ledger": 3230,
+  "rows_without_admissibility_verdict": 3230,
+  "admissibility_note": "a row is counted only when score_game stamped it currently_admissible under the contract in force at scoring time. Rows predating that stamp remain on the ledger and count toward no evidence unit.",
+  "scoring_rows": 0,
+  "graded_metrics": 0,
+  "distinct_games": 0,
+  "distinct_team_games": 0,
+  "distinct_player_games": 0,
+  "distinct_candidate_forecasts": 0,
+  "games": [],
   "units": {
    "scoring_rows": "ROW -- one metric x one sealed forecast x one outcome version. This is a bookkeeping count and is NEVER a prospective sample size.",
    "graded_metrics": "METRIC -- a distinct forecast quantity that produced at least one scored row.",
    "distinct_games": "GAME -- the independent unit. Two candidates of one game are one game.",
+   "distinct_team_games": "TEAM-GAME -- one team in one game. The unit a target budget, a play count and a snap total are allocated within, so it is the unit a within-team allocation error is shared across. Two teams in one game are NOT independent of each other either -- they share the clock and the score -- which is why GAME remains the floor unit.",
    "distinct_player_games": "PLAYER-GAME -- one player in one game. Not independent across players within a game: teammates share the same game state.",
    "distinct_candidate_forecasts": "CANDIDATE FORECAST -- one sealed forecast. Variants of the same game are PAIRED comparisons on that game, not independent games."
   },
   "floor_unit": "distinct_games",
   "paired_note": "Candidate variants from the same game are paired comparisons, not independent games. Pooling them inflates an apparent sample by the number of variants run and narrows every interval computed from it.",
   "prospective_sample_size": {
-   "value": 2,
+   "value": 0,
    "unit": "GAME",
    "note": "the sample size for an evidence floor. scoring_rows is not this number and must never be reported as it."
   }
@@ -255,6 +597,6 @@
   "n_rows_superseded": 0,
   "n_identities": 3230,
   "n_identities_revised": 0,
-  "rule": "one CURRENT version per forecast_id + game_id + entity + metric + player_id + team. Older versions are preserved verbatim and never deleted."
+  "rule": "one CURRENT version per forecast_id + game_id + entity + metric + player_id + team + arm. Older versions are preserved verbatim and never deleted."
  }
 }
