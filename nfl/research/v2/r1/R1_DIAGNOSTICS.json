@@ -1,0 +1,224 @@
+{
+ "spec_version": "qb-room-v2-starter-scenario-1",
+ "forward_chained_seasons": [
+  2022,
+  2023,
+  2024
+ ],
+ "m_draws": 500,
+ "n_rows_scored": 3851,
+ "n_team_games_scored": 1629,
+ "zero_mass_reliability": [
+  {
+   "label": "rank-1 QB, ALL weeks",
+   "n": 1616,
+   "n_games": 815,
+   "realised_zero": 0.1306,
+   "V1_mean": 0.1035,
+   "V2_mean": 0.0945,
+   "V1_gap": -0.0271,
+   "V1_gap_ci": [
+    -0.0423,
+    -0.0128
+   ],
+   "V2_gap": -0.0361,
+   "V2_gap_ci": [
+    -0.0498,
+    -0.0228
+   ],
+   "V1_brier": 0.0924,
+   "V2_brier": 0.0807
+  },
+  {
+   "label": "rank-1 QB, SEASON OPENER",
+   "n": 96,
+   "n_games": 48,
+   "realised_zero": 0.0,
+   "V1_mean": 0.2072,
+   "V2_mean": 0.0273,
+   "V1_gap": 0.2072,
+   "V1_gap_ci": [
+    0.1718,
+    0.2429
+   ],
+   "V2_gap": 0.0273,
+   "V2_gap_ci": [
+    0.0211,
+    0.0339
+   ],
+   "V1_brier": 0.0692,
+   "V2_brier": 0.0017
+  },
+  {
+   "label": "rank-1 QB, IN-SEASON",
+   "n": 1520,
+   "n_games": 767,
+   "realised_zero": 0.1388,
+   "V1_mean": 0.0969,
+   "V2_mean": 0.0988,
+   "V1_gap": -0.0419,
+   "V1_gap_ci": [
+    -0.0572,
+    -0.0268
+   ],
+   "V2_gap": -0.0401,
+   "V2_gap_ci": [
+    -0.0549,
+    -0.0258
+   ],
+   "V1_brier": 0.0939,
+   "V2_brier": 0.0857
+  },
+  {
+   "label": "rank-1 QB, IN-SEASON, not the previous primary (D5 says V1 UNDER-assigns here)",
+   "n": 149,
+   "n_games": 140,
+   "realised_zero": 0.7315,
+   "V1_mean": 0.3946,
+   "V2_mean": 0.5441,
+   "V1_gap": -0.337,
+   "V1_gap_ci": [
+    -0.4119,
+    -0.263
+   ],
+   "V2_gap": -0.1874,
+   "V2_gap_ci": [
+    -0.2629,
+    -0.1117
+   ],
+   "V1_brier": 0.3171,
+   "V2_brier": 0.2381
+  },
+  {
+   "label": "rank-1 QB, OPENER, not the previous primary (the cell that produced 0.412)",
+   "n": 51,
+   "n_games": 35,
+   "realised_zero": 0.0,
+   "V1_mean": 0.3269,
+   "V2_mean": 0.0332,
+   "V1_gap": 0.3269,
+   "V1_gap_ci": [
+    0.2906,
+    0.3604
+   ],
+   "V2_gap": 0.0332,
+   "V2_gap_ci": [
+    0.0233,
+    0.0437
+   ],
+   "V1_brier": 0.1255,
+   "V2_brier": 0.0024
+  },
+  {
+   "label": "rank-2 QB, all",
+   "n": 1595,
+   "n_games": 813,
+   "realised_zero": 0.7618,
+   "V1_mean": 0.7284,
+   "V2_mean": 0.6909,
+   "V1_gap": -0.0334,
+   "V1_gap_ci": [
+    -0.0536,
+    -0.0131
+   ],
+   "V2_gap": -0.0708,
+   "V2_gap_ci": [
+    -0.0912,
+    -0.0502
+   ],
+   "V1_brier": 0.1673,
+   "V2_brier": 0.1647
+  },
+  {
+   "label": "rank-3 QB, all",
+   "n": 640,
+   "n_games": 527,
+   "realised_zero": 0.8891,
+   "V1_mean": 0.6881,
+   "V2_mean": 0.8872,
+   "V1_gap": -0.201,
+   "V1_gap_ci": [
+    -0.2243,
+    -0.1769
+   ],
+   "V2_gap": -0.0019,
+   "V2_gap_ci": [
+    -0.0211,
+    0.0195
+   ],
+   "V1_brier": 0.1349,
+   "V2_brier": 0.0769
+  },
+  {
+   "label": "every charted QB",
+   "n": 3851,
+   "n_games": 815,
+   "realised_zero": 0.518,
+   "V1_mean": 0.4594,
+   "V2_mean": 0.4733,
+   "V1_gap": -0.0586,
+   "V1_gap_ci": [
+    -0.0671,
+    -0.05
+   ],
+   "V2_gap": -0.0448,
+   "V2_gap_ci": [
+    -0.0529,
+    -0.0362
+   ],
+   "V1_brier": 0.1305,
+   "V2_brier": 0.1148
+  }
+ ],
+ "engine_symptoms": [
+  {
+   "stratum": "all weeks",
+   "n_team_games": 1629,
+   "top_passer_share": {
+    "realised": 0.968,
+    "V1": 0.9651,
+    "V2": 0.9702
+   },
+   "frac_two_qb_at_5plus_dropbacks": {
+    "realised": 0.0823,
+    "V1": 0.0961,
+    "V2": 0.0756
+   }
+  },
+  {
+   "stratum": "SEASON OPENER",
+   "n_team_games": 96,
+   "top_passer_share": {
+    "realised": 0.986,
+    "V1": 0.957,
+    "V2": 0.9698
+   },
+   "frac_two_qb_at_5plus_dropbacks": {
+    "realised": 0.0312,
+    "V1": 0.1258,
+    "V2": 0.0762
+   }
+  },
+  {
+   "stratum": "IN-SEASON",
+   "n_team_games": 1533,
+   "top_passer_share": {
+    "realised": 0.9669,
+    "V1": 0.9656,
+    "V2": 0.9702
+   },
+   "frac_two_qb_at_5plus_dropbacks": {
+    "realised": 0.0855,
+    "V1": 0.0943,
+    "V2": 0.0755
+   }
+  }
+ ],
+ "prev_primary_feature_definition_check": {
+  "what": "panel_p3.dropbacks_as_passer is an ATTEMPT count, not a dropback count. This measures how often the primary it names differs from the true-dropback primary.",
+  "n_team_games": 2718,
+  "agree": 2712,
+  "disagree": 6,
+  "disagree_rate": 0.00221
+ }
+}

@@ -672,3 +672,116 @@ different threshold here.
 
 **What I will not do.** Stub the fetch, mock it into a passing test, or route
 around the proxy. The tests are recorded BLOCKED and this entry is why.
+
+
+---
+
+## 2026-09-14T21:20Z — OUT-013: DEN@KC inactives, status at T-3h, and a correction
+
+**Update to the "Time-critical, today" note above, not a new request.** The
+DEN@KC board has been rebuilt and sealed since that entry was written and the
+inactives position is unchanged, so this records the evidence rather than
+asking again.
+
+**Two further attempts today, both refused at the proxy.** Manifest rows
+`20260914T161625Z` and `20260914T173936Z`, both `official_inactives`, both
+`BLOCKED` / `NO_EGRESS`:
+
+    curl: (56) CONNECT tunnel failed, response 403
+    http_code_reported "000", proxy_refusal_status "403"
+    discharge_eligibility.targets: []
+
+`targets: []` on both is correct and is worth reading carefully: at 16:16Z and
+17:39Z the DEN@KC inactives window had not opened, so there was no obligation
+to discharge even had the bytes arrived. The window is
+**2026-09-14T22:45Z -> 2026-09-15T00:05Z**. Nothing before it can fill it.
+
+**A correction to something an agent reported and I nearly repeated.** A
+workstream reported that its re-run "carries `official_inactives` and
+`official_injury_report` hashes that the sealed run did not have", which I was
+one step from relaying as "the inactives landed". **They did not land.** What
+appears in that run's `capture_validation` is the record of the *failed*
+attempts. That is the capture discipline working exactly as designed — the
+bytes are refused, the refusal is stored with its cause, and nothing is
+stubbed — but a stored refusal is not a stored inactive list, and the two must
+never be read as the same artifact.
+
+**What this costs the board, concretely.** Tonight's rebuilt board fires two
+HARD `ROLE_STATE_SOURCE_CONFLICT` findings, one per club, both reading:
+
+> the inactive ownership mechanism reports `enforced=False` with failed
+> conditions `['official_inactive_evidence_ingested',
+> 'evidence_tied_to_this_game_and_team', 'no_unresolved_identity']`
+
+so the quarterback family is quarantined on both teams for want of an
+authoritative list. The board is `PRELIMINARY_PROVISIONAL` and **`FINAL` is not
+reachable from this executor.** Per the owner's first ruling the ladder is
+NFL -> club -> PRELIMINARY; the first two rungs need bytes from outside this
+checkout, which is what this entry is for.
+
+**Still not doing.** No stub, no mock, no reconstruction after the window
+closes, and no loosening of the FINAL requirement to make tonight's board look
+more finished than its evidence supports. If the window closes unfilled, it is
+recorded as a miss.
+
+---
+
+## 2026-09-14 — OUT-014: the injury-report publication ceiling was ALREADY LIFTED by bytes you delivered, plus a freshness request
+
+**Part 1 — a correction to the entry above titled "injury-report publication
+clock (BLOCKS 3 of 14 games)". It is discharged. Please do not work it.**
+
+That entry asks for either (1) a feed or parser preserving the report's own
+date and type, or (2) the official final injury report captured as its own
+source. **Both arrived on 2026-09-13, before that entry was written**, in the
+package you delivered as `NFL_final_report`. They were ingested by
+`nfl/tools/ingest_delivered_injuries.py` (step 5) and are durable in
+`nfl/vintage_manifest.jsonl`, capture `20260913T124700Z`, under
+`value.explicit_no_designations` — one record per club, each carrying
+`report_period` ("2026 REG Week 1 game-status report; explicit game date"),
+`game_date`, `evidence_text`, `content_sha256`
+(`df1dd90380b8d720ef61790a40a96e3bdaf535b6bd7ea5af9bcde184aa212ac9`),
+`retrieved_at`, `publication_time`, `source_modified_time` and an XPath
+`locator`. Raw bytes at
+`nfl/vintage/delivered_injury_evidence.df1dd90380b8d720.html.gz`.
+
+The five clubs it covers — **DEN, HOU, MIA, MIN, WAS** — are *exactly* the five
+the readiness gate was deferring, with no false positives and no misses. The
+gate was not detecting missing reports; it was detecting "this club designated
+nobody" and calling it "this club has not filed yet". `readiness.py` now reads
+the statement and returns `READY_BY_EXPLICIT_NO_DESIGNATION`. No threshold was
+invented and `NEEDS_REPORT_STATUS` is still `True`.
+
+So the three games that entry lists as blocked — **BUF@HOU, GB@MIN, MIA@LV** —
+plus **WAS@PHI** and **DEN@KC** are recoverable from bytes already in this
+checkout. Nothing is owed to you for them.
+
+**Part 2 — what IS still owed, and it is narrow.**
+
+1. **A fresh `injuries` capture.** The newest lawful one is
+   `injuries.66e960ec81fccc6e.csv.gz`, `retrieved_at`
+   **2026-09-13T15:45:56.665261Z**. Tonight's DEN@KC board cuts at
+   **2026-09-14T20:58:33Z**. That is a **29.2-hour** unobserved window over a
+   Monday-night game. Source:
+   `https://github.com/nflverse/nflverse-data/releases/download/injuries/injuries_2026.csv`.
+
+2. **Re-confirmation of the DEN@KC game-status report.** The statement we rely
+   on has `source_modified_time` **2026-09-12T23:07:53.998Z**, about 46 hours
+   before the cut. It is lawful and it is what the league published, but it is
+   not fresh. What would settle it is the same page,
+   `https://www.nfl.com/news/nfl-week-1-injury-report-2026-season`, re-read at
+   or after 2026-09-14T20:00Z, specifically the **MONDAY, SEPT. 14** section:
+   whether "BRONCOS — No injury designations" still stands, and whether Kansas
+   City's two OUT designations (OT Josh Simmons, back; DB Chamarri Conner,
+   knee) are unchanged.
+
+**Not blocked on either.** The diagnosis and the repair stand on bytes already
+here; both requests would only raise confidence, and neither is a precondition
+for the board. Assigned, not blocking.
+
+**One thing I did not do.** Two of Kansas City's delivered rows — Simmons and
+Conner — were quarantined at ingest as `NOT_PROMOTED_BY_DELIVERY` ("present in
+the evidence set, absent from the candidates"). They reached us anyway through
+the nflverse feed, so nothing was lost this time. If the candidate set is meant
+to carry every club in the package, that is a gap in the delivery worth
+checking on your side before the next one.

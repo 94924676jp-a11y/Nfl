@@ -415,6 +415,14 @@ STALE_HOURS = 48.0
 GAME_STATES = (
     'READY_WITH_COMPLETE_INPUT',       # both teams, every contract field filed
     'READY',                           # both teams satisfy the contract
+    # The club has EXPLICITLY STATED that it filed no game designations, and
+    # that statement is captured, clocked and content-hashed in the vintage
+    # manifest. Kept DISTINCT from 'READY' so the basis is never lost, and
+    # spelled with a READY prefix because every consumer in this repository
+    # tests `state.startswith('READY')` -- layers.py:119 (frozen),
+    # football_engine.py:595-605, readiness.py:700, pool_audit.py:679,
+    # completeness.py:123. See `explicit_no_designation` below.
+    'READY_BY_EXPLICIT_NO_DESIGNATION',
     'INJURY_REPORT_NOT_YET_FILED',     # a team has no row for this week at all
     'INJURY_REPORT_INCOMPLETE',        # rows exist, a contract field is unfilled
     'INJURY_REPORT_STALE',             # the feed moved on, this block did not
@@ -554,6 +562,96 @@ def team_kickoff(season: int, week: int, team: str):
     return _KICKOFF_CACHE[key].get(team)
 
 
+def explicit_no_designation(season: int, team: str, kickoff_utc=None,
+                            as_of=None) -> dict | None:
+    """The club's own "we filed no game designations" statement, or None.
+
+    THE THIRD STATE THE INJURIES FEED CANNOT SPELL.
+
+    `nfl/capture/delivered_injuries.py:426-452` names three genuinely different
+    team states and observes that the nflverse schema can express only two:
+
+      (a) rows filed, designations present   -- report_status is populated
+      (b) rows filed, no designation FILED YET -- report_status blank
+      (c) the club has EXPLICITLY STATED it has NO designations
+
+    (b) is an absence of evidence and (c) is evidence. They are byte-identical
+    in the feed, which is why the gate below could only ever read (c) as (b)
+    and refuse a club for being healthy. Measured on 2026 week 1 at the
+    DEN@KC cut: the gate deferred exactly {DEN, HOU, MIA, MIN, WAS}, and the
+    delivered package carries an explicit (c) statement for exactly those five
+    clubs and no others. The gate was not detecting missing reports. It was
+    detecting (c) and calling it (b).
+
+    THIS READS EVIDENCE. IT DOES NOT INVENT A THRESHOLD.
+
+    `nfl/research/slate_audit/EVIDENCE_CEILING_injury_report_publication.md`
+    withdrew an earlier repair that tried to separate (b) from (c) by a rule
+    over blank columns, correctly, because that is a threshold chosen to make
+    games pass. This is the other route the same write-up names as sufficient:
+    the official final report captured as its own source, carrying its own
+    report type and game date. Nothing here is derived from row counts, blank
+    counts, or how many clubs would pass.
+
+    WHAT IT WILL NOT DO.
+
+      * It does not clear INJURY_REPORT_NOT_YET_FILED. A club with no rows at
+        all has filed no PRACTICE report either, and this statement speaks only
+        to game designations. Those are different fields with different
+        consumers.
+      * It does not clear INJURY_REPORT_STALE or a chronology failure. Both are
+        statements about the capture, not about the club.
+      * It applies the SAME as-of cut as the rest of the gate. A statement
+        retrieved after the cut is not evidence this forecast may consume.
+    """
+    ko = VS.parse_ts(kickoff_utc or team_kickoff(season, 1, team))
+    if ko is None:
+        return None
+    # PARSED ONCE, HERE. The production caller passes an already-parsed cut,
+    # so `got > as_of` worked on that path and only that path; any caller
+    # handing in the ISO string every other selector in this module accepts
+    # got a TypeError comparing a datetime to a str. The cut is a clock
+    # wherever it comes from.
+    cut = VS.parse_ts(as_of) if as_of is not None else None
+    # An NFL game date is the LOCAL date the league publishes the fixture
+    # under. For a kickoff instant in UTC that is either the same UTC date or
+    # the one before it -- an evening US kickoff rolls past midnight UTC. Both
+    # are accepted and nothing narrower is assumed, because assuming a specific
+    # offset here would be a constant nobody derived.
+    ok_dates = {(ko.date()).isoformat(),
+                (ko.date() - _dt.timedelta(days=1)).isoformat()}
+    try:
+        lines = VS.MANIFEST.read_text().splitlines()
+    except OSError:
+        return None
+    best = None
+    for line in lines:
+        if 'explicit_no_designations' not in line:
+            continue
+        try:
+            row = json.loads(line)
+        except ValueError:
+            continue
+        v = row.get('value')
+        if not isinstance(v, dict) or row.get('season') != season:
+            continue
+        for rec in (v.get('explicit_no_designations') or []):
+            if rec.get('team') != team:
+                continue
+            if rec.get('kind') != 'EXPLICIT_TEAM_NO_INJURY_DESIGNATIONS':
+                continue
+            if rec.get('game_date') not in ok_dates:
+                continue
+            got = VS.parse_ts(rec.get('retrieved_at'))
+            if got is None or got >= ko:
+                continue
+            if cut is not None and got > cut:
+                continue
+            if best is None or got > VS.parse_ts(best['retrieved_at']):
+                best = rec
+    return best
+
+
 def team_readiness(season: int, week: int, team: str, kickoff_utc=None,
                    written_at=None) -> dict:
     """One team's state against the frozen input contract.
@@ -648,6 +746,34 @@ def team_readiness(season: int, week: int, team: str, kickoff_utc=None,
                 **d}
     pop = d['population']
     if NEEDS_REPORT_STATUS and pop['report_status'] == 0:
+        # An unfiled designation is not an absence of injury -- UNLESS the club
+        # has said in its own words that it has none, in which case the absence
+        # IS the filed fact. `explicit_no_designation` returns that statement
+        # only when it is captured, hashed, and lawful at this same cut.
+        # NEEDS_REPORT_STATUS is unchanged and still True: this does not lower
+        # the requirement, it recognises a second way of meeting it.
+        nd = explicit_no_designation(season, team, kickoff_utc=kickoff_utc,
+                                     as_of=cut)
+        if nd is not None:
+            return {'team': team,
+                    'state': 'READY_BY_EXPLICIT_NO_DESIGNATION',
+                    'as_of': cut.isoformat() if cut is not None else None,
+                    'reason': f'{team} has {d["n_rows"]} row(s) and no filed '
+                              f'designation, and the club has EXPLICITLY '
+                              f'stated it filed none: '
+                              f'"{nd.get("evidence_text")}" '
+                              f'({nd.get("report_period")}, game date '
+                              f'{nd.get("game_date")}), from '
+                              f'{nd.get("source_id")} retrieved '
+                              f'{nd.get("retrieved_at")}. This is the filed '
+                              f'fact, not an absence of one.',
+                    'no_designation_evidence': {
+                        k: nd.get(k) for k in
+                        ('kind', 'evidence_text', 'report_period', 'game_date',
+                         'source_id', 'source_url', 'content_sha256',
+                         'retrieved_at', 'publication_time',
+                         'source_modified_time', 'locator')},
+                    **d}
         return {'team': team, 'state': 'INJURY_REPORT_INCOMPLETE',
                 'as_of': cut.isoformat() if cut is not None else None,
                 'reason': f'{team} has {d["n_rows"]} row(s) but report_status '

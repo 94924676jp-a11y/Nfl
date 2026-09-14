@@ -671,6 +671,55 @@ def _partition(par, team, budget, rng, m):
             floor_binds, degenerate)
 
 
+def _partition_given(par, team, budget, designed_qb, rng, m):
+    """The SAME multinomial, CONDITIONED on the designed-QB count being known.
+
+    WHY THIS EXISTS. `allocate` drew `designed_qb` itself, and the QB layer
+    drew `rush_opp` itself, and nothing ever made the two agree. They are one
+    football quantity -- how many of this team's carries its quarterbacks took
+    -- with two owners, and the board published both: A1's answer sized the
+    `rb` budget the named backs were dealt from, and the QB layer's answer is
+    what `qb/rush_opp` seals. Measured on 2026_01_DEN_KC run d1e2727743c93990,
+    Kansas City: A1 designed_qb mean 0.7090 against the QB layer's
+    `rush_opp - scr` mean 0.6150, per draw differing by -11 to +10, which put
+    the named owners above the team's own carry level in 149 of 1,000 draws by
+    up to 9.6915 carries.
+
+    THIS IS NOT A REPAIR OF A DRAWN RESULT. If
+    (X_1..X_6) ~ Multinomial(B, p) then, conditional on the designed-QB
+    component taking the value d, the remaining five are distributed exactly
+    as Multinomial(B - d, p_{-dq} / (1 - p_dq)). That conditional law is drawn
+    here directly. The division by (1 - p_dq) is the conditional probability
+    vector of A1's own partition, not a renormalisation applied after the
+    fact: no count is drawn and then moved, nothing is clipped, and no
+    parameter is fitted. The share matrix `_shares` produces is untouched.
+
+    A draw whose five remaining weights are all zero has no partition to make;
+    it is NAMED, COUNTED and given to the fringe, which is the convention
+    `_shares` already declares for a degenerate draw rather than a second one
+    invented here.
+    """
+    p, floor_binds, degenerate = _shares(par, team, rng, m)
+    j_fix = CATEGORIES.index('designed_qb')
+    rest = [j for j in range(len(CATEGORIES)) if j != j_fix]
+    b = np.asarray(budget, np.int64)
+    d = np.asarray(designed_qb, np.int64)
+    q = p[rest].copy()
+    tot = q.sum(0)
+    cond_degenerate = tot <= EPS
+    q[:, cond_degenerate] = 0.0
+    q[rest.index(CATEGORIES.index('fringe')), cond_degenerate] = 1.0
+    q = q / np.where(cond_degenerate, 1.0, tot)
+    out = np.empty((len(CATEGORIES), m), np.int64)
+    out[j_fix] = d
+    rest_ix = np.asarray(rest, np.int64)
+    rest_b = b - d
+    for j in range(m):
+        out[rest_ix, j] = rng.multinomial(int(rest_b[j]), q[:, j])
+    return ({c: out[j] for j, c in enumerate(CATEGORIES)},
+            floor_binds, degenerate, int(cond_degenerate.sum()))
+
+
 def verify_allocation(alloc, budget, team_carries, scrambles) -> dict:
     """The hard requirements, COUNTED. Never repaired.
 
@@ -697,7 +746,8 @@ def verify_allocation(alloc, budget, team_carries, scrambles) -> dict:
 
 def allocate(season: int, week: int, teams, team_carries_draws,
              scramble_draws, m: int = 200, seed: int = 20260908, *,
-             params=None, game_id=None, level_rounding=None) -> Outcome:
+             params=None, game_id=None, level_rounding=None,
+             qb_designed_rush=None) -> Outcome:
     """Partition each team's rush-play budget across the six categories.
 
     Parameters
@@ -711,6 +761,17 @@ def allocate(season: int, week: int, teams, team_carries_draws,
     level_rounding      None refuses a non-integer level. 'round_half_even'
                         is the caller DECLARING that rounding somebody else's
                         level is acceptable here; the moved cells are counted.
+    qb_designed_rush    {team: (m,) integer array} -- the QB layer's OWN
+                        designed-rush count, i.e. `rush_opp - scr` summed over
+                        the team's quarterbacks. Supplying it makes the QB
+                        layer the single owner of that quantity: `designed_qb`
+                        is no longer drawn here, it IS this count, and the
+                        remaining five categories are drawn from the exact
+                        conditional multinomial on what is left of the budget.
+                        Omitting it keeps A1 drawing its own designed_qb, in
+                        which case the board carries TWO answers to one
+                        question and the named owners can exceed the team's
+                        carry level -- see `_partition_given`.
 
     Returns an Outcome whose value is
 
@@ -801,6 +862,76 @@ def allocate(season: int, week: int, teams, team_carries_draws,
             f'between two owners. {dict(sorted(over.items())[:6])}',
             teams=over, n_cells=int(sum(over.values())))
 
+    # THE SECOND OWNER, REFUSED BY NAME RATHER THAN RECONCILED LATER.
+    # `qb_designed_rush` is a COUNT the QB layer already drew. It is not
+    # rounded here: rounding somebody else's count is how a quantity acquires
+    # a third value.
+    dq = {}
+    if qb_designed_rush is not None:
+        miss = [t for t in teams if t not in qb_designed_rush]
+        if miss:
+            return Outcome.fail(
+                'A1_QB_DESIGNED_RUSH_TEAM_MISSING',
+                f'no QB designed-rush count for {miss}. A missing count is '
+                f'not a count of zero, and falling back to drawing it here '
+                f'would reinstate the second owner for exactly those teams.',
+                missing=miss)
+        bad_shape, non_int, neg = [], {}, {}
+        for t in teams:
+            a = np.asarray(qb_designed_rush[t], np.float64).reshape(-1)
+            if a.size != m:
+                bad_shape.append(f'qb_designed_rush/{t}: {a.size} draws, '
+                                 f'expected {m}')
+                continue
+            off = int((np.abs(a - np.rint(a)) > 1e-9).sum())
+            if off:
+                non_int[t] = off
+            n = int((a < 0).sum())
+            if n:
+                neg[t] = n
+            dq[t] = np.rint(a).astype(np.int64)
+        if bad_shape:
+            return Outcome.fail(
+                'A1_QB_DESIGNED_RUSH_DRAW_MISMATCH',
+                f'{len(bad_shape)} QB designed-rush vector(s) are not {m} '
+                f'draws long: {bad_shape[:4]}. These layers share one draw '
+                f'index, so a mismatch is refused rather than reshaped.',
+                problems=bad_shape[:20])
+        if non_int:
+            return Outcome.fail(
+                'A1_QB_DESIGNED_RUSH_NOT_INTEGER',
+                f'{sum(non_int.values())} non-integer cell(s) across '
+                f'{len(non_int)} team(s) in the QB designed-rush count. A '
+                f'designed run is an event; a fractional one is not a small '
+                f'one, and rounding another layer`s count here would give the '
+                f'quantity a third value. {dict(sorted(non_int.items())[:6])}',
+                teams=non_int)
+        if neg:
+            return Outcome.fail(
+                'A1_QB_DESIGNED_RUSH_NEGATIVE',
+                f'{sum(neg.values())} negative cell(s) across {len(neg)} '
+                f'team(s). A negative count of designed runs is not a small '
+                f'count. {dict(sorted(neg.items())[:6])}', teams=neg)
+        short = {}
+        for t in teams:
+            n = int((dq[t] > counts[('tc', t)] - counts[('scr', t)]).sum())
+            if n:
+                short[t] = n
+        if short:
+            return Outcome.fail(
+                'A1_QB_DESIGNED_RUSH_EXCEEDS_BUDGET',
+                f'{sum(short.values())} draw cell(s) across {len(short)} '
+                f'team(s) where the QB layer`s designed-rush count is larger '
+                f'than the whole rush-play budget it has to fit inside, so '
+                f'the five remaining categories would have a negative budget. '
+                f'Refused by name rather than clipped: clipping would move a '
+                f'carry between two owners silently. The coupling that '
+                f'prevents this is upstream -- SC1 must couple the carry '
+                f'level against `rush_opp`, not against `scr` alone, because '
+                f'a designed quarterback run is a team carry exactly as a '
+                f'scramble is. {dict(sorted(short.items())[:6])}',
+                teams=short, n_cells=int(sum(short.values())))
+
     sid = stream_component()
     if sid.state is not State.PASS:
         return sid
@@ -817,6 +948,7 @@ def allocate(season: int, week: int, teams, team_carries_draws,
           'category_budget_overruns': 0, 'ledger_violations': 0,
           'carries_with_no_owner': 0, 'carries_with_two_owners': 0}
     floor_binds = degenerate = 0
+    cond_degenerate = 0
     no_history = []
     for t in teams:
         tc, scr = counts[('tc', t)], counts[('scr', t)]
@@ -826,9 +958,15 @@ def allocate(season: int, week: int, teams, team_carries_draws,
             return tcomp
         rng = np.random.default_rng(
             [int(seed), ordinal, gc, int(tcomp.value), int(sid.value)])
-        alloc, fb, deg = _partition(params, t, budget, rng, m)
+        if qb_designed_rush is None:
+            alloc, fb, deg = _partition(params, t, budget, rng, m)
+            cdeg = 0
+        else:
+            alloc, fb, deg, cdeg = _partition_given(
+                params, t, budget, dq[t], rng, m)
         floor_binds += fb
         degenerate += deg
+        cond_degenerate += cdeg
         if t not in params['history']:
             no_history.append(t)
         cnt = verify_allocation(alloc, budget, tc, scr)
@@ -865,6 +1003,16 @@ def allocate(season: int, week: int, teams, team_carries_draws,
         every_carry_exactly_one_owner=True,
         share_floor_binds=int(floor_binds),
         degenerate_draws_named_and_given_to_fringe=int(degenerate),
+        conditional_degenerate_draws_named_and_given_to_fringe=int(
+            cond_degenerate),
+        designed_qb_owner=('the QB layer, supplied as qb_designed_rush'
+                           if qb_designed_rush is not None
+                           else 'A1 -- DRAWN HERE, so qb/rush_opp is a SECOND '
+                                'answer to the same quantity and the named '
+                                'rush owners are not bounded by the team '
+                                'carry level'),
+        qb_designed_rush_supplied=qb_designed_rush is not None,
+        rush_opportunity_single_owner=qb_designed_rush is not None,
         clipping_applied=0, survivor_renormalisation_applied=0,
         post_hoc_repairs=0, deleted_draws=0,
         scrambles_redrawn=0, scrambles_dropback_owned=True,
@@ -955,3 +1103,229 @@ def mean_based_dependence(X, y) -> Outcome:
         f'compared with an observed correlation. Use per_draw_dependence.',
         value_not_comparable=r, statistic='mean_based',
         comparable_with_realised=False)
+
+
+# ------------------------------------------------------ R4: the sealed ledger
+def _dist(x) -> dict:
+    """A residual reported as a DISTRIBUTION, because a mean hides a sign change.
+
+    D6's finding in one function: Kansas City's rush residual has a mean of
+    +0.1555 -- 0.6% of the level, the most closed allocation of the fifteen
+    games -- and is NEGATIVE in 464 of 1,000 draws with an sd of 3.99 and a
+    range of [-9.96, +28.08]. The mean is what is left after the two halves
+    cancel. Any summary that prints the mean alone ranks boards close to
+    backwards, so no residual leaves this module as a scalar.
+    """
+    a = np.asarray(x, np.float64).reshape(-1)
+    return {'mean': float(a.mean()), 'sd': float(a.std(ddof=0)),
+            'min': float(a.min()), 'max': float(a.max()),
+            'p05': float(np.percentile(a, 5)),
+            'p50': float(np.percentile(a, 50)),
+            'p95': float(np.percentile(a, 95)),
+            'draws': int(a.size),
+            'draws_negative': int((a < -1e-9).sum()),
+            'draws_positive': int((a > 1e-9).sum()),
+            'draws_zero': int((np.abs(a) <= 1e-9).sum()),
+            'sign_changes': bool((a < -1e-9).any() and (a > 1e-9).any())}
+
+
+def ownership_ledger(teams, team_carries, scrambles, categories,
+                     player_carries=None, player_other=None,
+                     qb_rush_opportunity=None) -> Outcome:
+    """Team rush opportunity -> category -> player -> unowned, per draw.
+
+    WHAT THIS EXISTS FOR. `allocate` already gives every carry exactly one
+    owner in every draw -- six categories, one multinomial, closure verified
+    by `verify_allocation`. Only `rb` ever reached a sealed artifact, so a
+    reader of the artifact could measure that a quarter of the team's carries
+    had no modelled owner and could not say whose they were. D6 measured it
+    across 102 sealed runs: frame mean 24.1% unowned, range 0.6%-45.3%, all 67
+    team-runs with a rushing layer changing sign, 6,650 of 95,000 draws
+    dealing MORE carries than the team's level.
+
+    This function composes the ledger that makes the same quantity
+    ATTRIBUTED. It computes two residuals and reports both:
+
+      `unowned_before`  team_carries - (named RBs + QB scrambles + QB designed)
+                        -- the D6 quantity, i.e. what a reader of the previous
+                        artifact could see. It is NOT a defect: its owners are
+                        kneel, wr, te, fringe and the unmodelled-back pool,
+                        which are real football.
+
+      `unowned_after`   team_carries - (every category + every named back +
+                        the named other pool). Zero in every draw, by
+                        construction, and a non-zero value is a FAILURE of
+                        this composition rather than a residual to report.
+
+    It changes nothing. No draw is written, no category is rescaled, and the
+    quarterback containment breach is SURFACED with its counts rather than
+    repaired -- `qb_rush_opportunity_within_team_carries` breaches on 60 of
+    204 sealed team-runs and 371 of 232,000 cells, and the J-13 stored-vector
+    defect blocks attributing the negative tail. That is an open item with an
+    owner, not a number to adjust.
+    """
+    if not teams:
+        return Outcome.blocked(
+            'A1_LEDGER_NO_TEAMS',
+            'no team was supplied, so there is no ownership graph to compose. '
+            'An empty ledger is not a ledger of zero.', cause=Cause.DEPENDENCY)
+    out, bad = {}, []
+    for t in teams:
+        miss = [c for c in CATEGORIES if (t, c) not in categories]
+        if miss:
+            return Outcome.fail(
+                'A1_LEDGER_CATEGORY_MISSING',
+                f'{t} carries no {miss} category. The whole partition is the '
+                f'point of this ledger; composing it from a subset would '
+                f'reproduce the defect it exists to close.',
+                team=t, missing=miss)
+        tc = np.asarray(team_carries[t], np.float64).reshape(-1)
+        scr = np.asarray(scrambles[t], np.float64).reshape(-1)
+        cat = {c: np.asarray(categories[(t, c)], np.float64).reshape(-1)
+               for c in CATEGORIES}
+        m = tc.size
+        if scr.size != m or any(v.size != m for v in cat.values()):
+            return Outcome.fail(
+                'A1_LEDGER_DRAW_MISMATCH',
+                f'{t}: the level, the scrambles and the categories are not on '
+                f'one draw index.', team=t)
+        named = (np.asarray(player_carries[t], np.float64).sum(0)
+                 if player_carries is not None and t in player_carries
+                 else np.zeros(m))
+        n_backs = (int(np.asarray(player_carries[t]).shape[0])
+                   if player_carries is not None and t in player_carries
+                   else 0)
+        oth = (np.asarray(player_other[t], np.float64).reshape(-1)
+               if player_other is not None and t in player_other
+               else np.zeros(m))
+        # The `rb` CATEGORY is what the named backs and the unmodelled-back
+        # pool partition. TWO CLOSURES, AND THEY ARE DIFFERENT QUESTIONS.
+        #
+        #   the A1 closure       team_carries == scrambles + the six
+        #                        categories. Exact in every draw by
+        #                        construction, for EVERY team, whether or not
+        #                        any player layer ran for it.
+        #   the player closure   the `rb` category == named backs + the
+        #                        unmodelled-back pool. Only askable of a team
+        #                        whose appearance layer ran. A team deferred
+        #                        under APPEARANCE_TEAM_DEFERRED has a fully
+        #                        attributed CATEGORY ledger and no player
+        #                        split, and collapsing those two into one
+        #                        residual would report a deferral as a
+        #                        conservation defect.
+        has_players = (player_carries is not None and t in player_carries)
+        rb_resid = cat['rb'] - (named + oth)
+        rec = {
+            'team': t, 'n_draws': m, 'n_named_backs': n_backs,
+            'team_carries_mean': float(tc.mean()),
+            'scrambles_mean': float(scr.mean()),
+            'rush_play_budget_mean': float((tc - scr).mean()),
+            'categories': {c: {'mean': float(v.mean()),
+                               'share_of_team_carries': float(
+                                   v.mean() / max(tc.mean(), 1e-9))}
+                           for c, v in cat.items()},
+            'rb_category_split': {
+                'state': 'ALLOCATED' if has_players else 'NOT_ALLOCATED',
+                'why_not_allocated': (None if has_players else
+                                      'no player layer ran for this team, so '
+                                      'the rb category is attributed at '
+                                      'category level and has no player '
+                                      'split. This is not unowned mass.'),
+                'named_backs_mean': float(named.mean()),
+                'unmodelled_back_pool_mean': float(oth.mean()),
+                'residual': _dist(rb_resid) if has_players else None},
+            'unowned_before': _dist(
+                tc - (named + scr + cat['designed_qb'])),
+            'unowned_after': _dist(
+                tc - (scr + sum(cat[c] for c in CATEGORIES))),
+        }
+        rec['unowned_before']['share_of_team_carries'] = float(
+            rec['unowned_before']['mean'] / max(tc.mean(), 1e-9))
+        rec['unowned_after']['share_of_team_carries'] = float(
+            rec['unowned_after']['mean'] / max(tc.mean(), 1e-9))
+        if qb_rush_opportunity is not None and t in qb_rush_opportunity:
+            q = np.asarray(qb_rush_opportunity[t], np.float64).reshape(-1)
+            head = tc - q
+            # ONE QUANTITY, AND THE LEDGER SAYS WHETHER IT HAS ONE OWNER.
+            #
+            # A1's own answer to "how many carries did this team's
+            # quarterbacks take" is `scrambles + designed_qb`, and it is the
+            # answer the `rb` budget was carved out of. `qb_rush_opportunity`
+            # is the QB layer's answer. When `allocate` is given
+            # `qb_designed_rush` the two are one array by construction and
+            # `cells_disagreeing` is 0. When it is not, they are independent
+            # draws, and the difference is the exact amount by which the
+            # NAMED rush owners can exceed the team's carry level -- less
+            # whatever slack kneel / wr / te / fringe and the
+            # unmodelled-back pool happen to hold in that draw.
+            #
+            # Measured, 2026_01_DEN_KC run d1e2727743c93990, Kansas City:
+            # 149 of 1,000 draws over-allocated by up to 9.6915 carries.
+            a1q = scr + cat['designed_qb']
+            excess = q - a1q
+            slack = (cat['kneel'] + cat['wr'] + cat['te'] + cat['fringe']
+                     + oth)
+            rec['qb_rush_opportunity_single_owner'] = {
+                'a1_answer_mean': float(a1q.mean()),
+                'qb_layer_answer_mean': float(q.mean()),
+                'cells_disagreeing': int((np.abs(excess) > 1e-9).sum()),
+                'qb_layer_excess': _dist(excess),
+                'state': ('ONE_OWNER' if not (np.abs(excess) > 1e-9).any()
+                          else 'TWO_OWNERS'),
+                'implied_named_owner_over_allocation': _dist(excess - slack),
+                'implied_draws_over_allocated': int(
+                    ((excess - slack) > 0.5).sum()),
+                'owner': ('the QB layer -- A1 was given qb_designed_rush and '
+                          'drew the other five categories from the exact '
+                          'conditional multinomial'
+                          if not (np.abs(excess) > 1e-9).any() else
+                          'NOBODY -- A1 drew designed_qb and the QB layer '
+                          'drew rush_opp, so the board carries two answers '
+                          'to one quantity. Pass qb_designed_rush to '
+                          'allocate() to make the QB layer the single '
+                          'owner.')}
+            rec['qb_rush_opportunity_within_team_carries'] = {
+                'qb_rush_opportunity_mean': float(q.mean()),
+                'headroom': _dist(head),
+                'breaching_cells': int((head < -1e-9).sum()),
+                'state': 'BREACHED' if (head < -1e-9).any() else 'HELD',
+                'surfaced_not_repaired': (
+                    'DIAGNOSTIC in draw_coherence pending the J-13 stored-'
+                    'vector defect: the SC1-coupled carry vector the engine '
+                    'partitioned is not the vector run_forecast seals, so a '
+                    'breach cannot today be split between a carry dealt twice '
+                    'and a denominator that was never used. Reported with its '
+                    'counts; nothing here adjusts it.')}
+        if (rec['unowned_after']['draws_negative']
+                or rec['unowned_after']['draws_positive']):
+            bad.append(t)
+        if has_players and (rb_resid_bad := int((np.abs(rb_resid)
+                                                 > 1e-9).sum())):
+            return Outcome.fail(
+                'A1_LEDGER_RB_SPLIT_DOES_NOT_CLOSE',
+                f'{t}: the named backs plus the unmodelled-back pool do not '
+                f'sum to the `rb` category in {rb_resid_bad} draw(s). The '
+                f'player deal partitions that category by construction, so a '
+                f'gap means the player layer ran on a different budget from '
+                f'the one A1 dealt -- a wrong vector or a wrong draw index, '
+                f'not unowned mass.', team=t, cells=rb_resid_bad)
+        out[t] = rec
+    if bad:
+        return Outcome.fail(
+            'A1_LEDGER_DOES_NOT_CLOSE',
+            f'{bad}: the full ownership graph leaves a non-zero residual. '
+            f'`allocate` gives every carry exactly one owner by construction, '
+            f'so a residual here is a defect in this composition -- a wrong '
+            f'level, a wrong draw index, or a category read from a different '
+            f'run -- and is refused rather than reported as unowned mass.',
+            teams=bad, ledger=out)
+    return Outcome.ok(
+        'A1_OWNERSHIP_LEDGER', value=out,
+        detail=f'{len(teams)} team(s): team carries -> six A1 categories -> '
+               f'named backs and the unmodelled-back pool, with every carry '
+               f'attributed in every draw',
+        spec_version=SPEC_VERSION, categories=list(CATEGORIES),
+        unowned_after_is_zero_by_construction=True,
+        unowned_before_owners=('kneel', 'wr', 'te', 'fringe',
+                               'unmodelled_back_pool'),
+        teams=list(teams))

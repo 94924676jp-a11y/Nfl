@@ -36,8 +36,9 @@ V1_CANDIDATE_R5 = 'V1_CANDIDATE_R5'
 V1_CANDIDATE_R6 = 'V1_CANDIDATE_R6'
 V1_CANDIDATE_R7 = 'V1_CANDIDATE_R7'
 V1_CANDIDATE_R8 = 'V1_CANDIDATE_R8'
+V1_CANDIDATE_R9 = 'V1_CANDIDATE_R9'
 MODES = (PRODUCTION_BASELINE, V1_CANDIDATE, V1_CANDIDATE_R5, V1_CANDIDATE_R6,
-         V1_CANDIDATE_R7, V1_CANDIDATE_R8)
+         V1_CANDIDATE_R7, V1_CANDIDATE_R8, V1_CANDIDATE_R9)
 
 # component -> what it does, what governs it, and what it changes.
 # `engine_flag` is the argument football_engine.run_game receives.
@@ -274,6 +275,70 @@ R8_REPAIR = {
 }
 
 
+# R9 REPLACES THE QUARTERBACK ROOM'S ALLOCATOR, AND NOTHING ELSE.
+#
+# R8's room is `qb3_lib.allocate`, which draws WHICH quarterback is the
+# primary and then resamples that man's share from the cell's UNCONDITIONAL
+# pool -- a pool in which 47.35% of the (rank 1, not-previous-primary)
+# observations are exactly zero. The two steps disagree by construction:
+# `P(share = 0 | he is the primary)` is 0.0000 by the definition of primary,
+# and the pool it draws from says 0.4735. On tonight's board that put a
+# 0.4120 probability of ZERO DROPBACKS on a healthy depth-chart QB1.
+#
+# The cohort that decides it is week-1 depth-chart QB1s, 2021-2024: 128
+# quarterbacks, of whom ZERO recorded a zero-dropback game. Forward-chained,
+# R8's mechanism assigns that population a mean 0.1982 and a maximum 0.456;
+# R9's assigns a mean 0.0278 and a maximum 0.137. No floor, clip or minimum
+# exists anywhere in the module -- the zero mass falls because the starter is
+# DEFINED as the taker of dropback one, which makes P(db = 0 | started) an
+# identity rather than an estimate.
+#
+# THE HONEST PART. This is EXPLORATORY. The season-boundary hypothesis was
+# selected on this same historical panel before the module existed, so the
+# forward chaining controls parameter leakage and says nothing about
+# specification leakage. Three cells remain open and are recorded rather than
+# smoothed: in-season rank-1 not-previous-primary is still under-assigned by
+# 0.187, rank-2 zero mass is a trade rather than a strict improvement, and
+# two quarterbacks at five-plus dropbacks on tonight's KC room sits at 9.8%
+# against a realised season-opener rate of 3.12%.
+R9_FLAGS = dict(R8_FLAGS)
+R9_FLAGS['qb_allocator'] = 'qb_room_v2'
+
+R9_REPAIR = {
+    'component': 'R9',
+    'what': 'the quarterback room allocates an INTEGER dropback count through '
+            'an explicit starter/exit/replacement state, instead of drawing a '
+            'share from a pool that contradicts the identity it drew',
+    'replaces': 'qb3_lib.allocate, which stays frozen and is still the R8 '
+                'configuration; this is a successor lineage, not an edit',
+    'defect': 'the primary is drawn, then that player\'s share is resampled '
+              'from the cell\'s unconditional pool, 47.35% of which is zero '
+              'in the (rank 1, not previous primary) cell',
+    'evidence': 'week-1 depth-chart QB1, 2021-2024, n=128, realised '
+                'zero-dropback games 0/128. Forward-chained mean P(zero): R8 '
+                '0.1982 (max 0.456, 39.8% at or above 0.25) vs R9 0.0278 '
+                '(max 0.137, 0.0% at or above 0.25). Overall Brier 0.1305 -> '
+                '0.1148',
+    'structural_guarantee': 'the starter is defined as the taker of dropback '
+                            '1, so P(dropbacks = 0 | started) = 0 is an '
+                            'identity; tested against a poisoned parameter '
+                            'set carrying the arithmetic form of the defect',
+    'introduces_no_constant': True,
+    'no_floor_clip_or_minimum': True,
+    'governance': 'EXPLORATORY -- the hypothesis was selected on this panel, '
+                  'so forward chaining controls parameter leakage only. A '
+                  'confirmatory result needs untouched games.',
+    'open_and_not_smoothed': [
+        'in-season rank-1 not-previous-primary under-assigned by 0.187',
+        'rank-2 zero mass is a trade, not a strict improvement',
+        'two QBs at 5+ dropbacks on KC tonight is 9.8% vs a realised 3.12%',
+        'a starter injured on the opening kickoff would be scored a '
+        'non-starter; rare, definitional, and stated rather than papered over',
+    ],
+    'inherits': 'R8',
+}
+
+
 def resolve(mode: str) -> Outcome:
     """The flags and the component manifest for a named mode, or a refusal.
 
@@ -289,6 +354,16 @@ def resolve(mode: str) -> Outcome:
             value={'mode': PRODUCTION_BASELINE, 'flags': {},
                    'components': [], 'candidate': False},
             detail='no candidate component is active')
+    if mode == V1_CANDIDATE_R9:
+        return Outcome.ok(
+            'MODE_V1_CANDIDATE_R9',
+            value={'mode': V1_CANDIDATE_R9, 'flags': dict(R9_FLAGS),
+                   'components': manifest() + [R5_REPAIR, R6_REPAIR,
+                                               R8_REPAIR, R9_REPAIR],
+                   'candidate': True},
+            detail='R8 plus the R9 quarterback room, which allocates integer '
+                   'dropbacks through an explicit starter state instead of a '
+                   'share drawn from a pool that contradicts it')
     if mode == V1_CANDIDATE_R8:
         return Outcome.ok(
             'MODE_V1_CANDIDATE_R8',

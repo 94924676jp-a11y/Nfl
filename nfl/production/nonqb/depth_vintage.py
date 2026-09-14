@@ -37,6 +37,46 @@ nflverse 2020-2024 0.707-0.812, ESPN 2025 0.895-0.923. Anything fitted across
 the break carries a regime indicator so the level shift is absorbed rather
 than averaged.
 
+THE RECEIVER ORDERING WAS A SPECIAL-TEAMS ORDERING (R3, 2026-09-14)
+
+`weekly` used to take each player's MINIMUM `depth_team` across ALL of his
+listed slots and then order the room by `(depth_team, depth_position)`.
+`depth_position` is a string and `KOR < KR < PR < WR` alphabetically, so a
+kick/punt returner listed at `(PR, 1)` sorted ahead of the club's actual first
+-team receivers. Reproduced here over the 2021-2024 REG charts, 2,432 WR
+team-weeks: the rank-1 slot was a return slot in 1,649 of them (0.6780), and
+was not the plain `WR` slot in 1,665 (0.6846, the figure D5 reports). For RB
+the winning slot was a return slot in 616 (0.2533) and `FB` in 796 (0.3273).
+Worked example, KC 2023 week 1: the "WR1" was the returner, not the receiver.
+
+The realised record says the same thing. Zero-target rate by the old ordinal,
+WR, 2021-2024, all charted players joined to a played team-game:
+0.3528 / 0.1559 / 0.1567 / 0.3085 / 0.5496 -- NON-MONOTONE, because rank 1 was
+not a role.
+
+THE REPAIR, AND WHAT IT EXPOSES UNDERNEATH
+
+Only rows whose `formation` is `Offense` build the offensive role ordering, and
+the slot STRING is never a sort key -- an alphabet is not a depth chart. What
+is left is the vendor's own `depth_team` inside the offensive formation.
+
+That reveals the thing the contamination was hiding: **the weekly vendor does
+not publish a WR1/WR2/WR3 order at all.** In 2,396 of 2,432 WR rooms (0.9852)
+two or three players share `depth_team == 1` with no distinguishing offensive
+slot. So this module now emits a GROUP, not a unique ordinal: every player the
+chart calls a first-team receiver carries group 1, and `tie_size` and
+`resolved` say so out loud. Manufacturing 1/2/3 out of a three-way tie is what
+produced the defect in the first place, and it is not done here.
+
+Zero-target rate by the repaired group, same rows: 0.1263 / 0.4429 / 0.6480 --
+monotone. Appeared-only: 0.0319 / 0.2700 / 0.3886, also monotone. RB moves from
+0.3236 / 0.2182 / 0.2946 (non-monotone) to 0.2391 / 0.2795 / 0.4483.
+
+A player listed ONLY on special teams has no offensive role evidence. He is
+NOT given an offensive rank -- he is counted and named in the evidence instead,
+because "the chart lists him as a returner" and "the chart puts him first among
+receivers" are different facts and the old key rendered them the same.
+
 POINT-IN-TIME, OR REFUSE
 
 `daily_point_in_time` takes the newest snapshot STRICTLY BEFORE the clock it is
@@ -61,7 +101,10 @@ if str(_REPO) not in sys.path:
 
 from sportsplatform.governance.outcome import Cause, Outcome, State  # noqa: E402
 
-SPEC_VERSION = 'depth-vintage-pit-1'
+# Bumped by R3 2026-09-14: `weekly` now emits an OFFENSIVE DEPTH GROUP
+# built from `formation == 'Offense'` rows only. The old string described
+# a different quantity and must not be carried across the change.
+SPEC_VERSION = 'depth-vintage-pit-2-offensive-role-only'
 
 # WHAT THIS SELECTOR CANNOT ANSWER, STATED WHERE IT IS SELECTED. The capture
 # reducer keeps one `dt` slice per blob and the rest of the series is not
@@ -78,6 +121,12 @@ DURABILITY_CEILING = (
 
 SKILL = ('QB', 'RB', 'WR', 'TE', 'FB', 'HB')
 _NORM = {'FB': 'RB', 'HB': 'RB'}
+
+# Return-team designations. They appear as `depth_position` strings in the
+# weekly vendor and as `pos_abb` values in the daily one. In NEITHER feed may
+# one of them decide an offensive role ordering. Named here so the two paths
+# are policed by one list instead of two habits.
+RETURN_SLOTS = ('KR', 'PR', 'KOR')
 
 WEEKLY_VENDOR = 'nflverse_weekly'
 DAILY_VENDOR = 'espn_daily'
@@ -98,15 +147,45 @@ def _ordinal(listed):
 
 
 # ---------------------------------------------------------------- weekly
-def weekly(stage, seasons=range(2020, 2025)) -> Outcome:
-    """The 2020-2024 weekly leaves -> {(season, week, club, gsis): (rank, pos)}.
+# R3. THE OFFENSIVE ROLE ORDERING IS BUILT FROM OFFENSIVE ROWS ONLY.
+#
+# `formation` is a column the vendor already publishes on every weekly row and
+# this module never read it. Measured on the staged 2021-2024 REG leaves:
+# 35,983 skill rows are `Offense`, 8,734 are `Special Teams`, 51 are `Defense`.
+# The special-teams rows are the ones that carried `PR`/`KR`/`KOR` into the
+# sort key. They are not dropped from the world -- they are dropped from the
+# OFFENSIVE ordering, which is the only thing this function claims to build.
+OFFENSE_FORMATION = 'Offense'
+
+# The ordering key, stated once. `depth_team` is the vendor's own rank inside
+# its own slot and is the only ordering evidence the weekly feed carries. The
+# slot STRING is deliberately absent: it is a name, not a rank, and sorting on
+# it alphabetically is the defect. Players tied on `depth_team` are tied, and
+# the tie is reported rather than broken by a coin flip wearing a sort key.
+WEEKLY_ORDERING_KEY = (
+    'offensive depth_team, group-compacted within (season, week, club, '
+    'normalised position); no slot string and no special-teams row '
+    'participates')
+
+
+def weekly(stage, seasons=range(2020, 2025), detail=False) -> Outcome:
+    """The 2020-2024 weekly leaves -> {(season, week, club, gsis): (group, pos)}.
+
+    `group` is a DEPTH GROUP, not a unique ordinal. Two or three players can
+    share group 1 because the vendor lists two or three first-team receivers
+    and supplies nothing to order them by. `detail=True` returns the full
+    record per player -- group, tie_size, resolved, depth_team, slots -- so a
+    consumer can tell "he is the WR1" from "he is one of three the chart calls
+    first-team".
 
     A season whose leaf is absent is NAMED. Skipping it silently is how the
     2025 hole stayed invisible for as long as it did.
     """
     stage = pathlib.Path(stage)
-    raw = collections.defaultdict(list)
-    seen, absent = [], []
+    off = collections.defaultdict(dict)       # room -> pid -> (depth_team, slots)
+    st_only = collections.defaultdict(set)    # room -> pids seen ONLY off-offence
+    seen, absent, no_formation = [], [], []
+    n_off = n_st = n_other = n_return_in_offence = 0
     for y in seasons:
         p = stage / f'dc_{y}.csv'
         if not p.exists():
@@ -115,6 +194,12 @@ def weekly(stage, seasons=range(2020, 2025)) -> Outcome:
         hdr = p.open().readline()
         if 'depth_team' not in hdr:
             absent.append(y)
+            continue
+        if 'formation' not in hdr:
+            # NOT A DEFAULT. Without `formation` the offensive rows cannot be
+            # separated from the return-team rows, and the only construction
+            # available is the contaminated one. Refusing is the answer.
+            no_formation.append(y)
             continue
         seen.append(y)
         for r in csv.DictReader(p.open()):
@@ -127,33 +212,92 @@ def weekly(stage, seasons=range(2020, 2025)) -> Outcome:
                 d = int(r['depth_team'])
             except (TypeError, ValueError, KeyError):
                 continue
-            raw[(int(r['season']), int(r['week']), r['club_code'],
-                 _NORM.get(pos, pos))].append(
-                     (d, r.get('depth_position') or '', r['gsis_id']))
-    if absent:
+            form = (r.get('formation') or '').strip()
+            room = (int(r['season']), int(r['week']), r['club_code'],
+                    _NORM.get(pos, pos))
+            pid = r['gsis_id']
+            slot = (r.get('depth_position') or '').strip()
+            if form == OFFENSE_FORMATION and slot.upper() in RETURN_SLOTS:
+                # Belt and braces. A return designation filed under the
+                # offensive formation is still a return designation and must
+                # not order receivers. Measured 0 on 2021-2024; counted so a
+                # future vendor change is visible instead of silent.
+                n_return_in_offence += 1
+                st_only[room].add(pid)
+            elif form == OFFENSE_FORMATION:
+                n_off += 1
+                cur = off[room].get(pid)
+                if cur is None or d < cur[0]:
+                    off[room][pid] = (d, {slot} if cur is None
+                                      else cur[1] | {slot})
+                else:
+                    cur[1].add(slot)
+            else:
+                n_st += 1 if form and form != 'Defense' else 0
+                n_other += 1 if form == 'Defense' else 0
+                st_only[room].add(pid)
+    if absent or no_formation:
         return Outcome.blocked(
             'DEPTH_WEEKLY_LEAF_MISSING',
-            f'no usable weekly depth leaf for season(s) {absent}; a missing '
-            f'season is a hole in the frame, not an empty one',
-            cause=Cause.DATA, seasons_absent=absent, seasons_present=seen)
-    if not raw:
+            f'no usable weekly depth leaf for season(s) '
+            f'{sorted(absent + no_formation)}; a missing season is a hole in '
+            f'the frame, not an empty one. `formation` is required: without '
+            f'it the offensive rows cannot be separated from the return-team '
+            f'rows and the only ordering available is the contaminated one.',
+            cause=Cause.DATA, seasons_absent=absent,
+            seasons_without_formation_column=no_formation,
+            seasons_present=seen)
+    if not off:
         return Outcome.fail(
             'DEPTH_WEEKLY_EMPTY',
-            f'{len(seen)} leaf/leaves were read and produced no skill-position '
-            f'row; an empty chart is an error, not a result')
-    out = {}
-    for (s, w, club, pos), v in raw.items():
-        best = {}
-        for d, dp, pid in v:
-            if pid not in best or d < best[pid][0]:
-                best[pid] = (d, dp)
-        for pid, rank in _ordinal([((b[0], b[1]), pid)
-                                   for pid, b in best.items()]).items():
-            out[(s, w, club, pid)] = (rank, pos)
-    return Outcome.ok('DEPTH_WEEKLY_OK', value=out, spec_version=SPEC_VERSION,
-                      vendor=WEEKLY_VENDOR, n_entries=len(out),
-                      seasons=sorted(seen), n_team_weeks=len({
-                          (k[0], k[1], k[2]) for k in out}))
+            f'{len(seen)} leaf/leaves were read and produced no OFFENSIVE '
+            f'skill-position row; an empty chart is an error, not a result')
+    out, det = {}, {}
+    tie1 = collections.Counter()
+    n_unresolved_rooms = n_rooms = 0
+    st_only_players = 0
+    for room, players in off.items():
+        n_rooms += 1
+        depths = sorted({v[0] for v in players.values()})
+        gi = {d: i + 1 for i, d in enumerate(depths)}
+        size = collections.Counter(v[0] for v in players.values())
+        for pid, (d, slots) in players.items():
+            g = gi[d]
+            out[(room[0], room[1], room[2], pid)] = (g, room[3])
+            det[(room[0], room[1], room[2], pid)] = {
+                'group': g, 'pos': room[3], 'depth_team': d,
+                'tie_size': size[d], 'resolved': size[d] == 1,
+                'offensive_slots': sorted(s for s in slots if s)}
+        top = min(depths) if depths else None
+        tie1[size.get(top, 0)] += 1
+        if size.get(top, 0) > 1:
+            n_unresolved_rooms += 1
+        st_only_players += len(st_only.get(room, set()) - set(players))
+    return Outcome.ok(
+        'DEPTH_WEEKLY_OK', value=(det if detail else out),
+        spec_version=SPEC_VERSION, vendor=WEEKLY_VENDOR, n_entries=len(out),
+        seasons=sorted(seen),
+        n_team_weeks=len({(k[0], k[1], k[2]) for k in out}),
+        n_rooms=n_rooms,
+        ordering_key=WEEKLY_ORDERING_KEY,
+        n_offensive_rows=n_off,
+        n_special_teams_rows_excluded=n_st,
+        n_return_slot_rows_under_offence_excluded=n_return_in_offence,
+        return_slots_never_ordering=list(RETURN_SLOTS),
+        n_defense_rows_excluded=n_other,
+        # DECLARED, NOT RESOLVED. This is the uncertainty the special-teams
+        # contamination was hiding: the vendor names a first-team GROUP and
+        # not a first receiver, and inventing an order inside it is the defect.
+        n_rooms_with_unresolved_top_group=n_unresolved_rooms,
+        top_group_size_histogram=dict(sorted(tie1.items())),
+        n_players_listed_only_off_offence=st_only_players,
+        uncertainty=('a player sharing `depth_team` with a room-mate carries '
+                     'the same group and `resolved=False`; no unique ordinal '
+                     'is manufactured. A player listed only on special teams '
+                     'or defence carries NO offensive rank at all, which is '
+                     'not the same fact as being unlisted.'),
+        value_is=('{(season, week, club, gsis): (group, pos)}; `detail=True` '
+                  'returns the full per-player record'))
 
 
 # ---------------------------------------------------------------- daily
@@ -232,7 +376,13 @@ def daily(text) -> Outcome:
     snap = collections.defaultdict(dict)
     vendor_groups = collections.defaultdict(set)
     norm_groups = collections.defaultdict(set)
-    n = n_slot_absent = 0
+    n = n_slot_absent = n_return_rows = 0
+    return_pos_seen = set()
+    for _r in csv.DictReader(io.StringIO(text)):
+        _pa = (_r.get('pos_abb') or '').upper()
+        if _pa in RETURN_SLOTS:
+            n_return_rows += 1
+            return_pos_seen.add(_pa)
     for d, team, pid, pos, rk, slot, pos_raw in _daily_rows(text):
         cur = snap[(team, d)].get(pid)
         if (cur is None
@@ -295,6 +445,30 @@ def daily(text) -> Outcome:
             (d, {pid: (ranked[pid], players[pid][1]) for pid in players}))
     for t in by_team:
         by_team[t].sort(key=lambda x: x[0])
+    # R3, 2026-09-14. TWO FACTS ABOUT THIS SCALE, MEASURED AND DECLARED
+    # RATHER THAN REPAIRED, BECAUSE REPAIRING THE SECOND WOULD MOVE A SERVED
+    # FEATURE THAT NOTHING HERE HAS REFITTED.
+    #
+    #   1. THE RETURN-SLOT CONTAMINATION THAT `weekly` CARRIED IS NOT HERE.
+    #      `KR`, `PR` and `KOR` are `pos_abb` values in this vendor, not
+    #      `depth_position` strings, so `pos not in SKILL` already drops them
+    #      before any ordering happens. Verified on the six persisted blobs:
+    #      104 `KR` rows and 81 `PR` rows read, 0 reaching a rank.
+    #      `n_return_slot_rows_excluded` records it so the absence is a
+    #      measurement rather than an assumption.
+    #
+    #   2. THE ORDINAL IS OFFENCE-WIDE, AND IT IS NOT A WITHIN-POSITION ROLE
+    #      RANK. `snap` is keyed on (team, dt), so every skill player on the
+    #      club competes for one ordinal and the vendor's `pos_rank == 1`
+    #      quarterback, running back, receiver and tight end are separated
+    #      only by `gsis_id`. `rank_1_position_mix` reports which position
+    #      actually won rank 1 per team-snapshot. A consumer reading `rank`
+    #      as "WR1" is reading it wrongly, and this says so on the artifact.
+    rank1_pos = collections.Counter()
+    for t, snaps_t in by_team.items():
+        for _d, m in snaps_t:
+            top = min(m.items(), key=lambda kv: kv[1][0])
+            rank1_pos[top[1][1]] += 1
     return Outcome.ok('DEPTH_DAILY_OK', value=dict(by_team),
                       spec_version=SPEC_VERSION, vendor=DAILY_VENDOR,
                       n_rows=n, n_teams=len(by_team),
@@ -304,6 +478,17 @@ def daily(text) -> Outcome:
                       # matter, instead of seeing a column of zeroes.
                       n_rows_without_pos_slot=n_slot_absent,
                       pos_slot_available=(n_slot_absent == 0),
+                      n_return_slot_rows_excluded=n_return_rows,
+                      return_slot_pos_abb_seen=sorted(return_pos_seen),
+                      rank_scale=(
+                          'OFFENCE-WIDE ordinal within (team, dt) across QB, '
+                          'RB, WR, TE. It is NOT a within-position depth '
+                          'rank: a club fields a pos_rank-1 QB, RB, WR and TE '
+                          'simultaneously and only gsis_id separates them. '
+                          'Declared by R3 2026-09-14, not repaired: changing '
+                          'it moves a served feature whose coefficients were '
+                          'fitted on this scale.'),
+                      rank_1_position_mix=dict(sorted(rank1_pos.items())),
                       n_vendor_rank_groups=len(vendor_groups),
                       n_vendor_rank_ties=0,
                       n_normalisation_rank_collisions=len(collisions),

@@ -274,17 +274,74 @@ def test_g_kneels_are_excluded_checked_against_the_feed():
           'the defect being excluded', not seeded, f'{len(seeded)}')
 
 
+def _executable_refbands_reach(path):
+    """Ways this file could actually READ a band, ignoring what it says.
+
+    THE TEXT GREP THIS REPLACES WAS BACKWARDS. It flagged any file whose
+    bytes contained "refbands", which caught `nfl/production/stat_contract.py`
+    for a DOCSTRING citing `nfl/research/refbands/REFERENCE_BANDS.json` as the
+    source of a measured 2.4356 per-QB1 gap -- a sentence whose entire purpose
+    is to warn a reader off comparing a forecast to a band built on the other
+    definition of a pass attempt. Penalising that comment makes the invariant
+    punish its own documentation, and the cheapest way to go green would have
+    been to DELETE the warning. So the check now looks for the things that
+    would let the module reach a band and execute on it: an import, an
+    attribute access, and a string used as anything other than a docstring.
+    Prose stays free; a path does not.
+    """
+    import ast
+    src = path.read_text(errors='ignore')
+    if 'refbands' not in src:
+        return []
+    tree = ast.parse(src)
+    doc_nodes = set()
+    for node in ast.walk(tree):
+        if isinstance(node, (ast.Module, ast.FunctionDef, ast.AsyncFunctionDef,
+                             ast.ClassDef)):
+            b = getattr(node, 'body', None)
+            if b and isinstance(b[0], ast.Expr) and \
+                    isinstance(b[0].value, ast.Constant) and \
+                    isinstance(b[0].value.value, str):
+                doc_nodes.add(id(b[0].value))
+    found = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            found += [a.name for a in node.names if 'refbands' in a.name]
+        elif isinstance(node, ast.ImportFrom):
+            if 'refbands' in (node.module or ''):
+                found.append(node.module)
+            found += [a.name for a in node.names if 'refbands' in a.name]
+        elif isinstance(node, ast.Attribute) and 'refbands' in node.attr:
+            found.append(node.attr)
+        elif isinstance(node, ast.Name) and 'refbands' in node.id:
+            found.append(node.id)
+        elif isinstance(node, ast.Constant) and isinstance(node.value, str) \
+                and 'refbands' in node.value and id(node) not in doc_nodes:
+            found.append(repr(node.value[:60]))
+    return found
+
+
 def test_h_no_projection_path_can_reach_a_band():
-    hits = []
+    hits, prose = [], []
     for base in ('nfl/production', 'nfl/product'):
         d = ROOT / base
         if not d.exists():
             continue
         for p in d.rglob('*.py'):
-            if 'refbands' in p.read_text(errors='ignore'):
-                hits.append(str(p.relative_to(ROOT)))
-    check('nothing under nfl/production or nfl/product references refbands',
-          not hits, ', '.join(hits) or 'clean')
+            reach = _executable_refbands_reach(p)
+            rel = str(p.relative_to(ROOT))
+            if reach:
+                hits.append(f'{rel}: {reach}')
+            elif 'refbands' in p.read_text(errors='ignore'):
+                prose.append(rel)
+    check('no projection module imports, names or opens a refbands path',
+          not hits, '; '.join(hits) or 'clean')
+    # REPORTED, NOT FAILED. A projection module that merely NAMES the band
+    # artifact in prose is documenting a trap, and the count is printed so a
+    # reader can go and check that is all it is doing.
+    check('  and any prose mention is in a docstring only',
+          True, f'{len(prose)} file(s) mention it in prose: '
+                f'{", ".join(prose) or "none"}')
     src = (RB / 'refbands.py').read_text()
     check('the module imports nothing from a projection path',
           'nfl.production' not in src and 'nfl.product' not in src)

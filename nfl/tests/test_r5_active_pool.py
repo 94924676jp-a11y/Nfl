@@ -125,13 +125,38 @@ def test_missing_status_refuses_rather_than_silently_running_unfiltered():
     that did not happen."""
     src = open(os.path.join(_ROOT, 'nfl/production/run_forecast.py')).read()
     i = src.index("if fl.get('active_roster_only')")
-    window = src[i:i + 900]
+    # THE WINDOW IS SLICED TO THE BRANCH, NOT TO A CHARACTER COUNT.
+    #
+    # This read `src[i:i + 900]`, and 900 was only ever the length the branch
+    # happened to be. When R2's eligibility gate replaced the status-only
+    # filter the branch grew to 2,580 characters, and the two refusal
+    # assertions fell off the end of the window -- so the checks FAILED while
+    # every line they were looking for was still present and still correct, a
+    # few hundred characters further down. A test that reports a repair as
+    # missing because the file got longer is measuring the file's length.
+    #
+    # The end marker is the branch's own last statement. If someone renames
+    # it, this raises ValueError rather than silently shrinking back to a
+    # window that proves nothing -- which is the failure mode being removed.
+    j = src.index("fx['_eligibility_gate_applied'] = True", i)
+    window = src[i:j + 40]
     check('the R5 branch returns a fatal on a status refusal',
           "fx['_nonqb'] = {'fatal': st}" in window)
+    check('  and on a snapshot refusal',
+          "fx['_nonqb'] = {'fatal': snap}" in window)
     check('  and on an empty pool',
           "fx['_nonqb'] = {'fatal': pool}" in window)
     check('  it never falls back to the unfiltered list',
           'except' not in window and 'or players' not in window)
+    # THE GATE IS THE MECHANISM, NOT A LABEL ON THE OLD ONE. `active_pool`
+    # answers "is he on the active roster" and reads every other adverse
+    # determination as silence; the branch must be calling the gate that
+    # ranks four authorities, and must build the choice set rather than
+    # allocating and zeroing afterwards.
+    check('  the branch builds its pool from the eligibility gate',
+          'EG.snapshot(' in window and 'EG.choice_set(' in window)
+    check('  and no longer from roster status alone',
+          'RS.active_pool(nonqb' not in window)
 
 
 def test_zz_every_check_passed():

@@ -481,15 +481,33 @@ def build(args, fixtures: dict = None) -> dict:
         if sl.state is not State.PASS:
             return sl
         qb = sl.value
+        # P0-1. THE TEAM DROPBACK DRAWS, HOISTED ABOVE THE ALLOCATION.
+        #
+        # `qb_room_v2` allocates an INTEGER dropback count rather than a
+        # share, so it needs the team's dropback draws, and `_team_volume` is
+        # memoised and independent of the allocation -- it was simply called
+        # a few lines later. Hoisting it changes nothing about the draw
+        # (same memo, same seed, same coupling); it only makes it available
+        # to the allocator that needs it. `qb3` ignores the argument
+        # entirely and its call is asserted bit-identical by the suite.
+        tv = _team_volume()
+        if tv.state is not State.PASS:
+            return tv
+        _alloc = fl.get('qb_allocator') or 'qb3'
+        _tdb = ({t: np.asarray(tv.value[('team_dropbacks_part', t)], float)
+                 for t in teams} if _alloc == 'qb_room_v2' else None)
         # THE ARGUMENT WHOSE ABSENCE WAS THE DEFECT. official_inactive_ids
         # reached the non-QB engine only; the QB share pool never saw it.
         qa = FE.QA.allocate(args.season, args.week, teams, qbp, m=m,
                             seed=args.seed,
                             inactive_ids=fx.get('official_inactive_ids'),
                             inactive_provenance=fx.get(
-                                'official_inactive_provenance'))
+                                'official_inactive_provenance'),
+                            allocator=_alloc,
+                            team_dropback_draws=_tdb)
         if qa.state is not State.PASS:
             return qa
+        fx['_qb_allocator'] = _alloc
         # THE VERDICT TRAVELS WITH THE RUN, because the board cannot re-derive
         # it. `qb_inactive_ownership_enforced` used to be read by the product
         # board and written by nobody, so QB_INACTIVE_NOT_CONSUMED could never
@@ -838,7 +856,20 @@ def build(args, fixtures: dict = None) -> dict:
         # 88-91% of their teams' attempts), and changing it would disturb the
         # control this repair is measured against.
         if fl.get('active_roster_only'):
+            # R2 PATCH 1, APPLIED. `roster_status.active_pool` answers ONE
+            # question -- is he on the active roster -- and reads every other
+            # adverse determination as silence. The gate answers the question
+            # actually being asked, over four ranked authorities, and it
+            # removes an ineligible player at CHOICE-SET CONSTRUCTION rather
+            # than allocating to him and zeroing him afterwards. R2 measured
+            # what the difference costs: allocate-then-zero moves 17.60 units
+            # of share onto his team-mates; the gate leaves him with none.
+            #
+            # The evidence keys `_r5` carried are preserved, because callers
+            # downstream read them and a repair that silently renames its own
+            # audit trail is a repair nobody can check.
             from nfl.production.nonqb import roster_status as RS
+            from nfl.production import eligibility_gate as EG
             st = RS.status_map(args.season, args.week, teams,
                                observed_before=args.written_at,
                                kickoff_utc=fx.get('kickoff_utc'))
@@ -847,13 +878,28 @@ def build(args, fixtures: dict = None) -> dict:
                 return fx['_nonqb']
             nonqb = [q for q in players if q.get('position') != 'QB']
             qbs = [q for q in players if q.get('position') == 'QB']
-            pool = RS.active_pool(nonqb, st.value)
+            snap = EG.snapshot(
+                args.season, args.week, teams, nonqb,
+                kickoff_utc=fx.get('kickoff_utc'),
+                observed_before=args.written_at,
+                game_id=args.game_id,
+                # None means NO LIST WAS AVAILABLE. () would mean a list was
+                # read and named nobody. They are different facts and the
+                # gate is entitled to tell them apart.
+                official_inactive_ids=fx.get('official_inactive_ids'))
+            if snap.state is not State.PASS:
+                fx['_nonqb'] = {'fatal': snap}
+                return fx['_nonqb']
+            pool = EG.choice_set(nonqb, snap)
             if pool.state is not State.PASS:
                 fx['_nonqb'] = {'fatal': pool}
                 return fx['_nonqb']
-            players = qbs + pool.value
+            players = qbs + list(pool.value)
+            fx['_eligibility'] = {k: v for k, v in snap.evidence.items()
+                                  if k != 'value'}
             fx['_r5'] = {k: v for k, v in pool.evidence.items()
                          if k != 'value'}
+            fx['_eligibility_gate_applied'] = True
             fx['_r5']['roster_status_source'] = st.evidence.get('source')
             fx['_r5']['roster_status_observed_at'] = st.evidence.get(
                 'observed_at')
@@ -885,20 +931,58 @@ def build(args, fixtures: dict = None) -> dict:
                     k: v for k, v in o.evidence.items() if k != 'value'}
             # Tier from trailing snap share, with the captured depth chart as
             # the named fallback for players who have none.
-            dr = {}
-            try:
-                from nfl.product import board as _PBRD
-                for k, v in _PBRD.depth_rank(args.season, args.week,
-                                             teams).items():
+            # R6-CLOCK, REPAIRED. This read `depth_rank(season, week, teams)`
+            # with no `as_of`, inside `except Exception: dr = {}`. There is no
+            # `vintage_selector.clock(...)` block anywhere in the production
+            # path, so the selector refused -- correctly, every single time --
+            # with VINTAGE_CLOCK_UNRESOLVED, and the bare except destroyed the
+            # evidence that it had. `assign_tiers` has therefore never seen a
+            # depth rank on any board in the corpus: measured on tonight's
+            # pool the basis counter reads `trailing_snap_share` 22 /
+            # `no_information_lowest_tier` 5, where a supplied rank gives
+            # `shrunk_trailing_and_depth` 22 / `depth_chart` 5.
+            #
+            # It is worth being exact about what repairing it buys, because it
+            # is less than it looks: on tonight's 27-player pool the supplied
+            # rank changes ZERO tiers in all six rooms. The anchor moves every
+            # score and `assign_tiers` exports rank, which absorbs it. The
+            # repair is here because a guard that fires on every run and is
+            # never seen is a broken guard, not because it moves tonight.
+            #
+            # The cut is the one the forecast itself declares. A refusal is
+            # now RECORDED rather than swallowed: `dr` still falls back to
+            # empty, because an absent chart is a real state the mechanism
+            # already handles, but the artifact says which state it was in.
+            dr, dr_ev = {}, None
+            from nfl.product import board as _PBRD
+            from nfl.production.nonqb import vintage_selector as _VS
+            _dro = _PBRD.depth_rank_outcome(
+                args.season, args.week, teams,
+                as_of=_VS.as_of_cut(fx.get('kickoff_utc'), args.written_at))
+            if _dro.state is State.PASS:
+                for k, v in _dro.value.items():
                     dr[k] = v[1]
-            except Exception:                                 # noqa: BLE001
-                dr = {}
+                dr_ev = {'state': 'PASS', 'code': _dro.code,
+                         'n_players': len(dr),
+                         'as_of': _dro.evidence.get('as_of')}
+            else:
+                dr_ev = {'state': _dro.state.value, 'code': _dro.code,
+                         'detail': str(_dro.detail)[:300], 'n_players': 0}
+            fx['_r6']['depth_rank'] = dr_ev
             at = RP.assign_tiers(
                 [q for q in players if q.get('position') != 'QB'],
                 role_priors['targets'], depth_rank=dr)
             tiers = at['tier']
             import collections as _c
             fx['_r6']['tier_basis'] = dict(_c.Counter(at['basis'].values()))
+            # R3 PATCH 1, APPLIED. D2 asked for `tier` and `basis` on the row;
+            # a basis COUNTER cannot answer which player was placed on what
+            # evidence. `tier_degraded` is the one to read first: anything but
+            # False means the repaired single-scale ordering did not run and
+            # the board is carrying the old two-pass defect.
+            fx['_r6']['tier_detail'] = at['detail']
+            fx['_r6']['tier_ordering'] = at['ordering']
+            fx['_r6']['tier_degraded'] = at['degraded']
             fx['_r6_applied'] = True
 
         # R7. THE APPEARANCE FRAME REPAIR. Nothing is computed here: the flag
@@ -941,6 +1025,7 @@ def build(args, fixtures: dict = None) -> dict:
         # defaults apply unchanged.
         qb = None
         rushing_budget = None
+        rush_categories = None
         shared_pass = 'off'
         game_coupling = 'none'
         if _mode['mode'] != 'PRODUCTION_BASELINE':
@@ -974,6 +1059,16 @@ def build(args, fixtures: dict = None) -> dict:
                     fx['_nonqb'] = {'fatal': o}
                     return fx['_nonqb']
                 fx['_coupled_team_carries'] = team_carries
+                # R4. A1'S WHOLE PARTITION, NOT JUST `rb`.
+                #
+                # `allocate` gives every carry exactly one owner in every
+                # draw across six categories; filtering to `rb` here threw
+                # five of them away and left the artifact unable to say whose
+                # the other carries were. D6 measured the consequence: a frame
+                # mean of 24.1% of every team's carries with no modelled owner
+                # (range 0.6%-45.3%), which was never missing information --
+                # it was computed and discarded at this line.
+                rush_categories = dict(a1.value['carries'])
 
         # NO EXCEPTION MAY ESCAPE THIS CHAIN. Every stage in this pipeline
         # owes a NAMED outcome; a traceback is the one thing it may not
@@ -989,6 +1084,7 @@ def build(args, fixtures: dict = None) -> dict:
                 kickoff_utc=fx.get('kickoff_utc'), run_id=run_id, qb=qb,
                 shared_pass=shared_pass, game_coupling=game_coupling,
                 rushing_budget=rushing_budget,
+                rush_categories=rush_categories,
                 team_carries_override=fx.get('_coupled_team_carries'),
                 tv=_team_volume(),
                 appearance_spec=_appearance_spec(fl),
@@ -1026,6 +1122,24 @@ def build(args, fixtures: dict = None) -> dict:
             applied.append('R7')
         if fx.get('_r8_applied'):
             applied.append('R8')
+        # R9 IS RECORDED FROM WHAT RAN, NOT FROM WHAT WAS ASKED FOR.
+        #
+        # The first R9 board rendered `components applied: A1, A3G, C0, C3,
+        # R2, R5, R6, R8, SC1` -- no R9 -- while every quarterback number on
+        # it came from the R9 allocator. A board that does not name the
+        # mechanism that produced its headline figure cannot be audited, and
+        # this project's whole claim is that the chain of evidence behind a
+        # number is as trustworthy as the number.
+        #
+        # The flag is read back from `_qb_allocator`, which is set at the
+        # allocation call site from the value actually passed, so a run that
+        # requested `qb_room_v2` and silently fell back could not report R9.
+        # It cannot silently fall back either -- `qb_allocation.allocate`
+        # returns FAIL[QB_ALLOCATOR_UNKNOWN] on an unknown name and
+        # BLOCKED[QB_ROOM_V2_NEEDS_TEAM_DROPBACKS] without the draws -- but
+        # the marker is derived rather than asserted regardless.
+        if fx.get('_qb_allocator') == 'qb_room_v2':
+            applied.append('R9')
         fx['_candidate_applied'] = sorted(set(applied))
         fx['_candidate_not_reached'] = sorted(set(not_reached))
         return fx['_nonqb']
@@ -1043,10 +1157,18 @@ def build(args, fixtures: dict = None) -> dict:
         # is mapped rather than added to UNREPORTED_LAYERS because it CAN
         # fail -- a team left with nobody is a real refusal.
         'participation': ('participation', 'participation_frame'),
+        # R4 adds four layers to this stage and they are mapped rather than
+        # listed as unreported, because every one of them CAN fail: a
+        # non-integer budget, a degenerate simplex, a category matrix that
+        # does not close, and a count that is not a count are all real
+        # refusals and none may reach the artifact unseen.
         'targets_carries': ('targets_carries', 'carries', 'shared_pass',
-                            'rushing_budget', 'carry_other_denominator'),
+                            'rushing_budget', 'carry_other_denominator',
+                            'target_counts', 'carry_counts',
+                            'rush_category_ownership'),
         'conversion': ('receiving_conversion',),
-        'td_layer': ('receiving_td', 'rushing_td'),
+        'td_layer': ('receiving_td', 'rushing_td', 'counts_are_counts',
+                     'stat_contract'),
     }
     # Engine layers that no declared stage answers for. They are LISTED, not
     # ignored: a layer absent from both this set and STAGE_LAYERS is a layer
@@ -1527,6 +1649,57 @@ def build(args, fixtures: dict = None) -> dict:
                          'rushing_td': _np.asarray(
                              pay['draws']['rush_td'])},
                         lambda pid: _team_of_player.get(pid))
+            # R4. THE RUSH CATEGORY MATRIX, ROW AXIS = TEAM.
+            #
+            # D6's highest-value recommendation, and its wording: "sealing the
+            # category matrix makes the entire rush partition auditable from a
+            # sealed board, and would let the 24.1% residual be attributed
+            # instead of merely measured." One metric per A1 category plus the
+            # unmodelled-back pool the player deal names, so a reader of the
+            # npz can walk team carries -> category -> player -> pool without
+            # re-running the allocator or trusting a summary.
+            rc = pay.get('rush_category')
+            if rc:
+                rc_teams = sorted(rc)
+                mats = {c: _np.stack([_np.asarray(rc[t][c], float)
+                                      for t in rc_teams])
+                        for c in sorted(next(iter(rc.values())))}
+                o = ds.add_layer(
+                    'rush_category', rc_teams, mats,
+                    'nfl-rushing-a1-category-1',
+                    'rushing_a1: ONE multinomial per team per draw over the '
+                    'rush-play budget; every carry has exactly one owner',
+                    row_axis='team')
+                if o.state is not State.PASS:
+                    return _fail(o)
+                produced['rush_category'] = len(rc_teams)
+                _p2_add('rush_category', rc_teams, mats, lambda t: t,
+                        scalar_row=True)
+            # THE UNMODELLED-BACK POOL IS A SEPARATE LAYER ON ITS OWN ROWS.
+            #
+            # It is the part of the `rb` CATEGORY that the player deal gave to
+            # backs outside the modelled set, so it exists only for a team
+            # whose appearance layer ran -- tonight, Kansas City and not
+            # Denver. Carrying it as a column of `rush_category` would force a
+            # row for every team in that matrix and a deferred team has no
+            # honest value to put there; a zero would read as "no unmodelled
+            # backs" when the truth is "no player split was made".
+            rcp = pay.get('rush_category_other')
+            if rcp:
+                rcp_teams = sorted(rcp)
+                mats = {'unmodelled_back_pool': _np.stack(
+                    [_np.asarray(rcp[t], float) for t in rcp_teams])}
+                o = ds.add_layer(
+                    'rush_player_pool', rcp_teams, mats,
+                    'nfl-rushing-a1-category-1',
+                    'the share of the A1 `rb` category dealt to backs outside '
+                    'the modelled set, on the shared game draw index',
+                    row_axis='team')
+                if o.state is not State.PASS:
+                    return _fail(o)
+                produced['rush_player_pool'] = len(rcp_teams)
+                _p2_add('rush_player_pool', rcp_teams, mats, lambda t: t,
+                        scalar_row=True)
         tv = fx.get('_team_volume')
         if tv:
             teams = sorted({t for (_m, t) in tv})

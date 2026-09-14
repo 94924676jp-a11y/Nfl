@@ -30,9 +30,43 @@ RB-carries 0.74.
 
 TIER IS POINT-IN-TIME AND NEVER SEES ITS OWN GAME. It is the rank of a
 player's TRAILING mean snap share within his team and position, computed from
-strictly earlier weeks. Where a player has no trailing history the captured
-depth chart supplies the rank instead; where neither exists he is placed in the
-lowest tier and that is recorded rather than assumed away.
+strictly earlier weeks.
+
+3. THE ROOM WAS ORDERED IN TWO PASSES, AND THE SECOND PASS COULD NEVER
+   OVERTAKE THE FIRST. (R3, 2026-09-14. This is D4's P0-2.)
+
+   `assign_tiers` used to sort everyone WITH a trailing snap share, then append
+   everyone else starting at `start = len(known)`. A player the current depth
+   chart ranks first, but who has no trailing history -- a rookie, a free agent,
+   anyone whose history is at another club and outside the window -- was
+   therefore placed below EVERY veteran with any history at all, however
+   little. Replayed on week 1 of 2021-2024: 47 of 47 chart-rank-1 skill players
+   with no trailing history landed below tier 1, 29 of them in tier 4+. Their
+   assigned tiers imply a 0.0604 target share against a realised 0.1031, a 41%
+   understatement, and because `weight` returns the tier mean EXACTLY at
+   `n_own = 0`, for those players the tier was not a prior on a history -- it
+   WAS the whole forecast.
+
+   THE REPAIR IS STRUCTURAL, NOT A PROMOTION RULE. There is no ladder, no
+   "rank 1 gets tier 1", and no player or team is named. The two passes are
+   gone: every player in the room is placed on ONE continuous scale, an
+   expected snap share
+
+       score = w * own_trailing_snap + (1 - w) * anchor,   w = n / (n + k)
+
+   where `anchor` is the empirically measured mean snap share of the tier his
+   CURRENT depth listing puts him in, `n` is how many trailing observations he
+   actually has, and `k` is the same empirical-Bayes within/between-player
+   variance ratio the class prior already estimates -- here for snap share.
+   Both `anchor` and `k` are estimated from the panel in `build`; neither is
+   chosen. Current role evidence is the observation, history is the
+   uncertainty information that shrinks it, and which of two players ends up
+   higher is decided by that arithmetic and never by which list they were on.
+   A player with no listing anchors on the deepest measured tier, which is the
+   old behaviour made continuous rather than categorical.
+
+   The pathology is then impossible by construction: there is no step at which
+   one group is appended after another.
 """
 from __future__ import annotations
 
@@ -129,50 +163,181 @@ def build(panel, cls_share, positions, ordinal_cut) -> Outcome:
             'identified and would have to be chosen rather than estimated',
             cause=Cause.DATA)
 
+    # --- R3. THE SAME TWO ESTIMATES AGAIN, FOR SNAP SHARE.
+    #
+    # `assign_tiers` orders a room on expected snap share, so it needs an
+    # anchor and a shrinkage constant in THAT quantity, not in the class share.
+    # Both are measured here by the identical construction: the tier's own mean
+    # snap share (appeared rows, same >=50 floor), and the within/between
+    # player variance ratio. Nothing is chosen, and no value is carried over
+    # from the class-share estimates -- a target share and a snap share are
+    # different quantities and reusing one constant for both would be exactly
+    # the silent-constant defect this module was written to end.
+    sv = collections.defaultdict(list)
+    snap_per_player = collections.defaultdict(list)
+    for r in rows:
+        if not r.get('appeared'):
+            continue
+        sn = r.get('snap_share')
+        if sn is None:
+            continue
+        t = tier.get((r['ord'], r['gsis_id']))
+        if t is not None:
+            sv[_tier_label(r['position'], t)].append(sn)
+        snap_per_player[(r['position'], r['gsis_id'])].append(sn)
+    tier_snap_mean = {kk: float(statistics.mean(v)) for kk, v in sv.items()
+                      if len(v) >= 50}
+    k_snap = {}
+    for pos in positions:
+        vals = [v for (p_, _pid), v in snap_per_player.items()
+                if p_ == pos and len(v) >= 4]
+        if len(vals) < 30:
+            continue
+        within = statistics.mean(statistics.pvariance(v) for v in vals)
+        between = statistics.pvariance([statistics.mean(v) for v in vals])
+        if between > 0:
+            k_snap[pos] = float(within / between)
+    if not tier_snap_mean or not k_snap:
+        # NAMED, NOT DEGRADED SILENTLY. Without these two `assign_tiers` has
+        # no scale on which to place a no-history player against a veteran,
+        # and it would fall back to the two-pass ordering this repair removed.
+        return Outcome.blocked(
+            'ROLE_PRIOR_SNAP_ANCHOR_UNIDENTIFIED',
+            f'the snap-share tier anchor ({len(tier_snap_mean)} tier(s) at or '
+            f'above 50 observations) or its shrinkage constant '
+            f'({len(k_snap)} position(s)) is not identified from rows earlier '
+            f'than {ordinal_cut}. The room ordering would have to be chosen '
+            f'rather than estimated.', cause=Cause.DATA)
+
     # trailing snap share at the cut, for pricing prospective players
     latest = {pid: statistics.mean(h[-TRAIL:]) for pid, h in trail.items() if h}
+    latest_n = {pid: len(h[-TRAIL:]) for pid, h in trail.items() if h}
     return Outcome.ok(
         'ROLE_PRIOR_OK',
         value={'tier_mean': tier_mean, 'k': k, 'trailing_snap': latest,
+               'trailing_n': latest_n,
+               'tier_snap_mean': tier_snap_mean, 'k_snap': k_snap,
                'n_history': {pid: len(v) for (_p, pid), v in
                              per_player.items()}},
         spec_version=SPEC_VERSION, cls_share=cls_share,
         ordinal_cut=ordinal_cut, n_rows=len(rows),
         tier_means={kk: round(vv, 5) for kk, vv in sorted(tier_mean.items())},
         shrinkage_k={kk: round(vv, 3) for kk, vv in sorted(k.items())},
+        tier_snap_means={kk: round(vv, 5)
+                         for kk, vv in sorted(tier_snap_mean.items())},
+        shrinkage_k_snap={kk: round(vv, 3)
+                          for kk, vv in sorted(k_snap.items())},
         note='k is within/between player variance of the class share; it is '
-             'estimated, never chosen')
+             'estimated, never chosen. k_snap and tier_snap_mean are the same '
+             'construction in snap share, and are what orders a room.')
+
+
+LEGACY_TWO_PASS = (
+    'the prior carries no snap-share anchor (`tier_snap_mean`) or no '
+    '`k_snap`, so the room cannot be placed on one scale and the pre-repair '
+    'two-pass ordering is used. `build` always supplies both; a prior that '
+    'does not is not one this repair can govern, and it says so here rather '
+    'than pretending the repair applied.')
+
+
+def _anchor(tsm, pos, t):
+    """The measured mean snap share of tier `t` at position `pos`.
+
+    Falls back to that position's own tiers, then to every tier, and never to
+    a number written in this file.
+    """
+    v = tsm.get(_tier_label(pos, t))
+    if v is not None:
+        return v, 'tier'
+    own = [vv for kk, vv in tsm.items() if kk.startswith(str(pos))]
+    if own:
+        return float(statistics.mean(own)), 'position_mean_of_tiers'
+    return float(statistics.mean(tsm.values())), 'all_tiers_mean'
 
 
 def assign_tiers(players, prior, depth_rank=None) -> dict:
-    """Point-in-time tier for a prospective slate: trailing snap share where it
-    exists, the captured depth chart otherwise."""
-    trail = prior['trailing_snap']
+    """Point-in-time tier for a prospective slate, on ONE scale.
+
+    Every player in a (team, position) room is placed by the same expected
+    snap share -- his own trailing value shrunk toward the anchor his CURRENT
+    depth listing implies. There is no pass that ranks one group before
+    another, which is what made a no-history chart-rank-1 player unpromotable.
+    """
+    trail = prior.get('trailing_snap') or {}
+    tn = prior.get('trailing_n') or {}
+    tsm = prior.get('tier_snap_mean') or {}
+    ks = prior.get('k_snap') or {}
+    depth_rank = depth_rank or {}
     grp = collections.defaultdict(list)
     for q in players:
         grp[(q.get('team'), q.get('position'))].append(q)
-    out, basis = {}, {}
-    for _k, rs in grp.items():
-        known = sorted([q for q in rs if trail.get(q['gsis_id']) is not None],
-                       key=lambda q: -trail[q['gsis_id']])
-        for i, q in enumerate(known):
-            out[q['gsis_id']] = i + 1
-            basis[q['gsis_id']] = 'trailing_snap_share'
-        rest = [q for q in rs if q['gsis_id'] not in out]
-        # THE DEPTH CHART IS THE FALLBACK, NOT A GUESS. It is captured, it is
-        # point-in-time, and using it is the difference between placing a
-        # rookie at his listed rank and placing him at the positional mean.
-        ranked = []
-        for q in rest:
-            d = (depth_rank or {}).get(q['gsis_id'])
-            ranked.append((d if d is not None else 99, q))
-        ranked.sort(key=lambda x: x[0])
-        start = len(known)
-        for j, (d, q) in enumerate(ranked):
-            out[q['gsis_id']] = start + j + 1
-            basis[q['gsis_id']] = ('depth_chart' if d != 99
-                                   else 'no_information_lowest_tier')
-    return {'tier': out, 'basis': basis}
+    out, basis, detail = {}, {}, {}
+
+    if not tsm or not ks:
+        # DECLARED DEGRADATION. Not a silent fallback: the caller is told,
+        # by name, that the repaired ordering did not run.
+        for _k, rs in grp.items():
+            known = sorted([q for q in rs
+                            if trail.get(q['gsis_id']) is not None],
+                           key=lambda q: -trail[q['gsis_id']])
+            for i, q in enumerate(known):
+                out[q['gsis_id']] = i + 1
+                basis[q['gsis_id']] = 'trailing_snap_share'
+            rest = [q for q in rs if q['gsis_id'] not in out]
+            ranked = sorted(
+                [((depth_rank.get(q['gsis_id']) or 99), q['gsis_id'], q)
+                 for q in rest])
+            for j, (d, _pid, q) in enumerate(ranked):
+                out[q['gsis_id']] = len(known) + j + 1
+                basis[q['gsis_id']] = ('depth_chart' if d != 99
+                                       else 'no_information_lowest_tier')
+        return {'tier': out, 'basis': basis, 'detail': {},
+                'spec_version': SPEC_VERSION, 'ordering': 'legacy_two_pass',
+                'degraded': True, 'degraded_reason': LEGACY_TWO_PASS}
+
+    k_default = float(statistics.mean(ks.values()))
+    for (_team, pos), rs in grp.items():
+        scored = []
+        for q in rs:
+            pid = q['gsis_id']
+            own = trail.get(pid)
+            n = int(tn.get(pid, 0) or 0) if own is not None else 0
+            d = depth_rank.get(pid)
+            has_d = d is not None
+            # NO LISTING IS NOT TIER 1 AND IT IS NOT A GUESS: it anchors on
+            # the deepest measured tier, which is what "the chart does not
+            # carry him" has historically meant.
+            anchor_tier = min(int(d), MAX_TIER) if has_d else MAX_TIER
+            anchor, anchor_src = _anchor(tsm, pos, anchor_tier)
+            kk = ks.get(pos, k_default)
+            w = (n / (n + kk)) if n else 0.0
+            score = (w * own + (1.0 - w) * anchor) if own is not None \
+                else anchor
+            if n and has_d:
+                b = 'shrunk_trailing_and_depth'
+            elif n:
+                b = 'trailing_snap_share'
+            elif has_d:
+                b = 'depth_chart'
+            else:
+                b = 'no_information_lowest_tier'
+            scored.append((-float(score), pid, q, {
+                'score': float(score), 'own_trailing': own,
+                'n_trailing': n, 'depth_rank': (int(d) if has_d else None),
+                'anchor_tier': anchor_tier, 'anchor': float(anchor),
+                'anchor_source': anchor_src, 'shrinkage_w': float(w),
+                'k_snap': float(kk), 'basis': b}))
+        scored.sort()
+        for i, (_neg, pid, _q, det) in enumerate(scored):
+            out[pid] = i + 1
+            basis[pid] = det['basis']
+            det['tier'] = i + 1
+            det['room_size'] = len(scored)
+            detail[pid] = det
+    return {'tier': out, 'basis': basis, 'detail': detail,
+            'spec_version': SPEC_VERSION,
+            'ordering': 'single_scale_shrunk_expected_snap_share',
+            'degraded': False}
 
 
 def weight(pid, position, own_ewma, n_own, tier, prior) -> float:

@@ -736,3 +736,205 @@ def test_kneels_stay_explicit_and_the_shape_is_not_degenerate():
     check('no category is ever negative',
           all(int((o.value['carries'][(t, c)] < 0).sum()) == 0
               for t in TEAMS for c in R.CATEGORIES))
+
+
+# ------------------------------------- 11. U1: rush opportunity has ONE owner
+#
+# THE DEFECT THIS SECTION SEEDS IS THE REAL ONE. `allocate` drew
+# `designed_qb` and the QB layer drew `rush_opp`, and nothing made them agree.
+# On the sealed 2026_01_DEN_KC board d1e2727743c93990 that put the NAMED rush
+# owners -- the modelled backs plus the quarterbacks -- above the team's own
+# carry level in 149 of 1,000 Kansas City draws, by up to 9.6915 carries.
+# Every check below is on the identity the product gate evaluates, not on a
+# proxy for it.
+
+
+def _qb_rush(m, teams=TEAMS, seed=77, scr=None):
+    """A QB layer's own (scr, rush_opp) per team, on the A1 draw index."""
+    rng = np.random.default_rng(seed)
+    tc, s = _levels(m, teams=teams)
+    if scr is not None:
+        s = scr
+    ro = {t: s[t] + rng.integers(0, 4, m).astype(np.int64) for t in teams}
+    return tc, s, ro
+
+
+def test_the_qb_layer_becomes_the_single_owner_of_designed_qb_rush():
+    print('\n11. U1: designed QB rush has one owner, or the ledger says so')
+    m = 400
+    tc, scr, ro = _qb_rush(m)
+    drush = {t: ro[t] - scr[t] for t in TEAMS}
+    par = _params()
+    o = R.allocate(2026, 1, list(TEAMS), tc, scr, m=m, seed=20260908,
+                   params=par, qb_designed_rush=drush)
+    if not check('allocation passes with the QB count supplied',
+                 o.state is State.PASS, o.code):
+        return
+    check('designed_qb IS the supplied count, cell for cell',
+          all(np.array_equal(o.value['carries'][(t, 'designed_qb')], drush[t])
+              for t in TEAMS))
+    check('A1 and the QB layer now give ONE answer for qb rush opportunity',
+          all(np.array_equal(o.value['qb_rush_opportunity'][t], ro[t])
+              for t in TEAMS))
+    check('the evidence says who owns it',
+          o.evidence['rush_opportunity_single_owner'] is True
+          and o.evidence['qb_designed_rush_supplied'] is True,
+          str(o.evidence.get('designed_qb_owner'))[:60])
+    check('every hard requirement is still zero',
+          all(o.evidence[k] == 0 for k in
+              ('closure_violations', 'negative_allocations',
+               'category_budget_overruns', 'ledger_violations',
+               'carries_with_no_owner', 'carries_with_two_owners')))
+    check('no category is negative',
+          all(int((o.value['carries'][(t, c)] < 0).sum()) == 0
+              for t in TEAMS for c in R.CATEGORIES))
+    # THE CONDITIONAL LAW, NOT A RESCALE: the five remaining categories
+    # partition exactly what the budget has left after the QB count.
+    rest = [c for c in R.CATEGORIES if c != 'designed_qb']
+    check('the other five partition budget - designed_qb exactly',
+          all(np.array_equal(
+              sum(o.value['carries'][(t, c)] for c in rest),
+              o.value['rush_play_budget'][t] - drush[t]) for t in TEAMS))
+
+
+def test_the_named_rush_owners_cannot_exceed_the_team_carry_level():
+    print('\n11b. the product gate identity, computed on both constructions')
+    m = 1000
+    tc, scr, ro = _qb_rush(m, seed=91)
+    par = _params()
+    # The ONE quantity the gate checks: modelled backs + QB rush opportunity
+    # against the team's own carry level. The modelled backs are dealt from
+    # the `rb` category, so `rb` is their upper bound in every draw.
+    def worst(alloc):
+        out = {}
+        for t in TEAMS:
+            owners = alloc['carries'][(t, 'rb')] + ro[t]
+            over = owners - tc[t]
+            out[t] = (int((over > 0.5).sum()), float(over.max()))
+        return out
+
+    unwired = R.allocate(2026, 1, list(TEAMS), tc, scr, m=m, seed=20260908,
+                         params=par)
+    if not check('the unwired allocation runs', unwired.state is State.PASS,
+                 unwired.code):
+        return
+    bad = worst(unwired.value)
+    n_bad = sum(v[0] for v in bad.values())
+    check(f'SEEDED DEFECT REPRODUCED: {n_bad} draw(s) over-allocate without '
+          f'the wiring (worst {max(v[1] for v in bad.values()):+.2f} carries)',
+          n_bad > 0, str(bad))
+
+    wired = R.allocate(2026, 1, list(TEAMS), tc, scr, m=m, seed=20260908,
+                       params=par,
+                       qb_designed_rush={t: ro[t] - scr[t] for t in TEAMS})
+    if not check('the wired allocation runs', wired.state is State.PASS,
+                 wired.code):
+        return
+    good = worst(wired.value)
+    n_good = sum(v[0] for v in good.values())
+    check(f'and ZERO with it, in {m} draws x {len(TEAMS)} teams', n_good == 0,
+          str(good))
+    check('the repair is a construction: the excess is <= 0 in every cell, '
+          'not merely inside a tolerance',
+          all(v[1] <= 0.0 for v in good.values()), str(good))
+    check('nothing was clipped or repaired to achieve it',
+          wired.evidence['clipping_applied'] == 0
+          and wired.evidence['post_hoc_repairs'] == 0
+          and wired.evidence['survivor_renormalisation_applied'] == 0)
+
+
+def test_a_qb_count_that_cannot_fit_is_refused_by_name_not_clipped():
+    print('\n11c. an infeasible QB count is refused, never clipped')
+    m = 120
+    tc, scr = _levels(m)
+    par = _params()
+    over = {t: (tc[t] - scr[t]) + 1 for t in TEAMS}       # one carry too many
+    o = R.allocate(2026, 1, list(TEAMS), tc, scr, m=m, seed=20260908,
+                   params=par, qb_designed_rush=over)
+    check('refused by name', o.state is State.FAIL
+          and o.code == 'A1_QB_DESIGNED_RUSH_EXCEEDS_BUDGET', o.code)
+    check('and it counts the cells rather than fixing them',
+          o.evidence.get('n_cells') == m * len(TEAMS),
+          str(o.evidence.get('n_cells')))
+    check('the refusal names the upstream coupling that prevents it',
+          'rush_opp' in o.detail and 'SC1' in o.detail)
+    # a FRACTIONAL count is not rounded here: that would be a third answer.
+    frac = {t: (tc[t] - scr[t]).astype(float) * 0 + 1.5 for t in TEAMS}
+    o2 = R.allocate(2026, 1, list(TEAMS), tc, scr, m=m, seed=20260908,
+                    params=par, qb_designed_rush=frac)
+    check('a fractional QB count is refused, not rounded',
+          o2.state is State.FAIL
+          and o2.code == 'A1_QB_DESIGNED_RUSH_NOT_INTEGER', o2.code)
+    neg = {t: np.full(m, -1, np.int64) for t in TEAMS}
+    o3 = R.allocate(2026, 1, list(TEAMS), tc, scr, m=m, seed=20260908,
+                    params=par, qb_designed_rush=neg)
+    check('a negative QB count is refused',
+          o3.state is State.FAIL
+          and o3.code == 'A1_QB_DESIGNED_RUSH_NEGATIVE', o3.code)
+    part = {t: np.zeros(m, np.int64) for t in TEAMS[:2]}
+    o4 = R.allocate(2026, 1, list(TEAMS), tc, scr, m=m, seed=20260908,
+                    params=par, qb_designed_rush=part)
+    check('a MISSING team is refused rather than drawn here for that team',
+          o4.state is State.FAIL
+          and o4.code == 'A1_QB_DESIGNED_RUSH_TEAM_MISSING', o4.code)
+    short = {t: np.zeros(m - 3, np.int64) for t in TEAMS}
+    o5 = R.allocate(2026, 1, list(TEAMS), tc, scr, m=m, seed=20260908,
+                    params=par, qb_designed_rush=short)
+    check('a wrong draw count is refused rather than reshaped',
+          o5.state is State.FAIL
+          and o5.code == 'A1_QB_DESIGNED_RUSH_DRAW_MISMATCH', o5.code)
+
+
+def test_the_default_path_is_bit_identical_and_still_says_it_has_two_owners():
+    print('\n11d. omitting the argument changes nothing and admits it')
+    m = 300
+    tc, scr = _levels(m)
+    par = _params()
+    a = R.allocate(2026, 1, list(TEAMS), tc, scr, m=m, seed=20260908,
+                   params=par)
+    b = R.allocate(2026, 1, list(TEAMS), tc, scr, m=m, seed=20260908,
+                   params=par, qb_designed_rush=None)
+    if not check('both run', a.state is State.PASS and b.state is State.PASS):
+        return
+    check('the unwired path is untouched, cell for cell',
+          all(np.array_equal(a.value['carries'][(t, c)],
+                             b.value['carries'][(t, c)])
+              for t in TEAMS for c in R.CATEGORIES))
+    check('and it says out loud that the quantity has no single owner',
+          a.evidence['rush_opportunity_single_owner'] is False
+          and 'SECOND' in a.evidence['designed_qb_owner'])
+
+
+def test_the_ownership_ledger_names_the_second_owner():
+    print('\n11e. the ledger reports one owner or two, with counts')
+    m = 400
+    tc, scr, ro = _qb_rush(m, seed=13)
+    par = _params()
+    for label, kw in (('unwired', {}),
+                      ('wired', {'qb_designed_rush':
+                                 {t: ro[t] - scr[t] for t in TEAMS}})):
+        o = R.allocate(2026, 1, list(TEAMS), tc, scr, m=m, seed=20260908,
+                       params=par, **kw)
+        if not check(f'{label}: allocation passes', o.state is State.PASS,
+                     o.code):
+            continue
+        led = R.ownership_ledger(
+            list(TEAMS), {t: tc[t] for t in TEAMS},
+            {t: scr[t] for t in TEAMS}, o.value['carries'],
+            qb_rush_opportunity={t: ro[t] for t in TEAMS})
+        if not check(f'{label}: the ledger closes', led.state is State.PASS,
+                     led.code):
+            continue
+        st = {t: led.value[t]['qb_rush_opportunity_single_owner']['state']
+              for t in TEAMS}
+        want = 'ONE_OWNER' if kw else 'TWO_OWNERS'
+        check(f'{label}: every team reads {want}',
+              all(v == want for v in st.values()), str(st))
+        dis = sum(led.value[t]['qb_rush_opportunity_single_owner']
+                  ['cells_disagreeing'] for t in TEAMS)
+        check(f'{label}: {dis} disagreeing cell(s) reported',
+              (dis == 0) if kw else (dis > 0))
+        ov = sum(led.value[t]['qb_rush_opportunity_single_owner']
+                 ['implied_draws_over_allocated'] for t in TEAMS)
+        check(f'{label}: {ov} implied over-allocated draw(s)',
+              (ov == 0) if kw else (ov > 0))

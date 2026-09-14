@@ -1,0 +1,528 @@
+{
+ "spec_version": "qb-room-v2-starter-scenario-1",
+ "game_id": "2026_01_DEN_KC",
+ "n_draws": 1000,
+ "seed": 20260908,
+ "ordinal": 202601,
+ "team_volume_source": "sealed V1 draws, team_volume/team_dropbacks_part -- held fixed so the allocator is the only treatment",
+ "inactives": "NO_INACTIVES_INGESTION -- the official list is not published at the time this ran, so every rostered quarterback is treated as eligible and no emergency third-QB designation is available to consume.",
+ "prior": "jeffreys",
+ "trained_on_ordinals_before": 202601,
+ "p_exit": 0.1339,
+ "teams": {
+  "KC": {
+   "configuration": {
+    "configuration": "NO_PREV_PRIMARY_IN_ROOM",
+    "is_season_opener": true,
+    "prev_primary_pid": "00-0037324",
+    "prev_primary_ordinal": 202518,
+    "depth_chart_qb1": "00-0033873",
+    "n_qb_in_room": 3,
+    "week1_specification_defect": true,
+    "defect_id": "QB3_WEEK1_SEASON_BOUNDARY",
+    "defect_basis": "nfl/research/qb3/QB3_WEEK1_INCUMBENT_AUDIT.json. The previous primary comes from the prior season's final game, which is the game a club is most likely to rest its starter in, so the incumbent signal can name a rested or replaced quarterback and dilute the current QB1."
+   },
+   "is_season_opener": true,
+   "prev_primary_pid": "00-0037324",
+   "prev_primary_ordinal": 202518,
+   "team_dropbacks_mean": 41.4679,
+   "team_dropbacks_int_mean": 41.492,
+   "p_any_exit": 0.15,
+   "rows": [
+    {
+     "pid": "00-0033873",
+     "name": "Patrick Mahomes",
+     "rank": 1,
+     "was_prev_primary": 0,
+     "n_prior_games_with_a_dropback": 80,
+     "league_donor_fallback": false,
+     "V2": {
+      "p_start": 0.989,
+      "p_zero_dropbacks": 0.009,
+      "p_replacement_state": 0.002,
+      "p_exits_while_starting": 0.147,
+      "dropbacks": 39.165,
+      "attempts": 34.758,
+      "completions": 23.028,
+      "pass_yards": 253.09,
+      "sacks": 1.795,
+      "scrambles": 2.612,
+      "q": {
+       "db": [
+        28,
+        40,
+        51
+       ],
+       "att": [
+        24,
+        35,
+        46
+       ],
+       "cmp": [
+        14,
+        23,
+        32
+       ],
+       "pyds": [
+        129,
+        247,
+        389
+       ]
+      },
+      "conditional_pass_yards": 255.3885
+     },
+     "V1_sealed": {
+      "p_zero_dropbacks": 0.412,
+      "dropbacks": 22.824,
+      "attempts": 20.201,
+      "completions": 13.292,
+      "pass_yards": 144.0156,
+      "sacks": 1.069,
+      "scrambles": 1.554,
+      "q_db": [
+       0,
+       30,
+       48
+      ],
+      "q_att": [
+       0,
+       26,
+       42
+      ],
+      "q_cmp": [
+       0,
+       16,
+       28
+      ],
+      "q_pyds": [
+       0.0,
+       160.0,
+       320.49130434782614
+      ],
+      "conditional_pass_yards": 244.9244
+     }
+    },
+    {
+     "pid": "00-0036945",
+     "name": "Justin Fields",
+     "rank": 2,
+     "was_prev_primary": 0,
+     "n_prior_games_with_a_dropback": 56,
+     "league_donor_fallback": false,
+     "V2": {
+      "p_start": 0.004,
+      "p_zero_dropbacks": 0.792,
+      "p_replacement_state": 0.204,
+      "p_exits_while_starting": 0.0,
+      "dropbacks": 1.721,
+      "attempts": 1.402,
+      "completions": 0.83,
+      "pass_yards": 9.187,
+      "sacks": 0.143,
+      "scrambles": 0.176,
+      "q": {
+       "db": [
+        0,
+        0,
+        3
+       ],
+       "att": [
+        0,
+        0,
+        3
+       ],
+       "cmp": [
+        0,
+        0,
+        2
+       ],
+       "pyds": [
+        0,
+        0,
+        22
+       ]
+      },
+      "conditional_pass_yards": 44.1683
+     },
+     "V1_sealed": {
+      "p_zero_dropbacks": 0.456,
+      "dropbacks": 13.198,
+      "attempts": 10.337,
+      "completions": 6.759,
+      "pass_yards": 72.5948,
+      "sacks": 1.369,
+      "scrambles": 1.492,
+      "q_db": [
+       0,
+       4,
+       33
+      ],
+      "q_att": [
+       0,
+       2,
+       26
+      ],
+      "q_cmp": [
+       0,
+       1,
+       18
+      ],
+      "q_pyds": [
+       0.0,
+       12.289473684210526,
+       197.8954285714286
+      ],
+      "conditional_pass_yards": 133.4464
+     }
+    },
+    {
+     "pid": "00-0040906",
+     "name": "KC QB3",
+     "rank": 3,
+     "was_prev_primary": 0,
+     "n_prior_games_with_a_dropback": 0,
+     "league_donor_fallback": true,
+     "V2": {
+      "p_start": 0.007,
+      "p_zero_dropbacks": 0.945,
+      "p_replacement_state": 0.048,
+      "p_exits_while_starting": 0.003,
+      "dropbacks": 0.606,
+      "attempts": 0.545,
+      "completions": 0.352,
+      "pass_yards": 3.92,
+      "sacks": 0.035,
+      "scrambles": 0.026,
+      "q": {
+       "db": [
+        0,
+        0,
+        0
+       ],
+       "att": [
+        0,
+        0,
+        0
+       ],
+       "cmp": [
+        0,
+        0,
+        0
+       ],
+       "pyds": [
+        0,
+        0,
+        0
+       ]
+      },
+      "conditional_pass_yards": 71.2727
+     },
+     "V1_sealed": {
+      "p_zero_dropbacks": 0.419,
+      "dropbacks": 5.47,
+      "attempts": 4.868,
+      "completions": 3.227,
+      "pass_yards": 34.5666,
+      "sacks": 0.342,
+      "scrambles": 0.26,
+      "q_db": [
+       0,
+       2,
+       14
+      ],
+      "q_att": [
+       0,
+       2,
+       12
+      ],
+      "q_cmp": [
+       0,
+       1,
+       9
+      ],
+      "q_pyds": [
+       0.0,
+       12.643678160919539,
+       93.77916666666668
+      ],
+      "conditional_pass_yards": 59.495
+     }
+    }
+   ],
+   "closure_max_integer_deviation": 0,
+   "qb_sum_dropbacks_mean": 41.492,
+   "room_symptoms": {
+    "chart_qb1": "00-0033873",
+    "top_passer_share": {
+     "V1": 0.849,
+     "V2": 0.9641
+    },
+    "chart_qb1_share": {
+     "V1": 0.5473,
+     "V2": 0.9448
+    },
+    "frac_draws_two_qb_at_5plus_dropbacks": {
+     "V1": 0.48,
+     "V2": 0.098
+    }
+   }
+  },
+  "DEN": {
+   "configuration": {
+    "configuration": "AGREE",
+    "is_season_opener": true,
+    "prev_primary_pid": "00-0039732",
+    "prev_primary_ordinal": 202518,
+    "depth_chart_qb1": "00-0039732",
+    "n_qb_in_room": 3,
+    "week1_specification_defect": true,
+    "defect_id": "QB3_WEEK1_SEASON_BOUNDARY",
+    "defect_basis": "nfl/research/qb3/QB3_WEEK1_INCUMBENT_AUDIT.json. The previous primary comes from the prior season's final game, which is the game a club is most likely to rest its starter in, so the incumbent signal can name a rested or replaced quarterback and dilute the current QB1."
+   },
+   "is_season_opener": true,
+   "prev_primary_pid": "00-0039732",
+   "prev_primary_ordinal": 202518,
+   "team_dropbacks_mean": 37.1858,
+   "team_dropbacks_int_mean": 37.223,
+   "p_any_exit": 0.142,
+   "rows": [
+    {
+     "pid": "00-0039732",
+     "name": "Bo Nix",
+     "rank": 1,
+     "was_prev_primary": 1,
+     "n_prior_games_with_a_dropback": 34,
+     "league_donor_fallback": false,
+     "V2": {
+      "p_start": 0.992,
+      "p_zero_dropbacks": 0.008,
+      "p_replacement_state": 0.0,
+      "p_exits_while_starting": 0.141,
+      "dropbacks": 35.344,
+      "attempts": 31.691,
+      "completions": 20.336,
+      "pass_yards": 204.004,
+      "sacks": 1.293,
+      "scrambles": 2.36,
+      "q": {
+       "db": [
+        26,
+        36,
+        45
+       ],
+       "att": [
+        22,
+        32,
+        42
+       ],
+       "cmp": [
+        12,
+        20,
+        29
+       ],
+       "pyds": [
+        92,
+        197,
+        327
+       ]
+      },
+      "conditional_pass_yards": 205.6492
+     },
+     "V1_sealed": {
+      "p_zero_dropbacks": 0.048,
+      "dropbacks": 34.062,
+      "attempts": 30.543,
+      "completions": 19.918,
+      "pass_yards": 202.3544,
+      "sacks": 1.278,
+      "scrambles": 2.241,
+      "q_db": [
+       24,
+       36,
+       45
+      ],
+      "q_att": [
+       21,
+       32,
+       41
+      ],
+      "q_cmp": [
+       12,
+       21,
+       28
+      ],
+      "q_pyds": [
+       105.0,
+       201.45112781954884,
+       308.6538461538462
+      ],
+      "conditional_pass_yards": 212.5571
+     }
+    },
+    {
+     "pid": "00-0035264",
+     "name": "Jarrett Stidham",
+     "rank": 2,
+     "was_prev_primary": 0,
+     "n_prior_games_with_a_dropback": 6,
+     "league_donor_fallback": false,
+     "V2": {
+      "p_start": 0.005,
+      "p_zero_dropbacks": 0.804,
+      "p_replacement_state": 0.191,
+      "p_exits_while_starting": 0.001,
+      "dropbacks": 1.462,
+      "attempts": 1.198,
+      "completions": 0.775,
+      "pass_yards": 9.701,
+      "sacks": 0.124,
+      "scrambles": 0.14,
+      "q": {
+       "db": [
+        0,
+        0,
+        3
+       ],
+       "att": [
+        0,
+        0,
+        2
+       ],
+       "cmp": [
+        0,
+        0,
+        1
+       ],
+       "pyds": [
+        0,
+        0,
+        18
+       ]
+      },
+      "conditional_pass_yards": 49.4949
+     },
+     "V1_sealed": {
+      "p_zero_dropbacks": 0.803,
+      "dropbacks": 2.26,
+      "attempts": 1.921,
+      "completions": 1.193,
+      "pass_yards": 14.0579,
+      "sacks": 0.191,
+      "scrambles": 0.148,
+      "q_db": [
+       0,
+       0,
+       6
+      ],
+      "q_att": [
+       0,
+       0,
+       5
+      ],
+      "q_cmp": [
+       0,
+       0,
+       3
+      ],
+      "q_pyds": [
+       0.0,
+       0.0,
+       32.88333333333335
+      ],
+      "conditional_pass_yards": 71.36
+     }
+    },
+    {
+     "pid": "00-0036879",
+     "name": "Sam Ehlinger",
+     "rank": 3,
+     "was_prev_primary": 0,
+     "n_prior_games_with_a_dropback": 4,
+     "league_donor_fallback": false,
+     "V2": {
+      "p_start": 0.003,
+      "p_zero_dropbacks": 0.945,
+      "p_replacement_state": 0.052,
+      "p_exits_while_starting": 0.0,
+      "dropbacks": 0.417,
+      "attempts": 0.368,
+      "completions": 0.244,
+      "pass_yards": 2.238,
+      "sacks": 0.019,
+      "scrambles": 0.03,
+      "q": {
+       "db": [
+        0,
+        0,
+        0
+       ],
+       "att": [
+        0,
+        0,
+        0
+       ],
+       "cmp": [
+        0,
+        0,
+        0
+       ],
+       "pyds": [
+        0,
+        0,
+        0
+       ]
+      },
+      "conditional_pass_yards": 40.6909
+     },
+     "V1_sealed": {
+      "p_zero_dropbacks": 0.791,
+      "dropbacks": 0.901,
+      "attempts": 0.772,
+      "completions": 0.485,
+      "pass_yards": 4.5397,
+      "sacks": 0.068,
+      "scrambles": 0.061,
+      "q_db": [
+       0,
+       0,
+       2
+      ],
+      "q_att": [
+       0,
+       0,
+       2
+      ],
+      "q_cmp": [
+       0,
+       0,
+       1
+      ],
+      "q_pyds": [
+       0.0,
+       0.0,
+       12.016666666666671
+      ],
+      "conditional_pass_yards": 21.7211
+     }
+    }
+   ],
+   "closure_max_integer_deviation": 0,
+   "qb_sum_dropbacks_mean": 37.223,
+   "room_symptoms": {
+    "chart_qb1": "00-0039732",
+    "top_passer_share": {
+     "V1": 0.9573,
+     "V2": 0.9671
+    },
+    "chart_qb1_share": {
+     "V1": 0.9148,
+     "V2": 0.9487
+    },
+    "frac_draws_two_qb_at_5plus_dropbacks": {
+     "V1": 0.102,
+     "V2": 0.086
+    }
+   }
+  }
+ }
+}

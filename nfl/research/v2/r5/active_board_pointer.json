@@ -1,0 +1,217 @@
+{
+ "active": null,
+ "active_path": null,
+ "active_run_id": null,
+ "computing": null,
+ "history": [],
+ "last_refusal": {
+  "at": "2026-09-14T21:38:16.775449+00:00",
+  "authorization_code": "NFL1_NOT_AUTHORIZED",
+  "blocked_by": [
+   "QUALITY_GATES",
+   "QUALITY_GATES_INSUFFICIENT_EVIDENCE",
+   "AUTHORIZATION:NFL1_NOT_AUTHORIZED"
+  ],
+  "hard_fired": [
+   {
+    "action": "WITHHOLD_ROW",
+    "gate": "HEALTHY_QB1_ZERO_OPPORTUNITY_ANOMALY",
+    "subject": "KC/00-0033873",
+    "why": "the board labels this row QB1 and carries no withholding designation for him, and simultaneously assigns P(zero dropbacks) = 0.4120. The realised rate of that event among week-1 chart QB1s is 0 of 128."
+   },
+   {
+    "action": "QUARANTINE_FAMILY",
+    "gate": "QB_ROOM_SPLIT_ANOMALY",
+    "subject": "DEN/qb",
+    "why": "this room projects a two-passer game with probability 0.1020, 1.3x the highest measured base rate (0.078 in weeks 2+; 0.039 in week 1; 0.000 realised in 2026 week 1)."
+   },
+   {
+    "action": "QUARANTINE_FAMILY",
+    "gate": "QB_ROOM_SPLIT_ANOMALY",
+    "subject": "KC/qb",
+    "why": "this room projects a two-passer game with probability 0.4800, 6.2x the highest measured base rate (0.078 in weeks 2+; 0.039 in week 1; 0.000 realised in 2026 week 1)."
+   },
+   {
+    "action": "QUARANTINE_FAMILY",
+    "gate": "ROLE_STATE_SOURCE_CONFLICT",
+    "subject": "DEN/qb",
+    "why": "the board publishes a quarterback room whose inactive ownership mechanism reports enforced=False with failed conditions ['official_inactive_evidence_ingested', 'evidence_tied_to_this_game_and_team', 'no_unresolved_identity']; the role state shown is therefore not sourced from the authority the board names as its own AND the readiness source for DEN is INJURY_REPORT_INCOMPLETE: DEN has 1 row(s) but report_status is unfilled on every one. teammate_availability reads it, and an unfiled designation is not an absence of injury."
+   },
+   {
+    "action": "QUARANTINE_FAMILY",
+    "gate": "ROLE_STATE_SOURCE_CONFLICT",
+    "subject": "KC/qb",
+    "why": "the board publishes a quarterback room whose inactive ownership mechanism reports enforced=False with failed conditions ['official_inactive_evidence_ingested', 'evidence_tied_to_this_game_and_team', 'no_unresolved_identity']; the role state shown is therefore not sourced from the authority the board names as its own"
+   },
+   {
+    "action": "QUARANTINE_FAMILY",
+    "gate": "RUSH_ACCOUNTING_FAILURE",
+    "subject": "KC/rushing",
+    "why": "390 of 1000 draws deal the named rush owners MORE carries than the team's own carry level, by up to 9.96 carries. Both are arithmetically impossible, independent of any view about the forecast."
+   },
+   {
+    "action": "WITHHOLD_ROW",
+    "gate": "COUNT_SUPPORT_FAILURE",
+    "subject": "KC/00-0038134/rushing/carries",
+    "why": "rushing/carries is declared kind='count' in nfl/product/metrics.py and carries 795 non-integer and 0 negative draw cells out of 1000. Every threshold probability published off this row is computed on support the world cannot produce."
+   },
+   {
+    "action": "WITHHOLD_ROW",
+    "gate": "COUNT_SUPPORT_FAILURE",
+    "subject": "KC/00-0040078/rushing/carries",
+    "why": "rushing/carries is declared kind='count' in nfl/product/metrics.py and carries 604 non-integer and 0 negative draw cells out of 1000. Every threshold probability published off this row is computed on support the world cannot produce."
+   },
+   {
+    "action": "WITHHOLD_ROW",
+    "gate": "COUNT_SUPPORT_FAILURE",
+    "subject": "KC/00-0041013/rushing/carries",
+    "why": "rushing/carries is declared kind='count' in nfl/product/metrics.py and carries 783 non-integer and 0 negative draw cells out of 1000. Every threshold probability published off this row is computed on support the world cannot produce."
+   },
+   {
+    "action": "WITHHOLD_ROW",
+    "gate": "IDENTITY_DEPTH_ROLE_CONFLICT",
+    "subject": "DEN/00-0039732",
+    "why": "the row carries no human-readable name. board.build never joins one: nfl/product/names.py exists and is used by the market tools, and the board does not call it, while the reduced roster vintage the board DOES read drops full_name in its reduce_cols. A board that renders a gsis_id where a person belongs is not a product row."
+   },
+   {
+    "action": "WITHHOLD_ROW",
+    "gate": "IDENTITY_DEPTH_ROLE_CONFLICT",
+    "subject": "KC/00-0033873",
+    "why": "the row carries no human-readable name. board.build never joins one: nfl/product/names.py exists and is used by the market tools, and the board does not call it, while the reduced roster vintage the board DOES read drops full_name in its reduce_cols. A board that renders a gsis_id where a person belongs is not a product row."
+   },
+   {
+    "action": "WITHHOLD_ROW",
+    "gate": "IDENTITY_DEPTH_ROLE_CONFLICT",
+    "subject": "KC/00-0036945",
+    "why": "the row carries no human-readable name. board.build never joins one: nfl/product/names.py exists and is used by the market tools, and the board does not call it, while the reduced roster vintage the board DOES read drops full_name in its reduce_cols. A board that renders a gsis_id where a person belongs is not a product row."
+   },
+   {
+    "action": "WITHHOLD_ROW",
+    "gate": "IDENTITY_DEPTH_ROLE_CONFLICT",
+    "subject": "KC/00-0040906",
+    "why": "the row carries no human-readable name. board.build never joins one: nfl/product/names.py exists and is used by the market tools, and the board does not call it, while the reduced roster vintage the board DOES read drops full_name in its reduce_cols. A board that renders a gsis_id where a person belongs is not a product row."
+   },
+   {
+    "action": "WITHHOLD_ROW",
+    "gate": "IDENTITY_DEPTH_ROLE_CONFLICT",
+    "subject": "DEN/00-0035264",
+    "why": "the row carries no human-readable name. board.build never joins one: nfl/product/names.py exists and is used by the market tools, and the board does not call it, while the reduced roster vintage the board DOES read drops full_name in its reduce_cols. A board that renders a gsis_id where a person belongs is not a product row."
+   },
+   {
+    "action": "WITHHOLD_ROW",
+    "gate": "IDENTITY_DEPTH_ROLE_CONFLICT",
+    "subject": "DEN/00-0036879",
+    "why": "the row carries no human-readable name. board.build never joins one: nfl/product/names.py exists and is used by the market tools, and the board does not call it, while the reduced roster vintage the board DOES read drops full_name in its reduce_cols. A board that renders a gsis_id where a person belongs is not a product row."
+   },
+   {
+    "action": "WITHHOLD_ROW",
+    "gate": "IDENTITY_DEPTH_ROLE_CONFLICT",
+    "subject": "KC/00-0038134",
+    "why": "the row carries no human-readable name. board.build never joins one: nfl/product/names.py exists and is used by the market tools, and the board does not call it, while the reduced roster vintage the board DOES read drops full_name in its reduce_cols. A board that renders a gsis_id where a person belongs is not a product row."
+   },
+   {
+    "action": "WITHHOLD_ROW",
+    "gate": "IDENTITY_DEPTH_ROLE_CONFLICT",
+    "subject": "KC/00-0041013",
+    "why": "the row carries no human-readable name. board.build never joins one: nfl/product/names.py exists and is used by the market tools, and the board does not call it, while the reduced roster vintage the board DOES read drops full_name in its reduce_cols. A board that renders a gsis_id where a person belongs is not a product row."
+   },
+   {
+    "action": "WITHHOLD_ROW",
+    "gate": "IDENTITY_DEPTH_ROLE_CONFLICT",
+    "subject": "KC/00-0040078",
+    "why": "the row carries no human-readable name. board.build never joins one: nfl/product/names.py exists and is used by the market tools, and the board does not call it, while the reduced roster vintage the board DOES read drops full_name in its reduce_cols. A board that renders a gsis_id where a person belongs is not a product row."
+   },
+   {
+    "action": "WITHHOLD_ROW",
+    "gate": "IDENTITY_DEPTH_ROLE_CONFLICT",
+    "subject": "KC/00-0039067",
+    "why": "the row carries no human-readable name. board.build never joins one: nfl/product/names.py exists and is used by the market tools, and the board does not call it, while the reduced roster vintage the board DOES read drops full_name in its reduce_cols. A board that renders a gsis_id where a person belongs is not a product row."
+   },
+   {
+    "action": "WITHHOLD_ROW",
+    "gate": "IDENTITY_DEPTH_ROLE_CONFLICT",
+    "subject": "KC/00-0039894",
+    "why": "the row carries no human-readable name. board.build never joins one: nfl/product/names.py exists and is used by the market tools, and the board does not call it, while the reduced roster vintage the board DOES read drops full_name in its reduce_cols. A board that renders a gsis_id where a person belongs is not a product row."
+   },
+   {
+    "action": "WITHHOLD_ROW",
+    "gate": "IDENTITY_DEPTH_ROLE_CONFLICT",
+    "subject": "KC/00-0038519",
+    "why": "the row carries no human-readable name. board.build never joins one: nfl/product/names.py exists and is used by the market tools, and the board does not call it, while the reduced roster vintage the board DOES read drops full_name in its reduce_cols. A board that renders a gsis_id where a person belongs is not a product row."
+   },
+   {
+    "action": "WITHHOLD_ROW",
+    "gate": "IDENTITY_DEPTH_ROLE_CONFLICT",
+    "subject": "KC/00-0040890",
+    "why": "the row carries no human-readable name. board.build never joins one: nfl/product/names.py exists and is used by the market tools, and the board does not call it, while the reduced roster vintage the board DOES read drops full_name in its reduce_cols. A board that renders a gsis_id where a person belongs is not a product row."
+   },
+   {
+    "action": "WITHHOLD_ROW",
+    "gate": "IDENTITY_DEPTH_ROLE_CONFLICT",
+    "subject": "KC/00-0038104",
+    "why": "the row carries no human-readable name. board.build never joins one: nfl/product/names.py exists and is used by the market tools, and the board does not call it, while the reduced roster vintage the board DOES read drops full_name in its reduce_cols. A board that renders a gsis_id where a person belongs is not a product row."
+   },
+   {
+    "action": "WITHHOLD_ROW",
+    "gate": "IDENTITY_DEPTH_ROLE_CONFLICT",
+    "subject": "KC/00-0040646",
+    "why": "the row carries no human-readable name. board.build never joins one: nfl/product/names.py exists and is used by the market tools, and the board does not call it, while the reduced roster vintage the board DOES read drops full_name in its reduce_cols. A board that renders a gsis_id where a person belongs is not a product row."
+   },
+   {
+    "action": "WITHHOLD_ROW",
+    "gate": "IDENTITY_DEPTH_ROLE_CONFLICT",
+    "subject": "KC/00-0030506",
+    "why": "the row carries no human-readable name. board.build never joins one: nfl/product/names.py exists and is used by the market tools, and the board does not call it, while the reduced roster vintage the board DOES read drops full_name in its reduce_cols. A board that renders a gsis_id where a person belongs is not a product row."
+   },
+   {
+    "action": "WITHHOLD_ROW",
+    "gate": "IDENTITY_DEPTH_ROLE_CONFLICT",
+    "subject": "KC/00-0036637",
+    "why": "the row carries no human-readable name. board.build never joins one: nfl/product/names.py exists and is used by the market tools, and the board does not call it, while the reduced roster vintage the board DOES read drops full_name in its reduce_cols. A board that renders a gsis_id where a person belongs is not a product row."
+   },
+   {
+    "action": "WITHHOLD_ROW",
+    "gate": "IDENTITY_DEPTH_ROLE_CONFLICT",
+    "subject": "KC/00-0040081",
+    "why": "the row carries no human-readable name. board.build never joins one: nfl/product/names.py exists and is used by the market tools, and the board does not call it, while the reduced roster vintage the board DOES read drops full_name in its reduce_cols. A board that renders a gsis_id where a person belongs is not a product row."
+   },
+   {
+    "action": "WITHHOLD_ROW",
+    "gate": "IDENTITY_DEPTH_ROLE_CONFLICT",
+    "subject": "KC/00-0039824",
+    "why": "the row carries no human-readable name. board.build never joins one: nfl/product/names.py exists and is used by the market tools, and the board does not call it, while the reduced roster vintage the board DOES read drops full_name in its reduce_cols. A board that renders a gsis_id where a person belongs is not a product row."
+   },
+   {
+    "action": "WITHHOLD_BOARD",
+    "gate": "IDENTITY_DEPTH_ROLE_CONFLICT",
+    "subject": "BOARD",
+    "why": "all 19 rows are nameless, so the board cannot be rendered for a reader at all. This is escalated from row scope to board scope: withholding every row individually and calling what is left a board would be a board of nothing."
+   },
+   {
+    "action": "QUARANTINE_FAMILY",
+    "gate": "UNATTRIBUTED_OPPORTUNITY_MASS",
+    "subject": "DEN/rushing",
+    "why": "the board publishes a team_carries pool of 27.55 for DEN and seals ZERO rushing rows for it. Every share this family would publish has a denominator no row can be checked against, and 100% of the mass is unattributable in principle rather than merely unattributed."
+   },
+   {
+    "action": "QUARANTINE_FAMILY",
+    "gate": "UNATTRIBUTED_OPPORTUNITY_MASS",
+    "subject": "DEN/receiving",
+    "why": "the board publishes a team_targets pool of 33.75 for DEN and seals ZERO receiving rows for it. Every share this family would publish has a denominator no row can be checked against, and 100% of the mass is unattributable in principle rather than merely unattributed."
+   }
+  ],
+  "hard_insufficient_evidence": [
+   {
+    "gate": "AUTHORITATIVE_INACTIVE_NONZERO_OPPORTUNITY",
+    "subject": "BOARD",
+    "why": "no authoritative inactive list is ingested for this game, so this gate has no evidence to evaluate. It is NOT passed. The measured cost of treating it as passed: 28 officially inactive players carried mean forecast participation 0.247 with 101 of 144 rows strictly positive, and one club's QB1 was projected 19.7 dropbacks 42.7 hours after being listed Out."
+   }
+  ],
+  "identity": "V1_SEALED"
+ },
+ "note": "the ACTIVE user-facing board. Swapping this file never touches a board artifact.",
+ "pointer_version": 34,
+ "publication_state": "PRELIMINARY_PROVISIONAL",
+ "spec_version": "nfl-board-pointer-1",
+ "written_at": "2026-09-14T21:38:16.801086+00:00"
+}

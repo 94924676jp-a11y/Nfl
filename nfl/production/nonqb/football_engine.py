@@ -48,6 +48,8 @@ from nfl.production.nonqb import qb_allocation as QA               # noqa: E402
 from nfl.production.nonqb import participation_prior as PP        # noqa: E402
 from nfl.production.nonqb import player_record as PR              # noqa: E402
 from nfl.production import draw_coherence as DC                   # noqa: E402
+from nfl.production import stat_contract as SCT                   # noqa: E402
+from nfl.production.nonqb import rushing_a1 as RA1                # noqa: E402
 
 # What the per-quarterback split is and is not. The counts are an exact
 # combinatorial allocation of the team's own events; the YARDAGE is still a
@@ -64,6 +66,19 @@ PASSER_CREDIT_ATTRIBUTION = (
 RECEIVING_POS = ('WR', 'TE', 'RB')
 CARRY_POS = ('RB',)
 ENGINE_VERSION = 'nfl-football-engine-v1-r4'
+
+# R4. THE COUNT STREAMS, DECLARED AS LITERAL COMPONENTS.
+#
+# Dealing an integer budget consumes randomness, and a new draw taken from an
+# EXISTING stream would move every subsequent draw of that stream -- the
+# allocation, the conversion, the touchdowns -- for a reason that has nothing
+# to do with any of them. Each deal therefore gets its own stream, seeded the
+# way the C3 deal beside it already is: [seed, ordinal, game component,
+# literal]. The literals are here, named, rather than inline, because a magic
+# number written twice is two streams nobody knows are the same one.
+COUNT_STREAM_CARRIES = 0xC0417
+COUNT_STREAM_TARGETS = 0xC0418
+COUNT_CONTRACT_VERSION = SCT.CONTRACT_VERSION
 
 
 def credit_passing_line(att_by_qb, int_by_qb, team_cmp, team_pyds,
@@ -447,12 +462,25 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
              injuries_rows=None, test_only=False, kickoff_utc=None,
              run_id='rehearsal', qb=None, shared_pass='off',
              game_coupling='none', rushing_budget=None,
-             team_carries_override=None, tv=None,
+             team_carries_override=None, tv=None, rush_categories=None,
              appearance_spec='frozen', observed_before=None,
              inactive_ids=None):
     """One game, every implemented layer, one draw index.
 
     `rushing_budget` is A1's `rb` category carries, {team: (m,) counts}.
+
+    `rush_categories` is A1's WHOLE partition, {(team, category): (m,) counts}
+    for every one of kneel / designed_qb / rb / wr / te / fringe -- i.e.
+    `rushing_a1.allocate(...).value['carries']` handed over entire rather than
+    filtered down to `rb`. Supplying it is what turns the rush residual from
+    MEASURED into ATTRIBUTED: D6 found a frame mean of 24.1% of every team's
+    carries (range 0.6%-45.3%, 5-10 carries per team-draw) with no modelled
+    owner, and the owner was never missing -- `rushing_a1` computes all six
+    categories with one multinomial and five of them were discarded at the
+    call site. With it supplied, every carry in every draw has a named owner
+    in the artifact and the unowned mass is identically zero by construction.
+    Without it the ledger is emitted as NOT_APPLICABLE with the reason, and
+    the residual is reported as the unattributed quantity it still is.
 
     A1 IS THE SOLE OWNER OF THE RUSHING-OPPORTUNITY PARTITION, and supplying
     it here is what makes that true rather than merely stated. Without it the
@@ -768,6 +796,9 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
     S, other = tc.value['share'], tc.value['other']
     c3 = None
     c3_other = None
+    # Set by BOTH branches below. The count form of the opportunity
+    # identity is now checked on every configuration, not only C3.
+    opp_other_counts = None
     if shared_pass == 'c3' and qb is not None and qb.get('draws'):
         # C3: THE TARGET BUDGET COMES FROM THE THROW PROCESS, NOT FROM D1.
         #
@@ -832,6 +863,7 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
         # its own name. The allocator's own `other` is left untouched so that
         # `share_simplex_closure` still checks the allocator.
         c3_other = dealt.value['other'].astype(float)
+        opp_other_counts = c3_other
         _per_team = np.stack([T[a:a + cc].sum(0)
                               for a, cc in zip(starts, counts)])
         c3_closure = int((np.abs(_per_team + dealt.value['other']
@@ -859,8 +891,53 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
             return g, None
         g['layers']['shared_pass'] = 'PASS[C3_TARGET_BUDGET_FROM_THROWS]'
     else:
-        tgt_vol = np.stack([tv.value[('team_targets', t)] for t in ateams])
-        T = S * np.repeat(tgt_vol, counts, axis=0)
+        # R4 -- A TARGET IS AN EVENT, SO IT IS DEALT, NOT MULTIPLIED.
+        #
+        # `T = share x team_targets` is a continuous product of a simplex
+        # share and a continuous D1 level. It is declared `kind: 'count'` in
+        # nfl/product/metrics.py and printed with `:.0f`, and `receiving_
+        # conversion` then draws its binomial on `rint(T)` -- so the number
+        # the reader sees, the number the conversion used, and the number that
+        # is sealed are three different quantities.
+        #
+        # The level is integerised once, by its owner`s declared convention
+        # (round-half-even, the same one `rushing_a1.allocate` requires), and
+        # the resulting integer budget is then DEALT across the receivers and
+        # the named `other` pool by the allocation simplex itself. The C3 path
+        # beside this one has done exactly this since XL1; this brings the
+        # non-C3 path onto the same construction rather than inventing a
+        # second one.
+        _lvl = SCT.integerise_level(
+            np.stack([np.asarray(tv.value[('team_targets', t)], float)
+                      for t in ateams]))
+        if _lvl.state is not State.PASS:
+            _lay('target_counts', _lvl)
+            g['halted_at'] = 'target_counts'
+            g['halt_reason'] = _lvl.detail[:200]
+            return g, None
+        tgt_vol = _lvl.value.astype(float)
+        _rng_t = np.random.default_rng(
+            [seed, season * 100 + week,
+             int(SEEDS.game_component(game_id).value), COUNT_STREAM_TARGETS])
+        _dealt_t = SCT.deal_counts(S, other, [tgt_vol[k] for k in
+                                              range(len(ateams))],
+                                   starts, counts, _rng_t, metric='targets')
+        if _dealt_t.state is not State.PASS:
+            _lay('target_counts', _dealt_t)
+            g['halted_at'] = 'target_counts'
+            g['halt_reason'] = _dealt_t.detail[:200]
+            return g, None
+        T = _dealt_t.value['counts'].astype(float)
+        opp_other_counts = _dealt_t.value['other'].astype(float)
+        _lay('target_counts', Outcome.ok(
+            'TARGET_COUNTS_DEALT',
+            value={'mean_dealt': _dealt_t.evidence['mean_dealt_per_draw'],
+                   'mean_other': _dealt_t.evidence['mean_other_per_draw']},
+            detail=_dealt_t.detail,
+            level_cells_moved_by_rounding=_lvl.evidence['cells_moved'],
+            level_mean_shift=_lvl.evidence['mean_shift'],
+            closure=_dealt_t.evidence['closure'],
+            contract_version=COUNT_CONTRACT_VERSION))
         g['layers']['shared_pass'] = f'NOT_APPLICABLE[SHARED_PASS_{shared_pass.upper()}]'
 
     # ---- carries (RB only, simplex, its own group layout) ----------------
@@ -989,7 +1066,68 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
             mean_rb_budget=[round(float(x.mean()), 4) for x in car_vol],
             mean_team_carries=[round(float(x.mean()), 4) for x in tc_lvl]))
         g['layers']['rushing_budget_owner'] = 'PASS[A1_RB_CATEGORY]'
-    C = Sc * np.repeat(car_vol, rb_counts, axis=0)
+    # R4 -- A CARRY IS AN EVENT, SO IT IS DEALT, NOT MULTIPLIED.
+    #
+    # THE DEFECT. `C = share x budget` is a continuous product and it reached
+    # the sealed artifact as float64: non-integer in 243,766 of 384,000 cells
+    # across the 102 sealed runs (63.48%), and in 795 of 1,000 cells for
+    # tonight`s Kansas City RB1. `nfl/product/metrics.py` declares
+    # ('rushing','carries') `kind: 'count'` and `render.py` prints it `:.0f`,
+    # so a "9.5+" threshold was being read off a quantity that is 10.4183 in a
+    # draw where the back carried the ball either ten times or eleven and
+    # never 10.4183 times. It is not a display problem: `layers.rushing_td`
+    # draws its binomial on `rint(C)`, so the touchdown layer and the sealed
+    # carry column were already two different numbers.
+    #
+    # WHY NOT ROUND. Rounding each player`s cell independently destroys the
+    # closure the allocation was built to satisfy -- k independent roundings
+    # of a partition do not sum back to the budget -- and rounding a final
+    # mean is worse still, because a mean is not a draw and a threshold
+    # probability read off a rounded mean is not a probability of anything.
+    #
+    # WHAT THIS DOES. The integer budget is DEALT:
+    #
+    #   (C_1..C_k, C_other) ~ Multinomial(budget, (s_1..s_k, other_share))
+    #
+    # so `sum_i C_i + C_other == budget` exactly, in integers, in every draw.
+    # The probability vector IS the simplex `layers.targets_carries` produced,
+    # so the competition between backs is untouched and E[C_i] is the same
+    # `budget x s_i` the product gave. Nothing is fitted, clipped or
+    # renormalised. The VARIANCE rises, because dealing a finite number of
+    # carries to a finite number of backs is genuinely noisier than splitting
+    # a level by a share, and that noise was missing rather than absent.
+    _cl = SCT.integerise_level(car_vol)
+    if _cl.state is not State.PASS:
+        _lay('carry_counts', _cl)
+        g['halted_at'] = 'carry_counts'
+        g['halt_reason'] = _cl.detail[:200]
+        return g, None
+    car_vol = _cl.value.astype(float)
+    _rng_c = np.random.default_rng(
+        [seed, season * 100 + week,
+         int(SEEDS.game_component(game_id).value), COUNT_STREAM_CARRIES])
+    _dealt_c = SCT.deal_counts(Sc, other_c,
+                               [car_vol[k] for k in range(len(ateams))],
+                               rb_starts, rb_counts, _rng_c, metric='carries')
+    if _dealt_c.state is not State.PASS:
+        _lay('carry_counts', _dealt_c)
+        g['halted_at'] = 'carry_counts'
+        g['halt_reason'] = _dealt_c.detail[:200]
+        return g, None
+    C = _dealt_c.value['counts'].astype(float)
+    carry_other_counts = _dealt_c.value['other'].astype(float)
+    _lay('carry_counts', Outcome.ok(
+        'CARRY_COUNTS_DEALT',
+        value={'mean_dealt': _dealt_c.evidence['mean_dealt_per_draw'],
+               'mean_other': _dealt_c.evidence['mean_other_per_draw']},
+        detail=_dealt_c.detail,
+        level_cells_moved_by_rounding=_cl.evidence['cells_moved'],
+        level_mean_shift=_cl.evidence['mean_shift'],
+        closure=_dealt_c.evidence['closure'],
+        note='the `other` pool here is the unmodelled-back mass on the A1 '
+             '`rb` denominator (C1), not the non-RB categories -- those are '
+             'owned by rushing_a1 and reported under rush_category_ownership',
+        contract_version=COUNT_CONTRACT_VERSION))
 
     ordinal = season * 100 + week
     cv = LY.receiving_conversion(tc, T, fits['receiving_priors'].value, ids,
@@ -1020,7 +1158,10 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
         receiving_yards=cv.value['receiving_yards'],
         # Under C3 the opportunity identity is checked as exact integer
         # counts, which is stricter than the share form it replaces.
-        opportunity_other_counts=(c3_other if c3 is not None else None))
+        # BOTH branches now deal an integer budget, so the exact count
+        # form of the opportunity identity is available on every
+        # configuration rather than only under C3.
+        opportunity_other_counts=opp_other_counts)
     g['accounting']['receiving'] = f'{rec_acc.state.value}[{rec_acc.code}]'
     qb_rush, qb_records = None, []
     if qb is not None and qb.get('r2'):
@@ -1199,6 +1340,122 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
         rushing_td=rtd.value['rush_td'], rushing_yards=None,
         qb_rush_opportunity=qb_rush)
     g['accounting']['rushing'] = f'{rush_acc.state.value}[{rush_acc.code}]'
+
+    # ---- R4: EXPLICIT RUSH CATEGORY OWNERSHIP ---------------------------
+    #
+    # The rebuilt board has to be able to walk team rush opportunity ->
+    # category allocation -> player allocation -> unowned mass, and until now
+    # it could not, because only A1's `rb` category was ever handed over. The
+    # other five -- kneel, designed_qb, wr, te, fringe -- were computed by one
+    # multinomial alongside it and thrown away at the call site, which is why
+    # D6 could measure 24.1% of the frame's carries as unowned and could not
+    # say whose they were.
+    #
+    # NOTHING IS FORCED ONTO A NAMED BACK. The categories are A1's own draw;
+    # this reads them. And nothing is absorbed: `unowned_after` is zero by
+    # construction and a non-zero value FAILS rather than becoming a residual.
+    if rush_categories:
+        # OVER BOTH CLUBS, NOT ONLY THE ONES THE APPEARANCE LAYER RAN FOR.
+        # The category partition is a TEAM quantity: it needs the carry level
+        # and the scramble draw and nothing else. A team deferred under
+        # APPEARANCE_TEAM_DEFERRED has no player split and still has a fully
+        # attributed category ledger, and omitting it here would leave the
+        # exact team whose evidence is thinnest as the one with no rush
+        # ownership record at all.
+        _lteams = [t for t in teams if all(
+            (t, c) in rush_categories for c in RA1.CATEGORIES)]
+        _scr_by_team = {
+            t: (np.stack([np.asarray(qb['draws']['scr'][i], float)
+                          for i in qb['index_by_team'].get(t, [])]).sum(0)
+                if qb is not None and qb['index_by_team'].get(t)
+                else np.zeros(m)) for t in _lteams}
+        _led = RA1.ownership_ledger(
+            _lteams,
+            {t: _team_carries(t) for t in _lteams},
+            _scr_by_team,
+            rush_categories,
+            player_carries={t: C[a:a + c] for t, a, c
+                            in zip(ateams, rb_starts, rb_counts)},
+            player_other={t: carry_other_counts[k]
+                          for k, t in enumerate(ateams)},
+            qb_rush_opportunity=({t: qb_rush[k] for k, t in enumerate(ateams)}
+                                 if qb_rush is not None else None))
+        _lay('rush_category_ownership', _led)
+        if _led.state is not State.PASS:
+            g['halted_at'] = 'rush_category_ownership'
+            g['halt_reason'] = _led.detail[:200]
+            return g, None
+        g['rush_ownership'] = _led.value
+        # U1 -- RUSH OPPORTUNITY HAS ONE OWNER, OR THE BOARD SAYS SO.
+        #
+        # THE DEFECT. `rushing_a1.allocate` returns
+        # `qb_rush_opportunity = scrambles + designed_qb` and NOBODY CONSUMED
+        # IT. `qb_rush` a few lines above is built from the QB layer's own
+        # `rush_opp` draw instead, so the same football quantity -- how many
+        # of this team's carries its quarterbacks took -- reached the sealed
+        # board with two independently drawn answers, and the `rb` budget the
+        # named backs were dealt from was carved out of the OTHER one. The
+        # exact consequence, on the arrays this engine holds:
+        #
+        #   named_owners - team_carries
+        #       = (rush_opp - scr - designed_qb)
+        #         - (kneel + wr + te + fringe + unmodelled_back_pool)
+        #         - (team_carries - rint(team_carries))
+        #
+        # Verified cell for cell on run d1e2727743c93990: Kansas City, 149 of
+        # 1,000 draws over-allocated, worst 9.6915 carries.
+        #
+        # THE FIX IS UPSTREAM AND IT IS A CONSTRUCTION, NOT A CLAMP: pass the
+        # QB layer's designed-rush count to `allocate(qb_designed_rush=...)`,
+        # which stops drawing `designed_qb` and draws the other five
+        # categories from the exact conditional multinomial. Then the two
+        # answers are one array and this verdict reads PASS.
+        #
+        # THIS DOES NOT HALT THE GAME, DELIBERATELY. The condition is a
+        # property of the arrays this engine was HANDED, not of anything it
+        # computed, and the product layer already quarantines the rushing
+        # family on it. A halt here would replace a quarantined family with no
+        # board at all and would hide the very counts that say how large the
+        # breach is. It is recorded as a FAIL verdict so it cannot be read as
+        # a pass and cannot return silently.
+        _so = {t: (_led.value[t].get('qb_rush_opportunity_single_owner') or {})
+               for t in _lteams}
+        _two = sorted(t for t, v in _so.items()
+                      if v.get('state') == 'TWO_OWNERS')
+        g['accounting']['rush_opportunity_single_owner'] = (
+            f'FAIL[RUSH_OPPORTUNITY_HAS_TWO_OWNERS]' if _two
+            else 'PASS[RUSH_OPPORTUNITY_ONE_OWNER]')
+        g['accounting']['rush_opportunity_single_owner_evidence'] = {
+            'teams_with_two_owners': _two,
+            'per_team': {
+                t: {'state': v.get('state'),
+                    'cells_disagreeing': v.get('cells_disagreeing'),
+                    'a1_answer_mean': v.get('a1_answer_mean'),
+                    'qb_layer_answer_mean': v.get('qb_layer_answer_mean'),
+                    'implied_draws_over_allocated':
+                        v.get('implied_draws_over_allocated'),
+                    'implied_max_over_allocation':
+                        ((v.get('implied_named_owner_over_allocation') or {})
+                         .get('max'))}
+                for t, v in sorted(_so.items())},
+            'repair': ('rushing_a1.allocate(qb_designed_rush=...) -- the QB '
+                       'layer becomes the single owner and the remaining five '
+                       'categories are drawn from the conditional '
+                       'multinomial. Nothing is clipped or renormalised.')}
+        rush_category_draws = {
+            t: {c: np.asarray(rush_categories[(t, c)]).reshape(-1)
+                for c in RA1.CATEGORIES} for t in _lteams}
+    else:
+        _lay('rush_category_ownership', Outcome.not_applicable(
+            'RUSH_CATEGORIES_NOT_SUPPLIED',
+            'A1`s full category matrix was not handed to this engine, so the '
+            'rush residual can be measured and cannot be attributed. This is '
+            'the state D6 measured at a 24.1% frame mean of unowned carries. '
+            'It is NOT_APPLICABLE rather than PASS because nothing was '
+            'checked: pass rush_categories=allocate(...).value["carries"] to '
+            'make the partition auditable from the sealed board.',
+            a1_rb_budget_supplied=rushing_budget is not None))
+        rush_category_draws = None
     g['accounting']['detail'] = {
         'receiving': {k: v for k, v in rec_acc.evidence.items()
                       if k not in ('value', 'other_mass_interpretation')},
@@ -1459,6 +1716,74 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
                                      if k != 'value'}
     pub = LY.assert_publishable(ap, pa, tc, car, cv, td, rtd)
     g['publication_gate'] = f'{pub.state.value}[{pub.code}]'
+
+    # ---- R4: EVERY DECLARED COUNT IS A COUNT, ON THE VALUES THAT SEAL ----
+    #
+    # Checked HERE, on the arrays this function returns, and after the last
+    # write to them. That placement is the whole lesson of the C3 credit gate
+    # forty lines up: `run_forecast` stamped QB_DRAW_ACCOUNTING_HOLDS on 101
+    # artifacts because it checked an intermediate value that was later
+    # overwritten. A support check on a matrix that is not the sealed matrix
+    # is the same defect in a different metric.
+    #
+    # It ASSERTS. It does not round anything into shape: a count that is not a
+    # count is a defect in whatever generated it, and repairing it here would
+    # move the evidence away from the generator.
+    _count_mats = {
+        'receiving/targets': T,
+        'receiving/receptions': cv.value['receptions'],
+        'receiving/receiving_td': td.value['td'],
+        'rushing/carries': C,
+        'rushing/rushing_td': rtd.value['rush_td'],
+    }
+    if qb is not None:
+        for _f, _k in (('att', 'qb/att'), ('cmp', 'qb/cmp'), ('db', 'qb/db'),
+                       ('int', 'qb/int'), ('ptd', 'qb/ptd'),
+                       ('rtd', 'qb/rtd'), ('rush_opp', 'qb/rush_opp'),
+                       ('sacks', 'qb/sacks'), ('scr', 'qb/scr')):
+            if _f in qb['draws']:
+                _count_mats[_k] = np.asarray(qb['draws'][_f], float)
+    _cc = SCT.assert_counts_are_counts(_count_mats)
+    _lay('counts_are_counts', _cc)
+    if _cc.state is not State.PASS:
+        g['halted_at'] = 'counts_are_counts'
+        g['halt_reason'] = _cc.detail[:300]
+        return g, None
+
+    # ---- R4: THE PASSING STAT CONTRACT, ON THE SAME SEALED VALUES --------
+    #
+    # `db == att + sacks + scr` is the identity that separates the board`s
+    # attempt definition from nflverse `pass_attempt`, which includes every
+    # sack and every spike. `qb_v1.identity_check` already owns it; this
+    # re-states it through the VERSIONED contract so the artifact carries the
+    # contract version beside the number, and so the identity is checked once
+    # more on the values that actually seal.
+    if qb is not None and all(f in qb['draws'] for f in
+                              ('db', 'att', 'sacks', 'scr')):
+        _sc = SCT.assert_dropback_identity(
+            np.asarray(qb['draws']['db'], float),
+            np.asarray(qb['draws']['att'], float),
+            np.asarray(qb['draws']['sacks'], float),
+            np.asarray(qb['draws']['scr'], float))
+        _lay('stat_contract', _sc)
+        if _sc.state is not State.PASS:
+            g['halted_at'] = 'stat_contract'
+            g['halt_reason'] = _sc.detail[:300]
+            return g, None
+        g['stat_contract'] = {
+            'version': SCT.CONTRACT_VERSION,
+            'dropback_identity': _sc.evidence['identity'],
+            'max_abs_deviation': _sc.evidence['max_abs_deviation'],
+            'cells': _sc.evidence['n_cells'],
+            'att_is': SCT.TERMS['pass_attempt']['predicate'],
+            'att_raw_is_not_att': SCT.IDENTITIES['att_raw_is_not_att'],
+            'false_friends': sorted(SCT.FALSE_FRIENDS)}
+    else:
+        _lay('stat_contract', Outcome.not_applicable(
+            'STAT_CONTRACT_NO_QB_DRAWS',
+            'no quarterback draw set reached this engine, so the dropback '
+            'identity has no cells to be checked over. Recorded as not '
+            'applicable, never as satisfied.'))
     g['test_only'] = bool(test_only or ap.evidence.get('test_only'))
     # The IDENTITY of every draw row travels with the draws. A covariance
     # diagnostic needs to know which player and which team a row is, and
@@ -1467,6 +1792,15 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
         'targets': T, 'carries': C, 'receptions': cv.value['receptions'],
         'receiving_yards': cv.value['receiving_yards'],
         'receiving_td': td.value['td'], 'rush_td': rtd.value['rush_td']},
+        # R4. A1's WHOLE PARTITION, ROW AXIS = TEAM, so a sealed board can
+        # walk the rush ledger without re-running the allocator. `None` when
+        # the caller supplied no category matrix, which is a different thing
+        # from a partition of zero and is why this is not an empty dict.
+        'rush_category': rush_category_draws,
+        'rush_category_other': ({t: carry_other_counts[k]
+                                 for k, t in enumerate(ateams)}
+                                if rush_category_draws else None),
+        'rush_ownership': g.get('rush_ownership'),
         'accounting': (rec_acc, rush_acc),
         'index': {'recv_ids': ids, 'recv_pos': pos,
                   'recv_team': [q['team'] for q in recv],

@@ -409,9 +409,29 @@ def ownership_verdict(teams, out, inact, zeroed, closure_dev,
     }
 
 
+# THE V2 ALLOCATOR IS AVAILABLE HERE AND IS OFF BY DEFAULT.
+#
+# `qb_room_v2` replaces the mechanism that put a 0.412 zero-dropback mass on
+# Patrick Mahomes on the sealed DEN@KC board (see nfl/research/v2/r1/). It is
+# reachable from this function by ONE argument and nothing else changes: with
+# `allocator='qb3'` the code below is the code that ran before, argument for
+# argument, and the suite asserts the output is bit-identical.
+#
+# IT IS OFF BECAUSE OF WHAT IT NEEDS, NOT BECAUSE OF WHAT IT IS. V2's estimand
+# is an INTEGER DROPBACK COUNT, so it needs the team's dropback draws, and this
+# function is called before team volume is drawn. Turning it on therefore
+# requires the caller to pass `team_dropback_draws`, which today only
+# `football_engine` holds -- and that file belongs to another workstream. The
+# flag exists so integration is a flag flip and a plumbing change rather than a
+# rewrite, and so that leaving it off is a visible decision rather than an
+# absence.
+ALLOCATORS = ('qb3', 'qb_room_v2')
+
+
 def allocate(season, week, teams, qb_players, m=200, seed=20260908,
              kickoff_utc=None, written_at=None, inactive_ids=None,
-             inactive_provenance=None) -> Outcome:
+             inactive_provenance=None, allocator='qb3',
+             team_dropback_draws=None) -> Outcome:
     """team -> (pids, shares (n_qb, m)). Shares sum to 1 in every draw.
 
     OFFICIALLY INACTIVE QUARTERBACKS OWN NOTHING, AND THIS IS WHERE THAT IS
@@ -431,6 +451,18 @@ def allocate(season, week, teams, qb_players, m=200, seed=20260908,
     A downstream subtraction would have been a second mechanism papering over
     the first.
     """
+    if allocator not in ALLOCATORS:
+        return Outcome.fail(
+            'QB_ALLOCATOR_UNKNOWN',
+            f'{allocator!r} is not one of {ALLOCATORS}. An unknown allocator '
+            f'is refused rather than silently falling back to the default.')
+    if allocator == 'qb_room_v2' and not team_dropback_draws:
+        return Outcome.blocked(
+            'QB_ROOM_V2_NEEDS_TEAM_DROPBACKS',
+            'qb_room_v2 allocates INTEGER dropback counts, so it needs the '
+            'team dropback draws. They were not supplied. Refusing rather '
+            'than allocating a share it cannot make integral.',
+            cause=Cause.DEPENDENCY)
     f = _fit_for(season)
     if f is None:
         return Outcome.blocked(
@@ -520,8 +552,12 @@ def allocate(season, week, teams, qb_players, m=200, seed=20260908,
         # IS the room, the same call is made with the same arguments, and the
         # output is bit-identical. The suite asserts it.
         elig = [x for x in trip if not (inact and x[0] in inact)]
-        S_e = Q.allocate(par, elig, m=m, seed=seed,
-                         ordinal=season * 100 + week, team=t)
+        if allocator == 'qb_room_v2':
+            S_e = _v2_shares(season, week, t, elig, prev_detail.get(t), m,
+                             seed, team_dropback_draws)
+        else:
+            S_e = Q.allocate(par, elig, m=m, seed=seed,
+                             ordinal=season * 100 + week, team=t)
         if mask.any():
             pos = {pid: i for i, (pid, _, _) in enumerate(trip)}
             S = np.zeros((len(trip), m))
@@ -563,6 +599,7 @@ def allocate(season, week, teams, qb_players, m=200, seed=20260908,
                             inactive_provenance)
     return Outcome.ok('QB_ALLOCATION_OK', value=out,
                       spec_version=SPEC_VERSION, governance=GOVERNANCE,
+                      allocator=allocator,
                       qb_inactive_ownership_enforced=own['enforced'],
                       qb_inactive_ownership=own,
                       qb3_configuration=qb3_cfg,
@@ -575,3 +612,25 @@ def allocate(season, week, teams, qb_players, m=200, seed=20260908,
                       trained_on_seasons_before=season,
                       warnings=[f'known limitation: {k}'
                                 for k in KNOWN_LIMITATIONS])
+
+
+def _v2_shares(season, week, team, elig, prev_detail, m, seed, tdb):
+    """`qb_room_v2` counts, expressed as the share matrix this function returns.
+
+    The division is by the SAME integer team total the counts were allocated
+    from, so a caller that multiplies these shares by its own team dropback
+    draws recovers the integer counts up to its own rounding -- and exactly,
+    under R2's `rint` apportionment.
+    """
+    from nfl.production.nonqb import qb_room_v2 as V2
+    import numpy as _np
+    par = V2.fit_for_ordinal(season * 100 + week)
+    room = [{'pid': p, 'rank': V2.rank_bucket(r), 'was_prev_primary': int(w)}
+            for p, r, w in elig]
+    V = _np.asarray(tdb[team] if isinstance(tdb, dict) else tdb, float)[:m]
+    al = V2.allocate_dropbacks(par, room, V, seed=seed,
+                               ordinal=season * 100 + week, team=team,
+                               is_opener=bool((prev_detail or {}).get(
+                                   'is_season_opener')))
+    N = _np.maximum(al['team_dropbacks_int'], 1)
+    return al['db'] / N[None, :]

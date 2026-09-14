@@ -1,0 +1,817 @@
+{
+ "run_id": "efc10ecd2f927abb",
+ "arm": "A",
+ "written_at": "2026-09-14T20:58:33Z",
+ "pipeline_version": "nfl-production-pipeline-1",
+ "status": "SEALED",
+ "elapsed_s": 138.8259,
+ "stages": [
+  {
+   "stage": "capture_validation",
+   "state": "PASS",
+   "code": "INPUTS_VALIDATED",
+   "detail": "",
+   "input_hashes": {
+    "depth_charts": "f66f0c2583dba46378701c74b5f0d03adcb769454b5121f6bf327665b5d87846",
+    "espn_injuries_json": "0cd99d47b1cc389f6f09973bed503eac54e90f1a701b34de2b690e9a90febc95",
+    "injuries": "66e960ec81fccc6e5f95d23644de3ab58255af6682ec4fee0a12d8fc14f86865",
+    "official_inactives": "423d0c34811cd6d63b6eab66f5178e957c8a2e2647e8636815a83128d3625161",
+    "official_injury_report": "ec99910f37f94bb89872633001a811546258bc0ebd452666d6f2037ac38f9040",
+    "schedules": "bfb4ca5952e3a974c4ca81d0951c872d29bb102735dcc981604258bef2b96315",
+    "weekly_rosters": "bdab6ecee12d44a46d4913f81cb9f33f83f18422457a82f273970ae54df614f3"
+   },
+   "spec_version": "nfl-production-pipeline-1",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 3.790855407714844e-05,
+   "metrics": {},
+   "governance": [],
+   "spec_versions": {},
+   "warnings_detail": []
+  },
+  {
+   "stage": "identity_resolution",
+   "state": "PASS",
+   "code": "IDENTITY_RESOLVED",
+   "detail": "",
+   "input_hashes": {},
+   "spec_version": null,
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 6.365776062011719e-05,
+   "metrics": {},
+   "governance": [],
+   "spec_versions": {},
+   "warnings_detail": []
+  },
+  {
+   "stage": "feature_build",
+   "state": "PASS",
+   "code": "STAGE_DECLARED_UNIMPLEMENTED",
+   "detail": "feature_build: the accepted research baseline 'prior-only, ordinal prefix cut' has no production implementation. Declared as debt rather than reported as a successful forecast.",
+   "input_hashes": {},
+   "spec_version": "prior-only, ordinal prefix cut",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 1.2874603271484375e-05,
+   "metrics": {},
+   "governance": [],
+   "spec_versions": {},
+   "warnings_detail": []
+  },
+  {
+   "stage": "team_environment",
+   "state": "PASS",
+   "code": "TEAM_ENVIRONMENT_OK",
+   "detail": "",
+   "input_hashes": {},
+   "spec_version": "team-volume-v1-p4b-frozen-1",
+   "warnings": [
+    "known limitation: team_volume_is_near_unforecastable"
+   ],
+   "refusal_code": null,
+   "elapsed_s": 0.8256328105926514,
+   "metrics": {},
+   "governance": [],
+   "spec_versions": {},
+   "warnings_detail": [
+    {
+     "layer": "team_volume",
+     "warning": "known limitation: team_volume_is_near_unforecastable"
+    }
+   ]
+  },
+  {
+   "stage": "appearance",
+   "state": "PASS",
+   "code": "APPEARANCE_OK",
+   "detail": "",
+   "input_hashes": {},
+   "spec_version": "appearance-r8-reliability-weighted-1",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 137.87027883529663,
+   "metrics": {},
+   "governance": [],
+   "spec_versions": {
+    "appearance": "appearance-r8-reliability-weighted-1"
+   },
+   "warnings_detail": []
+  },
+  {
+   "stage": "participation",
+   "state": "PASS",
+   "code": "PARTICIPATION_OK",
+   "detail": "",
+   "input_hashes": {},
+   "spec_version": "participation=participation-s2-ewma_hl2-frozen; governance INFORMATION_CONSTRAINED",
+   "warnings": [
+    "participation: known limitation: pass-snap participation is an upper bound on routes run"
+   ],
+   "refusal_code": null,
+   "elapsed_s": 7.200241088867188e-05,
+   "metrics": {},
+   "governance": [],
+   "spec_versions": {
+    "participation": "participation-s2-ewma_hl2-frozen; governance INFORMATION_CONSTRAINED",
+    "participation_frame": null
+   },
+   "warnings_detail": [
+    {
+     "layer": "participation",
+     "warning": "known limitation: pass-snap participation is an upper bound on routes run"
+    }
+   ]
+  },
+  {
+   "stage": "targets_carries",
+   "state": "PASS",
+   "code": "TARGETS_CARRIES_OK",
+   "detail": "",
+   "input_hashes": {},
+   "spec_version": "targets_carries=p4c-system-C-frozen; governance DATA_BLOCKED; carries=p4c-system-C-frozen; governance DATA_BLOCKED; rush_category_ownership=rushing-a1-production-v1",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 4.100799560546875e-05,
+   "metrics": {},
+   "governance": [],
+   "spec_versions": {
+    "targets_carries": "p4c-system-C-frozen; governance DATA_BLOCKED",
+    "carries": "p4c-system-C-frozen; governance DATA_BLOCKED",
+    "rushing_budget": null,
+    "carry_counts": null,
+    "rush_category_ownership": "rushing-a1-production-v1"
+   },
+   "warnings_detail": []
+  },
+  {
+   "stage": "conversion",
+   "state": "PASS",
+   "code": "CONVERSION_OK",
+   "detail": "",
+   "input_hashes": {},
+   "spec_version": "rc1-baseline-frozen; SIGNAL_WEAK; governance HOLD_CHARACTERIZED + CALIBRATION_DEFECT",
+   "warnings": [
+    "receiving_conversion: known limitation: RC1 SIGNAL_WEAK",
+    "receiving_conversion: governance: receiving_baseline_calibration CALIBRATION_DEFECT"
+   ],
+   "refusal_code": null,
+   "elapsed_s": 2.1457672119140625e-05,
+   "metrics": {},
+   "governance": [
+    {
+     "layer": "receiving_conversion",
+     "governance": "HOLD_CHARACTERIZED + CALIBRATION_DEFECT"
+    }
+   ],
+   "spec_versions": {
+    "receiving_conversion": "rc1-baseline-frozen; SIGNAL_WEAK; governance HOLD_CHARACTERIZED + CALIBRATION_DEFECT"
+   },
+   "warnings_detail": [
+    {
+     "layer": "receiving_conversion",
+     "warning": "known limitation: RC1 SIGNAL_WEAK"
+    },
+    {
+     "layer": "receiving_conversion",
+     "warning": "governance: receiving_baseline_calibration CALIBRATION_DEFECT"
+    }
+   ]
+  },
+  {
+   "stage": "td_layer",
+   "state": "PASS",
+   "code": "TD_LAYER_OK",
+   "detail": "",
+   "input_hashes": {},
+   "spec_version": "receiving_td=td2-pooled-positional-control-frozen; governance HOLD_TENTATIVE; rushing_td=td2-rush|carry-pooled-positional-control-frozen; governance HOLD_TENTATIVE",
+   "warnings": [
+    "receiving_td: known limitation: TD2 pooled positional control, HOLD_TENTATIVE",
+    "rushing_td: known limitation: TD2 pooled positional control, HOLD_TENTATIVE"
+   ],
+   "refusal_code": null,
+   "elapsed_s": 2.9802322387695312e-05,
+   "metrics": {},
+   "governance": [
+    {
+     "layer": "receiving_td",
+     "governance": "HOLD_TENTATIVE"
+    },
+    {
+     "layer": "rushing_td",
+     "governance": "HOLD_TENTATIVE"
+    }
+   ],
+   "spec_versions": {
+    "receiving_td": "td2-pooled-positional-control-frozen; governance HOLD_TENTATIVE",
+    "rushing_td": "td2-rush|carry-pooled-positional-control-frozen; governance HOLD_TENTATIVE",
+    "counts_are_counts": null,
+    "stat_contract": null
+   },
+   "warnings_detail": [
+    {
+     "layer": "receiving_td",
+     "warning": "known limitation: TD2 pooled positional control, HOLD_TENTATIVE"
+    },
+    {
+     "layer": "rushing_td",
+     "warning": "known limitation: TD2 pooled positional control, HOLD_TENTATIVE"
+    }
+   ]
+  },
+  {
+   "stage": "qb_layer",
+   "state": "PASS",
+   "code": "QB_LAYER_OK",
+   "detail": "",
+   "input_hashes": {},
+   "spec_version": "qb-v1-aggregate-then-allocate-1",
+   "warnings": [
+    "known limitation: multi_qb_over_prediction",
+    "known limitation: int_discrimination",
+    "known limitation: discrete_low_count_intervals"
+   ],
+   "refusal_code": null,
+   "elapsed_s": 2.6464462280273438e-05,
+   "metrics": {
+    "n_qb_games": 6
+   },
+   "governance": [],
+   "spec_versions": {},
+   "warnings_detail": [
+    {
+     "layer": "qb_v1",
+     "warning": "known limitation: multi_qb_over_prediction"
+    },
+    {
+     "layer": "qb_v1",
+     "warning": "known limitation: int_discrimination"
+    },
+    {
+     "layer": "qb_v1",
+     "warning": "known limitation: discrete_low_count_intervals"
+    }
+   ]
+  },
+  {
+   "stage": "joint_reconciliation",
+   "state": "PASS",
+   "code": "JOINT_RECONCILED",
+   "detail": "",
+   "input_hashes": {},
+   "spec_version": "minimum-viable production coupling",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 2.3126602172851562e-05,
+   "metrics": {},
+   "governance": [],
+   "spec_versions": {},
+   "warnings_detail": []
+  },
+  {
+   "stage": "player_draws",
+   "state": "PASS",
+   "code": "DRAWS_BUILT",
+   "detail": "212000 draw cell(s) preserved across 29 matrix(es) on one draw index of 1000; 33 player quantile view(s) kept",
+   "input_hashes": {},
+   "spec_version": "nfl-player-draw-1",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 0.12441849708557129,
+   "metrics": {},
+   "governance": [],
+   "spec_versions": {},
+   "warnings_detail": []
+  },
+  {
+   "stage": "scoring",
+   "state": "PASS",
+   "code": "SCORED",
+   "detail": "",
+   "input_hashes": {},
+   "spec_version": "deterministic",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 2.2649765014648438e-05,
+   "metrics": {},
+   "governance": [],
+   "spec_versions": {},
+   "warnings_detail": []
+  },
+  {
+   "stage": "artifact_sealing",
+   "state": "PASS",
+   "code": "ARTIFACT_SEALED",
+   "detail": "212000 draw cell(s) referenced by sha256; 10 of 12 hard invariant(s) were evaluated and hold; 2 carried as OWED: ['qb_cross_layer_reconciliation', 'qb_inactive_owns_nothing']; 2 diagnostic(s) not clean (recorded, not gating): ['nonqb_layer_availability', 'qb_known_limitations']",
+   "input_hashes": {},
+   "spec_version": "nfl-forecast-artifact-1",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 0.0050241947174072266,
+   "metrics": {},
+   "governance": [],
+   "spec_versions": {},
+   "warnings_detail": []
+  }
+ ],
+ "n_refusals": 0,
+ "refusals": [],
+ "first_failure": null,
+ "draw_artifact": {
+  "sha256": "681b1be4750d63ea02381a803cca2a67b3314fcf7fc41b6a4e9d1c729831d8ea",
+  "bytes": 116664,
+  "n_draws": 1000,
+  "n_matrices": 29,
+  "n_draw_cells": 212000,
+  "content_digest": "31455f2c617af10bfc0294f0a5471b43788a8c32c60430ef474f0968053ffd60"
+ },
+ "accounting_verdicts": [
+  {
+   "invariant": "draw_artifact_integrity",
+   "class": "HARD",
+   "state": "PASS",
+   "code": "DRAW_ARTIFACT_VERIFIED"
+  },
+  {
+   "invariant": "draw_encoding_lossless",
+   "class": "HARD",
+   "state": "PASS",
+   "code": "DRAW_ENCODING_LOSSLESS"
+  },
+  {
+   "invariant": "draw_index_shared",
+   "class": "HARD",
+   "state": "PASS",
+   "code": "DRAW_INDEX_SHARED"
+  },
+  {
+   "invariant": "draw_set_non_empty",
+   "class": "HARD",
+   "state": "PASS",
+   "code": "DRAW_SET_PRESENT"
+  },
+  {
+   "invariant": "draw_summary_consistency",
+   "class": "HARD",
+   "state": "PASS",
+   "code": "SUMMARY_MATCHES_DRAWS"
+  },
+  {
+   "invariant": "nonqb_layer_availability",
+   "class": "DIAGNOSTIC",
+   "state": "FAIL",
+   "code": "NONQB_LAYERS_UNAVAILABLE"
+  },
+  {
+   "invariant": "qb_allocation_residual",
+   "class": "DIAGNOSTIC",
+   "state": "PASS",
+   "code": "QB_ALLOCATION_RESIDUAL_NONE"
+  },
+  {
+   "invariant": "qb_cross_layer_reconciliation",
+   "class": "HARD",
+   "state": "DEFERRED",
+   "code": "CROSS_LAYER_RECONCILIATION_NOT_RUN"
+  },
+  {
+   "invariant": "qb_dropback_identity",
+   "class": "HARD",
+   "state": "PASS",
+   "code": "QB_DROPBACK_IDENTITY_HOLDS"
+  },
+  {
+   "invariant": "qb_inactive_owns_nothing",
+   "class": "HARD",
+   "state": "DEFERRED",
+   "code": "QB_INACTIVE_OWNERSHIP_NOT_ESTABLISHED"
+  },
+  {
+   "invariant": "qb_known_limitations",
+   "class": "DIAGNOSTIC",
+   "state": "FAIL",
+   "code": "QB_LAYER_KNOWN_LIMITATIONS"
+  },
+  {
+   "invariant": "qb_per_draw_accounting",
+   "class": "HARD",
+   "state": "PASS",
+   "code": "QB_DRAW_ACCOUNTING_HOLDS"
+  },
+  {
+   "invariant": "qb_team_accounting",
+   "class": "HARD",
+   "state": "PASS",
+   "code": "QB_TEAM_ACCOUNTING_MEASURED"
+  },
+  {
+   "invariant": "rushing_single_owner",
+   "class": "HARD",
+   "state": "PASS",
+   "code": "A1_RUSH_ALLOCATION"
+  },
+  {
+   "invariant": "scramble_carry_coherence",
+   "class": "HARD",
+   "state": "PASS",
+   "code": "SC1_COHERENT"
+  }
+ ],
+ "draw_coherence": {
+  "state": "PASS",
+  "code": "DRAW_COHERENCE_HOLDS",
+  "detail": "5 component(s) evaluated and hold; 1 DEFERRED with the debt named: ['rushing']",
+  "spec_version": "nfl-draw-coherence-1",
+  "components": {
+   "carries": {
+    "state": "PASS",
+    "code": "CARRY_CONTAINMENT_MEASURED",
+    "diagnostics_not_clean": {
+     "team_qb_rush_opportunity_within_team_carries": 1,
+     "team_carry_allocation_containment": 443
+    },
+    "violations": {
+     "team_carry_allocation_containment": 443,
+     "team_qb_rush_opportunity_within_team_carries": 1,
+     "team_scrambles_within_team_carries": 0
+    },
+    "cells_checked": {
+     "team_carry_allocation_containment": 2000,
+     "team_qb_rush_opportunity_within_team_carries": 2000,
+     "team_scrambles_within_team_carries": 2000
+    },
+    "not_evaluated": []
+   },
+   "counts_non_negative": {
+    "state": "PASS",
+    "code": "COUNTS_NON_NEGATIVE",
+    "diagnostics_not_clean": {},
+    "violations": {
+     "counts_non_negative": 0
+    },
+    "cells_checked": {
+     "counts_non_negative": 149000
+    },
+    "not_evaluated": []
+   },
+   "qb": {
+    "state": "PASS",
+    "code": "QB_DRAW_COHERENCE_HOLDS",
+    "diagnostics_not_clean": {},
+    "violations": {
+     "qb_attempts_within_dropbacks": 0,
+     "qb_completions_and_interceptions_within_attempts": 0,
+     "qb_completions_within_attempts": 0,
+     "qb_dropback_partition": 0,
+     "qb_passing_td_within_attempts": 0,
+     "qb_passing_td_within_completions": 0,
+     "qb_rushing_td_within_rush_opportunity": 0,
+     "qb_zero_completions_zero_passing_yards": 0,
+     "qb_zero_rush_opportunity_zero_rushing_yards": 0
+    },
+    "cells_checked": {
+     "qb_attempts_within_dropbacks": 6000,
+     "qb_completions_and_interceptions_within_attempts": 6000,
+     "qb_completions_within_attempts": 6000,
+     "qb_dropback_partition": 6000,
+     "qb_passing_td_within_attempts": 6000,
+     "qb_passing_td_within_completions": 6000,
+     "qb_rushing_td_within_rush_opportunity": 6000,
+     "qb_zero_completions_zero_passing_yards": 6000,
+     "qb_zero_rush_opportunity_zero_rushing_yards": 6000
+    },
+    "not_evaluated": []
+   },
+   "receiving": {
+    "state": "PASS",
+    "code": "RECEIVING_DRAW_COHERENCE_HOLDS",
+    "diagnostics_not_clean": {},
+    "violations": {
+     "receiving_td_within_receptions": 0,
+     "receptions_within_targets": 0,
+     "zero_receptions_zero_receiving_yards": 0
+    },
+    "cells_checked": {
+     "receiving_td_within_receptions": 27000,
+     "receptions_within_targets": 27000,
+     "zero_receptions_zero_receiving_yards": 27000
+    },
+    "not_evaluated": []
+   },
+   "rushing": {
+    "state": "DEFERRED",
+    "code": "RUSHING_TD_WITHIN_CARRIES_DEFERRED",
+    "owed": {
+     "decision": "is `rushing/carries` a count or a continuous level? The product contract says count, MODELED; the stored array is non-integer in 0 of 7,000 cell(s) (0.0%).",
+     "owner": "the carry-allocation contract, not this file",
+     "blocks": "rushing_td_within_carries, which cannot be a HARD gate while its right-hand side is of undeclared type"
+    }
+   },
+   "team_closure": {
+    "state": "PASS",
+    "code": "TEAM_CLOSURE_HOLDS",
+    "diagnostics_not_clean": {},
+    "violations": {
+     "team_passing_line_closes_on_receiving": 0,
+     "team_targets_within_team_attempts": 0
+    },
+    "cells_checked": {
+     "team_passing_line_closes_on_receiving": 6000,
+     "team_targets_within_team_attempts": 2000
+    },
+    "not_evaluated": []
+   }
+  },
+  "registered_as_invariant": false,
+  "gating": false
+ },
+ "readiness": {
+  "DEN": {
+   "team": "DEN",
+   "state": "READY",
+   "as_of": "2026-09-14T20:58:33+00:00",
+   "reason": "DIAGNOSTIC PATCH: explicit team-level no-designation statement in the delivered package",
+   "newest_capture": "2026-09-13T15:45:56.665261+00:00",
+   "n_rows": 1,
+   "blob": "nfl/vintage/injuries.66e960ec81fccc6e.csv.gz",
+   "population": {
+    "report_status": 0,
+    "practice_status": 1,
+    "practice_primary_injury": 1
+   }
+  },
+  "KC": {
+   "team": "KC",
+   "as_of": "2026-09-14T20:58:33+00:00",
+   "state": "READY",
+   "reason": "the team satisfies the frozen input contract",
+   "newest_capture": "2026-09-13T15:45:56.665261+00:00",
+   "n_rows": 11,
+   "blob": "nfl/vintage/injuries.66e960ec81fccc6e.csv.gz",
+   "population": {
+    "report_status": 2,
+    "practice_status": 11,
+    "practice_primary_injury": 11
+   }
+  }
+ },
+ "confidence_contract": {
+  "module": "nfl.product.confidence",
+  "dimensions": [
+   "input_completeness",
+   "role_certainty",
+   "distribution_width",
+   "status_certainty",
+   "layer_completeness"
+  ],
+  "weights": {
+   "input_completeness": 0.2,
+   "role_certainty": 0.2,
+   "distribution_width": 0.2,
+   "status_certainty": 0.2,
+   "layer_completeness": 0.2
+  },
+  "weights_note": "flat by design: no evidence yet says which dimension predicts a miss, and a fitted weighting with nothing behind it would be a silent constant",
+  "means": "confidence in the model and its inputs, NOT in the outcome"
+ },
+ "qb_inactive_ownership": {
+  "enforced": false,
+  "conditions": {
+   "official_inactive_evidence_ingested": false,
+   "evidence_tied_to_this_game_and_team": false,
+   "all_resolved_inactive_qbs_excluded": true,
+   "no_unresolved_identity": false,
+   "allocation_passes_accounting": true,
+   "forecast_generated_after_enforcement": true
+  },
+  "failed_conditions": [
+   "official_inactive_evidence_ingested",
+   "evidence_tied_to_this_game_and_team",
+   "no_unresolved_identity"
+  ],
+  "inactive_qbs_in_modelled_room": {},
+  "inactive_qbs_excluded": {},
+  "n_unmapped_official_names": null,
+  "unmapped_official_names": null,
+  "unresolved_qb_room_risk": {
+   "blocks_qb_enforcement": true,
+   "n_unresolved": null,
+   "blocking": [],
+   "cleared": [],
+   "reason": "the artifact does not report whether any official name went unresolved"
+  },
+  "closure_max_dev": 1.1102230246251565e-16,
+  "game_id": null,
+  "spec_version": "qb3-dropback-allocation-candidate-1",
+  "what_true_means": "the official list for BOTH clubs was ingested and tied to this game, every officially inactive quarterback the model carries was excluded from the allocation BEFORE the draw, no official name went unresolved, the shares close, and the forecast was built from this allocation.",
+  "what_true_does_not_mean": "it does not mean no quarterback is inactive, and it does not mean the projection is right. It means the inactive evidence was consumed by the mechanism that owns the share."
+ },
+ "qb3_configuration": {
+  "DEN": {
+   "configuration": "AGREE",
+   "is_season_opener": true,
+   "prev_primary_pid": "00-0039732",
+   "prev_primary_ordinal": 202518,
+   "depth_chart_qb1": "00-0039732",
+   "n_qb_in_room": 3,
+   "week1_specification_defect": true,
+   "defect_id": "QB3_WEEK1_SEASON_BOUNDARY",
+   "defect_basis": "nfl/research/qb3/QB3_WEEK1_INCUMBENT_AUDIT.json. The previous primary comes from the prior season's final game, which is the game a club is most likely to rest its starter in, so the incumbent signal can name a rested or replaced quarterback and dilute the current QB1."
+  },
+  "KC": {
+   "configuration": "NO_PREV_PRIMARY_IN_ROOM",
+   "is_season_opener": true,
+   "prev_primary_pid": "00-0037324",
+   "prev_primary_ordinal": 202518,
+   "depth_chart_qb1": "00-0033873",
+   "n_qb_in_room": 3,
+   "week1_specification_defect": true,
+   "defect_id": "QB3_WEEK1_SEASON_BOUNDARY",
+   "defect_basis": "nfl/research/qb3/QB3_WEEK1_INCUMBENT_AUDIT.json. The previous primary comes from the prior season's final game, which is the game a club is most likely to rest its starter in, so the incumbent signal can name a rested or replaced quarterback and dilute the current QB1."
+  }
+ },
+ "qb_pool_eligibility": {
+  "spec_version": "roster-status-active-pool-r5",
+  "n_in": 7,
+  "n_kept": 6,
+  "n_unknown_status_kept": 0,
+  "dropped_by_status": {
+   "RES": 1
+  },
+  "dropped_meaning": {
+   "RES": "reserve or injured reserve"
+  },
+  "kept_unrecognised_status": {},
+  "only_declared_codes_are_dropped": [
+   "CUT",
+   "DEV",
+   "EXE",
+   "RES"
+  ],
+  "roster_status_source": "weekly_rosters.bdab6ecee12d44a4.csv",
+  "roster_status_observed_at": "2026-09-14T16:16:25Z",
+  "n_qb_in": 7,
+  "n_qb_kept": 6,
+  "qb_participation_limitation": "QB participation is QB3 (contract nfl/research/qb3/predeclaration_qb3.md, sha256 be61392619d45f3ad1936ef0512d203d9f415ba92e271aa6010281e707f05a9e). Filtering the QB pool on roster status removes ineligible quarterbacks and does NOT repair either known participation defect. (1) QB3_WEEK1_SEASON_BOUNDARY: in a season opener the incumbent signal is the PRIOR SEASON FINAL-GAME primary passer, the game a club is most likely to rest a starter in. Measured league-wide, the depth-chart QB1 equals that passer in only 59 of 160 week-1 rooms (0.3688), and 77 of 192 team-seasons (0.4010) end with a primary who is not that season modal starter (nfl/research/qb3/QB3_WEEK1_INCUMBENT_AUDIT.json). Removing an ineligible incumbent does not restore the bit; it moves the room from DISAGREE to NO_PREV_PRIMARY_IN_ROOM, whose cell (1,0) carries p_primary 0.4922 and P(share=0) 0.4735 against cell (1,1) 0.9046 and 0.0736. (2) An unranked rostered quarterback is modelled at depth rank 3 (nfl/production/nonqb/qb_allocation.py, \"r = 3\"), which is a populated cell and not a null: 27 of 119 rostered quarterbacks league-wide carry no depth-chart row. CONSEQUENCE: on a season-opening board the modelled split between a club starting quarterback and his backups is not trustworthy, quarterback-derived markets are CONTAMINATED and inadmissible, and no QB number here may be compared with a price."
+ },
+ "qb_participation_limitation": "QB participation is QB3 (contract nfl/research/qb3/predeclaration_qb3.md, sha256 be61392619d45f3ad1936ef0512d203d9f415ba92e271aa6010281e707f05a9e). Filtering the QB pool on roster status removes ineligible quarterbacks and does NOT repair either known participation defect. (1) QB3_WEEK1_SEASON_BOUNDARY: in a season opener the incumbent signal is the PRIOR SEASON FINAL-GAME primary passer, the game a club is most likely to rest a starter in. Measured league-wide, the depth-chart QB1 equals that passer in only 59 of 160 week-1 rooms (0.3688), and 77 of 192 team-seasons (0.4010) end with a primary who is not that season modal starter (nfl/research/qb3/QB3_WEEK1_INCUMBENT_AUDIT.json). Removing an ineligible incumbent does not restore the bit; it moves the room from DISAGREE to NO_PREV_PRIMARY_IN_ROOM, whose cell (1,0) carries p_primary 0.4922 and P(share=0) 0.4735 against cell (1,1) 0.9046 and 0.0736. (2) An unranked rostered quarterback is modelled at depth rank 3 (nfl/production/nonqb/qb_allocation.py, \"r = 3\"), which is a populated cell and not a null: 27 of 119 rostered quarterbacks league-wide carry no depth-chart row. CONSEQUENCE: on a season-opening board the modelled split between a club starting quarterback and his backups is not trustworthy, quarterback-derived markets are CONTAMINATED and inadmissible, and no QB number here may be compared with a price.",
+ "qb_inactive_ownership_enforced": false,
+ "execution_identity": "efc10ecd2f927abb37928b4e2c53420f3f3fc18d6790ea4d78b4eb0d969e85ee",
+ "code_commit": "2dc44abc8b316f2f23ede1bc9eb7015c6b19e14a+src1[ee397a8bc8521b19]",
+ "code_identity": {
+  "contract_version": "nfl-code-identity-1",
+  "commit": "2dc44abc8b316f2f23ede1bc9eb7015c6b19e14a",
+  "source_scope_sha256": "ee397a8bc8521b19b0a0d8a315c05f374d74e19f474f642d55a6fcae97523649",
+  "source_scope_clean": false,
+  "dirty_source_files": [
+   {
+    "path": "nfl/product/board.py",
+    "state": "PRESENT",
+    "sha256": "50006a9a8416142279c1dc38c0e75b08cf68a06ff55d35be3143902723213ba9",
+    "bytes": 21077
+   },
+   {
+    "path": "nfl/product/board_pointer.py",
+    "state": "PRESENT",
+    "sha256": "74aa98ea5ab765f726a05703f5ca9eab910fd6e725f758ffaed4921eeb7e099f",
+    "bytes": 23961
+   },
+   {
+    "path": "nfl/product/quality_gates.py",
+    "state": "PRESENT",
+    "sha256": "1aeb27ade07f0713dfd7ee24d3ce2bdab67574125d80c512bf4e3d026b278b70",
+    "bytes": 55098
+   },
+   {
+    "path": "nfl/production/candidate_mode.py",
+    "state": "PRESENT",
+    "sha256": "db9dfde8c24d3e51cabf3b78f228237d20f00c0b37b1b4580059754ea4d7b2ac",
+    "bytes": 22762
+   },
+   {
+    "path": "nfl/production/eligibility_gate.py",
+    "state": "PRESENT",
+    "sha256": "bc79eeb023045c4ee6bbb1890ea200b6c2e613e1edd0a88888e08ff5ac105575",
+    "bytes": 42070
+   },
+   {
+    "path": "nfl/production/nonqb/depth_vintage.py",
+    "state": "PRESENT",
+    "sha256": "b18d88fe48a49054c84e23a8cae9b217b6eb1862e94a9c5ab19f9dec3fc9d54d",
+    "bytes": 30762
+   },
+   {
+    "path": "nfl/production/nonqb/football_engine.py",
+    "state": "PRESENT",
+    "sha256": "578a4fcf7f858041e3e1c67db7a845238f810582844214cb31f34f9e799e55e2",
+    "bytes": 99086
+   },
+   {
+    "path": "nfl/production/nonqb/qb_allocation.py",
+    "state": "PRESENT",
+    "sha256": "8b11d4e75b7e6a9036b0cd03582a729842dbda36b5c502e545fdd1880a9f3434",
+    "bytes": 29859
+   },
+   {
+    "path": "nfl/production/nonqb/qb_room_v2.py",
+    "state": "PRESENT",
+    "sha256": "f45e1889c626b9caa405c92c528b6bd868796533e25ead74b3207cd77f59b70f",
+    "bytes": 36415
+   },
+   {
+    "path": "nfl/production/nonqb/role_prior.py",
+    "state": "PRESENT",
+    "sha256": "bf927f5a4621054658281e8160e75263e74c7f13477c9881384cf8a72894480f",
+    "bytes": 16871
+   },
+   {
+    "path": "nfl/production/nonqb/rushing_a1.py",
+    "state": "PRESENT",
+    "sha256": "51b2d38b4bce79b5fda9f1dfffd34a92622b991dc0e34f2261533f8f60595c20",
+    "bytes": 53576
+   },
+   {
+    "path": "nfl/production/run_forecast.py",
+    "state": "PRESENT",
+    "sha256": "91780b92c273a718716c52762a9bb307de5fe083197e176c1502fccfa959b56e",
+    "bytes": 124635
+   },
+   {
+    "path": "nfl/production/stat_contract.py",
+    "state": "PRESENT",
+    "sha256": "a9ec869c97569e23058e47cf78222a4a6895ee0c23836066a1e6c2d47317b7f4",
+    "bytes": 30767
+   }
+  ],
+  "n_dirty_source_files": 13,
+  "scope": {
+   "source_roots": [
+    "nfl/production",
+    "nfl/prospective",
+    "nfl/identity",
+    "nfl/product",
+    "nfl/schema",
+    "nfl/tools",
+    "sportsplatform"
+   ],
+   "source_suffixes": [
+    ".py"
+   ],
+   "excluded_subtrees": [
+    "nfl/prospective/q9shadow/dryrun",
+    "nfl/prospective/q9shadow/sealed",
+    "nfl/production/runs",
+    "nfl/derived",
+    "nfl/research",
+    "nfl/vintage"
+   ],
+   "generated_subtrees_excluded": [
+    "nfl/prospective/q9shadow/dryrun",
+    "nfl/prospective/q9shadow/sealed",
+    "nfl/production/runs",
+    "nfl/derived",
+    "nfl/research",
+    "nfl/vintage"
+   ],
+   "research_out_of_scope_why": "causal research modules are hashed by content into module_source_sha16, which is inside spec_sha256 (identity E), which is inside the fingerprint. Adding nfl/research/** to B would move every run id for thousands of non-causal files."
+  },
+  "runtime": {
+   "implementation": "CPython",
+   "python_version": "3.12.3",
+   "numpy_version": "2.5.3",
+   "platform": "Linux-6.18.44-fc-v24-x86_64-with-glibc2.39",
+   "thread_env": {
+    "OMP_NUM_THREADS": null,
+    "MKL_NUM_THREADS": null,
+    "OPENBLAS_NUM_THREADS": null,
+    "NUMEXPR_NUM_THREADS": null,
+    "VECLIB_MAXIMUM_THREADS": null
+   },
+   "hashed_keys": [
+    "implementation",
+    "python_version",
+    "numpy_version"
+   ],
+   "recorded_not_hashed_keys": [
+    "platform",
+    "thread_env"
+   ]
+  },
+  "runtime_token": "implementation=CPython+python_version=3.12.3+numpy_version=2.5.3",
+  "clean_source_sentinel_sha256": "44aa01d03783de1852e326ebdd9231dabf562583de6bdbd89c2a0d660b029a43",
+  "residual_gaps": [
+   "IMPORTED_RESEARCH_MODULES_NOT_IN_B: a research module that the sealing path imports but that is not one of the four in module_source_sha16 -- nfl.research.q7.panel and nfl.research.q8.audit are the live examples -- is in neither B nor E. Remedy: hash each imported module file by content into the candidate identity. That is candidate.py, not this module.",
+   "NON_PY_SOURCE_NOT_IN_B: a frozen parameter file under a source root (nfl/production/nonqb/frozen/*.json.gz) is not source by SOURCE_SUFFIXES. For Q9 these are covered by the candidate parameter hashes in E. Remedy elsewhere: seal the resolved path and sha256, which is WS18 F1.",
+   "THREAD_ENV_RECORDED_NOT_HASHED: promote to RUNTIME_HASHED_KEYS if and when a measured draw difference is attributed to thread count. Not before -- an unmeasured coefficient in an identity is a silent constant.",
+   "STAGING_NOT_DISTINGUISHED: B hashes worktree CONTENT, so a staged and an unstaged edit of identical bytes are the same identity. Deliberate: the bytes the interpreter reads are the bytes that matter."
+  ],
+  "code_version": "2dc44abc8b316f2f23ede1bc9eb7015c6b19e14a+src1[ee397a8bc8521b19]"
+ },
+ "dry_run": false,
+ "prospective_eligible": null,
+ "publication": {
+  "state": "BLOCKED",
+  "code": "NFL1_NOT_AUTHORIZED",
+  "detail": "NFL-1 is 'NOT AUTHORIZED' and G0A is '11/12'. A forecast may be COMPUTED and SEALED locally, but it may not be published. No test result, checklist state or caller flag can change this -- only an owne"
+ }
+}
