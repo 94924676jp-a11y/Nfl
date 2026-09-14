@@ -26,7 +26,18 @@ _REPO = pathlib.Path(__file__).resolve().parents[2]
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
-SPEC_VERSION = 'model-health/1.0.0'
+# 1.1.0 on coordinator ruling, 2026-09-14. ADDITIVE: `FIELDS` gained four
+# entries (n_zero_completed_rows, n_game_clusters, outcome_selection_basis,
+# market_selection_basis) and `WARNINGS` gained two
+# (OUTCOME_CONDITIONAL_SELECTION, MARKET_STATS_OUTCOME_SELECTED). No existing
+# field changed meaning and none was removed, so this is NOT the 1.0.0 -> 2.0.0
+# break that `same_day_retrospective` correctly took when its scored SET
+# changed. Leaving the string at 1.0.0 would have been worse than either
+# choice: a consumer keying on 1.0.0 would read a different schema under the
+# same name, which is the drift this workstream exists to stop.
+# `MODEL_HEALTH_2026-09-13.json` is published quoting 1.0.0 and is NOT
+# rewritten; CORRECTIONS.json records what changed under that name.
+SPEC_VERSION = 'model-health/1.1.0'
 
 # The fields the API is contracted to expose per metric.
 FIELDS = (
@@ -37,8 +48,17 @@ FIELDS = (
     'market_mean_model_probability', 'market_mean_novig_probability',
     'market_mean_gap_pp',
     'n_contaminated_rows', 'n_refused_rows',
+    # HOW THE SCORED SET WAS CHOSEN travels with every row, because a
+    # statistic computed on rows selected after the outcome was known is not
+    # the same kind of object as one computed on a complete set, and nothing
+    # in the numbers themselves reveals the difference.
+    'n_zero_completed_rows', 'n_game_clusters',
+    'outcome_selection_basis', 'market_selection_basis',
     'warnings', 'ranking_eligible',
 )
+
+# The only selection basis that is not itself a warning.
+SELECTION_COMPLETE = 'COMPLETE_INCLUDING_ZERO_BY_COMPLETION'
 
 # Named warnings. Each is a CONDITION on measured evidence, never a judgement.
 WARNINGS = {
@@ -61,6 +81,18 @@ WARNINGS = {
     'CONTAMINATED_STRATUM':
         'rows for this metric sit in a contaminated stratum and are not '
         'evidence about the layer.',
+    'OUTCOME_CONDITIONAL_SELECTION':
+        'the scored set for this metric was chosen using the realised '
+        'outcome, or its selection basis was not declared. Which forecasts '
+        'get graded must be decided by what existed at forecast time. A '
+        'statistic from such a set describes the selection as much as the '
+        'model and may not rank anything.',
+    'MARKET_STATS_OUTCOME_SELECTED':
+        'the market comparison for this metric was graded on a set chosen '
+        'using the realised outcome, or its selection basis was not '
+        'declared. Dropping the players who recorded nothing removes exactly '
+        'the comparisons a positive-volume forecast loses, so the hit rate '
+        'is measured on survivors.',
 }
 
 # Thresholds, declared here rather than inline so they are reviewable.
@@ -69,9 +101,23 @@ MIN_N_FOR_A_WARNING = 8
 
 
 def evaluate(metric, outcome_stats=None, market_stats=None, buckets=None,
-             declared_defects=(), n_contaminated=0, n_refused=0):
-    """Health for one metric. Returns the contract row, warnings included."""
+             declared_defects=(), n_contaminated=0, n_refused=0,
+             n_zero_completed=0, n_game_clusters=None,
+             outcome_selection_basis=None, market_selection_basis=None,
+             carried_warnings=()):
+    """Health for one metric. Returns the contract row, warnings included.
+
+    SELECTION IS PART OF THE EVIDENCE AND IS REQUIRED, NOT OPTIONAL. The
+    2026-09-13 artifact reported `receiving/targets` as the single
+    ranking-eligible metric on a coverage figure computed after every row
+    whose realised value was zero had been deleted. Nothing in the contract
+    could have caught that, because the contract never asked how the rows
+    were chosen. It asks now, and an undeclared basis is treated as an
+    outcome-conditional one: silence is not a clean bill.
+    """
     w = []
+    if str(outcome_selection_basis or 'UNDECLARED') != SELECTION_COMPLETE:
+        w.append('OUTCOME_CONDITIONAL_SELECTION')
     o = outcome_stats or {}
     m = market_stats or {}
     n_o = int(o.get('n') or 0)
@@ -80,6 +126,8 @@ def evaluate(metric, outcome_stats=None, market_stats=None, buckets=None,
         if (o.get('coverage_50') is not None and o['coverage_50'] < 0.50) or \
            (o.get('coverage_80') is not None and o['coverage_80'] < 0.80):
             w.append('COVERAGE_BELOW_NOMINAL')
+    if n_m and str(market_selection_basis or 'UNDECLARED') != SELECTION_COMPLETE:
+        w.append('MARKET_STATS_OUTCOME_SELECTED')
     if n_m >= MIN_N_FOR_A_WARNING:
         pu = m.get('pct_under')
         if pu is not None and (pu >= SKEW_THRESHOLD or pu <= 1 - SKEW_THRESHOLD):
@@ -106,6 +154,18 @@ def evaluate(metric, outcome_stats=None, market_stats=None, buckets=None,
         break
     if n_contaminated:
         w.append('CONTAMINATED_STRATUM')
+    # A WARNING THIS CALL CANNOT RECOMPUTE IS CARRIED, NOT DROPPED.
+    #
+    # Regenerating an artifact without the inputs a previous warning was
+    # raised from must never be the reason a metric becomes rankable again. A
+    # rebuild that silently loosens a gate is worse than no rebuild.
+    for cw in carried_warnings or ():
+        if cw not in WARNINGS:
+            raise ValueError(
+                f'MODEL_HEALTH_UNKNOWN_CARRIED_WARNING: {cw!r} is not in the '
+                f'declared vocabulary. A warning with no meaning attached is '
+                f'not a warning.')
+        w.append(cw)
     w = list(dict.fromkeys(w))
     return {
         'metric': metric, 'layer': str(metric).split('/')[0],
@@ -127,6 +187,15 @@ def evaluate(metric, outcome_stats=None, market_stats=None, buckets=None,
         'market_mean_gap_pp': m.get('mean_probability_gap_pp'),
         'n_contaminated_rows': int(n_contaminated),
         'n_refused_rows': int(n_refused),
+        'n_zero_completed_rows': int(n_zero_completed),
+        # ROWS ARE NOT A SAMPLE SIZE. n_scored counts player-game-metric rows;
+        # the unit these errors vary in is the game. Both are published so a
+        # reader cannot mistake one for the other.
+        'n_game_clusters': (int(n_game_clusters)
+                            if n_game_clusters is not None else None),
+        'outcome_selection_basis': str(outcome_selection_basis or 'UNDECLARED'),
+        'market_selection_basis': (str(market_selection_basis or 'UNDECLARED')
+                                   if n_m else None),
         'warnings': w,
         'ranking_eligible': not w,
         'warning_meanings': {x: WARNINGS[x] for x in w},
