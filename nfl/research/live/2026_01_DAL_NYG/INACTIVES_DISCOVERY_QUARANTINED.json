@@ -1,0 +1,93 @@
+{
+ "artifact": "DAL_NYG_INACTIVES_DISCOVERY_QUARANTINED",
+ "governing": false,
+ "governs_nothing": "this record is DISCOVERY and CORROBORATION only, per owner instruction. It is not ingested, does not reach the appearance layer, does not clear POST_INACTIVES_COMPLETE, and no projection on any board was built from it.",
+ "source": {
+  "kind": "THIRD_PARTY_AGGREGATOR_SCREENSHOT",
+  "site": "rotowire.com",
+  "observed_by": "owner",
+  "observed_at_local": "approximately 2026-09-13 19:17 ET",
+  "recorded_at_utc": "2026-09-13T23:30:00Z",
+  "image_sha256": "137a3cd2a939494c66cb3e59120263a2d6b058e37d9fcf61b4372cbe877cf6af",
+  "why_not_authoritative": "RotoWire is an aggregator. The authoritative declaration is the NFL or club game-day inactive list, which this session cannot reach: the egress gateway answers 403 to CONNECT for www.nfl.com:443 and site.api.espn.com:443."
+ },
+ "transcribed_verbatim_as_displayed": {
+  "note": "names are transcribed exactly as they appear on the screenshot, abbreviations included. They are NOT normalised, NOT expanded, and NOT matched to any roster id.",
+  "DAL_inactives": [
+   {
+    "pos": "RB",
+    "name": "I. Abanikanda"
+   },
+   {
+    "pos": "WR",
+    "name": "Camden Brown"
+   },
+   {
+    "pos": "CB",
+    "name": "C. Carson"
+   },
+   {
+    "pos": "OG",
+    "name": "A. Cornelius"
+   },
+   {
+    "pos": "DE",
+    "name": "Tyrus Wheat"
+   }
+  ],
+  "NYG_inactives": [
+   {
+    "pos": "WR",
+    "name": "Dalen Cambre"
+   },
+   {
+    "pos": "OT",
+    "name": "J.C. Davis"
+   },
+   {
+    "pos": "TE",
+    "name": "T. Fidone"
+   },
+   {
+    "pos": "RB",
+    "name": "Najee Harris"
+   },
+   {
+    "pos": "DT",
+    "name": "B. Jamison-Travis"
+   },
+   {
+    "pos": "CB",
+    "name": "Nic Jones"
+   },
+   {
+    "pos": "S",
+    "name": "J. Pinnock"
+   }
+  ],
+  "displayed_starters": {
+   "DAL": {
+    "QB": "Dak Prescott",
+    "RB": "J. Williams"
+   },
+   "NYG": {
+    "QB": "Jaxson Dart",
+    "RB": "Cam Skattebo"
+   }
+  }
+ },
+ "what_it_would_change_if_it_were_authoritative": {
+  "note": "stated so the owner can see the stake, NOT applied. No projection below was altered.",
+  "DAL": [
+   "Israel Abanikanda is listed inactive. The sealed PRE board projects him 4.79 carries, ABOVE the charted RB2 Emari Demercado at 3.52. If authoritative, that carry mass would redistribute.",
+   "Camden Brown is listed inactive. PRE projects him 2.53 targets (7.3% of the DAL pool).",
+   "Ajani Cornelius appears both on the governed injury vintage (knee, Full Participation) and on this list."
+  ],
+  "NYG": [
+   "Najee Harris is listed inactive. PRE projects him 4.79 carries (15.2% of the NYG pool) as the charted RB2. This is the single largest potential change on either club.",
+   "the other six named are not carried with a modelled offensive metric on the PRE board."
+  ]
+ },
+ "omission_is_not_activity": "a player absent from these lists is NOT thereby active. Nothing here asserts anyone plays.",
+ "required_to_supersede": "official NFL or club bytes, official URL, UTC retrieval clock, publication clock if stated, raw sha256, both clubs. Filed in docs/AGENT_OUTBOX.md at 2026-09-13T23:30Z."
+}

@@ -427,3 +427,72 @@ four-unit accounting, the §4 floor evaluation, the randomized-PIT emission and
 the dry-run proof are all complete and green. The pregame feature builder is
 mine and is next. When your bytes land, the live path runs with no code change
 on my side: `python3.12 -m nfl.prospective.q9shadow.seal --season 2026`.
+
+---
+
+## 2026-09-13T23:30Z — DAL_NYG official inactives. ASSIGNED, not blocked.
+
+Kickoff `2026-09-14T00:20:00Z`. RotoWire was showing both clubs' lists at about
+19:17 ET, so the information EXISTS publicly. I cannot reach it.
+
+**Proven, not assumed.** The egress gateway answers **403 to CONNECT** for the
+authoritative hosts. Timestamped relay failures recorded by the proxy:
+
+```
+2026-09-13T23:12:11.643Z  connect_rejected  www.nfl.com:443
+2026-09-13T23:12:11.884Z  connect_rejected  www.nfl.com:443
+2026-09-13T23:12:12.134Z  connect_rejected  site.api.espn.com:443
+2026-09-13T23:18:41.777Z  connect_rejected  www.nfl.com:443
+```
+
+`nfl/tools/capture_vintage.py` independently reports `official_inactives:
+NO_EGRESS`, `official_injury_report: NO_EGRESS`, `espn_injuries_json:
+NO_EGRESS`. GitHub is reachable — I pulled nflverse play-by-play and weekly
+rosters today without trouble — so this is a host policy denial, not a network
+outage.
+
+**What I need, exactly.**
+
+* The official NFL or club game-day INACTIVE declaration for **DAL** and for
+  **NYG**, 2026 week 1.
+* The original document bytes, not a transcription.
+* The official URL each came from.
+* Your retrieval timestamp in UTC.
+* The publication timestamp if the source states one explicitly. If it does
+  not, say so rather than supplying your retrieval clock in its place.
+* A sha256 of the raw bytes.
+* Both clubs in the same delivery. One club alone cannot clear
+  `POST_INACTIVES_COMPLETE`.
+* Exact names and statuses as printed. No normalisation, no expansion of
+  abbreviations, no reordering.
+
+The existing delivery path handles it with no code change on my side:
+
+```
+python3.12 nfl/tools/ingest_inactives.py --game-id 2026_01_DAL_NYG \
+  --bytes <file> --source-url <official url> --retrieved-at <UTC> \
+  --published-at <UTC or omit> --delivery --delivery-source-url <url> \
+  --delivered-by "<who>" --names-json <names> --positions-json <positions> \
+  --out nfl/research/live/2026_01_DAL_NYG
+```
+
+**What I will not substitute for it.**
+
+* **RotoWire.** The owner's instruction is explicit that it is discovery and
+  corroboration only, never governing evidence. I have recorded it as a
+  quarantined discovery artifact and it governs nothing.
+* **`weekly_rosters.status`.** nflverse carries ACT/DEV/RES/RET/CUT for week 1,
+  and I checked it today: 109 ACT across DAL and NYG. That is ROSTER status,
+  not game-day inactive status. `nfl/capture/delivered_injuries.py` lists
+  `status` in `ROSTER_FORBIDDEN_COLUMNS` for exactly this reason. Reading ACT
+  as "active tonight" would be the collapse this project has already banned in
+  code.
+* **Anything derived from omission.** A player not named on a list is not
+  thereby active.
+
+**What does not wait on you.** The PRE_INACTIVES projection is sealed and
+stands: run_id `3dddf9f62c9260b0`, written_at `2026-09-13T23:12:33Z`, 8,000
+draws, 117 projection rows, 36 players. It was built from evidence legitimately
+available before kickoff and needs nothing from this request. Official
+inactives REFINE that forecast; they did not have to create it. When your bytes
+land the chain is about nine minutes end to end.

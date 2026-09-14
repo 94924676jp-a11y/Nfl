@@ -1,0 +1,1921 @@
+{
+ "artifact": "DAL_NYG_FORENSIC_CORRECTED_RESEARCH",
+ "carry_budget_decomposition": {
+  "DAL": {
+   "delta_closes": {
+    "rb_plus_non_rb_delta": 0.5323,
+    "rush_play_budget_delta": 0.5323
+   },
+   "identity": {
+    "closes": true,
+    "equation": "team_carries - scrambles = rb_budget + non_rb_categories (kneel, designed_qb, wr, te, fringe)",
+    "owner": "nfl/production/nonqb/rushing_a1.py, OWN-8 frozen graph",
+    "worst_absolute_per_draw_residual": 0.0
+   },
+   "non_rb_categories": {
+    "corrected": 9.6915,
+    "delta": 1.248,
+    "mc_se_of_delta": 0.0868,
+    "pre": 8.4436,
+    "z": 14.37
+   },
+   "qb_rush_opportunity": {
+    "corrected": 2.6864,
+    "delta": -1.8928,
+    "mc_se_of_delta": 0.0369,
+    "pre": 4.5791,
+    "z": -51.27
+   },
+   "rb_budget": {
+    "corrected": 16.8241,
+    "delta": -0.7157,
+    "mc_se_of_delta": 0.1034,
+    "pre": 17.5399,
+    "z": -6.92
+   },
+   "rush_play_budget": {
+    "corrected": 26.5157,
+    "delta": 0.5323,
+    "mc_se_of_delta": 0.0968,
+    "pre": 25.9834,
+    "z": 5.5
+   },
+   "scrambles": {
+    "corrected": 1.6851,
+    "delta": -0.5323,
+    "mc_se_of_delta": 0.0235,
+    "pre": 2.2174,
+    "z": -22.69
+   },
+   "team_carries": {
+    "corrected": 28.2008,
+    "delta": 0.0,
+    "mc_se_of_delta": 0.0932,
+    "pre": 28.2008,
+    "z": 0.0
+   }
+  },
+  "NYG": {
+   "delta_closes": {
+    "rb_plus_non_rb_delta": 0.0,
+    "rush_play_budget_delta": 0.0
+   },
+   "identity": {
+    "closes": true,
+    "equation": "team_carries - scrambles = rb_budget + non_rb_categories (kneel, designed_qb, wr, te, fringe)",
+    "owner": "nfl/production/nonqb/rushing_a1.py, OWN-8 frozen graph",
+    "worst_absolute_per_draw_residual": 0.0
+   },
+   "non_rb_categories": {
+    "corrected": 8.781,
+    "delta": -0.0,
+    "mc_se_of_delta": 0.0758,
+    "pre": 8.781,
+    "z": -0.0
+   },
+   "qb_rush_opportunity": {
+    "corrected": 5.2021,
+    "delta": 0.0,
+    "mc_se_of_delta": 0.0433,
+    "pre": 5.2021,
+    "z": 0.0
+   },
+   "rb_budget": {
+    "corrected": 20.1145,
+    "delta": 0.0,
+    "mc_se_of_delta": 0.1103,
+    "pre": 20.1145,
+    "z": 0.0
+   },
+   "rush_play_budget": {
+    "corrected": 28.8954,
+    "delta": 0.0,
+    "mc_se_of_delta": 0.1304,
+    "pre": 28.8954,
+    "z": 0.0
+   },
+   "scrambles": {
+    "corrected": 2.6099,
+    "delta": 0.0,
+    "mc_se_of_delta": 0.0272,
+    "pre": 2.6099,
+    "z": 0.0
+   },
+   "team_carries": {
+    "corrected": 31.5053,
+    "delta": 0.0,
+    "mc_se_of_delta": 0.1238,
+    "pre": 31.5053,
+    "z": 0.0
+   }
+  }
+ },
+ "contract_version": "forensic-corrected-research-1",
+ "creates_prospective_evidence": false,
+ "declared_treatment": {
+  "00-0036893": {
+   "basis": "OFFICIAL_INACTIVE",
+   "corrected_opportunity_mean": 0.0,
+   "name": "Najee Harris",
+   "pre_opportunity_mean": 6.0642,
+   "team": "NYG"
+  },
+  "00-0038389": {
+   "basis": "OFFICIAL_INACTIVE",
+   "corrected_opportunity_mean": 0.0,
+   "name": "Israel Abanikanda",
+   "pre_opportunity_mean": 6.5587,
+   "team": "DAL"
+  },
+  "00-0039398": {
+   "basis": "NOT_ON_ACTIVE_53_PRACTICE_SQUAD",
+   "corrected_opportunity_mean": 0.0,
+   "name": "Joe Milton III",
+   "pre_opportunity_mean": 21.6747,
+   "team": "DAL"
+  },
+  "00-0040225": {
+   "basis": "OFFICIAL_INACTIVE",
+   "corrected_opportunity_mean": 0.0,
+   "name": "Thomas Fidone II",
+   "pre_opportunity_mean": 0.4637,
+   "team": "NYG"
+  },
+  "00-0040431": {
+   "basis": "OFFICIAL_INACTIVE",
+   "corrected_opportunity_mean": 0.0,
+   "name": "Dalen Cambre",
+   "pre_opportunity_mean": 0.337,
+   "team": "NYG"
+  },
+  "00-0040930": {
+   "basis": "OFFICIAL_INACTIVE",
+   "corrected_opportunity_mean": 0.0,
+   "name": "Camden Brown",
+   "pre_opportunity_mean": 2.5266,
+   "team": "DAL"
+  }
+ },
+ "execution_identity": {
+  "caveat_working_tree": {
+   "committed_base_equal": true,
+   "corrected": "d954110bcfafed627006cd9adbc6e6aace6a78fe+dirty[40]",
+   "note": "the committed base commit is identical and every engine identity field matches, but the corrected run was executed with more uncommitted files present. Neither working tree can be re-read, so this WEAKENS the comparison and is named rather than dismissed.",
+   "pre": "d954110bcfafed627006cd9adbc6e6aace6a78fe+dirty[33]",
+   "unresolved": true
+  },
+  "code": "FORENSIC_EXECUTION_IDENTITY_MATCHES",
+  "compared": [
+   "written_at",
+   "model_configuration",
+   "seed_protocol",
+   "game_id",
+   "model_arm",
+   "feature_set_hash",
+   "source_captures",
+   "n_draws",
+   "component_manifest",
+   "code_commit"
+  ],
+  "declared_treatment": "player eligibility set (6 identities removed)",
+  "spec_hash": {
+   "corrected": "4b186a21b83a49ec",
+   "differs": true,
+   "pre": "3dddf9f62c9260b0"
+  },
+  "state": "PASS"
+ },
+ "game_id": "2026_01_DAL_NYG",
+ "market_information_consulted": "NONE. No sportsbook file was opened, no price was read and no edge was computed in producing this artifact.",
+ "player_metric_comparison": {
+  "per_player": {
+   "receiving/receiving_yards": [
+    {
+     "corrected": 10.3344,
+     "delta": 0.5336,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0031235",
+     "mc_se_of_delta": 0.2789,
+     "pre": 9.8008,
+     "team": "NYG",
+     "z": 1.91
+    },
+    {
+     "corrected": 0.0576,
+     "delta": -0.0075,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0031484",
+     "mc_se_of_delta": 0.0248,
+     "pre": 0.0651,
+     "team": "NYG",
+     "z": -0.3
+    },
+    {
+     "corrected": 2.9086,
+     "delta": 0.1942,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0033376",
+     "mc_se_of_delta": 0.117,
+     "pre": 2.7144,
+     "team": "NYG",
+     "z": 1.66
+    },
+    {
+     "corrected": 7.8879,
+     "delta": 0.8644,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0034419",
+     "mc_se_of_delta": 0.2205,
+     "pre": 7.0235,
+     "team": "NYG",
+     "z": 3.92
+    },
+    {
+     "corrected": 4.9932,
+     "delta": 0.3775,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0035250",
+     "mc_se_of_delta": 0.1567,
+     "pre": 4.6158,
+     "team": "NYG",
+     "z": 2.41
+    },
+    {
+     "corrected": 1.8624,
+     "delta": 0.1264,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0035535",
+     "mc_se_of_delta": 0.1527,
+     "pre": 1.736,
+     "team": "NYG",
+     "z": 0.83
+    },
+    {
+     "corrected": 3.0744,
+     "delta": 0.3689,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0035639",
+     "mc_se_of_delta": 0.1938,
+     "pre": 2.7055,
+     "team": "DAL",
+     "z": 1.9
+    },
+    {
+     "corrected": 24.7785,
+     "delta": 2.3868,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0036309",
+     "mc_se_of_delta": 0.4226,
+     "pre": 22.3917,
+     "team": "NYG",
+     "z": 5.65
+    },
+    {
+     "corrected": 67.474,
+     "delta": 7.0993,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0036358",
+     "mc_se_of_delta": 0.8324,
+     "pre": 60.3747,
+     "team": "DAL",
+     "z": 8.53
+    },
+    {
+     "corrected": 0.0,
+     "delta": -6.2869,
+     "excluded_in_corrected": true,
+     "gsis_id": "00-0036893",
+     "mc_se_of_delta": 0.1143,
+     "pre": 6.2869,
+     "team": "NYG",
+     "z": -54.99
+    },
+    {
+     "corrected": 8.7308,
+     "delta": 0.9878,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0036997",
+     "mc_se_of_delta": 0.2281,
+     "pre": 7.743,
+     "team": "DAL",
+     "z": 4.33
+    },
+    {
+     "corrected": 63.3391,
+     "delta": 6.5326,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0037247",
+     "mc_se_of_delta": 0.9185,
+     "pre": 56.8065,
+     "team": "DAL",
+     "z": 7.11
+    },
+    {
+     "corrected": 13.9131,
+     "delta": 1.2476,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0037801",
+     "mc_se_of_delta": 0.4375,
+     "pre": 12.6655,
+     "team": "DAL",
+     "z": 2.85
+    },
+    {
+     "corrected": 16.9579,
+     "delta": 0.869,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0037838",
+     "mc_se_of_delta": 0.3414,
+     "pre": 16.0889,
+     "team": "NYG",
+     "z": 2.55
+    },
+    {
+     "corrected": 29.5095,
+     "delta": 3.2997,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0038041",
+     "mc_se_of_delta": 0.4393,
+     "pre": 26.2097,
+     "team": "DAL",
+     "z": 7.51
+    },
+    {
+     "corrected": 0.0,
+     "delta": -8.074,
+     "excluded_in_corrected": true,
+     "gsis_id": "00-0038389",
+     "mc_se_of_delta": 0.1422,
+     "pre": 8.074,
+     "team": "DAL",
+     "z": -56.78
+    },
+    {
+     "corrected": 4.8389,
+     "delta": 0.6194,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0038547",
+     "mc_se_of_delta": 0.1899,
+     "pre": 4.2195,
+     "team": "DAL",
+     "z": 3.26
+    },
+    {
+     "corrected": 6.6716,
+     "delta": 0.4892,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0038705",
+     "mc_se_of_delta": 0.2072,
+     "pre": 6.1824,
+     "team": "DAL",
+     "z": 2.36
+    },
+    {
+     "corrected": 8.1875,
+     "delta": 0.8755,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0038738",
+     "mc_se_of_delta": 0.2437,
+     "pre": 7.312,
+     "team": "DAL",
+     "z": 3.59
+    },
+    {
+     "corrected": 6.7797,
+     "delta": 0.7099,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0039062",
+     "mc_se_of_delta": 0.2331,
+     "pre": 6.0699,
+     "team": "DAL",
+     "z": 3.05
+    },
+    {
+     "corrected": 42.3817,
+     "delta": 2.8081,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0039337",
+     "mc_se_of_delta": 0.537,
+     "pre": 39.5736,
+     "team": "NYG",
+     "z": 5.23
+    },
+    {
+     "corrected": 15.0514,
+     "delta": 1.2931,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0039384",
+     "mc_se_of_delta": 0.2627,
+     "pre": 13.7583,
+     "team": "NYG",
+     "z": 4.92
+    },
+    {
+     "corrected": 43.3909,
+     "delta": 4.6054,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0039410",
+     "mc_se_of_delta": 0.641,
+     "pre": 38.7855,
+     "team": "DAL",
+     "z": 7.18
+    },
+    {
+     "corrected": 10.3949,
+     "delta": 1.0693,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0039530",
+     "mc_se_of_delta": 0.2849,
+     "pre": 9.3256,
+     "team": "DAL",
+     "z": 3.75
+    },
+    {
+     "corrected": 27.7355,
+     "delta": 2.4115,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0039847",
+     "mc_se_of_delta": 0.3972,
+     "pre": 25.324,
+     "team": "NYG",
+     "z": 6.07
+    },
+    {
+     "corrected": 0.0,
+     "delta": -3.3891,
+     "excluded_in_corrected": true,
+     "gsis_id": "00-0040225",
+     "mc_se_of_delta": 0.1066,
+     "pre": 3.3891,
+     "team": "NYG",
+     "z": -31.79
+    },
+    {
+     "corrected": 0.0,
+     "delta": -2.584,
+     "excluded_in_corrected": true,
+     "gsis_id": "00-0040431",
+     "mc_se_of_delta": 0.109,
+     "pre": 2.584,
+     "team": "NYG",
+     "z": -23.7
+    },
+    {
+     "corrected": 15.692,
+     "delta": 1.1574,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0040715",
+     "mc_se_of_delta": 0.2594,
+     "pre": 14.5346,
+     "team": "NYG",
+     "z": 4.46
+    },
+    {
+     "corrected": 0.0,
+     "delta": -20.0995,
+     "excluded_in_corrected": true,
+     "gsis_id": "00-0040930",
+     "mc_se_of_delta": 0.3229,
+     "pre": 20.0995,
+     "team": "DAL",
+     "z": -62.25
+    },
+    {
+     "corrected": 11.2172,
+     "delta": 0.7777,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0041042",
+     "mc_se_of_delta": 0.303,
+     "pre": 10.4395,
+     "team": "NYG",
+     "z": 2.57
+    }
+   ],
+   "receiving/receptions": [
+    {
+     "corrected": 0.7877,
+     "delta": 0.0476,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0031235",
+     "mc_se_of_delta": 0.0179,
+     "pre": 0.7401,
+     "team": "NYG",
+     "z": 2.66
+    },
+    {
+     "corrected": 0.0065,
+     "delta": -0.0009,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0031484",
+     "mc_se_of_delta": 0.0026,
+     "pre": 0.0074,
+     "team": "NYG",
+     "z": -0.34
+    },
+    {
+     "corrected": 0.4138,
+     "delta": 0.0336,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0033376",
+     "mc_se_of_delta": 0.0138,
+     "pre": 0.3801,
+     "team": "NYG",
+     "z": 2.43
+    },
+    {
+     "corrected": 0.8495,
+     "delta": 0.0885,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0034419",
+     "mc_se_of_delta": 0.02,
+     "pre": 0.761,
+     "team": "NYG",
+     "z": 4.43
+    },
+    {
+     "corrected": 0.7454,
+     "delta": 0.054,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0035250",
+     "mc_se_of_delta": 0.0187,
+     "pre": 0.6914,
+     "team": "NYG",
+     "z": 2.89
+    },
+    {
+     "corrected": 0.1245,
+     "delta": 0.0063,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0035535",
+     "mc_se_of_delta": 0.0095,
+     "pre": 0.1182,
+     "team": "NYG",
+     "z": 0.66
+    },
+    {
+     "corrected": 0.3071,
+     "delta": 0.0254,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0035639",
+     "mc_se_of_delta": 0.0174,
+     "pre": 0.2818,
+     "team": "DAL",
+     "z": 1.46
+    },
+    {
+     "corrected": 1.9055,
+     "delta": 0.1816,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0036309",
+     "mc_se_of_delta": 0.027,
+     "pre": 1.7239,
+     "team": "NYG",
+     "z": 6.72
+    },
+    {
+     "corrected": 5.2183,
+     "delta": 0.5696,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0036358",
+     "mc_se_of_delta": 0.0568,
+     "pre": 4.6486,
+     "team": "DAL",
+     "z": 10.03
+    },
+    {
+     "corrected": 0.0,
+     "delta": -0.987,
+     "excluded_in_corrected": true,
+     "gsis_id": "00-0036893",
+     "mc_se_of_delta": 0.0145,
+     "pre": 0.987,
+     "team": "NYG",
+     "z": -68.11
+    },
+    {
+     "corrected": 1.4999,
+     "delta": 0.1859,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0036997",
+     "mc_se_of_delta": 0.0321,
+     "pre": 1.314,
+     "team": "DAL",
+     "z": 5.78
+    },
+    {
+     "corrected": 4.0086,
+     "delta": 0.4205,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0037247",
+     "mc_se_of_delta": 0.0527,
+     "pre": 3.5881,
+     "team": "DAL",
+     "z": 7.98
+    },
+    {
+     "corrected": 1.0277,
+     "delta": 0.1075,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0037801",
+     "mc_se_of_delta": 0.0276,
+     "pre": 0.9203,
+     "team": "DAL",
+     "z": 3.89
+    },
+    {
+     "corrected": 1.4626,
+     "delta": 0.0848,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0037838",
+     "mc_se_of_delta": 0.0243,
+     "pre": 1.3779,
+     "team": "NYG",
+     "z": 3.49
+    },
+    {
+     "corrected": 3.2996,
+     "delta": 0.373,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0038041",
+     "mc_se_of_delta": 0.0434,
+     "pre": 2.9266,
+     "team": "DAL",
+     "z": 8.6
+    },
+    {
+     "corrected": 0.0,
+     "delta": -1.2263,
+     "excluded_in_corrected": true,
+     "gsis_id": "00-0038389",
+     "mc_se_of_delta": 0.0186,
+     "pre": 1.2263,
+     "team": "DAL",
+     "z": -65.98
+    },
+    {
+     "corrected": 0.5306,
+     "delta": 0.0703,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0038547",
+     "mc_se_of_delta": 0.0192,
+     "pre": 0.4604,
+     "team": "DAL",
+     "z": 3.66
+    },
+    {
+     "corrected": 1.0297,
+     "delta": 0.0884,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0038705",
+     "mc_se_of_delta": 0.0267,
+     "pre": 0.9414,
+     "team": "DAL",
+     "z": 3.31
+    },
+    {
+     "corrected": 0.961,
+     "delta": 0.0901,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0038738",
+     "mc_se_of_delta": 0.0264,
+     "pre": 0.8709,
+     "team": "DAL",
+     "z": 3.41
+    },
+    {
+     "corrected": 0.6506,
+     "delta": 0.0686,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0039062",
+     "mc_se_of_delta": 0.0198,
+     "pre": 0.582,
+     "team": "DAL",
+     "z": 3.47
+    },
+    {
+     "corrected": 3.6245,
+     "delta": 0.265,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0039337",
+     "mc_se_of_delta": 0.0383,
+     "pre": 3.3595,
+     "team": "NYG",
+     "z": 6.92
+    },
+    {
+     "corrected": 1.9444,
+     "delta": 0.1606,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0039384",
+     "mc_se_of_delta": 0.028,
+     "pre": 1.7837,
+     "team": "NYG",
+     "z": 5.73
+    },
+    {
+     "corrected": 3.7073,
+     "delta": 0.4039,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0039410",
+     "mc_se_of_delta": 0.0483,
+     "pre": 3.3034,
+     "team": "DAL",
+     "z": 8.36
+    },
+    {
+     "corrected": 1.0304,
+     "delta": 0.1075,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0039530",
+     "mc_se_of_delta": 0.0254,
+     "pre": 0.9229,
+     "team": "DAL",
+     "z": 4.22
+    },
+    {
+     "corrected": 2.4334,
+     "delta": 0.2239,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0039847",
+     "mc_se_of_delta": 0.0291,
+     "pre": 2.2095,
+     "team": "NYG",
+     "z": 7.71
+    },
+    {
+     "corrected": 0.0,
+     "delta": -0.3285,
+     "excluded_in_corrected": true,
+     "gsis_id": "00-0040225",
+     "mc_se_of_delta": 0.0091,
+     "pre": 0.3285,
+     "team": "NYG",
+     "z": -36.18
+    },
+    {
+     "corrected": 0.0,
+     "delta": -0.2112,
+     "excluded_in_corrected": true,
+     "gsis_id": "00-0040431",
+     "mc_se_of_delta": 0.0075,
+     "pre": 0.2112,
+     "team": "NYG",
+     "z": -27.99
+    },
+    {
+     "corrected": 1.9187,
+     "delta": 0.1589,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0040715",
+     "mc_se_of_delta": 0.0268,
+     "pre": 1.7599,
+     "team": "NYG",
+     "z": 5.94
+    },
+    {
+     "corrected": 0.0,
+     "delta": -1.5955,
+     "excluded_in_corrected": true,
+     "gsis_id": "00-0040930",
+     "mc_se_of_delta": 0.0228,
+     "pre": 1.5955,
+     "team": "DAL",
+     "z": -70.11
+    },
+    {
+     "corrected": 0.9018,
+     "delta": 0.065,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0041042",
+     "mc_se_of_delta": 0.0204,
+     "pre": 0.8367,
+     "team": "NYG",
+     "z": 3.19
+    }
+   ],
+   "receiving/targets": [
+    {
+     "corrected": 1.4607,
+     "delta": 0.0919,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0031235",
+     "mc_se_of_delta": 0.0282,
+     "pre": 1.3689,
+     "team": "NYG",
+     "z": 3.26
+    },
+    {
+     "corrected": 0.0091,
+     "delta": -0.0003,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0031484",
+     "mc_se_of_delta": 0.0034,
+     "pre": 0.0094,
+     "team": "NYG",
+     "z": -0.07
+    },
+    {
+     "corrected": 0.5791,
+     "delta": 0.0464,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0033376",
+     "mc_se_of_delta": 0.0178,
+     "pre": 0.5327,
+     "team": "NYG",
+     "z": 2.6
+    },
+    {
+     "corrected": 1.2679,
+     "delta": 0.1331,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0034419",
+     "mc_se_of_delta": 0.0271,
+     "pre": 1.1347,
+     "team": "NYG",
+     "z": 4.91
+    },
+    {
+     "corrected": 0.939,
+     "delta": 0.0661,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0035250",
+     "mc_se_of_delta": 0.0223,
+     "pre": 0.8729,
+     "team": "NYG",
+     "z": 2.96
+    },
+    {
+     "corrected": 0.2241,
+     "delta": 0.013,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0035535",
+     "mc_se_of_delta": 0.0156,
+     "pre": 0.2111,
+     "team": "NYG",
+     "z": 0.84
+    },
+    {
+     "corrected": 0.4531,
+     "delta": 0.0385,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0035639",
+     "mc_se_of_delta": 0.0245,
+     "pre": 0.4146,
+     "team": "DAL",
+     "z": 1.57
+    },
+    {
+     "corrected": 3.2984,
+     "delta": 0.3043,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0036309",
+     "mc_se_of_delta": 0.0405,
+     "pre": 2.9941,
+     "team": "NYG",
+     "z": 7.51
+    },
+    {
+     "corrected": 7.6402,
+     "delta": 0.8336,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0036358",
+     "mc_se_of_delta": 0.0781,
+     "pre": 6.8066,
+     "team": "DAL",
+     "z": 10.68
+    },
+    {
+     "corrected": 0.0,
+     "delta": -1.2732,
+     "excluded_in_corrected": true,
+     "gsis_id": "00-0036893",
+     "mc_se_of_delta": 0.0174,
+     "pre": 1.2732,
+     "team": "NYG",
+     "z": -73.07
+    },
+    {
+     "corrected": 1.9689,
+     "delta": 0.2362,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0036997",
+     "mc_se_of_delta": 0.0405,
+     "pre": 1.7326,
+     "team": "DAL",
+     "z": 5.83
+    },
+    {
+     "corrected": 6.436,
+     "delta": 0.6836,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0037247",
+     "mc_se_of_delta": 0.0791,
+     "pre": 5.7524,
+     "team": "DAL",
+     "z": 8.64
+    },
+    {
+     "corrected": 1.6364,
+     "delta": 0.1757,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0037801",
+     "mc_se_of_delta": 0.0414,
+     "pre": 1.4606,
+     "team": "DAL",
+     "z": 4.24
+    },
+    {
+     "corrected": 2.1233,
+     "delta": 0.1278,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0037838",
+     "mc_se_of_delta": 0.0314,
+     "pre": 1.9955,
+     "team": "NYG",
+     "z": 4.07
+    },
+    {
+     "corrected": 4.488,
+     "delta": 0.4954,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0038041",
+     "mc_se_of_delta": 0.056,
+     "pre": 3.9926,
+     "team": "DAL",
+     "z": 8.85
+    },
+    {
+     "corrected": 0.0,
+     "delta": -1.7674,
+     "excluded_in_corrected": true,
+     "gsis_id": "00-0038389",
+     "mc_se_of_delta": 0.0251,
+     "pre": 1.7674,
+     "team": "DAL",
+     "z": -70.54
+    },
+    {
+     "corrected": 0.809,
+     "delta": 0.1034,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0038547",
+     "mc_se_of_delta": 0.0278,
+     "pre": 0.7056,
+     "team": "DAL",
+     "z": 3.72
+    },
+    {
+     "corrected": 1.4254,
+     "delta": 0.1294,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0038705",
+     "mc_se_of_delta": 0.0349,
+     "pre": 1.296,
+     "team": "DAL",
+     "z": 3.7
+    },
+    {
+     "corrected": 1.2055,
+     "delta": 0.1118,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0038738",
+     "mc_se_of_delta": 0.0321,
+     "pre": 1.0938,
+     "team": "DAL",
+     "z": 3.48
+    },
+    {
+     "corrected": 1.3408,
+     "delta": 0.1395,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0039062",
+     "mc_se_of_delta": 0.0367,
+     "pre": 1.2012,
+     "team": "DAL",
+     "z": 3.8
+    },
+    {
+     "corrected": 5.8114,
+     "delta": 0.4363,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0039337",
+     "mc_se_of_delta": 0.0537,
+     "pre": 5.3751,
+     "team": "NYG",
+     "z": 8.12
+    },
+    {
+     "corrected": 2.635,
+     "delta": 0.212,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0039384",
+     "mc_se_of_delta": 0.0351,
+     "pre": 2.423,
+     "team": "NYG",
+     "z": 6.05
+    },
+    {
+     "corrected": 5.2535,
+     "delta": 0.57,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0039410",
+     "mc_se_of_delta": 0.0648,
+     "pre": 4.6835,
+     "team": "DAL",
+     "z": 8.8
+    },
+    {
+     "corrected": 1.5401,
+     "delta": 0.1623,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0039530",
+     "mc_se_of_delta": 0.0355,
+     "pre": 1.3779,
+     "team": "DAL",
+     "z": 4.56
+    },
+    {
+     "corrected": 3.8169,
+     "delta": 0.338,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0039847",
+     "mc_se_of_delta": 0.0395,
+     "pre": 3.4789,
+     "team": "NYG",
+     "z": 8.55
+    },
+    {
+     "corrected": 0.0,
+     "delta": -0.4637,
+     "excluded_in_corrected": true,
+     "gsis_id": "00-0040225",
+     "mc_se_of_delta": 0.0118,
+     "pre": 0.4637,
+     "team": "NYG",
+     "z": -39.42
+    },
+    {
+     "corrected": 0.0,
+     "delta": -0.337,
+     "excluded_in_corrected": true,
+     "gsis_id": "00-0040431",
+     "mc_se_of_delta": 0.011,
+     "pre": 0.337,
+     "team": "NYG",
+     "z": -30.72
+    },
+    {
+     "corrected": 2.522,
+     "delta": 0.2069,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0040715",
+     "mc_se_of_delta": 0.0325,
+     "pre": 2.3151,
+     "team": "NYG",
+     "z": 6.37
+    },
+    {
+     "corrected": 0.0,
+     "delta": -2.5266,
+     "excluded_in_corrected": true,
+     "gsis_id": "00-0040930",
+     "mc_se_of_delta": 0.0334,
+     "pre": 2.5266,
+     "team": "DAL",
+     "z": -75.76
+    },
+    {
+     "corrected": 1.4306,
+     "delta": 0.0994,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0041042",
+     "mc_se_of_delta": 0.0289,
+     "pre": 1.3313,
+     "team": "NYG",
+     "z": 3.43
+    }
+   ],
+   "rushing/carries": [
+    {
+     "corrected": 0.9641,
+     "delta": 0.2373,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0033376",
+     "mc_se_of_delta": 0.0276,
+     "pre": 0.7268,
+     "team": "NYG",
+     "z": 8.61
+    },
+    {
+     "corrected": 3.8833,
+     "delta": 0.8904,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0035250",
+     "mc_se_of_delta": 0.0516,
+     "pre": 2.9928,
+     "team": "NYG",
+     "z": 17.24
+    },
+    {
+     "corrected": 0.0,
+     "delta": -4.791,
+     "excluded_in_corrected": true,
+     "gsis_id": "00-0036893",
+     "mc_se_of_delta": 0.0335,
+     "pre": 4.791,
+     "team": "NYG",
+     "z": -143.0
+    },
+    {
+     "corrected": 9.2353,
+     "delta": 1.8153,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0036997",
+     "mc_se_of_delta": 0.1157,
+     "pre": 7.4201,
+     "team": "DAL",
+     "z": 15.7
+    },
+    {
+     "corrected": 0.0,
+     "delta": -4.7913,
+     "excluded_in_corrected": true,
+     "gsis_id": "00-0038389",
+     "mc_se_of_delta": 0.0593,
+     "pre": 4.7913,
+     "team": "DAL",
+     "z": -80.78
+    },
+    {
+     "corrected": 4.8474,
+     "delta": 1.3309,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0038705",
+     "mc_se_of_delta": 0.0904,
+     "pre": 3.5165,
+     "team": "DAL",
+     "z": 14.72
+    },
+    {
+     "corrected": 2.7414,
+     "delta": 0.9294,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0038738",
+     "mc_se_of_delta": 0.0688,
+     "pre": 1.812,
+     "team": "DAL",
+     "z": 13.52
+    },
+    {
+     "corrected": 7.9756,
+     "delta": 1.8558,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0039384",
+     "mc_se_of_delta": 0.0697,
+     "pre": 6.1198,
+     "team": "NYG",
+     "z": 26.61
+    },
+    {
+     "corrected": 7.2915,
+     "delta": 1.8074,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0040715",
+     "mc_se_of_delta": 0.0638,
+     "pre": 5.4841,
+     "team": "NYG",
+     "z": 28.35
+    }
+   ]
+  },
+  "per_team_sum": {
+   "receiving/receiving_yards|DAL": {
+    "corrected": 266.3044,
+    "delta": -0.269,
+    "mc_se_of_delta": 1.3334,
+    "pre": 266.5734,
+    "z": -0.2
+   },
+   "receiving/receiving_yards|NYG": {
+    "corrected": 181.8584,
+    "delta": 1.5323,
+    "mc_se_of_delta": 1.1106,
+    "pre": 180.3261,
+    "z": 1.38
+   },
+   "receiving/receptions|DAL": {
+    "corrected": 23.2709,
+    "delta": -0.3111,
+    "mc_se_of_delta": 0.0908,
+    "pre": 23.582,
+    "z": -3.43
+   },
+   "receiving/receptions|NYG": {
+    "corrected": 17.1182,
+    "delta": -0.1579,
+    "mc_se_of_delta": 0.0874,
+    "pre": 17.2761,
+    "z": -1.81
+   },
+   "receiving/targets|DAL": {
+    "corrected": 34.1969,
+    "delta": -0.6146,
+    "mc_se_of_delta": 0.1169,
+    "pre": 34.8115,
+    "z": -5.26
+   },
+   "receiving/targets|NYG": {
+    "corrected": 26.1175,
+    "delta": 0.0008,
+    "mc_se_of_delta": 0.1194,
+    "pre": 26.1167,
+    "z": 0.01
+   },
+   "rushing/carries|DAL": {
+    "corrected": 16.8241,
+    "delta": -0.7157,
+    "mc_se_of_delta": 0.1034,
+    "pre": 17.5399,
+    "z": -6.92
+   },
+   "rushing/carries|NYG": {
+    "corrected": 20.1145,
+    "delta": 0.0,
+    "mc_se_of_delta": 0.1103,
+    "pre": 20.1145,
+    "z": 0.0
+   }
+  }
+ },
+ "promoted": false,
+ "prospective_eligible": false,
+ "qb3_mechanism": {
+  "cause": null,
+  "code": "QB3_MECHANISM_REPRODUCED",
+  "detail": "qb3_lib.allocate reproduces both boards from the cell statistics, so the split is the allocator and not the draw",
+  "state": "PASS",
+  "value": {
+   "cell_statistics": {
+    "('2+', 1)": {
+     "mean_share": 0.5979,
+     "n": 240,
+     "p_primary": 0.6167,
+     "p_share_is_zero": 0.3458
+    },
+    "(1, 0)": {
+     "mean_share": 0.4946,
+     "n": 321,
+     "p_primary": 0.4922,
+     "p_share_is_zero": 0.4735
+    },
+    "(2, 0)": {
+     "mean_share": 0.0794,
+     "n": 2436,
+     "p_primary": 0.0686,
+     "p_share_is_zero": 0.812
+    }
+   },
+   "dal_previous_primary": "00-0039398",
+   "dal_previous_primary_is_practice_squad": true,
+   "fitted_on_seasons_before": 2025,
+   "forbidden_by": "predeclaration_qb3_ab.md section 2 -- \"it may not let a healthy, rostered QB2 or QB3 dilute a normal starter's volume merely by existing\"",
+   "mechanism": [
+    "the primary is drawn with probability proportional to cell p_primary, so removing Milton renormalises Prescott to 0.8777 and Howell to 0.1223",
+    "step 3 gives the primary's remainder to `the others` in proportion to cell weight; with two quarterbacks left, Howell is the only other and takes all of it",
+    "Prescott's cell mean share is 0.4946, so the expected remainder handed to Howell is 0.5054"
+   ],
+   "prescott_cell": "(1, 0) -- charted QB1 who did NOT start the club's previous game",
+   "reproduced_shares": {
+    "corrected_2qb": {
+     "00-0033077": 0.5474,
+     "00-0037077": 0.4526,
+     "closure_max_abs_dev": 0.0
+    },
+    "pre_3qb": {
+     "00-0033077": 0.4176,
+     "00-0037077": 0.0515,
+     "00-0039398": 0.5309,
+     "closure_max_abs_dev": 2.220446049250313e-16
+    }
+   }
+  }
+ },
+ "qb_comparison": {
+  "dropback_share": {
+   "DAL": {
+    "00-0033077": {
+     "corrected": 0.5416,
+     "delta": 0.1284,
+     "pre": 0.4132
+    },
+    "00-0037077": {
+     "corrected": 0.4584,
+     "delta": 0.4048,
+     "pre": 0.0536
+    },
+    "00-0039398": {
+     "corrected": 0.0,
+     "delta": -0.5332,
+     "pre": 0.5332
+    }
+   },
+   "NYG": {
+    "00-0031503": {
+     "corrected": 0.0774,
+     "delta": 0.0,
+     "pre": 0.0774
+    },
+    "00-0038998": {
+     "corrected": 0.0311,
+     "delta": 0.0,
+     "pre": 0.0311
+    },
+    "00-0040691": {
+     "corrected": 0.8914,
+     "delta": 0.0,
+     "pre": 0.8914
+    }
+   }
+  },
+  "per_qb": {
+   "qb/att": [
+    {
+     "corrected": 2.2615,
+     "delta": 0.0,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0031503",
+     "mc_se_of_delta": 0.0958,
+     "pre": 2.2615,
+     "team": "NYG",
+     "z": 0.0
+    },
+    {
+     "corrected": 20.0866,
+     "delta": 4.7661,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0033077",
+     "mc_se_of_delta": 0.2832,
+     "pre": 15.3205,
+     "team": "DAL",
+     "z": 16.83
+    },
+    {
+     "corrected": 16.0472,
+     "delta": 14.1761,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0037077",
+     "mc_se_of_delta": 0.2009,
+     "pre": 1.8711,
+     "team": "DAL",
+     "z": 70.55
+    },
+    {
+     "corrected": 0.841,
+     "delta": 0.0,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0038998",
+     "mc_se_of_delta": 0.036,
+     "pre": 0.841,
+     "team": "NYG",
+     "z": 0.0
+    },
+    {
+     "corrected": 0.0,
+     "delta": -19.576,
+     "excluded_in_corrected": true,
+     "gsis_id": "00-0039398",
+     "mc_se_of_delta": 0.1921,
+     "pre": 19.576,
+     "team": "DAL",
+     "z": -101.91
+    },
+    {
+     "corrected": 24.4775,
+     "delta": 0.0,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0040691",
+     "mc_se_of_delta": 0.1654,
+     "pre": 24.4775,
+     "team": "NYG",
+     "z": 0.0
+    }
+   ],
+   "qb/cmp": [
+    {
+     "corrected": 1.3935,
+     "delta": -0.0052,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0031503",
+     "mc_se_of_delta": 0.0611,
+     "pre": 1.3987,
+     "team": "NYG",
+     "z": -0.09
+    },
+    {
+     "corrected": 12.9229,
+     "delta": 3.0761,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0033077",
+     "mc_se_of_delta": 0.1856,
+     "pre": 9.8468,
+     "team": "DAL",
+     "z": 16.57
+    },
+    {
+     "corrected": 10.348,
+     "delta": 9.161,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0037077",
+     "mc_se_of_delta": 0.1319,
+     "pre": 1.187,
+     "team": "DAL",
+     "z": 69.43
+    },
+    {
+     "corrected": 0.5188,
+     "delta": -0.0087,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0038998",
+     "mc_se_of_delta": 0.0249,
+     "pre": 0.5275,
+     "team": "NYG",
+     "z": -0.35
+    },
+    {
+     "corrected": 0.0,
+     "delta": -12.5482,
+     "excluded_in_corrected": true,
+     "gsis_id": "00-0039398",
+     "mc_se_of_delta": 0.1262,
+     "pre": 12.5482,
+     "team": "DAL",
+     "z": -99.45
+    },
+    {
+     "corrected": 15.206,
+     "delta": -0.1439,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0040691",
+     "mc_se_of_delta": 0.1104,
+     "pre": 15.3499,
+     "team": "NYG",
+     "z": -1.3
+    }
+   ],
+   "qb/db": [
+    {
+     "corrected": 2.5401,
+     "delta": 0.0,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0031503",
+     "mc_se_of_delta": 0.1072,
+     "pre": 2.5401,
+     "team": "NYG",
+     "z": 0.0
+    },
+    {
+     "corrected": 22.0192,
+     "delta": 5.2206,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0033077",
+     "mc_se_of_delta": 0.3097,
+     "pre": 16.7986,
+     "team": "DAL",
+     "z": 16.86
+    },
+    {
+     "corrected": 18.6345,
+     "delta": 16.4541,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0037077",
+     "mc_se_of_delta": 0.2325,
+     "pre": 2.1804,
+     "team": "DAL",
+     "z": 70.76
+    },
+    {
+     "corrected": 1.0209,
+     "delta": 0.0,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0038998",
+     "mc_se_of_delta": 0.0432,
+     "pre": 1.0209,
+     "team": "NYG",
+     "z": 0.0
+    },
+    {
+     "corrected": 0.0,
+     "delta": -21.6747,
+     "excluded_in_corrected": true,
+     "gsis_id": "00-0039398",
+     "mc_se_of_delta": 0.212,
+     "pre": 21.6747,
+     "team": "DAL",
+     "z": -102.23
+    },
+    {
+     "corrected": 29.2411,
+     "delta": 0.0,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0040691",
+     "mc_se_of_delta": 0.1938,
+     "pre": 29.2411,
+     "team": "NYG",
+     "z": 0.0
+    }
+   ],
+   "qb/pyds": [
+    {
+     "corrected": 14.7879,
+     "delta": -0.079,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0031503",
+     "mc_se_of_delta": 0.6502,
+     "pre": 14.8669,
+     "team": "NYG",
+     "z": -0.12
+    },
+    {
+     "corrected": 147.9852,
+     "delta": 36.7164,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0033077",
+     "mc_se_of_delta": 2.178,
+     "pre": 111.2688,
+     "team": "DAL",
+     "z": 16.86
+    },
+    {
+     "corrected": 118.3192,
+     "delta": 104.7129,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0037077",
+     "mc_se_of_delta": 1.5559,
+     "pre": 13.6063,
+     "team": "DAL",
+     "z": 67.3
+    },
+    {
+     "corrected": 5.5349,
+     "delta": 0.0347,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0038998",
+     "mc_se_of_delta": 0.2462,
+     "pre": 5.5003,
+     "team": "NYG",
+     "z": 0.14
+    },
+    {
+     "corrected": 0.0,
+     "delta": -141.6983,
+     "excluded_in_corrected": true,
+     "gsis_id": "00-0039398",
+     "mc_se_of_delta": 1.4791,
+     "pre": 141.6983,
+     "team": "DAL",
+     "z": -95.8
+    },
+    {
+     "corrected": 161.5356,
+     "delta": 1.5766,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0040691",
+     "mc_se_of_delta": 1.2948,
+     "pre": 159.959,
+     "team": "NYG",
+     "z": 1.22
+    }
+   ],
+   "qb/rush_opp": [
+    {
+     "corrected": 0.1822,
+     "delta": 0.0,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0031503",
+     "mc_se_of_delta": 0.01,
+     "pre": 0.1822,
+     "team": "NYG",
+     "z": 0.0
+    },
+    {
+     "corrected": 1.3907,
+     "delta": 0.3257,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0033077",
+     "mc_se_of_delta": 0.0261,
+     "pre": 1.065,
+     "team": "DAL",
+     "z": 12.47
+    },
+    {
+     "corrected": 1.2956,
+     "delta": 1.1424,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0037077",
+     "mc_se_of_delta": 0.021,
+     "pre": 0.1532,
+     "team": "DAL",
+     "z": 54.48
+    },
+    {
+     "corrected": 0.0975,
+     "delta": 0.0,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0038998",
+     "mc_se_of_delta": 0.0063,
+     "pre": 0.0975,
+     "team": "NYG",
+     "z": 0.0
+    },
+    {
+     "corrected": 0.0,
+     "delta": -3.3609,
+     "excluded_in_corrected": true,
+     "gsis_id": "00-0039398",
+     "mc_se_of_delta": 0.0384,
+     "pre": 3.3609,
+     "team": "DAL",
+     "z": -87.46
+    },
+    {
+     "corrected": 4.9224,
+     "delta": 0.0,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0040691",
+     "mc_se_of_delta": 0.0468,
+     "pre": 4.9224,
+     "team": "NYG",
+     "z": 0.0
+    }
+   ],
+   "qb/scr": [
+    {
+     "corrected": 0.0989,
+     "delta": 0.0,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0031503",
+     "mc_se_of_delta": 0.0064,
+     "pre": 0.0989,
+     "team": "NYG",
+     "z": 0.0
+    },
+    {
+     "corrected": 0.7983,
+     "delta": 0.1843,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0033077",
+     "mc_se_of_delta": 0.0173,
+     "pre": 0.614,
+     "team": "DAL",
+     "z": 10.66
+    },
+    {
+     "corrected": 0.8869,
+     "delta": 0.7839,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0037077",
+     "mc_se_of_delta": 0.0156,
+     "pre": 0.103,
+     "team": "DAL",
+     "z": 50.19
+    },
+    {
+     "corrected": 0.0799,
+     "delta": 0.0,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0038998",
+     "mc_se_of_delta": 0.0055,
+     "pre": 0.0799,
+     "team": "NYG",
+     "z": 0.0
+    },
+    {
+     "corrected": 0.0,
+     "delta": -1.5004,
+     "excluded_in_corrected": true,
+     "gsis_id": "00-0039398",
+     "mc_se_of_delta": 0.0197,
+     "pre": 1.5004,
+     "team": "DAL",
+     "z": -76.33
+    },
+    {
+     "corrected": 2.4311,
+     "delta": 0.0,
+     "excluded_in_corrected": false,
+     "gsis_id": "00-0040691",
+     "mc_se_of_delta": 0.0284,
+     "pre": 2.4311,
+     "team": "NYG",
+     "z": 0.0
+    }
+   ]
+  },
+  "per_team_qb_sum": {
+   "qb/att|DAL": {
+    "corrected": 36.1339,
+    "delta": -0.6337,
+    "mc_se_of_delta": 0.1185,
+    "pre": 36.7676,
+    "z": -5.35
+   },
+   "qb/att|NYG": {
+    "corrected": 27.58,
+    "delta": 0.0,
+    "mc_se_of_delta": 0.1238,
+    "pre": 27.58,
+    "z": 0.0
+   },
+   "qb/cmp|DAL": {
+    "corrected": 23.2709,
+    "delta": -0.3111,
+    "mc_se_of_delta": 0.0908,
+    "pre": 23.582,
+    "z": -3.43
+   },
+   "qb/cmp|NYG": {
+    "corrected": 17.1182,
+    "delta": -0.1579,
+    "mc_se_of_delta": 0.0874,
+    "pre": 17.2761,
+    "z": -1.81
+   },
+   "qb/db|DAL": {
+    "corrected": 40.6538,
+    "delta": 0.0,
+    "mc_se_of_delta": 0.127,
+    "pre": 40.6538,
+    "z": 0.0
+   },
+   "qb/db|NYG": {
+    "corrected": 32.8021,
+    "delta": 0.0,
+    "mc_se_of_delta": 0.1414,
+    "pre": 32.8021,
+    "z": 0.0
+   },
+   "qb/pyds|DAL": {
+    "corrected": 266.3044,
+    "delta": -0.269,
+    "mc_se_of_delta": 1.3334,
+    "pre": 266.5734,
+    "z": -0.2
+   },
+   "qb/pyds|NYG": {
+    "corrected": 181.8584,
+    "delta": 1.5323,
+    "mc_se_of_delta": 1.1106,
+    "pre": 180.3261,
+    "z": 1.38
+   },
+   "qb/rush_opp|DAL": {
+    "corrected": 2.6864,
+    "delta": -1.8928,
+    "mc_se_of_delta": 0.0369,
+    "pre": 4.5791,
+    "z": -51.27
+   },
+   "qb/rush_opp|NYG": {
+    "corrected": 5.2021,
+    "delta": 0.0,
+    "mc_se_of_delta": 0.0433,
+    "pre": 5.2021,
+    "z": 0.0
+   },
+   "qb/scr|DAL": {
+    "corrected": 1.6851,
+    "delta": -0.5323,
+    "mc_se_of_delta": 0.0235,
+    "pre": 2.2174,
+    "z": -22.69
+   },
+   "qb/scr|NYG": {
+    "corrected": 2.6099,
+    "delta": 0.0,
+    "mc_se_of_delta": 0.0272,
+    "pre": 2.6099,
+    "z": 0.0
+   }
+  }
+ },
+ "run_ids": {
+  "corrected": "4b186a21b83a49ec",
+  "pre": "3dddf9f62c9260b0"
+ },
+ "runs": {
+  "corrected": "nfl/research/live/2026_01_DAL_NYG/FORENSIC_CORRECTED_RESEARCH/4b186a21b83a49ec",
+  "pre": "nfl/research/live/2026_01_DAL_NYG/pre_inactives_V1_CANDIDATE_R8/3dddf9f62c9260b0"
+ },
+ "sealed_pre_artifact_preserved": {
+  "modified": false,
+  "note": "the sealed PRE run is READ here and never rewritten.",
+  "run_id": "3dddf9f62c9260b0"
+ },
+ "status": "RESEARCH_CANDIDATE",
+ "team_budget_comparison": {
+  "team_volume/team_carries|DAL": {
+   "corrected": 28.2008,
+   "delta": 0.0,
+   "mc_se_of_delta": 0.0932,
+   "pre": 28.2008,
+   "z": 0.0
+  },
+  "team_volume/team_carries|NYG": {
+   "corrected": 31.5053,
+   "delta": 0.0,
+   "mc_se_of_delta": 0.1238,
+   "pre": 31.5053,
+   "z": 0.0
+  },
+  "team_volume/team_dropbacks_part|DAL": {
+   "corrected": 40.8944,
+   "delta": 0.0,
+   "mc_se_of_delta": 0.1274,
+   "pre": 40.8944,
+   "z": 0.0
+  },
+  "team_volume/team_dropbacks_part|NYG": {
+   "corrected": 32.8874,
+   "delta": 0.0,
+   "mc_se_of_delta": 0.1412,
+   "pre": 32.8874,
+   "z": 0.0
+  },
+  "team_volume/team_off_snaps|DAL": {
+   "corrected": 69.6737,
+   "delta": 0.0,
+   "mc_se_of_delta": 0.164,
+   "pre": 69.6737,
+   "z": 0.0
+  },
+  "team_volume/team_off_snaps|NYG": {
+   "corrected": 65.5231,
+   "delta": 0.0,
+   "mc_se_of_delta": 0.1416,
+   "pre": 65.5231,
+   "z": 0.0
+  },
+  "team_volume/team_targets|DAL": {
+   "corrected": 33.1868,
+   "delta": 0.0,
+   "mc_se_of_delta": 0.1151,
+   "pre": 33.1868,
+   "z": 0.0
+  },
+  "team_volume/team_targets|NYG": {
+   "corrected": 28.1753,
+   "delta": 0.0,
+   "mc_se_of_delta": 0.113,
+   "pre": 28.1753,
+   "z": 0.0
+  }
+ },
+ "verdicts": [
+  {
+   "evidence": [
+    "all five officially inactive identities carried opportunity before and carry exactly zero after",
+    "NYG, whose QB room did not change, conserves its player-side sums EXACTLY: carries +0.000, targets +0.001",
+    "no carry, target or reception was transferred by hand; the governed allocator redistributed within its own budget"
+   ],
+   "repair": "A. official inactives consumed; ineligible players made ineligible",
+   "verdict": "INPUT_DEFECT_FIXED"
+  },
+  {
+   "evidence": [
+    "Joe Milton III fell from 21.67 dropbacks to 0.00",
+    "DAL team QB dropbacks are UNCHANGED at 40.65; the mass was redistributed, not removed",
+    "Sam Howell rose from 0.0536 to 0.4584 of DAL dropbacks while Dak Prescott reached only 0.5416",
+    "the QB3 mixing defect MOVED from Milton to Howell rather than resolving; the repair was necessary and is not sufficient"
+   ],
+   "repair": "B. non-game-eligible quarterback identity removed (practice squad)",
+   "verdict": "INPUT_DEFECT_FIXED_BUT_SPECIFICATION_DEFECT_REMAINS"
+  },
+  {
+   "evidence": [
+    "predeclaration_qb3_ab.md sha256 07b36d0e... is complete enough to execute and needs no invented parameter",
+    "but what it specifies is a WALK-FORWARD evaluation on 2022, 2023 and 2024 with clustered bootstrap, not a forecast for a 2026 game",
+    "its section 8 states that 2026 estimates no rate in either stage and that until section 6 is met \"every week-1 quarterback market stays inadmissible\"",
+    "no QB3-AB estimator exists in the repository; building one tonight would be unregistered modelling inside an audit",
+    "branch stopped on the preregistration's own scope, not on incompleteness"
+   ],
+   "repair": "C. QB3 Stage-A / Stage-B two-stage participation",
+   "verdict": "UNRESOLVED"
+  },
+  {
+   "evidence": [
+    "the estimand IS fully specified and closes exactly: team_carries - scrambles = rb + kneel + designed_qb + wr + te + fringe, worst per-draw residual 0.00e+00",
+    "nothing was renormalised and nothing leaked: DAL rush play budget +0.532 equals rb -0.716 plus non-RB +1.248",
+    "DAL rb budget FELL -0.716 even though its rush play budget ROSE, because A1's rb share does not condition on which running backs are eligible",
+    "whether a club that loses its lead back should keep the same rb share is a football assumption this repository does not contain. It is REPORTED, not invented."
+   ],
+   "repair": "D. carry budget equation and redistribution estimand",
+   "verdict": "SPECIFICATION_DEFECT_REMAINS"
+  }
+ ],
+ "what_this_does_not_establish": [
+  "it does not establish that the corrected projection is more accurate. One game produces no evidence about accuracy.",
+  "it does not clear QB3_WEEK1_SEASON_BOUNDARY, which is a specification defect and is not cleared by any input repair.",
+  "it does not clear QB_INACTIVE_OWNERSHIP_NOT_ENFORCED: the corrected run still reports enforced=false, because the exclusions were applied by this research harness and not by the governed mechanism that owns the share.",
+  "it does not make any quarterback market admissible."
+ ]
+}

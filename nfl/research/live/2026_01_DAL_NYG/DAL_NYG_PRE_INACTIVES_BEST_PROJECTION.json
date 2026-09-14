@@ -1,0 +1,272 @@
+{
+ "artifact": "DAL_NYG_PRE_INACTIVES_BEST_PROJECTION",
+ "spec_version": "projection-board/1.0.0",
+ "market_information_used": "NONE. No sportsbook artifact was opened, read or joined in this run.",
+ "game": {
+  "game_id": "2026_01_DAL_NYG",
+  "kickoff_utc": "2026-09-14T00:20:00Z"
+ },
+ "forecast_identity": {
+  "run_id": "3dddf9f62c9260b0",
+  "forecast_stage": "PRE_INACTIVES",
+  "written_at": "2026-09-13T23:12:33Z",
+  "n_draws": 8000,
+  "seed": 20260908,
+  "model_configuration": "V1_CANDIDATE_R8",
+  "draw_artifact_sha256": "b338e71b0d0bc83adffff8b214046e3dad309bec9671cbebade6451d76b81667",
+  "board_dir": "nfl/research/live/2026_01_DAL_NYG/pre_inactives_V1_CANDIDATE_R8/3dddf9f62c9260b0"
+ },
+ "monte_carlo": {
+  "n_draws": 8000,
+  "raised_from": 1000,
+  "reason": "measured MC error at n=1000 was material: receptions q90 SE 0.435 (13.4% of the metric SD), qb/pyds median SE 7.5 yards",
+  "measured_reduction": "q90 standard errors fell 2.7-2.9x, against the 2.83x theory for an 8x draw increase",
+  "this_is_computational_precision_not_a_model_change": true
+ },
+ "evidence": {
+  "injury_vintage_retrieved_at": "2026-09-13T23:12:09Z",
+  "depth_chart_retrieved_at": "2026-09-08T11:56:57Z",
+  "depth_chart_note": "5 days old and predating week 1. That is the governed capture and the readiness gate accepts it; for a season opener it is the final preseason chart, but it is NOT a game-week chart.",
+  "blocked_sources": [
+   "official_injury_report: NO_EGRESS",
+   "official_inactives: NO_EGRESS",
+   "espn_injuries_json: NO_EGRESS"
+  ],
+  "governed_injury_facts": {
+   "DAL": [
+    {
+     "player": "Malik Davis",
+     "pos": "RB",
+     "report_status": "Out",
+     "injury": "Hip"
+    },
+    {
+     "player": "Luke Schoonmaker",
+     "pos": "TE",
+     "report_status": null,
+     "practice": "Did Not Participate",
+     "injury": "Not injury related - personal matter"
+    }
+   ],
+   "NYG": [
+    {
+     "player": "Malik Nabers",
+     "pos": "WR",
+     "report_status": "Questionable",
+     "practice": "Full Participation",
+     "injury": "Knee"
+    }
+   ]
+  },
+  "omission_never_read_as_active": true
+ },
+ "layer_health": {
+  "capture_validation": "READY",
+  "feature_build": "READY (declared unimplemented)",
+  "team_environment": "DEGRADED \u2014 known limitation team_volume_is_near_unforecastable",
+  "appearance": "READY",
+  "participation": "READY",
+  "targets_carries": "READY",
+  "conversion": "READY",
+  "td_layer": "READY",
+  "qb_participation": "CONTAMINATED \u2014 QB3_WEEK1_SEASON_BOUNDARY + QB3_PARTICIPATION_MIXING",
+  "carries": "DEGRADED \u2014 CARRY_ALLOCATION_HEALTH_WARNING, confirmed present in this game",
+  "player_distribution": "READY"
+ },
+ "carry_allocation_chain": {
+  "DAL": {
+   "team_carries_mean": 28.201,
+   "team_carries_q10": 20.434,
+   "team_carries_q90": 33.131,
+   "qb_rush_opportunity_mean": 4.579,
+   "non_qb_rush_budget_mean": 17.54,
+   "allocated_mean": 22.119,
+   "residual_unowned_mean": 6.082,
+   "residual_unowned_pct": 0.2157,
+   "closure_pct_mean": 0.7886,
+   "closure_pct_q10": 0.5971,
+   "closure_pct_q90": 0.9824,
+   "n_draws_with_residual_gt_0": 7360,
+   "n_draws": 8000,
+   "rushers": [
+    {
+     "player": "Javonte Williams",
+     "role": "RB1",
+     "position": "RB",
+     "carries_mean": 7.42,
+     "carries_q10": 0.0,
+     "carries_q90": 15.9,
+     "p_carry_ge_1": 0.663,
+     "share_of_team_mean": 0.2631
+    },
+    {
+     "player": "Israel Abanikanda",
+     "role": "RB3",
+     "position": "RB",
+     "carries_mean": 4.791,
+     "carries_q10": 0.0,
+     "carries_q90": 12.23,
+     "p_carry_ge_1": 0.7521,
+     "share_of_team_mean": 0.1699
+    },
+    {
+     "player": "Emari Demercado",
+     "role": "RB2",
+     "position": "RB",
+     "carries_mean": 3.516,
+     "carries_q10": 0.0,
+     "carries_q90": 9.77,
+     "p_carry_ge_1": 0.5424,
+     "share_of_team_mean": 0.1247
+    },
+    {
+     "player": "Hunter Luepke",
+     "role": "FB1",
+     "position": "RB",
+     "carries_mean": 1.812,
+     "carries_q10": 0.0,
+     "carries_q90": 5.62,
+     "p_carry_ge_1": 0.3711,
+     "share_of_team_mean": 0.0643
+    }
+   ]
+  },
+  "NYG": {
+   "team_carries_mean": 31.505,
+   "team_carries_q10": 21.147,
+   "team_carries_q90": 41.715,
+   "qb_rush_opportunity_mean": 5.202,
+   "non_qb_rush_budget_mean": 20.114,
+   "allocated_mean": 25.317,
+   "residual_unowned_mean": 6.189,
+   "residual_unowned_pct": 0.1964,
+   "closure_pct_mean": 0.8144,
+   "closure_pct_q10": 0.6279,
+   "closure_pct_q90": 0.9905,
+   "n_draws_with_residual_gt_0": 7276,
+   "n_draws": 8000,
+   "rushers": [
+    {
+     "player": "Tyrone Tracy Jr.",
+     "role": "RB3",
+     "position": "RB",
+     "carries_mean": 6.12,
+     "carries_q10": 0.0,
+     "carries_q90": 10.81,
+     "p_carry_ge_1": 0.8869,
+     "share_of_team_mean": 0.1942
+    },
+    {
+     "player": "Cam Skattebo",
+     "role": "RB1",
+     "position": "RB",
+     "carries_mean": 5.484,
+     "carries_q10": 1.88,
+     "carries_q90": 9.59,
+     "p_carry_ge_1": 0.9409,
+     "share_of_team_mean": 0.1741
+    },
+    {
+     "player": "Najee Harris",
+     "role": "RB2",
+     "position": "RB",
+     "carries_mean": 4.791,
+     "carries_q10": 1.47,
+     "carries_q90": 8.62,
+     "p_carry_ge_1": 0.9291,
+     "share_of_team_mean": 0.1521
+    },
+    {
+     "player": "Devin Singletary",
+     "role": "RB4",
+     "position": "RB",
+     "carries_mean": 2.993,
+     "carries_q10": 0.0,
+     "carries_q90": 6.63,
+     "p_carry_ge_1": 0.6847,
+     "share_of_team_mean": 0.095
+    },
+    {
+     "player": "Patrick Ricard",
+     "role": "FB1",
+     "position": "RB",
+     "carries_mean": 0.727,
+     "carries_q10": 0.0,
+     "carries_q90": 2.52,
+     "p_carry_ge_1": 0.2323,
+     "share_of_team_mean": 0.0231
+    }
+   ]
+  }
+ },
+ "unowned_pool_verdict": {
+  "appears_in_this_game": true,
+  "DAL": {
+   "residual_pct": 0.2157,
+   "closure": 0.7886,
+   "draws_with_residual": "7360/8000"
+  },
+  "NYG": {
+   "residual_pct": 0.1964,
+   "closure": 0.8144,
+   "draws_with_residual": "7276/8000"
+  },
+  "statement": "the ~22% unowned-pool phenomenon diagnosed on the 1 PM slate is PRESENT here: DAL 21.6%, NYG 19.6%, with a positive residual in over 90% of draws on both clubs."
+ },
+ "sanity_audit": {
+  "flags": [
+   {
+    "code": "QB2_OR_LOWER_PROJECTED_ABOVE_CHARTED_QB1",
+    "team": "DAL",
+    "detail": "Joe Milton III (unranked) at 21.67 dropbacks is above the depth chart QB1 Dak Prescott at 16.80",
+    "severity": "HIGH",
+    "attributed_to": "QB3_WEEK1_SEASON_BOUNDARY"
+   },
+   {
+    "code": "CHARTED_QB1_LOW_PARTICIPATION_PROBABILITY",
+    "team": "DAL",
+    "detail": "Dak Prescott P(dropback>=1)=0.530; a healthy charted starter with no OUT designation should not carry this much zero mass",
+    "severity": "HIGH",
+    "attributed_to": "QB3_PARTICIPATION_MIXING"
+   },
+   {
+    "code": "EXCESSIVE_UNOWNED_OPPORTUNITY",
+    "team": "DAL",
+    "detail": "21.6% of projected team carries are allocated to no player on the board (6.08 of 28.20); closure 78.9%",
+    "severity": "HIGH",
+    "attributed_to": "CARRY_ALLOCATION_HEALTH_WARNING"
+   },
+   {
+    "code": "DEPTH_RUSHER_ABOVE_PRIMARY",
+    "team": "NYG",
+    "detail": "Tyrone Tracy Jr. (RB3) 6.12 carries above RB1 Cam Skattebo 5.48",
+    "severity": "MEDIUM",
+    "attributed_to": "CARRY_ALLOCATION_HEALTH_WARNING"
+   },
+   {
+    "code": "EXCESSIVE_UNOWNED_OPPORTUNITY",
+    "team": "NYG",
+    "detail": "19.6% of projected team carries are allocated to no player on the board (6.19 of 31.50); closure 81.4%",
+    "severity": "HIGH",
+    "attributed_to": "CARRY_ALLOCATION_HEALTH_WARNING"
+   },
+   {
+    "code": "TE2_TARGETS_ABOVE_TE1",
+    "team": "NYG",
+    "detail": "Theo Johnson (TE2) 3.48 targets above Isaiah Likely (TE1) 2.00",
+    "severity": "MEDIUM",
+    "attributed_to": "ROLE_ORDERING_NOT_EVIDENCED"
+   }
+  ],
+  "n_flags": 6,
+  "rule": "sanity checking may FLAG a projection. It may not alter one. No number below was hand-tuned."
+ },
+ "projection_board_rows": 117,
+ "metrics_not_manufactured": [
+  "rushing/rushing_yards (RB/WR/TE) \u2014 no governed estimand",
+  "receiving/air_yards \u2014 NO_AIR_YARDS_LAYER",
+  "qb/rating \u2014 NO_RATE_COMPOSITE_LAYER",
+  "game score, spread, total, win probability \u2014 not governed layers"
+ ],
+ "ranking_note": "the confidence ranking orders by FORECAST RELIABILITY, never by market edge. No market was consulted."
+}
