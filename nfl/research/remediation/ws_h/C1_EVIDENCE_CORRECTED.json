@@ -1,0 +1,1106 @@
+{
+ "artifact": "C1_EVIDENCE_CORRECTED",
+ "spec_version": "ws-h-c1-evidence-corrected/1.0.0",
+ "workstream": "WS-H",
+ "produced_utc": "2026-09-14",
+ "status": "EXPLORATORY",
+ "governance": "Not prospective evidence. Not promoted. R8 remains the accepted baseline. No production, frozen or other-workstream file was modified by WS-H; every write is under nfl/research/remediation/ws_h/. No market data was opened at any point.",
+ "git": {
+  "branch": "claude/nfl-greenfield-architecture-stsxmk",
+  "head_sha": "837d52f0d448527bd52a2aedc26362cb17611a08",
+  "repair_shipped_in": "57d38ad",
+  "measurement_shipped_in": "3f5fc82"
+ },
+ "supersedes": {
+  "artifact": "nfl/research/slate_audit/C1_EVALUATION.json",
+  "sha256": "a79772b4cc3c1e376a31590151d149e077421da7fecb7f18466dff70df3f9324",
+  "sha16": "a79772b4cc3c1e37",
+  "disposition": "PRESERVED UNMODIFIED. It was hashed before and after every step of this verification and is byte-identical; the evaluation was re-run through a scratchpad driver so c1_eval.main() could not write to it. It remains quotable for its DESIGN, its cluster counts, its closure, and the SIGN and CONSISTENCY of its result. Its absolute metrics and its CRPS magnitude are superseded by `corrected_evaluation` in this file and must not be quoted.",
+  "correction_link": "nfl/research/remediation/ws_h/C1_EVIDENCE_CORRECTED.json"
+ },
+ "preregistration_sha256": "9d0443e1bd777d31371d2f7073c4e8acf2be9afcc6b4730471957b225e83e9a0",
+ "method": "Every number below was re-derived from code and bytes in this repository. WS02's figures were treated as hypotheses to falsify, not as inputs. Three of WS02's own conclusions did not survive that and are classified here on exactly the same terms as everything else.",
+ "claims": [
+  {
+   "classification": "VALID",
+   "claim": "p4c_build fits the carries `other` mass on a TEAM-carries denominator: pool = clip(mall - ms, 0, 0.95) with mall summing every position.",
+   "stated_in": "predeclaration_c1_denominator.md S1; p4c_build.py:157 (HEAD)",
+   "basis": "Read from source and recomputed. Over the 2,718 pre-2026 team-games excluding 2020, mall has mean 1.00000000, min 0.9999999999999998, max 1.0000000000000002 and ZERO team-games deviating by more than 1e-6. The fitted quantity is therefore exactly 1 - (modelled RBs share of TEAM carries)."
+  },
+  {
+   "classification": "VALID",
+   "claim": "The fitted team-denominator mass is 0.198875.",
+   "stated_in": "predeclaration S1; own5_rush_ownership.json; p4c_params.params(\"carries\", 2026)",
+   "re_derived_value": 0.19887535274028778,
+   "basis": "Recomputed independently from p4b/panel_enriched.pkl: 0.19887535274028778, identical to the production parameter object."
+  },
+  {
+   "classification": "VALID",
+   "claim": "run_forecast hands the allocator A1's `rb` category, not team_carries.",
+   "stated_in": "predeclaration S1; run_forecast.py:755 (HEAD)",
+   "basis": "rushing_budget = {t: a1.value['carries'][(t,'rb')] ...}. A1's CATEGORIES are kneel, designed_qb, rb, wr, te, fringe; league shares read live from the frozen parameter object are rb 0.860235, designed_qb 0.068808, wr 0.036027, kneel 0.028758, fringe 0.003658, te 0.002514, summing to 1.0000000000."
+  },
+  {
+   "classification": "VALID",
+   "claim": "The double subtraction is real and its direction is as diagnosed: a team-denominator residual applied to a partition of that denominator removes kneel, designed_qb, wr, te and fringe a second time.",
+   "stated_in": "predeclaration S1; football_engine.py:509-558 (HEAD)",
+   "basis": "Mechanism confirmed by reading both ends of the seam and by a live engine A/B on a real A1 budget. Removing the double subtraction raises the modelled backs projection by a factor of 1.224798."
+  },
+  {
+   "classification": "CORRECTED",
+   "claim": "The historical non-RB share of team carries.",
+   "stated_in": "predeclaration S1; denominator.py:17 docstring; test_c1_denominator.py:7 docstring; commit message of 57d38ad",
+   "registered_value": 0.1918,
+   "re_derived_value": {
+    "matched_population_and_estimator_2021_2025_ex2020": 0.190173,
+    "pbp_window_2021_2024_ex2020": 0.191059
+   },
+   "basis": "Recomputed from panel_enriched.pkl with the SAME estimator the fit uses: mean over team-games of summed s_carries, denominator team_carries. Positional decomposition on the matched population: RB 0.809827, QB 0.155309, WR 0.029964, TE 0.003983, other 0.000917."
+  },
+  {
+   "classification": "INVALIDATED",
+   "claim": "\"The fitted 0.198875 and the historical non-RB mass 0.1918 agree to three decimals, and that agreement is the identification.\"",
+   "stated_in": "predeclaration S1; denominator.py:208 these_two_agree_which_is_the_proof; commit message",
+   "basis": "0.198875 against 0.1918 differ by 0.007075 -- agreement to ONE decimal place. On the matched population they differ by 0.008702. The identification still holds by a different route: that gap IS the unmodelled-RB mass on the team denominator, since 0.010774 x 0.809827 = 0.008724 against a measured 0.008702. It is an exact accounting identity, not a coincidence of decimals that does not exist."
+  },
+  {
+   "classification": "CORRECTED",
+   "claim": "The correct `other` residual on the running-back denominator.",
+   "stated_in": "predeclaration S1; denominator.py:193; p4c_build.py:174 comment; football_engine.py:525 comment; test_c1_denominator.py _pools(); commit message; the WS-H task brief",
+   "registered_value": 0.008754,
+   "re_derived_value": 0.010773708112537861,
+   "basis": "Read directly from the production parameter object: p4c_params.params(\"carries\",2026)[\"mass_pool_partition\"].mean() = 0.010773708112537861. Reproduced independently from the panel (ratio-of-means 0.010773, mean-of-ratios 0.010792; the estimator choice is worth ~0.00002). 0.010774 is what the code PRODUCES. 0.008754 was never produced by any code path -- it is a derived quantity assembled in denominator.py:193 from two mismatched sources."
+  },
+  {
+   "classification": "CORRECTED",
+   "claim": "The overstatement factor.",
+   "stated_in": "predeclaration S1; denominator.py overstatement_factor; p4c_build.py:174; football_engine.py comment; commit message",
+   "registered_value": "22.7x",
+   "re_derived_value": "18.46x",
+   "basis": "0.19887535274028778 / 0.010773708112537861 = 18.4593."
+  },
+  {
+   "classification": "CORRECTED",
+   "claim": "The share of the running-back budget subtracted twice.",
+   "stated_in": "predeclaration S1",
+   "registered_value": 0.1901,
+   "re_derived_value": 0.188102,
+   "basis": "0.198875 - 0.010774 = 0.188102."
+  },
+  {
+   "classification": "CORRECTED",
+   "claim": "The quarterback share of team carries, quoted as the dominant component of the non-RB mass.",
+   "stated_in": "predeclaration S1; football_engine.py:513 comment",
+   "registered_value": 0.1568,
+   "re_derived_value": 0.155309,
+   "basis": "Same estimator/population correction. The qualitative claim -- QB rushing dominates the non-RB mass -- survives unchanged."
+  },
+  {
+   "classification": "INVALIDATED",
+   "claim": "WS02: \"the registered 0.1918 is the 2020-INCLUSIVE figure, so the two terms in the identification argument are drawn from different populations\", and the same population mismatch propagated into 0.008754 / 22.7x.",
+   "stated_in": "WS02_C1_VERIFICATION.md items 5 and 6 and its Bottom Line",
+   "basis": "The population is not the driver, and it pulls the wrong way. Running OWN-5's own estimator on panel_p3: ALL seasons -> non-RB 0.191779 (this IS the registered 0.1918); EXCLUDING 2020 -> 0.191861, which moves AWAY from 0.1902 by +0.000082. Running the FIT's estimator on the SAME 2020-inclusive population -> 0.190015, not 0.1918. Decomposition through denominator.py:193's own formula: holding the estimator fixed and changing the population moves `correct_other` by -0.000101 (OWN-5 estimator) or -0.000193 (fit estimator); holding the population fixed and changing the estimator moves it by +0.002159 (all seasons) or +0.002066 (ex-2020). The estimator is worth ten to twenty times the population and it is the only term with the right sign. The real cause: own5/audit_rush_ownership.historical_from_panel uses a DIFFERENT ESTIMATOR on a DIFFERENT SOURCE FILE with a DIFFERENT DENOMINATOR COLUMN -- ratio-of-means of raw `carries` over `team_rush_att`, read from nfl/research/inputs/panel_p3.csv.gz -- against the fit's mean of per-team-game summed `s_carries` over `team_carries`, read from p4b/panel_enriched.pkl. The two denominator columns have the same mean (26.9157 on the ex-2020 window), so this is a Jensen gap between ratio-of-means and mean-of-ratios, not a data-window gap.",
+   "note": "WS02's CORRECTED VALUES (0.010774, 18.46x, \"they differ by 0.0071\") all stand; only its causal explanation is withdrawn. This matters operationally: the remedy WS02's diagnosis implies -- align the season windows -- would move the number by 0.0002 and leave the discrepancy entirely intact."
+  },
+  {
+   "classification": "CORRECTED",
+   "claim": "WS02: \"0.010773 x 0.809827 = 0.008724, which closes the decomposition to five decimals.\"",
+   "stated_in": "WS02_C1_VERIFICATION.md item 5",
+   "registered_value": "closes to five decimals",
+   "re_derived_value": "closes to four decimals",
+   "basis": "The exact gap is 0.19887535 - 0.190173 = 0.008702 against 0.008724. The residual 0.000022 is the mean-of-ratios versus ratio-of-means difference inside the partition estimator itself."
+  },
+  {
+   "classification": "VALID",
+   "claim": "c1_eval.run() at HEAD reproduces the committed C1_EVALUATION.json byte for byte.",
+   "stated_in": "WS02_C1_VERIFICATION.md item 7; re-verified here",
+   "basis": "Re-run through a scratchpad driver so main() could not write. sha256 of the committed file BEFORE: a79772b4cc3c1e376a31590151d149e077421da7fecb7f18466dff70df3f9324; sha256 of the re-run serialisation: a79772b4cc3c1e376a31590151d149e077421da7fecb7f18466dff70df3f9324; sha256 of the committed file AFTER: a79772b4cc3c1e376a31590151d149e077421da7fecb7f18466dff70df3f9324."
+  },
+  {
+   "classification": "INVALIDATED",
+   "claim": "C1_EVALUATION.json design.team_volume = \"ORACLED at the realised team level\".",
+   "stated_in": "C1_EVALUATION.json; c1_eval.py:216 comment",
+   "basis": "`te` is filtered to f_n_prior >= 1, so the group sum `team_lvl` is the realised MODELLED-RB carry level, not the team level. Measured per team-game: modelled-RB 21.5701 / 21.4081 / 21.5956 for 2022 / 2023 / 2024, against team carries 27.2509 / 26.8493 / 26.9982. c1_eval.py:222 then multiplies it by rb_share 0.860235 -- A1's share of (team_carries - scrambles). A team-to-RB conversion factor is applied to a quantity already on the RB scale. That is the same units error C1 exists to fix, one layer up, inside C1's own harness."
+  },
+  {
+   "classification": "VALID",
+   "claim": "WS02: the budget c1_eval hands both arms is 14-16% below the level it is declared to be on.",
+   "stated_in": "WS02_C1_VERIFICATION.md item 7; independently re-derived here",
+   "basis": "Budget actually handed: 18.5554 / 18.4160 / 18.5773. A true A1 `rb` analogue, (realised team_carries - realised scrambles) x 0.860235: 22.0058 / 21.4600 / 21.5454. Realised all-RB carries: 21.8376 / 21.5754 / 21.7555. Shortfall against the A1 analogue -15.68% / -14.18% / -13.78%; against realised all-RB carries -15.03% / -14.64% / -14.61%. WS02's figures reproduce to four decimals."
+  },
+  {
+   "classification": "INVALIDATED",
+   "claim": "Every ABSOLUTE metric in C1_EVALUATION.json -- bias, MAE, CRPS, mean_projected, cov50/cov80/cov90 and pit_mean -- for both arms, per season and pooled.",
+   "stated_in": "C1_EVALUATION.json per_season.*.{BASELINE,C1} and pooled",
+   "basis": "All are measured against a budget roughly 15% short. They are exactly reproducible and they are not the quantities they are labelled as. Corrected values are in `corrected_evaluation`. In particular, DO NOT QUOTE \"bias -1.6245 -> -0.8094\"."
+  },
+  {
+   "classification": "CORRECTED",
+   "claim": "The pooled CRPS improvement and its team-game clustered interval.",
+   "stated_in": "C1_EVALUATION.json pooled and pooled_crps_diff_clustered_bootstrap; and WS02_C1_VERIFICATION.md Bottom Line, which preserved this figure as one that survives",
+   "registered_value": {
+    "pooled_crps_BASELINE": 2.171036,
+    "pooled_crps_C1": 1.849061,
+    "diff": -0.321975,
+    "boot_mean": -0.321988,
+    "lo": -0.335537,
+    "hi": -0.308541,
+    "n_clusters": 1630,
+    "relative_improvement": -0.1483
+   },
+   "re_derived_value": {
+    "pooled_crps_BASELINE": 1.913023,
+    "pooled_crps_C1": 1.730026,
+    "diff": -0.182997,
+    "boot_mean": -0.18292,
+    "lo": -0.195603,
+    "hi": -0.170441,
+    "n_clusters": 1630,
+    "relative_improvement": -0.0957
+   },
+   "basis": "CRPS is in carries units, so it scales with the budget. WS02 named the budget error and then quoted pooled CRPS -0.322 [-0.336, -0.309] as what survives; that is inconsistent with its own finding, and it is the single figure in WS02 most likely to be re-quoted. On the corrected oracle (realised all-RB carries) the pooled improvement is -0.182997, clustered 95% [-0.195603, -0.170441] over 1,630 team-game clusters. Per season -0.184153 / -0.187333 / -0.177223, every interval excluding zero. WHAT SURVIVES UNCHANGED: the sign, the interval excluding zero, consistency in all three seasons, and the fact of a material improvement. WHAT DOES NOT: the magnitude -0.322 and the relative 14.8%."
+  },
+  {
+   "classification": "VALID",
+   "claim": "The bootstrap clusters on team-game and reports its cluster count beside every interval.",
+   "stated_in": "C1_EVALUATION.json; p4c_lib.block_boot:227",
+   "basis": "row_cluster = f\"{team}_{ord}\" with ord = season*100 + week, so no 2022 team-game can merge with a 2023 one. Per-season 542 + 544 + 544 = 1,630 = the pooled n_clusters, matching the frame the WS-H brief declares. block_boot resamples clusters with replacement and forms the ratio of sums, which is correct for unequal cluster sizes, and returns None below 5 clusters rather than a thin interval. Arms are paired on the same W, the same appearance draws and the same rng index array."
+  },
+  {
+   "classification": "VALID",
+   "claim": "a1_rb_league_share = 0.860235.",
+   "stated_in": "C1_EVALUATION.json design",
+   "basis": "rushing_a1.params(2026,1)[\"league\"][\"rb\"] = 0.860235, read live from nfl/derived/rushing_a1_params_2026w01.json (sha16 9d56c2604832cff7)."
+  },
+  {
+   "classification": "VALID",
+   "claim": "Acceptance criteria 1, 2, 3 and 5 pass.",
+   "stated_in": "C1_EVALUATION.json acceptance_criteria_section_7",
+   "basis": "They pass on the shipped budget and on both corrected budgets. Allocation closure max absolute deviation is 2.384185791015625e-07 (float32 epsilon) in every arm x season x budget variant -- 18 of 18."
+  },
+  {
+   "classification": "CORRECTED",
+   "claim": "Acceptance criterion 4, \"signed carry bias moves toward zero and does not overshoot into over-projection\".",
+   "stated_in": "C1_EVALUATION.json; predeclaration S7 item 4",
+   "registered_value": "PASS, measured as |C1 bias| 0.80935 < |BASELINE bias| 1.624487",
+   "re_derived_value": "PASS, measured on the corrected oracle as |C1 bias| 0.054454 < |BASELINE bias| 1.010582, with per-season C1 bias -0.028136 / -0.065205 / -0.071997, all still negative, so there is no overshoot",
+   "basis": "The criterion passes, but on the shipped harness the non-overshoot half was checked against a reference level systematically ~15% low, so it was not measured. Under the alternative A1-analogue budget the 2022 sign does flip, to +0.009496 -- so which side of zero C1 lands on in a single season is not determined by the data, it is determined by which of two defensible budget definitions you pick. NO EQUIVALENCE MARGIN AND NO TOST WERE PREDECLARED. Nothing here may be read as a claim that C1 is unbiased, stable or correct."
+  },
+  {
+   "classification": "VALID",
+   "claim": "market_information_consulted: NONE.",
+   "stated_in": "C1_EVALUATION.json",
+   "basis": "No market module is imported anywhere on this path -- c1_eval, p4c_build, p4c_lib, football_engine, rushing_a1. WS-H opened no market data at any point."
+  },
+  {
+   "classification": "VALID",
+   "claim": "The result is EXPLORATORY.",
+   "stated_in": "predeclaration S8; C1_EVALUATION.json status",
+   "basis": "The defect was found by inspecting the 2026 week-1 slate and the fitted parameters, and that inspection selected the finding. The corrected evaluation in this artifact inherits the same ceiling and is equally exploratory. A confirmatory result needs games untouched by the selection."
+  },
+  {
+   "classification": "VALID",
+   "claim": "Receiving is bit-identical. C1 touches carries only.",
+   "stated_in": "predeclaration S2 and S6; WS02 item 11; re-proved here on a REAL A1 budget",
+   "basis": "Engine A/B on 2026_01_ATL_PIT, m=200, seed=20260908, with a REAL A1 `rb` budget produced by rushing_a1.allocate on SC1-coupled D1 team-carry draws (WS02 used a synthetic integer budget in a feasible range). Arms differ ONLY in that arm PRE has mass_pool_partition overwritten with mass_pool in memory; no file was touched and both arms received the identical budget. sha256 of each draw array, POST vs PRE: targets c5fc4712c73784f3 / c5fc4712c73784f3; receptions f1a310ed8aff7d9e / f1a310ed8aff7d9e; receiving_yards 70fddedae9fcd510 / 70fddedae9fcd510; receiving_td dc3e73fa8cff0e42 / dc3e73fa8cff0e42. Zero cells differing in each, out of 47 x 200. allocation.share 8f0542c5a06ffff9 and allocation.other d3d1e40eb9a9dc86 identical, as are allocation.counts, allocation.starts and all ten team_draws arrays. Of 47 player records, 11 differ and only in `metrics`; those 11 are the running backs. Layer states are identical in both arms."
+  },
+  {
+   "classification": "VALID",
+   "claim": "The blast radius is carries and rushing touchdowns, and nothing else.",
+   "stated_in": "WS02 item 10; re-measured here on a real A1 budget",
+   "basis": "carries 3.460056 -> 4.237870, 1,639 of 2,200 cells differing; rush_td 0.105909 -> 0.127727, 148 cells. Every other draw array is bit-identical. There is no rushing-yards array to move: layers.rushing_conversion returns DEFERRED[RUSHING_CONVERSION_CONTROL_UNDEFINED] by design, confirmed live in this run. A rebuilt board is unchanged in that column because the column does not exist, not because the change failed to propagate."
+  },
+  {
+   "classification": "CORRECTED",
+   "claim": "WS02: \"observed ratio 1.2248 against the algebraic prediction (1 - 0.010774)/(1 - 0.198875) = 1.2347; the gap is degenerate groups and per-draw pool resampling.\"",
+   "stated_in": "WS02_C1_VERIFICATION.md item 10",
+   "registered_value": "the gap is degenerate groups and per-draw pool resampling",
+   "re_derived_value": "the gap is the per-draw pool resample alone; degenerate groups cannot contribute to it",
+   "basis": "A degenerate group has S = 0 for every row in BOTH arms, so it contributes zero to both means and cancels out of the ratio exactly. It cannot explain any part of the gap. The resample alone explains all of it: drawing w_other with a matched index array of shape (2, 200) from the two fitted pools 2,000 times gives a ratio of 1.234925 +/- 0.008517, 95% [1.219030, 1.252441], which contains the observed 1.224798. Both the observed ratio (1.224798) and the algebraic prediction (1.234797) reproduce WS02 to four decimals on a DIFFERENT budget, which is itself the direct proof that the ratio is budget-scale invariant."
+  },
+  {
+   "classification": "VALID",
+   "claim": "The Q9 frozen candidate identity is undisturbed.",
+   "stated_in": "predeclaration S9; WAVE0_BASELINE.json q9_frozen_identity; WS02 item 12",
+   "basis": "candidate.identity_sha256(candidate.identity(2024)) recomputed at HEAD = 82c8b52699bbeb00e656a3d543f995bac7034e9a89ff2a8d783e27b6fdc8422e, matching the sealed dryrun/2024_01_ARI_BUF/ARI/SEALED_FORECAST.json. module_source_sha16 matches the Wave-0 baseline exactly: nfl.research.q9.hurdle bb51133641338547, nfl.research.q9b.family 5b411b4f00e28e6f, nfl.research.q9b.production_parity 1f320b1ee3170e64, nfl.production.nonqb.layers 481f005f682cd721. Q9_PROSPECTIVE_FREEZE.json sha16 recomputed = a28e8832430b1420, matching. layers.py source sha16 recomputed independently = 481f005f682cd721 and the file contains neither `budget_is_partition` nor `mass_pool_partition`. Placing the selection in football_engine.py rather than layers.py is what buys this, and it holds."
+  },
+  {
+   "classification": "VALID",
+   "claim": "Carry conservation holds: every carry has exactly one owner in every draw.",
+   "stated_in": "rushing_a1.verify_allocation and the ownership graph team_carries - scrambles = kneel + designed_qb + rb + wr + te + fringe; re-derived here",
+   "basis": "rushing_a1.allocate on 2 teams x 200 draws, fed real D1 team-carry draws from team_volume_v1.forecast and SC1-coupled scrambles, returned PASS A1_RUSH_ALLOCATION with closure_violations 0, negative_allocations 0, category_budget_overruns 0, ledger_violations 0, carries_with_no_owner 0, carries_with_two_owners 0, clipping_applied 0, survivor_renormalisation_applied 0, post_hoc_repairs 0, deleted_draws 0, scrambles_redrawn 0. Recomputed INDEPENDENTLY from the returned arrays rather than trusting that evidence block: 0 violations across 400 draw cells of both (sum of the six categories == team_carries - scrambles) and (no negative allocation). The engine's own partition guard is live and was observed firing during setup: RUSHING_BUDGET_EXCEEDS_TEAM_CARRIES on any cell where the A1 rb budget exceeds the D1 team-carry level it partitions.",
+   "note": "Observation outside C1 scope, for whoever owns A1: share_floor_binds was 756 on this game, so A1's per-category share floor binds often, and the two teams' realised category shares (te 0.059 for a league 0.0025) are driven by a halflife-2 EWMA over a short recent history. Conservation is unaffected."
+  },
+  {
+   "classification": "INVALIDATED",
+   "claim": "predeclaration S8: \"the second defect the OWN-5 audit names -- that `other` is fitted as a share and consumed against an unnormalised weight sum -- is REAL and is not addressed by C1.\"",
+   "stated_in": "predeclaration S8; own5_rush_ownership.json `consumption`; denominator.py:233 second_and_separate_defect",
+   "basis": "It is not real at HEAD. OWN-6/OWN-7 fixed it: p4c_lib.allocate computes S = W*A*(1 - w_other)/sum(W*A) with other = w_other, and documents the fix in place at p4c_lib.py:108-125. The stale sentence is a hardcoded literal at own5/audit_rush_ownership.py:144, reproduced faithfully into own5_rush_ownership.json and surfaced again by denominator.py:233.",
+   "note": "WS02 named three carriers of this stale string. There is a FOURTH, and it is the one closest to the code: p4c_lib.allocate's own docstring at p4c_lib.py:101 still states the superseded formula \"simplex: S_i = w_i A_i / (sum_g w A + w_other)\", four lines above the comment explaining that that formula was replaced. WS02 missed it."
+  },
+  {
+   "classification": "VALID",
+   "claim": "A hardcoded 0.0088 sits in the committed test, and the test passes anyway.",
+   "stated_in": "nfl/tests/test_c1_denominator.py _pools(); WS02 item 6",
+   "basis": "_pools() returns np.full(400, 0.1989) and np.full(400, 0.0088) -- fabricated constants, so no fitted value is ever read. Demonstrated rather than argued: substituting the REAL fitted pools (0.198875 / 0.010774) into the module and re-running test_a leaves all three checks passing, the only visible change being the printed detail \"22.6x\" becoming \"18.5x\". The three checks are (1) an assertion about an array the function just built, (2) abs(0.1989 - 0.1918) < 0.01, which compares two literals and reads no code at all, and (3) a ratio > 10 threshold that 18.46 and 22.7 both clear. So test_a pins a partition value the code does not produce and is structurally unable to notice. run_suite.py --only test_c1_denominator at HEAD: modules 1, test functions 7, checks 25, FAILING CHECKS 0, RAISED 0, SUITE PASS -- and that green says nothing about either number it was written to guard.",
+   "note": "test_b and test_f are source-string greps that do genuine work; test_c performs a live Q9 identity recomputation; test_e reads the class declarations. There is no test_d."
+  },
+  {
+   "classification": "VALID",
+   "claim": "The C1 evidence does not inherit the WS-F zero-row selection leak.",
+   "stated_in": "new finding, WS-H",
+   "basis": "c1_eval scores the P4C panel directly and never touches nfl/research/same_day_retrospective.py. Its fold filter reads only pregame quantities: f_n_prior >= 1, a fitted point forecast, appearance-model membership and volume-store membership. Realised zeros are SCORED, never deleted: 1,061 of 2,365 rows in 2022 (44.86%), 972 of 2,255 in 2023 (43.10%) and 880 of 2,166 in 2024 (40.63%) carry a realised zero, and 0 rows are dropped for a zero outcome. That satisfies the postgame.py:762 semantics (\"A MISSING PLAYER IS A ZERO\") for this frame with no change to either file WS-F and WS-G own. No patch is being handed over."
+  },
+  {
+   "classification": "VALID",
+   "claim": "WS02: the pre-registration, the estimator, the harness, the result and the test all arrive in ONE commit, so the document's own claim to have been written first is unverifiable from this repository.",
+   "stated_in": "WS02 item 1; re-checked here",
+   "basis": "git show --stat 57d38ad lists football_engine.py, run_forecast.py, p4c_build.py, c1_eval.py, C1_EVALUATION.json, predeclaration_c1_denominator.md and test_c1_denominator.py together. Cited-hash integrity IS verified: sha256 of the pre-registration recomputed = 9d0443e1bd777d31371d2f7073c4e8acf2be9afcc6b4730471957b225e83e9a0, cited identically at C1_EVALUATION.json:4, c1_eval.py:64 and test_c1_denominator.py:45. Ordering is not verifiable. Nothing contradicts the claim; nothing in the tree can support it."
+  },
+  {
+   "classification": "CORRECTED",
+   "claim": "The WS-H task brief: \"C1 is already implemented and shipped (commit 3f5fc82).\"",
+   "stated_in": "WS-H task brief",
+   "registered_value": "3f5fc82",
+   "re_derived_value": "57d38ad",
+   "basis": "3f5fc82 \"The carries allocator subtracts the non-RB mass twice\" ships the slate audit and nfl/research/slate_audit/denominator.py -- the MEASUREMENT, and the source of the 0.008754 / 22.7x figures. The repair itself -- p4c_build mass_pool_partition, the football_engine selection, the pre-registration, c1_eval, C1_EVALUATION.json and the test -- ships in 57d38ad \"One bit decides whether Dak Prescott plays\"."
+  },
+  {
+   "classification": "VALID",
+   "claim": "WS02: A1's rb share is fit on seasons that include all three evaluation seasons.",
+   "stated_in": "WS02 item 7, second issue; re-checked here",
+   "basis": "rushing_a1.params(2026,1) reports seasons_used [2020, 2021, 2022, 2023, 2024, 2025]. Pre-registration S4 constrains 'every P4C parameter' and A1's share is not a P4C parameter, so this is not a literal breach; it is held identical across arms so it cannot flip the comparison. It remains a 2026-fit quantity shaping a 2022 budget, and no artifact says so. It is equally present in the corrected evaluation here, which uses the same share."
+  },
+  {
+   "classification": "VALID",
+   "claim": "WS02: rz_carries carries the identical class declaration and now gets a mass_pool_partition nobody consumes.",
+   "stated_in": "WS02 \"What the repair may have missed\" item 1; extended here",
+   "basis": "Confirmed unconsumed: football_engine.slate_fits instantiates only p4c_params_targets and p4c_params_carries, and layers.targets_carries is called only for those two classes. Extension WS02 did not measure: rz_carries mass_mean 0.213614 against mass_pool_partition 0.009634 -- a 22.17x gap, LARGER than the carries gap that was the defect. Its partition pool is also 68 team-games SHORTER than its base pool (n_team_games_no_position_mass = 68, against 0 for carries), so a future consumer would be comparing pools of different length without anything saying so."
+  },
+  {
+   "classification": "VALID",
+   "claim": "WS02: targets has a 1.23x version of the same gap, currently benign.",
+   "stated_in": "WS02 \"What the repair may have missed\" item 2",
+   "basis": "targets mass_mean 0.011282 against mass_pool_partition 0.009194, ratio 1.2270. The engine never selects it: the swap is gated on `rushing_budget is not None` inside the carries block, and the targets call passes fits[\"p4c_params_targets\"].value untouched and executes first."
+  },
+  {
+   "classification": "VALID",
+   "claim": "WS02: alpha0 is not carried across the pool swap.",
+   "stated_in": "WS02 item 4c; re-checked and qualified here",
+   "basis": "p4c_build.py:197 fits the Dirichlet concentration with mo = par[\"mass_mean\"], the TEAM mass, through scale = (1 - mo)/sum(C). The engine swaps mass_pool and mass_mean and leaves alpha0 at 6.664756, a value whose contract is the 0.199 mass.",
+   "note": "The latency is MORE remote than WS02 states. gen_weights reads alpha0 only on the D_dir branch, and production does not select a system at run time: layers.targets_carries hardcodes the string literal \"C\". Reaching D_dir therefore requires editing layers.py, which is hashed by the frozen Q9 candidate identity. Still worth fixing; it is not one flag away."
+  }
+ ],
+ "claim_counts": {
+  "VALID": 22,
+  "CORRECTED": 10,
+  "INVALIDATED": 5
+ },
+ "denominators": {
+  "FITTED": {
+   "where": "nfl/research/p4c/p4c_build.py:157 (HEAD)",
+   "expression": "pool[k] = clip(mall[k] - ms[k], 0, 0.95)",
+   "denominator": "team_carries, via s_carries = y_carries / den[\"team_carries\"] built in p4b/p4b_panel.py:56",
+   "closure_of_mall": {
+    "n_team_games": 2718,
+    "mean": 1.0,
+    "min": 0.9999999999999998,
+    "max": 1.0000000000000002,
+    "n_deviating_gt_1e-6": 0,
+    "seasons_used": [
+     2021,
+     2022,
+     2023,
+     2024,
+     2025
+    ]
+   },
+   "fitted_value": 0.19887535274028778,
+   "interpretation": "1 - (modelled RBs share of TEAM carries)",
+   "pool_shape": {
+    "n": 2718,
+    "median": 0.1785714328289032,
+    "fraction_exactly_zero": 0.0,
+    "clip_binding_cells": 2
+   }
+  },
+  "CONSUMED": {
+   "where": "nfl/production/run_forecast.py:755 -> nfl/production/nonqb/football_engine.py:534-558 (HEAD)",
+   "expression": "rushing_budget = {t: a1.value['carries'][(t,'rb')] for t in teams}",
+   "denominator": "A1's `rb` CATEGORY, a partition of (team_carries - scrambles)",
+   "a1_league_shares": {
+    "rb": 0.860235,
+    "designed_qb": 0.068808,
+    "wr": 0.036027,
+    "kneel": 0.028758,
+    "fringe": 0.003658,
+    "te": 0.002514,
+    "sum": 1.0
+   },
+   "already_removed_before_the_allocator_sees_it": [
+    "kneel",
+    "designed_qb",
+    "wr",
+    "te",
+    "fringe"
+   ]
+  },
+  "REPAIRED": {
+   "where": "nfl/research/p4c/p4c_build.py:183-187 emits it; football_engine.py:534-558 selects it",
+   "expression": "rbp[k] = clip((mpos[k] - ms[k]) / mpos[k], 0, 0.95) over team-games with mpos > 1e-9",
+   "fitted_value": 0.010773708112537861,
+   "interpretation": "share of the RUNNING-BACK budget taken by running backs the pool does not model",
+   "overstatement_ratio": 18.459321975708008,
+   "pool_shape": {
+    "n": 2718,
+    "dropped_for_no_position_mass": 0,
+    "median": 0.0,
+    "fraction_exactly_zero": 0.9532744665194997,
+    "clip_binding_cells": 1
+   },
+   "distributional_note": "C1 does not merely shift the `other` mass down. It replaces a diffuse distribution (median 0.1786) with a spike at zero plus a thin right tail: the partition pool is EXACTLY ZERO in 95.33% of training team-games. In most draws the modelled backs take the entire A1 rb budget and the `other` container is empty. This is the actual driver of the coverage change and no committed artifact records it."
+  },
+  "REFUSAL_PATH": {
+   "code": "P4C_PARTITION_POOL_MISSING",
+   "behaviour": "With an A1 budget supplied and no mass_pool_partition, the engine halts at `carries` and returns payload None. It never falls back to the team pool, because that fallback IS the double subtraction and would be invisible in the output. Read from source at football_engine.py:536-551; WS02 additionally exercised it live and it refused.",
+   "non_a1_path": "With rushing_budget None the engine reports carry_other_denominator = NOT_APPLICABLE[D1_TEAM_CARRIES_POOL] beside rushing_budget_owner = NOT_APPLICABLE[D1_TEAM_CARRIES] and runs to completion on the team pool with the team budget, which is the correct pairing."
+  }
+ },
+ "units_at_every_boundary": [
+  {
+   "boundary": "p4c_build mass_pool",
+   "quantity": "share of TEAM carries",
+   "units": "dimensionless [0,1]",
+   "verdict": "CORRECT for a consumer handed team_carries",
+   "evidence": "mall == 1.0 exactly over 2,718 team-games, so mall - ms is a share by construction."
+  },
+  {
+   "boundary": "p4c_build mass_pool_partition",
+   "quantity": "share of the RB budget",
+   "units": "dimensionless [0,1]",
+   "verdict": "CORRECT for a consumer handed A1 rb",
+   "evidence": "explicitly normalised by mpos[k]."
+  },
+  {
+   "boundary": "p4c_lib.allocate (simplex)",
+   "quantity": "S = W*A*(1 - w_other)/sum(W*A), other = w_other",
+   "units": "shares summing to 1 per group per draw",
+   "verdict": "CORRECT, and scale-invariant in W",
+   "evidence": "Closure recomputed here at max absolute deviation 2.384185791015625e-07 (float32 epsilon) in every arm x season x budget variant, 18 of 18. Because the allocator renormalises, the scale of W and of the point forecast C cancels, so C is not a units risk."
+  },
+  {
+   "boundary": "football_engine C = Sc * repeat(car_vol)",
+   "quantity": "share x A1 rb budget",
+   "units": "carries",
+   "verdict": "CORRECT ONLY AFTER C1",
+   "evidence": "before the repair a team-denominator share multiplied an rb-denominator budget."
+  },
+  {
+   "boundary": "c1_eval.py:216-222 rb_budget",
+   "quantity": "(group sum of y over MODELLED RBs) x 0.860235",
+   "units": "carries, but on the wrong level",
+   "verdict": "WRONG -- a team-to-RB conversion applied to an RB-level quantity",
+   "evidence": "budget 18.5554 / 18.4160 / 18.5773 against a realised all-RB level of 21.8376 / 21.5754 / 21.7555."
+  },
+  {
+   "boundary": "p4c_build alpha0",
+   "quantity": "Dirichlet concentration fitted with scale = (1 - mass_mean)/sum(C)",
+   "units": "contract is the TEAM mass 0.199",
+   "verdict": "NOT SWAPPED with the pool -- latent, unreachable today",
+   "evidence": "gen_weights reads alpha0 only on the D_dir branch, and layers.targets_carries hardcodes system \"C\"."
+  }
+ ],
+ "corrected_evaluation": {
+  "design": {
+   "what_changed_from_the_shipped_harness": "ONE thing: the budget level. Same arms, same seeds (SEED 20260914, +1009 appearance, +3000 weights, +5000 pool index, +31 PIT), same weights W, same appearance draws, same test rows, same fold filter, same pools, same bootstrap. The AS_SHIPPED variant reproduces every committed per-season number exactly, which is what licenses reading the others as a pure re-scaling.",
+   "budget_variants": {
+    "AS_SHIPPED_modelledRB_x_rbshare": "what c1_eval does: (group sum of y over modelled RBs) x 0.860235. Reproduced for control.",
+    "CORRECTED_oracle_all_RB_carries": "PRIMARY. The realised value of the quantity A1s `rb` category estimates: every running backs realised carries in that team-game. This is what \"ORACLED at the realised level\" means for the budget the allocator actually consumes, and it is coherent with `other`, which exists precisely to hold the unmodelled backs.",
+    "CORRECTED_A1_analogue_team_minus_scr_x_rbshare": "SECONDARY. (realised team_carries - realised scrambles) x 0.860235 -- production's own construction with the levels oracled. Reported because it is equally defensible and because the two disagree about the SIGN of C1's 2022 bias, which is worth knowing."
+   },
+   "eval_seasons": [
+    2022,
+    2023,
+    2024
+   ],
+   "n_draws": 400,
+   "seed": 20260914,
+   "clustering": "team-game, cluster counts reported beside every interval, 542 + 544 + 544 = 1,630 pooled",
+   "status": "EXPLORATORY, for the same reason the shipped artifact is"
+  },
+  "levels_per_team_game": {
+   "2022": {
+    "modelled_RB_carries": 21.5701,
+    "all_RB_carries": 21.8376,
+    "team_carries": 27.2509,
+    "scrambles": 1.6697,
+    "A1_analogue_budget": 22.0058,
+    "as_shipped_budget": 18.5554,
+    "as_shipped_shortfall_vs_all_RB": -0.1503,
+    "as_shipped_shortfall_vs_A1_analogue": -0.1568
+   },
+   "2023": {
+    "modelled_RB_carries": 21.4081,
+    "all_RB_carries": 21.5754,
+    "team_carries": 26.8493,
+    "scrambles": 1.9026,
+    "A1_analogue_budget": 21.46,
+    "as_shipped_budget": 18.416,
+    "as_shipped_shortfall_vs_all_RB": -0.1464,
+    "as_shipped_shortfall_vs_A1_analogue": -0.1418
+   },
+   "2024": {
+    "modelled_RB_carries": 21.5956,
+    "all_RB_carries": 21.7555,
+    "team_carries": 26.9982,
+    "scrambles": 1.9522,
+    "A1_analogue_budget": 21.5454,
+    "as_shipped_budget": 18.5773,
+    "as_shipped_shortfall_vs_all_RB": -0.1461,
+    "as_shipped_shortfall_vs_A1_analogue": -0.1378
+   }
+  },
+  "zero_completion": {
+   "2022": {
+    "rows_with_realised_zero": 1061,
+    "fraction_zero": 0.448626,
+    "rows_dropped_for_zero_outcome": 0,
+    "selection_on_outcome": "NONE -- the fold filter reads only pregame quantities (f_n_prior, _C, appearance model, volume-store membership). A realised zero is scored, never deleted."
+   },
+   "2023": {
+    "rows_with_realised_zero": 972,
+    "fraction_zero": 0.431042,
+    "rows_dropped_for_zero_outcome": 0,
+    "selection_on_outcome": "NONE -- the fold filter reads only pregame quantities (f_n_prior, _C, appearance model, volume-store membership). A realised zero is scored, never deleted."
+   },
+   "2024": {
+    "rows_with_realised_zero": 880,
+    "fraction_zero": 0.406279,
+    "rows_dropped_for_zero_outcome": 0,
+    "selection_on_outcome": "NONE -- the fold filter reads only pregame quantities (f_n_prior, _C, appearance model, volume-store membership). A realised zero is scored, never deleted."
+   }
+  },
+  "per_season": {
+   "2022": {
+    "AS_SHIPPED_modelledRB_x_rbshare": {
+     "BASELINE": {
+      "crps": 2.066771,
+      "bias": -1.525883,
+      "mae": 2.99253,
+      "mean_projected": 3.417458,
+      "mean_actual": 4.94334,
+      "cov50": 0.5848,
+      "cov80": 0.74,
+      "cov90": 0.8144,
+      "pit_mean": 0.5776,
+      "other_mean": 0.196639,
+      "closure_max_abs_dev": 2.384185791015625e-07,
+      "n_degenerate_groups": 1599
+     },
+     "C1": {
+      "crps": 1.759115,
+      "bias": -0.766684,
+      "mae": 2.719388,
+      "mean_projected": 4.176657,
+      "mean_actual": 4.94334,
+      "cov50": 0.6486,
+      "cov80": 0.8207,
+      "cov90": 0.8901,
+      "pit_mean": 0.538,
+      "other_mean": 0.018319,
+      "closure_max_abs_dev": 2.384185791015625e-07,
+      "n_degenerate_groups": 1599
+     },
+     "crps_diff_c1_minus_baseline": -0.307656,
+     "crps_diff_clustered_bootstrap": {
+      "mean": -0.30716382602660397,
+      "lo": -0.32941908872850195,
+      "hi": -0.28447760984618775,
+      "n_clusters": 542
+     },
+     "ratio_C1_over_BASELINE_mean_projection": 1.222153
+    },
+    "CORRECTED_oracle_all_RB_carries": {
+     "BASELINE": {
+      "crps": 1.818814,
+      "bias": -0.921425,
+      "mae": 2.790066,
+      "mean_projected": 4.021915,
+      "mean_actual": 4.94334,
+      "cov50": 0.6342,
+      "cov80": 0.8173,
+      "cov90": 0.8968,
+      "pit_mean": 0.5448,
+      "other_mean": 0.196639,
+      "closure_max_abs_dev": 2.384185791015625e-07,
+      "n_degenerate_groups": 1599
+     },
+     "C1": {
+      "crps": 1.634661,
+      "bias": -0.028136,
+      "mae": 2.606202,
+      "mean_projected": 4.915204,
+      "mean_actual": 4.94334,
+      "cov50": 0.7163,
+      "cov80": 0.9006,
+      "cov90": 0.9581,
+      "pit_mean": 0.493,
+      "other_mean": 0.018319,
+      "closure_max_abs_dev": 2.384185791015625e-07,
+      "n_degenerate_groups": 1599
+     },
+     "crps_diff_c1_minus_baseline": -0.184153,
+     "crps_diff_clustered_bootstrap": {
+      "mean": -0.18365494511244967,
+      "lo": -0.20429797036233868,
+      "hi": -0.16095629290431607,
+      "n_clusters": 542
+     },
+     "ratio_C1_over_BASELINE_mean_projection": 1.222105
+    },
+    "CORRECTED_A1_analogue_team_minus_scr_x_rbshare": {
+     "BASELINE": {
+      "crps": 1.857262,
+      "bias": -0.89053,
+      "mae": 2.82277,
+      "mean_projected": 4.052811,
+      "mean_actual": 4.94334,
+      "cov50": 0.6457,
+      "cov80": 0.8161,
+      "cov90": 0.893,
+      "pit_mean": 0.5417,
+      "other_mean": 0.196639,
+      "closure_max_abs_dev": 2.384185791015625e-07,
+      "n_degenerate_groups": 1599
+     },
+     "C1": {
+      "crps": 1.688684,
+      "bias": 0.009496,
+      "mae": 2.68231,
+      "mean_projected": 4.952837,
+      "mean_actual": 4.94334,
+      "cov50": 0.7078,
+      "cov80": 0.8892,
+      "cov90": 0.9476,
+      "pit_mean": 0.4924,
+      "other_mean": 0.018319,
+      "closure_max_abs_dev": 2.384185791015625e-07,
+      "n_degenerate_groups": 1599
+     },
+     "crps_diff_c1_minus_baseline": -0.168578,
+     "crps_diff_clustered_bootstrap": {
+      "mean": -0.1685902787105404,
+      "lo": -0.19466248709747602,
+      "hi": -0.142735372758433,
+      "n_clusters": 542
+     },
+     "ratio_C1_over_BASELINE_mean_projection": 1.222075
+    }
+   },
+   "2023": {
+    "AS_SHIPPED_modelledRB_x_rbshare": {
+     "BASELINE": {
+      "crps": 2.177153,
+      "bias": -1.632061,
+      "mae": 3.098194,
+      "mean_projected": 3.532463,
+      "mean_actual": 5.164523,
+      "cov50": 0.5517,
+      "cov80": 0.7317,
+      "cov90": 0.8084,
+      "pit_mean": 0.5874,
+      "other_mean": 0.205093,
+      "closure_max_abs_dev": 2.384185791015625e-07,
+      "n_degenerate_groups": 1846
+     },
+     "C1": {
+      "crps": 1.852279,
+      "bias": -0.811996,
+      "mae": 2.799224,
+      "mean_projected": 4.352527,
+      "mean_actual": 5.164523,
+      "cov50": 0.6341,
+      "cov80": 0.8275,
+      "cov90": 0.8927,
+      "pit_mean": 0.542,
+      "other_mean": 0.020557,
+      "closure_max_abs_dev": 2.384185791015625e-07,
+      "n_degenerate_groups": 1846
+     },
+     "crps_diff_c1_minus_baseline": -0.324874,
+     "crps_diff_clustered_bootstrap": {
+      "mean": -0.32596419907813007,
+      "lo": -0.3490342828804886,
+      "hi": -0.3048385008089048,
+      "n_clusters": 544
+     },
+     "ratio_C1_over_BASELINE_mean_projection": 1.232151
+    },
+    "CORRECTED_oracle_all_RB_carries": {
+     "BASELINE": {
+      "crps": 1.919951,
+      "bias": -1.02593,
+      "mae": 2.880211,
+      "mean_projected": 4.138593,
+      "mean_actual": 5.164523,
+      "cov50": 0.6124,
+      "cov80": 0.8089,
+      "cov90": 0.8914,
+      "pit_mean": 0.554,
+      "other_mean": 0.205093,
+      "closure_max_abs_dev": 2.384185791015625e-07,
+      "n_degenerate_groups": 1846
+     },
+     "C1": {
+      "crps": 1.732618,
+      "bias": -0.065205,
+      "mae": 2.671643,
+      "mean_projected": 5.099318,
+      "mean_actual": 5.164523,
+      "cov50": 0.6998,
+      "cov80": 0.9029,
+      "cov90": 0.9574,
+      "pit_mean": 0.4954,
+      "other_mean": 0.020557,
+      "closure_max_abs_dev": 2.384185791015625e-07,
+      "n_degenerate_groups": 1846
+     },
+     "crps_diff_c1_minus_baseline": -0.187333,
+     "crps_diff_clustered_bootstrap": {
+      "mean": -0.18825203714006647,
+      "lo": -0.20831620019967112,
+      "hi": -0.16624539211245856,
+      "n_clusters": 544
+     },
+     "ratio_C1_over_BASELINE_mean_projection": 1.232138
+    },
+    "CORRECTED_A1_analogue_team_minus_scr_x_rbshare": {
+     "BASELINE": {
+      "crps": 1.96391,
+      "bias": -1.048662,
+      "mae": 2.92648,
+      "mean_projected": 4.115861,
+      "mean_actual": 5.164523,
+      "cov50": 0.6129,
+      "cov80": 0.8062,
+      "cov90": 0.8843,
+      "pit_mean": 0.5553,
+      "other_mean": 0.205093,
+      "closure_max_abs_dev": 2.384185791015625e-07,
+      "n_degenerate_groups": 1846
+     },
+     "C1": {
+      "crps": 1.769388,
+      "bias": -0.093167,
+      "mae": 2.722589,
+      "mean_projected": 5.071356,
+      "mean_actual": 5.164523,
+      "cov50": 0.6905,
+      "cov80": 0.8936,
+      "cov90": 0.9401,
+      "pit_mean": 0.4993,
+      "other_mean": 0.020557,
+      "closure_max_abs_dev": 2.384185791015625e-07,
+      "n_degenerate_groups": 1846
+     },
+     "crps_diff_c1_minus_baseline": -0.194522,
+     "crps_diff_clustered_bootstrap": {
+      "mean": -0.1954649885868311,
+      "lo": -0.22082240899208136,
+      "hi": -0.1694899249215529,
+      "n_clusters": 544
+     },
+     "ratio_C1_over_BASELINE_mean_projection": 1.232149
+    }
+   },
+   "2024": {
+    "AS_SHIPPED_modelledRB_x_rbshare": {
+     "BASELINE": {
+      "crps": 2.278512,
+      "bias": -1.724265,
+      "mae": 3.200039,
+      "mean_projected": 3.699558,
+      "mean_actual": 5.423823,
+      "cov50": 0.5379,
+      "cov80": 0.7188,
+      "cov90": 0.7936,
+      "pit_mean": 0.5936,
+      "other_mean": 0.207434,
+      "closure_max_abs_dev": 2.384185791015625e-07,
+      "n_degenerate_groups": 2329
+     },
+     "C1": {
+      "crps": 1.94392,
+      "bias": -0.85318,
+      "mae": 2.882795,
+      "mean_projected": 4.570642,
+      "mean_actual": 5.423823,
+      "cov50": 0.6108,
+      "cov80": 0.8121,
+      "cov90": 0.8758,
+      "pit_mean": 0.5452,
+      "other_mean": 0.020867,
+      "closure_max_abs_dev": 2.384185791015625e-07,
+      "n_degenerate_groups": 2329
+     },
+     "crps_diff_c1_minus_baseline": -0.334592,
+     "crps_diff_clustered_bootstrap": {
+      "mean": -0.33454603679438366,
+      "lo": -0.3602091670568534,
+      "hi": -0.3046169667608363,
+      "n_clusters": 544
+     },
+     "ratio_C1_over_BASELINE_mean_projection": 1.235456
+    },
+    "CORRECTED_oracle_all_RB_carries": {
+     "BASELINE": {
+      "crps": 2.008676,
+      "bias": -1.091952,
+      "mae": 2.955924,
+      "mean_projected": 4.331871,
+      "mean_actual": 5.423823,
+      "cov50": 0.5937,
+      "cov80": 0.7964,
+      "cov90": 0.8809,
+      "pit_mean": 0.5574,
+      "other_mean": 0.207434,
+      "closure_max_abs_dev": 2.384185791015625e-07,
+      "n_degenerate_groups": 2329
+     },
+     "C1": {
+      "crps": 1.831453,
+      "bias": -0.071997,
+      "mae": 2.76313,
+      "mean_projected": 5.351826,
+      "mean_actual": 5.423823,
+      "cov50": 0.6801,
+      "cov80": 0.8915,
+      "cov90": 0.9488,
+      "pit_mean": 0.4955,
+      "other_mean": 0.020867,
+      "closure_max_abs_dev": 2.384185791015625e-07,
+      "n_degenerate_groups": 2329
+     },
+     "crps_diff_c1_minus_baseline": -0.177223,
+     "crps_diff_clustered_bootstrap": {
+      "mean": -0.1769245385670976,
+      "lo": -0.20255144366566633,
+      "hi": -0.15136452742726314,
+      "n_clusters": 544
+     },
+     "ratio_C1_over_BASELINE_mean_projection": 1.235454
+    },
+    "CORRECTED_A1_analogue_team_minus_scr_x_rbshare": {
+     "BASELINE": {
+      "crps": 2.056488,
+      "bias": -1.134937,
+      "mae": 3.023423,
+      "mean_projected": 4.288886,
+      "mean_actual": 5.423823,
+      "cov50": 0.5896,
+      "cov80": 0.7969,
+      "cov90": 0.874,
+      "pit_mean": 0.5604,
+      "other_mean": 0.207434,
+      "closure_max_abs_dev": 2.384185791015625e-07,
+      "n_degenerate_groups": 2329
+     },
+     "C1": {
+      "crps": 1.868374,
+      "bias": -0.125274,
+      "mae": 2.809775,
+      "mean_projected": 5.298549,
+      "mean_actual": 5.423823,
+      "cov50": 0.6764,
+      "cov80": 0.8753,
+      "cov90": 0.9303,
+      "pit_mean": 0.5014,
+      "other_mean": 0.020867,
+      "closure_max_abs_dev": 2.384185791015625e-07,
+      "n_degenerate_groups": 2329
+     },
+     "crps_diff_c1_minus_baseline": -0.188114,
+     "crps_diff_clustered_bootstrap": {
+      "mean": -0.18832791674437066,
+      "lo": -0.21480189274300723,
+      "hi": -0.15981879587116427,
+      "n_clusters": 544
+     },
+     "ratio_C1_over_BASELINE_mean_projection": 1.235414
+    }
+   }
+  },
+  "pooled_on_corrected_oracle": {
+   "BASELINE": {
+    "crps": 1.913023,
+    "bias": -1.010582,
+    "mae": 2.872961,
+    "cov50": 0.6141,
+    "cov80": 0.8078,
+    "cov90": 0.8899
+   },
+   "C1": {
+    "crps": 1.730026,
+    "bias": -0.054454,
+    "mae": 2.678038,
+    "cov50": 0.6992,
+    "cov80": 0.8985,
+    "cov90": 0.9549
+   }
+  },
+  "pooled_crps_diff_clustered_bootstrap_corrected": {
+   "mean": -0.18292028135120508,
+   "lo": -0.1956028952567666,
+   "hi": -0.17044098483368153,
+   "n_clusters": 1630
+  },
+  "pooled_as_shipped_for_comparison": {
+   "BASELINE": {
+    "crps": 2.171036,
+    "bias": -1.624487,
+    "mae": 3.093877,
+    "cov50": 0.5588,
+    "cov80": 0.7305,
+    "cov90": 0.8058
+   },
+   "C1": {
+    "crps": 1.849061,
+    "bias": -0.80935,
+    "mae": 2.798075,
+    "cov50": 0.6317,
+    "cov80": 0.8202,
+    "cov90": 0.8864
+   },
+   "crps_diff_clustered_bootstrap": {
+    "mean": -0.32198822859005616,
+    "lo": -0.33553690531986274,
+    "hi": -0.30854124290094637,
+    "n_clusters": 1630
+   }
+  },
+  "budget_scale_invariance_of_the_comparison": {
+   "measured": {
+    "2022": {
+     "AS_SHIPPED_modelledRB_x_rbshare": 1.222153,
+     "CORRECTED_oracle_all_RB_carries": 1.222105,
+     "CORRECTED_A1_analogue_team_minus_scr_x_rbshare": 1.222075
+    },
+    "2023": {
+     "AS_SHIPPED_modelledRB_x_rbshare": 1.232151,
+     "CORRECTED_oracle_all_RB_carries": 1.232138,
+     "CORRECTED_A1_analogue_team_minus_scr_x_rbshare": 1.232149
+    },
+    "2024": {
+     "AS_SHIPPED_modelledRB_x_rbshare": 1.235456,
+     "CORRECTED_oracle_all_RB_carries": 1.235454,
+     "CORRECTED_A1_analogue_team_minus_scr_x_rbshare": 1.235414
+    }
+   },
+   "reading": "The ratio of the two arms mean projections is invariant to the budget to six decimal places (2022: 1.222153 / 1.222105 / 1.222075 across three budgets that differ by 18%). That is why the DIRECTION and the RELATIVE effect survive the harness error while every absolute number does not."
+  },
+  "coverage_note": "On the corrected oracle both arms OVER-cover: C1 reaches 0.6992 / 0.8985 / 0.9549 against nominal 0.50 / 0.80 / 0.90, and BASELINE 0.6141 / 0.8078 / 0.8899. The shipped artifact's apparently near-nominal coverage was a product of the short budget. Interpretation is constrained: 40.6-44.9% of scored rows have a realised zero and the predictive distribution carries a large point mass at zero, so interval coverage is lumpy and a percentile interval is conservative by construction. This is recorded, not diagnosed, and no adequacy claim is made.",
+  "what_must_not_be_quoted": [
+   "bias -1.6245 -> -0.8094 (shipped pooled bias, both arms measured on a budget ~15% short)",
+   "MAE 3.0939 -> 2.7981",
+   "CRPS 2.1710 -> 1.8491 as levels",
+   "pooled CRPS improvement -0.322 with interval [-0.336, -0.309] -- WS02 preserved this and it does not survive",
+   "coverage 0.5588/0.7305/0.8058 -> 0.6317/0.8202/0.8864"
+  ],
+  "what_survives": [
+   "the causal denominator mismatch and its direction",
+   "the chronological walk-forward design: for evaluation season Y every P4C parameter is fit on seasons < Y, excluding 2020",
+   "team-game clustered inference with cluster counts beside every interval, 1,630 pooled clusters",
+   "exact allocation closure, 2.384185791015625e-07 in 18 of 18 arm x season x budget cells",
+   "a material CRPS improvement, consistent in all three seasons, with every clustered 95% interval excluding zero",
+   "the relative effect on the modelled backs share of their budget: x1.222 to x1.235 by season, x1.230 pooled"
+  ]
+ },
+ "engine_ab": {
+  "game": "2026_01_ATL_PIT",
+  "m": 200,
+  "seed": 20260908,
+  "budget": "a REAL A1 `rb` budget: team_volume_v1.forecast team-carry draws -> scramble_coherence.couple -> rushing_a1.allocate(level_rounding=\"round_half_even\"). Means ATL 25.135, PIT 21.825 against SC1-coupled team carries ATL 29.525, PIT 28.140. WS02 used a synthetic integer budget; this is the one improvement over its item 10/11. Scrambles were resampled from the historical per-team-game distribution because the QB layer needs the full capture chain -- DECLARED, and irrelevant to the claim under test because both arms receive the identical budget and the budget enters as a multiplier.",
+  "arms": {
+   "POST": "HEAD as committed",
+   "PRE": "mass_pool_partition overwritten with mass_pool IN MEMORY; no file touched"
+  },
+  "draw_arrays": {
+   "carries": {
+    "identical": false,
+    "sha256_16_post": "4fd3134965dd1c41",
+    "sha256_16_pre": "b992b9480d958ea4",
+    "mean_post": 4.23787,
+    "mean_pre": 3.460056,
+    "ratio_post_over_pre": 1.224798,
+    "shape": [
+     11,
+     200
+    ],
+    "n_cells_differing": 1639
+   },
+   "receiving_td": {
+    "identical": true,
+    "sha256_16_post": "dc3e73fa8cff0e42",
+    "sha256_16_pre": "dc3e73fa8cff0e42",
+    "mean_post": 0.058617,
+    "mean_pre": 0.058617,
+    "ratio_post_over_pre": 1.0,
+    "shape": [
+     47,
+     200
+    ],
+    "n_cells_differing": 0
+   },
+   "receiving_yards": {
+    "identical": true,
+    "sha256_16_post": "70fddedae9fcd510",
+    "sha256_16_pre": "70fddedae9fcd510",
+    "mean_post": 9.993723,
+    "mean_pre": 9.993723,
+    "ratio_post_over_pre": 1.0,
+    "shape": [
+     47,
+     200
+    ],
+    "n_cells_differing": 0
+   },
+   "receptions": {
+    "identical": true,
+    "sha256_16_post": "f1a310ed8aff7d9e",
+    "sha256_16_pre": "f1a310ed8aff7d9e",
+    "mean_post": 0.892766,
+    "mean_pre": 0.892766,
+    "ratio_post_over_pre": 1.0,
+    "shape": [
+     47,
+     200
+    ],
+    "n_cells_differing": 0
+   },
+   "rush_td": {
+    "identical": false,
+    "sha256_16_post": "dcae3df7d1175b05",
+    "sha256_16_pre": "49a80e9742123c3d",
+    "mean_post": 0.127727,
+    "mean_pre": 0.105909,
+    "ratio_post_over_pre": 1.206009,
+    "shape": [
+     11,
+     200
+    ],
+    "n_cells_differing": 148
+   },
+   "targets": {
+    "identical": true,
+    "sha256_16_post": "c5fc4712c73784f3",
+    "sha256_16_pre": "c5fc4712c73784f3",
+    "mean_post": 1.332907,
+    "mean_pre": 1.332907,
+    "ratio_post_over_pre": 1.0,
+    "shape": [
+     47,
+     200
+    ],
+    "n_cells_differing": 0
+   },
+   "allocation.share": {
+    "identical": true,
+    "sha256_16_post": "8f0542c5a06ffff9",
+    "sha256_16_pre": "8f0542c5a06ffff9",
+    "shape": [
+     47,
+     200
+    ],
+    "n_cells_differing": 0
+   },
+   "allocation.other": {
+    "identical": true,
+    "sha256_16_post": "d3d1e40eb9a9dc86",
+    "sha256_16_pre": "d3d1e40eb9a9dc86",
+    "shape": [
+     2,
+     200
+    ],
+    "n_cells_differing": 0
+   }
+  },
+  "records": {
+   "n": 47,
+   "rows_differing": 11,
+   "fields_differing": [
+    "metrics"
+   ],
+   "note": "the 11 rows that differ are the running backs"
+  },
+  "layer_states_identical_in_both_arms": true,
+  "rushing_conversion": "DEFERRED[RUSHING_CONVERSION_CONTROL_UNDEFINED] -- there is no rushing-yards array for carries to move",
+  "ratio": {
+   "observed_carries": 1.224798,
+   "algebraic_prediction": 1.234797,
+   "algebraic_expression": "(1 - 0.010773708112537861) / (1 - 0.19887535274028778)",
+   "gap_explained_by": "the finite w_other resample alone. A matched-index resample of shape (2,200) from the two fitted pools, 2,000 replicates: ratio 1.234925 +/- 0.008517, 95% [1.219030, 1.252441], which contains 1.224798. Degenerate groups cannot contribute: they set S = 0 in BOTH arms and cancel out of the ratio."
+  }
+ },
+ "carry_conservation": {
+  "ownership_graph": "team_carries - scrambles = kneel + designed_qb + rb + wr + te + fringe",
+  "checked_on": "2 teams x 200 draws, real D1 team-carry draws, SC1-coupled",
+  "a1_evidence_block": {
+   "draws": 400,
+   "closure_violations": 0,
+   "negative_allocations": 0,
+   "category_budget_overruns": 0,
+   "ledger_violations": 0,
+   "carries_with_no_owner": 0,
+   "carries_with_two_owners": 0,
+   "clipping_applied": 0,
+   "survivor_renormalisation_applied": 0,
+   "post_hoc_repairs": 0,
+   "deleted_draws": 0,
+   "scrambles_redrawn": 0,
+   "every_carry_exactly_one_owner": true
+  },
+  "independent_recomputation": {
+   "draw_cells": 400,
+   "violations": 0,
+   "note": "recomputed from the returned category arrays rather than trusting the evidence block"
+  },
+  "engine_guard": "RUSHING_BUDGET_EXCEEDS_TEAM_CARRIES is live; a partition cannot exceed the thing partitioned",
+  "out_of_scope_observation": "share_floor_binds 756 on this game; A1 per-category share floor binds often. Not a C1 matter."
+ },
+ "q9_identity": {
+  "candidate_identity_sha256_recomputed": "82c8b52699bbeb00e656a3d543f995bac7034e9a89ff2a8d783e27b6fdc8422e",
+  "sealed_value": "82c8b52699bbeb00e656a3d543f995bac7034e9a89ff2a8d783e27b6fdc8422e",
+  "match": true,
+  "module_source_sha16_recomputed": {
+   "nfl.research.q9.hurdle": "bb51133641338547",
+   "nfl.research.q9b.family": "5b411b4f00e28e6f",
+   "nfl.research.q9b.production_parity": "1f320b1ee3170e64",
+   "nfl.production.nonqb.layers": "481f005f682cd721"
+  },
+  "matches_wave0_baseline": true,
+  "freeze_file_sha16_recomputed": "a28e8832430b1420",
+  "layers_py_source_sha16_recomputed": "481f005f682cd721",
+  "layers_py_contains_budget_is_partition": false,
+  "layers_py_contains_mass_pool_partition": false
+ },
+ "suite": {
+  "command": "python3.12 nfl/tests/run_suite.py --only test_c1_denominator",
+  "modules": 1,
+  "test_functions": 7,
+  "checks": 25,
+  "failing_checks": 0,
+  "raised": 0,
+  "verdict": "SUITE PASS",
+  "caveat": "A green here is not behavioural proof of the two registered numbers. test_a fabricates its inputs; substituting the real fitted pools leaves all three of its checks passing."
+ },
+ "honest_statement_of_the_result": "C1 corrects a real denominator mismatch. It raises the modelled running backs share of the budget they are dealt by a factor of 1.230 (1.222 to 1.235 by season, invariant to the budget level to six decimals), and on a correctly-scaled oracled budget it improves pooled carry CRPS by 0.182997, with a team-game clustered 95% interval of [-0.195603, -0.170441] over 1,630 clusters, in the same direction in all three evaluation seasons with every per-season interval excluding zero. The applied `other` mass is 0.010774 against a fitted 0.198875, an 18.46x overstatement. Receiving is bit-identical and the frozen Q9 candidate identity is unchanged. The result is EXPLORATORY: the defect was found by inspecting the data the evaluation then scored. No equivalence margin and no TOST were predeclared, so nothing here supports a claim that any quantity is unbiased, stable, closed or correct.",
+ "known_ceilings": [
+  "Chronology is not provable from this repository: pre-registration, estimator, harness, result and test are one commit.",
+  "The \"unmodelled running back\" population is a proxy (f_n_prior >= 1 is not the production depth-chart pool), as the pre-registration itself declares. The comparison is unaffected; the LEVEL 0.010774 is only as good as the proxy.",
+  "The corrected budget is still ORACLED. It isolates the allocation layer, which is the layer under test, and its numbers are not comparable with run_p4c or with any live forecast.",
+  "A1's rb share is fit on seasons that include all three evaluation seasons. Held identical across arms; still unstated in any committed artifact.",
+  "The bootstrap resamples team-games only. Monte Carlo error from the 400 draws, the appearance draws and the single W realisation sits inside the point estimate, not inside the interval.",
+  "Only test_c1_denominator was run. Whether the repair disturbs any other suite is out of scope here.",
+  "football_engine.py was dirty in the working tree during this verification (WS-B, 328 insertions). The C1 block at HEAD:509-558 is untouched by that diff, verified by git diff; the A/B ran against the working-tree module."
+ ]
+}
