@@ -552,3 +552,123 @@ correct it — and withdrew it. `readiness.py` is restored to `3f5fc82`.
 blast-radius class are repaired and needed no new evidence:
 NYJ@TEN, CHI@CAR and CLE@JAX all now produce full boards where they produced
 none. Three of six recovered; three wait on this.
+
+
+---
+
+## 2026-09-14 — OUT-011: why every scheduled workflow stopped at 2026-09-11T03:38:27Z
+
+**ASSIGNED, not blocked.** This is the sole cause of 47 missed week-1 capture
+targets and it is the highest-value unanswered question in the capture layer.
+Everything repairable from inside the repository has been repaired (see
+`nfl/research/remediation/ws_j/WS_J_CAPTURE_EXECUTOR.md`); the cause itself is
+not visible from this checkout.
+
+**What is established here, and it is not a guess.** Four independent scheduled
+workflows stopped within 35 minutes of each other and never ran again:
+
+| workflow | commits | first | last (UTC) |
+|---|---|---|---|
+| `NFL vintage capture` (`nfl-capture.yml`, `*/30 * * * *`) | 161 | 2026-09-07T00:24:50Z | **2026-09-11T03:38:27Z** |
+| `NFL status anchored capture` (`nfl-status.yml`) | 32 | 2026-09-08T20:04:53Z | **2026-09-11T03:01:09Z** |
+| `NFL T-90 anchored capture` (`nfl-t90.yml`) | 14 | 2026-09-07T02:23:46Z | **2026-09-11T00:44:04Z** |
+| `NFL availability watch` (`nfl-availability.yml`) | 1 | 2026-09-10T18:31:05Z | 2026-09-10T18:31:05Z |
+
+Counted on `origin/main` by exact author-string match on `nfl-capture[bot]` /
+`nfl-availability[bot]`; 208 bot commits in total. The last GitHub-Actions
+manifest row in this checkout is `20260911T004357Z`.
+
+**What this rules out, from the repository alone.** The workflow definitions are
+not the cause. They were last edited at `19ef57a`, 2026-09-10T05:02:19Z, and ran
+successfully for 22.6 hours afterwards. `main` and the working branch carry
+byte-identical `.github/workflows/`. The T-90 crons for 2026-09-13 15:30-16:50Z,
+18:55-20:15Z and 22:50-00:10Z and for 2026-09-14 22:45-00:05Z are present,
+syntactically valid, and verified by
+`nfl/tests/test_capture_obligations.py::test_I` to fire inside the windows they
+were generated for. A defect in one workflow also cannot explain four stopping
+together. Whatever happened is at the Actions or repository level.
+
+**Exactly what I need, and none of it is inferable from here.** For repository
+`<owner>/<repo>`, branch `main`:
+
+1. `GET /repos/{owner}/{repo}/actions/runs?created=>=2026-09-11` — every run,
+   its `name`, `event`, `status`, `conclusion`, `created_at`, `run_attempt`.
+   **The decisive question: did runs exist and fail, or were there no runs?**
+   Absence of a commit is not proof a run did not start, and this repository
+   cannot tell the two apart.
+2. `GET /repos/{owner}/{repo}/actions/workflows` — the `state` field of each of
+   `nfl-capture.yml`, `nfl-t90.yml`, `nfl-status.yml`, `nfl-availability.yml`.
+   `disabled_manually` / `disabled_inactivity` would answer this outright.
+3. Billing: `GET /repos/{owner}/{repo}/actions/cache/usage` and the account's
+   Actions minutes / spending-limit state as of 2026-09-11. The cadence in this
+   repository is roughly 48 baseline runs a day plus up to ~96 anchored runs on
+   a slate day; a private-repo minute allowance is a live hypothesis and cheap
+   to confirm or kill.
+4. Whether `main` is still the default branch. Scheduled workflows run only from
+   the default branch; every commit since 2026-09-11T03:38Z has gone to
+   `claude/nfl-greenfield-architecture-stsxmk` instead.
+5. If runs exist for 2026-09-13: the job logs for any run of
+   `NFL T-90 anchored capture`, so the failure can be classified as egress,
+   parser, permissions or push.
+
+**The structural point, which stands whatever the answer is.** Nothing that runs
+inside GitHub Actions can detect GitHub Actions being off; a scheduled job
+cannot page about its own scheduler. `.github/workflows/nfl-capture-liveness.yml`
+now catches every PARTIAL failure — one workflow disabled while others run,
+captures that execute but stop writing manifest rows, a runner that cannot reach
+the sources, a cron schedule whose absolute dates have all elapsed — and it is
+silenced by the same event as everything else in a total halt. **Closing that
+needs an observer outside Actions.** Please either stand one up or tell me it is
+out of scope, because until then the answer to "is the capture executor alive"
+is only ever "no evidence has arrived", which is an observation of the
+consequence and not of the cause.
+
+**Time-critical, today.** `2026_01_DEN_KC` inactives, window
+**2026-09-14T22:45Z -> 2026-09-15T00:05Z**, kickoff 2026-09-15T00:15Z, is the
+last open week-1 obligation and the only one that has not already been lost.
+Three cron entries in `nfl-t90.yml` fire inside it (`45,50,55 22 14 9 *`,
+`*/5 23 14 9 *`, `0,5 0 15 9 *`). If the executor is still halted it will close
+unfilled like the other 47. **Do not backfill it afterwards** — a miss recorded
+as a miss is worth more than a reconstruction.
+
+---
+
+## 2026-09-14 — OUT-012: a live source fetch cannot be proven from this executor
+
+**ASSIGNED, not blocked.** `nfl/tests/test_capture_obligations.py` carries two
+proofs recorded as `BLOCKED(cause=NETWORK)` rather than as passing tests. This
+is the first of them and it is deliberate: a mock of a fetch proves that the
+mock returns what the mock was told to return, and
+`nfl/research/parallel_pass/ws11/WS11_FALSE_GREEN_AUDIT.md` already names three
+P0 false greens of that shape.
+
+**The state, measured.** Every 2026-09-13 manifest row carries
+`basis: LOCAL_INVOCATION`, `is_github_actions: false`,
+`basis_can_discharge: false`; 18 runs recorded `NO_EGRESS` on
+`official_injury_report`, `official_inactives` and `espn_injuries_json`, and 90
+such rows across 32 runs overall. **Two independent blocks are live at once and
+fixing either alone changes nothing**: this executor has no egress, AND its
+basis cannot discharge an obligation even if the bytes arrived. The second is
+not a bug — Directive 7 §5 is explicit that a generic background capture does
+not discharge a perishable window — so the remedy is the anchored runner, not a
+different threshold here.
+
+**What would discharge this request.** Any ONE of:
+
+1. Confirmation from an executor with egress that these three URLs return real
+   content, with the HTTP status and byte count, so the sources can be
+   distinguished from an origin outage: `https://www.nfl.com/injuries/`,
+   `https://www.nfl.com/inactives/`, and the ESPN injuries JSON endpoint named
+   in `nfl/capture/registry.py`.
+2. A verified URL for `official_transactions`, which has **177 consecutive
+   `ENDPOINT_NOT_YET_VERIFIED` BLOCKED rows and has never been captured once**.
+   It is registered and wired; it has no endpoint. This is a declared open debt,
+   not a regression, and it needs one working URL from you.
+3. A test of `reduce_recoverability_assumption` — whether nflverse still serves
+   the older `dt` slices for `depth_charts` and `weekly_rosters`. WS-K's repair
+   makes the reduction auditable and leaves this one assumption untested;
+   `reduce_recoverability_checked` is `false` on all 368 rows and correctly says
+   so. Requested on WS-K's behalf, since this file is mine.
+
+**What I will not do.** Stub the fetch, mock it into a passing test, or route
+around the proxy. The tests are recorded BLOCKED and this entry is why.

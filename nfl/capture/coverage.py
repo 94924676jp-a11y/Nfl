@@ -90,6 +90,64 @@ from nfl.capture.schedule import (GAME_SPECIFIC_KINDS,  # noqa: E402
                                   NON_OBLIGATION_KINDS, CaptureDue,
                                   season_plan)
 
+# EVERY PASS ROW LANDS IN EXACTLY ONE OF THESE, AND AN UNRECOGNISED ROW REFUSES.
+#
+# WS13 W5, measured 2026-09-14. The manifest has two writers. `capture_vintage`
+# writes rows carrying `execution_target` and `discharge_eligibility`;
+# `nfl/production/nonqb/inactives.py` writes 18 rows carrying
+# `spec_version: "official-inactives-1"`, a `game_id`, a `source_url`, a
+# `published_at` and a `sha256` that verifies against the blob on disk -- and
+# none of the declaration blocks. Those 18 rows are real, hash-verified,
+# game-anchored and chronologically valid, and `eligible_targets` correctly
+# returns nothing for them, because Directive 7 section 6 requires the target to
+# have been DECLARED before the fetch and they declare nothing.
+#
+# The defect was never the refusal. It was that the refusal was SILENT: those
+# rows fell into an `unattributed` bucket alongside 1,031 periodic sweeps, and
+# the coverage report for twelve Sunday games said MISSED with no indication
+# that verified evidence for those games was sitting in the same file. A reader
+# could not tell "we never fetched it" from "we fetched it and cannot credit
+# it", and those need opposite responses -- one is a capture failure, the other
+# is a schema and declaration failure.
+#
+# So each row is now classified by name, the classes are counted, and a row that
+# matches none of them BLOCKS the report instead of being absorbed.
+#
+# THIS CHANGES NO VERDICT. Covered stays covered, missed stays missed. Nothing
+# here credits an undeclared row with a discharge and nothing here rewrites a
+# manifest row. The 47 missed week-1 targets are still 47 missed targets.
+DISPOSITIONS = (
+    "DISCHARGING",             # declared, eligible, verified -- may discharge
+    "DECLARED_NOT_ELIGIBLE",   # declared a target, bytes refused it, reasons
+    "SWEEP_NO_OPEN_TARGET",    # declared, no target open at declaration time
+    "LEGACY_PRE_DIRECTIVE_7",  # post-hoc `discharge_claims` only
+    "FOREIGN_SCHEMA",          # a second writer, under a declared spec_version
+    "PRE_DECLARATION_CAPTURE", # a capture row written before declarations
+    "UNDECLARED_NO_ARTIFACT",  # no declaration and no blob reference either
+    "ARTIFACT_UNVERIFIED",     # blob absent, unreadable, or hash mismatch
+)
+
+# EVERY `spec_version` THIS MODULE KNOWS HOW TO READ. A row carrying one that is
+# not here BLOCKS the report.
+#
+# This is the prospective half of the W5 repair. A second writer announces
+# itself in exactly one place -- it stamps its own `spec_version` -- so that is
+# where the check belongs. `nfl/production/nonqb/inactives.py` appended 18 rows
+# under `official-inactives-1` and nothing anywhere noticed; the rows simply
+# stopped counting. The next writer will be refused by name instead.
+#
+#   None                        `nfl/tools/capture_vintage.py`, the capture tool
+#   official-inactives-1        `nfl/production/nonqb/inactives.py`, WS13 4a
+#   delivered_injuries/1.0.0    `nfl/tools/ingest_delivered_injuries.py`
+KNOWN_SPEC_VERSIONS = (None, "official-inactives-1", "delivered_injuries/1.0.0")
+
+# Measured 2026-09-14 on nfl/vintage_manifest.jsonl, 1,061 PASS rows:
+#   DISCHARGING 12 - DECLARED_NOT_ELIGIBLE and SWEEP_NO_OPEN_TARGET 963 -
+#   LEGACY_PRE_DIRECTIVE_7 6 - FOREIGN_SCHEMA 18 - PRE_DECLARATION_CAPTURE 62 -
+#   ARTIFACT_UNVERIFIED 0 excluded rows re-classified under their own class.
+# The counts are reported by `performed_from_manifest`; they are recomputed on
+# every call and nothing here hard-codes them.
+
 
 def _parse_ts(v) -> Optional[dt.datetime]:
     if not v:
@@ -102,32 +160,142 @@ def _parse_ts(v) -> Optional[dt.datetime]:
 
 
 def _blob_ok(value: dict) -> tuple:
-    """Does the raw artifact actually exist, and do its bytes hash correctly?
+    """Does the raw artifact exist, and does a digest OF THE STORED BYTES match?
 
     Directive 7 §5 requires "a real persisted raw artifact" for discharge, and
     §9.9/§9.11 require that a persistence failure or a wrong hash PREVENTS
-    coverage. A manifest row is a claim about a file; this opens the file. The
-    two have already disagreed once in this project -- the `.reduced` blobs are
-    named for a digest that is not their own -- so the row's word is not taken.
+    coverage. A manifest row is a claim about a file; this opens the file.
+
+    WS-K'S PATCH, TAKEN AS WRITTEN (WS_K_PERSISTED_PROVENANCE.md §10).
+
+    The `sha256` on a `durability: "reduce"` row is the digest of the UPSTREAM
+    file, and the file actually persisted is a column-reduced subset whose own
+    hash was never recorded. Checking the stored bytes against `sha256` is
+    therefore guaranteed to mismatch, which is how all 368 reduce rows read as
+    RAW_SHA256_MISMATCH -- a number that sounds like corruption and is not.
+    WS-K recovered a persisted digest for 216 of them and established that the
+    other 152 have no attested digest of their stored bytes and never will.
+
+    THE TRAP, AND IT IS LOAD-BEARING. A reduce row with no persisted digest must
+    NOT fall back to `value["sha256"]`. That field describes bytes that were
+    never stored; using it re-asserts, silently, the exact claim WS-K disproved.
+    Those 152 rows get their own code and read as CANNOT BE CHECKED -- never as
+    wrong, never as fine. Hashing an unattested blob and recording the result
+    would be circular and is refused.
+
+    NO COVERAGE VERDICT MOVES ON THIS. All 368 reduce rows carry
+    `discharge_eligibility.n_eligible == 0`: they discharge nothing and never
+    could. The 47 missed week-1 windows stay missed.
     """
-    import gzip as _gzip, hashlib as _hashlib
+    import hashlib as _hashlib
+    from nfl.capture.persisted_provenance import (load_recovery, read_blob,
+                                                  resolve_blob)
     blob = (value or {}).get("blob")
-    sha = (value or {}).get("sha256")
     if not blob:
         return False, "RAW_ARTIFACT_NOT_PERSISTED"
+
+    # Prefer a digest that covers the bytes ACTUALLY PERSISTED.
+    sha = (value or {}).get("persisted_content_sha256")
+    if not sha:
+        rec = _recovery().get(blob)
+        if rec and rec.get("persisted_content_sha256"):
+            sha = rec["persisted_content_sha256"]
+
+    if not sha:
+        if (value or {}).get("durability") == "reduce":
+            return False, "PERSISTED_DIGEST_ABSENT_HISTORICAL"
+        sha = (value or {}).get("sha256")
+
     if not sha or len(sha) != 64:
         return False, "RAW_SHA256_ABSENT_OR_MALFORMED"
-    path = _REPO / blob
-    if not path.exists():
+
+    # Also resolves the rows that cite `...reduced.csv` when only
+    # `...reduced.csv.gz` exists (WS13 §3c).
+    path, _how = resolve_blob(blob)
+    if path is None:
         return False, f"RAW_ARTIFACT_MISSING_ON_DISK:{blob}"
     try:
-        raw = (_gzip.open(path, "rb").read() if str(path).endswith(".gz")
-               else path.read_bytes())
+        raw = read_blob(path)
     except OSError as exc:
         return False, f"RAW_ARTIFACT_UNREADABLE:{type(exc).__name__}"
     if _hashlib.sha256(raw).hexdigest() != sha:
-        return False, "RAW_SHA256_MISMATCH"
+        return False, "PERSISTED_CONTENT_SHA256_MISMATCH"
     return True, None
+
+
+_RECOVERY_CACHE = {}
+
+
+def _recovery() -> dict:
+    """The persisted-digest sidecar, read once per process.
+
+    `performed_from_manifest` calls `_blob_ok` 1,061 times; re-reading the
+    sidecar on each would turn one file read into a thousand. Cached by
+    identity of the file's mtime and size so a rebuilt sidecar is picked up
+    rather than a stale dict being served forever.
+    """
+    from nfl.capture.persisted_provenance import RECOVERY, load_recovery
+    p = pathlib.Path(RECOVERY)
+    key = (str(p), p.stat().st_mtime_ns, p.stat().st_size) if p.exists() else None
+    if key not in _RECOVERY_CACHE:
+        _RECOVERY_CACHE.clear()
+        _RECOVERY_CACHE[key] = load_recovery()
+    return _RECOVERY_CACHE[key]
+
+
+def _disposition(val: dict, artifact_ok: bool, n_eligible: int) -> str:
+    """Which named class this PASS row belongs to. Never a default.
+
+    Order matters and is deliberate: artifact verification comes first because a
+    row whose bytes do not verify is not evidence of anything regardless of what
+    it declared, and reporting it under its declaration would credit a claim the
+    file cannot support.
+    """
+    if not artifact_ok:
+        return "ARTIFACT_UNVERIFIED"
+    if n_eligible:
+        return "DISCHARGING"
+    decl = val.get("execution_target") or {}
+    if val.get("discharge_eligibility") is not None:
+        block = val.get("discharge_eligibility") or {}
+        return ("DECLARED_NOT_ELIGIBLE" if block.get("targets")
+                else "SWEEP_NO_OPEN_TARGET")
+    if decl:
+        return "SWEEP_NO_OPEN_TARGET"
+    if val.get("discharge_claims"):
+        return "LEGACY_PRE_DIRECTIVE_7"
+    if val.get("spec_version"):
+        return "FOREIGN_SCHEMA"
+    # WRITTEN BEFORE DIRECTIVE 7 EXISTED, not written wrongly. 68 rows from
+    # 2026-09-06/07 carry a blob, a clock and a hash and no declaration block of
+    # any kind, because the mechanism that writes one was added on 2026-09-07.
+    # They discharge nothing -- there is no intent to read -- and they are named
+    # rather than lumped in with the sweeps, because "declared and the bytes
+    # were refused" and "predates declaration entirely" are different facts.
+    return ("PRE_DECLARATION_CAPTURE" if val.get("blob")
+            else "UNDECLARED_NO_ARTIFACT")
+
+
+def _uncredited(val: dict, source: str, ts, capture_id) -> Optional[dict]:
+    """A verified, game-anchored capture that is not permitted to discharge.
+
+    Returned for REPORTING only. It never reaches `_clears` and never changes a
+    target's state. What it answers is the question a MISSED line cannot: did we
+    hold bytes for this game, from an authorised source, before kickoff, that we
+    are refusing to credit -- and if so, on what ground.
+    """
+    gid = val.get("game_id")
+    if not gid or not ts:
+        return None
+    return {"game_id": gid, "source": source, "capture_id": capture_id,
+            "retrieved_at": ts.isoformat(),
+            "spec_version": val.get("spec_version"),
+            "source_url": val.get("source_url"),
+            "published_at": val.get("published_at"),
+            "sha256": val.get("sha256"),
+            "refusal": ("NO_DECLARATION_BLOCK"
+                        if val.get("discharge_eligibility") is None
+                        else "DECLARED_BUT_REFUSED")}
 
 
 def performed_from_manifest(manifest_path, *, verify_artifacts: bool = True
@@ -161,6 +329,9 @@ def performed_from_manifest(manifest_path, *, verify_artifacts: bool = True
     out, undated, n_pass, excluded = [], [], 0, []
     legacy = 0
     unattributed = 0
+    disposition_counts = {d: 0 for d in DISPOSITIONS}
+    unclassified = []
+    uncredited = []
     # ROWS AND TARGET-PAIRS ARE DIFFERENT UNITS AND THE COUNTERS CONFLATED THEM.
     #
     # `out` holds one entry per (game_id, kind) a row DECLARED, so a single
@@ -192,13 +363,30 @@ def performed_from_manifest(manifest_path, *, verify_artifacts: bool = True
 
         ok, why = ((True, None) if not verify_artifacts
                    else _blob_ok(val))
+        targets = eligible_targets(val) if ok else []
+        disp = _disposition(val, ok, len(targets))
+        disposition_counts[disp] += 1
+        if val.get("spec_version") not in KNOWN_SPEC_VERSIONS:
+            # NEVER A SILENT DEFAULT. An unknown `spec_version` means a writer
+            # this module has never read has appended to the manifest, and the
+            # honest answer is that this week's coverage is unknown until the
+            # schema is named -- not that those rows contribute nothing. That
+            # silence is what hid 18 verified game-anchored inactives rows.
+            unclassified.append({"source": row.get("source"),
+                                 "capture_id": row.get("capture_id"),
+                                 "spec_version": val.get("spec_version"),
+                                 "keys": sorted(val.keys())[:12]})
+        if disp in ("FOREIGN_SCHEMA", "DECLARED_NOT_ELIGIBLE",
+                    "PRE_DECLARATION_CAPTURE"):
+            u = _uncredited(val, row.get("source"), ts, row.get("capture_id"))
+            if u:
+                uncredited.append(u)
         if not ok:
             excluded.append({"source": row.get("source"),
                              "capture_id": row.get("capture_id"),
                              "reason": why})
             unattributed += 1
             continue
-        targets = eligible_targets(val)
         if not targets:
             # Real evidence, kept in the manifest, discharging nothing. This
             # line used to append `(ts, source, None)` and that unattributed
@@ -209,6 +397,20 @@ def performed_from_manifest(manifest_path, *, verify_artifacts: bool = True
         for gid, kind in targets:
             out.append((ts, row.get("source"), gid, kind))
 
+    if unclassified:
+        seen = sorted({str(u.get("spec_version")) for u in unclassified})
+        return Outcome.blocked(
+            "MANIFEST_SPEC_VERSION_UNKNOWN",
+            f"{len(unclassified)} of {n_pass} PASS rows carry a spec_version "
+            f"this module has never read: {seen}. Known: "
+            f"{list(KNOWN_SPEC_VERSIONS)}. A second writer appending under an "
+            f"unread schema is exactly how 18 verified, game-anchored, "
+            f"pre-kickoff inactives rows became invisible to this report for "
+            f"twelve games. Read the schema and add it here; do not let the "
+            f"rows count as nothing by default.",
+            cause=Cause.DATA, unclassified=unclassified[:20],
+            n_unclassified=len(unclassified), n_pass=n_pass,
+            unknown_spec_versions=seen)
     if undated:
         return Outcome.blocked(
             "CAPTURE_CLOCK_UNREADABLE",
@@ -235,7 +437,12 @@ def performed_from_manifest(manifest_path, *, verify_artifacts: bool = True
                                   'pairs; n_attributed_rows and '
                                   'n_unattributed count manifest ROWS. Only '
                                   'the row counts partition n_pass_rows.'),
-                      artifact_excluded=excluded, legacy_claim_rows=legacy)
+                      artifact_excluded=excluded, legacy_claim_rows=legacy,
+                      disposition_counts=disposition_counts,
+                      dispositions_partition_pass_rows=(
+                          sum(disposition_counts.values()) == n_pass),
+                      uncredited_game_anchored=uncredited,
+                      n_uncredited_game_anchored=len(uncredited))
 
 
 def load_week_plan(season: int, week: int, vintage_dir=None) -> Outcome:
@@ -306,6 +513,42 @@ def coverage(season: int, week: int, *, manifest_path,
         else:
             pending.append(c)
 
+    # WHY A MISSED TARGET NOW CARRIES A SECOND LINE, AND WHY IT STILL SAYS
+    # MISSED.
+    #
+    # WS13 section 4a: twelve of the 47 week-1 misses are games for which the
+    # store DOES hold hash-verified, game-anchored, pre-kickoff inactives bytes
+    # -- written by a second manifest writer, under a schema carrying no
+    # declaration block, therefore not dischargeable and correctly refused. The
+    # report said MISSED and stopped there, and a reader could not tell that
+    # case apart from a game we never fetched anything for. They need opposite
+    # responses.
+    #
+    # THIS IS NOT A BACKFILL AND IT DOES NOT MOVE A SINGLE TARGET. `missed`
+    # above is computed before this block and is not touched by it. Nothing
+    # below feeds `_clears`, nothing rewrites a manifest row, and no target
+    # changes state. The 47 are still 47. What changes is that the report now
+    # distinguishes a capture failure from a declaration-and-schema failure, and
+    # names which of the two each miss is.
+    from nfl.capture.registry import can_discharge
+    uncredited = read.evidence.get("uncredited_game_anchored", []) or []
+    with_evidence, dark = [], []
+    for c in missed:
+        lo, hi = c.window
+        hits = [u for u in uncredited
+                if u["game_id"] == c.game_id
+                and can_discharge(u["source"], c.kind)
+                and (_parse_ts(u["retrieved_at"]) is not None)
+                and lo <= _parse_ts(u["retrieved_at"]) <= hi]
+        if hits:
+            with_evidence.append({
+                "game_id": c.game_id, "kind": c.kind,
+                "still_missed": True,
+                "why_not_discharged": sorted({h["refusal"] for h in hits}),
+                "uncredited_rows": hits})
+        else:
+            dark.append({"game_id": c.game_id, "kind": c.kind})
+
     summary = {
         "season": season, "week": week,
         "as_of_utc": now.isoformat(),
@@ -313,11 +556,32 @@ def coverage(season: int, week: int, *, manifest_path,
         "covered": len(covered), "missed": len(missed),
         "not_yet_due": len(pending),
         "game_specific_kinds": list(GAME_SPECIFIC_KINDS),
+        # UNITS, NAMED IN THE KEY FROM NOW ON.
+        #
+        # `attributed_captures` counts (game_id, kind) PAIRS and always has.
+        # Its name reads as rows, and because every emitted pair carries a
+        # game_id it is identically equal to `dischargeable_captures`: two
+        # names, one number, and neither of them the row count a reader
+        # reaches for. Measured 2026-09-14 it is 103 against 12 rows.
+        #
+        # IT IS NOT REDEFINED HERE. Three test modules and
+        # `capture_vintage.py` read this key, and silently changing what a
+        # published number means is worse than an awkward name. The row unit
+        # is added beside it under a key that says which unit it is.
+        "attributed_rows": read.evidence.get("n_attributed_rows", 0),
+        "dischargeable_target_pairs": len(performed),
         "attributed_captures": sum(1 for p in performed if p[2]),
         "dischargeable_captures": len(performed),
         "unattributed_captures": read.evidence.get("n_unattributed", 0),
         "total_pass_rows": read.evidence.get("n_pass_rows", 0),
         "total_captures": len(performed),
+        "row_dispositions": read.evidence.get("disposition_counts", {}),
+        "dispositions_partition_pass_rows": read.evidence.get(
+            "dispositions_partition_pass_rows"),
+        # The W5 split of the misses. Both lists are still MISSED.
+        "missed_with_uncredited_evidence": len(with_evidence),
+        "missed_with_no_evidence_at_all": len(dark),
+        "uncredited_detail": with_evidence,
         "artifacts_verified": verify_artifacts,
         "artifact_excluded": read.evidence.get("artifact_excluded", []),
         "legacy_claim_rows": read.evidence.get("legacy_claim_rows", 0),
@@ -332,7 +596,10 @@ def coverage(season: int, week: int, *, manifest_path,
             f"{len(missed)} of {summary['n_targets']} targets had their window "
             f"close with no authorised, in-window, game-attributed capture. "
             f"These are not recoverable later: the pages they name are "
-            f"overwritten in place.",
+            f"overwritten in place. Of them, {len(with_evidence)} have "
+            f"hash-verified game-anchored bytes in this same manifest that no "
+            f"rule permits to discharge them, and {len(dark)} have nothing at "
+            f"all. Both are misses; they are different defects.",
             **summary)
     if not covered:
         return Outcome.deferred(

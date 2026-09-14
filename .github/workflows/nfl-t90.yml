@@ -65,6 +65,20 @@ jobs:
         with:
           python-version: '3.12'
 
+      # BELOW 3.12 THE ENGINE DOES NOT IMPORT, and two of the causes are at AST
+      # level -- the module fails to parse before any import semantics or any
+      # test can report on it. Asserted rather than assumed.
+      - name: Assert the interpreter is 3.12 or later
+        run: |
+          python3 -c "import sys; assert sys.version_info >= (3,12), 'INTERPRETER_TOO_OLD: ' + sys.version; print('interpreter', sys.version.split()[0])"
+
+      # The before-state for the blob/manifest invariant, taken before any
+      # bytes are fetched so the post-capture check compares two real
+      # observations rather than the store against itself.
+      - name: Snapshot the vintage store before capture
+        run: |
+          python3 nfl/tools/check_retention.py --store vintage --snapshot-to /tmp/pre
+
       - name: Capture
         run: |
           set +e
@@ -123,6 +137,18 @@ jobs:
             exit 1
           fi
           grep -E '^manifest rows appended:' /tmp/capture.log
+
+      # THE SAME GUARD AS THE LINE ABOVE, OFF THE LOG STRING AND ONTO THE
+      # FILESYSTEM. The 50 runs that lost 2026-09-08/09/10 printed no summary
+      # line at all, which is exactly when a stdout guard can see least. This
+      # compares the blob set and the manifest before and after, and refuses a
+      # run that added durable bytes with no row naming them. Runs AFTER the
+      # commit: the bytes are kept and so is the signal.
+      - name: Assert no blob was written without a manifest row
+        if: always()
+        run: |
+          python3 nfl/tools/check_retention.py --store vintage --gate delta \
+            --before-blobs /tmp/pre.blobs --before-manifest /tmp/pre.manifest
 
       - name: Fail only on a real FAIL
         if: always()
