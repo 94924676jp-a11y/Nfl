@@ -1,0 +1,130 @@
+{
+  "artifact": "REMEDIATION_BASELINE",
+  "captured_at_utc": "2026-09-14",
+  "captured_by": "coordinator, Wave 0, before any remediation edit",
+  "rule": "Nothing in this file may be recomputed later and substituted. A post-repair number is compared against these, never replaces them.",
+  "git": {
+    "head_sha": "837d52f0d448527bd52a2aedc26362cb17611a08",
+    "branch": "claude/nfl-greenfield-architecture-stsxmk",
+    "pushed": true,
+    "dirty_tree_entries": 29,
+    "dirty_tree_is_pre_existing": true,
+    "pre_existing_uncommitted_note": "7 modified + 22 untracked files, q9shadow work dated 2026-09-12, predating this session. NOT authored by this remediation pass. Saved verbatim so authorship stays separable.",
+    "pre_existing_diff_sha256": "9ced29bcb739140da7540095da086e2816a8e13eb2c7e40d4e996f893625ba76",
+    "pre_existing_diff_stat": "7 files changed, 1272 insertions(+), 68 deletions(-)",
+    "pre_existing_modified": [
+      "nfl/prospective/q9shadow/Q9_PROSPECTIVE_INTEGRATION.md",
+      "nfl/prospective/q9shadow/Q9_PROSPECTIVE_LEDGER_STATE.json",
+      "nfl/prospective/q9shadow/Q9_SHADOW_DRYRUN_SEAL_LEDGER.jsonl",
+      "nfl/prospective/q9shadow/ledger.py",
+      "nfl/prospective/q9shadow/seal.py",
+      "nfl/prospective/q9shadow/shadow.py",
+      "nfl/tests/test_q9_prospective_shadow.py"
+    ],
+    "attribution_hazard": "WS-E must edit nfl/prospective/q9shadow/seal.py, which is already dirty. Its commit must name its own hunks explicitly; the pre-existing diff above is the boundary."
+  },
+  "q9_frozen_identity": {
+    "freeze_file": "nfl/research/q9b/Q9_PROSPECTIVE_FREEZE.json",
+    "freeze_file_sha16": "a28e8832430b1420",
+    "mechanism_spec_version": "q9-target-hurdle-1",
+    "allocator": "nfl.research.q9.hurdle.allocate_hurdle",
+    "module_source_sha16": {
+      "nfl.research.q9.hurdle": "bb51133641338547",
+      "nfl.research.q9b.family": "5b411b4f00e28e6f",
+      "nfl.research.q9b.production_parity": "1f320b1ee3170e64",
+      "nfl.production.nonqb.layers": "481f005f682cd721"
+    },
+    "production_interface_version_sha16": "481f005f682cd721",
+    "feature_set_identity": {
+      "n_features": 25,
+      "first": "intercept",
+      "last": "expected_team_budget_standardised"
+    },
+    "parameter_hashes": {
+      "hurdle_coefficients_sha16": "9491bb9f4b09b6a2",
+      "hurdle_standardiser_mu_sha16": "9bc34ec6da42b07f",
+      "hurdle_standardiser_sd_sha16": "69307c2004799e0a",
+      "class_prior_sha16": "171212d5426ea16a",
+      "budget_point_sha16": "05529fbf227b2f06"
+    },
+    "rule": "nfl.production.nonqb.layers is hashed by this freeze. No workstream may edit layers.py. C1 was placed in football_engine.py for exactly this reason and the same constraint binds every repair in this pass."
+  },
+  "freeze_file_sha16": {
+    "nfl/research/q9b/Q9_PROSPECTIVE_FREEZE.json": "a28e8832430b1420",
+    "nfl/production/FREEZE_V1_R8.json": "d8513a39bbd50016",
+    "nfl/production/FREEZE_V1_R7.json": "4cd90b5dd50579bc",
+    "nfl/production/FREEZE_V1_R6.json": "02ee1154c3af1347",
+    "nfl/production/FREEZE_V1_R5.json": "b1ffc475bee3bb48",
+    "nfl/production/FREEZE_V1_PRODUCT_PATH.json": "354e6609926afd0b",
+    "nfl/production/nonqb/FREEZE_R3.json": "1be5dc7d9f2ffb21",
+    "nfl/production/nonqb/FREEZE_R4.json": "a5fa1574f413d295",
+    "nfl/schema/DRAW_ARCHIVE_FREEZE.json": "5371b8b3b6afa3ab"
+  },
+  "suite": {
+    "interpreter": "python3.12",
+    "runner": "nfl/tests/run_suite.py",
+    "modules": 90,
+    "test_functions": 1019,
+    "checks": 5850,
+    "failing_checks": 0,
+    "raised": 0,
+    "verdict": "SUITE PASS",
+    "caveat": "WS11 identified 3 P0 false greens. A green suite here is not behavioural proof; WS-N owns converting them."
+  },
+  "impossible_states_before": {
+    "scope": "all sealed player_draws.npz under nfl/research/live/2026_01_*",
+    "runs_scanned": 101,
+    "runs_with_qb_layer": 101,
+    "qb_cells": 838000,
+    "receiving_cells": 1396000,
+    "rushing_cells": 381000,
+    "I1_cmp_gt_att": 5278,
+    "I2_ptd_gt_cmp": 731,
+    "I3_pyds_nonzero_with_cmp_zero": 11616,
+    "I4_db_ne_att_plus_sacks_plus_scr": 0,
+    "I6_receptions_gt_targets": 0,
+    "runs_carrying_I1_violations": 33,
+    "negative_cells_by_array": {
+      "qb__pyds": 2261,
+      "qb__ryds": 2821,
+      "receiving__receiving_yards": 8213
+    },
+    "negative_note": "Negatives occur ONLY in yardage arrays, never in a count array. Rushing and receiving yards may lawfully be negative. Negative TOTAL passing yards is contract-dependent, not impossible. WS-O classifies; it is not assumed a defect here."
+  },
+  "appearance_baseline": {
+    "module_sha16": {"appearance_r8": "ac1d54a6ae66f08c", "appearance_r7": "6d53f2200195c1ef"},
+    "spec_version": "appearance-r8-reliability-weighted-1",
+    "v1_numeric_features": 12,
+    "leak_evidence_from_ws04": {
+      "training_v1_present_rows": 53381,
+      "training_v1_present_appearance_rate": 0.7106,
+      "training_v1_absent_rows": 6158,
+      "training_v1_absent_appearance_rate": 0.0,
+      "serve_v1_present": "30/30, 24/24, 28/28",
+      "presence_bit_alone_auc": 0.6425,
+      "in_sample_week1_mean_p": 0.5438,
+      "in_sample_week1_actual": 0.5371,
+      "served_2026_week1_mean_p": 0.7996,
+      "served_cold_start_mean_p": 0.9920,
+      "served_cm_carried_ge9_mean_p": 0.9622
+    }
+  },
+  "artifact_sha16": {
+    "nfl/research/model_health/MODEL_HEALTH_2026-09-13.json": "4639ff1a0fdcb8a6",
+    "nfl/research/SUNDAY_1PM_OUTCOME_AUDIT.json": "82f706127181238d",
+    "nfl/research/slate_audit/C1_EVALUATION.json": "a79772b4cc3c1e37",
+    "nfl/research/live/OPEN_DEFECTS.json": "6921d226530f4d27",
+    "nfl/research/PATH_C_STATE.json": "ebd1274086ec9c81"
+  },
+  "capture_health_before": {
+    "vintage_manifest_rows": 1672,
+    "vintage_blobs": 490,
+    "last_github_actions_capture_commit": "1034e27",
+    "last_github_actions_capture_utc": "2026-09-11T00:44:04Z",
+    "unverifiable_pass_rows": 368,
+    "unverifiable_pass_fraction": 0.347,
+    "official_transactions_rows_blocked": 177,
+    "surviving_executor_basis": "LOCAL_INVOCATION, is_github_actions false, basis_can_discharge false"
+  },
+  "publication_state": "NOT PUBLICATION-READY (engineering/model-readiness statement only; no NFL-1 governance change, PATH_C_STATE untouched)"
+}

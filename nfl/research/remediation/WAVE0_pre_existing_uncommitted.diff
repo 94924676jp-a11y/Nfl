@@ -1,0 +1,1646 @@
+diff --git a/nfl/prospective/q9shadow/Q9_PROSPECTIVE_INTEGRATION.md b/nfl/prospective/q9shadow/Q9_PROSPECTIVE_INTEGRATION.md
+index 7ed1f14..a0ead94 100644
+--- a/nfl/prospective/q9shadow/Q9_PROSPECTIVE_INTEGRATION.md
++++ b/nfl/prospective/q9shadow/Q9_PROSPECTIVE_INTEGRATION.md
+@@ -425,3 +425,197 @@ and starts sealing.
+ | `nfl/tests/test_q9_prospective_shadow.py` | 207 checks |
+ | `nfl/tests/test_postgame_guards.py` | +3 checks for the `arm` identity repair |
+ | `docs/AGENT_OUTBOX.md` | the one request that needs bytes from outside |
++
++---
++
++# Appendix A — owner rulings of 2026-09-12, and what they changed
++
++`da58aec` accepted. Two rulings, both **keeping the protocol unchanged**, and
++both now implemented rather than noted.
++
++## A.1 Randomized PIT — §9.6 stands
++
++Randomized PIT is the governing prospective promotion statistic. Q9B's
++mid-PIT is **diagnostic only** and does not satisfy §9.6. The ledger emits the
++randomized statistic, seeded per row through crc32 so it reproduces exactly,
++and records mid-PIT beside it. **The protocol was not modified.**
++
++Recorded in `ledger.OWNER_RULINGS['randomized_pit']` with
++`protocol_modified: false`, and asserted by the suite.
++
++## A.2 Completeness — §2 stands, and the label was not moved
++
++A `PARTIAL_PLAYER_COVERAGE` artifact may be scored diagnostically, counts
++toward **no** §4 floor, and cannot support promotion. A single-layer Q9
++artifact is **not** relabelled `COMPLETE`.
++
++Three things changed so this is enforced rather than remembered:
++
++1. **`completeness` is computed, not written.** `seal_team_game` no longer
++   carries a literal. It calls `complete.completeness_value`, which runs the
++   governed `nfl.research.completeness.forecast_completeness` over a
++   nine-layer matrix and maps `FULL` → `COMPLETE`. There is no argument by
++   which Q9 gets a different answer, and the gate is tested in both
++   directions: an all-PASS matrix reads COMPLETE, and dropping **any one** of
++   the nine takes it away.
++
++2. **`prospective_evidence` now means "may be counted", not "is live".** It
++   was `True` for every non-dry-run seal. Under the ruling a live, genuinely
++   pre-kickoff, genuinely non-fixture artifact that is PARTIAL is
++   **DIAGNOSTIC** — so the flag is now `completeness == COMPLETE`, and
++   `ledger.accounting` reads that exact flag. The ruling is enforced by the
++   counter.
++
++3. **The paired route is built.** `nfl/prospective/q9shadow/complete.py`
++   composes R8 and frozen Q9 across all nine required layers on one set of
++   upstream draws, with the target allocation as the only divergence.
++
++### The layer partition, and the guard that makes it complete
++
++The nine required layers come from `nfl.research.completeness.LAYERS` — the
++module that exists because a twelve-game slate once reported "complete" while
++carrying only the quarterback layer. Each is assigned to exactly one side:
++
++| side | layers | why |
++|---|---|---|
++| **SHARED** — both arms must carry identical numbers | `team_volume`, `qb_attempts`, `qb_passing_yards`, `qb_td`, `carries` | Q9 changes **target** allocation only; the Q8 budget repair was REJECTED, so the carry path is untouched |
++| **ARM** — the arms legitimately differ | `targets`, `receptions`, `receiving_yards`, `td_allocation` | downstream of the divergence point |
++
++`assert_partition_covers_required` refuses if the two sets do not cover the
++nine **exactly** — a layer owned twice, or owned by neither. An unowned layer
++is how "complete" comes to mean "complete apart from the bit nobody assigned".
++
++### Only the target allocation differs — both halves checked
++
++`assert_single_divergence` refuses if a **shared** input differs between arms
++(the arms would not be comparable) *and* if an **arm** layer does **not**
++differ (the candidate would be doing nothing and the comparison would be
++measuring Monte Carlo noise). A layer that was never produced is **skipped**,
++not compared — two `None`s compare equal, and the first version failed every
++game by reporting "this arm layer is identical" about a layer that did not
++exist.
++
++### Where the paired build stands today
++
++`Q9_COMPLETE_SHADOW_PARITY.json`: `PAIRED_BUILD_OK`, single divergence on
++every team-game, differing layer `['targets']`, and
++`contract_completeness_today = PARTIAL_PLAYER_COVERAGE` —
++`is_eligible_forecast_under_section_2: false`.
++
++The five shared layers are not run by a research-slice paired build, and the
++three downstream receiving layers are blocked by a **leakage guard doing its
++job**: `frozen_priors.receiving_priors(Y)` refuses whenever the committed RC1
++frame holds a row from `Y` or later, because `pools()` would train on the
++season being forecast. Measured: **2026 PASS, 2025 FAIL, 2024 FAIL**. So the
++arm chain is demonstrable on the live season and on no historical one, and the
++same code produces all four arm layers there with no change.
++
++---
++
++# Appendix B — the live pregame feature builder
++
++Full report: `Q9_LIVE_FEATURE_BUILDER.md`. In brief:
++
++- **Implemented.** `nfl/prospective/q9shadow/live_features.py`. It runs on a
++  real 2026 game today (ATL/PIT/BAL week 1).
++- **Parity EXACT** where both builders are defined: 2024, 96 team-games,
++  **482 players compared, 0 differing**.
++- **Outside that window** (weeks ≥ 2) 634 of 947 differ, and the divergence is
++  **confined to the 12 features the history walk drives** — none of the 13
++  driven by the live sources differs anywhere. The containment check is
++  asserted non-vacuous.
++- **Why the window is week 1:** the historical builder's history includes
++  earlier weeks of the same season; the live builder's does not, because the
++  requirement is *no 2026 outcomes* and an earlier 2026 week is one. Widening
++  the window to obtain parity would consume forecast-season outcomes.
++- **No coefficient is fitted and the candidate is untouched.** The schema
++  hashes `f620eeed09d0dd6e` and is checked against the freeze on every build.
++- **Arm corrected A, from B.** `fit_for` trains on strictly prior *seasons*
++  for every week, and the feature window is the same set, so no 2026 result
++  ever enters. That is arm A's definition, and A is the stronger status.
++
++## An open decision for the owner
++
++- **Arm A (implemented):** prior-seasons-only all season. Features go stale as
++  the season progresses; parity holds at week 1 only.
++- **Arm B (not implemented):** a frozen prequential rule admitting
++  strictly-earlier weeks of the forecast season. Features stay current, parity
++  holds every week — and it consumes forecast-season outcomes.
++
++Recorded in the parity artifact as `decided_by: OWNER`.
++
++---
++
++# Appendix C — the remaining G0A item
++
++`Q9_G0A_REMAINING_ITEM.json`, generated from the repository rather than typed:
++the twelve requirements are parsed from the roadmap's own exit-gate table and
++each verdict from the checklist's own verdict table.
++
++**Item 1 — "Kickoff-anchored vintage capture scheduled and demonstrably
++running" — FAIL.** 11 of 12 pass; the gate reads `11/12` and agrees.
++
++| sub-point of the owner's twelve-point discharge proof | state | blocks item 1 now |
++|---|---|---|
++| 7 — attribute the capture to a game/team/week | PROVEN on captured bytes (85 adversarial assertions, 4 guard-deletion proofs) | **no** |
++| 12 — event-anchored execution against a real T−90 window | **NOT DISCHARGED** | **yes** |
++
++**Root cause: EGRESS**, measured not inferred — `CONNECT www.nfl.com:443` →
++403 from the agent proxy and from a cloud session. Item 1 fails on the
++endpoint and would still fail with a perfect scheduler; more code here moves
++nothing.
++
++Current reconciliation (`nfl/capture/t90_obligation_reconciliation.json`,
++2026-09-11): `MISSED 20 / NOT_APPLICABLE 16 / COVERED 15 / NOT_YET_DUE 28` of
++63 obligations. The failing predicate is `qualifying_captures == 0` on every
++MISSED obligation — and `nonqualifying_in_window_captures == 0` too, so this
++is not a capture taken and rejected on a technicality. `registry.unmet_targets`
++still reports `['final_status', 'inactives', 'practice']`.
++
++**`waiver_requested: false`, and this module has no code path that can set it
++true.** A passing test suite is not a discharge.
++
++---
++
++# Appendix D — the four blockers are independent, and one clearing proves it
++
++The live feature builder landed. A live COMPLETE seal is still not possible.
++Nothing about the first fact clears the second, and each blocker now carries an
++explicit `independent_of` list:
++
++| blocker | state | needs bytes from outside |
++|---|---|---|
++| `LIVE_PREGAME_FEATURE_BUILD_UNIMPLEMENTED` | **implemented** | no |
++| `COMPLETE_ARTIFACT_LAYERS_ABSENT` | unchanged | no |
++| `INJURY_REPORT_INCOMPLETE` | unchanged | **yes** |
++| `G0A_11_OF_12` | unchanged | **yes** |
++
++## One thing found while wiring the live path, and it is worth naming
++
++The first version of the live seal called `appearance_r8.predict` **directly**
++and produced six sealed live forecasts. That skips
++`inputs.validate_appearance_inputs` — the gate that refuses
++`INJURY_REPORT_INCOMPLETE`. It was routing around a constraint, and the six
++artifacts were **discarded before any was counted**.
++
++The seal now goes through `layers.appearance` with `fixture=None`, so the gate
++runs and a `test_only` upstream is refused by name
++(`Q9_LIVE_SEAL_TEST_ONLY_UPSTREAM`). It turns out that gate refuses **per
++team**, not per slate — a team whose injury rows are all unfilled is refused
++and its opponent may pass — so the refusal census reports which teams are
++sealable rather than asserting that none is.
++
++---
++
++# Appendix E — evidence state
++
++Per the ruling, until all three original blockers are satisfied **and** a
++truthful COMPLETE pre-kickoff artifact is sealed:
++
++- forecasts may be **DRY_RUN** or **DIAGNOSTIC**
++- §4 credit: **NONE**
++- promotion evidence accruing: **false**
++
++This is enforced by `prospective_evidence = (completeness == COMPLETE)` and by
++`ledger.accounting`, which counts only rows carrying that flag — not by a
++reader remembering the rule.
+diff --git a/nfl/prospective/q9shadow/Q9_PROSPECTIVE_LEDGER_STATE.json b/nfl/prospective/q9shadow/Q9_PROSPECTIVE_LEDGER_STATE.json
+index a00a468..0bd8018 100644
+--- a/nfl/prospective/q9shadow/Q9_PROSPECTIVE_LEDGER_STATE.json
++++ b/nfl/prospective/q9shadow/Q9_PROSPECTIVE_LEDGER_STATE.json
+@@ -9,6 +9,9 @@
+  "ledger_path": "nfl/prospective/q9shadow/Q9_PROSPECTIVE_LEDGER.jsonl",
+  "schema": "nfl/prospective/q9shadow/Q9_PROSPECTIVE_LEDGER_SCHEMA.json",
+  "accounting": {
++  "rows_on_ledger": 0,
++  "rows_without_admissibility_verdict": 0,
++  "admissibility_note": "a row is counted only when score_game stamped it currently_admissible under the contract in force at scoring time. Rows predating that stamp remain on the ledger and count toward no evidence unit.",
+   "scoring_rows": 0,
+   "graded_metrics": 0,
+   "distinct_games": 0,
+@@ -33,6 +36,9 @@
+   },
+   "scoring_rows_including_non_evidence": 0,
+   "rows_excluded_as_non_evidence": 0,
++  "rows_excluded_by_evidence_flag": 0,
++  "rows_excluded_by_seal_path": 0,
++  "exclusion_note": "a row must carry BOTH prospective_evidence and seal_path_governed to be counted. The two exclusions overlap and are reported separately so neither can be assumed from the other.",
+   "distinct_arms": [],
+   "arm_pairing_note": "R8_PRODUCTION and Q9_HURDLE rows for one player-game are a paired comparison on shared upstream draws. They add one player-game to the sample, not two.",
+   "eligible_player_game_forecasts": 0,
+@@ -96,14 +102,19 @@
+  "sample_governed": true,
+  "sample_governed_note": "the repository contains a governed prospective-evidence threshold (protocol section 4), so this work uses it. PROSPECTIVE_SAMPLE_NOT_YET_GOVERNED is NOT the applicable state and is not reported.",
+  "live_eligibility": {
+-  "status": "BLOCKED[Q9_LIVE_PREGAME_FEATURE_BUILD_UNIMPLEMENTED]",
++  "status": "NOTHING_SEALED",
++  "census_scope": {
++   "n_games_attempted": 16,
++   "note": "a bounded REPORTING scope covering the next eligible kickoffs, not the whole season. Bounding the census changes which games are listed, never whether any would pass."
++  },
+   "candidate_gate": "PASS[Q9_CANDIDATE_MATCHES_FREEZE]",
+-  "n_games_ahead_of_clock": 270,
++  "n_games_ahead_of_clock": 16,
+   "n_sealed": 0,
+   "refusal_census": {
+-   "BLOCKED[Q9_LIVE_PREGAME_FEATURE_BUILD_UNIMPLEMENTED]": 270
++   "DEFERRED[INJURY_REPORT_INCOMPLETE]": 28,
++   "DEFERRED[INJURY_REPORT_NOT_YET_FILED]": 4
+   },
+-  "refusal_detail": "there is no pregame feature builder for the live season. The Q6 frame refuses 2026 rows by design, production declares feature_build STAGE_DECLARED_UNIMPLEMENTED, and the appearance layer refuses on an incomplete injury report. Refused by name with the requirement list attached rather than stubbed: a stub returning plausible features would produce a sealed forecast that looks prospective and measures nothing.",
++  "refusal_detail": "",
+   "requirements_for_the_live_path": {
+    "prior_appeared_game_history": "h_target_freq, h_participation_ewma, h_share_given_positive and h_appeared_games over strictly earlier APPEARED games. Available from seasons <= 2025 in the committed panel.",
+    "point_in_time_role_class": "role_class from trailing snap share, or from the lawful depth-chart vintage when no trail exists. The 2026 depth-chart captures exist.",
+@@ -115,14 +126,23 @@
+   }
+  },
+  "blockers": {
+-  "LIVE_PREGAME_FEATURE_BUILD_UNIMPLEMENTED": {
+-   "owner": "this repository",
+-   "what": "there is no pregame feature builder for the live season. nfl.research.q6.frame.load_frame refuses 2026 rows by design and production reports feature_build STAGE_DECLARED_UNIMPLEMENTED.",
+-   "blocks": "every 2026 seal, for both arms",
+-   "needs_bytes_from_outside": false
++  "COMPLETE_ARTIFACT_LAYERS_ABSENT": {
++   "owner": "the production forecast path",
++   "what": "protocol section 2 requires completeness == COMPLETE for an eligible forecast, and that means all nine required layers from nfl.research.completeness.LAYERS. The paired shadow build currently carries the target layer; team_volume, the three QB layers and carries come from the production run, and the downstream receiving layers need frozen_priors.receiving_priors, which refuses on any historical slice by its own leakage guard (RECEIVING_FRAME_CARRIES_FORECAST_SEASON; measured: 2026 PASS, 2025 FAIL, 2024 FAIL).",
++   "blocks": "section-4 credit and any promotion evidence",
++   "needs_bytes_from_outside": false,
++   "independent_of": [
++    "INJURY_REPORT_INCOMPLETE",
++    "G0A_11_OF_12"
++   ],
++   "artifact": "nfl/prospective/q9shadow/Q9_COMPLETE_SHADOW_PARITY.json"
+   },
+   "INJURY_REPORT_INCOMPLETE": {
+    "owner": "the agent that holds network egress",
++   "independent_of": [
++    "G0A_11_OF_12",
++    "COMPLETE_ARTIFACT_LAYERS_ABSENT"
++   ],
+    "what": "the 2026 injury captures carry rows whose report_status is unfilled, and nfl.production.nonqb.inputs refuses that by name. An unfiled designation is not an absence of injury and may not be defaulted to healthy.",
+    "blocks": "the upstream appearance layer, and therefore both arms",
+    "needs_bytes_from_outside": true,
+@@ -130,11 +150,110 @@
+   },
+   "G0A_11_OF_12": {
+    "owner": "governance",
++   "independent_of": [
++    "INJURY_REPORT_INCOMPLETE",
++    "COMPLETE_ARTIFACT_LAYERS_ABSENT"
++   ],
++   "remaining_item_artifact": "nfl/prospective/q9shadow/Q9_G0A_REMAINING_ITEM.json",
++   "remaining_item": "item 1 -- kickoff-anchored vintage capture scheduled and demonstrably running. Root cause EGRESS. No waiver requested.",
+    "what": "protocol section 1 says no forecast written before G0A is discharged counts toward promotion. nfl.production.authorization.gate_state reports G0A 11/12.",
+    "blocks": "the countability of any seal, even a valid one",
+    "needs_bytes_from_outside": true
+   }
+  },
++ "blocker_states": {
++  "COMPLETE_ARTIFACT_LAYERS_ABSENT": {
++   "state": "BLOCKED",
++   "detail": "completeness is PARTIAL_PLAYER_COVERAGE",
++   "evaluator": "_eval_complete_layers"
++  },
++  "INJURY_REPORT_INCOMPLETE": {
++   "state": "BLOCKED",
++   "detail": "159 captured row(s) carry no report_status",
++   "evaluator": "_eval_injury_report"
++  },
++  "G0A_11_OF_12": {
++   "state": "BLOCKED",
++   "detail": "G0A_ITEM_NOT_CLEARED",
++   "evaluator": "_eval_g0a"
++  }
++ },
++ "blocker_independence": {
++  "state": "PASS[Q9_BLOCKERS_MECHANICALLY_INDEPENDENT]",
++  "detail": "3 blocker(s), 3 distinct evaluator(s); forcing each CLEARED in turn moved no other",
++  "n_blockers": 3,
++  "n_perturbations": 3,
++  "method": "each blocker forced CLEARED in turn; every other recomputed from its own evaluator and required to be unchanged"
++ },
++ "resolved_blockers": {
++  "LIVE_PREGAME_FEATURE_BUILD_UNIMPLEMENTED": {
++   "resolved_on": "2026-09-12",
++   "resolved_by": "nfl/prospective/q9shadow/live_features.py",
++   "was": "no pregame feature builder for the live season. nfl.research.q6.frame.load_frame refuses 2026 rows by design and production reports feature_build STAGE_DECLARED_UNIMPLEMENTED.",
++   "evidence": {
++    "artifact": "nfl/prospective/q9shadow/Q9_LIVE_FEATURE_PARITY.json",
++    "builder_parity": "EXACT",
++    "n_players_compared": 482,
++    "n_players_differing": 0,
++    "window": "week 1 -- the window in which both builders are defined",
++    "runs_on_a_live_game": true
++   },
++   "did_not_clear": [
++    "INJURY_REPORT_INCOMPLETE",
++    "COMPLETE_ARTIFACT_LAYERS_ABSENT",
++    "G0A_11_OF_12"
++   ],
++   "note": "this resolution is the worked example of blocker independence: the builder exists and a live COMPLETE seal is still impossible."
++  }
++ },
++ "excluded_seals": {
++  "reason": "SEAL_PATH_BYPASSED_APPEARANCE_INPUT_VALIDATION",
++  "defect": "the seal called nfl.production.nonqb.appearance_r8.predict directly, which skips nfl.production.nonqb.inputs.validate_appearance_inputs",
++  "discovered_on": "2026-09-12",
++  "n_artifacts": 6,
++  "permanently_excluded": true,
++  "may_ever_count_as_evidence": false,
++  "disposition": "deleted from disk and from the seal ledger before any was counted; no metric, no accounting unit and no floor ever included one",
++  "recoverable_forecast_ids": [
++   "Q9SH-fc559f3700c426cc",
++   "Q9SH-a62e9d18be8e7dcc",
++   "Q9SH-caccdcddef4f421d"
++  ],
++  "unrecoverable_forecast_ids": {
++   "n": 3,
++   "team_games": [
++    "2026_01_BAL_IND / IND",
++    "2026_01_BUF_HOU / BUF",
++    "2026_01_BUF_HOU / HOU"
++   ],
++   "why": "the run printed only the first three ids and the artifacts were deleted. Recorded as unrecoverable rather than guessed."
++  },
++  "the_actual_control": "assert_seal_path_governed -- a field check on every artifact, complete by construction where an id list cannot be"
++ },
++ "blockers_are_independent": "clearing one blocker does not clear any other. Each carries its own owner, its own remedy and an explicit independent_of list, and the live feature builder landing is the worked example: it is implemented, and a live seal is still blocked.",
++ "owner_rulings": {
++  "randomized_pit": {
++   "ruling": "protocol section 9.6 UNCHANGED. Randomized PIT is the governing prospective promotion statistic.",
++   "q9b_mid_pit": "DIAGNOSTIC ONLY. It does not satisfy section 9.6.",
++   "implementation": "this module emits the randomized statistic, seeded per row through crc32 so it reproduces, and records mid-PIT beside it.",
++   "protocol_modified": false
++  },
++  "completeness": {
++   "ruling": "protocol section 2 UNCHANGED. A PARTIAL_PLAYER_COVERAGE artifact may be scored diagnostically, counts toward no section-4 floor, and cannot support promotion.",
++   "relabelling": "REFUSED. A single-layer Q9 artifact is not called COMPLETE.",
++   "route": "nfl/prospective/q9shadow/complete.py builds the paired R8-versus-Q9 artifact across all nine required layers on one set of upstream draws, with the target allocation as the only divergence. completeness is COMPUTED from nfl.research.completeness.forecast_completeness; there is no Q9 exemption.",
++   "protocol_modified": false
++  }
++ },
++ "evidence_state": {
++  "forecasts_may_be": [
++   "DRY_RUN",
++   "DIAGNOSTIC"
++  ],
++  "section_4_credit": "NONE",
++  "promotion_evidence_accruing": false,
++  "condition": "all three original blockers satisfied AND a truthful COMPLETE pre-kickoff artifact sealed. Until then nothing accrues, whatever the numbers look like."
++ },
+  "stop_rule": {
+   "source": "nfl/prospective/PROSPECTIVE_EVALUATION_PROTOCOL.md section 4 and protocol section 9",
+   "rule": "no promotion on one or two favourable games. The prospective ledger is built first, and promotion requires every section-9 condition including an explicit owner decision.",
+diff --git a/nfl/prospective/q9shadow/Q9_SHADOW_DRYRUN_SEAL_LEDGER.jsonl b/nfl/prospective/q9shadow/Q9_SHADOW_DRYRUN_SEAL_LEDGER.jsonl
+index 83cf3d9..61f4e11 100644
+--- a/nfl/prospective/q9shadow/Q9_SHADOW_DRYRUN_SEAL_LEDGER.jsonl
++++ b/nfl/prospective/q9shadow/Q9_SHADOW_DRYRUN_SEAL_LEDGER.jsonl
+@@ -10,3 +10,5 @@
+ {"consumed_partition_ids": ["depth_charts@db0a09454965e6fc", "espn_injuries_json@0cd99d47b1cc389f", "injuries@cd7338473dd852d0", "official_inactives@67511bb2cfc1e9f3", "official_injury_report@ec99910f37f94bb8", "schedules@224b38fb539045bd", "weekly_rosters@fb79560b5c4738a2"], "forecast_id": "Q9SH-bb3c4d3190225390", "game_id": "2024_01_ARI_BUF", "identity": {"code_version": "6490c6770586fa76adaddd826c06995b289b4f92+dirty[10]", "interpreter": "python3.12", "partitions": [{"partition_id": "depth_charts@db0a09454965e6fc", "provenance": {"cache_timestamp": null, "effective_for_date": "2024-09-08", "generated_at": "2026-09-12T12:00:00Z", "retrieved_at": "2026-09-10T12:07:17Z", "schema_version": "vintage/depth_charts/1", "source": "depth_charts", "source_timestamp": "2026-09-10T12:07:17Z", "url": "nfl/vintage/depth_charts.db0a09454965e6fc.reduced.csv.gz"}, "sha256": "db0a09454965e6fcd4d7378a19381fa53f251432f80f09ebdcc45f78f5e1bc9f", "source": "depth_charts", "url": "nfl/vintage/depth_charts.db0a09454965e6fc.reduced.csv.gz"}, {"partition_id": "espn_injuries_json@0cd99d47b1cc389f", "provenance": {"cache_timestamp": null, "effective_for_date": "2024-09-08", "generated_at": "2026-09-12T12:00:00Z", "retrieved_at": "2026-09-11T00:43:57Z", "schema_version": "vintage/espn_injuries_json/1", "source": "espn_injuries_json", "source_timestamp": "2026-09-11T00:43:57Z", "url": "nfl/vintage/espn_injuries_json.0cd99d47b1cc389f.json.gz"}, "sha256": "0cd99d47b1cc389f6f09973bed503eac54e90f1a701b34de2b690e9a90febc95", "source": "espn_injuries_json", "url": "nfl/vintage/espn_injuries_json.0cd99d47b1cc389f.json.gz"}, {"partition_id": "injuries@cd7338473dd852d0", "provenance": {"cache_timestamp": null, "effective_for_date": "2024-09-08", "generated_at": "2026-09-12T12:00:00Z", "retrieved_at": "2026-09-11T12:19:21Z", "schema_version": "vintage/injuries/1", "source": "injuries", "source_timestamp": "2026-09-11T12:19:21Z", "url": "nfl/vintage/injuries.cd7338473dd852d0.csv.gz"}, "sha256": "cd7338473dd852d02c6986663addb31431609946fa8756d0460bf2e98d3501a9", "source": "injuries", "url": "nfl/vintage/injuries.cd7338473dd852d0.csv.gz"}, {"partition_id": "official_inactives@67511bb2cfc1e9f3", "provenance": {"cache_timestamp": null, "effective_for_date": "2024-09-08", "generated_at": "2026-09-12T12:00:00Z", "retrieved_at": "2026-09-11T00:43:57Z", "schema_version": "vintage/official_inactives/1", "source": "official_inactives", "source_timestamp": "2026-09-11T00:43:57Z", "url": "nfl/vintage/official_inactives.67511bb2cfc1e9f3.html.gz"}, "sha256": "67511bb2cfc1e9f35b11a4eba503f4bce67e51bc8cb1252c52e8b8f6ffd9e1aa", "source": "official_inactives", "url": "nfl/vintage/official_inactives.67511bb2cfc1e9f3.html.gz"}, {"partition_id": "official_injury_report@ec99910f37f94bb8", "provenance": {"cache_timestamp": null, "effective_for_date": "2024-09-08", "generated_at": "2026-09-12T12:00:00Z", "retrieved_at": "2026-09-11T00:43:57Z", "schema_version": "vintage/official_injury_report/1", "source": "official_injury_report", "source_timestamp": "2026-09-11T00:43:57Z", "url": "nfl/vintage/official_injury_report.ec99910f37f94bb8.html.gz"}, "sha256": "ec99910f37f94bb89872633001a811546258bc0ebd452666d6f2037ac38f9040", "source": "official_injury_report", "url": "nfl/vintage/official_injury_report.ec99910f37f94bb8.html.gz"}, {"partition_id": "schedules@224b38fb539045bd", "provenance": {"cache_timestamp": null, "effective_for_date": "2024-09-08", "generated_at": "2026-09-12T12:00:00Z", "retrieved_at": "2026-09-11T12:19:21Z", "schema_version": "vintage/schedules/1", "source": "schedules", "source_timestamp": "2026-09-11T12:19:21Z", "url": "nfl/vintage/schedules.224b38fb539045bd.csv.gz"}, "sha256": "224b38fb539045bd3679655c02bee6e282bbef7d74e99cf5d34ce42915c6725d", "source": "schedules", "url": "nfl/vintage/schedules.224b38fb539045bd.csv.gz"}, {"partition_id": "weekly_rosters@fb79560b5c4738a2", "provenance": {"cache_timestamp": null, "effective_for_date": "2024-09-08", "generated_at": "2026-09-12T12:00:00Z", "retrieved_at": "2026-09-11T12:19:21Z", "schema_version": "vintage/weekly_rosters/1", "source": "weekly_rosters", "source_timestamp": "2026-09-11T12:19:21Z", "url": "nfl/vintage/weekly_rosters.fb79560b5c4738a2.reduced.csv.gz"}, "sha256": "fb79560b5c4738a284e4b37f49759cdceaa461eee6f41ea0840e7d0d9eb17026", "source": "weekly_rosters", "url": "nfl/vintage/weekly_rosters.fb79560b5c4738a2.reduced.csv.gz"}], "seed": {"n_draws": 120, "policy": "shared upstream; per-arm allocation stream via crc32", "seed": 20260912}, "spec_id": "Q9_TARGET_HURDLE/q9-shadow-seal-1", "spec_sha256": "82c8b52699bbeb00e656a3d543f995bac7034e9a89ff2a8d783e27b6fdc8422e"}, "identity_fingerprint": "NFLFP-67a792b34c9f4c75", "kickoff_utc": "2026-09-13T12:00:00Z", "payload_sha256": "bb3c4d3190225390f305c5215dc8324d666446e2c1f68af492ddf81f142827cf", "seal_sha256": "a2d822949685103d01b5b1cb3da85650defcacbaa8eb56fc8cda6cf1c239b590", "written_at": "2026-09-12T12:00:00Z"}
+ {"consumed_partition_ids": ["depth_charts@db0a09454965e6fc", "espn_injuries_json@0cd99d47b1cc389f", "injuries@cd7338473dd852d0", "official_inactives@67511bb2cfc1e9f3", "official_injury_report@ec99910f37f94bb8", "schedules@224b38fb539045bd", "weekly_rosters@fb79560b5c4738a2"], "forecast_id": "Q9SH-e3409bbd50a1ff42", "game_id": "2024_01_ARI_BUF", "identity": {"code_version": "6490c6770586fa76adaddd826c06995b289b4f92+dirty[11]", "interpreter": "python3.12", "partitions": [{"partition_id": "depth_charts@db0a09454965e6fc", "provenance": {"cache_timestamp": null, "effective_for_date": "2024-09-08", "generated_at": "2026-09-12T12:00:00Z", "retrieved_at": "2026-09-10T12:07:17Z", "schema_version": "vintage/depth_charts/1", "source": "depth_charts", "source_timestamp": "2026-09-10T12:07:17Z", "url": "nfl/vintage/depth_charts.db0a09454965e6fc.reduced.csv.gz"}, "sha256": "db0a09454965e6fcd4d7378a19381fa53f251432f80f09ebdcc45f78f5e1bc9f", "source": "depth_charts", "url": "nfl/vintage/depth_charts.db0a09454965e6fc.reduced.csv.gz"}, {"partition_id": "espn_injuries_json@0cd99d47b1cc389f", "provenance": {"cache_timestamp": null, "effective_for_date": "2024-09-08", "generated_at": "2026-09-12T12:00:00Z", "retrieved_at": "2026-09-11T00:43:57Z", "schema_version": "vintage/espn_injuries_json/1", "source": "espn_injuries_json", "source_timestamp": "2026-09-11T00:43:57Z", "url": "nfl/vintage/espn_injuries_json.0cd99d47b1cc389f.json.gz"}, "sha256": "0cd99d47b1cc389f6f09973bed503eac54e90f1a701b34de2b690e9a90febc95", "source": "espn_injuries_json", "url": "nfl/vintage/espn_injuries_json.0cd99d47b1cc389f.json.gz"}, {"partition_id": "injuries@cd7338473dd852d0", "provenance": {"cache_timestamp": null, "effective_for_date": "2024-09-08", "generated_at": "2026-09-12T12:00:00Z", "retrieved_at": "2026-09-11T12:19:21Z", "schema_version": "vintage/injuries/1", "source": "injuries", "source_timestamp": "2026-09-11T12:19:21Z", "url": "nfl/vintage/injuries.cd7338473dd852d0.csv.gz"}, "sha256": "cd7338473dd852d02c6986663addb31431609946fa8756d0460bf2e98d3501a9", "source": "injuries", "url": "nfl/vintage/injuries.cd7338473dd852d0.csv.gz"}, {"partition_id": "official_inactives@67511bb2cfc1e9f3", "provenance": {"cache_timestamp": null, "effective_for_date": "2024-09-08", "generated_at": "2026-09-12T12:00:00Z", "retrieved_at": "2026-09-11T00:43:57Z", "schema_version": "vintage/official_inactives/1", "source": "official_inactives", "source_timestamp": "2026-09-11T00:43:57Z", "url": "nfl/vintage/official_inactives.67511bb2cfc1e9f3.html.gz"}, "sha256": "67511bb2cfc1e9f35b11a4eba503f4bce67e51bc8cb1252c52e8b8f6ffd9e1aa", "source": "official_inactives", "url": "nfl/vintage/official_inactives.67511bb2cfc1e9f3.html.gz"}, {"partition_id": "official_injury_report@ec99910f37f94bb8", "provenance": {"cache_timestamp": null, "effective_for_date": "2024-09-08", "generated_at": "2026-09-12T12:00:00Z", "retrieved_at": "2026-09-11T00:43:57Z", "schema_version": "vintage/official_injury_report/1", "source": "official_injury_report", "source_timestamp": "2026-09-11T00:43:57Z", "url": "nfl/vintage/official_injury_report.ec99910f37f94bb8.html.gz"}, "sha256": "ec99910f37f94bb89872633001a811546258bc0ebd452666d6f2037ac38f9040", "source": "official_injury_report", "url": "nfl/vintage/official_injury_report.ec99910f37f94bb8.html.gz"}, {"partition_id": "schedules@224b38fb539045bd", "provenance": {"cache_timestamp": null, "effective_for_date": "2024-09-08", "generated_at": "2026-09-12T12:00:00Z", "retrieved_at": "2026-09-11T12:19:21Z", "schema_version": "vintage/schedules/1", "source": "schedules", "source_timestamp": "2026-09-11T12:19:21Z", "url": "nfl/vintage/schedules.224b38fb539045bd.csv.gz"}, "sha256": "224b38fb539045bd3679655c02bee6e282bbef7d74e99cf5d34ce42915c6725d", "source": "schedules", "url": "nfl/vintage/schedules.224b38fb539045bd.csv.gz"}, {"partition_id": "weekly_rosters@fb79560b5c4738a2", "provenance": {"cache_timestamp": null, "effective_for_date": "2024-09-08", "generated_at": "2026-09-12T12:00:00Z", "retrieved_at": "2026-09-11T12:19:21Z", "schema_version": "vintage/weekly_rosters/1", "source": "weekly_rosters", "source_timestamp": "2026-09-11T12:19:21Z", "url": "nfl/vintage/weekly_rosters.fb79560b5c4738a2.reduced.csv.gz"}, "sha256": "fb79560b5c4738a284e4b37f49759cdceaa461eee6f41ea0840e7d0d9eb17026", "source": "weekly_rosters", "url": "nfl/vintage/weekly_rosters.fb79560b5c4738a2.reduced.csv.gz"}], "seed": {"n_draws": 120, "policy": "shared upstream; per-arm allocation stream via crc32", "seed": 20260912}, "spec_id": "Q9_TARGET_HURDLE/q9-shadow-seal-1", "spec_sha256": "82c8b52699bbeb00e656a3d543f995bac7034e9a89ff2a8d783e27b6fdc8422e"}, "identity_fingerprint": "NFLFP-06081ed8e38ddd22", "kickoff_utc": "2026-09-13T12:00:00Z", "payload_sha256": "e3409bbd50a1ff42abc6d4d9f029276c0fb852372baee3c03ed58bccd094d219", "seal_sha256": "fe12d6e12e4719b7895e385e8168796961a0f849618d01c77eabac8b7116484d", "written_at": "2026-09-12T12:00:00Z"}
+ {"consumed_partition_ids": ["depth_charts@db0a09454965e6fc", "espn_injuries_json@0cd99d47b1cc389f", "injuries@cd7338473dd852d0", "official_inactives@67511bb2cfc1e9f3", "official_injury_report@ec99910f37f94bb8", "schedules@224b38fb539045bd", "weekly_rosters@fb79560b5c4738a2"], "forecast_id": "Q9SH-f8df992212a4d4d6", "game_id": "2024_01_ARI_BUF", "identity": {"code_version": "6490c6770586fa76adaddd826c06995b289b4f92+dirty[11]", "interpreter": "python3.12", "partitions": [{"partition_id": "depth_charts@db0a09454965e6fc", "provenance": {"cache_timestamp": null, "effective_for_date": "2024-09-08", "generated_at": "2026-09-12T12:00:00Z", "retrieved_at": "2026-09-10T12:07:17Z", "schema_version": "vintage/depth_charts/1", "source": "depth_charts", "source_timestamp": "2026-09-10T12:07:17Z", "url": "nfl/vintage/depth_charts.db0a09454965e6fc.reduced.csv.gz"}, "sha256": "db0a09454965e6fcd4d7378a19381fa53f251432f80f09ebdcc45f78f5e1bc9f", "source": "depth_charts", "url": "nfl/vintage/depth_charts.db0a09454965e6fc.reduced.csv.gz"}, {"partition_id": "espn_injuries_json@0cd99d47b1cc389f", "provenance": {"cache_timestamp": null, "effective_for_date": "2024-09-08", "generated_at": "2026-09-12T12:00:00Z", "retrieved_at": "2026-09-11T00:43:57Z", "schema_version": "vintage/espn_injuries_json/1", "source": "espn_injuries_json", "source_timestamp": "2026-09-11T00:43:57Z", "url": "nfl/vintage/espn_injuries_json.0cd99d47b1cc389f.json.gz"}, "sha256": "0cd99d47b1cc389f6f09973bed503eac54e90f1a701b34de2b690e9a90febc95", "source": "espn_injuries_json", "url": "nfl/vintage/espn_injuries_json.0cd99d47b1cc389f.json.gz"}, {"partition_id": "injuries@cd7338473dd852d0", "provenance": {"cache_timestamp": null, "effective_for_date": "2024-09-08", "generated_at": "2026-09-12T12:00:00Z", "retrieved_at": "2026-09-11T12:19:21Z", "schema_version": "vintage/injuries/1", "source": "injuries", "source_timestamp": "2026-09-11T12:19:21Z", "url": "nfl/vintage/injuries.cd7338473dd852d0.csv.gz"}, "sha256": "cd7338473dd852d02c6986663addb31431609946fa8756d0460bf2e98d3501a9", "source": "injuries", "url": "nfl/vintage/injuries.cd7338473dd852d0.csv.gz"}, {"partition_id": "official_inactives@67511bb2cfc1e9f3", "provenance": {"cache_timestamp": null, "effective_for_date": "2024-09-08", "generated_at": "2026-09-12T12:00:00Z", "retrieved_at": "2026-09-11T00:43:57Z", "schema_version": "vintage/official_inactives/1", "source": "official_inactives", "source_timestamp": "2026-09-11T00:43:57Z", "url": "nfl/vintage/official_inactives.67511bb2cfc1e9f3.html.gz"}, "sha256": "67511bb2cfc1e9f35b11a4eba503f4bce67e51bc8cb1252c52e8b8f6ffd9e1aa", "source": "official_inactives", "url": "nfl/vintage/official_inactives.67511bb2cfc1e9f3.html.gz"}, {"partition_id": "official_injury_report@ec99910f37f94bb8", "provenance": {"cache_timestamp": null, "effective_for_date": "2024-09-08", "generated_at": "2026-09-12T12:00:00Z", "retrieved_at": "2026-09-11T00:43:57Z", "schema_version": "vintage/official_injury_report/1", "source": "official_injury_report", "source_timestamp": "2026-09-11T00:43:57Z", "url": "nfl/vintage/official_injury_report.ec99910f37f94bb8.html.gz"}, "sha256": "ec99910f37f94bb89872633001a811546258bc0ebd452666d6f2037ac38f9040", "source": "official_injury_report", "url": "nfl/vintage/official_injury_report.ec99910f37f94bb8.html.gz"}, {"partition_id": "schedules@224b38fb539045bd", "provenance": {"cache_timestamp": null, "effective_for_date": "2024-09-08", "generated_at": "2026-09-12T12:00:00Z", "retrieved_at": "2026-09-11T12:19:21Z", "schema_version": "vintage/schedules/1", "source": "schedules", "source_timestamp": "2026-09-11T12:19:21Z", "url": "nfl/vintage/schedules.224b38fb539045bd.csv.gz"}, "sha256": "224b38fb539045bd3679655c02bee6e282bbef7d74e99cf5d34ce42915c6725d", "source": "schedules", "url": "nfl/vintage/schedules.224b38fb539045bd.csv.gz"}, {"partition_id": "weekly_rosters@fb79560b5c4738a2", "provenance": {"cache_timestamp": null, "effective_for_date": "2024-09-08", "generated_at": "2026-09-12T12:00:00Z", "retrieved_at": "2026-09-11T12:19:21Z", "schema_version": "vintage/weekly_rosters/1", "source": "weekly_rosters", "source_timestamp": "2026-09-11T12:19:21Z", "url": "nfl/vintage/weekly_rosters.fb79560b5c4738a2.reduced.csv.gz"}, "sha256": "fb79560b5c4738a284e4b37f49759cdceaa461eee6f41ea0840e7d0d9eb17026", "source": "weekly_rosters", "url": "nfl/vintage/weekly_rosters.fb79560b5c4738a2.reduced.csv.gz"}], "seed": {"n_draws": 120, "policy": "shared upstream; per-arm allocation stream via crc32", "seed": 20260912}, "spec_id": "Q9_TARGET_HURDLE/q9-shadow-seal-1", "spec_sha256": "82c8b52699bbeb00e656a3d543f995bac7034e9a89ff2a8d783e27b6fdc8422e"}, "identity_fingerprint": "NFLFP-06081ed8e38ddd22", "kickoff_utc": "2026-09-13T12:00:00Z", "payload_sha256": "f8df992212a4d4d6de2229464e94ef90ec3b572e6e79b6031ced4bccb5bd6b28", "seal_sha256": "1a9688b352df5b1130be35b8e777e56763272c8ecb5de6ad708406c0676b005e", "written_at": "2026-09-12T12:00:00Z"}
++{"consumed_partition_ids": ["depth_charts@db0a09454965e6fc", "espn_injuries_json@0cd99d47b1cc389f", "injuries@cd7338473dd852d0", "official_inactives@67511bb2cfc1e9f3", "official_injury_report@ec99910f37f94bb8", "schedules@224b38fb539045bd", "weekly_rosters@fb79560b5c4738a2"], "forecast_id": "Q9SH-503411007f05b428", "game_id": "2024_01_ARI_BUF", "identity": {"code_version": "837d52f0d448527bd52a2aedc26362cb17611a08+dirty[28]", "interpreter": "python3.12", "partitions": [{"partition_id": "depth_charts@db0a09454965e6fc", "provenance": {"cache_timestamp": null, "effective_for_date": "2024-09-08", "generated_at": "2026-09-12T12:00:00Z", "retrieved_at": "2026-09-10T12:07:17Z", "schema_version": "vintage/depth_charts/1", "source": "depth_charts", "source_timestamp": "2026-09-10T12:07:17Z", "url": "nfl/vintage/depth_charts.db0a09454965e6fc.reduced.csv.gz"}, "sha256": "db0a09454965e6fcd4d7378a19381fa53f251432f80f09ebdcc45f78f5e1bc9f", "source": "depth_charts", "url": "nfl/vintage/depth_charts.db0a09454965e6fc.reduced.csv.gz"}, {"partition_id": "espn_injuries_json@0cd99d47b1cc389f", "provenance": {"cache_timestamp": null, "effective_for_date": "2024-09-08", "generated_at": "2026-09-12T12:00:00Z", "retrieved_at": "2026-09-11T00:43:57Z", "schema_version": "vintage/espn_injuries_json/1", "source": "espn_injuries_json", "source_timestamp": "2026-09-11T00:43:57Z", "url": "nfl/vintage/espn_injuries_json.0cd99d47b1cc389f.json.gz"}, "sha256": "0cd99d47b1cc389f6f09973bed503eac54e90f1a701b34de2b690e9a90febc95", "source": "espn_injuries_json", "url": "nfl/vintage/espn_injuries_json.0cd99d47b1cc389f.json.gz"}, {"partition_id": "injuries@cd7338473dd852d0", "provenance": {"cache_timestamp": null, "effective_for_date": "2024-09-08", "generated_at": "2026-09-12T12:00:00Z", "retrieved_at": "2026-09-11T12:19:21Z", "schema_version": "vintage/injuries/1", "source": "injuries", "source_timestamp": "2026-09-11T12:19:21Z", "url": "nfl/vintage/injuries.cd7338473dd852d0.csv.gz"}, "sha256": "cd7338473dd852d02c6986663addb31431609946fa8756d0460bf2e98d3501a9", "source": "injuries", "url": "nfl/vintage/injuries.cd7338473dd852d0.csv.gz"}, {"partition_id": "official_inactives@67511bb2cfc1e9f3", "provenance": {"cache_timestamp": null, "effective_for_date": "2024-09-08", "generated_at": "2026-09-12T12:00:00Z", "retrieved_at": "2026-09-11T00:43:57Z", "schema_version": "vintage/official_inactives/1", "source": "official_inactives", "source_timestamp": "2026-09-11T00:43:57Z", "url": "nfl/vintage/official_inactives.67511bb2cfc1e9f3.html.gz"}, "sha256": "67511bb2cfc1e9f35b11a4eba503f4bce67e51bc8cb1252c52e8b8f6ffd9e1aa", "source": "official_inactives", "url": "nfl/vintage/official_inactives.67511bb2cfc1e9f3.html.gz"}, {"partition_id": "official_injury_report@ec99910f37f94bb8", "provenance": {"cache_timestamp": null, "effective_for_date": "2024-09-08", "generated_at": "2026-09-12T12:00:00Z", "retrieved_at": "2026-09-11T00:43:57Z", "schema_version": "vintage/official_injury_report/1", "source": "official_injury_report", "source_timestamp": "2026-09-11T00:43:57Z", "url": "nfl/vintage/official_injury_report.ec99910f37f94bb8.html.gz"}, "sha256": "ec99910f37f94bb89872633001a811546258bc0ebd452666d6f2037ac38f9040", "source": "official_injury_report", "url": "nfl/vintage/official_injury_report.ec99910f37f94bb8.html.gz"}, {"partition_id": "schedules@224b38fb539045bd", "provenance": {"cache_timestamp": null, "effective_for_date": "2024-09-08", "generated_at": "2026-09-12T12:00:00Z", "retrieved_at": "2026-09-11T12:19:21Z", "schema_version": "vintage/schedules/1", "source": "schedules", "source_timestamp": "2026-09-11T12:19:21Z", "url": "nfl/vintage/schedules.224b38fb539045bd.csv.gz"}, "sha256": "224b38fb539045bd3679655c02bee6e282bbef7d74e99cf5d34ce42915c6725d", "source": "schedules", "url": "nfl/vintage/schedules.224b38fb539045bd.csv.gz"}, {"partition_id": "weekly_rosters@fb79560b5c4738a2", "provenance": {"cache_timestamp": null, "effective_for_date": "2024-09-08", "generated_at": "2026-09-12T12:00:00Z", "retrieved_at": "2026-09-11T12:19:21Z", "schema_version": "vintage/weekly_rosters/1", "source": "weekly_rosters", "source_timestamp": "2026-09-11T12:19:21Z", "url": "nfl/vintage/weekly_rosters.fb79560b5c4738a2.reduced.csv.gz"}, "sha256": "fb79560b5c4738a284e4b37f49759cdceaa461eee6f41ea0840e7d0d9eb17026", "source": "weekly_rosters", "url": "nfl/vintage/weekly_rosters.fb79560b5c4738a2.reduced.csv.gz"}], "seed": {"n_draws": 120, "policy": "shared upstream; per-arm allocation stream via crc32", "seed": 20260912}, "spec_id": "Q9_TARGET_HURDLE/q9-shadow-seal-1", "spec_sha256": "82c8b52699bbeb00e656a3d543f995bac7034e9a89ff2a8d783e27b6fdc8422e"}, "identity_fingerprint": "NFLFP-1049eeb3aae3b11c", "kickoff_utc": "2026-09-13T12:00:00Z", "payload_sha256": "503411007f05b42871acf4d5fe56c45dff567286f356af4d37bb516e7a1dddf8", "seal_sha256": "b3cefda8bdf77917b19650c8eb2061685a5da70ee4e43889651937c95b8f12b6", "written_at": "2026-09-12T12:00:00Z"}
++{"consumed_partition_ids": ["depth_charts@db0a09454965e6fc", "espn_injuries_json@0cd99d47b1cc389f", "injuries@cd7338473dd852d0", "official_inactives@67511bb2cfc1e9f3", "official_injury_report@ec99910f37f94bb8", "schedules@224b38fb539045bd", "weekly_rosters@fb79560b5c4738a2"], "forecast_id": "Q9SH-2feb0fd3d95bc013", "game_id": "2024_01_ARI_BUF", "identity": {"code_version": "837d52f0d448527bd52a2aedc26362cb17611a08+dirty[30]", "interpreter": "python3.12", "partitions": [{"partition_id": "depth_charts@db0a09454965e6fc", "provenance": {"cache_timestamp": null, "effective_for_date": "2024-09-08", "generated_at": "2026-09-12T12:00:00Z", "retrieved_at": "2026-09-10T12:07:17Z", "schema_version": "vintage/depth_charts/1", "source": "depth_charts", "source_timestamp": "2026-09-10T12:07:17Z", "url": "nfl/vintage/depth_charts.db0a09454965e6fc.reduced.csv.gz"}, "sha256": "db0a09454965e6fcd4d7378a19381fa53f251432f80f09ebdcc45f78f5e1bc9f", "source": "depth_charts", "url": "nfl/vintage/depth_charts.db0a09454965e6fc.reduced.csv.gz"}, {"partition_id": "espn_injuries_json@0cd99d47b1cc389f", "provenance": {"cache_timestamp": null, "effective_for_date": "2024-09-08", "generated_at": "2026-09-12T12:00:00Z", "retrieved_at": "2026-09-11T00:43:57Z", "schema_version": "vintage/espn_injuries_json/1", "source": "espn_injuries_json", "source_timestamp": "2026-09-11T00:43:57Z", "url": "nfl/vintage/espn_injuries_json.0cd99d47b1cc389f.json.gz"}, "sha256": "0cd99d47b1cc389f6f09973bed503eac54e90f1a701b34de2b690e9a90febc95", "source": "espn_injuries_json", "url": "nfl/vintage/espn_injuries_json.0cd99d47b1cc389f.json.gz"}, {"partition_id": "injuries@cd7338473dd852d0", "provenance": {"cache_timestamp": null, "effective_for_date": "2024-09-08", "generated_at": "2026-09-12T12:00:00Z", "retrieved_at": "2026-09-11T12:19:21Z", "schema_version": "vintage/injuries/1", "source": "injuries", "source_timestamp": "2026-09-11T12:19:21Z", "url": "nfl/vintage/injuries.cd7338473dd852d0.csv.gz"}, "sha256": "cd7338473dd852d02c6986663addb31431609946fa8756d0460bf2e98d3501a9", "source": "injuries", "url": "nfl/vintage/injuries.cd7338473dd852d0.csv.gz"}, {"partition_id": "official_inactives@67511bb2cfc1e9f3", "provenance": {"cache_timestamp": null, "effective_for_date": "2024-09-08", "generated_at": "2026-09-12T12:00:00Z", "retrieved_at": "2026-09-11T00:43:57Z", "schema_version": "vintage/official_inactives/1", "source": "official_inactives", "source_timestamp": "2026-09-11T00:43:57Z", "url": "nfl/vintage/official_inactives.67511bb2cfc1e9f3.html.gz"}, "sha256": "67511bb2cfc1e9f35b11a4eba503f4bce67e51bc8cb1252c52e8b8f6ffd9e1aa", "source": "official_inactives", "url": "nfl/vintage/official_inactives.67511bb2cfc1e9f3.html.gz"}, {"partition_id": "official_injury_report@ec99910f37f94bb8", "provenance": {"cache_timestamp": null, "effective_for_date": "2024-09-08", "generated_at": "2026-09-12T12:00:00Z", "retrieved_at": "2026-09-11T00:43:57Z", "schema_version": "vintage/official_injury_report/1", "source": "official_injury_report", "source_timestamp": "2026-09-11T00:43:57Z", "url": "nfl/vintage/official_injury_report.ec99910f37f94bb8.html.gz"}, "sha256": "ec99910f37f94bb89872633001a811546258bc0ebd452666d6f2037ac38f9040", "source": "official_injury_report", "url": "nfl/vintage/official_injury_report.ec99910f37f94bb8.html.gz"}, {"partition_id": "schedules@224b38fb539045bd", "provenance": {"cache_timestamp": null, "effective_for_date": "2024-09-08", "generated_at": "2026-09-12T12:00:00Z", "retrieved_at": "2026-09-11T12:19:21Z", "schema_version": "vintage/schedules/1", "source": "schedules", "source_timestamp": "2026-09-11T12:19:21Z", "url": "nfl/vintage/schedules.224b38fb539045bd.csv.gz"}, "sha256": "224b38fb539045bd3679655c02bee6e282bbef7d74e99cf5d34ce42915c6725d", "source": "schedules", "url": "nfl/vintage/schedules.224b38fb539045bd.csv.gz"}, {"partition_id": "weekly_rosters@fb79560b5c4738a2", "provenance": {"cache_timestamp": null, "effective_for_date": "2024-09-08", "generated_at": "2026-09-12T12:00:00Z", "retrieved_at": "2026-09-11T12:19:21Z", "schema_version": "vintage/weekly_rosters/1", "source": "weekly_rosters", "source_timestamp": "2026-09-11T12:19:21Z", "url": "nfl/vintage/weekly_rosters.fb79560b5c4738a2.reduced.csv.gz"}, "sha256": "fb79560b5c4738a284e4b37f49759cdceaa461eee6f41ea0840e7d0d9eb17026", "source": "weekly_rosters", "url": "nfl/vintage/weekly_rosters.fb79560b5c4738a2.reduced.csv.gz"}], "seed": {"n_draws": 120, "policy": "shared upstream; per-arm allocation stream via crc32", "seed": 20260912}, "spec_id": "Q9_TARGET_HURDLE/q9-shadow-seal-1", "spec_sha256": "82c8b52699bbeb00e656a3d543f995bac7034e9a89ff2a8d783e27b6fdc8422e"}, "identity_fingerprint": "NFLFP-1b5e17a5e51854e4", "kickoff_utc": "2026-09-13T12:00:00Z", "payload_sha256": "2feb0fd3d95bc013823d2789448390021b4f8ef7812d11791b4a2558dbdb4dc6", "seal_sha256": "af013e428080fc1d39c582cfb08c16a4811d56bd0de8dfd87d1a628c6e6c924b", "written_at": "2026-09-12T12:00:00Z"}
+diff --git a/nfl/prospective/q9shadow/ledger.py b/nfl/prospective/q9shadow/ledger.py
+index 4907db9..dceac0f 100644
+--- a/nfl/prospective/q9shadow/ledger.py
++++ b/nfl/prospective/q9shadow/ledger.py
+@@ -56,7 +56,7 @@ _REPO = pathlib.Path(__file__).resolve().parents[3]
+ if str(_REPO) not in sys.path:
+     sys.path.insert(0, str(_REPO))
+ 
+-from sportsplatform.governance.outcome import Outcome                 # noqa: E402
++from sportsplatform.governance.outcome import Cause, Outcome, State   # noqa: E402
+ from nfl.prospective.q9shadow import candidate as CAND                # noqa: E402
+ from nfl.research import postgame as PG                               # noqa: E402
+ from nfl.research.shadow import score as SC                           # noqa: E402
+@@ -281,6 +281,16 @@ def score_rows(art, draws, actuals, outcome_hash, outcome_source,
+     that exact substitution -- a missing key defaulted to zero -- is what
+     turned a 74-yard game into a scored zero once already.
+     """
++    # THE SEAL-PATH GATE, AT THE POINT ROWS ARE CREATED.
++    #
++    # Scoring is where an artifact turns into evidence, so it is where the
++    # bypass check belongs. An artifact that did not come through the governed
++    # appearance interface produces ZERO rows -- not rows marked non-evidence,
++    # zero -- because a row that exists can be miscounted and a row that was
++    # never created cannot.
++    gate = assert_seal_path_governed(art)
++    if gate.state is not State.PASS:
++        return []
+     rows = []
+     pids = list(art['player_ids'])
+     summary = {(r['arm'], r['player_id']): r for r in art['player_summary']}
+@@ -318,6 +328,24 @@ def score_rows(art, draws, actuals, outcome_hash, outcome_source,
+                 'finality_code': finality_code,
+                 'prospective_evidence': bool(
+                     art.get('prospective_evidence', False)),
++                # STAMPED ON THE ROW, NOT ONLY CHECKED AT CREATION.
++                # `score_rows` is not the only way a row can reach the
++                # ledger -- `append_rows` takes whatever it is given -- so
++                # the verdict travels with the row and `accounting` reads it.
++                'seal_path_governed': True,
++                # THE SHARED COUNTING STAMP, and the reason it is separate
++                # from `seal_path_governed`.
++                #
++                # `accounting` delegates to `postgame.accounting`, which
++                # counts only rows stamped `currently_admissible`. Stamping
++                # only the q9shadow-specific field silently zeroed every Q9
++                # count the moment the postgame gate landed -- the two layers
++                # agreed on the policy and disagreed on the field name.
++                # `currently_admissible` is the shared gate; `seal_path_
++                # governed` records WHY this row earned it.
++                'currently_admissible': True,
++                'readiness_gate': (art.get('seal_path') or {}).get(
++                    'readiness_gate'),
+                 'promoted': False,
+                 'zero_probability': s.get('zero_probability'),
+                 'mean_targets': s.get('mean_targets'),
+@@ -344,11 +372,31 @@ def score_rows(art, draws, actuals, outcome_hash, outcome_source,
+ 
+ # -------------------------------------------------------- the accounting
+ def accounting(rows):
+-    """The four counts, from the governed counter, plus the arm pairing."""
+-    counted = [r for r in rows if r.get('prospective_evidence')]
++    """The four counts, from the governed counter, plus the arm pairing.
++
++    TWO INDEPENDENT EXCLUSIONS, APPLIED AT THE COUNTER.
++      * `prospective_evidence` -- the owner's evidence ruling.
++      * `seal_path_governed` -- a row whose artifact did not come through the
++        governed appearance interface AND the per-team readiness gate. A row
++        that predates the stamp has no verdict, and no verdict is not a pass.
++    Both are enforced here as well as at `score_rows`, because a row can
++    reach the ledger through `append_rows` without passing `score_rows` at
++    all.
++    """
++    counted = [r for r in rows if r.get('prospective_evidence')
++               and r.get('seal_path_governed') is True]
+     acc = PG.accounting(counted)
+     acc['scoring_rows_including_non_evidence'] = len(list(rows))
+-    acc['rows_excluded_as_non_evidence'] = len(list(rows)) - len(counted)
++    allrows = list(rows)
++    acc['rows_excluded_as_non_evidence'] = len(allrows) - len(counted)
++    acc['rows_excluded_by_evidence_flag'] = sum(
++        1 for r in allrows if not r.get('prospective_evidence'))
++    acc['rows_excluded_by_seal_path'] = sum(
++        1 for r in allrows if r.get('seal_path_governed') is not True)
++    acc['exclusion_note'] = (
++        'a row must carry BOTH prospective_evidence and '
++        'seal_path_governed to be counted. The two exclusions overlap and '
++        'are reported separately so neither can be assumed from the other.')
+     acc['distinct_arms'] = sorted({r.get('arm') for r in counted
+                                    if r.get('arm')})
+     acc['arm_pairing_note'] = schema()['arm_pairing_note']
+@@ -493,7 +541,18 @@ def _pit_chi2(pits, bins=10):
+ LEDGER_STATE = HERE / 'Q9_PROSPECTIVE_LEDGER_STATE.json'
+ 
+ 
+-def state(season=2026, now=None):
++# HOW MANY GAMES THE CENSUS COVERS.
++#
++# `state()` used to attempt every eligible game -- 270 of them, each needing a
++# full live feature build before the readiness gate is even reached. That is
++# minutes of work to produce a census, and it timed out in practice. The
++# census is a REPORTING scope, not a governance one: bounding it changes which
++# games are listed, never whether any of them would pass. `census_scope` is
++# recorded on the artifact so a bounded census is never read as the season.
++CENSUS_GAMES = 16
++
++
++def state(season=2026, now=None, n_games=CENSUS_GAMES):
+     """The ledger as it actually stands, with the reason it stands there.
+ 
+     AN EMPTY LEDGER IS NOT REPORTED AS A ZERO AND LEFT THERE. This project's
+@@ -507,7 +566,7 @@ def state(season=2026, now=None):
+     from nfl.prospective.q9shadow import shadow as SH
+     rows = current()
+     acc = accounting(rows)
+-    live = SEAL.seal_season(season, now, SH.LIVE_PREGAME)
++    live = SEAL.seal_season(season, now, SH.LIVE_PREGAME, n_games=n_games)
+     census = collections.Counter(
+         f'{r["state"]}[{r["code"]}]' for r in (live.get('refusals') or []))
+     return {
+@@ -530,6 +589,12 @@ def state(season=2026, now=None):
+             'and is not reported.'),
+         'live_eligibility': {
+             'status': live.get('status'),
++            'census_scope': {
++                'n_games_attempted': n_games,
++                'note': 'a bounded REPORTING scope covering the next '
++                        'eligible kickoffs, not the whole season. Bounding '
++                        'the census changes which games are listed, never '
++                        'whether any would pass.'},
+             'candidate_gate': live.get('candidate_gate'),
+             'n_games_ahead_of_clock': live.get('n_eligible_games'),
+             'n_sealed': len(live.get('sealed') or []),
+@@ -539,25 +604,123 @@ def state(season=2026, now=None):
+                 SH.LIVE_PREGAME_REQUIREMENTS,
+         },
+         'blockers': BLOCKERS,
++        'blocker_states': blocker_states(),
++        'blocker_independence': (lambda o: {
++            'state': f'{o.state.value}[{o.code}]', 'detail': o.detail,
++            'n_blockers': o.evidence.get('n_blockers'),
++            'n_perturbations': o.evidence.get('n_perturbations'),
++            'method': 'each blocker forced CLEARED in turn; every other '
++                      'recomputed from its own evaluator and required to be '
++                      'unchanged',
++        })(assert_blockers_independent()),
++        'resolved_blockers': RESOLVED_BLOCKERS,
++        'excluded_seals': EXCLUDED_SEALS,
++        'blockers_are_independent': (
++            'clearing one blocker does not clear any other. Each carries its '
++            'own owner, its own remedy and an explicit independent_of list, '
++            'and the live feature builder landing is the worked example: it '
++            'is implemented, and a live seal is still blocked.'),
++        'owner_rulings': OWNER_RULINGS,
++        'evidence_state': {
++            'forecasts_may_be': ['DRY_RUN', 'DIAGNOSTIC'],
++            'section_4_credit': 'NONE',
++            'promotion_evidence_accruing': False,
++            'condition': ('all three original blockers satisfied AND a '
++                          'truthful COMPLETE pre-kickoff artifact sealed. '
++                          'Until then nothing accrues, whatever the numbers '
++                          'look like.'),
++        },
+         'stop_rule': STOP_RULE,
+     }
+ 
+ 
+-# The three things standing between this integration and a countable
+-# prospective row. Each is named, each is upstream of Q9, and none is
+-# something this task may route around.
+-BLOCKERS = {
++# THE OWNER RULINGS THIS LAYER IMPLEMENTS, recorded so the reasoning cannot
++# be reconstructed wrongly later.
++OWNER_RULINGS = {
++    'randomized_pit': {
++        'ruling': 'protocol section 9.6 UNCHANGED. Randomized PIT is the '
++                  'governing prospective promotion statistic.',
++        'q9b_mid_pit': 'DIAGNOSTIC ONLY. It does not satisfy section 9.6.',
++        'implementation': 'this module emits the randomized statistic, seeded '
++                          'per row through crc32 so it reproduces, and '
++                          'records mid-PIT beside it.',
++        'protocol_modified': False,
++    },
++    'completeness': {
++        'ruling': 'protocol section 2 UNCHANGED. A PARTIAL_PLAYER_COVERAGE '
++                  'artifact may be scored diagnostically, counts toward no '
++                  'section-4 floor, and cannot support promotion.',
++        'relabelling': 'REFUSED. A single-layer Q9 artifact is not called '
++                       'COMPLETE.',
++        'route': 'nfl/prospective/q9shadow/complete.py builds the paired '
++                 'R8-versus-Q9 artifact across all nine required layers on '
++                 'one set of upstream draws, with the target allocation as '
++                 'the only divergence. completeness is COMPUTED from '
++                 'nfl.research.completeness.forecast_completeness; there is '
++                 'no Q9 exemption.',
++        'protocol_modified': False,
++    },
++}
++
++# The things standing between this integration and a countable prospective
++# row. Each is named, each is upstream of Q9, and none is something this task
++# may route around. THEY ARE INDEPENDENT: clearing one does not imply any
++# other is cleared, and `independent_of` on each says so explicitly.
++# RESOLVED, AND MOVED OUT OF THE LIVE LIST RATHER THAN LEFT THERE WITH A
++# "status: IMPLEMENTED" STRING.
++#
++# A blocker list whose entries can say "actually this one is done" is not a
++# blocker list -- a reader has to parse prose to learn the state, and the
++# stale name (`..._UNIMPLEMENTED`) keeps asserting the opposite of the truth.
++# So it is recorded here, with its evidence, and `BLOCKERS` holds only what
++# actually blocks.
++RESOLVED_BLOCKERS = {
+     'LIVE_PREGAME_FEATURE_BUILD_UNIMPLEMENTED': {
+-        'owner': 'this repository',
+-        'what': 'there is no pregame feature builder for the live season. '
+-                'nfl.research.q6.frame.load_frame refuses 2026 rows by '
+-                'design and production reports feature_build '
+-                'STAGE_DECLARED_UNIMPLEMENTED.',
+-        'blocks': 'every 2026 seal, for both arms',
++        'resolved_on': '2026-09-12',
++        'resolved_by': 'nfl/prospective/q9shadow/live_features.py',
++        'was': 'no pregame feature builder for the live season. '
++               'nfl.research.q6.frame.load_frame refuses 2026 rows by design '
++               'and production reports feature_build '
++               'STAGE_DECLARED_UNIMPLEMENTED.',
++        'evidence': {
++            'artifact': 'nfl/prospective/q9shadow/Q9_LIVE_FEATURE_PARITY.json',
++            'builder_parity': 'EXACT',
++            'n_players_compared': 482,
++            'n_players_differing': 0,
++            'window': 'week 1 -- the window in which both builders are '
++                      'defined',
++            'runs_on_a_live_game': True,
++        },
++        'did_not_clear': ['INJURY_REPORT_INCOMPLETE',
++                          'COMPLETE_ARTIFACT_LAYERS_ABSENT', 'G0A_11_OF_12'],
++        'note': 'this resolution is the worked example of blocker '
++                'independence: the builder exists and a live COMPLETE seal is '
++                'still impossible.',
++    },
++}
++
++BLOCKERS = {
++    'COMPLETE_ARTIFACT_LAYERS_ABSENT': {
++        'owner': 'the production forecast path',
++        'what': 'protocol section 2 requires completeness == COMPLETE for an '
++                'eligible forecast, and that means all nine required layers '
++                'from nfl.research.completeness.LAYERS. The paired shadow '
++                'build currently carries the target layer; team_volume, the '
++                'three QB layers and carries come from the production run, '
++                'and the downstream receiving layers need '
++                'frozen_priors.receiving_priors, which refuses on any '
++                'historical slice by its own leakage guard '
++                '(RECEIVING_FRAME_CARRIES_FORECAST_SEASON; measured: 2026 '
++                'PASS, 2025 FAIL, 2024 FAIL).',
++        'blocks': 'section-4 credit and any promotion evidence',
+         'needs_bytes_from_outside': False,
++        'independent_of': ['INJURY_REPORT_INCOMPLETE', 'G0A_11_OF_12'],
++        'artifact': 'nfl/prospective/q9shadow/Q9_COMPLETE_SHADOW_PARITY.json',
+     },
+     'INJURY_REPORT_INCOMPLETE': {
+         'owner': 'the agent that holds network egress',
++        'independent_of': ['G0A_11_OF_12',
++                           'COMPLETE_ARTIFACT_LAYERS_ABSENT'],
+         'what': 'the 2026 injury captures carry rows whose report_status is '
+                 'unfilled, and nfl.production.nonqb.inputs refuses that by '
+                 'name. An unfiled designation is not an absence of injury '
+@@ -571,6 +734,13 @@ BLOCKERS = {
+     },
+     'G0A_11_OF_12': {
+         'owner': 'governance',
++        'independent_of': ['INJURY_REPORT_INCOMPLETE',
++                           'COMPLETE_ARTIFACT_LAYERS_ABSENT'],
++        'remaining_item_artifact':
++            'nfl/prospective/q9shadow/Q9_G0A_REMAINING_ITEM.json',
++        'remaining_item': 'item 1 -- kickoff-anchored vintage capture '
++                          'scheduled and demonstrably running. Root cause '
++                          'EGRESS. No waiver requested.',
+         'what': 'protocol section 1 says no forecast written before G0A is '
+                 'discharged counts toward promotion. '
+                 'nfl.production.authorization.gate_state reports G0A 11/12.',
+@@ -591,6 +761,360 @@ STOP_RULE = {
+ }
+ 
+ 
++# ==================================================================
++# PERMANENT EXCLUSION OF THE GUARD-BYPASS SEALS
++# ==================================================================
++#
++# Six live artifacts were produced by a seal path that called
++# `appearance_r8.predict` DIRECTLY, skipping
++# `inputs.validate_appearance_inputs` -- the gate that refuses
++# INJURY_REPORT_INCOMPLETE. They were deleted from disk and their ledger was
++# removed before any was counted.
++#
++# AN ID BLACKLIST CANNOT BE THE GUARD, AND SAYING SO IS THE POINT. The run log
++# printed only the first three forecast_ids and the artifacts are gone, so
++# three of the six ids are UNRECOVERABLE. A list that is knowingly incomplete
++# must not be presented as the control.
++#
++# The control is structural instead: every sealed artifact records the
++# appearance interface it came through, and `assert_seal_path_governed`
++# refuses any artifact that did not come through the governed one -- whatever
++# its id, including the three whose ids are lost, and including any future
++# bypass nobody has thought of yet. The id list below is an AUDIT RECORD, not
++# the mechanism.
++EXCLUDED_SEAL_BATCHES = ()          # populated below; see EXCLUDED_SEALS
++
++EXCLUDED_SEALS = {
++    'reason': 'SEAL_PATH_BYPASSED_APPEARANCE_INPUT_VALIDATION',
++    'defect': 'the seal called nfl.production.nonqb.appearance_r8.predict '
++              'directly, which skips '
++              'nfl.production.nonqb.inputs.validate_appearance_inputs',
++    'discovered_on': '2026-09-12',
++    'n_artifacts': 6,
++    'permanently_excluded': True,
++    'may_ever_count_as_evidence': False,
++    'disposition': 'deleted from disk and from the seal ledger before any was '
++                   'counted; no metric, no accounting unit and no floor ever '
++                   'included one',
++    'recoverable_forecast_ids': [
++        'Q9SH-fc559f3700c426cc',        # 2026_01_ATL_PIT / ATL
++        'Q9SH-a62e9d18be8e7dcc',        # 2026_01_ATL_PIT / PIT
++        'Q9SH-caccdcddef4f421d',        # 2026_01_BAL_IND / BAL
++    ],
++    'unrecoverable_forecast_ids': {
++        'n': 3,
++        'team_games': ['2026_01_BAL_IND / IND', '2026_01_BUF_HOU / BUF',
++                       '2026_01_BUF_HOU / HOU'],
++        'why': 'the run printed only the first three ids and the artifacts '
++               'were deleted. Recorded as unrecoverable rather than guessed.',
++    },
++    'the_actual_control': 'assert_seal_path_governed -- a field check on every '
++                          'artifact, complete by construction where an id '
++                          'list cannot be',
++}
++
++# A SECOND BATCH, FOUND BY AUDITING THE FIRST FIX.
++#
++# The id lists in both batches are HISTORICAL AUDIT EVIDENCE. They are
++# explicitly NON-EXHAUSTIVE (batch 1 is missing three ids that cannot be
++# recovered) and NON-AUTHORITATIVE. The authoritative control is
++# `assert_seal_path_governed`, a field check that does not depend on anyone
++# having written an id down.
++EXCLUDED_SEALS_2 = {'defect': 'nfl.production.nonqb.layers.appearance consults per-team '
++           'readiness ONLY when `teams` is supplied. The seal called '
++           'it without `teams`, so it took the slate-wide branch -- '
++           'which returned ENGINE_INPUTS_READY while 28 of 32 teams '
++           'had every injury row unfilled. Per-team readiness refuses '
++           'those teams by name with INJURY_REPORT_INCOMPLETE. '
++           'Omitting an argument is not a lighter version of calling '
++           'the wrong function; the guard did not run either way.',
++ 'discovered_by': 'the audit of the live-seal terminal state: 26 of 26 '
++                  'team-games sealed with 0 refusals while the injury '
++                  'feed carried 159 of 167 rows without a '
++                  'report_status',
++ 'discovered_on': '2026-09-12',
++ 'disposition': 'deleted from disk and from the seal ledger before any '
++                'was counted; every one carried '
++                'prospective_evidence=false and entered no metric, '
++                'accounting unit or floor',
++ 'may_ever_count_as_evidence': False,
++ 'n_artifacts': 26,
++ 'permanently_excluded': True,
++ 'reason': 'SEAL_PATH_SKIPPED_PER_TEAM_READINESS_GATE',
++ 'recoverable_forecast_ids': ['Q9SH-181f9ab1c271d7d0',
++                              'Q9SH-a89fe6a34ef8420d',
++                              'Q9SH-5a825f68a09f4533',
++                              'Q9SH-6dbde3189dc9d335',
++                              'Q9SH-5d9b539a48a3a1e0',
++                              'Q9SH-979c28f6d8a5c482',
++                              'Q9SH-10cf6c9e9ce0b487',
++                              'Q9SH-3c110a96a79a752f',
++                              'Q9SH-5cc2612eef7536f0',
++                              'Q9SH-dd71e69cbc4e0c39',
++                              'Q9SH-ddabbff169afd4c3',
++                              'Q9SH-cc477d7e0e7e8e5e',
++                              'Q9SH-8d7c397191958df0',
++                              'Q9SH-5d7006bf14b0d92d',
++                              'Q9SH-d0922be3004654d8',
++                              'Q9SH-1e3edf9595057481',
++                              'Q9SH-100419f74de2eb6c',
++                              'Q9SH-b2f2f7405362da1a',
++                              'Q9SH-6c2a75d12c019222',
++                              'Q9SH-bf7bdc52fad0991b',
++                              'Q9SH-ae993c26d891b7b7',
++                              'Q9SH-5916e6ff1cd27ac7',
++                              'Q9SH-97d343e3e60f685c',
++                              'Q9SH-e93a54cb102b89d6',
++                              'Q9SH-7e0b63f382042800',
++                              'Q9SH-8cfdaea03fa025f3'],
++ 'the_actual_control': 'assert_seal_path_governed now also requires '
++                       'seal_path.readiness_gate == PER_TEAM, so an '
++                       'artifact built through the slate-wide branch '
++                       'is refused by a field check rather than by an '
++                       'id list',
++ 'unrecoverable_forecast_ids': {'n': 0,
++                                'team_games': [],
++                                'why': 'the ledger was intact, so all '
++                                       '26 ids are recorded'}}
++
++EXCLUDED_SEAL_BATCHES = (EXCLUDED_SEALS, EXCLUDED_SEALS_2)
++
++GOVERNED_APPEARANCE_INTERFACE = 'nfl.production.nonqb.layers.appearance'
++PER_TEAM_READINESS_GATE = 'PER_TEAM'
++
++
++def assert_seal_path_governed(art) -> Outcome:
++    """Refuse an artifact that did not come through the governed appearance
++    interface, whatever its forecast_id.
++
++    An artifact with NO `seal_path` is refused too. It predates the field, so
++    nothing establishes which interface produced it -- and "we cannot tell" is
++    not one of the permitted answers for something that would be counted.
++    """
++    sp = art.get('seal_path')
++    if not sp:
++        return Outcome.fail(
++            'Q9_SEAL_PATH_UNRECORDED',
++            f'{art.get("forecast_id")} carries no seal_path, so which '
++            f'appearance interface produced it cannot be established. An '
++            f'artifact that cannot say how it was built may not be counted.')
++    got = sp.get('appearance_interface')
++    if got != GOVERNED_APPEARANCE_INTERFACE:
++        return Outcome.fail(
++            'Q9_SEAL_PATH_NOT_GOVERNED',
++            f'{art.get("forecast_id")} came through {got!r} rather than '
++            f'{GOVERNED_APPEARANCE_INTERFACE!r}, which skips '
++            f'inputs.validate_appearance_inputs. '
++            f'{EXCLUDED_SEALS["disposition"]}.',
++            appearance_interface=got)
++    if sp.get('upstream_test_only'):
++        return Outcome.fail(
++            'Q9_SEAL_PATH_TEST_ONLY_UPSTREAM',
++            f'{art.get("forecast_id")} was built on a TEST_ONLY appearance '
++            f'fixture. A fixture-sourced forecast is not a forecast.')
++    # THE PER-TEAM READINESS GATE MUST HAVE RUN.
++    #
++    # Calling the governed interface is necessary and NOT sufficient:
++    # `layers.appearance` consults per-team readiness only when `teams` is
++    # supplied, and the slate-wide branch it falls back to returned
++    # ENGINE_INPUTS_READY on a slate where 28 of 32 teams had every injury row
++    # unfilled. Twenty-six artifacts sealed through that branch.
++    if sp.get('readiness_gate') != PER_TEAM_READINESS_GATE:
++        return Outcome.fail(
++            'Q9_SEAL_PATH_READINESS_GATE_NOT_PER_TEAM',
++            f'{art.get("forecast_id")} records readiness_gate='
++            f'{sp.get("readiness_gate")!r}. The per-team gate is the one that '
++            f'refuses INJURY_REPORT_INCOMPLETE; the slate-wide branch does '
++            f'not, despite a comment claiming it is more conservative.',
++            readiness_gate=sp.get('readiness_gate'))
++    return Outcome.ok('Q9_SEAL_PATH_GOVERNED', value=got)
++
++
++# ==================================================================
++# BLOCKER INDEPENDENCE, EVALUATED RATHER THAN DECLARED
++# ==================================================================
++#
++# Each blocker is computed from its OWN source by its own evaluator. Two
++# blockers sharing an evaluator would move together, and a declared
++# `independent_of` list would then be a claim the code contradicts.
++def _eval_complete_layers():
++    art = HERE / 'Q9_COMPLETE_SHADOW_PARITY.json'
++    if not art.exists():
++        return 'BLOCKED', 'no paired-build artifact'
++    d = json.loads(art.read_text())
++    return (('CLEARED', 'all nine required layers present')
++            if d.get('is_eligible_forecast_under_section_2')
++            else ('BLOCKED', f'completeness is '
++                             f'{d.get("contract_completeness_today")}'))
++
++
++def _eval_injury_report():
++    from nfl.prospective.q9shadow import live_features as LF
++    import datetime as _dt
++    now = _dt.datetime.now(_dt.timezone.utc).isoformat()
++    o = LF.injury_rows(2026, now)
++    if o.state is not State.PASS:
++        return 'BLOCKED', f'{o.code}'
++    n = o.evidence.get('n_without_report_status') or 0
++    return (('CLEARED', 'every captured row carries a report_status')
++            if n == 0 else
++            ('BLOCKED', f'{n} captured row(s) carry no report_status'))
++
++
++def _eval_g0a():
++    from nfl.prospective.q9shadow import g0a as G0A
++    o = G0A.check()
++    return (('CLEARED', o.detail) if o.state is State.PASS
++            else ('BLOCKED', f'{o.code}'))
++
++
++BLOCKER_EVALUATORS = {
++    'COMPLETE_ARTIFACT_LAYERS_ABSENT': _eval_complete_layers,
++    'INJURY_REPORT_INCOMPLETE': _eval_injury_report,
++    'G0A_11_OF_12': _eval_g0a,
++}
++
++
++def blocker_states():
++    """Every blocker's state, each from its own source."""
++    out = {}
++    for name, fn in BLOCKER_EVALUATORS.items():
++        try:
++            state, detail = fn()
++        except Exception as exc:                              # noqa: BLE001
++            # AN EVALUATOR THAT CRASHED IS NOT A BLOCKED BLOCKER.
++            #
++            # The first version returned 'BLOCKED' here, and a missing `State`
++            # import then made two of the three blockers read BLOCKED for a
++            # NameError -- a code defect wearing a governance state. EVALUATOR
++            # _ERROR is its own state so a crash can never be mistaken for a
++            # measurement, in either direction.
++            state, detail = 'EVALUATOR_ERROR', f'{type(exc).__name__}: {exc}'
++        out[name] = {'state': state, 'detail': str(detail)[:300],
++                     'evaluator': fn.__name__}
++    return out
++
++
++def assert_blockers_independent() -> Outcome:
++    """Clearing one blocker must not change any other's computed state.
++
++    NOT A DECLARATION. Each blocker is forced CLEARED in turn and every OTHER
++    blocker is recomputed; a state that moves means the two share a cause and
++    the `independent_of` lists are lying. The evaluators are also required to
++    be distinct functions, because two names pointing at one evaluator would
++    pass the perturbation test while being the same blocker twice.
++    """
++    names = sorted(BLOCKER_EVALUATORS)
++    fns = [BLOCKER_EVALUATORS[n] for n in names]
++    # SHARING IS DETECTED BY IDENTITY, NEVER BY VALUE.
++    #
++    # Two evaluators that happen to return the same answer today are not the
++    # same evaluator, and two that return different answers may still be one
++    # function behind a wrapper. So three identity tests, each catching a
++    # different aliasing shape, and no comparison of returned values anywhere:
++    #   id()        the same function object registered twice
++    #   __code__    a different wrapper object around the same code
++    #   __name__    a rename that leaves both pointing at one definition
++    for label, key in (('object identity', id),
++                       ('code object', lambda f: f.__code__),
++                       ('name', lambda f: f.__name__)):
++        seen = {}
++        for nm, f in zip(names, fns):
++            k = key(f)
++            if k in seen:
++                return Outcome.fail(
++                    'Q9_BLOCKERS_SHARE_AN_EVALUATOR',
++                    f'{seen[k]!r} and {nm!r} share an evaluator by {label}. '
++                    f'They would move together, so they are one blocker under '
++                    f'two names -- regardless of whether their current '
++                    f'answers agree.',
++                    aliased=[seen[k], nm], by=label)
++            seen[k] = nm
++    declared = {n: set(BLOCKERS[n]['independent_of']) for n in names
++                if n in BLOCKERS}
++    incomplete = {n: sorted(set(names) - {n} - d)
++                  for n, d in declared.items() if set(names) - {n} - d}
++    if incomplete:
++        return Outcome.fail(
++            'Q9_BLOCKER_INDEPENDENCE_NOT_DECLARED',
++            f'{incomplete} are not named in the corresponding '
++            f'independent_of lists.', missing=incomplete)
++
++    base = blocker_states()
++    broken = {n: v['detail'] for n, v in base.items()
++              if v['state'] == 'EVALUATOR_ERROR'}
++    if broken:
++        return Outcome.fail(
++            'Q9_BLOCKER_EVALUATOR_ERROR',
++            f'{len(broken)} blocker evaluator(s) raised: {broken}. An '
++            f'independence result computed over crashed evaluators would be '
++            f'a statement about the crash, not about the blockers.',
++            broken=broken)
++    moved = []
++    saved = dict(BLOCKER_EVALUATORS)
++    try:
++        for n in names:
++            BLOCKER_EVALUATORS[n] = lambda: ('CLEARED', 'forced for the test')
++            after = blocker_states()
++            for other in names:
++                if other == n:
++                    continue
++                if after[other]['state'] != base[other]['state']:
++                    moved.append({'cleared': n, 'also_moved': other,
++                                  'from': base[other]['state'],
++                                  'to': after[other]['state']})
++            BLOCKER_EVALUATORS[n] = saved[n]
++    finally:
++        BLOCKER_EVALUATORS.clear()
++        BLOCKER_EVALUATORS.update(saved)
++    if moved:
++        return Outcome.fail(
++            'Q9_BLOCKERS_NOT_INDEPENDENT',
++            f'clearing one blocker moved another: {moved}. They share a '
++            f'cause, so clearing one would silently appear to clear the '
++            f'other.', moved=moved)
++    return Outcome.ok(
++        'Q9_BLOCKERS_MECHANICALLY_INDEPENDENT',
++        value={'n_blockers': len(names), 'states': base},
++        detail=f'{len(names)} blocker(s), {len(set(fns))} distinct '
++               f'evaluator(s); forcing each CLEARED in turn moved no other',
++        n_blockers=len(names), n_perturbations=len(names))
++
++
++NON_CLEARED_BLOCKER_STATES = ('BLOCKED', 'EVALUATOR_ERROR')
++
++
++def promotion_gate() -> Outcome:
++    """May promotion or a COMPLETE declaration proceed? Today: no.
++
++    REFUSES ON BOTH NON-CLEARED STATES. `BLOCKED` means the blocker was
++    measured and holds; `EVALUATOR_ERROR` means it could not be measured. A
++    gate that refused only the first would let a crashed evaluator read as
++    permission, which is the same defect as an unfilled injury designation
++    read as an absence of injury.
++
++    This function cannot return PASS while any blocker is non-cleared, and it
++    has no argument, flag or override that changes that.
++    """
++    st = blocker_states()
++    bad = {n: v['state'] for n, v in st.items()
++           if v['state'] in NON_CLEARED_BLOCKER_STATES}
++    if bad:
++        return Outcome.blocked(
++            'Q9_PROMOTION_REFUSED_BLOCKERS_NOT_CLEARED',
++            f'{len(bad)} blocker(s) are not cleared: {bad}. '
++            f'BLOCKED means measured and holding; EVALUATOR_ERROR means not '
++            f'measured at all. Neither is permission.',
++            cause=Cause.GOVERNANCE, blockers=bad, states=st)
++    return Outcome.blocked(
++        'Q9_PROMOTION_STILL_REQUIRES_AN_OWNER_DECISION',
++        'every blocker is cleared, and that is not promotion. Protocol '
++        'section 9 requires the section-4 floors, a Holm-Bonferroni-corrected '
++        'CRPS win, randomized PIT not worse, and an explicit owner decision '
++        'that no code path can produce.',
++        cause=Cause.GOVERNANCE, states=st)
++
++
+ def append_rows(rows, path=None):
+     """Append-only. Nothing on disk is rewritten, ever."""
+     p = pathlib.Path(path or LEDGER)
+diff --git a/nfl/prospective/q9shadow/seal.py b/nfl/prospective/q9shadow/seal.py
+index f78b2b6..1c9ca8b 100644
+--- a/nfl/prospective/q9shadow/seal.py
++++ b/nfl/prospective/q9shadow/seal.py
+@@ -72,8 +72,10 @@ from nfl.identity.execution_identity import ExecutionIdentity         # noqa: E4
+ from nfl.prospective import artifact as ART                           # noqa: E402
+ from nfl.prospective import registries as REG                         # noqa: E402
+ from nfl.prospective.q9shadow import candidate as CAND                # noqa: E402
++from nfl.prospective.q9shadow import complete as COMPLETE             # noqa: E402
+ from nfl.prospective.q9shadow import inputs as IN                     # noqa: E402
+ from nfl.prospective.q9shadow import shadow as SH                     # noqa: E402
++from nfl.prospective.q9shadow import timebasis as TB                  # noqa: E402
+ 
+ SPEC_VERSION = 'q9-shadow-seal-1'
+ 
+@@ -118,12 +120,25 @@ SCHEDULE_PREGAME_COLUMNS = ('game_id', 'season', 'game_type', 'week',
+                             'location', 'roof', 'surface', 'stadium_id')
+ 
+ # The arm this candidate is registered under in the artifact contract.
+-# B: frozen-spec prequential. The hurdle's stage-1 coefficients are fitted on
+-# seasons strictly earlier than the forecast season by a rule frozen before
+-# the season, which is exactly what arm B describes. It is NOT arm A: arm A
+-# consumes no 2026 outcome all season, and a week-8 forecast under this rule
+-# would have weeks 1-7 in its training window.
+-MODEL_ARM = 'B'
++#
++# A: static pre-2026 benchmark -- consumes NO 2026 outcome at any point in the
++# season. CORRECTED from B, and the correction matters because A is the
++# STRONGER evidentiary status, not a convenience.
++#
++# The earlier reasoning was that a week-8 forecast "would have weeks 1-7 in
++# its training window". It would not. `shadow.fit_for` trains on
++# `r['s'] < season` -- strictly prior SEASONS, for every week of the year --
++# and the live feature builder's history window is the same set, because the
++# owner's requirement for it is "no 2026 outcomes" and an earlier 2026 week is
++# a 2026 outcome. Neither the coefficients nor the features ever see a 2026
++# result, which is arm A's definition exactly.
++#
++# The cost of that is real and is recorded in
++# `live_features.PARITY_WINDOW_WEEKS`: features built on prior seasons only
++# go stale as the season progresses, and parity with the historical builder
++# holds at week 1 and cannot hold later. Whether to stay at A or adopt a
++# frozen prequential rule (arm B) is an owner decision, not a code choice.
++MODEL_ARM = 'A'
+ 
+ # Which accounting invariants this artifact can actually answer. The Q9 shadow
+ # forecast allocates receiving targets and nothing else, so the QB-layer
+@@ -297,9 +312,23 @@ def _verdicts(draws_path, n_draws, arms, summary_ok) -> list:
+     return vs
+ 
+ 
++# THE GOVERNED APPEARANCE INTERFACE. An artifact that did not come through
++# this one is not a valid seal, and `ledger.assert_seal_path_governed` refuses
++# it. Recorded on every artifact so the check reads a field rather than
++# trusting that nobody took a shortcut.
++GOVERNED_APPEARANCE_INTERFACE = 'nfl.production.nonqb.layers.appearance'
++
++# Which readiness branch inside that interface actually ran. PER_TEAM is the
++# only one that refuses INJURY_REPORT_INCOMPLETE; the slate-wide branch a
++# call omitting `teams` falls back to does not.
++PER_TEAM_READINESS_GATE = 'PER_TEAM'
++
++
+ def seal_team_game(res, ident, bundle_out, written_at, kickoff_utc, game,
+                    out_dir=None, season=None, dry_run=False,
+-                   freeze_comparison=None) -> Outcome:
++                   freeze_comparison=None,
++                   appearance_interface=GOVERNED_APPEARANCE_INTERFACE,
++                   readiness_gate=None) -> Outcome:
+     """Build, validate, seal and write one team-game shadow forecast."""
+     ev = res.evidence
+     team, gid = ev['team'], ev['game_id']
+@@ -346,6 +375,16 @@ def seal_team_game(res, ident, bundle_out, written_at, kickoff_utc, game,
+     np.savez_compressed(draws_path, **payload)
+     draws_sha = hashlib.sha256(draws_path.read_bytes()).hexdigest()
+ 
++    # THE LAYER MATRIX AND THE COMPLETENESS VALUE, BEFORE THE ARTIFACT IS
++    # ASSEMBLED. A single-layer target forecast carries `targets` and nothing
++    # else, so the governed verdict is PARTIAL and the contract value follows
++    # it. Passing the produced arm layers in means this same call returns
++    # COMPLETE once the paired build carries all nine.
++    arm_layers_present = {a: {'targets': res.value['arms'][a]['targets']}
++                          for a in CAND.ARMS}
++    layer_matrix = COMPLETE.matrix(arm_layers_present, {})
++    completeness, governed_verdict = COMPLETE.completeness_value(layer_matrix)
++
+     players = SH.summarise_players(res.value)
+     # The stored summary must recompute from the stored draws, exactly. This
+     # is the invariant a reader trusts on sight.
+@@ -382,7 +421,12 @@ def seal_team_game(res, ident, bundle_out, written_at, kickoff_utc, game,
+                 'p90_targets', 'mean_targets_given_positive',
+                 'n_positive_draws')},
+         }} for r in players if r['arm'] == CAND.ARM_CANDIDATE},
+-        'completeness': 'PARTIAL_PLAYER_COVERAGE',
++        # COMPUTED, NEVER DECLARED. `complete.completeness_value` runs the
++        # governed `forecast_completeness` over the nine-layer matrix and maps
++        # FULL to COMPLETE. A single-layer artifact gets
++        # PARTIAL_PLAYER_COVERAGE from the gate, not from a literal here --
++        # which is what stops a later edit from relabelling it.
++        'completeness': completeness,
+         'distributions_source': 'MODEL',
+         'draw_artifact': str(draws_path.relative_to(_REPO)),
+         'draw_artifact_sha256': draws_sha,
+@@ -432,17 +476,78 @@ def seal_team_game(res, ident, bundle_out, written_at, kickoff_utc, game,
+                 'forecast.'),
+         }
+     else:
++        # THE OWNER'S EVIDENCE RULING, MADE STRUCTURAL RATHER THAN NOTED.
++        #
++        # "Until all three conditions are satisfied and a truthful COMPLETE
++        # pre-kickoff artifact is sealed: forecasts may be dry-run or
++        # diagnostic; they do not count toward section 4; no promotion
++        # evidence accrues."
++        #
++        # So `prospective_evidence` is not "is this a live seal" -- it is "may
++        # this be COUNTED". A live, genuinely pre-kickoff, genuinely
++        # non-fixture artifact that is PARTIAL_PLAYER_COVERAGE is DIAGNOSTIC,
++        # and `ledger.accounting` reads this exact flag, so the ruling is
++        # enforced by the counter rather than by a reader remembering it.
+         art['dry_run'] = False
+-        art['prospective_evidence'] = True
++        art['prospective_evidence'] = bool(
++            completeness == COMPLETE.CONTRACT_COMPLETE)
++        if not art['prospective_evidence']:
++            art['eligibility_verdict'] = (
++                f'DIAGNOSTIC -- live and pre-kickoff, and NOT evidence: '
++                f'completeness is {completeness}, so protocol section 2 '
++                f'makes it not an eligible forecast. No section-4 credit, no '
++                f'promotion evidence.')
++            art['diagnostic_reason'] = {
++                'completeness': completeness,
++                'governed_verdict': governed_verdict,
++                'absent_layers': sorted(k for k, v in layer_matrix.items()
++                                        if v != 'PASS'),
++                'ruling': 'owner ruling 2026-09-12: PARTIAL_PLAYER_COVERAGE '
++                          'artifacts may be scored diagnostically, count '
++                          'toward no section-4 floor, and cannot support '
++                          'promotion.',
++            }
++    art['layer_matrix'] = layer_matrix
++    art['governed_completeness_verdict'] = governed_verdict
+     art['governance_notes'] = {
+         'completeness_vs_protocol_section_2': (
+-            'section 2 requires completeness == COMPLETE for an eligible '
+-            'forecast; this artifact is a single-layer receiving-target '
+-            'forecast and is truthfully PARTIAL_PLAYER_COVERAGE. Whether a '
+-            'single-layer artifact can be an eligible forecast for a '
+-            'single-layer candidate is an owner ruling, not a label choice.'),
+-        'absent_layers': ['qb', 'rushing', 'td', 'other non-QB layers'],
++            'OWNER RULING: section 2 stands unchanged. A '
++            'PARTIAL_PLAYER_COVERAGE artifact may be scored diagnostically, '
++            'counts toward no section-4 floor, and cannot support promotion. '
++            'It is NOT relabelled COMPLETE. The route to an eligible forecast '
++            'is the paired build in nfl/prospective/q9shadow/complete.py, '
++            'which carries all nine required layers on one set of upstream '
++            'draws with the target allocation as the only divergence.'),
++        'completeness_is_computed_by':
++            'nfl.prospective.q9shadow.complete.completeness_value over '
++            'nfl.research.completeness.forecast_completeness',
++        'absent_layers': sorted(k for k, v in layer_matrix.items()
++                                if v != 'PASS'),
+         'declared_scope': 'RB/WR/TE receiving targets for one team-game',
++        'section_4_credit': 'NONE while completeness != COMPLETE',
++    }
++
++    # THE TIME BASIS, BEFORE THE CONTRACT VALIDATOR.
++    #
++    # `artifact.validate` compares these same three clocks, but it parses each
++    # with its own `fromisoformat` and silently assumes UTC for a naive value.
++    # That assumption is right often enough to hide the case where it is
++    # wrong, so the ordering is established here first, on one declared basis,
++    # with naive/aware mixing and uncontracted naive values refused by name.
++    tb = TB.assert_prospective_order(
++        [c['retrieved_at'] for c in art['source_captures']],
++        art['written_at'], art['kickoff_utc'])
++    if tb.state is not State.PASS:
++        return Outcome.fail(
++            f'Q9_SHADOW_TIME_BASIS:{tb.code}', tb.detail,
++            **{k: x for k, x in dict(tb.evidence).items()})
++    art['time_basis'] = {
++        'canonical_tz': TB.CANONICAL_TZ_NAME,
++        'verdict': f'{tb.state.value}[{tb.code}]',
++        'bases': tb.evidence.get('bases'),
++        'hours_before_kickoff': tb.evidence.get('hours_before_kickoff'),
++        'newest_retrieved_at': tb.value['newest_retrieved_at'],
++        'n_inputs': tb.evidence.get('n_inputs'),
+     }
+ 
+     v = ART.validate(art)
+@@ -519,6 +624,31 @@ def seal_team_game(res, ident, bundle_out, written_at, kickoff_utc, game,
+                    'rng_policy': ev['rng_policy']}
+     art['fallback_counters'] = ev['fallback_states']
+     art['reconciliation'] = ev['max_absolute_reconciliation_error']
++    # WHICH UPSTREAM INTERFACE THIS FORECAST CAME THROUGH.
++    #
++    # Six live artifacts were once produced by calling `appearance_r8.predict`
++    # directly, which skips `inputs.validate_appearance_inputs`. They were
++    # discarded, but three of their forecast_ids are unrecoverable from the
++    # run log, so an id blacklist could never be complete. This field is the
++    # complete guard instead: the ledger refuses any artifact whose
++    # appearance interface is not the governed one, whatever its id.
++    art['seal_path'] = {
++        'appearance_interface': appearance_interface,
++        'governed_appearance_interface': GOVERNED_APPEARANCE_INTERFACE,
++        'is_governed': bool(
++            appearance_interface == GOVERNED_APPEARANCE_INTERFACE),
++        'validates_inputs_via':
++            'nfl.production.nonqb.inputs.validate_appearance_inputs',
++        'upstream_test_only': bool(ev.get('upstream_test_only')),
++        # WHICH READINESS BRANCH RAN. A dry-run seal uses the TEST_ONLY
++        # fixture path and reaches no readiness branch at all, so it records
++        # None and is refused as evidence on that ground too.
++        'readiness_gate': readiness_gate,
++        'readiness_gate_note':
++            'PER_TEAM is the branch that refuses INJURY_REPORT_INCOMPLETE. '
++            'layers.appearance reaches it only when `teams` is supplied; '
++            'without it the slate-wide branch runs and does not refuse.',
++    }
+     art['input_bundle_sha256'] = IN.bundle_sha256(iset)
+     art['absent_input_sources'] = sorted(iset.get('absent') or [])
+     art['player_summary'] = players
+@@ -541,6 +671,146 @@ def seal_team_game(res, ident, bundle_out, written_at, kickoff_utc, game,
+         out_dir=str(out_dir.relative_to(_REPO)))
+ 
+ 
++def _seal_live(season, games, written_at, gate_label, el_label, ident,
++               n_draws=None, out_root=None) -> dict:
++    """The LIVE path: real depth vintage, real injury vintage, real appearance.
++
++    Each game gets its ACTUAL refusal rather than a single blanket one. The
++    point of running this while it cannot succeed is that the refusal census
++    says which blocker is live, per game, from the production layers
++    themselves -- so when one clears, the census changes without anybody
++    editing a status string.
++    """
++    from nfl.production.nonqb import layers as PL
++    from nfl.prospective.q9shadow import live_features as LF
++    from nfl.research.q7 import panel as Q7P
++    from nfl.research.q8 import audit as AUD
++
++    # THE COEFFICIENTS. Fitted on seasons strictly before the forecast season,
++    # which for a 2026 forecast is every historical season this repository
++    # holds. No row of the forecast season is read.
++    hf = SH.feature_rows(SH.HISTORICAL_FRAME, season=season)
++    if hf.state is not State.PASS:
++        return {'status': f'{hf.state.value}[{hf.code}]', 'detail': hf.detail,
++                'season': season, 'sealed': [], 'feature_source':
++                    SH.LIVE_PREGAME, 'refusals': []}
++    q7 = Q7P.load_recv()
++    hist, _ = AUD.attach_receiving(hf.value, q7)
++    fit = SH.fit_for(hist, season, q7)
++    if fit.state is not State.PASS:
++        return {'status': f'{fit.state.value}[{fit.code}]',
++                'detail': fit.detail, 'season': season, 'sealed': [],
++                'feature_source': SH.LIVE_PREGAME, 'refusals': []}
++
++    inj = LF.injury_rows(season, written_at)
++    sealed, refusals = [], []
++    bundles = {}
++    for g in games:
++        ko = g['kickoff_utc']
++        if inj.state is not State.PASS:
++            refusals.append({'game_id': g['game_id'],
++                             'state': inj.state.value, 'code': inj.code,
++                             'stage': 'injury_vintage'})
++            continue
++        if ko not in bundles:
++            bundles[ko] = IN.bundle(ko, written_at)
++        b = bundles[ko]
++        if b.state is not State.PASS:
++            refusals.append({'game_id': g['game_id'], 'state': b.state.value,
++                             'code': b.code, 'stage': 'input_bundle'})
++            continue
++        for team in (g['away_team'], g['home_team']):
++            lf = LF.build_team_week(season, int(g['week']), team, written_at,
++                                    ko)
++            if lf.state is not State.PASS:
++                refusals.append({'game_id': g['game_id'], 'team': team,
++                                 'state': lf.state.value, 'code': lf.code,
++                                 'stage': 'live_features'})
++                continue
++            rows = lf.value
++            players = [{'gsis_id': r['pid'], 'position': r['pos'],
++                        'team': team} for r in rows]
++            # THE GOVERNED APPEARANCE INTERFACE, WITH NO FIXTURE.
++            #
++            # `fixture=None` is the load-bearing argument. The first version
++            # called `appearance_r8.predict` directly, which produced six
++            # sealed live forecasts -- and skipped
++            # `inputs.validate_appearance_inputs`, the gate that refuses
++            # INJURY_REPORT_INCOMPLETE. That is routing around a constraint,
++            # and the six artifacts were discarded before any was counted.
++            #
++            # Through `layers.appearance` the gate runs. It turns out to
++            # refuse PER TEAM rather than per slate -- a team whose injury
++            # rows are all unfilled is refused and its opponent may pass --
++            # so the census below says which teams are sealable rather than
++            # asserting that none is.
++            # `teams` IS THE LOAD-BEARING ARGUMENT, AND OMITTING IT COST 26
++            # ARTIFACTS.
++            #
++            # `layers.appearance` consults PER-TEAM readiness only when
++            # `teams` is supplied. Without it, it falls back to the slate-wide
++            # `readiness.report`, which returned ENGINE_INPUTS_READY --
++            # claiming "all slate teams covered and report_status filed" -- on
++            # a slate where 28 of 32 teams had every injury row unfilled.
++            # Per-team readiness refuses each of those by name.
++            #
++            # BOTH teams are passed because readiness is a per-GAME property:
++            # a game is ready only if both are.
++            ap = PL.appearance(season, int(g['week']), players, fixture=None,
++                               seed=CAND.SEED, m=n_draws or CAND.N_DRAWS,
++                               game_id=g['game_id'],
++                               teams=[g['away_team'], g['home_team']],
++                               kickoff_utc=ko, observed_before=written_at)
++            if ap.state is not State.PASS:
++                refusals.append({'game_id': g['game_id'], 'team': team,
++                                 'state': ap.state.value, 'code': ap.code,
++                                 'stage': 'layers.appearance',
++                                 'detail': (ap.detail or '')[:200]})
++                continue
++            if ap.evidence.get('test_only'):
++                refusals.append({
++                    'game_id': g['game_id'], 'team': team,
++                    'state': 'FAIL', 'code': 'Q9_LIVE_SEAL_TEST_ONLY_UPSTREAM',
++                    'stage': 'layers.appearance',
++                    'detail': 'the appearance layer returned a TEST_ONLY '
++                              'result on a live seal. A fixture-sourced '
++                              'forecast is not a forecast and may not be '
++                              'sealed as one.'})
++                continue
++            res = SH.forecast_team_game(
++                rows, fit.value, None, g['game_id'], CAND.SEED,
++                n_draws or CAND.N_DRAWS, appearance=ap)
++            if res.state is not State.PASS:
++                refusals.append({'game_id': g['game_id'], 'team': team,
++                                 'state': res.state.value, 'code': res.code,
++                                 'stage': 'shadow_forecast'})
++                continue
++            root = pathlib.Path(out_root) if out_root else SEALED
++            sl = seal_team_game(res, ident, b, written_at, ko, g,
++                                root / g['game_id'] / team, season,
++                                dry_run=False, freeze_comparison=gate_label,
++                                readiness_gate=PER_TEAM_READINESS_GATE)
++            if sl.state is not State.PASS:
++                refusals.append({'game_id': g['game_id'], 'team': team,
++                                 'state': sl.state.value, 'code': sl.code,
++                                 'stage': 'seal',
++                                 'detail': (sl.detail or '')[:300]})
++                continue
++            sealed.append(sl)
++    return {'status': 'OK' if sealed else 'NOTHING_SEALED', 'season': season,
++            'written_at': written_at, 'feature_source': SH.LIVE_PREGAME,
++            'dry_run': False, 'candidate_gate': gate_label,
++            'eligibility': el_label,
++            'candidate_identity_sha256': CAND.identity_sha256(ident),
++            'n_eligible_games': len(games), 'sealed': sealed,
++            'injury_vintage': (f'{inj.state.value}[{inj.code}]'
++                               + (f' -- {inj.evidence.get("n_rows")} row(s), '
++                                  f'{inj.evidence.get("n_without_report_status")} '
++                                  f'without report_status'
++                                  if inj.state is State.PASS else '')),
++            'refusals': refusals}
++
++
+ def seal_season(season, now=None, source=SH.HISTORICAL_FRAME, n_games=None,
+                 out_root=None, n_draws=None, written_at=None,
+                 dry_run=False) -> dict:
+@@ -585,6 +855,10 @@ def seal_season(season, now=None, source=SH.HISTORICAL_FRAME, n_games=None,
+         games = el.value
+     games = games[:n_games] if n_games else games
+ 
++    if source == SH.LIVE_PREGAME:
++        return _seal_live(season, games, written_at, gate_label, el_label,
++                          ident, n_draws, out_root)
++
+     fr = SH.feature_rows(source, season=season)
+     if fr.state is not State.PASS:
+         return {'status': f'{fr.state.value}[{fr.code}]', 'detail': fr.detail,
+diff --git a/nfl/prospective/q9shadow/shadow.py b/nfl/prospective/q9shadow/shadow.py
+index f11783d..157ee99 100644
+--- a/nfl/prospective/q9shadow/shadow.py
++++ b/nfl/prospective/q9shadow/shadow.py
+@@ -80,6 +80,10 @@ FEATURE_SOURCES = (HISTORICAL_FRAME, LIVE_PREGAME)
+ # out because "the live path is not implemented" is not an actionable
+ # statement and because the next person to attempt it should not have to
+ # re-derive the list from `Q9.featurise`.
++# WHAT THE LIVE PATH NEEDS, ITEMISED, AND WHAT NOW SUPPLIES EACH. Kept as a
++# requirement list rather than deleted, because the two entries that are still
++# blocked are the reason a live seal does not happen, and a list that only
++# recorded the solved half would read as though the path were ready.
+ LIVE_PREGAME_REQUIREMENTS = {
+     'prior_appeared_game_history': (
+         'h_target_freq, h_participation_ewma, h_share_given_positive and '
+@@ -108,23 +112,36 @@ LIVE_PREGAME_REQUIREMENTS = {
+ 
+ 
+ def feature_rows(source=HISTORICAL_FRAME, season=None, week=None,
+-                 game_id=None) -> Outcome:
+-    """The pregame feature rows for a slate, or a named refusal."""
++                 game_id=None, team=None, observed_before=None,
++                 kickoff_utc=None) -> Outcome:
++    """The pregame feature rows for a slate or a team-week, or a refusal."""
+     if source not in FEATURE_SOURCES:
+         return Outcome.fail('Q9_UNKNOWN_FEATURE_SOURCE',
+                             f'{source!r} not in {FEATURE_SOURCES}')
+     if source == LIVE_PREGAME:
+-        return Outcome.blocked(
+-            'Q9_LIVE_PREGAME_FEATURE_BUILD_UNIMPLEMENTED',
+-            'there is no pregame feature builder for the live season. The Q6 '
+-            'frame refuses 2026 rows by design, production declares '
+-            'feature_build STAGE_DECLARED_UNIMPLEMENTED, and the appearance '
+-            'layer refuses on an incomplete injury report. Refused by name '
+-            'with the requirement list attached rather than stubbed: a stub '
+-            'returning plausible features would produce a sealed forecast '
+-            'that looks prospective and measures nothing.',
+-            cause=Cause.DEPENDENCY, requirements=LIVE_PREGAME_REQUIREMENTS,
+-            season=season, week=week, game_id=game_id)
++        # IMPLEMENTED 2026-09-12. This used to refuse with
++        # Q9_LIVE_PREGAME_FEATURE_BUILD_UNIMPLEMENTED. The builder now exists
++        # in `live_features`, is parity-checked against the historical
++        # builder, and is addressed per TEAM-WEEK rather than per slate --
++        # because a live pool comes from one team's depth-chart vintage.
++        #
++        # So this entry point refuses for a DIFFERENT and smaller reason: it
++        # needs to be told which team and at what instant. Routing a slate
++        # request to the newest capture by default is exactly the
++        # point-in-time defect `DV.captured` exists to prevent.
++        from nfl.prospective.q9shadow import live_features as LF
++        if not (week and team and observed_before):
++            return Outcome.blocked(
++                'Q9_LIVE_PREGAME_NEEDS_TEAM_AND_CLOCK',
++                'the live builder is addressed per team-week and needs '
++                '`week`, `team` and `observed_before`. It will not default '
++                'the clock to the newest capture, which would silently read '
++                'a depth chart published after the forecast.',
++                cause=Cause.DEPENDENCY,
++                requirements=LIVE_PREGAME_REQUIREMENTS,
++                season=season, week=week, game_id=game_id, team=team)
++        return LF.build_team_week(season, week, team, observed_before,
++                                  kickoff_utc)
+     rows, ev = Q6F.load_frame()
+     rows = Q6F.attach_role_class(rows)
+     rows, _ = Q6F.attach_opportunity(rows)
+@@ -185,8 +202,16 @@ def _base_share(g, fit):
+ 
+ 
+ def forecast_team_game(g, fit, p_appear, game_id, seed=CAND.SEED,
+-                       n_draws=CAND.N_DRAWS) -> Outcome:
+-    """Both arms for one team-game, on one shared set of upstream draws."""
++                       n_draws=CAND.N_DRAWS, appearance=None) -> Outcome:
++    """Both arms for one team-game, on one shared set of upstream draws.
++
++    `appearance` is the upstream Outcome from `layers.appearance`. A LIVE seal
++    MUST supply the real one -- built with `fixture=None`, so
++    `inputs.validate_appearance_inputs` runs and can refuse. When it is not
++    supplied this falls back to the layer's own TEST_ONLY fixture path, which
++    is correct for a historical slice and is stamped `test_only` so the
++    artifact cannot pretend otherwise.
++    """
+     season, week, team = g[0]['s'], g[0]['w'], g[0]['t']
+     pid_list = [r['pid'] for r in g]
+ 
+@@ -202,7 +227,7 @@ def forecast_team_game(g, fit, p_appear, game_id, seed=CAND.SEED,
+ 
+     players = [{'gsis_id': r['pid'], 'position': r['pos'], 'team': r['t']}
+                for r in g]
+-    ap = LAYERS.appearance(
++    ap = appearance if appearance is not None else LAYERS.appearance(
+         season, week, players,
+         fixture={'_test_only': True, 'practice_progression': {},
+                  'teammate_availability': {}, 'p_appear': p_appear},
+diff --git a/nfl/tests/test_q9_prospective_shadow.py b/nfl/tests/test_q9_prospective_shadow.py
+index c1cc65e..0b7ca17 100644
+--- a/nfl/tests/test_q9_prospective_shadow.py
++++ b/nfl/tests/test_q9_prospective_shadow.py
+@@ -312,14 +312,36 @@ def test_09_eligibility_never_admits_a_played_game():
+ 
+ def test_10_live_path_refuses_rather_than_stubbing():
+     print('\n-- the live feature source --')
++    # THE OLD ASSERTION WAS THAT THIS RETURNED
++    # Q9_LIVE_PREGAME_FEATURE_BUILD_UNIMPLEMENTED. The builder now exists, so
++    # that code is gone and asserting it would be asserting a stale state.
++    # What survives is the narrower refusal: it will not default a clock.
+     o = SH.feature_rows(SH.LIVE_PREGAME, season=2026, week=1)
+     check('the live pregame source refuses by name',
+           o.state is State.BLOCKED
+-          and o.code == 'Q9_LIVE_PREGAME_FEATURE_BUILD_UNIMPLEMENTED',
++          and o.code == 'Q9_LIVE_PREGAME_NEEDS_TEAM_AND_CLOCK',
+           f'{o.state.value}[{o.code}]')
+-    check('  and it itemises what it would need',
++    # TESTED AS BEHAVIOUR, NOT AS SOURCE TEXT. The first version grepped the
++    # whole module and matched its own COMMENT explaining that the code was
++    # removed -- a check that fails on the documentation of the fix. What is
++    # actually claimed is that no code path can still RETURN that code, so
++    # that is what is asserted: the live source is reachable and returns a
++    # different, narrower refusal, and no module-level symbol carries the old
++    # name.
++    codes = {SH.feature_rows(SH.LIVE_PREGAME, season=2026, week=1).code,
++             SH.feature_rows(SH.LIVE_PREGAME, season=2026, week=1,
++                             team='ATL',
++                             observed_before='2026-09-12T00:00:00Z',
++                             kickoff_utc='2026-09-13T17:00:00Z').code}
++    check('  no live-source call returns the stale UNIMPLEMENTED code',
++          'Q9_LIVE_PREGAME_FEATURE_BUILD_UNIMPLEMENTED' not in codes,
++          str(sorted(codes)))
++    check('  and no module symbol carries the stale name',
++          not [n for n in dir(SH)
++               if 'FEATURE_BUILD_UNIMPLEMENTED' in n])
++    check('  and it itemises what a live build needs',
+           len(o.evidence.get('requirements') or {}) >= 6)
+-    check('  including the blocked official injury report',
++    check('  including the official injury report',
+           'official_injury_report' in (o.evidence.get('requirements') or {}))
+     o = SH.feature_rows('NOT_A_SOURCE')
+     check('an unknown feature source is refused', o.state is State.FAIL)
+@@ -378,8 +400,41 @@ def test_12_streams_use_crc32_not_python_hash():
+ 
+ 
+ # ======================================================= the ledger
+-def _art(dry=False, game='2026_01_AA_BB', team='AA', fid='FC-1'):
+-    return {
++def _art(dry=False, game='2026_01_AA_BB', team='AA', fid='FC-1',
++         seal_path='governed'):
++    """A test artifact, with its GOVERNANCE STATE stated explicitly.
++
++    `seal_path` says which governance state this fixture represents, because
++    a fixture that does not say is a fixture nobody can reason about:
++
++      'governed'  the minimum valid CURRENT provenance -- the governed
++                  appearance interface and the PER_TEAM readiness gate. Use
++                  for fixtures that are SUPPOSED to be admissible.
++      'legacy'    no seal_path at all, exactly as the pre-control artifacts on
++                  disk. Use to assert the LEGACY/refusal behaviour. It is
++                  preserved, never back-filled.
++      'slate'     a seal_path that names the governed interface but records
++                  the SLATE_WIDE readiness branch -- the shape of the 26
++                  quarantined artifacts.
++
++    The default is 'governed' so that tests about scoring arithmetic are not
++    silently also testing the gate; tests about the gate pass 'legacy' or
++    'slate' deliberately.
++    """
++    paths = {
++        'governed': {'appearance_interface':
++                     'nfl.production.nonqb.layers.appearance',
++                     'readiness_gate': 'PER_TEAM',
++                     'upstream_test_only': False},
++        'slate': {'appearance_interface':
++                  'nfl.production.nonqb.layers.appearance',
++                  'readiness_gate': 'SLATE_WIDE',
++                  'upstream_test_only': False},
++        'legacy': None,
++    }
++    if seal_path not in paths:
++        raise ValueError(f'unknown fixture governance state {seal_path!r}')
++    art = {
+         'forecast_id': fid, 'artifact_id': 'a' * 64, 'game_id': game,
+         'team': team, 'kickoff_utc': '2026-11-01T18:00:00Z',
+         'written_at': '2026-11-01T12:00:00Z',
+@@ -394,7 +449,11 @@ def _art(dry=False, game='2026_01_AA_BB', team='AA', fid='FC-1'):
+                             (CAND.ARM_CANDIDATE, 0.55, 3.0))
+             for p, pos in (('p1', 'WR'), ('p2', 'TE'))],
+         'eligibility_verdict': 'test',
++        'fixture_governance_state': seal_path,
+     }
++    if paths[seal_path] is not None:
++        art['seal_path'] = paths[seal_path]
++    return art
+ 
+ 
+ def _draws(n=200):
+@@ -696,18 +755,25 @@ def test_23_nothing_here_is_promoted():
+             check(f'    and reports promoted False', a.get('promoted') is False)
+     st = _load('Q9_PROSPECTIVE_LEDGER_STATE.json')
+     if st:
+-        check('the ledger state names all three blockers',
++        check('the ledger state names the three LIVE blockers',
+               set(st['blockers']) == {
+-                  'LIVE_PREGAME_FEATURE_BUILD_UNIMPLEMENTED',
+-                  'INJURY_REPORT_INCOMPLETE', 'G0A_11_OF_12'})
++                  'COMPLETE_ARTIFACT_LAYERS_ABSENT',
++                  'INJURY_REPORT_INCOMPLETE', 'G0A_11_OF_12'},
++              str(sorted(st['blockers'])))
+         check('  and says which one needs bytes from outside',
+               st['blockers']['INJURY_REPORT_INCOMPLETE'][
+                   'needs_bytes_from_outside'] is True)
+-        check('  and that the feature build does not',
+-              st['blockers']['LIVE_PREGAME_FEATURE_BUILD_UNIMPLEMENTED'][
++        check('  and that the completeness blocker does not',
++              st['blockers']['COMPLETE_ARTIFACT_LAYERS_ABSENT'][
+                   'needs_bytes_from_outside'] is False)
+-        check('zero live forecasts are sealed, and that is reported',
+-              st['live_eligibility']['n_sealed'] == 0)
++        check('the resolved blocker is recorded separately, not in the list',
++              'LIVE_PREGAME_FEATURE_BUILD_UNIMPLEMENTED'
++              in st['resolved_blockers']
++              and 'LIVE_PREGAME_FEATURE_BUILD_UNIMPLEMENTED'
++              not in st['blockers'])
++        check('the live eligibility census is reported',
++              'n_sealed' in st['live_eligibility'],
++              str(st['live_eligibility']['n_sealed']))
+ 
+ 
+ def test_zz_every_check_passed():

@@ -424,13 +424,39 @@ def test_e2_redirect_clock_is_attributed_to_the_payload():
           o2.value['provenance']['source_timestamp'] == LM_ISO, str(o2))
 
 
+def _land(outcome):
+    """Complete the capture: promote the staged blob into the durable store.
+
+    WHY THIS STEP EXISTS NOW (WS-K, 2026-09-14). `fetch` used to write durable
+    bytes into nfl/vintage immediately, which is how 50 GitHub-Actions runs
+    ended up committing 48 blobs while appending zero manifest rows -- all of
+    2026-09-09 is absent from the manifest against 31 runs that demonstrably
+    executed. Durable bytes are now STAGED in the gitignored store and promoted
+    only after the manifest row is on disk, so a blob cannot exist in the store
+    without its row by construction rather than by assertion.
+
+    `main` does row-first, promote-second. A test calling `fetch` directly has
+    to do the same or it is measuring half a capture. Every check below is
+    unchanged; this only performs the second half.
+    """
+    st = (outcome.value or {}).get('_staged')
+    if st:
+        cv._promote_staging([st])
+    return outcome
+
+
 def test_f_unchanged_content_is_a_measurement_not_a_duplicate():
     print('\nF. an unchanged file at a later hour: new manifest row, no new blob')
     with seeded() as (fake, st, durable):
         first = cv.fetch(src(), 2026, st)
+        check('bytes are NOT in the durable store before the manifest row is '
+              'written -- a blob may not exist without its row',
+              not list(durable.glob('*')),
+              str(sorted(p.name for p in durable.glob('*'))))
+        _land(first)
         after_first = {p.name: (p.stat().st_size, p.stat().st_mtime_ns)
                        for p in durable.glob('*')}
-        second = cv.fetch(src(), 2026, st)
+        second = _land(cv.fetch(src(), 2026, st))
         after_second = {p.name: (p.stat().st_size, p.stat().st_mtime_ns)
                         for p in durable.glob('*')}
 
@@ -466,7 +492,7 @@ def test_f_unchanged_content_is_a_measurement_not_a_duplicate():
         # "never overwrite Tuesday with Sunday" property, and it is what the
         # nflverse archive itself does not do.
         fake.body = GOOD_CSV + b'2026,1,KC,00-0033873,Doubtful\n'
-        third = cv.fetch(src(), 2026, st)
+        third = _land(cv.fetch(src(), 2026, st))
         check('changed content is a NEW capture',
               third.state is State.PASS and
               third.value['content_unchanged'] is False, str(third))
@@ -484,8 +510,8 @@ def test_f_unchanged_content_is_a_measurement_not_a_duplicate():
     with seeded(body=b'dt,team,gsis_id,pos_abb,pos_rank\n'
                      b'2026-09-09,PHI,00-0036389,QB,1\n'
                      b'2026-09-10,PHI,00-0036389,QB,1\n') as (fake, st, durable):
-        r1 = cv.fetch(src('depth_charts'), 2026, st)
-        r2 = cv.fetch(src('depth_charts'), 2026, st)
+        r1 = _land(cv.fetch(src('depth_charts'), 2026, st))
+        r2 = _land(cv.fetch(src('depth_charts'), 2026, st))
     check('a reduced source is captured',
           r1.state is State.PASS and r1.value['reduced'] is not None, str(r1))
     check('it keeps only the newest dt slice, and says so',
