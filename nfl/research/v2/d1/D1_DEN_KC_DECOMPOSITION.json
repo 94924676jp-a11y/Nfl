@@ -1,0 +1,3987 @@
+{
+ "board_dir": "nfl/research/live/2026_01_DEN_KC/PRELIMINARY_PROVISIONAL_V1_CANDIDATE_R8/f91342d6787a66a1",
+ "changes_no_model": true,
+ "code_commit": "9c3c29a83310970fc0f0c43fdb974d3fe317ced9+src1[b6dfb3faf23af1d5]",
+ "contract_version": "nfl-decomposition-1",
+ "evidence_grades": {
+  "ABSENT": "the engine has no such quantity; a substitute, if any, is named with its direction of error",
+  "DERIVED_BY_DIFFERENCE": "formed by subtracting stored matrices",
+  "DERIVED_BY_DIVISION": "a rate obtained by division; reproduces itself by construction and is not independent evidence",
+  "DERIVED_BY_SUM": "a total formed by summing stored matrices",
+  "MEASURED_DRAWS": "both sides are stored draw matrices and the relation was checked on every draw cell"
+ },
+ "game_id": "2026_01_DEN_KC",
+ "model_configuration": "V1_CANDIDATE_R8",
+ "n_draws": 1000,
+ "players": [
+  {
+   "chains": [
+    {
+     "absences": [
+      {
+       "code": "NO_ROUTES_LAYER",
+       "step": "team_dropbacks -> routes run"
+      }
+     ],
+     "chain": "RECEIVING",
+     "links": [
+      {
+       "array": "team_volume__team_dropbacks_part",
+       "evidence": "MEASURED_DRAWS",
+       "step": "team_dropbacks",
+       "value": 41.46789
+      },
+      {
+       "code": "NO_ROUTES_LAYER",
+       "evidence": "ABSENT",
+       "step": "team_dropbacks -> routes run",
+       "substitute": "pass-snap participation share (participation-s2-ewma_hl2)",
+       "substitute_value": null,
+       "value": null,
+       "why_honest": "V1 has no routes layer anywhere. The engine's own stand-in is pass_snaps / team_dropbacks, which nfl/production/nonqb/layers.py names as an UPPER BOUND on routes run with an unbounded gap -- and it is not persisted into this artifact either, so the proxy cannot even be quoted here. It is named as a proxy and left null rather than back-solved from targets, which would only re-derive the target share it is supposed to explain."
+      },
+      {
+       "evidence": "MEASURED_DRAWS",
+       "note": "C3 constructs receptions out of QB completions, so the receiving chain routes through the QB layer",
+       "step": "QB attempts (the real allocation pool)",
+       "value": 35.406
+      },
+      {
+       "evidence": "DERIVED_BY_SUM",
+       "step": "sum of modelled player targets (the allocation denominator)",
+       "value": 33.497
+      },
+      {
+       "code": "WS09_J12_STORED_TEAM_TARGETS_IS_NOT_THE_DENOMINATOR",
+       "evidence": "MEASURED_DRAWS",
+       "is_the_allocation_denominator": false,
+       "step": "stored team_volume__team_targets",
+       "value": 28.703538
+      },
+      {
+       "denominator": {
+        "mean": 33.497,
+        "name": "sum(modelled targets)"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 6.617,
+        "name": "receiving__targets[00-0030506]"
+       },
+       "step": "target share of the modelled target pool",
+       "value": 0.19754
+      },
+      {
+       "denominator": {
+        "mean": 28.703538,
+        "name": "team_volume__team_targets"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "persisted only so the size of the error is visible. This is not the share; it is what the share becomes when the denominator is taken from the wrong place.",
+       "numerator": {
+        "mean": 6.617,
+        "name": "receiving__targets[00-0030506]"
+       },
+       "step": "target share if the stored team total were used (WRONG)",
+       "value": 0.230529
+      },
+      {
+       "array": "receiving__targets",
+       "evidence": "MEASURED_DRAWS",
+       "step": "targets",
+       "value": 6.617
+      },
+      {
+       "array": "receiving__receptions",
+       "cells_with_receptions_above_targets": 0,
+       "evidence": "MEASURED_DRAWS",
+       "step": "receptions",
+       "value": 4.735
+      },
+      {
+       "denominator": {
+        "mean": 6.617,
+        "name": "receiving__targets"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 4.735,
+        "name": "receiving__receptions"
+       },
+       "step": "catch probability = receptions / targets",
+       "value": 0.715581
+      },
+      {
+       "array": "receiving__receiving_yards",
+       "cells_with_yards_and_no_reception": 0,
+       "evidence": "MEASURED_DRAWS",
+       "step": "receiving yards",
+       "value": 54.07
+      },
+      {
+       "denominator": {
+        "mean": 4.735,
+        "name": "receiving__receptions"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 54.07,
+        "name": "receiving__receiving_yards"
+       },
+       "step": "yards per reception = receiving yards / receptions",
+       "value": 11.419219
+      }
+     ],
+     "participation": {
+      "basis": "LOWER_BOUND_ONLY",
+      "basis_detail": "the appearance probability is computed upstream and is not persisted in the sealed artifact. A player who appears and receives nothing is cell-for-cell identical to a player who did not appear, so the draws bound P(participates) from below and cannot identify it.",
+      "mask": "receiving__targets > 0",
+      "p_participates": null,
+      "p_participates_is_a_bound": true,
+      "p_participates_lower_bound": 0.99,
+      "verified_cells_violating": null
+     },
+     "views": {
+      "cond_over_uncond_on_participation": 1.010101,
+      "conditional_caveat": "participation is not identified in the artifact, so every \"| participates\" figure here is conditioned on the LOWER-BOUND mask (any modelled opportunity > 0). It is an upper bound on the true conditional mean, because it drops the appear-and-receive-nothing draws that belong in the denominator.",
+      "conditional_is_identified": false,
+      "e_opportunity": 6.617,
+      "e_opportunity_given_nonzero_opportunity": 6.683838,
+      "e_opportunity_given_participates": 6.683838,
+      "e_outcome": 54.07,
+      "e_outcome_given_nonzero_opportunity": 54.616162,
+      "e_outcome_given_participates": 54.616162,
+      "one_minus_p_zero_outcome": 0.974,
+      "one_over_one_minus_p_zero_opportunity": 1.010101,
+      "one_over_one_minus_p_zero_outcome": 1.026694,
+      "one_over_p_participates": null,
+      "opportunity_cond_over_uncond_on_participation": 1.010101,
+      "opportunity_metric": "receiving__targets",
+      "outcome_metric": "receiving__receiving_yards",
+      "p_participates": null,
+      "p_participates_lower_bound": 0.99,
+      "p_zero_opportunity": 0.01,
+      "p_zero_opportunity_equals_non_participation": true,
+      "p_zero_outcome": 0.026,
+      "participating_draws_with_zero_opportunity": 0,
+      "ratio_identity_holds_against_p_participates": null,
+      "ratio_identity_note": "E[Y] = P(participates) * E[Y | participates] holds exactly for the PARTICIPATION mask and for no other probability. Against P(zero OUTCOME) it is off by the draws where a participating player produced a zero; against P(zero OPPORTUNITY) it is off by the draws where a participating player drew no opportunity -- on this board, backup quarterbacks who were sacked or scrambled without attempting a pass.",
+      "uncond_over_cond_on_participation": 0.99,
+      "zero_opportunity_and_zero_outcome_agree": false
+     }
+    }
+   ],
+   "depth_chart": "TE1",
+   "gsis_id": "00-0030506",
+   "position": "TE",
+   "team": "KC"
+  },
+  {
+   "chains": [
+    {
+     "absences": [],
+     "chain": "QB_PASSING",
+     "links": [
+      {
+       "array": "team_volume__team_off_snaps",
+       "evidence": "MEASURED_DRAWS",
+       "step": "team_plays",
+       "value": 67.697
+      },
+      {
+       "array": "team_volume__team_dropbacks_part",
+       "evidence": "MEASURED_DRAWS",
+       "step": "team_dropbacks",
+       "value": 41.46789
+      },
+      {
+       "denominator": {
+        "mean": 41.46789,
+        "name": "team_dropbacks_part"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 22.824,
+        "name": "qb__db[00-0033873]"
+       },
+       "step": "QB participation/share of team dropbacks",
+       "value": 0.550402
+      },
+      {
+       "array": "qb__db",
+       "evidence": "MEASURED_DRAWS",
+       "step": "QB dropbacks",
+       "value": 22.824
+      },
+      {
+       "array": "qb__att",
+       "evidence": "MEASURED_DRAWS",
+       "holds_on_every_draw": true,
+       "identity": "qb__db == qb__att + qb__sacks + qb__scr",
+       "note": "an exact per-draw identity in the stored artifact, so the attempt link is measured rather than reconstructed",
+       "step": "dropbacks -> attempts",
+       "value": 20.201,
+       "worst_absolute_deviation": 0.0
+      },
+      {
+       "array": "qb__cmp",
+       "evidence": "MEASURED_DRAWS",
+       "step": "completions",
+       "value": 13.292
+      },
+      {
+       "denominator": {
+        "mean": 20.201,
+        "name": "qb__att"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 13.292,
+        "name": "qb__cmp"
+       },
+       "step": "completion rate = completions / attempts",
+       "value": 0.657987
+      },
+      {
+       "array": "qb__pyds",
+       "evidence": "MEASURED_DRAWS",
+       "step": "passing yards",
+       "value": 144.015566
+      },
+      {
+       "denominator": {
+        "mean": 13.292,
+        "name": "qb__cmp"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 144.015566,
+        "name": "qb__pyds"
+       },
+       "step": "yards per completion = passing yards / completions",
+       "value": 10.834755
+      }
+     ],
+     "participation": {
+      "basis": "IDENTIFIED_IN_DRAWS",
+      "basis_detail": "zero dropbacks implies zero of every other QB quantity on every draw cell, so the mask separates \"did not play as a passer\" from \"played and produced nothing\"",
+      "mask": "qb__db > 0",
+      "p_participates": 0.588,
+      "p_participates_is_a_bound": false,
+      "p_participates_lower_bound": 0.588,
+      "verified_cells_violating": 0
+     },
+     "views": {
+      "cond_over_uncond_on_participation": 1.70068,
+      "conditional_caveat": null,
+      "conditional_is_identified": true,
+      "e_opportunity": 20.201,
+      "e_opportunity_given_nonzero_opportunity": 34.355442,
+      "e_opportunity_given_participates": 34.355442,
+      "e_outcome": 144.015566,
+      "e_outcome_given_nonzero_opportunity": 244.924432,
+      "e_outcome_given_participates": 244.924432,
+      "one_minus_p_zero_outcome": 0.587,
+      "one_over_one_minus_p_zero_opportunity": 1.70068,
+      "one_over_one_minus_p_zero_outcome": 1.703578,
+      "one_over_p_participates": 1.70068,
+      "opportunity_cond_over_uncond_on_participation": 1.70068,
+      "opportunity_metric": "qb__att",
+      "outcome_metric": "qb__pyds",
+      "p_participates": 0.588,
+      "p_participates_lower_bound": 0.588,
+      "p_zero_opportunity": 0.412,
+      "p_zero_opportunity_equals_non_participation": true,
+      "p_zero_outcome": 0.413,
+      "participating_draws_with_zero_opportunity": 0,
+      "ratio_identity_holds_against_p_participates": true,
+      "ratio_identity_note": "E[Y] = P(participates) * E[Y | participates] holds exactly for the PARTICIPATION mask and for no other probability. Against P(zero OUTCOME) it is off by the draws where a participating player produced a zero; against P(zero OPPORTUNITY) it is off by the draws where a participating player drew no opportunity -- on this board, backup quarterbacks who were sacked or scrambled without attempting a pass.",
+      "uncond_over_cond_on_participation": 0.588,
+      "zero_opportunity_and_zero_outcome_agree": false
+     }
+    },
+    {
+     "absences": [],
+     "chain": "QB_RUSHING",
+     "links": [
+      {
+       "array": "qb__rush_opp",
+       "evidence": "MEASURED_DRAWS",
+       "step": "QB rush opportunities",
+       "value": 1.725
+      },
+      {
+       "array": "qb__ryds",
+       "evidence": "MEASURED_DRAWS",
+       "note": "the QB layer HAS a carry->yards conversion. The non-QB layer does not. Same board, two different answers to the same modelling question.",
+       "step": "QB rushing yards",
+       "value": 12.913748
+      },
+      {
+       "denominator": {
+        "mean": 1.725,
+        "name": "qb__rush_opp"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 12.913748,
+        "name": "qb__ryds"
+       },
+       "step": "yards per rush opportunity",
+       "value": 7.486231
+      }
+     ],
+     "participation": {
+      "basis": "IDENTIFIED_IN_DRAWS",
+      "basis_detail": "zero dropbacks implies zero of every other QB quantity on every draw cell, so the mask separates \"did not play as a passer\" from \"played and produced nothing\"",
+      "mask": "qb__db > 0",
+      "p_participates": 0.588,
+      "p_participates_is_a_bound": false,
+      "p_participates_lower_bound": 0.588,
+      "verified_cells_violating": 0
+     },
+     "views": {
+      "cond_over_uncond_on_participation": 1.70068,
+      "conditional_caveat": null,
+      "conditional_is_identified": true,
+      "e_opportunity": 1.725,
+      "e_opportunity_given_nonzero_opportunity": 3.130672,
+      "e_opportunity_given_participates": 2.933673,
+      "e_outcome": 12.913748,
+      "e_outcome_given_nonzero_opportunity": 23.436929,
+      "e_outcome_given_participates": 21.962156,
+      "one_minus_p_zero_outcome": 0.55,
+      "one_over_one_minus_p_zero_opportunity": 1.814882,
+      "one_over_one_minus_p_zero_outcome": 1.818182,
+      "one_over_p_participates": 1.70068,
+      "opportunity_cond_over_uncond_on_participation": 1.70068,
+      "opportunity_metric": "qb__rush_opp",
+      "outcome_metric": "qb__ryds",
+      "p_participates": 0.588,
+      "p_participates_lower_bound": 0.588,
+      "p_zero_opportunity": 0.449,
+      "p_zero_opportunity_equals_non_participation": false,
+      "p_zero_outcome": 0.45,
+      "participating_draws_with_zero_opportunity": 37,
+      "ratio_identity_holds_against_p_participates": true,
+      "ratio_identity_note": "E[Y] = P(participates) * E[Y | participates] holds exactly for the PARTICIPATION mask and for no other probability. Against P(zero OUTCOME) it is off by the draws where a participating player produced a zero; against P(zero OPPORTUNITY) it is off by the draws where a participating player drew no opportunity -- on this board, backup quarterbacks who were sacked or scrambled without attempting a pass.",
+      "uncond_over_cond_on_participation": 0.588,
+      "zero_opportunity_and_zero_outcome_agree": false
+     }
+    }
+   ],
+   "depth_chart": "QB1",
+   "gsis_id": "00-0033873",
+   "position": "QB",
+   "team": "KC"
+  },
+  {
+   "chains": [
+    {
+     "absences": [],
+     "chain": "QB_PASSING",
+     "links": [
+      {
+       "array": "team_volume__team_off_snaps",
+       "evidence": "MEASURED_DRAWS",
+       "step": "team_plays",
+       "value": 65.412
+      },
+      {
+       "array": "team_volume__team_dropbacks_part",
+       "evidence": "MEASURED_DRAWS",
+       "step": "team_dropbacks",
+       "value": 37.185768
+      },
+      {
+       "denominator": {
+        "mean": 37.185768,
+        "name": "team_dropbacks_part"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 2.26,
+        "name": "qb__db[00-0035264]"
+       },
+       "step": "QB participation/share of team dropbacks",
+       "value": 0.060776
+      },
+      {
+       "array": "qb__db",
+       "evidence": "MEASURED_DRAWS",
+       "step": "QB dropbacks",
+       "value": 2.26
+      },
+      {
+       "array": "qb__att",
+       "evidence": "MEASURED_DRAWS",
+       "holds_on_every_draw": true,
+       "identity": "qb__db == qb__att + qb__sacks + qb__scr",
+       "note": "an exact per-draw identity in the stored artifact, so the attempt link is measured rather than reconstructed",
+       "step": "dropbacks -> attempts",
+       "value": 1.921,
+       "worst_absolute_deviation": 0.0
+      },
+      {
+       "array": "qb__cmp",
+       "evidence": "MEASURED_DRAWS",
+       "step": "completions",
+       "value": 1.193
+      },
+      {
+       "denominator": {
+        "mean": 1.921,
+        "name": "qb__att"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 1.193,
+        "name": "qb__cmp"
+       },
+       "step": "completion rate = completions / attempts",
+       "value": 0.621031
+      },
+      {
+       "array": "qb__pyds",
+       "evidence": "MEASURED_DRAWS",
+       "step": "passing yards",
+       "value": 14.057913
+      },
+      {
+       "denominator": {
+        "mean": 1.193,
+        "name": "qb__cmp"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 14.057913,
+        "name": "qb__pyds"
+       },
+       "step": "yards per completion = passing yards / completions",
+       "value": 11.783665
+      }
+     ],
+     "participation": {
+      "basis": "IDENTIFIED_IN_DRAWS",
+      "basis_detail": "zero dropbacks implies zero of every other QB quantity on every draw cell, so the mask separates \"did not play as a passer\" from \"played and produced nothing\"",
+      "mask": "qb__db > 0",
+      "p_participates": 0.197,
+      "p_participates_is_a_bound": false,
+      "p_participates_lower_bound": 0.197,
+      "verified_cells_violating": 0
+     },
+     "views": {
+      "cond_over_uncond_on_participation": 5.076142,
+      "conditional_caveat": null,
+      "conditional_is_identified": true,
+      "e_opportunity": 1.921,
+      "e_opportunity_given_nonzero_opportunity": 10.497268,
+      "e_opportunity_given_participates": 9.751269,
+      "e_outcome": 14.057913,
+      "e_outcome_given_nonzero_opportunity": 76.819194,
+      "e_outcome_given_participates": 71.359962,
+      "one_minus_p_zero_outcome": 0.163,
+      "one_over_one_minus_p_zero_opportunity": 5.464481,
+      "one_over_one_minus_p_zero_outcome": 6.134969,
+      "one_over_p_participates": 5.076142,
+      "opportunity_cond_over_uncond_on_participation": 5.076142,
+      "opportunity_metric": "qb__att",
+      "outcome_metric": "qb__pyds",
+      "p_participates": 0.197,
+      "p_participates_lower_bound": 0.197,
+      "p_zero_opportunity": 0.817,
+      "p_zero_opportunity_equals_non_participation": false,
+      "p_zero_outcome": 0.837,
+      "participating_draws_with_zero_opportunity": 14,
+      "ratio_identity_holds_against_p_participates": true,
+      "ratio_identity_note": "E[Y] = P(participates) * E[Y | participates] holds exactly for the PARTICIPATION mask and for no other probability. Against P(zero OUTCOME) it is off by the draws where a participating player produced a zero; against P(zero OPPORTUNITY) it is off by the draws where a participating player drew no opportunity -- on this board, backup quarterbacks who were sacked or scrambled without attempting a pass.",
+      "uncond_over_cond_on_participation": 0.197,
+      "zero_opportunity_and_zero_outcome_agree": false
+     }
+    },
+    {
+     "absences": [],
+     "chain": "QB_RUSHING",
+     "links": [
+      {
+       "array": "qb__rush_opp",
+       "evidence": "MEASURED_DRAWS",
+       "step": "QB rush opportunities",
+       "value": 0.245
+      },
+      {
+       "array": "qb__ryds",
+       "evidence": "MEASURED_DRAWS",
+       "note": "the QB layer HAS a carry->yards conversion. The non-QB layer does not. Same board, two different answers to the same modelling question.",
+       "step": "QB rushing yards",
+       "value": 0.9746
+      },
+      {
+       "denominator": {
+        "mean": 0.245,
+        "name": "qb__rush_opp"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 0.9746,
+        "name": "qb__ryds"
+       },
+       "step": "yards per rush opportunity",
+       "value": 3.977959
+      }
+     ],
+     "participation": {
+      "basis": "IDENTIFIED_IN_DRAWS",
+      "basis_detail": "zero dropbacks implies zero of every other QB quantity on every draw cell, so the mask separates \"did not play as a passer\" from \"played and produced nothing\"",
+      "mask": "qb__db > 0",
+      "p_participates": 0.197,
+      "p_participates_is_a_bound": false,
+      "p_participates_lower_bound": 0.197,
+      "verified_cells_violating": 0
+     },
+     "views": {
+      "cond_over_uncond_on_participation": 5.076142,
+      "conditional_caveat": null,
+      "conditional_is_identified": true,
+      "e_opportunity": 0.245,
+      "e_opportunity_given_nonzero_opportunity": 2.474747,
+      "e_opportunity_given_participates": 1.243655,
+      "e_outcome": 0.9746,
+      "e_outcome_given_nonzero_opportunity": 9.844444,
+      "e_outcome_given_participates": 4.947208,
+      "one_minus_p_zero_outcome": 0.098,
+      "one_over_one_minus_p_zero_opportunity": 10.10101,
+      "one_over_one_minus_p_zero_outcome": 10.204082,
+      "one_over_p_participates": 5.076142,
+      "opportunity_cond_over_uncond_on_participation": 5.076143,
+      "opportunity_metric": "qb__rush_opp",
+      "outcome_metric": "qb__ryds",
+      "p_participates": 0.197,
+      "p_participates_lower_bound": 0.197,
+      "p_zero_opportunity": 0.901,
+      "p_zero_opportunity_equals_non_participation": false,
+      "p_zero_outcome": 0.902,
+      "participating_draws_with_zero_opportunity": 98,
+      "ratio_identity_holds_against_p_participates": true,
+      "ratio_identity_note": "E[Y] = P(participates) * E[Y | participates] holds exactly for the PARTICIPATION mask and for no other probability. Against P(zero OUTCOME) it is off by the draws where a participating player produced a zero; against P(zero OPPORTUNITY) it is off by the draws where a participating player drew no opportunity -- on this board, backup quarterbacks who were sacked or scrambled without attempting a pass.",
+      "uncond_over_cond_on_participation": 0.197,
+      "zero_opportunity_and_zero_outcome_agree": false
+     }
+    }
+   ],
+   "depth_chart": "QB2",
+   "gsis_id": "00-0035264",
+   "position": "QB",
+   "team": "DEN"
+  },
+  {
+   "chains": [
+    {
+     "absences": [
+      {
+       "code": "NO_ROUTES_LAYER",
+       "step": "team_dropbacks -> routes run"
+      }
+     ],
+     "chain": "RECEIVING",
+     "links": [
+      {
+       "array": "team_volume__team_dropbacks_part",
+       "evidence": "MEASURED_DRAWS",
+       "step": "team_dropbacks",
+       "value": 41.46789
+      },
+      {
+       "code": "NO_ROUTES_LAYER",
+       "evidence": "ABSENT",
+       "step": "team_dropbacks -> routes run",
+       "substitute": "pass-snap participation share (participation-s2-ewma_hl2)",
+       "substitute_value": null,
+       "value": null,
+       "why_honest": "V1 has no routes layer anywhere. The engine's own stand-in is pass_snaps / team_dropbacks, which nfl/production/nonqb/layers.py names as an UPPER BOUND on routes run with an unbounded gap -- and it is not persisted into this artifact either, so the proxy cannot even be quoted here. It is named as a proxy and left null rather than back-solved from targets, which would only re-derive the target share it is supposed to explain."
+      },
+      {
+       "evidence": "MEASURED_DRAWS",
+       "note": "C3 constructs receptions out of QB completions, so the receiving chain routes through the QB layer",
+       "step": "QB attempts (the real allocation pool)",
+       "value": 35.406
+      },
+      {
+       "evidence": "DERIVED_BY_SUM",
+       "step": "sum of modelled player targets (the allocation denominator)",
+       "value": 33.497
+      },
+      {
+       "code": "WS09_J12_STORED_TEAM_TARGETS_IS_NOT_THE_DENOMINATOR",
+       "evidence": "MEASURED_DRAWS",
+       "is_the_allocation_denominator": false,
+       "step": "stored team_volume__team_targets",
+       "value": 28.703538
+      },
+      {
+       "denominator": {
+        "mean": 33.497,
+        "name": "sum(modelled targets)"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 1.774,
+        "name": "receiving__targets[00-0036637]"
+       },
+       "step": "target share of the modelled target pool",
+       "value": 0.05296
+      },
+      {
+       "denominator": {
+        "mean": 28.703538,
+        "name": "team_volume__team_targets"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "persisted only so the size of the error is visible. This is not the share; it is what the share becomes when the denominator is taken from the wrong place.",
+       "numerator": {
+        "mean": 1.774,
+        "name": "receiving__targets[00-0036637]"
+       },
+       "step": "target share if the stored team total were used (WRONG)",
+       "value": 0.061804
+      },
+      {
+       "array": "receiving__targets",
+       "evidence": "MEASURED_DRAWS",
+       "step": "targets",
+       "value": 1.774
+      },
+      {
+       "array": "receiving__receptions",
+       "cells_with_receptions_above_targets": 0,
+       "evidence": "MEASURED_DRAWS",
+       "step": "receptions",
+       "value": 1.282
+      },
+      {
+       "denominator": {
+        "mean": 1.774,
+        "name": "receiving__targets"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 1.282,
+        "name": "receiving__receptions"
+       },
+       "step": "catch probability = receptions / targets",
+       "value": 0.722661
+      },
+      {
+       "array": "receiving__receiving_yards",
+       "cells_with_yards_and_no_reception": 0,
+       "evidence": "MEASURED_DRAWS",
+       "step": "receiving yards",
+       "value": 12.329
+      },
+      {
+       "denominator": {
+        "mean": 1.282,
+        "name": "receiving__receptions"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 12.329,
+        "name": "receiving__receiving_yards"
+       },
+       "step": "yards per reception = receiving yards / receptions",
+       "value": 9.617005
+      }
+     ],
+     "participation": {
+      "basis": "LOWER_BOUND_ONLY",
+      "basis_detail": "the appearance probability is computed upstream and is not persisted in the sealed artifact. A player who appears and receives nothing is cell-for-cell identical to a player who did not appear, so the draws bound P(participates) from below and cannot identify it.",
+      "mask": "receiving__targets > 0",
+      "p_participates": null,
+      "p_participates_is_a_bound": true,
+      "p_participates_lower_bound": 0.632,
+      "verified_cells_violating": null
+     },
+     "views": {
+      "cond_over_uncond_on_participation": 1.582278,
+      "conditional_caveat": "participation is not identified in the artifact, so every \"| participates\" figure here is conditioned on the LOWER-BOUND mask (any modelled opportunity > 0). It is an upper bound on the true conditional mean, because it drops the appear-and-receive-nothing draws that belong in the denominator.",
+      "conditional_is_identified": false,
+      "e_opportunity": 1.774,
+      "e_opportunity_given_nonzero_opportunity": 2.806962,
+      "e_opportunity_given_participates": 2.806962,
+      "e_outcome": 12.329,
+      "e_outcome_given_nonzero_opportunity": 19.507911,
+      "e_outcome_given_participates": 19.507911,
+      "one_minus_p_zero_outcome": 0.572,
+      "one_over_one_minus_p_zero_opportunity": 1.582278,
+      "one_over_one_minus_p_zero_outcome": 1.748252,
+      "one_over_p_participates": null,
+      "opportunity_cond_over_uncond_on_participation": 1.582278,
+      "opportunity_metric": "receiving__targets",
+      "outcome_metric": "receiving__receiving_yards",
+      "p_participates": null,
+      "p_participates_lower_bound": 0.632,
+      "p_zero_opportunity": 0.368,
+      "p_zero_opportunity_equals_non_participation": true,
+      "p_zero_outcome": 0.428,
+      "participating_draws_with_zero_opportunity": 0,
+      "ratio_identity_holds_against_p_participates": null,
+      "ratio_identity_note": "E[Y] = P(participates) * E[Y | participates] holds exactly for the PARTICIPATION mask and for no other probability. Against P(zero OUTCOME) it is off by the draws where a participating player produced a zero; against P(zero OPPORTUNITY) it is off by the draws where a participating player drew no opportunity -- on this board, backup quarterbacks who were sacked or scrambled without attempting a pass.",
+      "uncond_over_cond_on_participation": 0.632,
+      "zero_opportunity_and_zero_outcome_agree": false
+     }
+    }
+   ],
+   "depth_chart": "TE2",
+   "gsis_id": "00-0036637",
+   "position": "TE",
+   "team": "KC"
+  },
+  {
+   "chains": [
+    {
+     "absences": [],
+     "chain": "QB_PASSING",
+     "links": [
+      {
+       "array": "team_volume__team_off_snaps",
+       "evidence": "MEASURED_DRAWS",
+       "step": "team_plays",
+       "value": 65.412
+      },
+      {
+       "array": "team_volume__team_dropbacks_part",
+       "evidence": "MEASURED_DRAWS",
+       "step": "team_dropbacks",
+       "value": 37.185768
+      },
+      {
+       "denominator": {
+        "mean": 37.185768,
+        "name": "team_dropbacks_part"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 0.901,
+        "name": "qb__db[00-0036879]"
+       },
+       "step": "QB participation/share of team dropbacks",
+       "value": 0.02423
+      },
+      {
+       "array": "qb__db",
+       "evidence": "MEASURED_DRAWS",
+       "step": "QB dropbacks",
+       "value": 0.901
+      },
+      {
+       "array": "qb__att",
+       "evidence": "MEASURED_DRAWS",
+       "holds_on_every_draw": true,
+       "identity": "qb__db == qb__att + qb__sacks + qb__scr",
+       "note": "an exact per-draw identity in the stored artifact, so the attempt link is measured rather than reconstructed",
+       "step": "dropbacks -> attempts",
+       "value": 0.772,
+       "worst_absolute_deviation": 0.0
+      },
+      {
+       "array": "qb__cmp",
+       "evidence": "MEASURED_DRAWS",
+       "step": "completions",
+       "value": 0.485
+      },
+      {
+       "denominator": {
+        "mean": 0.772,
+        "name": "qb__att"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 0.485,
+        "name": "qb__cmp"
+       },
+       "step": "completion rate = completions / attempts",
+       "value": 0.628238
+      },
+      {
+       "array": "qb__pyds",
+       "evidence": "MEASURED_DRAWS",
+       "step": "passing yards",
+       "value": 4.539709
+      },
+      {
+       "denominator": {
+        "mean": 0.485,
+        "name": "qb__cmp"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 4.539709,
+        "name": "qb__pyds"
+       },
+       "step": "yards per completion = passing yards / completions",
+       "value": 9.360224
+      }
+     ],
+     "participation": {
+      "basis": "IDENTIFIED_IN_DRAWS",
+      "basis_detail": "zero dropbacks implies zero of every other QB quantity on every draw cell, so the mask separates \"did not play as a passer\" from \"played and produced nothing\"",
+      "mask": "qb__db > 0",
+      "p_participates": 0.209,
+      "p_participates_is_a_bound": false,
+      "p_participates_lower_bound": 0.209,
+      "verified_cells_violating": 0
+     },
+     "views": {
+      "cond_over_uncond_on_participation": 4.784689,
+      "conditional_caveat": null,
+      "conditional_is_identified": true,
+      "e_opportunity": 0.772,
+      "e_opportunity_given_nonzero_opportunity": 3.938776,
+      "e_opportunity_given_participates": 3.69378,
+      "e_outcome": 4.539709,
+      "e_outcome_given_nonzero_opportunity": 23.161779,
+      "e_outcome_given_participates": 21.721094,
+      "one_minus_p_zero_outcome": 0.159,
+      "one_over_one_minus_p_zero_opportunity": 5.102041,
+      "one_over_one_minus_p_zero_outcome": 6.289308,
+      "one_over_p_participates": 4.784689,
+      "opportunity_cond_over_uncond_on_participation": 4.784689,
+      "opportunity_metric": "qb__att",
+      "outcome_metric": "qb__pyds",
+      "p_participates": 0.209,
+      "p_participates_lower_bound": 0.209,
+      "p_zero_opportunity": 0.804,
+      "p_zero_opportunity_equals_non_participation": false,
+      "p_zero_outcome": 0.841,
+      "participating_draws_with_zero_opportunity": 13,
+      "ratio_identity_holds_against_p_participates": true,
+      "ratio_identity_note": "E[Y] = P(participates) * E[Y | participates] holds exactly for the PARTICIPATION mask and for no other probability. Against P(zero OUTCOME) it is off by the draws where a participating player produced a zero; against P(zero OPPORTUNITY) it is off by the draws where a participating player drew no opportunity -- on this board, backup quarterbacks who were sacked or scrambled without attempting a pass.",
+      "uncond_over_cond_on_participation": 0.209,
+      "zero_opportunity_and_zero_outcome_agree": false
+     }
+    },
+    {
+     "absences": [],
+     "chain": "QB_RUSHING",
+     "links": [
+      {
+       "array": "qb__rush_opp",
+       "evidence": "MEASURED_DRAWS",
+       "step": "QB rush opportunities",
+       "value": 0.1
+      },
+      {
+       "array": "qb__ryds",
+       "evidence": "MEASURED_DRAWS",
+       "note": "the QB layer HAS a carry->yards conversion. The non-QB layer does not. Same board, two different answers to the same modelling question.",
+       "step": "QB rushing yards",
+       "value": 0.609
+      },
+      {
+       "denominator": {
+        "mean": 0.1,
+        "name": "qb__rush_opp"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 0.609,
+        "name": "qb__ryds"
+       },
+       "step": "yards per rush opportunity",
+       "value": 6.09
+      }
+     ],
+     "participation": {
+      "basis": "IDENTIFIED_IN_DRAWS",
+      "basis_detail": "zero dropbacks implies zero of every other QB quantity on every draw cell, so the mask separates \"did not play as a passer\" from \"played and produced nothing\"",
+      "mask": "qb__db > 0",
+      "p_participates": 0.209,
+      "p_participates_is_a_bound": false,
+      "p_participates_lower_bound": 0.209,
+      "verified_cells_violating": 0
+     },
+     "views": {
+      "cond_over_uncond_on_participation": 4.784689,
+      "conditional_caveat": null,
+      "conditional_is_identified": true,
+      "e_opportunity": 0.1,
+      "e_opportunity_given_nonzero_opportunity": 1.388889,
+      "e_opportunity_given_participates": 0.478469,
+      "e_outcome": 0.609,
+      "e_outcome_given_nonzero_opportunity": 8.458333,
+      "e_outcome_given_participates": 2.913876,
+      "one_minus_p_zero_outcome": 0.072,
+      "one_over_one_minus_p_zero_opportunity": 13.888889,
+      "one_over_one_minus_p_zero_outcome": 13.888889,
+      "one_over_p_participates": 4.784689,
+      "opportunity_cond_over_uncond_on_participation": 4.78469,
+      "opportunity_metric": "qb__rush_opp",
+      "outcome_metric": "qb__ryds",
+      "p_participates": 0.209,
+      "p_participates_lower_bound": 0.209,
+      "p_zero_opportunity": 0.928,
+      "p_zero_opportunity_equals_non_participation": false,
+      "p_zero_outcome": 0.928,
+      "participating_draws_with_zero_opportunity": 137,
+      "ratio_identity_holds_against_p_participates": true,
+      "ratio_identity_note": "E[Y] = P(participates) * E[Y | participates] holds exactly for the PARTICIPATION mask and for no other probability. Against P(zero OUTCOME) it is off by the draws where a participating player produced a zero; against P(zero OPPORTUNITY) it is off by the draws where a participating player drew no opportunity -- on this board, backup quarterbacks who were sacked or scrambled without attempting a pass.",
+      "uncond_over_cond_on_participation": 0.209,
+      "zero_opportunity_and_zero_outcome_agree": true
+     }
+    }
+   ],
+   "depth_chart": "QB3",
+   "gsis_id": "00-0036879",
+   "position": "QB",
+   "team": "DEN"
+  },
+  {
+   "chains": [
+    {
+     "absences": [],
+     "chain": "QB_PASSING",
+     "links": [
+      {
+       "array": "team_volume__team_off_snaps",
+       "evidence": "MEASURED_DRAWS",
+       "step": "team_plays",
+       "value": 67.697
+      },
+      {
+       "array": "team_volume__team_dropbacks_part",
+       "evidence": "MEASURED_DRAWS",
+       "step": "team_dropbacks",
+       "value": 41.46789
+      },
+      {
+       "denominator": {
+        "mean": 41.46789,
+        "name": "team_dropbacks_part"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 13.198,
+        "name": "qb__db[00-0036945]"
+       },
+       "step": "QB participation/share of team dropbacks",
+       "value": 0.31827
+      },
+      {
+       "array": "qb__db",
+       "evidence": "MEASURED_DRAWS",
+       "step": "QB dropbacks",
+       "value": 13.198
+      },
+      {
+       "array": "qb__att",
+       "evidence": "MEASURED_DRAWS",
+       "holds_on_every_draw": true,
+       "identity": "qb__db == qb__att + qb__sacks + qb__scr",
+       "note": "an exact per-draw identity in the stored artifact, so the attempt link is measured rather than reconstructed",
+       "step": "dropbacks -> attempts",
+       "value": 10.337,
+       "worst_absolute_deviation": 0.0
+      },
+      {
+       "array": "qb__cmp",
+       "evidence": "MEASURED_DRAWS",
+       "step": "completions",
+       "value": 6.759
+      },
+      {
+       "denominator": {
+        "mean": 10.337,
+        "name": "qb__att"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 6.759,
+        "name": "qb__cmp"
+       },
+       "step": "completion rate = completions / attempts",
+       "value": 0.653865
+      },
+      {
+       "array": "qb__pyds",
+       "evidence": "MEASURED_DRAWS",
+       "step": "passing yards",
+       "value": 72.594824
+      },
+      {
+       "denominator": {
+        "mean": 6.759,
+        "name": "qb__cmp"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 72.594824,
+        "name": "qb__pyds"
+       },
+       "step": "yards per completion = passing yards / completions",
+       "value": 10.740468
+      }
+     ],
+     "participation": {
+      "basis": "IDENTIFIED_IN_DRAWS",
+      "basis_detail": "zero dropbacks implies zero of every other QB quantity on every draw cell, so the mask separates \"did not play as a passer\" from \"played and produced nothing\"",
+      "mask": "qb__db > 0",
+      "p_participates": 0.544,
+      "p_participates_is_a_bound": false,
+      "p_participates_lower_bound": 0.544,
+      "verified_cells_violating": 0
+     },
+     "views": {
+      "cond_over_uncond_on_participation": 1.838235,
+      "conditional_caveat": null,
+      "conditional_is_identified": true,
+      "e_opportunity": 10.337,
+      "e_opportunity_given_nonzero_opportunity": 19.213755,
+      "e_opportunity_given_participates": 19.001838,
+      "e_outcome": 72.594824,
+      "e_outcome_given_nonzero_opportunity": 134.934618,
+      "e_outcome_given_participates": 133.446368,
+      "one_minus_p_zero_outcome": 0.528,
+      "one_over_one_minus_p_zero_opportunity": 1.858736,
+      "one_over_one_minus_p_zero_outcome": 1.893939,
+      "one_over_p_participates": 1.838235,
+      "opportunity_cond_over_uncond_on_participation": 1.838235,
+      "opportunity_metric": "qb__att",
+      "outcome_metric": "qb__pyds",
+      "p_participates": 0.544,
+      "p_participates_lower_bound": 0.544,
+      "p_zero_opportunity": 0.462,
+      "p_zero_opportunity_equals_non_participation": false,
+      "p_zero_outcome": 0.472,
+      "participating_draws_with_zero_opportunity": 6,
+      "ratio_identity_holds_against_p_participates": true,
+      "ratio_identity_note": "E[Y] = P(participates) * E[Y | participates] holds exactly for the PARTICIPATION mask and for no other probability. Against P(zero OUTCOME) it is off by the draws where a participating player produced a zero; against P(zero OPPORTUNITY) it is off by the draws where a participating player drew no opportunity -- on this board, backup quarterbacks who were sacked or scrambled without attempting a pass.",
+      "uncond_over_cond_on_participation": 0.544,
+      "zero_opportunity_and_zero_outcome_agree": false
+     }
+    },
+    {
+     "absences": [],
+     "chain": "QB_RUSHING",
+     "links": [
+      {
+       "array": "qb__rush_opp",
+       "evidence": "MEASURED_DRAWS",
+       "step": "QB rush opportunities",
+       "value": 3.364
+      },
+      {
+       "array": "qb__ryds",
+       "evidence": "MEASURED_DRAWS",
+       "note": "the QB layer HAS a carry->yards conversion. The non-QB layer does not. Same board, two different answers to the same modelling question.",
+       "step": "QB rushing yards",
+       "value": 21.493004
+      },
+      {
+       "denominator": {
+        "mean": 3.364,
+        "name": "qb__rush_opp"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 21.493004,
+        "name": "qb__ryds"
+       },
+       "step": "yards per rush opportunity",
+       "value": 6.389121
+      }
+     ],
+     "participation": {
+      "basis": "IDENTIFIED_IN_DRAWS",
+      "basis_detail": "zero dropbacks implies zero of every other QB quantity on every draw cell, so the mask separates \"did not play as a passer\" from \"played and produced nothing\"",
+      "mask": "qb__db > 0",
+      "p_participates": 0.544,
+      "p_participates_is_a_bound": false,
+      "p_participates_lower_bound": 0.544,
+      "verified_cells_violating": 0
+     },
+     "views": {
+      "cond_over_uncond_on_participation": 1.838235,
+      "conditional_caveat": null,
+      "conditional_is_identified": true,
+      "e_opportunity": 3.364,
+      "e_opportunity_given_nonzero_opportunity": 6.674603,
+      "e_opportunity_given_participates": 6.183824,
+      "e_outcome": 21.493004,
+      "e_outcome_given_nonzero_opportunity": 42.644849,
+      "e_outcome_given_participates": 39.509199,
+      "one_minus_p_zero_outcome": 0.504,
+      "one_over_one_minus_p_zero_opportunity": 1.984127,
+      "one_over_one_minus_p_zero_outcome": 1.984127,
+      "one_over_p_participates": 1.838235,
+      "opportunity_cond_over_uncond_on_participation": 1.838235,
+      "opportunity_metric": "qb__rush_opp",
+      "outcome_metric": "qb__ryds",
+      "p_participates": 0.544,
+      "p_participates_lower_bound": 0.544,
+      "p_zero_opportunity": 0.496,
+      "p_zero_opportunity_equals_non_participation": false,
+      "p_zero_outcome": 0.496,
+      "participating_draws_with_zero_opportunity": 40,
+      "ratio_identity_holds_against_p_participates": true,
+      "ratio_identity_note": "E[Y] = P(participates) * E[Y | participates] holds exactly for the PARTICIPATION mask and for no other probability. Against P(zero OUTCOME) it is off by the draws where a participating player produced a zero; against P(zero OPPORTUNITY) it is off by the draws where a participating player drew no opportunity -- on this board, backup quarterbacks who were sacked or scrambled without attempting a pass.",
+      "uncond_over_cond_on_participation": 0.544,
+      "zero_opportunity_and_zero_outcome_agree": true
+     }
+    }
+   ],
+   "depth_chart": "QB2",
+   "gsis_id": "00-0036945",
+   "position": "QB",
+   "team": "KC"
+  },
+  {
+   "chains": [
+    {
+     "absences": [
+      {
+       "code": "NO_ROUTES_LAYER",
+       "step": "team_dropbacks -> routes run"
+      }
+     ],
+     "chain": "RECEIVING",
+     "links": [
+      {
+       "array": "team_volume__team_dropbacks_part",
+       "evidence": "MEASURED_DRAWS",
+       "step": "team_dropbacks",
+       "value": 41.46789
+      },
+      {
+       "code": "NO_ROUTES_LAYER",
+       "evidence": "ABSENT",
+       "step": "team_dropbacks -> routes run",
+       "substitute": "pass-snap participation share (participation-s2-ewma_hl2)",
+       "substitute_value": null,
+       "value": null,
+       "why_honest": "V1 has no routes layer anywhere. The engine's own stand-in is pass_snaps / team_dropbacks, which nfl/production/nonqb/layers.py names as an UPPER BOUND on routes run with an unbounded gap -- and it is not persisted into this artifact either, so the proxy cannot even be quoted here. It is named as a proxy and left null rather than back-solved from targets, which would only re-derive the target share it is supposed to explain."
+      },
+      {
+       "evidence": "MEASURED_DRAWS",
+       "note": "C3 constructs receptions out of QB completions, so the receiving chain routes through the QB layer",
+       "step": "QB attempts (the real allocation pool)",
+       "value": 35.406
+      },
+      {
+       "evidence": "DERIVED_BY_SUM",
+       "step": "sum of modelled player targets (the allocation denominator)",
+       "value": 33.497
+      },
+      {
+       "code": "WS09_J12_STORED_TEAM_TARGETS_IS_NOT_THE_DENOMINATOR",
+       "evidence": "MEASURED_DRAWS",
+       "is_the_allocation_denominator": false,
+       "step": "stored team_volume__team_targets",
+       "value": 28.703538
+      },
+      {
+       "denominator": {
+        "mean": 33.497,
+        "name": "sum(modelled targets)"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 1.816,
+        "name": "receiving__targets[00-0038104]"
+       },
+       "step": "target share of the modelled target pool",
+       "value": 0.054214
+      },
+      {
+       "denominator": {
+        "mean": 28.703538,
+        "name": "team_volume__team_targets"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "persisted only so the size of the error is visible. This is not the share; it is what the share becomes when the denominator is taken from the wrong place.",
+       "numerator": {
+        "mean": 1.816,
+        "name": "receiving__targets[00-0038104]"
+       },
+       "step": "target share if the stored team total were used (WRONG)",
+       "value": 0.063267
+      },
+      {
+       "array": "receiving__targets",
+       "evidence": "MEASURED_DRAWS",
+       "step": "targets",
+       "value": 1.816
+      },
+      {
+       "array": "receiving__receptions",
+       "cells_with_receptions_above_targets": 0,
+       "evidence": "MEASURED_DRAWS",
+       "step": "receptions",
+       "value": 0.959
+      },
+      {
+       "denominator": {
+        "mean": 1.816,
+        "name": "receiving__targets"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 0.959,
+        "name": "receiving__receptions"
+       },
+       "step": "catch probability = receptions / targets",
+       "value": 0.528084
+      },
+      {
+       "array": "receiving__receiving_yards",
+       "cells_with_yards_and_no_reception": 0,
+       "evidence": "MEASURED_DRAWS",
+       "step": "receiving yards",
+       "value": 13.88
+      },
+      {
+       "denominator": {
+        "mean": 0.959,
+        "name": "receiving__receptions"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 13.88,
+        "name": "receiving__receiving_yards"
+       },
+       "step": "yards per reception = receiving yards / receptions",
+       "value": 14.47341
+      }
+     ],
+     "participation": {
+      "basis": "LOWER_BOUND_ONLY",
+      "basis_detail": "the appearance probability is computed upstream and is not persisted in the sealed artifact. A player who appears and receives nothing is cell-for-cell identical to a player who did not appear, so the draws bound P(participates) from below and cannot identify it.",
+      "mask": "receiving__targets > 0",
+      "p_participates": null,
+      "p_participates_is_a_bound": true,
+      "p_participates_lower_bound": 0.59,
+      "verified_cells_violating": null
+     },
+     "views": {
+      "cond_over_uncond_on_participation": 1.694915,
+      "conditional_caveat": "participation is not identified in the artifact, so every \"| participates\" figure here is conditioned on the LOWER-BOUND mask (any modelled opportunity > 0). It is an upper bound on the true conditional mean, because it drops the appear-and-receive-nothing draws that belong in the denominator.",
+      "conditional_is_identified": false,
+      "e_opportunity": 1.816,
+      "e_opportunity_given_nonzero_opportunity": 3.077966,
+      "e_opportunity_given_participates": 3.077966,
+      "e_outcome": 13.88,
+      "e_outcome_given_nonzero_opportunity": 23.525424,
+      "e_outcome_given_participates": 23.525424,
+      "one_minus_p_zero_outcome": 0.456,
+      "one_over_one_minus_p_zero_opportunity": 1.694915,
+      "one_over_one_minus_p_zero_outcome": 2.192982,
+      "one_over_p_participates": null,
+      "opportunity_cond_over_uncond_on_participation": 1.694915,
+      "opportunity_metric": "receiving__targets",
+      "outcome_metric": "receiving__receiving_yards",
+      "p_participates": null,
+      "p_participates_lower_bound": 0.59,
+      "p_zero_opportunity": 0.41,
+      "p_zero_opportunity_equals_non_participation": true,
+      "p_zero_outcome": 0.544,
+      "participating_draws_with_zero_opportunity": 0,
+      "ratio_identity_holds_against_p_participates": null,
+      "ratio_identity_note": "E[Y] = P(participates) * E[Y | participates] holds exactly for the PARTICIPATION mask and for no other probability. Against P(zero OUTCOME) it is off by the draws where a participating player produced a zero; against P(zero OPPORTUNITY) it is off by the draws where a participating player drew no opportunity -- on this board, backup quarterbacks who were sacked or scrambled without attempting a pass.",
+      "uncond_over_cond_on_participation": 0.59,
+      "zero_opportunity_and_zero_outcome_agree": false
+     }
+    }
+   ],
+   "depth_chart": "WR3",
+   "gsis_id": "00-0038104",
+   "position": "WR",
+   "team": "KC"
+  },
+  {
+   "chains": [
+    {
+     "absences": [
+      {
+       "code": "RB_CATEGORY_BUDGET_NOT_PERSISTED",
+       "step": "designed_rush_budget -> RB carry budget"
+      },
+      {
+       "code": "RUSHING_CONVERSION_CONTROL_UNDEFINED",
+       "step": "carries -> rushing yards"
+      }
+     ],
+     "chain": "RB_RUSHING",
+     "links": [
+      {
+       "array": "team_volume__team_off_snaps",
+       "evidence": "MEASURED_DRAWS",
+       "step": "team_plays",
+       "value": 67.697
+      },
+      {
+       "array": "team_volume__team_carries",
+       "evidence": "MEASURED_DRAWS",
+       "step": "team_carries",
+       "value": 25.244857
+      },
+      {
+       "evidence": "DERIVED_BY_DIFFERENCE",
+       "step": "designed_rush_budget = rint(team_carries) - sum(QB scrambles)",
+       "value": 21.866
+      },
+      {
+       "code": "RB_CATEGORY_BUDGET_NOT_PERSISTED",
+       "evidence": "ABSENT",
+       "step": "designed_rush_budget -> RB carry budget",
+       "substitute": "sum of the modelled RBs' carries",
+       "substitute_value": 19.519335,
+       "value": null,
+       "why_honest": "A1 partitions the rush-play budget across six named categories and the rb category total is a real quantity the engine computed, but it is not written into the artifact. The sum over modelled RBs is a LOWER BOUND on it: any carry A1 gave the rb category that landed on an unmodelled back is missing from the sum and from nothing else."
+      },
+      {
+       "denominator": {
+        "mean": 19.519335,
+        "name": "sum(modelled RB carries)"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 10.918275,
+        "name": "rushing__carries[00-0038134]"
+       },
+       "step": "RB share of the modelled RB pool",
+       "value": 0.559357
+      },
+      {
+       "denominator": {
+        "mean": 25.244857,
+        "name": "team_volume__team_carries"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "the second denominator, persisted beside the first so a share can never be quoted without saying what it is a share OF",
+       "numerator": {
+        "mean": 10.918275,
+        "name": "rushing__carries[00-0038134]"
+       },
+       "step": "RB share of team_carries",
+       "value": 0.432495
+      },
+      {
+       "array": "rushing__carries",
+       "evidence": "MEASURED_DRAWS",
+       "non_integer_draw_cells": 795,
+       "note": "stored as float64 and fractional in most cells: these are allocated carry mass under the P4C simplex, not integer carries. A threshold read off them is reading a continuous quantity.",
+       "step": "carries",
+       "value": 10.918275
+      },
+      {
+       "code": "RUSHING_CONVERSION_CONTROL_UNDEFINED",
+       "evidence": "ABSENT",
+       "step": "carries -> rushing yards",
+       "substitute": null,
+       "value": null,
+       "why_honest": "the board declares this metric UNAVAILABLE and names carries x yards-per-carry as the PROHIBITED implementation. There is no substitute, so none is offered; the chain terminates at carries and the outcome view is null rather than invented."
+      }
+     ],
+     "participation": {
+      "basis": "LOWER_BOUND_ONLY",
+      "basis_detail": "the appearance probability is computed upstream and is not persisted in the sealed artifact. A player who appears and receives nothing is cell-for-cell identical to a player who did not appear, so the draws bound P(participates) from below and cannot identify it.",
+      "mask": "receiving__targets > 0 or rushing__carries > 0",
+      "p_participates": null,
+      "p_participates_is_a_bound": true,
+      "p_participates_lower_bound": 0.854,
+      "verified_cells_violating": null
+     },
+     "views": {
+      "cond_over_uncond_on_participation": null,
+      "conditional_caveat": "participation is not identified in the artifact, so every \"| participates\" figure here is conditioned on the LOWER-BOUND mask (any modelled opportunity > 0). It is an upper bound on the true conditional mean, because it drops the appear-and-receive-nothing draws that belong in the denominator.",
+      "conditional_is_identified": false,
+      "e_opportunity": 10.918275,
+      "e_opportunity_given_nonzero_opportunity": 12.845029,
+      "e_opportunity_given_participates": 12.784865,
+      "e_outcome": null,
+      "e_outcome_given_nonzero_opportunity": null,
+      "e_outcome_given_participates": null,
+      "one_minus_p_zero_outcome": null,
+      "one_over_one_minus_p_zero_opportunity": 1.176471,
+      "one_over_one_minus_p_zero_outcome": null,
+      "one_over_p_participates": null,
+      "opportunity_cond_over_uncond_on_participation": 1.17096,
+      "opportunity_metric": "rushing__carries",
+      "outcome_metric": null,
+      "p_participates": null,
+      "p_participates_lower_bound": 0.854,
+      "p_zero_opportunity": 0.15,
+      "p_zero_opportunity_equals_non_participation": false,
+      "p_zero_outcome": null,
+      "participating_draws_with_zero_opportunity": 4,
+      "ratio_identity_holds_against_p_participates": null,
+      "ratio_identity_note": "E[Y] = P(participates) * E[Y | participates] holds exactly for the PARTICIPATION mask and for no other probability. Against P(zero OUTCOME) it is off by the draws where a participating player produced a zero; against P(zero OPPORTUNITY) it is off by the draws where a participating player drew no opportunity -- on this board, backup quarterbacks who were sacked or scrambled without attempting a pass.",
+      "uncond_over_cond_on_participation": null,
+      "zero_opportunity_and_zero_outcome_agree": null
+     }
+    },
+    {
+     "absences": [
+      {
+       "code": "NO_ROUTES_LAYER",
+       "step": "team_dropbacks -> routes run"
+      }
+     ],
+     "chain": "RECEIVING",
+     "links": [
+      {
+       "array": "team_volume__team_dropbacks_part",
+       "evidence": "MEASURED_DRAWS",
+       "step": "team_dropbacks",
+       "value": 41.46789
+      },
+      {
+       "code": "NO_ROUTES_LAYER",
+       "evidence": "ABSENT",
+       "step": "team_dropbacks -> routes run",
+       "substitute": "pass-snap participation share (participation-s2-ewma_hl2)",
+       "substitute_value": null,
+       "value": null,
+       "why_honest": "V1 has no routes layer anywhere. The engine's own stand-in is pass_snaps / team_dropbacks, which nfl/production/nonqb/layers.py names as an UPPER BOUND on routes run with an unbounded gap -- and it is not persisted into this artifact either, so the proxy cannot even be quoted here. It is named as a proxy and left null rather than back-solved from targets, which would only re-derive the target share it is supposed to explain."
+      },
+      {
+       "evidence": "MEASURED_DRAWS",
+       "note": "C3 constructs receptions out of QB completions, so the receiving chain routes through the QB layer",
+       "step": "QB attempts (the real allocation pool)",
+       "value": 35.406
+      },
+      {
+       "evidence": "DERIVED_BY_SUM",
+       "step": "sum of modelled player targets (the allocation denominator)",
+       "value": 33.497
+      },
+      {
+       "code": "WS09_J12_STORED_TEAM_TARGETS_IS_NOT_THE_DENOMINATOR",
+       "evidence": "MEASURED_DRAWS",
+       "is_the_allocation_denominator": false,
+       "step": "stored team_volume__team_targets",
+       "value": 28.703538
+      },
+      {
+       "denominator": {
+        "mean": 33.497,
+        "name": "sum(modelled targets)"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 2.452,
+        "name": "receiving__targets[00-0038134]"
+       },
+       "step": "target share of the modelled target pool",
+       "value": 0.073201
+      },
+      {
+       "denominator": {
+        "mean": 28.703538,
+        "name": "team_volume__team_targets"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "persisted only so the size of the error is visible. This is not the share; it is what the share becomes when the denominator is taken from the wrong place.",
+       "numerator": {
+        "mean": 2.452,
+        "name": "receiving__targets[00-0038134]"
+       },
+       "step": "target share if the stored team total were used (WRONG)",
+       "value": 0.085425
+      },
+      {
+       "array": "receiving__targets",
+       "evidence": "MEASURED_DRAWS",
+       "step": "targets",
+       "value": 2.452
+      },
+      {
+       "array": "receiving__receptions",
+       "cells_with_receptions_above_targets": 0,
+       "evidence": "MEASURED_DRAWS",
+       "step": "receptions",
+       "value": 1.999
+      },
+      {
+       "denominator": {
+        "mean": 2.452,
+        "name": "receiving__targets"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 1.999,
+        "name": "receiving__receptions"
+       },
+       "step": "catch probability = receptions / targets",
+       "value": 0.815253
+      },
+      {
+       "array": "receiving__receiving_yards",
+       "cells_with_yards_and_no_reception": 0,
+       "evidence": "MEASURED_DRAWS",
+       "step": "receiving yards",
+       "value": 15.279
+      },
+      {
+       "denominator": {
+        "mean": 1.999,
+        "name": "receiving__receptions"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 15.279,
+        "name": "receiving__receiving_yards"
+       },
+       "step": "yards per reception = receiving yards / receptions",
+       "value": 7.643322
+      }
+     ],
+     "participation": {
+      "basis": "LOWER_BOUND_ONLY",
+      "basis_detail": "the appearance probability is computed upstream and is not persisted in the sealed artifact. A player who appears and receives nothing is cell-for-cell identical to a player who did not appear, so the draws bound P(participates) from below and cannot identify it.",
+      "mask": "receiving__targets > 0 or rushing__carries > 0",
+      "p_participates": null,
+      "p_participates_is_a_bound": true,
+      "p_participates_lower_bound": 0.854,
+      "verified_cells_violating": null
+     },
+     "views": {
+      "cond_over_uncond_on_participation": 1.17096,
+      "conditional_caveat": "participation is not identified in the artifact, so every \"| participates\" figure here is conditioned on the LOWER-BOUND mask (any modelled opportunity > 0). It is an upper bound on the true conditional mean, because it drops the appear-and-receive-nothing draws that belong in the denominator.",
+      "conditional_is_identified": false,
+      "e_opportunity": 2.452,
+      "e_opportunity_given_nonzero_opportunity": 3.382069,
+      "e_opportunity_given_participates": 2.871194,
+      "e_outcome": 15.279,
+      "e_outcome_given_nonzero_opportunity": 21.074483,
+      "e_outcome_given_participates": 17.891101,
+      "one_minus_p_zero_outcome": 0.682,
+      "one_over_one_minus_p_zero_opportunity": 1.37931,
+      "one_over_one_minus_p_zero_outcome": 1.466276,
+      "one_over_p_participates": null,
+      "opportunity_cond_over_uncond_on_participation": 1.17096,
+      "opportunity_metric": "receiving__targets",
+      "outcome_metric": "receiving__receiving_yards",
+      "p_participates": null,
+      "p_participates_lower_bound": 0.854,
+      "p_zero_opportunity": 0.275,
+      "p_zero_opportunity_equals_non_participation": false,
+      "p_zero_outcome": 0.318,
+      "participating_draws_with_zero_opportunity": 129,
+      "ratio_identity_holds_against_p_participates": null,
+      "ratio_identity_note": "E[Y] = P(participates) * E[Y | participates] holds exactly for the PARTICIPATION mask and for no other probability. Against P(zero OUTCOME) it is off by the draws where a participating player produced a zero; against P(zero OPPORTUNITY) it is off by the draws where a participating player drew no opportunity -- on this board, backup quarterbacks who were sacked or scrambled without attempting a pass.",
+      "uncond_over_cond_on_participation": 0.854,
+      "zero_opportunity_and_zero_outcome_agree": false
+     }
+    }
+   ],
+   "depth_chart": "RB1",
+   "gsis_id": "00-0038134",
+   "position": "RB",
+   "team": "KC"
+  },
+  {
+   "chains": [
+    {
+     "absences": [
+      {
+       "code": "NO_ROUTES_LAYER",
+       "step": "team_dropbacks -> routes run"
+      }
+     ],
+     "chain": "RECEIVING",
+     "links": [
+      {
+       "array": "team_volume__team_dropbacks_part",
+       "evidence": "MEASURED_DRAWS",
+       "step": "team_dropbacks",
+       "value": 41.46789
+      },
+      {
+       "code": "NO_ROUTES_LAYER",
+       "evidence": "ABSENT",
+       "step": "team_dropbacks -> routes run",
+       "substitute": "pass-snap participation share (participation-s2-ewma_hl2)",
+       "substitute_value": null,
+       "value": null,
+       "why_honest": "V1 has no routes layer anywhere. The engine's own stand-in is pass_snaps / team_dropbacks, which nfl/production/nonqb/layers.py names as an UPPER BOUND on routes run with an unbounded gap -- and it is not persisted into this artifact either, so the proxy cannot even be quoted here. It is named as a proxy and left null rather than back-solved from targets, which would only re-derive the target share it is supposed to explain."
+      },
+      {
+       "evidence": "MEASURED_DRAWS",
+       "note": "C3 constructs receptions out of QB completions, so the receiving chain routes through the QB layer",
+       "step": "QB attempts (the real allocation pool)",
+       "value": 35.406
+      },
+      {
+       "evidence": "DERIVED_BY_SUM",
+       "step": "sum of modelled player targets (the allocation denominator)",
+       "value": 33.497
+      },
+      {
+       "code": "WS09_J12_STORED_TEAM_TARGETS_IS_NOT_THE_DENOMINATOR",
+       "evidence": "MEASURED_DRAWS",
+       "is_the_allocation_denominator": false,
+       "step": "stored team_volume__team_targets",
+       "value": 28.703538
+      },
+      {
+       "denominator": {
+        "mean": 33.497,
+        "name": "sum(modelled targets)"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 0.891,
+        "name": "receiving__targets[00-0038519]"
+       },
+       "step": "target share of the modelled target pool",
+       "value": 0.026599
+      },
+      {
+       "denominator": {
+        "mean": 28.703538,
+        "name": "team_volume__team_targets"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "persisted only so the size of the error is visible. This is not the share; it is what the share becomes when the denominator is taken from the wrong place.",
+       "numerator": {
+        "mean": 0.891,
+        "name": "receiving__targets[00-0038519]"
+       },
+       "step": "target share if the stored team total were used (WRONG)",
+       "value": 0.031041
+      },
+      {
+       "array": "receiving__targets",
+       "evidence": "MEASURED_DRAWS",
+       "step": "targets",
+       "value": 0.891
+      },
+      {
+       "array": "receiving__receptions",
+       "cells_with_receptions_above_targets": 0,
+       "evidence": "MEASURED_DRAWS",
+       "step": "receptions",
+       "value": 0.424
+      },
+      {
+       "denominator": {
+        "mean": 0.891,
+        "name": "receiving__targets"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 0.424,
+        "name": "receiving__receptions"
+       },
+       "step": "catch probability = receptions / targets",
+       "value": 0.47587
+      },
+      {
+       "array": "receiving__receiving_yards",
+       "cells_with_yards_and_no_reception": 0,
+       "evidence": "MEASURED_DRAWS",
+       "step": "receiving yards",
+       "value": 8.255
+      },
+      {
+       "denominator": {
+        "mean": 0.424,
+        "name": "receiving__receptions"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 8.255,
+        "name": "receiving__receiving_yards"
+       },
+       "step": "yards per reception = receiving yards / receptions",
+       "value": 19.46934
+      }
+     ],
+     "participation": {
+      "basis": "LOWER_BOUND_ONLY",
+      "basis_detail": "the appearance probability is computed upstream and is not persisted in the sealed artifact. A player who appears and receives nothing is cell-for-cell identical to a player who did not appear, so the draws bound P(participates) from below and cannot identify it.",
+      "mask": "receiving__targets > 0",
+      "p_participates": null,
+      "p_participates_is_a_bound": true,
+      "p_participates_lower_bound": 0.334,
+      "verified_cells_violating": null
+     },
+     "views": {
+      "cond_over_uncond_on_participation": 2.994012,
+      "conditional_caveat": "participation is not identified in the artifact, so every \"| participates\" figure here is conditioned on the LOWER-BOUND mask (any modelled opportunity > 0). It is an upper bound on the true conditional mean, because it drops the appear-and-receive-nothing draws that belong in the denominator.",
+      "conditional_is_identified": false,
+      "e_opportunity": 0.891,
+      "e_opportunity_given_nonzero_opportunity": 2.667665,
+      "e_opportunity_given_participates": 2.667665,
+      "e_outcome": 8.255,
+      "e_outcome_given_nonzero_opportunity": 24.715569,
+      "e_outcome_given_participates": 24.715569,
+      "one_minus_p_zero_outcome": 0.247,
+      "one_over_one_minus_p_zero_opportunity": 2.994012,
+      "one_over_one_minus_p_zero_outcome": 4.048583,
+      "one_over_p_participates": null,
+      "opportunity_cond_over_uncond_on_participation": 2.994012,
+      "opportunity_metric": "receiving__targets",
+      "outcome_metric": "receiving__receiving_yards",
+      "p_participates": null,
+      "p_participates_lower_bound": 0.334,
+      "p_zero_opportunity": 0.666,
+      "p_zero_opportunity_equals_non_participation": true,
+      "p_zero_outcome": 0.753,
+      "participating_draws_with_zero_opportunity": 0,
+      "ratio_identity_holds_against_p_participates": null,
+      "ratio_identity_note": "E[Y] = P(participates) * E[Y | participates] holds exactly for the PARTICIPATION mask and for no other probability. Against P(zero OUTCOME) it is off by the draws where a participating player produced a zero; against P(zero OPPORTUNITY) it is off by the draws where a participating player drew no opportunity -- on this board, backup quarterbacks who were sacked or scrambled without attempting a pass.",
+      "uncond_over_cond_on_participation": 0.334,
+      "zero_opportunity_and_zero_outcome_agree": false
+     }
+    }
+   ],
+   "depth_chart": "WR6",
+   "gsis_id": "00-0038519",
+   "position": "WR",
+   "team": "KC"
+  },
+  {
+   "chains": [
+    {
+     "absences": [
+      {
+       "code": "NO_ROUTES_LAYER",
+       "step": "team_dropbacks -> routes run"
+      }
+     ],
+     "chain": "RECEIVING",
+     "links": [
+      {
+       "array": "team_volume__team_dropbacks_part",
+       "evidence": "MEASURED_DRAWS",
+       "step": "team_dropbacks",
+       "value": 41.46789
+      },
+      {
+       "code": "NO_ROUTES_LAYER",
+       "evidence": "ABSENT",
+       "step": "team_dropbacks -> routes run",
+       "substitute": "pass-snap participation share (participation-s2-ewma_hl2)",
+       "substitute_value": null,
+       "value": null,
+       "why_honest": "V1 has no routes layer anywhere. The engine's own stand-in is pass_snaps / team_dropbacks, which nfl/production/nonqb/layers.py names as an UPPER BOUND on routes run with an unbounded gap -- and it is not persisted into this artifact either, so the proxy cannot even be quoted here. It is named as a proxy and left null rather than back-solved from targets, which would only re-derive the target share it is supposed to explain."
+      },
+      {
+       "evidence": "MEASURED_DRAWS",
+       "note": "C3 constructs receptions out of QB completions, so the receiving chain routes through the QB layer",
+       "step": "QB attempts (the real allocation pool)",
+       "value": 35.406
+      },
+      {
+       "evidence": "DERIVED_BY_SUM",
+       "step": "sum of modelled player targets (the allocation denominator)",
+       "value": 33.497
+      },
+      {
+       "code": "WS09_J12_STORED_TEAM_TARGETS_IS_NOT_THE_DENOMINATOR",
+       "evidence": "MEASURED_DRAWS",
+       "is_the_allocation_denominator": false,
+       "step": "stored team_volume__team_targets",
+       "value": 28.703538
+      },
+      {
+       "denominator": {
+        "mean": 33.497,
+        "name": "sum(modelled targets)"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 8.492,
+        "name": "receiving__targets[00-0039067]"
+       },
+       "step": "target share of the modelled target pool",
+       "value": 0.253515
+      },
+      {
+       "denominator": {
+        "mean": 28.703538,
+        "name": "team_volume__team_targets"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "persisted only so the size of the error is visible. This is not the share; it is what the share becomes when the denominator is taken from the wrong place.",
+       "numerator": {
+        "mean": 8.492,
+        "name": "receiving__targets[00-0039067]"
+       },
+       "step": "target share if the stored team total were used (WRONG)",
+       "value": 0.295852
+      },
+      {
+       "array": "receiving__targets",
+       "evidence": "MEASURED_DRAWS",
+       "step": "targets",
+       "value": 8.492
+      },
+      {
+       "array": "receiving__receptions",
+       "cells_with_receptions_above_targets": 0,
+       "evidence": "MEASURED_DRAWS",
+       "step": "receptions",
+       "value": 6.253
+      },
+      {
+       "denominator": {
+        "mean": 8.492,
+        "name": "receiving__targets"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 6.253,
+        "name": "receiving__receptions"
+       },
+       "step": "catch probability = receptions / targets",
+       "value": 0.73634
+      },
+      {
+       "array": "receiving__receiving_yards",
+       "cells_with_yards_and_no_reception": 0,
+       "evidence": "MEASURED_DRAWS",
+       "step": "receiving yards",
+       "value": 73.802
+      },
+      {
+       "denominator": {
+        "mean": 6.253,
+        "name": "receiving__receptions"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 73.802,
+        "name": "receiving__receiving_yards"
+       },
+       "step": "yards per reception = receiving yards / receptions",
+       "value": 11.802655
+      }
+     ],
+     "participation": {
+      "basis": "LOWER_BOUND_ONLY",
+      "basis_detail": "the appearance probability is computed upstream and is not persisted in the sealed artifact. A player who appears and receives nothing is cell-for-cell identical to a player who did not appear, so the draws bound P(participates) from below and cannot identify it.",
+      "mask": "receiving__targets > 0",
+      "p_participates": null,
+      "p_participates_is_a_bound": true,
+      "p_participates_lower_bound": 0.981,
+      "verified_cells_violating": null
+     },
+     "views": {
+      "cond_over_uncond_on_participation": 1.019368,
+      "conditional_caveat": "participation is not identified in the artifact, so every \"| participates\" figure here is conditioned on the LOWER-BOUND mask (any modelled opportunity > 0). It is an upper bound on the true conditional mean, because it drops the appear-and-receive-nothing draws that belong in the denominator.",
+      "conditional_is_identified": false,
+      "e_opportunity": 8.492,
+      "e_opportunity_given_nonzero_opportunity": 8.656473,
+      "e_opportunity_given_participates": 8.656473,
+      "e_outcome": 73.802,
+      "e_outcome_given_nonzero_opportunity": 75.231397,
+      "e_outcome_given_participates": 75.231397,
+      "one_minus_p_zero_outcome": 0.978,
+      "one_over_one_minus_p_zero_opportunity": 1.019368,
+      "one_over_one_minus_p_zero_outcome": 1.022495,
+      "one_over_p_participates": null,
+      "opportunity_cond_over_uncond_on_participation": 1.019368,
+      "opportunity_metric": "receiving__targets",
+      "outcome_metric": "receiving__receiving_yards",
+      "p_participates": null,
+      "p_participates_lower_bound": 0.981,
+      "p_zero_opportunity": 0.019,
+      "p_zero_opportunity_equals_non_participation": true,
+      "p_zero_outcome": 0.022,
+      "participating_draws_with_zero_opportunity": 0,
+      "ratio_identity_holds_against_p_participates": null,
+      "ratio_identity_note": "E[Y] = P(participates) * E[Y | participates] holds exactly for the PARTICIPATION mask and for no other probability. Against P(zero OUTCOME) it is off by the draws where a participating player produced a zero; against P(zero OPPORTUNITY) it is off by the draws where a participating player drew no opportunity -- on this board, backup quarterbacks who were sacked or scrambled without attempting a pass.",
+      "uncond_over_cond_on_participation": 0.981,
+      "zero_opportunity_and_zero_outcome_agree": false
+     }
+    }
+   ],
+   "depth_chart": "WR1",
+   "gsis_id": "00-0039067",
+   "position": "WR",
+   "team": "KC"
+  },
+  {
+   "chains": [
+    {
+     "absences": [],
+     "chain": "QB_PASSING",
+     "links": [
+      {
+       "array": "team_volume__team_off_snaps",
+       "evidence": "MEASURED_DRAWS",
+       "step": "team_plays",
+       "value": 65.412
+      },
+      {
+       "array": "team_volume__team_dropbacks_part",
+       "evidence": "MEASURED_DRAWS",
+       "step": "team_dropbacks",
+       "value": 37.185768
+      },
+      {
+       "denominator": {
+        "mean": 37.185768,
+        "name": "team_dropbacks_part"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 34.062,
+        "name": "qb__db[00-0039732]"
+       },
+       "step": "QB participation/share of team dropbacks",
+       "value": 0.915996
+      },
+      {
+       "array": "qb__db",
+       "evidence": "MEASURED_DRAWS",
+       "step": "QB dropbacks",
+       "value": 34.062
+      },
+      {
+       "array": "qb__att",
+       "evidence": "MEASURED_DRAWS",
+       "holds_on_every_draw": true,
+       "identity": "qb__db == qb__att + qb__sacks + qb__scr",
+       "note": "an exact per-draw identity in the stored artifact, so the attempt link is measured rather than reconstructed",
+       "step": "dropbacks -> attempts",
+       "value": 30.543,
+       "worst_absolute_deviation": 0.0
+      },
+      {
+       "array": "qb__cmp",
+       "evidence": "MEASURED_DRAWS",
+       "step": "completions",
+       "value": 19.918
+      },
+      {
+       "denominator": {
+        "mean": 30.543,
+        "name": "qb__att"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 19.918,
+        "name": "qb__cmp"
+       },
+       "step": "completion rate = completions / attempts",
+       "value": 0.65213
+      },
+      {
+       "array": "qb__pyds",
+       "evidence": "MEASURED_DRAWS",
+       "step": "passing yards",
+       "value": 202.354389
+      },
+      {
+       "denominator": {
+        "mean": 19.918,
+        "name": "qb__cmp"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 202.354389,
+        "name": "qb__pyds"
+       },
+       "step": "yards per completion = passing yards / completions",
+       "value": 10.159373
+      }
+     ],
+     "participation": {
+      "basis": "IDENTIFIED_IN_DRAWS",
+      "basis_detail": "zero dropbacks implies zero of every other QB quantity on every draw cell, so the mask separates \"did not play as a passer\" from \"played and produced nothing\"",
+      "mask": "qb__db > 0",
+      "p_participates": 0.952,
+      "p_participates_is_a_bound": false,
+      "p_participates_lower_bound": 0.952,
+      "verified_cells_violating": 0
+     },
+     "views": {
+      "cond_over_uncond_on_participation": 1.05042,
+      "conditional_caveat": null,
+      "conditional_is_identified": true,
+      "e_opportunity": 30.543,
+      "e_opportunity_given_nonzero_opportunity": 32.082983,
+      "e_opportunity_given_participates": 32.082983,
+      "e_outcome": 202.354389,
+      "e_outcome_given_nonzero_opportunity": 212.557131,
+      "e_outcome_given_participates": 212.557131,
+      "one_minus_p_zero_outcome": 0.951,
+      "one_over_one_minus_p_zero_opportunity": 1.05042,
+      "one_over_one_minus_p_zero_outcome": 1.051525,
+      "one_over_p_participates": 1.05042,
+      "opportunity_cond_over_uncond_on_participation": 1.05042,
+      "opportunity_metric": "qb__att",
+      "outcome_metric": "qb__pyds",
+      "p_participates": 0.952,
+      "p_participates_lower_bound": 0.952,
+      "p_zero_opportunity": 0.048,
+      "p_zero_opportunity_equals_non_participation": true,
+      "p_zero_outcome": 0.049,
+      "participating_draws_with_zero_opportunity": 0,
+      "ratio_identity_holds_against_p_participates": true,
+      "ratio_identity_note": "E[Y] = P(participates) * E[Y | participates] holds exactly for the PARTICIPATION mask and for no other probability. Against P(zero OUTCOME) it is off by the draws where a participating player produced a zero; against P(zero OPPORTUNITY) it is off by the draws where a participating player drew no opportunity -- on this board, backup quarterbacks who were sacked or scrambled without attempting a pass.",
+      "uncond_over_cond_on_participation": 0.952,
+      "zero_opportunity_and_zero_outcome_agree": false
+     }
+    },
+    {
+     "absences": [],
+     "chain": "QB_RUSHING",
+     "links": [
+      {
+       "array": "qb__rush_opp",
+       "evidence": "MEASURED_DRAWS",
+       "step": "QB rush opportunities",
+       "value": 3.739
+      },
+      {
+       "array": "qb__ryds",
+       "evidence": "MEASURED_DRAWS",
+       "note": "the QB layer HAS a carry->yards conversion. The non-QB layer does not. Same board, two different answers to the same modelling question.",
+       "step": "QB rushing yards",
+       "value": 20.099969
+      },
+      {
+       "denominator": {
+        "mean": 3.739,
+        "name": "qb__rush_opp"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 20.099969,
+        "name": "qb__ryds"
+       },
+       "step": "yards per rush opportunity",
+       "value": 5.375761
+      }
+     ],
+     "participation": {
+      "basis": "IDENTIFIED_IN_DRAWS",
+      "basis_detail": "zero dropbacks implies zero of every other QB quantity on every draw cell, so the mask separates \"did not play as a passer\" from \"played and produced nothing\"",
+      "mask": "qb__db > 0",
+      "p_participates": 0.952,
+      "p_participates_is_a_bound": false,
+      "p_participates_lower_bound": 0.952,
+      "verified_cells_violating": 0
+     },
+     "views": {
+      "cond_over_uncond_on_participation": 1.05042,
+      "conditional_caveat": null,
+      "conditional_is_identified": true,
+      "e_opportunity": 3.739,
+      "e_opportunity_given_nonzero_opportunity": 4.068553,
+      "e_opportunity_given_participates": 3.927521,
+      "e_outcome": 20.099969,
+      "e_outcome_given_nonzero_opportunity": 21.871566,
+      "e_outcome_given_participates": 21.113413,
+      "one_minus_p_zero_outcome": 0.89,
+      "one_over_one_minus_p_zero_opportunity": 1.088139,
+      "one_over_one_minus_p_zero_outcome": 1.123596,
+      "one_over_p_participates": 1.05042,
+      "opportunity_cond_over_uncond_on_participation": 1.05042,
+      "opportunity_metric": "qb__rush_opp",
+      "outcome_metric": "qb__ryds",
+      "p_participates": 0.952,
+      "p_participates_lower_bound": 0.952,
+      "p_zero_opportunity": 0.081,
+      "p_zero_opportunity_equals_non_participation": false,
+      "p_zero_outcome": 0.11,
+      "participating_draws_with_zero_opportunity": 33,
+      "ratio_identity_holds_against_p_participates": true,
+      "ratio_identity_note": "E[Y] = P(participates) * E[Y | participates] holds exactly for the PARTICIPATION mask and for no other probability. Against P(zero OUTCOME) it is off by the draws where a participating player produced a zero; against P(zero OPPORTUNITY) it is off by the draws where a participating player drew no opportunity -- on this board, backup quarterbacks who were sacked or scrambled without attempting a pass.",
+      "uncond_over_cond_on_participation": 0.952,
+      "zero_opportunity_and_zero_outcome_agree": false
+     }
+    }
+   ],
+   "depth_chart": "QB1",
+   "gsis_id": "00-0039732",
+   "position": "QB",
+   "team": "DEN"
+  },
+  {
+   "chains": [
+    {
+     "absences": [
+      {
+       "code": "NO_ROUTES_LAYER",
+       "step": "team_dropbacks -> routes run"
+      }
+     ],
+     "chain": "RECEIVING",
+     "links": [
+      {
+       "array": "team_volume__team_dropbacks_part",
+       "evidence": "MEASURED_DRAWS",
+       "step": "team_dropbacks",
+       "value": 41.46789
+      },
+      {
+       "code": "NO_ROUTES_LAYER",
+       "evidence": "ABSENT",
+       "step": "team_dropbacks -> routes run",
+       "substitute": "pass-snap participation share (participation-s2-ewma_hl2)",
+       "substitute_value": null,
+       "value": null,
+       "why_honest": "V1 has no routes layer anywhere. The engine's own stand-in is pass_snaps / team_dropbacks, which nfl/production/nonqb/layers.py names as an UPPER BOUND on routes run with an unbounded gap -- and it is not persisted into this artifact either, so the proxy cannot even be quoted here. It is named as a proxy and left null rather than back-solved from targets, which would only re-derive the target share it is supposed to explain."
+      },
+      {
+       "evidence": "MEASURED_DRAWS",
+       "note": "C3 constructs receptions out of QB completions, so the receiving chain routes through the QB layer",
+       "step": "QB attempts (the real allocation pool)",
+       "value": 35.406
+      },
+      {
+       "evidence": "DERIVED_BY_SUM",
+       "step": "sum of modelled player targets (the allocation denominator)",
+       "value": 33.497
+      },
+      {
+       "code": "WS09_J12_STORED_TEAM_TARGETS_IS_NOT_THE_DENOMINATOR",
+       "evidence": "MEASURED_DRAWS",
+       "is_the_allocation_denominator": false,
+       "step": "stored team_volume__team_targets",
+       "value": 28.703538
+      },
+      {
+       "denominator": {
+        "mean": 33.497,
+        "name": "sum(modelled targets)"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 0.458,
+        "name": "receiving__targets[00-0039824]"
+       },
+       "step": "target share of the modelled target pool",
+       "value": 0.013673
+      },
+      {
+       "denominator": {
+        "mean": 28.703538,
+        "name": "team_volume__team_targets"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "persisted only so the size of the error is visible. This is not the share; it is what the share becomes when the denominator is taken from the wrong place.",
+       "numerator": {
+        "mean": 0.458,
+        "name": "receiving__targets[00-0039824]"
+       },
+       "step": "target share if the stored team total were used (WRONG)",
+       "value": 0.015956
+      },
+      {
+       "array": "receiving__targets",
+       "evidence": "MEASURED_DRAWS",
+       "step": "targets",
+       "value": 0.458
+      },
+      {
+       "array": "receiving__receptions",
+       "cells_with_receptions_above_targets": 0,
+       "evidence": "MEASURED_DRAWS",
+       "step": "receptions",
+       "value": 0.422
+      },
+      {
+       "denominator": {
+        "mean": 0.458,
+        "name": "receiving__targets"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 0.422,
+        "name": "receiving__receptions"
+       },
+       "step": "catch probability = receptions / targets",
+       "value": 0.921397
+      },
+      {
+       "array": "receiving__receiving_yards",
+       "cells_with_yards_and_no_reception": 0,
+       "evidence": "MEASURED_DRAWS",
+       "step": "receiving yards",
+       "value": 2.835
+      },
+      {
+       "denominator": {
+        "mean": 0.422,
+        "name": "receiving__receptions"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 2.835,
+        "name": "receiving__receiving_yards"
+       },
+       "step": "yards per reception = receiving yards / receptions",
+       "value": 6.718009
+      }
+     ],
+     "participation": {
+      "basis": "LOWER_BOUND_ONLY",
+      "basis_detail": "the appearance probability is computed upstream and is not persisted in the sealed artifact. A player who appears and receives nothing is cell-for-cell identical to a player who did not appear, so the draws bound P(participates) from below and cannot identify it.",
+      "mask": "receiving__targets > 0",
+      "p_participates": null,
+      "p_participates_is_a_bound": true,
+      "p_participates_lower_bound": 0.19,
+      "verified_cells_violating": null
+     },
+     "views": {
+      "cond_over_uncond_on_participation": 5.263158,
+      "conditional_caveat": "participation is not identified in the artifact, so every \"| participates\" figure here is conditioned on the LOWER-BOUND mask (any modelled opportunity > 0). It is an upper bound on the true conditional mean, because it drops the appear-and-receive-nothing draws that belong in the denominator.",
+      "conditional_is_identified": false,
+      "e_opportunity": 0.458,
+      "e_opportunity_given_nonzero_opportunity": 2.410526,
+      "e_opportunity_given_participates": 2.410526,
+      "e_outcome": 2.835,
+      "e_outcome_given_nonzero_opportunity": 14.921053,
+      "e_outcome_given_participates": 14.921053,
+      "one_minus_p_zero_outcome": 0.184,
+      "one_over_one_minus_p_zero_opportunity": 5.263158,
+      "one_over_one_minus_p_zero_outcome": 5.434783,
+      "one_over_p_participates": null,
+      "opportunity_cond_over_uncond_on_participation": 5.263157,
+      "opportunity_metric": "receiving__targets",
+      "outcome_metric": "receiving__receiving_yards",
+      "p_participates": null,
+      "p_participates_lower_bound": 0.19,
+      "p_zero_opportunity": 0.81,
+      "p_zero_opportunity_equals_non_participation": true,
+      "p_zero_outcome": 0.816,
+      "participating_draws_with_zero_opportunity": 0,
+      "ratio_identity_holds_against_p_participates": null,
+      "ratio_identity_note": "E[Y] = P(participates) * E[Y | participates] holds exactly for the PARTICIPATION mask and for no other probability. Against P(zero OUTCOME) it is off by the draws where a participating player produced a zero; against P(zero OPPORTUNITY) it is off by the draws where a participating player drew no opportunity -- on this board, backup quarterbacks who were sacked or scrambled without attempting a pass.",
+      "uncond_over_cond_on_participation": 0.19,
+      "zero_opportunity_and_zero_outcome_agree": false
+     }
+    }
+   ],
+   "depth_chart": "TE3",
+   "gsis_id": "00-0039824",
+   "position": "TE",
+   "team": "KC"
+  },
+  {
+   "chains": [
+    {
+     "absences": [
+      {
+       "code": "NO_ROUTES_LAYER",
+       "step": "team_dropbacks -> routes run"
+      }
+     ],
+     "chain": "RECEIVING",
+     "links": [
+      {
+       "array": "team_volume__team_dropbacks_part",
+       "evidence": "MEASURED_DRAWS",
+       "step": "team_dropbacks",
+       "value": 41.46789
+      },
+      {
+       "code": "NO_ROUTES_LAYER",
+       "evidence": "ABSENT",
+       "step": "team_dropbacks -> routes run",
+       "substitute": "pass-snap participation share (participation-s2-ewma_hl2)",
+       "substitute_value": null,
+       "value": null,
+       "why_honest": "V1 has no routes layer anywhere. The engine's own stand-in is pass_snaps / team_dropbacks, which nfl/production/nonqb/layers.py names as an UPPER BOUND on routes run with an unbounded gap -- and it is not persisted into this artifact either, so the proxy cannot even be quoted here. It is named as a proxy and left null rather than back-solved from targets, which would only re-derive the target share it is supposed to explain."
+      },
+      {
+       "evidence": "MEASURED_DRAWS",
+       "note": "C3 constructs receptions out of QB completions, so the receiving chain routes through the QB layer",
+       "step": "QB attempts (the real allocation pool)",
+       "value": 35.406
+      },
+      {
+       "evidence": "DERIVED_BY_SUM",
+       "step": "sum of modelled player targets (the allocation denominator)",
+       "value": 33.497
+      },
+      {
+       "code": "WS09_J12_STORED_TEAM_TARGETS_IS_NOT_THE_DENOMINATOR",
+       "evidence": "MEASURED_DRAWS",
+       "is_the_allocation_denominator": false,
+       "step": "stored team_volume__team_targets",
+       "value": 28.703538
+      },
+      {
+       "denominator": {
+        "mean": 33.497,
+        "name": "sum(modelled targets)"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 3.9,
+        "name": "receiving__targets[00-0039894]"
+       },
+       "step": "target share of the modelled target pool",
+       "value": 0.116428
+      },
+      {
+       "denominator": {
+        "mean": 28.703538,
+        "name": "team_volume__team_targets"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "persisted only so the size of the error is visible. This is not the share; it is what the share becomes when the denominator is taken from the wrong place.",
+       "numerator": {
+        "mean": 3.9,
+        "name": "receiving__targets[00-0039894]"
+       },
+       "step": "target share if the stored team total were used (WRONG)",
+       "value": 0.135872
+      },
+      {
+       "array": "receiving__targets",
+       "evidence": "MEASURED_DRAWS",
+       "step": "targets",
+       "value": 3.9
+      },
+      {
+       "array": "receiving__receptions",
+       "cells_with_receptions_above_targets": 0,
+       "evidence": "MEASURED_DRAWS",
+       "step": "receptions",
+       "value": 2.297
+      },
+      {
+       "denominator": {
+        "mean": 3.9,
+        "name": "receiving__targets"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 2.297,
+        "name": "receiving__receptions"
+       },
+       "step": "catch probability = receptions / targets",
+       "value": 0.588974
+      },
+      {
+       "array": "receiving__receiving_yards",
+       "cells_with_yards_and_no_reception": 0,
+       "evidence": "MEASURED_DRAWS",
+       "step": "receiving yards",
+       "value": 27.174
+      },
+      {
+       "denominator": {
+        "mean": 2.297,
+        "name": "receiving__receptions"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 27.174,
+        "name": "receiving__receiving_yards"
+       },
+       "step": "yards per reception = receiving yards / receptions",
+       "value": 11.830213
+      }
+     ],
+     "participation": {
+      "basis": "LOWER_BOUND_ONLY",
+      "basis_detail": "the appearance probability is computed upstream and is not persisted in the sealed artifact. A player who appears and receives nothing is cell-for-cell identical to a player who did not appear, so the draws bound P(participates) from below and cannot identify it.",
+      "mask": "receiving__targets > 0",
+      "p_participates": null,
+      "p_participates_is_a_bound": true,
+      "p_participates_lower_bound": 0.814,
+      "verified_cells_violating": null
+     },
+     "views": {
+      "cond_over_uncond_on_participation": 1.228501,
+      "conditional_caveat": "participation is not identified in the artifact, so every \"| participates\" figure here is conditioned on the LOWER-BOUND mask (any modelled opportunity > 0). It is an upper bound on the true conditional mean, because it drops the appear-and-receive-nothing draws that belong in the denominator.",
+      "conditional_is_identified": false,
+      "e_opportunity": 3.9,
+      "e_opportunity_given_nonzero_opportunity": 4.791155,
+      "e_opportunity_given_participates": 4.791155,
+      "e_outcome": 27.174,
+      "e_outcome_given_nonzero_opportunity": 33.383292,
+      "e_outcome_given_participates": 33.383292,
+      "one_minus_p_zero_outcome": 0.755,
+      "one_over_one_minus_p_zero_opportunity": 1.228501,
+      "one_over_one_minus_p_zero_outcome": 1.324503,
+      "one_over_p_participates": null,
+      "opportunity_cond_over_uncond_on_participation": 1.228501,
+      "opportunity_metric": "receiving__targets",
+      "outcome_metric": "receiving__receiving_yards",
+      "p_participates": null,
+      "p_participates_lower_bound": 0.814,
+      "p_zero_opportunity": 0.186,
+      "p_zero_opportunity_equals_non_participation": true,
+      "p_zero_outcome": 0.245,
+      "participating_draws_with_zero_opportunity": 0,
+      "ratio_identity_holds_against_p_participates": null,
+      "ratio_identity_note": "E[Y] = P(participates) * E[Y | participates] holds exactly for the PARTICIPATION mask and for no other probability. Against P(zero OUTCOME) it is off by the draws where a participating player produced a zero; against P(zero OPPORTUNITY) it is off by the draws where a participating player drew no opportunity -- on this board, backup quarterbacks who were sacked or scrambled without attempting a pass.",
+      "uncond_over_cond_on_participation": 0.814,
+      "zero_opportunity_and_zero_outcome_agree": false
+     }
+    }
+   ],
+   "depth_chart": "WR2",
+   "gsis_id": "00-0039894",
+   "position": "WR",
+   "team": "KC"
+  },
+  {
+   "chains": [
+    {
+     "absences": [
+      {
+       "code": "RB_CATEGORY_BUDGET_NOT_PERSISTED",
+       "step": "designed_rush_budget -> RB carry budget"
+      },
+      {
+       "code": "RUSHING_CONVERSION_CONTROL_UNDEFINED",
+       "step": "carries -> rushing yards"
+      }
+     ],
+     "chain": "RB_RUSHING",
+     "links": [
+      {
+       "array": "team_volume__team_off_snaps",
+       "evidence": "MEASURED_DRAWS",
+       "step": "team_plays",
+       "value": 67.697
+      },
+      {
+       "array": "team_volume__team_carries",
+       "evidence": "MEASURED_DRAWS",
+       "step": "team_carries",
+       "value": 25.244857
+      },
+      {
+       "evidence": "DERIVED_BY_DIFFERENCE",
+       "step": "designed_rush_budget = rint(team_carries) - sum(QB scrambles)",
+       "value": 21.866
+      },
+      {
+       "code": "RB_CATEGORY_BUDGET_NOT_PERSISTED",
+       "evidence": "ABSENT",
+       "step": "designed_rush_budget -> RB carry budget",
+       "substitute": "sum of the modelled RBs' carries",
+       "substitute_value": 19.519335,
+       "value": null,
+       "why_honest": "A1 partitions the rush-play budget across six named categories and the rb category total is a real quantity the engine computed, but it is not written into the artifact. The sum over modelled RBs is a LOWER BOUND on it: any carry A1 gave the rb category that landed on an unmodelled back is missing from the sum and from nothing else."
+      },
+      {
+       "denominator": {
+        "mean": 19.519335,
+        "name": "sum(modelled RB carries)"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 3.31373,
+        "name": "rushing__carries[00-0040078]"
+       },
+       "step": "RB share of the modelled RB pool",
+       "value": 0.169767
+      },
+      {
+       "denominator": {
+        "mean": 25.244857,
+        "name": "team_volume__team_carries"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "the second denominator, persisted beside the first so a share can never be quoted without saying what it is a share OF",
+       "numerator": {
+        "mean": 3.31373,
+        "name": "rushing__carries[00-0040078]"
+       },
+       "step": "RB share of team_carries",
+       "value": 0.131264
+      },
+      {
+       "array": "rushing__carries",
+       "evidence": "MEASURED_DRAWS",
+       "non_integer_draw_cells": 604,
+       "note": "stored as float64 and fractional in most cells: these are allocated carry mass under the P4C simplex, not integer carries. A threshold read off them is reading a continuous quantity.",
+       "step": "carries",
+       "value": 3.31373
+      },
+      {
+       "code": "RUSHING_CONVERSION_CONTROL_UNDEFINED",
+       "evidence": "ABSENT",
+       "step": "carries -> rushing yards",
+       "substitute": null,
+       "value": null,
+       "why_honest": "the board declares this metric UNAVAILABLE and names carries x yards-per-carry as the PROHIBITED implementation. There is no substitute, so none is offered; the chain terminates at carries and the outcome view is null rather than invented."
+      }
+     ],
+     "participation": {
+      "basis": "LOWER_BOUND_ONLY",
+      "basis_detail": "the appearance probability is computed upstream and is not persisted in the sealed artifact. A player who appears and receives nothing is cell-for-cell identical to a player who did not appear, so the draws bound P(participates) from below and cannot identify it.",
+      "mask": "receiving__targets > 0 or rushing__carries > 0",
+      "p_participates": null,
+      "p_participates_is_a_bound": true,
+      "p_participates_lower_bound": 0.733,
+      "verified_cells_violating": null
+     },
+     "views": {
+      "cond_over_uncond_on_participation": null,
+      "conditional_caveat": "participation is not identified in the artifact, so every \"| participates\" figure here is conditioned on the LOWER-BOUND mask (any modelled opportunity > 0). It is an upper bound on the true conditional mean, because it drops the appear-and-receive-nothing draws that belong in the denominator.",
+      "conditional_is_identified": false,
+      "e_opportunity": 3.31373,
+      "e_opportunity_given_nonzero_opportunity": 5.362022,
+      "e_opportunity_given_participates": 4.520777,
+      "e_outcome": null,
+      "e_outcome_given_nonzero_opportunity": null,
+      "e_outcome_given_participates": null,
+      "one_minus_p_zero_outcome": null,
+      "one_over_one_minus_p_zero_opportunity": 1.618123,
+      "one_over_one_minus_p_zero_outcome": null,
+      "one_over_p_participates": null,
+      "opportunity_cond_over_uncond_on_participation": 1.364256,
+      "opportunity_metric": "rushing__carries",
+      "outcome_metric": null,
+      "p_participates": null,
+      "p_participates_lower_bound": 0.733,
+      "p_zero_opportunity": 0.382,
+      "p_zero_opportunity_equals_non_participation": false,
+      "p_zero_outcome": null,
+      "participating_draws_with_zero_opportunity": 115,
+      "ratio_identity_holds_against_p_participates": null,
+      "ratio_identity_note": "E[Y] = P(participates) * E[Y | participates] holds exactly for the PARTICIPATION mask and for no other probability. Against P(zero OUTCOME) it is off by the draws where a participating player produced a zero; against P(zero OPPORTUNITY) it is off by the draws where a participating player drew no opportunity -- on this board, backup quarterbacks who were sacked or scrambled without attempting a pass.",
+      "uncond_over_cond_on_participation": null,
+      "zero_opportunity_and_zero_outcome_agree": null
+     }
+    },
+    {
+     "absences": [
+      {
+       "code": "NO_ROUTES_LAYER",
+       "step": "team_dropbacks -> routes run"
+      }
+     ],
+     "chain": "RECEIVING",
+     "links": [
+      {
+       "array": "team_volume__team_dropbacks_part",
+       "evidence": "MEASURED_DRAWS",
+       "step": "team_dropbacks",
+       "value": 41.46789
+      },
+      {
+       "code": "NO_ROUTES_LAYER",
+       "evidence": "ABSENT",
+       "step": "team_dropbacks -> routes run",
+       "substitute": "pass-snap participation share (participation-s2-ewma_hl2)",
+       "substitute_value": null,
+       "value": null,
+       "why_honest": "V1 has no routes layer anywhere. The engine's own stand-in is pass_snaps / team_dropbacks, which nfl/production/nonqb/layers.py names as an UPPER BOUND on routes run with an unbounded gap -- and it is not persisted into this artifact either, so the proxy cannot even be quoted here. It is named as a proxy and left null rather than back-solved from targets, which would only re-derive the target share it is supposed to explain."
+      },
+      {
+       "evidence": "MEASURED_DRAWS",
+       "note": "C3 constructs receptions out of QB completions, so the receiving chain routes through the QB layer",
+       "step": "QB attempts (the real allocation pool)",
+       "value": 35.406
+      },
+      {
+       "evidence": "DERIVED_BY_SUM",
+       "step": "sum of modelled player targets (the allocation denominator)",
+       "value": 33.497
+      },
+      {
+       "code": "WS09_J12_STORED_TEAM_TARGETS_IS_NOT_THE_DENOMINATOR",
+       "evidence": "MEASURED_DRAWS",
+       "is_the_allocation_denominator": false,
+       "step": "stored team_volume__team_targets",
+       "value": 28.703538
+      },
+      {
+       "denominator": {
+        "mean": 33.497,
+        "name": "sum(modelled targets)"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 1.848,
+        "name": "receiving__targets[00-0040078]"
+       },
+       "step": "target share of the modelled target pool",
+       "value": 0.055169
+      },
+      {
+       "denominator": {
+        "mean": 28.703538,
+        "name": "team_volume__team_targets"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "persisted only so the size of the error is visible. This is not the share; it is what the share becomes when the denominator is taken from the wrong place.",
+       "numerator": {
+        "mean": 1.848,
+        "name": "receiving__targets[00-0040078]"
+       },
+       "step": "target share if the stored team total were used (WRONG)",
+       "value": 0.064382
+      },
+      {
+       "array": "receiving__targets",
+       "evidence": "MEASURED_DRAWS",
+       "step": "targets",
+       "value": 1.848
+      },
+      {
+       "array": "receiving__receptions",
+       "cells_with_receptions_above_targets": 0,
+       "evidence": "MEASURED_DRAWS",
+       "step": "receptions",
+       "value": 1.347
+      },
+      {
+       "denominator": {
+        "mean": 1.848,
+        "name": "receiving__targets"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 1.347,
+        "name": "receiving__receptions"
+       },
+       "step": "catch probability = receptions / targets",
+       "value": 0.728896
+      },
+      {
+       "array": "receiving__receiving_yards",
+       "cells_with_yards_and_no_reception": 0,
+       "evidence": "MEASURED_DRAWS",
+       "step": "receiving yards",
+       "value": 9.561
+      },
+      {
+       "denominator": {
+        "mean": 1.347,
+        "name": "receiving__receptions"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 9.561,
+        "name": "receiving__receiving_yards"
+       },
+       "step": "yards per reception = receiving yards / receptions",
+       "value": 7.097996
+      }
+     ],
+     "participation": {
+      "basis": "LOWER_BOUND_ONLY",
+      "basis_detail": "the appearance probability is computed upstream and is not persisted in the sealed artifact. A player who appears and receives nothing is cell-for-cell identical to a player who did not appear, so the draws bound P(participates) from below and cannot identify it.",
+      "mask": "receiving__targets > 0 or rushing__carries > 0",
+      "p_participates": null,
+      "p_participates_is_a_bound": true,
+      "p_participates_lower_bound": 0.733,
+      "verified_cells_violating": null
+     },
+     "views": {
+      "cond_over_uncond_on_participation": 1.364256,
+      "conditional_caveat": "participation is not identified in the artifact, so every \"| participates\" figure here is conditioned on the LOWER-BOUND mask (any modelled opportunity > 0). It is an upper bound on the true conditional mean, because it drops the appear-and-receive-nothing draws that belong in the denominator.",
+      "conditional_is_identified": false,
+      "e_opportunity": 1.848,
+      "e_opportunity_given_nonzero_opportunity": 2.910236,
+      "e_opportunity_given_participates": 2.521146,
+      "e_outcome": 9.561,
+      "e_outcome_given_nonzero_opportunity": 15.056693,
+      "e_outcome_given_participates": 13.043656,
+      "one_minus_p_zero_outcome": 0.562,
+      "one_over_one_minus_p_zero_opportunity": 1.574803,
+      "one_over_one_minus_p_zero_outcome": 1.779359,
+      "one_over_p_participates": null,
+      "opportunity_cond_over_uncond_on_participation": 1.364256,
+      "opportunity_metric": "receiving__targets",
+      "outcome_metric": "receiving__receiving_yards",
+      "p_participates": null,
+      "p_participates_lower_bound": 0.733,
+      "p_zero_opportunity": 0.365,
+      "p_zero_opportunity_equals_non_participation": false,
+      "p_zero_outcome": 0.438,
+      "participating_draws_with_zero_opportunity": 98,
+      "ratio_identity_holds_against_p_participates": null,
+      "ratio_identity_note": "E[Y] = P(participates) * E[Y | participates] holds exactly for the PARTICIPATION mask and for no other probability. Against P(zero OUTCOME) it is off by the draws where a participating player produced a zero; against P(zero OPPORTUNITY) it is off by the draws where a participating player drew no opportunity -- on this board, backup quarterbacks who were sacked or scrambled without attempting a pass.",
+      "uncond_over_cond_on_participation": 0.733,
+      "zero_opportunity_and_zero_outcome_agree": false
+     }
+    }
+   ],
+   "depth_chart": "RB3",
+   "gsis_id": "00-0040078",
+   "position": "RB",
+   "team": "KC"
+  },
+  {
+   "chains": [
+    {
+     "absences": [
+      {
+       "code": "NO_ROUTES_LAYER",
+       "step": "team_dropbacks -> routes run"
+      }
+     ],
+     "chain": "RECEIVING",
+     "links": [
+      {
+       "array": "team_volume__team_dropbacks_part",
+       "evidence": "MEASURED_DRAWS",
+       "step": "team_dropbacks",
+       "value": 41.46789
+      },
+      {
+       "code": "NO_ROUTES_LAYER",
+       "evidence": "ABSENT",
+       "step": "team_dropbacks -> routes run",
+       "substitute": "pass-snap participation share (participation-s2-ewma_hl2)",
+       "substitute_value": null,
+       "value": null,
+       "why_honest": "V1 has no routes layer anywhere. The engine's own stand-in is pass_snaps / team_dropbacks, which nfl/production/nonqb/layers.py names as an UPPER BOUND on routes run with an unbounded gap -- and it is not persisted into this artifact either, so the proxy cannot even be quoted here. It is named as a proxy and left null rather than back-solved from targets, which would only re-derive the target share it is supposed to explain."
+      },
+      {
+       "evidence": "MEASURED_DRAWS",
+       "note": "C3 constructs receptions out of QB completions, so the receiving chain routes through the QB layer",
+       "step": "QB attempts (the real allocation pool)",
+       "value": 35.406
+      },
+      {
+       "evidence": "DERIVED_BY_SUM",
+       "step": "sum of modelled player targets (the allocation denominator)",
+       "value": 33.497
+      },
+      {
+       "code": "WS09_J12_STORED_TEAM_TARGETS_IS_NOT_THE_DENOMINATOR",
+       "evidence": "MEASURED_DRAWS",
+       "is_the_allocation_denominator": false,
+       "step": "stored team_volume__team_targets",
+       "value": 28.703538
+      },
+      {
+       "denominator": {
+        "mean": 33.497,
+        "name": "sum(modelled targets)"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 1.088,
+        "name": "receiving__targets[00-0040081]"
+       },
+       "step": "target share of the modelled target pool",
+       "value": 0.032481
+      },
+      {
+       "denominator": {
+        "mean": 28.703538,
+        "name": "team_volume__team_targets"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "persisted only so the size of the error is visible. This is not the share; it is what the share becomes when the denominator is taken from the wrong place.",
+       "numerator": {
+        "mean": 1.088,
+        "name": "receiving__targets[00-0040081]"
+       },
+       "step": "target share if the stored team total were used (WRONG)",
+       "value": 0.037905
+      },
+      {
+       "array": "receiving__targets",
+       "evidence": "MEASURED_DRAWS",
+       "step": "targets",
+       "value": 1.088
+      },
+      {
+       "array": "receiving__receptions",
+       "cells_with_receptions_above_targets": 0,
+       "evidence": "MEASURED_DRAWS",
+       "step": "receptions",
+       "value": 0.751
+      },
+      {
+       "denominator": {
+        "mean": 1.088,
+        "name": "receiving__targets"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 0.751,
+        "name": "receiving__receptions"
+       },
+       "step": "catch probability = receptions / targets",
+       "value": 0.690257
+      },
+      {
+       "array": "receiving__receiving_yards",
+       "cells_with_yards_and_no_reception": 0,
+       "evidence": "MEASURED_DRAWS",
+       "step": "receiving yards",
+       "value": 7.469
+      },
+      {
+       "denominator": {
+        "mean": 0.751,
+        "name": "receiving__receptions"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 7.469,
+        "name": "receiving__receiving_yards"
+       },
+       "step": "yards per reception = receiving yards / receptions",
+       "value": 9.945406
+      }
+     ],
+     "participation": {
+      "basis": "LOWER_BOUND_ONLY",
+      "basis_detail": "the appearance probability is computed upstream and is not persisted in the sealed artifact. A player who appears and receives nothing is cell-for-cell identical to a player who did not appear, so the draws bound P(participates) from below and cannot identify it.",
+      "mask": "receiving__targets > 0",
+      "p_participates": null,
+      "p_participates_is_a_bound": true,
+      "p_participates_lower_bound": 0.426,
+      "verified_cells_violating": null
+     },
+     "views": {
+      "cond_over_uncond_on_participation": 2.347418,
+      "conditional_caveat": "participation is not identified in the artifact, so every \"| participates\" figure here is conditioned on the LOWER-BOUND mask (any modelled opportunity > 0). It is an upper bound on the true conditional mean, because it drops the appear-and-receive-nothing draws that belong in the denominator.",
+      "conditional_is_identified": false,
+      "e_opportunity": 1.088,
+      "e_opportunity_given_nonzero_opportunity": 2.553991,
+      "e_opportunity_given_participates": 2.553991,
+      "e_outcome": 7.469,
+      "e_outcome_given_nonzero_opportunity": 17.532864,
+      "e_outcome_given_participates": 17.532864,
+      "one_minus_p_zero_outcome": 0.361,
+      "one_over_one_minus_p_zero_opportunity": 2.347418,
+      "one_over_one_minus_p_zero_outcome": 2.770083,
+      "one_over_p_participates": null,
+      "opportunity_cond_over_uncond_on_participation": 2.347418,
+      "opportunity_metric": "receiving__targets",
+      "outcome_metric": "receiving__receiving_yards",
+      "p_participates": null,
+      "p_participates_lower_bound": 0.426,
+      "p_zero_opportunity": 0.574,
+      "p_zero_opportunity_equals_non_participation": true,
+      "p_zero_outcome": 0.639,
+      "participating_draws_with_zero_opportunity": 0,
+      "ratio_identity_holds_against_p_participates": null,
+      "ratio_identity_note": "E[Y] = P(participates) * E[Y | participates] holds exactly for the PARTICIPATION mask and for no other probability. Against P(zero OUTCOME) it is off by the draws where a participating player produced a zero; against P(zero OPPORTUNITY) it is off by the draws where a participating player drew no opportunity -- on this board, backup quarterbacks who were sacked or scrambled without attempting a pass.",
+      "uncond_over_cond_on_participation": 0.426,
+      "zero_opportunity_and_zero_outcome_agree": false
+     }
+    }
+   ],
+   "depth_chart": "TE4",
+   "gsis_id": "00-0040081",
+   "position": "TE",
+   "team": "KC"
+  },
+  {
+   "chains": [
+    {
+     "absences": [
+      {
+       "code": "NO_ROUTES_LAYER",
+       "step": "team_dropbacks -> routes run"
+      }
+     ],
+     "chain": "RECEIVING",
+     "links": [
+      {
+       "array": "team_volume__team_dropbacks_part",
+       "evidence": "MEASURED_DRAWS",
+       "step": "team_dropbacks",
+       "value": 41.46789
+      },
+      {
+       "code": "NO_ROUTES_LAYER",
+       "evidence": "ABSENT",
+       "step": "team_dropbacks -> routes run",
+       "substitute": "pass-snap participation share (participation-s2-ewma_hl2)",
+       "substitute_value": null,
+       "value": null,
+       "why_honest": "V1 has no routes layer anywhere. The engine's own stand-in is pass_snaps / team_dropbacks, which nfl/production/nonqb/layers.py names as an UPPER BOUND on routes run with an unbounded gap -- and it is not persisted into this artifact either, so the proxy cannot even be quoted here. It is named as a proxy and left null rather than back-solved from targets, which would only re-derive the target share it is supposed to explain."
+      },
+      {
+       "evidence": "MEASURED_DRAWS",
+       "note": "C3 constructs receptions out of QB completions, so the receiving chain routes through the QB layer",
+       "step": "QB attempts (the real allocation pool)",
+       "value": 35.406
+      },
+      {
+       "evidence": "DERIVED_BY_SUM",
+       "step": "sum of modelled player targets (the allocation denominator)",
+       "value": 33.497
+      },
+      {
+       "code": "WS09_J12_STORED_TEAM_TARGETS_IS_NOT_THE_DENOMINATOR",
+       "evidence": "MEASURED_DRAWS",
+       "is_the_allocation_denominator": false,
+       "step": "stored team_volume__team_targets",
+       "value": 28.703538
+      },
+      {
+       "denominator": {
+        "mean": 33.497,
+        "name": "sum(modelled targets)"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 1.176,
+        "name": "receiving__targets[00-0040646]"
+       },
+       "step": "target share of the modelled target pool",
+       "value": 0.035108
+      },
+      {
+       "denominator": {
+        "mean": 28.703538,
+        "name": "team_volume__team_targets"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "persisted only so the size of the error is visible. This is not the share; it is what the share becomes when the denominator is taken from the wrong place.",
+       "numerator": {
+        "mean": 1.176,
+        "name": "receiving__targets[00-0040646]"
+       },
+       "step": "target share if the stored team total were used (WRONG)",
+       "value": 0.040971
+      },
+      {
+       "array": "receiving__targets",
+       "evidence": "MEASURED_DRAWS",
+       "step": "targets",
+       "value": 1.176
+      },
+      {
+       "array": "receiving__receptions",
+       "cells_with_receptions_above_targets": 0,
+       "evidence": "MEASURED_DRAWS",
+       "step": "receptions",
+       "value": 0.771
+      },
+      {
+       "denominator": {
+        "mean": 1.176,
+        "name": "receiving__targets"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 0.771,
+        "name": "receiving__receptions"
+       },
+       "step": "catch probability = receptions / targets",
+       "value": 0.655612
+      },
+      {
+       "array": "receiving__receiving_yards",
+       "cells_with_yards_and_no_reception": 0,
+       "evidence": "MEASURED_DRAWS",
+       "step": "receiving yards",
+       "value": 5.717
+      },
+      {
+       "denominator": {
+        "mean": 0.771,
+        "name": "receiving__receptions"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 5.717,
+        "name": "receiving__receiving_yards"
+       },
+       "step": "yards per reception = receiving yards / receptions",
+       "value": 7.415045
+      }
+     ],
+     "participation": {
+      "basis": "LOWER_BOUND_ONLY",
+      "basis_detail": "the appearance probability is computed upstream and is not persisted in the sealed artifact. A player who appears and receives nothing is cell-for-cell identical to a player who did not appear, so the draws bound P(participates) from below and cannot identify it.",
+      "mask": "receiving__targets > 0",
+      "p_participates": null,
+      "p_participates_is_a_bound": true,
+      "p_participates_lower_bound": 0.399,
+      "verified_cells_violating": null
+     },
+     "views": {
+      "cond_over_uncond_on_participation": 2.506266,
+      "conditional_caveat": "participation is not identified in the artifact, so every \"| participates\" figure here is conditioned on the LOWER-BOUND mask (any modelled opportunity > 0). It is an upper bound on the true conditional mean, because it drops the appear-and-receive-nothing draws that belong in the denominator.",
+      "conditional_is_identified": false,
+      "e_opportunity": 1.176,
+      "e_opportunity_given_nonzero_opportunity": 2.947368,
+      "e_opportunity_given_participates": 2.947368,
+      "e_outcome": 5.717,
+      "e_outcome_given_nonzero_opportunity": 14.328321,
+      "e_outcome_given_participates": 14.328321,
+      "one_minus_p_zero_outcome": 0.344,
+      "one_over_one_minus_p_zero_opportunity": 2.506266,
+      "one_over_one_minus_p_zero_outcome": 2.906977,
+      "one_over_p_participates": null,
+      "opportunity_cond_over_uncond_on_participation": 2.506265,
+      "opportunity_metric": "receiving__targets",
+      "outcome_metric": "receiving__receiving_yards",
+      "p_participates": null,
+      "p_participates_lower_bound": 0.399,
+      "p_zero_opportunity": 0.601,
+      "p_zero_opportunity_equals_non_participation": true,
+      "p_zero_outcome": 0.656,
+      "participating_draws_with_zero_opportunity": 0,
+      "ratio_identity_holds_against_p_participates": null,
+      "ratio_identity_note": "E[Y] = P(participates) * E[Y | participates] holds exactly for the PARTICIPATION mask and for no other probability. Against P(zero OUTCOME) it is off by the draws where a participating player produced a zero; against P(zero OPPORTUNITY) it is off by the draws where a participating player drew no opportunity -- on this board, backup quarterbacks who were sacked or scrambled without attempting a pass.",
+      "uncond_over_cond_on_participation": 0.399,
+      "zero_opportunity_and_zero_outcome_agree": false
+     }
+    }
+   ],
+   "depth_chart": "WR5",
+   "gsis_id": "00-0040646",
+   "position": "WR",
+   "team": "KC"
+  },
+  {
+   "chains": [
+    {
+     "absences": [
+      {
+       "code": "NO_ROUTES_LAYER",
+       "step": "team_dropbacks -> routes run"
+      }
+     ],
+     "chain": "RECEIVING",
+     "links": [
+      {
+       "array": "team_volume__team_dropbacks_part",
+       "evidence": "MEASURED_DRAWS",
+       "step": "team_dropbacks",
+       "value": 41.46789
+      },
+      {
+       "code": "NO_ROUTES_LAYER",
+       "evidence": "ABSENT",
+       "step": "team_dropbacks -> routes run",
+       "substitute": "pass-snap participation share (participation-s2-ewma_hl2)",
+       "substitute_value": null,
+       "value": null,
+       "why_honest": "V1 has no routes layer anywhere. The engine's own stand-in is pass_snaps / team_dropbacks, which nfl/production/nonqb/layers.py names as an UPPER BOUND on routes run with an unbounded gap -- and it is not persisted into this artifact either, so the proxy cannot even be quoted here. It is named as a proxy and left null rather than back-solved from targets, which would only re-derive the target share it is supposed to explain."
+      },
+      {
+       "evidence": "MEASURED_DRAWS",
+       "note": "C3 constructs receptions out of QB completions, so the receiving chain routes through the QB layer",
+       "step": "QB attempts (the real allocation pool)",
+       "value": 35.406
+      },
+      {
+       "evidence": "DERIVED_BY_SUM",
+       "step": "sum of modelled player targets (the allocation denominator)",
+       "value": 33.497
+      },
+      {
+       "code": "WS09_J12_STORED_TEAM_TARGETS_IS_NOT_THE_DENOMINATOR",
+       "evidence": "MEASURED_DRAWS",
+       "is_the_allocation_denominator": false,
+       "step": "stored team_volume__team_targets",
+       "value": 28.703538
+      },
+      {
+       "denominator": {
+        "mean": 33.497,
+        "name": "sum(modelled targets)"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 1.846,
+        "name": "receiving__targets[00-0040890]"
+       },
+       "step": "target share of the modelled target pool",
+       "value": 0.055109
+      },
+      {
+       "denominator": {
+        "mean": 28.703538,
+        "name": "team_volume__team_targets"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "persisted only so the size of the error is visible. This is not the share; it is what the share becomes when the denominator is taken from the wrong place.",
+       "numerator": {
+        "mean": 1.846,
+        "name": "receiving__targets[00-0040890]"
+       },
+       "step": "target share if the stored team total were used (WRONG)",
+       "value": 0.064313
+      },
+      {
+       "array": "receiving__targets",
+       "evidence": "MEASURED_DRAWS",
+       "step": "targets",
+       "value": 1.846
+      },
+      {
+       "array": "receiving__receptions",
+       "cells_with_receptions_above_targets": 0,
+       "evidence": "MEASURED_DRAWS",
+       "step": "receptions",
+       "value": 1.173
+      },
+      {
+       "denominator": {
+        "mean": 1.846,
+        "name": "receiving__targets"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 1.173,
+        "name": "receiving__receptions"
+       },
+       "step": "catch probability = receptions / targets",
+       "value": 0.635428
+      },
+      {
+       "array": "receiving__receiving_yards",
+       "cells_with_yards_and_no_reception": 0,
+       "evidence": "MEASURED_DRAWS",
+       "step": "receiving yards",
+       "value": 14.541
+      },
+      {
+       "denominator": {
+        "mean": 1.173,
+        "name": "receiving__receptions"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 14.541,
+        "name": "receiving__receiving_yards"
+       },
+       "step": "yards per reception = receiving yards / receptions",
+       "value": 12.396419
+      }
+     ],
+     "participation": {
+      "basis": "LOWER_BOUND_ONLY",
+      "basis_detail": "the appearance probability is computed upstream and is not persisted in the sealed artifact. A player who appears and receives nothing is cell-for-cell identical to a player who did not appear, so the draws bound P(participates) from below and cannot identify it.",
+      "mask": "receiving__targets > 0",
+      "p_participates": null,
+      "p_participates_is_a_bound": true,
+      "p_participates_lower_bound": 0.605,
+      "verified_cells_violating": null
+     },
+     "views": {
+      "cond_over_uncond_on_participation": 1.652893,
+      "conditional_caveat": "participation is not identified in the artifact, so every \"| participates\" figure here is conditioned on the LOWER-BOUND mask (any modelled opportunity > 0). It is an upper bound on the true conditional mean, because it drops the appear-and-receive-nothing draws that belong in the denominator.",
+      "conditional_is_identified": false,
+      "e_opportunity": 1.846,
+      "e_opportunity_given_nonzero_opportunity": 3.05124,
+      "e_opportunity_given_participates": 3.05124,
+      "e_outcome": 14.541,
+      "e_outcome_given_nonzero_opportunity": 24.034711,
+      "e_outcome_given_participates": 24.034711,
+      "one_minus_p_zero_outcome": 0.526,
+      "one_over_one_minus_p_zero_opportunity": 1.652893,
+      "one_over_one_minus_p_zero_outcome": 1.901141,
+      "one_over_p_participates": null,
+      "opportunity_cond_over_uncond_on_participation": 1.652893,
+      "opportunity_metric": "receiving__targets",
+      "outcome_metric": "receiving__receiving_yards",
+      "p_participates": null,
+      "p_participates_lower_bound": 0.605,
+      "p_zero_opportunity": 0.395,
+      "p_zero_opportunity_equals_non_participation": true,
+      "p_zero_outcome": 0.474,
+      "participating_draws_with_zero_opportunity": 0,
+      "ratio_identity_holds_against_p_participates": null,
+      "ratio_identity_note": "E[Y] = P(participates) * E[Y | participates] holds exactly for the PARTICIPATION mask and for no other probability. Against P(zero OUTCOME) it is off by the draws where a participating player produced a zero; against P(zero OPPORTUNITY) it is off by the draws where a participating player drew no opportunity -- on this board, backup quarterbacks who were sacked or scrambled without attempting a pass.",
+      "uncond_over_cond_on_participation": 0.605,
+      "zero_opportunity_and_zero_outcome_agree": false
+     }
+    }
+   ],
+   "depth_chart": "WR4",
+   "gsis_id": "00-0040890",
+   "position": "WR",
+   "team": "KC"
+  },
+  {
+   "chains": [
+    {
+     "absences": [],
+     "chain": "QB_PASSING",
+     "links": [
+      {
+       "array": "team_volume__team_off_snaps",
+       "evidence": "MEASURED_DRAWS",
+       "step": "team_plays",
+       "value": 67.697
+      },
+      {
+       "array": "team_volume__team_dropbacks_part",
+       "evidence": "MEASURED_DRAWS",
+       "step": "team_dropbacks",
+       "value": 41.46789
+      },
+      {
+       "denominator": {
+        "mean": 41.46789,
+        "name": "team_dropbacks_part"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 5.47,
+        "name": "qb__db[00-0040906]"
+       },
+       "step": "QB participation/share of team dropbacks",
+       "value": 0.131909
+      },
+      {
+       "array": "qb__db",
+       "evidence": "MEASURED_DRAWS",
+       "step": "QB dropbacks",
+       "value": 5.47
+      },
+      {
+       "array": "qb__att",
+       "evidence": "MEASURED_DRAWS",
+       "holds_on_every_draw": true,
+       "identity": "qb__db == qb__att + qb__sacks + qb__scr",
+       "note": "an exact per-draw identity in the stored artifact, so the attempt link is measured rather than reconstructed",
+       "step": "dropbacks -> attempts",
+       "value": 4.868,
+       "worst_absolute_deviation": 0.0
+      },
+      {
+       "array": "qb__cmp",
+       "evidence": "MEASURED_DRAWS",
+       "step": "completions",
+       "value": 3.227
+      },
+      {
+       "denominator": {
+        "mean": 4.868,
+        "name": "qb__att"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 3.227,
+        "name": "qb__cmp"
+       },
+       "step": "completion rate = completions / attempts",
+       "value": 0.662901
+      },
+      {
+       "array": "qb__pyds",
+       "evidence": "MEASURED_DRAWS",
+       "step": "passing yards",
+       "value": 34.56661
+      },
+      {
+       "denominator": {
+        "mean": 3.227,
+        "name": "qb__cmp"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 34.56661,
+        "name": "qb__pyds"
+       },
+       "step": "yards per completion = passing yards / completions",
+       "value": 10.711686
+      }
+     ],
+     "participation": {
+      "basis": "IDENTIFIED_IN_DRAWS",
+      "basis_detail": "zero dropbacks implies zero of every other QB quantity on every draw cell, so the mask separates \"did not play as a passer\" from \"played and produced nothing\"",
+      "mask": "qb__db > 0",
+      "p_participates": 0.581,
+      "p_participates_is_a_bound": false,
+      "p_participates_lower_bound": 0.581,
+      "verified_cells_violating": 0
+     },
+     "views": {
+      "cond_over_uncond_on_participation": 1.72117,
+      "conditional_caveat": null,
+      "conditional_is_identified": true,
+      "e_opportunity": 4.868,
+      "e_opportunity_given_nonzero_opportunity": 8.407599,
+      "e_opportunity_given_participates": 8.378657,
+      "e_outcome": 34.56661,
+      "e_outcome_given_nonzero_opportunity": 59.700535,
+      "e_outcome_given_participates": 59.495025,
+      "one_minus_p_zero_outcome": 0.549,
+      "one_over_one_minus_p_zero_opportunity": 1.727116,
+      "one_over_one_minus_p_zero_outcome": 1.821494,
+      "one_over_p_participates": 1.72117,
+      "opportunity_cond_over_uncond_on_participation": 1.72117,
+      "opportunity_metric": "qb__att",
+      "outcome_metric": "qb__pyds",
+      "p_participates": 0.581,
+      "p_participates_lower_bound": 0.581,
+      "p_zero_opportunity": 0.421,
+      "p_zero_opportunity_equals_non_participation": false,
+      "p_zero_outcome": 0.451,
+      "participating_draws_with_zero_opportunity": 2,
+      "ratio_identity_holds_against_p_participates": true,
+      "ratio_identity_note": "E[Y] = P(participates) * E[Y | participates] holds exactly for the PARTICIPATION mask and for no other probability. Against P(zero OUTCOME) it is off by the draws where a participating player produced a zero; against P(zero OPPORTUNITY) it is off by the draws where a participating player drew no opportunity -- on this board, backup quarterbacks who were sacked or scrambled without attempting a pass.",
+      "uncond_over_cond_on_participation": 0.581,
+      "zero_opportunity_and_zero_outcome_agree": false
+     }
+    },
+    {
+     "absences": [],
+     "chain": "QB_RUSHING",
+     "links": [
+      {
+       "array": "qb__rush_opp",
+       "evidence": "MEASURED_DRAWS",
+       "step": "QB rush opportunities",
+       "value": 0.481
+      },
+      {
+       "array": "qb__ryds",
+       "evidence": "MEASURED_DRAWS",
+       "note": "the QB layer HAS a carry->yards conversion. The non-QB layer does not. Same board, two different answers to the same modelling question.",
+       "step": "QB rushing yards",
+       "value": 2.49608
+      },
+      {
+       "denominator": {
+        "mean": 0.481,
+        "name": "qb__rush_opp"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 2.49608,
+        "name": "qb__ryds"
+       },
+       "step": "yards per rush opportunity",
+       "value": 5.189356
+      }
+     ],
+     "participation": {
+      "basis": "IDENTIFIED_IN_DRAWS",
+      "basis_detail": "zero dropbacks implies zero of every other QB quantity on every draw cell, so the mask separates \"did not play as a passer\" from \"played and produced nothing\"",
+      "mask": "qb__db > 0",
+      "p_participates": 0.581,
+      "p_participates_is_a_bound": false,
+      "p_participates_lower_bound": 0.581,
+      "verified_cells_violating": 0
+     },
+     "views": {
+      "cond_over_uncond_on_participation": 1.72117,
+      "conditional_caveat": null,
+      "conditional_is_identified": true,
+      "e_opportunity": 0.481,
+      "e_opportunity_given_nonzero_opportunity": 1.551613,
+      "e_opportunity_given_participates": 0.827883,
+      "e_outcome": 2.49608,
+      "e_outcome_given_nonzero_opportunity": 8.051871,
+      "e_outcome_given_participates": 4.296179,
+      "one_minus_p_zero_outcome": 0.302,
+      "one_over_one_minus_p_zero_opportunity": 3.225806,
+      "one_over_one_minus_p_zero_outcome": 3.311258,
+      "one_over_p_participates": 1.72117,
+      "opportunity_cond_over_uncond_on_participation": 1.72117,
+      "opportunity_metric": "qb__rush_opp",
+      "outcome_metric": "qb__ryds",
+      "p_participates": 0.581,
+      "p_participates_lower_bound": 0.581,
+      "p_zero_opportunity": 0.69,
+      "p_zero_opportunity_equals_non_participation": false,
+      "p_zero_outcome": 0.698,
+      "participating_draws_with_zero_opportunity": 271,
+      "ratio_identity_holds_against_p_participates": true,
+      "ratio_identity_note": "E[Y] = P(participates) * E[Y | participates] holds exactly for the PARTICIPATION mask and for no other probability. Against P(zero OUTCOME) it is off by the draws where a participating player produced a zero; against P(zero OPPORTUNITY) it is off by the draws where a participating player drew no opportunity -- on this board, backup quarterbacks who were sacked or scrambled without attempting a pass.",
+      "uncond_over_cond_on_participation": 0.581,
+      "zero_opportunity_and_zero_outcome_agree": false
+     }
+    }
+   ],
+   "depth_chart": "QB3",
+   "gsis_id": "00-0040906",
+   "position": "QB",
+   "team": "KC"
+  },
+  {
+   "chains": [
+    {
+     "absences": [
+      {
+       "code": "RB_CATEGORY_BUDGET_NOT_PERSISTED",
+       "step": "designed_rush_budget -> RB carry budget"
+      },
+      {
+       "code": "RUSHING_CONVERSION_CONTROL_UNDEFINED",
+       "step": "carries -> rushing yards"
+      }
+     ],
+     "chain": "RB_RUSHING",
+     "links": [
+      {
+       "array": "team_volume__team_off_snaps",
+       "evidence": "MEASURED_DRAWS",
+       "step": "team_plays",
+       "value": 67.697
+      },
+      {
+       "array": "team_volume__team_carries",
+       "evidence": "MEASURED_DRAWS",
+       "step": "team_carries",
+       "value": 25.244857
+      },
+      {
+       "evidence": "DERIVED_BY_DIFFERENCE",
+       "step": "designed_rush_budget = rint(team_carries) - sum(QB scrambles)",
+       "value": 21.866
+      },
+      {
+       "code": "RB_CATEGORY_BUDGET_NOT_PERSISTED",
+       "evidence": "ABSENT",
+       "step": "designed_rush_budget -> RB carry budget",
+       "substitute": "sum of the modelled RBs' carries",
+       "substitute_value": 19.519335,
+       "value": null,
+       "why_honest": "A1 partitions the rush-play budget across six named categories and the rb category total is a real quantity the engine computed, but it is not written into the artifact. The sum over modelled RBs is a LOWER BOUND on it: any carry A1 gave the rb category that landed on an unmodelled back is missing from the sum and from nothing else."
+      },
+      {
+       "denominator": {
+        "mean": 19.519335,
+        "name": "sum(modelled RB carries)"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 5.287331,
+        "name": "rushing__carries[00-0041013]"
+       },
+       "step": "RB share of the modelled RB pool",
+       "value": 0.270877
+      },
+      {
+       "denominator": {
+        "mean": 25.244857,
+        "name": "team_volume__team_carries"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "the second denominator, persisted beside the first so a share can never be quoted without saying what it is a share OF",
+       "numerator": {
+        "mean": 5.287331,
+        "name": "rushing__carries[00-0041013]"
+       },
+       "step": "RB share of team_carries",
+       "value": 0.209442
+      },
+      {
+       "array": "rushing__carries",
+       "evidence": "MEASURED_DRAWS",
+       "non_integer_draw_cells": 783,
+       "note": "stored as float64 and fractional in most cells: these are allocated carry mass under the P4C simplex, not integer carries. A threshold read off them is reading a continuous quantity.",
+       "step": "carries",
+       "value": 5.287331
+      },
+      {
+       "code": "RUSHING_CONVERSION_CONTROL_UNDEFINED",
+       "evidence": "ABSENT",
+       "step": "carries -> rushing yards",
+       "substitute": null,
+       "value": null,
+       "why_honest": "the board declares this metric UNAVAILABLE and names carries x yards-per-carry as the PROHIBITED implementation. There is no substitute, so none is offered; the chain terminates at carries and the outcome view is null rather than invented."
+      }
+     ],
+     "participation": {
+      "basis": "LOWER_BOUND_ONLY",
+      "basis_detail": "the appearance probability is computed upstream and is not persisted in the sealed artifact. A player who appears and receives nothing is cell-for-cell identical to a player who did not appear, so the draws bound P(participates) from below and cannot identify it.",
+      "mask": "receiving__targets > 0 or rushing__carries > 0",
+      "p_participates": null,
+      "p_participates_is_a_bound": true,
+      "p_participates_lower_bound": 0.909,
+      "verified_cells_violating": null
+     },
+     "views": {
+      "cond_over_uncond_on_participation": null,
+      "conditional_caveat": "participation is not identified in the artifact, so every \"| participates\" figure here is conditioned on the LOWER-BOUND mask (any modelled opportunity > 0). It is an upper bound on the true conditional mean, because it drops the appear-and-receive-nothing draws that belong in the denominator.",
+      "conditional_is_identified": false,
+      "e_opportunity": 5.287331,
+      "e_opportunity_given_nonzero_opportunity": 6.362612,
+      "e_opportunity_given_participates": 5.816646,
+      "e_outcome": null,
+      "e_outcome_given_nonzero_opportunity": null,
+      "e_outcome_given_participates": null,
+      "one_minus_p_zero_outcome": null,
+      "one_over_one_minus_p_zero_opportunity": 1.203369,
+      "one_over_one_minus_p_zero_outcome": null,
+      "one_over_p_participates": null,
+      "opportunity_cond_over_uncond_on_participation": 1.10011,
+      "opportunity_metric": "rushing__carries",
+      "outcome_metric": null,
+      "p_participates": null,
+      "p_participates_lower_bound": 0.909,
+      "p_zero_opportunity": 0.169,
+      "p_zero_opportunity_equals_non_participation": false,
+      "p_zero_outcome": null,
+      "participating_draws_with_zero_opportunity": 78,
+      "ratio_identity_holds_against_p_participates": null,
+      "ratio_identity_note": "E[Y] = P(participates) * E[Y | participates] holds exactly for the PARTICIPATION mask and for no other probability. Against P(zero OUTCOME) it is off by the draws where a participating player produced a zero; against P(zero OPPORTUNITY) it is off by the draws where a participating player drew no opportunity -- on this board, backup quarterbacks who were sacked or scrambled without attempting a pass.",
+      "uncond_over_cond_on_participation": null,
+      "zero_opportunity_and_zero_outcome_agree": null
+     }
+    },
+    {
+     "absences": [
+      {
+       "code": "NO_ROUTES_LAYER",
+       "step": "team_dropbacks -> routes run"
+      }
+     ],
+     "chain": "RECEIVING",
+     "links": [
+      {
+       "array": "team_volume__team_dropbacks_part",
+       "evidence": "MEASURED_DRAWS",
+       "step": "team_dropbacks",
+       "value": 41.46789
+      },
+      {
+       "code": "NO_ROUTES_LAYER",
+       "evidence": "ABSENT",
+       "step": "team_dropbacks -> routes run",
+       "substitute": "pass-snap participation share (participation-s2-ewma_hl2)",
+       "substitute_value": null,
+       "value": null,
+       "why_honest": "V1 has no routes layer anywhere. The engine's own stand-in is pass_snaps / team_dropbacks, which nfl/production/nonqb/layers.py names as an UPPER BOUND on routes run with an unbounded gap -- and it is not persisted into this artifact either, so the proxy cannot even be quoted here. It is named as a proxy and left null rather than back-solved from targets, which would only re-derive the target share it is supposed to explain."
+      },
+      {
+       "evidence": "MEASURED_DRAWS",
+       "note": "C3 constructs receptions out of QB completions, so the receiving chain routes through the QB layer",
+       "step": "QB attempts (the real allocation pool)",
+       "value": 35.406
+      },
+      {
+       "evidence": "DERIVED_BY_SUM",
+       "step": "sum of modelled player targets (the allocation denominator)",
+       "value": 33.497
+      },
+      {
+       "code": "WS09_J12_STORED_TEAM_TARGETS_IS_NOT_THE_DENOMINATOR",
+       "evidence": "MEASURED_DRAWS",
+       "is_the_allocation_denominator": false,
+       "step": "stored team_volume__team_targets",
+       "value": 28.703538
+      },
+      {
+       "denominator": {
+        "mean": 33.497,
+        "name": "sum(modelled targets)"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 1.139,
+        "name": "receiving__targets[00-0041013]"
+       },
+       "step": "target share of the modelled target pool",
+       "value": 0.034003
+      },
+      {
+       "denominator": {
+        "mean": 28.703538,
+        "name": "team_volume__team_targets"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "persisted only so the size of the error is visible. This is not the share; it is what the share becomes when the denominator is taken from the wrong place.",
+       "numerator": {
+        "mean": 1.139,
+        "name": "receiving__targets[00-0041013]"
+       },
+       "step": "target share if the stored team total were used (WRONG)",
+       "value": 0.039682
+      },
+      {
+       "array": "receiving__targets",
+       "evidence": "MEASURED_DRAWS",
+       "step": "targets",
+       "value": 1.139
+      },
+      {
+       "array": "receiving__receptions",
+       "cells_with_receptions_above_targets": 0,
+       "evidence": "MEASURED_DRAWS",
+       "step": "receptions",
+       "value": 0.865
+      },
+      {
+       "denominator": {
+        "mean": 1.139,
+        "name": "receiving__targets"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 0.865,
+        "name": "receiving__receptions"
+       },
+       "step": "catch probability = receptions / targets",
+       "value": 0.759438
+      },
+      {
+       "array": "receiving__receiving_yards",
+       "cells_with_yards_and_no_reception": 0,
+       "evidence": "MEASURED_DRAWS",
+       "step": "receiving yards",
+       "value": 6.265
+      },
+      {
+       "denominator": {
+        "mean": 0.865,
+        "name": "receiving__receptions"
+       },
+       "evidence": "DERIVED_BY_DIVISION",
+       "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+       "numerator": {
+        "mean": 6.265,
+        "name": "receiving__receiving_yards"
+       },
+       "step": "yards per reception = receiving yards / receptions",
+       "value": 7.242775
+      }
+     ],
+     "participation": {
+      "basis": "LOWER_BOUND_ONLY",
+      "basis_detail": "the appearance probability is computed upstream and is not persisted in the sealed artifact. A player who appears and receives nothing is cell-for-cell identical to a player who did not appear, so the draws bound P(participates) from below and cannot identify it.",
+      "mask": "receiving__targets > 0 or rushing__carries > 0",
+      "p_participates": null,
+      "p_participates_is_a_bound": true,
+      "p_participates_lower_bound": 0.909,
+      "verified_cells_violating": null
+     },
+     "views": {
+      "cond_over_uncond_on_participation": 1.10011,
+      "conditional_caveat": "participation is not identified in the artifact, so every \"| participates\" figure here is conditioned on the LOWER-BOUND mask (any modelled opportunity > 0). It is an upper bound on the true conditional mean, because it drops the appear-and-receive-nothing draws that belong in the denominator.",
+      "conditional_is_identified": false,
+      "e_opportunity": 1.139,
+      "e_opportunity_given_nonzero_opportunity": 2.363071,
+      "e_opportunity_given_participates": 1.253025,
+      "e_outcome": 6.265,
+      "e_outcome_given_nonzero_opportunity": 12.997925,
+      "e_outcome_given_participates": 6.892189,
+      "one_minus_p_zero_outcome": 0.418,
+      "one_over_one_minus_p_zero_opportunity": 2.074689,
+      "one_over_one_minus_p_zero_outcome": 2.392344,
+      "one_over_p_participates": null,
+      "opportunity_cond_over_uncond_on_participation": 1.10011,
+      "opportunity_metric": "receiving__targets",
+      "outcome_metric": "receiving__receiving_yards",
+      "p_participates": null,
+      "p_participates_lower_bound": 0.909,
+      "p_zero_opportunity": 0.518,
+      "p_zero_opportunity_equals_non_participation": false,
+      "p_zero_outcome": 0.582,
+      "participating_draws_with_zero_opportunity": 427,
+      "ratio_identity_holds_against_p_participates": null,
+      "ratio_identity_note": "E[Y] = P(participates) * E[Y | participates] holds exactly for the PARTICIPATION mask and for no other probability. Against P(zero OUTCOME) it is off by the draws where a participating player produced a zero; against P(zero OPPORTUNITY) it is off by the draws where a participating player drew no opportunity -- on this board, backup quarterbacks who were sacked or scrambled without attempting a pass.",
+      "uncond_over_cond_on_participation": 0.909,
+      "zero_opportunity_and_zero_outcome_agree": false
+     }
+    }
+   ],
+   "depth_chart": "RB2",
+   "gsis_id": "00-0041013",
+   "position": "RB",
+   "team": "KC"
+  }
+ ],
+ "run_id": "f91342d6787a66a1",
+ "team_chains": {
+  "DEN": {
+   "conservation": [],
+   "links": [
+    {
+     "array": "team_volume__team_off_snaps",
+     "evidence": "MEASURED_DRAWS",
+     "step": "team_plays (offensive snaps)",
+     "value": 65.412
+    },
+    {
+     "array": "team_volume__team_dropbacks_part",
+     "evidence": "MEASURED_DRAWS",
+     "step": "team_plays -> team_dropbacks",
+     "value": 37.185768
+    },
+    {
+     "array": "team_volume__team_carries",
+     "evidence": "MEASURED_DRAWS",
+     "step": "team_plays -> team_carries (designed rushes + scrambles)",
+     "value": 27.551364
+    },
+    {
+     "denominator": {
+      "mean": 65.412,
+      "name": "team_off_snaps"
+     },
+     "evidence": "DERIVED_BY_DIVISION",
+     "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+     "numerator": {
+      "mean": 37.185768,
+      "name": "team_dropbacks_part"
+     },
+     "step": "dropback rate = team_dropbacks / team_plays",
+     "value": 0.568485
+    },
+    {
+     "evidence": "DERIVED_BY_DIFFERENCE",
+     "max": 7.886646,
+     "min": -6.632418,
+     "note": "the three team levels are drawn as separate streams and do not close to each other by construction. The residual is reported because a decomposition that hid it would imply a closure the engine does not enforce.",
+     "step": "residual = team_plays - (team_dropbacks + team_carries)",
+     "value": 0.674867
+    },
+    {
+     "evidence": "MEASURED_DRAWS",
+     "holds_on_every_draw": true,
+     "identity": "sum(qb__db over the team) == rint(team_dropbacks_part)",
+     "note": "checked cell by cell on the stored draws; this one is a measurement, not a reconstruction",
+     "step": "team_dropbacks -> sum(QB dropbacks)",
+     "value": 37.223,
+     "worst_absolute_deviation": 0.0
+    },
+    {
+     "evidence": "DERIVED_BY_DIFFERENCE",
+     "min": 7.0,
+     "note": "the A1 ownership graph subtracts dropback-owned scrambles from the carry level before partitioning. rint() is the caller's declared level_rounding, not this module's choice.",
+     "step": "designed_rush_budget = rint(team_carries) - sum(QB scrambles)",
+     "value": 25.082
+    },
+    {
+     "code": "WS09_J12_STORED_TEAM_TARGETS_IS_NOT_THE_DENOMINATOR",
+     "evidence": "MEASURED_DRAWS",
+     "is_the_allocation_denominator": false,
+     "note": "persisted so the wrong denominator is visible rather than merely absent. Dividing a player target mean by this value yields a share of a pool the allocator never used.",
+     "step": "stored team_volume__team_targets",
+     "value": 33.749483
+    }
+   ],
+   "means": {
+    "designed_rush_budget": 25.082,
+    "qb_attempts": 33.236,
+    "stored_team_targets": 33.749483,
+    "sum_modelled_targets": null,
+    "team_carries": 27.551364,
+    "team_dropbacks": 37.185768,
+    "team_off_snaps": 65.412
+   },
+   "team": "DEN"
+  },
+  "KC": {
+   "conservation": [
+    {
+     "evidence": "MEASURED_DRAWS",
+     "holds_on_every_draw": true,
+     "identity": "sum(receiving__receptions) == sum(qb__cmp)",
+     "note": "C3 CONSTRUCTS the receiving layer out of QB completions rather than reconciling two independent draws. The receiving chain must therefore route through QB attempts, not through a separately stored team total.",
+     "worst_absolute_deviation": 0.0
+    },
+    {
+     "evidence": "MEASURED_DRAWS",
+     "holds_on_every_draw": true,
+     "identity": "sum(receiving__receiving_yards) == sum(qb__pyds)",
+     "worst_absolute_deviation": 0.0
+    },
+    {
+     "draws_at_the_boundary": 183,
+     "evidence": "MEASURED_DRAWS",
+     "holds_exactly": false,
+     "holds_within_tolerance": true,
+     "identity": "sum(modelled RB carries) <= designed_rush_budget",
+     "note": "the RB *category* budget A1 drew is not persisted. What is checked here is containment inside the whole rush-play budget, which is weaker. It holds to 1e-5 and NOT exactly: the overshoot is float32-scale and is reported rather than rounded away.",
+     "tolerance": 1e-05,
+     "worst_excess": 2.328e-06
+    }
+   ],
+   "links": [
+    {
+     "array": "team_volume__team_off_snaps",
+     "evidence": "MEASURED_DRAWS",
+     "step": "team_plays (offensive snaps)",
+     "value": 67.697
+    },
+    {
+     "array": "team_volume__team_dropbacks_part",
+     "evidence": "MEASURED_DRAWS",
+     "step": "team_plays -> team_dropbacks",
+     "value": 41.46789
+    },
+    {
+     "array": "team_volume__team_carries",
+     "evidence": "MEASURED_DRAWS",
+     "step": "team_plays -> team_carries (designed rushes + scrambles)",
+     "value": 25.244857
+    },
+    {
+     "denominator": {
+      "mean": 67.697,
+      "name": "team_off_snaps"
+     },
+     "evidence": "DERIVED_BY_DIVISION",
+     "note": "a ratio computed backwards from two engine outputs; it reproduces itself by construction and is not independent evidence about the rate",
+     "numerator": {
+      "mean": 41.46789,
+      "name": "team_dropbacks_part"
+     },
+     "step": "dropback rate = team_dropbacks / team_plays",
+     "value": 0.612551
+    },
+    {
+     "evidence": "DERIVED_BY_DIFFERENCE",
+     "max": 8.064003,
+     "min": -8.727085,
+     "note": "the three team levels are drawn as separate streams and do not close to each other by construction. The residual is reported because a decomposition that hid it would imply a closure the engine does not enforce.",
+     "step": "residual = team_plays - (team_dropbacks + team_carries)",
+     "value": 0.984253
+    },
+    {
+     "evidence": "MEASURED_DRAWS",
+     "holds_on_every_draw": true,
+     "identity": "sum(qb__db over the team) == rint(team_dropbacks_part)",
+     "note": "checked cell by cell on the stored draws; this one is a measurement, not a reconstruction",
+     "step": "team_dropbacks -> sum(QB dropbacks)",
+     "value": 41.492,
+     "worst_absolute_deviation": 0.0
+    },
+    {
+     "evidence": "DERIVED_BY_DIFFERENCE",
+     "min": 1.0,
+     "note": "the A1 ownership graph subtracts dropback-owned scrambles from the carry level before partitioning. rint() is the caller's declared level_rounding, not this module's choice.",
+     "step": "designed_rush_budget = rint(team_carries) - sum(QB scrambles)",
+     "value": 21.866
+    },
+    {
+     "evidence": "DERIVED_BY_SUM",
+     "note": "every modelled target sits inside a QB attempt, but not every attempt carries a modelled target. The gap is the attempts that reach no modelled receiver and it is never negative on this board.",
+     "step": "QB attempts -> sum(modelled player targets)",
+     "unallocated_attempts_max": 23.0,
+     "unallocated_attempts_mean": 1.909,
+     "unallocated_attempts_min": 0.0,
+     "value": 33.497
+    },
+    {
+     "code": "WS09_J12_STORED_TEAM_TARGETS_IS_NOT_THE_DENOMINATOR",
+     "evidence": "MEASURED_DRAWS",
+     "is_the_allocation_denominator": false,
+     "note": "persisted so the wrong denominator is visible rather than merely absent. Dividing a player target mean by this value yields a share of a pool the allocator never used.",
+     "step": "stored team_volume__team_targets",
+     "value": 28.703538
+    }
+   ],
+   "means": {
+    "designed_rush_budget": 21.866,
+    "qb_attempts": 35.406,
+    "stored_team_targets": 28.703538,
+    "sum_modelled_targets": 33.497,
+    "team_carries": 25.244857,
+    "team_dropbacks": 41.46789,
+    "team_off_snaps": 67.697
+   },
+   "team": "KC"
+  }
+ },
+ "team_layer_states": {
+  "DEN": {
+   "qb": {
+    "code": null,
+    "detail": null,
+    "n_rows": 3,
+    "state": "MODELLED"
+   },
+   "receiving": {
+    "code": "APPEARANCE_TEAM_DEFERRED",
+    "detail": "appearance: APPEARANCE_TEAM_DEFERRED: DEN is INJURY_REPORT_INCOMPLETE and is deferred -- 14 player(s) carry no appearance estimate and no projection. The appearance layer ran on KC only. a team with no filed report is NOT a team with no injuries. No appearance probability, no allocation and no projection is emitted for any player of a deferred team.",
+    "n_rows": 0,
+    "state": "ABSENT_TEAM_DEFERRED"
+   },
+   "rushing": {
+    "code": "APPEARANCE_TEAM_DEFERRED",
+    "detail": "appearance: APPEARANCE_TEAM_DEFERRED: DEN is INJURY_REPORT_INCOMPLETE and is deferred -- 14 player(s) carry no appearance estimate and no projection. The appearance layer ran on KC only. a team with no filed report is NOT a team with no injuries. No appearance probability, no allocation and no projection is emitted for any player of a deferred team.",
+    "n_rows": 0,
+    "state": "ABSENT_TEAM_DEFERRED"
+   }
+  },
+  "KC": {
+   "qb": {
+    "code": null,
+    "detail": null,
+    "n_rows": 3,
+    "state": "MODELLED"
+   },
+   "receiving": {
+    "code": null,
+    "detail": null,
+    "n_rows": 13,
+    "state": "MODELLED"
+   },
+   "rushing": {
+    "code": null,
+    "detail": null,
+    "n_rows": 3,
+    "state": "MODELLED"
+   }
+  }
+ },
+ "teams": [
+  "DEN",
+  "KC"
+ ]
+}

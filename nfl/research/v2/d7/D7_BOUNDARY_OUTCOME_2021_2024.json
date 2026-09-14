@@ -1,0 +1,58 @@
+{
+ "artifact": "D7_SEASON_BOUNDARY_OUTCOME_SIDE",
+ "spec_version": "d7-boundary-outcome/1.0.0",
+ "governance": "DIAGNOSTIC ONLY. Outcome-side description of the historical world. Contains no forecast and scores no model, so it CANNOT identify the engine's sensitivity to the season boundary. It bounds one explanation, nothing more.",
+ "sources": [
+  "nfl/research/postgame/pbp_2021.e8743a568f99667a.csv.gz",
+  "nfl/research/postgame/pbp_2022.0c69a71eb3949895.csv.gz",
+  "nfl/research/postgame/pbp_2023.4649804ee0f0a40b.csv.gz",
+  "nfl/research/postgame/pbp_2024.23370d5d10f8104d.csv.gz"
+ ],
+ "team_games_per_season": {
+  "2021": 544,
+  "2022": 542,
+  "2023": 544,
+  "2024": 544
+ },
+ "unit": "(game_id, posteam)",
+ "scope": "REG season only",
+ "week_1": {
+  "label": "SEASON BOUNDARY (week 1)",
+  "n_team_games": 128,
+  "n_game_clusters": 64,
+  "n_season_week_clusters": 4,
+  "mean_top_passer_share": 0.9289,
+  "median_top_passer_share": 0.9474,
+  "p10_top_passer_share": 0.8371,
+  "mean_n_passers_ge1": 1.1641,
+  "mean_n_passers_ge5": 1.0391,
+  "share_of_team_games_with_2plus_passers_ge5": 0.0391,
+  "mean_dropbacks": 38.8203,
+  "unattributed_dropbacks": 276
+ },
+ "weeks_2_plus": {
+  "label": "NON-BOUNDARY (weeks 2+)",
+  "n_team_games": 2046,
+  "n_game_clusters": 1023,
+  "n_season_week_clusters": 68,
+  "mean_top_passer_share": 0.9223,
+  "median_top_passer_share": 0.9487,
+  "p10_top_passer_share": 0.8333,
+  "mean_n_passers_ge1": 1.2532,
+  "mean_n_passers_ge5": 1.0782,
+  "share_of_team_games_with_2plus_passers_ge5": 0.0777,
+  "mean_dropbacks": 37.7424,
+  "unattributed_dropbacks": 3636
+ },
+ "difference_week1_minus_rest": {
+  "mean_top_passer_share": 0.0067,
+  "se_game_clustered_both_arms": 0.0062,
+  "z": 1.074,
+  "note": "descriptive. No equivalence margin was predeclared and no two-one-sided test was run, so a small difference is not evidence that the two are the same."
+ },
+ "what_this_does_not_establish": [
+  "It does not measure the model. No forecast enters it.",
+  "It does not supply the missing non-boundary forecast arm, and nothing here may be used as a substitute for one.",
+  "Seasons 2021-2024 are not 2026 and roster churn differs by year."
+ ]
+}

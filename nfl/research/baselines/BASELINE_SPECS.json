@@ -1,0 +1,3239 @@
+{
+ "artifact": "D8_FROZEN_BASELINE_SPECS",
+ "baselines": {
+  "B1-SEASON-TO-DATE": {
+   "boundary": "does not cross the season boundary",
+   "constants": [],
+   "constants_frozen": {},
+   "data_identity": {
+    "2021": {
+     "blob": "nfl/research/postgame/pbp_2021.e8743a568f99667a.csv.gz",
+     "sha256": "e8743a568f99667a8bdcd29ba12224ee1782ad2b7916bee78ee335c099383739"
+    },
+    "2022": {
+     "blob": "nfl/research/postgame/pbp_2022.0c69a71eb3949895.csv.gz",
+     "sha256": "0c69a71eb39498956c7b1d5c1ca52ce7fe679934a95d1af249facb5ea9829ea4"
+    },
+    "2023": {
+     "blob": "nfl/research/postgame/pbp_2023.4649804ee0f0a40b.csv.gz",
+     "sha256": "4649804ee0f0a40b41e51ec75a1ce921949d7fab5459213488656b92f78560e8"
+    },
+    "2024": {
+     "blob": "nfl/research/postgame/pbp_2024.23370d5d10f8104d.csv.gz",
+     "sha256": "23370d5d10f8104d80d46a1fc5e61f4f6f5a3263fe96fe2dd629913cfcb08c06"
+    },
+    "position_source": {
+     "blob": "nfl/research/inputs/panel_p3.csv.gz",
+     "note": "position labels only; no quantity is taken from this file",
+     "sha256": "6cb51092175c7a066ceb937e9443762c10f00150d146b8c9264a6ac5b95ab596"
+    }
+   },
+   "estimator": "estimators.season_to_date",
+   "fallback_chain": [
+    "W1-PRIOR-SEASON-SHRUNK",
+    "B6-LEAGUE-POSITION-PRIOR"
+   ],
+   "frames": {
+    "FRAME_A": "point-in-time eligible: >=1 opportunity for this team in the team's 3 most recent completed games before the forecast ordinal (in-season; at a season opener, the team's last 3 games of the previous season). Membership is a function of prior games only. A selected player who does not play scores an actual of zero.",
+    "FRAME_B": "appeared: FRAME_A restricted to rows with >=1 realised opportunity. CONDITIONS ON THE OUTCOME and is reported only as a labelled secondary frame.",
+    "clustering": "game_id; every reported interval is a game-clustered block bootstrap",
+    "frame_window_games": 3,
+    "grouping": "(game_id, posteam) -- never by game alone",
+    "kneels": "excluded: qb_kneel != '1'",
+    "season_type": "REG only"
+   },
+   "name": "B1-SEASON-TO-DATE",
+   "spec_sha256": "70926a7f70b34a893f61018e4a356a1cfef7d2359ec7c0144b0ad8975c3efaea",
+   "spec_version": "d8-baselines-1",
+   "window": "all completed games of the CURRENT season, same subject",
+   "windows_frozen": {}
+  },
+  "B2-RECENT-N": {
+   "boundary": "crosses the season boundary",
+   "constants": [
+    "recent_n"
+   ],
+   "constants_frozen": {
+    "carries": {
+     "c_carryover_slope": 0.82175,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=89; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 89,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 0.725039,
+     "positions": [
+      "RB"
+     ],
+     "sigma2_between": 26.85095,
+     "sigma2_within": 19.467996
+    },
+    "pass_att": {
+     "c_carryover_slope": 0.628459,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=42; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 42,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 1.125357,
+     "positions": [
+      "QB"
+     ],
+     "sigma2_between": 91.016442,
+     "sigma2_within": 102.425979
+    },
+    "pass_cmp": {
+     "c_carryover_slope": 0.664104,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=42; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 42,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 1.113114,
+     "positions": [
+      "QB"
+     ],
+     "sigma2_between": 42.08145,
+     "sigma2_within": 46.841434
+    },
+    "pass_int": {
+     "c_carryover_slope": 0.112082,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=42; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 42,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 17.884043,
+     "positions": [
+      "QB"
+     ],
+     "sigma2_between": 0.039262,
+     "sigma2_within": 0.702158
+    },
+    "pass_td": {
+     "c_carryover_slope": 0.543798,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=42; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 42,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 2.939758,
+     "positions": [
+      "QB"
+     ],
+     "sigma2_between": 0.315472,
+     "sigma2_within": 0.927412
+    },
+    "pass_yds": {
+     "c_carryover_slope": 0.587897,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=42; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 42,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 1.251198,
+     "positions": [
+      "QB"
+     ],
+     "sigma2_between": 5017.92941,
+     "sigma2_within": 6278.425576
+    },
+    "rec_td": {
+     "c_carryover_slope": 0.505417,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=199; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 199,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 12.224757,
+     "positions": [
+      "WR",
+      "TE"
+     ],
+     "sigma2_between": 0.015307,
+     "sigma2_within": 0.187123
+    },
+    "rec_yds": {
+     "c_carryover_slope": 0.804614,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=199; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 199,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 1.654331,
+     "positions": [
+      "WR",
+      "TE"
+     ],
+     "sigma2_between": 387.78324,
+     "sigma2_within": 641.521684
+    },
+    "receptions": {
+     "c_carryover_slope": 0.808981,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=199; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 199,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 1.207744,
+     "positions": [
+      "WR",
+      "TE"
+     ],
+     "sigma2_between": 2.402235,
+     "sigma2_within": 2.901284
+    },
+    "rush_yds": {
+     "c_carryover_slope": 0.822825,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=89; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 89,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 1.189325,
+     "positions": [
+      "RB"
+     ],
+     "sigma2_between": 553.49778,
+     "sigma2_within": 658.288473
+    },
+    "targets": {
+     "c_carryover_slope": 0.812525,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=199; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 199,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 0.916247,
+     "positions": [
+      "WR",
+      "TE"
+     ],
+     "sigma2_between": 5.223489,
+     "sigma2_within": 4.786005
+    },
+    "team_dropbacks": {
+     "c_carryover_slope": 0.490136,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=32; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 32,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 5.970545,
+     "positions": [
+      "TEAM"
+     ],
+     "sigma2_between": 11.528198,
+     "sigma2_within": 68.829622
+    },
+    "team_pass_att": {
+     "c_carryover_slope": 0.704861,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=32; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 32,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 4.341523,
+     "positions": [
+      "TEAM"
+     ],
+     "sigma2_between": 13.676412,
+     "sigma2_within": 59.376463
+    },
+    "team_plays": {
+     "c_carryover_slope": 0.284802,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=32; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 32,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 14.390278,
+     "positions": [
+      "TEAM"
+     ],
+     "sigma2_between": 4.561804,
+     "sigma2_within": 65.64563
+    },
+    "team_rush_att": {
+     "c_carryover_slope": 0.507606,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=32; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 32,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 9.361382,
+     "positions": [
+      "TEAM"
+     ],
+     "sigma2_between": 5.430591,
+     "sigma2_within": 50.837837
+    }
+   },
+   "data_identity": {
+    "2021": {
+     "blob": "nfl/research/postgame/pbp_2021.e8743a568f99667a.csv.gz",
+     "sha256": "e8743a568f99667a8bdcd29ba12224ee1782ad2b7916bee78ee335c099383739"
+    },
+    "2022": {
+     "blob": "nfl/research/postgame/pbp_2022.0c69a71eb3949895.csv.gz",
+     "sha256": "0c69a71eb39498956c7b1d5c1ca52ce7fe679934a95d1af249facb5ea9829ea4"
+    },
+    "2023": {
+     "blob": "nfl/research/postgame/pbp_2023.4649804ee0f0a40b.csv.gz",
+     "sha256": "4649804ee0f0a40b41e51ec75a1ce921949d7fab5459213488656b92f78560e8"
+    },
+    "2024": {
+     "blob": "nfl/research/postgame/pbp_2024.23370d5d10f8104d.csv.gz",
+     "sha256": "23370d5d10f8104d80d46a1fc5e61f4f6f5a3263fe96fe2dd629913cfcb08c06"
+    },
+    "position_source": {
+     "blob": "nfl/research/inputs/panel_p3.csv.gz",
+     "note": "position labels only; no quantity is taken from this file",
+     "sha256": "6cb51092175c7a066ceb937e9443762c10f00150d146b8c9264a6ac5b95ab596"
+    }
+   },
+   "estimator": "estimators.recent_n",
+   "fallback_chain": [
+    "B6-LEAGUE-POSITION-PRIOR"
+   ],
+   "frames": {
+    "FRAME_A": "point-in-time eligible: >=1 opportunity for this team in the team's 3 most recent completed games before the forecast ordinal (in-season; at a season opener, the team's last 3 games of the previous season). Membership is a function of prior games only. A selected player who does not play scores an actual of zero.",
+    "FRAME_B": "appeared: FRAME_A restricted to rows with >=1 realised opportunity. CONDITIONS ON THE OUTCOME and is reported only as a labelled secondary frame.",
+    "clustering": "game_id; every reported interval is a game-clustered block bootstrap",
+    "frame_window_games": 3,
+    "grouping": "(game_id, posteam) -- never by game alone",
+    "kneels": "excluded: qb_kneel != '1'",
+    "season_type": "REG only"
+   },
+   "name": "B2-RECENT-N",
+   "spec_sha256": "6092c42df798cce06511f96b355675a6e35884014b8a0bfa81e4558f69c1d14d",
+   "spec_version": "d8-baselines-1",
+   "window": "the last N completed games of the subject, N frozen",
+   "windows_frozen": {
+    "carries": {
+     "class": "FITTED_PRIOR_WINDOW",
+     "ewma_half_life_games": 1.0,
+     "ewma_selection_mae": 3.921496,
+     "h_grid": [
+      0.5,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      6.0,
+      8.0,
+      12.0
+     ],
+     "n_grid": [
+      1,
+      2,
+      3,
+      4,
+      6,
+      8,
+      10,
+      16
+     ],
+     "recent_n": 2,
+     "recent_n_selection_mae": 4.016206,
+     "selection_rows": 1882,
+     "selection_seasons": [
+      2022
+     ]
+    },
+    "pass_att": {
+     "class": "FITTED_PRIOR_WINDOW",
+     "ewma_half_life_games": 0.5,
+     "ewma_selection_mae": 11.28565,
+     "h_grid": [
+      0.5,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      6.0,
+      8.0,
+      12.0
+     ],
+     "n_grid": [
+      1,
+      2,
+      3,
+      4,
+      6,
+      8,
+      10,
+      16
+     ],
+     "recent_n": 1,
+     "recent_n_selection_mae": 11.512947,
+     "selection_rows": 811,
+     "selection_seasons": [
+      2022
+     ]
+    },
+    "pass_cmp": {
+     "class": "FITTED_PRIOR_WINDOW",
+     "ewma_half_life_games": 0.5,
+     "ewma_selection_mae": 7.274669,
+     "h_grid": [
+      0.5,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      6.0,
+      8.0,
+      12.0
+     ],
+     "n_grid": [
+      1,
+      2,
+      3,
+      4,
+      6,
+      8,
+      10,
+      16
+     ],
+     "recent_n": 1,
+     "recent_n_selection_mae": 7.431566,
+     "selection_rows": 811,
+     "selection_seasons": [
+      2022
+     ]
+    },
+    "pass_int": {
+     "class": "FITTED_PRIOR_WINDOW",
+     "ewma_half_life_games": 12.0,
+     "ewma_selection_mae": 0.65757,
+     "h_grid": [
+      0.5,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      6.0,
+      8.0,
+      12.0
+     ],
+     "n_grid": [
+      1,
+      2,
+      3,
+      4,
+      6,
+      8,
+      10,
+      16
+     ],
+     "recent_n": 8,
+     "recent_n_selection_mae": 0.655047,
+     "selection_rows": 811,
+     "selection_seasons": [
+      2022
+     ]
+    },
+    "pass_td": {
+     "class": "FITTED_PRIOR_WINDOW",
+     "ewma_half_life_games": 4.0,
+     "ewma_selection_mae": 0.793913,
+     "h_grid": [
+      0.5,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      6.0,
+      8.0,
+      12.0
+     ],
+     "n_grid": [
+      1,
+      2,
+      3,
+      4,
+      6,
+      8,
+      10,
+      16
+     ],
+     "recent_n": 16,
+     "recent_n_selection_mae": 0.797101,
+     "selection_rows": 811,
+     "selection_seasons": [
+      2022
+     ]
+    },
+    "pass_yds": {
+     "class": "FITTED_PRIOR_WINDOW",
+     "ewma_half_life_games": 4.0,
+     "ewma_selection_mae": 83.522731,
+     "h_grid": [
+      0.5,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      6.0,
+      8.0,
+      12.0
+     ],
+     "n_grid": [
+      1,
+      2,
+      3,
+      4,
+      6,
+      8,
+      10,
+      16
+     ],
+     "recent_n": 10,
+     "recent_n_selection_mae": 83.961793,
+     "selection_rows": 811,
+     "selection_seasons": [
+      2022
+     ]
+    },
+    "rec_td": {
+     "class": "FITTED_PRIOR_WINDOW",
+     "ewma_half_life_games": 0.5,
+     "ewma_selection_mae": 0.256031,
+     "h_grid": [
+      0.5,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      6.0,
+      8.0,
+      12.0
+     ],
+     "n_grid": [
+      1,
+      2,
+      3,
+      4,
+      6,
+      8,
+      10,
+      16
+     ],
+     "recent_n": 1,
+     "recent_n_selection_mae": 0.253041,
+     "selection_rows": 4193,
+     "selection_seasons": [
+      2022
+     ]
+    },
+    "rec_yds": {
+     "class": "FITTED_PRIOR_WINDOW",
+     "ewma_half_life_games": 3.0,
+     "ewma_selection_mae": 21.43499,
+     "h_grid": [
+      0.5,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      6.0,
+      8.0,
+      12.0
+     ],
+     "n_grid": [
+      1,
+      2,
+      3,
+      4,
+      6,
+      8,
+      10,
+      16
+     ],
+     "recent_n": 16,
+     "recent_n_selection_mae": 21.680237,
+     "selection_rows": 4193,
+     "selection_seasons": [
+      2022
+     ]
+    },
+    "receptions": {
+     "class": "FITTED_PRIOR_WINDOW",
+     "ewma_half_life_games": 3.0,
+     "ewma_selection_mae": 1.594388,
+     "h_grid": [
+      0.5,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      6.0,
+      8.0,
+      12.0
+     ],
+     "n_grid": [
+      1,
+      2,
+      3,
+      4,
+      6,
+      8,
+      10,
+      16
+     ],
+     "recent_n": 6,
+     "recent_n_selection_mae": 1.61353,
+     "selection_rows": 4193,
+     "selection_seasons": [
+      2022
+     ]
+    },
+    "rush_yds": {
+     "class": "FITTED_PRIOR_WINDOW",
+     "ewma_half_life_games": 2.0,
+     "ewma_selection_mae": 21.15347,
+     "h_grid": [
+      0.5,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      6.0,
+      8.0,
+      12.0
+     ],
+     "n_grid": [
+      1,
+      2,
+      3,
+      4,
+      6,
+      8,
+      10,
+      16
+     ],
+     "recent_n": 3,
+     "recent_n_selection_mae": 21.645855,
+     "selection_rows": 1882,
+     "selection_seasons": [
+      2022
+     ]
+    },
+    "targets": {
+     "class": "FITTED_PRIOR_WINDOW",
+     "ewma_half_life_games": 2.0,
+     "ewma_selection_mae": 2.209102,
+     "h_grid": [
+      0.5,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      6.0,
+      8.0,
+      12.0
+     ],
+     "n_grid": [
+      1,
+      2,
+      3,
+      4,
+      6,
+      8,
+      10,
+      16
+     ],
+     "recent_n": 6,
+     "recent_n_selection_mae": 2.241653,
+     "selection_rows": 4193,
+     "selection_seasons": [
+      2022
+     ]
+    },
+    "team_dropbacks": {
+     "class": "FITTED_PRIOR_WINDOW",
+     "ewma_half_life_games": 6.0,
+     "ewma_selection_mae": 6.819109,
+     "h_grid": [
+      0.5,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      6.0,
+      8.0,
+      12.0
+     ],
+     "n_grid": [
+      1,
+      2,
+      3,
+      4,
+      6,
+      8,
+      10,
+      16
+     ],
+     "recent_n": 16,
+     "recent_n_selection_mae": 6.866697,
+     "selection_rows": 542,
+     "selection_seasons": [
+      2022
+     ]
+    },
+    "team_pass_att": {
+     "class": "FITTED_PRIOR_WINDOW",
+     "ewma_half_life_games": 6.0,
+     "ewma_selection_mae": 6.291681,
+     "h_grid": [
+      0.5,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      6.0,
+      8.0,
+      12.0
+     ],
+     "n_grid": [
+      1,
+      2,
+      3,
+      4,
+      6,
+      8,
+      10,
+      16
+     ],
+     "recent_n": 16,
+     "recent_n_selection_mae": 6.330835,
+     "selection_rows": 542,
+     "selection_seasons": [
+      2022
+     ]
+    },
+    "team_plays": {
+     "class": "FITTED_PRIOR_WINDOW",
+     "ewma_half_life_games": 12.0,
+     "ewma_selection_mae": 6.539891,
+     "h_grid": [
+      0.5,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      6.0,
+      8.0,
+      12.0
+     ],
+     "n_grid": [
+      1,
+      2,
+      3,
+      4,
+      6,
+      8,
+      10,
+      16
+     ],
+     "recent_n": 16,
+     "recent_n_selection_mae": 6.596287,
+     "selection_rows": 542,
+     "selection_seasons": [
+      2022
+     ]
+    },
+    "team_rush_att": {
+     "class": "FITTED_PRIOR_WINDOW",
+     "ewma_half_life_games": 8.0,
+     "ewma_selection_mae": 5.825263,
+     "h_grid": [
+      0.5,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      6.0,
+      8.0,
+      12.0
+     ],
+     "n_grid": [
+      1,
+      2,
+      3,
+      4,
+      6,
+      8,
+      10,
+      16
+     ],
+     "recent_n": 16,
+     "recent_n_selection_mae": 5.921933,
+     "selection_rows": 542,
+     "selection_seasons": [
+      2022
+     ]
+    }
+   }
+  },
+  "B3-EWMA": {
+   "boundary": "crosses the season boundary",
+   "constants": [
+    "ewma_half_life_games"
+   ],
+   "constants_frozen": {
+    "carries": {
+     "c_carryover_slope": 0.82175,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=89; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 89,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 0.725039,
+     "positions": [
+      "RB"
+     ],
+     "sigma2_between": 26.85095,
+     "sigma2_within": 19.467996
+    },
+    "pass_att": {
+     "c_carryover_slope": 0.628459,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=42; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 42,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 1.125357,
+     "positions": [
+      "QB"
+     ],
+     "sigma2_between": 91.016442,
+     "sigma2_within": 102.425979
+    },
+    "pass_cmp": {
+     "c_carryover_slope": 0.664104,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=42; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 42,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 1.113114,
+     "positions": [
+      "QB"
+     ],
+     "sigma2_between": 42.08145,
+     "sigma2_within": 46.841434
+    },
+    "pass_int": {
+     "c_carryover_slope": 0.112082,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=42; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 42,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 17.884043,
+     "positions": [
+      "QB"
+     ],
+     "sigma2_between": 0.039262,
+     "sigma2_within": 0.702158
+    },
+    "pass_td": {
+     "c_carryover_slope": 0.543798,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=42; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 42,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 2.939758,
+     "positions": [
+      "QB"
+     ],
+     "sigma2_between": 0.315472,
+     "sigma2_within": 0.927412
+    },
+    "pass_yds": {
+     "c_carryover_slope": 0.587897,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=42; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 42,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 1.251198,
+     "positions": [
+      "QB"
+     ],
+     "sigma2_between": 5017.92941,
+     "sigma2_within": 6278.425576
+    },
+    "rec_td": {
+     "c_carryover_slope": 0.505417,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=199; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 199,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 12.224757,
+     "positions": [
+      "WR",
+      "TE"
+     ],
+     "sigma2_between": 0.015307,
+     "sigma2_within": 0.187123
+    },
+    "rec_yds": {
+     "c_carryover_slope": 0.804614,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=199; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 199,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 1.654331,
+     "positions": [
+      "WR",
+      "TE"
+     ],
+     "sigma2_between": 387.78324,
+     "sigma2_within": 641.521684
+    },
+    "receptions": {
+     "c_carryover_slope": 0.808981,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=199; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 199,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 1.207744,
+     "positions": [
+      "WR",
+      "TE"
+     ],
+     "sigma2_between": 2.402235,
+     "sigma2_within": 2.901284
+    },
+    "rush_yds": {
+     "c_carryover_slope": 0.822825,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=89; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 89,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 1.189325,
+     "positions": [
+      "RB"
+     ],
+     "sigma2_between": 553.49778,
+     "sigma2_within": 658.288473
+    },
+    "targets": {
+     "c_carryover_slope": 0.812525,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=199; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 199,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 0.916247,
+     "positions": [
+      "WR",
+      "TE"
+     ],
+     "sigma2_between": 5.223489,
+     "sigma2_within": 4.786005
+    },
+    "team_dropbacks": {
+     "c_carryover_slope": 0.490136,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=32; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 32,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 5.970545,
+     "positions": [
+      "TEAM"
+     ],
+     "sigma2_between": 11.528198,
+     "sigma2_within": 68.829622
+    },
+    "team_pass_att": {
+     "c_carryover_slope": 0.704861,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=32; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 32,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 4.341523,
+     "positions": [
+      "TEAM"
+     ],
+     "sigma2_between": 13.676412,
+     "sigma2_within": 59.376463
+    },
+    "team_plays": {
+     "c_carryover_slope": 0.284802,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=32; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 32,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 14.390278,
+     "positions": [
+      "TEAM"
+     ],
+     "sigma2_between": 4.561804,
+     "sigma2_within": 65.64563
+    },
+    "team_rush_att": {
+     "c_carryover_slope": 0.507606,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=32; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 32,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 9.361382,
+     "positions": [
+      "TEAM"
+     ],
+     "sigma2_between": 5.430591,
+     "sigma2_within": 50.837837
+    }
+   },
+   "data_identity": {
+    "2021": {
+     "blob": "nfl/research/postgame/pbp_2021.e8743a568f99667a.csv.gz",
+     "sha256": "e8743a568f99667a8bdcd29ba12224ee1782ad2b7916bee78ee335c099383739"
+    },
+    "2022": {
+     "blob": "nfl/research/postgame/pbp_2022.0c69a71eb3949895.csv.gz",
+     "sha256": "0c69a71eb39498956c7b1d5c1ca52ce7fe679934a95d1af249facb5ea9829ea4"
+    },
+    "2023": {
+     "blob": "nfl/research/postgame/pbp_2023.4649804ee0f0a40b.csv.gz",
+     "sha256": "4649804ee0f0a40b41e51ec75a1ce921949d7fab5459213488656b92f78560e8"
+    },
+    "2024": {
+     "blob": "nfl/research/postgame/pbp_2024.23370d5d10f8104d.csv.gz",
+     "sha256": "23370d5d10f8104d80d46a1fc5e61f4f6f5a3263fe96fe2dd629913cfcb08c06"
+    },
+    "position_source": {
+     "blob": "nfl/research/inputs/panel_p3.csv.gz",
+     "note": "position labels only; no quantity is taken from this file",
+     "sha256": "6cb51092175c7a066ceb937e9443762c10f00150d146b8c9264a6ac5b95ab596"
+    }
+   },
+   "estimator": "estimators.ewma",
+   "fallback_chain": [
+    "B6-LEAGUE-POSITION-PRIOR"
+   ],
+   "frames": {
+    "FRAME_A": "point-in-time eligible: >=1 opportunity for this team in the team's 3 most recent completed games before the forecast ordinal (in-season; at a season opener, the team's last 3 games of the previous season). Membership is a function of prior games only. A selected player who does not play scores an actual of zero.",
+    "FRAME_B": "appeared: FRAME_A restricted to rows with >=1 realised opportunity. CONDITIONS ON THE OUTCOME and is reported only as a labelled secondary frame.",
+    "clustering": "game_id; every reported interval is a game-clustered block bootstrap",
+    "frame_window_games": 3,
+    "grouping": "(game_id, posteam) -- never by game alone",
+    "kneels": "excluded: qb_kneel != '1'",
+    "season_type": "REG only"
+   },
+   "name": "B3-EWMA",
+   "spec_sha256": "a5d992569e5f2b32aba45c4e1eb7838aa24baf2bff838a00e80e57fdc17a9ec6",
+   "spec_version": "d8-baselines-1",
+   "window": "all completed games of the subject, weight 0.5 ** (games_back / H); games_back counts APPEARANCES, not calendar weeks",
+   "windows_frozen": {
+    "carries": {
+     "class": "FITTED_PRIOR_WINDOW",
+     "ewma_half_life_games": 1.0,
+     "ewma_selection_mae": 3.921496,
+     "h_grid": [
+      0.5,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      6.0,
+      8.0,
+      12.0
+     ],
+     "n_grid": [
+      1,
+      2,
+      3,
+      4,
+      6,
+      8,
+      10,
+      16
+     ],
+     "recent_n": 2,
+     "recent_n_selection_mae": 4.016206,
+     "selection_rows": 1882,
+     "selection_seasons": [
+      2022
+     ]
+    },
+    "pass_att": {
+     "class": "FITTED_PRIOR_WINDOW",
+     "ewma_half_life_games": 0.5,
+     "ewma_selection_mae": 11.28565,
+     "h_grid": [
+      0.5,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      6.0,
+      8.0,
+      12.0
+     ],
+     "n_grid": [
+      1,
+      2,
+      3,
+      4,
+      6,
+      8,
+      10,
+      16
+     ],
+     "recent_n": 1,
+     "recent_n_selection_mae": 11.512947,
+     "selection_rows": 811,
+     "selection_seasons": [
+      2022
+     ]
+    },
+    "pass_cmp": {
+     "class": "FITTED_PRIOR_WINDOW",
+     "ewma_half_life_games": 0.5,
+     "ewma_selection_mae": 7.274669,
+     "h_grid": [
+      0.5,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      6.0,
+      8.0,
+      12.0
+     ],
+     "n_grid": [
+      1,
+      2,
+      3,
+      4,
+      6,
+      8,
+      10,
+      16
+     ],
+     "recent_n": 1,
+     "recent_n_selection_mae": 7.431566,
+     "selection_rows": 811,
+     "selection_seasons": [
+      2022
+     ]
+    },
+    "pass_int": {
+     "class": "FITTED_PRIOR_WINDOW",
+     "ewma_half_life_games": 12.0,
+     "ewma_selection_mae": 0.65757,
+     "h_grid": [
+      0.5,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      6.0,
+      8.0,
+      12.0
+     ],
+     "n_grid": [
+      1,
+      2,
+      3,
+      4,
+      6,
+      8,
+      10,
+      16
+     ],
+     "recent_n": 8,
+     "recent_n_selection_mae": 0.655047,
+     "selection_rows": 811,
+     "selection_seasons": [
+      2022
+     ]
+    },
+    "pass_td": {
+     "class": "FITTED_PRIOR_WINDOW",
+     "ewma_half_life_games": 4.0,
+     "ewma_selection_mae": 0.793913,
+     "h_grid": [
+      0.5,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      6.0,
+      8.0,
+      12.0
+     ],
+     "n_grid": [
+      1,
+      2,
+      3,
+      4,
+      6,
+      8,
+      10,
+      16
+     ],
+     "recent_n": 16,
+     "recent_n_selection_mae": 0.797101,
+     "selection_rows": 811,
+     "selection_seasons": [
+      2022
+     ]
+    },
+    "pass_yds": {
+     "class": "FITTED_PRIOR_WINDOW",
+     "ewma_half_life_games": 4.0,
+     "ewma_selection_mae": 83.522731,
+     "h_grid": [
+      0.5,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      6.0,
+      8.0,
+      12.0
+     ],
+     "n_grid": [
+      1,
+      2,
+      3,
+      4,
+      6,
+      8,
+      10,
+      16
+     ],
+     "recent_n": 10,
+     "recent_n_selection_mae": 83.961793,
+     "selection_rows": 811,
+     "selection_seasons": [
+      2022
+     ]
+    },
+    "rec_td": {
+     "class": "FITTED_PRIOR_WINDOW",
+     "ewma_half_life_games": 0.5,
+     "ewma_selection_mae": 0.256031,
+     "h_grid": [
+      0.5,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      6.0,
+      8.0,
+      12.0
+     ],
+     "n_grid": [
+      1,
+      2,
+      3,
+      4,
+      6,
+      8,
+      10,
+      16
+     ],
+     "recent_n": 1,
+     "recent_n_selection_mae": 0.253041,
+     "selection_rows": 4193,
+     "selection_seasons": [
+      2022
+     ]
+    },
+    "rec_yds": {
+     "class": "FITTED_PRIOR_WINDOW",
+     "ewma_half_life_games": 3.0,
+     "ewma_selection_mae": 21.43499,
+     "h_grid": [
+      0.5,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      6.0,
+      8.0,
+      12.0
+     ],
+     "n_grid": [
+      1,
+      2,
+      3,
+      4,
+      6,
+      8,
+      10,
+      16
+     ],
+     "recent_n": 16,
+     "recent_n_selection_mae": 21.680237,
+     "selection_rows": 4193,
+     "selection_seasons": [
+      2022
+     ]
+    },
+    "receptions": {
+     "class": "FITTED_PRIOR_WINDOW",
+     "ewma_half_life_games": 3.0,
+     "ewma_selection_mae": 1.594388,
+     "h_grid": [
+      0.5,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      6.0,
+      8.0,
+      12.0
+     ],
+     "n_grid": [
+      1,
+      2,
+      3,
+      4,
+      6,
+      8,
+      10,
+      16
+     ],
+     "recent_n": 6,
+     "recent_n_selection_mae": 1.61353,
+     "selection_rows": 4193,
+     "selection_seasons": [
+      2022
+     ]
+    },
+    "rush_yds": {
+     "class": "FITTED_PRIOR_WINDOW",
+     "ewma_half_life_games": 2.0,
+     "ewma_selection_mae": 21.15347,
+     "h_grid": [
+      0.5,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      6.0,
+      8.0,
+      12.0
+     ],
+     "n_grid": [
+      1,
+      2,
+      3,
+      4,
+      6,
+      8,
+      10,
+      16
+     ],
+     "recent_n": 3,
+     "recent_n_selection_mae": 21.645855,
+     "selection_rows": 1882,
+     "selection_seasons": [
+      2022
+     ]
+    },
+    "targets": {
+     "class": "FITTED_PRIOR_WINDOW",
+     "ewma_half_life_games": 2.0,
+     "ewma_selection_mae": 2.209102,
+     "h_grid": [
+      0.5,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      6.0,
+      8.0,
+      12.0
+     ],
+     "n_grid": [
+      1,
+      2,
+      3,
+      4,
+      6,
+      8,
+      10,
+      16
+     ],
+     "recent_n": 6,
+     "recent_n_selection_mae": 2.241653,
+     "selection_rows": 4193,
+     "selection_seasons": [
+      2022
+     ]
+    },
+    "team_dropbacks": {
+     "class": "FITTED_PRIOR_WINDOW",
+     "ewma_half_life_games": 6.0,
+     "ewma_selection_mae": 6.819109,
+     "h_grid": [
+      0.5,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      6.0,
+      8.0,
+      12.0
+     ],
+     "n_grid": [
+      1,
+      2,
+      3,
+      4,
+      6,
+      8,
+      10,
+      16
+     ],
+     "recent_n": 16,
+     "recent_n_selection_mae": 6.866697,
+     "selection_rows": 542,
+     "selection_seasons": [
+      2022
+     ]
+    },
+    "team_pass_att": {
+     "class": "FITTED_PRIOR_WINDOW",
+     "ewma_half_life_games": 6.0,
+     "ewma_selection_mae": 6.291681,
+     "h_grid": [
+      0.5,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      6.0,
+      8.0,
+      12.0
+     ],
+     "n_grid": [
+      1,
+      2,
+      3,
+      4,
+      6,
+      8,
+      10,
+      16
+     ],
+     "recent_n": 16,
+     "recent_n_selection_mae": 6.330835,
+     "selection_rows": 542,
+     "selection_seasons": [
+      2022
+     ]
+    },
+    "team_plays": {
+     "class": "FITTED_PRIOR_WINDOW",
+     "ewma_half_life_games": 12.0,
+     "ewma_selection_mae": 6.539891,
+     "h_grid": [
+      0.5,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      6.0,
+      8.0,
+      12.0
+     ],
+     "n_grid": [
+      1,
+      2,
+      3,
+      4,
+      6,
+      8,
+      10,
+      16
+     ],
+     "recent_n": 16,
+     "recent_n_selection_mae": 6.596287,
+     "selection_rows": 542,
+     "selection_seasons": [
+      2022
+     ]
+    },
+    "team_rush_att": {
+     "class": "FITTED_PRIOR_WINDOW",
+     "ewma_half_life_games": 8.0,
+     "ewma_selection_mae": 5.825263,
+     "h_grid": [
+      0.5,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      6.0,
+      8.0,
+      12.0
+     ],
+     "n_grid": [
+      1,
+      2,
+      3,
+      4,
+      6,
+      8,
+      10,
+      16
+     ],
+     "recent_n": 16,
+     "recent_n_selection_mae": 5.921933,
+     "selection_rows": 542,
+     "selection_seasons": [
+      2022
+     ]
+    }
+   }
+  },
+  "B4-SHRINK": {
+   "boundary": "crosses the season boundary explicitly and by design",
+   "constants": [
+    "k_prior_games",
+    "c_carryover_slope"
+   ],
+   "constants_frozen": {
+    "carries": {
+     "c_carryover_slope": 0.82175,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=89; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 89,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 0.725039,
+     "positions": [
+      "RB"
+     ],
+     "sigma2_between": 26.85095,
+     "sigma2_within": 19.467996
+    },
+    "pass_att": {
+     "c_carryover_slope": 0.628459,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=42; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 42,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 1.125357,
+     "positions": [
+      "QB"
+     ],
+     "sigma2_between": 91.016442,
+     "sigma2_within": 102.425979
+    },
+    "pass_cmp": {
+     "c_carryover_slope": 0.664104,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=42; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 42,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 1.113114,
+     "positions": [
+      "QB"
+     ],
+     "sigma2_between": 42.08145,
+     "sigma2_within": 46.841434
+    },
+    "pass_int": {
+     "c_carryover_slope": 0.112082,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=42; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 42,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 17.884043,
+     "positions": [
+      "QB"
+     ],
+     "sigma2_between": 0.039262,
+     "sigma2_within": 0.702158
+    },
+    "pass_td": {
+     "c_carryover_slope": 0.543798,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=42; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 42,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 2.939758,
+     "positions": [
+      "QB"
+     ],
+     "sigma2_between": 0.315472,
+     "sigma2_within": 0.927412
+    },
+    "pass_yds": {
+     "c_carryover_slope": 0.587897,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=42; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 42,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 1.251198,
+     "positions": [
+      "QB"
+     ],
+     "sigma2_between": 5017.92941,
+     "sigma2_within": 6278.425576
+    },
+    "rec_td": {
+     "c_carryover_slope": 0.505417,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=199; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 199,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 12.224757,
+     "positions": [
+      "WR",
+      "TE"
+     ],
+     "sigma2_between": 0.015307,
+     "sigma2_within": 0.187123
+    },
+    "rec_yds": {
+     "c_carryover_slope": 0.804614,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=199; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 199,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 1.654331,
+     "positions": [
+      "WR",
+      "TE"
+     ],
+     "sigma2_between": 387.78324,
+     "sigma2_within": 641.521684
+    },
+    "receptions": {
+     "c_carryover_slope": 0.808981,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=199; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 199,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 1.207744,
+     "positions": [
+      "WR",
+      "TE"
+     ],
+     "sigma2_between": 2.402235,
+     "sigma2_within": 2.901284
+    },
+    "rush_yds": {
+     "c_carryover_slope": 0.822825,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=89; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 89,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 1.189325,
+     "positions": [
+      "RB"
+     ],
+     "sigma2_between": 553.49778,
+     "sigma2_within": 658.288473
+    },
+    "targets": {
+     "c_carryover_slope": 0.812525,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=199; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 199,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 0.916247,
+     "positions": [
+      "WR",
+      "TE"
+     ],
+     "sigma2_between": 5.223489,
+     "sigma2_within": 4.786005
+    },
+    "team_dropbacks": {
+     "c_carryover_slope": 0.490136,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=32; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 32,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 5.970545,
+     "positions": [
+      "TEAM"
+     ],
+     "sigma2_between": 11.528198,
+     "sigma2_within": 68.829622
+    },
+    "team_pass_att": {
+     "c_carryover_slope": 0.704861,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=32; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 32,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 4.341523,
+     "positions": [
+      "TEAM"
+     ],
+     "sigma2_between": 13.676412,
+     "sigma2_within": 59.376463
+    },
+    "team_plays": {
+     "c_carryover_slope": 0.284802,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=32; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 32,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 14.390278,
+     "positions": [
+      "TEAM"
+     ],
+     "sigma2_between": 4.561804,
+     "sigma2_within": 65.64563
+    },
+    "team_rush_att": {
+     "c_carryover_slope": 0.507606,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=32; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 32,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 9.361382,
+     "positions": [
+      "TEAM"
+     ],
+     "sigma2_between": 5.430591,
+     "sigma2_within": 50.837837
+    }
+   },
+   "data_identity": {
+    "2021": {
+     "blob": "nfl/research/postgame/pbp_2021.e8743a568f99667a.csv.gz",
+     "sha256": "e8743a568f99667a8bdcd29ba12224ee1782ad2b7916bee78ee335c099383739"
+    },
+    "2022": {
+     "blob": "nfl/research/postgame/pbp_2022.0c69a71eb3949895.csv.gz",
+     "sha256": "0c69a71eb39498956c7b1d5c1ca52ce7fe679934a95d1af249facb5ea9829ea4"
+    },
+    "2023": {
+     "blob": "nfl/research/postgame/pbp_2023.4649804ee0f0a40b.csv.gz",
+     "sha256": "4649804ee0f0a40b41e51ec75a1ce921949d7fab5459213488656b92f78560e8"
+    },
+    "2024": {
+     "blob": "nfl/research/postgame/pbp_2024.23370d5d10f8104d.csv.gz",
+     "sha256": "23370d5d10f8104d80d46a1fc5e61f4f6f5a3263fe96fe2dd629913cfcb08c06"
+    },
+    "position_source": {
+     "blob": "nfl/research/inputs/panel_p3.csv.gz",
+     "note": "position labels only; no quantity is taken from this file",
+     "sha256": "6cb51092175c7a066ceb937e9443762c10f00150d146b8c9264a6ac5b95ab596"
+    }
+   },
+   "estimator": "estimators.shrunk",
+   "fallback_chain": [
+    "(total by construction: collapses to the position mean when no history exists)"
+   ],
+   "frames": {
+    "FRAME_A": "point-in-time eligible: >=1 opportunity for this team in the team's 3 most recent completed games before the forecast ordinal (in-season; at a season opener, the team's last 3 games of the previous season). Membership is a function of prior games only. A selected player who does not play scores an actual of zero.",
+    "FRAME_B": "appeared: FRAME_A restricted to rows with >=1 realised opportunity. CONDITIONS ON THE OUTCOME and is reported only as a labelled secondary frame.",
+    "clustering": "game_id; every reported interval is a game-clustered block bootstrap",
+    "frame_window_games": 3,
+    "grouping": "(game_id, posteam) -- never by game alone",
+    "kneels": "excluded: qb_kneel != '1'",
+    "season_type": "REG only"
+   },
+   "name": "B4-SHRINK",
+   "spec_sha256": "0b13caa107db71cb9e22c6ed2400eb40513a1c365b60f91e75e29b36742534eb",
+   "spec_version": "d8-baselines-1",
+   "window": "prior-season mean carried over by c and shrunk to the position mean, then updated by the current season with prior weight k games",
+   "windows_frozen": {}
+  },
+  "B5-ROLE-AVERAGE": {
+   "boundary": "uses no level information about the subject himself",
+   "constants": [
+    "role_max_rank=6",
+    "frame_window_games=3"
+   ],
+   "constants_frozen": {
+    "carries": {
+     "c_carryover_slope": 0.82175,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=89; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 89,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 0.725039,
+     "positions": [
+      "RB"
+     ],
+     "sigma2_between": 26.85095,
+     "sigma2_within": 19.467996
+    },
+    "pass_att": {
+     "c_carryover_slope": 0.628459,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=42; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 42,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 1.125357,
+     "positions": [
+      "QB"
+     ],
+     "sigma2_between": 91.016442,
+     "sigma2_within": 102.425979
+    },
+    "pass_cmp": {
+     "c_carryover_slope": 0.664104,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=42; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 42,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 1.113114,
+     "positions": [
+      "QB"
+     ],
+     "sigma2_between": 42.08145,
+     "sigma2_within": 46.841434
+    },
+    "pass_int": {
+     "c_carryover_slope": 0.112082,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=42; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 42,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 17.884043,
+     "positions": [
+      "QB"
+     ],
+     "sigma2_between": 0.039262,
+     "sigma2_within": 0.702158
+    },
+    "pass_td": {
+     "c_carryover_slope": 0.543798,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=42; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 42,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 2.939758,
+     "positions": [
+      "QB"
+     ],
+     "sigma2_between": 0.315472,
+     "sigma2_within": 0.927412
+    },
+    "pass_yds": {
+     "c_carryover_slope": 0.587897,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=42; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 42,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 1.251198,
+     "positions": [
+      "QB"
+     ],
+     "sigma2_between": 5017.92941,
+     "sigma2_within": 6278.425576
+    },
+    "rec_td": {
+     "c_carryover_slope": 0.505417,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=199; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 199,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 12.224757,
+     "positions": [
+      "WR",
+      "TE"
+     ],
+     "sigma2_between": 0.015307,
+     "sigma2_within": 0.187123
+    },
+    "rec_yds": {
+     "c_carryover_slope": 0.804614,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=199; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 199,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 1.654331,
+     "positions": [
+      "WR",
+      "TE"
+     ],
+     "sigma2_between": 387.78324,
+     "sigma2_within": 641.521684
+    },
+    "receptions": {
+     "c_carryover_slope": 0.808981,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=199; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 199,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 1.207744,
+     "positions": [
+      "WR",
+      "TE"
+     ],
+     "sigma2_between": 2.402235,
+     "sigma2_within": 2.901284
+    },
+    "rush_yds": {
+     "c_carryover_slope": 0.822825,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=89; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 89,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 1.189325,
+     "positions": [
+      "RB"
+     ],
+     "sigma2_between": 553.49778,
+     "sigma2_within": 658.288473
+    },
+    "targets": {
+     "c_carryover_slope": 0.812525,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=199; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 199,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 0.916247,
+     "positions": [
+      "WR",
+      "TE"
+     ],
+     "sigma2_between": 5.223489,
+     "sigma2_within": 4.786005
+    },
+    "team_dropbacks": {
+     "c_carryover_slope": 0.490136,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=32; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 32,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 5.970545,
+     "positions": [
+      "TEAM"
+     ],
+     "sigma2_between": 11.528198,
+     "sigma2_within": 68.829622
+    },
+    "team_pass_att": {
+     "c_carryover_slope": 0.704861,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=32; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 32,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 4.341523,
+     "positions": [
+      "TEAM"
+     ],
+     "sigma2_between": 13.676412,
+     "sigma2_within": 59.376463
+    },
+    "team_plays": {
+     "c_carryover_slope": 0.284802,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=32; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 32,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 14.390278,
+     "positions": [
+      "TEAM"
+     ],
+     "sigma2_between": 4.561804,
+     "sigma2_within": 65.64563
+    },
+    "team_rush_att": {
+     "c_carryover_slope": 0.507606,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=32; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 32,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 9.361382,
+     "positions": [
+      "TEAM"
+     ],
+     "sigma2_between": 5.430591,
+     "sigma2_within": 50.837837
+    }
+   },
+   "data_identity": {
+    "2021": {
+     "blob": "nfl/research/postgame/pbp_2021.e8743a568f99667a.csv.gz",
+     "sha256": "e8743a568f99667a8bdcd29ba12224ee1782ad2b7916bee78ee335c099383739"
+    },
+    "2022": {
+     "blob": "nfl/research/postgame/pbp_2022.0c69a71eb3949895.csv.gz",
+     "sha256": "0c69a71eb39498956c7b1d5c1ca52ce7fe679934a95d1af249facb5ea9829ea4"
+    },
+    "2023": {
+     "blob": "nfl/research/postgame/pbp_2023.4649804ee0f0a40b.csv.gz",
+     "sha256": "4649804ee0f0a40b41e51ec75a1ce921949d7fab5459213488656b92f78560e8"
+    },
+    "2024": {
+     "blob": "nfl/research/postgame/pbp_2024.23370d5d10f8104d.csv.gz",
+     "sha256": "23370d5d10f8104d80d46a1fc5e61f4f6f5a3263fe96fe2dd629913cfcb08c06"
+    },
+    "position_source": {
+     "blob": "nfl/research/inputs/panel_p3.csv.gz",
+     "note": "position labels only; no quantity is taken from this file",
+     "sha256": "6cb51092175c7a066ceb937e9443762c10f00150d146b8c9264a6ac5b95ab596"
+    }
+   },
+   "estimator": "estimators.role_average",
+   "fallback_chain": [
+    "B6-LEAGUE-POSITION-PRIOR"
+   ],
+   "frames": {
+    "FRAME_A": "point-in-time eligible: >=1 opportunity for this team in the team's 3 most recent completed games before the forecast ordinal (in-season; at a season opener, the team's last 3 games of the previous season). Membership is a function of prior games only. A selected player who does not play scores an actual of zero.",
+    "FRAME_B": "appeared: FRAME_A restricted to rows with >=1 realised opportunity. CONDITIONS ON THE OUTCOME and is reported only as a labelled secondary frame.",
+    "clustering": "game_id; every reported interval is a game-clustered block bootstrap",
+    "frame_window_games": 3,
+    "grouping": "(game_id, posteam) -- never by game alone",
+    "kneels": "excluded: qb_kneel != '1'",
+    "season_type": "REG only"
+   },
+   "name": "B5-ROLE-AVERAGE",
+   "spec_sha256": "e4b5b68cd3066c97953a956ed026a75cf6e8243965963017537c6febd68e7f9b",
+   "spec_version": "d8-baselines-1",
+   "window": "league mean for (position, within-team usage rank) over seasons strictly before the forecast season; rank from the team's last 3 completed games",
+   "windows_frozen": {}
+  },
+  "B6-LEAGUE-POSITION-PRIOR": {
+   "boundary": "terminal fallback; always defined for a labelled position",
+   "constants": [],
+   "constants_frozen": {},
+   "data_identity": {
+    "2021": {
+     "blob": "nfl/research/postgame/pbp_2021.e8743a568f99667a.csv.gz",
+     "sha256": "e8743a568f99667a8bdcd29ba12224ee1782ad2b7916bee78ee335c099383739"
+    },
+    "2022": {
+     "blob": "nfl/research/postgame/pbp_2022.0c69a71eb3949895.csv.gz",
+     "sha256": "0c69a71eb39498956c7b1d5c1ca52ce7fe679934a95d1af249facb5ea9829ea4"
+    },
+    "2023": {
+     "blob": "nfl/research/postgame/pbp_2023.4649804ee0f0a40b.csv.gz",
+     "sha256": "4649804ee0f0a40b41e51ec75a1ce921949d7fab5459213488656b92f78560e8"
+    },
+    "2024": {
+     "blob": "nfl/research/postgame/pbp_2024.23370d5d10f8104d.csv.gz",
+     "sha256": "23370d5d10f8104d80d46a1fc5e61f4f6f5a3263fe96fe2dd629913cfcb08c06"
+    },
+    "position_source": {
+     "blob": "nfl/research/inputs/panel_p3.csv.gz",
+     "note": "position labels only; no quantity is taken from this file",
+     "sha256": "6cb51092175c7a066ceb937e9443762c10f00150d146b8c9264a6ac5b95ab596"
+    }
+   },
+   "estimator": "estimators.league_prior",
+   "fallback_chain": [],
+   "frames": {
+    "FRAME_A": "point-in-time eligible: >=1 opportunity for this team in the team's 3 most recent completed games before the forecast ordinal (in-season; at a season opener, the team's last 3 games of the previous season). Membership is a function of prior games only. A selected player who does not play scores an actual of zero.",
+    "FRAME_B": "appeared: FRAME_A restricted to rows with >=1 realised opportunity. CONDITIONS ON THE OUTCOME and is reported only as a labelled secondary frame.",
+    "clustering": "game_id; every reported interval is a game-clustered block bootstrap",
+    "frame_window_games": 3,
+    "grouping": "(game_id, posteam) -- never by game alone",
+    "kneels": "excluded: qb_kneel != '1'",
+    "season_type": "REG only"
+   },
+   "name": "B6-LEAGUE-POSITION-PRIOR",
+   "spec_sha256": "67827619f38d04d67ecbf56b850822857e23f37ff082c32853cc5c77dfa14a07",
+   "spec_version": "d8-baselines-1",
+   "window": "mean over FRAME_A rows of seasons strictly before the forecast season, by position",
+   "windows_frozen": {}
+  },
+  "W1-FINAL-GAME": {
+   "boundary": "DIAGNOSTIC COMPARATOR ONLY -- NOT A FROZEN DEFAULT",
+   "constants": [],
+   "constants_frozen": {},
+   "data_identity": {
+    "2021": {
+     "blob": "nfl/research/postgame/pbp_2021.e8743a568f99667a.csv.gz",
+     "sha256": "e8743a568f99667a8bdcd29ba12224ee1782ad2b7916bee78ee335c099383739"
+    },
+    "2022": {
+     "blob": "nfl/research/postgame/pbp_2022.0c69a71eb3949895.csv.gz",
+     "sha256": "0c69a71eb39498956c7b1d5c1ca52ce7fe679934a95d1af249facb5ea9829ea4"
+    },
+    "2023": {
+     "blob": "nfl/research/postgame/pbp_2023.4649804ee0f0a40b.csv.gz",
+     "sha256": "4649804ee0f0a40b41e51ec75a1ce921949d7fab5459213488656b92f78560e8"
+    },
+    "2024": {
+     "blob": "nfl/research/postgame/pbp_2024.23370d5d10f8104d.csv.gz",
+     "sha256": "23370d5d10f8104d80d46a1fc5e61f4f6f5a3263fe96fe2dd629913cfcb08c06"
+    },
+    "position_source": {
+     "blob": "nfl/research/inputs/panel_p3.csv.gz",
+     "note": "position labels only; no quantity is taken from this file",
+     "sha256": "6cb51092175c7a066ceb937e9443762c10f00150d146b8c9264a6ac5b95ab596"
+    }
+   },
+   "estimator": "estimators.w1_final_game",
+   "fallback_chain": [
+    "B6-LEAGUE-POSITION-PRIOR"
+   ],
+   "frames": {
+    "FRAME_A": "point-in-time eligible: >=1 opportunity for this team in the team's 3 most recent completed games before the forecast ordinal (in-season; at a season opener, the team's last 3 games of the previous season). Membership is a function of prior games only. A selected player who does not play scores an actual of zero.",
+    "FRAME_B": "appeared: FRAME_A restricted to rows with >=1 realised opportunity. CONDITIONS ON THE OUTCOME and is reported only as a labelled secondary frame.",
+    "clustering": "game_id; every reported interval is a game-clustered block bootstrap",
+    "frame_window_games": 3,
+    "grouping": "(game_id, posteam) -- never by game alone",
+    "kneels": "excluded: qb_kneel != '1'",
+    "season_type": "REG only"
+   },
+   "justification": "scored so that the cost of the engine's existing \"previous primary\" shape is a number rather than an assertion",
+   "name": "W1-FINAL-GAME",
+   "spec_sha256": "e407c88a5de8119011855147acc83ea6e64c041fe45e4ce3beab86ded1aa91d4",
+   "spec_version": "d8-baselines-1",
+   "window": "the single final game of the prior season",
+   "windows_frozen": {}
+  },
+  "W1-PRIOR-SEASON-MEAN": {
+   "boundary": "DIAGNOSTIC MIDDLE TERM -- isolates shrinkage from window",
+   "constants": [],
+   "constants_frozen": {},
+   "data_identity": {
+    "2021": {
+     "blob": "nfl/research/postgame/pbp_2021.e8743a568f99667a.csv.gz",
+     "sha256": "e8743a568f99667a8bdcd29ba12224ee1782ad2b7916bee78ee335c099383739"
+    },
+    "2022": {
+     "blob": "nfl/research/postgame/pbp_2022.0c69a71eb3949895.csv.gz",
+     "sha256": "0c69a71eb39498956c7b1d5c1ca52ce7fe679934a95d1af249facb5ea9829ea4"
+    },
+    "2023": {
+     "blob": "nfl/research/postgame/pbp_2023.4649804ee0f0a40b.csv.gz",
+     "sha256": "4649804ee0f0a40b41e51ec75a1ce921949d7fab5459213488656b92f78560e8"
+    },
+    "2024": {
+     "blob": "nfl/research/postgame/pbp_2024.23370d5d10f8104d.csv.gz",
+     "sha256": "23370d5d10f8104d80d46a1fc5e61f4f6f5a3263fe96fe2dd629913cfcb08c06"
+    },
+    "position_source": {
+     "blob": "nfl/research/inputs/panel_p3.csv.gz",
+     "note": "position labels only; no quantity is taken from this file",
+     "sha256": "6cb51092175c7a066ceb937e9443762c10f00150d146b8c9264a6ac5b95ab596"
+    }
+   },
+   "estimator": "estimators.w1_prior_season_mean",
+   "fallback_chain": [
+    "B6-LEAGUE-POSITION-PRIOR"
+   ],
+   "frames": {
+    "FRAME_A": "point-in-time eligible: >=1 opportunity for this team in the team's 3 most recent completed games before the forecast ordinal (in-season; at a season opener, the team's last 3 games of the previous season). Membership is a function of prior games only. A selected player who does not play scores an actual of zero.",
+    "FRAME_B": "appeared: FRAME_A restricted to rows with >=1 realised opportunity. CONDITIONS ON THE OUTCOME and is reported only as a labelled secondary frame.",
+    "clustering": "game_id; every reported interval is a game-clustered block bootstrap",
+    "frame_window_games": 3,
+    "grouping": "(game_id, posteam) -- never by game alone",
+    "kneels": "excluded: qb_kneel != '1'",
+    "season_type": "REG only"
+   },
+   "name": "W1-PRIOR-SEASON-MEAN",
+   "spec_sha256": "4076f622a42150dfe30817cc0053aaf9e56abb52c11c3258febb80e0dfec6f16",
+   "spec_version": "d8-baselines-1",
+   "window": "the prior season's per-game mean, unshrunk",
+   "windows_frozen": {}
+  },
+  "W1-PRIOR-SEASON-SHRUNK": {
+   "assumptions": [
+    "a player's prior-season per-game level is informative about his week-1 level, discounted by the measured carry-over slope c",
+    "no offseason roster movement is modelled: this package has no roster feed and does not invent one, so a player who changed clubs is forecast for his PRIOR club and scores an actual of zero. The cost is reported as frame_a_zero_actual_rate rather than assumed away",
+    "rookies and any player with no prior-season game fall to the position prior, which is the honest degenerate case"
+   ],
+   "boundary": "THE FROZEN WEEK-1 / SEASON-OPENER TRANSITION BASELINE",
+   "constants": [
+    "k_prior_games",
+    "c_carryover_slope"
+   ],
+   "constants_frozen": {
+    "carries": {
+     "c_carryover_slope": 0.82175,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=89; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 89,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 0.725039,
+     "positions": [
+      "RB"
+     ],
+     "sigma2_between": 26.85095,
+     "sigma2_within": 19.467996
+    },
+    "pass_att": {
+     "c_carryover_slope": 0.628459,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=42; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 42,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 1.125357,
+     "positions": [
+      "QB"
+     ],
+     "sigma2_between": 91.016442,
+     "sigma2_within": 102.425979
+    },
+    "pass_cmp": {
+     "c_carryover_slope": 0.664104,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=42; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 42,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 1.113114,
+     "positions": [
+      "QB"
+     ],
+     "sigma2_between": 42.08145,
+     "sigma2_within": 46.841434
+    },
+    "pass_int": {
+     "c_carryover_slope": 0.112082,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=42; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 42,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 17.884043,
+     "positions": [
+      "QB"
+     ],
+     "sigma2_between": 0.039262,
+     "sigma2_within": 0.702158
+    },
+    "pass_td": {
+     "c_carryover_slope": 0.543798,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=42; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 42,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 2.939758,
+     "positions": [
+      "QB"
+     ],
+     "sigma2_between": 0.315472,
+     "sigma2_within": 0.927412
+    },
+    "pass_yds": {
+     "c_carryover_slope": 0.587897,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=42; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 42,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 1.251198,
+     "positions": [
+      "QB"
+     ],
+     "sigma2_between": 5017.92941,
+     "sigma2_within": 6278.425576
+    },
+    "rec_td": {
+     "c_carryover_slope": 0.505417,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=199; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 199,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 12.224757,
+     "positions": [
+      "WR",
+      "TE"
+     ],
+     "sigma2_between": 0.015307,
+     "sigma2_within": 0.187123
+    },
+    "rec_yds": {
+     "c_carryover_slope": 0.804614,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=199; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 199,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 1.654331,
+     "positions": [
+      "WR",
+      "TE"
+     ],
+     "sigma2_between": 387.78324,
+     "sigma2_within": 641.521684
+    },
+    "receptions": {
+     "c_carryover_slope": 0.808981,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=199; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 199,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 1.207744,
+     "positions": [
+      "WR",
+      "TE"
+     ],
+     "sigma2_between": 2.402235,
+     "sigma2_within": 2.901284
+    },
+    "rush_yds": {
+     "c_carryover_slope": 0.822825,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=89; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 89,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 1.189325,
+     "positions": [
+      "RB"
+     ],
+     "sigma2_between": 553.49778,
+     "sigma2_within": 658.288473
+    },
+    "targets": {
+     "c_carryover_slope": 0.812525,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=199; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 199,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 0.916247,
+     "positions": [
+      "WR",
+      "TE"
+     ],
+     "sigma2_between": 5.223489,
+     "sigma2_within": 4.786005
+    },
+    "team_dropbacks": {
+     "c_carryover_slope": 0.490136,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=32; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 32,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 5.970545,
+     "positions": [
+      "TEAM"
+     ],
+     "sigma2_between": 11.528198,
+     "sigma2_within": 68.829622
+    },
+    "team_pass_att": {
+     "c_carryover_slope": 0.704861,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=32; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 32,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 4.341523,
+     "positions": [
+      "TEAM"
+     ],
+     "sigma2_between": 13.676412,
+     "sigma2_within": 59.376463
+    },
+    "team_plays": {
+     "c_carryover_slope": 0.284802,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=32; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 32,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 14.390278,
+     "positions": [
+      "TEAM"
+     ],
+     "sigma2_between": 4.561804,
+     "sigma2_within": 65.64563
+    },
+    "team_rush_att": {
+     "c_carryover_slope": 0.507606,
+     "c_class": "FITTED_PRIOR_WINDOW",
+     "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=32; a fit, to seasons strictly before the evaluation window",
+     "c_n_pairs": 32,
+     "k_class": "DERIVED_FROM_PRINCIPLE",
+     "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+     "k_prior_games": 9.361382,
+     "positions": [
+      "TEAM"
+     ],
+     "sigma2_between": 5.430591,
+     "sigma2_within": 50.837837
+    }
+   },
+   "data_identity": {
+    "2021": {
+     "blob": "nfl/research/postgame/pbp_2021.e8743a568f99667a.csv.gz",
+     "sha256": "e8743a568f99667a8bdcd29ba12224ee1782ad2b7916bee78ee335c099383739"
+    },
+    "2022": {
+     "blob": "nfl/research/postgame/pbp_2022.0c69a71eb3949895.csv.gz",
+     "sha256": "0c69a71eb39498956c7b1d5c1ca52ce7fe679934a95d1af249facb5ea9829ea4"
+    },
+    "2023": {
+     "blob": "nfl/research/postgame/pbp_2023.4649804ee0f0a40b.csv.gz",
+     "sha256": "4649804ee0f0a40b41e51ec75a1ce921949d7fab5459213488656b92f78560e8"
+    },
+    "2024": {
+     "blob": "nfl/research/postgame/pbp_2024.23370d5d10f8104d.csv.gz",
+     "sha256": "23370d5d10f8104d80d46a1fc5e61f4f6f5a3263fe96fe2dd629913cfcb08c06"
+    },
+    "position_source": {
+     "blob": "nfl/research/inputs/panel_p3.csv.gz",
+     "note": "position labels only; no quantity is taken from this file",
+     "sha256": "6cb51092175c7a066ceb937e9443762c10f00150d146b8c9264a6ac5b95ab596"
+    }
+   },
+   "estimator": "estimators.w1_prior_season_shrunk",
+   "fallback_chain": [
+    "B6-LEAGUE-POSITION-PRIOR"
+   ],
+   "frames": {
+    "FRAME_A": "point-in-time eligible: >=1 opportunity for this team in the team's 3 most recent completed games before the forecast ordinal (in-season; at a season opener, the team's last 3 games of the previous season). Membership is a function of prior games only. A selected player who does not play scores an actual of zero.",
+    "FRAME_B": "appeared: FRAME_A restricted to rows with >=1 realised opportunity. CONDITIONS ON THE OUTCOME and is reported only as a labelled secondary frame.",
+    "clustering": "game_id; every reported interval is a game-clustered block bootstrap",
+    "frame_window_games": 3,
+    "grouping": "(game_id, posteam) -- never by game alone",
+    "kneels": "excluded: qb_kneel != '1'",
+    "season_type": "REG only"
+   },
+   "justification": "Chosen on a stated principle before any evaluation-window score existed: a mean over a player's whole prior season has strictly smaller sampling variance than any single game drawn from it, for the same estimand. The rejected alternative -- the prior season's FINAL game -- is the shape the engine already carries, and its pathology is measured: previous_primary_detail(2026,1) ['KC'] resolves to 2025 week 18, and the charted QB1 equals the prior-season final-game primary in only 59 of 160 week-1 rooms (0.3688). The comparator is scored in this package AFTER the freeze, as a diagnostic, and the choice was not conditioned on that score.",
+   "name": "W1-PRIOR-SEASON-SHRUNK",
+   "spec_sha256": "0c1d2287d5a4f7760c7417e00b2d5bb9629e258854335a1d2ed017aff6fd4cd9",
+   "spec_version": "d8-baselines-1",
+   "window": "the prior season's per-game mean, carried over by c and shrunk to the position mean with prior weight k",
+   "windows_frozen": {}
+  }
+ },
+ "constants": {
+  "carries": {
+   "c_carryover_slope": 0.82175,
+   "c_class": "FITTED_PRIOR_WINDOW",
+   "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=89; a fit, to seasons strictly before the evaluation window",
+   "c_n_pairs": 89,
+   "k_class": "DERIVED_FROM_PRINCIPLE",
+   "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+   "k_prior_games": 0.725039,
+   "positions": [
+    "RB"
+   ],
+   "sigma2_between": 26.85095,
+   "sigma2_within": 19.467996
+  },
+  "pass_att": {
+   "c_carryover_slope": 0.628459,
+   "c_class": "FITTED_PRIOR_WINDOW",
+   "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=42; a fit, to seasons strictly before the evaluation window",
+   "c_n_pairs": 42,
+   "k_class": "DERIVED_FROM_PRINCIPLE",
+   "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+   "k_prior_games": 1.125357,
+   "positions": [
+    "QB"
+   ],
+   "sigma2_between": 91.016442,
+   "sigma2_within": 102.425979
+  },
+  "pass_cmp": {
+   "c_carryover_slope": 0.664104,
+   "c_class": "FITTED_PRIOR_WINDOW",
+   "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=42; a fit, to seasons strictly before the evaluation window",
+   "c_n_pairs": 42,
+   "k_class": "DERIVED_FROM_PRINCIPLE",
+   "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+   "k_prior_games": 1.113114,
+   "positions": [
+    "QB"
+   ],
+   "sigma2_between": 42.08145,
+   "sigma2_within": 46.841434
+  },
+  "pass_int": {
+   "c_carryover_slope": 0.112082,
+   "c_class": "FITTED_PRIOR_WINDOW",
+   "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=42; a fit, to seasons strictly before the evaluation window",
+   "c_n_pairs": 42,
+   "k_class": "DERIVED_FROM_PRINCIPLE",
+   "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+   "k_prior_games": 17.884043,
+   "positions": [
+    "QB"
+   ],
+   "sigma2_between": 0.039262,
+   "sigma2_within": 0.702158
+  },
+  "pass_td": {
+   "c_carryover_slope": 0.543798,
+   "c_class": "FITTED_PRIOR_WINDOW",
+   "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=42; a fit, to seasons strictly before the evaluation window",
+   "c_n_pairs": 42,
+   "k_class": "DERIVED_FROM_PRINCIPLE",
+   "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+   "k_prior_games": 2.939758,
+   "positions": [
+    "QB"
+   ],
+   "sigma2_between": 0.315472,
+   "sigma2_within": 0.927412
+  },
+  "pass_yds": {
+   "c_carryover_slope": 0.587897,
+   "c_class": "FITTED_PRIOR_WINDOW",
+   "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=42; a fit, to seasons strictly before the evaluation window",
+   "c_n_pairs": 42,
+   "k_class": "DERIVED_FROM_PRINCIPLE",
+   "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+   "k_prior_games": 1.251198,
+   "positions": [
+    "QB"
+   ],
+   "sigma2_between": 5017.92941,
+   "sigma2_within": 6278.425576
+  },
+  "rec_td": {
+   "c_carryover_slope": 0.505417,
+   "c_class": "FITTED_PRIOR_WINDOW",
+   "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=199; a fit, to seasons strictly before the evaluation window",
+   "c_n_pairs": 199,
+   "k_class": "DERIVED_FROM_PRINCIPLE",
+   "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+   "k_prior_games": 12.224757,
+   "positions": [
+    "WR",
+    "TE"
+   ],
+   "sigma2_between": 0.015307,
+   "sigma2_within": 0.187123
+  },
+  "rec_yds": {
+   "c_carryover_slope": 0.804614,
+   "c_class": "FITTED_PRIOR_WINDOW",
+   "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=199; a fit, to seasons strictly before the evaluation window",
+   "c_n_pairs": 199,
+   "k_class": "DERIVED_FROM_PRINCIPLE",
+   "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+   "k_prior_games": 1.654331,
+   "positions": [
+    "WR",
+    "TE"
+   ],
+   "sigma2_between": 387.78324,
+   "sigma2_within": 641.521684
+  },
+  "receptions": {
+   "c_carryover_slope": 0.808981,
+   "c_class": "FITTED_PRIOR_WINDOW",
+   "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=199; a fit, to seasons strictly before the evaluation window",
+   "c_n_pairs": 199,
+   "k_class": "DERIVED_FROM_PRINCIPLE",
+   "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+   "k_prior_games": 1.207744,
+   "positions": [
+    "WR",
+    "TE"
+   ],
+   "sigma2_between": 2.402235,
+   "sigma2_within": 2.901284
+  },
+  "rush_yds": {
+   "c_carryover_slope": 0.822825,
+   "c_class": "FITTED_PRIOR_WINDOW",
+   "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=89; a fit, to seasons strictly before the evaluation window",
+   "c_n_pairs": 89,
+   "k_class": "DERIVED_FROM_PRINCIPLE",
+   "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+   "k_prior_games": 1.189325,
+   "positions": [
+    "RB"
+   ],
+   "sigma2_between": 553.49778,
+   "sigma2_within": 658.288473
+  },
+  "targets": {
+   "c_carryover_slope": 0.812525,
+   "c_class": "FITTED_PRIOR_WINDOW",
+   "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=199; a fit, to seasons strictly before the evaluation window",
+   "c_n_pairs": 199,
+   "k_class": "DERIVED_FROM_PRINCIPLE",
+   "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+   "k_prior_games": 0.916247,
+   "positions": [
+    "WR",
+    "TE"
+   ],
+   "sigma2_between": 5.223489,
+   "sigma2_within": 4.786005
+  },
+  "team_dropbacks": {
+   "c_carryover_slope": 0.490136,
+   "c_class": "FITTED_PRIOR_WINDOW",
+   "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=32; a fit, to seasons strictly before the evaluation window",
+   "c_n_pairs": 32,
+   "k_class": "DERIVED_FROM_PRINCIPLE",
+   "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+   "k_prior_games": 5.970545,
+   "positions": [
+    "TEAM"
+   ],
+   "sigma2_between": 11.528198,
+   "sigma2_within": 68.829622
+  },
+  "team_pass_att": {
+   "c_carryover_slope": 0.704861,
+   "c_class": "FITTED_PRIOR_WINDOW",
+   "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=32; a fit, to seasons strictly before the evaluation window",
+   "c_n_pairs": 32,
+   "k_class": "DERIVED_FROM_PRINCIPLE",
+   "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+   "k_prior_games": 4.341523,
+   "positions": [
+    "TEAM"
+   ],
+   "sigma2_between": 13.676412,
+   "sigma2_within": 59.376463
+  },
+  "team_plays": {
+   "c_carryover_slope": 0.284802,
+   "c_class": "FITTED_PRIOR_WINDOW",
+   "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=32; a fit, to seasons strictly before the evaluation window",
+   "c_n_pairs": 32,
+   "k_class": "DERIVED_FROM_PRINCIPLE",
+   "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+   "k_prior_games": 14.390278,
+   "positions": [
+    "TEAM"
+   ],
+   "sigma2_between": 4.561804,
+   "sigma2_within": 65.64563
+  },
+  "team_rush_att": {
+   "c_carryover_slope": 0.507606,
+   "c_class": "FITTED_PRIOR_WINDOW",
+   "c_derivation": "OLS slope of the 2022 per-game mean on the 2021 per-game mean, n_pairs=32; a fit, to seasons strictly before the evaluation window",
+   "c_n_pairs": 32,
+   "k_class": "DERIVED_FROM_PRINCIPLE",
+   "k_derivation": "normal-normal posterior weight sigma_w^2 / sigma_b^2, both measured on seasons [2021, 2022]",
+   "k_prior_games": 9.361382,
+   "positions": [
+    "TEAM"
+   ],
+   "sigma2_between": 5.430591,
+   "sigma2_within": 50.837837
+  }
+ },
+ "data_identity": {
+  "2021": {
+   "blob": "nfl/research/postgame/pbp_2021.e8743a568f99667a.csv.gz",
+   "sha256": "e8743a568f99667a8bdcd29ba12224ee1782ad2b7916bee78ee335c099383739"
+  },
+  "2022": {
+   "blob": "nfl/research/postgame/pbp_2022.0c69a71eb3949895.csv.gz",
+   "sha256": "0c69a71eb39498956c7b1d5c1ca52ce7fe679934a95d1af249facb5ea9829ea4"
+  },
+  "2023": {
+   "blob": "nfl/research/postgame/pbp_2023.4649804ee0f0a40b.csv.gz",
+   "sha256": "4649804ee0f0a40b41e51ec75a1ce921949d7fab5459213488656b92f78560e8"
+  },
+  "2024": {
+   "blob": "nfl/research/postgame/pbp_2024.23370d5d10f8104d.csv.gz",
+   "sha256": "23370d5d10f8104d80d46a1fc5e61f4f6f5a3263fe96fe2dd629913cfcb08c06"
+  },
+  "position_source": {
+   "blob": "nfl/research/inputs/panel_p3.csv.gz",
+   "note": "position labels only; no quantity is taken from this file",
+   "sha256": "6cb51092175c7a066ceb937e9443762c10f00150d146b8c9264a6ac5b95ab596"
+  }
+ },
+ "document_sha256": "fb6d5912c39b7505e6deefe8937d7a26205c69cd7a8ac4e735648e88c521f9ee",
+ "estimation_seasons": [
+  2021,
+  2022
+ ],
+ "evaluation_seasons": [
+  2023,
+  2024
+ ],
+ "excluded_seasons_and_why": {
+  "2025": "no play-by-play blob exists in this repository",
+  "2026": "the live season. One week-1 game (DEN@KC) is still unplayed and the rest are this season's own outcomes. panel.blob_for refuses the season by raising ChronologyRefused, so it is unreachable from this package rather than merely discouraged."
+ },
+ "frames": {
+  "FRAME_A": "point-in-time eligible: >=1 opportunity for this team in the team's 3 most recent completed games before the forecast ordinal (in-season; at a season opener, the team's last 3 games of the previous season). Membership is a function of prior games only. A selected player who does not play scores an actual of zero.",
+  "FRAME_B": "appeared: FRAME_A restricted to rows with >=1 realised opportunity. CONDITIONS ON THE OUTCOME and is reported only as a labelled secondary frame.",
+  "clustering": "game_id; every reported interval is a game-clustered block bootstrap",
+  "frame_window_games": 3,
+  "grouping": "(game_id, posteam) -- never by game alone",
+  "kneels": "excluded: qb_kneel != '1'",
+  "season_type": "REG only"
+ },
+ "governance": "DIAGNOSTICS ONLY. No baseline in this document may be adopted, promoted, or wired into a projection path. A baseline is a comparison object.",
+ "lawful_seasons": [
+  2021,
+  2022,
+  2023,
+  2024
+ ],
+ "panel_audit": {
+  "2021": {
+   "drop_kneel": 396,
+   "drop_no_posteam": 2602,
+   "drop_season_type": 2271,
+   "games": 272,
+   "player_rows": 5414,
+   "rows_total": 49922,
+   "team_rows": 544
+  },
+  "2022": {
+   "drop_kneel": 424,
+   "drop_no_posteam": 2599,
+   "drop_season_type": 2277,
+   "games": 271,
+   "player_rows": 5372,
+   "rows_total": 49434,
+   "team_rows": 542
+  },
+  "2023": {
+   "drop_kneel": 429,
+   "drop_no_posteam": 2522,
+   "drop_season_type": 2266,
+   "games": 272,
+   "player_rows": 5368,
+   "rows_total": 49665,
+   "team_rows": 544
+  },
+  "2024": {
+   "drop_kneel": 405,
+   "drop_no_posteam": 2588,
+   "drop_season_type": 2218,
+   "games": 272,
+   "player_rows": 5303,
+   "rows_total": 49492,
+   "team_rows": 544
+  },
+  "position_multi_label_players": 13,
+  "position_players": 1793,
+  "position_unlabelled_player_games": 0
+ },
+ "quantities": [
+  "carries",
+  "pass_att",
+  "pass_cmp",
+  "pass_int",
+  "pass_td",
+  "pass_yds",
+  "rec_td",
+  "rec_yds",
+  "receptions",
+  "rush_yds",
+  "targets",
+  "team_dropbacks",
+  "team_pass_att",
+  "team_plays",
+  "team_rush_att"
+ ],
+ "spec_version": "d8-baselines-1",
+ "windows": {
+  "carries": {
+   "class": "FITTED_PRIOR_WINDOW",
+   "ewma_half_life_games": 1.0,
+   "ewma_selection_mae": 3.921496,
+   "h_grid": [
+    0.5,
+    1.0,
+    2.0,
+    3.0,
+    4.0,
+    6.0,
+    8.0,
+    12.0
+   ],
+   "n_grid": [
+    1,
+    2,
+    3,
+    4,
+    6,
+    8,
+    10,
+    16
+   ],
+   "recent_n": 2,
+   "recent_n_selection_mae": 4.016206,
+   "selection_rows": 1882,
+   "selection_seasons": [
+    2022
+   ]
+  },
+  "pass_att": {
+   "class": "FITTED_PRIOR_WINDOW",
+   "ewma_half_life_games": 0.5,
+   "ewma_selection_mae": 11.28565,
+   "h_grid": [
+    0.5,
+    1.0,
+    2.0,
+    3.0,
+    4.0,
+    6.0,
+    8.0,
+    12.0
+   ],
+   "n_grid": [
+    1,
+    2,
+    3,
+    4,
+    6,
+    8,
+    10,
+    16
+   ],
+   "recent_n": 1,
+   "recent_n_selection_mae": 11.512947,
+   "selection_rows": 811,
+   "selection_seasons": [
+    2022
+   ]
+  },
+  "pass_cmp": {
+   "class": "FITTED_PRIOR_WINDOW",
+   "ewma_half_life_games": 0.5,
+   "ewma_selection_mae": 7.274669,
+   "h_grid": [
+    0.5,
+    1.0,
+    2.0,
+    3.0,
+    4.0,
+    6.0,
+    8.0,
+    12.0
+   ],
+   "n_grid": [
+    1,
+    2,
+    3,
+    4,
+    6,
+    8,
+    10,
+    16
+   ],
+   "recent_n": 1,
+   "recent_n_selection_mae": 7.431566,
+   "selection_rows": 811,
+   "selection_seasons": [
+    2022
+   ]
+  },
+  "pass_int": {
+   "class": "FITTED_PRIOR_WINDOW",
+   "ewma_half_life_games": 12.0,
+   "ewma_selection_mae": 0.65757,
+   "h_grid": [
+    0.5,
+    1.0,
+    2.0,
+    3.0,
+    4.0,
+    6.0,
+    8.0,
+    12.0
+   ],
+   "n_grid": [
+    1,
+    2,
+    3,
+    4,
+    6,
+    8,
+    10,
+    16
+   ],
+   "recent_n": 8,
+   "recent_n_selection_mae": 0.655047,
+   "selection_rows": 811,
+   "selection_seasons": [
+    2022
+   ]
+  },
+  "pass_td": {
+   "class": "FITTED_PRIOR_WINDOW",
+   "ewma_half_life_games": 4.0,
+   "ewma_selection_mae": 0.793913,
+   "h_grid": [
+    0.5,
+    1.0,
+    2.0,
+    3.0,
+    4.0,
+    6.0,
+    8.0,
+    12.0
+   ],
+   "n_grid": [
+    1,
+    2,
+    3,
+    4,
+    6,
+    8,
+    10,
+    16
+   ],
+   "recent_n": 16,
+   "recent_n_selection_mae": 0.797101,
+   "selection_rows": 811,
+   "selection_seasons": [
+    2022
+   ]
+  },
+  "pass_yds": {
+   "class": "FITTED_PRIOR_WINDOW",
+   "ewma_half_life_games": 4.0,
+   "ewma_selection_mae": 83.522731,
+   "h_grid": [
+    0.5,
+    1.0,
+    2.0,
+    3.0,
+    4.0,
+    6.0,
+    8.0,
+    12.0
+   ],
+   "n_grid": [
+    1,
+    2,
+    3,
+    4,
+    6,
+    8,
+    10,
+    16
+   ],
+   "recent_n": 10,
+   "recent_n_selection_mae": 83.961793,
+   "selection_rows": 811,
+   "selection_seasons": [
+    2022
+   ]
+  },
+  "rec_td": {
+   "class": "FITTED_PRIOR_WINDOW",
+   "ewma_half_life_games": 0.5,
+   "ewma_selection_mae": 0.256031,
+   "h_grid": [
+    0.5,
+    1.0,
+    2.0,
+    3.0,
+    4.0,
+    6.0,
+    8.0,
+    12.0
+   ],
+   "n_grid": [
+    1,
+    2,
+    3,
+    4,
+    6,
+    8,
+    10,
+    16
+   ],
+   "recent_n": 1,
+   "recent_n_selection_mae": 0.253041,
+   "selection_rows": 4193,
+   "selection_seasons": [
+    2022
+   ]
+  },
+  "rec_yds": {
+   "class": "FITTED_PRIOR_WINDOW",
+   "ewma_half_life_games": 3.0,
+   "ewma_selection_mae": 21.43499,
+   "h_grid": [
+    0.5,
+    1.0,
+    2.0,
+    3.0,
+    4.0,
+    6.0,
+    8.0,
+    12.0
+   ],
+   "n_grid": [
+    1,
+    2,
+    3,
+    4,
+    6,
+    8,
+    10,
+    16
+   ],
+   "recent_n": 16,
+   "recent_n_selection_mae": 21.680237,
+   "selection_rows": 4193,
+   "selection_seasons": [
+    2022
+   ]
+  },
+  "receptions": {
+   "class": "FITTED_PRIOR_WINDOW",
+   "ewma_half_life_games": 3.0,
+   "ewma_selection_mae": 1.594388,
+   "h_grid": [
+    0.5,
+    1.0,
+    2.0,
+    3.0,
+    4.0,
+    6.0,
+    8.0,
+    12.0
+   ],
+   "n_grid": [
+    1,
+    2,
+    3,
+    4,
+    6,
+    8,
+    10,
+    16
+   ],
+   "recent_n": 6,
+   "recent_n_selection_mae": 1.61353,
+   "selection_rows": 4193,
+   "selection_seasons": [
+    2022
+   ]
+  },
+  "rush_yds": {
+   "class": "FITTED_PRIOR_WINDOW",
+   "ewma_half_life_games": 2.0,
+   "ewma_selection_mae": 21.15347,
+   "h_grid": [
+    0.5,
+    1.0,
+    2.0,
+    3.0,
+    4.0,
+    6.0,
+    8.0,
+    12.0
+   ],
+   "n_grid": [
+    1,
+    2,
+    3,
+    4,
+    6,
+    8,
+    10,
+    16
+   ],
+   "recent_n": 3,
+   "recent_n_selection_mae": 21.645855,
+   "selection_rows": 1882,
+   "selection_seasons": [
+    2022
+   ]
+  },
+  "targets": {
+   "class": "FITTED_PRIOR_WINDOW",
+   "ewma_half_life_games": 2.0,
+   "ewma_selection_mae": 2.209102,
+   "h_grid": [
+    0.5,
+    1.0,
+    2.0,
+    3.0,
+    4.0,
+    6.0,
+    8.0,
+    12.0
+   ],
+   "n_grid": [
+    1,
+    2,
+    3,
+    4,
+    6,
+    8,
+    10,
+    16
+   ],
+   "recent_n": 6,
+   "recent_n_selection_mae": 2.241653,
+   "selection_rows": 4193,
+   "selection_seasons": [
+    2022
+   ]
+  },
+  "team_dropbacks": {
+   "class": "FITTED_PRIOR_WINDOW",
+   "ewma_half_life_games": 6.0,
+   "ewma_selection_mae": 6.819109,
+   "h_grid": [
+    0.5,
+    1.0,
+    2.0,
+    3.0,
+    4.0,
+    6.0,
+    8.0,
+    12.0
+   ],
+   "n_grid": [
+    1,
+    2,
+    3,
+    4,
+    6,
+    8,
+    10,
+    16
+   ],
+   "recent_n": 16,
+   "recent_n_selection_mae": 6.866697,
+   "selection_rows": 542,
+   "selection_seasons": [
+    2022
+   ]
+  },
+  "team_pass_att": {
+   "class": "FITTED_PRIOR_WINDOW",
+   "ewma_half_life_games": 6.0,
+   "ewma_selection_mae": 6.291681,
+   "h_grid": [
+    0.5,
+    1.0,
+    2.0,
+    3.0,
+    4.0,
+    6.0,
+    8.0,
+    12.0
+   ],
+   "n_grid": [
+    1,
+    2,
+    3,
+    4,
+    6,
+    8,
+    10,
+    16
+   ],
+   "recent_n": 16,
+   "recent_n_selection_mae": 6.330835,
+   "selection_rows": 542,
+   "selection_seasons": [
+    2022
+   ]
+  },
+  "team_plays": {
+   "class": "FITTED_PRIOR_WINDOW",
+   "ewma_half_life_games": 12.0,
+   "ewma_selection_mae": 6.539891,
+   "h_grid": [
+    0.5,
+    1.0,
+    2.0,
+    3.0,
+    4.0,
+    6.0,
+    8.0,
+    12.0
+   ],
+   "n_grid": [
+    1,
+    2,
+    3,
+    4,
+    6,
+    8,
+    10,
+    16
+   ],
+   "recent_n": 16,
+   "recent_n_selection_mae": 6.596287,
+   "selection_rows": 542,
+   "selection_seasons": [
+    2022
+   ]
+  },
+  "team_rush_att": {
+   "class": "FITTED_PRIOR_WINDOW",
+   "ewma_half_life_games": 8.0,
+   "ewma_selection_mae": 5.825263,
+   "h_grid": [
+    0.5,
+    1.0,
+    2.0,
+    3.0,
+    4.0,
+    6.0,
+    8.0,
+    12.0
+   ],
+   "n_grid": [
+    1,
+    2,
+    3,
+    4,
+    6,
+    8,
+    10,
+    16
+   ],
+   "recent_n": 16,
+   "recent_n_selection_mae": 5.921933,
+   "selection_rows": 542,
+   "selection_seasons": [
+    2022
+   ]
+  }
+ }
+}

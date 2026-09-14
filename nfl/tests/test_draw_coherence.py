@@ -64,9 +64,20 @@ BASELINE = (pathlib.Path(_ROOT) / 'nfl' / 'research' / 'remediation'
 # The pre-repair counts, re-derived here and asserted against the frozen
 # baseline file. These are the numbers the sealed artifacts CARRY; they are
 # not a target and they are not expected to be zero.
+# RE-FROZEN 2026-09-14 after the DEN@KC live board was sealed into the repo.
+#
+# The prior freeze was runs=101, qb_cells=838000, and it FAILED rather than
+# silently absorbing the new run -- which is the guard working. The corpus grew
+# by exactly one legitimate sealed run,
+# nfl/research/live/2026_01_DEN_KC/PRELIMINARY_PROVISIONAL_V1_CANDIDATE_R8/
+# f91342d6787a66a1 (6 QB rows x 1000 draws = 6000 new QB cells, 838000 ->
+# 844000). The violation counts below are UNCHANGED by that run: the DEN@KC
+# board contributes 0 to every impossible-state tally, because it was built
+# after the passer-credit repair. That is the fact worth preserving here --
+# the corpus grew and the defect counts did not.
 EXPECTED_SEALED = {
-    'runs': 101,
-    'qb_cells': 838000,
+    'runs': 102,
+    'qb_cells': 844000,
     'qb_completions_within_attempts': 5278,
     'qb_passing_td_within_completions': 731,
     'qb_zero_completions_zero_passing_yards': 11616,
@@ -543,7 +554,7 @@ def test_every_sealed_artifact_is_rescanned_against_the_frozen_baseline():
     check(f'  {layers["qb"]} carry a QB layer, {layers["receiving"]} carry the '
           f'receiving layer -- the non-QB checks rest on a THIRD of the '
           f'frame, not on all of it',
-          layers['qb'] == 101 and layers['receiving'] == 33,
+          layers['qb'] == 102 and layers['receiving'] == 34,
           f'{layers}')
     check('  the QB scan covered the baseline cell count',
           cells.get('qb_completions_within_attempts') ==
@@ -600,8 +611,8 @@ def test_negative_yardage_is_left_alone_and_the_reason_is_measured():
                 neg_by_array[k] = neg_by_array.get(k, 0) + int((v < 0).sum())
     check('negative yardage exists and is NOT treated as a defect',
           neg_by_array.get('qb/pyds') == 2261
-          and neg_by_array.get('qb/ryds') == 2821
-          and neg_by_array.get('receiving/receiving_yards') == 8213,
+          and neg_by_array.get('qb/ryds') == 2853
+          and neg_by_array.get('receiving/receiving_yards') == 8302,
           f'{neg_by_array}')
     check('  every negative passing-yard cell is in a run WITHOUT the shared '
           'passing event',

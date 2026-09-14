@@ -1,0 +1,191 @@
+{
+ "artifact": "REFBANDS_2025_SUPPLEMENT",
+ "cross_source_reconciliation_2021_2024": {
+  "att_raw": {
+   "max_abs": 4,
+   "mean_pbp_minus_p3": 0.0298,
+   "n_nonzero": 543
+  },
+  "carries": {
+   "max_abs": 6,
+   "mean_pbp_minus_p3": -0.0699,
+   "n_nonzero": 1100
+  },
+  "matched_rows": 21544,
+  "pbp_rows_absent_from_panel_p3": 14,
+  "targets": {
+   "max_abs": 2,
+   "mean_pbp_minus_p3": 0.01639,
+   "n_nonzero": 347
+  }
+ },
+ "lawful_because": "every 2025 REG game finished in January 2026, before the 2026-09-14T17:40:19Z cutoff",
+ "metric_caveat": "att_raw here is nflverse pass_attempt and INCLUDES sacks and spikes. It is NOT the board qb/att.",
+ "not_in_pbp_corpus": "there is no pbp_2025 blob under nfl/research/postgame/, so passing YARDS, official ATTEMPTS, receptions and receiving yards are not derivable for 2025 in this repository. This is the single highest-value missing lawful input for this workstream.",
+ "panel_p3_dropback_column_is_att_raw": {
+  "finding": "dropbacks_as_passer == pass_att_as_passer in every row. panel_p3 carries no true dropback column.",
+  "rows_checked": 48439,
+  "rows_equal": 48439
+ },
+ "player_games_present": {
+  "00-0033873": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   11,
+   12,
+   13,
+   14,
+   15
+  ],
+  "00-0038134": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   9,
+   10,
+   11,
+   12,
+   13,
+   14,
+   15,
+   16,
+   17,
+   18
+  ],
+  "00-0039732": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   13,
+   14,
+   15,
+   16,
+   17,
+   18
+  ],
+  "00-0041013": []
+ },
+ "role_bands_2025": {
+  "2025|role:QB1|att_raw": {
+   "mean": 33.32169117647059,
+   "n": 544,
+   "p10": 23.0,
+   "p25": 27.0,
+   "p50": 33.0,
+   "p75": 39.0,
+   "p90": 44.0
+  },
+  "2025|role:QB2|att_raw": {
+   "mean": 4.63063063063063,
+   "n": 111,
+   "p10": 1.0,
+   "p25": 1.0,
+   "p50": 2.0,
+   "p75": 7.0,
+   "p90": 12.0
+  },
+  "2025|role:RUSH1|carries": {
+   "mean": 15.159926470588236,
+   "n": 544,
+   "p10": 9.300000000000004,
+   "p25": 12.0,
+   "p50": 14.0,
+   "p75": 18.0,
+   "p90": 22.0
+  },
+  "2025|role:RUSH2|carries": {
+   "mean": 6.805147058823529,
+   "n": 544,
+   "p10": 3.0,
+   "p25": 5.0,
+   "p50": 7.0,
+   "p75": 9.0,
+   "p90": 11.0
+  }
+ },
+ "source": "nfl/research/inputs/panel_p3.csv.gz",
+ "spec_version": "refbands-diagnostic-1",
+ "tonight_players": {
+  "2024|player:00-0033873|att_raw": {
+   "mean": 38.4375,
+   "n": 16,
+   "p10": 29.5,
+   "p25": 34.25,
+   "p50": 38.5,
+   "p75": 42.0,
+   "p90": 47.0
+  },
+  "2024|player:00-0038134|carries": {
+   "mean": 13.909090909090908,
+   "n": 11,
+   "p10": 8.0,
+   "p25": 10.5,
+   "p50": 14.0,
+   "p75": 16.0,
+   "p90": 20.0
+  },
+  "2024|player:00-0039732|att_raw": {
+   "mean": 34.705882352941174,
+   "n": 17,
+   "p10": 27.8,
+   "p25": 32.0,
+   "p50": 35.0,
+   "p75": 37.0,
+   "p90": 42.4
+  },
+  "2024|player:00-0041013|carries": {
+   "n": 0,
+   "status": "INSUFFICIENT_EVIDENCE"
+  },
+  "2025|player:00-0033873|att_raw": {
+   "mean": 38.142857142857146,
+   "n": 14,
+   "p10": 33.0,
+   "p25": 34.5,
+   "p50": 37.0,
+   "p75": 39.75,
+   "p90": 45.900000000000006
+  },
+  "2025|player:00-0038134|carries": {
+   "mean": 13.0,
+   "n": 17,
+   "p10": 10.0,
+   "p25": 10.0,
+   "p50": 13.0,
+   "p75": 16.0,
+   "p90": 16.4
+  },
+  "2025|player:00-0039732|att_raw": {
+   "mean": 37.23529411764706,
+   "n": 17,
+   "p10": 28.2,
+   "p25": 30.0,
+   "p50": 39.0,
+   "p75": 41.0,
+   "p90": 46.8
+  },
+  "2025|player:00-0041013|carries": {
+   "n": 0,
+   "status": "INSUFFICIENT_EVIDENCE"
+  }
+ }
+}

@@ -1,0 +1,4408 @@
+{
+ "adequacy_rule": {
+  "alpha": 0.05,
+  "derivation": "n >= ln(alpha)/ln(1-t), t = min(p,1-p): the sample size at which the sample is 95% likely to contain an observation in the tail being reported",
+  "n_floor": 5,
+  "n_min": {
+   "p10": 29,
+   "p25": 11,
+   "p50": 5,
+   "p75": 11,
+   "p90": 29
+  }
+ },
+ "artifact": "NFL_REFERENCE_BANDS",
+ "artifacts": {
+  "all_bands": {
+   "bytes": 2214137,
+   "bytes_uncompressed": 33117109,
+   "path": "nfl/research/refbands/REFERENCE_BANDS.jsonl.gz",
+   "sha256": "6889b6de410f4c1b705b29f60b3edbda579d36d7cd8c00f97630643dcea62797"
+  },
+  "supplement": {
+   "bytes": 3489,
+   "path": "nfl/research/refbands/RECENT_2025_SUPPLEMENT.json",
+   "sha256": "55a00964a26a5ee12f9bdd781540f2ad015b991b7b18ec0f0d6e86f4535e7c6c"
+  },
+  "tonight": {
+   "bytes": 42197,
+   "path": "nfl/research/refbands/TONIGHT_DEN_KC_PLACEMENT.json",
+   "sha256": "9e979c4b37b5b029aaeffa48568f82a36379ded55f0ea40a9f5bd13b5a930ab8"
+  },
+  "usage_panel": {
+   "bytes": 324849,
+   "path": "nfl/research/refbands/USAGE_PANEL.csv.gz",
+   "sha256": "d1dcad681bc82228f7a854f43fac5461542c1d823d684d3d40f32c860b6d7652"
+  }
+ },
+ "counts": {
+  "by_level": {
+   "player_role": 10957,
+   "player_role_recent": 10957,
+   "player_role_season": 21981,
+   "position": 18,
+   "role": 54,
+   "role_season": 216,
+   "role_starter": 196,
+   "role_team": 1710
+  },
+  "by_status": {
+   "INSUFFICIENT_EVIDENCE": 26685,
+   "OWN": 18,
+   "OWN_DOMINANT": 2356,
+   "SHRUNK": 17030
+  },
+  "records": 46089
+ },
+ "definition_sensitivity": {
+  "bands": {
+   "att_raw": {
+    "mean": 35.001839926402944,
+    "n": 2174,
+    "p10": 24.0,
+    "p25": 29.0,
+    "p50": 35.0,
+    "p75": 41.0,
+    "p90": 46.0
+   },
+   "attempts": {
+    "mean": 32.56623735050598,
+    "n": 2174,
+    "p10": 22.0,
+    "p25": 27.0,
+    "p50": 32.0,
+    "p75": 38.0,
+    "p90": 43.0
+   },
+   "dropbacks": {
+    "mean": 36.609935602575895,
+    "n": 2174,
+    "p10": 25.0,
+    "p25": 30.0,
+    "p50": 36.0,
+    "p75": 42.0,
+    "p90": 48.0
+   }
+  },
+  "per_team_game_mean_gap_att_raw_minus_attempts": 2.4356,
+  "tonight_percentile_under_each_definition": {
+   "Bo Nix": {
+    "att_raw": 39.8,
+    "attempts": 51.6,
+    "dropbacks": 33.0
+   },
+   "Patrick Mahomes": {
+    "att_raw": 49.1,
+    "attempts": 60.9,
+    "dropbacks": 41.7
+   }
+  },
+  "why": "the broad bands this work extends label their QB1 band \"pass attempts\". It reproduces EXACTLY and ONLY against att_raw, which includes sacks and spikes. The board metric qb/att is the other quantity. The two bands are given here side by side so the gap is a number, not an opinion."
+ },
+ "definitions": {
+  "att_raw": "nflverse pass_attempt, INCLUDES sacks and spikes",
+  "attempts": "pass_attempt & !sack & !qb_spike -- the board qb/att and nfl/research/qb2/build_qb.py `attempts`",
+  "carries": "rush_attempt & !qb_kneel",
+  "dropbacks": "att_raw + scrambles - spikes",
+  "quantile_method": "numpy.percentile method=\"linear\"",
+  "roles": "observed within-team-game usage ranks, not depth chart",
+  "route_proxy": "ROUTE_PROXY_PASS_PARTICIPATION -- panel_p3 pass_snaps, presence on the field for a team dropback. An UPPER BOUND on routes run, not a route count.",
+  "targets": "pass_attempt with a receiver_player_id"
+ },
+ "forecast_cutoff": "2026-09-14T17:40:19Z",
+ "frame": {
+  "games": 1087,
+  "grouping": "GROUP BY (game_id, posteam), never game_id",
+  "player_team_game_rows": 21558,
+  "season_type": "REG",
+  "seasons": [
+   2021,
+   2022,
+   2023,
+   2024
+  ],
+  "team_games": 2174
+ },
+ "headline_bands": [
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 27.5302343159486,
+    "n": 2646,
+    "p10": 3.0,
+    "p25": 21.0,
+    "p50": 30.0,
+    "p75": 37.0,
+    "p90": 42.0
+   },
+   "band_source": "own",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 4.0,
+     "level": 10,
+     "lo": 2.0,
+     "n_clusters": 1087
+    },
+    "50": {
+     "b": 400,
+     "hi": 30.0,
+     "level": 50,
+     "lo": 30.0,
+     "n_clusters": 1087
+    },
+    "90": {
+     "b": 400,
+     "hi": 43.0,
+     "level": 90,
+     "lo": 41.0,
+     "n_clusters": 1087
+    }
+   },
+   "key": "pos:QB",
+   "level": "position",
+   "metric": "attempts",
+   "n": 2646,
+   "n_clusters": 1087,
+   "own": {
+    "mean": 27.5302343159486,
+    "n": 2646,
+    "p10": 3.0,
+    "p25": 21.0,
+    "p50": 30.0,
+    "p75": 37.0,
+    "p90": 42.0
+   },
+   "parent_key": null,
+   "status": "OWN"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 29.60959939531368,
+    "n": 2646,
+    "p10": 3.0,
+    "p25": 24.0,
+    "p50": 32.0,
+    "p75": 39.0,
+    "p90": 45.0
+   },
+   "band_source": "own",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 4.0,
+     "level": 10,
+     "lo": 2.0,
+     "n_clusters": 1087
+    },
+    "50": {
+     "b": 400,
+     "hi": 33.0,
+     "level": 50,
+     "lo": 32.0,
+     "n_clusters": 1087
+    },
+    "90": {
+     "b": 400,
+     "hi": 46.0,
+     "level": 90,
+     "lo": 44.0,
+     "n_clusters": 1087
+    }
+   },
+   "key": "pos:QB",
+   "level": "position",
+   "metric": "att_raw",
+   "n": 2646,
+   "n_clusters": 1087,
+   "own": {
+    "mean": 29.60959939531368,
+    "n": 2646,
+    "p10": 3.0,
+    "p25": 24.0,
+    "p50": 32.0,
+    "p75": 39.0,
+    "p90": 45.0
+   },
+   "parent_key": null,
+   "status": "OWN"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 30.982993197278912,
+    "n": 2646,
+    "p10": 3.0,
+    "p25": 25.0,
+    "p50": 34.0,
+    "p75": 41.0,
+    "p90": 47.0
+   },
+   "band_source": "own",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 4.0,
+     "level": 10,
+     "lo": 2.0,
+     "n_clusters": 1087
+    },
+    "50": {
+     "b": 400,
+     "hi": 35.0,
+     "level": 50,
+     "lo": 33.0,
+     "n_clusters": 1087
+    },
+    "90": {
+     "b": 400,
+     "hi": 48.0,
+     "level": 90,
+     "lo": 46.0,
+     "n_clusters": 1087
+    }
+   },
+   "key": "pos:QB",
+   "level": "position",
+   "metric": "dropbacks",
+   "n": 2646,
+   "n_clusters": 1087,
+   "own": {
+    "mean": 30.982993197278912,
+    "n": 2646,
+    "p10": 3.0,
+    "p25": 25.0,
+    "p50": 34.0,
+    "p75": 41.0,
+    "p90": 47.0
+   },
+   "parent_key": null,
+   "status": "OWN"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 194.25774754346182,
+    "n": 2646,
+    "p10": 13.0,
+    "p25": 131.25,
+    "p50": 209.0,
+    "p75": 266.0,
+    "p90": 320.0
+   },
+   "band_source": "own",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 19.0,
+     "level": 10,
+     "lo": 8.0,
+     "n_clusters": 1087
+    },
+    "50": {
+     "b": 400,
+     "hi": 214.0,
+     "level": 50,
+     "lo": 205.0,
+     "n_clusters": 1087
+    },
+    "90": {
+     "b": 400,
+     "hi": 325.01,
+     "level": 90,
+     "lo": 316.0,
+     "n_clusters": 1087
+    }
+   },
+   "key": "pos:QB",
+   "level": "position",
+   "metric": "pass_yards",
+   "n": 2646,
+   "n_clusters": 1087,
+   "own": {
+    "mean": 194.25774754346182,
+    "n": 2646,
+    "p10": 13.0,
+    "p25": 131.25,
+    "p50": 209.0,
+    "p75": 266.0,
+    "p90": 320.0
+   },
+   "parent_key": null,
+   "status": "OWN"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 17.790249433106577,
+    "n": 2646,
+    "p10": 2.0,
+    "p25": 13.0,
+    "p50": 19.0,
+    "p75": 24.0,
+    "p90": 28.0
+   },
+   "band_source": "own",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 2.0,
+     "level": 10,
+     "lo": 1.0,
+     "n_clusters": 1087
+    },
+    "50": {
+     "b": 400,
+     "hi": 20.0,
+     "level": 50,
+     "lo": 19.0,
+     "n_clusters": 1087
+    },
+    "90": {
+     "b": 400,
+     "hi": 29.0,
+     "level": 90,
+     "lo": 28.0,
+     "n_clusters": 1087
+    }
+   },
+   "key": "pos:QB",
+   "level": "position",
+   "metric": "completions",
+   "n": 2646,
+   "n_clusters": 1087,
+   "own": {
+    "mean": 17.790249433106577,
+    "n": 2646,
+    "p10": 2.0,
+    "p25": 13.0,
+    "p50": 19.0,
+    "p75": 24.0,
+    "p90": 28.0
+   },
+   "parent_key": null,
+   "status": "OWN"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 6.4271232259517905,
+    "n": 8878,
+    "p10": 1.0,
+    "p25": 1.0,
+    "p50": 4.0,
+    "p75": 10.0,
+    "p90": 16.0
+   },
+   "band_source": "own",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 1.0,
+     "level": 10,
+     "lo": 1.0,
+     "n_clusters": 1087
+    },
+    "50": {
+     "b": 400,
+     "hi": 4.0,
+     "level": 50,
+     "lo": 4.0,
+     "n_clusters": 1087
+    },
+    "90": {
+     "b": 400,
+     "hi": 16.0,
+     "level": 90,
+     "lo": 16.0,
+     "n_clusters": 1087
+    }
+   },
+   "key": "pos:ANYRUSHER",
+   "level": "position",
+   "metric": "carries",
+   "n": 8878,
+   "n_clusters": 1087,
+   "own": {
+    "mean": 6.4271232259517905,
+    "n": 8878,
+    "p10": 1.0,
+    "p25": 1.0,
+    "p50": 4.0,
+    "p75": 10.0,
+    "p90": 16.0
+   },
+   "parent_key": null,
+   "status": "OWN"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 8.210334662736258,
+    "n": 5767,
+    "p10": 1.0,
+    "p25": 2.0,
+    "p50": 7.0,
+    "p75": 13.0,
+    "p90": 18.0
+   },
+   "band_source": "own",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 1.0,
+     "level": 10,
+     "lo": 1.0,
+     "n_clusters": 1087
+    },
+    "50": {
+     "b": 400,
+     "hi": 7.0,
+     "level": 50,
+     "lo": 6.0,
+     "n_clusters": 1087
+    },
+    "90": {
+     "b": 400,
+     "hi": 19.0,
+     "level": 90,
+     "lo": 18.0,
+     "n_clusters": 1087
+    }
+   },
+   "key": "pos:RB",
+   "level": "position",
+   "metric": "carries",
+   "n": 5767,
+   "n_clusters": 1087,
+   "own": {
+    "mean": 8.210334662736258,
+    "n": 5767,
+    "p10": 1.0,
+    "p25": 2.0,
+    "p50": 7.0,
+    "p75": 13.0,
+    "p90": 18.0
+   },
+   "parent_key": null,
+   "status": "OWN"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 2.271544997398994,
+    "n": 5767,
+    "p10": 0.0,
+    "p25": 1.0,
+    "p50": 2.0,
+    "p75": 3.0,
+    "p90": 5.0
+   },
+   "band_source": "own",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 0.0,
+     "level": 10,
+     "lo": 0.0,
+     "n_clusters": 1087
+    },
+    "50": {
+     "b": 400,
+     "hi": 2.0,
+     "level": 50,
+     "lo": 2.0,
+     "n_clusters": 1087
+    },
+    "90": {
+     "b": 400,
+     "hi": 5.0,
+     "level": 90,
+     "lo": 5.0,
+     "n_clusters": 1087
+    }
+   },
+   "key": "pos:RB",
+   "level": "position",
+   "metric": "targets",
+   "n": 5767,
+   "n_clusters": 1087,
+   "own": {
+    "mean": 2.271544997398994,
+    "n": 5767,
+    "p10": 0.0,
+    "p25": 1.0,
+    "p50": 2.0,
+    "p75": 3.0,
+    "p90": 5.0
+   },
+   "parent_key": null,
+   "status": "OWN"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 1.7622680769897694,
+    "n": 5767,
+    "p10": 0.0,
+    "p25": 0.0,
+    "p50": 1.0,
+    "p75": 3.0,
+    "p90": 4.0
+   },
+   "band_source": "own",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 0.0,
+     "level": 10,
+     "lo": 0.0,
+     "n_clusters": 1087
+    },
+    "50": {
+     "b": 400,
+     "hi": 1.0,
+     "level": 50,
+     "lo": 1.0,
+     "n_clusters": 1087
+    },
+    "90": {
+     "b": 400,
+     "hi": 4.0,
+     "level": 90,
+     "lo": 4.0,
+     "n_clusters": 1087
+    }
+   },
+   "key": "pos:RB",
+   "level": "position",
+   "metric": "receptions",
+   "n": 5767,
+   "n_clusters": 1087,
+   "own": {
+    "mean": 1.7622680769897694,
+    "n": 5767,
+    "p10": 0.0,
+    "p25": 0.0,
+    "p50": 1.0,
+    "p75": 3.0,
+    "p90": 4.0
+   },
+   "parent_key": null,
+   "status": "OWN"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 14.487944492627927,
+    "n": 5765,
+    "p10": 3.0,
+    "p25": 6.0,
+    "p50": 13.0,
+    "p75": 21.0,
+    "p90": 28.0
+   },
+   "band_source": "own",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 3.0,
+     "level": 10,
+     "lo": 2.0,
+     "n_clusters": 1087
+    },
+    "50": {
+     "b": 400,
+     "hi": 13.0,
+     "level": 50,
+     "lo": 13.0,
+     "n_clusters": 1087
+    },
+    "90": {
+     "b": 400,
+     "hi": 29.0,
+     "level": 90,
+     "lo": 28.0,
+     "n_clusters": 1087
+    }
+   },
+   "key": "pos:RB",
+   "level": "position",
+   "metric": "route_proxy",
+   "n": 5765,
+   "n_clusters": 1087,
+   "own": {
+    "mean": 14.487944492627927,
+    "n": 5765,
+    "p10": 3.0,
+    "p25": 6.0,
+    "p50": 13.0,
+    "p75": 21.0,
+    "p90": 28.0
+   },
+   "parent_key": null,
+   "status": "OWN"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 4.825141015310233,
+    "n": 8687,
+    "p10": 1.0,
+    "p25": 2.0,
+    "p50": 4.0,
+    "p75": 7.0,
+    "p90": 10.0
+   },
+   "band_source": "own",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 1.0,
+     "level": 10,
+     "lo": 1.0,
+     "n_clusters": 1087
+    },
+    "50": {
+     "b": 400,
+     "hi": 4.0,
+     "level": 50,
+     "lo": 4.0,
+     "n_clusters": 1087
+    },
+    "90": {
+     "b": 400,
+     "hi": 10.0,
+     "level": 90,
+     "lo": 10.0,
+     "n_clusters": 1087
+    }
+   },
+   "key": "pos:WR",
+   "level": "position",
+   "metric": "targets",
+   "n": 8687,
+   "n_clusters": 1087,
+   "own": {
+    "mean": 4.825141015310233,
+    "n": 8687,
+    "p10": 1.0,
+    "p25": 2.0,
+    "p50": 4.0,
+    "p75": 7.0,
+    "p90": 10.0
+   },
+   "parent_key": null,
+   "status": "OWN"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 3.034649476228848,
+    "n": 8687,
+    "p10": 0.0,
+    "p25": 1.0,
+    "p50": 2.0,
+    "p75": 4.0,
+    "p90": 7.0
+   },
+   "band_source": "own",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 0.0,
+     "level": 10,
+     "lo": 0.0,
+     "n_clusters": 1087
+    },
+    "50": {
+     "b": 400,
+     "hi": 3.0,
+     "level": 50,
+     "lo": 2.0,
+     "n_clusters": 1087
+    },
+    "90": {
+     "b": 400,
+     "hi": 7.0,
+     "level": 90,
+     "lo": 6.0,
+     "n_clusters": 1087
+    }
+   },
+   "key": "pos:WR",
+   "level": "position",
+   "metric": "receptions",
+   "n": 8687,
+   "n_clusters": 1087,
+   "own": {
+    "mean": 3.034649476228848,
+    "n": 8687,
+    "p10": 0.0,
+    "p25": 1.0,
+    "p50": 2.0,
+    "p75": 4.0,
+    "p90": 7.0
+   },
+   "parent_key": null,
+   "status": "OWN"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 38.06699666167837,
+    "n": 8687,
+    "p10": 0.0,
+    "p25": 9.0,
+    "p50": 28.0,
+    "p75": 57.0,
+    "p90": 90.0
+   },
+   "band_source": "own",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 0.0,
+     "level": 10,
+     "lo": 0.0,
+     "n_clusters": 1087
+    },
+    "50": {
+     "b": 400,
+     "hi": 29.0,
+     "level": 50,
+     "lo": 27.0,
+     "n_clusters": 1087
+    },
+    "90": {
+     "b": 400,
+     "hi": 92.0,
+     "level": 90,
+     "lo": 87.0,
+     "n_clusters": 1087
+    }
+   },
+   "key": "pos:WR",
+   "level": "position",
+   "metric": "rec_yards",
+   "n": 8687,
+   "n_clusters": 1087,
+   "own": {
+    "mean": 38.06699666167837,
+    "n": 8687,
+    "p10": 0.0,
+    "p25": 9.0,
+    "p50": 28.0,
+    "p75": 57.0,
+    "p90": 90.0
+   },
+   "parent_key": null,
+   "status": "OWN"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 24.54218947853114,
+    "n": 8687,
+    "p10": 6.0,
+    "p25": 14.0,
+    "p50": 26.0,
+    "p75": 34.0,
+    "p90": 41.0
+   },
+   "band_source": "own",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 6.0,
+     "level": 10,
+     "lo": 6.0,
+     "n_clusters": 1087
+    },
+    "50": {
+     "b": 400,
+     "hi": 26.0,
+     "level": 50,
+     "lo": 25.0,
+     "n_clusters": 1087
+    },
+    "90": {
+     "b": 400,
+     "hi": 41.0,
+     "level": 90,
+     "lo": 40.0,
+     "n_clusters": 1087
+    }
+   },
+   "key": "pos:WR",
+   "level": "position",
+   "metric": "route_proxy",
+   "n": 8687,
+   "n_clusters": 1087,
+   "own": {
+    "mean": 24.54218947853114,
+    "n": 8687,
+    "p10": 6.0,
+    "p25": 14.0,
+    "p50": 26.0,
+    "p75": 34.0,
+    "p90": 41.0
+   },
+   "parent_key": null,
+   "status": "OWN"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 3.4982586487114,
+    "n": 4307,
+    "p10": 1.0,
+    "p25": 1.0,
+    "p50": 3.0,
+    "p75": 5.0,
+    "p90": 7.0
+   },
+   "band_source": "own",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 1.0,
+     "level": 10,
+     "lo": 1.0,
+     "n_clusters": 1087
+    },
+    "50": {
+     "b": 400,
+     "hi": 3.0,
+     "level": 50,
+     "lo": 3.0,
+     "n_clusters": 1087
+    },
+    "90": {
+     "b": 400,
+     "hi": 8.0,
+     "level": 90,
+     "lo": 7.0,
+     "n_clusters": 1087
+    }
+   },
+   "key": "pos:TE",
+   "level": "position",
+   "metric": "targets",
+   "n": 4307,
+   "n_clusters": 1087,
+   "own": {
+    "mean": 3.4982586487114,
+    "n": 4307,
+    "p10": 1.0,
+    "p25": 1.0,
+    "p50": 3.0,
+    "p75": 5.0,
+    "p90": 7.0
+   },
+   "parent_key": null,
+   "status": "OWN"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 2.447179010912468,
+    "n": 4307,
+    "p10": 0.0,
+    "p25": 1.0,
+    "p50": 2.0,
+    "p75": 3.0,
+    "p90": 5.0
+   },
+   "band_source": "own",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 0.0,
+     "level": 10,
+     "lo": 0.0,
+     "n_clusters": 1087
+    },
+    "50": {
+     "b": 400,
+     "hi": 2.0,
+     "level": 50,
+     "lo": 2.0,
+     "n_clusters": 1087
+    },
+    "90": {
+     "b": 400,
+     "hi": 6.0,
+     "level": 90,
+     "lo": 5.0,
+     "n_clusters": 1087
+    }
+   },
+   "key": "pos:TE",
+   "level": "position",
+   "metric": "receptions",
+   "n": 4307,
+   "n_clusters": 1087,
+   "own": {
+    "mean": 2.447179010912468,
+    "n": 4307,
+    "p10": 0.0,
+    "p25": 1.0,
+    "p50": 2.0,
+    "p75": 3.0,
+    "p90": 5.0
+   },
+   "parent_key": null,
+   "status": "OWN"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 25.267471557928953,
+    "n": 4307,
+    "p10": 0.0,
+    "p25": 6.0,
+    "p50": 18.0,
+    "p75": 37.0,
+    "p90": 60.0
+   },
+   "band_source": "own",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 0.0,
+     "level": 10,
+     "lo": 0.0,
+     "n_clusters": 1087
+    },
+    "50": {
+     "b": 400,
+     "hi": 19.0,
+     "level": 50,
+     "lo": 17.0,
+     "n_clusters": 1087
+    },
+    "90": {
+     "b": 400,
+     "hi": 62.12249999999989,
+     "level": 90,
+     "lo": 58.0,
+     "n_clusters": 1087
+    }
+   },
+   "key": "pos:TE",
+   "level": "position",
+   "metric": "rec_yards",
+   "n": 4307,
+   "n_clusters": 1087,
+   "own": {
+    "mean": 25.267471557928953,
+    "n": 4307,
+    "p10": 0.0,
+    "p25": 6.0,
+    "p50": 18.0,
+    "p75": 37.0,
+    "p90": 60.0
+   },
+   "parent_key": null,
+   "status": "OWN"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 20.37334571627583,
+    "n": 4307,
+    "p10": 6.0,
+    "p25": 11.0,
+    "p50": 19.0,
+    "p75": 29.0,
+    "p90": 37.0
+   },
+   "band_source": "own",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 7.0,
+     "level": 10,
+     "lo": 6.0,
+     "n_clusters": 1087
+    },
+    "50": {
+     "b": 400,
+     "hi": 19.0,
+     "level": 50,
+     "lo": 19.0,
+     "n_clusters": 1087
+    },
+    "90": {
+     "b": 400,
+     "hi": 37.0,
+     "level": 90,
+     "lo": 36.0,
+     "n_clusters": 1087
+    }
+   },
+   "key": "pos:TE",
+   "level": "position",
+   "metric": "route_proxy",
+   "n": 4307,
+   "n_clusters": 1087,
+   "own": {
+    "mean": 20.37334571627583,
+    "n": 4307,
+    "p10": 6.0,
+    "p25": 11.0,
+    "p50": 19.0,
+    "p75": 29.0,
+    "p90": 37.0
+   },
+   "parent_key": null,
+   "status": "OWN"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 32.49994407406378,
+    "n": 2174,
+    "p10": 21.74988651838402,
+    "p25": 26.921016795279165,
+    "p50": 31.973672265093054,
+    "p75": 37.98683613254652,
+    "p90": 42.98683613254653,
+    "w_own": 0.9868361325465275
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 22.0,
+     "level": 10,
+     "lo": 21.0,
+     "n_clusters": 1087
+    },
+    "50": {
+     "b": 400,
+     "hi": 33.0,
+     "level": 50,
+     "lo": 32.0,
+     "n_clusters": 1087
+    },
+    "90": {
+     "b": 400,
+     "hi": 44.0,
+     "level": 90,
+     "lo": 42.0,
+     "n_clusters": 1087
+    }
+   },
+   "key": "role:QB1",
+   "level": "role",
+   "metric": "attempts",
+   "n": 2174,
+   "n_clusters": 1087,
+   "own": {
+    "mean": 32.56623735050598,
+    "n": 2174,
+    "p10": 22.0,
+    "p25": 27.0,
+    "p50": 32.0,
+    "p75": 38.0,
+    "p90": 43.0
+   },
+   "parent_key": "pos:QB",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 34.93085718677444,
+    "n": 2174,
+    "p10": 23.723558783477078,
+    "p25": 28.934180662732636,
+    "p50": 34.960508397639586,
+    "p75": 40.97367226509306,
+    "p90": 45.98683613254653,
+    "w_own": 0.9868361325465275
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 25.0,
+     "level": 10,
+     "lo": 23.0,
+     "n_clusters": 1087
+    },
+    "50": {
+     "b": 400,
+     "hi": 35.0,
+     "level": 50,
+     "lo": 34.0,
+     "n_clusters": 1087
+    },
+    "90": {
+     "b": 400,
+     "hi": 47.0,
+     "level": 90,
+     "lo": 45.0,
+     "n_clusters": 1087
+    }
+   },
+   "key": "role:QB1",
+   "level": "role",
+   "metric": "att_raw",
+   "n": 2174,
+   "n_clusters": 1087,
+   "own": {
+    "mean": 35.001839926402944,
+    "n": 2174,
+    "p10": 24.0,
+    "p25": 29.0,
+    "p50": 35.0,
+    "p75": 41.0,
+    "p90": 46.0
+   },
+   "parent_key": "pos:QB",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 36.535863278584245,
+    "n": 2174,
+    "p10": 24.710394916023603,
+    "p25": 29.93418066273264,
+    "p50": 35.97367226509306,
+    "p75": 41.98683613254653,
+    "p90": 47.98683613254653,
+    "w_own": 0.9868361325465275
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 26.0,
+     "level": 10,
+     "lo": 25.0,
+     "n_clusters": 1087
+    },
+    "50": {
+     "b": 400,
+     "hi": 37.0,
+     "level": 50,
+     "lo": 36.0,
+     "n_clusters": 1087
+    },
+    "90": {
+     "b": 400,
+     "hi": 49.0,
+     "level": 90,
+     "lo": 47.0,
+     "n_clusters": 1087
+    }
+   },
+   "key": "role:QB1",
+   "level": "role",
+   "metric": "dropbacks",
+   "n": 2174,
+   "n_clusters": 1087,
+   "own": {
+    "mean": 36.609935602575895,
+    "n": 2174,
+    "p10": 25.0,
+    "p25": 30.0,
+    "p50": 36.0,
+    "p75": 42.0,
+    "p90": 48.0
+   },
+   "parent_key": "pos:QB",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 230.40920321323668,
+    "n": 2174,
+    "p10": 134.67689514298687,
+    "p25": 178.37142532909667,
+    "p50": 227.74988651838402,
+    "p75": 278.8288697231049,
+    "p90": 327.89468906037223,
+    "w_own": 0.9868361325465275
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 142.0075,
+     "level": 10,
+     "lo": 131.0,
+     "n_clusters": 1087
+    },
+    "50": {
+     "b": 400,
+     "hi": 232.0,
+     "level": 50,
+     "lo": 224.0,
+     "n_clusters": 1087
+    },
+    "90": {
+     "b": 400,
+     "hi": 334.0,
+     "level": 90,
+     "lo": 323.0,
+     "n_clusters": 1087
+    }
+   },
+   "key": "role:QB1",
+   "level": "role",
+   "metric": "pass_yards",
+   "n": 2174,
+   "n_clusters": 1087,
+   "own": {
+    "mean": 230.89144434222632,
+    "n": 2174,
+    "p10": 136.3,
+    "p25": 179.0,
+    "p50": 228.0,
+    "p75": 279.0,
+    "p90": 328.0
+   },
+   "parent_key": "pos:QB",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 21.05579538518388,
+    "n": 2174,
+    "p10": 12.855197458011801,
+    "p25": 16.947344530186108,
+    "p50": 20.973672265093057,
+    "p75": 24.986836132546525,
+    "p90": 28.98683613254653,
+    "w_own": 0.9868361325465275
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 14.0,
+     "level": 10,
+     "lo": 13.0,
+     "n_clusters": 1087
+    },
+    "50": {
+     "b": 400,
+     "hi": 21.0,
+     "level": 50,
+     "lo": 21.0,
+     "n_clusters": 1087
+    },
+    "90": {
+     "b": 400,
+     "hi": 29.0,
+     "level": 90,
+     "lo": 28.0,
+     "n_clusters": 1087
+    }
+   },
+   "key": "role:QB1",
+   "level": "role",
+   "metric": "completions",
+   "n": 2174,
+   "n_clusters": 1087,
+   "own": {
+    "mean": 21.09935602575897,
+    "n": 2174,
+    "p10": 13.0,
+    "p25": 17.0,
+    "p50": 21.0,
+    "p75": 25.0,
+    "p90": 29.0
+   },
+   "parent_key": "pos:QB",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 5.395230536659108,
+    "n": 521,
+    "p10": 0.1581818181818182,
+    "p25": 2.0545454545454547,
+    "p50": 3.4763636363636365,
+    "p75": 7.634545454545455,
+    "p90": 13.581818181818182,
+    "w_own": 0.9472727272727273
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 1.0,
+     "level": 10,
+     "lo": 0.0,
+     "n_clusters": 433
+    },
+    "50": {
+     "b": 400,
+     "hi": 2.0,
+     "level": 50,
+     "lo": 1.0,
+     "n_clusters": 433
+    },
+    "90": {
+     "b": 400,
+     "hi": 13.0,
+     "level": 90,
+     "lo": 11.0,
+     "n_clusters": 433
+    }
+   },
+   "key": "role:QB2",
+   "level": "role",
+   "metric": "attempts",
+   "n": 521,
+   "n_clusters": 433,
+   "own": {
+    "mean": 4.163147792706334,
+    "n": 521,
+    "p10": 0.0,
+    "p25": 1.0,
+    "p50": 2.0,
+    "p75": 6.0,
+    "p90": 12.0
+   },
+   "parent_key": "pos:QB",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 5.921233422661994,
+    "n": 521,
+    "p10": 1.1054545454545455,
+    "p25": 2.212727272727273,
+    "p50": 3.581818181818182,
+    "p75": 8.687272727272727,
+    "p90": 14.687272727272727,
+    "w_own": 0.9472727272727273
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 1.0,
+     "level": 10,
+     "lo": 1.0,
+     "n_clusters": 433
+    },
+    "50": {
+     "b": 400,
+     "hi": 2.0,
+     "level": 50,
+     "lo": 1.0,
+     "n_clusters": 433
+    },
+    "90": {
+     "b": 400,
+     "hi": 15.0,
+     "level": 90,
+     "lo": 13.0,
+     "n_clusters": 433
+    }
+   },
+   "key": "role:QB2",
+   "level": "role",
+   "metric": "att_raw",
+   "n": 521,
+   "n_clusters": 433,
+   "own": {
+    "mean": 4.6026871401151634,
+    "n": 521,
+    "p10": 1.0,
+    "p25": 1.0,
+    "p50": 2.0,
+    "p75": 7.0,
+    "p90": 13.0
+   },
+   "parent_key": "pos:QB",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 6.266376004947434,
+    "n": 521,
+    "p10": 1.1054545454545455,
+    "p25": 2.2654545454545456,
+    "p50": 3.6872727272727275,
+    "p75": 8.792727272727273,
+    "p90": 15.74,
+    "w_own": 0.9472727272727273
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 1.0,
+     "level": 10,
+     "lo": 1.0,
+     "n_clusters": 433
+    },
+    "50": {
+     "b": 400,
+     "hi": 2.0,
+     "level": 50,
+     "lo": 1.0,
+     "n_clusters": 433
+    },
+    "90": {
+     "b": 400,
+     "hi": 15.0,
+     "level": 90,
+     "lo": 13.0,
+     "n_clusters": 433
+    }
+   },
+   "key": "role:QB2",
+   "level": "role",
+   "metric": "dropbacks",
+   "n": 521,
+   "n_clusters": 433,
+   "own": {
+    "mean": 4.890595009596929,
+    "n": 521,
+    "p10": 1.0,
+    "p25": 1.0,
+    "p50": 2.0,
+    "p75": 7.0,
+    "p90": 14.0
+   },
+   "parent_key": "pos:QB",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 34.122681234109805,
+    "n": 521,
+    "p10": 0.6854545454545455,
+    "p25": 6.920454545454547,
+    "p50": 21.44,
+    "p75": 49.07454545454546,
+    "p90": 91.70727272727272,
+    "w_own": 0.9472727272727273
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 0.0,
+     "level": 10,
+     "lo": 0.0,
+     "n_clusters": 433
+    },
+    "50": {
+     "b": 400,
+     "hi": 14.0,
+     "level": 50,
+     "lo": 8.0,
+     "n_clusters": 433
+    },
+    "90": {
+     "b": 400,
+     "hi": 83.0,
+     "level": 90,
+     "lo": 69.0,
+     "n_clusters": 433
+    }
+   },
+   "key": "role:QB2",
+   "level": "role",
+   "metric": "pass_yards",
+   "n": 521,
+   "n_clusters": 433,
+   "own": {
+    "mean": 25.209213051823415,
+    "n": 521,
+    "p10": 0.0,
+    "p25": 0.0,
+    "p50": 11.0,
+    "p75": 37.0,
+    "p90": 79.0
+   },
+   "parent_key": "pos:QB",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 12.505541105331023,
+    "n": 39,
+    "p10": 1.2794117647058825,
+    "p25": 9.529411764705884,
+    "p50": 13.36764705882353,
+    "p75": 16.35294117647059,
+    "p90": 18.48529411764706,
+    "w_own": 0.5735294117647058
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 1.0,
+     "level": 10,
+     "lo": 0.0,
+     "n_clusters": 39
+    },
+    "50": {
+     "b": 400,
+     "hi": 1.0,
+     "level": 50,
+     "lo": 1.0,
+     "n_clusters": 39
+    },
+    "90": {
+     "b": 400,
+     "hi": 8.0,
+     "level": 90,
+     "lo": 1.0,
+     "n_clusters": 39
+    }
+   },
+   "key": "role:QB3",
+   "level": "role",
+   "metric": "attempts",
+   "n": 39,
+   "n_clusters": 39,
+   "own": {
+    "mean": 1.3333333333333333,
+    "n": 39,
+    "p10": 0.0,
+    "p25": 1.0,
+    "p50": 1.0,
+    "p75": 1.0,
+    "p90": 1.0
+   },
+   "parent_key": "pos:QB",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 14.080982392957184,
+    "n": 39,
+    "p10": 1.8529411764705883,
+    "p25": 11.23529411764706,
+    "p50": 15.073529411764708,
+    "p75": 18.058823529411768,
+    "p90": 20.617647058823533,
+    "w_own": 0.5735294117647058
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 1.0,
+     "level": 10,
+     "lo": 1.0,
+     "n_clusters": 39
+    },
+    "50": {
+     "b": 400,
+     "hi": 1.0,
+     "level": 50,
+     "lo": 1.0,
+     "n_clusters": 39
+    },
+    "90": {
+     "b": 400,
+     "hi": 8.0,
+     "level": 90,
+     "lo": 1.0,
+     "n_clusters": 39
+    }
+   },
+   "key": "role:QB3",
+   "level": "role",
+   "metric": "dropbacks",
+   "n": 39,
+   "n_clusters": 39,
+   "own": {
+    "mean": 1.5128205128205128,
+    "n": 39,
+    "p10": 1.0,
+    "p25": 1.0,
+    "p50": 1.0,
+    "p75": 1.0,
+    "p90": 1.0
+   },
+   "parent_key": "pos:QB",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 15.14452409149006,
+    "n": 2174,
+    "p10": 8.89468906037222,
+    "p25": 10.868361325465274,
+    "p50": 14.855197458011803,
+    "p75": 18.881525192918744,
+    "p90": 22.907852927825694,
+    "w_own": 0.9868361325465275
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 9.0,
+     "level": 10,
+     "lo": 9.0,
+     "n_clusters": 1087
+    },
+    "50": {
+     "b": 400,
+     "hi": 15.0,
+     "level": 50,
+     "lo": 14.0,
+     "n_clusters": 1087
+    },
+    "90": {
+     "b": 400,
+     "hi": 23.0,
+     "level": 90,
+     "lo": 22.0,
+     "n_clusters": 1087
+    }
+   },
+   "key": "role:RUSH1",
+   "level": "role",
+   "metric": "carries",
+   "n": 2174,
+   "n_clusters": 1087,
+   "own": {
+    "mean": 15.260809567617295,
+    "n": 2174,
+    "p10": 9.0,
+    "p25": 11.0,
+    "p50": 15.0,
+    "p75": 19.0,
+    "p90": 23.0
+   },
+   "parent_key": "pos:ANYRUSHER",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 6.496762209172782,
+    "n": 2168,
+    "p10": 2.973600364132909,
+    "p25": 3.960400546199363,
+    "p50": 5.973600364132909,
+    "p75": 9.013199817933547,
+    "p90": 11.065999089667729,
+    "w_own": 0.9868001820664543
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 3.0,
+     "level": 10,
+     "lo": 2.0,
+     "n_clusters": 1087
+    },
+    "50": {
+     "b": 400,
+     "hi": 6.0,
+     "level": 50,
+     "lo": 6.0,
+     "n_clusters": 1087
+    },
+    "90": {
+     "b": 400,
+     "hi": 11.0,
+     "level": 90,
+     "lo": 11.0,
+     "n_clusters": 1087
+    }
+   },
+   "key": "role:RUSH2",
+   "level": "role",
+   "metric": "carries",
+   "n": 2168,
+   "n_clusters": 1087,
+   "own": {
+    "mean": 6.497693726937269,
+    "n": 2168,
+    "p10": 3.0,
+    "p25": 4.0,
+    "p50": 6.0,
+    "p75": 9.0,
+    "p90": 11.0
+   },
+   "parent_key": "pos:ANYRUSHER",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 3.0606602731202868,
+    "n": 2071,
+    "p10": 1.0,
+    "p25": 1.986190476190476,
+    "p50": 3.013809523809524,
+    "p75": 4.082857142857143,
+    "p90": 6.1380952380952385,
+    "w_own": 0.9861904761904762
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 1.0,
+     "level": 10,
+     "lo": 1.0,
+     "n_clusters": 1086
+    },
+    "50": {
+     "b": 400,
+     "hi": 3.0,
+     "level": 50,
+     "lo": 2.0,
+     "n_clusters": 1086
+    },
+    "90": {
+     "b": 400,
+     "hi": 6.0,
+     "level": 90,
+     "lo": 5.0,
+     "n_clusters": 1086
+    }
+   },
+   "key": "role:RUSH3",
+   "level": "role",
+   "metric": "carries",
+   "n": 2071,
+   "n_clusters": 1086,
+   "own": {
+    "mean": 3.013520038628682,
+    "n": 2071,
+    "p10": 1.0,
+    "p25": 2.0,
+    "p50": 3.0,
+    "p75": 4.0,
+    "p90": 6.0
+   },
+   "parent_key": "pos:ANYRUSHER",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 15.09809337504283,
+    "n": 2174,
+    "p10": 8.89468906037222,
+    "p25": 10.881525192918746,
+    "p50": 13.907852927825692,
+    "p75": 18.92101679527916,
+    "p90": 22.934180662732636,
+    "w_own": 0.9868361325465275
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 9.0,
+     "level": 10,
+     "lo": 9.0,
+     "n_clusters": 1087
+    },
+    "50": {
+     "b": 400,
+     "hi": 15.0,
+     "level": 50,
+     "lo": 14.0,
+     "n_clusters": 1087
+    },
+    "90": {
+     "b": 400,
+     "hi": 23.0,
+     "level": 90,
+     "lo": 22.0,
+     "n_clusters": 1087
+    }
+   },
+   "key": "role:RB1",
+   "level": "role",
+   "metric": "carries",
+   "n": 2174,
+   "n_clusters": 1087,
+   "own": {
+    "mean": 15.189972401103956,
+    "n": 2174,
+    "p10": 9.0,
+    "p25": 11.0,
+    "p50": 14.0,
+    "p75": 19.0,
+    "p90": 23.0
+   },
+   "parent_key": "pos:RB",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 3.2936335927937224,
+    "n": 2174,
+    "p10": 0.0,
+    "p25": 1.0,
+    "p50": 2.986836132546528,
+    "p75": 4.973672265093055,
+    "p90": 5.986836132546528,
+    "w_own": 0.9868361325465275
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 1.0,
+     "level": 10,
+     "lo": 0.0,
+     "n_clusters": 1087
+    },
+    "50": {
+     "b": 400,
+     "hi": 3.0,
+     "level": 50,
+     "lo": 3.0,
+     "n_clusters": 1087
+    },
+    "90": {
+     "b": 400,
+     "hi": 7.0,
+     "level": 90,
+     "lo": 6.0,
+     "n_clusters": 1087
+    }
+   },
+   "key": "role:RB1",
+   "level": "role",
+   "metric": "targets",
+   "n": 2174,
+   "n_clusters": 1087,
+   "own": {
+    "mean": 3.3072677092916285,
+    "n": 2174,
+    "p10": 0.0,
+    "p25": 1.0,
+    "p50": 3.0,
+    "p75": 5.0,
+    "p90": 6.0
+   },
+   "parent_key": "pos:RB",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 2.579258181676216,
+    "n": 2174,
+    "p10": 0.0,
+    "p25": 0.9868361325465275,
+    "p50": 1.9868361325465274,
+    "p75": 3.9868361325465274,
+    "p90": 4.986836132546527,
+    "w_own": 0.9868361325465275
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 0.0,
+     "level": 10,
+     "lo": 0.0,
+     "n_clusters": 1087
+    },
+    "50": {
+     "b": 400,
+     "hi": 2.0,
+     "level": 50,
+     "lo": 2.0,
+     "n_clusters": 1087
+    },
+    "90": {
+     "b": 400,
+     "hi": 6.0,
+     "level": 90,
+     "lo": 5.0,
+     "n_clusters": 1087
+    }
+   },
+   "key": "role:RB1",
+   "level": "role",
+   "metric": "receptions",
+   "n": 2174,
+   "n_clusters": 1087,
+   "own": {
+    "mean": 2.5901563937442504,
+    "n": 2174,
+    "p10": 0.0,
+    "p25": 1.0,
+    "p50": 2.0,
+    "p75": 4.0,
+    "p90": 5.0
+   },
+   "parent_key": "pos:RB",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 21.564752787238408,
+    "n": 2174,
+    "p10": 9.907852927825692,
+    "p25": 14.881525192918748,
+    "p50": 20.89468906037222,
+    "p75": 27.90785292782569,
+    "p90": 33.921016795279165,
+    "w_own": 0.9868361325465275
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 11.0,
+     "level": 10,
+     "lo": 10.0,
+     "n_clusters": 1087
+    },
+    "50": {
+     "b": 400,
+     "hi": 22.0,
+     "level": 50,
+     "lo": 20.0,
+     "n_clusters": 1087
+    },
+    "90": {
+     "b": 400,
+     "hi": 35.0,
+     "level": 90,
+     "lo": 33.0,
+     "n_clusters": 1087
+    }
+   },
+   "key": "role:RB1",
+   "level": "role",
+   "metric": "route_proxy",
+   "n": 2174,
+   "n_clusters": 1087,
+   "own": {
+    "mean": 21.659153633854647,
+    "n": 2174,
+    "p10": 10.0,
+    "p25": 15.0,
+    "p50": 21.0,
+    "p75": 28.0,
+    "p90": 34.0
+   },
+   "parent_key": "pos:RB",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 5.765893900292975,
+    "n": 2085,
+    "p10": 1.9862819299905392,
+    "p25": 2.986281929990539,
+    "p50": 5.0274361400189225,
+    "p75": 8.068590350047304,
+    "p90": 11.096026490066226,
+    "w_own": 0.9862819299905392
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 2.0,
+     "level": 10,
+     "lo": 2.0,
+     "n_clusters": 1084
+    },
+    "50": {
+     "b": 400,
+     "hi": 5.0,
+     "level": 50,
+     "lo": 5.0,
+     "n_clusters": 1084
+    },
+    "90": {
+     "b": 400,
+     "hi": 11.0,
+     "level": 90,
+     "lo": 10.0,
+     "n_clusters": 1084
+    }
+   },
+   "key": "role:RB2",
+   "level": "role",
+   "metric": "carries",
+   "n": 2085,
+   "n_clusters": 1084,
+   "own": {
+    "mean": 5.73189448441247,
+    "n": 2085,
+    "p10": 2.0,
+    "p25": 3.0,
+    "p50": 5.0,
+    "p75": 8.0,
+    "p90": 11.0
+   },
+   "parent_key": "pos:RB",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 1.9242548746095416,
+    "n": 2085,
+    "p10": 0.0,
+    "p25": 0.013718070009460792,
+    "p50": 1.0137180700094608,
+    "p75": 3.0,
+    "p90": 5.0,
+    "w_own": 0.9862819299905392
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 0.0,
+     "level": 10,
+     "lo": 0.0,
+     "n_clusters": 1084
+    },
+    "50": {
+     "b": 400,
+     "hi": 2.0,
+     "level": 50,
+     "lo": 1.0,
+     "n_clusters": 1084
+    },
+    "90": {
+     "b": 400,
+     "hi": 5.0,
+     "level": 90,
+     "lo": 4.0,
+     "n_clusters": 1084
+    }
+   },
+   "key": "role:RB2",
+   "level": "role",
+   "metric": "targets",
+   "n": 2085,
+   "n_clusters": 1084,
+   "own": {
+    "mean": 1.9194244604316546,
+    "n": 2085,
+    "p10": 0.0,
+    "p25": 0.0,
+    "p50": 1.0,
+    "p75": 3.0,
+    "p90": 5.0
+   },
+   "parent_key": "pos:RB",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 1.487278038899103,
+    "n": 2085,
+    "p10": 0.0,
+    "p25": 0.0,
+    "p50": 1.0,
+    "p75": 2.013718070009461,
+    "p90": 4.0,
+    "w_own": 0.9862819299905392
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 0.0,
+     "level": 10,
+     "lo": 0.0,
+     "n_clusters": 1084
+    },
+    "50": {
+     "b": 400,
+     "hi": 1.0,
+     "level": 50,
+     "lo": 1.0,
+     "n_clusters": 1084
+    },
+    "90": {
+     "b": 400,
+     "hi": 4.0,
+     "level": 90,
+     "lo": 3.0,
+     "n_clusters": 1084
+    }
+   },
+   "key": "role:RB2",
+   "level": "role",
+   "metric": "receptions",
+   "n": 2085,
+   "n_clusters": 1084,
+   "own": {
+    "mean": 1.483453237410072,
+    "n": 2085,
+    "p10": 0.0,
+    "p25": 0.0,
+    "p50": 1.0,
+    "p75": 2.0,
+    "p90": 4.0
+   },
+   "parent_key": "pos:RB",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 12.091367261251754,
+    "n": 2085,
+    "p10": 3.0,
+    "p25": 6.0,
+    "p50": 11.02743614001892,
+    "p75": 17.054872280037845,
+    "p90": 23.0685903500473,
+    "w_own": 0.9862819299905392
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 3.0,
+     "level": 10,
+     "lo": 3.0,
+     "n_clusters": 1084
+    },
+    "50": {
+     "b": 400,
+     "hi": 11.0,
+     "level": 50,
+     "lo": 10.0,
+     "n_clusters": 1084
+    },
+    "90": {
+     "b": 400,
+     "hi": 24.0,
+     "level": 90,
+     "lo": 22.0,
+     "n_clusters": 1084
+    }
+   },
+   "key": "role:RB2",
+   "level": "role",
+   "metric": "route_proxy",
+   "n": 2085,
+   "n_clusters": 1084,
+   "own": {
+    "mean": 12.058033573141486,
+    "n": 2085,
+    "p10": 3.0,
+    "p25": 6.0,
+    "p50": 11.0,
+    "p75": 17.0,
+    "p90": 23.0
+   },
+   "parent_key": "pos:RB",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 2.583350263929009,
+    "n": 938,
+    "p10": 1.0,
+    "p25": 1.0299896587383661,
+    "p50": 2.1499482936918306,
+    "p75": 3.299896587383661,
+    "p90": 5.38986556359876,
+    "w_own": 0.9700103412616339
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 1.0,
+     "level": 10,
+     "lo": 1.0,
+     "n_clusters": 743
+    },
+    "50": {
+     "b": 400,
+     "hi": 2.0,
+     "level": 50,
+     "lo": 2.0,
+     "n_clusters": 743
+    },
+    "90": {
+     "b": 400,
+     "hi": 5.0,
+     "level": 90,
+     "lo": 5.0,
+     "n_clusters": 743
+    }
+   },
+   "key": "role:RB3",
+   "level": "role",
+   "metric": "carries",
+   "n": 938,
+   "n_clusters": 743,
+   "own": {
+    "mean": 2.4093816631130065,
+    "n": 938,
+    "p10": 1.0,
+    "p25": 1.0,
+    "p50": 2.0,
+    "p75": 3.0,
+    "p90": 5.0
+   },
+   "parent_key": "pos:RB",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 1.1218974197772191,
+    "n": 938,
+    "p10": 0.0,
+    "p25": 0.02998965873836612,
+    "p50": 1.0299896587383661,
+    "p75": 2.029989658738366,
+    "p90": 3.0599793174767322,
+    "w_own": 0.9700103412616339
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 0.0,
+     "level": 10,
+     "lo": 0.0,
+     "n_clusters": 743
+    },
+    "50": {
+     "b": 400,
+     "hi": 1.0,
+     "level": 50,
+     "lo": 1.0,
+     "n_clusters": 743
+    },
+    "90": {
+     "b": 400,
+     "hi": 3.0,
+     "level": 90,
+     "lo": 3.0,
+     "n_clusters": 743
+    }
+   },
+   "key": "role:RB3",
+   "level": "role",
+   "metric": "targets",
+   "n": 938,
+   "n_clusters": 743,
+   "own": {
+    "mean": 1.0863539445628998,
+    "n": 938,
+    "p10": 0.0,
+    "p25": 0.0,
+    "p50": 1.0,
+    "p75": 2.0,
+    "p90": 3.0
+   },
+   "parent_key": "pos:RB",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 0.848092837882837,
+    "n": 938,
+    "p10": 0.0,
+    "p25": 0.0,
+    "p50": 0.02998965873836612,
+    "p75": 1.0599793174767322,
+    "p90": 2.0599793174767322,
+    "w_own": 0.9700103412616339
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 0.0,
+     "level": 10,
+     "lo": 0.0,
+     "n_clusters": 743
+    },
+    "50": {
+     "b": 400,
+     "hi": 0.0,
+     "level": 50,
+     "lo": 0.0,
+     "n_clusters": 743
+    },
+    "90": {
+     "b": 400,
+     "hi": 3.0,
+     "level": 90,
+     "lo": 2.0,
+     "n_clusters": 743
+    }
+   },
+   "key": "role:RB3",
+   "level": "role",
+   "metric": "receptions",
+   "n": 938,
+   "n_clusters": 743,
+   "own": {
+    "mean": 0.8198294243070362,
+    "n": 938,
+    "p10": 0.0,
+    "p25": 0.0,
+    "p50": 0.0,
+    "p75": 1.0,
+    "p90": 2.0
+   },
+   "parent_key": "pos:RB",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 7.400155844856176,
+    "n": 936,
+    "p10": 0.09015544041450763,
+    "p25": 2.12020725388601,
+    "p50": 5.24041450777202,
+    "p75": 11.300518134715027,
+    "p90": 16.36062176165803,
+    "w_own": 0.9699481865284975
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 1.0,
+     "level": 10,
+     "lo": 0.0,
+     "n_clusters": 742
+    },
+    "50": {
+     "b": 400,
+     "hi": 6.0,
+     "level": 50,
+     "lo": 5.0,
+     "n_clusters": 742
+    },
+    "90": {
+     "b": 400,
+     "hi": 17.0,
+     "level": 90,
+     "lo": 15.0,
+     "n_clusters": 742
+    }
+   },
+   "key": "role:RB3",
+   "level": "role",
+   "metric": "route_proxy",
+   "n": 936,
+   "n_clusters": 742,
+   "own": {
+    "mean": 7.180555555555555,
+    "n": 936,
+    "p10": 0.0,
+    "p25": 2.0,
+    "p50": 5.0,
+    "p75": 11.0,
+    "p90": 16.0
+   },
+   "parent_key": "pos:RB",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 8.81975900564866,
+    "n": 2174,
+    "p10": 4.947344530186109,
+    "p25": 6.934180662732637,
+    "p50": 7.947344530186109,
+    "p75": 10.94734453018611,
+    "p90": 12.960508397639583,
+    "w_own": 0.9868361325465275
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 5.0,
+     "level": 10,
+     "lo": 5.0,
+     "n_clusters": 1087
+    },
+    "50": {
+     "b": 400,
+     "hi": 9.0,
+     "level": 50,
+     "lo": 8.0,
+     "n_clusters": 1087
+    },
+    "90": {
+     "b": 400,
+     "hi": 13.0,
+     "level": 90,
+     "lo": 13.0,
+     "n_clusters": 1087
+    }
+   },
+   "key": "role:WR1",
+   "level": "role",
+   "metric": "targets",
+   "n": 2174,
+   "n_clusters": 1087,
+   "own": {
+    "mean": 8.873045078196872,
+    "n": 2174,
+    "p10": 5.0,
+    "p25": 7.0,
+    "p50": 8.0,
+    "p75": 11.0,
+    "p90": 13.0
+   },
+   "parent_key": "pos:WR",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 5.683161522837329,
+    "n": 2174,
+    "p10": 2.9605083976395825,
+    "p25": 3.9605083976395825,
+    "p50": 4.9605083976395825,
+    "p75": 6.9605083976395825,
+    "p90": 8.973672265093056,
+    "w_own": 0.9868361325465275
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 3.0,
+     "level": 10,
+     "lo": 3.0,
+     "n_clusters": 1087
+    },
+    "50": {
+     "b": 400,
+     "hi": 6.0,
+     "level": 50,
+     "lo": 5.0,
+     "n_clusters": 1087
+    },
+    "90": {
+     "b": 400,
+     "hi": 9.0,
+     "level": 90,
+     "lo": 9.0,
+     "n_clusters": 1087
+    }
+   },
+   "key": "role:WR1",
+   "level": "role",
+   "metric": "receptions",
+   "n": 2174,
+   "n_clusters": 1087,
+   "own": {
+    "mean": 5.718491260349586,
+    "n": 2174,
+    "p10": 3.0,
+    "p25": 4.0,
+    "p50": 5.0,
+    "p75": 7.0,
+    "p90": 9.0
+   },
+   "parent_key": "pos:WR",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 71.64318788161084,
+    "n": 2174,
+    "p10": 26.644575578756243,
+    "p25": 43.53926463912846,
+    "p50": 64.5129369042215,
+    "p75": 94.49977303676805,
+    "p90": 122.2695415342715,
+    "w_own": 0.9868361325465275
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 29.0,
+     "level": 10,
+     "lo": 25.0,
+     "n_clusters": 1087
+    },
+    "50": {
+     "b": 400,
+     "hi": 69.0,
+     "level": 50,
+     "lo": 63.975,
+     "n_clusters": 1087
+    },
+    "90": {
+     "b": 400,
+     "hi": 126.0,
+     "level": 90,
+     "lo": 119.68250000000005,
+     "n_clusters": 1087
+    }
+   },
+   "key": "role:WR1",
+   "level": "role",
+   "metric": "rec_yards",
+   "n": 2174,
+   "n_clusters": 1087,
+   "own": {
+    "mean": 72.09107635694572,
+    "n": 2174,
+    "p10": 27.0,
+    "p25": 44.0,
+    "p50": 65.0,
+    "p75": 95.0,
+    "p90": 122.70000000000005
+   },
+   "parent_key": "pos:WR",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 32.73069609390713,
+    "n": 2174,
+    "p10": 21.789378120744438,
+    "p25": 26.82886972310486,
+    "p50": 32.90785292782569,
+    "p75": 38.934180662732636,
+    "p90": 43.96050839763958,
+    "w_own": 0.9868361325465275
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 22.0,
+     "level": 10,
+     "lo": 21.0,
+     "n_clusters": 1087
+    },
+    "50": {
+     "b": 400,
+     "hi": 33.0,
+     "level": 50,
+     "lo": 32.0,
+     "n_clusters": 1087
+    },
+    "90": {
+     "b": 400,
+     "hi": 45.0,
+     "level": 90,
+     "lo": 43.0,
+     "n_clusters": 1087
+    }
+   },
+   "key": "role:WR1",
+   "level": "role",
+   "metric": "route_proxy",
+   "n": 2174,
+   "n_clusters": 1087,
+   "own": {
+    "mean": 32.83992640294388,
+    "n": 2174,
+    "p10": 22.0,
+    "p25": 27.0,
+    "p50": 33.0,
+    "p75": 39.0,
+    "p90": 44.0
+   },
+   "parent_key": "pos:WR",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 5.60214763371662,
+    "n": 2173,
+    "p10": 2.9736603088101723,
+    "p25": 3.9736603088101727,
+    "p50": 4.9868301544050855,
+    "p75": 7.0,
+    "p90": 9.013169845594915,
+    "w_own": 0.9868301544050863
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 3.0,
+     "level": 10,
+     "lo": 3.0,
+     "n_clusters": 1087
+    },
+    "50": {
+     "b": 400,
+     "hi": 5.0,
+     "level": 50,
+     "lo": 5.0,
+     "n_clusters": 1087
+    },
+    "90": {
+     "b": 400,
+     "hi": 9.0,
+     "level": 90,
+     "lo": 8.0,
+     "n_clusters": 1087
+    }
+   },
+   "key": "role:WR2",
+   "level": "role",
+   "metric": "targets",
+   "n": 2173,
+   "n_clusters": 1087,
+   "own": {
+    "mean": 5.612517257248045,
+    "n": 2173,
+    "p10": 3.0,
+    "p25": 4.0,
+    "p50": 5.0,
+    "p75": 7.0,
+    "p90": 9.0
+   },
+   "parent_key": "pos:WR",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 3.4741166370620506,
+    "n": 2173,
+    "p10": 0.9868301544050863,
+    "p25": 1.9868301544050864,
+    "p50": 2.9868301544050864,
+    "p75": 4.9868301544050855,
+    "p90": 6.013169845594914,
+    "w_own": 0.9868301544050863
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 1.0,
+     "level": 10,
+     "lo": 1.0,
+     "n_clusters": 1087
+    },
+    "50": {
+     "b": 400,
+     "hi": 3.0,
+     "level": 50,
+     "lo": 3.0,
+     "n_clusters": 1087
+    },
+    "90": {
+     "b": 400,
+     "hi": 6.0,
+     "level": 90,
+     "lo": 6.0,
+     "n_clusters": 1087
+    }
+   },
+   "key": "role:WR2",
+   "level": "role",
+   "metric": "receptions",
+   "n": 2173,
+   "n_clusters": 1087,
+   "own": {
+    "mean": 3.4799815922687527,
+    "n": 2173,
+    "p10": 1.0,
+    "p25": 2.0,
+    "p50": 3.0,
+    "p75": 5.0,
+    "p90": 6.0
+   },
+   "parent_key": "pos:WR",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 44.06491503323736,
+    "n": 2173,
+    "p10": 9.868301544050862,
+    "p25": 20.841961852861036,
+    "p50": 38.85513169845595,
+    "p75": 60.94732061762035,
+    "p90": 86.05267938237965,
+    "w_own": 0.9868301544050863
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 11.0,
+     "level": 10,
+     "lo": 9.0,
+     "n_clusters": 1087
+    },
+    "50": {
+     "b": 400,
+     "hi": 41.0,
+     "level": 50,
+     "lo": 37.0,
+     "n_clusters": 1087
+    },
+    "90": {
+     "b": 400,
+     "hi": 89.0,
+     "level": 90,
+     "lo": 82.0,
+     "n_clusters": 1087
+    }
+   },
+   "key": "role:WR2",
+   "level": "role",
+   "metric": "rec_yards",
+   "n": 2173,
+   "n_clusters": 1087,
+   "own": {
+    "mean": 44.1449608835711,
+    "n": 2173,
+    "p10": 10.0,
+    "p25": 21.0,
+    "p50": 39.0,
+    "p75": 61.0,
+    "p90": 86.0
+   },
+   "parent_key": "pos:WR",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 29.767812667973388,
+    "n": 2173,
+    "p10": 16.85513169845595,
+    "p25": 22.881471389645778,
+    "p50": 29.947320617620345,
+    "p75": 35.973660308810175,
+    "p90": 41.986830154405084,
+    "w_own": 0.9868301544050863
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 18.0,
+     "level": 10,
+     "lo": 16.0,
+     "n_clusters": 1087
+    },
+    "50": {
+     "b": 400,
+     "hi": 30.01249999999999,
+     "level": 50,
+     "lo": 30.0,
+     "n_clusters": 1087
+    },
+    "90": {
+     "b": 400,
+     "hi": 43.0,
+     "level": 90,
+     "lo": 42.0,
+     "n_clusters": 1087
+    }
+   },
+   "key": "role:WR2",
+   "level": "role",
+   "metric": "route_proxy",
+   "n": 2173,
+   "n_clusters": 1087,
+   "own": {
+    "mean": 29.83755177174413,
+    "n": 2173,
+    "p10": 17.0,
+    "p25": 23.0,
+    "p50": 30.0,
+    "p75": 36.0,
+    "p90": 42.0
+   },
+   "parent_key": "pos:WR",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 3.298474388733207,
+    "n": 2115,
+    "p10": 1.0,
+    "p25": 2.0,
+    "p50": 3.013526119402985,
+    "p75": 4.040578358208955,
+    "p90": 6.05410447761194,
+    "w_own": 0.9864738805970149
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 1.0,
+     "level": 10,
+     "lo": 1.0,
+     "n_clusters": 1086
+    },
+    "50": {
+     "b": 400,
+     "hi": 3.0,
+     "level": 50,
+     "lo": 3.0,
+     "n_clusters": 1086
+    },
+    "90": {
+     "b": 400,
+     "hi": 6.0,
+     "level": 90,
+     "lo": 5.0,
+     "n_clusters": 1086
+    }
+   },
+   "key": "role:WR3",
+   "level": "role",
+   "metric": "targets",
+   "n": 2115,
+   "n_clusters": 1086,
+   "own": {
+    "mean": 3.2775413711583923,
+    "n": 2115,
+    "p10": 1.0,
+    "p25": 2.0,
+    "p50": 3.0,
+    "p75": 4.0,
+    "p90": 6.0
+   },
+   "parent_key": "pos:WR",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 2.02798732966914,
+    "n": 2115,
+    "p10": 0.0,
+    "p25": 1.0,
+    "p50": 2.0,
+    "p75": 3.013526119402985,
+    "p90": 4.040578358208955,
+    "w_own": 0.9864738805970149
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 0.9025000000000033,
+     "level": 10,
+     "lo": 0.0,
+     "n_clusters": 1086
+    },
+    "50": {
+     "b": 400,
+     "hi": 2.0,
+     "level": 50,
+     "lo": 2.0,
+     "n_clusters": 1086
+    },
+    "90": {
+     "b": 400,
+     "hi": 4.0,
+     "level": 90,
+     "lo": 4.0,
+     "n_clusters": 1086
+    }
+   },
+   "key": "role:WR3",
+   "level": "role",
+   "metric": "receptions",
+   "n": 2115,
+   "n_clusters": 1086,
+   "own": {
+    "mean": 2.0141843971631204,
+    "n": 2115,
+    "p10": 0.0,
+    "p25": 1.0,
+    "p50": 2.0,
+    "p75": 3.0,
+    "p90": 4.0
+   },
+   "parent_key": "pos:WR",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 25.297547995890238,
+    "n": 2115,
+    "p10": 0.0,
+    "p25": 8.013526119402986,
+    "p50": 19.121735074626866,
+    "p75": 37.2705223880597,
+    "p90": 57.44636194029851,
+    "w_own": 0.9864738805970149
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 0.0,
+     "level": 10,
+     "lo": 0.0,
+     "n_clusters": 1086
+    },
+    "50": {
+     "b": 400,
+     "hi": 20.0,
+     "level": 50,
+     "lo": 18.0,
+     "n_clusters": 1086
+    },
+    "90": {
+     "b": 400,
+     "hi": 59.0,
+     "level": 90,
+     "lo": 54.0,
+     "n_clusters": 1086
+    }
+   },
+   "key": "role:WR3",
+   "level": "role",
+   "metric": "rec_yards",
+   "n": 2115,
+   "n_clusters": 1086,
+   "own": {
+    "mean": 25.122458628841606,
+    "n": 2115,
+    "p10": 0.0,
+    "p25": 8.0,
+    "p50": 19.0,
+    "p75": 37.0,
+    "p90": 57.0
+   },
+   "parent_key": "pos:WR",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 24.190169540521175,
+    "n": 2115,
+    "p10": 9.945895522388058,
+    "p25": 15.97294776119403,
+    "p50": 24.027052238805968,
+    "p75": 32.02705223880597,
+    "p90": 38.040578358208954,
+    "w_own": 0.9864738805970149
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 10.0,
+     "level": 10,
+     "lo": 9.0,
+     "n_clusters": 1086
+    },
+    "50": {
+     "b": 400,
+     "hi": 25.0,
+     "level": 50,
+     "lo": 24.0,
+     "n_clusters": 1086
+    },
+    "90": {
+     "b": 400,
+     "hi": 39.0,
+     "level": 90,
+     "lo": 37.0,
+     "n_clusters": 1086
+    }
+   },
+   "key": "role:WR3",
+   "level": "role",
+   "metric": "route_proxy",
+   "n": 2115,
+   "n_clusters": 1086,
+   "own": {
+    "mean": 24.18534278959811,
+    "n": 2115,
+    "p10": 10.0,
+    "p25": 16.0,
+    "p50": 24.0,
+    "p75": 32.0,
+    "p90": 38.0
+   },
+   "parent_key": "pos:WR",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 1.864239668470128,
+    "n": 1511,
+    "p10": 1.0,
+    "p25": 1.0188311688311689,
+    "p50": 2.0376623376623377,
+    "p75": 2.0941558441558445,
+    "p90": 3.1318181818181823,
+    "w_own": 0.9811688311688311
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 1.0,
+     "level": 10,
+     "lo": 1.0,
+     "n_clusters": 981
+    },
+    "50": {
+     "b": 400,
+     "hi": 2.0,
+     "level": 50,
+     "lo": 1.0,
+     "n_clusters": 981
+    },
+    "90": {
+     "b": 400,
+     "hi": 3.0,
+     "level": 90,
+     "lo": 3.0,
+     "n_clusters": 981
+    }
+   },
+   "key": "role:WR4",
+   "level": "role",
+   "metric": "targets",
+   "n": 1511,
+   "n_clusters": 981,
+   "own": {
+    "mean": 1.8074123097286565,
+    "n": 1511,
+    "p10": 1.0,
+    "p25": 1.0,
+    "p50": 2.0,
+    "p75": 2.0,
+    "p90": 3.0
+   },
+   "parent_key": "pos:WR",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 1.1246784641627512,
+    "n": 1511,
+    "p10": 0.0,
+    "p25": 0.018831168831168865,
+    "p50": 1.0188311688311689,
+    "p75": 2.0376623376623377,
+    "p90": 2.0941558441558445,
+    "w_own": 0.9811688311688311
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 0.0,
+     "level": 10,
+     "lo": 0.0,
+     "n_clusters": 981
+    },
+    "50": {
+     "b": 400,
+     "hi": 1.0,
+     "level": 50,
+     "lo": 1.0,
+     "n_clusters": 981
+    },
+    "90": {
+     "b": 400,
+     "hi": 2.0,
+     "level": 90,
+     "lo": 2.0,
+     "n_clusters": 981
+    }
+   },
+   "key": "role:WR4",
+   "level": "role",
+   "metric": "receptions",
+   "n": 1511,
+   "n_clusters": 981,
+   "own": {
+    "mean": 1.0880211780277962,
+    "n": 1511,
+    "p10": 0.0,
+    "p25": 0.0,
+    "p50": 1.0,
+    "p75": 2.0,
+    "p90": 2.0
+   },
+   "parent_key": "pos:WR",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 13.53957331375888,
+    "n": 1511,
+    "p10": 0.0,
+    "p25": 0.1694805194805198,
+    "p50": 8.376623376623378,
+    "p75": 18.734415584415586,
+    "p90": 34.073376623376625,
+    "w_own": 0.9811688311688311
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 0.0,
+     "level": 10,
+     "lo": 0.0,
+     "n_clusters": 981
+    },
+    "50": {
+     "b": 400,
+     "hi": 9.0,
+     "level": 50,
+     "lo": 8.0,
+     "n_clusters": 981
+    },
+    "90": {
+     "b": 400,
+     "hi": 37.0,
+     "level": 90,
+     "lo": 30.0,
+     "n_clusters": 981
+    }
+   },
+   "key": "role:WR4",
+   "level": "role",
+   "metric": "rec_yards",
+   "n": 1511,
+   "n_clusters": 981,
+   "own": {
+    "mean": 13.068828590337525,
+    "n": 1511,
+    "p10": 0.0,
+    "p25": 0.0,
+    "p50": 8.0,
+    "p75": 18.0,
+    "p90": 33.0
+   },
+   "parent_key": "pos:WR",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 13.162807464206107,
+    "n": 1511,
+    "p10": 3.056493506493507,
+    "p25": 6.150649350649351,
+    "p50": 11.282467532467534,
+    "p75": 18.301298701298702,
+    "p90": 26.282467532467532,
+    "w_own": 0.9811688311688311
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 3.0,
+     "level": 10,
+     "lo": 3.0,
+     "n_clusters": 981
+    },
+    "50": {
+     "b": 400,
+     "hi": 11.0,
+     "level": 50,
+     "lo": 10.0,
+     "n_clusters": 981
+    },
+    "90": {
+     "b": 400,
+     "hi": 27.0,
+     "level": 90,
+     "lo": 25.0,
+     "n_clusters": 981
+    }
+   },
+   "key": "role:WR4",
+   "level": "role",
+   "metric": "route_proxy",
+   "n": 1511,
+   "n_clusters": 981,
+   "own": {
+    "mean": 12.944407677035077,
+    "n": 1511,
+    "p10": 3.0,
+    "p25": 6.0,
+    "p50": 11.0,
+    "p75": 18.0,
+    "p90": 26.0
+   },
+   "parent_key": "pos:WR",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 5.190442290516711,
+    "n": 2163,
+    "p10": 1.9867700729927007,
+    "p25": 2.9735401459854014,
+    "p50": 4.973540145985401,
+    "p75": 6.973540145985401,
+    "p90": 8.973540145985403,
+    "w_own": 0.9867700729927007
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 2.0,
+     "level": 10,
+     "lo": 2.0,
+     "n_clusters": 1087
+    },
+    "50": {
+     "b": 400,
+     "hi": 5.0,
+     "level": 50,
+     "lo": 5.0,
+     "n_clusters": 1087
+    },
+    "90": {
+     "b": 400,
+     "hi": 9.0,
+     "level": 90,
+     "lo": 9.0,
+     "n_clusters": 1087
+    }
+   },
+   "key": "role:TE1",
+   "level": "role",
+   "metric": "targets",
+   "n": 2163,
+   "n_clusters": 1087,
+   "own": {
+    "mean": 5.213129912159038,
+    "n": 2163,
+    "p10": 2.0,
+    "p25": 3.0,
+    "p50": 5.0,
+    "p75": 7.0,
+    "p90": 9.0
+   },
+   "parent_key": "pos:TE",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 3.6240730799801377,
+    "n": 2163,
+    "p10": 0.9867700729927007,
+    "p25": 1.9867700729927007,
+    "p50": 2.9867700729927007,
+    "p75": 4.973540145985401,
+    "p90": 6.973540145985401,
+    "w_own": 0.9867700729927007
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 1.0,
+     "level": 10,
+     "lo": 1.0,
+     "n_clusters": 1087
+    },
+    "50": {
+     "b": 400,
+     "hi": 3.0,
+     "level": 50,
+     "lo": 3.0,
+     "n_clusters": 1087
+    },
+    "90": {
+     "b": 400,
+     "hi": 7.0,
+     "level": 90,
+     "lo": 6.0,
+     "n_clusters": 1087
+    }
+   },
+   "key": "role:TE1",
+   "level": "role",
+   "metric": "receptions",
+   "n": 2163,
+   "n_clusters": 1087,
+   "own": {
+    "mean": 3.6398520573277855,
+    "n": 2163,
+    "p10": 1.0,
+    "p25": 2.0,
+    "p50": 3.0,
+    "p75": 5.0,
+    "p90": 7.0
+   },
+   "parent_key": "pos:TE",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 37.96795468758209,
+    "n": 2163,
+    "p10": 6.907390510948905,
+    "p25": 16.854470802919707,
+    "p50": 32.801551094890506,
+    "p75": 52.78832116788321,
+    "p90": 76.57773722627734,
+    "w_own": 0.9867700729927007
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 8.0,
+     "level": 10,
+     "lo": 6.0,
+     "n_clusters": 1087
+    },
+    "50": {
+     "b": 400,
+     "hi": 34.0,
+     "level": 50,
+     "lo": 32.0,
+     "n_clusters": 1087
+    },
+    "90": {
+     "b": 400,
+     "hi": 80.0,
+     "level": 90,
+     "lo": 72.0,
+     "n_clusters": 1087
+    }
+   },
+   "key": "role:TE1",
+   "level": "role",
+   "metric": "rec_yards",
+   "n": 2163,
+   "n_clusters": 1087,
+   "own": {
+    "mean": 38.13823393435044,
+    "n": 2163,
+    "p10": 7.0,
+    "p25": 17.0,
+    "p50": 33.0,
+    "p75": 53.0,
+    "p90": 76.79999999999995
+   },
+   "parent_key": "pos:TE",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 27.692895540954378,
+    "n": 2163,
+    "p10": 13.894160583941606,
+    "p25": 20.86770072992701,
+    "p50": 27.880930656934307,
+    "p75": 34.9206204379562,
+    "p90": 40.9470802919708,
+    "w_own": 0.9867700729927007
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 15.0,
+     "level": 10,
+     "lo": 14.0,
+     "n_clusters": 1087
+    },
+    "50": {
+     "b": 400,
+     "hi": 28.0,
+     "level": 50,
+     "lo": 27.0,
+     "n_clusters": 1087
+    },
+    "90": {
+     "b": 400,
+     "hi": 42.0,
+     "level": 90,
+     "lo": 40.0,
+     "n_clusters": 1087
+    }
+   },
+   "key": "role:TE1",
+   "level": "role",
+   "metric": "route_proxy",
+   "n": 2163,
+   "n_clusters": 1087,
+   "own": {
+    "mean": 27.791030975496994,
+    "n": 2163,
+    "p10": 14.0,
+    "p25": 21.0,
+    "p50": 28.0,
+    "p75": 35.0,
+    "p90": 41.0
+   },
+   "parent_key": "pos:TE",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 2.006494406968695,
+    "n": 1580,
+    "p10": 1.0,
+    "p25": 1.0,
+    "p50": 2.0180236171535118,
+    "p75": 3.0360472343070235,
+    "p90": 4.054070851460534,
+    "w_own": 0.9819763828464885
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 1.0,
+     "level": 10,
+     "lo": 1.0,
+     "n_clusters": 1012
+    },
+    "50": {
+     "b": 400,
+     "hi": 2.0,
+     "level": 50,
+     "lo": 2.0,
+     "n_clusters": 1012
+    },
+    "90": {
+     "b": 400,
+     "hi": 4.0,
+     "level": 90,
+     "lo": 3.0,
+     "n_clusters": 1012
+    }
+   },
+   "key": "role:TE2",
+   "level": "role",
+   "metric": "targets",
+   "n": 1580,
+   "n_clusters": 1012,
+   "own": {
+    "mean": 1.979113924050633,
+    "n": 1580,
+    "p10": 1.0,
+    "p25": 1.0,
+    "p50": 2.0,
+    "p75": 3.0,
+    "p90": 4.0
+   },
+   "parent_key": "pos:TE",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 1.4126589131861167,
+    "n": 1580,
+    "p10": 0.0,
+    "p25": 1.0,
+    "p50": 1.0180236171535115,
+    "p75": 2.0180236171535118,
+    "p90": 3.0360472343070235,
+    "w_own": 0.9819763828464885
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 0.0,
+     "level": 10,
+     "lo": 0.0,
+     "n_clusters": 1012
+    },
+    "50": {
+     "b": 400,
+     "hi": 1.0,
+     "level": 50,
+     "lo": 1.0,
+     "n_clusters": 1012
+    },
+    "90": {
+     "b": 400,
+     "hi": 3.0,
+     "level": 90,
+     "lo": 3.0,
+     "n_clusters": 1012
+    }
+   },
+   "key": "role:TE2",
+   "level": "role",
+   "metric": "receptions",
+   "n": 1580,
+   "n_clusters": 1012,
+   "own": {
+    "mean": 1.3936708860759495,
+    "n": 1580,
+    "p10": 0.0,
+    "p25": 1.0,
+    "p50": 1.0,
+    "p75": 2.0,
+    "p90": 3.0
+   },
+   "parent_key": "pos:TE",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 13.889221053561181,
+    "n": 1580,
+    "p10": 0.0,
+    "p25": 3.054070851460535,
+    "p50": 9.162212554381604,
+    "p75": 20.306401491609694,
+    "p90": 34.4686140459913,
+    "w_own": 0.9819763828464885
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 0.0,
+     "level": 10,
+     "lo": 0.0,
+     "n_clusters": 1012
+    },
+    "50": {
+     "b": 400,
+     "hi": 10.0,
+     "level": 50,
+     "lo": 9.0,
+     "n_clusters": 1012
+    },
+    "90": {
+     "b": 400,
+     "hi": 35.5025,
+     "level": 90,
+     "lo": 31.0,
+     "n_clusters": 1012
+    }
+   },
+   "key": "role:TE2",
+   "level": "role",
+   "metric": "rec_yards",
+   "n": 1580,
+   "n_clusters": 1012,
+   "own": {
+    "mean": 13.680379746835444,
+    "n": 1580,
+    "p10": 0.0,
+    "p25": 3.0,
+    "p50": 9.0,
+    "p75": 20.0,
+    "p90": 34.0
+   },
+   "parent_key": "pos:TE",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 14.05147733111995,
+    "n": 1580,
+    "p10": 5.018023617153512,
+    "p25": 8.054070851460535,
+    "p50": 13.10814170292107,
+    "p75": 18.44375388440025,
+    "p90": 24.23430702299565,
+    "w_own": 0.9819763828464885
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 6.0,
+     "level": 10,
+     "lo": 5.0,
+     "n_clusters": 1012
+    },
+    "50": {
+     "b": 400,
+     "hi": 13.0,
+     "level": 50,
+     "lo": 12.0,
+     "n_clusters": 1012
+    },
+    "90": {
+     "b": 400,
+     "hi": 25.0,
+     "level": 90,
+     "lo": 24.0,
+     "n_clusters": 1012
+    }
+   },
+   "key": "role:TE2",
+   "level": "role",
+   "metric": "route_proxy",
+   "n": 1580,
+   "n_clusters": 1012,
+   "own": {
+    "mean": 13.935443037974684,
+    "n": 1580,
+    "p10": 5.0,
+    "p25": 8.0,
+    "p50": 13.0,
+    "p75": 18.25,
+    "p90": 24.0
+   },
+   "parent_key": "pos:TE",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 1.3488941083105535,
+    "n": 514,
+    "p10": 1.0,
+    "p25": 1.0,
+    "p50": 1.1068139963167587,
+    "p75": 1.2136279926335174,
+    "p90": 2.2670349907918967,
+    "w_own": 0.9465930018416207
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 1.0,
+     "level": 10,
+     "lo": 1.0,
+     "n_clusters": 446
+    },
+    "50": {
+     "b": 400,
+     "hi": 1.0,
+     "level": 50,
+     "lo": 1.0,
+     "n_clusters": 446
+    },
+    "90": {
+     "b": 400,
+     "hi": 2.0,
+     "level": 90,
+     "lo": 2.0,
+     "n_clusters": 446
+    }
+   },
+   "key": "role:TE3",
+   "level": "role",
+   "metric": "targets",
+   "n": 514,
+   "n_clusters": 446,
+   "own": {
+    "mean": 1.227626459143969,
+    "n": 514,
+    "p10": 1.0,
+    "p25": 1.0,
+    "p50": 1.0,
+    "p75": 1.0,
+    "p90": 2.0
+   },
+   "parent_key": "pos:TE",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 0.9465344223139255,
+    "n": 514,
+    "p10": 0.0,
+    "p25": 0.05340699815837935,
+    "p50": 1.0534069981583793,
+    "p75": 1.1068139963167587,
+    "p90": 2.160220994475138,
+    "w_own": 0.9465930018416207
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 0.0,
+     "level": 10,
+     "lo": 0.0,
+     "n_clusters": 446
+    },
+    "50": {
+     "b": 400,
+     "hi": 1.0,
+     "level": 50,
+     "lo": 1.0,
+     "n_clusters": 446
+    },
+    "90": {
+     "b": 400,
+     "hi": 2.0,
+     "level": 90,
+     "lo": 1.0,
+     "n_clusters": 446
+    }
+   },
+   "key": "role:TE3",
+   "level": "role",
+   "metric": "receptions",
+   "n": 514,
+   "n_clusters": 446,
+   "own": {
+    "mean": 0.8618677042801557,
+    "n": 514,
+    "p10": 0.0,
+    "p25": 0.0,
+    "p50": 1.0,
+    "p75": 1.0,
+    "p90": 2.0
+   },
+   "parent_key": "pos:TE",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 9.662535313406886,
+    "n": 514,
+    "p10": 0.0,
+    "p25": 0.3204419889502761,
+    "p50": 7.587476979742173,
+    "p75": 14.281767955801104,
+    "p90": 24.029465930018418,
+    "w_own": 0.9465930018416207
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 0.0,
+     "level": 10,
+     "lo": 0.0,
+     "n_clusters": 446
+    },
+    "50": {
+     "b": 400,
+     "hi": 7.0,
+     "level": 50,
+     "lo": 6.0,
+     "n_clusters": 446
+    },
+    "90": {
+     "b": 400,
+     "hi": 24.0,
+     "level": 90,
+     "lo": 20.0,
+     "n_clusters": 446
+    }
+   },
+   "key": "role:TE3",
+   "level": "role",
+   "metric": "rec_yards",
+   "n": 514,
+   "n_clusters": 446,
+   "own": {
+    "mean": 8.782101167315176,
+    "n": 514,
+    "p10": 0.0,
+    "p25": 0.0,
+    "p50": 7.0,
+    "p75": 13.0,
+    "p90": 22.0
+   },
+   "parent_key": "pos:TE",
+   "status": "OWN_DOMINANT"
+  },
+  {
+   "adequacy": {
+    "p10": "OK",
+    "p25": "OK",
+    "p50": "OK",
+    "p75": "OK",
+    "p90": "OK"
+   },
+   "band": {
+    "mean": 10.776845351329646,
+    "n": 514,
+    "p10": 3.160220994475138,
+    "p25": 6.267034990791897,
+    "p50": 9.534069981583793,
+    "p75": 13.85451197053407,
+    "p90": 19.67734806629833,
+    "w_own": 0.9465930018416207
+   },
+   "band_source": "shrunk",
+   "clustered_ci": {
+    "10": {
+     "b": 400,
+     "hi": 4.0,
+     "level": 10,
+     "lo": 3.0,
+     "n_clusters": 446
+    },
+    "50": {
+     "b": 400,
+     "hi": 10.0,
+     "level": 50,
+     "lo": 9.0,
+     "n_clusters": 446
+    },
+    "90": {
+     "b": 400,
+     "hi": 20.0,
+     "level": 90,
+     "lo": 17.0,
+     "n_clusters": 446
+    }
+   },
+   "key": "role:TE3",
+   "level": "role",
+   "metric": "route_proxy",
+   "n": 514,
+   "n_clusters": 446,
+   "own": {
+    "mean": 10.235408560311283,
+    "n": 514,
+    "p10": 3.0,
+    "p25": 6.0,
+    "p50": 9.0,
+    "p75": 13.0,
+    "p90": 18.69999999999999
+   },
+   "parent_key": "pos:TE",
+   "status": "OWN_DOMINANT"
+  }
+ ],
+ "insufficient_evidence_by_level": {
+  "player_role": {
+   "insufficient_evidence": 5634,
+   "records": 10957,
+   "share": 0.5142
+  },
+  "player_role_recent": {
+   "insufficient_evidence": 5634,
+   "records": 10957,
+   "share": 0.5142
+  },
+  "player_role_season": {
+   "insufficient_evidence": 15321,
+   "records": 21981,
+   "share": 0.697
+  },
+  "position": {
+   "insufficient_evidence": 0,
+   "records": 18,
+   "share": 0.0
+  },
+  "role": {
+   "insufficient_evidence": 0,
+   "records": 54,
+   "share": 0.0
+  },
+  "role_season": {
+   "insufficient_evidence": 0,
+   "records": 216,
+   "share": 0.0
+  },
+  "role_starter": {
+   "insufficient_evidence": 30,
+   "records": 196,
+   "share": 0.1531
+  },
+  "role_team": {
+   "insufficient_evidence": 66,
+   "records": 1710,
+   "share": 0.0386
+  }
+ },
+ "purpose": "DIAGNOSTIC ONLY. A band answers whether a conditional projection is unusually low or high against history. It is never a floor, a cap, a correction or a model input.",
+ "shrinkage_rule": {
+  "derivation": "n0 = n_min_for(10) = 29, the sample size at which the widest published quantile pair first becomes estimable. NOT fitted; no outcome was consulted.",
+  "form": "w = n/(n+n0); band = w*own + (1-w)*parent",
+  "monotone": "a convex blend of two monotone bands is monotone",
+  "n0": 29
+ },
+ "spec_version": "refbands-diagnostic-1"
+}
