@@ -1,0 +1,1373 @@
+{
+ "artifact": "DEN_KC_GAME_LEVEL_POOL_MANIFEST",
+ "game_id": "2026_01_DEN_KC",
+ "kickoff_utc": "2026-09-15T00:15:00Z",
+ "built_at_utc": "2026-09-14T17:25:53.636236+00:00",
+ "basis": "L3 audit rows (pre-L6/L7) reconciled against the post-repair engine behaviour",
+ "publication_state": "PRELIMINARY_PROVISIONAL",
+ "is_final": false,
+ "why_not_final": [
+  {
+   "code": "INACTIVES_UNAVAILABLE_NO_AUTHORITATIVE_SOURCE",
+   "scope": "WHOLE_BOARD",
+   "detail": "Ruling-1 ladder exhausted and recorded: official NFL source www.nfl.com 403 CONNECT; official club sources www.denverbroncos.com and www.chiefs.com both 403 CONNECT; api.nfl.com, static.www.nfl.com, pro-football-reference all 403 CONNECT. registry.can_discharge names official_inactives as the only source permitted to discharge kind=inactives. No authoritative game-day eligibility evidence exists for this game, therefore FINAL is not reachable and is not claimed."
+  },
+  {
+   "code": "APPEARANCE_TEAM_DEFERRED_DEN",
+   "scope": "DEN_SKILL_ONLY",
+   "detail": "DEN carries 1 injury row (Marvin Mims Jr., practice_status filled, report_status blank). readiness contract: rows exist but report_status unfilled on every one => INJURY_REPORT_INCOMPLETE. An unfiled designation is not an absence of injury and is not inferred as one."
+  }
+ ],
+ "counts": {
+  "DEN": {
+   "roster_rows": 88,
+   "at_modelled_positions": 26,
+   "by_position": {
+    "QB": 3,
+    "RB": 6,
+    "TE": 6,
+    "WR": 11
+   },
+   "skill_positions_total": 23,
+   "skill_r5_eligible_but_deferred": 14,
+   "skill_excluded_by_roster_status": 9,
+   "qb_projected_post_repair": 3,
+   "skill_projected_post_repair": 0
+  },
+  "KC": {
+   "roster_rows": 92,
+   "at_modelled_positions": 32,
+   "by_position": {
+    "QB": 4,
+    "RB": 7,
+    "TE": 7,
+    "WR": 14
+   },
+   "skill_positions_total": 28,
+   "skill_r5_eligible_but_deferred": 13,
+   "skill_excluded_by_roster_status": 15,
+   "qb_projected_post_repair": 3,
+   "skill_projected_post_repair": 13
+  },
+  "BOARD_TOTAL": {
+   "qb": 6,
+   "skill": 13,
+   "rows": 19,
+   "intended_full_two_team_board": 33,
+   "missing": 14,
+   "missing_all_from": "DEN",
+   "missing_cause": "APPEARANCE_TEAM_DEFERRED_DEN"
+  }
+ },
+ "rows": [
+  {
+   "player": "Bo Nix",
+   "gsis_id": "00-0039732",
+   "team": "DEN",
+   "position": "QB",
+   "roster_status": "ACT",
+   "depth_status": "QB1",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_ACTIVE",
+   "in_model_pool_post_repair": true,
+   "projection_families": [
+    "qb/att",
+    "qb/cmp",
+    "qb/inc*",
+    "qb/int",
+    "qb/ptd",
+    "qb/pyds",
+    "qb/db",
+    "qb/sacks",
+    "qb/scr",
+    "qb/rush_opp",
+    "qb/ryds",
+    "qb/rtd"
+   ],
+   "exclusion_reason": null,
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Jarrett Stidham",
+   "gsis_id": "00-0035264",
+   "team": "DEN",
+   "position": "QB",
+   "roster_status": "ACT",
+   "depth_status": "QB2",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_ACTIVE",
+   "in_model_pool_post_repair": true,
+   "projection_families": [
+    "qb/att",
+    "qb/cmp",
+    "qb/inc*",
+    "qb/int",
+    "qb/ptd",
+    "qb/pyds",
+    "qb/db",
+    "qb/sacks",
+    "qb/scr",
+    "qb/rush_opp",
+    "qb/ryds",
+    "qb/rtd"
+   ],
+   "exclusion_reason": null,
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Sam Ehlinger",
+   "gsis_id": "00-0036879",
+   "team": "DEN",
+   "position": "QB",
+   "roster_status": "ACT",
+   "depth_status": "QB3",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_ACTIVE",
+   "in_model_pool_post_repair": true,
+   "projection_families": [
+    "qb/att",
+    "qb/cmp",
+    "qb/inc*",
+    "qb/int",
+    "qb/ptd",
+    "qb/pyds",
+    "qb/db",
+    "qb/sacks",
+    "qb/scr",
+    "qb/rush_opp",
+    "qb/ryds",
+    "qb/rtd"
+   ],
+   "exclusion_reason": null,
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Adam Prentice",
+   "gsis_id": "00-0036727",
+   "team": "DEN",
+   "position": "RB",
+   "roster_status": "DEV",
+   "depth_status": "NOT_CHARTED",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_EXCLUDED",
+   "in_model_pool_post_repair": false,
+   "projection_families": [],
+   "exclusion_reason": "R5_ROSTER_STATUS_DEV",
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Cody Schrader",
+   "gsis_id": "00-0039703",
+   "team": "DEN",
+   "position": "RB",
+   "roster_status": "DEV",
+   "depth_status": "NOT_CHARTED",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_EXCLUDED",
+   "in_model_pool_post_repair": false,
+   "projection_families": [],
+   "exclusion_reason": "R5_ROSTER_STATUS_DEV",
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "J.K. Dobbins",
+   "gsis_id": "00-0036158",
+   "team": "DEN",
+   "position": "RB",
+   "roster_status": "ACT",
+   "depth_status": "RB1",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_ACTIVE",
+   "in_model_pool_post_repair": false,
+   "projection_families": [],
+   "exclusion_reason": "APPEARANCE_DEFERRED(DEN:INJURY_REPORT_INCOMPLETE)",
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Jonah Coleman",
+   "gsis_id": "00-0041496",
+   "team": "DEN",
+   "position": "RB",
+   "roster_status": "ACT",
+   "depth_status": "RB3",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_ACTIVE",
+   "in_model_pool_post_repair": false,
+   "projection_families": [],
+   "exclusion_reason": "APPEARANCE_DEFERRED(DEN:INJURY_REPORT_INCOMPLETE)",
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "RJ Harvey",
+   "gsis_id": "00-0040730",
+   "team": "DEN",
+   "position": "RB",
+   "roster_status": "ACT",
+   "depth_status": "RB2",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_ACTIVE",
+   "in_model_pool_post_repair": false,
+   "projection_families": [],
+   "exclusion_reason": "APPEARANCE_DEFERRED(DEN:INJURY_REPORT_INCOMPLETE)",
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Tyler Badie",
+   "gsis_id": "00-0037085",
+   "team": "DEN",
+   "position": "RB",
+   "roster_status": "ACT",
+   "depth_status": "RB4",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_ACTIVE",
+   "in_model_pool_post_repair": false,
+   "projection_families": [],
+   "exclusion_reason": "APPEARANCE_DEFERRED(DEN:INJURY_REPORT_INCOMPLETE)",
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Adam Trautman",
+   "gsis_id": "00-0036422",
+   "team": "DEN",
+   "position": "TE",
+   "roster_status": "ACT",
+   "depth_status": "TE2",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_ACTIVE",
+   "in_model_pool_post_repair": false,
+   "projection_families": [],
+   "exclusion_reason": "APPEARANCE_DEFERRED(DEN:INJURY_REPORT_INCOMPLETE)",
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Caleb Lohner",
+   "gsis_id": "00-0040240",
+   "team": "DEN",
+   "position": "TE",
+   "roster_status": "RES",
+   "depth_status": "TE5",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_EXCLUDED",
+   "in_model_pool_post_repair": false,
+   "projection_families": [],
+   "exclusion_reason": "R5_ROSTER_STATUS_RES",
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Dallen Bentley",
+   "gsis_id": "00-0041133",
+   "team": "DEN",
+   "position": "TE",
+   "roster_status": "ACT",
+   "depth_status": "TE4",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_ACTIVE",
+   "in_model_pool_post_repair": false,
+   "projection_families": [],
+   "exclusion_reason": "APPEARANCE_DEFERRED(DEN:INJURY_REPORT_INCOMPLETE)",
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Evan Engram",
+   "gsis_id": "00-0033881",
+   "team": "DEN",
+   "position": "TE",
+   "roster_status": "ACT",
+   "depth_status": "TE1",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_ACTIVE",
+   "in_model_pool_post_repair": false,
+   "projection_families": [],
+   "exclusion_reason": "APPEARANCE_DEFERRED(DEN:INJURY_REPORT_INCOMPLETE)",
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Lucas Krull",
+   "gsis_id": "00-0037539",
+   "team": "DEN",
+   "position": "TE",
+   "roster_status": "DEV",
+   "depth_status": "NOT_CHARTED",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_EXCLUDED",
+   "in_model_pool_post_repair": false,
+   "projection_families": [],
+   "exclusion_reason": "R5_ROSTER_STATUS_DEV",
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Nate Adkins",
+   "gsis_id": "00-0038783",
+   "team": "DEN",
+   "position": "TE",
+   "roster_status": "ACT",
+   "depth_status": "TE3",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_ACTIVE",
+   "in_model_pool_post_repair": false,
+   "projection_families": [],
+   "exclusion_reason": "APPEARANCE_DEFERRED(DEN:INJURY_REPORT_INCOMPLETE)",
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Cameron Ross",
+   "gsis_id": "00-0041299",
+   "team": "DEN",
+   "position": "WR",
+   "roster_status": "CUT",
+   "depth_status": "NOT_CHARTED",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_EXCLUDED",
+   "in_model_pool_post_repair": false,
+   "projection_families": [],
+   "exclusion_reason": "R5_ROSTER_STATUS_CUT",
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Courtland Sutton",
+   "gsis_id": "00-0034348",
+   "team": "DEN",
+   "position": "WR",
+   "roster_status": "ACT",
+   "depth_status": "WR2",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_ACTIVE",
+   "in_model_pool_post_repair": false,
+   "projection_families": [],
+   "exclusion_reason": "APPEARANCE_DEFERRED(DEN:INJURY_REPORT_INCOMPLETE)",
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Dane Key",
+   "gsis_id": "00-0041293",
+   "team": "DEN",
+   "position": "WR",
+   "roster_status": "DEV",
+   "depth_status": "NOT_CHARTED",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_EXCLUDED",
+   "in_model_pool_post_repair": false,
+   "projection_families": [],
+   "exclusion_reason": "R5_ROSTER_STATUS_DEV",
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Jaylen Waddle",
+   "gsis_id": "00-0036613",
+   "team": "DEN",
+   "position": "WR",
+   "roster_status": "ACT",
+   "depth_status": "WR1",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_ACTIVE",
+   "in_model_pool_post_repair": false,
+   "projection_families": [],
+   "exclusion_reason": "APPEARANCE_DEFERRED(DEN:INJURY_REPORT_INCOMPLETE)",
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Joseph Manjack",
+   "gsis_id": "00-0041294",
+   "team": "DEN",
+   "position": "WR",
+   "roster_status": "CUT",
+   "depth_status": "NOT_CHARTED",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_EXCLUDED",
+   "in_model_pool_post_repair": false,
+   "projection_families": [],
+   "exclusion_reason": "R5_ROSTER_STATUS_CUT",
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Kolbe Katsis",
+   "gsis_id": "00-0041292",
+   "team": "DEN",
+   "position": "WR",
+   "roster_status": "DEV",
+   "depth_status": "NOT_CHARTED",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_EXCLUDED",
+   "in_model_pool_post_repair": false,
+   "projection_families": [],
+   "exclusion_reason": "R5_ROSTER_STATUS_DEV",
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Lil'Jordan Humphrey",
+   "gsis_id": "00-0035406",
+   "team": "DEN",
+   "position": "WR",
+   "roster_status": "ACT",
+   "depth_status": "WR6",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_ACTIVE",
+   "in_model_pool_post_repair": false,
+   "projection_families": [],
+   "exclusion_reason": "APPEARANCE_DEFERRED(DEN:INJURY_REPORT_INCOMPLETE)",
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Marvin Mims Jr.",
+   "gsis_id": "00-0038976",
+   "team": "DEN",
+   "position": "WR",
+   "roster_status": "ACT",
+   "depth_status": "WR3",
+   "injury_status": "NO_DESIGNATION_FILED / Full Participation in Practice",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_ACTIVE",
+   "in_model_pool_post_repair": false,
+   "projection_families": [],
+   "exclusion_reason": "APPEARANCE_DEFERRED(DEN:INJURY_REPORT_INCOMPLETE)",
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Michael Bandy",
+   "gsis_id": "00-0036959",
+   "team": "DEN",
+   "position": "WR",
+   "roster_status": "DEV",
+   "depth_status": "NOT_CHARTED",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_EXCLUDED",
+   "in_model_pool_post_repair": false,
+   "projection_families": [],
+   "exclusion_reason": "R5_ROSTER_STATUS_DEV",
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Pat Bryant",
+   "gsis_id": "00-0040134",
+   "team": "DEN",
+   "position": "WR",
+   "roster_status": "ACT",
+   "depth_status": "WR4",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_ACTIVE",
+   "in_model_pool_post_repair": false,
+   "projection_families": [],
+   "exclusion_reason": "APPEARANCE_DEFERRED(DEN:INJURY_REPORT_INCOMPLETE)",
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Troy Franklin",
+   "gsis_id": "00-0039868",
+   "team": "DEN",
+   "position": "WR",
+   "roster_status": "ACT",
+   "depth_status": "WR5",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_ACTIVE",
+   "in_model_pool_post_repair": false,
+   "projection_families": [],
+   "exclusion_reason": "APPEARANCE_DEFERRED(DEN:INJURY_REPORT_INCOMPLETE)",
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Chris Oladokun",
+   "gsis_id": "00-0037324",
+   "team": "KC",
+   "position": "QB",
+   "roster_status": "RES",
+   "depth_status": "NOT_CHARTED",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_EXCLUDED",
+   "in_model_pool_post_repair": false,
+   "projection_families": [],
+   "exclusion_reason": "QB_POOL_EXEMPT_FROM_R5(ROSTER_STATUS_RES)",
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Garrett Nussmeier",
+   "gsis_id": "00-0040906",
+   "team": "KC",
+   "position": "QB",
+   "roster_status": "ACT",
+   "depth_status": "QB3",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_ACTIVE",
+   "in_model_pool_post_repair": true,
+   "projection_families": [
+    "qb/att",
+    "qb/cmp",
+    "qb/inc*",
+    "qb/int",
+    "qb/ptd",
+    "qb/pyds",
+    "qb/db",
+    "qb/sacks",
+    "qb/scr",
+    "qb/rush_opp",
+    "qb/ryds",
+    "qb/rtd"
+   ],
+   "exclusion_reason": null,
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Justin Fields",
+   "gsis_id": "00-0036945",
+   "team": "KC",
+   "position": "QB",
+   "roster_status": "ACT",
+   "depth_status": "QB2",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_ACTIVE",
+   "in_model_pool_post_repair": true,
+   "projection_families": [
+    "qb/att",
+    "qb/cmp",
+    "qb/inc*",
+    "qb/int",
+    "qb/ptd",
+    "qb/pyds",
+    "qb/db",
+    "qb/sacks",
+    "qb/scr",
+    "qb/rush_opp",
+    "qb/ryds",
+    "qb/rtd"
+   ],
+   "exclusion_reason": null,
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Patrick Mahomes",
+   "gsis_id": "00-0033873",
+   "team": "KC",
+   "position": "QB",
+   "roster_status": "ACT",
+   "depth_status": "QB1",
+   "injury_status": "NO_DESIGNATION_FILED / Full Participation in Practice",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_ACTIVE",
+   "in_model_pool_post_repair": true,
+   "projection_families": [
+    "qb/att",
+    "qb/cmp",
+    "qb/inc*",
+    "qb/int",
+    "qb/ptd",
+    "qb/pyds",
+    "qb/db",
+    "qb/sacks",
+    "qb/scr",
+    "qb/rush_opp",
+    "qb/ryds",
+    "qb/rtd"
+   ],
+   "exclusion_reason": null,
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Ben VanSumeren",
+   "gsis_id": "00-0038489",
+   "team": "KC",
+   "position": "RB",
+   "roster_status": "DEV",
+   "depth_status": "NOT_CHARTED",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_EXCLUDED",
+   "in_model_pool_post_repair": false,
+   "projection_families": [],
+   "exclusion_reason": "R5_ROSTER_STATUS_DEV",
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Brashard Smith",
+   "gsis_id": "00-0040078",
+   "team": "KC",
+   "position": "RB",
+   "roster_status": "ACT",
+   "depth_status": "RB3",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_ACTIVE",
+   "in_model_pool_post_repair": true,
+   "projection_families": [
+    "receiving/targets",
+    "receiving/receptions",
+    "receiving/receiving_yards",
+    "receiving/receiving_td",
+    "rushing/carries",
+    "rushing/rushing_td"
+   ],
+   "exclusion_reason": null,
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "EJ Smith",
+   "gsis_id": "00-0040964",
+   "team": "KC",
+   "position": "RB",
+   "roster_status": "RES",
+   "depth_status": "NOT_CHARTED",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_EXCLUDED",
+   "in_model_pool_post_repair": false,
+   "projection_families": [],
+   "exclusion_reason": "R5_ROSTER_STATUS_RES",
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Emmett Johnson",
+   "gsis_id": "00-0041013",
+   "team": "KC",
+   "position": "RB",
+   "roster_status": "ACT",
+   "depth_status": "RB2",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_ACTIVE",
+   "in_model_pool_post_repair": true,
+   "projection_families": [
+    "receiving/targets",
+    "receiving/receptions",
+    "receiving/receiving_yards",
+    "receiving/receiving_td",
+    "rushing/carries",
+    "rushing/rushing_td"
+   ],
+   "exclusion_reason": null,
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Jaydn Ott",
+   "gsis_id": "00-0040959",
+   "team": "KC",
+   "position": "RB",
+   "roster_status": "DEV",
+   "depth_status": "NOT_CHARTED",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_EXCLUDED",
+   "in_model_pool_post_repair": false,
+   "projection_families": [],
+   "exclusion_reason": "R5_ROSTER_STATUS_DEV",
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Kenneth Walker III",
+   "gsis_id": "00-0038134",
+   "team": "KC",
+   "position": "RB",
+   "roster_status": "ACT",
+   "depth_status": "RB1",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_ACTIVE",
+   "in_model_pool_post_repair": true,
+   "projection_families": [
+    "receiving/targets",
+    "receiving/receptions",
+    "receiving/receiving_yards",
+    "receiving/receiving_td",
+    "rushing/carries",
+    "rushing/rushing_td"
+   ],
+   "exclusion_reason": null,
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Nate Carter",
+   "gsis_id": "00-0040547",
+   "team": "KC",
+   "position": "RB",
+   "roster_status": "DEV",
+   "depth_status": "NOT_CHARTED",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_EXCLUDED",
+   "in_model_pool_post_repair": false,
+   "projection_families": [],
+   "exclusion_reason": "R5_ROSTER_STATUS_DEV",
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Jake Briningstool",
+   "gsis_id": "00-0040081",
+   "team": "KC",
+   "position": "TE",
+   "roster_status": "ACT",
+   "depth_status": "TE4",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_ACTIVE",
+   "in_model_pool_post_repair": true,
+   "projection_families": [
+    "receiving/targets",
+    "receiving/receptions",
+    "receiving/receiving_yards",
+    "receiving/receiving_td"
+   ],
+   "exclusion_reason": null,
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Jared Wiley",
+   "gsis_id": "00-0039824",
+   "team": "KC",
+   "position": "TE",
+   "roster_status": "ACT",
+   "depth_status": "TE3",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_ACTIVE",
+   "in_model_pool_post_repair": true,
+   "projection_families": [
+    "receiving/targets",
+    "receiving/receptions",
+    "receiving/receiving_yards",
+    "receiving/receiving_td"
+   ],
+   "exclusion_reason": null,
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "John Michael Gyllenborg",
+   "gsis_id": "00-0040955",
+   "team": "KC",
+   "position": "TE",
+   "roster_status": "RES",
+   "depth_status": "TE5",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_EXCLUDED",
+   "in_model_pool_post_repair": false,
+   "projection_families": [],
+   "exclusion_reason": "R5_ROSTER_STATUS_RES",
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Mason Pline",
+   "gsis_id": "00-0039702",
+   "team": "KC",
+   "position": "TE",
+   "roster_status": "CUT",
+   "depth_status": "NOT_CHARTED",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_EXCLUDED",
+   "in_model_pool_post_repair": false,
+   "projection_families": [],
+   "exclusion_reason": "R5_ROSTER_STATUS_CUT",
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Noah Gray",
+   "gsis_id": "00-0036637",
+   "team": "KC",
+   "position": "TE",
+   "roster_status": "ACT",
+   "depth_status": "TE2",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_ACTIVE",
+   "in_model_pool_post_repair": true,
+   "projection_families": [
+    "receiving/targets",
+    "receiving/receptions",
+    "receiving/receiving_yards",
+    "receiving/receiving_td"
+   ],
+   "exclusion_reason": null,
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Thomas Odukoya",
+   "gsis_id": "00-0038145",
+   "team": "KC",
+   "position": "TE",
+   "roster_status": "EXE",
+   "depth_status": "NOT_CHARTED",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_EXCLUDED",
+   "in_model_pool_post_repair": false,
+   "projection_families": [],
+   "exclusion_reason": "R5_ROSTER_STATUS_EXE",
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Travis Kelce",
+   "gsis_id": "00-0030506",
+   "team": "KC",
+   "position": "TE",
+   "roster_status": "ACT",
+   "depth_status": "TE1",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_ACTIVE",
+   "in_model_pool_post_repair": true,
+   "projection_families": [
+    "receiving/targets",
+    "receiving/receptions",
+    "receiving/receiving_yards",
+    "receiving/receiving_td"
+   ],
+   "exclusion_reason": null,
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Andrew Armstrong",
+   "gsis_id": "00-0040298",
+   "team": "KC",
+   "position": "WR",
+   "roster_status": "DEV",
+   "depth_status": "NOT_CHARTED",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_EXCLUDED",
+   "in_model_pool_post_repair": false,
+   "projection_families": [],
+   "exclusion_reason": "R5_ROSTER_STATUS_DEV",
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Cyrus Allen",
+   "gsis_id": "00-0040890",
+   "team": "KC",
+   "position": "WR",
+   "roster_status": "ACT",
+   "depth_status": "WR4",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_ACTIVE",
+   "in_model_pool_post_repair": true,
+   "projection_families": [
+    "receiving/targets",
+    "receiving/receptions",
+    "receiving/receiving_yards",
+    "receiving/receiving_td"
+   ],
+   "exclusion_reason": null,
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Jacob De Jesus",
+   "gsis_id": "00-0040967",
+   "team": "KC",
+   "position": "WR",
+   "roster_status": "CUT",
+   "depth_status": "NOT_CHARTED",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_EXCLUDED",
+   "in_model_pool_post_repair": false,
+   "projection_families": [],
+   "exclusion_reason": "R5_ROSTER_STATUS_CUT",
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Jalen Royals",
+   "gsis_id": "00-0040646",
+   "team": "KC",
+   "position": "WR",
+   "roster_status": "ACT",
+   "depth_status": "WR5",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_ACTIVE",
+   "in_model_pool_post_repair": true,
+   "projection_families": [
+    "receiving/targets",
+    "receiving/receptions",
+    "receiving/receiving_yards",
+    "receiving/receiving_td"
+   ],
+   "exclusion_reason": null,
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Jason Brownlee",
+   "gsis_id": "00-0038492",
+   "team": "KC",
+   "position": "WR",
+   "roster_status": "CUT",
+   "depth_status": "NOT_CHARTED",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_EXCLUDED",
+   "in_model_pool_post_repair": false,
+   "projection_families": [],
+   "exclusion_reason": "R5_ROSTER_STATUS_CUT",
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Jeff Caldwell",
+   "gsis_id": "00-0040953",
+   "team": "KC",
+   "position": "WR",
+   "roster_status": "RES",
+   "depth_status": "WR7",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_EXCLUDED",
+   "in_model_pool_post_repair": false,
+   "projection_families": [],
+   "exclusion_reason": "R5_ROSTER_STATUS_RES",
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Jeff Weimer",
+   "gsis_id": "00-0041575",
+   "team": "KC",
+   "position": "WR",
+   "roster_status": "CUT",
+   "depth_status": "NOT_CHARTED",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_EXCLUDED",
+   "in_model_pool_post_repair": false,
+   "projection_families": [],
+   "exclusion_reason": "R5_ROSTER_STATUS_CUT",
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Jimmy Holiday",
+   "gsis_id": "00-0040120",
+   "team": "KC",
+   "position": "WR",
+   "roster_status": "RES",
+   "depth_status": "WR8",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_EXCLUDED",
+   "in_model_pool_post_repair": false,
+   "projection_families": [],
+   "exclusion_reason": "R5_ROSTER_STATUS_RES",
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Nikko Remigio",
+   "gsis_id": "00-0038519",
+   "team": "KC",
+   "position": "WR",
+   "roster_status": "ACT",
+   "depth_status": "WR6",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_ACTIVE",
+   "in_model_pool_post_repair": true,
+   "projection_families": [
+    "receiving/targets",
+    "receiving/receptions",
+    "receiving/receiving_yards",
+    "receiving/receiving_td"
+   ],
+   "exclusion_reason": null,
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Omari Evans",
+   "gsis_id": "00-0040954",
+   "team": "KC",
+   "position": "WR",
+   "roster_status": "DEV",
+   "depth_status": "NOT_CHARTED",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_EXCLUDED",
+   "in_model_pool_post_repair": false,
+   "projection_families": [],
+   "exclusion_reason": "R5_ROSTER_STATUS_DEV",
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Rashee Rice",
+   "gsis_id": "00-0039067",
+   "team": "KC",
+   "position": "WR",
+   "roster_status": "ACT",
+   "depth_status": "WR1",
+   "injury_status": "NO_DESIGNATION_FILED / Full Participation in Practice",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_ACTIVE",
+   "in_model_pool_post_repair": true,
+   "projection_families": [
+    "receiving/targets",
+    "receiving/receptions",
+    "receiving/receiving_yards",
+    "receiving/receiving_td"
+   ],
+   "exclusion_reason": null,
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Tyquan Thornton",
+   "gsis_id": "00-0038104",
+   "team": "KC",
+   "position": "WR",
+   "roster_status": "ACT",
+   "depth_status": "WR3",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_ACTIVE",
+   "in_model_pool_post_repair": true,
+   "projection_families": [
+    "receiving/targets",
+    "receiving/receptions",
+    "receiving/receiving_yards",
+    "receiving/receiving_td"
+   ],
+   "exclusion_reason": null,
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Xavier Loyd",
+   "gsis_id": "00-0041020",
+   "team": "KC",
+   "position": "WR",
+   "roster_status": "CUT",
+   "depth_status": "NOT_CHARTED",
+   "injury_status": "NO_INJURY_ROW",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_EXCLUDED",
+   "in_model_pool_post_repair": false,
+   "projection_families": [],
+   "exclusion_reason": "R5_ROSTER_STATUS_CUT",
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  },
+  {
+   "player": "Xavier Worthy",
+   "gsis_id": "00-0039894",
+   "team": "KC",
+   "position": "WR",
+   "roster_status": "ACT",
+   "depth_status": "WR2",
+   "injury_status": "NO_DESIGNATION_FILED / Full Participation in Practice",
+   "gameday_status": "UNRESOLVED",
+   "eligibility": "ROSTER_ACTIVE",
+   "in_model_pool_post_repair": true,
+   "projection_families": [
+    "receiving/targets",
+    "receiving/receptions",
+    "receiving/receiving_yards",
+    "receiving/receiving_td"
+   ],
+   "exclusion_reason": null,
+   "binding_evidence_vintage": {
+    "roster": "weekly_rosters.bdab6ecee12d44a4 (2026-09-14T16:16:33Z)",
+    "depth": "depth_charts.f66f0c2583dba463 (vendor dt 2026-09-14T13:53:31Z)",
+    "injury": "injuries.66e960ec81fccc6e (2026-09-13T12:41:50Z, MIRROR not governing)",
+    "gameday": "NONE \u2014 no authoritative inactives exist for this game"
+   }
+  }
+ ]
+}

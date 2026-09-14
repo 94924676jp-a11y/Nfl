@@ -87,6 +87,26 @@ _CSV = (b'dt,team,gsis_id,pos_abb,pos_rank,full_name,jersey\n'
 _COLS = ('dt', 'team', 'gsis_id', 'pos_abb', 'pos_rank')
 
 
+def _staged_pairs(stored):
+    """The staged (pending, final) pairs of a `_persist` result.
+
+    `_staged` was ONE pair until the Ruling 3 raw retention (2026-09-14) gave
+    `reduce` a second staged blob: the reduction AND the full upstream file,
+    both durable. Indexing `[0]` as a path silently measured half the change,
+    so the shape is read through the tool's own normaliser.
+    """
+    return CV._normalise_staged(stored.get('_staged'))
+
+
+def _reduced_staged(stored):
+    """The staged path of the REDUCED blob specifically."""
+    want = pathlib.PurePosixPath(stored['blob']).name
+    for pend, _final in _staged_pairs(stored):
+        if pathlib.PurePosixPath(pend).name == want:
+            return pathlib.Path(pend)
+    raise AssertionError(f'no staged entry for the reduced blob {want}')
+
+
 def _src(name='depth_charts', durability='reduce'):
     return CV.Source(name=name, url='https://example.invalid/x.csv',
                      required=True, durability=durability,
@@ -136,7 +156,7 @@ def test_reduce_row_carries_a_digest_of_the_bytes_it_stored():
                      'upstream_bytes_only__blob_is_a_reduction',
                      stored['sha256_is_of'])
 
-        staged = pathlib.Path(stored['_staged'][0])
+        staged = _reduced_staged(stored)
         got = hashlib.sha256(gzip.open(staged, 'rb').read()).hexdigest()
         assert check('  and the digest matches the bytes on disk', got == ps)
 
@@ -202,13 +222,23 @@ def test_a_blob_cannot_exist_in_the_store_without_its_manifest_row():
         assert check('nothing is in the durable store before the row is written',
                      not final.exists(),
                      'a blob reached nfl/vintage before its manifest row')
-        staged = pathlib.Path(stored['_staged'][0])
-        assert check('  the bytes are staged outside the tracked store',
-                     staged.exists() and 'vintage' not in str(staged.parent))
+        raw_final = CV.DURABLE_ROOT / pathlib.PurePosixPath(
+            stored['raw_blob']).name
+        assert check('  nor is the RAW blob, which is staged the same way',
+                     not raw_final.exists())
+        pairs = _staged_pairs(stored)
+        assert check('  a reduce source stages BOTH the reduction and the raw '
+                     'upstream file', len(pairs) == 2,
+                     str([pathlib.PurePosixPath(q).name for q, _ in pairs]))
+        for pend, _f in pairs:
+            q = pathlib.Path(pend)
+            assert check(f'  {q.name} is staged outside the tracked store',
+                         q.exists() and 'vintage' not in str(q.parent))
 
         moved = CV._promote_staging([stored['_staged']])
-        assert check('promotion after the row lands puts it in the store',
-                     final.exists() and len(moved) == 1)
+        assert check('promotion after the row lands puts both in the store',
+                     final.exists() and raw_final.exists() and len(moved) == 2,
+                     str(moved))
 
 
 def test_a_run_that_writes_no_row_leaves_no_blob_behind():
@@ -218,16 +248,24 @@ def test_a_run_that_writes_no_row_leaves_no_blob_behind():
         n = CV._purge_staging([stored['_staged']])
         final = CV.DURABLE_ROOT / pathlib.PurePosixPath(stored['blob']).name
         assert check('purged staging leaves the durable store empty',
-                     n == 1 and not final.exists()
-                     and not list(CV.DURABLE_ROOT.glob('*')))
+                     n == 2 and not final.exists()
+                     and not list(CV.DURABLE_ROOT.glob('*')),
+                     f'purged {n}, store holds '
+                     f'{sorted(q.name for q in CV.DURABLE_ROOT.glob("*"))}')
 
 
 def test_a_pass_row_may_not_claim_a_capture_it_cannot_name():
     """The other half of WS-J's requirement, read exactly as an auditor would."""
+    _ret = {'raw_bytes': 'nfl/vintage/x.raw.csv.gz', 'raw_hash': 'b' * 64,
+            'transformation_version': CV.TRANSFORM_VERSION,
+            'reduced_artifact': 'nfl/vintage/x.gz', 'reduced_hash': 'a' * 64,
+            'raw_home_is_gitignored_only': False}
     ok_row = {'state': 'PASS', 'source': 'x',
               'value': {'blob': 'nfl/vintage/x.gz',
                         'persisted_content_sha256': 'a' * 64,
-                        'upstream_content_sha256': 'b' * 64}}
+                        'upstream_content_sha256': 'b' * 64,
+                        'raw_blob_durable': True,
+                        'retention_ruling3': dict(_ret)}}
     try:
         CV._assert_no_pass_without_capture([ok_row])
         assert check('a complete PASS row is accepted', True)
@@ -243,7 +281,22 @@ def test_a_pass_row_may_not_claim_a_capture_it_cannot_name():
               'upstream_content_sha256': 'b' * 64}),
             ('with no upstream digest',
              {'blob': 'nfl/vintage/x.gz',
-              'persisted_content_sha256': 'a' * 64})):
+              'persisted_content_sha256': 'a' * 64}),
+            # RULING 3. A row that stored bytes but cannot name the raw
+            # artifact, or whose only raw home is gitignored, is claiming a
+            # retention it does not have.
+            ('with no Ruling 3 retention block at all',
+             {'blob': 'nfl/vintage/x.gz', 'persisted_content_sha256': 'a' * 64,
+              'upstream_content_sha256': 'b' * 64, 'raw_blob_durable': True}),
+            ('whose raw bytes live only in a gitignored home',
+             {'blob': 'nfl/vintage/x.gz', 'persisted_content_sha256': 'a' * 64,
+              'upstream_content_sha256': 'b' * 64, 'raw_blob_durable': False,
+              'retention_ruling3': dict(_ret,
+                                        raw_home_is_gitignored_only=True)}),
+            ('that names no durable raw blob',
+             {'blob': 'nfl/vintage/x.gz', 'persisted_content_sha256': 'a' * 64,
+              'upstream_content_sha256': 'b' * 64, 'raw_blob_durable': False,
+              'retention_ruling3': dict(_ret)})):
         bad = {'state': 'PASS', 'source': 'x', 'value': val}
         raised = False
         try:
@@ -304,11 +357,19 @@ def test_the_live_manifest_still_carries_the_defect_unaltered():
     each row was written, and a repaired-looking history cannot be told from a
     history that never had the defect.
     """
-    out = PP.reduce_rows()
-    assert check('reduce rows are readable', out.state is State.PASS, out.code)
+    # SCOPED TO THE DEFECT POPULATION, NOT TO EVERY REDUCE ROW. The manifest
+    # is append-only and grows with every capture, so `reduce_rows()` is a
+    # moving number and pinning a frozen count to it fails on the next
+    # legitimate capture -- as it did. `defect_rows()` is closed by
+    # construction; see its docstring.
+    out = PP.defect_rows()
+    assert check('defect rows are readable', out.state is State.PASS, out.code)
     n = out.evidence['n_rows']
-    assert check('the measured population is still 368 reduce PASS rows',
+    assert check('the measured population is still 368 defect rows',
                  n == 368, f'{n}')
+    assert check('  and the repaired rows are outside it, not edited into it',
+                 out.evidence['n_reduce_rows_total'] >= n,
+                 str(out.evidence))
     rewritten = [r for rows in out.value.values() for r in rows
                  if (r.get('value') or {}).get('persisted_content_sha256')]
     assert check('not one historical row was rewritten in place',
@@ -437,7 +498,7 @@ def test_the_loss_has_a_mechanism_and_it_is_not_the_source_or_the_date():
 def test_self_verification_is_a_three_way_answer():
     """PASS / FAIL / BLOCKED. Unverifiable is not the same as wrong."""
     recs = PP.load_recovery()
-    out = PP.reduce_rows()
+    out = PP.defect_rows()
     tallies = {}
     for rows in out.value.values():
         for r in rows:
@@ -524,7 +585,7 @@ def test_the_defect_is_reproduced_before_it_is_claimed_repaired():
         if _hashlib.sha256(raw).hexdigest() != sha:
             return False, 'RAW_SHA256_MISMATCH'
         return True, None
-    out = PP.reduce_rows()
+    out = PP.defect_rows()
     codes = {}
     for rows in out.value.values():
         for r in rows:

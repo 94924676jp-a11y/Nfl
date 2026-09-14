@@ -109,23 +109,52 @@ def test_identical_inputs_and_frozen_model_give_identical_draws():
     if not check('the reproduction run sealed',
                  summary['status'] == 'SEALED', summary['status']):
         return
-    # THE RUN ID IS NOT THE DETERMINISM CLAIM. It hashes the execution
-    # identity, which includes `code_commit()` -- and that carries a
-    # `+dirty[n]` counter of uncommitted files. Editing anything in the tree
-    # moves the run id while the forecast is untouched, which is the counter
-    # working. The claim being proven is that the DRAWS reproduce, so the run
-    # id is only required to match when the tree is clean enough for it to be
-    # a fair comparison.
-    import subprocess
-    dirty = subprocess.run(['git', 'status', '--porcelain'], cwd=_ROOT,
-                           capture_output=True, text=True).stdout.strip()
-    if not dirty:
+    # THE RUN ID IS NOT THE DETERMINISM CLAIM, AND THE GATE ON IT WAS WRONG
+    # IN TWO WAYS THAT OUTLIVED THE THING IT WAS WRITTEN FOR.
+    #
+    # `run_id` hashes the execution identity, which includes `code_commit()`.
+    # That used to return `<sha>+dirty[n]`, a COUNT of uncommitted paths, so
+    # the run id moved whenever anything anywhere in the tree moved --
+    # including this run's own outputs. The gate written for that form was
+    # "compare run ids only when `git status --porcelain` is empty":
+    #
+    #   IT NEVER FIRED. The tree is essentially never clean in this
+    #   repository, so the comparison was skipped on every execution this
+    #   test has ever had -- and the skip branch recorded `check(..., True)`,
+    #   a PASS for a comparison that did not happen. That is the
+    #   absence-read-as-success defect inside the measurement system.
+    #
+    #   IT ASKED THE WRONG QUESTION. Under `nfl.identity.code_identity` the
+    #   identity is a CONTENT digest over in-scope dirty SOURCE. An untracked
+    #   note, a generated board and a research artifact do not move it, so a
+    #   whole-tree cleanliness test is both too strict and beside the point.
+    #
+    # The right question is whether the code identity NOW is the code
+    # identity that produced the STORED board. Boards sealed before WS-E
+    # carry the withdrawn count-keyed form, which can never equal a
+    # contract-form identity, and that is reported as NOT APPLICABLE with the
+    # reason attached rather than as a pass.
+    from nfl.identity import code_identity as CI
+    from nfl.production import run_forecast as RUN
+    now_cv = RUN.code_commit()
+    stored_cv = str((json.loads((d / 'board.json').read_text())
+                     if (d / 'board.json').exists() else {}
+                     ).get('code_commit') or '')
+    if stored_cv and now_cv == stored_cv:
         check('  it reproduces the same run id',
               bd['run_id'] == row['run_id'],
               f'{bd["run_id"]} != {row["run_id"]}')
+    elif CI.refuses_count_keyed(stored_cv):
+        print(f'  N/A   run id comparison: the stored board carries the '
+              f'withdrawn count-keyed identity {stored_cv!r}, which no '
+              f'contract-form run can reproduce. Not a determinism result '
+              f'either way.')
     else:
-        check('  run id comparison skipped: the working tree is dirty, so '
-              'code_commit carries a +dirty marker', True)
+        print(f'  N/A   run id comparison: the stored board was produced '
+              f'under code identity {stored_cv!r} and this run is '
+              f'{now_cv!r}. Different code, so a different run id is '
+              f'expected.')
+    # The draw comparison below is the determinism claim and is NEVER skipped.
     again = np.load(pathlib.Path(run_dir) / 'player_draws.npz')
 
     # DETERMINISM IS "SAME CODE, SAME INPUTS, SAME DRAWS", AND THAT IS WHAT IS

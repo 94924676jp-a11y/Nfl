@@ -154,8 +154,10 @@ R5_FLAGS = dict(
 
 R5_REPAIR = {
     'component': 'R5',
-    'what': 'restrict the non-QB allocation pool to players whose roster '
-            'status is ACT',
+    'what': 'restrict the allocation pool to players whose roster status is '
+            'ACT. Originally non-QB only; the quarterback pool was exempt and '
+            'is no longer, so this sentence was widened to match behaviour '
+            'rather than leaving the two to drift apart',
     'replaces': 'an unfiltered weekly-roster pool that included practice '
                 'squad, reserve and released players',
     'defect': 'P4C weights are conditional-on-appearing shares consumed as '

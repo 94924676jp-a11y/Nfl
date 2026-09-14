@@ -1,0 +1,1534 @@
+{
+ "artifact": "L2_LIVE_DEN_KC_APPEARANCE",
+ "game_id": "2026_01_DEN_KC",
+ "kickoff_utc": "2026-09-15T00:15:00Z",
+ "written_at": "2026-09-14T16:27:25Z",
+ "sealed_before_kickoff": true,
+ "governance": {
+  "arm_authorised_for_this_run": "CANDIDATE_B_LIVE_EVALUATION",
+  "is_confirmed": false,
+  "is_promoted": false,
+  "incumbent_default_unchanged": true,
+  "both_arms_are_recorded": "Both arms were run on the same universe with the same information set, and the arm that produced each number is stamped on the row. Neither silently replaces the other.",
+  "tonight_is_not_evidence": "The realised outcome of this game must NOT be used to decide whether Candidate B was good. 47 scorable players in one game cannot separate two appearance models; the decision is sealed before kickoff and the outcome is graded under the standing ledger, not fed back into it.",
+  "freeze": "nfl/research/remediation/l2/CANDIDATE_B_FREEZE.json",
+  "freeze_sha256": "32ea294a98145b242e2cd8a7e5e702626bb85f5375c170068975f679e24797f6"
+ },
+ "information_set": {
+  "written_at": "2026-09-14T16:27:25Z",
+  "sources": {
+   "depth_charts": {
+    "blob": "nfl/vintage/depth_charts.f66f0c2583dba463.raw.csv.gz",
+    "observed_at": "2026-09-14T16:16:25Z",
+    "observed_basis": "capture_id",
+    "sha256": "f66f0c2583dba463"
+   },
+   "espn_injuries_json": {
+    "blob": "nfl/vintage/espn_injuries_json.0cd99d47b1cc389f.json.gz",
+    "observed_at": "2026-09-11T00:43:57Z",
+    "observed_basis": "capture_id",
+    "sha256": "0cd99d47b1cc389f"
+   },
+   "injuries": {
+    "blob": "nfl/vintage/injuries.66e960ec81fccc6e.csv.gz",
+    "observed_at": "2026-09-13T15:45:56Z",
+    "observed_basis": "capture_id",
+    "sha256": "66e960ec81fccc6e"
+   },
+   "official_inactives": {
+    "blob": "nfl/vintage/official_inactives.423d0c34811cd6d6.html.gz",
+    "observed_at": "2026-09-13T19:14:00Z",
+    "observed_basis": "retrieved_at",
+    "sha256": "423d0c34811cd6d6"
+   },
+   "official_injury_report": {
+    "blob": "nfl/vintage/official_injury_report.ec99910f37f94bb8.html.gz",
+    "observed_at": "2026-09-11T00:43:57Z",
+    "observed_basis": "capture_id",
+    "sha256": "ec99910f37f94bb8"
+   },
+   "schedules": {
+    "blob": "nfl/vintage/schedules.2b59c058ffa3ab99.csv.gz",
+    "observed_at": "2026-09-14T16:16:25Z",
+    "observed_basis": "capture_id",
+    "sha256": "2b59c058ffa3ab99"
+   },
+   "weekly_rosters": {
+    "blob": "nfl/vintage/weekly_rosters.bdab6ecee12d44a4.raw.csv.gz",
+    "observed_at": "2026-09-14T16:16:25Z",
+    "observed_basis": "capture_id",
+    "sha256": "bdab6ecee12d44a4"
+   }
+  }
+ },
+ "universe": {
+  "roster_blob": "nfl/vintage/weekly_rosters.bdab6ecee12d44a4.raw.csv.gz",
+  "n_roster_rows": 180,
+  "n_players": 180,
+  "n_without_gsis_id": 0,
+  "by_team": {
+   "KC": 92,
+   "DEN": 88
+  },
+  "n_skill_positions": 58,
+  "injuries_blob": "nfl/vintage/injuries.66e960ec81fccc6e.csv.gz",
+  "n_injury_rows_den_kc": 12
+ },
+ "depth_chart": {
+  "state": "PASS",
+  "code": "DEPTH_CAPTURE_OK",
+  "n_listed": 37,
+  "rank_semantics": "the espn_daily vendor ranks OFFENCE-WIDE, not within position: each club has exactly one rank 1 and both clubs' rank 1 is a tight end tonight. depth_vintage reports pos_slot_available: False. So the \"clear RB1\" and \"WR1\" cells are not constructible on tonight's chart and are reported EMPTY rather than filled with the wrong players.",
+  "coverage": "37 of the 58 skill-position players on the two rosters are listed, so \"unlisted\" tonight partly means the chart is short, not that the player is off the roster. Both arms drive unlisted players to near zero, so this is a caution about the chart under either arm."
+ },
+ "arm_summary": {
+  "INCUMBENT_KNOWN_DEFECTIVE": {
+   "state": "PASS",
+   "code": "APPEARANCE_ARM_PREDICTED",
+   "n_scored": 47,
+   "n_declined": 133,
+   "spec_version": "appearance-r8-reliability-weighted-1",
+   "coef_sha256": "557725f24fdc18ee",
+   "module_sha256": "ac1d54a6ae66f08c1a00fca0d8b0f8235a4673765769e9d1a16368cd64e452ee",
+   "governance": "INCUMBENT -- in use, and known defective",
+   "p_mean": 0.7175,
+   "p_median": 0.838782,
+   "p_min": 0.004671,
+   "p_max": 0.997055,
+   "p_sd": 0.330228,
+   "n_above_0_99": 10,
+   "n_above_0_95": 15,
+   "n_below_0_05": 4,
+   "top5pct_mean_predicted": 0.994513,
+   "states": {
+    "KNOWN_HEALTHY": 29,
+    "NO_HISTORY": 141,
+    "UNKNOWN_STATUS": 10
+   }
+  },
+  "CANDIDATE_B_LIVE_EVALUATION": {
+   "state": "PASS",
+   "code": "APPEARANCE_ARM_PREDICTED",
+   "n_scored": 47,
+   "n_declined": 133,
+   "spec_version": "appearance-b-union-candidate-universe-1",
+   "coef_sha256": "88664d345948aed3",
+   "module_sha256": "a3a1d5679314fb8cf8500fce2c3aa7f7e8b8cae25751a0d24c27fbdcdd79a255",
+   "governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+   "p_mean": 0.501694,
+   "p_median": 0.523597,
+   "p_min": 0.010727,
+   "p_max": 0.990729,
+   "p_sd": 0.314037,
+   "n_above_0_99": 1,
+   "n_above_0_95": 2,
+   "n_below_0_05": 10,
+   "top5pct_mean_predicted": 0.981555,
+   "states": {
+    "KNOWN_HEALTHY": 29,
+    "NO_HISTORY": 141,
+    "UNKNOWN_STATUS": 10
+   }
+  }
+ },
+ "arm_difference": {
+  "n_shared_players": 47,
+  "mean_b_minus_incumbent": -0.215806,
+  "median": -0.072835,
+  "min": -0.791111,
+  "max": 0.010486,
+  "n_b_lower": 41,
+  "n_b_higher": 6
+ },
+ "pathological_cells": {
+  "clear_RB1": {
+   "n": 0,
+   "note": "EMPTY CELL -- reported as empty, not as a passing result"
+  },
+  "WR1": {
+   "n": 0,
+   "note": "EMPTY CELL -- reported as empty, not as a passing result"
+  },
+  "long_absence_carried_ge_9": {
+   "n": 9,
+   "incumbent_mean": 0.49443,
+   "b_mean": 0.12871,
+   "b_min": 0.01073,
+   "b_max": 0.47521,
+   "examples": [
+    {
+     "pid": "00-0040081",
+     "team": "KC",
+     "pos": "TE",
+     "rank": 13,
+     "n_prior": 17,
+     "cm_carried": 17,
+     "incumbent": 0.99705,
+     "b": 0.47521
+    },
+    {
+     "pid": "00-0036879",
+     "team": "DEN",
+     "pos": "QB",
+     "rank": 9,
+     "n_prior": 69,
+     "cm_carried": 43,
+     "incumbent": 0.94579,
+     "b": 0.40587
+    },
+    {
+     "pid": "00-0035264",
+     "team": "DEN",
+     "pos": "QB",
+     "rank": 6,
+     "n_prior": 97,
+     "cm_carried": 9,
+     "incumbent": 0.83306,
+     "b": 0.20087
+    },
+    {
+     "pid": "00-0037539",
+     "team": "DEN",
+     "pos": "TE",
+     "rank": null,
+     "n_prior": 48,
+     "cm_carried": 14,
+     "incumbent": 0.16826,
+     "b": 0.02022
+    }
+   ]
+  },
+  "reserve_listed_rank_ge_4_thin_history": {
+   "n": 9,
+   "incumbent_mean": 0.93642,
+   "b_mean": 0.42481,
+   "b_min": 0.17691,
+   "b_max": 0.5236,
+   "examples": [
+    {
+     "pid": "00-0040120",
+     "team": "KC",
+     "pos": "WR",
+     "rank": 19,
+     "n_prior": 1,
+     "cm_carried": 0,
+     "incumbent": 0.52043,
+     "b": 0.5236
+    },
+    {
+     "pid": "00-0040240",
+     "team": "DEN",
+     "pos": "TE",
+     "rank": 17,
+     "n_prior": 0,
+     "cm_carried": 0,
+     "incumbent": 0.99197,
+     "b": 0.46417
+    },
+    {
+     "pid": "00-0040955",
+     "team": "KC",
+     "pos": "TE",
+     "rank": 16,
+     "n_prior": 0,
+     "cm_carried": 0,
+     "incumbent": 0.99197,
+     "b": 0.46417
+    },
+    {
+     "pid": "00-0041133",
+     "team": "DEN",
+     "pos": "TE",
+     "rank": 15,
+     "n_prior": 0,
+     "cm_carried": 0,
+     "incumbent": 0.99197,
+     "b": 0.46417
+    }
+   ]
+  },
+  "unlisted_with_history": {
+   "n": 10,
+   "incumbent_mean": 0.17049,
+   "b_mean": 0.01343,
+   "b_min": 0.01073,
+   "b_max": 0.02022,
+   "examples": [
+    {
+     "pid": "00-0037539",
+     "team": "DEN",
+     "pos": "TE",
+     "rank": null,
+     "n_prior": 48,
+     "cm_carried": 14,
+     "incumbent": 0.16826,
+     "b": 0.02022
+    },
+    {
+     "pid": "00-0036727",
+     "team": "DEN",
+     "pos": "RB",
+     "rank": null,
+     "n_prior": 79,
+     "cm_carried": 0,
+     "incumbent": 0.00957,
+     "b": 0.02006
+    },
+    {
+     "pid": "00-0038492",
+     "team": "KC",
+     "pos": "WR",
+     "rank": null,
+     "n_prior": 26,
+     "cm_carried": 0,
+     "incumbent": 0.00853,
+     "b": 0.0156
+    },
+    {
+     "pid": "00-0039702",
+     "team": "KC",
+     "pos": "TE",
+     "rank": null,
+     "n_prior": 17,
+     "cm_carried": 17,
+     "incumbent": 0.64301,
+     "b": 0.01201
+    }
+   ]
+  },
+  "week1_cold_start_listed": {
+   "n": 8,
+   "incumbent_mean": 0.98841,
+   "b_mean": 0.41246,
+   "b_min": 0.17691,
+   "b_max": 0.46417,
+   "examples": [
+    {
+     "pid": "00-0040240",
+     "team": "DEN",
+     "pos": "TE",
+     "rank": 17,
+     "n_prior": 0,
+     "cm_carried": 0,
+     "incumbent": 0.99197,
+     "b": 0.46417
+    },
+    {
+     "pid": "00-0040955",
+     "team": "KC",
+     "pos": "TE",
+     "rank": 16,
+     "n_prior": 0,
+     "cm_carried": 0,
+     "incumbent": 0.99197,
+     "b": 0.46417
+    },
+    {
+     "pid": "00-0041133",
+     "team": "DEN",
+     "pos": "TE",
+     "rank": 15,
+     "n_prior": 0,
+     "cm_carried": 0,
+     "incumbent": 0.99197,
+     "b": 0.46417
+    },
+    {
+     "pid": "00-0040890",
+     "team": "KC",
+     "pos": "WR",
+     "rank": 14,
+     "n_prior": 0,
+     "cm_carried": 0,
+     "incumbent": 0.99088,
+     "b": 0.43766
+    }
+   ]
+  },
+  "skill_positions": {
+   "n": 47,
+   "incumbent_mean": 0.7175,
+   "b_mean": 0.50169,
+   "b_min": 0.01073,
+   "b_max": 0.99073,
+   "examples": [
+    {
+     "pid": "00-0030506",
+     "team": "KC",
+     "pos": "TE",
+     "rank": 1,
+     "n_prior": 101,
+     "cm_carried": 0,
+     "incumbent": 0.99081,
+     "b": 0.99073
+    },
+    {
+     "pid": "00-0033881",
+     "team": "DEN",
+     "pos": "TE",
+     "rank": 1,
+     "n_prior": 105,
+     "cm_carried": 0,
+     "incumbent": 0.96835,
+     "b": 0.97238
+    },
+    {
+     "pid": "00-0034348",
+     "team": "DEN",
+     "pos": "WR",
+     "rank": 5,
+     "n_prior": 91,
+     "cm_carried": 0,
+     "incumbent": 0.92043,
+     "b": 0.88715
+    },
+    {
+     "pid": "00-0036158",
+     "team": "DEN",
+     "pos": "RB",
+     "rank": 2,
+     "n_prior": 78,
+     "cm_carried": 7,
+     "incumbent": 0.99012,
+     "b": 0.87483
+    }
+   ]
+  },
+  "non_skill_positions": {
+   "n": 0,
+   "note": "EMPTY CELL -- reported as empty, not as a passing result"
+  }
+ },
+ "n_rows": 47,
+ "rows": [
+  {
+   "gsis_id": "00-0030506",
+   "team": "KC",
+   "position": "TE",
+   "depth_rank_offense_wide": 1,
+   "n_prior_frame_rows": 101,
+   "cm_carried": 0,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.99081,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.99073,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  },
+  {
+   "gsis_id": "00-0033881",
+   "team": "DEN",
+   "position": "TE",
+   "depth_rank_offense_wide": 1,
+   "n_prior_frame_rows": 105,
+   "cm_carried": 0,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.96835,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.97238,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  },
+  {
+   "gsis_id": "00-0034348",
+   "team": "DEN",
+   "position": "WR",
+   "depth_rank_offense_wide": 5,
+   "n_prior_frame_rows": 91,
+   "cm_carried": 0,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.92043,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.88715,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  },
+  {
+   "gsis_id": "00-0036158",
+   "team": "DEN",
+   "position": "RB",
+   "depth_rank_offense_wide": 2,
+   "n_prior_frame_rows": 78,
+   "cm_carried": 7,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.99012,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.87483,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  },
+  {
+   "gsis_id": "00-0033873",
+   "team": "KC",
+   "position": "QB",
+   "depth_rank_offense_wide": 2,
+   "n_prior_frame_rows": 101,
+   "cm_carried": 3,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.97401,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.8698,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  },
+  {
+   "gsis_id": "00-0039067",
+   "team": "KC",
+   "position": "WR",
+   "depth_rank_offense_wide": 4,
+   "n_prior_frame_rows": 42,
+   "cm_carried": 3,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.97966,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.84896,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  },
+  {
+   "gsis_id": "00-0036422",
+   "team": "DEN",
+   "position": "TE",
+   "depth_rank_offense_wide": 7,
+   "n_prior_frame_rows": 105,
+   "cm_carried": 0,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.88203,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.84078,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  },
+  {
+   "gsis_id": "00-0038976",
+   "team": "DEN",
+   "position": "WR",
+   "depth_rank_offense_wide": 11,
+   "n_prior_frame_rows": 51,
+   "cm_carried": 0,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.83878,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.8121,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  },
+  {
+   "gsis_id": "00-0039732",
+   "team": "DEN",
+   "position": "QB",
+   "depth_rank_offense_wide": 4,
+   "n_prior_frame_rows": 34,
+   "cm_carried": 0,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.88347,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.81063,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  },
+  {
+   "gsis_id": "00-0040730",
+   "team": "DEN",
+   "position": "RB",
+   "depth_rank_offense_wide": 8,
+   "n_prior_frame_rows": 17,
+   "cm_carried": 0,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.85311,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.80453,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  },
+  {
+   "gsis_id": "00-0036637",
+   "team": "KC",
+   "position": "TE",
+   "depth_rank_offense_wide": 5,
+   "n_prior_frame_rows": 85,
+   "cm_carried": 0,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.85202,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.80205,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  },
+  {
+   "gsis_id": "00-0038134",
+   "team": "KC",
+   "position": "RB",
+   "depth_rank_offense_wide": 3,
+   "n_prior_frame_rows": 68,
+   "cm_carried": 0,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.83472,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.79882,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  },
+  {
+   "gsis_id": "00-0039894",
+   "team": "KC",
+   "position": "WR",
+   "depth_rank_offense_wide": 7,
+   "n_prior_frame_rows": 34,
+   "cm_carried": 1,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.87295,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.77295,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  },
+  {
+   "gsis_id": "00-0040134",
+   "team": "DEN",
+   "position": "WR",
+   "depth_rank_offense_wide": 14,
+   "n_prior_frame_rows": 17,
+   "cm_carried": 0,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.80777,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.76958,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  },
+  {
+   "gsis_id": "00-0039868",
+   "team": "DEN",
+   "position": "WR",
+   "depth_rank_offense_wide": 16,
+   "n_prior_frame_rows": 34,
+   "cm_carried": 0,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.78812,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.75122,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  },
+  {
+   "gsis_id": "00-0040078",
+   "team": "KC",
+   "position": "RB",
+   "depth_rank_offense_wide": 11,
+   "n_prior_frame_rows": 17,
+   "cm_carried": 0,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.74066,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.69341,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  },
+  {
+   "gsis_id": "00-0038104",
+   "team": "KC",
+   "position": "WR",
+   "depth_rank_offense_wide": 9,
+   "n_prior_frame_rows": 58,
+   "cm_carried": 3,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.94573,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.68103,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  },
+  {
+   "gsis_id": "00-0040646",
+   "team": "KC",
+   "position": "WR",
+   "depth_rank_offense_wide": 15,
+   "n_prior_frame_rows": 17,
+   "cm_carried": 0,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.74623,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.65593,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  },
+  {
+   "gsis_id": "00-0038783",
+   "team": "DEN",
+   "position": "TE",
+   "depth_rank_offense_wide": 10,
+   "n_prior_frame_rows": 51,
+   "cm_carried": 0,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.70668,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.6433,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  },
+  {
+   "gsis_id": "00-0037085",
+   "team": "DEN",
+   "position": "RB",
+   "depth_rank_offense_wide": 13,
+   "n_prior_frame_rows": 29,
+   "cm_carried": 0,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.63199,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.58512,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  },
+  {
+   "gsis_id": "00-0035406",
+   "team": "DEN",
+   "position": "WR",
+   "depth_rank_offense_wide": 18,
+   "n_prior_frame_rows": 84,
+   "cm_carried": 0,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.60962,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.58421,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  },
+  {
+   "gsis_id": "00-0036613",
+   "team": "DEN",
+   "position": "WR",
+   "depth_rank_offense_wide": 3,
+   "n_prior_frame_rows": 85,
+   "cm_carried": 1,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.62999,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.564,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  },
+  {
+   "gsis_id": "00-0039824",
+   "team": "KC",
+   "position": "TE",
+   "depth_rank_offense_wide": 10,
+   "n_prior_frame_rows": 28,
+   "cm_carried": 0,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.63532,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.54588,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  },
+  {
+   "gsis_id": "00-0040120",
+   "team": "KC",
+   "position": "WR",
+   "depth_rank_offense_wide": 19,
+   "n_prior_frame_rows": 1,
+   "cm_carried": 0,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.52043,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.5236,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  },
+  {
+   "gsis_id": "00-0036945",
+   "team": "KC",
+   "position": "QB",
+   "depth_rank_offense_wide": 6,
+   "n_prior_frame_rows": 90,
+   "cm_carried": 7,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.96027,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.51023,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  },
+  {
+   "gsis_id": "00-0040081",
+   "team": "KC",
+   "position": "TE",
+   "depth_rank_offense_wide": 13,
+   "n_prior_frame_rows": 17,
+   "cm_carried": 17,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.99705,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.47521,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  },
+  {
+   "gsis_id": "00-0038519",
+   "team": "KC",
+   "position": "WR",
+   "depth_rank_offense_wide": 17,
+   "n_prior_frame_rows": 21,
+   "cm_carried": 2,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.77111,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.4704,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  },
+  {
+   "gsis_id": "00-0040240",
+   "team": "DEN",
+   "position": "TE",
+   "depth_rank_offense_wide": 17,
+   "n_prior_frame_rows": 0,
+   "cm_carried": 0,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.99197,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.46417,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  },
+  {
+   "gsis_id": "00-0040955",
+   "team": "KC",
+   "position": "TE",
+   "depth_rank_offense_wide": 16,
+   "n_prior_frame_rows": 0,
+   "cm_carried": 0,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.99197,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.46417,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  },
+  {
+   "gsis_id": "00-0041133",
+   "team": "DEN",
+   "position": "TE",
+   "depth_rank_offense_wide": 15,
+   "n_prior_frame_rows": 0,
+   "cm_carried": 0,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.99197,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.46417,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  },
+  {
+   "gsis_id": "00-0040890",
+   "team": "KC",
+   "position": "WR",
+   "depth_rank_offense_wide": 14,
+   "n_prior_frame_rows": 0,
+   "cm_carried": 0,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.99088,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.43766,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  },
+  {
+   "gsis_id": "00-0040953",
+   "team": "KC",
+   "position": "WR",
+   "depth_rank_offense_wide": 18,
+   "n_prior_frame_rows": 0,
+   "cm_carried": 0,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.99088,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.43766,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  },
+  {
+   "gsis_id": "00-0041013",
+   "team": "KC",
+   "position": "RB",
+   "depth_rank_offense_wide": 8,
+   "n_prior_frame_rows": 0,
+   "cm_carried": 0,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.99081,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.42748,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  },
+  {
+   "gsis_id": "00-0041496",
+   "team": "DEN",
+   "position": "RB",
+   "depth_rank_offense_wide": 12,
+   "n_prior_frame_rows": 0,
+   "cm_carried": 0,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.99081,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.42748,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  },
+  {
+   "gsis_id": "00-0036879",
+   "team": "DEN",
+   "position": "QB",
+   "depth_rank_offense_wide": 9,
+   "n_prior_frame_rows": 69,
+   "cm_carried": 43,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.94579,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.40587,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  },
+  {
+   "gsis_id": "00-0035264",
+   "team": "DEN",
+   "position": "QB",
+   "depth_rank_offense_wide": 6,
+   "n_prior_frame_rows": 97,
+   "cm_carried": 9,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.83306,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.20087,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  },
+  {
+   "gsis_id": "00-0040906",
+   "team": "KC",
+   "position": "QB",
+   "depth_rank_offense_wide": 12,
+   "n_prior_frame_rows": 0,
+   "cm_carried": 0,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.96802,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.17691,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  },
+  {
+   "gsis_id": "00-0037539",
+   "team": "DEN",
+   "position": "TE",
+   "depth_rank_offense_wide": null,
+   "n_prior_frame_rows": 48,
+   "cm_carried": 14,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.16826,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.02022,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  },
+  {
+   "gsis_id": "00-0036727",
+   "team": "DEN",
+   "position": "RB",
+   "depth_rank_offense_wide": null,
+   "n_prior_frame_rows": 79,
+   "cm_carried": 0,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.00957,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.02006,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  },
+  {
+   "gsis_id": "00-0038492",
+   "team": "KC",
+   "position": "WR",
+   "depth_rank_offense_wide": null,
+   "n_prior_frame_rows": 26,
+   "cm_carried": 0,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.00853,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.0156,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  },
+  {
+   "gsis_id": "00-0039702",
+   "team": "KC",
+   "position": "TE",
+   "depth_rank_offense_wide": null,
+   "n_prior_frame_rows": 17,
+   "cm_carried": 17,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.64301,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.01201,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  },
+  {
+   "gsis_id": "00-0038145",
+   "team": "KC",
+   "position": "TE",
+   "depth_rank_offense_wide": null,
+   "n_prior_frame_rows": 9,
+   "cm_carried": 9,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.625,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.01188,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  },
+  {
+   "gsis_id": "00-0036959",
+   "team": "DEN",
+   "position": "WR",
+   "depth_rank_offense_wide": null,
+   "n_prior_frame_rows": 33,
+   "cm_carried": 1,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.00821,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.01152,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  },
+  {
+   "gsis_id": "00-0039703",
+   "team": "DEN",
+   "position": "RB",
+   "depth_rank_offense_wide": null,
+   "n_prior_frame_rows": 24,
+   "cm_carried": 17,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.08105,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.01082,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  },
+  {
+   "gsis_id": "00-0040547",
+   "team": "KC",
+   "position": "RB",
+   "depth_rank_offense_wide": null,
+   "n_prior_frame_rows": 17,
+   "cm_carried": 10,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.07801,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.01077,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  },
+  {
+   "gsis_id": "00-0037324",
+   "team": "KC",
+   "position": "QB",
+   "depth_rank_offense_wide": null,
+   "n_prior_frame_rows": 8,
+   "cm_carried": 0,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.00467,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.01073,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  },
+  {
+   "gsis_id": "00-0038489",
+   "team": "KC",
+   "position": "RB",
+   "depth_rank_offense_wide": null,
+   "n_prior_frame_rows": 17,
+   "cm_carried": 17,
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "p_appear": 0.0786,
+    "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+    "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+    "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+    "appearance_coef_sha256": "557725f24fdc18ee",
+    "appearance_module_sha256": "ac1d54a6ae66f08c"
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "p_appear": 0.01073,
+    "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+    "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+    "appearance_coef_sha256": "88664d345948aed3",
+    "appearance_module_sha256": "a3a1d5679314fb8c"
+   }
+  }
+ ],
+ "market_inputs_used": 0
+}

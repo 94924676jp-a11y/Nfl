@@ -20,6 +20,7 @@ three open decisions. It is never emitted as zero.
 from __future__ import annotations
 
 import collections
+import dataclasses
 import pathlib
 import sys
 import time
@@ -40,6 +41,7 @@ from nfl.production.nonqb import accounting as ACC                # noqa: E402
 from nfl.production.nonqb import frozen_priors as FP              # noqa: E402
 from nfl.production.nonqb import layers as LY                     # noqa: E402
 from nfl.production.nonqb import p4c_params as P4                 # noqa: E402
+from nfl.production.nonqb import readiness as RD                  # noqa: E402
 from nfl.production.nonqb import shared_pass as SP                # noqa: E402
 from nfl.production import seeds as SEEDS                         # noqa: E402
 from nfl.production.nonqb import qb_allocation as QA               # noqa: E402
@@ -497,6 +499,110 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
         return np.asarray(tv.value[('team_carries', t)], float).reshape(-1)
 
     recv = [q for q in players if q.get('position') in RECEIVING_POS]
+
+    # ---- AN EVIDENCE GAP ABOUT ONE TEAM IS SCOPED TO THAT TEAM ----------
+    #
+    # `layers.appearance` resolves readiness PER TEAM and then defers the
+    # WHOLE GAME on the worst of them (layers.py:110-127). Its own `owed`
+    # block already carries both per-team states, so the information needed
+    # to scope the refusal correctly is present at the moment it is dropped.
+    #
+    # Measured on 2026_01_DEN_KC: Denver carries exactly ONE injury row and
+    # its `report_status` is blank, so the contract reads
+    # INJURY_REPORT_INCOMPLETE. Kansas City carries eleven rows, two of them
+    # designated, and reads READY. Under the game-scoped refusal Denver's
+    # single unfiled designation removed Kansas City's thirteen eligible
+    # non-quarterbacks along with Denver's own fourteen, and the board
+    # reached quarterbacks only, with no skill player of either club on it.
+    # Measured before and after on the sealed board for that game: 6 rows,
+    # all QB -> 19 rows, the same 6 quarterbacks plus 13 Kansas City skill
+    # players (6 WR, 4 TE, 3 RB) and still no Denver skill player.
+    #
+    # WHICH REFUSALS MAY BE NARROWED AND WHICH MAY NOT. This is an
+    # EVIDENCE-GAP refusal -- "I do not know whether Denver's players are
+    # available" -- and an evidence gap about unit U is a statement about U.
+    # A CONSTRUCTION-INVARIANT refusal (a partition exceeding the thing it
+    # partitions, a count identity that does not close, a player allocated
+    # opportunity with no appearance vector) is a statement about the whole
+    # construction and is NEVER narrowed. Nothing here touches one of those:
+    # every accounting and closure check below still runs, and the QB-side
+    # guards -- `reconcile_allocation_share`, `reconcile_team_volume`,
+    # `reconcile_cross_layer` -- are still evaluated over BOTH teams.
+    #
+    # THE GUARD IS NOT WEAKENED AND MUST NOT BE. `layers.appearance` is
+    # called with the readiness contract exactly as it stands; it is called
+    # with the teams whose evidence exists. A deferred team is not treated as
+    # a team with nobody injured (readiness.py:650-657 says why that reading
+    # is wrong): it is recorded under its own state and its own reason, and
+    # not one of its players reaches a modelled quantity.
+    #
+    # layers.py is hashed by Q9's frozen candidate identity 481f005f682cd721
+    # and may not be edited, so the scoping happens at the CALL SITE -- the
+    # same placement the C1 denominator selection uses, for the same reason.
+    #
+    # THE RNG STATEMENT, IN FULL, BECAUSE IT IS NOT A DRAW-PRESERVING CHANGE.
+    # Appearance consumes ONE shared stream sequentially across the player
+    # dict, so running it over the READY teams' players produces different
+    # draws than running it over both teams' players would have. That is
+    # unavoidable and it is not hidden: when every team is READY this block
+    # changes nothing at all and the draws are bit-identical to before, and
+    # when a team is deferred there is no both-teams run to perturb because
+    # the incumbent code produces nothing whatsoever for that game.
+    ateams = tuple(teams)
+    team_scope = None
+    if injuries_rows is None:
+        # The gate-cut handoff is a CONTEXT VAR that `team_readiness` appends
+        # to and `readiness.latest_injuries_rows` may later consume. Probing
+        # readiness here would append a second, identical entry per team and
+        # move `n_gate_evaluations` in the feed's own evidence on a run that
+        # is otherwise unchanged. The cuts are identical -- same kickoff,
+        # same written_at, same teams -- so the probe restores the handoff
+        # and the call below sees exactly the state it saw before.
+        _gate_before = RD._GATE_CUTS.get()
+        try:
+            _tr = [RD.team_readiness(season, week, t, kickoff_utc=kickoff_utc)
+                   for t in teams]
+        finally:
+            RD._GATE_CUTS.set(_gate_before)
+        _ready = [r for r in _tr if str(r['state']).startswith('READY')]
+        _notready = [r for r in _tr
+                     if not str(r['state']).startswith('READY')]
+        # EVERY TEAM READY -> there is nothing to scope, and the call below is
+        # the call that was always made, on the frame that was always built.
+        # NO TEAM READY -> there is no game left to scope to, so the
+        # whole-game deferral is the correct answer and `layers.appearance`
+        # is left to produce it in its own words with its own code.
+        if _ready and _notready:
+            ateams = tuple(r['team'] for r in _tr
+                           if str(r['state']).startswith('READY'))
+            _excluded = [q for q in recv if q['team'] not in ateams]
+            team_scope = {
+                'scoped': True,
+                'code': 'APPEARANCE_TEAM_DEFERRED',
+                'ready_teams': list(ateams),
+                'deferred_teams': [
+                    {'team': r['team'], 'state': r['state'],
+                     'reason': r['reason'],
+                     'n_injury_rows': r.get('n_rows'),
+                     'n_players_excluded': sum(
+                         1 for q in _excluded if q['team'] == r['team']),
+                     'gsis_ids': sorted(q['gsis_id'] for q in _excluded
+                                        if q['team'] == r['team'])}
+                    for r in _notready],
+                'teams': [{'team': r['team'], 'state': r['state']}
+                          for r in _tr],
+                'n_players_excluded': len(_excluded),
+                'note': 'a team with no filed report is NOT a team with no '
+                        'injuries. No appearance probability, no allocation '
+                        'and no projection is emitted for any player of a '
+                        'deferred team.',
+                'rng_note': 'the appearance stream is consumed over the READY '
+                            'teams\' players only, so these are not the draws '
+                            'a both-teams-READY run would have produced. '
+                            'There is no such run here: the unscoped code '
+                            'produces nothing for this game.'}
+            g['appearance_team_scope'] = team_scope
+            g['deferred_teams'] = team_scope['deferred_teams']
     ids = [q['gsis_id'] for q in recv]
     pos = [q['position'] for q in recv]
     starts, counts, i = [], [], 0
@@ -504,7 +610,7 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
     for q in recv:
         by_team[q['team']].append(q)
     order = []
-    for t in teams:
+    for t in ateams:
         order.extend(by_team.get(t, []))
         starts.append(i)
         counts.append(len(by_team.get(t, [])))
@@ -549,10 +655,31 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
     # game_id separates this game's streams from every other game on the
     # slate. Without it a sixteen-game slate is not sixteen games.
     ap = LY.appearance(season, week, recv, fixture=fixture, m=m, seed=seed,
-                       teams=teams, kickoff_utc=kickoff_utc,
+                       teams=ateams, kickoff_utc=kickoff_utc,
                        game_id=game_id, appearance_spec=appearance_spec,
                        observed_before=observed_before,
                        inactive_ids=inactive_ids)
+    # THE DEFERRAL TRAVELS WITH THE LAYER THAT WOULD HAVE CARRIED IT.
+    # `run_forecast._governance_facts` passes a layer's `warnings` through to
+    # the sealed stage verbatim, so the team-scoped refusal reaches the
+    # artifact by the channel the layers already use rather than by a new one
+    # nobody reads. A NEW `g['layers']` KEY WOULD RAISE
+    # ENGINE_LAYER_NOT_REPORTED in `run_forecast._assert_every_layer_is_
+    # reported`, which is that guard working; the structured record is put on
+    # `g` and on this outcome's evidence instead.
+    if team_scope is not None and ap.state is State.PASS:
+        _w = list(ap.evidence.get('warnings') or [])
+        _w.append(
+            'APPEARANCE_TEAM_DEFERRED: '
+            + '; '.join(f"{d['team']} is {d['state']} and is deferred -- "
+                        f"{d['n_players_excluded']} player(s) carry no "
+                        f"appearance estimate and no projection"
+                        for d in team_scope['deferred_teams'])
+            + f". The appearance layer ran on {', '.join(ateams)} only. "
+            + team_scope['note'])
+        ap = dataclasses.replace(
+            ap, evidence={**ap.evidence, 'warnings': _w,
+                          'team_scope': team_scope})
     _lay('appearance', ap)
     if ap.state is not State.PASS:
         g['halted_at'] = 'appearance'
@@ -587,7 +714,7 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
         _dropped = [q for q in recv if q['gsis_id'] not in pa.value]
         if _dropped:
             _left = {q['team'] for q in _placeable}
-            _empty = [t for t in teams if t not in _left]
+            _empty = [t for t in ateams if t not in _left]
             if _empty:
                 o = Outcome.fail(
                     'NONQB_TEAM_HAS_NO_APPEARING_PLAYER',
@@ -604,7 +731,7 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
             for q in _placeable:
                 _by[q['team']].append(q)
             _order, starts, counts, _i = [], [], [], 0
-            for t in teams:
+            for t in ateams:
                 _order.extend(_by.get(t, []))
                 starts.append(_i)
                 counts.append(len(_by.get(t, [])))
@@ -663,7 +790,8 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
             return g, None
         att_by_team = [np.stack([np.asarray(qb['draws']['att'][i], float)
                                  for i in qb['index_by_team'].get(t, [])])
-                       if qb['index_by_team'].get(t) else None for t in teams]
+                       if qb['index_by_team'].get(t) else None
+                       for t in ateams]
         if any(a is None for a in att_by_team):
             g['halted_at'] = 'shared_pass'
             g['halt_reason'] = ('C3_TEAM_HAS_NO_QUARTERBACK_ROW: the throw '
@@ -731,7 +859,7 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
             return g, None
         g['layers']['shared_pass'] = 'PASS[C3_TARGET_BUDGET_FROM_THROWS]'
     else:
-        tgt_vol = np.stack([tv.value[('team_targets', t)] for t in teams])
+        tgt_vol = np.stack([tv.value[('team_targets', t)] for t in ateams])
         T = S * np.repeat(tgt_vol, counts, axis=0)
         g['layers']['shared_pass'] = f'NOT_APPLICABLE[SHARED_PASS_{shared_pass.upper()}]'
 
@@ -740,7 +868,7 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
     rb_ids = [q['gsis_id'] for q in rb]
     rb_pos = [q['position'] for q in rb]
     rb_starts, rb_counts, j = [], [], 0
-    for t in teams:
+    for t in ateams:
         n = sum(1 for q in rb if q['team'] == t)
         rb_starts.append(j); rb_counts.append(n); j += n
     # C1. THE `other` MASS MUST BE ON THE SAME DENOMINATOR AS THE BUDGET.
@@ -806,11 +934,11 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
     Sc, other_c = car.value['share'], car.value['other']
     # WHOSE CARRIES ARE THE BACKS COMPETING FOR? Exactly one layer may answer.
     if rushing_budget is None:
-        car_vol = np.stack([_team_carries(t) for t in teams])
+        car_vol = np.stack([_team_carries(t) for t in ateams])
         g['layers']['rushing_budget_owner'] = \
             'NOT_APPLICABLE[D1_TEAM_CARRIES]'
     else:
-        missing = [t for t in teams if t not in rushing_budget]
+        missing = [t for t in ateams if t not in rushing_budget]
         if missing:
             o = Outcome.fail(
                 'RUSHING_BUDGET_TEAM_MISSING',
@@ -824,12 +952,13 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
             g['halt_reason'] = o.detail[:200]
             return g, None
         car_vol = np.stack([np.asarray(rushing_budget[t], float).reshape(-1)
-                            for t in teams])
-        if car_vol.shape != (len(teams), m):
+                            for t in ateams])
+        if car_vol.shape != (len(ateams), m):
             o = Outcome.fail(
                 'RUSHING_BUDGET_DRAW_MISMATCH',
                 f'the A1 carry budget has shape {list(car_vol.shape)} against '
-                f'{[len(teams), m]}. These layers share one draw index, so a '
+                f'{[len(ateams), m]}. These layers share one draw index, so '
+                f'a '
                 f'mismatch is refused rather than reshaped.',
                 got=list(car_vol.shape))
             _lay('rushing_budget', o)
@@ -840,7 +969,7 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
         # Checked rather than assumed: if it did, the backs would be dealt
         # carries the game did not contain.
         tc_lvl = np.stack([np.asarray(_team_carries(t), float)
-                           for t in teams])
+                           for t in ateams])
         over = int((car_vol > tc_lvl + 1e-9).sum())
         if over:
             o = Outcome.fail(
@@ -1045,13 +1174,19 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
     if qb is not None:
         idx = qb['index_by_team']
         D = qb['draws']
-        rows_by_team = {t: idx.get(t, []) for t in teams}
+        # THE NON-QB ALLOCATION FRAME, because this vector is stacked
+        # against `rb_starts`/`rb_counts` in `reconcile_rushing` and those
+        # describe the teams the allocation ran for. The BOTH-TEAMS question
+        # -- does each club's quarterback rushing fit inside that club's
+        # carries -- is still asked in full by `reconcile_team_volume` below,
+        # which is handed `team_carry_draws` for every team in the game.
+        rows_by_team = {t: idx.get(t, []) for t in ateams}
         # The team's QB rush opportunity in draw j is the SUM over that team's
         # quarterbacks, because the containment question is about the team's
         # carry budget, not about any one passer.
         qb_rush = np.stack([
             (D['rush_opp'][rows_by_team[t]].sum(0) if rows_by_team[t]
-             else np.zeros(m)) for t in teams])
+             else np.zeros(m)) for t in ateams])
         # THE QUARTERBACK RECORDS ARE BUILT LATER, NOT HERE. `PR.summarise`
         # computes its mean and quantiles EAGERLY, and the C3 credit below
         # rewrites `qb['draws']['cmp' | 'pyds' | 'ptd']` in place afterwards.
@@ -1336,7 +1471,14 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
         'index': {'recv_ids': ids, 'recv_pos': pos,
                   'recv_team': [q['team'] for q in recv],
                   'rb_ids': rb_ids, 'rb_team': [q['team'] for q in rb],
-                  'teams': list(teams)},
+                  # The teams these ROWS belong to, which is the ALLOCATION
+                  # frame and equals the game's two clubs on every run where
+                  # both are READY. The game's own clubs are `g['teams']` and
+                  # the scope, when one was applied, is
+                  # `g['appearance_team_scope']`; nothing additive is put here
+                  # so that a both-teams-READY payload stays byte-identical to
+                  # what it was before this repair.
+                  'teams': list(ateams)},
         # The ALLOCATION LAYER's own outputs, so a study can re-run the
         # conversion chain on a different opportunity budget without
         # reimplementing the layers that produced the competition. Additive:

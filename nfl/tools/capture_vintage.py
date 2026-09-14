@@ -40,6 +40,7 @@ import datetime as _dt
 import hashlib
 import json
 import pathlib
+import re
 import subprocess
 import sys
 
@@ -89,6 +90,30 @@ SCHEMA_VERSION = "nflverse-release-1"
 # defect, not the repair.
 TRANSFORM_ID = "nfl-vintage-column-reduce"
 TRANSFORM_VERSION = "reduce-2"
+
+# RULING 3 RETENTION. Raw bytes, raw hash, transformation version, reduced
+# artifact, reduced hash -- and the raw half must live somewhere that survives.
+#
+# Until 2026-09-14 the `reduce` durability wrote the reduced blob into the
+# TRACKED nfl/vintage and the full upstream file into `store/raw`, which is
+# `nfl_vintage/` and is gitignored (.gitignore:7). So the raw half of every
+# reduce source's retention existed only on whichever machine ran the capture.
+# WS-L measured the consequence: 6 of 6 Actions-only vintages lost their raw
+# bytes, 7 of 7 seen on a developer machine kept them. Raw retention was a
+# property of who looked, which is not retention.
+#
+# A GITIGNORED SOLE HOME DOES NOT SATISFY RULING 3. The upstream bytes are now
+# ALSO written, gzipped and content-addressed, into the same durable store as
+# the reduction, staged and promoted under the same rows-before-bytes
+# invariant, and verified on read-back against the upstream digest. The
+# ephemeral copy is kept as well -- it is uncompressed and cheap to read, and
+# `vintage_selector.raw_candidates` globs it -- but it is no longer the only
+# copy, so losing it is no longer losing the evidence.
+#
+# Cost, measured 2026-09-14 rather than estimated: depth_charts_2026.csv is
+# 49,311,029 bytes and 9,843,252 gzipped; roster_weekly_2026.csv is 943,125.
+# Content addressing dedupes, so an unchanged re-capture adds no bytes.
+RETENTION_POLICY = "ruling3-raw-and-reduced-durable-1"
 
 
 @dataclasses.dataclass(frozen=True)
@@ -217,15 +242,32 @@ def fetch(src: Source, season: int, store: pathlib.Path,
     # real run against nfl.com.
     retrieved_at = _now()
     status = (r.stdout or "").strip() or "000"
+    # THE TRANSPORT'S OWN REFUSAL, RECORDED VERBATIM.
+    #
+    # curl reports a proxy CONNECT denial as exit 56 with `%{http_code}` 000 --
+    # the HTTP code belongs to a request that was never made. The 403 the
+    # gateway actually returned lives only in stderr, and stderr was discarded,
+    # so every proxy denial in this manifest reads `NO_EGRESS` with no code at
+    # all. "We got nothing" and "the gateway refused us with 403" are different
+    # facts and the second is the one that names who can fix it.
+    curl_err = (r.stderr or "").strip()[:400] or None
+    m_proxy = re.search(r"response (\d{3})", curl_err or "")
+    transport = {"curl_exit_code": r.returncode, "curl_stderr": curl_err,
+                 "proxy_refusal_status": (m_proxy.group(1) if m_proxy
+                                          else None),
+                 "http_code_reported": status}
 
     if status == "000":
         return Outcome.blocked(
             "NO_EGRESS",
-            f"{src.name}: no HTTP response for {src.url}. This says nothing "
+            f"{src.name}: no HTTP response for {src.url}"
+            + (f" -- transport refused: {curl_err}" if curl_err else "")
+            + f". This says nothing "
             f"about the data. Per DEC-029 it is ASSIGNED to an agent with "
             f"egress, not blocked for the project, and it is never stubbed.",
             cause=Cause.NETWORK, source=src.name, url=src.url,
-            requested_at=requested_at, retrieved_at=retrieved_at)
+            requested_at=requested_at, retrieved_at=retrieved_at,
+            **transport)
 
     if status == "404":
         if src.required:
@@ -243,7 +285,9 @@ def fetch(src: Source, season: int, store: pathlib.Path,
     if status in ("403", "407"):
         return Outcome.blocked(f"SOURCE_HTTP_{status}",
                                f"{src.name}: egress policy denied {src.url}",
-                               cause=Cause.NETWORK, source=src.name)
+                               cause=Cause.NETWORK, source=src.name,
+                               url=src.url, retrieved_at=retrieved_at,
+                               **transport)
     if not status.startswith("2"):
         return Outcome.fail(f"SOURCE_HTTP_{status}",
                             f"{src.name}: unexpected status for {src.url}",
@@ -560,6 +604,37 @@ def _flush(manifest, rows) -> int:
             fh.write(json.dumps(row, sort_keys=True) + "\n")
     return len(rows)
 
+def _normalise_staged(staged) -> list:
+    """Accept a pair, a list of pairs, or a list of lists of pairs.
+
+    `_persist` returned ONE (pending, final) tuple until the Ruling 3 raw
+    retention gave `reduce` a second staged blob, and every caller that wrapped
+    the old return value in a list is now handing this a nested one. Silently
+    promoting the first element and dropping the rest is exactly the class of
+    partial success this capture path exists to refuse, so the shape is
+    normalised in one place and anything that is not a (pending, final) pair
+    raises rather than being skipped.
+    """
+    out = []
+    def _walk(x):
+        if x is None:
+            return
+        if isinstance(x, (tuple, list)) and len(x) == 2 and all(
+                isinstance(q, (str, pathlib.Path)) for q in x):
+            out.append((str(x[0]), str(x[1])))
+            return
+        if isinstance(x, (tuple, list)):
+            for q in x:
+                _walk(q)
+            return
+        raise TypeError(
+            f"STAGED_ENTRY_MALFORMED: {x!r} is not a (pending, final) pair "
+            f"nor a container of them. Refusing to guess which blobs to "
+            f"promote.")
+    _walk(staged)
+    return out
+
+
 def _purge_staging(staged) -> int:
     """Throw away every staged blob whose manifest row was not written.
 
@@ -568,7 +643,7 @@ def _purge_staging(staged) -> int:
     source, a window or a basis.
     """
     n = 0
-    for pend, _final in staged:
+    for pend, _final in _normalise_staged(staged):
         q = pathlib.Path(pend)
         if q.exists():
             q.unlink()
@@ -595,7 +670,7 @@ def _promote_staging(staged) -> list:
     MANIFEST ROW -- by construction, not by assertion.
     """
     moved = []
-    for pend, final in staged:
+    for pend, final in _normalise_staged(staged):
         q, f = pathlib.Path(pend), pathlib.Path(final)
         if not q.exists():
             # Already promoted, or two sources in one run resolved to the same
@@ -635,6 +710,25 @@ def _assert_no_pass_without_capture(rows) -> None:
             continue
         if not v.get("upstream_content_sha256"):
             bad.append((r.get("source"), "PASS_WITH_NO_UPSTREAM_DIGEST"))
+            continue
+        # RULING 3, ENFORCED STRUCTURALLY. Every retention field a later
+        # auditor needs must be present, and the raw bytes must have a durable
+        # home. A PASS row whose only raw copy is gitignored is a row claiming
+        # retention it does not have.
+        ret = v.get("retention_ruling3") or {}
+        missing = [k for k in ("raw_bytes", "raw_hash",
+                               "transformation_version")
+                   if not ret.get(k)]
+        if missing:
+            bad.append((r.get("source"),
+                        f"PASS_WITH_INCOMPLETE_RULING3_RETENTION{missing}"))
+            continue
+        if ret.get("raw_home_is_gitignored_only") is not False:
+            bad.append((r.get("source"),
+                        "PASS_WITH_RAW_BYTES_ONLY_IN_A_GITIGNORED_HOME"))
+            continue
+        if not v.get("raw_blob_durable"):
+            bad.append((r.get("source"), "PASS_WITH_NO_DURABLE_RAW_BLOB"))
     if bad:
         raise SystemExit(
             "MANIFEST_CLAIMS_PASS_WITHOUT_QUALIFYING_CAPTURE: "
@@ -925,7 +1019,26 @@ def _persist(src: Source, payload: bytes, digest: str,
                 "blob_file_sha256": file_sha,
                 "self_verifying": True,
                 "content_unchanged": unchanged, "reduced": None,
-                "_staged": staged}
+                # commit_raw retains the upstream bytes verbatim, so the raw
+                # artifact and the retained artifact are one object. Stated
+                # explicitly rather than inferred from the absence of a
+                # reduction: "there was no transformation" and "the
+                # transformation was not recorded" must not read alike.
+                "raw_blob": _rel(blob),
+                "raw_blob_durable": True,
+                "raw_blob_content_sha256": digest,
+                "raw_blob_file_sha256": file_sha,
+                "raw_blob_n_bytes": len(payload),
+                "retention_policy": RETENTION_POLICY,
+                "retention_ruling3": {
+                    "raw_bytes": _rel(blob),
+                    "raw_hash": digest,
+                    "transformation_version": "none__upstream_verbatim",
+                    "reduced_artifact": None,
+                    "reduced_hash": None,
+                    "raw_home_is_gitignored_only": False,
+                },
+                "_staged": [staged] if staged else []}
 
     if src.durability == "reduce":
         DURABLE_ROOT.mkdir(parents=True, exist_ok=True)
@@ -955,6 +1068,26 @@ def _persist(src: Source, payload: bytes, digest: str,
         eph = store / "raw" / f"{src.name}.{digest[:16]}.csv"
         if not eph.exists():
             eph.write_bytes(payload)
+
+        # RULING 3. The raw upstream bytes get a DURABLE, TRACKED home beside
+        # the reduction, content-addressed on their own digest and verified on
+        # read-back. See RETENTION_POLICY above for why the ephemeral copy is
+        # not enough. Staged and promoted with the reduction under the same
+        # rows-before-bytes invariant, so a run that dies leaves neither.
+        raw_blob = DURABLE_ROOT / f"{src.name}.{digest[:16]}.raw.csv.gz"
+        raw_pend = _pending_root(store) / raw_blob.name
+        raw_unchanged = raw_blob.exists() or raw_pend.exists()
+        if raw_blob.exists():
+            raw_file_sha = _verify_persisted(raw_blob, digest,
+                                             f"{src.name}:raw")
+            raw_staged = None
+        else:
+            if not raw_pend.exists():
+                _write_gz_deterministic(raw_pend, payload)
+            raw_file_sha = _verify_persisted(raw_pend, digest,
+                                             f"{src.name}:raw")
+            raw_staged = (str(raw_pend), str(raw_blob))
+
         return {"blob": _rel(red), "blob_durable": True,
                 "blob_encoding": "gzip",
                 # NAMES THE OBJECT IT COVERS. It read "uncompressed_bytes",
@@ -1011,7 +1144,30 @@ def _persist(src: Source, payload: bytes, digest: str,
                 # reduction matches this transformation of these bytes.
                 "reduce_recoverability_checked": False,
                 "persisted_artifact_verified_against_upstream_bytes": True,
-                "_staged": staged}
+                # THE RAW HALF OF RULING 3, NAMED SO IT CAN BE AUDITED.
+                # `raw_blob` is the durable tracked copy; `full_bytes_
+                # ephemeral_at` inside `reduced` remains the gitignored
+                # convenience copy. They are recorded separately because one of
+                # them is evidence and the other is a cache.
+                "raw_blob": _rel(raw_blob),
+                "raw_blob_durable": True,
+                "raw_blob_encoding": "gzip",
+                "raw_blob_is_upstream_verbatim": True,
+                "raw_blob_content_sha256": digest,
+                "raw_blob_file_sha256": raw_file_sha,
+                "raw_blob_n_bytes": len(payload),
+                "raw_blob_content_unchanged": raw_unchanged,
+                "raw_blob_self_verifying": True,
+                "retention_policy": RETENTION_POLICY,
+                "retention_ruling3": {
+                    "raw_bytes": _rel(raw_blob),
+                    "raw_hash": digest,
+                    "transformation_version": TRANSFORM_VERSION,
+                    "reduced_artifact": _rel(red),
+                    "reduced_hash": red_digest,
+                    "raw_home_is_gitignored_only": False,
+                },
+                "_staged": [q for q in (staged, raw_staged) if q]}
 
     eph = store / "raw" / f"{src.name}.{digest[:16]}.csv"
     unchanged = eph.exists()
@@ -1028,7 +1184,25 @@ def _persist(src: Source, payload: bytes, digest: str,
             "blob_file_sha256": file_sha,
             "self_verifying": True,
             "content_unchanged": unchanged, "reduced": None,
-            "_staged": None}
+            "raw_blob": str(eph),
+            "raw_blob_durable": False,
+            "raw_blob_content_sha256": digest,
+            "raw_blob_file_sha256": file_sha,
+            "raw_blob_n_bytes": len(payload),
+            "retention_policy": RETENTION_POLICY,
+            "retention_ruling3": {
+                "raw_bytes": str(eph),
+                "raw_hash": digest,
+                "transformation_version": "none__upstream_verbatim",
+                "reduced_artifact": None,
+                "reduced_hash": None,
+                # SAID OUT LOUD. No source currently declares `ephemeral`
+                # durability; if one ever does, its retention does NOT satisfy
+                # Ruling 3 and this field is how a reader finds that out
+                # without re-deriving the gitignore rules.
+                "raw_home_is_gitignored_only": True,
+            },
+            "_staged": []}
 
 
 def main() -> int:
@@ -1113,9 +1287,13 @@ def main() -> int:
             # `_staged` is plumbing, not provenance. It names a path that will
             # not exist a moment later, so it is removed before the row is
             # written rather than persisted as a dangling reference.
-            st = out.value.pop("_staged", None)
-            if st:
-                staged.append(st)
+            # A LIST, NOT A PAIR. `reduce` now stages TWO blobs -- the
+            # reduction and the raw upstream file (Ruling 3) -- and the old
+            # single-tuple shape would have silently promoted only the first.
+            st = out.value.pop("_staged", None) or []
+            if isinstance(st, tuple):
+                st = [st]
+            staged.extend(st)
             row["value"] = out.value
         else:
             # A run that ATTEMPTED a declared target and failed must leave that

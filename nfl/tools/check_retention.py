@@ -95,8 +95,19 @@ STORES = {
 # Keys that legitimately hold a blob path in a manifest row, at whatever nesting
 # the writer used. Listed explicitly so that adding a writer is a reviewable
 # edit rather than something a recursive scan absorbs silently.
-_BLOB_KEYS = ("blob", "blob_sidecar")
+#
+# `raw_blob` was added 2026-09-14 with the Ruling 3 durable raw retention: a
+# `reduce` capture now promotes TWO durable blobs, the column reduction and the
+# full upstream file. The recursive audit below caught its absence immediately
+# and the tool REFUSED rather than reporting two real artifacts as orphans,
+# which is the behaviour this design is for -- the collector failing closed
+# instead of the census quietly growing by two.
+_BLOB_KEYS = ("blob", "blob_sidecar", "raw_blob")
 _BLOB_LIST_PATHS = (("value", "delivery", "raw_evidence_blobs"),)
+# Nested single-path blob references, by the same rule: declared explicitly so
+# a new nesting is a reviewable edit and never something the audit absorbs.
+_BLOB_NESTED_PATHS = (("value", "retention_ruling3", "raw_bytes"),
+                      ("value", "retention_ruling3", "reduced_artifact"))
 
 
 def _lines(p: "pathlib.Path | None") -> list:
@@ -126,6 +137,14 @@ def _explicit_blob_names(row: dict) -> set:
             for v in node:
                 if isinstance(v, str) and v:
                     out.add(pathlib.Path(v).name)
+    for path in _BLOB_NESTED_PATHS:
+        node = row
+        for seg in path:
+            node = node.get(seg) if isinstance(node, dict) else None
+            if node is None:
+                break
+        if isinstance(node, str) and node:
+            out.add(pathlib.Path(node).name)
     return out
 
 

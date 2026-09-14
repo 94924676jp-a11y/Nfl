@@ -1,0 +1,686 @@
+{
+ "arrays": {
+  "array_differences": [],
+  "arrays_only_in_a": [],
+  "arrays_only_in_b": [],
+  "compared": [
+   {
+    "array": "qb/att",
+    "n_draws": 40,
+    "n_rows": 8
+   },
+   {
+    "array": "qb/cmp",
+    "n_draws": 40,
+    "n_rows": 8
+   },
+   {
+    "array": "qb/db",
+    "n_draws": 40,
+    "n_rows": 8
+   },
+   {
+    "array": "qb/int",
+    "n_draws": 40,
+    "n_rows": 8
+   },
+   {
+    "array": "qb/ptd",
+    "n_draws": 40,
+    "n_rows": 8
+   },
+   {
+    "array": "qb/pyds",
+    "n_draws": 40,
+    "n_rows": 8
+   },
+   {
+    "array": "qb/rtd",
+    "n_draws": 40,
+    "n_rows": 8
+   },
+   {
+    "array": "qb/rush_opp",
+    "n_draws": 40,
+    "n_rows": 8
+   },
+   {
+    "array": "qb/ryds",
+    "n_draws": 40,
+    "n_rows": 8
+   },
+   {
+    "array": "qb/sacks",
+    "n_draws": 40,
+    "n_rows": 8
+   },
+   {
+    "array": "qb/scr",
+    "n_draws": 40,
+    "n_rows": 8
+   },
+   {
+    "array": "receiving/receiving_td",
+    "n_draws": 40,
+    "n_rows": 45
+   },
+   {
+    "array": "receiving/receiving_yards",
+    "n_draws": 40,
+    "n_rows": 45
+   },
+   {
+    "array": "receiving/receptions",
+    "n_draws": 40,
+    "n_rows": 45
+   },
+   {
+    "array": "receiving/targets",
+    "n_draws": 40,
+    "n_rows": 45
+   },
+   {
+    "array": "rushing/carries",
+    "n_draws": 40,
+    "n_rows": 11
+   },
+   {
+    "array": "rushing/rushing_td",
+    "n_draws": 40,
+    "n_rows": 11
+   },
+   {
+    "array": "team_volume/team_carries",
+    "n_draws": 40,
+    "n_rows": 2
+   },
+   {
+    "array": "team_volume/team_dropbacks_part",
+    "n_draws": 40,
+    "n_rows": 2
+   },
+   {
+    "array": "team_volume/team_off_snaps",
+    "n_draws": 40,
+    "n_rows": 2
+   },
+   {
+    "array": "team_volume/team_rz_carries",
+    "n_draws": 40,
+    "n_rows": 2
+   },
+   {
+    "array": "team_volume/team_targets",
+    "n_draws": 40,
+    "n_rows": 2
+   }
+  ],
+  "content_digest_a": "bfad4efe0931a41d559ac73f413dd4c8deed071a27af99de143b504163451d99",
+  "content_digest_b": "bfad4efe0931a41d559ac73f413dd4c8deed071a27af99de143b504163451d99",
+  "content_digest_equal": true,
+  "identical": true,
+  "layers_only_in_a": [],
+  "layers_only_in_b": [],
+  "n_arrays_compared": 22,
+  "n_cells_compared": 12000,
+  "row_axis_disagreements": [],
+  "row_set_differences": []
+ },
+ "cause_definitions": {
+  "CAUSE_0_INPUTS_NOT_FROZEN": "the frozen input manifest was not held constant across the two runs, so the premise of the comparison failed and nothing downstream of it is evidence about determinism.",
+  "CAUSE_1_IN_SCOPE_SOURCE_CHANGED": "a file inside the declared SOURCE scope of identity B changed between the two runs. The two runs did not execute the same code, so a difference in their outputs or identities is expected and is not a determinism defect.",
+  "CAUSE_2_SEALED_BODY_READS_D": "the predictive arrays are identical and an identity moved anyway, with in-scope source and input hashes constant. Some field inside an identity read state outside the declared inputs -- a path, a count, a clock, or the machine. This is the dF/dD != 0 defect class.",
+  "CAUSE_3_PREDICTIVE_NONDETERMINISM": "in-scope source constant, input hashes constant, every identity constant, and the draws differ. Genuine nondeterminism in the predictive path. NEVER OBSERVED IN THIS REPOSITORY -- if this is reported, exhaust the other three before believing it."
+ },
+ "classification": {
+  "findings": [],
+  "primary_cause": null
+ },
+ "code_identity_observations": [
+  {
+   "code_version": "9c3c29a83310970fc0f0c43fdb974d3fe317ced9+src1[2511d71a5640c006]",
+   "commit": "9c3c29a83310970fc0f0c43fdb974d3fe317ced9",
+   "dirty_source_files": [
+    {
+     "path": "nfl/production/authorization.py",
+     "sha256": "8a71cb0f004e0dfcecbd18d09f140b87e3db8b5be4b568d8b32b9235b776bde8",
+     "state": "PRESENT"
+    },
+    {
+     "path": "nfl/production/nonqb/appearance_arm.py",
+     "sha256": "bd7b284bbb2f7b85036e5737ef77b778b90f4ca35f5334a918388794ebc243f3",
+     "state": "PRESENT"
+    },
+    {
+     "path": "nfl/production/nonqb/appearance_b.py",
+     "sha256": "a3a1d5679314fb8cf8500fce2c3aa7f7e8b8cae25751a0d24c27fbdcdd79a255",
+     "state": "PRESENT"
+    },
+    {
+     "path": "nfl/production/pool_audit.py",
+     "sha256": "33ccefb6690f5999a59c80d31af711995aee0596ca23a10bbca49f7e5792cc68",
+     "state": "PRESENT"
+    },
+    {
+     "path": "nfl/tools/capture_vintage.py",
+     "sha256": "ae073a49f85d2d9a51cba39a9d8eea97cbcb9280468e7ab79f60b10562059d6b",
+     "state": "PRESENT"
+    },
+    {
+     "path": "nfl/tools/determinism_proof.py",
+     "sha256": "44d1e8373599a185b87a03ab6993c8d9e5d0bbd42af1b81b6ca949ce9fbaad2c",
+     "state": "PRESENT"
+    }
+   ],
+   "label": "before_run_a",
+   "resolved": true,
+   "runtime_token": "implementation=CPython+python_version=3.12.3+numpy_version=2.5.3",
+   "source_scope_clean": false,
+   "source_scope_sha256": "2511d71a5640c006a8a9f12c395be878d3c9d8c81dc8b1292a89ebad203e674f"
+  },
+  {
+   "code_version": "9c3c29a83310970fc0f0c43fdb974d3fe317ced9+src1[2511d71a5640c006]",
+   "commit": "9c3c29a83310970fc0f0c43fdb974d3fe317ced9",
+   "dirty_source_files": [
+    {
+     "path": "nfl/production/authorization.py",
+     "sha256": "8a71cb0f004e0dfcecbd18d09f140b87e3db8b5be4b568d8b32b9235b776bde8",
+     "state": "PRESENT"
+    },
+    {
+     "path": "nfl/production/nonqb/appearance_arm.py",
+     "sha256": "bd7b284bbb2f7b85036e5737ef77b778b90f4ca35f5334a918388794ebc243f3",
+     "state": "PRESENT"
+    },
+    {
+     "path": "nfl/production/nonqb/appearance_b.py",
+     "sha256": "a3a1d5679314fb8cf8500fce2c3aa7f7e8b8cae25751a0d24c27fbdcdd79a255",
+     "state": "PRESENT"
+    },
+    {
+     "path": "nfl/production/pool_audit.py",
+     "sha256": "33ccefb6690f5999a59c80d31af711995aee0596ca23a10bbca49f7e5792cc68",
+     "state": "PRESENT"
+    },
+    {
+     "path": "nfl/tools/capture_vintage.py",
+     "sha256": "ae073a49f85d2d9a51cba39a9d8eea97cbcb9280468e7ab79f60b10562059d6b",
+     "state": "PRESENT"
+    },
+    {
+     "path": "nfl/tools/determinism_proof.py",
+     "sha256": "44d1e8373599a185b87a03ab6993c8d9e5d0bbd42af1b81b6ca949ce9fbaad2c",
+     "state": "PRESENT"
+    }
+   ],
+   "label": "between_runs",
+   "resolved": true,
+   "runtime_token": "implementation=CPython+python_version=3.12.3+numpy_version=2.5.3",
+   "source_scope_clean": false,
+   "source_scope_sha256": "2511d71a5640c006a8a9f12c395be878d3c9d8c81dc8b1292a89ebad203e674f"
+  },
+  {
+   "code_version": "9c3c29a83310970fc0f0c43fdb974d3fe317ced9+src1[2511d71a5640c006]",
+   "commit": "9c3c29a83310970fc0f0c43fdb974d3fe317ced9",
+   "dirty_source_files": [
+    {
+     "path": "nfl/production/authorization.py",
+     "sha256": "8a71cb0f004e0dfcecbd18d09f140b87e3db8b5be4b568d8b32b9235b776bde8",
+     "state": "PRESENT"
+    },
+    {
+     "path": "nfl/production/nonqb/appearance_arm.py",
+     "sha256": "bd7b284bbb2f7b85036e5737ef77b778b90f4ca35f5334a918388794ebc243f3",
+     "state": "PRESENT"
+    },
+    {
+     "path": "nfl/production/nonqb/appearance_b.py",
+     "sha256": "a3a1d5679314fb8cf8500fce2c3aa7f7e8b8cae25751a0d24c27fbdcdd79a255",
+     "state": "PRESENT"
+    },
+    {
+     "path": "nfl/production/pool_audit.py",
+     "sha256": "33ccefb6690f5999a59c80d31af711995aee0596ca23a10bbca49f7e5792cc68",
+     "state": "PRESENT"
+    },
+    {
+     "path": "nfl/tools/capture_vintage.py",
+     "sha256": "ae073a49f85d2d9a51cba39a9d8eea97cbcb9280468e7ab79f60b10562059d6b",
+     "state": "PRESENT"
+    },
+    {
+     "path": "nfl/tools/determinism_proof.py",
+     "sha256": "44d1e8373599a185b87a03ab6993c8d9e5d0bbd42af1b81b6ca949ce9fbaad2c",
+     "state": "PRESENT"
+    }
+   ],
+   "label": "after_run_b",
+   "resolved": true,
+   "runtime_token": "implementation=CPython+python_version=3.12.3+numpy_version=2.5.3",
+   "source_scope_clean": false,
+   "source_scope_sha256": "2511d71a5640c006a8a9f12c395be878d3c9d8c81dc8b1292a89ebad203e674f"
+  }
+ ],
+ "consumed_inputs": {
+  "a": {
+   "depth_charts": {
+    "retrieved_at": "2026-09-10T12:07:17Z",
+    "sha256": "db0a09454965e6fcd4d7378a19381fa53f251432f80f09ebdcc45f78f5e1bc9f"
+   },
+   "espn_injuries_json": {
+    "retrieved_at": "2026-09-10T21:08:11Z",
+    "sha256": "0d5437d0a003e60d2c77b2cee5967e9942a778d6797fb2341488c561860c0158"
+   },
+   "injuries": {
+    "retrieved_at": "2026-09-10T12:07:17Z",
+    "sha256": "96dcc98e297a38ecb8edcc7ab8864260b2899e24604f60c2a9514498ea53c2fb"
+   },
+   "official_inactives": {
+    "retrieved_at": "2026-09-08T17:06:03Z",
+    "sha256": "88a19528350ea23f34804a73a92bc09b3d525cd7704348a165c345d2cdd96aa2"
+   },
+   "official_injury_report": {
+    "retrieved_at": "2026-09-08T17:06:03Z",
+    "sha256": "3aa790936d7e96f79865d26f6a683c4b862693e519af5539568aba54a1cc273d"
+   },
+   "schedules": {
+    "retrieved_at": "2026-09-10T21:08:02Z",
+    "sha256": "566d12fdc0fd173aef7901e3d7b1f87f86acea889e4989e9656e965d0fd1d490"
+   },
+   "weekly_rosters": {
+    "retrieved_at": "2026-09-10T12:07:17Z",
+    "sha256": "3b0d5d40dc7816f78c1854f3bdd21ad439c780aa77e767be0b6c11396f4527ee"
+   }
+  },
+  "b": {
+   "depth_charts": {
+    "retrieved_at": "2026-09-10T12:07:17Z",
+    "sha256": "db0a09454965e6fcd4d7378a19381fa53f251432f80f09ebdcc45f78f5e1bc9f"
+   },
+   "espn_injuries_json": {
+    "retrieved_at": "2026-09-10T21:08:11Z",
+    "sha256": "0d5437d0a003e60d2c77b2cee5967e9942a778d6797fb2341488c561860c0158"
+   },
+   "injuries": {
+    "retrieved_at": "2026-09-10T12:07:17Z",
+    "sha256": "96dcc98e297a38ecb8edcc7ab8864260b2899e24604f60c2a9514498ea53c2fb"
+   },
+   "official_inactives": {
+    "retrieved_at": "2026-09-08T17:06:03Z",
+    "sha256": "88a19528350ea23f34804a73a92bc09b3d525cd7704348a165c345d2cdd96aa2"
+   },
+   "official_injury_report": {
+    "retrieved_at": "2026-09-08T17:06:03Z",
+    "sha256": "3aa790936d7e96f79865d26f6a683c4b862693e519af5539568aba54a1cc273d"
+   },
+   "schedules": {
+    "retrieved_at": "2026-09-10T21:08:02Z",
+    "sha256": "566d12fdc0fd173aef7901e3d7b1f87f86acea889e4989e9656e965d0fd1d490"
+   },
+   "weekly_rosters": {
+    "retrieved_at": "2026-09-10T12:07:17Z",
+    "sha256": "3b0d5d40dc7816f78c1854f3bdd21ad439c780aa77e767be0b6c11396f4527ee"
+   }
+  },
+  "drift_from_frozen_manifest": []
+ },
+ "cutoff_utc": "2026-09-10T21:18:56Z",
+ "dF_dD": {
+  "claim": "a run must not change its own identity by writing its own outputs: F = f(A,B,C,E,inputs) and dF/dD = 0",
+  "counterfactual_discriminating": true,
+  "counterfactual_note": "true means the WITHDRAWN <sha>+dirty[N] form WOULD have produced different identities across these observation points while the content digest did not -- the repair is doing work here. false means the tree happened not to move (for example both output roots are outside the repository), so this particular execution does not discriminate between the two implementations and is a weaker demonstration. It is never a reason to call the old form sound.",
+  "observation_points": [
+   "before_run_a",
+   "between_runs",
+   "after_run_b"
+  ],
+  "out_root_a": "/home/user/nfl/dp_proof_A",
+  "out_root_b": "/home/user/nfl/dp_proof_B",
+  "roots_are_separate_top_level_directories": true,
+  "run_b_identity_equals_run_a_identity": true,
+  "run_b_ran_with_run_a_outputs_on_disk": true,
+  "source_scope_sha256_by_point": {
+   "after_run_b": "2511d71a5640c006a8a9f12c395be878d3c9d8c81dc8b1292a89ebad203e674f",
+   "before_run_a": "2511d71a5640c006a8a9f12c395be878d3c9d8c81dc8b1292a89ebad203e674f",
+   "between_runs": "2511d71a5640c006a8a9f12c395be878d3c9d8c81dc8b1292a89ebad203e674f"
+  },
+  "source_scope_stable": true
+ },
+ "diagnostics": {
+  "elapsed_s_a": 88.504,
+  "elapsed_s_b": 26.494,
+  "generated_at": "2026-09-14T16:26:10Z",
+  "legacy_counterfactual_by_point": {
+   "after_run_b": {
+    "available": true,
+    "n_dirty_tree_entries": 34,
+    "withdrawn_code_version": "9c3c29a83310970fc0f0c43fdb974d3fe317ced9+dirty[34]"
+   },
+   "before_run_a": {
+    "available": true,
+    "n_dirty_tree_entries": 29,
+    "withdrawn_code_version": "9c3c29a83310970fc0f0c43fdb974d3fe317ced9+dirty[29]"
+   },
+   "between_runs": {
+    "available": true,
+    "n_dirty_tree_entries": 32,
+    "withdrawn_code_version": "9c3c29a83310970fc0f0c43fdb974d3fe317ced9+dirty[32]"
+   }
+  },
+  "numpy": "2.5.3",
+  "platform": "Linux-6.18.44-fc-v24-x86_64-with-glibc2.39",
+  "python": "3.12.3",
+  "run_dir_a": "/home/user/nfl/dp_proof_A/cf65adfa3e165848",
+  "run_dir_b": "/home/user/nfl/dp_proof_B/cf65adfa3e165848"
+ },
+ "draws": 40,
+ "equalities": {
+  "generated_output_did_not_alter_second_run_identity": true,
+  "identical_candidate_identity": true,
+  "identical_execution_identity": true,
+  "identical_input_hashes": true,
+  "identical_model_configuration": true,
+  "identical_predictive_arrays": true
+ },
+ "frozen_input_manifest": {
+  "absent_sources": [
+   "official_transactions",
+   "pbp_participation",
+   "snap_counts"
+  ],
+  "cutoff_utc": "2026-09-10T21:18:56Z",
+  "kickoff_utc": "2026-09-11T00:35:00Z",
+  "manifest_sha256": "39e51f8ae30190b722bb9c016d39e1f6feadbfc865856719f32259739c2de193",
+  "manifest_version": "nfl-frozen-input-manifest-1",
+  "sources": {
+   "depth_charts": {
+    "blob": "nfl/vintage/depth_charts.db0a09454965e6fc.reduced.csv.gz",
+    "blob_sha256": "9c264b63fa83e53bcc131f4fac1ad52de031b9824001733dbc3766a1e9c8ae72",
+    "capture_id": "20260910T120717Z",
+    "observed_at": "2026-09-10T12:07:17Z",
+    "sha256": "db0a09454965e6fcd4d7378a19381fa53f251432f80f09ebdcc45f78f5e1bc9f"
+   },
+   "espn_injuries_json": {
+    "blob": "nfl/vintage/espn_injuries_json.0d5437d0a003e60d.json.gz",
+    "blob_sha256": "997e0cac1b37057c172371a7afea29f653771f6d35eeadc2348a4ed212bc159a",
+    "capture_id": "20260910T210811Z",
+    "observed_at": "2026-09-10T21:08:11Z",
+    "sha256": "0d5437d0a003e60d2c77b2cee5967e9942a778d6797fb2341488c561860c0158"
+   },
+   "injuries": {
+    "blob": "nfl/vintage/injuries.96dcc98e297a38ec.csv.gz",
+    "blob_sha256": "7903783b66440735865267b3c4cbc8b6f5d4768481b25fb72746e7dbbe1b7686",
+    "capture_id": "20260910T120717Z",
+    "observed_at": "2026-09-10T12:07:17Z",
+    "sha256": "96dcc98e297a38ecb8edcc7ab8864260b2899e24604f60c2a9514498ea53c2fb"
+   },
+   "official_inactives": {
+    "blob": "nfl/vintage/official_inactives.88a19528350ea23f.html.gz",
+    "blob_sha256": "d65f53d1925fba4a961e449eec8ae8185a810bfb0d566294e749eaf98e369d21",
+    "capture_id": "20260908T170603Z",
+    "observed_at": "2026-09-08T17:06:03Z",
+    "sha256": "88a19528350ea23f34804a73a92bc09b3d525cd7704348a165c345d2cdd96aa2"
+   },
+   "official_injury_report": {
+    "blob": "nfl/vintage/official_injury_report.3aa790936d7e96f7.html.gz",
+    "blob_sha256": "2ed908ff08a00b33866a5be40c9eac9516b47580bb3c605607d556304a5f6a62",
+    "capture_id": "20260908T170603Z",
+    "observed_at": "2026-09-08T17:06:03Z",
+    "sha256": "3aa790936d7e96f79865d26f6a683c4b862693e519af5539568aba54a1cc273d"
+   },
+   "schedules": {
+    "blob": "nfl/vintage/schedules.566d12fdc0fd173a.csv.gz",
+    "blob_sha256": "9b47d33ffbf1aef0bde93e80a8f5d17a192b7de8c94e13921f97f4868174a9c0",
+    "capture_id": "20260910T210802Z",
+    "observed_at": "2026-09-10T21:08:02Z",
+    "sha256": "566d12fdc0fd173aef7901e3d7b1f87f86acea889e4989e9656e965d0fd1d490"
+   },
+   "weekly_rosters": {
+    "blob": "nfl/vintage/weekly_rosters.3b0d5d40dc7816f7.reduced.csv.gz",
+    "blob_sha256": "0c9ce66d87a20a6f221d594e7eb09cdfab6a54e09eb609bf4bdc4dc667cc3930",
+    "capture_id": "20260910T120717Z",
+    "observed_at": "2026-09-10T12:07:17Z",
+    "sha256": "3b0d5d40dc7816f78c1854f3bdd21ad439c780aa77e767be0b6c11396f4527ee"
+   }
+  }
+ },
+ "game_id": "2026_01_SF_LA",
+ "identity": {
+  "a": {
+   "candidate_identity": {
+    "candidate_components": [
+     {
+      "component": "A1",
+      "engine_flag": "rushing_a1",
+      "governance": "REHEARSAL_ONLY",
+      "predeclaration": "nfl/research/own8/predeclaration_own8.md",
+      "predeclaration_sha256": "90f6ecc37bcee427177f183be03374c13ec87fe1e14d667a4457c797748789db",
+      "replaces": "a QB rush draw that could exceed the carry pool it sits inside",
+      "what": "single-owner rushing: one multinomial partitions the rush-play budget across kneel / designed QB / RB / WR / TE / fringe, so every carry has exactly one owner"
+     },
+     {
+      "component": "A3G",
+      "engine_flag": "game_coupling",
+      "governance": "REHEARSAL_ONLY -- its own pre-registered verdict did NOT clear; integrated on corrected clauses recorded in predeclaration_a3g_addendum_01.md",
+      "predeclaration": "nfl/research/a3g/predeclaration_a3g.md",
+      "predeclaration_sha256": "d3620883e52fd6d2da9b56403a219210e82e52d5a65bf73cbd23f1d13d4e78ea",
+      "replaces": "two independently drawn teams, and game totals whose spread was the sum of independent marginals",
+      "what": "the two teams in a game share one coupled draw index; marginals unmoved by construction"
+     },
+     {
+      "component": "C0",
+      "engine_flag": "include_cold_start",
+      "governance": "REHEARSAL_ONLY",
+      "predeclaration": "nfl/research/own3/predeclaration_own3.md",
+      "predeclaration_sha256": "aedced9c82f74b5b406e4658ddf8b435fc1582fdfc0e7d759a5a7ff3b5f07c82",
+      "replaces": "a 2.3-6.9% dropback share leaving the system",
+      "what": "cold-start quarterbacks kept in the slate so allocated share reaches a modelled QB state"
+     },
+     {
+      "component": "C3",
+      "engine_flag": "shared_pass",
+      "governance": "REHEARSAL_ONLY",
+      "predeclaration": "nfl/research/xl1/predeclaration_xl1.md",
+      "predeclaration_sha256": "60fe3fbc0f35933e7bd4b43c56fb0afb68d95de67b4f51699a878ceb488d94da",
+      "replaces": "passing and receiving yards/TDs drawn independently",
+      "what": "one passing event: the target budget comes from the throw process and the passer line is credited from the receiving event"
+     },
+     {
+      "component": "R2",
+      "engine_flag": "r2",
+      "governance": "REHEARSAL_ONLY -- engineering integration, not prospective validation",
+      "predeclaration": "nfl/research/r2/predeclaration_qb_level_ownership_r2.md",
+      "predeclaration_sha256": "3d7beeb39f32da11623ac2be178ca4b764ecf314a5a55515b0d45c0e3d4f323c",
+      "replaces": "the composition that divided one level by another",
+      "what": "QB dropback level owned by D1 x QB3 and apportioned by largest remainder; QB V1 supplies conditional rates only"
+     },
+     {
+      "component": "SC1",
+      "engine_flag": "rushing_a1",
+      "governance": "REHEARSAL_ONLY",
+      "predeclaration": "nfl/research/sc1/predeclaration_sc1.md",
+      "predeclaration_sha256": "b62e48f23b5f3a16fb633e5286e575f23d7de3e07c8ebf923255d8d565e76729",
+      "replaces": "two levels drawn on one index from independent randomness, whose tails crossed into a negative rush-play budget",
+      "what": "the scramble/carry joint state is made coherent by permuting which draw index receives which carry value, so team carries >= QB scrambles in every draw"
+     }
+    ],
+    "candidate_components_applied": [
+     "A1",
+     "A3G",
+     "C0",
+     "C3",
+     "R2",
+     "SC1"
+    ],
+    "cold_start_freeze_identity": null,
+    "component_manifest": {
+     "applied": [
+      "A1",
+      "A3G",
+      "C0",
+      "C3",
+      "R2",
+      "SC1"
+     ],
+     "not_reached": []
+    },
+    "feature_set_hash": "4d2eda3e88818e2ad5a78e146c4e2f48",
+    "model_arm": "A",
+    "seed_protocol": "per-row seed 20260908",
+    "spec_hash": "cf65adfa3e165848"
+   },
+   "execution_identity": {
+    "arm": "A",
+    "artifact_code_commit": "9c3c29a83310970fc0f0c43fdb974d3fe317ced9+src1[2511d71a5640c006]",
+    "code_commit": "9c3c29a83310970fc0f0c43fdb974d3fe317ced9+src1[2511d71a5640c006]",
+    "code_identity_code_version": "9c3c29a83310970fc0f0c43fdb974d3fe317ced9+src1[2511d71a5640c006]",
+    "code_identity_commit": "9c3c29a83310970fc0f0c43fdb974d3fe317ced9",
+    "code_identity_source_scope_sha256": "2511d71a5640c006a8a9f12c395be878d3c9d8c81dc8b1292a89ebad203e674f",
+    "execution_identity": "cf65adfa3e165848a48c25892dc37f73a57a2be5f0b4642080ea407c40af2d3b",
+    "pipeline_version": "nfl-production-pipeline-1",
+    "run_id": "cf65adfa3e165848",
+    "runtime_token": "implementation=CPython+python_version=3.12.3+numpy_version=2.5.3",
+    "written_at": "2026-09-10T21:18:56Z"
+   },
+   "model_configuration": {
+    "completeness": "PARTIAL_PLAYER_COVERAGE",
+    "eligibility_verdict": "V1_CANDIDATE|APPLIED:A1,A3G,C0,C3,R2,SC1|NOT_REACHED:|PARTIAL|PRODUCED:appearance,conversion,participation,qb_layer,targets_carries,td_layer|ABSENT:feature_build",
+    "model_configuration": "V1_CANDIDATE",
+    "n_draws": 40,
+    "rng": {
+     "generator": "numpy.random.default_rng (PCG64)",
+     "seed": 20260908,
+     "seed_protocol": "per-row seed 20260908"
+    }
+   }
+  },
+  "b": {
+   "candidate_identity": {
+    "candidate_components": [
+     {
+      "component": "A1",
+      "engine_flag": "rushing_a1",
+      "governance": "REHEARSAL_ONLY",
+      "predeclaration": "nfl/research/own8/predeclaration_own8.md",
+      "predeclaration_sha256": "90f6ecc37bcee427177f183be03374c13ec87fe1e14d667a4457c797748789db",
+      "replaces": "a QB rush draw that could exceed the carry pool it sits inside",
+      "what": "single-owner rushing: one multinomial partitions the rush-play budget across kneel / designed QB / RB / WR / TE / fringe, so every carry has exactly one owner"
+     },
+     {
+      "component": "A3G",
+      "engine_flag": "game_coupling",
+      "governance": "REHEARSAL_ONLY -- its own pre-registered verdict did NOT clear; integrated on corrected clauses recorded in predeclaration_a3g_addendum_01.md",
+      "predeclaration": "nfl/research/a3g/predeclaration_a3g.md",
+      "predeclaration_sha256": "d3620883e52fd6d2da9b56403a219210e82e52d5a65bf73cbd23f1d13d4e78ea",
+      "replaces": "two independently drawn teams, and game totals whose spread was the sum of independent marginals",
+      "what": "the two teams in a game share one coupled draw index; marginals unmoved by construction"
+     },
+     {
+      "component": "C0",
+      "engine_flag": "include_cold_start",
+      "governance": "REHEARSAL_ONLY",
+      "predeclaration": "nfl/research/own3/predeclaration_own3.md",
+      "predeclaration_sha256": "aedced9c82f74b5b406e4658ddf8b435fc1582fdfc0e7d759a5a7ff3b5f07c82",
+      "replaces": "a 2.3-6.9% dropback share leaving the system",
+      "what": "cold-start quarterbacks kept in the slate so allocated share reaches a modelled QB state"
+     },
+     {
+      "component": "C3",
+      "engine_flag": "shared_pass",
+      "governance": "REHEARSAL_ONLY",
+      "predeclaration": "nfl/research/xl1/predeclaration_xl1.md",
+      "predeclaration_sha256": "60fe3fbc0f35933e7bd4b43c56fb0afb68d95de67b4f51699a878ceb488d94da",
+      "replaces": "passing and receiving yards/TDs drawn independently",
+      "what": "one passing event: the target budget comes from the throw process and the passer line is credited from the receiving event"
+     },
+     {
+      "component": "R2",
+      "engine_flag": "r2",
+      "governance": "REHEARSAL_ONLY -- engineering integration, not prospective validation",
+      "predeclaration": "nfl/research/r2/predeclaration_qb_level_ownership_r2.md",
+      "predeclaration_sha256": "3d7beeb39f32da11623ac2be178ca4b764ecf314a5a55515b0d45c0e3d4f323c",
+      "replaces": "the composition that divided one level by another",
+      "what": "QB dropback level owned by D1 x QB3 and apportioned by largest remainder; QB V1 supplies conditional rates only"
+     },
+     {
+      "component": "SC1",
+      "engine_flag": "rushing_a1",
+      "governance": "REHEARSAL_ONLY",
+      "predeclaration": "nfl/research/sc1/predeclaration_sc1.md",
+      "predeclaration_sha256": "b62e48f23b5f3a16fb633e5286e575f23d7de3e07c8ebf923255d8d565e76729",
+      "replaces": "two levels drawn on one index from independent randomness, whose tails crossed into a negative rush-play budget",
+      "what": "the scramble/carry joint state is made coherent by permuting which draw index receives which carry value, so team carries >= QB scrambles in every draw"
+     }
+    ],
+    "candidate_components_applied": [
+     "A1",
+     "A3G",
+     "C0",
+     "C3",
+     "R2",
+     "SC1"
+    ],
+    "cold_start_freeze_identity": null,
+    "component_manifest": {
+     "applied": [
+      "A1",
+      "A3G",
+      "C0",
+      "C3",
+      "R2",
+      "SC1"
+     ],
+     "not_reached": []
+    },
+    "feature_set_hash": "4d2eda3e88818e2ad5a78e146c4e2f48",
+    "model_arm": "A",
+    "seed_protocol": "per-row seed 20260908",
+    "spec_hash": "cf65adfa3e165848"
+   },
+   "execution_identity": {
+    "arm": "A",
+    "artifact_code_commit": "9c3c29a83310970fc0f0c43fdb974d3fe317ced9+src1[2511d71a5640c006]",
+    "code_commit": "9c3c29a83310970fc0f0c43fdb974d3fe317ced9+src1[2511d71a5640c006]",
+    "code_identity_code_version": "9c3c29a83310970fc0f0c43fdb974d3fe317ced9+src1[2511d71a5640c006]",
+    "code_identity_commit": "9c3c29a83310970fc0f0c43fdb974d3fe317ced9",
+    "code_identity_source_scope_sha256": "2511d71a5640c006a8a9f12c395be878d3c9d8c81dc8b1292a89ebad203e674f",
+    "execution_identity": "cf65adfa3e165848a48c25892dc37f73a57a2be5f0b4642080ea407c40af2d3b",
+    "pipeline_version": "nfl-production-pipeline-1",
+    "run_id": "cf65adfa3e165848",
+    "runtime_token": "implementation=CPython+python_version=3.12.3+numpy_version=2.5.3",
+    "written_at": "2026-09-10T21:18:56Z"
+   },
+   "model_configuration": {
+    "completeness": "PARTIAL_PLAYER_COVERAGE",
+    "eligibility_verdict": "V1_CANDIDATE|APPLIED:A1,A3G,C0,C3,R2,SC1|NOT_REACHED:|PARTIAL|PRODUCED:appearance,conversion,participation,qb_layer,targets_carries,td_layer|ABSENT:feature_build",
+    "model_configuration": "V1_CANDIDATE",
+    "n_draws": 40,
+    "rng": {
+     "generator": "numpy.random.default_rng (PCG64)",
+     "seed": 20260908,
+     "seed_protocol": "per-row seed 20260908"
+    }
+   }
+  },
+  "differences": []
+ },
+ "kickoff_utc": "2026-09-11T00:35:00Z",
+ "model_configuration": "V1_CANDIDATE",
+ "proof_body_excludes": [
+  "diagnostics",
+  "proof_body_sha256",
+  "proof_signature",
+  "proof_body_excludes",
+  "proof_body_excludes_why"
+ ],
+ "proof_body_excludes_why": "each excluded key reads generated artifact state (D), the wall clock, or the machine. The identity contract forbids a D-reader inside a sealed body whether or not it is hashed, because the body is itself hashed into an identity -- the artifact minus its hash keys IS the payload. Excluding them is what makes proof_body_sha256 reproducible across runs.",
+ "proof_body_sha256": "b41f351879e802ae7d64be052ed254eef4f8d12675794233bea5b87c514e31c4",
+ "proof_signature": "7f089d874d57a47cb060d130213d4518535de9a1a42034b4e2da4f641c2725a4",
+ "proof_tool": "nfl/tools/determinism_proof.py",
+ "proof_tool_sha256": "44d1e8373599a185b87a03ab6993c8d9e5d0bbd42af1b81b6ca949ce9fbaad2c",
+ "proof_version": "nfl-determinism-proof-1",
+ "season": 2026,
+ "seed": 20260908,
+ "verdict": "PASS",
+ "week": 1
+}

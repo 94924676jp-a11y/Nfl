@@ -54,6 +54,36 @@ EXCLUSION_LIMIT = 0.01
 
 ARMS = ('A', 'B', 'C')
 
+# WHAT A QUARTERBACK NUMBER ON THIS BOARD IS STILL WRONG ABOUT, IN ONE STRING.
+#
+# Recorded on every run that filters the QB pool, because the two limitations
+# below survive that filter and a reader who sees an eligibility repair applied
+# would otherwise reasonably infer the room is now sound. It is not. The string
+# is general; the per-run evidence that instantiates it travels beside it in
+# `qb3_configuration` and `qb_pool_eligibility`, so nothing here is asserted
+# that the artifact does not also show.
+QB_PARTICIPATION_LIMITATION = (
+    'QB participation is QB3 (contract nfl/research/qb3/predeclaration_qb3.md, '
+    'sha256 be61392619d45f3ad1936ef0512d203d9f415ba92e271aa6010281e707f05a9e). '
+    'Filtering the QB pool on roster status removes ineligible quarterbacks '
+    'and does NOT repair either known participation defect. (1) '
+    'QB3_WEEK1_SEASON_BOUNDARY: in a season opener the incumbent signal is the '
+    'PRIOR SEASON FINAL-GAME primary passer, the game a club is most likely to '
+    'rest a starter in. Measured league-wide, the depth-chart QB1 equals that '
+    'passer in only 59 of 160 week-1 rooms (0.3688), and 77 of 192 '
+    'team-seasons (0.4010) end with a primary who is not that season modal '
+    'starter (nfl/research/qb3/QB3_WEEK1_INCUMBENT_AUDIT.json). Removing an '
+    'ineligible incumbent does not restore the bit; it moves the room from '
+    'DISAGREE to NO_PREV_PRIMARY_IN_ROOM, whose cell (1,0) carries '
+    'p_primary 0.4922 and P(share=0) 0.4735 against cell (1,1) 0.9046 and '
+    '0.0736. (2) An unranked rostered quarterback is modelled at depth rank 3 '
+    '(nfl/production/nonqb/qb_allocation.py, "r = 3"), which is a populated '
+    'cell and not a null: 27 of 119 rostered quarterbacks league-wide carry no '
+    'depth-chart row. CONSEQUENCE: on a season-opening board the modelled '
+    'split between a club starting quarterback and his backups is not '
+    'trustworthy, quarterback-derived markets are CONTAMINATED and '
+    'inadmissible, and no QB number here may be compared with a price.')
+
 # B14. WHICH INVARIANT A DRAW-ARTIFACT REFUSAL BELONGS TO.
 #
 # The hard/diagnostic classification itself lives in ONE place --
@@ -363,6 +393,89 @@ def build(args, fixtures: dict = None) -> dict:
                 cause=Cause.DATA)
         teams = list(fx.get('team_ids') or [])
         m = fx.get('qb_draws', 200)
+        # R5-QB. THE ELIGIBILITY FILTER THE QUARTERBACK POOL WAS EXEMPT FROM.
+        #
+        # R5 filters the non-QB pool on roster status and the comment above it
+        # says the QB pool is left untouched. That exemption put a RESERVE-LIST
+        # quarterback into a live room: on 2026-09-14 for 2026_01_DEN_KC the
+        # pool carried KC's Chris Oladokun, status RES, and the QB3 layer gave
+        # him 55.00% of Kansas City's modelled dropbacks against Patrick
+        # Mahomes's 37.76%. A player who is not on the active roster cannot
+        # take a dropback, so his share is zero by the definition of the event,
+        # not by any modelling choice -- the same reasoning `qb_allocation`
+        # already applies to an officially inactive quarterback.
+        #
+        # IT IS THE SAME FILTER, NOT A SECOND ONE. `roster_status.active_pool`
+        # is called with the same status map the non-QB half uses, under the
+        # same flag, drawn from the same capture and the same chronology cut.
+        # No constant is introduced and nothing is reweighted: the room is
+        # smaller and QB3 renormalises across whoever remains, exactly as it
+        # does for a team that carries two quarterbacks rather than four.
+        #
+        # THIS IS NOT A FIX FOR THE ORDERING AND IS NOT OFFERED AS ONE.
+        # Measured on tonight's rooms: removing Oladokun leaves KC in
+        # NO_PREV_PRIMARY_IN_ROOM with Mahomes at 0.5474, Justin Fields at
+        # 0.3201, P(Mahomes takes zero dropbacks) = 0.4120 and
+        # corr(Mahomes, Fields) = -0.9936 -- the DAL/NYG result of `d652afb`
+        # reproduced on a second game. The binding mechanism is the week-1
+        # season-boundary incumbent (`QB3_WEEK1_SEASON_BOUNDARY`), which this
+        # does not touch. It is applied because a reserve-list quarterback in
+        # an eligibility-filtered board is indefensible on its own terms.
+        #
+        # IT MUST NEVER FALL BACK TO THE UNFILTERED LIST. A status refusal is
+        # returned as the layer's outcome, for the reason R5 states: running
+        # unfiltered under a filtered label reports a repair that did not
+        # happen.
+        #
+        # SPELLED `eligibility_on` RATHER THAN INLINING THE FLAG READ, because
+        # `test_r5_active_pool` locates the NON-QB branch by searching the
+        # source for the literal spelling of that flag read in an `if`, and
+        # takes the first hit. This block is earlier in the file, so an equal
+        # spelling would silently redirect that guard onto this window and the
+        # non-QB branch would go unchecked -- a test measuring the wrong code
+        # while staying green. The two branches now read differently on
+        # purpose; the locator is still fragile and is named in the return.
+        eligibility_on = bool(fl.get('active_roster_only'))
+        if eligibility_on:
+            from nfl.production.nonqb import roster_status as RS
+            st = RS.status_map(args.season, args.week, teams,
+                               observed_before=args.written_at,
+                               kickoff_utc=fx.get('kickoff_utc'))
+            if st.state is not State.PASS:
+                return st
+            qpool = RS.active_pool(qbp, st.value)
+            if qpool.state is not State.PASS:
+                return qpool
+            # A TEAM WHOSE WHOLE ROOM IS INELIGIBLE IS A REFUSAL, NOT AN EMPTY
+            # ROOM. `qb_allocation` skips a team with no quarterback and the
+            # board would then carry a game one of whose clubs has no passer
+            # at all, silently. The non-QB half already refuses this shape
+            # (NONQB_TEAM_HAS_NO_PLACEABLE_PLAYER); this says the same thing
+            # about quarterbacks.
+            had = {q.get('team') for q in qbp}
+            left = {q.get('team') for q in qpool.value}
+            emptied = sorted(t for t in had if t not in left)
+            if emptied:
+                return Outcome.blocked(
+                    'QB_POOL_EMPTIED_BY_ELIGIBILITY',
+                    f'every quarterback {emptied} carries is off the active '
+                    f'roster, so filtering on eligibility would leave the '
+                    f'club with nobody to take a dropback. Refused rather '
+                    f'than allocating a team dropback share among nobody, '
+                    f'and rather than putting the ineligible room back.',
+                    cause=Cause.DATA, teams_emptied=emptied,
+                    n_qb_in=len(qbp), n_qb_kept=len(qpool.value))
+            fx['_r5_qb'] = {
+                k: v for k, v in qpool.evidence.items() if k != 'value'}
+            fx['_r5_qb']['roster_status_source'] = st.evidence.get('source')
+            fx['_r5_qb']['roster_status_observed_at'] = st.evidence.get(
+                'observed_at')
+            fx['_r5_qb']['n_qb_in'] = len(qbp)
+            fx['_r5_qb']['n_qb_kept'] = len(qpool.value)
+            fx['_r5_qb']['qb_participation_limitation'] = (
+                QB_PARTICIPATION_LIMITATION)
+            fx['_r5_qb_applied'] = True
+            qbp = list(qpool.value)
         sl = FE.qb_slate(args.season, args.week, qbp, m=m, seed=args.seed,
                          include_cold_start=bool(fl.get('include_cold_start')))
         if sl.state is not State.PASS:
@@ -1889,6 +2002,12 @@ def build(args, fixtures: dict = None) -> dict:
     summary['confidence_contract'] = fx.get('confidence_contract')
     summary['qb_inactive_ownership'] = _own
     summary['qb3_configuration'] = fx.get('_qb3_config')
+    # THE ELIGIBILITY VERDICT FOR THE QUARTERBACK POOL, AND WHAT IT DOES NOT
+    # REPAIR. Absent on a run that did not filter -- absence stays absence and
+    # is never backfilled into a sealed artifact.
+    summary['qb_pool_eligibility'] = fx.get('_r5_qb')
+    summary['qb_participation_limitation'] = (
+        QB_PARTICIPATION_LIMITATION if fx.get('_r5_qb_applied') else None)
     summary['qb_inactive_ownership_enforced'] = bool(
         (_own or {}).get('enforced'))
     summary['execution_identity'] = execution_identity(args, src, commit)

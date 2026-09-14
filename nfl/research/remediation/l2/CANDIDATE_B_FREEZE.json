@@ -1,0 +1,3019 @@
+{
+ "artifact": "CANDIDATE_B_FREEZE",
+ "freeze_version": "candidate-b-freeze-1",
+ "frozen_at": "2026-09-14T16:36:00Z",
+ "frozen_by": "L2",
+ "repository": {
+  "path": "/home/user/nfl",
+  "branch": "claude/nfl-greenfield-architecture-stsxmk",
+  "head": "9c3c29a83310970fc0f0c43fdb974d3fe317ced9",
+  "interpreter": "python3.12",
+  "interpreter_full": "3.12.3"
+ },
+ "governance": {
+  "state": "CANDIDATE_B_LIVE_EVALUATION",
+  "is_confirmed": false,
+  "is_promoted": false,
+  "default_arm_unchanged": true,
+  "confirmed_and_promoted_refuse": true,
+  "evidence_status": "EXPLORATORY. The hypothesis was selected from the same historical panel every score was computed on. Freezing the data does not make it a holdout and writing the preregistration first does not restore independence.",
+  "tonight_is_not_evidence": "Tonight's realised outcome must not be used to decide whether Candidate B was good. One game of about 47 scorable players cannot separate two appearance models, and reading it as though it could is how a coin flip becomes a validation. The decision is sealed before kickoff; the outcome is recorded and graded under the standing ledger, not fed back into this ruling.",
+  "sealed_before_kickoff_utc": "2026-09-15T00:15:00Z"
+ },
+ "identity": {
+  "spec_version": "appearance-b-union-candidate-universe-1",
+  "preregistration": "nfl/research/remediation/ws_a/PREREG_appearance_leak.md",
+  "preregistration_sha256": "b14738a0a4a262cccba416b6d76e3b80db4340b46f1ab144d0546bfe8f368dda",
+  "basis": "U_UNION_CANDIDATE_UNIVERSE",
+  "basis_definition": "the frozen P3 panel EXTENDED with one zero-opportunity panel-shaped row per union-frame candidate the panel lacks, then appearance_model._walk and p3_features.enrich run over the extension. Every union frame row carries a V1 block afterwards, so block presence is a constant.",
+  "featuriser": "appearance_r8.featurise sliced to its first 76 columns",
+  "n_features": 76,
+  "feature_names_in_order": [
+   "intercept",
+   "depth_r1",
+   "depth_r2",
+   "depth_r3",
+   "depth_r4plus",
+   "depth_unlisted",
+   "vendor_is_daily",
+   "vendor_daily_x_depth_r1",
+   "vendor_daily_x_depth_r2",
+   "vendor_daily_x_depth_r3",
+   "vendor_daily_x_depth_r4plus",
+   "vendor_daily_x_depth_unlisted",
+   "pos_QB",
+   "pos_RB",
+   "pos_WR",
+   "pos_TE",
+   "week_is_1",
+   "crossed_season_boundary",
+   "cm_within_capped4_over4",
+   "cm_within_is_zero",
+   "cm_carried_capped4_over4",
+   "app_ewma",
+   "app_ewma_is_missing",
+   "prev_appeared",
+   "prev_appeared_is_missing",
+   "n_prior_capped20_over20",
+   "n_prior_lt_4",
+   "inj_status_Out",
+   "inj_status_Doubtful",
+   "inj_status_Questionable",
+   "inj_practice_did_not_participate",
+   "inj_row_available",
+   "reliability_weight_w",
+   "one_minus_w",
+   "w_times_app_cur",
+   "app_cur_is_missing",
+   "w_times_app_ewma_cur",
+   "app_ewma_cur_is_missing",
+   "w_times_rate3_cur",
+   "rate3_cur_is_missing",
+   "w_times_snap_ewma_cur",
+   "snap_ewma_cur_is_missing",
+   "n_cur_capped12_over12",
+   "one_minus_w_x_depth_r1",
+   "one_minus_w_x_depth_r2",
+   "one_minus_w_x_depth_r3",
+   "one_minus_w_x_depth_r4plus",
+   "one_minus_w_x_depth_unlisted",
+   "v1_f_rate3",
+   "v1_f_rate3_is_missing",
+   "v1_f_rate5",
+   "v1_f_rate5_is_missing",
+   "v1_f_rate_ewma",
+   "v1_f_rate_ewma_is_missing",
+   "v1_f_prev_snap",
+   "v1_f_prev_snap_is_missing",
+   "v1_f_snap_ewma",
+   "v1_f_snap_ewma_is_missing",
+   "v1_f_vac_snap",
+   "v1_f_vac_snap_is_missing",
+   "v1_f_vac_route",
+   "v1_f_vac_route_is_missing",
+   "v1_f_vac_target",
+   "v1_f_vac_target_is_missing",
+   "v1_f_vac_carry",
+   "v1_f_vac_carry_is_missing",
+   "v1_f_snap_before_absence",
+   "v1_f_snap_before_absence_is_missing",
+   "v1_f_swing",
+   "v1_f_swing_is_missing",
+   "v1_f_volatility",
+   "v1_f_volatility_is_missing",
+   "v1_f_weeks_since_appear_capped9_over9",
+   "v1_f_n_teammates_out_capped3_over3",
+   "v1_f_practice_improving",
+   "v1_f_practice_worsening"
+  ],
+  "feature_name_verification": {
+   "method": "one input perturbed at a time; the SET of columns that move is asserted against the claimed names",
+   "n_probes": 10,
+   "all_probes_match": true
+  },
+  "column_removed_from_the_incumbent": {
+   "name": "v1_block_is_absent__REMOVED_BY_CANDIDATE_B",
+   "position_in_r8": 76
+  },
+  "estimator": {
+   "function": "nfl/research/p2/stage_a.py:fit_logistic",
+   "l2": 1.0,
+   "iters": 300,
+   "learning_rate": 0.5,
+   "standardisation": "per-column mean/sd, intercept exempt",
+   "inherited_from": "appearance_r8.fit; not chosen here"
+  },
+  "reliability_constant_k": {
+   "estimator": "appearance_r8.reliability_k",
+   "definition": "within-player variance over between-player variance of player-season appearance rates, players with >= 4 games",
+   "estimated_not_chosen": true,
+   "per_forecast_season": {
+    "2022": {
+     "k": 1.37199,
+     "cut": 202200
+    },
+    "2023": {
+     "k": 1.34473,
+     "cut": 202300
+    },
+    "2024": {
+     "k": 1.290632,
+     "cut": 202400
+    },
+    "2025": {
+     "k": 1.270713,
+     "cut": 202500
+    },
+    "2026": {
+     "k": 1.217589,
+     "cut": 202600
+    }
+   }
+  },
+  "no_constant_is_hand_set": true
+ },
+ "parameters": {
+  "forecast_season_in_use_tonight": 2026,
+  "coefficient_vector_sha256": "88664d345948aed3403f9333f6e30bc8907157b3782f0e187280800d3cce4d69",
+  "coefficient_vector_sha256_16": "88664d345948aed3",
+  "standardisation_mean_sha256": "b2e462525bff89194fca7dd3106608faa4ce08d2cd6cb803bc15b60144308a65",
+  "standardisation_sd_sha256": "54702789e94adf419a2df17ffa58c14e8638865b8818891d094df227e3ba6d80",
+  "n_coefficients": 76,
+  "coefficients": [
+   0.9233165418256164,
+   0.0840319468848912,
+   0.17725954406017627,
+   0.07385729398425979,
+   0.05525869859333495,
+   -0.423239877923384,
+   -0.08154950703488126,
+   0.04473404362817489,
+   0.041884665753804826,
+   -0.0013641226965140298,
+   -0.034065940150007495,
+   -0.21604363752183686,
+   -0.38218182089969027,
+   0.07364179343409057,
+   0.10198239906551824,
+   0.1310295374637815,
+   -0.3742910211981116,
+   0.09998703627808317,
+   -0.01631617190985491,
+   0.15250423936266755,
+   0.09559089536260079,
+   0.24344704581641352,
+   0.00953009072506547,
+   0.08851826611241548,
+   0.00953009072506547,
+   0.008709083941811751,
+   0.00766249651237896,
+   -0.8778077164997666,
+   -0.44733329928866533,
+   -0.25906146636945526,
+   -0.3798700215858454,
+   0.2515441919489664,
+   -0.05626941472682992,
+   0.05626941472638454,
+   0.12730744642498343,
+   0.091527669187284,
+   0.27968167689217477,
+   0.091527669187284,
+   0.24050942879447168,
+   0.09152766918728471,
+   0.031821694029942504,
+   -0.0602254281585334,
+   -0.027244712408204294,
+   0.2543120920167661,
+   0.06521461658391463,
+   0.02793162245673924,
+   0.020702806680445635,
+   -0.21945871233623693,
+   -0.0934676095414775,
+   0.028686872221413234,
+   -0.28319366243254507,
+   0.028686872221413234,
+   0.19640972252660002,
+   0.028686872221413234,
+   0.3109677755318573,
+   0.036277308320825846,
+   0.19554272953648968,
+   0.03627730832082777,
+   0.07465872680748929,
+   0.0,
+   0.0944701956450934,
+   0.0,
+   -0.09990365771171765,
+   0.0,
+   0.013235231158129267,
+   0.0,
+   0.3602547981447973,
+   0.0,
+   -0.13956064753554817,
+   0.0,
+   -0.0579038743858709,
+   0.0,
+   -0.20186590476001762,
+   0.18312021613054527,
+   0.12646039212077692,
+   -0.05301664501727957
+  ],
+  "coef_sha256_by_forecast_season": {
+   "2022": "6310b09485405129",
+   "2023": "ae46208fada6ff71",
+   "2024": "270990b6d2650317",
+   "2025": "120f9a8a47d8021b",
+   "2026": "88664d345948aed3"
+  },
+  "fit_evidence_2026": {
+   "spec_version": "appearance-b-union-candidate-universe-1",
+   "cached": false,
+   "n_train_rows": 59539,
+   "n_features": 76,
+   "n_dropped_unsupported_cell": 245,
+   "unsupported_cell": "no_history_and_not_depth_listed",
+   "train_seasons": [
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025
+   ],
+   "in_sample_brier": 0.11080804746744884,
+   "in_sample_auc": 0.9141348277941773,
+   "base_rate": 0.6370614219251247,
+   "l2": 1.0,
+   "k": 1.217589,
+   "v1_presence_rate_in_training": 1.0,
+   "basis": "U_UNION_CANDIDATE_UNIVERSE",
+   "preregistration_sha256": "b14738a0a4a262cccba416b6d76e3b80db4340b46f1ab144d0546bfe8f368dda"
+  }
+ },
+ "training": {
+  "seasons": [
+   2020,
+   2021,
+   2022,
+   2023,
+   2024,
+   2025
+  ],
+  "n_train_rows": 59539,
+  "n_dropped_unsupported_cell": 245,
+  "unsupported_cell": "no_history_and_not_depth_listed",
+  "frame": {
+   "spec_version": "appearance-b-union-candidate-universe-1",
+   "cached": false,
+   "n_rows": 59784,
+   "n_from_panel": 83144,
+   "n_added_by_depth_chart": 6181,
+   "n_team_weeks": 3230,
+   "n_team_weeks_without_a_lawful_chart": 0,
+   "seasons": [
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025
+   ],
+   "n_unlisted": 9677,
+   "n_rows_with_a_snap_share": 53580,
+   "n_rows_without_a_snap_share": 6204,
+   "n_rows_with_the_v1_feature_block": 59784,
+   "n_rows_without_the_v1_feature_block": 0,
+   "n_synthetic_union_rows_added_to_the_panel": 6158,
+   "v1_presence_rate": 1.0,
+   "basis": "U_UNION_CANDIDATE_UNIVERSE"
+  },
+  "incumbent_frame_for_comparison": {
+   "n_rows": 59784,
+   "n_with_block": 53626,
+   "n_without_block": 6158,
+   "appearance_rate_when_block_present": 0.711875,
+   "appearance_rate_when_block_absent": 0.0,
+   "n_absent": 6158
+  },
+  "row_counts_by_forecast_season": {
+   "2022": 18946,
+   "2023": 28954,
+   "2024": 38681,
+   "2025": 48343,
+   "2026": 59539
+  }
+ },
+ "module_source_sha256": {
+  "nfl/production/nonqb/appearance_b.py": "a3a1d5679314fb8cf8500fce2c3aa7f7e8b8cae25751a0d24c27fbdcdd79a255",
+  "nfl/production/nonqb/appearance_arm.py": "bd7b284bbb2f7b85036e5737ef77b778b90f4ca35f5334a918388794ebc243f3",
+  "nfl/production/nonqb/appearance_r8.py": "ac1d54a6ae66f08c1a00fca0d8b0f8235a4673765769e9d1a16368cd64e452ee",
+  "nfl/production/nonqb/appearance_r7.py": "6d53f2200195c1efee980b2c776f85aecf6dd86b7bdfd416f6335c3fc7dc9240",
+  "nfl/production/nonqb/appearance_model.py": "27967baa60fda3466f72117aa29f21cd82872d64eb07e1402748fcd45138f705",
+  "nfl/production/nonqb/depth_vintage.py": "79b3b2603491c0540904b2708da435f15f8cb9c96ec1b6f9fc5a6634739702ec",
+  "nfl/production/nonqb/layers.py": "481f005f682cd72129e6bf02e55cba86913ddffd7d88367743c616e3e11c0108",
+  "nfl/research/p2/stage_a.py": "03fd19be44872fd803773fd913a3c6dfaea7b3a210626992e6d435862371c9b7",
+  "nfl/research/p3/p3_features.py": "26b27673dd465b152d521f907bd616c4e9ff314814421d64ca808021b2172151",
+  "nfl/research/p1/model.py": "352304b7ecee16e3ec71623949d85c75161b6c93df2501937f592cab3c96fa13",
+  "nfl/tests/test_appearance_candidate_b.py": "fac039f29a429058d371b9e031a65ea8294d00015702a6930406d219b63844ca",
+  "nfl/research/remediation/ws_a/PREREG_appearance_leak.md": "b14738a0a4a262cccba416b6d76e3b80db4340b46f1ab144d0546bfe8f368dda",
+  "nfl/research/remediation/ws_a/harness.py": "d8e02b0606b3a079109c9d518459590b07cc16de7b9357d17a1baa0d97ccc0e6",
+  "nfl/research/remediation/ws_a/build_blocks.py": "360678e8b17025916cbfd05634cdb0502d36a9ae67bfebf0475b19d03dcaaecb",
+  "nfl/research/remediation/ws_a/evaluate.py": "e565a45ea160a736f3558048c1b51e4d0a69938e88daadf037d58d3b39fa6bb9",
+  "nfl/research/remediation/ws_a/WS_A_RESULTS.json": "7be89cdfee183c180bd7384f223b846c21a4d961cdfe1b4b3ec9499cbaf358e5"
+ },
+ "input_leaf_sha256_decompressed": {
+  "dc_2020.csv": "45a315dd7f3e7837faf06a9c9cf995e1c131017a748482b2caaa111ffa0b9372",
+  "dc_2021.csv": "91e3384ff13146c77f02fed2c3eca163d35868dd62da6b794c5b51df1d15b724",
+  "dc_2022.csv": "4c64ee59666431c49cbc0a818cc3165886012cf72b545771a77c0805aa621b9c",
+  "dc_2023.csv": "583f83842590e7e7d3417e0cd9c5c9e38f8696353bb754561d80e5583d2a98cf",
+  "dc_2024.csv": "f210a33774611f7f78a89af789b61c6289a2631a21227a1a3c63c973c23588b7",
+  "denom_panel.csv": "d1df0c119fffc0e826ae095d04e8c3c1ce0a6017cf0dc64d2897e507be407a52",
+  "inj_2020.csv": "706cca82824214f6b73ba0c6e537d3ee39766a50c644b8974b9fc28d7518de90",
+  "inj_2021.csv": "1049fb9ff0fe7cfcf3ba8bfe1f5a35d3aba985c461c8fb7bf5201735b6d34254",
+  "inj_2022.csv": "5f0d60324e597edd1a2ced8540b04e40b51dd440591dd1df11b8d96343387c9e",
+  "inj_2023.csv": "16b04e21da5aa3944cfa9c22cafcc84ed7e6d9866eaddf0344e9b8cbf2f63afe",
+  "inj_2024.csv": "498bce8e13cb64b2ab9bb0ad6cb81d0a63c2ddb24016c9fc90c2de2126fae449",
+  "inj_2025.csv": "15ee790fef634caea988e7b6562fc393a63739dd7ee38229d1b42161427709df",
+  "panel_p3.csv": "1b3445034c624983f51bdcde4184024a16bf6f41aa2e66013278c3d4bb851d2a",
+  "dc25_daily.csv": "c80bc32f67c2dfe4250de76ee4fbd0e9e3fb9d3be04e31b65a4e11c9df30f698"
+ },
+ "live_information_set": {
+  "written_at": "2026-09-14T16:27:25Z",
+  "sources": {
+   "depth_charts": {
+    "blob": "nfl/vintage/depth_charts.f66f0c2583dba463.raw.csv.gz",
+    "observed_at": "2026-09-14T16:16:25Z",
+    "observed_basis": "capture_id",
+    "sha256": "f66f0c2583dba463"
+   },
+   "espn_injuries_json": {
+    "blob": "nfl/vintage/espn_injuries_json.0cd99d47b1cc389f.json.gz",
+    "observed_at": "2026-09-11T00:43:57Z",
+    "observed_basis": "capture_id",
+    "sha256": "0cd99d47b1cc389f"
+   },
+   "injuries": {
+    "blob": "nfl/vintage/injuries.66e960ec81fccc6e.csv.gz",
+    "observed_at": "2026-09-13T15:45:56Z",
+    "observed_basis": "capture_id",
+    "sha256": "66e960ec81fccc6e"
+   },
+   "official_inactives": {
+    "blob": "nfl/vintage/official_inactives.423d0c34811cd6d6.html.gz",
+    "observed_at": "2026-09-13T19:14:00Z",
+    "observed_basis": "retrieved_at",
+    "sha256": "423d0c34811cd6d6"
+   },
+   "official_injury_report": {
+    "blob": "nfl/vintage/official_injury_report.ec99910f37f94bb8.html.gz",
+    "observed_at": "2026-09-11T00:43:57Z",
+    "observed_basis": "capture_id",
+    "sha256": "ec99910f37f94bb8"
+   },
+   "schedules": {
+    "blob": "nfl/vintage/schedules.2b59c058ffa3ab99.csv.gz",
+    "observed_at": "2026-09-14T16:16:25Z",
+    "observed_basis": "capture_id",
+    "sha256": "2b59c058ffa3ab99"
+   },
+   "weekly_rosters": {
+    "blob": "nfl/vintage/weekly_rosters.bdab6ecee12d44a4.raw.csv.gz",
+    "observed_at": "2026-09-14T16:16:25Z",
+    "observed_basis": "capture_id",
+    "sha256": "bdab6ecee12d44a4"
+   }
+  }
+ },
+ "evaluation": {
+  "artifact": "nfl/research/remediation/ws_a/WS_A_RESULTS.json",
+  "sha256": "7be89cdfee183c180bd7384f223b846c21a4d961cdfe1b4b3ec9499cbaf358e5",
+  "n_eval_rows": 40593,
+  "eval_seasons": [
+   2022,
+   2023,
+   2024,
+   2025
+  ],
+  "n_clusters_game": 2174,
+  "n_clusters_date": 72,
+  "bootstrap_reps": 1000,
+  "bootstrap_seed": 20260914,
+  "alpha_per_candidate_bonferroni": 0.025,
+  "equivalence_margin_calibration_in_the_large": 0.02,
+  "non_inferiority_margin_brier": 0.005,
+  "headline": {
+   "BASE_INFRAME": {
+    "n": 40593,
+    "brier": 0.090094,
+    "brier_ci95_cluster_game": [
+     0.088123,
+     0.091916
+    ],
+    "log_loss": 0.289698,
+    "auc": 0.941528,
+    "mean_predicted": 0.634728,
+    "observed_rate": 0.628803,
+    "calibration_in_the_large": 0.005925,
+    "calibration_in_the_large_ci90_cluster_game": [
+     0.003817,
+     0.007985
+    ],
+    "tost_rejects_both_nulls_cluster_game": true,
+    "expected_calibration_error": 0.018739
+   },
+   "BASE_SERVE": {
+    "n": 40593,
+    "brier": 0.158523,
+    "brier_ci95_cluster_game": [
+     0.155599,
+     0.16145
+    ],
+    "log_loss": 0.546011,
+    "auc": 0.823726,
+    "mean_predicted": 0.717761,
+    "observed_rate": 0.628803,
+    "calibration_in_the_large": 0.088958,
+    "calibration_in_the_large_ci90_cluster_game": [
+     0.085403,
+     0.092384
+    ],
+    "tost_rejects_both_nulls_cluster_game": false,
+    "expected_calibration_error": 0.088958
+   },
+   "A": {
+    "n": 40593,
+    "brier": 0.158345,
+    "brier_ci95_cluster_game": [
+     0.15534,
+     0.161317
+    ],
+    "log_loss": 0.603106,
+    "auc": 0.817401,
+    "mean_predicted": 0.7126,
+    "observed_rate": 0.628803,
+    "calibration_in_the_large": 0.083797,
+    "calibration_in_the_large_ci90_cluster_game": [
+     0.080203,
+     0.087273
+    ],
+    "tost_rejects_both_nulls_cluster_game": false,
+    "expected_calibration_error": 0.083797
+   },
+   "B": {
+    "n": 40593,
+    "brier": 0.111806,
+    "brier_ci95_cluster_game": [
+     0.109746,
+     0.11392
+    ],
+    "log_loss": 0.358429,
+    "auc": 0.915341,
+    "mean_predicted": 0.642633,
+    "observed_rate": 0.628803,
+    "calibration_in_the_large": 0.01383,
+    "calibration_in_the_large_ci90_cluster_game": [
+     0.011346,
+     0.016305
+    ],
+    "tost_rejects_both_nulls_cluster_game": true,
+    "expected_calibration_error": 0.029361
+   },
+   "A0": {
+    "n": 40593,
+    "brier": 0.115114,
+    "brier_ci95_cluster_game": [
+     0.113044,
+     0.11729
+    ],
+    "log_loss": 0.369945,
+    "auc": 0.908833,
+    "mean_predicted": 0.645403,
+    "observed_rate": 0.628803,
+    "calibration_in_the_large": 0.0166,
+    "calibration_in_the_large_ci90_cluster_game": [
+     0.013861,
+     0.019171
+    ],
+    "tost_rejects_both_nulls_cluster_game": true,
+    "expected_calibration_error": 0.030871
+   }
+  },
+  "paired_vs_pre_repair": {
+   "BASE_INFRAME_minus_BASE_SERVE": {
+    "brier_difference": -0.06843,
+    "paired_ci95_cluster_game": [
+     -0.070929,
+     -0.065783
+    ],
+    "paired_ci95_cluster_date": [
+     -0.077797,
+     -0.058311
+    ],
+    "one_sided_upper_97_5_cluster_game": -0.065783,
+    "non_inferior_at_margin": true,
+    "superior_at_alpha_0_025": true,
+    "is_promotion_candidate": false
+   },
+   "A_minus_BASE_SERVE": {
+    "brier_difference": -0.000178,
+    "paired_ci95_cluster_game": [
+     -0.001439,
+     0.001029
+    ],
+    "paired_ci95_cluster_date": [
+     -0.004397,
+     0.004739
+    ],
+    "one_sided_upper_97_5_cluster_game": 0.001029,
+    "non_inferior_at_margin": true,
+    "superior_at_alpha_0_025": false,
+    "is_promotion_candidate": true
+   },
+   "B_minus_BASE_SERVE": {
+    "brier_difference": -0.046717,
+    "paired_ci95_cluster_game": [
+     -0.04913,
+     -0.044332
+    ],
+    "paired_ci95_cluster_date": [
+     -0.054398,
+     -0.038761
+    ],
+    "one_sided_upper_97_5_cluster_game": -0.044332,
+    "non_inferior_at_margin": true,
+    "superior_at_alpha_0_025": true,
+    "is_promotion_candidate": true
+   },
+   "A0_minus_BASE_SERVE": {
+    "brier_difference": -0.043409,
+    "paired_ci95_cluster_game": [
+     -0.045847,
+     -0.041052
+    ],
+    "paired_ci95_cluster_date": [
+     -0.051201,
+     -0.035468
+    ],
+    "one_sided_upper_97_5_cluster_game": -0.041052,
+    "non_inferior_at_margin": true,
+    "superior_at_alpha_0_025": true,
+    "is_promotion_candidate": false
+   }
+  },
+  "ranking_sanity": {
+   "BASE_INFRAME": {
+    "auc": 0.941528,
+    "mean_within_team_week_spearman_rank_vs_p": -0.32876,
+    "n_team_weeks_scored": 2174,
+    "top5pct_mean_predicted": 0.99196,
+    "top5pct_observed_rate": 0.98866
+   },
+   "BASE_SERVE": {
+    "auc": 0.823726,
+    "mean_within_team_week_spearman_rank_vs_p": -0.21515,
+    "n_team_weeks_scored": 2174,
+    "top5pct_mean_predicted": 0.99423,
+    "top5pct_observed_rate": 0.57565
+   },
+   "A": {
+    "auc": 0.817401,
+    "mean_within_team_week_spearman_rank_vs_p": -0.22161,
+    "n_team_weeks_scored": 2174,
+    "top5pct_mean_predicted": 0.99758,
+    "top5pct_observed_rate": 0.39773
+   },
+   "B": {
+    "auc": 0.915341,
+    "mean_within_team_week_spearman_rank_vs_p": -0.34886,
+    "n_team_weeks_scored": 2174,
+    "top5pct_mean_predicted": 0.98911,
+    "top5pct_observed_rate": 0.98571
+   },
+   "A0": {
+    "auc": 0.908833,
+    "mean_within_team_week_spearman_rank_vs_p": -0.35648,
+    "n_team_weeks_scored": 2174,
+    "top5pct_mean_predicted": 0.98529,
+    "top5pct_observed_rate": 0.98324
+   }
+  },
+  "inversion_diagnostic": {
+   "n_listed_non_designated": 31538,
+   "predeclared_sign_app_ewma": "positive",
+   "predeclared_sign_cm_carried": "negative",
+   "BASE_INFRAME": {
+    "pearson_app_ewma_vs_p": 0.84128,
+    "pearson_cm_carried_vs_p": -0.06474
+   },
+   "BASE_SERVE": {
+    "pearson_app_ewma_vs_p": 0.54564,
+    "pearson_cm_carried_vs_p": 0.0568
+   },
+   "A": {
+    "pearson_app_ewma_vs_p": 0.612,
+    "pearson_cm_carried_vs_p": 0.03477
+   },
+   "B": {
+    "pearson_app_ewma_vs_p": 0.8882,
+    "pearson_cm_carried_vs_p": 0.00438
+   },
+   "A0": {
+    "pearson_app_ewma_vs_p": 0.89923,
+    "pearson_cm_carried_vs_p": 0.00611
+   }
+  },
+  "clean_rerun": {
+   "rerun_by": "L2",
+   "cache_rebuilt_from_scratch": true,
+   "reproduces_the_committed_artifact_exactly": true,
+   "note": "the committed file was not overwritten; the rerun wrote to the scratchpad and was compared field by field"
+  }
+ },
+ "proofs": {
+  "P1_identity_frozen": "this file",
+  "P2_clean_rerun": "PASS",
+  "P3_train_serve_parity": {
+   "verdict": "PASS on the basis; the tonight-only marginal comparison is reported and is not a basis test at n = 47 from one game",
+   "block_presence_rate_training": 1.0,
+   "block_presence_rate_serve": 1.0,
+   "block_presence_equal_to_four_decimals": true,
+   "incumbent_for_contrast": {
+    "n_train": 59539,
+    "n_train_with_block": 53381,
+    "train_presence_rate": 0.896572,
+    "serve_presence_rate": 1.0,
+    "equal_to_four_decimals": false,
+    "note": "appearance_r8.predict fills the block for every player at serve, so the column is a constant there and a variable in training. That difference is the train/serve half of the defect."
+   },
+   "serve_path_reproduces_training_basis_bit_for_bit": {
+    "weeks": {
+     "2025_w18": {
+      "state": "BLOCKED",
+      "code": "NO_HISTORICAL_INJURY_ROW_TO_ECHO"
+     },
+     "2023_w9": {
+      "n_rows": 469,
+      "n_bit_identical": 463,
+      "n_differing": 6,
+      "n_differing_with_a_single_row_that_week": 0,
+      "examples_single_row": []
+     }
+    },
+    "note": "The serve path is _prospective_union; the training basis is the union walk. For a player with one frame row that week the two must agree bit for bit. A player with two rows that week is the declared duplicate-ordinal case.",
+    "verdict": "PASS"
+   },
+   "serve_shaped_population_parity": {
+    "2024_w1": {
+     "n_candidates_that_week": 703,
+     "n_with_a_single_row_that_week": 561,
+     "n_excluded_duplicate_ordinal": 142,
+     "features_failing": [],
+     "verdict": "PASS"
+    },
+    "2022_w1": {
+     "n_candidates_that_week": 761,
+     "n_with_a_single_row_that_week": 587,
+     "n_excluded_duplicate_ordinal": 174,
+     "features_failing": [],
+     "verdict": "PASS"
+    }
+   },
+   "serve_shaped_population_parity_full": {
+    "incumbent_block_presence": {
+     "n_train": 59539,
+     "n_train_with_block": 53381,
+     "train_presence_rate": 0.896572,
+     "serve_presence_rate": 1.0,
+     "equal_to_four_decimals": false,
+     "note": "appearance_r8.predict fills the block for every player at serve, so the column is a constant there and a variable in training. That difference is the train/serve half of the defect."
+    },
+    "2024_w1": {
+     "n_candidates_that_week": 703,
+     "n_with_a_single_row_that_week": 561,
+     "n_excluded_duplicate_ordinal": 142,
+     "features": {
+      "f_rate3": {
+       "train_basis": {
+        "n": 561,
+        "n_present": 477,
+        "presence_rate": 0.850267,
+        "mean": 0.672956,
+        "sd": 0.38797
+       },
+       "serve_path": {
+        "n": 561,
+        "n_present": 477,
+        "presence_rate": 0.850267,
+        "mean": 0.672956,
+        "sd": 0.38797
+       },
+       "smd": 0.0,
+       "presence_rates_equal_to_4dp": true,
+       "parity_claimed": true
+      },
+      "f_rate5": {
+       "train_basis": {
+        "n": 561,
+        "n_present": 477,
+        "presence_rate": 0.850267,
+        "mean": 0.687911,
+        "sd": 0.342882
+       },
+       "serve_path": {
+        "n": 561,
+        "n_present": 477,
+        "presence_rate": 0.850267,
+        "mean": 0.687911,
+        "sd": 0.342882
+       },
+       "smd": 0.0,
+       "presence_rates_equal_to_4dp": true,
+       "parity_claimed": true
+      },
+      "f_rate_ewma": {
+       "train_basis": {
+        "n": 561,
+        "n_present": 477,
+        "presence_rate": 0.850267,
+        "mean": 0.688528,
+        "sd": 0.29985
+       },
+       "serve_path": {
+        "n": 561,
+        "n_present": 477,
+        "presence_rate": 0.850267,
+        "mean": 0.688528,
+        "sd": 0.29985
+       },
+       "smd": 0.0,
+       "presence_rates_equal_to_4dp": true,
+       "parity_claimed": true
+      },
+      "f_prev_snap": {
+       "train_basis": {
+        "n": 561,
+        "n_present": 477,
+        "presence_rate": 0.850267,
+        "mean": 0.327526,
+        "sd": 0.334198
+       },
+       "serve_path": {
+        "n": 561,
+        "n_present": 477,
+        "presence_rate": 0.850267,
+        "mean": 0.327526,
+        "sd": 0.334198
+       },
+       "smd": 0.0,
+       "presence_rates_equal_to_4dp": true,
+       "parity_claimed": true
+      },
+      "f_snap_ewma": {
+       "train_basis": {
+        "n": 561,
+        "n_present": 477,
+        "presence_rate": 0.850267,
+        "mean": 0.33735,
+        "sd": 0.265851
+       },
+       "serve_path": {
+        "n": 561,
+        "n_present": 477,
+        "presence_rate": 0.850267,
+        "mean": 0.33735,
+        "sd": 0.265851
+       },
+       "smd": 0.0,
+       "presence_rates_equal_to_4dp": true,
+       "parity_claimed": true
+      },
+      "f_vac_snap": {
+       "train_basis": {
+        "n": 561,
+        "n_present": 561,
+        "presence_rate": 1.0,
+        "mean": 0.019358,
+        "sd": 0.132554
+       },
+       "serve_path": {
+        "n": 561,
+        "n_present": 561,
+        "presence_rate": 1.0,
+        "mean": 0.019358,
+        "sd": 0.132554
+       },
+       "smd": 0.0,
+       "presence_rates_equal_to_4dp": true,
+       "parity_claimed": true
+      },
+      "f_vac_route": {
+       "train_basis": {
+        "n": 561,
+        "n_present": 561,
+        "presence_rate": 1.0,
+        "mean": 0.015041,
+        "sd": 0.101371
+       },
+       "serve_path": {
+        "n": 561,
+        "n_present": 561,
+        "presence_rate": 1.0,
+        "mean": 0.015041,
+        "sd": 0.101371
+       },
+       "smd": 0.0,
+       "presence_rates_equal_to_4dp": true,
+       "parity_claimed": true
+      },
+      "f_vac_target": {
+       "train_basis": {
+        "n": 561,
+        "n_present": 561,
+        "presence_rate": 1.0,
+        "mean": 0.003608,
+        "sd": 0.024422
+       },
+       "serve_path": {
+        "n": 561,
+        "n_present": 561,
+        "presence_rate": 1.0,
+        "mean": 0.003608,
+        "sd": 0.024422
+       },
+       "smd": 0.0,
+       "presence_rates_equal_to_4dp": true,
+       "parity_claimed": true
+      },
+      "f_vac_carry": {
+       "train_basis": {
+        "n": 561,
+        "n_present": 561,
+        "presence_rate": 1.0,
+        "mean": 0.0,
+        "sd": 0.0
+       },
+       "serve_path": {
+        "n": 561,
+        "n_present": 561,
+        "presence_rate": 1.0,
+        "mean": 0.0,
+        "sd": 0.0
+       },
+       "smd": 0.0,
+       "presence_rates_equal_to_4dp": true,
+       "parity_claimed": true
+      },
+      "f_snap_before_absence": {
+       "train_basis": {
+        "n": 561,
+        "n_present": 561,
+        "presence_rate": 1.0,
+        "mean": 0.372995,
+        "sd": 0.328425
+       },
+       "serve_path": {
+        "n": 561,
+        "n_present": 561,
+        "presence_rate": 1.0,
+        "mean": 0.372995,
+        "sd": 0.328425
+       },
+       "smd": 0.0,
+       "presence_rates_equal_to_4dp": true,
+       "parity_claimed": true
+      },
+      "f_swing": {
+       "train_basis": {
+        "n": 561,
+        "n_present": 561,
+        "presence_rate": 1.0,
+        "mean": 0.159459,
+        "sd": 0.226897
+       },
+       "serve_path": {
+        "n": 561,
+        "n_present": 561,
+        "presence_rate": 1.0,
+        "mean": 0.159459,
+        "sd": 0.226897
+       },
+       "smd": 0.0,
+       "presence_rates_equal_to_4dp": true,
+       "parity_claimed": true
+      },
+      "f_volatility": {
+       "train_basis": {
+        "n": 561,
+        "n_present": 561,
+        "presence_rate": 1.0,
+        "mean": 0.119434,
+        "sd": 0.122352
+       },
+       "serve_path": {
+        "n": 561,
+        "n_present": 561,
+        "presence_rate": 1.0,
+        "mean": 0.119434,
+        "sd": 0.122352
+       },
+       "smd": 0.0,
+       "presence_rates_equal_to_4dp": true,
+       "parity_claimed": true
+      },
+      "f_weeks_since_appear": {
+       "train_basis": {
+        "n": 561,
+        "n_present": 472,
+        "presence_rate": 0.841355,
+        "mean": 2.127119,
+        "sd": 2.675029
+       },
+       "serve_path": {
+        "n": 561,
+        "n_present": 472,
+        "presence_rate": 0.841355,
+        "mean": 2.127119,
+        "sd": 2.675029
+       },
+       "smd": 0.0,
+       "presence_rates_equal_to_4dp": true,
+       "parity_claimed": true
+      },
+      "f_n_teammates_out": {
+       "train_basis": {
+        "n": 561,
+        "n_present": 561,
+        "presence_rate": 1.0,
+        "mean": 0.030303,
+        "sd": 0.2091
+       },
+       "serve_path": {
+        "n": 561,
+        "n_present": 561,
+        "presence_rate": 1.0,
+        "mean": 0.030303,
+        "sd": 0.2091
+       },
+       "smd": 0.0,
+       "presence_rates_equal_to_4dp": true,
+       "parity_claimed": true
+      },
+      "f_practice_seq": {
+       "train_basis": {
+        "n": 561,
+        "n_present": 561,
+        "presence_rate": 1.0
+       },
+       "serve_path": {
+        "n": 561,
+        "n_present": 561,
+        "presence_rate": 1.0
+       },
+       "smd": null,
+       "presence_rates_equal_to_4dp": true,
+       "parity_claimed": true
+      },
+      "f_practice_improving": {
+       "train_basis": {
+        "n": 561,
+        "n_present": 561,
+        "presence_rate": 1.0,
+        "mean": 0.0,
+        "sd": 0.0
+       },
+       "serve_path": {
+        "n": 561,
+        "n_present": 561,
+        "presence_rate": 1.0,
+        "mean": 0.0,
+        "sd": 0.0
+       },
+       "smd": 0.0,
+       "presence_rates_equal_to_4dp": true,
+       "parity_claimed": true
+      },
+      "f_practice_worsening": {
+       "train_basis": {
+        "n": 561,
+        "n_present": 561,
+        "presence_rate": 1.0,
+        "mean": 0.0,
+        "sd": 0.0
+       },
+       "serve_path": {
+        "n": 561,
+        "n_present": 561,
+        "presence_rate": 1.0,
+        "mean": 0.0,
+        "sd": 0.0
+       },
+       "smd": 0.0,
+       "presence_rates_equal_to_4dp": true,
+       "parity_claimed": true
+      }
+     },
+     "features_failing": [],
+     "verdict": "PASS"
+    },
+    "2022_w1": {
+     "n_candidates_that_week": 761,
+     "n_with_a_single_row_that_week": 587,
+     "n_excluded_duplicate_ordinal": 174,
+     "features": {
+      "f_rate3": {
+       "train_basis": {
+        "n": 587,
+        "n_present": 506,
+        "presence_rate": 0.86201,
+        "mean": 0.621871,
+        "sd": 0.377112
+       },
+       "serve_path": {
+        "n": 587,
+        "n_present": 506,
+        "presence_rate": 0.86201,
+        "mean": 0.621871,
+        "sd": 0.377112
+       },
+       "smd": 0.0,
+       "presence_rates_equal_to_4dp": true,
+       "parity_claimed": true
+      },
+      "f_rate5": {
+       "train_basis": {
+        "n": 587,
+        "n_present": 506,
+        "presence_rate": 0.86201,
+        "mean": 0.629578,
+        "sd": 0.334503
+       },
+       "serve_path": {
+        "n": 587,
+        "n_present": 506,
+        "presence_rate": 0.86201,
+        "mean": 0.629578,
+        "sd": 0.334503
+       },
+       "smd": 0.0,
+       "presence_rates_equal_to_4dp": true,
+       "parity_claimed": true
+      },
+      "f_rate_ewma": {
+       "train_basis": {
+        "n": 587,
+        "n_present": 506,
+        "presence_rate": 0.86201,
+        "mean": 0.643213,
+        "sd": 0.293907
+       },
+       "serve_path": {
+        "n": 587,
+        "n_present": 506,
+        "presence_rate": 0.86201,
+        "mean": 0.643213,
+        "sd": 0.293907
+       },
+       "smd": 0.0,
+       "presence_rates_equal_to_4dp": true,
+       "parity_claimed": true
+      },
+      "f_prev_snap": {
+       "train_basis": {
+        "n": 587,
+        "n_present": 506,
+        "presence_rate": 0.86201,
+        "mean": 0.298933,
+        "sd": 0.333587
+       },
+       "serve_path": {
+        "n": 587,
+        "n_present": 506,
+        "presence_rate": 0.86201,
+        "mean": 0.298933,
+        "sd": 0.333587
+       },
+       "smd": 0.0,
+       "presence_rates_equal_to_4dp": true,
+       "parity_claimed": true
+      },
+      "f_snap_ewma": {
+       "train_basis": {
+        "n": 587,
+        "n_present": 506,
+        "presence_rate": 0.86201,
+        "mean": 0.313643,
+        "sd": 0.267718
+       },
+       "serve_path": {
+        "n": 587,
+        "n_present": 506,
+        "presence_rate": 0.86201,
+        "mean": 0.313643,
+        "sd": 0.267718
+       },
+       "smd": 0.0,
+       "presence_rates_equal_to_4dp": true,
+       "parity_claimed": true
+      },
+      "f_vac_snap": {
+       "train_basis": {
+        "n": 587,
+        "n_present": 587,
+        "presence_rate": 1.0,
+        "mean": 0.020988,
+        "sd": 0.118904
+       },
+       "serve_path": {
+        "n": 587,
+        "n_present": 587,
+        "presence_rate": 1.0,
+        "mean": 0.020988,
+        "sd": 0.118904
+       },
+       "smd": 0.0,
+       "presence_rates_equal_to_4dp": true,
+       "parity_claimed": true
+      },
+      "f_vac_route": {
+       "train_basis": {
+        "n": 587,
+        "n_present": 587,
+        "presence_rate": 1.0,
+        "mean": 0.024091,
+        "sd": 0.1333
+       },
+       "serve_path": {
+        "n": 587,
+        "n_present": 587,
+        "presence_rate": 1.0,
+        "mean": 0.024091,
+        "sd": 0.1333
+       },
+       "smd": 0.0,
+       "presence_rates_equal_to_4dp": true,
+       "parity_claimed": true
+      },
+      "f_vac_target": {
+       "train_basis": {
+        "n": 587,
+        "n_present": 587,
+        "presence_rate": 1.0,
+        "mean": 0.005821,
+        "sd": 0.03613
+       },
+       "serve_path": {
+        "n": 587,
+        "n_present": 587,
+        "presence_rate": 1.0,
+        "mean": 0.005821,
+        "sd": 0.03613
+       },
+       "smd": 0.0,
+       "presence_rates_equal_to_4dp": true,
+       "parity_claimed": true
+      },
+      "f_vac_carry": {
+       "train_basis": {
+        "n": 587,
+        "n_present": 587,
+        "presence_rate": 1.0,
+        "mean": 0.000401,
+        "sd": 0.006861
+       },
+       "serve_path": {
+        "n": 587,
+        "n_present": 587,
+        "presence_rate": 1.0,
+        "mean": 0.000401,
+        "sd": 0.006861
+       },
+       "smd": 0.0,
+       "presence_rates_equal_to_4dp": true,
+       "parity_claimed": true
+      },
+      "f_snap_before_absence": {
+       "train_basis": {
+        "n": 587,
+        "n_present": 587,
+        "presence_rate": 1.0,
+        "mean": 0.357121,
+        "sd": 0.324109
+       },
+       "serve_path": {
+        "n": 587,
+        "n_present": 587,
+        "presence_rate": 1.0,
+        "mean": 0.357121,
+        "sd": 0.324109
+       },
+       "smd": 0.0,
+       "presence_rates_equal_to_4dp": true,
+       "parity_claimed": true
+      },
+      "f_swing": {
+       "train_basis": {
+        "n": 587,
+        "n_present": 587,
+        "presence_rate": 1.0,
+        "mean": 0.142624,
+        "sd": 0.188892
+       },
+       "serve_path": {
+        "n": 587,
+        "n_present": 587,
+        "presence_rate": 1.0,
+        "mean": 0.142624,
+        "sd": 0.188892
+       },
+       "smd": 0.0,
+       "presence_rates_equal_to_4dp": true,
+       "parity_claimed": true
+      },
+      "f_volatility": {
+       "train_basis": {
+        "n": 587,
+        "n_present": 587,
+        "presence_rate": 1.0,
+        "mean": 0.125313,
+        "sd": 0.120131
+       },
+       "serve_path": {
+        "n": 587,
+        "n_present": 587,
+        "presence_rate": 1.0,
+        "mean": 0.125313,
+        "sd": 0.120131
+       },
+       "smd": 0.0,
+       "presence_rates_equal_to_4dp": true,
+       "parity_claimed": true
+      },
+      "f_weeks_since_appear": {
+       "train_basis": {
+        "n": 587,
+        "n_present": 500,
+        "presence_rate": 0.851789,
+        "mean": 2.09,
+        "sd": 2.17517
+       },
+       "serve_path": {
+        "n": 587,
+        "n_present": 500,
+        "presence_rate": 0.851789,
+        "mean": 2.09,
+        "sd": 2.17517
+       },
+       "smd": 0.0,
+       "presence_rates_equal_to_4dp": true,
+       "parity_claimed": true
+      },
+      "f_n_teammates_out": {
+       "train_basis": {
+        "n": 587,
+        "n_present": 587,
+        "presence_rate": 1.0,
+        "mean": 0.034072,
+        "sd": 0.181568
+       },
+       "serve_path": {
+        "n": 587,
+        "n_present": 587,
+        "presence_rate": 1.0,
+        "mean": 0.034072,
+        "sd": 0.181568
+       },
+       "smd": 0.0,
+       "presence_rates_equal_to_4dp": true,
+       "parity_claimed": true
+      },
+      "f_practice_seq": {
+       "train_basis": {
+        "n": 587,
+        "n_present": 587,
+        "presence_rate": 1.0
+       },
+       "serve_path": {
+        "n": 587,
+        "n_present": 587,
+        "presence_rate": 1.0
+       },
+       "smd": null,
+       "presence_rates_equal_to_4dp": true,
+       "parity_claimed": true
+      },
+      "f_practice_improving": {
+       "train_basis": {
+        "n": 587,
+        "n_present": 587,
+        "presence_rate": 1.0,
+        "mean": 0.0,
+        "sd": 0.0
+       },
+       "serve_path": {
+        "n": 587,
+        "n_present": 587,
+        "presence_rate": 1.0,
+        "mean": 0.0,
+        "sd": 0.0
+       },
+       "smd": 0.0,
+       "presence_rates_equal_to_4dp": true,
+       "parity_claimed": true
+      },
+      "f_practice_worsening": {
+       "train_basis": {
+        "n": 587,
+        "n_present": 587,
+        "presence_rate": 1.0,
+        "mean": 0.0,
+        "sd": 0.0
+       },
+       "serve_path": {
+        "n": 587,
+        "n_present": 587,
+        "presence_rate": 1.0,
+        "mean": 0.0,
+        "sd": 0.0
+       },
+       "smd": 0.0,
+       "presence_rates_equal_to_4dp": true,
+       "parity_claimed": true
+      }
+     },
+     "features_failing": [],
+     "verdict": "PASS"
+    }
+   },
+   "tonight_only_marginal_comparison": {
+    "all_weeks_comparator": {
+     "comparator": "all weeks 2020-2025",
+     "n_train": 59539,
+     "n_serve": 47,
+     "features_failing_the_declared_threshold": [
+      "f_rate3",
+      "f_rate5",
+      "f_rate_ewma",
+      "f_prev_snap",
+      "f_snap_ewma",
+      "f_vac_snap",
+      "f_vac_route",
+      "f_vac_target",
+      "f_vac_carry",
+      "f_snap_before_absence",
+      "f_swing",
+      "f_volatility",
+      "f_weeks_since_appear",
+      "f_n_teammates_out",
+      "f_practice_improving",
+      "f_practice_worsening"
+     ],
+     "n_failing": 16,
+     "block_presence_rate_train": 1.0,
+     "block_presence_rate_serve": 1.0,
+     "verdict": "PARTIAL"
+    },
+    "week_1_comparator": {
+     "comparator": "week 1 only, 2020-2025 -- the like-for-like comparator",
+     "n_train": 4163,
+     "n_serve": 47,
+     "features_failing_the_declared_threshold": [
+      "f_rate3",
+      "f_rate5",
+      "f_rate_ewma",
+      "f_prev_snap",
+      "f_snap_ewma",
+      "f_vac_snap",
+      "f_vac_route",
+      "f_vac_target",
+      "f_swing",
+      "f_volatility",
+      "f_weeks_since_appear",
+      "f_n_teammates_out",
+      "f_practice_improving",
+      "f_practice_worsening"
+     ],
+     "n_failing": 14,
+     "block_presence_rate_train": 1.0,
+     "block_presence_rate_serve": 1.0,
+     "verdict": "PARTIAL"
+    },
+    "week_1_comparator_full": {
+     "comparator": "week 1 only, 2020-2025 -- the like-for-like comparator",
+     "n_train": 4163,
+     "n_serve": 47,
+     "features": {
+      "f_rate3": {
+       "train": {
+        "n": 4163,
+        "n_present": 3215,
+        "presence_rate": 0.77228,
+        "mean": 0.693209,
+        "sd": 0.371685
+       },
+       "serve": {
+        "n": 47,
+        "n_present": 39,
+        "presence_rate": 0.829787,
+        "mean": 0.547009,
+        "sd": 0.455552
+       },
+       "smd": 0.3517,
+       "presence_rates_equal_to_4dp": false,
+       "parity_claimed": false
+      },
+      "f_rate5": {
+       "train": {
+        "n": 4163,
+        "n_present": 3215,
+        "presence_rate": 0.77228,
+        "mean": 0.704344,
+        "sd": 0.327438
+       },
+       "serve": {
+        "n": 47,
+        "n_present": 39,
+        "presence_rate": 0.829787,
+        "mean": 0.553846,
+        "sd": 0.42168
+       },
+       "smd": 0.3987,
+       "presence_rates_equal_to_4dp": false,
+       "parity_claimed": false
+      },
+      "f_rate_ewma": {
+       "train": {
+        "n": 4163,
+        "n_present": 3215,
+        "presence_rate": 0.77228,
+        "mean": 0.702153,
+        "sd": 0.292013
+       },
+       "serve": {
+        "n": 47,
+        "n_present": 39,
+        "presence_rate": 0.829787,
+        "mean": 0.562817,
+        "sd": 0.394525
+       },
+       "smd": 0.4015,
+       "presence_rates_equal_to_4dp": false,
+       "parity_claimed": false
+      },
+      "f_prev_snap": {
+       "train": {
+        "n": 4163,
+        "n_present": 3215,
+        "presence_rate": 0.77228,
+        "mean": 0.339705,
+        "sd": 0.339189
+       },
+       "serve": {
+        "n": 47,
+        "n_present": 39,
+        "presence_rate": 0.829787,
+        "mean": 0.244615,
+        "sd": 0.293973
+       },
+       "smd": 0.2996,
+       "presence_rates_equal_to_4dp": false,
+       "parity_claimed": false
+      },
+      "f_snap_ewma": {
+       "train": {
+        "n": 4163,
+        "n_present": 3215,
+        "presence_rate": 0.77228,
+        "mean": 0.352566,
+        "sd": 0.265857
+       },
+       "serve": {
+        "n": 47,
+        "n_present": 39,
+        "presence_rate": 0.829787,
+        "mean": 0.274809,
+        "sd": 0.273485
+       },
+       "smd": 0.2883,
+       "presence_rates_equal_to_4dp": false,
+       "parity_claimed": false
+      },
+      "f_vac_snap": {
+       "train": {
+        "n": 4163,
+        "n_present": 4163,
+        "presence_rate": 1.0,
+        "mean": 0.009822,
+        "sd": 0.086806
+       },
+       "serve": {
+        "n": 47,
+        "n_present": 47,
+        "presence_rate": 1.0,
+        "mean": 0.0,
+        "sd": 0.0
+       },
+       "smd": 0.16,
+       "presence_rates_equal_to_4dp": true,
+       "parity_claimed": false
+      },
+      "f_vac_route": {
+       "train": {
+        "n": 4163,
+        "n_present": 4163,
+        "presence_rate": 1.0,
+        "mean": 0.009573,
+        "sd": 0.085354
+       },
+       "serve": {
+        "n": 47,
+        "n_present": 47,
+        "presence_rate": 1.0,
+        "mean": 0.0,
+        "sd": 0.0
+       },
+       "smd": 0.1586,
+       "presence_rates_equal_to_4dp": true,
+       "parity_claimed": false
+      },
+      "f_vac_target": {
+       "train": {
+        "n": 4163,
+        "n_present": 4163,
+        "presence_rate": 1.0,
+        "mean": 0.002253,
+        "sd": 0.021602
+       },
+       "serve": {
+        "n": 47,
+        "n_present": 47,
+        "presence_rate": 1.0,
+        "mean": 0.0,
+        "sd": 0.0
+       },
+       "smd": 0.1475,
+       "presence_rates_equal_to_4dp": true,
+       "parity_claimed": false
+      },
+      "f_vac_carry": {
+       "train": {
+        "n": 4163,
+        "n_present": 4163,
+        "presence_rate": 1.0,
+        "mean": 0.000304,
+        "sd": 0.006131
+       },
+       "serve": {
+        "n": 47,
+        "n_present": 47,
+        "presence_rate": 1.0,
+        "mean": 0.0,
+        "sd": 0.0
+       },
+       "smd": 0.0701,
+       "presence_rates_equal_to_4dp": true,
+       "parity_claimed": true
+      },
+      "f_snap_before_absence": {
+       "train": {
+        "n": 4163,
+        "n_present": 4163,
+        "presence_rate": 1.0,
+        "mean": 0.349628,
+        "sd": 0.335453
+       },
+       "serve": {
+        "n": 47,
+        "n_present": 47,
+        "presence_rate": 1.0,
+        "mean": 0.342766,
+        "sd": 0.332368
+       },
+       "smd": 0.0206,
+       "presence_rates_equal_to_4dp": true,
+       "parity_claimed": true
+      },
+      "f_swing": {
+       "train": {
+        "n": 4163,
+        "n_present": 4163,
+        "presence_rate": 1.0,
+        "mean": 0.147735,
+        "sd": 0.213922
+       },
+       "serve": {
+        "n": 47,
+        "n_present": 47,
+        "presence_rate": 1.0,
+        "mean": 0.107518,
+        "sd": 0.183942
+       },
+       "smd": 0.2016,
+       "presence_rates_equal_to_4dp": true,
+       "parity_claimed": false
+      },
+      "f_volatility": {
+       "train": {
+        "n": 4163,
+        "n_present": 4163,
+        "presence_rate": 1.0,
+        "mean": 0.115174,
+        "sd": 0.122652
+       },
+       "serve": {
+        "n": 47,
+        "n_present": 47,
+        "presence_rate": 1.0,
+        "mean": 0.08893,
+        "sd": 0.126814
+       },
+       "smd": 0.2104,
+       "presence_rates_equal_to_4dp": true,
+       "parity_claimed": false
+      },
+      "f_weeks_since_appear": {
+       "train": {
+        "n": 4163,
+        "n_present": 3189,
+        "presence_rate": 0.766034,
+        "mean": 1.899028,
+        "sd": 2.190968
+       },
+       "serve": {
+        "n": 47,
+        "n_present": 36,
+        "presence_rate": 0.765957,
+        "mean": 4.944444,
+        "sd": 8.498553
+       },
+       "smd": 0.4907,
+       "presence_rates_equal_to_4dp": true,
+       "parity_claimed": false
+      },
+      "f_n_teammates_out": {
+       "train": {
+        "n": 4163,
+        "n_present": 4163,
+        "presence_rate": 1.0,
+        "mean": 0.015614,
+        "sd": 0.131513
+       },
+       "serve": {
+        "n": 47,
+        "n_present": 47,
+        "presence_rate": 1.0,
+        "mean": 0.0,
+        "sd": 0.0
+       },
+       "smd": 0.1679,
+       "presence_rates_equal_to_4dp": true,
+       "parity_claimed": false
+      },
+      "f_practice_seq": {
+       "train": {
+        "n": 4163,
+        "n_present": 4163,
+        "presence_rate": 1.0,
+        "is_categorical": true
+       },
+       "serve": {
+        "n": 47,
+        "n_present": 47,
+        "presence_rate": 1.0,
+        "is_categorical": true
+       },
+       "smd": null,
+       "presence_rates_equal_to_4dp": true,
+       "parity_claimed": true
+      },
+      "f_practice_improving": {
+       "train": {
+        "n": 4163,
+        "n_present": 4163,
+        "presence_rate": 1.0,
+        "mean": 0.0,
+        "sd": 0.0
+       },
+       "serve": {
+        "n": 47,
+        "n_present": 47,
+        "presence_rate": 1.0,
+        "mean": 0.0,
+        "sd": 0.0
+       },
+       "smd": null,
+       "presence_rates_equal_to_4dp": true,
+       "parity_claimed": false
+      },
+      "f_practice_worsening": {
+       "train": {
+        "n": 4163,
+        "n_present": 4163,
+        "presence_rate": 1.0,
+        "mean": 0.0,
+        "sd": 0.0
+       },
+       "serve": {
+        "n": 47,
+        "n_present": 47,
+        "presence_rate": 1.0,
+        "mean": 0.0,
+        "sd": 0.0
+       },
+       "smd": null,
+       "presence_rates_equal_to_4dp": true,
+       "parity_claimed": false
+      }
+     },
+     "features_failing_the_declared_threshold": [
+      "f_rate3",
+      "f_rate5",
+      "f_rate_ewma",
+      "f_prev_snap",
+      "f_snap_ewma",
+      "f_vac_snap",
+      "f_vac_route",
+      "f_vac_target",
+      "f_swing",
+      "f_volatility",
+      "f_weeks_since_appear",
+      "f_n_teammates_out",
+      "f_practice_improving",
+      "f_practice_worsening"
+     ],
+     "n_failing": 14,
+     "block_presence_rate_train": 1.0,
+     "block_presence_rate_serve": 1.0,
+     "verdict": "PARTIAL"
+    },
+    "cold_start_share": {
+     "training_all_weeks": {
+      "n": 59539,
+      "n_no_prior_appearance_history": 1106,
+      "rate": 0.018576
+     },
+     "training_week_1": {
+      "n": 4163,
+      "n_no_prior_appearance_history": 948,
+      "rate": 0.22772
+     },
+     "serve_tonight": {
+      "n": 47,
+      "n_no_prior_appearance_history": 8,
+      "rate": 0.170213
+     }
+    },
+    "caveat": "n = 47 from a single game cluster against 4,163 week-1 training rows from sixty game-weeks. The differences are dominated by which two teams these are. Two of the reported failures -- f_practice_improving and f_practice_worsening -- are an artefact of a zero pooled standard deviation where the two means are identical at 0.0."
+   }
+  },
+  "P4_no_label_dependent_feature_presence": {
+   "n_rows": 59784,
+   "n_without_block": 0,
+   "presence_rate": 1.0,
+   "p_appeared_given_block_absent": null,
+   "note": "undefined for want of any such row",
+   "verdict": "PASS"
+  },
+  "P4_label_flip_invariance": {
+   "weeks": {
+    "2022_w1": {
+     "n_target_week_rows": 1141,
+     "n_rows_that_moved": 107,
+     "n_rows_that_moved_with_a_single_row_that_week": 0,
+     "n_target_week_rows_whose_player_has_more_than_one_row_that_week": 174,
+     "examples": [
+      {
+       "key": [
+        2022,
+        1,
+        "ARI",
+        "00-0034681"
+       ],
+       "n_rows_for_this_player_that_week": 2
+      },
+      {
+       "key": [
+        2022,
+        1,
+        "ARI",
+        "00-0034775"
+       ],
+       "n_rows_for_this_player_that_week": 2
+      },
+      {
+       "key": [
+        2022,
+        1,
+        "ATL",
+        "00-0026143"
+       ],
+       "n_rows_for_this_player_that_week": 2
+      }
+     ]
+    },
+    "2024_w1": {
+     "n_target_week_rows": 1048,
+     "n_rows_that_moved": 98,
+     "n_rows_that_moved_with_a_single_row_that_week": 0,
+     "n_target_week_rows_whose_player_has_more_than_one_row_that_week": 142,
+     "examples": [
+      {
+       "key": [
+        2024,
+        1,
+        "ATL",
+        "00-0030578"
+       ],
+       "n_rows_for_this_player_that_week": 2
+      },
+      {
+       "key": [
+        2024,
+        1,
+        "ATL",
+        "00-0031585"
+       ],
+       "n_rows_for_this_player_that_week": 2
+      },
+      {
+       "key": [
+        2024,
+        1,
+        "ATL",
+        "00-0033858"
+       ],
+       "n_rows_for_this_player_that_week": 2
+      }
+     ]
+    },
+    "2025_w18": {
+     "n_target_week_rows": 971,
+     "n_rows_that_moved": 0,
+     "n_rows_that_moved_with_a_single_row_that_week": 0,
+     "n_target_week_rows_whose_player_has_more_than_one_row_that_week": 0,
+     "examples": []
+    },
+    "2023_w9": {
+     "n_target_week_rows": 714,
+     "n_rows_that_moved": 3,
+     "n_rows_that_moved_with_a_single_row_that_week": 0,
+     "n_target_week_rows_whose_player_has_more_than_one_row_that_week": 6,
+     "examples": [
+      {
+       "key": [
+        2023,
+        9,
+        "ARI",
+        "00-0033949"
+       ],
+       "n_rows_for_this_player_that_week": 2
+      },
+      {
+       "key": [
+        2023,
+        9,
+        "LA",
+        "00-0036415"
+       ],
+       "n_rows_for_this_player_that_week": 2
+      },
+      {
+       "key": [
+        2023,
+        9,
+        "NYJ",
+        "00-0035140"
+       ],
+       "n_rows_for_this_player_that_week": 2
+      }
+     ]
+    }
+   },
+   "verdict": "PASS",
+   "verdict_unrestricted": "FAIL"
+  },
+  "P5_chronology": "PASS",
+  "P6_pathological_cells": {
+   "historical_cells": {
+    "clear_RB1": {
+     "n": 1773,
+     "observed_rate": 0.82516,
+     "BASE_INFRAME": {
+      "mean_predicted": 0.8199,
+      "gap": -0.00526,
+      "brier": 0.07729
+     },
+     "BASE_SERVE": {
+      "mean_predicted": 0.84462,
+      "gap": 0.01947,
+      "brier": 0.0992
+     },
+     "A": {
+      "mean_predicted": 0.83892,
+      "gap": 0.01376,
+      "brier": 0.09417
+     },
+     "B": {
+      "mean_predicted": 0.82392,
+      "gap": -0.00124,
+      "brier": 0.0854
+     },
+     "A0": {
+      "mean_predicted": 0.82903,
+      "gap": 0.00388,
+      "brier": 0.08963
+     }
+    },
+    "WR1": {
+     "n": 1695,
+     "observed_rate": 0.81298,
+     "BASE_INFRAME": {
+      "mean_predicted": 0.82336,
+      "gap": 0.01038,
+      "brier": 0.08804
+     },
+     "BASE_SERVE": {
+      "mean_predicted": 0.84569,
+      "gap": 0.03271,
+      "brier": 0.10583
+     },
+     "A": {
+      "mean_predicted": 0.84331,
+      "gap": 0.03034,
+      "brier": 0.10662
+     },
+     "B": {
+      "mean_predicted": 0.82801,
+      "gap": 0.01503,
+      "brier": 0.09664
+     },
+     "A0": {
+      "mean_predicted": 0.83517,
+      "gap": 0.02219,
+      "brier": 0.099
+     }
+    },
+    "long_absence_carried_ge_9": {
+     "n": 64,
+     "observed_rate": 0.40625,
+     "BASE_INFRAME": {
+      "mean_predicted": 0.37469,
+      "gap": -0.03156,
+      "brier": 0.0194
+     },
+     "BASE_SERVE": {
+      "mean_predicted": 0.93439,
+      "gap": 0.52814,
+      "brier": 0.56456
+     },
+     "A": {
+      "mean_predicted": 0.84656,
+      "gap": 0.44031,
+      "brier": 0.50179
+     },
+     "B": {
+      "mean_predicted": 0.61792,
+      "gap": 0.21167,
+      "brier": 0.34502
+     },
+     "A0": {
+      "mean_predicted": 0.6286,
+      "gap": 0.22235,
+      "brier": 0.35144
+     }
+    },
+    "long_absence_app_ewma_lt_0.05": {
+     "n": 2260,
+     "observed_rate": 0.13009,
+     "BASE_INFRAME": {
+      "mean_predicted": 0.11279,
+      "gap": -0.01729,
+      "brier": 0.00827
+     },
+     "BASE_SERVE": {
+      "mean_predicted": 0.83355,
+      "gap": 0.70346,
+      "brier": 0.64605
+     },
+     "A": {
+      "mean_predicted": 0.72168,
+      "gap": 0.59159,
+      "brier": 0.54809
+     },
+     "B": {
+      "mean_predicted": 0.19219,
+      "gap": 0.0621,
+      "brier": 0.12055
+     },
+     "A0": {
+      "mean_predicted": 0.20124,
+      "gap": 0.07115,
+      "brier": 0.12623
+     }
+    },
+    "reserve_listed_rank_ge_4_thin_history": {
+     "n": 1089,
+     "observed_rate": 0.52066,
+     "BASE_INFRAME": {
+      "mean_predicted": 0.5184,
+      "gap": -0.00226,
+      "brier": 0.0488
+     },
+     "BASE_SERVE": {
+      "mean_predicted": 0.89761,
+      "gap": 0.37694,
+      "brier": 0.4236
+     },
+     "A": {
+      "mean_predicted": 0.89411,
+      "gap": 0.37345,
+      "brier": 0.43025
+     },
+     "B": {
+      "mean_predicted": 0.55637,
+      "gap": 0.03571,
+      "brier": 0.17372
+     },
+     "A0": {
+      "mean_predicted": 0.55698,
+      "gap": 0.03632,
+      "brier": 0.17584
+     }
+    },
+    "unlisted_with_history": {
+     "n": 6489,
+     "observed_rate": 0.20404,
+     "BASE_INFRAME": {
+      "mean_predicted": 0.24949,
+      "gap": 0.04546,
+      "brier": 0.13199
+     },
+     "BASE_SERVE": {
+      "mean_predicted": 0.25393,
+      "gap": 0.04989,
+      "brier": 0.13458
+     },
+     "A": {
+      "mean_predicted": 0.29943,
+      "gap": 0.09539,
+      "brier": 0.18846
+     },
+     "B": {
+      "mean_predicted": 0.25071,
+      "gap": 0.04667,
+      "brier": 0.15378
+     },
+     "A0": {
+      "mean_predicted": 0.25038,
+      "gap": 0.04635,
+      "brier": 0.15767
+     }
+    },
+    "week1_cold_start_listed": {
+     "n": 357,
+     "observed_rate": 0.52381,
+     "BASE_INFRAME": {
+      "mean_predicted": 0.52206,
+      "gap": -0.00175,
+      "brier": 2e-05
+     },
+     "BASE_SERVE": {
+      "mean_predicted": 0.97918,
+      "gap": 0.45537,
+      "brier": 0.45133
+     },
+     "A": {
+      "mean_predicted": 0.98032,
+      "gap": 0.45651,
+      "brier": 0.45235
+     },
+     "B": {
+      "mean_predicted": 0.55744,
+      "gap": 0.03363,
+      "brier": 0.23566
+     },
+     "A0": {
+      "mean_predicted": 0.54302,
+      "gap": 0.01921,
+      "brier": 0.23516
+     }
+    },
+    "designated_out_or_doubtful": {
+     "n": 1015,
+     "observed_rate": 0.00099,
+     "BASE_INFRAME": {
+      "mean_predicted": 0.01247,
+      "gap": 0.01149,
+      "brier": 0.00191
+     },
+     "BASE_SERVE": {
+      "mean_predicted": 0.01649,
+      "gap": 0.0155,
+      "brier": 0.00319
+     },
+     "A": {
+      "mean_predicted": 0.02209,
+      "gap": 0.0211,
+      "brier": 0.00818
+     },
+     "B": {
+      "mean_predicted": 0.01212,
+      "gap": 0.01114,
+      "brier": 0.00192
+     },
+     "A0": {
+      "mean_predicted": 0.01277,
+      "gap": 0.01179,
+      "brier": 0.00167
+     }
+    }
+   },
+   "live_cells": {
+    "clear_RB1": {
+     "n": 0,
+     "note": "EMPTY CELL -- reported as empty, not as a passing result"
+    },
+    "WR1": {
+     "n": 0,
+     "note": "EMPTY CELL -- reported as empty, not as a passing result"
+    },
+    "long_absence_carried_ge_9": {
+     "n": 9,
+     "incumbent_mean": 0.49443,
+     "b_mean": 0.12871,
+     "b_min": 0.01073,
+     "b_max": 0.47521,
+     "examples": [
+      {
+       "pid": "00-0040081",
+       "team": "KC",
+       "pos": "TE",
+       "rank": 13,
+       "n_prior": 17,
+       "cm_carried": 17,
+       "incumbent": 0.99705,
+       "b": 0.47521
+      },
+      {
+       "pid": "00-0036879",
+       "team": "DEN",
+       "pos": "QB",
+       "rank": 9,
+       "n_prior": 69,
+       "cm_carried": 43,
+       "incumbent": 0.94579,
+       "b": 0.40587
+      },
+      {
+       "pid": "00-0035264",
+       "team": "DEN",
+       "pos": "QB",
+       "rank": 6,
+       "n_prior": 97,
+       "cm_carried": 9,
+       "incumbent": 0.83306,
+       "b": 0.20087
+      },
+      {
+       "pid": "00-0037539",
+       "team": "DEN",
+       "pos": "TE",
+       "rank": null,
+       "n_prior": 48,
+       "cm_carried": 14,
+       "incumbent": 0.16826,
+       "b": 0.02022
+      }
+     ]
+    },
+    "reserve_listed_rank_ge_4_thin_history": {
+     "n": 9,
+     "incumbent_mean": 0.93642,
+     "b_mean": 0.42481,
+     "b_min": 0.17691,
+     "b_max": 0.5236,
+     "examples": [
+      {
+       "pid": "00-0040120",
+       "team": "KC",
+       "pos": "WR",
+       "rank": 19,
+       "n_prior": 1,
+       "cm_carried": 0,
+       "incumbent": 0.52043,
+       "b": 0.5236
+      },
+      {
+       "pid": "00-0040240",
+       "team": "DEN",
+       "pos": "TE",
+       "rank": 17,
+       "n_prior": 0,
+       "cm_carried": 0,
+       "incumbent": 0.99197,
+       "b": 0.46417
+      },
+      {
+       "pid": "00-0040955",
+       "team": "KC",
+       "pos": "TE",
+       "rank": 16,
+       "n_prior": 0,
+       "cm_carried": 0,
+       "incumbent": 0.99197,
+       "b": 0.46417
+      },
+      {
+       "pid": "00-0041133",
+       "team": "DEN",
+       "pos": "TE",
+       "rank": 15,
+       "n_prior": 0,
+       "cm_carried": 0,
+       "incumbent": 0.99197,
+       "b": 0.46417
+      }
+     ]
+    },
+    "unlisted_with_history": {
+     "n": 10,
+     "incumbent_mean": 0.17049,
+     "b_mean": 0.01343,
+     "b_min": 0.01073,
+     "b_max": 0.02022,
+     "examples": [
+      {
+       "pid": "00-0037539",
+       "team": "DEN",
+       "pos": "TE",
+       "rank": null,
+       "n_prior": 48,
+       "cm_carried": 14,
+       "incumbent": 0.16826,
+       "b": 0.02022
+      },
+      {
+       "pid": "00-0036727",
+       "team": "DEN",
+       "pos": "RB",
+       "rank": null,
+       "n_prior": 79,
+       "cm_carried": 0,
+       "incumbent": 0.00957,
+       "b": 0.02006
+      },
+      {
+       "pid": "00-0038492",
+       "team": "KC",
+       "pos": "WR",
+       "rank": null,
+       "n_prior": 26,
+       "cm_carried": 0,
+       "incumbent": 0.00853,
+       "b": 0.0156
+      },
+      {
+       "pid": "00-0039702",
+       "team": "KC",
+       "pos": "TE",
+       "rank": null,
+       "n_prior": 17,
+       "cm_carried": 17,
+       "incumbent": 0.64301,
+       "b": 0.01201
+      }
+     ]
+    },
+    "week1_cold_start_listed": {
+     "n": 8,
+     "incumbent_mean": 0.98841,
+     "b_mean": 0.41246,
+     "b_min": 0.17691,
+     "b_max": 0.46417,
+     "examples": [
+      {
+       "pid": "00-0040240",
+       "team": "DEN",
+       "pos": "TE",
+       "rank": 17,
+       "n_prior": 0,
+       "cm_carried": 0,
+       "incumbent": 0.99197,
+       "b": 0.46417
+      },
+      {
+       "pid": "00-0040955",
+       "team": "KC",
+       "pos": "TE",
+       "rank": 16,
+       "n_prior": 0,
+       "cm_carried": 0,
+       "incumbent": 0.99197,
+       "b": 0.46417
+      },
+      {
+       "pid": "00-0041133",
+       "team": "DEN",
+       "pos": "TE",
+       "rank": 15,
+       "n_prior": 0,
+       "cm_carried": 0,
+       "incumbent": 0.99197,
+       "b": 0.46417
+      },
+      {
+       "pid": "00-0040890",
+       "team": "KC",
+       "pos": "WR",
+       "rank": 14,
+       "n_prior": 0,
+       "cm_carried": 0,
+       "incumbent": 0.99088,
+       "b": 0.43766
+      }
+     ]
+    },
+    "skill_positions": {
+     "n": 47,
+     "incumbent_mean": 0.7175,
+     "b_mean": 0.50169,
+     "b_min": 0.01073,
+     "b_max": 0.99073,
+     "examples": [
+      {
+       "pid": "00-0030506",
+       "team": "KC",
+       "pos": "TE",
+       "rank": 1,
+       "n_prior": 101,
+       "cm_carried": 0,
+       "incumbent": 0.99081,
+       "b": 0.99073
+      },
+      {
+       "pid": "00-0033881",
+       "team": "DEN",
+       "pos": "TE",
+       "rank": 1,
+       "n_prior": 105,
+       "cm_carried": 0,
+       "incumbent": 0.96835,
+       "b": 0.97238
+      },
+      {
+       "pid": "00-0034348",
+       "team": "DEN",
+       "pos": "WR",
+       "rank": 5,
+       "n_prior": 91,
+       "cm_carried": 0,
+       "incumbent": 0.92043,
+       "b": 0.88715
+      },
+      {
+       "pid": "00-0036158",
+       "team": "DEN",
+       "pos": "RB",
+       "rank": 2,
+       "n_prior": 78,
+       "cm_carried": 7,
+       "incumbent": 0.99012,
+       "b": 0.87483
+      }
+     ]
+    },
+    "non_skill_positions": {
+     "n": 0,
+     "note": "EMPTY CELL -- reported as empty, not as a passing result"
+    }
+   }
+  },
+  "P7_live_universe": {
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "state": "PASS",
+    "code": "APPEARANCE_ARM_PREDICTED",
+    "n_scored": 47,
+    "n_declined": 133,
+    "spec_version": "appearance-r8-reliability-weighted-1",
+    "coef_sha256": "557725f24fdc18ee",
+    "module_sha256": "ac1d54a6ae66f08c1a00fca0d8b0f8235a4673765769e9d1a16368cd64e452ee",
+    "governance": "INCUMBENT -- in use, and known defective",
+    "p_mean": 0.7175,
+    "p_median": 0.838782,
+    "p_min": 0.004671,
+    "p_max": 0.997055,
+    "p_sd": 0.330228,
+    "n_above_0_99": 10,
+    "n_above_0_95": 15,
+    "n_below_0_05": 4,
+    "top5pct_mean_predicted": 0.994513,
+    "states": {
+     "KNOWN_HEALTHY": 29,
+     "NO_HISTORY": 141,
+     "UNKNOWN_STATUS": 10
+    },
+    "row_stamp_example": {
+     "p_appear": 0.9908121927084734,
+     "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+     "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+     "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+     "appearance_coef_sha256": "557725f24fdc18ee",
+     "appearance_module_sha256": "ac1d54a6ae66f08c"
+    }
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "state": "PASS",
+    "code": "APPEARANCE_ARM_PREDICTED",
+    "n_scored": 47,
+    "n_declined": 133,
+    "spec_version": "appearance-b-union-candidate-universe-1",
+    "coef_sha256": "88664d345948aed3",
+    "module_sha256": "a3a1d5679314fb8cf8500fce2c3aa7f7e8b8cae25751a0d24c27fbdcdd79a255",
+    "governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "p_mean": 0.501694,
+    "p_median": 0.523597,
+    "p_min": 0.010727,
+    "p_max": 0.990729,
+    "p_sd": 0.314037,
+    "n_above_0_99": 1,
+    "n_above_0_95": 2,
+    "n_below_0_05": 10,
+    "top5pct_mean_predicted": 0.981555,
+    "states": {
+     "KNOWN_HEALTHY": 29,
+     "NO_HISTORY": 141,
+     "UNKNOWN_STATUS": 10
+    },
+    "row_stamp_example": {
+     "p_appear": 0.9907286182954358,
+     "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+     "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+     "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+     "appearance_coef_sha256": "88664d345948aed3",
+     "appearance_module_sha256": "a3a1d5679314fb8c"
+    }
+   }
+  }
+ },
+ "known_residual_limits": [
+  {
+   "name": "universe is still not the roster",
+   "detail": "a union frame row is panel-or-depth-listed. A player with history who is not depth-listed and does not play still produces no frame row. Closing this needs weekly 53-man roster membership for 2020-2025, which is not in this checkout.",
+   "measured": {
+    "n_roster_players": 180,
+    "n_scored_tonight": 47,
+    "n_declined_unsupported_cell": 133
+   }
+  },
+  {
+   "name": "duplicate player-ordinals",
+   "detail": "appearance_model._walk orders by ord alone, so where a player holds two frame rows at the same (season, week) the first in list order becomes history for the second and its label reaches the second row's features. Present in R7 and R8 identically; Candidate B neither introduces nor repairs it.",
+   "measured": {
+    "union_frame_by_pid_season_week": {
+     "n_rows": 59784,
+     "n_cells_with_more_than_one_row": 1747,
+     "n_rows_in_such_cells": 3498,
+     "fraction_of_rows": 0.058511
+    },
+    "panel_by_pid_season_week": {
+     "n_rows": 83144,
+     "n_cells_with_more_than_one_row": 2001,
+     "n_rows_in_such_cells": 4006,
+     "fraction_of_rows": 0.048181
+    },
+    "why_it_matters": "appearance_model._walk orders by ord alone, so where a player holds two rows at the same (season, week) the first in list order becomes history for the second and its label reaches the second row's features. A property of the frozen walk and of the union frame key (s, w, t, pid); present in R7 and R8 identically."
+   },
+   "sensitivity": {
+    "eval_season": 2025,
+    "n_frame_rows": 59784,
+    "n_rows_in_a_duplicate_cell": 3498,
+    "fraction_of_frame": 0.058511,
+    "n_train_all": 48343,
+    "n_train_without_duplicates": 45577,
+    "n_eval_all": 11196,
+    "n_eval_without_duplicates": 10464,
+    "scored_on_all_eval_rows": {
+     "brier_trained_on_all": 0.128923
+    },
+    "scored_on_non_duplicate_eval_rows_only": {
+     "brier_trained_on_all": 0.126783,
+     "brier_trained_without_duplicates": 0.123862,
+     "difference": -0.002921,
+     "auc_trained_on_all": 0.898283,
+     "auc_trained_without_duplicates": 0.899654,
+     "mean_absolute_prediction_difference": 0.033662,
+     "max_absolute_prediction_difference": 0.275184
+    },
+    "note": "Both fits are forward-chained on seasons strictly earlier than 2025 and scored on the same rows, so the only difference is whether the 5.85% duplicate-ordinal cell was in the training set. This is a sensitivity, not a repair: the defect is in the frozen walk's ordering and is present in R7 and R8 identically."
+   }
+  },
+  {
+   "name": "gameday inactives are not read by any appearance model",
+   "detail": "the official list is applied one layer later, in layers.py. Candidate B does not change that and does not claim to.",
+   "measured": {
+    "game_id": "2026_01_TB_CIN",
+    "kickoff_utc": "2026-09-13T17:00:00Z",
+    "clock": "2026-09-13T16:16:00Z",
+    "roster_blob": "nfl/vintage/weekly_rosters.cef497eaeddef07b.reduced.csv.gz",
+    "injuries_blob": "nfl/vintage/injuries.66e960ec81fccc6e.csv.gz",
+    "n_players": 179,
+    "endries_gsis_id": "00-0041116",
+    "keshawn_gsis_id": null,
+    "arms": {
+     "INCUMBENT_KNOWN_DEFECTIVE": {
+      "state": "PASS",
+      "n_scored": 43,
+      "p_mean": 0.658562,
+      "endries_p": 0.99197,
+      "endries_rank_of_n": [
+       3,
+       43
+      ],
+      "keshawn_p": null,
+      "top10": [
+       [
+        "00-0041048",
+        0.99693
+       ],
+       [
+        "00-0041094",
+        0.99197
+       ],
+       [
+        "00-0041116",
+        0.99197
+       ],
+       [
+        "00-0040785",
+        0.99088
+       ],
+       [
+        "00-0041069",
+        0.99088
+       ],
+       [
+        "00-0039589",
+        0.98655
+       ],
+       [
+        "00-0034855",
+        0.98279
+       ],
+       [
+        "00-0040129",
+        0.97476
+       ],
+       [
+        "00-0040429",
+        0.97174
+       ],
+       [
+        "00-0041251",
+        0.96802
+       ]
+      ]
+     },
+     "CANDIDATE_B_LIVE_EVALUATION": {
+      "state": "PASS",
+      "n_scored": 43,
+      "p_mean": 0.517206,
+      "endries_p": 0.46417,
+      "endries_rank_of_n": [
+       25,
+       43
+      ],
+      "keshawn_p": null,
+      "top10": [
+       [
+        "00-0034855",
+        0.98001
+       ],
+       [
+        "00-0040129",
+        0.97446
+       ],
+       [
+        "00-0038129",
+        0.97001
+       ],
+       [
+        "00-0034829",
+        0.96614
+       ],
+       [
+        "00-0035359",
+        0.94529
+       ],
+       [
+        "00-0033921",
+        0.94355
+       ],
+       [
+        "00-0036919",
+        0.91604
+       ],
+       [
+        "00-0036410",
+        0.91457
+       ],
+       [
+        "00-0039361",
+        0.90997
+       ],
+       [
+        "00-0036442",
+        0.89175
+       ]
+      ]
+     }
+    },
+    "finding": "No appearance model in this repository reads the official inactive list; it is applied a layer later in layers.py. Candidate B does not change that and does not claim to. What this case measures is whether B's latent for a depth-listed cold-start player is still driven to near one by the leak."
+   }
+  }
+ ],
+ "q9_frozen_candidate_identity": {
+  "file": "nfl/production/nonqb/layers.py",
+  "expected_sha256_16": "481f005f682cd721",
+  "actual_sha256": "481f005f682cd72129e6bf02e55cba86913ddffd7d88367743c616e3e11c0108",
+  "unchanged": true
+ },
+ "files_created_by_L2": [
+  "nfl/production/nonqb/appearance_b.py",
+  "nfl/production/nonqb/appearance_arm.py",
+  "nfl/tests/test_appearance_candidate_b.py",
+  "nfl/research/remediation/l2/CANDIDATE_B_FREEZE.json",
+  "nfl/research/remediation/l2/L2_CANDIDATE_B_VALIDATION.md"
+ ],
+ "files_modified_by_L2": [],
+ "market_inputs_used": 0,
+ "postgame_inputs_used_in_any_pregame_feature": 0,
+ "live_run": {
+  "game_id": "2026_01_DEN_KC",
+  "kickoff_utc": "2026-09-15T00:15:00Z",
+  "universe": {
+   "roster_blob": "nfl/vintage/weekly_rosters.bdab6ecee12d44a4.raw.csv.gz",
+   "n_roster_rows": 180,
+   "n_players": 180,
+   "n_without_gsis_id": 0,
+   "by_team": {
+    "KC": 92,
+    "DEN": 88
+   },
+   "n_skill_positions": 58,
+   "injuries_blob": "nfl/vintage/injuries.66e960ec81fccc6e.csv.gz",
+   "n_injury_rows_den_kc": 12
+  },
+  "arms": {
+   "INCUMBENT_KNOWN_DEFECTIVE": {
+    "state": "PASS",
+    "code": "APPEARANCE_ARM_PREDICTED",
+    "n_scored": 47,
+    "n_declined": 133,
+    "spec_version": "appearance-r8-reliability-weighted-1",
+    "coef_sha256": "557725f24fdc18ee",
+    "module_sha256": "ac1d54a6ae66f08c1a00fca0d8b0f8235a4673765769e9d1a16368cd64e452ee",
+    "governance": "INCUMBENT -- in use, and known defective",
+    "p_mean": 0.7175,
+    "p_median": 0.838782,
+    "p_min": 0.004671,
+    "p_max": 0.997055,
+    "p_sd": 0.330228,
+    "n_above_0_99": 10,
+    "n_above_0_95": 15,
+    "n_below_0_05": 4,
+    "top5pct_mean_predicted": 0.994513,
+    "states": {
+     "KNOWN_HEALTHY": 29,
+     "NO_HISTORY": 141,
+     "UNKNOWN_STATUS": 10
+    },
+    "row_stamp_example": {
+     "p_appear": 0.9908121927084734,
+     "appearance_arm": "INCUMBENT_KNOWN_DEFECTIVE",
+     "appearance_arm_governance": "INCUMBENT -- in use, and known defective",
+     "appearance_spec_version": "appearance-r8-reliability-weighted-1",
+     "appearance_coef_sha256": "557725f24fdc18ee",
+     "appearance_module_sha256": "ac1d54a6ae66f08c"
+    }
+   },
+   "CANDIDATE_B_LIVE_EVALUATION": {
+    "state": "PASS",
+    "code": "APPEARANCE_ARM_PREDICTED",
+    "n_scored": 47,
+    "n_declined": 133,
+    "spec_version": "appearance-b-union-candidate-universe-1",
+    "coef_sha256": "88664d345948aed3",
+    "module_sha256": "a3a1d5679314fb8cf8500fce2c3aa7f7e8b8cae25751a0d24c27fbdcdd79a255",
+    "governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+    "p_mean": 0.501694,
+    "p_median": 0.523597,
+    "p_min": 0.010727,
+    "p_max": 0.990729,
+    "p_sd": 0.314037,
+    "n_above_0_99": 1,
+    "n_above_0_95": 2,
+    "n_below_0_05": 10,
+    "top5pct_mean_predicted": 0.981555,
+    "states": {
+     "KNOWN_HEALTHY": 29,
+     "NO_HISTORY": 141,
+     "UNKNOWN_STATUS": 10
+    },
+    "row_stamp_example": {
+     "p_appear": 0.9907286182954358,
+     "appearance_arm": "CANDIDATE_B_LIVE_EVALUATION",
+     "appearance_arm_governance": "LIVE EVALUATION -- authorised to run and to be recorded. NOT promoted, NOT confirmed. Tonight's outcome is not evidence about whether B is better.",
+     "appearance_spec_version": "appearance-b-union-candidate-universe-1",
+     "appearance_coef_sha256": "88664d345948aed3",
+     "appearance_module_sha256": "a3a1d5679314fb8c"
+    }
+   }
+  },
+  "arm_difference": {
+   "n_shared_players": 47,
+   "mean_b_minus_incumbent": -0.215806,
+   "median": -0.072835,
+   "min": -0.791111,
+   "max": 0.010486,
+   "n_b_lower": 41,
+   "n_b_higher": 6
+  },
+  "pathological_cells": {
+   "clear_RB1": {
+    "n": 0,
+    "note": "EMPTY CELL -- reported as empty, not as a passing result"
+   },
+   "WR1": {
+    "n": 0,
+    "note": "EMPTY CELL -- reported as empty, not as a passing result"
+   },
+   "long_absence_carried_ge_9": {
+    "n": 9,
+    "incumbent_mean": 0.49443,
+    "b_mean": 0.12871,
+    "b_min": 0.01073,
+    "b_max": 0.47521,
+    "examples": [
+     {
+      "pid": "00-0040081",
+      "team": "KC",
+      "pos": "TE",
+      "rank": 13,
+      "n_prior": 17,
+      "cm_carried": 17,
+      "incumbent": 0.99705,
+      "b": 0.47521
+     },
+     {
+      "pid": "00-0036879",
+      "team": "DEN",
+      "pos": "QB",
+      "rank": 9,
+      "n_prior": 69,
+      "cm_carried": 43,
+      "incumbent": 0.94579,
+      "b": 0.40587
+     },
+     {
+      "pid": "00-0035264",
+      "team": "DEN",
+      "pos": "QB",
+      "rank": 6,
+      "n_prior": 97,
+      "cm_carried": 9,
+      "incumbent": 0.83306,
+      "b": 0.20087
+     },
+     {
+      "pid": "00-0037539",
+      "team": "DEN",
+      "pos": "TE",
+      "rank": null,
+      "n_prior": 48,
+      "cm_carried": 14,
+      "incumbent": 0.16826,
+      "b": 0.02022
+     }
+    ]
+   },
+   "reserve_listed_rank_ge_4_thin_history": {
+    "n": 9,
+    "incumbent_mean": 0.93642,
+    "b_mean": 0.42481,
+    "b_min": 0.17691,
+    "b_max": 0.5236,
+    "examples": [
+     {
+      "pid": "00-0040120",
+      "team": "KC",
+      "pos": "WR",
+      "rank": 19,
+      "n_prior": 1,
+      "cm_carried": 0,
+      "incumbent": 0.52043,
+      "b": 0.5236
+     },
+     {
+      "pid": "00-0040240",
+      "team": "DEN",
+      "pos": "TE",
+      "rank": 17,
+      "n_prior": 0,
+      "cm_carried": 0,
+      "incumbent": 0.99197,
+      "b": 0.46417
+     },
+     {
+      "pid": "00-0040955",
+      "team": "KC",
+      "pos": "TE",
+      "rank": 16,
+      "n_prior": 0,
+      "cm_carried": 0,
+      "incumbent": 0.99197,
+      "b": 0.46417
+     },
+     {
+      "pid": "00-0041133",
+      "team": "DEN",
+      "pos": "TE",
+      "rank": 15,
+      "n_prior": 0,
+      "cm_carried": 0,
+      "incumbent": 0.99197,
+      "b": 0.46417
+     }
+    ]
+   },
+   "unlisted_with_history": {
+    "n": 10,
+    "incumbent_mean": 0.17049,
+    "b_mean": 0.01343,
+    "b_min": 0.01073,
+    "b_max": 0.02022,
+    "examples": [
+     {
+      "pid": "00-0037539",
+      "team": "DEN",
+      "pos": "TE",
+      "rank": null,
+      "n_prior": 48,
+      "cm_carried": 14,
+      "incumbent": 0.16826,
+      "b": 0.02022
+     },
+     {
+      "pid": "00-0036727",
+      "team": "DEN",
+      "pos": "RB",
+      "rank": null,
+      "n_prior": 79,
+      "cm_carried": 0,
+      "incumbent": 0.00957,
+      "b": 0.02006
+     },
+     {
+      "pid": "00-0038492",
+      "team": "KC",
+      "pos": "WR",
+      "rank": null,
+      "n_prior": 26,
+      "cm_carried": 0,
+      "incumbent": 0.00853,
+      "b": 0.0156
+     },
+     {
+      "pid": "00-0039702",
+      "team": "KC",
+      "pos": "TE",
+      "rank": null,
+      "n_prior": 17,
+      "cm_carried": 17,
+      "incumbent": 0.64301,
+      "b": 0.01201
+     }
+    ]
+   },
+   "week1_cold_start_listed": {
+    "n": 8,
+    "incumbent_mean": 0.98841,
+    "b_mean": 0.41246,
+    "b_min": 0.17691,
+    "b_max": 0.46417,
+    "examples": [
+     {
+      "pid": "00-0040240",
+      "team": "DEN",
+      "pos": "TE",
+      "rank": 17,
+      "n_prior": 0,
+      "cm_carried": 0,
+      "incumbent": 0.99197,
+      "b": 0.46417
+     },
+     {
+      "pid": "00-0040955",
+      "team": "KC",
+      "pos": "TE",
+      "rank": 16,
+      "n_prior": 0,
+      "cm_carried": 0,
+      "incumbent": 0.99197,
+      "b": 0.46417
+     },
+     {
+      "pid": "00-0041133",
+      "team": "DEN",
+      "pos": "TE",
+      "rank": 15,
+      "n_prior": 0,
+      "cm_carried": 0,
+      "incumbent": 0.99197,
+      "b": 0.46417
+     },
+     {
+      "pid": "00-0040890",
+      "team": "KC",
+      "pos": "WR",
+      "rank": 14,
+      "n_prior": 0,
+      "cm_carried": 0,
+      "incumbent": 0.99088,
+      "b": 0.43766
+     }
+    ]
+   },
+   "skill_positions": {
+    "n": 47,
+    "incumbent_mean": 0.7175,
+    "b_mean": 0.50169,
+    "b_min": 0.01073,
+    "b_max": 0.99073,
+    "examples": [
+     {
+      "pid": "00-0030506",
+      "team": "KC",
+      "pos": "TE",
+      "rank": 1,
+      "n_prior": 101,
+      "cm_carried": 0,
+      "incumbent": 0.99081,
+      "b": 0.99073
+     },
+     {
+      "pid": "00-0033881",
+      "team": "DEN",
+      "pos": "TE",
+      "rank": 1,
+      "n_prior": 105,
+      "cm_carried": 0,
+      "incumbent": 0.96835,
+      "b": 0.97238
+     },
+     {
+      "pid": "00-0034348",
+      "team": "DEN",
+      "pos": "WR",
+      "rank": 5,
+      "n_prior": 91,
+      "cm_carried": 0,
+      "incumbent": 0.92043,
+      "b": 0.88715
+     },
+     {
+      "pid": "00-0036158",
+      "team": "DEN",
+      "pos": "RB",
+      "rank": 2,
+      "n_prior": 78,
+      "cm_carried": 7,
+      "incumbent": 0.99012,
+      "b": 0.87483
+     }
+    ]
+   },
+   "non_skill_positions": {
+    "n": 0,
+    "note": "EMPTY CELL -- reported as empty, not as a passing result"
+   }
+  }
+ }
+}

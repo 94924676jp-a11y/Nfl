@@ -1,0 +1,81 @@
+{
+ "artifact": "DEN_KC_LIVE_RUN_RECORD",
+ "game_id": "2026_01_DEN_KC",
+ "matchup": "Denver at Kansas City, GEHA Field at Arrowhead",
+ "kickoff_utc": "2026-09-15T00:15:00Z",
+ "forecast_cutoff_utc": "2026-09-14T17:40:19Z",
+ "run_id": "f91342d6787a66a1",
+ "model_configuration": "V1_CANDIDATE_R8",
+ "draws": 1000,
+ "seed": 20260908,
+ "dry_run": false,
+ "prospective_eligible": null,
+ "prospective_eligible_note": "null, not false. Before today's repair make_board.build_one hardcoded dry_run=True, which stamped every board ever produced as prospective_eligible=false. This is the first board this system has sealed that is genuinely admissible as prospective evidence.",
+
+ "publication_state": "PRELIMINARY_PROVISIONAL",
+ "is_final": false,
+ "why_not_final": [
+  {"code": "INACTIVES_UNAVAILABLE_NO_AUTHORITATIVE_SOURCE", "scope": "WHOLE_BOARD",
+   "ladder_tested_and_exhausted": [
+    "official NFL source www.nfl.com -> 403 to CONNECT, gateway policy denial",
+    "official club source www.denverbroncos.com -> 403 to CONNECT",
+    "official club source www.chiefs.com -> 403 to CONNECT",
+    "api.nfl.com, static.www.nfl.com, pro-football-reference.com -> 403 to CONNECT"],
+   "consequence": "No authoritative game-day eligibility evidence exists for this game. FINAL is not reachable and is not claimed. Nothing is inferred from omission."},
+  {"code": "APPEARANCE_TEAM_DEFERRED_DEN", "scope": "DEN_SKILL_ONLY",
+   "detail": "DEN carries 1 injury row (Marvin Mims Jr., practice_status filled, report_status blank) against KC's 11. readiness contract: rows exist but report_status unfilled on every one => INJURY_REPORT_INCOMPLETE. An unfiled designation is not an absence of injury and was not treated as one."}],
+
+ "board_contents": {
+  "qb_rows": 6, "receiving_rows": 13, "rushing_rows": 3, "team_volume_rows": 2,
+  "total_player_rows": 19,
+  "intended_full_two_team_board": 33,
+  "missing": 14, "missing_all_from": "DEN", "missing_cause": "APPEARANCE_TEAM_DEFERRED_DEN",
+  "draw_cells": 134000},
+
+ "final_hard_invariants_on_sealed_draws": {
+  "cmp <= att": 0, "cmp + int <= att": 0, "ptd <= cmp": 0, "ptd <= att": 0,
+  "cmp==0 implies pyds==0": 0, "receptions <= targets": 0,
+  "verdict": "ALL PASS, evaluated after all final assignments on the sealed store"},
+
+ "determinism_proof": {
+  "method": "two independent output roots, identical frozen inputs",
+  "predictive_arrays_bit_identical": "22/22",
+  "draw_cells_compared": 134000,
+  "draw_digest": "41350b5bac617b709c81f609fe3818b5",
+  "run_id_identical": true, "execution_identity_identical": true,
+  "row_ids_identical_all_layers": true,
+  "verdict": "PASS",
+  "note": "The second run wrote its own outputs and the identity did not move. This is the property the V1 dirty-file-count identity could not satisfy."},
+
+ "evidence_at_cutoff": {
+  "schedules": {"sha16": "2b59c058ffa3ab99", "retrieved": "2026-09-14T17:39:37Z", "eligibility": "LAWFUL_AT_CUTOFF"},
+  "weekly_rosters": {"sha16": "bdab6ecee12d44a4", "retrieved": "2026-09-14T16:16:33Z", "eligibility": "LAWFUL_AT_CUTOFF"},
+  "depth_charts": {"sha16": "f66f0c2583dba463", "retrieved": "2026-09-14T16:16:27Z", "eligibility": "LAWFUL_AT_CUTOFF"},
+  "injuries": {"sha16": "66e960ec81fccc6e", "retrieved": "2026-09-13T15:45:56Z", "eligibility": "LAWFUL_AT_CUTOFF"},
+  "authority_downgrades": [
+   "injuries: DOWNGRADED__MIRROR_IN_A_GOVERNING_SLOT",
+   "inactives: UNFILLED__NO_SOURCE_OF_ANY_AUTHORITY",
+   "transactions: UNFILLED__NO_SOURCE_OF_ANY_AUTHORITY"],
+  "market_exclusion": "MARKET_PROVABLY_EXCLUDED"},
+
+ "known_limitations_carried_on_the_board": [
+  "QB participation is QB3. No QB market on this card is priceable: P(Mahomes takes zero dropbacks) = 0.412. The season boundary, not eligibility, is the binding mechanism -- previous_primary_detail(2026,1)['KC'] resolves to ordinal 202518, i.e. 2025 week 18. DEN's room does not show the pathology (Nix P(zero dropbacks) = 0.048), which localises the defect rather than excusing it.",
+  "KC's passing line is credited from its own receiving event (C3) while DEN's is drawn independently by QB V1, because only KC has a modelled receiving layer tonight.",
+  "draw_coherence diagnostic team_qb_rush_opportunity_within_team_carries reports 6 violations / 2000 cells, present on control boards, unowned, not caused by tonight's repairs. All HARD guards pass.",
+  "Appearance incumbent is INCUMBENT_KNOWN_DEFECTIVE (train/serve leak confirmed). Candidate B is frozen at 32ea294a98145b24 and is SHADOW ONLY per Ruling 3."],
+
+ "stage_timing_seconds_v1_benchmark": {
+  "note": "First measured V1 live benchmark, per FAST PATH section 15. Observation only; no stage skipped or reordered.",
+  "capture_all_sources": 14.22,
+  "evidence_bundle_at_cutoff": 3.06,
+  "engine_import": 0.11,
+  "build_one_total_seal_and_render": 114.39,
+  "determinism_rerun": 114.38,
+  "full_test_suite": "approximately 1500 (106 modules, 1278 functions, 7181 checks)"},
+
+ "suite_at_seal": {"modules": 106, "test_functions": 1278, "checks": 7181,
+  "failing": 0, "raised": 0, "zero_check_functions": 0, "blocked_declared": 3,
+  "verdict": "SUITE PASS"},
+
+ "market_comparison": "NOT PERFORMED. Permitted only after sealing; this record marks the seal boundary."
+}

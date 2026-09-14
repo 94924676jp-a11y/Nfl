@@ -108,8 +108,25 @@ def _inactive_provenance(game_id, teams, inactive_ids):
 
 def build_one(season, week, game_id, written_at, out_dir, draws=1000,
               seed=20260908, model_configuration='V1_CANDIDATE',
-              inactive_ids=None):
-    """Seal a forecast and render its board. Returns (summary, board, dir)."""
+              inactive_ids=None, dry_run=True):
+    """Seal a forecast and render its board. Returns (summary, board, dir).
+
+    `dry_run` DEFAULTS TO TRUE AND THAT IS NOT A SAFE DEFAULT, IT IS THE
+    HISTORICAL ONE.
+
+    It was hardcoded `True` here with no way for a caller to say otherwise,
+    and `run_forecast` reads it as `prospective_eligible = False if dry_run
+    else None` and as `test_only`. `--dry-run` is documented as "historical
+    fixture run; NEVER prospective evidence". So every board this function has
+    ever produced -- including every live pregame board -- was stamped as
+    never-prospective, and nothing said so at the point of use.
+
+    The default is left at True so that no existing caller's behaviour moves
+    when this parameter appears. A REAL pregame run, one intended to become
+    prospective evidence, must pass `dry_run=False` deliberately. That is the
+    point: the claim "this is prospective evidence" should be made by the
+    caller that knows it is true, not inherited from a default.
+    """
     away, home = game_id.split('_')[2:4]
     teams = (away, home)
     ko = kickoff_for(season, week, game_id)
@@ -203,7 +220,7 @@ def build_one(season, week, game_id, written_at, out_dir, draws=1000,
     args = argparse.Namespace(
         season=season, week=week, game_id=game_id, arm='A',
         written_at=written_at, out_dir=out_dir, seed=seed,
-        dry_run=True, fixtures=None,
+        dry_run=bool(dry_run), fixtures=None,
         model_configuration=model_configuration)
 
     summary = RUN.build(args, fx)

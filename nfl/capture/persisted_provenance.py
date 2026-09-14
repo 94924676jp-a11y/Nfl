@@ -173,6 +173,54 @@ def reduce_rows(manifest_path=MANIFEST) -> Outcome:
                       n_distinct_blobs=len(by_blob))
 
 
+def defect_rows(manifest_path=MANIFEST) -> Outcome:
+    """The HISTORICAL defect population: reduce PASS rows with no persisted
+    digest. Grouped by cited blob, same shape as `reduce_rows`.
+
+    WHY A SEPARATE FUNCTION, AND WHY IT IS DEFINED BY SHAPE RATHER THAN BY A
+    DATE OR A COUNT.
+
+    The defect population is 368 rows and every statement made about it -- 366
+    by hash mismatch, 2 by a missing .gz suffix, 216 recoverable, 152
+    unverifiable -- is measured against that number. Those statements were
+    checked against `reduce_rows()`, which returns EVERY reduce row in an
+    append-only manifest that grows every time a capture runs. So the first
+    legitimate capture after the repair moved 368 to 370 and turned four
+    frozen historical measurements into failures, which is the "a count in
+    prose goes stale the moment it is written" defect occurring inside the
+    measurement system.
+
+    A cutoff timestamp would have been the wrong fix: it would need updating
+    too, and it would silently include any future row written by an older code
+    path. The population is defined by the property that CONSTITUTES the
+    defect -- a reduce row carrying no digest of the bytes it persisted -- so
+    it is closed by construction. Every row written after the repair carries
+    one, `_assert_no_pass_without_capture` refuses to append one that does not,
+    and the set can therefore never grow again.
+    """
+    out = reduce_rows(manifest_path)
+    if out.state is not State.PASS:
+        return out
+    by_blob, n = {}, 0
+    for blob, rows in out.value.items():
+        keep = [r for r in rows
+                if not (r.get("value") or {}).get("persisted_content_sha256")]
+        if keep:
+            by_blob[blob] = keep
+            n += len(keep)
+    if n == 0:
+        return Outcome.fail(
+            "NO_DEFECT_ROWS_FOUND",
+            f"{manifest_path} carries no reduce PASS row lacking a persisted "
+            f"digest. The measured historical population is 368; reading zero "
+            f"means this is not that manifest, not that the history changed.")
+    return Outcome.ok("DEFECT_ROWS", value=by_blob, n_rows=n,
+                      n_distinct_blobs=len(by_blob),
+                      n_reduce_rows_total=out.evidence["n_rows"],
+                      definition="reduce PASS rows with no "
+                                 "persisted_content_sha256")
+
+
 def attempt_recovery(blob: str, rows: list, cv) -> dict:
     """Try to close the verification chain for ONE persisted blob.
 

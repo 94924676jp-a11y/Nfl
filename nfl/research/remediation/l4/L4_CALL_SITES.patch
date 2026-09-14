@@ -1,0 +1,148 @@
+# L4 call-site patches -- NOT APPLIED. Generated against copies, ast-parsed.
+# apply with: git apply -p1 nfl/research/remediation/l4/L4_CALL_SITES.patch
+# Neither nfl/production/run_forecast.py nor nfl/tools/make_board.py was
+# edited in the working tree by L4. Verify with git diff before applying.
+--- a/nfl/production/run_forecast.py	2026-09-14 16:36:19.316884775 +0000
++++ b/nfl/production/run_forecast.py	2026-09-14 16:36:46.639744738 +0000
+@@ -1909,9 +1909,28 @@
+     summary['dry_run'] = bool(args.dry_run)
+     summary['prospective_eligible'] = False if args.dry_run else None
+     # publication is a SEPARATE gate and is checked last, never assumed
++    #
++    # A SEAL CANNOT MAKE A PER-METRIC PUBLICATION DECISION, AND MUST SAY SO.
++    # `may_publish()` with no context answers the board-wide question only.
++    # The metric-level facts the gate now takes are not all in this
++    # function's hands: the chronology verdicts live in the board's vintage
++    # selection and model health is a graded research artifact whose vintage
++    # the caller must vouch for. Supplying either from here would be this
++    # function inventing a fact to make a decision look complete.
++    #
++    # So the SCOPE of the answer is recorded with the answer. A reader of
++    # run_status.json can now tell a board-wide refusal from a metric-level
++    # one, and can see that no metric decision was taken here. The per-metric
++    # decisions are taken at board build time by
++    # `authorization.decide_board`, which is where the missing facts are.
+     pub = AUTH.may_publish()
+     summary['publication'] = {'state': pub.state.value, 'code': pub.code,
+-                              'detail': pub.detail[:200]}
++                              'detail': pub.detail[:200],
++                              'scope': pub.evidence.get('scope'),
++                              'metric_decision': pub.evidence.get(
++                                  'metric_decision'),
++                              'mechanism_spec_version': pub.evidence.get(
++                                  'spec_version')}
+     p.out_dir.mkdir(parents=True, exist_ok=True)
+     (p.out_dir / 'run_status.json').write_text(
+         json.dumps(summary, indent=1, default=str) + '\n')
+--- a/nfl/tools/make_board.py	2026-09-14 16:36:19.318868640 +0000
++++ b/nfl/tools/make_board.py	2026-09-14 16:37:02.406461481 +0000
+@@ -23,8 +23,10 @@
+ if str(_REPO) not in sys.path:
+     sys.path.insert(0, str(_REPO))
+ 
++from nfl.production import authorization as AUTH                  # noqa: E402
+ from nfl.production import run_forecast as RUN                    # noqa: E402
+ from nfl.production.nonqb import readiness as RD                  # noqa: E402
++from nfl.production.nonqb import vintage_selector as VS           # noqa: E402
+ from nfl.product import board as B                                # noqa: E402
+ from nfl.product import confidence as CONF                        # noqa: E402
+ from nfl.product import names as NM                               # noqa: E402
+@@ -108,7 +110,7 @@
+ 
+ def build_one(season, week, game_id, written_at, out_dir, draws=1000,
+               seed=20260908, model_configuration='V1_CANDIDATE',
+-              inactive_ids=None):
++              inactive_ids=None, model_health_path=None):
+     """Seal a forecast and render its board. Returns (summary, board, dir)."""
+     away, home = game_id.split('_')[2:4]
+     teams = (away, home)
+@@ -229,6 +231,54 @@
+     bd['qb_inactive_ownership_enforced'] = bool(
+         summary.get('qb_inactive_ownership_enforced'))
+ 
++    # ------------------------------------------------------------------
++    # PER-METRIC PUBLICATION DECISIONS, ON THE FACTS THIS BOARD HOLDS
++    #
++    # `may_publish()` took no arguments, so the board could only ever record
++    # one board-wide verdict for every number on it. It now decides per run
++    # and per metric, and this is the only place that holds all the facts:
++    # the run's own governance transport, AND the chronology verdicts from
++    # the vintage selection above, AND -- if the operator names one -- a
++    # model-health artifact.
++    #
++    # CHRONOLOGY IS NOT ASSERTED HERE, IT IS CARRIED. Every source in `info`
++    # was already compared against `written_at` a hundred lines above, and
++    # the build raises SOURCE_AFTER_WRITTEN_AT if any is not earlier. The
++    # verdict below reports the result of that check in the selector's own
++    # closed vocabulary; it does not re-decide it and cannot disagree with it.
++    chronology = {name: (VS.LAWFUL if rec['observed_at'] < written_at
++                         else VS.REJECT_LATE)
++                  for name, rec in info['sources'].items()}
++    # MODEL HEALTH IS OPTIONAL AND ITS VINTAGE IS THE OPERATOR'S CLAIM.
++    #
++    # It is graded on realised outcomes, so loading one whose scored games
++    # include this board's own game would put post-kickoff information into a
++    # pregame artifact. The artifact's own `date` is therefore checked
++    # against this board's cut and a later one is REFUSED rather than
++    # silently used. Absent a path the facts are NOT_SUPPLIED, the health
++    # rules answer UNEVALUABLE, and the board says so -- which is the honest
++    # answer and not a failure.
++    health = AUTH.NOT_SUPPLIED
++    if model_health_path:
++        _h = json.loads(pathlib.Path(model_health_path).read_text())
++        _d = str(_h.get('date') or '')
++        if not _d or _d >= written_at[:10]:
++            raise SystemExit(
++                f'MODEL_HEALTH_NOT_BEFORE_CUT: {model_health_path} is dated '
++                f'{_d!r} against a board cut of {written_at}. A health '
++                f'artifact graded on outcomes at or after the cut carries '
++                f'post-kickoff information into a pregame board.')
++        health = {r['metric']: r for r in (_h.get('metrics') or [])}
++    bd['publication_decisions'] = AUTH.decide_board(
++        summary, chronology=chronology, model_health=health)
++    bd['publication_mechanism'] = {
++        'spec_version': AUTH.SPEC_VERSION,
++        'model_health_artifact': str(model_health_path or 'NOT_SUPPLIED'),
++        'wave7_levels_activated': [],
++        'note': 'dispositions are ALLOW / REFUSE / UNDECIDED / UNEVALUABLE. '
++                'UNDECIDED means no rule has been set for this metric and '
++                'every input that rule would take is attached to the row.'}
++
+     (run_dir / 'board.json').write_text(
+         json.dumps(bd, indent=1, sort_keys=True, default=str))
+     # Names resolved under the SAME cut as the forecast. Display only.
+@@ -243,6 +293,10 @@
+ def main():
+     ap = argparse.ArgumentParser()
+     ap.add_argument('--game-id', required=True)
++    ap.add_argument('--model-health', default=None,
++                    help='path to a MODEL_HEALTH artifact whose grading date '
++                         'is strictly before this board cut. Omitted, the '
++                         'health rules report UNEVALUABLE rather than clean.')
+     ap.add_argument('--season', type=int, default=2026)
+     ap.add_argument('--week', type=int, default=1)
+     ap.add_argument('--written-at', required=True,
+@@ -256,7 +310,7 @@
+ 
+     summary, bd, run_dir = build_one(
+         a.season, a.week, a.game_id, a.written_at, a.out_dir, a.draws,
+-        a.seed, a.model_configuration)
++        a.seed, a.model_configuration, model_health_path=a.model_health)
+     print('status', summary['status'], 'run_id', summary['run_id'])
+     for st in summary['stages']:
+         print('  %-22s %-16s %s' % (st['stage'], st['state'],
+@@ -266,6 +320,14 @@
+     print('board  ', run_dir / 'BOARD.md')
+     print('players', bd['n_players'], '| authorization',
+           bd['authorization']['label'])
++    # THE PER-METRIC ANSWER, PRINTED. A disposition nobody sees is a
++    # disposition nobody acts on, and the board-wide label above has never
++    # been able to say anything about an individual number.
++    for m, d in sorted((bd.get('publication_decisions') or {}).items()):
++        n_und = len(d.get('undecided') or [])
++        print('  %-26s board=%-10s metric=%-12s rank=%-12s undecided=%d'
++              % (m, d.get('board_disposition'), d.get('metric_disposition'),
++                 d.get('ranking_disposition'), n_und))
+     return 0
+ 
+ 
