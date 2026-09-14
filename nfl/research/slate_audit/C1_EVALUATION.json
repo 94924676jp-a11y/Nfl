@@ -1,0 +1,215 @@
+{
+ "artifact": "C1_DENOMINATOR_EVALUATION",
+ "spec_version": "c1-denominator-eval/1.0.0",
+ "preregistration_sha256": "9d0443e1bd777d31371d2f7073c4e8acf2be9afcc6b4730471957b225e83e9a0",
+ "status": "EXPLORATORY",
+ "governance": "Not prospective evidence. Not promoted. R8 remains the accepted baseline.",
+ "design": {
+  "arms": {
+   "BASELINE": "w_other from mass_pool, fitted on the TEAM denominator -- what production does today",
+   "C1": "w_other from mass_pool_rb, the same numerator on the RUNNING-BACK denominator"
+  },
+  "held_identical": [
+   "weights W",
+   "appearance draws",
+   "A1 rb budget",
+   "seed",
+   "draw index",
+   "test rows"
+  ],
+  "team_volume": "ORACLED at the realised team level, declared",
+  "a1_rb_league_share": 0.860235,
+  "eval_seasons": [
+   2022,
+   2023,
+   2024
+  ],
+  "n_draws": 400,
+  "seed": 20260914
+ },
+ "per_season": {
+  "2022": {
+   "n_rows": 2365,
+   "n_team_games": 542,
+   "pool_evidence": {
+    "n_team_games": 544,
+    "n_team_games_with_rb_mass": 544,
+    "n_team_games_dropped_no_rb_mass": 0,
+    "seasons_used": [
+     2021
+    ],
+    "baseline_mean": 0.190931,
+    "c1_mean": 0.011003
+   },
+   "BASELINE": {
+    "crps": 2.066771,
+    "bias": -1.525883,
+    "mae": 2.99253,
+    "mean_projected": 3.417458,
+    "mean_actual": 4.94334,
+    "cov50": 0.5848,
+    "cov80": 0.74,
+    "cov90": 0.8144,
+    "pit_mean": 0.5776,
+    "other_mean": 0.196639,
+    "closure_max_abs_dev": 2.384185791015625e-07,
+    "n_degenerate_groups": 1599
+   },
+   "C1": {
+    "crps": 1.759115,
+    "bias": -0.766684,
+    "mae": 2.719388,
+    "mean_projected": 4.176657,
+    "mean_actual": 4.94334,
+    "cov50": 0.6486,
+    "cov80": 0.8207,
+    "cov90": 0.8901,
+    "pit_mean": 0.538,
+    "other_mean": 0.018319,
+    "closure_max_abs_dev": 2.384185791015625e-07,
+    "n_degenerate_groups": 1599
+   },
+   "crps_diff_c1_minus_baseline": -0.307656,
+   "crps_diff_clustered_bootstrap": {
+    "mean": -0.30716382602660397,
+    "lo": -0.32941908872850195,
+    "hi": -0.28447760984618775,
+    "n_clusters": 542
+   }
+  },
+  "2023": {
+   "n_rows": 2255,
+   "n_team_games": 544,
+   "pool_evidence": {
+    "n_team_games": 1086,
+    "n_team_games_with_rb_mass": 1086,
+    "n_team_games_dropped_no_rb_mass": 0,
+    "seasons_used": [
+     2021,
+     2022
+    ],
+    "baseline_mean": 0.197909,
+    "c1_mean": 0.01192
+   },
+   "BASELINE": {
+    "crps": 2.177153,
+    "bias": -1.632061,
+    "mae": 3.098194,
+    "mean_projected": 3.532463,
+    "mean_actual": 5.164523,
+    "cov50": 0.5517,
+    "cov80": 0.7317,
+    "cov90": 0.8084,
+    "pit_mean": 0.5874,
+    "other_mean": 0.205093,
+    "closure_max_abs_dev": 2.384185791015625e-07,
+    "n_degenerate_groups": 1846
+   },
+   "C1": {
+    "crps": 1.852279,
+    "bias": -0.811996,
+    "mae": 2.799224,
+    "mean_projected": 4.352527,
+    "mean_actual": 5.164523,
+    "cov50": 0.6341,
+    "cov80": 0.8275,
+    "cov90": 0.8927,
+    "pit_mean": 0.542,
+    "other_mean": 0.020557,
+    "closure_max_abs_dev": 2.384185791015625e-07,
+    "n_degenerate_groups": 1846
+   },
+   "crps_diff_c1_minus_baseline": -0.324874,
+   "crps_diff_clustered_bootstrap": {
+    "mean": -0.32596419907813007,
+    "lo": -0.3490342828804886,
+    "hi": -0.3048385008089048,
+    "n_clusters": 544
+   }
+  },
+  "2024": {
+   "n_rows": 2166,
+   "n_team_games": 544,
+   "pool_evidence": {
+    "n_team_games": 1630,
+    "n_team_games_with_rb_mass": 1630,
+    "n_team_games_dropped_no_rb_mass": 0,
+    "seasons_used": [
+     2021,
+     2022,
+     2023
+    ],
+    "baseline_mean": 0.198812,
+    "c1_mean": 0.010414
+   },
+   "BASELINE": {
+    "crps": 2.278512,
+    "bias": -1.724265,
+    "mae": 3.200039,
+    "mean_projected": 3.699558,
+    "mean_actual": 5.423823,
+    "cov50": 0.5379,
+    "cov80": 0.7188,
+    "cov90": 0.7936,
+    "pit_mean": 0.5936,
+    "other_mean": 0.207434,
+    "closure_max_abs_dev": 2.384185791015625e-07,
+    "n_degenerate_groups": 2329
+   },
+   "C1": {
+    "crps": 1.94392,
+    "bias": -0.85318,
+    "mae": 2.882795,
+    "mean_projected": 4.570642,
+    "mean_actual": 5.423823,
+    "cov50": 0.6108,
+    "cov80": 0.8121,
+    "cov90": 0.8758,
+    "pit_mean": 0.5452,
+    "other_mean": 0.020867,
+    "closure_max_abs_dev": 2.384185791015625e-07,
+    "n_degenerate_groups": 2329
+   },
+   "crps_diff_c1_minus_baseline": -0.334592,
+   "crps_diff_clustered_bootstrap": {
+    "mean": -0.33454603679438366,
+    "lo": -0.3602091670568534,
+    "hi": -0.3046169667608363,
+    "n_clusters": 544
+   }
+  }
+ },
+ "pooled": {
+  "BASELINE": {
+   "crps": 2.171036,
+   "bias": -1.624487,
+   "mae": 3.093877,
+   "cov50": 0.5588,
+   "cov80": 0.7305,
+   "cov90": 0.8058
+  },
+  "C1": {
+   "crps": 1.849061,
+   "bias": -0.80935,
+   "mae": 2.798075,
+   "cov50": 0.6317,
+   "cov80": 0.8202,
+   "cov90": 0.8864
+  }
+ },
+ "pooled_crps_diff_clustered_bootstrap": {
+  "mean": -0.32198822859005616,
+  "lo": -0.33553690531986274,
+  "hi": -0.30854124290094637,
+  "n_clusters": 1630
+ },
+ "acceptance_criteria_section_7": {
+  "1_crps_improves": true,
+  "2_clustered_interval_excludes_zero": true,
+  "3_consistent_in_all_three_seasons": true,
+  "4_bias_moves_toward_zero_without_overshoot": true,
+  "5_closure_exact": true
+ },
+ "accepted": true,
+ "market_information_consulted": "NONE"
+}

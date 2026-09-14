@@ -330,6 +330,68 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
     pa = _lay('participation',
                   LY.participation(ap, fits['participation_prior'].value, m=m))
 
+    # A PLAYER WITH NO APPEARANCE DRAW IS EXCLUDED, NOT A REASON TO REFUSE THE
+    # WHOLE GAME.
+    #
+    # `targets_carries` refuses with ALLOCATION_PLAYER_WITHOUT_APPEARANCE when
+    # any player it is handed has no appearance vector, and it is right to:
+    # allocating to a player whose availability is unknown invents it. But the
+    # refusal was game-scoped where the missing evidence is player-scoped. On
+    # 2026-09-13 ONE such player cost CHI@CAR and CLE@JAX every running back
+    # and every receiver projection for both clubs.
+    #
+    # So the frame is narrowed to the players who HAVE the evidence, each
+    # exclusion is named, and the refusal is kept for the case where it is
+    # genuinely a game-level fact: a team with nobody left has no partition to
+    # make. `rb` below is derived from `recv`, so filtering here covers the
+    # carry layout too.
+    if pa.state is State.PASS:
+        _placeable = [q for q in recv if q['gsis_id'] in pa.value]
+        _dropped = [q for q in recv if q['gsis_id'] not in pa.value]
+        if _dropped:
+            _left = {q['team'] for q in _placeable}
+            _empty = [t for t in teams if t not in _left]
+            if _empty:
+                o = Outcome.fail(
+                    'NONQB_TEAM_HAS_NO_APPEARING_PLAYER',
+                    f'excluding {len(_dropped)} player(s) with no appearance '
+                    f'draw would leave {_empty} with nobody to allocate '
+                    f'opportunity among. Refused rather than allocating '
+                    f'within an empty team.',
+                    teams_emptied=_empty, n_excluded=len(_dropped))
+                _lay('participation_frame', o)
+                g['halted_at'] = 'participation_frame'
+                g['halt_reason'] = o.detail[:200]
+                return g, None
+            _by = collections.defaultdict(list)
+            for q in _placeable:
+                _by[q['team']].append(q)
+            _order, starts, counts, _i = [], [], [], 0
+            for t in teams:
+                _order.extend(_by.get(t, []))
+                starts.append(_i)
+                counts.append(len(_by.get(t, [])))
+                _i += len(_by.get(t, []))
+            recv = _order
+            ids = [q['gsis_id'] for q in recv]
+            pos = [q['position'] for q in recv]
+            g['n_players'] = len(recv)
+            g['excluded_no_appearance'] = [
+                {'gsis_id': q['gsis_id'], 'team': q.get('team'),
+                 'position': q.get('position'),
+                 'reason': 'NO_APPEARANCE_DRAW'} for q in _dropped]
+            _lay('participation_frame', Outcome.ok(
+                'PARTICIPATION_FRAME_NARROWED', value=len(recv),
+                detail=f'{len(_dropped)} player(s) carry no appearance draw '
+                       f'and are excluded by name; {len(recv)} remain and '
+                       f'every team still has players to allocate among.',
+                n_excluded=len(_dropped), n_remaining=len(recv),
+                excluded=g['excluded_no_appearance'][:10]))
+        else:
+            _lay('participation_frame', Outcome.ok(
+                'PARTICIPATION_FRAME_COMPLETE', value=len(recv),
+                detail='every modelled player carries an appearance draw'))
+
     # ---- targets (WR/TE/RB, simplex) ------------------------------------
     Ct = [fits['C_targets'].value.get(p, 0.0) for p in ids]
     tc = LY.targets_carries(pa, 'targets', Ct, pos, (starts, counts), ids,
@@ -444,10 +506,60 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
     for t in teams:
         n = sum(1 for q in rb if q['team'] == t)
         rb_starts.append(j); rb_counts.append(n); j += n
+    # C1. THE `other` MASS MUST BE ON THE SAME DENOMINATOR AS THE BUDGET.
+    #
+    # `p4c_build` fits `mass_pool` as `mall - ms` where `mall` sums EVERY
+    # position, so for the carries class it is the share of TEAM CARRIES not
+    # taken by modelled backs -- 0.1989, which is the non-RB mass (quarterback
+    # rushing 0.157, receivers 0.030, tight ends 0.004) almost exactly.
+    #
+    # This engine does not multiply those shares by team carries. When A1 owns
+    # the partition it multiplies them by A1's `rb` CATEGORY, from which kneel,
+    # designed_qb, wr, te and fringe are already gone -- so the default pool
+    # takes the same mass off a second time and the modelled backs lose about
+    # 19 points of their budget. Measured on the 2026 week-1 slate: carries
+    # projected 7.42 against 10.55 actual, bias -3.12 at z = -3.14, while
+    # targets -- whose class denominator IS what production feeds it -- came in
+    # essentially unbiased under the same estimator and the same code.
+    #
+    # `mass_pool_partition` is the same numerator on the RUNNING-BACK
+    # denominator, 0.0088. Selected HERE, beside the line that chooses the
+    # multiplier, because the two must move together; and passed by swapping
+    # the pool rather than by adding an argument to `layers.targets_carries`,
+    # because the frozen Q9 candidate identity hashes that module's source and
+    # editing it would break a freeze this change has no business touching.
+    #
+    # Registration: predeclaration_c1_denominator.md sha256 9d0443e1,
+    # evaluated walk-forward on 2022-2024 in slate_audit/C1_EVALUATION.json.
+    _cpar = fits['p4c_params_carries'].value
+    if rushing_budget is not None:
+        _part = (_cpar or {}).get('mass_pool_partition')
+        if _part is None or not len(_part):
+            # NEVER FALL BACK TO THE TEAM POOL. That fallback IS the double
+            # subtraction, and it would be invisible in the output.
+            o = Outcome.fail(
+                'P4C_PARTITION_POOL_MISSING',
+                'the carry budget is A1\'s `rb` partition but the fitted P4C '
+                'carry parameters carry no `mass_pool_partition`. Refused '
+                'rather than defaulting to the team-denominator pool, which '
+                'is the defect this selection exists to fix.',
+                has_mass_pool=bool((_cpar or {}).get('mass_pool') is not None))
+            _lay('carries', o)
+            g['halted_at'] = 'carries'
+            g['halt_reason'] = o.detail[:200]
+            return g, None
+        _cpar = dict(_cpar)
+        _cpar['mass_pool'] = _part
+        _cpar['mass_mean'] = float(np.asarray(_part).mean())
+        g['layers']['carry_other_denominator'] = \
+            'PASS[A1_RB_PARTITION_POOL]'
+    else:
+        g['layers']['carry_other_denominator'] = \
+            'NOT_APPLICABLE[D1_TEAM_CARRIES_POOL]'
     car = LY.targets_carries(
         pa, 'carries', [fits['C_carries'].value.get(p, 0.0) for p in rb_ids],
         rb_pos, (rb_starts, rb_counts), rb_ids,
-        fits['p4c_params_carries'].value, m=m, seed=seed,
+        _cpar, m=m, seed=seed,
         game_id=game_id, ordinal=season * 100 + week)
     _lay('carries', car)
     if car.state is not State.PASS:

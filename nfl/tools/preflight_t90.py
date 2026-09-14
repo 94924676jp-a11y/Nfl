@@ -101,22 +101,40 @@ def _checks(season: int, week: int) -> list:
 
     # 4. the executor can actually write. Checked by looking at what it has
     #    already done rather than by reading permissions we cannot verify.
+    # A CAPABILITY IS NOT A RECENCY PROPERTY, and this used to read the last
+    # 40 commits only. The runner had pushed 198 times, but a single session
+    # of 40 human commits displaced every one of them out of the window and
+    # the check reported RUNNER_HAS_NEVER_PUSHED -- "the executor's write path
+    # is unproven" -- about a path proven 198 times. Whether the executor CAN
+    # write is answered by whether it EVER has; how recently is a separate
+    # question and is reported beside it rather than folded into it.
+    # THE AUTHOR IS MATCHED EXACTLY, NEVER THROUGH git's --author.
+    # `--author=nfl-capture[bot]` reads the brackets as a REGEX CHARACTER
+    # CLASS, so it looks for "nfl-capture" followed by one of b, o or t and
+    # finds nothing. It returned 0 against a real 198. The author string is
+    # compared as a string, which is what the original did correctly.
+    bot = last = None
     try:
-        log = subprocess.run(
-            ["git", "log", "--format=%an", "-40"], cwd=_REPO,
-            capture_output=True, text=True, timeout=20).stdout.split("\n")
-    except (OSError, subprocess.SubprocessError) as exc:
-        log = []
+        rows = subprocess.run(
+            ["git", "log", "--format=%an|%h|%ad", "--date=short"],
+            cwd=_REPO, capture_output=True, text=True,
+            timeout=60).stdout.splitlines()
+        hits = [r for r in rows
+                if r.split("|", 1)[0].strip() == "nfl-capture[bot]"]
+        bot = len(hits)
+        last = " ".join(hits[0].split("|")[1:]) if hits else None
+    except (OSError, subprocess.SubprocessError, ValueError) as exc:
         out.append(("git history readable", Outcome.blocked(
             "GIT_UNAVAILABLE", str(exc), cause=Cause.ENVIRONMENT)))
-    bot = sum(1 for a in log if a.strip() == "nfl-capture[bot]")
     out.append(("the runner has already pushed evidence unattended",
                 Outcome.ok("RUNNER_CAN_PUSH", value=bot,
-                           detail=f"{bot} of the last {len(log)} commits were "
-                                  f"authored by nfl-capture[bot]")
+                           detail=f"{bot} commit(s) in the whole history are "
+                                  f"authored by nfl-capture[bot]; most "
+                                  f"recent {last}",
+                           n_commits=bot, most_recent=last)
                 if bot else Outcome.fail(
                     "RUNNER_HAS_NEVER_PUSHED",
-                    "no commit by nfl-capture[bot] in recent history; the "
+                    "no commit by nfl-capture[bot] anywhere in history; the "
                     "executor's write path is unproven.")))
 
     # 5. the official sources have returned real content, and their artifacts

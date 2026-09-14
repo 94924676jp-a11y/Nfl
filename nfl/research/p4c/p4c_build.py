@@ -135,6 +135,7 @@ def fit_params(sub, cls, ev, rows_all):
     # From seasons < ev, EXCLUDING 2020 (pre-declaration section 1).
     ms = collections.defaultdict(float)
     mall = collections.defaultdict(float)
+    mpos = collections.defaultdict(float)
     seasons_used = set()
     for r in rows_all:
         if r['season'] >= ev or r['season'] in L.MASS_POOL_EXCLUDE_SEASONS:
@@ -145,8 +146,13 @@ def fit_params(sub, cls, ev, rows_all):
         seasons_used.add(r['season'])
         k = (r['team'], r['ord'])
         mall[k] += s
-        if r['position'] in c['pos'] and (r.get('f_n_prior') or 0) >= 1:
-            ms[k] += s
+        if r['position'] in c['pos']:
+            # EVERY player at a modelled POSITION, whether or not the pool
+            # models him. `ms` below is the modelled subset; the gap between
+            # the two is what `mass_pool_rb` is for.
+            mpos[k] += s
+            if (r.get('f_n_prior') or 0) >= 1:
+                ms[k] += s
     if c['mode'] == 'simplex':
         pool = np.array([max(0.0, min(0.95, mall[k] - ms[k])) for k in mall],
                         np.float32)
@@ -155,6 +161,31 @@ def fit_params(sub, cls, ev, rows_all):
     par['mass_pool'] = pool
     par['mass_mean'] = float(pool.mean())
     par['mass_pool_seasons'] = sorted(seasons_used)
+
+    # ---- C1: the same numerator on the CLASS-POSITION denominator ----------
+    # `mass_pool` is `mall - ms` and `mall` sums EVERY position, so it is the
+    # share of the whole team denominator not taken by modelled players. That
+    # is the right quantity when the consumer is handed the team denominator.
+    #
+    # It is the WRONG quantity when the consumer is handed a PARTITION of it.
+    # Production hands the carries allocator A1's `rb` category, from which
+    # kneel, designed_qb, wr, te and fringe are already removed, so subtracting
+    # a team-denominator residual removes them a second time. Measured: 0.1989
+    # against a correct 0.0088, a 22.7x overstatement (slate_audit/
+    # denominator.py, predeclaration_c1_denominator.md sha256 9d0443e1).
+    #
+    # `mass_pool_rb` is that residual on the class's own position mass. It is
+    # ADDITIVE: `mass_pool` above is untouched, so every existing consumer --
+    # the targets class included, which has no partition between fit and use
+    # and is the control that proved this a seam -- is bit-identical.
+    if c['mode'] == 'simplex':
+        keys = [k for k in mall if mpos[k] > 1e-9]
+        rbp = np.array([max(0.0, min(0.95, (mpos[k] - ms[k]) / mpos[k]))
+                        for k in keys], np.float32)
+        par['mass_pool_partition'] = rbp
+        par['mass_mean_partition'] = (float(rbp.mean()) if rbp.size
+                                      else None)
+        par['n_team_games_no_position_mass'] = len(mall) - len(keys)
 
     # ---- Dirichlet concentration, pooled moment estimator ------------------
     if c['mode'] == 'simplex':

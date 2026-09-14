@@ -496,3 +496,59 @@ draws, 117 projection rows, 36 players. It was built from evidence legitimately
 available before kickoff and needs nothing from this request. Official
 inactives REFINE that forecast; they did not have to create it. When your bytes
 land the chain is about nine minutes end to end.
+
+---
+
+## 2026-09-14 — injury-report publication clock (BLOCKS 3 of 14 games)
+
+**Status: EVIDENCE CEILING.** Written up in full at
+`nfl/research/slate_audit/EVIDENCE_CEILING_injury_report_publication.md`.
+
+**What I need, and why it is yours.** The injury feed we capture carries no
+publication date, no report-type field and no filing timestamp. Its columns
+are `season, season_type, game_type, team, week, gsis_id, position,
+full_name, first_name, last_name, report_primary_injury,
+report_secondary_injury, report_status, practice_primary_injury,
+practice_secondary_injury, practice_status` and that is the whole schema. The
+capture's `retrieved_at` records when WE fetched it, which is a different
+quantity — a Friday fetch of a Wednesday report carries a Friday clock.
+
+Without it, a club with four rows, practice statuses filled and no game
+designation is byte-identical in two states that have opposite meanings:
+
+* the **final** report is out and this club has nobody designated — the most
+  benign injury state there is; or
+* only the **mid-week practice** report is out and no designation has been
+  filed yet.
+
+Measured: in the game-day capture `injuries.66e960ec81fccc6e.csv.gz`, 61 of
+182 rows carry a designation (33.5%); in the mid-week capture
+`injuries.cd7338473dd852d0.csv.gz`, 8 of 167 (4.8%). The slate separates
+cleanly. **A single team does not.** Houston, Minnesota and Miami each carried
+zero designations on game day and lost BUF@HOU, GB@MIN and MIA@LV their entire
+non-QB player board.
+
+**Exactly what would lift it — any one is enough:**
+
+1. An injury feed or parser that **preserves the report's own date and type**
+   ("Wednesday practice report" / "Friday final injury report"). This resolves
+   it per team with no threshold.
+2. **The official final injury report captured as its own source**, so its
+   presence is itself the publication signal. `official_injury_report` already
+   appears in our source list; whether it carries the date and type has not
+   been established, and establishing that needs the bytes.
+3. Enough **historical weeks** of the feed that the designated-row share is a
+   measured separation with a derived cut rather than a number chosen to make
+   three games pass.
+
+**What I will not do.** Pick a threshold. Infer publication from
+`retrieved_at`. Read "no designation" as "nobody hurt". I attempted a repair
+that refused only when `report_status` AND `practice_status` were both blank,
+measured it across all seven captures we hold, found `both blank` is **zero in
+every one** — so it would never fire and would delete the guard rather than
+correct it — and withdrew it. `readiness.py` is restored to `3f5fc82`.
+
+**What does not wait on you.** The other two instances of the same
+blast-radius class are repaired and needed no new evidence:
+NYJ@TEN, CHI@CAR and CLE@JAX all now produce full boards where they produced
+none. Three of six recovered; three wait on this.

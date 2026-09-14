@@ -40,6 +40,16 @@ from nfl.production import derived as DERIVED                       # noqa: E402
 from nfl.production import candidate_mode as CAND                   # noqa: E402
 from nfl.production import draws_artifact as DA                     # noqa: E402
 
+# THE ONE BOUND ON EVERY PLAYER-SCOPED EXCLUSION, declared once.
+#
+# Two stages exclude a player they cannot place rather than refusing the game
+# around him -- `identity_resolution` for a missing gsis_id, and the non-QB
+# frame check for a missing gsis_id, position or team. Both are bounded by
+# this: above it the roster feed is BROKEN rather than incomplete and the run
+# refuses. It lived inside `_identity` as a local, so the second stage could
+# not read it and refused the whole game around one player instead.
+EXCLUSION_LIMIT = 0.01
+
 ARMS = ('A', 'B', 'C')
 
 # B14. WHICH INVARIANT A DRAW-ARTIFACT REFUSAL BELONGS TO.
@@ -448,7 +458,6 @@ def build(args, fixtures: dict = None) -> dict:
         #
         # The escape hatch is bounded. Above EXCLUSION_LIMIT the roster feed is
         # broken rather than merely incomplete, and the run refuses.
-        EXCLUSION_LIMIT = 0.01
         if players and len(bad) / len(players) > EXCLUSION_LIMIT:
             return RF.refuse('IDENTITY_UNRESOLVED', 'identity_resolution',
                              f'{len(bad)} of {len(players)} player(s) have no '
@@ -544,17 +553,58 @@ def build(args, fixtures: dict = None) -> dict:
         need = ('gsis_id', 'position', 'team')
         thin = [q for q in players if not all(q.get(k) for k in need)]
         if thin:
-            o = Outcome.blocked(
-                'NONQB_PLAYER_FRAME_INCOMPLETE',
-                f'{len(thin)} of {len(players)} player(s) carry no '
-                f'{"/".join(need)}, so they cannot be grouped by team or '
-                f'given a positional weight. Named here rather than raised '
-                f'inside the allocator.',
-                cause=Cause.DATA,
-                n_incomplete=len(thin), n_players=len(players),
-                example=[{k: q.get(k) for k in need} for q in thin[:3]])
-            fx['_nonqb'] = {'fatal': o}
-            return fx['_nonqb']
+            # THE REFUSAL IS SCOPED TO THE PLAYER, NOT THE GAME.
+            #
+            # This used to refuse the whole non-QB chain, and on 2026-09-13 it
+            # did: ONE player of 190 carried no position, and NYJ@TEN produced
+            # no running back and no receiver projection for either club. Two
+            # other games lost their boards the same way for a different
+            # missing field. A player who cannot be placed is still only one
+            # player, and the rest of the frame is not damaged by his absence.
+            #
+            # `identity_resolution` ALREADY established this policy for a
+            # missing gsis_id, with its own declared EXCLUSION_LIMIT: exclude,
+            # name, and refuse only when the count says the feed is broken
+            # rather than incomplete. This applies that same policy to the
+            # same class of defect two fields wider. It is not a new rule and
+            # it introduces no new constant.
+            limit = EXCLUSION_LIMIT
+            if len(thin) / len(players) > limit:
+                o = Outcome.blocked(
+                    'NONQB_PLAYER_FRAME_INCOMPLETE',
+                    f'{len(thin)} of {len(players)} player(s) carry no '
+                    f'{"/".join(need)}, above the {limit:.0%} limit. That is '
+                    f'a broken roster feed rather than an incomplete one, so '
+                    f'it is refused instead of excluded.',
+                    cause=Cause.DATA,
+                    n_incomplete=len(thin), n_players=len(players),
+                    limit=limit,
+                    example=[{k: q.get(k) for k in need} for q in thin[:3]])
+                fx['_nonqb'] = {'fatal': o}
+                return fx['_nonqb']
+            keep = [q for q in players if all(q.get(k) for k in need)]
+            # A TEAM THAT LOSES EVERY PLAYER IS A REAL REFUSAL. Allocation
+            # partitions opportunity WITHIN a team, so a team with nobody left
+            # has no partition to make and excluding down to it would invent
+            # one.
+            left = {q['team'] for q in keep}
+            empty = [t for t in teams if t not in left]
+            if empty:
+                o = Outcome.blocked(
+                    'NONQB_TEAM_HAS_NO_PLACEABLE_PLAYER',
+                    f'excluding {len(thin)} unplaceable player(s) would leave '
+                    f'{empty} with nobody to allocate opportunity among. '
+                    f'Refused rather than allocating within an empty team.',
+                    cause=Cause.DATA, teams_emptied=empty,
+                    n_excluded=len(thin))
+                fx['_nonqb'] = {'fatal': o}
+                return fx['_nonqb']
+            fx.setdefault('_excluded_unidentified', []).extend(
+                {'team': q.get('team'), 'position': q.get('position'),
+                 'gsis_id': q.get('gsis_id'),
+                 'missing_fields': [k for k in need if not q.get(k)],
+                 'reason': 'NONQB_FRAME_FIELD_MISSING'} for q in thin)
+            players = keep
 
         # THE DERIVED ARTIFACTS FIRST, through their declared owner. The QB
         # stage already gated on this; the non-QB chain reached the same
@@ -777,9 +827,14 @@ def build(args, fixtures: dict = None) -> dict:
     # inferred from a name match.
     STAGE_LAYERS = {
         'appearance': ('appearance',),
-        'participation': ('participation',),
+        # `participation_frame` reports whether any modelled player had to be
+        # excluded for carrying no appearance draw. It belongs to this stage
+        # because it is a statement about the participation evidence, and it
+        # is mapped rather than added to UNREPORTED_LAYERS because it CAN
+        # fail -- a team left with nobody is a real refusal.
+        'participation': ('participation', 'participation_frame'),
         'targets_carries': ('targets_carries', 'carries', 'shared_pass',
-                            'rushing_budget'),
+                            'rushing_budget', 'carry_other_denominator'),
         'conversion': ('receiving_conversion',),
         'td_layer': ('receiving_td', 'rushing_td'),
     }

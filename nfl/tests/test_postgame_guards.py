@@ -357,16 +357,41 @@ def test_g_the_emitted_status_artifact_reports_units_separately():
     st = json.loads(p.read_text())
     ev = st.get('evidence') or {}
     check('the artifact carries an evidence block', bool(ev))
-    check('  with games and rows as separate numbers',
-          ev.get('distinct_games') != ev.get('scoring_rows'),
-          f"{ev.get('distinct_games')} games / {ev.get('scoring_rows')} rows")
+    # THE POINT IS THAT ROWS ARE NOT A SAMPLE SIZE, AND THERE ARE TWO WAYS
+    # THE ARTIFACT CAN DEMONSTRATE IT.
+    #
+    # This used to require counted evidence -- more forecasts than games, rows
+    # unequal to games -- which held only while the ledger carried rows the
+    # contract still counts. It now carries 3,230 rows that predate the
+    # admissibility stamp and therefore count toward NOTHING, and the checks
+    # read that as a defect. It is the opposite: an evidence block reporting
+    # zero games beside a ledger of 3,230 rows is the strongest statement of
+    # "a row is not a game" this artifact can make. What must be true either
+    # way is that the units are reported SEPARATELY and that excluded rows are
+    # NAMED rather than silently dropped.
+    on_ledger = ev.get('rows_on_ledger')
+    unstamped = ev.get('rows_without_admissibility_verdict')
+    if ev.get('scoring_rows'):
+        check('  with games and rows as separate numbers',
+              ev.get('distinct_games') != ev.get('scoring_rows'),
+              f"{ev.get('distinct_games')} games / {ev.get('scoring_rows')} "
+              f"rows")
+        check('  nineteen sealed forecasts are not nineteen games',
+              ev.get('distinct_candidate_forecasts', 0) >
+              ev.get('distinct_games', 0),
+              f"{ev.get('distinct_candidate_forecasts')} forecasts / "
+              f"{ev.get('distinct_games')} games")
+    else:
+        check('  counted evidence is zero, so the artifact must say WHY',
+              on_ledger is not None and unstamped is not None,
+              f'rows_on_ledger={on_ledger} unstamped={unstamped}')
+        check('  and the rows that count for nothing are NAMED, not dropped',
+              bool(on_ledger) and unstamped == on_ledger,
+              f'{unstamped} of {on_ledger} carry no admissibility verdict')
+        check('  and the artifact explains what the stamp means',
+              'admissib' in str(ev.get('admissibility_note', '')).lower())
     check('  and a sample size declared in GAME units',
           (ev.get('prospective_sample_size') or {}).get('unit') == 'GAME')
-    check('  nineteen sealed forecasts are not nineteen games',
-          ev.get('distinct_candidate_forecasts', 0) >
-          ev.get('distinct_games', 0),
-          f"{ev.get('distinct_candidate_forecasts')} forecasts / "
-          f"{ev.get('distinct_games')} games")
     check('the finality signals required are published in the artifact',
           len(st.get('finality_signals_required') or []) ==
           len(PG.FINALITY_SIGNALS))

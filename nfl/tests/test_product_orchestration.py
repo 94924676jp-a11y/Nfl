@@ -28,6 +28,24 @@ GAME = '2026_01_SF_LA'
 KICKOFF = '2026-09-11T00:35:00Z'
 
 
+# DRAW ARRAYS AN ACCEPTED, REGISTERED CHANGE IS ALLOWED TO MOVE.
+#
+# A board in the store was produced by the code of its day. When an allocator
+# is deliberately changed, its arrays stop matching that record -- and that is
+# the change working, not determinism failing. Anything NOT in here that moves
+# is undeclared drift and fails.
+#
+# Keyed by draw array, valued by the registration that authorised it.
+DECLARED_DRAW_CHANGES = {
+    'rushing__carries':
+        'C1 -- the carry allocator\'s `other` mass on A1\'s denominator. '
+        'predeclaration_c1_denominator.md sha256 9d0443e1',
+    'rushing__rushing_td':
+        'C1 -- derived from carries, so it moves with them. Same '
+        'registration.',
+}
+
+
 def check(label, ok, detail=''):
     global PASSED, FAILED
     if ok:
@@ -86,15 +104,52 @@ def test_identical_inputs_and_frozen_model_give_identical_draws():
     else:
         check('  run id comparison skipped: the working tree is dirty, so '
               'code_commit carries a +dirty marker', True)
-    check('  the draw content digest reproduces exactly',
-          bd['draw_content_digest'] == row['draw_content_digest'],
-          bd['draw_content_digest'])
     again = np.load(pathlib.Path(run_dir) / 'player_draws.npz')
-    same = [k for k in fc.arrays if k in again.files
-            and np.array_equal(fc.arrays[k], again[k])]
-    check(f'  every one of {len(fc.arrays)} draw arrays is bit-identical',
-          len(same) == len(fc.arrays) == len(again.files),
-          f'{len(same)}/{len(fc.arrays)} matched')
+
+    # DETERMINISM IS "SAME CODE, SAME INPUTS, SAME DRAWS", AND THAT IS WHAT IS
+    # PROVEN HERE -- by building a SECOND time under the code running now.
+    #
+    # This used to be proven only by comparing against the STORED board, which
+    # silently also pinned the code that produced it. The first accepted
+    # change to an allocator therefore failed it as a determinism defect when
+    # nothing about determinism had moved. A guard that cannot tell "the draws
+    # are not reproducible" from "the model was deliberately changed" reports
+    # the wrong defect, and the fix is to measure the two separately.
+    tmp2 = tempfile.mkdtemp(prefix='determ2_')
+    _s2, bd2, run_dir2 = build_one(
+        2026, 1, GAME, row['written_at'], tmp2,
+        fc.n_draws, 20260908, row['model_configuration'])
+    twice = np.load(pathlib.Path(run_dir2) / 'player_draws.npz')
+    repro = [k for k in again.files
+             if k in twice.files and np.array_equal(again[k], twice[k])]
+    check(f'  building twice under the current code reproduces all '
+          f'{len(again.files)} arrays exactly',
+          len(repro) == len(again.files) == len(twice.files),
+          f'{len(repro)}/{len(again.files)} matched')
+    check('  and the draw content digest is stable across those two builds',
+          bd['draw_content_digest'] == bd2['draw_content_digest'],
+          f"{bd['draw_content_digest'][:16]} vs "
+          f"{bd2['draw_content_digest'][:16]}")
+
+    # SEPARATELY: what has moved since the STORED board, and was it declared?
+    # Undeclared drift in a draw array is still a defect and still fails.
+    moved = sorted(k for k in fc.arrays if k in again.files
+                   and not np.array_equal(fc.arrays[k], again[k]))
+    undeclared = [k for k in moved if k not in DECLARED_DRAW_CHANGES]
+    check('  every array that moved since the stored board was a DECLARED '
+          'change',
+          not undeclared,
+          f'undeclared: {undeclared}' if undeclared
+          else f'declared drift in {moved}' if moved
+          else 'nothing moved')
+    if moved:
+        check('    and the declared change names its registration',
+              all(DECLARED_DRAW_CHANGES.get(k) for k in moved),
+              json.dumps({k: DECLARED_DRAW_CHANGES.get(k) for k in moved}))
+    else:
+        check('    and the digest therefore still matches the stored board',
+              bd['draw_content_digest'] == row['draw_content_digest'],
+              bd['draw_content_digest'])
 
 
 # ============================================ PROOF 2: only newer vintages
