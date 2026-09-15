@@ -283,14 +283,19 @@ def build(season, games, blob, seal_choice):
         if not ko:
             skipped.append({'game_id': gid, 'status': 'NO_KICKOFF_IN_PLAN'})
             continue
+        # BOARD DISCOVERY IS THE SCORER'S, AT ANY DEPTH. The previous
+        # `cfg.glob('*/board.json')` hard-coded one directory level and saw
+        # 104 of 121 sealed boards -- which is why this module's own
+        # D7_ROWS_ALL_SEALS artifact carried ONE seal for 2026_01_SF_LA
+        # against four to eight for every other game, with ten board.json on
+        # that game's disk. Imported, not reimplemented, for the reason this
+        # module already imports the absence ladder: a second copy drifts.
         cands = []
-        gdir = _REPO / 'nfl' / 'research' / 'live' / gid
-        for cfg in sorted(gdir.glob('*_V1_CANDIDATE_R8')):
-            for b in sorted(cfg.glob('*/board.json')):
-                j = json.loads(b.read_text())
-                wa = (j.get('freshness') or {}).get('written_at')
-                if wa and str(wa) < str(ko):
-                    cands.append((str(wa), b.parent))
+        for sd in SDR.sealed_board_dirs(game_id=gid, label='V1_CANDIDATE_R8'):
+            j = json.loads((sd / 'board.json').read_text())
+            wa = (j.get('freshness') or {}).get('written_at')
+            if wa and str(wa) < str(ko):
+                cands.append((str(wa), sd))
         if not cands:
             skipped.append({'game_id': gid, 'status': 'NO_PREGAME_SEAL'})
             continue
@@ -309,7 +314,10 @@ def build(season, games, blob, seal_choice):
                 continue
             board = json.loads((sd / 'board.json').read_text())
             man = json.loads((sd / 'player_draws_manifest.json').read_text())
-            draws = np.load(sd / 'player_draws.npz')
+            # EITHER ENCODING: SF_LA's pre-inactives seals store
+            # `player_draws.npz.gz`, and a literal `.npz` here would raise on
+            # exactly the five boards the depth repair just made visible.
+            draws = SDR.load_sealed_draws(sd)
             meta = {p['gsis_id']: p for p in board.get('players') or []}
             pcache = {}
             for r in base:

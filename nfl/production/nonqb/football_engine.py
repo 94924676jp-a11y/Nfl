@@ -799,6 +799,12 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
     # Set by BOTH branches below. The count form of the opportunity
     # identity is now checked on every configuration, not only C3.
     opp_other_counts = None
+    # R14. The four vectors of the target identity, or None. `None` is the
+    # honest value on a path that never composed them: an empty dict here
+    # would read as "the pools were empty" where the truth is "no pass event
+    # was composed", and `run_forecast` refuses rather than sealing a level
+    # it cannot get.
+    pass_event = None
     if shared_pass == 'c3' and qb is not None and qb.get('draws'):
         # C3: THE TARGET BUDGET COMES FROM THE THROW PROCESS, NOT FROM D1.
         #
@@ -832,22 +838,31 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
         rng_c3 = np.random.default_rng(
             [seed, season * 100 + week,
              int(SEEDS.game_component(game_id).value), 0xC3])
-        tgt = []
-        for a in att_by_team:
-            t_o = SP.targeted_throws(a, ur.value, rng_c3)
-            if t_o.state is not State.PASS:
-                g['halted_at'] = 'shared_pass'
-                g['halt_reason'] = f'{t_o.code}: {t_o.detail[:180]}'
-                return g, None
-            tgt.append(t_o.value)
-        dealt = SP.deal_targets(S, other, [x['targeted'] for x in tgt],
-                                starts, counts, rng_c3)
-        if dealt.state is not State.PASS:
+        # R14. ONE COMPOSITION, ONE OWNER, AND THE VECTORS SURVIVE IT.
+        #
+        # `targeted_throws` and `deal_targets` were already correct and are
+        # still exactly what runs: `shared_pass.compose_pass_event_ownership`
+        # calls them UNCHANGED, in the same order, on the same generator, and
+        # P9 asserted the composed output bit-identical to the uncomposed
+        # deal. What changes is that all four vectors of the target identity
+        # -- throws, untargeted, targeted, other -- leave this block instead
+        # of being reduced to means for an evidence dict and discarded. The
+        # two halves were one call site away from drifting apart, which is how
+        # the rush composition came apart before R11.
+        #
+        # NO DRAWN VALUE MOVES HERE, on any configuration. Composing is not a
+        # new configuration identity; SEALING what it returns is, and that is
+        # R14's business in `run_forecast`, not this block's.
+        comp = SP.compose_pass_event_ownership(
+            att_by_team, S, other, starts, counts, ur.value, rng_c3)
+        if comp.state is not State.PASS:
             g['halted_at'] = 'shared_pass'
-            g['halt_reason'] = f'{dealt.code}: {dealt.detail[:180]}'
+            g['halt_reason'] = f'{comp.code}: {comp.detail[:180]}'
             return g, None
-        T = dealt.value['targets'].astype(float)
-        tgt_vol = np.stack([np.asarray(x['targeted'], float) for x in tgt])
+        T = comp.value['targets'].astype(float)
+        tgt_vol = comp.value['targeted'].astype(float)
+        c3_untargeted = comp.value['untargeted'].astype(float)
+        c3_throws = comp.value['throws'].astype(float)
         # CLOSURE UNDER C3 IS A COUNT IDENTITY, AND IT IS CHECKED AS ONE.
         # `deal_targets` partitions an integer targeted-throw budget by a
         # multinomial, so `sum_i T_i + other == targeted` holds EXACTLY in
@@ -862,22 +877,38 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
         # So the count identity is asserted HERE, exactly, and reported under
         # its own name. The allocator's own `other` is left untouched so that
         # `share_simplex_closure` still checks the allocator.
-        c3_other = dealt.value['other'].astype(float)
+        c3_other = comp.value['other'].astype(float)
         opp_other_counts = c3_other
         _per_team = np.stack([T[a:a + cc].sum(0)
                               for a, cc in zip(starts, counts)])
-        c3_closure = int((np.abs(_per_team + dealt.value['other']
+        c3_closure = int((np.abs(_per_team + c3_other
                                  - tgt_vol) > 1e-9).sum())
+        # THE FOUR VECTORS, KEPT AND NAMED, so `run_forecast` can seal the
+        # level the partition consumed instead of the one D1 drew and nothing
+        # used. `published_team_targets` IS `targeted`: that is the vector the
+        # multinomial dealt from, and P9 measured what publishing the other
+        # one costs -- named receivers above the published level in 71,550 of
+        # 139,800 sealed C3 draws, exact agreement in 0.
+        pass_event = {
+            'teams': list(ateams),
+            'throws': c3_throws,
+            'untargeted': c3_untargeted,
+            'targeted': tgt_vol,
+            'other': c3_other,
+            'published_team_targets': {t: tgt_vol[k]
+                                       for k, t in enumerate(ateams)},
+            'identity': SP.TARGET_IDENTITY,
+            'published_level_is': 'targeted'}
         c3 = {'untargeted_rate': float(ur.value),
               'count_closure_violating_cells': c3_closure,
               'count_closure_identity': 'sum_i targets_i + other == targeted, '
                                         'per team per draw, exact',
-              'mean_throws': [round(float(np.mean(x['throws'])), 4)
-                              for x in tgt],
-              'mean_targeted': [round(float(np.mean(x['targeted'])), 4)
-                                for x in tgt],
-              'targets_dealt_mean': dealt.evidence['mean_targets_per_draw'],
-              'other_pool_mean': dealt.evidence['mean_other_per_draw'],
+              'mean_throws': [round(float(np.mean(c3_throws[k])), 4)
+                              for k in range(len(ateams))],
+              'mean_targeted': [round(float(np.mean(tgt_vol[k])), 4)
+                                for k in range(len(ateams))],
+              'targets_dealt_mean': float(T.sum(0).mean()),
+              'other_pool_mean': float(c3_other.sum(0).mean()),
               'target_budget_owner': 'the throw process (QB attempts), not D1',
               'd1_team_targets_unused': True}
         if c3_closure:
@@ -1805,6 +1836,30 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
         g['halt_reason'] = _cc.detail[:300]
         return g, None
 
+    # ---- P8: EVERY DECLARED EVENT INSIDE ITS OWN OPPORTUNITY -------------
+    #
+    # The same arrays, the same placement, and the reason is P8's: the cause
+    # was closed and the SYMPTOM was never fenced. 442 cells across the sealed
+    # corpus carry `rushing_td > carries` -- 415 of them a whole touchdown on
+    # a fractional carry, 27 of them two -- and they reached sealed artifacts
+    # with no check pointed at them. The integrality gate above catches the
+    # fractional carry BY ACCIDENT and says nothing about the impossible
+    # touchdown, so a second route to an over-drawn event would still arrive
+    # unannounced.
+    #
+    # Five declared pairs, each naming why the bound holds, and `_count_mats`
+    # already holds every array all five need. It ASSERTS: a rounding of the
+    # opportunity would take 442 impossible cells to zero without removing one
+    # fractional carry from one board, and `assert_events_within_opportunity`
+    # refuses `round_opportunity=` by name so that shortcut cannot be taken
+    # through this call site either.
+    _ev = SCT.assert_events_within_opportunity(_count_mats)
+    _lay('events_within_opportunity', _ev)
+    if _ev.state is not State.PASS:
+        g['halted_at'] = 'events_within_opportunity'
+        g['halt_reason'] = _ev.detail[:300]
+        return g, None
+
     # ---- R4: THE PASSING STAT CONTRACT, ON THE SAME SEALED VALUES --------
     #
     # `db == att + sacks + scr` is the identity that separates the board`s
@@ -1856,6 +1911,14 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
                                  for k, t in enumerate(ateams)}
                                 if rush_category_draws else None),
         'rush_ownership': g.get('rush_ownership'),
+        # R14. THE PASS-EVENT PARTITION, ROW AXIS = TEAM. `targeted`,
+        # `untargeted` and `other` are sealed by no board in this repository,
+        # so the exact target identity is checkable today only in its weak
+        # form. Carrying them here is what lets `run_forecast` seal them and
+        # publish the level the partition consumed. `None` on any path that
+        # did not compose a pass event -- an absent composition, never a
+        # partition of zero.
+        'pass_event': pass_event,
         'accounting': (rec_acc, rush_acc),
         'index': {'recv_ids': ids, 'recv_pos': pos,
                   'recv_team': [q['team'] for q in recv],

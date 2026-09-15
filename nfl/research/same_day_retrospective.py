@@ -81,7 +81,136 @@ if str(_REPO) not in sys.path:
 from sportsplatform.governance.outcome import State                  # noqa: E402
 from nfl.product import forecast_stage as FS                        # noqa: E402
 from nfl.research import postgame as PG                             # noqa: E402
+from nfl.research import sealed_index as SI                         # noqa: E402
 from nfl.research.shadow import actuals as ACT                      # noqa: E402
+
+
+# ------------------------------------------------- SEALED BOARD DISCOVERY
+# DEPTH IS NOT PART OF WHAT A SEALED BOARD IS.
+#
+# This module, `v2/d7/d7_central_tendency.py` and `market_outcome_audit.py`
+# each carried `cfg.glob('*/board.json')`. That shape hard-codes exactly ONE
+# directory level below the candidate directory, and 17 of the 121 sealed
+# `board.json` files under `nfl/research/live` do not sit there: five
+# `2026_01_SF_LA/pre_inactives_*` boards are one level shallower -- the board
+# sits in the candidate directory itself and its draws are gzipped -- and
+# twelve `REPLAY_C1/*` are a declared exclusion. The three selectors saw 104
+# of 121 boards and 65 of 66 R8 boards, and called it every sealed board.
+# `D7_ROWS_ALL_SEALS_2026W1.csv` is the published consequence: one seal for
+# 2026_01_SF_LA against four to eight for every other game, with ten
+# `board.json` on that game's disk.
+#
+# `sealed_index` had already made exactly this repair for DRAW files and wrote
+# down why: "The twelve REPLAY_C1 directories are the proof that the file
+# extension was never the cause: they are `.npz` and were missed anyway. Depth
+# was." These board readers are now routed through that same entry point
+# rather than through a second glob with the same assumption in it.
+#
+# THE SECOND HALF OF THE SAME DEFECT, AND IT IS NOT THE GLOB. A depth-agnostic
+# finder still loses a board if the code that opens it demands one spelling of
+# the draw file. `conservation.from_run_dir` required the literal
+# `player_draws.npz` and declined five real boards as "missing"; `score_seal`
+# below carried the identical presence check, and the five boards it would
+# have declined are the same five. Both are repaired here: discovery is by
+# `SI.live_draw_files()`, loading is by `SI.load_draws()`, and the stage label
+# is resolved by walking up to the directory that NAMES a stage instead of
+# assuming it is `d.parent`.
+
+BOARD_DISCOVERY = ('sealed_index.live_draw_files, any depth, either draw '
+                   'encoding; REPLAY_C1 excluded BY NAME via '
+                   'sealed_index.FENCE_EXCLUDED_NAMESPACES')
+
+_DISCOVERY_VERIFIED = None
+
+
+def board_config_dir(board_dir):
+    """The candidate/stage directory a sealed board belongs to, at ANY depth.
+
+    `d.parent` is the one-level assumption in another costume: for a board
+    that sits directly in its candidate directory it reaches past that
+    directory and returns the GAME, whose name names no stage, so the stage
+    resolves to None and every quarterback admissibility rule keyed on it
+    silently changes meaning. Walk up until a segment the stage vocabulary
+    recognises, and refuse rather than default if none does.
+    """
+    root = SI.LIVE_ROOT.resolve()
+    cur = pathlib.Path(board_dir).resolve()
+    while cur != root and cur.parent != cur:
+        if FS.stage_of_dirname(cur.name) is not None:
+            return cur
+        cur = cur.parent
+    return None
+
+
+def board_stage(board_dir):
+    """PRE / POST for a sealed board directory, resolved without a depth."""
+    cfg = board_config_dir(board_dir)
+    return FS.stage_of_dirname(cfg.name) if cfg is not None else None
+
+
+def load_sealed_draws(board_dir):
+    """The stored draws for a sealed board, either encoding, or None."""
+    return SI.load_draws(pathlib.Path(board_dir))
+
+
+def sealed_board_dirs(game_id=None, label=None):
+    """Every sealed board directory under research/live, at any depth.
+
+    `label` filters on the CANDIDATE directory's name -- `V1_CANDIDATE_R8`
+    matches a candidate directory ending `_V1_CANDIDATE_R8` -- which is what
+    the three old `gdir.glob(f'*_{label}')` selectors meant by it.
+    """
+    global _DISCOVERY_VERIFIED
+    if _DISCOVERY_VERIFIED is None:
+        # Set BEFORE the cross-check, which itself calls this function. A
+        # reader that forgets to call the guard is the failure mode the guard
+        # exists for, so it is not left to a caller to remember.
+        _DISCOVERY_VERIFIED = {}
+        _DISCOVERY_VERIFIED = assert_board_discovery_complete()
+    out = set()
+    for f in SI.live_draw_files():
+        d = f.parent
+        if not (d / 'board.json').exists():
+            continue
+        if game_id is not None and SI.game_id_of(f) != game_id:
+            continue
+        if label is not None:
+            cfg = board_config_dir(d)
+            if cfg is None or not cfg.name.endswith('_' + str(label)):
+                continue
+        out.add(d)
+    return sorted(out)
+
+
+def assert_board_discovery_complete():
+    """Every discoverable board is reachable by the route above, or say so.
+
+    Discovery runs through the stored DRAWS, so a sealed board whose draws
+    were never written would be invisible to it -- a new way to lose 17 of
+    121 without noticing. This is the cross-check, and it is deliberately
+    depth-agnostic on both sides: `rglob`, not a level count. Measured
+    2026-09-15: 121 board.json on disk, 12 in the declared REPLAY_C1
+    exclusion, 109 reached, 0 unreachable.
+    """
+    reached = {str(d) for d in sealed_board_dirs()}
+    on_disk, excluded = set(), 0
+    for b in SI.LIVE_ROOT.rglob('board.json'):
+        ns = b.relative_to(SI.LIVE_ROOT).parts[0]
+        if ns in SI.FENCE_EXCLUDED_NAMESPACES:
+            excluded += 1
+            continue
+        on_disk.add(str(b.parent))
+    missed = sorted(on_disk - reached)
+    if missed:
+        raise RuntimeError(
+            f'SEALED_BOARD_WITHOUT_STORED_DRAWS: {len(missed)} sealed '
+            f'board(s) carry a board.json that the draw-file route cannot '
+            f'reach, so a board reader would silently omit them: '
+            f'{missed[:6]}. An unreachable board is an error with a name, '
+            f'not a smaller frame.')
+    return {'boards_on_disk': len(on_disk) + excluded,
+            'declared_exclusions': excluded,
+            'reached': len(reached), 'unreachable': 0}
 
 # 2.0.0, not 1.0.1: which rows are scored is part of what the number MEANS,
 # so a statistic from this module may not be compared with one from 1.0.0.
@@ -452,14 +581,17 @@ def score_seal(gid, ko, sealed_dir, rows, outcome_sha, names,
                     'status': 'NOT_PREGAME', 'written_at': wa,
                     'kickoff_utc': ko}
     man = json.loads(man_p.read_text())
-    npz = d / 'player_draws.npz'
-    if not npz.exists():
+    # EITHER ENCODING, AND NO DEPTH ASSUMPTION. `d / 'player_draws.npz'` is
+    # the presence check that made `conservation.from_run_dir` decline five
+    # real boards as "missing": SF_LA's five pre-inactives seals store
+    # `player_draws.npz.gz`. `SI.load_draws` reads both.
+    draws = load_sealed_draws(d)
+    if draws is None:
         return [], {'game_id': gid, 'dir': str(d),
                     'status': 'NO_STORED_DRAWS',
                     'detail': 'nine percentiles cannot support CRPS and none '
                               'is computed from them'}
-    draws = np.load(npz)
-    stage = FS.stage_of_dirname(d.parent.name)
+    stage = board_stage(d)
     qb = ACT.qb_actuals(rows)
     rr = ACT.receiving_rushing_actuals(rows)
     tiers = role_tiers(board, names)
@@ -798,13 +930,11 @@ def main(argv=None):
             skipped.append({'game_id': gid, 'status': 'NO_KICKOFF_IN_PLAN'})
             continue
         cands = []
-        gdir = _REPO / 'nfl' / 'research' / 'live' / gid
-        for cfg in sorted(gdir.glob('*_V1_CANDIDATE_R8')):
-            for b in sorted(cfg.glob('*/board.json')):
-                j = json.loads(b.read_text())
-                wa = (j.get('freshness') or {}).get('written_at')
-                if wa and str(wa) < str(ko):
-                    cands.append((str(wa), b.parent))
+        for sd in sealed_board_dirs(game_id=gid, label='V1_CANDIDATE_R8'):
+            j = json.loads((sd / 'board.json').read_text())
+            wa = (j.get('freshness') or {}).get('written_at')
+            if wa and str(wa) < str(ko):
+                cands.append((str(wa), sd))
         if not cands:
             skipped.append({'game_id': gid, 'status': 'NO_PREGAME_SEAL'})
             continue

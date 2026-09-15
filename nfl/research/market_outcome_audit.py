@@ -183,14 +183,25 @@ def grade(side, actual, line):
     return 'LOSS' if over else 'WIN'
 
 
-def pregame_seal(gdir, kickoff, label='V1_CANDIDATE_R8'):
+def pregame_seal(game_id, kickoff, label='V1_CANDIDATE_R8'):
+    """The latest pregame sealed board for one game, found at ANY depth.
+
+    Was `gdir.glob(f'*_{label}')` over `cfg.glob('*/board.json')`, which
+    hard-codes one directory level below the candidate directory and reached
+    104 of the 121 sealed boards -- 65 of 66 at R8. The one it could not see
+    here is `2026_01_SF_LA/pre_inactives_V1_CANDIDATE_R8`, whose board sits in
+    the candidate directory itself. Discovery is now the scorer's, which runs
+    through `sealed_index.live_draw_files()`.
+
+    The argument is the GAME ID, not a directory, because a caller that builds
+    `live/<gid>` by hand is re-asserting the layout this repair removed.
+    """
     cands = []
-    for cfg in sorted(gdir.glob(f'*_{label}')):
-        for b in sorted(cfg.glob('*/board.json')):
-            j = json.loads(b.read_text())
-            wa = (j.get('freshness') or {}).get('written_at')
-            if wa and str(wa) < str(kickoff):
-                cands.append((str(wa), b.parent))
+    for sd in SDR.sealed_board_dirs(game_id=game_id, label=label):
+        j = json.loads((sd / 'board.json').read_text())
+        wa = (j.get('freshness') or {}).get('written_at')
+        if wa and str(wa) < str(kickoff):
+            cands.append((str(wa), sd))
     cands.sort()
     return cands[-1] if cands else (None, None)
 
@@ -220,8 +231,7 @@ def audit_slate(slate, games, snapshot, season=2026, label='V1_CANDIDATE_R8',
     for gid in games:
         ko = ko_of.get(gid)
         sub = [r for r in allrows if r.get('game_id') == gid]
-        gdir = _REPO / 'nfl' / 'research' / 'live' / gid
-        wa, sd = pregame_seal(gdir, ko, label)
+        wa, sd = pregame_seal(gid, ko, label)
         teams = set(gid.split('_')[2:4])
         gq = {k: v for k, v in quotes.items() if k[1] in teams}
         if not sub:
@@ -245,8 +255,13 @@ def audit_slate(slate, games, snapshot, season=2026, label='V1_CANDIDATE_R8',
             continue
         board = json.loads((sd / 'board.json').read_text())
         man = json.loads((sd / 'player_draws_manifest.json').read_text())
-        draws = np.load(sd / 'player_draws.npz')
-        stage = FS.stage_of_dirname(sd.parent.name)
+        # EITHER ENCODING, AND NO DEPTH ASSUMPTION IN THE STAGE EITHER.
+        # `sd.parent.name` is the same one-level assumption as the glob was:
+        # for a board that sits directly in its candidate directory it names
+        # the GAME, `stage_of_dirname` returns None, and every quarterback
+        # admissibility rule keyed on the stage quietly changes meaning.
+        draws = SDR.load_sealed_draws(sd)
+        stage = SDR.board_stage(sd)
         qb_block = FS.qb_metric_blockers(board, stage)
         qa = ACT.qb_actuals(sub)
         rr = ACT.receiving_rushing_actuals(sub)
