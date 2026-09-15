@@ -1,0 +1,3367 @@
+{
+ "TEST_ONLY": false,
+ "absent_layers": [
+  "feature_build"
+ ],
+ "accounting_verdicts": [
+  {
+   "class": "HARD",
+   "code": "DRAW_ARTIFACT_VERIFIED",
+   "detail": "29 matrix(es) re-read and hashed, one shared draw index of 400",
+   "evaluator": "nfl.production.draws_artifact.verify",
+   "invariant": "draw_artifact_integrity",
+   "state": "PASS"
+  },
+  {
+   "class": "HARD",
+   "code": "DRAW_ENCODING_LOSSLESS",
+   "detail": "every matrix round-tripped exactly through its stored dtype; nothing was clipped, rounded or rescaled to fit",
+   "evaluator": "nfl.production.draws_artifact.DrawSet.write",
+   "invariant": "draw_encoding_lossless",
+   "state": "PASS"
+  },
+  {
+   "class": "HARD",
+   "code": "DRAW_INDEX_SHARED",
+   "detail": "all 29 matrix(es) share one draw index of width 400",
+   "evaluator": "nfl.production.draws_artifact.verify",
+   "invariant": "draw_index_shared",
+   "state": "PASS"
+  },
+  {
+   "class": "HARD",
+   "code": "DRAW_SET_PRESENT",
+   "detail": "29 matrix(es) from ['qb', 'receiving', 'rush_category', 'rush_player_pool', 'rushing', 'team_volume']",
+   "evaluator": "nfl.production.draws_artifact.DrawSet",
+   "invariant": "draw_set_non_empty",
+   "state": "PASS"
+  },
+  {
+   "class": "HARD",
+   "code": "SUMMARY_MATCHES_DRAWS",
+   "detail": "all 188 summary(ies) recomputed exactly from the stored draws",
+   "evaluator": "nfl.production.draws_artifact.assert_summary_consistent",
+   "invariant": "draw_summary_consistency",
+   "state": "PASS"
+  },
+  {
+   "class": "DIAGNOSTIC",
+   "code": "NONQB_LAYERS_UNAVAILABLE",
+   "detail": "1 completeness layer(s) produced nothing this run: ['feature_build']. Carried by `completeness` as partial coverage; named here so the artifact says WHICH.",
+   "evaluator": "nfl.production.run_forecast (non-QB chain states)",
+   "invariant": "nonqb_layer_availability",
+   "state": "FAIL"
+  },
+  {
+   "class": "DIAGNOSTIC",
+   "code": "QB_ALLOCATION_RESIDUAL_NONE",
+   "detail": "the team reconciliation raised no residual warning",
+   "evaluator": "nfl.production.qb_accounting.reconcile_team (warnings)",
+   "invariant": "qb_allocation_residual",
+   "state": "PASS"
+  },
+  {
+   "class": "HARD",
+   "code": "CROSS_LAYER_RECONCILIATION_NOT_RUN",
+   "detail": "the receiving draw set was not supplied to this run, so team passing yards against player receiving yards and passing TD against receiving TD could not be reconciled. This is recorded as owed rather than reported as satisfied.",
+   "evaluator": "nfl.production.qb_accounting.reconcile_cross_layer",
+   "invariant": "qb_cross_layer_reconciliation",
+   "owed": {
+    "blocking_stage": "conversion (RC1 baseline; SIGNAL_WEAK)",
+    "exception_to_preserve": {
+     "invariant": "team_pass_yards_eq_team_recv_yards",
+     "n_explained_by_lateral": 75,
+     "n_team_games": 3230,
+     "n_unexplained": 1,
+     "n_violating": 76,
+     "policy": "A lateral residual is NAMED and permitted. Anything else is an unexplained residual and stays a FAIL. The exception may never be widened to make an unexplained case pass.",
+     "seasons": [
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+     ],
+     "unexplained_example": {
+      "note": "no lateral on the play; upstream inconsistency of 1 yard, left visible",
+      "passing_yards": 13.0,
+      "receiving_yards": 12.0,
+      "season": 2022,
+      "team": "IND",
+      "week": 16
+     }
+    },
+    "needs": [
+     "receiving yard draws aligned to the same team-games and draw indices",
+     "receiving TD draws"
+    ]
+   },
+   "state": "DEFERRED"
+  },
+  {
+   "class": "HARD",
+   "code": "QB_DROPBACK_IDENTITY_HOLDS",
+   "detail": "holds on all 2400 draw cells",
+   "evaluator": "nfl.production.qb_v1.identity_check",
+   "invariant": "qb_dropback_identity",
+   "state": "PASS"
+  },
+  {
+   "class": "HARD",
+   "code": "QB_INACTIVE_OWNERSHIP_NOT_ESTABLISHED",
+   "detail": "no official inactive list was supplied for this game, so no quarterback can be checked against one. This is the absence of the question, not an answer to it.",
+   "evaluator": "nfl.production.qb_accounting.assert_inactive_qbs_own_nothing",
+   "invariant": "qb_inactive_owns_nothing",
+   "owed": {
+    "needs": "official_inactive_ids for this game"
+   },
+   "state": "DEFERRED"
+  },
+  {
+   "class": "DIAGNOSTIC",
+   "code": "QB_LAYER_KNOWN_LIMITATIONS",
+   "detail": "characterised weaknesses present in every run of this layer: discrete_low_count_intervals, int_discrimination, multi_qb_over_prediction. Measured and reported, never smoothed away. This is a statement about how good the model is, not about whether its numbers are self-consistent, so it does not gate.",
+   "evaluator": "nfl.production.qb_v1.KNOWN_LIMITATIONS",
+   "invariant": "qb_known_limitations",
+   "state": "FAIL"
+  },
+  {
+   "class": "HARD",
+   "code": "QB_DRAW_ACCOUNTING_HOLDS",
+   "detail": "all 7 identities hold on every one of 2400 draw cells",
+   "evaluator": "nfl.production.qb_accounting.reconcile_draws",
+   "invariant": "qb_per_draw_accounting",
+   "state": "PASS"
+  },
+  {
+   "class": "HARD",
+   "code": "QB_TEAM_ACCOUNTING_MEASURED",
+   "detail": "2 team-game(s), 2 with more than one quarterback; per-team dropback closure CLOSES.",
+   "evaluator": "nfl.production.qb_accounting.reconcile_team",
+   "invariant": "qb_team_accounting",
+   "state": "PASS"
+  },
+  {
+   "class": "HARD",
+   "code": "A1_RUSH_ALLOCATION",
+   "detail": "2 team(s) x 400 draws partitioned into 6 categories; every carry has exactly one owner in every draw",
+   "evaluator": "nfl.production.nonqb.rushing_a1.allocate",
+   "invariant": "rushing_single_owner",
+   "state": "PASS"
+  },
+  {
+   "class": "HARD",
+   "code": "SC1_COHERENT",
+   "detail": "carries >= scrambles in every draw, by permutation of the carry draw index; no value changed",
+   "evaluator": "nfl.production.nonqb.scramble_coherence.couple",
+   "invariant": "scramble_carry_coherence",
+   "state": "PASS"
+  }
+ ],
+ "candidate_components": [
+  {
+   "component": "A1",
+   "engine_flag": "rushing_a1",
+   "governance": "REHEARSAL_ONLY",
+   "predeclaration": "nfl/research/own8/predeclaration_own8.md",
+   "predeclaration_sha256": "90f6ecc37bcee427177f183be03374c13ec87fe1e14d667a4457c797748789db",
+   "replaces": "a QB rush draw that could exceed the carry pool it sits inside",
+   "what": "single-owner rushing: one multinomial partitions the rush-play budget across kneel / designed QB / RB / WR / TE / fringe, so every carry has exactly one owner"
+  },
+  {
+   "component": "A3G",
+   "engine_flag": "game_coupling",
+   "governance": "REHEARSAL_ONLY -- its own pre-registered verdict did NOT clear; integrated on corrected clauses recorded in predeclaration_a3g_addendum_01.md",
+   "predeclaration": "nfl/research/a3g/predeclaration_a3g.md",
+   "predeclaration_sha256": "d3620883e52fd6d2da9b56403a219210e82e52d5a65bf73cbd23f1d13d4e78ea",
+   "replaces": "two independently drawn teams, and game totals whose spread was the sum of independent marginals",
+   "what": "the two teams in a game share one coupled draw index; marginals unmoved by construction"
+  },
+  {
+   "component": "C0",
+   "engine_flag": "include_cold_start",
+   "governance": "REHEARSAL_ONLY",
+   "predeclaration": "nfl/research/own3/predeclaration_own3.md",
+   "predeclaration_sha256": "aedced9c82f74b5b406e4658ddf8b435fc1582fdfc0e7d759a5a7ff3b5f07c82",
+   "replaces": "a 2.3-6.9% dropback share leaving the system",
+   "what": "cold-start quarterbacks kept in the slate so allocated share reaches a modelled QB state"
+  },
+  {
+   "component": "C3",
+   "engine_flag": "shared_pass",
+   "governance": "REHEARSAL_ONLY",
+   "predeclaration": "nfl/research/xl1/predeclaration_xl1.md",
+   "predeclaration_sha256": "60fe3fbc0f35933e7bd4b43c56fb0afb68d95de67b4f51699a878ceb488d94da",
+   "replaces": "passing and receiving yards/TDs drawn independently",
+   "what": "one passing event: the target budget comes from the throw process and the passer line is credited from the receiving event"
+  },
+  {
+   "component": "R2",
+   "engine_flag": "r2",
+   "governance": "REHEARSAL_ONLY -- engineering integration, not prospective validation",
+   "predeclaration": "nfl/research/r2/predeclaration_qb_level_ownership_r2.md",
+   "predeclaration_sha256": "3d7beeb39f32da11623ac2be178ca4b764ecf314a5a55515b0d45c0e3d4f323c",
+   "replaces": "the composition that divided one level by another",
+   "what": "QB dropback level owned by D1 x QB3 and apportioned by largest remainder; QB V1 supplies conditional rates only"
+  },
+  {
+   "component": "SC1",
+   "engine_flag": "rushing_a1",
+   "governance": "REHEARSAL_ONLY",
+   "predeclaration": "nfl/research/sc1/predeclaration_sc1.md",
+   "predeclaration_sha256": "b62e48f23b5f3a16fb633e5286e575f23d7de3e07c8ebf923255d8d565e76729",
+   "replaces": "two levels drawn on one index from independent randomness, whose tails crossed into a negative rush-play budget",
+   "what": "the scramble/carry joint state is made coherent by permuting which draw index receives which carry value, so team carries >= QB scrambles in every draw"
+  },
+  {
+   "component": "R5",
+   "defect": "P4C weights are conditional-on-appearing shares consumed as unconditional weights over an unfiltered roster, so the vector is not a partition and normalisation halves every starter",
+   "evidence": "historical pool 14.6/team-game with sum(C)=1.24; unfiltered 2026 pool 22.5 with sum(C)=2.14; ACT-filtered 14.5 with sum(C)=1.46",
+   "governance": "REHEARSAL_ONLY",
+   "introduces_no_constant": true,
+   "replaces": "an unfiltered weekly-roster pool that included practice squad, reserve and released players",
+   "what": "restrict the allocation pool to players whose roster status is ACT. Originally non-QB only; the quarterback pool was exempt and is no longer, so this sentence was widened to match behaviour rather than leaving the two to drift apart"
+  },
+  {
+   "component": "R6",
+   "defect": "the weight is role-blind where it has no history, and the participation prior it competes with is flat at 1.39:1 against a realised 2.5:1 in snaps and 3.7:1 in targets",
+   "evidence": "realised target share by point-in-time tier over 3,230 team-games: WR1 22.7 / WR2 18.3 / WR3 13.3 / WR4+ 6.1 pct",
+   "governance": "REHEARSAL_ONLY",
+   "inherits": "R5",
+   "introduces_no_constant": true,
+   "replaces": "a positional-mean fallback that is blind to role",
+   "shrinkage": "n/(n+k), k estimated from within/between player variance",
+   "what": "class weight = own history shrunk toward point-in-time depth tier"
+  },
+  {
+   "component": "R8",
+   "defect": "R7 beat the frozen mechanism in weeks 1-4 and lost to it from week 5. A calendar switch would reproduce that table and learn nothing, and would hand the wrong model to a player who signs in week 9 with as little current-season evidence as one in week 1",
+   "evidence": "forward-chained 2022-2025 on identical rows, Brier by regime V1 / R7 / R8: week 1 0.24667 / 0.10966 / 0.06321; weeks 2-4 0.18146 / 0.11510 / 0.10049; weeks 5-9 0.11213 / 0.11814 / 0.10345; weeks 10-18 0.10975 / 0.11989 / 0.10611. R8 beats both in every regime and every team-week-blocked interval excludes zero",
+   "governance": "REHEARSAL_ONLY",
+   "inherits": "R7",
+   "inherits_every_r7_refusal": "point-in-time depth selection, no today-chart substitution, the three-state appearance vocabulary, the explicit season boundary, and the declined no_history_and_not_depth_listed cell",
+   "introduces_no_constant": true,
+   "k": "ESTIMATED, never chosen: within-player over between-player variance of player-season appearance rates. 4,073 player-seasons with at least four games give within 0.139520, between 0.114588, k = 1.2176",
+   "no_week_number_in_the_design": true,
+   "replaces": "choosing between two models by week number",
+   "what": "one appearance model whose regime moves with the evidence: every current-season participation quantity enters weighted by w = n_cur / (n_cur + k), and the depth block is interacted with (1 - w), so depth carries the cold start and participation takes over as a player accumulates games"
+  },
+  {
+   "component": "R9",
+   "defect": "the primary is drawn, then that player's share is resampled from the cell's unconditional pool, 47.35% of which is zero in the (rank 1, not previous primary) cell",
+   "evidence": "week-1 depth-chart QB1, 2021-2024, n=128, realised zero-dropback games 0/128. Forward-chained mean P(zero): R8 0.1982 (max 0.456, 39.8% at or above 0.25) vs R9 0.0278 (max 0.137, 0.0% at or above 0.25). Overall Brier 0.1305 -> 0.1148",
+   "governance": "EXPLORATORY -- the hypothesis was selected on this panel, so forward chaining controls parameter leakage only. A confirmatory result needs untouched games.",
+   "inherits": "R8",
+   "introduces_no_constant": true,
+   "no_floor_clip_or_minimum": true,
+   "open_and_not_smoothed": [
+    "in-season rank-1 not-previous-primary under-assigned by 0.187",
+    "rank-2 zero mass is a trade, not a strict improvement",
+    "two QBs at 5+ dropbacks on KC tonight is 9.8% vs a realised 3.12%",
+    "a starter injured on the opening kickoff would be scored a non-starter; rare, definitional, and stated rather than papered over"
+   ],
+   "replaces": "qb3_lib.allocate, which stays frozen and is still the R8 configuration; this is a successor lineage, not an edit",
+   "structural_guarantee": "the starter is defined as the taker of dropback 1, so P(dropbacks = 0 | started) = 0 is an identity; tested against a poisoned parameter set carrying the arithmetic form of the defect",
+   "what": "the quarterback room allocates an INTEGER dropback count through an explicit starter/exit/replacement state, instead of drawing a share from a pool that contradicts the identity it drew"
+  }
+ ],
+ "candidate_components_applied": [
+  "A1",
+  "A3G",
+  "C0",
+  "C3",
+  "R2",
+  "R5",
+  "R6",
+  "R8",
+  "R9",
+  "SC1"
+ ],
+ "candidate_components_not_reached": [],
+ "code_commit": "64783d0aebe440469e97c4bf5439b7a8c2063557+src1[d7cbfe3024b2f9aa]",
+ "completeness": "PARTIAL_PLAYER_COVERAGE",
+ "contract_version": "nfl-forecast-artifact-1",
+ "distributions": {
+  "00-0030506": {
+   "receiving": {
+    "receiving_td": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_td",
+      "n_draws": 400,
+      "row": 14
+     },
+     "mean": 0.2825,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 1.0
+    },
+    "receiving_yards": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_yards",
+      "n_draws": 400,
+      "row": 14
+     },
+     "mean": 50.59,
+     "p10": 12.0,
+     "p50": 44.0,
+     "p90": 99.10000000000002
+    },
+    "receptions": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receptions",
+      "n_draws": 400,
+      "row": 14
+     },
+     "mean": 4.6225,
+     "p10": 1.0,
+     "p50": 4.0,
+     "p90": 8.0
+    },
+    "targets": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/targets",
+      "n_draws": 400,
+      "row": 14
+     },
+     "mean": 6.3975,
+     "p10": 3.0,
+     "p50": 6.0,
+     "p90": 11.0
+    }
+   }
+  },
+  "00-0033873": {
+   "qb": {
+    "att": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/att",
+      "n_draws": 400,
+      "row": 3
+     },
+     "mean": 34.8675,
+     "p10": 24.0,
+     "p50": 35.0,
+     "p90": 46.0
+    },
+    "cmp": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/cmp",
+      "n_draws": 400,
+      "row": 3
+     },
+     "mean": 22.91,
+     "p10": 14.0,
+     "p50": 23.0,
+     "p90": 31.0
+    },
+    "db": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/db",
+      "n_draws": 400,
+      "row": 3
+     },
+     "mean": 39.3575,
+     "p10": 28.0,
+     "p50": 40.0,
+     "p90": 51.0
+    },
+    "int": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/int",
+      "n_draws": 400,
+      "row": 3
+     },
+     "mean": 0.6525,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 2.0
+    },
+    "ptd": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/ptd",
+      "n_draws": 400,
+      "row": 3
+     },
+     "mean": 1.59,
+     "p10": 0.0,
+     "p50": 1.0,
+     "p90": 3.0
+    },
+    "pyds": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/pyds",
+      "n_draws": 400,
+      "row": 3
+     },
+     "mean": 248.4024959605268,
+     "p10": 132.56842105263158,
+     "p50": 252.08333333333331,
+     "p90": 359.1
+    },
+    "rtd": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/rtd",
+      "n_draws": 400,
+      "row": 3
+     },
+     "mean": 0.1775,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 1.0
+    },
+    "rush_opp": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/rush_opp",
+      "n_draws": 400,
+      "row": 3
+     },
+     "mean": 3.0225,
+     "p10": 1.0,
+     "p50": 3.0,
+     "p90": 5.100000000000023
+    },
+    "ryds": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/ryds",
+      "n_draws": 400,
+      "row": 3
+     },
+     "mean": 22.340480158730156,
+     "p10": 3.450000000000003,
+     "p50": 18.833333333333336,
+     "p90": 47.18857142857144
+    },
+    "sacks": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/sacks",
+      "n_draws": 400,
+      "row": 3
+     },
+     "mean": 1.75,
+     "p10": 0.0,
+     "p50": 2.0,
+     "p90": 4.0
+    },
+    "scr": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/scr",
+      "n_draws": 400,
+      "row": 3
+     },
+     "mean": 2.74,
+     "p10": 1.0,
+     "p50": 2.5,
+     "p90": 5.0
+    }
+   }
+  },
+  "00-0033881": {
+   "receiving": {
+    "receiving_td": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_td",
+      "n_draws": 400,
+      "row": 0
+     },
+     "mean": 0.2325,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 1.0
+    },
+    "receiving_yards": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_yards",
+      "n_draws": 400,
+      "row": 0
+     },
+     "mean": 24.72,
+     "p10": 0.0,
+     "p50": 20.0,
+     "p90": 55.10000000000002
+    },
+    "receptions": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receptions",
+      "n_draws": 400,
+      "row": 0
+     },
+     "mean": 2.7,
+     "p10": 0.0,
+     "p50": 2.0,
+     "p90": 6.0
+    },
+    "targets": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/targets",
+      "n_draws": 400,
+      "row": 0
+     },
+     "mean": 3.9875,
+     "p10": 1.0,
+     "p50": 3.0,
+     "p90": 7.0
+    }
+   }
+  },
+  "00-0034348": {
+   "receiving": {
+    "receiving_td": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_td",
+      "n_draws": 400,
+      "row": 1
+     },
+     "mean": 0.22,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 1.0
+    },
+    "receiving_yards": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_yards",
+      "n_draws": 400,
+      "row": 1
+     },
+     "mean": 45.9775,
+     "p10": 0.9000000000000057,
+     "p50": 39.5,
+     "p90": 91.10000000000002
+    },
+    "receptions": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receptions",
+      "n_draws": 400,
+      "row": 1
+     },
+     "mean": 3.52,
+     "p10": 1.0,
+     "p50": 3.0,
+     "p90": 7.0
+    },
+    "targets": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/targets",
+      "n_draws": 400,
+      "row": 1
+     },
+     "mean": 5.6775,
+     "p10": 1.0,
+     "p50": 5.0,
+     "p90": 10.0
+    }
+   }
+  },
+  "00-0035264": {
+   "qb": {
+    "att": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/att",
+      "n_draws": 400,
+      "row": 0
+     },
+     "mean": 0.95,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 1.0
+    },
+    "cmp": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/cmp",
+      "n_draws": 400,
+      "row": 0
+     },
+     "mean": 0.6175,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 1.0
+    },
+    "db": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/db",
+      "n_draws": 400,
+      "row": 0
+     },
+     "mean": 1.13,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 1.0
+    },
+    "int": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/int",
+      "n_draws": 400,
+      "row": 0
+     },
+     "mean": 0.0425,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "ptd": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/ptd",
+      "n_draws": 400,
+      "row": 0
+     },
+     "mean": 0.045,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "pyds": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/pyds",
+      "n_draws": 400,
+      "row": 0
+     },
+     "mean": 6.632290680480806,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 11.535483870967754
+    },
+    "rtd": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/rtd",
+      "n_draws": 400,
+      "row": 0
+     },
+     "mean": 0.0,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "rush_opp": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/rush_opp",
+      "n_draws": 400,
+      "row": 0
+     },
+     "mean": 0.1475,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "ryds": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/ryds",
+      "n_draws": 400,
+      "row": 0
+     },
+     "mean": 0.8198630952380952,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "sacks": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/sacks",
+      "n_draws": 400,
+      "row": 0
+     },
+     "mean": 0.09,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "scr": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/scr",
+      "n_draws": 400,
+      "row": 0
+     },
+     "mean": 0.09,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    }
+   }
+  },
+  "00-0035406": {
+   "receiving": {
+    "receiving_td": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_td",
+      "n_draws": 400,
+      "row": 2
+     },
+     "mean": 0.065,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "receiving_yards": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_yards",
+      "n_draws": 400,
+      "row": 2
+     },
+     "mean": 8.32,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 28.100000000000023
+    },
+    "receptions": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receptions",
+      "n_draws": 400,
+      "row": 2
+     },
+     "mean": 0.7,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 2.1000000000000227
+    },
+    "targets": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/targets",
+      "n_draws": 400,
+      "row": 2
+     },
+     "mean": 1.1075,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 4.0
+    }
+   }
+  },
+  "00-0036158": {
+   "receiving": {
+    "receiving_td": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_td",
+      "n_draws": 400,
+      "row": 3
+     },
+     "mean": 0.0575,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "receiving_yards": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_yards",
+      "n_draws": 400,
+      "row": 3
+     },
+     "mean": 6.42,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 20.0
+    },
+    "receptions": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receptions",
+      "n_draws": 400,
+      "row": 3
+     },
+     "mean": 1.1225,
+     "p10": 0.0,
+     "p50": 1.0,
+     "p90": 3.0
+    },
+    "targets": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/targets",
+      "n_draws": 400,
+      "row": 3
+     },
+     "mean": 1.4075,
+     "p10": 0.0,
+     "p50": 1.0,
+     "p90": 3.1000000000000227
+    }
+   },
+   "rushing": {
+    "carries": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "rushing/carries",
+      "n_draws": 400,
+      "row": 0
+     },
+     "mean": 10.935,
+     "p10": 5.0,
+     "p50": 10.0,
+     "p90": 19.0
+    },
+    "rushing_td": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "rushing/rushing_td",
+      "n_draws": 400,
+      "row": 0
+     },
+     "mean": 0.335,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 1.0
+    }
+   }
+  },
+  "00-0036422": {
+   "receiving": {
+    "receiving_td": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_td",
+      "n_draws": 400,
+      "row": 4
+     },
+     "mean": 0.07,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "receiving_yards": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_yards",
+      "n_draws": 400,
+      "row": 4
+     },
+     "mean": 7.195,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 28.100000000000023
+    },
+    "receptions": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receptions",
+      "n_draws": 400,
+      "row": 4
+     },
+     "mean": 0.675,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 2.0
+    },
+    "targets": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/targets",
+      "n_draws": 400,
+      "row": 4
+     },
+     "mean": 0.9575,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 3.0
+    }
+   }
+  },
+  "00-0036613": {
+   "receiving": {
+    "receiving_td": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_td",
+      "n_draws": 400,
+      "row": 5
+     },
+     "mean": 0.1475,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 1.0
+    },
+    "receiving_yards": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_yards",
+      "n_draws": 400,
+      "row": 5
+     },
+     "mean": 23.1125,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 73.20000000000005
+    },
+    "receptions": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receptions",
+      "n_draws": 400,
+      "row": 5
+     },
+     "mean": 1.73,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 5.100000000000023
+    },
+    "targets": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/targets",
+      "n_draws": 400,
+      "row": 5
+     },
+     "mean": 2.6125,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 8.0
+    }
+   }
+  },
+  "00-0036637": {
+   "receiving": {
+    "receiving_td": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_td",
+      "n_draws": 400,
+      "row": 15
+     },
+     "mean": 0.115,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 1.0
+    },
+    "receiving_yards": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_yards",
+      "n_draws": 400,
+      "row": 15
+     },
+     "mean": 15.17,
+     "p10": 0.0,
+     "p50": 8.5,
+     "p90": 42.0
+    },
+    "receptions": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receptions",
+      "n_draws": 400,
+      "row": 15
+     },
+     "mean": 1.47,
+     "p10": 0.0,
+     "p50": 1.0,
+     "p90": 4.0
+    },
+    "targets": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/targets",
+      "n_draws": 400,
+      "row": 15
+     },
+     "mean": 2.0275,
+     "p10": 0.0,
+     "p50": 1.0,
+     "p90": 5.0
+    }
+   }
+  },
+  "00-0036879": {
+   "qb": {
+    "att": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/att",
+      "n_draws": 400,
+      "row": 1
+     },
+     "mean": 0.295,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "cmp": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/cmp",
+      "n_draws": 400,
+      "row": 1
+     },
+     "mean": 0.19,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "db": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/db",
+      "n_draws": 400,
+      "row": 1
+     },
+     "mean": 0.36,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "int": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/int",
+      "n_draws": 400,
+      "row": 1
+     },
+     "mean": 0.0075,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "ptd": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/ptd",
+      "n_draws": 400,
+      "row": 1
+     },
+     "mean": 0.01,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "pyds": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/pyds",
+      "n_draws": 400,
+      "row": 1
+     },
+     "mean": 2.057379564575169,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "rtd": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/rtd",
+      "n_draws": 400,
+      "row": 1
+     },
+     "mean": 0.0,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "rush_opp": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/rush_opp",
+      "n_draws": 400,
+      "row": 1
+     },
+     "mean": 0.0475,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "ryds": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/ryds",
+      "n_draws": 400,
+      "row": 1
+     },
+     "mean": 0.4678333333333333,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "sacks": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/sacks",
+      "n_draws": 400,
+      "row": 1
+     },
+     "mean": 0.0375,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "scr": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/scr",
+      "n_draws": 400,
+      "row": 1
+     },
+     "mean": 0.0275,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    }
+   }
+  },
+  "00-0036945": {
+   "qb": {
+    "att": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/att",
+      "n_draws": 400,
+      "row": 4
+     },
+     "mean": 1.195,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 2.0
+    },
+    "cmp": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/cmp",
+      "n_draws": 400,
+      "row": 4
+     },
+     "mean": 0.7775,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 1.0
+    },
+    "db": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/db",
+      "n_draws": 400,
+      "row": 4
+     },
+     "mean": 1.55,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 2.1000000000000227
+    },
+    "int": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/int",
+      "n_draws": 400,
+      "row": 4
+     },
+     "mean": 0.0175,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "ptd": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/ptd",
+      "n_draws": 400,
+      "row": 4
+     },
+     "mean": 0.0475,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "pyds": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/pyds",
+      "n_draws": 400,
+      "row": 4
+     },
+     "mean": 8.676863897213071,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 14.811904761904762
+    },
+    "rtd": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/rtd",
+      "n_draws": 400,
+      "row": 4
+     },
+     "mean": 0.0375,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "rush_opp": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/rush_opp",
+      "n_draws": 400,
+      "row": 4
+     },
+     "mean": 0.3875,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "ryds": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/ryds",
+      "n_draws": 400,
+      "row": 4
+     },
+     "mean": 2.2582196622821624,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "sacks": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/sacks",
+      "n_draws": 400,
+      "row": 4
+     },
+     "mean": 0.1575,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "scr": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/scr",
+      "n_draws": 400,
+      "row": 4
+     },
+     "mean": 0.1975,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    }
+   }
+  },
+  "00-0037085": {
+   "receiving": {
+    "receiving_td": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_td",
+      "n_draws": 400,
+      "row": 6
+     },
+     "mean": 0.045,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "receiving_yards": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_yards",
+      "n_draws": 400,
+      "row": 6
+     },
+     "mean": 5.3425,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 18.100000000000023
+    },
+    "receptions": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receptions",
+      "n_draws": 400,
+      "row": 6
+     },
+     "mean": 0.805,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 2.1000000000000227
+    },
+    "targets": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/targets",
+      "n_draws": 400,
+      "row": 6
+     },
+     "mean": 1.19,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 4.0
+    }
+   },
+   "rushing": {
+    "carries": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "rushing/carries",
+      "n_draws": 400,
+      "row": 1
+     },
+     "mean": 0.6475,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 2.0
+    },
+    "rushing_td": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "rushing/rushing_td",
+      "n_draws": 400,
+      "row": 1
+     },
+     "mean": 0.0225,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    }
+   }
+  },
+  "00-0038104": {
+   "receiving": {
+    "receiving_td": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_td",
+      "n_draws": 400,
+      "row": 16
+     },
+     "mean": 0.0775,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "receiving_yards": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_yards",
+      "n_draws": 400,
+      "row": 16
+     },
+     "mean": 13.1425,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 45.0
+    },
+    "receptions": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receptions",
+      "n_draws": 400,
+      "row": 16
+     },
+     "mean": 0.9,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 3.0
+    },
+    "targets": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/targets",
+      "n_draws": 400,
+      "row": 16
+     },
+     "mean": 1.705,
+     "p10": 0.0,
+     "p50": 1.0,
+     "p90": 5.0
+    }
+   }
+  },
+  "00-0038134": {
+   "receiving": {
+    "receiving_td": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_td",
+      "n_draws": 400,
+      "row": 17
+     },
+     "mean": 0.0575,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "receiving_yards": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_yards",
+      "n_draws": 400,
+      "row": 17
+     },
+     "mean": 15.1825,
+     "p10": 0.0,
+     "p50": 4.0,
+     "p90": 45.0
+    },
+    "receptions": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receptions",
+      "n_draws": 400,
+      "row": 17
+     },
+     "mean": 1.8525,
+     "p10": 0.0,
+     "p50": 1.0,
+     "p90": 5.0
+    },
+    "targets": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/targets",
+      "n_draws": 400,
+      "row": 17
+     },
+     "mean": 2.175,
+     "p10": 0.0,
+     "p50": 2.0,
+     "p90": 6.0
+    }
+   },
+   "rushing": {
+    "carries": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "rushing/carries",
+      "n_draws": 400,
+      "row": 4
+     },
+     "mean": 8.215,
+     "p10": 0.0,
+     "p50": 8.0,
+     "p90": 18.0
+    },
+    "rushing_td": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "rushing/rushing_td",
+      "n_draws": 400,
+      "row": 4
+     },
+     "mean": 0.26,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 1.0
+    }
+   }
+  },
+  "00-0038519": {
+   "receiving": {
+    "receiving_td": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_td",
+      "n_draws": 400,
+      "row": 18
+     },
+     "mean": 0.0575,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "receiving_yards": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_yards",
+      "n_draws": 400,
+      "row": 18
+     },
+     "mean": 11.3175,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 44.0
+    },
+    "receptions": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receptions",
+      "n_draws": 400,
+      "row": 18
+     },
+     "mean": 0.5675,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 2.0
+    },
+    "targets": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/targets",
+      "n_draws": 400,
+      "row": 18
+     },
+     "mean": 1.1425,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 4.0
+    }
+   }
+  },
+  "00-0038783": {
+   "receiving": {
+    "receiving_td": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_td",
+      "n_draws": 400,
+      "row": 7
+     },
+     "mean": 0.03,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "receiving_yards": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_yards",
+      "n_draws": 400,
+      "row": 7
+     },
+     "mean": 4.815,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 17.0
+    },
+    "receptions": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receptions",
+      "n_draws": 400,
+      "row": 7
+     },
+     "mean": 0.62,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 2.0
+    },
+    "targets": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/targets",
+      "n_draws": 400,
+      "row": 7
+     },
+     "mean": 0.7625,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 3.0
+    }
+   }
+  },
+  "00-0038976": {
+   "receiving": {
+    "receiving_td": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_td",
+      "n_draws": 400,
+      "row": 8
+     },
+     "mean": 0.1175,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 1.0
+    },
+    "receiving_yards": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_yards",
+      "n_draws": 400,
+      "row": 8
+     },
+     "mean": 22.1125,
+     "p10": 0.0,
+     "p50": 7.0,
+     "p90": 66.10000000000002
+    },
+    "receptions": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receptions",
+      "n_draws": 400,
+      "row": 8
+     },
+     "mean": 1.7025,
+     "p10": 0.0,
+     "p50": 1.0,
+     "p90": 4.0
+    },
+    "targets": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/targets",
+      "n_draws": 400,
+      "row": 8
+     },
+     "mean": 2.395,
+     "p10": 0.0,
+     "p50": 2.0,
+     "p90": 6.0
+    }
+   }
+  },
+  "00-0039067": {
+   "receiving": {
+    "receiving_td": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_td",
+      "n_draws": 400,
+      "row": 19
+     },
+     "mean": 0.445,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 1.0
+    },
+    "receiving_yards": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_yards",
+      "n_draws": 400,
+      "row": 19
+     },
+     "mean": 67.675,
+     "p10": 15.0,
+     "p50": 64.0,
+     "p90": 125.20000000000005
+    },
+    "receptions": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receptions",
+      "n_draws": 400,
+      "row": 19
+     },
+     "mean": 5.6725,
+     "p10": 2.0,
+     "p50": 5.0,
+     "p90": 10.0
+    },
+    "targets": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/targets",
+      "n_draws": 400,
+      "row": 19
+     },
+     "mean": 7.81,
+     "p10": 3.9000000000000057,
+     "p50": 7.0,
+     "p90": 13.0
+    }
+   }
+  },
+  "00-0039732": {
+   "qb": {
+    "att": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/att",
+      "n_draws": 400,
+      "row": 2
+     },
+     "mean": 32.135,
+     "p10": 24.0,
+     "p50": 32.0,
+     "p90": 41.0
+    },
+    "cmp": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/cmp",
+      "n_draws": 400,
+      "row": 2
+     },
+     "mean": 20.4975,
+     "p10": 14.0,
+     "p50": 21.0,
+     "p90": 27.0
+    },
+    "db": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/db",
+      "n_draws": 400,
+      "row": 2
+     },
+     "mean": 35.7325,
+     "p10": 27.0,
+     "p50": 36.0,
+     "p90": 45.0
+    },
+    "int": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/int",
+      "n_draws": 400,
+      "row": 2
+     },
+     "mean": 0.5975,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 2.0
+    },
+    "ptd": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/ptd",
+      "n_draws": 400,
+      "row": 2
+     },
+     "mean": 1.4275,
+     "p10": 0.0,
+     "p50": 1.0,
+     "p90": 3.0
+    },
+    "pyds": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/pyds",
+      "n_draws": 400,
+      "row": 2
+     },
+     "mean": 215.25032975494403,
+     "p10": 125.9,
+     "p50": 210.0,
+     "p90": 312.25161290322586
+    },
+    "rtd": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/rtd",
+      "n_draws": 400,
+      "row": 2
+     },
+     "mean": 0.24,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 1.0
+    },
+    "rush_opp": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/rush_opp",
+      "n_draws": 400,
+      "row": 2
+     },
+     "mean": 3.815,
+     "p10": 1.0,
+     "p50": 4.0,
+     "p90": 7.0
+    },
+    "ryds": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/ryds",
+      "n_draws": 400,
+      "row": 2
+     },
+     "mean": 20.908241071428574,
+     "p10": 2.4900000000000007,
+     "p50": 18.0,
+     "p90": 42.5
+    },
+    "sacks": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/sacks",
+      "n_draws": 400,
+      "row": 2
+     },
+     "mean": 1.3,
+     "p10": 0.0,
+     "p50": 1.0,
+     "p90": 3.0
+    },
+    "scr": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/scr",
+      "n_draws": 400,
+      "row": 2
+     },
+     "mean": 2.2975,
+     "p10": 0.0,
+     "p50": 2.0,
+     "p90": 5.0
+    }
+   }
+  },
+  "00-0039824": {
+   "receiving": {
+    "receiving_td": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_td",
+      "n_draws": 400,
+      "row": 20
+     },
+     "mean": 0.04,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "receiving_yards": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_yards",
+      "n_draws": 400,
+      "row": 20
+     },
+     "mean": 4.23,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 14.0
+    },
+    "receptions": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receptions",
+      "n_draws": 400,
+      "row": 20
+     },
+     "mean": 0.59,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 2.0
+    },
+    "targets": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/targets",
+      "n_draws": 400,
+      "row": 20
+     },
+     "mean": 0.6475,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 2.0
+    }
+   }
+  },
+  "00-0039868": {
+   "receiving": {
+    "receiving_td": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_td",
+      "n_draws": 400,
+      "row": 9
+     },
+     "mean": 0.155,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 1.0
+    },
+    "receiving_yards": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_yards",
+      "n_draws": 400,
+      "row": 9
+     },
+     "mean": 20.56,
+     "p10": 0.0,
+     "p50": 10.0,
+     "p90": 57.0
+    },
+    "receptions": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receptions",
+      "n_draws": 400,
+      "row": 9
+     },
+     "mean": 1.8725,
+     "p10": 0.0,
+     "p50": 1.0,
+     "p90": 5.0
+    },
+    "targets": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/targets",
+      "n_draws": 400,
+      "row": 9
+     },
+     "mean": 3.14,
+     "p10": 0.0,
+     "p50": 2.0,
+     "p90": 7.0
+    }
+   }
+  },
+  "00-0039894": {
+   "receiving": {
+    "receiving_td": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_td",
+      "n_draws": 400,
+      "row": 21
+     },
+     "mean": 0.18,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 1.0
+    },
+    "receiving_yards": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_yards",
+      "n_draws": 400,
+      "row": 21
+     },
+     "mean": 25.765,
+     "p10": 0.0,
+     "p50": 18.0,
+     "p90": 64.0
+    },
+    "receptions": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receptions",
+      "n_draws": 400,
+      "row": 21
+     },
+     "mean": 2.1325,
+     "p10": 0.0,
+     "p50": 2.0,
+     "p90": 5.0
+    },
+    "targets": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/targets",
+      "n_draws": 400,
+      "row": 21
+     },
+     "mean": 3.5675,
+     "p10": 0.0,
+     "p50": 3.0,
+     "p90": 8.0
+    }
+   }
+  },
+  "00-0040078": {
+   "receiving": {
+    "receiving_td": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_td",
+      "n_draws": 400,
+      "row": 22
+     },
+     "mean": 0.055,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "receiving_yards": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_yards",
+      "n_draws": 400,
+      "row": 22
+     },
+     "mean": 7.845,
+     "p10": 0.0,
+     "p50": 1.0,
+     "p90": 25.100000000000023
+    },
+    "receptions": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receptions",
+      "n_draws": 400,
+      "row": 22
+     },
+     "mean": 1.17,
+     "p10": 0.0,
+     "p50": 1.0,
+     "p90": 3.0
+    },
+    "targets": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/targets",
+      "n_draws": 400,
+      "row": 22
+     },
+     "mean": 1.655,
+     "p10": 0.0,
+     "p50": 1.0,
+     "p90": 4.0
+    }
+   },
+   "rushing": {
+    "carries": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "rushing/carries",
+      "n_draws": 400,
+      "row": 5
+     },
+     "mean": 3.685,
+     "p10": 0.0,
+     "p50": 2.0,
+     "p90": 11.0
+    },
+    "rushing_td": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "rushing/rushing_td",
+      "n_draws": 400,
+      "row": 5
+     },
+     "mean": 0.1225,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.10000000000002274
+    }
+   }
+  },
+  "00-0040081": {
+   "receiving": {
+    "receiving_td": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_td",
+      "n_draws": 400,
+      "row": 23
+     },
+     "mean": 0.09,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "receiving_yards": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_yards",
+      "n_draws": 400,
+      "row": 23
+     },
+     "mean": 8.7575,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 30.0
+    },
+    "receptions": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receptions",
+      "n_draws": 400,
+      "row": 23
+     },
+     "mean": 0.8275,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 3.0
+    },
+    "targets": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/targets",
+      "n_draws": 400,
+      "row": 23
+     },
+     "mean": 1.2225,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 4.0
+    }
+   }
+  },
+  "00-0040134": {
+   "receiving": {
+    "receiving_td": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_td",
+      "n_draws": 400,
+      "row": 10
+     },
+     "mean": 0.1875,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 1.0
+    },
+    "receiving_yards": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_yards",
+      "n_draws": 400,
+      "row": 10
+     },
+     "mean": 24.6675,
+     "p10": 0.0,
+     "p50": 14.0,
+     "p90": 67.10000000000002
+    },
+    "receptions": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receptions",
+      "n_draws": 400,
+      "row": 10
+     },
+     "mean": 1.9325,
+     "p10": 0.0,
+     "p50": 1.0,
+     "p90": 5.0
+    },
+    "targets": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/targets",
+      "n_draws": 400,
+      "row": 10
+     },
+     "mean": 3.21,
+     "p10": 0.0,
+     "p50": 3.0,
+     "p90": 7.0
+    }
+   }
+  },
+  "00-0040646": {
+   "receiving": {
+    "receiving_td": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_td",
+      "n_draws": 400,
+      "row": 24
+     },
+     "mean": 0.05,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "receiving_yards": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_yards",
+      "n_draws": 400,
+      "row": 24
+     },
+     "mean": 4.745,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 14.0
+    },
+    "receptions": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receptions",
+      "n_draws": 400,
+      "row": 24
+     },
+     "mean": 0.61,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 2.0
+    },
+    "targets": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/targets",
+      "n_draws": 400,
+      "row": 24
+     },
+     "mean": 0.95,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 3.0
+    }
+   }
+  },
+  "00-0040730": {
+   "receiving": {
+    "receiving_td": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_td",
+      "n_draws": 400,
+      "row": 11
+     },
+     "mean": 0.095,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "receiving_yards": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_yards",
+      "n_draws": 400,
+      "row": 11
+     },
+     "mean": 17.1175,
+     "p10": 0.0,
+     "p50": 14.0,
+     "p90": 40.0
+    },
+    "receptions": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receptions",
+      "n_draws": 400,
+      "row": 11
+     },
+     "mean": 2.3825,
+     "p10": 0.0,
+     "p50": 2.0,
+     "p90": 5.0
+    },
+    "targets": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/targets",
+      "n_draws": 400,
+      "row": 11
+     },
+     "mean": 2.9625,
+     "p10": 0.0,
+     "p50": 3.0,
+     "p90": 6.100000000000023
+    }
+   },
+   "rushing": {
+    "carries": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "rushing/carries",
+      "n_draws": 400,
+      "row": 2
+     },
+     "mean": 6.28,
+     "p10": 0.0,
+     "p50": 6.0,
+     "p90": 12.0
+    },
+    "rushing_td": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "rushing/rushing_td",
+      "n_draws": 400,
+      "row": 2
+     },
+     "mean": 0.1875,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 1.0
+    }
+   }
+  },
+  "00-0040890": {
+   "receiving": {
+    "receiving_td": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_td",
+      "n_draws": 400,
+      "row": 25
+     },
+     "mean": 0.1625,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 1.0
+    },
+    "receiving_yards": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_yards",
+      "n_draws": 400,
+      "row": 25
+     },
+     "mean": 26.755,
+     "p10": 0.0,
+     "p50": 20.0,
+     "p90": 68.10000000000002
+    },
+    "receptions": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receptions",
+      "n_draws": 400,
+      "row": 25
+     },
+     "mean": 2.26,
+     "p10": 0.0,
+     "p50": 2.0,
+     "p90": 5.0
+    },
+    "targets": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/targets",
+      "n_draws": 400,
+      "row": 25
+     },
+     "mean": 3.4875,
+     "p10": 0.0,
+     "p50": 3.0,
+     "p90": 7.0
+    }
+   }
+  },
+  "00-0040906": {
+   "qb": {
+    "att": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/att",
+      "n_draws": 400,
+      "row": 5
+     },
+     "mean": 0.6975,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "cmp": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/cmp",
+      "n_draws": 400,
+      "row": 5
+     },
+     "mean": 0.4275,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "db": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/db",
+      "n_draws": 400,
+      "row": 5
+     },
+     "mean": 0.7925,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "int": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/int",
+      "n_draws": 400,
+      "row": 5
+     },
+     "mean": 0.0225,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "ptd": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/ptd",
+      "n_draws": 400,
+      "row": 5
+     },
+     "mean": 0.035,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "pyds": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/pyds",
+      "n_draws": 400,
+      "row": 5
+     },
+     "mean": 4.913140142260115,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "rtd": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/rtd",
+      "n_draws": 400,
+      "row": 5
+     },
+     "mean": 0.0,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "rush_opp": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/rush_opp",
+      "n_draws": 400,
+      "row": 5
+     },
+     "mean": 0.0825,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "ryds": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/ryds",
+      "n_draws": 400,
+      "row": 5
+     },
+     "mean": 0.4005059523809523,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "sacks": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/sacks",
+      "n_draws": 400,
+      "row": 5
+     },
+     "mean": 0.045,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "scr": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "qb/scr",
+      "n_draws": 400,
+      "row": 5
+     },
+     "mean": 0.05,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    }
+   }
+  },
+  "00-0041013": {
+   "receiving": {
+    "receiving_td": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_td",
+      "n_draws": 400,
+      "row": 26
+     },
+     "mean": 0.06,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "receiving_yards": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_yards",
+      "n_draws": 400,
+      "row": 26
+     },
+     "mean": 10.8175,
+     "p10": 0.0,
+     "p50": 5.0,
+     "p90": 30.0
+    },
+    "receptions": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receptions",
+      "n_draws": 400,
+      "row": 26
+     },
+     "mean": 1.44,
+     "p10": 0.0,
+     "p50": 1.0,
+     "p90": 4.0
+    },
+    "targets": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/targets",
+      "n_draws": 400,
+      "row": 26
+     },
+     "mean": 1.89,
+     "p10": 0.0,
+     "p50": 1.0,
+     "p90": 5.0
+    }
+   },
+   "rushing": {
+    "carries": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "rushing/carries",
+      "n_draws": 400,
+      "row": 6
+     },
+     "mean": 8.0,
+     "p10": 1.0,
+     "p50": 7.0,
+     "p90": 16.100000000000023
+    },
+    "rushing_td": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "rushing/rushing_td",
+      "n_draws": 400,
+      "row": 6
+     },
+     "mean": 0.2775,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 1.0
+    }
+   }
+  },
+  "00-0041133": {
+   "receiving": {
+    "receiving_td": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_td",
+      "n_draws": 400,
+      "row": 12
+     },
+     "mean": 0.03,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "receiving_yards": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_yards",
+      "n_draws": 400,
+      "row": 12
+     },
+     "mean": 7.2625,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 22.0
+    },
+    "receptions": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receptions",
+      "n_draws": 400,
+      "row": 12
+     },
+     "mean": 0.695,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 2.0
+    },
+    "targets": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/targets",
+      "n_draws": 400,
+      "row": 12
+     },
+     "mean": 0.9625,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 3.0
+    }
+   }
+  },
+  "00-0041496": {
+   "receiving": {
+    "receiving_td": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_td",
+      "n_draws": 400,
+      "row": 13
+     },
+     "mean": 0.03,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    },
+    "receiving_yards": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receiving_yards",
+      "n_draws": 400,
+      "row": 13
+     },
+     "mean": 6.3175,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 22.0
+    },
+    "receptions": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/receptions",
+      "n_draws": 400,
+      "row": 13
+     },
+     "mean": 0.8475,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 3.0
+    },
+    "targets": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "receiving/targets",
+      "n_draws": 400,
+      "row": 13
+     },
+     "mean": 1.105,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 3.0
+    }
+   },
+   "rushing": {
+    "carries": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "rushing/carries",
+      "n_draws": 400,
+      "row": 3
+     },
+     "mean": 2.205,
+     "p10": 0.0,
+     "p50": 1.5,
+     "p90": 6.0
+    },
+    "rushing_td": {
+     "draws_ref": {
+      "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+      "key": "rushing/rushing_td",
+      "n_draws": 400,
+      "row": 3
+     },
+     "mean": 0.05,
+     "p10": 0.0,
+     "p50": 0.0,
+     "p90": 0.0
+    }
+   }
+  }
+ },
+ "distributions_source": "MODEL",
+ "draw_artifact": {
+  "arrays": {
+   "qb/att": {
+    "dtype": "int16",
+    "sha256": "9bdd6d75834abe0cfe0eb865b2d48fd66a1f867eede7f55f4db01f464d2ef690",
+    "shape": [
+     6,
+     400
+    ]
+   },
+   "qb/cmp": {
+    "dtype": "int16",
+    "sha256": "fe219c483e6cf2d32dd02f4e11a1dd73338a2009a69c46a7daaa456300693dcf",
+    "shape": [
+     6,
+     400
+    ]
+   },
+   "qb/db": {
+    "dtype": "int16",
+    "sha256": "b850274e3961105237a0bfb63af7ba45188a54aebd0e9583b4b7779471c2ec27",
+    "shape": [
+     6,
+     400
+    ]
+   },
+   "qb/int": {
+    "dtype": "int16",
+    "sha256": "c5b1be201a50667ad25bbcaaa8cbc2f4823924586adc7d19b59ea87c6c49821a",
+    "shape": [
+     6,
+     400
+    ]
+   },
+   "qb/ptd": {
+    "dtype": "int16",
+    "sha256": "b8d888b58f584b0ac1bfd072973640fe4d0677827305a5a8a2c1b7302012e07f",
+    "shape": [
+     6,
+     400
+    ]
+   },
+   "qb/pyds": {
+    "dtype": "float64",
+    "sha256": "e85ef9a0552efa086b334f403be7943ea1a1661ede9faff33ba4f974d452b3f3",
+    "shape": [
+     6,
+     400
+    ]
+   },
+   "qb/rtd": {
+    "dtype": "int16",
+    "sha256": "5eea01600a46e8d201eb265294a26014d8e9d042e19194c866755c8a95856e9b",
+    "shape": [
+     6,
+     400
+    ]
+   },
+   "qb/rush_opp": {
+    "dtype": "int16",
+    "sha256": "c357995e696cb3abaca88c3b0a421ee1d4397d96306a726347fa3690f128f3f6",
+    "shape": [
+     6,
+     400
+    ]
+   },
+   "qb/ryds": {
+    "dtype": "float64",
+    "sha256": "cebcf16b5d076d2c69159aa2f2e4865cb46809332ae0a5e4016ab7bb62f3cdfb",
+    "shape": [
+     6,
+     400
+    ]
+   },
+   "qb/sacks": {
+    "dtype": "int16",
+    "sha256": "5399065ec0798d57786e23bc95fe89b234f49ceeb43a0bdb497021eaafe55891",
+    "shape": [
+     6,
+     400
+    ]
+   },
+   "qb/scr": {
+    "dtype": "int16",
+    "sha256": "345bc761ab3b1123cd44e0266e292475411bcc920e4a06f688fbce60b793b591",
+    "shape": [
+     6,
+     400
+    ]
+   },
+   "receiving/receiving_td": {
+    "dtype": "int16",
+    "sha256": "5ff300af1092a8b83736c33ef70428d2646ae257a02e111b36d6789641728eba",
+    "shape": [
+     27,
+     400
+    ]
+   },
+   "receiving/receiving_yards": {
+    "dtype": "int16",
+    "sha256": "91a9333e38015205f93d34d57e4e14485c9529156f2fc11e4f02d22b6ef76314",
+    "shape": [
+     27,
+     400
+    ]
+   },
+   "receiving/receptions": {
+    "dtype": "int16",
+    "sha256": "0ff1ae5b7933033d89b23a9a641293c5765dd5581625ae4a2998a4e9eb174621",
+    "shape": [
+     27,
+     400
+    ]
+   },
+   "receiving/targets": {
+    "dtype": "int16",
+    "sha256": "c5098ca3e83d2c97edb8f572d8c43b5872d27c2c92d9fcd35b3784cb722c6531",
+    "shape": [
+     27,
+     400
+    ]
+   },
+   "rush_category/designed_qb": {
+    "dtype": "int16",
+    "sha256": "d6d60fef4f9ab33a8a9a80bcf61ba4d11c5c678c31401f20d69297df4391527b",
+    "shape": [
+     2,
+     400
+    ]
+   },
+   "rush_category/fringe": {
+    "dtype": "int16",
+    "sha256": "9e4b09fbc2cab8406306a4dbdd5f4aad369539ac5877d122679aec8168c3743a",
+    "shape": [
+     2,
+     400
+    ]
+   },
+   "rush_category/kneel": {
+    "dtype": "int16",
+    "sha256": "f973ea25d793fa4dda97e716177d44ac7e77f2c85d706d8f9784282d31bbb241",
+    "shape": [
+     2,
+     400
+    ]
+   },
+   "rush_category/rb": {
+    "dtype": "int16",
+    "sha256": "9620cf1b4fcc93f46f2b1e349da76a5efe109b9caa970427464cc7d6b396e4c5",
+    "shape": [
+     2,
+     400
+    ]
+   },
+   "rush_category/te": {
+    "dtype": "int16",
+    "sha256": "30444fda72da6161d33ede014eeb907e2707d223c82ee52802f21e05bedfafc1",
+    "shape": [
+     2,
+     400
+    ]
+   },
+   "rush_category/wr": {
+    "dtype": "int16",
+    "sha256": "6a4ea62b15610a8299d9516bef7307bd4469f9752898a6cd0d39beee36f140d9",
+    "shape": [
+     2,
+     400
+    ]
+   },
+   "rush_player_pool/unmodelled_back_pool": {
+    "dtype": "int16",
+    "sha256": "7309647bb48d5ef0e57d78dbd22d8689516aac10eb03456064b011a8bc67fa8f",
+    "shape": [
+     2,
+     400
+    ]
+   },
+   "rushing/carries": {
+    "dtype": "int16",
+    "sha256": "31e270f7b3dd8d3a6921f5a61b9285740d5058240f9768fbbee2ed84b6a3b426",
+    "shape": [
+     7,
+     400
+    ]
+   },
+   "rushing/rushing_td": {
+    "dtype": "int16",
+    "sha256": "b9276a6279c01ae57b29aabf65b5ee5abe8ca6b8f70105557e761d69d9514145",
+    "shape": [
+     7,
+     400
+    ]
+   },
+   "team_volume/team_carries": {
+    "dtype": "float64",
+    "sha256": "de0d4d66af0c91cfd3545fd05b649f9c04b2fa3f0d26efe903d458ab535e0078",
+    "shape": [
+     2,
+     400
+    ]
+   },
+   "team_volume/team_dropbacks_part": {
+    "dtype": "float64",
+    "sha256": "3f0c9b76b0cd8470e5219744805a265f8458fa7c942fcfe767dae8163c7e848d",
+    "shape": [
+     2,
+     400
+    ]
+   },
+   "team_volume/team_off_snaps": {
+    "dtype": "int16",
+    "sha256": "25ff634f0d82452a06ad917e84ba1fe8fc8ea7b5b3d15471669631863b2f5e03",
+    "shape": [
+     2,
+     400
+    ]
+   },
+   "team_volume/team_rz_carries": {
+    "dtype": "float64",
+    "sha256": "fffe91fe9b53a8016bb44e332621192738cc7e3d5cf3d0d6eca6cb1a3e84b5d2",
+    "shape": [
+     2,
+     400
+    ]
+   },
+   "team_volume/team_targets": {
+    "dtype": "float64",
+    "sha256": "ff76726d35c37b1c6451b082ced09c97d02fae04685c02bc09301f5722110e39",
+    "shape": [
+     2,
+     400
+    ]
+   }
+  },
+  "content_digest": "473bc799bcd4bc49328b3907866609942d8bf3caf7fb1909babbc2887ba1087d",
+  "draw_artifact_version": "nfl-draw-artifact-1",
+  "draw_index_semantics": {
+   "across_rows": "INDEPENDENT_STREAMS_COLUMN_ALIGNED",
+   "note": "column j is the same iteration of one row's stream for every metric of that row, so cross-metric dependence on this axis is real. Rows are seeded independently, so a CROSS-ROW correlation read off the same axis measures the generator's lack of coupling, not a football quantity.",
+   "within_row_across_metrics": "SAME_SIMULATED_WORLD"
+  },
+  "file": {
+   "bytes": 53965,
+   "name": "player_draws.npz",
+   "sha256": "23c767453d192330fa0d189e6f251e6c17e03c90224c8e892dbd321c231ccb27"
+  },
+  "game_id": "2026_01_DEN_KC",
+  "layers": {
+   "qb": {
+    "metrics": [
+     "att",
+     "cmp",
+     "db",
+     "int",
+     "ptd",
+     "pyds",
+     "rtd",
+     "rush_opp",
+     "ryds",
+     "sacks",
+     "scr"
+    ],
+    "rng_stream": "numpy default_rng([seed, ord, gsis_id]) -- one stream per row; columns are aligned, rows are independent",
+    "row_axis": "gsis_id",
+    "row_ids": [
+     "00-0035264",
+     "00-0036879",
+     "00-0039732",
+     "00-0033873",
+     "00-0036945",
+     "00-0040906"
+    ],
+    "shape": [
+     6,
+     400
+    ],
+    "spec_version": "qb-v1-aggregate-then-allocate-1"
+   },
+   "receiving": {
+    "metrics": [
+     "receiving_td",
+     "receiving_yards",
+     "receptions",
+     "targets"
+    ],
+    "rng_stream": "P4C simplex allocation and RC1 conversion on the shared game draw index",
+    "row_axis": "gsis_id",
+    "row_ids": [
+     "00-0033881",
+     "00-0034348",
+     "00-0035406",
+     "00-0036158",
+     "00-0036422",
+     "00-0036613",
+     "00-0037085",
+     "00-0038783",
+     "00-0038976",
+     "00-0039868",
+     "00-0040134",
+     "00-0040730",
+     "00-0041133",
+     "00-0041496",
+     "00-0030506",
+     "00-0036637",
+     "00-0038104",
+     "00-0038134",
+     "00-0038519",
+     "00-0039067",
+     "00-0039824",
+     "00-0039894",
+     "00-0040078",
+     "00-0040081",
+     "00-0040646",
+     "00-0040890",
+     "00-0041013"
+    ],
+    "shape": [
+     27,
+     400
+    ],
+    "spec_version": "nfl-nonqb-receiving-1"
+   },
+   "rush_category": {
+    "metrics": [
+     "designed_qb",
+     "fringe",
+     "kneel",
+     "rb",
+     "te",
+     "wr"
+    ],
+    "rng_stream": "rushing_a1: ONE multinomial per team per draw over the rush-play budget; every carry has exactly one owner",
+    "row_axis": "team",
+    "row_ids": [
+     "DEN",
+     "KC"
+    ],
+    "shape": [
+     2,
+     400
+    ],
+    "spec_version": "nfl-rushing-a1-category-1"
+   },
+   "rush_player_pool": {
+    "metrics": [
+     "unmodelled_back_pool"
+    ],
+    "rng_stream": "the share of the A1 `rb` category dealt to backs outside the modelled set, on the shared game draw index",
+    "row_axis": "team",
+    "row_ids": [
+     "DEN",
+     "KC"
+    ],
+    "shape": [
+     2,
+     400
+    ],
+    "spec_version": "nfl-rushing-a1-category-1"
+   },
+   "rushing": {
+    "metrics": [
+     "carries",
+     "rushing_td"
+    ],
+    "rng_stream": "P4C simplex allocation over the A1 running-back budget on the shared game draw index",
+    "row_axis": "gsis_id",
+    "row_ids": [
+     "00-0036158",
+     "00-0037085",
+     "00-0040730",
+     "00-0041496",
+     "00-0038134",
+     "00-0040078",
+     "00-0041013"
+    ],
+    "shape": [
+     7,
+     400
+    ],
+    "spec_version": "nfl-nonqb-rushing-1"
+   },
+   "team_volume": {
+    "metrics": [
+     "team_carries",
+     "team_dropbacks_part",
+     "team_off_snaps",
+     "team_rz_carries",
+     "team_targets"
+    ],
+    "rng_stream": "nfl.production.seeds declared streams, per metric",
+    "row_axis": "team",
+    "row_ids": [
+     "DEN",
+     "KC"
+    ],
+    "shape": [
+     2,
+     400
+    ],
+    "spec_version": "team-volume-v1-p4b-frozen-1"
+   }
+  },
+  "n_draw_cells": 84800,
+  "n_draws": 400,
+  "n_layers": 6,
+  "n_matrices": 29,
+  "rng": {
+   "generator": "numpy.random.default_rng (PCG64)",
+   "seed": 20260908,
+   "seed_protocol": "per-row seed 20260908"
+  },
+  "run_id": "cbaa9c6409960679"
+ },
+ "draw_artifact_sha256": "23c767453d192330fa0d189e6f251e6c17e03c90224c8e892dbd321c231ccb27",
+ "eligibility_verdict": "V1_CANDIDATE|APPLIED:A1,A3G,C0,C3,R2,R5,R6,R8,R9,SC1|NOT_REACHED:|PARTIAL|PRODUCED:appearance,conversion,participation,qb_layer,targets_carries,td_layer|ABSENT:feature_build",
+ "excluded_unidentified": [],
+ "feature_set_hash": "4d2eda3e88818e2ad5a78e146c4e2f48",
+ "game_id": "2026_01_DEN_KC",
+ "kickoff_utc": "2026-09-15T00:15:00Z",
+ "model_arm": "A",
+ "model_configuration": "V1_CANDIDATE_R9",
+ "player_ids": [
+  "00-0030506",
+  "00-0030615",
+  "00-0031898",
+  "00-0032569",
+  "00-0032762",
+  "00-0033073",
+  "00-0033297",
+  "00-0033303",
+  "00-0033538",
+  "00-0033873",
+  "00-0033881",
+  "00-0034348",
+  "00-0034847",
+  "00-0034978",
+  "00-0035248",
+  "00-0035262",
+  "00-0035264",
+  "00-0035406",
+  "00-0035663",
+  "00-0035686",
+  "00-0035763",
+  "00-0035764",
+  "00-0035900",
+  "00-0036158",
+  "00-0036221",
+  "00-0036374",
+  "00-0036380",
+  "00-0036392",
+  "00-0036416",
+  "00-0036422",
+  "00-0036428",
+  "00-0036557",
+  "00-0036564",
+  "00-0036613",
+  "00-0036621",
+  "00-0036623",
+  "00-0036637",
+  "00-0036660",
+  "00-0036683",
+  "00-0036727",
+  "00-0036874",
+  "00-0036879",
+  "00-0036909",
+  "00-0036943",
+  "00-0036945",
+  "00-0036952",
+  "00-0036959",
+  "00-0037001",
+  "00-0037080",
+  "00-0037085",
+  "00-0037192",
+  "00-0037207",
+  "00-0037208",
+  "00-0037230",
+  "00-0037249",
+  "00-0037266",
+  "00-0037278",
+  "00-0037284",
+  "00-0037294",
+  "00-0037303",
+  "00-0037324",
+  "00-0037353",
+  "00-0037384",
+  "00-0037539",
+  "00-0037752",
+  "00-0037799",
+  "00-0037807",
+  "00-0038104",
+  "00-0038106",
+  "00-0038134",
+  "00-0038145",
+  "00-0038489",
+  "00-0038492",
+  "00-0038513",
+  "00-0038519",
+  "00-0038552",
+  "00-0038605",
+  "00-0038649",
+  "00-0038717",
+  "00-0038783",
+  "00-0038796",
+  "00-0038976",
+  "00-0038982",
+  "00-0039003",
+  "00-0039006",
+  "00-0039067",
+  "00-0039177",
+  "00-0039317",
+  "00-0039324",
+  "00-0039371",
+  "00-0039433",
+  "00-0039438",
+  "00-0039548",
+  "00-0039565",
+  "00-0039568",
+  "00-0039702",
+  "00-0039703",
+  "00-0039732",
+  "00-0039809",
+  "00-0039824",
+  "00-0039825",
+  "00-0039827",
+  "00-0039833",
+  "00-0039844",
+  "00-0039868",
+  "00-0039894",
+  "00-0040072",
+  "00-0040078",
+  "00-0040081",
+  "00-0040116",
+  "00-0040118",
+  "00-0040120",
+  "00-0040134",
+  "00-0040153",
+  "00-0040168",
+  "00-0040223",
+  "00-0040240",
+  "00-0040298",
+  "00-0040313",
+  "00-0040328",
+  "00-0040449",
+  "00-0040452",
+  "00-0040454",
+  "00-0040547",
+  "00-0040634",
+  "00-0040640",
+  "00-0040646",
+  "00-0040670",
+  "00-0040679",
+  "00-0040720",
+  "00-0040730",
+  "00-0040748",
+  "00-0040890",
+  "00-0040906",
+  "00-0040951",
+  "00-0040952",
+  "00-0040953",
+  "00-0040954",
+  "00-0040955",
+  "00-0040956",
+  "00-0040957",
+  "00-0040958",
+  "00-0040959",
+  "00-0040960",
+  "00-0040961",
+  "00-0040963",
+  "00-0040964",
+  "00-0040966",
+  "00-0040967",
+  "00-0040969",
+  "00-0040987",
+  "00-0041013",
+  "00-0041019",
+  "00-0041020",
+  "00-0041130",
+  "00-0041133",
+  "00-0041134",
+  "00-0041256",
+  "00-0041289",
+  "00-0041290",
+  "00-0041292",
+  "00-0041293",
+  "00-0041294",
+  "00-0041295",
+  "00-0041296",
+  "00-0041297",
+  "00-0041298",
+  "00-0041299",
+  "00-0041301",
+  "00-0041358",
+  "00-0041379",
+  "00-0041496",
+  "00-0041497",
+  "00-0041498",
+  "00-0041501",
+  "00-0041543",
+  "00-0041545",
+  "00-0041552",
+  "00-0041575",
+  "00-0041589"
+ ],
+ "promoted": false,
+ "prospective_eligible": false,
+ "qb_team_dropback_closure": {
+  "draw_cells": 800,
+  "integer_level": true,
+  "no_cross_team_compensation": "each team is compared only against its own budget; a surplus on one team can never offset a shortfall on the other",
+  "per_team": {
+   "(2026, 1, 'DEN')": {
+    "budget_mean": 37.172401,
+    "cells": 400,
+    "qb_sum_mean": 37.2225,
+    "violating": 0
+   },
+   "(2026, 1, 'KC')": {
+    "budget_mean": 41.702643,
+    "cells": 400,
+    "qb_sum_mean": 41.7,
+    "violating": 0
+   }
+  },
+  "status": "CLOSES",
+  "test": "sum of QB dropbacks == rint(team dropback draw), per team per draw",
+  "violating_cells": 0,
+  "worst_absolute_deviation": 0.0
+ },
+ "seed_protocol": "per-row seed 20260908",
+ "source_captures": [
+  {
+   "retrieved_at": "2026-09-14T16:16:25Z",
+   "sha256": "f66f0c2583dba46378701c74b5f0d03adcb769454b5121f6bf327665b5d87846",
+   "source": "depth_charts"
+  },
+  {
+   "retrieved_at": "2026-09-11T00:43:57Z",
+   "sha256": "0cd99d47b1cc389f6f09973bed503eac54e90f1a701b34de2b690e9a90febc95",
+   "source": "espn_injuries_json"
+  },
+  {
+   "retrieved_at": "2026-09-13T15:45:56Z",
+   "sha256": "66e960ec81fccc6e5f95d23644de3ab58255af6682ec4fee0a12d8fc14f86865",
+   "source": "injuries"
+  },
+  {
+   "retrieved_at": "2026-09-13T19:14:00Z",
+   "sha256": "423d0c34811cd6d63b6eab66f5178e957c8a2e2647e8636815a83128d3625161",
+   "source": "official_inactives"
+  },
+  {
+   "retrieved_at": "2026-09-11T00:43:57Z",
+   "sha256": "ec99910f37f94bb89872633001a811546258bc0ebd452666d6f2037ac38f9040",
+   "source": "official_injury_report"
+  },
+  {
+   "retrieved_at": "2026-09-14T17:39:36Z",
+   "sha256": "bfb4ca5952e3a974c4ca81d0951c872d29bb102735dcc981604258bef2b96315",
+   "source": "schedules"
+  },
+  {
+   "retrieved_at": "2026-09-14T16:16:25Z",
+   "sha256": "bdab6ecee12d44a46d4913f81cb9f33f83f18422457a82f273970ae54df614f3",
+   "source": "weekly_rosters"
+  }
+ ],
+ "spec_hash": "cbaa9c6409960679",
+ "team_draw_row_index": {
+  "DEN": 0,
+  "KC": 1
+ },
+ "team_ids": [
+  "DEN",
+  "KC"
+ ],
+ "written_at": "2026-09-14T23:27:47Z"
+}

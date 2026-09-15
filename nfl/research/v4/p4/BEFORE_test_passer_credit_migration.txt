@@ -1,0 +1,123 @@
+
+A. the sealed corpus, as built
+  ok   the shared corpus discovery returns boards
+  ok     the scan covered a non-zero number of qb cells
+       121 boards, 990,000 qb cells, 516,000 rushing cells
+       cmp <= att                   8214 violating cell(s)
+       cmp + int <= att             9189 violating cell(s)
+       ptd <= cmp                   1113 violating cell(s)
+       ptd <= att                     30 violating cell(s)
+       cmp == 0 -> pyds == 0       18041 violating cell(s)
+       rushing_td <= carries         442 violating cell(s)
+  ok     the old-credit defect is still present in the sealed bytes, which is what makes the migration necessary and what proves no seal was rewritten
+       worst boards: 3dddf9f62c9260b0(3401), 4b186a21b83a49ec(1871), e3377d4686f74ef7(1253), 5081b27bef42d922(1072)
+
+B. the effective corpus: every board is a box score
+  FAIL a migration has actually been recorded  MIGRATION_LEDGER.json does not exist, so nothing has been migrated and this fence is scanning the sealed corpus exactly as built. Run `python3.12 nfl/tools/passer_credit_migration.py`.
+  ok   every board on disk is accounted for in the migration ledger
+  BLOCKED MIGRATED family is empty, so its zero is not a result  NO_BOARDS_IN_FAMILY
+       UNCHANGED: 121 board(s), 990,000 qb cells
+         cmp <= att                   8214
+         cmp + int <= att             9189
+         ptd <= cmp                   1113
+         ptd <= att                     30
+         cmp == 0 -> pyds == 0       18041
+  ok     UNCHANGED: the scan covered a non-zero number of cells
+  FAIL   UNCHANGED: ZERO impossible passing-line cells  36587 cell(s) across 50 board(s)
+         nfl/research/live/2026_01_DAL_NYG/pre_inactives_V1_CANDIDATE_R8/3dddf9f62c9260b0  {"cmp_within_att": 830, "cmp_plus_int_within_att": 956, "ptd_within_cmp": 105, "ptd_within_att": 3, "zero_cmp_zero_pyds": 1446}
+         nfl/research/live/2026_01_DAL_NYG/FORENSIC_CORRECTED_RESEARCH/4b186a21b83a49ec  {"cmp_within_att": 374, "cmp_plus_int_within_att": 445, "ptd_within_cmp": 65, "ptd_within_att": 3, "zero_cmp_zero_pyds": 943}
+         nfl/research/live/REPLAY_C1/e3377d4686f74ef7  {"cmp_within_att": 244, "cmp_plus_int_within_att": 272, "ptd_within_cmp": 44, "zero_cmp_zero_pyds": 686}
+         nfl/research/live/REPLAY_C1/5081b27bef42d922  {"cmp_within_att": 275, "cmp_plus_int_within_att": 303, "ptd_within_cmp": 27, "zero_cmp_zero_pyds": 458}
+         nfl/research/live/REPLAY_C1/73b97ca4db0d92a1  {"cmp_within_att": 198, "cmp_plus_int_within_att": 222, "ptd_within_cmp": 28, "zero_cmp_zero_pyds": 437}
+         nfl/research/live/2026_01_ATL_PIT/pre_inactives_V1_CANDIDATE_R8/f1111b7baef2756a  {"cmp_within_att": 184, "cmp_plus_int_within_att": 208, "ptd_within_cmp": 32, "zero_cmp_zero_pyds": 343}
+         nfl/research/live/2026_01_SF_LA/post_inactives_V1_CANDIDATE_R7/e264f9c6b84837d9  {"cmp_within_att": 161, "cmp_plus_int_within_att": 185, "ptd_within_cmp": 20, "zero_cmp_zero_pyds": 400}
+         nfl/research/live/2026_01_SF_LA/pre_inactives_V1_CANDIDATE_R6  {"cmp_within_att": 153, "cmp_plus_int_within_att": 175, "ptd_within_cmp": 31, "ptd_within_att": 1, "zero_cmp_zero_pyds": 402}
+         nfl/research/live/2026_01_SF_LA/post_inactives_V1_CANDIDATE_R6/155b47697c211ae8  {"cmp_within_att": 176, "cmp_plus_int_within_att": 188, "ptd_within_cmp": 21, "ptd_within_att": 3, "zero_cmp_zero_pyds": 371}
+         nfl/research/live/2026_01_SF_LA/post_inactives_V1_CANDIDATE_R8/5e70d8847e32c7ae  {"cmp_within_att": 162, "cmp_plus_int_within_att": 178, "ptd_within_cmp": 24, "ptd_within_att": 1, "zero_cmp_zero_pyds": 386}
+         nfl/research/live/2026_01_SF_LA/pre_inactives_V1_CANDIDATE  {"cmp_within_att": 167, "cmp_plus_int_within_att": 186, "ptd_within_cmp": 22, "ptd_within_att": 1, "zero_cmp_zero_pyds": 371}
+         nfl/research/live/2026_01_BAL_IND/pre_inactives_V1_CANDIDATE_R8/bee85f326a3fde5c  {"cmp_within_att": 170, "cmp_plus_int_within_att": 187, "ptd_within_cmp": 19, "ptd_within_att": 1, "zero_cmp_zero_pyds": 369}
+         nfl/research/live/REPLAY_C1/f53d09100d45594a  {"cmp_within_att": 170, "cmp_plus_int_within_att": 187, "ptd_within_cmp": 19, "ptd_within_att": 1, "zero_cmp_zero_pyds": 369}
+         nfl/research/live/2026_01_SF_LA/pre_inactives_V1_CANDIDATE_R7  {"cmp_within_att": 163, "cmp_plus_int_within_att": 181, "ptd_within_cmp": 18, "zero_cmp_zero_pyds": 382}
+         nfl/research/live/2026_01_SF_LA/pre_inactives_V1_CANDIDATE_R8  {"cmp_within_att": 158, "cmp_plus_int_within_att": 172, "ptd_within_cmp": 18, "zero_cmp_zero_pyds": 392}
+         nfl/research/live/REPLAY_C1/18ec200fdf1a6337  {"cmp_within_att": 158, "cmp_plus_int_within_att": 172, "ptd_within_cmp": 18, "zero_cmp_zero_pyds": 392}
+         nfl/research/live/2026_01_SF_LA/post_inactives_V1_CANDIDATE_R5/ee1c94270bb53963  {"cmp_within_att": 162, "cmp_plus_int_within_att": 181, "ptd_within_cmp": 22, "zero_cmp_zero_pyds": 372}
+         nfl/research/live/2026_01_ATL_PIT/pre_inactives_V1_CANDIDATE_R8/f67d72ab0701d211  {"cmp_within_att": 186, "cmp_plus_int_within_att": 202, "ptd_within_cmp": 21, "ptd_within_att": 1, "zero_cmp_zero_pyds": 326}
+         nfl/research/live/2026_01_SF_LA/post_inactives_V1_CANDIDATE/f6c8251583500e35  {"cmp_within_att": 160, "cmp_plus_int_within_att": 181, "ptd_within_cmp": 20, "zero_cmp_zero_pyds": 375}
+         nfl/research/live/REPLAY_C1/997c0ed2fbeff9aa  {"cmp_within_att": 186, "cmp_plus_int_within_att": 202, "ptd_within_cmp": 21, "ptd_within_att": 1, "zero_cmp_zero_pyds": 326}
+         nfl/research/live/REPLAY_C1/c787073bade88e9d  {"cmp_within_att": 186, "cmp_plus_int_within_att": 202, "ptd_within_cmp": 21, "ptd_within_att": 1, "zero_cmp_zero_pyds": 326}
+         nfl/research/live/2026_01_SF_LA/pre_inactives_V1_CANDIDATE_R5  {"cmp_within_att": 166, "cmp_plus_int_within_att": 184, "ptd_within_cmp": 21, "zero_cmp_zero_pyds": 361}
+         nfl/research/live/REPLAY_C1/d13eea0dbfead60d  {"cmp_within_att": 146, "cmp_plus_int_within_att": 158, "ptd_within_cmp": 22, "ptd_within_att": 1, "zero_cmp_zero_pyds": 392}
+         nfl/research/live/2026_01_TB_CIN/post_inactives_V1_CANDIDATE_R7/c92e797ec27b82a1  {"cmp_within_att": 151, "cmp_plus_int_within_att": 166, "ptd_within_cmp": 17, "zero_cmp_zero_pyds": 356}
+         nfl/research/live/2026_01_TB_CIN/post_inactives_V1_CANDIDATE_R5/819a8eba1596697d  {"cmp_within_att": 145, "cmp_plus_int_within_att": 166, "ptd_within_cmp": 21, "ptd_within_att": 3, "zero_cmp_zero_pyds": 349}
+         nfl/research/live/2026_01_TB_CIN/post_inactives_V1_CANDIDATE/811718e6e7eca2a5  {"cmp_within_att": 132, "cmp_plus_int_within_att": 154, "ptd_within_cmp": 28, "zero_cmp_zero_pyds": 369}
+         nfl/research/live/2026_01_TB_CIN/post_inactives_V1_CANDIDATE_R8/e92b9e19466d27bd  {"cmp_within_att": 136, "cmp_plus_int_within_att": 152, "ptd_within_cmp": 27, "ptd_within_att": 1, "zero_cmp_zero_pyds": 361}
+         nfl/research/live/2026_01_TB_CIN/post_inactives_V1_CANDIDATE_R6/35c0c1c10aadf799  {"cmp_within_att": 146, "cmp_plus_int_within_att": 164, "ptd_within_cmp": 18, "zero_cmp_zero_pyds": 347}
+         nfl/research/live/2026_01_TB_CIN/pre_inactives_V1_CANDIDATE_R8/f593e33a99b390d6  {"cmp_within_att": 140, "cmp_plus_int_within_att": 158, "ptd_within_cmp": 17, "zero_cmp_zero_pyds": 357}
+         nfl/research/live/REPLAY_C1/4e5afe80fae773bc  {"cmp_within_att": 140, "cmp_plus_int_within_att": 158, "ptd_within_cmp": 17, "zero_cmp_zero_pyds": 357}
+         nfl/research/live/2026_01_TB_CIN/pre_inactives_V1_CANDIDATE_R8/34f993a6de29d926  {"cmp_within_att": 135, "cmp_plus_int_within_att": 153, "ptd_within_cmp": 16, "zero_cmp_zero_pyds": 343}
+         nfl/research/live/2026_01_NO_DET/pre_inactives_V1_CANDIDATE_R8/61e7754d93c72ec1  {"cmp_within_att": 141, "cmp_plus_int_within_att": 153, "ptd_within_cmp": 16, "ptd_within_att": 1, "zero_cmp_zero_pyds": 321}
+         nfl/research/live/REPLAY_C1/5e29cb0f6fc8bc44  {"cmp_within_att": 141, "cmp_plus_int_within_att": 153, "ptd_within_cmp": 16, "ptd_within_att": 1, "zero_cmp_zero_pyds": 321}
+         nfl/research/live/REPLAY_C1/35f0b2c3dda08a70  {"cmp_within_att": 157, "cmp_plus_int_within_att": 189, "ptd_within_cmp": 24, "zero_cmp_zero_pyds": 231}
+         nfl/research/live/2026_01_NO_DET/post_inactives_V1_CANDIDATE_R5/863e3c361ef00559  {"cmp_within_att": 124, "cmp_plus_int_within_att": 132, "ptd_within_cmp": 20, "zero_cmp_zero_pyds": 291}
+         nfl/research/live/2026_01_NO_DET/post_inactives_V1_CANDIDATE/d681253b529be2e3  {"cmp_within_att": 135, "cmp_plus_int_within_att": 141, "ptd_within_cmp": 17, "zero_cmp_zero_pyds": 269}
+         nfl/research/live/2026_01_NO_DET/post_inactives_V1_CANDIDATE_R7/caa861cdb290fe8c  {"cmp_within_att": 124, "cmp_plus_int_within_att": 128, "ptd_within_cmp": 21, "zero_cmp_zero_pyds": 272}
+         nfl/research/live/2026_01_NO_DET/post_inactives_V1_CANDIDATE_R8/b5b02f6365ead28f  {"cmp_within_att": 134, "cmp_plus_int_within_att": 142, "ptd_within_cmp": 9, "zero_cmp_zero_pyds": 260}
+         nfl/research/live/2026_01_NO_DET/post_inactives_V1_CANDIDATE_R6/e29bedc52145eaaf  {"cmp_within_att": 130, "cmp_plus_int_within_att": 136, "ptd_within_cmp": 15, "ptd_within_att": 3, "zero_cmp_zero_pyds": 254}
+         nfl/research/live/2026_01_ARI_LAC/pre_inactives_V1_CANDIDATE_R8/16add7fc0320a7c3  {"cmp_within_att": 115, "cmp_plus_int_within_att": 128, "ptd_within_cmp": 17, "ptd_within_att": 1, "zero_cmp_zero_pyds": 253}
+         nfl/research/live/2026_01_ARI_LAC/pre_inactives_V1_CANDIDATE_R8/835a7c3cbcf9a041  {"cmp_within_att": 104, "cmp_plus_int_within_att": 113, "ptd_within_cmp": 21, "zero_cmp_zero_pyds": 272}
+         nfl/research/live/2026_01_ARI_LAC/pre_inactives_V1_CANDIDATE_R8/a96de8c8c882f01b  {"cmp_within_att": 104, "cmp_plus_int_within_att": 113, "ptd_within_cmp": 21, "zero_cmp_zero_pyds": 272}
+         nfl/research/live/REPLAY_C1/7636eaa57c3cf0b0  {"cmp_within_att": 128, "cmp_plus_int_within_att": 144, "ptd_within_cmp": 15, "ptd_within_att": 1, "zero_cmp_zero_pyds": 222}
+         nfl/research/live/2026_01_DAL_NYG/pre_inactives_V1_CANDIDATE_R8/bc42f90fc7da8335  {"cmp_within_att": 103, "cmp_plus_int_within_att": 123, "ptd_within_cmp": 14, "zero_cmp_zero_pyds": 189}
+         nfl/research/live/2026_01_DAL_NYG/pre_inactives_V1_CANDIDATE_R8/ec678556411d7e8c  {"cmp_within_att": 103, "cmp_plus_int_within_att": 123, "ptd_within_cmp": 14, "zero_cmp_zero_pyds": 189}
+         nfl/research/live/2026_01_ARI_LAC/post_inactives_V1_CANDIDATE_R8/797eed72f07fbd9b  {"cmp_within_att": 89, "cmp_plus_int_within_att": 105, "ptd_within_cmp": 13, "ptd_within_att": 1, "zero_cmp_zero_pyds": 205}
+         nfl/research/live/2026_01_ARI_LAC/post_inactives_V1_CANDIDATE/5025e9d4e92a447c  {"cmp_within_att": 85, "cmp_plus_int_within_att": 97, "ptd_within_cmp": 4, "zero_cmp_zero_pyds": 204}
+         nfl/research/live/2026_01_ARI_LAC/post_inactives_V1_CANDIDATE_R6/b94761b2d925cd60  {"cmp_within_att": 84, "cmp_plus_int_within_att": 93, "ptd_within_cmp": 11, "zero_cmp_zero_pyds": 191}
+         nfl/research/live/2026_01_ARI_LAC/post_inactives_V1_CANDIDATE_R7/592e3bcb69517972  {"cmp_within_att": 82, "cmp_plus_int_within_att": 95, "ptd_within_cmp": 11, "zero_cmp_zero_pyds": 174}
+         nfl/research/live/2026_01_ARI_LAC/post_inactives_V1_CANDIDATE_R5/cb882552260d6a00  {"cmp_within_att": 71, "cmp_plus_int_within_att": 83, "ptd_within_cmp": 14, "zero_cmp_zero_pyds": 187}
+
+C. rushing_td <= carries -- measured, attributed, left red
+  ok   the rushing scan covered a non-zero number of cells
+       rushing_td > carries: 442 cell(s) of 516,000
+       carries not an integer: 327,103 of 516,000 (63.4%)
+  FAIL rushing/carries is a COUNT of carries  327,103 of 516,000 cells are not integers, so `rushing_td <= carries` is comparing a count against a continuous level. Owner: the rushing allocation (nfl/production/nonqb/rushing_a1.py). NOT repair 5.
+  FAIL rushing_td <= carries on every row  442 cell(s); every one has 0 < carries < 1 and rushing_td == 1. Downstream of the check above. NOT repair 5.
+
+D. refusals are declared, not dropped
+  ok   there are no unmigratable boards to declare
+
+E. the seals survive the migration, byte for byte
+  ok   the snapshot covers a non-zero number of sealed files
+  ok   the migration ran
+  ok     every sealed file has the same sha256 afterwards
+  ok     no sealed file was removed
+  ok     no file was added inside a sealed run directory
+
+F. determinism, and the blast radius of the rewrite
+  BLOCKED no migrated board to re-run  NO_MIGRATED_BOARD
+
+G. the repair in the tree is the repair being applied
+  ok   the migration CALLS credit_passing_line
+  ok     and never calls the superseded credit
+  ok     and the replacement still declares coherence by construction, so "by construction" stays a claim anyone can check
+  ok     and shared_pass records that its credit is superseded
+
+H. the upper tail, against a bound derived from realised games
+       derivation: 3787 realised QB game-lines with a completion, max 525 yards, 0 above 554
+       rule of three -> 95% one-sided limit on the exceedance rate 7.907e-04
+  ok   the bound rests on a non-trivial history
+  ok     and on zero realised exceedances of the record, which is what makes the rule of three the right limit
+  ok   the tail scan covered at least one side family
+       C3_SIDE: 115 of 470,000 above 554 (2.447e-04), max 755
+  FAIL   C3_SIDE: the hard rule bound abs(pyds) <= 99*cmp holds  18043 cell(s) outside a bound no football game can be outside
+  ok     C3_SIDE: the record-exceedance rate is inside the derived 95% limit
+       QB_ONLY_SIDE: 680 of 520,000 above 554 (1.308e-03), max 1587
+  ok     QB_ONLY_SIDE: the hard rule bound abs(pyds) <= 99*cmp holds
+  FAIL   QB_ONLY_SIDE: the record-exceedance rate is inside the derived 95% limit  1.308e-03 against 7.907e-04, max draw 1587 yards. The passing credit does not generate this: it is qb2_lib.py:306-307, PY = CMP * ypc_d, a game-level yards-per-completion ratio resampled whole and multiplied by an independently drawn completion count. NOT repair 5, and NOT to be fixed by clipping.
+
+21 passed, 6 failed, 2 blocked
+Traceback (most recent call last):
+  File "/home/user/nfl/nfl/tests/test_passer_credit_migration.py", line 456, in <module>
+    fn()
+  File "/home/user/nfl/nfl/tests/test_passer_credit_migration.py", line 450, in test_zz_every_check_passed
+    raise AssertionError(f'{FAILED} check(s) failed in this module')
+AssertionError: 6 check(s) failed in this module

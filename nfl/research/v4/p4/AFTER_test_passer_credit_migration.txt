@@ -1,0 +1,95 @@
+
+A. the sealed corpus, as built
+  ok   the shared corpus discovery returns boards
+  ok     the scan covered a non-zero number of qb cells
+       121 boards, 990,000 qb cells, 516,000 rushing cells
+       cmp <= att                   8214 violating cell(s)
+       cmp + int <= att             9189 violating cell(s)
+       ptd <= cmp                   1113 violating cell(s)
+       ptd <= att                     30 violating cell(s)
+       cmp == 0 -> pyds == 0       18041 violating cell(s)
+       rushing_td <= carries         442 violating cell(s)
+  ok     the old-credit defect is still present in the sealed bytes, which is what makes the migration necessary and what proves no seal was rewritten
+       worst boards: 3dddf9f62c9260b0(3401), 4b186a21b83a49ec(1871), e3377d4686f74ef7(1253), 5081b27bef42d922(1072)
+
+B. the effective corpus: every board is a box score
+  ok   a migration has actually been recorded
+  ok   every board on disk is accounted for in the migration ledger
+       MIGRATED: 42 board(s), 314,000 qb cells
+         cmp <= att                      0
+         cmp + int <= att                0
+         ptd <= cmp                      0
+         ptd <= att                      0
+         cmp == 0 -> pyds == 0           0
+  ok     MIGRATED: the scan covered a non-zero number of cells
+  ok     MIGRATED: ZERO impossible passing-line cells
+       UNCHANGED: 71 board(s), 532,000 qb cells
+         cmp <= att                      0
+         cmp + int <= att                0
+         ptd <= cmp                      0
+         ptd <= att                      0
+         cmp == 0 -> pyds == 0           0
+  ok     UNCHANGED: the scan covered a non-zero number of cells
+  ok     UNCHANGED: ZERO impossible passing-line cells
+
+C. rushing_td <= carries -- measured, attributed, left red
+  ok   the rushing scan covered a non-zero number of cells
+       rushing_td > carries: 442 cell(s) of 516,000
+       carries not an integer: 327,103 of 516,000 (63.4%)
+  FAIL rushing/carries is a COUNT of carries  327,103 of 516,000 cells are not integers, so `rushing_td <= carries` is comparing a count against a continuous level. Owner: the rushing allocation (nfl/production/nonqb/rushing_a1.py). NOT repair 5.
+  FAIL rushing_td <= carries on every row  442 cell(s); every one has 0 < carries < 1 and rushing_td == 1. Downstream of the check above. NOT repair 5.
+
+D. refusals are declared, not dropped
+       8 board(s) refused:
+        - nfl/research/live/2026_01_DAL_NYG/FORENSIC_CORRECTED_RESEARCH/4b186a21b83a49ec  ['PASSER_CREDIT_EXCEEDS_COMPLETABLE_ATTEMPTS']
+        - nfl/research/live/2026_01_DAL_NYG/pre_inactives_V1_CANDIDATE_R8/3dddf9f62c9260b0  ['PASSER_CREDIT_EXCEEDS_COMPLETABLE_ATTEMPTS']
+        - nfl/research/live/2026_01_SF_LA/post_inactives_V1_CANDIDATE_R5/ee1c94270bb53963  ['PASSER_CREDIT_EXCEEDS_COMPLETABLE_ATTEMPTS']
+        - nfl/research/live/2026_01_SF_LA/post_inactives_V1_CANDIDATE_R7/e264f9c6b84837d9  ['PASSER_CREDIT_EXCEEDS_COMPLETABLE_ATTEMPTS']
+        - nfl/research/live/2026_01_SF_LA/pre_inactives_V1_CANDIDATE  ['PASSER_CREDIT_EXCEEDS_COMPLETABLE_ATTEMPTS']
+        - nfl/research/live/2026_01_SF_LA/pre_inactives_V1_CANDIDATE_R6  ['PASSER_CREDIT_EXCEEDS_COMPLETABLE_ATTEMPTS']
+        - nfl/research/live/2026_01_TB_CIN/post_inactives_V1_CANDIDATE_R5/819a8eba1596697d  ['PASSER_CREDIT_EXCEEDS_COMPLETABLE_ATTEMPTS']
+        - nfl/research/live/2026_01_TB_CIN/post_inactives_V1_CANDIDATE_R6/35c0c1c10aadf799  ['PASSER_CREDIT_EXCEEDS_COMPLETABLE_ATTEMPTS']
+  ok   every refusal carries a NAMED code and a team
+  ok     and every refusal is the upstream coupling gap the replacement refuses BY NAME rather than clipping
+
+E. the seals survive the migration, byte for byte
+  ok   the snapshot covers a non-zero number of sealed files
+  ok   the migration ran
+  ok     every sealed file has the same sha256 afterwards
+  ok     no sealed file was removed
+  ok     no file was added inside a sealed run directory
+
+F. determinism, and the blast radius of the rewrite
+  ok   a migrated board re-migrates
+  ok     two runs on the same board produce identical arrays
+  ok     and the same migrated run id
+  ok     only qb/cmp, qb/pyds and qb/ptd differ from the source
+  ok     and all three of them did change
+
+G. the repair in the tree is the repair being applied
+  ok   the migration CALLS credit_passing_line
+  ok     and never calls the superseded credit
+  ok     and the replacement still declares coherence by construction, so "by construction" stays a claim anyone can check
+  ok     and shared_pass records that its credit is superseded
+
+H. the upper tail, against a bound derived from realised games
+       derivation: 3787 realised QB game-lines with a completion, max 525 yards, 0 above 554
+       rule of three -> 95% one-sided limit on the exceedance rate 7.907e-04
+  ok   the bound rests on a non-trivial history
+  ok     and on zero realised exceedances of the record, which is what makes the rule of three the right limit
+       declared UNMIGRATABLE boards, counted apart: C3_SIDE 37/144,000 above the record, 4630 outside 99*cmp
+  ok   the tail scan covered at least one side family
+       C3_SIDE: 80 of 326,000 above 554 (2.454e-04), max 755
+  ok     C3_SIDE: the hard rule bound abs(pyds) <= 99*cmp holds
+  ok     C3_SIDE: the record-exceedance rate is inside the derived 95% limit
+       QB_ONLY_SIDE: 680 of 520,000 above 554 (1.308e-03), max 1587
+  ok     QB_ONLY_SIDE: the hard rule bound abs(pyds) <= 99*cmp holds
+  FAIL   QB_ONLY_SIDE: the record-exceedance rate is inside the derived 95% limit  1.308e-03 against 7.907e-04, max draw 1587 yards. The passing credit does not generate this: it is qb2_lib.py:306-307, PY = CMP * ypc_d, a game-level yards-per-completion ratio resampled whole and multiplied by an independently drawn completion count. NOT repair 5, and NOT to be fixed by clipping.
+
+32 passed, 3 failed, 0 blocked
+Traceback (most recent call last):
+  File "/home/user/nfl/nfl/tests/test_passer_credit_migration.py", line 456, in <module>
+    fn()
+  File "/home/user/nfl/nfl/tests/test_passer_credit_migration.py", line 450, in test_zz_every_check_passed
+    raise AssertionError(f'{FAILED} check(s) failed in this module')
+AssertionError: 3 check(s) failed in this module

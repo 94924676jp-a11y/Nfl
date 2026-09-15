@@ -49,6 +49,7 @@ variance and that is a construction rather than an estimate.
 from __future__ import annotations
 
 import collections
+import gzip
 import hashlib
 import pathlib
 import sys
@@ -493,6 +494,466 @@ def predict(season, week, players, injuries_rows, observed_before=None,
         declined=declined, states=dict(states),
         coef_sha256=f.value['coef_sha256'],
         clock=clock.isoformat(), depth=depth_ev,
+        reliability_weight_mean=round(float(np.mean(ws)), 6),
+        reliability_weight_max=round(float(np.max(ws)), 6),
+        n_with_a_depth_listing=sum(1 for q in players
+                                   if depth.get(q.get('gsis_id'))),
+        p_mean=float(np.mean(p)), p_min=float(np.min(p)),
+        p_max=float(np.max(p)), **f.value['evidence'])
+
+
+# ======================================================================
+# P1 / R10. THE TWO APPEARANCE-PATH REPAIRS FROM AUTOPSY_DEN_KC SECTION 4.
+#
+# EVERYTHING ABOVE THIS LINE IS UNTOUCHED AND STAYS THAT WAY. R8 is frozen
+# lineage: `V1_CANDIDATE_R8` and `V1_CANDIDATE_R9` both run `featurise`,
+# `fit` and `predict` above, and their fitted coefficients must not move
+# because of work done here. R10 is a SUCCESSOR, not an edit -- the same
+# shape as R9 replacing the quarterback room while `qb3_lib` stayed frozen.
+#
+# REPAIR 1 -- `f_weeks_since_appear` was a value with no missingness flag,
+# encoded through a FALSY test.
+#
+#     f.append(min(v or 9, 9) / 9.0)
+#
+# All twelve V1_NUMERIC features carry a value AND a flag; this one carried
+# neither. `v or 9` fires on None AND on 0, so "never appeared", "appeared in
+# the most recent game" and "gone for nine games" are one number, 1.0000,
+# while "missed exactly one game" is 0.1111. The encoding is therefore not
+# monotone in its own quantity.
+#
+# Measured on the union frame (n=59,742): the value is 1-based, so 0 never
+# occurs in stored data -- the 0 collision is a latent hazard rather than an
+# occurring one, and it is repaired structurally rather than argued away. The
+# collision that DOES occur is None against 9+: 1,273 rows carry None and
+# appear at rate 1.0000, 11 rows carry 9-11 and appear at rate 0.5455, and
+# the design row cannot tell them apart. That is what put +1.2600 of logit on
+# a back with no NFL history and -0.2785 on one with 68 games.
+#
+# The repair is the treatment every other numeric already gets: value, then
+# flag, with an explicit `is None` test and a monotone encoding in which a
+# player who appeared in the most recent game sits at the MINIMUM.
+#
+# REPAIR 2 -- the depth ordinal was offence-wide in the daily era and
+# within-position in the weekly era, in one column of one design row.
+#
+#     weekly era (2020-2024, n=48,543)  r1 0.8930  r2 0.7018  r3 0.5186
+#     daily  era (2025,      n=11,199)  r1 0.9136  r2 0.9357  r3 0.8805
+#
+# The daily era's top three buckets are flat because they are not roles --
+# they are the three alphabetically-first `pos_rank == 1` players on the
+# club. `depth_vintage` now SUPPLIES a within-position scale beside the
+# offence-wide one rather than replacing it, and R10 consumes that scale on
+# both sides of the fit. On it the same 2025 rows give 0.9139 / 0.7451 /
+# 0.6425 / 0.3720 / 0.0596, monotone and on the weekly era's footing.
+#
+# BOTH REPAIRS CHANGE THE DESIGN MATRIX, SO R10 REFITS. That is why they are
+# one candidate and not two: a run carrying one of them is not a control for
+# the other.
+SPEC_VERSION_R10 = 'appearance-r10-monotone-weeks-and-within-position-rank-1'
+
+# The rank scale R10 is fitted on and served on. Named once so the fit and
+# the forecast cannot drift apart -- a model fitted on one scale and served
+# on another is exactly the train/serve break repair 2 is about.
+RANK_SCALE_R10 = DV.WITHIN_POSITION
+
+_FRAME_R10 = {}
+_FIT_R10 = {}
+
+
+def within_position_overlay(rows) -> Outcome:
+    """{(s, w, t, pid): within-position ordinal} for the daily-vendor rows.
+
+    Built from the SAME leaf and the SAME point-in-time selection R7's frame
+    used, so the only thing that differs from `r['rank']` is the scale. A row
+    the offence-wide scale listed and this one does not would mean the two
+    disagree about who is on the chart, which is a different claim entirely
+    and is refused by name rather than filled in.
+    """
+    if not R7.DAILY_LEAF.exists():
+        return Outcome.blocked(
+            'R10_DAILY_LEAF_MISSING',
+            f'{R7.DAILY_LEAF} is absent, so the daily-vendor seasons carry no '
+            f'within-position rank and the successor would silently fall back '
+            f'to the offence-wide ordinal it exists to replace',
+            cause=Cause.DATA)
+    dy = DV.daily(gzip.open(R7.DAILY_LEAF, 'rt').read(), scale=RANK_SCALE_R10)
+    if dy.state is not State.PASS:
+        return dy
+    M, A, F = AM._frozen()
+    kick = A.kickoffs()
+    chart, over = {}, {}
+    n_daily = n_listed_old = n_listed_new = 0
+    no_chart = []
+    for r in rows:
+        if r.get('vendor') != DV.DAILY_VENDOR:
+            continue
+        n_daily += 1
+        key = (r['s'], r['w'], r['t'])
+        if key not in chart:
+            k = kick.get(key)
+            pit = DV.daily_point_in_time(dy.value, r['t'], k) if k else None
+            chart[key] = (pit.value if (pit is not None
+                                        and pit.state is State.PASS) else None)
+            if chart[key] is None:
+                no_chart.append({'season': key[0], 'week': key[1],
+                                 'team': key[2],
+                                 'code': 'NO_KICKOFF' if pit is None
+                                         else pit.code})
+        m = chart[key]
+        if r.get('rank') is not None:
+            n_listed_old += 1
+        if m is None:
+            continue
+        v = m.get(r['pid'])
+        if v is not None:
+            over[(r['s'], r['w'], r['t'], r['pid'])] = int(v[0])
+            n_listed_new += 1
+    if n_daily and not over:
+        return Outcome.fail(
+            'R10_OVERLAY_EMPTY',
+            f'{n_daily} daily-vendor frame row(s) produced no within-position '
+            f'rank at all; an empty overlay is an error, not a result')
+    if n_listed_old != n_listed_new:
+        return Outcome.fail(
+            'R10_OVERLAY_LISTEDNESS_DISAGREES',
+            f'{n_listed_old} frame row(s) carry an offence-wide depth rank '
+            f'but {n_listed_new} carry a within-position one. The repair '
+            f're-ranks players; it must not re-list them, and a difference '
+            f'here means the two scales disagree about who is on the chart',
+            n_listed_offence_wide=n_listed_old,
+            n_listed_within_position=n_listed_new)
+    return Outcome.ok(
+        'R10_OVERLAY_OK', value=over, spec_version=SPEC_VERSION_R10,
+        rank_scale=RANK_SCALE_R10, n_daily_rows=n_daily,
+        n_listed=n_listed_new, n_team_weeks=len(chart),
+        n_team_weeks_without_a_lawful_chart=len(no_chart),
+        team_weeks_without_a_lawful_chart=no_chart[:10],
+        leaf=str(R7.DAILY_LEAF.relative_to(_REPO)),
+        rank_1_position_mix=dy.evidence.get('rank_1_position_mix'))
+
+
+def enriched_frame_r10() -> Outcome:
+    """R8's frame with the depth rank restated on ONE scale, in a new key.
+
+    `rank` is left exactly as it was, because R7, R8 and `pool_audit` read it
+    and a successor does not get to move a quantity its predecessors are still
+    serving. The within-position value lands in `rank_pos`, and rows are
+    COPIED rather than annotated so nothing above this line can see it.
+
+    The weekly vendor needs no overlay: `depth_vintage.weekly` already groups
+    inside (season, week, club, normalised position), so its rank is the
+    within-position quantity on both scales. Only the daily vendor's ordinal
+    was offence-wide.
+    """
+    _fp = R7._dependency_fingerprint()
+    if _FRAME_R10.get('rows') and _FRAME_R10.get('fingerprint') == _fp:
+        _ev = dict(_FRAME_R10['evidence'])
+        _ev['fingerprint'] = _fp
+        return Outcome.ok('R10_FRAME_CACHED', value=_FRAME_R10['rows'],
+                          spec_version=SPEC_VERSION_R10, cached=True, **_ev)
+    if _FRAME_R10.get('rows'):
+        _FRAME_R10.clear()
+    fr = enriched_frame()
+    if fr.state is not State.PASS:
+        return fr
+    ov = within_position_overlay(fr.value)
+    if ov.state is not State.PASS:
+        return ov
+    rows, n_weekly, n_daily, n_unlisted = [], 0, 0, 0
+    for r in fr.value:
+        q = dict(r)
+        if q.get('vendor') == DV.DAILY_VENDOR:
+            q['rank_pos'] = ov.value.get((q['s'], q['w'], q['t'], q['pid']))
+            n_daily += 1
+        else:
+            q['rank_pos'] = q.get('rank')
+            n_weekly += 1
+        if q['rank_pos'] is None:
+            n_unlisted += 1
+        rows.append(q)
+    n_moved = sum(1 for a, b in zip(fr.value, rows)
+                  if a.get('rank') != b.get('rank_pos'))
+    ev = {kk: vv for kk, vv in fr.evidence.items()
+          if kk not in ('cached', 'spec_version', 'value', 'fingerprint')}
+    ev['rank_scale'] = RANK_SCALE_R10
+    ev['n_rows'] = len(rows)
+    ev['n_weekly_vendor_rows_already_within_position'] = n_weekly
+    ev['n_daily_vendor_rows_rescaled'] = n_daily
+    ev['n_rows_with_no_depth_listing'] = n_unlisted
+    ev['n_rows_whose_depth_rank_moved'] = n_moved
+    ev['overlay'] = {k: v for k, v in ov.evidence.items()
+                     if k not in ('value', 'spec_version')}
+    ev['rank_is_not_mutated'] = (
+        "`rank` is untouched on every row; the within-position value is a "
+        "new key, `rank_pos`, and only R10's featuriser reads it")
+    _FRAME_R10['rows'], _FRAME_R10['evidence'] = rows, ev
+    _FRAME_R10['fingerprint'] = _fp
+    return Outcome.ok('R10_FRAME_OK', value=rows,
+                      spec_version=SPEC_VERSION_R10, cached=False, **ev)
+
+
+def featurise_r10(r, k):
+    """R8's design row with the two repairs, and nothing else changed.
+
+    Deliberately a copy of `featurise` rather than a call into it: R8's
+    featuriser is served by two frozen candidate modes, and a successor that
+    reaches inside it to change a column is an edit wearing a new name.
+    """
+    if 'rank_pos' not in r:
+        raise ValueError(
+            'R10_RANK_SCALE_MISSING: this row carries no `rank_pos`, so the '
+            'within-position depth rank is unavailable and the only value to '
+            'hand the depth bucket would be the offence-wide ordinal this '
+            'model exists to stop consuming. Build rows through '
+            'enriched_frame_r10() or predict_r10().')
+    # REPAIR 2, applied to BOTH depth blocks through one substitution. R7's
+    # featuriser reads `rank`, so it is handed a row whose rank IS the
+    # within-position ordinal; the original row is not modified.
+    rr = dict(r)
+    rr['rank'] = r['rank_pos']
+    f = list(R7.featurise(rr))
+    w = weight(rr.get('n_cur'), k)
+    f.append(w)
+    f.append(1.0 - w)
+    for key in ('app_cur', 'app_ewma_cur', 'rate3_cur', 'snap_ewma_cur'):
+        v = rr.get(key)
+        f.append(0.0 if v is None else w * float(v))
+        f.append(1.0 if v is None else 0.0)
+    f.append(min(rr.get('n_cur') or 0, 12) / 12.0)
+    rk = rr.get('rank')
+    bucket = ('unlisted' if rk is None else
+              ('r1' if rk == 1 else 'r2' if rk == 2 else
+               'r3' if rk == 3 else 'r4plus'))
+    for b in ('r1', 'r2', 'r3', 'r4plus', 'unlisted'):
+        f.append((1.0 - w) if bucket == b else 0.0)
+    blk = rr.get('v1') or {}
+    for key in V1_NUMERIC:
+        v = blk.get(key)
+        f.append(0.0 if v is None else float(v))
+        f.append(1.0 if v is None else 0.0)
+    # REPAIR 1. VALUE THEN FLAG, LIKE EVERY OTHER NUMERIC IN THIS BLOCK.
+    #
+    # `is None` and not a falsy test, so a real 0 is a real 0. The value is
+    # non-decreasing in weeks-since-appear across the whole range and 0 sits
+    # at the minimum, which is the direction the quantity actually runs: a
+    # player who appeared in the most recent game is the LEAST overdue. The
+    # negative branch of the clamp cannot fire on stored data -- the quantity
+    # is 1-based -- and is there so that a generator change cannot fold a
+    # future value back onto an existing one silently.
+    v = blk.get('f_weeks_since_appear')
+    f.append(0.0 if v is None else min(max(float(v), 0.0), 9.0) / 9.0)
+    f.append(1.0 if v is None else 0.0)
+    f.append(min(float(blk.get('f_n_teammates_out') or 0.0), 3.0) / 3.0)
+    f.append(float(blk.get('f_practice_improving') or 0.0))
+    f.append(float(blk.get('f_practice_worsening') or 0.0))
+    f.append(1.0 if rr.get('v1') is None else 0.0)
+    return f
+
+
+N_FEATURES_R10 = len(featurise_r10(
+    {'w': 1, 'pos': 'WR', 'rank': 1, 'rank_pos': 1, 'n_cur': 0}, 1.2))
+
+
+def fit_r10(season: int, l2=1.0) -> Outcome:
+    """R8's fit procedure on R10's design row. Its own cache, its own hash."""
+    key = (int(season), float(l2))
+    if key in _FIT_R10:
+        m = _FIT_R10[key]
+        return Outcome.ok('R10_FIT', value=m, spec_version=SPEC_VERSION_R10,
+                          cached=True, **m['evidence'])
+    fr = enriched_frame_r10()
+    if fr.state is not State.PASS:
+        return fr
+    rows = fr.value
+    ko = reliability_k(rows, cut=int(season) * 100)
+    if ko.state is not State.PASS:
+        return ko
+    k = ko.value
+    M, A, F = AM._frozen()
+    train = [r for r in rows if r['s'] < season and not is_unsupported(r)]
+    dropped = sum(1 for r in rows if r['s'] < season and is_unsupported(r))
+    if not train:
+        return Outcome.fail(
+            'R10_FRAME_EMPTY',
+            f'no frame row earlier than {season} survived the '
+            f'unsupported-cell exclusion; a fit on nothing is not a fit')
+    X = [featurise_r10(r, k) for r in train]
+    y = [r['appeared'] for r in train]
+    model = A.fit_logistic(X, y, l2=l2)
+    p = A.predict(model, X)
+    ev = {'n_train_rows': len(train), 'n_features': len(X[0]),
+          'n_dropped_unsupported_cell': dropped,
+          'unsupported_cell': UNSUPPORTED_CELL,
+          'train_seasons': sorted({r['s'] for r in train}),
+          'in_sample_brier': float(A.brier(y, p)),
+          'in_sample_auc': float(A.auc(y, p)),
+          'base_rate': float(np.mean(y)), 'l2': l2,
+          'k': round(k, 6), 'k_evidence': ko.evidence,
+          'rank_scale': RANK_SCALE_R10,
+          'repairs': ('f_weeks_since_appear carries a missingness indicator '
+                      'and a monotone encoding; the depth rank is '
+                      'within-position on both sides of the fit'),
+          'no_week_number_in_the_design':
+              'the regime moves with n_cur, not with the calendar'}
+    m = {'model': model, 'k': k, 'evidence': ev,
+         'coef_sha256': hashlib.sha256(
+             np.asarray(model['w']).tobytes()).hexdigest()[:16]}
+    _FIT_R10[key] = m
+    return Outcome.ok('R10_FIT', value=m, spec_version=SPEC_VERSION_R10,
+                      cached=False, **ev)
+
+
+def predict_r10(season, week, players, injuries_rows, observed_before=None,
+                kickoff_utc=None, depth=None, depth_scale=None) -> Outcome:
+    """Per-player P(appear) under R10. Every R7 and R8 refusal is inherited.
+
+    A caller-supplied depth chart must NAME ITS SCALE. Accepting one silently
+    is how a model fitted on within-position ranks ends up served an
+    offence-wide ordinal in the same column -- the train/serve break this
+    candidate exists to close, reintroduced through a keyword argument.
+    """
+    fr = enriched_frame_r10()
+    if fr.state is not State.PASS:
+        return fr
+    f = fit_r10(season)
+    if f.state is not State.PASS:
+        return f
+    k = f.value['k']
+    M, A, F = AM._frozen()
+
+    clock = R7._parse(observed_before) or R7._parse(kickoff_utc)
+    if clock is None:
+        return Outcome.fail(
+            'R10_NO_CLOCK',
+            'neither observed_before nor kickoff_utc was supplied, so the '
+            'depth chart could not be selected point-in-time and the newest '
+            'capture would have been used by default')
+    if depth is None:
+        teams = sorted({q.get('team') for q in players if q.get('team')})
+        if not teams:
+            return Outcome.fail('R10_NO_TEAMS', 'no player carries a team')
+        cap = DV.captured(teams, clock, scale=RANK_SCALE_R10)
+        if cap.state is not State.PASS:
+            return cap
+        depth = cap.value
+        depth_ev = {kk: vv for kk, vv in cap.evidence.items() if kk != 'value'}
+    else:
+        if depth_scale != RANK_SCALE_R10:
+            return Outcome.fail(
+                'R10_DEPTH_SCALE_UNDECLARED',
+                f'a depth chart was supplied with depth_scale='
+                f'{depth_scale!r}; R10 is fitted on {RANK_SCALE_R10!r} and '
+                f'will not consume a chart that does not declare that scale. '
+                f'An offence-wide ordinal in this column is the defect, not '
+                f'a fallback.',
+                required=RANK_SCALE_R10, supplied=str(depth_scale))
+        depth_ev = {'source': 'supplied_by_caller',
+                    'rank_scale_name': depth_scale}
+
+    pr = AM.prospective_feature_rows(season, week, players, injuries_rows)
+    if pr.state is not State.PASS:
+        return pr
+    v1rows = {r['gsis_id']: r for r in pr.value['target']}
+
+    inj26 = AM.parse_injuries_rows(injuries_rows, season)
+    hist = collections.defaultdict(list)
+    cur = collections.defaultdict(list)
+    for r in fr.value:
+        hist[r['pid']].append(r)
+        if r['s'] == int(season):
+            cur[r['pid']].append(r)
+
+    declined, states = {}, collections.Counter()
+    rowsX, ids, ws = [], [], []
+    for q in players:
+        pid = q.get('gsis_id')
+        if not pid:
+            return Outcome.fail(
+                'R10_IDENTITY_UNRESOLVED',
+                'a player carries no gsis_id; fuzzy name matching is forbidden')
+        d = depth.get(pid)
+        past = hist.get(pid) or []
+        cpast = cur.get(pid) or []
+        rk = (d[0] if d else None)
+        r = {'s': int(season), 'w': int(week), 't': q.get('team'), 'pid': pid,
+             'pos': R7._pos(q.get('position')), 'appeared': None,
+             'rank': rk, 'rank_pos': rk, 'vendor': DV.DAILY_VENDOR,
+             'n_prior': len(past),
+             'prev_appeared': past[-1]['appeared'] if past else None,
+             'crossed': bool(past) and past[-1]['s'] < int(season)}
+        cm = 0
+        for x in reversed(past):
+            if x['s'] != int(season) or x['appeared']:
+                break
+            cm += 1
+        r['cm_within'] = cm
+        carried = 0
+        if r['crossed']:
+            for x in reversed(past):
+                if x['appeared']:
+                    break
+                carried += 1
+        r['cm_carried'] = carried
+
+        def _ew(vals):
+            if not vals:
+                return None
+            num = den = 0.0
+            ww = 1.0
+            for v in reversed(vals):
+                num += ww * v
+                den += ww
+                ww *= _HL
+            return num / den
+        r['app_ewma'] = _ew([x['appeared'] for x in past])
+        capp = [x['appeared'] for x in cpast]
+        r['n_cur'] = len(cpast)
+        r['app_cur'] = float(np.mean(capp)) if capp else None
+        r['rate3_cur'] = float(np.mean(capp[-3:])) if capp else None
+        r['app_ewma_cur'] = _ew(capp)
+        csnap = [x['snap'] for x in cpast if x.get('snap') is not None]
+        r['snap_ewma_cur'] = _ew(csnap)
+        r['snap'] = None                     # unknown before the game is played
+        _v = v1rows.get(pid)
+        r['v1'] = ({k: _v.get(k) for k in V1_NUMERIC + (
+            'f_weeks_since_appear', 'f_n_teammates_out', 'f_practice_seq',
+            'f_practice_improving', 'f_practice_worsening')}
+            if _v is not None else None)
+        di = inj26.get((int(season), int(week), q.get('team'), pid))
+        r['inj_status'] = di['report_status'] if di else None
+        r['inj_practice'] = di['practice_status'] if di else None
+        r['inj_available'] = 1 if di is not None else 0
+        r['state'] = state_of(r)
+        states[r['state']] += 1
+        if is_unsupported(r):
+            declined[pid] = {
+                'reason': UNSUPPORTED_CELL,
+                'detail': 'no prior frame row and no depth listing. The only '
+                          'rows this repository holds in that cell appeared, '
+                          'so its appearance rate is 1.0000 with zero '
+                          'variance and is not an estimate.'}
+            continue
+        rowsX.append(featurise_r10(r, k))
+        ids.append(pid)
+        ws.append(weight(r['n_cur'], k))
+    if not ids:
+        return Outcome.fail(
+            'R10_NO_SCORABLE_PLAYER',
+            f'all {len(players)} player(s) fall in the unsupported cell',
+            n_declined=len(declined))
+    p = A.predict(f.value['model'], rowsX)
+    out = {pid: float(v) for pid, v in zip(ids, p)}
+    return Outcome.ok(
+        'R10_APPEARANCE_PREDICTED', value=out, spec_version=SPEC_VERSION_R10,
+        test_only=False, n_players=len(out), n_declined=len(declined),
+        declined=declined, states=dict(states),
+        coef_sha256=f.value['coef_sha256'],
+        clock=clock.isoformat(), depth=depth_ev,
+        # `rank_scale` is NOT repeated here: the fit's own evidence already
+        # carries it and it must be the fit's value, not a second one written
+        # beside it. Two spellings of one fact is how a served model and its
+        # artifact come to disagree.
         reliability_weight_mean=round(float(np.mean(ws)), 6),
         reliability_weight_max=round(float(np.max(ws)), 6),
         n_with_a_depth_listing=sum(1 for q in players

@@ -26,6 +26,30 @@ M_DRAWS = 1000
 PASS_COMPONENTS = ('V', 'S', 'M', 'C', 'Y')
 RUSH_COMPONENTS = ('VS', 'RO', 'RY')
 
+# HOW THE QUARTERBACK SHARE S IS BUILT. The incumbent is the DEFAULT and is
+# byte-for-byte the behaviour every sealed artifact was produced under; a
+# candidate must be asked for by name.
+#
+# SHARE_SPEC_UNCONDITIONAL resamples this quarterback's own prior shares
+# against a positional pool holding EVERY quarterback-game with a dropback,
+# backups included. Measured on the 2020-2024 pool: 690 of 3,376 rows (20.4%)
+# were not their team's primary passer that week and their mean share is
+# 0.1233 against 0.9683 for the 2,686 primary rows. The two components are
+# therefore estimates of different quantities and the mixture weight trades
+# between them as though they were the same one.
+#
+# SHARE_SPEC_STARTER_CONDITIONED (P2 repair 3, candidate R12) puts both
+# components on one conditioning basis: the own component is this
+# quarterback's own prior games AS HIS TEAM'S PRIMARY PASSER, and the pool is
+# stratified by `prior_primary` -- whether the pool row's passer was his
+# team's primary passer in HIS OWN most recent previous appearance. Both
+# labels are facts about games strictly earlier than the one being forecast,
+# so no future information enters. No constant is introduced: the mixture
+# weight is the module's existing `rung_weight`.
+SHARE_SPEC_UNCONDITIONAL = 'unconditional'
+SHARE_SPEC_STARTER_CONDITIONED = 'starter_conditioned'
+SHARE_SPECS = (SHARE_SPEC_UNCONDITIONAL, SHARE_SPEC_STARTER_CONDITIONED)
+
 
 def load():
     d = pickle.load(open(f'{HERE}/qb.pkl', 'rb'))
@@ -54,8 +78,30 @@ def load():
     return qbs
 
 
+def primary_flags(rs):
+    """Who took the most dropbacks for his team in each team-game.
+
+    A FACT ABOUT A GAME, used only for games strictly earlier than the one
+    being forecast. Ties break by attempts then gsis_id, which is the rule
+    `nfl/research/v3/h1/h1_frame.py` uses, so the two agree row for row.
+    Written onto every row as `_primary` and recomputed on each call, so a
+    second `attach` over a frame with prospective rows appended cannot leave a
+    stale label behind.
+    """
+    by = collections.defaultdict(list)
+    for r in rs:
+        by[(r['season'], r['week'], r['team'])].append(r)
+    for v in by.values():
+        v.sort(key=lambda r: (-r.get('db', 0), -r.get('att', 0),
+                              str(r['gsis_id'])))
+        for i, r in enumerate(v):
+            r['_primary'] = bool(i == 0 and r.get('db', 0) > 0)
+    return rs
+
+
 def attach(rs):
     """Prior-only history, strict ordinal prefix cut."""
+    primary_flags(rs)
     hist = collections.defaultdict(list); hord = collections.defaultdict(list)
     thist = collections.defaultdict(list); thord = collections.defaultdict(list)
     for r in rs:
@@ -76,6 +122,14 @@ def attach(rs):
         r['h_ryds'] = sum(x['ryds'] for x in past)
         r['h_rtd'] = sum(x['rtd'] for x in past)
         r['h_share'] = [x['db'] / x['team_db'] for x in past if x['team_db'] > 0]
+        # THE SAME HISTORY, CONDITIONED ON THE ROLE. Only prior games, only
+        # ones in which he was his team's primary passer. `prior_primary` is
+        # his role in his most recent previous appearance and is None when he
+        # has none; it is the only role signal in this repository that is
+        # available before kickoff.
+        r['h_share_primary'] = [x['db'] / x['team_db'] for x in past
+                                if x['team_db'] > 0 and x['_primary']]
+        r['prior_primary'] = past[-1]['_primary'] if past else None
         r['h_teamdb'] = [x['team_db'] for x in past if x['team_db'] > 0]
         r['h_ypc'] = [x['pyds'] / x['cmp'] for x in past if x['cmp'] > 0]
         r['h_ypr'] = [x['ryds'] / x['rush_opp'] for x in past
@@ -108,6 +162,7 @@ def ewma(vals, hl=HL):
 def pools(rs, ev):
     """QB positional pools from strictly prior seasons only."""
     a = collections.Counter(); tdb = []; shares = []; ypc = []; ypr = []
+    strat = collections.defaultdict(list)
     for r in rs:
         if r['season'] >= ev or r['db'] <= 0:
             continue
@@ -117,12 +172,20 @@ def pools(rs, ev):
         a['pyds'] += r['pyds']; a['ryds'] += r['ryds']
         if r['team_db'] > 0:
             tdb.append(r['team_db']); shares.append(r['db'] / r['team_db'])
+            # Stratified by the pool row's OWN lagged role. Absent on a frame
+            # that has not been through `attach`, in which case the stratum is
+            # simply not built and the starter-conditioned spec refuses by
+            # name rather than falling back to the pool it is repairing.
+            if 'prior_primary' in r:
+                strat[r['prior_primary']].append(r['db'] / r['team_db'])
         if r['cmp'] > 0:
             ypc.append(r['pyds'] / r['cmp'])
         if r['rush_opp'] > 0:
             ypr.append(r['ryds'] / r['rush_opp'])
     db = max(a['db'], 1)
-    return {'team_db': np.array(tdb, float) if tdb else np.array([32.0]),
+    return {'share_by_prior_primary':
+                {k: np.array(v, float) for k, v in strat.items() if v},
+            'team_db': np.array(tdb, float) if tdb else np.array([32.0]),
             'share': np.array(shares, float) if shares else np.array([0.9]),
             'ypc': np.array(ypc, float) if ypc else np.array([11.0]),
             'ypr_draws': np.array(ypr, float) if ypr else np.array([4.0]),
@@ -196,8 +259,70 @@ def _mix(rng, own, pool, w, m, ewma=False):
     return np.where(use, own[pick], pool[rng.integers(0, len(pool), m)])
 
 
+def share_draws(r, po, rng, w, ew, m, spec=SHARE_SPEC_UNCONDITIONAL):
+    """The quarterback's share of his team's dropbacks, as m draws.
+
+    ONE FUNCTION, TWO SPECIFICATIONS, SO THERE IS ONE PLACE TO READ. The
+    incumbent branch is the expression `simulate` used inline and consumes the
+    RNG identically, so a run that does not ask for a candidate draws exactly
+    what it drew before.
+
+    THE DEFECT THE CANDIDATE REPAIRS. Under SHARE_SPEC_UNCONDITIONAL the two
+    mixture components answer different questions: `r['h_share']` is dominated
+    by this quarterback's games as the primary passer (95.3% of the 26,044
+    prior appearances behind the 2025 starting-QB frame), while `po['share']`
+    is a league pool in which 20.4% of rows are backup appearances averaging a
+    0.1233 share. Shrinking the first toward the second moves a starter's
+    predictive distribution toward a population he is not in, which is the
+    same missing normalisation `qb_allocation.py` records from the other end
+    when the room is summed.
+
+    THE CANDIDATE. Both components are conditioned on the primary-passer role:
+    own history is restricted to his prior games in that role, and the pool is
+    the stratum whose members carried the same `prior_primary` label he does.
+    The label is his role in his own most recent previous appearance, which is
+    the only pregame role signal this repository holds for 2025 -- there is no
+    2025 weekly depth chart in `nfl/research/inputs/`. It is a lagged fact, so
+    nothing about the game being forecast enters.
+
+    NOT A CALIBRATED ROLE MODEL, AND SAID SO HERE. This does not forecast
+    WHETHER he starts. It forecasts his share given the role his history
+    points at, and the role uncertainty survives only as whatever non-primary
+    mass the stratified pool carries. A quarterback whose role changes between
+    his last appearance and this game is mispriced by it, and the count of
+    such games in the 2025 frame is reported rather than absorbed.
+    """
+    if spec not in SHARE_SPECS:
+        raise ValueError(f'unknown share specification {spec!r}; declared: '
+                         f'{SHARE_SPECS}')
+    if spec == SHARE_SPEC_UNCONDITIONAL:
+        return np.clip(_mix(rng, r['h_share'], po['share'], w, m, ew), 0, 1)
+    if 'h_share_primary' not in r or 'prior_primary' not in r:
+        raise ValueError(
+            'QB_SHARE_ROLE_FIELDS_ABSENT: the starter-conditioned share needs '
+            "`h_share_primary` and `prior_primary`, which `attach` writes. "
+            'Refusing to fall back to the unconditional pool this '
+            'specification exists to replace.')
+    strat = po.get('share_by_prior_primary') or {}
+    if not strat:
+        raise ValueError(
+            'QB_SHARE_POOL_NOT_STRATIFIED: `pools` built no '
+            '`share_by_prior_primary` strata, which happens when the frame it '
+            'was given had not been through `attach`. Refusing rather than '
+            'silently drawing the incumbent pool.')
+    # A quarterback with no prior game in the role falls back to his whole
+    # history rather than to nothing; a stratum with no rows falls back to the
+    # unstratified pool. Both are named in the returned evidence by the
+    # caller, not swallowed.
+    own = r['h_share_primary'] or r['h_share']
+    pool = strat.get(r['prior_primary'])
+    if pool is None or len(pool) == 0:
+        pool = po['share']
+    return np.clip(_mix(rng, own, pool, w, m, ew), 0, 1)
+
+
 def simulate(rs, ev, allrows, oracle=(), seed=SEED, m=M_DRAWS, rung='L1',
-             db_external=None):
+             db_external=None, share_spec=SHARE_SPEC_UNCONDITIONAL):
     """Team-aggregate-then-allocate. Returns a dict of (n, m) draw matrices.
 
     `db_external` is R2: an (n_rows, m) INTEGER dropback level supplied by the
@@ -205,6 +330,10 @@ def simulate(rs, ev, allrows, oracle=(), seed=SEED, m=M_DRAWS, rung='L1',
     conditional rates only. See
     nfl/research/r2/predeclaration_qb_level_ownership_r2.md
     (sha256 3d7beeb39f32da11623ac2be178ca4b764ecf314a5a55515b0d45c0e3d4f323c).
+
+    `share_spec` is P2 repair 3 and defaults to the incumbent. It is INERT
+    whenever `db_external` is supplied, because the share is then not drawn at
+    all -- see `share_draws`.
 
     Under R2 the team dropback volume `V` and the quarterback share `S` are
     owned by D1 and QB3 respectively. Drawing them here made this layer a
@@ -249,8 +378,7 @@ def simulate(rs, ev, allrows, oracle=(), seed=SEED, m=M_DRAWS, rung='L1',
             # S: this QB's share of it
             S = (np.full(m, (r['db'] / r['team_db']) if r['team_db'] > 0
                          else 1.0, float) if 'S' in oracle
-                 else np.clip(_mix(rng, r['h_share'], po['share'], w, m, ew),
-                              0, 1))
+                 else share_draws(r, po, rng, w, ew, m, share_spec))
             DB = np.maximum(np.rint(V * S), 0).astype(int)
             if 'V' in oracle and 'S' in oracle:
                 DB = np.full(m, r['db'], int)

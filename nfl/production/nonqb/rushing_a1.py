@@ -1028,6 +1028,349 @@ def allocate(season: int, week: int, teams, team_carries_draws,
         predeclaration_sha256=pre.value, **ev)
 
 
+# ------------------------------------------- P3: the composition, in one place
+def assert_named_owner_containment(teams, team_carries_published,
+                                   named_back_carries, qb_rush_opportunity,
+                                   tolerance=0.0) -> Outcome:
+    """Named rush owners <= the PUBLISHED team carry level, DECOMPOSED.
+
+    THE DEFECT THIS EXISTS TO CATCH, AND WHY ONE SUMMED CHECK MISSED IT.
+
+    `quality_gates.gate_rush_accounting` compares one quantity -- RB carries
+    plus QB scrambles plus QB designed runs -- against the team level. It is
+    the correct quantity to gate on and the wrong one to repair from: it sums
+    two layers and names neither. Decomposed against the sealed arrays of
+    board 96954efc523bd7d3 (2026_01_DEN_KC, V1_CANDIDATE_R9, 1,000 draws):
+
+        RB carries only      DEN 2 draws positive, max +0.2619
+                             KC  2 draws positive, max +0.0854
+        RB + QB rush opp     DEN 206 positive, max +6.1219
+                             KC  237 positive, max +9.6915
+
+    The multinomial deal is sound. The impossibility enters with the
+    quarterback. So this returns BOTH series, always, and the refusal carries
+    both -- a reader of a fired verdict must be able to see which half moved.
+
+    THE LEVEL IS THE PUBLISHED ONE, ON PURPOSE. A containment check against a
+    denominator the run did not seal cannot be attributed between a carry with
+    two owners and a level that was never used, which is exactly why
+    `draw_coherence.team_qb_rush_opportunity_within_team_carries` is a
+    diagnostic rather than a gate. Pass the vector the board carries.
+
+    It REPAIRS NOTHING. It counts and it names. `tolerance` defaults to ZERO
+    because the composition this fence guards makes the bound exact; the
+    product gate's half-carry tolerance exists to separate rounding from a real
+    over-deal on boards whose level and owners are on different draw indices,
+    and importing that slack here would hide the thing this asserts.
+    """
+    if not teams:
+        return Outcome.blocked(
+            'A1_CONTAINMENT_NO_TEAMS',
+            'no team was supplied, so there is nothing to contain. An empty '
+            'check is not a passing check.', cause=Cause.DEPENDENCY)
+    ev, bad = {}, []
+    for t in teams:
+        for name, src in (('team_carries_published', team_carries_published),
+                          ('named_back_carries', named_back_carries),
+                          ('qb_rush_opportunity', qb_rush_opportunity)):
+            if t not in src:
+                return Outcome.fail(
+                    'A1_CONTAINMENT_INPUT_MISSING',
+                    f'no {name} for {t}. A missing vector is not a vector of '
+                    f'zero, and treating it as one would report containment '
+                    f'for a quantity nobody measured.', team=t, input=name)
+        lvl = np.asarray(team_carries_published[t], np.float64).reshape(-1)
+        rb = np.asarray(named_back_carries[t], np.float64)
+        rb = rb.sum(0) if rb.ndim == 2 else rb.reshape(-1)
+        q = np.asarray(qb_rush_opportunity[t], np.float64).reshape(-1)
+        if not (lvl.size == rb.size == q.size):
+            return Outcome.fail(
+                'A1_CONTAINMENT_DRAW_MISMATCH',
+                f'{t}: level {lvl.size}, backs {rb.size}, QB rush {q.size}. '
+                f'These share one draw index; a mismatch is refused rather '
+                f'than broadcast.', team=t)
+        rb_only, both = rb - lvl, rb + q - lvl
+        rec = {
+            'n_draws': int(lvl.size),
+            'rb_only_draws_over': int((rb_only > tolerance).sum()),
+            'rb_only_max_excess': float(rb_only.max()),
+            'qb_only_draws_over': int((q - lvl > tolerance).sum()),
+            'qb_only_max_excess': float((q - lvl).max()),
+            'rb_plus_qb_draws_over': int((both > tolerance).sum()),
+            'rb_plus_qb_max_excess': float(both.max()),
+            'level_is_integer': bool(
+                not (np.abs(lvl - np.rint(lvl)) > 1e-9).any())}
+        ev[t] = rec
+        if rec['rb_plus_qb_draws_over']:
+            bad.append(t)
+    flat = {'rb_only_draws_over': sum(v['rb_only_draws_over']
+                                      for v in ev.values()),
+            'qb_only_draws_over': sum(v['qb_only_draws_over']
+                                      for v in ev.values()),
+            'rb_plus_qb_draws_over': sum(v['rb_plus_qb_draws_over']
+                                         for v in ev.values()),
+            'rb_only_max_excess': max(v['rb_only_max_excess']
+                                      for v in ev.values()),
+            'rb_plus_qb_max_excess': max(v['rb_plus_qb_max_excess']
+                                         for v in ev.values()),
+            'per_team': ev, 'tolerance': float(tolerance),
+            'decomposed': True}
+    if bad:
+        return Outcome.fail(
+            'A1_NAMED_OWNERS_EXCEED_TEAM_CARRIES',
+            f'{bad}: the named rush owners are dealt more carries than the '
+            f'published team level in at least one draw. Decomposed, the '
+            f'running-back deal is over by at most '
+            f'{flat["rb_only_max_excess"]:+.4f} and the running backs plus '
+            f'the quarterbacks by {flat["rb_plus_qb_max_excess"]:+.4f}, so '
+            f'the difference between those two numbers is where the repair '
+            f'belongs. Reported, never clipped.', **flat)
+    return Outcome.ok(
+        'A1_NAMED_OWNERS_WITHIN_TEAM_CARRIES', value=ev,
+        detail=f'{len(teams)} team(s): named backs plus quarterback rush '
+               f'opportunity fit inside the published carry level in every '
+               f'draw, decomposed into both halves',
+        **flat)
+
+
+def compose_rush_ownership(season: int, week: int, teams, *,
+                           team_carry_level, qb_scrambles,
+                           qb_rush_opportunity, m: int,
+                           seed: int = 20260908, params=None, game_id=None,
+                           level_rounding='round_half_even') -> Outcome:
+    """THE WHOLE RUSH COMPOSITION, in one named function with one owner.
+
+    WHAT WAS WRONG. Three steps used to live at the `run_forecast` call site
+    and each was individually defensible:
+
+      1. SC1 coupled the carry level against the SCRAMBLES. A designed
+         quarterback run is a team carry exactly as a scramble is, so the
+         bound was too weak and `rush_opp > team_carries` stayed reachable --
+         1 of 1,000 Kansas City draws on sealed board 96954efc523bd7d3.
+      2. `allocate` was called WITHOUT `qb_designed_rush`, so A1 drew its own
+         `designed_qb` while the QB layer drew `rush_opp`. One football
+         quantity, two owners, two values: DEN 2.2960 against 1.6270, KC
+         0.7090 against 0.6150, disagreeing in 814 and 528 of 1,000 cells and
+         differing per draw by -10 to +15 carries.
+      3. The run sealed D1's RAW continuous level while the engine partitioned
+         the SC1-coupled, integerised one, so the board published a
+         denominator the game never used and a breach could not be attributed
+         between a doubled carry and a wrong vector.
+
+    Together those put the named rush owners above the team's own carry level
+    in 149 of 1,000 DEN draws and 148 of 1,000 KC draws, by up to 6.12 and
+    9.69 carries -- the product gate's `RUSH_ACCOUNTING_FAILURE`.
+
+    WHAT THIS DOES. The same three steps, composed in the order that makes the
+    constraint an identity rather than a hope:
+
+        coupled   = SC1.couple(qb_rush_opportunity, team_carry_level)
+        published = rint(coupled)                      # A1's own rounding
+        designed  = qb_rush_opportunity - qb_scrambles
+        alloc     = allocate(..., qb_designed_rush=designed)
+
+    and then, because `qb_rush_opportunity` is integral and SC1 only permutes,
+
+        rb_category + qb_rush_opportunity
+            = (published - scr - designed - kneel - wr - te - fringe)
+              + (scr + designed)
+            = published - (kneel + wr + te + fringe)
+            <= published
+
+    in EVERY draw, for EVERY input this function accepts. Nothing is clipped,
+    nothing is truncated, no drawn result is renormalised and no draw is
+    deleted: SC1 chooses which draw index receives which carry value and the
+    multiset of carry values is unchanged element for element, and A1 draws
+    the five remaining categories from the EXACT conditional multinomial given
+    the designed-QB count rather than adjusting a partition after the fact.
+
+    WHAT IT REFUSES, BY NAME. A non-integral or negative quarterback rush
+    count; a rush opportunity smaller than the scrambles inside it; a draw
+    whose carry level cannot be permuted to clear the rush opportunity
+    (SC1's own `SC1_NO_DONOR_DRAW`); and any allocation whose containment
+    verification does not close. Each is a refusal, and a refusal is not a
+    repair.
+
+    Returns an Outcome whose value is
+
+        {'allocation':             allocate(...).value,
+         'team_carries_published': {team: (m,) int64},   # SEAL THIS ONE
+         'qb_rush_opportunity':    {team: (m,) int64},   # passed through
+         'qb_designed_rush':       {team: (m,) int64},
+         'sc1':                    {team: SC1 evidence}}
+    """
+    from nfl.production.nonqb import scramble_coherence as SC1
+    if not teams:
+        return Outcome.blocked(
+            'A1_COMPOSE_NO_TEAMS',
+            'no team was supplied for this slate; an empty slate from an '
+            'upstream stage is not a composition of zero.',
+            cause=Cause.DEPENDENCY)
+    if int(m) <= 0:
+        return Outcome.fail('A1_COMPOSE_NO_DRAWS',
+                            f'm={m}; a composition needs at least one draw.')
+    miss = {name: [t for t in teams if t not in src]
+            for name, src in (('team_carry_level', team_carry_level),
+                              ('qb_scrambles', qb_scrambles),
+                              ('qb_rush_opportunity', qb_rush_opportunity))}
+    if any(miss.values()):
+        return Outcome.fail(
+            'A1_COMPOSE_INPUT_TEAM_MISSING',
+            f'missing per-team vectors: '
+            f'{ {k: v for k, v in miss.items() if v} }. A missing level or a '
+            f'missing quarterback rush count is not a level of zero, and '
+            f'falling back would reinstate the second owner for exactly those '
+            f'teams.', missing=miss)
+
+    # THE QUARTERBACK'S COUNTS ARE NOT ROUNDED HERE. Rounding another layer's
+    # count is how a quantity acquires a third value; a fractional rush
+    # attempt is not a small one.
+    bad_shape, non_int, neg, inverted = [], {}, {}, {}
+    ro, scr = {}, {}
+    for t in teams:
+        a = np.asarray(qb_rush_opportunity[t], np.float64).reshape(-1)
+        s = np.asarray(qb_scrambles[t], np.float64).reshape(-1)
+        lv = np.asarray(team_carry_level[t], np.float64).reshape(-1)
+        for nm, v in (('qb_rush_opportunity', a), ('qb_scrambles', s),
+                      ('team_carry_level', lv)):
+            if v.size != m:
+                bad_shape.append(f'{nm}/{t}: {v.size} draws, expected {m}')
+        if a.size != m or s.size != m:
+            continue
+        off = int((np.abs(a - np.rint(a)) > 1e-9).sum()
+                  + (np.abs(s - np.rint(s)) > 1e-9).sum())
+        if off:
+            non_int[t] = off
+        n = int((a < 0).sum() + (s < 0).sum())
+        if n:
+            neg[t] = n
+        inv = int((a < s - 1e-9).sum())
+        if inv:
+            inverted[t] = inv
+        ro[t], scr[t] = a, s
+    if bad_shape:
+        return Outcome.fail(
+            'A1_COMPOSE_DRAW_MISMATCH',
+            f'{len(bad_shape)} input vector(s) are not {m} draws long: '
+            f'{bad_shape[:4]}. These layers share one draw index, so a '
+            f'mismatch is refused rather than reshaped.',
+            problems=bad_shape[:20])
+    if non_int:
+        return Outcome.fail(
+            'A1_COMPOSE_QB_RUSH_NOT_INTEGER',
+            f'{sum(non_int.values())} non-integer quarterback rush cell(s) '
+            f'across {len(non_int)} team(s). A rush attempt is an event; a '
+            f'fractional one is not a small one, and rounding another layer`s '
+            f'count here would give the quantity a third value. '
+            f'{dict(sorted(non_int.items())[:6])}', teams=non_int)
+    if neg:
+        return Outcome.fail(
+            'A1_COMPOSE_QB_RUSH_NEGATIVE',
+            f'{sum(neg.values())} negative quarterback rush cell(s) across '
+            f'{len(neg)} team(s). A negative count of rushes is not a small '
+            f'count. {dict(sorted(neg.items())[:6])}', teams=neg)
+    if inverted:
+        return Outcome.fail(
+            'A1_COMPOSE_SCRAMBLES_EXCEED_RUSH_OPPORTUNITY',
+            f'{sum(inverted.values())} cell(s) across {len(inverted)} team(s) '
+            f'carry more scrambles than rush opportunity, so the implied '
+            f'designed-run count is negative. The QB layer owns both and the '
+            f'identity `rush_opp = scrambles + designed` is its own; it is '
+            f'refused here rather than absorbed. '
+            f'{dict(sorted(inverted.items())[:6])}', teams=inverted)
+
+    # STEP 1. SC1, BOUNDED BY THE WHOLE RUSH OPPORTUNITY RATHER THAN BY THE
+    # SCRAMBLES. `couple` is generic in its first argument -- it is a per-draw
+    # lower bound on carries -- so raising the bound needs no change inside
+    # SC1 and no clipping anywhere: it reorders which draw receives which
+    # carry value and the marginal is a multiset invariant it checks itself.
+    coupled, sc1_ev, swaps = {}, {}, 0
+    for t in teams:
+        o = SC1.couple(ro[t], np.asarray(team_carry_level[t],
+                                         np.float64).reshape(-1))
+        if o.state is not State.PASS:
+            return Outcome.fail(
+                'A1_COMPOSE_SC1_REFUSED',
+                f'{t}: {o.code}: {o.detail[:200]} -- the carry level cannot '
+                f'be permuted to hold this team`s quarterback rush '
+                f'opportunity. Refused rather than clipped: clipping the '
+                f'level would silently move a carry between two owners.',
+                team=t, sc1_code=o.code)
+        coupled[t] = np.asarray(o.value, np.float64)
+        sc1_ev[t] = {k: v for k, v in o.evidence.items() if k != 'value'}
+        swaps += int(o.evidence.get('n_swaps', 0) or 0)
+
+    # STEP 2. ONE OWNER FOR THE DESIGNED RUNS: the QB layer's, handed to A1.
+    designed = {t: np.rint(ro[t] - scr[t]).astype(np.int64) for t in teams}
+
+    alloc = allocate(season, week, teams, coupled, scr, m=m, seed=seed,
+                     params=params, game_id=game_id,
+                     level_rounding=level_rounding,
+                     qb_designed_rush=designed)
+    if alloc.state is not State.PASS:
+        return alloc
+
+    # STEP 3. THE LEVEL THE BOARD PUBLISHES IS THE LEVEL THAT WAS PARTITIONED.
+    published = {t: np.asarray(alloc.value['team_carries'][t], np.int64)
+                 for t in teams}
+    qbo = {t: np.rint(ro[t]).astype(np.int64) for t in teams}
+
+    # VERIFIED, NOT ASSERTED. The bound is an identity above; this is the
+    # executable statement of it, decomposed, and a failure here is a defect
+    # in this composition rather than a residual to report.
+    cont = assert_named_owner_containment(
+        list(teams), published,
+        {t: np.asarray(alloc.value['carries'][(t, 'rb')], np.float64)
+         for t in teams}, qbo)
+    if cont.state is not State.PASS:
+        return cont
+    for t in teams:
+        tot = sum(np.asarray(alloc.value['carries'][(t, c)], np.int64)
+                  for c in CATEGORIES)
+        openc = int((tot + np.rint(scr[t]).astype(np.int64)
+                     != published[t]).sum())
+        if openc:
+            return Outcome.fail(
+                'A1_COMPOSE_PARTITION_DOES_NOT_CLOSE',
+                f'{t}: the six categories plus the scrambles do not equal the '
+                f'published level in {openc} draw(s). A1 closes by '
+                f'construction, so a gap here means this composition handed '
+                f'it a level or a draw index it did not partition.',
+                team=t, cells=openc)
+
+    return Outcome.ok(
+        'A1_RUSH_OWNERSHIP_COMPOSED',
+        value={'allocation': alloc.value,
+               'team_carries_published': published,
+               'qb_rush_opportunity': qbo,
+               'qb_designed_rush': designed,
+               'sc1': sc1_ev},
+        detail=f'{len(teams)} team(s) x {m} draws: the carry level is '
+               f'permuted to hold the quarterbacks` whole rush opportunity, '
+               f'the QB layer is the single owner of the designed runs, and '
+               f'the level the board publishes is the level A1 partitioned',
+        spec_version=SPEC_VERSION, season=int(season), week=int(week),
+        n_teams=len(teams), n_draws=int(m),
+        sc1_bound='qb_rush_opportunity',
+        sc1_bound_was='qb_scrambles',
+        sc1_total_swaps=int(swaps),
+        sc1_marginal_preserved=True,
+        rush_opportunity_single_owner=True,
+        designed_qb_owner='the QB layer, via qb_rush_opportunity - scrambles',
+        published_level_is_the_partitioned_level=True,
+        named_owner_containment=cont.code,
+        named_owner_containment_evidence={
+            k: v for k, v in cont.evidence.items() if k != 'per_team'},
+        clipping_applied=0, survivor_renormalisation_applied=0,
+        post_hoc_repairs=0, deleted_draws=0,
+        allocation_evidence={k: alloc.evidence.get(k) for k in (
+            'share_floor_binds', 'degenerate_draws_named_and_given_to_fringe',
+            'conditional_degenerate_draws_named_and_given_to_fringe',
+            'level_cells_rounded', 'closure_violations',
+            'ledger_violations', 'carries_with_two_owners')})
+
+
+
 # ----------------------------------------------------- dependence, per draw
 def per_draw_dependence(X, y) -> Outcome:
     """corr(one draw per team-game, realised series), as a DISTRIBUTION.

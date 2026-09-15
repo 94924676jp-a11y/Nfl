@@ -445,24 +445,101 @@ def performed_from_manifest(manifest_path, *, verify_artifacts: bool = True
                       n_uncredited_game_anchored=len(uncredited))
 
 
-def load_week_plan(season: int, week: int, vintage_dir=None) -> Outcome:
+def _schedule_snapshots(vintage_dir: pathlib.Path, manifest_path=None,
+                        as_of=None):
+    """Schedule blobs ordered by WHEN WE LEARNED THEM, oldest first.
+
+    P7, 2026-09-15. This used `key=lambda p: p.stat().st_mtime`, which is the
+    first entry on `vintage_selector`'s forbidden list -- "filesystem mtime as
+    information time" -- and it is forbidden for two separate reasons that both
+    bite here. A checkout, a copy or a `touch` reorders it, so the plan is not
+    reproducible; and mtime is not a clock on the bytes, so a blob that the
+    manifest cannot date at all still sorts somewhere.
+
+    MEASURED on this tree the same day: 134 `schedules.*.csv.gz` blobs are on
+    disk and 48 of them appear in NO manifest row. Under the old ordering one
+    of those orphans could be, and for the sibling reader
+    `team_volume_v1.coaches` (which takes `sorted(glob)[-1]`) actually IS, the
+    file a production input is read from -- with no retrieval instant, no
+    provenance and no content attribution.
+
+    So the order now comes from `bitemporal`, over the manifest, on transaction
+    time. Orphans are RETURNED LAST and COUNTED rather than dropped: dropping
+    them would hide the retention defect, and this module is not the place to
+    fix it. The fallback to mtime survives for the case where no manifest row
+    matches anything on disk -- a caller passing a synthetic `vintage_dir` --
+    and the basis is reported so a reader can tell the two apart.
+    """
+    blobs = sorted(vintage_dir.glob("schedules.*.csv.gz"))
+    if not blobs:
+        return [], {"basis": "NONE", "n_blobs": 0, "n_orphan": 0}
+    learned = {}
+    try:
+        from nfl.capture import bitemporal as _BT
+        for f in _BT.facts_from_manifest(manifest_path=manifest_path,
+                                         source="schedules"):
+            if f.blob:
+                learned[pathlib.Path(f.blob).name] = f.learned_at
+    except Exception:                                        # noqa: BLE001
+        # NAMED, NOT SWALLOWED: the basis below records that the manifest was
+        # unreadable, so a degraded ordering cannot pass for the good one.
+        learned = {}
+    clocked = [(learned[b.name], b) for b in blobs if learned.get(b.name)]
+    orphans = [b for b in blobs if not learned.get(b.name)]
+    if as_of is not None:
+        from nfl.capture import bitemporal as _BT2
+        cut = _BT2.parse(as_of)
+        clocked = [(t, b) for t, b in clocked if _BT2.parse(t) < cut]
+        orphans = []      # an undateable blob is never lawful under a cut
+    if not clocked:
+        return (sorted(blobs, key=lambda p: p.stat().st_mtime),
+                {"basis": "FILESYSTEM_MTIME_FALLBACK", "n_blobs": len(blobs),
+                 "n_orphan": len(orphans),
+                 "note": ("no schedules blob on disk could be dated from the "
+                          "manifest, so the order is mtime and is NOT "
+                          "information time. Reported, not hidden.")})
+    clocked.sort(key=lambda tb: (tb[0], tb[1].name))
+    return ([b for _t, b in clocked] if as_of is not None
+            else orphans + [b for _t, b in clocked]), {
+        "basis": "MANIFEST_RETRIEVED_AT", "n_blobs": len(blobs),
+        "n_clocked": len(clocked), "n_orphan": len(orphans),
+        "newest_learned_at": clocked[-1][0],
+        "note": ("ordered on transaction time; blobs with no manifest row are "
+                 "ordered FIRST so they can never win, and counted so the "
+                 "retention gap stays visible")}
+
+
+def load_week_plan(season: int, week: int, vintage_dir=None,
+                   manifest_path=None, as_of=None) -> Outcome:
     """The capture plan for one week, built from the captured schedule snapshot.
 
     The schedule is itself a captured artifact rather than a constant, so the
     plan inherits its vintage. If no snapshot has been captured there is no plan
     and this refuses; inventing kickoff times to keep a report populated is the
     exact defect class this project exists to prevent.
+
+    `as_of` is OPTIONAL and defaults to no bound, which is correct for this
+    reader and is worth saying why: the plan reads `season`, `week`,
+    `game_type`, `gameday`, `gametime` and the team codes, and a kickoff TIME
+    is scheduled months ahead. None of those columns is a realised outcome. The
+    same blob DOES carry `result`, `home_score`, `spread_line` and
+    `total_line` -- measured on `schedules.bfb4ca5952e3a974.csv.gz`, week-1
+    results present for 15 of 16 games and `total_line` for weeks 1 and 2 --
+    and this function reads none of them. The guard against that leak is the
+    absence of a reader, which is a weaker guarantee than a bound, so `as_of`
+    exists for a caller who wants the bound as well.
     """
     vintage_dir = pathlib.Path(vintage_dir or (_REPO / "nfl" / "vintage"))
-    snaps = sorted(vintage_dir.glob("schedules.*.csv.gz"),
-                   key=lambda p: p.stat().st_mtime)
+    snaps, order = _schedule_snapshots(vintage_dir, manifest_path=manifest_path,
+                                       as_of=as_of)
     if not snaps:
         return Outcome.blocked(
             "NO_SCHEDULE_SNAPSHOT",
             "no schedules artifact has been captured, so no kickoff time is "
             "known and no T-90 target can be located in time. There is no "
             "plan to check coverage against.",
-            cause=Cause.DEPENDENCY, searched=str(vintage_dir))
+            cause=Cause.DEPENDENCY, searched=str(vintage_dir),
+            snapshot_order=order)
     latest = snaps[-1]
     rows = [r for r in csv.DictReader(
                 io.StringIO(gzip.open(latest, "rt").read()))
@@ -474,13 +551,14 @@ def load_week_plan(season: int, week: int, vintage_dir=None) -> Outcome:
             "NO_GAMES_IN_SNAPSHOT",
             f"the schedule snapshot {latest.name} carries no {season} regular "
             f"season week {week} rows. An empty plan is not full coverage.",
-            cause=Cause.DATA, snapshot=latest.name)
+            cause=Cause.DATA, snapshot=latest.name, snapshot_order=order)
     plan = season_plan(rows)
     return Outcome.ok(
         "WEEK_PLAN_BUILT", value=plan,
         detail=f"{len(plan)} targets across {len(rows)} games, from "
                f"{latest.name}",
-        snapshot=latest.name, n_games=len(rows), n_targets=len(plan))
+        snapshot=latest.name, n_games=len(rows), n_targets=len(plan),
+        snapshot_order=order)
 
 
 def coverage(season: int, week: int, *, manifest_path,

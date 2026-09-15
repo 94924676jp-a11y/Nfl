@@ -1,0 +1,211 @@
+{
+ "cells": {
+  "qb": 8000,
+  "rushing": 7000
+ },
+ "coherence_after": {
+  "cmp_plus_int_within_att": 0,
+  "cmp_within_att": 0,
+  "ptd_within_att": 0,
+  "ptd_within_cmp": 0,
+  "rushing_td_within_carries": 9,
+  "zero_cmp_zero_pyds": 0
+ },
+ "coherence_before": {
+  "cmp_plus_int_within_att": 303,
+  "cmp_within_att": 275,
+  "ptd_within_att": 0,
+  "ptd_within_cmp": 27,
+  "rushing_td_within_carries": 9,
+  "zero_cmp_zero_pyds": 458
+ },
+ "credit": {
+  "coherent_by_construction": [
+   "cmp <= att",
+   "cmp <= att - int",
+   "ptd <= cmp",
+   "cmp == 0 -> pyds == 0"
+  ],
+  "metrics_copied_unchanged": [
+   "qb__att",
+   "qb__db",
+   "qb__int",
+   "qb__rtd",
+   "qb__rush_opp",
+   "qb__ryds",
+   "qb__sacks",
+   "qb__scr",
+   "receiving__receiving_td",
+   "receiving__receiving_yards",
+   "receiving__receptions",
+   "receiving__targets",
+   "rushing__carries",
+   "rushing__rushing_td",
+   "team_volume__team_carries",
+   "team_volume__team_dropbacks_part",
+   "team_volume__team_off_snaps",
+   "team_volume__team_rz_carries",
+   "team_volume__team_targets"
+  ],
+  "metrics_rewritten": [
+   "qb__cmp",
+   "qb__pyds",
+   "qb__ptd"
+  ],
+  "replacement": "nfl.production.nonqb.football_engine.credit_passing_line (football_engine.py:84)",
+  "scheme": "multivariate hypergeometric over (attempts - interceptions), then over the credited completions; yards on the COMPLETION share",
+  "superseded": "nfl.production.nonqb.shared_pass.credit_to_passers (shared_pass.py:172)"
+ },
+ "family_before": "C3_OLD_CREDIT",
+ "migrated_run_id": "eeb1d432ed1b6e69",
+ "not_a_board": "board.json and BOARD.md are deliberately NOT regenerated. Their per-player means, percentiles, thresholds and confidence scores are a rendering produced by code this workstream does not own; a second renderer would be a second board and a copied stale one would be worse. Owed, to make this consumable as a board: run the existing board renderer over these draws.",
+ "randomness": {
+  "seed_derivation": "int(sha256('{SPEC_VERSION}|{source_run_id}|{team}')[:16], 16)",
+  "stream": "numpy default_rng(seed), one per (source run, team)",
+  "why_not_the_original_stream": "the engine seeds the credit rng once per game and its STATE at the credit call depends on the whole preceding run, which a sealed artifact does not carry. A stream derived from the artifact's own identity is reproducible; a re-created engine stream would be a guess wearing provenance."
+ },
+ "row_identity": {
+  "qb": {
+   "row_ids": [
+    "00-0029604",
+    "00-0038579",
+    "00-0040996",
+    "00-0041562",
+    "00-0038128",
+    "00-0040014",
+    "00-0040222",
+    "00-0040398"
+   ],
+   "teams": [
+    "LV",
+    "LV",
+    "LV",
+    "LV",
+    "MIA",
+    "MIA",
+    "MIA",
+    "MIA"
+   ]
+  },
+  "receiving": {
+   "row_ids": [
+    "00-0037252",
+    "00-0037666",
+    "00-0038824",
+    "00-0039040",
+    "00-0039874",
+    "00-0039880",
+    "00-0040198",
+    "00-0041077",
+    "00-0041436",
+    "00-0041523",
+    "00-0041524",
+    "00-0041525",
+    "00-0041529",
+    "00-0041579",
+    "00-0034365",
+    "00-0035345",
+    "00-0035891",
+    "00-0037093",
+    "00-0037291",
+    "00-0037304",
+    "00-0038563",
+    "00-0039066",
+    "00-0039338",
+    "00-0039407",
+    "00-0040122",
+    "00-0040729",
+    "00-0040894"
+   ],
+   "teams": [
+    "MIA",
+    "MIA",
+    "MIA",
+    "MIA",
+    "MIA",
+    "MIA",
+    "MIA",
+    "MIA",
+    "MIA",
+    "MIA",
+    "MIA",
+    "MIA",
+    "MIA",
+    "MIA",
+    "LV",
+    "LV",
+    "LV",
+    "LV",
+    "LV",
+    "LV",
+    "LV",
+    "LV",
+    "LV",
+    "LV",
+    "LV",
+    "LV",
+    "LV"
+   ]
+  },
+  "rushing": {
+   "row_ids": [
+    "00-0039040",
+    "00-0039874",
+    "00-0040198",
+    "00-0041436",
+    "00-0037304",
+    "00-0039407",
+    "00-0040122"
+   ],
+   "teams": [
+    "MIA",
+    "MIA",
+    "MIA",
+    "MIA",
+    "LV",
+    "LV",
+    "LV"
+   ]
+  }
+ },
+ "sides": {
+  "LV": {
+   "action": "MIGRATED",
+   "mean_abs_completion_shift": 0.5375,
+   "n_qb_rows": 4,
+   "n_recv_rows": 13,
+   "scheme": "multivariate hypergeometric over (attempts - interceptions), then over credited completions; yards on the completion share",
+   "stream_seed": 2080806913466895331
+  },
+  "MIA": {
+   "action": "MIGRATED",
+   "mean_abs_completion_shift": 0.7615,
+   "n_qb_rows": 4,
+   "n_recv_rows": 14,
+   "scheme": "multivariate hypergeometric over (attempts - interceptions), then over credited completions; yards on the completion share",
+   "stream_seed": 8942570613167852517
+  }
+ },
+ "source": {
+  "code_commit": "3f5fc82cb8a03e8f5f82a97286e85097dc6319ae+dirty[38]",
+  "dir": "nfl/research/live/REPLAY_C1/5081b27bef42d922",
+  "draw_content_digest": "9960a207c15f4e818f215b112531f6ff687b7fe6429e76b73c315a4e77936158",
+  "draws_file_sha256_on_disk": "1cf0287ee1d049e8766bae55171e664368962be453d4ec74b6bdb76cb7300a9e",
+  "draws_sha256": "1cf0287ee1d049e8766bae55171e664368962be453d4ec74b6bdb76cb7300a9e",
+  "game_id": "2026_01_MIA_LV",
+  "model_configuration": "V1_CANDIDATE_R8",
+  "run_id": "5081b27bef42d922",
+  "seal_preserved": "byte-identical; nothing was written into the source directory"
+ },
+ "spec_version": "p4-passer-credit-migration-1",
+ "team_totals_source": "the receiving layer of the same side -- receptions, receiving_yards and receiving_td summed -- cross-checked against the stored per-quarterback sums in every draw",
+ "upper_tail_after": {
+  "C3_SIDE": {
+   "above_99_per_cmp": 0,
+   "above_record": 2,
+   "cells": 8000,
+   "max": 585.0
+  }
+ },
+ "what_this_is": "a POST-HOC rebuild of one sealed board's per-quarterback passing line through the replacement credit function. It is NOT a prospective forecast, it was built after the game it describes, and it is inadmissible as prospective evidence."
+}

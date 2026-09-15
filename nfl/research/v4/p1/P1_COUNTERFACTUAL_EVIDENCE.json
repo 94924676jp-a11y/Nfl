@@ -1,0 +1,150 @@
+{
+ "artifact": "P1_KC_BACKFIELD_COUNTERFACTUAL",
+ "spec_version": "p1-kc-backfield-counterfactual-1",
+ "cutoff": "2026-09-14T20:58:33Z",
+ "governance": "EXPLORATORY. No realized DEN@KC outcome exists in this repository, none was sought, and no realised quantity is a target anywhere in this file. No sportsbook price entered any part of it.",
+ "sealed_inputs": {
+  "C": {
+   "00-0038134": 0.429622,
+   "00-0041013": 0.264512,
+   "00-0040078": 0.14138
+  },
+  "appearance_r8": {
+   "00-0038134": 0.723664,
+   "00-0041013": 0.99253,
+   "00-0040078": 0.762094
+  },
+  "board_shares": {
+   "00-0038134": 0.4133,
+   "00-0041013": 0.417,
+   "00-0040078": 0.1511
+  },
+  "board_share_assignment": "the autopsy lists the three shares without labels; assigned from the sealed carry means 8.345 / 8.420 in the same document",
+  "source": "nfl/research/v3/AUTOPSY_DEN_KC.md section 4"
+ },
+ "n_players": 58,
+ "roster_source": {
+  "n_rows": 180,
+  "reduced": {
+   "family": "weekly_rosters",
+   "source": "weekly_rosters",
+   "blob": "nfl/vintage/weekly_rosters.bdab6ecee12d44a4.reduced.csv.gz",
+   "capture_id": "20260914T161625Z",
+   "retrieved_at": "2026-09-14T16:16:33.199666+00:00",
+   "published_at": "2026-09-14T13:58:26+00:00",
+   "published_authority": "DERIVED_DETERMINISTIC",
+   "content_sha256": "bdab6ecee12d44a46d4913f81cb9f33f83f18422457a82f273970ae54df614f3",
+   "chronology": "RETRIEVED_AT_OR_BEFORE_CUT",
+   "as_of": "2026-09-14T20:58:33+00:00",
+   "fallback_reason": null,
+   "evidence_ceiling": "The reduced vintage DROPS `status`, so the reduced blobs cannot answer roster membership at all and the raw retained files are the only source for it. A clock check alone is insufficient for this family: after a team plays, the vendor re-partitions ACT/INA, so `roster_status` runs a CONTENT check as well. That pair is the reference design for this module.",
+   "selection_rule": "max(retrieved_at, content_sha256) over lawful",
+   "extra": {
+    "n_data_rows": 2963,
+    "source_timestamp_header": "Last-Modified",
+    "n_recaptures_collapsed": 177
+   },
+   "spec_version": "vintage-selector-1"
+  },
+  "raw": {
+   "path": "/home/user/nfl/nfl/vintage/weekly_rosters.bdab6ecee12d44a4.raw.csv.gz",
+   "blob": "nfl/vintage/weekly_rosters.bdab6ecee12d44a4.raw.csv.gz",
+   "content_sha256": "bdab6ecee12d44a46d4913f81cb9f33f83f18422457a82f273970ae54df614f3",
+   "durable": true,
+   "same_capture": true,
+   "basis": "manifest raw_blob of the SAME capture",
+   "retrieved_at": "2026-09-14T16:16:33.199666+00:00"
+  }
+ },
+ "n_injury_rows": 182,
+ "carry_prior_normalised": {
+  "RB1 (long history, new club)": 0.5142,
+  "RB3 (short history)": 0.1692,
+  "RB2 (no NFL history)": 0.3166
+ },
+ "replication_check": {
+  "at_p_equals_one": {
+   "RB1 (long history, new club)": 0.5142,
+   "RB3 (short history)": 0.1692,
+   "RB2 (no NFL history)": 0.3166
+  },
+  "max_abs_error_against_the_prior": 0.0,
+  "at_the_sealed_r8_probabilities": {
+   "RB1 (long history, new club)": 0.392,
+   "RB3 (short history)": 0.1677,
+   "RB2 (no NFL history)": 0.4403
+  },
+  "sealed_board_shares": {
+   "RB1 (long history, new club)": 0.4133,
+   "RB3 (short history)": 0.1511,
+   "RB2 (no NFL history)": 0.417
+  },
+  "max_abs_error_against_the_board": 0.0233,
+  "draws": {
+   "n_draws": 200000,
+   "n_draws_with_no_survivor": 96
+  }
+ },
+ "injury_rows_for_the_three_backs": [],
+ "arms": {
+  "R8": {
+   "spec_version": "appearance-r8-reliability-weighted-1",
+   "coef_sha256": "3cc23577a3d234ba",
+   "rank_scale": "offence_wide",
+   "appearance_p": {
+    "RB1 (long history, new club)": 0.723664,
+    "RB3 (short history)": 0.762094,
+    "RB2 (no NFL history)": 0.99253
+   },
+   "expected_carry_share": {
+    "RB1 (long history, new club)": 0.392,
+    "RB3 (short history)": 0.1677,
+    "RB2 (no NFL history)": 0.4403
+   },
+   "departure_from_the_prior": {
+    "RB1 (long history, new club)": -0.1222,
+    "RB3 (short history)": -0.0015,
+    "RB2 (no NFL history)": 0.1237
+   },
+   "max_abs_departure": 0.1237,
+   "order_matches_the_prior": false,
+   "draws": {
+    "n_draws": 200000,
+    "n_draws_with_no_survivor": 96
+   }
+  },
+  "R10": {
+   "spec_version": "appearance-r10-monotone-weeks-and-within-position-rank-1",
+   "coef_sha256": "5fe9fb485a260e3f",
+   "rank_scale": "within_position",
+   "appearance_p": {
+    "RB1 (long history, new club)": 0.969951,
+    "RB3 (short history)": 0.72345,
+    "RB2 (no NFL history)": 0.995362
+   },
+   "expected_carry_share": {
+    "RB1 (long history, new club)": 0.5282,
+    "RB3 (short history)": 0.1264,
+    "RB2 (no NFL history)": 0.3454
+   },
+   "departure_from_the_prior": {
+    "RB1 (long history, new club)": 0.014,
+    "RB3 (short history)": -0.0428,
+    "RB2 (no NFL history)": 0.0288
+   },
+   "max_abs_departure": 0.0428,
+   "order_matches_the_prior": true,
+   "draws": {
+    "n_draws": 200000,
+    "n_draws_with_no_survivor": 9
+   }
+  }
+ },
+ "verdict": {
+  "r8_inverts_the_prior": true,
+  "r10_preserves_the_prior_order": true,
+  "max_abs_departure_R8": 0.1237,
+  "max_abs_departure_R10": 0.0428,
+  "lawful_pregame_evidence_to_depart": "none found: no injury row for any of the three backs at the cutoff; the depth chart lists them 1/2/3 within the position room and is stable across the week"
+ }
+}

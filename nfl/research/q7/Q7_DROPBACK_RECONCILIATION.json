@@ -1,0 +1,95 @@
+{
+ "artifact": "NFL_Q7_DROPBACK_RECONCILIATION",
+ "spec_version": "q7-panel-2",
+ "reference": "nflverse play-by-play column `qb_dropback`",
+ "why": "The composed identity att + sacks + scr == db is a tautology and cannot detect a counter that is never reached. This is the external check it displaced.",
+ "panel_dropback_total": 122053,
+ "nflverse_dropback_total": 122044,
+ "residual_panel_minus_nflverse": 9,
+ "panel_player_games": 4056,
+ "nflverse_player_games": 4055,
+ "player_games_disagreeing_with_raw_nflverse": 9,
+ "player_games_agreeing_with_raw_nflverse": 4047,
+ "explained_by": {
+  "ATTEMPT_NOT_AN_NFLVERSE_DROPBACK": 9,
+  "rows": [
+   {
+    "kind": "ATTEMPT_NOT_AN_NFLVERSE_DROPBACK",
+    "game_id": "2021_15_KC_LAC",
+    "team": "KC",
+    "player": "00-0033873",
+    "play_type": "no_play",
+    "desc": "TWO-POINT CONVERSION ATTEMPT. 15-P.Mahomes pass to 25-C.Edwards-Helaire is complete. ATTEMPT SUCCEEDS. PENALTY on LAC-97"
+   },
+   {
+    "kind": "ATTEMPT_NOT_AN_NFLVERSE_DROPBACK",
+    "game_id": "2022_11_CLE_BUF",
+    "team": "CLE",
+    "player": "00-0033119",
+    "play_type": "no_play",
+    "desc": "(Run formation) TWO-POINT CONVERSION ATTEMPT. 7-J.Brissett pass to 2-A.Cooper is incomplete. ATTEMPT FAILS. PENALTY on C"
+   },
+   {
+    "kind": "ATTEMPT_NOT_AN_NFLVERSE_DROPBACK",
+    "game_id": "2023_07_BUF_NE",
+    "team": "BUF",
+    "player": "00-0034857",
+    "play_type": "no_play",
+    "desc": "TWO-POINT CONVERSION ATTEMPT. 17-J.Allen pass to 88-D.Knox is complete. ATTEMPT SUCCEEDS. PENALTY on NE-30-M.Mapu, Defen"
+   },
+   {
+    "kind": "ATTEMPT_NOT_AN_NFLVERSE_DROPBACK",
+    "game_id": "2023_08_TB_BUF",
+    "team": "TB",
+    "player": "00-0034855",
+    "play_type": "no_play",
+    "desc": "TWO-POINT CONVERSION ATTEMPT. 6-B.Mayfield pass to 88-C.Otton is complete. ATTEMPT SUCCEEDS. Pass caught over middle, 5 "
+   },
+   {
+    "kind": "ATTEMPT_NOT_AN_NFLVERSE_DROPBACK",
+    "game_id": "2023_09_TB_HOU",
+    "team": "HOU",
+    "player": "00-0039163",
+    "play_type": "no_play",
+    "desc": "TWO-POINT CONVERSION ATTEMPT. 7-C.Stroud pass to 47-A.Beck is incomplete. ATTEMPT FAILS. DEFENSIVE TWO-POINT ATTEMPT. 9-"
+   },
+   {
+    "kind": "ATTEMPT_NOT_AN_NFLVERSE_DROPBACK",
+    "game_id": "2023_16_CLE_HOU",
+    "team": "HOU",
+    "player": "00-0036898",
+    "play_type": "no_play",
+    "desc": "TWO-POINT CONVERSION ATTEMPT. 10-D.Mills pass to 12-N.Collins is complete. ATTEMPT SUCCEEDS. PENALTY on CLE-91-A.Wright,"
+   },
+   {
+    "kind": "ATTEMPT_NOT_AN_NFLVERSE_DROPBACK",
+    "game_id": "2023_17_ARI_PHI",
+    "team": "ARI",
+    "player": "00-0035228",
+    "play_type": "no_play",
+    "desc": "TWO-POINT CONVERSION ATTEMPT. 1-K.Murray pass to 14-Mi.Wilson is complete. ATTEMPT SUCCEEDS. PENALTY on PHI-29-A.Maddox,"
+   },
+   {
+    "kind": "ATTEMPT_NOT_AN_NFLVERSE_DROPBACK",
+    "game_id": "2025_02_SEA_PIT",
+    "team": "PIT",
+    "player": "00-0023459",
+    "play_type": "no_play",
+    "desc": "(1:50) (Shotgun) 8-A.Rodgers sacked at PIT 47 for -7 yards. FUMBLES, ball out of bounds at SEA 41. The Replay Official r"
+   },
+   {
+    "kind": "ATTEMPT_NOT_AN_NFLVERSE_DROPBACK",
+    "game_id": "2025_03_LA_PHI",
+    "team": "LA",
+    "player": "00-0039750",
+    "play_type": "field_goal",
+    "desc": "(8:46) 16-J.Karty 36 yard field goal is BLOCKED (98-J.Carter), Center-47-A.Ward, Holder-42-E.Evans, recovered by LA-16-J"
+   }
+  ]
+ },
+ "unexplained_player_games": 0,
+ "unexplained_rows": [],
+ "derivation": "The frozen attempt definition is pass_attempt & !sack & !spike. nflverse leaves qb_dropback at 0 on a small number of rows that satisfy it anyway: two-point conversion passes (7 of the 9), one replay-reversed sack inside a penalty no_play, and one blocked field goal carrying pass_attempt = 1. The residual must equal that enumerated set exactly; the tolerance is the count of those rows, not a percentage.",
+ "scrambles_excluded_as_not_a_dropback": 388,
+ "dropbacks_with_no_player_id": 0
+}

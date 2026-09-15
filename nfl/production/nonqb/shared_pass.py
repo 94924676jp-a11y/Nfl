@@ -52,6 +52,41 @@ PER_QB_CREDIT = ('PROPORTIONAL_ATTRIBUTION -- exact at team level in every '
                  'passer. A draw with two passers attributes on the '
                  'targeted-throw share rather than on which throw was caught.')
 
+# SUPERSEDED. Read this before calling `credit_to_passers`.
+#
+# The paragraph above is accurate and was not enough. "Attributes on the
+# targeted-throw share rather than on which throw was caught" is a true
+# sentence about a scheme that can hand a quarterback more completions than he
+# threw attempts -- a multinomial samples a finite pool WITH replacement -- and
+# can hand him passing yards in a draw where he completed nothing, because the
+# yardage rides on the attempt share and never looks at the completion draw.
+#
+# Measured across the 121 sealed boards on 2026-09-15: 18,041 cells with yards
+# on zero completions, 8,214 with cmp > att, 9,189 where cmp + int no longer
+# fits inside att, 1,113 with ptd > cmp. Every one of them sits on a board
+# built by this function. The 68 boards that never called it and the 3 built
+# by the replacement carry zero.
+#
+# `football_engine.credit_passing_line` (football_engine.py:84) replaces it and
+# production has called that since the R9 rebuild. This function is retained
+# ONLY so the sealed boards built with it stay reproducible -- not because it
+# is a supported option. Nothing new should call it.
+#
+# ITS BEHAVIOUR IS DELIBERATELY UNCHANGED. Fixing it in place would silently
+# alter what the historical generator does and destroy the one property it is
+# still kept for.
+CREDIT_TO_PASSERS_STATUS = (
+    'SUPERSEDED by nfl.production.nonqb.football_engine.credit_passing_line '
+    '(football_engine.py:84). Retained only so the sealed boards built with '
+    'it remain reproducible. Its per-quarterback split is not a box score: '
+    'the counts are multinomial on the ATTEMPT share, which samples a finite '
+    'pool with replacement, and the yardage rides on that same attempt share '
+    'independent of the completion draw. Do not call it in new code. The '
+    'affected boards are migrated by nfl/tools/passer_credit_migration.py and '
+    'reported in nfl/research/v4/p4/P4_CREDIT_MIGRATION.md.')
+CREDIT_TO_PASSERS_REPLACEMENT = \
+    'nfl.production.nonqb.football_engine.credit_passing_line'
+
 
 def untargeted_rate() -> Outcome:
     """The share of throws with no intended receiver: throwaways and spikes.
@@ -172,6 +207,10 @@ def deal_targets(share, other, targeted, starts, counts, rng) -> Outcome:
 def credit_to_passers(att_by_qb, team_cmp, team_pyds, team_ptd,
                       rng) -> Outcome:
     """Split derived team passing totals among that team's quarterbacks.
+
+    SUPERSEDED -- see `CREDIT_TO_PASSERS_STATUS` above, and do not call this in
+    new code. `football_engine.credit_passing_line` replaces it. This body is
+    left exactly as the sealed boards were built with it.
 
     Counts split multinomially on the targeted-throw share so they sum EXACTLY;
     yardage splits on the same share. See PER_QB_CREDIT for what this is and is

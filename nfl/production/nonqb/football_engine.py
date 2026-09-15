@@ -1442,6 +1442,61 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
                        'layer becomes the single owner and the remaining five '
                        'categories are drawn from the conditional '
                        'multinomial. Nothing is clipped or renormalised.')}
+        # ---- THE DECOMPOSED CONTAINMENT VERDICT --------------------------
+        #
+        # THE TEST THAT WAS MISSING, AND WHY ITS ABSENCE COST A REPAIR.
+        # `quality_gates.gate_rush_accounting` fires on ONE summed quantity --
+        # RB carries plus QB scrambles plus QB designed runs against the team
+        # level -- so a reader of a fired gate cannot tell which layer moved.
+        # An earlier workstream read it as a defect in A1's multinomial and
+        # wrote a repair for the running-back deal. Decomposed against the
+        # sealed arrays of board 96954efc523bd7d3 (2026_01_DEN_KC, 1,000
+        # draws) the RB deal is over the gate's half-carry tolerance in ZERO
+        # draws on both clubs (max +0.2619 DEN, +0.0854 KC) while RB plus the
+        # quarterbacks' rush opportunity is over in 149 and 148 draws by up to
+        # 6.1219 and 9.6915 carries.
+        #
+        # So the engine reports BOTH HALVES, separately, on every run. It
+        # repairs nothing and halts nothing: the condition is a property of
+        # the arrays this engine was HANDED, the product layer already
+        # quarantines the rushing family on it, and a halt would replace a
+        # quarantined family with no board and hide the counts that say how
+        # large the breach is.
+        #
+        # The level is `_team_carries`, which is the vector this game actually
+        # partitioned. Under the R11 composition that is also the vector the
+        # board publishes; under R9 it is not, and the evidence says which by
+        # carrying `level_is_integer`.
+        _cteams = [t for t in _lteams if t in ateams]
+        _ci = {t: list(ateams).index(t) for t in _cteams}
+        if _cteams and qb_rush is not None:
+            _cont = RA1.assert_named_owner_containment(
+                _cteams,
+                {t: np.asarray(_team_carries(t), float) for t in _cteams},
+                {t: C[rb_starts[_ci[t]]:rb_starts[_ci[t]] + rb_counts[_ci[t]]]
+                 for t in _cteams},
+                {t: qb_rush[_ci[t]] for t in _cteams})
+        else:
+            _cont = Outcome.not_applicable(
+                'RUSH_CONTAINMENT_NO_PLAYER_FRAME',
+                'no club in this game carries both a named-back split and a '
+                'quarterback rush draw, so the decomposed containment has '
+                'nothing to decompose. NOT_APPLICABLE with a reason rather '
+                'than a pass over an empty set.',
+                teams_with_categories=list(_lteams),
+                teams_with_player_split=list(ateams))
+        g['accounting']['rush_named_owner_containment'] = \
+            f'{_cont.state.value}[{_cont.code}]'
+        g['accounting']['rush_named_owner_containment_evidence'] = {
+            k: v for k, v in _cont.evidence.items() if k != 'value'}
+        # A CLUB WITH NO PLAYER SPLIT IS NAMED, NEVER FOLDED IN AS ZERO.
+        # A team deferred under APPEARANCE_TEAM_DEFERRED has a fully
+        # attributed category ledger and no named backs; adding a zero row for
+        # it would report "no over-allocation" for a quantity nobody measured.
+        _no_split = [t for t in _lteams if t not in ateams]
+        if _no_split:
+            g['accounting']['rush_named_owner_containment_evidence'][
+                'teams_without_player_split_not_measured'] = _no_split
         rush_category_draws = {
             t: {c: np.asarray(rush_categories[(t, c)]).reshape(-1)
                 for c in RA1.CATEGORIES} for t in _lteams}

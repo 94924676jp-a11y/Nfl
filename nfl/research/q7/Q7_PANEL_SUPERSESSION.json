@@ -1,0 +1,21 @@
+{
+ "artifact": "NFL_Q7_PANEL_SUPERSESSION",
+ "spec_version": "q7-panel-2",
+ "supersedes": "q7-panel-1",
+ "defect": "q7-panel-1 charged QB counters to passer_player_id only. A qb_scramble play carries no passer id, so the `scr` column was built with 1 scramble across 4,025 QB-games against 5,864 in the same six seasons, and the composed dropback total was 116,190 against nflverse 122,044.",
+ "why_it_was_not_caught": "The only dropback check was the composed identity att + sacks + scr == db, which is true of any three numbers and cannot detect a counter that is never reached.",
+ "superseded_artifacts": {
+  "nfl/research/q7/q7_qb_game.csv.gz": "b0b8192a6e79bacc3d1a8c365c9ae3ac9680cd08c8cc2e2eccbb223936a3b974",
+  "nfl/research/q7/q7_recv_game.csv.gz": "d0289ab8fd21cf6cfc9bd87c1ac480f12dd8b8d218406ef0b314c76e2513c590",
+  "nfl/research/q7/Q7_RAW_PROVENANCE.json": "1f6ff36e0bf2c368777d0dbe1f5b06ca09dc63b99a2975b69e178e3dd2d09c2e"
+ },
+ "superseded_artifacts_retained": true,
+ "retention_reason": "The published Q7 conclusions were computed from the version-1 panel. Deleting it would delete the audit trail of every conclusion drawn from it.",
+ "conclusions_drawn_from_the_superseded_panel": [
+  "nfl/research/q7/Q7_DECISION.md",
+  "nfl/research/q7/Q7_FORWARD_CHAIN_RESULTS.json",
+  "nfl/research/q7/Q7_SCORED_ROWS.csv.gz",
+  "nfl/research/q7/Q7_DIAGNOSTICS.csv"
+ ],
+ "rebuilt_comparison": "nfl/research/v4/p5/P5_Q7_SCRAMBLE_REPAIR.md"
+}

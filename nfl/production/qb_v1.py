@@ -216,15 +216,41 @@ def slate_prospective(season: int, week: int, qb_players,
 
 
 def forecast(rows, season, allrows, seed=20260908, m=1000,
-             db_external=None) -> Outcome:
+             db_external=None, share_spec=None) -> Outcome:
     """Run the V1 layer. Returns draw matrices keyed by statistic.
 
     `db_external` is R2: an (n_rows, m) integer dropback level owned by
     D1 x QB3 and apportioned by largest remainder. When supplied this layer
     draws no level of its own and contributes conditional rates only.
+
+    `share_spec` is P2 repair 3 (candidate R12) and names how the
+    quarterback's share of team dropbacks is built. `None` means the
+    incumbent, which is what every sealed artifact was produced under and what
+    this default keeps producing, draw cell for draw cell.
+
+    IT IS INERT UNDER R2, AND THAT IS STATED RATHER THAN DISCOVERED. When
+    `db_external` is supplied the share is never drawn, so a run carrying both
+    is a run in which `share_spec` changes nothing. The evidence that the
+    repair works was measured on the path that DOES draw a share: this layer
+    called without `db_external`, which is the PRODUCTION_BASELINE path and
+    the one `nfl/research/v3/h1` scored.
     """
     import time as _time
     import qb2_lib as Q
+    if share_spec is not None and share_spec not in Q.SHARE_SPECS:
+        return Outcome.fail(
+            'QB_SHARE_SPEC_UNKNOWN',
+            f'{share_spec!r} is not a declared share specification. '
+            f'Declared: {Q.SHARE_SPECS}. Refusing rather than defaulting to '
+            f'the incumbent, which would run a different model than the '
+            f'operator asked for.', known=list(Q.SHARE_SPECS))
+    if share_spec is not None and db_external is not None:
+        return Outcome.fail(
+            'QB_SHARE_SPEC_INERT_UNDER_R2',
+            'share_spec was supplied together with db_external. Under R2 the '
+            'level arrives already apportioned and this layer draws no share '
+            'at all, so the specification would have no effect and the run '
+            'would carry a component label it did not use.')
     if not rows:
         return Outcome.blocked(
             'STAGE_NOT_IMPLEMENTED',
@@ -233,7 +259,9 @@ def forecast(rows, season, allrows, seed=20260908, m=1000,
     t0 = _time.perf_counter()
     try:
         D = Q.simulate(rows, season, allrows, seed=seed, m=m,
-                       db_external=db_external)
+                       db_external=db_external,
+                       share_spec=(share_spec if share_spec is not None
+                                   else Q.SHARE_SPEC_UNCONDITIONAL))
     except Exception as exc:                                     # noqa: BLE001
         return Outcome.fail('QB_V1_RAISED', f'{type(exc).__name__}: {exc}')
     # ACTUAL DRAW GENERATION, timed around the simulate call alone. Orchestrator
@@ -256,6 +284,7 @@ def forecast(rows, season, allrows, seed=20260908, m=1000,
         'QB_V1_FORECAST', value=D,
         detail=f'{len(rows)} QB-game(s), {m} draws, {SPEC_VERSION}',
         spec_version=SPEC_VERSION,
+        share_spec=(share_spec or 'unconditional (incumbent)'),
         draw_generation_seconds=round(draw_seconds, 4),
         n_qb_games=len(rows), n_draws=m,
         draw_cells=int(D['db'].size) * len(FIELDS),

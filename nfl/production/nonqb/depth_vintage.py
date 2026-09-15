@@ -146,6 +146,53 @@ def _ordinal(listed):
     return {pid: i + 1 for i, (_, pid) in enumerate(sorted(listed))}
 
 
+# ---------------------------------------------------------------- scales
+# P1, 2026-09-15. THE SECOND SCALE, SUPPLIED RATHER THAN SUBSTITUTED.
+#
+# R3 measured the offence-wide ordinal and declared it (see `daily`), on the
+# ground that re-ranking anybody moves a served feature whose coefficients
+# were fitted on this scale. That reasoning is intact and the default is
+# unchanged: `OFFENCE_WIDE` is what every existing caller gets, value for
+# value. What was missing is the OTHER scale.
+#
+# The weekly vendor's group is built inside (season, week, club, normalised
+# position) -- a WITHIN-POSITION quantity -- and the daily vendor's ordinal is
+# offence-wide, so the two eras put different quantities in one column of one
+# design row. Measured on the R7/R8 union frame, appearance rate by depth
+# bucket:
+#
+#     weekly era (2020-2024, n=48,543)  r1 0.8930  r2 0.7018  r3 0.5186
+#     daily  era (2025,      n=11,199)  r1 0.9136  r2 0.9357  r3 0.8805
+#
+# The daily era's top three buckets are flat because they are not roles: they
+# are the three alphabetically-first `pos_rank == 1` players on the club. On
+# the within-position scale the same rows give 0.9139 / 0.7451 / 0.6425 --
+# monotone, and on the weekly era's footing.
+#
+# A caller asking for a scale this module does not implement is REFUSED. A
+# default would hand back the offence-wide ordinal under a name the caller did
+# not choose, which is how the contaminated scale reached a served feature in
+# the first place.
+OFFENCE_WIDE = 'offence_wide'
+WITHIN_POSITION = 'within_position'
+RANK_SCALES = (OFFENCE_WIDE, WITHIN_POSITION)
+
+RANK_SCALE_MEANING = {
+    OFFENCE_WIDE: (
+        'OFFENCE-WIDE ordinal within (team, dt) across QB, RB, WR, TE. It is '
+        'NOT a within-position depth rank: a club fields a pos_rank-1 QB, RB, '
+        'WR and TE simultaneously and only gsis_id separates them. Declared '
+        'by R3 2026-09-14, not repaired: changing it moves a served feature '
+        'whose coefficients were fitted on this scale.'),
+    WITHIN_POSITION: (
+        'WITHIN-POSITION ordinal inside (team, dt, normalised position), on '
+        'the same footing as the weekly vendor group. Every position on the '
+        'club has its own rank 1, so a cross-position gsis_id tiebreak cannot '
+        'arise. Supplied by P1 2026-09-15 for a successor candidate that '
+        'REFITS on it; it is not the scale R8 or R9 were fitted on.'),
+}
+
+
 # ---------------------------------------------------------------- weekly
 # R3. THE OFFENSIVE ROLE ORDERING IS BUILT FROM OFFENSIVE ROWS ONLY.
 #
@@ -371,8 +418,23 @@ def _slot_sort(slot):
     return -1 if slot is SLOT_ABSENT else slot
 
 
-def daily(text) -> Outcome:
-    """Daily-schema text -> {team: [(dt, {pid: (rank, pos)}), ...]} in dt order."""
+def daily(text, scale=OFFENCE_WIDE) -> Outcome:
+    """Daily-schema text -> {team: [(dt, {pid: (rank, pos)}), ...]} in dt order.
+
+    `scale` names WHICH ordinal the rank is. `OFFENCE_WIDE` is the default and
+    is what every caller written before 2026-09-15 receives, unchanged;
+    `WITHIN_POSITION` ranks inside (team, dt, normalised position) instead.
+    The two are different quantities and neither is a translation of the
+    other, so the chosen one is carried on the evidence by name.
+    """
+    if scale not in RANK_SCALES:
+        return Outcome.fail(
+            'DEPTH_DAILY_RANK_SCALE_UNKNOWN',
+            f'{scale!r} names no depth rank scale this module builds. '
+            f'Declared: {list(RANK_SCALES)}. Refusing rather than defaulting '
+            f'to the offence-wide ordinal, which would serve a scale the '
+            f'caller did not ask for under a name they did.',
+            known=list(RANK_SCALES), requested=str(scale))
     snap = collections.defaultdict(dict)
     vendor_groups = collections.defaultdict(set)
     norm_groups = collections.defaultdict(set)
@@ -439,8 +501,22 @@ def daily(text) -> Outcome:
     collisions = sorted(k for k, pids in norm_groups.items() if len(pids) > 1)
     by_team = collections.defaultdict(list)
     for (team, d), players in snap.items():
-        ranked = _ordinal([((v[0], _slot_sort(v[2]), pid), pid)
-                           for pid, v in players.items()])
+        if scale == WITHIN_POSITION:
+            # ONE ROOM PER NORMALISED POSITION. The sort key inside a room is
+            # the same one the offence-wide path uses -- vendor pos_rank,
+            # then the (absent) slot, then gsis_id -- so nothing new decides
+            # an order here. What changes is WHO IS BEING COMPARED: a back is
+            # ranked against backs, and the cross-position collision that put
+            # a club's RB1 behind its TE1 and QB1 cannot occur at all.
+            rooms = collections.defaultdict(list)
+            for pid, v in players.items():
+                rooms[v[1]].append(((v[0], _slot_sort(v[2]), pid), pid))
+            ranked = {}
+            for listed in rooms.values():
+                ranked.update(_ordinal(listed))
+        else:
+            ranked = _ordinal([((v[0], _slot_sort(v[2]), pid), pid)
+                               for pid, v in players.items()])
         by_team[team].append(
             (d, {pid: (ranked[pid], players[pid][1]) for pid in players}))
     for t in by_team:
@@ -464,9 +540,20 @@ def daily(text) -> Outcome:
     #      only by `gsis_id`. `rank_1_position_mix` reports which position
     #      actually won rank 1 per team-snapshot. A consumer reading `rank`
     #      as "WR1" is reading it wrongly, and this says so on the artifact.
+    #
+    #   P1, 2026-09-15: (2) is now REPAIRABLE BY THE CALLER rather than only
+    #   declared, through `scale`. Nothing about the default moved. Under
+    #   WITHIN_POSITION the same counter reports every rank-1 player rather
+    #   than the single winner of a contest that no longer takes place, so a
+    #   club contributes one count per position it lists.
     rank1_pos = collections.Counter()
     for t, snaps_t in by_team.items():
         for _d, m in snaps_t:
+            if scale == WITHIN_POSITION:
+                for _pid, v in m.items():
+                    if v[0] == 1:
+                        rank1_pos[v[1]] += 1
+                continue
             top = min(m.items(), key=lambda kv: kv[1][0])
             rank1_pos[top[1][1]] += 1
     return Outcome.ok('DEPTH_DAILY_OK', value=dict(by_team),
@@ -480,14 +567,8 @@ def daily(text) -> Outcome:
                       pos_slot_available=(n_slot_absent == 0),
                       n_return_slot_rows_excluded=n_return_rows,
                       return_slot_pos_abb_seen=sorted(return_pos_seen),
-                      rank_scale=(
-                          'OFFENCE-WIDE ordinal within (team, dt) across QB, '
-                          'RB, WR, TE. It is NOT a within-position depth '
-                          'rank: a club fields a pos_rank-1 QB, RB, WR and TE '
-                          'simultaneously and only gsis_id separates them. '
-                          'Declared by R3 2026-09-14, not repaired: changing '
-                          'it moves a served feature whose coefficients were '
-                          'fitted on this scale.'),
+                      rank_scale=RANK_SCALE_MEANING[scale],
+                      rank_scale_name=scale,
                       rank_1_position_mix=dict(sorted(rank1_pos.items())),
                       n_vendor_rank_groups=len(vendor_groups),
                       n_vendor_rank_ties=0,
@@ -535,7 +616,7 @@ def daily_point_in_time(by_team, team, before) -> Outcome:
 
 
 # ---------------------------------------------------------------- production
-def captured(teams, observed_before, blobs=None) -> Outcome:
+def captured(teams, observed_before, blobs=None, scale=OFFENCE_WIDE) -> Outcome:
     """The 2026 captured vintage, selected point-in-time.
 
     Each reduced blob holds ONE dt slice: the capture reducer keeps the newest
@@ -565,7 +646,7 @@ def captured(teams, observed_before, blobs=None) -> Outcome:
     head = text[0].splitlines()[0]
     joined = head + '\n' + '\n'.join(
         '\n'.join(t.splitlines()[1:]) for t in text)
-    d = daily(joined)
+    d = daily(joined, scale=scale)
     if d.state is not State.PASS:
         return d
     out, chosen, missing = {}, {}, []
@@ -591,6 +672,8 @@ def captured(teams, observed_before, blobs=None) -> Outcome:
                       vendor=DAILY_VENDOR, n_players=len(out),
                       observed_before=str(observed_before), chosen=chosen,
                       n_blobs=len(paths),
+                      rank_scale_name=scale,
+                      rank_scale=RANK_SCALE_MEANING[scale],
                       evidence_ceiling=DURABILITY_CEILING,
                       pos_slot_available=d.evidence.get('pos_slot_available'),
                       n_normalisation_rank_collisions=d.evidence.get(
