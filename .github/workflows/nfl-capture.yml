@@ -53,22 +53,100 @@ concurrency:
   group: nfl-vintage-capture
   cancel-in-progress: false
 
+# ONE DECLARATION OF THE PRODUCTION CAPTURE BRANCH, read by both the checkout
+# ref and the write-back target. They used to name it separately, and they
+# disagreed: the first D24 pin set `ref: capture-prod` while the push still
+# said `HEAD:main`, so a run would have rebased the capture tree onto main and
+# pushed it there -- the accidental promotion of model and research code that
+# this whole mechanism exists to prevent. Two places naming one branch is the
+# defect; one place is the fix.
+env:
+  CAPTURE_BRANCH: capture-prod
+
 jobs:
   capture:
     runs-on: ubuntu-latest
     steps:
+      # WHERE THIS FILE HAS TO LIVE, AND IT IS NOT capture-prod.
+      #
+      # GitHub reads a `schedule:` workflow DEFINITION from the DEFAULT BRANCH
+      # only. A pin committed solely to capture-prod is inert: the scheduler
+      # never reads that copy, so it would go on checking out the default
+      # branch while a test on another branch reported the pin present. That is
+      # D24's own shape -- a repair on the branch that does not run -- and it
+      # nearly happened to the repair for D24.
+      #
+      # So: this DEFINITION belongs on the default branch, and the capture
+      # SURFACE it checks out belongs on capture-prod. The two are separate on
+      # purpose.
+      #
+      # This step used to be a bare `actions/checkout@v4`. A `schedule:`
+      # trigger checks out the DEFAULT branch, and measured on 2026-09-15 that
+      # branch was missing THREE capture modules entirely --
+      # payload_contract.py, persisted_provenance.py, evidence_layers.py -- so
+      # D20's row_container, D22's payload contracts and D24's own
+      # persisted-digest guard were all absent from the only code that actually
+      # captures, while their tests passed on the development branch.
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.CAPTURE_BRANCH }}
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+
+      # BELOW 3.12 THE ENGINE DOES NOT IMPORT, and two of the causes are at AST
+      # level -- the module fails to parse before any import semantics or any
+      # test can report on it. A runner silently downgraded by a setup-python
+      # cache miss would produce a capture that failed for a reason nothing
+      # here would name, so the interpreter is asserted rather than assumed.
+      - name: Assert the interpreter is 3.12 or later
+        run: |
+          python3 -c "import sys; assert sys.version_info >= (3,12), 'INTERPRETER_TOO_OLD: ' + sys.version; print('interpreter', sys.version.split()[0])"
+
+      # THE BEFORE-STATE FOR THE BLOB/MANIFEST INVARIANT. Taken before anything
+      # is fetched, so the post-capture check compares two real observations
+      # rather than the store against itself.
+      # A MUTABLE BRANCH NAME IS NOT PROVENANCE. `ref:` says which branch; it
+      # does not say which commit ran, and the branch moves -- this job commits
+      # its own captured bytes back to it. So the resolved commit is recorded
+      # before anything is fetched.
+      - name: Record the resolved capture commit
+        id: capref
+        run: |
+          SHA=$(git rev-parse HEAD)
+          echo "executed_sha=$SHA" | tee -a "$GITHUB_OUTPUT"
+          echo "branch=$(git rev-parse --abbrev-ref HEAD)" | tee -a "$GITHUB_OUTPUT"
+
+      # FAIL CLOSED BEFORE FETCHING ANYTHING. A job that discovers afterwards
+      # that it ran the wrong code has already written rows nobody can
+      # attribute. The identity it checks is the SURFACE DIGEST, not the branch
+      # tip: the tip moves on every successful capture, so a tip-keyed check
+      # would pass the first run and refuse every run after it.
+      #
+      # Placed after the interpreter assertion so that a wrong interpreter is
+      # named as a wrong interpreter, and still before the capture, which is
+      # the step that fetches.
+      - name: Assert this executor is the approved capture release
+        run: |
+          python3 nfl/tools/capture_release.py --check-executor \
+            --executed-sha "${{ steps.capref.outputs.executed_sha }}"
+
+      - name: Snapshot the vintage store before capture
+        run: |
+          python3 nfl/tools/check_retention.py --store vintage --snapshot-to /tmp/pre
 
       - name: Capture
         id: capture
         run: |
           set +e
           python3 nfl/tools/capture_vintage.py --season 2026 | tee /tmp/capture.log
-          echo "exit=$?" >> "$GITHUB_OUTPUT"
+          # ${PIPESTATUS[0]}, NOT $?. After a pipe $? is TEE's status, which is
+          # 0 whatever the capture did, so `exit=` recorded nothing about the
+          # capture at all. The anchored workflow's comment has named this bug
+          # since 2026-09-10; this file still had it.
+          echo "capture_exit=${PIPESTATUS[0]}" | tee -a "$GITHUB_OUTPUT"
 
       # COMMIT BEFORE JUDGING. The FAIL gate used to run first, and because a
       # failing step skips the rest of the job, one source returning FAIL threw
@@ -93,8 +171,8 @@ jobs:
             -m "Captured by GitHub Actions run ${GITHUB_RUN_ID}." \
             -m "Append-only: adds manifest rows and content-addressed blobs, rewrites nothing."
           # Rebase rather than force: a concurrent run's rows are evidence too.
-          git pull --rebase --autostash origin main
-          git push origin HEAD:main
+          git pull --rebase --autostash origin "$CAPTURE_BRANCH"
+          git push origin HEAD:"$CAPTURE_BRANCH"
 
       # Same gate as the anchored workflow: durable bytes with no manifest row
       # are orphans -- nothing attributes them to a game, a window or a basis,
@@ -114,6 +192,24 @@ jobs:
             exit 1
           fi
           grep -E '^manifest rows appended:' /tmp/capture.log
+
+      # THE W3 GUARD, OFF THE LOG STRING AND ONTO THE FILESYSTEM.
+      #
+      # The step above greps stdout for `manifest rows appended: [1-9]`. The 50
+      # runs that lost 2026-09-08/09/10 -- 48 orphan blobs, all of 2026-09-09
+      # absent from the manifest including the four runs inside the NE@SEA
+      # T-90 inactives window -- printed no summary line at all, which is
+      # precisely the condition under which a stdout guard can see least. This
+      # reads the blob set and the manifest before and after instead, and
+      # refuses a run that added durable bytes without a row naming them.
+      #
+      # Runs AFTER the commit, like every other gate here: the bytes are kept
+      # and the signal is kept.
+      - name: Assert no blob was written without a manifest row
+        if: always()
+        run: |
+          python3 nfl/tools/check_retention.py --store vintage --gate delta \
+            --before-blobs /tmp/pre.blobs --before-manifest /tmp/pre.manifest
 
       - name: Fail the run only on a real FAIL
         if: always()
