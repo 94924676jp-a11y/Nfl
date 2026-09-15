@@ -222,3 +222,86 @@ readers behind it are not.** Fixing three corpus globs did not fix
 conservation's presence check, and fixing that did not fix three board readers.
 
 **No market data entered any part of this work. Nothing here is a wager.**
+
+---
+
+# ADDENDUM — 2026-09-15 afternoon
+
+Written at HEAD `af72f67`. The morning report above stands; this records what
+changed after it.
+
+## The day's defects, and they share one shape
+
+| | what | state |
+|---|---|---|
+| **D20** | `nfl.com/inactives/` served an empty page for nine days; 374 captures passed; 15 of Week 1's 63 coverage targets were credited to it | **repaired** |
+| **D21** | the reconciliation statistic restates numpy's contract — 385,446 rows of zero, one of them feeding a boolean named `exact` | statistic built, **not wired** |
+| **D22** | the json and csv guards count the envelope; ESPN's document scores 35 against 800 real entries and still scores 35 when emptied | **repaired** |
+| **D23** | a `written_at` cutoff does not pin an input set when the manifest is append-only | **diagnosed, not repaired** |
+| **D24** | the persisted-digest guard is on the branch that does not capture | **diagnosed, not repaired** |
+
+**Four of the five are the same failure.** Not "a check was missing" — a check
+existed, was well-reasoned, and was answering a different question than the one
+its result was read as answering. D20's marker count answered *does the word
+appear*. D21's statistic answered *does numpy conserve*. D22's row count answered
+*did bytes arrive*. D24's guard answered *does this branch refuse bad rows*. Each
+was correct. Each was read as evidence about football, or about production, or
+about the corpus.
+
+## And the distance problem, three times in one day
+
+- D20's fact was **known on 2026-09-10**, written into one game's provenance
+  block in a field called `what_this_is_not`, and never reached the registry,
+  the capture guard or the coverage reader.
+- "main stopped capturing on 09-11" came from a **stale tracking ref** rather
+  than from main, and was load-bearing in `OUT-011` and seven test assertions
+  for four days.
+- D24's repair protects nothing in production while a test asserts it holds.
+
+The defect was not in the analysis. It was in the distance between where a thing
+was established and where it was needed.
+
+## Five claims of mine that were wrong, in order
+
+1. "The DEN@KC window closed with zero attempts." Eight lawful attempts.
+2. "main carries in-window PASS captures, so the window was filled." They are
+   empty — **and I committed this one** before decompressing a blob.
+3. "The blast radius is 37 captures." It is 374 over nine days.
+4. "No positive control exists, so the D22 repair is blocked." The injury report
+   is 374 of them, on the same code path.
+5. "No miss holds uncredited bytes" — written into a test as `== 0`. That `0`
+   was **produced by a defect of my own**: my first cut suppressed the 18
+   delivered markdown captures, the only genuine inactive lists in the store. A
+   repair aimed at evidence quality was deleting the evidence, and it looked
+   like a cleaner number.
+
+Plus one inside a test: the first cut of D23's section C grepped for a field
+name and counted a **constructor argument** as a consumer, reporting the defect
+repaired — a textual false green inside the test written to catch textual false
+greens.
+
+## What the model work found
+
+**Team volume is biased, and it is a lag.** Snaps `+0.996 ± 0.266` and dropbacks
+`+0.605 ± 0.296`, team-season blocked, both CIs excluding zero, both feeding
+passing. Monotone by season — dropbacks `−0.157 → +0.856 → +1.115`, *crossing
+zero*. Confirmed against the panel: the league mean of actuals falls 2.91 and
+2.65 since 2020, while the two metrics with flat league means carry **no bias at
+all**. No estimator in the family has a trend term.
+
+**The repair is not recommended.** The bias is a tenth of the MAE. Removing it
+buys calibration and nothing for discrimination, which is the objective. `r` is
+0.129, slope 0.423, sd ratio 0.304 — the model still emits far too little
+game-to-game variation, and that is the actual problem.
+
+**An open contradiction:** the autopsy has 2025 dropbacks *under*-projected by
+−1.3697; this has them *over*-projected by +1.115. Different layers. Until that
+is decomposed, "team volume is biased" must name the layer.
+
+## Not done
+
+QB cold-start ownership, R14 pass-event single ownership, R10 to a board, track1
+scramble repair, h1_frame, Tier-0 validation, the data-plane DAG, the stacked V2
+challenger, and the D21 successor candidate itself.
+
+**Nothing promoted. R10 through R13 have zero boards between them.**
