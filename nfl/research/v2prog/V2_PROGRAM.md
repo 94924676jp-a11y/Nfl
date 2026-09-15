@@ -176,3 +176,111 @@ cover anything committed after it started. A re-run is in flight and is **not**
 claimed here.
 
 **V2 NOT YET EARNED**
+
+---
+
+## Tick 2026-09-15T15:10Z — D22, coverage truth, and the team-volume mechanism
+
+Working HEAD `19e16d0`, pushed. Task Zero accepted and not reopened; merge
+history, D20 semantics, every candidate freeze and every seal preserved.
+
+### The D20 blast radius, answered
+
+**The corruption was confined to capture and coverage reporting. No prediction
+consumed a false inactive list.** All 13 real ingestions cite per-game
+`nfl.com/news` articles; none cites `/inactives/`. Pre-inactives boards carry the
+empty blob only as provenance, stamped 67.7 hours before kickoff, with no
+inactive-derived key at all. The eligibility gate's `None` vs `()` distinction is
+what protected it. Full record: `nfl/research/v4/D20_COVERAGE_CORRECTION.md`.
+
+**The project already knew, on 2026-09-10.** The SF@LA ingestion record has a
+field named `what_this_is_not` calling the landing page "a placeholder carrying
+no list and the wrong document". Five days before D20 was found. The failure was
+not discovery — it was **propagation**: the fact sat in one game's provenance
+block and never reached the registry, the capture guard or the coverage reader.
+
+Where it did reach: 83 artifacts name an empty blob in their consumed partitions,
+so it enters identity fingerprints. Provenance, not input. Recorded, not
+repaired — repairing it means re-sealing forecasts.
+
+### Coverage truth
+
+**28/63**, superseding 43/63. All 15 targets that moved are inactives targets;
+nothing else moved either way. Of the 35 misses, 13 hold real game-anchored bytes
+the ledger correctly refuses (delivered route, no declaration block) — an exact
+13-to-13 match with the games holding an `INACTIVES_INGESTION.json` — and 22 have
+nothing. Reading 28/63 as "we do not know who was inactive" would be a second
+error in the opposite direction.
+
+### D22 — the same hole in the other two content kinds
+
+Both count the **envelope**. ESPN's injuries document scores 32 + 3 = 35 against
+800 real entries, and still scores 35 with every team's list emptied. The csv
+check counts rows and never looks at a column. No live corruption; a latent hole
+closed. Contracts declared per source, both controls, bypass proof.
+
+Two things it uncovered: the `SOURCE_HAS_NO_ROWS_YET` branch D20 kept unreachable
+was **itself broken** (a `NameError` on an undefined `url`), and a test fixture
+had been keying its player column `player` where the feed sends `gsis_id`.
+
+### D21 — my framing was wrong, and the fourth seeded test is what showed it
+
+Duplicated ownership: a duplication that **creates** units is caught by the old
+`|sum − n|` (7.0) and is **invisible** to the new residual (1.83, inside its own
+null). Theft that preserves the total is the exact reverse. **Neither statistic
+dominates.** The old one is a *conservation* check and a correct one; what was
+wrong was reading it as a check on the *allocation*, above all as a key named
+`exact`. The successor reports both. `recon_error` is marked
+`INVALIDATED_NON_INFORMATIVE_AS_AN_ALLOCATION_CHECK` — how it may be read, not
+whether it may exist — and its 385,446 zeros stay so artifacts remain
+reproducible.
+
+**The successor candidate identity is still not built.** D21 stays
+`repaired=False`.
+
+### Team volume — the mechanism, confirmed
+
+Two of five metrics carry a bias distinguishable from zero under team-season
+block bootstrap, both positive, both feeding passing: `team_off_snaps` +0.996 ±
+0.266 and `team_dropbacks_part` +0.605 ± 0.296.
+
+It is **season drift**, monotone — dropbacks go −0.157, +0.856, +1.115 across
+2023–25, *crossing zero*, which no fixed offset does. Confirmed directly: the
+league mean of actuals falls 2.91 for snaps and 2.65 for dropbacks since 2020,
+while `team_carries` moves 0.10 and `team_rz_carries` 0.13 — and **neither of
+those carries a bias**. The two that drift are exactly the two falling fastest.
+Every estimator in the family is an average of the past and none has a trend
+term, so the selection could not have avoided it.
+
+Week 1 is **UNDERPOWERED, not fine**: every Week-1 CI covers zero at n=96.
+
+**Open contradiction, deliberately unresolved:** the autopsy has 2025 dropbacks
+UNDER-projected by −1.3697; this has them OVER-projected by +1.115. Different
+layers. If both hold, the intervening layers remove ~2.5 dropbacks per
+team-game. Until that is decomposed, "team volume is biased" must name the layer.
+
+### Regressions: all classified, none unexplained
+
+Pre-existing (reproduced identically at `382556b` in a clean worktree):
+`test_c1_denominator` 1, `test_q9_live_feature_builder` 5, `test_stat_contract`
+1. **My earlier attribution of the candidate drift to the merge was wrong.**
+
+Merge-*exposed*, not merge-introduced: `test_live_capture_den_kc` 1 — the
+pre-existing dangling `raw/schedules.c563178ace7c6637.csv` reference became
+reachable. Merge-caused: `test_persisted_provenance` 3, frozen counts moved by
+corpus growth.
+
+Fixed this tick: `test_capture_obligations` 3 (one of them an environment
+dependence **I** introduced — asserting ambient liveness inside a harness that
+isolates the state root), `test_p7_data_plane` 4 (stale premises).
+
+Deliberate: `test_p6_false_greens` 17, `test_passer_credit_migration` 3.
+
+### Not done, and not claimed
+
+QB cold-start ownership, R14 pass-event single ownership, R10 to a board, track1
+scramble repair, Tier-0 board validation, the data-plane DAG, the stacked V2
+challenger. **Nothing promoted. R10–R13 remain isolated challengers with zero
+boards between them.**
+
+**V2 NOT YET EARNED**
