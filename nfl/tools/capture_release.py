@@ -297,6 +297,10 @@ def assert_executor_matches_release(release, executed_sha=None) -> Outcome:
     # move it. The commit is recorded, and still refuses a genuinely unrelated
     # commit -- what it no longer does is refuse its own output.
     commit = _commit_provenance(release, executed_sha)
+    if commit['state'] == 'EXECUTED_SHA_UNRESOLVABLE':
+        return Outcome.fail(
+            'CAPTURE_EXECUTOR_COMMIT_UNRESOLVABLE', commit['detail'],
+            executed_sha=executed_sha, commit_provenance=commit['state'])
     if commit['state'] == 'DIVERGED_FROM_RELEASE_COMMIT':
         return Outcome.fail(
             'CAPTURE_EXECUTOR_COMMIT_MISMATCH',
@@ -332,12 +336,39 @@ def _commit_provenance(release, executed_sha):
     if not executed_sha:
         return {'state': 'EXECUTED_SHA_NOT_REPORTED',
                 'detail': 'the job did not report the commit it resolved'}
+
+    # IS THERE A REPOSITORY HERE AT ALL? This has to be asked before anything
+    # is concluded from a git failure, because "git said no" and "there is no
+    # git here" are different facts and only one of them is the job's problem.
+    in_repo = _git('rev-parse', '--verify', '--quiet',
+                   'HEAD^{commit}').returncode == 0
+
+    # A COMMIT THAT DOES NOT EXIST IS NOT AN UNDECIDABLE ANCESTRY.
+    # Relaxing the equality check cost this, and a test caught it: with the
+    # ancestry check alone, `assert_executor_matches_release(rel, 'de'*32)`
+    # PASSED -- merge-base returns 128 on an unknown object, 128 fell through
+    # to NOT_ESTABLISHED, and NOT_ESTABLISHED does not block. So a job
+    # reporting a commit nobody can resolve went unchallenged. That is weaker
+    # than what it replaced, which is not an acceptable trade for fixing the
+    # self-invalidation, so it fails closed on its own code.
+    if in_repo and _git('rev-parse', '--verify', '--quiet',
+                        f'{executed_sha}^{{commit}}').returncode != 0:
+        return {'state': 'EXECUTED_SHA_UNRESOLVABLE',
+                'detail': f'{str(executed_sha)[:16]} does not resolve to a '
+                          f'commit in the repository the job is running from. '
+                          f'A commit nobody can look up is not provenance.'}
+
     if not want:
         return {'state': 'RELEASE_PINS_NO_COMMIT',
                 'detail': 'the deployed record pins a surface digest, not a '
                           'commit; the development ledger holds the commit'}
     if executed_sha == want:
         return {'state': 'MATCHES_RELEASE_COMMIT', 'detail': ''}
+    if not in_repo:
+        return {'state': 'COMMIT_ANCESTRY_NOT_ESTABLISHED',
+                'detail': 'no git repository here, so ancestry cannot be '
+                          'established. NOT ASKED, not a pass; the surface '
+                          'digest is what is holding the gate closed.'}
     r = _git('merge-base', '--is-ancestor', want, executed_sha)
     if r.returncode == 0:
         return {'state': 'DESCENDS_FROM_RELEASE_COMMIT',
