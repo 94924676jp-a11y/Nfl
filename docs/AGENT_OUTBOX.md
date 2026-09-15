@@ -907,3 +907,101 @@ needs no bytes from anyone — it is in `appearance_r8.featurise` and
 `depth_vintage.daily` and is fully diagnosed in the report above. This request
 would have made the forecast **better informed**; it would not have made it
 **correct**, and I am not offering it as a substitute for the repair.
+
+---
+
+## 2026-09-15T13:40Z — OUT-016: the inactives endpoint is the wrong endpoint, and it has been passing for nine days
+
+**This is not a blocked task. It is an assigned one, and it is the highest-value
+thing I can hand you this week.** I found it while reconciling with main and I
+can prove all of it from committed bytes. What I cannot do is confirm the
+replacement endpoint, because that needs a fetch.
+
+**What the registry points at.** `nfl/capture/registry.py:234`,
+`official_inactives`, `url_template = "https://www.nfl.com/inactives/"`, marked
+`required=True`, `authority_rank=1`, and noted as *"the only source that can
+discharge an inactives target."*
+
+**What that URL actually served for the whole of Week 1.** An empty-state page.
+Its own body text, verbatim:
+
+> Please check back soon for NFL Inactive Reports for this Season
+
+Zero `<table>`. Zero `<tr>`. Not one player name.
+
+**How many times we stored it and called it a capture.** 374. Every
+`official_inactives` capture from `20260907T002448Z` to `20260915T130638Z`,
+nine days, each one `state: PASS`, `code: CAPTURED`, each with a non-zero
+`n_data_rows` (4, 23, 30, 34 or 41 — the number drifts because it is counting
+how many news tiles the page happened to be showing).
+
+**Why the substance guard did not catch it, in one line.** The guard is correct
+and deliberate — `capture_vintage.py:345` defers a zero-marker HTML payload as
+`SOURCE_HAS_NO_ROWS_YET` precisely so an unpublished page is recorded as a debt.
+It never fires because this source's marker vocabulary is the single word
+`"inactive"` and that word appears 41 times in the page's own furniture: the
+`<title>`, the meta description, `og:url`, the canonical link, the ad and
+analytics config blobs, a visually-hidden `<h1>`, the placeholder promo, and the
+`data-link_name` / `href` / `aria-label` attributes of news tiles. One of the 41
+is the empty-state sentence itself. **The page's written statement that it has no
+data counts as one unit of evidence that it has data.** Then `:358` assigns that
+count to `n_data_rows`, so page chrome is laundered into a row count and every
+consumer downstream sees rows.
+
+Recorded as **D20** in `nfl/research/live/OPEN_DEFECTS.json`, replayed by
+`nfl/tests/test_inactives_substance.py` (sections B and C fail by design).
+
+**The part that matters for DEN@KC, and it corrects me twice.** I reported in
+OUT-013 that the window closed with nothing attempted. That was wrong: eight
+captures were taken inside the declared window 22:45:00Z–00:05:00Z, by the
+GitHub Actions workflow `NFL T-90 anchored capture` on `refs/heads/main`, each
+with `execution_target.declared_before_fetch: true` and basis
+`SCHEDULED_WINDOW_ANCHORED`, each passing `discharge_eligibility` for
+`2026_01_DEN_KC` with `refusals: []`. I then corrected myself to "so the window
+was filled," and committed that. **That was wrong too.** The eight are
+provenance-lawful and substantively empty. The scheduler did its job perfectly
+and fetched a page with nothing on it.
+
+Had this branch consumed those eight, the R2 eligibility gate would have been
+handed 41 rows of navigation furniture and would have reported the inactives
+obligation **discharged over an empty set**. The board would have published
+claiming knowledge it did not have. That is worse than the miss we actually took.
+**The Week-1 miss remains a miss** and nothing here changes `d1e2727743c93990`.
+
+**What I need from you.**
+
+1. **The correct endpoint pattern.** The empty page links to its own replacement.
+   Occurrences 17–22 of the marker word are the `href` and `title` of
+   `/news/week-1-monday-night-inactives-denver-broncos-at-kansas-city-chiefs`,
+   summarised as *"Here are the official inactives for the Denver Broncos at the
+   Kansas City Chiefs."* So the data was published, on time, at a per-game URL.
+   I need to know whether that slug is derivable before the article exists —
+   from `season`, `week`, kickoff slot and the two club names — or whether it can
+   only be discovered by reading an index. **Those two answers imply completely
+   different capture designs** and I will not guess between them. If it is only
+   discoverable, name the index that lists it and I will spec a two-stage fetch.
+
+2. **One populated inactives page, any game, as a positive control.** This is the
+   blocking item. The repair bar is two-sided: a fix must make the empty page
+   stop passing *and* leave a page with real rows still passing. I have zero
+   blobs for the second half — all 392 PASS records are either the empty landing
+   page or your delivered markdown. Section D of my test reports `NOT_EXECUTED`
+   rather than skipping, and it stays `NOT_EXECUTED` until you send bytes.
+   **Without it I can make the test green and I would have no idea whether I had
+   broken real captures, so I am not going to.**
+
+3. **Confirmation on one point of fact.** You already solved this once. Your
+   delivered capture `20260910T234420Z`, *"SF @ LA: Final Pregame Intelligence
+   Capture,"* carries both complete official inactive lists and cites
+   `https://www.nfl.com/news/australia-game-inactives-san-francisco-49ers-at-los-angeles-rams`.
+   You went to the per-game article by hand. Was `https://www.nfl.com/inactives/`
+   ever populated this season and we missed the window, or has it been an
+   empty shell since the registry was written? If the latter, the endpoint has
+   never once worked and `source_status: VERIFIED_REACHABLE_EXTERNALLY` is
+   measuring reachability while saying nothing about content — which is a
+   registry-vocabulary problem I will fix on my side either way.
+
+**What this does not license.** No bytes you send may score, revise or re-seal
+any board already written. Anything that arrives now is a pregame input for
+future forecasts only, and the captures already in the tree stay exactly as they
+are: `PASS`, empty, and annotated.
