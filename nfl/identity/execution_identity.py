@@ -12,6 +12,22 @@ Recording a sha256 next to a run is the easy half and does not help. The hash ha
 to be inside the identity that the fingerprint is computed over, so that changing
 an input necessarily changes the fingerprint. That is the difference this module
 exists to make.
+
+WHAT `code_version` AND `interpreter` MUST CARRY (WS-E, 2026-09-14)
+
+Those two fields are identities A+B and C of the contract in
+`nfl.identity.code_identity`, and the contract document is
+`nfl/research/remediation/ws_e/WS_E_IDENTITY_CONTRACT.md`. Build them with
+`code_identity.code_identity()`; do not assemble either by hand.
+
+`validate()` now refuses the withdrawn count-keyed form `<sha>+dirty[N]`. That
+string keyed the run identity on the NUMBER of dirty paths in the working tree,
+which made a run's identity a function of its own outputs -- run 1 writes a
+proof directory, run 2 counts one more path, and two bit-identical draw sets get
+two different fingerprints. WS01, WS18 (F3) and WS19 found it independently and
+WS18 measured it live. It is refused here rather than only in the caller,
+because the next caller will be written by someone who did not read the caller
+that was fixed.
 """
 from __future__ import annotations
 
@@ -28,6 +44,7 @@ if str(_REPO) not in sys.path:
 
 from sportsplatform.governance.outcome import Cause, Outcome, State  # noqa: E402
 from sportsplatform.governance.provenance import Provenance, validate as validate_prov  # noqa: E402
+from nfl.identity.code_identity import KEYS_ON_COUNT_MARKER as CODE_VERSION_COUNT_MARKER  # noqa: E402
 
 
 @dataclasses.dataclass(frozen=True)
@@ -96,6 +113,22 @@ class ExecutionIdentity:
                 'IDENTITY_SPEC_UNHASHED',
                 f'{self.spec_id}: no spec_sha256. A frozen specification that '
                 f'is not hashed is not frozen.')
+        # THE WITHDRAWN CONTRACT. `<sha>+dirty[N]` keys the identity on a COUNT
+        # of dirty paths, so (a) two different working trees with equal counts
+        # alias to one identity, and (b) a run that writes an output file
+        # changes its own identity. Refused by name, in the identity itself,
+        # so no caller can reintroduce it quietly.
+        if CODE_VERSION_COUNT_MARKER in str(self.code_version):
+            return Outcome.fail(
+                'IDENTITY_CODE_VERSION_KEYS_ON_COUNT',
+                f'{self.spec_id}: code_version {self.code_version!r} carries '
+                f'the withdrawn {CODE_VERSION_COUNT_MARKER!r} form, which keys '
+                f'the run identity on the NUMBER of dirty working-tree paths. '
+                f'A count cannot identify content -- two unrelated trees with '
+                f'the same number of dirty files produce the same identity -- '
+                f'and it moves when the run writes its own outputs. Build '
+                f'code_version with nfl.identity.code_identity.code_identity().',
+                code_version=self.code_version)
         bad = {}
         for p in self.partitions:
             v = validate_prov(p.provenance)

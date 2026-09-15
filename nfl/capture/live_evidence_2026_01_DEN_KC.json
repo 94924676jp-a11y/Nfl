@@ -1,0 +1,776 @@
+{
+ "authority_downgrades": [
+  {
+   "authority_promotion": false,
+   "authority_promotion_note": "Being the only source in hand is not a promotion. The stand-in keeps its registered authority and the governing slot is recorded as unfilled by an OFFICIAL source.",
+   "ceiling": "The nflverse `injuries` feed is a weekly archive restatement, not the league's intraweek cascade. It keeps ONE row per player-week and the 2025+ schema dropped `date_modified`, so no row-level clock survives: Wednesday's practice designation is overwritten rather than stored. It cannot answer (a) the club's filed practice participation on a named day, (b) the Friday game-status designation at the moment it was filed, or (c) inactives, which resolve Questionable to 0/1 at T-90 and appear in no form in this file. A player absent from it is not thereby active: omission is not an observation.",
+   "governing_authority": "OFFICIAL",
+   "governing_available_to_this_executor": false,
+   "governing_refusal": "403",
+   "governing_source": "official_injury_report",
+   "slot": "injuries",
+   "stand_in_authority": "ARCHIVE",
+   "stand_in_source": "injuries",
+   "status": "DOWNGRADED__MIRROR_IN_A_GOVERNING_SLOT"
+  },
+  {
+   "authority_promotion": false,
+   "authority_promotion_note": "Being the only source in hand is not a promotion. The stand-in keeps its registered authority and the governing slot is recorded as unfilled by an OFFICIAL source.",
+   "ceiling": "No source of any authority covers inactives at this cutoff. The correct downstream response is to refuse the claim, not to substitute a source that answers a different question.",
+   "governing_authority": "OFFICIAL",
+   "governing_available_to_this_executor": false,
+   "governing_refusal": "403",
+   "governing_source": "official_inactives",
+   "slot": "inactives",
+   "stand_in_authority": null,
+   "stand_in_source": null,
+   "status": "UNFILLED__NO_SOURCE_OF_ANY_AUTHORITY"
+  },
+  {
+   "authority_promotion": false,
+   "authority_promotion_note": "Being the only source in hand is not a promotion. The stand-in keeps its registered authority and the governing slot is recorded as unfilled by an OFFICIAL source.",
+   "ceiling": "No source of any authority covers transactions at this cutoff. The correct downstream response is to refuse the claim, not to substitute a source that answers a different question.",
+   "governing_authority": "OFFICIAL",
+   "governing_available_to_this_executor": false,
+   "governing_refusal": "ENDPOINT_NOT_YET_VERIFIED",
+   "governing_source": "official_transactions",
+   "slot": "transactions",
+   "stand_in_authority": null,
+   "stand_in_source": null,
+   "status": "UNFILLED__NO_SOURCE_OF_ANY_AUTHORITY"
+  }
+ ],
+ "completeness": {
+  "evidence_ceilings_not_failures": [],
+  "families_with_unverified_artifacts": [],
+  "required_families": [
+   "schedules",
+   "weekly_rosters",
+   "depth_charts"
+  ],
+  "required_missing_at_cutoff": [],
+  "retention_by_family": {
+   "depth_charts": "RULING3_COMPLETE",
+   "injuries": "RULING3_COMPLETE",
+   "schedules": "RULING3_COMPLETE",
+   "weekly_rosters": "RULING3_COMPLETE"
+  }
+ },
+ "cutoff_is_an_explicit_input": true,
+ "cutoff_is_pregame": true,
+ "cutoff_utc": "2026-09-14T17:40:19+00:00",
+ "earliest_lawful_cutoff": {
+  "binding_family": [
+   "weekly_rosters"
+  ],
+  "code": "EARLIEST_LAWFUL_CUTOFF",
+  "earliest_lawful_cutoff_utc": "2026-09-06T20:11:17.241139+00:00",
+  "per_family_earliest_retrieved_at": {
+   "depth_charts": "2026-09-06T20:11:11.117615+00:00",
+   "schedules": "2026-09-06T20:11:10.544873+00:00",
+   "weekly_rosters": "2026-09-06T20:11:17.241139+00:00"
+  },
+  "required_families": [
+   "schedules",
+   "weekly_rosters",
+   "depth_charts"
+  ],
+  "rule": "max over required families of the earliest lawful retrieval. A cutoff below this leaves a required family empty, and an empty required family is a refusal, not a smaller forecast.",
+  "state": "PASS"
+ },
+ "game": {
+  "away_coach": "Sean Payton",
+  "away_rest": "7",
+  "away_team": "DEN",
+  "div_game": "1",
+  "espn": "401872931",
+  "game_id": "2026_01_DEN_KC",
+  "game_type": "REG",
+  "gameday": "2026-09-14",
+  "gametime": "20:15",
+  "home_coach": "Andy Reid",
+  "home_rest": "7",
+  "home_team": "KC",
+  "location": "Home",
+  "old_game_id": "2026091400",
+  "pfr": "202609140kan",
+  "roof": "outdoors",
+  "season": "2026",
+  "stadium": "GEHA Field at Arrowhead Stadium",
+  "stadium_id": "KAN00",
+  "surface": "grass",
+  "week": "1",
+  "weekday": "Monday"
+ },
+ "game_id": "2026_01_DEN_KC",
+ "game_identity_blob": "nfl/vintage/schedules.bfb4ca5952e3a974.csv.gz",
+ "generated_at": "2026-09-14T17:40:22.218801Z",
+ "kickoff_utc": "2026-09-15T00:15:00+00:00",
+ "market_exclusion": {
+  "audit_key_prefix": "quarantined_column:",
+  "captured_not_consumed": "The market columns ARE captured -- they are inside the schedules file and the file is retained verbatim. Ruling 3 retention and forecast quarantine are different obligations and this is the line between them: the bytes are kept, and nothing that reaches a forecast carries them.",
+  "closure_check": {
+   "key_hits": [],
+   "n_values_scanned": 584,
+   "scope": "the COMPLETE emitted object, audit block included",
+   "value_hits": [],
+   "verdict": "MARKET_PROVABLY_EXCLUDED"
+  },
+  "emitted_columns_cleared_for_forecast": {
+   "code": "COLUMNS_ALLOWED",
+   "state": "PASS"
+  },
+  "emitted_schedule_columns": [
+   "away_coach",
+   "away_rest",
+   "away_team",
+   "div_game",
+   "espn",
+   "game_id",
+   "game_type",
+   "gameday",
+   "gametime",
+   "home_coach",
+   "home_rest",
+   "home_team",
+   "location",
+   "old_game_id",
+   "pfr",
+   "roof",
+   "season",
+   "stadium",
+   "stadium_id",
+   "surface",
+   "week",
+   "weekday"
+  ],
+  "gate_check": {
+   "quarantined_column:away_moneyline": {
+    "category": "MARKET",
+    "code": "MARKET_COLUMN_ACCESS",
+    "state": "FAIL"
+   },
+   "quarantined_column:away_spread_odds": {
+    "category": "MARKET",
+    "code": "MARKET_COLUMN_ACCESS",
+    "state": "FAIL"
+   },
+   "quarantined_column:home_moneyline": {
+    "category": "MARKET",
+    "code": "MARKET_COLUMN_ACCESS",
+    "state": "FAIL"
+   },
+   "quarantined_column:home_spread_odds": {
+    "category": "MARKET",
+    "code": "MARKET_COLUMN_ACCESS",
+    "state": "FAIL"
+   },
+   "quarantined_column:over_odds": {
+    "category": "MARKET",
+    "code": "MARKET_COLUMN_ACCESS",
+    "state": "FAIL"
+   },
+   "quarantined_column:spread_line": {
+    "category": "MARKET",
+    "code": "MARKET_COLUMN_ACCESS",
+    "state": "FAIL"
+   },
+   "quarantined_column:total_line": {
+    "category": "MARKET",
+    "code": "MARKET_COLUMN_ACCESS",
+    "state": "FAIL"
+   },
+   "quarantined_column:under_odds": {
+    "category": "MARKET",
+    "code": "MARKET_COLUMN_ACCESS",
+    "state": "FAIL"
+   }
+  },
+  "key_check": {
+   "hits": [],
+   "n_emitted_keys_scanned": 151
+  },
+  "market_columns_declared": [
+   "away_moneyline",
+   "away_spread_odds",
+   "home_moneyline",
+   "home_spread_odds",
+   "over_odds",
+   "spread_line",
+   "total_line",
+   "under_odds"
+  ],
+  "market_columns_populated_for_this_game": {
+   "quarantined_column:away_moneyline": true,
+   "quarantined_column:away_spread_odds": true,
+   "quarantined_column:home_moneyline": true,
+   "quarantined_column:home_spread_odds": true,
+   "quarantined_column:over_odds": true,
+   "quarantined_column:spread_line": true,
+   "quarantined_column:total_line": true,
+   "quarantined_column:under_odds": true
+  },
+  "market_value_sha256": {
+   "quarantined_column:away_moneyline": "9bdb2af6799204a299c603994b8e400e4b1fd625efdb74066cc869fee42c9df3",
+   "quarantined_column:away_spread_odds": "62dab6a0c4f3261a77079b6e00520341bad34264f7d88950b4ff04dfb527e30a",
+   "quarantined_column:home_moneyline": "b70c2a2370c6fb2f085054985df951d0934850b10653dd5f6bfb100d898df1cd",
+   "quarantined_column:home_spread_odds": "dd6369d666d6431f3aa0c9464bd3eb65afe89a2420be4380bcf3060c2442222a",
+   "quarantined_column:over_odds": "dd6369d666d6431f3aa0c9464bd3eb65afe89a2420be4380bcf3060c2442222a",
+   "quarantined_column:spread_line": "b8736b999909049671d0ea075a42b308a5fbe2df1854899123fe09eb0ee9de61",
+   "quarantined_column:total_line": "457a963a813c0963d0661e888ecf53b80354035cb3b6a740ada5e7e4cd5eb0b1",
+   "quarantined_column:under_odds": "62dab6a0c4f3261a77079b6e00520341bad34264f7d88950b4ff04dfb527e30a"
+  },
+  "market_values_are_not_reproduced_here": "deliberate. The digest is recomputable from the captured file by anyone auditing this; restating the price inside the artifact the forecast reads is the leak, not the audit.",
+  "n_populated_for_this_game": 8,
+  "posthoc_and_outcome_also_excluded": [
+   "away_qb_id",
+   "away_qb_name",
+   "away_score",
+   "ftn",
+   "gsis",
+   "home_qb_id",
+   "home_qb_name",
+   "home_score",
+   "nfl_detail_id",
+   "overtime",
+   "pff",
+   "referee",
+   "result",
+   "temp",
+   "total",
+   "wind"
+  ],
+  "proof_is_vacuous": false,
+  "value_check": {
+   "hits": [],
+   "n_emitted_values_scanned": 487,
+   "note": "a value scan is what survives a rename; a key check alone does not"
+  },
+  "verdict": "MARKET_PROVABLY_EXCLUDED"
+ },
+ "sources": {
+  "depth_charts": {
+   "artifact_verification": {
+    "persisted": {
+     "actual_sha256": "9c8ab2fa9368e83a6d84dd572d52462918c305bb6f77878c71f0fb29e4a0df39",
+     "blob": "nfl/vintage/depth_charts.f66f0c2583dba463.reduced.csv.gz",
+     "expected_sha256": "9c8ab2fa9368e83a6d84dd572d52462918c305bb6f77878c71f0fb29e4a0df39",
+     "is_failure": false,
+     "state": "VERIFIED"
+    },
+    "raw": {
+     "actual_sha256": "f66f0c2583dba46378701c74b5f0d03adcb769454b5121f6bf327665b5d87846",
+     "blob": "nfl/vintage/depth_charts.f66f0c2583dba463.raw.csv.gz",
+     "expected_sha256": "f66f0c2583dba46378701c74b5f0d03adcb769454b5121f6bf327665b5d87846",
+     "is_failure": false,
+     "state": "VERIFIED"
+    }
+   },
+   "authority": "ARCHIVE",
+   "authority_rank": 99,
+   "blob": "nfl/vintage/depth_charts.f66f0c2583dba463.reduced.csv.gz",
+   "blob_file_sha256": "7125c785ecfe113b6c4b8732a37da6411ca9a5f0036e1fa6f2f8dbce0a19acc5",
+   "capture_id": "20260914T161625Z",
+   "code": "VINTAGE_SELECTED",
+   "cutoff": "2026-09-14T17:40:19+00:00",
+   "durability": "reduce",
+   "effective_scope": {
+    "authority": "SOURCE_PROVIDED",
+    "derivation": null,
+    "game_id": null,
+    "kind": "EXACT_TIMESTAMP",
+    "season": 2026,
+    "source_value": "2026-09-14T13:53:40+00:00",
+    "teams": [],
+    "valid_from": "2026-09-14T13:53:40+00:00",
+    "valid_to": null,
+    "week": null
+   },
+   "evidence_ceiling": "The vendor `dt` inside the rows is a real publication clock and is preferred over retrieval for this family. It is a DAILY stamp, so intra-day ordering is not recoverable from it. AND THE SERIES IS MOSTLY NOT DURABLE: WS-L measured 171 of 177 captured `dt` slices persisted NOWHERE -- only 6 reduced blobs survive, one `dt` each. So for most historical cutoffs there is no stored chart to select, and the correct answer is this ceiling rather than the nearest chart that does exist. The reduction also DROPS `pos_slot`, which is the vendor tiebreak within a `pos_abb`; see depth_vintage.daily, RL-10.",
+   "executor_access": "REACHABLE",
+   "family": "depth_charts",
+   "forbidden_selection_inputs": [
+    "filesystem mtime",
+    "glob order",
+    "filename order",
+    "file size",
+    "row count",
+    "latest-on-disk"
+   ],
+   "forecast_cutoff_eligibility": "LAWFUL_AT_CUTOFF",
+   "lawful_because": "retrieved_at 2026-09-14T16:16:27.504983+00:00 <= cutoff 2026-09-14T17:40:19+00:00",
+   "n_data_rows": 518581,
+   "n_lawful_at_cutoff": 7,
+   "n_rejected_as_later_than_cutoff": 0,
+   "n_rejected_at_cutoff": 3,
+   "observation_time": "2026-09-14T13:53:40+00:00",
+   "observation_time_authority": "SOURCE_PROVIDED",
+   "observation_time_header": "Last-Modified",
+   "persisted_content_sha256": "9c8ab2fa9368e83a6d84dd572d52462918c305bb6f77878c71f0fb29e4a0df39",
+   "raw_bytes": "nfl/vintage/depth_charts.f66f0c2583dba463.raw.csv.gz",
+   "raw_hash": "f66f0c2583dba46378701c74b5f0d03adcb769454b5121f6bf327665b5d87846",
+   "raw_n_bytes": 49311029,
+   "required": true,
+   "retention_ruling3": {
+    "raw_blob_durable": true,
+    "raw_bytes": "nfl/vintage/depth_charts.f66f0c2583dba463.raw.csv.gz",
+    "raw_bytes_present_on_disk": true,
+    "raw_hash": "f66f0c2583dba46378701c74b5f0d03adcb769454b5121f6bf327665b5d87846",
+    "raw_home_is_gitignored_only": false,
+    "raw_n_bytes": 49311029,
+    "reduced_artifact": "nfl/vintage/depth_charts.f66f0c2583dba463.reduced.csv.gz",
+    "reduced_hash": "9c8ab2fa9368e83a6d84dd572d52462918c305bb6f77878c71f0fb29e4a0df39",
+    "retention_policy": "ruling3-raw-and-reduced-durable-1",
+    "status": "RULING3_COMPLETE",
+    "transformation_code_sha256": "5e4eb7a9257ea44c999b39b078be29acbc9ab80bd897196a21778cb482027456",
+    "transformation_version": "reduce-2"
+   },
+   "retrieved_at": "2026-09-14T16:16:27.504983+00:00",
+   "selection_rule": "max(retrieved_at, content_sha256) over lawful",
+   "serves_kinds": [],
+   "source": "depth_charts",
+   "source_status": "VERIFIED_REACHABLE_EXTERNALLY",
+   "state": "PASS",
+   "transformation": {
+    "code_sha256": "5e4eb7a9257ea44c999b39b078be29acbc9ab80bd897196a21778cb482027456",
+    "code_symbol": "nfl.tools.capture_vintage._reduce_frame",
+    "deterministic": true,
+    "input_n_bytes": 49311029,
+    "input_sha256": "f66f0c2583dba46378701c74b5f0d03adcb769454b5121f6bf327665b5d87846",
+    "irreversibility_note": "the reduction discards columns and, for dt-versioned sources, prior snapshots. The upstream file cannot be rebuilt from this blob. That is why upstream_content_sha256 is kept: it identifies what was fetched, even though what was fetched is not what is stored.",
+    "missing_columns": [],
+    "output_columns": [
+     "dt",
+     "team",
+     "gsis_id",
+     "pos_abb",
+     "pos_rank"
+    ],
+    "output_n_bytes": 93811,
+    "output_sha256": "9c8ab2fa9368e83a6d84dd572d52462918c305bb6f77878c71f0fb29e4a0df39",
+    "requested_columns": [
+     "dt",
+     "team",
+     "gsis_id",
+     "pos_abb",
+     "pos_rank"
+    ],
+    "reversible": false,
+    "row_filter": "newest_dt_slice",
+    "row_filter_value": "2026-09-14T13:53:31Z",
+    "rows_in_file": 518581,
+    "rows_kept": 2232,
+    "transform_id": "nfl-vintage-column-reduce",
+    "transform_version": "reduce-2"
+   },
+   "upstream_content_sha256": "f66f0c2583dba46378701c74b5f0d03adcb769454b5121f6bf327665b5d87846",
+   "upstream_n_bytes": 49311029,
+   "url": "https://github.com/nflverse/nflverse-data/releases/download/depth_charts/depth_charts_2026.csv"
+  },
+  "injuries": {
+   "artifact_verification": {
+    "persisted": {
+     "actual_sha256": "66e960ec81fccc6e5f95d23644de3ab58255af6682ec4fee0a12d8fc14f86865",
+     "blob": "nfl/vintage/injuries.66e960ec81fccc6e.csv.gz",
+     "expected_sha256": "66e960ec81fccc6e5f95d23644de3ab58255af6682ec4fee0a12d8fc14f86865",
+     "is_failure": false,
+     "state": "VERIFIED"
+    },
+    "raw": {
+     "actual_sha256": "66e960ec81fccc6e5f95d23644de3ab58255af6682ec4fee0a12d8fc14f86865",
+     "blob": "nfl/vintage/injuries.66e960ec81fccc6e.csv.gz",
+     "expected_sha256": "66e960ec81fccc6e5f95d23644de3ab58255af6682ec4fee0a12d8fc14f86865",
+     "is_failure": false,
+     "state": "VERIFIED"
+    }
+   },
+   "authority": "ARCHIVE",
+   "authority_rank": 99,
+   "blob": "nfl/vintage/injuries.66e960ec81fccc6e.csv.gz",
+   "blob_file_sha256": "a4783bf63cb684ab970c612fdddef935b63c7fc3b78b34d77aeba8029eb51ead",
+   "capture_id": "20260913T154556Z",
+   "code": "VINTAGE_SELECTED",
+   "cutoff": "2026-09-14T17:40:19+00:00",
+   "durability": "commit_raw",
+   "effective_scope": {
+    "authority": "DERIVED_DETERMINISTIC",
+    "derivation": {
+     "evidence": "The file is season-scoped and carries per-row season/week, but the 2025+ schema dropped date_modified so no row-level clock survives. The file's own Last-Modified is the only defensible effective boundary and is recorded as DERIVED, not as source-provided.",
+     "method": "valid_from := HTTP Last-Modified of the captured file",
+     "status": "DERIVED"
+    },
+    "game_id": null,
+    "kind": "DATE_INTERVAL",
+    "season": 2026,
+    "source_value": "2026",
+    "teams": [],
+    "valid_from": "2026-09-13T12:41:50+00:00",
+    "valid_to": null,
+    "week": null
+   },
+   "evidence_ceiling": "The league's own filing instant is not recorded. `valid_from` is the mirror file's HTTP Last-Modified, which is an upper bound on publication and a lower bound on nothing. Retrieval is never earlier than publication, so `retrieved_at <= cut` still implies the bytes existed by the cut -- the direction is conservative, and that is all it is.",
+   "executor_access": "REACHABLE",
+   "family": "injuries",
+   "forbidden_selection_inputs": [
+    "filesystem mtime",
+    "glob order",
+    "filename order",
+    "file size",
+    "row count",
+    "latest-on-disk"
+   ],
+   "forecast_cutoff_eligibility": "LAWFUL_AT_CUTOFF",
+   "lawful_because": "retrieved_at 2026-09-13T15:45:56.665261+00:00 <= cutoff 2026-09-14T17:40:19+00:00",
+   "n_data_rows": 182,
+   "n_lawful_at_cutoff": 7,
+   "n_rejected_as_later_than_cutoff": 0,
+   "n_rejected_at_cutoff": 0,
+   "observation_time": "2026-09-13T12:41:50+00:00",
+   "observation_time_authority": "DERIVED_DETERMINISTIC",
+   "observation_time_header": "Last-Modified",
+   "persisted_content_sha256": "66e960ec81fccc6e5f95d23644de3ab58255af6682ec4fee0a12d8fc14f86865",
+   "raw_bytes": "nfl/vintage/injuries.66e960ec81fccc6e.csv.gz",
+   "raw_hash": "66e960ec81fccc6e5f95d23644de3ab58255af6682ec4fee0a12d8fc14f86865",
+   "raw_n_bytes": 20631,
+   "required": false,
+   "retention_ruling3": {
+    "raw_blob_durable": true,
+    "raw_bytes": "nfl/vintage/injuries.66e960ec81fccc6e.csv.gz",
+    "raw_bytes_present_on_disk": true,
+    "raw_hash": "66e960ec81fccc6e5f95d23644de3ab58255af6682ec4fee0a12d8fc14f86865",
+    "raw_home_is_gitignored_only": false,
+    "raw_n_bytes": 20631,
+    "reduced_artifact": null,
+    "reduced_hash": null,
+    "retention_policy": "ruling3-raw-and-reduced-durable-1",
+    "status": "RULING3_COMPLETE",
+    "transformation_code_sha256": null,
+    "transformation_version": "none__upstream_verbatim"
+   },
+   "retrieved_at": "2026-09-13T15:45:56.665261+00:00",
+   "selection_rule": "max(retrieved_at, content_sha256) over lawful",
+   "serves_kinds": [],
+   "source": "injuries",
+   "source_status": "VERIFIED_REACHABLE_EXTERNALLY",
+   "state": "PASS",
+   "transformation": null,
+   "upstream_content_sha256": "66e960ec81fccc6e5f95d23644de3ab58255af6682ec4fee0a12d8fc14f86865",
+   "upstream_n_bytes": 20631,
+   "url": "https://github.com/nflverse/nflverse-data/releases/download/injuries/injuries_2026.csv"
+  },
+  "schedules": {
+   "artifact_verification": {
+    "persisted": {
+     "actual_sha256": "bfb4ca5952e3a974c4ca81d0951c872d29bb102735dcc981604258bef2b96315",
+     "blob": "nfl/vintage/schedules.bfb4ca5952e3a974.csv.gz",
+     "expected_sha256": "bfb4ca5952e3a974c4ca81d0951c872d29bb102735dcc981604258bef2b96315",
+     "is_failure": false,
+     "state": "VERIFIED"
+    },
+    "raw": {
+     "actual_sha256": "bfb4ca5952e3a974c4ca81d0951c872d29bb102735dcc981604258bef2b96315",
+     "blob": "nfl/vintage/schedules.bfb4ca5952e3a974.csv.gz",
+     "expected_sha256": "bfb4ca5952e3a974c4ca81d0951c872d29bb102735dcc981604258bef2b96315",
+     "is_failure": false,
+     "state": "VERIFIED"
+    }
+   },
+   "authority": "ARCHIVE",
+   "authority_rank": 99,
+   "blob": "nfl/vintage/schedules.bfb4ca5952e3a974.csv.gz",
+   "blob_file_sha256": "0ea26f3bf9444a8b3148e625d4725555cddb7dd079177246a5ce8e597b82c093",
+   "capture_id": "20260914T173936Z",
+   "code": "VINTAGE_SELECTED",
+   "cutoff": "2026-09-14T17:40:19+00:00",
+   "durability": "commit_raw",
+   "effective_scope": {
+    "authority": "DERIVED_DETERMINISTIC",
+    "derivation": {
+     "evidence": "Reference data with no per-row effective clock.",
+     "method": "valid_from := HTTP Last-Modified of the captured file",
+     "status": "DERIVED"
+    },
+    "game_id": null,
+    "kind": "DATE_INTERVAL",
+    "season": 2026,
+    "source_value": "2026",
+    "teams": [],
+    "valid_from": "2026-09-14T17:16:18+00:00",
+    "valid_to": null,
+    "week": null
+   },
+   "evidence_ceiling": "WS12 scored this UNPROVABLE rather than leaking, and this module does not upgrade that verdict. No leak has been measured: the readers take only season, week, game_type, gameday, gametime and team codes. What is true is that the committed blob carries `result`, `home_score`, `spread_line` and `total_line` in all 46 columns, and that both existing selectors order by filesystem mtime or by content-hash string, neither of which is a clock. The guard today is the absence of a reader, not a bound on the selector.",
+   "executor_access": "REACHABLE",
+   "family": "schedules",
+   "forbidden_selection_inputs": [
+    "filesystem mtime",
+    "glob order",
+    "filename order",
+    "file size",
+    "row count",
+    "latest-on-disk"
+   ],
+   "forecast_cutoff_eligibility": "LAWFUL_AT_CUTOFF",
+   "lawful_because": "retrieved_at 2026-09-14T17:39:37.360117+00:00 <= cutoff 2026-09-14T17:40:19+00:00",
+   "n_data_rows": 7548,
+   "n_lawful_at_cutoff": 86,
+   "n_rejected_as_later_than_cutoff": 0,
+   "n_rejected_at_cutoff": 3,
+   "observation_time": "2026-09-14T17:16:18+00:00",
+   "observation_time_authority": "DERIVED_DETERMINISTIC",
+   "observation_time_header": "Last-Modified",
+   "persisted_content_sha256": "bfb4ca5952e3a974c4ca81d0951c872d29bb102735dcc981604258bef2b96315",
+   "raw_bytes": "nfl/vintage/schedules.bfb4ca5952e3a974.csv.gz",
+   "raw_hash": "bfb4ca5952e3a974c4ca81d0951c872d29bb102735dcc981604258bef2b96315",
+   "raw_n_bytes": 2177810,
+   "required": true,
+   "retention_ruling3": {
+    "raw_blob_durable": true,
+    "raw_bytes": "nfl/vintage/schedules.bfb4ca5952e3a974.csv.gz",
+    "raw_bytes_present_on_disk": true,
+    "raw_hash": "bfb4ca5952e3a974c4ca81d0951c872d29bb102735dcc981604258bef2b96315",
+    "raw_home_is_gitignored_only": false,
+    "raw_n_bytes": 2177810,
+    "reduced_artifact": null,
+    "reduced_hash": null,
+    "retention_policy": "ruling3-raw-and-reduced-durable-1",
+    "status": "RULING3_COMPLETE",
+    "transformation_code_sha256": null,
+    "transformation_version": "none__upstream_verbatim"
+   },
+   "retrieved_at": "2026-09-14T17:39:37.360117+00:00",
+   "selection_rule": "max(retrieved_at, content_sha256) over lawful",
+   "serves_kinds": [],
+   "source": "schedules",
+   "source_status": "VERIFIED_REACHABLE_EXTERNALLY",
+   "state": "PASS",
+   "transformation": null,
+   "upstream_content_sha256": "bfb4ca5952e3a974c4ca81d0951c872d29bb102735dcc981604258bef2b96315",
+   "upstream_n_bytes": 2177810,
+   "url": "https://github.com/nflverse/nflverse-data/releases/download/schedules/games.csv"
+  },
+  "weekly_rosters": {
+   "artifact_verification": {
+    "persisted": {
+     "actual_sha256": "571b3d49d187ac6525d913fab0dbe3b3ed4afd7855140e56981b4c17cd5bf91a",
+     "blob": "nfl/vintage/weekly_rosters.bdab6ecee12d44a4.reduced.csv.gz",
+     "expected_sha256": "571b3d49d187ac6525d913fab0dbe3b3ed4afd7855140e56981b4c17cd5bf91a",
+     "is_failure": false,
+     "state": "VERIFIED"
+    },
+    "raw": {
+     "actual_sha256": "bdab6ecee12d44a46d4913f81cb9f33f83f18422457a82f273970ae54df614f3",
+     "blob": "nfl/vintage/weekly_rosters.bdab6ecee12d44a4.raw.csv.gz",
+     "expected_sha256": "bdab6ecee12d44a46d4913f81cb9f33f83f18422457a82f273970ae54df614f3",
+     "is_failure": false,
+     "state": "VERIFIED"
+    }
+   },
+   "authority": "ARCHIVE",
+   "authority_rank": 99,
+   "blob": "nfl/vintage/weekly_rosters.bdab6ecee12d44a4.reduced.csv.gz",
+   "blob_file_sha256": "1fe8a95f46ae65dba7474973c7217ea83be620f826407599ef8eb522468dcb1f",
+   "capture_id": "20260914T161625Z",
+   "code": "VINTAGE_SELECTED",
+   "cutoff": "2026-09-14T17:40:19+00:00",
+   "durability": "reduce",
+   "effective_scope": {
+    "authority": "DERIVED_DETERMINISTIC",
+    "derivation": {
+     "evidence": "Rows carry season and week, but `status` is a post-hoc gameday outcome (INA -> 0 snaps of 3,438) and is quarantined.",
+     "method": "valid_from := HTTP Last-Modified of the captured file",
+     "status": "DERIVED"
+    },
+    "game_id": null,
+    "kind": "DATE_INTERVAL",
+    "season": 2026,
+    "source_value": "2026",
+    "teams": [],
+    "valid_from": "2026-09-14T13:58:26+00:00",
+    "valid_to": null,
+    "week": null
+   },
+   "evidence_ceiling": "The reduced vintage DROPS `status`, so the reduced blobs cannot answer roster membership at all and the raw retained files are the only source for it. A clock check alone is insufficient for this family: after a team plays, the vendor re-partitions ACT/INA, so `roster_status` runs a CONTENT check as well. That pair is the reference design for this module.",
+   "executor_access": "REACHABLE",
+   "family": "weekly_rosters",
+   "forbidden_selection_inputs": [
+    "filesystem mtime",
+    "glob order",
+    "filename order",
+    "file size",
+    "row count",
+    "latest-on-disk"
+   ],
+   "forecast_cutoff_eligibility": "LAWFUL_AT_CUTOFF",
+   "lawful_because": "retrieved_at 2026-09-14T16:16:33.199666+00:00 <= cutoff 2026-09-14T17:40:19+00:00",
+   "n_data_rows": 2963,
+   "n_lawful_at_cutoff": 8,
+   "n_rejected_as_later_than_cutoff": 0,
+   "n_rejected_at_cutoff": 3,
+   "observation_time": "2026-09-14T13:58:26+00:00",
+   "observation_time_authority": "DERIVED_DETERMINISTIC",
+   "observation_time_header": "Last-Modified",
+   "persisted_content_sha256": "571b3d49d187ac6525d913fab0dbe3b3ed4afd7855140e56981b4c17cd5bf91a",
+   "raw_bytes": "nfl/vintage/weekly_rosters.bdab6ecee12d44a4.raw.csv.gz",
+   "raw_hash": "bdab6ecee12d44a46d4913f81cb9f33f83f18422457a82f273970ae54df614f3",
+   "raw_n_bytes": 943125,
+   "required": true,
+   "retention_ruling3": {
+    "raw_blob_durable": true,
+    "raw_bytes": "nfl/vintage/weekly_rosters.bdab6ecee12d44a4.raw.csv.gz",
+    "raw_bytes_present_on_disk": true,
+    "raw_hash": "bdab6ecee12d44a46d4913f81cb9f33f83f18422457a82f273970ae54df614f3",
+    "raw_home_is_gitignored_only": false,
+    "raw_n_bytes": 943125,
+    "reduced_artifact": "nfl/vintage/weekly_rosters.bdab6ecee12d44a4.reduced.csv.gz",
+    "reduced_hash": "571b3d49d187ac6525d913fab0dbe3b3ed4afd7855140e56981b4c17cd5bf91a",
+    "retention_policy": "ruling3-raw-and-reduced-durable-1",
+    "status": "RULING3_COMPLETE",
+    "transformation_code_sha256": "5e4eb7a9257ea44c999b39b078be29acbc9ab80bd897196a21778cb482027456",
+    "transformation_version": "reduce-2"
+   },
+   "retrieved_at": "2026-09-14T16:16:33.199666+00:00",
+   "selection_rule": "max(retrieved_at, content_sha256) over lawful",
+   "serves_kinds": [],
+   "source": "weekly_rosters",
+   "source_status": "VERIFIED_REACHABLE_EXTERNALLY",
+   "state": "PASS",
+   "transformation": {
+    "code_sha256": "5e4eb7a9257ea44c999b39b078be29acbc9ab80bd897196a21778cb482027456",
+    "code_symbol": "nfl.tools.capture_vintage._reduce_frame",
+    "deterministic": true,
+    "input_n_bytes": 943125,
+    "input_sha256": "bdab6ecee12d44a46d4913f81cb9f33f83f18422457a82f273970ae54df614f3",
+    "irreversibility_note": "the reduction discards columns and, for dt-versioned sources, prior snapshots. The upstream file cannot be rebuilt from this blob. That is why upstream_content_sha256 is kept: it identifies what was fetched, even though what was fetched is not what is stored.",
+    "missing_columns": [],
+    "output_columns": [
+     "season",
+     "week",
+     "team",
+     "gsis_id",
+     "position"
+    ],
+    "output_n_bytes": 76241,
+    "output_sha256": "571b3d49d187ac6525d913fab0dbe3b3ed4afd7855140e56981b4c17cd5bf91a",
+    "requested_columns": [
+     "season",
+     "week",
+     "team",
+     "gsis_id",
+     "position"
+    ],
+    "reversible": false,
+    "row_filter": "no_row_filter",
+    "row_filter_value": null,
+    "rows_in_file": 2963,
+    "rows_kept": 2963,
+    "transform_id": "nfl-vintage-column-reduce",
+    "transform_version": "reduce-2"
+   },
+   "upstream_content_sha256": "bdab6ecee12d44a46d4913f81cb9f33f83f18422457a82f273970ae54df614f3",
+   "upstream_n_bytes": 943125,
+   "url": "https://github.com/nflverse/nflverse-data/releases/download/weekly_rosters/roster_weekly_2026.csv"
+  }
+ },
+ "spec_version": "live-game-evidence-1",
+ "unreachable_official_sources": {
+  "official_inactives": {
+   "authority": "OFFICIAL",
+   "authority_rank": 1,
+   "declared_executor_access": "UNTESTED",
+   "interpretation": "The SOURCE is not known to be down. THIS executor is refused at the egress proxy. Those are different facts and only the second is ours.",
+   "is_evidence_not_a_gap": true,
+   "last_capture_attempt": {
+    "capture_id": "20260914T173936Z",
+    "code": "NO_EGRESS",
+    "curl_exit_code": 56,
+    "curl_stderr": "curl: (56) CONNECT tunnel failed, response 403",
+    "detail": "official_inactives: no HTTP response for https://www.nfl.com/inactives/ -- transport refused: curl: (56) CONNECT tunnel failed, response 403. This says nothing about the data. Per DEC-029 it is ASSIGNED to an agent with egress, not blocked for the project, and it is never stubbed.",
+    "http_code_reported": "000",
+    "proxy_refusal_status": "403",
+    "state": "BLOCKED"
+   },
+   "live_probe": {
+    "curl_exit_code": 56,
+    "curl_stderr": "curl: (56) CONNECT tunnel failed, response 403",
+    "http_code_reported": "000",
+    "probed_at": "2026-09-14T17:40:21.822733Z",
+    "probed_once": true,
+    "proxy_refusal_status": "403",
+    "retry_policy": "none -- a policy denial repeats, and retrying spends the window it is denying",
+    "state": "REFUSED"
+   },
+   "may_be_inferred_from_absence": false,
+   "registry_note": "Resolves Questionable to 0/1 at ~T-90. The only source that can discharge an inactives target.",
+   "serves_kinds": [
+    "inactives"
+   ],
+   "source": "official_inactives",
+   "source_status": "VERIFIED_REACHABLE_EXTERNALLY",
+   "url": "https://www.nfl.com/inactives/"
+  },
+  "official_injury_report": {
+   "authority": "OFFICIAL",
+   "authority_rank": 1,
+   "declared_executor_access": "UNTESTED",
+   "interpretation": "The SOURCE is not known to be down. THIS executor is refused at the egress proxy. Those are different facts and only the second is ours.",
+   "is_evidence_not_a_gap": true,
+   "last_capture_attempt": {
+    "capture_id": "20260914T173936Z",
+    "code": "NO_EGRESS",
+    "curl_exit_code": 56,
+    "curl_stderr": "curl: (56) CONNECT tunnel failed, response 403",
+    "detail": "official_injury_report: no HTTP response for https://www.nfl.com/injuries/ -- transport refused: curl: (56) CONNECT tunnel failed, response 403. This says nothing about the data. Per DEC-029 it is ASSIGNED to an agent with egress, not blocked for the project, and it is never stubbed.",
+    "http_code_reported": "000",
+    "proxy_refusal_status": "403",
+    "state": "BLOCKED"
+   },
+   "live_probe": {
+    "curl_exit_code": 56,
+    "curl_stderr": "curl: (56) CONNECT tunnel failed, response 403",
+    "http_code_reported": "000",
+    "probed_at": "2026-09-14T17:40:21.334072Z",
+    "probed_once": true,
+    "proxy_refusal_status": "403",
+    "retry_policy": "none -- a policy denial repeats, and retrying spends the window it is denying",
+    "state": "REFUSED"
+   },
+   "may_be_inferred_from_absence": false,
+   "registry_note": "THE intraweek cascade. Measured externally 2026-09-06: HTTP 200, server-rendered HTML, no CAPTCHA or robots exclusion. Measured HERE: DNS resolves to 151.101.65.55 and the LOCAL proxy answers 403 to CONNECT www.nfl.com:443. The source is fine; this executor is denied. Those are different facts.",
+   "serves_kinds": [
+    "practice",
+    "final_status"
+   ],
+   "source": "official_injury_report",
+   "source_status": "VERIFIED_REACHABLE_EXTERNALLY",
+   "url": "https://www.nfl.com/injuries/"
+  },
+  "official_transactions": {
+   "authority": "OFFICIAL",
+   "authority_rank": 1,
+   "declared_executor_access": "UNTESTED",
+   "interpretation": "The SOURCE is not known to be down. THIS executor is refused at the egress proxy. Those are different facts and only the second is ours.",
+   "is_evidence_not_a_gap": true,
+   "last_capture_attempt": {
+    "capture_id": "20260914T173936Z",
+    "code": "ENDPOINT_NOT_YET_VERIFIED",
+    "curl_exit_code": null,
+    "curl_stderr": null,
+    "detail": "official_transactions: registered and wired to no capture target(s), but no verified endpoint exists. Assigned to the networked researcher. A guessed URL is refused here because a guess that 404s is indistinguishable from a real endpoint that is down.",
+    "http_code_reported": null,
+    "proxy_refusal_status": null,
+    "state": "BLOCKED"
+   },
+   "live_probe": {
+    "reason": "no url",
+    "state": "NOT_ATTEMPTED"
+   },
+   "may_be_inferred_from_absence": false,
+   "registry_note": "Elevations, signings, IR moves. Candidate for closing the prediction-time eligibility debt.",
+   "serves_kinds": [],
+   "source": "official_transactions",
+   "source_status": "UNVERIFIED",
+   "url": null
+  }
+ }
+}

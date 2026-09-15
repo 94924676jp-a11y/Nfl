@@ -1,0 +1,106 @@
+name: NFL capture liveness
+
+# THE DETECTOR THAT DID NOT EXIST, AND WHAT IT STILL CANNOT SEE.
+#
+# On 2026-09-11T03:38:27Z every scheduled workflow in this repository stopped at
+# once -- `NFL vintage capture` (161 commits, every 30 minutes since 09-07),
+# `NFL status anchored capture` (32), `NFL T-90 anchored capture` (14) and
+# `NFL availability watch` (1). None of them ran again. The T-90 crons for the
+# twelve-game Sunday slate and for DEN@KC were already committed and already
+# correct; they simply never fired. 47 of 63 week-1 obligations closed unfilled
+# and NOTHING IN THIS REPOSITORY SAID ANYTHING for three days:
+#
+#   * coverage.py cannot say anything, by design: a target is DEFERRED until its
+#     window closes, so its alarm is downstream of the loss it reports.
+#   * preflight_t90.py asked "has the runner EVER pushed" -- 198 times, PASS --
+#     and printed the date of the last push as decoration.
+#   * the test suite was green throughout. It measures the repository, and the
+#     repository was fine. What had stopped was the executor.
+#
+# This workflow measures the one thing none of those did: whether evidence is
+# still arriving. It writes nothing, captures nothing, commits nothing, and has
+# read-only permissions, so it cannot itself become a source of manifest rows.
+#
+# THE LIMIT, STATED RATHER THAN PAPERED OVER. Nothing that runs inside GitHub
+# Actions can detect GitHub Actions being off. If the cause of 2026-09-11 was an
+# Actions-level halt -- a disabled workflow, an exhausted spending cap, a
+# suspended app installation -- this workflow is halted by the same thing and is
+# silent in the same way. A scheduled job cannot page about its own scheduler.
+# Detecting THAT requires an observer outside Actions, and it is filed as
+# OUT-011 in docs/AGENT_OUTBOX.md. What this DOES catch is every partial
+# failure: one workflow disabled while others run, captures that execute but
+# stop writing manifest rows, a runner that cannot reach the sources, a cron
+# schedule whose absolute dates have all elapsed.
+#
+# It is also a heartbeat in its own right: its run history in the Actions UI is
+# an independent record of whether the scheduler fired, and unlike a capture run
+# it produces that record whether or not any bytes changed.
+
+on:
+  schedule:
+    # Hourly. The question is "has evidence stopped arriving", and the horizon
+    # the check uses is two ticks of the BASELINE cadence -- 60 minutes -- so
+    # asking more often than hourly cannot detect anything sooner.
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  # Deliberately NOT the capture group. This must never queue behind a capture,
+  # and it must never delay one.
+  group: nfl-capture-liveness
+  cancel-in-progress: true
+
+jobs:
+  liveness:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Assert the interpreter is 3.12 or later
+        run: |
+          python3 -c "import sys; assert sys.version_info >= (3,12), 'INTERPRETER_TOO_OLD: ' + sys.version; print('interpreter', sys.version.split()[0])"
+
+      # `--gate scheduler` prints every check and every failure. It narrows only
+      # the EXIT CODE, to the failures an unattended hourly run can act on: the
+      # executor being silent, and the next window having no cron entry that
+      # fires inside it. The 47 missed week-1 targets and the 48 orphan blobs
+      # are printed on every run and are not gated, because they cannot be
+      # repaired by anything this job could do and a light that is red forever
+      # stops being read. Nothing is suppressed; see nfl/tools/preflight_t90.py.
+      - name: Has evidence stopped arriving
+        run: |
+          python3 nfl/tools/preflight_t90.py --season 2026 --week 1 --gate scheduler
+
+      # A SECOND, NARROWER ASSERTION THAT DOES NOT DEPEND ON A PLAN EXISTING.
+      # If the schedule snapshot is missing or the week has rolled over, the
+      # pre-flight above returns BLOCKED on the plan and never reaches the
+      # liveness question. This one reads the manifest directly and answers it
+      # regardless.
+      - name: Last GitHub-Actions evidence, unconditionally
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import datetime as dt, sys
+          from nfl.tools.preflight_t90 import (last_anchored_evidence,
+                                               _baseline_cadence_minutes,
+                                               MISSED_TICKS_BEFORE_DEAD)
+          ev, cad = last_anchored_evidence(), _baseline_cadence_minutes()
+          print(ev.state.value, ev.code, ev.detail)
+          print(cad.state.value, cad.code, cad.detail)
+          if ev.state.value != 'PASS' or cad.state.value != 'PASS':
+              sys.exit(1)
+          gap = (dt.datetime.now(dt.timezone.utc) - ev.value).total_seconds() / 60
+          horizon = MISSED_TICKS_BEFORE_DEAD * cad.value
+          print(f'gap {gap/60:.2f}h  horizon {horizon}min  '
+                f'missed_ticks {gap/cad.value:.0f}')
+          if gap > horizon:
+              print('ANCHORED_EXECUTOR_SILENT')
+              sys.exit(1)
+          print('ANCHORED_EXECUTOR_ALIVE')
+          PY
