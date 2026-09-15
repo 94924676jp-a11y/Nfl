@@ -56,6 +56,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(
 
 from nfl.capture import capture_identity as CI                     # noqa: E402
 from nfl.tools import capture_release as CR                        # noqa: E402
+from sportsplatform.governance.outcome import State                # noqa: E402
 
 PASSED = FAILED = 0
 NOT_EXECUTED = []
@@ -63,6 +64,13 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 WORKFLOWS = ROOT / '.github' / 'workflows'
 CAPTURE_WORKFLOWS = ('nfl-capture.yml', 'nfl-t90.yml')
 PROD_BRANCH = CR.PROD_BRANCH
+
+#: THE PASSING STATE IS SPELLED 'PASS', NOT 'OK'. This test first
+#: compared against 'OK' and so reported a PASSING gate as a failure,
+#: which then skipped sections C, D and G as blocked by it. A test that
+#: gets the vocabulary wrong does not fail safe -- it manufactures a
+#: defect and hides three real checks behind it.
+PASS = State.PASS.value
 
 
 def check(label, cond, detail=''):
@@ -194,7 +202,7 @@ def test_a_a_clean_deployed_checkout_proves_its_own_release():
               'every scheduled capture refuses to run')
         out, rc = _check_executor(d)
         check('the gate returns ok from a clean checkout',
-              out.get('state') == 'OK',
+              out.get('state') == PASS,
               f'state={out.get("state")} code={out.get("code")}')
         check('  and exits 0', rc == 0, f'exit={rc}')
         check('  and names the release it matched',
@@ -370,7 +378,7 @@ def test_c_a_data_commit_does_not_invalidate_the_executor():
         return
     try:
         base, _ = _check_executor(d)
-        if base.get('state') != 'OK':
+        if base.get('state') != PASS:
             not_executed('data-commit simulation',
                          f'the clean checkout already fails '
                          f'({base.get("code")}); section A owns that')
@@ -385,7 +393,7 @@ def test_c_a_data_commit_does_not_invalidate_the_executor():
                                  'schedules@deadbeefdeadbeef'}) + '\n')
         after, rc = _check_executor(d, executed_sha='0' * 40)
         check('the gate still returns ok after a data-only change',
-              after.get('state') == 'OK',
+              after.get('state') == PASS,
               f'state={after.get("state")} code={after.get("code")} -- the '
               f'capture job commits its own output back, so the tip always '
               f'moves; a gate keyed on commit equality refuses from run 2 on')
@@ -415,7 +423,7 @@ def test_d_a_surface_edit_still_fails_closed():
         return
     try:
         base, _ = _check_executor(d)
-        if base.get('state') != 'OK':
+        if base.get('state') != PASS:
             not_executed('surface-edit bypass',
                          f'clean checkout already fails ({base.get("code")})')
             return
@@ -432,7 +440,7 @@ def test_d_a_surface_edit_still_fails_closed():
         victim.write_bytes(original)
         restored, _ = _check_executor(d)
         check('  and restoring the byte restores the ok',
-              restored.get('state') == 'OK',
+              restored.get('state') == PASS,
               'if this fails the check is not reading the file it claims to')
     finally:
         shutil.rmtree(d, ignore_errors=True)
@@ -525,7 +533,7 @@ def test_g_a_capture_cycle_does_not_invalidate_the_next_capture():
         return
     try:
         pre, _ = _check_executor(d)
-        if pre.get('state') != 'OK':
+        if pre.get('state') != PASS:
             not_executed('capture cycle',
                          f'the surface does not validate at rest '
                          f'({pre.get("code")}); section A owns that')
@@ -538,7 +546,7 @@ def test_g_a_capture_cycle_does_not_invalidate_the_next_capture():
         # 1. the executor validates before anything is fetched
         s1, rc1 = _check_executor(d, executed_sha=tip0)
         check('1. the executor validates at the release tip',
-              s1.get('state') == 'OK' and rc1 == 0,
+              s1.get('state') == PASS and rc1 == 0,
               f'{s1.get("code")}')
         sha0 = s1.get('evidence', {}).get('capture_code_sha')
 
@@ -577,7 +585,7 @@ def test_g_a_capture_cycle_does_not_invalidate_the_next_capture():
         # 5. and the NEXT executor still validates
         s2, rc2 = _check_executor(d, executed_sha=tip1)
         check('5. the next executor still validates',
-              s2.get('state') == 'OK' and rc2 == 0,
+              s2.get('state') == PASS and rc2 == 0,
               f'{s2.get("code")} -- this is the whole point: a moved tip is '
               f'not a changed surface')
         check('   and the surface digest did not move with the tip',
@@ -602,7 +610,7 @@ def test_g_a_capture_cycle_does_not_invalidate_the_next_capture():
               f'{s3.get("code")}')
         check('   and a non-zero exit', rc3 != 0, f'exit={rc3}')
         check('   and it is the SURFACE, not the tip, that refused it',
-              tip2 != tip1 and s2.get('state') == 'OK',
+              tip2 != tip1 and s2.get('state') == PASS,
               'step 5 moved the tip and passed; step 6 moved the surface and '
               'failed. That contrast is the proof.')
     finally:
