@@ -103,3 +103,76 @@ validation QUEUED.
    promoted at all, is an owner call.
 3. **REPLAY_C1 namespace.** Excluded from corpus fences by name with a stated
    reason. Confirm that is intended.
+
+---
+
+## Tick 2026-09-15T13:28Z — TASK ZERO, D20, and queue item 1
+
+**Branch state.** Reconciled with `main` (`619a00bd`). Working HEAD `586c975`,
+pushed and confirmed at the remote. Ancestry and verification in
+`nfl/research/v4/TASK_ZERO_RECONCILIATION.md`.
+
+### Landed
+
+| | |
+|---|---|
+| **TASK ZERO** | 289 main commits, all capture evidence, zero code. 1368 blobs verified / 0 mismatches. 121 of 121 board seals recompute. |
+| **D20** | Repaired. The inactives source served an empty page for nine days and passed 374 times; coverage was crediting 15 of week 1's 63 targets to it. |
+| **D21** | Statistic built and proven. **Not wired** — every call site is sealed. |
+
+### Two premises this tick destroyed
+
+1. **`main` never stopped capturing.** The "executor halted 2026-09-11" reading
+   came from a stale remote-tracking ref and had been load-bearing for four
+   days, including in `OUT-011` and in seven test assertions.
+2. **The DEN@KC inactives window was not unattempted.** Eight lawful in-window
+   captures were made. They are empty. The miss stands, for a different reason.
+
+### The thing to carry forward
+
+Five successive claims I made this tick were wrong, and each was corrected by
+looking one layer deeper than the last: branch → repository, manifest row →
+blob, window → corpus, source → sibling source, and finally **my own fix → what
+it deleted**. The fifth is the one worth keeping: a repair is a step that
+returns something too, and mine returned a cleaner number by discarding the only
+genuine inactives evidence in the store. Section 7 of the Task Zero artifact has
+the full list.
+
+And from D21: **a freeze is over the source file, not over behaviour.** A
+diagnostic-only edit that cannot move a single draw still destroys the candidate
+identity. "It does not change the numbers" is not a licence to edit sealed code.
+
+### Queue status
+
+| # | item | state |
+|---|---|---|
+| 1 | recon_error tautology | **statistic built and proven; wiring BLOCKED on a successor candidate identity** |
+| 2 | R14 target published level | not started |
+| 3 | track1 build_state_panel scrambles | not started |
+| 4 | h1_frame reading the superseded q7 panel | not started |
+| 5 | team_volume_v1 drift | not started |
+| 6 | wire R10 to a board | not started |
+| 7 | the 377 unconstructed refusal codes | not started |
+| 8 | Tier-0 game-day board validation | not started |
+| 9 | Phase 7 K and DST surfaces | not started |
+| 10 | a confirmatory frame | not started |
+
+### New, undiagnosed, and it belongs near the top of the queue
+
+**Historical dry-runs are not stable across corpus growth.** The same 2024 game
+now resolves to different vintage partitions than its own sealed rows
+(`depth_charts@bd431f6c551c64e4` where the sealed row has `db0a09454965e6fc`,
+and likewise for four other sources), because reconciliation brought newer
+vintages and the selector takes the latest lawful one.
+`test_q9_live_feature_builder` reports the same drift on four 2024/2025 games.
+This is a reproducibility question and it is not yet diagnosed.
+
+### Suite
+
+129 modules, 1581 test functions, 8681 checks, **46 failing, 8 raised, 17
+blocked** — measured on the merged tree *before* this tick's work, so it still
+counts the six `test_capture_obligations` failures since fixed, and it does not
+cover anything committed after it started. A re-run is in flight and is **not**
+claimed here.
+
+**V2 NOT YET EARNED**
