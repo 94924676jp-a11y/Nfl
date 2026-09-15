@@ -59,6 +59,17 @@ PROD_BRANCH = 'capture-prod'
 ALLOWED_PREFIXES = (
     'nfl/capture/',
     'nfl/tools/capture_vintage.py',
+    # THE RELEASE TOOL ITSELF TRAVELS. capture-prod runs --check-executor before
+    # it fetches anything, so the checker has to be there. Added deliberately
+    # after this allowlist refused the first promotion attempt for omitting it,
+    # which is the guard working rather than a reason to route around it.
+    #
+    # It is in the ALLOWLIST (what may be promoted) and NOT in
+    # capture_identity.CAPTURE_SURFACE (what is hashed as deciding a capture's
+    # MEANING). Those are different questions: the surface is the code whose
+    # change would change what a row means; the allowlist is the code permitted
+    # to reach production at all.
+    'nfl/tools/capture_release.py',
     'nfl/tools/check_retention.py',
     'nfl/tools/preflight_t90.py',
     'nfl/tools/gen_t90_schedule.py',

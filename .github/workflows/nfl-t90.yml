@@ -60,7 +60,28 @@ jobs:
   capture:
     runs-on: ubuntu-latest
     steps:
+      # D24. SAME PIN AS nfl-capture.yml, AND THIS IS THE WORKFLOW THAT
+      # ACTUALLY TOOK THE DEN@KC INACTIVES. It had the same bare checkout, so
+      # the eight lawful in-window captures on 2026-09-14 were taken by
+      # default-branch code that was missing three capture modules. Pinning
+      # only nfl-capture.yml would have left the anchored path -- the one that
+      # matters most, because it is the one with a deadline -- unprotected.
       - uses: actions/checkout@v4
+        with:
+          ref: capture-prod
+          fetch-depth: 0
+
+      - name: Record the resolved capture commit
+        id: capref
+        run: |
+          SHA=$(git rev-parse HEAD)
+          echo "executed_sha=$SHA" | tee -a "$GITHUB_OUTPUT"
+          echo "branch=$(git rev-parse --abbrev-ref HEAD)" | tee -a "$GITHUB_OUTPUT"
+
+      - name: Assert this executor is the approved capture release
+        run: |
+          python3 nfl/tools/capture_release.py --check-executor \
+            --executed-sha "${{ steps.capref.outputs.executed_sha }}"
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
