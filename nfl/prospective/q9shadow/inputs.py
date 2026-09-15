@@ -235,6 +235,44 @@ def bundle(kickoff_utc, written_at, sources=None) -> Outcome:
         n_sources=len(chosen), absent=sorted(iset.get('absent') or []))
 
 
+def bundle_from_partition_ids(consumed_partition_ids, kickoff_utc) -> Outcome:
+    """The input set a sealed forecast ACTUALLY consumed. D23.
+
+    `bundle` above selects the latest observation before the consumed clock,
+    which is correct and is NOT reproducible: the manifest is append-only and
+    can later acquire rows whose timestamps also satisfy that cutoff. Measured
+    on 2024_01_ARI_BUF at written_at 2026-09-12T12:00:00Z -- the sealed
+    input_bundle_sha256 is 6477fddd245bcc26, re-running selection today gives
+    6970cb9b6ea65fa8, and every pick in both is lawful.
+
+        A CLOCK BOUNDS SELECTION. IT DOES NOT DETERMINE IT.
+
+    So an ORIGINAL_REPLAY does not select at all. It is handed the partition
+    ids the seal recorded and resolves exactly those, or it refuses. A missing
+    partition is never replaced by the nearest lawful blob: that would produce a
+    different forecast and present it as the original.
+
+    The mode vocabulary and the resolution live in
+    nfl.research.shadow.replay_contract; this is the entry point on the module
+    callers already use.
+    """
+    from nfl.research.shadow import replay_contract as _RC
+    try:
+        iset = _RC.build_from_partition_ids(consumed_partition_ids,
+                                            kickoff_utc)
+    except _RC.ReplayRefusal as exc:
+        return Outcome.fail(exc.code, exc.detail, **(exc.evidence or {}))
+    g = assert_no_outcome_shaped_inputs(iset)
+    if g.state is not State.PASS:
+        return g
+    return Outcome.ok(
+        'Q9_SHADOW_BUNDLE_PINNED', value=iset,
+        detail=f'{iset["n_partitions"]} partition(s) resolved from the seal\'s '
+               f'own record; selection was not re-run',
+        n_sources=iset['n_partitions'], pinned=True,
+        replay_mode=_RC.ORIGINAL_REPLAY)
+
+
 def partitions(iset, written_at, effective_for_date) -> list:
     """One ConsumedPartition per selected source, with real provenance.
 
