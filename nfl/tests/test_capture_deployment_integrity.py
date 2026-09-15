@@ -29,6 +29,7 @@ import hashlib
 import json
 import os
 import pathlib
+import re
 import subprocess
 import sys
 
@@ -148,19 +149,53 @@ def test_d_BUG_the_scheduled_capture_path_runs_unvalidated_code():
     wf = WORKFLOW.read_text()
     check('the capture workflow is schedule-triggered',
           'schedule:' in wf and 'cron:' in wf)
-    # A checkout with no ref on a schedule trigger takes the DEFAULT branch.
-    co = [ln for ln in wf.splitlines() if 'actions/checkout' in ln]
-    check('  and it checks out with actions/checkout', bool(co), str(co))
-    check('  with no explicit ref, so it runs the default branch',
-          'ref:' not in wf,
-          'if a ref: appeared this check needs rewriting, not deleting')
 
+    # REWRITTEN 2026-09-15, AND THE OLD VERSION SAID TO DO THIS. It asserted
+    # `'ref:' not in wf` -- that is, it asserted THE BUG EXISTS, so pinning the
+    # ref broke the check that was watching for the pin. Its own failure
+    # message read "if a ref: appeared this check needs rewriting, not
+    # deleting". A check should assert what must HOLD; then fixing the defect
+    # turns it green instead of red.
+    #
+    # AND IT MUST READ THE DEFAULT BRANCH, NOT THIS ONE. The working tree is
+    # not what the scheduler runs. A pin present here and absent on the default
+    # branch is exactly D24: a repair on the branch that does not run.
     r = subprocess.run(['git', 'rev-parse', '--verify', 'origin/main'],
                        capture_output=True, text=True, cwd=ROOT)
     if r.returncode != 0:
         not_executed('origin/main not fetched',
                      'cannot compare the deployed surface; run git fetch')
         return
+    for name in ('nfl-capture.yml', 'nfl-t90.yml'):
+        shown = subprocess.run(
+            ['git', 'show', f'origin/main:.github/workflows/{name}'],
+            capture_output=True, text=True, cwd=ROOT)
+        if shown.returncode != 0:
+            check(f'{name} exists on the default branch', False, 'absent')
+            continue
+        try:
+            import yaml
+            doc = yaml.safe_load(shown.stdout)
+        except Exception:                                        # noqa: BLE001
+            not_executed(f'{name} parsed from origin/main', 'no yaml parser')
+            continue
+        # Structural: a `ref:` inside a comment is not a checkout step.
+        refs = []
+        for job in ((doc or {}).get('jobs') or {}).values():
+            for s in (job.get('steps') or []):
+                if isinstance(s, dict) and 'checkout' in str(s.get('uses') or ''):
+                    v = (s.get('with') or {}).get('ref')
+                    if isinstance(v, str):
+                        m = re.fullmatch(r'\$\{\{\s*env\.(\w+)\s*\}\}',
+                                         v.strip())
+                        if m:
+                            v = ((doc.get('env') or {}).get(m.group(1)))
+                    refs.append(v)
+        check(f'the default-branch {name} pins an explicit governed ref',
+              bool(refs) and all(rf == 'capture-prod' for rf in refs),
+              f'{refs} -- a schedule trigger with no ref checks out the '
+              f'DEFAULT branch, which on 2026-09-15 was missing three capture '
+              f'modules outright')
     v = CI.validated()
     if v is None:
         not_executed('no validated contract', 'nothing to compare against')

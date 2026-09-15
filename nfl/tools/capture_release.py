@@ -89,7 +89,24 @@ DENY_SUBSTRINGS = (
     'nfl/product/',
 )
 
+#: THE DEVELOPMENT-SIDE LEDGER. Append-only, holds every release ever built,
+#: and carries the resolved development commit each was built from.
 RELEASES = _REPO / 'nfl' / 'capture' / 'CAPTURE_RELEASES.jsonl'
+
+#: THE DEPLOYED-SIDE RECORD, and it exists because of a regress rather than an
+#: oversight. A ledger row is appended AFTER the promotion commit is made, so
+#: `CAPTURE_RELEASES.jsonl` can never be inside the release it describes --
+#: and putting it in the NEXT release does not help, because that release's row
+#: is appended after it too. Measured on CAPREL-631e3d2212cba417: 11 changed
+#: paths, no ledger among them.
+#:
+#: So capture-prod carries ONE self-describing record instead, pinned on the
+#: SURFACE DIGEST. The digest is computable before the commit exists and does
+#: not move when the commit does, which is exactly the property the ledger row
+#: lacks. Without this file a clean capture-prod checkout answers
+#: NO_APPROVED_CAPTURE_RELEASE and every scheduled capture refuses to run --
+#: measured 2026-09-15, which is what sent this repair.
+APPROVED = _REPO / 'nfl' / 'capture' / 'APPROVED_RELEASE.json'
 
 
 def _git(*args):
@@ -267,32 +284,152 @@ def assert_executor_matches_release(release, executed_sha=None) -> Outcome:
             running_capture_code_sha=running, approved_capture_code_sha=want,
             absent=absent,
             capture_release_id=release.get('capture_release_id'))
-    if executed_sha and release.get('resolved_source_sha') and \
-            executed_sha != release['resolved_source_sha']:
+    # THE SURFACE IS IDENTITY; THE COMMIT IS PROVENANCE. These were conflated,
+    # and the conflation made the gate self-invalidating: the capture job
+    # COMMITS ITS CAPTURED BYTES BACK to the branch it checked out, so the tip
+    # moves on every run. Keyed on commit equality, the gate would have passed
+    # the first capture and refused every capture after it -- invalidating
+    # itself by operating normally, which is not a gate.
+    #
+    # The owner's requirement is that the resolved sha be RECORDED and that the
+    # job fail closed when the deployed SURFACE does not match. Both hold here.
+    # The surface digest above is the fail-closed identity; data commits do not
+    # move it. The commit is recorded, and still refuses a genuinely unrelated
+    # commit -- what it no longer does is refuse its own output.
+    commit = _commit_provenance(release, executed_sha)
+    if commit['state'] == 'DIVERGED_FROM_RELEASE_COMMIT':
         return Outcome.fail(
             'CAPTURE_EXECUTOR_COMMIT_MISMATCH',
-            f'the job reports executing {executed_sha[:12]} but the approved '
-            f'release resolved {release["resolved_source_sha"][:12]}. A branch '
-            f'name is not provenance; the commit is.',
+            f'the job reports executing {str(executed_sha)[:12]}, which does '
+            f'not descend from the approved release commit '
+            f'{str(release.get("resolved_source_sha"))[:12]}. A branch name is '
+            f'not provenance; the commit is.',
             executed_sha=executed_sha,
-            approved_sha=release['resolved_source_sha'])
+            approved_sha=release.get('resolved_source_sha'),
+            commit_provenance=commit['state'])
     return Outcome.ok(
         'CAPTURE_EXECUTOR_MATCHES_RELEASE',
         value=release.get('capture_release_id'),
         detail=f'running surface {running[:16]} matches approved release '
-               f'{release.get("capture_release_id")}',
+               f'{release.get("capture_release_id")} '
+               f'[commit {commit["state"]}]',
         capture_release_id=release.get('capture_release_id'),
-        capture_code_sha=running, executed_sha=executed_sha)
+        capture_code_sha=running, executed_sha=executed_sha,
+        # NOT_ESTABLISHED IS CARRIED, NEVER DROPPED. An ancestry check that
+        # could not run is not an ancestry check that passed, and a summary
+        # that omits it would read as though it had.
+        commit_provenance=commit['state'],
+        commit_provenance_detail=commit['detail'],
+        release_record_source=release.get('_record_source'))
+
+
+def _commit_provenance(release, executed_sha):
+    """What can honestly be said about the commit this executor is running.
+
+    Five states, and the undecidable one is named rather than rounded to yes.
+    """
+    want = release.get('resolved_source_sha')
+    if not executed_sha:
+        return {'state': 'EXECUTED_SHA_NOT_REPORTED',
+                'detail': 'the job did not report the commit it resolved'}
+    if not want:
+        return {'state': 'RELEASE_PINS_NO_COMMIT',
+                'detail': 'the deployed record pins a surface digest, not a '
+                          'commit; the development ledger holds the commit'}
+    if executed_sha == want:
+        return {'state': 'MATCHES_RELEASE_COMMIT', 'detail': ''}
+    r = _git('merge-base', '--is-ancestor', want, executed_sha)
+    if r.returncode == 0:
+        return {'state': 'DESCENDS_FROM_RELEASE_COMMIT',
+                'detail': f'{executed_sha[:12]} descends from {want[:12]}; '
+                          f'the capture job commits its own output, so this '
+                          f'is the normal steady state'}
+    if r.returncode == 1:
+        return {'state': 'DIVERGED_FROM_RELEASE_COMMIT', 'detail': ''}
+    return {'state': 'COMMIT_ANCESTRY_NOT_ESTABLISHED',
+            'detail': f'git could not decide: {r.stderr.strip()[:200]}. This '
+                      f'is NOT ASKED, not a pass; the surface digest is what '
+                      f'is holding the gate closed here'}
+
+
+def deployable_record(doc) -> dict:
+    """The release record that TRAVELS to capture-prod.
+
+    It deliberately drops `resolved_source_sha`. That field names the commit the
+    release was built FROM, and the executor runs a capture-prod commit which
+    will never be it -- so shipping it would ship a comparison guaranteed to
+    fail. The commit stays recorded on the development-side ledger, which is
+    where it can be written after the fact without a regress.
+    """
+    keep = ('spec_version', 'capture_release_id', 'capture_code_sha',
+            'capture_surface', 'prod_branch', 'allowlist', 'deny_substrings',
+            'parser_version', 'source_contract_version', 'built_at_utc',
+            'changed_paths', 'n_changed_paths')
+    out = {k: doc[k] for k in keep if k in doc}
+    out['promoted_from_development_sha'] = doc.get('resolved_source_sha')
+    out['resolved_source_sha_recorded_in'] = (
+        'nfl/capture/CAPTURE_RELEASES.jsonl on the development branch')
+    out['published'] = True
+    out['note'] = (
+        'The deployed copy of an approved capture release. Pinned on the '
+        'surface digest, which does not move when the branch does. The '
+        'executor compares its running surface against capture_code_sha and '
+        'refuses to fetch anything if they differ.')
+    return out
 
 
 def approved_release(path=None):
-    """The most recent published release, or None."""
-    p = pathlib.Path(path) if path else RELEASES
-    if not p.exists():
-        return None
-    rows = [json.loads(ln) for ln in p.read_text().splitlines() if ln.strip()]
-    pub = [r for r in rows if r.get('published')]
-    return pub[-1] if pub else None
+    """The release THIS TREE is running under, from whichever record it has.
+
+    TWO RECORDS, DELIBERATELY, and which one is present tells you which tree you
+    are on. Development carries the append-only ledger. capture-prod carries the
+    single deployed record, because a ledger row cannot be inside the release it
+    describes (see APPROVED above). The source is stamped onto the returned
+    record so a log never has to guess which one answered.
+    """
+    if path:
+        p = pathlib.Path(path)
+        if not p.exists():
+            return None
+        if p.suffix == '.json':
+            rec = json.loads(p.read_text())
+            rec['_record_source'] = str(p)
+            return rec
+        rows = [json.loads(ln) for ln in p.read_text().splitlines()
+                if ln.strip()]
+        pub = [r for r in rows if r.get('published')]
+        if not pub:
+            return None
+        pub[-1]['_record_source'] = str(p)
+        return pub[-1]
+
+    if RELEASES.exists():
+        rows = [json.loads(ln) for ln in RELEASES.read_text().splitlines()
+                if ln.strip()]
+        pub = [r for r in rows if r.get('published')]
+        if pub:
+            rec = pub[-1]
+            rec['_record_source'] = 'CAPTURE_RELEASES.jsonl'
+            # BOTH PRESENT MUST AGREE. On the development tree both files
+            # exist; if they name different surfaces then the deployed record
+            # is stale and the tree cannot say what production is running.
+            # Stamped, not silently preferred.
+            if APPROVED.exists():
+                try:
+                    dep = json.loads(APPROVED.read_text())
+                except json.JSONDecodeError:
+                    dep = {}
+                if dep.get('capture_code_sha') != rec.get('capture_code_sha'):
+                    rec['_record_source'] = (
+                        'CAPTURE_RELEASES.jsonl (DISAGREES WITH '
+                        'APPROVED_RELEASE.json)')
+            return rec
+
+    if APPROVED.exists():
+        rec = json.loads(APPROVED.read_text())
+        rec['_record_source'] = 'APPROVED_RELEASE.json'
+        return rec
+    return None
 
 
 def main(argv=None):
@@ -301,12 +438,28 @@ def main(argv=None):
                     help='verify and describe a candidate release')
     ap.add_argument('--check-executor', action='store_true',
                     help='fail closed unless this tree is the approved release')
+    ap.add_argument('--emit-approved-record', action='store_true',
+                    help='write nfl/capture/APPROVED_RELEASE.json so the '
+                         'deployed tree can prove its own release')
     ap.add_argument('--source-ref', default='HEAD')
     ap.add_argument('--executed-sha', default=None)
     a = ap.parse_args(argv)
     if a.check_executor:
         out = assert_executor_matches_release(approved_release(),
                                               a.executed_sha)
+    elif a.emit_approved_record:
+        out = build_release(a.source_ref)
+        if out.state is State.PASS:
+            rec = deployable_record(out.value)
+            APPROVED.write_text(json.dumps(rec, indent=2, sort_keys=True) +
+                                '\n')
+            out = Outcome.ok(
+                'CAPTURE_APPROVED_RECORD_WRITTEN',
+                value=str(APPROVED),
+                detail=f'{rec["capture_release_id"]} pinned on surface '
+                       f'{rec["capture_code_sha"][:16]}',
+                capture_release_id=rec['capture_release_id'],
+                capture_code_sha=rec['capture_code_sha'])
     else:
         out = build_release(a.source_ref)
     print(json.dumps({'state': out.state.value, 'code': out.code,
