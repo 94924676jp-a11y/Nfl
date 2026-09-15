@@ -111,36 +111,65 @@ BASELINE = (pathlib.Path(_ROOT) / 'nfl' / 'research' / 'remediation'
 # and no new dropback-partition break. The ONE new coherence finding on these
 # boards is a negative passing-yard cell on a shared-passing-event run, which
 # is NOT absorbed here -- it is registered as D19 and pinned separately below.
-# CORPUS EXPANDED 2026-09-15 (repair 7): 104 -> 109 boards, 856,000 -> 896,000
-# QB cells. The five 2026_01_SF_LA/pre_inactives_* boards were always on disk
-# and were never scanned, because this fence's glob hard-coded a three-level
-# path shape. Corpus SIZE is not a defect and is updated here.
+# WHAT THIS FENCE IS, SETTLED 2026-09-15 AFTER I GAVE TWO CONTRADICTORY ORDERS.
 #
-# THE VIOLATION BASELINES BELOW ARE DELIBERATELY NOT UPDATED. Scanning the five
-# newly visible boards raised them:
-#     qb_completions_within_attempts              5,278 -> 6,085
-#     qb_completions_and_interceptions_within_att 5,929 -> 6,827
-#     qb_passing_td_within_completions              731 ->   841
-#     qb_passing_td_within_attempts                  22 ->    24
-# Those ~1,800 cells are not new. They were made VISIBLE, and they are the
-# old credit function's impossible states on boards nobody was scanning.
-# Raising the baselines to absorb them would relabel a discovery as the status
-# quo. They stay, and these checks FAIL, until the board migration drives them
-# to zero -- which is the point: a fence whose baseline moves whenever it is
-# tripped is not a fence.
+# Corpus expanded (repair 7): 104 -> 109 boards, 856,000 -> 896,000 QB cells.
+# The five 2026_01_SF_LA/pre_inactives_* boards were always on disk and were
+# never scanned, because this fence's glob hard-coded a three-level path shape.
+#
+# I then instructed the migration workstream to "drive these counts to zero"
+# while also forbidding it to touch a single sealed byte. **Those two
+# instructions cannot both be satisfied and the agent was right to say so.**
+# `sealed_corpus()` is `sealed_index.live_draw_files()` -- the IMMUTABLE sealed
+# history. A migration that must not alter those bytes cannot lower a count
+# measured on them. The counts are identical before and after the migration.
+#
+# THE RESOLUTION, AND IT IS A REFRAME NOT A CONCESSION. This fence measures
+# immutable history, so "zero" was never the right target for it; zero is the
+# target for GENERATION, and generation is fenced elsewhere:
+#   * `test_passer_credit_migration` asserts ZERO impossible passing-line cells
+#     across all 113 boards that can be scanned coherently, after migration.
+#   * Boards built by `football_engine.credit_passing_line` (the replacement,
+#     and the only credit path production calls) carry zero by construction.
+# What THIS fence is for is detecting CHANGE in a corpus that should not
+# change. So its baselines are pinned at the measured truth of that corpus.
+#
+# A REJECTED ALTERNATIVE, recorded because it is the tempting one. The counts
+# could be zeroed by teaching `live_draw_files()` a supersession rule so it
+# returns the migrated rebuild in place of the sealed original. **That would be
+# wrong.** `live_draw_files()` is also what the prospective ledger reads, and
+# making it serve a post-hoc rebuild where a prospective forecast belongs would
+# contaminate the prospective evidence base in order to improve a coherence
+# count. The migrated artifacts therefore live under `nfl/research/v4/p4/
+# migrated/`, deliberately outside `live/`.
+#
+# Measured 2026-09-15 over 109 boards / 896,000 QB cells, independently
+# reproduced by me and by the migration workstream:
+#     qb_completions_within_attempts               6,085
+#     qb_completions_and_interceptions_within_att  6,827
+#     qb_passing_td_within_completions               841
+#     qb_passing_td_within_attempts                   24
+#     qb_zero_completions_zero_passing_yards      13,524
+# Over all 121 boards on disk the passing-line total is 36,587 across 51
+# boards; the 9,286-cell difference is the REPLAY_C1 namespace, excluded from
+# this corpus by name. A published figure of 27,564 does not reproduce from any
+# corpus and should not be quoted.
+#
+# THESE NUMBERS MAY ONLY EVER FALL. If one rises, a sealed board changed or a
+# new incoherent board was sealed, and either is a P0.
 EXPECTED_SEALED = {
     'runs': 109,
     'qb_cells': 896000,
-    'qb_completions_within_attempts': 5278,
-    'qb_passing_td_within_completions': 731,
-    'qb_zero_completions_zero_passing_yards': 11616,
+    'qb_completions_within_attempts': 6085,
+    'qb_passing_td_within_completions': 841,
+    'qb_zero_completions_zero_passing_yards': 13524,
     'qb_dropback_partition': 0,
     'receptions_within_targets': 0,
     # Measured by this workstream, absent from the Wave-0 baseline because
     # nothing had asked the question yet. `cmp + int <= att` is NOT implied by
     # `cmp <= att`: 651 of these satisfy cmp <= att.
-    'qb_completions_and_interceptions_within_attempts': 5929,
-    'qb_passing_td_within_attempts': 22,
+    'qb_completions_and_interceptions_within_attempts': 6827,
+    'qb_passing_td_within_attempts': 24,
     'qb_rushing_td_within_rush_opportunity': 0,
     'qb_zero_rush_opportunity_zero_rushing_yards': 0,
     'counts_non_negative': 0,

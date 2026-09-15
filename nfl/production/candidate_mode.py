@@ -37,8 +37,17 @@ V1_CANDIDATE_R6 = 'V1_CANDIDATE_R6'
 V1_CANDIDATE_R7 = 'V1_CANDIDATE_R7'
 V1_CANDIDATE_R8 = 'V1_CANDIDATE_R8'
 V1_CANDIDATE_R9 = 'V1_CANDIDATE_R9'
-MODES = (PRODUCTION_BASELINE, V1_CANDIDATE, V1_CANDIDATE_R5, V1_CANDIDATE_R6,
-         V1_CANDIDATE_R7, V1_CANDIDATE_R8, V1_CANDIDATE_R9)
+V1_CANDIDATE_R10 = 'V1_CANDIDATE_R10'
+V1_CANDIDATE_R11 = 'V1_CANDIDATE_R11'
+V1_CANDIDATE_R12 = 'V1_CANDIDATE_R12'
+MODES = (PRODUCTION_BASELINE, V1_CANDIDATE, V1_CANDIDATE_R5,
+         V1_CANDIDATE_R6, V1_CANDIDATE_R7, V1_CANDIDATE_R8,
+         V1_CANDIDATE_R9, V1_CANDIDATE_R10, V1_CANDIDATE_R11,
+         V1_CANDIDATE_R12)
+
+# Every mode that is a CANDIDATE, derived so a new one cannot escape a guard
+# by not being added to a hand-written list. See `assert_not_promoted`.
+CANDIDATE_MODES = tuple(m for m in MODES if m != PRODUCTION_BASELINE)
 
 # component -> what it does, what governs it, and what it changes.
 # `engine_flag` is the argument football_engine.run_game receives.
@@ -339,6 +348,287 @@ R9_REPAIR = {
 }
 
 
+# R10 REPLACES THE APPEARANCE MECHANISM R8 INTRODUCED AND R9 INHERITED, AND
+# NOTHING ELSE. The R9 quarterback room is carried over untouched.
+#
+# THE TWO DEFECTS, both in the appearance path, both changing the design
+# matrix, and therefore ONE candidate rather than two: a run carrying one of
+# them is not a control for the other.
+#
+#   1. `appearance_r8.featurise` encoded `f_weeks_since_appear` as
+#      `min(v or 9, 9) / 9.0` -- the only numeric in the block with a value
+#      and no missingness indicator, through a FALSY test. `None` (never
+#      seen), `0` (appeared in the most recent game) and `9+` (gone all
+#      season) all encode to 1.0000 while `1` encodes to 0.1111, so the
+#      feature is not monotone in its own quantity. Measured on the union
+#      frame: the stored quantity is 1-based, so the 0 collision is a latent
+#      hazard; the collision that OCCURS is None against 9+, where 1,273 rows
+#      carrying None appear at rate 1.0000 and 11 rows carrying 9-11 appear
+#      at 0.5455 and the design row cannot tell them apart.
+#
+#   2. `depth_vintage.daily` ranked offence-wide while
+#      `depth_vintage.weekly` grouped within position, so one column of one
+#      design row held two different quantities. Appearance rate by bucket:
+#      weekly era r1 0.8930 / r2 0.7018 / r3 0.5186, daily era 0.9136 /
+#      0.9357 / 0.8805 -- flat at the top because those buckets are the three
+#      alphabetically-first `pos_rank == 1` players, not roles. On the
+#      within-position scale the same 2025 rows give 0.9139 / 0.7451 /
+#      0.6425 / 0.3720, monotone.
+#
+# NEITHER MODULE IS EDITED IN PLACE. `depth_vintage` SUPPLIES the second
+# scale beside the first and its default is unchanged value for value;
+# `appearance_r8` gains a successor featuriser, fit and predict beside the
+# frozen ones. R8's and R9's coefficients are byte-identical after the change.
+R10_FLAGS = {k: v for k, v in R9_FLAGS.items() if k != 'appearance_r8'}
+R10_FLAGS['appearance_r10'] = True
+
+R10_REPAIR = {
+    'component': 'R10',
+    'what': 'the appearance design row pairs f_weeks_since_appear with a '
+            'missingness indicator and encodes it monotonically, and the '
+            'depth rank is the WITHIN-POSITION ordinal on both sides of the '
+            'fit instead of an offence-wide one in the daily era and a '
+            'within-position one in the weekly era',
+    'replaces': 'appearance_r8.featurise/fit/predict, which stay frozen and '
+                'are still what R8 and R9 run; this is a successor lineage, '
+                'not an edit',
+    'defect': 'a value read through a falsy test and served without a '
+              'missingness flag, and a depth ordinal contaminated by '
+              'cross-position gsis_id tiebreaks',
+    'evidence': 'AUTOPSY_DEN_KC section 4: the weeks-since feature carries '
+                '39% of the 3.9266 logit gap between two backs and its '
+                'direction is perverse -- giving the historyless back the '
+                'other\'s full history DROPS him 0.9925 -> 0.8135. Depth '
+                'cost, same board: 0.723664 at offence-wide ordinal 3 against '
+                '0.977057 at ordinal 1',
+    'refits': 'both repairs change the feature matrix, so R10 is fitted from '
+              'scratch on the same forward-chained frame; the old '
+              'coefficients are preserved under R8 and are not reused',
+    'introduces_no_constant': True,
+    'governance': 'EXPLORATORY -- both defects were found by inspecting a '
+                  'sealed board in this repository, so any comparison on '
+                  'these same seasons controls parameter leakage only. A '
+                  'confirmatory result needs untouched games.',
+    'wiring': 'the mechanism is registered and callable '
+              '(appearance_r8.predict_r10); routing a board through it needs '
+              'a line in nonqb/layers.py (FROZEN) and run_forecast, neither '
+              'owned by this repair, so no sealed board runs R10 yet',
+    'inherits': 'R9',
+}
+
+
+# R11 REPLACES THE RUSH COMPOSITION, AND NOTHING ELSE.
+#
+# IT INHERITS R9, NOT R10. R10 is a concurrent appearance repair on the same
+# ancestor; the two are orthogonal and stacking an unrelated unvalidated
+# mechanism underneath this one would make any difference between R9 and R11
+# unattributable. R11 = R9 + one repair, so the only difference between the
+# two runs is that repair.
+#
+# THE DEFECT, MEASURED. The product gate fires RUSH_ACCOUNTING_FAILURE on
+# sealed board 96954efc523bd7d3 (2026_01_DEN_KC, V1_CANDIDATE_R9, 1,000 draws)
+# at 149 of 1,000 Denver draws and 148 of 1,000 Kansas City draws, by up to
+# 6.1219 and 9.6915 carries. DECOMPOSED against the same arrays, A1's
+# multinomial running-back deal is sound and the impossibility is entirely in
+# the quarterback's rushing opportunity:
+#
+#     RB carries only      DEN 2 draws positive, max +0.2619, 0 over the gate
+#                          KC  2 draws positive, max +0.0854, 0 over the gate
+#     RB + QB rush opp     DEN 206 positive, 149 over the gate, max +6.1219
+#                          KC  237 positive, 148 over the gate, max +9.6915
+#
+# An earlier workstream read the fired gate as a defect in the RB deal and
+# wrote a repair for it. A single undecomposed check is what aimed it there.
+#
+# THREE SEPARABLE CAUSES, ALL AT THE COMPOSITION, NONE IN A1's ESTIMATOR:
+#
+#   1. SC1 coupled the carry level against the SCRAMBLES. A designed
+#      quarterback run is a team carry exactly as a scramble is, so the bound
+#      was too weak and rush_opp > team_carries stayed reachable -- 1 of 1,000
+#      KC draws on that board.
+#   2. `rushing_a1.allocate` was called without `qb_designed_rush`, so A1 drew
+#      its own `designed_qb` while the QB layer drew `rush_opp`. One football
+#      quantity, two owners, two values: DEN 2.2960 vs 1.6270, KC 0.7090 vs
+#      0.6150, disagreeing in 814 and 528 of 1,000 cells and differing per
+#      draw by -10 to +15 carries.
+#   3. run_forecast sealed D1's raw continuous level while the engine
+#      partitioned the SC1-coupled integerised one, so the board published a
+#      denominator the game never used and a breach could not be attributed
+#      between a carry with two owners and a wrong vector.
+#
+# NO CONSTANT IS INTRODUCED AND NOTHING IS REFITTED. The estimator family, the
+# category set, the shrinkage constant and the half-life are OWN-9's,
+# untouched. The repair is an ORDER-OF-COMPOSITION change, assembled in one
+# named function (`rushing_a1.compose_rush_ownership`) so the three steps
+# cannot drift apart at a call site again.
+#
+# WHAT DOES MOVE, AND IT IS A MARGINAL. `rush_category.designed_qb` is no
+# longer A1's own draw; it IS the QB layer's `rush_opp - scr`. That is the
+# point -- one quantity, one value -- and because it changes a sampling
+# distribution it is a NEW configuration identity rather than an edit to R9.
+R11_FLAGS = dict(R9_FLAGS)
+R11_FLAGS['rush_single_owner'] = True
+
+R11_REPAIR = {
+    'component': 'R11',
+    'what': 'the rush composition becomes one construction: the carry level '
+            'is permuted to hold the quarterbacks` WHOLE rush opportunity, '
+            'the QB layer is the single owner of designed runs and A1 draws '
+            'the other five categories from the exact conditional '
+            'multinomial, and the level the board publishes is the level A1 '
+            'partitioned',
+    'replaces': 'three separately-defensible steps at the run_forecast call '
+                'site whose composition left the constraint unenforceable. '
+                'rushing_a1.allocate is unchanged and still what R9 runs; '
+                'this is a successor lineage, not an edit',
+    'defect': 'named rush owners were dealt more carries than the team`s own '
+              'carry level in 149 of 1,000 DEN draws and 148 of 1,000 KC '
+              'draws on sealed board 96954efc523bd7d3, by up to 6.1219 and '
+              '9.6915 carries',
+    'decomposition': 'RB carries alone exceed the gate tolerance in 0 of '
+                     '1,000 draws on both teams (max +0.2619 DEN, +0.0854 '
+                     'KC). The impossibility is entirely in the QB rush path, '
+                     'and a single summed check could not say so.',
+    'evidence': 'the two answers for designed QB runs disagreed in 814 of '
+                '1,000 DEN cells and 528 of 1,000 KC cells, per draw by -10 '
+                'to +15 carries',
+    'structural_guarantee': 'rb_category + qb_rush_opportunity == published '
+                            '- (kneel + wr + te + fringe), hence <= published, '
+                            'in every draw for every input the composition '
+                            'accepts. Asserted DECOMPOSED by '
+                            'rushing_a1.assert_named_owner_containment and '
+                            'demonstrated against a seeded one-carry breach '
+                            'in nfl/tests/test_p3_rush_accounting.py',
+    'introduces_no_constant': True,
+    'no_clip_truncation_renormalisation_or_deleted_draw': True,
+    'refits_nothing': True,
+    'governance': 'REHEARSAL_ONLY -- engineering integration, not prospective '
+                  'validation',
+    'open_and_not_smoothed': [
+        'raising SC1`s bound from scrambles to rush opportunity permutes more '
+        'draws, so A3G`s game-level pairing survives in fewer cells than '
+        'under R9. The carry marginal is unchanged element for element; the '
+        'JOINT with the opposing club is not, and that is not measured here.',
+        'the designed-QB marginal is now the QB layer`s draw. `qb2_lib` has '
+        'its own open miscalibration on dropback share and this composition '
+        'inherits whatever that layer carries.',
+        'the published carry level becomes integral, which is what the '
+        'partition consumed and is a change to what the board publishes.',
+        'the repair was found by inspecting a sealed board in this '
+        'repository, so it is engineering integration on development data '
+        'and nothing here is a prospective result.',
+    ],
+    'inherits': 'R9',
+    'does_not_inherit': 'R10 -- a concurrent, orthogonal appearance repair',
+}
+
+
+# R12 REPAIRS THE QUARTERBACK DROPBACK SHARE INSIDE QB V1, AND NOTHING ELSE.
+#
+# R9 is untouched and is still what R9 runs; R10 and R11 are concurrent,
+# orthogonal repairs and are not inherited. This is a successor lineage, not
+# an edit.
+#
+# THE DEFECT, MEASURED. `qb2_lib.simulate` builds a quarterback's share of his
+# team's dropbacks by resampling his own prior shares against a positional
+# pool holding EVERY quarterback-game with a dropback. On the 2020-2024 pool
+# 690 of 3,376 rows -- 20.4% -- are backup appearances whose mean share is
+# 0.1233, against 0.9683 for the 2,686 primary-passer rows. The own component
+# and the shrinkage target are therefore estimates of DIFFERENT quantities and
+# the rung weight trades between them as though they were the same one.
+# Conditioned on being the primary passer the result sits too low; summed over
+# the room it sits too high, which is the 2.17x over-allocation
+# `qb_allocation.py` already records from the other end. Same missing
+# normalisation, opposite sign.
+#
+# THE REPAIR. Both components are put on one conditioning basis: the own
+# component is restricted to his prior games AS HIS TEAM'S PRIMARY PASSER, and
+# the pool is stratified by `prior_primary` -- the passer's own role in his own
+# most recent previous appearance. Both labels are facts about strictly
+# earlier games, so no future information enters. No constant is introduced:
+# the mixture weight is the module's existing `rung_weight`.
+#
+# EVIDENCE. Forward-chained over the 540 eligible 2025 starting-QB games in
+# 272 games, block bootstrap over whole games, 2,000 resamples, the frame the
+# defect was established on in nfl/research/v3/h1. Share signed bias
+# -0.0778 [-0.0870, -0.0691] -> -0.0190 [-0.0278, -0.0109]. Randomized PIT
+# chi-square on 9 df 32.481 (p = 1.6e-04) -> 8.667 (p = 0.469). End-to-end
+# passing-yard CRPS 43.042 -> 41.744, paired difference -1.298
+# [-2.198, -0.436].
+#
+# WHAT IT COSTS, RECORDED RATHER THAN SMOOTHED. Passing-yard signed bias moves
+# from -5.922 [-12.669, +0.734], an interval containing zero, to
+# +7.538 [+0.902, +14.167], an interval that does not. The incumbent's
+# apparent accuracy on passing yards was two errors cancelling: a share drawn
+# too low against a team-dropback layer drawn +1.637 too high, which H1
+# attributes to league drift in a frozen 2020-2024 league mean. Repairing the
+# share removes one of them and exposes the other, and the other lives in the
+# team volume layer, not here.
+#
+# IT IS INERT UNDER R2. When `db_external` is supplied the share is never
+# drawn at all, and every mode from V1_CANDIDATE onward sets r2, so on the
+# engine path this component changes nothing. `qb_v1.forecast` refuses the
+# pair outright rather than carrying a component label it did not use. The
+# measured path is qb_v1 called WITHOUT `db_external` -- PRODUCTION_BASELINE,
+# and the path nfl/research/v3/h1 scored.
+R12_FLAGS = dict(R9_FLAGS)
+R12_FLAGS['qb_share_spec'] = 'starter_conditioned'
+
+R12_REPAIR = {
+    'component': 'R12',
+    'what': "the quarterback's share of team dropbacks is drawn from his own "
+            'prior games in the primary-passer role, shrunk toward the pool '
+            'stratum carrying the same lagged role, instead of toward a pool '
+            'that mixes starters and backups',
+    'replaces': "qb2_lib.simulate's unconditional share resample, which stays "
+                'the default and is what every sealed artifact was produced '
+                'under; verified identical on 1,296,000 draw cells',
+    'defect': 'the own component and the shrinkage target estimate different '
+              'quantities: 690 of 3,376 pool rows (20.4%) are backup '
+              'appearances at a mean share of 0.1233 against 0.9683 for the '
+              '2,686 primary rows',
+    'evidence': '540 forward-chained 2025 starting-QB games over 272 games. '
+                'Share bias -0.0778 [-0.0870, -0.0691] -> -0.0190 '
+                '[-0.0278, -0.0109]; randomized PIT chi2 32.481 -> 8.667 on '
+                '9 df; end-to-end passing-yard CRPS 43.042 -> 41.744, paired '
+                'difference -1.298 [-2.198, -0.436], block bootstrap over '
+                'whole games',
+    'report': 'nfl/research/v4/p2/P2_QB_SHARE_REPAIR.md',
+    'introduces_no_constant': True,
+    'no_floor_clip_or_minimum': True,
+    'refits_nothing': True,
+    'inert_under_r2': True,
+    'governance': 'EXPLORATORY -- three share specifications were compared on '
+                  'this same 540-game 2025 frame before one was chosen, so '
+                  'forward chaining controls parameter leakage only and not '
+                  'specification leakage. 2025 is development data in this '
+                  'project. A confirmatory result needs untouched games.',
+    'open_and_not_smoothed': [
+        'passing-yard bias moves from -5.922, whose interval contains zero, '
+        'to +7.538, whose interval does not. The residual is the team '
+        "dropback layer's +1.637 league drift, not the share.",
+        'the share bias TOST against a predeclared +/-0.010 margin returns '
+        'NOT_SHOWN_EQUIVALENT in BOTH arms, so the word calibrated is not '
+        'used of either.',
+        'on the 40 of 540 games where the lagged role is not the role he '
+        'played, the repair is slightly WORSE: share CRPS 0.1077 -> 0.1184 '
+        'and passing-yard CRPS 42.19 -> 46.84. It helps where the role '
+        'signal is right and costs a little where it is not.',
+        'the mid-PIT chi-square RISES, 944.6 -> 1074.9, because 78.89% of '
+        'realised shares are exactly 1.0 and a mid-PIT is not uniform on an '
+        'atom. The published 929.0 is largely that instrument. The '
+        'randomized PIT is the instrument a discrete quantity needs and it '
+        'is the one this repair is judged on.',
+        'no 2025 weekly depth chart exists in nfl/research/inputs/, so the '
+        'only pregame role signal available for the rerun is the lagged one. '
+        'A real starter designation would strictly improve it and is not '
+        'assumed here.',
+    ],
+    'inherits': 'R9',
+    'does_not_inherit': 'R10 and R11 -- concurrent, orthogonal repairs',
+}
+
+
 def resolve(mode: str) -> Outcome:
     """The flags and the component manifest for a named mode, or a refusal.
 
@@ -354,6 +644,42 @@ def resolve(mode: str) -> Outcome:
             value={'mode': PRODUCTION_BASELINE, 'flags': {},
                    'components': [], 'candidate': False},
             detail='no candidate component is active')
+    if mode == V1_CANDIDATE_R12:
+        return Outcome.ok(
+            'MODE_V1_CANDIDATE_R12',
+            value={'mode': V1_CANDIDATE_R12, 'flags': dict(R12_FLAGS),
+                   'components': manifest() + [R5_REPAIR, R6_REPAIR,
+                                               R8_REPAIR, R9_REPAIR,
+                                               R12_REPAIR],
+                   'candidate': True},
+            detail='R9 plus the R12 starter-conditioned dropback share, which '
+                   'puts both halves of the share mixture on one conditioning '
+                   'basis. INERT while r2 is set, because the share is then '
+                   'not drawn at all')
+    if mode == V1_CANDIDATE_R11:
+        return Outcome.ok(
+            'MODE_V1_CANDIDATE_R11',
+            value={'mode': V1_CANDIDATE_R11, 'flags': dict(R11_FLAGS),
+                   'components': manifest() + [R5_REPAIR, R6_REPAIR,
+                                               R8_REPAIR, R9_REPAIR,
+                                               R11_REPAIR],
+                   'candidate': True},
+            detail='R9 plus the R11 rush composition, which gives the '
+                   'quarterback`s rushing opportunity one owner and publishes '
+                   'the carry level the partition actually consumed. It '
+                   'inherits R9, NOT R10.')
+    if mode == V1_CANDIDATE_R10:
+        return Outcome.ok(
+            'MODE_V1_CANDIDATE_R10',
+            value={'mode': V1_CANDIDATE_R10, 'flags': dict(R10_FLAGS),
+                   'components': manifest() + [R5_REPAIR, R6_REPAIR,
+                                               R8_REPAIR, R9_REPAIR,
+                                               R10_REPAIR],
+                   'candidate': True},
+            detail='R9 with the appearance mechanism replaced: the '
+                   'weeks-since-appearance feature carries a missingness '
+                   'indicator and a monotone encoding, and the depth rank is '
+                   'within-position on both sides of the fit')
     if mode == V1_CANDIDATE_R9:
         return Outcome.ok(
             'MODE_V1_CANDIDATE_R9',
@@ -419,14 +745,27 @@ def manifest() -> list:
 def assert_not_promoted(mode: str, artifact: dict) -> Outcome:
     """A candidate artifact must say so, in every field that could be read as
     a promotion claim. Called by the sealer; tested with the guard stubbed."""
-    if mode not in (V1_CANDIDATE, V1_CANDIDATE_R5, V1_CANDIDATE_R6,
-                    V1_CANDIDATE_R7, V1_CANDIDATE_R8):
+    # THE LIST IS DERIVED, NOT TYPED, AND THAT IS THE REPAIR.
+    #
+    # This guard used to enumerate candidate modes by hand. R9, R10 and R11
+    # were registered and nobody added them, so an artifact in any of those
+    # modes hit `not in (...)` and returned NOT_APPLICABLE -- the masquerade
+    # check silently did not run on three live configurations, R9 among them,
+    # which is the mode that produced the DEN@KC boards. A guard that has to
+    # be remembered is a guard that gets forgotten; this one had already
+    # deleted itself three times before anyone noticed.
+    #
+    # Appending the three names would have restored it and left the identical
+    # trap for R13. `CANDIDATE_MODES` is derived from `MODES` instead, so a
+    # newly registered candidate is checked the moment it exists and cannot
+    # opt out by omission. PRODUCTION_BASELINE is excluded because it is not a
+    # candidate; that exclusion is a property of the mode, not a list someone
+    # maintains.
+    if mode not in CANDIDATE_MODES:
         return Outcome.not_applicable('NOT_A_CANDIDATE_RUN',
                                       f'mode is {mode!r}')
     bad = []
-    if artifact.get('model_configuration') not in (
-            V1_CANDIDATE, V1_CANDIDATE_R5, V1_CANDIDATE_R6,
-            V1_CANDIDATE_R7, V1_CANDIDATE_R8):
+    if artifact.get('model_configuration') not in CANDIDATE_MODES:
         bad.append('model_configuration does not name the candidate mode')
     if not artifact.get('candidate_components'):
         bad.append('candidate_components is empty on a candidate run')

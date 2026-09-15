@@ -118,7 +118,25 @@ def run(season=2026, week=1, m=200, seed=20260908, mode='test_only',
         out['qb_layer_detail'] = qo.detail[:250]
     else:
         teams_all = sorted({q['team'] for q in qbp})
-        qa = FE.QA.allocate(season, week, teams_all, qbp, m=m, seed=seed)
+        # ARMED WITH THE EARLIEST KICKOFF IN THE SLATE, not a per-game one.
+        #
+        # This call allocates the WHOLE slate in one pass, so there is no single
+        # kickoff to bound it with. The correct bound is the earliest: a depth
+        # chart lawful for every game in the slate must precede the first of
+        # them. Using the latest would certify a chart against games that had
+        # already kicked off.
+        #
+        # Passing neither -- which is what this line did -- left
+        # `DEPTH_CHART_CHRONOLOGY_FAILURE` unreachable, exactly as at
+        # `run_forecast.py:501`. The chart is chosen by `sorted(glob)[-1]`, and
+        # today that is one retrieved 2026-09-14T16:16:25Z, after 74 of the 79
+        # week-1 kickoff targets.
+        _slate_ko = min(ko.values()) if ko else None
+        qa = FE.QA.allocate(season, week, teams_all, qbp, m=m, seed=seed,
+                            kickoff_utc=(
+                                _slate_ko.isoformat().replace('+00:00', 'Z')
+                                if hasattr(_slate_ko, 'isoformat')
+                                else _slate_ko))
         out['layers']['qb_allocation'] = f'{qa.state.value}[{qa.code}]'
         if qa.state is State.PASS:
             qb['allocation'] = qa.value

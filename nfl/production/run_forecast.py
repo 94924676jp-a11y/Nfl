@@ -498,13 +498,44 @@ def build(args, fixtures: dict = None) -> dict:
                  for t in teams} if _alloc == 'qb_room_v2' else None)
         # THE ARGUMENT WHOSE ABSENCE WAS THE DEFECT. official_inactive_ids
         # reached the non-QB engine only; the QB share pool never saw it.
+        # THE CLOCK THE CHRONOLOGY GUARD NEEDS, WHICH NOBODY WAS PASSING.
+        #
+        # `qb_allocation.allocate` carries a real guard:
+        #
+        #     for label, bound in (('kickoff', kickoff_utc),
+        #                          ('written_at', written_at)):
+        #         if bound and got and str(got) >= str(bound):
+        #             return Outcome.fail('DEPTH_CHART_CHRONOLOGY_FAILURE', ...)
+        #
+        # Both parameters default to None and this call site passed neither, so
+        # `if bound` was false on every production run and the body has never
+        # executed. The guard is correct; it was simply unreachable.
+        #
+        # What it was guarding: the depth chart is selected by
+        # `sorted(glob(...))[-1]` -- lexicographic content-hash order, no clock.
+        # Today that resolves to `depth_charts.f66f0c2583dba463.reduced.csv.gz`,
+        # retrieved 2026-09-14T16:16:25Z, and **74 of 79 week-1 kickoff targets
+        # precede it**. The QB room ordering read from that chart feeds dropback
+        # allocation, so a board built for an earlier week-1 game consumed a
+        # chart published after its own kickoff.
+        #
+        # This is the `board.depth_rank` defect one function over, on the same
+        # source, and the opposite failure: there the guard fired on every run
+        # and a bare `except Exception` destroyed the evidence; here the guard
+        # never fired at all. Both are the same lesson -- a guard nobody can
+        # see is not a guard.
+        #
+        # Both values are already in scope and are handed to the neighbouring
+        # calls at lines 442-443 and 951-952 in exactly this form.
         qa = FE.QA.allocate(args.season, args.week, teams, qbp, m=m,
                             seed=args.seed,
                             inactive_ids=fx.get('official_inactive_ids'),
                             inactive_provenance=fx.get(
                                 'official_inactive_provenance'),
                             allocator=_alloc,
-                            team_dropback_draws=_tdb)
+                            team_dropback_draws=_tdb,
+                            kickoff_utc=fx.get('kickoff_utc'),
+                            written_at=args.written_at)
         if qa.state is not State.PASS:
             return qa
         fx['_qb_allocator'] = _alloc
@@ -552,36 +583,113 @@ def build(args, fixtures: dict = None) -> dict:
             # a permutation, so the carry marginal is invariant element for
             # element and the scramble draw is not touched at all. Minimal
             # swaps, so A3G's pairing survives wherever it was not the problem.
-            car, sc1 = {}, {}
-            for t in teams:
-                o = SC1.couple(scr[t],
-                               np.asarray(tv.value[('team_carries', t)],
-                                          float))
-                if o.state is not State.PASS:
-                    return o
-                car[t] = o.value
-                sc1[t] = {k: v for k, v in o.evidence.items()
-                          if k != 'value'}
-            fx['_sc1'] = sc1
-            _inv_sc1 = fx.setdefault('_inv', {})
-            _inv_sc1['scramble_carry_coherence'] = Outcome.ok(
-                'SC1_COHERENT', value=True,
-                detail='carries >= scrambles in every draw, by permutation of '
-                       'the carry draw index; no value changed',
-                total_swaps=sum(int(v.get('n_swaps', 0))
-                                for v in sc1.values()),
-                teams=len(sc1))
-            applied.append('SC1')
-            a1 = RA1.allocate(
-                args.season, args.week, teams, car,
-                scr, m=m, seed=args.seed, game_id=args.game_id,
-                level_rounding='round_half_even')
-            if a1.state is not State.PASS:
-                return a1
-            fx['_rushing_a1'] = a1
-            _inv_a1 = fx.setdefault('_inv', {})
-            _inv_a1['rushing_single_owner'] = a1
-            applied.append('A1')
+            # R11. THE WHOLE COMPOSITION IN ONE CALL, OR THE THREE STEPS
+            # SEPARATELY, AND THE FLAG DECIDES WHICH.
+            #
+            # Under R9 these three lines each looked right on their own and
+            # the composition did not: SC1 bounded the carry level by the
+            # SCRAMBLES while the named rush owners include the quarterback's
+            # DESIGNED runs too; `allocate` was called without
+            # `qb_designed_rush`, so A1 drew a second answer to a quantity the
+            # QB layer had already drawn; and the level sealed below was D1's
+            # raw continuous draw rather than the integerised, permuted one
+            # the partition consumed. Measured on sealed board
+            # 96954efc523bd7d3: named owners above the team's own carry level
+            # in 149 of 1,000 DEN draws and 148 of 1,000 KC draws, by up to
+            # 6.1219 and 9.6915 carries, while the RB deal alone was over the
+            # gate tolerance in ZERO draws on both clubs.
+            #
+            # `rushing_a1.compose_rush_ownership` is those three steps in the
+            # order that makes the bound an identity. Nothing is clipped,
+            # truncated, renormalised or deleted. The R9 path below is left
+            # EXACTLY as it was, byte for byte, so every sealed R9 board stays
+            # reproducible and the two configurations differ in one component.
+            _single = bool(fl.get('rush_single_owner'))
+            if _single:
+                ro = {t: np.asarray(
+                    [qb['draws']['rush_opp'][i] for i in
+                     qb['index_by_team'].get(t, [])], float).sum(0)
+                    if qb['index_by_team'].get(t) else np.zeros(m)
+                    for t in teams}
+                comp = RA1.compose_rush_ownership(
+                    args.season, args.week, teams,
+                    team_carry_level={
+                        t: np.asarray(tv.value[('team_carries', t)], float)
+                        for t in teams},
+                    qb_scrambles=scr, qb_rush_opportunity=ro,
+                    m=m, seed=args.seed, game_id=args.game_id,
+                    level_rounding='round_half_even')
+                if comp.state is not State.PASS:
+                    return comp
+                sc1 = comp.value['sc1']
+                fx['_sc1'] = sc1
+                # THE LEVEL THE BOARD PUBLISHES IS THE LEVEL THAT WAS
+                # PARTITIONED. Sealing D1's raw vector beside an allocation
+                # built on a different one is the stored-vector defect that
+                # keeps `team_qb_rush_opportunity_within_team_carries` a
+                # diagnostic instead of a gate.
+                fx['_published_team_carries'] = comp.value[
+                    'team_carries_published']
+                _inv_sc1 = fx.setdefault('_inv', {})
+                _inv_sc1['scramble_carry_coherence'] = Outcome.ok(
+                    'SC1_COHERENT', value=True,
+                    detail='carries >= the quarterbacks` WHOLE rush '
+                           'opportunity in every draw -- scrambles and '
+                           'designed runs both -- by permutation of the carry '
+                           'draw index; no value changed',
+                    total_swaps=sum(int(v.get('n_swaps', 0))
+                                    for v in sc1.values()),
+                    bound='qb_rush_opportunity', teams=len(sc1))
+                applied.append('SC1')
+                a1 = Outcome.ok(
+                    comp.code, value=comp.value['allocation'],
+                    detail=comp.detail,
+                    **{k: v for k, v in comp.evidence.items()
+                       if k != 'value'})
+                fx['_rushing_a1'] = a1
+                fx['_rush_composition'] = {
+                    k: v for k, v in comp.evidence.items() if k != 'value'}
+                _inv_a1 = fx.setdefault('_inv', {})
+                _inv_a1['rushing_single_owner'] = a1
+                # 'R11' is NOT appended here. `applied` carries the
+                # engine-flag components (R2, C0, C3, A3G, SC1, A1); the
+                # configuration-level repairs R5-R11 are declared in
+                # `candidate_components` and in `model_configuration`,
+                # and inventing a second place to name them is how two
+                # lists of the same thing start disagreeing.
+                applied.append('A1')
+            else:
+                car, sc1 = {}, {}
+                for t in teams:
+                    o = SC1.couple(scr[t],
+                                   np.asarray(tv.value[('team_carries', t)],
+                                              float))
+                    if o.state is not State.PASS:
+                        return o
+                    car[t] = o.value
+                    sc1[t] = {k: v for k, v in o.evidence.items()
+                              if k != 'value'}
+                fx['_sc1'] = sc1
+                _inv_sc1 = fx.setdefault('_inv', {})
+                _inv_sc1['scramble_carry_coherence'] = Outcome.ok(
+                    'SC1_COHERENT', value=True,
+                    detail='carries >= scrambles in every draw, by '
+                           'permutation of the carry draw index; no value '
+                           'changed',
+                    total_swaps=sum(int(v.get('n_swaps', 0))
+                                    for v in sc1.values()),
+                    teams=len(sc1))
+                applied.append('SC1')
+                a1 = RA1.allocate(
+                    args.season, args.week, teams, car,
+                    scr, m=m, seed=args.seed, game_id=args.game_id,
+                    level_rounding='round_half_even')
+                if a1.state is not State.PASS:
+                    return a1
+                fx['_rushing_a1'] = a1
+                _inv_a1 = fx.setdefault('_inv', {})
+                _inv_a1['rushing_single_owner'] = a1
+                applied.append('A1')
         # C3 IS NOT ADJUDICATED HERE. It is reached inside the non-QB chain
         # or it is not, and only that chain can say which; this used to record
         # `not reached` unconditionally, which was accurate only for as long
@@ -1703,6 +1811,27 @@ def build(args, fixtures: dict = None) -> dict:
         tv = fx.get('_team_volume')
         if tv:
             teams = sorted({t for (_m, t) in tv})
+            # R11. SEAL THE CARRY VECTOR THE GAME CONSUMED.
+            #
+            # D1 draws a CONTINUOUS team-carry level; SC1 permutes which draw
+            # index receives which value and A1 integerises it, and it is that
+            # vector the six categories and the running-back deal partition.
+            # Sealing D1's raw draw beside them published a denominator the
+            # game never used, which is why a containment breach could not be
+            # attributed between a carry with two owners and a wrong vector --
+            # `draw_coherence.team_qb_rush_opportunity_within_team_carries`
+            # says so in its own `why_not_hard`. The substitution is a
+            # PERMUTATION composed with A1's declared round-half-even, so the
+            # carry marginal is unchanged element for element; no value is
+            # clipped and no draw is dropped. Only the R11 composition sets
+            # this key, so every other configuration seals exactly what it
+            # sealed before.
+            _pub = fx.get('_published_team_carries') or {}
+            _tvc = dict(tv)
+            for _t, _v in _pub.items():
+                if ('team_carries', _t) in _tvc:
+                    _tvc[('team_carries', _t)] = _np.asarray(_v, float)
+            tv = _tvc
             mats = {m: _np.stack([_np.asarray(tv[(m, t)], float)
                                   for t in teams])
                     for m in TV.METRICS if all((m, t) in tv for t in teams)}

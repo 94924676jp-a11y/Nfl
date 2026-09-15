@@ -121,9 +121,26 @@ non-market prior-point-differential proxy was substituted and labelled as one.
 
 ### The real QB defect, and it is neither volume nor efficiency
 
-**QB dropback SHARE is badly miscalibrated.** PIT χ² **929.0 on 9 df**;
-realised share above the predictive P90 in **79% of games**; z skew +3.88,
-excess kurtosis +26.8. Mechanism read out of the code: `qb2_lib.simulate`
+> **CORRECTED 2026-09-15. Two of the three numbers below were instrument
+> artifacts and I published them twice before checking the instrument.**
+> **78.89% of the 540 realised shares are exactly 1.0**, verified directly.
+> The 929.0 was a *mid*-PIT, which is not uniform on an atom even under a
+> perfect forecast — the published histogram's spike at bins 6–7 with a
+> literal zero in the top bin is that signature. The atom-correct
+> **randomized** PIT on the same draws is **χ² 32.481 (p = 1.6e-04)**: a real
+> defect, roughly 29× smaller in χ² than advertised. Likewise "above P90 in
+> 79% of games" reproduces arithmetically but means nothing, because P90 = 1.0
+> in most games and `y < P90` is false whenever y = 1.0; the atom-safe
+> analogue is u < 0.90 in **89.44%** against a nominal 90%, essentially
+> nominal. **The genuine coverage failure is in the LOWER tail** — u < 0.10 in
+> **4.81%** against 10%. The signed bias below is untouched and reproduces to
+> 1e-6. Anyone tracking "929" will read the repair as a regression, because
+> the repaired distribution puts *more* mass at exactly 1.0 and the mid-PIT
+> rises to 1074.9.
+
+**QB dropback SHARE is miscalibrated**, signed bias **−0.0778**
+[−0.0868, −0.0687] — the starter's share is put too low. Randomized PIT
+χ² 32.481 on 9 df. Mechanism read out of the code: `qb2_lib.simulate`
 resamples share against a pool containing every QB-game **including backups**,
 and conditioning on being the primary passer selects the top of that pool.
 This is the mirror image of the already-recorded 2.17× over-allocation summed
@@ -313,10 +330,16 @@ would have been aimed at the wrong layer.
 | DEN | 2.296 | 1.627 |
 | KC | 0.709 | 0.615 |
 
-And the category partition does not close: `Σ rush_category` against
-`team_carries` has max |difference| **8.4278** (DEN) and **10.2027** (KC).
-This contradicts the earlier report that unowned category mass went to
-identically 0.0000 in every draw.
+> **WITHDRAWN 2026-09-15. This was my mis-specified comparison, not a
+> defect.** A1 subtracts scrambles from the budget *before* partitioning and
+> partitions the **integerised** level. I compared `Σ rush_category` against
+> the raw continuous `team_carries`, omitting scrambles and skipping the
+> rounding. In A1's declared form the partition closes **exactly**:
+> `max |Σ rush_category + scrambles − rint(team_carries)| = 0.000000` on both
+> clubs of the sealed R9 board, verified directly. The earlier report that
+> unowned category mass is identically 0.0000 was right and my contradiction
+> of it was wrong. What was genuinely missing was not closure but the
+> **assertion** of it; that is now made per draw and refused by name.
 
 ### 5.3 A committed research panel has a structurally-zero column
 
@@ -378,7 +401,12 @@ with no shrinkage and no denominator weighting.
 
 Two larger defects were found behind it, neither of which had a fence:
 
-- **27,564 genuinely impossible per-QB cells across 50 boards** — `cmp==0 &
+- **36,587 impossible per-QB passing-line cells across 51 of 121 boards.**
+  (The figure of 27,564 I relayed earlier **reproduces from no corpus** and
+  should not be quoted. Independently recounted: 36,587 over all 121 boards
+  on disk; 27,301 over the 109-board fence corpus; 9,286 in the REPLAY_C1
+  namespace that the fences exclude by name — and 27,301 + 9,286 = 36,587
+  exactly.) Components — `cmp==0 &
   pyds≠0` 18,041; `cmp>att` 8,214; `cmp+int>att` 9,189; `ptd>cmp` 1,113;
   `ptd>att` 30; `rushing_td>carries` 442. Cause: the old credit function
   splits completions multinomially on **attempt** share and yards on attempt
@@ -472,3 +500,45 @@ below-median quarterback games as a model failure is exactly the pressure this
 autopsy exists to resist.
 
 **Nothing here is a wager and no market data entered any part of it.**
+
+
+---
+
+## 13. Added 2026-09-15: a CONFIRMED leak, found after this autopsy was written
+
+**`run_forecast.py:501` called `qb_allocation.allocate(...)` with neither
+`kickoff_utc` nor `written_at`, so the depth-chart chronology guard has never
+executed on any production run.** The guard is real and correct:
+
+    for label, bound in (('kickoff', kickoff_utc), ('written_at', written_at)):
+        if bound and got and str(got) >= str(bound):
+            return Outcome.fail('DEPTH_CHART_CHRONOLOGY_FAILURE', ...)
+
+Both parameters default to `None`, so `if bound` was false every time. Verified
+directly: the call site passed neither, and both defaults are `None`.
+
+What it guards: the depth chart is chosen by `sorted(glob(...))[-1]` —
+lexicographic content-hash order, no clock. That resolves to
+`depth_charts.f66f0c2583dba463.reduced.csv.gz`, retrieved **2026-09-14T16:16:25Z**,
+and **74 of the 79 week-1 kickoff targets precede it**. The QB room ordering
+read from that chart feeds dropback allocation, so a board built for an earlier
+week-1 game consumed a depth chart published after its own kickoff.
+
+Tonight's DEN@KC board is **not** affected — its kickoff is 2026-09-15T00:15Z,
+after the chart's retrieval — but earlier week-1 boards are.
+
+**This is the `board.depth_rank` defect one function over, on the same source,
+and the exact opposite failure.** There the guard fired on every run and a bare
+`except Exception: dr = {}` destroyed the evidence. Here the guard never fired
+at all. Both are one lesson: *a guard nobody can see is not a guard.*
+
+Repaired at both call sites — `run_forecast.py:501` and
+`engine_rehearsal.py:121`, the latter bounded by the **earliest** kickoff in
+the slate, since a chart lawful for the whole slate must precede its first
+game. A board rebuilt with the guard armed still seals (`cbaa9c6409960679`), so
+arming it does not break the current path.
+
+**The wider finding is that enforcement covers a third of the sources.**
+`vintage_selector.FAMILIES` declares 4 of 12; the other eight have no clocked
+selector and are reached by globbing, which is why every leak finding in this
+audit is glob-shaped.
