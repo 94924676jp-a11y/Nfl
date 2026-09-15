@@ -1014,3 +1014,52 @@ claiming knowledge it did not have. That is worse than the miss we actually took
 any board already written. Anything that arrives now is a pregame input for
 future forecasts only, and the captures already in the tree stay exactly as they
 are: `PASS`, empty, and annotated.
+
+---
+
+## 2026-09-15T15:05Z — OUT-017: three sources have no payload contract and I cannot write one without a sample
+
+**Small, cheap, and blocking a guard rather than a model.** Not urgent; do it
+whenever a capture window is convenient.
+
+**Background.** D20 was an html source that passed for nine days over a page
+carrying no players. Auditing the other content kinds found the same hole in
+both — the validity check counts the ENVELOPE. ESPN's injuries document is
+`{injuries:[32 teams], season, status, timestamp}`, which scores 32 + 3 = 35
+against 800 real injury entries, **and still scores 35 when every team's list is
+emptied**. The csv check counts rows and never looks at a column.
+
+That is closed (D22). Each source now declares where its entities live —
+`row_container` for html, `payload_path` for json, `required_columns` plus
+`substantive_any_of` for csv — and `nfl/capture/payload_contract.py` goes and
+looks. Positive control: all 428 espn blobs, all 296 csv blobs and all 354
+injury-report blobs still pass. Negative control: six seeded emptiness cases all
+refused, including the one the old check provably could not see.
+
+**What I cannot do.** Three sources have **zero committed blobs**, so their
+schema cannot be read:
+
+| source | state | what I need |
+|---|---|---|
+| `official_transactions` | `PENDING_ENDPOINT_VERIFICATION` | one successful capture, any date |
+| `pbp_participation` | `REACHABLE`, `watch_only` | one file, any week of 2025 or 2026 |
+| `snap_counts` | `REACHABLE`, `watch_only` | one file, any week of 2025 or 2026 |
+
+For each I need **one real payload**, or failing that just **the exact header
+line**. That is enough to declare the contract.
+
+**Why I am asking instead of writing plausible column names.** Because this
+project has already shipped that exact defect: an export wrote 7,926 rows with
+every meaningful column blank, *because the field names were guessed instead of
+read from the schema*. Declaring `('player_id', 'team', 'snaps')` because it
+sounds right would put a guess into a guard whose whole job is to refuse
+guesses. `nfl/tests/test_payload_contract.py` reports all three as
+**NOT_EXECUTED** — not a pass — and names this request as what discharges them.
+
+**One thing worth knowing if you go for `snap_counts` anyway.** OUT-015 already
+asks you for 2026 preseason snap counts for the appearance model. The same
+fetch answers both: I need the header for the contract, the rows for the model.
+
+**No hurry and nothing is blocked on it.** The three sources capture nothing
+today, so an undeclared contract costs nothing yet. It becomes load-bearing the
+moment any of them starts producing.

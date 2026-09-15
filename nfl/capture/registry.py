@@ -134,6 +134,51 @@ class SourceSpec:
     # Declare the tag whose presence means "rows exist". Empty = no structural
     # claim, and the marker count stands alone as before.
     row_container: tuple = ()
+    # THE SAME QUESTION FOR JSON AND CSV. D22.
+    #
+    # D20 was an html source passing over a page with no players. The other two
+    # content kinds have the identical hole, because both count the ENVELOPE.
+    #
+    #   json: the check is `len(list)`, or for a dict the sum of list lengths
+    #         plus one per scalar. ESPN's injuries document is
+    #         {injuries:[32 teams], season, status, timestamp}, so it scores
+    #         32 + 3 = 35 against 800 real injury entries. Empty every team's
+    #         list and it STILL scores 35 -- indistinguishable from healthy.
+    #         Drop the injuries key entirely and the three scalars alone score
+    #         3, which passes.
+    #
+    #   csv:  the check is `len(nonblank_lines) - 1`, which counts rows and
+    #         never looks at a column. This project has already shipped the
+    #         failure that catches: an export wrote 7,926 rows with every
+    #         meaningful column blank, because the field names were guessed
+    #         rather than read from the schema.
+    #
+    # So declare, per source, WHERE the entities live and WHAT an entity must
+    # carry. Both default to empty, leaving a source that declares nothing on
+    # exactly its old behaviour.
+    #
+    #: For json. A path of keys from the document root to the list of
+    #: entities, e.g. ("injuries", "*", "injuries") where "*" means "each
+    #: element of this list". At least one entity must exist at that path.
+    payload_path: tuple = ()
+    #: For csv. Columns that must be present in the header AND non-blank on at
+    #: least one data row. A header is a promise; a populated cell is evidence.
+    #: These are IDENTITY columns -- what a consumer joins on.
+    required_columns: tuple = ()
+    #: For csv. At least ONE of these must be populated on at least one row:
+    #: the column that carries the document's actual subject matter.
+    #:
+    #: WHY ANY-OF AND NOT A FIXED COLUMN. The injury feed's substance MOVES
+    #: THROUGH THE WEEK. Measured on the committed blobs: injuries.bfa4aa0ee7cde902
+    #: and injuries.1bf460ad261559a8 (2026-09-07 and 09-08, week 1) carry
+    #: practice_status fully populated -- "Did Not Participate", "Limited",
+    #: "Full" -- and report_status blank on every row, because the game-status
+    #: designation is not assigned until the final report. That is a CORRECT
+    #: empty, not a defect, and requiring report_status outright would have
+    #: flipped those two legitimate midweek captures to DEFERRED. Picking the
+    #: column that happens to make every blob pass would be fitting the guard
+    #: to the data, which is the error this whole class of defect is made of.
+    substantive_any_of: tuple = ()
     note: str = ""
 
     def url(self, season: int) -> Optional[str]:
@@ -143,6 +188,8 @@ class SourceSpec:
 REGISTRY: tuple = (
     SourceSpec(
         name="injuries",
+        required_columns=("gsis_id", "team"),
+        substantive_any_of=("report_status", "practice_status"),
         authority=SourceAuthority.ARCHIVE,
         source_status=SourceStatus.VERIFIED_REACHABLE_EXTERNALLY,
         executor_access=ExecutorAccess.REACHABLE,
@@ -164,6 +211,7 @@ REGISTRY: tuple = (
     ),
     SourceSpec(
         name="schedules",
+        required_columns=("game_id", "away_team", "home_team"),
         authority=SourceAuthority.ARCHIVE,
         source_status=SourceStatus.VERIFIED_REACHABLE_EXTERNALLY,
         executor_access=ExecutorAccess.REACHABLE,
@@ -178,6 +226,7 @@ REGISTRY: tuple = (
     ),
     SourceSpec(
         name="depth_charts",
+        required_columns=("team", "gsis_id", "pos_abb"),
         authority=SourceAuthority.ARCHIVE,
         source_status=SourceStatus.VERIFIED_REACHABLE_EXTERNALLY,
         executor_access=ExecutorAccess.REACHABLE,
@@ -192,6 +241,7 @@ REGISTRY: tuple = (
     ),
     SourceSpec(
         name="weekly_rosters",
+        required_columns=("season", "team", "gsis_id", "position"),
         authority=SourceAuthority.ARCHIVE,
         source_status=SourceStatus.VERIFIED_REACHABLE_EXTERNALLY,
         executor_access=ExecutorAccess.REACHABLE,
@@ -259,6 +309,9 @@ REGISTRY: tuple = (
                       "football/nfl/injuries"),
         required=False, durability="commit_raw",
         reachability=Reachability.REACHABLE, content_kind="json",
+        # Measured on all 428 committed blobs: this path yields 800 entries on
+        # every one of them, where the old count yielded 35.
+        payload_path=("injuries", "*", "injuries"),
         authority=SourceAuthority.CANDIDATE_FALLBACK, authority_rank=9,
         source_status=SourceStatus.VERIFIED_REACHABLE_EXTERNALLY,
         executor_access=ExecutorAccess.LOCAL_PROXY_CONNECT_403,

@@ -48,7 +48,8 @@ _REPO = pathlib.Path(__file__).resolve().parents[2]
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
-from sportsplatform.governance.outcome import Cause, Outcome, State  # noqa: E402
+from sportsplatform.governance.outcome import Cause, Outcome, State
+from nfl.capture import payload_contract as _contract  # noqa: E402
 from sportsplatform.governance.provenance import Provenance, validate as validate_prov  # noqa: E402
 from nfl.capture import registry as _registry  # noqa: E402
 
@@ -141,6 +142,9 @@ class Source:
     # verified by an environment that never executes it.
     content_markers: tuple = ()
     row_container: tuple = ()
+    payload_path: tuple = ()
+    required_columns: tuple = ()
+    substantive_any_of: tuple = ()
 
 
 def _sources(season: int) -> list[Source]:
@@ -169,7 +173,13 @@ def _sources(season: int) -> list[Source]:
                           content_markers=tuple(
                               getattr(spec, 'content_markers', ()) or ()),
                           row_container=tuple(
-                              getattr(spec, 'row_container', ()) or ())))
+                              getattr(spec, 'row_container', ()) or ()),
+                          payload_path=tuple(
+                              getattr(spec, 'payload_path', ()) or ()),
+                          required_columns=tuple(
+                              getattr(spec, 'required_columns', ()) or ()),
+                          substantive_any_of=tuple(
+                              getattr(spec, 'substantive_any_of', ()) or ())))
     return out
 
 
@@ -376,7 +386,7 @@ def fetch(src: Source, season: int, store: pathlib.Path,
                 source=src.name, n_bytes=n_bytes, n_markers=_markers,
                 markers_looked_for=list(_markers_for),
                 row_container_looked_for=list(src.row_container),
-                owed=f"{src.name}:{url}")
+                owed=f"{src.name}:{src.url}")
         if _markers == 0:
             # NOT a pass: nothing is stored and nothing is discharged. It is a
             # debt, and it stays owed until a later capture carries rows.
@@ -389,7 +399,7 @@ def fetch(src: Source, season: int, store: pathlib.Path,
                 f"nothing and is owed until a capture carries rows.",
                 source=src.name, n_bytes=n_bytes, n_markers=0,
                 markers_looked_for=list(_markers_for),
-                owed=f"{src.name}:{url}")
+                owed=f"{src.name}:{src.url}")
         n_data_rows = _markers      # the HTML analogue of "rows that mean something"
     elif src.content_kind == "json":
         # A minified JSON document is a single line, so a row count read 8,996,076
@@ -413,12 +423,33 @@ def fetch(src: Source, season: int, store: pathlib.Path,
                 "JSON_EMPTY_DOCUMENT",
                 f"{src.name}: parses as JSON but carries no entries. Valid and "
                 f"empty is still empty.", source=src.name, n_bytes=n_bytes)
+        # D22. THE COUNT ABOVE COUNTS THE ENVELOPE. ESPN's injuries document is
+        # {injuries:[32 teams], season, status, timestamp}: `_n` is 32 + 3 = 35
+        # against 800 real injury entries, and it STILL reads 35 when every
+        # team's list is emptied. So ask the source where its entities actually
+        # live. A source declaring no payload_path is unaffected.
+        _pc_ok, _pc_code, _pc_ev = _contract.check_json(_doc, src)
+        if not _pc_ok:
+            tmp.unlink()
+            return Outcome.deferred(
+                _pc_code,
+                f"{src.name}: HTTP {status}, {n_bytes} bytes that parse as "
+                f"JSON and carry {_n} top-level item(s) -- but "
+                f"{_pc_ev.get('n_entities', 0)} entities at the declared "
+                f"payload path {_pc_ev.get('payload_path')}. The envelope is "
+                f"intact and the payload is not there. This discharges nothing "
+                f"and is owed until a capture carries entities.",
+                source=src.name, n_bytes=n_bytes, owed=f"{src.name}:{src.url}",
+                **_pc_ev)
+        if _pc_ev.get('n_entities') is not None:
+            _n = _pc_ev['n_entities']
         n_data_rows = _n
     else:
         # Count DATA ROWS, not newlines. Counting newlines let b"a,b,c\n\n\n"
         # through as three lines: a durable blob written and a manifest row
         # claiming a real vintage, over zero rows of data.
         n_data_rows = max(0, len(_nonblank) - 1)
+        _csv_contract_pending = True     # applied below, AFTER the row check
     if n_data_rows < 1:
         tmp.unlink()
         return Outcome.fail(
@@ -427,6 +458,39 @@ def fetch(src: Source, season: int, store: pathlib.Path,
             f"{n_data_rows} data rows -- a header with nothing under it.",
             source=src.name, n_bytes=n_bytes, n_lines=lines,
             n_data_rows=n_data_rows)
+    if src.content_kind not in ("html", "json"):
+        # D22. A ROW COUNT NEVER LOOKS AT A COLUMN. This project has already
+        # shipped an export of 7,926 rows with every meaningful column blank,
+        # because the field names were guessed rather than read from the
+        # schema. A source declaring no required_columns is unaffected.
+        _pc_ok, _pc_code, _pc_ev = _contract.check_csv(_text, src)
+        if not _pc_ok:
+            tmp.unlink()
+            # ABSENT AND EMPTY ARE DIFFERENT FACTS AND GET DIFFERENT STATES.
+            # A column the source no longer sends is a WRONG DOCUMENT -- a
+            # schema change, a redirect, an error page rendered as csv -- and
+            # waiting for it to fill in is the wrong response, so it FAILS. A
+            # column present and unpopulated, or an availability column that
+            # says nothing yet, is a source that has not published, which is a
+            # DEBT and defers. Collapsing the two would repeat D20's error one
+            # level up: treating "we got the wrong thing" as "not yet".
+            if _pc_code == 'SCHEMA_COLUMNS_ABSENT':
+                return Outcome.fail(
+                    _pc_code,
+                    f"{src.name}: HTTP {status}, {n_data_rows} data row(s), "
+                    f"but the declared columns "
+                    f"{_pc_ev.get('missing_from_header')} are not in the "
+                    f"header at all. This is not an unpublished source, it is "
+                    f"a different document.",
+                    source=src.name, n_bytes=n_bytes, **_pc_ev)
+            return Outcome.deferred(
+                _pc_code,
+                f"{src.name}: HTTP {status}, {n_data_rows} data row(s) whose "
+                f"declared columns do not carry data: {_pc_ev}. A header is a "
+                f"promise and a populated cell is evidence. This discharges "
+                f"nothing and is owed until a capture carries both.",
+                source=src.name, n_bytes=n_bytes, owed=f"{src.name}:{src.url}",
+                **_pc_ev)
 
     digest = hashlib.sha256(payload).hexdigest()
     header = payload.split(b"\n", 1)[0].decode("utf-8", "replace").strip()

@@ -60,7 +60,13 @@ PASSED = FAILED = 0
 LM = 'Wed, 02 Sep 2026 19:30:00 GMT'
 LM_ISO = '2026-09-02T19:30:00+00:00'
 HEADERS_200 = f'HTTP/1.1 200 OK\r\nLast-Modified: {LM}\r\nETag: "abc123"\r\n\r\n'
-GOOD_CSV = (b'season,week,team,player,report_status\n'
+# COLUMN NAMED `player` UNTIL 2026-09-15, WHICH THE REAL FEED DOES NOT SEND.
+# The live injuries csv keys its player column `gsis_id` -- the values here were
+# already gsis ids, only the header was wrong. Nothing noticed until
+# `injuries` declared required_columns=('gsis_id','team') under D22 and this
+# fixture was refused as a different document. A fixture that does not match
+# the schema it stands in for tests the harness, not the source.
+GOOD_CSV = (b'season,week,team,gsis_id,report_status\n'
             b'2026,1,PHI,00-0036389,Questionable\n'
             b'2026,1,DAL,00-0033077,Out\n')
 
@@ -190,7 +196,11 @@ def test_b_header_only_200_is_never_a_success():
 
     # FIXED: the check now counts DATA ROWS, not newlines, so a CSV whose single
     # data row lacks a trailing newline is correctly accepted rather than refused.
-    with seeded(body=b'season,week\n2026,1') as (f, st, d):
+    # Carries the declared schema so that what is under test is the ROW COUNT
+    # and nothing else. `season,week` alone would now be refused as a different
+    # document, which is correct and is a different test.
+    with seeded(body=b'gsis_id,team,report_status\n00-0036389,PHI,Out') as (
+            f, st, d):
         o4 = cv.fetch(src(), 2026, st)
     check('FIXED: a single data row with no trailing newline is ACCEPTED '
           '-- the check counts data rows, not newlines',
