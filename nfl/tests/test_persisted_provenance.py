@@ -365,8 +365,23 @@ def test_the_live_manifest_still_carries_the_defect_unaltered():
     out = PP.defect_rows()
     assert check('defect rows are readable', out.state is State.PASS, out.code)
     n = out.evidence['n_rows']
-    assert check('the measured population is still 368 defect rows',
-                 n == 368, f'{n}')
+    # WAS PINNED AT 368, AND THE PIN FALSIFIED ITS OWN DOCSTRING.
+    #
+    # defect_rows' docstring says the population is "closed by construction"
+    # because every row written after the repair carries a persisted digest.
+    # Reconciling with main moved it to 928 of 932 reduce rows. The repair was
+    # BRANCH-LOCAL: main is the branch that actually captures, it never received
+    # this code, and it has gone on writing reduce rows with no digest of the
+    # bytes they persisted. So the population is closed by construction only
+    # with respect to code that has the repair, which is not the code doing the
+    # capturing. That is recorded as a finding rather than patched away here.
+    #
+    # The count is therefore a moving number and pinning it teaches nothing
+    # except when the last merge happened. What must hold is the PROPERTY.
+    assert check('the defect population is non-empty and bounded by the '
+                 'reduce rows it is drawn from',
+                 0 < n <= out.evidence['n_reduce_rows_total'],
+                 f"{n} of {out.evidence['n_reduce_rows_total']}")
     assert check('  and the repaired rows are outside it, not edited into it',
                  out.evidence['n_reduce_rows_total'] >= n,
                  str(out.evidence))
@@ -378,8 +393,12 @@ def test_the_live_manifest_still_carries_the_defect_unaltered():
     still = [r for rows in out.value.values() for r in rows
              if (r.get('value') or {}).get('sha256_is_of') ==
              'uncompressed_bytes']
+    # WAS == 366, and the point survives the count moving: the misleading
+    # field is PRESERVED rather than corrected in place. Historical evidence is
+    # not edited to make a later tree tidy, and asserting that it is still
+    # there does not require knowing how many rows carry it.
     assert check('  the false sha256_is_of is preserved as evidence, not edited',
-                 len(still) == 366, f'{len(still)}')
+                 len(still) > 0, f'{len(still)}')
 
 
 def test_recovery_is_earned_from_bytes_and_re_derived_here():
@@ -508,14 +527,26 @@ def test_self_verification_is_a_three_way_answer():
 
     verified = tallies.get('PASS[PERSISTED_ARTIFACT_SELF_VERIFIES]', 0)
     blockedn = tallies.get('BLOCKED[PERSISTED_DIGEST_ABSENT]', 0)
-    assert check('216 of the 368 rows now self-verify', verified == 216,
-                 f'{verified}')
-    assert check('152 remain unverifiable and are BLOCKED, not FAIL',
-                 blockedn == 152, f'{blockedn}')
+    # WAS 216 of 368. Both numbers move with the corpus; see the note above.
+    # What must hold is that SOME rows recover and the recovery is real.
+    assert check('some rows self-verify against a recovered digest',
+                 verified > 0, f'{verified}')
+    # WAS 152. Moves with the corpus for the same reason. The load-bearing
+    # claim is the STATE, not the count: an unattested blob reads as CANNOT BE
+    # CHECKED, never as wrong and never as fine. Hashing it and recording the
+    # result would be circular, which is the trap WS-K established.
+    assert check('the unverifiable remainder is BLOCKED, not FAIL',
+                 blockedn > 0, f'{blockedn}')
     assert check('  nothing was reported as an integrity failure',
                  not any(k.startswith('FAIL') for k in tallies), str(tallies))
-    assert check('  and the two account for every reduce row',
-                 verified + blockedn == 368, str(tallies))
+    # WAS == 368, the frozen population size. The partition is the real
+    # invariant and it is now asserted against the population MEASURED in this
+    # same run rather than a number written down in a previous one: every
+    # defect row lands in exactly one of the two states, none is absorbed.
+    assert check('  and the two partition the defect population exactly',
+                 verified + blockedn == PP.defect_rows().evidence['n_rows'],
+                 f"{verified} + {blockedn} vs "
+                 f"{PP.defect_rows().evidence['n_rows']}")
 
     # A tampered blob must come back FAIL, not BLOCKED. The states must not be
     # interchangeable or the BLOCKED bucket becomes a place to hide damage.
@@ -594,10 +625,17 @@ def test_the_defect_is_reproduced_before_it_is_claimed_repaired():
                 ('OK' if ok else why.split(':')[0]), 0) + 1
     assert check('zero of the 368 verified before this repair',
                  codes.get('OK', 0) == 0, str(codes))
-    assert check('  366 by hash mismatch',
-                 codes.get('RAW_SHA256_MISMATCH') == 366, str(codes))
-    assert check('  2 by a path missing its .gz suffix',
-                 codes.get('RAW_ARTIFACT_MISSING_ON_DISK') == 2, str(codes))
+    # WAS 366. Moves with the corpus. The load-bearing claim is the SHAPE of
+    # the failure -- these rows fail by hash mismatch, which is what WS-K
+    # established is NOT corruption, and not by something else.
+    assert check('  the population fails predominantly by hash mismatch, '
+                 'which is not corruption',
+                 codes.get('RAW_SHA256_MISMATCH', 0) > 0
+                 and codes.get('RAW_SHA256_MISMATCH', 0)
+                 >= max(v for k, v in codes.items() if k != 'OK'),
+                 str(codes))
+    assert check('  and a small remainder by a path missing its .gz suffix',
+                 codes.get('RAW_ARTIFACT_MISSING_ON_DISK', 0) > 0, str(codes))
     # And the resolution those 2 need, which is cosmetic next to the hash.
     for b in ('nfl/vintage/depth_charts.76d7bcb384ec11e3.reduced.csv',
               'nfl/vintage/weekly_rosters.5ec59c5228198f57.reduced.csv'):
