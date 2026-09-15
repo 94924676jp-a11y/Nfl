@@ -649,11 +649,20 @@ def test_h_commit_provenance_states_are_all_reachable():
               == 'DIVERGED_FROM_RELEASE_COMMIT')
     else:
         not_executed('ancestry states', 'no two-commit history to compare')
+    # STATED AS WHAT IT MUST NOT BE. Enumerating the acceptable failures was
+    # itself brittle: adding EXECUTED_SHA_UNRESOLVABLE -- a STRONGER answer --
+    # would have failed a check whose point is that the weak answers never read
+    # as yes. So the check names the passing states and refuses them.
+    PASSING = ('MATCHES_RELEASE_COMMIT', 'DESCENDS_FROM_RELEASE_COMMIT',
+               'RELEASE_PINS_NO_COMMIT')
     unknown = fn({'resolved_source_sha': 'f' * 40}, '0' * 40)['state']
-    check('an undecidable ancestry is NOT rounded to a pass',
-          unknown in ('COMMIT_ANCESTRY_NOT_ESTABLISHED',
-                      'DIVERGED_FROM_RELEASE_COMMIT'),
+    check('a commit that cannot be resolved is NOT rounded to a pass',
+          unknown not in PASSING,
           f'got {unknown!r}; NOT ASKED must never render as yes')
+    check('  and it is named as unresolvable, not as undecidable ancestry',
+          unknown == 'EXECUTED_SHA_UNRESOLVABLE',
+          f'got {unknown!r} -- "git could not decide" and "that commit does '
+          f'not exist" are different facts')
 
 
 if __name__ == '__main__':

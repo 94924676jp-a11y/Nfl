@@ -215,9 +215,39 @@ def test_e_the_approved_release_is_complete_and_enforceable():
     check('  this tree matches the approved release',
           good.code == 'CAPTURE_EXECUTOR_MATCHES_RELEASE',
           f'{good.code} {good.detail[:120]}')
+    # THE COMMIT RELATION HAS THREE ANSWERS, NOT TWO, and this check used to
+    # collapse them. It asserted that ANY commit other than the release commit
+    # refuses -- which was true, and was exactly the self-invalidating rule:
+    # the capture job commits its captured bytes back, so the tip moves and
+    # from the second capture onward "a different commit" is the NORMAL state.
+    # Refusing it refused production. So the three are separated here.
     bad = CR.assert_executor_matches_release(rel, 'de' * 32)
-    check('  a different executed commit REFUSES',
-          bad.code == 'CAPTURE_EXECUTOR_COMMIT_MISMATCH', bad.code)
+    check('  an unresolvable executed commit REFUSES',
+          bad.state.name == 'FAIL', f'{bad.code} -- it must not proceed')
+    check('    and says the commit does not resolve',
+          bad.code == 'CAPTURE_EXECUTOR_COMMIT_UNRESOLVABLE', bad.code)
+
+    _root = CR._git('rev-list', '--max-parents=0', '-n', '1',
+                    'HEAD').stdout.strip()
+    _head = CR._git('rev-parse', 'HEAD').stdout.strip()
+    if _root and _head and _root != _head:
+        diverged = dict(rel)
+        diverged['resolved_source_sha'] = _head
+        d = CR.assert_executor_matches_release(diverged, _root)
+        check('  a resolvable commit that does NOT descend REFUSES',
+              d.code == 'CAPTURE_EXECUTOR_COMMIT_MISMATCH', d.code)
+        desc = dict(rel)
+        desc['resolved_source_sha'] = _root
+        ok2 = CR.assert_executor_matches_release(desc, _head)
+        check('  but a DESCENDANT commit does not, because capture moves the tip',
+              ok2.code == 'CAPTURE_EXECUTOR_MATCHES_RELEASE', ok2.code)
+        check('    and the descent is stated in the evidence',
+              ok2.evidence.get('commit_provenance')
+              == 'DESCENDS_FROM_RELEASE_COMMIT',
+              str(ok2.evidence.get('commit_provenance')))
+    else:
+        not_executed('the descendant/diverged split',
+                     'no two-commit history to build the cases from')
     none = CR.assert_executor_matches_release(None)
     check('  and no release at all REFUSES rather than proceeding',
           none.code == 'NO_APPROVED_CAPTURE_RELEASE', none.code)
@@ -239,7 +269,13 @@ def test_f_the_pin_is_what_is_doing_the_work():
         not_executed('nfl-capture.yml absent', 'nothing to bypass')
         return
     live = p.read_text()
-    stripped = re.sub(r'^\s*ref:\s*capture-prod\s*$', '', live, flags=re.M)
+    # STRIP WHATEVER FORM THE PIN TAKES. It was the literal `capture-prod`;
+    # it is now `${{ env.CAPTURE_BRANCH }}`, because the ref and the push
+    # target must read one declaration. A bypass proof keyed to the old
+    # spelling stops stripping anything and then reports that the pin is
+    # not load-bearing -- which would be this file measuring its own
+    # staleness rather than the workflow.
+    stripped = re.sub(r'^\s*ref:\s*\S.*$', '', live, flags=re.M)
     blocks_live = _checkout_steps(live)
     blocks_stub = _checkout_steps(stripped)
     check('with the ref present, every checkout names one',
