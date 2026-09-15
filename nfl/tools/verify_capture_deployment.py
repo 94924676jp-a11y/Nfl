@@ -152,8 +152,14 @@ def verify(remote='origin', default_branch='main'):
             bool(refs) and all(r == PROD for r in refs),
             str(len(refs)) + ' checkout step(s): ' + str(refs))
         targets = _wf_write_targets(doc)
-        rec(wf + ' on the default branch writes back to ' + PROD,
-            bool(targets) and all(t == PROD for t in targets),
+        # THE DETAIL MUST NOT NARRATE A FAILURE ON A PASSING LINE. This printed
+        # "a job that checks out capture-prod and pushes to main promotes the
+        # capture tree into the default branch" next to an `ok`, which reads as
+        # though the green line had found that. A reader should never have to
+        # work out whether the prose applies.
+        _ok = bool(targets) and all(t == PROD for t in targets)
+        rec(wf + ' on the default branch writes back to ' + PROD, _ok,
+            str(targets) if _ok else
             str(targets) + ' -- a job that checks out ' + PROD + ' and pushes '
             'to ' + default_branch + ' promotes the capture tree into the '
             'default branch')

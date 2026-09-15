@@ -200,7 +200,47 @@ def test_d_BUG_the_scheduled_capture_path_runs_unvalidated_code():
     if v is None:
         not_executed('no validated contract', 'nothing to compare against')
         return
-    main_surface = _ref_surface('origin/main')
+    # MEASURE THE BRANCH THAT ACTUALLY RUNS, WHICH IS NO LONGER THIS ONE.
+    # This read origin/main's capture surface and called that "what the
+    # scheduler runs". Before D24 that was right, because a ref-less checkout
+    # took the default branch. After D24 it is wrong BY DESIGN: the default
+    # branch carries the workflow DEFINITIONS and capture-prod carries the
+    # SURFACE, so measuring main's surface reports three modules missing from a
+    # branch that is not supposed to have them, and would go on reporting it
+    # forever while production was correct.
+    #
+    # So: follow the pointer instead of assuming where it points. Resolve the
+    # ref out of the default-branch definition, then measure THAT. If anyone
+    # unpins the ref, this falls back to the default branch and goes red again,
+    # which is the behaviour worth keeping.
+    executed_ref = 'origin/main'
+    for _n in ('nfl-capture.yml', 'nfl-t90.yml'):
+        _shown = subprocess.run(
+            ['git', 'show', f'origin/main:.github/workflows/{_n}'],
+            capture_output=True, text=True, cwd=ROOT)
+        if _shown.returncode != 0:
+            continue
+        try:
+            import yaml
+            _doc = yaml.safe_load(_shown.stdout)
+        except Exception:                                        # noqa: BLE001
+            continue
+        for _job in ((_doc or {}).get('jobs') or {}).values():
+            for _s in (_job.get('steps') or []):
+                if not isinstance(_s, dict):
+                    continue
+                if 'checkout' not in str(_s.get('uses') or ''):
+                    continue
+                _v = (_s.get('with') or {}).get('ref')
+                if not isinstance(_v, str):
+                    continue
+                _m = re.fullmatch(r'\$\{\{\s*env\.(\w+)\s*\}\}', _v.strip())
+                if _m:
+                    _v = ((_doc.get('env') or {}).get(_m.group(1)) or _v)
+                if _v and _v != 'origin/main':
+                    executed_ref = f'origin/{_v}'
+    print(f'       the scheduler checks out: {executed_ref}')
+    main_surface = _ref_surface(executed_ref)
     orig = CI.surface
     try:
         CI.surface = lambda: main_surface
@@ -212,7 +252,8 @@ def test_d_BUG_the_scheduled_capture_path_runs_unvalidated_code():
     print(f"       differing on main  : {d.get('differing')}")
     # BUG: the branch the scheduler checks out does not carry the validated
     # capture implementation.
-    check('the default branch runs the VALIDATED capture implementation',
+    check(f'the branch the scheduler checks out ({executed_ref}) runs the '
+          f'VALIDATED capture implementation',
           d['verdict'] == 'MATCHES',
           f"CAPTURE_DEPLOYMENT_DRIFT: {d.get('detail')} Until this is green, "
           f"every scheduled capture writes rows produced by code that was "

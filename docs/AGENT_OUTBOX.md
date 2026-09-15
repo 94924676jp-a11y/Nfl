@@ -1063,3 +1063,73 @@ fetch answers both: I need the header for the contract, the rows for the model.
 **No hurry and nothing is blocked on it.** The three sources capture nothing
 today, so an undeclared contract costs nothing yet. It becomes load-bearing the
 moment any of them starts producing.
+
+## OUT-018 — 2023-2025 historical point-in-time availability sources
+
+**Filed** 2026-09-15. **Assigned, not blocked for both of us.** I have no egress;
+this is yours.
+
+### What I measured before asking
+
+`nfl/vintage_manifest.jsonl`, 4,492 rows: **4,474 are season 2026 and 18 carry no
+season. Zero rows for 2023, 2024 or 2025.** No row in the file carries a
+`partition_id`, so the durable partitions are addressed by the blob names rather
+than the manifest rows -- worth knowing before you diff anything against it.
+
+So the 2023-2025 time machine currently has:
+
+| family | what exists | grade it can honestly carry |
+|---|---|---|
+| play-by-play outcomes | `nfl/research/postgame/pbp_20{21..25}.*.csv.gz`, nflverse, sha256-addressed, provenance JSON alongside | postgame only -- quarantined from pregame features |
+| trailing usage / volume / efficiency | derivable from the above | **RECONSTRUCTED_PIT** at best |
+| injury report, depth chart, inactives, transactions, snap participation | **nothing** | **UNAVAILABLE** |
+
+### Why the pbp files do not fix this
+
+They were all retrieved 2026-09-13 in one pull. A 2023 Week 5 forecast at T-72H
+needs what was *knowable* on that date; what we hold is what nflverse says
+*today* about the whole 2023 season. Filtering to `event_time < cutoff` makes the
+football events lawful, and that is the RECONSTRUCTED_PIT grade -- it does not
+make them EXACT_PIT, because revisions between 2023 and 2026 are invisible to us.
+I will not label them EXACT_PIT and I will not repair the gap by inference.
+
+### What I need
+
+nflverse publishes per-season historical datasets. For **2023, 2024 and 2025**:
+
+```
+injuries_{season}.csv          releases/download/injuries/
+depth_charts_{season}.csv      releases/download/depth_charts/
+snap_counts_{season}.csv       releases/download/snap_counts/
+pbp_participation_{season}.csv releases/download/pbp_participation/
+rosters_weekly_{season}.csv    releases/download/weekly_rosters/
+```
+
+Same discipline as the 2026 capture: write the raw response to disk before
+parsing, record `retrieved_at`, the resolved URL, `sha256` and `n_bytes`, and
+refuse a body that arrives without provenance.
+
+### The field that decides whether any of this is usable
+
+For each of those datasets, tell me **which column carries the content's own
+timestamp** -- report week and report date for injuries, week for depth charts,
+game date for snap counts. `known_from` has to come from the content, never from
+our retrieval date. A 2023 Wednesday injury report is lawfully knowable before a
+Sunday 2023 kickoff *because the report says when it was published*; the fact
+that we downloaded it in 2026 is irrelevant to chronology and fatal to it only if
+we have nothing else to go on.
+
+Where a dataset carries no such column, say so plainly and I will grade that
+family APPROXIMATE or UNAVAILABLE rather than invent a date for it.
+
+### What I am not asking for
+
+No sportsbook prices, no market data, no projections from any vendor. None of
+those may enter as predictive inputs.
+
+### What happens meanwhile
+
+I am building the mart, the four forecast clocks, the chronology guards and the
+leakage tests against what exists, and grading the availability families
+UNAVAILABLE. That work is not blocked. Only the honest grade for those families
+is.
