@@ -285,9 +285,39 @@ def pbp_sources() -> Outcome:
             'A1_PBP_GLOB_MATCHED_NOTHING',
             f'{env}={pat!r} matched no file. An empty match is an absence, '
             f'not an empty season.', cause=Cause.DATA, env=env, pattern=pat)
+    # THE COMMITTED CORPUS IS A DECLARED SOURCE, NOT A FALLBACK GUESS.
+    #
+    # The docstring above said play-by-play "is NOT committed to this
+    # repository". That went stale: nfl/research/postgame carries
+    # pbp_{season}.{sha16}.csv.gz for 2021-2026, each with a
+    # .provenance.json sidecar naming the nflverse release URL, the retrieval
+    # time and the sha256 of the bytes. Requiring an environment variable to
+    # find files that are sitting in the tree made the QB layer BLOCK on
+    # A1_PBP_SOURCE_NOT_LOCATED for 2026 week 2 -- a binding defect reported as
+    # a missing input.
+    #
+    # THIS IS NOT A CHRONOLOGY HOLE. The frame is cut STRICTLY BEFORE
+    # `season * 100 + week` by `_history_from_frame`, and the caller asserts
+    # the cut held rather than trusting it. Handing it the whole corpus
+    # therefore cannot leak DET-BUF's own play-by-play into DET-BUF's forecast:
+    # ordinal 202602 is excluded by construction and the guard checks it.
+    # Historical play-by-play through games already played is exactly what this
+    # frame is for.
+    committed = sorted(_glob.glob(str(
+        _REPO / 'nfl' / 'research' / 'postgame' / 'pbp_*.csv.gz')))
+    if committed:
+        return Outcome.ok(
+            'A1_PBP_SOURCES', value=committed,
+            detail=f'{len(committed)} committed play-by-play file(s) from '
+                   f'nfl/research/postgame',
+            env=None, pattern='nfl/research/postgame/pbp_*.csv.gz',
+            source='COMMITTED_CORPUS',
+            sha256={os.path.basename(f): _sha_file(f)[:16]
+                    for f in committed})
     return Outcome.blocked(
         'A1_PBP_SOURCE_NOT_LOCATED',
-        f'set one of {PBP_GLOB_ENV} to the nflverse play-by-play files '
+        f'no committed play-by-play under nfl/research/postgame, and none of '
+        f'{PBP_GLOB_ENV} is set to the nflverse play-by-play files '
         f'(pbp{{season}}.csv.gz, seasons 2020..latest). The fields consumed '
         f'are season, week, posteam, season_type, two_point_attempt, '
         f'qb_dropback, passer_player_id, rush_attempt, rusher_player_id, '

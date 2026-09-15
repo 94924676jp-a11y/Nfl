@@ -33,7 +33,7 @@ for _q in (str(_REPO), str(_REPO / 'nfl' / 'research' / 'p4c'),
     if _q not in sys.path:
         sys.path.insert(0, _q)
 
-from sportsplatform.governance.outcome import Outcome, State      # noqa: E402
+from sportsplatform.governance.outcome import Cause, Outcome, State      # noqa: E402
 from nfl.production import team_volume_v1 as TV                   # noqa: E402
 from nfl.production import qb_accounting as QBACC                 # noqa: E402
 from nfl.production import qb_v1 as QBV1                          # noqa: E402
@@ -328,10 +328,31 @@ def slate_fits(season, week, players, role_priors=None, tiers=None) -> Outcome:
             ('td_priors_rush', FP.td_priors(season, 'rush'))):
         states[name] = f'{o.state.value}[{o.code}]'
         if o.state is not State.PASS:
+            # A CAUSE READ BACK OUT OF EVIDENCE IS A STRING, NOT THE ENUM.
+            #
+            # `Outcome` stores cause as its `.value`, so this handed the
+            # literal 'DATA' to a constructor that requires `Cause.DATA` and
+            # got OutcomeError: BLOCKED_CAUSE_UNDECLARED ... (got 'DATA') --
+            # an error message naming DATA as invalid while listing DATA among
+            # the valid choices, which is how long it took to read.
+            #
+            # The consequence was worse than the crash. This refusal exists to
+            # say WHICH prior was unavailable and why; raising here destroyed
+            # that and the caller reported the generic SLATE_FITS_RAISED
+            # instead, so five stages went NOT_APPLICABLE for a reason nobody
+            # could see. The upstream refusal is preserved now.
+            _c = o.evidence.get('cause')
+            if isinstance(_c, str):
+                _c = next((c for c in Cause if c.value == _c or c.name == _c),
+                          None)
+            elif not isinstance(_c, Cause):
+                _c = None
             return Outcome.blocked(
                 'SLATE_FITS_UNAVAILABLE',
                 f'{name} returned {o.state.value}[{o.code}]: {o.detail[:160]}',
-                cause=o.evidence.get('cause') or None, states=states)
+                cause=_c or Cause.DEPENDENCY,
+                failing_fit=name, upstream_code=o.code,
+                upstream_cause=o.evidence.get('cause'), states=states)
         fits[name] = o
     return Outcome.ok('SLATE_FITS_OK', value=fits, states=states,
                       evidence_by_fit={

@@ -452,13 +452,27 @@ def build(args, fixtures: dict = None) -> dict:
                                    observed_before=args.written_at)
                 if pcq.state is not State.PASS:
                     return pcq
-                pq = {r['gsis_id']: r['participation_prior']
-                      for r in pcq.value if r.get('gsis_id')}
-                kq = {r['gsis_id']: r['participant_class']
-                      for r in pcq.value if r.get('gsis_id')}
-                qbp = [dict(q, participation_prior=pq.get(q.get('gsis_id')),
-                            participant_class=kq.get(q.get('gsis_id')))
-                       for q in qbp]
+                bq = {r['gsis_id']: r for r in pcq.value if r.get('gsis_id')}
+                qkeep = [q for q in qbp
+                         if bq.get(q.get('gsis_id'), {})
+                         .get('enters_opportunity_pool')]
+                qempty = sorted({q.get('team') for q in qbp}
+                                - {q.get('team') for q in qkeep})
+                if qempty:
+                    return Outcome.blocked(
+                        'QB_POOL_EMPTIED_BY_ELIGIBILITY',
+                        f'every quarterback {qempty} carries is off the game '
+                        f'roster, so the club would have nobody to take a '
+                        f'dropback. Refused rather than allocating a team '
+                        f'dropback share among nobody.',
+                        cause=Cause.DATA, teams_emptied=qempty,
+                        n_qb_in=len(qbp), n_qb_kept=len(qkeep))
+                qbp = [dict(q,
+                            participation_prior=bq[q['gsis_id']]
+                            .get('participation_prior'),
+                            participant_class=bq[q['gsis_id']]
+                            .get('participant_class'))
+                       for q in qkeep]
                 fx['_qb_participant_class'] = {
                     'fallback_from': st.code, 'detail': pcq.detail,
                     'counts': pcq.evidence.get('counts')}
@@ -1033,17 +1047,54 @@ def build(args, fixtures: dict = None) -> dict:
                 if pc.state is not State.PASS:
                     fx['_nonqb'] = {'fatal': pc}
                     return fx['_nonqb']
-                prior = {r['gsis_id']: r['participation_prior']
-                         for r in pc.value if r.get('gsis_id')}
-                klass = {r['gsis_id']: r['participant_class']
-                         for r in pc.value if r.get('gsis_id')}
-                players = [dict(q, participation_prior=prior.get(
-                                    q.get('gsis_id')),
-                                participant_class=klass.get(q.get('gsis_id')))
-                           for q in players]
+                # OFF THE GAME ROSTER MEANS OUT OF THE POOL, NOT A TINY
+                # SHARE. Weighting a practice-squad player by a smoothed
+                # observation rate gave him a direct route to a target without
+                # ever entering a lawful game-day state. He needs a ROSTER
+                # TRANSITION first, and its probability is not identified --
+                # `official_transactions` has no endpoint. So he is held out of
+                # the opportunity pool and the branch stays visible.
+                by_id = {r['gsis_id']: r for r in pc.value if r.get('gsis_id')}
+                pool_ids = {g for g, r in by_id.items()
+                            if r.get('enters_opportunity_pool')}
+                held = [q for q in players
+                        if q.get('gsis_id') not in pool_ids]
+                kept = [q for q in players if q.get('gsis_id') in pool_ids]
+                # A TEAM WITH NOBODY LEFT IS A REFUSAL, not an empty partition.
+                emptied = sorted({q.get('team') for q in players}
+                                 - {q.get('team') for q in kept})
+                if emptied:
+                    fx['_nonqb'] = {'fatal': Outcome.blocked(
+                        'PARTICIPANT_POOL_EMPTIED_BY_ELIGIBILITY',
+                        f'{emptied} has no player on the game roster, so '
+                        f'there is nobody to allocate opportunity among. '
+                        f'Refused rather than allocating within an empty '
+                        f'team or putting the off-roster players back.',
+                        cause=Cause.DATA, teams_emptied=emptied,
+                        n_in=len(players), n_kept=len(kept))}
+                    return fx['_nonqb']
+                players = [dict(q,
+                                participation_prior=by_id[q['gsis_id']]
+                                .get('participation_prior'),
+                                participant_class=by_id[q['gsis_id']]
+                                .get('participant_class'),
+                                eligibility_state=by_id[q['gsis_id']]
+                                .get('eligibility_state'))
+                           for q in kept]
                 fx['_participant_class'] = {
                     k: v for k, v in pc.evidence.items() if k != 'value'}
                 fx['_participant_class']['fallback_from'] = st.code
+                fx['_participant_class']['n_members'] = len(by_id)
+                fx['_participant_class']['n_in_opportunity_pool'] = len(kept)
+                fx['_participant_class']['n_held_off_roster'] = len(held)
+                fx['_participant_class']['held_off_roster'] = [
+                    {'gsis_id': q.get('gsis_id'), 'team': q.get('team'),
+                     'position': q.get('position'),
+                     'participant_class': by_id.get(q.get('gsis_id'), {})
+                     .get('participant_class'),
+                     'reason': 'REQUIRES_ROSTER_TRANSITION_PROBABILITY_'
+                               'THAT_IS_NOT_IDENTIFIED'}
+                    for q in held]
                 fx['_participant_class']['detail'] = pc.detail
                 # The gate below still runs: official inactives and the injury
                 # report are ranked authorities and they still exclude.
@@ -1641,12 +1692,28 @@ def build(args, fixtures: dict = None) -> dict:
                                     'spec_versions') and v})
 
             if not _v:
-                return Outcome.ok(
-                    'STAGE_DECLARED_UNIMPLEMENTED', value={},
+                # PASS ANSWERED A DIFFERENT QUESTION THAN IT WAS READ AS.
+                #
+                # This returned Outcome.ok, so the run summary printed
+                # `feature_build PASS STAGE_DECLARED_UNIMPLEMENTED`. PASS here
+                # meant "the control flow executed and the gap was declared
+                # correctly". Every reader takes it to mean "this stage
+                # produced a feature". Those are different questions and the
+                # word answered the wrong one.
+                #
+                # DEFERRED is this pipeline's existing vocabulary for exactly
+                # this -- declared debt, carried into the artifact as OWED and
+                # never as passed. Three separate facts are now reported
+                # instead of one overloaded state: the control flow ran
+                # (executed), the feature does not exist (implemented), and it
+                # is therefore not product-ready (product_ready).
+                return Outcome.deferred(
+                    'STAGE_DECLARED_UNIMPLEMENTED',
                     detail=f'{_st}: the accepted research baseline {_s!r} has '
                            f'no production implementation. Declared as debt '
                            f'rather than reported as a successful forecast.',
-                    implemented=False, layer=_k)
+                    value={}, executed=True, implemented=False,
+                    product_ready=False, owed=f'{_st}:{_s}', layer=_k)
             return Outcome.ok(f'{_st.upper()}_OK', value=_v, implemented=True)
         p.run_stage(stage, _model, declared_inputs=['h_history', 'q_pos_mean'],
                     spec_version=spec)

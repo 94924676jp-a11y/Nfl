@@ -35,6 +35,22 @@ Zero of 305 non-ACT skill players took a single offensive snap. And ACT is
 The rates live in PARTICIPATION_RATE_BY_STATUS.json with their n, their source
 blob hashes and their join. Nothing here is a chosen number.
 
+STATE TRANSITION IS NOT PARTICIPATION, AND THE FIRST CUT CONFLATED THEM.
+It handed every class a Jeffreys-smoothed rate off the same table, so a
+practice-squad player carried 0.0041 and a released player 0.0093 of a direct
+route to a target. That silently answered a question nobody had identified:
+
+    P(appears) = P(roster transition before kickoff) x P(appears | eligible)
+
+The right-hand factor is measured here, 361/417. The LEFT-hand factor needs a
+transactions feed, and there is none. So it is returned as None rather than a
+number, and an off-roster player is HELD OUT of the opportunity pool instead of
+being given a small weight. He cannot receive a route, a carry or a target
+unless a simulated world first places him in a lawful game-day state, and no
+such branch can be built from a feed that does not exist. The absence of a
+transactions endpoint must never become a tiny probability of participating by
+magic.
+
 THREE THINGS THIS REFUSES TO DO.
 
   * It does not read INA's 0/62 as a week-2 prior. That zero is TRUE BY
@@ -141,19 +157,67 @@ def rates() -> Outcome:
     return Outcome.ok('PARTICIPATION_RATES_READ', value=doc)
 
 
-def participation_prior(cls: str, doc: dict):
-    """Jeffreys mean for the class, or the marginal for UNKNOWN.
+#: Which classes are ON THE GAME ROSTER as things stand. Everyone else needs a
+#: ROSTER TRANSITION before kickoff -- an elevation, an activation, a signing --
+#: and that is a different event with a different probability.
+_GAME_ROSTER = (ACTIVE_ROSTER_CONFIRMED, ACTIVE_ROSTER_EXPECTED,
+                ELEVATION_CONFIRMED)
 
-    JEFFREYS, NOT THE RAW RATE. DEV measured 0/120. Carrying that as 0.0 would
-    assert a practice-squad snap is IMPOSSIBLE, which 120 observations cannot
-    establish; the Jeffreys mean says 0.0041 instead -- small, and not a claim
-    of impossibility.
-    """
+
+def eligibility_state(cls: str) -> str:
+    """Whether this class is on the game roster, off it, or unknown."""
+    if cls in _GAME_ROSTER:
+        return 'ELIGIBLE'
     if cls == UNKNOWN:
-        return (doc.get('frame') or {}).get('marginal_rate_any_member')
-    key = _RATE_KEY.get(cls)
-    row = (doc.get('rates') or {}).get(key or '')
-    return row.get('jeffreys_mean') if row else None
+        return 'UNKNOWN'
+    return 'NOT_GAME_ROSTER'
+
+
+def p_appear_given_eligible(doc: dict):
+    """P(offensive snap | ON THE GAME ROSTER). Measured: 361/417 = 0.8657.
+
+    ONE QUANTITY, NOT TWO. The first cut of this module handed every class a
+    Jeffreys-smoothed rate from the same table and called it a participation
+    probability -- so a practice-squad player got 0.0041 and a released player
+    0.0093 of a direct route to a target. That silently answered a question
+    nobody had identified:
+
+        P(appears) = P(roster transition before kickoff) * P(appears | eligible)
+
+    The right-hand factor is measured here. The LEFT-hand factor requires a
+    transactions feed, and `official_transactions` has no verified endpoint --
+    459 manifest rows, every one BLOCKED/ENDPOINT_NOT_YET_VERIFIED. So it is
+    NOT identified, and a smoothed observation rate is not a substitute for it.
+    The absence of a transaction feed must not become a small probability of
+    participating by magic.
+    """
+    row = (doc.get('rates') or {}).get('ACT') or {}
+    return row.get('jeffreys_mean')
+
+
+def transition_probability(cls: str):
+    """P(this class reaches the game roster before kickoff). UNIDENTIFIED.
+
+    Deliberately returns None for every off-roster class rather than a number.
+    A practice-squad player DOES sometimes get elevated and a reserve player
+    DOES sometimes get activated; what this repository cannot currently do is
+    say how often, because the feed that would say so does not exist. None is
+    the honest answer and it keeps the branch visible instead of dissolving it
+    into a weight.
+    """
+    return 1.0 if cls in _GAME_ROSTER else None
+
+
+def participation_prior(cls: str, doc: dict):
+    """P(offensive snap), or None when it is not identified.
+
+    Returns a number ONLY for a class already on the game roster. For anyone
+    else the answer depends on a transition probability nobody has measured, so
+    there is no number to return and the caller must not invent one.
+    """
+    if cls in _GAME_ROSTER:
+        return p_appear_given_eligible(doc)
+    return None
 
 
 def _raw_status_map(season: int, week: int):
@@ -224,15 +288,27 @@ def classify(season: int, week: int, members, *, observed_before=None):
             st = prior_wk[g]
             cls = _CARRY.get(st, UNKNOWN)
             basis, grade = f'{st}@w{week - 1}', 'CARRIED_FORWARD_ONE_WEEK'
+        est = eligibility_state(cls)
         p = participation_prior(cls, doc)
-        if p is None:
+        if est == 'ELIGIBLE' and p is None:
             return Outcome.blocked(
                 'PARTICIPATION_PRIOR_MISSING',
-                f'class {cls} has no measured rate in {RATES_PATH.name}.',
+                f'class {cls} is on the game roster but {RATES_PATH.name} '
+                f'carries no ACT rate to give it.',
                 cause=Cause.DATA, participant_class=cls)
         rows.append({'gsis_id': g, 'team': m.get('team'),
                      'position': m.get('position'),
-                     'participant_class': cls, 'participation_prior': p,
+                     'participant_class': cls,
+                     'eligibility_state': est,
+                     # ONLY the game-roster classes carry a participation
+                     # number. Everyone else carries None and a named reason.
+                     'participation_prior': p,
+                     'p_appear_given_eligible': p_appear_given_eligible(doc),
+                     'transition_probability': transition_probability(cls),
+                     'transition_authority': (
+                         'IDENTIFIED' if est == 'ELIGIBLE'
+                         else 'UNIDENTIFIED_NO_TRANSACTIONS_ENDPOINT'),
+                     'enters_opportunity_pool': est == 'ELIGIBLE',
                      'status_basis': basis, 'evidence_grade': grade})
         counts[cls] = counts.get(cls, 0) + 1
 

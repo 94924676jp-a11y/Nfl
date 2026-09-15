@@ -1133,3 +1133,65 @@ I am building the mart, the four forecast clocks, the chronology guards and the
 leakage tests against what exists, and grading the availability families
 UNAVAILABLE. That work is not blocked. Only the honest grade for those families
 is.
+
+## OUT-019 — pbp_participation 2026, the last thing between us and a skill-position board
+
+**Filed** 2026-09-15. **Assigned, not blocked for both of us.** No egress here.
+
+### What it blocks
+
+DET-BUF (`2026_02_DET_BUF`, Thursday 2026-09-17) seals with quarterbacks only.
+Appearance, participation, targets_carries, conversion and td_layer all return:
+
+```
+SLATE_FITS_UNAVAILABLE
+  participation_prior BLOCKED[PARTICIPATION_HISTORY_STALE]:
+  the newest participation history is ordinal 202518 and the forecast is
+  2026 week 2. ewma_hl2 weights the most recent games hardest, so running it
+  with no 2026 game would be a different estimator.
+  missing_source: pbp_participation_2026
+```
+
+That refusal is CORRECT and I am not suppressing it. `week2_data_debt.json`
+promised it. Running the accepted estimator on 2025 data alone would be a
+different estimator wearing the accepted one's name.
+
+### Why I cannot clear it myself
+
+`pbp_participation` is in the manifest 380 times, every row:
+
+```
+NOT_APPLICABLE  WATCH_ONLY_SOURCE_NOT_CAPTURED_HERE
+"registered and reachable, but handled by the periodic availability watch,
+ which is not event-anchored and discharges nothing. Deliberately outside
+ this execution."
+```
+
+**Reachable, and never captured.** Not a code defect, not a missing endpoint --
+an uncaptured source.
+
+### What I need
+
+`pbp_participation_2026` covering **week 1** (and week 2 once it exists):
+
+```
+releases/download/pbp_participation/pbp_participation_2026.csv
+```
+
+Same discipline as every other capture: raw bytes to disk before parsing,
+`retrieved_at`, resolved URL, `sha256`, `n_bytes`, and a refusal on a body with
+no provenance.
+
+### One question that decides how much it buys us
+
+Week 1 is the ONLY 2026 week that has been played. `share_prior` needs a
+current-season observation to satisfy its staleness rule; one week will satisfy
+it. Tell me whether the file carries `offense_players` per play (the route
+denominator) or only the snap aggregate -- that decides whether the receiving
+layer gets routes or only a snap proxy, and I will grade it accordingly rather
+than assume.
+
+### Not asked for
+
+No sportsbook prices, no vendor projections. Neither may enter as a predictive
+input.
