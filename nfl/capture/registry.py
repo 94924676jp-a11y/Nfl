@@ -119,6 +119,66 @@ class SourceSpec:
     # and when those four dropped off the page on 2026-09-08T17:36Z the control
     # flipped to FAIL over 419KB of real content.
     content_markers: tuple = ()
+    # THE SHAPE THE DATA LIVES IN, not a word that describes it.
+    # D20: official_inactives served an empty-state page for nine days and
+    # passed 374 times, because its marker word "inactive" appears up to 41
+    # times in the page's own chrome -- title, meta, og:url, ad and analytics
+    # config, news-tile link attributes -- and once in the empty-state sentence
+    # itself. A word count cannot tell a table of players from a navigation
+    # bar. A row container can: measured over every committed blob,
+    # official_injury_report carries a <table> in 374 of 374 captures (13 to
+    # 214 <tr>), official_inactives in 0 of 392. That separation is complete
+    # and needs no threshold, because it is the declared shape of the source,
+    # not a quantity fitted to the data.
+    #
+    # Declare the tag whose presence means "rows exist". Empty = no structural
+    # claim, and the marker count stands alone as before.
+    row_container: tuple = ()
+    # THE SAME QUESTION FOR JSON AND CSV. D22.
+    #
+    # D20 was an html source passing over a page with no players. The other two
+    # content kinds have the identical hole, because both count the ENVELOPE.
+    #
+    #   json: the check is `len(list)`, or for a dict the sum of list lengths
+    #         plus one per scalar. ESPN's injuries document is
+    #         {injuries:[32 teams], season, status, timestamp}, so it scores
+    #         32 + 3 = 35 against 800 real injury entries. Empty every team's
+    #         list and it STILL scores 35 -- indistinguishable from healthy.
+    #         Drop the injuries key entirely and the three scalars alone score
+    #         3, which passes.
+    #
+    #   csv:  the check is `len(nonblank_lines) - 1`, which counts rows and
+    #         never looks at a column. This project has already shipped the
+    #         failure that catches: an export wrote 7,926 rows with every
+    #         meaningful column blank, because the field names were guessed
+    #         rather than read from the schema.
+    #
+    # So declare, per source, WHERE the entities live and WHAT an entity must
+    # carry. Both default to empty, leaving a source that declares nothing on
+    # exactly its old behaviour.
+    #
+    #: For json. A path of keys from the document root to the list of
+    #: entities, e.g. ("injuries", "*", "injuries") where "*" means "each
+    #: element of this list". At least one entity must exist at that path.
+    payload_path: tuple = ()
+    #: For csv. Columns that must be present in the header AND non-blank on at
+    #: least one data row. A header is a promise; a populated cell is evidence.
+    #: These are IDENTITY columns -- what a consumer joins on.
+    required_columns: tuple = ()
+    #: For csv. At least ONE of these must be populated on at least one row:
+    #: the column that carries the document's actual subject matter.
+    #:
+    #: WHY ANY-OF AND NOT A FIXED COLUMN. The injury feed's substance MOVES
+    #: THROUGH THE WEEK. Measured on the committed blobs: injuries.bfa4aa0ee7cde902
+    #: and injuries.1bf460ad261559a8 (2026-09-07 and 09-08, week 1) carry
+    #: practice_status fully populated -- "Did Not Participate", "Limited",
+    #: "Full" -- and report_status blank on every row, because the game-status
+    #: designation is not assigned until the final report. That is a CORRECT
+    #: empty, not a defect, and requiring report_status outright would have
+    #: flipped those two legitimate midweek captures to DEFERRED. Picking the
+    #: column that happens to make every blob pass would be fitting the guard
+    #: to the data, which is the error this whole class of defect is made of.
+    substantive_any_of: tuple = ()
     note: str = ""
 
     def url(self, season: int) -> Optional[str]:
@@ -128,6 +188,8 @@ class SourceSpec:
 REGISTRY: tuple = (
     SourceSpec(
         name="injuries",
+        required_columns=("gsis_id", "team"),
+        substantive_any_of=("report_status", "practice_status"),
         authority=SourceAuthority.ARCHIVE,
         source_status=SourceStatus.VERIFIED_REACHABLE_EXTERNALLY,
         executor_access=ExecutorAccess.REACHABLE,
@@ -149,6 +211,7 @@ REGISTRY: tuple = (
     ),
     SourceSpec(
         name="schedules",
+        required_columns=("game_id", "away_team", "home_team"),
         authority=SourceAuthority.ARCHIVE,
         source_status=SourceStatus.VERIFIED_REACHABLE_EXTERNALLY,
         executor_access=ExecutorAccess.REACHABLE,
@@ -163,6 +226,7 @@ REGISTRY: tuple = (
     ),
     SourceSpec(
         name="depth_charts",
+        required_columns=("team", "gsis_id", "pos_abb"),
         authority=SourceAuthority.ARCHIVE,
         source_status=SourceStatus.VERIFIED_REACHABLE_EXTERNALLY,
         executor_access=ExecutorAccess.REACHABLE,
@@ -177,6 +241,7 @@ REGISTRY: tuple = (
     ),
     SourceSpec(
         name="weekly_rosters",
+        required_columns=("season", "team", "gsis_id", "position"),
         authority=SourceAuthority.ARCHIVE,
         source_status=SourceStatus.VERIFIED_REACHABLE_EXTERNALLY,
         executor_access=ExecutorAccess.REACHABLE,
@@ -210,6 +275,7 @@ REGISTRY: tuple = (
         serves_kinds=("practice", "final_status"),
         content_markers=("questionable", "doubtful", "did not participate",
                          "limited participation", "full participation"),
+        row_container=("<tr",),
         # The CAPTURE is a whole-page snapshot, effective at the instant the
         # origin produced it. WEEK_TEAM is what a PARSED ROW would carry, and no
         # parser exists yet -- declaring it here made scope construction refuse
@@ -232,6 +298,7 @@ REGISTRY: tuple = (
         executor_access=ExecutorAccess.UNTESTED,
         serves_kinds=("inactives",),
         content_markers=("inactive",),
+        row_container=("<tr",),
         source_scope_kind=ScopeKind.EXACT_TIMESTAMP,
         note=("Resolves Questionable to 0/1 at ~T-90. The only source that can "
               "discharge an inactives target."),
@@ -242,6 +309,9 @@ REGISTRY: tuple = (
                       "football/nfl/injuries"),
         required=False, durability="commit_raw",
         reachability=Reachability.REACHABLE, content_kind="json",
+        # Measured on all 428 committed blobs: this path yields 800 entries on
+        # every one of them, where the old count yielded 35.
+        payload_path=("injuries", "*", "injuries"),
         authority=SourceAuthority.CANDIDATE_FALLBACK, authority_rank=9,
         source_status=SourceStatus.VERIFIED_REACHABLE_EXTERNALLY,
         executor_access=ExecutorAccess.LOCAL_PROXY_CONNECT_403,
@@ -327,6 +397,133 @@ REGISTRY: tuple = (
 )
 
 BY_NAME = {s.name: s for s in REGISTRY}
+
+
+# =========================================================================
+# DELIVERED SOURCES. Stored, declared, and never fetched by this project.
+# =========================================================================
+#
+# P7, 2026-09-15. `nfl/vintage_manifest.jsonl` holds PASS rows for two sources
+# that appear nowhere in `REGISTRY`:
+#
+#     hardrock_market_snapshot   1 row, capture_id 20260913T183203Z
+#     official_status_evidence   1 row, same capture_id
+#
+# Both arrived with `acquisition: EXTERNAL_AUTHORITATIVE_DELIVERY` -- handed
+# over by the networked agent rather than retrieved here -- and both have a
+# durable blob in `nfl/vintage/`. Until now nothing in code declared what they
+# are, who may read them, or whether a forecast may. An undeclared source with
+# a stored blob is exactly the state `resolve()` refuses for a fetched one, and
+# the refusal was being dodged by never asking.
+#
+# THEY ARE NOT ADDED TO `REGISTRY`, and that is deliberate rather than
+# fastidious. `capture_vintage._sources()` iterates `REGISTRY` and would start
+# planning fetches for them; `persisted_provenance` reads durability off the
+# same tuple. A delivered artifact has no endpoint to poll and no cadence to
+# miss, so putting it in the fetch registry would manufacture a capture
+# obligation that cannot be discharged and was never owed.
+#
+# `forecast_eligible=False` here is a DECLARATION, not a mechanism. What
+# actually keeps the Hard Rock snapshot out of a forecast is that no
+# forecast-path module imports anything that reads it -- measured by
+# `nfl/tests/test_p7_data_plane.py` section E, which walks the readers rather
+# than trusting this flag. The flag exists so that a future wiring is a visible
+# contradiction instead of a quiet first.
+@dataclasses.dataclass(frozen=True)
+class DeliveredSpec:
+    name: str
+    delivered_at: str
+    acquisition: str
+    role: str
+    forecast_eligible: bool
+    why_not: str
+    blob: str
+    note: str = ""
+
+
+DELIVERED: tuple = (
+    DeliveredSpec(
+        name="hardrock_market_snapshot",
+        delivered_at="2026-09-13T18:13:12.712Z",
+        acquisition="EXTERNAL_AUTHORITATIVE_DELIVERY",
+        role="DOWNSTREAM_COMPARATOR_ONLY",
+        forecast_eligible=False,
+        why_not=("A sportsbook price is forbidden as a predictive input, "
+                 "full stop, and not because of what it would do to the "
+                 "numbers: a model that has seen the line is no longer "
+                 "independent evidence about the line. It may be compared "
+                 "against a SEALED forecast and never read before one."),
+        blob="nfl/vintage/hardrock_market_snapshot.3d9b22dc39e12e54.csv.gz",
+        note=("166 quotes, 19 distinct retrieval instants, all lines half "
+              "points, two-sided open on every row. Read today only by "
+              "nfl/product/market_cdf.py, which is imported only by "
+              "nfl/tools/market_comparison.py and "
+              "nfl/research/market_outcome_audit.py -- both strictly "
+              "downstream of every seal."),
+    ),
+    DeliveredSpec(
+        name="official_status_evidence",
+        delivered_at="2026-09-13T18:12:01.430Z",
+        acquisition="EXTERNAL_AUTHORITATIVE_DELIVERY",
+        role="READINESS_EVIDENCE_CANDIDATE",
+        forecast_eligible=False,
+        why_not=("Its own delivery record reads "
+                 "`readiness_contract_verdict: DOES_NOT_SATISFY`. All 19 rows "
+                 "carry game_status BLANK (9) or UNSPECIFIED (10), and the "
+                 "delivery is explicit that neither is a designation and "
+                 "neither is an active status. Reading either as 'active' is "
+                 "the inference the artifact was written to forbid."),
+        blob="nfl/vintage/official_status_evidence.22b3b1c5e26e69ac.csv.gz",
+        note="19 rows, 3 clubs (MIA, MIN, WAS), practice DNP 1 / LP 5 / FP 13.",
+    ),
+)
+
+DELIVERED_BY_NAME = {d.name: d for d in DELIVERED}
+
+
+def declared_sources() -> set:
+    """Every source name this project declares, fetched or delivered.
+
+    The set a completeness check should compare the manifest against. Keeping
+    it a function rather than a third constant means a new table cannot be
+    added without this answer changing too.
+    """
+    return set(BY_NAME) | set(DELIVERED_BY_NAME)
+
+
+def forecast_eligible(name: str) -> Outcome:
+    """May a FORECAST read this source? A declaration, never a mechanism.
+
+    Answers for delivered sources from their declaration and refuses to answer
+    for fetched ones, because for those the question is not a property of the
+    source at all -- it is a property of the CUT the reader supplies, and
+    `nfl.capture.bitemporal.readable_at` is what answers it. Returning a
+    cheerful True here for `injuries` would be the exact collapse
+    `availability.eligibility_record` keeps apart: ordering is a fact about
+    clocks, authorisation is a decision.
+    """
+    d = DELIVERED_BY_NAME.get(name)
+    if d is not None:
+        if d.forecast_eligible:
+            return Outcome.ok('DELIVERED_SOURCE_DECLARED_ELIGIBLE', value=True,
+                              detail=f'{name}: {d.role}', source=name)
+        return Outcome.blocked(
+            'DELIVERED_SOURCE_FORBIDDEN_AS_PREDICTIVE_INPUT',
+            f'{name}: {d.why_not}', cause=Cause.GOVERNANCE, source=name,
+            role=d.role, blob=d.blob)
+    if name in BY_NAME:
+        return Outcome.deferred(
+            'ELIGIBILITY_IS_A_PROPERTY_OF_THE_CUT',
+            f'{name} is a fetched source. Whether a forecast may read a given '
+            f'capture of it depends on that capture\'s transaction time '
+            f'against the forecast cut, not on the source. Ask '
+            f'nfl.capture.bitemporal.readable_at.',
+            owed=f'{name}:cut', source=name)
+    return Outcome.blocked(
+        'SOURCE_NOT_IN_REGISTRY',
+        f'{name!r} is declared nowhere -- neither fetched nor delivered. An '
+        f'undeclared source is undeclared, not clean.',
+        cause=Cause.GOVERNANCE, source=name)
 
 
 def resolve(name: str, season: int) -> Outcome:

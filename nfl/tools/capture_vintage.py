@@ -40,6 +40,7 @@ import datetime as _dt
 import hashlib
 import json
 import pathlib
+import re
 import subprocess
 import sys
 
@@ -47,7 +48,8 @@ _REPO = pathlib.Path(__file__).resolve().parents[2]
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
-from sportsplatform.governance.outcome import Cause, Outcome, State  # noqa: E402
+from sportsplatform.governance.outcome import Cause, Outcome, State
+from nfl.capture import payload_contract as _contract  # noqa: E402
 from sportsplatform.governance.provenance import Provenance, validate as validate_prov  # noqa: E402
 from nfl.capture import registry as _registry  # noqa: E402
 
@@ -61,6 +63,58 @@ MANIFEST = _REPO / "nfl" / "vintage_manifest.jsonl"
 
 TIMEOUT_S = 240
 SCHEMA_VERSION = "nflverse-release-1"
+
+# THE REDUCTION IS A NAMED, VERSIONED TRANSFORMATION, NOT AN IMPLEMENTATION
+# DETAIL.
+#
+# Until 2026-09-14 the `reduce` durability wrote a column-reduced subset to
+# nfl/vintage and recorded, beside it, the sha256 / n_bytes / n_lines of the
+# FULL UPSTREAM FILE -- an object that was never persisted anywhere durable.
+# Every one of the 368 PASS rows so written therefore failed its own manifest
+# hash, and `coverage._blob_ok` correctly excluded all of them from discharge.
+# Nothing was corrupt; the manifest simply made a claim about a different
+# object from the one it stored.
+#
+# The generalising rule, and it is the same one that produced this project's
+# other provenance defects: A HASH MUST NAME THE OBJECT IT COVERS. One field
+# that sometimes means the upstream file and sometimes the retained file is
+# how this happened, so the two now have separate names and both are written:
+#
+#   upstream_content_sha256   -- the bytes the origin served
+#   persisted_content_sha256  -- the uncompressed bytes actually retained
+#   blob_file_sha256          -- the file on disk, gzip container included
+#
+# `sha256` is retained, unchanged in meaning, as the upstream digest: it is the
+# content address embedded in every blob filename and
+# `research/shadow/information_set.blob_for` resolves blobs through it. Moving
+# it would have been a second silent redefinition of a field, which is the
+# defect, not the repair.
+TRANSFORM_ID = "nfl-vintage-column-reduce"
+TRANSFORM_VERSION = "reduce-2"
+
+# RULING 3 RETENTION. Raw bytes, raw hash, transformation version, reduced
+# artifact, reduced hash -- and the raw half must live somewhere that survives.
+#
+# Until 2026-09-14 the `reduce` durability wrote the reduced blob into the
+# TRACKED nfl/vintage and the full upstream file into `store/raw`, which is
+# `nfl_vintage/` and is gitignored (.gitignore:7). So the raw half of every
+# reduce source's retention existed only on whichever machine ran the capture.
+# WS-L measured the consequence: 6 of 6 Actions-only vintages lost their raw
+# bytes, 7 of 7 seen on a developer machine kept them. Raw retention was a
+# property of who looked, which is not retention.
+#
+# A GITIGNORED SOLE HOME DOES NOT SATISFY RULING 3. The upstream bytes are now
+# ALSO written, gzipped and content-addressed, into the same durable store as
+# the reduction, staged and promoted under the same rows-before-bytes
+# invariant, and verified on read-back against the upstream digest. The
+# ephemeral copy is kept as well -- it is uncompressed and cheap to read, and
+# `vintage_selector.raw_candidates` globs it -- but it is no longer the only
+# copy, so losing it is no longer losing the evidence.
+#
+# Cost, measured 2026-09-14 rather than estimated: depth_charts_2026.csv is
+# 49,311,029 bytes and 9,843,252 gzipped; roster_weekly_2026.csv is 943,125.
+# Content addressing dedupes, so an unchanged re-capture adds no bytes.
+RETENTION_POLICY = "ruling3-raw-and-reduced-durable-1"
 
 
 @dataclasses.dataclass(frozen=True)
@@ -87,6 +141,10 @@ class Source:
     # An unreachable code path is not a working one, and a guard is not
     # verified by an environment that never executes it.
     content_markers: tuple = ()
+    row_container: tuple = ()
+    payload_path: tuple = ()
+    required_columns: tuple = ()
+    substantive_any_of: tuple = ()
 
 
 def _sources(season: int) -> list[Source]:
@@ -113,7 +171,15 @@ def _sources(season: int) -> list[Source]:
                           reduce_cols=spec.reduce_cols,
                           content_kind=spec.content_kind, note=spec.note,
                           content_markers=tuple(
-                              getattr(spec, 'content_markers', ()) or ())))
+                              getattr(spec, 'content_markers', ()) or ()),
+                          row_container=tuple(
+                              getattr(spec, 'row_container', ()) or ()),
+                          payload_path=tuple(
+                              getattr(spec, 'payload_path', ()) or ()),
+                          required_columns=tuple(
+                              getattr(spec, 'required_columns', ()) or ()),
+                          substantive_any_of=tuple(
+                              getattr(spec, 'substantive_any_of', ()) or ())))
     return out
 
 
@@ -189,15 +255,32 @@ def fetch(src: Source, season: int, store: pathlib.Path,
     # real run against nfl.com.
     retrieved_at = _now()
     status = (r.stdout or "").strip() or "000"
+    # THE TRANSPORT'S OWN REFUSAL, RECORDED VERBATIM.
+    #
+    # curl reports a proxy CONNECT denial as exit 56 with `%{http_code}` 000 --
+    # the HTTP code belongs to a request that was never made. The 403 the
+    # gateway actually returned lives only in stderr, and stderr was discarded,
+    # so every proxy denial in this manifest reads `NO_EGRESS` with no code at
+    # all. "We got nothing" and "the gateway refused us with 403" are different
+    # facts and the second is the one that names who can fix it.
+    curl_err = (r.stderr or "").strip()[:400] or None
+    m_proxy = re.search(r"response (\d{3})", curl_err or "")
+    transport = {"curl_exit_code": r.returncode, "curl_stderr": curl_err,
+                 "proxy_refusal_status": (m_proxy.group(1) if m_proxy
+                                          else None),
+                 "http_code_reported": status}
 
     if status == "000":
         return Outcome.blocked(
             "NO_EGRESS",
-            f"{src.name}: no HTTP response for {src.url}. This says nothing "
+            f"{src.name}: no HTTP response for {src.url}"
+            + (f" -- transport refused: {curl_err}" if curl_err else "")
+            + f". This says nothing "
             f"about the data. Per DEC-029 it is ASSIGNED to an agent with "
             f"egress, not blocked for the project, and it is never stubbed.",
             cause=Cause.NETWORK, source=src.name, url=src.url,
-            requested_at=requested_at, retrieved_at=retrieved_at)
+            requested_at=requested_at, retrieved_at=retrieved_at,
+            **transport)
 
     if status == "404":
         if src.required:
@@ -215,7 +298,9 @@ def fetch(src: Source, season: int, store: pathlib.Path,
     if status in ("403", "407"):
         return Outcome.blocked(f"SOURCE_HTTP_{status}",
                                f"{src.name}: egress policy denied {src.url}",
-                               cause=Cause.NETWORK, source=src.name)
+                               cause=Cause.NETWORK, source=src.name,
+                               url=src.url, retrieved_at=retrieved_at,
+                               **transport)
     if not status.startswith("2"):
         return Outcome.fail(f"SOURCE_HTTP_{status}",
                             f"{src.name}: unexpected status for {src.url}",
@@ -270,6 +355,38 @@ def fetch(src: Source, season: int, store: pathlib.Path,
                 f"over a page that did not render is not a capture.",
                 source=src.name, n_bytes=n_bytes, n_markers=_markers,
                 js_shell=_shell)
+        # THE SUBJECT WORD IS NOT THE SUBJECT. D20: this source's marker word
+        # appears in its own chrome -- title, meta, og:url, ad and analytics
+        # config, news-tile link attributes -- and once inside the sentence
+        # "Please check back soon for NFL Inactive Reports for this Season",
+        # so the page's written statement that it has NO data scored as one
+        # unit of evidence that it HAS data. The marker count never reached 0
+        # and the debt branch below was unreachable for nine days and 374
+        # captures, each stored as PASS/CAPTURED with n_data_rows set to the
+        # chrome count.
+        #
+        # So ask for the shape the rows live in, not a word about them. This
+        # is a declared property of the source, not a threshold fitted to the
+        # data: over every committed blob, official_injury_report carries <tr>
+        # in 374 of 374 captures and official_inactives in 0 of 392. Sources
+        # that declare no row_container are unaffected and keep the old
+        # behaviour exactly.
+        _rows_present = (not src.row_container) or any(
+            c.lower() in _text.lower() for c in src.row_container)
+        if _markers and not _rows_present:
+            tmp.unlink()
+            return Outcome.deferred(
+                "SOURCE_HAS_NO_ROWS_YET",
+                f"{src.name}: HTTP {status}, {len(payload)} bytes that render "
+                f"and carry {_markers} occurrence(s) of {_markers_for} -- but "
+                f"not one {' or '.join(src.row_container)}. The subject word is "
+                f"present and the rows are not, which is what a landing page "
+                f"about the data looks like. This discharges nothing and is "
+                f"owed until a capture carries rows.",
+                source=src.name, n_bytes=n_bytes, n_markers=_markers,
+                markers_looked_for=list(_markers_for),
+                row_container_looked_for=list(src.row_container),
+                owed=f"{src.name}:{src.url}")
         if _markers == 0:
             # NOT a pass: nothing is stored and nothing is discharged. It is a
             # debt, and it stays owed until a later capture carries rows.
@@ -282,7 +399,7 @@ def fetch(src: Source, season: int, store: pathlib.Path,
                 f"nothing and is owed until a capture carries rows.",
                 source=src.name, n_bytes=n_bytes, n_markers=0,
                 markers_looked_for=list(_markers_for),
-                owed=f"{src.name}:{url}")
+                owed=f"{src.name}:{src.url}")
         n_data_rows = _markers      # the HTML analogue of "rows that mean something"
     elif src.content_kind == "json":
         # A minified JSON document is a single line, so a row count read 8,996,076
@@ -306,12 +423,33 @@ def fetch(src: Source, season: int, store: pathlib.Path,
                 "JSON_EMPTY_DOCUMENT",
                 f"{src.name}: parses as JSON but carries no entries. Valid and "
                 f"empty is still empty.", source=src.name, n_bytes=n_bytes)
+        # D22. THE COUNT ABOVE COUNTS THE ENVELOPE. ESPN's injuries document is
+        # {injuries:[32 teams], season, status, timestamp}: `_n` is 32 + 3 = 35
+        # against 800 real injury entries, and it STILL reads 35 when every
+        # team's list is emptied. So ask the source where its entities actually
+        # live. A source declaring no payload_path is unaffected.
+        _pc_ok, _pc_code, _pc_ev = _contract.check_json(_doc, src)
+        if not _pc_ok:
+            tmp.unlink()
+            return Outcome.deferred(
+                _pc_code,
+                f"{src.name}: HTTP {status}, {n_bytes} bytes that parse as "
+                f"JSON and carry {_n} top-level item(s) -- but "
+                f"{_pc_ev.get('n_entities', 0)} entities at the declared "
+                f"payload path {_pc_ev.get('payload_path')}. The envelope is "
+                f"intact and the payload is not there. This discharges nothing "
+                f"and is owed until a capture carries entities.",
+                source=src.name, n_bytes=n_bytes, owed=f"{src.name}:{src.url}",
+                **_pc_ev)
+        if _pc_ev.get('n_entities') is not None:
+            _n = _pc_ev['n_entities']
         n_data_rows = _n
     else:
         # Count DATA ROWS, not newlines. Counting newlines let b"a,b,c\n\n\n"
         # through as three lines: a durable blob written and a manifest row
         # claiming a real vintage, over zero rows of data.
         n_data_rows = max(0, len(_nonblank) - 1)
+        _csv_contract_pending = True     # applied below, AFTER the row check
     if n_data_rows < 1:
         tmp.unlink()
         return Outcome.fail(
@@ -320,6 +458,39 @@ def fetch(src: Source, season: int, store: pathlib.Path,
             f"{n_data_rows} data rows -- a header with nothing under it.",
             source=src.name, n_bytes=n_bytes, n_lines=lines,
             n_data_rows=n_data_rows)
+    if src.content_kind not in ("html", "json"):
+        # D22. A ROW COUNT NEVER LOOKS AT A COLUMN. This project has already
+        # shipped an export of 7,926 rows with every meaningful column blank,
+        # because the field names were guessed rather than read from the
+        # schema. A source declaring no required_columns is unaffected.
+        _pc_ok, _pc_code, _pc_ev = _contract.check_csv(_text, src)
+        if not _pc_ok:
+            tmp.unlink()
+            # ABSENT AND EMPTY ARE DIFFERENT FACTS AND GET DIFFERENT STATES.
+            # A column the source no longer sends is a WRONG DOCUMENT -- a
+            # schema change, a redirect, an error page rendered as csv -- and
+            # waiting for it to fill in is the wrong response, so it FAILS. A
+            # column present and unpopulated, or an availability column that
+            # says nothing yet, is a source that has not published, which is a
+            # DEBT and defers. Collapsing the two would repeat D20's error one
+            # level up: treating "we got the wrong thing" as "not yet".
+            if _pc_code == 'SCHEMA_COLUMNS_ABSENT':
+                return Outcome.fail(
+                    _pc_code,
+                    f"{src.name}: HTTP {status}, {n_data_rows} data row(s), "
+                    f"but the declared columns "
+                    f"{_pc_ev.get('missing_from_header')} are not in the "
+                    f"header at all. This is not an unpublished source, it is "
+                    f"a different document.",
+                    source=src.name, n_bytes=n_bytes, **_pc_ev)
+            return Outcome.deferred(
+                _pc_code,
+                f"{src.name}: HTTP {status}, {n_data_rows} data row(s) whose "
+                f"declared columns do not carry data: {_pc_ev}. A header is a "
+                f"promise and a populated cell is evidence. This discharges "
+                f"nothing and is owed until a capture carries both.",
+                source=src.name, n_bytes=n_bytes, owed=f"{src.name}:{src.url}",
+                **_pc_ev)
 
     digest = hashlib.sha256(payload).hexdigest()
     header = payload.split(b"\n", 1)[0].decode("utf-8", "replace").strip()
@@ -368,7 +539,16 @@ def fetch(src: Source, season: int, store: pathlib.Path,
             source=src.name, last_modified_raw=last_modified,
             date_raw=http_date)
 
-    stored = _persist(src, payload, digest, store)
+    try:
+        stored = _persist(src, payload, digest, store)
+    except PersistIntegrityError as exc:
+        # NOT a PASS with a caveat. The bytes arrived, and what we retained
+        # does not hash to what the row would claim, so there is no row to
+        # write. Nothing is promoted into the durable store either: the blob
+        # is still in staging and `main` discards it.
+        return Outcome.fail(
+            "PERSISTED_ARTIFACT_SELF_VERIFICATION_FAILED", str(exc)[:600],
+            source=src.name, upstream_content_sha256=digest, n_bytes=n_bytes)
 
     prov = Provenance(
         source=f"nflverse:{src.name}",
@@ -398,7 +578,16 @@ def fetch(src: Source, season: int, store: pathlib.Path,
         "CAPTURED",
         value={"source": src.name, "url": src.url, "http_status": status,
                "effective_scope": scope.as_dict(),
+               # `sha256`/`n_bytes`/`n_lines` describe the UPSTREAM file and
+               # always have. They keep that meaning -- `sha256` is the content
+               # address in every blob filename and information_set.blob_for
+               # resolves through it, so redefining it would silently break
+               # blob resolution for every vintage already stored. What changes
+               # is that the object each digest covers is now stated rather
+               # than assumed: `**stored` adds upstream_content_sha256,
+               # persisted_content_sha256 and blob_file_sha256 by name.
                "sha256": digest, "n_bytes": n_bytes, "n_lines": lines,
+               "upstream_n_bytes": n_bytes, "upstream_n_lines": lines,
                "n_data_rows": n_data_rows,
                "n_cols": len(header.split(",")), "header": header[:2000],
                "etag": etag, "durability": src.durability,
@@ -514,6 +703,139 @@ def _flush(manifest, rows) -> int:
             fh.write(json.dumps(row, sort_keys=True) + "\n")
     return len(rows)
 
+def _normalise_staged(staged) -> list:
+    """Accept a pair, a list of pairs, or a list of lists of pairs.
+
+    `_persist` returned ONE (pending, final) tuple until the Ruling 3 raw
+    retention gave `reduce` a second staged blob, and every caller that wrapped
+    the old return value in a list is now handing this a nested one. Silently
+    promoting the first element and dropping the rest is exactly the class of
+    partial success this capture path exists to refuse, so the shape is
+    normalised in one place and anything that is not a (pending, final) pair
+    raises rather than being skipped.
+    """
+    out = []
+    def _walk(x):
+        if x is None:
+            return
+        if isinstance(x, (tuple, list)) and len(x) == 2 and all(
+                isinstance(q, (str, pathlib.Path)) for q in x):
+            out.append((str(x[0]), str(x[1])))
+            return
+        if isinstance(x, (tuple, list)):
+            for q in x:
+                _walk(q)
+            return
+        raise TypeError(
+            f"STAGED_ENTRY_MALFORMED: {x!r} is not a (pending, final) pair "
+            f"nor a container of them. Refusing to guess which blobs to "
+            f"promote.")
+    _walk(staged)
+    return out
+
+
+def _purge_staging(staged) -> int:
+    """Throw away every staged blob whose manifest row was not written.
+
+    A staged blob is not evidence of anything. Deleting it is the point: the
+    store must never hold a durable artifact that no row attributes to a
+    source, a window or a basis.
+    """
+    n = 0
+    for pend, _final in _normalise_staged(staged):
+        q = pathlib.Path(pend)
+        if q.exists():
+            q.unlink()
+            n += 1
+    return n
+
+
+def _promote_staging(staged) -> list:
+    """Move staged blobs into the durable store. ONLY after the rows are on disk.
+
+    THE INVARIANT, AND IT IS ONE INVARIANT SEEN FROM TWO SIDES.
+
+    WS-J measured the other side of it in production: 50 GitHub-Actions runs
+    committed a blob and appended ZERO manifest rows -- 48 orphan blobs, and
+    all of 2026-09-09 absent from the manifest against 31 runs that
+    demonstrably executed. The previous guard here raised AFTER the blobs were
+    already written into nfl/vintage, so it converted a silent orphan into a
+    loud one without preventing it.
+
+    Ordering fixes what a check could not. Durable bytes are written to a
+    gitignored staging directory; the manifest row is appended first; only then
+    is the blob moved into the store. A crash before the row exists leaves
+    nothing in the tracked tree, so A BLOB CANNOT BE WRITTEN WITHOUT ITS
+    MANIFEST ROW -- by construction, not by assertion.
+    """
+    moved = []
+    for pend, final in _normalise_staged(staged):
+        q, f = pathlib.Path(pend), pathlib.Path(final)
+        if not q.exists():
+            # Already promoted, or two sources in one run resolved to the same
+            # blob. Not an error; recorded so the count stays truthful.
+            continue
+        f.parent.mkdir(parents=True, exist_ok=True)
+        q.replace(f)
+        moved.append(_rel(f))
+    return moved
+
+
+def _assert_no_pass_without_capture(rows) -> None:
+    """A manifest may not claim PASS when no qualifying capture exists.
+
+    The second half of WS-J's requirement. A PASS row asserts that bytes were
+    retrieved and retained; this refuses to write one that cannot name the
+    artifact it retained, or that names one with no digest covering it. It is
+    deliberately structural -- it reads the row exactly as a later auditor
+    would, with no access to the variables that built it.
+
+    Raises rather than downgrading. A PASS row in this shape is a defect in
+    this program, not a state of the world, and the run must not continue past
+    it into a commit.
+    """
+    bad = []
+    for r in rows:
+        if r.get("state") != "PASS":
+            continue
+        v = r.get("value") or {}
+        if not v.get("blob"):
+            bad.append((r.get("source"), "PASS_WITH_NO_ARTIFACT"))
+            continue
+        ps = v.get("persisted_content_sha256")
+        if not ps or len(ps) != 64:
+            bad.append((r.get("source"),
+                        "PASS_WITH_NO_DIGEST_OF_THE_PERSISTED_BYTES"))
+            continue
+        if not v.get("upstream_content_sha256"):
+            bad.append((r.get("source"), "PASS_WITH_NO_UPSTREAM_DIGEST"))
+            continue
+        # RULING 3, ENFORCED STRUCTURALLY. Every retention field a later
+        # auditor needs must be present, and the raw bytes must have a durable
+        # home. A PASS row whose only raw copy is gitignored is a row claiming
+        # retention it does not have.
+        ret = v.get("retention_ruling3") or {}
+        missing = [k for k in ("raw_bytes", "raw_hash",
+                               "transformation_version")
+                   if not ret.get(k)]
+        if missing:
+            bad.append((r.get("source"),
+                        f"PASS_WITH_INCOMPLETE_RULING3_RETENTION{missing}"))
+            continue
+        if ret.get("raw_home_is_gitignored_only") is not False:
+            bad.append((r.get("source"),
+                        "PASS_WITH_RAW_BYTES_ONLY_IN_A_GITIGNORED_HOME"))
+            continue
+        if not v.get("raw_blob_durable"):
+            bad.append((r.get("source"), "PASS_WITH_NO_DURABLE_RAW_BLOB"))
+    if bad:
+        raise SystemExit(
+            "MANIFEST_CLAIMS_PASS_WITHOUT_QUALIFYING_CAPTURE: "
+            + "; ".join(f"{s}:{c}" for s, c in bad)
+            + ". A PASS row must name a persisted artifact and carry a digest "
+              "that covers the bytes actually retained. Refusing to append.")
+
+
 def _declare(season: int) -> dict:
     """The execution's target set, fixed at run start before any fetch."""
     from nfl.capture.execution import declare
@@ -604,87 +926,382 @@ def _substantive(payload: bytes) -> dict:
     return out.value
 
 
+class PersistIntegrityError(Exception):
+    """The bytes retained do not match the digest recorded for them.
+
+    Raised, never returned as a value, because there is no honest partial
+    result here: if a persisted artifact does not hash to the digest its
+    manifest row will carry, the row must not be written as PASS.
+    """
+
+
+def _reduce_frame(payload: bytes, reduce_cols) -> tuple:
+    """The column reduction, as a NAMED PURE FUNCTION so it can be hashed.
+
+    Extracted verbatim from the body of `_persist` on 2026-09-14. It is byte
+    identical in behaviour to the inline version that produced every reduced
+    blob now in nfl/vintage -- verified by re-running it over the seven full
+    upstream files that survive in the gitignored ephemeral store and matching
+    all seven stored blobs exactly. Do not "tidy" it: its output bytes are the
+    thing hashed, so any change to quoting, column order or line terminator is
+    a change to the artifact's identity and needs a TRANSFORM_VERSION bump.
+
+    Returns (reduced_bytes, detail).
+    """
+    import csv, io
+    rdr = csv.DictReader(io.StringIO(payload.decode("utf-8", "replace")))
+    fields = rdr.fieldnames or []
+    cols = [c for c in reduce_cols if c in fields]
+    missing = [c for c in reduce_cols if c not in fields]
+    rows = list(rdr)
+
+    # `dt`-versioned sources (depth_charts) are an upstream CUMULATIVE
+    # history: every capture re-ships all prior snapshots. Storing the
+    # whole file daily would retain the same rows ~170 times over. The
+    # vintage fact we need is what the NEWEST snapshot said at the moment
+    # we looked.
+    newest = None
+    if "dt" in fields and rows:
+        newest = max((r.get("dt") or "") for r in rows)
+        kept = [r for r in rows if (r.get("dt") or "") == newest]
+    else:
+        kept = rows
+
+    buf = io.StringIO()
+    w = csv.DictWriter(buf, fieldnames=cols)
+    w.writeheader()
+    for row in kept:
+        w.writerow({c: row.get(c, "") for c in cols})
+    out = buf.getvalue().encode()
+    return out, {"rows_in_file": len(rows), "rows_kept": len(kept),
+                 "newest_dt": newest, "missing_columns": missing,
+                 "selected_columns": list(cols),
+                 "requested_columns": list(reduce_cols),
+                 "output_header": (out.split(b"\n", 1)[0]
+                                   .decode("utf-8", "replace").strip())}
+
+
+def _transform_code_identity() -> str:
+    """sha256 of the reduction's own source text.
+
+    TRANSFORM_VERSION is a claim a human maintains; this is a measurement. If
+    someone edits `_reduce_frame` without bumping the version, the rows written
+    afterwards still say so, and a reader comparing two vintages can tell
+    whether the same code produced both.
+    """
+    import inspect
+    return hashlib.sha256(
+        inspect.getsource(_reduce_frame).encode("utf-8")).hexdigest()
+
+
+def _write_gz_deterministic(path: pathlib.Path, data: bytes) -> None:
+    """gzip with no mtime and no embedded filename.
+
+    The previous `gzip.open(path, "wb")` stamped the current time into the
+    header, so the same content produced a different FILE every time and
+    `blob_file_sha256` could not exist as a stable quantity. The uncompressed
+    payload is unaffected either way; this only makes the container
+    reproducible, which is what lets a reader verify the file without first
+    decompressing it.
+    """
+    import gzip
+    with open(path, "wb") as raw:
+        with gzip.GzipFile(filename="", mode="wb", fileobj=raw,
+                           compresslevel=9, mtime=0) as fh:
+            fh.write(data)
+
+
+def _read_blob_bytes(path: pathlib.Path) -> bytes:
+    import gzip
+    if str(path).endswith(".gz"):
+        with gzip.open(path, "rb") as fh:
+            return fh.read()
+    return path.read_bytes()
+
+
+def _verify_persisted(path: pathlib.Path, expect_sha: str, label: str) -> str:
+    """Read back what was just written (or what was already there) and hash it.
+
+    EVERY PERSISTED BLOB MUST SELF-VERIFY: a reader holding only the blob and
+    its manifest row has to be able to confirm the row describes the blob. That
+    property is established here, at write time, against the bytes on disk --
+    not asserted from the bytes still in memory, which would prove only that
+    the program has a variable.
+
+    Returns the digest of the FILE (container included) for `blob_file_sha256`.
+    """
+    if not path.exists():
+        raise PersistIntegrityError(
+            f"{label}: blob absent at {path} immediately after persistence. A "
+            f"file that is not there cannot be a capture.")
+    got = hashlib.sha256(_read_blob_bytes(path)).hexdigest()
+    if got != expect_sha:
+        raise PersistIntegrityError(
+            f"{label}: the bytes retained at {path} hash to {got[:16]} but the "
+            f"manifest row would record {expect_sha[:16]}. This is the exact "
+            f"defect the two-digest schema exists to prevent -- a row "
+            f"describing an object other than the one stored. Refusing to "
+            f"write the row.")
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _pending_root(store: pathlib.Path) -> pathlib.Path:
+    """Where durable blobs are STAGED before their manifest row exists.
+
+    Deliberately inside the ephemeral (gitignored) store rather than under
+    nfl/vintage: a run that dies mid-capture must leave nothing behind in the
+    tracked tree, and a staging directory inside the durable root would be one
+    `git add nfl/vintage` away from being committed as an orphan -- which is
+    the failure this staging exists to end.
+    """
+    q = store / "pending_blobs"
+    q.mkdir(parents=True, exist_ok=True)
+    return q
+
+
 def _persist(src: Source, payload: bytes, digest: str,
              store: pathlib.Path) -> dict:
     """Durability policy, per source.
 
     Durable blobs are stored GZIPPED. Compression is lossless, so the recorded
-    sha256 is still the digest of the ORIGINAL bytes and integrity is unchanged;
-    it just makes daily retention affordable. Git is not assumed to be a durable
-    archive in principle -- it is simply the durable store this environment has,
-    and the policy is sized so that using it stays honest rather than aspirational.
+    upstream sha256 is still the digest of the ORIGINAL bytes and integrity is
+    unchanged; it just makes daily retention affordable. Git is not assumed to
+    be a durable archive in principle -- it is simply the durable store this
+    environment has, and the policy is sized so that using it stays honest
+    rather than aspirational.
+
+    THREE DIGESTS, THREE OBJECTS, THREE NAMES. See TRANSFORM_ID above. A
+    durable row now always carries `persisted_content_sha256`, and for every
+    durability that digest covers the bytes at `blob`. `commit_raw` and
+    `ephemeral` persist the upstream bytes unchanged, so there the two content
+    digests are equal -- recorded equal, explicitly, rather than left to be
+    inferred from one field's absence.
+
+    Blobs are STAGED here and promoted only after the manifest row is written;
+    `_staged` carries (staged_path, final_path) for the caller to promote. A
+    durable blob may not exist in the store without its row.
     """
-    import gzip
-
-    def _write_gz(path: pathlib.Path, data: bytes) -> None:
-        with gzip.open(path, "wb", compresslevel=9) as fh:
-            fh.write(data)
-
     if src.durability == "commit_raw":
         DURABLE_ROOT.mkdir(parents=True, exist_ok=True)
         _ext = {"html": "html", "json": "json"}.get(src.content_kind, "csv")
         blob = DURABLE_ROOT / f"{src.name}.{digest[:16]}.{_ext}.gz"
-        unchanged = blob.exists()
-        if not unchanged:
-            _write_gz(blob, payload)
+        pend = _pending_root(store) / blob.name
+        # WE ALREADY HOLD THESE BYTES IF THEY ARE STAGED, NOT ONLY IF THEY ARE
+        # PROMOTED. Staging made the durable root temporarily empty, so a
+        # second observation of identical content inside one run read as NEW
+        # and would have written the blob twice. `content_unchanged` is a claim
+        # about the bytes, and a staged blob is bytes we hold.
+        unchanged = blob.exists() or pend.exists()
+        if blob.exists():
+            # A RE-OBSERVATION IS ALSO AN INTEGRITY CHECK. The blob already
+            # held is read back and hashed against the bytes that just arrived.
+            # If the stored artifact has drifted from what its name claims, the
+            # capture fails loudly instead of appending a 141st row asserting
+            # content we no longer hold.
+            file_sha = _verify_persisted(blob, digest, src.name)
+            staged = None
+        else:
+            if not pend.exists():
+                _write_gz_deterministic(pend, payload)
+            file_sha = _verify_persisted(pend, digest, src.name)
+            staged = (str(pend), str(blob))
         return {"blob": _rel(blob), "blob_durable": True,
-                "blob_encoding": "gzip", "sha256_is_of": "uncompressed_bytes",
-                "content_unchanged": unchanged, "reduced": None}
+                "blob_encoding": "gzip",
+                "sha256_is_of": "upstream_bytes_which_are_also_the_"
+                                "persisted_uncompressed_bytes",
+                "upstream_content_sha256": digest,
+                "persisted_content_sha256": digest,
+                "persisted_n_bytes": len(payload),
+                "persisted_n_lines": len(payload.decode(
+                    "utf-8", "replace").splitlines()),
+                "persisted_is_upstream_verbatim": True,
+                "blob_file_sha256": file_sha,
+                "self_verifying": True,
+                "content_unchanged": unchanged, "reduced": None,
+                # commit_raw retains the upstream bytes verbatim, so the raw
+                # artifact and the retained artifact are one object. Stated
+                # explicitly rather than inferred from the absence of a
+                # reduction: "there was no transformation" and "the
+                # transformation was not recorded" must not read alike.
+                "raw_blob": _rel(blob),
+                "raw_blob_durable": True,
+                "raw_blob_content_sha256": digest,
+                "raw_blob_file_sha256": file_sha,
+                "raw_blob_n_bytes": len(payload),
+                "retention_policy": RETENTION_POLICY,
+                "retention_ruling3": {
+                    "raw_bytes": _rel(blob),
+                    "raw_hash": digest,
+                    "transformation_version": "none__upstream_verbatim",
+                    "reduced_artifact": None,
+                    "reduced_hash": None,
+                    "raw_home_is_gitignored_only": False,
+                },
+                "_staged": [staged] if staged else []}
 
     if src.durability == "reduce":
         DURABLE_ROOT.mkdir(parents=True, exist_ok=True)
         red = DURABLE_ROOT / f"{src.name}.{digest[:16]}.reduced.csv.gz"
-        unchanged = red.exists()
-        detail = {}
-        if not unchanged:
-            import csv, io
-            rdr = csv.DictReader(io.StringIO(payload.decode("utf-8", "replace")))
-            fields = rdr.fieldnames or []
-            cols = [c for c in src.reduce_cols if c in fields]
-            missing = [c for c in src.reduce_cols if c not in fields]
-            rows = list(rdr)
+        pend = _pending_root(store) / red.name
+        unchanged = red.exists() or pend.exists()
 
-            # `dt`-versioned sources (depth_charts) are an upstream CUMULATIVE
-            # history: every capture re-ships all prior snapshots. Storing the
-            # whole file daily would retain the same rows ~170 times over. The
-            # vintage fact we need is what the NEWEST snapshot said at the moment
-            # we looked, and the manifest sha256 still attests to the whole file.
-            newest = None
-            if "dt" in fields and rows:
-                newest = max((r.get("dt") or "") for r in rows)
-                kept = [r for r in rows if (r.get("dt") or "") == newest]
-            else:
-                kept = rows
+        # COMPUTED ON EVERY CAPTURE, INCLUDING UNCHANGED ONES. It used to be
+        # skipped when the blob already existed, which is why an unchanged
+        # re-observation could record nothing at all about the object it was
+        # re-observing. Recomputing costs a CSV pass and buys a live check that
+        # the retained reduction is still exactly what this transformation
+        # produces from these upstream bytes -- WS13's open question 2, closed
+        # by measurement instead of the bare assumption it replaced.
+        reduced, detail = _reduce_frame(payload, src.reduce_cols)
+        red_digest = hashlib.sha256(reduced).hexdigest()
 
-            buf = io.StringIO()
-            w = csv.DictWriter(buf, fieldnames=cols)
-            w.writeheader()
-            for row in kept:
-                w.writerow({c: row.get(c, "") for c in cols})
-            _write_gz(red, buf.getvalue().encode())
-            detail = {"rows_in_file": len(rows), "rows_kept": len(kept),
-                      "newest_dt": newest, "missing_columns": missing}
+        if red.exists():
+            file_sha = _verify_persisted(red, red_digest, src.name)
+            staged = None
+        else:
+            if not pend.exists():
+                _write_gz_deterministic(pend, reduced)
+            file_sha = _verify_persisted(pend, red_digest, src.name)
+            staged = (str(pend), str(red))
 
         eph = store / "raw" / f"{src.name}.{digest[:16]}.csv"
         if not eph.exists():
             eph.write_bytes(payload)
+
+        # RULING 3. The raw upstream bytes get a DURABLE, TRACKED home beside
+        # the reduction, content-addressed on their own digest and verified on
+        # read-back. See RETENTION_POLICY above for why the ephemeral copy is
+        # not enough. Staged and promoted with the reduction under the same
+        # rows-before-bytes invariant, so a run that dies leaves neither.
+        raw_blob = DURABLE_ROOT / f"{src.name}.{digest[:16]}.raw.csv.gz"
+        raw_pend = _pending_root(store) / raw_blob.name
+        raw_unchanged = raw_blob.exists() or raw_pend.exists()
+        if raw_blob.exists():
+            raw_file_sha = _verify_persisted(raw_blob, digest,
+                                             f"{src.name}:raw")
+            raw_staged = None
+        else:
+            if not raw_pend.exists():
+                _write_gz_deterministic(raw_pend, payload)
+            raw_file_sha = _verify_persisted(raw_pend, digest,
+                                             f"{src.name}:raw")
+            raw_staged = (str(raw_pend), str(raw_blob))
+
         return {"blob": _rel(red), "blob_durable": True,
-                "blob_encoding": "gzip", "sha256_is_of": "uncompressed_bytes",
+                "blob_encoding": "gzip",
+                # NAMES THE OBJECT IT COVERS. It read "uncompressed_bytes",
+                # which a reader takes to mean the uncompressed bytes of this
+                # blob; on a reduce row it meant the upstream file, which is
+                # not stored here at all. That sentence was false on 366 rows.
+                "sha256_is_of": "upstream_bytes_only__blob_is_a_reduction",
+                "upstream_content_sha256": digest,
+                "persisted_content_sha256": red_digest,
+                "persisted_n_bytes": len(reduced),
+                "persisted_n_lines": len(reduced.decode().splitlines()),
+                "persisted_is_upstream_verbatim": False,
+                "blob_file_sha256": file_sha,
+                "self_verifying": True,
                 "content_unchanged": unchanged,
                 "reduced": {"columns": list(src.reduce_cols),
-                            "strategy": "newest_dt_slice" if not unchanged else "unchanged",
+                            "strategy": "newest_dt_slice",
                             **detail,
                             "full_bytes_ephemeral_at": _rel(eph)},
+                # THE REDUCTION ITSELF IS NOW AUDITABLE, not merely declared.
+                # Identity, version, input digest, output digest, the schema
+                # actually written, and a measurement of the code that did it.
+                "transformation": {
+                    "transform_id": TRANSFORM_ID,
+                    "transform_version": TRANSFORM_VERSION,
+                    "code_sha256": _transform_code_identity(),
+                    "code_symbol": "nfl.tools.capture_vintage._reduce_frame",
+                    "input_sha256": digest,
+                    "input_n_bytes": len(payload),
+                    "output_sha256": red_digest,
+                    "output_n_bytes": len(reduced),
+                    "output_columns": detail["selected_columns"],
+                    "requested_columns": detail["requested_columns"],
+                    "missing_columns": detail["missing_columns"],
+                    "row_filter": ("newest_dt_slice" if detail["newest_dt"]
+                                   else "no_row_filter"),
+                    "row_filter_value": detail["newest_dt"],
+                    "rows_in_file": detail["rows_in_file"],
+                    "rows_kept": detail["rows_kept"],
+                    "deterministic": True,
+                    "reversible": False,
+                    "irreversibility_note":
+                        "the reduction discards columns and, for dt-versioned "
+                        "sources, prior snapshots. The upstream file cannot be "
+                        "rebuilt from this blob. That is why upstream_content_"
+                        "sha256 is kept: it identifies what was fetched, even "
+                        "though what was fetched is not what is stored.",
+                },
                 "reduce_recoverability_assumption":
                     "upstream retains full dt history for this source",
-                "reduce_recoverability_checked": False}
+                # Still false as a claim about UPSTREAM: nothing here tests
+                # whether nflverse still serves the old dt slices. What IS now
+                # checked every run is the local half -- that the retained
+                # reduction matches this transformation of these bytes.
+                "reduce_recoverability_checked": False,
+                "persisted_artifact_verified_against_upstream_bytes": True,
+                # THE RAW HALF OF RULING 3, NAMED SO IT CAN BE AUDITED.
+                # `raw_blob` is the durable tracked copy; `full_bytes_
+                # ephemeral_at` inside `reduced` remains the gitignored
+                # convenience copy. They are recorded separately because one of
+                # them is evidence and the other is a cache.
+                "raw_blob": _rel(raw_blob),
+                "raw_blob_durable": True,
+                "raw_blob_encoding": "gzip",
+                "raw_blob_is_upstream_verbatim": True,
+                "raw_blob_content_sha256": digest,
+                "raw_blob_file_sha256": raw_file_sha,
+                "raw_blob_n_bytes": len(payload),
+                "raw_blob_content_unchanged": raw_unchanged,
+                "raw_blob_self_verifying": True,
+                "retention_policy": RETENTION_POLICY,
+                "retention_ruling3": {
+                    "raw_bytes": _rel(raw_blob),
+                    "raw_hash": digest,
+                    "transformation_version": TRANSFORM_VERSION,
+                    "reduced_artifact": _rel(red),
+                    "reduced_hash": red_digest,
+                    "raw_home_is_gitignored_only": False,
+                },
+                "_staged": [q for q in (staged, raw_staged) if q]}
 
     eph = store / "raw" / f"{src.name}.{digest[:16]}.csv"
     unchanged = eph.exists()
     if not unchanged:
         eph.write_bytes(payload)
+    file_sha = _verify_persisted(eph, digest, src.name)
     return {"blob": str(eph), "blob_durable": False,
-            "content_unchanged": unchanged, "reduced": None}
+            "sha256_is_of": "upstream_bytes_which_are_also_the_"
+                            "persisted_uncompressed_bytes",
+            "upstream_content_sha256": digest,
+            "persisted_content_sha256": digest,
+            "persisted_n_bytes": len(payload),
+            "persisted_is_upstream_verbatim": True,
+            "blob_file_sha256": file_sha,
+            "self_verifying": True,
+            "content_unchanged": unchanged, "reduced": None,
+            "raw_blob": str(eph),
+            "raw_blob_durable": False,
+            "raw_blob_content_sha256": digest,
+            "raw_blob_file_sha256": file_sha,
+            "raw_blob_n_bytes": len(payload),
+            "retention_policy": RETENTION_POLICY,
+            "retention_ruling3": {
+                "raw_bytes": str(eph),
+                "raw_hash": digest,
+                "transformation_version": "none__upstream_verbatim",
+                "reduced_artifact": None,
+                "reduced_hash": None,
+                # SAID OUT LOUD. No source currently declares `ephemeral`
+                # durability; if one ever does, its retention does NOT satisfy
+                # Ruling 3 and this field is how a reader finds that out
+                # without re-deriving the gitignore rules.
+                "raw_home_is_gitignored_only": True,
+            },
+            "_staged": []}
 
 
 def main() -> int:
@@ -734,6 +1351,15 @@ def main() -> int:
               f"{t['window_start_utc'][11:16]}Z..{t['window_end_utc'][11:16]}Z")
 
     rows, counts = [], {}
+    # Staged durable blobs, promoted into nfl/vintage ONLY after the manifest
+    # rows are on disk. See _promote_staging.
+    staged = []
+    # A previous run that died mid-capture may have left staging behind. Those
+    # bytes carry no row and never will, so they are cleared rather than
+    # promoted by a later run that knows nothing about them.
+    for _old in _pending_root(store).glob("*"):
+        if _old.is_file():
+            _old.unlink()
     for src in _sources(args.season):
         # ONE SOURCE MAY NOT DESTROY THE RUN. There was no boundary here, and
         # the manifest was written only after the whole loop, so ANY unhandled
@@ -757,6 +1383,16 @@ def main() -> int:
                "detail": out.detail,
                "evidence": {k: v for k, v in out.evidence.items()}}
         if out.state is State.PASS:
+            # `_staged` is plumbing, not provenance. It names a path that will
+            # not exist a moment later, so it is removed before the row is
+            # written rather than persisted as a dangling reference.
+            # A LIST, NOT A PAIR. `reduce` now stages TWO blobs -- the
+            # reduction and the raw upstream file (Ruling 3) -- and the old
+            # single-tuple shape would have silently promoted only the first.
+            st = out.value.pop("_staged", None) or []
+            if isinstance(st, tuple):
+                st = [st]
+            staged.extend(st)
             row["value"] = out.value
         else:
             # A run that ATTEMPTED a declared target and failed must leave that
@@ -815,6 +1451,14 @@ def main() -> int:
     # and the durable record omitted it -- the audit trail was missing exactly
     # the sources that constitute the Item 1 failure, which is the half that
     # survives this container.
+    # STRUCTURAL, AND BEFORE THE APPEND. A row that cannot name what it
+    # retained must never reach the manifest.
+    try:
+        _assert_no_pass_without_capture(rows)
+    except SystemExit:
+        _purge_staging(staged)
+        raise
+
     n_written = _flush(manifest, rows)
 
     # A CAPTURE THAT WROTE NO MANIFEST ROW DID NOT CAPTURE ANYTHING, whatever
@@ -823,6 +1467,7 @@ def main() -> int:
     # nothing. This is the exact production failure -- schedules blobs
     # committed, manifest untouched since 2026-09-08, and the workflow green.
     if n_written == 0:
+        _purge_staging(staged)
         raise SystemExit(
             "CAPTURE_WROTE_NO_MANIFEST_ROW: sources ran and durable bytes may "
             "already be on disk, but no manifest row was appended, so nothing "
@@ -830,6 +1475,13 @@ def main() -> int:
             "Failing loudly rather than leaving orphan blobs behind a green "
             "run.")
     print(f"\nmanifest rows appended: {n_written}")
+
+    # ROWS FIRST, BYTES SECOND. Everything above this line could fail without
+    # putting a single unattributed artifact into the durable store.
+    promoted = _promote_staging(staged)
+    print(f"durable blobs promoted: {len(promoted)}")
+    for q in promoted:
+        print(f"  + {q}")
 
     print(f"\ncapture {capture_id}: {counts}")
     unmet = _registry.unmet_targets(manifest)

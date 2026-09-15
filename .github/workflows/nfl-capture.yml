@@ -57,7 +57,39 @@ jobs:
   capture:
     runs-on: ubuntu-latest
     steps:
+      # D24. EXPLICIT GOVERNED REF, NOT THE DEFAULT BRANCH.
+      #
+      # This step used to be a bare `actions/checkout@v4`. A `schedule:`
+      # trigger checks out the DEFAULT branch, and measured on 2026-09-15 that
+      # branch was missing THREE capture modules entirely --
+      # payload_contract.py, persisted_provenance.py, evidence_layers.py -- so
+      # D20's row_container, D22's payload contracts and D24's own
+      # persisted-digest guard were all absent from the only code that actually
+      # captures, while their tests passed on the development branch.
       - uses: actions/checkout@v4
+        with:
+          ref: capture-prod
+          fetch-depth: 0
+
+      # A MUTABLE BRANCH NAME IS NOT PROVENANCE. `ref: capture-prod` says which
+      # branch; it does not say which commit ran, and the branch moves. So the
+      # resolved commit is recorded before anything is fetched, and the
+      # executor check below compares it against the approved release.
+      - name: Record the resolved capture commit
+        id: capref
+        run: |
+          SHA=$(git rev-parse HEAD)
+          echo "executed_sha=$SHA" | tee -a "$GITHUB_OUTPUT"
+          echo "branch=$(git rev-parse --abbrev-ref HEAD)" | tee -a "$GITHUB_OUTPUT"
+
+      # FAIL CLOSED BEFORE FETCHING ANYTHING. A job that discovers afterwards
+      # that it ran the wrong code has already written rows nobody can
+      # attribute. This refuses to capture at all unless the running surface is
+      # the approved release.
+      - name: Assert this executor is the approved capture release
+        run: |
+          python3 nfl/tools/capture_release.py --check-executor \
+            --executed-sha "${{ steps.capref.outputs.executed_sha }}"
 
       - uses: actions/setup-python@v5
         with:
