@@ -173,7 +173,7 @@ def class_point_forecast(cls: str, season: int, week: int, players,
             'CLASS_HISTORY_EMPTY',
             f'no prior appeared {cls} share earlier than {season} week '
             f'{week}; a point forecast over nothing is not one')
-    out, fell_back = {}, []
+    out, fell_back, weighted = {}, [], []
     for q in players:
         pid, pos = q.get('gsis_id'), q.get('position')
         if pos not in L.CLASSES[cls]['pos'] or not pid:
@@ -197,6 +197,28 @@ def class_point_forecast(cls: str, season: int, week: int, players,
                 f'neither history nor a positional prior exists for {pos}')
         if not h:
             fell_back.append(pid)
+        # C IS A CONDITIONAL-ON-APPEARING SHARE. This module's own defect
+        # statement says so: "P4C weights are conditional-on-appearing shares
+        # consumed as unconditional weights over an unfiltered roster". R5
+        # patched that by hard-filtering the pool to roster status ACT, which
+        # works only while an ACT column exists -- and for 2026 week 2 it does
+        # not, because the vintage reduction drops it.
+        #
+        # So the weight becomes what it always should have been:
+        #
+        #     E[share] = P(appears) * E[share | appears]
+        #
+        # A player carrying no participation_prior is untouched, so every
+        # existing caller and every frozen arm keeps its exact behaviour. Where
+        # the prior IS supplied it is uniform across the active pool, so it
+        # cancels in the simplex normalisation and active players are scored
+        # identically to the hard filter -- what changes is that a
+        # practice-squad or reserve player contributes his own small mass
+        # instead of a full share or nothing at all.
+        pp = q.get('participation_prior')
+        if pp is not None:
+            v = float(v) * float(pp)
+            weighted.append(pid)
         out[pid] = float(v)
     if not out:
         return Outcome.fail(
@@ -206,6 +228,7 @@ def class_point_forecast(cls: str, season: int, week: int, players,
                       spec_version=SPEC_VERSION, alloc_class=cls,
                       n_players=len(out), ordinal_cut=cut,
                       n_on_positional_prior=len(fell_back),
+                      n_participation_weighted=len(weighted),
                       role_prior_applied=role_prior is not None,
                       positional_prior={k: round(v, 6)
                                         for k, v in pri.items()})

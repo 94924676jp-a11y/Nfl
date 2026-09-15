@@ -442,40 +442,67 @@ def build(args, fixtures: dict = None) -> dict:
                                observed_before=args.written_at,
                                kickoff_utc=fx.get('kickoff_utc'))
             if st.state is not State.PASS:
-                return st
-            qpool = RS.active_pool(qbp, st.value)
-            if qpool.state is not State.PASS:
-                return qpool
-            # A TEAM WHOSE WHOLE ROOM IS INELIGIBLE IS A REFUSAL, NOT AN EMPTY
-            # ROOM. `qb_allocation` skips a team with no quarterback and the
-            # board would then carry a game one of whose clubs has no passer
-            # at all, silently. The non-QB half already refuses this shape
-            # (NONQB_TEAM_HAS_NO_PLACEABLE_PLAYER); this says the same thing
-            # about quarterbacks.
-            had = {q.get('team') for q in qbp}
-            left = {q.get('team') for q in qpool.value}
-            emptied = sorted(t for t in had if t not in left)
-            if emptied:
-                return Outcome.blocked(
-                    'QB_POOL_EMPTIED_BY_ELIGIBILITY',
-                    f'every quarterback {emptied} carries is off the active '
-                    f'roster, so filtering on eligibility would leave the '
-                    f'club with nobody to take a dropback. Refused rather '
-                    f'than allocating a team dropback share among nobody, '
-                    f'and rather than putting the ineligible room back.',
-                    cause=Cause.DATA, teams_emptied=emptied,
-                    n_qb_in=len(qbp), n_qb_kept=len(qpool.value))
-            fx['_r5_qb'] = {
-                k: v for k, v in qpool.evidence.items() if k != 'value'}
-            fx['_r5_qb']['roster_status_source'] = st.evidence.get('source')
-            fx['_r5_qb']['roster_status_observed_at'] = st.evidence.get(
-                'observed_at')
-            fx['_r5_qb']['n_qb_in'] = len(qbp)
-            fx['_r5_qb']['n_qb_kept'] = len(qpool.value)
-            fx['_r5_qb']['qb_participation_limitation'] = (
-                QB_PARTICIPATION_LIMITATION)
-            fx['_r5_qb_applied'] = True
-            qbp = list(qpool.value)
+                # SAME RULE AS THE NON-QB HALF: a week with no ACT column is
+                # not a week with no quarterbacks. Without this the qb_layer
+                # went BLOCKED on 2026 week 2 and the game had no passer.
+                # The room is kept whole and each member carries his graded
+                # participation probability instead of a hard ACT filter.
+                from nfl.production.nonqb import participant_class as PCL
+                pcq = PCL.classify(args.season, args.week, qbp,
+                                   observed_before=args.written_at)
+                if pcq.state is not State.PASS:
+                    return pcq
+                pq = {r['gsis_id']: r['participation_prior']
+                      for r in pcq.value if r.get('gsis_id')}
+                kq = {r['gsis_id']: r['participant_class']
+                      for r in pcq.value if r.get('gsis_id')}
+                qbp = [dict(q, participation_prior=pq.get(q.get('gsis_id')),
+                            participant_class=kq.get(q.get('gsis_id')))
+                       for q in qbp]
+                fx['_qb_participant_class'] = {
+                    'fallback_from': st.code, 'detail': pcq.detail,
+                    'counts': pcq.evidence.get('counts')}
+            else:
+                qpool = RS.active_pool(qbp, st.value)
+                if qpool.state is not State.PASS:
+                    return qpool
+            # EVERYTHING BELOW READS `qpool`, WHICH ONLY EXISTS WHEN THE
+            # ACT COLUMN WAS READABLE. Under the graded fallback the room is
+            # kept whole and weighted, so there is no filtered pool to audit
+            # and no team can be emptied BY THE FILTER -- the refusal below
+            # is about the filter removing a club's last passer, which cannot
+            # happen when no filter ran.
+            if st.state is State.PASS:
+                # A TEAM WHOSE WHOLE ROOM IS INELIGIBLE IS A REFUSAL, NOT AN EMPTY
+                # ROOM. `qb_allocation` skips a team with no quarterback and the
+                # board would then carry a game one of whose clubs has no passer
+                # at all, silently. The non-QB half already refuses this shape
+                # (NONQB_TEAM_HAS_NO_PLACEABLE_PLAYER); this says the same thing
+                # about quarterbacks.
+                had = {q.get('team') for q in qbp}
+                left = {q.get('team') for q in qpool.value}
+                emptied = sorted(t for t in had if t not in left)
+                if emptied:
+                    return Outcome.blocked(
+                        'QB_POOL_EMPTIED_BY_ELIGIBILITY',
+                        f'every quarterback {emptied} carries is off the active '
+                        f'roster, so filtering on eligibility would leave the '
+                        f'club with nobody to take a dropback. Refused rather '
+                        f'than allocating a team dropback share among nobody, '
+                        f'and rather than putting the ineligible room back.',
+                        cause=Cause.DATA, teams_emptied=emptied,
+                        n_qb_in=len(qbp), n_qb_kept=len(qpool.value))
+                fx['_r5_qb'] = {
+                    k: v for k, v in qpool.evidence.items() if k != 'value'}
+                fx['_r5_qb']['roster_status_source'] = st.evidence.get('source')
+                fx['_r5_qb']['roster_status_observed_at'] = st.evidence.get(
+                    'observed_at')
+                fx['_r5_qb']['n_qb_in'] = len(qbp)
+                fx['_r5_qb']['n_qb_kept'] = len(qpool.value)
+                fx['_r5_qb']['qb_participation_limitation'] = (
+                    QB_PARTICIPATION_LIMITATION)
+                fx['_r5_qb_applied'] = True
+                qbp = list(qpool.value)
         sl = FE.qb_slate(args.season, args.week, qbp, m=m, seed=args.seed,
                          include_cold_start=bool(fl.get('include_cold_start')))
         if sl.state is not State.PASS:
@@ -982,8 +1009,45 @@ def build(args, fixtures: dict = None) -> dict:
                                observed_before=args.written_at,
                                kickoff_utc=fx.get('kickoff_utc'))
             if st.state is not State.PASS:
-                fx['_nonqb'] = {'fatal': st}
-                return fx['_nonqb']
+                # NO ACT COLUMN FOR THIS WEEK IS NOT AN EMPTY LEAGUE.
+                #
+                # This was `fatal`, and on 2026 week 2 it fired: no raw
+                # weekly-roster capture carries `status` for week 2, because
+                # the vintage reduction drops the column, so status_map
+                # returned ROSTER_STATUS_EMPTY and DET-BUF produced no running
+                # back, no receiver and no tight end for either club. Missing
+                # evidence about roster STATUS was being read as a claim that
+                # the participant UNIVERSE is empty.
+                #
+                # The fallback is NOT an unfiltered membership pool -- that
+                # recreates the dilution R5 exists to prevent, and it was
+                # measured before being rejected: league week-2 skill
+                # membership is 810 rows of which only 487 were ACT, and DET's
+                # contains a RETIRED player. Instead every member is placed in
+                # a graded participation class and carries P(takes an
+                # offensive snap), so an impossible player contributes almost
+                # nothing while nobody is deleted from the universe.
+                from nfl.production.nonqb import participant_class as PCL
+                pc = PCL.classify(args.season, args.week, players,
+                                  observed_before=args.written_at)
+                if pc.state is not State.PASS:
+                    fx['_nonqb'] = {'fatal': pc}
+                    return fx['_nonqb']
+                prior = {r['gsis_id']: r['participation_prior']
+                         for r in pc.value if r.get('gsis_id')}
+                klass = {r['gsis_id']: r['participant_class']
+                         for r in pc.value if r.get('gsis_id')}
+                players = [dict(q, participation_prior=prior.get(
+                                    q.get('gsis_id')),
+                                participant_class=klass.get(q.get('gsis_id')))
+                           for q in players]
+                fx['_participant_class'] = {
+                    k: v for k, v in pc.evidence.items() if k != 'value'}
+                fx['_participant_class']['fallback_from'] = st.code
+                fx['_participant_class']['detail'] = pc.detail
+                # The gate below still runs: official inactives and the injury
+                # report are ranked authorities and they still exclude.
+                # This adds the class the gate cannot see; it replaces nothing.
             nonqb = [q for q in players if q.get('position') != 'QB']
             qbs = [q for q in players if q.get('position') == 'QB']
             snap = EG.snapshot(

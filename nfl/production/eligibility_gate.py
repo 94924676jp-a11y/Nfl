@@ -426,14 +426,65 @@ def snapshot(season, week, teams, players, *, kickoff_utc,
 
     rs = RS.status_map(season, week, teams, observed_before=observed_before,
                        kickoff_utc=kickoff_utc)
+    # ROSTER STATUS IS AUTHORITY RANK 3, AND A RANK THAT CANNOT BE READ IS AN
+    # UNAVAILABLE AUTHORITY, NOT AN EMPTY LEAGUE.
+    #
+    # This returned the refusal, so a week with no raw status capture killed
+    # the snapshot and every stage downstream of it. Measured on 2026 week 2:
+    # ROSTER_STATUS_EMPTY propagated into appearance, participation,
+    # targets_carries, conversion, td_layer and qb_layer, and DET-BUF produced
+    # no skill-position board at all.
+    #
+    # Ranks 1 and 2 -- the official inactive list and the official injury
+    # report -- do not depend on rank 3 and still exclude exactly who they
+    # excluded before. What is lost is the ability to say a player is on the
+    # ACTIVE ROSTER, and that loss is now RECORDED rather than fatal:
+    # `participant_class` supplies the graded participation probability the
+    # missing rank would otherwise have decided, and the caller can see which
+    # of the two it got.
+    roster_status_authority = 'READ'
     if rs.state is not State.PASS:
-        return rs
-    statuses = rs.value
+        roster_status_authority = f'UNAVAILABLE:{rs.code}'
+        statuses = {}
+    else:
+        statuses = rs.value
 
     inj = injury_designations(season, week, teams, kickoff_utc=kickoff_utc,
                               observed_before=observed_before)
+    # AUTHORITY RANK 2, GRADED THE SAME WAY AS RANK 3.
+    #
+    # The refusal it returns is CORRECT and stays: an empty injury slice is a
+    # statement about a capture, and reading it as "no club has an injury" is
+    # the absence-as-success defect. But that is a fact for the caller to
+    # GRADE, not to die on. On the Tuesday before a Thursday game the week's
+    # official injury report has not been published yet -- that is an EARLY
+    # forecast vintage, not a broken pipeline, and refusing it means the
+    # product has nothing to show until Wednesday.
+    #
+    # What is lost is the ability to say a player is OUT or DOUBTFUL, and it
+    # is recorded. Rank 1, the official inactive list, is unaffected; so is the
+    # graded participation class. Nobody is silently promoted to healthy: an
+    # unavailable rank means UNKNOWN at that rank, and the publication state
+    # downstream is what tells a reader how much evidence stands behind the
+    # number.
+    injury_authority = 'READ'
     if inj.state is not State.PASS:
-        return inj
+        injury_authority = f'UNAVAILABLE:{inj.code}'
+        # EVERY KEY THE CONSUMER READS IS SUPPLIED, EXPLICITLY UNAVAILABLE.
+        # Omitting them raised KeyError: 'vintage' inside the appearance stage
+        # -- an unnamed crash two layers from the cause, which is exactly the
+        # shape this repair exists to remove. An absent authority has to be
+        # SHAPED like the authority it replaces, or every downstream reader
+        # becomes a place the pipeline can die.
+        _why = inj.code
+        inj = Outcome.ok(
+            'ELIGIBILITY_DESIGNATIONS_UNAVAILABLE', value={},
+            spec_version=SPEC_VERSION, n_rows_in_scope=0, n_designated=0,
+            unavailable_reason=_why,
+            vintage={'blob': None, 'unavailable_reason': _why},
+            content_sha256=None, retrieved_at=None,
+            known_from=None, known_from_authority='UNAVAILABLE',
+            non_vocabulary_or_blank=0, vocabulary=sorted(_DESIGNATION))
 
     inactive = None if official_inactive_ids is None \
         else set(official_inactive_ids)
@@ -577,6 +628,8 @@ def snapshot(season, week, teams, players, *, kickoff_utc,
                         else 'PRELIMINARY_PROVISIONAL -- no official gameday '
                              'inactive list; final eligibility is NOT '
                              'inferred and no player is assumed to dress'),
+        roster_status_authority=roster_status_authority,
+        injury_authority=injury_authority,
         roster_vintage=roster_vintage, injury_vintage=injury_vintage,
         designation_scan=inj.evidence['non_vocabulary_or_blank'],
         absence_is_not_evidence='a player absent from the injury report is '
