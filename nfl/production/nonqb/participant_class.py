@@ -317,6 +317,24 @@ def classify(season: int, week: int, members, *, observed_before=None):
         detail=f'{len(rows)} member(s): '
                + ', '.join(f'{k} {v}' for k, v in sorted(counts.items())),
         spec_version=SPEC_VERSION, counts=counts,
+        # UNKNOWN IS NEITHER ACTIVE NOR EXCLUDED, AND MUST NOT VANISH.
+        # It is held out of the point pool because inventing a weight for it
+        # would be inventing the transition probability by another route. But
+        # dropping it silently would make it "definitely excluded", which is
+        # the other thing it must not mean. So it is COUNTED and NAMED here,
+        # and a non-empty unknown population is a declared incompleteness the
+        # caller has to deal with rather than a group that quietly disappeared.
+        n_unknown=sum(1 for r in rows
+                      if r['eligibility_state'] == 'UNKNOWN'),
+        unknown_members=[r['gsis_id'] for r in rows
+                         if r['eligibility_state'] == 'UNKNOWN'],
+        unknown_semantics=('NOT_ACTIVE_AND_NOT_EXCLUDED__'
+                           'REQUIRES_ELIGIBILITY_RESOLUTION'),
+        n_in_opportunity_pool=sum(1 for r in rows
+                                  if r['enters_opportunity_pool']),
+        n_held_pending_transition=sum(
+            1 for r in rows if not r['enters_opportunity_pool']
+            and r['eligibility_state'] == 'NOT_GAME_ROSTER'),
         same_week_status_sources=same_src,
         prior_week_status_sources=prior_src,
         n_same_week=len(same), n_prior_week=len(prior_wk),

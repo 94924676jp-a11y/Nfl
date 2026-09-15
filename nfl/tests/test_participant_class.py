@@ -79,17 +79,25 @@ def test_a_no_practice_squad_player_competes_without_an_elevation():
           'if none are here the file was pre-filtered and this proves nothing')
     act = [r for r in out.value
            if r['participant_class'] == PC.ACTIVE_ROSTER_EXPECTED]
-    check('  and every one is far below an active player',
-          all(p['participation_prior'] < 0.05 for p in ps),
-          str(sorted({p['participation_prior'] for p in ps})))
-    check('  by two orders of magnitude',
-          ps and act
-          and min(a['participation_prior'] for a in act)
-          > 100 * max(p['participation_prior'] for p in ps))
-    # NOT ZERO. 0/120 cannot establish impossibility.
-    check('  but none is recorded as impossible',
-          all(p['participation_prior'] > 0 for p in ps),
-          'a measured 0/120 is not proof a practice-squad snap cannot happen')
+    # REWRITTEN. This used to assert a practice-squad player carried a SMALL
+    # participation probability. That was the conflation itself: a smoothed
+    # observation rate was standing in for P(roster transition before
+    # kickoff), which nothing here has measured. He carries NO participation
+    # number now, and no route into the opportunity pool.
+    check('  and none carries a participation number at all',
+          all(p['participation_prior'] is None for p in ps),
+          str({p['participation_prior'] for p in ps}))
+    check('  and none enters the opportunity pool',
+          all(not p['enters_opportunity_pool'] for p in ps))
+    check('  and the transition probability is UNIDENTIFIED, not a number',
+          all(p['transition_probability'] is None for p in ps),
+          'inventing it would be inventing an elevation rate from a feed that '
+          'does not exist')
+    check('  and the missing authority is named',
+          all(p['transition_authority']
+              == 'UNIDENTIFIED_NO_TRANSACTIONS_ENDPOINT' for p in ps))
+    check('  while an active player does carry one',
+          act and all(a['participation_prior'] is not None for a in act))
     check('  and elevation is reported UNAVAILABLE, not silently unused',
           out.evidence.get('elevation_authority')
           == 'UNAVAILABLE_NO_TRANSACTIONS_ENDPOINT',
@@ -106,8 +114,9 @@ def test_b_no_reserve_or_released_player_competes():
             if r['participant_class'] in (PC.RESERVE, PC.RELEASED, PC.RETIRED)]
     check('they are present in the membership file', bool(dead),
           'DET week-2 skill membership contains a RETIRED player')
-    check('  and none competes meaningfully',
-          all(d['participation_prior'] < 0.10 for d in dead),
+    check('  and none competes at all',
+          all(d['participation_prior'] is None
+              and not d['enters_opportunity_pool'] for d in dead),
           str([(d['participant_class'], d['participation_prior'])
                for d in dead]))
     check('  and each names the status it came from',
@@ -124,7 +133,8 @@ def test_c_secondary_participants_stay_available():
         for pos in ('WR', 'TE', 'RB'):
             live = [r for r in out.value
                     if r['team'] == team and r['position'] == pos
-                    and r['participation_prior'] > 0.5]
+                    and r['enters_opportunity_pool']
+                    and (r['participation_prior'] or 0) > 0.5]
             check(f'{team} {pos}: more than the board shows remain live',
                   len(live) >= 3,
                   f'{len(live)} live -- the board shows WR1/WR2/WR3 or one '
@@ -146,7 +156,8 @@ def test_d_a_week_one_inactive_is_not_a_week_two_exclusion():
               for r in ina),
           str({r['participant_class'] for r in ina}))
     check('  and carry the full active participation prior',
-          all(r['participation_prior'] > 0.5 for r in ina),
+          all(r['enters_opportunity_pool']
+              and (r['participation_prior'] or 0) > 0.5 for r in ina),
           'INA measured 0/62 IN WEEK 1 BY CONSTRUCTION; reusing that as a '
           'week-2 prior would be the defect this file audits')
 
@@ -159,7 +170,8 @@ def test_e_the_pool_is_neither_membership_nor_a_hard_filter():
         return
     for team in ('DET', 'BUF'):
         rows = [r for r in out.value if r['team'] == team]
-        eff = sum(r['participation_prior'] for r in rows)
+        pool = [r for r in rows if r['enters_opportunity_pool']]
+        eff = sum(r['participation_prior'] for r in pool)
         check(f'{team}: effective pool is well below raw membership',
               eff < 0.75 * len(rows),
               f'{eff:.2f} effective vs {len(rows)} members')
@@ -168,26 +180,64 @@ def test_e_the_pool_is_neither_membership_nor_a_hard_filter():
               'every member is classified; none is dropped')
         check(f'  and the effective pool is in the band R5 fitted (12-17)',
               12.0 <= eff <= 17.0, f'{eff:.2f}')
+        check(f'  and everyone held out is held for a NAMED reason',
+              all(r['transition_authority']
+                  == 'UNIDENTIFIED_NO_TRANSACTIONS_ENDPOINT'
+                  for r in rows if not r['enters_opportunity_pool']))
 
 
 def test_f_unknown_is_neither_active_nor_excluded():
-    print('\nF. UNKNOWN is uncertainty, not a decision')
+    """The hardest of the three, and the one a pool filter gets wrong twice.
+
+    The first cut gave UNKNOWN the marginal rate, 0.5000 -- which invents the
+    transition probability by another route. Holding it out of the pool instead
+    makes it "definitely excluded", which is the other thing it must not mean.
+    So it is held out of the POINT pool and COUNTED as a declared
+    incompleteness: neither resolved nor disappeared.
+    """
+    print('\nF. UNKNOWN is uncertainty, not a decision either way')
     ro = PC.rates()
     if not ro.ok:
         not_executed('rate artifact', ro.code)
         return
     doc = ro.value
-    u = PC.participation_prior(PC.UNKNOWN, doc)
-    check('UNKNOWN carries a prior at all', u is not None)
-    check('  and it is not 0', u and u > 0.05, str(u))
-    check('  and it is not 1', u and u < 0.95, str(u))
-    check('  and it is the measured marginal over all members',
-          u == (doc.get('frame') or {}).get('marginal_rate_any_member'),
-          str(u))
-    a = PC.participation_prior(PC.ACTIVE_ROSTER_EXPECTED, doc)
-    p = PC.participation_prior(PC.PRACTICE_SQUAD, doc)
-    check('  and it sits between active and practice squad',
-          p < u < a, f'{p} < {u} < {a}')
+    check('UNKNOWN is not given a participation number',
+          PC.participation_prior(PC.UNKNOWN, doc) is None,
+          'the marginal rate would be the transition probability invented '
+          'by another route')
+    check('  and is not asserted eligible',
+          PC.eligibility_state(PC.UNKNOWN) == 'UNKNOWN',
+          PC.eligibility_state(PC.UNKNOWN))
+    check('  and is not asserted off the roster either',
+          PC.eligibility_state(PC.UNKNOWN) != 'NOT_GAME_ROSTER')
+    check('  and its transition probability is UNIDENTIFIED',
+          PC.transition_probability(PC.UNKNOWN) is None)
+    # AND IT MUST BE COUNTED, or "held out" silently becomes "excluded".
+    m, out = _classified()
+    if out is None or not out.ok:
+        not_executed('unknown reporting', 'no classification')
+        return
+    ev = out.evidence
+    check('the classification reports how many are UNKNOWN',
+          'n_unknown' in ev, str(sorted(ev)[:12]))
+    check('  and names them rather than dropping them',
+          'unknown_members' in ev
+          and len(ev['unknown_members']) == ev['n_unknown'])
+    check('  and states what UNKNOWN means',
+          ev.get('unknown_semantics')
+          == 'NOT_ACTIVE_AND_NOT_EXCLUDED__REQUIRES_ELIGIBILITY_RESOLUTION',
+          str(ev.get('unknown_semantics')))
+    check('  and the pool and held counts are both reported',
+          'n_in_opportunity_pool' in ev and 'n_held_pending_transition' in ev)
+    check('  and every member is accounted for in one of the three',
+          ev['n_in_opportunity_pool'] + ev['n_held_pending_transition']
+          + ev['n_unknown'] == len(out.value),
+          f"{ev['n_in_opportunity_pool']} + "
+          f"{ev['n_held_pending_transition']} + {ev['n_unknown']} "
+          f"vs {len(out.value)} -- nobody may fall between the classes")
+    # DET-BUF happens to have none; the accounting must still hold.
+    check('  (DET-BUF carries no UNKNOWN member, so Thursday is unaffected)',
+          ev['n_unknown'] == 0, str(ev['n_unknown']))
 
 
 if __name__ == '__main__':
