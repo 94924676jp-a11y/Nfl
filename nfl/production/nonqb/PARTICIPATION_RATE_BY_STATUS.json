@@ -1,0 +1,111 @@
+{
+ "artifact": "NFL_PARTICIPATION_RATE_BY_ROSTER_STATUS",
+ "built_at_utc": "2026-09-15T20:30:12.862245+00:00",
+ "carry_forward_caveat": "INA measures 0/62 BY CONSTRUCTION: a week-1 inactive did not take a week-1 snap. That number says NOTHING about week 2 and must never be used as a week-2 prior. A week-1 INA player is a 53-man roster member, so his week-2 class is ACTIVE_ROSTER_EXPECTED and his prior is the ACT rate. The injury-persistence adjustment that would refine this is NOT IDENTIFIED from one week of data and is left unmeasured rather than guessed.",
+ "frame": {
+  "marginal_rate_any_member": 0.5,
+  "positions": [
+   "FB",
+   "QB",
+   "RB",
+   "TE",
+   "WR"
+  ],
+  "season": 2026,
+  "skill_rows_joined": 722,
+  "skill_rows_with_snaps": 361,
+  "teams": [
+   "ARI",
+   "ATL",
+   "BAL",
+   "BUF",
+   "CAR",
+   "CHI",
+   "CIN",
+   "CLE",
+   "DAL",
+   "DET",
+   "GB",
+   "HOU",
+   "IND",
+   "JAX",
+   "LA",
+   "LAC",
+   "LV",
+   "MIA",
+   "MIN",
+   "NE",
+   "NO",
+   "NYG",
+   "NYJ",
+   "PHI",
+   "PIT",
+   "SEA",
+   "SF",
+   "TB",
+   "TEN",
+   "WAS"
+  ],
+  "teams_covered": 30,
+  "week": 1
+ },
+ "join": "weekly_rosters.pfr_id -> snap_counts.pfr_player_id",
+ "question": "P(offensive snaps > 0 in the SAME week | nflverse weekly-roster status that week), skill positions only. This is a SAME-WEEK rate. It is NOT a week-to-week persistence rate and must not be used as one -- see carry_forward_caveat.",
+ "rates": {
+  "ACT": {
+   "jeffreys_mean": 0.8648325358851675,
+   "n": 417,
+   "played": 361,
+   "rate": 0.8657074340527577
+  },
+  "CUT": {
+   "jeffreys_mean": 0.009259259259259259,
+   "n": 53,
+   "played": 0,
+   "rate": 0.0
+  },
+  "DEV": {
+   "jeffreys_mean": 0.004132231404958678,
+   "n": 120,
+   "played": 0,
+   "rate": 0.0
+  },
+  "EXE": {
+   "jeffreys_mean": 0.25,
+   "n": 1,
+   "played": 0,
+   "rate": 0.0
+  },
+  "INA": {
+   "jeffreys_mean": 0.007936507936507936,
+   "n": 62,
+   "played": 0,
+   "rate": 0.0
+  },
+  "RES": {
+   "jeffreys_mean": 0.0078125,
+   "n": 63,
+   "played": 0,
+   "rate": 0.0
+  },
+  "RET": {
+   "jeffreys_mean": 0.07142857142857142,
+   "n": 6,
+   "played": 0,
+   "rate": 0.0
+  }
+ },
+ "sources": {
+  "roster": {
+   "path": "nfl/vintage/weekly_rosters.bdab6ecee12d44a4.raw.csv.gz",
+   "sha256": "4ee189a4283850a3d4a4582427e391c20ca2849af6e85660fa4d70f274fa463f"
+  },
+  "snap_counts": {
+   "path": "nfl/availability_raw/snap_counts_2026.4da350a50d0bb39b.csv.gz",
+   "sha256": "6fa2a7b2397c73f026f6c22a5e042540c1a6420b351138c48861415bb746bb1a",
+   "week1_rows": 1397
+  }
+ },
+ "spec_version": "participation-rate-by-status-1",
+ "unknown_prior_basis": "A player known only to be on the membership file gets the MARGINAL rate over all members, not 0 and not 1."
+}
