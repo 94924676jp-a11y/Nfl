@@ -70,8 +70,8 @@ repository's own declarations.
 **R1 — check sites.** Every `check(...)` and `blocked(...)` call site in every
 test module, located by AST with its full line span, its enclosing function and
 its label literal. That is this repository's own vocabulary for "here is a
-property I claim to enforce"; all 120 test modules define `check` and carry a
-tally, so the coverage is total. Each module is then imported and its `check`
+property I claim to enforce"; all 126 test modules discovered on this run
+define `check` and carry a tally, so the coverage is total. Each module is then imported and its `check`
 and `blocked` replaced by recorders that read the module's tally before and
 after the real call and attribute the verdict to the caller's line. Declared
 minus executed is the answer, **at check-site granularity** rather than
@@ -102,6 +102,11 @@ reverse.
     BLOCKED         declared, executed, and it said out loud it could not run
     NOT_CERTIFIED   declared and NEVER EXECUTED on this run
     NEGATIVE_ARM    a site whose verdict argument is the literal False
+    BLOCKED_ARM_NOT_TAKEN
+                    a `blocked(...)` site that did not fire: the fixture WAS
+                    there and the real checks ran
+    BLOCKED_BRANCH  a site in a function where a `blocked()` DID fire: the
+                    untaken half of a declared either/or
 
 **NOT_CERTIFIED is distinct from both PASS and FAIL**, which is what the
 directive asks for. BLOCKED and NOT_CERTIFIED are both failures to certify and
@@ -156,7 +161,134 @@ answers *was it run*, and the census answers *was it worth running*.
 
 ### The first full run
 
-__MANIFEST_RUN__
+    $ python3.12 nfl/tools/invariant_manifest.py -v
+      126 modules, 2026-09-15 05:11-05:44 UTC
+
+    register          declared CERTIFIED FAILED BLOCKED NOT_CERT  not-taken
+    R1_CHECK_SITE         6783      6291     31       6       57        398
+    R2_REFUSAL_CODE        823       446      0       0      377          0
+    R3_LOAD_BEARING         52        51      0       0        1          0
+    TOTAL                 7658      6788     31       6      435        398
+
+    MANIFEST FAILURE_TO_CERTIFY
+    wrote nfl/research/v4/p6/INVARIANT_MANIFEST.json
+
+`not-taken` is the three declared-either-or classes counted apart:
+`NEGATIVE_ARM` (232), `BLOCKED_ARM_NOT_TAKEN` (163) and `BLOCKED_BRANCH` (3).
+
+**The two arm classes were added after this run and applied to its rows without
+re-executing anything**, and the JSON says so in a `relabelled` field. No
+verdict changed; only the name given to a site that never executed. They matter
+because on the first pass **163 of the 223 apparent failures to certify were a
+`blocked(...)` site that did not fire** — which means the fixture WAS there and
+the real checks ran. Counting those would have buried the 57 that are real
+under three times their number of noise, and a headline that cries wolf is how
+a measurement tool stops being read. The rule for crediting them is the
+repository's own escape hatch and nothing softer: a site is only excused when
+it is itself a `blocked()` call, or sits in a function where a `blocked()`
+actually fired **on this run**. A function that returned silently gets nothing.
+
+### What the first run found
+
+**57 check sites were declared and never evaluated**, and nothing else in the
+repository would have said so. They concentrate:
+
+| Module | Never-executed `check()` sites |
+|---|---|
+| `test_appearance_team_scope.py` | 16 |
+| `test_accounting_invariants.py` | 7 |
+| `test_preflight.py` | 6 |
+| `test_product_orchestration.py` | 6 |
+| `test_injury_parser.py` | 3 |
+| eleven other modules | 1-2 each |
+
+`test_appearance_team_scope.py` is the shape to read first, because it is
+honest and still loses coverage. It is built as an either/or — build a fixture,
+and if it cannot be built call `blocked(...)` and return — and it uses the
+escape hatch properly in four places. But three of its guarded returns are
+followed by sixteen `check()` sites that describe the DEN@KC team-scope
+property in detail ("the ready frame is KC only", "Denver is the deferred
+club", "no Denver player is in the allocation frame", "every eligible Kansas
+City player IS modelled"), and on this run none of them was reached. The
+module passes. `run_suite.py` reports no zero-check function, because each
+function banked checks before the return. The property those sixteen lines
+describe was not tested and the suite said nothing.
+
+**31 check sites failed.** Fifteen are `test_p6_false_greens.py`, the
+deliberate reproductions in Part B. The other sixteen are in ten modules
+`test_draw_coherence` (4), `test_passer_credit_migration` (3),
+`test_conservation` (2), `test_q9_live_feature_builder` (2), and one each in
+`test_c1_denominator`, `test_p7_data_plane`, `test_product_orchestration`,
+`test_qb_eligibility_den_kc`, `test_stat_contract` — and they are **not P6's
+findings and are not attributed here**. The repository was being edited by six
+other agents while this ran; some of these are very likely the transient state
+of work in flight. They are recorded because a run that saw them and did not
+say so would be the defect this whole document is about. The suite was already
+red before `test_p6_false_greens.py` existed.
+
+**377 of 823 named refusal codes were never constructed by any test.** That is
+46% of the guards the shipping tree declares, never once seen to fire during a
+full suite run. It is a lower bound on the gap rather than a defect list — a
+guard can be exercised through a path that returns a different code — and it is
+reported rather than gated for the reason given above. It is also the single
+largest number in this document and the one most worth someone's attention.
+
+**One of the 52 declared load-bearing guards never executed**, and the reason
+is worth the whole R3 register on its own. `test_qb2_production.py:500`:
+
+    assert_guard_is_load_bearing(
+        run=seeded('ptd', 99), module_path='nfl.production.run_forecast',
+        attr='QBACC', caught=lambda s: s['status'] == 'REFUSED',
+        replacement=None,
+        returns=None) if False else None
+    # (done explicitly below -- QBACC is a module reference, not a callable)
+
+A bypass proof disabled by `if False`, left standing in the source. It is
+benign — the comment is true and the work is done explicitly below with
+`guard_bypassed` — but the declaration still reads as coverage to anything that
+greps for it, and R3 is the only thing in the repository that noticed.
+
+### Calibration of the runner, and of this tool
+
+    $ python3.12 nfl/tests/run_suite.py --only test_p6_false_greens
+      modules 1  test functions 12  checks 36  FAILING CHECKS 19  RAISED 1
+      ZERO-CHECK FUNCTIONS 0  BLOCKED FUNCTIONS 0
+      SUITE FAIL
+
+The runner reads the new module correctly: 36 checks, 19 failing, the tripwire
+raising, no spurious zero-check report. `run_suite.py` itself was not modified.
+
+**Regression mode, proven end to end against a seeded skip** (the seed module
+was created, run, and removed; it is not in the tree):
+
+    # step 1 - baseline, with the fixture present
+    $ invariant_manifest.py --only test_zzz_p6_probe --name probe_base.json
+      R1_CHECK_SITE  2 declared  2 CERTIFIED
+      MANIFEST FULLY_CERTIFIED
+
+    # step 2 - the fixture goes away, so the second check is never reached
+    $ invariant_manifest.py --only test_zzz_p6_probe --baseline probe_base.json
+      R1_CHECK_SITE  2 declared  1 CERTIFIED  1 NOT_CERTIFIED
+      REGRESSION MODE: 1 invariant(s) that were certified in the baseline are
+      not certified now.
+        NOT_CERTIFIED  nfl/tests/test_zzz_p6_probe.py:17
+                       THE PROPERTY THIS TEST EXISTS FOR
+      MANIFEST FAILURE_TO_CERTIFY
+
+    # the same module, same moment, through the runner every agent uses
+    $ python3.12 nfl/tests/run_suite.py --only test_zzz_p6_probe
+      modules 1  test functions 2  checks 1  FAILING CHECKS 0  RAISED 0
+      ZERO-CHECK FUNCTIONS 0  BLOCKED FUNCTIONS 0
+      SUITE PASS
+
+That is the whole argument for the tool in nine lines: a named invariant
+stopped being evaluated, and the suite went green.
+
+And the tool does not exempt itself: one site in `test_p6_false_greens.py` is
+reported NOT_CERTIFIED — the `check('the tautological RNG proof is gone', True)`
+arm that fires only once the function it names has been deleted. That is a
+declared either/or the arm rules do not cover, it is correctly named, and it is
+left in the census rather than special-cased.
 
 ---
 
@@ -204,6 +336,7 @@ would they have been", not severity of the underlying bug.
 | 10 | `readiness_t90.py:131` renders `State.BLOCKED` as `READY` | refusal-read-as-success | ACTIVE, declared in place | reported only (see §B.10) |
 | 11 | `test_capture_manifest_integrity.py:84` falls back to a 900-char window when its end marker is absent, without asserting the marker was found | brittle-source-slice | ACTIVE, low | reported only |
 | 12 | `test_injury_parser.py:611` accepts `State.PASS` **or** `State.BLOCKED`; `test_capture_states.py:226` passes whenever its subject refuses | refusal-read-as-success | ACTIVE, low | reported only |
+| 13 | `test_qb2_production.py:500` declares a load-bearing-guard proof and disables it with `if False else None`; the declaration still reads as coverage | tautology (dead declaration) | ACTIVE, benign | found by the manifest's R3 register; reported only |
 | — | `test_r5_active_pool` fixed-width window | brittle-source-slice | **REPAIRED** | window now runs marker-to-marker and raises if the end marker moves |
 | — | `test_refbands` raw-text grep catching its own warning comment | silent narrowing | **REPAIRED** | replaced by `_executable_refbands_reach()`, an AST reachability scan that exempts docstrings |
 | — | Three corpus fences globbing three levels, 104 of 121 boards | silent narrowing | **REPAIRED** | `sealed_index.live_draw_files()` — but only for **draw files**; see finding 2 |
@@ -472,7 +605,7 @@ describing the candidate it names without anything saying so, and has not yet.
   prints the real state beside the check, so nothing is hidden.
   `test_capture_states.py:226` is `o.state is not State.PASS or o.value[...]`,
   an implication that passes whenever its subject refuses, under a label that
-  makes the stronger claim. A sweep of all 120 test modules found exactly two
+  makes the stronger claim. A sweep of every test module found exactly two
   such implication-shaped checks and the other one
   (`test_coverage.py:90`, "never PASS while nothing has come due") is
   legitimate — the implication IS the property.
@@ -488,7 +621,7 @@ describing the candidate it names without anything saying so, and has not yet.
 - **Fixed-depth `parts[-3]` / nested-star globs.** Only `sealed_index.py`
   carries the shape, in its own docstring describing the repair. The remaining
   `parts[n]` sites index parsed identifiers, not paths.
-- **Constant-vs-constant comparisons across all 120 test modules.** Six, all
+- **Constant-vs-constant comparisons across every test module.** Six, all
   accounted for above.
 
 ---
@@ -512,6 +645,9 @@ precisely so that six other agents' dependence on the runner is not disturbed.
 | B.7 `starter_class` | assign before writing, and make `build_refbands.write()` refuse a column empty in every row as it already refuses zero bytes | refbands owner |
 | B.8 h1 reads superseded q7 | point `h1_frame.Q7` at `q7_qb_game_r2.csv.gz`, and extend `Q7_PANEL_SUPERSESSION.json` to enumerate readers as well as artifacts | v3/h1 owner, q7 owner |
 | B.9 freeze hashes | call `freeze._module_hash` and compare, three lines | q9b owner |
+| A: 57 never-executed check sites | for each, either reach the branch or record `blocked()` so the runner and the manifest can see it; 16 of the 57 are one module, `test_appearance_team_scope.py` | each test's owner |
+| A: 377 of 823 refusal codes never constructed | not a defect list and not repairable in one pass; the useful first step is to decide which codes are meant to be reachable from a test at all, and to seed violations for those | whoever owns the guard |
+| A: the `if False` bypass declaration | delete the dead call, or re-enable it; the comment beside it is already correct | qb2 owner |
 
 **The one structural repair that would prevent most of the column findings**
 (B.3, B.7, and the `q7` defect before it) is a single rule applied at build
@@ -585,8 +721,19 @@ stage outputs, applied to columns instead of files.
 | `nfl/tools/invariant_manifest.py` | the manifest tool (new) |
 | `nfl/tests/test_p6_false_greens.py` | one failing reproduction per ACTIVE finding (new) |
 | `nfl/research/v4/p6/P6_INVARIANT_MANIFEST.md` | this document (new) |
-| `nfl/research/v4/p6/INVARIANT_MANIFEST.json` | the first full manifest run, and the baseline for regression mode (new) |
+| `nfl/research/v4/p6/INVARIANT_MANIFEST.json` | the first full manifest run (126 modules, 7,658 declared invariants), and the baseline for `--baseline` regression mode (new) |
 | `nfl/tests/run_suite.py` | **unchanged** |
+
+## A note on commits
+
+P6 was instructed not to commit or push and did not. At 05:24 UTC another
+agent's `git add -A` sweep committed `nfl/tools/invariant_manifest.py`,
+`nfl/tests/test_p6_false_greens.py` and an earlier draft of this document into
+`53a3c27` mid-edit, so the versions in that commit are not the ones described
+here. The current versions, and `INVARIANT_MANIFEST.json`, are in the working
+tree uncommitted. Nothing was lost and nothing needs undoing; it is recorded
+because a reader comparing `53a3c27` against this document would otherwise find
+them disagreeing and have no way to know why.
 
 ## A note on the colour of the suite
 

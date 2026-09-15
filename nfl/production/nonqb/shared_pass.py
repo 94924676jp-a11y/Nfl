@@ -24,7 +24,7 @@ import os
 
 import numpy as np
 
-from sportsplatform.governance.outcome import Cause, Outcome
+from sportsplatform.governance.outcome import Cause, Outcome, State
 
 SPEC_VERSION = 'xl1-shared-pass-1'
 GOVERNANCE = ('CANDIDATE -- pre-registered, exploratory, NOT promoted and not '
@@ -273,3 +273,254 @@ def identity_report(team_cmp, team_pyds, team_ptd, recv_R, recv_Y,
                       detail='completions, passing yards and passing '
                              'touchdowns agree in every draw',
                       **ev)
+
+
+# ---------------------------------------------------------------------------
+# P9. THE PUBLISHED TARGET LEVEL IS NOT THE PARTITIONED TARGET LEVEL.
+# ---------------------------------------------------------------------------
+#
+# WHAT CLOSES, MEASURED FIRST, SO THE DEFECT IS NOT OVERSTATED.
+#
+# The C3 target partition closes. `deal_targets` hands an integer targeted-
+# throw budget to a multinomial over the receivers plus the named `other`
+# pool, so `sum_i T_i + other == targeted` per team per draw by construction,
+# and `football_engine.run_game` halts if it ever does not. Measured across
+# every sealed board in this repository that ran C3 and carries a receiving
+# layer -- 113 team-runs, 139,800 draws -- the residual against the throw
+# budget `rint(sum qb/att)` is NEVER NEGATIVE in any draw, minimum 0.0000,
+# mean +1.7651. Containment against the level the game consumed holds
+# everywhere.
+#
+# WHAT DOES NOT, AND IT IS A PUBLICATION DEFECT RATHER THAN AN ALLOCATION ONE.
+#
+# `team_volume/team_targets` is D1's own, separately drawn, CONTINUOUS team
+# target level. Under C3 nothing consumes it -- `football_engine` marks it
+# `d1_team_targets_unused: True` in its own evidence -- and `run_forecast`
+# seals it anyway, under a name that asserts it is the team's targets. So the
+# board publishes one team target level and partitions a different one. On the
+# same 113 team-runs:
+#
+#     sum of named receivers' targets == published team_targets   0 / 139,800
+#     ... == rint(published)                                 10,849 / 139,800
+#     ... EXCEEDS the published level              71,550 / 139,800 (51.18%)
+#     worst per-draw excess over the published level                  +28.63
+#
+# A reader who divides a receiver's targets by the published team target level
+# gets a target share above 1.0 in half the draws. Nothing in production does
+# that today -- `product/board._shares` divides by the modelled pool, and
+# `postgame` refuses the estimand by name -- so this is latent, not live.
+#
+# THIS IS THE RECEIVING ANALOGUE OF R11's THIRD RUSH CAUSE, AND ONLY THE
+# THIRD. The rush repair had to fix three things; two of them are absent here.
+# There is no wrong coupling quantity: the budget is the whole throw process,
+# not a sub-component of it. There is no live second owner: D1's level is
+# inert under C3, where A1's `designed_qb` was not inert. What remains is
+# exactly cause three -- the published level is not the level partitioned.
+#
+# THE PRIOR FINDING, READ CORRECTLY. `stored_team_targets_is_not_the_
+# denominator` reports 0 of 100,000 draws in exact agreement across 68
+# team-runs (WS09 J-12, `nfl/research/v2/d6/D6_CONSERVATION_DASHBOARD.md:291`).
+# Read as "the target partition does not close" that is a MIS-SPECIFIED
+# COMPARISON: it compares a published-but-unused draw against a quantity no
+# partition consumed either, and it never gated anything. Read as what its own
+# name says -- a gauge on a second owner that is published and unused -- it is
+# correctly specified, and the number it reports is the size of the
+# publication defect above, not of an allocation defect.
+PUBLISHED_TARGET_LEVEL_STATUS = (
+    'NOT_THE_PARTITIONED_LEVEL. Under C3 the receiving target partition is '
+    'dealt from the throw process (`targeted_throws`), and `team_volume/'
+    'team_targets` -- D1`s separately drawn continuous level -- is sealed '
+    'beside it unused. Named receivers exceed the published level in 71,550 '
+    'of 139,800 draws across 113 sealed C3 team-runs, by up to 28.63 targets, '
+    'and agree with it exactly in 0. Containment against the level the game '
+    'ACTUALLY consumed holds in every one of those draws with a non-negative '
+    'residual. Repairing the publication needs `football_engine.run_game` to '
+    'return the composed vectors and `run_forecast` to seal them, neither of '
+    'which this module owns.')
+
+# The four vectors of the target identity, named once. Three of the four are
+# absent from every sealed board, which is why the identity is checkable today
+# only in its weak form (`sum targets <= throws`) and not in its exact one.
+TARGET_IDENTITY = ('throws == untargeted + sum_i targets_i + other, per team '
+                   'per draw, exactly. `throws` is recoverable from a sealed '
+                   'board as rint(sum qb/att); `untargeted`, `targeted` and '
+                   '`other` are NOT SEALED by any board in this repository.')
+TARGET_VECTORS_NOT_SEALED = ('targeted', 'untargeted', 'other')
+
+
+def compose_pass_event_ownership(att_by_team, share, other, starts, counts,
+                                 rate, rng) -> Outcome:
+    """THE WHOLE TARGET COMPOSITION, in one named function with one owner.
+
+    `targeted_throws` and `deal_targets` were already correct and are called
+    here UNCHANGED, in the same order, on the same generator. What did not
+    exist was a single place that holds all four vectors of the identity at
+    once and states which of them a board must publish. Splitting them across
+    a call site is how the rush composition came apart, and the two halves of
+    this one are already one step from drifting: `football_engine` keeps
+    `tgt_vol` and `c3_other` as locals, reduces them to means for its evidence
+    block, and discards the vectors.
+
+    NOTHING IS CLIPPED, TRUNCATED OR RENORMALISED, and no drawn value moves.
+    This composes existing calls; it does not replace an estimator, so it is
+    not a new configuration identity on its own. Sealing what it returns IS a
+    change to what the board publishes and needs one.
+
+    Returns, per team index, the four vectors of TARGET_IDENTITY plus
+    `published_level` -- the vector a board must seal as the team target
+    level, which is `targeted`, because that is the one the partition
+    consumed.
+    """
+    n_teams = len(starts)
+    if n_teams != len(counts) or n_teams != len(att_by_team):
+        return Outcome.fail(
+            'PASS_EVENT_TEAM_SHAPE_MISMATCH',
+            f'{len(att_by_team)} attempt block(s), {len(starts)} start(s) and '
+            f'{len(counts)} count(s). These index the same teams; a mismatch '
+            f'is refused rather than zipped to the shortest.')
+    tgt = []
+    for k, a in enumerate(att_by_team):
+        if a is None:
+            return Outcome.fail(
+                'PASS_EVENT_TEAM_HAS_NO_PASSER',
+                f'team index {k} carries no quarterback attempt block. The '
+                f'throw budget IS the attempts, so this is not a team with '
+                f'zero targets, it is a team with no budget at all.', team=k)
+        o = targeted_throws(a, rate, rng)
+        if o.state is not State.PASS:
+            return o
+        tgt.append(o.value)
+    dealt = deal_targets(share, other, [x['targeted'] for x in tgt],
+                         starts, counts, rng)
+    if dealt.state is not State.PASS:
+        return dealt
+    T = dealt.value['targets']
+    per_team = np.stack([np.asarray(T[s0:s0 + c].sum(0), np.int64)
+                         if c else np.zeros(len(tgt[k]['targeted']), np.int64)
+                         for k, (s0, c) in enumerate(zip(starts, counts))])
+    targeted = np.stack([np.asarray(x['targeted'], np.int64) for x in tgt])
+    untargeted = np.stack([np.asarray(x['untargeted'], np.int64) for x in tgt])
+    throws = np.stack([np.asarray(x['throws'], np.int64) for x in tgt])
+    other_out = np.asarray(dealt.value['other'], np.int64)
+    # BOTH HALVES OF THE IDENTITY, ASSERTED SEPARATELY, so a failure names the
+    # half it is in rather than a single summed number that names neither.
+    bad_partition = int((per_team + other_out != targeted).sum())
+    bad_budget = int((targeted + untargeted != throws).sum())
+    if bad_partition or bad_budget:
+        return Outcome.fail(
+            'PASS_EVENT_OWNERSHIP_DOES_NOT_CLOSE',
+            f'the target identity fails in {bad_partition} partition cell(s) '
+            f'(sum_i targets_i + other != targeted) and {bad_budget} budget '
+            f'cell(s) (targeted + untargeted != throws). This is a '
+            f'construction, so a deviation is a defect and never a tolerance '
+            f'to widen.',
+            partition_violating_cells=bad_partition,
+            budget_violating_cells=bad_budget)
+    return Outcome.ok(
+        'PASS_EVENT_OWNERSHIP_COMPOSED',
+        value={'targets': T, 'other': other_out, 'targeted': targeted,
+               'untargeted': untargeted, 'throws': throws,
+               'published_level': targeted},
+        detail=f'{n_teams} team(s), {throws.shape[1]} draw(s); every throw '
+               f'owned exactly once by a receiver, the other pool or the '
+               f'untargeted pool',
+        identity=TARGET_IDENTITY,
+        partition_violating_cells=0, budget_violating_cells=0,
+        published_level_is='targeted -- the level the partition consumed, '
+                           'NOT D1`s team_volume/team_targets',
+        not_sealed_by_any_board=list(TARGET_VECTORS_NOT_SEALED),
+        no_clip_truncation_or_renormalisation=True)
+
+
+def assert_target_ownership_closure(teams, published_level, named_targets,
+                                    other_pool=None, untargeted=None,
+                                    tolerance=0.0) -> Outcome:
+    """Named target owners against the PUBLISHED team target level, DECOMPOSED.
+
+    WHY DECOMPOSED. `conservation.target_view` emits three separate rows and
+    still cannot say which side moved, because two of them share a right-hand
+    side that is neither the published level nor the partitioned one. A single
+    summed check aimed the rush repair at the wrong layer; this returns every
+    series it measured, always, and a refusal carries all of them.
+
+    WHICH QUANTITY AND WHICH SIDE, explicitly:
+
+        named_only      receivers alone against the published level
+        named_plus_other    receivers + the unmodelled-receiver pool
+        full_partition  receivers + other + untargeted, which IS the identity
+
+    Pass `published_level` as the vector the BOARD CARRIES, not the one the
+    engine used. A containment check against a denominator the run did not
+    seal cannot be attributed between an over-deal and a wrong vector -- which
+    is the whole finding this fence exists to make visible.
+
+    It REPAIRS NOTHING. It counts and it names. `tolerance` defaults to ZERO
+    because the composition it guards makes the bound exact.
+    """
+    if not teams:
+        return Outcome.blocked(
+            'TARGET_CLOSURE_NO_TEAMS',
+            'no team was supplied, so there is nothing to close. An empty '
+            'check is not a passing check.', cause=Cause.DEPENDENCY)
+    ev, bad = {}, []
+    for t in teams:
+        for name, src in (('published_level', published_level),
+                          ('named_targets', named_targets)):
+            if t not in src:
+                return Outcome.fail(
+                    'TARGET_CLOSURE_INPUT_MISSING',
+                    f'no {name} for {t}. A missing vector is not a vector of '
+                    f'zero, and treating it as one would report closure for a '
+                    f'quantity nobody measured.', team=t, input=name)
+        lvl = np.asarray(published_level[t], np.float64).reshape(-1)
+        nt = np.asarray(named_targets[t], np.float64)
+        nt = nt.sum(0) if nt.ndim == 2 else nt.reshape(-1)
+        op = (np.zeros_like(lvl) if other_pool is None or t not in other_pool
+              else np.asarray(other_pool[t], np.float64).reshape(-1))
+        ut = (np.zeros_like(lvl) if untargeted is None or t not in untargeted
+              else np.asarray(untargeted[t], np.float64).reshape(-1))
+        if not (lvl.size == nt.size == op.size == ut.size):
+            return Outcome.fail(
+                'TARGET_CLOSURE_DRAW_MISMATCH',
+                f'{t}: level {lvl.size}, named {nt.size}, other {op.size}, '
+                f'untargeted {ut.size}. These share one draw index; a '
+                f'mismatch is refused rather than broadcast.', team=t)
+        e_named, e_both = nt - lvl, nt + op - lvl
+        e_full = nt + op + ut - lvl
+        rec = {
+            'n_draws': int(lvl.size),
+            'named_only_draws_over': int((e_named > tolerance).sum()),
+            'named_only_max_excess': float(e_named.max()),
+            'named_plus_other_draws_over': int((e_both > tolerance).sum()),
+            'named_plus_other_max_excess': float(e_both.max()),
+            'full_partition_draws_not_exact':
+                int((np.abs(e_full) > tolerance).sum()),
+            'full_partition_max_abs': float(np.abs(e_full).max()),
+            'exact_agreement_draws': int((np.abs(e_named) <= tolerance).sum()),
+            'level_is_integer':
+                bool(not (np.abs(lvl - np.rint(lvl)) > 1e-9).any()),
+            'other_pool_supplied': other_pool is not None and t in other_pool,
+            'untargeted_supplied': untargeted is not None and t in untargeted}
+        ev[t] = rec
+        if rec['full_partition_draws_not_exact']:
+            bad.append((t, 'full_partition',
+                        rec['full_partition_draws_not_exact'],
+                        rec['full_partition_max_abs']))
+        elif rec['named_plus_other_draws_over']:
+            bad.append((t, 'named_plus_other',
+                        rec['named_plus_other_draws_over'],
+                        rec['named_plus_other_max_excess']))
+    if bad:
+        return Outcome.fail(
+            'TARGET_OWNERSHIP_DOES_NOT_CLOSE',
+            'the target partition does not close on the PUBLISHED level: '
+            + '; '.join(f'{t} {side} in {n} draw(s), worst {w:.4f}'
+                        for t, side, n, w in bad)
+            + '. Which side moved is named above; do not widen a tolerance.',
+            violations=bad, per_team=ev)
+    return Outcome.ok(
+        'TARGET_OWNERSHIP_CLOSES', value=ev,
+        detail=f'{len(teams)} team(s): every named receiver target, the '
+               f'unmodelled-receiver pool and the untargeted pool are '
+               f'contained by the published team target level',
+        per_team=ev, tolerance=float(tolerance))

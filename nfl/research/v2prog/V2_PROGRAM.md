@@ -36,51 +36,53 @@ because a number looks more reasonable.
 
 ## PHASE 1 — structural correctness
 
-| # | item | state | owner | note |
+| # | item | state | candidate | evidence |
 |---|---|---|---|---|
-| 1.1 | `f_weeks_since_appear` encoding | RUNNING | P1 | non-monotonic: None/0/9+ all encode 1.0000 |
-| 1.2 | missingness semantics, every numeric | RUNNING | P1 | 12 `V1_NUMERIC` have indicators; this one does not |
-| 1.3 | position/role-specific depth semantics | RUNNING | P1 | rank is offence-wide, ties break on `gsis_id` |
-| 1.4 | QB starter/share calibration | RUNNING | P2 | PIT χ² 929.0 on 9 df; above P90 in 79% of games |
-| 1.5 | QB cold-start share ownership | QUEUED | — | depends on 1.4 landing |
-| 1.6 | QB rush composition | RUNNING | P3 | RB-only 2/1000; +QB rush 206–237/1000, max 9.69 |
-| 1.7 | passing-credit generation | RUNNING | P4 | 27,564 impossible cells on 50 boards |
-| 1.8 | impossible distribution tails | QUEUED | — | 680 cells above the 554-yd record, max 1,587 |
-| 1.9 | integer count support | PARTIAL | — | 271,691 non-integer carry cells corpus-wide |
-| 1.10 | rush ownership closure | RUNNING | P3 | category partition off by 8.43 / 10.20 carries |
+| 1.1 | `f_weeks_since_appear` encoding | **DONE** | R10 | live collision is `None` vs 9+, not `0` — the value is generated 1-based (`i + 1`), so my "0 encodes to max" was a latent hazard, not a live defect |
+| 1.2 | missingness semantics, every numeric | **DONE** | R10 | `featurise_r10` gives value+flag, explicit `is None`, monotone. **Left open one column over**: `f_n_teammates_out` still reads `or 0.0`, folding "no v1 block" into "zero teammates out" |
+| 1.3 | position/role depth semantics | **DONE** | R10 | worse than diagnosed — a train/serve **scale break**: `weekly` groups within position, `daily` ranks offence-wide. One column held two quantities |
+| 1.4 | QB starter/share calibration | **DONE** | R12 | rPIT χ² 32.481 → 8.667, bias −0.0778 → −0.0190, CRPS −1.298 [−2.198, −0.436] |
+| 1.5 | QB cold-start share ownership | QUEUED | — | next tick |
+| 1.6 | QB rush composition | **DONE** | R11 | 149→0 and 148→0 over-allocation, max excess 9.69 → 0.0000 |
+| 1.7 | passing-credit generation | **DONE (42/50)** | — | 42 boards migrated to 0 impossible cells; **8 unmigratable**, named, 9,541 cells |
+| 1.8 | impossible distribution tails | QUEUED | — | 680 cells above the 554-yd record, max 1,587; owned by `qb2_lib.py:306-307` |
+| 1.9 | integer count support | OPEN | — | `rushing/carries` 63.4% non-integer; every `rtd>carries` cell is `0<carries<1` with `td==1` |
+| 1.10 | rush ownership closure | **DONE** | R11 | and my 8.43/10.20 "non-closure" was a mis-specified comparison — it closes at 0.000000 |
 | 1.11 | target ownership closure | QUEUED | — | |
 | 1.12 | receiving/pass-event identity | QUEUED | — | |
-| 1.13 | eligibility-before-choice-set | DONE (earlier) | — | gate replaced allocate-then-zero; 17.60 units |
-| 1.14 | identity/name propagation | DONE (earlier) | — | 19/19 resolved with provenance |
-| 1.15 | `.npz.gz` audit coverage | **DONE** | me | repair 7; cause was path depth, not extension |
-| 1.16 | false-green BLOCKED/PASS paths | RUNNING | me | Phase 9 invariant manifest |
-| 1.17 | temp staging leak | IN PROGRESS | me | `stage_inputs` mkdtemp, never removed |
+| 1.13 | eligibility-before-choice-set | DONE (earlier) | R2 | |
+| 1.14 | identity/name propagation | DONE (earlier) | — | |
+| 1.15 | `.npz.gz` audit coverage | **DONE** | — | cause was **path depth**, not extension; 17 boards at depth 2 |
+| 1.16 | false-green BLOCKED/PASS paths | RUNNING | — | P6; one already fixed by me (`assert_not_promoted` skipped R9/R10/R11) |
+| 1.17 | temp staging leak | **DONE** | — | content-addressed; two processes now share one stage |
+| 1.18 | **CONFIRMED LEAK — depth-chart chronology guard never executed** | **DONE** | — | `run_forecast.py:501` passed no clock; 74 of 79 week-1 kickoffs precede the selected chart |
 
 ## PHASE 5 — research artifact rebuild
 
-| item | state | owner |
-|---|---|---|
-| Q7 scramble rebuild from raw PBP | RUNNING | P5 |
-| Mark conclusions depending on defective Q7 fields INVALIDATED | RUNNING | P5 |
-| Re-run 2025 forward-chained QB share study on corrected data | QUEUED | after P5 + P2 |
-| Re-run appearance calibration with corrected features | RUNNING | P1 |
+Q7 rebuilt (`q7-panel-2`): scr **1 → 5,864**, db 116,190 → 122,053, player-games
+agreeing with nflverse 1,518/4,024 → **4,047/4,056**, unexplained **2,506 → 0**.
+The single scramble v1 held was one row double-counted as sack *and* scramble.
+Receiver panel decompressed-identical — the control.
+
+**Every published Q7 conclusion SURVIVES**: 588 of 1,003 quantities move, **0 of
+60 significance flags and 0 of 4 verdicts**. Two numbers need re-issuing in
+`Q7_DECISION.md` (COMPOSED decomposition; cold-start table) — not edited, not
+mine. v1 superseded, never overwritten.
+
+Re-run of the 2025 share study on corrected data: **still queued** (P2 used
+`qb.pkl`, correctly, not the defective panel).
 
 ## PHASE 6 — distribution quality
 
-Census exists (`nfl/research/v3/x1/`) and found: 27,564 impossible per-QB
-cells on 50 boards; 680 cells above the all-time single-game passing record;
-2,262 negative passing-yard cells all traceable to 1–2 completion donor games.
-**Outstanding: report frequency by candidate and component**, and re-census
-after the migration. No clipping anywhere.
+Census done. **Headline corrected**: 36,587 impossible passing-line cells over
+121 boards; 27,301 over the 109-board fence corpus; 9,286 in REPLAY_C1. The
+figure 27,564 reproduces from no corpus. Outstanding: frequency **by candidate
+and component**, and re-census after migration.
 
 ## PHASE 9 — operations
 
-| item | state |
-|---|---|
-| staging leak fix | IN PROGRESS |
-| content-addressed reusable staging | IN PROGRESS |
-| invariant-execution manifest (`required → executed → result`) | QUEUED |
-| Tier-0 game-day board validation | QUEUED |
+Staging leak fixed. Invariant-execution manifest RUNNING. Tier-0 board
+validation QUEUED.
 
 ## Blocked information gaps
 

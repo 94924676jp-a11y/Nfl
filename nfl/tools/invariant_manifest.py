@@ -57,6 +57,12 @@ So the verdict vocabulary has five values and NOT_CERTIFIED is a distinct one:
                     unreachable half of a try/except refusal pair, whose
                     non-execution is the guard working. Counted apart and
                     never as a certification.
+    BLOCKED_ARM_NOT_TAKEN
+                    a `blocked(...)` site that did not fire, i.e. the fixture
+                    WAS available and the real checks ran. Same shape, same
+                    treatment.
+    BLOCKED_BRANCH  a site in a function that recorded a blocked() this run:
+                    the untaken half of a declared either/or.
 
 BLOCKED and NOT_CERTIFIED are both failures to certify. They are reported
 apart because they are different defects: BLOCKED is honest and NOT_CERTIFIED
@@ -407,8 +413,20 @@ def build(files, verbose=False):
         for i, s in enumerate(rec['sites']):
             v = ex.get(i)
             if v is None:
-                res = ('NEGATIVE_ARM' if s.get('arm') == 'negative'
-                       else 'NOT_CERTIFIED')
+                # A `blocked(...)` SITE THAT DID NOT FIRE IS THE TEST WORKING.
+                # It is the "I could not run" arm of the same either/or that
+                # NEGATIVE_ARM covers for `check(label, False)`: its
+                # non-execution means the fixture WAS there and the real
+                # checks ran. On the first full pass 163 of 223 apparent
+                # failures to certify were this shape, so counting them would
+                # have buried the 57 that are real under three times their
+                # number of noise.
+                if s['kind'] == 'blocked':
+                    res = 'BLOCKED_ARM_NOT_TAKEN'
+                elif s.get('arm') == 'negative':
+                    res = 'NEGATIVE_ARM'
+                else:
+                    res = 'NOT_CERTIFIED'
             else:
                 res = v
             rows.append({
@@ -586,7 +604,8 @@ def main(argv=None):
         c = by[(reg, 'CERTIFIED')]; fl = by[(reg, 'FAILED')]
         bl = by[(reg, 'BLOCKED')] + by[(reg, 'BLOCKED_BRANCH')]
         nc = by[(reg, 'NOT_CERTIFIED')]
-        na = by[(reg, 'NEGATIVE_ARM')]
+        na = (by[(reg, 'NEGATIVE_ARM')]
+              + by[(reg, 'BLOCKED_ARM_NOT_TAKEN')])
         tot['d'] += d; tot['c'] += c; tot['f'] += fl
         tot['b'] += bl; tot['n'] += nc; tot['a'] += na
         print(f'{reg:<17}{d:>9}{c:>10}{fl:>7}{bl:>8}{nc:>9}{na:>9}')

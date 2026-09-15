@@ -35,6 +35,7 @@ from __future__ import annotations
 import hashlib
 import json
 import pathlib
+import re
 import shutil
 import subprocess
 import sys
@@ -65,6 +66,35 @@ def blocked(label, why):
     global BLOCKED
     BLOCKED += 1
     print(f'  BLOCKED {label}  {why}')
+
+
+def _stage_inputs_body():
+    """The source of `stage_inputs` ALONE, sliced to the function.
+
+    THE POLARITY TRAP, WHICH THIS MODULE FELL INTO WHILE HUNTING IT.
+
+    Both readers here used `s[i:i + 3000]` over a function that is 1,679
+    characters long -- overshooting by 1,321 characters into unrelated code.
+    For a POSITIVE assertion ("this line is present") an oversized window is
+    merely sloppy. For the NEGATIVE one below ("mkdtemp is absent") it is
+    wrong in both directions: an oversized window fails on an unrelated
+    `mkdtemp` elsewhere in the file, and an undersized one -- which is what
+    this becomes the moment the function grows past 3,000 characters -- goes
+    BLIND and reports clean while the leak is reintroduced.
+
+    A positive windowed assertion fails loudly when a file grows; a negative
+    one passes. That asymmetry is why `test_r5_active_pool` announced its own
+    breakage when the branch it read grew to 2,580 characters, and why this
+    check would have said nothing at all.
+
+    Sliced to the next top-level `def`, so the window tracks the function.
+    """
+    src = (pathlib.Path(__file__).resolve().parents[1]
+           / 'production' / 'nonqb' / 'appearance_model.py')
+    s = src.read_text()
+    i = s.index('def stage_inputs')
+    m = re.search(r'\n(?:def |@|class )', s[i + 10:])
+    return s[i:i + 10 + m.start()] if m else s[i:]
 
 
 def _artifacts_ok():
@@ -108,11 +138,7 @@ def test_b_a_reused_stage_still_hash_verifies_every_leaf():
     if not _artifacts_ok():
         blocked('derived artifacts unavailable', 'ARTIFACTS_UNAVAILABLE')
         return
-    src = pathlib.Path(__file__).resolve().parents[1] / \
-        'production' / 'nonqb' / 'appearance_model.py'
-    s = src.read_text()
-    i = s.index('def stage_inputs')
-    body = s[i:i + 3000]
+    body = _stage_inputs_body()
     check('the staging path still hashes each leaf',
           'hashlib.sha256(raw).hexdigest()' in body)
     check('  and still refuses on a mismatch by name',
@@ -180,11 +206,7 @@ def test_c_a_different_manifest_stages_somewhere_else():
 def test_d_the_leak_itself_is_gone():
     """No unconditional mkdtemp on the default path."""
     print('\nD. no per-process temp directory on the default path')
-    src = pathlib.Path(__file__).resolve().parents[1] / \
-        'production' / 'nonqb' / 'appearance_model.py'
-    s = src.read_text()
-    i = s.index('def stage_inputs')
-    body = s[i:i + 3000]
+    body = _stage_inputs_body()
     check('stage_inputs no longer calls mkdtemp for the default stage',
           'mkdtemp' not in body,
           'mkdtemp still present -- each process leaks a directory')
