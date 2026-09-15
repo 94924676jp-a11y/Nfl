@@ -1,0 +1,774 @@
+{
+ "artifact": "X1_DRAW_PATHOLOGY_CENSUS",
+ "spec_version": "x1-draw-pathology-census-1",
+ "scope": {
+  "root": "nfl/research/live/**/player_draws{.npz,.npz.gz}",
+  "boards_found": 121,
+  "note": "116 boards store player_draws.npz and 5 more (2026_01_SF_LA/*) store player_draws.npz.gz. A sweep matching only *.npz misses those 5. All 121 carry board.json pipeline_status == SEALED.",
+  "boards_by_game_dir": 109,
+  "boards_replay_c1": 12,
+  "row_identity": "player_draws_manifest.json layers[<layer>].row_ids; never positional",
+  "frozen_file_verified": "nfl/production/nonqb/layers.py sha256 481f005f682cd72129e6bf02e55cba86913ddffd7d88367743c616e3e11c0108 unchanged"
+ },
+ "definitions": {
+  "impossible": "violates an arithmetic identity of the box score or a rule of the game. Never justified by plausibility or by what a good forecast ought to look like.",
+  "suspicious": "inside the rules but outside the support of 5 seasons of realised games at the same conditioning count, or structurally degenerate. A suspicious cell is NOT a defect on its own: a Monte Carlo engine is supposed to produce extreme draws.",
+  "yardage_bound_derivation": "a completed forward pass gains or loses at most 99 yards: the line of scrimmage can sit at most on either 1-yard line, and the play ends between the two goal lines, so per-completion yardage is bounded to [-99,+99] and a game total to [-99*cmp, +99*cmp]. This is the only HARD yardage bound available; it is deliberately loose and it does NOT catch D19. D19 is therefore classified SUSPICIOUS, not impossible, contradicting the wording of the D19 entry.",
+  "empirical_support_bound": "yards-per-completion support measured on 3,787 QB games, seasons 2020-2025, from nfl/research/qb2/qb.pkl, banded by the completion count that produced it. Not a threshold chosen to make a number look bad: it is the observed min/max of the same statistic at the same count."
+ },
+ "impossible_totals": {
+  "qb:cmp0_pyds_nonzero": {
+   "cells": 18041,
+   "boards_affected": 50
+  },
+  "qb:cmp_gt_att": {
+   "cells": 8214,
+   "boards_affected": 50
+  },
+  "qb:cmp_plus_int_gt_att": {
+   "cells": 9189,
+   "boards_affected": 50
+  },
+  "qb:ptd_gt_att": {
+   "cells": 30,
+   "boards_affected": 20
+  },
+  "qb:ptd_gt_cmp": {
+   "cells": 1113,
+   "boards_affected": 50
+  },
+  "qb:pyds_above_99_per_cmp": {
+   "cells": 18043,
+   "boards_affected": 50
+  },
+  "rushing:td_gt_carries": {
+   "cells": 442,
+   "boards_affected": 50
+  },
+  "xl:named_carries_gt_team_carries": {
+   "cells": 8,
+   "boards_affected": 2
+  },
+  "xl:rush_category_sum_ne_team_carries": {
+   "cells": 4000,
+   "boards_affected": 2
+  }
+ },
+ "impossible_zero": [
+  "qb/att:negative_count",
+  "qb/cmp:negative_count",
+  "qb/db:negative_count",
+  "qb/int:negative_count",
+  "qb/ptd:negative_count",
+  "qb/rtd:negative_count",
+  "qb/rush_opp:negative_count",
+  "qb/sacks:negative_count",
+  "qb/scr:negative_count",
+  "qb:att_plus_sacks_plus_scr_gt_db",
+  "qb:dropback_identity_broken",
+  "qb:pyds_below_minus99_per_cmp",
+  "qb:rtd_gt_rush_opp",
+  "qb:rushopp0_ryds_nonzero",
+  "qb:ryds_below_minus99_per_opp",
+  "qb:scr_gt_rush_opp",
+  "receiving/receiving_td:negative_count",
+  "receiving/receptions:negative_count",
+  "receiving/targets:negative_count",
+  "receiving:rec0_yards_nonzero",
+  "receiving:rec_gt_tgt",
+  "receiving:td_gt_rec",
+  "receiving:yards_above_99_per_rec",
+  "receiving:yards_below_minus99_per_rec",
+  "rushing/carries:negative_count",
+  "rushing/rushing_td:negative_count",
+  "team_volume/team_carries:negative_count",
+  "team_volume/team_dropbacks_part:negative_count",
+  "team_volume/team_off_snaps:negative_count",
+  "team_volume/team_rz_carries:negative_count",
+  "team_volume/team_targets:negative_count",
+  "team_volume:rz_carries_gt_carries",
+  "xl:c3_completions_mismatch",
+  "xl:c3_pass_td_mismatch",
+  "xl:c3_pass_yards_mismatch",
+  "xl:named_carries_gt_rb_category"
+ ],
+ "suspicious_totals": {
+  "qb/att:rows_iqr_zero": {
+   "cells": 329,
+   "boards_affected": 97
+  },
+  "qb/att:rows_total": {
+   "cells": 906,
+   "boards_affected": 121
+  },
+  "qb/cmp:rows_iqr_zero": {
+   "cells": 379,
+   "boards_affected": 98
+  },
+  "qb/cmp:rows_total": {
+   "cells": 906,
+   "boards_affected": 121
+  },
+  "qb/pyds:rows_iqr_zero": {
+   "cells": 346,
+   "boards_affected": 97
+  },
+  "qb/pyds:rows_total": {
+   "cells": 906,
+   "boards_affected": 121
+  },
+  "qb/ryds:rows_iqr_zero": {
+   "cells": 493,
+   "boards_affected": 121
+  },
+  "qb/ryds:rows_total": {
+   "cells": 906,
+   "boards_affected": 121
+  },
+  "qb:pyds_negative": {
+   "cells": 2262,
+   "boards_affected": 67
+  },
+  "qb:pyds_non_integer": {
+   "cells": 300841,
+   "boards_affected": 121
+  },
+  "qb:ryds_negative": {
+   "cells": 3353,
+   "boards_affected": 121
+  },
+  "qb:ryds_non_integer": {
+   "cells": 126700,
+   "boards_affected": 121
+  },
+  "qb:ypc_above_20_at_cmp_ge10": {
+   "cells": 1504,
+   "boards_affected": 117
+  },
+  "qb:ypc_below_3_at_cmp_ge10": {
+   "cells": 832,
+   "boards_affected": 73
+  },
+  "receiving:yards_negative": {
+   "cells": 11479,
+   "boards_affected": 53
+  }
+ },
+ "cell_denominators": {
+  "qb/att": 990000,
+  "qb/cmp": 990000,
+  "qb/db": 990000,
+  "qb/int": 990000,
+  "qb/ptd": 990000,
+  "qb/pyds": 990000,
+  "qb/rtd": 990000,
+  "qb/rush_opp": 990000,
+  "qb/ryds": 990000,
+  "qb/sacks": 990000,
+  "qb/scr": 990000,
+  "receiving/receiving_td": 1924000,
+  "receiving/receiving_yards": 1924000,
+  "receiving/receptions": 1924000,
+  "receiving/targets": 1924000,
+  "rushing/carries": 516000,
+  "rushing/rushing_td": 516000,
+  "team_volume/team_carries": 270000,
+  "team_volume/team_dropbacks_part": 270000,
+  "team_volume/team_off_snaps": 270000,
+  "team_volume/team_rz_carries": 270000,
+  "team_volume/team_targets": 270000,
+  "xl:c3_bound": 132000,
+  "xl:named_vs_rb": 3000,
+  "xl:rush_cat_vs_team": 4000
+ },
+ "board_families": {
+  "C3_OLD_CREDIT": {
+   "boards": 50,
+   "imp:qb/att:negative_count": 0,
+   "imp:qb/cmp:negative_count": 0,
+   "imp:qb/db:negative_count": 0,
+   "imp:qb/int:negative_count": 0,
+   "imp:qb/ptd:negative_count": 0,
+   "imp:qb/rtd:negative_count": 0,
+   "imp:qb/rush_opp:negative_count": 0,
+   "imp:qb/sacks:negative_count": 0,
+   "imp:qb/scr:negative_count": 0,
+   "imp:qb:cmp_gt_att": 8214,
+   "imp:qb:cmp_plus_int_gt_att": 9189,
+   "imp:qb:ptd_gt_cmp": 1113,
+   "imp:qb:ptd_gt_att": 30,
+   "imp:qb:att_plus_sacks_plus_scr_gt_db": 0,
+   "imp:qb:dropback_identity_broken": 0,
+   "imp:qb:scr_gt_rush_opp": 0,
+   "imp:qb:rtd_gt_rush_opp": 0,
+   "imp:qb:cmp0_pyds_nonzero": 18041,
+   "imp:qb:rushopp0_ryds_nonzero": 0,
+   "imp:qb:pyds_below_minus99_per_cmp": 0,
+   "imp:qb:pyds_above_99_per_cmp": 18043,
+   "imp:qb:ryds_below_minus99_per_opp": 0,
+   "imp:receiving/receptions:negative_count": 0,
+   "imp:receiving/targets:negative_count": 0,
+   "imp:receiving/receiving_td:negative_count": 0,
+   "imp:receiving:rec_gt_tgt": 0,
+   "imp:receiving:td_gt_rec": 0,
+   "imp:receiving:rec0_yards_nonzero": 0,
+   "imp:receiving:yards_below_minus99_per_rec": 0,
+   "imp:receiving:yards_above_99_per_rec": 0,
+   "imp:rushing/carries:negative_count": 0,
+   "imp:rushing/rushing_td:negative_count": 0,
+   "imp:rushing:td_gt_carries": 441,
+   "imp:team_volume/team_carries:negative_count": 0,
+   "imp:team_volume/team_dropbacks_part:negative_count": 0,
+   "imp:team_volume/team_off_snaps:negative_count": 0,
+   "imp:team_volume/team_rz_carries:negative_count": 0,
+   "imp:team_volume/team_targets:negative_count": 0,
+   "imp:team_volume:rz_carries_gt_carries": 0,
+   "imp:xl:c3_pass_yards_mismatch": 0,
+   "imp:xl:c3_completions_mismatch": 0,
+   "imp:xl:c3_pass_td_mismatch": 0,
+   "sus:qb:pyds_negative": 0,
+   "sus:qb:ryds_negative": 1627,
+   "sus:qb:pyds_non_integer": 111704,
+   "sus:qb:ryds_non_integer": 53923,
+   "sus:qb:ypc_below_3_at_cmp_ge10": 4,
+   "sus:qb:ypc_above_20_at_cmp_ge10": 250,
+   "sus:qb/pyds:rows_iqr_zero": 182,
+   "sus:qb/pyds:rows_total": 374,
+   "sus:qb/att:rows_iqr_zero": 182,
+   "sus:qb/att:rows_total": 374,
+   "sus:qb/cmp:rows_iqr_zero": 215,
+   "sus:qb/cmp:rows_total": 374,
+   "sus:qb/ryds:rows_iqr_zero": 244,
+   "sus:qb/ryds:rows_total": 374,
+   "sus:receiving:yards_negative": 11058,
+   "sus:receiving:yards_non_integer": 0
+  },
+  "QB_ONLY": {
+   "boards": 68,
+   "imp:qb/att:negative_count": 0,
+   "imp:qb/cmp:negative_count": 0,
+   "imp:qb/db:negative_count": 0,
+   "imp:qb/int:negative_count": 0,
+   "imp:qb/ptd:negative_count": 0,
+   "imp:qb/rtd:negative_count": 0,
+   "imp:qb/rush_opp:negative_count": 0,
+   "imp:qb/sacks:negative_count": 0,
+   "imp:qb/scr:negative_count": 0,
+   "imp:qb:cmp_gt_att": 0,
+   "imp:qb:cmp_plus_int_gt_att": 0,
+   "imp:qb:ptd_gt_cmp": 0,
+   "imp:qb:ptd_gt_att": 0,
+   "imp:qb:att_plus_sacks_plus_scr_gt_db": 0,
+   "imp:qb:dropback_identity_broken": 0,
+   "imp:qb:scr_gt_rush_opp": 0,
+   "imp:qb:rtd_gt_rush_opp": 0,
+   "imp:qb:cmp0_pyds_nonzero": 0,
+   "imp:qb:rushopp0_ryds_nonzero": 0,
+   "imp:qb:pyds_below_minus99_per_cmp": 0,
+   "imp:qb:pyds_above_99_per_cmp": 0,
+   "imp:qb:ryds_below_minus99_per_opp": 0,
+   "imp:team_volume/team_carries:negative_count": 0,
+   "imp:team_volume/team_dropbacks_part:negative_count": 0,
+   "imp:team_volume/team_off_snaps:negative_count": 0,
+   "imp:team_volume/team_rz_carries:negative_count": 0,
+   "imp:team_volume/team_targets:negative_count": 0,
+   "imp:team_volume:rz_carries_gt_carries": 0,
+   "sus:qb:pyds_negative": 2261,
+   "sus:qb:ryds_negative": 1618,
+   "sus:qb:pyds_non_integer": 184920,
+   "sus:qb:ryds_non_integer": 69299,
+   "sus:qb:ypc_below_3_at_cmp_ge10": 825,
+   "sus:qb:ypc_above_20_at_cmp_ge10": 1246,
+   "sus:qb/pyds:rows_iqr_zero": 154,
+   "sus:qb/pyds:rows_total": 514,
+   "sus:qb/att:rows_iqr_zero": 137,
+   "sus:qb/att:rows_total": 514,
+   "sus:qb/cmp:rows_iqr_zero": 154,
+   "sus:qb/cmp:rows_total": 514,
+   "sus:qb/ryds:rows_iqr_zero": 239,
+   "sus:qb/ryds:rows_total": 514
+  },
+  "C3_NEW_CREDIT": {
+   "boards": 3,
+   "imp:qb/att:negative_count": 0,
+   "imp:qb/cmp:negative_count": 0,
+   "imp:qb/db:negative_count": 0,
+   "imp:qb/int:negative_count": 0,
+   "imp:qb/ptd:negative_count": 0,
+   "imp:qb/rtd:negative_count": 0,
+   "imp:qb/rush_opp:negative_count": 0,
+   "imp:qb/sacks:negative_count": 0,
+   "imp:qb/scr:negative_count": 0,
+   "imp:qb:cmp_gt_att": 0,
+   "imp:qb:cmp_plus_int_gt_att": 0,
+   "imp:qb:ptd_gt_cmp": 0,
+   "imp:qb:ptd_gt_att": 0,
+   "imp:qb:att_plus_sacks_plus_scr_gt_db": 0,
+   "imp:qb:dropback_identity_broken": 0,
+   "imp:qb:scr_gt_rush_opp": 0,
+   "imp:qb:rtd_gt_rush_opp": 0,
+   "imp:qb:cmp0_pyds_nonzero": 0,
+   "imp:qb:rushopp0_ryds_nonzero": 0,
+   "imp:qb:pyds_below_minus99_per_cmp": 0,
+   "imp:qb:pyds_above_99_per_cmp": 0,
+   "imp:qb:ryds_below_minus99_per_opp": 0,
+   "imp:receiving/receptions:negative_count": 0,
+   "imp:receiving/targets:negative_count": 0,
+   "imp:receiving/receiving_td:negative_count": 0,
+   "imp:receiving:rec_gt_tgt": 0,
+   "imp:receiving:td_gt_rec": 0,
+   "imp:receiving:rec0_yards_nonzero": 0,
+   "imp:receiving:yards_below_minus99_per_rec": 0,
+   "imp:receiving:yards_above_99_per_rec": 0,
+   "imp:rushing/carries:negative_count": 0,
+   "imp:rushing/rushing_td:negative_count": 0,
+   "imp:rushing:td_gt_carries": 1,
+   "imp:team_volume/team_carries:negative_count": 0,
+   "imp:team_volume/team_dropbacks_part:negative_count": 0,
+   "imp:team_volume/team_off_snaps:negative_count": 0,
+   "imp:team_volume/team_rz_carries:negative_count": 0,
+   "imp:team_volume/team_targets:negative_count": 0,
+   "imp:team_volume:rz_carries_gt_carries": 0,
+   "imp:xl:c3_pass_yards_mismatch": 0,
+   "imp:xl:c3_completions_mismatch": 0,
+   "imp:xl:c3_pass_td_mismatch": 0,
+   "sus:qb:pyds_negative": 1,
+   "sus:qb:ryds_negative": 108,
+   "sus:qb:pyds_non_integer": 4217,
+   "sus:qb:ryds_non_integer": 3478,
+   "sus:qb:ypc_below_3_at_cmp_ge10": 3,
+   "sus:qb:ypc_above_20_at_cmp_ge10": 8,
+   "sus:qb/pyds:rows_iqr_zero": 10,
+   "sus:qb/pyds:rows_total": 18,
+   "sus:qb/att:rows_iqr_zero": 10,
+   "sus:qb/att:rows_total": 18,
+   "sus:qb/cmp:rows_iqr_zero": 10,
+   "sus:qb/cmp:rows_total": 18,
+   "sus:qb/ryds:rows_iqr_zero": 10,
+   "sus:qb/ryds:rows_total": 18,
+   "sus:receiving:yards_negative": 421,
+   "sus:receiving:yards_non_integer": 0,
+   "imp:xl:rush_category_sum_ne_team_carries": 4000,
+   "imp:xl:named_carries_gt_rb_category": 0,
+   "imp:xl:named_carries_gt_team_carries": 8
+  }
+ },
+ "empirical_ypc_support": {
+  "source": "nfl/research/qb2/qb.pkl, seasons 2020-2025, dropbacks>0 and completions>0",
+  "bands": {
+   "cmp_1": {
+    "n": 222,
+    "min": -7.0,
+    "max": 75.0
+   },
+   "cmp_2_4": {
+    "n": 180,
+    "min": -2.0,
+    "max": 40.0
+   },
+   "cmp_5_9": {
+    "n": 204,
+    "min": 4.111,
+    "max": 27.333
+   },
+   "cmp_10_14": {
+    "n": 410,
+    "min": 3.462,
+    "max": 22.091
+   },
+   "cmp_15_19": {
+    "n": 846,
+    "min": 4.235,
+    "max": 21.0
+   },
+   "cmp_20_plus": {
+    "n": 1925,
+    "min": 5.125,
+    "max": 21.2
+   }
+  }
+ },
+ "d19": {
+  "verified": true,
+  "board": "d1e2727743c93990",
+  "gsis": "00-0039732",
+  "draw": 885,
+  "att": 30,
+  "cmp": 16,
+  "pyds": -32.0,
+  "implied_ypc": -2.0,
+  "generator_file": "nfl/research/qb2/qb2_lib.py",
+  "generator_lines": "306-307",
+  "generator_code": "ypc_d = _mix(rng, r['h_ypc'], po['ypc'], w, m, ew); PY = CMP * ypc_d",
+  "mix_lines": "nfl/research/qb2/qb2_lib.py:184-196",
+  "production_entry": "nfl/production/qb_v1.py:235 -> qb2_lib.simulate",
+  "mechanism": "PY is not a per-completion yardage draw. One GAME-LEVEL yards-per-completion ratio is resampled whole -- from the QB own history with probability w = h_games/(h_games+K), K=4.0, otherwise from the positional pool -- and multiplied by a completion count drawn independently. The ratio carries no record of the completion count that produced it and is not weighted by it.",
+  "pool_negatives": {
+   "pool_size": 3787,
+   "negative_entries": 10,
+   "distinct_negative_values": [
+    -7.0,
+    -3.0,
+    -2.0,
+    -1.0,
+    -0.5
+   ],
+   "donor_completion_counts": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    2,
+    1,
+    1,
+    1,
+    2
+   ],
+   "note": "every negative pool entry comes from a 1- or 2-completion game"
+  },
+  "exact_arithmetic": "-2.0 is a pool value four times over (2024 WAS 1 cmp for -2; 2024 CAR 2 cmp for -4; 2024 NE 1 cmp for -2; 2025 ARI 1 cmp for -2). -2.0 x 16 completions = -32.0 exactly.",
+  "bo_nix_own_history": {
+   "h_games": 34,
+   "min_h_ypc": 5.0,
+   "negatives": 0,
+   "w": 0.8947368421052632,
+   "implication": "the draw came from the POOL branch, not his own history"
+  },
+  "expected_rate": {
+   "p_pool_branch": 0.10526,
+   "p_pool_value_negative": 0.0026406,
+   "p_per_draw": 0.000278,
+   "expected_cells_in_1000": 0.278,
+   "observed": 1,
+   "poisson_p_at_least_one": 0.2426
+  },
+  "hypothesis_tested_and_REJECTED": "The brief asked whether the negative tail is a symmetric-distribution artifact -- a Normal or similar fitted to a right-skewed quantity. It is NOT. No distribution is fitted anywhere on this path. _mix is an empirical resample with replacement of realised game-level ratios, so every value it can emit was observed in a real NFL game. Q7 per-reception skew 2.197 / excess kurtosis 7.830 describes the RECEIVING path, which is a different generator and is not what produced this cell. The defect is not distributional shape; it is SCALE NON-EXCHANGEABILITY -- a ratio estimated at n=1 completion applied at n=16 completions with no shrinkage and no denominator weighting.",
+  "proof_across_corpus": {
+   "negative_qb_pyds_cells": 2262,
+   "ypc_exactly_equals_a_pool_historical_value": 2262,
+   "ypc_from_own_history_only": 0,
+   "unmatched": 0,
+   "distinct_ypc_values_used": [
+    -3.0,
+    -2.0,
+    -1.0,
+    -0.5
+   ],
+   "completion_counts": {
+    "min": 1,
+    "median": 5.0,
+    "max": 38
+   },
+   "pyds": {
+    "min": -76.0,
+    "median": -10.0,
+    "max": -0.5
+   },
+   "cells_at_or_below_minus20": 300,
+   "cells_at_or_below_minus30": 156
+  }
+ },
+ "d19_blast_radius_correction": {
+  "d19_claim": "2,261 negative cells sit on QB-only boards and exactly ONE sits on a board carrying the shared passing event; the invariant that every negative passing-yard cell lives on a run WITHOUT the shared passing event is now false, by one cell.",
+  "measured": "The 2,262 total reproduces EXACTLY. The inference does not. C3 binds per TEAM-SIDE, not per board. Board d1e2727743c93990 carries a receiving layer for KC only (13 KC receivers, 0 DEN); Bo Nix is DEN. Measured per team-side: 104 sides are C3-bound (team qb pyds equals team receiving yards to 5.7e-14) and 2 sides are not. ZERO of the 2,262 negative cells sit on a C3-bound side; all 2,262 sit on a side with no receiving layer. The invariant HOLDS, exactly, at the level that generates the number.",
+  "verdict": "D19 blast_radius should be corrected. The cell is not an exception to the invariant; board d1e2727743c93990 is simply the first board in the corpus that carries C3 for one of its two teams only.",
+  "also": "D19 presents itself as 1 cell in 1,000 on ONE board. The same mechanism produces 156 cells at or below -30 yards and 2,262 in total across the corpus. The cell was flagged because a fence happened to be pointed at that board, not because it is rare."
+ },
+ "second_finding_upper_tail": {
+  "statement": "The same generator contaminates the RIGHT tail, harder, and no fence points at it.",
+  "raw_qb_v1_cells_measured": 520000,
+  "pyds_max": 1587.0,
+  "nfl_single_game_record": 554,
+  "cells_above_500": 1208,
+  "cells_above_554": 680,
+  "cells_above_600": 437,
+  "cells_above_700": 192,
+  "cells_above_800": 82,
+  "ypc_at_cmp_ge10": {
+   "n": 130422,
+   "min": -3.0,
+   "median": 10.808,
+   "max": 69.0,
+   "historical_support": [
+    3.462,
+    22.091
+   ],
+   "cells_below_support": 1554,
+   "cells_above_support": 586,
+   "rate_below_pct": 1.1915,
+   "rate_above_pct": 0.4493
+  },
+  "donor_completion_count_of_out_of_support_cells": {
+   "below": {
+    "1": 1485,
+    "2": 55,
+    "3": 2,
+    "4": 12
+   },
+   "above": {
+    "1": 531,
+    "2": 27,
+    "3": 23,
+    "9": 5
+   }
+  },
+  "interpretation": "2,016 of 2,140 out-of-support cells (94.2%) trace to a donor game with exactly ONE completion. The left tail has 156 cells worse than -30 yards; the right tail has 680 cells above the all-time NFL single-game record. By magnitude the right tail is the larger defect."
+ },
+ "downstream": {
+  "unit": "QB row on a non-C3 side, 1000 draws each",
+  "rows": 490,
+  "contaminated_cells_total": 4935,
+  "rows_with_at_least_one": 361,
+  "per_row_contaminated": {
+   "mean": 10.071428571428571,
+   "median": 2.0,
+   "max": 111
+  },
+  "shift_when_contaminated_cells_dropped": {
+   "mean_yards": {
+    "mean": -0.453,
+    "median": 0.0,
+    "min": -13.857,
+    "max": 6.456,
+    "rows_over_1yd": 63
+   },
+   "p10": {
+    "mean": 0.566,
+    "median": 0.0,
+    "min": -0.048,
+    "max": 36.052,
+    "rows_over_1yd": 29
+   },
+   "p50": {
+    "mean": -0.031,
+    "median": 0.0,
+    "min": -5.401,
+    "max": 11.11,
+    "rows_over_1yd": 89
+   },
+   "p90": {
+    "mean": -1.006,
+    "median": 0.0,
+    "min": -26.821,
+    "max": 8.065,
+    "rows_over_1yd": 103
+   },
+   "sd": {
+    "mean": -2.112,
+    "median": 0.0,
+    "min": -53.481,
+    "max": 1.577
+   }
+  },
+  "threshold_probability_shift_pp": {
+   "175": {
+    "mean": -0.0243,
+    "max_abs": 2.1227,
+    "rows_over_0.5pp": 49
+   },
+   "200": {
+    "mean": -0.0566,
+    "max_abs": 2.3422,
+    "rows_over_0.5pp": 44
+   },
+   "225": {
+    "mean": -0.0815,
+    "max_abs": 2.281,
+    "rows_over_0.5pp": 31
+   },
+   "250": {
+    "mean": -0.1051,
+    "max_abs": 2.3339,
+    "rows_over_0.5pp": 36
+   },
+   "275": {
+    "mean": -0.1196,
+    "max_abs": 2.4316,
+    "rows_over_0.5pp": 35
+   },
+   "300": {
+    "mean": -0.1257,
+    "max_abs": 2.6183,
+    "rows_over_0.5pp": 35
+   }
+  },
+  "d19_cell_alone": {
+   "row": "00-0039732 on d1e2727743c93990",
+   "mean": {
+    "with": 210.1484,
+    "without": 210.3907,
+    "delta": 0.2424
+   },
+   "sd": {
+    "with": 78.9895,
+    "without": 78.6564,
+    "delta": -0.3331
+   },
+   "p10": {
+    "with": 117.0,
+    "without": 117.22,
+    "delta": 0.2182
+   },
+   "p50": {
+    "with": 209.42,
+    "without": 209.88,
+    "delta": 0.4583
+   },
+   "p90": {
+    "with": 306.98,
+    "without": 307.02,
+    "delta": 0.0344
+   },
+   "threshold_shift_pp": {
+    "175": 0.0668,
+    "200": 0.0535,
+    "225": 0.0397,
+    "250": 0.0285,
+    "275": 0.0181,
+    "300": 0.0116
+   },
+   "verdict": "NEGLIGIBLE. One cell in a thousand moves the mean by +0.24 yards (0.12%) and no threshold probability by more than 0.07 percentage points. Reported as negligible because it is negligible."
+  }
+ },
+ "crps_and_pit": {
+  "artifact_supports_exact_crps": true,
+  "why": "player_draws.npz stores the FULL 1000 simulated draws per row, not nine percentiles, so CRPS is exact rather than approximated.",
+  "log_score": "NOT AVAILABLE without a smoothing choice. A 1000-draw empirical measure with atoms at zero has no density; any log score would be scoring a kernel the engine never declared.",
+  "pit": "NOT ASSESSABLE here. Only 20 QB-game passing lines in this repository have a realised outcome, all 2026 week 1, and PIT on 20 clustered observations measures nothing.",
+  "outcomes_available": "nfl/research/postgame/pbp_2026.1415dd98ba7f701a.csv.gz carries 10 of the 15 week-1 games. It has ZERO DEN and ZERO KC rows and was retrieved 2026-09-14T00:25:56Z, before the 2026-09-15T00:15Z kickoff, so the DEN@KC result is not in this repository and was not used.",
+  "crps_measured": {
+   "scored_rows_raw_qb_v1": 9,
+   "mean_crps_with_contamination": 63.4571,
+   "mean_crps_with_cells_dropped": 63.0862,
+   "delta": -0.3709,
+   "per_row_delta": {
+    "median": -0.0068,
+    "min": -3.897,
+    "max": 0.4412
+   },
+   "CAVEAT": "n = 9 rows over 9 games. This establishes NOTHING about whether cleaning improves forecast quality. It is reported because it was measured, with its n, and it must not be quoted as evidence either way."
+  }
+ },
+ "claims_in_the_brief_corrected": {
+  "104_sealed_boards": "There are 121 sealed boards, not 104. 116 store player_draws.npz and 5 (2026_01_SF_LA) store player_draws.npz.gz. 109 sit under a game directory and 12 under REPLAY_C1. The number 104 matches the count of C3-BOUND TEAM-SIDES, which is a different population; it also equals 116 minus the 12 REPLAY_C1 boards, so two different derivations land on it by coincidence.",
+  "2262_negative_qb_pyds": "REPRODUCED EXACTLY. 2,262 cells, on 67 boards.",
+  "2261_on_qb_only_boards_one_on_a_C3_board": "True as stated about BOARDS and misleading as an inference. Per team-side, 2,262 of 2,262 are on sides with no receiving layer and 0 of 2,262 are on a C3-bound side.",
+  "149_of_1000_carries_exceed_team_level": "NOT REPRODUCIBLE on the sealed corpus. Source located: nfl/research/v2/d1/D1_DEN_UNIVERSE.md:175, which measured an in-flight D1 research build, not a board under nfl/research/live. Measured here over 104 team-sides x 1000 draws = 132,000: 314 draws (0.238%) deal named rushers more carries than team_volume/team_carries, worst excess 0.743 carries and ZERO draws exceeding by a full carry. The D1 figure of \"up to 6.12 carries\" does not appear anywhere in the sealed corpus. The comparison is also int-vs-float: team_carries is a continuous level (non-integrality up to 0.495) and dealt carries are int16, so a sub-carry excess is a representation mismatch, not a lost carry.",
+  "negative_yardage_counts_in_draw_coherence": "draw_coherence.py:47 states 2,261 negative qb/pyds, 2,821 qb/ryds and 8,213 receiving yards over 68 runs without the shared passing event. Measured now over all 121 boards: 2,262 qb/pyds, 3,353 qb/ryds, 11,479 receiving yards. The docstring is stale, not wrong -- boards have been added since it was written."
+ },
+ "market_boundary": {
+  "statement": "No market feed exists in this system and no sportsbook data is in this repository. board.json carries its own threshold_disclaimer to that effect. No price was fetched, no line was estimated, no edge was computed, and nothing here is a wager recommendation.",
+  "what_can_be_said": "Only a property of our own distribution: which stored quantities are contaminated in the region an external threshold would sit.",
+  "unsafe_to_compare_against_any_external_threshold": [
+   {
+    "quantity": "qb/pyds on any team-side with no receiving layer",
+    "reason": "1.19% of cells at cmp>=10 fall below, and 0.45% above, the yards-per-completion support of 3,181 realised games. Individual rows move up to 2.6 percentage points at a 175-300 yard threshold and up to 26.8 yards at P90 when those cells are removed. A threshold in the tail reads a region built out of 1-completion donor games.",
+    "boards": "68 QB-only boards plus the DEN side of the 2 R9 DEN@KC boards"
+   },
+   {
+    "quantity": "qb/cmp, qb/pyds, qb/ptd on the 50 boards using the old attempt-share credit",
+    "reason": "8,214 cells carry more completions than attempts, 9,189 more completions+interceptions than attempts, 1,113 more passing TDs than completions, and 18,041 carry passing yards with zero completions. A per-QB threshold on those boards is reading an allocation that is not a football box score, even though the TEAM total is exact.",
+    "boards": "50"
+   },
+   {
+    "quantity": "rushing/rushing_td",
+    "reason": "442 cells on 50 boards carry more rushing touchdowns than carries.",
+    "boards": "50"
+   }
+  ],
+  "safe_by_this_census": "The 3 DEN@KC boards f91342d6787a66a1, 96954efc523bd7d3 and d1e2727743c93990 carry none of the per-QB impossible states. d1e2727743c93990 carries one negative pyds cell whose own measured effect is negligible."
+ },
+ "den_kc_question": {
+  "asked": "are the two most recent DEN@KC boards better, worse or the same as the corpus?",
+  "answer": "BETTER, and for a traceable reason, not by luck.",
+  "table": {
+   "f91342d6787a66a1 (R8)": {
+    "cmp_gt_att": 0,
+    "cmp0_pyds_nonzero": 0,
+    "ptd_gt_cmp": 0,
+    "rushing_td_gt_carries": 1,
+    "negative_pyds": 0
+   },
+   "96954efc523bd7d3 (R9)": {
+    "cmp_gt_att": 0,
+    "cmp0_pyds_nonzero": 0,
+    "ptd_gt_cmp": 0,
+    "rushing_td_gt_carries": 0,
+    "negative_pyds": 0
+   },
+   "d1e2727743c93990 (R9)": {
+    "cmp_gt_att": 0,
+    "cmp0_pyds_nonzero": 0,
+    "ptd_gt_cmp": 0,
+    "rushing_td_gt_carries": 0,
+    "negative_pyds": 1
+   },
+   "the other 50 C3 boards": {
+    "cmp_gt_att": 8214,
+    "cmp0_pyds_nonzero": 18041,
+    "ptd_gt_cmp": 1113,
+    "rushing_td_gt_carries": 441,
+    "negative_pyds": 0
+   }
+  },
+  "reason": "the 50 contaminated boards call nfl/production/nonqb/shared_pass.py:172 credit_to_passers, which splits team completions multinomially on ATTEMPT SHARE (sampling a finite pool WITH replacement) and splits yards on the same attempt share independent of the completion draw. The 3 clean boards call nfl/production/nonqb/football_engine.py:84 credit_passing_line, which allocates by multivariate hypergeometric over (attempts - interceptions), then TDs over credited completions, then yards on the COMPLETION share, and asserts cmp<=att, cmp<=att-int, ptd<=cmp and cmp==0 -> pyds==0 on the values it is about to write (lines 285-300). The repair is already in the tree and already effective; the older boards predate it.",
+  "remaining_gap": "96954efc523bd7d3 is clean on every check in this census. d1e2727743c93990 differs only by the single qb_v1 pyds cell, which sits on the DEN side that credit_passing_line never touches because DEN has no receiving layer."
+ },
+ "cross_layer_divergence_declared": {
+  "rush_category_sum_vs_team_carries": {
+   "boards": 2,
+   "draws": 4000,
+   "draws_differing_by_1_or_more": 1702,
+   "DEN": {
+    "category_sum_mean": 25.124,
+    "team_carries_mean": 27.551,
+    "diff_min": -8.4278,
+    "diff_max": 0.4762
+   },
+   "KC": {
+    "category_sum_mean": 22.329,
+    "team_carries_mean": 25.245,
+    "diff_min": -10.2027,
+    "diff_max": 0.2986
+   },
+   "classification": "NOT impossible. The A1 category budget UNDER-allocates relative to the published team level; it never over-allocates by a full carry. This is the divergence draw_coherence.py:591-597 already names: football_engine._team_carries returns the SC1-coupled vector while run_forecast seals D1 raw vector into team_volume/team_carries. Two layers answering the same question differently, already declared."
+  }
+ },
+ "fixes_proposed_none_applied": [
+  {
+   "id": "X1-F1",
+   "target": "nfl/research/qb2/qb2_lib.py:306-307",
+   "problem": "PY = CMP * ypc_d applies a game-level ratio estimated at any completion count to a completion count drawn independently.",
+   "options": [
+    "weight the _mix resample by the donor game completion count, so a 1-completion game cannot carry the same mass as a 30-completion game",
+    "shrink each donor ratio toward the pooled rate by its own completion count, n/(n+k), the same shrinkage form this file already uses for w",
+    "replace the product with a per-completion yardage draw, so game yardage is a sum of cmp draws rather than a scalar multiple -- this also removes the zero conditional dispersion of pyds given cmp and the 22.75% non-integrality"
+   ],
+   "NOT_a_fix": "clipping pyds at zero or at any -k. D19 test_required already says so and it is right: the check must go to zero by construction.",
+   "predeclaration_required": true,
+   "note": "all three options change the predictive distribution and are mechanism changes, not patches. None applied."
+  },
+  {
+   "id": "X1-F2",
+   "target": "the 50 boards on shared_pass.credit_to_passers",
+   "problem": "27,564 impossible per-QB cells across 4 checks.",
+   "proposal": "no code change needed -- football_engine.credit_passing_line already replaces it and is already coherent by construction. What is missing is that the 50 sealed boards carry the defect and nothing marks them. Propose a board-level provenance flag naming which credit function produced the qb passing line, so a consumer can refuse the old ones.",
+   "predeclaration_required": false
+  },
+  {
+   "id": "X1-F3",
+   "target": "nfl/production/draw_coherence.py:47",
+   "problem": "the negative-yardage cell counts in the docstring are stale (2,261 / 2,821 / 8,213 against a measured 2,262 / 3,353 / 11,479).",
+   "proposal": "derive them at run time from the artifacts rather than writing them into prose, which is the same failure mode as a suite count in a README.",
+   "predeclaration_required": false
+  },
+  {
+   "id": "X1-F4",
+   "target": "OPEN_DEFECTS.json D19 blast_radius",
+   "problem": "the C3 exception is measured per board and should be per team-side; the stated invariant is not broken.",
+   "proposal": "correct the wording and record that the same mechanism produces 2,262 cells and a larger right-tail contamination, so D19 is not a one-cell defect.",
+   "predeclaration_required": false
+  }
+ ]
+}

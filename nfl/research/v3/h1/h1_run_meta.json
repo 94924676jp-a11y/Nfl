@@ -1,0 +1,151 @@
+{
+ "artifact": "NFL_H1_RUN_META",
+ "spec_version": "h1-run-1",
+ "status": "EXPLORATORY -- 2025 is development data in this project",
+ "eval_season": 2025,
+ "rung": "L1",
+ "seed": 20260908,
+ "n_draws": 1000,
+ "pit_seed": 20260915,
+ "frame": {
+  "n_rows": 4040,
+  "n_team_games": 3230,
+  "n_primary_ties": 7,
+  "qb_frame_sha256": "e2de51d345502a2717a64e584f5e883a64eb3ed51ff97e5f42e406a0ddba0c54",
+  "per_season": {
+   "2020": 652,
+   "2021": 688,
+   "2022": 668,
+   "2023": 691,
+   "2024": 677,
+   "2025": 664
+  }
+ },
+ "eligibility": {
+  "tally": {
+   "season_rows": 664,
+   "primary_passer": 544,
+   "has_prior_appearance": 540,
+   "team_has_prior_game": 540,
+   "eligible": 540,
+   "not_primary_passer": 120,
+   "no_prior_appearance": 4
+  },
+  "primary_passers_without_prior_appearance": [
+   [
+    "2025_01_MIN_CHI",
+    "MIN",
+    "00-0039923"
+   ],
+   [
+    "2025_01_TEN_DEN",
+    "TEN",
+    "00-0040676"
+   ],
+   [
+    "2025_11_BAL_CLE",
+    "CLE",
+    "00-0040668"
+   ],
+   [
+    "2025_14_MIA_NYJ",
+    "NYJ",
+    "00-0040398"
+   ]
+  ],
+  "dropped_below_min_dropbacks": [],
+  "min_dropbacks": 10
+ },
+ "n_rows_simulated": 540,
+ "n_primary_frame": 540,
+ "n_scored_rows": 10730,
+ "n_layers": 20,
+ "layers": [
+  "att_per_dropback",
+  "cmp_per_attempt",
+  "int_per_attempt",
+  "ptd_per_attempt",
+  "ptd_per_completion",
+  "qb_attempts",
+  "qb_completions",
+  "qb_dropback_share",
+  "qb_dropbacks",
+  "qb_interceptions",
+  "qb_pass_td",
+  "qb_passing_yards",
+  "qb_rush_opportunities",
+  "qb_sacks",
+  "qb_scrambles",
+  "scr_per_rush_opportunity",
+  "team_dropbacks_p4b",
+  "team_dropbacks_qb2",
+  "team_offensive_plays",
+  "yards_per_completion"
+ ],
+ "vs_reproduction_exact": true,
+ "p4b_team_off_snaps": {
+  "key": "team_off_snaps",
+  "point_estimator": "league_mean",
+  "form": "empirical",
+  "inner_validation_season": 2024,
+  "inner_crps": {
+   "empirical": 4.922033841911764,
+   "gaussian": 4.934576321756974,
+   "student_t": 4.926138297264311,
+   "team_empirical": 4.989345323529411,
+   "coach_empirical": 4.974163887867647
+  },
+  "n_eval": 544,
+  "n_train": 2686,
+  "train_seasons": [
+   2020,
+   2021,
+   2022,
+   2023,
+   2024
+  ],
+  "negative_draw_rate": 0.0
+ },
+ "p4b_team_dropbacks_part": {
+  "key": "team_dropbacks_part",
+  "point_estimator": "coach_prior",
+  "form": "empirical",
+  "inner_validation_season": 2024,
+  "inner_crps": {
+   "empirical": 4.810494112762306,
+   "gaussian": 4.82684659186409,
+   "student_t": 4.824657419656866,
+   "team_empirical": 4.852924036714666,
+   "coach_empirical": 4.836443289502846
+  },
+  "n_eval": 544,
+  "n_train": 2686,
+  "train_seasons": [
+   2020,
+   2021,
+   2022,
+   2023,
+   2024
+  ],
+  "negative_draw_rate": 0.0
+ },
+ "q7_crosscheck": {
+  "n_q7_rows": 4025,
+  "n_h1_rows": 4040,
+  "n_matched_keys": 4009,
+  "n_q7_only": 16,
+  "n_h1_only": 31,
+  "field_agreement_on_matched": {
+   "att": 3505,
+   "sacks": 4009,
+   "scr": 1502,
+   "cmp": 4009,
+   "db": 1514,
+   "ptd": 4009,
+   "int": 4009,
+   "pyds": 4009
+  },
+  "q7_total_scrambles": 1,
+  "h1_total_scrambles": 5864
+ }
+}

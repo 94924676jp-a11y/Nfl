@@ -77,6 +77,19 @@ and backs did:
 | Cyrus Allen, targets | 1.85 | 3.52 | 3.61 |
 | Rashee Rice, targets | 8.49 | 7.68 | 7.96 |
 
+> **WITHDRAWN 2026-09-15.** The paragraph below explains this parity as a tie
+> in the depth chart plus absent trailing history. Every clause of that
+> explanation was measured false in `nfl/research/v3/AUTOPSY_DEN_KC.md`. There
+> is **no tie** (0 across 178 KC RB groups; the ties fact cited belongs to the
+> 2020–2024 `depth_team` schema, not this capture), the two backs receive
+> **different** anchors, and the carry prior separates them **1.62 : 1 in
+> Walker's favour**. The parity is produced **entirely by the appearance
+> layer**, which returns 0.7237 for Walker against 0.9925 for Johnson and is
+> then renormalised over survivors. The remedy proposed below — a tiebreaker,
+> or declaring that the model has no view — is also wrong: the model had a
+> strong and correct view that a downstream layer reversed. Kept in place
+> rather than deleted, because a withdrawn claim is evidence too.
+
 This is R3's depth repair landing. It also produces a result worth flagging
 rather than celebrating: **Kansas City's two lead backs come out at parity** —
 8.233 against 8.227 in Arm A, and in Arm B the order actually reverses, 8.345

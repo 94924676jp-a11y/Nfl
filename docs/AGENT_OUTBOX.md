@@ -785,3 +785,125 @@ the evidence set, absent from the candidates"). They reached us anyway through
 the nflverse feed, so nothing was lost this time. If the candidate set is meant
 to carry every club in the package, that is a gap in the delivery worth
 checking on your side before the next one.
+
+
+---
+
+## 2026-09-15T01:50Z — OUT-014: the realized DEN@KC outcome, for the postgame autopsy
+
+**ASSIGNED, not blocked for both of us.** A postgame layer decomposition of
+`2026_01_DEN_KC` was requested. The forecast side is complete and sealed. The
+**actual** side does not exist in this checkout, and I will not reconstruct it
+from numbers quoted in conversation.
+
+**Measured, not assumed.** The newest 2026 play-by-play capture is
+`nfl/research/postgame/pbp_2026.1415dd98ba7f701a.csv.gz`, sha256 `1415dd98…`,
+`retrieved_at` **2026-09-14T00:25:56Z** — roughly 24 hours BEFORE the
+2026-09-15T00:15Z kickoff. It holds **10 games, all week 1, and zero rows for
+DEN or KC**. The prior capture `d9e442ae…` (2026-09-11T19:16Z) likewise. So the
+game is absent because it had not been played when the bytes were taken, and no
+capture has been attempted since 17:39Z because the executor is halted.
+
+**What I need, and why each field.** A postgame capture of `2026_01_DEN_KC`
+sufficient to populate the same reduction as `nfl/research/q7/panel.py`, whose
+definitions are fixed and must not be reinterpreted downstream:
+
+    attempt     pass_attempt AND NOT sack AND NOT qb_spike
+    completion  an attempt that completed
+    dropback    attempts + sacks + scrambles   (COMPOSED, never read from qb_dropback)
+
+Per team: offensive snaps, dropbacks, carries, targets. Per quarterback:
+dropbacks, attempts, completions, passing yards, passing TD, INT, sacks,
+scrambles, rush attempts, rushing yards. Per back and receiver: carries,
+rushing yards, targets, receptions, receiving yards, receiving TD.
+
+`https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2026.csv.gz`
+is the registered source and rank-1 authority; a refreshed pull carrying week 1
+complete would discharge this entirely.
+
+**Why the layer decomposition cannot proceed without it.** The request was for
+FORECAST -> ACTUAL -> ERROR -> CONTRIBUTION across nine layers: team plays,
+team dropbacks, QB dropback share, attempts/dropback, completions/attempt,
+yards/completion, passing TD/attempt, INT/attempt, scramble/rush opportunity.
+A final passing-yard total identifies **none** of those nine. Four numbers were
+quoted to me in conversation (Mahomes 184 passing yards, Nix 131, Walker 23
+carries, Johnson 8). Even taking all four as correct, they pin one endpoint and
+leave every intermediate layer free: the sequential counterfactual
+(actual volume -> actual share -> actual attempt conversion -> actual completion
+conversion -> actual yards/completion) is **underdetermined**, and any
+attribution I produced from them would be a decomposition of my own
+assumptions wearing the costume of a measurement.
+
+**What I did instead, and it needs no bytes from you.** The reported outcomes
+are POSITIONED inside the sealed predictive distribution — exact, because the
+board stores 1,000 draws per quantity rather than percentiles — and the
+one-at-a-time layer sensitivity is computed from the sealed forecast alone.
+Both are in the autopsy. Neither asserts the quoted numbers are true.
+
+**What I will not do.** Fabricate the actual layer values, infer them from a
+box score I have not read, treat conversation-quoted figures as a capture, or
+write any of them into the prospective ledger as a scored outcome. The
+`2026_01_DEN_KC` inactives obligation is already recorded MISSED and unfilled
+(covered 15, missed 48) and is not being backfilled either.
+
+---
+
+## 2026-09-15T05:10Z — OUT-015: a pregame role-intent source. No such family is captured
+
+**COVERAGE GAP, not a bug, and not blocked for both of us.** Raised by B1's
+root-cause work on Kansas City's backfield
+(`nfl/research/v3/b1/B1_KC_BACKFIELD_ROOT_CAUSE.md`).
+
+**What the gap is.** Kenneth Walker III (`00-0038134`) joined Kansas City for
+2026; every one of his 67 panel rows is Seattle, 2022-2025. Emmett Johnson
+(`00-0041013`) has **zero** rows in `panel_p3`, in `panel_enriched.pkl` and in
+`q7_recv_game.csv.gz` — a true cold start. The only pregame evidence this
+repository holds that speaks to which of them leads the backfield is the ESPN
+daily depth chart (`pos_rank` 1 and 2, clean, no tie, stable 2026-09-09 through
+2026-09-14). That is one bit, from one vendor, and the appearance layer degrades
+it before use.
+
+**Measured, not assumed.** `nfl/vintage/` holds ten source families:
+`delivered_injury_evidence`, `depth_charts`, `espn_injuries_json`,
+`hardrock_market_snapshot`, `injuries`, `official_inactives`,
+`official_injury_report`, `official_status_evidence`, `schedules`,
+`weekly_rosters`. Seven were sealed into `d1e2727743c93990`. **None of the ten
+carries preseason participation, camp usage, or a coaching statement.**
+
+**What I am asking for, and why each one.**
+
+1. **Preseason play-by-play and snap counts, 2026.**
+   `https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2026.csv.gz`
+   filtered to `season_type == 'PRE'`, and
+   `https://github.com/nflverse/nflverse-data/releases/download/snap_counts/snap_counts_2026.csv.gz`.
+   Dates needed: **2026-08-07 through 2026-08-30** (the three preseason weeks
+   preceding the 2026-09-14/15 week-1 slate). Per player: `offense_snaps`,
+   `offense_pct`, carries, targets. This is the only quantitative pregame
+   observation of a rookie or a newly-acquired back in his current club's
+   offence, and it is exactly the quantity `appearance_r8` has to impute for a
+   `NO_HISTORY` player today.
+
+2. **Weekly rosters for the 2026 preseason weeks**, same source family as the
+   already-captured `weekly_rosters` (`bdab6ecee12d44a4`, retrieved
+   2026-09-14T16:16:25Z), for `week` values covering **2026-08-07 to
+   2026-08-30**, so a preseason snap can be attributed to a club.
+
+3. **Depth-chart `pos_slot`.** The capture reduction currently drops it: the
+   reduced header is `dt,team,gsis_id,pos_abb,pos_rank` while the raw carries
+   `pos_slot`. `depth_vintage.py:307-325` records this and measures the harm as
+   zero **so far** (0 tie groups on all six persisted blobs). Retaining it is a
+   capture-layer change, and it is cheap insurance against the first vendor tie.
+
+**What I am NOT asking for.** Beat-reporter copy, depth-chart commentary, or
+coaching quotes. They are not a governed source, they carry no schema, and I
+would not know how to refuse a bad one. If a structured, dated, attributable
+feed of stated role intent exists, name it and I will spec an ingest; otherwise
+this item is closed as out of scope rather than left open.
+
+**What this does not license.** None of the above may be used to score, revise
+or re-seal `d1e2727743c93990`, or any board already written. It is an input for
+future forecasts only. The root cause of the Kansas City parity is internal and
+needs no bytes from anyone — it is in `appearance_r8.featurise` and
+`depth_vintage.daily` and is fully diagnosed in the report above. This request
+would have made the forecast **better informed**; it would not have made it
+**correct**, and I am not offering it as a substitute for the repair.
