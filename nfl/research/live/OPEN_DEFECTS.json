@@ -2,6 +2,7 @@
  "artifact": "NFL_OPEN_DEFECTS",
  "spec_version": "live-review-1",
  "games_reviewed": [
+  "2026_01_DEN_KC",
   "2026_01_NE_SEA (sealed shadow forecast, T-31h)",
   "2026_01_SF_LA"
  ],
@@ -277,6 +278,22 @@
    "blast_radius": "Possibly systemic; TWO observations",
    "impact": "Offsetting errors make yardage look accurate while both components are wrong. If real, it is a volume/efficiency coupling the model lacks.",
    "test_required": "Decompose yards into attempts x efficiency and test the coupling across >=20 games. TWO GAMES IS A HYPOTHESIS, NOT A FINDING."
+  },
+  {
+   "id": "D19",
+   "category": "MODELING",
+   "games": [
+    "2026_01_DEN_KC"
+   ],
+   "symptom": "A SINGLE DRAW PUTS 16 COMPLETIONS ON 30 ATTEMPTS AND NETS MINUS 32 PASSING YARDS. Board d1e2727743c93990, Bo Nix (00-0039732), draw 885: att=30, cmp=16, pyds=-32.0. Negative passing yardage is legitimate in this engine and is deliberately not clipped -- test_draw_coherence asserts that no non-negativity check is declared over any yardage array, and that is correct. What is NOT legitimate is this magnitude at this completion count: sixteen completed passes averaging about -2 yards each is not a football outcome, and no realised NFL game resembles it. The cell is therefore a pathological tail of the yards-per-completion draw, not an instance of the ordinary short-loss completion the non-clipping policy exists to preserve.",
+   "earliest_layer": "qb passing yardage draw (yards per completion), downstream of the C3 shared passing event",
+   "kind": "MODELING",
+   "repaired": false,
+   "repaired_by": null,
+   "root_cause_classification": "UNDIAGNOSED -- found by a fence, not yet traced to a line",
+   "blast_radius": "1 cell in 1,000 draws on ONE board. Measured across all 104 sealed boards in nfl/research/live/: qb/pyds carries 2,262 negative cells in total, of which 2,261 sit on QB-only boards (no receiving layer) and exactly ONE sits on a board carrying the shared passing event. That one is this cell. Tonight's FINAL board 96954efc523bd7d3 carries NONE and is clean. The invariant that previously held -- every negative passing-yard cell lives on a run WITHOUT the shared passing event -- is now false, by one cell.",
+   "impact": "Negligible for a mean or a median and material for any tail statistic, which is exactly the class of statistic this project intends to report: CRPS, log score, PIT and tail calibration all read the region this cell sits in. It must not be absorbed into a count fence as though it were ordinary negative yardage.",
+   "test_required": "test_draw_coherence::test_negative_yardage_is_left_alone_and_the_reason_is_measured now pins c3-side negatives at 1 and names this defect. The fix is NOT to clip: it is to find why yards-per-completion can go this far negative at 16 completions, and the check must go back to 0 by construction, never by widening the fence."
   }
  ],
  "ne_sea_limitations": [

@@ -240,14 +240,28 @@ def test_F_visibility_does_not_become_a_discharge():
     """The line that must not be crossed. Making the 18 rows VISIBLE must not
     make them COUNT: they carry no declaration, Directive 7 §6 refuses them, and
     a miss that is reported more informatively is still a miss."""
-    print('\nF. nothing is backfilled: the 47 stay missed')
+    print('\nF. nothing is backfilled: the 48 stay missed')
     o = C.coverage(2026, 1, manifest_path=MANIFEST)
     e = o.evidence
     check('coverage still FAILS on the perishable windows',
           o.state is State.FAIL and o.code == 'PERISHABLE_WINDOWS_MISSED',
           str(o)[:140])
-    check('covered is 15 and missed is 47, unchanged',
-          e['covered'] == 15 and e['missed'] == 47,
+    # 47 -> 48 ON 2026-09-15, AND THE EXTRA ONE IS THE POINT OF THIS TEST.
+    #
+    # The 48th is `2026_01_DEN_KC` inactives. Its window opened 2026-09-14T22:45Z
+    # and closed 2026-09-15T00:05Z, ten minutes before kickoff, and it closed
+    # UNFILLED: zero capture attempts were made inside it, because the capture
+    # executor is halted, and the last attempt of any kind was 17:39Z returning
+    # `curl: (56) CONNECT tunnel failed, response 403`. It was the last open
+    # week-1 obligation and the only one that had not already been lost.
+    #
+    # It is recorded as a miss and is NOT backfilled. Bytes fetched now would
+    # be post-kickoff and could not have informed a pregame board; writing them
+    # in afterwards would convert a real miss into a fake capture, which is the
+    # one thing this whole module exists to prevent. `covered` stays 15 -- the
+    # miss adds nothing to what was covered.
+    check('covered is 15 and missed is 48 -- DEN@KC closed unfilled',
+          e['covered'] == 15 and e['missed'] == 48,
           f"covered={e['covered']} missed={e['missed']}")
     check('the two sub-counts partition the misses',
           e['missed_with_uncredited_evidence']

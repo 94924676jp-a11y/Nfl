@@ -79,7 +79,31 @@ CORPUS = {'plays': 211755, 'att_raw': 97696, 'att': 90748, 'sack': 6601,
           'kneel': 2104, 'designed_rush': 66657, 'dropbacks': 102403}
 
 # The sealed state of the count defect, re-derived below.
-SEALED_COUNTS = {'runs': 102, 'carry_cells': 384000,
+# THE CORPUS GREW; THE DEFECT DID NOT.
+#
+# `runs` and `carry_cells` count sealed artifacts ON DISK, so they move
+# whenever anyone builds a board -- which makes them a measure of how much has
+# been built, not of how broken it is. Re-freezing them is therefore routine
+# bookkeeping AND the exact move by which a fence gets quietly widened until it
+# fences nothing, so the number that matters is recorded here rather than left
+# to be inferred:
+#
+#   2026-09-15, after the DEN@KC rebuild added two boards:
+#     runs             102 -> 104
+#     carry_cells   384,000 -> 394,000   (+10,000 new cells)
+#     NON-INTEGER   243,766 -> 243,766   (UNCHANGED, +0)
+#
+# Both new runs (`d1e2727743c93990`, `96954efc523bd7d3`) contribute ZERO
+# non-integer carry cells. That is the whole point of the counts repair: a
+# carry is dealt as a count now, so it cannot arrive fractional. The defect is
+# still fenced at exactly the size it was measured at, on a corpus 10,000 cells
+# larger, and the fence would still catch a regression because the third check
+# below pins `carry_non_integer_cells` exactly.
+#
+# If a future re-freeze has to raise `carry_non_integer_cells`, that is NOT
+# bookkeeping. It means something started emitting fractional carries again and
+# the number to change is in the engine, not here.
+SEALED_COUNTS = {'runs': 104, 'carry_cells': 394000,
                  'carry_non_integer_cells': 243766,
                  'qb_identity_cells': 844000,
                  'qb_identity_violating_cells': 0}

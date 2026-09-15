@@ -17,7 +17,7 @@ if str(_REPO) not in sys.path:
 from nfl.tools import preflight_t90 as P  # noqa: E402
 from sportsplatform.governance.outcome import State  # noqa: E402
 
-PASSED = FAILED = 0
+PASSED = FAILED = BLOCKED = 0
 
 
 def check(label, cond, detail=''):
@@ -30,6 +30,13 @@ def check(label, cond, detail=''):
         print(f'  FAIL {label}  {detail}')
 
 
+def blocked(label, why):
+    """Counted apart and never as a pass."""
+    global BLOCKED
+    BLOCKED += 1
+    print(f'  BLOCKED {label}  {why}')
+
+
 def run():
     return P._checks(2026, 1)
 
@@ -38,13 +45,57 @@ def by(results, fragment):
     return next(o for lbl, o in results if fragment in lbl)
 
 
+# WEEK 1 IS OVER, AND THREE TESTS HERE STILL ASSUMED IT WAS NOT.
+#
+# `preflight_t90` only emits its per-target checks -- "first upcoming
+# inactives target", "the window is exactly the owner's T-90 -> T-10", "not
+# already covered" -- while an inactives window is still AHEAD. Once the last
+# one closes it emits a single FAIL[ALL_WINDOWS_CLOSED] instead, which is the
+# tool working: pre-flight is too late to change anything, and it says so.
+#
+# On 2026-09-15T00:05Z the last week-1 window (DEN@KC) closed. `by()` then
+# raised StopIteration in tests A, E and F, so three functions died on the
+# passage of time. Test A's own comment already says "THE PROPERTY, NOT THE
+# CALENDAR" -- it was written when the literal game id '2026_01_NE_SEA' went
+# stale the same way -- and the same fix simply had not been applied to the
+# rest of the module.
+#
+# These tests exercise preflight's DETECTION logic, which has nothing to
+# detect when there is no upcoming target. So they run in full when a window
+# is open and record blocked() with a named cause when none is, rather than
+# raising, or passing on nothing, or being re-pinned to a date that will go
+# stale again next week.
+def _has_upcoming(results):
+    return any('first upcoming' in lbl for lbl, _ in results)
+
+
+def _all_windows_closed(results):
+    return any(o.code == 'ALL_WINDOWS_CLOSED' for _, o in results)
+
+
+def _skip_closed(where):
+    blocked(f'{where}: no inactives window is still ahead, so preflight emits '
+            f'no per-target check to exercise',
+            'ALL_WINDOWS_CLOSED')
+
+
 def test_A_it_is_clear_right_now():
     print('\nA. the honest current state')
     r = run()
-    fails = [(l, o.code) for l, o in r if o.state is State.FAIL]
-    check('every check passes today', not fails, str(fails))
+    # ALL_WINDOWS_CLOSED is a terminal state, not a defect: it says the week's
+    # last window has passed. Every OTHER failure is still a failure.
+    fails = [(l, o.code) for l, o in r
+             if o.state is State.FAIL and o.code != 'ALL_WINDOWS_CLOSED']
+    check('no check fails for a reason other than the week being over',
+          not fails, str(fails))
     check('and there are enough of them to be worth running', len(r) >= 8,
           str(len(r)))
+    if not _has_upcoming(r):
+        check('preflight reports the week closed, by name',
+              _all_windows_closed(r),
+              str([(l, o.code) for l, o in r if o.state is State.FAIL]))
+        _skip_closed('A (the per-target checks)')
+        return
     # THE PROPERTY, NOT THE CALENDAR. This asserted the literal
     # '2026_01_NE_SEA', which was the first upcoming game on the day the test
     # was written and stopped being so the moment that game kicked off -- the
@@ -115,6 +166,9 @@ def test_D_it_notices_a_renamed_workflow():
 def test_E_it_notices_a_moved_window():
     print('\nE. the T-90 -> T-10 window cannot be widened unnoticed')
     import nfl.capture.schedule as S
+    if not _has_upcoming(run()):
+        _skip_closed('E (the window-width check)')
+        return
     original = S.WINDOWS['inactives']
     try:
         S.WINDOWS['inactives'] = (dt.timedelta(0), dt.timedelta(hours=6))
@@ -131,6 +185,9 @@ def test_F_it_would_notice_a_premature_cover():
     print('\nF. anything covered before the event is a failure, not a pass')
     import nfl.tools.preflight_t90 as PF
     import nfl.capture.coverage as C
+    if not _has_upcoming(run()):
+        _skip_closed('F (the premature-cover check)')
+        return
     from sportsplatform.governance.outcome import Outcome
     original = C.coverage
     try:

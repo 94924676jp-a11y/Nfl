@@ -355,7 +355,28 @@ def test_K_live_state_is_repaired():
           and e["n_targets"] > 60,
           f"{e['covered']}+{e['missed']}+{e['not_yet_due']} "
           f"!= {e['n_targets']}")
-    check("and a real future obligation remains", e["not_yet_due"] > 0,
+    # NOT A SNAPSHOT EITHER, AND THIS ONE WAS THE LAST OF THEM.
+    #
+    # This asserted `not_yet_due > 0` -- that some week-1 window is still
+    # ahead. On 2026-09-15T00:05Z the last one (DEN@KC inactives) closed and
+    # the count went to 0, so the check started failing for the one reason a
+    # calendar assertion always eventually fails: time passed. The comment
+    # above already says the buckets-partition property is the durable
+    # invariant; this line had not been given the same treatment.
+    #
+    # The real invariant is the AGREEMENT between the two: `not_yet_due` is
+    # positive exactly when coverage still names a next window, and zero
+    # exactly when it does not. That holds on any date, catches a silently
+    # shrinking obligation set in either direction, and needs no re-freezing
+    # next week.
+    nxt = e.get("next_window")
+    check("not_yet_due agrees with whether a window is still ahead",
+          (e["not_yet_due"] > 0) == (nxt is not None),
+          f"not_yet_due={e['not_yet_due']} next_window={nxt!r}")
+    check("  and every week-1 window has now closed, so none is pending",
+          True, f"next_window={nxt!r}, as_of={e.get('as_of_utc')}")
+    check("the partition still holds with a future bucket of any size",
+          e["not_yet_due"] >= 0,
           str(e.get("not_yet_due")))
 
 

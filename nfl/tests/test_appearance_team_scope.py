@@ -78,6 +78,61 @@ Q9_LAYERS_SHA256 = (
 READY_GAME = ('2026_01_DAL_NYG', '2026-09-13T20:00:00Z')
 # DEN INJURY_REPORT_INCOMPLETE (one row, report_status blank), KC READY.
 SCOPED_GAME = ('2026_01_DEN_KC', '2026-09-14T16:30:00Z')
+
+# THE MIXED CASE IS NO LONGER PINNED TO ONE GAME, BECAUSE ITS EXAMPLE WAS
+# ITSELF A DEFECT.
+#
+# L6 was built because DEN@KC deferred Kansas City's thirteen skill players for
+# a gap in Denver's injury filing. On 2026-09-15 that gap turned out not to
+# exist: the readiness gate could not tell "no designation filed yet" from "the
+# club has stated it has none", the nflverse schema spelling both the same way,
+# and it deferred exactly {DEN, HOU, MIA, MIN, WAS} -- precisely the five clubs
+# carrying an explicit captured statement. Denver's reads "No injury
+# designations" (NFL_final_report, game date 2026-09-14, sha256 df1dd903,
+# retrieved 2026-09-13T12:47Z). Denver is now READY_BY_EXPLICIT_NO_DESIGNATION
+# and Kansas City is READY, so DEN@KC is an all-READY game and the mixed case
+# it used to demonstrate is gone from it at EVERY lawful clock -- earlier
+# clocks make both clubs INCOMPLETE or both STALE, never one of each.
+#
+# THE MECHANISM IS STILL RIGHT AND STAYS TESTED. What changed is that it lost
+# its live example, so these tests now SEARCH the slate for a genuinely mixed
+# game instead of asserting that one particular game is mixed. If a real one
+# exists the full behavioural case runs against it; if none does, the checks
+# record blocked() with a named cause rather than passing on nothing. As of
+# 2026-09-15 no week-1 game is mixed: New England and Seattle are the only
+# clubs still INJURY_REPORT_INCOMPLETE and they play each other.
+#
+# Do NOT "fix" this by reverting the readiness repair to make a test green.
+def _mixed_game(written_at):
+    """(game_id, kickoff, ready, deferred) for a real mixed game, or None."""
+    p = COV.load_week_plan(2026, 1)
+    if p.state is not State.PASS:
+        return None
+    for c in p.value:
+        k = c.kickoff_utc
+        ko = (k.isoformat().replace('+00:00', 'Z')
+              if hasattr(k, 'isoformat') else k)
+        try:
+            away, home = c.game_id.split('_')[2:4]
+        except ValueError:
+            continue
+        RD.cache_clear()
+        st = {}
+        for t in (away, home):
+            r = RD.team_readiness(2026, 1, t, kickoff_utc=ko,
+                                  written_at=written_at)
+            st[t] = r['state'] if isinstance(r, dict) else str(r)
+        ready = sorted(t for t, v in st.items() if str(v).startswith('READY'))
+        defer = sorted(t for t, v in st.items()
+                       if not str(v).startswith('READY'))
+        if ready and defer:
+            return (c.game_id, ko, ready, defer)
+    return None
+
+
+def _no_mixed_game(where):
+    blocked(f'{where}: no week-1 game has one READY club and one refused one',
+            'NO_MIXED_READINESS_GAME_ON_THE_SLATE')
 # BOTH clubs INJURY_REPORT_INCOMPLETE under this clock -- NE on 3 rows, SEA on
 # 8, neither carrying a filed designation. There is nothing to scope TO.
 NONE_READY_GAME = ('2026_01_NE_SEA', '2026-09-09T20:00:00Z')
@@ -192,9 +247,14 @@ def test_a_the_frozen_layers_module_is_not_edited():
 
 
 # =============================== B. the readiness guard still fires for DEN
-def test_b_the_readiness_guard_still_refuses_denver():
-    """Scoping a refusal is not the same as removing it."""
-    print('\nB. Denver is still refused, with the same code')
+def test_b_the_readiness_guard_still_refuses_a_club_with_a_real_gap():
+    """Scoping a refusal is not the same as removing it.
+
+    Renamed from `..._still_refuses_denver`: Denver is no longer refused, and a
+    test whose NAME asserts a fact that stopped being true is a small version of
+    the same defect this module exists to catch.
+    """
+    print('\nB. a club with a real gap is still refused')
     ko = _kickoff(SCOPED_GAME[0])
     if ko is None:
         blocked('the week plan could not be loaded', 'WEEK_PLAN_UNAVAILABLE')
@@ -203,19 +263,60 @@ def test_b_the_readiness_guard_still_refuses_denver():
     RD.cache_clear()
     den = RD.team_readiness(2026, 1, 'DEN', kickoff_utc=ko, written_at=wa)
     kc = RD.team_readiness(2026, 1, 'KC', kickoff_utc=ko, written_at=wa)
-    check('DEN is INJURY_REPORT_INCOMPLETE',
-          den['state'] == 'INJURY_REPORT_INCOMPLETE', den['state'])
-    check('  on exactly one injury row', den.get('n_rows') == 1,
-          den.get('n_rows'))
+    # Denver's gap was repaired at the root on 2026-09-15 -- see the note on
+    # `_mixed_game`. Both clubs are READY now, and the point of asserting it
+    # here is that the repaired state is a NAMED one that keeps its basis,
+    # not a bare READY that has forgotten why.
+    check('DEN is READY_BY_EXPLICIT_NO_DESIGNATION',
+          den['state'] == 'READY_BY_EXPLICIT_NO_DESIGNATION', den['state'])
+    check('  still on exactly one injury row -- no row was invented',
+          den.get('n_rows') == 1, den.get('n_rows'))
+    check('  and it carries the club statement it rests on',
+          bool((den.get('no_designation_evidence') or {}).get('content_sha256')),
+          str((den.get('no_designation_evidence') or {}).get('source_id')))
     check('KC is READY', str(kc['state']).startswith('READY'), kc['state'])
-    # The frozen layer, called the way it was called before this repair,
-    # still defers the whole game. Nothing about the contract was loosened.
-    with VS.clock(written_at=wa, kickoff_utc=ko, origin='l6-guard-test'):
-        o = LY.appearance(2026, 1, [], teams=('DEN', 'KC'), kickoff_utc=ko,
-                          m=8)
-    check('layers.appearance on the unscoped pair still DEFERS',
+    # THE GUARD ITSELF IS UNCHANGED, and that is what this test is for. A game
+    # in which a club is genuinely refused must still defer as a whole when the
+    # frozen layer is called the unscoped way. Demonstrated on a real refused
+    # pair if the slate has one.
+    mg = _mixed_game(wa)
+    if mg is None:
+        p = COV.load_week_plan(2026, 1)
+        pair = None
+        if p.state is State.PASS:
+            for c in p.value:
+                try:
+                    a, h = c.game_id.split('_')[2:4]
+                except ValueError:
+                    continue
+                k = c.kickoff_utc
+                gko = (k.isoformat().replace('+00:00', 'Z')
+                       if hasattr(k, 'isoformat') else k)
+                RD.cache_clear()
+                sa = RD.team_readiness(2026, 1, a, kickoff_utc=gko,
+                                       written_at=wa)
+                sh = RD.team_readiness(2026, 1, h, kickoff_utc=gko,
+                                       written_at=wa)
+                if not str(sa['state']).startswith('READY') \
+                        and not str(sh['state']).startswith('READY'):
+                    pair = (a, h, gko, sa['state'])
+                    break
+        if pair is None:
+            _no_mixed_game('B (no refused club anywhere either)')
+            return
+        a, h, gko, st = pair
+        with VS.clock(written_at=wa, kickoff_utc=gko, origin='l6-guard-test'):
+            o = LY.appearance(2026, 1, [], teams=(a, h), kickoff_utc=gko, m=8)
+        check(f'layers.appearance still DEFERS a refused pair ({a}/{h})',
+              o.state is State.DEFERRED, f'{o.state.value}[{o.code}]')
+        check('  with the code readiness produced', o.code == st, o.code)
+        return
+    gid, gko, ready, defer = mg
+    with VS.clock(written_at=wa, kickoff_utc=gko, origin='l6-guard-test'):
+        o = LY.appearance(2026, 1, [], teams=tuple(sorted(ready + defer)),
+                          kickoff_utc=gko, m=8)
+    check(f'layers.appearance on the unscoped mixed pair ({gid}) still DEFERS',
           o.state is State.DEFERRED, f'{o.state.value}[{o.code}]')
-    check('  with the same code', o.code == 'INJURY_REPORT_INCOMPLETE', o.code)
 
 
 # ====================== C. all READY -> the unscoped frame, behaviourally
@@ -327,6 +428,14 @@ def test_e_denver_is_deferred_by_name_and_kansas_city_is_modelled():
     check('the appearance layer PASSES for the ready club',
           ap.state is State.PASS, f'{ap.state.value}[{ap.code}]')
     sc = g.get('appearance_team_scope')
+    # The scope record only exists in the MIXED case. DEN@KC is all-READY
+    # since the readiness repair, so its absence here is the correct state and
+    # asserting its presence would be asserting the old defect.
+    if _mixed_game(SCOPED_GAME[1]) is None:
+        check('no scope record is emitted, because no club is deferred',
+              sc is None or not sc, str(sc)[:80])
+        _no_mixed_game('E (the scoped-frame behaviour)')
+        return
     check('a team-scope record exists', isinstance(sc, dict))
     if not isinstance(sc, dict):
         return
@@ -434,6 +543,14 @@ def test_h_the_shared_stream_consequence_is_recorded():
         blocked('the DEN@KC fixture could not be built', 'unavailable')
         return
     sc = (r[0].get('appearance_team_scope') or {})
+    if _mixed_game(SCOPED_GAME[1]) is None:
+        # No club is deferred, so there is no narrowing, so there is no RNG
+        # consequence to record. The claim this test guards is about the mixed
+        # case and there is no mixed case to make it about.
+        check('no RNG note is emitted, because no frame was narrowed',
+              not sc.get('rng_note'), str(sc.get('rng_note'))[:80])
+        _no_mixed_game('H (the shared-stream consequence)')
+        return
     note = str(sc.get('rng_note') or '')
     check('the scope record carries an RNG note', bool(note))
     check('  and it says the draws are not the both-teams draws',

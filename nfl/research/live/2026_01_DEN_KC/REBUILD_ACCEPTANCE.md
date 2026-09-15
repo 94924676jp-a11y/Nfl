@@ -190,16 +190,16 @@ Targeted suites on the final tree, all PASS: `test_qb_room_v2` (14/58),
 (27/148), `test_vintage_selector` (24/131), `test_board_row_identity` (9/38),
 `test_quality_gates` (253 checks).
 
-**The full 116-module suite was NOT re-run against this final tree.** The last
-complete run was against the tree as it stood before the Denver, names and
-rush workstreams landed. That is a gap and it is stated rather than papered
-over; it must be run before any of this is promoted.
+**The full suite HAS now been run against the final tree** (post-kickoff,
+2026-09-15T01:43Z), closing the gap this section previously recorded as open.
+117 modules, 1,473 test functions, **8,384 checks, 6 failing** — and the six
+are exactly the Q9 governance escalation described below. It went 25 failing
+to 6; what the other 19 were, and what they cost, is section 12.
 
-`test_stat_contract` carries one failing check — a frozen count of sealed runs
-on disk, which my own new boards moved. The *defect* count it fences did not
-move, which is the check that matters: every board built after the counts
-repair contributes zero non-integer carry cells. The fence needs re-freezing
-with that rationale, and I did not re-freeze it under time pressure.
+`test_stat_contract` is now green: the fence was re-frozen at 104 runs /
+394,000 carry cells with the rationale recorded in the file. The number that
+matters did not move — **non-integer carry cells stayed at exactly 243,766**,
+and both new boards contribute zero, which is the counts repair working.
 
 `test_c1_denominator` (1 check) and `test_q9_live_feature_builder` (5) are
 left FAILING on purpose — see the integration record. R3's `depth_vintage`
@@ -212,3 +212,110 @@ ruling.
 
 No sportsbook data entered any of this work, no price was consulted, and no
 recommendation to stake money is made or implied.
+
+
+---
+
+## 12. After kickoff: what the full suite found, and one real defect
+
+The board above is historical now — kickoff was 2026-09-15T00:15Z. This
+section records what running the full suite against the final tree turned up,
+because three of the findings are about the rebuild itself.
+
+**25 failing checks, reduced to 6.** The six that remain are the Q9
+escalation in section 10. The other nineteen fell into four groups.
+
+### 12.1 Conservation was silently unchecked on both new boards
+
+The worst of them, and it was invisible. A1's carry partition now reaches the
+artifact as `rush_category` and `rush_player_pool`, both declaring
+`row_axis: "team"`. `conservation.team_rows` exempted `team_volume` **by name**
+and demanded `gsis_id` of everything else, so every board carrying the new
+layers returned `BLOCKED[CONSERVATION_ROW_AXIS_UNKNOWN]` — meaning the
+conservation invariant stopped being evaluated at the moment the new layers
+arrived, on the DEN@KC boards among others. A refusal is the safe failure and
+it is still a failure: nothing announced that the check had stopped running.
+Exactly the defect class this repository names as its most expensive — *a step
+that returned nothing was read as success.*
+
+Repaired: a team-axis layer joins by team, because its row ids **are** team
+codes. An axis the module does not understand is still refused by name. With
+conservation actually running, both boards resolve
+(`CONSERVATION_ROWS_RESOLVED`) and **exact closure holds at zero failures**.
+
+### 12.2 A pathological draw, registered as D19 rather than absorbed
+
+With the fence live, one new coherence finding appeared: board
+`d1e2727743c93990`, Bo Nix, draw 885 — **16 completions on 30 attempts for
+−32 passing yards.**
+
+Negative passing yardage is legitimate here and is deliberately not clipped.
+Sixteen completions averaging about −2 yards each is not. It is a pathological
+tail of the yards-per-completion draw, not the ordinary short-loss completion
+the no-clipping policy protects, and the honest move was **not** to widen the
+count fence around it. It is filed as **D19** in `OPEN_DEFECTS.json`,
+UNDIAGNOSED and UNREPAIRED, and the check is pinned at exactly 1 so a second
+one fails. **The fix is not to clip**: it is to find why the draw reaches −32
+at 16 completions, after which the count returns to 0 by construction.
+Tonight's final board `96954efc523bd7d3` carries no such cell.
+
+### 12.3 L6's scoping repair was built for a defect that did not exist
+
+Eight checks in `test_appearance_team_scope` failed. L6 exists because DEN@KC
+deferred Kansas City's thirteen skill players for a gap in Denver's injury
+filing. The readiness repair showed that gap was a misreading, so Denver is
+READY and **DEN@KC is no longer a mixed game at any lawful clock** — earlier
+clocks make both clubs INCOMPLETE or both STALE, never one of each.
+
+The mechanism is still right and still needed; it lost its live example. The
+tests now **search the slate** for a genuinely mixed game rather than asserting
+one particular game is mixed, and record `blocked()` with a named cause when
+none exists. As of today none does: New England and Seattle are the only clubs
+still `INJURY_REPORT_INCOMPLETE` and they play each other. The guard itself is
+still demonstrated on a real refused pair (NE/SEA defers whole). One test was
+renamed — `..._still_refuses_denver` asserted in its own name a fact that had
+stopped being true.
+
+### 12.4 Calendar assertions, and the miss
+
+Three checks failed because time passed: `test_preflight` and
+`test_discharge_identity` asserted that a week-1 inactives window still lay
+ahead. The last one closed at 00:05Z. `test_preflight` had already learned
+this lesson once — its own comment reads "THE PROPERTY, NOT THE CALENDAR" —
+and the fix had not been applied to the other three functions in the file, so
+they raised `StopIteration` on the passage of time. They are now clock-aware:
+full assertions when a window is open, `blocked()` with a named cause when not,
+and `not_yet_due` is checked for *agreement* with whether a next window exists
+rather than pinned to a number.
+
+**The DEN@KC inactives window closed unfilled**, and the obligation ledger now
+records it: covered 15, missed 48. **Zero capture attempts were made inside the
+window** — the executor is halted, and the last attempt of any kind was 17:39Z
+returning proxy 403. It is not backfilled. Bytes fetched now would be
+post-kickoff and could not have informed a pregame board; writing them in
+afterwards would convert a real miss into a fake capture.
+
+### 12.5 Corpus fences re-frozen, with every delta attributed
+
+Four fences count artifacts on disk and moved because two boards were added.
+Each was re-frozen with its measurement recorded in the file, and in every case
+the number that matters held:
+
+| fence | corpus | the defect count |
+|---|---|---|
+| `test_stat_contract` | 102→104 runs | non-integer carry cells **243,766 → 243,766** |
+| `test_draw_coherence` | 102→104 runs | every violation count **unchanged** |
+| `test_conservation` | 204→208 team-runs | **closure failures 0 → 0** |
+
+On conservation I predicted the breaching-game count would rise by one and
+**the fence rejected my re-freeze and printed the nine games**: DEN@KC was
+already breaching, so the new boards add breaching team-runs inside a game that
+was already breaching. The wrong prediction is left in the file next to the
+correction, because a re-freeze that quietly absorbs a bad guess is the exact
+failure the fence exists to catch.
+
+The new boards' contribution to the QB-rush containment breach is **1 violating
+cell per board in 1,000 draws**, against a corpus rate near 6 per breaching
+team-run — milder than the corpus, still a breach, still open, and still the
+same defect the product gate reports as `RUSH_ACCOUNTING_FAILURE` whose repair
+was written but never wired or verified and is therefore not enabled.

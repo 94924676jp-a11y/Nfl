@@ -523,12 +523,13 @@ def team_rows(manifest, players) -> Outcome:
     `manifest` is the parsed `player_draws_manifest.json`; `players` is
     `board.json['players']`. Returns {team: {layer: [rows], 'team_volume': i}}.
 
-    `team_volume` declares `row_axis == 'team'` and its row ids are the team
-    codes themselves; the player layers declare `row_axis == 'gsis_id'` and
-    are joined to a team through the board. A positional join across layers is
-    a defect this repository has already paid for, so the row axis is READ and
-    a layer that declares an axis this function does not understand is
-    refused rather than assumed.
+    A layer declaring `row_axis == 'team'` -- `team_volume`, and A1's
+    `rush_category` and `rush_player_pool` -- carries team codes as its row
+    ids and is matched directly. A layer declaring `row_axis == 'gsis_id'` is
+    joined to a team through the board. A positional join across layers is a
+    defect this repository has already paid for, so the row axis is READ, and
+    a layer declaring an axis this function does not understand is refused
+    rather than assumed.
     """
     lays = (manifest or {}).get('layers') or {}
     if not lays:
@@ -566,12 +567,37 @@ def team_rows(manifest, players) -> Outcome:
         for lay, spec in sorted(lays.items()):
             if lay == 'team_volume':
                 continue
-            if spec.get('row_axis') != 'gsis_id':
+            axis = spec.get('row_axis')
+            # A TEAM-AXIS LAYER JOINS BY TEAM. IT IS NOT AN UNKNOWN AXIS.
+            #
+            # This branch exempted `team_volume` BY NAME and then demanded
+            # `gsis_id` of everything else, so the first team-axis layer that
+            # was not called `team_volume` refused the whole board. A1's carry
+            # partition reaching the artifact as `rush_category` and
+            # `rush_player_pool` (both `row_axis: "team"`) did exactly that:
+            # every board carrying them returned
+            # BLOCKED[CONSERVATION_ROW_AXIS_UNKNOWN], which means CONSERVATION
+            # WENT UNCHECKED on them -- on the two DEN@KC boards built
+            # 2026-09-14/15 among others. A refusal is the safe failure and it
+            # is still a failure: the invariant stopped being tested at the
+            # moment new layers arrived, and nothing said so until the fence
+            # in test_conservation.py counted the boards it could not score.
+            #
+            # The axis is still READ, never assumed, and an axis this module
+            # does not understand is still refused by name below. What changes
+            # is that 'team' is now understood, because it is: the row ids ARE
+            # the team codes, exactly as they are for team_volume, so the join
+            # is an identity match and needs no player map.
+            if axis == 'team':
+                ids = spec.get('row_ids') or []
+                e[lay] = [i for i, code in enumerate(ids) if code == t]
+                continue
+            if axis != 'gsis_id':
                 return Outcome.blocked(
                     'CONSERVATION_ROW_AXIS_UNKNOWN',
-                    f'layer {lay!r} declares row_axis '
-                    f'{spec.get("row_axis")!r}, which this module does not '
-                    f'know how to join to a team.', cause=Cause.DATA)
+                    f'layer {lay!r} declares row_axis {axis!r}, which this '
+                    f'module does not know how to join to a team.',
+                    cause=Cause.DATA)
             ids = spec.get('row_ids') or []
             e[lay] = [i for i, g in enumerate(ids) if team_of.get(g) == t]
             unmapped += [g for g in ids if g not in team_of]
