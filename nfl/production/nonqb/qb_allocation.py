@@ -45,6 +45,7 @@ for _q in (str(_REPO), str(_REPO / 'nfl' / 'research' / 'qb3')):
         sys.path.insert(0, _q)
 
 from sportsplatform.governance.outcome import Cause, Outcome, State  # noqa: E402
+from nfl.production.nonqb import vintage_selector as VS  # noqa: E402
 
 SPEC_VERSION = 'qb3-dropback-allocation-candidate-1'
 GOVERNANCE = 'CANDIDATE -- evaluated on 2022-2024 development data, NOT promoted'
@@ -83,14 +84,106 @@ def cache_clear():
     _FIT.clear()
 
 
-def captured_depth_chart() -> Outcome:
-    """QB rank per team from the newest captured depth chart."""
-    fs = sorted(glob.glob(str(_REPO / 'nfl' / 'vintage' / DEPTH_GLOB)))
-    if not fs:
-        return Outcome.blocked('DEPTH_CHART_NOT_CAPTURED',
-                               'no depth-chart capture exists in nfl/vintage',
-                               cause=Cause.DATA)
-    p = fs[-1]
+def dt_max():
+    """A sentinel later than any real instant, for ordering unparseable bounds
+    last rather than crashing on them."""
+    import datetime as _dt
+    return _dt.datetime.max.replace(tzinfo=_dt.timezone.utc)
+
+
+def _depth_chart_vintages():
+    """(retrieved_at, path) for every depth-chart capture, oldest first.
+
+    The clock comes from the manifest, which is the only place it is recorded.
+    A blob with no manifest row is UNATTRIBUTABLE and is excluded rather than
+    guessed at -- an unplaceable capture cannot be shown lawful for any cut.
+    """
+    import json as _json
+    man = _REPO / 'nfl' / 'vintage_manifest.jsonl'
+    rows = []
+    if man.exists():
+        for line in man.read_text().splitlines():
+            if line.strip():
+                try:
+                    rows.append(_json.loads(line))
+                except ValueError:
+                    continue
+    out = []
+    for p in sorted(glob.glob(str(_REPO / 'nfl' / 'vintage' / DEPTH_GLOB))):
+        h = pathlib.Path(p).name.split('.')[1]
+        when = None
+        for r in rows:
+            if h in _json.dumps(r):
+                when = r.get('retrieved_at') or r.get('capture_id')
+                break
+        if when:
+            # PARSED, NOT STRING-COMPARED. The manifest carries BOTH shapes --
+            # `2026-09-14T17:39:41.517748Z` and the compact capture-id form
+            # `20260910T120717Z` -- and comparing them as strings is wrong in a
+            # way that looks like it works: '-' (0x2D) sorts before '0' (0x30),
+            # so EVERY compact stamp sorts after EVERY ISO one regardless of
+            # date. My first version of this function did exactly that and
+            # concluded that 0 of 7 captures were lawful for a 2026-09-11 cut
+            # when five of them were.
+            t = VS.parse_ts(when)
+            if t is not None:
+                out.append((t, str(when), p))
+    return sorted(out, key=lambda r: r[0])
+
+
+def captured_depth_chart(as_of=None) -> Outcome:
+    """QB rank per team from the newest depth chart LAWFUL AT `as_of`.
+
+    SELECTION IS BY CLOCK. IT USED TO BE BY CONTENT-HASH ORDER.
+
+    This read `sorted(glob(...))[-1]` and called it "the newest captured depth
+    chart". The filenames carry content hashes, so that is lexicographically
+    last by hash and bears no relation to time. On the seven captures in the
+    tree hash order and time order happen to agree; nothing makes them agree.
+    A capture hashing to `0abc...` taken tomorrow would sort FIRST and never be
+    selected; one hashing to `fff...` taken last week would be selected
+    forever.
+
+    The cost was real, not theoretical: a forecast written 2026-09-11 was
+    served a chart retrieved 2026-09-14 -- three days of future information --
+    while FIVE lawful captures for that cut sat unused (09-06, 09-07, 09-08 and
+    two on 09-10). `allocate` has carried a correct chronology guard for this
+    all along, but no caller passed it a clock until 2026-09-15, so it never
+    executed. The guard is the backstop; this is the cause.
+
+    `as_of=None` preserves the previous behaviour for callers that have no cut
+    -- it selects the newest by TIME rather than by hash, which is what the old
+    docstring always claimed was happening.
+    """
+    vintages = _depth_chart_vintages()
+    if not vintages:
+        # No manifest row for any blob: fall back to the raw listing so a
+        # missing manifest degrades to the old behaviour rather than to a
+        # refusal that hides a capture which does exist.
+        fs = sorted(glob.glob(str(_REPO / 'nfl' / 'vintage' / DEPTH_GLOB)))
+        if not fs:
+            return Outcome.blocked(
+                'DEPTH_CHART_NOT_CAPTURED',
+                'no depth-chart capture exists in nfl/vintage',
+                cause=Cause.DATA)
+        p = fs[-1]
+    else:
+        cut = VS.parse_ts(as_of) if as_of is not None else None
+        if as_of is not None and cut is None:
+            return Outcome.fail(
+                'DEPTH_CHART_CUT_UNPARSEABLE',
+                f'as_of={as_of!r} could not be parsed as an instant. '
+                f'Refusing rather than silently ignoring the cut.')
+        lawful = [r for r in vintages if cut is None or r[0] < cut]
+        if not lawful:
+            return Outcome.blocked(
+                'DEPTH_CHART_NO_LAWFUL_VINTAGE',
+                f'every depth-chart capture was retrieved at or after '
+                f'{as_of}; the oldest is {vintages[0][1]}. Refusing to serve '
+                f'a chart the forecast could not have seen.',
+                cause=Cause.DATA, as_of=str(as_of),
+                oldest_available=vintages[0][1])
+        p = lawful[-1][2]
     rows = list(csv.DictReader(gzip.open(p, 'rt')))
     qb = [r for r in rows if (r.get('pos_abb') or '').upper() == 'QB'
           and r.get('gsis_id')]
@@ -109,9 +202,30 @@ def captured_depth_chart() -> Outcome:
         if prev is None or rank < prev:
             out[r['team']][r['gsis_id']] = rank
     dts = sorted({r.get('dt') for r in qb if r.get('dt')})
+    # TWO DIFFERENT INSTANTS, PREVIOUSLY ONE NAME.
+    #
+    # `retrieved_at` here has always been the newest `dt` INSIDE the chart --
+    # the vendor's own publication stamp -- not the moment we fetched it. The
+    # manifest records the fetch. They differ (09-10T12:01 inside a blob
+    # fetched 09-10T12:07) and a reader comparing one against the other gets a
+    # mismatch that looks like a bug in the selector.
+    #
+    # The name is kept because the chronology guard reads it and because the
+    # VENDOR stamp is the right bound for leakage -- what matters is when the
+    # information existed, not when we happened to collect it. The fetch
+    # instant is published beside it under its own name so the two can never
+    # again be confused for each other.
+    _sel = None
+    for _t, _w, _path in _depth_chart_vintages():
+        if _path == p:
+            _sel = _w
+            break
     return Outcome.ok('DEPTH_CHART_OK', value=dict(out),
                       blob=pathlib.Path(p).name, n_teams=len(out),
-                      n_qb_rows=len(qb), retrieved_at=(dts[-1] if dts else None))
+                      n_qb_rows=len(qb), retrieved_at=(dts[-1] if dts else None),
+                      vendor_dt=(dts[-1] if dts else None),
+                      capture_retrieved_at=_sel,
+                      selected_as_of=str(as_of) if as_of is not None else None)
 
 
 def previous_primary_detail(season: int, week: int) -> dict:
@@ -470,7 +584,17 @@ def allocate(season, week, teams, qb_players, m=200, seed=20260908,
             f'no cell could be fitted on seasons before {season}',
             cause=Cause.DATA)
     par, _frame = f
-    dc = captured_depth_chart()
+    # THE CUT REACHES THE SELECTOR, not just the guard below.
+    #
+    # Previously the selector had no clock and the guard caught the result
+    # after the fact -- which turns a recoverable situation into a refusal
+    # whenever a lawful older capture exists. Passing the tighter of the two
+    # bounds lets the selector pick that capture, and leaves the guard as the
+    # backstop it should be rather than the only line of defence.
+    _bounds = [b for b in (written_at, kickoff_utc) if b]
+    _cut = min(_bounds, key=lambda b: (VS.parse_ts(b) or dt_max())) \
+        if _bounds else None
+    dc = captured_depth_chart(as_of=_cut)
     if dc.state is not State.PASS:
         return dc
     got = dc.evidence.get('retrieved_at')

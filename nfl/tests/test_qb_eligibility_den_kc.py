@@ -26,6 +26,7 @@ from, what the artifact records -- and none is about what any quarterback does.
 from __future__ import annotations
 
 import hashlib
+import ast
 import os
 import sys
 
@@ -70,6 +71,23 @@ def blocked(label, why):
     print(f'  BLOCKED {label} -- {why}')
 
 
+def _qb_compute_node():
+    """The `_candidate_qb_compute` AST node, from the whole module.
+
+    Parsing the file entire and selecting the node avoids slicing source text
+    and re-indenting it -- a nested function sliced out and dedented does not
+    reliably parse, and a check that cannot parse its subject is a check that
+    reports on nothing.
+    """
+    src = open(os.path.join(_ROOT, 'nfl/production/run_forecast.py'),
+               encoding='utf-8').read()
+    for n in ast.walk(ast.parse(src)):
+        if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)) \
+                and n.name == '_candidate_qb_compute':
+            return n
+    raise AssertionError('_candidate_qb_compute not found in run_forecast.py')
+
+
 def _qb_compute_source():
     src = open(os.path.join(_ROOT, 'nfl/production/run_forecast.py'),
                encoding='utf-8').read()
@@ -90,8 +108,36 @@ def test_the_qb_pool_is_filtered_under_the_same_flag_as_the_non_qb_pool():
           'RS.status_map(args.season, args.week, teams' in body
           and "observed_before=args.written_at" in body
           and "kickoff_utc=fx.get('kickoff_utc')" in body)
+    # PARSED, NOT GREPPED -- and this check has already been wrong once.
+    #
+    # It read `'except' not in body and 'or qbp' not in body`, a raw substring
+    # search over source text. On 2026-09-15 a COMMENT was added to this branch
+    # explaining that the depth_rank defect was "a bare `except Exception` that
+    # destroyed the evidence" -- and the word `except` inside that sentence
+    # failed the check. The prose documenting the trap was penalised by the
+    # check hunting for it.
+    #
+    # That is the `test_refbands` failure mode exactly: there, an invariant
+    # "no projection path reaches a reference band" was a text grep, and it
+    # caught a docstring WARNING readers off the bands, so the cheapest way to
+    # green it was to delete the warning. The fix there was to parse. Same fix
+    # here.
+    #
+    # What the invariant actually means: this branch must contain no exception
+    # handler that could swallow a refusal, and no `or`-fallback substituting
+    # the unfiltered pool. Both are code shapes, so both are read from the AST
+    # of the whole module -- slicing text and dedenting it does not reliably
+    # parse a nested function, which is the same class of brittleness again.
+    node = _qb_compute_node()
+    handlers = [n for n in ast.walk(node)
+                if isinstance(n, (ast.ExceptHandler, ast.Try))]
+    or_fallbacks = [
+        n for n in ast.walk(node)
+        if isinstance(n, ast.BoolOp) and isinstance(n.op, ast.Or)
+        and any(isinstance(v, ast.Name) and v.id == 'qbp' for v in n.values)]
     check('  it never falls back to the unfiltered list',
-          'except' not in body and 'or qbp' not in body)
+          not handlers and not or_fallbacks,
+          f'{len(handlers)} handler(s), {len(or_fallbacks)} or-fallback(s)')
     check('  a status refusal is returned, not swallowed',
           'return st' in body and 'return qpool' in body)
     check('  a team emptied by eligibility refuses by name',
