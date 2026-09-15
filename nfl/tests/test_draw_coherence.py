@@ -50,6 +50,7 @@ if _ROOT not in sys.path:
 
 from sportsplatform.governance.outcome import Outcome, State      # noqa: E402
 from nfl.production import draw_coherence as DC                   # noqa: E402
+from nfl.research import sealed_index as SI          # noqa: E402
 from nfl.production.nonqb import football_engine as FE            # noqa: E402
 from nfl.production.nonqb import shared_pass as SP                # noqa: E402
 from nfl.prospective import artifact as ART                       # noqa: E402
@@ -57,7 +58,24 @@ from nfl.prospective import artifact as ART                       # noqa: E402
 PASSED = FAILED = 0
 
 LIVE = pathlib.Path(_ROOT) / 'nfl' / 'research' / 'live'
-GLOB = '2026_01_*/*/*/player_draws.npz'
+# CORPUS DISCOVERY IS SHARED AND IS BY CONTENT.
+#
+# This module used to carry its own
+#     GLOB = '2026_01_*/*/*/player_draws.npz'
+# which hard-codes THREE levels below live/ and one file extension. Seventeen
+# board directories satisfy neither -- five 2026_01_SF_LA/pre_inactives_* at
+# depth 2 and gzipped, twelve REPLAY_C1/* at depth 2 as plain .npz -- so this
+# fence scanned 104 boards, called them "every sealed board", and was re-frozen
+# at that number. The twelve plain-.npz REPLAY_C1 directories are what rules
+# the extension out as the cause: depth was.
+#
+# `sealed_index.live_draw_files()` finds boards by content at any depth in
+# either encoding, minus namespaces excluded BY NAME in
+# `sealed_index.FENCE_EXCLUDED_NAMESPACES`. `test_sealed_corpus_census` asserts
+# this fence's corpus equals that set, so a future narrowing fails loudly
+# instead of silently shrinking the evidence base.
+def sealed_corpus():
+    return SI.live_draw_files()
 BASELINE = (pathlib.Path(_ROOT) / 'nfl' / 'research' / 'remediation'
             / 'WAVE0_BASELINE.json')
 
@@ -93,9 +111,26 @@ BASELINE = (pathlib.Path(_ROOT) / 'nfl' / 'research' / 'remediation'
 # and no new dropback-partition break. The ONE new coherence finding on these
 # boards is a negative passing-yard cell on a shared-passing-event run, which
 # is NOT absorbed here -- it is registered as D19 and pinned separately below.
+# CORPUS EXPANDED 2026-09-15 (repair 7): 104 -> 109 boards, 856,000 -> 896,000
+# QB cells. The five 2026_01_SF_LA/pre_inactives_* boards were always on disk
+# and were never scanned, because this fence's glob hard-coded a three-level
+# path shape. Corpus SIZE is not a defect and is updated here.
+#
+# THE VIOLATION BASELINES BELOW ARE DELIBERATELY NOT UPDATED. Scanning the five
+# newly visible boards raised them:
+#     qb_completions_within_attempts              5,278 -> 6,085
+#     qb_completions_and_interceptions_within_att 5,929 -> 6,827
+#     qb_passing_td_within_completions              731 ->   841
+#     qb_passing_td_within_attempts                  22 ->    24
+# Those ~1,800 cells are not new. They were made VISIBLE, and they are the
+# old credit function's impossible states on boards nobody was scanning.
+# Raising the baselines to absorb them would relabel a discovery as the status
+# quo. They stay, and these checks FAIL, until the board migration drives them
+# to zero -- which is the point: a fence whose baseline moves whenever it is
+# tripped is not a fence.
 EXPECTED_SEALED = {
-    'runs': 104,
-    'qb_cells': 856000,
+    'runs': 109,
+    'qb_cells': 896000,
     'qb_completions_within_attempts': 5278,
     'qb_passing_td_within_completions': 731,
     'qb_zero_completions_zero_passing_yards': 11616,
@@ -180,14 +215,17 @@ def check(label, ok, detail=''):
 
 
 def _runs():
-    return sorted(LIVE.glob(GLOB))
+    return sealed_corpus()
 
 
 def _load(npz):
     d = npz.parent
     man = json.load(open(d / 'player_draws_manifest.json'))
     board = json.load(open(d / 'board.json'))
-    z = np.load(npz)
+    # Through the shared loader: it handles the gzipped encoding the newly
+    # visible 2026_01_SF_LA/pre_inactives_* boards use, and passes
+    # allow_pickle, which a bare np.load(npz) does not.
+    z = SI.load_draws(d)
     arrays = {k.replace('__', '/', 1): z[k] for k in z.files}
     team_of = {p['gsis_id']: p['team'] for p in board['players']}
     rows = {}
@@ -549,7 +587,7 @@ def test_every_sealed_artifact_is_rescanned_against_the_frozen_baseline():
     """
     runs = _runs()
     if not check('sealed runs were found to scan', bool(runs),
-                 f'{LIVE}/{GLOB} matched nothing'):
+                 'sealed_corpus() matched nothing'):
         return
     tot, cells = {}, {}
     layers = {'qb': 0, 'receiving': 0, 'rushing': 0, 'team_volume': 0}
@@ -572,7 +610,7 @@ def test_every_sealed_artifact_is_rescanned_against_the_frozen_baseline():
     check(f'  {layers["qb"]} carry a QB layer, {layers["receiving"]} carry the '
           f'receiving layer -- the non-QB checks rest on a THIRD of the '
           f'frame, not on all of it',
-          layers['qb'] == 104 and layers['receiving'] == 36,
+          layers['qb'] == 109 and layers['receiving'] == 41,
           f'{layers}')
     check('  the QB scan covered the baseline cell count',
           cells.get('qb_completions_within_attempts') ==

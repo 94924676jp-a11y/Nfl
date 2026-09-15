@@ -212,6 +212,56 @@ def _game_from_path(d: pathlib.Path):
     return None
 
 
+LIVE_ROOT = _ROOT / 'nfl' / 'research' / 'live' if '_ROOT' in dir() else (
+    pathlib.Path(__file__).resolve().parents[2] / 'nfl' / 'research' / 'live')
+
+# Namespaces a corpus fence may legitimately skip, BY NAME and with a reason.
+# An exclusion listed here is a decision; one encoded accidentally in a glob's
+# path shape is a defect. See nfl/tests/test_sealed_corpus_census.py.
+FENCE_EXCLUDED_NAMESPACES = {
+    'REPLAY_C1': 'replay artifacts of other runs, not independent forecasts',
+}
+
+
+def live_draw_files(exclude=FENCE_EXCLUDED_NAMESPACES):
+    """Every sealed draw file under research/live -- ANY depth, EITHER encoding.
+
+    THE ONE ENTRY POINT A CORPUS FENCE SHOULD USE.
+
+    Three fences each carried their own `LIVE.glob('2026_01_*/*/*/
+    player_draws.npz')`. That shape hard-codes THREE levels below `live/` and a
+    single file extension, and 17 board directories satisfy neither: five
+    `2026_01_SF_LA/pre_inactives_*` boards sit two levels down and are gzipped,
+    and twelve `REPLAY_C1/*` sit two levels down as plain `.npz`. The fences
+    reported 104 boards, called it "every sealed board", and were re-frozen at
+    that number.
+
+    The twelve REPLAY_C1 directories are the proof that the file extension was
+    never the cause: they are `.npz` and were missed anyway. Depth was.
+
+    Returns files, not directories, because callers want `f.parent` for the run
+    and read the array out of `f` itself.
+    """
+    out = []
+    for pat in ('player_draws.npz', 'player_draws.npz.gz'):
+        for p in LIVE_ROOT.rglob(pat):
+            ns = p.relative_to(LIVE_ROOT).parts[0]
+            if ns in (exclude or ()):
+                continue
+            out.append(p)
+    return sorted(out)
+
+
+def game_id_of(draw_file):
+    """The game a sealed draw file belongs to, without assuming a depth.
+
+    `f.parent.parts[-3]` is the same hard-coded three-level assumption in
+    another costume: at depth 2 it reaches past the game directory entirely.
+    """
+    rel = pathlib.Path(draw_file).resolve().relative_to(LIVE_ROOT)
+    return rel.parts[0]
+
+
 def discover_all():
     """Every sealed forecast, across every namespace, keyed by directory."""
     out = []

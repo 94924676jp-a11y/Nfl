@@ -54,12 +54,30 @@ if _ROOT not in sys.path:
 
 from sportsplatform.governance.outcome import State                # noqa: E402
 from nfl.product import conservation as CN                         # noqa: E402
+from nfl.research import sealed_index as SI          # noqa: E402
 from nfl.production import draw_coherence as DC                    # noqa: E402
 
 PASSED = FAILED = 0
 
 LIVE = pathlib.Path(_ROOT) / 'nfl' / 'research' / 'live'
-GLOB = '2026_01_*/*/*/player_draws.npz'
+# CORPUS DISCOVERY IS SHARED AND IS BY CONTENT.
+#
+# This module used to carry its own
+#     GLOB = '2026_01_*/*/*/player_draws.npz'
+# which hard-codes THREE levels below live/ and one file extension. Seventeen
+# board directories satisfy neither -- five 2026_01_SF_LA/pre_inactives_* at
+# depth 2 and gzipped, twelve REPLAY_C1/* at depth 2 as plain .npz -- so this
+# fence scanned 104 boards, called them "every sealed board", and was re-frozen
+# at that number. The twelve plain-.npz REPLAY_C1 directories are what rules
+# the extension out as the cause: depth was.
+#
+# `sealed_index.live_draw_files()` finds boards by content at any depth in
+# either encoding, minus namespaces excluded BY NAME in
+# `sealed_index.FENCE_EXCLUDED_NAMESPACES`. `test_sealed_corpus_census` asserts
+# this fence's corpus equals that set, so a future narrowing fails loudly
+# instead of silently shrinking the evidence base.
+def sealed_corpus():
+    return SI.live_draw_files()
 TONIGHT = (LIVE / '2026_01_DEN_KC' / 'PRELIMINARY_PROVISIONAL_V1_CANDIDATE_R8'
            / 'f91342d6787a66a1')
 
@@ -138,14 +156,14 @@ def check(label, ok, detail=''):
 
 
 def _runs():
-    return sorted(LIVE.glob(GLOB))
+    return sealed_corpus()
 
 
 def _load(d):
     man = json.load(open(d / 'player_draws_manifest.json'))
     board = json.load(open(d / 'board.json'))
     art = json.load(open(d / 'forecast_artifact.json'))
-    z = np.load(d / 'player_draws.npz')
+    z = SI.load_draws(d)
     arrays = {k.replace('__', '/', 1): z[k].astype(float) for k in z.files}
     return man, board, art, arrays
 
@@ -661,7 +679,7 @@ def test_every_sealed_board_is_scanned_and_matches_the_frozen_baseline():
         ev = o.evidence
         n_team_runs += ev['n_teams']
         n_c3 += 1 if ev['regime'].get('C3') else 0
-        game = f.parent.parts[-3]
+        game = SI.game_id_of(f)
         for r in ev['records']:
             if r.get('residual') is None:
                 continue

@@ -59,6 +59,7 @@ if _ROOT not in sys.path:
 
 from sportsplatform.governance.outcome import State                # noqa: E402
 from nfl.production import stat_contract as SC                     # noqa: E402
+from nfl.research import sealed_index as SI          # noqa: E402
 
 csv.field_size_limit(10 ** 7)
 
@@ -68,7 +69,24 @@ PBP = sorted(glob.glob(os.path.join(_ROOT, 'nfl', 'research', 'postgame',
                                     'pbp_*.csv.gz')))
 PANEL = os.path.join(_ROOT, 'nfl', 'research', 'inputs', 'panel_p3.csv.gz')
 LIVE = pathlib.Path(_ROOT) / 'nfl' / 'research' / 'live'
-GLOB = '2026_01_*/*/*/player_draws.npz'
+# CORPUS DISCOVERY IS SHARED AND IS BY CONTENT.
+#
+# This module used to carry its own
+#     GLOB = '2026_01_*/*/*/player_draws.npz'
+# which hard-codes THREE levels below live/ and one file extension. Seventeen
+# board directories satisfy neither -- five 2026_01_SF_LA/pre_inactives_* at
+# depth 2 and gzipped, twelve REPLAY_C1/* at depth 2 as plain .npz -- so this
+# fence scanned 104 boards, called them "every sealed board", and was re-frozen
+# at that number. The twelve plain-.npz REPLAY_C1 directories are what rules
+# the extension out as the cause: depth was.
+#
+# `sealed_index.live_draw_files()` finds boards by content at any depth in
+# either encoding, minus namespaces excluded BY NAME in
+# `sealed_index.FENCE_EXCLUDED_NAMESPACES`. `test_sealed_corpus_census` asserts
+# this fence's corpus equals that set, so a future narrowing fails loudly
+# instead of silently shrinking the evidence base.
+def sealed_corpus():
+    return SI.live_draw_files()
 
 # MEASURED 2026-09-14 on the six pbp corpora in this repository, REG only,
 # two-point attempts and no_play rows excluded, posteam non-empty. A fence,
@@ -103,7 +121,18 @@ CORPUS = {'plays': 211755, 'att_raw': 97696, 'att': 90748, 'sack': 6601,
 # If a future re-freeze has to raise `carry_non_integer_cells`, that is NOT
 # bookkeeping. It means something started emitting fractional carries again and
 # the number to change is in the engine, not here.
-SEALED_COUNTS = {'runs': 104, 'carry_cells': 394000,
+# CORPUS EXPANDED 2026-09-15 (repair 7): 104 -> 109 runs, 394,000 -> 433,000
+# carry cells, for the reason recorded in test_draw_coherence. Corpus size is
+# updated; the DEFECT count is not.
+#
+# Non-integer carry cells measured over the full corpus: 271,691, against the
+# 243,766 this fence held. The 27,925 difference is entirely the five boards
+# that were never scanned -- all pre-repair, so all fractional. Absorbing them
+# into the baseline would convert 27,925 newly discovered defective cells into
+# "the expected number". The baseline stays at what the counts repair actually
+# achieved on the boards built after it, and this check FAILS until the
+# unmigrated boards are dealt with.
+SEALED_COUNTS = {'runs': 109, 'carry_cells': 433000,
                  'carry_non_integer_cells': 243766,
                  'qb_identity_cells': 844000,
                  'qb_identity_violating_cells': 0}
@@ -299,14 +328,14 @@ def test_c_dropback_identity_holds_and_bites():
 
 
 def test_c_the_identity_holds_on_every_sealed_quarterback_cell():
-    runs = sorted(LIVE.glob(GLOB))
+    runs = sealed_corpus()
     if not runs:
         blocked('no sealed runs', 'the identity has nothing to hold over')
         return
     cells = viol = 0
     worst = 0.0
     for p in runs:
-        z = np.load(p, allow_pickle=True)
+        z = SI.load_draws(p.parent)
         if not {'qb__db', 'qb__att', 'qb__sacks', 'qb__scr'} <= set(z.files):
             continue
         o = SC.assert_dropback_identity(z['qb__db'], z['qb__att'],
@@ -476,13 +505,13 @@ def test_e_integerise_level_declares_itself_and_counts_the_moves():
 
 # ------------------------------------------------------------ the sealed fence
 def test_f_the_sealed_carry_defect_is_fenced_at_the_size_it_was_measured():
-    runs = sorted(LIVE.glob(GLOB))
+    runs = sealed_corpus()
     if not runs:
         blocked('no sealed runs', 'the defect has nothing to be fenced on')
         return
     cells = frac = 0
     for p in runs:
-        z = np.load(p, allow_pickle=True)
+        z = SI.load_draws(p.parent)
         if 'rushing__carries' not in z.files:
             continue
         a = np.asarray(z['rushing__carries'], float)
@@ -497,7 +526,7 @@ def test_f_the_sealed_carry_defect_is_fenced_at_the_size_it_was_measured():
           f'fenced at its measured size',
           frac == SEALED_COUNTS['carry_non_integer_cells'], f'got {frac}')
     # AND THE SAME CHECK, THROUGH THE CONTRACT, MUST REFUSE THEM.
-    z = np.load(runs[0], allow_pickle=True)
+    z = SI.load_draws(runs[0].parent)
     o = SC.assert_counts_are_counts({'rushing/carries':
                                      np.asarray(z['rushing__carries'], float)})
     check('  the contract refuses a sealed carry matrix from before the '
