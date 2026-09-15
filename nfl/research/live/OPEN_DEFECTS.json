@@ -395,7 +395,32 @@
       "status": "STATISTIC BUILT AND PROVEN; NOT WIRED. Every call site is inside a sealed candidate, so none of them may be edited in place.",
       "why_not_wired_and_how_that_was_learned": "I wired all four research sites first and the project's own freeze test caught it, which is the system working exactly as designed. test_p6_false_greens reported FREEZE_NO_LONGER_DESCRIBES_THE_CANDIDATE for nfl.research.q9.hurdle (recorded bb51133641338547, source became 6517108f7536bd99) and nfl.research.q9b.family (recorded 5b411b4f00e28e6f, became 47acf78faebd0fee). Auditing the rest of the record then showed nfl.research.q6.forward_chain is sealed too, at c7dab79ba2ac751a in nfl/prospective/q9shadow/Q9_PROSPECTIVE_CANDIDATE.json, and my edit had moved it to 7cbfb2bacbad8bf9. All four edits were REVERTED and all seven module hashes in that record verify again. THE LESSON, WHICH IS NOT A DETAIL: a freeze is over the SOURCE FILE, not over behaviour. I had reasoned that a diagnostic-only change consumes no draw and cannot move a projection -- which is true, and irrelevant. I even wrote 'this run reproduces the frozen one exactly' into a comment. The draws would have been identical and the candidate identity would still have been destroyed. 'It does not change the numbers' is not a licence to edit sealed code.",
       "what_exists_and_is_proven": "nfl/research/allocation_residual.py, allocation_residual/1.0.0, standalone and depended on by nothing sealed. Proven in test_p6_false_greens P6-FG-2 against the same seeded violations that expose the tautology: a correct allocation scores inside its own null, one player given every unit scores 87.6, a player deleted and his mass moved scores 21.9, against a null whose max over 300 seeds is 3.71. The honest limit is asserted too -- a WRONG intent, faithfully dealt, scores 0.0, because reconciliation is not validation.",
-      "what_it_would_take": "A NEW CANDIDATE IDENTITY, per the standing ruling: coefficient- or closure-changing work never edits a frozen arm. A successor module importing the frozen allocator and re-reporting, registered as its own candidate, with fresh dry-run seals -- and the old artifacts SUPERSEDED rather than overwritten, on the Q7_PANEL_SUPERSESSION.json precedent. That is real work and it is NOT started. Do not read this defect as one commit from closed."
+      "what_it_would_take": "A NEW CANDIDATE IDENTITY, per the standing ruling: coefficient- or closure-changing work never edits a frozen arm. A successor module importing the frozen allocator and re-reporting, registered as its own candidate, with fresh dry-run seals -- and the old artifacts SUPERSEDED rather than overwritten, on the Q7_PANEL_SUPERSESSION.json precedent. That is real work and it is NOT started. Do not read this defect as one commit from closed.",
+      "historical_column_status": {
+        "column": "recon_error (q6, q9b) / max_reconciliation_error (q9) / max_absolute_reconciliation_error (q9shadow)",
+        "status": "INVALIDATED_NON_INFORMATIVE_AS_AN_ALLOCATION_CHECK",
+        "rows_affected": 385446,
+        "value_on_every_row": 0.0,
+        "preserved": true,
+        "why_preserved": "The column and its values stay in every published artifact, unaltered, so those artifacts remain byte-reproducible and their seals keep verifying. INVALIDATED marks how the number may be READ, not whether it may exist.",
+        "may_not_be_read_as": "evidence that the allocator distributes units correctly; a validity check on any candidate; grounds for a summary key named `exact`.",
+        "may_still_be_read_as": "A CONSERVATION CHECK, and a correct one. This corrects the framing D21 was first written with. Measured on seeded defects: a duplication that CREATES units inflates the total, which |sum - n| catches (7.0) and the new standardised residual is BLIND to (1.83, inside its own null of 3.71). A theft that preserves the total is the reverse -- invisible to |sum - n| (0.0), obvious to the residual (21.9). NEITHER STATISTIC DOMINATES. They answer different questions: \"were units created or destroyed\" and \"did they go where they were meant to\". The successor must report BOTH; replacing one with the other would trade one blind spot for another. Asserted in both directions in test_p6_false_greens P6-FG-2 so the pairing cannot be dropped on the belief that either covers the other."
+      },
+      "successor_design": {
+        "new_metric_name": "alloc_residual_z",
+        "never_reuses": "the recon_error name or its semantics",
+        "reports_alongside": "the conservation check, retained under its own name",
+        "module": "nfl/research/allocation_residual.py (allocation_residual/1.0.0)",
+        "statistic": "max over players of |mean dealt - mean intended| / se, where se is the multinomial's own standard error -- derived, not chosen, so no fitted constant. Null behaviour computed and reported beside it rather than assumed.",
+        "required_tests_status": {
+          "intact allocation inside the expected null region": "PASS",
+          "seeded ownership theft fires": "PASS (87.6 and 21.9 vs null max 3.71)",
+          "seeded dropped mass fires": "PASS",
+          "seeded duplicated ownership fires": "PARTIAL AND REPORTED AS SUCH. The residual is BLIND to a duplication that inflates the total; the retained conservation check catches it. The pair covers it, neither member alone does, and the test asserts exactly that rather than claiming the residual handles it.",
+          "frozen old candidate artifacts still reproduce": "PASS. All seven module hashes in Q9_PROSPECTIVE_CANDIDATE.json verify; nothing frozen was touched."
+        },
+        "not_yet_built": "The successor CANDIDATE IDENTITY itself. No new module imports the frozen allocator and re-reports, no new call site emits alloc_residual_z, and no dry-run seal has been written for it. D21 stays repaired=False."
+      }
     },
     {
       "id": "D22",

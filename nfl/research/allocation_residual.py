@@ -45,6 +45,32 @@ seeded violations above give 87.6 (all to one player) and 21.9 (a player
 dropped). The separation is roughly an order of magnitude and does not rest on
 a cutoff: nothing here thresholds, it reports.
 
+THE TWO STATISTICS ARE COMPLEMENTARY AND NEITHER DOMINATES.
+
+This was discovered by testing DUPLICATED ownership, and it corrects the framing
+this module was first written with ("replace the old one"). Measured, D=64,
+5 players, budget 30, seed 20260915, null max 3.71:
+
+    seeded defect                          old |sum-n|      new z
+    ------------------------------------   -----------      -----
+    intact                                      0.0          1.83
+    one player given every unit                 0.0         87.64
+    p1's units MOVED to p2 (total kept)         0.0         21.91
+    p2 given a COPY of p1's units               7.0          1.83   <-- new is BLIND
+
+The last row is the point. A duplication that CREATES units inflates the total,
+which the old statistic sees by construction and this one cannot: if every
+player's mean still matches his intent, a copy that happens to land on a player
+whose intent already matched leaves every residual unchanged. Conversely a theft
+that preserves the total is invisible to the old statistic and obvious to this
+one.
+
+So the old statistic is not merely inert -- it is a CONSERVATION check, and it
+is a correct one. What was wrong was reading it as a check on the ALLOCATION.
+Report both: `|sum - n|` answers "were units created or destroyed", this answers
+"did they go where they were meant to". Neither is the other's replacement, and
+dropping either leaves a blind spot.
+
 WHAT IT STILL CANNOT SEE, stated so nobody reads it as more than it is:
 
   * It scores the allocation against the intent it was GIVEN. If `P` itself is
@@ -53,6 +79,8 @@ WHAT IT STILL CANNOT SEE, stated so nobody reads it as more than it is:
   * It is a mean over draws, so a correct mean with a wrong spread passes.
   * `se_j` is zero when `P[d, j]` is 0 or 1 for every draw. A discrepancy there
     is unbounded rather than large, and is reported as `inf`, never as 0.
+  * A duplication that inflates the total, per the table above. Pair it with the
+    conservation check; do not use this one alone.
 """
 import numpy as np
 

@@ -1,0 +1,337 @@
+{
+  "spec": "team_volume_drift/1.0.0",
+  "seed": 20260915,
+  "eval_seasons": [
+    2023,
+    2024,
+    2025
+  ],
+  "excluded_seasons": {
+    "2022": "no strictly-earlier estimator selection exists; scoring it would select on the data being scored"
+  },
+  "n_panel_rows": 3230,
+  "clustering": "block bootstrap over team-season blocks",
+  "estimator_source": "team_volume_v1.selected(), READ from volume_results.json and never re-chosen",
+  "metrics": {
+    "team_off_snaps": {
+      "estimator": "league_mean",
+      "selected_on_season": 2022,
+      "n": 1632,
+      "n_team_season_blocks": 96,
+      "bias_pred_minus_actual": 0.9964,
+      "bias_blocked_se": 0.2658,
+      "bias_blocked_ci95": [
+        0.4867,
+        1.5109
+      ],
+      "bias_excludes_zero": true,
+      "mae": 7.0931,
+      "rmse": 8.9322,
+      "sd_actual": 8.8685,
+      "sd_pred": 1.1046,
+      "by_season": {
+        "2023": {
+          "n": 544,
+          "bias": 0.504,
+          "mae": 6.9832,
+          "rmse": 8.7249
+        },
+        "2024": {
+          "n": 544,
+          "bias": 0.7501,
+          "mae": 7.0628,
+          "rmse": 8.7696
+        },
+        "2025": {
+          "n": 544,
+          "bias": 1.7352,
+          "mae": 7.2333,
+          "rmse": 9.2912
+        }
+      },
+      "week1": {
+        "n": 96,
+        "bias": 1.4953,
+        "bias_blocked_se": 0.9151,
+        "bias_blocked_ci95": [
+          -0.3349,
+          3.2502
+        ],
+        "bias_excludes_zero": false,
+        "mae": 7.2373,
+        "rmse": 8.8958
+      },
+      "week2plus": {
+        "n": 1536,
+        "bias": 0.9652,
+        "bias_blocked_se": 0.2671,
+        "bias_blocked_ci95": [
+          0.4394,
+          1.499
+        ],
+        "bias_excludes_zero": true,
+        "mae": 7.0841,
+        "rmse": 8.9345
+      },
+      "sd_ratio_pred_over_actual": 0.1246,
+      "pearson_r": 0.0526,
+      "calibration_slope": 0.4223
+    },
+    "team_dropbacks_part": {
+      "estimator": "coach_prior",
+      "selected_on_season": 2022,
+      "n": 1632,
+      "n_team_season_blocks": 96,
+      "bias_pred_minus_actual": 0.6046,
+      "bias_blocked_se": 0.2965,
+      "bias_blocked_ci95": [
+        0.0242,
+        1.1797
+      ],
+      "bias_excludes_zero": true,
+      "mae": 6.5942,
+      "rmse": 8.2525,
+      "sd_actual": 8.1748,
+      "sd_pred": 2.4854,
+      "by_season": {
+        "2023": {
+          "n": 544,
+          "bias": -0.1574,
+          "mae": 6.3133,
+          "rmse": 7.883
+        },
+        "2024": {
+          "n": 544,
+          "bias": 0.8564,
+          "mae": 6.7323,
+          "rmse": 8.544
+        },
+        "2025": {
+          "n": 544,
+          "bias": 1.1148,
+          "mae": 6.7371,
+          "rmse": 8.3169
+        }
+      },
+      "week1": {
+        "n": 96,
+        "bias": 0.7655,
+        "bias_blocked_se": 0.9286,
+        "bias_blocked_ci95": [
+          -1.1127,
+          2.4896
+        ],
+        "bias_excludes_zero": false,
+        "mae": 7.4163,
+        "rmse": 9.1443
+      },
+      "week2plus": {
+        "n": 1536,
+        "bias": 0.5945,
+        "bias_blocked_se": 0.2983,
+        "bias_blocked_ci95": [
+          0.0185,
+          1.178
+        ],
+        "bias_excludes_zero": true,
+        "mae": 6.5429,
+        "rmse": 8.1936
+      },
+      "sd_ratio_pred_over_actual": 0.304,
+      "pearson_r": 0.1286,
+      "calibration_slope": 0.4229
+    },
+    "team_targets": {
+      "estimator": "coach_prior",
+      "selected_on_season": 2022,
+      "n": 1632,
+      "n_team_season_blocks": 96,
+      "bias_pred_minus_actual": 0.2973,
+      "bias_blocked_se": 0.1807,
+      "bias_blocked_ci95": [
+        -0.0581,
+        0.6675
+      ],
+      "bias_excludes_zero": false,
+      "mae": 5.9437,
+      "rmse": 7.4495,
+      "sd_actual": 7.4787,
+      "sd_pred": 3.4768,
+      "by_season": {
+        "2023": {
+          "n": 544,
+          "bias": 0.3982,
+          "mae": 5.8402,
+          "rmse": 7.2771
+        },
+        "2024": {
+          "n": 544,
+          "bias": -0.1003,
+          "mae": 6.0365,
+          "rmse": 7.6314
+        },
+        "2025": {
+          "n": 544,
+          "bias": 0.594,
+          "mae": 5.9544,
+          "rmse": 7.4358
+        }
+      },
+      "week1": {
+        "n": 96,
+        "bias": 0.9386,
+        "bias_blocked_se": 0.8012,
+        "bias_blocked_ci95": [
+          -0.6932,
+          2.4562
+        ],
+        "bias_excludes_zero": false,
+        "mae": 6.1388,
+        "rmse": 7.8694
+      },
+      "week2plus": {
+        "n": 1536,
+        "bias": 0.2572,
+        "bias_blocked_se": 0.1895,
+        "bias_blocked_ci95": [
+          -0.1144,
+          0.6406
+        ],
+        "bias_excludes_zero": false,
+        "mae": 5.9315,
+        "rmse": 7.4225
+      },
+      "sd_ratio_pred_over_actual": 0.4649,
+      "pearson_r": 0.2419,
+      "calibration_slope": 0.5203
+    },
+    "team_carries": {
+      "estimator": "coach_prior",
+      "selected_on_season": 2022,
+      "n": 1632,
+      "n_team_season_blocks": 96,
+      "bias_pred_minus_actual": 0.2628,
+      "bias_blocked_se": 0.2547,
+      "bias_blocked_ci95": [
+        -0.2412,
+        0.7588
+      ],
+      "bias_excludes_zero": false,
+      "mae": 5.9817,
+      "rmse": 7.3858,
+      "sd_actual": 7.4658,
+      "sd_pred": 2.3055,
+      "by_season": {
+        "2023": {
+          "n": 544,
+          "bias": 0.3883,
+          "mae": 5.9942,
+          "rmse": 7.4053
+        },
+        "2024": {
+          "n": 544,
+          "bias": 0.0747,
+          "mae": 6.0846,
+          "rmse": 7.3826
+        },
+        "2025": {
+          "n": 544,
+          "bias": 0.3255,
+          "mae": 5.8664,
+          "rmse": 7.3694
+        }
+      },
+      "week1": {
+        "n": 96,
+        "bias": 0.2898,
+        "bias_blocked_se": 0.6952,
+        "bias_blocked_ci95": [
+          -1.0839,
+          1.6096
+        ],
+        "bias_excludes_zero": false,
+        "mae": 5.2498,
+        "rmse": 6.5588
+      },
+      "week2plus": {
+        "n": 1536,
+        "bias": 0.2611,
+        "bias_blocked_se": 0.2623,
+        "bias_blocked_ci95": [
+          -0.2551,
+          0.7712
+        ],
+        "bias_excludes_zero": false,
+        "mae": 6.0275,
+        "rmse": 7.4345
+      },
+      "sd_ratio_pred_over_actual": 0.3088,
+      "pearson_r": 0.1899,
+      "calibration_slope": 0.6151
+    },
+    "team_rz_carries": {
+      "estimator": "coach_prior",
+      "selected_on_season": 2022,
+      "n": 1524,
+      "n_team_season_blocks": 96,
+      "bias_pred_minus_actual": -0.0371,
+      "bias_blocked_se": 0.11,
+      "bias_blocked_ci95": [
+        -0.2541,
+        0.1762
+      ],
+      "bias_excludes_zero": false,
+      "mae": 2.4405,
+      "rmse": 3.1001,
+      "sd_actual": 3.0898,
+      "sd_pred": 0.4115,
+      "by_season": {
+        "2023": {
+          "n": 506,
+          "bias": -0.0056,
+          "mae": 2.4912,
+          "rmse": 3.1479
+        },
+        "2024": {
+          "n": 509,
+          "bias": -0.0691,
+          "mae": 2.4368,
+          "rmse": 3.0703
+        },
+        "2025": {
+          "n": 509,
+          "bias": -0.0365,
+          "mae": 2.3938,
+          "rmse": 3.082
+        }
+      },
+      "week1": {
+        "n": 93,
+        "bias": 0.0904,
+        "bias_blocked_se": 0.319,
+        "bias_blocked_ci95": [
+          -0.5419,
+          0.6961
+        ],
+        "bias_excludes_zero": false,
+        "mae": 2.4879,
+        "rmse": 3.0533
+      },
+      "week2plus": {
+        "n": 1431,
+        "bias": -0.0454,
+        "bias_blocked_se": 0.1099,
+        "bias_blocked_ci95": [
+          -0.2619,
+          0.1705
+        ],
+        "bias_excludes_zero": false,
+        "mae": 2.4374,
+        "rmse": 3.1032
+      },
+      "sd_ratio_pred_over_actual": 0.1332,
+      "pearson_r": 0.0395,
+      "calibration_slope": 0.2966
+    }
+  }
+}

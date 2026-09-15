@@ -260,6 +260,26 @@ def test_fg2_the_reconciliation_error_can_detect_a_wrong_allocation():
     check('  and the separation is an order of magnitude, not a hair',
           min(z_one, z_drop) > 5 * null['max'],
           f'one={z_one:.2f} drop={z_drop:.2f} null_max={null["max"]:.2f}')
+    # DUPLICATED OWNERSHIP, AND IT IS THE STATISTIC'S OWN BLIND SPOT.
+    # p2 is given a COPY of p1's units while p1 keeps his. That CREATES units,
+    # so the total inflates -- which the OLD statistic sees by construction and
+    # this one does not, because every player's mean still matches his intent.
+    # Asserted in both directions so neither statistic can be dropped on the
+    # belief that the other covers it: they are complementary, not successive.
+    dup = T.copy()
+    dup[:, 2] = dup[:, 1]
+    check('  a duplication that CREATES units is caught by the conservation '
+          'check', _recon(dup, budget) > 0, str(_recon(dup, budget)))
+    check('  and is INVISIBLE to the residual, which is its blind spot',
+          AR.allocation_residual_z(dup, P, budget) <= null['max'],
+          f'z={AR.allocation_residual_z(dup, P, budget):.4f} -- if this ever '
+          f'exceeds the null the blind spot closed and the docstring is stale')
+    check('  so neither statistic may be dropped in favour of the other',
+          _recon(drop, budget) == 0.0
+          and AR.allocation_residual_z(drop, P, budget) > null['max'],
+          'theft is invisible to conservation and obvious to the residual; '
+          'duplication is the reverse')
+
     # THE HONEST LIMIT, ASSERTED SO IT CANNOT BE FORGOTTEN. The replacement
     # scores the deal against the intent it was HANDED. Wrong intent, faithfully
     # dealt, reads clean -- reconciliation is not validation.
