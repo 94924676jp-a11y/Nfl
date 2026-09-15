@@ -307,7 +307,16 @@ def test_i_parity_is_bit_for_bit_when_it_is_run():
           and 'produces no artifact' in p['test_only_note'])
     check('more than one game was tested, so the parity is not one draw',
           p['n_games_tested'] > 1, str(p['n_games_tested']))
-    check('  and the reconciliation error is exactly zero on every game',
+    # THIS CHECK IS INERT AND IS KEPT LABELLED RATHER THAN DELETED. D21.
+    # The value comes from nfl/prospective/q9shadow/shadow.py:282, which is
+    # `|multinomial(n, p).sum() - n|` -- zero by numpy's own contract. So this
+    # asserts the library's documentation, not the allocator, and it reads as
+    # "the allocation is correct" while being incapable of saying otherwise.
+    # The shadow is SEALED PROSPECTIVE code and its refusal behaviour is not
+    # changed here; see D21 for the site census and why this one is deferred
+    # rather than repaired. What is fixed is the label.
+    check('  and the INERT reconciliation statistic is zero, which it cannot '
+          'fail to be -- see D21',
           all(g['max_reconciliation_error'] == 0.0 for g in p['games']),
           str(sorted({g['max_reconciliation_error'] for g in p['games']})))
     check('  and every game reconciled with the research harness',
@@ -346,7 +355,12 @@ def test_i2_the_parity_artifact_agrees_with_the_run():
     check('the record and the run agree on the budget estimator',
           a['budget_estimator'] == p['budget_estimator'])
     n = min(a['n_games_tested'], p['n_games_tested'])
-    check('  and on the per-game reconciliation, game for game',
+    # Determinism over an inert quantity is still determinism -- two runs of a
+    # constant agree -- so this proves rather less than its name suggests. Kept
+    # because the SHAPE of the comparison is what the freeze record needs, and
+    # labelled because the quantity compared measures nothing. D21.
+    check('  and on the per-game reconciliation statistic (inert; see D21), '
+          'game for game',
           [g['max_reconciliation_error'] for g in a['games'][:n]]
           == [g['max_reconciliation_error'] for g in p['games'][:n]],
           f'compared {n} game(s)')

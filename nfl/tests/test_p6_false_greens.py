@@ -91,6 +91,8 @@ _ROOT = pathlib.Path(__file__).resolve().parents[2]
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
+from nfl.research import allocation_residual as AR                 # noqa: E402
+
 PASSED = FAILED = BLOCKED = 0
 LIVE = _ROOT / 'nfl' / 'research' / 'live'
 
@@ -227,14 +229,48 @@ def test_fg2_the_reconciliation_error_can_detect_a_wrong_allocation():
     wrong_budget_scalar = budget_scalar * 3
     wb = np.array([rng.multinomial(wrong_budget_scalar, P[d])
                    for d in range(n_draws)])
-    check('a maximally concentrated allocation is distinguishable',
-          _recon(one, budget) > 0,
-          f'TAUTOLOGY: recon_error={_recon(one, budget)} on an allocation that '
-          f'gives one player every unit')
-    check('a silently dropped player is distinguishable',
-          _recon(drop, budget) > 0,
-          f'TAUTOLOGY: recon_error={_recon(drop, budget)} with a player zeroed '
-          f'and his mass moved')
+    # THE TAUTOLOGY, KEPT AND INVERTED. These two assertions used to read
+    # `_recon(...) > 0` and FAILED, which is how the defect was reported. The
+    # statistic is now replaced rather than patched, so what must be preserved
+    # here is the DEMONSTRATION that the old one was inert -- if either of
+    # these ever stops being 0.0, the transcription in `_recon` has drifted
+    # from what q9b/family.py:282 actually published and this file is lying
+    # about the history it exists to record.
+    check('HISTORY: the old statistic could not see one player given every '
+          'unit', _recon(one, budget) == 0.0, str(_recon(one, budget)))
+    check('HISTORY: nor a player deleted and his mass moved',
+          _recon(drop, budget) == 0.0, str(_recon(drop, budget)))
+
+    # AND THE REPLACEMENT, on exactly the same seeded violations.
+    z_ok = AR.allocation_residual_z(T, P, budget)
+    z_one = AR.allocation_residual_z(one, P, budget)
+    z_drop = AR.allocation_residual_z(drop, P, budget)
+    null = AR.null_quantiles(n_players=n_players, budget=budget_scalar,
+                             n_draws=n_draws)
+    print(f'       null over {null["n_seeds"]} seeds: median '
+          f'{null["median"]:.2f}, p95 {null["p95"]:.2f}, max {null["max"]:.2f}')
+    check('  the replacement scores a CORRECT allocation inside its own null',
+          z_ok <= null['max'], f'z={z_ok:.4f} vs null max {null["max"]:.4f}')
+    check('  and sees one player given every unit',
+          z_one > null['max'], f'z={z_one:.4f} vs null max {null["max"]:.4f}')
+    check('  and sees a player deleted and his mass moved',
+          z_drop > null['max'], f'z={z_drop:.4f} vs null max {null["max"]:.4f}')
+    # A STATISTIC WITH NO NULL IS A NUMBER NOBODY CAN READ. The separation is
+    # reported, not thresholded: nothing in production gates on this.
+    check('  and the separation is an order of magnitude, not a hair',
+          min(z_one, z_drop) > 5 * null['max'],
+          f'one={z_one:.2f} drop={z_drop:.2f} null_max={null["max"]:.2f}')
+    # THE HONEST LIMIT, ASSERTED SO IT CANNOT BE FORGOTTEN. The replacement
+    # scores the deal against the intent it was HANDED. Wrong intent, faithfully
+    # dealt, reads clean -- reconciliation is not validation.
+    wrong_P = np.zeros_like(P)
+    wrong_P[:, 0] = 1.0
+    faithful = np.zeros_like(T)
+    faithful[:, 0] = budget_scalar
+    check('  but a WRONG intent, faithfully dealt, still reads clean -- '
+          'reconciliation is not validation',
+          AR.allocation_residual_z(faithful, wrong_P, budget) == 0.0,
+          str(AR.allocation_residual_z(faithful, wrong_P, budget)))
     # REPORTED AS A PASS AND KEPT, BECAUSE IT BOUNDS THE CLAIM. The statistic
     # is not inert in every direction: an allocation built to one budget and
     # scored against a different one IS caught. What it cannot see is any
@@ -243,7 +279,12 @@ def test_fg2_the_reconciliation_error_can_detect_a_wrong_allocation():
           'against is caught, so the statistic is not inert in every '
           'direction', _recon(wb, budget) > 0,
           f'recon_error={_recon(wb, budget)}')
-    # And the published artifacts, so the claim is not only about the idea.
+    # AND THE PUBLISHED ARTIFACTS. The producers now emit
+    # `alloc_residual_z`; these files still carry the old constant column
+    # because they have not been regenerated yet. That is a REPUBLICATION debt,
+    # not a code defect, and it stays visible here until the pipelines are
+    # re-run -- deleting the check would hide the fact that every consumer of
+    # these three files is still reading 385,446 rows of zero.
     for rel, col in (('nfl/research/q6/Q6_DIAGNOSTICS.csv.gz', 'recon_error'),
                      ('nfl/research/q9b/Q9B_FAMILY_ROWS.csv.gz', 'recon_error'),
                      ('nfl/research/q9/Q9_DIAGNOSTICS.csv',

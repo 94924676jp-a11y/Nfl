@@ -9,7 +9,7 @@
   "slate_reviewed": "2026-09-13 (12 games, sealed but QB-only)",
   "scope_note": "CORRECTED 2026-09-11. An earlier version of this ledger asserted NE@SEA was never forecast. It was: a V1_CANDIDATE forecast was sealed at a T-31h information set and scored against the realised game. BOTH games are genuine prospective case studies, n=2, with different limitations rather than one being unusable.",
   "promotion_rule": "No modeling item may be promoted on this evidence. Every MODELING defect below requires multi-game prospective evidence and a pre-registration before any change is scored as an improvement.",
-  "n_defects": 20,
+  "n_defects": 21,
   "defects": [
     {
       "id": "D01",
@@ -319,6 +319,83 @@
       "history_not_rewritten": "No manifest row was altered, deleted or re-stated. All 374 stay state PASS with their original n_data_rows. Capture evidence is append-only. What changed is what a READER credits them with discharging, and the honest answer was always none. d1e2727743c93990 is untouched and the Week-1 miss remains a miss.",
       "still_open": "The endpoint itself. https://www.nfl.com/inactives/ is still what the registry points at, and it is still empty -- the repair makes the system TELL THE TRUTH about that rather than fix it. Week 1's inactives are genuinely unrecoverable. OUT-016 asks the networked agent for the per-game article pattern and whether its slug is derivable pregame or only discoverable, which imply different capture designs.",
       "repair_near_miss": "RECORDED BECAUSE IT ALMOST INVERTED THE DEFECT. The first cut of coverage._has_declared_rows applied the row_container test to every official_inactives row regardless of payload shape. Under this source name the store holds TWO shapes: 374 html landing pages (content_kind 'html') and 18 DELIVERED markdown captures (content_kind null, spec_version 'official-inactives-1') written by the networked agent -- and those 18 carry the only genuine inactive lists anywhere in the repository, including both complete lists for SF@LA. Markdown has no <tr>, so the first cut refused them: a repair aimed at evidence quality was deleting the evidence, and it presented as a cleaner number (missed_with_uncredited_evidence fell from 13 to 0). Caught by test_capture_obligations section E, which asserts the count 18 rather than a direction. Fixed by scoping the check to content_kind == 'html', since a row container is a claim about HTML and about nothing else. Now protected by section G of test_inactives_substance.py. The lesson is not about html: a repair is a step that returns something, and a step whose output looks better is exactly what this project's canonical defect class feels like from the inside."
+    },
+    {
+      "id": "D21",
+      "category": "MEASUREMENT",
+      "games": [],
+      "symptom": "FIVE SITES PUBLISHED A RECONCILIATION STATISTIC THAT RESTATES NUMPY'S DOCUMENTATION, ONE OF THEM AS A BOOLEAN NAMED `exact` AND ONE OF THEM AS A HARD REFUSAL THAT CAN NEVER FIRE. Every site computes some form of abs(multinomial(n, p).sum() - n). numpy.random.multinomial(n, p) sums to n by contract, so the quantity is identically zero and says nothing about the allocator. Published as exactly 0.0 on 385,446 rows: 276,968 in Q6_DIAGNOSTICS.csv.gz, 104,130 in Q9B_FAMILY_ROWS.csv.gz, 4,348 in Q9_DIAGNOSTICS.csv.",
+      "earliest_layer": "the research reporting layer, five independent transcriptions of one wrong idea",
+      "kind": "MEASUREMENT",
+      "repaired": false,
+      "repaired_by": null,
+      "root_cause_classification": "DIAGNOSED. The statistic asks whether the dealt units sum to the budget they were dealt from, which is guaranteed by the sampler's own definition. It is the same shape q7/panel.py already wrote down: compose db = att + sacks + scr, then assert att + sacks + scr == db, and learn only that addition works -- least of all that one of the three terms is structurally zero.",
+      "proof_it_is_inert": "Measured on seeded violations in test_p6_false_greens.py P6-FG-2, and those assertions are now INVERTED to preserve the demonstration: handing one player every single unit scores 0.0; deleting a player and giving his mass to his neighbour scores 0.0. It cannot see ANY error that preserves the total, which is every allocation error there is. The one thing it does catch is an allocation built against a different budget than it is scored against, so it is not inert in every direction -- and that bound is asserted too, rather than the claim being overstated.",
+      "site_census": [
+        {
+          "site": "nfl/research/q6/forward_chain.py:489",
+          "role": "diagnostic",
+          "status": "REVERTED -- SEALED, NEEDS A SUCCESSOR CANDIDATE",
+          "published_rows": 276968,
+          "sealed_in": "nfl/prospective/q9shadow/Q9_PROSPECTIVE_CANDIDATE.json identity.module_source_sha16"
+        },
+        {
+          "site": "nfl/research/q6/analyse.py:178",
+          "role": "consumer, key team_reconciliation_error_max",
+          "status": "REVERTED -- SEALED, NEEDS A SUCCESSOR CANDIDATE",
+          "published_rows": null,
+          "sealed_in": "nfl/prospective/q9shadow/Q9_PROSPECTIVE_CANDIDATE.json identity.module_source_sha16"
+        },
+        {
+          "site": "nfl/research/q9b/family.py:282",
+          "role": "diagnostic",
+          "status": "REVERTED -- SEALED, NEEDS A SUCCESSOR CANDIDATE",
+          "published_rows": 104130,
+          "sealed_in": "nfl/prospective/q9shadow/Q9_PROSPECTIVE_CANDIDATE.json identity.module_source_sha16"
+        },
+        {
+          "site": "nfl/research/q9b/family.py:611",
+          "role": "consumer, key reconciliation.max_absolute_error",
+          "status": "REVERTED -- SEALED, NEEDS A SUCCESSOR CANDIDATE",
+          "published_rows": null,
+          "sealed_in": "nfl/prospective/q9shadow/Q9_PROSPECTIVE_CANDIDATE.json identity.module_source_sha16"
+        },
+        {
+          "site": "nfl/research/q9/hurdle.py:337",
+          "role": "diagnostic",
+          "status": "REVERTED -- SEALED, NEEDS A SUCCESSOR CANDIDATE",
+          "published_rows": 4348,
+          "sealed_in": "nfl/prospective/q9shadow/Q9_PROSPECTIVE_CANDIDATE.json identity.module_source_sha16"
+        },
+        {
+          "site": "nfl/research/q9/hurdle.py:640 _recon_block",
+          "role": "SUMMARY BOOLEAN named `exact`",
+          "status": "REVERTED -- SEALED, NEEDS A SUCCESSOR CANDIDATE",
+          "note": "The worst shape a false green takes: not a number nobody reads, but a boolean asserting the thing is right. Key removed, not renamed.",
+          "sealed_in": "nfl/prospective/q9shadow/Q9_PROSPECTIVE_CANDIDATE.json identity.module_source_sha16"
+        },
+        {
+          "site": "nfl/prospective/q9shadow/shadow.py:282",
+          "role": "HARD GUARD -- gates Outcome.fail(Q9_SHADOW_TEAM_TARGET_RECONCILIATION_VIOLATED)",
+          "status": "DEFERRED -- NOT TOUCHED",
+          "note": "An inert GUARD, not an inert diagnostic, and materially worse: it has refused nothing on every input it has ever been given, which is precisely the assert_batch_games_are_new pattern nfl/tests/bypass.py was written about. It is DEFERRED because q9shadow is sealed prospective code and changing what it refuses is closure-changing: under the standing ruling that needs a NEW candidate identity, not an edit. Deferring it is a decision, not an oversight, and it must not be summarised as repaired.",
+          "sealed_in": "nfl/prospective/q9shadow/Q9_PROSPECTIVE_CANDIDATE.json identity.module_source_sha16"
+        },
+        {
+          "site": "nfl/research/q9b/production_parity.py:248",
+          "role": "consumer of the q9shadow value",
+          "status": "DEFERRED -- follows q9shadow",
+          "sealed_in": "nfl/prospective/q9shadow/Q9_PROSPECTIVE_CANDIDATE.json identity.module_source_sha16"
+        }
+      ],
+      "what_the_replacement_does_not_do": "STATED SO IT IS NOT OVERSOLD. It scores the deal against the intent it was HANDED: if the shares themselves are wrong, dealt will match intended and it reads clean. Reconciliation is not validation, and P6-FG-2 asserts exactly that with a wrong-intent-faithfully-dealt case scoring 0.0. It is a mean over draws, so a correct mean with a wrong spread passes. A player whose share leaves no room for sampling noise reports inf rather than 0.",
+      "no_fitted_constant": "The standard error is the multinomial's own, derived rather than chosen, so the statistic is a z-score whose null behaviour is computable and is reported alongside it. Measured over 300 seeds at 5 players, budget 30, 64 draws: a correct allocation gives median 1.43, p95 2.57, max 3.71; the seeded violations give 87.6 and 21.9. Nothing gates on it -- it reports.",
+      "republication_debt": "OPEN AND UNCHANGED, and now known to be larger than it looked. The producers still emit the inert column because they are sealed and were reverted, so Q6_DIAGNOSTICS.csv.gz, Q9B_FAMILY_ROWS.csv.gz and Q9_DIAGNOSTICS.csv all still carry 385,446 rows of zero and every consumer still reads them. Three checks in P6-FG-2 fail on exactly this and are kept failing: deleting them would hide it. Republication cannot happen without the successor candidate above, and when it does the old artifacts are superseded, never overwritten.",
+      "found_by": "V2 tick queue item 1; claim independently verified against the three published artifacts before any code was changed.",
+      "status": "STATISTIC BUILT AND PROVEN; NOT WIRED. Every call site is inside a sealed candidate, so none of them may be edited in place.",
+      "why_not_wired_and_how_that_was_learned": "I wired all four research sites first and the project's own freeze test caught it, which is the system working exactly as designed. test_p6_false_greens reported FREEZE_NO_LONGER_DESCRIBES_THE_CANDIDATE for nfl.research.q9.hurdle (recorded bb51133641338547, source became 6517108f7536bd99) and nfl.research.q9b.family (recorded 5b411b4f00e28e6f, became 47acf78faebd0fee). Auditing the rest of the record then showed nfl.research.q6.forward_chain is sealed too, at c7dab79ba2ac751a in nfl/prospective/q9shadow/Q9_PROSPECTIVE_CANDIDATE.json, and my edit had moved it to 7cbfb2bacbad8bf9. All four edits were REVERTED and all seven module hashes in that record verify again. THE LESSON, WHICH IS NOT A DETAIL: a freeze is over the SOURCE FILE, not over behaviour. I had reasoned that a diagnostic-only change consumes no draw and cannot move a projection -- which is true, and irrelevant. I even wrote 'this run reproduces the frozen one exactly' into a comment. The draws would have been identical and the candidate identity would still have been destroyed. 'It does not change the numbers' is not a licence to edit sealed code.",
+      "what_exists_and_is_proven": "nfl/research/allocation_residual.py, allocation_residual/1.0.0, standalone and depended on by nothing sealed. Proven in test_p6_false_greens P6-FG-2 against the same seeded violations that expose the tautology: a correct allocation scores inside its own null, one player given every unit scores 87.6, a player deleted and his mass moved scores 21.9, against a null whose max over 300 seeds is 3.71. The honest limit is asserted too -- a WRONG intent, faithfully dealt, scores 0.0, because reconciliation is not validation.",
+      "what_it_would_take": "A NEW CANDIDATE IDENTITY, per the standing ruling: coefficient- or closure-changing work never edits a frozen arm. A successor module importing the frozen allocator and re-reporting, registered as its own candidate, with fresh dry-run seals -- and the old artifacts SUPERSEDED rather than overwritten, on the Q7_PANEL_SUPERSESSION.json precedent. That is real work and it is NOT started. Do not read this defect as one commit from closed."
     }
   ],
   "ne_sea_limitations": [
