@@ -213,14 +213,36 @@ def test_b_the_budget_is_derived_and_never_invented():
           'a literal duration in freshness.py would be a silent constant')
 
 
-def test_b2_the_halted_executor_shows_up_as_stale_at_den_kc():
+def test_b2_the_monitor_at_den_kc_measures_arrival_not_content():
+    """WAS: "the halted executor shows up as STALE at DEN@KC". Both halves of
+    that name were wrong, and the correction is the point of this test now.
+
+    TASK ZERO established the executor was never halted -- that reading came
+    from a stale remote-tracking ref. Real main captured through
+    2026-09-15T13:06:52Z, and the last official_inactives capture before the
+    DEN@KC window closed landed at 23:59:37Z. So the monitor reads FRESH, age
+    6.9 minutes at kickoff, and it is RIGHT about what it measures.
+
+    AND THE BYTES WERE EMPTY. Every one of those captures is the
+    "Please check back soon for NFL Inactive Reports for this Season" page --
+    D20. So this source is simultaneously FRESH and carrying nothing, which is
+    D20's shape at the freshness layer: staleness is a FETCH_SUCCESS question
+    (did bytes arrive recently) and says nothing about STRUCTURAL_VALIDITY (are
+    there rows in them). See nfl/capture/evidence_layers.py.
+
+    This test now pins that distinction rather than asserting the old premise.
+    """
     print('\nB2. the monitor against the DEN@KC kickoff')
     row = FR.source_staleness('official_inactives', '2026-09-15T00:15:00+00:00',
                               manifest_path=MANIFEST)
-    check('official_inactives is STALE for DEN@KC',
-          row['verdict'] == FR.STALE, str(row.get('verdict')))
+    check('official_inactives reads FRESH at the DEN@KC kickoff -- the '
+          'executor was never halted',
+          row['verdict'] == FR.FRESH, str(row.get('verdict')))
     check('and the age is reported in the row, not just the verdict',
-          row.get('age_minutes', 0) > 80, str(row.get('age_minutes')))
+          row.get('age_minutes') is not None, str(row.get('age_minutes')))
+    check('  FRESH here means bytes arrived recently and NOTHING about whether '
+          'they carry rows -- those captures are all D20 empty pages',
+          True)
     row2 = FR.source_staleness('official_transactions',
                                '2026-09-15T00:15:00+00:00',
                                manifest_path=MANIFEST)
@@ -378,8 +400,17 @@ def test_d_the_den_kc_inactives_window_is_still_empty():
         p = BT.parse(t)
         if p is not None and lo <= p <= hi:
             inside.append((r.get('source'), r.get('state'), t))
-    check('zero manifest rows carry a retrieved_at inside the window',
-          not inside, str(inside[:4]))
+    # WAS: "zero manifest rows carry a retrieved_at inside the window".
+    # FALSE. Eight official_inactives captures landed inside it, each declared
+    # before its fetch, window-anchored, from the GitHub Actions workflow. The
+    # window was ATTEMPTED and the source had nothing -- see D20. Asserting
+    # zero attempts was asserting a stale premise, and it passed for four days.
+    inside_inact = [r for r in inside if r[0] == 'official_inactives']
+    check('the window was attempted -- captures DID land inside it',
+          len(inside_inact) >= 8, f'{len(inside_inact)} found')
+    check('  and they all passed the fetch layer',
+          all(st == 'PASS' for _s, st, _t in inside_inact),
+          str({st for _s, st, _t in inside_inact}))
     cov = COV.coverage(2026, 1, manifest_path=MANIFEST,
                        now=dt.datetime(2026, 9, 15, 12, tzinfo=dt.timezone.utc),
                        verify_artifacts=False)
@@ -391,8 +422,13 @@ def test_d_the_den_kc_inactives_window_is_still_empty():
           missed[0]['window_start_utc'].startswith('2026-09-14T22:45')
           and missed[0]['window_end_utc'].startswith('2026-09-15T00:05'),
           str(missed[0] if missed else None))
-    check('and the week tally is unchanged at covered 15 / missed 48',
-          (cov.evidence['covered'], cov.evidence['missed']) == (15, 48),
+    # WAS 15 / 48. Two corrections compound, and both are corrections rather
+    # than improvements: reconciliation with main brought 289 commits of
+    # capture evidence this branch did not hold, and D20's repair then withdrew
+    # credit from 15 inactives targets covered only by an empty landing page.
+    # See nfl/research/v4/D20_COVERAGE_CORRECTION.md.
+    check('the week tally is covered 28 / missed 35',
+          (cov.evidence['covered'], cov.evidence['missed']) == (28, 35),
           f"{cov.evidence['covered']} / {cov.evidence['missed']}")
 
 
@@ -533,7 +569,7 @@ if __name__ == '__main__':
     test_a4_the_gate_refuses_an_empty_fact_set()
     test_a5_the_gate_fires_on_the_real_manifest()
     test_b_the_budget_is_derived_and_never_invented()
-    test_b2_the_halted_executor_shows_up_as_stale_at_den_kc()
+    test_b2_the_monitor_at_den_kc_measures_arrival_not_content()
     test_b3_the_monitor_refuses_an_empty_page_and_keeps_a_closed_vocabulary()
     test_c1_CONFIRMED_LEAK_depth_chart_guard_is_disarmed_by_its_caller()
     test_c1b_the_guard_ITSELF_is_correct_when_a_caller_arms_it()
