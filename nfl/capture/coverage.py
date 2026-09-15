@@ -159,6 +159,68 @@ def _parse_ts(v) -> Optional[dt.datetime]:
     return d if d.tzinfo else d.replace(tzinfo=dt.timezone.utc)
 
 
+def _has_declared_rows(source: str, value: dict) -> tuple:
+    """Does the stored payload contain the shape its rows live in?
+
+    D20. `performed_from_manifest` credited any row whose `state` was PASS and
+    whose blob hashed correctly. Neither test looks at what the bytes SAY. For
+    nine days `official_inactives` captured https://www.nfl.com/inactives/
+    while that page carried its own empty-state sentence -- "Please check back
+    soon for NFL Inactive Reports for this Season" -- and not one <tr>. All 374
+    captures hashed perfectly, because they are perfect copies of an empty page.
+
+    MEASURED COST AT THIS LAYER, week 1 2026: crediting them puts coverage at
+    43 of 63 targets. Refusing them puts it at 28 of 63. FIFTEEN targets, 24% of
+    the week, were reported covered on the strength of a page saying "check back
+    soon". A hash proves a byte is the byte we fetched. It says nothing whatever
+    about whether that byte is a football player.
+
+    So ask the source for the shape it declared (`SourceSpec.row_container`) and
+    open the blob. A source that declares nothing is unaffected and keeps the
+    old behaviour exactly.
+
+    THIS REWRITES NO HISTORY. The 374 manifest rows stay exactly as written,
+    state PASS, annotated by D20. Capture evidence is append-only. What changes
+    is only whether a READER credits them with discharging an obligation, and
+    the honest answer was always no.
+    """
+    import gzip as _gzip
+    from nfl.capture.registry import BY_NAME as _BY_NAME
+    spec = _BY_NAME.get(source)
+    want = tuple(getattr(spec, "row_container", ()) or ()) if spec else ()
+    if not want:
+        return True, None
+    # A ROW CONTAINER IS A CLAIM ABOUT HTML AND ABOUT NOTHING ELSE.
+    # The first cut of this check asked every official_inactives row for a
+    # <tr> and so refused the 18 DELIVERED game-anchored captures, which are
+    # markdown written by the second agent and DO carry real inactive lists --
+    # suppressing the only genuine inactives evidence in the store while
+    # claiming to protect evidence quality. Exactly the defect being repaired,
+    # pointed the other way. The 374 landing-page rows carry
+    # content_kind 'html'; the 18 delivered ones carry none and a
+    # spec_version of 'official-inactives-1'. Only the former are in scope.
+    if (value or {}).get("content_kind") != "html":
+        return True, None
+    blob = (value or {}).get("blob")
+    if not blob:
+        return True, None          # _blob_ok owns that refusal, not this one
+    fp = pathlib.Path(blob)
+    if not fp.exists():
+        fp = pathlib.Path("nfl/vintage") / fp.name
+    if not fp.exists():
+        return True, None          # absence is _blob_ok's verdict to give
+    try:
+        raw = fp.read_bytes()
+        if fp.name.endswith(".gz"):
+            raw = _gzip.decompress(raw)
+        text = raw.decode("utf-8", "replace").lower()
+    except Exception:
+        return True, None          # unreadable is not the same as empty
+    if any(c.lower() in text for c in want):
+        return True, None
+    return False, "SOURCE_HAS_NO_ROWS_YET"
+
+
 def _blob_ok(value: dict) -> tuple:
     """Does the raw artifact exist, and does a digest OF THE STORED BYTES match?
 
@@ -363,6 +425,11 @@ def performed_from_manifest(manifest_path, *, verify_artifacts: bool = True
 
         ok, why = ((True, None) if not verify_artifacts
                    else _blob_ok(val))
+        # A ROW THAT HASHES IS NOT A ROW THAT SAYS ANYTHING. See D20 and
+        # _has_declared_rows: 374 perfect copies of an empty page credited 15
+        # of week 1's 63 targets.
+        if ok:
+            ok, why = _has_declared_rows(row.get("source"), val)
         targets = eligible_targets(val) if ok else []
         disp = _disposition(val, ok, len(targets))
         disposition_counts[disp] += 1

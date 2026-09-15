@@ -114,7 +114,7 @@ change to any stored artifact.
 
 ---
 
-## 6. The eleven in-window inactives captures — classified, and it is bad news
+## 6. The in-window inactives captures — classified, and it is bad news
 
 The directive asked for a three-way classification: *source/executor now
 operational for future games*, *historically valid in-window capture*, or
@@ -179,7 +179,43 @@ the obligation was attempted, lawfully, eight times, and the source had nothing.
 
 ---
 
-## 7. Three claims I made about this window, in order, and why each was wrong
+## 6b. What D20 was costing downstream, measured
+
+The capture layer was not where the damage stopped.
+
+`nfl/capture/coverage.py::performed_from_manifest` credited any manifest row
+whose `state` was `PASS` and whose blob hashed correctly. Neither test reads what
+the bytes say — and a hash over an empty page is a perfect hash. So the 374
+empty captures were counted as performed captures and discharged obligations.
+
+Week 1 2026, 63 targets:
+
+| | covered | missed |
+|---|---:|---:|
+| crediting the empty captures | **43** | 20 |
+| refusing them | **28** | 35 |
+
+**Fifteen targets — 24% of the week — were reported covered on the strength of a
+page saying "Please check back soon."** That is the real cost of D20, and it is
+an order of magnitude larger than the one game that started the investigation.
+
+Repaired by the same declared property. `SourceSpec.row_container` now gates the
+reader as well as the writer, and each refusal is recorded individually in
+`artifact_excluded` with reason `SOURCE_HAS_NO_ROWS_YET` and its `capture_id`, so
+the exclusion is auditable rather than silent. The 374 manifest rows are
+untouched: capture evidence is append-only, and what changed is only what a
+reader credits them with.
+
+The marker vocabulary was deliberately **not** touched. Tuning words until the
+empty page fails is the move that caused the defect — a previous pass had this
+source passing on four incidental `"questionable"`s, and when those four left the
+page it flipped to `FAIL` over 419KB of real content. Two-sided proof over every
+committed blob: `official_injury_report` 374 of 374 still `PASS`,
+`official_inactives` 392 of 392 now `DEFERRED`. Complete separation, no threshold.
+
+---
+
+## 7. Five claims I made about this window, in order, and why each was wrong
 
 This belongs in the record because the pattern is the point, not the individual
 errors.
@@ -192,12 +228,30 @@ errors.
    describing the captures and treated them as the captures.
 3. **"The blast radius is 37 captures in the 09-14/15 window."** False. It is
    374 over nine days. Section C of the replay test counted them and corrected me.
+4. **"No positive control exists, so the repair is blocked."** False, and this
+   one nearly cost the repair. I was looking for a *populated inactives page*,
+   of which there is none. The control I actually needed was any real HTML
+   capture on the same code path, and `official_injury_report` is 374 of them.
+   I had written "blocked" into D20 and into OUT-016 before checking whether the
+   sibling source answered the question.
+5. **"No miss now holds uncredited game-anchored bytes"** — written into a test
+   as `== 0`. False, and the most instructive of the five, because the `0` was
+   *real output that I measured*. My own first cut of
+   `coverage._has_declared_rows` asked every `official_inactives` row for a
+   `<tr>` and so refused the 18 **delivered markdown** captures — the only
+   genuine inactive lists anywhere in the store. A repair aimed squarely at
+   evidence quality was quietly deleting the evidence, and its effect looked
+   like a clean number. The true value is 13. Caught by section E of
+   `test_capture_obligations`, which asserts a count rather than a direction.
 
 Each correction came from looking exactly one layer deeper than the previous
-claim had: branch → repository, manifest row → blob, window → corpus. **Every one
-of the three is the project's canonical defect class** — *a step that returned
+claim had: branch → repository, manifest row → blob, window → corpus, source →
+sibling source, and finally my own fix → what it deleted. **Every one of the five
+is the project's canonical defect class** — *a step that returned
 nothing, or something partial, was read as success* — with me in the role of the
-step. The manifest said `PASS` 374 times and I believed it twice.
+step. The manifest said `PASS` 374 times and I believed it twice. The fifth is the
+one worth keeping: a repair is a step that returns something too, and mine
+returned a better-looking number by discarding data.
 
 `2c0c36b`'s message is left standing with its error intact rather than amended.
 Historical evidence is not altered to make the current tree green, and that

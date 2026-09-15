@@ -140,6 +140,7 @@ class Source:
     # An unreachable code path is not a working one, and a guard is not
     # verified by an environment that never executes it.
     content_markers: tuple = ()
+    row_container: tuple = ()
 
 
 def _sources(season: int) -> list[Source]:
@@ -166,7 +167,9 @@ def _sources(season: int) -> list[Source]:
                           reduce_cols=spec.reduce_cols,
                           content_kind=spec.content_kind, note=spec.note,
                           content_markers=tuple(
-                              getattr(spec, 'content_markers', ()) or ())))
+                              getattr(spec, 'content_markers', ()) or ()),
+                          row_container=tuple(
+                              getattr(spec, 'row_container', ()) or ())))
     return out
 
 
@@ -342,6 +345,38 @@ def fetch(src: Source, season: int, store: pathlib.Path,
                 f"over a page that did not render is not a capture.",
                 source=src.name, n_bytes=n_bytes, n_markers=_markers,
                 js_shell=_shell)
+        # THE SUBJECT WORD IS NOT THE SUBJECT. D20: this source's marker word
+        # appears in its own chrome -- title, meta, og:url, ad and analytics
+        # config, news-tile link attributes -- and once inside the sentence
+        # "Please check back soon for NFL Inactive Reports for this Season",
+        # so the page's written statement that it has NO data scored as one
+        # unit of evidence that it HAS data. The marker count never reached 0
+        # and the debt branch below was unreachable for nine days and 374
+        # captures, each stored as PASS/CAPTURED with n_data_rows set to the
+        # chrome count.
+        #
+        # So ask for the shape the rows live in, not a word about them. This
+        # is a declared property of the source, not a threshold fitted to the
+        # data: over every committed blob, official_injury_report carries <tr>
+        # in 374 of 374 captures and official_inactives in 0 of 392. Sources
+        # that declare no row_container are unaffected and keep the old
+        # behaviour exactly.
+        _rows_present = (not src.row_container) or any(
+            c.lower() in _text.lower() for c in src.row_container)
+        if _markers and not _rows_present:
+            tmp.unlink()
+            return Outcome.deferred(
+                "SOURCE_HAS_NO_ROWS_YET",
+                f"{src.name}: HTTP {status}, {len(payload)} bytes that render "
+                f"and carry {_markers} occurrence(s) of {_markers_for} -- but "
+                f"not one {' or '.join(src.row_container)}. The subject word is "
+                f"present and the rows are not, which is what a landing page "
+                f"about the data looks like. This discharges nothing and is "
+                f"owed until a capture carries rows.",
+                source=src.name, n_bytes=n_bytes, n_markers=_markers,
+                markers_looked_for=list(_markers_for),
+                row_container_looked_for=list(src.row_container),
+                owed=f"{src.name}:{url}")
         if _markers == 0:
             # NOT a pass: nothing is stored and nothing is discharged. It is a
             # debt, and it stays owed until a later capture carries rows.

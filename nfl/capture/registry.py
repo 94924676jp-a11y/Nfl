@@ -119,6 +119,21 @@ class SourceSpec:
     # and when those four dropped off the page on 2026-09-08T17:36Z the control
     # flipped to FAIL over 419KB of real content.
     content_markers: tuple = ()
+    # THE SHAPE THE DATA LIVES IN, not a word that describes it.
+    # D20: official_inactives served an empty-state page for nine days and
+    # passed 374 times, because its marker word "inactive" appears up to 41
+    # times in the page's own chrome -- title, meta, og:url, ad and analytics
+    # config, news-tile link attributes -- and once in the empty-state sentence
+    # itself. A word count cannot tell a table of players from a navigation
+    # bar. A row container can: measured over every committed blob,
+    # official_injury_report carries a <table> in 374 of 374 captures (13 to
+    # 214 <tr>), official_inactives in 0 of 392. That separation is complete
+    # and needs no threshold, because it is the declared shape of the source,
+    # not a quantity fitted to the data.
+    #
+    # Declare the tag whose presence means "rows exist". Empty = no structural
+    # claim, and the marker count stands alone as before.
+    row_container: tuple = ()
     note: str = ""
 
     def url(self, season: int) -> Optional[str]:
@@ -210,6 +225,7 @@ REGISTRY: tuple = (
         serves_kinds=("practice", "final_status"),
         content_markers=("questionable", "doubtful", "did not participate",
                          "limited participation", "full participation"),
+        row_container=("<tr",),
         # The CAPTURE is a whole-page snapshot, effective at the instant the
         # origin produced it. WEEK_TEAM is what a PARSED ROW would carry, and no
         # parser exists yet -- declaring it here made scope construction refuse
@@ -232,6 +248,7 @@ REGISTRY: tuple = (
         executor_access=ExecutorAccess.UNTESTED,
         serves_kinds=("inactives",),
         content_markers=("inactive",),
+        row_container=("<tr",),
         source_scope_kind=ScopeKind.EXACT_TIMESTAMP,
         note=("Resolves Questionable to 0/1 at ~T-90. The only source that can "
               "discharge an inactives target."),

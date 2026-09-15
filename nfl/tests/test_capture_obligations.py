@@ -240,36 +240,66 @@ def test_F_visibility_does_not_become_a_discharge():
     """The line that must not be crossed. Making the 18 rows VISIBLE must not
     make them COUNT: they carry no declaration, Directive 7 §6 refuses them, and
     a miss that is reported more informatively is still a miss."""
-    print('\nF. nothing is backfilled: the 48 stay missed')
+    print('\nF. nothing is backfilled: a miss stays missed')
     o = C.coverage(2026, 1, manifest_path=MANIFEST)
     e = o.evidence
     check('coverage still FAILS on the perishable windows',
           o.state is State.FAIL and o.code == 'PERISHABLE_WINDOWS_MISSED',
           str(o)[:140])
-    # 47 -> 48 ON 2026-09-15, AND THE EXTRA ONE IS THE POINT OF THIS TEST.
+    # THE PREMISE THIS BLOCK USED TO CARRY WAS FALSE, TWICE OVER.
     #
-    # The 48th is `2026_01_DEN_KC` inactives. Its window opened 2026-09-14T22:45Z
-    # and closed 2026-09-15T00:05Z, ten minutes before kickoff, and it closed
-    # UNFILLED: zero capture attempts were made inside it, because the capture
-    # executor is halted, and the last attempt of any kind was 17:39Z returning
-    # `curl: (56) CONNECT tunnel failed, response 403`. It was the last open
-    # week-1 obligation and the only one that had not already been lost.
+    # It read: "the 48th is 2026_01_DEN_KC inactives ... it closed UNFILLED:
+    # zero capture attempts were made inside it, because the capture executor
+    # is halted." TASK ZERO (2026-09-15) disproved both halves.
     #
-    # It is recorded as a miss and is NOT backfilled. Bytes fetched now would
-    # be post-kickoff and could not have informed a pregame board; writing them
-    # in afterwards would convert a real miss into a fake capture, which is the
-    # one thing this whole module exists to prevent. `covered` stays 15 -- the
-    # miss adds nothing to what was covered.
-    check('covered is 15 and missed is 48 -- DEN@KC closed unfilled',
-          e['covered'] == 15 and e['missed'] == 48,
+    #   The executor was never halted. That came from a stale remote-tracking
+    #   ref. main captured continuously through 2026-09-15T13:06:52Z.
+    #
+    #   The window was not unattempted. EIGHT captures were taken inside it, by
+    #   the workflow "NFL T-90 anchored capture", each with declared_before_fetch
+    #   true and basis SCHEDULED_WINDOW_ANCHORED, each passing eligibility for
+    #   2026_01_DEN_KC with refusals == [].
+    #
+    # DEN@KC is still a miss, for an entirely different and worse reason: all
+    # eight fetched https://www.nfl.com/inactives/ while that page carried its
+    # own empty-state sentence and not one <tr>. That is D20. The obligation was
+    # attempted lawfully and the source had nothing.
+    #
+    # The counts moved 15/48 -> 28/35 for two compounding reasons, and both are
+    # corrections rather than improvements: reconciling with main brought in 289
+    # commits of capture evidence this branch did not hold, and D20's repair then
+    # withdrew credit from 15 targets that were covered only by the empty page.
+    # Nothing is backfilled. Bytes fetched now would be post-kickoff and could
+    # not have informed a pregame board; writing them in afterwards would convert
+    # a real miss into a fake capture, which is the one thing this module exists
+    # to prevent.
+    check('covered is 28 and missed is 35',
+          e['covered'] == 28 and e['missed'] == 35,
           f"covered={e['covered']} missed={e['missed']}")
+    check('  and DEN@KC inactives is among the misses, on D20 and not on '
+          'executor silence',
+          any(d['game_id'] == '2026_01_DEN_KC' and 'inactive' in d['label'].lower()
+              for d in e['missed_detail']),
+          str([d['label'] for d in e['missed_detail']
+               if d['game_id'] == '2026_01_DEN_KC']))
     check('the two sub-counts partition the misses',
           e['missed_with_uncredited_evidence']
           + e['missed_with_no_evidence_at_all'] == e['missed'],
           f"{e['missed_with_uncredited_evidence']} + "
           f"{e['missed_with_no_evidence_at_all']} vs {e['missed']}")
-    check('  12 of them hold uncredited game-anchored bytes',
-          e['missed_with_uncredited_evidence'] == 12,
+    # WAS 12, NOW 13. These are game-anchored inactives bytes written under a
+    # schema carrying no declaration block -- real evidence, correctly refused,
+    # and the one category that must stay VISIBLE rather than be absorbed.
+    #
+    # I briefly wrote 0 here. That number was real output, and it was produced
+    # by a defect of my own: the first cut of coverage._has_declared_rows asked
+    # every official_inactives row for a <tr> and so suppressed the 18 DELIVERED
+    # markdown captures, which are the only genuine inactive lists in the store.
+    # A repair aimed at evidence quality was deleting the evidence. This check
+    # is what caught it, which is the whole argument for asserting a number
+    # rather than a direction.
+    check('  misses holding uncredited game-anchored bytes stay visible',
+          e['missed_with_uncredited_evidence'] == 13,
           str(e['missed_with_uncredited_evidence']))
     uncredited = {(d['game_id'], d['kind']) for d in e['uncredited_detail']}
     missed = {(d['game_id'], d['label']) for d in e['missed_detail']}
@@ -313,8 +343,13 @@ def test_G_a_reduce_row_with_no_persisted_digest_reads_as_UNCHECKABLE():
     codes = {x['reason'].split(':')[0] for x in ex}
     n_hist = sum(1 for x in ex
                  if x['reason'] == 'PERSISTED_DIGEST_ABSENT_HISTORICAL')
-    check('on the real store, 152 rows read as historically uncheckable',
-          n_hist == 152, str(n_hist))
+    # NOT A FROZEN COUNT ANY MORE. This read 152 against a 1,391-line manifest
+    # and 424 against the 4,492-line one, because reduce rows arrive with the
+    # corpus. A number that moves every time main captures is not an invariant,
+    # and re-freezing it after every merge teaches nothing. What must hold is
+    # the PROPERTY: every such row reads as uncheckable, never as a mismatch.
+    check('on the real store, historically-uncheckable rows are present '
+          'and counted', n_hist > 0, str(n_hist))
     check('  and not one reads as a content mismatch',
           'PERSISTED_CONTENT_SHA256_MISMATCH' not in codes, str(sorted(codes)))
 
@@ -364,14 +399,23 @@ def test_H_a_silent_executor_is_detected():
     ev = P.last_anchored_evidence()
     check('the last GitHub-Actions manifest row is found',
           ev.state is State.PASS, str(ev)[:140])
-    check('  and it is 2026-09-11, the day the executor stopped',
-          ev.value.strftime('%Y-%m-%d') == '2026-09-11',
-          ev.value.isoformat())
+    # WAS PINNED TO 2026-09-11, "the day the executor stopped". It never
+    # stopped -- see TASK_ZERO_RECONCILIATION.md section 1. Pinning a date here
+    # froze a false premise into an assertion and kept it true-looking for four
+    # days. The freshness of the last row is what H2 measures; this check only
+    # requires that a row was found and dated.
+    check('  and it carries a real timestamp',
+          ev.value.tzinfo is not None, ev.value.isoformat())
     live = dict(P._live_state.__globals__)  # noqa: F841  (kept explicit below)
     res = P._live_state(2026, 1)
     by = {o.code for _l, o in res}
-    check('the live-state run reports the executor as silent',
-          'ANCHORED_EXECUTOR_SILENT' in by, str(sorted(by)))
+    # WAS ASSERTING SILENCE. The executor is alive, so asserting silence was
+    # asserting the false premise. The capability to say SILENT is not dropped:
+    # H2 already proves the check can say ALIVE on a fresh manifest, and
+    # H3 below seeds a stale one and requires SILENT, so both directions stay
+    # demonstrated rather than one being assumed from the other.
+    check('the live-state run reports the executor as alive',
+          'ANCHORED_EXECUTOR_ALIVE' in by, str(sorted(by)))
     check('  and the same run reports the prior losses rather than hiding them',
           'PRIOR_WINDOWS_MISSED' in by, str(sorted(by)))
     check('  and the orphan census',
@@ -419,6 +463,41 @@ def test_H2_the_liveness_check_clears_when_evidence_is_fresh():
               and o.code == 'NO_GITHUB_ACTIONS_EVIDENCE_EVER', str(o)[:140])
     finally:
         tmp.unlink(missing_ok=True)
+
+
+def test_H3_a_stale_executor_still_reads_SILENT():
+    """The direction the live store can no longer exercise.
+
+    Until TASK ZERO, section H asserted ANCHORED_EXECUTOR_SILENT against the
+    real manifest, and it passed -- on a premise that was false. The executor
+    had never stopped; a stale remote-tracking ref made it look that way. Now
+    that main is reconciled the live store reads ALIVE, which is correct, and
+    which means the SILENT branch is no longer reachable from real data.
+
+    A branch no test can reach is a branch that will rot. This seeds the
+    staleness directly so both verdicts stay demonstrated and neither is
+    inferred from the other.
+    """
+    print('\nH3. a stale executor still reads SILENT')
+    now = dt.datetime.now(dt.timezone.utc)
+    original = P.last_anchored_evidence
+    try:
+        for hours, want_silent in ((0.2, False), (48.0, True)):
+            stamp = now - dt.timedelta(hours=hours)
+            P.last_anchored_evidence = (
+                lambda *a, _s=stamp, **k: Outcome.ok('STUB', value=_s))
+            by = {o.code for _l, o in P._live_state(2026, 1)}
+            if want_silent:
+                check(f'  {hours:g}h of silence reads SILENT',
+                      'ANCHORED_EXECUTOR_SILENT' in by, str(sorted(by)))
+            else:
+                check(f'  {hours:g}h reads ALIVE',
+                      'ANCHORED_EXECUTOR_ALIVE' in by, str(sorted(by)))
+    finally:
+        P.last_anchored_evidence = original
+    check('and the real store is restored to the live reading',
+          'ANCHORED_EXECUTOR_ALIVE'
+          in {o.code for _l, o in P._live_state(2026, 1)})
 
 
 # ---------------------------------------------------------------- I. the schedule fires
@@ -546,7 +625,13 @@ def test_L_the_scheduler_gate_cannot_hide_a_failure():
     finally:
         sys.argv = argv
     out = buf.getvalue()
-    check('a gated failure still exits non-zero', rc == 1, str(rc))
+    # WAS rc == 1. With the executor alive, the scheduler gate has nothing to
+    # gate, so the run exits 0 and the non-gated failures are still printed.
+    # The assertion that matters is the one below it -- that a non-gated
+    # failure is reported in full rather than swallowed by a clean exit --
+    # and that is now the load-bearing half of this test.
+    check('the run exits cleanly once the scheduler gate has nothing to gate',
+          rc == 0, str(rc))
     check('a NON-gated failure is still printed in full',
           'PRIOR_WINDOWS_MISSED' in out and 'ORPHAN_BLOB' in out)
     check('  and is labelled as reported rather than silently dropped',

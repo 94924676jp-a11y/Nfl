@@ -912,6 +912,15 @@ would have made the forecast **better informed**; it would not have made it
 
 ## 2026-09-15T13:40Z — OUT-016: the inactives endpoint is the wrong endpoint, and it has been passing for nine days
 
+**Supersedes a premise in OUT-011 and OUT-013.** OUT-011 asked you why "every
+scheduled workflow stopped at 2026-09-11T03:38:27Z". It never stopped. That came
+from a stale remote-tracking ref on my side; `main` captured continuously through
+2026-09-15T13:06:52Z. **Do not spend time answering OUT-011's question** — there
+is no outage to explain. Its entry stays in this file unedited, because an
+outbox is a record of what was asked and when, not a list of things that turned
+out to be true.
+
+
 **This is not a blocked task. It is an assigned one, and it is the highest-value
 thing I can hand you this week.** I found it while reconciling with main and I
 can prove all of it from committed bytes. What I cannot do is confirm the
