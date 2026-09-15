@@ -912,6 +912,13 @@ def build(args, fixtures: dict = None) -> dict:
         m = fx.get('qb_draws', 200)
         fl = _mode['flags']
 
+        # THE 2026 WEEK-1 PARTICIPATION ROWS ARE OPT-IN, PER CANDIDATE.
+        # Set from the resolved mode's flags so the arm that consumes the
+        # approximated numerator is the arm that declared it. R9 and every
+        # frozen arm leave it False and are byte-identical to before.
+        from nfl.production.nonqb import participation_prior as _PP
+        _PP.set_include_2026w1(bool(fl.get('include_2026w1_participation')))
+
         if not players:
             o = Outcome.blocked(
                 'NONQB_PLAYER_SET_EMPTY',

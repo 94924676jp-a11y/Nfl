@@ -423,6 +423,15 @@ GAME_STATES = (
     # football_engine.py:595-605, readiness.py:700, pool_audit.py:679,
     # completeness.py:123. See `explicit_no_designation` below.
     'READY_BY_EXPLICIT_NO_DESIGNATION',
+    # NOBODY IN THE LEAGUE HAS FILED YET, so this club's silence carries no
+    # club-specific information. Distinguished from the club-specific case
+    # BY EVIDENCE, not by a guessed filing calendar: it is assigned only when
+    # `seen` is empty for EVERY club in the capture. On the Tuesday before a
+    # Thursday game that is the normal state of the world, and refusing it
+    # produced a blank board for a game 51 hours away. READY-prefixed because
+    # every consumer tests startswith('READY'); the projection is EARLY and
+    # the artifact says so.
+    'READY_BY_EARLY_VINTAGE_NO_LEAGUE_REPORT',
     'INJURY_REPORT_NOT_YET_FILED',     # a team has no row for this week at all
     'INJURY_REPORT_INCOMPLETE',        # rows exist, a contract field is unfilled
     'INJURY_REPORT_STALE',             # the feed moved on, this block did not
@@ -709,6 +718,28 @@ def team_readiness(season: int, week: int, team: str, kickoff_utc=None,
         # cut in the reason is what stops `not yet filed` being read as `this
         # team has nobody injured` when the truth is `nothing had been filed
         # YET at the moment this forecast was written`.
+        # IS THIS CLUB SILENT, OR IS THE WHOLE LEAGUE? Different facts.
+        # A club that has not filed while 30 others have is a gap in OUR
+        # evidence about that club. A week where NOBODY has filed is a report
+        # that does not exist yet, and reading the second as the first blanks
+        # the board for every game in the week.
+        if not seen:
+            return {
+                'team': team,
+                'state': 'READY_BY_EARLY_VINTAGE_NO_LEAGUE_REPORT',
+                'reason': f'NO club has an injuries row for {season} week '
+                          f'{week} in any capture'
+                          + (f' retrieved at or before {cut.isoformat()}'
+                             if cut is not None else '')
+                          + f'. The report does not exist yet rather than '
+                            f'{team} being silent about it, so this is an '
+                            f'EARLY vintage. It is NEVER read as absence of '
+                            f'injury: every player keeps the availability '
+                            f'uncertainty his own evidence carries.',
+                'n_rows': 0, 'newest_capture': None,
+                'projection_vintage': 'EARLY',
+                'league_wide_absence': True,
+                'as_of': cut.isoformat() if cut is not None else None}
         return {'team': team, 'state': 'INJURY_REPORT_NOT_YET_FILED',
                 'reason': f'no injuries row for {team} in any capture for '
                           f'{season} week {week}'

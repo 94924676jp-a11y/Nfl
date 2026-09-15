@@ -41,10 +41,19 @@ V1_CANDIDATE_R10 = 'V1_CANDIDATE_R10'
 V1_CANDIDATE_R11 = 'V1_CANDIDATE_R11'
 V1_CANDIDATE_R12 = 'V1_CANDIDATE_R12'
 V1_CANDIDATE_R13 = 'V1_CANDIDATE_R13'
+#: R9 PLUS THE APPROXIMATED 2026 WEEK-1 PARTICIPATION NUMERATOR.
+#: A SEPARATE IDENTITY ON PURPOSE. The accepted Stage-2 estimator is ewma_hl2
+#: over TRUE pass_snaps. For 2026 week 2 that numerator does not exist --
+#: pbp_participation was never captured and `offense_players` is absent from
+#: the play-by-play -- so this arm feeds it a numerator APPROXIMATED from the
+#: team dropback rate. Same estimator, DIFFERENT ESTIMAND. Running it under the
+#: R9 name would be the accepted arm impersonated by an approximation, which is
+#: the defect this registry exists to prevent.
+V1_CANDIDATE_R9_W1P = 'V1_CANDIDATE_R9_W1P'
 MODES = (PRODUCTION_BASELINE, V1_CANDIDATE, V1_CANDIDATE_R5,
          V1_CANDIDATE_R6, V1_CANDIDATE_R7, V1_CANDIDATE_R8,
          V1_CANDIDATE_R9, V1_CANDIDATE_R10, V1_CANDIDATE_R11,
-         V1_CANDIDATE_R12, V1_CANDIDATE_R13)
+         V1_CANDIDATE_R12, V1_CANDIDATE_R13, V1_CANDIDATE_R9_W1P)
 
 # Every mode that is a CANDIDATE, derived so a new one cannot escape a guard
 # by not being added to a hand-written list. See `assert_not_promoted`.
@@ -380,6 +389,38 @@ R9_REPAIR = {
 # scale beside the first and its default is unchanged value for value;
 # `appearance_r8` gains a successor featuriser, fit and predict beside the
 # frozen ones. R8's and R9's coefficients are byte-identical after the change.
+R9_W1P_FLAGS = dict(R9_FLAGS)
+R9_W1P_FLAGS['include_2026w1_participation'] = True
+
+R9_W1P_REPAIR = {
+    'component': 'R9_W1P',
+    'what': 'include the 2026 week-1 participation rows derived in '
+            'panel_2026w1 so the Stage-2 ewma sees a current-season game',
+    'replaces': 'a PARTICIPATION_HISTORY_STALE refusal that produced no '
+                'running back, receiver or tight end at all for a week-2 game',
+    'defect': 'the accepted estimator weights the most recent games hardest '
+              'and the panel stops at ordinal 202518, so week 2 of 2026 had '
+              'no current-season history to weight',
+    'approximation': (
+        'pass_snaps is APPROXIMATED as offense_snaps * (team_dropbacks / '
+        'team_offense_plays). Six of the seven fields the estimator needs are '
+        'exact from held evidence; this one is not derivable because '
+        'offense_players is absent from the play-by-play. The error is '
+        'BOUNDED per row: lo = max(0, snaps - runs), hi = min(snaps, '
+        'dropbacks). Measured on DET/BUF, mean share-bound width 0.307 -- '
+        'tightest for every-down players (Amon-Ra St. Brown 0.098) and widest '
+        'for rotational ones (Brock Wright 0.780).'),
+    'known_bias': (
+        'assumes a player pass/run snap split equal to his team, which '
+        'over-credits blocking tight ends and early-down backs with pass '
+        'participation and under-credits third-down backs and slot receivers'),
+    'not_the_accepted_arm': (
+        'ewma_hl2 over TRUE pass_snaps is the accepted estimator. This is the '
+        'same estimator over a DIFFERENT ESTIMAND and must never be reported '
+        'as, compared against, or promoted in place of the accepted arm '
+        'without the exact numerator.'),
+}
+
 R10_FLAGS = {k: v for k, v in R9_FLAGS.items() if k != 'appearance_r8'}
 R10_FLAGS['appearance_r10'] = True
 
@@ -810,6 +851,19 @@ def resolve(mode: str) -> Outcome:
                    'weeks-since-appearance feature carries a missingness '
                    'indicator and a monotone encoding, and the depth rank is '
                    'within-position on both sides of the fit')
+    if mode == V1_CANDIDATE_R9_W1P:
+        return Outcome.ok(
+            'MODE_V1_CANDIDATE_R9_W1P',
+            value={'mode': V1_CANDIDATE_R9_W1P, 'flags': dict(R9_W1P_FLAGS),
+                   'components': manifest() + [R5_REPAIR, R6_REPAIR,
+                                               R8_REPAIR, R9_REPAIR,
+                                               R9_W1P_REPAIR],
+                   'candidate': True},
+            detail='R9 with the 2026 week-1 participation rows included. The '
+                   'pass-snap numerator on those rows is APPROXIMATED from '
+                   'the team dropback rate, not counted, so this is a '
+                   'different estimand from the accepted arm and carries its '
+                   'own identity')
     if mode == V1_CANDIDATE_R9:
         return Outcome.ok(
             'MODE_V1_CANDIDATE_R9',

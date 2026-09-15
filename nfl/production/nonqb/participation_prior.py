@@ -48,6 +48,24 @@ KNOWN_LIMITATION = ('pass_snaps / team_dropbacks_part is an UPPER BOUND on '
 
 _CACHE: dict = {}
 
+#: OFF BY DEFAULT, AND THE ACCEPTED ARM NEVER TURNS IT ON.
+#: When true, `_history` appends the 2026 week-1 rows derived in
+#: `panel_2026w1`, whose `pass_snaps` is APPROXIMATED from the team dropback
+#: rate rather than counted. That is a different estimand, so it is a different
+#: candidate -- V1_CANDIDATE_R9_W1P -- and never ewma_hl2-on-true-pass_snaps
+#: wearing a new hat. `include_2026w1()` is the only way to set it and it
+#: stamps what it did into the returned evidence.
+_INCLUDE_2026W1 = False
+
+
+def set_include_2026w1(on: bool):
+    """Opt the 2026 week-1 derived rows in or out. Clears the cache."""
+    global _INCLUDE_2026W1
+    if bool(on) != _INCLUDE_2026W1:
+        _CACHE.clear()
+    _INCLUDE_2026W1 = bool(on)
+    return _INCLUDE_2026W1
+
 
 def _ewma():
     """The frozen estimator. Imported so production cannot drift from it."""
@@ -83,6 +101,28 @@ def _history(ordinal_cut: int):
             if den <= 0 or not appeared:
                 continue
             rows.append((o, r['gsis_id'], r['position'], snaps / den))
+
+    w1p_rows, w1p_prov = 0, None
+    if _INCLUDE_2026W1:
+        from nfl.production.nonqb import panel_2026w1 as W1P
+        w = W1P.build()
+        if not w.ok:
+            # A DERIVATION THAT REFUSED IS NOT AN EMPTY SEASON. Raising here
+            # would be indistinguishable from "no 2026 games exist", which is
+            # the absence-as-success defect this project keeps finding.
+            raise RuntimeError(f'{w.code}: {w.detail[:200]}')
+        w1p_prov = w.evidence.get('provenance')
+        for r in w.value:
+            o = int(r['season']) * 100 + int(r['week'])
+            if o >= ordinal_cut:
+                continue
+            den = float(r.get('team_dropbacks_part') or 0)
+            pct = r.get('offense_pct')
+            if den <= 0 or pct in (None, '', '0', '0.0'):
+                continue
+            rows.append((o, r['gsis_id'], r['position'],
+                         float(r['pass_snaps']) / den))
+            w1p_rows += 1
     rows.sort()
     for o, pid, pos, v in rows:
         hist[pid].append(v)
@@ -92,7 +132,8 @@ def _history(ordinal_cut: int):
     pos_mean = {p: (pos_sum[p] / pos_n[p]) if pos_n[p] else None
                 for p in POSITIONS}
     newest = max((o for o, *_ in rows), default=None)
-    _CACHE[key] = (hist, ords, pos_mean, len(rows), newest)
+    _CACHE[key] = (hist, ords, pos_mean, len(rows), newest,
+                   w1p_rows, w1p_prov)
     return _CACHE[key]
 
 
@@ -104,7 +145,7 @@ def share_prior(season: int, week: int, players) -> Outcome:
     """ewma_hl2 of prior appeared pass-snap shares, per player."""
     cut = season * 100 + week
     ew = _ewma()
-    hist, ords, pos_mean, n_rows, newest = _history(cut)
+    hist, ords, pos_mean, n_rows, newest, w1p_rows, w1p_prov = _history(cut)
     if not n_rows:
         return Outcome.blocked(
             'PARTICIPATION_HISTORY_EMPTY',
@@ -169,4 +210,17 @@ def share_prior(season: int, week: int, players) -> Outcome:
         n_on_positional_mean=len(fell_back),
         positional_mean={k: (round(v, 6) if v is not None else None)
                          for k, v in pos_mean.items()},
-        warnings=[f'known limitation: {KNOWN_LIMITATION}'])
+        # THE APPROXIMATION TRAVELS WITH THE NUMBER, ALWAYS.
+        include_2026w1=_INCLUDE_2026W1,
+        n_2026w1_rows=w1p_rows,
+        w1p_provenance=w1p_prov,
+        estimand=('pass_snaps/team_dropbacks_part; the 2026 week-1 numerator '
+                  'is APPROXIMATED from the team dropback rate'
+                  if _INCLUDE_2026W1 else
+                  'pass_snaps/team_dropbacks_part, counted'),
+        warnings=([f'known limitation: {KNOWN_LIMITATION}'] +
+                  ([f'{w1p_rows} row(s) carry an APPROXIMATED pass-snap '
+                    f'numerator; bounds are on the derived rows and the '
+                    f'approximation is tightest for every-down players and '
+                    f'widest for rotational ones']
+                   if _INCLUDE_2026W1 else [])))
