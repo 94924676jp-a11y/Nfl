@@ -9,7 +9,7 @@
   "slate_reviewed": "2026-09-13 (12 games, sealed but QB-only)",
   "scope_note": "CORRECTED 2026-09-11. An earlier version of this ledger asserted NE@SEA was never forecast. It was: a V1_CANDIDATE forecast was sealed at a T-31h information set and scored against the realised game. BOTH games are genuine prospective case studies, n=2, with different limitations rather than one being unusable.",
   "promotion_rule": "No modeling item may be promoted on this evidence. Every MODELING defect below requires multi-game prospective evidence and a pre-registration before any change is scored as an improvement.",
-  "n_defects": 22,
+  "n_defects": 23,
   "defects": [
     {
       "id": "D01",
@@ -437,6 +437,25 @@
       "no_column_was_chosen_to_make_the_corpus_pass": "report_status is blank on every row of injuries.bfa4aa0ee7cde902 and injuries.1bf460ad261559a8 (2026-09-07/08, week 1) because the game-status designation is not assigned until the final report -- practice_status is fully populated on both. That is a CORRECT empty on a midweek practice report. Requiring report_status outright would have flipped two legitimate captures to DEFERRED; quietly dropping it because it failed would be fitting the guard to the data. Hence substantive_any_of, which asks that a row say SOMETHING about availability without dictating which day of the week it is.",
       "a_second_defect_this_uncovered": "THE DEBT BRANCH D20 MADE UNREACHABLE WAS ITSELF BROKEN. capture_vintage.py's SOURCE_HAS_NO_ROWS_YET branch built its evidence with owed=f'{src.name}:{url}' where no local `url` exists -- a NameError that would have crashed the capture the first time an html source legitimately published nothing. It never fired because the marker count never reached zero, which is D20. So D20 was hiding a crash in the very branch it was keeping unreachable, and the D20 repair is what first executed that code. Fixed to src.url at all four sites.",
       "still_open": "THREE SOURCES HAVE NO CONTRACT AND CANNOT GET ONE HERE: official_transactions (PENDING_ENDPOINT_VERIFICATION), pbp_participation and snap_counts (both watch_only). All three have zero committed blobs, so their schema cannot be READ, and declaring guessed column names would be precisely the defect this work exists to prevent -- this project has already shipped an export of 7,926 rows with every meaningful column blank from guessed field names. test_payload_contract reports them as NOT_EXECUTED, which is not a pass. Discharged by one captured sample each; requested as OUT-017."
+    },
+    {
+      "id": "D23",
+      "category": "REPRODUCIBILITY",
+      "games": [
+        "2024_01_ARI_BUF"
+      ],
+      "symptom": "TWO RUNS OF THE SAME GAME AT THE SAME DECLARED CLOCK CONSUMED DIFFERENT INPUTS. Q9_SHADOW_DRYRUN_SEAL_LEDGER.jsonl holds 55 rows for 2024_01_ARI_BUF at written_at 2026-09-12T12:00:00Z carrying TWO distinct input sets, differing in 10 partitions across 5 sources: depth_charts (db0a09454965e6fc vs bd431f6c551c64e4), espn_injuries_json, official_inactives (67511bb2cfc1e9f3 vs fefbd73647bb1e1d), official_injury_report and schedules.",
+      "earliest_layer": "nfl/prospective/q9shadow/inputs.py::bundle, and the replay contract above it",
+      "kind": "REPRODUCIBILITY",
+      "repaired": false,
+      "repaired_by": null,
+      "root_cause_classification": "DIAGNOSED, AND THE SELECTOR IS NOT AT FAULT. inputs.bundle selects the latest capture with retrieved_at <= written_at, which is correct and is what makes that inequality hold by construction. Both picks obey it: 67511bb2cfc1e9f3 retrieved 2026-09-11T00:44:00Z and fefbd73647bb1e1d retrieved 2026-09-12T11:34:53Z, both at or before the clock -- measured across all 385 resolvable picks in the ledger, ZERO violate it. The second blob is genuinely later and genuinely lawful; it simply DID NOT EXIST in this branch's manifest when the seal was written. Counted: 0 rows at 382556b, 0 at the common ancestor 1034e272, 3 on main. Reconciliation added it, dated in the past relative to the clock. THE ONE-LINE STATEMENT: A written_at CUTOFF DOES NOT PIN AN INPUT SET WHEN THE MANIFEST IS APPEND-ONLY AND CAN GAIN ROWS DATED BEFORE THAT CUTOFF. A clock BOUNDS selection; it does not DETERMINE it, because what is selectable is a property of the manifest's content, and the content grows.",
+      "why_it_outranks_most_open_items": "Every chronological comparison in this project re-runs a historical window. If each re-run silently re-selects its inputs as the corpus grows, two arms compared on 'the same' 2024 game may not have seen the same 2024 game, and no before-and-after is reproducible. That is the evidentiary basis of V2. It also means a candidate identity recomputed today need not match the one sealed with it, without anything having gone wrong.",
+      "the_fix_is_already_in_the_artifact": "Every seal records consumed_partition_ids. A REPLAY must reproduce FROM those recorded ids; only a NEW FORECAST re-runs selection. Re-running selection and calling the result a replay produces a different forecast wearing the same clock, which is precisely what the fingerprint discipline exists to prevent. The structural proof that this is not possible today: inputs.bundle's signature is (kickoff_utc, written_at, sources=None) -- no parameter accepts a recorded input set, so no caller can pin a rebuild.",
+      "not_the_cause": "NOT the merge, which only supplied a blob that was always going to be lawful. NOT a clock violation -- 385 of 385 picks obey it. NOT test_q9_live_feature_builder's 5 failures, which reproduce IDENTICALLY at 382556b in a clean pre-merge worktree and are therefore a separate, pre-existing defect that must not be folded into this one.",
+      "replayed_by": "nfl/tests/test_replay_pins_its_inputs.py (section C FAILS by design)",
+      "a_defect_committed_inside_its_own_test": "RECORDED BECAUSE IT IS THE SAME CLASS. The first cut of section C grepped for 'consumed_partition_ids' and counted any line containing '=' as a consumer. It matched `identity={}, consumed_partition_ids=tuple(` -- a CONSTRUCTOR ARGUMENT -- and reported the defect repaired. A textual heuristic reporting a false green inside the test written to catch textual false greens. Replaced with a check on inputs.bundle's actual signature, which cannot be satisfied by prose.",
+      "found_by": "V2 tick queue item 2; diagnosed from the ledger and the manifest, with the merge attribution tested and rejected."
     }
   ],
   "ne_sea_limitations": [
