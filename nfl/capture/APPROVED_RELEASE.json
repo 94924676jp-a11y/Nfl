@@ -1,0 +1,41 @@
+{
+  "allowlist": [
+    "nfl/capture/",
+    "nfl/tools/capture_vintage.py",
+    "nfl/tools/capture_release.py",
+    "nfl/tools/check_retention.py",
+    "nfl/tools/preflight_t90.py",
+    "nfl/tools/gen_t90_schedule.py",
+    "nfl/tools/nflwrite.py",
+    "nfl/identity/",
+    "sportsplatform/governance/",
+    ".github/workflows/"
+  ],
+  "built_at_utc": "2026-09-15T18:34:41.618892+00:00",
+  "capture_code_sha": "8094370a1878c8a2c988b58324b42c056daec186105bff36568da1f898955ded",
+  "capture_release_id": "CAPREL-361a020a66c673b8",
+  "capture_surface": {
+    "nfl/capture/coverage.py": "90b92630091a870d8472264be37bc9a52ecfcdb699825c124742d8c7575f12ff",
+    "nfl/capture/evidence_layers.py": "88c31ed4b85be7eaa9dc1916f14ef6b5128d79cc89eec9b8797bad77bef907c6",
+    "nfl/capture/payload_contract.py": "1b28a955829383575935b44fb62646b764c2fb083d5677ced42f0b357784af7e",
+    "nfl/capture/persisted_provenance.py": "11c34202c76e09f6e70d67e40cfba30285d7731a6e0086b9063e13dd33f5334c",
+    "nfl/capture/registry.py": "fd36045c923d8ae0379fc2ba7700c196cab12c7c328c9d2f5d9811032e3a6092",
+    "nfl/tools/capture_vintage.py": "6ab160c2a088e1d9fcf7daacdbd9791a660ac520a97203b920aceff7ef57b2de"
+  },
+  "changed_paths": [],
+  "deny_substrings": [
+    "nfl/production/",
+    "nfl/research/",
+    "nfl/prospective/",
+    "nfl/product/"
+  ],
+  "n_changed_paths": 0,
+  "note": "The deployed copy of an approved capture release. Pinned on the surface digest, which does not move when the branch does. The executor compares its running surface against capture_code_sha and refuses to fetch anything if they differ.",
+  "parser_version": "capture_identity/1.0.0",
+  "prod_branch": "capture-prod",
+  "promoted_from_development_sha": "008fa20a95ac861f1cb4ef1064862c670dc1327f",
+  "published": true,
+  "resolved_source_sha_recorded_in": "nfl/capture/CAPTURE_RELEASES.jsonl on the development branch",
+  "source_contract_version": "payload_contract/1.0.0",
+  "spec_version": "capture_release/1.0.0"
+}
