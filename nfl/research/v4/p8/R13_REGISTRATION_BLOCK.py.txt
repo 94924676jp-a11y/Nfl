@@ -1,0 +1,163 @@
+# ============================================================================
+# P8 / R13 CANDIDATE REGISTRATION -- PREPARED, NOT APPLIED.
+#
+# `nfl/production/candidate_mode.py` is on P8's explicit DO-NOT-EDIT list and
+# another agent was committing to this tree during this task (HEAD moved from
+# 53a3c27 to 6216de0 mid-run, and `nfl/tests/test_qb_eligibility_den_kc.py`
+# carried someone else's uncommitted edit). Two agents appending to one MODES
+# tuple is exactly how a candidate letter gets taken twice, so the block is
+# written out here for the coordinator to apply rather than applied.
+#
+# R10, R11 and R12 are taken. R13 is the next free identity; if it has been
+# taken since, rename it here and nothing else changes -- this repair touches
+# no other component.
+#
+# APPLY: three edits, all additive. R8 and R9 are not touched.
+# ============================================================================
+
+# ---- 1. near the other mode constants, about line 42 -----------------------
+V1_CANDIDATE_R13 = 'V1_CANDIDATE_R13'
+MODES = (PRODUCTION_BASELINE, V1_CANDIDATE, V1_CANDIDATE_R5,
+         V1_CANDIDATE_R6, V1_CANDIDATE_R7, V1_CANDIDATE_R8,
+         V1_CANDIDATE_R9, V1_CANDIDATE_R10, V1_CANDIDATE_R11,
+         V1_CANDIDATE_R12, V1_CANDIDATE_R13)
+
+
+# ---- 2. after the R12 block ------------------------------------------------
+# R13 REPAIRS THE PASSING-YARD CONSTRUCTION INSIDE QB V1, AND NOTHING ELSE.
+#
+# R9 is untouched and is still what R9 runs; R10, R11 and R12 are concurrent,
+# orthogonal repairs and are not inherited. This is a successor lineage, not an
+# edit.
+#
+# THE DEFECT, MEASURED. `qb2_lib.simulate` built passing yards as
+# `PY = CMP * ypc_d`, where `ypc_d` is ONE game-level yards-per-completion
+# ratio resampled whole from a pool of 3,787 realised QB game-lines and CMP is
+# an independently drawn completion count. The donor ratio carries no record of
+# the completion count that produced it and is not weighted by it, so a ratio
+# estimated at n = 1 completion is applied at n = 16 with no shrinkage. That is
+# SCALE NON-EXCHANGEABILITY. Measured over the sealed corpus: 680 of 520,000
+# `qb/pyds` cells on QB-only team-sides exceed the all-time NFL single-game
+# record of 554 yards, maximum 1,587, a rate of 1.308e-03 against a one-sided
+# 95% bound of 7.907e-04 derived from zero such games in 3,787; 2,262 cells are
+# negative, of which D19's -32 yards on 16 completions is -2.0 x 16 exactly,
+# the -2.0 donated by a one-completion game. Negative yards per completion
+# exists in real football ONLY at 1-2 completions; across the 3,385 games with
+# five or more, the minimum is +3.462.
+#
+# THE REPAIR. The UNIT OF RESAMPLING changes from the game to the completion. A
+# draw needing CMP completions draws donor games with probability proportional
+# to their own completion count and consumes min(n_donor, completions still
+# needed) from each until CMP are covered, so sum_k t_k == CMP and t_k <= n_k
+# in every draw: no donor supplies yardage for more completions than it itself
+# recorded. The mixture weight is the module's existing `rung_weight`, applied
+# per completion block rather than per game -- the unit the weight is a
+# reliability statement about. NOTHING IS CLIPPED, TRUNCATED OR REJECTED: the
+# support of the generator is unchanged and only the probability law moves. No
+# constant is introduced and nothing is refitted.
+#
+# EVIDENCE. 635 eligible 2025 QB-game rows over 272 games, forward-chained
+# (pool 2020-2024), one seed, 1,000 draws, both arms on one slate. Rate above
+# the record 5.260e-03 -> 5.102e-04, row-clustered 95% CI
+# [4.32e-04, 5.89e-04], inside the derived bound. Maximum 2,898 -> 772 yards;
+# minimum -238 -> -3; cells below -30 yards 970 -> 0; cells in D19's own state
+# (16+ completions at or below -32 yards) 938 -> 0. Cells outside the realised
+# ratio support at their own completion count 13,803 -> 112. On the 79
+# quarterbacks who actually appear on the sealed boards, rate 5.873e-03 ->
+# 3.798e-04 and out-of-support 2,395 -> 10.
+#
+# WHAT IT COSTS, RECORDED RATHER THAN SMOOTHED. Passing-yard CRPS 48.855 ->
+# 49.103, paired difference +0.248 [-0.074, +0.524], game-clustered block
+# bootstrap, 2,000 resamples -- the interval contains zero, so this cohort does
+# NOT establish that either arm forecasts better. The centre moves -1.73 yards
+# (-0.84%) and the between-row SD of predicted means 43.97 -> 42.42. Interval
+# coverage moves toward nominal at 50% and 80% (0.531 -> 0.498, 0.827 -> 0.798)
+# and slightly below it at 90% and 95% (0.934 -> 0.912, 0.967 -> 0.959). The
+# implied-ratio variance at 1-4 completions falls further below the realised
+# value than the incumbent's did; that band was already under-dispersed in both
+# arms and the repair makes it worse.
+#
+# IT IS NOT INERT UNDER R2. The completion count is drawn in qb_v1 on every
+# path, so this construction runs whether or not the dropback level arrives
+# from D1 x QB3. R12 and R13 are independently selectable.
+R13_FLAGS = dict(R9_FLAGS)
+R13_FLAGS['qb_ypc_spec'] = 'completion_blocks'
+
+R13_REPAIR = {
+    'component': 'R13',
+    'what': 'passing yards are built by resampling COMPLETIONS -- donor games '
+            'drawn in proportion to their own completion count, each '
+            'supplying at most as many completions as it recorded -- instead '
+            'of multiplying one whole game-level yards-per-completion ratio '
+            'by an independently drawn completion count',
+    'replaces': "qb2_lib.simulate's `PY = CMP * ypc_d`, which stays the "
+                'default and is what every sealed artifact was produced '
+                'under; verified byte-identical on the 2025 cohort',
+    'defect': 'scale non-exchangeability -- a ratio estimated at n = 1 '
+              'completion applied at n = 16 with no shrinkage and no '
+              'denominator weighting. 680 of 520,000 QB-only cells above the '
+              '554-yard all-time record, maximum 1,587, rate 1.308e-03 '
+              'against a derived bound of 7.907e-04; 2,262 negative cells',
+    'evidence': '635 eligible 2025 QB-game rows over 272 games, forward '
+                'chained. Rate above the record 5.260e-03 -> 5.102e-04 '
+                '(row-clustered 95% CI [4.32e-04, 5.89e-04], inside the '
+                'bound); maximum 2,898 -> 772; minimum -238 -> -3; cells '
+                'below -30 yards 970 -> 0; out-of-support cells 13,803 -> 112',
+    'report': 'nfl/research/v4/p8/P8_TAILS_AND_COUNTS.md',
+    'introduces_no_constant': True,
+    'no_clip_truncation_or_rejection': True,
+    'refits_nothing': True,
+    'inert_under_r2': False,
+    'governance': 'EXPLORATORY -- four constructions were compared on the '
+                  'same 2025 frame before one was chosen, and the sealed '
+                  'corpus was inspected before the repair was designed, so '
+                  'forward chaining controls parameter leakage only and not '
+                  'specification leakage. A confirmatory result needs '
+                  'untouched games.',
+    'open_and_not_smoothed': [
+        'passing-yard CRPS 48.855 -> 49.103, paired difference +0.248 '
+        '[-0.074, +0.524], game-clustered block bootstrap. The interval '
+        'contains zero. This cohort does not establish that either arm '
+        'forecasts better and the repair is not offered as one that does.',
+        'the centre moves -1.73 yards (-0.84%), because the completion-'
+        'weighted mean ratio (10.955) is not the unweighted mean of ratios '
+        '(11.135). That is a declared consequence of the denominator '
+        'weighting, not a side effect.',
+        'the implied-ratio variance at 1-4 completions falls from 27.4 to '
+        '12.6 against a realised 148.5. Both arms are badly under-dispersed '
+        'there and the repair makes it worse; the band is 7% of cells and '
+        'no starting-quarterback forecast lives in it.',
+        '324 cells still exceed 554 yards. 46 of them (14.2%) carry a '
+        'completion count above 47, the realised maximum, so part of the '
+        'residual is the completion layer and not this one.',
+        'the randomised PIT chi-square on 9 df moves 19.09 -> 16.51 against a '
+        '5% critical value of 16.92. Neither arm is shown calibrated and the '
+        'word is not used of either; a failure to reject is not evidence of '
+        'adequacy.',
+    ],
+    'inherits': 'R9',
+    'does_not_inherit': 'R10, R11 and R12 -- concurrent, orthogonal repairs',
+}
+
+
+# ---- 3. inside resolve(), beside the other candidate branches --------------
+    if mode == V1_CANDIDATE_R13:
+        return Outcome.ok(
+            'MODE_V1_CANDIDATE_R13',
+            value={'mode': V1_CANDIDATE_R13, 'flags': dict(R13_FLAGS),
+                   'components': manifest() + [R5_REPAIR, R6_REPAIR,
+                                               R8_REPAIR, R9_REPAIR,
+                                               R13_REPAIR],
+                   'candidate': True},
+            detail='R9 plus the R13 completion-block passing-yard '
+                   'construction, which resamples completions instead of '
+                   'multiplying one game-level ratio by an independently '
+                   'drawn completion count. NOT inert under r2.')
+
+
+# ---- 4. the engine flag, wherever run_forecast reads qb_share_spec ---------
+# `qb_ypc_spec` reaches the layer as `qb_v1.forecast(..., ypc_spec=...)`, the
+# same shape `qb_share_spec` already uses. `qb_v1.forecast` refuses an
+# undeclared value by name (QB_YPC_SPEC_UNKNOWN) rather than defaulting to the
+# incumbent, and unlike `share_spec` it is NOT refused alongside `db_external`,
+# because it is not inert under R2.

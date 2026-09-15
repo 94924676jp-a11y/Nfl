@@ -50,6 +50,43 @@ SHARE_SPEC_UNCONDITIONAL = 'unconditional'
 SHARE_SPEC_STARTER_CONDITIONED = 'starter_conditioned'
 SHARE_SPECS = (SHARE_SPEC_UNCONDITIONAL, SHARE_SPEC_STARTER_CONDITIONED)
 
+# HOW PASSING YARDS ARE BUILT FROM COMPLETIONS. The incumbent is the DEFAULT
+# and is byte-for-byte the behaviour every sealed artifact was produced under;
+# a candidate must be asked for by name.
+#
+# YPC_SPEC_GAME_RATIO is the incumbent: ONE game-level yards-per-completion
+# ratio is resampled whole and multiplied by an independently drawn completion
+# count. The donor ratio carries no record of the completion count that
+# produced it and is not weighted by it, so a ratio estimated at n = 1
+# completion is applied at n = 16 with no shrinkage. That is SCALE
+# NON-EXCHANGEABILITY and it is what puts 680 cells of the sealed corpus above
+# the all-time single-game record of 554 yards (max 1,587) and 2,262 cells
+# below zero. Measured on the 3,787-game donor pool: negative yards per
+# completion exists in real football ONLY at 1-2 completions, and across the
+# 3,181 games with 5 or more completions the minimum is +3.462.
+#
+# YPC_SPEC_COMPLETION_BLOCKS (P8 repair, candidate R13) changes the UNIT OF
+# RESAMPLING from the game to the completion. A draw needing CMP completions
+# draws donor games with probability proportional to their own completion
+# count and consumes min(n_donor, completions still needed) completions from
+# each, until CMP are covered:
+#
+#     PY = sum_k t_k * ypc_k,   sum_k t_k == CMP,   t_k <= n_k
+#
+# so no donor game ever supplies yardage for more completions than it itself
+# recorded. The expectation is the ratio estimator sum(pass_yards) /
+# sum(completions) over the pool -- the same quantity the incumbent estimates
+# by an unweighted mean of ratios -- and the dispersion of the implied ratio
+# now falls with CMP the way the realised bands do. NOTHING IS CLIPPED,
+# TRUNCATED OR REJECTED: the support of the generator is unchanged and only
+# the probability law moves. No constant is introduced; the mixture weight is
+# the module's existing `rung_weight`, applied per completion block rather
+# than per game, which is the unit the weight is a reliability statement
+# about.
+YPC_SPEC_GAME_RATIO = 'game_ratio'
+YPC_SPEC_COMPLETION_BLOCKS = 'completion_blocks'
+YPC_SPECS = (YPC_SPEC_GAME_RATIO, YPC_SPEC_COMPLETION_BLOCKS)
+
 
 def load():
     d = pickle.load(open(f'{HERE}/qb.pkl', 'rb'))
@@ -132,6 +169,11 @@ def attach(rs):
         r['prior_primary'] = past[-1]['_primary'] if past else None
         r['h_teamdb'] = [x['team_db'] for x in past if x['team_db'] > 0]
         r['h_ypc'] = [x['pyds'] / x['cmp'] for x in past if x['cmp'] > 0]
+        # THE DENOMINATOR EACH RATIO WAS ESTIMATED ON, kept beside the
+        # ratio. Written unconditionally and in the same order as `h_ypc`, so
+        # the two are index-aligned by construction rather than by a later
+        # zip that could silently mis-pair them. The incumbent never reads it.
+        r['h_ypc_n'] = [x['cmp'] for x in past if x['cmp'] > 0]
         r['h_ypr'] = [x['ryds'] / x['rush_opp'] for x in past
                       if x['rush_opp'] > 0]
         hist[pid].append(r); hord[pid].append(r['ord'])
@@ -162,6 +204,7 @@ def ewma(vals, hl=HL):
 def pools(rs, ev):
     """QB positional pools from strictly prior seasons only."""
     a = collections.Counter(); tdb = []; shares = []; ypc = []; ypr = []
+    ypc_n = []
     strat = collections.defaultdict(list)
     for r in rs:
         if r['season'] >= ev or r['db'] <= 0:
@@ -180,6 +223,7 @@ def pools(rs, ev):
                 strat[r['prior_primary']].append(r['db'] / r['team_db'])
         if r['cmp'] > 0:
             ypc.append(r['pyds'] / r['cmp'])
+            ypc_n.append(r['cmp'])
         if r['rush_opp'] > 0:
             ypr.append(r['ryds'] / r['rush_opp'])
     db = max(a['db'], 1)
@@ -188,6 +232,13 @@ def pools(rs, ev):
             'team_db': np.array(tdb, float) if tdb else np.array([32.0]),
             'share': np.array(shares, float) if shares else np.array([0.9]),
             'ypc': np.array(ypc, float) if ypc else np.array([11.0]),
+            # The completion count behind each pool ratio, index-aligned with
+            # 'ypc'. `ypc_w` is that count normalised: drawing a donor with
+            # this probability is drawing a COMPLETION uniformly from the
+            # pool's completions rather than a GAME uniformly from its games.
+            'ypc_n': np.array(ypc_n, float) if ypc_n else np.array([1.0]),
+            'ypc_w': ((np.array(ypc_n, float) / float(sum(ypc_n)))
+                      if ypc_n else np.array([1.0])),
             'ypr_draws': np.array(ypr, float) if ypr else np.array([4.0]),
             'p_att': a['att'] / db, 'p_sack': a['sacks'] / db,
             'p_scr': a['scr'] / db,
@@ -259,6 +310,154 @@ def _mix(rng, own, pool, w, m, ewma=False):
     return np.where(use, own[pick], pool[rng.integers(0, len(pool), m)])
 
 
+def _norm_w(n, q=None):
+    """Donor probabilities proportional to completion count, optionally EWMA.
+
+    Returns None when there is nothing to draw from, so the caller refuses
+    rather than dividing by zero.
+    """
+    n = np.asarray(n, float)
+    if n.size == 0:
+        return None
+    p = n if q is None else n * np.asarray(q, float)
+    tot = float(p.sum())
+    if not (tot > 0):
+        return None
+    return p / tot
+
+
+def completion_block_yards(rng, own_y, own_n, pool_y, pool_p, pool_n, w, CMP,
+                           own_p=None):
+    """PY as a sum over COMPLETION BLOCKS. Returns (PY, ledger).
+
+    Each block draws one donor game and takes `t = min(n_donor, completions
+    still needed)` completions' worth of that donor's realised yards per
+    completion. The loop ends when every draw has exactly CMP completions
+    covered, so
+
+        sum_k t_k == CMP   and   t_k <= n_k   for every block,
+
+    which is the property the incumbent lacks: there, one donor covers ALL
+    CMP completions however few produced it.
+
+    THE SOURCE IS CHOSEN PER BLOCK, not per draw. `w` is a reliability weight
+    on an estimate of a per-completion rate, so it is applied at the
+    completion. The incumbent applies it at the game, which makes a whole
+    game's yardage either entirely this quarterback's history or entirely the
+    pool's; measured on the 2025 cohort that per-game switch is worth a factor
+    of 1.8 in the rate of cells above the all-time record (9.50e-04 against
+    5.24e-04) and a factor of 9 in out-of-support cells.
+
+    THE LEDGER IS RETURNED, NOT ASSERTED AWAY. It carries the closure this
+    function is supposed to hold by construction, so a caller -- and the test
+    module -- reads the property from the mechanism instead of assuming it.
+    An unchecked construction is an assumption.
+    """
+    CMP = np.asarray(CMP, np.int64)
+    m = CMP.shape[0]
+    acc = np.zeros(m, float)
+    rem = np.maximum(CMP, 0).copy()
+    covered = np.zeros(m, np.int64)
+    have_own = own_p is not None and len(own_y) > 0 and w > 0
+    blocks = 0
+    overdraw = 0
+    rounds = 0
+    while True:
+        live = rem > 0
+        k = int(live.sum())
+        if k == 0:
+            break
+        rounds += 1
+        pk = rng.choice(len(pool_y), k, p=pool_p)
+        yv = pool_y[pk]
+        nv = np.asarray(pool_n, np.int64)[pk]
+        if have_own:
+            use = rng.random(k) < w
+            if use.any():
+                ok = rng.choice(len(own_y), k, p=own_p)
+                yv = np.where(use, np.asarray(own_y, float)[ok], yv)
+                nv = np.where(use, np.asarray(own_n, np.int64)[ok], nv)
+        t = np.minimum(nv, rem[live])
+        overdraw = max(overdraw, int((t - nv).max()))
+        acc[live] += t * yv
+        rem[live] -= t
+        covered[live] += t
+        blocks += k
+    return acc, {'blocks_drawn': blocks, 'rounds': rounds,
+                 'completions_requested': int(CMP.sum()),
+                 'completions_covered': int(covered.sum()),
+                 'closes': bool(np.array_equal(covered, np.maximum(CMP, 0))),
+                 'max_block_completions_above_donor': overdraw}
+
+
+def passing_yards_draws(r, po, rng, w, ew, m, CMP, spec=YPC_SPEC_GAME_RATIO):
+    """Passing yards for one quarterback-game, as m draws.
+
+    ONE FUNCTION, TWO SPECIFICATIONS, SO THERE IS ONE PLACE TO READ. The
+    incumbent branch is the expression `simulate` used inline and consumes the
+    RNG identically, so a run that does not ask for a candidate draws exactly
+    what it drew before.
+    """
+    if spec not in YPC_SPECS:
+        raise ValueError(f'unknown passing-yard specification {spec!r}; '
+                         f'declared: {YPC_SPECS}')
+    if spec == YPC_SPEC_GAME_RATIO:
+        ypc_d = _mix(rng, r['h_ypc'], po['ypc'], w, m, ew)
+        return CMP * ypc_d, None
+    if 'h_ypc_n' not in r:
+        raise ValueError(
+            'QB_YPC_DONOR_COUNTS_ABSENT: the completion-block specification '
+            "needs `h_ypc_n`, which `attach` writes beside `h_ypc`. Refusing "
+            'to fall back to the game-ratio resample this specification '
+            'exists to replace.')
+    if len(r['h_ypc_n']) != len(r['h_ypc']):
+        raise ValueError(
+            f'QB_YPC_DONOR_COUNTS_MISALIGNED: {len(r["h_ypc"])} own ratios '
+            f'against {len(r["h_ypc_n"])} completion counts. A ratio paired '
+            f'with the wrong denominator is the defect this repairs.')
+    pool_p = po.get('ypc_w')
+    if pool_p is None or 'ypc_n' not in po:
+        raise ValueError(
+            'QB_YPC_POOL_NOT_COUNTED: `pools` built no `ypc_n`/`ypc_w`, which '
+            'happens when the pool came from an older build. Refusing rather '
+            'than silently drawing games uniformly.')
+    own_p = _norm_w(r['h_ypc_n'], _ew(len(r['h_ypc_n'])) if ew else None)
+    # THE BLOCK DRAWS RUN ON A SPAWNED CHILD STREAM, and the incumbent's own
+    # `_mix` is called on the parent and its result DISCARDED. Both halves of
+    # that sentence are deliberate and neither is a trick.
+    #
+    # A child stream, because this construction draws a VARIABLE number of
+    # random numbers -- a draw needing more completions draws more donor
+    # blocks. Taken from the shared stream, the RNG position of every layer
+    # drawn after passing yards would depend on the completion draw, a
+    # coupling the incumbent does not have and which would make two runs at
+    # different draw counts non-comparable. `Generator.spawn` derives the
+    # child from the parent's seed sequence, not from its stream position, so
+    # the child is reproducible and independent of what the parent has drawn.
+    #
+    # The discarded `_mix` is STREAM ALIGNMENT and nothing else. It holds the
+    # parent at exactly the position the incumbent leaves it in, so that
+    # `ptd`, `int`, `drush`, `rush_opp`, `ryds` and `rtd` come out BYTE-
+    # IDENTICAL in both arms and the only quantity that differs between them
+    # is the one under treatment. Without it a comparison of the two arms
+    # would be reading six re-randomised layers as though they were an effect.
+    # Its value is never read; R2 made the opposite choice -- skip the draws
+    # and accept a shifted stream -- and said so, and this says so too.
+    _stream_alignment_discarded = _mix(rng, r['h_ypc'], po['ypc'], w, m, ew)
+    del _stream_alignment_discarded
+    PY, ledger = completion_block_yards(
+        rng.spawn(1)[0], np.asarray(r['h_ypc'], float),
+        np.asarray(r['h_ypc_n'], np.int64),
+        po['ypc'], pool_p, po['ypc_n'], w, CMP, own_p=own_p)
+    if not ledger['closes'] or ledger['max_block_completions_above_donor'] > 0:
+        raise ValueError(
+            f'QB_YPC_BLOCK_LEDGER_BROKEN: {ledger}. The closure holds by '
+            f'construction, so a failure here is a defect in this function; '
+            f'it is checked because an unchecked construction is an '
+            f'assumption.')
+    return PY, ledger
+
+
 def share_draws(r, po, rng, w, ew, m, spec=SHARE_SPEC_UNCONDITIONAL):
     """The quarterback's share of his team's dropbacks, as m draws.
 
@@ -322,7 +521,8 @@ def share_draws(r, po, rng, w, ew, m, spec=SHARE_SPEC_UNCONDITIONAL):
 
 
 def simulate(rs, ev, allrows, oracle=(), seed=SEED, m=M_DRAWS, rung='L1',
-             db_external=None, share_spec=SHARE_SPEC_UNCONDITIONAL):
+             db_external=None, share_spec=SHARE_SPEC_UNCONDITIONAL,
+             ypc_spec=YPC_SPEC_GAME_RATIO):
     """Team-aggregate-then-allocate. Returns a dict of (n, m) draw matrices.
 
     `db_external` is R2: an (n_rows, m) INTEGER dropback level supplied by the
@@ -334,6 +534,14 @@ def simulate(rs, ev, allrows, oracle=(), seed=SEED, m=M_DRAWS, rung='L1',
     `share_spec` is P2 repair 3 and defaults to the incumbent. It is INERT
     whenever `db_external` is supplied, because the share is then not drawn at
     all -- see `share_draws`.
+
+    `ypc_spec` is the P8 repair and defaults to the incumbent. It is NOT inert
+    under R2: the completion count is drawn here on every path, so the
+    passing-yard construction runs whether or not the dropback level arrives
+    from outside. The candidate consumes a different number of random numbers
+    from the incumbent -- a variable one, because a draw needing more
+    completions draws more donor blocks -- so its comparator is
+    same-seed-same-slate, not draw-for-draw identity, exactly as R2's is.
 
     Under R2 the team dropback volume `V` and the quarterback share `S` are
     owned by D1 and QB3 respectively. Drawing them here made this layer a
@@ -358,6 +566,9 @@ def simulate(rs, ev, allrows, oracle=(), seed=SEED, m=M_DRAWS, rung='L1',
         if rung not in RUNGS:
             raise ValueError(f'unknown ladder rung {rung!r}; the ladder is '
                              f'CLOSED at {RUNGS}')
+        if ypc_spec not in YPC_SPECS:
+            raise ValueError(f'unknown passing-yard specification '
+                             f'{ypc_spec!r}; declared: {YPC_SPECS}')
         w = rung_weight(r, rung)
         ew = rung in ('L2', 'L3')
 
@@ -433,8 +644,7 @@ def simulate(rs, ev, allrows, oracle=(), seed=SEED, m=M_DRAWS, rung='L1',
             ypc = (r['pyds'] / r['cmp']) if r['cmp'] > 0 else float(po['ypc'].mean())
             PY = CMP * ypc
         else:
-            ypc_d = _mix(rng, r['h_ypc'], po['ypc'], w, m, ew)
-            PY = CMP * ypc_d
+            PY, _ = passing_yards_draws(r, po, rng, w, ew, m, CMP, ypc_spec)
 
         # discrete conversion, never a decomposition axis (see prereg s5).
         # DRAWN FROM THE CAUSAL PARENT, not from attempts: a passing TD is a

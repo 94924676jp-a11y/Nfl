@@ -216,7 +216,7 @@ def slate_prospective(season: int, week: int, qb_players,
 
 
 def forecast(rows, season, allrows, seed=20260908, m=1000,
-             db_external=None, share_spec=None) -> Outcome:
+             db_external=None, share_spec=None, ypc_spec=None) -> Outcome:
     """Run the V1 layer. Returns draw matrices keyed by statistic.
 
     `db_external` is R2: an (n_rows, m) integer dropback level owned by
@@ -227,6 +227,19 @@ def forecast(rows, season, allrows, seed=20260908, m=1000,
     quarterback's share of team dropbacks is built. `None` means the
     incumbent, which is what every sealed artifact was produced under and what
     this default keeps producing, draw cell for draw cell.
+
+    `ypc_spec` is the P8 repair (candidate R13) and names how passing yards
+    are built from completions. `None` means the incumbent -- one game-level
+    yards-per-completion ratio resampled whole and multiplied by an
+    independently drawn completion count -- which is what every sealed
+    artifact was produced under and what this default keeps producing, draw
+    cell for draw cell.
+
+    UNLIKE `share_spec`, IT IS NOT INERT UNDER R2. The completion count is
+    drawn in this layer on every path, so the passing-yard construction runs
+    whether or not the dropback level arrives from D1 x QB3. The two
+    specifications are therefore independently selectable and a run may carry
+    both.
 
     IT IS INERT UNDER R2, AND THAT IS STATED RATHER THAN DISCOVERED. When
     `db_external` is supplied the share is never drawn, so a run carrying both
@@ -244,6 +257,13 @@ def forecast(rows, season, allrows, seed=20260908, m=1000,
             f'Declared: {Q.SHARE_SPECS}. Refusing rather than defaulting to '
             f'the incumbent, which would run a different model than the '
             f'operator asked for.', known=list(Q.SHARE_SPECS))
+    if ypc_spec is not None and ypc_spec not in Q.YPC_SPECS:
+        return Outcome.fail(
+            'QB_YPC_SPEC_UNKNOWN',
+            f'{ypc_spec!r} is not a declared passing-yard specification. '
+            f'Declared: {Q.YPC_SPECS}. Refusing rather than defaulting to the '
+            f'incumbent, which would run a different model than the operator '
+            f'asked for.', known=list(Q.YPC_SPECS))
     if share_spec is not None and db_external is not None:
         return Outcome.fail(
             'QB_SHARE_SPEC_INERT_UNDER_R2',
@@ -261,7 +281,9 @@ def forecast(rows, season, allrows, seed=20260908, m=1000,
         D = Q.simulate(rows, season, allrows, seed=seed, m=m,
                        db_external=db_external,
                        share_spec=(share_spec if share_spec is not None
-                                   else Q.SHARE_SPEC_UNCONDITIONAL))
+                                   else Q.SHARE_SPEC_UNCONDITIONAL),
+                       ypc_spec=(ypc_spec if ypc_spec is not None
+                                 else Q.YPC_SPEC_GAME_RATIO))
     except Exception as exc:                                     # noqa: BLE001
         return Outcome.fail('QB_V1_RAISED', f'{type(exc).__name__}: {exc}')
     # ACTUAL DRAW GENERATION, timed around the simulate call alone. Orchestrator
@@ -285,6 +307,7 @@ def forecast(rows, season, allrows, seed=20260908, m=1000,
         detail=f'{len(rows)} QB-game(s), {m} draws, {SPEC_VERSION}',
         spec_version=SPEC_VERSION,
         share_spec=(share_spec or 'unconditional (incumbent)'),
+        ypc_spec=(ypc_spec or 'game_ratio (incumbent)'),
         draw_generation_seconds=round(draw_seconds, 4),
         n_qb_games=len(rows), n_draws=m,
         draw_cells=int(D['db'].size) * len(FIELDS),

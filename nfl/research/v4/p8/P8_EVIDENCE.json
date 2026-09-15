@@ -1,0 +1,432 @@
+{
+ "spec_version": "p8-tails-and-counts-1",
+ "frame": {
+  "n_rows": 4040,
+  "n_team_games": 3230,
+  "n_primary_ties": 7,
+  "qb_frame_sha256": "e2de51d345502a2717a64e584f5e883a64eb3ed51ff97e5f42e406a0ddba0c54",
+  "per_season": {
+   "2020": 652,
+   "2021": 688,
+   "2022": 668,
+   "2023": 691,
+   "2024": 677,
+   "2025": 664
+  }
+ },
+ "donor_pool": {
+  "games": 3787,
+  "max_realised_pass_yards": 525.0,
+  "above_record": 0,
+  "unweighted_mean_ratio": 11.13452863167489,
+  "completion_weighted_mean_ratio": 10.955001710961561,
+  "total_completions": 70136,
+  "negative_ratios": 10,
+  "max_completions_behind_a_negative_ratio": 2,
+  "games_with_5_or_more_completions": 3385,
+  "games_with_10_or_more_completions": 3181,
+  "min_ratio_at_5_or_more": 3.4615384615384617,
+  "band_support": {
+   "1-1": {
+    "games": 222,
+    "mean_cmp": 1.0,
+    "min": -7.0,
+    "max": 75.0,
+    "var": 148.48860625331213
+   },
+   "2-4": {
+    "games": 180,
+    "mean_cmp": 2.688888888888889,
+    "min": -2.0,
+    "max": 40.0,
+    "var": 53.66292071867024
+   },
+   "5-9": {
+    "games": 204,
+    "mean_cmp": 7.03921568627451,
+    "min": 4.111111111111111,
+    "max": 27.333333333333332,
+    "var": 17.02066294182865
+   },
+   "10-14": {
+    "games": 410,
+    "mean_cmp": 12.43170731707317,
+    "min": 3.4615384615384617,
+    "max": 22.09090909090909,
+    "var": 10.005711864995472
+   },
+   "15-19": {
+    "games": 846,
+    "mean_cmp": 17.19739952718676,
+    "min": 4.235294117647059,
+    "max": 21.0,
+    "var": 7.221726297538643
+   },
+   "20-99": {
+    "games": 1925,
+    "mean_cmp": 25.115844155844155,
+    "min": 5.125,
+    "max": 21.2,
+    "var": 4.177826751049526
+   }
+  }
+ },
+ "derived_rate_bound": {
+  "n": 3787,
+  "events": 0,
+  "one_sided_95_upper": 0.0007907440424271828,
+  "rule_of_three": 0.0007921837866385001,
+  "basis": "zero of n realised QB game-lines above the all-time record of 554"
+ },
+ "sealed_corpus_census": {
+  "boards": 121,
+  "carry_cells": 516000,
+  "carry_non_integer": 327103,
+  "carry_non_integer_fraction": 0.6339205426356589,
+  "rushing_td_above_carries": 442,
+  "of_which_carries_in_0_1_with_one_td": 415,
+  "of_which_carries_in_1_2_with_two_td": 27,
+  "post_counts_repair_boards": {
+   "cells": 10000,
+   "non_integer": 0,
+   "violations": 0,
+   "boards": 2
+  },
+  "qb_pyds_cells": 990000,
+  "qb_pyds_max": 1587.0,
+  "qb_pyds_over_record": 795,
+  "qb_pyds_negative": 2262,
+  "qb_only_sides": {
+   "cells": 520000,
+   "over_record": 680,
+   "rate": 0.0013076923076923077
+  },
+  "c3_bound_sides": {
+   "cells": 470000,
+   "over_record": 115,
+   "rate": 0.0002446808510638298
+  }
+ },
+ "cohorts": {
+  "C1_2025_forward_chained": {
+   "rows": 635,
+   "games": 272,
+   "draws": 1000,
+   "matrices_differing_between_arms": [
+    "pyds"
+   ],
+   "arms": {
+    "incumbent": {
+     "cells": 635000,
+     "max": 2898.0,
+     "min": -238.0,
+     "over_record": 3340,
+     "rate_over_record": 0.00525984251968504,
+     "negative": 1483,
+     "below_minus_30": 970,
+     "out_of_support_banded": 13803,
+     "mean": 207.26401662554787,
+     "sd": 113.85822867550846,
+     "sd_of_row_means": 43.97106324661707,
+     "by_band": {
+      "1-1": {
+       "cells": 25096,
+       "out_of_support": 0,
+       "var_implied_ratio": 27.41010129917342,
+       "realised_var": 148.48860625331213,
+       "min": -7.0,
+       "max": 75.0
+      },
+      "2-4": {
+       "cells": 21792,
+       "out_of_support": 50,
+       "var_implied_ratio": 21.288583787165745,
+       "realised_var": 53.66292071867024,
+       "min": -7.0,
+       "max": 69.0
+      },
+      "5-9": {
+       "cells": 23867,
+       "out_of_support": 781,
+       "var_implied_ratio": 14.28231451904496,
+       "realised_var": 17.02066294182865,
+       "min": -7.0,
+       "max": 69.0
+      },
+      "10-14": {
+       "cells": 67154,
+       "out_of_support": 1201,
+       "var_implied_ratio": 11.751244128497436,
+       "realised_var": 10.005711864995472,
+       "min": -7.0,
+       "max": 75.0
+      },
+      "15-19": {
+       "cells": 155110,
+       "out_of_support": 3449,
+       "var_implied_ratio": 11.084061852629256,
+       "realised_var": 7.221726297538643,
+       "min": -7.0,
+       "max": 75.0
+      },
+      "20-99": {
+       "cells": 326173,
+       "out_of_support": 8322,
+       "var_implied_ratio": 9.876991113330721,
+       "realised_var": 4.177826751049526,
+       "min": -7.0,
+       "max": 75.0
+      }
+     },
+     "crps": 48.85531586551121,
+     "signed_bias": 15.66244182239825,
+     "coverage": {
+      "50": 0.5307086614173229,
+      "80": 0.8267716535433071,
+      "90": 0.9338582677165355,
+      "95": 0.9669291338582677
+     },
+     "randomised_pit_chi2_9df": 19.094488188976378,
+     "pearson_r_mean_vs_realised": 0.440563483252216,
+     "rate_over_record_row_clustered": {
+      "rate": 0.00525984251968504,
+      "se": 0.0003309773475344924,
+      "ci95": [
+       0.004611126918517434,
+       0.005908558120852645
+      ],
+      "inside_derived_bound": false
+     }
+    },
+    "candidate": {
+     "cells": 635000,
+     "max": 771.9032258064517,
+     "min": -3.0,
+     "over_record": 324,
+     "rate_over_record": 0.0005102362204724409,
+     "negative": 12,
+     "below_minus_30": 0,
+     "out_of_support_banded": 112,
+     "mean": 205.53050047484618,
+     "sd": 100.70380466841307,
+     "sd_of_row_means": 42.423824760378906,
+     "by_band": {
+      "1-1": {
+       "cells": 25096,
+       "out_of_support": 0,
+       "var_implied_ratio": 12.553019492504891,
+       "realised_var": 148.48860625331213,
+       "min": -3.0,
+       "max": 69.0
+      },
+      "2-4": {
+       "cells": 21792,
+       "out_of_support": 0,
+       "var_implied_ratio": 7.544059232134247,
+       "realised_var": 53.66292071867024,
+       "min": -0.5,
+       "max": 40.0
+      },
+      "5-9": {
+       "cells": 23867,
+       "out_of_support": 19,
+       "var_implied_ratio": 6.230188547602035,
+       "realised_var": 17.02066294182865,
+       "min": 2.6666666666666665,
+       "max": 27.138996138996138
+      },
+      "10-14": {
+       "cells": 67154,
+       "out_of_support": 1,
+       "var_implied_ratio": 5.7139508031113415,
+       "realised_var": 10.005711864995472,
+       "min": 3.4615384615384617,
+       "max": 22.115702479338843
+      },
+      "15-19": {
+       "cells": 155110,
+       "out_of_support": 45,
+       "var_implied_ratio": 5.034697427092224,
+       "realised_var": 7.221726297538643,
+       "min": 4.033333333333333,
+       "max": 21.994652406417114
+      },
+      "20-99": {
+       "cells": 326173,
+       "out_of_support": 47,
+       "var_implied_ratio": 3.898983817103473,
+       "realised_var": 4.177826751049526,
+       "min": 4.173913043478261,
+       "max": 21.2
+      }
+     },
+     "crps": 49.10303410833011,
+     "signed_bias": 13.928925671696533,
+     "coverage": {
+      "50": 0.49763779527559054,
+      "80": 0.7984251968503937,
+      "90": 0.9118110236220472,
+      "95": 0.9590551181102362
+     },
+     "randomised_pit_chi2_9df": 16.511811023622048,
+     "pearson_r_mean_vs_realised": 0.4529507862929851,
+     "rate_over_record_row_clustered": {
+      "rate": 0.000510236220472441,
+      "se": 4.007877016942848e-05,
+      "ci95": [
+       0.0004316818309403612,
+       0.0005887906100045209
+      ],
+      "inside_derived_bound": true
+     }
+    }
+   },
+   "crps_delta_candidate_minus_incumbent": {
+    "mean": 0.24771824281890245,
+    "ci95": [
+     -0.07375544311657979,
+     0.5244311178546003
+    ],
+    "method": "block bootstrap over whole games, 2000 resamples",
+    "reading": "the interval contains zero, so this cohort does not establish that either arm forecasts better"
+   }
+  },
+  "C2_sealed_board_quarterbacks": {
+   "quarterbacks_on_sealed_boards": 112,
+   "rows_with_a_prior_appearance": 79,
+   "draws": 1000,
+   "matrices_differing_between_arms": [
+    "pyds"
+   ],
+   "no_realised_outcome": "these are 2026 week-1 rows; no outcome for them is in this repository, so no score is computed and none is implied",
+   "arms": {
+    "incumbent": {
+     "cells": 79000,
+     "max": 2208.0,
+     "min": -189.0,
+     "over_record": 464,
+     "rate_over_record": 0.0058734177215189875,
+     "negative": 396,
+     "below_minus_30": 204,
+     "out_of_support_banded": 2395,
+     "mean": 185.69691141801945,
+     "sd": 120.41052256570957,
+     "sd_of_row_means": 47.18264226526416,
+     "by_band": {
+      "1-1": {
+       "cells": 4208,
+       "out_of_support": 0,
+       "var_implied_ratio": 28.300611145720495,
+       "realised_var": 148.48860625331213,
+       "min": -3.0,
+       "max": 69.0
+      },
+      "2-4": {
+       "cells": 4756,
+       "out_of_support": 4,
+       "var_implied_ratio": 21.997225151979453,
+       "realised_var": 53.66292071867024,
+       "min": -3.0,
+       "max": 75.0
+      },
+      "5-9": {
+       "cells": 5157,
+       "out_of_support": 206,
+       "var_implied_ratio": 17.147909496027502,
+       "realised_var": 17.02066294182865,
+       "min": -3.0,
+       "max": 75.0
+      },
+      "10-14": {
+       "cells": 9272,
+       "out_of_support": 257,
+       "var_implied_ratio": 13.445196100500935,
+       "realised_var": 10.005711864995472,
+       "min": -3.0,
+       "max": 49.0
+      },
+      "15-19": {
+       "cells": 18202,
+       "out_of_support": 613,
+       "var_implied_ratio": 14.491006848257781,
+       "realised_var": 7.221726297538643,
+       "min": -3.0,
+       "max": 69.0
+      },
+      "20-99": {
+       "cells": 34671,
+       "out_of_support": 1315,
+       "var_implied_ratio": 12.688384183529342,
+       "realised_var": 4.177826751049526,
+       "min": -7.0,
+       "max": 75.0
+      }
+     }
+    },
+    "candidate": {
+     "cells": 79000,
+     "max": 693.0454545454545,
+     "min": -4.0,
+     "over_record": 30,
+     "rate_over_record": 0.00037974683544303797,
+     "negative": 75,
+     "below_minus_30": 0,
+     "out_of_support_banded": 10,
+     "mean": 184.84004631907464,
+     "sd": 105.16132113568504,
+     "sd_of_row_means": 44.71287934030076,
+     "by_band": {
+      "1-1": {
+       "cells": 4208,
+       "out_of_support": 0,
+       "var_implied_ratio": 15.159820102095262,
+       "realised_var": 148.48860625331213,
+       "min": -3.0,
+       "max": 37.0
+      },
+      "2-4": {
+       "cells": 4756,
+       "out_of_support": 0,
+       "var_implied_ratio": 8.028325455163548,
+       "realised_var": 53.66292071867024,
+       "min": -2.0,
+       "max": 37.0
+      },
+      "5-9": {
+       "cells": 5157,
+       "out_of_support": 4,
+       "var_implied_ratio": 6.308763204824611,
+       "realised_var": 17.02066294182865,
+       "min": 2.676923076923077,
+       "max": 23.55555555555556
+      },
+      "10-14": {
+       "cells": 9272,
+       "out_of_support": 1,
+       "var_implied_ratio": 5.973925912850721,
+       "realised_var": 10.005711864995472,
+       "min": 3.4615384615384612,
+       "max": 21.636363636363637
+      },
+      "15-19": {
+       "cells": 18202,
+       "out_of_support": 4,
+       "var_implied_ratio": 5.296349878219219,
+       "realised_var": 7.221726297538643,
+       "min": 4.219607843137255,
+       "max": 21.2
+      },
+      "20-99": {
+       "cells": 34671,
+       "out_of_support": 1,
+       "var_implied_ratio": 3.954572548302978,
+       "realised_var": 4.177826751049526,
+       "min": 4.666666666666667,
+       "max": 20.827956989247312
+      }
+     }
+    }
+   }
+  }
+ }
+}

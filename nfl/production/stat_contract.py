@@ -33,9 +33,9 @@ and every number in the docstrings was measured by
 `nfl/tests/test_stat_contract.py` against the pbp corpus in
 `nfl/research/postgame/`, not recalled.
 
-THIS MODULE REPAIRS NOTHING. `assert_counts_are_counts` and
-`assert_dropback_identity` return a FAIL naming the violating cells; they never
-round, clip or renormalise. `deal_counts` is a generator, not a repair: it is
+THIS MODULE REPAIRS NOTHING. `assert_counts_are_counts`,
+`assert_events_within_opportunity` and `assert_dropback_identity` return a FAIL
+naming the violating cells; they never round, clip or renormalise. `deal_counts` is a generator, not a repair: it is
 called INSTEAD of forming a continuous product, never afterwards.
 """
 from __future__ import annotations
@@ -474,6 +474,110 @@ def assert_counts_are_counts(matrices, *, metrics=None) -> Outcome:
         detail=f'{len(checked)} declared count(s) are non-negative integers '
                f'in every cell',
         checked=checked, not_declared_counts=skipped,
+        contract_version=CONTRACT_VERSION)
+
+
+# EVENT -> OPPORTUNITY. Which count is bounded by which, per draw cell.
+#
+# THE DEFECT THIS EXISTS FOR. 442 cells of the sealed corpus carry more
+# rushing touchdowns than carries. Every one of them has a FRACTIONAL carry:
+# 415 sit at 0 < carries < 1 with one touchdown and 27 at 1 < carries < 2 with
+# two, because `layers.rushing_td` drew its binomial on a ROUNDED carry count
+# while the board published the unrounded one. Two numbers for one quantity.
+#
+# The generation half is already repaired -- `deal_counts` deals an integer
+# budget, and the two boards built after that repair carry zero fractional
+# carries and zero violations -- but NOTHING ASSERTED THE INVARIANT. The
+# repair closed the cause and left the symptom unfenced, so a second route to
+# the same state would reach a sealed artifact unannounced.
+#
+# THE COMPARISON IS AGAINST THE PUBLISHED OPPORTUNITY, NEVER A ROUNDING OF IT.
+# All 442 violations vanish against `ceil(carries)` or `rint(carries)`, and
+# that is exactly why neither is used: rounding the denominator would make the
+# count zero while leaving a fractional carry in a published artifact, which
+# is the symptom disappearing rather than the defect closing.
+EVENT_BOUNDS = {
+    'rushing/rushing_td': ('rushing/carries',
+                           'a rushing touchdown is scored on a carry'),
+    'receiving/receptions': ('receiving/targets',
+                             'a reception is a completed target'),
+    'receiving/receiving_td': ('receiving/receptions',
+                               'a receiving touchdown is caught'),
+    'qb/cmp': ('qb/att', 'a completion is a completed attempt'),
+    'qb/ptd': ('qb/cmp', 'a passing touchdown is a completion'),
+}
+
+
+def assert_events_within_opportunity(matrices, *, round_opportunity=None,
+                                     bounds=None) -> Outcome:
+    """Every declared event <= its opportunity, per draw cell. ASSERTS only.
+
+    A pair whose opportunity array is absent is SKIPPED AND NAMED, because a
+    check that silently had nothing to check is this project's Class A defect
+    wearing a green tick. A call that checks nothing at all is BLOCKED.
+    """
+    if round_opportunity is not None:
+        return Outcome.fail(
+            'EVENT_OPPORTUNITY_ROUNDING_REQUESTED',
+            f'round_opportunity={round_opportunity!r}. The bound is read '
+            f'against the opportunity the artifact PUBLISHES. Rounding it '
+            f'first is what turns 442 impossible cells into zero impossible '
+            f'cells without removing one fractional carry from one board, '
+            f'and this contract refuses to be the place that happens.')
+    pairs = dict(bounds if bounds is not None else EVENT_BOUNDS)
+    checked, skipped, viol = {}, [], []
+    for ev, (opp, why) in sorted(pairs.items()):
+        if ev not in matrices or opp not in matrices:
+            skipped.append({'event': ev, 'opportunity': opp,
+                            'missing': [k for k in (ev, opp)
+                                        if k not in matrices]})
+            continue
+        e = np.asarray(matrices[ev], float)
+        o = np.asarray(matrices[opp], float)
+        if e.shape != o.shape:
+            return Outcome.fail(
+                'EVENT_OPPORTUNITY_SHAPE',
+                f'{ev} has shape {list(e.shape)} against {opp} '
+                f'{list(o.shape)}. These share one draw index, so a mismatch '
+                f'is refused rather than broadcast.', event=ev, opportunity=opp)
+        if e.size == 0:
+            return Outcome.fail(
+                'EVENT_MATRIX_EMPTY',
+                f'{ev} carries no cells. An empty matrix is not zero '
+                f'violations.', event=ev)
+        bad = e > o
+        n = int(bad.sum())
+        checked[ev] = {'opportunity': opp, 'cells': int(e.size),
+                       'violations': n, 'why': why}
+        if n:
+            worst = float((e - o)[bad].max())
+            checked[ev]['worst_excess'] = worst
+            viol.append((ev, opp, n, worst, why))
+    if not checked:
+        return Outcome.blocked(
+            'NO_EVENT_OPPORTUNITY_PAIR_SUPPLIED',
+            f'none of the {len(matrices)} matrix(es) supplied completes a '
+            f'declared event/opportunity pair: {sorted(matrices)[:8]}. '
+            f'Nothing was checked, which is not the same as everything '
+            f'passing.', cause=Cause.DATA, supplied=sorted(matrices),
+            declared=sorted(pairs), skipped=skipped)
+    if viol:
+        return Outcome.fail(
+            'EVENT_EXCEEDS_OPPORTUNITY',
+            '; '.join(f'{e}: {n} cell(s) above {o} (worst excess {w:.6f}) -- '
+                      f'{why}' for e, o, n, w, why in viol)
+            + '. Refused rather than reconciled: the opportunity is what the '
+              'artifact publishes, and an event that cannot have happened is '
+              'a defect in whatever generated the pair.',
+            violations=[{'event': e, 'opportunity': o, 'cells': n,
+                         'worst_excess': w} for e, o, n, w, _ in viol],
+            checked=checked, skipped_pairs=skipped,
+            contract_version=CONTRACT_VERSION)
+    return Outcome.ok(
+        'EVENTS_WITHIN_OPPORTUNITY', value=checked,
+        detail=f'{len(checked)} event/opportunity pair(s) hold in every draw '
+               f'cell',
+        checked=checked, skipped_pairs=skipped,
         contract_version=CONTRACT_VERSION)
 
 
