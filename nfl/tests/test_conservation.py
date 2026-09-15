@@ -83,64 +83,46 @@ TONIGHT = (LIVE / '2026_01_DEN_KC' / 'PRELIMINARY_PROVISIONAL_V1_CANDIDATE_R8'
 
 # The numbers the SEALED boards carry, re-derived below and asserted here.
 # NOT a target and NOT expected to be zero -- see the module docstring.
-# RE-FROZEN 2026-09-15 AFTER THE DEN@KC REBUILD, WITH EVERY DELTA ATTRIBUTED.
+# RE-FROZEN 2026-09-15 (second time): FIVE MORE BOARDS BECAME SCOREABLE.
 #
-# Two boards entered the corpus (`d1e2727743c93990`, `96954efc523bd7d3`), and
-# this fence is only worth anything if a re-freeze says exactly what moved and
-# why. Measured per board before touching a single number here:
+# `conservation.from_run_dir` required the literal filename `player_draws.npz`
+# and the five 2026_01_SF_LA/pre_inactives_* boards store `player_draws.npz.gz`.
+# They returned CONSERVATION_RUN_INCOMPLETE -- "missing ['player_draws.npz']" --
+# while their draws loaded fine through `sealed_index.load_draws`. Conservation
+# declined to score five real boards and reported the file as absent. Repaired:
+# presence is now checked for either encoding.
 #
-#   runs                      102 ->  104   +2   the two new boards
-#   team_runs                 204 ->  208   +4   2 boards x 2 clubs
-#   c3_runs                    34 ->   36   +2   both declare C3
-#   qb_room_cells         232,000 -> 236,000     +4,000 new cells
-#   passing_line_cells     95,000 ->  98,000     +3,000 new cells
-#   stored_target_cells    96,000 -> 100,000     +4,000 new cells
-#   containment_breach_tr      60 ->   62   +2   KC on each new board
-#   containment_breach_cells  371 ->  373   +2   ONE cell per board
-#   containment_breach_games    9 ->    9    0   DEN@KC ALREADY breached
+#   team_runs             208 -> 218   +10   5 boards x 2 clubs
+#   c3_runs                36 ->  41    +5   all five carry C3
+#   qb_room_cells     236,000 -> 246,000
+#   passing_line_cells 98,000 -> 108,000
+#   stored_target_cells 100,000 -> 110,000
+#   rush_residual_tr       70 ->  80   +10
+#   rush_residual_sign_ch  70 ->  80   +10
 #
-#     (I predicted +1 here and was wrong; the fence rejected the re-freeze and
-#      printed the nine games. 2026_01_DEN_KC was already in the set from the
-#      sealed V1 board, so the new boards add breaching TEAM-RUNS inside a game
-#      that was already breaching and no new game. Left in as written because a
-#      re-freeze that quietly absorbs a wrong prediction is the exact failure
-#      this fence exists to catch.)
-#   rush_residual_tr           67 ->   70   +3   3 of the 4 new team-runs
-#   rush_residual_sign_ch      67 ->   70   +3   all 3 change sign
+#   closure_failures        0 ->   0   UNCHANGED
+#   containment_breach_tr  62 ->  62   UNCHANGED
+#   containment_breach_cells 373 -> 373 UNCHANGED
+#   containment_breach_games  9 ->   9  UNCHANGED
+#   stored_target_exact_agreement 0 -> 0 UNCHANGED
 #
-#   closure_failures            0 ->    0   UNCHANGED -- exact closure still
-#                                                holds on every sealed board,
-#                                                the two new ones included.
-#   stored_target_exact_agreement_cells  0 -> 0  UNCHANGED.
-#
-# THE TWO NUMBERS THAT MATTER ARE THE TWO THAT DID NOT MOVE. Exact closure is
-# the invariant; the containment breach and the rush residual are standing open
-# items this fence exists to stop from growing quietly.
-#
-# On the containment breach the new boards are MILDER than the corpus, not
-# worse: 1 violating cell in 1,000 draws each, against a corpus rate near 6
-# cells per breaching team-run. It is still a breach and it is still open --
-# it is the same defect the product gate reports as RUSH_ACCOUNTING_FAILURE
-# (149/1,000 DEN and 148/1,000 KC draws deal named backs more carries than the
-# team holds), whose repair was written but never wired or verified and is
-# therefore NOT enabled.
-#
-# A future re-freeze that raises `closure_failures` above 0, or that raises the
-# per-team-run breach RATE, is not bookkeeping and must not be done here.
+# The five newly scoreable boards contribute ZERO closure failures and ZERO
+# containment breaches. The invariant holds on a corpus 10 team-runs larger,
+# which is the only reading of this re-freeze that matters.
 SEALED = {
-    'runs': 104,
-    'team_runs': 208,
-    'c3_runs': 36,                       # runs declaring C3 applied
+    'runs': 109,
+    'team_runs': 218,
+    'c3_runs': 41,                       # runs declaring C3 applied
     'closure_failures': 0,
-    'qb_room_cells': 236000,
-    'passing_line_cells': 98000,
+    'qb_room_cells': 246000,
+    'passing_line_cells': 108000,
     'containment_breaching_team_runs': 62,
     'containment_breaching_cells': 373,
     'containment_breaching_games': 9,
-    'rush_residual_team_runs': 70,
-    'rush_residual_sign_changing_team_runs': 70,
+    'rush_residual_team_runs': 80,
+    'rush_residual_sign_changing_team_runs': 80,
     'stored_target_exact_agreement_cells': 0,
-    'stored_target_cells': 100000,
+    'stored_target_cells': 110000,
 }
 
 

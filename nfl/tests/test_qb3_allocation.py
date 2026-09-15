@@ -136,9 +136,33 @@ def test_F_production_layer_refuses_correctly():
                         [{'gsis_id': p, 'team': t}
                          for t, room in dc.value.items() for p in room],
                         m=50, kickoff_utc='2020-01-01T00:00:00Z')
+        # THE REFUSAL MOVED EARLIER, AND THAT IS THE REPAIR WORKING.
+        #
+        # This asserted FAIL[DEPTH_CHART_CHRONOLOGY_FAILURE] -- the guard
+        # inside `allocate`, which fires AFTER a chart has been selected and
+        # found too new. On 2026-09-15 selection itself became clock-aware:
+        # `captured_depth_chart(as_of=...)` picks the newest vintage lawful at
+        # the cut, so with a 2020 kickoff no vintage qualifies and it refuses
+        # up front with BLOCKED[DEPTH_CHART_NO_LAWFUL_VINTAGE].
+        #
+        # BLOCKED is the right state for that: "no capture predates this
+        # instant" is an absence of data, not a violated invariant, and the
+        # code names the absence rather than reporting that the chart it
+        # happened to grab was too new.
+        #
+        # BOTH codes are accepted and NOTHING WIDER. The property under test is
+        # that a chart the forecast could not have seen is refused; asserting
+        # merely `state is not PASS` would also swallow an unrelated failure,
+        # which is how a refusal check stops testing refusal.
+        #
+        # The chronology guard is now a backstop rather than the only defence.
+        # It remains reachable if selection is ever bypassed, and
+        # `test_depth_chart_vintage_selection` covers the selector directly.
         check('  a depth chart retrieved after kickoff is REFUSED',
-              o.state is State.FAIL
-              and o.code == 'DEPTH_CHART_CHRONOLOGY_FAILURE',
+              (o.state is State.FAIL
+               and o.code == 'DEPTH_CHART_CHRONOLOGY_FAILURE')
+              or (o.state is State.BLOCKED
+                  and o.code == 'DEPTH_CHART_NO_LAWFUL_VINTAGE'),
               f'{o.state.value}[{o.code}]')
     e = QA.allocate(2026, 1, ['NE'], [], m=20)
     check('  an empty QB list is refused, not silently emptied',

@@ -931,9 +931,25 @@ def from_run_dir(path) -> Outcome:
     and never an empty result.
     """
     d = pathlib.Path(path)
-    need = ('player_draws.npz', 'player_draws_manifest.json', 'board.json',
+    # THE DRAWS ARE FOUND BY CONTENT, NOT BY ONE SPELLING OF THE FILENAME.
+    #
+    # This required the literal `player_draws.npz`, and five
+    # 2026_01_SF_LA/pre_inactives_* boards store `player_draws.npz.gz`. They
+    # reported CONSERVATION_RUN_INCOMPLETE -- "missing ['player_draws.npz']" --
+    # while their draws loaded perfectly through `sealed_index.load_draws`,
+    # which has handled both encodings since it was written. So conservation
+    # declined to score five real boards and said the file was absent.
+    #
+    # It is the same extension-blindness that made three corpus fences report
+    # 104 of 121 boards, one module further on: fixing the globs did not fix
+    # the readers behind them. Discovery is by content; so is presence.
+    draws = next((p for p in (d / 'player_draws.npz',
+                              d / 'player_draws.npz.gz') if p.exists()), None)
+    need = ('player_draws_manifest.json', 'board.json',
             'forecast_artifact.json')
     missing = [f for f in need if not (d / f).exists()]
+    if draws is None:
+        missing = ['player_draws.npz or player_draws.npz.gz'] + missing
     if missing:
         return Outcome.blocked(
             'CONSERVATION_RUN_INCOMPLETE',
@@ -943,7 +959,13 @@ def from_run_dir(path) -> Outcome:
     man = json.load(open(d / 'player_draws_manifest.json'))
     board = json.load(open(d / 'board.json'))
     art = json.load(open(d / 'forecast_artifact.json'))
-    z = np.load(d / 'player_draws.npz')
+    if draws.name.endswith('.gz'):
+        import gzip as _gz
+        import io as _io
+        z = np.load(_io.BytesIO(_gz.open(draws, 'rb').read()),
+                    allow_pickle=True)
+    else:
+        z = np.load(draws, allow_pickle=True)
     arrays = {k.replace('__', '/', 1): z[k].astype(float) for k in z.files}
     rows = team_rows(man, board.get('players'))
     if rows.state is not State.PASS:
