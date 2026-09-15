@@ -57,6 +57,19 @@ jobs:
   capture:
     runs-on: ubuntu-latest
     steps:
+      # WHERE THIS FILE HAS TO LIVE, AND IT IS NOT capture-prod.
+      #
+      # GitHub reads a `schedule:` workflow DEFINITION from the DEFAULT BRANCH
+      # only. A pin committed solely to capture-prod is inert: the scheduler
+      # never reads that copy, so it would go on checking out the default
+      # branch while a test on another branch reported the pin present. That is
+      # D24's own shape -- a repair on the branch that does not run -- and it
+      # nearly happened to the repair for D24.
+      #
+      # So: this DEFINITION belongs on the default branch, and the capture
+      # SURFACE it checks out belongs on capture-prod. The two are separate on
+      # purpose.
+      #
       # D24. EXPLICIT GOVERNED REF, NOT THE DEFAULT BRANCH.
       #
       # This step used to be a bare `actions/checkout@v4`. A `schedule:`
