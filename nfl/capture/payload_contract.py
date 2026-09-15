@@ -34,6 +34,11 @@ capture_vintage already used for an unpublished page.
 import csv as _csv
 import io
 
+#: Declared so a capture row can prove WHICH contract shape judged it. A
+#: provenance field reading "unknown" is a provenance field that has not been
+#: filled in, and `capture_release` was recording exactly that.
+SPEC_VERSION = 'payload_contract/1.0.0'
+
 CODE_EMPTY = 'SOURCE_HAS_NO_ROWS_YET'
 
 
