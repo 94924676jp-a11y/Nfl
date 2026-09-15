@@ -41,6 +41,8 @@ import csv
 import gzip
 import hashlib
 import json
+import tempfile
+import os
 import pathlib
 import sys
 import time
@@ -71,6 +73,45 @@ _STAGE = None            # staged input directory, one per process
 _FIT = {}                # (season, injuries fingerprint) -> fitted model
 
 
+def stage_digest(manifest_path=None) -> str:
+    """A digest of exactly the bytes staging will produce.
+
+    Over the MANIFEST, not over the staged files: the manifest carries each
+    leaf's `sha256_decompressed`, staging refuses on any mismatch, so the
+    manifest determines the staged tree completely. Two runs agreeing here
+    cannot disagree on disk without one of them refusing.
+
+    `NEEDED` is included because it selects WHICH leaves are staged, and a
+    change to it changes the tree while leaving every hash untouched.
+    """
+    p = pathlib.Path(manifest_path) if manifest_path else MANIFEST
+    files = json.loads(p.read_text())['files']
+    parts = [f'{name}:{files.get(name, {}).get("sha256_decompressed", "")}'
+             for name in sorted(NEEDED)]
+    parts.append('needed:' + ','.join(sorted(NEEDED)))
+    return hashlib.sha256('\n'.join(parts).encode()).hexdigest()[:16]
+
+
+def _stage_root(digest: str) -> pathlib.Path:
+    """Where a stage with this digest lives. One directory per CONTENT.
+
+    THE LEAK THIS REPLACES. `tempfile.mkdtemp(prefix='nfl-appearance-')` ran
+    once per process and the directory was never removed. On 2026-09-14, 617 of
+    them at 33 MB each filled the disk to 100% with 1.5 MB free, stopping an
+    agent mid-measurement and invalidating a full suite run that was in flight.
+    A board build spawns several processes, so the leak scaled with the thing
+    this project does most.
+
+    Content addressing fixes it without adding a cache: the path is a function
+    of the manifest, so a second process finds the first one's tree, and every
+    leaf is still hash-checked on the way in. Nothing is deleted on exit --
+    another live process may be reading it -- and a stale directory is either
+    byte-correct or has a different name.
+    """
+    base = os.environ.get('NFL_STAGE_ROOT') or tempfile.gettempdir()
+    return pathlib.Path(base) / f'nfl-appearance-{digest}'
+
+
 def stage_inputs(dest=None) -> Outcome:
     """Decompress the committed leaves, hash-checking every one."""
     global _STAGE
@@ -81,9 +122,7 @@ def stage_inputs(dest=None) -> Outcome:
                                f'{MANIFEST} is absent, so no leaf can be '
                                f'verified before use', cause=Cause.DATA)
     man = json.loads(MANIFEST.read_text())['files']
-    import tempfile
-    d = pathlib.Path(dest) if dest else pathlib.Path(
-        tempfile.mkdtemp(prefix='nfl-appearance-'))
+    d = pathlib.Path(dest) if dest else _stage_root(stage_digest())
     d.mkdir(parents=True, exist_ok=True)
     for name in NEEDED:
         src = INPUTS / (name + '.gz')
