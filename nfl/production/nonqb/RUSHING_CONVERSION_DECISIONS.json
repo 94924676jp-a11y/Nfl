@@ -1,0 +1,42 @@
+{
+ "artifact": "NFL_RUSHING_CONVERSION_OWNER_DECISIONS",
+ "spec_version": "rushing-conversion-decisions-1",
+ "decided_at_utc": "2026-09-16",
+ "decided_by": "owner",
+ "supersedes_verdict": "RUSHING_CONVERSION_CONTROL_UNDEFINED",
+ "context": "nfl/production/nonqb/layers.py returned DEFERRED RUSHING_CONVERSION_CONTROL_UNDEFINED with three open scientific decisions reserved to the owner. The module refuses a caller-supplied prior BEFORE anything else so that the refusal is about ownership rather than absence; these decisions are what lift it.",
+ "RUSH-DECISION-1": {
+  "question": "which distributional family the control uses for a season with no outcomes; P5A selects by CRPS against the evaluation season's own realised yards, which cannot run for 2026, and the predeclared Y-1 inner-validation nesting was never implemented",
+  "decision": "FREEZE_FAMILY_FROM_MOST_RECENT_COMPLETED_SEASON",
+  "resolved_value": "emp_tilt",
+  "basis": "p5a_results.json 2025 family_by_system.A",
+  "label_required": "CARRIED_FORWARD_NOT_SELECTED",
+  "caveat": "the family is not validated for 2026 and must never be described as selected for it. It is the 2025 choice carried forward.",
+  "instability_flag": "THE A-FAMILY IS NOT STABLE ACROSS SEASONS. 2024 family_by_system.A is 'mix3' and 2025 is 'emp_tilt'. Freezing the most recent completed season therefore carries a family that DIFFERS from the one the prior season would have frozen. This is recorded rather than smoothed over, and it bounds how much confidence the frozen choice deserves."
+ },
+ "RUSH-DECISION-2": {
+  "question": "whether promotion criterion 4 (randomised PIT within 25%) is read per season or pooled; it is the only criterion system B breaches and it breaches in one season of four",
+  "decision": "PER_SEASON",
+  "consequence": "the control is the OPPORTUNITY-ONLY POOL, system A. A player-shrunk system is NOT promoted.",
+  "note": "one season's breach disqualifies. This is the stricter reading and it costs player-specific efficiency."
+ },
+ "RUSH-DECISION-3": {
+  "question": "whether the control is the PREDECLARED position-stratified pool (RB versus non-RB) or the UNSTRATIFIED pool that was implemented; they are different distributions",
+  "decision": "POSITION_STRATIFIED_RB_VS_NON_RB",
+  "consequence": "honours the predeclaration. RB and non-RB carries draw from different per-carry distributions.",
+  "implementation_gap": "p5a_results.json carries ONE unstratified pool per season -- mean 4.3166, p_exp 0.11415, p_stuff 0.20181 on 126,077 training carries for 2025. The stratified pools the decision requires ARE NOT IN THE ARTIFACT and must be rebuilt from pre-cutoff play-by-play before the control can run. This is work, not a lookup."
+ },
+ "resulting_control": {
+  "system": "A (opportunity-only)",
+  "family": "emp_tilt (carried forward from 2025)",
+  "stratification": "RB vs non-RB",
+  "estimand": "predictive distribution of player-game rushing yards as a compound: draw the carry count from the accepted joint allocation, then draw that many per-carry outcomes",
+  "prohibited": "rushing_yards = carries x yards_per_carry. Named as prohibited in layers.py: it puts a point where a distribution belongs and discards the stuff and explosive components. The decisions above do not license it."
+ },
+ "still_required_before_the_control_can_run": [
+  "rebuild RB and non-RB per-carry pools from play-by-play strictly before ordinal 202602",
+  "implement emp_tilt sampling against those stratified pools",
+  "wire the compound draw so carries come from the joint allocation already sealed, not resampled",
+  "assert per draw that team rushing yards equal the sum of player rushing yards"
+ ]
+}
