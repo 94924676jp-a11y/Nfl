@@ -72,10 +72,18 @@ def _ds(n_rows=3, n_draws=64, seed=7):
     rng = np.random.default_rng(seed)
     base = rng.integers(0, 400, (n_rows, n_draws)).astype(float)
     ds = DA.DrawSet('run-test', 'G_TEST', 20260908, 'per-row seed 20260908')
+    # A PLAYER-AXIS LAYER MUST CARRY THE TEAM OF EVERY ROW. `add_layer` now
+    # refuses one that does not, because a row whose club is unknown cannot be
+    # conserved on a team axis and the display board is not a wide enough
+    # fallback. The fixture is brought onto the contract rather than the
+    # contract relaxed for the fixture: these rows are synthetic, so they are
+    # given synthetic clubs.
     o = ds.add_layer('qb', [f'p{i}' for i in range(n_rows)],
                      {'base': base, 'paired': 2.0 * base + 1.0,
                       'ptd': rng.integers(0, 5, (n_rows, n_draws))},
-                     'spec-test-1', 'default_rng([seed, ord, gsis_id])')
+                     'spec-test-1', 'default_rng([seed, ord, gsis_id])',
+                     row_teams={f'p{i}': 'T%d' % (i % 2)
+                                for i in range(n_rows)})
     if o.state is not State.PASS:
         raise AssertionError(f'fixture draw set did not build: {o}')
     return ds, base
@@ -190,9 +198,11 @@ def test_a_ragged_draw_index_is_rejected():
     """The defect that would break every dependence diagnostic SILENTLY."""
     print('\nB13-D. one shared draw index, or a refusal')
     ds = DA.DrawSet('r', 'g', 1, 'p')
-    o = ds.add_layer('a', ['x'], {'m': np.zeros((1, 10))}, 's', 'stream')
+    o = ds.add_layer('a', ['x'], {'m': np.zeros((1, 10))}, 's', 'stream',
+                     row_teams=['T0'])
     check('the first layer sets the index', o.state is State.PASS, o.code)
-    o = ds.add_layer('b', ['y'], {'m': np.zeros((1, 9))}, 's', 'stream')
+    o = ds.add_layer('b', ['y'], {'m': np.zeros((1, 9))}, 's', 'stream',
+                     row_teams=['T0'])
     check('a second layer on a DIFFERENT draw width refuses with '
           'DRAW_INDEX_RAGGED',
           o.state is State.FAIL and o.code == 'DRAW_INDEX_RAGGED', o.code)
@@ -200,7 +210,8 @@ def test_a_ragged_draw_index_is_rejected():
           'b/m' not in ds.arrays and 'b' not in ds.layers)
     # and the same defect caught on read, where a hand-built file could carry it
     ds2 = DA.DrawSet('r', 'g', 1, 'p')
-    ds2.add_layer('a', ['x'], {'m': np.zeros((1, 10))}, 's', 'stream')
+    ds2.add_layer('a', ['x'], {'m': np.zeros((1, 10))}, 's', 'stream',
+                  row_teams=['T0'])
     d = _tmp()
     w = ds2.write(d)
     ds2.arrays['a/n'] = np.zeros((1, 3))

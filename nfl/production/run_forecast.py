@@ -58,6 +58,12 @@ EXCLUSION_LIMIT = 0.01
 
 ARMS = ('A', 'B', 'C')
 
+#: The seal contract for a REFUSED C3. Written on every C3 run, whether or not
+#: the refusal occurred, so that its ABSENCE means "sealed by an engine that
+#: did not transport this" rather than "nothing went wrong". A key that appears
+#: only on failure cannot distinguish a healthy run from an old one.
+C3_REFUSAL_CONTRACT = 'c3-refusal-transport-1'
+
 # WHAT A QUARTERBACK NUMBER ON THIS BOARD IS STILL WRONG ABOUT, IN ONE STRING.
 #
 # Recorded on every run that filters the QB pool, because the two limitations
@@ -1442,6 +1448,57 @@ def build(args, fixtures: dict = None) -> dict:
             else:
                 not_reached.append('C3')
             fx['_c3_state'] = sp
+            # A REFUSED HARD INVARIANT MUST REACH THE SEAL.
+            #
+            # `credit_passing_line` refuses a draw in which the receiving
+            # event caught more balls than the quarterbacks had
+            # non-intercepted attempts -- the coupling gap C3 declares and
+            # does not close. The engine records that refusal in
+            # `accounting['shared_pass_credit']`, sets `halted_at` and a halt
+            # reason, and then DOES NOT RETURN: the run continues and seals.
+            #
+            # None of those three reached board.json, forecast_artifact.json
+            # or run_status.json. Measured on 60 sealed boards across the
+            # week-1 slate and every arm from V1_CANDIDATE to R9_W1P_GA: zero
+            # occurrences of the refusal code in any sealed file. The only
+            # visible symptom was the phrase `not reached`, which reads like a
+            # configuration fact and is in fact a failed hard invariant.
+            #
+            # So the board carried a HALF-APPLIED C3 -- targets dealt from the
+            # throw process, passer line NOT credited from the receiving
+            # event -- and said nothing. That is this project's named worst
+            # defect class, a partial result read as success, and it is what
+            # made a 1,000-draw board and an 8,000-draw board on the same arm
+            # look like different candidate declarations when the only
+            # difference was whether enough draws were run to reach the gap.
+            #
+            # This transports it. It changes NO number: it is a statement
+            # about a run that already happened.
+            if not sp.startswith('PASS'):
+                _acc = (g.get('accounting') or {})
+                _st, _, _cd = sp.partition('[')
+                fx['_c3_refusal'] = {
+                    'seal_contract': C3_REFUSAL_CONTRACT,
+                    'state': _st or 'UNKNOWN',
+                    'code': _cd.rstrip(']') or 'UNKNOWN',
+                    'layer_state': sp,
+                    'halted_at': g.get('halted_at'),
+                    'halt_reason': (g.get('halt_reason') or '')[:600],
+                    'shared_pass_credit':
+                        _acc.get('shared_pass_credit'),
+                    'shared_pass_credit_detail':
+                        _acc.get('shared_pass_credit_detail'),
+                    # THE MIXTURE, NAMED. C3's first half changes the target
+                    # budget; its second half credits the passer line. A run
+                    # that ran one and refused the other is neither arm.
+                    'first_half_applied': bool(
+                        (g.get('c3') or {}).get('target_budget_owner')),
+                    'passer_line_owner':
+                        (g.get('c3') or {}).get('passer_line_owner'),
+                    'means': 'C3 was REACHED and a hard invariant inside it '
+                             'refused. This is not the same fact as an arm '
+                             'that never declared C3, and the two must never '
+                             'be rendered by the same phrase.'}
         if fx.get('_r5_applied'):
             applied.append('R5')
         if fx.get('_r6_applied'):
@@ -1920,9 +1977,22 @@ def build(args, fixtures: dict = None) -> dict:
                 else:
                     _p2_rows.setdefault(t, {}).setdefault(layer, []).append(i)
 
-        _team_of_player = {q['gsis_id']: q.get('team')
+        # A KEY WHOSE VALUE IS None IS NOT AN ANSWER, AND IT BLOCKS THE ONE
+        # THAT IS. This comprehension wrote `gsis_id -> None` for any player
+        # the roster feed could not place, and the `setdefault` below then saw
+        # the key already present and declined to fill it from `qb_rows` --
+        # which DOES carry the club, because the quarterback frame is built
+        # from the QB panel rather than from the roster feed.
+        #
+        # The consequence was not a missing team on a board nobody reads: it
+        # was `rushing_total` refusing with DRAW_LAYER_ROWS_WITHOUT_A_TEAM for
+        # 12 of 12 rows on a fixture whose quarterbacks all had clubs, which
+        # stopped the pipeline at `player_draws` and took two governance tests
+        # down with it. Only a REAL team is recorded, so the fallbacks below
+        # can do their job.
+        _team_of_player = {q['gsis_id']: q['team']
                            for q in (fx.get('players') or [])
-                           if q.get('gsis_id')}
+                           if q.get('gsis_id') and q.get('team')}
         for _r in (fx.get('qb_rows') or []):
             if _r.get('gsis_id') and _r.get('team'):
                 _team_of_player.setdefault(_r['gsis_id'], _r['team'])
@@ -2870,6 +2940,12 @@ def build(args, fixtures: dict = None) -> dict:
             'candidate_components_applied': fx.get('_candidate_applied') or [],
             'candidate_components_not_reached':
                 fx.get('_candidate_not_reached') or [],
+            # PRESENT ONLY WHEN C3 WAS REACHED AND REFUSED. Absent means the
+            # question did not arise; it never means the answer was yes.
+            **({'c3_refusal': fx['_c3_refusal'],
+                'seal_contract_c3': C3_REFUSAL_CONTRACT}
+               if fx.get('_c3_refusal') else
+               {'seal_contract_c3': C3_REFUSAL_CONTRACT}),
             'promoted': False,
             'prospective_eligible': False,
             'TEST_ONLY': _dist_source != 'MODEL',

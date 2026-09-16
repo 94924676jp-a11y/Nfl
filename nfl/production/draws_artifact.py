@@ -193,20 +193,6 @@ class DrawSet:
                 'DRAW_LAYER_NO_METRICS',
                 f'{layer} supplied no metric matrices. An empty layer is an '
                 f'absence, not a distribution.')
-        teams_by_row = None
-        if row_axis == 'gsis_id':
-            teams_by_row = {str(k): v for k, v in (row_teams or {}).items()}
-            missing = [r for r in rows if not teams_by_row.get(r)]
-            if missing:
-                return Outcome.fail(
-                    'DRAW_LAYER_ROWS_WITHOUT_A_TEAM',
-                    f'{layer} supplies no team for {len(missing)} of '
-                    f'{len(rows)} player row(s): {missing[:6]}. A player row '
-                    f'whose club is unknown cannot be conserved on a team '
-                    f'axis, and the display board is NOT a sufficient '
-                    f'fallback -- the participant universe is wider than it.',
-                    layer=layer, n_missing=len(missing),
-                    missing=missing[:12])
         staged = {}
         for metric, mat in sorted(matrices.items()):
             arr = np.asarray(mat, dtype=np.float64)
@@ -247,6 +233,47 @@ class DrawSet:
                     f'NaN with a number.',
                     n_bad=int((~np.isfinite(arr)).sum()))
             staged[metric] = arr
+        # THE TEAM MAP IS CHECKED LAST, AFTER THE MATRICES ARE WELL FORMED.
+        #
+        # It used to be checked first, and that made it MASK the structural
+        # refusals underneath it: a layer with a ragged matrix, a row-count
+        # mismatch or a NaN was told its rows had no club, which is the least
+        # useful true statement available. `DRAW_MATRIX_ROW_MISMATCH` and
+        # `DRAW_LAYER_ROWS_WITHOUT_A_TEAM` are different defects and the
+        # earlier one owns the refusal.
+        #
+        # `row_teams` is accepted as a MAPPING or as a SEQUENCE aligned to
+        # `row_ids`, because the manifest stores the aligned sequence and a
+        # caller that read one back had to convert it to a dict to hand it
+        # forward -- a conversion with nothing to check it.
+        teams_by_row = None
+        if row_axis == 'gsis_id':
+            if row_teams is None:
+                teams_by_row = {}
+            elif hasattr(row_teams, 'items'):
+                teams_by_row = {str(k): v for k, v in row_teams.items()}
+            else:
+                seq = list(row_teams)
+                if len(seq) != len(rows):
+                    return Outcome.fail(
+                        'DRAW_LAYER_TEAM_SEQUENCE_MISALIGNED',
+                        f'{layer} supplied {len(seq)} team(s) against '
+                        f'{len(rows)} row identity(ies). A sequence of teams '
+                        f'means "aligned to row_ids", so a different length '
+                        f'is not a shorter answer, it is a wrong one.',
+                        layer=layer, n_teams=len(seq), n_rows=len(rows))
+                teams_by_row = {r: t for r, t in zip(rows, seq)}
+            missing = [r for r in rows if not teams_by_row.get(r)]
+            if missing:
+                return Outcome.fail(
+                    'DRAW_LAYER_ROWS_WITHOUT_A_TEAM',
+                    f'{layer} supplies no team for {len(missing)} of '
+                    f'{len(rows)} player row(s): {missing[:6]}. A player row '
+                    f'whose club is unknown cannot be conserved on a team '
+                    f'axis, and the display board is NOT a sufficient '
+                    f'fallback -- the participant universe is wider than it.',
+                    layer=layer, n_missing=len(missing),
+                    missing=missing[:12])
         for metric, arr in staged.items():
             self.arrays[f'{layer}/{metric}'] = arr
         self.layers[layer] = {
