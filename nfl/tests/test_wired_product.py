@@ -189,14 +189,20 @@ def numeric(run_dir):
     for i, pid in enumerate(rid['dk_scoring']):
         kw = {}
         for lyr, pairs in (
+                # RUSHING YARDS COME FROM `rushing_total` AND NOWHERE ELSE.
+                # `qb/ryds` and `rushing/rushing_yards` are COMPONENTS of it
+                # now, alongside the gadget yards, so scoring them here would
+                # both double-count and miss the gadget contribution. This
+                # map lagged the engine's and reported a 19.3-point diff on
+                # Amon-Ra St. Brown -- his 1.62 gadget yards flip the
+                # 100-rushing-yard bonus in some draws. The engine was right.
                 ('qb', (('pass_yds', 'pyds'), ('pass_td', 'ptd'),
-                        ('ints', 'int'), ('rush_yds', 'ryds'),
-                        ('rush_td', 'rtd'))),
+                        ('ints', 'int'), ('rush_td', 'rtd'))),
                 ('receiving', (('rec', 'receptions'),
                                ('rec_yds', 'receiving_yards'),
                                ('rec_td', 'receiving_td'))),
-                ('rushing', (('rush_yds', 'rushing_yards'),
-                             ('rush_td', 'rushing_td')))):
+                ('rushing', (('rush_td', 'rushing_td'),)),
+                ('rushing_total', (('rush_yds', 'rushing_yards'),))):
             ids = rid.get(lyr) or []
             if pid not in ids:
                 continue
