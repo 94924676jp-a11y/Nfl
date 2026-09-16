@@ -734,10 +734,9 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
         g['halted_at'] = 'appearance'
         g['halt_reason'] = ap.detail[:200]
         for k in ('participation', 'targets_carries', 'carries',
-                  'receiving_conversion', 'receiving_td', 'rushing_td'):
+                  'receiving_conversion', 'receiving_td', 'rushing_td',
+                  'rushing_conversion'):
             g['layers'][k] = 'NOT_APPLICABLE[UPSTREAM_NOT_EXECUTED]'
-        g['layers']['rushing_conversion'] = \
-            'DEFERRED[RUSHING_CONVERSION_CONTROL_UNDEFINED]'
         return g, None
 
     pa = _lay('participation',
@@ -1192,10 +1191,15 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
     rtd = LY.rushing_td(car, C, fits['td_priors_rush'].value, rb_ids, rb_pos,
                         ordinal, m=m, seed=seed)
     _lay('rushing_td', rtd)
-    ry = LY.rushing_conversion(car)
+    # THE CONVERSION CONSUMES THE DEALT CARRIES, on the same rows and the
+    # same draw index as the carry counts and the rushing touchdowns. Nothing
+    # is resampled here, so the yards belong to the carries the accounting
+    # already closed on.
+    ry = LY.rushing_conversion(car, C, None, rb_ids, rb_pos, ordinal,
+                               m=m, seed=seed)
     _lay('rushing_conversion', ry)
 
-    for o in (cv, td, rtd):
+    for o in (cv, td, rtd, ry):
         if o.state is not State.PASS:
             g['halted_at'] = 'conversion_or_td'
             g['halt_reason'] = o.detail[:200]
@@ -1389,7 +1393,8 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
         # verdicts, one layer along. See `_qb_records_from_final_draws`.
     rush_acc = ACC.reconcile_rushing(
         Sc, other_c, car_vol, C, rb_starts, rb_counts,
-        rushing_td=rtd.value['rush_td'], rushing_yards=None,
+        rushing_td=rtd.value['rush_td'],
+        rushing_yards=ry.value['rushing_yards'],
         qb_rush_opportunity=qb_rush)
     g['accounting']['rushing'] = f'{rush_acc.state.value}[{rush_acc.code}]'
 
@@ -1806,13 +1811,9 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
             mets['rushing_td'] = PR.summarise(rtd.value['rush_td'][r],
                                               LY.SPEC['rushing_td'],
                                               'rushing_td', run_id)
-            mets['rushing_yards'] = PR.absent(
-                'rushing_yards',
-                'RUSHING_CONVERSION_CONTROL_UNDEFINED: no governed frozen '
-                'control exists for carry -> rushing yards. Three scientific '
-                'decisions are open; see '
-                'nfl/production/nonqb/rushing_inventory.json.',
-                run_id, open_decisions=list(LY.RUSHING_CONVERSION_DECISIONS))
+            mets['rushing_yards'] = PR.summarise(
+                ry.value['rushing_yards'][r], LY.SPEC['rushing_conversion'],
+                'rushing_yards', run_id)
         records.append(PR.record(pid, q['position'], game_id, run_id, mets))
     records.extend(qb_records)
     g['n_records'] = len(records)
@@ -1821,7 +1822,7 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
     g['player_contract'] = f'{v.state.value}[{v.code}]'
     g['player_contract_evidence'] = {k: x for k, x in v.evidence.items()
                                      if k != 'value'}
-    pub = LY.assert_publishable(ap, pa, tc, car, cv, td, rtd)
+    pub = LY.assert_publishable(ap, pa, tc, car, cv, td, rtd, ry)
     g['publication_gate'] = f'{pub.state.value}[{pub.code}]'
 
     # ---- R4: EVERY DECLARED COUNT IS A COUNT, ON THE VALUES THAT SEAL ----
@@ -1922,7 +1923,8 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
     return g, {'records': records, 'draws': {
         'targets': T, 'carries': C, 'receptions': cv.value['receptions'],
         'receiving_yards': cv.value['receiving_yards'],
-        'receiving_td': td.value['td'], 'rush_td': rtd.value['rush_td']},
+        'receiving_td': td.value['td'], 'rush_td': rtd.value['rush_td'],
+        'rushing_yards': ry.value['rushing_yards']},
         # R4. A1's WHOLE PARTITION, ROW AXIS = TEAM, so a sealed board can
         # walk the rush ledger without re-running the allocator. `None` when
         # the caller supplied no category matrix, which is a different thing

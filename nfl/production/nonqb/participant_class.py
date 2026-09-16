@@ -141,6 +141,21 @@ _CARRY = {
 RAW = _REPO / 'nfl' / 'vintage'
 
 
+def from_roster_status(status: str) -> str:
+    """One roster status code -> one participation class.
+
+    Public because the mapping is needed outside `classify` -- the kicker
+    resolver reads one club's position-K rows and has to know which of them
+    are on the game roster. Reaching into `_CARRY` from another module would
+    make a second copy of this table the first time someone forgot it was
+    shared.
+
+    AN UNRECOGNISED CODE IS UNKNOWN, WHICH IS UNCERTAINTY. It is not ACTIVE
+    and it is not EXCLUDED, and every consumer has to treat it as neither.
+    """
+    return _CARRY.get((status or '').strip().upper(), UNKNOWN)
+
+
 def rates() -> Outcome:
     """The measured participation rates, or a refusal naming what is absent."""
     if not RATES_PATH.exists():

@@ -46,6 +46,7 @@ if str(_REPO) not in sys.path:
 from sportsplatform.governance.outcome import Cause, Outcome, State   # noqa: E402
 from nfl.capture import coverage as COV                               # noqa: E402
 from nfl.research import completeness as CP                           # noqa: E402
+from nfl.identity import code_identity as CI                          # noqa: E402
 from nfl.research import daily_board as RB                            # noqa: E402
 from nfl.product import daily_board as PB                             # noqa: E402
 from nfl.tools import ingest_inactives as II                          # noqa: E402
@@ -395,12 +396,39 @@ def run_game(game, candidate, prev_state, timer, written_at, dry_run=False,
             rec['timing_seconds']['changed_slice_detection'] = round(
                 time.perf_counter() - t, 4)
 
+        # THE CODE IS PART OF THE REUSE KEY, AND IT WAS NOT.
+        #
+        # Reuse asked only whether the DATA had moved. So a slate run after a
+        # model change reused a board the changed model never produced, and
+        # reported it REUSED -- the artifact on disk was built by different
+        # source and nothing said so. "Is it reproducible" and "can it be
+        # rolled back" both die on that: a board is identified by its inputs
+        # AND the code that consumed them.
+        #
+        # `code_version` is commit + dirty-source digest, so an uncommitted
+        # edit moves it too. A run that cannot resolve its own code identity
+        # does NOT get to reuse: unknown is not unchanged.
+        _ci = CI.code_identity()
+        _now_code = (_ci.value.get('code_version')
+                     if _ci.state is State.PASS else None)
+        _prev_code = prev_state.get('code_version')
+        _code_moved = (_now_code is None or _prev_code is None
+                       or _now_code != _prev_code)
+        rec['code_version'] = _now_code
+        rec['code_version_previous'] = _prev_code
+        if _code_moved and not changed:
+            rec['recompute_cause'] = (
+                'CODE_IDENTITY_UNRESOLVABLE' if _now_code is None
+                else 'NO_PRIOR_CODE_VERSION_RECORDED' if _prev_code is None
+                else 'CODE_CHANGED_SINCE_LAST_SEAL')
         sealed = prev_state.get('sealed')
-        if not changed and sealed and pathlib.Path(sealed).exists():
+        if not changed and not _code_moved and sealed \
+                and pathlib.Path(sealed).exists():
             rec['action'] = 'UNCHANGED_REUSED'
             rec['execution_state'] = 'REUSED'
             rec['reason'] = ('every consumed slice is byte-identical to the '
-                             'one this game was last forecast from')
+                             'one this game was last forecast from, and the '
+                             'code identity is unchanged')
             rec['sealed'] = sealed
             rec['recomputed'] = False
             rec['timing_seconds']['forecasting'] = 0.0
@@ -408,12 +436,24 @@ def run_game(game, candidate, prev_state, timer, written_at, dry_run=False,
             return rec, rec['action']
 
         if dry_run:
+            # A DRY RUN IS NOT AN EXECUTION AND MUST NOT BE COUNTED AS ONE.
+            # This branch used to stamp execution_state EXECUTED beside
+            # `nothing was computed or sealed`, so a slate that modelled
+            # nothing reported "1 executed / 0 blocked" -- exactly the false
+            # green the orchestration_note above is written against. The state
+            # is now its own, and the slate summary counts it apart.
             rec['action'] = ('NEW_FORECAST' if not sealed
                              else 'REFRESHED_INFORMATION_CHANGED')
-            rec['execution_state'] = 'EXECUTED'
+            rec['execution_state'] = 'PLANNED_NOT_EXECUTED_DRY_RUN'
             rec['reason'] = 'dry run: nothing was computed or sealed'
             rec['recomputed'] = False
             rec['dry_run'] = True
+            # AND IT STILL HAS TO SAY WHAT IT PRODUCED. Without this the
+            # record reached CP.summarise with no `forecast_completeness` and
+            # raised KeyError, killing the whole slate -- the same crash
+            # `_mark_no_forecast` was written for on the refusal path, reached
+            # by a branch that was never given the same treatment.
+            _mark_no_forecast(rec)
             return rec, rec['action']
 
         with timer.stage('forecasting'):
@@ -560,6 +600,7 @@ def run(date_str, candidate='R8', market=None, external_status=None,
             new_state[g['game_id']] = {'slices': rec.get('consumed_slices'),
                                        'sealed': rec['sealed'],
                                        'written_at': written_at,
+                                       'code_version': rec.get('code_version'),
                                        'action': action}
         elif prev.get(g['game_id']):
             new_state[g['game_id']] = prev[g['game_id']]
@@ -593,6 +634,12 @@ def run(date_str, candidate='R8', market=None, external_status=None,
         'games_reused': sum(1 for r in records
                             if r.get('execution_state') == 'REUSED'),
         'games_blocked': len(blocked),
+        # NOT_EXECUTED NEVER DISAPPEARS FROM A SUMMARY. A dry run plans a
+        # board and computes nothing, and this is where a reader sees that
+        # rather than inferring it from a zero somewhere else.
+        'games_planned_not_executed_dry_run': sum(
+            1 for r in records
+            if r.get('execution_state') == 'PLANNED_NOT_EXECUTED_DRY_RUN'),
         'orchestration_note': ('games_executed counts boards that sealed. '
                                'Forecast usability is the completeness block '
                                'below and is an independent question.'),

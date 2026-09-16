@@ -298,9 +298,10 @@ def reconcile_rushing(carry_share, carry_other, team_carries,
                       qb_rush_opportunity=None) -> Outcome:
     """The rushing half of the engine, on the same draw index.
 
-    `rushing_yards` is accepted and checked but is expected to be None while
-    RUSHING_CONVERSION_CONTROL_UNDEFINED holds. A vacuous pass is named as
-    such rather than counted as a satisfied identity.
+    `rushing_yards` is now supplied by the adjudicated conversion control, so
+    the identity is live rather than vacuous. The None branch is kept because
+    a run whose conversion layer refuses still has to report NOT_APPLICABLE
+    rather than a satisfied identity -- a vacuous pass is named as such.
     """
     S = np.asarray(carry_share, np.float64)
     O = np.asarray(carry_other, np.float64)
@@ -328,8 +329,9 @@ def reconcile_rushing(carry_share, carry_other, team_carries,
     if rushing_yards is None:
         ev['zero_carries_implies_zero_rushing_yards'] = 'NOT_APPLICABLE'
         ev['rushing_yards_reason'] = (
-            'RUSHING_CONVERSION_CONTROL_UNDEFINED -- no rushing-yard draw '
-            'exists to check. Recorded as not applicable, never as satisfied.')
+            'the conversion layer produced no rushing-yard draw on this run, '
+            'so there is nothing to check. Recorded as not applicable, never '
+            'as satisfied.')
     else:
         Y = np.asarray(rushing_yards, np.float64)
         bad = int(((np.rint(C) <= 0) & (np.abs(Y) > 1e-9)).sum())

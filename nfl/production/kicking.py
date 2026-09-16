@@ -76,14 +76,12 @@ BANDS = ((0, 20, 'FG<20'), (20, 30, 'FG20s'), (30, 40, 'FG30s'),
 BAND_NAMES = tuple(b for _, _, b in BANDS)
 MIN_FOR_EB = 20
 
-#: DRAFTKINGS NFL KICKER SCORING, a published external rule rather than a
-#: fitted quantity. Declared here so a reader can check it against DK's own
-#: rules instead of finding it inline: FG under 40 = 3, 40-49 = 4, 50+ = 5,
-#: extra point = 1. A scoring adapter is a CONVENTION, not a model parameter,
-#: and changing platform must not change a single simulated event.
-DK_FG_POINTS = {'FG<20': 3.0, 'FG20s': 3.0, 'FG30s': 3.0,
-                'FG40s': 4.0, 'FG50+': 5.0}
-DK_XP_POINTS = 1.0
+#: NO SCORING TABLE LIVES HERE. This module simulated kicks AND carried its
+#: own copy of the DraftKings point values, which made two answers to one
+#: question -- and they had already diverged, because the points were scored
+#: from an extra-point draw the caller never saw. `nfl.product.dk_scoring`
+#: owns every point value; this module publishes events only, so a scoring
+#: change cannot reach a simulated kick.
 
 _CACHE: dict = {}
 
@@ -117,6 +115,7 @@ def fit(cut_ordinal: int) -> Outcome:
 
     lg = collections.Counter()
     per = collections.defaultdict(collections.Counter)
+    names: dict = {}
     tg = collections.defaultdict(lambda: {'td': 0, 'fga': 0, 'xpa': 0})
     xpa = xpm = 0
     mix = collections.Counter()
@@ -145,10 +144,21 @@ def fit(cut_ordinal: int) -> Outcome:
                     lg[b + '_a'] += 1
                     lg[b + '_m'] += made
                     mix[b] += 1
-                    k = (r.get('kicker_player_name') or '').strip()
+                    # THE KEY IS THE PLAYER ID, NOT THE PRINTED NAME.
+                    # pbp writes the kicker as "T.Bass" and the roster writes
+                    # "Tyler Bass". Bridging those by reconstructing an
+                    # initial is a guess that fails on a suffix, a hyphen or
+                    # two kickers sharing a surname, and it fails SILENTLY --
+                    # an unmatched kicker falls back to the league rate and
+                    # nothing says so. `kicker_player_id` is the same gsis_id
+                    # the roster carries, so no bridge is needed.
+                    k = (r.get('kicker_player_id') or '').strip()
                     if k:
                         per[k][b + '_a'] += 1
                         per[k][b + '_m'] += made
+                        nm = (r.get('kicker_player_name') or '').strip()
+                        if nm:
+                            names[k] = nm
             xpr = (r.get('extra_point_result') or '').strip()
             if xpr in ('good', 'failed', 'blocked'):
                 xpa += 1
@@ -204,6 +214,8 @@ def fit(cut_ordinal: int) -> Outcome:
         'fga_by_td': {k: v for k, v in fga_by_td.items()},
         'xpa_by_td': {k: v for k, v in xpa_by_td.items()},
         'kicker_counts': {k: dict(v) for k, v in per.items()},
+        'kicker_key': 'gsis_id',
+        'kicker_names': dict(names),
         'n_team_games': len(tg), 'n_fg_attempts': sum(band_n.values()),
         'sources': [str(pathlib.Path(f).relative_to(_REPO)) for f in files],
     }
@@ -266,7 +278,7 @@ def simulate(doc, kicker_name, team_td_draws, seed=20260908):
     by_band_a = {b: np.zeros(n, dtype=int) for b in BAND_NAMES}
     by_band_m = {b: np.zeros(n, dtype=int) for b in BAND_NAMES}
     fgm = np.zeros(n, dtype=int)
-    dk = np.zeros(n, dtype=float)
+    xpm = np.zeros(n, dtype=int)
     for i in range(n):
         if fga[i] > 0:
             drawn = rng.multinomial(int(fga[i]), mix)
@@ -279,12 +291,112 @@ def simulate(doc, kicker_name, team_td_draws, seed=20260908):
                 mk = int(rng.binomial(a, p)) if p is not None else 0
                 by_band_m[b][i] = mk
                 fgm[i] += mk
-                dk[i] += mk * DK_FG_POINTS[b]
-        xm = int(rng.binomial(int(xpa[i]), xp_p)) if xpa[i] > 0 else 0
-        dk[i] += xm * DK_XP_POINTS
-        by_band_m['_xpm'] = by_band_m.get('_xpm')
-    xpm = np.array([int(rng.binomial(int(x), xp_p)) if x > 0 else 0
-                    for x in xpa])
+        # ONE DRAW, ONE PUBLISHED VALUE. This vector used to be drawn here
+        # to score the points and then drawn a SECOND time from a fresh rng
+        # for the return value, so the extra points a reader could see were
+        # not the ones the total was built from. Scoring now lives entirely
+        # in dk_scoring, which is the single definition of a DraftKings
+        # point, and this module publishes only the events.
+        xpm[i] = int(rng.binomial(int(xpa[i]), xp_p)) if xpa[i] > 0 else 0
     return {'fga': fga, 'fgm': fgm, 'xpa': xpa, 'xpm': xpm,
-            'band_att': by_band_a, 'band_made': by_band_m, 'dk': dk,
+            'band_att': by_band_a, 'band_made': by_band_m,
             'rates': rates}
+
+
+def resolve_kicker(doc, team: str, season: int, week: int) -> Outcome:
+    """Which player kicks for `team`, from the roster capture. Never guessed.
+
+    The first version of the board named the two kickers by hand. That is
+    fine for one game and wrong for a slate: it cannot be audited, it cannot
+    scale, and it silently survives a kicker being cut. This reads the roster
+    capture and refuses when the answer is not there.
+
+    THE GRADED PARTICIPATION CLASSES APPLY HERE TOO. A club can carry more
+    than one player at position K -- an injured incumbent on reserve, a
+    practice-squad leg. Picking the first row would sometimes pick the one
+    who is not going to kick, so rows are classified and only the game-roster
+    classes are eligible. If that leaves more than one, this refuses rather
+    than choosing: two eligible kickers is a fact about the roster, and
+    inventing a tiebreak here would bury it.
+    """
+    by_week = {}
+    for f in sorted(glob.glob(str(
+            _REPO / 'nfl/vintage/weekly_rosters.*raw.csv*'))):
+        for r in csv.DictReader(gzip.open(f, 'rt')):
+            if (r.get('position') or '').upper() != 'K':
+                continue
+            if (r.get('team') or '').strip() != team:
+                continue
+            try:
+                if int(r.get('season') or 0) != int(season):
+                    continue
+                w = int(r.get('week') or 0)
+            except ValueError:
+                continue
+            if w <= int(week):
+                by_week.setdefault(w, []).append(r)
+    if not by_week:
+        return Outcome.blocked(
+            'KICKER_NOT_ON_ROSTER_CAPTURE',
+            f'no position-K row for {team} at or before {season} week '
+            f'{week}. A kicker named from memory is not evidence, so no '
+            f'kicking line is produced for this club.',
+            cause=Cause.DATA, team=team)
+
+    # THE MOST RECENT CAPTURE AT OR BEFORE THE FORECAST WEEK, AND IT SAYS SO.
+    #
+    # There is no week-2 roster capture, and a week-1 row is evidence that
+    # this player was the kicker IN WEEK 1 -- not that he is the kicker now.
+    # Carrying it forward is the right call for a position that turns over
+    # rarely, and presenting it as current would be the "a data label is
+    # football reality" error: a kicker can be cut on Tuesday and this file
+    # would never know.
+    #
+    # So the row is used AND the basis is stamped. A reader can tell a
+    # confirmed week from a carried-forward one, which is the whole point of
+    # the graded classes: ACTIVE_ROSTER_EXPECTED is not
+    # ACTIVE_ROSTER_CONFIRMED and this is exactly where the difference lives.
+    src_week = max(by_week)
+    rows = by_week[src_week]
+    carried = int(src_week) != int(week)
+
+    from nfl.production.nonqb import participant_class as PC
+    graded = [(r, PC.from_roster_status(
+        (r.get('status') or '').strip().upper())) for r in rows]
+    eligible = [(r, c) for r, c in graded if PC.eligibility_state(c) == 'ELIGIBLE']
+    classes = {(r.get('gsis_id') or ''): c for r, c in graded}
+    if len(eligible) != 1:
+        return Outcome.blocked(
+            'KICKER_NOT_UNIQUELY_DETERMINED',
+            f'{team} has {len(eligible)} game-roster kicker(s) in {season} '
+            f'week {src_week} out of {len(rows)} position-K row(s): '
+            f'{classes}. One is required and this will not pick one.',
+            cause=Cause.DATA, team=team, classes=classes,
+            roster_source_week=int(src_week))
+    row, cls = eligible[0]
+    gsis = (row.get('gsis_id') or '').strip()
+    if not gsis:
+        return Outcome.blocked(
+            'KICKER_HAS_NO_GSIS_ID',
+            f"{team}'s kicker row carries no gsis_id, so it cannot be joined "
+            f"to the fitted per-kicker counts.", cause=Cause.DATA, team=team)
+    counts = (doc['kicker_counts'].get(gsis) or {})
+    att = sum(v for k, v in counts.items() if k.endswith('_a'))
+    basis = ('CARRIED_FORWARD_FROM_WEEK_%d_NO_CAPTURE_FOR_WEEK_%d'
+             % (src_week, week)) if carried else 'ROSTER_CAPTURE_THIS_WEEK'
+    return Outcome.ok(
+        'KICKER_RESOLVED',
+        value={'gsis_id': gsis, 'name': (row.get('full_name') or '').strip(),
+               'team': team, 'participant_class': cls,
+               'pbp_name': doc.get('kicker_names', {}).get(gsis),
+               'prior_fg_attempts': int(att),
+               'roster_basis': basis, 'roster_source_week': int(src_week)},
+        spec_version=SPEC_VERSION, team=team, gsis_id=gsis,
+        participant_class=cls, prior_fg_attempts=int(att),
+        roster_basis=basis, roster_source_week=int(src_week),
+        # A kicker with no history is NOT an error -- he shrinks all the way
+        # to the league band rates, which is the right answer for a rookie.
+        # It is reported because "league rates" and "his rates" are different
+        # claims and a reader must be able to tell which one he is reading.
+        rate_basis=('OWN_HISTORY_SHRUNK_TO_LEAGUE' if att
+                    else 'LEAGUE_ONLY_NO_PRIOR_ATTEMPTS'))

@@ -38,6 +38,8 @@ from nfl.production import team_volume_v1 as TV
 from nfl.production import qb_v1 as QBV1                             # noqa: E402
 from nfl.production import derived as DERIVED                       # noqa: E402
 from nfl.production import candidate_mode as CAND                   # noqa: E402
+from nfl.production import kicking as KICK                          # noqa: E402
+from nfl.product import dk_scoring as DKS                           # noqa: E402
 from nfl.production import draws_artifact as DA                     # noqa: E402
 from nfl.identity import code_identity as CI                       # noqa: E402
 from nfl.production import draw_coherence as DC                     # noqa: E402
@@ -1893,20 +1895,27 @@ def build(args, fixtures: dict = None) -> dict:
                         lambda pid: _team_of_player.get(pid))
             rb_ids = idx['rb_ids']
             if rb_ids:
+                # RUSHING YARDS SEAL WITH THE CARRIES THAT PRODUCED THEM.
+                # The conversion consumed this exact carry matrix, so the two
+                # metrics share rows and draw index by construction. Sealing
+                # them in one layer is what stops a later reader pairing a
+                # yard total with a carry count from a different world.
+                _rushmats = {
+                    'carries': _np.asarray(pay['draws']['carries']),
+                    'rushing_td': _np.asarray(pay['draws']['rush_td'])}
+                _ryd = pay['draws'].get('rushing_yards')
+                if _ryd is not None:
+                    _rushmats['rushing_yards'] = _np.asarray(_ryd)
                 o = ds.add_layer(
-                    'rushing', rb_ids,
-                    {'carries': _np.asarray(pay['draws']['carries']),
-                     'rushing_td': _np.asarray(pay['draws']['rush_td'])},
+                    'rushing', rb_ids, _rushmats,
                     'nfl-nonqb-rushing-1',
                     'P4C simplex allocation over the A1 running-back budget '
-                    'on the shared game draw index')
+                    'on the shared game draw index; rushing_yards drawn per '
+                    'carry by the adjudicated emp_tilt system-A control')
                 if o.state is not State.PASS:
                     return _fail(o)
                 produced['rushing'] = len(rb_ids)
-                _p2_add('rushing', rb_ids,
-                        {'carries': _np.asarray(pay['draws']['carries']),
-                         'rushing_td': _np.asarray(
-                             pay['draws']['rush_td'])},
+                _p2_add('rushing', rb_ids, _rushmats,
                         lambda pid: _team_of_player.get(pid))
             # R4. THE RUSH CATEGORY MATRIX, ROW AXIS = TEAM.
             #
@@ -2027,6 +2036,155 @@ def build(args, fixtures: dict = None) -> dict:
                         f'A row order may differ; the SET may not.',
                         matrix_teams=sorted(teams),
                         declared_teams=sorted(_declared)))
+
+        # ---- KICKING AND DRAFTKINGS SCORING, INSIDE THE SEAL --------
+        #
+        # THESE USED TO BE ASSEMBLED AFTER THE SEAL, and that was the defect.
+        # A script read the sealed npz, drew kicks from it and scored points,
+        # and the result was a board nobody could reproduce from the artifact:
+        # a second product with no run identity, no provenance bundle and no
+        # publication state, whose numbers happened to agree with the sealed
+        # ones because the same process had just made both. Every kick and
+        # every point now originates inside this stage, on this run's draw
+        # index, and seals with everything else.
+        #
+        # THE COUPLING IS THE REASON, not tidiness. A kicker's opportunity is
+        # conditioned on his own offense's touchdowns DRAW BY DRAW: the worlds
+        # where Detroit scores four times are the worlds where its kicker
+        # attempts four extra points. Scoring that outside the seal would have
+        # meant a reader could pair a kicking line with a different world's
+        # offense and nothing would have caught it.
+        _kick_notes = {}
+        if ds.arrays and not fx.get('distributions'):
+            _ord = int(args.season) * 100 + int(args.week)
+            _kfit = KICK.fit(_ord)
+            if _kfit.state is not State.PASS:
+                # A refusal is RECORDED, not swallowed and not fatal. A run
+                # whose passing and rushing are sound should not lose them
+                # because the kicking corpus is missing.
+                _kick_notes['fit'] = f'{_kfit.state.value}[{_kfit.code}]'
+            else:
+                _kdoc = _kfit.value
+                _k_rows, _k_mats, _k_meta = [], {}, {}
+                for _t in sorted(_p2_rows):
+                    _rk = KICK.resolve_kicker(_kdoc, _t, args.season,
+                                              args.week)
+                    if _rk.state is not State.PASS:
+                        _kick_notes[_t] = f'{_rk.state.value}[{_rk.code}]'
+                        continue
+                    # OFFENSIVE TOUCHDOWNS, THIS TEAM, THIS DRAW. Summed from
+                    # the sealed matrices by ROW INDEX from _p2_rows, never by
+                    # board position -- the layers do not share a row order
+                    # and pairing them positionally is the identity defect
+                    # this file has already paid for once.
+                    _idx = _p2_rows[_t]
+                    _td = _np.zeros(int(ds.n_draws), dtype=float)
+                    for _lay, _met in (('receiving', 'receiving_td'),
+                                       ('rushing', 'rushing_td'),
+                                       ('qb', 'rtd'), ('qb', 'ptd')):
+                        _mat = _p2.get(f'{_lay}/{_met}')
+                        _rows = _idx.get(_lay)
+                        if _mat is None or not _rows:
+                            continue
+                        if _lay == 'qb' and _met == 'ptd':
+                            # A PASSING TOUCHDOWN AND ITS RECEPTION ARE ONE
+                            # TOUCHDOWN. Both layers carry it -- the passer
+                            # gets ptd, the catcher gets receiving_td -- so
+                            # adding both would give the kicker twice the
+                            # extra-point chances the drive produced. The
+                            # receiving side is counted and the passing side
+                            # is not, because receiving_td covers every
+                            # receiver while a team may have more than one
+                            # passer.
+                            continue
+                        _td += _np.asarray(_mat, float)[list(_rows)].sum(0)
+                    _sim = KICK.simulate(_kdoc, _rk.value['gsis_id'],
+                                         _np.rint(_td).astype(int),
+                                         seed=int(args.seed))
+                    _gk = _rk.value['gsis_id']
+                    _k_rows.append(_gk)
+                    for _m2 in ('fga', 'fgm', 'xpa', 'xpm'):
+                        _k_mats.setdefault(_m2, []).append(_sim[_m2])
+                    for _b in KICK.BAND_NAMES:
+                        _k_mats.setdefault('att_' + _b, []).append(
+                            _sim['band_att'][_b])
+                        _k_mats.setdefault('made_' + _b, []).append(
+                            _sim['band_made'][_b])
+                    _k_mats.setdefault('offensive_td', []).append(_td)
+                    _k_mats.setdefault('dk_points', []).append(
+                        DKS.kicker_points(_sim['band_made'], _sim['xpm']))
+                    _k_meta[_gk] = {
+                        'team': _t, 'name': _rk.value['name'],
+                        'participant_class': _rk.value['participant_class'],
+                        'prior_fg_attempts': _rk.value['prior_fg_attempts'],
+                        'rate_basis': _rk.as_dict()['evidence']['rate_basis'],
+                        'roster_basis': _rk.value['roster_basis'],
+                        'roster_source_week': _rk.value['roster_source_week']}
+                if _k_rows:
+                    o = ds.add_layer(
+                        'kicking', _k_rows,
+                        {k: _np.stack(v) for k, v in _k_mats.items()},
+                        KICK.SPEC_VERSION,
+                        'kicking.simulate, conditioned draw-by-draw on this '
+                        "team's sealed offensive touchdowns")
+                    if o.state is not State.PASS:
+                        return _fail(o)
+                    produced['kicking'] = len(_k_rows)
+                    _kick_notes['resolved'] = _k_meta
+                    _p2_add('kicking', _k_rows,
+                            {k: _np.stack(v) for k, v in _k_mats.items()},
+                            lambda g: _k_meta.get(g, {}).get('team'))
+            fx['_kicking'] = _kick_notes
+
+            # ---- ONE DRAFTKINGS POINT TOTAL PER SKILL PLAYER ------------
+            #
+            # Scored from the sealed matrices, on the shared draw index, so a
+            # player's point total and the events behind it are the same
+            # world. The bonuses are per draw and not applied to a mean --
+            # DK pays 3 points for 100 rushing yards IN A GAME, and a mean of
+            # 96 that clears 100 in a third of worlds earns a third of the
+            # bonus, not none of it.
+            _dk_rows, _dk_vecs = [], []
+            _all_ids = []
+            for _lay in ('qb', 'receiving', 'rushing'):
+                _all_ids.extend(ds.layers.get(_lay, {}).get('row_ids') or [])
+            for _pid in sorted(set(_all_ids)):
+                _kw = {}
+                for _lay, _pairs in (
+                        ('qb', (('pass_yds', 'pyds'), ('pass_td', 'ptd'),
+                                ('ints', 'int'), ('rush_yds', 'ryds'),
+                                ('rush_td', 'rtd'))),
+                        ('receiving', (('rec', 'receptions'),
+                                       ('rec_yds', 'receiving_yards'),
+                                       ('rec_td', 'receiving_td'))),
+                        ('rushing', (('rush_yds', 'rushing_yards'),
+                                     ('rush_td', 'rushing_td')))):
+                    _r = ds.row_index(_lay, _pid)
+                    if _r is None:
+                        continue
+                    for _arg, _met in _pairs:
+                        if f'{_lay}/{_met}' not in ds.arrays:
+                            continue
+                        _v = ds.vector(_lay, _met, _r)
+                        # A PLAYER CAN RUSH FROM TWO LAYERS. A quarterback's
+                        # rushing yards come from the qb layer and a running
+                        # back's from the rushing layer; summing rather than
+                        # overwriting is what keeps a rushing quarterback who
+                        # also appears as a rusher from losing half his yards.
+                        _kw[_arg] = _kw.get(_arg, 0.0) + _v
+                if _kw:
+                    _dk_rows.append(_pid)
+                    _dk_vecs.append(DKS.skill_points(int(ds.n_draws), **_kw))
+            if _dk_rows:
+                o = ds.add_layer(
+                    'dk_scoring', _dk_rows,
+                    {'dk_points': _np.stack(_dk_vecs)},
+                    DKS.SPEC_VERSION,
+                    'DraftKings NFL classic scoring applied per draw to this '
+                    "run's sealed events; no randomness of its own")
+                if o.state is not State.PASS:
+                    return _fail(o)
+                produced['dk_scoring'] = len(_dk_rows)
 
         if not ds.arrays:
             # ABSENCE IS NOT SUCCESS, AND IT IS NAMED.
@@ -2354,6 +2512,17 @@ def build(args, fixtures: dict = None) -> dict:
             # reported in the R6 and R7 audits for a quantity that in fact
             # closes exactly. The map is now written down.
             'team_draw_row_index': fx.get('_team_draw_row_index') or {},
+            # THE KICKER'S IDENTITY TRAVELS WITH HIS DRAWS. Sealing the
+            # kicking matrices while leaving the kicker as a bare gsis_id in
+            # the manifest would publish sixteen metrics nobody can attribute
+            # to a club, a name, a participation class or the roster week the
+            # name came from. That last one matters most: there is no week-2
+            # roster capture, so the kicker is carried forward from week 1 and
+            # the artifact has to SAY he is carried forward rather than let a
+            # reader assume the roster was checked today. Refusals for clubs
+            # with no resolvable kicker are recorded here too, because a club
+            # that produced no kicking line must be visible as such.
+            'kicking': fx.get('_kicking') or {},
             # THE CLOSURE PROOF, QUANTIFIED, IN THE ARTIFACT ITSELF. Every team
             # dropback belongs to exactly one quarterback on that team, and a
             # reader should not have to re-derive that from the draw matrices

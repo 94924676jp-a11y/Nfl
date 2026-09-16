@@ -42,7 +42,7 @@ SPEC = {
                 'HOLD_TENTATIVE',
     'rushing_td': 'td2-rush|carry-pooled-positional-control-frozen; governance '
                   'HOLD_TENTATIVE',
-    'rushing_conversion': None,          # NO CONTROL EXISTS -- see D6 below
+    'rushing_conversion': 'rushing-conversion-A-emp_tilt-stratified-1; family CARRIED_FORWARD_NOT_SELECTED; governance HOLD_TENTATIVE',
 }
 
 KNOWN_LIMITATIONS = {
@@ -597,23 +597,29 @@ RUSHING_CONVERSION_DECISIONS = (
 def rushing_conversion(carries_outcome: Outcome, carry_draws=None,
                        priors=None, player_ids=None, positions=None,
                        ordinal=None, m=200, seed=20260908):
-    """carry -> rushing yards. NO GOVERNED CONTROL EXISTS, so this refuses.
+    """carry -> rushing yards. THE THREE DECISIONS ARE MADE; THIS NOW RUNS.
 
-    P5A is the canonical research module and it ran. What it does not carry is
-    an adjudication: no finding document, no decision artifact, no `decision`
-    field in PATH_C_STATE, and -- decisively -- no chronology-legal rule that
-    names a distributional family for an unplayed season.
+    THIS LAYER DEFERRED FOR A REASON AND THE REASON IS GONE. It returned
+    RUSHING_CONVERSION_CONTROL_UNDEFINED because P5A had run without an
+    adjudication: no rule named a distributional family for a season with no
+    outcomes, no rule read promotion criterion 4, and the implemented pool was
+    unstratified where the pre-declaration said RB versus non-RB. Those are
+    scientific choices, not engineering ones, so the layer refused rather than
+    picked. The owner decided all three on 2026-09-16 and
+    RUSHING_CONVERSION_DECISIONS.json records them:
 
-    The three open decisions are in RUSHING_CONVERSION_DECISIONS and in
-    nfl/production/nonqb/rushing_inventory.json. They are the owner's, and
-    this packet did not make them.
+        family          emp_tilt, CARRIED_FORWARD_NOT_SELECTED from 2025
+        system          A -- opportunity only, no shrinkage blocks
+        stratification  RB versus non-RB, as predeclared
 
-    THE PROHIBITED IMPLEMENTATION IS NAMED HERE ON PURPOSE. The obvious way to
-    make this layer "work" is rushing_yards = carries x yards_per_carry. That
-    is a point where a distribution belongs -- the defect class this project
-    has now hit four times -- and it would also silently discard the stuff and
-    explosive components that make a rushing distribution what it is. It is
-    refused, not merely discouraged.
+    WHAT IS STILL REFUSED. A caller-supplied efficiency prior, for the same
+    reason as before: the frozen control owns those priors and a caller may
+    not stand in for it. And `rushing_yards = carries x yards_per_carry`,
+    which is a point where a distribution belongs. Every carry is drawn.
+
+    THE CARRIES ARE CONSUMED, NEVER RESAMPLED. `carry_draws` is the vector the
+    conserved allocation already dealt, so the yards belong to the same
+    carries the accounting closed on and the rush partition stays exact.
     """
     if priors:
         # A caller-supplied efficiency prior is refused BEFORE anything else,
@@ -621,20 +627,73 @@ def rushing_conversion(carries_outcome: Outcome, carry_draws=None,
         return Outcome.fail(
             'RUSHING_PRIOR_NOT_OWNED_BY_CALLER',
             'a rushing efficiency prior was supplied by the caller. The frozen '
-            'control owns those priors, and no frozen control exists, so there '
-            'is nothing a caller may stand in for.',
+            'control owns those priors, and a caller may not stand in for it.',
             supplied=sorted(priors))
-    return Outcome.deferred(
-        'RUSHING_CONVERSION_CONTROL_UNDEFINED',
-        'no defined frozen production control exists for carry -> rushing '
-        'yards. P5A ran and is not adjudicated; three scientific decisions are '
-        'open and they are the owner\'s.',
-        owed={'decisions': list(RUSHING_CONVERSION_DECISIONS),
-              'inventory': 'nfl/production/nonqb/rushing_inventory.json',
-              'research_module': 'nfl/research/p5a/',
-              'unblocks': ['rushing_yards'],
-              'not_blocked': ['carries', 'rushing_td']},
-        spec_version=None, governance='HOLD_CHARACTERIZED')
+    if carries_outcome.state is not State.PASS:
+        return _blocked('BLOCKED_UPSTREAM_RUSH_OPPORTUNITY',
+                        f'the rushing conversion layer needs a carry '
+                        f'allocation; upstream is '
+                        f'{carries_outcome.state.value}'
+                        f'[{carries_outcome.code}]')
+    if carry_draws is None or not player_ids or positions is None \
+            or ordinal is None:
+        return Outcome.fail(
+            'RUSHING_CONVERSION_INPUTS_ABSENT',
+            'the conversion needs the dealt carry draws, the row identities '
+            'and the positions that select the stratum. Running without the '
+            'positions would put every carry in one pool, which is the '
+            'unstratified control wearing a stratified name.',
+            have={'carry_draws': carry_draws is not None,
+                  'player_ids': bool(player_ids),
+                  'positions': positions is not None,
+                  'ordinal': ordinal is not None})
+    from nfl.production.nonqb import rushing_conversion as RC
+
+    built = RC.pools(int(ordinal))
+    if built.state is not State.PASS:
+        # The pool build's own refusal is passed through rather than
+        # relabelled -- a missing play-by-play corpus is a DATA cause and
+        # saying "conversion failed" would lose that.
+        return built
+    C = np.maximum(np.rint(np.asarray(carry_draws, float)), 0).astype(int)
+    if C.shape != (len(player_ids), m):
+        return Outcome.fail(
+            'CROSS_DRAW_INDEX_MISMATCH',
+            f'carry draws have shape {C.shape} against '
+            f'{(len(player_ids), m)}', got=list(C.shape))
+    pools_v = built.value
+    Y = np.zeros(C.shape, dtype=np.float64)
+    strata_used = {}
+    for i, pid in enumerate(player_ids):
+        pos = positions[i]
+        strata_used[str(pid)] = RC._stratum(pos)
+        Y[i] = RC.yards_for(C[i], pos, pools_v, seed, f'{ordinal}:{pid}')
+    # EVERY CARRY HAS YARDS AND ONLY CARRIES HAVE YARDS. A row with no carry
+    # in draw j must carry no yards in draw j; the reverse would be yardage
+    # with no opportunity behind it.
+    bad = int(((C == 0) & (Y != 0.0)).sum())
+    if bad:
+        return Outcome.fail(
+            'RUSHING_YARDS_WITHOUT_A_CARRY',
+            f'{bad} (row, draw) cell(s) carry rushing yards with zero '
+            f'carries. Yardage with no opportunity behind it is not a '
+            f'distribution, it is an accounting break.', n_cells=bad)
+    prov = built.as_dict()['evidence']['provenance']
+    return Outcome.ok(
+        'RUSHING_CONVERSION_OK', value={'rushing_yards': Y},
+        spec_version=RC.SPEC_VERSION,
+        test_only=bool(carries_outcome.evidence.get('test_only')),
+        governance='HOLD_TENTATIVE',
+        family=RC.FAMILY, family_label=RC.FAMILY_LABEL, system=RC.SYSTEM,
+        decisions='nfl/production/nonqb/RUSHING_CONVERSION_DECISIONS.json',
+        strata={s: prov['strata'][s] for s in RC.STRATA},
+        n_players=len(player_ids),
+        rows_by_stratum=collections.Counter(strata_used.values()),
+        carries_with_no_position=prov['carries_with_no_position'],
+        position_precedence=prov['position_precedence'],
+        warnings=['the family was CARRIED FORWARD from 2025, not selected for '
+                  '2026 -- P5A selects by CRPS against realised yards and '
+                  '2026 has none. HOLD_TENTATIVE.'])
 
 
 # ---------------------------------------------------------------- gate

@@ -61,21 +61,29 @@ def skill_points(n, *, pass_yds=None, pass_td=None, ints=None,
     return p
 
 
+#: The one mapping from a distance band to DraftKings points. `kicking.py`
+#: names the bands; this names what they are worth.
+BAND_POINTS = {'FG<20': FG_UNDER_40, 'FG20s': FG_UNDER_40,
+               'FG30s': FG_UNDER_40, 'FG40s': FG_40_49,
+               'FG50+': FG_50_PLUS}
+
+
 def kicker_points(band_made: dict, xpm) -> np.ndarray:
     """DK points per draw for a kicker, from made field goals BY BAND."""
     keys = list(band_made)
     n = len(band_made[keys[0]]) if keys else len(xpm)
     pts = np.zeros(n)
     for band, made in band_made.items():
-        if band.startswith('_'):
-            continue
-        v = np.asarray(made, dtype=float)
-        if band in ('FG<20', 'FG20s', 'FG30s'):
-            pts += v * FG_UNDER_40
-        elif band == 'FG40s':
-            pts += v * FG_40_49
-        elif band == 'FG50+':
-            pts += v * FG_50_PLUS
+        # AN UNRECOGNISED BAND RAISES. The elif chain used to fall through to
+        # nothing, so a band this table did not know about scored zero points
+        # and the total still looked like a total. A made field goal worth no
+        # points is a defect, and it must not be reachable by adding a band
+        # upstream and forgetting this table.
+        if band not in BAND_POINTS:
+            raise KeyError(
+                f'{band!r} is not a scored field-goal band. Known bands are '
+                f'{sorted(BAND_POINTS)}. Refused rather than scored as zero.')
+        pts += np.asarray(made, dtype=float) * BAND_POINTS[band]
     return pts + np.asarray(xpm, dtype=float) * EXTRA_POINT
 
 
