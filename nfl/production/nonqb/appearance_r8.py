@@ -1138,3 +1138,108 @@ def fit_rest(season: int, l2=1.0) -> Outcome:
     _FIT_REST[key] = m
     return Outcome.ok('REST_FIT', value=m, spec_version=SPEC_VERSION_REST,
                       cached=False, **ev)
+
+
+# ====================================================== REST2 -- interaction
+#
+# Pre-registered in `nfl/research/rest/predeclaration_rest2.md` BEFORE it was
+# built. Fix B is withdrawn and preserved; this is a successor identity, and
+# `featurise` / `fit` / `predict` above are untouched.
+#
+# WHY A MAIN EFFECT COULD NOT WORK, in one sentence: it nudges the player who
+# sat and the player who played by the same amount, so it cannot move the gap
+# BETWEEN them, which is exactly what fix B's numbers showed.
+#
+# FOUR COLUMNS, NO THRESHOLDS. The continuous `prev_snap` is the whole point --
+# it is what makes the rank<=3 / snap>=0.50 / snap<=0.10 cuts unnecessary, and
+# those cuts were chosen while looking at two players, which is why they are
+# confined to the measurement signature the model never sees.
+SPEC_VERSION_REST2 = 'appearance-rest2-boundary-x-participation'
+N_REST2_COLUMNS = 4
+
+
+def annotate_rest2(rows):
+    """`prev_was_last_regular_week`, plus WHAT HE DID in that game.
+
+    `prev_snap` is the `snap` field of the immediately preceding frame row --
+    the same quantity `snap_ewma_cur` is built from, read directly rather than
+    aggregated. A chart-added row has no snap share and that is NOT a zero, so
+    it carries its own missingness companion.
+    """
+    rows, last = annotate_rest(rows)
+    prev = {}
+    for r in sorted(rows, key=lambda x: (int(x['s']), int(x['w']))):
+        p = prev.get(r['pid'])
+        r['prev_appeared_row'] = (None if p is None else int(p['appeared']))
+        r['prev_snap'] = (None if p is None else p.get('snap'))
+        prev[r['pid']] = r
+    return rows, last
+
+
+def featurise_rest2(r, k):
+    """R8's design row plus the four pre-registered columns, append-only so
+    every existing coefficient keeps its index and a weight diff is readable."""
+    f = list(featurise(r, k))
+    L = float(r.get('prev_was_last_regular_week') or 0.0)
+    pa = r.get('prev_appeared_row')
+    ps = r.get('prev_snap')
+    f.append(L)                                             # 1. main effect
+    f.append(L * (0.0 if pa is None else float(pa)))        # 2. x appeared
+    f.append(L * (0.0 if ps is None else float(ps)))        # 3. x snap share
+    f.append(L * (1.0 if ps is None else 0.0))              # 4. x missing
+    return f
+
+
+REST2_COLUMN_NAMES = ('L', 'L_x_prev_appeared', 'L_x_prev_snap',
+                      'L_x_prev_snap_missing')
+
+_FIT_REST2 = {}
+
+
+def fit_rest2(season: int, l2=1.0) -> Outcome:
+    """Same frame, same exclusion, same l2, same k as R8. Four extra columns,
+    every one of them zero wherever L is zero -- so no row is added, removed or
+    reweighted relative to the arm this is measured against."""
+    key = (int(season), float(l2))
+    if key in _FIT_REST2:
+        m = _FIT_REST2[key]
+        return Outcome.ok('REST2_FIT', value=m,
+                          spec_version=SPEC_VERSION_REST2, cached=True,
+                          **m['evidence'])
+    fr = enriched_frame()
+    if fr.state is not State.PASS:
+        return fr
+    rows, last = annotate_rest2(list(fr.value))
+    ko = reliability_k(rows, cut=int(season) * 100)
+    if ko.state is not State.PASS:
+        return ko
+    k = ko.value
+    M, A, F = AM._frozen()
+    train = [r for r in rows if r['s'] < season and not is_unsupported(r)]
+    if not train:
+        return Outcome.fail(
+            'REST2_FRAME_EMPTY',
+            f'no frame row earlier than {season} survived the exclusion')
+    X = [featurise_rest2(r, k) for r in train]
+    y = [r['appeared'] for r in train]
+    model = A.fit_logistic(X, y, l2=l2)
+    flagged = [r for r in train if r.get('prev_was_last_regular_week')]
+    w = np.asarray(model['w'], float)
+    ev = {'n_train_rows': len(train), 'n_features': len(X[0]),
+          'n_rows_carrying_the_flag': len(flagged),
+          'n_flagged_that_appeared': sum(1 for r in flagged
+                                         if r.get('prev_appeared_row')),
+          'n_flagged_without_a_snap_share': sum(
+              1 for r in flagged if r.get('prev_snap') is None),
+          'last_regular_week_per_season': dict(sorted(last.items())),
+          'train_seasons': sorted({r['s'] for r in train}),
+          'base_rate': float(np.mean(y)), 'l2': l2, 'k': round(k, 6),
+          'coefs': {n: float(v) for n, v in
+                    zip(REST2_COLUMN_NAMES, w[-N_REST2_COLUMNS:])},
+          'inherits': 'R8, append-only; R8`s own coefficients are untouched '
+                      'and still served by fit()'}
+    m = {'model': model, 'k': k, 'evidence': ev, 'rows': rows,
+         'coef_sha256': hashlib.sha256(w.tobytes()).hexdigest()[:16]}
+    _FIT_REST2[key] = m
+    return Outcome.ok('REST2_FIT', value=m, spec_version=SPEC_VERSION_REST2,
+                      cached=False, **ev)
