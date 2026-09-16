@@ -1,0 +1,43 @@
+{
+ "spec_version": "outcome-crosscheck-1",
+ "external_source": "FantasyCruncher game-log screenshot, supplied by the owner",
+ "external_is": "OUTCOME_AND_HISTORY_CROSS_CHECK_ONLY",
+ "external_is_not": ["a projection input", "a target", "an eligibility authority"],
+ "discarded_from_the_screenshot": ["Proj", "Val", "Cost"],
+ "player": "James Cook",
+ "gsis_id": "00-0037248",
+ "agreement_2026_week_1": {
+  "external": {"carries": 13, "rush_yards": 57, "targets": 4,
+               "receptions": 3, "receiving_yards": 12},
+  "ours_from_play_by_play": {"carries": 13, "rush_yards": 57, "targets": 4,
+                             "receptions": 3, "receiving_yards": 12},
+  "ours_from_participation_panel": {"carries": 13, "targets": 4,
+                                    "offense_snaps": 42, "offense_pct": 0.72,
+                                    "team_plays": 53},
+  "verdict": "EXACT ON ALL FIVE FIELDS",
+  "what_this_validates": [
+   "identity resolution -- the gsis_id we joined on is the right player",
+   "the 2026 week-1 derivation, both the pbp count and the snap panel",
+   "that week 1 was a real participation game, which is the premise of the repair"]
+ },
+ "agreement_2025_week_18": {
+  "external": {"attempts": 2, "yards": 15},
+  "ours_from_play_by_play": {"carries": 2, "yards": 15},
+  "verdict": "EXACT",
+  "what_this_validates": "the stale previous game really was a 2-carry rest appearance, so f_prev_snap = 0.03 was a correct reading of a wrong row"
+ },
+ "second_defect_this_cross_check_exposed": {
+  "finding": "the appearance panel excludes the POSTSEASON, so week 18 is the last REGULAR-SEASON game and not the last game.",
+  "evidence": {
+   "our_play_by_play_has": {"2025_wk18": "2 carries, 15 yds",
+                            "2025_wk19": "15 carries, 46 yds",
+                            "2025_wk20": "24 carries, 117 yds"},
+   "appearance_panel_2025_weeks_present": "1..18 only",
+   "cook_panel_weeks": "1-6, 8-18 (week 7 was his bye)"
+  },
+  "reading": "Cook's previous game was wrong TWICE OVER. It was a rest game, and it was not even his most recent game -- he played two playoff rounds after it, the second at 24 carries for 117 yards, and the panel never sees them. The same holds for every playoff team.",
+  "does_it_change_this_forecast": "NO. 2026 week 1 is more recent than the 2025 postseason, so the repair supersedes it here.",
+  "when_it_would_bite": "any forecast written during or shortly after a postseason, for every team still playing. It is recorded as an open structural gap and is NOT fixed in this candidate.",
+  "status": "OPEN -- not repaired, not scheduled, recorded"
+ }
+}
