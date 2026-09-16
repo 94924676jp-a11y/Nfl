@@ -391,6 +391,28 @@ R9_REPAIR = {
 # frozen ones. R8's and R9's coefficients are byte-identical after the change.
 R9_W1P_FLAGS = dict(R9_FLAGS)
 R9_W1P_FLAGS['include_2026w1_participation'] = True
+# CARRY CONSERVATION IS R11's REPAIR AND IT ALREADY EXISTS.
+# Measured on the R9_W1P board 1119ae644642392c, per draw and never noise:
+#   team_carries vs summed rush categories -- DET 29.17 vs 28.31, BUF 30.08
+#   vs 27.55, agreeing in 0 of 1000 draws on either club.
+# R9 leaves three things undone that R11 composes in one call: SC1 bounds the
+# carry level by SCRAMBLES while the named owners include the quarterback's
+# DESIGNED runs; `allocate` runs without `qb_designed_rush`, so A1 draws a
+# second answer to a quantity the QB layer already drew; and the sealed level
+# is D1's raw CONTINUOUS draw rather than the integerised vector the partition
+# consumed. Nothing is clipped, renormalised or deleted by including it.
+R9_W1P_FLAGS['rush_single_owner'] = True
+# TARGET CONSERVATION IS THE RECEIVING ANALOGUE, AND ONLY CAUSE THREE OF IT.
+# `football_engine` already computes the partitioned level and names it
+# `published_team_targets` with `published_level_is: 'targeted'`, and checks
+# `sum_i targets_i + other == targeted` per team per draw exactly. What was
+# missing is that `run_forecast` sealed D1's separately drawn CONTINUOUS
+# `team_targets` beside it -- a denominator the game never used. Measured:
+# receivers exceed the published level in 51.18% of 139,800 sealed C3 draws
+# and agree in 0. The allocation is sound; the published label was wrong, so
+# this publishes the level that was partitioned rather than renormalising a
+# partition that is already correct.
+R9_W1P_FLAGS['publish_partitioned_team_targets'] = True
 
 R9_W1P_REPAIR = {
     'component': 'R9_W1P',

@@ -1331,6 +1331,19 @@ def build(args, fixtures: dict = None) -> dict:
                         'outcomes': g.get('layer_outcomes') or {}}
         if payload:
             fx['_nonqb_payload'] = payload
+            # THE LEVEL THE PARTITION CONSUMED, CARRIED TO THE SEAL.
+            # `football_engine` builds `published_team_targets` for exactly
+            # this and says so in its own comment -- "carrying them here is
+            # what lets run_forecast seal them and publish the level the
+            # partition consumed" -- and then nothing read it. So the board
+            # published D1's separately drawn CONTINUOUS team_targets, which
+            # nothing partitions, beside an allocation built on `targeted`.
+            # Receivers exceed the published level in 51.18% of 139,800 sealed
+            # C3 draws and agree in none of them.
+            _pe = payload.get('pass_event') or {}
+            if _pe.get('published_team_targets') and _pe.get(
+                    'published_level_is') == 'targeted':
+                fx['_published_team_targets'] = _pe['published_team_targets']
         # C3 IS REACHED OR IT IS NOT, AND THE ENGINE SAYS WHICH. This was
         # hard-coded as "not reached" on the QB path, which was true only
         # because the chain never ran.
@@ -1969,6 +1982,21 @@ def build(args, fixtures: dict = None) -> dict:
             for _t, _v in _pub.items():
                 if ('team_carries', _t) in _tvc:
                     _tvc[('team_carries', _t)] = _np.asarray(_v, float)
+            # THE SAME CORRECTION ON THE RECEIVING SIDE, and it is a
+            # PUBLICATION fix rather than an allocation one. The partition is
+            # already sound -- targets never exceed attempts in any draw -- so
+            # renormalising it would break something that works. What was
+            # wrong is that the sealed vector was not the vector partitioned.
+            # Gated on the candidate flag, so every frozen arm seals exactly
+            # what it sealed before.
+            if (_mode['flags'] or {}).get('publish_partitioned_team_targets'):
+                _pt = fx.get('_published_team_targets') or {}
+                for _t, _v in _pt.items():
+                    if ('team_targets', _t) in _tvc:
+                        _tvc[('team_targets', _t)] = _np.asarray(_v, float)
+                fx['_team_targets_published_level'] = (
+                    'targeted (the level the multinomial dealt from)'
+                    if _pt else 'D1 (no pass event composed)')
             tv = _tvc
             mats = {m: _np.stack([_np.asarray(tv[(m, t)], float)
                                   for t in teams])
