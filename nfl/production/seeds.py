@@ -71,6 +71,15 @@ STREAMS = {
     'rushing_a1': {
         'rush_play_budget_partition': 1,
     },
+    # Carry -> rushing yards, and the gadget allocation. Both draw ONE stream
+    # per layer; the per-player component is open-set and comes from
+    # `row_component` below, exactly as a game id does.
+    'rushing_conversion': {
+        'per_carry_yards': 1,
+    },
+    'gadget_rush': {
+        'category_allocation': 1,
+    },
 }
 
 
@@ -153,5 +162,41 @@ def game_component(game_id: str) -> Outcome:
         'SEED_GAME_COMPONENT',
         value=int.from_bytes(d[:4], 'big'),
         detail=f'{game_id} -> stable 32-bit component',
+        seed_contract=SEED_CONTRACT, derived_from_python_hash=False,
+        stable_across_processes=True)
+
+
+def row_component(tag: str) -> Outcome:
+    """A stable stream component for an OPEN-SET key -- a player, a tag.
+
+    THIS EXISTS BECAUSE THE DEFECT THIS MODULE WAS WRITTEN FOR CAME BACK.
+    The docstring at the top records two layers seeding an RNG from
+    `hash(str)`; `rushing_conversion` and `gadget_rush` then did it again,
+    with `abs(hash(tag))` and `abs(hash((team, category, tag)))`. It was
+    caught by diffing two seals built minutes apart from identical source
+    with the same seed: every count agreed and `rushing__rushing_yards`,
+    `gadget_rush__wr`, `gadget_rush__te` and the `dk_scoring__dk_points`
+    downstream of them did not.
+
+    A private helper in each module would have fixed those two and left the
+    third author to rediscover the whole thing, so the derivation lives here
+    with the rest of the seed contract.
+
+    WHY A DIGEST RATHER THAN THE `stream_id` TABLE. Same reason as
+    `game_component`: the table is for a small closed set a reader can check
+    by eye, and player ids are an open set. What the contract requires is
+    determinism across processes, which sha256 gives and `hash()` does not.
+    """
+    if not tag or not isinstance(tag, str):
+        return Outcome.fail(
+            'SEED_ROW_TAG_MISSING',
+            f'a per-row stream component needs a non-empty string tag; got '
+            f'{tag!r}. Refusing rather than defaulting to a shared stream.',
+            tag=tag)
+    d = hashlib.sha256(f'{SEED_CONTRACT}|row|{tag}'.encode()).digest()
+    return Outcome.ok(
+        'SEED_ROW_COMPONENT',
+        value=int.from_bytes(d[:4], 'big'),
+        detail=f'{tag} -> stable 32-bit component',
         seed_contract=SEED_CONTRACT, derived_from_python_hash=False,
         stable_across_processes=True)

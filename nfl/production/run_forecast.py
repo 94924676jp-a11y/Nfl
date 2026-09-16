@@ -1855,7 +1855,8 @@ def build(args, fixtures: dict = None) -> dict:
                 {f: _np.asarray(D[f]) for f in QBV1.FIELDS},
                 QBV1.SPEC_VERSION,
                 'numpy default_rng([seed, ord, gsis_id]) -- one stream per '
-                'row; columns are aligned, rows are independent')
+                'row; columns are aligned, rows are independent',
+                row_teams={r['gsis_id']: r.get('team') for r in rows})
             if o.state is not State.PASS:
                 return _fail(o)
             produced['qb'] = len(rows)
@@ -1882,7 +1883,8 @@ def build(args, fixtures: dict = None) -> dict:
                          pay['draws']['receiving_td'])},
                     'nfl-nonqb-receiving-1',
                     'P4C simplex allocation and RC1 conversion on the shared '
-                    'game draw index')
+                    'game draw index',
+                    row_teams={g: _team_of_player.get(g) for g in rec_ids})
                 if o.state is not State.PASS:
                     return _fail(o)
                 produced['receiving'] = len(rec_ids)
@@ -1913,7 +1915,8 @@ def build(args, fixtures: dict = None) -> dict:
                     'nfl-nonqb-rushing-1',
                     'P4C simplex allocation over the A1 running-back budget '
                     'on the shared game draw index; rushing_yards drawn per '
-                    'carry by the adjudicated emp_tilt system-A control')
+                    'carry by the adjudicated emp_tilt system-A control',
+                    row_teams={g: _team_of_player.get(g) for g in rb_ids})
                 if o.state is not State.PASS:
                     return _fail(o)
                 produced['rushing'] = len(rb_ids)
@@ -2124,7 +2127,9 @@ def build(args, fixtures: dict = None) -> dict:
                         'gadget_rush', _g_rows, _mats2, GADGET.SPEC_VERSION,
                         'multinomial over the club\'s named players at the '
                         'position, weights = own prior carries + fitted '
-                        'alpha; kneels by per-draw dropback argmax')
+                        'alpha; kneels by per-draw dropback argmax',
+                        row_teams={g: _team_of_player.get(g)
+                                   for g in _g_rows})
                     if o.state is not State.PASS:
                         return _fail(o)
                     produced['gadget_rush'] = len(_g_rows)
@@ -2251,7 +2256,8 @@ def build(args, fixtures: dict = None) -> dict:
                         {k: _np.stack(v) for k, v in _k_mats.items()},
                         KICK.SPEC_VERSION,
                         'kicking.simulate, conditioned draw-by-draw on this '
-                        "team's sealed offensive touchdowns")
+                        "team's sealed offensive touchdowns",
+                        row_teams={g: v['team'] for g, v in _k_meta.items()})
                     if o.state is not State.PASS:
                         return _fail(o)
                     produced['kicking'] = len(_k_rows)
@@ -2306,7 +2312,8 @@ def build(args, fixtures: dict = None) -> dict:
                     {'dk_points': _np.stack(_dk_vecs)},
                     DKS.SPEC_VERSION,
                     'DraftKings NFL classic scoring applied per draw to this '
-                    "run's sealed events; no randomness of its own")
+                    "run's sealed events; no randomness of its own",
+                    row_teams={g: _team_of_player.get(g) for g in _dk_rows})
                 if o.state is not State.PASS:
                     return _fail(o)
                 produced['dk_scoring'] = len(_dk_rows)

@@ -52,7 +52,9 @@ for _q in (str(_REPO), str(_REPO / 'nfl' / 'research' / 'p5a')):
     if _q not in sys.path:
         sys.path.insert(0, _q)
 
-from sportsplatform.governance.outcome import Cause, Outcome      # noqa: E402
+from sportsplatform.governance.outcome import (Cause, Outcome,   # noqa: E402
+                                               State)
+from nfl.production import seeds as SEEDS                        # noqa: E402
 
 SPEC_VERSION = 'rushing-conversion-A-emp_tilt-stratified-1'
 FAMILY = 'emp_tilt'
@@ -229,8 +231,15 @@ def yards_for(carries, position, built, seed, tag=''):
     import p5a_lib as P
     c = np.asarray(carries).astype(int)
     st = built[_stratum(position)]
+    # THE SEED CONTRACT OWNS THIS, not a private helper. `abs(hash(tag))`
+    # was here and is salted per process; seeds.row_component is the declared
+    # open-set derivation and is stable across processes and machines.
+    _rc = SEEDS.row_component(f'rushing_conversion|{tag}')
+    if _rc.state is not State.PASS:
+        raise ValueError(_rc.code)
+    _sid = SEEDS.stream_id('rushing_conversion', 'per_carry_yards')
     rng = np.random.default_rng(
-        [int(seed), int(abs(hash(tag)) % (2 ** 31)), len(c)])
+        [int(seed), int(_sid.value), int(_rc.value), len(c)])
     total = int(c.sum())
     out = np.zeros(c.shape[0], dtype=np.float64)
     if total <= 0:

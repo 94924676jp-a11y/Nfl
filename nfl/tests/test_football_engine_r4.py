@@ -37,28 +37,48 @@ def check(label, ok, detail=''):
 
 
 # ================================================= rushing conversion
-def test_A_rushing_conversion_refuses_and_names_the_decisions():
-    print('\nA. rushing yards have no governed control, and say so')
+def test_A_rushing_conversion_runs_now_the_decisions_are_made():
+    """THIS TEST USED TO ASSERT THE HOLD. The hold is lifted, so it does not.
+
+    It checked that the layer returned DEFERRED
+    RUSHING_CONVERSION_CONTROL_UNDEFINED and named three open scientific
+    decisions. The owner made all three on 2026-09-16 and
+    RUSHING_CONVERSION_DECISIONS.json records them, so continuing to assert
+    the refusal would be a test defending a state the project has left --
+    green on a question nobody is asking.
+
+    What it asserts instead is that the decisions are RECORDED, that the
+    layer carries a spec version rather than None, and -- the part that
+    matters -- that the two refusals which must SURVIVE the layer being
+    implemented still fire. A layer becoming implemented is not a licence for
+    a caller to supply its priors or to run it without the positions that
+    select the stratum.
+    """
+    print('\nA. rushing yards now have a governed control, and its refusals '
+          'still hold')
+    dec = json.load(open(os.path.join(
+        _ROOT, 'nfl', 'production', 'nonqb',
+        'RUSHING_CONVERSION_DECISIONS.json')))
+    check('the three decisions are recorded, not assumed',
+          all(k in json.dumps(dec) for k in
+              ('RUSH-DECISION-1', 'RUSH-DECISION-2', 'RUSH-DECISION-3')))
+    check('  the layer carries a spec version rather than None',
+          LY.SPEC.get('rushing_conversion') is not None,
+          str(LY.SPEC.get('rushing_conversion')))
+    check('  and it is the stratified system-A emp_tilt control',
+          'emp_tilt' in (LY.SPEC.get('rushing_conversion') or '')
+          and 'stratified' in (LY.SPEC.get('rushing_conversion') or ''))
+    # THE REFUSALS THAT MUST SURVIVE.
     o = LY.rushing_conversion(Outcome.ok('CARRIES_OK', value={}))
-    check('the layer defers rather than producing rushing yards',
-          o.state is State.DEFERRED
-          and o.code == 'RUSHING_CONVERSION_CONTROL_UNDEFINED',
-          f'{o.state.value}[{o.code}]')
-    dec = o.evidence['owed']['decisions']
-    check('  it names three open scientific decisions', len(dec) == 3, len(dec))
-    for tag in ('RUSH-DECISION-1', 'RUSH-DECISION-2', 'RUSH-DECISION-3'):
-        check(f'  {tag} is named', any(d.startswith(tag) for d in dec))
-    check('  and it emits no value at all', o.value is None)
-    inv = json.load(open(os.path.join(_ROOT, 'nfl', 'production', 'nonqb',
-                                      'rushing_inventory.json')))
-    check('  the inventory records the same verdict',
-          inv['verdict'] == 'RUSHING_CONVERSION_CONTROL_UNDEFINED')
-    check('  and names the chronology defect in P5A explicitly',
-          'INNER VALIDATION' in inv['9_chronology_rule']
-          ['family_selection_defect'].upper())
-    check('  the inventory does not claim P5A is accepted',
-          inv['3_owner_action']['decision_artifact'] is None
-          and inv['3_owner_action']['decision_field_present'] is False)
+    check('running without positions is still refused',
+          o.state is State.FAIL
+          and o.code == 'RUSHING_CONVERSION_INPUTS_ABSENT',
+          f'{o.state.value}[{o.code}] -- without them every carry lands in '
+          f'one pool, which is the unstratified control wearing a '
+          f'stratified name')
+    o2 = LY.rushing_conversion(Outcome.deferred('UPSTREAM', 'no carries'))
+    check('  and a refused upstream still blocks rather than inventing yards',
+          o2.state is not State.PASS, f'{o2.state.value}[{o2.code}]')
 
 
 def test_A_caller_supplied_rushing_prior_is_refused():
@@ -151,9 +171,42 @@ def test_C_rushing_accounting_identities_are_load_bearing():
     check('  rushing yards are NOT_APPLICABLE, never satisfied',
           o.evidence['zero_carries_implies_zero_rushing_yards']
           == 'NOT_APPLICABLE')
-    check('  and the reason names the missing control',
-          'RUSHING_CONVERSION_CONTROL_UNDEFINED'
-          in o.evidence['rushing_yards_reason'])
+    # THE NOT_APPLICABLE BRANCH SURVIVES THE CONTROL EXISTING, and that is
+    # what this now checks. `_rush_case` supplies no rushing yards, so the
+    # identity has nothing to score and must say NOT_APPLICABLE rather than
+    # report a satisfied invariant. What changed is the REASON: the control
+    # is no longer undefined, so the text no longer claims it is.
+    check('  and the reason is that this run produced no yards, not that no '
+          'control exists',
+          'nothing to check' in o.evidence['rushing_yards_reason']
+          and 'never\nas satisfied' not in o.evidence['rushing_yards_reason'],
+          o.evidence['rushing_yards_reason'][:120])
+    # AND THE LIVE BRANCH IS EXERCISED, so NOT_APPLICABLE is not the only
+    # path this module ever takes through the identity.
+    import numpy as _np
+    live = dict(base)
+    _C = _np.asarray(base['player_carries'], float)
+    live['rushing_yards'] = _np.where(_np.rint(_C) > 0, 4.3 * _C, 0.0)
+    o2 = ACC.reconcile_rushing(**live)
+    check('  with yards supplied the identity is LIVE and holds',
+          o2.evidence.get(
+              'zero_carries_implies_zero_rushing_yards_violations') == 0,
+          str(o2.evidence.get(
+              'zero_carries_implies_zero_rushing_yards_violations')))
+    bad = dict(live)
+    bad['rushing_yards'] = _np.asarray(live['rushing_yards']).copy()
+    _z = _np.argwhere(_np.rint(_C) <= 0)
+    if _z.size:
+        bad['rushing_yards'][tuple(_z[0])] = 7.0
+        o3 = ACC.reconcile_rushing(**bad)
+        check('  and a yard with no carry behind it is caught',
+              o3.evidence.get(
+                  'zero_carries_implies_zero_rushing_yards_violations') == 1,
+              str(o3.evidence.get(
+                  'zero_carries_implies_zero_rushing_yards_violations')))
+    else:
+        print('  ..   NOT_EXECUTED a yard with no carry behind it is caught '
+              '-- this fixture has no zero-carry cell to plant one in')
 
     b = dict(base); b['carry_other'] = base['carry_other'] + 0.05
     check('a broken team carry closure is caught',

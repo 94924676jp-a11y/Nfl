@@ -12,7 +12,7 @@
   {
    "class": "HARD",
    "code": "DRAW_ARTIFACT_VERIFIED",
-   "detail": "47 matrix(es) re-read and hashed, one shared draw index of 1000",
+   "detail": "50 matrix(es) re-read and hashed, one shared draw index of 1000",
    "evaluator": "nfl.production.draws_artifact.verify",
    "invariant": "draw_artifact_integrity",
    "state": "PASS"
@@ -28,7 +28,7 @@
   {
    "class": "HARD",
    "code": "DRAW_INDEX_SHARED",
-   "detail": "all 47 matrix(es) share one draw index of width 1000",
+   "detail": "all 50 matrix(es) share one draw index of width 1000",
    "evaluator": "nfl.production.draws_artifact.verify",
    "invariant": "draw_index_shared",
    "state": "PASS"
@@ -36,7 +36,7 @@
   {
    "class": "HARD",
    "code": "DRAW_SET_PRESENT",
-   "detail": "47 matrix(es) from ['dk_scoring', 'kicking', 'qb', 'receiving', 'rush_category', 'rush_player_pool', 'rushing', 'team_volume']",
+   "detail": "50 matrix(es) from ['dk_scoring', 'gadget_rush', 'kicking', 'qb', 'receiving', 'rush_category', 'rush_player_pool', 'rushing', 'team_volume']",
    "evaluator": "nfl.production.draws_artifact.DrawSet",
    "invariant": "draw_set_non_empty",
    "state": "PASS"
@@ -278,6 +278,19 @@
    "not_the_accepted_arm": "ewma_hl2 over TRUE pass_snaps is the accepted estimator. This is the same estimator over a DIFFERENT ESTIMAND and must never be reported as, compared against, or promoted in place of the accepted arm without the exact numerator.",
    "replaces": "a PARTICIPATION_HISTORY_STALE refusal that produced no running back, receiver or tight end at all for a week-2 game",
    "what": "include the 2026 week-1 participation rows derived in panel_2026w1 so the Stage-2 ewma sees a current-season game"
+  },
+  {
+   "coefficients": "ONE per category. Weights are own prior carries + alpha, with alpha fitted by forward-scored log-loss of the actual owner: wr 0.75 (loss 1.2612, n=2685), te 0.10 (loss 0.7411, n=203). Both interior to the grid. The first criterion tried -- matching the mean top-share -- is WITHDRAWN: it is monotone in alpha and returned the grid boundary, where a player with no prior carry can never take one.",
+   "component": "R9_W1P_G",
+   "defect": "a board that hides kneels overstates every quarterback rushing line on a team that is ahead, because a kneel is an official rush attempt that loses a yard or two; and a gadget carry with no owner is a receiver rushing line that silently reads zero",
+   "engine_flag": "allocate_gadget_rush",
+   "evidence": "pre-cutoff: 2212 kneels, 100.0% taken by a quarterback and 83.2% by the game's own primary passer; 2685 wr carries whose busiest receiver takes a median 100% and mean 91.7% of a team-game; 203 te carries at 99.0%. nfl/production/nonqb/GADGET_RUSH_FIT.json.",
+   "governance": "REHEARSAL_ONLY -- a closure change with its own identity, never an edit to R9_W1P",
+   "known_limitation": "the allocation is slightly LESS concentrated than the real thing -- simulated mean top-share 0.873 against an observed 0.917 for wr. Reported rather than closed, because moving alpha to close it is the moment-matching this component explicitly withdrew.",
+   "not_allocated": "fringe and the unmodelled-back pool stay unnamed. Of 132 pre-cutoff fringe carries, 28 are defensive backs, 26 punters, 12 linebackers, 1 a kicker and 65 belong to 11 rushers with no position in any source held -- none recoverable from panel_p3. Where an owner exists he is on no offensive board. This is the correct answer, not a gap.",
+   "opportunity_only_not_yards": "THIS ALLOCATES THE CARRY, NOT THE YARD. A kneel, a jet sweep and a tight-end run now have a named owner and still contribute nothing to his rushing yards, because the conversion draws on the RB pool over the rushing layer and these carries are not in it. Measured pre-cutoff: a kneel is -1.0922 yards (n=2212, sd 0.57, p50 -1.0), a wr carry +5.5423 (n=2685, sd 7.72, p50 4.0, p90 14.0) and a te carry +2.7044 (n=203). On this board that is about -1.64 rushing yards missing from Josh Allen and +1.55 from Amon-Ra St. Brown. Small, and NOT closed here: the wr distribution is a different animal from the RB pool -- mean 5.54 against 4.29, with a far heavier tail -- so converting these carries needs its own stratum, which is a further closure change and therefore a further candidate, not an edit to this one.",
+   "replaces": "three categories of team rushing mass with no player. Measured on the sealed DET-BUF board: BUF kneel 1.560 + wr 0.478 + te 0.058 and DET 0.641 + 0.584 + 0.040 carries per draw belonging to no one",
+   "what": "the kneel, wr and te rush categories are dealt to NAMED players on the same board, on the same draw index, instead of reaching the board as a team-level number with nobody on it"
   }
  ],
  "candidate_components_applied": [
@@ -293,7 +306,7 @@
   "SC1"
  ],
  "candidate_components_not_reached": [],
- "code_commit": "7528413ca656a63d4843bc384c0e44d58e0e8aff+src1[123d25e40ded63a5]",
+ "code_commit": "af9ef9e1cdd8247397626ca392830d109ba9fe4f+src1[da5543de01669a94]",
  "completeness": "PARTIAL_PLAYER_COVERAGE",
  "contract_version": "nfl-forecast-artifact-1",
  "distributions": {
@@ -301,7 +314,7 @@
    "qb": {
     "att": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "qb/att",
       "n_draws": 1000,
       "row": 2
@@ -313,7 +326,7 @@
     },
     "cmp": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "qb/cmp",
       "n_draws": 1000,
       "row": 2
@@ -325,7 +338,7 @@
     },
     "db": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "qb/db",
       "n_draws": 1000,
       "row": 2
@@ -337,7 +350,7 @@
     },
     "int": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "qb/int",
       "n_draws": 1000,
       "row": 2
@@ -349,7 +362,7 @@
     },
     "ptd": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "qb/ptd",
       "n_draws": 1000,
       "row": 2
@@ -361,7 +374,7 @@
     },
     "pyds": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "qb/pyds",
       "n_draws": 1000,
       "row": 2
@@ -373,7 +386,7 @@
     },
     "rtd": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "qb/rtd",
       "n_draws": 1000,
       "row": 2
@@ -385,7 +398,7 @@
     },
     "rush_opp": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "qb/rush_opp",
       "n_draws": 1000,
       "row": 2
@@ -397,7 +410,7 @@
     },
     "ryds": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "qb/ryds",
       "n_draws": 1000,
       "row": 2
@@ -409,7 +422,7 @@
     },
     "sacks": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "qb/sacks",
       "n_draws": 1000,
       "row": 2
@@ -421,7 +434,7 @@
     },
     "scr": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "qb/scr",
       "n_draws": 1000,
       "row": 2
@@ -437,7 +450,7 @@
    "qb": {
     "att": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "qb/att",
       "n_draws": 1000,
       "row": 3
@@ -449,7 +462,7 @@
     },
     "cmp": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "qb/cmp",
       "n_draws": 1000,
       "row": 3
@@ -461,7 +474,7 @@
     },
     "db": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "qb/db",
       "n_draws": 1000,
       "row": 3
@@ -473,7 +486,7 @@
     },
     "int": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "qb/int",
       "n_draws": 1000,
       "row": 3
@@ -485,7 +498,7 @@
     },
     "ptd": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "qb/ptd",
       "n_draws": 1000,
       "row": 3
@@ -497,7 +510,7 @@
     },
     "pyds": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "qb/pyds",
       "n_draws": 1000,
       "row": 3
@@ -509,7 +522,7 @@
     },
     "rtd": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "qb/rtd",
       "n_draws": 1000,
       "row": 3
@@ -521,7 +534,7 @@
     },
     "rush_opp": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "qb/rush_opp",
       "n_draws": 1000,
       "row": 3
@@ -533,7 +546,7 @@
     },
     "ryds": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "qb/ryds",
       "n_draws": 1000,
       "row": 3
@@ -545,7 +558,7 @@
     },
     "sacks": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "qb/sacks",
       "n_draws": 1000,
       "row": 3
@@ -557,7 +570,7 @@
     },
     "scr": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "qb/scr",
       "n_draws": 1000,
       "row": 3
@@ -573,7 +586,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 0
@@ -585,7 +598,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 0
@@ -597,7 +610,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 0
@@ -609,7 +622,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 0
@@ -625,7 +638,7 @@
    "qb": {
     "att": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "qb/att",
       "n_draws": 1000,
       "row": 0
@@ -637,7 +650,7 @@
     },
     "cmp": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "qb/cmp",
       "n_draws": 1000,
       "row": 0
@@ -649,7 +662,7 @@
     },
     "db": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "qb/db",
       "n_draws": 1000,
       "row": 0
@@ -661,7 +674,7 @@
     },
     "int": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "qb/int",
       "n_draws": 1000,
       "row": 0
@@ -673,7 +686,7 @@
     },
     "ptd": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "qb/ptd",
       "n_draws": 1000,
       "row": 0
@@ -685,7 +698,7 @@
     },
     "pyds": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "qb/pyds",
       "n_draws": 1000,
       "row": 0
@@ -697,7 +710,7 @@
     },
     "rtd": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "qb/rtd",
       "n_draws": 1000,
       "row": 0
@@ -709,7 +722,7 @@
     },
     "rush_opp": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "qb/rush_opp",
       "n_draws": 1000,
       "row": 0
@@ -721,7 +734,7 @@
     },
     "ryds": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "qb/ryds",
       "n_draws": 1000,
       "row": 0
@@ -733,7 +746,7 @@
     },
     "sacks": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "qb/sacks",
       "n_draws": 1000,
       "row": 0
@@ -745,7 +758,7 @@
     },
     "scr": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "qb/scr",
       "n_draws": 1000,
       "row": 0
@@ -761,7 +774,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 12
@@ -773,7 +786,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 12
@@ -785,7 +798,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 12
@@ -797,7 +810,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 12
@@ -813,7 +826,7 @@
    "qb": {
     "att": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "qb/att",
       "n_draws": 1000,
       "row": 1
@@ -825,7 +838,7 @@
     },
     "cmp": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "qb/cmp",
       "n_draws": 1000,
       "row": 1
@@ -837,7 +850,7 @@
     },
     "db": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "qb/db",
       "n_draws": 1000,
       "row": 1
@@ -849,7 +862,7 @@
     },
     "int": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "qb/int",
       "n_draws": 1000,
       "row": 1
@@ -861,7 +874,7 @@
     },
     "ptd": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "qb/ptd",
       "n_draws": 1000,
       "row": 1
@@ -873,7 +886,7 @@
     },
     "pyds": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "qb/pyds",
       "n_draws": 1000,
       "row": 1
@@ -885,7 +898,7 @@
     },
     "rtd": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "qb/rtd",
       "n_draws": 1000,
       "row": 1
@@ -897,7 +910,7 @@
     },
     "rush_opp": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "qb/rush_opp",
       "n_draws": 1000,
       "row": 1
@@ -909,7 +922,7 @@
     },
     "ryds": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "qb/ryds",
       "n_draws": 1000,
       "row": 1
@@ -921,7 +934,7 @@
     },
     "sacks": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "qb/sacks",
       "n_draws": 1000,
       "row": 1
@@ -933,7 +946,7 @@
     },
     "scr": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "qb/scr",
       "n_draws": 1000,
       "row": 1
@@ -949,7 +962,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 13
@@ -961,7 +974,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 13
@@ -973,7 +986,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 13
@@ -985,7 +998,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 13
@@ -1001,7 +1014,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 14
@@ -1013,7 +1026,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 14
@@ -1025,7 +1038,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 14
@@ -1037,7 +1050,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 14
@@ -1051,7 +1064,7 @@
    "rushing": {
     "carries": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "rushing/carries",
       "n_draws": 1000,
       "row": 3
@@ -1063,7 +1076,7 @@
     },
     "rushing_td": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "rushing/rushing_td",
       "n_draws": 1000,
       "row": 3
@@ -1079,7 +1092,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 1
@@ -1091,7 +1104,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 1
@@ -1103,7 +1116,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 1
@@ -1115,7 +1128,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 1
@@ -1131,7 +1144,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 15
@@ -1143,7 +1156,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 15
@@ -1155,7 +1168,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 15
@@ -1167,7 +1180,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 15
@@ -1183,7 +1196,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 2
@@ -1195,7 +1208,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 2
@@ -1207,7 +1220,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 2
@@ -1219,7 +1232,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 2
@@ -1235,7 +1248,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 3
@@ -1247,7 +1260,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 3
@@ -1259,7 +1272,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 3
@@ -1271,7 +1284,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 3
@@ -1287,7 +1300,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 16
@@ -1299,7 +1312,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 16
@@ -1311,7 +1324,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 16
@@ -1323,7 +1336,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 16
@@ -1339,7 +1352,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 4
@@ -1351,7 +1364,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 4
@@ -1363,7 +1376,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 4
@@ -1375,7 +1388,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 4
@@ -1391,7 +1404,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 17
@@ -1403,7 +1416,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 17
@@ -1415,7 +1428,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 17
@@ -1427,7 +1440,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 17
@@ -1441,7 +1454,7 @@
    "rushing": {
     "carries": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "rushing/carries",
       "n_draws": 1000,
       "row": 4
@@ -1453,7 +1466,7 @@
     },
     "rushing_td": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "rushing/rushing_td",
       "n_draws": 1000,
       "row": 4
@@ -1469,7 +1482,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 18
@@ -1481,7 +1494,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 18
@@ -1493,7 +1506,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 18
@@ -1505,7 +1518,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 18
@@ -1521,7 +1534,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 5
@@ -1533,7 +1546,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 5
@@ -1545,7 +1558,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 5
@@ -1557,7 +1570,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 5
@@ -1573,7 +1586,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 6
@@ -1585,7 +1598,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 6
@@ -1597,7 +1610,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 6
@@ -1609,7 +1622,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 6
@@ -1623,7 +1636,7 @@
    "rushing": {
     "carries": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "rushing/carries",
       "n_draws": 1000,
       "row": 0
@@ -1635,7 +1648,7 @@
     },
     "rushing_td": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "rushing/rushing_td",
       "n_draws": 1000,
       "row": 0
@@ -1651,7 +1664,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 19
@@ -1663,7 +1676,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 19
@@ -1675,7 +1688,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 19
@@ -1687,7 +1700,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 19
@@ -1703,7 +1716,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 7
@@ -1715,7 +1728,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 7
@@ -1727,7 +1740,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 7
@@ -1739,7 +1752,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 7
@@ -1755,7 +1768,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 8
@@ -1767,7 +1780,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 8
@@ -1779,7 +1792,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 8
@@ -1791,7 +1804,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 8
@@ -1805,7 +1818,7 @@
    "rushing": {
     "carries": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "rushing/carries",
       "n_draws": 1000,
       "row": 1
@@ -1817,7 +1830,7 @@
     },
     "rushing_td": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "rushing/rushing_td",
       "n_draws": 1000,
       "row": 1
@@ -1833,7 +1846,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 9
@@ -1845,7 +1858,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 9
@@ -1857,7 +1870,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 9
@@ -1869,7 +1882,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 9
@@ -1883,7 +1896,7 @@
    "rushing": {
     "carries": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "rushing/carries",
       "n_draws": 1000,
       "row": 2
@@ -1895,7 +1908,7 @@
     },
     "rushing_td": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "rushing/rushing_td",
       "n_draws": 1000,
       "row": 2
@@ -1911,7 +1924,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 20
@@ -1923,7 +1936,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 20
@@ -1935,7 +1948,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 20
@@ -1947,7 +1960,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 20
@@ -1961,7 +1974,7 @@
    "rushing": {
     "carries": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "rushing/carries",
       "n_draws": 1000,
       "row": 5
@@ -1973,7 +1986,7 @@
     },
     "rushing_td": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "rushing/rushing_td",
       "n_draws": 1000,
       "row": 5
@@ -1989,7 +2002,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 21
@@ -2001,7 +2014,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 21
@@ -2013,7 +2026,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 21
@@ -2025,7 +2038,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 21
@@ -2039,7 +2052,7 @@
    "rushing": {
     "carries": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "rushing/carries",
       "n_draws": 1000,
       "row": 6
@@ -2051,7 +2064,7 @@
     },
     "rushing_td": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "rushing/rushing_td",
       "n_draws": 1000,
       "row": 6
@@ -2067,7 +2080,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 22
@@ -2079,7 +2092,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 22
@@ -2091,7 +2104,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 22
@@ -2103,7 +2116,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 22
@@ -2119,7 +2132,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 23
@@ -2131,7 +2144,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 23
@@ -2143,7 +2156,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 23
@@ -2155,7 +2168,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 23
@@ -2171,7 +2184,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 24
@@ -2183,7 +2196,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 24
@@ -2195,7 +2208,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 24
@@ -2207,7 +2220,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 24
@@ -2223,7 +2236,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 10
@@ -2235,7 +2248,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 10
@@ -2247,7 +2260,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 10
@@ -2259,7 +2272,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 10
@@ -2275,7 +2288,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 11
@@ -2287,7 +2300,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 11
@@ -2299,7 +2312,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 11
@@ -2311,7 +2324,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 11
@@ -2327,7 +2340,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 25
@@ -2339,7 +2352,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 25
@@ -2351,7 +2364,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 25
@@ -2363,7 +2376,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+      "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 25
@@ -2381,9 +2394,33 @@
   "arrays": {
    "dk_scoring/dk_points": {
     "dtype": "float64",
-    "sha256": "be5935519a2946e3f27f78874cce09d052b662336394cdf795d01f66531be741",
+    "sha256": "b87ffba6fdf56b3fedee098431eb7f552fb10eacea34bbe9468ba5dfaefce7bd",
     "shape": [
      30,
+     1000
+    ]
+   },
+   "gadget_rush/kneel": {
+    "dtype": "int16",
+    "sha256": "49ee0499736394a93b2d97f2c7f23e621553edaaf1cd1373bc1e3a4eba7c2d32",
+    "shape": [
+     24,
+     1000
+    ]
+   },
+   "gadget_rush/te": {
+    "dtype": "int16",
+    "sha256": "27293538a3b4527cbecf8b7ec5bb36c7783b889c25df473ac0c9fd59f084aab4",
+    "shape": [
+     24,
+     1000
+    ]
+   },
+   "gadget_rush/wr": {
+    "dtype": "int16",
+    "sha256": "4e79f2653dd7da7a33169d5db8adef2b63b1af0edfc8f13330f2e384dbaff21c",
+    "shape": [
+     24,
      1000
     ]
    },
@@ -2709,7 +2746,7 @@
    },
    "rushing/rushing_yards": {
     "dtype": "int16",
-    "sha256": "6951a66390f082ef0a0a233dbf62e7383f3c718c128c143010554cdfef694389",
+    "sha256": "7fd99803766cc2640d0c2e615d1fe7a943fd9fc38a454eb84a2f1d6f3a07cf6d",
     "shape": [
      7,
      1000
@@ -2756,7 +2793,7 @@
     ]
    }
   },
-  "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+  "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
   "draw_artifact_version": "nfl-draw-artifact-1",
   "draw_index_semantics": {
    "across_rows": "INDEPENDENT_STREAMS_COLUMN_ALIGNED",
@@ -2764,9 +2801,9 @@
    "within_row_across_metrics": "SAME_SIMULATED_WORLD"
   },
   "file": {
-   "bytes": 177613,
+   "bytes": 180982,
    "name": "player_draws.npz",
-   "sha256": "51c7e2e2d3533673ef68628af2445e81855e26276eddab3e95942e5082424e22"
+   "sha256": "70eab19b3fbeec7b591e9e1e4693471bed7fd3a3d45400093b144f7102fe9ce5"
   },
   "game_id": "2026_02_DET_BUF",
   "layers": {
@@ -2808,11 +2845,109 @@
      "00-0040669",
      "00-0041443"
     ],
+    "row_teams": [
+     "DET",
+     "DET",
+     "DET",
+     "BUF",
+     "BUF",
+     "BUF",
+     "BUF",
+     "BUF",
+     "DET",
+     "BUF",
+     "DET",
+     "DET",
+     "BUF",
+     "DET",
+     "BUF",
+     "BUF",
+     "DET",
+     "DET",
+     "BUF",
+     "DET",
+     "DET",
+     "DET",
+     "BUF",
+     "BUF",
+     "BUF",
+     "BUF",
+     "BUF",
+     "DET",
+     "DET",
+     "BUF"
+    ],
     "shape": [
      30,
      1000
     ],
     "spec_version": "dk-nfl-classic-1"
+   },
+   "gadget_rush": {
+    "metrics": [
+     "kneel",
+     "te",
+     "wr"
+    ],
+    "rng_stream": "multinomial over the club's named players at the position, weights = own prior carries + fitted alpha; kneels by per-draw dropback argmax",
+    "row_axis": "gsis_id",
+    "row_ids": [
+     "00-0033106",
+     "00-0033949",
+     "00-0034270",
+     "00-0034487",
+     "00-0034577",
+     "00-0034827",
+     "00-0034857",
+     "00-0035500",
+     "00-0035544",
+     "00-0035689",
+     "00-0036754",
+     "00-0036963",
+     "00-0036988",
+     "00-0037240",
+     "00-0037261",
+     "00-0037524",
+     "00-0038181",
+     "00-0038679",
+     "00-0038933",
+     "00-0039065",
+     "00-0039901",
+     "00-0040194",
+     "00-0040363",
+     "00-0040669"
+    ],
+    "row_teams": [
+     "DET",
+     "DET",
+     "DET",
+     "BUF",
+     "BUF",
+     "BUF",
+     "BUF",
+     "BUF",
+     "DET",
+     "BUF",
+     "DET",
+     "DET",
+     "BUF",
+     "DET",
+     "BUF",
+     "DET",
+     "DET",
+     "BUF",
+     "BUF",
+     "DET",
+     "BUF",
+     "BUF",
+     "BUF",
+     "DET"
+    ],
+    "shape": [
+     24,
+     1000
+    ],
+    "spec_version": "gadget-rush-allocation-1"
    },
    "kicking": {
     "metrics": [
@@ -2838,6 +2973,10 @@
     "row_ids": [
      "00-0036162",
      "00-0039172"
+    ],
+    "row_teams": [
+     "BUF",
+     "DET"
     ],
     "shape": [
      2,
@@ -2866,6 +3005,12 @@
      "00-0034857",
      "00-0033106",
      "00-0033949"
+    ],
+    "row_teams": [
+     "BUF",
+     "BUF",
+     "DET",
+     "DET"
     ],
     "shape": [
      4,
@@ -2909,6 +3054,34 @@
      "00-0040194",
      "00-0040363",
      "00-0041443"
+    ],
+    "row_teams": [
+     "DET",
+     "DET",
+     "DET",
+     "DET",
+     "DET",
+     "DET",
+     "DET",
+     "DET",
+     "DET",
+     "DET",
+     "DET",
+     "DET",
+     "BUF",
+     "BUF",
+     "BUF",
+     "BUF",
+     "BUF",
+     "BUF",
+     "BUF",
+     "BUF",
+     "BUF",
+     "BUF",
+     "BUF",
+     "BUF",
+     "BUF",
+     "BUF"
     ],
     "shape": [
      26,
@@ -2970,6 +3143,15 @@
      "00-0039471",
      "00-0039875"
     ],
+    "row_teams": [
+     "DET",
+     "DET",
+     "DET",
+     "BUF",
+     "BUF",
+     "BUF",
+     "BUF"
+    ],
     "shape": [
      7,
      1000
@@ -2997,21 +3179,274 @@
     "spec_version": "team-volume-v1-p4b-frozen-1"
    }
   },
-  "n_draw_cells": 255000,
+  "n_draw_cells": 327000,
   "n_draws": 1000,
-  "n_layers": 8,
-  "n_matrices": 47,
+  "n_layers": 9,
+  "n_matrices": 50,
   "rng": {
    "generator": "numpy.random.default_rng (PCG64)",
    "seed": 20260908,
    "seed_protocol": "per-row seed 20260908"
   },
-  "run_id": "ef715b4cab6c7103"
+  "run_id": "690f6d51924121f7"
  },
- "draw_artifact_sha256": "51c7e2e2d3533673ef68628af2445e81855e26276eddab3e95942e5082424e22",
+ "draw_artifact_sha256": "70eab19b3fbeec7b591e9e1e4693471bed7fd3a3d45400093b144f7102fe9ce5",
  "eligibility_verdict": "V1_CANDIDATE|APPLIED:A1,A3G,C0,C3,R2,R5,R6,R8,R9,SC1|NOT_REACHED:|PARTIAL|PRODUCED:qb_layer|ABSENT:appearance,conversion,feature_build,participation,targets_carries,td_layer",
  "excluded_unidentified": [],
  "feature_set_hash": "4d2eda3e88818e2ad5a78e146c4e2f48",
+ "gadget_rush": {
+  "allocated": {
+   "BUF/kneel": {
+    "historical_primary_passer_rate": 0.832,
+    "mean_kneels": 1.56,
+    "n_qbs": 2,
+    "note": "100.0% of 2212 pre-cutoff kneels were taken by a quarterback",
+    "rule": "per-draw argmax of quarterback dropbacks",
+    "spec_version": "gadget-rush-allocation-1"
+   },
+   "BUF/te": {
+    "alpha": 0.1,
+    "category": "te",
+    "mean_allocated": 0.058,
+    "n_players": 4,
+    "players_with_no_prior_carry": [
+     "00-0035689",
+     "00-0038933",
+     "00-0040194",
+     "00-0040363"
+    ],
+    "spec_version": "gadget-rush-allocation-1",
+    "team": "BUF",
+    "weights": {
+     "00-0035689": 0.25,
+     "00-0038933": 0.25,
+     "00-0040194": 0.25,
+     "00-0040363": 0.25
+    }
+   },
+   "BUF/wr": {
+    "alpha": 0.75,
+    "category": "wr",
+    "mean_allocated": 0.478,
+    "n_players": 7,
+    "players_with_no_prior_carry": [
+     "00-0034487",
+     "00-0034827",
+     "00-0035500",
+     "00-0036988",
+     "00-0038679"
+    ],
+    "spec_version": "gadget-rush-allocation-1",
+    "team": "BUF",
+    "weights": {
+     "00-0034487": 0.073171,
+     "00-0034827": 0.073171,
+     "00-0035500": 0.073171,
+     "00-0036988": 0.073171,
+     "00-0037261": 0.463415,
+     "00-0038679": 0.073171,
+     "00-0039901": 0.170732
+    }
+   },
+   "DET/kneel": {
+    "historical_primary_passer_rate": 0.832,
+    "mean_kneels": 0.641,
+    "n_qbs": 2,
+    "note": "100.0% of 2212 pre-cutoff kneels were taken by a quarterback",
+    "rule": "per-draw argmax of quarterback dropbacks",
+    "spec_version": "gadget-rush-allocation-1"
+   },
+   "DET/te": {
+    "alpha": 0.1,
+    "category": "te",
+    "mean_allocated": 0.04,
+    "n_players": 3,
+    "players_with_no_prior_carry": [
+     "00-0034270",
+     "00-0036754"
+    ],
+    "spec_version": "gadget-rush-allocation-1",
+    "team": "DET",
+    "weights": {
+     "00-0034270": 0.076923,
+     "00-0036754": 0.076923,
+     "00-0039065": 0.846154
+    }
+   },
+   "DET/wr": {
+    "alpha": 0.75,
+    "category": "wr",
+    "mean_allocated": 0.584,
+    "n_players": 6,
+    "players_with_no_prior_carry": [
+     "00-0035544",
+     "00-0037524",
+     "00-0038181",
+     "00-0040669"
+    ],
+    "spec_version": "gadget-rush-allocation-1",
+    "team": "DET",
+    "weights": {
+     "00-0035544": 0.014019,
+     "00-0036963": 0.5,
+     "00-0037240": 0.443925,
+     "00-0037524": 0.014019,
+     "00-0038181": 0.014019,
+     "00-0040669": 0.014019
+    }
+   }
+  },
+  "not_allocated": {
+   "fringe": "measured 132 carries pre-cutoff: 28 DB, 26 P, 12 LB, 1 K, and 65 from 11 rushers with no position in any source held. Where an owner exists he is not on an offensive board.",
+   "unmodelled_back_pool": "by construction the share of the rb category dealt to backs OUTSIDE the modelled set. Naming it would mean inventing the back."
+  },
+  "rows": {
+   "00-0033106": {
+    "name": "Jared Goff",
+    "name_resolved": true,
+    "position": "QB",
+    "team": "DET"
+   },
+   "00-0033949": {
+    "name": "Joshua Dobbs",
+    "name_resolved": true,
+    "position": "QB",
+    "team": "DET"
+   },
+   "00-0034270": {
+    "name": "Tyler Conklin",
+    "name_resolved": true,
+    "position": "TE",
+    "team": "DET"
+   },
+   "00-0034487": {
+    "name": "Trent Sherfield",
+    "name_resolved": true,
+    "position": "WR",
+    "team": "BUF"
+   },
+   "00-0034577": {
+    "name": "Kyle Allen",
+    "name_resolved": true,
+    "position": "QB",
+    "team": "BUF"
+   },
+   "00-0034827": {
+    "name": "DJ Moore",
+    "name_resolved": true,
+    "position": "WR",
+    "team": "BUF"
+   },
+   "00-0034857": {
+    "name": "Josh Allen",
+    "name_resolved": true,
+    "position": "QB",
+    "team": "BUF"
+   },
+   "00-0035500": {
+    "name": "Greg Dortch",
+    "name_resolved": true,
+    "position": "WR",
+    "team": "BUF"
+   },
+   "00-0035544": {
+    "name": "Tom Kennedy",
+    "name_resolved": true,
+    "position": "WR",
+    "team": "DET"
+   },
+   "00-0035689": {
+    "name": "Dawson Knox",
+    "name_resolved": true,
+    "position": "TE",
+    "team": "BUF"
+   },
+   "00-0036754": {
+    "name": "Brock Wright",
+    "name_resolved": true,
+    "position": "TE",
+    "team": "DET"
+   },
+   "00-0036963": {
+    "name": "Amon-Ra St. Brown",
+    "name_resolved": true,
+    "position": "WR",
+    "team": "DET"
+   },
+   "00-0036988": {
+    "name": "Josh Palmer",
+    "name_resolved": true,
+    "position": "WR",
+    "team": "BUF"
+   },
+   "00-0037240": {
+    "name": "Jameson Williams",
+    "name_resolved": true,
+    "position": "WR",
+    "team": "DET"
+   },
+   "00-0037261": {
+    "name": "Khalil Shakir",
+    "name_resolved": true,
+    "position": "WR",
+    "team": "BUF"
+   },
+   "00-0037524": {
+    "name": "Tay Martin",
+    "name_resolved": true,
+    "position": "WR",
+    "team": "DET"
+   },
+   "00-0038181": {
+    "name": "Lucky Jackson",
+    "name_resolved": true,
+    "position": "WR",
+    "team": "DET"
+   },
+   "00-0038679": {
+    "name": "Tyrell Shavers",
+    "name_resolved": true,
+    "position": "WR",
+    "team": "BUF"
+   },
+   "00-0038933": {
+    "name": "Dalton Kincaid",
+    "name_resolved": true,
+    "position": "TE",
+    "team": "BUF"
+   },
+   "00-0039065": {
+    "name": "Sam LaPorta",
+    "name_resolved": true,
+    "position": "TE",
+    "team": "DET"
+   },
+   "00-0039901": {
+    "name": "Keon Coleman",
+    "name_resolved": true,
+    "position": "WR",
+    "team": "BUF"
+   },
+   "00-0040194": {
+    "name": "Jackson Hawes",
+    "name_resolved": true,
+    "position": "TE",
+    "team": "BUF"
+   },
+   "00-0040363": {
+    "name": "Keleki Latu",
+    "name_resolved": true,
+    "position": "TE",
+    "team": "BUF"
+   },
+   "00-0040669": {
+    "name": "Isaac TeSlaa",
+    "name_resolved": true,
+    "position": "WR",
+    "team": "DET"
+   }
+  }
+ },
  "game_id": "2026_02_DET_BUF",
  "kicking": {
   "resolved": {
@@ -3037,7 +3472,7 @@
  },
  "kickoff_utc": "2026-09-18T00:15:00Z",
  "model_arm": "A",
- "model_configuration": "V1_CANDIDATE_R9_W1P",
+ "model_configuration": "V1_CANDIDATE_R9_W1P_G",
  "player_ids": [
   "00-0031237",
   "00-0031550",
@@ -3255,7 +3690,7 @@
    "source": "weekly_rosters"
   }
  ],
- "spec_hash": "ef715b4cab6c7103",
+ "spec_hash": "690f6d51924121f7",
  "team_draw_row_index": {
   "BUF": 0,
   "DET": 1
@@ -3264,5 +3699,5 @@
   "DET",
   "BUF"
  ],
- "written_at": "2026-09-16T12:10:00Z"
+ "written_at": "2026-09-16T14:19:21Z"
 }

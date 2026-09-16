@@ -67,6 +67,7 @@ import collections
 import csv
 import glob
 import gzip
+import hashlib
 import json
 import pathlib
 import pickle
@@ -80,6 +81,7 @@ if str(_REPO) not in sys.path:
 
 from sportsplatform.governance.outcome import Cause, Outcome, State  # noqa: E402
 from nfl.production import derived as DERIVED                        # noqa: E402
+from nfl.production import seeds as SEEDS                            # noqa: E402
 
 SPEC_VERSION = 'gadget-rush-allocation-1'
 CATEGORIES = ('wr', 'te')
@@ -221,8 +223,16 @@ def allocate(doc, team: str, category: str, counts, candidates, seed,
     w = np.array([doc['weights'][category].get(team, {}).get(g, 0)
                   + ALPHA[category] for g in ids], dtype=float)
     w = w / w.sum()
+    # STABLE ACROSS PROCESSES. `hash()` on a tuple of strings is salted per
+    # process, so this was not reproducible. seeds.row_component is the
+    # declared open-set derivation; the layer's own stream id comes from the
+    # readable table beside it.
+    _rc = SEEDS.row_component(f'gadget|{team}|{category}|{tag}')
+    if _rc.state is not State.PASS:
+        return _rc
+    _sid = SEEDS.stream_id('gadget_rush', 'category_allocation')
     rng = np.random.default_rng(
-        [int(seed), abs(hash((team, category, tag))) % (2 ** 31), len(C)])
+        [int(seed), int(_sid.value), int(_rc.value), len(C)])
     out = np.zeros((len(ids), C.shape[0]), dtype=np.int64)
     for j in range(C.shape[0]):
         if C[j] > 0:

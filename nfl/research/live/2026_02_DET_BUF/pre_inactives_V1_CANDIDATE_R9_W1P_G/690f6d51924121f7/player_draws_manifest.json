@@ -2,9 +2,33 @@
  "arrays": {
   "dk_scoring/dk_points": {
    "dtype": "float64",
-   "sha256": "be5935519a2946e3f27f78874cce09d052b662336394cdf795d01f66531be741",
+   "sha256": "b87ffba6fdf56b3fedee098431eb7f552fb10eacea34bbe9468ba5dfaefce7bd",
    "shape": [
     30,
+    1000
+   ]
+  },
+  "gadget_rush/kneel": {
+   "dtype": "int16",
+   "sha256": "49ee0499736394a93b2d97f2c7f23e621553edaaf1cd1373bc1e3a4eba7c2d32",
+   "shape": [
+    24,
+    1000
+   ]
+  },
+  "gadget_rush/te": {
+   "dtype": "int16",
+   "sha256": "27293538a3b4527cbecf8b7ec5bb36c7783b889c25df473ac0c9fd59f084aab4",
+   "shape": [
+    24,
+    1000
+   ]
+  },
+  "gadget_rush/wr": {
+   "dtype": "int16",
+   "sha256": "4e79f2653dd7da7a33169d5db8adef2b63b1af0edfc8f13330f2e384dbaff21c",
+   "shape": [
+    24,
     1000
    ]
   },
@@ -330,7 +354,7 @@
   },
   "rushing/rushing_yards": {
    "dtype": "int16",
-   "sha256": "6951a66390f082ef0a0a233dbf62e7383f3c718c128c143010554cdfef694389",
+   "sha256": "7fd99803766cc2640d0c2e615d1fe7a943fd9fc38a454eb84a2f1d6f3a07cf6d",
    "shape": [
     7,
     1000
@@ -377,7 +401,7 @@
    ]
   }
  },
- "content_digest": "c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30",
+ "content_digest": "ad207096a9ed413ff36436c8035874c82104a2bdf83e2907d35a57631a7761e9",
  "draw_artifact_version": "nfl-draw-artifact-1",
  "draw_index_semantics": {
   "across_rows": "INDEPENDENT_STREAMS_COLUMN_ALIGNED",
@@ -385,9 +409,9 @@
   "within_row_across_metrics": "SAME_SIMULATED_WORLD"
  },
  "file": {
-  "bytes": 177613,
+  "bytes": 180982,
   "name": "player_draws.npz",
-  "sha256": "51c7e2e2d3533673ef68628af2445e81855e26276eddab3e95942e5082424e22"
+  "sha256": "70eab19b3fbeec7b591e9e1e4693471bed7fd3a3d45400093b144f7102fe9ce5"
  },
  "game_id": "2026_02_DET_BUF",
  "layers": {
@@ -429,11 +453,109 @@
     "00-0040669",
     "00-0041443"
    ],
+   "row_teams": [
+    "DET",
+    "DET",
+    "DET",
+    "BUF",
+    "BUF",
+    "BUF",
+    "BUF",
+    "BUF",
+    "DET",
+    "BUF",
+    "DET",
+    "DET",
+    "BUF",
+    "DET",
+    "BUF",
+    "BUF",
+    "DET",
+    "DET",
+    "BUF",
+    "DET",
+    "DET",
+    "DET",
+    "BUF",
+    "BUF",
+    "BUF",
+    "BUF",
+    "BUF",
+    "DET",
+    "DET",
+    "BUF"
+   ],
    "shape": [
     30,
     1000
    ],
    "spec_version": "dk-nfl-classic-1"
+  },
+  "gadget_rush": {
+   "metrics": [
+    "kneel",
+    "te",
+    "wr"
+   ],
+   "rng_stream": "multinomial over the club's named players at the position, weights = own prior carries + fitted alpha; kneels by per-draw dropback argmax",
+   "row_axis": "gsis_id",
+   "row_ids": [
+    "00-0033106",
+    "00-0033949",
+    "00-0034270",
+    "00-0034487",
+    "00-0034577",
+    "00-0034827",
+    "00-0034857",
+    "00-0035500",
+    "00-0035544",
+    "00-0035689",
+    "00-0036754",
+    "00-0036963",
+    "00-0036988",
+    "00-0037240",
+    "00-0037261",
+    "00-0037524",
+    "00-0038181",
+    "00-0038679",
+    "00-0038933",
+    "00-0039065",
+    "00-0039901",
+    "00-0040194",
+    "00-0040363",
+    "00-0040669"
+   ],
+   "row_teams": [
+    "DET",
+    "DET",
+    "DET",
+    "BUF",
+    "BUF",
+    "BUF",
+    "BUF",
+    "BUF",
+    "DET",
+    "BUF",
+    "DET",
+    "DET",
+    "BUF",
+    "DET",
+    "BUF",
+    "DET",
+    "DET",
+    "BUF",
+    "BUF",
+    "DET",
+    "BUF",
+    "BUF",
+    "BUF",
+    "DET"
+   ],
+   "shape": [
+    24,
+    1000
+   ],
+   "spec_version": "gadget-rush-allocation-1"
   },
   "kicking": {
    "metrics": [
@@ -459,6 +581,10 @@
    "row_ids": [
     "00-0036162",
     "00-0039172"
+   ],
+   "row_teams": [
+    "BUF",
+    "DET"
    ],
    "shape": [
     2,
@@ -487,6 +613,12 @@
     "00-0034857",
     "00-0033106",
     "00-0033949"
+   ],
+   "row_teams": [
+    "BUF",
+    "BUF",
+    "DET",
+    "DET"
    ],
    "shape": [
     4,
@@ -530,6 +662,34 @@
     "00-0040194",
     "00-0040363",
     "00-0041443"
+   ],
+   "row_teams": [
+    "DET",
+    "DET",
+    "DET",
+    "DET",
+    "DET",
+    "DET",
+    "DET",
+    "DET",
+    "DET",
+    "DET",
+    "DET",
+    "DET",
+    "BUF",
+    "BUF",
+    "BUF",
+    "BUF",
+    "BUF",
+    "BUF",
+    "BUF",
+    "BUF",
+    "BUF",
+    "BUF",
+    "BUF",
+    "BUF",
+    "BUF",
+    "BUF"
    ],
    "shape": [
     26,
@@ -591,6 +751,15 @@
     "00-0039471",
     "00-0039875"
    ],
+   "row_teams": [
+    "DET",
+    "DET",
+    "DET",
+    "BUF",
+    "BUF",
+    "BUF",
+    "BUF"
+   ],
    "shape": [
     7,
     1000
@@ -618,14 +787,14 @@
    "spec_version": "team-volume-v1-p4b-frozen-1"
   }
  },
- "n_draw_cells": 255000,
+ "n_draw_cells": 327000,
  "n_draws": 1000,
- "n_layers": 8,
- "n_matrices": 47,
+ "n_layers": 9,
+ "n_matrices": 50,
  "rng": {
   "generator": "numpy.random.default_rng (PCG64)",
   "seed": 20260908,
   "seed_protocol": "per-row seed 20260908"
  },
- "run_id": "ef715b4cab6c7103"
+ "run_id": "690f6d51924121f7"
 }

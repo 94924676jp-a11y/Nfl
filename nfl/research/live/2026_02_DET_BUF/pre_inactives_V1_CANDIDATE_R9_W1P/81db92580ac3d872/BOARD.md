@@ -3,9 +3,9 @@
 **SHADOW / NOT AUTHORIZED.** This forecast is not published, not prospective evidence and not production output. It was executed internally under a frozen candidate configuration.
 
 - Game `2026_02_DET_BUF`, kickoff **2026-09-18T00:15:00Z**
-- Forecast written at **2026-09-16T12:10:00Z** (36.08h before kickoff)
+- Forecast written at **2026-09-16T14:23:56Z** (33.85h before kickoff)
 - Model configuration **V1_CANDIDATE_R9_W1P**, components applied: A1, A3G, C0, C3, R2, R5, R6, R8, R9, SC1
-- Run `ef715b4cab6c7103`, 1000 draws, draw digest `c7a7f77c72fe067a5dde28067995a924254a5f4fc0666f564a01e759a6a89b30`
+- Run `81db92580ac3d872`, 1000 draws, draw digest `0106153f561f572bb19e4379401bc9dec25ef43af9d3531ebc73e84cf23629d5`
 - NFL-1 **NOT AUTHORIZED** (`NFL1_NOT_AUTHORIZED`); promoted `False`, prospective_eligible `False`
 
 `*` = provisional layer (governed, but under a declared caveat). Metrics V1 does not model are listed at the end and are never estimated in their place.

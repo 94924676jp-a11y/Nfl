@@ -550,11 +550,34 @@ def team_rows(manifest, players) -> Outcome:
             f'team_volume declares row_axis {tv.get("row_axis")!r}, not '
             f'"team". Refusing to assume its rows are teams.',
             cause=Cause.DATA)
+    # THE MANIFEST'S OWN MAP WINS, AND THE BOARD IS THE FALLBACK.
+    #
+    # This function used to resolve a player row's team ONLY through
+    # `board.json['players']` -- the DISPLAY board, which is narrower than
+    # the participant universe the simulator runs on. A layer whose rows are
+    # lawful participants but not display rows therefore arrived unjoinable
+    # and refused the whole board, which is the safe failure and is still a
+    # failure: the invariant stops being tested. It happened to
+    # `rush_category`, then to `kicking` (two kickers on no display row) and
+    # `gadget_rush` (three receivers who take gadget carries and are
+    # displayed nowhere).
+    #
+    # `add_layer` now requires a team for every gsis_id row and writes it
+    # into the layer as `row_teams`, so the map travels WITH the draws. It is
+    # read first. The board still fills in for a manifest sealed before that
+    # existed, which is why this is a fallback rather than a replacement.
     team_of = {}
     for p in players or []:
         g, t = p.get('gsis_id'), p.get('team')
         if g and t:
             team_of[g] = t
+    for lay, spec in sorted(lays.items()):
+        rt = spec.get('row_teams')
+        if not rt or spec.get('row_axis') != 'gsis_id':
+            continue
+        for g, t in zip(spec.get('row_ids') or [], rt):
+            if g and t:
+                team_of[str(g)] = t
     if not team_of:
         return Outcome.blocked(
             'CONSERVATION_NO_PLAYER_TEAM_MAP',

@@ -153,8 +153,26 @@ class DrawSet:
     # -- building
     def add_layer(self, layer: str, row_ids, matrices: dict,
                   spec_version: str, rng_stream: str,
-                  row_axis: str = 'gsis_id') -> Outcome:
-        """One layer's matrices. Every one must share the run's draw index."""
+                  row_axis: str = 'gsis_id', row_teams=None) -> Outcome:
+        """One layer's matrices. Every one must share the run's draw index.
+
+        A `gsis_id` LAYER MUST SUPPLY THE TEAM OF EVERY ROW, and this is the
+        third time the repository has paid for its absence. `conservation.py`
+        resolves a player row's team through `board.json['players']`, which is
+        the DISPLAY board -- narrower than the participant universe the
+        simulator uses. So a layer whose rows are lawful participants but not
+        display rows arrives unjoinable, the conservation fence refuses the
+        whole board, and the invariant silently stops being tested. Its own
+        docstring records this happening to `rush_category`; it then happened
+        again to `kicking` (two kickers on no display row) and to
+        `gadget_rush` (three receivers who take gadget carries and are
+        displayed nowhere).
+
+        The map now travels WITH the layer, in the manifest, so a consumer
+        never has to find it somewhere else and a new layer cannot arrive
+        without it. Supplying it is not optional for a player axis: a row
+        whose team is unknown is refused here rather than three stages later.
+        """
         if not layer or '/' in layer:
             return Outcome.fail(
                 'DRAW_LAYER_NAME_INVALID',
@@ -175,6 +193,20 @@ class DrawSet:
                 'DRAW_LAYER_NO_METRICS',
                 f'{layer} supplied no metric matrices. An empty layer is an '
                 f'absence, not a distribution.')
+        teams_by_row = None
+        if row_axis == 'gsis_id':
+            teams_by_row = {str(k): v for k, v in (row_teams or {}).items()}
+            missing = [r for r in rows if not teams_by_row.get(r)]
+            if missing:
+                return Outcome.fail(
+                    'DRAW_LAYER_ROWS_WITHOUT_A_TEAM',
+                    f'{layer} supplies no team for {len(missing)} of '
+                    f'{len(rows)} player row(s): {missing[:6]}. A player row '
+                    f'whose club is unknown cannot be conserved on a team '
+                    f'axis, and the display board is NOT a sufficient '
+                    f'fallback -- the participant universe is wider than it.',
+                    layer=layer, n_missing=len(missing),
+                    missing=missing[:12])
         staged = {}
         for metric, mat in sorted(matrices.items()):
             arr = np.asarray(mat, dtype=np.float64)
@@ -221,6 +253,8 @@ class DrawSet:
             'spec_version': spec_version, 'rng_stream': rng_stream,
             'row_axis': row_axis, 'row_ids': rows,
             'metrics': sorted(staged), 'shape': [len(rows), int(self.n_draws)]}
+        if teams_by_row is not None:
+            self.layers[layer]['row_teams'] = [teams_by_row[r] for r in rows]
         return Outcome.ok(f'DRAW_LAYER_ADDED', value=len(staged),
                           layer=layer, n_rows=len(rows),
                           n_metrics=len(staged), n_draws=int(self.n_draws))
