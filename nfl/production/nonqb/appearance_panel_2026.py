@@ -140,11 +140,20 @@ def build(season: int = 2026, week: int = 1) -> Outcome:
         # the snaps that exist are SPECIAL TEAMS snaps, so his appearance and
         # his share are read from that column instead.
         if pos == 'K':
-            counted, cpct = st, s.get('st_pct')
-            try:
-                pct = float(cpct) if cpct not in (None, '') else None
-            except ValueError:
-                pct = None
+            # HIS APPEARANCE IS A FACT; HIS SNAP SHARE IS NOT DEFINED ON THE
+            # SCALE THE MODEL LEARNED. The appearance feature `snap_share` is
+            # an OFFENSIVE share throughout the training panel, and a kicker
+            # takes no offensive snap. Handing over his special-teams share
+            # instead read 0.45 for Tyler Bass -- which on the offensive scale
+            # means a rotational player -- and drove him 0.9970 -> 0.6850 on a
+            # game he kicked three field goals in. That is a category error,
+            # not evidence.
+            #
+            # So the appearance is kept and the share is left MISSING, which
+            # the featuriser already has a flag for. The training panel holds
+            # 47 kicker rows against 21,219 receivers, so this position is
+            # thin support at best and is not worth a fabricated number.
+            counted, pct = st, None
         else:
             counted = off
         team = (s.get('team') or rteam or '').strip().upper()
@@ -156,6 +165,7 @@ def build(season: int = 2026, week: int = 1) -> Outcome:
             'game_id': (s.get('game_id') or '').strip(),
             'offense_snaps': off, 'st_snaps': st,
             'offense_pct': pct, 'snap_share': pct,
+            'snap_share_defined': pct is not None,
             'snaps_counted': counted,
             'snap_basis': 'ST_SNAPS' if pos == 'K' else 'OFFENSE_SNAPS',
             # APPEARANCE IS SNAPS -- the snaps his position actually takes.

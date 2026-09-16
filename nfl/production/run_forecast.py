@@ -310,6 +310,18 @@ def build(args, fixtures: dict = None) -> dict:
             raise ValueError(
                 'APPEARANCE_SPEC_AMBIGUOUS: this configuration names '
                 f'{named}. One appearance mechanism per configuration.')
+        # THE 2026 PANEL IS NOT A FOURTH MECHANISM. It is the frozen one
+        # walking a panel that reaches the forecast season -- same
+        # coefficients, same featuriser. So it composes with the frozen path
+        # and is refused alongside a named alternative rather than silently
+        # losing to it, because "which model ran" must have one answer.
+        if flags.get('appearance_panel_2026'):
+            if named:
+                raise ValueError(
+                    'APPEARANCE_SPEC_AMBIGUOUS: appearance_panel_2026 '
+                    f'extends the FROZEN mechanism and {named} names a '
+                    f'different one. Pick one.')
+            return 'frozen_2026panel'
         return named[0] if named else 'frozen'
 
     def _qb_dropback_budgets():
@@ -1110,6 +1122,75 @@ def build(args, fixtures: dict = None) -> dict:
                 # The gate below still runs: official inactives and the injury
                 # report are ranked authorities and they still exclude.
                 # This adds the class the gate cannot see; it replaces nothing.
+
+            # CURRENT-STATE AVAILABILITY, ON TOP OF ROSTER MEMBERSHIP.
+            #
+            # Roster class answers "is he on the game roster". It does not
+            # answer "has the club said he is out this week", and nothing
+            # else on this path did either: every 2026 official injury
+            # capture carries week 1 only, so a week-2 board had NO injury
+            # evidence at all and Ty Johnson was allocated 4.1 carries on a
+            # week the feed lists him OUT.
+            #
+            # Only TERMINAL states act -- OUT, injured reserve, PUP/NFI,
+            # suspension, an official game-day inactive. Doubtful and
+            # Questionable are preserved and move nobody: no calibrated
+            # transition exists for them here, and turning a probability into
+            # a certainty because the word sounds bad is the fabrication this
+            # project forbids. Absence from the feed is NO_ITEM and is not
+            # evidence of health.
+            if (fl or {}).get('availability_feed'):
+                from nfl.production.nonqb import availability_feed as AVF
+                # NAMES COME FROM THE RESOLVER, NOT FROM THE PLAYER DICT.
+                # At this point in the pipeline a player row carries no
+                # `name` -- display names are resolved later -- so keying the
+                # feed on it returned UNRESOLVED_IDENTITY for all 108 and
+                # removed nobody. The feed is name-keyed because the source
+                # has no gsis_id, so it needs the same resolver the board
+                # prints from.
+                try:
+                    _rn = NAMES.lookup(args.written_at) or {}
+                except Exception:                            # noqa: BLE001
+                    _rn = {}
+                _nm = {q['gsis_id']: (_rn.get(q['gsis_id']) or q.get('name'))
+                       for q in players if q.get('gsis_id')}
+                _av = AVF.states(args.written_at, _nm)
+                if _av.state is State.PASS:
+                    _out_ids = {g for g, v in _av.value.items()
+                                if v.get('availability') == 'UNAVAILABLE'}
+                    _before = len(players)
+                    _removed = [q for q in players
+                                if q.get('gsis_id') in _out_ids]
+                    if _removed:
+                        players = [q for q in players
+                                   if q.get('gsis_id') not in _out_ids]
+                    _ev = _av.as_dict()['evidence']
+                    fx['_availability'] = {
+                        k: v for k, v in _ev.items() if k != 'value'}
+                    fx['_availability']['n_players_considered'] = _before
+                    fx['_availability']['n_removed'] = len(_removed)
+                    # NAMED, WITH THE EVIDENCE THAT REMOVED HIM. A player who
+                    # vanishes from a board without a record is worse than one
+                    # who should not have been on it.
+                    fx['_availability']['removed'] = [
+                        {'gsis_id': q.get('gsis_id'),
+                         'name': _nm.get(q.get('gsis_id')) or q.get('name'),
+                         'team': q.get('team'), 'position': q.get('position'),
+                         **{k: _av.value[q['gsis_id']].get(k)
+                            for k in ('designation_text', 'published_at',
+                                      'retrieved_at', 'source', 'authority',
+                                      'detail')}}
+                        for q in _removed]
+                    fx['_availability']['opportunity_redistribution'] = (
+                        'NOT REASSIGNED BY HAND. A removed player simply is '
+                        'not in the allocation, so the existing football '
+                        'mechanisms -- the A1 category multinomial and the '
+                        'P4C simplex over the remaining pool -- deal his '
+                        'share among the players who are.')
+                else:
+                    fx['_availability'] = {
+                        'state': f'{_av.state.value}[{_av.code}]',
+                        'detail': _av.detail[:300]}
             nonqb = [q for q in players if q.get('position') != 'QB']
             qbs = [q for q in players if q.get('position') == 'QB']
             snap = EG.snapshot(
@@ -2658,6 +2739,8 @@ def build(args, fixtures: dict = None) -> dict:
             # WHO TOOK THE CARRIES THAT USED TO HAVE NOBODY, and
             # which categories were deliberately left unnamed.
             'gadget_rush': fx.get('_gadget_rush') or {},
+            # WHO THE CURRENT-STATE FEED REMOVED, AND ON WHAT.
+            'availability': fx.get('_availability') or {},
             # THE CLOSURE PROOF, QUANTIFIED, IN THE ARTIFACT ITSELF. Every team
             # dropback belongs to exactly one quarterback on that team, and a
             # reader should not have to re-derive that from the draw matrices

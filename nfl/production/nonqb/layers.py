@@ -194,6 +194,23 @@ def _run_real(season, week, players, injuries_rows, seed, m, test_only,
         o = AM.predict(season, week, players, injuries_rows)
         mech = 'FROZEN_P3_LOGISTIC'
         spec = SPEC['appearance']
+    elif appearance_spec == 'frozen_2026panel':
+        # THE SAME MECHANISM ON A PANEL THAT REACHES THE FORECAST SEASON.
+        # Not a new model: identical coefficients, identical featuriser. What
+        # changes is that a player's PREVIOUS GAME is his previous game.
+        # Without the injection the panel ends at 2025 week 18 -- a league-wide
+        # rest week -- so Josh Allen carried a 0.0 snap share into a week-2
+        # forecast and scored 0.4188, and James Cook carried a 2-snap rest
+        # game and scored 0.7138 against a 0.6936 training base rate.
+        from nfl.production.nonqb import appearance_model as AM
+        from nfl.production.nonqb import appearance_panel_2026 as AP26
+        _ap = AP26.build(int(season), 1)
+        if _ap.state is not State.PASS:
+            return _ap
+        o = AM.predict(season, week, players, injuries_rows,
+                       extra_rows=_ap.value)
+        mech = 'FROZEN_P3_LOGISTIC_ON_2026_PANEL'
+        spec = AP26.SPEC_VERSION
     elif appearance_spec == 'r8':
         from nfl.production.nonqb import appearance_r8 as AR8
         o = AR8.predict(season, week, players, injuries_rows,

@@ -51,11 +51,12 @@ V1_CANDIDATE_R13 = 'V1_CANDIDATE_R13'
 #: the defect this registry exists to prevent.
 V1_CANDIDATE_R9_W1P = 'V1_CANDIDATE_R9_W1P'
 V1_CANDIDATE_R9_W1P_G = 'V1_CANDIDATE_R9_W1P_G'
+V1_CANDIDATE_R9_W1P_GA = 'V1_CANDIDATE_R9_W1P_GA'
 MODES = (PRODUCTION_BASELINE, V1_CANDIDATE, V1_CANDIDATE_R5,
          V1_CANDIDATE_R6, V1_CANDIDATE_R7, V1_CANDIDATE_R8,
          V1_CANDIDATE_R9, V1_CANDIDATE_R10, V1_CANDIDATE_R11,
          V1_CANDIDATE_R12, V1_CANDIDATE_R13, V1_CANDIDATE_R9_W1P,
-         V1_CANDIDATE_R9_W1P_G)
+         V1_CANDIDATE_R9_W1P_G, V1_CANDIDATE_R9_W1P_GA)
 
 # Every mode that is a CANDIDATE, derived so a new one cannot escape a guard
 # by not being added to a hand-written list. See `assert_not_promoted`.
@@ -504,6 +505,74 @@ R9_W1P_G_REPAIR = {
     'engine_flag': 'allocate_gadget_rush',
 }
 
+R9_W1P_GA_FLAGS = dict(R9_W1P_G_FLAGS)
+# THE PANEL IS DEFINED AGAINST THE FROZEN MECHANISM, SO GA NAMES THAT ONE.
+# `appearance_panel_2026` injects observed 2026 rows into the frozen walk;
+# R8 is a different mechanism with its own frame builder and the injection is
+# not defined for it. Setting both raised APPEARANCE_SPEC_AMBIGUOUS, which is
+# the guard working -- two answers to "which model ran" is exactly what it
+# exists to stop. R8 is therefore dropped HERE, explicitly, rather than
+# letting one silently win.
+#
+# THE COST IS STATED: GA differs from G in TWO ways, the panel and the
+# mechanism, so a G-to-GA delta is not a clean read of the panel alone. The
+# isolated panel effect is measured separately, frozen-with against
+# frozen-without, and reported beside it.
+R9_W1P_GA_FLAGS.pop('appearance_r8', None)
+R9_W1P_GA_FLAGS['appearance_panel_2026'] = True
+R9_W1P_GA_FLAGS['availability_feed'] = True
+
+R9_W1P_GA_REPAIR = {
+    'component': 'R9_W1P_GA',
+    'what': 'the appearance mechanism runs on a panel that reaches the '
+            'forecast season, and current-state availability evidence is '
+            'joined to participant eligibility',
+    'replaces': 'a panel ending at 2025 week 18, so a league-wide rest week '
+                'was every player\'s most recent game; and an injury path '
+                'that consumed only the official weekly CSV, of which every '
+                '2026 capture carries week 1 only',
+    'defect': (
+        'Josh Allen scored P(appear) 0.4188 and James Cook 0.7138 against a '
+        '0.6936 training base rate, while Ty Johnson was given 4.1 carries '
+        'on a week the feed lists him OUT. n_with_an_injuries_row was 0 for '
+        'every player on the board.'),
+    'evidence': (
+        '769 official 2026 injury rows across eight captures, ALL week 1, so '
+        'no week-2 official evidence exists. 428 ESPN captures hold current '
+        'state; the newest lawful at the cutoff is stamped 2026-09-15T13:06Z '
+        'and was never offered to the parser, and would have been dropped by '
+        'it anyway for carrying no season/week column. '
+        'nfl/production/AVAILABILITY_AUDIT_DET_BUF.json.'),
+    'coefficients': 'NONE. The appearance coefficients are unchanged -- same '
+                    'coef_sha256, same featuriser. The panel it walks is '
+                    'longer and the eligibility set is smaller.',
+    'availability_authority': (
+        'OFFICIAL_GAMEDAY_INACTIVE > OFFICIAL_TEAM_OR_LEAGUE > '
+        'SECONDARY_ATTRIBUTED_REPORT. The secondary feed never outranks an '
+        'official declaration.'),
+    'probabilistic_states_not_acted_on': (
+        'Doubtful and Questionable are preserved and do NOT move a player out '
+        'of the pool. No calibrated transition exists for them at this '
+        'cutoff, so no coefficient is fabricated in either direction.'),
+    'confounded_comparison': (
+        'GA drops appearance_r8 because the panel injection is defined only '
+        'for the frozen mechanism, so a G-to-GA delta mixes a panel change '
+        'with a mechanism change. The isolated panel effect is measured '
+        'frozen-with against frozen-without and reported separately: Josh '
+        'Allen +0.4503, James Cook +0.2147, Gibbs +0.0047.'),
+    'known_limitation': (
+        'a kicker has no offensive snap share, and the appearance panel holds '
+        '47 kicker rows against 21,219 receivers. His appearance is recorded '
+        'and his share is left MISSING rather than filled with a '
+        'special-teams share on an offensive scale -- which read 0.45 for '
+        'Tyler Bass and drove him to 0.6850 on a 3-for-3 kicking game. Both '
+        'kickers now sit at 0.7781 on history alone; that is thin support, '
+        'and it is reported rather than dressed up.'),
+    'governance': 'REHEARSAL_ONLY -- an eligibility and panel change with its '
+                  'own identity, never an edit to R9_W1P_G',
+    'engine_flag': 'appearance_panel_2026',
+}
+
 R10_FLAGS = {k: v for k, v in R9_FLAGS.items() if k != 'appearance_r8'}
 R10_FLAGS['appearance_r10'] = True
 
@@ -934,6 +1003,20 @@ def resolve(mode: str) -> Outcome:
                    'weeks-since-appearance feature carries a missingness '
                    'indicator and a monotone encoding, and the depth rank is '
                    'within-position on both sides of the fit')
+    if mode == V1_CANDIDATE_R9_W1P_GA:
+        return Outcome.ok(
+            'MODE_V1_CANDIDATE_R9_W1P_GA',
+            value={'mode': V1_CANDIDATE_R9_W1P_GA,
+                   'flags': dict(R9_W1P_GA_FLAGS),
+                   'components': manifest() + [R5_REPAIR, R6_REPAIR,
+                                               R8_REPAIR, R9_REPAIR,
+                                               R9_W1P_REPAIR, R9_W1P_G_REPAIR,
+                                               R9_W1P_GA_REPAIR],
+                   'candidate': True},
+            detail='R9_W1P_G with the appearance panel extended to 2026 week '
+                   '1 and current-state availability joined to eligibility. '
+                   'Same appearance coefficients; a longer panel and a '
+                   'smaller eligible set')
     if mode == V1_CANDIDATE_R9_W1P_G:
         return Outcome.ok(
             'MODE_V1_CANDIDATE_R9_W1P_G',

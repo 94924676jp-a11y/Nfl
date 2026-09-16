@@ -275,9 +275,9 @@ def prospective_feature_rows(season, week, players, injuries_rows) -> Outcome:
     return _prospective(season, week, players, injuries_rows)
 
 
-def predict(season, week, players, injuries_rows) -> Outcome:
+def predict(season, week, players, injuries_rows, extra_rows=None) -> Outcome:
     """p(appear) for each rostered player, from the frozen mechanism."""
-    pr = _prospective(season, week, players, injuries_rows)
+    pr = _prospective(season, week, players, injuries_rows, extra_rows)
     if pr.state is not State.PASS:
         return pr
     target = pr.value['target']
@@ -293,12 +293,26 @@ def predict(season, week, players, injuries_rows) -> Outcome:
         test_only=False, n_players=len(out),
         n_without_prior_history=len(cold),
         n_with_an_injuries_row=with_inj,
+        n_observed_rows_injected=pr.as_dict()['evidence'].get(
+            'n_observed_rows_injected', 0),
         coef_sha256=f.value['coef_sha256'],
         p_mean=float(np.mean(p)), p_min=float(np.min(p)),
         p_max=float(np.max(p)), **f.value['evidence'])
 
 
-def _prospective(season, week, players, injuries_rows) -> Outcome:
+def _prospective(season, week, players, injuries_rows,
+                 extra_rows=None) -> Outcome:
+    """`extra_rows` is ADDITIVE AND OPT-IN, so the frozen path is unchanged.
+
+    The panel ends at 2025 week 18, which makes a rest week the most recent
+    game for every 2026 row. Handing observed 2026 rows in here puts the real
+    previous game back without restating a single line of the walk: they join
+    the same `rows` list the historical panel and the prospective rows share,
+    are sorted by the same ordinal, and are walked by the same `_walk`.
+
+    With `extra_rows=None` -- every caller that has not opted in -- nothing
+    about this function's behaviour moves.
+    """
     inj26 = parse_injuries_rows(injuries_rows, season)
     if not inj26:
         return Outcome.deferred(
@@ -329,7 +343,21 @@ def _prospective(season, week, players, injuries_rows) -> Outcome:
             tmpl.setdefault(r['team'], r)
     pros = prospective_rows(season, week, players, tmpl)
     known = {r['gsis_id'] for r in hist}
-    rows = sorted(hist + [_typed(r) for r in pros], key=lambda x: x['ord'])
+    # OBSERVED rows for the forecast season, strictly EARLIER than the
+    # forecast week. The bound is asserted rather than assumed: a row from
+    # the week being forecast would be the answer leaking into its own
+    # features, and a row from later still would be leakage outright.
+    obs = []
+    for r in (extra_rows or []):
+        try:
+            rs, rw = int(r['season']), int(r['week'])
+        except (KeyError, TypeError, ValueError):
+            continue
+        if rs != int(season) or rw >= int(week):
+            continue
+        obs.append(_typed({**r, 'did_not_appear': r.get('did_not_appear')}))
+    rows = sorted(hist + obs + [_typed(r) for r in pros],
+                  key=lambda x: x['ord'])
     by_pid = collections.defaultdict(list)
     for r in rows:
         by_pid[r['gsis_id']].append(r)
@@ -352,7 +380,9 @@ def _prospective(season, week, players, injuries_rows) -> Outcome:
     return Outcome.ok(
         'APPEARANCE_PROSPECTIVE_ROWS', value={'target': target, 'fit': f,
                                               'cold': cold},
-        spec_version=SPEC_VERSION, n_rows=len(target), n_cold=len(cold))
+        spec_version=SPEC_VERSION, n_rows=len(target), n_cold=len(cold),
+        n_observed_rows_injected=len(obs),
+        observed_row_bound=f'season == {season} and week < {week}')
 
 
 def _typed(r):
@@ -364,9 +394,23 @@ def _typed(r):
               'team_dropbacks_part', 'dropbacks_as_passer',
               'pass_att_as_passer', 'scrambles', 'designed_rushes'):
         r[k] = int(float(r.get(k) or 0))
-    r['offense_pct'] = None
+    # A PROSPECTIVE row has no snap share, because the game has not been
+    # played. An OBSERVED row handed in by a caller does, and nulling it was
+    # the whole defect: `add_shares` sets snap_share = offense_pct, so an
+    # injected 2026 week-1 row arrived with NO share and the walk kept the
+    # 2025 week-18 rest game as the previous snap anyway. Worse, the
+    # appearance features DID update from it, so a player came out as
+    # "played last week, at a zero snap share" -- a contradiction the model
+    # scored LOWER than the stale row it replaced. Josh Allen went 0.4188 to
+    # 0.3141 while every feature printed looked better.
+    if r.get('offense_pct') is None:
+        r['offense_pct'] = None
     r['ord'] = r['season'] * 100 + r['week']
-    r['did_not_appear'] = None            # UNKNOWN, and never read as 0
+    # A PROSPECTIVE row has no outcome, so UNKNOWN is right for it and must
+    # never be read as 0. An OBSERVED row supplied by a caller DOES have one,
+    # and overwriting it would throw away the very fact it was handed in for.
+    if 'did_not_appear' not in r or r['did_not_appear'] is None:
+        r['did_not_appear'] = None        # UNKNOWN, and never read as 0
     return r
 
 
