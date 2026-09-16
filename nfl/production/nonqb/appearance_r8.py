@@ -1036,3 +1036,105 @@ def predict_r10(season, week, players, injuries_rows, observed_before=None,
                                    if depth.get(q.get('gsis_id'))),
         p_mean=float(np.mean(p)), p_min=float(np.min(p)),
         p_max=float(np.max(p)), **f.value['evidence'])
+
+
+# ====================================================== REST fix B
+#
+# ONE BINARY COLUMN, NO THRESHOLDS, NO PLAYER LIST. Pre-registered in
+# `nfl/research/rest/predeclaration_rest.md` before it was built, alongside the
+# threshold-based deletion it was preferred over -- that alternative's three
+# cuts were chosen while looking at Josh Allen and James Cook, which makes them
+# fitted constants with no derivation.
+#
+# The defect it is aimed at, measured on the frozen mechanism over five season
+# transitions, weeks 1-4: an established starter who SAT the last regular week
+# is under-predicted by 0.0332 while the PLAYED control is over-predicted by
+# 0.0355, a differential of -0.0688 with a team-blocked 95% interval of
+# [-0.1133, -0.0256].
+#
+# THIS IS AN EXPLICIT MECHANISM CHANGE and therefore refits. R8's coefficients
+# are untouched and are still what R8 and R9 serve; this is a successor
+# lineage, not an edit.
+SPEC_VERSION_REST = 'appearance-rest1-prev-was-last-regular-week'
+
+
+def annotate_rest(rows):
+    """Set `prev_was_last_regular_week` on every row, in place.
+
+    1 when the player's IMMEDIATELY PRECEDING frame row is the final
+    regular-season week of its own season, 0 otherwise. Nothing else: no rank
+    cut, no snap cut, no appearance cut. Whether the sit matters, and by how
+    much, is what the fit is being asked.
+
+    The last week is READ FROM THE FRAME rather than assumed to be 17 or 18.
+    2020 ends at week 17 and every later season at 18, and hardcoding either
+    would silently mislabel a sixth of the corpus.
+    """
+    last = {}
+    for r in rows:
+        s = int(r['s'])
+        if int(r['w']) > last.get(s, 0):
+            last[s] = int(r['w'])
+    prev = {}
+    for r in sorted(rows, key=lambda x: (int(x['s']), int(x['w']))):
+        p = prev.get(r['pid'])
+        r['prev_was_last_regular_week'] = (
+            1.0 if p is not None and int(p['w']) == last.get(int(p['s']))
+            else 0.0)
+        prev[r['pid']] = r
+    return rows, last
+
+
+def featurise_rest(r, k):
+    """R8's design row plus the one column. Order is append-only on purpose:
+    every existing coefficient keeps its position, so a diff of the two weight
+    vectors is readable."""
+    f = list(featurise(r, k))
+    f.append(float(r.get('prev_was_last_regular_week') or 0.0))
+    return f
+
+
+_FIT_REST = {}
+
+
+def fit_rest(season: int, l2=1.0) -> Outcome:
+    """Same frame, same exclusion, same l2, same k. One extra column."""
+    key = (int(season), float(l2))
+    if key in _FIT_REST:
+        m = _FIT_REST[key]
+        return Outcome.ok('REST_FIT', value=m,
+                          spec_version=SPEC_VERSION_REST, cached=True,
+                          **m['evidence'])
+    fr = enriched_frame()
+    if fr.state is not State.PASS:
+        return fr
+    rows, last = annotate_rest(list(fr.value))
+    ko = reliability_k(rows, cut=int(season) * 100)
+    if ko.state is not State.PASS:
+        return ko
+    k = ko.value
+    M, A, F = AM._frozen()
+    train = [r for r in rows if r['s'] < season and not is_unsupported(r)]
+    if not train:
+        return Outcome.fail(
+            'REST_FRAME_EMPTY',
+            f'no frame row earlier than {season} survived the exclusion')
+    X = [featurise_rest(r, k) for r in train]
+    y = [r['appeared'] for r in train]
+    model = A.fit_logistic(X, y, l2=l2)
+    n_flag = sum(1 for r in train if r.get('prev_was_last_regular_week'))
+    ev = {'n_train_rows': len(train), 'n_features': len(X[0]),
+          'n_rows_carrying_the_flag': n_flag,
+          'flag_rate': round(n_flag / len(train), 6),
+          'last_regular_week_per_season': dict(sorted(last.items())),
+          'train_seasons': sorted({r['s'] for r in train}),
+          'base_rate': float(np.mean(y)), 'l2': l2, 'k': round(k, 6),
+          'coef_rest': float(np.asarray(model['w'])[-1]),
+          'inherits': 'R8, append-only: every prior coefficient keeps its '
+                      'column index'}
+    m = {'model': model, 'k': k, 'evidence': ev, 'rows': rows,
+         'coef_sha256': hashlib.sha256(
+             np.asarray(model['w']).tobytes()).hexdigest()[:16]}
+    _FIT_REST[key] = m
+    return Outcome.ok('REST_FIT', value=m, spec_version=SPEC_VERSION_REST,
+                      cached=False, **ev)
