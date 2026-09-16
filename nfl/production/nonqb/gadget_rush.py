@@ -82,6 +82,7 @@ if str(_REPO) not in sys.path:
 from sportsplatform.governance.outcome import Cause, Outcome, State  # noqa: E402
 from nfl.production import derived as DERIVED                        # noqa: E402
 from nfl.production import seeds as SEEDS                            # noqa: E402
+from nfl.production.nonqb import participant_class as PC             # noqa: E402
 
 SPEC_VERSION = 'gadget-rush-allocation-1'
 CATEGORIES = ('wr', 'te')
@@ -177,8 +178,33 @@ def fit(cut_ordinal: int) -> Outcome:
             f'built on that are not a measured allocation.',
             cause=Cause.DATA, counts=seen)
 
+    # THE PARTICIPATION CLASS IS PART OF THE FIT, NOT A CALLER'S PROBLEM.
+    # Without it `pool` selected on POSITION alone, so a practice-squad
+    # receiver and a reserve receiver stood in the gadget pool and took
+    # carries. Found by reconciling the board against an external contest
+    # universe: Tyrell Shavers (RES) held 0.039 carries a game, Trent
+    # Sherfield and Lucky Jackson (both DEV) another 0.040 between them. The
+    # rule they broke is explicit -- a player who is not on the game roster
+    # does not get direct opportunity merely because a historical rate is
+    # nonzero -- and every other layer already honoured it.
+    season, week = int(cut_ordinal) // 100, int(cut_ordinal) % 100
+    _status, _status_src = PC._raw_status_map(season, week)
+    if not _status and week > 1:
+        _status, _status_src = PC._raw_status_map(season, week - 1)
+    if not _status:
+        return Outcome.blocked(
+            'GADGET_NO_ROSTER_STATUS',
+            f'no raw weekly-roster capture carries status for {season} week '
+            f'{week} or the week before, so every candidate would be UNKNOWN '
+            f'and the pool would be membership by another name.',
+            cause=Cause.DATA, season=season, week=week)
+    classes = {g: PC.from_roster_status(v) for g, v in _status.items()}
+
     doc = {'spec_version': SPEC_VERSION, 'cut_ordinal': int(cut_ordinal),
            'alpha': dict(ALPHA), 'positions': pos,
+           'participant_class': classes,
+           'status_source': _status_src,
+           'status_week_used': week if _status_src else None,
            'weights': {c: {t: dict(v) for t, v in weights[c].items()}
                        for c in CATEGORIES},
            'n_prior_carries': dict(seen),
@@ -191,22 +217,40 @@ def fit(cut_ordinal: int) -> Outcome:
     return out
 
 
-def pool(doc, team: str, category: str, candidates) -> list:
-    """The club's eligible players at the gadget position, as ids.
+def pool(doc, team: str, category: str, candidates) -> tuple:
+    """The club's GAME-ROSTER players at the gadget position, and who was held.
 
     `candidates` are the board's own players -- the pool is never wider than
     the participant set the rest of the forecast used. A category carry can
     only go to someone the board already models, which is what stops this
     from quietly introducing a player nobody vetted.
+
+    AND POSITION IS NOT ELIGIBILITY. This selected on position alone and put
+    practice-squad and reserve receivers in the pool. A player not on the
+    game roster is HELD, not silently dropped: he is returned separately so
+    the caller can record that he was considered and excluded, and why.
+
+    UNKNOWN IS HELD TOO, and that is the point of holding rather than
+    dropping. It is not "definitely active" and it is not "definitely
+    excluded" -- it is uncertainty, and the honest thing is to keep it
+    visible instead of resolving it by default in either direction.
     """
     want = 'WR' if category == 'wr' else 'TE'
-    return sorted(g for g in candidates if doc['positions'].get(g) == want)
+    at_pos = sorted(g for g in candidates if doc['positions'].get(g) == want)
+    eligible, held = [], {}
+    for g in at_pos:
+        c = (doc.get('participant_class') or {}).get(g, PC.UNKNOWN)
+        if PC.eligibility_state(c) == 'ELIGIBLE':
+            eligible.append(g)
+        else:
+            held[g] = c
+    return eligible, held
 
 
 def allocate(doc, team: str, category: str, counts, candidates, seed,
              tag='') -> Outcome:
     """Deal this category's per-draw carries over the club's named players."""
-    ids = pool(doc, team, category, candidates)
+    ids, held = pool(doc, team, category, candidates)
     C = np.maximum(np.rint(np.asarray(counts, float)), 0).astype(int)
     if not ids:
         # NOT AN ERROR AND NOT A SILENT ZERO. The club models nobody at this
@@ -251,6 +295,10 @@ def allocate(doc, team: str, category: str, counts, candidates, seed,
         spec_version=SPEC_VERSION, team=team, category=category,
         n_players=len(ids), alpha=ALPHA[category],
         mean_allocated=float(C.mean()),
+        # CONSIDERED AND EXCLUDED, WITH THE REASON. Not the same as never
+        # having been in the universe, and a reader must be able to tell.
+        held_not_on_game_roster=held,
+        n_held=len(held),
         weights={g: round(float(x), 6) for g, x in zip(ids, w)},
         players_with_no_prior_carry=sorted(
             g for g in ids

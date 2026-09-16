@@ -106,6 +106,25 @@ def numeric(run_dir):
     g = rid['gadget_rush']
     n = int(m['n_draws'])
 
+    # Roster classes, read once, from the same capture the engine used.
+    import csv as _csv, glob as _glob, gzip as _gzip
+    from nfl.production.nonqb import participant_class as PC
+    _cls = {}
+    for f in sorted(_glob.glob(str(REPO / 'nfl/vintage/weekly_rosters.*raw.csv*'))):
+        for r in _csv.DictReader(_gzip.open(f, 'rt')):
+            gid = (r.get('gsis_id') or '').strip()
+            if gid and gid not in _cls:
+                _cls[gid] = PC.from_roster_status(
+                    (r.get('status') or '').strip().upper())
+    ck('roster_classes_were_read', bool(_cls), str(len(_cls)))
+    held_any = any(
+        isinstance(v, dict) and v.get('n_held')
+        for v in ((art.get('gadget_rush') or {}).get('allocated') or {}).values())
+    ck('players_off_the_game_roster_are_HELD_with_a_reason_not_dropped',
+       held_any,
+       'a considered-and-excluded player must be visible as such; silence '
+       'cannot be told apart from never having been in the universe')
+
     ck('every_gadget_row_is_named',
        all(gm.get(p, {}).get('name_resolved') for p in g),
        str([p for p in g if not gm.get(p, {}).get('name_resolved')]))
@@ -148,6 +167,19 @@ def numeric(run_dir):
         ck(f'{t} only_tight_ends_take_te_carries',
            all(gm[g[i]]['position'] == 'TE' for i in range(len(g))
                if gm[g[i]]['team'] == t and z['gadget_rush__te'][i].sum()))
+        # THE RULE EVERY OTHER LAYER ALREADY HONOURED. This module selected
+        # on POSITION alone, so a practice-squad and a reserve receiver stood
+        # in the gadget pool and took carries -- found by reconciling the
+        # board against an external contest universe, not by any check here.
+        from nfl.production.nonqb import participant_class as PC
+        for i, p in enumerate(g):
+            if gm[p]['team'] != t:
+                continue
+            c = (gm[p].get('participant_class')
+                 or _cls.get(p) or PC.UNKNOWN)
+            if any(z[f'gadget_rush__{k}'][i].sum() for k in CATS):
+                ck(f'{t} {gm[p]["name"]} is on the game roster',
+                   PC.eligibility_state(c) == 'ELIGIBLE', str(c))
         ck(f'{t} nobody_gets_a_fractional_carry',
            all(bool(np.allclose(z[f'gadget_rush__{c}'][rows],
                                 np.rint(z[f'gadget_rush__{c}'][rows])))
