@@ -1561,11 +1561,24 @@ def build(args, fixtures: dict = None) -> dict:
         # stage: a step that returned something partial is not a success, and
         # a run that cannot satisfy a declared invariant owes a refusal, not
         # a number. `run_status` records it at the stage that owns it.
-        if g.get('halted_at'):
+        # SCOPED TO THE HALTS THAT WERE NOT ALREADY FATAL, and the test that
+        # caught the over-reach is `test_full_slate_rehearsal`. Every other
+        # halt in the engine returns `(g, None)`: the layer produced nothing,
+        # `payload` is None, and each declared stage already reports its OWN
+        # blocker -- NE's appearance layer says "3 rows and report_status is
+        # unfilled on every one", which is the useful sentence. A blanket
+        # check replaced five specific blockers with one generic engine code
+        # and turned an already-handled data refusal into a whole-run fatal.
+        #
+        # A halt WITH a payload is the pathological pair: the engine said it
+        # stopped and handed back numbers anyway. That is exactly and only
+        # the two shared-pass sites.
+        if g.get('halted_at') and payload is not None:
             o = Outcome.fail(
                 'NONQB_ENGINE_HALTED',
-                f'the engine halted at {g["halted_at"]!r} and the run '
-                f'continued to the seal. A refused hard invariant is not a '
+                f'the engine halted at {g["halted_at"]!r} AND RETURNED A '
+                f'PAYLOAD, so the run would have sealed numbers produced by a '
+                f'chain that refused. A hard invariant that failed is not a '
                 f'configuration outcome: {(g.get("halt_reason") or "")[:300]}',
                 halted_at=g.get('halted_at'),
                 halt_reason=(g.get('halt_reason') or '')[:600],
