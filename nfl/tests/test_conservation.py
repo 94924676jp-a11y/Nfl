@@ -109,20 +109,70 @@ TONIGHT = (LIVE / '2026_01_DEN_KC' / 'PRELIMINARY_PROVISIONAL_V1_CANDIDATE_R8'
 # The five newly scoreable boards contribute ZERO closure failures and ZERO
 # containment breaches. The invariant holds on a corpus 10 team-runs larger,
 # which is the only reading of this re-freeze that matters.
+# RE-FROZEN 2026-09-16, and the one number that MOVED was understood before
+# it was re-pinned. The corpus grew by three boards because the fence can now
+# score them at all: `add_layer` requires a player-axis layer to carry its
+# rows` clubs, so `CONSERVATION_ROWS_WITHOUT_A_TEAM` -- which used to make the
+# fence decline a board and report a state it could not score -- no longer
+# occurs.
+#
+#   runs                  109 -> 112   +3
+#   team_runs             218 -> 224   +6   3 boards x 2 clubs
+#   c3_runs                41 ->  43   +2
+#   qb_room_cells     246,000 -> 266,000
+#   passing_line_cells 108,000 -> 112,000
+#   rush_residual_tr       80 ->  86   +6
+#   stored_target_cells 110,000 -> 114,000
+#
+#   rush_residual_sign_ch  80 ->  80   UNCHANGED, and that is the SECOND
+#     number worth reading rather than re-pinning. Six new team-runs carry a
+#     rush residual and NONE of them changes sign. They are exactly the three
+#     DET-BUF R9_W1P-family boards x 2 clubs -- 81db92580ac3d872,
+#     e58206e3e8473dc1, 117a78668a0b7a0e. On those arms A1 owns the whole rush
+#     partition, so the unowned residual is the fringe plus the unmodelled-back
+#     pool, which is non-negative by construction. On the older arms it was a
+#     two-sided over-and-under allocation that was negative in 464 of 1,000
+#     draws. Same check, two different quantities, and the repair is why.
+#
+#   closure_failures        0 ->   0   UNCHANGED
+#   containment_breach_tr  62 ->  62   UNCHANGED
+#   containment_breach_cells 373 -> 373 UNCHANGED
+#   containment_breach_games  9 ->   9  UNCHANGED
+#
+#   stored_target_exact_agreement 0 -> 982   ** THE ONE THAT MOVED **
+#
+# THE 982 IS A REPAIR, NOT A DEFECT, AND IT IS NOT SC2. It comes from exactly
+# two boards -- 2026_02_DET_BUF R9_W1P (491) and R9_W1P_G (491), BUF 267 and
+# DET 224 each, both 1,000 draws, both sealed at commits that PREDATE SC2 and
+# the C3 refusal transport.
+#
+# `R9_W1P` introduced `publish_partitioned_team_targets`, so from that arm the
+# board publishes the level the partition consumed rather than D1`s separately
+# drawn continuous vector. The gap this check measures is then identically
+# `-untargeted`: non-positive always, and zero exactly when no throw in that
+# draw was a throwaway or a spike. Verified against the closed form on five
+# sealed boards -- gap <= 0 in 1.0000 of cells, and P(gap = 0) against
+# E[(1-u)^throws] with u = 0.042320 reads 0.2670/0.2656 and 0.2240/0.2426 at
+# 1,000 draws and 0.2659/0.2637 and 0.2390/0.2430 at 8,000.
+#
+# SC2 changes it by nothing: GA (no SC2, C3 not reached), GS and GSV (both
+# SC2) return identical counts, 2127 and 1912 on 8,000 draws.
+#
+# nfl/research/sc2/STORED_TARGET_AGREEMENT_982.md carries the derivation.
 SEALED = {
-    'runs': 109,
-    'team_runs': 218,
-    'c3_runs': 41,                       # runs declaring C3 applied
+    'runs': 112,
+    'team_runs': 224,
+    'c3_runs': 43,                       # runs declaring C3 applied
     'closure_failures': 0,
-    'qb_room_cells': 246000,
-    'passing_line_cells': 108000,
+    'qb_room_cells': 266000,
+    'passing_line_cells': 112000,
     'containment_breaching_team_runs': 62,
     'containment_breaching_cells': 373,
     'containment_breaching_games': 9,
-    'rush_residual_team_runs': 80,
+    'rush_residual_team_runs': 86,
     'rush_residual_sign_changing_team_runs': 80,
-    'stored_target_exact_agreement_cells': 0,
-    'stored_target_cells': 110000,
+    'stored_target_exact_agreement_cells': 982,
+    'stored_target_cells': 114000,
 }
 
 

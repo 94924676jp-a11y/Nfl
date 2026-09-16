@@ -213,15 +213,32 @@ CONTRACTS = {
     'stored_team_targets_is_not_the_denominator': {
         'class': RESIDUAL, 'view': 'targets', 'unit': 'team-draw',
         'layers': ('qb', 'team_volume'), 'regime': 'C3', 'tol': None,
-        'asserts': 'measures team_volume/team_targets - rint(sum QB att): the '
-                   'distance between the stored team target total and the '
-                   'budget the game ACTUALLY dealt from. Reported so the trap '
-                   'is a number, never used as a denominator.',
-        'contract': 'WS09 J-12, FALSIFIED: the stored vector is a separate '
-                    'unused D1 draw. football_engine records '
-                    '`d1_team_targets_unused: True` in its own C3 evidence '
-                    'and run_forecast seals the unused vector regardless, '
-                    'under a name that says it is the team\'s targets.',
+        'asserts': 'measures team_volume/team_targets - rint(sum QB att). '
+                   'Reported so the trap is a number, never used as a '
+                   'denominator. WHAT THE NUMBER MEANS DEPENDS ON THE ARM, '
+                   'and reading it as one thing is how the pin below went '
+                   'stale: see `two_regimes`.',
+        'two_regimes': 'BEFORE `publish_partitioned_team_targets` (R9_W1P) '
+                       'the stored vector is D1`s separately drawn CONTINUOUS '
+                       'level, which nothing partitions, so this gap is the '
+                       'distance between two unrelated numbers and exact '
+                       'agreement has probability ~0. FROM R9_W1P the board '
+                       'publishes the level the partition consumed, so the '
+                       'gap is identically `-untargeted` -- it can only be '
+                       'non-positive, and it is ZERO exactly when no throw in '
+                       'that draw was a throwaway or a spike. Measured on '
+                       'five sealed boards: gap <= 0 in 1.0000 of cells, and '
+                       'P(gap = 0) matches E[(1-u)^throws] with u = 0.042320 '
+                       'to within 0.02. nfl/research/sc2/'
+                       'STORED_TARGET_AGREEMENT_982.md',
+        'contract': 'WS09 J-12, FALSIFIED FOR THE ARMS THAT PREDATE THE '
+                    'REPAIR: there the stored vector is a separate unused D1 '
+                    'draw, football_engine records `d1_team_targets_unused: '
+                    'True`, and run_forecast seals the unused vector under a '
+                    'name that says it is the team`s targets. From R9_W1P '
+                    'that is no longer what is sealed, and the agreement '
+                    'this check now reports is the repair working rather '
+                    'than a defect appearing.',
         'residual_owner': 'D1 team_volume, a second owner of one football '
                           'quantity; the number is stored but the game did '
                           'not use it',
