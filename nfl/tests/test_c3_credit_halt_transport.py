@@ -201,9 +201,13 @@ def test_a_refused_c3_credit_is_visible_in_what_was_sealed():
 
 
 def test_zz_every_check_passed():
+    # THE TRIPWIRE, AND IT IS RECOGNISED BY SHAPE. `run_suite.tally_tripwires`
+    # counts a function that calls anything beyond print/AssertionError as a
+    # real test, so a `', '.join(...)` in here turned this into a ZERO-CHECK
+    # function -- one that ran, measured nothing, and said nothing. The failed
+    # names are printed by `ck` as they happen and again in `main`.
     if FAILED:
-        raise AssertionError(f'{FAILED} failing check(s): '
-                             + ', '.join(_F))
+        raise AssertionError(f'{FAILED} check(s) failed in this module')
 
 
 def main():

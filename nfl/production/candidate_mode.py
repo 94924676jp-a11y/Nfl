@@ -52,11 +52,17 @@ V1_CANDIDATE_R13 = 'V1_CANDIDATE_R13'
 V1_CANDIDATE_R9_W1P = 'V1_CANDIDATE_R9_W1P'
 V1_CANDIDATE_R9_W1P_G = 'V1_CANDIDATE_R9_W1P_G'
 V1_CANDIDATE_R9_W1P_GA = 'V1_CANDIDATE_R9_W1P_GA'
+V1_CANDIDATE_R9_W1P_GS = 'V1_CANDIDATE_R9_W1P_GS'
+V1_CANDIDATE_R9_W1P_GSV = 'V1_CANDIDATE_R9_W1P_GSV'
+V1_CANDIDATE_R9_W1P_GSP = 'V1_CANDIDATE_R9_W1P_GSP'
+V1_CANDIDATE_R9_W1P_GSVP = 'V1_CANDIDATE_R9_W1P_GSVP'
 MODES = (PRODUCTION_BASELINE, V1_CANDIDATE, V1_CANDIDATE_R5,
          V1_CANDIDATE_R6, V1_CANDIDATE_R7, V1_CANDIDATE_R8,
          V1_CANDIDATE_R9, V1_CANDIDATE_R10, V1_CANDIDATE_R11,
          V1_CANDIDATE_R12, V1_CANDIDATE_R13, V1_CANDIDATE_R9_W1P,
-         V1_CANDIDATE_R9_W1P_G, V1_CANDIDATE_R9_W1P_GA)
+         V1_CANDIDATE_R9_W1P_G, V1_CANDIDATE_R9_W1P_GA,
+         V1_CANDIDATE_R9_W1P_GS, V1_CANDIDATE_R9_W1P_GSV,
+         V1_CANDIDATE_R9_W1P_GSP, V1_CANDIDATE_R9_W1P_GSVP)
 
 # Every mode that is a CANDIDATE, derived so a new one cannot escape a guard
 # by not being added to a hand-written list. See `assert_not_promoted`.
@@ -573,6 +579,187 @@ R9_W1P_GA_REPAIR = {
     'engine_flag': 'appearance_panel_2026',
 }
 
+# ================================================================== SC2
+#
+# THE ABLATION LINEAGE. Four arms that differ in ONE declared thing each, and
+# in nothing else -- which is the whole point, because the last comparison this
+# project ran (G at 1,000 draws against GA at 8,000) differed in the draw
+# count, the appearance mechanism, the availability evidence AND whether C3's
+# second half completed, and could therefore identify none of them.
+#
+# Every arm here carries SC2, because without it C3's passer credit refuses on
+# roughly 4 draws in 10,000 and the run seals a HALF-APPLIED C3 -- targets
+# dealt from the throw process, passer line uncredited. That is not a property
+# of any arm; it is a property of the draw count, and it made a 1,000-draw
+# board and an 8,000-draw board on the same arm look like different candidate
+# declarations.
+SC2_REPAIR = {
+    'component': 'SC2',
+    'what': 'the intercepted throws are reserved out of the pool the '
+            'receiving conversion converts, and the catch rate is taken '
+            'conditional on not having been intercepted',
+    'replaces': 'a chain in which C3 built the targeted-throw budget from the '
+                'quarterbacks\' attempts, RC1 converted every one of those '
+                'throws to a possible catch, and nothing had removed the ones '
+                'the interception draw had already spent',
+    'defect': 'credit_passing_line refuses a draw in which the receiving '
+              'event caught more balls than the quarterbacks had '
+              'non-intercepted attempts to throw. The refusal is correct. '
+              'What was wrong is that the engine recorded the halt and did '
+              'not return, so the board sealed a half-applied C3 and said '
+              'nothing -- 60 sealed boards across the week-1 slate and every '
+              'arm from V1_CANDIDATE to R9_W1P_GA carry an unexplained '
+              '`not reached: [C3]`',
+    'evidence': 'reproduced on 2026_02_DET_BUF, same checkout, same seed, '
+                'same written_at, changing only the draw count and the '
+                'candidate: G and GA both PASS at 400 draws; G FAILs on 1 '
+                'draw and GA on 3 at 8,000. Arm-independent, draw-count '
+                'dependent. nfl/research/sc2/SC2_SECTION3_RESULT.md',
+    'coefficients': 'ONE, and it is MEASURED: the league interception share '
+                    'of targets, 0.023766, on 2,718 REG team-games 2021-2025. '
+                    'It is what makes E[receptions] unchanged -- '
+                    'c/(1-pi) against a pool short by pi -- so the level does '
+                    'not move and only the joint state does. '
+                    'nfl/research/sc2/SC2_SECTION3_MEASUREMENT.json',
+    'withdrawn_alternative': 'SC2-B, a feasibility-constrained permutation of '
+                             'the interception draw index in SC1\'s style, is '
+                             'WITHDRAWN on the rule written before the number '
+                             'was seen. SC1\'s defence was that the model was '
+                             'badly under-coupled, +0.0299 against a '
+                             'historical +0.1802. Here the model is at '
+                             '+0.1973 against +0.2159, so permuting would '
+                             'destroy a dependence it already has about right',
+    'known_limitation': 'targets are treated as exchangeable with respect to '
+                        'being intercepted. A deep contested throw is '
+                        'likelier to be picked than a checkdown, and this '
+                        'layer forecasts no air yards, so it holds no '
+                        'quantity that could express the difference. Recorded '
+                        'rather than approximated with a coefficient nothing '
+                        'here can estimate',
+    'governance': 'REHEARSAL_ONLY -- a closure change with its own identity, '
+                  'never an edit to R9_W1P_G or R9_W1P_GA',
+    'engine_flag': 'reserve_interceptions',
+}
+
+#: GS -- the ablation BASELINE. G plus SC2 and nothing else: R8 appearance,
+#: the old availability path, C3 completing.
+R9_W1P_GS_FLAGS = dict(R9_W1P_G_FLAGS)
+R9_W1P_GS_FLAGS['reserve_interceptions'] = True
+
+#: GSV -- A1 only. The repaired current-state availability evidence, on the
+#: SAME R8 appearance mechanism the baseline runs.
+R9_W1P_GSV_FLAGS = dict(R9_W1P_GS_FLAGS)
+R9_W1P_GSV_FLAGS['availability_feed'] = True
+
+#: GSP -- A2 only. The 2026 week-1 appearance panel, on the OLD availability
+#: path. R8 is dropped because the panel injection is defined against the
+#: frozen mechanism and setting both is APPEARANCE_SPEC_AMBIGUOUS.
+R9_W1P_GSP_FLAGS = dict(R9_W1P_GS_FLAGS)
+R9_W1P_GSP_FLAGS.pop('appearance_r8', None)
+R9_W1P_GSP_FLAGS['appearance_panel_2026'] = True
+
+#: GSVP -- A1 + A2 together, for the interaction.
+R9_W1P_GSVP_FLAGS = dict(R9_W1P_GSP_FLAGS)
+R9_W1P_GSVP_FLAGS['availability_feed'] = True
+
+def _sc2_base():
+    """The component list every ablation arm shares, in one place.
+
+    Written as a function rather than a module constant so that a caller who
+    mutates the list it receives cannot reach back into the next arm's
+    declaration. Two arms whose component lists are the same object is one
+    `.append` away from an artifact that names a component the run never had.
+    """
+    return manifest() + [R5_REPAIR, R6_REPAIR, R8_REPAIR, R9_REPAIR,
+                         R9_W1P_REPAIR, R9_W1P_G_REPAIR, SC2_REPAIR]
+
+
+def _avail_only():
+    """A1 on its own: the eligibility half of GA, without the panel half."""
+    return {k: v for k, v in R9_W1P_GA_REPAIR.items()
+            if k not in ('coefficients', 'confounded_comparison',
+                         'known_limitation')} | {
+        'component': 'A1_AVAILABILITY',
+        'what': 'current-state availability evidence is joined to participant '
+                'eligibility. The appearance mechanism is NOT touched',
+        'isolates': 'the Ty Johnson effect -- a player the feed lists OUT '
+                    'leaves the allocation, and the A1 category multinomial '
+                    'and the P4C simplex deal his share among the players who '
+                    'are in it',
+        'engine_flag': 'availability_feed'}
+
+
+#: STOP. Every arm that consumes `appearance_panel_2026` carries this, and it
+#: disqualifies the arm from being a clean candidate until the week-1 rows are
+#: rebuilt on the union construction. Measured, not suspected:
+#: nfl/research/sc2/W1_PANEL_SURVIVORSHIP.md
+W1_PANEL_SURVIVORSHIP = {
+    'defect': 'the 2026 week-1 rows come from the snap-count file alone, so a '
+              'player who dressed and did not play, or was a healthy scratch, '
+              'has NO row. The frame every other week is built from is the '
+              'panel UNION the point-in-time depth chart, where he has one '
+              'with appeared = 0',
+    'measured': 'R7 frame 2025 week 1: 762 rows, 370 appeared, base rate '
+                '0.486. The 2026 week-1 panel: 422 rows, 391 appeared, base '
+                'rate 0.927',
+    'consequence': 'R8 moves w = n_cur/(n_cur+k) = 0.4509 of the weight off '
+                   'the depth listing at n_cur = 1. Those coefficients were '
+                   'fitted against a 48.6% non-appearer population. Adding '
+                   'the observation that a player PLAYED lowers him -- Josh '
+                   'Allen 0.9625 to 0.8449 on a 100% snap share, James Cook '
+                   '0.8381 to 0.6299 on 0.72',
+    'status': 'OPEN. This is a train/serve skew, not a football effect, and a '
+              'GSP-minus-GS difference would measure the filter at least as '
+              'much as the panel',
+    'repair': 'build the 2026 week-1 rows as the observed panel UNION the '
+              'point-in-time depth chart, appeared = 0 for a listed player '
+              'who took no offensive snap. NOT reweighting, and not dropping '
+              'the injection',
+}
+
+
+def _panel_only():
+    """A2 on its own, and it is NOT only the panel -- see `also_changes`."""
+    return {
+        'survivorship': dict(W1_PANEL_SURVIVORSHIP),
+        'component': 'A2_PANEL',
+        'what': 'the appearance mechanism walks a panel that reaches the '
+                'forecast season instead of stopping at 2025 week 18, which '
+                'was a league-wide rest week',
+        'also_changes': 'THE MECHANISM. The panel injection is defined only '
+                        'for the frozen logistic, so this arm drops R8. '
+                        'GSP-minus-GS is panel AND mechanism together and '
+                        'must never be reported as the panel effect alone',
+        'challenger_not_replacement': 'R8 carries forward-chained Brier '
+                                      'evidence by regime and this arm does '
+                                      'not. Out-of-sample score decides, not '
+                                      'feature novelty',
+        'known_limitation': 'a kicker has no offensive snap share and the '
+                            'panel holds 47 kicker rows against 21,219 '
+                            'receivers; his share is left MISSING rather '
+                            'than filled with a special-teams number on an '
+                            'offensive scale',
+        'engine_flag': 'appearance_panel_2026'}
+
+
+ABLATION_NOTE = {
+    'arms': {'R9_W1P_GS': 'baseline: R8 appearance, old availability, C3',
+             'R9_W1P_GSV': 'A1 only: repaired current availability',
+             'R9_W1P_GSP': 'A2 only: 2026 week-1 appearance panel',
+             'R9_W1P_GSVP': 'A1 + A2'},
+    'held_fixed': 'draw count, seed, written_at, game, code version, and SC2',
+    'what_it_cannot_separate': (
+        'A2 changes the appearance MECHANISM as well as the panel, because '
+        'the panel injection is defined only for the frozen model and R8 is a '
+        'different frame builder. So GSP-minus-GS is panel AND mechanism '
+        'together, and it is labelled that way rather than called the panel '
+        'effect.'),
+    'appearance_mechanism_status': (
+        'R8 carries forward-chained Brier evidence and the panel arm does '
+        'not. The panel arm is a CHALLENGER. Which survives is decided by '
+        'out-of-sample score, not by which has the newer features.'),
+}
+
 R10_FLAGS = {k: v for k, v in R9_FLAGS.items() if k != 'appearance_r8'}
 R10_FLAGS['appearance_r10'] = True
 
@@ -1003,6 +1190,48 @@ def resolve(mode: str) -> Outcome:
                    'weeks-since-appearance feature carries a missingness '
                    'indicator and a monotone encoding, and the depth rank is '
                    'within-position on both sides of the fit')
+    # ---- the four matched ablation arms ----------------------------
+    if mode == V1_CANDIDATE_R9_W1P_GS:
+        return Outcome.ok(
+            'MODE_V1_CANDIDATE_R9_W1P_GS',
+            value={'mode': V1_CANDIDATE_R9_W1P_GS,
+                   'flags': dict(R9_W1P_GS_FLAGS),
+                   'components': _sc2_base(),
+                   'ablation': dict(ABLATION_NOTE),
+                   'candidate': True},
+            detail='the ablation BASELINE: R9_W1P_G plus SC2, so C3 completes '
+                   'at any draw count. R8 appearance, old availability path')
+    if mode == V1_CANDIDATE_R9_W1P_GSV:
+        return Outcome.ok(
+            'MODE_V1_CANDIDATE_R9_W1P_GSV',
+            value={'mode': V1_CANDIDATE_R9_W1P_GSV,
+                   'flags': dict(R9_W1P_GSV_FLAGS),
+                   'components': _sc2_base() + [_avail_only()],
+                   'ablation': dict(ABLATION_NOTE),
+                   'candidate': True},
+            detail='A1 ONLY: the baseline with current-state availability '
+                   'evidence joined to eligibility. The appearance mechanism '
+                   'is unchanged, so this is the Ty Johnson effect alone')
+    if mode == V1_CANDIDATE_R9_W1P_GSP:
+        return Outcome.ok(
+            'MODE_V1_CANDIDATE_R9_W1P_GSP',
+            value={'mode': V1_CANDIDATE_R9_W1P_GSP,
+                   'flags': dict(R9_W1P_GSP_FLAGS),
+                   'components': _sc2_base() + [_panel_only()],
+                   'ablation': dict(ABLATION_NOTE),
+                   'candidate': True},
+            detail='A2 ONLY: the baseline with the 2026 week-1 appearance '
+                   'panel and the old availability path. Panel AND mechanism '
+                   'move together here and the note says so')
+    if mode == V1_CANDIDATE_R9_W1P_GSVP:
+        return Outcome.ok(
+            'MODE_V1_CANDIDATE_R9_W1P_GSVP',
+            value={'mode': V1_CANDIDATE_R9_W1P_GSVP,
+                   'flags': dict(R9_W1P_GSVP_FLAGS),
+                   'components': _sc2_base() + [_avail_only(), _panel_only()],
+                   'ablation': dict(ABLATION_NOTE),
+                   'candidate': True},
+            detail='A1 + A2: both, for the interaction term')
     if mode == V1_CANDIDATE_R9_W1P_GA:
         return Outcome.ok(
             'MODE_V1_CANDIDATE_R9_W1P_GA',

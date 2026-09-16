@@ -485,7 +485,7 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
              game_coupling='none', rushing_budget=None,
              team_carries_override=None, tv=None, rush_categories=None,
              appearance_spec='frozen', observed_before=None,
-             inactive_ids=None):
+             inactive_ids=None, reserve_interceptions=False):
     """One game, every implemented layer, one draw index.
 
     `rushing_budget` is A1's `rb` category carries, {team: (m,) counts}.
@@ -1181,8 +1181,37 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
         contract_version=COUNT_CONTRACT_VERSION))
 
     ordinal = season * 100 + week
-    cv = LY.receiving_conversion(tc, T, fits['receiving_priors'].value, ids,
-                                 pos, ordinal, m=m, seed=seed)
+    # SC2. RESERVE THE INTERCEPTED THROWS BEFORE THE CATCHES ARE DRAWN.
+    #
+    # Off by default and reachable only under C3, because it is the C3 target
+    # budget that the interception draw has to be made coherent with. Every
+    # arm that does not ask for it runs the identical call it always ran.
+    _sc2 = None
+    if reserve_interceptions and shared_pass == 'c3' and qb is not None:
+        _int_by_team = []
+        for k, t in enumerate(teams):
+            sel = list(qb['index_by_team'].get(t, []))
+            _int_by_team.append(
+                np.stack([np.asarray(qb['draws']['int'][i], float)
+                          for i in sel]).sum(0) if sel else np.zeros(m))
+        _rng_sc2 = np.random.default_rng(
+            [seed, season * 100 + week,
+             int(SEEDS.game_component(game_id).value), 0x5C2])
+        _res = SP.deal_interceptions(T, starts, counts, _int_by_team,
+                                     _rng_sc2)
+        _lay('interception_reservation', _res)
+        if _res.state is not State.PASS:
+            g['halted_at'] = 'interception_reservation'
+            g['halt_reason'] = _res.detail[:200]
+            return g, None
+        _sc2 = _res.value
+        g['accounting']['interception_reservation'] = {
+            k: v for k, v in _res.evidence.items() if k != 'value'}
+    cv = LY.receiving_conversion(
+        tc, T, fits['receiving_priors'].value, ids, pos, ordinal, m=m,
+        seed=seed, intercepted=_sc2,
+        pick_share=(None if _sc2 is None
+                    else SP.INTERCEPTION_SHARE_OF_TARGETS))
     _lay('receiving_conversion', cv)
     tdp = dict(fits['td_priors_rec'].value)
     tdp['pos_catch_rate'] = fits['receiving_priors'].value['pos_catch_rate']

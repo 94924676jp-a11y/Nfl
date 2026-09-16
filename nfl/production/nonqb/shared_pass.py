@@ -524,3 +524,93 @@ def assert_target_ownership_closure(teams, published_level, named_targets,
                f'unmodelled-receiver pool and the untargeted pool are '
                f'contained by the published team target level',
         per_team=ev, tolerance=float(tolerance))
+
+
+# ================================================================== SC2
+#: The league interception-per-target share, MEASURED on 2,718 REG team-games
+#: 2021-2025 and stored beside its derivation in
+#: `nfl/research/sc2/SC2_SECTION3_MEASUREMENT.json`. It is not a tuning knob
+#: and `test_sc2_interception_reservation.py` asserts that this number equals
+#: the artifact's, so the two cannot drift apart.
+#:
+#: What it is FOR: a target's outcome is one of caught / incomplete /
+#: intercepted, and those are mutually exclusive outcomes of one throw. So the
+#: catch rate conditional on NOT being intercepted is `c / (1 - pi)`, and the
+#: measurement gives 0.675155 / (1 - 0.023766) = 0.691591 -- which is the same
+#: 0.691591 measured directly as receptions / (targets - interceptions). The
+#: two agreeing is what says the identity is the right one.
+INTERCEPTION_SHARE_OF_TARGETS = 0.023766
+
+SC2_SPEC_VERSION = 'sc2-interception-reservation-1'
+
+
+def deal_interceptions(targets, starts, counts, team_int, rng) -> Outcome:
+    """Which of the dealt targets were intercepted, per receiver per draw.
+
+    An interception is a throw to somebody. The receiving chain converts
+    targets to catches with no idea that some of those throws were picked, and
+    `credit_passing_line` then meets the consequence: a team draw in which the
+    receivers caught more balls than the quarterbacks had non-intercepted
+    attempts to throw. That refusal is correct and stays; this is the coupling
+    that stops producing the draw.
+
+    THE SCHEME IS THE ONE `credit_passing_line` ALREADY USES, and for the same
+    reason. The picks are a subset of a FINITE pool of thrown balls, so they
+    are dealt WITHOUT replacement --
+
+        int_i ~ MultivariateHypergeometric(colors = targets_i, nsample = I)
+
+    -- which sums to `I` by construction and can never hand a receiver more
+    interceptions than he had targets. A multinomial here would do both.
+
+    Assumption, stated: targets are exchangeable with respect to being
+    intercepted. That is the same exchangeability the passer credit already
+    assumes across quarterbacks, and it is WRONG in the direction everyone
+    expects -- a deep contested throw is likelier to be picked than a checkdown
+    -- but this layer forecasts no air yards, so it holds no quantity that
+    could express the difference. Recorded as a known limitation rather than
+    approximated with a coefficient nothing here can estimate.
+
+    The unmodelled-receiver pool is NOT dealt picks. It is mass with no player
+    on it, and the cap that matters is on the named receivers whose catches
+    reach the passer credit.
+    """
+    T = np.asarray(targets, int)
+    n, m = T.shape
+    out = np.zeros_like(T)
+    short = []
+    for k, (s0, c) in enumerate(zip(starts, counts)):
+        if c == 0:
+            continue
+        I = np.rint(np.asarray(team_int[k], float)).astype(int)
+        block = T[s0:s0 + c]
+        avail = block.sum(0)
+        # A TEAM DRAW WITH MORE PICKS THAN NAMED TARGETS IS A DIFFERENT GAP.
+        # It means the interception draw and the target budget disagree about
+        # how many balls were thrown, which no reservation can fix. Counted
+        # and reported; the reservation takes what it can and the shortfall is
+        # visible rather than absorbed.
+        over = int((I > avail).sum())
+        if over:
+            short.append({'team_index': k, 'draws': over,
+                          'worst_excess': int((I - avail).max())})
+        take = np.minimum(I, avail)
+        for j in range(m):
+            t = int(take[j])
+            if t <= 0:
+                continue
+            col = block[:, j].astype(int)
+            out[s0:s0 + c, j] = rng.multivariate_hypergeometric(col, t)
+    dealt = out.sum(0)
+    return Outcome.ok(
+        'INTERCEPTIONS_RESERVED', value=out,
+        detail=f'{n} receiver row(s), {m} draw(s); every intercepted throw '
+               f'reserved against the receiver it was thrown to',
+        spec_version=SC2_SPEC_VERSION,
+        mean_reserved_per_draw=float(dealt.mean()),
+        never_exceeds_targets=bool((out <= T).all()),
+        team_draws_with_more_picks_than_named_targets=short,
+        sampling='multivariate hypergeometric, without replacement',
+        known_limitation='targets are treated as exchangeable with respect to '
+                         'being intercepted; this layer forecasts no air '
+                         'yards, so it holds nothing that could say otherwise')

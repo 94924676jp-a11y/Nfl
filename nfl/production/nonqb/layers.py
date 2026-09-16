@@ -405,7 +405,8 @@ def _row_rng(seed, ordinal, pid):
 
 
 def receiving_conversion(tc: Outcome, targets_draws, priors, player_ids,
-                         positions, ordinal, m=200, seed=20260908):
+                         positions, ordinal, m=200, seed=20260908,
+                         intercepted=None, pick_share=None):
     """RC1 baseline: shrunk catch rate, and per-catch yardage RESAMPLED.
 
     T is supplied by D3 rather than drawn, which is the one thing that differs
@@ -417,6 +418,32 @@ def receiving_conversion(tc: Outcome, targets_draws, priors, player_ids,
     collapses a distribution whose tail a Normal already understates
     thirteenfold. SIGNAL_WEAK, and the governance CALIBRATION_DEFECT is
     surfaced in metadata rather than left in a document.
+
+    SC2 -- `intercepted` AND `pick_share`, BOTH OPT-IN AND BOTH OR NEITHER.
+    With neither supplied this function is byte-identical to what every frozen
+    arm has always run, which is why they are parameters and not a rewrite.
+
+    With them, a target's outcome is treated as what it is: one of caught,
+    incomplete, or intercepted, mutually exclusive on one throw. The picks are
+    removed from the pool the binomial converts, and the rate is taken
+    conditional on not having been picked --
+
+        R_i ~ Binomial(T_i - int_i,  c_i / (1 - pi))
+
+    -- so that E[R_i] = T_i (1 - pi) c_i / (1 - pi) = T_i c_i, EXACTLY the
+    expectation the unreserved form had. The level does not move; only the
+    joint state with the interception draw does. `pi` is measured, not chosen:
+    `shared_pass.INTERCEPTION_SHARE_OF_TARGETS`.
+
+    Re-basing the denominator WITHOUT re-basing the rate would have cut about
+    0.51 receptions per team-game -- a level change wearing a coherence fix's
+    clothes, which SC2's pre-registration named as the objection it had to
+    answer before it was allowed to build anything.
+
+    A rate that lands above 1 after the division is CAPPED AT 1 AND COUNTED.
+    It can only happen where the shrunk own-rate is already at the boundary,
+    and a cap nobody counts is the kind of silence this project keeps paying
+    for.
     """
     if tc.state is not State.PASS:
         return _blocked('BLOCKED_UPSTREAM_OPPORTUNITY',
@@ -436,8 +463,37 @@ def receiving_conversion(tc: Outcome, targets_draws, priors, player_ids,
             'CROSS_DRAW_INDEX_MISMATCH',
             f'target draws have shape {T.shape} against '
             f'{(len(player_ids), m)}', got=list(T.shape))
+    if (intercepted is None) != (pick_share is None):
+        return Outcome.fail(
+            'SC2_RESERVATION_HALF_SUPPLIED',
+            'the interception reservation needs the dealt picks AND the '
+            'share they are drawn at. One without the other would either '
+            'remove throws without restoring the rate, or restore the rate '
+            'without removing the throws -- both move the level.')
+    INT = None
+    if intercepted is not None:
+        INT = np.maximum(np.rint(np.asarray(intercepted, float)),
+                         0).astype(int)
+        if INT.shape != T.shape:
+            return Outcome.fail(
+                'SC2_RESERVATION_SHAPE',
+                f'reserved interceptions have shape {INT.shape} against '
+                f'targets {T.shape}', got=list(INT.shape))
+        if (INT > T).any():
+            return Outcome.fail(
+                'SC2_RESERVATION_EXCEEDS_TARGETS',
+                f'{int((INT > T).sum())} cell(s) reserve more interceptions '
+                f'than the receiver had targets. Refused rather than clipped.',
+                n_bad=int((INT > T).sum()))
+        pi = float(pick_share)
+        if not 0.0 <= pi < 1.0:
+            return Outcome.fail(
+                'SC2_PICK_SHARE_OUT_OF_RANGE',
+                f'the interception share of targets is {pi}, which is not a '
+                f'share')
     K = float(priors['k_shrink'])
     R = np.zeros_like(T)
+    n_rate_capped = 0
     Y = np.zeros(T.shape, float)
     used_pos_rate = 0
     for i, pid in enumerate(player_ids):
@@ -455,7 +511,14 @@ def receiving_conversion(tc: Outcome, targets_draws, priors, player_ids,
         else:
             c = w * own_rate + (1 - w) * pos_rate
         c = min(max(c, 0.0), 1.0)
-        R[i] = rng.binomial(T[i], c)
+        if INT is None:
+            R[i] = rng.binomial(T[i], c)
+        else:
+            c_cond = c / (1.0 - pi)
+            if c_cond > 1.0:
+                c_cond = 1.0
+                n_rate_capped += 1
+            R[i] = rng.binomial(T[i] - INT[i], c_cond)
         own_v = np.asarray(own.get('h_V_flat') or [], float)
         pool_v = np.asarray(priors['pos_yardage_pool'].get(
             pos, np.array([0.0])), float)
@@ -484,6 +547,17 @@ def receiving_conversion(tc: Outcome, targets_draws, priors, player_ids,
                       n_players=len(player_ids),
                       n_on_positional_catch_rate=used_pos_rate,
                       k_shrink=K,
+                      interception_reservation=(
+                          None if INT is None else {
+                              'spec_version': 'sc2-interception-reservation-1',
+                              'pick_share': float(pick_share),
+                              'mean_reserved_per_draw':
+                                  float(INT.sum(0).mean()),
+                              'n_rows_whose_rate_capped_at_one':
+                                  n_rate_capped,
+                              'identity': 'E[R_i] = T_i c_i is preserved: the '
+                                          'rate is taken conditional on not '
+                                          'having been intercepted'}),
                       warnings=['known limitation: RC1 SIGNAL_WEAK',
                                 'governance: receiving_baseline_calibration '
                                 'CALIBRATION_DEFECT'])

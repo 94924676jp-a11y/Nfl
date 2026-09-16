@@ -1410,7 +1410,10 @@ def build(args, fixtures: dict = None) -> dict:
                 tv=_team_volume(),
                 appearance_spec=_appearance_spec(fl),
                 observed_before=args.written_at,
-                inactive_ids=fx.get('official_inactive_ids'))
+                inactive_ids=fx.get('official_inactive_ids'),
+                # SC2. Reachable only under C3, and off unless the resolved
+                # candidate asks for it, so every frozen arm is unmoved.
+                reserve_interceptions=bool(fl.get('reserve_interceptions')))
         except Exception as e:                                # noqa: BLE001
             o = Outcome.fail(
                 'NONQB_ENGINE_RAISED',
@@ -1525,8 +1528,51 @@ def build(args, fixtures: dict = None) -> dict:
         # the marker is derived rather than asserted regardless.
         if fx.get('_qb_allocator') == 'qb_room_v2':
             applied.append('R9')
+        # SC2 IS RECORDED FROM THE ENGINE'S OWN RESERVATION VERDICT, not from
+        # the flag. It is reachable only under C3, so a run that asked for it
+        # on a non-C3 arm never reserved anything and must not claim to have.
+        _res = ((g.get('accounting') or {}).get('interception_reservation')
+                or {})
+        if _res:
+            applied.append('SC2')
+            fx['_sc2'] = _res
+        elif fl.get('reserve_interceptions'):
+            not_reached.append('SC2')
+            fx['_sc2'] = {
+                'state': 'NOT_REACHED',
+                'why': 'the reservation runs inside the C3 pass event; this '
+                       'run did not reach it, so no throw was reserved and '
+                       'the component is not claimed'}
         fx['_candidate_applied'] = sorted(set(applied))
         fx['_candidate_not_reached'] = sorted(set(not_reached))
+        # A HALT IS FATAL. NO BOARD IS SEALED ON A REFUSED HARD INVARIANT.
+        #
+        # Two places in the engine set `halted_at` and then keep going: the
+        # C3 passer credit (`PASSER_CREDIT_EXCEEDS_COMPLETABLE_ATTEMPTS`) and
+        # the final-value gate that re-checks the QB identities on the draws
+        # the seal will actually read. Every other halt returns `(g, None)`
+        # and was already fatal. Those two were not, and the consequence was
+        # 60 sealed boards carrying a half-applied C3 -- targets dealt from
+        # the throw process, passer line left uncredited -- with the words
+        # `not reached` standing in for a failed invariant.
+        #
+        # Transporting the refusal made it visible. This makes it decisive,
+        # which is the rule this project already states for every other
+        # stage: a step that returned something partial is not a success, and
+        # a run that cannot satisfy a declared invariant owes a refusal, not
+        # a number. `run_status` records it at the stage that owns it.
+        if g.get('halted_at'):
+            o = Outcome.fail(
+                'NONQB_ENGINE_HALTED',
+                f'the engine halted at {g["halted_at"]!r} and the run '
+                f'continued to the seal. A refused hard invariant is not a '
+                f'configuration outcome: {(g.get("halt_reason") or "")[:300]}',
+                halted_at=g.get('halted_at'),
+                halt_reason=(g.get('halt_reason') or '')[:600],
+                c3_refusal=fx.get('_c3_refusal'),
+                components_not_reached=fx['_candidate_not_reached'])
+            fx['_nonqb'] = {'fatal': o}
+            return fx['_nonqb']
         return fx['_nonqb']
 
     # Which engine layer answers for which declared pipeline stage. The two
@@ -2921,6 +2967,7 @@ def build(args, fixtures: dict = None) -> dict:
             'availability': fx.get('_availability') or {},
             # EVERY RUSHING YARD IN ONE PLACE, AND ITS CLOSURE.
             'rushing_total': fx.get('_rushing_total') or {},
+            'interception_reservation': fx.get('_sc2') or {},
             # THE CLOSURE PROOF, QUANTIFIED, IN THE ARTIFACT ITSELF. Every team
             # dropback belongs to exactly one quarterback on that team, and a
             # reader should not have to re-derive that from the draw matrices

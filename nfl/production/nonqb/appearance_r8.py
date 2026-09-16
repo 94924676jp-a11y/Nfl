@@ -357,8 +357,34 @@ def fit(season: int, l2=1.0) -> Outcome:
 
 # ---------------------------------------------------------------- predict
 def predict(season, week, players, injuries_rows, observed_before=None,
-            kickoff_utc=None, depth=None) -> Outcome:
-    """Per-player P(appear). The refused cell is declined, exactly as in R7."""
+            kickoff_utc=None, depth=None, extra_rows=None) -> Outcome:
+    """Per-player P(appear). The refused cell is declined, exactly as in R7.
+
+    `extra_rows` IS ADDITIVE AND OPT-IN, so every caller that does not pass it
+    gets the identical numbers R8 has always produced. With `None` -- which is
+    every frozen arm -- nothing below this line executes.
+
+    WHAT IT IS FOR. R8's prospective row is assembled from `hist[pid]`, the
+    frame rows for that player, and the frame stops at 2025 week 18, a
+    league-wide rest week. So a week-2 2026 forecast asked R8 "what did he do
+    most recently" and R8 answered with a game half the league sat out. The
+    2026 week-1 rows exist and are observed; appending them to the frame is
+    the whole repair.
+
+    WHY NOT JUST USE THE FROZEN MECHANISM'S INJECTION. Because that mechanism
+    is the one R8 replaced. Forward-chained 2022-2025 on identical rows, weeks
+    2-4: frozen Brier 0.18146, R8 0.10049, n = 7,709, team-week-blocked
+    interval excluding zero. Handing the current data only to the losing model
+    is a choice between information and mechanism that nobody has to make.
+
+    THE COEFFICIENTS CANNOT MOVE. `fit` trains on `r['s'] < season`, so a 2026
+    row never reaches a 2026 fit. This adds history to a fitted model and
+    refits nothing; `coef_sha256` is identical with and without it.
+
+    THE CLOCK IS ENFORCED HERE, not trusted from the caller. Only rows in the
+    forecast season and STRICTLY EARLIER than the forecast week are admitted.
+    A row from the week being forecast would be the outcome being predicted.
+    """
     fr = enriched_frame()
     if fr.state is not State.PASS:
         return fr
@@ -408,6 +434,55 @@ def predict(season, week, players, injuries_rows, observed_before=None,
         hist[r['pid']].append(r)
         if r['s'] == int(season):
             cur[r['pid']].append(r)
+    inj_ev = None
+    if extra_rows:
+        need = ('s', 'w', 't', 'pid', 'appeared')
+        kept, refused = [], collections.Counter()
+        for r in extra_rows:
+            if any(r.get(k) is None for k in need):
+                refused['MISSING_A_REQUIRED_FIELD'] += 1
+                continue
+            if int(r['s']) != int(season):
+                refused['NOT_THE_FORECAST_SEASON'] += 1
+                continue
+            if int(r['w']) >= int(week):
+                # THE ROW BEING FORECAST IS NOT EVIDENCE ABOUT ITSELF.
+                refused['AT_OR_AFTER_THE_FORECAST_WEEK'] += 1
+                continue
+            kept.append({'s': int(r['s']), 'w': int(r['w']), 't': r['t'],
+                         'pid': r['pid'], 'appeared': int(r['appeared']),
+                         'snap': r.get('snap')})
+        if not kept:
+            return Outcome.fail(
+                'R8_EXTRA_ROWS_ALL_REFUSED',
+                f'{len(extra_rows)} injected row(s) were offered and none '
+                f'survived the clock and completeness checks: '
+                f'{dict(refused)}. An injection that adds nothing is an '
+                f'error, not a no-op -- it would look exactly like the '
+                f'uninjected arm while claiming to be a different one.',
+                refused=dict(refused), n_offered=len(extra_rows))
+        touched = set()
+        for r in kept:
+            hist[r['pid']].append(r)
+            cur[r['pid']].append(r)
+            touched.add(r['pid'])
+        # RE-SORTED, NOT ASSUMED. `past[-1]` is read as "his most recent
+        # game", so an appended row that is not last would silently answer a
+        # different question.
+        for pid in touched:
+            hist[pid].sort(key=lambda x: (int(x['s']), int(x['w'])))
+            cur[pid].sort(key=lambda x: (int(x['s']), int(x['w'])))
+        inj_ev = {
+            'spec': 'r8-frame-injection-1',
+            'n_offered': len(extra_rows), 'n_admitted': len(kept),
+            'n_refused': dict(refused),
+            'n_players_touched': len(touched),
+            'weeks_admitted': sorted({r['w'] for r in kept}),
+            'n_with_a_snap_share':
+                sum(1 for r in kept if r.get('snap') is not None),
+            'coefficients_unchanged': True,
+            'clock': f'season == {int(season)} and week < {int(week)}, '
+                     f'enforced here rather than trusted from the caller'}
 
     declined, states = {}, collections.Counter()
     rowsX, ids, ws = [], [], []
@@ -493,6 +568,7 @@ def predict(season, week, players, injuries_rows, observed_before=None,
         test_only=False, n_players=len(out), n_declined=len(declined),
         declined=declined, states=dict(states),
         coef_sha256=f.value['coef_sha256'],
+        frame_injection=inj_ev,
         clock=clock.isoformat(), depth=depth_ev,
         reliability_weight_mean=round(float(np.mean(ws)), 6),
         reliability_weight_max=round(float(np.max(ws)), 6),

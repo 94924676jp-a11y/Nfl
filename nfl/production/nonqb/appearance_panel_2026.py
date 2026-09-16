@@ -39,7 +39,7 @@ _REPO = pathlib.Path(__file__).resolve().parents[3]
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
-from sportsplatform.governance.outcome import Cause, Outcome  # noqa: E402
+from sportsplatform.governance.outcome import Cause, Outcome, State  # noqa: E402
 
 SPEC_VERSION = 'appearance-panel-2026w1-1'
 
@@ -205,3 +205,73 @@ def by_id(season: int = 2026, week: int = 1):
     """{gsis_id: row}, or an empty dict when the panel refuses."""
     o = build(season, week)
     return {r['gsis_id']: r for r in o.value} if o.ok else {}
+
+
+#: The spec version of the R7/R8-frame adapter. Named separately from
+#: SPEC_VERSION because the panel and the shape it is handed to a different
+#: mechanism in are two things that can change independently.
+R8_ADAPTER_SPEC_VERSION = 'appearance-panel-2026w1-r8-frame-1'
+
+
+def as_r8_frame_rows(season: int = 2026, week: int = 1) -> Outcome:
+    """The same observed rows, in the shape `appearance_r8`'s frame walk reads.
+
+    WHY THIS EXISTS RATHER THAN A SECOND PANEL. `appearance_model.predict`
+    already takes these rows through `extra_rows`, but that is the FROZEN
+    logistic -- the mechanism R8 replaced, and the one whose forward-chained
+    Brier is 0.18146 against R8's 0.10049 in the weeks 2-4 regime, on 7,709
+    rows with a team-week-blocked interval that excludes zero. Handing the
+    2026 information only to the losing mechanism is how a candidate ends up
+    choosing between "current data" and "the better model" when it could have
+    had both.
+
+    R8's prospective row is built from `hist[pid]`, the frame rows for that
+    player, so a current-season row appended to the frame IS the repair. Six
+    fields are all the walk reads: season, week, team, player, whether he
+    appeared, and his offensive snap share.
+
+    THE COEFFICIENTS DO NOT MOVE AND CANNOT. `appearance_r8.fit` trains on
+    `r['s'] < season`, so a 2026 row can never enter a 2026 fit. This adds
+    information to a fitted model; it does not refit one. `coef_sha256` is
+    identical with and without it, and the test asserts that rather than
+    trusting this sentence.
+
+    A KICKER'S SNAP SHARE IS LEFT MISSING, not filled from special teams. The
+    feature was learned as an OFFENSIVE share, and feeding a 0.45 special-teams
+    share into it drove Tyler Bass from 0.9970 to 0.6850 on a game he kicked
+    3-for-3. `build` already declines to invent one; this carries the decline
+    through instead of turning it into a zero.
+    """
+    o = build(int(season), int(week))
+    if o.state is not State.PASS:
+        return o
+    rows, n_snap = [], 0
+    for r in o.value:
+        if not r.get('gsis_id') or not r.get('team'):
+            continue
+        sn = r.get('snap_share') if r.get('snap_share_defined') else None
+        if sn is not None:
+            n_snap += 1
+        rows.append({'s': int(r['season']), 'w': int(r['week']),
+                     't': r['team'], 'pid': r['gsis_id'],
+                     'pos': r.get('position'),
+                     'appeared': int(r['appeared']),
+                     'snap': (None if sn is None else float(sn))})
+    if not rows:
+        return Outcome.fail(
+            'APPEARANCE_2026_R8_ROWS_EMPTY',
+            f'the {season} week {week} panel produced no row carrying both a '
+            f'gsis_id and a team, so there is nothing to append to the frame. '
+            f'An empty injection is an error, not a no-op.')
+    return Outcome.ok(
+        'APPEARANCE_2026_R8_FRAME_ROWS', value=rows,
+        spec_version=R8_ADAPTER_SPEC_VERSION,
+        n_rows=len(rows), n_with_a_snap_share=n_snap,
+        n_without_a_snap_share=len(rows) - n_snap,
+        appeared=sum(r['appeared'] for r in rows),
+        teams=len({r['t'] for r in rows}),
+        fields_the_walk_reads=['s', 'w', 't', 'pid', 'appeared', 'snap'],
+        coefficients_unchanged='appearance_r8.fit trains on s < season, so a '
+                               '2026 row cannot enter a 2026 fit',
+        detail=f'{len(rows)} observed {season} week {week} row(s) in R8 frame '
+               f'shape, {n_snap} with an offensive snap share')
