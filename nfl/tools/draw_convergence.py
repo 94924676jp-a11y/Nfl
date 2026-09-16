@@ -38,6 +38,11 @@ TOL_QUANTILE_REL_IQR = 0.02
 TOL_PROB_ABS = 0.01
 N_BATCHES = 20
 
+#: A quantile of a variable taking at most this many distinct integer values
+#: is flagged as a step function. It is NOT exempted -- see the note at the
+#: flag site and the secondary analysis at the end of `main`.
+DISCRETE_SUPPORT_MAX = 12
+
 QUANTILES = (10, 25, 75, 90)
 
 
@@ -86,9 +91,29 @@ def audit_run(run_dir):
                                            'converge'})
                         continue
                     tol = TOL_QUANTILE_REL_IQR * iqr
+                    # SMALL-SUPPORT INTEGER QUANTILES ARE FLAGGED, NOT
+                    # EXCUSED. A quantile of a variable supported on a handful
+                    # of integers is a STEP function: when the requested
+                    # quantile falls on a jump, its batch-to-batch variability
+                    # is a fraction of 1 and does NOT decay with n, because it
+                    # is a property of the discrete distribution rather than
+                    # Monte Carlo noise. Measured case: kicking/made_FG50+ p75
+                    # over support {0,1,2,3} with 75% mass at 0 -- IQR 0.25,
+                    # tolerance 0.005, MCSE 0.115 at every draw count tried.
+                    #
+                    # The predeclaration did not distinguish these from
+                    # continuous quantities, so they are still CHECKED and
+                    # still count against the decision. Excusing them here
+                    # would be relaxing a tolerance after seeing the data,
+                    # which the predeclaration forbids. The flag exists so the
+                    # NEXT predeclaration can be written correctly.
+                    disc = (len(np.unique(v)) <= DISCRETE_SUPPORT_MAX
+                            and np.allclose(v, np.rint(v)))
                     out.append({'key': f'{key}.p{q}', 'kind': 'quantile',
                                 'value': float(np.percentile(v, q)),
-                                'mcse': se, 'tol': tol, 'ok': se <= tol})
+                                'mcse': se, 'tol': tol, 'ok': se <= tol,
+                                'small_support_integer': bool(disc),
+                                'n_distinct': int(len(np.unique(v)))})
                 # P(zero) is published on every count metric.
                 se = mcse_batch(v, lambda a: float((a == 0).mean()))
                 out.append({'key': f'{key}.p_zero', 'kind': 'probability',
@@ -126,12 +151,35 @@ def main(argv=None):
                 k: sum(1 for r in bad if r['kind'] == k)
                 for k in ('mean', 'quantile', 'probability')},
         }
+        # SECONDARY, AND IT IS NOT THE DECISION. Restricting to quantities
+        # the criterion was designed for -- means, probabilities, and
+        # quantiles of variables with enough support for a quantile to be a
+        # continuous thing -- says what a CORRECTED predeclaration would
+        # choose. It is reported beside the decision, never in place of it.
+        cont = [r for r in checked
+                if not (r['kind'] == 'quantile'
+                        and r.get('small_support_integer'))]
+        cbad = [r for r in cont if not r['ok']]
+        cworst = max(cbad, key=lambda r: r['mcse'] / r['tol']) if cbad else None
+        report[n]['secondary_excluding_small_support_integer_quantiles'] = {
+            'is_not_the_decision': 'the predeclared criterion does not carve '
+                                   'these out. This says what a CORRECTED '
+                                   'predeclaration would choose, for the next '
+                                   'one to be written against.',
+            'n_checked': len(cont), 'n_failing': len(cbad),
+            'clears': not cbad,
+            'binding': ({'key': cworst['key'], 'mcse': round(cworst['mcse'], 6),
+                         'tolerance': round(cworst['tol'], 6)}
+                        if cworst else None)}
         print(f"n={n:6d}  checked {len(checked):5d}  failing {len(bad):5d}  "
               f"degenerate {len(na):4d}  "
               + (f"binding {worst['key']} "
                  f"({worst['mcse']:.4f} vs {worst['tol']:.4f})"
                  if worst else 'CLEARS'))
     ok = sorted(k for k, v in report.items() if v['clears'])
+    sec = sorted(k for k, v in report.items() if isinstance(v, dict)
+                 and v.get('secondary_excluding_small_support_integer_'
+                           'quantiles', {}).get('clears'))
     print()
     if ok:
         print(f'SMALLEST DRAW COUNT MEETING EVERY PREDECLARED TOLERANCE: '
@@ -146,6 +194,13 @@ def main(argv=None):
               'tolerance to make the last point work. The binding quantity at '
               'the largest n is named above.')
         report['chosen'] = None
+    print()
+    print('SECONDARY (NOT THE DECISION) -- excluding quantiles of variables '
+          'with at most '
+          f'{DISCRETE_SUPPORT_MAX} distinct integer values, whose quantiles '
+          'are step functions whose variability does not decay with n:')
+    print(f'  smallest clearing n: {sec[0] if sec else "none on this grid"}')
+    report['secondary_chosen'] = sec[0] if sec else None
     print(json.dumps(report, indent=1))
     return 0
 
