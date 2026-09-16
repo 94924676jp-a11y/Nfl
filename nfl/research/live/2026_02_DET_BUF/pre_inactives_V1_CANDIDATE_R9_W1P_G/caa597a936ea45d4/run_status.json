@@ -1,0 +1,660 @@
+{
+ "run_id": "caa597a936ea45d4",
+ "arm": "A",
+ "written_at": "2026-09-16T13:20:00Z",
+ "pipeline_version": "nfl-production-pipeline-1",
+ "status": "SEALED",
+ "elapsed_s": 188.8645,
+ "stages": [
+  {
+   "stage": "capture_validation",
+   "state": "PASS",
+   "code": "INPUTS_VALIDATED",
+   "detail": "",
+   "input_hashes": {
+    "depth_charts": "86e50d0cffc6b5c67777bdfd6523c7c17d349d40c3e6faea3a824c63555cc4dc",
+    "espn_injuries_json": "61972259f9220216bfbfbdb4c2cab0054bdca747f435bc67885f6ff18ed2b6dc",
+    "injuries": "66e960ec81fccc6e5f95d23644de3ab58255af6682ec4fee0a12d8fc14f86865",
+    "official_inactives": "88b9cb95c47e2d7262218c6cdadc596d7732e78d434d2e9af0f13bd5c193440b",
+    "official_injury_report": "bf5cdd52a73ae1b0469d6f621d5f0a13cf9bf576d588012e0421fbb26a52e76f",
+    "schedules": "844d406c6dffdbb71b897f7055615c91bbb232ab8a62ffcd10ccf2754adf44b8",
+    "weekly_rosters": "6ff9a4981106676ce0b8efb4d4b8ebf73129a8e32213761a6d8e2b25c4d0941e"
+   },
+   "spec_version": "nfl-production-pipeline-1",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 3.7670135498046875e-05,
+   "metrics": {},
+   "governance": [],
+   "spec_versions": {},
+   "warnings_detail": []
+  },
+  {
+   "stage": "identity_resolution",
+   "state": "PASS",
+   "code": "IDENTITY_RESOLVED",
+   "detail": "",
+   "input_hashes": {},
+   "spec_version": null,
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 3.886222839355469e-05,
+   "metrics": {},
+   "governance": [],
+   "spec_versions": {},
+   "warnings_detail": []
+  },
+  {
+   "stage": "feature_build",
+   "state": "DEFERRED",
+   "code": "STAGE_DECLARED_UNIMPLEMENTED",
+   "detail": "feature_build: the accepted research baseline 'prior-only, ordinal prefix cut' has no production implementation. Declared as debt rather than reported as a successful forecast.",
+   "input_hashes": {},
+   "spec_version": "prior-only, ordinal prefix cut",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 1.9311904907226562e-05,
+   "metrics": {},
+   "governance": [],
+   "spec_versions": {},
+   "warnings_detail": []
+  },
+  {
+   "stage": "team_environment",
+   "state": "PASS",
+   "code": "TEAM_ENVIRONMENT_OK",
+   "detail": "",
+   "input_hashes": {},
+   "spec_version": "team-volume-v1-p4b-frozen-1",
+   "warnings": [
+    "known limitation: team_volume_is_near_unforecastable"
+   ],
+   "refusal_code": null,
+   "elapsed_s": 0.7755923271179199,
+   "metrics": {},
+   "governance": [],
+   "spec_versions": {},
+   "warnings_detail": [
+    {
+     "layer": "team_volume",
+     "warning": "known limitation: team_volume_is_near_unforecastable"
+    }
+   ]
+  },
+  {
+   "stage": "appearance",
+   "state": "NOT_APPLICABLE",
+   "code": "ENGINE_LAYER_NOT_REPORTED",
+   "detail": "appearance: the engine ran layer(s) ['events_within_opportunity'] that no declared stage answers for, so their state would never reach the artifact. A layer nobody reports is a layer whose failure is invisible.",
+   "input_hashes": {},
+   "spec_version": "P3 appearance",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 163.15377235412598,
+   "metrics": {},
+   "governance": [],
+   "spec_versions": {},
+   "warnings_detail": []
+  },
+  {
+   "stage": "participation",
+   "state": "NOT_APPLICABLE",
+   "code": "ENGINE_LAYER_NOT_REPORTED",
+   "detail": "participation: the engine ran layer(s) ['events_within_opportunity'] that no declared stage answers for, so their state would never reach the artifact. A layer nobody reports is a layer whose failure is invisible.",
+   "input_hashes": {},
+   "spec_version": "Stage2 ewma_hl2; governance INFORMATION_CONSTRAINED",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 6.604194641113281e-05,
+   "metrics": {},
+   "governance": [],
+   "spec_versions": {},
+   "warnings_detail": []
+  },
+  {
+   "stage": "targets_carries",
+   "state": "NOT_APPLICABLE",
+   "code": "ENGINE_LAYER_NOT_REPORTED",
+   "detail": "targets_carries: the engine ran layer(s) ['events_within_opportunity'] that no declared stage answers for, so their state would never reach the artifact. A layer nobody reports is a layer whose failure is invisible.",
+   "input_hashes": {},
+   "spec_version": "P4C system C; governance DATA_BLOCKED",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 1.9550323486328125e-05,
+   "metrics": {},
+   "governance": [],
+   "spec_versions": {},
+   "warnings_detail": []
+  },
+  {
+   "stage": "conversion",
+   "state": "NOT_APPLICABLE",
+   "code": "ENGINE_LAYER_NOT_REPORTED",
+   "detail": "conversion: the engine ran layer(s) ['events_within_opportunity'] that no declared stage answers for, so their state would never reach the artifact. A layer nobody reports is a layer whose failure is invisible.",
+   "input_hashes": {},
+   "spec_version": "RC1 baseline; SIGNAL_WEAK; governance HOLD_CHARACTERIZED + CALIBRATION_DEFECT",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 1.4543533325195312e-05,
+   "metrics": {},
+   "governance": [],
+   "spec_versions": {},
+   "warnings_detail": []
+  },
+  {
+   "stage": "td_layer",
+   "state": "NOT_APPLICABLE",
+   "code": "ENGINE_LAYER_NOT_REPORTED",
+   "detail": "td_layer: the engine ran layer(s) ['events_within_opportunity'] that no declared stage answers for, so their state would never reach the artifact. A layer nobody reports is a layer whose failure is invisible.",
+   "input_hashes": {},
+   "spec_version": "TD2 pooled positional control; governance HOLD_TENTATIVE",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 1.3113021850585938e-05,
+   "metrics": {},
+   "governance": [],
+   "spec_versions": {},
+   "warnings_detail": []
+  },
+  {
+   "stage": "qb_layer",
+   "state": "PASS",
+   "code": "QB_LAYER_OK",
+   "detail": "",
+   "input_hashes": {},
+   "spec_version": "qb-v1-aggregate-then-allocate-1",
+   "warnings": [
+    "known limitation: multi_qb_over_prediction",
+    "known limitation: int_discrimination",
+    "known limitation: discrete_low_count_intervals"
+   ],
+   "refusal_code": null,
+   "elapsed_s": 2.47955322265625e-05,
+   "metrics": {
+    "n_qb_games": 4
+   },
+   "governance": [],
+   "spec_versions": {},
+   "warnings_detail": [
+    {
+     "layer": "qb_v1",
+     "warning": "known limitation: multi_qb_over_prediction"
+    },
+    {
+     "layer": "qb_v1",
+     "warning": "known limitation: int_discrimination"
+    },
+    {
+     "layer": "qb_v1",
+     "warning": "known limitation: discrete_low_count_intervals"
+    }
+   ]
+  },
+  {
+   "stage": "joint_reconciliation",
+   "state": "PASS",
+   "code": "JOINT_RECONCILED",
+   "detail": "",
+   "input_hashes": {},
+   "spec_version": "minimum-viable production coupling",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 2.1219253540039062e-05,
+   "metrics": {},
+   "governance": [],
+   "spec_versions": {},
+   "warnings_detail": []
+  },
+  {
+   "stage": "player_draws",
+   "state": "PASS",
+   "code": "DRAWS_BUILT",
+   "detail": "327000 draw cell(s) preserved across 50 matrix(es) on one draw index of 1000; 30 player quantile view(s) kept",
+   "input_hashes": {},
+   "spec_version": "nfl-player-draw-1",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 24.93022346496582,
+   "metrics": {},
+   "governance": [],
+   "spec_versions": {},
+   "warnings_detail": []
+  },
+  {
+   "stage": "scoring",
+   "state": "PASS",
+   "code": "SCORED",
+   "detail": "",
+   "input_hashes": {},
+   "spec_version": "deterministic",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 1.4543533325195312e-05,
+   "metrics": {},
+   "governance": [],
+   "spec_versions": {},
+   "warnings_detail": []
+  },
+  {
+   "stage": "artifact_sealing",
+   "state": "PASS",
+   "code": "ARTIFACT_SEALED",
+   "detail": "327000 draw cell(s) referenced by sha256; 10 of 12 hard invariant(s) were evaluated and hold; 2 carried as OWED: ['qb_cross_layer_reconciliation', 'qb_inactive_owns_nothing']; 2 diagnostic(s) not clean (recorded, not gating): ['nonqb_layer_availability', 'qb_known_limitations']",
+   "input_hashes": {},
+   "spec_version": "nfl-forecast-artifact-1",
+   "warnings": [],
+   "refusal_code": null,
+   "elapsed_s": 0.004509925842285156,
+   "metrics": {},
+   "governance": [],
+   "spec_versions": {},
+   "warnings_detail": []
+  }
+ ],
+ "n_refusals": 0,
+ "refusals": [],
+ "first_failure": null,
+ "draw_artifact": {
+  "sha256": "0fd33c919acf864b3577368814c9debe4e2aa906df3e59f3e58930d0b8d8075a",
+  "bytes": 181099,
+  "n_draws": 1000,
+  "n_matrices": 50,
+  "n_draw_cells": 327000,
+  "content_digest": "b8237412ac1d23e607c66c00831d620ac13b5d86122cee115251558fc933fc6b"
+ },
+ "accounting_verdicts": [
+  {
+   "invariant": "draw_artifact_integrity",
+   "class": "HARD",
+   "state": "PASS",
+   "code": "DRAW_ARTIFACT_VERIFIED"
+  },
+  {
+   "invariant": "draw_encoding_lossless",
+   "class": "HARD",
+   "state": "PASS",
+   "code": "DRAW_ENCODING_LOSSLESS"
+  },
+  {
+   "invariant": "draw_index_shared",
+   "class": "HARD",
+   "state": "PASS",
+   "code": "DRAW_INDEX_SHARED"
+  },
+  {
+   "invariant": "draw_set_non_empty",
+   "class": "HARD",
+   "state": "PASS",
+   "code": "DRAW_SET_PRESENT"
+  },
+  {
+   "invariant": "draw_summary_consistency",
+   "class": "HARD",
+   "state": "PASS",
+   "code": "SUMMARY_MATCHES_DRAWS"
+  },
+  {
+   "invariant": "nonqb_layer_availability",
+   "class": "DIAGNOSTIC",
+   "state": "FAIL",
+   "code": "NONQB_LAYERS_UNAVAILABLE"
+  },
+  {
+   "invariant": "qb_allocation_residual",
+   "class": "DIAGNOSTIC",
+   "state": "PASS",
+   "code": "QB_ALLOCATION_RESIDUAL_NONE"
+  },
+  {
+   "invariant": "qb_cross_layer_reconciliation",
+   "class": "HARD",
+   "state": "DEFERRED",
+   "code": "CROSS_LAYER_RECONCILIATION_NOT_RUN"
+  },
+  {
+   "invariant": "qb_dropback_identity",
+   "class": "HARD",
+   "state": "PASS",
+   "code": "QB_DROPBACK_IDENTITY_HOLDS"
+  },
+  {
+   "invariant": "qb_inactive_owns_nothing",
+   "class": "HARD",
+   "state": "DEFERRED",
+   "code": "QB_INACTIVE_OWNERSHIP_NOT_ESTABLISHED"
+  },
+  {
+   "invariant": "qb_known_limitations",
+   "class": "DIAGNOSTIC",
+   "state": "FAIL",
+   "code": "QB_LAYER_KNOWN_LIMITATIONS"
+  },
+  {
+   "invariant": "qb_per_draw_accounting",
+   "class": "HARD",
+   "state": "PASS",
+   "code": "QB_DRAW_ACCOUNTING_HOLDS"
+  },
+  {
+   "invariant": "qb_team_accounting",
+   "class": "HARD",
+   "state": "PASS",
+   "code": "QB_TEAM_ACCOUNTING_MEASURED"
+  },
+  {
+   "invariant": "rushing_single_owner",
+   "class": "HARD",
+   "state": "PASS",
+   "code": "A1_RUSH_OWNERSHIP_COMPOSED"
+  },
+  {
+   "invariant": "scramble_carry_coherence",
+   "class": "HARD",
+   "state": "PASS",
+   "code": "SC1_COHERENT"
+  }
+ ],
+ "draw_coherence": {
+  "state": "PASS",
+  "code": "DRAW_COHERENCE_HOLDS",
+  "detail": "5 component(s) evaluated and hold; 1 DEFERRED with the debt named: ['rushing']",
+  "spec_version": "nfl-draw-coherence-1",
+  "components": {
+   "carries": {
+    "state": "PASS",
+    "code": "CARRY_CONTAINMENT_MEASURED",
+    "diagnostics_not_clean": {},
+    "violations": {
+     "team_carry_allocation_containment": 0,
+     "team_qb_rush_opportunity_within_team_carries": 0,
+     "team_scrambles_within_team_carries": 0
+    },
+    "cells_checked": {
+     "team_carry_allocation_containment": 2000,
+     "team_qb_rush_opportunity_within_team_carries": 2000,
+     "team_scrambles_within_team_carries": 2000
+    },
+    "not_evaluated": []
+   },
+   "counts_non_negative": {
+    "state": "PASS",
+    "code": "COUNTS_NON_NEGATIVE",
+    "diagnostics_not_clean": {},
+    "violations": {
+     "counts_non_negative": 0
+    },
+    "cells_checked": {
+     "counts_non_negative": 128000
+    },
+    "not_evaluated": []
+   },
+   "qb": {
+    "state": "PASS",
+    "code": "QB_DRAW_COHERENCE_HOLDS",
+    "diagnostics_not_clean": {},
+    "violations": {
+     "qb_attempts_within_dropbacks": 0,
+     "qb_completions_and_interceptions_within_attempts": 0,
+     "qb_completions_within_attempts": 0,
+     "qb_dropback_partition": 0,
+     "qb_passing_td_within_attempts": 0,
+     "qb_passing_td_within_completions": 0,
+     "qb_rushing_td_within_rush_opportunity": 0,
+     "qb_zero_completions_zero_passing_yards": 0,
+     "qb_zero_rush_opportunity_zero_rushing_yards": 0
+    },
+    "cells_checked": {
+     "qb_attempts_within_dropbacks": 4000,
+     "qb_completions_and_interceptions_within_attempts": 4000,
+     "qb_completions_within_attempts": 4000,
+     "qb_dropback_partition": 4000,
+     "qb_passing_td_within_attempts": 4000,
+     "qb_passing_td_within_completions": 4000,
+     "qb_rushing_td_within_rush_opportunity": 4000,
+     "qb_zero_completions_zero_passing_yards": 4000,
+     "qb_zero_rush_opportunity_zero_rushing_yards": 4000
+    },
+    "not_evaluated": []
+   },
+   "receiving": {
+    "state": "PASS",
+    "code": "RECEIVING_DRAW_COHERENCE_HOLDS",
+    "diagnostics_not_clean": {},
+    "violations": {
+     "receiving_td_within_receptions": 0,
+     "receptions_within_targets": 0,
+     "zero_receptions_zero_receiving_yards": 0
+    },
+    "cells_checked": {
+     "receiving_td_within_receptions": 26000,
+     "receptions_within_targets": 26000,
+     "zero_receptions_zero_receiving_yards": 26000
+    },
+    "not_evaluated": []
+   },
+   "rushing": {
+    "state": "DEFERRED",
+    "code": "RUSHING_TD_WITHIN_CARRIES_DEFERRED",
+    "owed": {
+     "decision": "is `rushing/carries` a count or a continuous level? The product contract says count, MODELED; the stored array is non-integer in 0 of 7,000 cell(s) (0.0%).",
+     "owner": "the carry-allocation contract, not this file",
+     "blocks": "rushing_td_within_carries, which cannot be a HARD gate while its right-hand side is of undeclared type"
+    }
+   },
+   "team_closure": {
+    "state": "PASS",
+    "code": "TEAM_CLOSURE_HOLDS",
+    "diagnostics_not_clean": {},
+    "violations": {
+     "team_passing_line_closes_on_receiving": 0,
+     "team_targets_within_team_attempts": 0
+    },
+    "cells_checked": {
+     "team_passing_line_closes_on_receiving": 6000,
+     "team_targets_within_team_attempts": 2000
+    },
+    "not_evaluated": []
+   }
+  },
+  "registered_as_invariant": false,
+  "gating": false
+ },
+ "readiness": {
+  "DET": {
+   "team": "DET",
+   "state": "READY_BY_EARLY_VINTAGE_NO_LEAGUE_REPORT",
+   "reason": "NO club has an injuries row for 2026 week 2 in any capture retrieved at or before 2026-09-16T13:20:00+00:00. The report does not exist yet rather than DET being silent about it, so this is an EARLY vintage. It is NEVER read as absence of injury: every player keeps the availability uncertainty his own evidence carries.",
+   "n_rows": 0,
+   "newest_capture": null,
+   "projection_vintage": "EARLY",
+   "league_wide_absence": true,
+   "as_of": "2026-09-16T13:20:00+00:00"
+  },
+  "BUF": {
+   "team": "BUF",
+   "state": "READY_BY_EARLY_VINTAGE_NO_LEAGUE_REPORT",
+   "reason": "NO club has an injuries row for 2026 week 2 in any capture retrieved at or before 2026-09-16T13:20:00+00:00. The report does not exist yet rather than BUF being silent about it, so this is an EARLY vintage. It is NEVER read as absence of injury: every player keeps the availability uncertainty his own evidence carries.",
+   "n_rows": 0,
+   "newest_capture": null,
+   "projection_vintage": "EARLY",
+   "league_wide_absence": true,
+   "as_of": "2026-09-16T13:20:00+00:00"
+  }
+ },
+ "confidence_contract": {
+  "module": "nfl.product.confidence",
+  "dimensions": [
+   "input_completeness",
+   "role_certainty",
+   "distribution_width",
+   "status_certainty",
+   "layer_completeness"
+  ],
+  "weights": {
+   "input_completeness": 0.2,
+   "role_certainty": 0.2,
+   "distribution_width": 0.2,
+   "status_certainty": 0.2,
+   "layer_completeness": 0.2
+  },
+  "weights_note": "flat by design: no evidence yet says which dimension predicts a miss, and a fitted weighting with nothing behind it would be a silent constant",
+  "means": "confidence in the model and its inputs, NOT in the outcome"
+ },
+ "qb_inactive_ownership": {
+  "enforced": false,
+  "conditions": {
+   "official_inactive_evidence_ingested": false,
+   "evidence_tied_to_this_game_and_team": false,
+   "all_resolved_inactive_qbs_excluded": true,
+   "no_unresolved_identity": false,
+   "allocation_passes_accounting": true,
+   "forecast_generated_after_enforcement": true
+  },
+  "failed_conditions": [
+   "official_inactive_evidence_ingested",
+   "evidence_tied_to_this_game_and_team",
+   "no_unresolved_identity"
+  ],
+  "inactive_qbs_in_modelled_room": {},
+  "inactive_qbs_excluded": {},
+  "n_unmapped_official_names": null,
+  "unmapped_official_names": null,
+  "unresolved_qb_room_risk": {
+   "blocks_qb_enforcement": true,
+   "n_unresolved": null,
+   "blocking": [],
+   "cleared": [],
+   "reason": "the artifact does not report whether any official name went unresolved"
+  },
+  "closure_max_dev": 0.0,
+  "game_id": null,
+  "spec_version": "qb3-dropback-allocation-candidate-1",
+  "what_true_means": "the official list for BOTH clubs was ingested and tied to this game, every officially inactive quarterback the model carries was excluded from the allocation BEFORE the draw, no official name went unresolved, the shares close, and the forecast was built from this allocation.",
+  "what_true_does_not_mean": "it does not mean no quarterback is inactive, and it does not mean the projection is right. It means the inactive evidence was consumed by the mechanism that owns the share."
+ },
+ "qb3_configuration": {
+  "DET": {
+   "configuration": "AGREE",
+   "is_season_opener": true,
+   "prev_primary_pid": "00-0033106",
+   "prev_primary_ordinal": 202518,
+   "depth_chart_qb1": "00-0033106",
+   "n_qb_in_room": 2,
+   "week1_specification_defect": true,
+   "defect_id": "QB3_WEEK1_SEASON_BOUNDARY",
+   "defect_basis": "nfl/research/qb3/QB3_WEEK1_INCUMBENT_AUDIT.json. The previous primary comes from the prior season's final game, which is the game a club is most likely to rest its starter in, so the incumbent signal can name a rested or replaced quarterback and dilute the current QB1."
+  },
+  "BUF": {
+   "configuration": "NO_PREV_PRIMARY_IN_ROOM",
+   "is_season_opener": true,
+   "prev_primary_pid": "00-0033869",
+   "prev_primary_ordinal": 202518,
+   "depth_chart_qb1": "00-0034857",
+   "n_qb_in_room": 2,
+   "week1_specification_defect": true,
+   "defect_id": "QB3_WEEK1_SEASON_BOUNDARY",
+   "defect_basis": "nfl/research/qb3/QB3_WEEK1_INCUMBENT_AUDIT.json. The previous primary comes from the prior season's final game, which is the game a club is most likely to rest its starter in, so the incumbent signal can name a rested or replaced quarterback and dilute the current QB1."
+  }
+ },
+ "qb_pool_eligibility": null,
+ "qb_participation_limitation": null,
+ "qb_inactive_ownership_enforced": false,
+ "execution_identity": "caa597a936ea45d4ddd2e5f10ed2783275f92ea4f1ea4b8f58a9bc0a295e462d",
+ "code_commit": "45f0ff4cab46ff9011b3760a88d0a69bcbc8aee3+src1[23e4a5dea39426f2]",
+ "code_identity": {
+  "contract_version": "nfl-code-identity-1",
+  "commit": "45f0ff4cab46ff9011b3760a88d0a69bcbc8aee3",
+  "source_scope_sha256": "23e4a5dea39426f2c0e7c8d8800b1fd6f323bda568e966f113807414280212cc",
+  "source_scope_clean": false,
+  "dirty_source_files": [
+   {
+    "path": "nfl/production/candidate_mode.py",
+    "state": "PRESENT",
+    "sha256": "e7b7d516ce5d35ba14f17fec5001773e4c1cf90be5226dd0761eefa7aa3a848c",
+    "bytes": 58642
+   },
+   {
+    "path": "nfl/production/nonqb/gadget_rush.py",
+    "state": "PRESENT",
+    "sha256": "62e4e9476f642455e43bdc539b7d34c025b08242e295f98bec7e7ad7ad6d3df8",
+    "bytes": 13201
+   },
+   {
+    "path": "nfl/production/run_forecast.py",
+    "state": "PRESENT",
+    "sha256": "9cfd7ae24b0bc14425d5d1ae04957d35c4152ccfba2411f1be79fd89336007ea",
+    "bytes": 161087
+   }
+  ],
+  "n_dirty_source_files": 3,
+  "scope": {
+   "source_roots": [
+    "nfl/production",
+    "nfl/prospective",
+    "nfl/identity",
+    "nfl/product",
+    "nfl/schema",
+    "nfl/tools",
+    "sportsplatform"
+   ],
+   "source_suffixes": [
+    ".py"
+   ],
+   "excluded_subtrees": [
+    "nfl/prospective/q9shadow/dryrun",
+    "nfl/prospective/q9shadow/sealed",
+    "nfl/production/runs",
+    "nfl/derived",
+    "nfl/research",
+    "nfl/vintage"
+   ],
+   "generated_subtrees_excluded": [
+    "nfl/prospective/q9shadow/dryrun",
+    "nfl/prospective/q9shadow/sealed",
+    "nfl/production/runs",
+    "nfl/derived",
+    "nfl/research",
+    "nfl/vintage"
+   ],
+   "research_out_of_scope_why": "causal research modules are hashed by content into module_source_sha16, which is inside spec_sha256 (identity E), which is inside the fingerprint. Adding nfl/research/** to B would move every run id for thousands of non-causal files."
+  },
+  "runtime": {
+   "implementation": "CPython",
+   "python_version": "3.12.3",
+   "numpy_version": "2.5.3",
+   "platform": "Linux-6.18.44-fc-v33-x86_64-with-glibc2.39",
+   "thread_env": {
+    "OMP_NUM_THREADS": null,
+    "MKL_NUM_THREADS": null,
+    "OPENBLAS_NUM_THREADS": null,
+    "NUMEXPR_NUM_THREADS": null,
+    "VECLIB_MAXIMUM_THREADS": null
+   },
+   "hashed_keys": [
+    "implementation",
+    "python_version",
+    "numpy_version"
+   ],
+   "recorded_not_hashed_keys": [
+    "platform",
+    "thread_env"
+   ]
+  },
+  "runtime_token": "implementation=CPython+python_version=3.12.3+numpy_version=2.5.3",
+  "clean_source_sentinel_sha256": "44aa01d03783de1852e326ebdd9231dabf562583de6bdbd89c2a0d660b029a43",
+  "residual_gaps": [
+   "IMPORTED_RESEARCH_MODULES_NOT_IN_B: a research module that the sealing path imports but that is not one of the four in module_source_sha16 -- nfl.research.q7.panel and nfl.research.q8.audit are the live examples -- is in neither B nor E. Remedy: hash each imported module file by content into the candidate identity. That is candidate.py, not this module.",
+   "NON_PY_SOURCE_NOT_IN_B: a frozen parameter file under a source root (nfl/production/nonqb/frozen/*.json.gz) is not source by SOURCE_SUFFIXES. For Q9 these are covered by the candidate parameter hashes in E. Remedy elsewhere: seal the resolved path and sha256, which is WS18 F1.",
+   "THREAD_ENV_RECORDED_NOT_HASHED: promote to RUNTIME_HASHED_KEYS if and when a measured draw difference is attributed to thread count. Not before -- an unmeasured coefficient in an identity is a silent constant.",
+   "STAGING_NOT_DISTINGUISHED: B hashes worktree CONTENT, so a staged and an unstaged edit of identical bytes are the same identity. Deliberate: the bytes the interpreter reads are the bytes that matter."
+  ],
+  "code_version": "45f0ff4cab46ff9011b3760a88d0a69bcbc8aee3+src1[23e4a5dea39426f2]"
+ },
+ "dry_run": true,
+ "prospective_eligible": false,
+ "publication": {
+  "state": "BLOCKED",
+  "code": "NFL1_NOT_AUTHORIZED",
+  "detail": "NFL-1 is 'NOT AUTHORIZED' and G0A is '11/12'. A forecast may be COMPUTED and SEALED locally, but it may not be published. No test result, checklist state or caller flag can change this -- only an owne"
+ }
+}

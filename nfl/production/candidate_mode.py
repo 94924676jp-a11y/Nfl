@@ -50,10 +50,12 @@ V1_CANDIDATE_R13 = 'V1_CANDIDATE_R13'
 #: R9 name would be the accepted arm impersonated by an approximation, which is
 #: the defect this registry exists to prevent.
 V1_CANDIDATE_R9_W1P = 'V1_CANDIDATE_R9_W1P'
+V1_CANDIDATE_R9_W1P_G = 'V1_CANDIDATE_R9_W1P_G'
 MODES = (PRODUCTION_BASELINE, V1_CANDIDATE, V1_CANDIDATE_R5,
          V1_CANDIDATE_R6, V1_CANDIDATE_R7, V1_CANDIDATE_R8,
          V1_CANDIDATE_R9, V1_CANDIDATE_R10, V1_CANDIDATE_R11,
-         V1_CANDIDATE_R12, V1_CANDIDATE_R13, V1_CANDIDATE_R9_W1P)
+         V1_CANDIDATE_R12, V1_CANDIDATE_R13, V1_CANDIDATE_R9_W1P,
+         V1_CANDIDATE_R9_W1P_G)
 
 # Every mode that is a CANDIDATE, derived so a new one cannot escape a guard
 # by not being added to a hand-written list. See `assert_not_promoted`.
@@ -441,6 +443,51 @@ R9_W1P_REPAIR = {
         'same estimator over a DIFFERENT ESTIMAND and must never be reported '
         'as, compared against, or promoted in place of the accepted arm '
         'without the exact numerator.'),
+}
+
+R9_W1P_G_FLAGS = dict(R9_W1P_FLAGS)
+R9_W1P_G_FLAGS['allocate_gadget_rush'] = True
+
+R9_W1P_G_REPAIR = {
+    'component': 'R9_W1P_G',
+    'what': 'the kneel, wr and te rush categories are dealt to NAMED players '
+            'on the same board, on the same draw index, instead of reaching '
+            'the board as a team-level number with nobody on it',
+    'replaces': 'three categories of team rushing mass with no player. '
+                'Measured on the sealed DET-BUF board: BUF kneel 1.560 + wr '
+                '0.478 + te 0.058 and DET 0.641 + 0.584 + 0.040 carries per '
+                'draw belonging to no one',
+    'defect': 'a board that hides kneels overstates every quarterback rushing '
+              'line on a team that is ahead, because a kneel is an official '
+              'rush attempt that loses a yard or two; and a gadget carry with '
+              'no owner is a receiver rushing line that silently reads zero',
+    'evidence': (
+        'pre-cutoff: 2212 kneels, 100.0% taken by a quarterback and 83.2% by '
+        'the game\'s own primary passer; 2685 wr carries whose busiest '
+        'receiver takes a median 100% and mean 91.7% of a team-game; 203 te '
+        'carries at 99.0%. nfl/production/nonqb/GADGET_RUSH_FIT.json.'),
+    'coefficients': (
+        'ONE per category. Weights are own prior carries + alpha, with alpha '
+        'fitted by forward-scored log-loss of the actual owner: wr 0.75 '
+        '(loss 1.2612, n=2685), te 0.10 (loss 0.7411, n=203). Both interior '
+        'to the grid. The first criterion tried -- matching the mean '
+        'top-share -- is WITHDRAWN: it is monotone in alpha and returned the '
+        'grid boundary, where a player with no prior carry can never take '
+        'one.'),
+    'not_allocated': (
+        'fringe and the unmodelled-back pool stay unnamed. Of 132 pre-cutoff '
+        'fringe carries, 28 are defensive backs, 26 punters, 12 linebackers, '
+        '1 a kicker and 65 belong to 11 rushers with no position in any '
+        'source held -- none recoverable from panel_p3. Where an owner exists '
+        'he is on no offensive board. This is the correct answer, not a gap.'),
+    'known_limitation': (
+        'the allocation is slightly LESS concentrated than the real thing -- '
+        'simulated mean top-share 0.873 against an observed 0.917 for wr. '
+        'Reported rather than closed, because moving alpha to close it is the '
+        'moment-matching this component explicitly withdrew.'),
+    'governance': 'REHEARSAL_ONLY -- a closure change with its own identity, '
+                  'never an edit to R9_W1P',
+    'engine_flag': 'allocate_gadget_rush',
 }
 
 R10_FLAGS = {k: v for k, v in R9_FLAGS.items() if k != 'appearance_r8'}
@@ -873,6 +920,20 @@ def resolve(mode: str) -> Outcome:
                    'weeks-since-appearance feature carries a missingness '
                    'indicator and a monotone encoding, and the depth rank is '
                    'within-position on both sides of the fit')
+    if mode == V1_CANDIDATE_R9_W1P_G:
+        return Outcome.ok(
+            'MODE_V1_CANDIDATE_R9_W1P_G',
+            value={'mode': V1_CANDIDATE_R9_W1P_G,
+                   'flags': dict(R9_W1P_G_FLAGS),
+                   'components': manifest() + [R5_REPAIR, R6_REPAIR,
+                                               R8_REPAIR, R9_REPAIR,
+                                               R9_W1P_REPAIR,
+                                               R9_W1P_G_REPAIR],
+                   'candidate': True},
+            detail='R9_W1P with the kneel, wr and te rush categories dealt '
+                   'to named players. It changes what the board CLOSES over, '
+                   'so it takes its own identity rather than editing the arm '
+                   'it descends from')
     if mode == V1_CANDIDATE_R9_W1P:
         return Outcome.ok(
             'MODE_V1_CANDIDATE_R9_W1P',

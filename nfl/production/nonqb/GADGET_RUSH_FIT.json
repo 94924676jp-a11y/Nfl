@@ -1,0 +1,136 @@
+{
+ "spec_version": "gadget-rush-allocation-1",
+ "question": "the A1 rush categories kneel, wr and te reach the board with no player on them. Who actually takes those carries?",
+ "measured_pre_cutoff": {
+  "cut_ordinal": 202602,
+  "kneel": {
+   "n_carries": 2212,
+   "taken_by_a_quarterback": 1.0,
+   "taken_by_the_games_primary_passer": 0.832,
+   "no_dropback_recorded": 0.0
+  },
+  "wr": {
+   "n_carries": 2685,
+   "team_games_with_any": 1426,
+   "mean_per_such_game": 1.88,
+   "max_in_a_game": 22,
+   "mean_share_of_the_busiest_wr": 0.917,
+   "median_share": 1.0,
+   "distinct_rushers": 233
+  },
+  "te": {
+   "n_carries": 203,
+   "team_games_with_any": 170,
+   "mean_per_such_game": 1.19,
+   "max_in_a_game": 5,
+   "mean_share_of_the_busiest_te": 0.99,
+   "median_share": 1.0,
+   "distinct_rushers": 45
+  },
+  "fringe": {
+   "n_carries": 132,
+   "by_position": {
+    "DB": 28,
+    "P": 26,
+    "LB": 12,
+    "K": 1,
+    "NO_POSITION_IN_ANY_SOURCE": 65
+   },
+   "distinct_rushers_with_no_position": 11,
+   "recoverable_from_panel_p3": 0
+  }
+ },
+ "alpha_fit": {
+  "wr": {
+   "alpha": 0.75,
+   "mean_logloss": 1.261217,
+   "n_carries_scored": 2685,
+   "owner_not_in_pool": 0,
+   "sim_mean_top_share": 0.8727,
+   "actual_mean_top_share": 0.9169,
+   "interior_optimum": true,
+   "grid": [
+    0.02,
+    0.05,
+    0.1,
+    0.15,
+    0.2,
+    0.3,
+    0.4,
+    0.5,
+    0.75,
+    1.0,
+    1.5,
+    2.0,
+    3.0,
+    5.0
+   ]
+  },
+  "te": {
+   "alpha": 0.1,
+   "mean_logloss": 0.741068,
+   "n_carries_scored": 203,
+   "owner_not_in_pool": 0,
+   "sim_mean_top_share": 0.9794,
+   "actual_mean_top_share": 0.9895,
+   "interior_optimum": true,
+   "grid": [
+    0.02,
+    0.05,
+    0.1,
+    0.15,
+    0.2,
+    0.3,
+    0.4,
+    0.5,
+    0.75,
+    1.0,
+    1.5,
+    2.0,
+    3.0,
+    5.0
+   ]
+  }
+ },
+ "withdrawn_criterion": {
+  "what": "choosing alpha by matching the mean top-share of the busiest player",
+  "why": "the statistic is MONOTONE in alpha, so the criterion returned the smallest value on the grid every time (wr 0.02, the boundary). alpha = 0 asserts a player with no prior carry can never take one, which is false for every rookie and everyone who changed club. The moment-match hid exactly the failure it should have punished.",
+  "replaced_by": "mean log-loss of the ACTUAL owner under the weights, scored forward on team-games strictly after the prior that weights them. Proper, interior optimum, unbounded loss at alpha = 0."
+ },
+ "residual_under_the_fitted_alpha": {
+  "wr": {
+   "simulated_mean_top_share": 0.8727,
+   "observed": 0.9169,
+   "reading": "the allocation is slightly LESS concentrated than the real thing. Reported, not tuned away -- moving alpha to close this gap is the moment-matching just withdrawn."
+  },
+  "te": {
+   "simulated_mean_top_share": 0.9794,
+   "observed": 0.9895
+  }
+ },
+ "not_allocated": {
+  "fringe": "identity mostly does not exist, and where it does the owner is a defensive back, a punter or a linebacker who is on no offensive board. It stays unnamed and that is the correct answer.",
+  "unmodelled_back_pool": "by construction the backs OUTSIDE the modelled set. Naming it would mean inventing the back."
+ },
+ "unnamed_mass_before_this_change": {
+  "run": "DET-BUF sealed 1000-draw board, mean carries per draw",
+  "BUF": {
+   "kneel": 1.56,
+   "wr": 0.478,
+   "te": 0.058,
+   "fringe": 0.431,
+   "unmodelled_back_pool": 0.344,
+   "team_carries": 30.082,
+   "unnamed_fraction": 0.0954
+  },
+  "DET": {
+   "kneel": 0.641,
+   "wr": 0.584,
+   "te": 0.04,
+   "fringe": 0.162,
+   "unmodelled_back_pool": 0.325,
+   "team_carries": 29.213,
+   "unnamed_fraction": 0.06
+  }
+ }
+}

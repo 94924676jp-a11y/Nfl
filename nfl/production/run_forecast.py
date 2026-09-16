@@ -39,6 +39,8 @@ from nfl.production import qb_v1 as QBV1                             # noqa: E40
 from nfl.production import derived as DERIVED                       # noqa: E402
 from nfl.production import candidate_mode as CAND                   # noqa: E402
 from nfl.production import kicking as KICK                          # noqa: E402
+from nfl.production.nonqb import gadget_rush as GADGET              # noqa: E402
+from nfl.product import names as NAMES                              # noqa: E402
 from nfl.product import dk_scoring as DKS                           # noqa: E402
 from nfl.production import draws_artifact as DA                     # noqa: E402
 from nfl.identity import code_identity as CI                       # noqa: E402
@@ -2037,6 +2039,129 @@ def build(args, fixtures: dict = None) -> dict:
                         matrix_teams=sorted(teams),
                         declared_teams=sorted(_declared)))
 
+        # ---- THE RUSHING MASS THAT HAD NO PLAYER ---------------------
+        #
+        # A1 loses no carry -- every one lands in exactly one category. What
+        # it does not do is say WHO. kneel, wr and te reached the board as a
+        # team number with nobody on it: 2.87 of Buffalo's 30.08 carries and
+        # 1.75 of Detroit's 29.21. The kneels are the ones that bite, because
+        # a kneel is an official rush attempt that loses a yard, so hiding
+        # them overstates the rushing line of every quarterback whose team is
+        # ahead.
+        #
+        # THIS CHANGES WHAT THE BOARD CLOSES OVER, so it is gated on its own
+        # candidate identity and every frozen arm seals exactly what it
+        # sealed before. fringe and the unmodelled-back pool are NOT
+        # allocated: their owners are punters, defensive backs and players
+        # with no position in any source held, and inventing a name for them
+        # would be worse than the gap.
+        _gadget = {'allocated': {}, 'not_allocated': dict(GADGET.NOT_ALLOCATED)}
+        if ds.arrays and not fx.get('distributions') \
+                and (_mode['flags'] or {}).get('allocate_gadget_rush'):
+            _gord = int(args.season) * 100 + int(args.week)
+            _gfit = GADGET.fit(_gord)
+            if _gfit.state is not State.PASS:
+                _gadget['fit'] = f'{_gfit.state.value}[{_gfit.code}]'
+            else:
+                _gdoc = _gfit.value
+                _g_rows, _g_mats, _g_meta = [], {}, {}
+                _cat_rows = ds.layers.get('rush_category', {}).get(
+                    'row_ids') or []
+                for _t in _cat_rows:
+                    _ti = _cat_rows.index(_t)
+                    _mates = [g for g, tt in _team_of_player.items()
+                              if tt == _t]
+                    for _cat in GADGET.CATEGORIES:
+                        _mat = _p2.get(f'rush_category/{_cat}')
+                        if _mat is None:
+                            continue
+                        _al = GADGET.allocate(
+                            _gdoc, _t, _cat, _np.asarray(_mat)[_ti],
+                            _mates, int(args.seed), tag=f'{_gord}:{_t}')
+                        if _al.state is State.FAIL:
+                            return _fail(_al)
+                        if _al.state is not State.PASS:
+                            _gadget['allocated'][f'{_t}/{_cat}'] = \
+                                f'{_al.state.value}[{_al.code}]'
+                            continue
+                        for _j, _pid in enumerate(_al.value['row_ids']):
+                            _g_meta.setdefault(_pid, {})[_cat] = _t
+                            _g_mats.setdefault(_cat, {})[_pid] = \
+                                _al.value['counts'][_j]
+                        _gadget['allocated'][f'{_t}/{_cat}'] = {
+                            k: v for k, v in _al.as_dict()['evidence'].items()
+                            if k != 'value'}
+                    # KNEELS TO THE QUARTERBACK WHO THREW MOST IN THAT DRAW.
+                    _kn = _p2.get('rush_category/kneel')
+                    _qrows = (_p2_rows.get(_t) or {}).get('qb') or []
+                    if _kn is not None and _qrows and 'qb/db' in _p2:
+                        _qids = [(ds.layers['qb']['row_ids'])[_r]
+                                 for _r in _qrows]
+                        _kal = GADGET.kneels_to_primary_passer(
+                            _np.asarray(_kn)[_ti],
+                            _np.asarray(_p2['qb/db'])[list(_qrows)], _qids)
+                        if _kal.state is State.FAIL:
+                            return _fail(_kal)
+                        if _kal.state is State.PASS:
+                            for _j, _pid in enumerate(_kal.value['row_ids']):
+                                _g_mats.setdefault('kneel', {})[_pid] = \
+                                    _kal.value['counts'][_j]
+                        _gadget['allocated'][f'{_t}/kneel'] = {
+                            k: v for k, v in _kal.as_dict()['evidence'].items()
+                            if k != 'value'}
+                if _g_mats:
+                    # ONE LAYER, ONE ROW PER PLAYER, ONE COLUMN PER CATEGORY.
+                    # A player who takes only wr carries carries a zero row
+                    # for kneel, which is a real zero -- he did not kneel --
+                    # rather than an absence.
+                    _g_rows = sorted({p for c in _g_mats for p in _g_mats[c]})
+                    _mats2 = {
+                        c: _np.stack([_np.asarray(
+                            _g_mats[c].get(p, _np.zeros(int(ds.n_draws))),
+                            float) for p in _g_rows])
+                        for c in sorted(_g_mats)}
+                    o = ds.add_layer(
+                        'gadget_rush', _g_rows, _mats2, GADGET.SPEC_VERSION,
+                        'multinomial over the club\'s named players at the '
+                        'position, weights = own prior carries + fitted '
+                        'alpha; kneels by per-draw dropback argmax')
+                    if o.state is not State.PASS:
+                        return _fail(o)
+                    produced['gadget_rush'] = len(_g_rows)
+                    _p2_add('gadget_rush', _g_rows, _mats2,
+                            lambda g: _team_of_player.get(g))
+                    # THE ROWS ARE NAMED HERE, and three of them are why.
+                    # The allocation deals to the complete lawful participant
+                    # universe, which is WIDER than the displayed board: on
+                    # DET-BUF, three receivers took gadget carries while
+                    # appearing on no display row. That is correct football --
+                    # the board shows QB/RB/WR1-3/TE/K and the simulator must
+                    # not be limited to it -- but it means board.json cannot
+                    # name every gadget row, and reading team from there
+                    # returned None and made the conservation check look
+                    # broken. The identity is published with the layer.
+                    _pmeta = {q['gsis_id']: q for q in
+                              (fx.get('players') or []) if q.get('gsis_id')}
+                    _pmeta.update({r['gsis_id']: r for r in
+                                   (fx.get('qb_rows') or [])
+                                   if r.get('gsis_id')})
+                    # NAMES COME FROM THE SAME RESOLVER THE BOARD USES, and
+                    # an unresolved id stays the id. `nfl.product.names` is
+                    # display-only by contract -- no projection reads it --
+                    # and inventing a name is worse than printing an id.
+                    try:
+                        _nm = NAMES.lookup(args.written_at) or {}
+                    except Exception:                        # noqa: BLE001
+                        _nm = {}
+                    _gadget['rows'] = {
+                        g: {'team': _team_of_player.get(g),
+                            'name': _nm.get(g) or (_pmeta.get(g) or {}).get(
+                                'name') or g,
+                            'name_resolved': bool(_nm.get(g)),
+                            'position': (_pmeta.get(g) or {}).get('position')}
+                        for g in _g_rows}
+        fx['_gadget_rush'] = _gadget
+
         # ---- KICKING AND DRAFTKINGS SCORING, INSIDE THE SEAL --------
         #
         # THESE USED TO BE ASSEMBLED AFTER THE SEAL, and that was the defect.
@@ -2523,6 +2648,9 @@ def build(args, fixtures: dict = None) -> dict:
             # with no resolvable kicker are recorded here too, because a club
             # that produced no kicking line must be visible as such.
             'kicking': fx.get('_kicking') or {},
+            # WHO TOOK THE CARRIES THAT USED TO HAVE NOBODY, and
+            # which categories were deliberately left unnamed.
+            'gadget_rush': fx.get('_gadget_rush') or {},
             # THE CLOSURE PROOF, QUANTIFIED, IN THE ARTIFACT ITSELF. Every team
             # dropback belongs to exactly one quarterback on that team, and a
             # reader should not have to re-derive that from the draw matrices
