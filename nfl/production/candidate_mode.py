@@ -485,6 +485,20 @@ R9_W1P_G_REPAIR = {
         'simulated mean top-share 0.873 against an observed 0.917 for wr. '
         'Reported rather than closed, because moving alpha to close it is the '
         'moment-matching this component explicitly withdrew.'),
+    'opportunity_only_not_yards': (
+        'THIS ALLOCATES THE CARRY, NOT THE YARD. A kneel, a jet sweep and a '
+        'tight-end run now have a named owner and still contribute nothing to '
+        'his rushing yards, because the conversion draws on the RB pool over '
+        'the rushing layer and these carries are not in it. Measured '
+        'pre-cutoff: a kneel is -1.0922 yards (n=2212, sd 0.57, p50 -1.0), a '
+        'wr carry +5.5423 (n=2685, sd 7.72, p50 4.0, p90 14.0) and a te carry '
+        '+2.7044 (n=203). On this board that is about -1.64 rushing yards '
+        'missing from Josh Allen and +1.55 from Amon-Ra St. Brown. Small, and '
+        'NOT closed here: the wr distribution is a different animal from the '
+        'RB pool -- mean 5.54 against 4.29, with a far heavier tail -- so '
+        'converting these carries needs its own stratum, which is a further '
+        'closure change and therefore a further candidate, not an edit to '
+        'this one.'),
     'governance': 'REHEARSAL_ONLY -- a closure change with its own identity, '
                   'never an edit to R9_W1P',
     'engine_flag': 'allocate_gadget_rush',
