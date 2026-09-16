@@ -57,7 +57,7 @@ on 83,144 rows) returns:
 | Player | P(appear) |
 |---|---|
 | James Cook (BUF, RB1) | **0.7138** |
-| Ray Davis (BUF, RB2) | 0.9733 |
+| Ray Davis (BUF, RB2) | 0.8781 |
 | Jahmyr Gibbs (DET, RB1) | 0.9596 |
 
 Buffalo's starter is rated less likely to play than his own backup. Two facts

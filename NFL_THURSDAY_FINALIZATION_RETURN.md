@@ -226,10 +226,17 @@ Queried directly, the frozen P3 appearance mechanism returns:
 | Player | P(appear) |
 |---|---|
 | **James Cook (BUF, RB1)** | **0.7138** |
-| Ray Davis (BUF, RB2) | 0.9733 |
+| Ray Davis (BUF, RB2) | 0.8781 |
 | Jahmyr Gibbs (DET, RB1) | 0.9596 |
 
-Buffalo's starter is rated below his own backup. Two facts locate it: Cook's
+Buffalo's starter is rated below his own backup.
+> **Correction, 2026-09-16.** An earlier version of this file quoted Ray
+> Davis at P(appear) 0.9733. That figure was Brock Purdy's: I typed gsis
+> `00-0037834` (SF QB) instead of `00-0039875`. Ray Davis is **0.8781**. The
+> finding is unchanged -- Cook at 0.7138 is still below his own backup and
+> still essentially the training base rate of 0.6936 -- but the comparison
+> number was wrong and is corrected here and everywhere it appeared.
+ Two facts locate it: Cook's
 0.7138 is essentially the **training base rate, 0.6936** — the model is
 returning roughly what it returns for an unknown player rather than judging
 him — and **`n_with_an_injuries_row` is 0** for all three while 182 injury
