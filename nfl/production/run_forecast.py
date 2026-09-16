@@ -328,6 +328,18 @@ def build(args, fixtures: dict = None) -> dict:
                     f'extends the FROZEN mechanism and {named} names a '
                     f'different one. Pick one.')
             return 'frozen_2026panel'
+        # THE WEEK-1 UNION ROWS COMPOSE WITH R8 AND ONLY WITH R8. They are the
+        # same information the frozen panel carries, built on the population
+        # construction the R8 fit used, handed to the mechanism that has the
+        # forward-chained evidence. Asking for it without R8 is a
+        # configuration that names no mechanism for it to extend.
+        if flags.get('appearance_w1_union'):
+            if named != ['r8']:
+                raise ValueError(
+                    'APPEARANCE_SPEC_AMBIGUOUS: appearance_w1_union extends '
+                    f'R8 and this configuration names {named or "no "}'
+                    f'mechanism. Set appearance_r8.')
+            return 'r8_w1union'
         return named[0] if named else 'frozen'
 
     def _qb_dropback_budgets():

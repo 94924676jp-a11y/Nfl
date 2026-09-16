@@ -218,6 +218,28 @@ def _run_real(season, week, players, injuries_rows, seed, m, test_only,
                         kickoff_utc=kickoff_utc)
         mech = 'R8_RELIABILITY_WEIGHTED_LOGISTIC'
         spec = AR8.SPEC_VERSION
+    elif appearance_spec == 'r8_w1union':
+        # THE VALIDATED MECHANISM, GIVEN THE CURRENT SEASON. Same model, same
+        # coefficients -- `appearance_r8.fit` trains on `s < season`, so a
+        # 2026 row cannot enter a 2026 fit and `coef_sha256` is unmoved. What
+        # changes is that R8's history walk reaches the forecast season.
+        #
+        # The rows are the UNION construction: the observed panel plus the
+        # point-in-time depth chart, `appeared = 0` for a listed player with
+        # no offensive snap. The panel alone runs a 0.9265 week-1 base rate
+        # against a fitted 0.5390, and serving that skew moved a 100%-snap
+        # starter DOWN. The union reads 0.6275, inside the 0.4856-0.7476 range
+        # of the seasons the model was fitted on.
+        from nfl.production.nonqb import appearance_r8 as AR8
+        from nfl.production.nonqb import appearance_panel_2026 as AP26
+        _u = AP26.as_union_frame_rows(int(season), 1)
+        if _u.state is not State.PASS:
+            return _u
+        o = AR8.predict(season, week, players, injuries_rows,
+                        observed_before=observed_before,
+                        kickoff_utc=kickoff_utc, extra_rows=_u.value)
+        mech = 'R8_RELIABILITY_WEIGHTED_LOGISTIC_ON_2026_UNION_WEEK1'
+        spec = AP26.UNION_SPEC_VERSION
     elif appearance_spec == 'r7':
         from nfl.production.nonqb import appearance_r7 as AR7
         o = AR7.predict(season, week, players, injuries_rows,

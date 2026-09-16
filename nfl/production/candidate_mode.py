@@ -56,13 +56,15 @@ V1_CANDIDATE_R9_W1P_GS = 'V1_CANDIDATE_R9_W1P_GS'
 V1_CANDIDATE_R9_W1P_GSV = 'V1_CANDIDATE_R9_W1P_GSV'
 V1_CANDIDATE_R9_W1P_GSP = 'V1_CANDIDATE_R9_W1P_GSP'
 V1_CANDIDATE_R9_W1P_GSVP = 'V1_CANDIDATE_R9_W1P_GSVP'
+V1_CANDIDATE_R9_W1P_GSVU = 'V1_CANDIDATE_R9_W1P_GSVU'
 MODES = (PRODUCTION_BASELINE, V1_CANDIDATE, V1_CANDIDATE_R5,
          V1_CANDIDATE_R6, V1_CANDIDATE_R7, V1_CANDIDATE_R8,
          V1_CANDIDATE_R9, V1_CANDIDATE_R10, V1_CANDIDATE_R11,
          V1_CANDIDATE_R12, V1_CANDIDATE_R13, V1_CANDIDATE_R9_W1P,
          V1_CANDIDATE_R9_W1P_G, V1_CANDIDATE_R9_W1P_GA,
          V1_CANDIDATE_R9_W1P_GS, V1_CANDIDATE_R9_W1P_GSV,
-         V1_CANDIDATE_R9_W1P_GSP, V1_CANDIDATE_R9_W1P_GSVP)
+         V1_CANDIDATE_R9_W1P_GSP, V1_CANDIDATE_R9_W1P_GSVP,
+         V1_CANDIDATE_R9_W1P_GSVU)
 
 # Every mode that is a CANDIDATE, derived so a new one cannot escape a guard
 # by not being added to a hand-written list. See `assert_not_promoted`.
@@ -742,6 +744,49 @@ def _panel_only():
         'engine_flag': 'appearance_panel_2026'}
 
 
+#: GSVU -- THE REAL CHALLENGER. GSV plus the 2026 week-1 rows built on the
+#: SAME population construction R8 was fitted on. It differs from GSV in one
+#: declared flag, and it is the only arm in which the current season reaches
+#: the validated mechanism.
+R9_W1P_GSVU_FLAGS = dict(R9_W1P_GSV_FLAGS)
+R9_W1P_GSVU_FLAGS['appearance_w1_union'] = True
+
+W1_UNION_REPAIR = {
+    'component': 'W1U',
+    'what': 'R8`s history walk reaches the forecast season: the 2026 week-1 '
+            'rows are appended to its frame, built as the observed panel '
+            'UNION the point-in-time depth chart with appeared = 0 for a '
+            'listed player who took no offensive snap',
+    'replaces': 'a frame ending at 2025 week 18, a league-wide rest week, so '
+                'a week-2 forecast asked R8 what a player did most recently '
+                'and was answered with a game half the league sat out',
+    'not_the_panel_arm': 'the FROZEN mechanism`s injection used the panel '
+                         'ALONE, which is the snap-count file, and its week-1 '
+                         'base rate is 0.9265 against a fitted 0.5390. '
+                         'Serving that skew read a 100%-snap starter as '
+                         'evidence to LOWER him: Josh Allen 0.9625 to 0.8449, '
+                         'James Cook 0.8381 to 0.6299',
+    'evidence': 'union construction: 553 rows, 378 from the panel and 175 '
+                'added by the depth chart, base rate 0.6275, all 30 teams '
+                'charted point-in-time at their own week-1 kickoff. The '
+                'fitted seasons run 0.4856 (2025) to 0.7476 (2020), pooled '
+                '0.5390 over 4,176 rows, so the served population is inside '
+                'the range the model was fitted on rather than 0.39 above it',
+    'coefficients': 'NONE. appearance_r8.fit trains on s < season, so a 2026 '
+                    'row cannot enter a 2026 fit and coef_sha256 is '
+                    'identical with and without the injection',
+    'mechanism_unchanged': 'R8 keeps the forward-chained Brier record that '
+                           'the frozen challenger does not have. This adds '
+                           'information to it; it does not replace it',
+    'known_limitation': '`appeared = 0` means "listed and took no offensive '
+                        'snap". It cannot distinguish a healthy scratch from '
+                        'a dressed player who never got on the field -- and '
+                        'neither could the training frame, which is the point',
+    'governance': 'REHEARSAL_ONLY -- a frame change with its own identity, '
+                  'never an edit to R9_W1P_GSV',
+    'engine_flag': 'appearance_w1_union',
+}
+
 ABLATION_NOTE = {
     'arms': {'R9_W1P_GS': 'baseline: R8 appearance, old availability, C3',
              'R9_W1P_GSV': 'A1 only: repaired current availability',
@@ -1201,6 +1246,18 @@ def resolve(mode: str) -> Outcome:
                    'candidate': True},
             detail='the ablation BASELINE: R9_W1P_G plus SC2, so C3 completes '
                    'at any draw count. R8 appearance, old availability path')
+    if mode == V1_CANDIDATE_R9_W1P_GSVU:
+        return Outcome.ok(
+            'MODE_V1_CANDIDATE_R9_W1P_GSVU',
+            value={'mode': V1_CANDIDATE_R9_W1P_GSVU,
+                   'flags': dict(R9_W1P_GSVU_FLAGS),
+                   'components': _sc2_base() + [_avail_only(),
+                                                dict(W1_UNION_REPAIR)],
+                   'ablation': dict(ABLATION_NOTE),
+                   'candidate': True},
+            detail='THE CHALLENGER: GSV plus the 2026 week-1 rows on the '
+                   'population construction R8 was fitted on. One flag from '
+                   'GSV, same coefficients, validated mechanism')
     if mode == V1_CANDIDATE_R9_W1P_GSV:
         return Outcome.ok(
             'MODE_V1_CANDIDATE_R9_W1P_GSV',

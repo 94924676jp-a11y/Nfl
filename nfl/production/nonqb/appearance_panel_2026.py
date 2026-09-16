@@ -213,6 +213,141 @@ def by_id(season: int = 2026, week: int = 1):
 R8_ADAPTER_SPEC_VERSION = 'appearance-panel-2026w1-r8-frame-1'
 
 
+#: The offensive positions the R7/R8 frame keeps. Named here rather than
+#: imported so this module does not import the mechanism it feeds.
+FRAME_POS = ('QB', 'RB', 'WR', 'TE')
+
+UNION_SPEC_VERSION = 'appearance-panel-2026w1-union-1'
+
+
+def _kickoffs(season: int, week: int):
+    """(team) -> kickoff, for the point-in-time depth selection."""
+    from nfl.capture import coverage as C
+    p = C.load_week_plan(int(season), int(week))
+    if p.state is not State.PASS:
+        return None, p
+    out = {}
+    for c in p.value:
+        parts = str(c.game_id).split('_')
+        if len(parts) < 4:
+            continue
+        for t in (parts[2], parts[3]):
+            out[t] = c.kickoff_utc
+    return out, None
+
+
+def as_union_frame_rows(season: int = 2026, week: int = 1) -> Outcome:
+    """The week, built the way EVERY other week in the R7/R8 frame is built.
+
+    WHY THIS EXISTS. `as_r8_frame_rows` returns the observed panel alone, and
+    the panel comes from the snap-count file -- so a player who dressed and did
+    not take an offensive snap, or was a healthy scratch, has NO row. The frame
+    R8 was fitted on is the panel UNION the point-in-time depth chart, where he
+    has one with `appeared = 0`.
+
+    Measured, and this is the whole reason: the R7 frame's week-1 rows run a
+    base rate of 0.5390 over 4,176 rows. The panel alone is 0.9265 over 422. So
+    `n_cur = 1` at serve time was not the `n_cur = 1` the fit saw, and R8 --
+    which moves w = n_cur/(n_cur+k) = 0.4509 of its weight off the depth
+    listing the moment a player has one current-season game -- read a starter
+    who PLAYED as evidence to lower him. Josh Allen 0.9625 to 0.8449 on a 100%
+    snap share; James Cook 0.8381 to 0.6299 on 0.72.
+
+    THE DEPTH CHART IS SELECTED POINT-IN-TIME, at each team's own week-1
+    kickoff, from the captured 2026 vintage. It is not today's chart: a chart
+    captured after the game would be contaminated by it. If no lawful chart
+    predates a team's kickoff, that team is REPORTED as chart-less and
+    contributes only its panel rows -- the same treatment
+    `appearance_r7.build_frame` gives a team-week it cannot chart, and never a
+    fabricated zero.
+
+    `appeared = 0` here means "listed on the depth chart and took no offensive
+    snap". It does NOT mean "did not dress": the two are indistinguishable from
+    this evidence, and they were indistinguishable in training too, which is
+    the point -- the serve population has to be built the way the fit
+    population was, defects included.
+    """
+    o = build(int(season), int(week))
+    if o.state is not State.PASS:
+        return o
+    by_key, teams = {}, set()
+    n_panel_kept = n_panel_dropped_pos = 0
+    for r in o.value:
+        if not r.get('gsis_id') or not r.get('team'):
+            continue
+        if (r.get('position') or '').upper() not in FRAME_POS:
+            n_panel_dropped_pos += 1
+            continue
+        sn = r.get('snap_share') if r.get('snap_share_defined') else None
+        by_key[(r['team'], r['gsis_id'])] = {
+            's': int(r['season']), 'w': int(r['week']), 't': r['team'],
+            'pid': r['gsis_id'], 'pos': (r.get('position') or '').upper(),
+            'appeared': int(r['appeared']),
+            'snap': (None if sn is None else float(sn)),
+            'in_panel': True, 'rank': None}
+        teams.add(r['team'])
+        n_panel_kept += 1
+    if not by_key:
+        return Outcome.fail(
+            'APPEARANCE_2026_UNION_PANEL_EMPTY',
+            f'the {season} week {week} panel produced no row in {FRAME_POS} '
+            f'carrying both a gsis_id and a team.')
+
+    kicks, err = _kickoffs(int(season), int(week))
+    if kicks is None:
+        return err
+    from nfl.production.nonqb import depth_vintage as DV
+    added, no_chart, charted = 0, [], {}
+    for t in sorted(teams):
+        k = kicks.get(t)
+        if k is None:
+            no_chart.append({'team': t, 'code': 'NO_KICKOFF_IN_WEEK_PLAN'})
+            continue
+        cap = DV.captured([t], k)
+        if cap.state is not State.PASS:
+            no_chart.append({'team': t, 'code': cap.code})
+            continue
+        listed = cap.value or {}
+        charted[t] = str(k)
+        for pid, v in listed.items():
+            rank, pos = (v if isinstance(v, tuple) else (None, None))
+            key = (t, pid)
+            if key in by_key:
+                by_key[key]['rank'] = rank
+                continue
+            if (pos or '').upper() not in FRAME_POS:
+                continue
+            by_key[key] = {
+                's': int(season), 'w': int(week), 't': t, 'pid': pid,
+                'pos': (pos or '').upper(),
+                # LISTED AND TOOK NO OFFENSIVE SNAP. This is the row the
+                # snap-count file cannot contain, and its absence is what
+                # made the injected population 93% appearers.
+                'appeared': 0, 'snap': None, 'in_panel': False, 'rank': rank}
+            added += 1
+            
+    rows = sorted(by_key.values(), key=lambda r: (r['t'], r['pid']))
+    app = sum(r['appeared'] for r in rows)
+    return Outcome.ok(
+        'APPEARANCE_2026_UNION_FRAME_ROWS', value=rows,
+        spec_version=UNION_SPEC_VERSION,
+        n_rows=len(rows), n_from_panel=n_panel_kept,
+        n_added_by_depth_chart=added,
+        n_panel_rows_dropped_off_position=n_panel_dropped_pos,
+        appeared=app, base_rate=round(app / len(rows), 6),
+        n_teams=len(teams), n_teams_charted=len(charted),
+        n_teams_without_a_lawful_chart=len(no_chart),
+        teams_without_a_lawful_chart=no_chart[:8],
+        depth_selection='point-in-time at each team`s own week-1 kickoff, '
+                        'from the captured 2026 vintage',
+        construction='panel UNION point-in-time depth chart, appeared = 0 for '
+                     'a listed player with no offensive snap -- the same '
+                     'construction appearance_r7.build_frame uses for every '
+                     'other week',
+        detail=f'{len(rows)} row(s): {n_panel_kept} from the panel, {added} '
+               f'added by the depth chart; base rate {app / len(rows):.4f}')
+
+
 def as_r8_frame_rows(season: int = 2026, week: int = 1) -> Outcome:
     """The same observed rows, in the shape `appearance_r8`'s frame walk reads.
 
