@@ -12,7 +12,7 @@
   {
    "class": "HARD",
    "code": "DRAW_ARTIFACT_VERIFIED",
-   "detail": "50 matrix(es) re-read and hashed, one shared draw index of 1000",
+   "detail": "54 matrix(es) re-read and hashed, one shared draw index of 1000",
    "evaluator": "nfl.production.draws_artifact.verify",
    "invariant": "draw_artifact_integrity",
    "state": "PASS"
@@ -28,7 +28,7 @@
   {
    "class": "HARD",
    "code": "DRAW_INDEX_SHARED",
-   "detail": "all 50 matrix(es) share one draw index of width 1000",
+   "detail": "all 54 matrix(es) share one draw index of width 1000",
    "evaluator": "nfl.production.draws_artifact.verify",
    "invariant": "draw_index_shared",
    "state": "PASS"
@@ -36,7 +36,7 @@
   {
    "class": "HARD",
    "code": "DRAW_SET_PRESENT",
-   "detail": "50 matrix(es) from ['dk_scoring', 'gadget_rush', 'kicking', 'qb', 'receiving', 'rush_category', 'rush_player_pool', 'rushing', 'team_volume']",
+   "detail": "54 matrix(es) from ['dk_scoring', 'gadget_rush', 'kicking', 'qb', 'receiving', 'rush_category', 'rush_player_pool', 'rushing', 'rushing_total', 'team_volume']",
    "evaluator": "nfl.production.draws_artifact.DrawSet",
    "invariant": "draw_set_non_empty",
    "state": "PASS"
@@ -372,7 +372,7 @@
   "SC1"
  ],
  "candidate_components_not_reached": [],
- "code_commit": "9d3b9b2ff79523c6c3407f16f0612383c035d76c+src1[82ee625a33e931cc]",
+ "code_commit": "32a61be2d0a52c8db3c5eaff3306f392e035d033+src1[aaefe933c33865ef]",
  "completeness": "PARTIAL_PLAYER_COVERAGE",
  "contract_version": "nfl-forecast-artifact-1",
  "distributions": {
@@ -380,7 +380,7 @@
    "qb": {
     "att": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "qb/att",
       "n_draws": 1000,
       "row": 2
@@ -392,7 +392,7 @@
     },
     "cmp": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "qb/cmp",
       "n_draws": 1000,
       "row": 2
@@ -404,7 +404,7 @@
     },
     "db": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "qb/db",
       "n_draws": 1000,
       "row": 2
@@ -416,7 +416,7 @@
     },
     "int": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "qb/int",
       "n_draws": 1000,
       "row": 2
@@ -428,7 +428,7 @@
     },
     "ptd": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "qb/ptd",
       "n_draws": 1000,
       "row": 2
@@ -440,7 +440,7 @@
     },
     "pyds": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "qb/pyds",
       "n_draws": 1000,
       "row": 2
@@ -452,7 +452,7 @@
     },
     "rtd": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "qb/rtd",
       "n_draws": 1000,
       "row": 2
@@ -464,7 +464,7 @@
     },
     "rush_opp": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "qb/rush_opp",
       "n_draws": 1000,
       "row": 2
@@ -476,7 +476,7 @@
     },
     "ryds": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "qb/ryds",
       "n_draws": 1000,
       "row": 2
@@ -488,7 +488,7 @@
     },
     "sacks": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "qb/sacks",
       "n_draws": 1000,
       "row": 2
@@ -500,7 +500,7 @@
     },
     "scr": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "qb/scr",
       "n_draws": 1000,
       "row": 2
@@ -516,7 +516,7 @@
    "qb": {
     "att": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "qb/att",
       "n_draws": 1000,
       "row": 3
@@ -528,7 +528,7 @@
     },
     "cmp": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "qb/cmp",
       "n_draws": 1000,
       "row": 3
@@ -540,7 +540,7 @@
     },
     "db": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "qb/db",
       "n_draws": 1000,
       "row": 3
@@ -552,7 +552,7 @@
     },
     "int": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "qb/int",
       "n_draws": 1000,
       "row": 3
@@ -564,7 +564,7 @@
     },
     "ptd": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "qb/ptd",
       "n_draws": 1000,
       "row": 3
@@ -576,7 +576,7 @@
     },
     "pyds": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "qb/pyds",
       "n_draws": 1000,
       "row": 3
@@ -588,7 +588,7 @@
     },
     "rtd": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "qb/rtd",
       "n_draws": 1000,
       "row": 3
@@ -600,7 +600,7 @@
     },
     "rush_opp": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "qb/rush_opp",
       "n_draws": 1000,
       "row": 3
@@ -612,7 +612,7 @@
     },
     "ryds": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "qb/ryds",
       "n_draws": 1000,
       "row": 3
@@ -624,7 +624,7 @@
     },
     "sacks": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "qb/sacks",
       "n_draws": 1000,
       "row": 3
@@ -636,7 +636,7 @@
     },
     "scr": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "qb/scr",
       "n_draws": 1000,
       "row": 3
@@ -652,7 +652,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 0
@@ -664,7 +664,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 0
@@ -676,7 +676,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 0
@@ -688,7 +688,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 0
@@ -704,7 +704,7 @@
    "qb": {
     "att": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "qb/att",
       "n_draws": 1000,
       "row": 0
@@ -716,7 +716,7 @@
     },
     "cmp": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "qb/cmp",
       "n_draws": 1000,
       "row": 0
@@ -728,7 +728,7 @@
     },
     "db": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "qb/db",
       "n_draws": 1000,
       "row": 0
@@ -740,7 +740,7 @@
     },
     "int": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "qb/int",
       "n_draws": 1000,
       "row": 0
@@ -752,7 +752,7 @@
     },
     "ptd": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "qb/ptd",
       "n_draws": 1000,
       "row": 0
@@ -764,7 +764,7 @@
     },
     "pyds": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "qb/pyds",
       "n_draws": 1000,
       "row": 0
@@ -776,7 +776,7 @@
     },
     "rtd": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "qb/rtd",
       "n_draws": 1000,
       "row": 0
@@ -788,7 +788,7 @@
     },
     "rush_opp": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "qb/rush_opp",
       "n_draws": 1000,
       "row": 0
@@ -800,7 +800,7 @@
     },
     "ryds": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "qb/ryds",
       "n_draws": 1000,
       "row": 0
@@ -812,7 +812,7 @@
     },
     "sacks": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "qb/sacks",
       "n_draws": 1000,
       "row": 0
@@ -824,7 +824,7 @@
     },
     "scr": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "qb/scr",
       "n_draws": 1000,
       "row": 0
@@ -840,7 +840,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 12
@@ -852,7 +852,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 12
@@ -864,7 +864,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 12
@@ -876,7 +876,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 12
@@ -892,7 +892,7 @@
    "qb": {
     "att": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "qb/att",
       "n_draws": 1000,
       "row": 1
@@ -904,7 +904,7 @@
     },
     "cmp": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "qb/cmp",
       "n_draws": 1000,
       "row": 1
@@ -916,7 +916,7 @@
     },
     "db": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "qb/db",
       "n_draws": 1000,
       "row": 1
@@ -928,7 +928,7 @@
     },
     "int": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "qb/int",
       "n_draws": 1000,
       "row": 1
@@ -940,7 +940,7 @@
     },
     "ptd": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "qb/ptd",
       "n_draws": 1000,
       "row": 1
@@ -952,7 +952,7 @@
     },
     "pyds": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "qb/pyds",
       "n_draws": 1000,
       "row": 1
@@ -964,7 +964,7 @@
     },
     "rtd": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "qb/rtd",
       "n_draws": 1000,
       "row": 1
@@ -976,7 +976,7 @@
     },
     "rush_opp": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "qb/rush_opp",
       "n_draws": 1000,
       "row": 1
@@ -988,7 +988,7 @@
     },
     "ryds": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "qb/ryds",
       "n_draws": 1000,
       "row": 1
@@ -1000,7 +1000,7 @@
     },
     "sacks": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "qb/sacks",
       "n_draws": 1000,
       "row": 1
@@ -1012,7 +1012,7 @@
     },
     "scr": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "qb/scr",
       "n_draws": 1000,
       "row": 1
@@ -1028,7 +1028,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 13
@@ -1040,7 +1040,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 13
@@ -1052,7 +1052,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 13
@@ -1064,7 +1064,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 13
@@ -1080,7 +1080,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 1
@@ -1092,7 +1092,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 1
@@ -1104,7 +1104,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 1
@@ -1116,7 +1116,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 1
@@ -1132,7 +1132,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 14
@@ -1144,7 +1144,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 14
@@ -1156,7 +1156,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 14
@@ -1168,7 +1168,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 14
@@ -1184,7 +1184,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 2
@@ -1196,7 +1196,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 2
@@ -1208,7 +1208,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 2
@@ -1220,7 +1220,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 2
@@ -1236,7 +1236,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 3
@@ -1248,7 +1248,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 3
@@ -1260,7 +1260,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 3
@@ -1272,7 +1272,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 3
@@ -1288,7 +1288,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 15
@@ -1300,7 +1300,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 15
@@ -1312,7 +1312,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 15
@@ -1324,7 +1324,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 15
@@ -1340,7 +1340,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 4
@@ -1352,7 +1352,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 4
@@ -1364,7 +1364,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 4
@@ -1376,7 +1376,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 4
@@ -1392,7 +1392,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 16
@@ -1404,7 +1404,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 16
@@ -1416,7 +1416,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 16
@@ -1428,7 +1428,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 16
@@ -1442,7 +1442,7 @@
    "rushing": {
     "carries": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "rushing/carries",
       "n_draws": 1000,
       "row": 3
@@ -1454,7 +1454,7 @@
     },
     "rushing_td": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "rushing/rushing_td",
       "n_draws": 1000,
       "row": 3
@@ -1470,7 +1470,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 17
@@ -1482,7 +1482,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 17
@@ -1494,7 +1494,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 17
@@ -1506,7 +1506,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 17
@@ -1522,7 +1522,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 5
@@ -1534,7 +1534,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 5
@@ -1546,7 +1546,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 5
@@ -1558,7 +1558,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 5
@@ -1574,7 +1574,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 6
@@ -1586,7 +1586,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 6
@@ -1598,7 +1598,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 6
@@ -1610,7 +1610,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 6
@@ -1624,7 +1624,7 @@
    "rushing": {
     "carries": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "rushing/carries",
       "n_draws": 1000,
       "row": 0
@@ -1636,7 +1636,7 @@
     },
     "rushing_td": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "rushing/rushing_td",
       "n_draws": 1000,
       "row": 0
@@ -1652,7 +1652,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 18
@@ -1664,7 +1664,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 18
@@ -1676,7 +1676,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 18
@@ -1688,7 +1688,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 18
@@ -1704,7 +1704,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 7
@@ -1716,7 +1716,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 7
@@ -1728,7 +1728,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 7
@@ -1740,7 +1740,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 7
@@ -1756,7 +1756,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 8
@@ -1768,7 +1768,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 8
@@ -1780,7 +1780,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 8
@@ -1792,7 +1792,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 8
@@ -1806,7 +1806,7 @@
    "rushing": {
     "carries": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "rushing/carries",
       "n_draws": 1000,
       "row": 1
@@ -1818,7 +1818,7 @@
     },
     "rushing_td": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "rushing/rushing_td",
       "n_draws": 1000,
       "row": 1
@@ -1834,7 +1834,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 9
@@ -1846,7 +1846,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 9
@@ -1858,7 +1858,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 9
@@ -1870,7 +1870,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 9
@@ -1884,7 +1884,7 @@
    "rushing": {
     "carries": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "rushing/carries",
       "n_draws": 1000,
       "row": 2
@@ -1896,7 +1896,7 @@
     },
     "rushing_td": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "rushing/rushing_td",
       "n_draws": 1000,
       "row": 2
@@ -1912,7 +1912,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 19
@@ -1924,7 +1924,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 19
@@ -1936,7 +1936,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 19
@@ -1948,7 +1948,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 19
@@ -1962,7 +1962,7 @@
    "rushing": {
     "carries": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "rushing/carries",
       "n_draws": 1000,
       "row": 4
@@ -1974,7 +1974,7 @@
     },
     "rushing_td": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "rushing/rushing_td",
       "n_draws": 1000,
       "row": 4
@@ -1990,7 +1990,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 20
@@ -2002,7 +2002,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 20
@@ -2014,7 +2014,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 20
@@ -2026,7 +2026,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 20
@@ -2040,7 +2040,7 @@
    "rushing": {
     "carries": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "rushing/carries",
       "n_draws": 1000,
       "row": 5
@@ -2052,7 +2052,7 @@
     },
     "rushing_td": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "rushing/rushing_td",
       "n_draws": 1000,
       "row": 5
@@ -2068,7 +2068,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 21
@@ -2080,7 +2080,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 21
@@ -2092,7 +2092,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 21
@@ -2104,7 +2104,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 21
@@ -2120,7 +2120,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 22
@@ -2132,7 +2132,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 22
@@ -2144,7 +2144,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 22
@@ -2156,7 +2156,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 22
@@ -2172,7 +2172,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 23
@@ -2184,7 +2184,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 23
@@ -2196,7 +2196,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 23
@@ -2208,7 +2208,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 23
@@ -2224,7 +2224,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 10
@@ -2236,7 +2236,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 10
@@ -2248,7 +2248,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 10
@@ -2260,7 +2260,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 10
@@ -2276,7 +2276,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 11
@@ -2288,7 +2288,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 11
@@ -2300,7 +2300,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 11
@@ -2312,7 +2312,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 11
@@ -2328,7 +2328,7 @@
    "receiving": {
     "receiving_td": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_td",
       "n_draws": 1000,
       "row": 24
@@ -2340,7 +2340,7 @@
     },
     "receiving_yards": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receiving_yards",
       "n_draws": 1000,
       "row": 24
@@ -2352,7 +2352,7 @@
     },
     "receptions": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/receptions",
       "n_draws": 1000,
       "row": 24
@@ -2364,7 +2364,7 @@
     },
     "targets": {
      "draws_ref": {
-      "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+      "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
       "key": "receiving/targets",
       "n_draws": 1000,
       "row": 24
@@ -2382,7 +2382,7 @@
   "arrays": {
    "dk_scoring/dk_points": {
     "dtype": "float64",
-    "sha256": "36f36d565454e17bc7df90fe4b9300da3ab5e9461b1be7dc3dc3540d03b58b74",
+    "sha256": "1fb90728be7ef464756f56f70e7ade865b437898c5c46a6262389ca4de68a2b3",
     "shape": [
      29,
      1000
@@ -2396,6 +2396,14 @@
      1000
     ]
    },
+   "gadget_rush/kneel_yards": {
+    "dtype": "int16",
+    "sha256": "bdfc59c2b23f62be4b8931ed1de80b76f8febb72724941e0904d28413296d7fe",
+    "shape": [
+     21,
+     1000
+    ]
+   },
    "gadget_rush/te": {
     "dtype": "int16",
     "sha256": "708fd0eec89584e0b3bd5439d12ea0ef9a3c625a8ef0961bf804e2ed50a6afe7",
@@ -2404,9 +2412,25 @@
      1000
     ]
    },
+   "gadget_rush/te_yards": {
+    "dtype": "int16",
+    "sha256": "cd73030299a043973b4ebe614fc5c795bb84b47fcb7f0ff2cc5190a28f5cb3a2",
+    "shape": [
+     21,
+     1000
+    ]
+   },
    "gadget_rush/wr": {
     "dtype": "int16",
     "sha256": "a56e69c7e9e01a7291efd3fd9413bf1e4f64cbe33d52a6ad0052188c5624f66b",
+    "shape": [
+     21,
+     1000
+    ]
+   },
+   "gadget_rush/wr_yards": {
+    "dtype": "int16",
+    "sha256": "06349daefa7410d0257ccf22cdf25e6de7589927509862c6c63519e40c2630bd",
     "shape": [
      21,
      1000
@@ -2740,6 +2764,14 @@
      1000
     ]
    },
+   "rushing_total/rushing_yards": {
+    "dtype": "float64",
+    "sha256": "635c66b9f334752223084bb82e393ebc7fbd16c415d897bc8d1c03727913fb7a",
+    "shape": [
+     27,
+     1000
+    ]
+   },
    "team_volume/team_carries": {
     "dtype": "int16",
     "sha256": "b81690ad1570a982e657c3ab40bd4419f88c9ba161d90ab631bf28cf1a530e82",
@@ -2781,7 +2813,7 @@
     ]
    }
   },
-  "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+  "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
   "draw_artifact_version": "nfl-draw-artifact-1",
   "draw_index_semantics": {
    "across_rows": "INDEPENDENT_STREAMS_COLUMN_ALIGNED",
@@ -2789,9 +2821,9 @@
    "within_row_across_metrics": "SAME_SIMULATED_WORLD"
   },
   "file": {
-   "bytes": 171578,
+   "bytes": 190423,
    "name": "player_draws.npz",
-   "sha256": "b48c0f568ec48b4e421acb72f463b0f40d6458ac4c06f57b7d30076220392c3e"
+   "sha256": "b7a8817d34b78be02e69a31236514a373b2ad0d56766557e55b125b7be589090"
   },
   "game_id": "2026_02_DET_BUF",
   "layers": {
@@ -2872,8 +2904,11 @@
    "gadget_rush": {
     "metrics": [
      "kneel",
+     "kneel_yards",
      "te",
-     "wr"
+     "te_yards",
+     "wr",
+     "wr_yards"
     ],
     "rng_stream": "multinomial over the club's named players at the position, weights = own prior carries + fitted alpha; kneels by per-draw dropback argmax",
     "row_axis": "gsis_id",
@@ -3134,6 +3169,76 @@
     ],
     "spec_version": "nfl-nonqb-rushing-1"
    },
+   "rushing_total": {
+    "metrics": [
+     "rushing_yards"
+    ],
+    "rng_stream": "the sum of every rushing yard this player owns, on the shared draw index; no randomness of its own",
+    "row_axis": "gsis_id",
+    "row_ids": [
+     "00-0033106",
+     "00-0033949",
+     "00-0034270",
+     "00-0034577",
+     "00-0034827",
+     "00-0034857",
+     "00-0035500",
+     "00-0035544",
+     "00-0035689",
+     "00-0036754",
+     "00-0036963",
+     "00-0036988",
+     "00-0037240",
+     "00-0037248",
+     "00-0037261",
+     "00-0037524",
+     "00-0038896",
+     "00-0038933",
+     "00-0039065",
+     "00-0039139",
+     "00-0039364",
+     "00-0039471",
+     "00-0039875",
+     "00-0039901",
+     "00-0040194",
+     "00-0040363",
+     "00-0040669"
+    ],
+    "row_teams": [
+     "DET",
+     "DET",
+     "DET",
+     "BUF",
+     "BUF",
+     "BUF",
+     "BUF",
+     "DET",
+     "BUF",
+     "DET",
+     "DET",
+     "BUF",
+     "DET",
+     "BUF",
+     "BUF",
+     "DET",
+     "DET",
+     "BUF",
+     "DET",
+     "DET",
+     "DET",
+     "BUF",
+     "BUF",
+     "BUF",
+     "BUF",
+     "BUF",
+     "DET"
+    ],
+    "shape": [
+     27,
+     1000
+    ],
+    "spec_version": "rushing-total-1"
+   },
    "team_volume": {
     "metrics": [
      "team_carries",
@@ -3155,18 +3260,18 @@
     "spec_version": "team-volume-v1-p4b-frozen-1"
    }
   },
-  "n_draw_cells": 310000,
+  "n_draw_cells": 400000,
   "n_draws": 1000,
-  "n_layers": 9,
-  "n_matrices": 50,
+  "n_layers": 10,
+  "n_matrices": 54,
   "rng": {
    "generator": "numpy.random.default_rng (PCG64)",
    "seed": 20260908,
    "seed_protocol": "per-row seed 20260908"
   },
-  "run_id": "36da6fc8b7ef6854"
+  "run_id": "0ca97cd57ba78a14"
  },
- "draw_artifact_sha256": "b48c0f568ec48b4e421acb72f463b0f40d6458ac4c06f57b7d30076220392c3e",
+ "draw_artifact_sha256": "b7a8817d34b78be02e69a31236514a373b2ad0d56766557e55b125b7be589090",
  "eligibility_verdict": "V1_CANDIDATE|APPLIED:A1,A3G,C0,C3,R2,R5,R6,R9,SC1|NOT_REACHED:|PARTIAL|PRODUCED:qb_layer|ABSENT:appearance,conversion,feature_build,participation,targets_carries,td_layer",
  "excluded_unidentified": [],
  "feature_set_hash": "4d2eda3e88818e2ad5a78e146c4e2f48",
@@ -3410,6 +3515,26 @@
     "position": "WR",
     "team": "DET"
    }
+  },
+  "yard_strata": {
+   "kneel": {
+    "mean": -1.092224,
+    "n_carries": 2212,
+    "p_exp": 0.0,
+    "p_stuff": 1.0
+   },
+   "te": {
+    "mean": 2.705882,
+    "n_carries": 204,
+    "p_exp": 0.058824,
+    "p_stuff": 0.259804
+   },
+   "wr": {
+    "mean": 5.542379,
+    "n_carries": 2690,
+    "p_exp": 0.201115,
+    "p_stuff": 0.205204
+   }
   }
  },
  "game_id": "2026_02_DET_BUF",
@@ -3617,6 +3742,146 @@
   "violating_cells": 0,
   "worst_absolute_deviation": 0.0
  },
+ "rushing_total": {
+  "closure": "player rushing yards == sum of every rushing event he owns, EXACT to 1e-6 on every player and every draw",
+  "components": [
+   "qb/ryds",
+   "rushing/rushing_yards",
+   "gadget_rush/kneel_yards",
+   "gadget_rush/wr_yards",
+   "gadget_rush/te_yards"
+  ],
+  "mean_parts": {
+   "00-0033106": {
+    "gadget_rush/kneel_yards": -0.687,
+    "gadget_rush/te_yards": 0.0,
+    "gadget_rush/wr_yards": 0.0,
+    "qb/ryds": 5.0404
+   },
+   "00-0033949": {
+    "gadget_rush/kneel_yards": -0.021,
+    "gadget_rush/te_yards": 0.0,
+    "gadget_rush/wr_yards": 0.0,
+    "qb/ryds": 1.5751
+   },
+   "00-0034270": {
+    "gadget_rush/kneel_yards": 0.0,
+    "gadget_rush/te_yards": 0.015,
+    "gadget_rush/wr_yards": 0.0
+   },
+   "00-0034577": {
+    "gadget_rush/kneel_yards": -0.07,
+    "gadget_rush/te_yards": 0.0,
+    "gadget_rush/wr_yards": 0.0,
+    "qb/ryds": 0.6055
+   },
+   "00-0034827": {
+    "gadget_rush/kneel_yards": 0.0,
+    "gadget_rush/te_yards": 0.0,
+    "gadget_rush/wr_yards": 0.316
+   },
+   "00-0034857": {
+    "gadget_rush/kneel_yards": -1.621,
+    "gadget_rush/te_yards": 0.0,
+    "gadget_rush/wr_yards": 0.0,
+    "qb/ryds": 33.1931
+   },
+   "00-0035500": {
+    "gadget_rush/kneel_yards": 0.0,
+    "gadget_rush/te_yards": 0.0,
+    "gadget_rush/wr_yards": 0.176
+   },
+   "00-0035544": {
+    "gadget_rush/kneel_yards": 0.0,
+    "gadget_rush/te_yards": 0.0,
+    "gadget_rush/wr_yards": 0.005
+   },
+   "00-0035689": {
+    "gadget_rush/kneel_yards": 0.0,
+    "gadget_rush/te_yards": 0.025,
+    "gadget_rush/wr_yards": 0.0
+   },
+   "00-0036754": {
+    "gadget_rush/kneel_yards": 0.0,
+    "gadget_rush/te_yards": 0.025,
+    "gadget_rush/wr_yards": 0.0
+   },
+   "00-0036963": {
+    "gadget_rush/kneel_yards": 0.0,
+    "gadget_rush/te_yards": 0.0,
+    "gadget_rush/wr_yards": 1.566
+   },
+   "00-0036988": {
+    "gadget_rush/kneel_yards": 0.0,
+    "gadget_rush/te_yards": 0.0,
+    "gadget_rush/wr_yards": 0.208
+   },
+   "00-0037240": {
+    "gadget_rush/kneel_yards": 0.0,
+    "gadget_rush/te_yards": 0.0,
+    "gadget_rush/wr_yards": 1.277
+   },
+   "00-0037248": {
+    "rushing/rushing_yards": 60.67
+   },
+   "00-0037261": {
+    "gadget_rush/kneel_yards": 0.0,
+    "gadget_rush/te_yards": 0.0,
+    "gadget_rush/wr_yards": 1.624
+   },
+   "00-0037524": {
+    "gadget_rush/kneel_yards": 0.0,
+    "gadget_rush/te_yards": 0.0,
+    "gadget_rush/wr_yards": 0.025
+   },
+   "00-0038896": {
+    "rushing/rushing_yards": 0.0
+   },
+   "00-0038933": {
+    "gadget_rush/kneel_yards": 0.0,
+    "gadget_rush/te_yards": 0.027,
+    "gadget_rush/wr_yards": 0.0
+   },
+   "00-0039065": {
+    "gadget_rush/kneel_yards": 0.0,
+    "gadget_rush/te_yards": 0.089,
+    "gadget_rush/wr_yards": 0.0
+   },
+   "00-0039139": {
+    "rushing/rushing_yards": 100.613
+   },
+   "00-0039364": {
+    "rushing/rushing_yards": 7.458
+   },
+   "00-0039471": {
+    "rushing/rushing_yards": 15.223
+   },
+   "00-0039875": {
+    "rushing/rushing_yards": 16.054
+   },
+   "00-0039901": {
+    "gadget_rush/kneel_yards": 0.0,
+    "gadget_rush/te_yards": 0.0,
+    "gadget_rush/wr_yards": 0.403
+   },
+   "00-0040194": {
+    "gadget_rush/kneel_yards": 0.0,
+    "gadget_rush/te_yards": 0.042,
+    "gadget_rush/wr_yards": 0.0
+   },
+   "00-0040363": {
+    "gadget_rush/kneel_yards": 0.0,
+    "gadget_rush/te_yards": 0.043,
+    "gadget_rush/wr_yards": 0.0
+   },
+   "00-0040669": {
+    "gadget_rush/kneel_yards": 0.0,
+    "gadget_rush/te_yards": 0.0,
+    "gadget_rush/wr_yards": 0.036
+   }
+  },
+  "n_players": 27
+ },
  "seed_protocol": "per-row seed 20260908",
  "source_captures": [
   {
@@ -3655,7 +3920,7 @@
    "source": "weekly_rosters"
   }
  ],
- "spec_hash": "36da6fc8b7ef6854",
+ "spec_hash": "0ca97cd57ba78a14",
  "team_draw_row_index": {
   "BUF": 0,
   "DET": 1
@@ -3664,5 +3929,5 @@
   "DET",
   "BUF"
  ],
- "written_at": "2026-09-16T15:54:17Z"
+ "written_at": "2026-09-16T16:12:28Z"
 }

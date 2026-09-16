@@ -2193,6 +2193,27 @@ def build(args, fixtures: dict = None) -> dict:
                         _gadget['allocated'][f'{_t}/kneel'] = {
                             k: v for k, v in _kal.as_dict()['evidence'].items()
                             if k != 'value'}
+                # NAMED CARRIES MUST OWN NAMED YARDS. Allocating the carry
+                # and leaving the yard behind was the gap this closes: a
+                # kneel LOSES 1.09 yards and a jet sweep gains 5.54 against
+                # an RB pool mean of 4.29, so routing either through the RB
+                # pool would have been worse than the gap it filled.
+                if _g_mats:
+                    from nfl.production.nonqb import rushing_conversion as RCV
+                    _gp = RCV.gadget_pools(_gord)
+                    if _gp.state is not State.PASS:
+                        return _fail(_gp)
+                    _gpv = _gp.value
+                    for _cat in list(_g_mats):
+                        if _cat not in RCV.GADGET_STRATA:
+                            continue
+                        for _pid, _cnt in list(_g_mats[_cat].items()):
+                            _g_mats.setdefault(_cat + '_yards', {})[_pid] = \
+                                RCV.gadget_yards_for(
+                                    _cnt, _cat, _gpv, int(args.seed),
+                                    f'{_gord}:{_pid}')
+                    _gadget['yard_strata'] = _gp.as_dict()['evidence'][
+                        'provenance']['strata']
                 if _g_mats:
                     # ONE LAYER, ONE ROW PER PLAYER, ONE COLUMN PER CATEGORY.
                     # A player who takes only wr carries carries a zero row
@@ -2348,6 +2369,89 @@ def build(args, fixtures: dict = None) -> dict:
                             lambda g: _k_meta.get(g, {}).get('team'))
             fx['_kicking'] = _kick_notes
 
+            # ---- EVERY RUSHING YARD A PLAYER OWNS, IN ONE PLACE ---------
+            #
+            # A player's rushing yards were spread across up to three layers:
+            # `rushing` (RB carries), `qb` (scrambles and designed runs), and
+            # now `gadget_rush` (kneels, jet sweeps, tight-end runs). Nothing
+            # published their SUM, so "his rushing yards" had no single answer
+            # and DraftKings scored an incomplete one.
+            _rt_rows, _rt_tot, _rt_parts = [], {}, {}
+            if ds.arrays and not fx.get('distributions'):
+                _cand = set()
+                for _lay in ('qb', 'rushing', 'gadget_rush'):
+                    _cand.update(ds.layers.get(_lay, {}).get('row_ids') or [])
+
+                def _parts_of(pid):
+                    """Every rushing-yard vector this player owns."""
+                    out = {}
+                    for lay, met in (('qb', 'ryds'),
+                                     ('rushing', 'rushing_yards')):
+                        r = ds.row_index(lay, pid)
+                        if r is not None and f'{lay}/{met}' in ds.arrays:
+                            out[f'{lay}/{met}'] = ds.vector(lay, met, r)
+                    r = ds.row_index('gadget_rush', pid)
+                    if r is not None:
+                        for cat in ('kneel', 'wr', 'te'):
+                            k = f'gadget_rush/{cat}_yards'
+                            if k in ds.arrays:
+                                out[k] = ds.vector('gadget_rush',
+                                                   f'{cat}_yards', r)
+                    return out
+
+                for _pid in sorted(_cand):
+                    _pv = _parts_of(_pid)
+                    if not _pv:
+                        continue
+                    _rt_rows.append(_pid)
+                    _rt_tot[_pid] = sum(_pv.values())
+                    _rt_parts[_pid] = {k: round(float(v.mean()), 4)
+                                       for k, v in _pv.items()}
+                if _rt_rows:
+                    o = ds.add_layer(
+                        'rushing_total', _rt_rows,
+                        {'rushing_yards': _np.stack(
+                            [_rt_tot[g] for g in _rt_rows])},
+                        'rushing-total-1',
+                        'the sum of every rushing yard this player owns, on '
+                        'the shared draw index; no randomness of its own',
+                        row_teams={g: _team_of_player.get(g)
+                                   for g in _rt_rows})
+                    if o.state is not State.PASS:
+                        return _fail(o)
+                    produced['rushing_total'] = len(_rt_rows)
+                    # ASSERTED, NOT TRUSTED. Per player, per draw, the
+                    # published total equals the sum of its parts --
+                    # recomputed from the SEALED matrices rather than from the
+                    # variable that built them, because checking an
+                    # intermediate value is the defect this file has already
+                    # paid for. A tolerance, not ==: these are float sums.
+                    _bad = []
+                    for _pid in _rt_rows:
+                        _chk = sum(_parts_of(_pid).values())
+                        _i = ds.row_index('rushing_total', _pid)
+                        _d = float(_np.abs(
+                            _chk - ds.vector('rushing_total',
+                                             'rushing_yards', _i)).max())
+                        if _d > 1e-6:
+                            _bad.append({'gsis_id': _pid, 'max_abs_dev': _d})
+                    if _bad:
+                        return _fail(Outcome.fail(
+                            'RUSHING_TOTAL_DOES_NOT_CLOSE',
+                            f'{len(_bad)} player(s) publish a rushing-yard '
+                            f'total that is not the sum of the rushing events '
+                            f'they own.', players=_bad[:8]))
+                    fx['_rushing_total'] = {
+                        'n_players': len(_rt_rows),
+                        'closure': 'player rushing yards == sum of every '
+                                   'rushing event he owns, EXACT to 1e-6 on '
+                                   'every player and every draw',
+                        'components': ['qb/ryds', 'rushing/rushing_yards',
+                                       'gadget_rush/kneel_yards',
+                                       'gadget_rush/wr_yards',
+                                       'gadget_rush/te_yards'],
+                        'mean_parts': _rt_parts}
+
             # ---- ONE DRAFTKINGS POINT TOTAL PER SKILL PLAYER ------------
             #
             # Scored from the sealed matrices, on the shared draw index, so a
@@ -2358,19 +2462,23 @@ def build(args, fixtures: dict = None) -> dict:
             # bonus, not none of it.
             _dk_rows, _dk_vecs = [], []
             _all_ids = []
-            for _lay in ('qb', 'receiving', 'rushing'):
+            for _lay in ('qb', 'receiving', 'rushing', 'rushing_total'):
                 _all_ids.extend(ds.layers.get(_lay, {}).get('row_ids') or [])
             for _pid in sorted(set(_all_ids)):
                 _kw = {}
                 for _lay, _pairs in (
+                        # `qb/ryds` AND `rushing/rushing_yards` ARE NOT
+                        # SCORED HERE. Both are COMPONENTS of rushing_total,
+                        # which is scored instead; taking a component and the
+                        # total would pay the same yard twice.
                         ('qb', (('pass_yds', 'pyds'), ('pass_td', 'ptd'),
-                                ('ints', 'int'), ('rush_yds', 'ryds'),
-                                ('rush_td', 'rtd'))),
+                                ('ints', 'int'), ('rush_td', 'rtd'))),
                         ('receiving', (('rec', 'receptions'),
                                        ('rec_yds', 'receiving_yards'),
                                        ('rec_td', 'receiving_td'))),
-                        ('rushing', (('rush_yds', 'rushing_yards'),
-                                     ('rush_td', 'rushing_td')))):
+                        ('rushing', (('rush_td', 'rushing_td'),)),
+                        ('rushing_total',
+                         (('rush_yds', 'rushing_yards'),))):
                     _r = ds.row_index(_lay, _pid)
                     if _r is None:
                         continue
@@ -2741,6 +2849,8 @@ def build(args, fixtures: dict = None) -> dict:
             'gadget_rush': fx.get('_gadget_rush') or {},
             # WHO THE CURRENT-STATE FEED REMOVED, AND ON WHAT.
             'availability': fx.get('_availability') or {},
+            # EVERY RUSHING YARD IN ONE PLACE, AND ITS CLOSURE.
+            'rushing_total': fx.get('_rushing_total') or {},
             # THE CLOSURE PROOF, QUANTIFIED, IN THE ARTIFACT ITSELF. Every team
             # dropback belongs to exactly one quarterback on that team, and a
             # reader should not have to re-derive that from the draw matrices

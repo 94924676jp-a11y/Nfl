@@ -2,7 +2,7 @@
  "arrays": {
   "dk_scoring/dk_points": {
    "dtype": "float64",
-   "sha256": "36f36d565454e17bc7df90fe4b9300da3ab5e9461b1be7dc3dc3540d03b58b74",
+   "sha256": "1fb90728be7ef464756f56f70e7ade865b437898c5c46a6262389ca4de68a2b3",
    "shape": [
     29,
     1000
@@ -16,6 +16,14 @@
     1000
    ]
   },
+  "gadget_rush/kneel_yards": {
+   "dtype": "int16",
+   "sha256": "bdfc59c2b23f62be4b8931ed1de80b76f8febb72724941e0904d28413296d7fe",
+   "shape": [
+    21,
+    1000
+   ]
+  },
   "gadget_rush/te": {
    "dtype": "int16",
    "sha256": "708fd0eec89584e0b3bd5439d12ea0ef9a3c625a8ef0961bf804e2ed50a6afe7",
@@ -24,9 +32,25 @@
     1000
    ]
   },
+  "gadget_rush/te_yards": {
+   "dtype": "int16",
+   "sha256": "cd73030299a043973b4ebe614fc5c795bb84b47fcb7f0ff2cc5190a28f5cb3a2",
+   "shape": [
+    21,
+    1000
+   ]
+  },
   "gadget_rush/wr": {
    "dtype": "int16",
    "sha256": "a56e69c7e9e01a7291efd3fd9413bf1e4f64cbe33d52a6ad0052188c5624f66b",
+   "shape": [
+    21,
+    1000
+   ]
+  },
+  "gadget_rush/wr_yards": {
+   "dtype": "int16",
+   "sha256": "06349daefa7410d0257ccf22cdf25e6de7589927509862c6c63519e40c2630bd",
    "shape": [
     21,
     1000
@@ -360,6 +384,14 @@
     1000
    ]
   },
+  "rushing_total/rushing_yards": {
+   "dtype": "float64",
+   "sha256": "635c66b9f334752223084bb82e393ebc7fbd16c415d897bc8d1c03727913fb7a",
+   "shape": [
+    27,
+    1000
+   ]
+  },
   "team_volume/team_carries": {
    "dtype": "int16",
    "sha256": "b81690ad1570a982e657c3ab40bd4419f88c9ba161d90ab631bf28cf1a530e82",
@@ -401,7 +433,7 @@
    ]
   }
  },
- "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f",
+ "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552",
  "draw_artifact_version": "nfl-draw-artifact-1",
  "draw_index_semantics": {
   "across_rows": "INDEPENDENT_STREAMS_COLUMN_ALIGNED",
@@ -409,9 +441,9 @@
   "within_row_across_metrics": "SAME_SIMULATED_WORLD"
  },
  "file": {
-  "bytes": 171578,
+  "bytes": 190423,
   "name": "player_draws.npz",
-  "sha256": "b48c0f568ec48b4e421acb72f463b0f40d6458ac4c06f57b7d30076220392c3e"
+  "sha256": "b7a8817d34b78be02e69a31236514a373b2ad0d56766557e55b125b7be589090"
  },
  "game_id": "2026_02_DET_BUF",
  "layers": {
@@ -492,8 +524,11 @@
   "gadget_rush": {
    "metrics": [
     "kneel",
+    "kneel_yards",
     "te",
-    "wr"
+    "te_yards",
+    "wr",
+    "wr_yards"
    ],
    "rng_stream": "multinomial over the club's named players at the position, weights = own prior carries + fitted alpha; kneels by per-draw dropback argmax",
    "row_axis": "gsis_id",
@@ -754,6 +789,76 @@
    ],
    "spec_version": "nfl-nonqb-rushing-1"
   },
+  "rushing_total": {
+   "metrics": [
+    "rushing_yards"
+   ],
+   "rng_stream": "the sum of every rushing yard this player owns, on the shared draw index; no randomness of its own",
+   "row_axis": "gsis_id",
+   "row_ids": [
+    "00-0033106",
+    "00-0033949",
+    "00-0034270",
+    "00-0034577",
+    "00-0034827",
+    "00-0034857",
+    "00-0035500",
+    "00-0035544",
+    "00-0035689",
+    "00-0036754",
+    "00-0036963",
+    "00-0036988",
+    "00-0037240",
+    "00-0037248",
+    "00-0037261",
+    "00-0037524",
+    "00-0038896",
+    "00-0038933",
+    "00-0039065",
+    "00-0039139",
+    "00-0039364",
+    "00-0039471",
+    "00-0039875",
+    "00-0039901",
+    "00-0040194",
+    "00-0040363",
+    "00-0040669"
+   ],
+   "row_teams": [
+    "DET",
+    "DET",
+    "DET",
+    "BUF",
+    "BUF",
+    "BUF",
+    "BUF",
+    "DET",
+    "BUF",
+    "DET",
+    "DET",
+    "BUF",
+    "DET",
+    "BUF",
+    "BUF",
+    "DET",
+    "DET",
+    "BUF",
+    "DET",
+    "DET",
+    "DET",
+    "BUF",
+    "BUF",
+    "BUF",
+    "BUF",
+    "BUF",
+    "DET"
+   ],
+   "shape": [
+    27,
+    1000
+   ],
+   "spec_version": "rushing-total-1"
+  },
   "team_volume": {
    "metrics": [
     "team_carries",
@@ -775,14 +880,14 @@
    "spec_version": "team-volume-v1-p4b-frozen-1"
   }
  },
- "n_draw_cells": 310000,
+ "n_draw_cells": 400000,
  "n_draws": 1000,
- "n_layers": 9,
- "n_matrices": 50,
+ "n_layers": 10,
+ "n_matrices": 54,
  "rng": {
   "generator": "numpy.random.default_rng (PCG64)",
   "seed": 20260908,
   "seed_protocol": "per-row seed 20260908"
  },
- "run_id": "36da6fc8b7ef6854"
+ "run_id": "0ca97cd57ba78a14"
 }

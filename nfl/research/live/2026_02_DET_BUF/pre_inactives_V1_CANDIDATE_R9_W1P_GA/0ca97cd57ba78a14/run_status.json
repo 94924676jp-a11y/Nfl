@@ -1,10 +1,10 @@
 {
- "run_id": "36da6fc8b7ef6854",
+ "run_id": "0ca97cd57ba78a14",
  "arm": "A",
- "written_at": "2026-09-16T15:54:17Z",
+ "written_at": "2026-09-16T16:12:28Z",
  "pipeline_version": "nfl-production-pipeline-1",
  "status": "SEALED",
- "elapsed_s": 202.3899,
+ "elapsed_s": 216.5933,
  "stages": [
   {
    "stage": "capture_validation",
@@ -23,7 +23,7 @@
    "spec_version": "nfl-production-pipeline-1",
    "warnings": [],
    "refusal_code": null,
-   "elapsed_s": 3.600120544433594e-05,
+   "elapsed_s": 3.409385681152344e-05,
    "metrics": {},
    "governance": [],
    "spec_versions": {},
@@ -38,7 +38,7 @@
    "spec_version": null,
    "warnings": [],
    "refusal_code": null,
-   "elapsed_s": 4.029273986816406e-05,
+   "elapsed_s": 3.361701965332031e-05,
    "metrics": {},
    "governance": [],
    "spec_versions": {},
@@ -53,7 +53,7 @@
    "spec_version": "prior-only, ordinal prefix cut",
    "warnings": [],
    "refusal_code": null,
-   "elapsed_s": 1.6927719116210938e-05,
+   "elapsed_s": 1.7642974853515625e-05,
    "metrics": {},
    "governance": [],
    "spec_versions": {},
@@ -70,7 +70,7 @@
     "known limitation: team_volume_is_near_unforecastable"
    ],
    "refusal_code": null,
-   "elapsed_s": 0.7389392852783203,
+   "elapsed_s": 0.7443723678588867,
    "metrics": {},
    "governance": [],
    "spec_versions": {},
@@ -90,7 +90,7 @@
    "spec_version": "P3 appearance",
    "warnings": [],
    "refusal_code": null,
-   "elapsed_s": 176.90221118927002,
+   "elapsed_s": 177.66465210914612,
    "metrics": {},
    "governance": [],
    "spec_versions": {},
@@ -105,7 +105,7 @@
    "spec_version": "Stage2 ewma_hl2; governance INFORMATION_CONSTRAINED",
    "warnings": [],
    "refusal_code": null,
-   "elapsed_s": 3.504753112792969e-05,
+   "elapsed_s": 5.054473876953125e-05,
    "metrics": {},
    "governance": [],
    "spec_versions": {},
@@ -120,7 +120,7 @@
    "spec_version": "P4C system C; governance DATA_BLOCKED",
    "warnings": [],
    "refusal_code": null,
-   "elapsed_s": 1.71661376953125e-05,
+   "elapsed_s": 2.0742416381835938e-05,
    "metrics": {},
    "governance": [],
    "spec_versions": {},
@@ -135,7 +135,7 @@
    "spec_version": "RC1 baseline; SIGNAL_WEAK; governance HOLD_CHARACTERIZED + CALIBRATION_DEFECT",
    "warnings": [],
    "refusal_code": null,
-   "elapsed_s": 1.9788742065429688e-05,
+   "elapsed_s": 2.09808349609375e-05,
    "metrics": {},
    "governance": [],
    "spec_versions": {},
@@ -150,7 +150,7 @@
    "spec_version": "TD2 pooled positional control; governance HOLD_TENTATIVE",
    "warnings": [],
    "refusal_code": null,
-   "elapsed_s": 1.430511474609375e-05,
+   "elapsed_s": 2.3126602172851562e-05,
    "metrics": {},
    "governance": [],
    "spec_versions": {},
@@ -169,7 +169,7 @@
     "known limitation: discrete_low_count_intervals"
    ],
    "refusal_code": null,
-   "elapsed_s": 2.3126602172851562e-05,
+   "elapsed_s": 0.00037670135498046875,
    "metrics": {
     "n_qb_games": 4
    },
@@ -199,7 +199,7 @@
    "spec_version": "minimum-viable production coupling",
    "warnings": [],
    "refusal_code": null,
-   "elapsed_s": 1.9550323486328125e-05,
+   "elapsed_s": 2.6226043701171875e-05,
    "metrics": {},
    "governance": [],
    "spec_versions": {},
@@ -209,12 +209,12 @@
    "stage": "player_draws",
    "state": "PASS",
    "code": "DRAWS_BUILT",
-   "detail": "310000 draw cell(s) preserved across 50 matrix(es) on one draw index of 1000; 29 player quantile view(s) kept",
+   "detail": "400000 draw cell(s) preserved across 54 matrix(es) on one draw index of 1000; 29 player quantile view(s) kept",
    "input_hashes": {},
    "spec_version": "nfl-player-draw-1",
    "warnings": [],
    "refusal_code": null,
-   "elapsed_s": 24.743826627731323,
+   "elapsed_s": 38.17861461639404,
    "metrics": {},
    "governance": [],
    "spec_versions": {},
@@ -229,7 +229,7 @@
    "spec_version": "deterministic",
    "warnings": [],
    "refusal_code": null,
-   "elapsed_s": 1.4543533325195312e-05,
+   "elapsed_s": 1.33514404296875e-05,
    "metrics": {},
    "governance": [],
    "spec_versions": {},
@@ -239,12 +239,12 @@
    "stage": "artifact_sealing",
    "state": "PASS",
    "code": "ARTIFACT_SEALED",
-   "detail": "310000 draw cell(s) referenced by sha256; 10 of 12 hard invariant(s) were evaluated and hold; 2 carried as OWED: ['qb_cross_layer_reconciliation', 'qb_inactive_owns_nothing']; 2 diagnostic(s) not clean (recorded, not gating): ['nonqb_layer_availability', 'qb_known_limitations']",
+   "detail": "400000 draw cell(s) referenced by sha256; 10 of 12 hard invariant(s) were evaluated and hold; 2 carried as OWED: ['qb_cross_layer_reconciliation', 'qb_inactive_owns_nothing']; 2 diagnostic(s) not clean (recorded, not gating): ['nonqb_layer_availability', 'qb_known_limitations']",
    "input_hashes": {},
    "spec_version": "nfl-forecast-artifact-1",
    "warnings": [],
    "refusal_code": null,
-   "elapsed_s": 0.004553556442260742,
+   "elapsed_s": 0.004884481430053711,
    "metrics": {},
    "governance": [],
    "spec_versions": {},
@@ -255,12 +255,12 @@
  "refusals": [],
  "first_failure": null,
  "draw_artifact": {
-  "sha256": "b48c0f568ec48b4e421acb72f463b0f40d6458ac4c06f57b7d30076220392c3e",
-  "bytes": 171578,
+  "sha256": "b7a8817d34b78be02e69a31236514a373b2ad0d56766557e55b125b7be589090",
+  "bytes": 190423,
   "n_draws": 1000,
-  "n_matrices": 50,
-  "n_draw_cells": 310000,
-  "content_digest": "8e0246a03a88a0494e957aa0dae65496fb8637c2b115c6eeb121c2892762e21f"
+  "n_matrices": 54,
+  "n_draw_cells": 400000,
+  "content_digest": "d5b2e864fee7b686df698e5312259ea128b42f883bb09af0f7eac811597e5552"
  },
  "accounting_verdicts": [
   {
@@ -463,22 +463,22 @@
   "DET": {
    "team": "DET",
    "state": "READY_BY_EARLY_VINTAGE_NO_LEAGUE_REPORT",
-   "reason": "NO club has an injuries row for 2026 week 2 in any capture retrieved at or before 2026-09-16T15:54:17+00:00. The report does not exist yet rather than DET being silent about it, so this is an EARLY vintage. It is NEVER read as absence of injury: every player keeps the availability uncertainty his own evidence carries.",
+   "reason": "NO club has an injuries row for 2026 week 2 in any capture retrieved at or before 2026-09-16T16:12:28+00:00. The report does not exist yet rather than DET being silent about it, so this is an EARLY vintage. It is NEVER read as absence of injury: every player keeps the availability uncertainty his own evidence carries.",
    "n_rows": 0,
    "newest_capture": null,
    "projection_vintage": "EARLY",
    "league_wide_absence": true,
-   "as_of": "2026-09-16T15:54:17+00:00"
+   "as_of": "2026-09-16T16:12:28+00:00"
   },
   "BUF": {
    "team": "BUF",
    "state": "READY_BY_EARLY_VINTAGE_NO_LEAGUE_REPORT",
-   "reason": "NO club has an injuries row for 2026 week 2 in any capture retrieved at or before 2026-09-16T15:54:17+00:00. The report does not exist yet rather than BUF being silent about it, so this is an EARLY vintage. It is NEVER read as absence of injury: every player keeps the availability uncertainty his own evidence carries.",
+   "reason": "NO club has an injuries row for 2026 week 2 in any capture retrieved at or before 2026-09-16T16:12:28+00:00. The report does not exist yet rather than BUF being silent about it, so this is an EARLY vintage. It is NEVER read as absence of injury: every player keeps the availability uncertainty his own evidence carries.",
    "n_rows": 0,
    "newest_capture": null,
    "projection_vintage": "EARLY",
    "league_wide_absence": true,
-   "as_of": "2026-09-16T15:54:17+00:00"
+   "as_of": "2026-09-16T16:12:28+00:00"
   }
  },
  "confidence_contract": {
@@ -559,46 +559,28 @@
  "qb_pool_eligibility": null,
  "qb_participation_limitation": null,
  "qb_inactive_ownership_enforced": false,
- "execution_identity": "36da6fc8b7ef6854ced8862765a1e4e5c5b7eb5489064a74edd5ffbff9ef0eea",
- "code_commit": "9d3b9b2ff79523c6c3407f16f0612383c035d76c+src1[82ee625a33e931cc]",
+ "execution_identity": "0ca97cd57ba78a148e1e0574ee2911e32501db5e4c48009e7a1f5282d42b45e4",
+ "code_commit": "32a61be2d0a52c8db3c5eaff3306f392e035d033+src1[aaefe933c33865ef]",
  "code_identity": {
   "contract_version": "nfl-code-identity-1",
-  "commit": "9d3b9b2ff79523c6c3407f16f0612383c035d76c",
-  "source_scope_sha256": "82ee625a33e931ccb4b096bda1b4543f5d8bbd073f38353cf965f931b7a92e21",
+  "commit": "32a61be2d0a52c8db3c5eaff3306f392e035d033",
+  "source_scope_sha256": "aaefe933c33865ef5ade293f77aa9f69874ac4d466ff89dcc80a0ead8cd42c8c",
   "source_scope_clean": false,
   "dirty_source_files": [
    {
-    "path": "nfl/production/candidate_mode.py",
+    "path": "nfl/production/nonqb/rushing_conversion.py",
     "state": "PRESENT",
-    "sha256": "5ae620646f26308663bc5524edd723ed39539176ae57adb2384b8f22405dbda7",
-    "bytes": 64518
-   },
-   {
-    "path": "nfl/production/nonqb/appearance_model.py",
-    "state": "PRESENT",
-    "sha256": "07b80c693c8ff35d1e562c1f74332edc31da537d08b85f9172a0b210977fe81b",
-    "bytes": 23866
-   },
-   {
-    "path": "nfl/production/nonqb/appearance_panel_2026.py",
-    "state": "PRESENT",
-    "sha256": "823e32b5efd295c8f5a7dbb1a741a026c3733dd7b4c09e03d4a8bf79735e150c",
-    "bytes": 9672
-   },
-   {
-    "path": "nfl/production/nonqb/layers.py",
-    "state": "PRESENT",
-    "sha256": "6c99b94c5f4ad51e8e92e6ed69a9196b90812c4dadac47f278597fb8f18662e9",
-    "bytes": 37278
+    "sha256": "b48bc7142df2eef38a6c81c9901dcf5fafe70ad818b6fcd6b9bfd7c656178656",
+    "bytes": 17314
    },
    {
     "path": "nfl/production/run_forecast.py",
     "state": "PRESENT",
-    "sha256": "d633ecf14e4347dc6f52d610b62cc207f1f81b648b60a40420ef812fa2f89efa",
-    "bytes": 166598
+    "sha256": "d347f39e82967b888010c710bcbcc35ea91adb3e55cf33892dd487adabec6f5d",
+    "bytes": 172881
    }
   ],
-  "n_dirty_source_files": 5,
+  "n_dirty_source_files": 2,
   "scope": {
    "source_roots": [
     "nfl/production",
@@ -660,7 +642,7 @@
    "THREAD_ENV_RECORDED_NOT_HASHED: promote to RUNTIME_HASHED_KEYS if and when a measured draw difference is attributed to thread count. Not before -- an unmeasured coefficient in an identity is a silent constant.",
    "STAGING_NOT_DISTINGUISHED: B hashes worktree CONTENT, so a staged and an unstaged edit of identical bytes are the same identity. Deliberate: the bytes the interpreter reads are the bytes that matter."
   ],
-  "code_version": "9d3b9b2ff79523c6c3407f16f0612383c035d76c+src1[82ee625a33e931cc]"
+  "code_version": "32a61be2d0a52c8db3c5eaff3306f392e035d033+src1[aaefe933c33865ef]"
  },
  "dry_run": true,
  "prospective_eligible": false,

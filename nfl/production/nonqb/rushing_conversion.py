@@ -221,6 +221,140 @@ def pools(cut_ordinal: int) -> Outcome:
     return out
 
 
+#: The gadget strata. A kneel, a jet sweep and a tight-end run are not RB
+#: carries and must not be drawn from the RB pool. Measured pre-cutoff:
+#:
+#:     kneel   n=2212  mean -1.0922  sd 0.57   -- a kneel LOSES a yard
+#:     wr      n=2685  mean +5.5423  sd 7.72   -- and has a far heavier tail
+#:     te      n= 203  mean +2.7044  sd 5.03
+#:
+#: Against an RB pool mean of 4.2902. Routing a kneel through it would have
+#: paid a quarterback four yards for kneeling, and routing a jet sweep through
+#: it would understate both its mean and its tail.
+GADGET_STRATA = ('kneel', 'wr', 'te')
+
+
+def gadget_pools(cut_ordinal: int) -> Outcome:
+    """Per-carry yard pools for kneels, WR rushes and TE rushes.
+
+    Same family and same system as the RB control -- emp_tilt, system A, the
+    frozen `p5a_lib` calls, every carry drawn individually. What differs is
+    the stratum, which is the whole point: these are different distributions
+    and the measured means say so.
+    """
+    key = ('gadget_pools', int(cut_ordinal))
+    if key in _CACHE:
+        return _CACHE[key]
+    import p5a_lib as P
+
+    files = sorted(glob.glob(str(
+        _REPO / 'nfl/research/postgame/pbp_20*.csv.gz')))
+    if not files:
+        return Outcome.blocked(
+            'RUSHCONV_GADGET_PBP_ABSENT',
+            'no play-by-play under nfl/research/postgame, so no gadget pool '
+            'can be estimated.', cause=Cause.DATA)
+    # POSITION COMES FROM THE SAME BRIDGE AS THE RB POOLS, panel first.
+    pos_by_gsis = {}
+    _panel = _REPO / 'nfl' / 'research' / 'inputs' / 'panel_p3.csv.gz'
+    if _panel.exists():
+        for r in csv.DictReader(gzip.open(_panel, 'rt')):
+            g = (r.get('gsis_id') or '').strip()
+            pp = (r.get('position') or '').strip()
+            if g and pp and g not in pos_by_gsis:
+                pos_by_gsis[g] = pp
+    for f in sorted(glob.glob(str(
+            _REPO / 'nfl/vintage/weekly_rosters.*raw.csv*'))):
+        for r in csv.DictReader(gzip.open(f, 'rt')):
+            g = (r.get('gsis_id') or '').strip()
+            if g and g not in pos_by_gsis:
+                pos_by_gsis[g] = (r.get('position') or '').strip()
+
+    y = {k: [] for k in GADGET_STRATA}
+    for f in files:
+        for r in csv.DictReader(gzip.open(f, 'rt')):
+            sn, w = r.get('season'), r.get('week')
+            if not sn or not w:
+                continue
+            try:
+                if int(sn) * 100 + int(w) >= int(cut_ordinal):
+                    continue
+            except ValueError:
+                continue
+            if str(r.get('rush_attempt') or '0') not in ('1', '1.0'):
+                continue
+            try:
+                v = float(r.get('yards_gained') or 0)
+            except (TypeError, ValueError):
+                continue
+            if str(r.get('qb_kneel') or '0') in ('1', '1.0'):
+                y['kneel'].append(v)
+                continue
+            if str(r.get('qb_scramble') or '0') in ('1', '1.0'):
+                continue
+            pp = pos_by_gsis.get((r.get('rusher_player_id') or '').strip())
+            if pp == 'WR':
+                y['wr'].append(v)
+            elif pp == 'TE':
+                y['te'].append(v)
+
+    thin = [k for k in GADGET_STRATA if len(y[k]) < 100]
+    if thin:
+        return Outcome.blocked(
+            'RUSHCONV_GADGET_STRATUM_TOO_THIN',
+            f'{thin} carry fewer than 100 pre-cutoff carries '
+            f'({ {k: len(y[k]) for k in GADGET_STRATA} }). A pool estimated '
+            f'on that is not a distribution.', cause=Cause.DATA,
+            counts={k: len(y[k]) for k in GADGET_STRATA})
+
+    built = {}
+    for k in GADGET_STRATA:
+        pool = P.Pool(np.asarray(y[k], np.float32))
+        pmf = P.tilt_pmf(pool, pool.mean)
+        built[k] = {'pool': pool, 'cdf': np.cumsum(pmf), 'n': len(y[k]),
+                    'mean': pool.mean, 'p_stuff': pool.p_stuff,
+                    'p_exp': pool.p_exp}
+    prov = {'spec_version': SPEC_VERSION, 'system': SYSTEM, 'family': FAMILY,
+            'cut_ordinal': int(cut_ordinal),
+            'strata': {k: {'n_carries': built[k]['n'],
+                           'mean': round(built[k]['mean'], 6),
+                           'p_stuff': round(built[k]['p_stuff'], 6),
+                           'p_exp': round(built[k]['p_exp'], 6)}
+                       for k in GADGET_STRATA},
+            'not_used': 'the RB pool -- these are different distributions and '
+                        'the measured means differ by up to 5.4 yards'}
+    out = Outcome.ok(
+        'RUSHCONV_GADGET_POOLS', value=built, provenance=prov,
+        spec_version=SPEC_VERSION,
+        detail='; '.join(f"{k} n={built[k]['n']} mean={built[k]['mean']:.4f}"
+                         for k in GADGET_STRATA))
+    _CACHE[key] = out
+    return out
+
+
+def gadget_yards_for(counts, stratum, built, seed, tag=''):
+    """Compound draw over gadget carries, one stratum, every carry drawn."""
+    import p5a_lib as P
+    c = np.asarray(counts).astype(int)
+    st = built[stratum]
+    _rc = SEEDS.row_component(f'gadget_yards|{stratum}|{tag}')
+    if _rc.state is not State.PASS:
+        raise ValueError(_rc.code)
+    _sid = SEEDS.stream_id('rushing_conversion', 'per_carry_yards')
+    rng = np.random.default_rng(
+        [int(seed), int(_sid.value), int(_rc.value), len(c)])
+    out = np.zeros(c.shape[0], dtype=np.float64)
+    total = int(c.sum())
+    if total <= 0:
+        return out
+    flat = P.draw_carry_yards(FAMILY, st['pool'], total, {'cdf': st['cdf']},
+                              rng)
+    idx = np.concatenate([[0], np.cumsum(c)[:-1]])
+    nz = c > 0
+    out[nz] = np.add.reduceat(np.asarray(flat, np.float64), idx[nz])
+    return out
+
+
 def yards_for(carries, position, built, seed, tag=''):
     """Compound draw: EVERY carry drawn individually, then summed.
 
