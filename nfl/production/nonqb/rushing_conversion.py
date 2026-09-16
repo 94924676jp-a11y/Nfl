@@ -94,7 +94,41 @@ def pools(cut_ordinal: int) -> Outcome:
     # rusher; it does not say what he plays. Without the bridge every carry
     # would land in one stratum, which is the unstratified pool wearing a
     # stratified name.
+    # HISTORY FIRST, THEN THE CURRENT ROSTER -- AND HISTORY IS WHY.
+    # The first cut resolved position from the 2026 raw roster alone and
+    # DROPPED 22,821 pre-cutoff carries whose rusher is no longer rostered.
+    # That is survivorship, and it was systematic by season: 9,009 carries lost
+    # from 2021 against 625 from 2025, because the further back you look the
+    # more of that season's rushers have left the league.
+    #
+    # `panel_p3` carries gsis_id and position for 2020-2025 and resolves ALL
+    # 22,821 -- 20,030 of them running backs. Measured cost of the omission:
+    #
+    #     RB      mean 4.3896 -> 4.2902   n 42,061 -> 62,044
+    #     NON_RB  mean 4.6693 -> 4.5809   n 12,580 -> 15,418
+    #
+    # The retained pool was biased UP about 2% because the survivors are the
+    # better rushers; the stuff and explosive probabilities move by under
+    # 0.005. The RB shift is -3.22 standard errors of the retained mean, so it
+    # is not sampling noise. Small, systematic, and free to remove.
+    # SURVIVORSHIP_AUDIT.json carries the full breakdown by season, position,
+    # team, identity state, stratum and yards/carry distribution.
+    #
+    # PANEL FIRST, AND THE ORDER IS THE POINT. 1,102 rushers appear in both
+    # bridges and 6 of them are assigned different strata -- 49 carries. The
+    # panel says what the player was IN THE SEASON HE TOOK THE CARRY; the 2026
+    # roster says what he is now. A historical fact takes historical evidence,
+    # so the panel wins whenever both speak, not merely when the roster is
+    # silent.
     pos_by_gsis = {}
+    _panel = _REPO / 'nfl' / 'research' / 'inputs' / 'panel_p3.csv.gz'
+    if _panel.exists():
+        for r in csv.DictReader(gzip.open(_panel, 'rt')):
+            g = (r.get('gsis_id') or '').strip()
+            pos = (r.get('position') or '').strip()
+            if g and pos and g not in pos_by_gsis:
+                pos_by_gsis[g] = pos
+    _n_hist = len(pos_by_gsis)
     for f in sorted(glob.glob(str(_REPO / 'nfl/vintage/weekly_rosters.*raw.csv*'))):
         for r in csv.DictReader(gzip.open(f, 'rt')):
             g = (r.get('gsis_id') or '').strip()
@@ -162,8 +196,17 @@ def pools(cut_ordinal: int) -> Outcome:
                        'p_stuff': round(built[s]['p_stuff'], 6),
                        'p_exp': round(built[s]['p_exp'], 6)} for s in STRATA},
         'carries_with_no_position': unknown,
+        'identity_sources': {'panel_p3_historical': _n_hist,
+                             'total_after_roster': len(pos_by_gsis)},
+        'survivorship_note': (
+            'resolving position from the 2026 roster alone dropped 22,821 '
+            'pre-cutoff carries, 9,009 of them from 2021 against 625 from '
+            '2025. panel_p3 resolves all of them. The roster-only pools were '
+            'biased up ~2% on the mean because survivors rush better.'),
         'sources': [{'path': str(pathlib.Path(f).relative_to(_REPO)),
                      'sha256': _sha(f)} for f in files],
+        'audit_artifact': 'nfl/production/nonqb/SURVIVORSHIP_AUDIT.json',
+        'position_precedence': 'panel_p3_historical > weekly_rosters_2026',
         'not_used': 'p5a_results.json unstratified pool',
     }
     out = Outcome.ok('RUSHCONV_POOLS_BUILT', value=built, provenance=prov,
