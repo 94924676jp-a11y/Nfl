@@ -121,6 +121,26 @@ INVARIANTS = {
         'asserts': 'attempts + sacks + scrambles == dropbacks, per draw cell',
         'why_hard': 'the identity the entire QB layer is built on; a violation '
                     'means the components do not describe one football game.'},
+    'current_season_input_freshness': {
+        'class': HARD, 'evaluator': 'nfl.production.freshness.check_all',
+        'asserts': 'for a forecast at S*100+W with W >= 2, every REGISTERED '
+                   'current-season model input carries a maximum ordinal >= '
+                   'S*100+(W-1) AND covers every club its declared SCOPE '
+                   'expects. FIXTURE_LOCAL requires the clubs the fixture '
+                   'names; LEAGUE_WIDE requires the whole declared expected '
+                   'set, so 30 of 32 is BLOCKED. W == 1 records '
+                   'NOT_APPLICABLE_AT_A_SEASON_OPENER and never FRESH',
+        'why_hard': 'panel_p3 stopped at ordinal 202518, so a 2026 WEEK 2 '
+                    'board gave all 32 clubs a 2025 week-18 previous primary '
+                    'and classed all 32 a season opener -- and 7 of the 20 '
+                    'checkable clubs carried the wrong previous primary. '
+                    '`panel_freshness` already detected it and the board still '
+                    'published, because the verdict was RECORDED and nothing '
+                    'refused on it. Expressed on ORDINALS rather than '
+                    'wall-clock so a touched file cannot satisfy it, and the '
+                    'expected club set is SUPPLIED rather than inferred, '
+                    'because inferring it from the clubs present is what let a '
+                    '30-club panel look complete.'},
     'qb_inactive_owns_nothing': {
         'class': HARD,
         'evaluator':
