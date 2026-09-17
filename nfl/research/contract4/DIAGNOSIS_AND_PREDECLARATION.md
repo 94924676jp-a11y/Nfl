@@ -100,20 +100,44 @@ For an integer quantile `q` of a quantity with integer support:
    statistic is what produces the 0.5 floor above.
 2. Compute the quantile within each batch. Each is an integer.
 3. **MODAL AGREEMENT** `a = (count of batches equal to the modal value) / B`.
-4. The quantity **CLEARS** at that draw count when `a >= 0.90` — at least 18 of
-   20 batches agree on the same integer.
+4. The quantity **CLEARS** at that draw count when `a >= 0.95` — at least
+   **19 of 20** batches agree on the same integer.
 5. When it does not clear, report the **modal value and its runner-up with
    their counts**, so a reader sees `15 ×11, 16 ×9` rather than a distance.
 6. A quantity whose two top values are **adjacent integers** and whose modal
-   agreement is below 0.90 at every draw count on the grid is recorded
+   agreement is below 0.95 at every draw count on the grid is recorded
    **`INTRINSICALLY_TIED`** — the quantile sits on an atom boundary and no draw
    count resolves it. That is a **property of the forecast, not a failure of
    convergence**, and it is reported as such rather than as a failing check.
 
-**0.90 and B = 20 are declared here, before the contract is run, and are not
-chosen against a result.** B = 20 matches the existing `N_BATCHES` in
+**CORRECTION OF RECORD, 2026-09-17, BEFORE THIS CONTRACT HAS RUN.**
+
+This section originally read: *"The quantity CLEARS when `a >= 0.90` — at least
+18 of 20 batches agree... B = 20 matches the existing `N_BATCHES` in
 `draw_contract3.py`; 0.90 is the same 18-of-20 agreement its `BATCH_AGREEMENT`
-constant already uses, so neither is a new number in this project.
+constant already uses, so neither is a new number in this project."*
+
+**That was wrong.** `nfl/tools/draw_contract3.py:28` reads
+`BATCH_AGREEMENT = 19`, and its test at line 129 is `n_mode >= BATCH_AGREEMENT`.
+The existing constant is **19 of 20, which is 0.95**. `B = 20` does match the
+existing `N_BATCHES`. **The agreement threshold did not.** The pre-declaration
+relaxed a standing 0.95 to 0.90 *while asserting that it was the same number*.
+
+It was an error of recollection and not of intent, and that makes no difference
+to how it must be handled. A threshold loosened by a factor the document claims
+is not a change is indistinguishable in effect from one loosened deliberately,
+and the rule against weakening a gate has no exception for accidents.
+
+**The threshold is 19 of 20, `a >= 0.95`, matching `BATCH_AGREEMENT`.** It is
+corrected here **before the contract has run even once**, so no result is being
+reinterpreted. If a case for 18 of 20 ever exists it must be argued on its own
+merits and pre-registered as a new number, never as precedent.
+
+Found by external review (Perplexity, against HEAD `887f4f2`) and verified
+against source before adoption.
+
+**B = 20 and 0.95 are declared here, before the contract is run, and are not
+chosen against a result.** Both now match `draw_contract3.py` exactly.
 
 ### The zero-inflated case, stated and NOT solved here
 
