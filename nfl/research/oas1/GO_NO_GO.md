@@ -143,3 +143,69 @@ in the first weeks. If that happens, B5 ships and OAS1 is recorded as a
 measured negative for early-season weeks.
 
 **V2 NOT YET EARNED**
+
+---
+
+# Gate table after the ownership tranche — 2026-09-17, HEAD `df5fd88`
+
+Every row is YES or NO. Nothing here is "partial"; where a thing is genuinely
+undecided it says so in its own row and is not counted as a pass.
+
+| # | Gate | Status | Evidence |
+|---|---|---|---|
+| 1 | Governed `pbp` capture with at least one hashed 2026 capture | **YES** | 3 content-addressed blobs; 2026 `b69f55a172965e16`, 2025 `2f135887790a013f`, 2024 `23370d5d10f8104d`; re-verified by hash in preflight check `pbp_capture_hashes` |
+| 2 | `epa` target-only exemption, written, tested, limited to target use | **YES** | `OAS1_EPA_TARGET_ADMITTED` for the target; general quarantine still returns `MODEL_DERIVED_COLUMN_ACCESS`; a non-authorised caller still refused. Preflight `epa_target_only_authorisation` |
+| 3 | Prior-season OAS1 fit supplying `theta_prev` | **YES** | `OAS1_PRIOR_2025.json`, season 2025, 128 unit rows, sha256 `64a49ffa1937a607`; pass rank 64/66 deficiency 2, rush rank 64/66 deficiency 2 |
+| 4 | B0–B5 implemented and forward-chain-clean | **YES** | 18 folds per class, both classes, `OAS1_BASELINE_CHAIN.json` sha256 `2703f2d91e569ccb`, `candidate_fitted: false`. Max training ordinal 202601 < forecast ordinal 202602 |
+| 5 | Pre-declaration committed with literal thresholds a test reads from code | **YES** | commit `150c62a`, committed **before** any Week-2 number exists; preflight `preregistration_commit` resolves it and asserts `declared_before_any_week2_fit` |
+| 6 | Team normalization total across both seasons in scope | **YES** | 32 observed codes → 32 clubs, unresolved `[]`, over the actual Week-2 fit frame |
+| 7 | Evaluator supports continuous targets — MAE, RMSE, CRPS | **YES** | `evaluator.SCORERS` = brier, log_loss, crps, mae, rmse; `crps` is the imported product implementation, not re-derived |
+| 8 | Adjustment registry with a double-counting test | **YES** | 9 governed effects, 9 declared fields each, 6 HARD refusal codes, 65 checks including a production-approved control, a bypass-detection case, and test H, which exists because two refusals this table asserted were not actually refusing |
+| 9 | Freshness invariant registered and blocking | **YES** | `current_season_input_freshness` is HARD and still refuses live boards today (`denom_panel`, `team_volume_history` at 202518 against 202601) |
+| 10 | 2026 `pbp` available with the required fields | **YES** | 2,756 × 372, week 1, REG, 16 games, 32 clubs |
+| 11 | Pressure data available in-season | **NO** | `was_pressure` is 404 for 2026 and publishes after the postseason. **Not required for V1** and not a research-fit gate; registered as `ol_pass_protection_v1`, status `NOT_AVAILABLE`, so it has an owner before it has a consumer |
+| 12 | Commercial-use licensing resolved | **NO — UNDECIDED** | an owner decision, not an engineering one. Unchanged. Not a research-fit gate |
+
+**Research-fit gates are 1–10 and all ten are YES.** Gates 11 and 12 are
+downstream gates and neither has moved; neither is being counted as passed.
+
+## The three lawfulness flags, now enforced by code rather than prose
+
+| Flag | Value | Where it is enforced |
+|---|---|---|
+| `WEEK2_OAS1_FIT_LAWFUL` | **YES_RESEARCH_ONLY** | `fit_week2.py --dry-run` passes 13 preflight checks; the non-dry-run path raises because no fit is authorised |
+| `WEEK2_OAS1_DOWNSTREAM_LAWFUL` | **NO** | `adjustment_registry`: both opponent ids are `RESEARCH_ONLY` with permitted consumers `('diagnostics', 'research')`. Applying either from `team_volume` under the production purpose returns `ADJUSTMENT_NOT_PRODUCTION_APPROVED`; `team_volume` reading either returns `ADJUSTMENT_CONSUMER_NOT_PERMITTED`. **Both were verified by running them** — both returned PERMITTED until `b60bcf7` |
+| `SINGLE_ADJUSTMENT_OWNERSHIP` | **NO — not yet true of the system** | the registry now *declares* one owner per effect and refuses a second application, but only the effects it governs are covered. It is a contract that now exists, not a property the whole pipeline has been proven to have |
+
+The third is deliberately still NO. A registry that refuses double application
+is the mechanism; asserting that every adjustment in the system passes through
+it is a separate claim needing a separate audit, and writing YES because the
+mechanism exists is the exact substitution this registry was built to stop.
+
+## Strata
+
+`COLD_START_VALIDATION = NOT_EVALUATED`. Zero cold-start plays in both classes;
+the stratum is **empty, not passing**, and nothing converts it into a PASS.
+
+## One correction to this table's own method
+
+Two rows of the previous draft asserted a refusal that the code did not
+perform. They were caught because the claim was executed before it was
+written, not reviewed after. `assert_may_apply` did not read `status` at all,
+and `assert_consumer` unioned the applying layer into the permitted set
+unconditionally — which cancelled the single restriction both OAS1 entries
+were written to express. Sixty-five checks were green over both, because each
+one drove a helper rather than the contract. Fixed and re-tested at `b60bcf7`.
+
+**A gate table is evidence only if every row in it was run.** Rows 1–10 above
+were each produced by executing the check named in the evidence column, in this
+session, at this HEAD.
+
+## Verdict
+
+`WEEK2_OAS1_FIT_READY_TO_EXECUTE = YES` — **research-only, and not executed.**
+All ten research-fit gates are YES and the dry run is clean. The fit has not
+been run and the fitting body is not implemented; the runner raises rather than
+guessing at one. No downstream consumer may read the result when it exists.
+
+**V2 NOT YET EARNED**
