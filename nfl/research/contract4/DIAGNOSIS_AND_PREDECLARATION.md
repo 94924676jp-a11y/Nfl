@@ -139,6 +139,86 @@ against source before adoption.
 **B = 20 and 0.95 are declared here, before the contract is run, and are not
 chosen against a result.** Both now match `draw_contract3.py` exactly.
 
+### FINAL PRE-EXECUTION SPECIFICATION, 2026-09-17
+
+Six items must be complete before Contract 4 runs. It has **not** run.
+
+**1. Metric-kind registry coverage.** Classification is driven by
+`nfl.product.metrics.SUPPORTED`, never by a table in this file — the reasoning
+`draw_coherence.py` already applies when it derives `COUNT_ARRAYS` from that
+registry rather than hardcoding a tuple. **Measured at HEAD: `SUPPORTED` holds
+17 entries, 14 of kind `count` and 3 of kind `yards`, with no `probability`
+kind, no `lattice` kind and no `dk_scoring` entry at all**, while the board
+emits 54 matrices across 10 layers. **Contract 4 cannot run until every emitted
+array carries a declared kind.** A quantity whose kind is undeclared is
+`UNCLASSIFIED` and counts against coverage; it is never guessed from dtype,
+because `rushing/carries` is int-typed nowhere and `qb/pyds` is float and
+declared yards.
+
+**2. CDF-at-atom is the PRIMARY criterion for discrete quantiles.** Modal
+agreement is retained only as a secondary report.
+
+For an integer quantity at level `q`, the published quantile is the smallest
+integer `k` with `F(k) >= q/100`. **The quantile is an integer and cannot
+converge. `F(k)` is a probability, converges at `1/sqrt(n)`, and can.** So
+estimate `F(k-1)` and `F(k)` with Monte Carlo standard errors and classify:
+
+| verdict | condition |
+|---|---|
+| **DETERMINED** | `F(k-1) < q/100 <= F(k)` with both intervals excluding `q/100` |
+| **INTRINSICALLY_TIED** | an interval around `F(k)` or `F(k-1)` contains `q/100` and **narrows with n** — the level sits on an atom boundary |
+| **NOT_YET_CONVERGED** | the standard errors are still too wide to decide |
+
+Three reasons this replaces the instability test. It uses a **convergent**
+statistic, so more draws always help, where modal agreement got *worse* with n
+(0.4126 → 0.5004). It **separates "on a boundary" from "under-sampled"**, which
+modal agreement provably cannot, since both present as two adjacent values
+failing at every grid point. And it reuses Contract 3's existing probability
+threshold of **0.01** rather than inventing an instrument.
+
+**3. Coverage semantics, and `INCOMPLETE`.** Contract 4 publishes the fraction
+of in-scope quantities in **each** terminal state. Below a declared minimum
+certified fraction the overall verdict is **`INCOMPLETE`**, never a pass.
+
+> **An overall PASS while most rows are DEGENERATE, UNCLASSIFIED or
+> INTRINSICALLY_TIED is FORBIDDEN.** A contract satisfiable by having almost
+> nothing in scope is not a gate. On the DET-BUF board **27 of 29 player rows
+> are zero-inflated**, so this is the live risk, not a hypothetical one.
+
+**4. Zero-inflated quantities are graded in two parts, now.** Not deferred.
+The atom mass `P(X = 0)` is a **probability** and is graded under Contract 3 at
+threshold 0.01. The conditional positive part `X | X > 0` is graded by its own
+support class. A quantile falling **inside** the zero atom is
+`DEGENERATE_AT_ZERO` — neither passing nor failing — and counts against
+coverage under item 3.
+
+**5. `dk_points` is EXCLUDED from modal agreement.** DK points is a weighted sum
+of many components on a fine lattice, taking hundreds of attainable values, so
+its quantile behaves essentially continuously. Modal agreement across 20 batches
+on a support that fine approaches zero **for reasons unrelated to convergence**,
+guaranteeing failure for every arm regardless of forecast quality. It is graded
+as continuous under Contract 3, or by the CDF criterion in item 2. **Contract 4
+is reserved for coarse integer supports where modal agreement means something.**
+
+**6. Exchangeability of the batching must be tested, not assumed.** Batching is
+contiguous in draw-index order, which assumes the draw index is exchangeable.
+The artifact records `seed_protocol` as `"per-row seed 20260908"` and **whether
+contiguous blocks of that stream are exchangeable is UNKNOWN.** The contract
+computes modal agreement under contiguous blocks **and** under a declared random
+permutation of the index, and the two must agree within sampling error. If they
+do not, contiguous batching is biased and the permuted form governs.
+
+### A conservatism that must be declared, not hidden
+
+Batching splits `n` draws into 20 blocks, so each batch quantile is computed on
+`n/20` draws — **400 at n = 8,000**. The contract therefore grades the stability
+of a 400-draw quantile while the board publishes the 8,000-draw one. A **pass**
+is trustworthy, since stability at 400 implies stability at 8,000. A **failure
+is not diagnostic**, and could push a genuinely stable quantity into a terminal
+state that reads as a property of the forecast. **The full-sample quantile is
+therefore reported beside every batch verdict**, so a reader sees what is
+published next to what was graded.
+
 ### The zero-inflated case, stated and NOT solved here
 
 A quantity with an atom at zero is not one distribution. When `P(=0)` exceeds
