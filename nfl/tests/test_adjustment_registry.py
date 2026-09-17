@@ -54,6 +54,13 @@ ADJ = 'opponent_pass_strength_v1'
 OWNER_LAYER = 'team_volume'
 PERTURBATION = 0.25          # a known opponent-strength effect, in EPA/play
 
+#: THE OAS1 EFFECTS ARE RESEARCH_ONLY, so every lawful application of one below
+#: runs under the RESEARCH purpose. The production purpose is refused outright
+#: and test H is where that is checked -- it is a separate property from double
+#: counting and it gets its own test rather than riding along inside these.
+PURPOSE = AR.RESEARCH
+APPROVED = 'pace_v1'         # PRODUCTION_APPROVED, applied at team_volume
+
 
 class Frame:
     """A minimal frame that carries its OWN lineage, which is what is checked."""
@@ -62,10 +69,12 @@ class Frame:
         self.value = float(value)
         self.tags = []          # empty list, NOT None: "nothing applied yet"
 
-    def apply(self, adjustment_id, layer, amount, distinct_mechanism=None):
+    def apply(self, adjustment_id, layer, amount, distinct_mechanism=None,
+              purpose=PURPOSE):
         v = AR.assert_may_apply(adjustment_id, calling_layer=layer,
                                 frame_tags=self.tags,
-                                distinct_mechanism=distinct_mechanism)
+                                distinct_mechanism=distinct_mechanism,
+                                purpose=purpose)
         if v.state is not State.PASS:
             return v
         self.value += amount
@@ -160,6 +169,7 @@ def test_D_owner_and_lineage_refusals():
 def test_E_a_declared_distinct_mechanism_is_permitted():
     print('\nE. not all re-application is double counting')
     r = AR.assert_may_apply(ADJ, calling_layer=OWNER_LAYER, frame_tags=[ADJ],
+                            purpose=PURPOSE,
                             distinct_mechanism='coverage acting on catch rate '
                                                'is a different quantity from '
                                                'opponent strength acting on '
@@ -168,7 +178,7 @@ def test_E_a_declared_distinct_mechanism_is_permitted():
           r.state is State.PASS and r.evidence['re_applied_under_distinct_mechanism'],
           f'{r.state}[{r.code}]')
     r2 = AR.assert_may_apply(ADJ, calling_layer=OWNER_LAYER, frame_tags=[ADJ],
-                             distinct_mechanism='')
+                             purpose=PURPOSE, distinct_mechanism='')
     check('  but silence is still refused', r2.state is State.FAIL
           and r2.code == AR.ALREADY_APPLIED, f'{r2.state}[{r2.code}]')
 
@@ -196,7 +206,8 @@ def test_F_oas1_pass_and_rush_are_separate_ids():
     # Applying one must not clear the other from a frame's lineage.
     tags = ['opponent_pass_strength_v1']
     ok = AR.assert_may_apply('opponent_rush_strength_v1',
-                             calling_layer='team_volume', frame_tags=tags)
+                             calling_layer='team_volume', frame_tags=tags,
+                             purpose=PURPOSE)
     check('  applying the rush effect to a pass-adjusted frame is permitted, '
           'because they are different quantities',
           ok.state is State.PASS, f'{ok.state}[{ok.code}]')
@@ -219,6 +230,70 @@ def test_G_every_entry_declares_the_required_fields():
         check(f'  {aid} is registered', aid in AR.ADJUSTMENTS)
 
 
+def test_H_research_only_status_is_enforced_not_merely_declared():
+    """THE TWO HOLES THIS TEST EXISTS BECAUSE OF, both found by running the
+    claim instead of writing it down.
+
+    1. `assert_may_apply` did not read `status` at all, so `team_volume` --
+       the owning layer -- could apply a RESEARCH_ONLY opponent adjustment to
+       a production frame and get ADJUSTMENT_APPLICATION_PERMITTED. Being the
+       sole applier was silently treated as permission to ship.
+    2. `assert_consumer` unioned `applied_at` into the permitted set
+       unconditionally. Both OAS1 entries are applied AT `team_volume` and
+       deliberately omit it from `permitted_consumers`; the union cancelled
+       exactly that restriction and returned PERMITTED.
+
+    Both returned PASS while 47 checks were green, because every check drove a
+    helper rather than the contract. These drive the contract.
+    """
+    print('\nH. RESEARCH_ONLY is a refusal, not a label')
+    for aid in ('opponent_pass_strength_v1', 'opponent_rush_strength_v1'):
+        r = AR.assert_may_apply(aid, calling_layer=OWNER_LAYER, frame_tags=[],
+                                purpose=AR.PRODUCTION)
+        check(f'{aid}: the OWNING layer is refused under the production purpose',
+              r.state is State.FAIL and r.code == AR.NOT_PRODUCTION_APPROVED,
+              f'{r.state}[{r.code}]')
+        check('  the refusal is HARD', r.code in AR.HARD_CODES)
+        ok = AR.assert_may_apply(aid, calling_layer=OWNER_LAYER, frame_tags=[],
+                                 purpose=AR.RESEARCH)
+        check('  and permitted under the research purpose, so the refusal is '
+              'about status and not a blanket no',
+              ok.state is State.PASS and ok.code == AR.OK,
+              f'{ok.state}[{ok.code}]')
+        c = AR.assert_consumer(aid, consumer='team_volume')
+        check('  team_volume may NOT READ it either, though it is the applying '
+              'layer', c.state is State.FAIL
+              and c.code == AR.CONSUMER_NOT_PERMITTED, f'{c.state}[{c.code}]')
+        for good in ('diagnostics', 'research'):
+            g = AR.assert_consumer(aid, consumer=good)
+            check(f'  {good} may read it', g.state is State.PASS,
+                  f'{g.state}[{g.code}]')
+    # THE CONTROL. A production-approved effect is not caught by any of this.
+    f = Frame(1.00)
+    r = f.apply(APPROVED, OWNER_LAYER, PERTURBATION, purpose=AR.PRODUCTION)
+    check('CONTROL: a PRODUCTION_APPROVED effect applies under the production '
+          'purpose', r.state is State.PASS and r.code == AR.OK,
+          f'{r.state}[{r.code}]')
+    check('  and the frame moved', abs(f.value - 1.25) < 1e-12, str(f.value))
+    again = f.apply(APPROVED, OWNER_LAYER, PERTURBATION, purpose=AR.PRODUCTION)
+    check('  its second application is still refused',
+          again.state is State.FAIL and again.code == AR.ALREADY_APPLIED,
+          f'{again.state}[{again.code}]')
+    c = AR.assert_consumer(APPROVED, consumer=OWNER_LAYER)
+    check('  and its APPLYING layer may read it back, which is why the union '
+          'existed at all', c.state is State.PASS, f'{c.state}[{c.code}]')
+    # A DECLARED-BUT-ABSENT EFFECT HAS NOTHING TO APPLY OR READ.
+    n = AR.assert_may_apply('coverage_v1', calling_layer='coverage',
+                            frame_tags=[], purpose=AR.RESEARCH)
+    check('a NOT_AVAILABLE effect is refused under EVERY purpose',
+          n.state is State.FAIL and n.code == AR.NOT_PRODUCTION_APPROVED,
+          f'{n.state}[{n.code}]')
+    nr = AR.assert_consumer('coverage_v1', consumer='diagnostics')
+    check('  and cannot be read, because a default read as a measurement is '
+          'worse than a refusal', nr.state is State.FAIL
+          and nr.code == AR.NOT_PRODUCTION_APPROVED, f'{nr.state}[{nr.code}]')
+
+
 def test_zz_every_check_passed():
     """The module's own counter, re-raised so a failure turns this module RED."""
     if FAILED:
@@ -232,7 +307,8 @@ if __name__ == '__main__':
                test_D_owner_and_lineage_refusals,
                test_E_a_declared_distinct_mechanism_is_permitted,
                test_F_oas1_pass_and_rush_are_separate_ids,
-               test_G_every_entry_declares_the_required_fields):
+               test_G_every_entry_declares_the_required_fields,
+               test_H_research_only_status_is_enforced_not_merely_declared):
         fn()
     for n in NOT_EXECUTED:
         print(f'  NOT_EXECUTED {n}')

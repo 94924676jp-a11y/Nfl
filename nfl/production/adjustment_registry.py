@@ -45,12 +45,21 @@ OWNER_MISMATCH = 'ADJUSTMENT_OWNER_MISMATCH'
 UNREGISTERED = 'UNREGISTERED_ADJUSTMENT'
 LINEAGE_UNKNOWN = 'ADJUSTMENT_LINEAGE_UNKNOWN'
 CONSUMER_NOT_PERMITTED = 'ADJUSTMENT_CONSUMER_NOT_PERMITTED'
+NOT_PRODUCTION_APPROVED = 'ADJUSTMENT_NOT_PRODUCTION_APPROVED'
 OK = 'ADJUSTMENT_APPLICATION_PERMITTED'
 
 #: Every refusal here is HARD. A duplicated adjustment is not a warning: the
 #: number it produces is wrong and nothing downstream can detect it.
 HARD_CODES = (ALREADY_APPLIED, OWNER_MISMATCH, UNREGISTERED, LINEAGE_UNKNOWN,
-              CONSUMER_NOT_PERMITTED)
+              CONSUMER_NOT_PERMITTED, NOT_PRODUCTION_APPROVED)
+
+#: Why `purpose` exists. WEEK2_OAS1_FIT_LAWFUL is YES_RESEARCH_ONLY and
+#: WEEK2_OAS1_DOWNSTREAM_LAWFUL is NO. Those are two different permissions and
+#: a registry that cannot tell them apart enforces neither. `purpose` is how a
+#: caller says which one it is claiming, and the DEFAULT is production, so a
+#: caller that says nothing gets the stricter answer.
+PRODUCTION = 'production'
+RESEARCH = 'research'
 
 #: Status vocabulary. REGISTERED means the id exists and its lineage is
 #: governed; it does NOT mean the effect is production-approved.
@@ -185,13 +194,20 @@ def get(adjustment_id: str) -> Outcome:
 
 
 def assert_may_apply(adjustment_id: str, *, calling_layer: str,
-                     frame_tags=None, distinct_mechanism: str = None) -> Outcome:
+                     frame_tags=None, distinct_mechanism: str = None,
+                     purpose: str = PRODUCTION) -> Outcome:
     """May `calling_layer` apply `adjustment_id` to a frame carrying `frame_tags`?
 
     `frame_tags` is the frame's OWN record of what has already been applied to
     it. `None` is not an empty list: a frame that cannot say what has been done
     to it has unknown lineage and is refused, because "no tag" and "no
     adjustment" are different states and only one of them is safe.
+
+    `purpose` defaults to PRODUCTION. A RESEARCH_ONLY adjustment applied under
+    the production purpose is refused even by its own owning layer -- being the
+    owner is permission to be the ONLY applier, not permission to ship. A
+    NOT_AVAILABLE adjustment is refused under every purpose because it has no
+    producer: there is nothing to apply.
     """
     reg = get(adjustment_id)
     if reg.state is not State.PASS:
@@ -202,6 +218,7 @@ def assert_may_apply(adjustment_id: str, *, calling_layer: str,
           'applied_at': a['applied_at'], 'status': a['status'],
           'frame_tags': (None if frame_tags is None else sorted(frame_tags)),
           'distinct_mechanism': distinct_mechanism}
+    ev['purpose'] = purpose
     if frame_tags is None:
         return Outcome.fail(
             LINEAGE_UNKNOWN,
@@ -211,6 +228,30 @@ def assert_may_apply(adjustment_id: str, *, calling_layer: str,
             f'recorded what was applied" are different states and only the '
             f'first is safe.',
             cause=Cause.GOVERNANCE, **ev)
+    if a['status'] == NOT_AVAILABLE:
+        return Outcome.fail(
+            NOT_PRODUCTION_APPROVED,
+            f'{adjustment_id!r} is {NOT_AVAILABLE}: it has no producer, so '
+            f'there is no estimate to apply. It is registered so that a '
+            f'future one has an owner before it has a consumer.',
+            cause=Cause.GOVERNANCE, **ev)
+    if a['status'] != PRODUCTION_APPROVED:
+        if purpose != RESEARCH:
+            return Outcome.fail(
+                NOT_PRODUCTION_APPROVED,
+                f'{adjustment_id!r} is {a["status"]} and this call claims '
+                f'purpose {purpose!r}. Registered is not approved. A '
+                f'research-only estimate reaching a production frame is the '
+                f'whole thing this status exists to stop, and being the '
+                f'owning layer does not change it.',
+                cause=Cause.GOVERNANCE, **ev)
+        if RESEARCH not in a['permitted_consumers']:
+            return Outcome.fail(
+                NOT_PRODUCTION_APPROVED,
+                f'{adjustment_id!r} is {a["status"]} and does not list '
+                f'{RESEARCH!r} among its permitted consumers, so it may not '
+                f'be applied even under a research purpose.',
+                cause=Cause.GOVERNANCE, **ev)
     if calling_layer != a['applied_at']:
         return Outcome.fail(
             OWNER_MISMATCH,
@@ -247,14 +288,34 @@ def assert_consumer(adjustment_id: str, *, consumer: str) -> Outcome:
     if reg.state is not State.PASS:
         return reg
     a = reg.value
-    allowed = set(a['permitted_consumers']) | {a['applied_at']}
+    if a['status'] == NOT_AVAILABLE:
+        return Outcome.fail(
+            NOT_PRODUCTION_APPROVED,
+            f'{adjustment_id!r} is {NOT_AVAILABLE}: there is no estimate to '
+            f'read. Reading a declared-but-absent adjustment would return a '
+            f'default, and a default read as a measurement is worse than a '
+            f'refusal.',
+            cause=Cause.GOVERNANCE, adjustment_id=adjustment_id,
+            consumer=consumer, status=a['status'])
+    # THE APPLYING LAYER IS NOT AUTOMATICALLY A PERMITTED READER.
+    #
+    # This union used to be unconditional, and it silently cancelled the one
+    # restriction the OAS1 entries were written to express: both opponent
+    # adjustments are applied AT `team_volume` and deliberately do NOT list
+    # `team_volume` as a permitted consumer, so the union made `team_volume` a
+    # permitted reader of the very effect it is barred from consuming. A layer
+    # that writes a PRODUCTION_APPROVED quantity necessarily reads it back;
+    # nothing of the sort follows for one that is not approved.
+    allowed = set(a['permitted_consumers'])
+    if a['status'] == PRODUCTION_APPROVED:
+        allowed |= {a['applied_at']}
     if consumer not in allowed:
         return Outcome.fail(
             CONSUMER_NOT_PERMITTED,
-            f'{consumer!r} is not a permitted consumer of {adjustment_id!r}. '
-            f'Permitted: {sorted(allowed)}.',
+            f'{consumer!r} is not a permitted consumer of {adjustment_id!r} '
+            f'(status {a["status"]}). Permitted: {sorted(allowed)}.',
             cause=Cause.GOVERNANCE, adjustment_id=adjustment_id,
-            consumer=consumer, permitted=sorted(allowed))
+            consumer=consumer, permitted=sorted(allowed), status=a['status'])
     return Outcome.ok('ADJUSTMENT_CONSUMER_PERMITTED', value=consumer,
                       detail=f'{consumer} may read {adjustment_id}',
                       adjustment_id=adjustment_id, consumer=consumer)

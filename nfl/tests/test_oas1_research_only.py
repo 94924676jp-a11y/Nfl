@@ -60,14 +60,18 @@ def team_volume_import(artifact, *, consumer='team_volume'):
             f'{artifact.get("downstream_authorized")}. A research artifact '
             f'may not enter production.', cause=Cause.GOVERNANCE)
     for aid in artifact.get('adjustment_ids') or []:
-        reg = AR.get(aid)
-        if reg.state is not State.PASS:
-            return reg
-        if reg.value['status'] != AR.PRODUCTION_APPROVED:
-            return Outcome.fail(
-                'ADJUSTMENT_NOT_PRODUCTION_APPROVED',
-                f'{aid} is {reg.value["status"]}, not '
-                f'{AR.PRODUCTION_APPROVED}.', cause=Cause.GOVERNANCE)
+        # THE IMPORTER ASKS THE REGISTRY. It does not re-implement the rule.
+        #
+        # This block used to carry its own copy of the status test, which is
+        # why 18 green checks sat on top of a registry that would have said
+        # PERMITTED to every one of them: the test was driving its own logic
+        # and calling the result a contract. `purpose=PRODUCTION` is the claim
+        # a production importer is actually making, so that is the claim that
+        # gets checked.
+        m = AR.assert_may_apply(aid, calling_layer=consumer, frame_tags=[],
+                                purpose=AR.PRODUCTION)
+        if m.state is not State.PASS:
+            return m
         c = AR.assert_consumer(aid, consumer=consumer)
         if c.state is not State.PASS:
             return c
@@ -106,8 +110,17 @@ def test_B_flipping_the_artifact_flag_is_not_enough():
 def test_C_team_volume_is_not_a_permitted_consumer_either():
     print('\nC. barrier 2b: consumer permissions')
     for aid in OAS1_IDS:
+        # THE CASE THE FUNCTION IS NAMED AFTER, which it did not used to test.
+        # It checked `receiving` -- an unrelated layer -- and left `team_volume`
+        # untested, and `team_volume` was the one the registry permitted,
+        # because it is the layer the effect is applied at.
+        tv = AR.assert_consumer(aid, consumer='team_volume')
+        check(f'{aid}: TEAM_VOLUME is refused as a consumer, though it is the '
+              f'layer the effect is applied at',
+              tv.state is State.FAIL and tv.code == AR.CONSUMER_NOT_PERMITTED,
+              f'{tv.state}[{tv.code}]')
         c = AR.assert_consumer(aid, consumer='receiving')
-        check(f'{aid}: an unrelated layer is refused as a consumer',
+        check(f'  an unrelated layer is refused as a consumer',
               c.state is State.FAIL and c.code == AR.CONSUMER_NOT_PERMITTED,
               f'{c.state}[{c.code}]')
         d = AR.assert_consumer(aid, consumer='diagnostics')
