@@ -142,6 +142,22 @@ def selected(metric, season):
 _FIT_CACHE: dict = {}
 
 
+def newest_panel_ordinal() -> int:
+    """The newest (season, week) ordinal the volume panel actually contains.
+
+    MEASURED, NEVER ASSERTED. The freshness gate wants to know how current
+    this input is, and the only honest answer comes from the file. An earlier
+    caller passed the ordinal it WANTED -- `season * 100 + week - 1` -- which
+    made the gate agree with the caller instead of with the data. Measured
+    2026-09-17 the panel holds 3,230 rows from 202001 to 202518 and ZERO rows
+    for 2026, so that assertion was false by eighteen weeks.
+
+    Returns -1 for an empty panel, which is stale against every requirement
+    rather than fresh against none.
+    """
+    return max((int(r['ord']) for r in _panel()), default=-1)
+
+
 def _fit_for(metric, season, week, ordinal):
     key = (metric, season, week)
     if key in _FIT_CACHE:

@@ -518,6 +518,23 @@ def receiving_conversion(tc: Outcome, targets_draws, priors, player_ids,
     n_rate_capped = 0
     Y = np.zeros(T.shape, float)
     used_pos_rate = 0
+    # THE ATOMS THIS LAYER ALREADY DRAWS AND THEN THREW AWAY.
+    #
+    # `Y[i, d]` is not a quantity this layer invents: it is the SUM of the
+    # per-catch yardages resampled below. Returning only the sum forced every
+    # downstream consumer to treat a team's passing yards as a continuous
+    # quantity to be divided, which is how `qb/pyds` became non-integer in
+    # 17.48% of cells. The atoms are kept so the quarterback credit can deal
+    # the catches instead of splitting their total.
+    #
+    # ADDITIVE, AND THAT IS THE WHOLE CLAIM HERE. No distribution changes, no
+    # RNG call is added, moved or reordered, no existing return value is
+    # touched. `atoms[i]` is exactly the `picks` vector that produced `Y[i]`,
+    # laid out DRAW-MAJOR, and `receptions` already carries the segment
+    # lengths: draw d occupies `picks[e - R[i, d]:e]` for `e = R[i, :d+1].sum()`.
+    # A row that caught nothing in any draw carries a length-0 array, which is
+    # the right answer rather than an absent key.
+    ATOMS = [np.zeros(0, float) for _ in player_ids]
     for i, pid in enumerate(player_ids):
         pos = positions[i]
         rng = _row_rng(seed, ordinal, pid)
@@ -561,8 +578,10 @@ def receiving_conversion(tc: Outcome, targets_draws, priors, player_ids,
         cs = np.concatenate([[0.0], np.cumsum(picks)])
         ends = np.cumsum(R[i])
         Y[i] = cs[ends] - cs[ends - R[i]]
+        ATOMS[i] = picks
     return Outcome.ok('CONVERSION_OK',
-                      value={'receptions': R, 'receiving_yards': Y},
+                      value={'receptions': R, 'receiving_yards': Y,
+                             'receiving_yard_atoms': ATOMS},
                       spec_version=SPEC['receiving_conversion'],
                       test_only=bool(tc.evidence.get('test_only')),
                       governance='HOLD_CHARACTERIZED + CALIBRATION_DEFECT',

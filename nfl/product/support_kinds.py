@@ -45,10 +45,27 @@ CONTINUOUS = 'continuous'
 
 _C = {'kind': COUNT, 'emitted': INTEGER}
 _Y_INT = {'kind': YARDS, 'emitted': INTEGER}
-#: Declared support is integer; the engine emits a continuous share. The gap is
-#: the defect pre-registered in nfl/research/qb_yards/.
-_Y_CONT = {'kind': YARDS, 'emitted': CONTINUOUS,
-           'defect': 'QB_YARDS_CONTINUOUS_SHARE'}
+#: Declared support is integer; the engine emits a continuous value. TWO
+#: DIFFERENT MECHANISMS PRODUCE THAT GAP AND AN EARLIER VERSION OF THIS TABLE
+#: GAVE BOTH THE SAME NAME, which would have let the QY1 arm appear to repair a
+#: quantity it never touches.
+#:
+#: QB_YARDS_CONTINUOUS_SHARE is `football_engine.credit_passing_line` dividing
+#: an integer TEAM total by a completion share: `cmp_q / team_cmp * team_pyds`.
+#: QY1 replaces it with a partition of the catches and closes it.
+_Y_SHARE = {'kind': YARDS, 'emitted': CONTINUOUS,
+            'defect': 'QB_YARDS_CONTINUOUS_SHARE',
+            'repaired_by': 'QY1'}
+#: QB_RUSH_YARDS_RATE_PRODUCT is `qb2_lib.py:690`, `ryds = rush_opp * ypr`,
+#: an integer count of rushes multiplied by a per-GAME yards-per-rush rate
+#: resampled from history. There is no team total and no share anywhere in it,
+#: so QY1 does not touch it and must not be reported as though it did. The
+#: analogous repair is the one RC1 already makes for receiving -- resample
+#: per-CARRY yardages and sum them -- and it is neither written nor
+#: pre-registered.
+_Y_RATE = {'kind': YARDS, 'emitted': CONTINUOUS,
+           'defect': 'QB_RUSH_YARDS_RATE_PRODUCT',
+           'repaired_by': None}
 
 EMITTED_KINDS = {
     # ---- counts -------------------------------------------------------
@@ -80,17 +97,26 @@ EMITTED_KINDS = {
     'gadget_rush/kneel_yards': _Y_INT, 'gadget_rush/te_yards': _Y_INT,
     'gadget_rush/wr_yards': _Y_INT,
     'receiving/receiving_yards': _Y_INT, 'rushing/rushing_yards': _Y_INT,
-    'qb/pyds': _Y_CONT, 'qb/ryds': _Y_CONT,
+    'qb/pyds': _Y_SHARE, 'qb/ryds': _Y_RATE,
     'rushing_total/rushing_yards': {
         'kind': YARDS, 'emitted': CONTINUOUS,
-        'defect': 'QB_YARDS_CONTINUOUS_SHARE',
-        'note': 'inherits qb/ryds; repaired by the same change'},
+        'defect': 'QB_RUSH_YARDS_RATE_PRODUCT',
+        'repaired_by': None,
+        'note': 'inherits qb/ryds, so it inherits the RATE-PRODUCT defect and '
+                'not the share one. An earlier version of this line said it '
+                'was "repaired by the same change" as qb/pyds. That was '
+                'wrong: QY1 never touches a rushing yard'},
     # ---- lattice ------------------------------------------------------
     'dk_scoring/dk_points': {
         'kind': LATTICE, 'emitted': CONTINUOUS,
-        'defect': 'QB_YARDS_CONTINUOUS_SHARE',
-        'note': 'a weighted sum of counts and yards; it returns to its lattice '
-                'once QB yards are integral'},
+        'defect': ('QB_YARDS_CONTINUOUS_SHARE', 'QB_RUSH_YARDS_RATE_PRODUCT'),
+        'repaired_by': None,
+        'note': 'a weighted sum of counts and yards, so it carries BOTH '
+                'yardage defects and QY1 closes only one of them. It returns '
+                'to its lattice when qb/ryds is also integral, which nothing '
+                'currently written does -- an earlier version of this line '
+                'promised the lattice back "once QB yards are integral" and '
+                'that promise is withdrawn'},
     'kicking/dk_points': {'kind': LATTICE, 'emitted': INTEGER,
                           'note': 'made kicks only, so already on its grid'},
     # ---- continuous team levels, and they are NOT counts ---------------

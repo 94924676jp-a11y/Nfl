@@ -53,6 +53,15 @@ CODE_STALE = 'CURRENT_SEASON_INPUT_STALE'
 CODE_INCOMPLETE = 'CURRENT_SEASON_INPUT_INCOMPLETE'
 CODE_OPENER = 'NOT_APPLICABLE_AT_A_SEASON_OPENER'
 CODE_UNDECLARED = 'CURRENT_SEASON_INPUT_UNDECLARED'
+#: DISTINCT FROM STALE ON PURPOSE. Stale means the data exists and
+#: stops too early. UNVERIFIED means nobody has established where the
+#: current-season version of this input comes from at all. Both refuse
+#: and neither is weaker, but a reader of the refusal has to be able to
+#: tell which one they are looking at: one is fixed by a fresher pull
+#: and the other by finding a source. They shared CODE_STALE until a
+#: live run refused with `CURRENT_SEASON_INPUT_STALE` for an input that
+#: was never stale.
+CODE_UNVERIFIED = 'CURRENT_SEASON_SOURCE_UNVERIFIED'
 
 #: The registry. `default_scope` is what a single-fixture board gets; a
 #: league-wide fit must pass LEAGUE_WIDE explicitly and is refused on 30 of 32.
@@ -156,8 +165,8 @@ def check_input(input_id: str, season: int, week: int, *, scope=None,
 
     if spec.get('declared_blocked'):
         return Outcome.blocked(
-            CODE_STALE,
-            f'{input_id} is STALE BY DECLARATION '
+            CODE_UNVERIFIED,
+            f'{input_id} is BLOCKED BY DECLARATION '
             f'({spec["declared_blocked"]}): its current-season source has not '
             f'been established, and a partially complete input produces '
             f'confidently wrong numbers rather than a nameable refusal.',

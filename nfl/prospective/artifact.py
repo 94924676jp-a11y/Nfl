@@ -435,7 +435,15 @@ def assert_hard_invariants(verdicts) -> Outcome:
         return Outcome.fail(
             'HARD_INVARIANT_FAILED',
             f'{len(failed)} hard invariant(s) did not hold: '
+            # THE REASON TRAVELS WITH THE NAME. This printed only
+            # `name=STATE[CODE]`, and a live run then refused with
+            # `current_season_input_freshness=BLOCKED[...]` and nothing to say
+            # WHICH of three registered inputs refused or why. `offences`
+            # carried it, but the refusal record written to disk carries the
+            # message, so the message has to hold the reason.
             + '; '.join(f'{v["invariant"]}={v["state"]}[{v["code"]}]'
+                        + (f' -- {v["detail"][:200]}' if v.get('detail')
+                           else '')
                         for v in failed)
             + '. A forecast whose own accounting does not hold may not be '
               'sealed as valid, whatever else in the run succeeded.',

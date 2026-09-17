@@ -46,6 +46,7 @@ from nfl.production import draws_artifact as DA                     # noqa: E402
 from nfl.identity import code_identity as CI                       # noqa: E402
 from nfl.production import draw_coherence as DC                     # noqa: E402
 from nfl.production import coherence_certificate as CCERT           # noqa: E402
+from nfl.production import freshness as FRESH                       # noqa: E402
 
 # THE ONE BOUND ON EVERY PLAYER-SCOPED EXCLUSION, declared once.
 #
@@ -631,6 +632,7 @@ def build(args, fixtures: dict = None) -> dict:
         fx['_qb_allocator'] = _alloc
         fx['_qb_alloc_evidence'] = {
             k: v for k, v in qa.evidence.items() if k != 'value'}
+        fx['_panel_freshness'] = qa.evidence.get('panel_freshness') or {}
         # THE VERDICT TRAVELS WITH THE RUN, because the board cannot re-derive
         # it. `qb_inactive_ownership_enforced` used to be read by the product
         # board and written by nobody, so QB_INACTIVE_NOT_CONSUMED could never
@@ -1442,7 +1444,10 @@ def build(args, fixtures: dict = None) -> dict:
                 inactive_ids=fx.get('official_inactive_ids'),
                 # SC2. Reachable only under C3, and off unless the resolved
                 # candidate asks for it, so every frozen arm is unmoved.
-                reserve_interceptions=bool(fl.get('reserve_interceptions')))
+                reserve_interceptions=bool(fl.get('reserve_interceptions')),
+                # QY1. Reachable only under C3, and off unless the resolved
+                # candidate asks for it, so every frozen arm is unmoved.
+                qb_yard_atoms=bool(fl.get('qb_yard_atoms')))
         except Exception as e:                                # noqa: BLE001
             o = Outcome.fail(
                 'NONQB_ENGINE_RAISED',
@@ -1594,6 +1599,25 @@ def build(args, fixtures: dict = None) -> dict:
                 'why': 'the reservation runs inside the C3 pass event; this '
                        'run did not reach it, so no throw was reserved and '
                        'the component is not claimed'}
+        # QY1 IS RECORDED FROM THE ENGINE'S OWN ALLOCATION VERDICT, not from
+        # the flag, for the same reason SC2 is: it is reachable only inside
+        # the C3 pass credit, and a run that asked for it without reaching it
+        # dealt no atoms and must not claim to have.
+        _ya = (g.get('accounting') or {}).get('qb_yard_allocation')
+        if _ya == 'QY1_ATOM_PARTITION':
+            applied.append('QY1')
+            fx['_qy1'] = {'state': 'APPLIED',
+                          'allocation': _ya,
+                          'what': 'team passing yards partitioned among the '
+                                  'passers as the catches they are'}
+        elif fl.get('qb_yard_atoms'):
+            not_reached.append('QY1')
+            fx['_qy1'] = {
+                'state': 'NOT_REACHED',
+                'allocation': _ya,
+                'why': 'the partition runs inside the C3 pass credit; this '
+                       'run did not reach it, so no yard was dealt and the '
+                       'component is not claimed'}
         fx['_candidate_applied'] = sorted(set(applied))
         fx['_candidate_not_reached'] = sorted(set(not_reached))
         # A HALT IS FATAL. NO BOARD IS SEALED ON A REFUSED HARD INVARIANT.
@@ -2957,6 +2981,66 @@ def build(args, fixtures: dict = None) -> dict:
             # run_status.json carries all of them and not only the ones
             # some earlier stage happened to record.
             _inv = fx.setdefault('_inv', {})
+            # --- current-season input freshness ---------------------------
+            # DECLARED HARD, SO IT MUST BE ANSWERED. The artifact refuses an
+            # invariant with no verdict -- silence is not a permitted answer --
+            # and the first run after registering this one died at
+            # artifact_sealing with INVARIANT_VERDICT_MISSING. That guard was
+            # right: a gate nobody evaluates is the defect it exists to stop,
+            # one level up.
+            #
+            # A single-fixture board declares FIXTURE_LOCAL and names the clubs
+            # it actually reads. The expected set is SUPPLIED here rather than
+            # inferred from what the panel happens to contain.
+            _csp = (fx.get('_cs1') or {})
+            # THE CLUB LIST COMES FROM THE RUN, NOT FROM A LOCAL NAME. An
+            # earlier version of this block read `teams`, which is bound
+            # inside the draw-assembly closure and does not exist here; the
+            # run refused at artifact_sealing with a NameError, which is the
+            # correct outcome for a gate that cannot evaluate itself but not
+            # the one this gate is for. `team_ids` is the fixture's own club
+            # set, and an empty one is refused by `check_input` rather than
+            # passing over nothing.
+            _fteams = sorted(fx.get('team_ids') or [])
+            # AND THE ORDINALS ARE MEASURED, NOT ASSERTED. An earlier version
+            # of this block handed `team_volume_history` and `denom_panel` the
+            # ordinal it WANTED -- `season * 100 + week - 1` -- so the gate
+            # agreed with its caller instead of with the file. Both read
+            # `nfl/research/inputs/denom_panel.csv.gz`, which holds 3,230 rows
+            # from 202001 to 202518 and ZERO rows for 2026: the assertion was
+            # false by eighteen weeks and turned a genuinely stale input into
+            # a passing check. Asking the panel is the whole point.
+            try:
+                _tv_ord = TV.newest_panel_ordinal()
+            except Exception:                                 # noqa: BLE001
+                # A panel that cannot be read is not a fresh one. None is
+                # STALE downstream, which is the answer an unreadable input
+                # deserves.
+                _tv_ord = None
+            _fresh_all = FRESH.check_all(args.season, args.week, {
+                'panel_p3': dict(
+                    scope=FRESH.FIXTURE_LOCAL, expected_clubs=_fteams,
+                    present_clubs=sorted(
+                        set(_fteams) - set(_csp.get('missing_clubs') or ())),
+                    newest_ordinal=(
+                        int(args.season) * 100 + int(args.week) - 1
+                        if _csp.get('state') == 'PASS' else
+                        (fx.get('_panel_freshness') or {}).get(
+                            'newest_panel_ordinal')),
+                    provenance=_csp.get('weeks') or []),
+                'team_volume_history': dict(
+                    scope=FRESH.FIXTURE_LOCAL, expected_clubs=_fteams,
+                    present_clubs=_fteams, newest_ordinal=_tv_ord),
+                # THE SAME FILE. `team_volume_v1.PANEL` IS `denom_panel`, so
+                # these two entries are one input read by two consumers and
+                # they get the same measured ordinal. Giving them different
+                # ones would let the board call an input fresh under one name
+                # and blocked under the other.
+                'denom_panel': dict(
+                    scope=FRESH.LEAGUE_WIDE, expected_clubs=_fteams,
+                    present_clubs=_fteams, newest_ordinal=_tv_ord),
+            })
+            _inv['current_season_input_freshness'] = _fresh_all
             # --- P2 draw coherence ----------------------------------------
             #
             # The verdict was computed at `_draws()` on the matrices that are
@@ -3224,6 +3308,24 @@ def build(args, fixtures: dict = None) -> dict:
     pub = AUTH.may_publish()
     summary['publication'] = {'state': pub.state.value, 'code': pub.code,
                               'detail': pub.detail[:200]}
+    # A VERDICT THAT ONLY APPEARS WHEN THE BOARD SEALS IS INVISIBLE EXACTLY
+    # WHEN IT IS WANTED. Both of these live in the forecast artifact, which a
+    # REFUSED run never writes -- so on the run where the pipeline stopped,
+    # the two checks that say whether the draws survived to publication and
+    # whether their inputs were current had nothing on disk at all. They are
+    # copied into `run_status.json`, which is written either way.
+    summary['coherence_certificate'] = fx.get('_coherence_certificate') or {}
+    summary['coherence_certificate_verdict'] = (
+        fx.get('_coherence_certificate_verdict')
+        or {'state': 'NOT_EXECUTED',
+            'why': 'the run did not reach the publication verification point'})
+    _fv = (fx.get('_inv') or {}).get('current_season_input_freshness')
+    summary['current_season_input_freshness'] = (
+        {'state': _fv.state.value, 'code': _fv.code, 'detail': _fv.detail,
+         **{k: v for k, v in _fv.evidence.items() if k != 'value'}}
+        if _fv is not None else
+        {'state': 'NOT_EXECUTED',
+         'why': 'the run did not reach the invariant assembly'})
     p.out_dir.mkdir(parents=True, exist_ok=True)
     (p.out_dir / 'run_status.json').write_text(
         json.dumps(summary, indent=1, default=str) + '\n')

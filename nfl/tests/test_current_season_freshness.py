@@ -12,6 +12,7 @@ with one threshold either blocks the first or admits the second.
 from __future__ import annotations
 
 import os
+import pathlib
 import sys
 
 _ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -133,13 +134,20 @@ def test_E_an_unmentioned_registered_input_is_a_refusal():
 
 
 def test_F_denom_panel_is_blocked_by_declaration_and_says_why():
-    print('\nF. denom_panel: stale by declaration, and the block is not blunt')
+    print('\nF. denom_panel: blocked by declaration, and the block is not blunt')
     o = F.check_input('denom_panel', 2026, 2, scope=F.LEAGUE_WIDE,
                       newest_ordinal=202601, expected_clubs=CLUBS32,
                       present_clubs=CLUBS32)
+    # IT IS NOT STALE AND MUST NOT SAY IT IS. A live 2026 week-2 run refused
+    # at artifact_sealing with `CURRENT_SEASON_INPUT_STALE`, and the input it
+    # was talking about had a perfectly current ordinal -- what it lacks is an
+    # established current-season SOURCE. Same refusal, different repair, so a
+    # different code.
     check('it BLOCKS even with a current ordinal and full coverage',
-          o.state is State.BLOCKED and o.code == F.CODE_STALE,
+          o.state is State.BLOCKED and o.code == F.CODE_UNVERIFIED,
           f'{o.state}[{o.code}]')
+    check('  and it is NOT reported as stale, which it is not',
+          o.code != F.CODE_STALE, o.code)
     check('  naming the source problem rather than a coverage number',
           o.evidence.get('declared_blocked') == 'CURRENT_SEASON_SOURCE_UNVERIFIED',
           str(o.evidence.get('declared_blocked')))
@@ -185,6 +193,59 @@ def test_H_ordinals_not_wall_clock():
           str(F.required_ordinal(2026, 2)))
 
 
+def test_I_the_production_caller_MEASURES_the_ordinal_it_reports():
+    """The gate is asked, never told.
+
+    THIS IS THE BUG THIS TEST EXISTS FOR. The first wiring of this gate into
+    `run_forecast` passed `season * 100 + week - 1` as the newest ordinal of
+    `team_volume_history` and of `denom_panel`. That is the ordinal the gate
+    REQUIRES, so the check could not fail: the caller handed the gate its own
+    answer. Both names read `nfl/research/inputs/denom_panel.csv.gz`, which
+    stops at 202518 with no 2026 rows at all, so a 2026 week-2 board was
+    calling an eighteen-week-old input fresh.
+
+    A gate that agrees with whoever calls it is not a gate, and the failure is
+    silent, which is worse than a refusal.
+    """
+    print('\nI. the caller does not get to assert freshness')
+    src = (pathlib.Path(__file__).resolve().parents[1]
+           / 'production' / 'run_forecast.py').read_text()
+    i = src.find('FRESH.check_all(')
+    check('the production caller wires the gate at all', i > 0, str(i))
+    if i <= 0:
+        NOT_EXECUTED.append('I: no FRESH.check_all call found')
+        return
+    blk = src[i:i + 1800]
+    check('no entry asserts the REQUIRED ordinal as its own newest ordinal',
+          'newest_ordinal=int(args.season) * 100 + int(args.week) - 1'
+          not in blk,
+          'the caller still hands the gate the ordinal the gate demands')
+    check('  team_volume_history takes a MEASURED ordinal',
+          'newest_ordinal=_tv_ord' in blk, blk[:0] or 'not measured')
+    # And the measurement itself has to be real.
+    sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2]))
+    from nfl.production import team_volume_v1 as TV        # noqa: E402
+    got = TV.newest_panel_ordinal()
+    check('  and that measurement reads the panel, not the clock',
+          isinstance(got, int) and got > 0, str(got))
+    check('  the panel really is behind 2026 week 2, so this is not academic',
+          got < F.required_ordinal(2026, 2),
+          f'panel newest {got} against required {F.required_ordinal(2026, 2)}')
+    o = F.check_input('team_volume_history', 2026, 2, scope=F.FIXTURE_LOCAL,
+                      newest_ordinal=got, expected_clubs=CLUBS32,
+                      present_clubs=CLUBS32)
+    check('  so the gate BLOCKS it as stale, which the assertion had hidden',
+          o.state is State.BLOCKED and o.code == F.CODE_STALE,
+          f'{o.state}[{o.code}]')
+    # An unreadable panel must not become a fresh one.
+    o2 = F.check_input('team_volume_history', 2026, 2, scope=F.FIXTURE_LOCAL,
+                       newest_ordinal=None, expected_clubs=CLUBS32,
+                       present_clubs=CLUBS32)
+    check('  and an ordinal that could not be read is STALE, not FRESH',
+          o2.state is State.BLOCKED and o2.code == F.CODE_STALE,
+          f'{o2.state}[{o2.code}]')
+
+
 def test_zz_every_check_passed():
     """The module's own counter, re-raised so a failure turns this module RED."""
     if FAILED:
@@ -199,7 +260,8 @@ if __name__ == '__main__':
                test_E_an_unmentioned_registered_input_is_a_refusal,
                test_F_denom_panel_is_blocked_by_declaration_and_says_why,
                test_G_it_is_registered_HARD_and_evaluated_before_publication,
-               test_H_ordinals_not_wall_clock):
+               test_H_ordinals_not_wall_clock,
+               test_I_the_production_caller_MEASURES_the_ordinal_it_reports):
         fn()
     print(f'\n{PASSED} passed, {FAILED} failed')
     raise SystemExit(1 if FAILED else 0)

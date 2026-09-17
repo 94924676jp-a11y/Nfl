@@ -174,9 +174,35 @@ def test_D_the_discrepancies_are_the_known_defect_and_are_named():
     check('  it is exactly the QB-yard family and what inherits from it',
           set(d) == {'qb/pyds', 'qb/ryds', 'rushing_total/rushing_yards',
                      'dk_scoring/dk_points'}, str(d))
+    # TWO MECHANISMS, NOT ONE, AND AN EARLIER VERSION OF THIS TEST ASSERTED
+    # ONE. It required every discrepancy to name QB_YARDS_CONTINUOUS_SHARE,
+    # which made `qb/ryds` -- `rush_opp * ypr`, a count times a per-GAME rate
+    # at qb2_lib.py:690, with no team total and no share in it -- look like
+    # the same defect QY1 repairs. It is not, QY1 does not touch it, and a
+    # test that had stayed green would have let the arm claim a repair it
+    # never made.
+    KNOWN = {'QB_YARDS_CONTINUOUS_SHARE', 'QB_RUSH_YARDS_RATE_PRODUCT'}
     for k in d:
-        check(f'  {k} names the defect rather than only differing',
-              SK.EMITTED_KINDS[k].get('defect') == 'QB_YARDS_CONTINUOUS_SHARE')
+        names = SK.EMITTED_KINDS[k].get('defect')
+        names = (names,) if isinstance(names, str) else tuple(names or ())
+        check(f'  {k} names a DECLARED defect rather than only differing',
+              bool(names) and set(names) <= KNOWN, str(names))
+    check('  qb/pyds is the SHARE defect, and QY1 is recorded as its repair',
+          SK.EMITTED_KINDS['qb/pyds'].get('defect')
+          == 'QB_YARDS_CONTINUOUS_SHARE'
+          and SK.EMITTED_KINDS['qb/pyds'].get('repaired_by') == 'QY1',
+          str(SK.EMITTED_KINDS['qb/pyds']))
+    check('  qb/ryds is the RATE-PRODUCT defect and has NO repair written',
+          SK.EMITTED_KINDS['qb/ryds'].get('defect')
+          == 'QB_RUSH_YARDS_RATE_PRODUCT'
+          and SK.EMITTED_KINDS['qb/ryds'].get('repaired_by') is None,
+          str(SK.EMITTED_KINDS['qb/ryds']))
+    check('  dk_points carries BOTH, so QY1 does not restore its lattice',
+          set(SK.EMITTED_KINDS['dk_scoring/dk_points'].get('defect') or ())
+          == KNOWN
+          and SK.EMITTED_KINDS['dk_scoring/dk_points'].get('repaired_by')
+          is None,
+          str(SK.EMITTED_KINDS['dk_scoring/dk_points']))
 
 
 def test_E_it_does_not_contradict_the_publication_registry():

@@ -81,8 +81,46 @@ COUNT_STREAM_TARGETS = 0xC0418
 COUNT_CONTRACT_VERSION = SCT.CONTRACT_VERSION
 
 
+def team_completion_atoms(atom_rows, receptions, ri, m):
+    """Regroup RC1's per-receiver per-catch yardages into the TEAM's per-draw
+    multiset of completion yardages.
+
+    RC1 lays each receiver's atoms out draw-major and `receptions` carries the
+    segment lengths, so draw d of row i occupies `a[e - r[d]:e]` for
+    `e = r[:d+1].sum()`. A team's completions in draw d are the union of those
+    segments over the team's receivers, which is exactly the multiset
+    `credit_passing_line` partitions.
+
+    Returns `(per_draw, bad)`. `bad` is None on success and otherwise names
+    the row whose atom count disagrees with its own reception count -- an
+    impossible state that is reported rather than absorbed, because a silently
+    short multiset would deal the wrong yards to a real quarterback.
+    """
+    vals, drw = [], []
+    for i in ri:
+        a = np.asarray(atom_rows[i], float).reshape(-1)
+        r = np.rint(np.asarray(receptions[i], float)).astype(np.int64)
+        if int(r.sum()) != a.size:
+            return None, (int(i), int(r.sum()), int(a.size))
+        if not a.size:
+            continue
+        vals.append(a)
+        drw.append(np.repeat(np.arange(m), r))
+    if not vals:
+        return [np.zeros(0, float) for _ in range(m)], None
+    A = np.concatenate(vals)
+    D = np.concatenate(drw)
+    # A STABLE sort, so the layout is a deterministic function of the row
+    # order and not of numpy's partitioning choices. The partition shuffles
+    # afterwards anyway; determinism here is what makes the run reproducible.
+    order = np.argsort(D, kind='stable')
+    A = A[order]
+    starts = np.concatenate([[0], np.cumsum(np.bincount(D, minlength=m))])
+    return [A[starts[j]:starts[j + 1]] for j in range(m)], None
+
+
 def credit_passing_line(att_by_qb, int_by_qb, team_cmp, team_pyds,
-                        team_ptd, rng) -> Outcome:
+                        team_ptd, rng, atoms=None, atom_rng=None) -> Outcome:
     """Split the team's passing line among that team's quarterbacks.
 
     WHAT WAS WRONG, AND WHY MOVING A GUARD WOULD NOT HAVE FIXED IT
@@ -166,6 +204,42 @@ def credit_passing_line(att_by_qb, int_by_qb, team_cmp, team_pyds,
     kind SC1 was pre-registered to fix for carries and scrambles. It is
     REFUSED BY NAME here rather than clipped, and the analogous coupling is
     named as owed work rather than improvised.
+
+    QY1 -- THE YARDS, WHEN THE ATOMS ARE SUPPLIED
+    ---------------------------------------------
+    `atoms` is optional and OFF by default, so every frozen arm is bit-for-bit
+    unmoved. Supplied, it is the per-draw multiset of the team's completion
+    yardages -- the vector RC1 already drew and used to sum
+    `receiving_yards` -- and the yardage is then dealt as what it is:
+
+        partition the K completion-yardages into blocks of sizes
+        cmp_1 ... cmp_n, and give quarterback i the sum of his block.
+
+    That replaces `cmp_q / K * Y`, a CONTINUOUS SHARE of a team total, which
+    is why `qb/pyds` is non-integer in 17.48% of sealed cells. Every property
+    the share version had to assert now holds by construction: the blocks
+    partition the multiset so the totals close exactly; a block of integers
+    sums to an integer; an EMPTY block sums to 0, so "no completion, no
+    yards" needs no `np.where`; and nothing anywhere is compared against zero,
+    so a NEGATIVE team total -- 2,261 lawful negative cells in this repository
+    -- is dealt like any other.
+
+    A MULTIVARIATE HYPERGEOMETRIC WOULD BE THE WRONG FAMILY and is not used.
+    It distributes NON-NEGATIVE integer counts from an urn; there is no urn
+    with -7 balls in it, and the clip that would "fix" that breaks the HARD
+    `qb_cross_layer_reconciliation`, which asserts team passing yards EQUALS
+    player receiving yards over values that are lawfully negative.
+
+    THE PERMUTATION DRAWS FROM `atom_rng`, A SEPARATE STREAM, on purpose. The
+    completion and touchdown allocations must be identical to the incumbent's
+    for the same `rng`, so that an arm comparison isolates the yardage change
+    instead of measuring a shifted random stream.
+
+    The atoms are VALIDATED, NOT TRUSTED: a count that disagrees with the
+    completions, a non-integer atom, or a multiset that does not sum to the
+    declared team total is refused by its own name. Each of those would be a
+    silent mis-attribution otherwise, which is the failure mode this whole
+    function exists to have stopped doing.
     """
     A = np.asarray(att_by_qb, float)
     I = np.asarray(int_by_qb, float)
@@ -252,9 +326,83 @@ def credit_passing_line(att_by_qb, int_by_qb, team_cmp, team_pyds,
             completable[:, j], int(Ki[j]))
         ptd_q[:, j] = rng.multivariate_hypergeometric(
             cmp_q[:, j], int(Pi[j]))
-    denom = np.where(Ki > 0, Ki, 1)
-    pyds_q = np.where(Ki[None, :] > 0,
-                      cmp_q / denom[None, :] * Y[None, :], 0.0)
+    if atoms is None:
+        # THE INCUMBENT PATH, UNTOUCHED. A continuous share of the team total,
+        # and the reason `qb/pyds` has a continuous support it should not.
+        denom = np.where(Ki > 0, Ki, 1)
+        pyds_q = np.where(Ki[None, :] > 0,
+                          cmp_q / denom[None, :] * Y[None, :], 0.0)
+        yard_scheme = 'yards on the completion share of the team total'
+    else:
+        seg = list(atoms)
+        if len(seg) != m:
+            return Outcome.fail(
+                'PASSER_CREDIT_ATOM_SHAPE',
+                f'{len(seg)} atom vector(s) against {m} draw(s); the atoms '
+                f'do not share the draw index they are supposed to be '
+                f'indexed by.', n_atoms=len(seg), m=m)
+        seg = [np.asarray(v, float).reshape(-1) for v in seg]
+        n_bad = [j for j in range(m) if seg[j].size != int(Ki[j])]
+        if n_bad:
+            j = n_bad[0]
+            return Outcome.fail(
+                'PASSER_CREDIT_ATOM_COUNT_MISMATCH',
+                f'{len(n_bad)} draw(s) supply a number of completion '
+                f'yardages that is not the number of completions -- worst '
+                f'draw {j}: {seg[j].size} atom(s) against {int(Ki[j])} team '
+                f'completion(s). A partition needs the multiset it is '
+                f'partitioning; this is refused rather than padded or '
+                f'truncated.', n_bad=len(n_bad), worst_draw=j)
+        frac = [j for j in range(m)
+                if seg[j].size and np.any(np.abs(seg[j] - np.rint(seg[j]))
+                                          > 1e-9)]
+        if frac:
+            return Outcome.fail(
+                'PASSER_CREDIT_ATOM_NON_INTEGER',
+                f'{len(frac)} draw(s) carry a non-integer per-completion '
+                f'yardage -- first draw {frac[0]}. A yard is an integer; a '
+                f'fractional atom means the quantity has already been '
+                f'divided somewhere upstream, and rounding it here would '
+                f'hide exactly the defect this deal exists to remove.',
+                n_bad=len(frac), worst_draw=frac[0])
+        tot = np.array([seg[j].sum() for j in range(m)], float)
+        off = np.abs(tot - Y) > 1e-9
+        if off.any():
+            j = int(np.argmax(np.abs(tot - Y)))
+            return Outcome.fail(
+                'PASSER_CREDIT_ATOM_TOTAL_MISMATCH',
+                f'{int(off.sum())} draw(s) where the completion yardages do '
+                f'not sum to the declared team passing total -- worst draw '
+                f'{j}: atoms sum to {float(tot[j])} against {float(Y[j])}. '
+                f'One of the two is wrong and this function cannot tell '
+                f'which, so it refuses instead of preferring one.',
+                n_bad=int(off.sum()), worst_draw=j,
+                atom_total=float(tot[j]), declared_total=float(Y[j]))
+        arng = atom_rng if atom_rng is not None else rng
+        pyds_q = np.zeros((nq, m), float)
+        for j in range(m):
+            k = seg[j].size
+            if k == 0:
+                continue
+            shuffled = seg[j][arng.permutation(k)]
+            # The same cumulative-sum idiom RC1 uses, and for the same reason:
+            # `np.add.reduceat` cannot express the zero-length block a
+            # quarterback with no completions must receive, and that block's
+            # sum -- exactly 0 -- is the whole point of the construction.
+            cs = np.concatenate([[0.0], np.cumsum(shuffled)])
+            e = np.cumsum(cmp_q[:, j])
+            pyds_q[:, j] = cs[e] - cs[e - cmp_q[:, j]]
+        frac_out = int((np.abs(pyds_q - np.rint(pyds_q)) > 1e-9).sum())
+        if frac_out:
+            return Outcome.fail(
+                'PASSER_CREDIT_INCOHERENT',
+                f'{frac_out} credited cell(s) are non-integer after a '
+                f'partition of integers, which is arithmetically impossible. '
+                f'This is a defect in this function, not in its inputs.',
+                check='integer_yards_from_integer_atoms', n_bad=frac_out)
+        yard_scheme = ('yards by random PARTITION of the team\'s completion '
+                       'yardages into blocks of the credited completion '
+                       'counts; signed, integer, and closing by construction')
 
     # THE CLOSURE THE INCUMBENT CHECKED, KEPT VERBATIM. The new scheme closes
     # by construction; the check stays because a construction that is believed
@@ -295,7 +443,9 @@ def credit_passing_line(att_by_qb, int_by_qb, team_cmp, team_pyds,
                f'hypergeometric allocation over their own attempts',
         attribution=PASSER_CREDIT_ATTRIBUTION,
         scheme='multivariate hypergeometric over (attempts - interceptions), '
-               'then over credited completions; yards on the completion share',
+               'then over credited completions; ' + yard_scheme,
+        yard_allocation=('QY1_ATOM_PARTITION' if atoms is not None
+                         else 'CONTINUOUS_COMPLETION_SHARE'),
         replaces='nfl.production.nonqb.shared_pass.credit_to_passers, whose '
                  'attempt-share multinomial sampled a finite pool WITH '
                  'replacement',
@@ -485,7 +635,8 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
              game_coupling='none', rushing_budget=None,
              team_carries_override=None, tv=None, rush_categories=None,
              appearance_spec='frozen', observed_before=None,
-             inactive_ids=None, reserve_interceptions=False):
+             inactive_ids=None, reserve_interceptions=False,
+             qb_yard_atoms=False):
     """One game, every implemented layer, one draw index.
 
     `rushing_budget` is A1's `rb` category carries, {team: (m,) counts}.
@@ -1669,7 +1820,46 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
                 # `credit_passing_line` deals the same events from the same
                 # exchangeability assumption without replacement, so the
                 # coherence holds by construction rather than by a guard.
-                cr = credit_passing_line(A, IN, R, Y, TD, rngc)
+                # QY1. OFF unless the resolved candidate asked for it, so
+                # every sealed arm keeps the continuous share it was sealed
+                # with. Supplied, the passing yards are a PARTITION of the
+                # catches RC1 already drew rather than a division of their
+                # sum, and `qb/pyds` becomes integer by construction.
+                _atoms = None
+                if qb_yard_atoms:
+                    _rows = cv.value.get('receiving_yard_atoms')
+                    if _rows is None:
+                        g['accounting']['qb_yard_allocation'] = (
+                            'BLOCKED[QY1_ATOMS_NOT_SUPPLIED]')
+                        g['halted_at'] = 'shared_pass'
+                        g['halt_reason'] = (
+                            'the candidate asked for the QY1 atom partition '
+                            'and the conversion layer returned no atoms. '
+                            'Refused rather than falling back to the '
+                            'continuous share under the QY1 name.')
+                        cred_ok = False
+                        break
+                    _atoms, _bad = team_completion_atoms(
+                        _rows, np.asarray(cv.value['receptions'], float),
+                        ri, m)
+                    if _bad is not None:
+                        g['accounting']['qb_yard_allocation'] = (
+                            f'FAIL[QY1_ATOM_ROW_MISMATCH row={_bad[0]} '
+                            f'receptions={_bad[1]} atoms={_bad[2]}]')
+                        g['halted_at'] = 'shared_pass'
+                        g['halt_reason'] = (
+                            f'receiver row {_bad[0]} carries {_bad[1]} '
+                            f'reception(s) and {_bad[2]} per-catch '
+                            f'yardage(s). The two cannot both be right.')
+                        cred_ok = False
+                        break
+                cr = credit_passing_line(
+                    A, IN, R, Y, TD, rngc, atoms=_atoms,
+                    atom_rng=(None if _atoms is None else
+                              np.random.default_rng(
+                                  [seed, season * 100 + week,
+                                   int(SEEDS.game_component(game_id).value),
+                                   0xC302, k])))
                 if cr.state is not State.PASS:
                     g['accounting']['shared_pass_credit'] = \
                         f'{cr.state.value}[{cr.code}]'
@@ -1687,6 +1877,9 @@ def run_game(season, week, game_id, players, fits, m=200, seed=20260908,
             if cred_ok:
                 g['accounting']['shared_pass_credit'] = \
                     'PASS[PASSING_LINE_CREDITED_FROM_THE_RECEIVING_EVENT]'
+                g['accounting']['qb_yard_allocation'] = (
+                    'QY1_ATOM_PARTITION' if qb_yard_atoms
+                    else 'CONTINUOUS_COMPLETION_SHARE')
                 c3['passer_line_owner'] = ('the receiving event; QB V1 no '
                                            'longer draws cmp/pyds/ptd')
             g['c3'] = c3

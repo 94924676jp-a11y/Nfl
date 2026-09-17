@@ -59,6 +59,7 @@ V1_CANDIDATE_R9_W1P_GSVP = 'V1_CANDIDATE_R9_W1P_GSVP'
 V1_CANDIDATE_R9_W1P_GSVU = 'V1_CANDIDATE_R9_W1P_GSVU'
 V1_CANDIDATE_R9_W1P_GSVUQ = 'V1_CANDIDATE_R9_W1P_GSVUQ'
 V1_CANDIDATE_R9_W1P_GSVUC = 'V1_CANDIDATE_R9_W1P_GSVUC'
+V1_CANDIDATE_R9_W1P_GSVUCY = 'V1_CANDIDATE_R9_W1P_GSVUCY'
 MODES = (PRODUCTION_BASELINE, V1_CANDIDATE, V1_CANDIDATE_R5,
          V1_CANDIDATE_R6, V1_CANDIDATE_R7, V1_CANDIDATE_R8,
          V1_CANDIDATE_R9, V1_CANDIDATE_R10, V1_CANDIDATE_R11,
@@ -67,7 +68,7 @@ MODES = (PRODUCTION_BASELINE, V1_CANDIDATE, V1_CANDIDATE_R5,
          V1_CANDIDATE_R9_W1P_GS, V1_CANDIDATE_R9_W1P_GSV,
          V1_CANDIDATE_R9_W1P_GSP, V1_CANDIDATE_R9_W1P_GSVP,
          V1_CANDIDATE_R9_W1P_GSVU, V1_CANDIDATE_R9_W1P_GSVUQ,
-         V1_CANDIDATE_R9_W1P_GSVUC)
+         V1_CANDIDATE_R9_W1P_GSVUC, V1_CANDIDATE_R9_W1P_GSVUCY)
 
 # Every mode that is a CANDIDATE, derived so a new one cannot escape a guard
 # by not being added to a hand-written list. See `assert_not_promoted`.
@@ -839,6 +840,76 @@ QBSEM_REPAIR = {
 R9_W1P_GSVUC_FLAGS = dict(R9_W1P_GSVU_FLAGS)
 R9_W1P_GSVUC_FLAGS['current_season_state'] = True
 
+#: QY1 -- the passing yards dealt as a PARTITION of the catches, not as a
+#: share of their sum.
+QY1_REPAIR = {
+    'component': 'QY1',
+    'what': 'a quarterback`s passing yards in a draw are the SUM OF A BLOCK '
+            'of that team`s completion yardages, drawn by partitioning the '
+            'multiset of per-catch yards into blocks of the credited '
+            'completion counts',
+    'replaces': 'nothing is deleted. `credit_passing_line` keeps its '
+                'continuous-share path verbatim and takes the partition only '
+                'when a candidate supplies the atoms, so every sealed arm '
+                'reproduces bit for bit',
+    'defect': '`pyds_q = cmp_q / team_cmp * team_pyds` makes passing yards a '
+              'CONTINUOUS share of an integer team total. Measured: '
+              '`qb/pyds` non-integer in 5,594 of 32,000 sealed cells '
+              '(17.48%), the fractional parts being exactly the k/n '
+              'completion-share denominators. A yard is not divisible',
+    'why_not_a_hypergeometric': 'the atoms are SIGNED -- the frozen 2026 '
+                                'receiving pools carry 2,043 negative '
+                                'per-catch yardages out of 69,981, minimum '
+                                '-13, and the repository holds 2,261 lawful '
+                                'negative sealed `qb/pyds` cells. A '
+                                'multivariate hypergeometric distributes '
+                                'non-negative counts from an urn and would '
+                                'have to be rescued by a clip, and a clip '
+                                'breaks the HARD '
+                                'qb_cross_layer_reconciliation, which '
+                                'asserts team passing yards EQUALS player '
+                                'receiving yards over exactly those negative '
+                                'values',
+    'holds_by_construction': 'the blocks partition the multiset, so the '
+                             'per-passer yards sum to the team total exactly '
+                             'and not within a tolerance; a block of '
+                             'integers sums to an integer; an EMPTY block '
+                             'sums to 0, so "no completion, no yards" needs '
+                             'no np.where; and no step anywhere compares a '
+                             'value against zero, so a negative total deals '
+                             'like any other',
+    'upstream': 'RC1 already drew these atoms and summed them away. '
+                '`layers.receiving_conversion` now RETURNS them alongside '
+                'its existing values -- byte-identical `receptions` and '
+                '`receiving_yards` against HEAD, no added RNG call -- and '
+                'that additivity is asserted against the pre-change source '
+                'in nfl/tests/test_qb_yard_atoms.py, not asserted in prose',
+    'separate_rng_stream': 'the permutation draws from its own generator '
+                           '(0xC302) so the completion and touchdown '
+                           'allocations are bit-identical to the incumbent '
+                           'for the same seed. An arm comparison then '
+                           'isolates the yardage change instead of measuring '
+                           'a shifted random stream',
+    'not_claimed': 'that integer yards FORECAST better. This repairs the '
+                   'SUPPORT of a quantity whose realised values are '
+                   'integers. Whether it improves a proper score is an '
+                   'out-of-sample question and no acceptance gate in '
+                   'nfl/research/qb_yards/predeclaration_signed_deal.md '
+                   'makes that claim',
+    'consequence_recorded_in_advance': '`qb/pyds` moves from the continuous '
+                                       'class into Contract 4`s discrete '
+                                       'class. Declared before the arm ran, '
+                                       'not discovered after it',
+    'governance': 'REHEARSAL_ONLY -- a mechanism change with its own '
+                  'identity, never an edit to GSVUC or to any frozen arm',
+    'engine_flag': 'qb_yard_atoms',
+}
+
+#: GSVUCY -- QY1. GSVUC plus the signed integer partition of passing yards.
+#: One flag, one mechanism, one new identity.
+R9_W1P_GSVUCY_FLAGS = dict(R9_W1P_GSVUC_FLAGS)
+R9_W1P_GSVUCY_FLAGS['qb_yard_atoms'] = True
+
 CS1_REPAIR = {
     'component': 'CS1',
     'what': 'the previous-primary passer and the season-boundary flag are '
@@ -1349,6 +1420,21 @@ def resolve(mode: str) -> Outcome:
                    'candidate': True},
             detail='CS1: GSVU with current-season incumbency state, so a '
                    'week-2 game is not treated as a season opener')
+    if mode == V1_CANDIDATE_R9_W1P_GSVUCY:
+        return Outcome.ok(
+            'MODE_V1_CANDIDATE_R9_W1P_GSVUCY',
+            value={'mode': V1_CANDIDATE_R9_W1P_GSVUCY,
+                   'flags': dict(R9_W1P_GSVUCY_FLAGS),
+                   'components': _sc2_base() + [_avail_only(),
+                                                dict(W1_UNION_REPAIR),
+                                                dict(CS1_REPAIR),
+                                                dict(QY1_REPAIR)],
+                   'ablation': dict(ABLATION_NOTE),
+                   'candidate': True},
+            detail='QY1: GSVUC with the team passing yards PARTITIONED among '
+                   'the passers as the catches they are, so a passing-yard '
+                   'total is an integer by construction instead of a share '
+                   'of one')
     if mode == V1_CANDIDATE_R9_W1P_GSVUQ:
         return Outcome.ok(
             'MODE_V1_CANDIDATE_R9_W1P_GSVUQ',
