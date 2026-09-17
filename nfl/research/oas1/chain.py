@@ -235,6 +235,13 @@ def run(rows, *, play_class: str, folds, inner_k: int = INNER_K) -> Outcome:
                    if len(v) == len(fold_rows)}
     if not fold_rows:
         return Outcome.fail(CODE_NO_FOLDS, 'no fold produced a score')
+    summ_mae = {}
+    for name in BL.NAMES:
+        ok = [r for r in out[name] if r.get('state') == 'PASS']
+        if ok:
+            w = np.array([r['n_test'] for r in ok], float)
+            summ_mae[name] = float(np.average([r['mae'] for r in ok],
+                                              weights=w))
     # CLUSTERED DELTAS AGAINST THE DECISIVE COMPARATOR.
     #
     # Pooled across folds, resampling CLUSTERS rather than plays. i.i.d.
@@ -247,6 +254,8 @@ def run(rows, *, play_class: str, folds, inner_k: int = INNER_K) -> Outcome:
     # TEAM: a unit estimate is reused across that club's whole season, which a
     # per-game cluster understates.
     deltas = {}
+    deltas_vs_best = {}
+    best_name = None
     if pooled_y:
         Y = np.concatenate(pooled_y)
         G = np.concatenate(pooled_game)
@@ -282,6 +291,34 @@ def run(rows, *, play_class: str, folds, inner_k: int = INNER_K) -> Outcome:
                 except EV.EvaluatorError as e:
                     row[lbl] = {'error': f'EvaluatorError: {e}'}
             deltas[name] = row
+        # AND AGAINST THE STRONGEST BASELINE, WHICH IS A POST-HOC COMPARATOR.
+        #
+        # B5 is the PRE-REGISTERED comparator. "The strongest baseline" is
+        # identified by looking at the results, so every interval below is
+        # conditional on that selection and is NOT a clean test of the same
+        # kind. It is reported because the effective hurdle matters
+        # operationally, and it is labelled because presenting a post-hoc
+        # comparator as a pre-registered one is how a bar moves quietly.
+        best_name = min(
+            (n for n in BL.NAMES if summ_mae.get(n) is not None),
+            key=lambda n: summ_mae[n], default=None)
+        if best_name is not None and best_name in pooled_pred:
+            bb = pooled_pred[best_name]
+            for name in BL.NAMES:
+                if name == best_name or name not in pooled_pred:
+                    continue
+                row = {}
+                for lbl, cl in (('by_game', G), ('by_team', T)):
+                    d = EV.clustered_delta(EV.SCORERS['mae'], Y,
+                                           pooled_pred[name], bb, cl)
+                    row[lbl] = {'delta': d['delta'],
+                                'ci95': d['ci95_clustered'],
+                                'ci95_excludes_zero': not (
+                                    d['ci95_clustered'][0] <= 0
+                                    <= d['ci95_clustered'][1]),
+                                'p_a_better': d['p_a_better'],
+                                'n_clusters': d['n_clusters'], 'R': d['R']}
+                deltas_vs_best[name] = row
     summ = {}
     for name in BL.NAMES:
         ok = [r for r in out[name] if r.get('state') == 'PASS']
@@ -356,7 +393,10 @@ def run(rows, *, play_class: str, folds, inner_k: int = INNER_K) -> Outcome:
     return Outcome.ok(
         CODE_OK, value={'per_fold': out, 'summary': summ,
                         'folds': fold_rows,
-                        'clustered_delta_vs_B5': deltas},
+                        'clustered_delta_vs_B5': deltas,
+                        'strongest_baseline_by_mae': best_name,
+                        'strongest_is_post_hoc': True,
+                        'clustered_delta_vs_strongest': deltas_vs_best},
         detail=f'{play_class}: {len(fold_rows)} fold(s), '
                f'{len(BL.NAMES)} baseline(s)',
         spec_version=SPEC_VERSION, play_class=play_class,
