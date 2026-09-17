@@ -71,6 +71,10 @@ LEVELS = (0.50, 0.80, 0.90, 0.95)
 #: Bootstrap resamples for every clustered interval in this module.
 R_BOOT = 2000
 
+#: A predictor whose spread is below this multiple of the outcome's spread is
+#: treated as constant. See `calibration_slope`.
+DEGENERATE_PRED_SD_RATIO = 1e-10
+
 
 class EvaluatorError(ValueError):
     """Named so a caller can tell a refusal from an arithmetic failure."""
@@ -223,11 +227,91 @@ def _crps_only(y, x_rows):
     return float(np.mean([crps(X[i], Y[i]) for i in range(Y.size)]))
 
 
+def _mae_only(y, p):
+    """Mean absolute error, for a CONTINUOUS target.
+
+    ADDED FOR OAS1, which regresses a continuous per-play EPA. Every scorer
+    above is for a binary outcome or a draw matrix, so a continuous point
+    forecast had nowhere to be scored and the alternative was scoring it
+    outside the evaluator -- which is how a candidate and a baseline end up
+    measured by two different functions.
+    """
+    Y = np.asarray(y, float).reshape(-1)
+    P = np.asarray(p, float).reshape(-1)
+    if Y.size == 0 or P.size != Y.size:
+        raise EvaluatorError(
+            f'EVALUATOR_SHAPE: {P.size} prediction(s) against {Y.size} '
+            f'outcome(s).')
+    return float(np.abs(Y - P).mean())
+
+
+def _rmse_only(y, p):
+    """Root mean squared error, for a CONTINUOUS target."""
+    Y = np.asarray(y, float).reshape(-1)
+    P = np.asarray(p, float).reshape(-1)
+    if Y.size == 0 or P.size != Y.size:
+        raise EvaluatorError(
+            f'EVALUATOR_SHAPE: {P.size} prediction(s) against {Y.size} '
+            f'outcome(s).')
+    return float(np.sqrt(((Y - P) ** 2).mean()))
+
+
+def calibration_slope(y, p) -> dict:
+    """OLS slope of realised on predicted. Target 1.0.
+
+    THE METRIC THIS PROJECT HAS ALREADY BEEN BURNED BY. Prior team-plays
+    baselines showed slopes of 0.1416, 0.0384 and 0.2549 against a target of
+    1.0 while still producing a plausible MAE. A slope near zero with a decent
+    MAE is the signature of a model that has learned the league mean and
+    nothing else, and MAE alone cannot tell you that.
+
+    Returns a dict rather than a bare float because a DEGENERATE predictor --
+    zero variance in `p`, which B0 has by construction -- has no slope at all,
+    and returning 0.0 for that would be a measurement where there is none.
+    """
+    Y = np.asarray(y, float).reshape(-1)
+    P = np.asarray(p, float).reshape(-1)
+    if Y.size == 0 or P.size != Y.size:
+        raise EvaluatorError(
+            f'EVALUATOR_SHAPE: {P.size} prediction(s) against {Y.size} '
+            f'outcome(s).')
+    vp = float(P.var())
+    # A CONSTANT-IN-INTENT PREDICTOR IS NOT EXACTLY CONSTANT IN FLOAT, AND A
+    # LIVE CHAIN PROVED IT. The first version guarded on `vp <= 0.0`. B0
+    # emits one repeated value, but building it as `mu + f() + f()` leaves a
+    # variance of about 4.8e-35 rather than exactly zero, the guard let it
+    # through, and the chain reported a B0 calibration slope of -0.8153 beside
+    # a `pred_sd` of 0.00000. That is a regression of the outcome on
+    # rounding noise, presented as a measurement.
+    #
+    # The test is therefore RELATIVE to the outcome's own scale: a predictor
+    # whose spread is a ten-billionth of the target's carries no calibration
+    # information whatever its exact variance.
+    sp, sy = float(np.std(P)), float(np.std(Y))
+    if vp <= 0.0 or sp <= DEGENERATE_PRED_SD_RATIO * max(sy, 1e-12):
+        return {'slope': None, 'intercept': None, 'n': int(Y.size),
+                'predictor_variance': vp, 'predictor_sd': sp,
+                'outcome_sd': sy,
+                'degenerate_ratio_threshold': DEGENERATE_PRED_SD_RATIO,
+                'why_none': 'the predictor is constant to within floating '
+                            'point, so no slope is identified. A constant '
+                            'forecast is not a badly calibrated one; it is '
+                            'uncalibratable, and reporting a number fitted '
+                            'to rounding noise would be worse than '
+                            'reporting none.'}
+    b = float(np.cov(P, Y, ddof=1)[0, 1] / vp)
+    a = float(Y.mean() - b * P.mean())
+    return {'slope': b, 'intercept': a, 'n': int(Y.size),
+            'predictor_variance': vp, 'target_slope': 1.0}
+
+
 #: Every scorer takes (outcome, prediction) and returns a scalar where LOWER IS
 #: BETTER, which is what lets `clustered_delta` be indifferent to which it has.
-#: `crps` is the imported product implementation; nothing here re-derives it.
+#: `crps` is the imported product implementation; nothing here re-derives it,
+#: and `mae`/`rmse` were added for OAS1's continuous target rather than scored
+#: outside this module.
 SCORERS = {'brier': _brier_only, 'log_loss': _logloss_only,
-           'crps': _crps_only}
+           'crps': _crps_only, 'mae': _mae_only, 'rmse': _rmse_only}
 
 
 def against_baseline(y, p_model, p_baseline, clusters,
