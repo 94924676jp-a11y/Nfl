@@ -95,10 +95,28 @@ def _run(mod=L, **kw):
         _tc(), _targets(), _priors(), PIDS, POS, ORD, m=M, seed=SEED, **kw)
 
 
+#: THE COMMIT IMMEDIATELY BEFORE THE ATOMS EXISTED, pinned by id and not by
+#: `HEAD`.
+#:
+#: This test read `HEAD:nfl/production/nonqb/layers.py` and passed -- until the
+#: change was committed, at which point HEAD CONTAINED the atoms, the
+#: "HEAD did not already expose atoms" check failed, and the additivity
+#: comparison silently became a file compared against itself. The suite caught
+#: it on the first run after the commit.
+#:
+#: A before-and-after test whose "before" is a moving reference can only work
+#: until it is committed. `137a257` is the parent of the QY1 commit and its
+#: `layers.py` is `419ea433cba65dab`, which has no atom vector in it. Pinned,
+#: this proof stays reproducible forever.
+PRE_ATOM_COMMIT = '137a257'
+PRE_ATOM_LAYERS_SHA16 = '419ea433cba65dab'
+
+
 def _head_module():
-    """`layers.py` as it stood at HEAD, loaded as its own module."""
+    """`layers.py` as it stood BEFORE the atoms, loaded as its own module."""
     src = subprocess.run(
-        ['git', '-C', _ROOT, 'show', 'HEAD:nfl/production/nonqb/layers.py'],
+        ['git', '-C', _ROOT, 'show',
+         f'{PRE_ATOM_COMMIT}:nfl/production/nonqb/layers.py'],
         capture_output=True, text=True)
     if src.returncode != 0 or not src.stdout:
         return None
@@ -160,12 +178,28 @@ def test_A_the_atoms_are_exposed_and_well_formed():
           bool((flat < 0).any()), f'min atom {float(flat.min())}')
 
 
-def test_B_the_change_is_additive_against_HEAD():
+def test_B_the_change_is_additive_against_the_pinned_source():
     print('\nB. nothing that existed before this change moved')
+    import hashlib
+    raw = subprocess.run(
+        ['git', '-C', _ROOT, 'show',
+         f'{PRE_ATOM_COMMIT}:nfl/production/nonqb/layers.py'],
+        capture_output=True)
+    if raw.returncode != 0 or not raw.stdout:
+        # A shallow clone may not carry the parent. NOT_EXECUTED, never a pass:
+        # an additivity proof that cannot read its own "before" has proved
+        # nothing.
+        NOT_EXECUTED.append(
+            f'B: {PRE_ATOM_COMMIT} is not in this clone, so the pre-atom '
+            f'source could not be read')
+        print(f'  NOT_EXECUTED: {PRE_ATOM_COMMIT} unavailable in this clone')
+        return
+    got = hashlib.sha256(raw.stdout).hexdigest()[:16]
+    check('the pinned pre-atom source is the one this test was written against',
+          got == PRE_ATOM_LAYERS_SHA16, f'{got} != {PRE_ATOM_LAYERS_SHA16}')
     head = _head_module()
     if head is None:
-        NOT_EXECUTED.append('B: HEAD source unavailable (no git object)')
-        print('  NOT_EXECUTED: could not read HEAD:nfl/production/nonqb/layers.py')
+        NOT_EXECUTED.append('B: pre-atom source could not be imported')
         return
     old = _run(mod=head)
     new = _run()
@@ -174,12 +208,12 @@ def test_B_the_change_is_additive_against_HEAD():
     if not (old.state is State.PASS and new.state is State.PASS):
         NOT_EXECUTED.append('B: one arm refused')
         return
-    check('HEAD did NOT already expose atoms (so this test is not vacuous)',
+    check('the pinned source did NOT expose atoms (so this is not vacuous)',
           'receiving_yard_atoms' not in old.value, str(sorted(old.value)))
     for k in ('receptions', 'receiving_yards'):
         a = np.ascontiguousarray(np.asarray(old.value[k]))
         b = np.ascontiguousarray(np.asarray(new.value[k]))
-        check(f'{k} is BYTE-identical to HEAD',
+        check(f'{k} is BYTE-identical to the pre-atom source',
               a.dtype == b.dtype and a.shape == b.shape
               and a.tobytes() == b.tobytes(),
               f'{a.dtype}/{a.shape} vs {b.dtype}/{b.shape}, '
@@ -369,7 +403,7 @@ def test_zz_every_check_passed():
 
 if __name__ == '__main__':
     for fn in (test_A_the_atoms_are_exposed_and_well_formed,
-               test_B_the_change_is_additive_against_HEAD,
+               test_B_the_change_is_additive_against_the_pinned_source,
                test_C_the_deal_closes_exactly_and_stays_integer,
                test_D_a_negative_team_total_is_dealt_without_a_clip,
                test_E_the_deal_is_deterministic_and_refuses_bad_atoms,

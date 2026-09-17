@@ -214,6 +214,162 @@ def assert_columns_allowed(source: str, columns: Iterable[str],
                       source=source, purpose=purpose.value)
 
 
+# ======================================================================
+# THE OAS1 TARGET-ONLY EXEMPTION
+# ======================================================================
+#
+# WHAT THIS IS NOT. It is not a relaxation of the quarantine.
+# `assert_columns_allowed('pbp', ['epa'], Purpose.FORECAST)` still returns
+# FAIL[MODEL_DERIVED_COLUMN_ACCESS] and QUARANTINE is untouched. There is no
+# new Purpose value, deliberately: a caller must not be able to reach this by
+# passing an enum member to the ordinary gate. It is a SEPARATE ENTRY POINT
+# that one named module may call for one named column.
+#
+# THE DISTINCTION IT RESTS ON, and it is the whole argument:
+#
+#   a quarantined column used as a LABEL cannot leak into a feature set;
+#   a quarantined column used as a FEATURE carries the upstream model's
+#   unestablished information set into the forecast.
+#
+# OAS1 regresses EPA on team-unit dummies. EPA is the left-hand side. Nothing
+# on the right-hand side derives from it, and `assert_no_epa_in_features`
+# below is the assertion that keeps that true rather than assumed.
+#
+# WHY THE LEAKAGE ARGUMENT IS ANSWERABLE HERE, with the external evidence
+# separated from what it does and does not establish:
+#
+#   The nflfastR expected-points model's training data ends in 2019, so no
+#   2026 play influenced its parameters. A 2026 play's `epa` is a fixed
+#   function of that play's own down, distance, field position, clock and roof
+#   and the next-score outcome within the half. It is a contemporaneous
+#   transformation of the play, not a forecast informed by the future.
+#
+#   UNKNOWN, and recorded as UNKNOWN: whether the shipped `fastrmodels`
+#   artifact is the leave-one-season-out model described in the published
+#   calibration article or a single model fitted on all seasons. The training
+#   WINDOW is established; the fitting DESIGN is not.
+#
+#   The genuine exposure is therefore REVISION RISK, not future leakage. EPA
+#   values are documented as revised: models were rebuilt in nflfastR 2.0.5,
+#   EPA bugs were fixed in 4.0.0, 4.4.0 and 5.0.0 reaching back into past
+#   seasons, and the NFL issues stat corrections Monday through Wednesday.
+#   Revision risk is controllable by hashing, which is why a vintage digest is
+#   a REQUIRED argument below and not an optional one.
+#
+# WHAT STAYS REFUSED, and none of it is needed: `success`, `qb_epa`,
+# `air_epa`, `yac_epa`, `comp_air_epa`, `comp_yac_epa`, `ep`, `cp`, `cpoe`,
+# `xpass`, `pass_oe`, `wp` and the whole win-probability family. `wp` in
+# particular would import the market through its `vegas_wp` sibling.
+#
+# THE SHAPE FOLLOWS THE ONE PRECEDENT IN THIS FILE: `weekly_rosters.status`,
+# one module, one field, one purpose, two independent guards, every other
+# reader refused.
+
+#: The ONLY module that may construct the OAS1 target.
+OAS1_TARGET_MODULE = 'nfl.research.oas1.target'
+
+#: The only column the exemption covers. One name, not a family.
+OAS1_TARGET_COLUMN = 'epa'
+
+#: Columns that ARE `epa` under another name, or are built from it. A design
+#: matrix containing any of these is reading the target, whatever it is called.
+#: `epa = air_epa + yac_epa` on pass plays, so the parts are the whole.
+EPA_DERIVED = (
+    'epa', 'ep', 'air_epa', 'yac_epa', 'comp_air_epa', 'comp_yac_epa',
+    'qb_epa', 'xyac_epa', 'total_home_epa', 'total_away_epa',
+    'total_home_rush_epa', 'total_away_rush_epa', 'total_home_pass_epa',
+    'total_away_pass_epa', 'total_home_comp_air_epa',
+    'total_away_comp_air_epa', 'total_home_comp_yac_epa',
+    'total_away_comp_yac_epa', 'total_home_raw_air_epa',
+    'total_away_raw_air_epa', 'total_home_raw_yac_epa',
+    'total_away_raw_yac_epa', 'success',
+)
+
+CODE_TARGET_OK = 'OAS1_EPA_TARGET_ADMITTED'
+CODE_TARGET_WRONG_CALLER = 'OAS1_EPA_TARGET_WRONG_CALLER'
+CODE_TARGET_WIDENED = 'OAS1_EPA_TARGET_WIDENED'
+CODE_TARGET_NO_VINTAGE = 'OAS1_EPA_TARGET_NO_VINTAGE'
+CODE_EPA_IN_FEATURES = 'OAS1_EPA_IN_FEATURES'
+
+
+def assert_oas1_epa_target(columns: Iterable[str], *, caller_module: str,
+                           vintage_sha256: str) -> Outcome:
+    """Admit `epa` as the OAS1 regression TARGET, for one module, with a hash.
+
+    Three independent guards, each of which refuses on its own:
+
+    1. `caller_module` must be `OAS1_TARGET_MODULE`. Any other reader is
+       refused, including another OAS1 module.
+    2. `columns` must be exactly `['epa']`. This is what stops the exemption
+       widening by one column at a time -- the failure mode every quarantine
+       exemption in this project has to answer for.
+    3. `vintage_sha256` must be a full sha256 of the captured source file.
+       Without it the fit is not reproducible against a revisable target, and
+       an unreproducible fit against a moving label is the actual risk here.
+    """
+    cols = sorted(set(columns))
+    ev = {'exemption': 'oas1_epa_target', 'caller_module': caller_module,
+          'columns': cols, 'vintage_sha256': vintage_sha256,
+          'authorised_module': OAS1_TARGET_MODULE,
+          'target_column': OAS1_TARGET_COLUMN,
+          'general_quarantine_unchanged': True}
+    if caller_module != OAS1_TARGET_MODULE:
+        return Outcome.fail(
+            CODE_TARGET_WRONG_CALLER,
+            f'{caller_module!r} may not read the quarantined target. The '
+            f'exemption names exactly one module, {OAS1_TARGET_MODULE!r}, and '
+            f'an exemption that any caller can claim is not an exemption.',
+            cause=Cause.GOVERNANCE, **ev)
+    if cols != [OAS1_TARGET_COLUMN]:
+        return Outcome.fail(
+            CODE_TARGET_WIDENED,
+            f'the target-only exemption covers {[OAS1_TARGET_COLUMN]} and this '
+            f'read asks for {cols}. Refused rather than granted for the '
+            f'subset: a request that carries an extra column is how a narrow '
+            f'exemption becomes a wide one.',
+            cause=Cause.GOVERNANCE, **ev)
+    v = str(vintage_sha256 or '')
+    if len(v) != 64 or any(c not in '0123456789abcdef' for c in v.lower()):
+        return Outcome.fail(
+            CODE_TARGET_NO_VINTAGE,
+            f'no usable source vintage was supplied ({vintage_sha256!r}). The '
+            f'target is a third-party model output that is documented to be '
+            f'revised without notice, so a fit that cannot name the bytes it '
+            f'read is not reproducible and the exemption does not cover it.',
+            cause=Cause.GOVERNANCE, **ev)
+    return Outcome.ok(
+        CODE_TARGET_OK, value=cols,
+        detail=f'{OAS1_TARGET_COLUMN} admitted as the OAS1 regression target '
+               f'for {caller_module}, pinned to vintage {v[:16]}. Feature use '
+               f'remains refused.',
+        **ev)
+
+
+def assert_no_epa_in_features(columns: Iterable[str]) -> Outcome:
+    """No column of an OAS1 design matrix may be, or derive from, the target.
+
+    THIS IS THE TEST THAT STOPS THE EXEMPTION WIDENING, and it is checked
+    against the design matrix rather than against intent. `epa` is the sum of
+    `air_epa` and `yac_epa` on pass plays, so admitting a part admits the
+    whole; `success` is a threshold on `epa`; the `total_*_epa` columns are
+    running sums of it within a game.
+    """
+    cols = list(columns)
+    bad = sorted({c for c in cols if c in EPA_DERIVED})
+    ev = {'n_columns': len(cols), 'epa_derived_declared': list(EPA_DERIVED),
+          'offending': bad}
+    if bad:
+        return Outcome.fail(
+            CODE_EPA_IN_FEATURES,
+            f'{bad} appear in the feature set. These ARE the target or are '
+            f'built from it, so a model containing them regresses the target '
+            f'on itself. The exemption admits `epa` as a LABEL and nothing '
+            f'else.', cause=Cause.GOVERNANCE, **ev)
+    return Outcome.ok(
+        'OAS1_FEATURES_TARGET_FREE', value=cols,
+        detail=f'{len(cols)} feature column(s) and none is epa-derived', **ev)
+
+
 def forecast_safe_columns(source: str, columns: Iterable[str]) -> list[str]:
     """The columns of `columns` a forecast may consume. For building an
     allowlist, never for silently filtering a caller's request -- filtering a
