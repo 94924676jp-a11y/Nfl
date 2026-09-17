@@ -65,6 +65,14 @@ if str(_REPO) not in sys.path:
 from sportsplatform.governance.outcome import Cause, Outcome, State  # noqa: E402
 
 SPEC_VERSION = 'qb-room-v2-starter-scenario-1'
+
+#: QBSEM. A starter cell must carry at least this many NON-STARTING rows before
+#: its own relief rate is used; below it the pooled rank weight is used and the
+#: fallback is counted, never silent. 30 is the conventional small-sample line
+#: and it is declared here rather than chosen against a result -- the cells it
+#: excludes on this frame are (2,1,1) n=22, (3,1,0) n=10 and (3,1,1) n=7, none
+#: of which holds a DET-BUF quarterback.
+CELL_RELIEF_MIN_N = 30
 GOVERNANCE = ('CANDIDATE -- successor lineage to QB3, which stays frozen and '
               'unamended. Not promoted, no prospective evidence.')
 
@@ -457,6 +465,32 @@ def fit(frame, team_games, eval_ordinal, use_opener=True,
         raise QbRoomV2Error(f'PRIOR_UNKNOWN: {prior!r}')
     a = 0.5 if prior == 'jeffreys' else 0.0
     p_start = {k: ((v[1] + a) / (v[0] + 2 * a)) for k, v in start_n.items()}
+
+    # QBSEM. P(RELIEVES AT ALL | NOT THE STARTER), BY THE SAME CELL.
+    #
+    # `p_reliever_by_rank` above answers a different question -- "given the
+    # role changed hands, WHO took it" -- and the room was using it for both.
+    # The consequence, measured on this frame: cell (1, 1, 0) has n = 2,290,
+    # P(starter) = 0.9284 and P(db = 0) = 0.0694, so a rank-1 quarterback who
+    # does not start relieves in (1 - 0.9284 - 0.0694)/(1 - 0.9284) = 0.031 of
+    # those team-games. The sealed board returned him to the field in about
+    # 93% of them, because the pooled rank-1 reliever weight does not condition
+    # on WHY he is not starting -- and the dominant reason is that he was not
+    # available.
+    #
+    # Counted directly rather than derived from the identity above, so the
+    # numerator and denominator are observed rows and not a subtraction of two
+    # rounded rates.
+    rel_cell = collections.defaultdict(lambda: [0, 0])
+    for r in frame:
+        if r['ord'] >= cut or r['is_starter']:
+            continue
+        c = starter_cell(r['rank'], r['was_prev_primary'], r['is_opener'],
+                         use_opener)
+        rel_cell[c][0] += 1
+        rel_cell[c][1] += int(r['db'] > 0)
+    p_relief_cell = {k: ((v[1] + a) / (v[0] + 2 * a))
+                     for k, v in rel_cell.items()}
     return {
         'spec_version': SPEC_VERSION,
         'trained_on_ordinals_before': cut,
@@ -468,6 +502,13 @@ def fit(frame, team_games, eval_ordinal, use_opener=True,
         'k_start': {k: v[1] for k, v in start_n.items()},
         'p_reliever_by_rank': {k: (v[1] / v[0]) for k, v in rel_n.items()},
         'n_reliever_by_rank': {k: v[0] for k, v in rel_n.items()},
+        # QBSEM: consumed only by the arm that declares it. Present in every
+        # fit so the two arms share one fit object and cannot drift apart.
+        'p_relief_given_not_starter': p_relief_cell,
+        'p_relief_given_not_starter_raw': {
+            k: (v[1] / v[0]) for k, v in rel_cell.items() if v[0]},
+        'n_relief_given_not_starter': {k: v[0] for k, v in rel_cell.items()},
+        'k_relief_given_not_starter': {k: v[1] for k, v in rel_cell.items()},
         'p_exit': n_exit / n_tg,
         'n_team_games': n_tg,
         'n_exit': n_exit,
@@ -626,7 +667,7 @@ def _rng(seed, ordinal, team, salt=0):
 
 
 def allocate_dropbacks(par, room, team_db_draws, seed=20260908, ordinal=0,
-                       team='', is_opener=False) -> dict:
+                       team='', is_opener=False, cell_relief=False) -> dict:
     """Integer dropback counts per quarterback, one column per draw.
 
     `room` is a list of dicts: {'pid', 'rank', 'was_prev_primary',
@@ -669,6 +710,41 @@ def allocate_dropbacks(par, room, team_db_draws, seed=20260908, ordinal=0,
     if rw.sum() <= 0:
         rw = np.ones(n, float)
 
+    # QBSEM. WHETHER A NON-STARTER RETURNS AT ALL, BY HIS OWN STARTER CELL.
+    #
+    # Off unless the arm declares it, so every frozen candidate draws exactly
+    # what it always drew. On, the ONLY thing that changes is the event "this
+    # non-starter takes at least one dropback": who relieves once somebody
+    # does, how many dropbacks they get, and the integer split are untouched.
+    #
+    # `p_reliever_by_rank` answers "given the role changed hands, who took it".
+    # The room was using it for both that and "did the role change hands at
+    # all", and the two are different quantities -- measured on this frame,
+    # cell (1,1,0) has 164 non-starting rows of which 5 relieved, a rate of
+    # 0.0305, against a pooled rank-1 weight of 0.3030.
+    relieves = None
+    relief_ev = None
+    if cell_relief:
+        pr = par.get('p_relief_given_not_starter') or {}
+        nr = par.get('n_relief_given_not_starter') or {}
+        rates, fell_back = [], []
+        for r, c in zip(room, cells):
+            if c in pr and nr.get(c, 0) >= CELL_RELIEF_MIN_N:
+                rates.append(float(pr[c]))
+            else:
+                # SPARSE CELL: the pooled rank weight, and it is COUNTED.
+                rates.append(float(par['p_reliever_by_rank'].get(
+                    rank_bucket(r['rank']), 0.0)))
+                fell_back.append({'pid': r.get('pid'), 'cell': list(c),
+                                  'n_cell': int(nr.get(c, 0)),
+                                  'used': 'p_reliever_by_rank'})
+        relieves = rng.random((n, m)) < np.asarray(rates, float)[:, None]
+        relief_ev = {'spec': 'qbsem-cell-relief-1',
+                     'min_cell_n': CELL_RELIEF_MIN_N,
+                     'rates': [round(x, 6) for x in rates],
+                     'n_fell_back': len(fell_back),
+                     'fell_back': fell_back}
+
     exit_u = rng.random(m)
     exits = exit_u < par['p_exit']
     post_f = np.where(
@@ -685,6 +761,17 @@ def allocate_dropbacks(par, room, team_db_draws, seed=20260908, ordinal=0,
     post = np.rint(post_f * V).astype(np.int64)
     post = np.minimum(post, np.maximum(V - 1, 0))
     post = np.maximum(post, np.where(exits & (V >= 2), 1, 0))
+    if relieves is not None:
+        # The starter never relieves himself, so his own draw is discarded
+        # rather than being allowed to create a relief event.
+        rel = relieves.copy()
+        rel[who, np.arange(m)] = False
+        any_rel = rel.any(axis=0)
+        # A non-starter who is drawn to relieve MUST get a dropback, and one
+        # who is not MUST NOT -- otherwise the rate this arm exists to set is
+        # not the rate it delivers. Both bounds are the definition of the
+        # event, exactly as the two bounds above are.
+        post = np.where(any_rel, np.maximum(post, np.where(V >= 2, 1, 0)), 0)
     post = np.where(V <= 0, 0, post)
     starter_db = V - post
 
@@ -698,7 +785,10 @@ def allocate_dropbacks(par, room, team_db_draws, seed=20260908, ordinal=0,
             rng.integers(0, len(par['n_relievers_pool']), len(live))]
             if len(par['n_relievers_pool']) else np.ones(len(live), int))
         for idx, j in enumerate(live):
-            cand = [i for i in range(n) if i != who[j]]
+            if relieves is not None:
+                cand = [i for i in range(n) if i != who[j] and rel[i, j]]
+            else:
+                cand = [i for i in range(n) if i != who[j]]
             if not cand:
                 DB[who[j], j] += post[j]
                 continue
@@ -706,7 +796,9 @@ def allocate_dropbacks(par, room, team_db_draws, seed=20260908, ordinal=0,
             if ww.sum() <= 0:
                 ww = np.ones(len(cand), float)
             ww = ww / ww.sum()
-            k = int(min(max(n_rel[idx], 1), len(cand), post[j]))
+            k = (len(cand) if relieves is not None
+                 else int(min(max(n_rel[idx], 1), len(cand), post[j])))
+            k = int(min(max(k, 1), len(cand), max(post[j], 1)))
             pick = rng.choice(len(cand), size=k, replace=False, p=ww) if k > 1 \
                 else np.array([rng.choice(len(cand), p=ww)])
             # integer split of `post` among the picked relievers, largest
@@ -730,8 +822,16 @@ def allocate_dropbacks(par, room, team_db_draws, seed=20260908, ordinal=0,
         raise QbRoomV2Error(
             f'ALLOCATION_DOES_NOT_CLOSE: worst integer deviation {dev}. '
             f'Closure is the property this layer exists for.')
-    return {'db': DB, 'starter_index': who, 'exited': exits,
-            'team_dropbacks_int': V, 'p_start': p_start, 'cells': cells}
+    out = {'db': DB, 'starter_index': who, 'exited': exits,
+           'team_dropbacks_int': V, 'p_start': p_start, 'cells': cells}
+    if relief_ev is not None:
+        relief_ev['realised_p_db_zero'] = [
+            round(float((DB[i] == 0).mean()), 6) for i in range(n)]
+        relief_ev['realised_p_relief_given_not_starter'] = [
+            (round(float((DB[i][who != i] > 0).mean()), 6)
+             if int((who != i).sum()) else None) for i in range(n)]
+        out['cell_relief'] = relief_ev
+    return out
 
 
 # ------------------------------------------------- sack / scramble / attempt

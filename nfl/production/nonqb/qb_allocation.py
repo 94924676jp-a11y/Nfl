@@ -614,6 +614,7 @@ def allocate(season, week, teams, qb_players, m=200, seed=20260908,
             by_team[q.get('team')].append(q['gsis_id'])
     inact = set(inactive_ids or ())
     zeroed = {}
+    cell_relief_ev = {}
     out, ev = {}, {'teams_without_a_depth_chart': [],
                    'n_qb_by_team': {}, 'unranked_players': 0}
     for t in teams:
@@ -676,9 +677,15 @@ def allocate(season, week, teams, qb_players, m=200, seed=20260908,
         # IS the room, the same call is made with the same arguments, and the
         # output is bit-identical. The suite asserts it.
         elig = [x for x in trip if not (inact and x[0] in inact)]
-        if allocator == 'qb_room_v2':
-            S_e = _v2_shares(season, week, t, elig, prev_detail.get(t), m,
-                             seed, team_dropback_draws)
+        if allocator in ('qb_room_v2', 'qb_room_v2_sem'):
+            # QBSEM IS ITS OWN ALLOCATOR NAME, not a flag on the old one, so
+            # `_qb_allocator` -- which production reads back from the value
+            # actually passed -- names the mechanism that ran.
+            S_e, _cr = _v2_shares(season, week, t, elig, prev_detail.get(t), m,
+                                  seed, team_dropback_draws,
+                                  cell_relief=(allocator == 'qb_room_v2_sem'))
+            if _cr is not None:
+                cell_relief_ev[t] = _cr
         else:
             S_e = Q.allocate(par, elig, m=m, seed=seed,
                              ordinal=season * 100 + week, team=t)
@@ -727,6 +734,9 @@ def allocate(season, week, teams, qb_players, m=200, seed=20260908,
                       qb_inactive_ownership_enforced=own['enforced'],
                       qb_inactive_ownership=own,
                       qb3_configuration=qb3_cfg,
+                      # QBSEM: the rates that RAN and the sparse-cell
+                      # fallbacks, per team. Empty on every other allocator.
+                      cell_relief=cell_relief_ev or None,
                       n_inactive_qb_zeroed=sum(len(v) for v in zeroed.values()),
                       inactive_qb_zeroed=zeroed,
                       n_teams=len(out), closure_max_dev=worst,
@@ -738,7 +748,8 @@ def allocate(season, week, teams, qb_players, m=200, seed=20260908,
                                 for k in KNOWN_LIMITATIONS])
 
 
-def _v2_shares(season, week, team, elig, prev_detail, m, seed, tdb):
+def _v2_shares(season, week, team, elig, prev_detail, m, seed, tdb,
+               cell_relief=False):
     """`qb_room_v2` counts, expressed as the share matrix this function returns.
 
     The division is by the SAME integer team total the counts were allocated
@@ -755,6 +766,10 @@ def _v2_shares(season, week, team, elig, prev_detail, m, seed, tdb):
     al = V2.allocate_dropbacks(par, room, V, seed=seed,
                                ordinal=season * 100 + week, team=team,
                                is_opener=bool((prev_detail or {}).get(
-                                   'is_season_opener')))
+                                   'is_season_opener')),
+                               cell_relief=bool(cell_relief))
     N = _np.maximum(al['team_dropbacks_int'], 1)
-    return al['db'] / N[None, :]
+    # QBSEM's own evidence travels with the shares so the artifact can record
+    # the rates that ran and the sparse-cell fallbacks, rather than the flag
+    # that was requested.
+    return al['db'] / N[None, :], al.get('cell_relief')

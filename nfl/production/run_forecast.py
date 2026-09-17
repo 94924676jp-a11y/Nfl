@@ -569,8 +569,17 @@ def build(args, fixtures: dict = None) -> dict:
         if tv.state is not State.PASS:
             return tv
         _alloc = fl.get('qb_allocator') or 'qb3'
+        # QBSEM is its own allocator NAME, so `_qb_allocator` -- read back
+        # from the value actually passed -- names the mechanism that ran.
+        if fl.get('qb_cell_relief'):
+            if _alloc != 'qb_room_v2':
+                raise ValueError(
+                    f'QB_ALLOCATOR_AMBIGUOUS: qb_cell_relief extends '
+                    f'qb_room_v2 and this configuration names {_alloc!r}.')
+            _alloc = 'qb_room_v2_sem'
         _tdb = ({t: np.asarray(tv.value[('team_dropbacks_part', t)], float)
-                 for t in teams} if _alloc == 'qb_room_v2' else None)
+                 for t in teams}
+                if _alloc in ('qb_room_v2', 'qb_room_v2_sem') else None)
         # THE ARGUMENT WHOSE ABSENCE WAS THE DEFECT. official_inactive_ids
         # reached the non-QB engine only; the QB share pool never saw it.
         # THE CLOCK THE CHRONOLOGY GUARD NEEDS, WHICH NOBODY WAS PASSING.
@@ -614,6 +623,8 @@ def build(args, fixtures: dict = None) -> dict:
         if qa.state is not State.PASS:
             return qa
         fx['_qb_allocator'] = _alloc
+        fx['_qb_alloc_evidence'] = {
+            k: v for k, v in qa.evidence.items() if k != 'value'}
         # THE VERDICT TRAVELS WITH THE RUN, because the board cannot re-derive
         # it. `qb_inactive_ownership_enforced` used to be read by the product
         # board and written by nobody, so QB_INACTIVE_NOT_CONSUMED could never
@@ -1538,8 +1549,20 @@ def build(args, fixtures: dict = None) -> dict:
         # returns FAIL[QB_ALLOCATOR_UNKNOWN] on an unknown name and
         # BLOCKED[QB_ROOM_V2_NEEDS_TEAM_DROPBACKS] without the draws -- but
         # the marker is derived rather than asserted regardless.
-        if fx.get('_qb_allocator') == 'qb_room_v2':
+        if fx.get('_qb_allocator') in ('qb_room_v2', 'qb_room_v2_sem'):
             applied.append('R9')
+        # QBSEM IS RECORDED FROM THE ALLOCATOR'S OWN EVIDENCE, not the flag:
+        # the rates that ran and the sparse-cell fallbacks, per team.
+        _qa = fx.get('_qb_alloc_evidence') or {}
+        if _qa.get('cell_relief'):
+            applied.append('QBSEM')
+            fx['_qbsem'] = _qa['cell_relief']
+        elif fl.get('qb_cell_relief'):
+            not_reached.append('QBSEM')
+            fx['_qbsem'] = {'state': 'NOT_REACHED',
+                            'why': 'the cell-relief rates run inside '
+                                   'qb_room_v2`s allocation; this run did not '
+                                   'reach it, so the component is not claimed'}
         # SC2 IS RECORDED FROM THE ENGINE'S OWN RESERVATION VERDICT, not from
         # the flag. It is reachable only under C3, so a run that asked for it
         # on a non-C3 arm never reserved anything and must not claim to have.
@@ -2993,6 +3016,7 @@ def build(args, fixtures: dict = None) -> dict:
             # EVERY RUSHING YARD IN ONE PLACE, AND ITS CLOSURE.
             'rushing_total': fx.get('_rushing_total') or {},
             'interception_reservation': fx.get('_sc2') or {},
+            'qb_cell_relief': fx.get('_qbsem') or {},
             # THE CLOSURE PROOF, QUANTIFIED, IN THE ARTIFACT ITSELF. Every team
             # dropback belongs to exactly one quarterback on that team, and a
             # reader should not have to re-derive that from the draw matrices

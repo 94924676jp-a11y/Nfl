@@ -57,6 +57,7 @@ V1_CANDIDATE_R9_W1P_GSV = 'V1_CANDIDATE_R9_W1P_GSV'
 V1_CANDIDATE_R9_W1P_GSP = 'V1_CANDIDATE_R9_W1P_GSP'
 V1_CANDIDATE_R9_W1P_GSVP = 'V1_CANDIDATE_R9_W1P_GSVP'
 V1_CANDIDATE_R9_W1P_GSVU = 'V1_CANDIDATE_R9_W1P_GSVU'
+V1_CANDIDATE_R9_W1P_GSVUQ = 'V1_CANDIDATE_R9_W1P_GSVUQ'
 MODES = (PRODUCTION_BASELINE, V1_CANDIDATE, V1_CANDIDATE_R5,
          V1_CANDIDATE_R6, V1_CANDIDATE_R7, V1_CANDIDATE_R8,
          V1_CANDIDATE_R9, V1_CANDIDATE_R10, V1_CANDIDATE_R11,
@@ -64,7 +65,7 @@ MODES = (PRODUCTION_BASELINE, V1_CANDIDATE, V1_CANDIDATE_R5,
          V1_CANDIDATE_R9_W1P_G, V1_CANDIDATE_R9_W1P_GA,
          V1_CANDIDATE_R9_W1P_GS, V1_CANDIDATE_R9_W1P_GSV,
          V1_CANDIDATE_R9_W1P_GSP, V1_CANDIDATE_R9_W1P_GSVP,
-         V1_CANDIDATE_R9_W1P_GSVU)
+         V1_CANDIDATE_R9_W1P_GSVU, V1_CANDIDATE_R9_W1P_GSVUQ)
 
 # Every mode that is a CANDIDATE, derived so a new one cannot escape a guard
 # by not being added to a hand-written list. See `assert_not_promoted`.
@@ -787,6 +788,51 @@ W1_UNION_REPAIR = {
     'engine_flag': 'appearance_w1_union',
 }
 
+#: GSVUQ -- QBSEM. GSVU plus the cell-conditional relief rate. One flag.
+R9_W1P_GSVUQ_FLAGS = dict(R9_W1P_GSVU_FLAGS)
+R9_W1P_GSVUQ_FLAGS['qb_cell_relief'] = True
+
+QBSEM_REPAIR = {
+    'component': 'QBSEM',
+    'what': 'the probability that a NON-STARTING quarterback takes any '
+            'dropback is estimated per starter-state cell from the QB room`s '
+            'own frame, instead of a rank-pooled weight that answers a '
+            'different question',
+    'replaces': '`p_reliever_by_rank`, which answers "given the role changed '
+                'hands, WHO took it", used for both that and "did it change '
+                'hands at all"',
+    'defect': 'the board published QB lines on a different conditioning event '
+              'from every other position. A rank-1 quarterback who did not '
+              'start was returned to the field in about 93% of those worlds',
+    'evidence': 'the room`s own depth-chart frame, 6,673 rows over 2,717 '
+                'team-games. Cell (1,1,0): n=2,290, P(starter) 0.9284, '
+                'P(db=0) 0.0694, and 164 non-starting rows of which 5 '
+                'relieved -- 0.0305 raw, 0.0333 Jeffreys, against a pooled '
+                'rank-1 weight of 0.3030. '
+                'nfl/research/qbsem/predeclaration_qbsem.md',
+    'coefficients': 'NONE ADDED. A cell rate under the module`s existing '
+                    'Jeffreys Beta(1/2,1/2), the same prior and the same '
+                    'cells `p_start` already uses',
+    'unchanged': 'the starter-selection model, the reliever-identity model, '
+                 'the exit hazard, the post-exit pool and the integer split. '
+                 'Only the event "this non-starter returns at all" changes',
+    'sparse_cells': 'a cell needs 30 non-starting rows to use its own rate; '
+                    'below that the pooled rank weight is used and the '
+                    'fallback is COUNTED per player, never silent',
+    'known_limitation': 'the historical cell rate is estimated on a frame '
+                        'that includes quarterbacks who were inactive, while '
+                        'at serve time the eligibility gate has already '
+                        'removed hard-OUT quarterbacks from the room. Applied '
+                        'to a gate survivor this double-counts absence. The '
+                        'exposure on this board is nil -- no 2026 week-2 '
+                        'official report exists, so the gate removed no '
+                        'quarterback -- and it is recorded rather than '
+                        'repaired, because repairing it is a scope change',
+    'governance': 'REHEARSAL_ONLY -- a mechanism change with its own '
+                  'identity, never an edit to qb_room_v2 or to GSVU',
+    'engine_flag': 'qb_cell_relief',
+}
+
 ABLATION_NOTE = {
     'arms': {'R9_W1P_GS': 'baseline: R8 appearance, old availability, C3',
              'R9_W1P_GSV': 'A1 only: repaired current availability',
@@ -1246,6 +1292,19 @@ def resolve(mode: str) -> Outcome:
                    'candidate': True},
             detail='the ablation BASELINE: R9_W1P_G plus SC2, so C3 completes '
                    'at any draw count. R8 appearance, old availability path')
+    if mode == V1_CANDIDATE_R9_W1P_GSVUQ:
+        return Outcome.ok(
+            'MODE_V1_CANDIDATE_R9_W1P_GSVUQ',
+            value={'mode': V1_CANDIDATE_R9_W1P_GSVUQ,
+                   'flags': dict(R9_W1P_GSVUQ_FLAGS),
+                   'components': _sc2_base() + [_avail_only(),
+                                                dict(W1_UNION_REPAIR),
+                                                dict(QBSEM_REPAIR)],
+                   'ablation': dict(ABLATION_NOTE),
+                   'candidate': True},
+            detail='QBSEM: GSVU with the non-starter relief rate conditioned '
+                   'on the starter-state cell, so QB publication semantics '
+                   'match every other position')
     if mode == V1_CANDIDATE_R9_W1P_GSVU:
         return Outcome.ok(
             'MODE_V1_CANDIDATE_R9_W1P_GSVU',
