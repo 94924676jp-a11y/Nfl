@@ -1,0 +1,85 @@
+{
+ "artifact": "OFFICIAL_INACTIVES_CAPTURE_ATTEMPT",
+ "assigned_to": "docs/AGENT_OUTBOX.md OUT-020",
+ "attempts": [
+  {
+   "curl_exit": 56,
+   "http_code": "000",
+   "proxy": "403 CONNECT tunnel failed",
+   "url": "https://www.nfl.com/inactives/"
+  },
+  {
+   "curl_exit": 56,
+   "http_code": "000",
+   "proxy": "403 CONNECT tunnel failed",
+   "url": "https://www.detroitlions.com/team/inactives/"
+  },
+  {
+   "curl_exit": 56,
+   "http_code": "000",
+   "proxy": "403 CONNECT tunnel failed",
+   "url": "https://www.buffalobills.com/team/inactives/"
+  },
+  {
+   "curl_exit": 56,
+   "http_code": "000",
+   "proxy": "403 CONNECT tunnel failed",
+   "url": "https://api.nfl.com/v1/games"
+  },
+  {
+   "http_code": "000",
+   "proxy": "403 CONNECT tunnel failed",
+   "url": "https://operations.nfl.com/"
+  },
+  {
+   "http_code": "000",
+   "proxy": "403 CONNECT tunnel failed",
+   "url": "https://www.espn.com/"
+  }
+ ],
+ "cause": "NETWORK",
+ "code": "OFFICIAL_INACTIVES_NOT_CAPTURED",
+ "control": {
+  "http_code": "200",
+  "url": "https://raw.githubusercontent.com/nflverse/nflverse-data/master/README.md",
+  "why_it_matters": "the same executor reaches github, which is how the three pbp blobs were captured this afternoon. The official hosts are refused by a per-host network policy, so this is neither a broken network nor a code defect."
+ },
+ "game_id": "2026_02_DET_BUF",
+ "kickoff_utc": "2026-09-18T00:15:00Z",
+ "no_inference_from_omission": "a player absent from a list this executor never read is NOT thereby active. No availability state was changed by this file.",
+ "official_lists_obtained": {
+  "BUF": null,
+  "DET": null
+ },
+ "publication_timestamp_available": false,
+ "published_at_utc": null,
+ "raw_evidence_bytes": 1290,
+ "raw_evidence_path": "nfl/research/live/2026_02_DET_BUF/raw/official_inactives_attempt_2026-09-17T233101Z.txt",
+ "raw_evidence_sha256": "f8223afc7248743358daf58f45135c57e6aef941f23f6d8a9826a5a3f87c8076",
+ "retrieved_at_utc": "2026-09-17T23:31:01Z",
+ "secondary_evidence_in_hand_and_NOT_ingested": {
+  "BUF": [
+   "Skyler Bell",
+   "Jude Bowry",
+   "Ty Johnson",
+   "J. Kilgore",
+   "Ed Oliver",
+   "A. Reed-Adams",
+   "T.J. Sanders"
+  ],
+  "DET": [
+   "Keith Abney",
+   "A. Hassanein",
+   "C. Mahogany",
+   "Blake Miller",
+   "E. Rakestraw",
+   "Jimmy Rolder",
+   "Mekhi Wingo"
+  ],
+  "source": "RotoWire screenshot, device clock ~2026-09-17T19:05 ET",
+  "status_of_these_names": "UNVERIFIED_SECONDARY -- recorded so the later official capture can be reconciled against what was visible pre-kickoff, never as governing evidence.",
+  "why_not": "secondary. nfl/tools/ingest_inactives.py refuses a reporter summary, a vendor table and a transcription by design, and inactives.verify_supplied_names verifies supplied names AGAINST the official HTML, so it cannot run without the document either."
+ },
+ "spec_version": "det-buf-2026w2-official-inactives-attempt-1",
+ "state": "BLOCKED"
+}

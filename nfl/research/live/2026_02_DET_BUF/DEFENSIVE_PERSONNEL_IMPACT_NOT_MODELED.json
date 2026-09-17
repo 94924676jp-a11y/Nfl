@@ -1,0 +1,30 @@
+{
+ "artifact": "DET_BUF_2026W2_DEFENSIVE_PERSONNEL_IMPACT",
+ "evidence": {
+  "claim": "listed inactive",
+  "note": "the official declaration was not obtainable; see OFFICIAL_INACTIVES_CAPTURE_ATTEMPT.json. This entry records the claim and the missing capability, not a confirmed fact.",
+  "official_confirmation": null,
+  "player": "Ed Oliver",
+  "position": "DT",
+  "source": "RotoWire screenshot, ~2026-09-17T23:05Z",
+  "source_class": "SECONDARY_UNVERIFIED",
+  "team": "BUF"
+ },
+ "explicitly_not_done": [
+  "no boost to Jahmyr Gibbs",
+  "no boost to Jared Goff",
+  "no boost to DET rushing",
+  "no boost to DET offence in aggregate",
+  "no ad hoc defensive adjustment of any kind",
+  "no reweighting of any existing layer to stand in for one"
+ ],
+ "future_input_to": "matchup and OL-DL modelling. Registered owners already exist for the three effects so that a future producer has an owner before it has a consumer: ol_pass_protection_v1 and run_blocking_v1 under line_play, coverage_v1 under coverage.",
+ "game_id": "2026_02_DET_BUF",
+ "known_data_obstacle": "was_pressure is 404 for 2026 and publishes only after the postseason; defense_coverage_type comes from participation data on the same schedule. Gate IN_SEASON_PRESSURE_DATA is NO for this reason.",
+ "recorded_at_utc": "2026-09-17T23:38:00Z",
+ "spec_version": "det-buf-2026w2-def-personnel-1",
+ "status": "DEFENSIVE_PERSONNEL_IMPACT_NOT_MODELED",
+ "why_a_manual_boost_would_be_worse_than_nothing": "a hand-applied edge has no prior, no out-of-sample test and no rollback, and once a projection has been nudged once, every later evaluation of this fixture measures the nudge as well as the model. An unmodelled effect that is NAMED can be built and tested; one that has been quietly absorbed into a number cannot.",
+ "why_it_is_football_evidence": "an interior defensive lineman`s absence plausibly moves opposing rushing efficiency, pressure rate and therefore quarterback and back production. That is a real mechanism and it is the reason this is recorded rather than ignored.",
+ "why_nothing_moves_tonight": "the system has NO governed DL, pass-rush or run-defence personnel adjustment. ownership_audit reports run_blocking_v1, ol_pass_protection_v1 and coverage_v1 all NOT_AVAILABLE with no producer, and opponent_rush_strength_v1 is RESEARCH_ONLY and additionally RUSH_OPPONENT_ADJUSTMENT_NOT_SUPPORTED_YET on the frozen B0-B5 result. There is no calibrated path from \"this lineman is out\" to a player projection, so any number produced tonight would be invented."
+}

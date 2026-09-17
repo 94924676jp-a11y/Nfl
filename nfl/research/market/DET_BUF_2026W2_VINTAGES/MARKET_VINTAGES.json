@@ -1,0 +1,117 @@
+{
+ "artifact": "DET_BUF_2026W2_MARKET_VINTAGES",
+ "forecast_relation": "the forecast was sealed 2026-09-16T15:45:14Z, before all three. No forecast was regenerated after any of them and none may cause a rerun: OFFICIAL FOOTBALL EVIDENCE MAY UPDATE STATE, MARKET DATA MAY ONLY EVALUATE IT.",
+ "game_id": "2026_02_DET_BUF",
+ "kickoff_utc": "2026-09-18T00:15:00Z",
+ "market_is": "EVALUATION DATA, NEVER A MODEL INPUT. Nothing in this file changed a projection, a mean, a distribution, a parameter, CS1 or OAS1. It exists so that later market movement can be read against a forecast that was sealed before any of it.",
+ "merge_rule": "sportsbook identity travels with every observation. RotoWire is an aggregator display, not Hard Rock. Its 54.5 total and its -255 price are NOT Hard Rock line history and are not written into it, in either direction.",
+ "ordering_by_utc": [
+  "vintage 1 retrieval 21:44-21:45Z",
+  "vintage 2 display 23:05Z",
+  "vintage 3 display 23:06Z"
+ ],
+ "sealed_artifact_untouched": {
+  "all_rows_sha256": "312810563dae55df842d690f8bffbf3eb2783a7020a518d72ab5c37cf078bcee",
+  "note": "this vintage file lives in a SEPARATE directory. No byte of the sealed comparison was rewritten, and the three observations below are not merged into it.",
+  "path": "nfl/research/market/DET_BUF_2026W2/"
+ },
+ "spec_version": "det-buf-2026w2-market-vintages-1",
+ "vintages": [
+  {
+   "csv_sha256": "99700dc341322482cc6c3ce8118366cb1b925058f788be35802cf1f3da40c290",
+   "fixture_id": "202609189BE34D3B",
+   "game_lines_as_captured": {
+    "moneyline": {
+     "BUF": null,
+     "CORRECTION": "THE MONEYLINE PRICES ARE NOT IN THIS VINTAGE. The chronology handed to me attributed BUF -250 / DET +200 to the 21:44Z API snapshot. Both moneyline rows exist in the sealed CSV and both carry EMPTY over_odds and under_odds -- status open_single_selection, no price captured. -250/+200 appears in vintage 3, the Hard Rock app screenshot, and nowhere else. The difference is not cosmetic: it is the difference between a price the feed recorded and a price only ever seen on a phone.",
+     "DET": null,
+     "line_timestamp_utc": {
+      "BUF": "2026-09-17T16:33:52.843997Z",
+      "DET": "2026-09-17T16:03:27.449795Z"
+     },
+     "status": "open_single_selection"
+    },
+    "spread": {
+     "BUF": -5.5,
+     "DET": 5.5,
+     "line_timestamp_utc": "2026-09-17T20:42:28.054433Z",
+     "prices": null,
+     "status": "open_single_selection"
+    },
+    "total": {
+     "line": 55.0,
+     "line_timestamp_utc": "2026-09-17T15:23:40.526596Z",
+     "over_odds": -110,
+     "status": "open_two_sided",
+     "under_odds": -110
+    }
+   },
+   "is_a_single_instant": false,
+   "retrieved_at_utc": [
+    "2026-09-17T21:44:31Z",
+    "2026-09-17T21:45:02Z"
+   ],
+   "snapshot_identity": "hardrock:202609189BE34D3B@2026-09-17T21:45:02Z",
+   "source": "Hard Rock Bet via OpticOdds API v3",
+   "source_class": "PRIMARY_BOOK_FEED",
+   "spread_and_total_confirmed_against_the_sealed_csv": true,
+   "vintage": 1,
+   "why_not": "the retrieval is one instant; the LINES are not. Each row carries its own line_timestamp_utc and 162 distinct ones are preserved. The game lines below are quoted with the timestamp the feed gave each of them, never with the retrieval time."
+  },
+  {
+   "evidence": "screenshot only; no raw document, no hash, no publisher timestamp",
+   "game_lines_as_displayed": {
+    "moneyline": {
+     "BUF": -255
+    },
+    "spread": {
+     "BUF": -5.5
+    },
+    "total": {
+     "line": 54.5
+    }
+   },
+   "must_not_be_merged_into_hardrock_history": true,
+   "observed_at_device_local": "2026-09-17 19:05 ET",
+   "observed_at_utc": "2026-09-17T23:05:00Z",
+   "source": "RotoWire (web display)",
+   "source_class": "SECONDARY_AGGREGATOR_DISPLAY",
+   "sportsbook_attribution": "NOT STATED BY THE SOURCE",
+   "utc_offset_applied": "-04:00 (EDT)",
+   "vintage": 2,
+   "why": "54.5 and -255 are RotoWire`s display. Writing either into the Hard Rock series would manufacture a line move that Hard Rock never made, and a later reader would see a total drifting 55 -> 54.5 -> 55 inside twenty minutes at one book."
+  },
+  {
+   "evidence": "screenshot only; no raw document, no hash, no feed timestamp",
+   "game_lines_as_displayed": {
+    "moneyline": {
+     "BUF": -250,
+     "DET": 200
+    },
+    "spread": {
+     "BUF": {
+      "line": -5.5,
+      "price": -115
+     },
+     "DET": {
+      "line": 5.5,
+      "price": -105
+     }
+    },
+    "total": {
+     "line": 55.0,
+     "over_odds": -110,
+     "under_odds": -110
+    }
+   },
+   "no_inference_that_the_total_moved": "Hard Rock shows 55 at 21:44Z and 55 at 23:06Z. RotoWire showing 54.5 in between is RotoWire. No Hard Rock total movement is asserted.",
+   "observed_at_device_local": "2026-09-17 19:06 ET",
+   "observed_at_utc": "2026-09-17T23:06:00Z",
+   "relation_to_vintage_1": "same book, later observation, different capture CHANNEL -- app display rather than API. The spread and total agree with vintage 1. The moneyline pair is NEW here rather than a confirmation of it, because vintage 1 captured no moneyline price at all.",
+   "source": "Hard Rock Bet (mobile app)",
+   "source_class": "PRIMARY_BOOK_DISPLAY",
+   "utc_offset_applied": "-04:00 (EDT)",
+   "vintage": 3
+  }
+ ]
+}

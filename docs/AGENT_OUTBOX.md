@@ -1195,3 +1195,84 @@ than assume.
 
 No sportsbook prices, no vendor projections. Neither may enter as a predictive
 input.
+
+---
+
+## 2026-09-17 — OUT-020: the official DET @ BUF inactive declaration, tonight
+
+**ASSIGNED, not blocked for both of us.** Everything downstream of the bytes is
+built and tested here. What this executor cannot do is reach the page.
+
+**Kickoff** `2026-09-18T00:15:00Z`. The list publishes about T-90, so it exists
+now.
+
+### What I need — the raw document, nothing parsed
+
+```
+https://www.nfl.com/inactives/
+```
+
+or the equivalent official club pages:
+
+```
+https://www.detroitlions.com/  (official inactive declaration, Week 2 vs BUF)
+https://www.buffalobills.com/  (official inactive declaration, Week 2 vs DET)
+```
+
+Raw bytes only. Not a summary, not a vendor table, not a screenshot
+transcription — `nfl/tools/ingest_inactives.py` refuses all four by design:
+
+> It will not accept a reporter's summary, a sportsbook line, an inferred
+> dress list, or a retrospective INA column. `--bytes` must be the
+> authoritative document.
+
+With the bytes on disk the whole chain is one command:
+
+```
+python3.12 nfl/tools/ingest_inactives.py \
+    --game-id 2026_02_DET_BUF --bytes /path/to/inactives.html \
+    --source-url https://www.nfl.com/inactives/ \
+    --retrieved-at <UTC> [--published-at <UTC>] \
+    --out nfl/research/live/2026_02_DET_BUF
+```
+
+It hashes and content-addresses the bytes before parsing, requires BOTH clubs
+before emitting `POST_INACTIVES_COMPLETE`, refuses an ambiguous name rather
+than guessing, and zeroes an inactive player's appearance draws in every draw
+through the candidate's own mechanism.
+
+### Why I cannot clear it myself — measured, not assumed
+
+Attempted 2026-09-17T23:31:01Z. Every official host is refused by the
+environment's network policy at the CONNECT stage:
+
+```
+www.nfl.com:443            403  CONNECT tunnel failed   curl exit 56
+www.detroitlions.com:443   403  CONNECT tunnel failed   curl exit 56
+www.buffalobills.com:443   403  CONNECT tunnel failed   curl exit 56
+api.nfl.com:443            403  CONNECT tunnel failed   curl exit 56
+operations.nfl.com:443     403  CONNECT tunnel failed
+www.espn.com:443           403  CONNECT tunnel failed
+```
+
+The control matters: `raw.githubusercontent.com` answers `200` from this same
+executor, which is how the pbp blobs were captured this afternoon. So this is a
+per-host policy denial, not a broken network and not a code defect.
+
+### What I will NOT do instead
+
+A RotoWire screenshot of both inactive lists is in hand. It is secondary
+evidence and it is not being ingested, not being transcribed into the governed
+path, and not being used to zero anybody. `inactives.verify_supplied_names`
+exists precisely for supplied names — and it verifies them AGAINST the official
+HTML, so it cannot run without the document either.
+
+### The thing that is worse than the missing bytes
+
+`AVAILABILITY_AUDIT_DET_BUF.json` (run `e58206e3e8473dc1`) reports
+`official_feed_weeks: ["1"]`. The governed injury feed carries **no 2026 week-2
+row at all**, and 21 of 32 pool players sit at `EXISTS_BUT_DID_NOT_JOIN`. Ty
+Johnson, known unavailable, still carries `p_appear = 0.8929` and
+`f_inj_available = 0` in that run. Even a perfectly captured inactive list
+lands in a system whose injury join is not working for the current season
+(open item PRI-A). The bytes are necessary and they are not sufficient.
