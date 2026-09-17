@@ -181,10 +181,34 @@ def test_F_it_is_wired_between_the_guard_and_the_seal():
           f'{i_ver} vs {i_seal}')
     check('  and the seal REFUSES on a broken certificate',
           'CCERT.CODE_BROKEN' in src)
-    check('  verification reads ds.arrays, the PUBLICATION mapping, not _p2',
-          'CCERT.verify(\n                _cert, ds.arrays,' in src
-          or 'CCERT.verify(' in src and '_cert, ds.arrays' in src,
-          'must re-read to catch a replaced entry')
+    # SOURCE ORDER IS NOT SCOPE, AND THIS IS THE CHECK THAT PROVES IT.
+    #
+    # The first version asserted only that `CCERT.verify` appeared after
+    # `def _seal():` in the file, and passed. Every live run then died at
+    # artifact_sealing with `NameError: name 'ds' is not defined`, because
+    # `_seal()` is a different stage function and `ds` belongs to the
+    # player-draws stage. A text-ordering test cannot see a scope error.
+    #
+    # `_seal` may reference ONLY names it can actually reach. `fx` is the
+    # cross-stage carrier and is in its closure; `ds` is not.
+    import ast
+    tree = ast.parse(src)
+    seal = next((n for n in ast.walk(tree)
+                 if isinstance(n, ast.FunctionDef) and n.name == '_seal'), None)
+    check('  the seal stage function is found in the AST', seal is not None)
+    if seal is not None:
+        loaded = {x.id for x in ast.walk(seal)
+                  if isinstance(x, ast.Name) and isinstance(x.ctx, ast.Load)}
+        check('  `_seal` does NOT reference `ds` -- it is another stage`s local',
+              'ds' not in loaded,
+              'referencing it raises NameError on every run')
+        check('  and it reaches the arrays through `fx`, the stage carrier',
+              'fx' in loaded)
+    check('  the publication mapping is carried on fx, as the DICT not a copy',
+          "fx['_published_arrays'] = ds.arrays" in src,
+          'a values snapshot would miss a replaced entry')
+    check('  and verify() is handed that mapping',
+          'CCERT.verify(_cert, _pub,' in src)
 
 
 def test_zz_every_check_passed():

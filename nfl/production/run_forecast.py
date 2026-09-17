@@ -2757,6 +2757,15 @@ def build(args, fixtures: dict = None) -> dict:
         fx['_coherence_certificate'] = (
             _cert.value if _cert.state is State.PASS
             else {'state': _cert.state.value, 'code': _cert.code})
+        # THE PUBLICATION MAPPING ITSELF is carried across the stage boundary,
+        # not a copy. `_seal()` is a different stage function and `ds` is NOT in
+        # its closure -- the first version referenced it there and every run
+        # died with NameError at artifact_sealing. Holding the DICT is also
+        # what makes the check meaningful: a downstream `ds.arrays[k] = other`
+        # is visible through it, where a snapshot of the values would not be.
+        fx['_published_arrays'] = ds.arrays
+        fx['_published_row_ids'] = {k: v.get('row_ids')
+                                    for k, v in (ds.layers or {}).items()}
 
         w = ds.write(out_dir)
         if w.state is not State.PASS:
@@ -2854,11 +2863,10 @@ def build(args, fixtures: dict = None) -> dict:
         # references the guard held -- because that is what catches an entry
         # REPLACED downstream as well as one mutated in place.
         _cert = fx.get('_coherence_certificate')
-        if _cert and _cert.get('entries'):
-            _cv = CCERT.verify(
-                _cert, ds.arrays,
-                row_ids={k: v.get('row_ids') for k, v in
-                         (ds.layers or {}).items()})
+        _pub = fx.get('_published_arrays')
+        if _cert and _cert.get('entries') and _pub:
+            _cv = CCERT.verify(_cert, _pub,
+                               row_ids=fx.get('_published_row_ids') or {})
             fx['_coherence_certificate_verdict'] = {
                 'state': _cv.state.value, 'code': _cv.code,
                 **{k: v for k, v in _cv.evidence.items() if k != 'value'}}
