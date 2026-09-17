@@ -885,6 +885,9 @@ def allocate(season, week, teams, qb_players, m=200, seed=20260908,
                       qb_inactive_ownership=own,
                       qb3_configuration=qb3_cfg,
                       panel_freshness=_fresh_ev,
+                      # CS1's own verdict: which clubs the refresh covered,
+                      # from which source, and which it could not reach.
+                      current_season_panel=_cs_ev,
                       # QBSEM: the rates that RAN and the sparse-cell
                       # fallbacks, per team. Empty on every other allocator.
                       cell_relief=cell_relief_ev or None,

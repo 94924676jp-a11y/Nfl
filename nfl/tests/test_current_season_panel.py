@@ -173,6 +173,64 @@ def test_E_freshness_stops_firing_on_the_refreshed_state():
           'refresh is additive rather than a rewrite of it', True)
 
 
+def test_F_the_verdict_reaches_the_allocation_outcome():
+    """THE WIRING CHECK, and it is here because the wiring was broken.
+
+    The first GSVUC board ran to completion and recorded `not_reached: [CS1]`.
+    The refresh worked, the flag was declared, the candidate resolved -- and
+    `current_season_panel=` was never added to `allocate`'s Outcome, because
+    the edit that would have added it aborted on an earlier assertion and wrote
+    nothing. `_cs_ev` was computed and thrown away.
+
+    Every layer downstream reads the ALLOCATOR'S OWN EVIDENCE rather than the
+    flag, which is what made the failure visible as NOT_REACHED instead of a
+    silent false claim. That design worked. What was missing was a test that
+    the evidence arrives at all.
+    """
+    print('\nF. the refresh verdict reaches the allocation Outcome')
+    import numpy as np
+    dc = QA.captured_depth_chart()
+    if dc.state is not State.PASS:
+        print(f'  ..   NOT_EXECUTED no captured depth chart: {dc.code}')
+        return
+    teams = [t for t in ('DET', 'BUF') if dc.value.get(t)]
+    if not teams:
+        print('  ..   NOT_EXECUTED neither DET nor BUF is on the chart')
+        return
+    players = [{'gsis_id': g, 'team': t}
+               for t in teams for g in (dc.value.get(t) or {})]
+    tdb = {t: np.full(40, 35.0) for t in teams}
+    QA.cache_clear(); CSP.cache_clear()
+    off = QA.allocate(2026, 2, teams, players, m=40, allocator='qb_room_v2',
+                      team_dropback_draws=tdb, written_at=AS_OF,
+                      current_season_state=False)
+    QA.cache_clear(); CSP.cache_clear()
+    on = QA.allocate(2026, 2, teams, players, m=40, allocator='qb_room_v2',
+                     team_dropback_draws=tdb, written_at=AS_OF,
+                     current_season_state=True)
+    check('both allocations PASS',
+          off.state is State.PASS and on.state is State.PASS,
+          f'{off.state}[{off.code}] / {on.state}[{on.code}]')
+    check('  the Outcome carries `current_season_panel` when the flag is ON',
+          (on.evidence.get('current_season_panel') or {}).get('state') == 'PASS',
+          str(on.evidence.get('current_season_panel'))[:120])
+    check('  and records NOT_REQUESTED when it is OFF -- never silently absent',
+          (off.evidence.get('current_season_panel') or {}).get('state')
+          == 'NOT_REQUESTED',
+          str(off.evidence.get('current_season_panel'))[:120])
+    # THE STATE ACTUALLY REACHES THE ROOM, not just the evidence block.
+    for t in teams:
+        a = off.evidence['qb3_configuration'][t]
+        b = on.evidence['qb3_configuration'][t]
+        check(f'  {t}: opener {a["is_season_opener"]} -> '
+              f'{b["is_season_opener"]} in the room`s own configuration',
+              a['is_season_opener'] and not b['is_season_opener'],
+              f'{a["is_season_opener"]} -> {b["is_season_opener"]}')
+        check(f'    and its stale-state defect id clears',
+              a.get('defect_id') is not None and b.get('defect_id') is None,
+              f'{a.get("defect_id")} -> {b.get("defect_id")}')
+
+
 def test_zz_every_check_passed():
     """The module's own counter, re-raised so a failure turns this module RED."""
     if FAILED:
@@ -184,7 +242,8 @@ if __name__ == '__main__':
                test_B_the_clock_is_enforced_by_moving_it,
                test_C_the_refresh_is_additive,
                test_D_with_the_flag_the_state_is_corrected_and_absence_preserved,
-               test_E_freshness_stops_firing_on_the_refreshed_state):
+               test_E_freshness_stops_firing_on_the_refreshed_state,
+               test_F_the_verdict_reaches_the_allocation_outcome):
         fn()
     print(f'\n{PASSED} passed, {FAILED} failed')
     raise SystemExit(1 if FAILED else 0)
