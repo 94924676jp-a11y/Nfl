@@ -260,11 +260,27 @@ def run(rows, *, play_class: str, folds, inner_k: int = INNER_K) -> Outcome:
                 try:
                     d = EV.clustered_delta(EV.SCORERS['mae'], Y,
                                            pooled_pred[name], base, cl)
-                    row[lbl] = {k: d[k] for k in
-                                ('delta', 'ci95', 'p_a_better', 'n_rows',
-                                 'n_clusters', 'R')}
-                except Exception as e:                        # noqa: BLE001
-                    row[lbl] = {'error': f'{type(e).__name__}: {e}'}
+                    # THE KEY IS `ci95_clustered`, NOT `ci95`. Reading the
+                    # wrong name raised KeyError inside the try and every
+                    # delta came back as {'error': "KeyError: 'ci95'"} -- a
+                    # caller's mistake that the broad except turned into a
+                    # uniform, plausible-looking failure across all ten cells.
+                    row[lbl] = {'delta': d['delta'],
+                                'ci95': d['ci95_clustered'],
+                                'ci95_excludes_zero': not (
+                                    d['ci95_clustered'][0] <= 0
+                                    <= d['ci95_clustered'][1]),
+                                'p_a_better': d['p_a_better'],
+                                'n_rows': d['n_rows'],
+                                'n_clusters': d['n_clusters'], 'R': d['R']}
+                except KeyError as e:                         # noqa: BLE001
+                    # A MISSING KEY IS THIS MODULE'S BUG, NOT A DATA
+                    # CONDITION, and it must not be absorbed as one.
+                    raise RuntimeError(
+                        f'clustered_delta returned no {e} -- the caller is '
+                        f'reading a key the evaluator does not emit') from e
+                except EV.EvaluatorError as e:
+                    row[lbl] = {'error': f'EvaluatorError: {e}'}
             deltas[name] = row
     summ = {}
     for name in BL.NAMES:
