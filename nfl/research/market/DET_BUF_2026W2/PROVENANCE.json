@@ -1,0 +1,289 @@
+{
+ "artifact": "DET_BUF_2026W2_MARKET_COMPARISON",
+ "built_at": "2026-09-17T21:57:24.729645+00:00",
+ "chronology": {
+  "forecast_precedes_market": true,
+  "forecast_sealed_at": "2026-09-16T15:45:14Z",
+  "kickoff_utc": "2026-09-18T00:15:00Z",
+  "market_line_timestamp_max": "2026-09-17T21:43:28.420272Z",
+  "market_line_timestamp_min": "2026-09-17T15:23:40.526596Z",
+  "market_precedes_kickoff": true,
+  "market_retrieved_at": [
+   "2026-09-17T21:44:31Z",
+   "2026-09-17T21:45:02Z"
+  ],
+  "no_forecast_regenerated_after_market": true
+ },
+ "coverage": {
+  "EXACT_MODEL_SUPPORTED": 438,
+  "IDENTITY_UNRESOLVED": 2,
+  "MODEL_STAT_NOT_AVAILABLE": 36,
+  "NON_PLAYER_MARKET": 323,
+  "ONE_SIDED_MARKET": 102,
+  "PLAYER_NOT_IN_MODEL_UNIVERSE": 21
+ },
+ "coverage_states_declared": [
+  "EXACT_MODEL_SUPPORTED",
+  "MODEL_STAT_EXISTS_BUT_LINE_EVALUATION_UNSUPPORTED",
+  "MODEL_STAT_NOT_AVAILABLE",
+  "PLAYER_NOT_IN_MODEL_UNIVERSE",
+  "IDENTITY_UNRESOLVED",
+  "ONE_SIDED_MARKET",
+  "NON_PLAYER_MARKET",
+  "OTHER_EXPLICIT_REFUSAL"
+ ],
+ "coverage_total": 922,
+ "forecast": {
+  "code_commit": "b62a71ff90805141e808557111ee0ada013f7eb8+src1[44aa01d03783de18]",
+  "draw_content_digest": "7122994ca6490c3d459cef9001d87fa2e2c9bee150dc01d842b1ed7fb24e5962",
+  "draws_sha256": "c24d9dccbe6d76f25c9643ba3dcf0f19eee81bdda43a70352c4cd04829b87051",
+  "identity": "c3probe_V1_CANDIDATE_R9_W1P_GSVUC/d709e67b82d5b01c",
+  "n_draws": 8000,
+  "n_matrices": 54,
+  "n_players_in_universe": 29,
+  "run_id": "d709e67b82d5b01c",
+  "status": "SEALED",
+  "written_at": "2026-09-16T15:45:14Z"
+ },
+ "market_is": "EVALUATION DATA, NEVER A MODEL INPUT. No projection, mean, distribution, parameter, CS1 or OAS1 value was read from or changed by this file.",
+ "market_map": {
+  "Player Field Goals Made": {
+   "layer": "kicking",
+   "metric": "fgm"
+  },
+  "Player Interceptions": {
+   "layer": "qb",
+   "metric": "int"
+  },
+  "Player Passing Attempts": {
+   "layer": "qb",
+   "metric": "att"
+  },
+  "Player Passing Completions": {
+   "layer": "qb",
+   "metric": "cmp"
+  },
+  "Player Passing Touchdowns": {
+   "layer": "qb",
+   "metric": "ptd"
+  },
+  "Player Passing Yards": {
+   "layer": "qb",
+   "metric": "pyds"
+  },
+  "Player Receiving Yards": {
+   "layer": "receiving",
+   "metric": "receiving_yards"
+  },
+  "Player Receptions": {
+   "layer": "receiving",
+   "metric": "receptions"
+  },
+  "Player Rushing + Receiving Yards": {
+   "note": "added WITHIN each draw, so the joint dependence between a player`s rushing and receiving yards is preserved. Adding marginal means or convolving independently would answer a different question.",
+   "sum": [
+    [
+     "rushing_total",
+     "rushing_yards"
+    ],
+    [
+     "receiving",
+     "receiving_yards"
+    ]
+   ]
+  },
+  "Player Rushing Attempts": {
+   "layer": "rushing",
+   "metric": "carries"
+  },
+  "Player Rushing Yards": {
+   "layer": "rushing_total",
+   "metric": "rushing_yards",
+   "note": "rushing_total carries every rusher including quarterbacks; the `rushing` layer covers 6 backs only"
+  }
+ },
+ "market_snapshot": {
+  "alternates_not_collapsed": true,
+  "csv_bytes": 550738,
+  "csv_columns": 26,
+  "csv_rows": 922,
+  "csv_sha256": "99700dc341322482cc6c3ce8118366cb1b925058f788be35802cf1f3da40c290",
+  "distinct_line_timestamps": 162,
+  "duplicate_market_id_count": 902,
+  "feed_limitation": "Hard Rock via OpticOdds shows two-sided or one-sided AVAILABILITY. It cannot distinguish a market that was explicitly SUSPENDED from one that was removed or never posted. An absent market is therefore absent, and no inference about suspension is drawn from it.",
+  "fixture_id": "202609189BE34D3B",
+  "game": "DET @ BUF",
+  "identity": "hardrock:202609189BE34D3B@2026-09-17T21:45:02Z",
+  "line_timestamps_preserved": "each row keeps its own line_timestamp_utc; retrieval time is recorded separately and never substituted for it",
+  "n_alternate_rows": 844,
+  "n_main_line_rows": 78,
+  "n_player_prop_rows": 599,
+  "push_rule_counts": {
+   "no push, half-point line": 784,
+   "push on exact line": 138
+  },
+  "season_week": "2",
+  "source_endpoint": "OpticOdds API v3 GET /fixtures/odds?fixture_id=202609189BE34D3B&sportsbook=Hard Rock",
+  "sportsbook": "Hard Rock Bet",
+  "status_counts": {
+   "open_one_sided_over": 120,
+   "open_one_sided_under": 8,
+   "open_single_selection": 178,
+   "open_two_sided": 616
+  },
+  "zip_bytes": 201804,
+  "zip_entries": 28,
+  "zip_manifest": [
+   {
+    "crc32": "00000000",
+    "name": "ev/",
+    "size": 0
+   },
+   {
+    "crc32": "ebe38f98",
+    "name": "ev/combined2.json",
+    "size": 1205083
+   },
+   {
+    "crc32": "060e2e7b",
+    "name": "ev/fetchlog.json",
+    "size": 1324
+   },
+   {
+    "crc32": "03105253",
+    "name": "ev/game2.json",
+    "size": 499779
+   },
+   {
+    "crc32": "3e26143d",
+    "name": "ev/pmap.json",
+    "size": 1079
+   },
+   {
+    "crc32": "a8065694",
+    "name": "ev/mk.json",
+    "size": 13548
+   },
+   {
+    "crc32": "12f89ff1",
+    "name": "ev/SHA256SUMS.txt",
+    "size": 2536
+   },
+   {
+    "crc32": "00000000",
+    "name": "ev/per_market_raw/",
+    "size": 0
+   },
+   {
+    "crc32": "71e89aa1",
+    "name": "ev/per_market_raw/player_passing_touchdowns.json",
+    "size": 12946
+   },
+   {
+    "crc32": "0141ee8b",
+    "name": "ev/per_market_raw/player_passing_yards.json",
+    "size": 155986
+   },
+   {
+    "crc32": "d4997c02",
+    "name": "ev/per_market_raw/player_receiving_yards.json",
+    "size": 605030
+   },
+   {
+    "crc32": "66e3d422",
+    "name": "ev/per_market_raw/team_total.json",
+    "size": 98386
+   },
+   {
+    "crc32": "bb93ee0a",
+    "name": "ev/per_market_raw/player_touchdowns.json",
+    "size": 16111
+   },
+   {
+    "crc32": "6e075ab0",
+    "name": "ev/per_market_raw/point_spread.json",
+    "size": 192501
+   },
+   {
+    "crc32": "22735c13",
+    "name": "ev/per_market_raw/player_receptions.json",
+    "size": 98414
+   },
+   {
+    "crc32": "427de292",
+    "name": "ev/per_market_raw/player_longest_passing_completion.json",
+    "size": 6316
+   },
+   {
+    "crc32": "75eff1f7",
+    "name": "ev/per_market_raw/total_points.json",
+    "size": 210190
+   },
+   {
+    "crc32": "d16bb722",
+    "name": "ev/per_market_raw/player_rushing_p_receiving_yards.json",
+    "size": 6340
+   },
+   {
+    "crc32": "a1a03b8f",
+    "name": "ev/per_market_raw/player_passing_completions.json",
+    "size": 6231
+   },
+   {
+    "crc32": "d9397f85",
+    "name": "ev/per_market_raw/player_kicking_points.json",
+    "size": 3927
+   },
+   {
+    "crc32": "b883491e",
+    "name": "ev/per_market_raw/moneyline.json",
+    "size": 3826
+   },
+   {
+    "crc32": "216950e8",
+    "name": "ev/per_market_raw/player_longest_reception.json",
+    "size": 19940
+   },
+   {
+    "crc32": "2abf8c5e",
+    "name": "ev/per_market_raw/player_longest_rush.json",
+    "size": 6166
+   },
+   {
+    "crc32": "2ff11640",
+    "name": "ev/per_market_raw/player_field_goals_made.json",
+    "size": 6180
+   },
+   {
+    "crc32": "cf0ce45c",
+    "name": "ev/per_market_raw/player_passing_attempts.json",
+    "size": 6197
+   },
+   {
+    "crc32": "b1917324",
+    "name": "ev/per_market_raw/player_rushing_yards.json",
+    "size": 244972
+   },
+   {
+    "crc32": "22cef428",
+    "name": "ev/per_market_raw/player_interceptions.json",
+    "size": 6141
+   },
+   {
+    "crc32": "4c72630e",
+    "name": "ev/per_market_raw/player_rushing_attempts.json",
+    "size": 29805
+   }
+  ],
+  "zip_preserved_unchanged": true,
+  "zip_sha256": "478866d840679da09d4d497bd141bf3a7caa1a89511ecca28ee7f3defabcfac3"
+ },
+ "spec_version": "market-exact-evaluation-1",
+ "unsupported_markets": {
+  "Player Kicking Points": "requires the kicker`s scoring construction (field goals by distance bucket plus extra points) resolved to a point total in the same draw. The arrays exist but the scoring composition is not verified exact in this artifact, and an approximation is worse than a refusal.",
+  "Player Longest Passing Completion": "settles on the maximum single completion; not present as an event-level quantity.",
+  "Player Longest Reception": "settles on the MAXIMUM single reception. The sealed world holds per-game receiving totals and per-catch atoms are not exported in this artifact, so a maximum cannot be recovered from a sum.",
+  "Player Longest Rush": "settles on the maximum single carry; the sealed world holds per-game rushing totals only.",
+  "Player Touchdowns": "a touchdown ladder needs each player`s TOTAL touchdowns in the same simulated world. Receiving, rushing and passing touchdowns live in three separate layers with different row sets, and combining them is a construction this artifact has not verified."
+ }
+}

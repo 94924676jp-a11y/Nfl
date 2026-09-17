@@ -1,0 +1,1797 @@
+{
+ "artifact": "OAS1_PRIOR_SEASON_FIT",
+ "built_at": "2026-09-17T21:36:34.271046+00:00",
+ "fits": {
+  "pass": {
+   "centering": "coefficients centred within unit family for reporting; a relabelling, not a refit",
+   "defense_shift": 2.425902360936316e-18,
+   "home": 0.018285064771940772,
+   "home_se": 0.02592643243128266,
+   "identified": true,
+   "in_sample_mae": 1.1420835776888663,
+   "intercept": 0.027026487452624332,
+   "intercept_se": 0.01929529436245136,
+   "lambda": 10000.0,
+   "n_game_clusters": 272,
+   "n_rows": 19513,
+   "n_teams": 32,
+   "offense_shift": 2.6020852139652106e-18,
+   "residual_sd": 1.5683671715809537,
+   "sign_convention": "positive offensive strength = better offense; positive defensive strength = WORSE defence, because it enters as an additive contribution to offensive EPA"
+  },
+  "rush": {
+   "centering": "coefficients centred within unit family for reporting; a relabelling, not a refit",
+   "defense_shift": 9.351243737687476e-19,
+   "home": -0.02100919765716724,
+   "home_se": 0.01872036979027253,
+   "identified": true,
+   "in_sample_mae": 0.664063625752487,
+   "intercept": -0.03867902894715128,
+   "intercept_se": 0.01383951901120577,
+   "lambda": 10000.0,
+   "n_game_clusters": 272,
+   "n_rows": 12916,
+   "n_teams": 32,
+   "offense_shift": 9.41900637346782e-19,
+   "residual_sd": 0.9915188500159791,
+   "sign_convention": "positive offensive strength = better offense; positive defensive strength = WORSE defence, because it enters as an additive contribution to offensive EPA"
+  }
+ },
+ "frame": {
+  "exclusion_counts": {
+   "garbage_time": 0,
+   "kneel": 434,
+   "no_play": 4535,
+   "no_team": 0,
+   "none": 32429,
+   "null_epa": 0,
+   "penalty": 513,
+   "playoff": 2319,
+   "special_teams": 7082,
+   "spike": 81,
+   "unclassified": 1378
+  },
+  "gt_rule": "none",
+  "gt_rule_text": "no garbage-time exclusion",
+  "n_by_class": {
+   "pass": 19513,
+   "rush": 12916
+  },
+  "n_games_kept": 272,
+  "n_input_rows": 48771,
+  "n_kept": 32429,
+  "n_sacks_in_pass_class": 1279,
+  "n_sacks_kept": 1279,
+  "n_scrambles_in_pass_class": 1034,
+  "n_scrambles_kept": 1034,
+  "reason_precedence": [
+   "playoff",
+   "kneel",
+   "spike",
+   "no_play",
+   "special_teams/unclassified",
+   "penalty",
+   "no_team",
+   "null_epa",
+   "garbage_time",
+   "none"
+  ],
+  "reg_only": true,
+  "weeks": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12,
+   13,
+   14,
+   15,
+   16,
+   17,
+   18
+  ]
+ },
+ "identification": {
+  "pass": {
+   "code": "OAS1_DESIGN_IDENTIFIED",
+   "component_sizes": {
+    "64": 1
+   },
+   "deficiency": 2,
+   "design_cols": 66,
+   "identified": true,
+   "n_components": 1,
+   "n_rows": 19513,
+   "n_teams": 32,
+   "rank": 64,
+   "state": "PASS",
+   "structural_deficiency": 2,
+   "unestimable_opponent_dimensions": 0
+  },
+  "rush": {
+   "code": "OAS1_DESIGN_IDENTIFIED",
+   "component_sizes": {
+    "64": 1
+   },
+   "deficiency": 2,
+   "design_cols": 66,
+   "identified": true,
+   "n_components": 1,
+   "n_rows": 12916,
+   "n_teams": 32,
+   "rank": 64,
+   "state": "PASS",
+   "structural_deficiency": 2,
+   "unestimable_opponent_dimensions": 0
+  }
+ },
+ "lambda_boundary_sensitivity": {
+  "pass": {
+   "at_best_scoring_lambda": {
+    "def_pass": {
+     "max": 0.1781276261907256,
+     "mean_se": 0.04995149333665047,
+     "min": -0.15001753745206114,
+     "sd": 0.09271630536619559,
+     "sd_over_mean_se": 1.856126797678092
+    },
+    "off_pass": {
+     "max": 0.1711234459205974,
+     "mean_se": 0.04975332164290609,
+     "min": -0.2872929034075413,
+     "sd": 0.10432951560173861,
+     "sd_over_mean_se": 2.0969356850290635
+    }
+   },
+   "grid_max": 10000.0,
+   "lambda_best_scoring": 151.99110829529332,
+   "lambda_selected": 10000.0,
+   "note": "the selected lambda is the grid MAXIMUM. Under the pre-declared one-standard-error most-shrunken tie-break, a flat score surface drives the choice to the edge of the search space, which means the rule wanted MORE shrinkage than the grid offers. This is reported as a diagnostic. The rule is NOT changed after seeing it, and these best-scoring-lambda strengths are NOT the selected configuration.",
+   "selected_is_grid_maximum": true
+  },
+  "rush": {
+   "at_best_scoring_lambda": {
+    "def_rush": {
+     "max": 0.08096889530880148,
+     "mean_se": 0.022842506995692218,
+     "min": -0.06889881058400446,
+     "sd": 0.03139529151323531,
+     "sd_over_mean_se": 1.3744240734677688
+    },
+    "off_rush": {
+     "max": 0.06520011521173419,
+     "mean_se": 0.02264658055178023,
+     "min": -0.10974136730314665,
+     "sd": 0.033035546909803384,
+     "sd_over_mean_se": 1.458743267411578
+    }
+   },
+   "grid_max": 10000.0,
+   "lambda_best_scoring": 432.8761281083057,
+   "lambda_selected": 10000.0,
+   "note": "the selected lambda is the grid MAXIMUM. Under the pre-declared one-standard-error most-shrunken tie-break, a flat score surface drives the choice to the edge of the search space, which means the rule wanted MORE shrinkage than the grid offers. This is reported as a diagnostic. The rule is NOT changed after seeing it, and these best-scoring-lambda strengths are NOT the selected configuration.",
+   "selected_is_grid_maximum": true
+  }
+ },
+ "lambda_selection": {
+  "pass": {
+   "best_lambda_by_score": 151.99110829529332,
+   "best_score": 1.1443002185323299,
+   "chosen_is_more_shrunken_than_best": true,
+   "chosen_lambda": 10000.0,
+   "fold_weeks": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18
+   ],
+   "folds": [
+    {
+     "n_test": 1207,
+     "n_train": 1164,
+     "train_cols": 66,
+     "train_deficiency": 34,
+     "train_identified": false,
+     "train_rank": 32,
+     "week": 2
+    },
+    {
+     "n_test": 1137,
+     "n_train": 2371,
+     "train_cols": 66,
+     "train_deficiency": 5,
+     "train_identified": false,
+     "train_rank": 61,
+     "week": 3
+    },
+    {
+     "n_test": 1109,
+     "n_train": 3508,
+     "train_cols": 66,
+     "train_deficiency": 2,
+     "train_identified": true,
+     "train_rank": 64,
+     "week": 4
+    },
+    {
+     "n_test": 1064,
+     "n_train": 4617,
+     "train_cols": 66,
+     "train_deficiency": 2,
+     "train_identified": true,
+     "train_rank": 64,
+     "week": 5
+    },
+    {
+     "n_test": 1059,
+     "n_train": 5681,
+     "train_cols": 66,
+     "train_deficiency": 2,
+     "train_identified": true,
+     "train_rank": 64,
+     "week": 6
+    },
+    {
+     "n_test": 1156,
+     "n_train": 6740,
+     "train_cols": 66,
+     "train_deficiency": 2,
+     "train_identified": true,
+     "train_rank": 64,
+     "week": 7
+    },
+    {
+     "n_test": 912,
+     "n_train": 7896,
+     "train_cols": 66,
+     "train_deficiency": 2,
+     "train_identified": true,
+     "train_rank": 64,
+     "week": 8
+    },
+    {
+     "n_test": 1025,
+     "n_train": 8808,
+     "train_cols": 66,
+     "train_deficiency": 2,
+     "train_identified": true,
+     "train_rank": 64,
+     "week": 9
+    },
+    {
+     "n_test": 988,
+     "n_train": 9833,
+     "train_cols": 66,
+     "train_deficiency": 2,
+     "train_identified": true,
+     "train_rank": 64,
+     "week": 10
+    },
+    {
+     "n_test": 1070,
+     "n_train": 10821,
+     "train_cols": 66,
+     "train_deficiency": 2,
+     "train_identified": true,
+     "train_rank": 64,
+     "week": 11
+    },
+    {
+     "n_test": 1043,
+     "n_train": 11891,
+     "train_cols": 66,
+     "train_deficiency": 2,
+     "train_identified": true,
+     "train_rank": 64,
+     "week": 12
+    },
+    {
+     "n_test": 1114,
+     "n_train": 12934,
+     "train_cols": 66,
+     "train_deficiency": 2,
+     "train_identified": true,
+     "train_rank": 64,
+     "week": 13
+    },
+    {
+     "n_test": 1010,
+     "n_train": 14048,
+     "train_cols": 66,
+     "train_deficiency": 2,
+     "train_identified": true,
+     "train_rank": 64,
+     "week": 14
+    },
+    {
+     "n_test": 1114,
+     "n_train": 15058,
+     "train_cols": 66,
+     "train_deficiency": 2,
+     "train_identified": true,
+     "train_rank": 64,
+     "week": 15
+    },
+    {
+     "n_test": 1154,
+     "n_train": 16172,
+     "train_cols": 66,
+     "train_deficiency": 2,
+     "train_identified": true,
+     "train_rank": 64,
+     "week": 16
+    },
+    {
+     "n_test": 1093,
+     "n_train": 17326,
+     "train_cols": 66,
+     "train_deficiency": 2,
+     "train_identified": true,
+     "train_rank": 64,
+     "week": 17
+    },
+    {
+     "n_test": 1094,
+     "n_train": 18419,
+     "train_cols": 66,
+     "train_deficiency": 2,
+     "train_identified": true,
+     "train_rank": 64,
+     "week": 18
+    }
+   ],
+   "grid": [
+    0.1,
+    0.2848035868435802,
+    0.8111308307896871,
+    2.3101297000831593,
+    6.579332246575679,
+    18.73817422860383,
+    53.36699231206307,
+    151.99110829529332,
+    432.8761281083057,
+    1232.8467394420659,
+    3511.1917342151273,
+    10000.0
+   ],
+   "grid_boundary": {
+    "at_boundary": true,
+    "at_grid_maximum": true,
+    "at_grid_minimum": false,
+    "chosen_lambda": 10000.0,
+    "code": "RIDGE_GRID_BOUNDARY_SELECTED",
+    "grid_max": 10000.0,
+    "grid_min": 0.1,
+    "grid_must_not_be_expanded": "expanding the search space after observing which end was selected is retuning on the result. Any expansion is a NEW pre-registered experiment.",
+    "meaning": "the one-standard-error most-shrunken rule wanted MORE shrinkage than the declared grid offers",
+    "n_grid": 12
+   },
+   "mae_by_lambda": {
+    "0.1": 1.1522123911367441,
+    "0.2848035868435802": 1.151634676756773,
+    "0.8111308307896871": 1.1506163286438351,
+    "10000.0": 1.1488906721356342,
+    "1232.8467394420659": 1.1470425328514615,
+    "151.99110829529332": 1.1443002185323299,
+    "18.73817422860383": 1.1457604497876634,
+    "2.3101297000831593": 1.1491488311675457,
+    "3511.1917342151273": 1.1482874698088705,
+    "432.8761281083057": 1.1453434188577634,
+    "53.36699231206307": 1.1445292558959301,
+    "6.579332246575679": 1.1473675190087833
+   },
+   "n_folds": 17,
+   "n_folds_identified": 15,
+   "n_folds_unidentified": 2,
+   "one_se_threshold": 1.1516802580051622,
+   "score_metric": "mean absolute error on the held-out week",
+   "se_by_lambda": {
+    "0.1": 0.006951977518073283,
+    "0.2848035868435802": 0.0068423545069397585,
+    "0.8111308307896871": 0.006753717978368304,
+    "10000.0": 0.007184877301355512,
+    "1232.8467394420659": 0.007158873319753499,
+    "151.99110829529332": 0.00738003947283238,
+    "18.73817422860383": 0.007445102905679598,
+    "2.3101297000831593": 0.006834984730870419,
+    "3511.1917342151273": 0.007170489936950052,
+    "432.8761281083057": 0.007213000135744583,
+    "53.36699231206307": 0.007525426959595586,
+    "6.579332246575679": 0.007151426443488999
+   },
+   "tie_break": "among configurations within 1 SE of the best mean score, take the LARGEST lambda",
+   "unidentified_fold_weeks": [
+    2,
+    3
+   ],
+   "within_one_se": [
+    0.2848035868435802,
+    0.8111308307896871,
+    2.3101297000831593,
+    6.579332246575679,
+    18.73817422860383,
+    53.36699231206307,
+    151.99110829529332,
+    432.8761281083057,
+    1232.8467394420659,
+    3511.1917342151273,
+    10000.0
+   ]
+  },
+  "rush": {
+   "best_lambda_by_score": 432.8761281083057,
+   "best_score": 0.664769313268953,
+   "chosen_is_more_shrunken_than_best": true,
+   "chosen_lambda": 10000.0,
+   "fold_weeks": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18
+   ],
+   "folds": [
+    {
+     "n_test": 719,
+     "n_train": 713,
+     "train_cols": 66,
+     "train_deficiency": 34,
+     "train_identified": false,
+     "train_rank": 32,
+     "week": 2
+    },
+    {
+     "n_test": 754,
+     "n_train": 1432,
+     "train_cols": 66,
+     "train_deficiency": 5,
+     "train_identified": false,
+     "train_rank": 61,
+     "week": 3
+    },
+    {
+     "n_test": 780,
+     "n_train": 2186,
+     "train_cols": 66,
+     "train_deficiency": 2,
+     "train_identified": true,
+     "train_rank": 64,
+     "week": 4
+    },
+    {
+     "n_test": 608,
+     "n_train": 2966,
+     "train_cols": 66,
+     "train_deficiency": 2,
+     "train_identified": true,
+     "train_rank": 64,
+     "week": 5
+    },
+    {
+     "n_test": 691,
+     "n_train": 3574,
+     "train_cols": 66,
+     "train_deficiency": 2,
+     "train_identified": true,
+     "train_rank": 64,
+     "week": 6
+    },
+    {
+     "n_test": 666,
+     "n_train": 4265,
+     "train_cols": 66,
+     "train_deficiency": 2,
+     "train_identified": true,
+     "train_rank": 64,
+     "week": 7
+    },
+    {
+     "n_test": 604,
+     "n_train": 4931,
+     "train_cols": 66,
+     "train_deficiency": 2,
+     "train_identified": true,
+     "train_rank": 64,
+     "week": 8
+    },
+    {
+     "n_test": 656,
+     "n_train": 5535,
+     "train_cols": 66,
+     "train_deficiency": 2,
+     "train_identified": true,
+     "train_rank": 64,
+     "week": 9
+    },
+    {
+     "n_test": 712,
+     "n_train": 6191,
+     "train_cols": 66,
+     "train_deficiency": 2,
+     "train_identified": true,
+     "train_rank": 64,
+     "week": 10
+    },
+    {
+     "n_test": 732,
+     "n_train": 6903,
+     "train_cols": 66,
+     "train_deficiency": 2,
+     "train_identified": true,
+     "train_rank": 64,
+     "week": 11
+    },
+    {
+     "n_test": 670,
+     "n_train": 7635,
+     "train_cols": 66,
+     "train_deficiency": 2,
+     "train_identified": true,
+     "train_rank": 64,
+     "week": 12
+    },
+    {
+     "n_test": 816,
+     "n_train": 8305,
+     "train_cols": 66,
+     "train_deficiency": 2,
+     "train_identified": true,
+     "train_rank": 64,
+     "week": 13
+    },
+    {
+     "n_test": 685,
+     "n_train": 9121,
+     "train_cols": 66,
+     "train_deficiency": 2,
+     "train_identified": true,
+     "train_rank": 64,
+     "week": 14
+    },
+    {
+     "n_test": 766,
+     "n_train": 9806,
+     "train_cols": 66,
+     "train_deficiency": 2,
+     "train_identified": true,
+     "train_rank": 64,
+     "week": 15
+    },
+    {
+     "n_test": 789,
+     "n_train": 10572,
+     "train_cols": 66,
+     "train_deficiency": 2,
+     "train_identified": true,
+     "train_rank": 64,
+     "week": 16
+    },
+    {
+     "n_test": 783,
+     "n_train": 11361,
+     "train_cols": 66,
+     "train_deficiency": 2,
+     "train_identified": true,
+     "train_rank": 64,
+     "week": 17
+    },
+    {
+     "n_test": 772,
+     "n_train": 12144,
+     "train_cols": 66,
+     "train_deficiency": 2,
+     "train_identified": true,
+     "train_rank": 64,
+     "week": 18
+    }
+   ],
+   "grid": [
+    0.1,
+    0.2848035868435802,
+    0.8111308307896871,
+    2.3101297000831593,
+    6.579332246575679,
+    18.73817422860383,
+    53.36699231206307,
+    151.99110829529332,
+    432.8761281083057,
+    1232.8467394420659,
+    3511.1917342151273,
+    10000.0
+   ],
+   "grid_boundary": {
+    "at_boundary": true,
+    "at_grid_maximum": true,
+    "at_grid_minimum": false,
+    "chosen_lambda": 10000.0,
+    "code": "RIDGE_GRID_BOUNDARY_SELECTED",
+    "grid_max": 10000.0,
+    "grid_min": 0.1,
+    "grid_must_not_be_expanded": "expanding the search space after observing which end was selected is retuning on the result. Any expansion is a NEW pre-registered experiment.",
+    "meaning": "the one-standard-error most-shrunken rule wanted MORE shrinkage than the declared grid offers",
+    "n_grid": 12
+   },
+   "mae_by_lambda": {
+    "0.1": 0.6763354096205575,
+    "0.2848035868435802": 0.6755500943967523,
+    "0.8111308307896871": 0.6742350502095491,
+    "10000.0": 0.6651591664107803,
+    "1232.8467394420659": 0.6648618589599776,
+    "151.99110829529332": 0.665258566681714,
+    "18.73817422860383": 0.6686545724579163,
+    "2.3101297000831593": 0.6724228514551075,
+    "3511.1917342151273": 0.6650569152778728,
+    "432.8761281083057": 0.664769313268953,
+    "53.36699231206307": 0.6666799802412676,
+    "6.579332246575679": 0.6705459887506516
+   },
+   "n_folds": 17,
+   "n_folds_identified": 15,
+   "n_folds_unidentified": 2,
+   "one_se_threshold": 0.6727000862576976,
+   "score_metric": "mean absolute error on the held-out week",
+   "se_by_lambda": {
+    "0.1": 0.009154520789297096,
+    "0.2848035868435802": 0.00883382736267573,
+    "0.8111308307896871": 0.008417485410674108,
+    "10000.0": 0.007975762887162886,
+    "1232.8467394420659": 0.007959712172123686,
+    "151.99110829529332": 0.007899742588158684,
+    "18.73817422860383": 0.007868978059539924,
+    "2.3101297000831593": 0.008075749136726504,
+    "3511.1917342151273": 0.007970698519055967,
+    "432.8761281083057": 0.007930772988744575,
+    "53.36699231206307": 0.00787533645370256,
+    "6.579332246575679": 0.007925965874028534
+   },
+   "tie_break": "among configurations within 1 SE of the best mean score, take the LARGEST lambda",
+   "unidentified_fold_weeks": [
+    2,
+    3
+   ],
+   "within_one_se": [
+    2.3101297000831593,
+    6.579332246575679,
+    18.73817422860383,
+    53.36699231206307,
+    151.99110829529332,
+    432.8761281083057,
+    1232.8467394420659,
+    3511.1917342151273,
+    10000.0
+   ]
+  }
+ },
+ "n_units": 128,
+ "promoted": false,
+ "prospective_eligible": false,
+ "purpose": "the carryover prior theta_prev for a Week-2 forecast. NOT a forecast and NOT a promotion candidate.",
+ "season": 2025,
+ "spec_version": "oas1-prior-season-fit-1",
+ "stable_content_excludes": [
+  "built_at",
+  "stable_content_sha256"
+ ],
+ "stable_content_sha256": "64a49ffa1937a607c1fcedf90f02cc9a4ed347347c891f3539ba065b678ceef6",
+ "target": {
+  "exemption": "OAS1_EPA_TARGET_ADMITTED",
+  "feature_use": "REFUSED -- see allowlist.assert_no_epa_in_features",
+  "max": 7.96740508684889,
+  "mean": 0.002142753447235584,
+  "min": -12.6581113904249,
+  "model_generation": "UNKNOWN -- the pbp CSV export carries no fastrmodels version column. Recorded as unknown rather than inferred from a release date.",
+  "n": 32429,
+  "provenance_caveat": "the target is a third-party model output. Its training window is established as ending in 2019, so no 2026 play influenced its parameters. Its FIT DESIGN is UNKNOWN: whether the shipped fastrmodels artifact is the published leave-one-season-out model or a single all-seasons fit is not established. Its values are documented as revisable -- models rebuilt in nflfastR 2.0.5, EPA fixes in 4.0.0, 4.4.0 and 5.0.0 reaching back into past seasons, and NFL stat corrections Monday to Wednesday. Any promotion claim inherits this.",
+  "sd": 1.3695231671887513,
+  "source_column": "epa",
+  "target": "oas1_epa_target",
+  "used_as": "REGRESSION TARGET ONLY"
+ },
+ "training_provenance": {
+  "blob": "nfl/vintage/pbp_2025.2f135887790a013f.csv.gz",
+  "capture_id": "20260917T190047.468140Z.2f135887790a013f",
+  "n_input_rows": 48771,
+  "retrieved_at": "2026-09-17T19:00:45.013131+00:00",
+  "season": 2025,
+  "source": "nflverse:pbp",
+  "source_timestamp": "Thu, 13 Aug 2026 12:26:09 GMT",
+  "source_vintage_sha256": "2f135887790a013fd004e609e37096bb4816d5cc80b9f19122e1bad478961978",
+  "url": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2025.csv.gz"
+ },
+ "unit_family_summary": {
+  "def_pass": {
+   "max": 0.011854276302283697,
+   "mean": 1.7618285302889447e-19,
+   "mean_se": 0.004108755372915499,
+   "min": -0.010014892466386515,
+   "n": 32,
+   "sd": 0.006532710846444308,
+   "sum": 5.637851296924623e-18
+  },
+  "def_rush": {
+   "max": 0.006219464058371821,
+   "mean": 1.3552527156068805e-20,
+   "mean_se": 0.001979921217119594,
+   "min": -0.005140461612661962,
+   "n": 32,
+   "sd": 0.002447974607809829,
+   "sum": 4.336808689942018e-19
+  },
+  "off_pass": {
+   "max": 0.014445612479093147,
+   "mean": -5.421010862427522e-19,
+   "mean_se": 0.00409159758529284,
+   "min": -0.018756834685060016,
+   "n": 32,
+   "sd": 0.007403530533053646,
+   "sum": -1.734723475976807e-17
+  },
+  "off_rush": {
+   "max": 0.004806180010868906,
+   "mean": 6.776263578034403e-21,
+   "mean_se": 0.0019583755281285995,
+   "min": -0.0083262520576059,
+   "n": 32,
+   "sd": 0.0025554183404349956,
+   "sum": 2.168404344971009e-19
+  }
+ },
+ "units": [
+  {
+   "n_plays": 738,
+   "se_clustered_by_game": 0.0021194151926498535,
+   "strength": -0.0008994823281266145,
+   "strength_uncentered": -0.0008994823281266119,
+   "team": "ARI",
+   "unit": "off_pass"
+  },
+  {
+   "n_plays": 616,
+   "se_clustered_by_game": 0.0033539760825021347,
+   "strength": 0.007126635973749841,
+   "strength_uncentered": 0.007126635973749844,
+   "team": "ARI",
+   "unit": "def_pass"
+  },
+  {
+   "n_plays": 574,
+   "se_clustered_by_game": 0.00390951253183663,
+   "strength": -0.0014261529445325988,
+   "strength_uncentered": -0.0014261529445325962,
+   "team": "ATL",
+   "unit": "off_pass"
+  },
+  {
+   "n_plays": 625,
+   "se_clustered_by_game": 0.0031359565807249305,
+   "strength": -0.0009249099490431749,
+   "strength_uncentered": -0.0009249099490431725,
+   "team": "ATL",
+   "unit": "def_pass"
+  },
+  {
+   "n_plays": 497,
+   "se_clustered_by_game": 0.0039028954609834055,
+   "strength": -0.0012203486079675828,
+   "strength_uncentered": -0.0012203486079675801,
+   "team": "BAL",
+   "unit": "off_pass"
+  },
+  {
+   "n_plays": 685,
+   "se_clustered_by_game": 0.004472627636547321,
+   "strength": 0.003672500709881124,
+   "strength_uncentered": 0.0036725007098811265,
+   "team": "BAL",
+   "unit": "def_pass"
+  },
+  {
+   "n_plays": 579,
+   "se_clustered_by_game": 0.0037984153847991815,
+   "strength": 0.007639790125620526,
+   "strength_uncentered": 0.007639790125620528,
+   "team": "BUF",
+   "unit": "off_pass"
+  },
+  {
+   "n_plays": 522,
+   "se_clustered_by_game": 0.003321826453599537,
+   "strength": -0.005435014496148019,
+   "strength_uncentered": -0.005435014496148016,
+   "team": "BUF",
+   "unit": "def_pass"
+  },
+  {
+   "n_plays": 579,
+   "se_clustered_by_game": 0.0039343753090251305,
+   "strength": -0.002334128001150798,
+   "strength_uncentered": -0.0023341280011507956,
+   "team": "CAR",
+   "unit": "off_pass"
+  },
+  {
+   "n_plays": 554,
+   "se_clustered_by_game": 0.0037632247445163365,
+   "strength": 0.0047724915145660905,
+   "strength_uncentered": 0.004772491514566093,
+   "team": "CAR",
+   "unit": "def_pass"
+  },
+  {
+   "n_plays": 634,
+   "se_clustered_by_game": 0.002896974279455761,
+   "strength": 0.005521259161640243,
+   "strength_uncentered": 0.005521259161640245,
+   "team": "CHI",
+   "unit": "off_pass"
+  },
+  {
+   "n_plays": 588,
+   "se_clustered_by_game": 0.004488090161338152,
+   "strength": 0.0012100722313211259,
+   "strength_uncentered": 0.0012100722313211282,
+   "team": "CHI",
+   "unit": "def_pass"
+  },
+  {
+   "n_plays": 685,
+   "se_clustered_by_game": 0.005655941040561277,
+   "strength": -0.0015986395159148967,
+   "strength_uncentered": -0.0015986395159148941,
+   "team": "CIN",
+   "unit": "off_pass"
+  },
+  {
+   "n_plays": 603,
+   "se_clustered_by_game": 0.004424435326717949,
+   "strength": 0.007566565703764755,
+   "strength_uncentered": 0.007566565703764757,
+   "team": "CIN",
+   "unit": "def_pass"
+  },
+  {
+   "n_plays": 625,
+   "se_clustered_by_game": 0.0050123073176559525,
+   "strength": -0.018756834685060016,
+   "strength_uncentered": -0.018756834685060012,
+   "team": "CLE",
+   "unit": "off_pass"
+  },
+  {
+   "n_plays": 557,
+   "se_clustered_by_game": 0.004348708378107529,
+   "strength": -0.006384463708088081,
+   "strength_uncentered": -0.006384463708088079,
+   "team": "CLE",
+   "unit": "def_pass"
+  },
+  {
+   "n_plays": 671,
+   "se_clustered_by_game": 0.0032221829024122305,
+   "strength": 0.005936646702078284,
+   "strength_uncentered": 0.005936646702078286,
+   "team": "DAL",
+   "unit": "off_pass"
+  },
+  {
+   "n_plays": 624,
+   "se_clustered_by_game": 0.0046918158194633386,
+   "strength": 0.010965482792200746,
+   "strength_uncentered": 0.010965482792200748,
+   "team": "DAL",
+   "unit": "def_pass"
+  },
+  {
+   "n_plays": 665,
+   "se_clustered_by_game": 0.0033706003059020486,
+   "strength": 0.003549447890608586,
+   "strength_uncentered": 0.0035494478906085885,
+   "team": "DEN",
+   "unit": "off_pass"
+  },
+  {
+   "n_plays": 679,
+   "se_clustered_by_game": 0.004138909188759495,
+   "strength": -0.008200953446637118,
+   "strength_uncentered": -0.008200953446637117,
+   "team": "DEN",
+   "unit": "def_pass"
+  },
+  {
+   "n_plays": 618,
+   "se_clustered_by_game": 0.004421698129804127,
+   "strength": 0.007275725867790034,
+   "strength_uncentered": 0.007275725867790036,
+   "team": "DET",
+   "unit": "off_pass"
+  },
+  {
+   "n_plays": 632,
+   "se_clustered_by_game": 0.004907517894444706,
+   "strength": -0.002570413555839457,
+   "strength_uncentered": -0.0025704135558394544,
+   "team": "DET",
+   "unit": "def_pass"
+  },
+  {
+   "n_plays": 544,
+   "se_clustered_by_game": 0.0038770881403578377,
+   "strength": 0.01006450268134032,
+   "strength_uncentered": 0.010064502681340324,
+   "team": "GB",
+   "unit": "off_pass"
+  },
+  {
+   "n_plays": 604,
+   "se_clustered_by_game": 0.003621838494793669,
+   "strength": 0.0024210982583021466,
+   "strength_uncentered": 0.002421098258302149,
+   "team": "GB",
+   "unit": "def_pass"
+  },
+  {
+   "n_plays": 638,
+   "se_clustered_by_game": 0.003420206616817841,
+   "strength": 0.0009278184228064346,
+   "strength_uncentered": 0.0009278184228064372,
+   "team": "HOU",
+   "unit": "off_pass"
+  },
+  {
+   "n_plays": 613,
+   "se_clustered_by_game": 0.003378939145172207,
+   "strength": -0.009769985257681933,
+   "strength_uncentered": -0.009769985257681931,
+   "team": "HOU",
+   "unit": "def_pass"
+  },
+  {
+   "n_plays": 596,
+   "se_clustered_by_game": 0.003402228822889311,
+   "strength": 0.002133880170532454,
+   "strength_uncentered": 0.0021338801705324565,
+   "team": "IND",
+   "unit": "off_pass"
+  },
+  {
+   "n_plays": 685,
+   "se_clustered_by_game": 0.003674230606668611,
+   "strength": 0.001343665310960901,
+   "strength_uncentered": 0.0013436653109609035,
+   "team": "IND",
+   "unit": "def_pass"
+  },
+  {
+   "n_plays": 636,
+   "se_clustered_by_game": 0.004081988440976476,
+   "strength": 0.002688407454625463,
+   "strength_uncentered": 0.0026884074546254656,
+   "team": "JAX",
+   "unit": "off_pass"
+  },
+  {
+   "n_plays": 694,
+   "se_clustered_by_game": 0.004409143985204732,
+   "strength": -0.010014892466386515,
+   "strength_uncentered": -0.010014892466386514,
+   "team": "JAX",
+   "unit": "def_pass"
+  },
+  {
+   "n_plays": 676,
+   "se_clustered_by_game": 0.004760361650207278,
+   "strength": 0.0022516810852742783,
+   "strength_uncentered": 0.002251681085274281,
+   "team": "KC",
+   "unit": "off_pass"
+  },
+  {
+   "n_plays": 572,
+   "se_clustered_by_game": 0.0034142404495996013,
+   "strength": -0.0004834413914562178,
+   "strength_uncentered": -0.00048344139145621535,
+   "team": "KC",
+   "unit": "def_pass"
+  },
+  {
+   "n_plays": 615,
+   "se_clustered_by_game": 0.004186973714423982,
+   "strength": 0.011492232719871962,
+   "strength_uncentered": 0.011492232719871966,
+   "team": "LA",
+   "unit": "off_pass"
+  },
+  {
+   "n_plays": 656,
+   "se_clustered_by_game": 0.004495750499270885,
+   "strength": -0.006481330355842249,
+   "strength_uncentered": -0.006481330355842247,
+   "team": "LA",
+   "unit": "def_pass"
+  },
+  {
+   "n_plays": 669,
+   "se_clustered_by_game": 0.00480635888187352,
+   "strength": -0.0036034662630134015,
+   "strength_uncentered": -0.003603466263013399,
+   "team": "LAC",
+   "unit": "off_pass"
+  },
+  {
+   "n_plays": 580,
+   "se_clustered_by_game": 0.004205345807518998,
+   "strength": -0.0066837243083209975,
+   "strength_uncentered": -0.006683724308320995,
+   "team": "LAC",
+   "unit": "def_pass"
+  },
+  {
+   "n_plays": 588,
+   "se_clustered_by_game": 0.004790121446461834,
+   "strength": -0.011745121850562926,
+   "strength_uncentered": -0.011745121850562923,
+   "team": "LV",
+   "unit": "off_pass"
+  },
+  {
+   "n_plays": 583,
+   "se_clustered_by_game": 0.004392038229331743,
+   "strength": 0.001977536222502943,
+   "strength_uncentered": 0.0019775362225029455,
+   "team": "LV",
+   "unit": "def_pass"
+  },
+  {
+   "n_plays": 527,
+   "se_clustered_by_game": 0.003689225761660305,
+   "strength": -0.002026895332295337,
+   "strength_uncentered": -0.0020268953322953344,
+   "team": "MIA",
+   "unit": "off_pass"
+  },
+  {
+   "n_plays": 580,
+   "se_clustered_by_game": 0.004457546972773957,
+   "strength": 0.007154387575459506,
+   "strength_uncentered": 0.007154387575459509,
+   "team": "MIA",
+   "unit": "def_pass"
+  },
+  {
+   "n_plays": 564,
+   "se_clustered_by_game": 0.004985620163092315,
+   "strength": -0.010313905423986757,
+   "strength_uncentered": -0.010313905423986754,
+   "team": "MIN",
+   "unit": "off_pass"
+  },
+  {
+   "n_plays": 521,
+   "se_clustered_by_game": 0.005238892555046421,
+   "strength": -0.00860835225654903,
+   "strength_uncentered": -0.008608352256549028,
+   "team": "MIN",
+   "unit": "def_pass"
+  },
+  {
+   "n_plays": 608,
+   "se_clustered_by_game": 0.004556238752058097,
+   "strength": 0.014445612479093147,
+   "strength_uncentered": 0.014445612479093149,
+   "team": "NE",
+   "unit": "off_pass"
+  },
+  {
+   "n_plays": 580,
+   "se_clustered_by_game": 0.003547808993221743,
+   "strength": -0.0037344237605335504,
+   "strength_uncentered": -0.0037344237605335478,
+   "team": "NE",
+   "unit": "def_pass"
+  },
+  {
+   "n_plays": 655,
+   "se_clustered_by_game": 0.004250464249428843,
+   "strength": -0.005769806924195808,
+   "strength_uncentered": -0.0057698069241958055,
+   "team": "NO",
+   "unit": "off_pass"
+  },
+  {
+   "n_plays": 558,
+   "se_clustered_by_game": 0.004033220195112112,
+   "strength": -0.0030836410654175145,
+   "strength_uncentered": -0.003083641065417512,
+   "team": "NO",
+   "unit": "def_pass"
+  },
+  {
+   "n_plays": 610,
+   "se_clustered_by_game": 0.0036943505027012703,
+   "strength": -0.0014906432438450447,
+   "strength_uncentered": -0.001490643243845042,
+   "team": "NYG",
+   "unit": "off_pass"
+  },
+  {
+   "n_plays": 614,
+   "se_clustered_by_game": 0.0031374785421120327,
+   "strength": 0.0014628962788666205,
+   "strength_uncentered": 0.001462896278866623,
+   "team": "NYG",
+   "unit": "def_pass"
+  },
+  {
+   "n_plays": 602,
+   "se_clustered_by_game": 0.005107006182114243,
+   "strength": -0.010591075014133727,
+   "strength_uncentered": -0.010591075014133724,
+   "team": "NYJ",
+   "unit": "off_pass"
+  },
+  {
+   "n_plays": 565,
+   "se_clustered_by_game": 0.00472475357464589,
+   "strength": 0.011854276302283697,
+   "strength_uncentered": 0.011854276302283698,
+   "team": "NYJ",
+   "unit": "def_pass"
+  },
+  {
+   "n_plays": 568,
+   "se_clustered_by_game": 0.003791673801869865,
+   "strength": 0.0014050426399033825,
+   "strength_uncentered": 0.001405042639903385,
+   "team": "PHI",
+   "unit": "off_pass"
+  },
+  {
+   "n_plays": 616,
+   "se_clustered_by_game": 0.0036484600472444337,
+   "strength": -0.006885449270920797,
+   "strength_uncentered": -0.0068854492709207946,
+   "team": "PHI",
+   "unit": "def_pass"
+  },
+  {
+   "n_plays": 587,
+   "se_clustered_by_game": 0.0038551334237869714,
+   "strength": -0.0012181008190683665,
+   "strength_uncentered": -0.0012181008190683639,
+   "team": "PIT",
+   "unit": "off_pass"
+  },
+  {
+   "n_plays": 679,
+   "se_clustered_by_game": 0.004061837403248501,
+   "strength": -0.00014996463615793562,
+   "strength_uncentered": -0.00014996463615793318,
+   "team": "PIT",
+   "unit": "def_pass"
+  },
+  {
+   "n_plays": 509,
+   "se_clustered_by_game": 0.0041899751840475275,
+   "strength": 0.0038226827276162095,
+   "strength_uncentered": 0.003822682727616212,
+   "team": "SEA",
+   "unit": "off_pass"
+  },
+  {
+   "n_plays": 680,
+   "se_clustered_by_game": 0.005625142341108598,
+   "strength": -0.008657930162411029,
+   "strength_uncentered": -0.008657930162411027,
+   "team": "SEA",
+   "unit": "def_pass"
+  },
+  {
+   "n_plays": 624,
+   "se_clustered_by_game": 0.003702796519278492,
+   "strength": 0.008245028187784047,
+   "strength_uncentered": 0.00824502818778405,
+   "team": "SF",
+   "unit": "off_pass"
+  },
+  {
+   "n_plays": 616,
+   "se_clustered_by_game": 0.003588887690889023,
+   "strength": 0.005430638481474094,
+   "strength_uncentered": 0.0054306384814740965,
+   "team": "SF",
+   "unit": "def_pass"
+  },
+  {
+   "n_plays": 635,
+   "se_clustered_by_game": 0.004980939076003158,
+   "strength": -0.0006218833188779684,
+   "strength_uncentered": -0.0006218833188779657,
+   "team": "TB",
+   "unit": "off_pass"
+  },
+  {
+   "n_plays": 634,
+   "se_clustered_by_game": 0.004357078421580641,
+   "strength": 0.0030906090792044445,
+   "strength_uncentered": 0.003090609079204447,
+   "team": "TB",
+   "unit": "def_pass"
+  },
+  {
+   "n_plays": 643,
+   "se_clustered_by_game": 0.004403109474223911,
+   "strength": -0.01378779909944626,
+   "strength_uncentered": -0.013787799099446257,
+   "team": "TEN",
+   "unit": "off_pass"
+  },
+  {
+   "n_plays": 588,
+   "se_clustered_by_game": 0.0038469222072011334,
+   "strength": 0.007894441367397153,
+   "strength_uncentered": 0.007894441367397155,
+   "team": "TEN",
+   "unit": "def_pass"
+  },
+  {
+   "n_plays": 554,
+   "se_clustered_by_game": 0.004154944070012212,
+   "strength": 4.525055592723363e-06,
+   "strength_uncentered": 4.525055592725965e-06,
+   "team": "WAS",
+   "unit": "off_pass"
+  },
+  {
+   "n_plays": 610,
+   "se_clustered_by_game": 0.004573527504829623,
+   "strength": 0.010125592285498437,
+   "strength_uncentered": 0.010125592285498438,
+   "team": "WAS",
+   "unit": "def_pass"
+  },
+  {
+   "n_plays": 321,
+   "se_clustered_by_game": 0.0012055405929031935,
+   "strength": -0.0020732324974341563,
+   "strength_uncentered": -0.0020732324974341554,
+   "team": "ARI",
+   "unit": "off_rush"
+  },
+  {
+   "n_plays": 424,
+   "se_clustered_by_game": 0.0017887717616790456,
+   "strength": 0.0016222504101492143,
+   "strength_uncentered": 0.0016222504101492151,
+   "team": "ARI",
+   "unit": "def_rush"
+  },
+  {
+   "n_plays": 445,
+   "se_clustered_by_game": 0.002127333949717091,
+   "strength": -0.0003911547304271996,
+   "strength_uncentered": -0.00039115473042719865,
+   "team": "ATL",
+   "unit": "off_rush"
+  },
+  {
+   "n_plays": 413,
+   "se_clustered_by_game": 0.001592551386157425,
+   "strength": 0.0014284273457515803,
+   "strength_uncentered": 0.0014284273457515811,
+   "team": "ATL",
+   "unit": "def_rush"
+  },
+  {
+   "n_plays": 447,
+   "se_clustered_by_game": 0.002650187929602484,
+   "strength": 0.004201478716754995,
+   "strength_uncentered": 0.0042014787167549954,
+   "team": "BAL",
+   "unit": "off_rush"
+  },
+  {
+   "n_plays": 378,
+   "se_clustered_by_game": 0.0022434581344836484,
+   "strength": -0.0014605609820381774,
+   "strength_uncentered": -0.0014605609820381765,
+   "team": "BAL",
+   "unit": "def_rush"
+  },
+  {
+   "n_plays": 467,
+   "se_clustered_by_game": 0.0025179074849965726,
+   "strength": 0.004806180010868906,
+   "strength_uncentered": 0.004806180010868907,
+   "team": "BUF",
+   "unit": "off_rush"
+  },
+  {
+   "n_plays": 408,
+   "se_clustered_by_game": 0.002219049914677055,
+   "strength": 0.0036232777546711644,
+   "strength_uncentered": 0.0036232777546711652,
+   "team": "BUF",
+   "unit": "def_rush"
+  },
+  {
+   "n_plays": 403,
+   "se_clustered_by_game": 0.0020194660452751466,
+   "strength": -0.0006417701863862067,
+   "strength_uncentered": -0.0006417701863862057,
+   "team": "CAR",
+   "unit": "off_rush"
+  },
+  {
+   "n_plays": 427,
+   "se_clustered_by_game": 0.002281688827152308,
+   "strength": 0.002061768217755266,
+   "strength_uncentered": 0.002061768217755267,
+   "team": "CAR",
+   "unit": "def_rush"
+  },
+  {
+   "n_plays": 446,
+   "se_clustered_by_game": 0.002259189658099285,
+   "strength": 0.0028060461814112536,
+   "strength_uncentered": 0.0028060461814112545,
+   "team": "CHI",
+   "unit": "off_rush"
+  },
+  {
+   "n_plays": 418,
+   "se_clustered_by_game": 0.0020275398909470788,
+   "strength": 0.0006436400347338716,
+   "strength_uncentered": 0.0006436400347338726,
+   "team": "CHI",
+   "unit": "def_rush"
+  },
+  {
+   "n_plays": 356,
+   "se_clustered_by_game": 0.0018546576641185527,
+   "strength": 0.0019904664152412374,
+   "strength_uncentered": 0.0019904664152412383,
+   "team": "CIN",
+   "unit": "off_rush"
+  },
+  {
+   "n_plays": 416,
+   "se_clustered_by_game": 0.0022982685343473815,
+   "strength": 0.00441825529337539,
+   "strength_uncentered": 0.004418255293375391,
+   "team": "CIN",
+   "unit": "def_rush"
+  },
+  {
+   "n_plays": 382,
+   "se_clustered_by_game": 0.0014680867336532642,
+   "strength": -0.0011321421841682373,
+   "strength_uncentered": -0.0011321421841682365,
+   "team": "CLE",
+   "unit": "off_rush"
+  },
+  {
+   "n_plays": 427,
+   "se_clustered_by_game": 0.0018764274744644067,
+   "strength": -0.0007228789496705031,
+   "strength_uncentered": -0.0007228789496705021,
+   "team": "CLE",
+   "unit": "def_rush"
+  },
+  {
+   "n_plays": 413,
+   "se_clustered_by_game": 0.0016949322865011925,
+   "strength": 0.001868596940581692,
+   "strength_uncentered": 0.001868596940581693,
+   "team": "DAL",
+   "unit": "off_rush"
+  },
+  {
+   "n_plays": 386,
+   "se_clustered_by_game": 0.0015644041380614723,
+   "strength": 0.003552150389001338,
+   "strength_uncentered": 0.003552150389001339,
+   "team": "DAL",
+   "unit": "def_rush"
+  },
+  {
+   "n_plays": 397,
+   "se_clustered_by_game": 0.0015658279676901772,
+   "strength": -0.0004419332636803309,
+   "strength_uncentered": -0.00044193326368033,
+   "team": "DEN",
+   "unit": "off_rush"
+  },
+  {
+   "n_plays": 357,
+   "se_clustered_by_game": 0.0013279584488636131,
+   "strength": -0.0017491559257134023,
+   "strength_uncentered": -0.0017491559257134014,
+   "team": "DEN",
+   "unit": "def_rush"
+  },
+  {
+   "n_plays": 421,
+   "se_clustered_by_game": 0.0032147181930841334,
+   "strength": -0.0004158983013769838,
+   "strength_uncentered": -0.0004158983013769829,
+   "team": "DET",
+   "unit": "off_rush"
+  },
+  {
+   "n_plays": 394,
+   "se_clustered_by_game": 0.0019189032486363812,
+   "strength": -9.76398928789488e-06,
+   "strength_uncentered": -9.763989287893946e-06,
+   "team": "DET",
+   "unit": "def_rush"
+  },
+  {
+   "n_plays": 437,
+   "se_clustered_by_game": 0.0016086892777501,
+   "strength": -0.0006467206619035986,
+   "strength_uncentered": -0.0006467206619035976,
+   "team": "GB",
+   "unit": "off_rush"
+  },
+  {
+   "n_plays": 439,
+   "se_clustered_by_game": 0.0025059398648165717,
+   "strength": 3.9927689546696405e-06,
+   "strength_uncentered": 3.992768954670576e-06,
+   "team": "GB",
+   "unit": "def_rush"
+  },
+  {
+   "n_plays": 419,
+   "se_clustered_by_game": 0.0018261936880513729,
+   "strength": -0.0027421187115180792,
+   "strength_uncentered": -0.0027421187115180784,
+   "team": "HOU",
+   "unit": "off_rush"
+  },
+  {
+   "n_plays": 353,
+   "se_clustered_by_game": 0.001472399579544453,
+   "strength": -0.002888758473881665,
+   "strength_uncentered": -0.0028887584738816643,
+   "team": "HOU",
+   "unit": "def_rush"
+  },
+  {
+   "n_plays": 400,
+   "se_clustered_by_game": 0.0025713181690056246,
+   "strength": 0.004721964910922138,
+   "strength_uncentered": 0.0047219649109221384,
+   "team": "IND",
+   "unit": "off_rush"
+  },
+  {
+   "n_plays": 398,
+   "se_clustered_by_game": 0.0016678423587065867,
+   "strength": -0.0016863089431640359,
+   "strength_uncentered": -0.001686308943164035,
+   "team": "IND",
+   "unit": "def_rush"
+  },
+  {
+   "n_plays": 418,
+   "se_clustered_by_game": 0.0021292173338260086,
+   "strength": -1.5042451717919085e-05,
+   "strength_uncentered": -1.5042451717918143e-05,
+   "team": "JAX",
+   "unit": "off_rush"
+  },
+  {
+   "n_plays": 319,
+   "se_clustered_by_game": 0.0015093407160994806,
+   "strength": -0.0009427254358528647,
+   "strength_uncentered": -0.0009427254358528637,
+   "team": "JAX",
+   "unit": "def_rush"
+  },
+  {
+   "n_plays": 350,
+   "se_clustered_by_game": 0.0016112723518636647,
+   "strength": 0.0004116925861297831,
+   "strength_uncentered": 0.00041169258612978405,
+   "team": "KC",
+   "unit": "off_rush"
+  },
+  {
+   "n_plays": 390,
+   "se_clustered_by_game": 0.0017914831457168008,
+   "strength": -0.001680141174720876,
+   "strength_uncentered": -0.0016801411747208752,
+   "team": "KC",
+   "unit": "def_rush"
+  },
+  {
+   "n_plays": 427,
+   "se_clustered_by_game": 0.00264465506436838,
+   "strength": 0.0030164350651935646,
+   "strength_uncentered": 0.0030164350651935654,
+   "team": "LA",
+   "unit": "off_rush"
+  },
+  {
+   "n_plays": 401,
+   "se_clustered_by_game": 0.0018458662140141335,
+   "strength": -0.0006735448834629628,
+   "strength_uncentered": -0.0006735448834629618,
+   "team": "LA",
+   "unit": "def_rush"
+  },
+  {
+   "n_plays": 394,
+   "se_clustered_by_game": 0.0017002277567670621,
+   "strength": -0.0008853935015554896,
+   "strength_uncentered": -0.0008853935015554886,
+   "team": "LAC",
+   "unit": "off_rush"
+  },
+  {
+   "n_plays": 362,
+   "se_clustered_by_game": 0.0020306466280317127,
+   "strength": -0.0029528155703791867,
+   "strength_uncentered": -0.002952815570379186,
+   "team": "LAC",
+   "unit": "def_rush"
+  },
+  {
+   "n_plays": 337,
+   "se_clustered_by_game": 0.002468961635481278,
+   "strength": -0.0083262520576059,
+   "strength_uncentered": -0.008326252057605898,
+   "team": "LV",
+   "unit": "off_rush"
+  },
+  {
+   "n_plays": 453,
+   "se_clustered_by_game": 0.0025411510035454822,
+   "strength": -0.0014412257408933395,
+   "strength_uncentered": -0.0014412257408933386,
+   "team": "LV",
+   "unit": "def_rush"
+  },
+  {
+   "n_plays": 405,
+   "se_clustered_by_game": 0.002094770361980644,
+   "strength": 0.0005589145782528137,
+   "strength_uncentered": 0.0005589145782528146,
+   "team": "MIA",
+   "unit": "off_rush"
+  },
+  {
+   "n_plays": 418,
+   "se_clustered_by_game": 0.0021425340857972397,
+   "strength": 0.0005765798681091706,
+   "strength_uncentered": 0.0005765798681091716,
+   "team": "MIA",
+   "unit": "def_rush"
+  },
+  {
+   "n_plays": 359,
+   "se_clustered_by_game": 0.0014559517957684655,
+   "strength": -0.00019576430116475757,
+   "strength_uncentered": -0.00019576430116475662,
+   "team": "MIN",
+   "unit": "off_rush"
+  },
+  {
+   "n_plays": 487,
+   "se_clustered_by_game": 0.0024966244695613263,
+   "strength": -0.001389837577805492,
+   "strength_uncentered": -0.001389837577805491,
+   "team": "MIN",
+   "unit": "def_rush"
+  },
+  {
+   "n_plays": 400,
+   "se_clustered_by_game": 0.0026258058211437044,
+   "strength": -0.0008440383462549212,
+   "strength_uncentered": -0.0008440383462549202,
+   "team": "NE",
+   "unit": "off_rush"
+  },
+  {
+   "n_plays": 373,
+   "se_clustered_by_game": 0.001564062945303153,
+   "strength": -0.0006464439196849555,
+   "strength_uncentered": -0.0006464439196849545,
+   "team": "NE",
+   "unit": "def_rush"
+  },
+  {
+   "n_plays": 388,
+   "se_clustered_by_game": 0.001639669442616285,
+   "strength": -0.0038514618825526135,
+   "strength_uncentered": -0.0038514618825526126,
+   "team": "NO",
+   "unit": "off_rush"
+  },
+  {
+   "n_plays": 453,
+   "se_clustered_by_game": 0.0021780132672644136,
+   "strength": -0.0032029560752641676,
+   "strength_uncentered": -0.0032029560752641667,
+   "team": "NO",
+   "unit": "def_rush"
+  },
+  {
+   "n_plays": 443,
+   "se_clustered_by_game": 0.00147821725339954,
+   "strength": 0.0005287248313844666,
+   "strength_uncentered": 0.0005287248313844676,
+   "team": "NYG",
+   "unit": "off_rush"
+  },
+  {
+   "n_plays": 402,
+   "se_clustered_by_game": 0.0027690713775247195,
+   "strength": 0.006219464058371821,
+   "strength_uncentered": 0.006219464058371822,
+   "team": "NYG",
+   "unit": "def_rush"
+  },
+  {
+   "n_plays": 387,
+   "se_clustered_by_game": 0.0017350286184285232,
+   "strength": -0.002069933254675758,
+   "strength_uncentered": -0.002069933254675757,
+   "team": "NYJ",
+   "unit": "off_rush"
+  },
+  {
+   "n_plays": 468,
+   "se_clustered_by_game": 0.002370785842955681,
+   "strength": 0.0011647955020690974,
+   "strength_uncentered": 0.0011647955020690983,
+   "team": "NYJ",
+   "unit": "def_rush"
+  },
+  {
+   "n_plays": 415,
+   "se_clustered_by_game": 0.002248801127881975,
+   "strength": 0.000257198295401729,
+   "strength_uncentered": 0.0002571982954017299,
+   "team": "PHI",
+   "unit": "off_rush"
+  },
+  {
+   "n_plays": 430,
+   "se_clustered_by_game": 0.002046484638514695,
+   "strength": -0.0015462327607205187,
+   "strength_uncentered": -0.0015462327607205179,
+   "team": "PHI",
+   "unit": "def_rush"
+  },
+  {
+   "n_plays": 372,
+   "se_clustered_by_game": 0.0017294249439426905,
+   "strength": 0.0018542690759909004,
+   "strength_uncentered": 0.0018542690759909013,
+   "team": "PIT",
+   "unit": "off_rush"
+  },
+  {
+   "n_plays": 409,
+   "se_clustered_by_game": 0.002201883645463123,
+   "strength": 0.0004888849621271562,
+   "strength_uncentered": 0.0004888849621271572,
+   "team": "PIT",
+   "unit": "def_rush"
+  },
+  {
+   "n_plays": 465,
+   "se_clustered_by_game": 0.0017600514353066853,
+   "strength": -0.000949566257094381,
+   "strength_uncentered": -0.0009495662570943801,
+   "team": "SEA",
+   "unit": "off_rush"
+  },
+  {
+   "n_plays": 365,
+   "se_clustered_by_game": 0.001670815808762424,
+   "strength": -0.005140461612661962,
+   "strength_uncentered": -0.005140461612661961,
+   "team": "SEA",
+   "unit": "def_rush"
+  },
+  {
+   "n_plays": 430,
+   "se_clustered_by_game": 0.0014318901424359035,
+   "strength": 0.0010515731973114687,
+   "strength_uncentered": 0.0010515731973114696,
+   "team": "SF",
+   "unit": "off_rush"
+  },
+  {
+   "n_plays": 379,
+   "se_clustered_by_game": 0.0017307245674141264,
+   "strength": 0.0003864031558865181,
+   "strength_uncentered": 0.00038640315588651903,
+   "team": "SF",
+   "unit": "def_rush"
+  },
+  {
+   "n_plays": 415,
+   "se_clustered_by_game": 0.0017593826064166232,
+   "strength": -0.001687334175228589,
+   "strength_uncentered": -0.0016873341752285881,
+   "team": "TB",
+   "unit": "off_rush"
+  },
+  {
+   "n_plays": 337,
+   "se_clustered_by_game": 0.0018239787120109111,
+   "strength": -0.0020567139626439315,
+   "strength_uncentered": -0.0020567139626439307,
+   "team": "TB",
+   "unit": "def_rush"
+  },
+  {
+   "n_plays": 347,
+   "se_clustered_by_game": 0.001669756347105772,
+   "strength": -0.0011293513232526415,
+   "strength_uncentered": -0.0011293513232526406,
+   "team": "TEN",
+   "unit": "off_rush"
+  },
+  {
+   "n_plays": 387,
+   "se_clustered_by_game": 0.001944827063888156,
+   "strength": 0.0004375041971598846,
+   "strength_uncentered": 0.0004375041971598855,
+   "team": "TEN",
+   "unit": "def_rush"
+  },
+  {
+   "n_plays": 410,
+   "se_clustered_by_game": 0.0019008832209337816,
+   "strength": 0.00036556728255281607,
+   "strength_uncentered": 0.000365567282552817,
+   "team": "WAS",
+   "unit": "off_rush"
+  },
+  {
+   "n_plays": 445,
+   "se_clustered_by_game": 0.0019139812534220014,
+   "strength": 0.003563132019729793,
+   "strength_uncentered": 0.003563132019729794,
+   "team": "WAS",
+   "unit": "def_rush"
+  }
+ ]
+}
