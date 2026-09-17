@@ -1,0 +1,198 @@
+{
+ "spec": "qbsem-cell-replay-1",
+ "eval_season": 2025,
+ "fit_cut_ordinal": 202501,
+ "draws_per_team_game": 200,
+ "n_team_games": 544,
+ "n_rows": 1506,
+ "n_fallback_player_rows": 46,
+ "diagnostic_not_forecast": "team dropback totals are the REALISED totals, so this isolates allocation",
+ "row_weighted_mae": {
+  "baseline": 0.052251,
+  "qbsem": 0.046544
+ },
+ "cells": [
+  {
+   "cell": [
+    1,
+    0,
+    0
+   ],
+   "n": 55,
+   "realised": 0.490909,
+   "sim_baseline": 0.644091,
+   "sim_qbsem": 0.705091,
+   "baseline_err": 0.153182,
+   "qbsem_err": 0.214182,
+   "train_n_nonstarting": 147,
+   "used_own_cell_rate": true
+  },
+  {
+   "cell": [
+    1,
+    0,
+    1
+   ],
+   "n": 21,
+   "realised": 0.0,
+   "sim_baseline": 0.025476,
+   "sim_qbsem": 0.02,
+   "baseline_err": 0.025476,
+   "qbsem_err": 0.02,
+   "train_n_nonstarting": 0,
+   "used_own_cell_rate": false
+  },
+  {
+   "cell": [
+    1,
+    1,
+    0
+   ],
+   "n": 457,
+   "realised": 0.04814,
+   "sim_baseline": 0.064584,
+   "sim_qbsem": 0.073053,
+   "baseline_err": 0.016444,
+   "qbsem_err": 0.024912,
+   "train_n_nonstarting": 142,
+   "used_own_cell_rate": true
+  },
+  {
+   "cell": [
+    1,
+    1,
+    1
+   ],
+   "n": 11,
+   "realised": 0.0,
+   "sim_baseline": 0.009545,
+   "sim_qbsem": 0.007727,
+   "baseline_err": 0.009545,
+   "qbsem_err": 0.007727,
+   "train_n_nonstarting": 0,
+   "used_own_cell_rate": false
+  },
+  {
+   "cell": [
+    2,
+    0,
+    0
+   ],
+   "n": 463,
+   "realised": 0.794816,
+   "sim_baseline": 0.752462,
+   "sim_qbsem": 0.809611,
+   "baseline_err": -0.042354,
+   "qbsem_err": 0.014795,
+   "train_n_nonstarting": 1735,
+   "used_own_cell_rate": true
+  },
+  {
+   "cell": [
+    2,
+    0,
+    1
+   ],
+   "n": 26,
+   "realised": 0.961538,
+   "sim_baseline": 0.774038,
+   "sim_qbsem": 0.826731,
+   "baseline_err": -0.1875,
+   "qbsem_err": -0.134808,
+   "train_n_nonstarting": 107,
+   "used_own_cell_rate": true
+  },
+  {
+   "cell": [
+    2,
+    1,
+    0
+   ],
+   "n": 49,
+   "realised": 0.428571,
+   "sim_baseline": 0.236429,
+   "sim_qbsem": 0.255918,
+   "baseline_err": -0.192143,
+   "qbsem_err": -0.172653,
+   "train_n_nonstarting": 53,
+   "used_own_cell_rate": true
+  },
+  {
+   "cell": [
+    2,
+    1,
+    1
+   ],
+   "n": 6,
+   "realised": 1.0,
+   "sim_baseline": 0.756667,
+   "sim_qbsem": 0.069167,
+   "baseline_err": -0.243333,
+   "qbsem_err": -0.930833,
+   "train_n_nonstarting": 16,
+   "used_own_cell_rate": false
+  },
+  {
+   "cell": [
+    3,
+    0,
+    0
+   ],
+   "n": 392,
+   "realised": 0.969388,
+   "sim_baseline": 0.91324,
+   "sim_qbsem": 0.925128,
+   "baseline_err": -0.056148,
+   "qbsem_err": -0.04426,
+   "train_n_nonstarting": 779,
+   "used_own_cell_rate": true
+  },
+  {
+   "cell": [
+    3,
+    0,
+    1
+   ],
+   "n": 18,
+   "realised": 1.0,
+   "sim_baseline": 0.931389,
+   "sim_qbsem": 0.978611,
+   "baseline_err": -0.068611,
+   "qbsem_err": -0.021389,
+   "train_n_nonstarting": 45,
+   "used_own_cell_rate": true
+  },
+  {
+   "cell": [
+    3,
+    1,
+    0
+   ],
+   "n": 6,
+   "realised": 0.833333,
+   "sim_baseline": 0.2925,
+   "sim_qbsem": 0.2225,
+   "baseline_err": -0.540833,
+   "qbsem_err": -0.610833,
+   "train_n_nonstarting": 5,
+   "used_own_cell_rate": false
+  },
+  {
+   "cell": [
+    3,
+    1,
+    1
+   ],
+   "n": 2,
+   "realised": 1.0,
+   "sim_baseline": 0.87,
+   "sim_qbsem": 0.6875,
+   "baseline_err": -0.13,
+   "qbsem_err": -0.3125,
+   "train_n_nonstarting": 5,
+   "used_own_cell_rate": false
+  }
+ ],
+ "out_of_sample": "the fit cuts at ordinal 202501 and the replayed season is 2025, so NO replayed team-game is in the training set. An earlier draft of this file carried a caveat saying the realised rate and the fitted rate came from the same rows; that is true only when the fit includes the evaluation season, which this one does not. The caveat was wrong and is withdrawn.",
+ "what_it_measures": "simulated P(db = 0), which is dominated by the STARTER model, not by the relief rate QBSEM changes. That is why the improvement here (row-weighted MAE 0.052251 -> 0.046544, -11%) is far smaller than the improvement on the relief event scored directly in QBSEM_FORWARD_CHAINED.json."
+}

@@ -141,6 +141,51 @@ The three rows where QBSEM equals the baseline exactly — (2,1,1), (3,1,0),
 The two best-supported cells, (2,0,0) at n = 1,735 and (3,0,0) at n = 950,
 are calibrated to within 0.0144 and 0.0031.
 
+### Simulated vs historical `P(db = 0)`, replayed over a whole season
+
+`QBSEM_CELL_REPLAY.json`. Every 2025 team-game replayed through
+`allocate_dropbacks` under both arms, on that game's own realised dropback
+total, with the fit cut at ordinal 202501 — **so no replayed team-game is in
+the training set**. 544 team-games, 1,506 rows, 200 draws each.
+
+| cell | n | realised | sim baseline | sim QBSEM | baseline err | QBSEM err | train n |
+|---|---|---|---|---|---|---|---|
+| (1,0,0) | 55 | 0.4909 | 0.6441 | 0.7051 | +0.1532 | +0.2142 | 147 |
+| (1,0,1) | 21 | 0.0000 | 0.0255 | 0.0200 | +0.0255 | +0.0200 | **0** |
+| (1,1,0) | 457 | 0.0481 | 0.0646 | 0.0731 | +0.0164 | +0.0249 | 142 |
+| (1,1,1) | 11 | 0.0000 | 0.0095 | 0.0077 | +0.0095 | +0.0077 | **0** |
+| (2,0,0) | 463 | 0.7948 | 0.7525 | 0.8096 | −0.0424 | **+0.0148** | 1,735 |
+| (2,0,1) | 26 | 0.9615 | 0.7740 | 0.8267 | −0.1875 | −0.1348 | 107 |
+| (2,1,0) | 49 | 0.4286 | 0.2364 | 0.2559 | −0.1921 | −0.1727 | 53 |
+| (2,1,1) | 6 | 1.0000 | 0.7567 | 0.0692 | −0.2433 | **−0.9308** | 16 |
+| (3,0,0) | 392 | 0.9694 | 0.9132 | 0.9251 | −0.0561 | **−0.0443** | 779 |
+| (3,0,1) | 18 | 1.0000 | 0.9314 | 0.9786 | −0.0686 | −0.0214 | 45 |
+| (3,1,0) | 6 | 0.8333 | 0.2925 | 0.2225 | −0.5408 | −0.6108 | 5 |
+| (3,1,1) | 2 | 1.0000 | 0.8700 | 0.6875 | −0.1300 | −0.3125 | 5 |
+
+**Row-weighted mean |error|: baseline 0.052251 → QBSEM 0.046544, a reduction of
+11%.** That is a far smaller gain than the Brier result above, and the reason
+matters: **simulated `P(db = 0)` is dominated by the starter model, not by the
+relief rate QBSEM changes.** The starter model is already well calibrated
+(fitted `p_start` 0.928197 against a realised 0.9284 in the modal cell), so
+there is little room in this quantity for the relief rate to move. Scoring the
+relief event directly, as §2 does, is the measurement that isolates QBSEM;
+this one measures the composition.
+
+On the three cells carrying the bulk of the rows — (2,0,0) n=463, (1,1,0)
+n=457, (3,0,0) n=392, together 1,312 of 1,506 — QBSEM is better on two and
+slightly worse on one. The two worst rows, (2,1,1) and (3,1,0), have training
+counts of 16 and 5: **fallbacks again**, on n = 6 evaluation rows apiece.
+
+`(1, 0, 1)` and `(1, 1, 1)` carry `train n = 0` in this table too. That is the
+DET–BUF condition, reproduced independently: **no rank-1 quarterback in this
+frame has ever failed to start at a season boundary.**
+
+*A caveat I wrote into this file's first draft was wrong and is withdrawn.* I
+recorded that the realised and fitted rates came from the same rows. That holds
+only when the fit includes the evaluation season, and this one cuts before it.
+The comparison is out of sample.
+
 ---
 
 ## 3. Every acceptance item, stated
@@ -157,6 +202,21 @@ are calibrated to within 0.0144 and 0.0031.
 | 8 | machine-checkable unconditional-semantic parity, QB/RB/WR/TE/K | **PASS, K NOT_EXECUTED** | `nfl/tests/test_publication_semantics.py`; 112 boards, 14,770 metrics, 13,027 discriminating, 0 violations. No kicker exists on any sealed board |
 | 9 | exact QB team-volume conservation | **PASS** | §4; 8,000/8,000 draws on both clubs, worst integer deviation **0** |
 | 10 | Contract 3 on the unchanged grid | see §5 | grid not extended, contract not amended |
+
+### The pre-registration's own seven gates
+
+| gate | state |
+|---|---|
+| 1. simulated `P(db=0)` matches the realised rate for his cell; **Allen's target 0.0694** | **FAIL on the named target**, PASS on the general clause for all four QBs |
+| 2. zero-primary-passer worlds are 0 at the maximum in every metric and DK | **PASS** — tripwire check C, 0 violations on both candidate boards |
+| 3. replacement inherits with exact conservation | **PASS** — `db == V`, `att+sacks+scr == db`, `rush_opp == scr+designed_qb`, all 8,000/8,000 on both clubs, both arms |
+| 4. published QB means are unconditional over all worlds | **PASS** — tripwire check A, 0 deviations |
+| 5. conditional means may be emitted as a labelled diagnostic | **NOT EXERCISED** — the board emits none, and the gate says "may" |
+| 6. machine-checkable semantic parity on QB/RB/WR/TE/K | **PASS on QB/RB/WR/TE; K NOT_EXECUTED** — no kicker on any sealed board |
+| 7. no sportsbook or DFS information enters the repair | **PASS** — `test_qbsem_leakage.py` check D |
+
+**One gate fails. §3 of the pre-registration says that withdraws QBSEM, and it
+does.**
 
 **Item 4 is the gate. It fails. Nothing is sealed.**
 
