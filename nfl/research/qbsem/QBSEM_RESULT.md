@@ -279,7 +279,40 @@ The honest figures are the starters': Goff −29%, **Josh Allen −9% (2.2403 �
 Run on the already-predeclared grid n ∈ {1000, 2000, 4000, 8000, 16000}. **The
 grid is not extended and the contract is not amended, whatever the result.**
 
-<!-- C3_RESULT -->
+**Verdict: `chosen: null`. Contract 3 FAILS at every draw count, for QBSEM as
+it did for GSVU.** `CONTRACT3_GSVUQ.log`.
+
+| draws | GSVU failing / checked | QBSEM failing / checked | GSVU binding (boot sd vs threshold) | QBSEM binding (boot sd vs threshold) |
+|---|---|---|---|---|
+| 1,000 | 553 / 1,649 | 538 / 1,662 | `qb/pyds` p90 Allen — 5.8738 vs 1.0 | `qb/pyds` p90 Allen — 6.3147 vs 1.0 |
+| 2,000 | 356 / 1,664 | 328 / 1,677 | `qb/pyds` p90 Allen — 3.7578 vs 1.0 | `qb/pyds` p90 Goff — 3.5004 vs 1.0 |
+| 4,000 | 194 / 1,686 | 180 / 1,689 | `qb/pyds` p90 Allen — 2.7375 vs 1.0 | `qb/pyds` p90 Goff — 2.9262 vs 1.0 |
+| **8,000** | **108** / 1,691 | **117** / 1,700 | `qb/pyds` p90 Allen — **2.4011** vs 1.0 | `qb/cmp` p10 Goff — **0.4997** vs 0.25 |
+| 16,000 | 72 / 1,697 | **67** / 1,705 | `receiving/targets` p50 — 0.5 vs 0.25 | `qb/cmp` p10 Goff — 0.4999 vs 0.25 |
+
+**Read the counts with care: `n_checked` is not the same in the two arms**
+(1,700 against 1,691 at 8,000), so the failing counts are not a like-for-like
+ratio. The direction is a small reduction at four of five draw counts and a
+small *increase* at 8,000, 108 → 117.
+
+### What this does say about the §5 hypothesis, and it is not nothing
+
+**`qb/pyds` p90 stopped being the binding quantity at 8,000 and 16,000.** Under
+GSVU it bound at 8,000 with a bootstrap sd of 2.4011 yards against a 1.0-yard
+threshold. Under QBSEM the binding quantity at both 8,000 and 16,000 is
+`qb/cmp` p10 for Goff at 0.4997 against a 0.25 threshold — a **discrete count
+quantile sitting on a half-integer boundary**, which is an intrinsic
+discreteness problem and not a tail-density one.
+
+So the hypothesis is **directionally confirmed and practically irrelevant**:
+the passing-yard tail did settle enough to stop binding, and the contract still
+fails, because something else binds instead and the margin was never close.
+Josh Allen's own p90 bootstrap sd went 2.2403 → 2.0320 (R = 400) — a 9%
+reduction against a threshold it exceeds by a factor of two.
+
+**Contract 3's verdict does not depend on this and the contract is not
+relaxed.** The grid was not extended and no threshold was moved.
+
 
 ---
 
