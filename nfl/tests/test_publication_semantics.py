@@ -435,6 +435,18 @@ def test_D_the_contract_is_exercised_on_every_position():
               True)
 
 
+def test_zz_every_check_passed():
+    """The module's own counter, re-raised so a failure turns this module RED.
+
+    `run_suite` reads PASSED/FAILED and folds them into the aggregate, but a
+    module with no re-raising tripwire is classified PASS however many of its
+    checks failed -- the count moves and the module does not. Fifty modules in
+    this suite end with exactly this, and without it a tripwire cannot trip.
+    """
+    if FAILED:
+        raise AssertionError(f'{FAILED} check(s) failed in this module')
+
+
 if __name__ == '__main__':
     for fn in (test_0_the_tripwire_catches_a_seeded_violation,
                test_A_every_published_mean_is_the_unconditional_draw_mean,

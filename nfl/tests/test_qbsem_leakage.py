@@ -173,6 +173,18 @@ def test_D_no_outcome_of_the_forecast_game_enters_the_cell():
           'if o >= cut' in src_fn)
 
 
+def test_zz_every_check_passed():
+    """The module's own counter, re-raised so a failure turns this module RED.
+
+    `run_suite` reads PASSED/FAILED and folds them into the aggregate, but a
+    module with no re-raising tripwire is classified PASS however many of its
+    checks failed -- the count moves and the module does not. Fifty modules in
+    this suite end with exactly this, and without it a tripwire cannot trip.
+    """
+    if FAILED:
+        raise AssertionError(f'{FAILED} check(s) failed in this module')
+
+
 if __name__ == '__main__':
     for fn in (test_A_the_rate_sees_nothing_at_or_after_the_cut,
                test_B_the_cell_function_reads_only_its_three_arguments,
