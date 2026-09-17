@@ -339,6 +339,22 @@ def test_J_the_production_flag_is_inert_until_it_is_turned_on():
                             'qb_allocation.py')).read()
     check('  the qb3 call site is unchanged when the flag is off',
           "S_e = Q.allocate(par, elig, m=m, seed=seed," in src)
+    # FAILING REPRODUCTION, 2026-09-17. QBSEM's allocator name was added to
+    # every call site and to none of the guards, so the FIRST GSVUQ run
+    # refused the entire DET-BUF board at qb_layer with QB_ALLOCATOR_UNKNOWN:
+    # 'qb_room_v2_sem' is not one of ('qb3', 'qb_room_v2'). The guard was
+    # right and the whitelist was incomplete. These two checks fail on the
+    # code that produced that refusal.
+    check('  QBSEM`s allocator name is a KNOWN allocator',
+          'qb_room_v2_sem' in QA.ALLOCATORS, str(QA.ALLOCATORS))
+    semneed = QA.allocate(2026, 1, ['KC'], [], allocator='qb_room_v2_sem')
+    check('  and it is BLOCKED without team dropbacks for the same reason V2 is',
+          semneed.state is State.BLOCKED
+          and semneed.code == 'QB_ROOM_V2_NEEDS_TEAM_DROPBACKS',
+          str(semneed)[:110])
+    check('  the two V2 names are guarded through ONE tuple, not two literals',
+          QA.V2_ALLOCATORS == ('qb_room_v2', 'qb_room_v2_sem'),
+          str(QA.V2_ALLOCATORS))
 
 
 def test_K_v2_through_the_production_entry_point_closes():

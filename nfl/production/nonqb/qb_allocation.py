@@ -539,7 +539,14 @@ def ownership_verdict(teams, out, inact, zeroed, closure_dev,
 # flag exists so integration is a flag flip and a plumbing change rather than a
 # rewrite, and so that leaving it off is a visible decision rather than an
 # absence.
-ALLOCATORS = ('qb3', 'qb_room_v2')
+# `qb_room_v2_sem` is QBSEM: the same room with P(relieves | not starter)
+# conditioned on the starter cell. It is a SEPARATE NAME rather than a flag
+# so that `_qb_allocator`, which production reads back from the value that
+# was actually passed, names the mechanism that ran. It was missing from
+# this tuple on the first GSVUQ run and the pipeline refused the whole board
+# with QB_ALLOCATOR_UNKNOWN -- the guard doing exactly its job.
+ALLOCATORS = ('qb3', 'qb_room_v2', 'qb_room_v2_sem')
+V2_ALLOCATORS = ('qb_room_v2', 'qb_room_v2_sem')
 
 
 def allocate(season, week, teams, qb_players, m=200, seed=20260908,
@@ -570,7 +577,7 @@ def allocate(season, week, teams, qb_players, m=200, seed=20260908,
             'QB_ALLOCATOR_UNKNOWN',
             f'{allocator!r} is not one of {ALLOCATORS}. An unknown allocator '
             f'is refused rather than silently falling back to the default.')
-    if allocator == 'qb_room_v2' and not team_dropback_draws:
+    if allocator in V2_ALLOCATORS and not team_dropback_draws:
         return Outcome.blocked(
             'QB_ROOM_V2_NEEDS_TEAM_DROPBACKS',
             'qb_room_v2 allocates INTEGER dropback counts, so it needs the '
@@ -677,7 +684,7 @@ def allocate(season, week, teams, qb_players, m=200, seed=20260908,
         # IS the room, the same call is made with the same arguments, and the
         # output is bit-identical. The suite asserts it.
         elig = [x for x in trip if not (inact and x[0] in inact)]
-        if allocator in ('qb_room_v2', 'qb_room_v2_sem'):
+        if allocator in V2_ALLOCATORS:
             # QBSEM IS ITS OWN ALLOCATOR NAME, not a flag on the old one, so
             # `_qb_allocator` -- which production reads back from the value
             # actually passed -- names the mechanism that ran.
