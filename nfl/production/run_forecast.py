@@ -45,6 +45,7 @@ from nfl.product import dk_scoring as DKS                           # noqa: E402
 from nfl.production import draws_artifact as DA                     # noqa: E402
 from nfl.identity import code_identity as CI                       # noqa: E402
 from nfl.production import draw_coherence as DC                     # noqa: E402
+from nfl.production import coherence_certificate as CCERT           # noqa: E402
 
 # THE ONE BOUND ON EVERY PLAYER-SCOPED EXCLUSION, declared once.
 #
@@ -2745,6 +2746,18 @@ def build(args, fixtures: dict = None) -> dict:
             shared_pass_live='C3' in (fx.get('_candidate_applied') or []),
             include_carries='team_volume/team_carries' in _p2)
 
+        # CERTIFICATION POINT. Commit 8c81079 is titled "The guard ran, then
+        # the values it guarded were overwritten": the failure class is the gap
+        # between this line and the seal, not an absent guard. Fingerprint what
+        # the guard just certified so the seal can prove it is the same data.
+        _cert = CCERT.certify(
+            _p2, row_ids={k: v.get('row_ids') for k, v in
+                          (ds.layers or {}).items()},
+            guards=sorted(DC.HARD_CHECKS))
+        fx['_coherence_certificate'] = (
+            _cert.value if _cert.state is State.PASS
+            else {'state': _cert.state.value, 'code': _cert.code})
+
         w = ds.write(out_dir)
         if w.state is not State.PASS:
             return _fail(w)
@@ -2837,6 +2850,22 @@ def build(args, fixtures: dict = None) -> dict:
         declared_inputs=['draws'], spec_version='deterministic')
 
     def _seal():
+        # VERIFICATION POINT. Re-read the PUBLICATION-TIME arrays -- not the
+        # references the guard held -- because that is what catches an entry
+        # REPLACED downstream as well as one mutated in place.
+        _cert = fx.get('_coherence_certificate')
+        if _cert and _cert.get('entries'):
+            _cv = CCERT.verify(
+                _cert, ds.arrays,
+                row_ids={k: v.get('row_ids') for k, v in
+                         (ds.layers or {}).items()})
+            fx['_coherence_certificate_verdict'] = {
+                'state': _cv.state.value, 'code': _cv.code,
+                **{k: v for k, v in _cv.evidence.items() if k != 'value'}}
+            if _cv.state is not State.PASS:
+                return RF.refuse(
+                    CCERT.CODE_BROKEN, 'artifact_sealing',
+                    _cv.detail[:300], run_id)
         # AN ARTIFACT WITH NO FORECASTS IS NOT A FORECAST ARTIFACT. Without
         # this the pipeline sealed 16 of 16 games carrying `distributions: {}`
         # and reported PASS -- absence read as success, inside the production
@@ -3033,6 +3062,9 @@ def build(args, fixtures: dict = None) -> dict:
             'interception_reservation': fx.get('_sc2') or {},
             'qb_cell_relief': fx.get('_qbsem') or {},
             'current_season_state': fx.get('_cs1') or {},
+            'coherence_certificate': fx.get('_coherence_certificate') or {},
+            'coherence_certificate_verdict': (
+                fx.get('_coherence_certificate_verdict') or {}),
             # THE CLOSURE PROOF, QUANTIFIED, IN THE ARTIFACT ITSELF. Every team
             # dropback belongs to exactly one quarterback on that team, and a
             # reader should not have to re-derive that from the draw matrices
