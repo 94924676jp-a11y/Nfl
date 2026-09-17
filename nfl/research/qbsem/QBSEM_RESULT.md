@@ -334,6 +334,29 @@ it is worth more than the gate.
   the incumbency signal**, not the relief rate. A fix there is a third
   rest-state mechanism and is out of scope by instruction.
 
+### Recorded for later, and explicitly NOT part of this V2 gate
+
+Owner's note, 2026-09-17: QB participation should eventually be researched as a
+**joint hierarchical multinomial / competing-risk system**, with states such as
+*starter*, *reliever*, *full absence* and *emergency-only*. QBSEM can serve as
+the bridge to that architecture if it passes its gates.
+
+It did not pass, so it is not that bridge yet. Two things in this result bear
+directly on the eventual design and are worth carrying forward:
+
+1. **The states are not separable from pregame information as the frame stands.**
+   `P(db = 0 | cell)` conflates inactive, benched and blowout, and nothing
+   pregame distinguishes them. A competing-risk model needs those states
+   labelled, and labelling them is a data question before it is a modelling one.
+2. **Hierarchical pooling is exactly what the fallback failure argues for.**
+   The 104 sparse rows fail because the fallback is a hard switch to a
+   different, badly-calibrated estimator. A hierarchical model shrinks a thin
+   cell toward its parent instead of replacing it, which is the right shape for
+   this problem and would have made those rows the *least* damaging rather than
+   the most.
+
+Neither is attempted here.
+
 ## 7. Limitations carried forward
 
 - **Rest-state / season-boundary (unresolved, accepted).** Measured SAT-vs-PLAYED
