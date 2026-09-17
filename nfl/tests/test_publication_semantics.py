@@ -194,12 +194,72 @@ def audit_loaded(d, board, rid, arrays, tally):
                 tally['C'].append((str(d), pid, pos, 'dk_scoring/dk_points',
                                    round(mx, 6), int(zero.sum())))
 
+    # KICKERS ARE MODELLED AND NOT PUBLISHED, AND THE FIRST VERSION OF THIS
+    # MODULE MISSED THEM BECAUSE IT ONLY WALKED `board['players']`.
+    #
+    # Every board computes a `kicking` layer -- DET-BUF carries two rows,
+    # fga/fgm/xpa/xpm/dk_points/offensive_td, means 1.88/1.59/2.48/2.36/8.13
+    # -- and NO sealed board lists a kicker among its players. So K came back
+    # NOT_EXECUTED not because the corpus has no kickers but because this
+    # module could not see them. That was a gap in the test, and it made the
+    # test report a gap in the evidence.
+    #
+    # The rows are audited straight off the manifest. Check C is the one that
+    # applies: there is no published mean to compare against, which IS the
+    # defect, and it is recorded in `kicking_unpublished` rather than being
+    # silently skipped.
+    kids = rid.get('kicking') or []
+    for pid in kids:
+        tally['positions']['K'] += 1
+        vol = None
+        for met in ('fga', 'xpa'):
+            v = _get(rid, arrays, 'kicking', met, pid)
+            if v is not None:
+                v = np.abs(v)
+                vol = v if vol is None else vol + v
+        if vol is None:
+            tally['no_opportunity_column'].append((str(d), pid, 'K'))
+            continue
+        published = any(p.get('gsis_id') == pid
+                        for p in (board.get('players') or []))
+        if not published:
+            tally['kicking_unpublished'].append((str(d), pid))
+        zero = vol <= 0
+        if not zero.any():
+            continue
+        tally['positions_scored'].add('K')
+        # `offensive_td` IS NOT IN THIS LIST AND THE FIRST VERSION HAD IT.
+        #
+        # It is the TEAM's offensive touchdowns in that draw, recorded on the
+        # kicker's row as the INPUT the kicker model was conditioned on, not
+        # as anything the kicker produced. Requiring it to be zero when he
+        # has no attempt applies a production rule to an input column, and it
+        # fired on four sealed boards.
+        #
+        # Nor is a zero-attempt draw with touchdowns incoherent. `xpa` tracks
+        # `offensive_td` at about 0.86 attempts per touchdown -- means 0.856,
+        # 1.768, 2.677, 3.623 at td = 1..4 -- the remainder being two-point
+        # tries. P(xpa = 0 | td = 4) is 0.0025, which is a rare world and not
+        # an impossible one. The engine was right and my accounting was short
+        # a distinction, the same mistake in the same shape as the gadget-rush
+        # column above.
+        for met in ('fgm', 'xpm', 'dk_points'):
+            a = _get(rid, arrays, 'kicking', met, pid)
+            if a is None:
+                continue
+            tally['n_metrics_kicking'] += 1
+            mx = float(np.abs(a[zero]).max())
+            if mx > 0:
+                tally['C_kicking'].append((str(d), pid, f'kicking/{met}',
+                                           round(mx, 6), int(zero.sum())))
+
 
 def _new_tally():
     return {'A': [], 'B': [], 'C': [], 'n_metrics': 0, 'n_dk': 0,
             'n_discriminating': 0, 'positions': collections.Counter(),
             'positions_scored': set(), 'no_opportunity_column': [],
-            'metric_without_array': []}
+            'metric_without_array': [], 'C_kicking': [],
+            'n_metrics_kicking': 0, 'kicking_unpublished': []}
 
 
 _CORPUS = None
@@ -352,15 +412,27 @@ def test_D_the_contract_is_exercised_on_every_position():
     for pos in ('QB', 'RB', 'WR', 'TE'):
         check(f'{pos} is scored somewhere in the sealed corpus', pos in got,
               f'scored positions: {sorted(got)}')
-    if 'K' not in got:
-        # Stated, never passed. A kicker absent from the corpus leaves the
-        # kicking columns of this contract unexercised and that is a gap in
-        # the evidence, not a property of the board.
-        not_executed('K is scored somewhere in the sealed corpus',
-                     f'no kicker row on any sealed board; scored: '
-                     f'{sorted(got)}')
+    check(f'K is scored somewhere in the sealed corpus '
+          f'({t["n_metrics_kicking"]} kicking metric(s))', 'K' in got,
+          f'scored positions: {sorted(got)}')
+    check('  and a kicker with no attempt scores nothing, at the maximum',
+          not t['C_kicking'],
+          f'{len(t["C_kicking"])} violation(s): {t["C_kicking"][:3]}')
+    # THE DEFECT THIS TEST EXISTS TO SURFACE, STATED NOT PASSED. Every board
+    # computes a kicking layer and no board publishes a kicker among its
+    # players, so `n_players` undercounts by the size of the kicking room and
+    # BOARD.md renders no kicking section. It is named here because a test
+    # that quietly worked around it would hide it.
+    if t['kicking_unpublished']:
+        not_executed(
+            'every modelled kicker appears on the board that modelled him',
+            f'{len(t["kicking_unpublished"])} kicking row(s) are computed and '
+            f'sealed but absent from `board["players"]`, so they carry no '
+            f'published mean for checks A and B to test. '
+            f'{t["kicking_unpublished"][:2]}')
     else:
-        check('K is scored somewhere in the sealed corpus', True)
+        check('every modelled kicker appears on the board that modelled him',
+              True)
 
 
 if __name__ == '__main__':

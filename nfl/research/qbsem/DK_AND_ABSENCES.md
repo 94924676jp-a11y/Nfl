@@ -40,7 +40,7 @@ published mean. `V` = V1_CANDIDATE_R9_W1P_GSVU (provisional leader),
 
 | Requested quantity | State | Why |
 |---|---|---|
-| **Kicking** (FGA, FGM, XPA, XPM, kicker DK) | **ABSENT** | No kicker is in the room on this board. The engine has a `kicking` layer and it carried **no row** here. Not a zero — an absence. |
+| **Kicking** (FGA, FGM, XPA, XPM, kicker DK) | **MODELLED BUT NOT PUBLISHED** | ~~ABSENT — no kicker is in the room~~ **That was wrong and is withdrawn.** The `kicking` layer carries TWO rows with full distributions; `board["players"]` omits them, so `BOARD.md` renders no kicking section. The numbers are in `KICKING_CORRECTION.md`. |
 | **Rushing yards for RB / WR / TE** | **UNAVAILABLE** | `RUSHING_CONVERSION_CONTROL_UNDEFINED`. No governed control exists for carry → rushing yards; three owner decisions are open. `carries × YPC` is named in `layers.py` as the prohibited implementation and is not computed. |
 | **Passer rating** | **UNAVAILABLE** | `NO_RATE_COMPOSITE_LAYER`. A composite of forecast components is not itself a forecast distribution. |
 | **Air yards / aDOT** | **UNAVAILABLE** | `NO_AIR_YARDS_LAYER`. V1 forecasts no air-yards distribution. |
