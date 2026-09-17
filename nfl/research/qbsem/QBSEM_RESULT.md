@@ -316,6 +316,36 @@ relaxed.** The grid was not extended and no threshold was moved.
 
 ---
 
+## The confirming full suite
+
+Measured at the final HEAD, not one commit behind it.
+
+| | pre-QBSEM baseline | QBSEM HEAD |
+|---|---|---|
+| modules | 146 | **148** |
+| test functions | 1,657 | **1,668** |
+| checks | 9,051 | **9,100** |
+| **FAILING CHECKS** | **53** | **53** |
+| RAISED | 15 | 15 |
+| ZERO-CHECK FUNCTIONS | 0 | **0** |
+| BLOCKED FUNCTIONS | 22 | 22 |
+
+**The failing-module set and every per-module count are identical before and
+after.** Two new modules, 49 new checks, **zero new failures and no
+regression.** `SUITE_AT_QBSEM_HEAD.log`.
+
+`SUITE FAIL` is the standing state of this repository — the 53 failures are
+pre-existing and each is a known open defect, among them the 54.89% non-integer
+carry cells, the W1 panel survivorship gap, and `REPLAY_RE_SELECTS`. None of
+them is new and none is QBSEM's.
+
+**BLOCKED is not a pass and NOT_EXECUTED has not disappeared.** 22 functions
+are BLOCKED, and this work adds one NOT_EXECUTED of its own: the kicker
+publication gap, stated in `test_publication_semantics.py` rather than worked
+around.
+
+---
+
 ## 6. What survives, and the successor
 
 **The mechanism is right and the fallback is wrong.** That is the finding, and
