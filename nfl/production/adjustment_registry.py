@@ -112,17 +112,39 @@ ADJUSTMENTS = {
         'applied_at': 'team_volume', 'permitted_consumers': ('diagnostics',),
         'emitted_quantity_is_already_adjusted': True, 'embeds': (),
         'version': 1, 'status': PRODUCTION_APPROVED,
-        'evidence': 'team_volume_v1 draws team snap and dropback levels; a '
-                    'downstream layer that re-applied pace would count the '
-                    'same tempo twice.',
+        'evidence': 'team_volume_v1 draws team snap and dropback levels from '
+                    'own history (league_mean, team_expanding, last_game, '
+                    'roll3, roll5, ewma, prev_season, coach_prior). Tempo is '
+                    'EMBEDDED in those levels; it is never applied as a '
+                    'discrete step, and ownership_audit finds zero '
+                    'application sites for it on the whole production path. '
+                    'The flag above is the load-bearing part: a downstream '
+                    'layer that multiplied a pace factor onto those levels '
+                    'would count the same tempo twice.',
+        'note': 'APPROVED BUT NOT APPLIED. The status says a pace effect may '
+                'reach production; it does not claim one currently does.',
     },
     'game_environment_v1': {
-        'owner': 'team_environment', 'producer': 'nfl.production.run_forecast',
+        'owner': 'team_environment', 'producer': None,
         'applied_at': 'team_environment', 'permitted_consumers': ('diagnostics',),
-        'emitted_quantity_is_already_adjusted': True, 'embeds': (),
-        'version': 1, 'status': PRODUCTION_APPROVED,
-        'evidence': 'the team_environment stage; roof and surface reach the '
-                    'engine there and nowhere else.',
+        'emitted_quantity_is_already_adjusted': False, 'embeds': (),
+        'version': 1, 'status': NOT_AVAILABLE,
+        'evidence': 'CORRECTED by ownership_audit. This entry previously read '
+                    'PRODUCTION_APPROVED, already-adjusted, with the evidence '
+                    '"the team_environment stage; roof and surface reach the '
+                    'engine there and nowhere else". Every clause of that was '
+                    'wrong. The production stage NAMED team_environment calls '
+                    'TV.forecast(season, week, teams, m, seed, '
+                    'joint_residuals, game_pairs, game_coupling) -- no roof, '
+                    'no surface, no stadium. The only place either field '
+                    'survives on the production path is '
+                    'q9shadow/seal.py:118-120, where both are carried into '
+                    'the sealed pregame row and never read again. The stage '
+                    'name was a label and it was read as a football input.',
+        'note': 'A STAGE NAMED AFTER AN EFFECT IS NOT THE EFFECT. This is the '
+                'same failure class as a data label mistaken for football '
+                'reality, and it survived a registry built to catch exactly '
+                'that, because the entry was written from the stage name.',
     },
     'score_state_v1': {
         'owner': 'game_state', 'producer': None, 'applied_at': 'game_state',

@@ -1,0 +1,439 @@
+{
+ "adjustments_not_covered_by_this_audit": [],
+ "audit_can_only_disprove": "a scanner sees syntax. An adjustment applied through an opaque variable, a runtime config or a fitted coefficient is invisible to it, so a clean scan SUPPORTS the claim and never proves it.",
+ "code": "OWNERSHIP_AUDIT_COMPLETE",
+ "detail": "139 production module(s); 0 of 9 adjustment families implemented; 0 enforced through the registry",
+ "dispositions": {
+  "game_environment_v1|nfl/prospective/q9shadow/seal.py": {
+   "evidence": "seal.py:118-120 lists roof, surface and stadium_id in SCHEDULE_PREGAME_COLUMNS, and seal.py:216 projects each schedule row onto exactly those columns. The only two projected fields any later line reads are `gameday` and `gametime`, used at :233-:240 to compute kickoff_utc. roof, surface and stadium_id are carried into the sealed row as metadata and never read again -- grep for each in this package returns only the declaration, the projection and the leak check at :248.",
+   "verdict": "CARRIED_NOT_CONSUMED"
+  }
+ },
+ "n_enforced": 0,
+ "n_files_scanned": 139,
+ "n_implemented_in_production": 0,
+ "registry_callers_in_production": [],
+ "rows": {
+  "coverage_v1": {
+   "applied_at": "coverage",
+   "audit_state": "NOT_IMPLEMENTED",
+   "direct_arithmetic_bypasses": [],
+   "display": "defensive coverage",
+   "lineage_propagated": false,
+   "n_application_candidates": 0,
+   "n_applying": 0,
+   "n_sites": 2,
+   "note": "every `coverage` token in this tree is interval coverage or data coverage. Defensive coverage appears nowhere.",
+   "owner": "coverage",
+   "production_sites": [
+    {
+     "calls_registry": false,
+     "file": "nfl/capture/availability.py",
+     "identifiers": {
+      "defense_coverage_type": [
+       "nflverse_game_id,old_game_id,play_id,possession_team,offense_formation,offense_personnel,defenders_in_box,defense_personnel,number_of_pass_rushers,players_on_play,offense_players,defense_players,n_offense,n_defense,ngs_air_yards,time_to_throw,was_pressure,route,defense_man_zone_type,defense_coverage_type"
+      ],
+      "defense_man_zone_type": [
+       "nflverse_game_id,old_game_id,play_id,possession_team,offense_formation,offense_personnel,defenders_in_box,defense_personnel,number_of_pass_rushers,players_on_play,offense_players,defense_players,n_offense,n_defense,ngs_air_yards,time_to_throw,was_pressure,route,defense_man_zone_type,defense_coverage_type"
+      ]
+     },
+     "kind": "SCHEMA_LIST",
+     "propagates_lineage": false
+    },
+    {
+     "calls_registry": false,
+     "file": "nfl/ingest/validate.py",
+     "identifiers": {
+      "defense_coverage_type": [
+       "defense_coverage_type"
+      ]
+     },
+     "kind": "ACQUISITION_OR_GUARD",
+     "propagates_lineage": false
+    }
+   ],
+   "registered": true,
+   "site_kinds": [
+    "ACQUISITION_OR_GUARD",
+    "SCHEMA_LIST"
+   ],
+   "status_in_registry": "NOT_AVAILABLE"
+  },
+  "game_environment_v1": {
+   "applied_at": "team_environment",
+   "audit_state": "NOT_IMPLEMENTED",
+   "direct_arithmetic_bypasses": [],
+   "display": "game environment (roof / surface)",
+   "lineage_propagated": false,
+   "n_application_candidates": 1,
+   "n_applying": 0,
+   "n_sites": 3,
+   "note": "the production stage NAMED `team_environment` calls TV.forecast and passes it (season, week, teams, m, seed, joint_residuals, game_pairs, game_coupling). No roof, no surface, no stadium. The stage name is a label, not a football input.",
+   "owner": "team_environment",
+   "production_sites": [
+    {
+     "calls_registry": false,
+     "file": "nfl/capture/capture_identity.py",
+     "identifiers": {
+      "surface": [
+       "CAPTURE_SURFACE",
+       "SURFACE_DIFFERS",
+       "SURFACE_FILES_ABSENT",
+       "The capture implementation validated for production. Written by a governed step, never by a capture run. A running tree whose surface differs from this has not been validated, whatever its tests say on another branch.",
+       "capture_surface",
+       "n_surface_files_absent",
+       "surface",
+       "want_surface"
+      ]
+     },
+     "kind": "ACQUISITION_OR_GUARD",
+     "propagates_lineage": false
+    },
+    {
+     "calls_registry": false,
+     "file": "nfl/product/conservation.py",
+     "identifiers": {
+      "surface": [
+       "draw_coherence.team_qb_rush_opportunity_within_team_carries (DIAGNOSTIC, gates nothing until the stored-vector defect is closed). This is the OPEN ITEM the dashboard exists to surface: it is present on control boards, was not caused by any recent repair, and nobody owns it. Carried here with its SIZE so it is a standing row rather than a line in a test log."
+      ]
+     },
+     "kind": "PROSE",
+     "propagates_lineage": false
+    },
+    {
+     "calls_registry": false,
+     "disposition": "CARRIED_NOT_CONSUMED",
+     "disposition_evidence": "seal.py:118-120 lists roof, surface and stadium_id in SCHEDULE_PREGAME_COLUMNS, and seal.py:216 projects each schedule row onto exactly those columns. The only two projected fields any later line reads are `gameday` and `gametime`, used at :233-:240 to compute kickoff_utc. roof, surface and stadium_id are carried into the sealed row as metadata and never read again -- grep for each in this package returns only the declaration, the projection and the leak check at :248.",
+     "file": "nfl/prospective/q9shadow/seal.py",
+     "identifiers": {
+      "roof": [
+       "roof"
+      ],
+      "stadium_id": [
+       "stadium_id"
+      ],
+      "surface": [
+       "surface"
+      ]
+     },
+     "kind": "APPLICATION_CANDIDATE",
+     "propagates_lineage": false
+    }
+   ],
+   "registered": true,
+   "site_kinds": [
+    "ACQUISITION_OR_GUARD",
+    "APPLICATION_CANDIDATE",
+    "PROSE"
+   ],
+   "status_in_registry": "NOT_AVAILABLE"
+  },
+  "ol_pass_protection_v1": {
+   "applied_at": "line_play",
+   "audit_state": "NOT_IMPLEMENTED",
+   "direct_arithmetic_bypasses": [],
+   "display": "OL / pass protection",
+   "lineage_propagated": false,
+   "n_application_candidates": 0,
+   "n_applying": 0,
+   "n_sites": 1,
+   "note": "was_pressure is 404 for 2026 and publishes after the postseason.",
+   "owner": "line_play",
+   "production_sites": [
+    {
+     "calls_registry": false,
+     "file": "nfl/capture/availability.py",
+     "identifiers": {
+      "number_of_pass_rushers": [
+       "nflverse_game_id,old_game_id,play_id,possession_team,offense_formation,offense_personnel,defenders_in_box,defense_personnel,number_of_pass_rushers,players_on_play,offense_players,defense_players,n_offense,n_defense,ngs_air_yards,time_to_throw,was_pressure,route,defense_man_zone_type,defense_coverage_type"
+      ],
+      "pressure": [
+       "nflverse_game_id,old_game_id,play_id,possession_team,offense_formation,offense_personnel,defenders_in_box,defense_personnel,number_of_pass_rushers,players_on_play,offense_players,defense_players,n_offense,n_defense,ngs_air_yards,time_to_throw,was_pressure,route,defense_man_zone_type,defense_coverage_type"
+      ],
+      "time_to_throw": [
+       "nflverse_game_id,old_game_id,play_id,possession_team,offense_formation,offense_personnel,defenders_in_box,defense_personnel,number_of_pass_rushers,players_on_play,offense_players,defense_players,n_offense,n_defense,ngs_air_yards,time_to_throw,was_pressure,route,defense_man_zone_type,defense_coverage_type"
+      ],
+      "was_pressure": [
+       "nflverse_game_id,old_game_id,play_id,possession_team,offense_formation,offense_personnel,defenders_in_box,defense_personnel,number_of_pass_rushers,players_on_play,offense_players,defense_players,n_offense,n_defense,ngs_air_yards,time_to_throw,was_pressure,route,defense_man_zone_type,defense_coverage_type"
+      ]
+     },
+     "kind": "SCHEMA_LIST",
+     "propagates_lineage": false
+    }
+   ],
+   "registered": true,
+   "site_kinds": [
+    "SCHEMA_LIST"
+   ],
+   "status_in_registry": "NOT_AVAILABLE"
+  },
+  "opponent_pass_strength_v1": {
+   "applied_at": "team_volume",
+   "audit_state": "NOT_IMPLEMENTED",
+   "direct_arithmetic_bypasses": [],
+   "display": "opponent strength (pass)",
+   "lineage_propagated": false,
+   "n_application_candidates": 0,
+   "n_applying": 0,
+   "n_sites": 2,
+   "note": "the `opponent` key in team_volume_v1 is the PAIRED team-game lookup for the A3G copula correlation -- a dependence parameter, not a location shift. It moves no mean.",
+   "owner": "oas1",
+   "production_sites": [
+    {
+     "calls_registry": false,
+     "file": "nfl/ingest/allowlist.py",
+     "identifiers": {
+      "oas1": [
+       " admitted as the OAS1 regression target for ",
+       "OAS1_EPA_IN_FEATURES",
+       "OAS1_EPA_TARGET_ADMITTED",
+       "OAS1_EPA_TARGET_NO_VINTAGE",
+       "OAS1_EPA_TARGET_WIDENED",
+       "OAS1_EPA_TARGET_WRONG_CALLER",
+       "OAS1_FEATURES_TARGET_FREE",
+       "OAS1_TARGET_COLUMN",
+       "OAS1_TARGET_MODULE",
+       "assert_oas1_epa_target",
+       "nfl.research.oas1.target",
+       "oas1_epa_target"
+      ]
+     },
+     "kind": "ACQUISITION_OR_GUARD",
+     "propagates_lineage": false
+    },
+    {
+     "calls_registry": false,
+     "file": "nfl/ingest/pbp_capture.py",
+     "identifiers": {
+      "oas1": [
+       "capture only. `epa` remains MODEL_DERIVED and refused for Purpose.FORECAST except on the OAS1 target-only path; no market column may be read from this file at all.",
+       "oas1-pbp-capture-1"
+      ]
+     },
+     "kind": "ACQUISITION_OR_GUARD",
+     "propagates_lineage": false
+    }
+   ],
+   "registered": true,
+   "site_kinds": [
+    "ACQUISITION_OR_GUARD"
+   ],
+   "status_in_registry": "RESEARCH_ONLY"
+  },
+  "opponent_rush_strength_v1": {
+   "applied_at": "team_volume",
+   "audit_state": "NOT_IMPLEMENTED",
+   "direct_arithmetic_bypasses": [],
+   "display": "opponent strength (rush)",
+   "lineage_propagated": false,
+   "n_application_candidates": 0,
+   "n_applying": 0,
+   "n_sites": 2,
+   "note": "same lookup, same conclusion.",
+   "owner": "oas1",
+   "production_sites": [
+    {
+     "calls_registry": false,
+     "file": "nfl/ingest/allowlist.py",
+     "identifiers": {
+      "oas1": [
+       " admitted as the OAS1 regression target for ",
+       "OAS1_EPA_IN_FEATURES",
+       "OAS1_EPA_TARGET_ADMITTED",
+       "OAS1_EPA_TARGET_NO_VINTAGE",
+       "OAS1_EPA_TARGET_WIDENED",
+       "OAS1_EPA_TARGET_WRONG_CALLER",
+       "OAS1_FEATURES_TARGET_FREE",
+       "OAS1_TARGET_COLUMN",
+       "OAS1_TARGET_MODULE",
+       "assert_oas1_epa_target",
+       "nfl.research.oas1.target",
+       "oas1_epa_target"
+      ]
+     },
+     "kind": "ACQUISITION_OR_GUARD",
+     "propagates_lineage": false
+    },
+    {
+     "calls_registry": false,
+     "file": "nfl/ingest/pbp_capture.py",
+     "identifiers": {
+      "oas1": [
+       "capture only. `epa` remains MODEL_DERIVED and refused for Purpose.FORECAST except on the OAS1 target-only path; no market column may be read from this file at all.",
+       "oas1-pbp-capture-1"
+      ]
+     },
+     "kind": "ACQUISITION_OR_GUARD",
+     "propagates_lineage": false
+    }
+   ],
+   "registered": true,
+   "site_kinds": [
+    "ACQUISITION_OR_GUARD"
+   ],
+   "status_in_registry": "RESEARCH_ONLY"
+  },
+  "pace_v1": {
+   "applied_at": "team_volume",
+   "audit_state": "NOT_IMPLEMENTED",
+   "direct_arithmetic_bypasses": [],
+   "display": "pace / tempo",
+   "lineage_propagated": false,
+   "n_application_candidates": 0,
+   "n_applying": 0,
+   "n_sites": 0,
+   "note": "tempo is EMBEDDED in the team snap and dropback levels team_volume_v1 draws from own history. It is never applied as a discrete step, which is why nothing consults the registry about it -- and equally why a future layer that multiplied a pace factor onto those levels would be counting the same tempo twice.",
+   "owner": "team_volume",
+   "production_sites": [],
+   "registered": true,
+   "site_kinds": [],
+   "status_in_registry": "PRODUCTION_APPROVED"
+  },
+  "run_blocking_v1": {
+   "applied_at": "line_play",
+   "audit_state": "NOT_IMPLEMENTED",
+   "direct_arithmetic_bypasses": [],
+   "display": "run blocking",
+   "lineage_propagated": false,
+   "n_application_candidates": 0,
+   "n_applying": 0,
+   "n_sites": 1,
+   "note": "box counts are FTN charting, the thinnest evidence in the hierarchy.",
+   "owner": "line_play",
+   "production_sites": [
+    {
+     "calls_registry": false,
+     "file": "nfl/capture/availability.py",
+     "identifiers": {
+      "defenders_in_box": [
+       "nflverse_game_id,old_game_id,play_id,possession_team,offense_formation,offense_personnel,defenders_in_box,defense_personnel,number_of_pass_rushers,players_on_play,offense_players,defense_players,n_offense,n_defense,ngs_air_yards,time_to_throw,was_pressure,route,defense_man_zone_type,defense_coverage_type"
+      ]
+     },
+     "kind": "SCHEMA_LIST",
+     "propagates_lineage": false
+    }
+   ],
+   "registered": true,
+   "site_kinds": [
+    "SCHEMA_LIST"
+   ],
+   "status_in_registry": "NOT_AVAILABLE"
+  },
+  "score_state_v1": {
+   "applied_at": "game_state",
+   "audit_state": "NOT_IMPLEMENTED",
+   "direct_arithmetic_bypasses": [],
+   "display": "score state / game script",
+   "lineage_propagated": false,
+   "n_application_candidates": 0,
+   "n_applying": 0,
+   "n_sites": 4,
+   "note": "the `trailing` hits in this tree are trailing MEANS over time, not trailing on the scoreboard.",
+   "owner": "game_state",
+   "production_sites": [
+    {
+     "calls_registry": false,
+     "file": "nfl/ingest/allowlist.py",
+     "identifiers": {
+      "vegas_wp": [
+       "vegas_wp"
+      ],
+      "wp": [
+       "away_wp",
+       "def_wp",
+       "home_wp",
+       "vegas_home_wp",
+       "vegas_wp",
+       "wp"
+      ]
+     },
+     "kind": "ACQUISITION_OR_GUARD",
+     "propagates_lineage": false
+    },
+    {
+     "calls_registry": false,
+     "file": "nfl/ingest/pbp_capture.py",
+     "identifiers": {
+      "score_differential": [
+       "score_differential"
+      ]
+     },
+     "kind": "ACQUISITION_OR_GUARD",
+     "propagates_lineage": false
+    },
+    {
+     "calls_registry": false,
+     "file": "nfl/product/attribution.py",
+     "identifiers": {
+      "win_probability": [
+       "V1 has no game-state conditioning at any layer, so no draw in this artifact can be moved by score, clock or win probability. nfl/research/live/OPEN_DEFECTS.json D09, repaired: false."
+      ]
+     },
+     "kind": "PROSE",
+     "propagates_lineage": false
+    },
+    {
+     "calls_registry": false,
+     "file": "nfl/product/evaluator.py",
+     "identifiers": {
+      "game_script": [
+       "Rows inside one game are NOT independent observations. Attempts, completions and yards for one passer are near-deterministic functions of each other and both teams share one game script. Read n_games, never n_rows, as the sample size."
+      ]
+     },
+     "kind": "PROSE",
+     "propagates_lineage": false
+    }
+   ],
+   "registered": true,
+   "site_kinds": [
+    "ACQUISITION_OR_GUARD",
+    "PROSE"
+   ],
+   "status_in_registry": "NOT_AVAILABLE"
+  },
+  "weather_v1": {
+   "applied_at": "team_environment",
+   "audit_state": "NOT_IMPLEMENTED",
+   "direct_arithmetic_bypasses": [],
+   "display": "weather",
+   "lineage_propagated": false,
+   "n_application_candidates": 0,
+   "n_applying": 0,
+   "n_sites": 1,
+   "note": "temp and wind are quarantined POSTHOC in the ingest allowlist: they are the observed game-time conditions.",
+   "owner": "team_environment",
+   "production_sites": [
+    {
+     "calls_registry": false,
+     "file": "nfl/ingest/allowlist.py",
+     "identifiers": {
+      "temp": [
+       "temp"
+      ],
+      "wind": [
+       "wind"
+      ]
+     },
+     "kind": "ACQUISITION_OR_GUARD",
+     "propagates_lineage": false
+    }
+   ],
+   "registered": true,
+   "site_kinds": [
+    "ACQUISITION_OR_GUARD"
+   ],
+   "status_in_registry": "NOT_AVAILABLE"
+  }
+ },
+ "scan_excluded": [
+  "nfl/research",
+  "nfl/tests",
+  "nfl/tools"
+ ],
+ "scan_roots": [
+  "nfl"
+ ],
+ "single_adjustment_ownership_verified": false,
+ "spec_version": "nfl-ownership-audit-1",
+ "unreviewed_application_candidates": []
+}
