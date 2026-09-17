@@ -40,6 +40,21 @@ if str(_REPO) not in sys.path:
 
 from sportsplatform.governance.outcome import Cause, Outcome  # noqa: E402
 
+# CRPS AND PIT ARE IMPORTED, NEVER REIMPLEMENTED.
+#
+# Twelve private `crps` implementations already exist in `nfl/research/**`, and
+# a thirteenth here would be the duplication this module was supposed to end.
+# `nfl/product/evaluator.py` is the WIRED postgame scorer -- reached through
+# `nfl/tools/score_game.py` from `research/postgame.py`,
+# `research/same_day_retrospective.py` and two `prospective/q9shadow` modules --
+# and it already carries an exact empirical CRPS and a non-randomised PIT.
+#
+# THE DEPENDENCY RUNS ONE WAY, product <- production, and never back. `product`
+# scores ONE SEALED FORECAST against ONE FINISHED GAME and owns the ledger and
+# the seal verification. This module scores A PANEL against A BASELINE. They
+# answer different questions and share the primitives.
+from nfl.product.evaluator import crps, pit  # noqa: E402,F401
+
 SPEC_VERSION = 'nfl-evaluator-1'
 
 #: Log loss is unbounded at 0 and 1, so a single confident miss would make the
@@ -148,14 +163,21 @@ def clustered_delta(score_fn, y, p_a, p_b, clusters, r=R_BOOT,
     against 1.359pp clustered by player-game and 1.653pp by game -- roughly
     threefold too narrow. `clusters` is therefore a required argument.
     """
+    # A PREDICTION IS ONE-PER-ROW OR A DRAW MATRIX PER ROW, and the row axis is
+    # the first one either way. The first version reshaped predictions to 1-D,
+    # which is right for a probability and silently flattens a (rows, draws)
+    # CRPS matrix into 60,000 scalars against 120 outcomes. Only `y` and
+    # `clusters` are flattened; a prediction keeps its shape and is indexed on
+    # axis 0.
     y = np.asarray(y, float).reshape(-1)
-    a = np.asarray(p_a, float).reshape(-1)
-    b = np.asarray(p_b, float).reshape(-1)
+    a = np.asarray(p_a, float)
+    b = np.asarray(p_b, float)
     c = np.asarray(clusters).reshape(-1)
-    if not (y.size == a.size == b.size == c.size) or y.size == 0:
+    n = y.size
+    if not (a.shape[0] == b.shape[0] == c.size == n) or n == 0:
         raise EvaluatorError(
-            f'EVALUATOR_LENGTH_MISMATCH: y {y.size}, a {a.size}, b {b.size}, '
-            f'clusters {c.size}')
+            f'EVALUATOR_LENGTH_MISMATCH: y {n}, a rows {a.shape[0] if a.size else 0}, '
+            f'b rows {b.shape[0] if b.size else 0}, clusters {c.size}')
     keys = sorted(set(c.tolist()))
     if len(keys) < 2:
         raise EvaluatorError(
@@ -187,7 +209,25 @@ def _logloss_only(y, p):
     return float(-(y * np.log(q) + (1 - y) * np.log(1 - q)).mean())
 
 
-SCORERS = {'brier': _brier_only, 'log_loss': _logloss_only}
+def _crps_only(y, x_rows):
+    """Mean CRPS over rows. `x_rows` is (n_rows, n_draws); `y` is (n_rows,).
+
+    Signature matches the binary scorers -- (outcome, prediction) -- so
+    `clustered_delta` can take any scorer without knowing which it holds.
+    """
+    Y = np.asarray(y, float).reshape(-1)
+    X = np.asarray(x_rows, float)
+    if X.ndim != 2 or X.shape[0] != Y.size or X.size == 0:
+        raise EvaluatorError(
+            f'EVALUATOR_SHAPE: draws {X.shape} against {Y.size} outcome(s).')
+    return float(np.mean([crps(X[i], Y[i]) for i in range(Y.size)]))
+
+
+#: Every scorer takes (outcome, prediction) and returns a scalar where LOWER IS
+#: BETTER, which is what lets `clustered_delta` be indifferent to which it has.
+#: `crps` is the imported product implementation; nothing here re-derives it.
+SCORERS = {'brier': _brier_only, 'log_loss': _logloss_only,
+           'crps': _crps_only}
 
 
 def against_baseline(y, p_model, p_baseline, clusters,

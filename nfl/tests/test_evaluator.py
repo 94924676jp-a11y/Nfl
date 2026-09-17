@@ -196,6 +196,60 @@ def test_F_the_baseline_family_it_scores_against_exists():
     print(f'       {have}')
 
 
+def test_G_crps_is_imported_and_never_reimplemented():
+    """The duplication this module was supposed to END, not join.
+
+    Twelve private `crps` implementations already exist in nfl/research/**, and
+    nfl/product/evaluator.py -- the WIRED postgame scorer -- carries a
+    thirteenth-avoiding exact one. This module must use THAT, by import.
+    """
+    print('\nG. CRPS comes from the wired product evaluator, by import')
+    from nfl.product import evaluator as PV
+    check('`crps` is the SAME object as the product evaluator`s',
+          EV.crps is PV.crps)
+    check('  and `pit` likewise', EV.pit is PV.pit)
+    src = open(EV.__file__).read()
+    check('  this module defines no `crps` of its own',
+          'def crps(' not in src, 'a 13th CRPS would defeat the point')
+    check('  and no `pit` of its own', 'def pit(' not in src)
+    check('  the import is explicit and one-directional',
+          'from nfl.product.evaluator import crps, pit' in src)
+    check('  `crps` is registered as a scorer', 'crps' in EV.SCORERS)
+    # A SCORER MUST BE USABLE BY clustered_delta, which is the whole reason to
+    # register it: without this, a baseline cannot be compared on any count or
+    # continuous output, which is most of the board.
+    rng = np.random.default_rng(0)
+    n = 90
+    y = rng.standard_normal(n) * 3 + 10
+    good = rng.standard_normal((n, 400)) * 3 + 10
+    biased = rng.standard_normal((n, 400)) * 3 + 14
+    g = rng.integers(0, 25, n)
+    d = EV.clustered_delta(EV.SCORERS['crps'], y, good, biased, g, r=300)
+    check('  clustered_delta accepts a (rows, draws) prediction matrix',
+          d['n_rows'] == n and d['n_clusters'] == len(set(g.tolist())),
+          f'rows {d["n_rows"]}, clusters {d["n_clusters"]}')
+    check('    and finds the unbiased arm better, interval excluding zero',
+          d['delta'] < 0 and d['ci95_clustered'][1] < 0,
+          f'{d["delta"]:.4f} {d["ci95_clustered"]}')
+    # THE BUG THIS TEST EXISTS FOR: the first version reshaped predictions to
+    # 1-D, which is right for a probability and silently flattens a
+    # (rows, draws) matrix into n*draws scalars against n outcomes.
+    try:
+        EV.clustered_delta(EV.SCORERS['crps'], y, good[:5], biased, g, r=10)
+        check('  a row-count mismatch on a 2-D prediction REFUSES', False,
+              'flattened instead of refusing')
+    except EV.EvaluatorError as e:
+        check('  a row-count mismatch on a 2-D prediction REFUSES',
+              'LENGTH_MISMATCH' in str(e), str(e)[:60])
+    # And the 1-D binary path is unchanged.
+    yb = (rng.random(n) < 0.3).astype(float)
+    pm = np.clip(0.3 + 0.25 * (yb - 0.3), .01, .99)
+    pb = np.full(n, 0.3)
+    db = EV.clustered_delta(EV.SCORERS['brier'], yb, pm, pb, g, r=300)
+    check('  and the 1-D binary path still works unchanged',
+          db['n_rows'] == n and db['delta'] < 0, str(db['delta']))
+
+
 def test_zz_every_check_passed():
     """The module's own counter, re-raised so a failure turns this module RED."""
     if FAILED:
@@ -208,7 +262,8 @@ if __name__ == '__main__':
                test_C_clustering_is_required_and_widens_the_interval,
                test_D_coverage_and_sharpness_are_reported_together,
                test_E_the_baseline_comparison_returns_no_verdict,
-               test_F_the_baseline_family_it_scores_against_exists):
+               test_F_the_baseline_family_it_scores_against_exists,
+               test_G_crps_is_imported_and_never_reimplemented):
         fn()
     print(f'\n{PASSED} passed, {FAILED} failed')
     raise SystemExit(1 if FAILED else 0)
