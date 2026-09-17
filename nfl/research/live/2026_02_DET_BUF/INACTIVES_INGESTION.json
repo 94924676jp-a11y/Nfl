@@ -1,0 +1,163 @@
+{
+ "artifact": "NFL_OFFICIAL_INACTIVES_INGESTION",
+ "game_id": "2026_02_DET_BUF",
+ "teams": [
+  "DET",
+  "BUF"
+ ],
+ "parser_version": "official-inactives-1",
+ "steps": [
+  {
+   "step": "1. bytes stored before parsing",
+   "ok": true,
+   "code": "INACTIVES_STORED",
+   "sha256": "6dafcf6e981f11be65fb9306511cd22d2206311947195d787e2b5790579c536e",
+   "n_bytes": 585,
+   "blob": "nfl/vintage/official_inactives.6dafcf6e981f11be.html.gz",
+   "retrieved_at": "2026-09-17T23:41:00Z",
+   "published_at": null,
+   "source_url": "operator-relay://official_inactives_delivery_2026-09-17T2351Z",
+   "detail": "585 bytes, sha 6dafcf6e981f11be"
+  },
+  {
+   "step": "2. both clubs represented",
+   "ok": true,
+   "code": "INACTIVES_PARSED",
+   "n_names": {
+    "DET": 7,
+    "BUF": 7
+   },
+   "segmentation": "operator_supplied_verified_against_bytes",
+   "detail": "{'DET': 7, 'BUF': 7}"
+  },
+  {
+   "step": "3. identity resolved",
+   "ok": true,
+   "code": "INACTIVES_RESOLVED",
+   "roster_blob": "nfl/vintage/weekly_rosters.698183b8ab2a09fa.raw.csv.gz",
+   "n_roster": 152,
+   "n_roster_with_a_name": 152,
+   "n_resolved": {
+    "DET": 7,
+    "BUF": 7
+   },
+   "n_unmapped": 0,
+   "unmapped": [],
+   "unmapped_detail": [],
+   "detail": "{'DET': 7, 'BUF': 7} resolved, 0 unmapped"
+  },
+  {
+   "step": "4. POST_INACTIVES_COMPLETE",
+   "ok": true,
+   "code": "POST_INACTIVES_COMPLETE",
+   "n_inactive_by_team": {
+    "DET": 7,
+    "BUF": 7
+   },
+   "inactive_by_team": {
+    "DET": [
+     "00-0039396",
+     "00-0039408",
+     "00-0039862",
+     "00-0040761",
+     "00-0041439",
+     "00-0041442",
+     "00-0041445"
+    ],
+    "BUF": [
+     "00-0035230",
+     "00-0035537",
+     "00-0040724",
+     "00-0041086",
+     "00-0041128",
+     "00-0041443",
+     "00-0041548"
+    ]
+   },
+   "hours_before_kickoff": 0.567,
+   "teams_without_a_list": [],
+   "detail": "{'DET': 7, 'BUF': 7}"
+  },
+  {
+   "step": "4b. no player promoted to GAME_ACTIVE",
+   "ok": true,
+   "n_official_inactive": 14,
+   "n_not_listed": 138,
+   "detail": "absence from the list carries no positive claim"
+  },
+  {
+   "step": "5. perishables re-fetched, consumed slice compared",
+   "ok": true,
+   "slices": {
+    "depth_charts": {
+     "file_before": "6fd75211596249de",
+     "file_after": "6fd75211596249de",
+     "file_moved": false,
+     "slice_before": "6b94a19cc8365323",
+     "slice_after": "6b94a19cc8365323",
+     "slice_moved": false,
+     "rows": 32734,
+     "observed_at": "2026-09-17T23:37:39Z"
+    },
+    "injuries": {
+     "file_before": "d25887c3df86bf99",
+     "file_after": "d25887c3df86bf99",
+     "file_moved": false,
+     "slice_before": "6f68e6f07a7172a9",
+     "slice_after": "6f68e6f07a7172a9",
+     "slice_moved": false,
+     "rows": 11,
+     "observed_at": "2026-09-17T23:37:39Z"
+    },
+    "schedules": {
+     "file_before": "6b741ad9cb1cda34",
+     "file_after": "6b741ad9cb1cda34",
+     "file_moved": false,
+     "slice_before": "f1c6aa56ac3ad822",
+     "slice_after": "f1c6aa56ac3ad822",
+     "slice_moved": false,
+     "rows": 1,
+     "observed_at": "2026-09-17T23:37:39Z"
+    },
+    "weekly_rosters": {
+     "file_before": "698183b8ab2a09fa",
+     "file_after": "698183b8ab2a09fa",
+     "file_moved": false,
+     "slice_before": "2ca1b182893c1896",
+     "slice_after": "2ca1b182893c1896",
+     "slice_moved": false,
+     "rows": 152,
+     "observed_at": "2026-09-17T23:37:39Z"
+    }
+   },
+   "slices_moved": [],
+   "detail": "0 consumed slice(s) moved: none"
+  },
+  {
+   "step": "6. V1_CANDIDATE",
+   "ok": false,
+   "detail": "feature_build: STAGE_DECLARED_UNIMPLEMENTED"
+  }
+ ],
+ "vintage_root": "LIVE",
+ "provenance": {
+  "kind": "EXTERNAL_AUTHORITATIVE_DELIVERY",
+  "official_source_url": "https://www.nfl.com/news/week-2-thursday-night-inactives-detroit-lions-at-buffalo-bills",
+  "official_published_at": "2026-09-17T22:51:00Z",
+  "delivered_by": "operator (human relay of the NFL.com announcement)",
+  "delivered_artifact_sha256": "6dafcf6e981f11be65fb9306511cd22d2206311947195d787e2b5790579c536e",
+  "retrieved_at": "2026-09-17T23:41:00Z",
+  "what_this_is": "Every name below occurs verbatim in the delivered artifact, whose bytes are stored and hashed. That is a real check and it is NOT the same as holding the official page: this executor could not fetch the game-specific announcement (HTTP 000, gateway CONNECT denial), so the chain of custody runs official page -> networked agent -> this artifact.",
+  "what_this_is_not": "This is NOT a capture of nfl.com, and these names were NOT verified against the generic /inactives/ page, which is a placeholder carrying no list and is the wrong document."
+ },
+ "segmentation": "operator_supplied_verified_against_bytes",
+ "name_crosswalk": {
+  "raw_blob": "weekly_rosters.698183b8ab2a09fa.csv",
+  "exists": true,
+  "same_content_hash_as_the_pool_vintage": true
+ },
+ "unmapped_detail": [],
+ "written_at": "2026-09-17T23:42:27.231465Z",
+ "kickoff_utc": "2026-09-18T00:15:00Z",
+ "result": "REFUSED"
+}

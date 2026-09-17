@@ -1269,10 +1269,31 @@ HTML, so it cannot run without the document either.
 
 ### The thing that is worse than the missing bytes
 
-`AVAILABILITY_AUDIT_DET_BUF.json` (run `e58206e3e8473dc1`) reports
-`official_feed_weeks: ["1"]`. The governed injury feed carries **no 2026 week-2
-row at all**, and 21 of 32 pool players sit at `EXISTS_BUT_DID_NOT_JOIN`. Ty
-Johnson, known unavailable, still carries `p_appear = 0.8929` and
-`f_inj_available = 0` in that run. Even a perfectly captured inactive list
-lands in a system whose injury join is not working for the current season
-(open item PRI-A). The bytes are necessary and they are not sufficient.
+`AVAILABILITY_AUDIT_DET_BUF.json` (run `e58206e3e8473dc1`, 2026-09-16T13:20Z)
+reports `official_feed_weeks: ["1"]`, with 21 of 32 pool players at
+`EXISTS_BUT_DID_NOT_JOIN` and Ty Johnson carrying `p_appear = 0.8929` with
+`f_inj_available = 0`.
+
+**CORRECTED 2026-09-17T23:37Z, and the correction matters.** An earlier draft
+of this item read "the governed injury feed carries no 2026 week-2 row at
+all". That was wrong, and it was wrong in the direction that would have sent
+somebody looking in the wrong place. `injuries_2026.csv` was published
+`Last-Modified: 2026-09-17T12:34:06Z` carrying **194 week-2 rows**. What was
+stale was this repository's newest CAPTURE of it, `20260914T173936Z`, 20,631
+bytes, week 1 only. The 13:20Z run read that capture and reported week 1
+correctly. The defect is capture cadence, not the join.
+
+`capture_vintage.py --season 2026` has now been run: capture
+`20260917T233739Z`, new blob `nfl/vintage/injuries.d25887c3df86bf99.csv.gz`,
+41,688 bytes, 377 lines. **And it changes no projection**, which is the useful
+part: the only two Week-2 `Out` designations across both clubs are Christian
+Mahogany (OG) and Blake Miller (OT), neither of whom the model carries as a
+player; Ty Johnson is `Questionable`, not `Out`; and Skyler Bell has **no
+injury row at all**, because a healthy scratch never appears on an injury
+report. Tonight's own data therefore demonstrates the thing this item is
+asking for: the injury report cannot substitute for the inactives declaration.
+
+One smaller defect noticed in passing and NOT fixed under a kickoff clock: the
+capture recorded `source_timestamp: None` for `injuries` while the final hop
+did send `Last-Modified`. Same class as the pbp header-truncation defect fixed
+earlier today.

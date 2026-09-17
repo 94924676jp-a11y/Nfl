@@ -1,0 +1,168 @@
+{
+ "CORRECTION_TO_EARLIER_DIAGNOSIS": "an earlier note in this session said the governed injury feed carried no 2026 week-2 row at all. It carried 194, published 2026-09-17T12:34:06Z. What was stale was this repository`s newest CAPTURE (2026-09-14), so the 13:20Z availability run read week 1 correctly. The defect is capture cadence, not the join.",
+ "artifact": "DET_BUF_2026W2_GOVERNED_INJURY_REFRESH",
+ "blob": "nfl/vintage/injuries.d25887c3df86bf99.csv.gz",
+ "blob_sha256_of_gzip": "40ff0c0e3041ed3fb8693dc9546a28a437aaefc56462fec3250f2f33e9020228",
+ "capture_id": "20260917T233739Z",
+ "capture_tool": "nfl/tools/capture_vintage.py --season 2026 (append-only)",
+ "captured_at_utc": "2026-09-17T23:37:39Z",
+ "defect_noticed_not_fixed": "the capture recorded source_timestamp None for injuries while the final hop did send Last-Modified: Thu, 17 Sep 2026 12:34:06 GMT. Same class as the pbp header-truncation defect fixed earlier today. Not repaired under a kickoff clock.",
+ "det_buf_week2_rows": [
+  {
+   "gsis_id": "00-0034832",
+   "player": "Bradley Chubb",
+   "position": "LB",
+   "practice_status": "Full Participation in Practice",
+   "primary_injury": null,
+   "report_status": null,
+   "team": "BUF"
+  },
+  {
+   "gsis_id": "00-0035537",
+   "player": "Ty Johnson",
+   "position": "RB",
+   "practice_status": "Limited Participation in Practice",
+   "primary_injury": "Hamstring",
+   "report_status": "Questionable",
+   "team": "BUF"
+  },
+  {
+   "gsis_id": "00-0037254",
+   "player": "Terrel Bernard",
+   "position": "LB",
+   "practice_status": "Limited Participation in Practice",
+   "primary_injury": null,
+   "report_status": null,
+   "team": "BUF"
+  },
+  {
+   "gsis_id": "00-0039872",
+   "player": "Cole Bishop",
+   "position": "S",
+   "practice_status": "Limited Participation in Practice",
+   "primary_injury": "Knee",
+   "report_status": "Questionable",
+   "team": "BUF"
+  },
+  {
+   "gsis_id": "00-0040192",
+   "player": "Jordan Hancock",
+   "position": "CB",
+   "practice_status": "Full Participation in Practice",
+   "primary_injury": null,
+   "report_status": null,
+   "team": "BUF"
+  },
+  {
+   "gsis_id": "00-0040724",
+   "player": "T.J. Sanders",
+   "position": "DE",
+   "practice_status": "Limited Participation in Practice",
+   "primary_injury": "Knee",
+   "report_status": "Questionable",
+   "team": "BUF"
+  },
+  {
+   "gsis_id": "00-0034384",
+   "player": "D.J. Reed",
+   "position": "CB",
+   "practice_status": "Limited Participation in Practice",
+   "primary_injury": "Foot",
+   "report_status": "Questionable",
+   "team": "DET"
+  },
+  {
+   "gsis_id": "00-0038820",
+   "player": "Christian Izien",
+   "position": "S",
+   "practice_status": "Full Participation in Practice",
+   "primary_injury": null,
+   "report_status": null,
+   "team": "DET"
+  },
+  {
+   "gsis_id": "00-0038936",
+   "player": "Juice Scruggs",
+   "position": "G",
+   "practice_status": "Full Participation in Practice",
+   "primary_injury": null,
+   "report_status": null,
+   "team": "DET"
+  },
+  {
+   "gsis_id": "00-0039408",
+   "player": "Christian Mahogany",
+   "position": "G",
+   "practice_status": "Did Not Participate In Practice",
+   "primary_injury": "Hip",
+   "report_status": "Out",
+   "team": "DET"
+  },
+  {
+   "gsis_id": "00-0041439",
+   "player": "Blake Miller",
+   "position": "T",
+   "practice_status": "Did Not Participate In Practice",
+   "primary_injury": "Knee",
+   "report_status": "Out",
+   "team": "DET"
+  }
+ ],
+ "effect_on_projections": "NONE",
+ "game_id": "2026_02_DET_BUF",
+ "n_week2_rows_all_teams": 194,
+ "no_rerun_triggered": true,
+ "official_inactives_in_this_same_capture": {
+  "code": "NO_EGRESS",
+  "note": "the governed capture path records the same refusal in its own manifest, independently of the ad hoc curl probe.",
+  "state": "BLOCKED",
+  "url": "https://www.nfl.com/inactives/"
+ },
+ "out_designations": [
+  {
+   "gsis_id": "00-0039408",
+   "player": "Christian Mahogany",
+   "position": "G",
+   "practice_status": "Did Not Participate In Practice",
+   "primary_injury": "Hip",
+   "report_status": "Out",
+   "team": "DET"
+  },
+  {
+   "gsis_id": "00-0041439",
+   "player": "Blake Miller",
+   "position": "T",
+   "practice_status": "Did Not Participate In Practice",
+   "primary_injury": "Knee",
+   "report_status": "Out",
+   "team": "DET"
+  }
+ ],
+ "previous_capture": {
+  "bytes": 20631,
+  "capture_id": "20260914T173936Z",
+  "lines": 183,
+  "weeks_present": [
+   "1"
+  ]
+ },
+ "publication_timestamp_from": "HTTP Last-Modified on the final redirect hop",
+ "publication_timestamp_utc": "2026-09-17T12:34:06Z",
+ "raw_bytes": 41688,
+ "raw_lines": 377,
+ "rerun_rule": "this capture is football evidence and it is lawful, but it moves no player, so there is nothing for a rerun to change. A rerun still requires the official inactives declaration.",
+ "source": "nflverse injuries_2026.csv",
+ "source_class": "MIRROR_OF_THE_OFFICIAL_INJURY_REPORT, not an official NFL or club page",
+ "source_url": "https://github.com/nflverse/nflverse-data/releases/download/injuries/injuries_2026.csv",
+ "spec_version": "det-buf-2026w2-injury-refresh-1",
+ "weeks_present_now": [
+  "1",
+  "2"
+ ],
+ "why_none": {
+  "Blake Miller": "Out -- OT, not carried as a player in the model",
+  "Christian Mahogany": "Out -- OG, not carried as a player in the model",
+  "Skyler Bell": "NO INJURY ROW AT ALL. A healthy scratch never appears on an injury report, which is exactly why the gameday inactives declaration is the only document that closes this gap -- demonstrated here on tonight`s own data rather than argued.",
+  "Ty Johnson": "Questionable, NOT Out. An injury report at Questionable does not zero anybody, so this capture does not close the Ty Johnson question either."
+ }
+}

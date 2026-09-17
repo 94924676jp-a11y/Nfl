@@ -430,8 +430,14 @@ def test_G_the_evaluator_scores_a_continuous_target_without_a_second_crps():
     deg = EV.calibration_slope(y, np.zeros(4))
     check('a CONSTANT predictor gets slope None, not 0.0 -- B0 is '
           'uncalibratable, not badly calibrated',
-          deg['slope'] is None and 'no measurement' in deg['why_none'],
-          str(deg.get('slope')))
+          deg['slope'] is None
+          # ASSERT THE CLAIM, NOT A SENTENCE. This read
+          # `'no measurement' in deg['why_none']` and went red when the
+          # message was rewritten during the degenerate-ratio repair -- the
+          # behaviour never changed. `uncalibratable` is the load-bearing
+          # word and it is the one the project uses everywhere else.
+          and 'uncalibratable' in (deg.get('why_none') or ''),
+          f"slope={deg.get('slope')} why_none={deg.get('why_none')!r}")
 
 
 def _raises(fn):

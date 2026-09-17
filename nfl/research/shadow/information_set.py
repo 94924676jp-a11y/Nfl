@@ -25,6 +25,7 @@ was available earlier than it was.
 from __future__ import annotations
 
 import datetime as _dt
+import re as _re
 import hashlib
 import json
 import os
@@ -40,9 +41,40 @@ class InformationSetError(RuntimeError):
     expensive recurring defect."""
 
 
+_CAPTURE_ID = _re.compile(
+    r'^(?P<stamp>\d{8}T\d{6})(?:\.(?P<frac>\d+))?Z(?:\.(?P<digest>.+))?$')
+
+
 def _capture_instant(capture_id: str) -> _dt.datetime:
-    return _dt.datetime.strptime(capture_id, '%Y%m%dT%H%M%SZ').replace(
-        tzinfo=_dt.timezone.utc)
+    """The instant inside a capture id, in BOTH id shapes this repo has used.
+
+    The original shape is `20260914T173936Z`, one second of resolution. That
+    resolution collided: nflverse republishes the running season several times
+    a day, and two captures of DIFFERENT bytes inside the same second were
+    indistinguishable, so the second one -- a genuinely new vintage -- was
+    refused as an overwrite. The fix added sub-second precision and the content
+    digest, giving `20260917T185754.689856Z.b69f55a172965e16`.
+
+    This parser was not updated with it, and a bare strptime against
+    `%Y%m%dT%H%M%SZ` raised ValueError on every id in the new shape. That did
+    not degrade gracefully: it took down the whole information set, and with it
+    `ingest_inactives.py`, which builds one before it will seal anything. On
+    the night it mattered, the official inactive list could not be ingested
+    because of a timestamp format.
+
+    Both shapes parse here. The fractional part is kept, the digest suffix is
+    ignored -- it is an identity, not a clock.
+    """
+    m = _CAPTURE_ID.match(str(capture_id).strip())
+    if not m:
+        raise InformationSetError(
+            f'capture_id {capture_id!r} matches neither known shape '
+            f'(YYYYMMDDTHHMMSSZ, optionally .ffffff and .<digest>). Refusing '
+            f'rather than guessing a clock.')
+    d = _dt.datetime.strptime(m.group('stamp'), '%Y%m%dT%H%M%S')
+    if m.group('frac'):
+        d = d.replace(microsecond=int(m.group('frac')[:6].ljust(6, '0')))
+    return d.replace(tzinfo=_dt.timezone.utc)
 
 
 def _parse(ts) -> _dt.datetime:
