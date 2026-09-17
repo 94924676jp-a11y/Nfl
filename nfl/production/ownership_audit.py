@@ -257,6 +257,25 @@ DISPOSITIONS = {
     },
 }
 
+# THE GATE FIRED ON THE NEXT FILE WRITTEN AFTER IT WAS BUILT, which is the
+# behaviour wanted. `gate_ids.py` names WEEK2_OAS1_* and IN_SEASON_PRESSURE_DATA
+# and so matched `oas1` and `pressure`; it declares gate STATES and applies
+# nothing. Recorded rather than excluded by a rule, because a rule that skipped
+# `nfl/production/*_ids.py` would skip the next real applier that happened to
+# be named that way.
+for _aid in ('opponent_pass_strength_v1', 'opponent_rush_strength_v1',
+             'ol_pass_protection_v1'):
+    DISPOSITIONS[(_aid, 'nfl/production/gate_ids.py')] = {
+        'verdict': 'DECLARATION_NOT_APPLICATION',
+        'evidence': 'gate_ids.py holds gate identifiers and their YES/NO/'
+                    'UNDECIDED states. The matched tokens are the gate names '
+                    'WEEK2_OAS1_FIT_SPEC_READY, WEEK2_OAS1_PREFLIGHT_READY, '
+                    'WEEK2_OAS1_FIT_EXECUTABLE, WEEK2_OAS1_DOWNSTREAM_LAWFUL '
+                    'and IN_SEASON_PRESSURE_DATA. No arithmetic, no estimate, '
+                    'no frame: the module imports only Outcome.',
+    }
+del _aid
+
 
 class _Scan(ast.NodeVisitor):
     """Names, attributes and non-docstring string constants. Comments cannot
