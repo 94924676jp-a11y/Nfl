@@ -264,13 +264,97 @@ def previous_primary_detail(season: int, week: int) -> dict:
     return out
 
 
+#: The newest ordinal the incumbency panel may trail the forecast ordinal by,
+#: in weeks, before the state is STALE rather than merely historical. One: a
+#: week-W forecast must be able to see week W-1. Not a tuning knob -- it is the
+#: definition of "the previous game is the previous game".
+PANEL_MAX_TRAIL_WEEKS = 1
+
+
+def panel_freshness(season: int, week: int) -> Outcome:
+    """Can the incumbency panel see the forecast week`s PREVIOUS game?
+
+    THE ASSERTION THIS FILE WAS MISSING. `previous_primary_detail` takes the
+    most recent ordinal strictly before the cut and is correct. It has no way
+    to notice that the most recent ordinal is nine months old, so a week-2
+    forecast silently inherited 2025 week 18 for all 32 clubs and every one of
+    them was classed a season opener. Nothing refused, because nothing asked.
+
+    Measured 2026-09-17: `panel_p3.csv.gz` holds 2020-2025 with a maximum
+    ordinal of 202518 and ZERO rows for 2026.
+
+    A week-1 forecast legitimately crosses a season boundary and is NOT stale.
+    Any later week whose panel cannot reach week W-1 IS, and returns a named
+    BLOCKED rather than a silent answer.
+    """
+    import qb3_lib as Q
+    rows = Q.load_qb_panel()
+    if not rows:
+        return Outcome.blocked(
+            'PANEL_EMPTY',
+            'the incumbency panel holds no rows at all. An empty panel is an '
+            'error, not a season boundary.', cause=Cause.DATA)
+    newest = max(r['ord'] for r in rows)
+    cut = int(season) * 100 + int(week)
+    ev = {'newest_panel_ordinal': newest, 'forecast_ordinal': cut,
+          'max_trail_weeks': PANEL_MAX_TRAIL_WEEKS,
+          'seasons_in_panel': sorted({r['ord'] // 100 for r in rows})}
+    if int(week) <= 1:
+        return Outcome.ok(
+            'PANEL_FRESHNESS_NOT_APPLICABLE_AT_A_SEASON_OPENER',
+            value=dict(ev),
+            detail='week 1 crosses a season boundary by definition, so the '
+                   'previous ordinal belonging to an earlier season is the '
+                   'correct answer and not a staleness finding.', **ev)
+    need = int(season) * 100 + (int(week) - PANEL_MAX_TRAIL_WEEKS)
+    if newest >= need:
+        return Outcome.ok('PANEL_FRESH', value=dict(ev),
+                          detail=f'newest panel ordinal {newest} reaches the '
+                                 f'required {need}', **ev)
+    return Outcome.blocked(
+        'PANEL_STALE_CURRENT_SEASON_STATE',
+        f'the incumbency panel`s newest ordinal is {newest} and a '
+        f'{season} week {week} forecast requires at least {need}. Every club '
+        f'will therefore inherit a previous primary from {newest // 100} '
+        f'week {newest % 100} and be classed a season opener in a week that '
+        f'is not one. This is STALE CURRENT-SEASON STATE, not a season '
+        f'boundary.', cause=Cause.DATA, **ev)
+
+
 QB3_CONFIGURATIONS = ('AGREE', 'DISAGREE', 'NO_PREV_PRIMARY_IN_ROOM')
 
+#: The two conditions `is_season_opener` conflated, named apart.
+BOUNDARY_CAUSES = ('SEASON_OPENER', 'STALE_CURRENT_SEASON_STATE',
+                   'UNDETERMINED')
 
-def qb3_configuration(trip, prev_detail) -> dict:
+
+def _boundary_defect_id(opener, season, week):
+    if not opener:
+        return None
+    if week is None:
+        return 'QB3_WEEK1_SEASON_BOUNDARY'
+    return ('QB3_WEEK1_SEASON_BOUNDARY' if int(week) <= 1
+            else 'QB_STALE_CURRENT_SEASON_STATE')
+
+
+def qb3_configuration(trip, prev_detail, season=None, week=None) -> dict:
     """How the depth chart and the incumbent signal stand to each other.
 
     `trip` is the production room: [(pid, rank, was_prev_primary)].
+
+    THE DEFECT LABEL NAMED ONE CONDITION AND FIRED ON TWO. `is_season_opener`
+    is true whenever the previous ordinal belongs to an earlier season, and
+    that happens for two entirely different reasons:
+
+      * the forecast IS a season opener -- a real boundary, correctly named
+        QB3_WEEK1_SEASON_BOUNDARY;
+      * the forecast is week 2 or later and the PANEL has no current-season
+        rows -- stale state wearing a boundary's clothes. Calling that a
+        "week1 specification defect" hid it for an entire week of forecasts.
+
+    `season`/`week` separate them. Without them the old id is kept, because a
+    caller that cannot say which week it is must not be told which of the two
+    it has.
     """
     top = [x for x in trip if x[1] == 1]
     if any(x[2] for x in top):
@@ -294,7 +378,15 @@ def qb3_configuration(trip, prev_detail) -> dict:
         # AGREE -0.1098, DISAGREE -0.4420, NO_PREV -0.3611. Every week-1 room
         # is affected; DISAGREE and NO_PREV are affected severely.
         'week1_specification_defect': bool(opener),
-        'defect_id': 'QB3_WEEK1_SEASON_BOUNDARY' if opener else None,
+        # KEPT so every sealed artifact keeps the id it recorded.
+        'defect_id': (_boundary_defect_id(opener, season, week)
+                      if opener else None),
+        'defect_id_legacy': 'QB3_WEEK1_SEASON_BOUNDARY' if opener else None,
+        'boundary_cause': (None if not opener else
+                           ('SEASON_OPENER' if (week is not None and
+                                                int(week) <= 1)
+                            else ('STALE_CURRENT_SEASON_STATE'
+                                  if week is not None else 'UNDETERMINED'))),
         'defect_basis': (
             'nfl/research/qb3/QB3_WEEK1_INCUMBENT_AUDIT.json. The previous '
             'primary comes from the prior season\'s final game, which is the '
@@ -614,6 +706,13 @@ def allocate(season, week, teams, qb_players, m=200, seed=20260908,
     import qb3_lib as Q
     prev_detail = previous_primary_detail(season, week)
     prev = {k: v.get('pid') for k, v in prev_detail.items()}
+    # THE FRESHNESS VERDICT TRAVELS WITH THE ALLOCATION. Recorded, never
+    # swallowed: a stale panel produces a board whose every room is a
+    # season-opener room, and before this the artifact said nothing about it.
+    _fresh = panel_freshness(season, week)
+    _fresh_ev = {'state': _fresh.state.value, 'code': _fresh.code,
+                 'detail': _fresh.detail,
+                 **{k: v for k, v in _fresh.evidence.items() if k != 'value'}}
     qb3_cfg = {}
     by_team = collections.defaultdict(list)
     for q in qb_players:
@@ -719,7 +818,8 @@ def allocate(season, week, teams, qb_players, m=200, seed=20260908,
         out[t] = {'pids': pid_list, 'shares': S,
                   'ranks': [x[1] for x in trip],
                   'was_prev_primary': [x[2] for x in trip]}
-        qb3_cfg[t] = qb3_configuration(trip, prev_detail.get(t))
+        qb3_cfg[t] = qb3_configuration(trip, prev_detail.get(t),
+                                       season=season, week=week)
         ev['n_qb_by_team'][t] = len(trip)
     if not out:
         return Outcome.fail(
@@ -741,6 +841,7 @@ def allocate(season, week, teams, qb_players, m=200, seed=20260908,
                       qb_inactive_ownership_enforced=own['enforced'],
                       qb_inactive_ownership=own,
                       qb3_configuration=qb3_cfg,
+                      panel_freshness=_fresh_ev,
                       # QBSEM: the rates that RAN and the sparse-cell
                       # fallbacks, per team. Empty on every other allocator.
                       cell_relief=cell_relief_ev or None,
