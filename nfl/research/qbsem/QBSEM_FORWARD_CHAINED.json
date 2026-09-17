@@ -1,0 +1,317 @@
+{
+ "spec": "qbsem-forward-chained-participation-1",
+ "scoreboard": {
+  "baseline_pooled_rank": {
+   "brier": 0.473188,
+   "log_loss": 1.482542,
+   "auc": 0.622349,
+   "mean_prediction": 0.655486
+  },
+  "qbsem_cell": {
+   "brier": 0.106996,
+   "log_loss": 0.369178,
+   "auc": 0.620963,
+   "mean_prediction": 0.120431
+  },
+  "constant_forward_chained": {
+   "brier": 0.094177,
+   "log_loss": 0.336797,
+   "auc": 0.471069,
+   "mean_prediction": 0.101823
+  }
+ },
+ "head_to_head_vs_constant": {
+  "qbsem_minus_constant_ALL_ROWS": {
+   "n_rows": 3206,
+   "n_clusters": 2153,
+   "brier_a_minus_b": 0.012818,
+   "ci95_clustered": [
+    0.008224,
+    0.017347
+   ],
+   "p_a_better": 0.0
+  },
+  "qbsem_minus_constant_OWN_CELL_RATE_ONLY": {
+   "n_rows": 3102,
+   "n_clusters": 2105,
+   "brier_a_minus_b": -0.002668,
+   "ci95_clustered": [
+    -0.003476,
+    -0.001809
+   ],
+   "p_a_better": 1.0
+  },
+  "qbsem_minus_constant_SPARSE_FALLBACK_ONLY": {
+   "n_rows": 104,
+   "n_clusters": 88,
+   "brier_a_minus_b": 0.474709,
+   "ci95_clustered": [
+    0.391255,
+    0.551972
+   ],
+   "p_a_better": 0.0
+  }
+ },
+ "per_fold_brier": [
+  {
+   "season": 2022,
+   "n": 748,
+   "base_rate": 0.092246,
+   "baseline_pooled_rank": 0.527992,
+   "qbsem_cell": 0.121832,
+   "constant_forward_chained": 0.083768
+  },
+  {
+   "season": 2023,
+   "n": 756,
+   "base_rate": 0.126984,
+   "baseline_pooled_rank": 0.502829,
+   "qbsem_cell": 0.123918,
+   "constant_forward_chained": 0.111874
+  },
+  {
+   "season": 2024,
+   "n": 739,
+   "base_rate": 0.112314,
+   "baseline_pooled_rank": 0.473052,
+   "qbsem_cell": 0.102553,
+   "constant_forward_chained": 0.099744
+  },
+  {
+   "season": 2025,
+   "n": 963,
+   "base_rate": 0.09242,
+   "baseline_pooled_rank": 0.407455,
+   "qbsem_cell": 0.085595,
+   "constant_forward_chained": 0.084098
+  }
+ ],
+ "brier_by_fallback_state": {
+  "sparse_cells_fell_back": {
+   "n": 104,
+   "base_rate": 0.057692,
+   "baseline_pooled_rank": 0.530949,
+   "qbsem_cell": 0.530949,
+   "constant_forward_chained": 0.05624
+  },
+  "own_cell_rate_used": {
+   "n": 3102,
+   "base_rate": 0.106705,
+   "baseline_pooled_rank": 0.471252,
+   "qbsem_cell": 0.092782,
+   "constant_forward_chained": 0.095449
+  }
+ },
+ "event": "y = 1[db > 0] for a depth-charted QB who was NOT the starter",
+ "design": "expanding-window forward chain, one fit per evaluation season, cut = season*100+1 so no row of the evaluation season or later is in its own training set",
+ "exploratory": true,
+ "why_exploratory": "the frame is the one every earlier QB repair was selected on; this controls parameter leakage only",
+ "n_rows": 3206,
+ "n_clusters_team_game": 2153,
+ "base_rate": 0.105115,
+ "folds": [
+  {
+   "season": 2022,
+   "train_cut_ordinal": 202201,
+   "n_eval_rows": 748,
+   "n_train_team_games": 544
+  },
+  {
+   "season": 2023,
+   "train_cut_ordinal": 202301,
+   "n_eval_rows": 756,
+   "n_train_team_games": 1086
+  },
+  {
+   "season": 2024,
+   "train_cut_ordinal": 202401,
+   "n_eval_rows": 739,
+   "n_train_team_games": 1630
+  },
+  {
+   "season": 2025,
+   "train_cut_ordinal": 202501,
+   "n_eval_rows": 963,
+   "n_train_team_games": 2174
+  }
+ ],
+ "n_fallback_rows": 104,
+ "min_cell_n": 30,
+ "brier": {
+  "baseline": 0.473188,
+  "qbsem": 0.106996,
+  "qbsem_minus_baseline": -0.366193,
+  "ci95_clustered": [
+   -0.382916,
+   -0.349741
+  ],
+  "p_qbsem_better": 1.0
+ },
+ "log_loss": {
+  "baseline": 1.482542,
+  "qbsem": 0.369178,
+  "qbsem_minus_baseline": -1.113363,
+  "ci95_clustered": [
+   -1.160866,
+   -1.066529
+  ],
+  "p_qbsem_better": 1.0
+ },
+ "bootstrap": {
+  "R": 2000,
+  "cluster": "team-game",
+  "seed": 20260917
+ },
+ "cellwise_calibration": [
+  {
+   "cell": [
+    1,
+    0,
+    0
+   ],
+   "n": 141,
+   "k_relieved": 5,
+   "observed": 0.035461,
+   "observed_se_iid": 0.015575,
+   "mean_p_qbsem": 0.060724,
+   "mean_p_baseline": 0.316677,
+   "qbsem_minus_observed": 0.025263,
+   "baseline_minus_observed": 0.281216
+  },
+  {
+   "cell": [
+    1,
+    1,
+    0
+   ],
+   "n": 128,
+   "k_relieved": 4,
+   "observed": 0.03125,
+   "observed_se_iid": 0.015379,
+   "mean_p_qbsem": 0.041199,
+   "mean_p_baseline": 0.314529,
+   "qbsem_minus_observed": 0.009949,
+   "baseline_minus_observed": 0.283279
+  },
+  {
+   "cell": [
+    2,
+    0,
+    0
+   ],
+   "n": 1735,
+   "k_relieved": 262,
+   "observed": 0.151009,
+   "observed_se_iid": 0.008596,
+   "mean_p_qbsem": 0.136564,
+   "mean_p_baseline": 0.926967,
+   "qbsem_minus_observed": -0.014445,
+   "baseline_minus_observed": 0.775959
+  },
+  {
+   "cell": [
+    2,
+    0,
+    1
+   ],
+   "n": 105,
+   "k_relieved": 13,
+   "observed": 0.12381,
+   "observed_se_iid": 0.032143,
+   "mean_p_qbsem": 0.346124,
+   "mean_p_baseline": 0.927018,
+   "qbsem_minus_observed": 0.222315,
+   "baseline_minus_observed": 0.803208
+  },
+  {
+   "cell": [
+    2,
+    1,
+    0
+   ],
+   "n": 61,
+   "k_relieved": 9,
+   "observed": 0.147541,
+   "observed_se_iid": 0.045408,
+   "mean_p_qbsem": 0.438507,
+   "mean_p_baseline": 0.925492,
+   "qbsem_minus_observed": 0.290966,
+   "baseline_minus_observed": 0.777951
+  },
+  {
+   "cell": [
+    2,
+    1,
+    1
+   ],
+   "n": 18,
+   "k_relieved": 0,
+   "observed": 0.0,
+   "observed_se_iid": 0.0,
+   "mean_p_qbsem": 0.92613,
+   "mean_p_baseline": 0.92613,
+   "qbsem_minus_observed": 0.92613,
+   "baseline_minus_observed": 0.92613
+  },
+  {
+   "cell": [
+    3,
+    0,
+    0
+   ],
+   "n": 950,
+   "k_relieved": 44,
+   "observed": 0.046316,
+   "observed_se_iid": 0.006819,
+   "mean_p_qbsem": 0.049407,
+   "mean_p_baseline": 0.233742,
+   "qbsem_minus_observed": 0.003091,
+   "baseline_minus_observed": 0.187426
+  },
+  {
+   "cell": [
+    3,
+    0,
+    1
+   ],
+   "n": 56,
+   "k_relieved": 0,
+   "observed": 0.0,
+   "observed_se_iid": 0.0,
+   "mean_p_qbsem": 0.102704,
+   "mean_p_baseline": 0.230248,
+   "qbsem_minus_observed": 0.102704,
+   "baseline_minus_observed": 0.230248
+  },
+  {
+   "cell": [
+    3,
+    1,
+    0
+   ],
+   "n": 8,
+   "k_relieved": 0,
+   "observed": 0.0,
+   "observed_se_iid": 0.0,
+   "mean_p_qbsem": 0.244099,
+   "mean_p_baseline": 0.244099,
+   "qbsem_minus_observed": 0.244099,
+   "baseline_minus_observed": 0.244099
+  },
+  {
+   "cell": [
+    3,
+    1,
+    1
+   ],
+   "n": 4,
+   "k_relieved": 0,
+   "observed": 0.0,
+   "observed_se_iid": 0.0,
+   "mean_p_qbsem": 0.231533,
+   "mean_p_baseline": 0.231533,
+   "qbsem_minus_observed": 0.231533,
+   "baseline_minus_observed": 0.231533
+  }
+ ]
+}
