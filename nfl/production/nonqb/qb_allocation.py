@@ -228,7 +228,9 @@ def captured_depth_chart(as_of=None) -> Outcome:
                       selected_as_of=str(as_of) if as_of is not None else None)
 
 
-def previous_primary_detail(season: int, week: int) -> dict:
+def previous_primary_detail(season: int, week: int, as_of=None,
+                            current_season=False, all_clubs=None,
+                            with_evidence=False):
     """team -> {'pid', 'ordinal', 'is_season_opener'}.
 
     THE SEASON BOUNDARY IS A FACT ABOUT THE GAP, NOT ABOUT `week == 1`.
@@ -242,9 +244,32 @@ def previous_primary_detail(season: int, week: int) -> dict:
     This is DIAGNOSIS CARRIED ONTO THE ARTIFACT. It changes no probability and
     no draw; it records which configuration produced them so a reader, and the
     market comparator, can tell a contaminated room from a clean one.
+
+    CURRENT-SEASON ROWS ARE ADDITIVE AND OFF BY DEFAULT. `panel_p3.csv.gz` is a
+    frozen input inside the identity of every sealed candidate, so it is never
+    rewritten; current-season rows are appended IN MEMORY and only when a
+    caller asks. A caller that does not ask gets exactly the bytes it got
+    before, which is what keeps every prior arm bit-identical.
+
+    THE RETURN SHAPE IS UNCHANGED unless `with_evidence` is set. The refresh's
+    own verdict -- which clubs it covered, from which source, and which it
+    could not reach -- would have had to ride inside the club mapping
+    otherwise, and every existing caller iterates that mapping expecting only
+    clubs in it.
     """
     import qb3_lib as Q
     rows = Q.load_qb_panel()
+    cs_ev = {'requested': bool(current_season), 'state': 'NOT_REQUESTED'}
+    if current_season:
+        from nfl.production.nonqb import current_season_panel as CSP
+        _o = CSP.rows_before(season, week, as_of=as_of, all_clubs=all_clubs)
+        cs_ev = {'requested': True, 'state': _o.state.value, 'code': _o.code,
+                 **{k: v for k, v in _o.evidence.items() if k != 'value'}}
+        if _o.state is State.PASS:
+            rows = list(rows) + [
+                {'season': r['season'], 'week': r['week'], 'team': r['team'],
+                 'pid': r['pid'], 'name': r.get('name'), 'db': r['db'],
+                 'ord': r['ord']} for r in _o.value]
     tg = Q.team_games(rows)
     prim, by_team = {}, collections.defaultdict(list)
     for (t, o), v in tg.items():
@@ -260,8 +285,10 @@ def previous_primary_detail(season: int, week: int) -> dict:
             continue
         po = oo[i - 1]
         out[t] = {'pid': prim.get((t, po)), 'ordinal': po,
-                  'is_season_opener': (po // 100) != season}
-    return out
+                  'is_season_opener': (po // 100) != season,
+                  'current_season_evidence': bool(
+                      current_season and po // 100 == int(season))}
+    return (out, cs_ev) if with_evidence else out
 
 
 #: The newest ordinal the incumbency panel may trail the forecast ordinal by,
@@ -398,7 +425,18 @@ def qb3_configuration(trip, prev_detail, season=None, week=None) -> dict:
 
 def previous_primary(season: int, week: int) -> dict:
     """team -> the gsis_id of the primary passer of its last game, strictly
-    earlier by ordinal and spanning seasons."""
+    earlier by ordinal and spanning seasons.
+
+    ORPHANED, and named as such rather than quietly deleted. Nothing in this
+    repository calls it: it is `previous_primary_detail` minus the opener flag,
+    reimplementing the same bisect over the same panel. It is therefore ALSO
+    blind to the current season, and a future caller that reached for the
+    shorter name would silently reintroduce the staleness defect
+    `panel_freshness` exists to catch.
+
+    Left in place because deleting a public name is a separate decision from
+    marking it; do NOT wire anything new to it.
+    """
     import qb3_lib as Q
     rows = Q.load_qb_panel()
     tg = Q.team_games(rows)
@@ -644,7 +682,7 @@ V2_ALLOCATORS = ('qb_room_v2', 'qb_room_v2_sem')
 def allocate(season, week, teams, qb_players, m=200, seed=20260908,
              kickoff_utc=None, written_at=None, inactive_ids=None,
              inactive_provenance=None, allocator='qb3',
-             team_dropback_draws=None) -> Outcome:
+             team_dropback_draws=None, current_season_state=False) -> Outcome:
     """team -> (pids, shares (n_qb, m)). Shares sum to 1 in every draw.
 
     OFFICIALLY INACTIVE QUARTERBACKS OWN NOTHING, AND THIS IS WHERE THAT IS
@@ -704,7 +742,12 @@ def allocate(season, week, teams, qb_players, m=200, seed=20260908,
                 f'the depth chart was retrieved at {got}, which is not '
                 f'strictly before {label} {bound}')
     import qb3_lib as Q
-    prev_detail = previous_primary_detail(season, week)
+    # CS1: the refresh reads the forecast clock, so a capture taken at or
+    # after `written_at` can never reach the room. Off by default.
+    prev_detail, _cs_ev = previous_primary_detail(
+        season, week, as_of=(written_at if current_season_state else None),
+        current_season=bool(current_season_state), all_clubs=sorted(teams),
+        with_evidence=True)
     prev = {k: v.get('pid') for k, v in prev_detail.items()}
     # THE FRESHNESS VERDICT TRAVELS WITH THE ALLOCATION. Recorded, never
     # swallowed: a stale panel produces a board whose every room is a

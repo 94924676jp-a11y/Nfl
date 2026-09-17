@@ -618,6 +618,11 @@ def build(args, fixtures: dict = None) -> dict:
                                 'official_inactive_provenance'),
                             allocator=_alloc,
                             team_dropback_draws=_tdb,
+                            # CS1. Off unless the arm declares it, so every
+                            # frozen candidate reads exactly the bytes it read
+                            # before.
+                            current_season_state=bool(
+                                fl.get('current_season_state')),
                             kickoff_utc=fx.get('kickoff_utc'),
                             written_at=args.written_at)
         if qa.state is not State.PASS:
@@ -1554,6 +1559,16 @@ def build(args, fixtures: dict = None) -> dict:
         # QBSEM IS RECORDED FROM THE ALLOCATOR'S OWN EVIDENCE, not the flag:
         # the rates that ran and the sparse-cell fallbacks, per team.
         _qa = fx.get('_qb_alloc_evidence') or {}
+        _csp = _qa.get('current_season_panel') or {}
+        if _csp.get('state') == 'PASS':
+            applied.append('CS1')
+            fx['_cs1'] = _csp
+        elif fl.get('current_season_state'):
+            not_reached.append('CS1')
+            fx['_cs1'] = {'state': 'NOT_REACHED',
+                          'why': 'the refresh runs inside qb_allocation; this '
+                                 'run did not reach it, so the component is '
+                                 'not claimed', **_csp}
         if _qa.get('cell_relief'):
             applied.append('QBSEM')
             fx['_qbsem'] = _qa['cell_relief']
@@ -3017,6 +3032,7 @@ def build(args, fixtures: dict = None) -> dict:
             'rushing_total': fx.get('_rushing_total') or {},
             'interception_reservation': fx.get('_sc2') or {},
             'qb_cell_relief': fx.get('_qbsem') or {},
+            'current_season_state': fx.get('_cs1') or {},
             # THE CLOSURE PROOF, QUANTIFIED, IN THE ARTIFACT ITSELF. Every team
             # dropback belongs to exactly one quarterback on that team, and a
             # reader should not have to re-derive that from the draw matrices

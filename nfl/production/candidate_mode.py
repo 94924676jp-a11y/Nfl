@@ -58,6 +58,7 @@ V1_CANDIDATE_R9_W1P_GSP = 'V1_CANDIDATE_R9_W1P_GSP'
 V1_CANDIDATE_R9_W1P_GSVP = 'V1_CANDIDATE_R9_W1P_GSVP'
 V1_CANDIDATE_R9_W1P_GSVU = 'V1_CANDIDATE_R9_W1P_GSVU'
 V1_CANDIDATE_R9_W1P_GSVUQ = 'V1_CANDIDATE_R9_W1P_GSVUQ'
+V1_CANDIDATE_R9_W1P_GSVUC = 'V1_CANDIDATE_R9_W1P_GSVUC'
 MODES = (PRODUCTION_BASELINE, V1_CANDIDATE, V1_CANDIDATE_R5,
          V1_CANDIDATE_R6, V1_CANDIDATE_R7, V1_CANDIDATE_R8,
          V1_CANDIDATE_R9, V1_CANDIDATE_R10, V1_CANDIDATE_R11,
@@ -65,7 +66,8 @@ MODES = (PRODUCTION_BASELINE, V1_CANDIDATE, V1_CANDIDATE_R5,
          V1_CANDIDATE_R9_W1P_G, V1_CANDIDATE_R9_W1P_GA,
          V1_CANDIDATE_R9_W1P_GS, V1_CANDIDATE_R9_W1P_GSV,
          V1_CANDIDATE_R9_W1P_GSP, V1_CANDIDATE_R9_W1P_GSVP,
-         V1_CANDIDATE_R9_W1P_GSVU, V1_CANDIDATE_R9_W1P_GSVUQ)
+         V1_CANDIDATE_R9_W1P_GSVU, V1_CANDIDATE_R9_W1P_GSVUQ,
+         V1_CANDIDATE_R9_W1P_GSVUC)
 
 # Every mode that is a CANDIDATE, derived so a new one cannot escape a guard
 # by not being added to a hand-written list. See `assert_not_promoted`.
@@ -833,6 +835,49 @@ QBSEM_REPAIR = {
     'engine_flag': 'qb_cell_relief',
 }
 
+#: GSVUC -- CS1. GSVU plus current-season incumbency state. One flag.
+R9_W1P_GSVUC_FLAGS = dict(R9_W1P_GSVU_FLAGS)
+R9_W1P_GSVUC_FLAGS['current_season_state'] = True
+
+CS1_REPAIR = {
+    'component': 'CS1',
+    'what': 'the previous-primary passer and the season-boundary flag are '
+            'read from CURRENT-SEASON evidence captured before the forecast '
+            'instant, instead of from a panel that stops at the end of last '
+            'season',
+    'replaces': 'nothing. The panel is unchanged and is never rewritten; '
+                'current-season rows are APPENDED in memory and only when a '
+                'caller asks',
+    'defect': 'panel_p3.csv.gz holds 2020-2025 with a maximum ordinal of '
+              '202518 and ZERO rows for 2026, so a 2026 WEEK 2 forecast gave '
+              'all 32 clubs a 2025 week-18 previous primary and classed all '
+              '32 a season opener. Measured against 2026 week-1 play-by-play, '
+              '7 of the 20 checkable clubs carried the WRONG previous primary',
+    'evidence': '2026 week-1 play-by-play, 10 games over 20 clubs, retrieved '
+                '2026-09-14T00:25:56Z; and week-1 snap counts over 30 clubs, '
+                'retrieved 2026-09-14T18:33:36Z. Both strictly before the '
+                '2026-09-16T15:45:14Z forecast instant. '
+                'nfl/research/sbs/predeclaration_sbs.md',
+    'coefficients': 'NONE ADDED. The repair changes which bytes answer an '
+                    'existing question. There is no rate and no threshold',
+    'proxy': 'a club with no play-by-play falls back to the QB with the most '
+             'offensive snaps. The two agreed 20 of 20 on the week-1 overlap '
+             'with 0 identity-bridge failures, and n = 20 is NOT a validated '
+             'rate: no historical snap capture exists to check it against',
+    'missing_clubs': 'a club with neither source keeps the frozen panel answer '
+                     'and is NAMED, never inferred. For 2026 week 2 that is '
+                     'exactly DEN and KC',
+    'clock': 'enforced in code. A capture whose retrieval instant is not '
+             'STRICTLY before the forecast instant is dropped and the drop is '
+             'counted',
+    'not_claimed': 'no better forecast. The model is fed the state that is '
+                   'true rather than one nine months stale; whether that '
+                   'forecasts better is an out-of-sample question this board '
+                   'cannot answer',
+    'governance': 'REHEARSAL_ONLY -- a new identity, never an edit to GSVU',
+    'engine_flag': 'current_season_state',
+}
+
 ABLATION_NOTE = {
     'arms': {'R9_W1P_GS': 'baseline: R8 appearance, old availability, C3',
              'R9_W1P_GSV': 'A1 only: repaired current availability',
@@ -1292,6 +1337,18 @@ def resolve(mode: str) -> Outcome:
                    'candidate': True},
             detail='the ablation BASELINE: R9_W1P_G plus SC2, so C3 completes '
                    'at any draw count. R8 appearance, old availability path')
+    if mode == V1_CANDIDATE_R9_W1P_GSVUC:
+        return Outcome.ok(
+            'MODE_V1_CANDIDATE_R9_W1P_GSVUC',
+            value={'mode': V1_CANDIDATE_R9_W1P_GSVUC,
+                   'flags': dict(R9_W1P_GSVUC_FLAGS),
+                   'components': _sc2_base() + [_avail_only(),
+                                                dict(W1_UNION_REPAIR),
+                                                dict(CS1_REPAIR)],
+                   'ablation': dict(ABLATION_NOTE),
+                   'candidate': True},
+            detail='CS1: GSVU with current-season incumbency state, so a '
+                   'week-2 game is not treated as a season opener')
     if mode == V1_CANDIDATE_R9_W1P_GSVUQ:
         return Outcome.ok(
             'MODE_V1_CANDIDATE_R9_W1P_GSVUQ',
