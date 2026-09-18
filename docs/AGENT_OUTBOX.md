@@ -1297,3 +1297,56 @@ One smaller defect noticed in passing and NOT fixed under a kickoff clock: the
 capture recorded `source_timestamp: None` for `injuries` while the final hop
 did send `Last-Modified`. Same class as the pbp header-truncation defect fixed
 earlier today.
+
+---
+
+## 2026-09-18 — OUT-021: professional NFL Showdown portfolio practice under known model uncertainty
+
+**ASSIGNED.** This is a literature and practitioner-practice question, and the
+open web is refused at CONNECT from this executor (`www.espn.com` and every
+non-GitHub host tested 2026-09-17T23:28Z and 23:36Z; `raw.githubusercontent.com`
+answers 200 from the same process, so it is a per-host policy denial).
+
+**Why it is not being written from recollection.** Tonight's failure was an
+unsourced number being treated as trustworthy because nothing flagged it.
+Writing a "research package" on professional DFS practice from memory and
+presenting it as research would be that same failure in a different medium.
+
+### The question
+
+A model has known player-level uncertainty or a recorded defect shortly before
+lock, and the optimizer still has to produce a portfolio. What do strong
+Showdown players actually do?
+
+1. how they cap or remove uncertain players;
+2. when they override raw projections, and on what evidence;
+3. how they handle cheap punts with weak or unresolved roles;
+4. how they diversify captain exposure, and against what objective;
+5. how they use projected ownership and duplication risk;
+6. how they build game-script buckets;
+7. how they treat questionable, inactive and role-uncertain players;
+8. how many lineups go to contrarian versus core scenarios;
+9. how they distinguish projection error from intentional leverage;
+10. what stops a known model bug becoming portfolio concentration.
+
+### What is wanted back
+
+A workflow, exposure-governance rules, captain-selection rules, punt rules,
+uncertainty controls, scenario-bucket architecture, ownership and duplication
+integration, and a post-lock review checklist -- each with its source, so a
+claim can be checked rather than trusted.
+
+### What already exists here, so it is not duplicated
+
+`nfl/production/dfs/projection_confidence.py` and `portfolio_guard.py` answer
+(1), (2), (7) and (10) as **governance**, with declared caps that are
+explicitly not fitted. Questions (3), (5), (8) and (9) need an ownership and
+field model, which does not exist. Questions (4) and (6) need a contest-payout
+simulator, which does not exist. The architecture in
+`nfl/production/DFS_ARCHITECTURE.md` names all three layers.
+
+### Not asked for
+
+No sportsbook prices, no vendor projections. Neither may enter as a predictive
+input, and nothing learned here may reach the football simulator -- that
+boundary is the whole point of the DFS architecture file.
