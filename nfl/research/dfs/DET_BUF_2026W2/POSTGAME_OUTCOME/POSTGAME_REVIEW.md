@@ -16,14 +16,34 @@ Every source reachable from this executor was tried and the evidence is in
 | nflverse `play_by_play_2026.csv.gz` | 200, sha256 `b69f55a172965e16` — byte-identical to the pre-kickoff capture, week 1 only |
 | nflverse `stats_player_week_2026.csv` | 200, week 1 only; retried 2026-09-18T04:07:07Z, still week 1, 1,118 rows, 0 week-2 DET/BUF rows |
 | nflverse `snap_counts_2026.csv` | 200, week 1 only |
+| nfldata `games.csv` (raw.githubusercontent) | **200, week-2 row complete — final score captured** |
 | nflverse `schedules.csv` | 404 |
 | nfl.com, espn.com, detroitlions.com | 403 at CONNECT |
 
-The one piece of outcome information that reached this executor — "a
-high-scoring 41-31 game" — is recorded as `UNVERIFIED_SECONDARY — NOT
-INGESTED`. It has no source, no timestamp and no hash, it does not say which
-side scored 41, and a per-stat grade cannot be computed from a final score
-under any circumstances.
+### UPDATE 2026-09-18T04:20Z — the final score IS captured; the box score is not
+
+`nfldata` `games.csv`, reachable at `raw.githubusercontent.com`, carries the
+completed week-2 row. Captured through `nfl/postgame/ingest_outcome.py`, raw
+bytes archived before parsing, file sha256 `9c3b8476cb7d3fab…`:
+
+**DET 31 @ BUF 41.** Buffalo scored the 41. Total 72.
+
+It is written to `FINAL_SCORE.json`, a **separate artifact from
+`OUTCOME.json`**, which is still not written. A partial box score placed at
+the outcome path would be read as the outcome, and the grading gate requires
+`players` precisely so a half-measurement cannot be reported as a
+measurement.
+
+**The final score grades nothing in this model.** The sealed board emits no
+score and no game total anywhere — its team layer is snaps, dropbacks,
+carries, targets and red-zone carries. A 72-point game cannot be scored
+against a model that does not predict points. That gap is the subject of the
+shared-game-environment work, not a grade.
+
+What it does settle: the relayed sentence "a high-scoring 41-31 game" did not
+say which side scored 41, and now a hashed source does. The sentence itself
+remains recorded as `UNVERIFIED_SECONDARY — NOT INGESTED`; it was never the
+evidence, and it is not retroactively promoted by having turned out right.
 
 **A blocked capture is not a small result. It is no result.** Nothing below
 was estimated, partially graded, or filled in from the relayed score.
