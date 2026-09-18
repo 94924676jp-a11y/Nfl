@@ -1,0 +1,127 @@
+{
+ "amended_tie_break_order": [
+  "max lambda",
+  "max kappa",
+  "min rho"
+ ],
+ "amendment": "A1",
+ "artifact": "OAS1_WEEK2_PREREG_AMENDMENT_A1",
+ "code": "OAS1_AMENDMENT_VALID",
+ "declared_before_any_week2_fit": true,
+ "detail": "A1: 2 axis(es) removed (half_life, min_plays), 12,960 declared configurations collapse to 864 distinct ones (15x duplication); nothing added or widened",
+ "effective_search_space": {
+  "garbage_time": [
+   "none",
+   "A",
+   "B"
+  ],
+  "kappa": [
+   0.0,
+   1.0,
+   5.0,
+   20.0,
+   100.0,
+   500.0
+  ],
+  "lambda": [
+   0.1,
+   0.2848035868435802,
+   0.8111308307896871,
+   2.3101297000831593,
+   6.579332246575679,
+   18.73817422860383,
+   53.36699231206307,
+   151.99110829529332,
+   432.8761281083057,
+   1232.8467394420659,
+   3511.1917342151273,
+   10000.0
+  ],
+  "rho": [
+   0.5,
+   0.7,
+   0.85,
+   1.0
+  ]
+ },
+ "evidence": {
+  "amended_tie_break_order": [
+   "max lambda",
+   "max kappa",
+   "min rho"
+  ],
+  "amendment": "A1",
+  "declared_axes": [
+   "garbage_time",
+   "half_life",
+   "kappa",
+   "lambda",
+   "min_plays",
+   "rho"
+  ],
+  "declared_before_any_week2_fit": true,
+  "declared_configurations": 12960,
+  "duplication_factor": 15,
+  "effective_axes": [
+   "garbage_time",
+   "kappa",
+   "lambda",
+   "rho"
+  ],
+  "effective_configurations": 864,
+  "removal_only": true,
+  "removed_axes": [
+   "half_life",
+   "min_plays"
+  ],
+  "spec_version": "oas1-week2-preregistration-amendment-a1"
+ },
+ "may_not": [
+  "add a search value",
+  "widen a grid",
+  "move a threshold",
+  "change a comparator",
+  "alter a promotion rule",
+  "be written after a Week-2 fit has been run"
+ ],
+ "preregistration_is_unmodified": true,
+ "removed": {
+  "half_life": {
+   "declared_grid": [
+    2.0,
+    4.0,
+    8.0,
+    16.0,
+    Infinity
+   ],
+   "degeneracy_evidence": {
+    "current_season_ordinals_in_training": [
+     202601
+    ],
+    "games_back_for_every_current_season_play": 0,
+    "measured_from": "nfl.research.oas1.frame.build over the three governed blobs in WEEK2_FIT_CONFIG.inputs",
+    "plays_at_202601": 1888,
+    "weight_for_every_half_life": 1.0
+   },
+   "detail": "the preregistration declares neither a current-season scope nor an all-training scope. Under the current-season reading the axis is exactly degenerate at week 2; under the all-training reading it double-parameterises the prior weight that rho and kappa already carry, and would borrow B3's games_back formula without justification.",
+   "reason": "NO_DECLARED_SCOPE",
+   "reinstatement": "a further amendment declaring the SCOPE, written before any fit whose training set carries two or more current-season weeks."
+  },
+  "min_plays": {
+   "declared_grid": [
+    0,
+    20,
+    50
+   ],
+   "detail": "the only declared statement is MIN_SAMPLE_RULES, a reporting rule. Reporting cannot move an inner-fold score, so all three values give an identical objective.",
+   "reason": "REPORTING_ONLY_NO_PATH_INTO_THE_OBJECTIVE",
+   "retained_as": {
+    "fixed_value": 0,
+    "meaning": "every unit is reported, with n_plays_current_season and prior_weight_effective attached",
+    "role": "reporting"
+   }
+  }
+ },
+ "spec_version": "oas1-week2-preregistration-amendment-a1",
+ "state": "PASS"
+}

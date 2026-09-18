@@ -33,6 +33,7 @@ if str(_REPO) not in sys.path:
 from sportsplatform.governance.outcome import Cause, Outcome, State  # noqa: E402
 from nfl.ingest import allowlist as AL                              # noqa: E402
 from nfl.production import adjustment_registry as AR                # noqa: E402
+from nfl.research.oas1 import amendment as AM                       # noqa: E402
 from nfl.research.oas1 import design as DS                          # noqa: E402
 from nfl.research.oas1 import fit as FT                             # noqa: E402
 from nfl.research.oas1 import frame as FR                           # noqa: E402
@@ -234,10 +235,34 @@ def preflight(config_path: pathlib.Path = None) -> Outcome:
            f"opponent_rush_strength_v1={ra.value['status']}; the artifact "
            f"will carry research_only=true, downstream_authorized=false")
 
+    # 13. AMENDMENT A1: the two dead axes are out, and still dead -----------
+    am = AM.validate()
+    pf.add('amendment_a1_removal_only', am.state is State.PASS,
+           f"{am.code}: {am.detail}",
+           removed_axes=am.evidence.get('removed_axes'),
+           effective_configurations=am.evidence.get(
+               'effective_configurations'))
+
+    # 14. THE DEGENERACY THE AMENDMENT RESTS ON IS STILL TRUE ---------------
+    # A1 removes half_life because every current-season play is zero games
+    # back. That holds only while the training set carries ONE current-season
+    # week. The moment it carries two, the axis is live again and the
+    # amendment must be re-declared BEFORE the fit rather than after.
+    cur = sorted({r['ordinal'] for r in train
+                  if r['ordinal'] >= int(PRE.FORECAST_SEASON) * 100})
+    pf.add('amendment_a1_degeneracy_still_holds', len(cur) == 1,
+           f'{len(cur)} current-season ordinal(s) in the training set '
+           f'{cur}. A1 removes half_life on the ground that every '
+           f'current-season play is zero games back; with two or more weeks '
+           f'that ground is gone and A1 must be re-declared first.',
+           current_season_ordinals=cur)
+
     ev = {'spec_version': SPEC_VERSION, 'config': str(p),
           'config_sha256': cfg_sha, 'n_checks': len(pf.checks),
           'checks': pf.checks, 'n_failed': len(pf.failed),
           'candidate_identity': _need(cfg, 'candidate_identity'),
+          'effective_search_space': AM.effective_space(),
+          'amended_tie_break_order': list(AM.AMENDED_TIE_BREAK_ORDER),
           'research_only': True, 'downstream_authorized': False}
     if pf.failed:
         return Outcome.fail(
