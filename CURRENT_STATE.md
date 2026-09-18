@@ -1,6 +1,6 @@
 # NFL — current state
 
-**Generated** by `nfl/tools/system_state.py` at 2026-09-18T18:48:01.851407+00:00 from `SYSTEM_STATE.json`. Do not hand-edit this file: regenerate it.
+**Generated** by `nfl/tools/system_state.py` at 2026-09-18T20:38:52.267682+00:00 from `SYSTEM_STATE.json`. Do not hand-edit this file: regenerate it.
 
 Every value under `measured` was computed by reading this repository at the timestamp above. Every value under `declared` was asserted by somebody and says who, when, and why it cannot be measured here. Do not quote one as the other.
 
@@ -11,36 +11,32 @@ Every value under `measured` was computed by reading this repository at the time
 |  |  |
 |---|---|
 | branch | `claude/nfl-greenfield-architecture-stsxmk` |
-| HEAD | `4bb940d` — P8: Contract 4 was already reconciled; what was missing was the check |
-| HEAD committed | 2026-09-18T17:31:03+00:00 |
-| commits on branch | 878 |
-| source scope | clean |
+| HEAD | `20468a5` — P9: OAS1 Week 2 is fitted, and the selection selected nothing |
+| HEAD committed | 2026-09-18T18:49:44+00:00 |
+| commits on branch | 879 |
+| source scope | 2 dirty source file(s) |
 | dirty tree entries (source and not) | 20 |
-| code_version | `4bb940dbb2092d0f9f938134d5c99caf087e150f+src1[44aa01d03783de18]` |
-| python modules | 656 |
-| lines of python | 210,491 |
+| code_version | `20468a56f6e269ddd93a814e563f5cf0104f5643+src1[63a11d3f20432192]` |
+| python modules | 659 |
+| lines of python | 211,384 |
 
 ## 2. Test suite
 
-Source: `nfl/research/suite_attribution/SUITE_DIFF_p7p8_p9.json`. measured at WORKING_TREE, HEAD is 4bb940d. This total is not a statement about the tree as it stands.
+Source: `nfl/research/suite_attribution/SUITE_DIFF_p9_discovery.json`. measured at WORKING_TREE, HEAD is 20468a5. This total is not a statement about the tree as it stands.
 
-|  | at WORKING_TREE | baseline 4bb940d | delta |
+|  | at WORKING_TREE | baseline 20468a5 | delta |
 |---|---|---|---|
-| modules | 183 | 182 | 1 |
-| test functions | 1987 | 1971 | 16 |
-| checks | 10583 | 10447 | 136 |
-| failing checks | 63 | 61 | 2 |
+| modules | 184 | 183 | 1 |
+| test functions | 1997 | 1987 | 10 |
+| checks | 10632 | 10583 | 49 |
+| failing checks | 61 | 63 | -2 |
 | raised | 21 | 21 | 0 |
 | zero check functions | 0 | 0 | 0 |
 | blocked functions | 23 | 23 | 0 |
 
-Verdict: **SUITE FAIL**. Classification against the baseline: {'NEWLY_INTRODUCED': 3, 'PRE_EXISTING': 133}.
+Verdict: **SUITE FAIL**. Classification against the baseline: {'PRE_EXISTING': 133, 'RESOLVED_SINCE_BASELINE': 3}.
 
-Newly introduced since the baseline:
-
-- `nfl/tests/test_system_state.py` [FAILING_CHECK] FAIL the code inventory matches a live count  {'lines': 210452, 'modules': 656} vs {'modules': 656, 'lines': 210491}; regenerate: python3.12 nfl/tools/system_st
-- `nfl/tests/test_system_state.py` [FAILING_CHECK] FAIL the live suite check count appears
-- `nfl/tests/test_system_state.py` [MODULE_FAILING] 2 failing check(s)
+No item is newly introduced since the baseline.
 
 ## 3. Captured evidence
 
@@ -113,7 +109,12 @@ Production readiness (`nfl/production/production_readiness.json`, updated 2026-0
 | P7 | 2 | DONE |  |
 | P8 | 3 | DONE |  |
 | P9 | 4 | DONE |  |
-| A3 | 5 | ACTIVE |  |
+| A3 | 12 | QUEUED |  |
+| DISC-1 | 1 | DONE |  |
+| DISC-2 | 2 | BLOCKED | **measured, not assumed — the conditioning variable has no contrast.** `A1_SUCCESSOR_FEASI |
+| DISC-3 | 3 | ACTIVE |  |
+| DISC-4 | 8 | QUEUED |  |
+| DISC-5 | 13 | QUEUED |  |
 | OAS1-TIEBREAK | 5 | BLOCKED | **owner decision, and it may not be taken by whoever has seen the scores.** The three vari |
 | OAS1-HURDLE | 6 | BLOCKED | the captured 2026 play-by-play carries **week 1 only** — read from the file, 2,756 rows, z |
 | OAS1-FLAT-SURFACE | 7 | QUEUED |  |

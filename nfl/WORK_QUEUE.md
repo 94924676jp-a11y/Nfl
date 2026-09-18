@@ -15,6 +15,29 @@ artifact verification, its commit and its push have all completed and been
 read. A printed terminal line is not verification; the artifact or the remote
 ref is.
 
+## Continuous discovery
+
+After every completed cycle, `python3.12 nfl/tools/discovery.py --write`
+inspects captures, gaps, assumption statuses, suite classification, prospective
+counts and technical debt, and emits `nfl/DISCOVERY.json` with the candidates
+it detected mechanically.
+
+**It detects; this file ranks.** The four factors -- downstream impact,
+uncertainty, measurability, expected value of information -- are judgements and
+none of them is measurable from this tree, so every item above carries a
+`ranking` line stating them in words. A number for any of them in the generated
+artifact would be a silent constant wearing a measurement's clothes.
+
+**An empty candidate list is a result.** It means do validation and monitoring,
+not find something to build.
+
+**On A3 stepping back from ACTIVE to QUEUED.** A3 had a feasibility measurement
+done (108 QB-starter changes over 2024-2025; head-coach changes undetectable
+because the pbp coach field appears season-constant). It is MATERIAL and
+DECLARED. DISC-1 and DISC-2 concern an assumption that is CRITICAL and
+FALSIFIED with no successor, and newly available data bears directly on it.
+That is what justifies the jump; the queue is not reordered for novelty.
+
 ## Regeneration obligation
 
 Three generated files must be refreshed before a commit that changes the tree,
@@ -99,8 +122,8 @@ its downstream impact justifies it.
   - no gate is loosened to obtain a GO.
 
 ## ID: A3
-- **priority**: 5
-- **status**: ACTIVE
+- **priority**: 12
+- **status**: QUEUED
 - **dependencies**: assumption registry (DONE, A1/A2 settled)
 - **description**: Automatic Scientist — test
   `A3_ROLE_CONTINUITY_ACROSS_REGIME_CHANGES` against measurement.
@@ -110,6 +133,122 @@ its downstream impact justifies it.
   - the settlement moves only along a legal status edge and carries evidence;
   - a falsification blocks only the affected production path and rewrites no
     model output.
+
+## ID: DISC-1
+- **priority**: 1
+- **status**: DONE
+- **dependencies**: none
+- **description**: Write the successor research specification for
+  `A1_APPEARANCE_CERTAINTY`. A1 is FALSIFIED and CRITICAL and has **no
+  successor spec**, while A2 -- falsified the same day, and only MATERIAL --
+  has one. The spec must declare what would un-falsify A1: the conditioning
+  variable, the estimand, the population, the forward-chained cuts, and the
+  falsifier. It must be written BEFORE DISC-2 measures anything, or DISC-2 is
+  exploratory rather than confirmatory.
+- **blocker**: none
+- **acceptance criteria**:
+  - the successor spec names its conditioning variable and its falsifier;
+  - it is committed before any measurement under it is run;
+  - it does not hand-pick a clipping value, a floor, or a shrinkage constant;
+  - the falsified A1 record is superseded, not rewritten.
+- **classification**: RESEARCH_BLOCKER
+- **ranking**: impact HIGH (CRITICAL, blocks three declared consumers) x
+  uncertainty LOW (the defect is known) x measurability HIGH (writing) x EVI
+  HIGH (it governs the design of DISC-2, which is the measurement that matters)
+
+## ID: DISC-2
+- **priority**: 2
+- **status**: BLOCKED
+- **dependencies**: DISC-1 (DONE)
+- **description**: Measure whether official injury designations condition
+  appearance in 2026. `injuries` began publishing 2026-09-07 and this
+  repository holds **9 content-addressed vintages through 2026-09-17**,
+  carrying weeks 1 and 2 with `report_status` (Out 33, Questionable 28,
+  Doubtful 6 on the newest blob) and `practice_status`. Appearance outcomes for
+  week 1 are in the captured play-by-play. Subsumes the older `PRI-A` item.
+- **blocker**: **measured, not assumed — the conditioning variable has no
+  contrast.** `A1_SUCCESSOR_FEASIBILITY.json`: the A1 cohort at 2026 week 2 is
+  **59 players and none carries an Out, Doubtful or Questionable
+  designation** (13 listed with no status, 46 not listed). The effect of
+  designation is not estimable at any sample size. A second, independent
+  block: the week-2 outcome is not captured either, so even a cohort with
+  contrast could not be graded. Both need bytes from outside this checkout;
+  the request for 2022–2025 injury captures is in `docs/AGENT_OUTBOX.md`.
+  **ASSIGNED, not blocked for both agents.**
+- **acceptance criteria**:
+  - the read is point-in-time: a designation is used only from a vintage whose
+    `learned_at` precedes the cut, through the declared DAG edge;
+  - the estimand and falsifier come from DISC-1's spec, not from the data;
+  - forward-chained, strictly prospective cuts;
+  - a null result is recorded as a measured null and A1 stays falsified.
+- **classification**: RESEARCH_BLOCKER
+- **ranking**: impact HIGH (appearance is upstream of every non-QB projection)
+  x uncertainty HIGH (never measured for 2026) x measurability HIGH (captured,
+  content-addressed, bitemporal, with week-1 outcomes) x EVI HIGH (could move a
+  CRITICAL assumption from blocking to conditioned)
+
+## ID: DISC-3
+- **priority**: 3
+- **status**: ACTIVE
+- **dependencies**: none
+- **description**: The information gap registry has no freshness field and
+  nothing re-reads it. `GAP-2026-PARTICIPATION` still records "MEASURED: both
+  404 for 2026 as of 2026-09-08" while its sibling `injuries` has been
+  publishing since 2026-09-07 -- and nothing in the repository said so.
+  `nfl/tools/discovery.py` now detects this class; the remaining work is to
+  give each gap a `last_rechecked_utc` and a `recheck_horizon_days`, and to
+  re-state the three claims past the horizon from measured evidence. Those
+  three, named rather than counted: `GAP-2026-PARTICIPATION`,
+  `GAP-PREGAME-ROLE` and `GAP-INJURY-VINTAGE`.
+- **blocker**: none
+- **acceptance criteria**:
+  - every gap carries when it was last rechecked and by what;
+  - a claim past its horizon is surfaced rather than trusted;
+  - a recheck this executor cannot perform is recorded as ASSIGNED with an
+    outbox entry, never as a standing fact.
+- **classification**: MEASUREMENT_DEFECT
+- **ranking**: impact MEDIUM (it is how DISC-2's data nearly stayed invisible)
+  x uncertainty LOW x measurability HIGH x EVI MEDIUM-HIGH (prevents the same
+  near-miss recurring across ten gaps)
+
+## ID: DISC-4
+- **priority**: 8
+- **status**: QUEUED
+- **dependencies**: none
+- **description**: `DEBT-RECV-CALIB` blocks promotion by its own declaration:
+  receiving bias +2.18 yards, P(Y=0) predicted 0.3004 against 0.3293 actual,
+  and all four pre-declared repairs failed their bar. Its named next action is
+  a new pre-registration for a history-cohort centring family; R1 improved
+  CRPS, MAE, r and PIT together but missed |bias| < 1.00.
+- **blocker**: none — but it needs a new pre-registration, written before it
+  is run, and it is a larger build than DISC-1 through DISC-3.
+- **acceptance criteria**:
+  - the pre-registration is committed before the family is fitted;
+  - the reported over-coverage is treated as the zero-point-mass artifact the
+    registry says it is, not as a width defect;
+  - a failure to clear the bar is recorded as a measured negative.
+- **classification**: PRODUCTION_BLOCKER
+- **ranking**: impact HIGH (calibration is the GATE in the two-stage bar) x
+  uncertainty MEDIUM (the defect is characterised) x measurability HIGH x EVI
+  HIGH, but it is ranked below DISC-1..3 because those are cheaper and one of
+  them governs a CRITICAL assumption
+
+## ID: DISC-5
+- **priority**: 13
+- **status**: QUEUED
+- **dependencies**: none
+- **description**: The other promotion-blocking debts detected by
+  `discovery.py`: `DEBT-JOINT-TARGETS`, `DEBT-SNAP-IMPOSSIBILITY`,
+  `DEBT-HISTORICAL-VINTAGE`, `DEBT-TD-RECOVERABILITY`. Each declares
+  `blocks_promotion` and names a next action.
+- **blocker**: none — parked as a group deliberately
+- **acceptance criteria**:
+  - each is separated into its own item before work starts on it;
+  - none is closed by weakening what it blocks.
+- **classification**: NONBLOCKING_TECH_DEBT
+- **ranking**: impact HIGH in aggregate x uncertainty MEDIUM x measurability
+  MEDIUM x EVI MEDIUM. Parked because four items with one entry is not a plan,
+  and splitting them before any is worked would be paperwork.
 
 ## ID: OAS1-TIEBREAK
 - **priority**: 5

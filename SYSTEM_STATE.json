@@ -64,7 +64,7 @@
    "why_not_measurable": "routines live in a scheduler this executor cannot query. The previous `CURRENT_STATE.md` asserted a routine was DISABLED and recorded, in the same file, that a later firing reported success with no commit ever reaching the branch \u2014 an unresolved contradiction that it presented as state."
   }
  ],
- "generated_at": "2026-09-18T18:48:01.851407+00:00",
+ "generated_at": "2026-09-18T20:38:52.267682+00:00",
  "generated_by": "nfl/tools/system_state.py",
  "measured": {
   "assumptions": {
@@ -151,8 +151,8 @@
   },
   "code": {
    "TOTAL": {
-    "lines": 210491,
-    "modules": 656
+    "lines": 211384,
+    "modules": 659
    },
    "nfl/capture": {
     "lines": 6334,
@@ -183,16 +183,16 @@
     "modules": 18
    },
    "nfl/research": {
-    "lines": 63276,
-    "modules": 268
+    "lines": 63457,
+    "modules": 269
    },
    "nfl/tests": {
-    "lines": 67315,
-    "modules": 182
+    "lines": 67598,
+    "modules": 183
    },
    "nfl/tools": {
-    "lines": 13324,
-    "modules": 36
+    "lines": 13753,
+    "modules": 37
    },
    "sportsplatform": {
     "lines": 2455,
@@ -243,22 +243,28 @@
   },
   "git": {
    "branch": "claude/nfl-greenfield-architecture-stsxmk",
-   "dirty_source_files": [],
-   "head": "4bb940dbb2092d0f9f938134d5c99caf087e150f",
-   "head_committed_at": "2026-09-18T17:31:03+00:00",
-   "head_short": "4bb940d",
-   "head_subject": "P8: Contract 4 was already reconciled; what was missing was the check",
-   "is_clean": true,
-   "n_commits_on_branch": 878,
+   "dirty_source_files": [
+    "nfl/tools/agent_state.py",
+    "nfl/tools/discovery.py"
+   ],
+   "head": "20468a56f6e269ddd93a814e563f5cf0104f5643",
+   "head_committed_at": "2026-09-18T18:49:44+00:00",
+   "head_short": "20468a5",
+   "head_subject": "P9: OAS1 Week 2 is fitted, and the selection selected nothing",
+   "is_clean": false,
+   "n_commits_on_branch": 879,
    "remote_head": "3270829ca46e46f44285c5ae81952c31921bdda5",
    "worktree": {
-    "code_version": "4bb940dbb2092d0f9f938134d5c99caf087e150f+src1[44aa01d03783de18]",
-    "commit": "4bb940dbb2092d0f9f938134d5c99caf087e150f",
-    "dirty_source_files": [],
-    "n_dirty_source_files": 0,
+    "code_version": "20468a56f6e269ddd93a814e563f5cf0104f5643+src1[63a11d3f20432192]",
+    "commit": "20468a56f6e269ddd93a814e563f5cf0104f5643",
+    "dirty_source_files": [
+     "nfl/tools/agent_state.py",
+     "nfl/tools/discovery.py"
+    ],
+    "n_dirty_source_files": 2,
     "n_dirty_tree_entries_observed": 20,
     "scope_note": "dirty_source_files is SOURCE scope only -- the .py files the identity contract hashes. A changed .md or .json is counted in n_dirty_tree_entries_observed and is not listed.",
-    "source_scope_clean": true
+    "source_scope_clean": false
    }
   },
   "governance": {
@@ -304,57 +310,41 @@
    }
   },
   "suite": {
-   "artifact": "nfl/research/suite_attribution/SUITE_DIFF_p7p8_p9.json",
-   "baseline_commit": "4bb940d",
+   "artifact": "nfl/research/suite_attribution/SUITE_DIFF_p9_discovery.json",
+   "baseline_commit": "20468a5",
    "baseline_totals": {
-    "blocked_functions": 23,
-    "checks": 10447,
-    "failing_checks": 61,
-    "modules": 182,
-    "raised": 21,
-    "test_functions": 1971,
-    "zero_check_functions": 0
-   },
-   "counts_by_classification": {
-    "NEWLY_INTRODUCED": 3,
-    "PRE_EXISTING": 133
-   },
-   "delta_totals": {
-    "blocked_functions": 0,
-    "checks": 136,
-    "failing_checks": 2,
-    "modules": 1,
-    "raised": 0,
-    "test_functions": 16,
-    "zero_check_functions": 0
-   },
-   "is_current_head": false,
-   "measured_at_commit": "WORKING_TREE",
-   "newly_introduced": [
-    {
-     "detail": "FAIL the code inventory matches a live count  {'lines': 210452, 'modules': 656} vs {'modules': 656, 'lines': 210491}; regenerate: python3.12 nfl/tools/system_st",
-     "kind": "FAILING_CHECK",
-     "module": "nfl/tests/test_system_state.py"
-    },
-    {
-     "detail": "FAIL the live suite check count appears",
-     "kind": "FAILING_CHECK",
-     "module": "nfl/tests/test_system_state.py"
-    },
-    {
-     "detail": "2 failing check(s)",
-     "kind": "MODULE_FAILING",
-     "module": "nfl/tests/test_system_state.py"
-    }
-   ],
-   "staleness_note": "measured at WORKING_TREE, HEAD is 4bb940d. This total is not a statement about the tree as it stands.",
-   "totals": {
     "blocked_functions": 23,
     "checks": 10583,
     "failing_checks": 63,
     "modules": 183,
     "raised": 21,
     "test_functions": 1987,
+    "zero_check_functions": 0
+   },
+   "counts_by_classification": {
+    "PRE_EXISTING": 133,
+    "RESOLVED_SINCE_BASELINE": 3
+   },
+   "delta_totals": {
+    "blocked_functions": 0,
+    "checks": 49,
+    "failing_checks": -2,
+    "modules": 1,
+    "raised": 0,
+    "test_functions": 10,
+    "zero_check_functions": 0
+   },
+   "is_current_head": false,
+   "measured_at_commit": "WORKING_TREE",
+   "newly_introduced": [],
+   "staleness_note": "measured at WORKING_TREE, HEAD is 20468a5. This total is not a statement about the tree as it stands.",
+   "totals": {
+    "blocked_functions": 23,
+    "checks": 10632,
+    "failing_checks": 61,
+    "modules": 184,
+    "raised": 21,
+    "test_functions": 1997,
     "zero_check_functions": 0
    },
    "verdict": "SUITE FAIL"
@@ -370,9 +360,9 @@
   "work_queue": {
    "by_status": {
     "ACTIVE": 1,
-    "BLOCKED": 5,
-    "DONE": 4,
-    "QUEUED": 4
+    "BLOCKED": 6,
+    "DONE": 5,
+    "QUEUED": 7
    },
    "items": [
     {
@@ -407,8 +397,43 @@
      "blocker": "none known",
      "description": "Automatic Scientist \u2014 test `A3_ROLE_CONTINUITY_ACROSS_REGIME_CHANGES` against measurement.",
      "id": "A3",
-     "priority": "5",
+     "priority": "12",
+     "status": "QUEUED"
+    },
+    {
+     "blocker": "none",
+     "description": "Write the successor research specification for `A1_APPEARANCE_CERTAINTY`. A1 is FALSIFIED and CRITICAL and has **no successor spec**, while A2 -- falsified the same day, and only MATERIAL -- has one. The spec must declare what would un-falsify A1: the conditioning variable, the estimand, the population, the forward-chained cuts, and the falsifier. It must be written BEFORE DISC-2 measures anything, or DISC-2 is exploratory rather than confirmatory.",
+     "id": "DISC-1",
+     "priority": "1",
+     "status": "DONE"
+    },
+    {
+     "blocker": "**measured, not assumed \u2014 the conditioning variable has no contrast.** `A1_SUCCESSOR_FEASIBILITY.json`: the A1 cohort at 2026 week 2 is **59 players and none carries an Out, Doubtful or Questionable designation** (13 listed with no status, 46 not listed). The effect of designation is not estimable at any sample size. A second, independent block: the week-2 outcome is not captured either, so even a cohort with contrast could not be graded. Both need bytes from outside this checkout; the request for 2022\u20132025 injury captures is in `docs/AGENT_OUTBOX.md`. **ASSIGNED, not blocked for both agents.**",
+     "description": "Measure whether official injury designations condition appearance in 2026. `injuries` began publishing 2026-09-07 and this repository holds **9 content-addressed vintages through 2026-09-17**, carrying weeks 1 and 2 with `report_status` (Out 33, Questionable 28, Doubtful 6 on the newest blob) and `practice_status`. Appearance outcomes for week 1 are in the captured play-by-play. Subsumes the older `PRI-A` item.",
+     "id": "DISC-2",
+     "priority": "2",
+     "status": "BLOCKED"
+    },
+    {
+     "blocker": "none",
+     "description": "The information gap registry has no freshness field and nothing re-reads it. `GAP-2026-PARTICIPATION` still records \"MEASURED: both 404 for 2026 as of 2026-09-08\" while its sibling `injuries` has been publishing since 2026-09-07 -- and nothing in the repository said so. `nfl/tools/discovery.py` now detects this class; the remaining work is to give each gap a `last_rechecked_utc` and a `recheck_horizon_days`, and to re-state the three claims past the horizon from measured evidence. Those three, named rather than counted: `GAP-2026-PARTICIPATION`, `GAP-PREGAME-ROLE` and `GAP-INJURY-VINTAGE`.",
+     "id": "DISC-3",
+     "priority": "3",
      "status": "ACTIVE"
+    },
+    {
+     "blocker": "none \u2014 but it needs a new pre-registration, written before it is run, and it is a larger build than DISC-1 through DISC-3.",
+     "description": "`DEBT-RECV-CALIB` blocks promotion by its own declaration: receiving bias +2.18 yards, P(Y=0) predicted 0.3004 against 0.3293 actual, and all four pre-declared repairs failed their bar. Its named next action is a new pre-registration for a history-cohort centring family; R1 improved CRPS, MAE, r and PIT together but missed |bias| < 1.00.",
+     "id": "DISC-4",
+     "priority": "8",
+     "status": "QUEUED"
+    },
+    {
+     "blocker": "none \u2014 parked as a group deliberately",
+     "description": "The other promotion-blocking debts detected by `discovery.py`: `DEBT-JOINT-TARGETS`, `DEBT-SNAP-IMPOSSIBILITY`, `DEBT-HISTORICAL-VINTAGE`, `DEBT-TD-RECOVERABILITY`. Each declares `blocks_promotion` and names a next action.",
+     "id": "DISC-5",
+     "priority": "13",
+     "status": "QUEUED"
     },
     {
      "blocker": "**owner decision, and it may not be taken by whoever has seen the scores.** The three variants' MAEs are now on the record (pass 1.159614 / 1.159721 / 1.159993 for A / none / B), so any rule written here is a selection rule written after seeing them \u2014 the exact thing the one-SE rule and the tie-break exist to prevent. The gap is pre-existing in the pre-registration, not introduced by amendment A1.",
@@ -474,7 +499,7 @@
      "status": "QUEUED"
     }
    ],
-   "n": 14
+   "n": 19
   }
  },
  "reading_rule": "Every value under `measured` was computed by reading this repository at the timestamp above. Every value under `declared` was asserted by somebody and says who, when, and why it cannot be measured here. Do not quote one as the other.",

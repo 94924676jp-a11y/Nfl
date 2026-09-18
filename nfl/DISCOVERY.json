@@ -1,0 +1,609 @@
+{
+ "candidates": [
+  {
+   "evidence": {
+    "days_since_first_success": 11.29,
+    "first_success_utc": "2026-09-07T13:06:37+00:00",
+    "n_distinct_blobs": 9,
+    "previously_recorded_absent_as": {
+     "SOURCE_NOT_YET_PUBLISHED": 40
+    },
+    "source": "injuries",
+    "why_it_matters": "this source was recorded absent and is now publishing; anything that treated it as unavailable may be acting on a stale fact"
+   },
+   "impact_evidence": "a source recorded absent is now publishing, so any layer that was blocked on it may not be blocked any more",
+   "measurability_evidence": "9 content-addressed vintage(s) already captured in this repository",
+   "ranking": "NOT SCORED HERE -- see nfl/WORK_QUEUE.md",
+   "subject": "injuries",
+   "trigger": "SOURCE_NEWLY_PUBLISHING"
+  },
+  {
+   "evidence": {
+    "action": "PROSPECTIVE_ONLY",
+    "claim_age_days": 8.84,
+    "evidence_status": "PARTLY TESTABLE, corrected 2026-09-10. Role CHANGE within a week still needs our own capture; role LEVEL does not -- the upstream daily depth series predates our capture and gives a pregame role signa",
+    "has_no_date_at_all": false,
+    "id": "GAP-PREGAME-ROLE",
+    "newest_date_in_claim": "2026-09-10",
+    "stale_beyond_recheck_horizon": true
+   },
+   "impact_evidence": "the gap is recorded as blocking or held on a claim nobody has re-read",
+   "measurability_evidence": "rechecking is a capture attempt, not a model change",
+   "ranking": "NOT SCORED HERE -- see nfl/WORK_QUEUE.md",
+   "subject": "GAP-PREGAME-ROLE",
+   "trigger": "GAP_CLAIM_OLDER_THAN_RECHECK_HORIZON"
+  },
+  {
+   "evidence": {
+    "action": "PROSPECTIVE_ONLY",
+    "claim_age_days": 10.84,
+    "evidence_status": "MEASURED: both 404 for 2026 as of 2026-09-08",
+    "has_no_date_at_all": false,
+    "id": "GAP-2026-PARTICIPATION",
+    "newest_date_in_claim": "2026-09-08",
+    "stale_beyond_recheck_horizon": true
+   },
+   "impact_evidence": "the gap is recorded as blocking or held on a claim nobody has re-read",
+   "measurability_evidence": "rechecking is a capture attempt, not a model change",
+   "ranking": "NOT SCORED HERE -- see nfl/WORK_QUEUE.md",
+   "subject": "GAP-2026-PARTICIPATION",
+   "trigger": "GAP_CLAIM_OLDER_THAN_RECHECK_HORIZON"
+  },
+  {
+   "evidence": {
+    "action": "PROSPECTIVE_ONLY",
+    "claim_age_days": 12.84,
+    "evidence_status": "capture running since 2026-09-06",
+    "has_no_date_at_all": false,
+    "id": "GAP-INJURY-VINTAGE",
+    "newest_date_in_claim": "2026-09-06",
+    "stale_beyond_recheck_horizon": true
+   },
+   "impact_evidence": "the gap is recorded as blocking or held on a claim nobody has re-read",
+   "measurability_evidence": "rechecking is a capture attempt, not a model change",
+   "ranking": "NOT SCORED HERE -- see nfl/WORK_QUEUE.md",
+   "subject": "GAP-INJURY-VINTAGE",
+   "trigger": "GAP_CLAIM_OLDER_THAN_RECHECK_HORIZON"
+  },
+  {
+   "evidence": {
+    "blocks_promotion": true,
+    "blocks_research": false,
+    "id": "DEBT-RECV-CALIB",
+    "next_action": "a new pre-registration for a history-cohort centring family; R1 improved CRPS, MAE, r and PIT together but missed |bias| < 1.00",
+    "severity": "MEDIUM",
+    "state": "CALIBRATION_DEFECT_CONFIRMED -- all four predeclared repairs failed their bar"
+   },
+   "impact_evidence": "blocks promotion by its own declaration",
+   "measurability_evidence": "a new pre-registration for a history-cohort centring family; R1 improved CRPS, MAE, r and PIT together but missed |bias| < 1.00",
+   "ranking": "NOT SCORED HERE -- see nfl/WORK_QUEUE.md",
+   "subject": "DEBT-RECV-CALIB",
+   "trigger": "DEBT_BLOCKS_PROMOTION_WITH_A_NAMED_NEXT_ACTION"
+  },
+  {
+   "evidence": {
+    "blocks_promotion": true,
+    "blocks_research": false,
+    "id": "DEBT-JOINT-TARGETS",
+    "next_action": "Stage 6 of the master directive, not reached",
+    "severity": "MEDIUM",
+    "state": "OPEN -- joint simulator v2 NOT built in this session"
+   },
+   "impact_evidence": "blocks promotion by its own declaration",
+   "measurability_evidence": "Stage 6 of the master directive, not reached",
+   "ranking": "NOT SCORED HERE -- see nfl/WORK_QUEUE.md",
+   "subject": "DEBT-JOINT-TARGETS",
+   "trigger": "DEBT_BLOCKS_PROMOTION_WITH_A_NAMED_NEXT_ACTION"
+  },
+  {
+   "evidence": {
+    "blocks_promotion": true,
+    "blocks_research": false,
+    "id": "DEBT-SNAP-IMPOSSIBILITY",
+    "next_action": "carry into joint simulator v2",
+    "severity": "MEDIUM",
+    "state": "OPEN"
+   },
+   "impact_evidence": "blocks promotion by its own declaration",
+   "measurability_evidence": "carry into joint simulator v2",
+   "ranking": "NOT SCORED HERE -- see nfl/WORK_QUEUE.md",
+   "subject": "DEBT-SNAP-IMPOSSIBILITY",
+   "trigger": "DEBT_BLOCKS_PROMOTION_WITH_A_NAMED_NEXT_ACTION"
+  },
+  {
+   "evidence": {
+    "blocks_promotion": true,
+    "blocks_research": true,
+    "id": "DEBT-HISTORICAL-VINTAGE",
+    "next_action": "none; prospective capture is the only path",
+    "severity": "HIGH",
+    "state": "IRRECOVERABLE -- a final file is never as-of evidence"
+   },
+   "impact_evidence": "blocks promotion by its own declaration",
+   "measurability_evidence": "none; prospective capture is the only path",
+   "ranking": "NOT SCORED HERE -- see nfl/WORK_QUEUE.md",
+   "subject": "DEBT-HISTORICAL-VINTAGE",
+   "trigger": "DEBT_BLOCKS_PROMOTION_WITH_A_NAMED_NEXT_ACTION"
+  },
+  {
+   "evidence": {
+    "blocks_promotion": true,
+    "blocks_research": false,
+    "id": "DEBT-TD-RECOVERABILITY",
+    "next_action": "run the ladder and the composition test before funding any TD conversion modelling",
+    "severity": "MEDIUM",
+    "state": "DECOMPOSED, not characterised"
+   },
+   "impact_evidence": "blocks promotion by its own declaration",
+   "measurability_evidence": "run the ladder and the composition test before funding any TD conversion modelling",
+   "ranking": "NOT SCORED HERE -- see nfl/WORK_QUEUE.md",
+   "subject": "DEBT-TD-RECOVERABILITY",
+   "trigger": "DEBT_BLOCKS_PROMOTION_WITH_A_NAMED_NEXT_ACTION"
+  }
+ ],
+ "empty_is_a_result": "An empty candidate list means do validation and monitoring, not find something to build.",
+ "generated_at": "2026-09-18T20:02:54.142834+00:00",
+ "generated_by": "nfl/tools/discovery.py",
+ "ranking_rule": "Candidates are DETECTED here and RANKED in nfl/WORK_QUEUE.md. The four factors -- downstream impact, uncertainty, measurability, expected value of information -- are judgements, and none is measurable from this repository. A number for any of them here would be a silent constant wearing a measurement's clothes.",
+ "signals": {
+  "assumptions": {
+   "assumptions": [
+    {
+     "criticality": "CRITICAL",
+     "downstream": [
+      "nfl.production.nonqb.cs2_state",
+      "nfl.production.nonqb.cs2_state.state",
+      "CS2_STAGE2_PRODUCTION_ALLOCATION"
+     ],
+     "has_evidence": true,
+     "has_successor_spec": true,
+     "id": "A1_APPEARANCE_CERTAINTY",
+     "status": "FALSIFIED",
+     "test": "nfl.research.assumptions.cohort_appearance_certainty.measure",
+     "untested": false
+    },
+    {
+     "criticality": "CRITICAL",
+     "downstream": [
+      "nfl.production.nonqb.rushing_a1",
+      "nfl.production.nonqb.shared_pass",
+      "CS2_STAGE2_PRODUCTION_ALLOCATION"
+     ],
+     "has_evidence": true,
+     "has_successor_spec": true,
+     "id": "A2_PROPORTIONAL_REDISTRIBUTION",
+     "status": "FALSIFIED",
+     "test": "nfl.research.assumptions.a2_redistribution.run",
+     "untested": false
+    },
+    {
+     "criticality": "MATERIAL",
+     "downstream": [
+      "nfl.production.nonqb.role_prior",
+      "nfl.production.nonqb.cs2_state",
+      "nfl.research.oas1.baselines"
+     ],
+     "has_evidence": false,
+     "has_successor_spec": false,
+     "id": "A3_ROLE_CONTINUITY_ACROSS_REGIME_CHANGE",
+     "status": "DECLARED",
+     "test": "NOT_YET_WRITTEN",
+     "untested": true
+    },
+    {
+     "criticality": "CRITICAL",
+     "downstream": [
+      "nfl.production.nonqb.layers",
+      "TEAM_VOLUME_V2",
+      "SHARED_GAME_ENVIRONMENT"
+     ],
+     "has_evidence": false,
+     "has_successor_spec": false,
+     "id": "A4_STATIC_TEAM_VOLUME_SUFFICIENCY",
+     "status": "DECLARED",
+     "test": "nfl.research.coupling.game_offense_coupling.run",
+     "untested": false
+    },
+    {
+     "criticality": "MATERIAL",
+     "downstream": [
+      "nfl.production.nonqb.rushing_conversion",
+      "nfl.dfs.scoring.statline",
+      "PROP_MARKET_ANYTIME_TD"
+     ],
+     "has_evidence": false,
+     "has_successor_spec": false,
+     "id": "A5_TD_CONVERSION_PORTABILITY",
+     "status": "DECLARED",
+     "test": "NOT_YET_WRITTEN",
+     "untested": true
+    }
+   ],
+   "by_status": {
+    "DECLARED": 3,
+    "FALSIFIED": 2
+   },
+   "n": 5
+  },
+  "captures": {
+   "depth_charts": {
+    "absent_codes_recorded": {},
+    "days_since_first_success": 12.05,
+    "days_since_last_success": 0.85,
+    "first_success_utc": "2026-09-06T18:50:49.946312+00:00",
+    "last_success_utc": "2026-09-17T23:42:18+00:00",
+    "n_distinct_blobs": 13,
+    "states": {
+     "PASS": 471
+    }
+   },
+   "espn_injuries_json": {
+    "absent_codes_recorded": {},
+    "days_since_first_success": 11.82,
+    "days_since_last_success": 3.29,
+    "first_success_utc": "2026-09-07T00:24:48+00:00",
+    "last_success_utc": "2026-09-15T13:06:38+00:00",
+    "n_distinct_blobs": 428,
+    "states": {
+     "BLOCKED": 34,
+     "PASS": 428
+    }
+   },
+   "hardrock_market_snapshot": {
+    "absent_codes_recorded": {},
+    "days_since_first_success": 5.08,
+    "days_since_last_success": 5.08,
+    "first_success_utc": "2026-09-13T18:13:12.712000+00:00",
+    "last_success_utc": "2026-09-13T18:13:12.712000+00:00",
+    "n_distinct_blobs": 1,
+    "states": {
+     "PASS": 1
+    }
+   },
+   "injuries": {
+    "absent_codes_recorded": {
+     "SOURCE_NOT_YET_PUBLISHED": 40
+    },
+    "days_since_first_success": 11.29,
+    "days_since_last_success": 0.85,
+    "first_success_utc": "2026-09-07T13:06:37+00:00",
+    "last_success_utc": "2026-09-17T23:42:18+00:00",
+    "n_distinct_blobs": 9,
+    "states": {
+     "DEFERRED": 40,
+     "PASS": 432
+    }
+   },
+   "official_inactives": {
+    "absent_codes_recorded": {},
+    "days_since_first_success": 11.82,
+    "days_since_last_success": 0.85,
+    "first_success_utc": "2026-09-07T00:24:48+00:00",
+    "last_success_utc": "2026-09-17T23:41:00+00:00",
+    "n_distinct_blobs": 359,
+    "states": {
+     "BLOCKED": 34,
+     "FAIL": 54,
+     "PASS": 395
+    }
+   },
+   "official_injury_report": {
+    "absent_codes_recorded": {},
+    "days_since_first_success": 11.82,
+    "days_since_last_success": 3.29,
+    "first_success_utc": "2026-09-07T00:24:48+00:00",
+    "last_success_utc": "2026-09-15T13:06:38+00:00",
+    "n_distinct_blobs": 354,
+    "states": {
+     "BLOCKED": 37,
+     "FAIL": 54,
+     "PASS": 374
+    }
+   },
+   "official_status_evidence": {
+    "absent_codes_recorded": {},
+    "days_since_first_success": 5.08,
+    "days_since_last_success": 5.08,
+    "first_success_utc": "2026-09-13T18:12:01.430000+00:00",
+    "last_success_utc": "2026-09-13T18:12:01.430000+00:00",
+    "n_distinct_blobs": 1,
+    "states": {
+     "PASS": 1
+    }
+   },
+   "official_transactions": {
+    "absent_codes_recorded": {},
+    "days_since_first_success": null,
+    "days_since_last_success": null,
+    "first_success_utc": null,
+    "last_success_utc": null,
+    "n_distinct_blobs": 0,
+    "states": {
+     "BLOCKED": 462
+    }
+   },
+   "pbp": {
+    "absent_codes_recorded": {},
+    "days_since_first_success": 1.05,
+    "days_since_last_success": 1.04,
+    "first_success_utc": "2026-09-17T18:57:54+00:00",
+    "last_success_utc": "2026-09-17T19:00:50+00:00",
+    "n_distinct_blobs": 3,
+    "states": {
+     "PASS": 4
+    }
+   },
+   "pbp_participation": {
+    "absent_codes_recorded": {},
+    "days_since_first_success": null,
+    "days_since_last_success": null,
+    "first_success_utc": null,
+    "last_success_utc": null,
+    "n_distinct_blobs": 0,
+    "states": {
+     "NOT_APPLICABLE": 383
+    }
+   },
+   "schedules": {
+    "absent_codes_recorded": {},
+    "days_since_first_success": 12.05,
+    "days_since_last_success": 0.85,
+    "first_success_utc": "2026-09-06T18:50:50.687826+00:00",
+    "last_success_utc": "2026-09-17T23:42:18+00:00",
+    "n_distinct_blobs": 221,
+    "states": {
+     "PASS": 471
+    }
+   },
+   "snap_counts": {
+    "absent_codes_recorded": {},
+    "days_since_first_success": null,
+    "days_since_last_success": null,
+    "first_success_utc": null,
+    "last_success_utc": null,
+    "n_distinct_blobs": 0,
+    "states": {
+     "NOT_APPLICABLE": 383
+    }
+   },
+   "weekly_rosters": {
+    "absent_codes_recorded": {},
+    "days_since_first_success": 12.05,
+    "days_since_last_success": 0.85,
+    "first_success_utc": "2026-09-06T18:50:51.018040+00:00",
+    "last_success_utc": "2026-09-17T23:42:18+00:00",
+    "n_distinct_blobs": 13,
+    "states": {
+     "PASS": 471
+    }
+   }
+  },
+  "gaps": [
+   {
+    "action": "BLOCKED",
+    "claim_age_days": null,
+    "evidence_status": "UNTESTED. Explicitly not classified as failed or information-constrained.",
+    "has_no_date_at_all": true,
+    "id": "GAP-ROUTES",
+    "newest_date_in_claim": null,
+    "stale_beyond_recheck_horizon": false
+   },
+   {
+    "action": "PROSPECTIVE_ONLY",
+    "claim_age_days": 8.84,
+    "evidence_status": "PARTLY TESTABLE, corrected 2026-09-10. Role CHANGE within a week still needs our own capture; role LEVEL does not -- the upstream daily depth series predates our capture and gives a pregame role signa",
+    "has_no_date_at_all": false,
+    "id": "GAP-PREGAME-ROLE",
+    "newest_date_in_claim": "2026-09-10",
+    "stale_beyond_recheck_horizon": true
+   },
+   {
+    "action": "PROSPECTIVE_ONLY",
+    "claim_age_days": 10.84,
+    "evidence_status": "MEASURED: both 404 for 2026 as of 2026-09-08",
+    "has_no_date_at_all": false,
+    "id": "GAP-2026-PARTICIPATION",
+    "newest_date_in_claim": "2026-09-08",
+    "stale_beyond_recheck_horizon": true
+   },
+   {
+    "action": "HOLD",
+    "claim_age_days": null,
+    "evidence_status": "MARKED UNAVAILABLE in the TD1 pre-registration rather than approximated",
+    "has_no_date_at_all": true,
+    "id": "GAP-ENDZONE-TARGETS",
+    "newest_date_in_claim": null,
+    "stale_beyond_recheck_horizon": false
+   },
+   {
+    "action": "HOLD",
+    "claim_age_days": null,
+    "evidence_status": "audited in RC1; the split was NOT used as a decomposition axis",
+    "has_no_date_at_all": true,
+    "id": "GAP-AIRYARDS-YAC",
+    "newest_date_in_claim": null,
+    "stale_beyond_recheck_horizon": false
+   },
+   {
+    "action": "HOLD",
+    "claim_age_days": null,
+    "evidence_status": "UNTESTED",
+    "has_no_date_at_all": true,
+    "id": "GAP-COVERAGE-MATCHUP",
+    "newest_date_in_claim": null,
+    "stale_beyond_recheck_horizon": false
+   },
+   {
+    "action": "HOLD",
+    "claim_age_days": null,
+    "evidence_status": "UNTESTED",
+    "has_no_date_at_all": true,
+    "id": "GAP-PLAYCALLER",
+    "newest_date_in_claim": null,
+    "stale_beyond_recheck_horizon": false
+   },
+   {
+    "action": "CHEAP_PROBE",
+    "claim_age_days": 8.84,
+    "evidence_status": "CONSUMED by R7. depth_vintage.py selects point-in-time and appearance_r7.py fits on the result. Before R7 the feature was computed on 57,160 of 83,144 panel rows and read by NEITHER featuriser.",
+    "has_no_date_at_all": false,
+    "id": "GAP-DEPTH-CHART-PIT",
+    "newest_date_in_claim": "2026-09-10",
+    "stale_beyond_recheck_horizon": true
+   },
+   {
+    "action": "PROSPECTIVE_ONLY",
+    "claim_age_days": 12.84,
+    "evidence_status": "capture running since 2026-09-06",
+    "has_no_date_at_all": false,
+    "id": "GAP-INJURY-VINTAGE",
+    "newest_date_in_claim": "2026-09-06",
+    "stale_beyond_recheck_horizon": true
+   },
+   {
+    "action": "CHEAP_PROBE",
+    "claim_age_days": null,
+    "evidence_status": "DECOMPOSED, not characterised. Funding conversion modelling on the 75% figure alone would be the exact mistake RC1 was designed to prevent.",
+    "has_no_date_at_all": true,
+    "id": "GAP-TD-RECOVERABILITY",
+    "newest_date_in_claim": null,
+    "stale_beyond_recheck_horizon": false
+   }
+  ],
+  "newly_publishing": [
+   {
+    "days_since_first_success": 11.29,
+    "first_success_utc": "2026-09-07T13:06:37+00:00",
+    "n_distinct_blobs": 9,
+    "previously_recorded_absent_as": {
+     "SOURCE_NOT_YET_PUBLISHED": 40
+    },
+    "source": "injuries",
+    "why_it_matters": "this source was recorded absent and is now publishing; anything that treated it as unavailable may be acting on a stale fact"
+   }
+  ],
+  "prospective": {
+   "blocks": [
+    "DET_BUF_2026W2"
+   ],
+   "by_status": {
+    "AWAITING_OUTCOME": 1,
+    "GRADED": 1
+   },
+   "captured_game_outcomes": 1,
+   "ledger_rows": 2,
+   "n_graded_blocks": 1,
+   "note": "the calibration gate is a GATE and its floor is 300 graded units, rising to 500 below 0.2 implied probability. These counts are blocks and games, not graded units, and they are not the same thing -- do not read one for the other."
+  },
+  "suite": {
+   "artifact": "nfl/research/suite_attribution/SUITE_DIFF_p9_discovery.json",
+   "counts_by_classification": {
+    "CHANGED_CLASSIFICATION": 1,
+    "PRE_EXISTING": 134,
+    "RESOLVED_SINCE_BASELINE": 1
+   },
+   "measured_at_commit": "WORKING_TREE",
+   "n_newly_introduced": 0,
+   "totals": {
+    "blocked_functions": 23,
+    "checks": 10627,
+    "failing_checks": 62,
+    "modules": 184,
+    "raised": 21,
+    "test_functions": 1997,
+    "zero_check_functions": 0
+   }
+  },
+  "technical_debt": [
+   {
+    "blocks_promotion": true,
+    "blocks_research": false,
+    "id": "DEBT-RECV-CALIB",
+    "next_action": "a new pre-registration for a history-cohort centring family; R1 improved CRPS, MAE, r and PIT together but missed |bias| < 1.00",
+    "severity": "MEDIUM",
+    "state": "CALIBRATION_DEFECT_CONFIRMED -- all four predeclared repairs failed their bar"
+   },
+   {
+    "blocks_promotion": false,
+    "blocks_research": true,
+    "id": "DEBT-ROUTES",
+    "next_action": "FTN commercial track, external",
+    "severity": "HIGH",
+    "state": "BLOCKED on licensing"
+   },
+   {
+    "blocks_promotion": true,
+    "blocks_research": false,
+    "id": "DEBT-JOINT-TARGETS",
+    "next_action": "Stage 6 of the master directive, not reached",
+    "severity": "MEDIUM",
+    "state": "OPEN -- joint simulator v2 NOT built in this session"
+   },
+   {
+    "blocks_promotion": true,
+    "blocks_research": false,
+    "id": "DEBT-SNAP-IMPOSSIBILITY",
+    "next_action": "carry into joint simulator v2",
+    "severity": "MEDIUM",
+    "state": "OPEN"
+   },
+   {
+    "blocks_promotion": false,
+    "blocks_research": false,
+    "id": "DEBT-2024-RB1RB2",
+    "next_action": "none; do not tune to it",
+    "severity": "LOW",
+    "state": "REGISTERED, NOT UNDER RESEARCH"
+   },
+   {
+    "blocks_promotion": false,
+    "blocks_research": false,
+    "id": "DEBT-OTHER-MASS",
+    "next_action": "none",
+    "severity": "LOW",
+    "state": "MEASURED AND CLOSED for these invariants"
+   },
+   {
+    "blocks_promotion": false,
+    "blocks_research": false,
+    "id": "DEBT-PASSYDS-LATERAL",
+    "next_action": "none; the exception may never be widened to absorb the unexplained case",
+    "severity": "LOW",
+    "state": "NAMED AND BOUNDED"
+   },
+   {
+    "blocks_promotion": false,
+    "blocks_research": false,
+    "id": "DEBT-AIRYARDS-RECON",
+    "next_action": "none",
+    "severity": "LOW",
+    "state": "DESCRIPTIVE USE ONLY"
+   },
+   {
+    "blocks_promotion": true,
+    "blocks_research": true,
+    "id": "DEBT-HISTORICAL-VINTAGE",
+    "next_action": "none; prospective capture is the only path",
+    "severity": "HIGH",
+    "state": "IRRECOVERABLE -- a final file is never as-of evidence"
+   },
+   {
+    "blocks_promotion": false,
+    "blocks_research": false,
+    "id": "DEBT-QB-LAYER",
+    "next_action": "Stage 4",
+    "severity": "MEDIUM",
+    "state": "OPEN -- audit groundwork exists (pass_attempt includes sacks on every sack in every season; scrambles carry rusher_player_id on 4,091 of 4,380 and passer_player"
+   },
+   {
+    "blocks_promotion": true,
+    "blocks_research": false,
+    "id": "DEBT-TD-RECOVERABILITY",
+    "next_action": "run the ladder and the composition test before funding any TD conversion modelling",
+    "severity": "MEDIUM",
+    "state": "DECOMPOSED, not characterised"
+   }
+  ]
+ },
+ "spec_version": "nfl-continuous-discovery-1"
+}

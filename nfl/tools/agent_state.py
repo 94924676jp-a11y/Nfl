@@ -195,7 +195,20 @@ def build(path=None) -> dict:
         it['queue_position'] = i + 1
         by_status.setdefault(it['status'], []).append(it['id'])
     active = [it for it in items if it['status'] == 'ACTIVE']
-    eligible = [it['id'] for it in items if it['status'] == 'QUEUED']
+
+    def _prio(it):
+        # BY PRIORITY, NOT BY FILE ORDER. A first version returned the queue's
+        # own order, so a newly ranked priority-2 item appeared BELOW a
+        # priority-12 one that happened to be written earlier in the file --
+        # and "next three eligible" is the line a fresh session reads to decide
+        # what to do. An unparseable priority sorts last rather than first, so
+        # a malformed entry cannot jump the queue.
+        try:
+            return (0, int(str(it.get('priority')).strip()))
+        except (TypeError, ValueError):
+            return (1, 0)
+    eligible = [it['id'] for it in sorted(
+        (x for x in items if x['status'] == 'QUEUED'), key=_prio)]
     wt = worktree_state()
     dirty = wt.get('dirty_source_files', [])
     return {

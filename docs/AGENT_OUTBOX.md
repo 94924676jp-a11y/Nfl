@@ -1514,3 +1514,39 @@ scored comparison — send the plays, and let the committed grader run.
 
 **Not asked for.** No sportsbook price, no projection, no ownership. Market
 data may evaluate a forecast that was sealed before it and may never feed one.
+
+---
+
+## 2026-09-18 — historical injury designations, 2022–2025
+
+**Assigned, not blocked.** The A1 successor test is specified and cannot run.
+
+**What is needed.** The nflverse injuries release for **2022, 2023, 2024 and
+2025**:
+
+    https://github.com/nflverse/nflverse-data/releases/download/injuries/injuries_<season>.csv
+
+This repository holds `injuries` for **2026 only**: 1,145 rows across 9
+content-addressed vintages from 2026-09-07 to 2026-09-17, weeks 1 and 2,
+carrying `report_status` and `practice_status`. The existing capture path
+already records URL, retrieval time, `Last-Modified` and sha256, and is
+content-addressed, so a recapture returning identical bytes is one vintage.
+
+**Why it is the efficient path.** `A1_APPEARANCE_CERTAINTY` is FALSIFIED and
+CRITICAL: the cohort it called certain appears 93.13% of the time, n=1,702 over
+2022–2025. The successor question is what conditions the missing 6.87%, and the
+obvious candidate is the pre-kickoff injury designation.
+
+Measured, not assumed: at 2026 week 2 the cohort is **59 players and none of
+them carries an Out, Doubtful or Questionable designation** — 13 listed with no
+status, 46 not listed. The conditioning variable has no contrast, so its effect
+is not estimable at any sample size
+(`nfl/research/assumptions/A1_SUCCESSOR_FEASIBILITY.json`). With 2022–2025
+designations the test runs against the same population that falsified A1, at
+adequate n, immediately. Waiting for prospective weeks works too and is slow.
+
+**A note on what a null would mean.** If designations do not explain the 6.87%,
+that is a useful result and must be recorded as one. Please send the captures,
+not an opinion about whether they will help.
+
+**Not asked for.** No sportsbook price, no projection, no ownership.
