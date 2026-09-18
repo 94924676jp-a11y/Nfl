@@ -120,6 +120,45 @@ def assert_pregame_untouched() -> Outcome:
                       detail=f'{len(files)} frozen pregame file(s) unchanged')
 
 
+#: Stats a player with no recorded production has. All zero, and that is a
+#: MEASUREMENT rather than an imputation -- see `resolve_absent` for the
+#: condition under which it is one.
+ZERO_LINE = {k: 0.0 for k in STATS}
+
+ZERO_BY_ABSENCE = 'ZERO_NO_RECORDED_PRODUCTION'
+UNSCORABLE = 'CLUB_NOT_COVERED_BY_THE_OUTCOME'
+
+
+def resolve_absent(name, team, result) -> tuple:
+    """A board player with no row in the outcome: zero, or unscorable?
+
+    EXCLUDING HIM IS THE WORST OPTION AND IT IS THE TEMPTING ONE. A board
+    player who recorded nothing is the model's worst case, and dropping him
+    from the grade because he has no row is survivorship -- it grades the
+    model only on the players it got onto the field. Frank Gore Jr. was
+    projected 4.53 carries and carried 55% of a portfolio.
+
+    The weekly player-stat file carries a row only for a player with a stat
+    line, so absence has two possible causes and they must not be conflated:
+
+      no production   his club IS in the outcome, so the club's game was
+                      published and he simply did not record a carry, a
+                      target or a catch. His line is zeros. A MEASUREMENT.
+      not covered     his club is NOT in the outcome, so the game is not
+                      published. Nothing is known and nothing is assumed.
+
+    Returns (stat_line_or_None, code).
+    """
+    clubs = {p.get('team') for p in (result.get('players') or {}).values()}
+    if team and team not in clubs:
+        return None, UNSCORABLE
+    if not team:
+        # No club for him at all: the weakest case. Refuse rather than guess
+        # which of the two situations he is in.
+        return None, UNSCORABLE
+    return dict(ZERO_LINE), ZERO_BY_ABSENCE
+
+
 def percentile_bucket(actual, q: dict) -> str:
     """Where the actual landed in the predicted distribution."""
     if actual is None:

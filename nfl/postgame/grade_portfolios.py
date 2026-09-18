@@ -51,23 +51,41 @@ def _nm(s):
 
 
 def actual_dk(players_actual):
-    """Real DK points per player, from the real stat line."""
+    """Real DK points per NORMALISED player name, from the real stat line.
+
+    KEYED BY `universe.norm`, NOT BY THE RAW STRING. DraftKings calls him
+    'James Cook III' and the stat feed calls him 'James Cook'; a raw-string
+    join drops him, and a zero-by-absence rule on top of a dropped join would
+    then have scored the week's best running back as nothing. The same
+    mismatch hits 'Joshua Palmer' against 'Josh Palmer'. Identity is resolved
+    once, here.
+    """
     out = {}
-    for nm, a in players_actual.items():
+    for raw, a in players_actual.items():
+        nm = U.norm(raw)
+        k = a.get('kicking') or {}
         sl = SL.from_line(
             1, pass_yards=a.get('pass_yards') or 0,
             pass_td=a.get('pass_td') or 0,
             interceptions=a.get('interceptions') or 0,
             rush_yards=a.get('rush_yards') or 0, rush_td=a.get('rush_td') or 0,
             rec_yards=a.get('rec_yards') or 0,
-            receptions=a.get('receptions') or 0, rec_td=a.get('rec_td') or 0)
-        out[nm] = float(DK.score(sl)[0])
+            receptions=a.get('receptions') or 0, rec_td=a.get('rec_td') or 0,
+            fg_made=k.get('fg_made') or 0, fg_att=k.get('fg_att') or 0,
+            xp_made=k.get('xp_made') or 0, xp_att=k.get('xp_att') or 0,
+            fg_made_by_bucket=k.get('fg_made_by_bucket') or {})
+        # KICKING IS SCORED. Scoring a kicker 0 because the model cannot name
+        # him confuses two different things: the MODEL refuses the (team,
+        # position) join, and it is right to. The BOX SCORE names him. Leaving
+        # it out scored Jake Bates -- a 31-yard field goal and four extra
+        # points -- as nothing, in fifteen of forty delivered lineups.
+        out[nm] = float(DK.score(sl)[0] + DK.score_kicker(sl)[0])
     return out
 
 
 def optimal_lineup(scores, players):
     """The actual optimal DK Showdown lineup, solved exactly under the cap."""
-    pool = [p for p in players if p['name'] in scores]
+    pool = [p for p in players if U.norm(p['name']) in scores]
     if len(pool) < U.N_FLEX + 1:
         return None
     best = None
@@ -88,7 +106,7 @@ def optimal_lineup(scores, players):
                 for b in range(B - s, -1, -1):
                     if dp[k, b] <= NEG / 2:
                         continue
-                    cand = dp[k, b] + scores[p['name']]
+                    cand = dp[k, b] + scores[U.norm(p['name'])]
                     if cand > dp[k + 1, b + s]:
                         dp[k + 1, b + s] = cand
                         pick[k + 1][b + s] = pick[k][b] + [p['name']]
@@ -96,7 +114,7 @@ def optimal_lineup(scores, players):
         b = int(np.argmax(row))
         if row[b] <= NEG / 2:
             continue
-        total = row[b] + 1.5 * scores[c['name']]
+        total = row[b] + 1.5 * scores[U.norm(c['name'])]
         if best is None or total > best['score']:
             best = {'captain': c['name'], 'flex': sorted(pick[U.N_FLEX][b]),
                     'score': float(total),
@@ -116,7 +134,34 @@ def grade(outcome_path=None) -> Outcome:
         return uni
     players = uni.value['playable']
     scores = actual_dk(got.value['players'])
-    opt = optimal_lineup(scores, players)
+    # A board player with no outcome row whose CLUB is covered recorded
+    # nothing, and nothing is zero DK points. Leaving him unscorable dropped
+    # 26 of 40 ALTERNATE lineups on this slate -- ten of them for Frank Gore
+    # Jr. alone -- which would have graded each portfolio only on the subset
+    # that avoided its own worst pick. That is not a kindness, it is the
+    # survivorship error with extra steps.
+    zeroed = []
+    for pl in uni.value['players']:
+        key = U.norm(pl['name'])
+        if key in scores:
+            continue
+        line, code = OC.resolve_absent(pl['name'], pl.get('team'), got.value)
+        if line is not None:
+            scores[key] = 0.0
+            zeroed.append({'player': pl['name'], 'team': pl.get('team'),
+                           'code': code})
+    # THE ACTUAL OPTIMAL IS A FACT ABOUT THE SLATE, not about the model, so
+    # its pool is every salaried entrant -- kickers included. `playable`
+    # excludes them because the MODEL cannot name a kicker; that refusal is
+    # right and it has nothing to do with what the best lineup actually was.
+    pool = {}
+    for pl in uni.value['players']:
+        row = pool.setdefault(U.norm(pl['name']),
+                              {'name': pl['name'], 'team': pl.get('team')})
+        row['cpt_salary' if pl['slot'] == 'CPT' else 'salary'] = pl['salary']
+    full = [r for r in pool.values()
+            if 'salary' in r and 'cpt_salary' in r]
+    opt = optimal_lineup(scores, full)
     opt_freq = {r['name']: r for r in json.loads(
         (FIX / 'OPTIMAL_WORLDS.json').read_text())['rows']}
     out = {}
@@ -126,6 +171,7 @@ def grade(outcome_path=None) -> Outcome:
             if not (r and r[0].isdigit()):
                 continue
             cap, flex = _nm(r[4]), [_nm(x) for x in r[5:10]]
+            cap, flex = U.norm(cap), [U.norm(x) for x in flex]
             missing = [n for n in [cap] + flex if n not in scores]
             if missing:
                 unscorable.append({'captain': cap, 'missing': missing})
@@ -176,7 +222,8 @@ def grade(outcome_path=None) -> Outcome:
         'is_measurement_not_development': True,
     }
     return Outcome.ok(
-        'PORTFOLIOS_GRADED', value={'portfolios': out, 'actual_dk': scores},
+        'PORTFOLIOS_GRADED', value={'portfolios': out, 'actual_dk': scores,
+                                    'zero_by_absence': zeroed},
         detail=(f'optimal {opt["score"]:.2f} '
                 f'(CPT {opt["captain"]}); ' if opt else 'no optimal solved; ')
                + '; '.join(f'{k} best {v["best"]["score"]:.2f}'

@@ -52,6 +52,15 @@ STATS_URL = ('https://github.com/nflverse/nflverse-data/releases/download/'
 RAW = OC.DIR / 'raw'
 SCORE = OC.DIR / 'FINAL_SCORE.json'
 
+#: nflverse field-goal columns -> the DraftKings distance buckets
+#: `statline.StatLine.fg_made_by_bucket` uses. A kicker's DK points are
+#: distance-weighted, so summing `fg_made` alone would underpay a 50-yarder.
+FG_BUCKETS = {
+    'FG<20': 'fg_made_0_19', 'FG20s': 'fg_made_20_29',
+    'FG30s': 'fg_made_30_39', 'FG40s': 'fg_made_40_49',
+    'FG50+': ('fg_made_50_59', 'fg_made_60_'),
+}
+
 #: nflverse weekly column -> the stat name `outcome.STATS` declares. Explicit,
 #: because `attempts` means passing attempts here and `carries` does not.
 COLS = {
@@ -162,9 +171,21 @@ def player_lines() -> Outcome:
     players = {}
     for r in mine:
         nm = r.get('player_display_name') or r.get('player_name')
+        buckets = {}
+        for b, col in FG_BUCKETS.items():
+            cols = (col,) if isinstance(col, str) else col
+            v = sum(num(r.get(c)) for c in cols)
+            if v:
+                buckets[b] = v
+        kicking = {'fg_made': num(r.get('fg_made')),
+                   'fg_att': num(r.get('fg_att')),
+                   'xp_made': num(r.get('pat_made')),
+                   'xp_att': num(r.get('pat_att')),
+                   'fg_made_by_bucket': buckets}
         players[nm] = {'team': r.get('team'), 'position': r.get('position'),
                        'player_id': r.get('player_id'),
-                       **{k: num(r.get(c)) for k, c in COLS.items()}}
+                       **{k: num(r.get(c)) for k, c in COLS.items()},
+                       'kicking': kicking}
     return Outcome.ok(
         'PLAYER_LINES_CAPTURED', value=players,
         detail=f'{len(players)} player row(s) for week {WEEK}',

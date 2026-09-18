@@ -139,10 +139,19 @@ def assemble(gid: str, name: str, layers: dict, arrays, n_worlds: int) -> StatLi
 
 
 def from_line(n_worlds: int = 1, **kw) -> StatLine:
-    """A hand-built stat line, for unit tests with a known answer."""
+    """A hand-built stat line, for unit tests and for a real box-score row.
+
+    `fg_made_by_bucket` may be passed as a dict of scalars; it is broadcast to
+    `n_worlds` like every other field, because DraftKings pays a 50-yarder
+    more than a chip shot and a flat count would underpay one kicker and
+    overpay another.
+    """
     f = {k.name: _z(n_worlds) for k in dataclasses.fields(StatLine)
          if k.name not in ('name', 'fg_made_by_bucket')}
     for k, v in kw.items():
         if k in f:
             f[k] = np.full(n_worlds, float(v))
-    return StatLine(name=kw.get('name', 'test'), fg_made_by_bucket={}, **f)
+    buckets = {b: np.full(n_worlds, float(v))
+               for b, v in (kw.get('fg_made_by_bucket') or {}).items()}
+    return StatLine(name=kw.get('name', 'test'), fg_made_by_bucket=buckets,
+                    **f)

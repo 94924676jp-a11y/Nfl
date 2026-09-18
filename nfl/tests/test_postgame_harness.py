@@ -357,6 +357,81 @@ def test_J_a_sealed_board_can_never_become_training_data():
           not absent, str(absent))
 
 
+def test_K_a_board_player_who_did_nothing_is_graded_as_nothing():
+    """Dropping him would grade the model only on the players it got right."""
+    with tempfile.TemporaryDirectory() as d:
+        p = _write_fixture(pathlib.Path(d))
+        o = GP.grade(p)
+        if o.state is not State.PASS:
+            NOT_EXECUTED.append('K zero-by-absence')
+            return
+        zeroed = o.evidence['players_zero_by_absence']
+        check('K board players absent from the outcome are zeroed, not dropped',
+              len(zeroed) >= 5 and 'Frank Gore Jr.' in zeroed, str(zeroed))
+        check('K and nothing is left unscorable when both clubs are covered',
+              o.evidence['players_not_in_outcome'] == [],
+              str(o.evidence['players_not_in_outcome']))
+        gore = next(r for r in o.value['rows'] if r['player'] == 'Frank Gore Jr.')
+        check('K his actual is 0 and it is placed in the distribution',
+              gore['stats']['rush_att']['actual'] == 0.0
+              and gore['stats']['rush_att']['bucket'] in OC.BUCKETS,
+              str(gore['stats']['rush_att']))
+        check('K the artifact says why zero is a measurement here',
+              'survivorship' in o.evidence['zero_by_absence_is_a_measurement'])
+
+
+def test_L_identity_is_normalised_before_anything_is_zeroed():
+    """'James Cook III' and 'James Cook' are one man, and he played."""
+    check('L the normaliser folds the suffix and the alias',
+          EL is not None
+          and __import__('nfl.dfs.showdown.universe', fromlist=['norm'])
+          .norm('James Cook III')
+          == __import__('nfl.dfs.showdown.universe', fromlist=['norm'])
+          .norm('James Cook')
+          and __import__('nfl.dfs.showdown.universe', fromlist=['norm'])
+          .norm('Joshua Palmer')
+          == __import__('nfl.dfs.showdown.universe', fromlist=['norm'])
+          .norm('Josh Palmer'))
+    with tempfile.TemporaryDirectory() as d:
+        p = _write_fixture(pathlib.Path(d))
+        o = GF.grade(p)
+        if o.state is not State.PASS:
+            NOT_EXECUTED.append('L portfolio identity')
+            return
+        z = {x['player'] for x in o.value['zero_by_absence']}
+        # The fixture spells him 'James Cook'; DraftKings spells him
+        # 'James Cook III'. He rushed for 88 and must not be zeroed.
+        check('L a man who played is NEVER zeroed by a spelling difference',
+              'James Cook III' not in z
+              and o.value['actual_dk'][
+                  __import__('nfl.dfs.showdown.universe',
+                             fromlist=['norm']).norm('James Cook III')] > 0,
+              str(sorted(z)))
+        check('L every lineup scores once identity is resolved, kickers '
+              'included',
+              all(v['n_unscorable'] == 0
+                  for v in o.value['portfolios'].values()),
+              str({k: v['n_unscorable']
+                   for k, v in o.value['portfolios'].items()}))
+        check('L a kicker the model cannot name is still scored from the box '
+              'score', 'tylerbass' in o.value['actual_dk'],
+              str(sorted(o.value['actual_dk'])[:5]))
+
+
+def test_M_a_club_outside_the_outcome_is_refused_not_zeroed():
+    fake = {'players': {'Somebody': {'team': 'DET'}}}
+    line, code = OC.resolve_absent('X', 'BUF', fake)
+    check('M a player whose club is not in the outcome is unscorable',
+          line is None and code == OC.UNSCORABLE, f'{code}')
+    line2, code2 = OC.resolve_absent('X', 'DET', fake)
+    check('M a player whose club IS in the outcome is zeroed',
+          line2 is not None and code2 == OC.ZERO_BY_ABSENCE
+          and set(line2) == set(OC.STATS), f'{code2}')
+    line3, code3 = OC.resolve_absent('X', None, fake)
+    check('M and a player with no club at all is refused, not guessed',
+          line3 is None and code3 == OC.UNSCORABLE, f'{code3}')
+
+
 def test_zz_every_check_passed():
     if FAILED:
         raise AssertionError(f'{FAILED} check(s) failed in this module')
@@ -372,7 +447,10 @@ if __name__ == '__main__':
                test_G_the_frozen_pregame_set_is_untouched,
                test_H_the_ledger_is_append_only_and_registration_comes_first,
                test_I_the_real_det_buf_block_is_registered_and_still_awaiting,
-               test_J_a_sealed_board_can_never_become_training_data):
+               test_J_a_sealed_board_can_never_become_training_data,
+               test_K_a_board_player_who_did_nothing_is_graded_as_nothing,
+               test_L_identity_is_normalised_before_anything_is_zeroed,
+               test_M_a_club_outside_the_outcome_is_refused_not_zeroed):
         fn()
     for n in NOT_EXECUTED:
         print(f'  NOT_EXECUTED {n}')

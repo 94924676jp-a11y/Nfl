@@ -32,6 +32,7 @@ from nfl.postgame import outcome as OC                                 # noqa: E
 from nfl.dfs.scoring import statline as SL                             # noqa: E402
 from nfl.dfs.scoring import draftkings as DK                           # noqa: E402
 from nfl.dfs.scoring import fanduel as FD                              # noqa: E402
+from nfl.dfs.showdown import universe as UNI                           # noqa: E402
 
 SPEC_VERSION = 'nfl-postgame-grade-projections-1'
 PCT = (10, 25, 50, 75, 90, 95)
@@ -71,14 +72,33 @@ def grade(outcome_path=None) -> Outcome:
     L = man['layers']
     ids = L['dk_scoring']['row_ids']
     n = int(np.asarray(z['dk_scoring__dk_points']).shape[1])
-    actual = result['players']
-    rows, not_in_outcome = [], []
+    # Identity by normalised name: DraftKings and the stat feed spell the
+    # same man differently ('James Cook III' / 'James Cook').
+    actual = {UNI.norm(k): v for k, v in result['players'].items()}
+    # Team per board player, so an absent one can be told apart from an
+    # uncovered one. A board player with no outcome row whose CLUB is in the
+    # outcome recorded nothing, and zero is his measurement -- dropping him
+    # would grade the model only on the players it got onto the field.
+    uni = UNI.build()
+    # From `players`, not `playable`: the officially-inactive rows are
+    # excluded from the DFS pool and still belong in the GRADE. Skyler Bell
+    # was hard-zeroed before kickoff and the board projected him anyway; the
+    # model's number for him is exactly the kind that must not vanish.
+    teams = ({UNI.norm(p['name']): p['team'] for p in uni.value['players']}
+             if uni.state is State.PASS else {})
+    rows, not_in_outcome, zeroed = [], [], []
     for gid in ids:
         nm = names.get(gid, gid)
-        a = actual.get(nm)
+        a = actual.get(UNI.norm(nm))
         if a is None:
-            not_in_outcome.append(nm)
-            continue
+            line, code = OC.resolve_absent(nm, teams.get(UNI.norm(nm)),
+                                           result)
+            if line is None:
+                not_in_outcome.append({'player': nm, 'reason': code})
+                continue
+            a = {'team': teams.get(UNI.norm(nm)), 'position': None,
+                 **line}
+            zeroed.append(nm)
         sl = SL.assemble(gid, nm, L, z, n)
         per_stat = {}
         for stat, (layer, metric) in MAP.items():
@@ -142,10 +162,17 @@ def grade(outcome_path=None) -> Outcome:
         value={'rows': rows, 'buckets_by_stat': buckets,
                'buckets_overall': overall,
                'overall_share': {k: overall[k] / total for k in OC.BUCKETS}},
-        detail=f'{len(rows)} player(s) graded, {len(not_in_outcome)} in the '
-               f'board but absent from the outcome; {total} stat-observation(s)',
+        detail=f'{len(rows)} player(s) graded ({len(zeroed)} of them with no '
+               f'recorded production), {len(not_in_outcome)} unscorable; '
+               f'{total} stat-observation(s)',
         spec_version=SPEC_VERSION, n_players=len(rows),
-        players_not_in_outcome=sorted(not_in_outcome),
+        players_not_in_outcome=not_in_outcome,
+        players_zero_by_absence=sorted(zeroed),
+        zero_by_absence_is_a_measurement=(
+            'his club is in the outcome, so the game was published and he '
+            'recorded no carry, target or catch. Dropping him instead would '
+            'be survivorship: it grades the model only on the players it got '
+            'onto the field, and those are exactly the ones it got right.'),
         n_observations=total, nominal_shares=OC.NOMINAL,
         one_game_cannot_estimate_calibration=(
             'roughly thirty players and twelve stats give small bucket counts '

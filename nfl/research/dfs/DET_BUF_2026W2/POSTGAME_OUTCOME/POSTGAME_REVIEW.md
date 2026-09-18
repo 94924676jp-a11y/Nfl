@@ -1,118 +1,157 @@
-# DET @ BUF, week 2 2026 — postgame review state
+# DET @ BUF, week 2 2026 — postgame review
 
-**Status: NOT FROZEN.** `POSTGAME_REVIEW_FROZEN` cannot be declared. Phase 1
-did not complete, and ten of the twelve phases are measurements against a
-result this repository does not have.
+**Final: DET 31 @ BUF 41.** Captured, hashed, graded.
 
-## Phase 1 — capture the final outcome authoritatively
+**One slate.** It can show a defect and generate a hypothesis. It cannot fit a
+threshold, an exposure cap or an architectural choice, and it cannot rank the
+two portfolio architectures against each other. Nothing below was tuned to it.
 
-**BLOCKED, cause DATA.** Assigned to the other agent as `OUT-023`.
+## Phase 1 — the outcome, captured
 
-Every source reachable from this executor was tried and the evidence is in
-`CAPTURE_ATTEMPT.json` with hashes:
-
-| source | result |
-|---|---|
-| nflverse `play_by_play_2026.csv.gz` | 200, sha256 `b69f55a172965e16` — byte-identical to the pre-kickoff capture, week 1 only |
-| nflverse `stats_player_week_2026.csv` | 200, week 1 only; retried 2026-09-18T04:07:07Z, still week 1, 1,118 rows, 0 week-2 DET/BUF rows |
-| nflverse `snap_counts_2026.csv` | 200, week 1 only |
-| nfldata `games.csv` (raw.githubusercontent) | **200, week-2 row complete — final score captured** |
-| nflverse `schedules.csv` | 404 |
-| nfl.com, espn.com, detroitlions.com | 403 at CONNECT |
-
-### UPDATE 2026-09-18T04:20Z — the final score IS captured; the box score is not
-
-`nfldata` `games.csv`, reachable at `raw.githubusercontent.com`, carries the
-completed week-2 row. Captured through `nfl/postgame/ingest_outcome.py`, raw
-bytes archived before parsing, file sha256 `9c3b8476cb7d3fab…`:
-
-**DET 31 @ BUF 41.** Buffalo scored the 41. Total 72.
-
-It is written to `FINAL_SCORE.json`, a **separate artifact from
-`OUTCOME.json`**, which is still not written. A partial box score placed at
-the outcome path would be read as the outcome, and the grading gate requires
-`players` precisely so a half-measurement cannot be reported as a
-measurement.
-
-**The final score grades nothing in this model.** The sealed board emits no
-score and no game total anywhere — its team layer is snaps, dropbacks,
-carries, targets and red-zone carries. A 72-point game cannot be scored
-against a model that does not predict points. That gap is the subject of the
-shared-game-environment work, not a grade.
-
-What it does settle: the relayed sentence "a high-scoring 41-31 game" did not
-say which side scored 41, and now a hashed source does. The sentence itself
-remains recorded as `UNVERIFIED_SECONDARY — NOT INGESTED`; it was never the
-evidence, and it is not retroactively promoted by having turned out right.
-
-**A blocked capture is not a small result. It is no result.** Nothing below
-was estimated, partially graded, or filled in from the relayed score.
-
-## Phases 2–11 — the measurements
-
-All **NOT_EXECUTED**, every one of them gated on Phase 1. What exists is the
-harness, built and tested against a synthetic fixture so that the day the
-outcome lands is not also the day the graders are first exercised.
-
-| phase | grader | state |
+| artifact | source | sha256 |
 |---|---|---|
-| 2 projection grading, per stat | `nfl/postgame/grade_projections.py` | BUILT, TESTED, REFUSES |
-| 3 Buffalo role-defect review | (needs phase 2 output) | NOT_EXECUTED |
-| 4 prop grading, 43 supported lines | `nfl/postgame/grade_props.py` | BUILT, TESTED, REFUSES |
-| 5 card grading | `grade_props.py` `card_as_ordered` | BUILT, TESTED, REFUSES |
-| 6 portfolio grading, both 40-lineup sets | `nfl/postgame/grade_portfolios.py` | BUILT, TESTED, REFUSES |
-| 7 perfect lineup and regret | `grade_portfolios.optimal_lineup` | BUILT, TESTED, REFUSES |
-| 8 captain research review | (needs phase 6/7 output) | NOT_EXECUTED |
-| 9 cheap-punt review | (needs phase 6/7 output) | NOT_EXECUTED |
-| 10 calibration and ledger | `nfl/postgame/ledger.py` | REGISTERED, AWAITING_OUTCOME |
-| 11 game environment and correlation | (needs phase 2 output) | NOT_EXECUTED |
+| `FINAL_SCORE.json` | nfldata `games.csv` | `9c3b8476cb7d3fab…` |
+| `OUTCOME.json` — 72 player rows | + nflverse `stats_player_week_2026.csv` | file hash recorded in the ledger |
 
-Each grader stops at one gate, `nfl.postgame.outcome.require`, which returns
-`BLOCKED[POSTGAME_OUTCOME_NOT_CAPTURED]`. There is no path around it and no
-flag that relaxes it.
+Raw bytes were written to `raw/` before being parsed. The first three capture
+attempts are on the record in `CAPTURE_ATTEMPT.json`: nflverse carried week 1
+only until roughly 04:35Z, and the graders refused throughout rather than
+grade against a partial box score.
 
-## Phase 5 — a correction to the request's premise
+The sentence relayed in conversation — "a high-scoring 41-31 game" — stays
+recorded as `UNVERIFIED_SECONDARY — NOT INGESTED`. It did not say which side
+scored 41. A hashed source does: Buffalo.
 
-**There is no top-ten betting card for this game, because nothing was staked
-and no price was ever accepted.** What section 8 of
-`DET_BUF_PREKICKOFF_PROJECTIONS_2026-09-17.md` published was an ordering of the
-43 supported lines by |model − market|, under an explicit "None of this is an
-edge claim". `grade_props.py` grades the top ten of that ordering as
-`CARD_AS_ORDERED` and reports ROI, realised performance and closing-line value
-as `NOT_AVAILABLE` — not as zero.
+## Phase 2 — the board, stat by stat
 
-Worth stating before any result exists, because it will be the first thing the
-grade shows: **nine of those top ten rows are `ROLE_STATE_CONCERN`.** James
-Cook (five lines), Dalton Kincaid (two), DJ Moore (two). The ordering by
-disagreement with the market is very nearly an ordering by the severity of the
-known Buffalo role defect. Whichever way those nine settle, they measure the
-defect and not the model's edge, and they may not be read as either.
+29 players, 217 stat observations, **0 unscorable**.
 
-## Phase 12 — ingest without leakage
+**The model was low, and it was low almost everywhere.** Board DK total
+predicted **189.5** against **250.4** actual, a ratio of **1.32**.
 
-**DONE.** `nfl/postgame/eligibility.py` classifies every DET @ BUF artifact as
-`PREGAME_FROZEN_ARTIFACT`, `POSTGAME_TRAINING_ELIGIBLE_ARTIFACT` or
-`MARKET_EVALUATION_ONLY_ARTIFACT`, and `assert_may_train` refuses the first
-two classes outright and embargoes the outcome from training any model
-evaluated on this game. An artifact absent from the registry is refused rather
-than defaulted to eligible.
+| player | predicted mean DK | actual DK | error | where the actual landed |
+|---|---:|---:|---:|---|
+| Josh Allen | 20.85 | 40.82 | −19.97 | ABOVE_P90 |
+| Amon-Ra St. Brown | 18.54 | 38.20 | −19.66 | ABOVE_P90 |
+| Dalton Kincaid | 5.88 | 22.50 | −16.62 | ABOVE_P90 |
+| Jared Goff | 16.48 | 32.78 | −16.30 | ABOVE_P90 |
+| James Cook | 8.82 | 23.90 | −15.08 | ABOVE_P90 |
+| DJ Moore | 8.12 | −0.10 | **+8.22** | BELOW_P10 |
+| Ray Davis | 7.16 | 0.00 | +7.16 | P10_P25 |
 
-The asymmetry it encodes: the same stat line is training-eligible for next
-week's model and ineligible for this one. Eligibility is a property of the
-pair (artifact, consumer), never of a file.
+Bucket shares over all 217 observations, against nominal:
 
-## Closing-line value is gone, and saying so now is cheaper than later
+| bucket | observed | nominal |
+|---|---:|---:|
+| BELOW_P10 | 0.014 | 0.10 |
+| P10_P25 | 0.032 | 0.15 |
+| P25_P75 | 0.724 | 0.50 |
+| P75_P90 | 0.138 | 0.15 |
+| ABOVE_P90 | 0.092 | 0.10 |
 
-There is no closing player-prop vintage. The only prop capture is
-2026-09-17T21:44–21:45Z, about two and a half hours before kickoff; vintages 2
-and 3 are game-line displays at 23:05Z and 23:06Z. Unless a later Hard Rock
-prop snapshot exists in storage outside this checkout, closing-line comparison
-for this game is permanently `NOT_AVAILABLE` and will be reported that way
-rather than approximated from the pre-kickoff board.
+**Read that as a shape, not a calibration result.** 217 observations from 29
+players in one game are heavily correlated within player and within game, so
+these shares have no usable standard error and none is quoted. What the shape
+suggests — and it is a hypothesis for the ledger, not a finding — is a
+predictive distribution that is too wide in the middle and roughly right in
+the tails, in a game that ran hot.
 
-## What one slate could establish, if the outcome arrives
+**Seven players recorded nothing and are graded as zero, not dropped.** Frank
+Gore Jr., Jackson Hawes, Jackson Meeks, Joshua Dobbs, Kyle Allen, Skyler Bell,
+Tyler Conklin. Their clubs are in the outcome, so zero is a measurement.
+Excluding them would have graded the model only on the players it got onto the
+field — which are exactly the ones it got right.
 
-A defect, and a hypothesis. Not a threshold, not an exposure cap, not an
-architectural reversal, and not a ranking of the two portfolio architectures
-against each other. The ledger block exists so the record accumulates toward a
-sample that can carry those claims; this game is one row in it.
+## Phases 4 and 5 — the 43 frozen Hard Rock main lines
+
+| | hits | n | rate |
+|---|---:|---:|---:|
+| model's own side | 18 | 43 | 0.419 |
+| model's lean vs the market | 18 | 43 | 0.419 |
+| `MODEL_SUPPORTED` | 9 | 27 | 0.333 |
+| `ROLE_STATE_CONCERN` | 9 | 16 | 0.562 |
+
+**No standard error is reported and the refusal is deliberate.** 43 lines over
+16 players in one game are not 43 independent observations. The measured
+understatement from naive binomial SEs on this project's prop grading is
+roughly threefold. Cluster counts travel with every rate instead.
+
+By the probability the model gave its own side: 0.50–0.60 → 12/19; 0.60–0.70 →
+2/13; 0.70–0.80 → 2/5; 0.80–0.90 → 2/6. **The model did worse the more
+confident it was.** On one slate that is a hypothesis with a cluster count of
+eight, not a calibration curve.
+
+**The card.** There is no staked card — nothing was wagered, no price was
+accepted. Section 8's ordering by |model − market|, graded as
+`CARD_AS_ORDERED`, went **4/10**. Nine of its ten rows were
+`ROLE_STATE_CONCERN`, so it was very nearly an ordering by severity of the
+known Buffalo role defect. Six of the ten were James Cook or Dalton Kincaid
+unders; Cook ran for 135 and Kincaid caught 7 for 95.
+
+ROI, realised performance and closing-line value are `NOT_AVAILABLE`, not
+zero. There is no closing player-prop vintage and there never will be: the
+only prop capture is 21:44–21:45Z, and vintages 2 and 3 are game-line displays
+at 23:05Z and 23:06Z.
+
+## Phases 6 and 7 — both portfolios, and the lineup that won
+
+**Actual optimal 174.51** — CPT Josh Allen, with Amon-Ra St. Brown, Dalton
+Kincaid, Dawson Knox, Jared Goff, Joshua Palmer, at $49,900.
+
+| | mean | median | best | worst | regret | contains optimal |
+|---|---:|---:|---:|---:|---:|---|
+| delivered (CLAUDE) | 128.47 | 128.08 | 145.62 | 112.10 | 28.89 | no |
+| ALTERNATE | 135.88 | 132.83 | 156.21 | 109.03 | 18.30 | no |
+
+**This does not rank the two architectures.** The portfolios overlap heavily —
+about 2.5 of 6 players' mean pairwise uniqueness — so forty lineups are not
+forty independent samples and the gap is mostly variance.
+
+What the pregame board said about the optimal lineup, before it was known:
+Josh Allen `p_optimal` 0.65 but `p_optimal_captain` only **0.167**; St. Brown
+0.558; Goff 0.559; Kincaid 0.142; Knox 0.170; Palmer 0.167. **The three cheap
+pieces of the winning lineup were all `ROLE_STATE_CONCERN`.** A player rostered
+for a bad reason who scores is still rostered for a bad reason, and nothing
+here promotes an exposure because it worked once.
+
+## Two defects this grading pass found in the graders themselves
+
+Both were found because the numbers looked wrong, and both are now pinned by
+tests.
+
+**Identity.** DraftKings spells him *James Cook III*; the stat feed spells him
+*James Cook*. A raw-string join dropped him, and with a zero-by-absence rule
+sitting on top of it, the week's second-best running back would have been
+scored as nothing. Same for *Joshua Palmer* against *Josh Palmer*. Identity is
+now resolved through `universe.norm` before anything is scored or zeroed.
+
+**Kickers.** `actual_dk` knew only offensive stats, so Jake Bates — a 31-yard
+field goal and four extra points, **7.0 DK** — scored zero, in fifteen of
+forty delivered lineups. The model's refusal to name a kicker is a statement
+about the MODEL's (team, position) join and says nothing about what the box
+score knows. Kicking is now carried in the outcome artifact with distance
+buckets and scored through `DK.score_kicker`.
+
+## Phase 12 — ingestion, with the classes kept apart
+
+`eligibility.py` holds the line: `PREGAME_FROZEN_ARTIFACT` may never train,
+`MARKET_EVALUATION_ONLY` may never train, and this outcome is embargoed from
+any model evaluated on this game. The same stat line is training-eligible for
+next week's model and ineligible for this one.
+
+## The ledger
+
+`DET_BUF_2026W2` was registered `AWAITING_OUTCOME` **before** the result was
+capturable, with the scope pinned — 29 players, 12 stats, 43 supported lines,
+two portfolios — and is now `GRADED` with every artifact hash attached. The
+registration cannot be rewritten; a correction would be a further append.
+
+## What this game does NOT establish
+
+A calibration curve. A hit rate. A ranking of the two portfolios. A reason to
+change an exposure cap, a threshold, a parameter or an architecture. It is one
+row.
+
+**POSTGAME_REVIEW_FROZEN**
+
+**V2 NOT YET EARNED**
