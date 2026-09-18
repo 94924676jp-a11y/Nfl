@@ -868,8 +868,20 @@ def build(args, fixtures: dict = None) -> dict:
                     args, 'model_configuration', None)}
     _mode = _mode_o.value
 
-    p.run_stage('capture_validation', _capture,
-                declared_inputs=list(src), spec_version=PL.PIPELINE_VERSION)
+    _cap = p.run_stage('capture_validation', _capture,
+                       declared_inputs=list(src),
+                       spec_version=PL.PIPELINE_VERSION)
+    # P6: THE FIRST P7 DAG SLICE, wired into the pipeline that already exists.
+    #
+    # The captures this stage just validated become VintageNodes, so the run's
+    # own record can answer "which bytes is this forecast standing on?" by
+    # reachability rather than by a reader knowing which facts to hand the
+    # bitemporal checker. Nothing is invented: every value comes from `src`,
+    # which `_capture` has already hash-checked and clocked.
+    if _cap.state == 'PASS':
+        _reg = p.register_captures(src, args.written_at)
+        if _reg.state is not State.PASS:
+            fx.setdefault('_inv', {})['dag_capture_registration'] = _reg
 
     # --- 2. identity resolution ----------------------------------------
     def _identity():
@@ -3225,6 +3237,18 @@ def build(args, fixtures: dict = None) -> dict:
             diagnostics_not_clean=(
                 fx['_gate'].evidence.get('diagnostics_not_clean')
                 if fx.get('_gate') is not None else None))
+    # The forecast node is registered BEFORE sealing so the s.4 cut check has
+    # something to walk, and its inputs are the vintages the run validated --
+    # the honest input set for this slice. Derived nodes between the two are
+    # not yet registered; when they are, the same check tightens without any
+    # change here, which is the point of stating reachability once.
+    try:
+        p.dag.add(PL.ForecastNode(
+            run_id, args.written_at, ART.CONTRACT_VERSION,
+            PL.function_identity(_seal),
+            tuple(sorted(k for k in p.dag.nodes if k.startswith('vintage:')))))
+    except (PL.DagError, ValueError) as _exc:                     # noqa: BLE001
+        fx.setdefault('_inv', {})['dag_forecast_node'] = str(_exc)
     p.run_stage('artifact_sealing', _seal, declared_inputs=['draws'],
                 spec_version=ART.CONTRACT_VERSION)
 

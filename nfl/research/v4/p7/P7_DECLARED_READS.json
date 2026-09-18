@@ -1,0 +1,407 @@
+{
+ "audit": {
+  "code": "EVERY_VINTAGE_READ_DECLARED",
+  "evidence": {},
+  "state": "PASS",
+  "value": {
+   "edges_not_exercised": [],
+   "n_edges": 27,
+   "n_reads": 28,
+   "n_runtime_keyed": 3,
+   "n_sites": 31,
+   "n_writes": 3,
+   "runtime_keyed": [
+    {
+     "function": "_has_declared_rows",
+     "line": 213,
+     "module": "nfl/capture/coverage.py"
+    },
+    {
+     "function": "store_raw",
+     "line": 233,
+     "module": "nfl/capture/delivered_injuries.py"
+    },
+    {
+     "function": "attempt_recovery",
+     "line": 340,
+     "module": "nfl/capture/persisted_provenance.py"
+    }
+   ]
+  }
+ },
+ "audited_roots": [
+  "nfl/production/",
+  "nfl/product/",
+  "nfl/dfs/",
+  "nfl/capture/"
+ ],
+ "by_producer": {
+  "depth_charts": [
+   {
+    "basis": "READ_BY_HAND",
+    "consumer": "nfl/production/nonqb/depth_vintage.py",
+    "fields": [
+     "dt",
+     "team",
+     "gsis_id",
+     "pos_abb",
+     "pos_rank",
+     "pos_slot"
+    ],
+    "kind": "COLUMNS",
+    "why": "point-in-time depth selection. pos_slot is the vendor tiebreak within pos_abb and exists only on the raw blob."
+   },
+   {
+    "basis": "READ_BY_HAND",
+    "consumer": "nfl/production/nonqb/qb_allocation.py",
+    "fields": [
+     "dt",
+     "team",
+     "gsis_id",
+     "pos_abb",
+     "pos_rank"
+    ],
+    "kind": "COLUMNS",
+    "why": "QB room ordering at a cut. This is the `captured_depth_chart` call the spec named as an undeclared glob; it is now declared."
+   },
+   {
+    "basis": "READ_BY_HAND",
+    "consumer": "nfl/production/nonqb/vintage_selector.py",
+    "fields": [],
+    "kind": "BLOB_SELECTION",
+    "why": "joins retained raw files to the manifest by content hash."
+   }
+  ],
+  "espn_injuries_json": [
+   {
+    "basis": "READ_BY_HAND",
+    "consumer": "nfl/production/nonqb/availability_feed.py",
+    "fields": [
+     "timestamp",
+     "injuries[].displayName",
+     "injuries[].injuries[].athlete.displayName",
+     "injuries[].injuries[].athlete.position.abbreviation",
+     "injuries[].injuries[].status",
+     "injuries[].injuries[].date",
+     "injuries[].injuries[].shortComment"
+    ],
+    "kind": "COLUMNS",
+    "why": "designation text per player at a cut, kept verbatim."
+   }
+  ],
+  "injuries": [
+   {
+    "basis": "READ_BY_HAND",
+    "consumer": "nfl/production/nonqb/availability_feed.py",
+    "fields": [],
+    "kind": "BLOB_SELECTION",
+    "why": "the espn glob pattern also matches the `injuries` family name; declared so the audit is not satisfied by a coincidence."
+   },
+   {
+    "basis": "READ_BY_HAND",
+    "consumer": "nfl/production/nonqb/vintage_selector.py",
+    "fields": [],
+    "kind": "BLOB_SELECTION",
+    "why": "joins retained raw files to the manifest by content hash."
+   }
+  ],
+  "schedules": [
+   {
+    "basis": "READ_BY_HAND",
+    "consumer": "nfl/capture/coverage.py",
+    "fields": [],
+    "kind": "BLOB_SELECTION",
+    "why": "orders schedule blobs by manifest transaction time to pick the newest lawful one; projects no column."
+   },
+   {
+    "basis": "READ_BY_HAND",
+    "consumer": "nfl/capture/coverage.py",
+    "fields": [
+     "season",
+     "week",
+     "game_type",
+     "gameday",
+     "gametime",
+     "home_team",
+     "away_team"
+    ],
+    "kind": "COLUMNS",
+    "why": "the week capture plan: which games exist and when they kick off. A kickoff time is scheduled months ahead and is not an outcome. The same blob carries result, home_score, spread_line and total_line and this reader takes none of them."
+   },
+   {
+    "basis": "READ_BY_HAND",
+    "consumer": "nfl/production/nonqb/vintage_selector.py",
+    "fields": [],
+    "kind": "BLOB_SELECTION",
+    "why": "joins retained raw files to the manifest by content hash."
+   },
+   {
+    "basis": "READ_BY_HAND",
+    "consumer": "nfl/production/team_volume_v1.py",
+    "fields": [
+     "season",
+     "week",
+     "game_type",
+     "home_team",
+     "away_team",
+     "home_coach",
+     "away_coach"
+    ],
+    "kind": "COLUMNS",
+    "why": "coach_prior is the selected estimator for three of five volume metrics, so the head coach per team is a prediction-time input. home_coach/away_coach are reached through an f-string, which is why a literal scan missed them and a person had to read it."
+   }
+  ],
+  "vintage_manifest": [
+   {
+    "basis": "READ_BY_HAND",
+    "consumer": "nfl/capture/bitemporal.py",
+    "fields": [
+     "source",
+     "blob",
+     "content_sha256",
+     "retrieved_at",
+     "effective_scope"
+    ],
+    "kind": "COLUMNS",
+    "why": "builds the Fact list every cut check is judged on."
+   },
+   {
+    "basis": "READ_BY_HAND",
+    "consumer": "nfl/capture/live_game_evidence.py",
+    "fields": [
+     "source",
+     "blob",
+     "retrieved_at"
+    ],
+    "kind": "COLUMNS",
+    "why": "locates the evidence blob for a live game."
+   },
+   {
+    "basis": "READ_BY_HAND",
+    "consumer": "nfl/production/eligibility_gate.py",
+    "fields": [
+     "source",
+     "blob",
+     "content_sha256",
+     "retrieved_at"
+    ],
+    "kind": "COLUMNS",
+    "why": "stamps the vintage of each gating input onto the gate record."
+   },
+   {
+    "basis": "READ_BY_HAND",
+    "consumer": "nfl/production/nonqb/inputs.py",
+    "fields": [
+     "source",
+     "blob",
+     "content_sha256",
+     "retrieved_at"
+    ],
+    "kind": "COLUMNS",
+    "why": "resolves which captured bytes a non-QB layer ran on."
+   },
+   {
+    "basis": "READ_BY_HAND",
+    "consumer": "nfl/production/nonqb/qb_allocation.py",
+    "fields": [
+     "source",
+     "blob",
+     "content_sha256",
+     "retrieved_at"
+    ],
+    "kind": "COLUMNS",
+    "why": "clocks the depth-chart blobs it selects among."
+   },
+   {
+    "basis": "READ_BY_HAND",
+    "consumer": "nfl/production/nonqb/vintage_selector.py",
+    "fields": [
+     "source",
+     "blob",
+     "content_sha256",
+     "retrieved_at",
+     "effective_scope"
+    ],
+    "kind": "COLUMNS",
+    "why": "the sanctioned point-in-time selector. It is a declared reader like any other; being the intended channel does not exempt it."
+   }
+  ],
+  "weekly_rosters": [
+   {
+    "basis": "READ_BY_HAND",
+    "consumer": "nfl/dfs/showdown/kicker_identity.py",
+    "fields": [
+     "team",
+     "gsis_id",
+     "full_name",
+     "position"
+    ],
+    "kind": "COLUMNS",
+    "why": "resolves a kicking-layer row id to a named player, so a DFS entrant is keyed by player and not by (team, position)."
+   },
+   {
+    "basis": "LITERAL_SCAN",
+    "consumer": "nfl/product/daily_board.py",
+    "fields": [
+     "team",
+     "gsis_id",
+     "full_name",
+     "football_name",
+     "status"
+    ],
+    "kind": "COLUMNS",
+    "why": "board display identity."
+   },
+   {
+    "basis": "LITERAL_SCAN",
+    "consumer": "nfl/production/kicking.py",
+    "fields": [
+     "season",
+     "week",
+     "team",
+     "gsis_id",
+     "position",
+     "full_name",
+     "status"
+    ],
+    "kind": "COLUMNS",
+    "why": "the kicker of record per club. Player-keyed, never (team, position): that substitution is what OUT-023 was about."
+   },
+   {
+    "basis": "LITERAL_SCAN",
+    "consumer": "nfl/production/nonqb/appearance_panel_2026.py",
+    "fields": [
+     "season",
+     "week",
+     "team",
+     "gsis_id",
+     "position",
+     "full_name",
+     "pfr_id"
+    ],
+    "kind": "COLUMNS",
+    "why": "appearance panel membership."
+   },
+   {
+    "basis": "LITERAL_SCAN",
+    "consumer": "nfl/production/nonqb/current_season_panel.py",
+    "fields": [
+     "season",
+     "week",
+     "team",
+     "gsis_id",
+     "position",
+     "full_name",
+     "pfr_id"
+    ],
+    "kind": "COLUMNS",
+    "why": "current-season non-QB usage panel membership."
+   },
+   {
+    "basis": "LITERAL_SCAN",
+    "consumer": "nfl/production/nonqb/panel_2026w1.py",
+    "fields": [
+     "season",
+     "week",
+     "team",
+     "gsis_id",
+     "position",
+     "full_name",
+     "pfr_id"
+    ],
+    "kind": "COLUMNS",
+    "why": "week-1 cold-start panel membership."
+   },
+   {
+    "basis": "READ_BY_HAND",
+    "consumer": "nfl/production/nonqb/participant_class.py",
+    "fields": [
+     "season",
+     "week",
+     "team",
+     "gsis_id",
+     "position",
+     "status"
+    ],
+    "kind": "COLUMNS",
+    "why": "maps a roster status code to one participation class."
+   },
+   {
+    "basis": "READ_BY_HAND",
+    "consumer": "nfl/production/nonqb/roster_status.py",
+    "fields": [
+     "season",
+     "week",
+     "team",
+     "gsis_id",
+     "status"
+    ],
+    "kind": "COLUMNS",
+    "why": "roster membership at a cut. The reduced vintage drops `status`, so the retained raw files under nfl_vintage/raw are the only source."
+   },
+   {
+    "basis": "LITERAL_SCAN",
+    "consumer": "nfl/production/nonqb/rushing_conversion.py",
+    "fields": [
+     "season",
+     "week",
+     "gsis_id",
+     "position"
+    ],
+    "kind": "COLUMNS",
+    "why": "position attach for the rushing conversion frame."
+   },
+   {
+    "basis": "READ_BY_HAND",
+    "consumer": "nfl/production/nonqb/vintage_selector.py",
+    "fields": [],
+    "kind": "BLOB_SELECTION",
+    "why": "joins retained raw files to the manifest by content hash."
+   },
+   {
+    "basis": "LITERAL_SCAN",
+    "consumer": "nfl/production/rehearsal/run_slate.py",
+    "fields": [
+     "season",
+     "week",
+     "team",
+     "gsis_id",
+     "position"
+    ],
+    "kind": "COLUMNS",
+    "why": "rehearsal slate membership from the reduced vintage."
+   }
+  ]
+ },
+ "declared_writers": [
+  "nfl/production/nonqb/inactives.py",
+  "nfl/capture/delivered_injuries.py"
+ ],
+ "not_implemented": [
+  "PHASE_2: a read(node, cut) accessor. Every read below still happens by globbing a directory; the declaration bounds who reads what, it does not mediate the bytes.",
+  "PHASE_3: content-addressed recomputation ACROSS RUNS. The identity algebra and the cache exist and are exercised inside a run; nothing is persisted between runs yet."
+ ],
+ "phase": "PHASE_1_DECLARATION_ONLY",
+ "runtime_keyed_reads": [
+  {
+   "bounded_by": "the path is the `blob` field of the manifest row being checked, so the reachable set is the manifest's own. No CSV is parsed and no column is projected: the read is a lowercase substring test.",
+   "function": "_has_declared_rows",
+   "module": "nfl/capture/coverage.py",
+   "why": "substring-checks a captured blob for the team codes a manifest row claims it covers, so a row cannot assert coverage the bytes do not carry."
+  },
+  {
+   "bounded_by": "the path is the file this call created from bytes already in hand. NOTE, and it is a finding of this audit rather than a repair: the `delivered_injury_evidence` blob family is in nfl/vintage/ and is in neither registry.REGISTRY nor registry.DELIVERED, so no source name exists to declare an edge to. Naming it is a capture-layer change and is not made here.",
+   "function": "store_raw",
+   "module": "nfl/capture/delivered_injuries.py",
+   "why": "reads back the blob it has just written and refuses if the gzip round-trip does not hash to the same sha256."
+  },
+  {
+   "bounded_by": "both the source name and the content hash in the path come from the manifest row being recovered, and the recovered hash is compared back against that row.",
+   "function": "attempt_recovery",
+   "module": "nfl/capture/persisted_provenance.py",
+   "why": "re-derives the content hash of a retained raw file to recover the provenance of a manifest row whose blob is missing."
+  }
+ ],
+ "spec": "nfl/research/v4/p7/P7_DEPENDENCY_DAG_SPEC.md",
+ "spec_version": "p7-dependency-dag-phase1"
+}

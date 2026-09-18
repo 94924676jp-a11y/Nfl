@@ -1,0 +1,251 @@
+{
+ "generated_by": "nfl/tools/agent_state.py",
+ "generated_at": "2026-09-18T16:02:25.715423+00:00",
+ "git": {
+  "head": "7d46f395f588ff8b94e07dc9921185f58a2b1c2d",
+  "head_short": "7d46f39",
+  "branch": "claude/nfl-greenfield-architecture-stsxmk",
+  "head_subject": "Suite attributed: seven new failures, one cause, and it was my own guard",
+  "remote_head": "NO_UPSTREAM",
+  "dirty_paths": [
+   "nfl/production/pipeline.py",
+   "nfl/production/run_forecast.py",
+   "nfl/prospective/q9shadow/Q9_SHADOW_DRYRUN_SEAL_LEDGER.jsonl",
+   "nfl/research/v2/r5/active_board_pointer.json",
+   "nfl/research/v4/p7/P7_DEPENDENCY_DAG_SPEC.md",
+   "DKEntries_UPLOAD_DET_BUF_40.csv",
+   "NFL_THURSDAY_DET_BUF_RETURN.md",
+   "nfl/AGENT_STATE.json",
+   "nfl/HANDOFF.md",
+   "nfl/WORK_QUEUE.md",
+   "nfl/research/suite_attribution/SUITE_DIFF_3270829_p6_dag.json",
+   "nfl/research/suite_attribution/suite_p6_dag.log",
+   "nfl/research/v4/p7/P7_DECLARED_READS.json",
+   "nfl/tests/test_agent_state.py",
+   "nfl/tests/test_p7_dag.py",
+   "nfl/tools/agent_state.py"
+  ],
+  "is_clean": false
+ },
+ "active_task": "P7",
+ "active_task_position": 2,
+ "n_active": 1,
+ "last_completed_task": "P6",
+ "queue": [
+  {
+   "id": "P6",
+   "acceptance_criteria": [
+    "the four node types, declared edges with enumerated `fields`, and node identity `H(spec_version, code_identity, sorted(input identities), declared_fields)` live in `nfl/production/pipeline.py`",
+    "an AST audit fails on any read of the vintage store not declared as an edge, and a synthetic undeclared read is proven to fail it",
+    "the three invalidation cases are demonstrated: unchanged input reuses the cached node, an inactives change invalidates only downstream of inactives, an unrelated research artifact does not invalidate the game-day forecast",
+    "a real slice is wired into `run_forecast`, not merely tested beside it",
+    "full suite shows no newly introduced failure against `7d46f39`",
+    "committed and pushed to `claude/nfl-greenfield-architecture-stsxmk`."
+   ],
+   "priority": "1",
+   "status": "DONE",
+   "dependencies": "suite attribution at `7d46f39` (DONE)",
+   "description": "Implement the existing P7 dependency-DAG specification inside `nfl/production/pipeline.py`. Do not redesign it and do not create a second orchestrator.",
+   "blocker": "none",
+   "queue_position": 1
+  },
+  {
+   "id": "P7",
+   "acceptance_criteria": [
+    "`SYSTEM_STATE.json` is generated from the repository, never hand-edited",
+    "`CURRENT_STATE.md` is generated from `SYSTEM_STATE.json`",
+    "a test fails if either is stale against a live regeneration",
+    "no number in either file is retyped from prose."
+   ],
+   "priority": "2",
+   "status": "ACTIVE",
+   "dependencies": "P6",
+   "description": "Generate a canonical `SYSTEM_STATE.json` and derive `CURRENT_STATE.md` from it. Two independently maintained truths is the defect; one generated from the other is the repair.",
+   "blocker": "none known",
+   "queue_position": 2
+  },
+  {
+   "id": "P8",
+   "acceptance_criteria": [
+    "the chronology is traced to commits and stated",
+    "the resolution is a successor record, not a rewrite",
+    "test `CONTRACT_TEXT_AND_EXECUTABLE_CONSTANT_MUST_AGREE` exists and passes."
+   ],
+   "priority": "3",
+   "status": "QUEUED",
+   "dependencies": "none",
+   "description": "Reconcile Contract 4: the prose says 18/20 and the executable constant requires 19/20. Trace the chronology and resolve by append-only supersession, never by editing the older text.",
+   "blocker": "none known",
+   "queue_position": 3
+  },
+  {
+   "id": "P9",
+   "acceptance_criteria": [
+    "the amended preregistration is read and quoted before any run",
+    "no gate is loosened to obtain a GO."
+   ],
+   "priority": "4",
+   "status": "QUEUED",
+   "dependencies": "none",
+   "description": "Resume OAS1 from its amended preregistration state. Pass and rush stay separate. `GO_NO_GO` still records NO-GO gates and those stay recorded.",
+   "blocker": "none known",
+   "queue_position": 4
+  },
+  {
+   "id": "A3",
+   "acceptance_criteria": [
+    "forward-chained, strictly prospective cuts",
+    "the settlement moves only along a legal status edge and carries evidence",
+    "a falsification blocks only the affected production path and rewrites no model output."
+   ],
+   "priority": "5",
+   "status": "QUEUED",
+   "dependencies": "assumption registry (DONE, A1/A2 settled)",
+   "description": "Automatic Scientist \u2014 test `A3_ROLE_CONTINUITY_ACROSS_REGIME_CHANGES` against measurement.",
+   "blocker": "none known",
+   "queue_position": 5
+  },
+  {
+   "id": "A5",
+   "acceptance_criteria": [
+    "forward-chained, strictly prospective cuts",
+    "the settlement moves only along a legal status edge and carries evidence",
+    "a falsification blocks only the affected production path and rewrites no model output",
+    "portability is tested ACROSS the boundary it claims to cross, not within one side of it."
+   ],
+   "priority": "6",
+   "status": "QUEUED",
+   "dependencies": "assumption registry",
+   "description": "Automatic Scientist \u2014 test `A5_TD_CONVERSION_PORTABILITY`.",
+   "blocker": "none known",
+   "queue_position": 6
+  },
+  {
+   "id": "A4",
+   "acceptance_criteria": [
+    "the remaining estimand is stated and shown to be identified at the available sample before any measurement is attempted."
+   ],
+   "priority": "7",
+   "status": "BLOCKED",
+   "dependencies": "an identified estimand",
+   "description": "`A4_STATIC_TEAM_VOLUME_SUFFICIENCY` is half-measured and deliberately DECLARED rather than TESTED.",
+   "blocker": "the remaining estimand is not yet measurable. Completing it before it is measurable would manufacture a settlement, which is the failure mode the registry exists to prevent.",
+   "queue_position": 7
+  },
+  {
+   "id": "GAME_STATE",
+   "acceptance_criteria": [
+    "no postgame field reaches the generator, proven by a declared DAG edge rather than by the absence of a reader."
+   ],
+   "priority": "8",
+   "status": "BLOCKED",
+   "dependencies": "P6, P7, and a lawful pregame-only state generator",
+   "description": "The score/clock/game-state generative layer.",
+   "blocker": "prerequisite work has not made it lawful. The T1-C pregame-only generator exists; what is missing is the evidence that a game-state layer may consume it without a postgame path.",
+   "queue_position": 8
+  },
+  {
+   "id": "OUT-022C",
+   "acceptance_criteria": [
+    "a real FanDuel export is present with provenance",
+    "no salary is inferred from DraftKings, at any point, for any player."
+   ],
+   "priority": "9",
+   "status": "BLOCKED",
+   "dependencies": "an actual FanDuel slate salary export",
+   "description": "FanDuel single-game salaries. Stays open until a real export exists.",
+   "blocker": "no FanDuel salary export is in the repository and none can be fetched from here. **This is assigned, not blocked for both agents**: it needs bytes from outside this checkout. FanDuel provenance stays `VERIFIED_RULE_VALUE_RELAYED_SOURCE` and is not upgraded.",
+   "queue_position": 9
+  },
+  {
+   "id": "SUITE-PRE",
+   "acceptance_criteria": [
+    "any failure fixed is traced to its cause and its test is updated rather than suppressed."
+   ],
+   "priority": "10",
+   "status": "QUEUED",
+   "dependencies": "none",
+   "description": "The 136 PRE_EXISTING suite failures classified at `7d46f39`. Not to be fixed merely to obtain a green suite; to be worked deliberately, by cause, when a cause is on the critical path.",
+   "blocker": "none \u2014 deliberately low priority",
+   "queue_position": 10
+  }
+ ],
+ "queue_by_status": {
+  "DONE": [
+   "P6"
+  ],
+  "ACTIVE": [
+   "P7"
+  ],
+  "QUEUED": [
+   "P8",
+   "P9",
+   "A3",
+   "A5",
+   "SUITE-PRE"
+  ],
+  "BLOCKED": [
+   "A4",
+   "GAME_STATE",
+   "OUT-022C"
+  ]
+ },
+ "unresolved_blockers": [
+  {
+   "id": "A4",
+   "blocker": "the remaining estimand is not yet measurable. Completing it before it is measurable would manufacture a settlement, which is the failure mode the registry exists to prevent."
+  },
+  {
+   "id": "GAME_STATE",
+   "blocker": "prerequisite work has not made it lawful. The T1-C pregame-only generator exists; what is missing is the evidence that a game-state layer may consume it without a postgame path."
+  },
+  {
+   "id": "OUT-022C",
+   "blocker": "no FanDuel salary export is in the repository and none can be fetched from here. **This is assigned, not blocked for both agents**: it needs bytes from outside this checkout. FanDuel provenance stays `VERIFIED_RULE_VALUE_RELAYED_SOURCE` and is not upgraded."
+  }
+ ],
+ "next_three_eligible": [
+  "P8",
+  "P9",
+  "A3"
+ ],
+ "most_recent_suite_classification": {
+  "artifact": "nfl/research/suite_attribution/SUITE_ATTRIBUTION_e050090_3270829.json",
+  "baseline": {
+   "log": "/tmp/claude-0/-home-user-mlb-prop-system-v7/8de98087-4781-5a10-ae09-ef74590f8116/scratchpad/s2_base.log",
+   "totals": {
+    "blocked_functions": 22,
+    "checks": 9940,
+    "failing_checks": 62,
+    "modules": 169,
+    "raised": 22,
+    "test_functions": 1831,
+    "zero_check_functions": 1
+   },
+   "verdict": "SUITE FAIL"
+  },
+  "current": {
+   "log": "/tmp/claude-0/-home-user-mlb-prop-system-v7/8de98087-4781-5a10-ae09-ef74590f8116/scratchpad/s2_cur.log",
+   "totals": {
+    "blocked_functions": 22,
+    "checks": 10222,
+    "failing_checks": 64,
+    "modules": 178,
+    "raised": 26,
+    "test_functions": 1914,
+    "zero_check_functions": 1
+   },
+   "verdict": "SUITE FAIL"
+  },
+  "totals": null,
+  "classification_counts": {
+   "PRE_EXISTING": 136,
+   "NEWLY_INTRODUCED": 7
+  }
+ },
+ "production_impact": {
+  "real_money": "NOT ENABLED",
+  "v2_status": "NOT YET EARNED",
+  "note": "No change in this session has been promoted to a production forecast path. Read this field from the commit under review, never from this line alone."
+ }
+}

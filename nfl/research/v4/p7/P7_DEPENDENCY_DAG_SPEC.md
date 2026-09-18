@@ -1,4 +1,41 @@
-# P7 — dependency DAG and incremental recomputation: SPECIFICATION ONLY
+# P7 — dependency DAG and incremental recomputation: SPECIFICATION
+
+## STATUS, amended 2026-09-18 (P6)
+
+**Phase 1 of §6 is now implemented**, in `nfl/production/pipeline.py` — inside
+the existing orchestrator rather than beside it. Implemented: the four node
+types of §2, the declared edges of §3 with `fields` enumerated, the §4
+reachability invariant (`DAG.reachable_vintages`, `DAG.max_learned_at`,
+`DAG.assert_cut_lawful`), the §5 identity
+`H(spec_version, code_identity, sorted(input identities), declared_fields)`
+and both of §5's non-optional caching rules, and the §6 Phase 1 AST audit
+(`audit_declared_reads`). Tests: `nfl/tests/test_p7_dag.py`. Generated
+inventory: `P7_DECLARED_READS.json`, which answers "who reads
+`depth_charts`?" without a grep.
+
+**Phase 2 and Phase 3 are NOT implemented and nothing below should be read as
+claiming they are.** Every read in the declared edge set still happens by
+globbing a directory. What changed is that the read is declared, so an
+undeclared one fails a test — a bound on who reads what, not a capability
+gate. The cut check is registered in a real run and RECORDED rather than
+enforced; `Pipeline.register_captures` states why, and what would make it a
+halt.
+
+The audit's own findings on first run, kept here because they are facts about
+the tree rather than about this document: three reads take their file name
+from a manifest row at run time and are declared by `(module, function)` in
+`RUNTIME_KEYED_READS` instead of by source; and the
+`delivered_injury_evidence` blob family lives in `nfl/vintage/` while
+appearing in neither `registry.REGISTRY` nor `registry.DELIVERED`, so no
+source name exists to declare an edge to it. That second one is a capture-layer
+gap and was reported, not repaired.
+
+---
+
+**The sentence below was true when this file was written and is now superseded
+by the status block above.** It is left standing rather than deleted, because
+rewriting a document to match a later state is how a reader loses the ability
+to tell what was known when.
 
 **Nothing in this file is implemented.** It is a specification, written because
 the brief asked for a spec rather than a half-built implementation, and because
