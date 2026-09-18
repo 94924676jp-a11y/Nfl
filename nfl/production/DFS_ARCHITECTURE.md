@@ -98,3 +98,38 @@ claim that any of it is close. The current work is the DET-BUF projection
 board, and this specification is deliberately parked behind it.
 
 V2 NOT YET EARNED.
+
+---
+
+## Update 2026-09-18 — the scoring adapter layer is built
+
+The boundary above now has code on both sides of one arrow.
+
+```
+football simulator (unchanged, knows nothing of any site)
+  -> statline.assemble          one stat line per player per world
+    -> draftkings.score         VERIFIED against the engine's own array
+    -> fanduel.score            UNVERIFIED_FROM_RECOLLECTION, gated
+      -> site_rules             roster shape, cap, multiplier salary, per site
+        -> showdown/*           candidates, scenarios, correlation, audit
+```
+
+**One assembly, several sites.** `statline.py` exists so that DraftKings and
+FanDuel cannot disagree because of an assembly bug rather than a rules
+difference. It was needed: a first attempt at DK scoring reproduced pure
+runners exactly and missed receivers by up to 17.0 points, because gadget
+rushing yards live in their own layer.
+
+**The reconciliation is the licence.** `draftkings.score` reproduces
+`dk_scoring/dk_points` to 7.1e-15 across every player and every world. That is
+the only evidence that the assembly is complete, and it is why FanDuel is
+allowed to read the same StatLine rather than building its own.
+
+**Provenance is not equal across sites and is not averaged.** DraftKings
+legality is verified against the real entries file for this slate. FanDuel is
+recalled, gated, and assigned as OUT-022. A site whose rules are unverified
+cannot produce a submittable lineup here.
+
+**The arrow is still one-directional and a test enforces it**: no module under
+`nfl/production`, `nfl/research/oas1`, `nfl/capture` or `nfl/ingest` imports
+anything under `nfl.dfs`.

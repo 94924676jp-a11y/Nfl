@@ -1350,3 +1350,45 @@ simulator, which does not exist. The architecture in
 No sportsbook prices, no vendor projections. Neither may enter as a predictive
 input, and nothing learned here may reach the football simulator -- that
 boundary is the whole point of the DFS architecture file.
+
+---
+
+## 2026-09-18 — OUT-022: one FanDuel NFL single-game salary export, and the FanDuel scoring table
+
+**ASSIGNED.** The adapter is built and unit-tested; what is missing is the
+authority for its numbers. The open web is refused at CONNECT from this
+executor.
+
+### Why this is not written from recollection and shipped
+
+DraftKings scoring in this repository is **verified**: the engine carries its
+own DK implementation and `nfl/dfs/scoring/draftkings.py` reproduces
+`dk_scoring/dk_points` to 7.1e-15 over 29 players and 8,000 worlds. FanDuel has
+no such anchor here, so its coefficients are marked
+`UNVERIFIED_FROM_RECOLLECTION` and `fanduel.rules_state()` BLOCKS.
+
+Half a point per reception moves every pass-catcher on a slate. On this board
+Amon-Ra St. Brown is 4.19 DK points lower on FanDuel and Josh Allen only 0.72 —
+almost all of that gap is the reception rule and the missing yardage bonuses. If
+the recalled table is wrong, it is wrong in the place that reorders the entire
+receiver market.
+
+### What is needed
+
+1. **One FanDuel NFL single-game salary export.** It settles roster size, salary
+   cap, positional eligibility, whether kickers are offered, and — the field
+   that changes the shape of the optimisation rather than rescaling it —
+   whether the MVP row carries its own multiplied salary. DraftKings multiplies
+   captain salary by 1.5; FanDuel is believed not to. Believed is not good
+   enough to build a submittable lineup on.
+
+2. **The current FanDuel NFL scoring table**, to check these three first:
+   `reception` (believed 0.5, DraftKings 1.0), `bonus_100_rec_yards` and
+   `bonus_300_pass_yards` (believed zero, DraftKings 3.0 each).
+
+Dropping a verified table at
+`nfl/dfs/scoring/FANDUEL_RULES_VERIFIED.json` clears the block.
+
+### Not asked for
+
+No projections, no ownership, no contest results. Site rules and a salary file.
