@@ -2,15 +2,27 @@
  "adjustments_not_covered_by_this_audit": [],
  "audit_can_only_disprove": "a scanner sees syntax. An adjustment applied through an opaque variable, a runtime config or a fitted coefficient is invisible to it, so a clean scan SUPPORTS the claim and never proves it.",
  "code": "OWNERSHIP_AUDIT_COMPLETE",
- "detail": "139 production module(s); 0 of 9 adjustment families implemented; 0 enforced through the registry",
+ "detail": "158 production module(s); 0 of 9 adjustment families implemented; 0 enforced through the registry",
  "dispositions": {
   "game_environment_v1|nfl/prospective/q9shadow/seal.py": {
    "evidence": "seal.py:118-120 lists roof, surface and stadium_id in SCHEDULE_PREGAME_COLUMNS, and seal.py:216 projects each schedule row onto exactly those columns. The only two projected fields any later line reads are `gameday` and `gametime`, used at :233-:240 to compute kickoff_utc. roof, surface and stadium_id are carried into the sealed row as metadata and never read again -- grep for each in this package returns only the declaration, the projection and the leak check at :248.",
    "verdict": "CARRIED_NOT_CONSUMED"
+  },
+  "ol_pass_protection_v1|nfl/production/gate_ids.py": {
+   "evidence": "gate_ids.py holds gate identifiers and their YES/NO/UNDECIDED states. The matched tokens are the gate names WEEK2_OAS1_FIT_SPEC_READY, WEEK2_OAS1_PREFLIGHT_READY, WEEK2_OAS1_FIT_EXECUTABLE, WEEK2_OAS1_DOWNSTREAM_LAWFUL and IN_SEASON_PRESSURE_DATA. No arithmetic, no estimate, no frame: the module imports only Outcome.",
+   "verdict": "DECLARATION_NOT_APPLICATION"
+  },
+  "opponent_pass_strength_v1|nfl/production/gate_ids.py": {
+   "evidence": "gate_ids.py holds gate identifiers and their YES/NO/UNDECIDED states. The matched tokens are the gate names WEEK2_OAS1_FIT_SPEC_READY, WEEK2_OAS1_PREFLIGHT_READY, WEEK2_OAS1_FIT_EXECUTABLE, WEEK2_OAS1_DOWNSTREAM_LAWFUL and IN_SEASON_PRESSURE_DATA. No arithmetic, no estimate, no frame: the module imports only Outcome.",
+   "verdict": "DECLARATION_NOT_APPLICATION"
+  },
+  "opponent_rush_strength_v1|nfl/production/gate_ids.py": {
+   "evidence": "gate_ids.py holds gate identifiers and their YES/NO/UNDECIDED states. The matched tokens are the gate names WEEK2_OAS1_FIT_SPEC_READY, WEEK2_OAS1_PREFLIGHT_READY, WEEK2_OAS1_FIT_EXECUTABLE, WEEK2_OAS1_DOWNSTREAM_LAWFUL and IN_SEASON_PRESSURE_DATA. No arithmetic, no estimate, no frame: the module imports only Outcome.",
+   "verdict": "DECLARATION_NOT_APPLICATION"
   }
  },
  "n_enforced": 0,
- "n_files_scanned": 139,
+ "n_files_scanned": 158,
  "n_implemented_in_production": 0,
  "registry_callers_in_production": [],
  "rows": {
@@ -134,9 +146,9 @@
    "direct_arithmetic_bypasses": [],
    "display": "OL / pass protection",
    "lineage_propagated": false,
-   "n_application_candidates": 0,
+   "n_application_candidates": 1,
    "n_applying": 0,
-   "n_sites": 1,
+   "n_sites": 2,
    "note": "was_pressure is 404 for 2026 and publishes after the postseason.",
    "owner": "line_play",
    "production_sites": [
@@ -159,10 +171,32 @@
      },
      "kind": "SCHEMA_LIST",
      "propagates_lineage": false
+    },
+    {
+     "calls_registry": false,
+     "disposition": "DECLARATION_NOT_APPLICATION",
+     "disposition_evidence": "gate_ids.py holds gate identifiers and their YES/NO/UNDECIDED states. The matched tokens are the gate names WEEK2_OAS1_FIT_SPEC_READY, WEEK2_OAS1_PREFLIGHT_READY, WEEK2_OAS1_FIT_EXECUTABLE, WEEK2_OAS1_DOWNSTREAM_LAWFUL and IN_SEASON_PRESSURE_DATA. No arithmetic, no estimate, no frame: the module imports only Outcome.",
+     "file": "nfl/production/gate_ids.py",
+     "identifiers": {
+      "pressure": [
+       "IN_SEASON_PRESSURE_DATA",
+       "true pressure rate available during the season",
+       "was_pressure is 404 for 2026 and publishes after the postseason. Not required for V1 and not a research-fit gate. Registered as ol_pass_protection_v1, status NOT_AVAILABLE."
+      ],
+      "pressure_rate": [
+       "true pressure rate available during the season"
+      ],
+      "was_pressure": [
+       "was_pressure is 404 for 2026 and publishes after the postseason. Not required for V1 and not a research-fit gate. Registered as ol_pass_protection_v1, status NOT_AVAILABLE."
+      ]
+     },
+     "kind": "APPLICATION_CANDIDATE",
+     "propagates_lineage": false
     }
    ],
    "registered": true,
    "site_kinds": [
+    "APPLICATION_CANDIDATE",
     "SCHEMA_LIST"
    ],
    "status_in_registry": "NOT_AVAILABLE"
@@ -173,9 +207,9 @@
    "direct_arithmetic_bypasses": [],
    "display": "opponent strength (pass)",
    "lineage_propagated": false,
-   "n_application_candidates": 0,
+   "n_application_candidates": 1,
    "n_applying": 0,
-   "n_sites": 2,
+   "n_sites": 3,
    "note": "the `opponent` key in team_volume_v1 is the PAIRED team-game lookup for the A3G copula correlation -- a dependence parameter, not a location shift. It moves no mean.",
    "owner": "oas1",
    "production_sites": [
@@ -212,11 +246,32 @@
      },
      "kind": "ACQUISITION_OR_GUARD",
      "propagates_lineage": false
+    },
+    {
+     "calls_registry": false,
+     "disposition": "DECLARATION_NOT_APPLICATION",
+     "disposition_evidence": "gate_ids.py holds gate identifiers and their YES/NO/UNDECIDED states. The matched tokens are the gate names WEEK2_OAS1_FIT_SPEC_READY, WEEK2_OAS1_PREFLIGHT_READY, WEEK2_OAS1_FIT_EXECUTABLE, WEEK2_OAS1_DOWNSTREAM_LAWFUL and IN_SEASON_PRESSURE_DATA. No arithmetic, no estimate, no frame: the module imports only Outcome.",
+     "file": "nfl/production/gate_ids.py",
+     "identifiers": {
+      "oas1": [
+       "WEEK2_OAS1_DOWNSTREAM_LAWFUL",
+       "WEEK2_OAS1_FIT_EXECUTABLE",
+       "WEEK2_OAS1_FIT_READY_TO_EXECUTE",
+       "WEEK2_OAS1_FIT_SPEC_READY",
+       "WEEK2_OAS1_PREFLIGHT_READY",
+       "a prior-season OAS1 fit supplying theta_prev",
+       "epa admitted as an OAS1 regression target only",
+       "reported YES while fit_week2.py refused to run and contained no fitting body. \"Ready to execute\" is the one reading a person would act on, and it was the one part that was false. Replaced by WEEK2_OAS1_FIT_SPEC_READY, WEEK2_OAS1_PREFLIGHT_READY and WEEK2_OAS1_FIT_EXECUTABLE."
+      ]
+     },
+     "kind": "APPLICATION_CANDIDATE",
+     "propagates_lineage": false
     }
    ],
    "registered": true,
    "site_kinds": [
-    "ACQUISITION_OR_GUARD"
+    "ACQUISITION_OR_GUARD",
+    "APPLICATION_CANDIDATE"
    ],
    "status_in_registry": "RESEARCH_ONLY"
   },
@@ -226,9 +281,9 @@
    "direct_arithmetic_bypasses": [],
    "display": "opponent strength (rush)",
    "lineage_propagated": false,
-   "n_application_candidates": 0,
+   "n_application_candidates": 1,
    "n_applying": 0,
-   "n_sites": 2,
+   "n_sites": 3,
    "note": "same lookup, same conclusion.",
    "owner": "oas1",
    "production_sites": [
@@ -265,11 +320,32 @@
      },
      "kind": "ACQUISITION_OR_GUARD",
      "propagates_lineage": false
+    },
+    {
+     "calls_registry": false,
+     "disposition": "DECLARATION_NOT_APPLICATION",
+     "disposition_evidence": "gate_ids.py holds gate identifiers and their YES/NO/UNDECIDED states. The matched tokens are the gate names WEEK2_OAS1_FIT_SPEC_READY, WEEK2_OAS1_PREFLIGHT_READY, WEEK2_OAS1_FIT_EXECUTABLE, WEEK2_OAS1_DOWNSTREAM_LAWFUL and IN_SEASON_PRESSURE_DATA. No arithmetic, no estimate, no frame: the module imports only Outcome.",
+     "file": "nfl/production/gate_ids.py",
+     "identifiers": {
+      "oas1": [
+       "WEEK2_OAS1_DOWNSTREAM_LAWFUL",
+       "WEEK2_OAS1_FIT_EXECUTABLE",
+       "WEEK2_OAS1_FIT_READY_TO_EXECUTE",
+       "WEEK2_OAS1_FIT_SPEC_READY",
+       "WEEK2_OAS1_PREFLIGHT_READY",
+       "a prior-season OAS1 fit supplying theta_prev",
+       "epa admitted as an OAS1 regression target only",
+       "reported YES while fit_week2.py refused to run and contained no fitting body. \"Ready to execute\" is the one reading a person would act on, and it was the one part that was false. Replaced by WEEK2_OAS1_FIT_SPEC_READY, WEEK2_OAS1_PREFLIGHT_READY and WEEK2_OAS1_FIT_EXECUTABLE."
+      ]
+     },
+     "kind": "APPLICATION_CANDIDATE",
+     "propagates_lineage": false
     }
    ],
    "registered": true,
    "site_kinds": [
-    "ACQUISITION_OR_GUARD"
+    "ACQUISITION_OR_GUARD",
+    "APPLICATION_CANDIDATE"
    ],
    "status_in_registry": "RESEARCH_ONLY"
   },
@@ -327,10 +403,21 @@
    "lineage_propagated": false,
    "n_application_candidates": 0,
    "n_applying": 0,
-   "n_sites": 4,
+   "n_sites": 5,
    "note": "the `trailing` hits in this tree are trailing MEANS over time, not trailing on the scoreboard.",
    "owner": "game_state",
    "production_sites": [
+    {
+     "calls_registry": false,
+     "file": "nfl/dfs/showdown/captain_metrics.py",
+     "identifiers": {
+      "win_probability": [
+       "p_top1 is NOT ownership, NOT a win probability, and NOT P(optimal captain) -- see optimal_worlds.py for that"
+      ]
+     },
+     "kind": "PROSE",
+     "propagates_lineage": false
+    },
     {
      "calls_registry": false,
      "file": "nfl/ingest/allowlist.py",

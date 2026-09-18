@@ -44,6 +44,7 @@ if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
 from nfl.production import adjustment_registry as AR                # noqa: E402
+from sportsplatform.governance import artifact_claim as AC  # noqa: E402
 from sportsplatform.governance.outcome import Cause, Outcome, State  # noqa: E402
 
 SPEC_VERSION = 'nfl-ownership-audit-1'
@@ -525,7 +526,14 @@ def main() -> int:
         {'spec_version': SPEC_VERSION, 'code': o.code, 'detail': o.detail,
          **{k: v for k, v in o.evidence.items() if k != 'cause'}},
         indent=1, sort_keys=True, default=str))
-    print(f'wrote {out.relative_to(_REPO)}')
+    # THE ARTIFACT IS CLAIMED BY VERIFYING IT, never by
+    # printing a path. `dual_board.py | head -22` once died
+    # on SIGPIPE after the table printed and before the
+    # write, and the run was reported as successful.
+    c = AC.claim(out, schema=['rows', 'spec_version'],
+                 label=out.name)
+    if c.state is not State.PASS:
+        return 1
     return 0
 
 

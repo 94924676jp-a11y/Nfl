@@ -37,6 +37,7 @@ _REPO = pathlib.Path(__file__).resolve().parents[3]
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
+from sportsplatform.governance import artifact_claim as AC  # noqa: E402
 from sportsplatform.governance.outcome import Cause, Outcome, State  # noqa: E402
 from nfl.dfs.showdown import universe as U                           # noqa: E402
 
@@ -186,7 +187,14 @@ def main() -> int:
          'unconditional_mean_dk': o.value['unconditional_mean_dk'],
          'conditional_mean_dk': o.value['conditional_mean_dk']},
         indent=1, sort_keys=True))
-    print(f'\nwrote {out.relative_to(_REPO)}')
+    # THE ARTIFACT IS CLAIMED BY VERIFYING IT, never by
+    # printing a path. `dual_board.py | head -22` once died
+    # on SIGPIPE after the table printed and before the
+    # write, and the run was reported as successful.
+    c = AC.claim(out, schema=['buckets', 'evidence'],
+                 label=out.name)
+    if c.state is not State.PASS:
+        return 1
     return 0
 
 
