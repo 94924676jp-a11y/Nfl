@@ -1,0 +1,26 @@
+{
+ "USES_LIVE_GAME_OUTCOME_DATA": false,
+ "after_final": "results may be captured into a SEPARATE immutable outcome artifact for prospective evaluation. Even then: one slate cannot fit an exposure cap; one winning punt does not validate punt methodology; one losing core player does not invalidate a projection; and ROI over 40 heavily overlapping lineups is not 40 independent samples -- the measured pairwise uniqueness distance on the delivered portfolio is a mean of about 2.5 players out of 6.",
+ "artifact": "DET_BUF_2026W2_POSTLOCK_DEVELOPMENT",
+ "certification": "every module built in this window reads only the sealed pregame board (draws_sha256 c24d9dcc...), the pre-lock DK salary file, the official inactive declaration, and the two delivered portfolios. No box score, no play-by-play, no live score, no fantasy result and no observed game event entered any path.",
+ "enforced_by": "nfl/tests/test_dfs_showdown_research.py::test_H_no_live_game_data_anywhere_in_this_layer",
+ "game_id": "2026_02_DET_BUF",
+ "inputs_forbidden_while_open": [
+  "any 2026 week 2 play-by-play",
+  "any box score",
+  "any live scoreboard",
+  "any realised fantasy score",
+  "any contest result"
+ ],
+ "inputs_permitted": [
+  "nfl/research/dfs/DET_BUF_2026W2/frozen/sealed_player_draws.npz",
+  "nfl/research/dfs/DET_BUF_2026W2/frozen/DKSalaries_showdown.csv",
+  "nfl/research/live/2026_02_DET_BUF/INACTIVES_INGESTION.json",
+  "nfl/research/dfs/DET_BUF_2026W2/PORTFOLIO_CLAUDE_40.csv",
+  "nfl/research/dfs/DET_BUF_2026W2/PORTFOLIO_ALTERNATE_40.csv"
+ ],
+ "kickoff_utc": "2026-09-18T00:15:00Z",
+ "nothing_was_tuned_in_this_window": "every threshold introduced is declared and round -- ROLE_STATE_CONCERN 35%/10%, DATA_STATE_CONCERN 25%/5%, CHEAP_SALARY $1000, MISMATCH_FLAG 20%, CEILING_DK 25.0. None was fitted to anything, and none may be fitted to tonight.",
+ "spec_version": "det-buf-2026w2-postlock-barrier-1",
+ "window_opened_utc": "2026-09-18T02:40:00Z"
+}

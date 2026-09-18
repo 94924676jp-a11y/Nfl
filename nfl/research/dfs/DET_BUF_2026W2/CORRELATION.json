@@ -1,0 +1,711 @@
+{
+ "spec_version": "nfl-showdown-correlation-1",
+ "detail": "351 live pair(s); mean |r| 0.0311, max +0.4085, min -0.4637; 1 degenerate player(s) excluded",
+ "evidence": {
+  "spec_version": "nfl-showdown-correlation-1",
+  "n_players": 28,
+  "degenerate_players": [
+   "Jacob Saylors"
+  ],
+  "generator_caveat": "player rows are seeded INDEPENDENTLY in this artifact (draw_index_semantics.across_rows = INDEPENDENT_STREAMS_COLUMN_ALIGNED). A correlation near zero here is a fact about the generator, not about football, and must never be quoted as evidence that two players are independent on the field.",
+  "mean_abs_r": 0.03110024587970707,
+  "is_portfolio_information_only": true,
+  "uses_live_game_outcome_data": false
+ },
+ "names": [
+  "Jahmyr Gibbs",
+  "Josh Allen",
+  "Amon-Ra St. Brown",
+  "Jared Goff",
+  "James Cook III",
+  "DJ Moore",
+  "Jameson Williams",
+  "Dalton Kincaid",
+  "Khalil Shakir",
+  "Kyle Allen",
+  "Joshua Dobbs",
+  "Sam LaPorta",
+  "Keon Coleman",
+  "Isaac TeSlaa",
+  "Joshua Palmer",
+  "Sione Vaki",
+  "Dawson Knox",
+  "Ray Davis",
+  "Brock Wright",
+  "Tyler Conklin",
+  "Jacob Saylors",
+  "Tom Kennedy",
+  "Greg Dortch",
+  "Tay Martin",
+  "Jackson Hawes",
+  "Frank Gore Jr.",
+  "Jackson Meeks",
+  "Keleki Latu"
+ ],
+ "by_class": {
+  "QB_WITH_OWN_RECEIVER": {
+   "n": 36,
+   "mean_r": 0.1053851646018864,
+   "min_r": -0.0115391474914213,
+   "max_r": 0.408458229711737
+  },
+  "QB_WITH_OPPOSING_QB": {
+   "n": 4,
+   "mean_r": -0.016312926421701027,
+   "min_r": -0.05235851376880092,
+   "max_r": 0.010317026416292977
+  },
+  "RB_WITH_OPPOSING_PASSERS": {
+   "n": 55,
+   "mean_r": -0.0065695281558448915,
+   "min_r": -0.03377425112036612,
+   "max_r": 0.018826837321128886
+  },
+  "SAME_TEAM_RECEIVERS": {
+   "n": 72,
+   "mean_r": -0.018344798195137103,
+   "min_r": -0.049390584714571396,
+   "max_r": 0.024510639470772
+  },
+  "SAME_TEAM_BACKS": {
+   "n": 4,
+   "mean_r": -0.2211653988428498,
+   "min_r": -0.28728077576626687,
+   "max_r": -0.12163266422421039
+  },
+  "QB_WITH_OWN_BACK": {
+   "n": 10,
+   "mean_r": -0.0053367498443440695,
+   "min_r": -0.06390039541225971,
+   "max_r": 0.03510407648159121
+  }
+ },
+ "strongest_positive": [
+  {
+   "a": "Amon-Ra St. Brown",
+   "b": "Jared Goff",
+   "r": 0.408458229711737,
+   "same_team": true,
+   "classes": [
+    "QB_WITH_OWN_RECEIVER"
+   ],
+   "tags": [
+    "MODEL_SUPPORTED",
+    "MODEL_SUPPORTED"
+   ]
+  },
+  {
+   "a": "Jared Goff",
+   "b": "Jameson Williams",
+   "r": 0.34656632034984053,
+   "same_team": true,
+   "classes": [
+    "QB_WITH_OWN_RECEIVER"
+   ],
+   "tags": [
+    "MODEL_SUPPORTED",
+    "MODEL_SUPPORTED"
+   ]
+  },
+  {
+   "a": "Jared Goff",
+   "b": "Sam LaPorta",
+   "r": 0.2903732335269618,
+   "same_team": true,
+   "classes": [
+    "QB_WITH_OWN_RECEIVER"
+   ],
+   "tags": [
+    "MODEL_SUPPORTED",
+    "MODEL_SUPPORTED"
+   ]
+  },
+  {
+   "a": "Josh Allen",
+   "b": "Khalil Shakir",
+   "r": 0.2814533217440886,
+   "same_team": true,
+   "classes": [
+    "QB_WITH_OWN_RECEIVER"
+   ],
+   "tags": [
+    "MODEL_SUPPORTED",
+    "ROLE_STATE_CONCERN"
+   ]
+  },
+  {
+   "a": "Josh Allen",
+   "b": "DJ Moore",
+   "r": 0.2276847534881712,
+   "same_team": true,
+   "classes": [
+    "QB_WITH_OWN_RECEIVER"
+   ],
+   "tags": [
+    "MODEL_SUPPORTED",
+    "ROLE_STATE_CONCERN"
+   ]
+  },
+  {
+   "a": "Josh Allen",
+   "b": "Dalton Kincaid",
+   "r": 0.19479680906142519,
+   "same_team": true,
+   "classes": [
+    "QB_WITH_OWN_RECEIVER"
+   ],
+   "tags": [
+    "MODEL_SUPPORTED",
+    "ROLE_STATE_CONCERN"
+   ]
+  },
+  {
+   "a": "Josh Allen",
+   "b": "Keon Coleman",
+   "r": 0.18260087150733176,
+   "same_team": true,
+   "classes": [
+    "QB_WITH_OWN_RECEIVER"
+   ],
+   "tags": [
+    "MODEL_SUPPORTED",
+    "ROLE_STATE_CONCERN"
+   ]
+  },
+  {
+   "a": "Jared Goff",
+   "b": "Brock Wright",
+   "r": 0.17991141068660363,
+   "same_team": true,
+   "classes": [
+    "QB_WITH_OWN_RECEIVER"
+   ],
+   "tags": [
+    "MODEL_SUPPORTED",
+    "MODEL_SUPPORTED"
+   ]
+  },
+  {
+   "a": "Jared Goff",
+   "b": "Isaac TeSlaa",
+   "r": 0.1710242573273878,
+   "same_team": true,
+   "classes": [
+    "QB_WITH_OWN_RECEIVER"
+   ],
+   "tags": [
+    "MODEL_SUPPORTED",
+    "MODEL_SUPPORTED"
+   ]
+  },
+  {
+   "a": "Josh Allen",
+   "b": "Joshua Palmer",
+   "r": 0.1678133134548527,
+   "same_team": true,
+   "classes": [
+    "QB_WITH_OWN_RECEIVER"
+   ],
+   "tags": [
+    "MODEL_SUPPORTED",
+    "ROLE_STATE_CONCERN"
+   ]
+  },
+  {
+   "a": "Josh Allen",
+   "b": "Dawson Knox",
+   "r": 0.15980771144407588,
+   "same_team": true,
+   "classes": [
+    "QB_WITH_OWN_RECEIVER"
+   ],
+   "tags": [
+    "MODEL_SUPPORTED",
+    "ROLE_STATE_CONCERN"
+   ]
+  },
+  {
+   "a": "Jared Goff",
+   "b": "Tay Martin",
+   "r": 0.1358850832085139,
+   "same_team": true,
+   "classes": [
+    "QB_WITH_OWN_RECEIVER"
+   ],
+   "tags": [
+    "MODEL_SUPPORTED",
+    "MODEL_SUPPORTED"
+   ]
+  },
+  {
+   "a": "Josh Allen",
+   "b": "Keleki Latu",
+   "r": 0.12222333449832765,
+   "same_team": true,
+   "classes": [
+    "QB_WITH_OWN_RECEIVER"
+   ],
+   "tags": [
+    "MODEL_SUPPORTED",
+    "ROLE_STATE_CONCERN"
+   ]
+  },
+  {
+   "a": "Jared Goff",
+   "b": "Jackson Meeks",
+   "r": 0.12133312750039171,
+   "same_team": true,
+   "classes": [
+    "QB_WITH_OWN_RECEIVER"
+   ],
+   "tags": [
+    "MODEL_SUPPORTED",
+    "MODEL_SUPPORTED"
+   ]
+  },
+  {
+   "a": "Jared Goff",
+   "b": "Tyler Conklin",
+   "r": 0.10807196812589405,
+   "same_team": true,
+   "classes": [
+    "QB_WITH_OWN_RECEIVER"
+   ],
+   "tags": [
+    "MODEL_SUPPORTED",
+    "MODEL_SUPPORTED"
+   ]
+  },
+  {
+   "a": "Josh Allen",
+   "b": "Jackson Hawes",
+   "r": 0.10625338729304616,
+   "same_team": true,
+   "classes": [
+    "QB_WITH_OWN_RECEIVER"
+   ],
+   "tags": [
+    "MODEL_SUPPORTED",
+    "ROLE_STATE_CONCERN"
+   ]
+  },
+  {
+   "a": "Khalil Shakir",
+   "b": "Kyle Allen",
+   "r": 0.06971799629032249,
+   "same_team": true,
+   "classes": [
+    "QB_WITH_OWN_RECEIVER"
+   ],
+   "tags": [
+    "ROLE_STATE_CONCERN",
+    "MODEL_SUPPORTED"
+   ]
+  },
+  {
+   "a": "Kyle Allen",
+   "b": "Jackson Hawes",
+   "r": 0.05400436913678323,
+   "same_team": true,
+   "classes": [
+    "QB_WITH_OWN_RECEIVER"
+   ],
+   "tags": [
+    "MODEL_SUPPORTED",
+    "ROLE_STATE_CONCERN"
+   ]
+  },
+  {
+   "a": "Kyle Allen",
+   "b": "Dawson Knox",
+   "r": 0.05376805157501187,
+   "same_team": true,
+   "classes": [
+    "QB_WITH_OWN_RECEIVER"
+   ],
+   "tags": [
+    "MODEL_SUPPORTED",
+    "ROLE_STATE_CONCERN"
+   ]
+  },
+  {
+   "a": "DJ Moore",
+   "b": "Kyle Allen",
+   "r": 0.0530113655203035,
+   "same_team": true,
+   "classes": [
+    "QB_WITH_OWN_RECEIVER"
+   ],
+   "tags": [
+    "ROLE_STATE_CONCERN",
+    "MODEL_SUPPORTED"
+   ]
+  },
+  {
+   "a": "Jared Goff",
+   "b": "Tom Kennedy",
+   "r": 0.05270308797609511,
+   "same_team": true,
+   "classes": [
+    "QB_WITH_OWN_RECEIVER"
+   ],
+   "tags": [
+    "MODEL_SUPPORTED",
+    "MODEL_SUPPORTED"
+   ]
+  },
+  {
+   "a": "Kyle Allen",
+   "b": "Keon Coleman",
+   "r": 0.044975561403903595,
+   "same_team": true,
+   "classes": [
+    "QB_WITH_OWN_RECEIVER"
+   ],
+   "tags": [
+    "MODEL_SUPPORTED",
+    "ROLE_STATE_CONCERN"
+   ]
+  },
+  {
+   "a": "Kyle Allen",
+   "b": "Keleki Latu",
+   "r": 0.03990949815228735,
+   "same_team": true,
+   "classes": [
+    "QB_WITH_OWN_RECEIVER"
+   ],
+   "tags": [
+    "MODEL_SUPPORTED",
+    "ROLE_STATE_CONCERN"
+   ]
+  },
+  {
+   "a": "Joshua Dobbs",
+   "b": "Tay Martin",
+   "r": 0.03785256498714052,
+   "same_team": true,
+   "classes": [
+    "QB_WITH_OWN_RECEIVER"
+   ],
+   "tags": [
+    "MODEL_SUPPORTED",
+    "MODEL_SUPPORTED"
+   ]
+  },
+  {
+   "a": "Jared Goff",
+   "b": "Sione Vaki",
+   "r": 0.03510407648159121,
+   "same_team": true,
+   "classes": [
+    "QB_WITH_OWN_BACK"
+   ],
+   "tags": [
+    "MODEL_SUPPORTED",
+    "MODEL_SUPPORTED"
+   ]
+  }
+ ],
+ "strongest_negative": [
+  {
+   "a": "Josh Allen",
+   "b": "Frank Gore Jr.",
+   "r": -0.04290019556721658,
+   "same_team": true,
+   "classes": [
+    "QB_WITH_OWN_BACK"
+   ],
+   "tags": [
+    "MODEL_SUPPORTED",
+    "ROLE_STATE_CONCERN"
+   ]
+  },
+  {
+   "a": "Dalton Kincaid",
+   "b": "Dawson Knox",
+   "r": -0.044286941953279674,
+   "same_team": true,
+   "classes": [
+    "SAME_TEAM_RECEIVERS"
+   ],
+   "tags": [
+    "ROLE_STATE_CONCERN",
+    "ROLE_STATE_CONCERN"
+   ]
+  },
+  {
+   "a": "Jared Goff",
+   "b": "Keon Coleman",
+   "r": -0.04780359858255911,
+   "same_team": false,
+   "classes": [],
+   "tags": [
+    "MODEL_SUPPORTED",
+    "ROLE_STATE_CONCERN"
+   ]
+  },
+  {
+   "a": "Khalil Shakir",
+   "b": "Joshua Palmer",
+   "r": -0.04789018672272463,
+   "same_team": true,
+   "classes": [
+    "SAME_TEAM_RECEIVERS"
+   ],
+   "tags": [
+    "ROLE_STATE_CONCERN",
+    "ROLE_STATE_CONCERN"
+   ]
+  },
+  {
+   "a": "Khalil Shakir",
+   "b": "Keon Coleman",
+   "r": -0.04902277888702349,
+   "same_team": true,
+   "classes": [
+    "SAME_TEAM_RECEIVERS"
+   ],
+   "tags": [
+    "ROLE_STATE_CONCERN",
+    "ROLE_STATE_CONCERN"
+   ]
+  },
+  {
+   "a": "Amon-Ra St. Brown",
+   "b": "Tom Kennedy",
+   "r": -0.049390584714571396,
+   "same_team": true,
+   "classes": [
+    "SAME_TEAM_RECEIVERS"
+   ],
+   "tags": [
+    "MODEL_SUPPORTED",
+    "MODEL_SUPPORTED"
+   ]
+  },
+  {
+   "a": "James Cook III",
+   "b": "Dawson Knox",
+   "r": -0.049719487745873724,
+   "same_team": true,
+   "classes": [],
+   "tags": [
+    "ROLE_STATE_CONCERN",
+    "ROLE_STATE_CONCERN"
+   ]
+  },
+  {
+   "a": "James Cook III",
+   "b": "Keon Coleman",
+   "r": -0.04976042605414669,
+   "same_team": true,
+   "classes": [],
+   "tags": [
+    "ROLE_STATE_CONCERN",
+    "ROLE_STATE_CONCERN"
+   ]
+  },
+  {
+   "a": "Jahmyr Gibbs",
+   "b": "Tay Martin",
+   "r": -0.04988880875807821,
+   "same_team": true,
+   "classes": [],
+   "tags": [
+    "MODEL_SUPPORTED",
+    "MODEL_SUPPORTED"
+   ]
+  },
+  {
+   "a": "Josh Allen",
+   "b": "Jared Goff",
+   "r": -0.05235851376880092,
+   "same_team": false,
+   "classes": [
+    "QB_WITH_OPPOSING_QB"
+   ],
+   "tags": [
+    "MODEL_SUPPORTED",
+    "MODEL_SUPPORTED"
+   ]
+  },
+  {
+   "a": "Jahmyr Gibbs",
+   "b": "Brock Wright",
+   "r": -0.052365238990688075,
+   "same_team": true,
+   "classes": [],
+   "tags": [
+    "MODEL_SUPPORTED",
+    "MODEL_SUPPORTED"
+   ]
+  },
+  {
+   "a": "James Cook III",
+   "b": "DJ Moore",
+   "r": -0.053343160805320596,
+   "same_team": true,
+   "classes": [],
+   "tags": [
+    "ROLE_STATE_CONCERN",
+    "ROLE_STATE_CONCERN"
+   ]
+  },
+  {
+   "a": "James Cook III",
+   "b": "Khalil Shakir",
+   "r": -0.054827794101402906,
+   "same_team": true,
+   "classes": [],
+   "tags": [
+    "ROLE_STATE_CONCERN",
+    "ROLE_STATE_CONCERN"
+   ]
+  },
+  {
+   "a": "Josh Allen",
+   "b": "James Cook III",
+   "r": -0.059107312638705216,
+   "same_team": true,
+   "classes": [
+    "QB_WITH_OWN_BACK"
+   ],
+   "tags": [
+    "MODEL_SUPPORTED",
+    "ROLE_STATE_CONCERN"
+   ]
+  },
+  {
+   "a": "Jahmyr Gibbs",
+   "b": "Jameson Williams",
+   "r": -0.05986033867949736,
+   "same_team": true,
+   "classes": [],
+   "tags": [
+    "MODEL_SUPPORTED",
+    "MODEL_SUPPORTED"
+   ]
+  },
+  {
+   "a": "Jahmyr Gibbs",
+   "b": "Joshua Dobbs",
+   "r": -0.06390039541225971,
+   "same_team": true,
+   "classes": [
+    "QB_WITH_OWN_BACK"
+   ],
+   "tags": [
+    "MODEL_SUPPORTED",
+    "MODEL_SUPPORTED"
+   ]
+  },
+  {
+   "a": "James Cook III",
+   "b": "Dalton Kincaid",
+   "r": -0.07414273545126511,
+   "same_team": true,
+   "classes": [],
+   "tags": [
+    "ROLE_STATE_CONCERN",
+    "ROLE_STATE_CONCERN"
+   ]
+  },
+  {
+   "a": "Jahmyr Gibbs",
+   "b": "Sam LaPorta",
+   "r": -0.08023778684654272,
+   "same_team": true,
+   "classes": [],
+   "tags": [
+    "MODEL_SUPPORTED",
+    "MODEL_SUPPORTED"
+   ]
+  },
+  {
+   "a": "Jahmyr Gibbs",
+   "b": "Amon-Ra St. Brown",
+   "r": -0.1073972199647749,
+   "same_team": true,
+   "classes": [],
+   "tags": [
+    "MODEL_SUPPORTED",
+    "MODEL_SUPPORTED"
+   ]
+  },
+  {
+   "a": "Ray Davis",
+   "b": "Frank Gore Jr.",
+   "r": -0.12163266422421039,
+   "same_team": true,
+   "classes": [
+    "SAME_TEAM_BACKS"
+   ],
+   "tags": [
+    "ROLE_STATE_CONCERN",
+    "ROLE_STATE_CONCERN"
+   ]
+  },
+  {
+   "a": "James Cook III",
+   "b": "Frank Gore Jr.",
+   "r": -0.23526229350598316,
+   "same_team": true,
+   "classes": [
+    "SAME_TEAM_BACKS"
+   ],
+   "tags": [
+    "ROLE_STATE_CONCERN",
+    "ROLE_STATE_CONCERN"
+   ]
+  },
+  {
+   "a": "Jahmyr Gibbs",
+   "b": "Sione Vaki",
+   "r": -0.2404858618749388,
+   "same_team": true,
+   "classes": [
+    "SAME_TEAM_BACKS"
+   ],
+   "tags": [
+    "MODEL_SUPPORTED",
+    "MODEL_SUPPORTED"
+   ]
+  },
+  {
+   "a": "James Cook III",
+   "b": "Ray Davis",
+   "r": -0.28728077576626687,
+   "same_team": true,
+   "classes": [
+    "SAME_TEAM_BACKS"
+   ],
+   "tags": [
+    "ROLE_STATE_CONCERN",
+    "ROLE_STATE_CONCERN"
+   ]
+  },
+  {
+   "a": "Josh Allen",
+   "b": "Kyle Allen",
+   "r": -0.43451441080362324,
+   "same_team": true,
+   "classes": [],
+   "tags": [
+    "MODEL_SUPPORTED",
+    "MODEL_SUPPORTED"
+   ]
+  },
+  {
+   "a": "Jared Goff",
+   "b": "Joshua Dobbs",
+   "r": -0.4636827899050054,
+   "same_team": true,
+   "classes": [],
+   "tags": [
+    "MODEL_SUPPORTED",
+    "MODEL_SUPPORTED"
+   ]
+  }
+ ]
+}

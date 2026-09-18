@@ -1,0 +1,192 @@
+"""The frozen DET @ BUF Showdown universe: draws, salaries, ids, tags.
+
+ONE LOADER, SO EVERY MODULE BELOW IS LOOKING AT THE SAME SLATE. The 2026-09-17
+portfolio was built by a script that joined DK salaries to model names inline
+and then threw the join away, so nothing afterwards could check what had been
+matched to what. This module is the join, it is the only join, and it refuses
+rather than guessing.
+
+NOTHING HERE READS A LIVE GAME. The draws are the sealed pregame board and the
+salaries are the pre-lock DK file. See LIVE_BARRIER.json.
+"""
+from __future__ import annotations
+
+import csv
+import json
+import pathlib
+import re
+import sys
+
+import numpy as np
+
+_REPO = pathlib.Path(__file__).resolve().parents[3]
+if str(_REPO) not in sys.path:
+    sys.path.insert(0, str(_REPO))
+
+from sportsplatform.governance.outcome import Cause, Outcome, State  # noqa: E402
+from nfl.production.dfs import projection_confidence as PC           # noqa: E402
+
+SPEC_VERSION = 'nfl-showdown-universe-1'
+FROZEN = _REPO / 'nfl/research/dfs/DET_BUF_2026W2/frozen'
+GAME_ID = '2026_02_DET_BUF'
+SALARY_CAP = 50000
+N_FLEX = 5
+CPT_MULTIPLIER = 1.5
+
+#: Officially inactive on 2026-09-17. Blocked, not capped.
+OFFICIAL_INACTIVE = ('Skyler Bell', 'Ty Johnson')
+
+#: Buffalo non-quarterback skill players. CS1 is quarterback-only, so none of
+#: these carries current-season role state, and the P2 diagnostic found an
+#: appearance inversion on this roster. The tag is a statement about the MODEL,
+#: never about the player.
+BUF_ROLE_CONCERN = (
+    'James Cook', 'Ray Davis', 'Frank Gore Jr.', 'DJ Moore', 'Khalil Shakir',
+    'Keon Coleman', 'Dalton Kincaid', 'Dawson Knox', 'Josh Palmer',
+    'Greg Dortch', 'Jackson Hawes', 'Keleki Latu')
+
+
+#: DECLARED aliases, DK spelling -> board spelling. One entry, one reason.
+#: Fuzzy matching is refused: it is how a wrong man gets written into a lineup.
+ALIASES = {'joshuapalmer': 'joshpalmer'}
+
+#: KICKERS ARE DELIBERATELY LEFT UNRESOLVED. The sealed board's kicking layer
+#: carries TEAM rows, not named players, so a kicker can only be matched by
+#: (team, position). That join was already refused once on this fixture and it
+#: is refused here for the same reason: it is an inference about a join, not an
+#: identity. The consequence is on the record -- the 2026-09-17 portfolio
+#: rostered Tyler Bass and Jake Bates at 22.5% each, and the model cannot name
+#: either of them.
+KICKER_JOIN_REFUSED = ('the kicking layer is team-keyed; resolving a kicker '
+                       'would require a (team, position) join')
+
+
+def norm(s: str) -> str:
+    s = re.sub(r'\s*\(\d+\)\s*$', '', (s or '').strip())
+    s = re.sub(r'\s+(Jr\.|Sr\.|II|III|IV)$', '', s)
+    k = re.sub(r'[^a-z]', '', s.lower())
+    return ALIASES.get(k, k)
+
+
+def _tag(name: str) -> str:
+    n = norm(name)
+    if n in {norm(x) for x in OFFICIAL_INACTIVE}:
+        return PC.KNOWN_INACTIVE_STALE
+    if n in {norm(x) for x in BUF_ROLE_CONCERN}:
+        return PC.ROLE_STATE_CONCERN
+    return PC.MODEL_SUPPORTED
+
+
+def load() -> Outcome:
+    """(players, dk draws) for the frozen slate, or a refusal."""
+    zp = FROZEN / 'sealed_player_draws.npz'
+    mp = FROZEN / 'sealed_player_draws_manifest.json'
+    sp = FROZEN / 'DKSalaries_showdown.csv'
+    for p in (zp, mp, sp):
+        if not p.exists():
+            return Outcome.blocked(
+                'SHOWDOWN_FROZEN_INPUT_MISSING', f'{p} is absent',
+                cause=Cause.DATA)
+    z = np.load(zp)
+    man = json.loads(mp.read_text())
+    board_names = {}
+    # gsis_id -> name, taken from the layer row ids plus the board's own names
+    bj = FROZEN.parent / 'frozen_board_names.json'
+    if bj.exists():
+        board_names = json.loads(bj.read_text())
+    ids = man['layers']['dk_scoring']['row_ids']
+    teams = man['layers']['dk_scoring'].get('row_teams') or [None] * len(ids)
+    dk = np.asarray(z['dk_scoring__dk_points'], dtype=np.float64)
+    if dk.shape[0] != len(ids):
+        return Outcome.fail(
+            'SHOWDOWN_DRAW_ROW_MISMATCH',
+            f'{dk.shape[0]} draw row(s) against {len(ids)} manifest id(s)',
+            cause=Cause.DATA)
+    by_norm = {}
+    for i, g in enumerate(ids):
+        nm = board_names.get(g)
+        by_norm.setdefault(norm(nm) if nm else None, []).append((i, g, nm))
+    # DK salary rows
+    rows = []
+    for r in csv.reader(sp.read_text().splitlines()):
+        if len(r) > 19 and r[11] in ('RB', 'QB', 'WR', 'TE', 'K', 'DST'):
+            rows.append({'pos': r[11], 'name': r[13].strip(), 'dk_id': r[14],
+                         'slot': r[15], 'salary': int(r[16]),
+                         'team': r[18]})
+    if not rows:
+        return Outcome.fail('SHOWDOWN_SALARY_FILE_EMPTY', str(sp),
+                            cause=Cause.DATA)
+    return Outcome.ok(
+        'SHOWDOWN_UNIVERSE_RAW', value={'dk': dk, 'ids': ids, 'teams': teams,
+                                        'salary_rows': rows, 'manifest': man},
+        detail=f'{dk.shape[0]} modelled player(s), {dk.shape[1]} draw(s), '
+               f'{len(rows)} DK salary row(s)',
+        spec_version=SPEC_VERSION, n_draws=int(dk.shape[1]))
+
+
+def build() -> Outcome:
+    """The joined slate. A DK row the model cannot name is IDENTITY_UNRESOLVED,
+    never dropped quietly and never matched by position and team."""
+    raw = load()
+    if raw.state is not State.PASS:
+        return raw
+    v = raw.value
+    dk, ids = v['dk'], v['ids']
+    names = json.loads(
+        (FROZEN.parent / 'frozen_board_names.json').read_text())
+    idx = {}
+    for i, g in enumerate(ids):
+        n = norm(names.get(g, ''))
+        if not n:
+            continue
+        idx.setdefault(n, []).append(i)
+    ambiguous = sorted(n for n, rows in idx.items() if len(rows) > 1)
+    if ambiguous:
+        return Outcome.fail(
+            'SHOWDOWN_AMBIGUOUS_MODEL_NAME',
+            f'{ambiguous} resolve to more than one draw row. Two players who '
+            f'could both be one name is exactly where a fuzzy match writes the '
+            f'wrong man into a lineup.', cause=Cause.DATA)
+    players, unresolved = [], []
+    for r in v['salary_rows']:
+        n = norm(r['name'])
+        row = idx.get(n)
+        tag = _tag(r['name'])
+        if r['pos'] == 'DST':
+            tag = PC.UNSUPPORTED
+        elif row is None:
+            tag = PC.IDENTITY_UNRESOLVED
+            unresolved.append(r['name'])
+        players.append({
+            'dk_id': r['dk_id'], 'name': r['name'], 'pos': r['pos'],
+            'team': r['team'], 'slot': r['slot'], 'salary': r['salary'],
+            'draw_row': (row[0] if row else None), 'tag': tag,
+            'key': n})
+    flex = [p for p in players if p['slot'] == 'FLEX']
+    cpt = {p['key']: p for p in players if p['slot'] == 'CPT'}
+    playable = [p for p in flex
+                if p['draw_row'] is not None
+                and not PC.POLICY[p['tag']]['blocked']
+                and p['key'] in cpt]
+    for p in playable:
+        p['cpt_salary'] = cpt[p['key']]['salary']
+        p['cpt_dk_id'] = cpt[p['key']]['dk_id']
+        p['draws'] = dk[p['draw_row']]
+    if not playable:
+        return Outcome.fail('SHOWDOWN_NO_PLAYABLE_PLAYERS',
+                            'every DK row was blocked or unresolved',
+                            cause=Cause.DATA)
+    n_draws = int(dk.shape[1])
+    tagcount = {}
+    for p in players:
+        tagcount[p['tag']] = tagcount.get(p['tag'], 0) + 1
+    return Outcome.ok(
+        'SHOWDOWN_UNIVERSE', value={'players': players, 'playable': playable,
+                                    'n_draws': n_draws},
+        detail=f'{len(playable)} playable of {len(flex)} DK FLEX row(s); '
+               f'{len(unresolved)} identity-unresolved; {n_draws} draws',
+        spec_version=SPEC_VERSION, game_id=GAME_ID, salary_cap=SALARY_CAP,
+        n_playable=len(playable), n_draws=n_draws,
+        identity_unresolved=sorted(set(unresolved)),
+        tag_counts=tagcount,
+        uses_live_game_outcome_data=False)
