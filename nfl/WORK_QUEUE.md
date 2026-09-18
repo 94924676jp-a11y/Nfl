@@ -15,6 +15,20 @@ artifact verification, its commit and its push have all completed and been
 read. A printed terminal line is not verification; the artifact or the remote
 ref is.
 
+## Regeneration obligation
+
+Three generated files must be refreshed before a commit that changes the tree,
+or their own tests fail:
+
+```
+python3.12 nfl/production/pipeline.py --write-read-inventory
+python3.12 nfl/tools/system_state.py --write
+python3.12 nfl/tools/agent_state.py --write
+```
+
+That is the contract working, not an inconvenience: a generated file that does
+not track the tree is exactly the defect P7 repaired.
+
 ## Discovery classification
 
 A newly discovered defect is classified before it is allowed to interrupt the
@@ -47,7 +61,7 @@ its downstream impact justifies it.
 
 ## ID: P7
 - **priority**: 2
-- **status**: ACTIVE
+- **status**: DONE
 - **dependencies**: P6
 - **description**: Generate a canonical `SYSTEM_STATE.json` and derive
   `CURRENT_STATE.md` from it. Two independently maintained truths is the
@@ -61,7 +75,7 @@ its downstream impact justifies it.
 
 ## ID: P8
 - **priority**: 3
-- **status**: QUEUED
+- **status**: DONE
 - **dependencies**: none
 - **description**: Reconcile Contract 4: the prose says 18/20 and the
   executable constant requires 19/20. Trace the chronology and resolve by
@@ -74,7 +88,7 @@ its downstream impact justifies it.
 
 ## ID: P9
 - **priority**: 4
-- **status**: QUEUED
+- **status**: ACTIVE
 - **dependencies**: none
 - **description**: Resume OAS1 from its amended preregistration state. Pass
   and rush stay separate. `GO_NO_GO` still records NO-GO gates and those stay
@@ -150,6 +164,24 @@ its downstream impact justifies it.
 - **acceptance criteria**:
   - a real FanDuel export is present with provenance;
   - no salary is inferred from DraftKings, at any point, for any player.
+
+## ID: PRE-PORCELAIN
+- **priority**: 11
+- **status**: QUEUED
+- **dependencies**: none
+- **description**: `sportsplatform/governance/commit_claim.py` calls
+  `git status --porcelain` and is the sole remaining offender of
+  `test_determinism_proof.test_v_only_the_identity_module_reads_working_tree_state`.
+  Pre-existing at `e050090` and at every baseline since. Named here rather
+  than left inside a 61-item failing total, because P7's own generators joined
+  that list for an hour and the only reason it was noticed is that the list is
+  printed.
+- **blocker**: none — deliberately low priority
+- **acceptance criteria**:
+  - the module reads working-tree state through `nfl/identity/code_identity`
+    or states why it cannot;
+  - the fix is not a widening of the rule's exemption list.
+- **classification**: NONBLOCKING_TECH_DEBT
 
 ## ID: SUITE-PRE
 - **priority**: 10

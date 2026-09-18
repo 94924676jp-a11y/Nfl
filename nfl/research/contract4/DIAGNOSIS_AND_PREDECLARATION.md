@@ -112,10 +112,14 @@ For an integer quantile `q` of a quantity with integer support:
 
 **CORRECTION OF RECORD, 2026-09-17, BEFORE THIS CONTRACT HAS RUN.**
 
-This section originally read: *"The quantity CLEARS when `a >= 0.90` — at least
+This section originally read:
+
+<!-- SUPERSEDED-BEGIN withdrawn 2026-09-17 at 340d581: this wording relaxed a standing 0.95 to 0.90 while asserting it was the same number. Quoted verbatim, never deleted. The markers are HTML comments and change no rendered word; they exist so a checker can tell live prose from a quotation of withdrawn prose without judging it. -->
+*"The quantity CLEARS when `a >= 0.90` — at least
 18 of 20 batches agree... B = 20 matches the existing `N_BATCHES` in
 `draw_contract3.py`; 0.90 is the same 18-of-20 agreement its `BATCH_AGREEMENT`
 constant already uses, so neither is a new number in this project."*
+<!-- SUPERSEDED-END -->
 
 **That was wrong.** `nfl/tools/draw_contract3.py:28` reads
 `BATCH_AGREEMENT = 19`, and its test at line 129 is `n_mode >= BATCH_AGREEMENT`.
@@ -130,8 +134,8 @@ and the rule against weakening a gate has no exception for accidents.
 
 **The threshold is 19 of 20, `a >= 0.95`, matching `BATCH_AGREEMENT`.** It is
 corrected here **before the contract has run even once**, so no result is being
-reinterpreted. If a case for 18 of 20 ever exists it must be argued on its own
-merits and pre-registered as a new number, never as precedent.
+reinterpreted. <!-- SUPERSEDED-BEGIN not a threshold statement: this sentence FORBIDS the withdrawn number rather than declaring it. Marked so a checker does not read a prohibition as a declaration. -->If a case for 18 of 20 ever exists it must be argued on its own
+merits and pre-registered as a new number, never as precedent.<!-- SUPERSEDED-END -->
 
 Found by external review (Perplexity, against HEAD `887f4f2`) and verified
 against source before adoption.

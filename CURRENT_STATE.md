@@ -1,6 +1,6 @@
 # NFL — current state
 
-**Generated** by `nfl/tools/system_state.py` at 2026-09-18T17:29:16.345271+00:00 from `SYSTEM_STATE.json`. Do not hand-edit this file: regenerate it.
+**Generated** by `nfl/tools/system_state.py` at 2026-09-18T17:30:30.958333+00:00 from `SYSTEM_STATE.json`. Do not hand-edit this file: regenerate it.
 
 Every value under `measured` was computed by reading this repository at the timestamp above. Every value under `declared` was asserted by somebody and says who, when, and why it cannot be measured here. Do not quote one as the other.
 
@@ -11,18 +11,18 @@ Every value under `measured` was computed by reading this repository at the time
 |  |  |
 |---|---|
 | branch | `claude/nfl-greenfield-architecture-stsxmk` |
-| HEAD | `44ff8ed` — P6: the dependency DAG stops being a specification |
-| HEAD committed | 2026-09-18T16:02:59+00:00 |
-| commits on branch | 876 |
-| source scope | 3 dirty source file(s) |
-| dirty tree entries (source and not) | 24 |
-| code_version | `44ff8ededa57c836330897a662f541fd0dc98705+src1[cf86ad0219920413]` |
+| HEAD | `9bb5610` — P7: SYSTEM_STATE.json is generated and CURRENT_STATE.md derives from it |
+| HEAD committed | 2026-09-18T17:30:09+00:00 |
+| commits on branch | 877 |
+| source scope | clean |
+| dirty tree entries (source and not) | 14 |
+| code_version | `9bb56108f5be0ca830d95202e8113d127ebab4a4+src1[44aa01d03783de18]` |
 | python modules | 653 |
 | lines of python | 209,209 |
 
 ## 2. Test suite
 
-Source: `nfl/research/suite_attribution/SUITE_DIFF_p6_p7p8.json`. measured at WORKING_TREE, HEAD is 44ff8ed. This total is not a statement about the tree as it stands.
+Source: `nfl/research/suite_attribution/SUITE_DIFF_p6_p7p8.json`. measured at WORKING_TREE, HEAD is 9bb5610. This total is not a statement about the tree as it stands.
 
 |  | at WORKING_TREE | baseline 44ff8ed | delta |
 |---|---|---|---|
