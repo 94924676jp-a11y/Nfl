@@ -1,0 +1,105 @@
+{
+ "artifact": "DET_BUF_2026W2_POSTGAME_OUTCOME",
+ "assigned_to": "docs/AGENT_OUTBOX.md OUT-023",
+ "attempted_at_utc": "2026-09-18T03:43:06Z",
+ "blocks": [
+  "PHASE_2_projection_grading",
+  "PHASE_3_role_defect_review",
+  "PHASE_4_prop_grading",
+  "PHASE_5_card_grading",
+  "PHASE_6_portfolio_grading",
+  "PHASE_7_regret_analysis",
+  "PHASE_8_captain_review",
+  "PHASE_9_punt_review",
+  "PHASE_10_calibration",
+  "PHASE_11_game_environment_review"
+ ],
+ "box_score": null,
+ "cause": "DATA",
+ "code": "POSTGAME_OUTCOME_NOT_CAPTURED",
+ "drives": null,
+ "final_score": null,
+ "game_id": "2026_02_DET_BUF",
+ "hours_after_kickoff": 3.5,
+ "kickoff_utc": "2026-09-18T00:15:00Z",
+ "operator_relayed_unverified": {
+  "claim": "the final was a high-scoring 41-31 game",
+  "hash": null,
+  "retrieved_at": null,
+  "source_url": null,
+  "status": "UNVERIFIED_SECONDARY -- NOT INGESTED",
+  "where": "stated in the Phase 11 instruction of the postgame request",
+  "which_team_scored_41": "NOT STATED",
+  "why_not_ingested": "it carries no source, no timestamp and no hash, it does not say which side scored 41, and a box score cannot be graded from a final score in any case. It is recorded so a later capture can be reconciled against what was said, exactly as the RotoWire inactives were."
+ },
+ "play_by_play": null,
+ "raw_evidence_sha256": "62433d67e598aa479a308ca99a1d5045fd1aefcca9ca687789e8525eab6e0602",
+ "retries": [
+  {
+   "attempted_at_utc": "2026-09-18T04:07:07Z",
+   "bytes": 498905,
+   "http": 200,
+   "note": "still week 1 only. The publication lag has not cleared; the block stands and OUT-023 remains assigned.",
+   "rows": 1118,
+   "sha256_16": "af043a5d702df0f7",
+   "source": "nflverse stats_player_week_2026.csv",
+   "week2_det_buf_rows": 0,
+   "weeks_present": [
+    "1"
+   ]
+  }
+ ],
+ "scoring_plays": null,
+ "snap_counts": null,
+ "sources_checked": [
+  {
+   "det_buf_rows": 0,
+   "http": 200,
+   "note": "BYTE-IDENTICAL to the capture taken at 18:57Z before kickoff (b69f55a172965e16). The file has not moved, so this is not a parsing problem -- week 2 has not been published.",
+   "sha256": "b69f55a172965e16c2ac9104dc96e268dd56dc357ebdfd8ac2c68151afe9da59",
+   "source": "nflverse play_by_play_2026.csv.gz",
+   "weeks_present": [
+    "1"
+   ]
+  },
+  {
+   "http": 200,
+   "note": "no week 2 rows",
+   "source": "nflverse stats_player_week_2026.csv",
+   "weeks_present": [
+    "1"
+   ]
+  },
+  {
+   "http": 200,
+   "note": "no week 2 rows",
+   "source": "nflverse snap_counts_2026.csv",
+   "weeks_present": [
+    "1"
+   ]
+  },
+  {
+   "http": 404,
+   "note": "that release path 404s; the vintage copy this repo holds carries DET_BUF with EMPTY home_score, away_score, result and total",
+   "source": "nflverse schedules.csv"
+  },
+  {
+   "http": "000",
+   "note": "403 at CONNECT, per-host network policy",
+   "source": "https://www.nfl.com/games/lions-at-bills-2026-reg-2"
+  },
+  {
+   "http": "000",
+   "note": "403 at CONNECT",
+   "source": "https://www.espn.com/nfl/boxscore"
+  },
+  {
+   "http": "000",
+   "note": "403 at CONNECT",
+   "source": "https://www.detroitlions.com/"
+  }
+ ],
+ "spec_version": "det-buf-2026w2-postgame-1",
+ "state": "BLOCKED",
+ "what_would_unblock": "nflverse week-2 play_by_play plus stats_player_week and snap_counts, OR an official box score delivered through the same delivery tier the inactives used."
+}

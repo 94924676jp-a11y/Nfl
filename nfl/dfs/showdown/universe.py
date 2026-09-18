@@ -77,6 +77,12 @@ def _tag(name: str) -> str:
     return PC.MODEL_SUPPORTED
 
 
+#: Public alias. The postgame prop grader needs the same tag the DFS
+#: universe assigns, and re-deriving it there would be a second copy of
+#: the BUF role-concern list that could drift from this one.
+confidence_tag = _tag
+
+
 def load() -> Outcome:
     """(players, dk draws) for the frozen slate, or a refusal."""
     zp = FROZEN / 'sealed_player_draws.npz'

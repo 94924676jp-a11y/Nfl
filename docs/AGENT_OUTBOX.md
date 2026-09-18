@@ -1419,3 +1419,58 @@ Dropping a verified table at
 ### Not asked for
 
 No projections, no ownership, no contest results. Site rules and a salary file.
+
+---
+
+## 2026-09-18T04:10Z — OUT-023: the DET @ BUF final outcome. ASSIGNED, not blocked.
+
+**What is needed:** the authoritative final result of `2026_02_DET_BUF`,
+kickoff 2026-09-18T00:15:00Z — final score by side, and a per-player stat line
+for every player who took a snap, covering the twelve fields
+`nfl/postgame/outcome.py:STATS` names: `pass_att pass_cmp pass_yards pass_td
+interceptions rush_att rush_yards rush_td targets receptions rec_yards rec_td`.
+
+Preferred form, in order: the nflverse `stats_player_week_2026` row set once it
+carries week 2; the nflverse `play_by_play_2026` file once it does; an official
+box score with its URL and retrieval time.
+
+**What was already tried here, with results** (recorded in
+`nfl/research/dfs/DET_BUF_2026W2/POSTGAME_OUTCOME/CAPTURE_ATTEMPT.json`):
+
+| source | result |
+|---|---|
+| nflverse `play_by_play_2026.csv.gz` | HTTP 200, sha256 `b69f55a172965e16` — **byte-identical to the pre-kickoff capture**, week 1 only, 0 DET_BUF rows |
+| nflverse `stats_player_week_2026.csv` | HTTP 200, week 1 only |
+| nflverse `snap_counts_2026.csv` | HTTP 200, week 1 only |
+| nflverse `schedules.csv` | HTTP 404 |
+| nfl.com, espn.com, detroitlions.com | 403 at CONNECT |
+
+This is a publication lag, not a failure: the game ended a few hours ago and
+the weekly files had not rebuilt. **It is assigned rather than blocked** — if
+the other agent can reach a box score now, it does not need to wait for the
+nflverse rebuild.
+
+**What must travel with the bytes.** Source URL, retrieval timestamp in UTC,
+and the sha256 of the raw file. `nfl/postgame/outcome.py` refuses an artifact
+without `source`, `retrieved_at_utc` and `source_sha256`, and it is right to.
+
+**What must NOT be sent.** A score recalled in conversation. The sentence "a
+high-scoring 41-31 game" reached this executor and is recorded as
+`UNVERIFIED_SECONDARY — NOT INGESTED`: it carries no source, no timestamp, no
+hash, and it does not even say which side scored 41. Three graders and a
+prospective ledger block are built, tested and waiting; all of them refuse
+until a verified artifact lands at
+`nfl/research/dfs/DET_BUF_2026W2/POSTGAME_OUTCOME/OUTCOME.json`.
+
+**A second, smaller request, and it is now permanently unrecoverable if it is
+not already held.** There is no closing player-prop vintage for this game. The
+only prop capture is 2026-09-17T21:44–21:45Z, about two and a half hours before
+kickoff; vintages 2 and 3 are game-line displays at 23:05Z and 23:06Z. If a
+Hard Rock player-prop snapshot from nearer kickoff exists in storage outside
+this checkout, it would make a closing-line comparison possible. If it does
+not, closing-line value for DET @ BUF props stays `NOT_AVAILABLE` and is stated
+as such rather than approximated from the pre-kickoff board.
+
+**Not asked for.** No projections, no ownership, no contest results, no market
+prices as model input. Market data may only evaluate a forecast that was sealed
+before it.
