@@ -35,6 +35,9 @@ import subprocess
 import sys
 
 _REPO = pathlib.Path(__file__).resolve().parents[2]
+if str(_REPO) not in sys.path:
+    sys.path.insert(0, str(_REPO))
+
 QUEUE = _REPO / 'nfl' / 'WORK_QUEUE.md'
 STATE = _REPO / 'nfl' / 'AGENT_STATE.json'
 HANDOFF = _REPO / 'nfl' / 'HANDOFF.md'
@@ -45,6 +48,49 @@ GENERATOR = 'nfl/tools/agent_state.py'
 
 class QueueError(RuntimeError):
     pass
+
+
+def worktree_state() -> dict:
+    """Working-tree dirtiness, FROM THE MODULE THAT OWNS IT.
+
+    `nfl/identity/` is the only place in this repository permitted to ask git
+    about working-tree state; `test_determinism_proof` sweeps every source
+    module for a `--porcelain` call and fails on any other. A first version of
+    this generator ran `git status --porcelain` itself and joined
+    `commit_claim.py` on that offender list.
+
+    The rule is right here for a second reason, which is this control layer's
+    own reason for existing: an independently computed view of "what is dirty"
+    is a second truth, and the two drift. So the repair is a call into
+    `code_identity`, not an exemption from the rule.
+
+    `n_dirty_tree_entries_observed` is carried as a DIAGNOSTIC. The identity
+    module keeps it out of `ident` deliberately, because anything reading
+    generated artifact state that reaches a sealed body changes a forecast id
+    for byte-identical draws -- measured, in the Q9 dry run. `AGENT_STATE.json`
+    and `SYSTEM_STATE.json` are not sealed forecast artifacts and nothing
+    hashes them into one, which is why it is lawful to record it here and
+    would not be there.
+    """
+    from sportsplatform.governance.outcome import State
+    from nfl.identity import code_identity as CI
+    o = CI.code_identity()
+    if o.state is not State.PASS:
+        return {'state': 'NOT_MEASURED', 'why': f'{o.code}: {o.detail}'[:300]}
+    v = o.value
+    return {
+        'commit': v['commit'],
+        'code_version': v['code_version'],
+        'source_scope_clean': v['source_scope_clean'],
+        'dirty_source_files': [e['path'] for e in v['dirty_source_files']],
+        'n_dirty_source_files': v['n_dirty_source_files'],
+        'n_dirty_tree_entries_observed':
+            o.evidence.get('n_dirty_tree_entries_observed'),
+        'scope_note':
+            'dirty_source_files is SOURCE scope only -- the .py files the '
+            'identity contract hashes. A changed .md or .json is counted in '
+            'n_dirty_tree_entries_observed and is not listed.',
+    }
 
 
 def _git(*args) -> str:
@@ -150,12 +196,8 @@ def build(path=None) -> dict:
         by_status.setdefault(it['status'], []).append(it['id'])
     active = [it for it in items if it['status'] == 'ACTIVE']
     eligible = [it['id'] for it in items if it['status'] == 'QUEUED']
-    # `XY PATH`: the code is two columns wide and either may be blank,
-    # so the path starts after column 2 and is found by stripping, not
-    # by a fixed slice. A fixed [3:] ate the first character of a path
-    # whose code was `M ` rather than ` M`.
-    dirty = [ln[2:].strip() for ln in
-             _git('status', '--porcelain').splitlines() if ln.strip()]
+    wt = worktree_state()
+    dirty = wt.get('dirty_source_files', [])
     return {
         'generated_by': GENERATOR,
         'generated_at': dt.datetime.now(dt.timezone.utc).isoformat(),
@@ -166,8 +208,9 @@ def build(path=None) -> dict:
             'head_subject': _git('log', '-1', '--pretty=%s'),
             'remote_head': _git('rev-parse', '--short',
                                 '@{upstream}') or 'NO_UPSTREAM',
-            'dirty_paths': dirty,
-            'is_clean': not dirty,
+            'dirty_source_files': dirty,
+            'worktree': wt,
+            'is_clean': bool(wt.get('source_scope_clean')),
         },
         'active_task': (active[0]['id'] if active else None),
         'active_task_position': (active[0]['queue_position']
@@ -212,10 +255,12 @@ def handoff(state: dict) -> str:
         '## Where the repository is',
         '',
         f'- branch `{g["branch"]}` at `{g["head_short"]}` — {g["head_subject"]}',
-        f'- working tree: '
+        f'- source scope: '
         + ('clean' if g['is_clean']
-           else f'{len(g["dirty_paths"])} uncommitted path(s): '
-                + ', '.join(g['dirty_paths'][:8])),
+           else f'{len(g["dirty_source_files"])} dirty source file(s): '
+                + ', '.join(g['dirty_source_files'][:8]))
+        + f' ({g["worktree"].get("n_dirty_tree_entries_observed")} dirty tree '
+          f'entries in total, source and not)',
         '',
         '## Active task',
         '',

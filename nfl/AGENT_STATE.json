@@ -1,36 +1,36 @@
 {
  "generated_by": "nfl/tools/agent_state.py",
- "generated_at": "2026-09-18T16:02:25.715423+00:00",
+ "generated_at": "2026-09-18T17:29:48.776141+00:00",
  "git": {
-  "head": "7d46f395f588ff8b94e07dc9921185f58a2b1c2d",
-  "head_short": "7d46f39",
+  "head": "44ff8ededa57c836330897a662f541fd0dc98705",
+  "head_short": "44ff8ed",
   "branch": "claude/nfl-greenfield-architecture-stsxmk",
-  "head_subject": "Suite attributed: seven new failures, one cause, and it was my own guard",
+  "head_subject": "P6: the dependency DAG stops being a specification",
   "remote_head": "NO_UPSTREAM",
-  "dirty_paths": [
-   "nfl/production/pipeline.py",
-   "nfl/production/run_forecast.py",
-   "nfl/prospective/q9shadow/Q9_SHADOW_DRYRUN_SEAL_LEDGER.jsonl",
-   "nfl/research/v2/r5/active_board_pointer.json",
-   "nfl/research/v4/p7/P7_DEPENDENCY_DAG_SPEC.md",
-   "DKEntries_UPLOAD_DET_BUF_40.csv",
-   "NFL_THURSDAY_DET_BUF_RETURN.md",
-   "nfl/AGENT_STATE.json",
-   "nfl/HANDOFF.md",
-   "nfl/WORK_QUEUE.md",
-   "nfl/research/suite_attribution/SUITE_DIFF_3270829_p6_dag.json",
-   "nfl/research/suite_attribution/suite_p6_dag.log",
-   "nfl/research/v4/p7/P7_DECLARED_READS.json",
-   "nfl/tests/test_agent_state.py",
-   "nfl/tests/test_p7_dag.py",
-   "nfl/tools/agent_state.py"
+  "dirty_source_files": [
+   "nfl/tools/agent_state.py",
+   "nfl/tools/suite_diff.py",
+   "nfl/tools/system_state.py"
   ],
+  "worktree": {
+   "commit": "44ff8ededa57c836330897a662f541fd0dc98705",
+   "code_version": "44ff8ededa57c836330897a662f541fd0dc98705+src1[cf86ad0219920413]",
+   "source_scope_clean": false,
+   "dirty_source_files": [
+    "nfl/tools/agent_state.py",
+    "nfl/tools/suite_diff.py",
+    "nfl/tools/system_state.py"
+   ],
+   "n_dirty_source_files": 3,
+   "n_dirty_tree_entries_observed": 24,
+   "scope_note": "dirty_source_files is SOURCE scope only -- the .py files the identity contract hashes. A changed .md or .json is counted in n_dirty_tree_entries_observed and is not listed."
+  },
   "is_clean": false
  },
- "active_task": "P7",
- "active_task_position": 2,
+ "active_task": "P9",
+ "active_task_position": 4,
  "n_active": 1,
- "last_completed_task": "P6",
+ "last_completed_task": "P8",
  "queue": [
   {
    "id": "P6",
@@ -58,7 +58,7 @@
     "no number in either file is retyped from prose."
    ],
    "priority": "2",
-   "status": "ACTIVE",
+   "status": "DONE",
    "dependencies": "P6",
    "description": "Generate a canonical `SYSTEM_STATE.json` and derive `CURRENT_STATE.md` from it. Two independently maintained truths is the defect; one generated from the other is the repair.",
    "blocker": "none known",
@@ -72,7 +72,7 @@
     "test `CONTRACT_TEXT_AND_EXECUTABLE_CONSTANT_MUST_AGREE` exists and passes."
    ],
    "priority": "3",
-   "status": "QUEUED",
+   "status": "DONE",
    "dependencies": "none",
    "description": "Reconcile Contract 4: the prose says 18/20 and the executable constant requires 19/20. Trace the chronology and resolve by append-only supersession, never by editing the older text.",
    "blocker": "none known",
@@ -85,7 +85,7 @@
     "no gate is loosened to obtain a GO."
    ],
    "priority": "4",
-   "status": "QUEUED",
+   "status": "ACTIVE",
    "dependencies": "none",
    "description": "Resume OAS1 from its amended preregistration state. Pass and rush stay separate. `GO_NO_GO` still records NO-GO gates and those stay recorded.",
    "blocker": "none known",
@@ -158,6 +158,20 @@
    "queue_position": 9
   },
   {
+   "id": "PRE-PORCELAIN",
+   "acceptance_criteria": [
+    "the module reads working-tree state through `nfl/identity/code_identity` or states why it cannot",
+    "the fix is not a widening of the rule's exemption list."
+   ],
+   "priority": "11",
+   "status": "QUEUED",
+   "dependencies": "none",
+   "description": "`sportsplatform/governance/commit_claim.py` calls `git status --porcelain` and is the sole remaining offender of `test_determinism_proof.test_v_only_the_identity_module_reads_working_tree_state`. Pre-existing at `e050090` and at every baseline since. Named here rather than left inside a 61-item failing total, because P7's own generators joined that list for an hour and the only reason it was noticed is that the list is printed.",
+   "blocker": "none \u2014 deliberately low priority",
+   "classification": "NONBLOCKING_TECH_DEBT",
+   "queue_position": 10
+  },
+  {
    "id": "SUITE-PRE",
    "acceptance_criteria": [
     "any failure fixed is traced to its cause and its test is updated rather than suppressed."
@@ -167,21 +181,22 @@
    "dependencies": "none",
    "description": "The 136 PRE_EXISTING suite failures classified at `7d46f39`. Not to be fixed merely to obtain a green suite; to be worked deliberately, by cause, when a cause is on the critical path.",
    "blocker": "none \u2014 deliberately low priority",
-   "queue_position": 10
+   "queue_position": 11
   }
  ],
  "queue_by_status": {
   "DONE": [
-   "P6"
+   "P6",
+   "P7",
+   "P8"
   ],
   "ACTIVE": [
-   "P7"
+   "P9"
   ],
   "QUEUED": [
-   "P8",
-   "P9",
    "A3",
    "A5",
+   "PRE-PORCELAIN",
    "SUITE-PRE"
   ],
   "BLOCKED": [
@@ -205,9 +220,9 @@
   }
  ],
  "next_three_eligible": [
-  "P8",
-  "P9",
-  "A3"
+  "A3",
+  "A5",
+  "PRE-PORCELAIN"
  ],
  "most_recent_suite_classification": {
   "artifact": "nfl/research/suite_attribution/SUITE_ATTRIBUTION_e050090_3270829.json",

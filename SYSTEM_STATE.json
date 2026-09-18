@@ -1,0 +1,452 @@
+{
+ "declared": [
+  {
+   "claim": "This executor has no outbound network. The egress proxy returns 403 on every outbound request, including to nfl.com, measured from two separate cloud sessions rather than inferred from one.",
+   "declared_at": "2026-09-07",
+   "declared_by": "agent (this checkout), corroborated by a second session",
+   "id": "EGRESS_DENIED",
+   "status": "STANDING",
+   "what_would_verify": "an executor with egress to nfl.com that can run at kickoff\u221290 minutes.",
+   "why_not_measurable": "a repository read cannot establish a network fact, and a generator that tried would be measuring the moment it ran rather than the standing policy."
+  },
+  {
+   "claim": "A second agent on this project has network, holds the live sportsbook odds connector, can see project storage outside this git checkout, and can run long simulations.",
+   "declared_at": "2026-09-07",
+   "declared_by": "owner",
+   "id": "NETWORKED_AGENT_EXISTS",
+   "status": "STANDING",
+   "what_would_verify": "nothing here; it is a standing fact about the team. Its operational consequence is written down instead: a task blocked only for this executor is **assigned**, not blocked, and the request goes into `docs/AGENT_OUTBOX.md` before anything is marked blocked.",
+   "why_not_measurable": "the other agent's capabilities are not recorded in this tree."
+  },
+  {
+   "claim": "No money has been staked and none may be. Real money is NOT ENABLED and the weekly exposure cap is deliberately UNSET.",
+   "declared_at": "standing",
+   "declared_by": "owner",
+   "id": "REAL_MONEY_NOT_ENABLED",
+   "status": "STANDING",
+   "what_would_verify": "an owner ruling changing it. Until then the cap stays unstated and is not filled in.",
+   "why_not_measurable": "a governance decision, not a repository property. The repository can show the flag; it cannot show the intent behind it."
+  },
+  {
+   "claim": "V2 is not earned. A version number follows evidence; it is not a label applied in advance to work that hopes to earn it.",
+   "declared_at": "standing",
+   "declared_by": "owner",
+   "id": "V2_NOT_EARNED",
+   "status": "STANDING",
+   "what_would_verify": "a methodological change large enough to justify it, demonstrated on data that selected none of it.",
+   "why_not_measurable": "promotion is a decision."
+  },
+  {
+   "claim": "FanDuel single-game rules are recorded at provenance `VERIFIED_RULE_VALUE_RELAYED_SOURCE`. They were relayed, not read from a FanDuel document by this executor, and the provenance is not upgraded.",
+   "declared_at": "2026-09-16",
+   "declared_by": "agent, on the relay",
+   "id": "FANDUEL_PROVENANCE",
+   "status": "STANDING",
+   "what_would_verify": "a FanDuel slate export or rules page retrieved with provenance. Until then OUT-022C stays open and no salary is inferred from DraftKings.",
+   "why_not_measurable": "the repository holds the values; it cannot hold the fact of having seen the source."
+  },
+  {
+   "claim": "Sportsbook prices may evaluate a forecast and may never feed one. DFS ownership and contest behaviour never flow backward into football prediction.",
+   "declared_at": "standing",
+   "declared_by": "owner",
+   "id": "MARKET_IS_EVALUATION_ONLY",
+   "status": "STANDING",
+   "what_would_verify": "nothing; it is the rule. The DAG's `EDGE_DECLARES_MARKET_FIELD` refusal is its enforcement, not its source.",
+   "why_not_measurable": "the repository can be audited for a market column reaching a model \u2014 and the P7 dependency DAG now does exactly that for the `schedules` blob's price columns \u2014 but the rule itself is a decision."
+  },
+  {
+   "claim": "The state of any GitHub-hosted capture routine \u2014 enabled, disabled, last fired \u2014 is not knowable from this checkout.",
+   "declared_at": "2026-09-18",
+   "declared_by": "agent",
+   "id": "SCHEDULED_CAPTURE_STATE",
+   "status": "STANDING",
+   "what_would_verify": "a scheduler query by an agent that can make one, or a commit arriving on the branch from a runner. What this repository CAN say is measured instead: whether any capture is recorded in the manifest and when the newest one was retrieved.",
+   "why_not_measurable": "routines live in a scheduler this executor cannot query. The previous `CURRENT_STATE.md` asserted a routine was DISABLED and recorded, in the same file, that a later firing reported success with no commit ever reaching the branch \u2014 an unresolved contradiction that it presented as state."
+  }
+ ],
+ "generated_at": "2026-09-18T17:29:16.345271+00:00",
+ "generated_by": "nfl/tools/system_state.py",
+ "measured": {
+  "assumptions": {
+   "assumptions": [
+    {
+     "claim": "A non-QB skill player whose prior-season appearance rate is 1.0, and who has taken opportunity in every current-season week so far, will take opportunity in the next week with probability exactly 1.0.",
+     "criticality": "CRITICAL",
+     "id": "A1_APPEARANCE_CERTAINTY",
+     "status": "FALSIFIED"
+    },
+    {
+     "claim": "When a player is absent, his opportunity is redistributed to the rest of his room in proportion to their existing shares.",
+     "criticality": "CRITICAL",
+     "id": "A2_PROPORTIONAL_REDISTRIBUTION",
+     "status": "FALSIFIED"
+    },
+    {
+     "claim": "A player's role share carries across a regime change -- a new coordinator, a new starting quarterback, or a mid-season trade -- so prior-season share remains the right prior.",
+     "criticality": "MATERIAL",
+     "id": "A3_ROLE_CONTINUITY_ACROSS_REGIME_CHANGE",
+     "status": "DECLARED"
+    },
+    {
+     "claim": "A club's game-level offensive volume can be drawn independently of the opponent's and of the evolving score, so a static team-volume layer is sufficient.",
+     "criticality": "CRITICAL",
+     "id": "A4_STATIC_TEAM_VOLUME_SUFFICIENCY",
+     "status": "DECLARED"
+    },
+    {
+     "claim": "A player's touchdown conversion rate per opportunity is portable: it transfers across seasons and across usage levels, so yardage and touchdowns can be modelled from the same opportunity draw without ",
+     "criticality": "MATERIAL",
+     "id": "A5_TD_CONVERSION_PORTABILITY",
+     "status": "DECLARED"
+    }
+   ],
+   "by_status": {
+    "DECLARED": 3,
+    "FALSIFIED": 2
+   },
+   "n": 5
+  },
+  "capture": {
+   "by_source": {
+    "depth_charts": 471,
+    "espn_injuries_json": 462,
+    "hardrock_market_snapshot": 1,
+    "injuries": 472,
+    "official_inactives": 483,
+    "official_injury_report": 465,
+    "official_status_evidence": 1,
+    "official_transactions": 462,
+    "pbp": 4,
+    "pbp_participation": 383,
+    "schedules": 471,
+    "snap_counts": 383,
+    "weekly_rosters": 471
+   },
+   "by_state": {
+    "BLOCKED": 567,
+    "DEFERRED": 40,
+    "FAIL": 108,
+    "NOT_APPLICABLE": 766,
+    "PASS": 3048
+   },
+   "manifest_rows": 4529,
+   "retrieved_at_earliest": "2026-09-06T18:50:49.540119+00:00",
+   "retrieved_at_latest": "2026-09-17T23:42:25.952893+00:00",
+   "vintage_store_by_family": {
+    "delivered_injury_evidence": 1,
+    "depth_charts": 13,
+    "espn_injuries_json": 428,
+    "hardrock_market_snapshot": 1,
+    "injuries": 9,
+    "official_inactives": 359,
+    "official_injury_report": 354,
+    "official_status_evidence": 1,
+    "pbp_2024": 1,
+    "pbp_2025": 1,
+    "pbp_2026": 1,
+    "schedules": 267,
+    "weekly_rosters": 13
+   },
+   "vintage_store_files": 1449
+  },
+  "code": {
+   "TOTAL": {
+    "lines": 209209,
+    "modules": 653
+   },
+   "nfl/capture": {
+    "lines": 6334,
+    "modules": 16
+   },
+   "nfl/dfs": {
+    "lines": 2377,
+    "modules": 17
+   },
+   "nfl/identity": {
+    "lines": 1084,
+    "modules": 5
+   },
+   "nfl/postgame": {
+    "lines": 1488,
+    "modules": 8
+   },
+   "nfl/product": {
+    "lines": 8677,
+    "modules": 23
+   },
+   "nfl/production": {
+    "lines": 36763,
+    "modules": 70
+   },
+   "nfl/prospective": {
+    "lines": 7398,
+    "modules": 18
+   },
+   "nfl/research": {
+    "lines": 62414,
+    "modules": 266
+   },
+   "nfl/tests": {
+    "lines": 66895,
+    "modules": 181
+   },
+   "nfl/tools": {
+    "lines": 13324,
+    "modules": 36
+   },
+   "sportsplatform": {
+    "lines": 2455,
+    "modules": 13
+   }
+  },
+  "dependency_dag": {
+   "audit_code": "EVERY_VINTAGE_READ_DECLARED",
+   "audit_state": "PASS",
+   "audited_roots": [
+    "nfl/production/",
+    "nfl/product/",
+    "nfl/dfs/",
+    "nfl/capture/"
+   ],
+   "n_edges": 27,
+   "n_runtime_keyed": 3,
+   "not_implemented": [
+    "PHASE_2: a read(node, cut) accessor. Every read below still happens by globbing a directory; the declaration bounds who reads what, it does not mediate the bytes.",
+    "PHASE_3: content-addressed recomputation ACROSS RUNS. The identity algebra and the cache exist and are exercised inside a run; nothing is persisted between runs yet."
+   ],
+   "phase": "PHASE_1_DECLARATION_ONLY",
+   "readers_per_producer": {
+    "depth_charts": 3,
+    "espn_injuries_json": 1,
+    "injuries": 2,
+    "schedules": 4,
+    "vintage_manifest": 6,
+    "weekly_rosters": 11
+   },
+   "spec_version": "p7-dependency-dag-phase1"
+  },
+  "forecast_artifacts": {
+   "live_board_directories": 18,
+   "live_board_names_sample": [
+    "2026_01_ARI_LAC",
+    "2026_01_ATL_PIT",
+    "2026_01_BAL_IND",
+    "2026_01_BUF_HOU",
+    "2026_01_CHI_CAR",
+    "2026_01_CLE_JAX"
+   ],
+   "run_status_by_status": {
+    "REFUSED": 10,
+    "SEALED": 150
+   },
+   "sealed_run_status_files": 160
+  },
+  "git": {
+   "branch": "claude/nfl-greenfield-architecture-stsxmk",
+   "dirty_source_files": [
+    "nfl/tools/agent_state.py",
+    "nfl/tools/suite_diff.py",
+    "nfl/tools/system_state.py"
+   ],
+   "head": "44ff8ededa57c836330897a662f541fd0dc98705",
+   "head_committed_at": "2026-09-18T16:02:59+00:00",
+   "head_short": "44ff8ed",
+   "head_subject": "P6: the dependency DAG stops being a specification",
+   "is_clean": false,
+   "n_commits_on_branch": 876,
+   "remote_head": "3270829ca46e46f44285c5ae81952c31921bdda5",
+   "worktree": {
+    "code_version": "44ff8ededa57c836330897a662f541fd0dc98705+src1[cf86ad0219920413]",
+    "commit": "44ff8ededa57c836330897a662f541fd0dc98705",
+    "dirty_source_files": [
+     "nfl/tools/agent_state.py",
+     "nfl/tools/suite_diff.py",
+     "nfl/tools/system_state.py"
+    ],
+    "n_dirty_source_files": 3,
+    "n_dirty_tree_entries_observed": 24,
+    "scope_note": "dirty_source_files is SOURCE scope only -- the .py files the identity contract hashes. A changed .md or .json is counted in n_dirty_tree_entries_observed and is not listed.",
+    "source_scope_clean": false
+   }
+  },
+  "governance": {
+   "production_readiness": {
+    "artifact": "nfl/production/production_readiness.json",
+    "by_state": {
+     "BASELINE": 1,
+     "GREEN": 10,
+     "PARTIAL": 1
+    },
+    "n_capabilities": 12,
+    "not_green": [
+     {
+      "id": 6,
+      "name": "generate player-level football distributions",
+      "state": "PARTIAL"
+     },
+     {
+      "id": 8,
+      "name": "generate joint draw artifacts",
+      "state": "BASELINE"
+     }
+    ],
+    "updated_utc": "2026-09-08"
+   }
+  },
+  "postgame": {
+   "captured_outcomes": {
+    "games": [
+     "DET_BUF_2026W2"
+    ],
+    "n": 1
+   },
+   "prospective_evaluation_ledger": {
+    "blocks": [
+     "DET_BUF_2026W2"
+    ],
+    "by_status": {
+     "AWAITING_OUTCOME": 1,
+     "GRADED": 1
+    },
+    "rows": 2
+   }
+  },
+  "suite": {
+   "artifact": "nfl/research/suite_attribution/SUITE_DIFF_p6_p7p8.json",
+   "baseline_commit": "44ff8ed",
+   "baseline_totals": {
+    "blocked_functions": 23,
+    "checks": 10335,
+    "failing_checks": 61,
+    "modules": 179,
+    "raised": 21,
+    "test_functions": 1944,
+    "zero_check_functions": 0
+   },
+   "counts_by_classification": {
+    "PRE_EXISTING": 133
+   },
+   "delta_totals": {
+    "blocked_functions": 0,
+    "checks": 112,
+    "failing_checks": 0,
+    "modules": 3,
+    "raised": 0,
+    "test_functions": 27,
+    "zero_check_functions": 0
+   },
+   "is_current_head": false,
+   "measured_at_commit": "WORKING_TREE",
+   "newly_introduced": [],
+   "staleness_note": "measured at WORKING_TREE, HEAD is 44ff8ed. This total is not a statement about the tree as it stands.",
+   "totals": {
+    "blocked_functions": 23,
+    "checks": 10447,
+    "failing_checks": 61,
+    "modules": 182,
+    "raised": 21,
+    "test_functions": 1971,
+    "zero_check_functions": 0
+   },
+   "verdict": "SUITE FAIL"
+  },
+  "superseded_state_files": [
+   {
+    "bytes": 9024,
+    "note": "hand-written; superseded by this generated file. Kept unedited.",
+    "path": "nfl/research/state/CURRENT_STATE_2026-09-07.md",
+    "sha256": "e0dea212d4d1ab6a"
+   }
+  ],
+  "work_queue": {
+   "by_status": {
+    "ACTIVE": 1,
+    "BLOCKED": 3,
+    "DONE": 3,
+    "QUEUED": 4
+   },
+   "items": [
+    {
+     "blocker": "none",
+     "description": "Implement the existing P7 dependency-DAG specification inside `nfl/production/pipeline.py`. Do not redesign it and do not create a second orchestrator.",
+     "id": "P6",
+     "priority": "1",
+     "status": "DONE"
+    },
+    {
+     "blocker": "none known",
+     "description": "Generate a canonical `SYSTEM_STATE.json` and derive `CURRENT_STATE.md` from it. Two independently maintained truths is the defect; one generated from the other is the repair.",
+     "id": "P7",
+     "priority": "2",
+     "status": "DONE"
+    },
+    {
+     "blocker": "none known",
+     "description": "Reconcile Contract 4: the prose says 18/20 and the executable constant requires 19/20. Trace the chronology and resolve by append-only supersession, never by editing the older text.",
+     "id": "P8",
+     "priority": "3",
+     "status": "DONE"
+    },
+    {
+     "blocker": "none known",
+     "description": "Resume OAS1 from its amended preregistration state. Pass and rush stay separate. `GO_NO_GO` still records NO-GO gates and those stay recorded.",
+     "id": "P9",
+     "priority": "4",
+     "status": "ACTIVE"
+    },
+    {
+     "blocker": "none known",
+     "description": "Automatic Scientist \u2014 test `A3_ROLE_CONTINUITY_ACROSS_REGIME_CHANGES` against measurement.",
+     "id": "A3",
+     "priority": "5",
+     "status": "QUEUED"
+    },
+    {
+     "blocker": "none known",
+     "description": "Automatic Scientist \u2014 test `A5_TD_CONVERSION_PORTABILITY`.",
+     "id": "A5",
+     "priority": "6",
+     "status": "QUEUED"
+    },
+    {
+     "blocker": "the remaining estimand is not yet measurable. Completing it before it is measurable would manufacture a settlement, which is the failure mode the registry exists to prevent.",
+     "description": "`A4_STATIC_TEAM_VOLUME_SUFFICIENCY` is half-measured and deliberately DECLARED rather than TESTED.",
+     "id": "A4",
+     "priority": "7",
+     "status": "BLOCKED"
+    },
+    {
+     "blocker": "prerequisite work has not made it lawful. The T1-C pregame-only generator exists; what is missing is the evidence that a game-state layer may consume it without a postgame path.",
+     "description": "The score/clock/game-state generative layer.",
+     "id": "GAME_STATE",
+     "priority": "8",
+     "status": "BLOCKED"
+    },
+    {
+     "blocker": "no FanDuel salary export is in the repository and none can be fetched from here. **This is assigned, not blocked for both agents**: it needs bytes from outside this checkout. FanDuel provenance stays `VERIFIED_RULE_VALUE_RELAYED_SOURCE` and is not upgraded.",
+     "description": "FanDuel single-game salaries. Stays open until a real export exists.",
+     "id": "OUT-022C",
+     "priority": "9",
+     "status": "BLOCKED"
+    },
+    {
+     "blocker": "none \u2014 deliberately low priority",
+     "description": "`sportsplatform/governance/commit_claim.py` calls `git status --porcelain` and is the sole remaining offender of `test_determinism_proof.test_v_only_the_identity_module_reads_working_tree_state`. Pre-existing at `e050090` and at every baseline since. Named here rather than left inside a 61-item failing total, because P7's own generators joined that list for an hour and the only reason it was noticed is that the list is printed.",
+     "id": "PRE-PORCELAIN",
+     "priority": "11",
+     "status": "QUEUED"
+    },
+    {
+     "blocker": "none \u2014 deliberately low priority",
+     "description": "The 136 PRE_EXISTING suite failures classified at `7d46f39`. Not to be fixed merely to obtain a green suite; to be worked deliberately, by cause, when a cause is on the critical path.",
+     "id": "SUITE-PRE",
+     "priority": "10",
+     "status": "QUEUED"
+    }
+   ],
+   "n": 11
+  }
+ },
+ "reading_rule": "Every value under `measured` was computed by reading this repository at the timestamp above. Every value under `declared` was asserted by somebody and says who, when, and why it cannot be measured here. Do not quote one as the other.",
+ "spec_version": "nfl-system-state-1"
+}

@@ -199,3 +199,41 @@ def test_a_blocker_that_is_only_mine_is_recorded_as_assigned():
     check('and it still forbids inferring FanDuel salaries from DraftKings',
           any('DraftKings' in c for c in out['acceptance_criteria']),
           str(out['acceptance_criteria']))
+
+
+def test_the_generators_read_worktree_state_through_the_identity_module():
+    """A rule I broke, now pinned where the generators live.
+
+    `nfl/identity/` is the only place permitted to ask git about working-tree
+    state. The first version of these two generators ran
+    `git status --porcelain` themselves and joined `commit_claim.py` on the
+    offender list of `test_determinism_proof`. The suite caught it; this check
+    means the next generator written here is caught at its own test rather than
+    in a full-suite diff forty minutes later.
+    """
+    import ast
+    for rel in ('nfl/tools/agent_state.py', 'nfl/tools/system_state.py'):
+        tree = ast.parse((pathlib.Path(_ROOT) / rel).read_text())
+        calls = []
+        for n in ast.walk(tree):
+            if not isinstance(n, ast.Call):
+                continue
+            for a in list(n.args) + [k.value for k in n.keywords]:
+                for sub in ast.walk(a):
+                    if isinstance(sub, ast.Constant) \
+                            and isinstance(sub.value, str) \
+                            and '--porcelain' in sub.value:
+                        calls.append(n.lineno)
+        check(f'{rel} makes no --porcelain call', not calls, str(calls))
+    wt = AS.worktree_state()
+    check('worktree_state returns the identity module\'s own view',
+          'code_version' in wt or wt.get('state') == 'NOT_MEASURED', str(wt))
+    if 'code_version' in wt:
+        check('it reports SOURCE-scope cleanliness',
+              isinstance(wt['source_scope_clean'], bool))
+        check('it lists the dirty source files rather than a count alone',
+              isinstance(wt['dirty_source_files'], list))
+        check('and carries the whole-tree count as a named diagnostic',
+              wt['n_dirty_tree_entries_observed'] is not None)
+        check('it says the source scope is narrower than the tree',
+              'SOURCE scope only' in wt['scope_note'], wt['scope_note'][:60])

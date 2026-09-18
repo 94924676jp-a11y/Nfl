@@ -1,191 +1,176 @@
-# NFL Greenfield — what is going on right now
+# NFL — current state
 
-**Snapshot:** 2026-09-07 · **Week 1 kicks off 2026-09-09** (2 days)
-**Status:** NFL-0 evidence system built. No predictive model. **NFL-1 not authorised.**
-**G0A: 11 PASS / 1 FAIL** — and Item 1's blocker is now **resolved in substance**,
-pending the owner's verdict on two remaining points of the twelve-point proof.
+**Generated** by `nfl/tools/system_state.py` at 2026-09-18T17:29:16.345271+00:00 from `SYSTEM_STATE.json`. Do not hand-edit this file: regenerate it.
 
-**The executor exists.** A GitHub-hosted runner reaches nfl.com and has captured
-the official injury report and inactives page — content-addressed, gzipped,
-committed and pushed by the runner itself at `33c34de`, with `unmet_targets`
-returning empty for the first time.
+Every value under `measured` was computed by reading this repository at the timestamp above. Every value under `declared` was asserted by somebody and says who, when, and why it cannot be measured here. Do not quote one as the other.
 
 ---
 
-## 1. The two repositories
+## 1. Repository
 
-| | `94924676jp-a11y/nfl` | `94924676jp-a11y/mlb-prop-system-v7` |
-|---|---|---|
-| Branch | `main` @ `a559da2` | `claude/nfl-greenfield-architecture-stsxmk` @ `74bfa95` |
-| Role | **Canonical for NFL** | MLB engine; NFL copy now stale |
-| Contents | `sportsplatform/`, `nfl/`, `returns/` | 47k-line MLB system + a duplicate `nfl/` tree |
-| Tests | **1,230 assertions across 19 suites, 0 failing** (re-enumerated 2026-09-07) | retired; see `NFL_MOVED.md` there |
-
-**Live drift: RESOLVED.** The MLB repo's duplicate `nfl/` tree was retired on
-2026-09-07 and replaced with `NFL_MOVED.md`. This repository is the only source
-of truth.
-
----
-
-## 2. What is scheduled and running
-
-| Routine | State | Notes |
-|---|---|---|
-| `NFL vintage capture` | **DISABLED** | Turned off for cause at 22:36Z |
-| `Agent poll — projections track` | **ENABLED**, hourly | Pre-existing MLB track, unrelated to NFL. Last fired 2026-09-07 00:03Z |
-
-**Nothing NFL-related is running on a schedule.** The capture runs only when
-invoked by hand.
-
-### Why the capture trigger is off
-
-Not because it lacks permission. Because it cannot be expressed:
-
-- `create_session` **can** attach a repository source — but does not recur.
-- `create_trigger` **recurs** — but accepts no `source_url`.
-
-A trigger-fired session therefore starts with an empty `sources` list, has to
-clone the repository itself, and that is what demanded credentials and `gh`.
-A scheduled, unattended, repo-attached capture is **not expressible with the
-tools available to this session**.
-
-Left enabled it would fire every six hours, spawn a session titled "⚡ NFL vintage
-capture", and appear in the routines list as a working capture — which is the
-false-green pattern one layer down in the infrastructure.
-
-### One ambiguity I am not resolving in either direction
-
-The second trigger firing recorded `ROUTINE_RUN_STATUS_SUCCEEDED` at 22:51Z,
-after I had observed it blocked at 22:31Z and disabled the routine at 22:36Z.
-**No commit ever reached the branch.** So: the routine says the run succeeded; the
-repository shows nothing arrived; whether the capture executed inside that
-session is **unknown to me**. What is verified is narrower than I said earlier —
-**no scheduled capture is recorded in the manifest**, all 11 captures there being
-manual.
-
----
-
-## 3. The one thing blocking G0A
-
-**Item 1 — the perishable official cascade is not captured.** Practice
-participation, final game status, inactives.
-
-```
-UNMET CAPTURE TARGETS: ['final_status', 'inactives', 'practice']
-```
-
-Printed on every capture run. The cause is **egress alone**:
-
-| | Result |
+|  |  |
 |---|---|
-| DNS `www.nfl.com` | resolves → 151.101.65.55 |
-| `CONNECT www.nfl.com:443` | **`< HTTP/1.1 403 Forbidden`** — local proxy |
-| Externally (networked researcher) | **HTTP 200**, server-rendered HTML |
-| From a second cloud session | **same 403**, measured not inferred |
+| branch | `claude/nfl-greenfield-architecture-stsxmk` |
+| HEAD | `44ff8ed` — P6: the dependency DAG stops being a specification |
+| HEAD committed | 2026-09-18T16:02:59+00:00 |
+| commits on branch | 876 |
+| source scope | 3 dirty source file(s) |
+| dirty tree entries (source and not) | 24 |
+| code_version | `44ff8ededa57c836330897a662f541fd0dc98705+src1[cf86ad0219920413]` |
+| python modules | 653 |
+| lines of python | 209,209 |
 
-**The source is fine. Every executor available here is denied.** The policy is
-environment-level, so attaching a repository fixes execution and does nothing for
-egress. Those were always two separate failures and only one has been closed.
+## 2. Test suite
 
-**What would close Item 1** is not code in either repository: an executor with
-egress to nfl.com that can run at kickoff−90 minutes.
+Source: `nfl/research/suite_attribution/SUITE_DIFF_p6_p7p8.json`. measured at WORKING_TREE, HEAD is 44ff8ed. This total is not a statement about the tree as it stands.
 
----
+|  | at WORKING_TREE | baseline 44ff8ed | delta |
+|---|---|---|---|
+| modules | 182 | 179 | 3 |
+| test functions | 1971 | 1944 | 27 |
+| checks | 10447 | 10335 | 112 |
+| failing checks | 61 | 61 | 0 |
+| raised | 21 | 21 | 0 |
+| zero check functions | 0 | 0 | 0 |
+| blocked functions | 23 | 23 | 0 |
 
-## 4. Clock pressure
+Verdict: **SUITE FAIL**. Classification against the baseline: {'PRE_EXISTING': 133}.
 
-Week 1 opens **2026-09-09** — Wed 09-09, Thu 09-10, Sun 09-13, Mon 09-14.
+No item is newly introduced since the baseline.
 
-Every week the official cascade is uncaptured is **permanently lost**: ~132 bits
-of availability entropy and ~331 practice trajectories. The archive keeps one row
-per player-week, the 2025 schema dropped its only timestamp, and
-`injuries_2026.csv` is still **404**.
+## 3. Captured evidence
 
-**What is not at risk:** the cold-start specification was frozen at
-2026-09-06T19:37Z, before any 2026 outcome existed (`b356ecaa…`, verified against
-a snapshot with 272/272 null results). The fixed-prospective-holdout property
-comes from that freeze predating outcomes, **not** from executing predictions
-pre-kickoff. It survives whatever happens to the capture.
+`nfl/vintage_manifest.jsonl` carries **4529 rows**; the vintage store holds **1449 files**. Retrieval spans 2026-09-06T18:50:49.540119+00:00 to 2026-09-17T23:42:25.952893+00:00.
 
----
+| source | manifest rows |
+|---|---|
+| depth_charts | 471 |
+| espn_injuries_json | 462 |
+| hardrock_market_snapshot | 1 |
+| injuries | 472 |
+| official_inactives | 483 |
+| official_injury_report | 465 |
+| official_status_evidence | 1 |
+| official_transactions | 462 |
+| pbp | 4 |
+| pbp_participation | 383 |
+| schedules | 471 |
+| snap_counts | 383 |
+| weekly_rosters | 471 |
 
-## 5. Open debts and their owners
+Manifest row states: {'BLOCKED': 567, 'DEFERRED': 40, 'FAIL': 108, 'NOT_APPLICABLE': 766, 'PASS': 3048}.
 
-| Item | State | Owner |
+## 4. Governed assumptions
+
+| assumption | status | criticality |
 |---|---|---|
-| G0A Item 1 | **FAIL** — egress | External: needs an executor with egress |
-| `PREDICTION_TIME_ELIGIBILITY_UNAVAILABLE` | **OPEN** | Networked researcher — official inactives/transactions |
-| Official endpoint verification | 3 sources registered, **no URL invented** | Networked researcher |
-| ESPN semantic audit | **Cannot be done here** — same proxy denies it | Networked researcher |
-| Six of eight scheduler cadences | `confirmed=False` — inferred | Networked researcher |
-| MLB repo's duplicate `nfl/` tree | **Live drift** | You |
-| NFL-1 authorisation | Blocked at 11/12 | You |
-| `NFLVERSE_INJURY_SOURCE_STATUS_CONFLICT` | **RESOLVED** by appended record | — |
-| A3 ffopportunity | **CLOSED** — oracle benchmark, non-deployable | — |
-| T1 / T3 cold-start rulings | **CLOSED** — 2002 floor, home term retained | — |
-| `ARTIFACT_REFERENCE_INTEGRITY` (Rule 006) | **REGISTERED** 2026-09-07 — module + 39 assertions | — |
+| A1_APPEARANCE_CERTAINTY | FALSIFIED | CRITICAL |
+| A2_PROPORTIONAL_REDISTRIBUTION | FALSIFIED | CRITICAL |
+| A3_ROLE_CONTINUITY_ACROSS_REGIME_CHANGE | DECLARED | MATERIAL |
+| A4_STATIC_TEAM_VOLUME_SUFFICIENCY | DECLARED | CRITICAL |
+| A5_TD_CONVERSION_PORTABILITY | DECLARED | MATERIAL |
 
+A FALSIFIED assumption blocks the production path that depends on it and rewrites no model output.
 
-### Appended 2026-09-07 — `ARTIFACT_REFERENCE_INTEGRITY`, a Class-A failure class
+## 5. Dependency DAG (P7 Phase 1)
 
-Registered as **Rule 006**, `sportsplatform/governance/artifact_reference.py`,
-tested by `test_artifact_reference.py` (39 assertions, 0 failed). Owner ruling
-of 2026-09-07, following the P4E baseline-gate incident.
+`PHASE_1_DECLARATION_ONLY`, audit **PASS EVERY_VINTAGE_READ_DECLARED**, 27 declared edges over 4 package(s), 3 runtime-keyed read(s).
 
-**The rule.** A validation or reproducibility gate must not compare against a
-manually transcribed approximation of a canonical artifact value when the
-artifact itself is available. A gate must:
+| producer | declared readers |
+|---|---|
+| depth_charts | 3 |
+| espn_injuries_json | 1 |
+| injuries | 2 |
+| schedules | 4 |
+| vintage_manifest | 6 |
+| weekly_rosters | 11 |
 
-1. load its comparison value directly from the canonical artifact;
-2. hash and pin the artifact's identity;
-3. report that hash in the run output;
-4. never take gate truth from a display-rounded rendering — `.log`, `.txt`,
-   `.out`, `.md` and `.rst` are refused at source with
-   `GATE_SOURCE_IS_DISPLAY_ONLY` and cause `GOVERNANCE`;
-5. refuse a comparison value that arrives without artifact provenance
-   (`GATE_VALUE_UNSOURCED`), because a typed float and a loaded float are
-   indistinguishable once both are floats.
+Not implemented:
 
-**The incident it names.** P4E's baseline gate carried
-`PUBLISHED = {2024: 2.1102566719055176, ...}` as a source literal.
-`p4c_results.json` says `2.110274841594967`. The literal agreed with the
-artifact to **four** decimal places — the precision `run_p4c.log` prints, and
-the precision `predeclaration_p4e.md` §3 quotes — and diverged after it. The
-gate then failed at 1.8e-05 against a 1e-9 tolerance and cost a full diagnostic
-cycle before the answer turned out to be that the number had never been read.
-`transcription_signature()` reports that agreeing-precision as a diagnostic; it
-explains a mismatch and never excuses one.
+- PHASE_2: a read(node, cut) accessor. Every read below still happens by globbing a directory; the declaration bounds who reads what, it does not mediate the bytes.
+- PHASE_3: content-addressed recomputation ACROSS RUNS. The identity algebra and the cache exist and are exercised inside a run; nothing is persisted between runs yet.
 
-**Debt this closes, and one it does not.** It closes the class. It does not
-retroactively re-verify every gate already written in this repository; each is
-converted when next touched. `TASK_REPORT_2026-09-07_P4E.md` is left exactly as
-written — this record is the appended correction, not a rewrite of it.
+## 6. Forecast and postgame artifacts
+
+160 `run_status.json` file(s), by status {'REFUSED': 10, 'SEALED': 150}. 18 live board directory(ies).
+
+Prospective evaluation ledger: 2 rows over 1 block(s) ['DET_BUF_2026W2'], by status {'AWAITING_OUTCOME': 1, 'GRADED': 1}. Captured game outcomes: 1 (DET_BUF_2026W2).
+
+Production readiness (`nfl/production/production_readiness.json`, updated 2026-09-08): {'BASELINE': 1, 'GREEN': 10, 'PARTIAL': 1} over 12 capabilities.
+
+- 6 generate player-level football distributions: **PARTIAL**
+- 8 generate joint draw artifacts: **BASELINE**
+
+## 7. Work queue
+
+| id | priority | status | blocker |
+|---|---|---|---|
+| P6 | 1 | DONE |  |
+| P7 | 2 | DONE |  |
+| P8 | 3 | DONE |  |
+| P9 | 4 | ACTIVE |  |
+| A3 | 5 | QUEUED |  |
+| A5 | 6 | QUEUED |  |
+| A4 | 7 | BLOCKED | the remaining estimand is not yet measurable. Completing it before it is measurable would  |
+| GAME_STATE | 8 | BLOCKED | prerequisite work has not made it lawful. The T1-C pregame-only generator exists; what is  |
+| OUT-022C | 9 | BLOCKED | no FanDuel salary export is in the repository and none can be fetched from here. **This is |
+| PRE-PORCELAIN | 11 | QUEUED |  |
+| SUITE-PRE | 10 | QUEUED |  |
+
+Source: `nfl/WORK_QUEUE.md`. Full descriptions and acceptance criteria are there.
+
+## 8. Declared — asserted, not measured here
+
+Each of these is a statement nobody can settle by reading this repository. They are kept because they are load-bearing, and labelled because a declaration standing beside a measurement in the same voice is how this file went eleven days wrong.
+
+**EGRESS_DENIED** — This executor has no outbound network. The egress proxy returns 403 on every outbound request, including to nfl.com, measured from two separate cloud sessions rather than inferred from one.
+
+- declared by agent (this checkout), corroborated by a second session, 2026-09-07 (STANDING)
+- not measurable here: a repository read cannot establish a network fact, and a generator that tried would be measuring the moment it ran rather than the standing policy.
+- what would verify it: an executor with egress to nfl.com that can run at kickoff−90 minutes.
+
+**NETWORKED_AGENT_EXISTS** — A second agent on this project has network, holds the live sportsbook odds connector, can see project storage outside this git checkout, and can run long simulations.
+
+- declared by owner, 2026-09-07 (STANDING)
+- not measurable here: the other agent's capabilities are not recorded in this tree.
+- what would verify it: nothing here; it is a standing fact about the team. Its operational consequence is written down instead: a task blocked only for this executor is **assigned**, not blocked, and the request goes into `docs/AGENT_OUTBOX.md` before anything is marked blocked.
+
+**REAL_MONEY_NOT_ENABLED** — No money has been staked and none may be. Real money is NOT ENABLED and the weekly exposure cap is deliberately UNSET.
+
+- declared by owner, standing (STANDING)
+- not measurable here: a governance decision, not a repository property. The repository can show the flag; it cannot show the intent behind it.
+- what would verify it: an owner ruling changing it. Until then the cap stays unstated and is not filled in.
+
+**V2_NOT_EARNED** — V2 is not earned. A version number follows evidence; it is not a label applied in advance to work that hopes to earn it.
+
+- declared by owner, standing (STANDING)
+- not measurable here: promotion is a decision.
+- what would verify it: a methodological change large enough to justify it, demonstrated on data that selected none of it.
+
+**FANDUEL_PROVENANCE** — FanDuel single-game rules are recorded at provenance `VERIFIED_RULE_VALUE_RELAYED_SOURCE`. They were relayed, not read from a FanDuel document by this executor, and the provenance is not upgraded.
+
+- declared by agent, on the relay, 2026-09-16 (STANDING)
+- not measurable here: the repository holds the values; it cannot hold the fact of having seen the source.
+- what would verify it: a FanDuel slate export or rules page retrieved with provenance. Until then OUT-022C stays open and no salary is inferred from DraftKings.
+
+**MARKET_IS_EVALUATION_ONLY** — Sportsbook prices may evaluate a forecast and may never feed one. DFS ownership and contest behaviour never flow backward into football prediction.
+
+- declared by owner, standing (STANDING)
+- not measurable here: the repository can be audited for a market column reaching a model — and the P7 dependency DAG now does exactly that for the `schedules` blob's price columns — but the rule itself is a decision.
+- what would verify it: nothing; it is the rule. The DAG's `EDGE_DECLARES_MARKET_FIELD` refusal is its enforcement, not its source.
+
+**SCHEDULED_CAPTURE_STATE** — The state of any GitHub-hosted capture routine — enabled, disabled, last fired — is not knowable from this checkout.
+
+- declared by agent, 2026-09-18 (STANDING)
+- not measurable here: routines live in a scheduler this executor cannot query. The previous `CURRENT_STATE.md` asserted a routine was DISABLED and recorded, in the same file, that a later firing reported success with no commit ever reaching the branch — an unresolved contradiction that it presented as state.
+- what would verify it: a scheduler query by an agent that can make one, or a commit arriving on the branch from a runner. What this repository CAN say is measured instead: whether any capture is recorded in the manifest and when the newest one was retrieved.
+
+## 9. Superseded
+
+Hand-written state files this generated one replaces. They are kept unedited, because a note prepended to a historical document changes the document; the pointer belongs in the successor.
+
+- `nfl/research/state/CURRENT_STATE_2026-09-07.md` (9024 bytes, sha256 e0dea212d4d1ab6a…)
 
 ---
 
-## 6. What is ready and waiting
-
-Built, tested, and idle until an executor exists:
-
-- **Kickoff-anchored scheduler** — inactives window T−90 → T−10, exactly 80
-  minutes. A six-hourly poll cannot discharge it; a capture before the artifact
-  exists cannot either; nor can a source not authorised to serve that target.
-- **Source registry** — three official sources wired to the targets they serve,
-  with their scope semantics. Adding a verified endpoint is **a one-line edit**.
-- **Forecast sealing** — `written_at < kickoff`, every consumed partition
-  retrieved before the write, input hashes inside the fingerprint.
-- **Ingest quarantine** — 47 model-derived, 8 market, 5 outcome, 11 post-hoc
-  columns refused for forecast use while remaining readable for archive.
-
----
-
-## 7. If you want to move something today
-
-1. **Authorise retiring the MLB `nfl/` tree** — closes the drift while the two
-   copies are still identical apart from the last three commits.
-2. **Point the networked researcher at the endpoint list** — outbox §34 names
-   exactly what would close Item 1, and the registry is shaped to accept it.
-3. **Decide on NFL-1 under waiver** — the gate says no at 11/12. A waiver naming
-   Item 1 would be recorded as a waiver, never as a pass.
-
-Nothing here is blocked on more code in this repository.
+To refresh: `python3.12 nfl/tools/system_state.py --write`.

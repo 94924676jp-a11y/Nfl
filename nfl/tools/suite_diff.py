@@ -332,6 +332,12 @@ def main(argv=None) -> int:
                     help='commit whose tree decides whether a module is new; '
                          'without it "new module" is left null rather than '
                          'guessed')
+    ap.add_argument('--current-commit', default='',
+                    help='commit the CURRENT log was produced at. Recorded '
+                         'verbatim so a later reader can ask whether the '
+                         'measurement is still at HEAD instead of assuming '
+                         'it. Without it the field reads '
+                         'NO_COMMIT_RECORDED, which is a state, not a pass.')
     ap.add_argument('--repo', default='.')
     a = ap.parse_args(argv)
     ROOTS.extend([r for r in a.roots.split(',') if r.strip()])
@@ -361,6 +367,8 @@ def main(argv=None) -> int:
                   f'drops items understates a regression.')
             return 1
     d = classify(base, cur, baseline_files=base_files)
+    d['baseline']['commit'] = a.baseline_commit or 'NO_COMMIT_RECORDED'
+    d['current']['commit'] = a.current_commit or 'NO_COMMIT_RECORDED'
     d['self_check'] = {'baseline': self_check(base), 'current': self_check(cur)}
     pathlib.Path(a.out).write_text(json.dumps(d, indent=1, sort_keys=True))
     print(f"baseline {base['totals']}  {base['verdict']}")
