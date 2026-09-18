@@ -264,6 +264,32 @@ DISPOSITIONS = {
 # nothing. Recorded rather than excluded by a rule, because a rule that skipped
 # `nfl/production/*_ids.py` would skip the next real applier that happened to
 # be named that way.
+# AND IT FIRED AGAIN, 2026-09-18, on the next file written after THAT --
+# `assumptions/registry.py`, whose A3 record names
+# `nfl.research.oas1.baselines` in `downstream_dependencies` so that a
+# falsified role-continuity assumption is known to reach OAS1's priors. The
+# matcher saw `oas1` and asked for a reading, which is what it is for. Twice
+# now the gate has caught a DECLARATION and demanded it be read; twice the
+# reading took a minute and the alternative -- a rule excluding files that
+# look declarative -- would skip the next real applier that happens to look
+# that way too.
+for _aid in ('opponent_pass_strength_v1', 'opponent_rush_strength_v1'):
+    DISPOSITIONS[(_aid, 'nfl/production/assumptions/registry.py')] = {
+        'verdict': 'DECLARATION_NOT_APPLICATION',
+        'evidence': 'the only match is the literal string '
+                    '"nfl.research.oas1.baselines" inside '
+                    'A3_ROLE_CONTINUITY_ACROSS_REGIME_CHANGE\'s '
+                    '`downstream_dependencies` tuple. The module builds '
+                    'frozen Assumption records and exposes audit(), get() '
+                    'and all_assumptions(); it imports only `assumption` and '
+                    '`outcome`, holds no frame, computes no estimate, and '
+                    'reads no strength. Nothing named oas1 is called, '
+                    'multiplied or added anywhere in it -- the token is the '
+                    'NAME of a consumer that a falsified assumption would '
+                    'block, which is the opposite of applying an adjustment.',
+        'read_on': '2026-09-18',
+    }
+
 for _aid in ('opponent_pass_strength_v1', 'opponent_rush_strength_v1',
              'ol_pass_protection_v1'):
     DISPOSITIONS[(_aid, 'nfl/production/gate_ids.py')] = {
