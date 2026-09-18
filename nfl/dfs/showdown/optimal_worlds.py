@@ -26,6 +26,21 @@ being assigned by name so the order does not depend on dictionary iteration.
 The share of worlds where a tie occurred is carried in the evidence, because a
 high tie rate would mean the frequencies are partly an artefact of that rule.
 
+SITE LEGALITY IS PART OF THE OPTIMISATION, NOT A FILTER AFTER IT
+
+DraftKings Showdown requires both teams to be represented. The first version
+of this solver did not know that: it optimised over (flex slots, captain,
+salary) and `candidates.py` recorded `both_teams = len(teams) >= 2` after the
+fact. Recording legality after construction is not enforcing it during
+optimisation, and rejecting an illegal answer afterwards is worse than useless
+-- it leaves you with nothing, or with a second-best lineup that was never
+proved second-best under the constraint.
+
+The DP therefore carries a TEAM-COVERAGE MASK as a fourth state dimension. A
+terminal state is feasible only with the right roster size, exactly one
+captain, salary within the cap, no duplicate player, AND both clubs present.
+The lawful optimum is the optimum of a lawful problem.
+
 WHAT THESE NUMBERS ARE NOT
 
 `p_optimal` and `p_optimal_captain` are SIMULATED_OPTIMAL_LINEUP_FREQUENCY.
@@ -57,9 +72,29 @@ SIMULATED_OPTIMAL_LINEUP_FREQUENCY = 'SIMULATED_OPTIMAL_LINEUP_FREQUENCY'
 NEG = -1e18
 
 
+CODE_TEAM_COVERAGE = 'OPTIMAL_LINEUP_MUST_SATISFY_SITE_TEAM_COVERAGE'
+
+
+def team_bits(players):
+    """club -> one-hot bit, and the mask a legal lineup must reach.
+
+    Showdown is two clubs, so the mask is two bits and the full mask is 3. A
+    slate that somehow carried one club would make the constraint vacuous, and
+    that is reported rather than passed over.
+    """
+    clubs = sorted({p['team'] for p in players})
+    return {c: 1 << i for i, c in enumerate(clubs)}, (1 << len(clubs)) - 1
+
+
 def solve(players, cap: int = U.SALARY_CAP, n_flex: int = U.N_FLEX,
-          unit: int = 100, chunk_report: int = 2000) -> Outcome:
-    """Exact optimal lineup per world. O(worlds x players x slots x budget)."""
+          unit: int = 100, chunk_report: int = 2000,
+          require_team_coverage: bool = True) -> Outcome:
+    """Exact LAWFUL optimal lineup per world.
+
+    `require_team_coverage=False` exists only to measure what the constraint
+    costs -- it reproduces the pre-correction answer and must never be used to
+    publish a p_optimal.
+    """
     n = len(players)
     if n < n_flex + 1:
         return Outcome.fail('OPTIMAL_UNIVERSE_TOO_SMALL',
@@ -72,6 +107,15 @@ def solve(players, cap: int = U.SALARY_CAP, n_flex: int = U.N_FLEX,
     M = np.vstack([p['draws'] for p in P]).astype(np.float64)
     fs = np.array([p['salary'] // unit for p in P], dtype=np.int32)
     cs = np.array([p['cpt_salary'] // unit for p in P], dtype=np.int32)
+    bits, FULL = team_bits(P)
+    tb = np.array([bits[p['team']] for p in P], dtype=np.int8)
+    NM = FULL + 1                                   # number of mask states
+    if require_team_coverage and len(bits) < 2:
+        return Outcome.fail(
+            CODE_TEAM_COVERAGE,
+            f'the universe carries {len(bits)} club(s); a both-teams rule is '
+            f'vacuous and the slate is not a Showdown slate.',
+            cause=Cause.DATA, clubs=sorted(bits))
     B = cap // unit
     W = M.shape[1]
     S = n_flex + 1
@@ -81,33 +125,44 @@ def solve(players, cap: int = U.SALARY_CAP, n_flex: int = U.N_FLEX,
     ties = 0
     best_scores = np.zeros(W)
     lineups = []
-    # dp[k, c, b] = best flex-score-with-captain using the first j players
+    # dp[k, c, b, m] = best score with k flex taken, captain state c, budget b
+    # spent and clubs m represented. `m` is what makes the answer LAWFUL: a
+    # terminal state is read at m == FULL, so the DP never proposes a lineup
+    # that has to be thrown away afterwards.
+    # ch encodes 0 = skip, else 1 + direction*NM + source_mask, so the
+    # backtrack can recover which mask the winning transition came from --
+    # m_dst = m_src | bit is not invertible.
     for w in range(W):
         sc = M[:, w]
-        dp = np.full((S, 2, B + 1), NEG)
-        dp[0, 0, 0] = 0.0
-        ch = np.zeros((n, S, 2, B + 1), dtype=np.int8)   # 0 skip 1 flex 2 cpt
+        dp = np.full((S, 2, B + 1, NM), NEG)
+        dp[0, 0, 0, 0] = 0.0
+        ch = np.zeros((n, S, 2, B + 1, NM), dtype=np.int8)
         for j in range(n):
-            f, c, v = fs[j], cs[j], sc[j]
+            f, c, v, bit = int(fs[j]), int(cs[j]), sc[j], int(tb[j])
             nd = dp.copy()
-            # take as FLEX: k-1 -> k, same captain state, budget + f
-            if f <= B:
-                src = dp[:S - 1, :, :B + 1 - f]
-                cand = src + v
-                tgt = nd[1:, :, f:]
-                take = cand > tgt
-                nd[1:, :, f:] = np.where(take, cand, tgt)
-                ch[j, 1:, :, f:] = np.where(take, 1, ch[j, 1:, :, f:])
-            # take as CAPTAIN: captain state 0 -> 1, budget + c
-            if c <= B:
-                src = dp[:, 0, :B + 1 - c]
-                cand = src + v * U.CPT_MULTIPLIER
-                tgt = nd[:, 1, c:]
-                take = cand > tgt
-                nd[:, 1, c:] = np.where(take, cand, tgt)
-                ch[j, :, 1, c:] = np.where(take, 2, ch[j, :, 1, c:])
+            for ms in range(NM):
+                md = ms | bit
+                # take as FLEX: k-1 -> k, same captain state, budget + f
+                if f <= B:
+                    cand = dp[:S - 1, :, :B + 1 - f, ms] + v
+                    tgt = nd[1:, :, f:, md]
+                    take = cand > tgt
+                    nd[1:, :, f:, md] = np.where(take, cand, tgt)
+                    ch[j, 1:, :, f:, md] = np.where(
+                        take, 1 + 0 * NM + ms, ch[j, 1:, :, f:, md])
+                # take as CAPTAIN: captain state 0 -> 1, budget + c
+                if c <= B:
+                    cand = dp[:, 0, :B + 1 - c, ms] + v * U.CPT_MULTIPLIER
+                    tgt = nd[:, 1, c:, md]
+                    take = cand > tgt
+                    nd[:, 1, c:, md] = np.where(take, cand, tgt)
+                    ch[j, :, 1, c:, md] = np.where(
+                        take, 1 + 1 * NM + ms, ch[j, :, 1, c:, md])
             dp = nd
-        row = dp[n_flex, 1]
+        if require_team_coverage:
+            row = dp[n_flex, 1, :, FULL]
+        else:
+            row = dp[n_flex, 1].max(axis=1)
         b = int(np.argmax(row))
         if row[b] <= NEG / 2:
             infeasible += 1
@@ -119,22 +174,39 @@ def solve(players, cap: int = U.SALARY_CAP, n_flex: int = U.N_FLEX,
         # BACKTRACK. `ch` was written only where the candidate strictly beat
         # the incumbent, so following it reproduces the lineup that the
         # name-ordered scan found first among equals.
+        m = (FULL if require_team_coverage
+             else int(np.argmax(dp[n_flex, 1, b])))
         k, cu, bb = n_flex, 1, b
         cpt_i, flex_i = None, []
         for j in range(n - 1, -1, -1):
-            d = ch[j, k, cu, bb]
-            if d == 1:
+            code = int(ch[j, k, cu, bb, m])
+            if code == 0:
+                continue
+            d, ms = divmod(code - 1, NM)
+            if d == 0:
                 flex_i.append(j)
                 k -= 1
                 bb -= int(fs[j])
-            elif d == 2:
+            else:
                 cpt_i = j
                 cu = 0
                 bb -= int(cs[j])
+            m = ms
         if cpt_i is None or len(flex_i) != n_flex:
             infeasible += 1
             lineups.append(None)
             continue
+        if require_team_coverage:
+            got = 0
+            for i in [cpt_i] + flex_i:
+                got |= int(tb[i])
+            if got != FULL:
+                return Outcome.fail(
+                    CODE_TEAM_COVERAGE,
+                    f'world {w}: the solver returned a lineup covering mask '
+                    f'{got} against a required {FULL}. The DP state is wrong, '
+                    f'and a post-hoc filter would have hidden it.',
+                    cause=Cause.DATA, world=w, mask=got, required=FULL)
         as_cpt[cpt_i] += 1
         in_opt[cpt_i] += 1
         for i in flex_i:
@@ -170,6 +242,9 @@ def solve(players, cap: int = U.SALARY_CAP, n_flex: int = U.N_FLEX,
         tie_share=float(ties / max(solved, 1)),
         tie_break='lowest player index, indices assigned by name',
         mean_optimal_score=float(best_scores[best_scores > 0].mean()),
+        site_legality_enforced=bool(require_team_coverage),
+        site_rule='DraftKings Showdown requires both clubs to be represented',
+        clubs=sorted(bits),
         quantity=SIMULATED_OPTIMAL_LINEUP_FREQUENCY,
         is_not='NOT ownership, NOT projected ownership, NOT leverage',
         uses_live_game_outcome_data=False)
@@ -190,7 +265,10 @@ def main() -> int:
         print(f"{r['name']:22s} {r['tag']:20s} {r['salary']:6d} "
               f"{r['mean_dk']:6.2f} {r['p_optimal']:8.4f} "
               f"{r['p_optimal_captain']:10.4f}")
-    out = _REPO / 'nfl/research/dfs/DET_BUF_2026W2/OPTIMAL_WORLDS.json'
+    # NOT OPTIMAL_WORLDS.json. That file is the pre-correction artifact and is
+    # preserved as history: it was produced without the both-teams rule and
+    # over a universe with no named kicker. A correction creates a successor.
+    out = _REPO / 'nfl/research/dfs/DET_BUF_2026W2/OPTIMAL_WORLDS_v3.json'
     out.write_text(json.dumps(
         {'spec_version': SPEC_VERSION, 'detail': o.detail,
          'evidence': {k: v for k, v in o.evidence.items() if k != 'cause'},

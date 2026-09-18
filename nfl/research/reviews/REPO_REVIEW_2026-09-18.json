@@ -1,0 +1,77 @@
+{
+ "artifact": "REPO_REVIEW_2026_09_18",
+ "immutable": true,
+ "spec_version": "repo-review-1",
+ "recorded_at_utc": "2026-09-18T05:10:00Z",
+ "recorded_at_commit": "0b558b033237bb9b1203c813b98d38536c0a4fac",
+ "review_baseline_commit": "e050090",
+ "what_this_is": "Two independent repository reviews were run against branch state. This artifact records their findings VERBATIM AS FINDINGS, before any of them was acted on, so that the repairs below can be read against what was actually claimed rather than against a later summary of it. It is append-only in spirit: a correction is a successor artifact, never an edit to this one.",
+ "findings": {
+  "R1_DFS_SOLVER_TEAM_LEGALITY": {
+   "severity": "CORRECTNESS_DEFECT_IN_A_PUBLISHED_ARTIFACT",
+   "claim": "nfl/dfs/showdown/optimal_worlds.py solves exactly over (flex slots, captain state, salary) and does NOT enforce the DraftKings Showdown requirement that both teams be represented. candidates.py records both_teams = len(teams) >= 2 AFTER construction, and recording legality after construction is not enforcing it during optimization.",
+   "consequence": "OPTIMAL_WORLDS.json p_optimal and p_optimal_captain are frequencies over the mathematical optimum, not over the site-legal optimum. Any world whose unconstrained optimum is single-team carries a lineup that could not have been entered.",
+   "artifacts_affected": {
+    "nfl/research/dfs/DET_BUF_2026W2/OPTIMAL_WORLDS.json": "7fe848a24fa7f3e8",
+    "nfl/dfs/showdown/optimal_worlds.py": "4308a263298f1725",
+    "nfl/dfs/showdown/candidates.py": "ae760b85e7be4f8e"
+   },
+   "status_of_prior_artifact": "PRESERVED AND STILL READABLE AS HISTORY. It may NOT be cited as a lawful site-optimal result once the defect is confirmed. A successor carries the corrected numbers.",
+   "required_refusal": "OPTIMAL_LINEUP_MUST_SATISFY_SITE_TEAM_COVERAGE"
+  },
+  "R2_DFS_UNIVERSE_MISMATCH": {
+   "severity": "CORRECTNESS_DEFECT_IN_A_PUBLISHED_COMPARISON",
+   "claim": "The simulated optimality universe and the delivered portfolio universe are not the same set. The optimal-world board covers modeled offensive players and excludes at least kickers and DST, while delivered lineups rostered Jake Bates and Tyler Bass.",
+   "consequence": "A statement of the form 'delivered exposure X% against P(optimal) Y%' is UNDEFINED for any player outside the optimization universe. The postmortem's kicker exposure rows were exactly that.",
+   "required_refusal": "DFS_METRIC_COMPARISON_UNIVERSE_MISMATCH"
+  },
+  "R3_KICKER_IDENTITY_TEAM_KEYED": {
+   "severity": "IDENTITY_DEFECT",
+   "claim": "Kicker projections are team-keyed and were resolved downstream through a (team, position) join. That is not a player-level identity and is not acceptable for a player-level DFS product.",
+   "required_refusal": "KICKER_IDENTITY_MUST_BE_PLAYER_KEYED"
+  },
+  "R4_GAME_OFFENSE_COUPLING_SIGN": {
+   "severity": "STRUCTURAL_SIMULATION_DEFECT_SUSPECTED",
+   "claim": "Sealed DET-BUF club-versus-opponent offensive correlation is approximately negative, while archived historical game-level measurements are positive.",
+   "handling": "DIAGNOSTIC GATE, NOT A TARGET. No historical correlation may be hardcoded into simulation and no correlation constant may be injected. The metric must be defined once and measured identically on 2024, 2025 and the sealed worlds before any repair is proposed."
+  },
+  "R5_CONTRACT_4_TEXT_CODE_MISMATCH": {
+   "severity": "GOVERNANCE_DEFECT",
+   "claim": "Predeclaration text says 18/20 while executable code currently requires 19/20.",
+   "handling": "Trace chronology and resolve by append-only supersession. The executable threshold must NOT be silently changed to match prose, nor prose silently changed to match code."
+  },
+  "R6_CURRENT_STATE_STALE": {
+   "severity": "DOCUMENTATION_DEFECT",
+   "claim": "CURRENT_STATE.md is stale and cannot be trusted as canonical status.",
+   "handling": "Generate SYSTEM_STATE.json from machine-readable registries and derive CURRENT_STATE.md from it. Two independent truths is the defect."
+  },
+  "R7_P7_DAG_UNIMPLEMENTED": {
+   "severity": "UNIMPLEMENTED_SPECIFICATION",
+   "claim": "nfl/research/v4/p7/P7_DEPENDENCY_DAG_SPEC.md exists and is not implemented.",
+   "handling": "IMPLEMENT the smallest useful vertical slice wired into nfl/production/pipeline.py. Do not write another DAG proposal and do not build a parallel orchestration framework."
+  },
+  "R8_FANDUEL_PROVENANCE_OVERSTATED": {
+   "severity": "PROVENANCE_DEFECT",
+   "claim": "FanDuel rule values are correct but their provenance is operator relay, not direct first-party retrieval, because this executor cannot reach the official pages.",
+   "handling": "Record as VERIFIED_RULE_VALUE_RELAYED_SOURCE. Do not upgrade to direct-source provenance. OUT-022C stays open."
+  }
+ },
+ "hypotheses_from_the_det_buf_fixture": {
+  "governing_rule": "PROSPECTIVE OBSERVATIONS, NOT TUNING TARGETS. None may be declared established from one game, and nothing may be fitted to DET-BUF.",
+  "H1_ROLE_STATE_UNDERALLOCATION": "current-season non-QB role state does not reach allocation, so starters are underallocated and backups overallocated. Evidence to date: Cook week-1 carry share 0.619 against a board share of 0.454; nine of the top ten model-market discrepancies were already ROLE_STATE_CONCERN.",
+  "H2_GAME_ENVIRONMENT_TOO_COMPRESSED": "the simulator emits too little game-to-game variation in total production. Evidence to date: board DK total 189.5 against 250.4 actual, ratio 1.32, with five players above p90.",
+  "H3_UPPER_TAIL_JOINT_DEPENDENCE_UNDERSTATED": "the joint upper tail is too thin because clubs are not coupled. Evidence to date: five above-p90 players in one game, and the negative club-versus-opponent correlation in R4.",
+  "H4_MODEL_CONFIDENCE_MISALIGNED_WITH_CURRENT_STATE_QUALITY": "the model's own confidence does not track the quality of the current-season state behind it. Evidence to date: prop hit rate by the model's own probability band ran 12/19, 2/13, 2/5, 2/6 -- descriptively worse where it was more confident, on eight player clusters."
+ },
+ "not_to_be_built_yet": [
+  "new governance frameworks",
+  "another orchestration layer",
+  "another DAG specification",
+  "arbitrary DFS exposure tuning",
+  "ownership guesses",
+  "duplication guesses",
+  "contest payout EV without a field model",
+  "150-max authorization"
+ ],
+ "postgame_review_state": "POSTGAME_REVIEW_FROZEN, and preserved."
+}

@@ -19,6 +19,7 @@ _REPO = pathlib.Path(__file__).resolve().parents[2]
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
+from nfl.dfs.showdown import kicker_identity as KI
 from nfl.dfs.showdown import universe as U                          # noqa: E402
 from nfl.dfs.showdown import captain_metrics as CM                  # noqa: E402
 from nfl.dfs.showdown import candidates as CD                       # noqa: E402
@@ -53,7 +54,9 @@ def load_portfolio(fn):
 
 _U = U.build()
 PLAYERS = _U.value['playable'] if _U.state is State.PASS else []
-OPT = json.loads((FIX / 'OPTIMAL_WORLDS.json').read_text())['rows']
+#: v3: lawful under the site's both-teams rule and over the universe that
+#: includes both named kickers. The v1 file stays on disk as history.
+OPT = json.loads((FIX / 'OPTIMAL_WORLDS_v3.json').read_text())['rows']
 
 
 def test_A_captain_metrics_are_features_not_exposure():
@@ -86,15 +89,25 @@ def test_B_optimal_frequency_is_not_the_mean_ranking():
     check('the quantity is labelled, not left to the reader',
           all(r['quantity'] == 'SIMULATED_OPTIMAL_LINEUP_FREQUENCY'
               for r in OPT))
-    # Goff is 4th by mean and 3rd by optimality; Gore is 13th by mean and
-    # 12th by optimality at a twentieth of the salary. The orderings differ.
+    # THE CLAIM IS ABOUT THE ORDERINGS, NOT ABOUT ONE MAN. An earlier version
+    # pinned 'Goff is 3rd by optimality and 4th by mean', which was true of
+    # the v1 artifact and stopped being true when the universe gained two
+    # kickers. A test that fails because a coincidence moved is testing the
+    # coincidence.
     by_mean = [r['name'] for r in sorted(OPT, key=lambda r: -r['mean_dk'])]
     by_opt = [r['name'] for r in sorted(OPT, key=lambda r: -r['p_optimal'])]
     check('  the mean ordering and the optimality ordering are NOT the same',
           by_mean != by_opt)
-    check('  Jared Goff is more optimal than his mean rank suggests',
-          by_opt.index('Jared Goff') < by_mean.index('Jared Goff'),
-          f"opt {by_opt.index('Jared Goff')} mean {by_mean.index('Jared Goff')}")
+    moves = sorted(((by_mean.index(n) - by_opt.index(n)), n) for n in by_mean)
+    up, down = moves[-1], moves[0]
+    check('  and the gap is structural, not a single swap: someone moves at '
+          'least two places in each direction',
+          up[0] >= 2 and down[0] <= -2,
+          f'{up[1]} up {up[0]}, {down[1]} down {down[0]}')
+    check('  a cheap player can out-rank his mean because he buys the room',
+          any(r['mean_dk'] < 10.0 and r['p_optimal'] > 0.15 for r in OPT),
+          str(sorted((round(r['mean_dk'], 1), r['name'])
+                     for r in OPT if r['p_optimal'] > 0.15)[:4]))
     check('  every probability is a share of solved worlds',
           all(0.0 <= r['p_optimal'] <= 1.0 for r in OPT))
     check('  optimal-captain shares sum to about one',
@@ -173,23 +186,35 @@ def test_D_confidence_tags_reach_the_lineup_and_the_report():
           f'{alt.state}[{alt.code}]')
 
 
-def test_E_an_unresolvable_player_stops_the_report():
-    print('\nE. the delivered portfolio rosters players the model cannot name')
+def test_E_the_kicker_gap_is_closed_and_the_report_now_describes_all_40():
+    """SUPERSEDED BEHAVIOUR, and the history is the point.
+
+    Until 2026-09-18 this check asserted the opposite: the report REFUSED with
+    PORTFOLIO_CONTAINS_UNDESCRIBABLE_LINEUP on 15 of 40 lineups, because
+    Tyler Bass and Jake Bates had no name the board could resolve and the only
+    remaining route was a (team, position) join the module rightly refused.
+
+    The repair was not to relax that refusal. It was upstream:
+    `kicker_identity.resolve` matches the sealed kicking layer's `row_ids` --
+    which were gsis_ids all along -- against the governed roster vintage. The
+    positional join is STILL refused; there is simply no longer any reason to
+    reach for it. `test_dfs_universe_contract.py::test_F` pins that.
+    """
+    print('\nE. the kicker identity gap, closed upstream')
     o = PR.report(load_portfolio('PORTFOLIO_CLAUDE_40.csv'), PLAYERS,
                   optimal=OPT, label='delivered')
-    check('the report REFUSES rather than scoring around them',
-          o.state is State.FAIL
-          and o.code == 'PORTFOLIO_CONTAINS_UNDESCRIBABLE_LINEUP',
+    check('all 40 delivered lineups are now describable',
+          o.state is State.PASS and not o.evidence.get('errors'),
           f'{o.state}[{o.code}]')
-    names = {n for e in o.evidence['errors']
-             for n in re.findall(r"'([^']+)'", e['detail'])}
-    check('  naming the kickers, whose identity the board cannot resolve',
-          {'Tyler Bass', 'Jake Bates'} & names == {'Tyler Bass', 'Jake Bates'},
-          str(sorted(names)))
-    check('  15 of 40 lineups are affected',
-          len(o.evidence['errors']) == 15, str(len(o.evidence['errors'])))
-    check('  and the reason is the refused (team, position) join',
-          'team' in U.KICKER_JOIN_REFUSED)
+    names = {p['name'] for p in PLAYERS}
+    check('  because both kickers are named players in the universe now',
+          {'Tyler Bass', 'Jake Bates'} <= names,
+          str(sorted(n for n in names if 'Ba' in n)))
+    check('  the positional join stays refused, repair or no repair',
+          KI.assert_not_positional(('team', 'position')).state is State.FAIL)
+    check('  and the superseded reasoning is kept on the record, not deleted',
+          'team' in U.KICKER_JOIN_REFUSED
+          and U.KICKER_JOIN_REFUSED_SUPERSEDED_BY.endswith('resolve'))
 
 
 def test_F_salary_relief_dependence_is_measured():
@@ -250,7 +275,7 @@ if __name__ == '__main__':
                test_B_optimal_frequency_is_not_the_mean_ranking,
                test_C_captain_exposure_cannot_be_created_by_an_arbitrary_minimum,
                test_D_confidence_tags_reach_the_lineup_and_the_report,
-               test_E_an_unresolvable_player_stops_the_report,
+               test_E_the_kicker_gap_is_closed_and_the_report_now_describes_all_40,
                test_F_salary_relief_dependence_is_measured,
                test_G_the_audit_reports_and_does_not_repair,
                test_H_no_live_game_data_anywhere_in_this_layer):

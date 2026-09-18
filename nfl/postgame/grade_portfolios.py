@@ -162,8 +162,15 @@ def grade(outcome_path=None) -> Outcome:
     full = [r for r in pool.values()
             if 'salary' in r and 'cpt_salary' in r]
     opt = optimal_lineup(scores, full)
+    # v3, NOT the original. v1 optimised without the both-teams rule and over
+    # a universe with no named kicker; both are corrected, and citing v1 here
+    # would set a lawful grade beside an unlawful pregame frequency.
+    opt_src = next((FIX / n for n in ('OPTIMAL_WORLDS_v3.json',
+                                      'OPTIMAL_WORLDS_v2.json',
+                                      'OPTIMAL_WORLDS.json')
+                    if (FIX / n).exists()), None)
     opt_freq = {r['name']: r for r in json.loads(
-        (FIX / 'OPTIMAL_WORLDS.json').read_text())['rows']}
+        opt_src.read_text())['rows']}
     out = {}
     for label, fn in PORTFOLIOS.items():
         lus, unscorable = [], []
@@ -224,6 +231,7 @@ def grade(outcome_path=None) -> Outcome:
     return Outcome.ok(
         'PORTFOLIOS_GRADED', value={'portfolios': out, 'actual_dk': scores,
                                     'zero_by_absence': zeroed},
+        pregame_optimal_frequencies_from=opt_src.name,
         detail=(f'optimal {opt["score"]:.2f} '
                 f'(CPT {opt["captain"]}); ' if opt else 'no optimal solved; ')
                + '; '.join(f'{k} best {v["best"]["score"]:.2f}'

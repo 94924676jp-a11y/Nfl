@@ -24,6 +24,7 @@ if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
 from sportsplatform.governance.outcome import Cause, Outcome, State  # noqa: E402
+from nfl.dfs.showdown import kicker_identity as KI
 from nfl.production.dfs import projection_confidence as PC           # noqa: E402
 
 SPEC_VERSION = 'nfl-showdown-universe-1'
@@ -57,8 +58,17 @@ ALIASES = {'joshuapalmer': 'joshpalmer'}
 #: identity. The consequence is on the record -- the 2026-09-17 portfolio
 #: rostered Tyler Bass and Jake Bates at 22.5% each, and the model cannot name
 #: either of them.
+#: SUPERSEDED 2026-09-18, and kept because the reasoning was wrong in a way
+#: worth keeping visible. The kicking layer was never team-keyed: its
+#: `row_ids` are gsis_ids (`00-0036162` Tyler Bass, `00-0039172` Jake Bates,
+#: both confirmed against the nflverse ids in the postgame capture) and
+#: `row_teams` is a descriptive column beside the key. What was missing was a
+#: NAME -- `frozen_board_names.json` published 29 offensive ids and omitted
+#: these two -- so every name join failed and (team, position) was the only
+#: thing left to fall back on. `kicker_identity.resolve` closes it by id.
 KICKER_JOIN_REFUSED = ('the kicking layer is team-keyed; resolving a kicker '
                        'would require a (team, position) join')
+KICKER_JOIN_REFUSED_SUPERSEDED_BY = 'nfl.dfs.showdown.kicker_identity.resolve'
 
 
 def norm(s: str) -> str:
@@ -153,6 +163,20 @@ def build() -> Outcome:
             f'{ambiguous} resolve to more than one draw row. Two players who '
             f'could both be one name is exactly where a fuzzy match writes the '
             f'wrong man into a lineup.', cause=Cause.DATA)
+    # KICKERS, BY PLAYER ID. Their draws live in their own layer with its own
+    # array, so they carry `kick_draws` rather than a `dk_scoring` row index.
+    # Identity comes from `kicker_identity`, which matches on gsis_id and
+    # refuses a (team, position) join.
+    kick_draws, kick_meta = {}, {}
+    ki = KI.resolve()
+    if ki.state is State.PASS:
+        z2 = np.load(FROZEN / 'sealed_player_draws.npz')
+        if 'kicking__dk_points' in z2.files:
+            kd = np.asarray(z2['kicking__dk_points'], dtype=np.float64)
+            for gid, r in ki.value.items():
+                if r['row'] < kd.shape[0]:
+                    kick_draws[norm(r['name'])] = kd[r['row']]
+                    kick_meta[norm(r['name'])] = {**r, 'gsis_id': gid}
     players, unresolved = [], []
     for r in v['salary_rows']:
         n = norm(r['name'])
@@ -160,24 +184,27 @@ def build() -> Outcome:
         tag = _tag(r['name'])
         if r['pos'] == 'DST':
             tag = PC.UNSUPPORTED
-        elif row is None:
+        elif row is None and n not in kick_draws:
             tag = PC.IDENTITY_UNRESOLVED
             unresolved.append(r['name'])
         players.append({
             'dk_id': r['dk_id'], 'name': r['name'], 'pos': r['pos'],
             'team': r['team'], 'slot': r['slot'], 'salary': r['salary'],
             'draw_row': (row[0] if row else None), 'tag': tag,
-            'key': n})
+            'key': n,
+            'kicking_layer': n in kick_draws,
+            'gsis_id': (kick_meta[n]['gsis_id'] if n in kick_meta else None)})
     flex = [p for p in players if p['slot'] == 'FLEX']
     cpt = {p['key']: p for p in players if p['slot'] == 'CPT'}
     playable = [p for p in flex
-                if p['draw_row'] is not None
+                if (p['draw_row'] is not None or p['kicking_layer'])
                 and not PC.POLICY[p['tag']]['blocked']
                 and p['key'] in cpt]
     for p in playable:
         p['cpt_salary'] = cpt[p['key']]['salary']
         p['cpt_dk_id'] = cpt[p['key']]['dk_id']
-        p['draws'] = dk[p['draw_row']]
+        p['draws'] = (kick_draws[p['key']] if p['kicking_layer']
+                      else dk[p['draw_row']])
     if not playable:
         return Outcome.fail('SHOWDOWN_NO_PLAYABLE_PLAYERS',
                             'every DK row was blocked or unresolved',
@@ -195,4 +222,7 @@ def build() -> Outcome:
         n_playable=len(playable), n_draws=n_draws,
         identity_unresolved=sorted(set(unresolved)),
         tag_counts=tagcount,
+        kickers_resolved=sorted(kick_meta),
+        kicker_identity_state=f'{ki.state.value}[{ki.code}]',
+        kickers_resolved_by='gsis_id, never (team, position)',
         uses_live_game_outcome_data=False)
