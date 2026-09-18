@@ -57,6 +57,13 @@ from sportsplatform.governance.outcome import Cause, Outcome          # noqa: E4
 from nfl.production.nonqb.current_season_panel import _lawful         # noqa: E402
 
 SPEC_VERSION = 'current-season-nonqb-usage-panel-1'
+
+#: One blank row. Red-zone counts were added 2026-09-18 for A2;
+#: they are ADDITIVE and no existing field changed, so a caller
+#: that never asks for them gets exactly what it got before.
+BLANK = dict(carries=0.0, targets=0.0, receptions=0.0,
+             rush_yards=0.0, rec_yards=0.0,
+             rz_carries=0.0, rz_targets=0.0)
 PBP_GLOB = 'nfl/research/postgame/pbp_%d.*.csv.gz'
 
 #: What is counted, and how. Stated here so a reader never has to infer it.
@@ -67,6 +74,10 @@ COUNTING_RULES = {
     'receptions': 'complete_pass == 1, named receiver.',
     'rush_yards': 'rushing_yards summed over the counted carries.',
     'rec_yards': 'receiving_yards summed over the counted receptions.',
+    'rz_carries': 'counted carries with yardline_100 <= 20. The red zone is '
+                  'defined by field position, which the play-by-play carries '
+                  'directly; no drive reconstruction is involved.',
+    'rz_targets': 'counted targets with yardline_100 <= 20.',
     'appeared_by_opportunity': 'carries + targets > 0. A PROXY. A player who '
                                'took snaps without a carry or a target is '
                                'indistinguishable from one who did not play.',
@@ -258,8 +269,7 @@ def usage_season(season: int, as_of=None, weeks=None) -> Outcome:
             f'no play-by-play capture for {season} is lawful before '
             f'{as_of!r}', cause=Cause.DATA, **ev)
     want = None if weeks is None else {str(w) for w in weeks}
-    blank = dict(carries=0.0, targets=0.0, receptions=0.0,
-                 rush_yards=0.0, rec_yards=0.0)
+    blank = dict(BLANK)
     per = collections.defaultdict(lambda: dict(blank))
     with gzip.open(path, 'rt', errors='ignore') as fh:
         for r in csv.DictReader(fh):
@@ -271,17 +281,23 @@ def usage_season(season: int, as_of=None, weeks=None) -> Outcome:
             if _one(r.get('two_point_attempt')):
                 continue
             club = r['posteam']
+            yl = r.get('yardline_100')
+            rz = yl not in (None, '') and _f(yl) <= 20.0
             if _one(r.get('rush_attempt')):
                 pid = (r.get('rusher_player_id') or '').strip()
                 if pid:
                     d = per[(int(wk), club, pid)]
                     d['carries'] += 1
                     d['rush_yards'] += _f(r.get('rushing_yards'))
+                    if rz:
+                        d['rz_carries'] += 1
             if _one(r.get('pass_attempt')):
                 pid = (r.get('receiver_player_id') or '').strip()
                 if pid:
                     d = per[(int(wk), club, pid)]
                     d['targets'] += 1
+                    if rz:
+                        d['rz_targets'] += 1
                     if _one(r.get('complete_pass')):
                         d['receptions'] += 1
                         d['rec_yards'] += _f(r.get('receiving_yards'))

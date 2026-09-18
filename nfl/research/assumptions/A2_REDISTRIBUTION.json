@@ -1,0 +1,639 @@
+{
+ "detail": "carries: n=531 in-room beaten_by=[]; rz_carries: n=110 in-room beaten_by=[]; rz_targets: n=79 in-room beaten_by=[]; targets: n=537 in-room beaten_by=['LEARNED', 'ROOM_UNIFORM']",
+ "evidence": {
+  "beaten_by": {
+   "carries": [
+    "NO_TRANSFER"
+   ],
+   "rz_carries": [
+    "NO_TRANSFER"
+   ],
+   "rz_targets": [
+    "NO_TRANSFER"
+   ],
+   "targets": [
+    "NO_TRANSFER",
+    "LEARNED",
+    "ROOM_UNIFORM"
+   ]
+  },
+  "beaten_by_in_room": {
+   "carries": [],
+   "rz_carries": [],
+   "rz_targets": [],
+   "targets": [
+    "LEARNED",
+    "ROOM_UNIFORM"
+   ]
+  },
+  "cohort_detail": "1257 single-shock room-week(s) over 4 season(s); 368 multi-shock week(s) excluded",
+  "falsifier_limb_general_departure": [
+   "carries",
+   "rz_carries",
+   "rz_targets",
+   "targets"
+  ],
+  "falsifier_limb_nearest_neighbour_absorbs_more": [],
+  "falsifies_a2": true,
+  "heterogeneity": {
+   "carries": {
+    "any_cell_excludes_proportional": true,
+    "cells_excluding_proportional": [
+     "-1",
+     "-2",
+     "3"
+    ],
+    "n_cells": 7,
+    "nearest_neighbour_absorbs_more": false,
+    "nearest_neighbour_ci95": [
+     -0.02394418175733814,
+     0.08472096824348374
+    ],
+    "nearest_neighbour_excess": 0.029821099068002812,
+    "spread_of_mean_excess": 0.4435035802389297
+   },
+   "rz_carries": {
+    "any_cell_excludes_proportional": true,
+    "cells_excluding_proportional": [
+     "-1",
+     "-2",
+     "1"
+    ],
+    "n_cells": 4,
+    "nearest_neighbour_absorbs_more": false,
+    "nearest_neighbour_ci95": [
+     -0.11796179141548639,
+     0.12516386320679956
+    ],
+    "nearest_neighbour_excess": 0.00019865995936456298,
+    "spread_of_mean_excess": 1.0749506832142988
+   },
+   "rz_targets": {
+    "any_cell_excludes_proportional": true,
+    "cells_excluding_proportional": [
+     "-1",
+     "-2",
+     "-3",
+     "2",
+     "3"
+    ],
+    "n_cells": 7,
+    "nearest_neighbour_absorbs_more": false,
+    "nearest_neighbour_ci95": [
+     -0.1115450213257021,
+     0.13745155853370064
+    ],
+    "nearest_neighbour_excess": 0.006497374534942671,
+    "spread_of_mean_excess": 0.8608106833924932
+   },
+   "targets": {
+    "any_cell_excludes_proportional": true,
+    "cells_excluding_proportional": [
+     "-1",
+     "-2",
+     "-3",
+     "0",
+     "2",
+     "3"
+    ],
+    "n_cells": 7,
+    "nearest_neighbour_absorbs_more": false,
+    "nearest_neighbour_ci95": [
+     -0.09548812039555796,
+     -0.0068068279788387415
+    ],
+    "nearest_neighbour_excess": -0.05220651292178997,
+    "spread_of_mean_excess": 0.3234163277207587
+   }
+  },
+  "multi_shock_excluded_because": "with two materially involved players gone the redistribution cannot be attributed to either, and a clean rule would look wrong because two shocks interacted",
+  "n_events": 1257,
+  "n_events_by_room": {
+   "carries": 531,
+   "rz_carries": 110,
+   "rz_targets": 79,
+   "targets": 537
+  },
+  "no_substitution_matrix_is_written": "LEARNED is fitted per fold and discarded. Nothing here writes a substitution matrix, and the proportional allocator in production is untouched.",
+  "ordinal_guard": "assertion, not a comment; 0 violations",
+  "positions_not_available": "position is not carried in the play-by-play rows this cohort is built from, so the LEARNED cell key is (UNK, rank distance). The rank distance is the live dimension and it is derived from the shares themselves, never from a depth chart.",
+  "rooms_not_available": {
+   "pass_snaps": "snap counts are captured for 2026 only, and the cohort is 2022-2025.",
+   "routes": "pbp_participation is not captured in this repository for any season, so routes do not exist here. Substituting targets would be a different quantity wearing the same name."
+  },
+  "seasons": [
+   2022,
+   2023,
+   2024,
+   2025
+  ],
+  "skipped": {
+   "multi_shock": 368,
+   "no_shock": 2489,
+   "thin_week": 3030,
+   "too_few_survivors": 16
+  },
+  "spec_version": "a2-redistribution-shock-cohort-1",
+  "the_named_mechanism_was_wrong": "the falsifier guessed that the nearest neighbour absorbs MORE than proportional. He does not: his excess is about zero in three rooms and negative in targets. What actually departs is the other end -- survivors who were ALREADY LARGER than the absent man absorb far LESS than proportional predicts, and the vacated work spreads down the room and out of it. The general limb fires; the specific mechanism named does not.",
+  "thresholds": {
+   "MIN_CELL": 25,
+   "MIN_SHARE": 0.1,
+   "MIN_SURVIVORS": 2,
+   "MIN_VOLUME": 8.0,
+   "WINDOW": 3
+  },
+  "two_scores_because_two_questions": "the TOTAL score is dominated by work going to players outside the trailing room, which PROPORTIONAL prices at zero. The IN_ROOM score renormalises over survivors and asks only the redistribution question. Reporting one number would answer the wrong one.",
+  "uses_live_game_outcome_data": false
+ },
+ "rooms": {
+  "carries": {
+   "absorption_by_rank_distance": {
+    "-1": {
+     "ci95_cluster_bootstrap": [
+      -0.5205541779236155,
+      -0.30823092450088974
+     ],
+     "excludes_proportional": true,
+     "mean_absorbed_fraction": 0.0764693818378446,
+     "mean_excess_absorbed": -0.41368248117092693,
+     "n_event_clusters": 422,
+     "n_survivors": 422,
+     "null_is": "s_j / (1 - s_i), the fraction PROPORTIONAL predicts for this survivor"
+    },
+    "-2": {
+     "ci95_cluster_bootstrap": [
+      -0.4892541416289043,
+      -0.14711573053962326
+     ],
+     "excludes_proportional": true,
+     "mean_absorbed_fraction": 0.18647900587894253,
+     "mean_excess_absorbed": -0.3194666299756219,
+     "n_event_clusters": 204,
+     "n_survivors": 207,
+     "null_is": "s_j / (1 - s_i), the fraction PROPORTIONAL predicts for this survivor"
+    },
+    "-3": {
+     "ci95_cluster_bootstrap": [
+      -0.5996080150612538,
+      0.22610007543096783
+     ],
+     "excludes_proportional": false,
+     "mean_absorbed_fraction": 0.2884070944286046,
+     "mean_excess_absorbed": -0.15806957126495863,
+     "n_event_clusters": 40,
+     "n_survivors": 44,
+     "null_is": "s_j / (1 - s_i), the fraction PROPORTIONAL predicts for this survivor"
+    },
+    "0": {
+     "ci95_cluster_bootstrap": [
+      -0.02394418175733814,
+      0.08472096824348374
+     ],
+     "excludes_proportional": false,
+     "mean_absorbed_fraction": 0.20866137065709167,
+     "mean_excess_absorbed": 0.029821099068002812,
+     "n_event_clusters": 525,
+     "n_survivors": 600,
+     "null_is": "s_j / (1 - s_i), the fraction PROPORTIONAL predicts for this survivor"
+    },
+    "1": {
+     "ci95_cluster_bootstrap": [
+      -0.049799099669039455,
+      0.036313837995449016
+     ],
+     "excludes_proportional": false,
+     "mean_absorbed_fraction": 0.08172437564327388,
+     "mean_excess_absorbed": -0.009386059637473444,
+     "n_event_clusters": 439,
+     "n_survivors": 545,
+     "null_is": "s_j / (1 - s_i), the fraction PROPORTIONAL predicts for this survivor"
+    },
+    "2": {
+     "ci95_cluster_bootstrap": [
+      -0.02655157558198107,
+      0.03905490202550312
+     ],
+     "excludes_proportional": false,
+     "mean_absorbed_fraction": 0.056809056293604644,
+     "mean_excess_absorbed": 0.004184740074395942,
+     "n_event_clusters": 344,
+     "n_survivors": 470,
+     "null_is": "s_j / (1 - s_i), the fraction PROPORTIONAL predicts for this survivor"
+    },
+    "3": {
+     "ci95_cluster_bootstrap": [
+      -0.043873688894409936,
+      -0.010717031621825596
+     ],
+     "excludes_proportional": true,
+     "mean_absorbed_fraction": 0.004873870090507058,
+     "mean_excess_absorbed": -0.027139253968604612,
+     "n_event_clusters": 259,
+     "n_survivors": 565,
+     "null_is": "s_j / (1 - s_i), the fraction PROPORTIONAL predicts for this survivor"
+    }
+   },
+   "arms": {
+    "LEARNED": {
+     "log_score_in_room": 1.1397413841677602,
+     "log_score_total": 2.3447575298358205,
+     "mae_share": 0.09262937922070913,
+     "n_events": 531,
+     "n_in_room_events": 531
+    },
+    "NO_TRANSFER": {
+     "log_score_in_room": 1.1301638705258428,
+     "log_score_total": 1.4272826372760221,
+     "mae_share": 0.10077236690909835,
+     "n_events": 531,
+     "n_in_room_events": 531
+    },
+    "PROPORTIONAL": {
+     "log_score_in_room": 1.1301638705258428,
+     "log_score_total": 2.336033965263476,
+     "mae_share": 0.09023476057877576,
+     "n_events": 531,
+     "n_in_room_events": 531
+    },
+    "ROOM_UNIFORM": {
+     "log_score_in_room": 1.1628916648038843,
+     "log_score_total": 2.3641683305805214,
+     "mae_share": 0.097468553015943,
+     "n_events": 531,
+     "n_in_room_events": 531
+    }
+   },
+   "gain_calibration": {
+    "intercept": 0.004634321738540021,
+    "n_pairs": 2853,
+    "slope": 0.49508259485259243
+   },
+   "learned_fell_back_events": 67,
+   "n_events": 531,
+   "room_closure": {
+    "mean_share_to_players_outside_the_room": 0.09470543230403534,
+    "n_events": 531,
+    "share_of_events_with_any_outside_work": 0.5555555555555556,
+    "why_it_matters": "PROPORTIONAL assigns probability ZERO to anyone outside the trailing room, so this mass is scored at -log(1e-6) every time. It is a real defect of room membership and it is NOT a defect of the redistribution rule."
+   }
+  },
+  "rz_carries": {
+   "absorption_by_rank_distance": {
+    "-1": {
+     "ci95_cluster_bootstrap": [
+      -0.5794317348440428,
+      -0.08641938634863922
+     ],
+     "excludes_proportional": true,
+     "mean_absorbed_fraction": 0.20335337380293522,
+     "mean_excess_absorbed": -0.32628661686828203,
+     "n_event_clusters": 84,
+     "n_survivors": 84,
+     "null_is": "s_j / (1 - s_i), the fraction PROPORTIONAL predicts for this survivor"
+    },
+    "-2": {
+     "ci95_cluster_bootstrap": [
+      -1.4991088177753336,
+      -0.6608950023579729
+     ],
+     "excludes_proportional": true,
+     "mean_absorbed_fraction": -0.532058251092342,
+     "mean_excess_absorbed": -1.0747520232549341,
+     "n_event_clusters": 42,
+     "n_survivors": 44,
+     "null_is": "s_j / (1 - s_i), the fraction PROPORTIONAL predicts for this survivor"
+    },
+    "0": {
+     "ci95_cluster_bootstrap": [
+      -0.11796179141548639,
+      0.12516386320679956
+     ],
+     "excludes_proportional": false,
+     "mean_absorbed_fraction": 0.2135049897119545,
+     "mean_excess_absorbed": 0.00019865995936456298,
+     "n_event_clusters": 98,
+     "n_survivors": 133,
+     "null_is": "s_j / (1 - s_i), the fraction PROPORTIONAL predicts for this survivor"
+    },
+    "1": {
+     "ci95_cluster_bootstrap": [
+      -0.2703888230146382,
+      -0.08214450220242053
+     ],
+     "excludes_proportional": true,
+     "mean_absorbed_fraction": -0.0157085390333441,
+     "mean_excess_absorbed": -0.1803812928615847,
+     "n_event_clusters": 40,
+     "n_survivors": 54,
+     "null_is": "s_j / (1 - s_i), the fraction PROPORTIONAL predicts for this survivor"
+    }
+   },
+   "arms": {
+    "LEARNED": {
+     "log_score_in_room": 0.8632641198603559,
+     "log_score_total": 2.9502684002171633,
+     "mae_share": 0.1522711711604278,
+     "n_events": 110,
+     "n_in_room_events": 110
+    },
+    "NO_TRANSFER": {
+     "log_score_in_room": 0.8557558240335663,
+     "log_score_total": 1.2154769720003091,
+     "mae_share": 0.14556625060202258,
+     "n_events": 110,
+     "n_in_room_events": 110
+    },
+    "PROPORTIONAL": {
+     "log_score_in_room": 0.8557558240335662,
+     "log_score_total": 2.9412249860692605,
+     "mae_share": 0.14912798246212597,
+     "n_events": 110,
+     "n_in_room_events": 110
+    },
+    "ROOM_UNIFORM": {
+     "log_score_in_room": 0.8840048305419458,
+     "log_score_total": 2.963172387466156,
+     "mae_share": 0.1540604358732644,
+     "n_events": 110,
+     "n_in_room_events": 110
+    }
+   },
+   "gain_calibration": {
+    "intercept": -0.013965722946418464,
+    "n_pairs": 341,
+    "slope": 0.5220273391339215
+   },
+   "learned_fell_back_events": 56,
+   "n_events": 110,
+   "room_closure": {
+    "mean_share_to_players_outside_the_room": 0.15983685506412781,
+    "n_events": 110,
+    "share_of_events_with_any_outside_work": 0.6,
+    "why_it_matters": "PROPORTIONAL assigns probability ZERO to anyone outside the trailing room, so this mass is scored at -log(1e-6) every time. It is a real defect of room membership and it is NOT a defect of the redistribution rule."
+   }
+  },
+  "rz_targets": {
+   "absorption_by_rank_distance": {
+    "-1": {
+     "ci95_cluster_bootstrap": [
+      -1.0836139208448345,
+      -0.4597871804898681
+     ],
+     "excludes_proportional": true,
+     "mean_absorbed_fraction": -0.3727809397990875,
+     "mean_excess_absorbed": -0.7566567338202148,
+     "n_event_clusters": 47,
+     "n_survivors": 47,
+     "null_is": "s_j / (1 - s_i), the fraction PROPORTIONAL predicts for this survivor"
+    },
+    "-2": {
+     "ci95_cluster_bootstrap": [
+      -1.1584170746437827,
+      -0.5261602052998908
+     ],
+     "excludes_proportional": true,
+     "mean_absorbed_fraction": -0.4723606496862311,
+     "mean_excess_absorbed": -0.8280448809139406,
+     "n_event_clusters": 31,
+     "n_survivors": 43,
+     "null_is": "s_j / (1 - s_i), the fraction PROPORTIONAL predicts for this survivor"
+    },
+    "-3": {
+     "ci95_cluster_bootstrap": [
+      -1.5380718954248367,
+      -0.22086640211640213
+     ],
+     "excludes_proportional": true,
+     "mean_absorbed_fraction": -0.42407407407407405,
+     "mean_excess_absorbed": -0.7548091458805745,
+     "n_event_clusters": 12,
+     "n_survivors": 21,
+     "null_is": "s_j / (1 - s_i), the fraction PROPORTIONAL predicts for this survivor"
+    },
+    "0": {
+     "ci95_cluster_bootstrap": [
+      -0.1115450213257021,
+      0.13745155853370064
+     ],
+     "excludes_proportional": false,
+     "mean_absorbed_fraction": 0.17911121589993745,
+     "mean_excess_absorbed": 0.006497374534942671,
+     "n_event_clusters": 72,
+     "n_survivors": 124,
+     "null_is": "s_j / (1 - s_i), the fraction PROPORTIONAL predicts for this survivor"
+    },
+    "1": {
+     "ci95_cluster_bootstrap": [
+      -0.12569412069412067,
+      0.19516628910995112
+     ],
+     "excludes_proportional": false,
+     "mean_absorbed_fraction": 0.15173403669882546,
+     "mean_excess_absorbed": 0.03276580247855269,
+     "n_event_clusters": 35,
+     "n_survivors": 71,
+     "null_is": "s_j / (1 - s_i), the fraction PROPORTIONAL predicts for this survivor"
+    },
+    "2": {
+     "ci95_cluster_bootstrap": [
+      -0.29008320783429375,
+      -0.09668211792271246
+     ],
+     "excludes_proportional": true,
+     "mean_absorbed_fraction": -0.09958512801650056,
+     "mean_excess_absorbed": -0.19528167912313074,
+     "n_event_clusters": 25,
+     "n_survivors": 66,
+     "null_is": "s_j / (1 - s_i), the fraction PROPORTIONAL predicts for this survivor"
+    },
+    "3": {
+     "ci95_cluster_bootstrap": [
+      -0.3235805760262282,
+      -0.1077863003277763
+     ],
+     "excludes_proportional": true,
+     "mean_absorbed_fraction": -0.15178467727295852,
+     "mean_excess_absorbed": -0.23150798659616773,
+     "n_event_clusters": 13,
+     "n_survivors": 32,
+     "null_is": "s_j / (1 - s_i), the fraction PROPORTIONAL predicts for this survivor"
+    }
+   },
+   "arms": {
+    "LEARNED": {
+     "log_score_in_room": 1.4439817556874623,
+     "log_score_total": 4.289222966561808,
+     "mae_share": 0.1357586534353613,
+     "n_events": 79,
+     "n_in_room_events": 79
+    },
+    "NO_TRANSFER": {
+     "log_score_in_room": 1.4407642058249905,
+     "log_score_total": 1.6943881108585657,
+     "mae_share": 0.1116491482937934,
+     "n_events": 79,
+     "n_in_room_events": 79
+    },
+    "PROPORTIONAL": {
+     "log_score_in_room": 1.4407642058249905,
+     "log_score_total": 4.286341763525087,
+     "mae_share": 0.13474996038059991,
+     "n_events": 79,
+     "n_in_room_events": 79
+    },
+    "ROOM_UNIFORM": {
+     "log_score_in_room": 1.4493993262063898,
+     "log_score_total": 4.291639294567634,
+     "mae_share": 0.13444102458012272,
+     "n_events": 79,
+     "n_in_room_events": 79
+    }
+   },
+   "gain_calibration": {
+    "intercept": 0.002941296471578968,
+    "n_pairs": 404,
+    "slope": -0.2623836823670717
+   },
+   "learned_fell_back_events": 54,
+   "n_events": 79,
+   "room_closure": {
+    "mean_share_to_players_outside_the_room": 0.2277890689190019,
+    "n_events": 79,
+    "share_of_events_with_any_outside_work": 0.759493670886076,
+    "why_it_matters": "PROPORTIONAL assigns probability ZERO to anyone outside the trailing room, so this mass is scored at -log(1e-6) every time. It is a real defect of room membership and it is NOT a defect of the redistribution rule."
+   }
+  },
+  "targets": {
+   "absorption_by_rank_distance": {
+    "-1": {
+     "ci95_cluster_bootstrap": [
+      -0.2555197968874684,
+      -0.1231842597632702
+     ],
+     "excludes_proportional": true,
+     "mean_absorbed_fraction": 0.04035086893226195,
+     "mean_excess_absorbed": -0.18908744459112503,
+     "n_event_clusters": 428,
+     "n_survivors": 428,
+     "null_is": "s_j / (1 - s_i), the fraction PROPORTIONAL predicts for this survivor"
+    },
+    "-2": {
+     "ci95_cluster_bootstrap": [
+      -0.35915746986712954,
+      -0.20385227238093864
+     ],
+     "excludes_proportional": true,
+     "mean_absorbed_fraction": -0.0317782887359804,
+     "mean_excess_absorbed": -0.28626918264140605,
+     "n_event_clusters": 314,
+     "n_survivors": 338,
+     "null_is": "s_j / (1 - s_i), the fraction PROPORTIONAL predicts for this survivor"
+    },
+    "-3": {
+     "ci95_cluster_bootstrap": [
+      -0.34688290815221934,
+      -0.13923881377736752
+     ],
+     "excludes_proportional": true,
+     "mean_absorbed_fraction": 0.01175007352466573,
+     "mean_excess_absorbed": -0.24020573793254885,
+     "n_event_clusters": 158,
+     "n_survivors": 220,
+     "null_is": "s_j / (1 - s_i), the fraction PROPORTIONAL predicts for this survivor"
+    },
+    "0": {
+     "ci95_cluster_bootstrap": [
+      -0.09548812039555796,
+      -0.0068068279788387415
+     ],
+     "excludes_proportional": true,
+     "mean_absorbed_fraction": 0.0986766201849116,
+     "mean_excess_absorbed": -0.05220651292178997,
+     "n_event_clusters": 537,
+     "n_survivors": 604,
+     "null_is": "s_j / (1 - s_i), the fraction PROPORTIONAL predicts for this survivor"
+    },
+    "1": {
+     "ci95_cluster_bootstrap": [
+      -0.052982019657256095,
+      0.018717950117602623
+     ],
+     "excludes_proportional": false,
+     "mean_absorbed_fraction": 0.09108028521524611,
+     "mean_excess_absorbed": -0.015677351485376564,
+     "n_event_clusters": 479,
+     "n_survivors": 611,
+     "null_is": "s_j / (1 - s_i), the fraction PROPORTIONAL predicts for this survivor"
+    },
+    "2": {
+     "ci95_cluster_bootstrap": [
+      -0.09881706079110844,
+      -0.03222851656195362
+     ],
+     "excludes_proportional": true,
+     "mean_absorbed_fraction": 0.017305797229760184,
+     "mean_excess_absorbed": -0.06569771495300208,
+     "n_event_clusters": 428,
+     "n_survivors": 548,
+     "null_is": "s_j / (1 - s_i), the fraction PROPORTIONAL predicts for this survivor"
+    },
+    "3": {
+     "ci95_cluster_bootstrap": [
+      0.025127257222911384,
+      0.050242366408391095
+     ],
+     "excludes_proportional": true,
+     "mean_absorbed_fraction": 0.07498547632130485,
+     "mean_excess_absorbed": 0.03714714507935263,
+     "n_event_clusters": 525,
+     "n_survivors": 2524,
+     "null_is": "s_j / (1 - s_i), the fraction PROPORTIONAL predicts for this survivor"
+    }
+   },
+   "arms": {
+    "LEARNED": {
+     "log_score_in_room": 2.028382941530463,
+     "log_score_total": 2.751824670439487,
+     "mae_share": 0.05581255586306508,
+     "n_events": 537,
+     "n_in_room_events": 537
+    },
+    "NO_TRANSFER": {
+     "log_score_in_room": 2.0397189443988033,
+     "log_score_total": 2.194826404123165,
+     "mae_share": 0.05803790478856652,
+     "n_events": 537,
+     "n_in_room_events": 537
+    },
+    "PROPORTIONAL": {
+     "log_score_in_room": 2.0397189443988033,
+     "log_score_total": 2.7628690743824236,
+     "mae_share": 0.05555757815555689,
+     "n_events": 537,
+     "n_in_room_events": 537
+    },
+    "ROOM_UNIFORM": {
+     "log_score_in_room": 2.0248792809695844,
+     "log_score_total": 2.74879335291781,
+     "mae_share": 0.055271443464748014,
+     "n_events": 537,
+     "n_in_room_events": 537
+    }
+   },
+   "gain_calibration": {
+    "intercept": 0.0127071435884861,
+    "n_pairs": 5273,
+    "slope": -0.1607944726738353
+   },
+   "learned_fell_back_events": 47,
+   "n_events": 537,
+   "room_closure": {
+    "mean_share_to_players_outside_the_room": 0.061102705744760406,
+    "n_events": 537,
+    "share_of_events_with_any_outside_work": 0.6014897579143389,
+    "why_it_matters": "PROPORTIONAL assigns probability ZERO to anyone outside the trailing room, so this mass is scored at -log(1e-6) every time. It is a real defect of room membership and it is NOT a defect of the redistribution rule."
+   }
+  }
+ },
+ "spec_version": "a2-redistribution-shock-cohort-1"
+}

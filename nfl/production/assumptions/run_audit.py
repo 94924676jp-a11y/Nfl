@@ -37,6 +37,7 @@ from nfl.production.assumptions import registry as REG                 # noqa: E
 from nfl.production.nonqb import cs2_state as CS                       # noqa: E402
 from nfl.production.nonqb import current_season_nonqb_panel as P       # noqa: E402
 from nfl.research.assumptions import cohort_appearance_certainty as CO  # noqa: E402
+from nfl.research.assumptions import a2_redistribution as A2R        # noqa: E402
 
 SPEC_VERSION = 'automatic-scientist-v0'
 OUT = _REPO / 'nfl/research/assumptions/ASSUMPTION_AUDIT.json'
@@ -121,7 +122,59 @@ def run() -> dict:
                 (a1.to_dict() if a.id == a1.id else a.to_dict())
                 for a in REG.REGISTRY]
 
-    settled = [a1 if a.id == a1.id else a for a in REG.REGISTRY]
+    # ---- A2, from its recorded artifact rather than a fresh 20-minute run.
+    # The measurement is expensive and already hashed; re-running it here
+    # would produce the same numbers and invite the two copies to drift.
+    a2 = REG.get('A2_PROPORTIONAL_REDISTRIBUTION')
+    a2_art = _REPO / 'nfl/research/assumptions/A2_REDISTRIBUTION.json'
+    if a2_art.exists():
+        d2 = json.loads(a2_art.read_text())
+        e2 = d2['evidence']
+        body['a2_measurement'] = {
+            'artifact': a2_art.name,
+            'detail': d2['detail'],
+            'general_limb': e2['falsifier_limb_general_departure'],
+            'specific_limb':
+                e2['falsifier_limb_nearest_neighbour_absorbs_more'],
+            'the_named_mechanism_was_wrong': e2['the_named_mechanism_was_wrong'],
+            'room_closure': {r: v['room_closure'][
+                'mean_share_to_players_outside_the_room']
+                for r, v in d2['rooms'].items()},
+            'gain_calibration_slope': {
+                r: v['gain_calibration']['slope']
+                for r, v in d2['rooms'].items()}}
+        m2 = AS.settle(
+            a2,
+            status=AS.FALSIFIED if e2['falsifies_a2'] else AS.SUPPORTED,
+            evidence={'n_events': e2['n_events'],
+                      'seasons': e2['seasons'],
+                      'rooms_falsified': e2[
+                          'falsifier_limb_general_departure'],
+                      'nearest_neighbour_limb': e2[
+                          'falsifier_limb_nearest_neighbour_absorbs_more'],
+                      'room_closure': body['a2_measurement']['room_closure'],
+                      'gain_calibration_slope':
+                          body['a2_measurement']['gain_calibration_slope'],
+                      'test': a2.test,
+                      'artifact': a2_art.name},
+            uncertainty='cluster bootstrap over shock events, 2000 '
+                        'resamples, seed 20260918')
+        body['a2_settlement'] = {'state': m2.state.value, 'code': m2.code,
+                                 'detail': m2.detail,
+                                 'falsifier_unchanged':
+                                     m2.evidence.get('falsifier_unchanged')}
+        if m2.state is State.PASS:
+            a2 = m2.value
+
+    settled = []
+    for a in REG.REGISTRY:
+        if a.id == a1.id:
+            settled.append(a1)
+        elif a.id == a2.id:
+            settled.append(a2)
+        else:
+            settled.append(a)
+    body['registry']['assumptions'] = [a.to_dict() for a in settled]
     body['promotion'] = {}
     for consumer in sorted({d for a in settled
                             for d in a.downstream_dependencies}):

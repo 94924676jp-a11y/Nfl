@@ -77,7 +77,7 @@ A2 = AS.Assumption(
     population=('rooms in 2022-2025 where exactly one player with a '
                 'non-trivial prior share was absent for a week and present '
                 'the weeks either side.'),
-    test='NOT_YET_WRITTEN',
+    test='nfl.research.assumptions.a2_redistribution.run',
     falsifier=('the observed redistribution ratio departs from 1.0 '
                'systematically by role -- specifically, if the nearest '
                'depth-chart neighbour absorbs materially more than his '

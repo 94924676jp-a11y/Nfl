@@ -1,4 +1,34 @@
 {
+ "a2_measurement": {
+  "artifact": "A2_REDISTRIBUTION.json",
+  "detail": "carries: n=531 in-room beaten_by=[]; rz_carries: n=110 in-room beaten_by=[]; rz_targets: n=79 in-room beaten_by=[]; targets: n=537 in-room beaten_by=['LEARNED', 'ROOM_UNIFORM']",
+  "gain_calibration_slope": {
+   "carries": 0.49508259485259243,
+   "rz_carries": 0.5220273391339215,
+   "rz_targets": -0.2623836823670717,
+   "targets": -0.1607944726738353
+  },
+  "general_limb": [
+   "carries",
+   "rz_carries",
+   "rz_targets",
+   "targets"
+  ],
+  "room_closure": {
+   "carries": 0.09470543230403534,
+   "rz_carries": 0.15983685506412781,
+   "rz_targets": 0.2277890689190019,
+   "targets": 0.061102705744760406
+  },
+  "specific_limb": [],
+  "the_named_mechanism_was_wrong": "the falsifier guessed that the nearest neighbour absorbs MORE than proportional. He does not: his excess is about zero in three rooms and negative in targets. What actually departs is the other end -- survivors who were ALREADY LARGER than the absent man absorb far LESS than proportional predicts, and the vacated work spreads down the room and out of it. The general limb fires; the specific mechanism named does not."
+ },
+ "a2_settlement": {
+  "code": "ASSUMPTION_SETTLED",
+  "detail": "A2_PROPORTIONAL_REDISTRIBUTION: DECLARED -> FALSIFIED",
+  "falsifier_unchanged": true,
+  "state": "PASS"
+ },
  "artifact": "ASSUMPTION_AUDIT",
  "boundary_audit": {
   "code": "APPEARANCE_PROBABILITY_AT_BOUNDARY",
@@ -123,14 +153,13 @@
  "promotion": {
   "CS2_STAGE2_PRODUCTION_ALLOCATION": {
    "code": "PROMOTION_BLOCKED_BY_FALSIFIED_ASSUMPTION",
-   "detail": "CS2_STAGE2_PRODUCTION_ALLOCATION: 1 CRITICAL assumption(s) falsified \u2014 ['A1_APPEARANCE_CERTAINTY']. The model output is unchanged and stays quotable as what it is; what is refused is promotion.",
+   "detail": "CS2_STAGE2_PRODUCTION_ALLOCATION: 2 CRITICAL assumption(s) falsified \u2014 ['A1_APPEARANCE_CERTAINTY', 'A2_PROPORTIONAL_REDISTRIBUTION']. The model output is unchanged and stays quotable as what it is; what is refused is promotion.",
    "falsified_critical": [
-    "A1_APPEARANCE_CERTAINTY"
+    "A1_APPEARANCE_CERTAINTY",
+    "A2_PROPORTIONAL_REDISTRIBUTION"
    ],
    "state": "FAIL",
-   "untested_critical": [
-    "A2_PROPORTIONAL_REDISTRIBUTION"
-   ]
+   "untested_critical": []
   },
   "PROP_MARKET_ANYTIME_TD": {
    "code": "PROMOTION_NOT_BLOCKED_BY_ASSUMPTIONS",
@@ -199,13 +228,13 @@
    "untested_critical": []
   },
   "nfl.production.nonqb.rushing_a1": {
-   "code": "PROMOTION_NOT_BLOCKED_BY_ASSUMPTIONS",
-   "detail": "nfl.production.nonqb.rushing_a1: 1 assumption(s), 0 falsified at MATERIAL (warning, not a block)",
-   "falsified_critical": [],
-   "state": "PASS",
-   "untested_critical": [
+   "code": "PROMOTION_BLOCKED_BY_FALSIFIED_ASSUMPTION",
+   "detail": "nfl.production.nonqb.rushing_a1: 1 CRITICAL assumption(s) falsified \u2014 ['A2_PROPORTIONAL_REDISTRIBUTION']. The model output is unchanged and stays quotable as what it is; what is refused is promotion.",
+   "falsified_critical": [
     "A2_PROPORTIONAL_REDISTRIBUTION"
-   ]
+   ],
+   "state": "FAIL",
+   "untested_critical": []
   },
   "nfl.production.nonqb.rushing_conversion": {
    "code": "PROMOTION_NOT_BLOCKED_BY_ASSUMPTIONS",
@@ -215,13 +244,13 @@
    "untested_critical": []
   },
   "nfl.production.nonqb.shared_pass": {
-   "code": "PROMOTION_NOT_BLOCKED_BY_ASSUMPTIONS",
-   "detail": "nfl.production.nonqb.shared_pass: 1 assumption(s), 0 falsified at MATERIAL (warning, not a block)",
-   "falsified_critical": [],
-   "state": "PASS",
-   "untested_critical": [
+   "code": "PROMOTION_BLOCKED_BY_FALSIFIED_ASSUMPTION",
+   "detail": "nfl.production.nonqb.shared_pass: 1 CRITICAL assumption(s) falsified \u2014 ['A2_PROPORTIONAL_REDISTRIBUTION']. The model output is unchanged and stays quotable as what it is; what is refused is promotion.",
+   "falsified_critical": [
     "A2_PROPORTIONAL_REDISTRIBUTION"
-   ]
+   ],
+   "state": "FAIL",
+   "untested_critical": []
   },
   "nfl.research.oas1.baselines": {
    "code": "PROMOTION_NOT_BLOCKED_BY_ASSUMPTIONS",
@@ -280,15 +309,44 @@
      "CS2_STAGE2_PRODUCTION_ALLOCATION"
     ],
     "estimand": "E[share_j | i absent] / E[share_j | i present], for every pair (i, j) in a room, against the proportional prediction share_j / (1 - share_i). A ratio of 1.0 everywhere supports proportionality.",
-    "evidence": {},
+    "evidence": {
+     "artifact": "A2_REDISTRIBUTION.json",
+     "gain_calibration_slope": {
+      "carries": 0.49508259485259243,
+      "rz_carries": 0.5220273391339215,
+      "rz_targets": -0.2623836823670717,
+      "targets": -0.1607944726738353
+     },
+     "n_events": 1257,
+     "nearest_neighbour_limb": [],
+     "room_closure": {
+      "carries": 0.09470543230403534,
+      "rz_carries": 0.15983685506412781,
+      "rz_targets": 0.2277890689190019,
+      "targets": 0.061102705744760406
+     },
+     "rooms_falsified": [
+      "carries",
+      "rz_carries",
+      "rz_targets",
+      "targets"
+     ],
+     "seasons": [
+      2022,
+      2023,
+      2024,
+      2025
+     ],
+     "test": "nfl.research.assumptions.a2_redistribution.run"
+    },
     "falsifier": "the observed redistribution ratio departs from 1.0 systematically by role -- specifically, if the nearest depth-chart neighbour absorbs materially more than his proportional share, with a cluster-robust interval excluding proportionality.",
     "id": "A2_PROPORTIONAL_REDISTRIBUTION",
     "notes": "Named in P2_DIAGNOSTIC: Ty Johnson was removed as Out and his share was \"dealt among the remaining players by the A1 multinomial\" rather than reassigned by role. Nobody has measured whether football redistributes that way.",
     "population": "rooms in 2022-2025 where exactly one player with a non-trivial prior share was absent for a week and present the weeks either side.",
     "spec_version": "governed-assumption-1",
-    "status": "DECLARED",
-    "test": "NOT_YET_WRITTEN",
-    "uncertainty": ""
+    "status": "FALSIFIED",
+    "test": "nfl.research.assumptions.a2_redistribution.run",
+    "uncertainty": "cluster bootstrap over shock events, 2000 resamples, seed 20260918"
    },
    {
     "claim": "A player's role share carries across a regime change -- a new coordinator, a new starting quarterback, or a mid-season trade -- so prior-season share remains the right prior.",

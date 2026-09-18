@@ -26,6 +26,7 @@ from sportsplatform.governance.outcome import State                    # noqa: E
 from nfl.production.assumptions import audit_appearance as AA          # noqa: E402
 from nfl.production.assumptions import registry as REG                 # noqa: E402
 from nfl.production.assumptions import run_audit as RUN                # noqa: E402
+from nfl.research.assumptions import a2_redistribution as A2R          # noqa: E402
 from nfl.production import adjustment_registry as ADJ                  # noqa: E402
 
 PASSED = 0
@@ -275,6 +276,155 @@ def test_I_a_measured_status_is_overlaid_not_hand_edited():
               forged[A1] == AS.DECLARED, forged[A1])
 
 
+A2 = 'A2_PROPORTIONAL_REDISTRIBUTION'
+A2_ART = _REPO/'nfl/research/assumptions/A2_REDISTRIBUTION.json'
+
+
+def test_J_the_a2_cohort_is_built_the_way_it_says_it_is():
+    if not A2_ART.exists():
+        NOT_EXECUTED.append('J A2 artifact absent')
+        return
+    d = json.loads(A2_ART.read_text())
+    ev = d['evidence']
+    check('J thresholds were declared and travel with the result',
+          set(ev['thresholds']) >= {'MIN_SHARE', 'WINDOW', 'MIN_SURVIVORS',
+                                    'MIN_VOLUME', 'MIN_CELL'},
+          str(ev['thresholds']))
+    check('J multi-shock weeks were excluded and counted',
+          ev['skipped'].get('multi_shock', 0) > 0
+          and 'attributed' in ev['multi_shock_excluded_because'],
+          str(ev['skipped'].get('multi_shock')))
+    check('J the ordinal guard recorded zero violations',
+          '0 violations' in ev['ordinal_guard'], ev['ordinal_guard'])
+    check('J routes and pass participation are refused, with the reason',
+          set(ev['rooms_not_available']) == {'routes', 'pass_snaps'}
+          and 'not captured' in ev['rooms_not_available']['routes'],
+          str(sorted(ev['rooms_not_available'])))
+    check('J and no substitution matrix was written',
+          'discarded' in ev['no_substitution_matrix_is_written'])
+
+
+def test_K_room_closure_and_redistribution_are_scored_apart():
+    """The decomposition that keeps the answer honest."""
+    if not A2_ART.exists():
+        NOT_EXECUTED.append('K decomposition')
+        return
+    d = json.loads(A2_ART.read_text())
+    check('K the artifact says why there are two scores',
+          'wrong one' in d['evidence']['two_scores_because_two_questions'])
+    for room, v in d['rooms'].items():
+        arms = v['arms']
+        check(f'K {room}: NO_TRANSFER and PROPORTIONAL are the SAME in-room '
+              f'rule, so their in-room scores match exactly',
+              abs(arms['NO_TRANSFER']['log_score_in_room']
+                  - arms['PROPORTIONAL']['log_score_in_room']) < 1e-12,
+              f"{arms['NO_TRANSFER']['log_score_in_room']} vs "
+              f"{arms['PROPORTIONAL']['log_score_in_room']}")
+        check(f'K {room}: and NO_TRANSFER beats it on the TOTAL score, which '
+              f'is the room-closure defect, not a redistribution one',
+              arms['NO_TRANSFER']['log_score_total']
+              < arms['PROPORTIONAL']['log_score_total'],
+              f"{arms['NO_TRANSFER']['log_score_total']:.4f} vs "
+              f"{arms['PROPORTIONAL']['log_score_total']:.4f}")
+    closure = {r: v['room_closure']['mean_share_to_players_outside_the_room']
+               for r, v in d['rooms'].items()}
+    check('K every room leaks opportunity to players outside it',
+          all(x > 0.05 for x in closure.values()),
+          str({k: round(v, 4) for k, v in closure.items()}))
+
+
+def test_L_the_falsifier_fired_on_the_general_limb_and_not_the_specific_one():
+    """The named mechanism was wrong, and that is on the record."""
+    if not A2_ART.exists():
+        NOT_EXECUTED.append('L falsifier limbs')
+        return
+    ev = json.loads(A2_ART.read_text())['evidence']
+    check('L the general limb fires in all four rooms',
+          len(ev['falsifier_limb_general_departure']) == 4,
+          str(ev['falsifier_limb_general_departure']))
+    check('L the specific limb -- nearest neighbour absorbs MORE -- fires in '
+          'none', ev['falsifier_limb_nearest_neighbour_absorbs_more'] == [],
+          str(ev['falsifier_limb_nearest_neighbour_absorbs_more']))
+    check('L A2 is falsified on the general limb', ev['falsifies_a2'] is True)
+    check('L and the wrong guess is recorded rather than quietly repaired',
+          'close to the opposite' in ev['the_named_mechanism_was_wrong']
+          or 'does not' in ev['the_named_mechanism_was_wrong'],
+          ev['the_named_mechanism_was_wrong'][:80])
+    het = ev['heterogeneity']
+    check('L already-larger survivors absorb LESS than proportional',
+          all(h['nearest_neighbour_absorbs_more'] is False
+              for h in het.values()))
+
+
+def test_M_the_intervals_are_clustered_by_shock_event():
+    if not A2_ART.exists():
+        NOT_EXECUTED.append('M clustering')
+        return
+    d = json.loads(A2_ART.read_text())
+    seen = 0
+    for room, v in d['rooms'].items():
+        for rd, c in v['absorption_by_rank_distance'].items():
+            seen += 1
+            check_once = (c['n_event_clusters'] <= c['n_survivors']
+                          and c['ci95_cluster_bootstrap'][0] is not None
+                          and 's_j / (1 - s_i)' in c['null_is'])
+            if not check_once:
+                check(f'M {room} rd={rd} carries a clustered interval and a '
+                      f'stated null', False, str(c))
+                return
+    check('M every cell carries a cluster-bootstrap interval and states its '
+          'null as the proportional prediction', seen > 0, str(seen))
+    fewer = [(r, rd) for r, v in d['rooms'].items()
+             for rd, c in v['absorption_by_rank_distance'].items()
+             if c['n_event_clusters'] < c['n_survivors']]
+    check('M and at least one cell really has fewer clusters than survivors, '
+          'so the clustering is doing work', bool(fewer), str(fewer[:3]))
+
+
+def test_N_a2_blocks_only_the_substitution_path():
+    if not ART.exists():
+        NOT_EXECUTED.append('N A2 promotion scope')
+        return
+    d = json.loads(ART.read_text())
+    a2 = next((a for a in d['registry']['assumptions'] if a['id'] == A2), None)
+    check('N A2 is FALSIFIED in the audit', a2 and a2['status'] == AS.FALSIFIED,
+          str(a2 and a2['status']))
+    blocked = {k for k, v in d['promotion'].items()
+               if v['code'] == AS.CODE_BLOCKED}
+    check('N the substitution path is blocked',
+          {'nfl.production.nonqb.rushing_a1',
+           'nfl.production.nonqb.shared_pass'} <= blocked, str(sorted(blocked)))
+    check('N and nothing outside it is blocked by A2',
+          'nfl.production.nonqb.layers' not in blocked
+          and 'nfl.production.nonqb.rushing_conversion' not in blocked
+          and 'nfl.research.oas1.baselines' not in blocked,
+          str(sorted(blocked)))
+    check('N A2 carries its uncertainty as a clustered interval',
+          'cluster bootstrap' in (a2.get('uncertainty') or ''),
+          str(a2.get('uncertainty')))
+
+
+def test_O_the_successor_spec_installs_no_numbers():
+    spec = _REPO/'nfl/research/assumptions/A2_SUCCESSOR_SPEC.md'
+    check('O a successor specification exists', spec.exists())
+    if not spec.exists():
+        return
+    t = spec.read_text()
+    check('O it forbids a hand-designed matrix',
+          'No hand-designed substitution matrix' in t)
+    # Matched on a wrap-proof pair rather than one sentence: the markdown
+    # line-wraps, and a test that breaks when a paragraph reflows is testing
+    # the formatter.
+    flat = ' '.join(t.split())
+    check('O it forbids carrying a coefficient over from the diagnosis',
+          'No coefficient carried over' in flat
+          and 'fitting on the evaluation set' in flat)
+    check('O it keeps the proportional allocator in production meanwhile',
+          'stays in production until a successor beats it' in t)
+    check('O and it declares a measured negative to be a result',
+          'measured negative is a result' in t)
+
+
 def test_zz_every_check_passed():
     if FAILED:
         raise AssertionError(f'{FAILED} check(s) failed in this module')
@@ -289,7 +439,13 @@ if __name__ == '__main__':
                test_F_the_audit_does_not_rewrite_the_model_output,
                test_G_a_falsified_critical_assumption_blocks_promotion,
                test_H_the_block_reaches_the_real_production_path,
-               test_I_a_measured_status_is_overlaid_not_hand_edited):
+               test_I_a_measured_status_is_overlaid_not_hand_edited,
+               test_J_the_a2_cohort_is_built_the_way_it_says_it_is,
+               test_K_room_closure_and_redistribution_are_scored_apart,
+               test_L_the_falsifier_fired_on_the_general_limb_and_not_the_specific_one,
+               test_M_the_intervals_are_clustered_by_shock_event,
+               test_N_a2_blocks_only_the_substitution_path,
+               test_O_the_successor_spec_installs_no_numbers):
         fn()
     for n in NOT_EXECUTED:
         print(f'  NOT_EXECUTED {n}')
