@@ -47,37 +47,46 @@ def one(**kw):
 def test_A_quarterback():
     print('\nA. QB: 300 pass yds, 3 pass TD, 1 INT, 20 rush yds')
     sl = one(pass_yards=300, pass_td=3, interceptions=1, rush_yards=20)
-    # DK 0.04*300=12.0  +4*3=12.0  -1.0  +0.1*20=2.0  +3.0 (300-yard bonus)
+    # 0.04*300=12.0  +4*3=12.0  -1.0  +0.1*20=2.0  +3.0 (300-yard bonus)
     check('DK = 28.0', abs(DK.score(sl)[0] - 28.0) < 1e-9, str(DK.score(sl)[0]))
-    # FD the same minus the bonus FanDuel is believed not to pay
-    check('FD = 25.0', abs(FD.score(sl)[0] - 25.0) < 1e-9, str(FD.score(sl)[0]))
-    check('  the whole difference is the 300-yard bonus',
-          abs((DK.score(sl)[0] - FD.score(sl)[0]) - 3.0) < 1e-9)
-    just_under = one(pass_yards=299, pass_td=3, interceptions=1, rush_yards=20)
-    check('  and one yard short of 300 the two agree exactly',
-          abs(DK.score(just_under)[0] - FD.score(just_under)[0]) < 1e-9,
-          f'{DK.score(just_under)[0]} vs {FD.score(just_under)[0]}')
+    # CORRECTED 2026-09-18. This read FD = 25.0, on a recalled table that had
+    # FanDuel paying no yardage bonus. FanDuel pays the same +3.
+    check('FD = 28.0', abs(FD.score(sl)[0] - 28.0) < 1e-9, str(FD.score(sl)[0]))
+    check('  the two sites agree exactly on a passer who caught nothing, '
+          'because receptions are now the only difference between them',
+          abs(DK.score(sl)[0] - FD.score(sl)[0]) < 1e-9)
+    no_bonus = one(pass_yards=299, pass_td=3, interceptions=1, rush_yards=20)
+    # 299 * 0.04 = 11.96, not 12.00. The first version of this line expected
+    # 25.0 by rounding the yardage in my head; the adapters were right and the
+    # expectation was wrong. 11.96 + 12.0 - 1.0 + 2.0 = 24.96 on both sites.
+    check('  and one yard short of 300 BOTH lose the bonus together',
+          abs(DK.score(no_bonus)[0] - 24.96) < 1e-9
+          and abs(FD.score(no_bonus)[0] - 24.96) < 1e-9,
+          f'{DK.score(no_bonus)[0]} vs {FD.score(no_bonus)[0]}')
 
 
 def test_B_running_back():
     print('\nB. RB: 100 rush yds, 1 rush TD, 5 catches, 40 rec yds')
     sl = one(rush_yards=100, rush_td=1, receptions=5, rec_yards=40)
-    # DK 10.0 + 6.0 + 5*1.0 + 4.0 + 3.0 (100-yard bonus) = 28.0
+    # DK 10.0 + 6.0 + 5*1.0 + 4.0 + 3.0 (100-rush bonus) = 28.0
     check('DK = 28.0', abs(DK.score(sl)[0] - 28.0) < 1e-9, str(DK.score(sl)[0]))
-    # FD 10.0 + 6.0 + 5*0.5 + 4.0 = 22.5
-    check('FD = 22.5', abs(FD.score(sl)[0] - 22.5) < 1e-9, str(FD.score(sl)[0]))
-    check('  the gap is 3.0 bonus plus 2.5 of half-PPR',
-          abs((DK.score(sl)[0] - FD.score(sl)[0]) - 5.5) < 1e-9)
+    # FD 10.0 + 6.0 + 5*0.5 + 4.0 + 3.0 = 25.5.  CORRECTED from 22.5.
+    check('FD = 25.5', abs(FD.score(sl)[0] - 25.5) < 1e-9, str(FD.score(sl)[0]))
+    check('  the gap is 2.5, which is exactly half a point per catch and '
+          'nothing else', abs((DK.score(sl)[0] - FD.score(sl)[0]) - 2.5) < 1e-9)
 
 
 def test_C_wide_receiver():
     print('\nC. WR: 8 catches, 100 rec yds, 1 rec TD')
     sl = one(receptions=8, rec_yards=100, rec_td=1)
+    # DK 8*1.0 + 10.0 + 6.0 + 3.0 = 27.0
     check('DK = 27.0', abs(DK.score(sl)[0] - 27.0) < 1e-9, str(DK.score(sl)[0]))
-    check('FD = 20.0', abs(FD.score(sl)[0] - 20.0) < 1e-9, str(FD.score(sl)[0]))
-    check('  a high-catch receiver loses the most on FanDuel, which is the '
-          'half-PPR rule doing exactly what it should',
-          (DK.score(sl)[0] - FD.score(sl)[0]) == 7.0)
+    # FD 8*0.5 + 10.0 + 6.0 + 3.0 = 23.0.  CORRECTED from 20.0: the recalled
+    # table charged this receiver three points for breaking 100 yards, which
+    # is the outcome a tournament lineup exists to catch.
+    check('FD = 23.0', abs(FD.score(sl)[0] - 23.0) < 1e-9, str(FD.score(sl)[0]))
+    check('  a high-catch receiver still loses the most, at exactly 0.5 a '
+          'catch', abs((DK.score(sl)[0] - FD.score(sl)[0]) - 4.0) < 1e-9)
 
 
 def test_D_tight_end():
@@ -85,6 +94,8 @@ def test_D_tight_end():
     sl = one(receptions=4, rec_yards=50)
     check('DK = 9.0', abs(DK.score(sl)[0] - 9.0) < 1e-9, str(DK.score(sl)[0]))
     check('FD = 7.0', abs(FD.score(sl)[0] - 7.0) < 1e-9, str(FD.score(sl)[0]))
+    check('  no bonus is reached by either site, so the whole gap is the '
+          'four catches', abs((DK.score(sl)[0] - FD.score(sl)[0]) - 2.0) < 1e-9)
 
 
 def test_E_kicker():
@@ -145,10 +156,22 @@ def test_H_same_football_different_lawful_scores():
     check('  a quarterback with no catches loses far less',
           abs(qb['fd_minus_dk_mean']) < abs(star['fd_minus_dk_mean']),
           f"{qb['fd_minus_dk_mean']} vs {star['fd_minus_dk_mean']}")
-    check('  and every FanDuel mean is at or below its DraftKings mean, since '
-          'FanDuel here has no bonus and a smaller reception credit',
+    check('  every FanDuel mean is at or below its DraftKings mean, the gap '
+          'being half a point per catch',
           all(r['FANDUEL']['mean'] <= r['DRAFTKINGS']['mean'] + 1e-9
               for r in o.value))
+    # THE IDENTITY. With the bonuses now agreeing, receptions are the only
+    # scored quantity separating the sites, so this must hold to floating
+    # point for every player in every world -- a far stronger check than any
+    # pair of hand-built lines, because it fails if either adapter drifts on
+    # any term.
+    res = o.evidence['identity_fd_equals_dk_minus_half_ppr_max_residual']
+    check(f'  FD = DK - 0.5 x receptions holds to {res:.1e} over all 29 '
+          f'players and 8,000 worlds', res < 1e-9, str(res))
+    zero_rec = [r for r in o.value if r['receptions_mean'] == 0.0]
+    check('  and a player who never catches a pass scores identically on both',
+          zero_rec and all(abs(r['fd_minus_dk_mean']) < 1e-9 for r in zero_rec),
+          str([r['name'] for r in zero_rec][:4]))
     check('  P(zero) is essentially identical, because scoring rules cannot '
           'change whether a player produced anything',
           all(abs(r['FANDUEL']['p_zero'] - r['DRAFTKINGS']['p_zero']) < 0.01
@@ -180,32 +203,48 @@ def test_I_no_platform_scoring_reaches_the_football_model():
           'nfl.dfs' not in (_REPO / 'nfl/production/team_volume_v1.py').read_text())
 
 
-def test_J_fanduel_rules_are_not_treated_as_verified():
-    print('\nJ. FanDuel provenance')
+def test_J_fanduel_rules_are_verified_and_the_correction_is_recorded():
+    print('\nJ. FanDuel provenance, after OUT-022A and OUT-022B')
     r = FD.rules_state()
-    check('the scoring table refuses to claim verification',
-          r.state is State.BLOCKED and r.code == 'FANDUEL_RULES_UNVERIFIED',
+    check('the scoring table is now VERIFIED against a named source',
+          r.state is State.PASS and r.code == 'FANDUEL_RULES_VERIFIED',
           f'{r.state}[{r.code}]')
-    check('  with cause NETWORK, naming what is missing',
-          r.evidence.get('cause') in (Cause.NETWORK, Cause.NETWORK.value))
-    check('  and the three highest-risk coefficients are named',
-          set(FD.HIGHEST_RISK_IF_WRONG) == {'reception', 'bonus_100_rec_yards',
-                                            'bonus_300_pass_yards'})
-    check('  every FanDuel coefficient is marked UNVERIFIED',
-          set(FD.RULE_PROVENANCE.values()) == {FD.UNVERIFIED})
+    check('  every coefficient carries that provenance',
+          set(FD.RULE_PROVENANCE.values()) == {FD.VERIFIED})
+    # THE CORRECTION IS KEPT, NOT ERASED. All three coefficients that were
+    # wrong are the three that had been flagged HIGHEST_RISK_IF_WRONG, which
+    # is the argument for the gate rather than against it.
+    c = FD.CORRECTIONS_2026_09_18
+    for k in ('bonus_300_pass_yards', 'bonus_100_rush_yards',
+              'bonus_100_rec_yards'):
+        check(f'  {k}: was {c[k]["was"]}, now {c[k]["now"]}',
+              c[k]['was'] == 0.0 and c[k]['now'] == 3.0, str(c[k]))
+        check(f'    and the live table agrees', FD.BONUSES[k] == 3.0,
+              str(FD.BONUSES[k]))
+    check('  the bonuses now match DraftKings exactly',
+          all(FD.BONUSES[k] == DK.RULES[k] for k in FD.BONUSES))
+    check('  leaving receptions as the only difference',
+          FD.RULES['reception'] == 0.5 and DK.RULES['reception'] == 1.0)
     sd = SR.assert_verified('DRAFTKINGS_SHOWDOWN')
     sf = SR.assert_verified('FANDUEL_SINGLE_GAME')
-    check('  DraftKings legality IS verified, against the real entries file',
+    check('  DraftKings legality verified against the real entries file',
           sd.state is State.PASS, f'{sd.state}[{sd.code}]')
-    check('  FanDuel legality is NOT, and the refusal says what would clear it',
-          sf.state is State.BLOCKED
-          and 'salary export' in sf.detail, f'{sf.state}[{sf.code}]')
-    check('  the two formats differ in roster size',
-          SR.SITES['DRAFTKINGS_SHOWDOWN']['roster_size'] !=
-          SR.SITES['FANDUEL_SINGLE_GAME']['roster_size'])
-    check('  and, critically, in whether the multiplier slot costs extra salary',
-          SR.SITES['DRAFTKINGS_SHOWDOWN']['salary_is_multiplied'] is True
-          and SR.SITES['FANDUEL_SINGLE_GAME']['salary_is_multiplied'] is False)
+    check('  FanDuel legality now verified against first-party documentation',
+          sf.state is State.PASS, f'{sf.state}[{sf.code}]')
+    fd_rules = SR.SITES['FANDUEL_SINGLE_GAME']
+    corr = fd_rules['corrected_2026_09_18']
+    check('  roster size corrected 5 -> 6', corr['roster_size'] ==
+          {'was': 5, 'now': 6} and fd_rules['roster_size'] == 6)
+    check('  MVP salary multiplier corrected False -> True, the field that '
+          'changes the SHAPE of the optimisation',
+          corr['salary_is_multiplied'] == {'was': False, 'now': True}
+          and fd_rules['salary_is_multiplied'] is True)
+    check('  so both formats now multiply the multiplier slot`s salary',
+          SR.SITES['DRAFTKINGS_SHOWDOWN']['salary_is_multiplied']
+          == fd_rules['salary_is_multiplied'] is True)
+    check('  and they still differ on the cap',
+          SR.SITES['DRAFTKINGS_SHOWDOWN']['salary_cap'] == 50000
+          and fd_rules['salary_cap'] == 60000)
 
 
 def test_K_legality_is_enforced_per_site():
@@ -219,12 +258,22 @@ def test_K_legality_is_enforced_per_site():
           abs(dk6.evidence['salary'] - (18000 + 11400 + 10400 + 6400 + 2400
                                         + 400)) < 1e-9,
           str(dk6.evidence['salary']))
-    six_on_fd = SR.assert_lineup_legal('FANDUEL_SINGLE_GAME',
-                                       [12000] * 6, ['DET'] * 3 + ['BUF'] * 3)
-    check('  the same six-player shape is REFUSED on FanDuel',
-          six_on_fd.state is State.FAIL
-          and six_on_fd.code == 'LINEUP_WRONG_ROSTER_SIZE',
-          f'{six_on_fd.state}[{six_on_fd.code}]')
+    fd6 = SR.assert_lineup_legal('FANDUEL_SINGLE_GAME',
+                                 [12000, 11400, 10400, 6400, 2400, 400],
+                                 ['DET', 'BUF', 'DET', 'BUF', 'BUF', 'BUF'])
+    check('  the same six-player shape is now LEGAL on FanDuel too',
+          fd6.state is State.PASS, f'{fd6.state}[{fd6.code}]')
+    check('    with the MVP salary multiplied, same as DraftKings',
+          abs(fd6.evidence['salary'] - dk6.evidence['salary']) < 1e-9,
+          f"{fd6.evidence['salary']} vs {dk6.evidence['salary']}")
+    check('    but $11,000 of headroom left, because the cap is 60000',
+          abs(fd6.evidence['salary'] - 49000) < 1e-9)
+    five_on_fd = SR.assert_lineup_legal('FANDUEL_SINGLE_GAME',
+                                        [12000] * 5, ['DET'] * 3 + ['BUF'] * 2)
+    check('  and a FIVE-player lineup -- the stale pre-2025 shape -- is '
+          'refused', five_on_fd.state is State.FAIL
+          and five_on_fd.code == 'LINEUP_WRONG_ROSTER_SIZE',
+          f'{five_on_fd.state}[{five_on_fd.code}]')
     one_team = SR.assert_lineup_legal('DRAFTKINGS_SHOWDOWN',
                                       [1000] * 6, ['DET'] * 6)
     check('  a one-team lineup is refused', one_team.state is State.FAIL
@@ -248,7 +297,7 @@ if __name__ == '__main__':
                test_G_draftkings_reconciles_to_the_engine,
                test_H_same_football_different_lawful_scores,
                test_I_no_platform_scoring_reaches_the_football_model,
-               test_J_fanduel_rules_are_not_treated_as_verified,
+               test_J_fanduel_rules_are_verified_and_the_correction_is_recorded,
                test_K_legality_is_enforced_per_site):
         fn()
     for n in NOT_EXECUTED:

@@ -70,28 +70,35 @@ SITES = {
     'FANDUEL_SINGLE_GAME': {
         'site': 'FANDUEL',
         'format': 'Single Game (MVP)',
-        'roster_size': 5,
+        'roster_size': 6,
         'multiplier_slot': 'MVP',
         'n_multiplier_slots': 1,
-        'n_flex_slots': 4,
+        'n_flex_slots': 5,
         'points_multiplier': 1.5,
-        'salary_is_multiplied': False,
-        'salary_multiplier': 1.0,
+        'salary_is_multiplied': True,
+        'salary_multiplier': 1.5,
         'salary_cap': 60000,
         'min_teams_represented': 2,
-        'positional_eligibility': 'believed any position; kickers are believed '
-                                  'NOT offered on FanDuel single-game slates, '
-                                  'which would remove two rosterable players '
-                                  'relative to DraftKings',
+        'positional_eligibility': 'any position may fill any slot',
         'dst_is_rosterable': False,
         'separate_ids_per_slot': False,
-        'provenance': UNVERIFIED,
-        'evidence': None,
-        'what_would_verify_it': 'one FanDuel NFL single-game salary export. It '
-                               'carries roster shape, cap, and whether the MVP '
-                               'row has its own salary, on its face.',
-        'highest_risk_if_wrong': ('salary_is_multiplied', 'salary_cap',
-                                  'roster_size'),
+        'provenance': VERIFIED,
+        'evidence': 'first-party FanDuel single-game documentation, retrieved '
+                    '2026-09-17, relayed by the operator; corroborated by '
+                    'current-season FanDuel lineup examples',
+        'corrected_2026_09_18': {
+            'roster_size': {'was': 5, 'now': 6},
+            'n_flex_slots': {'was': 4, 'now': 5},
+            'salary_is_multiplied': {'was': False, 'now': True},
+            'salary_multiplier': {'was': 1.0, 'now': 1.5},
+            'why': 'FanDuel changed the MVP salary treatment beginning in '
+                   '2025. The recalled configuration was a pre-2025 format. '
+                   'It was flagged HIGHEST_RISK_IF_WRONG precisely because '
+                   'salary_is_multiplied changes the SHAPE of the '
+                   'optimisation rather than rescaling it -- and it was '
+                   'wrong, in the direction that would have left roughly a '
+                   'sixth of the cap unspent on every lineup.',
+        },
     },
 }
 

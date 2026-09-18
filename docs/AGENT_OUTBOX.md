@@ -1353,7 +1353,34 @@ boundary is the whole point of the DFS architecture file.
 
 ---
 
-## 2026-09-18 — OUT-022: one FanDuel NFL single-game salary export, and the FanDuel scoring table
+## 2026-09-18 — OUT-022: FanDuel rules and a slate salary export
+
+**SPLIT AND PARTIALLY RESOLVED 2026-09-18.**
+
+| item | status |
+|---|---|
+| **OUT-022A** FanDuel scoring rules | **RESOLVED** — official Rules & Scoring, retrieved 2026-09-17 |
+| **OUT-022B** FanDuel single-game structure | **RESOLVED** — first-party documentation; 6 slots, $60,000, MVP salary 1.5x |
+| **OUT-022C** FanDuel slate salary export | **STILL REQUIRED** |
+
+**022C is what remains.** Slate-specific player ids, salaries and eligibility
+must come from the actual contest file. They may NOT be inferred from the
+DraftKings salaries in this repository, from public articles, or from any
+projection: a DK salary is DK's opinion of a player's price, not FanDuel's, and
+the two sites price the same slate differently.
+
+Until 022C lands, `nfl/dfs/scoring/site_rules.py` will validate a FanDuel
+lineup's SHAPE but there is no FanDuel player universe to build one from.
+
+**What the resolved half corrected, kept on the record rather than erased:**
+all three FanDuel yardage bonuses were recalled as 0.0 and are +3; the format
+was recalled as 5 slots with unmultiplied MVP salary and is 6 slots with
+multiplied MVP salary. Every one of those was a field the module had already
+flagged `HIGHEST_RISK_IF_WRONG` and refused to ship on.
+
+---
+
+## SUPERSEDED — original OUT-022 text
 
 **ASSIGNED.** The adapter is built and unit-tested; what is missing is the
 authority for its numbers. The open web is refused at CONNECT from this

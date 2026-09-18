@@ -5,30 +5,32 @@ same simulated football worlds read through different arithmetic. Nothing in
 this file reaches back into the engine, and nothing in the engine knows this
 file exists.
 
-THE PROVENANCE PROBLEM, STATED BEFORE THE NUMBERS
+PROVENANCE, CORRECTED 2026-09-18
 
-DraftKings scoring in this repository is VERIFIED: the engine carries its own
-implementation and the adapter reproduces it exactly. FanDuel has no such
-anchor here. The coefficients below are RECALLED, and this environment cannot
-reach fanduel.com to check them -- the open web is refused at CONNECT.
+An earlier version of this module carried UNVERIFIED_FROM_RECOLLECTION
+coefficients and REFUSED to let them reach a portfolio. The gate was right and
+the recollection was wrong: external research against the official FanDuel
+Rules & Scoring page (retrieved 2026-09-17) shows FanDuel pays the SAME +3
+yardage bonuses DraftKings does -- 300 passing, 100 rushing, 100 receiving --
+where the recalled table had all three at zero.
 
-So they are marked `UNVERIFIED_FROM_RECOLLECTION` and the module REFUSES to
-score a real board through the public entry point until a rules artifact is
-supplied. Writing plausible numbers and letting a portfolio consume them is
-exactly the failure this project keeps having; a scoring table that is wrong by
-half a point per reception moves every receiver on the slate.
+That error was not small. It was three points on exactly the outcomes a DFS
+lineup is built to catch, and it would have depressed every ceiling on the
+board asymmetrically: a receiver who breaks 100 yards is precisely the player a
+tournament lineup needs, and the recalled table charged him three points for
+doing it.
 
-WHAT IS BELIEVED TO DIFFER FROM DRAFTKINGS, and each is load-bearing:
+WHAT ACTUALLY SEPARATES THE TWO SITES, now that the bonuses agree
 
-  * 0.5 points per reception, not 1.0. Half PPR moves pass-catchers a long way
-    relative to runners.
-  * NO yardage bonuses. DraftKings pays 3.0 at 300 passing / 100 rushing /
-    100 receiving; FanDuel is believed to pay none, which compresses ceilings.
-  * Fumble lost -2.0 rather than -1.0. Not simulated either way.
+Exactly one rule: 0.5 points per reception against DraftKings' 1.0. Every other
+scored quantity this simulation produces is identical. So for any player in any
+world:
 
-Everything else is believed identical: 0.04 per passing yard, 4 per passing
-touchdown, -1 per interception, 0.1 per rushing or receiving yard, 6 per
-rushing or receiving touchdown.
+    FD = DK - 0.5 * receptions
+
+That identity is asserted as a test over all 29 players and all 8,000 worlds.
+It is a much stronger check than comparing two hand-built lines, because it
+would fail if either adapter drifted on any term.
 """
 from __future__ import annotations
 
@@ -44,55 +46,70 @@ if str(_REPO) not in sys.path:
 from sportsplatform.governance.outcome import Cause, Outcome, State  # noqa: E402
 from nfl.dfs.scoring import statline as SL                           # noqa: E402
 
-SPEC_VERSION = 'nfl-dfs-scoring-fanduel-1'
+SPEC_VERSION = 'nfl-dfs-scoring-fanduel-2'
 SITE = 'FANDUEL'
 
 UNVERIFIED = 'UNVERIFIED_FROM_RECOLLECTION'
 VERIFIED = 'VERIFIED_AGAINST_SOURCE'
 
-#: Where a verified rules artifact would live. Until it exists, `score_board`
-#: refuses.
 RULES_ARTIFACT = _REPO / 'nfl/dfs/scoring/FANDUEL_RULES_VERIFIED.json'
+
+SOURCE = ('official FanDuel Rules & Scoring page, retrieved 2026-09-17, '
+          'relayed by the operator')
 
 RULES = {
     'pass_yard': 0.04, 'pass_td': 4.0, 'interception': -1.0,
     'rush_yard': 0.1, 'rush_td': 6.0,
     'rec_yard': 0.1, 'reception': 0.5, 'rec_td': 6.0,
-    'fumble_lost': -2.0,          # NOT SIMULATED
-    'two_point': 2.0,             # NOT SIMULATED
+    'fumble_lost': -2.0,          # NOT SIMULATED -- see statline.NOT_SIMULATED
+    'two_point_scored': 2.0,      # NOT SIMULATED
+    'two_point_thrown': 2.0,      # NOT SIMULATED
     'return_td': 6.0,             # NOT SIMULATED
     'fg_made_under_40': 3.0, 'fg_made_40s': 4.0, 'fg_made_50_plus': 5.0,
     'xp_made': 1.0,
 }
 
-#: No yardage bonuses, and the absence is DECLARED rather than implied by the
-#: dictionary simply not having the key. A missing key reads as an oversight;
-#: an explicit zero reads as a rule.
-BONUSES = {'bonus_300_pass_yards': 0.0, 'bonus_100_rush_yards': 0.0,
-           'bonus_100_rec_yards': 0.0}
+#: CORRECTED. These were 0.0 and that was wrong. Kept as an explicit mapping
+#: rather than folded into RULES so the correction stays visible.
+BONUSES = {'bonus_300_pass_yards': 3.0, 'bonus_100_rush_yards': 3.0,
+           'bonus_100_rec_yards': 3.0}
 
-RULE_PROVENANCE = {k: UNVERIFIED for k in list(RULES) + list(BONUSES)}
+RULE_PROVENANCE = {k: VERIFIED for k in list(RULES) + list(BONUSES)}
 
-#: Per-rule confidence, so a later verification pass knows where to look first.
-#: These are the three that differ from DraftKings and therefore the three that
-#: change a lineup if they are wrong.
-HIGHEST_RISK_IF_WRONG = ('reception', 'bonus_100_rec_yards',
-                         'bonus_300_pass_yards')
+#: What changed, and what it was. A correction that erases the wrong value
+#: teaches nobody anything.
+CORRECTIONS_2026_09_18 = {
+    'bonus_300_pass_yards': {'was': 0.0, 'now': 3.0},
+    'bonus_100_rush_yards': {'was': 0.0, 'now': 3.0},
+    'bonus_100_rec_yards': {'was': 0.0, 'now': 3.0},
+    'why': 'the recalled table assumed FanDuel pays no yardage bonuses. It '
+           'pays the same +3 DraftKings does. Recollection was wrong on the '
+           'three coefficients that had been flagged HIGHEST_RISK_IF_WRONG, '
+           'which is the argument for the gate rather than against it.',
+}
+
+#: The ONLY rule that now separates the two sites on anything this simulation
+#: produces.
+ONLY_DIFFERENCE_FROM_DRAFTKINGS = 'reception: 0.5 here against 1.0 on DraftKings'
 
 
 def score(sl: SL.StatLine) -> np.ndarray:
-    """Arithmetic only. No gate: unit tests need to exercise the formula."""
-    return (RULES['pass_yard'] * sl.pass_yards
-            + RULES['pass_td'] * sl.pass_td
-            + RULES['interception'] * sl.interceptions
-            + RULES['rush_yard'] * sl.rush_yards
-            + RULES['rush_td'] * sl.rush_td
-            + RULES['rec_yard'] * sl.rec_yards
-            + RULES['reception'] * sl.receptions
-            + RULES['rec_td'] * sl.rec_td)
+    s = (RULES['pass_yard'] * sl.pass_yards
+         + RULES['pass_td'] * sl.pass_td
+         + RULES['interception'] * sl.interceptions
+         + RULES['rush_yard'] * sl.rush_yards
+         + RULES['rush_td'] * sl.rush_td
+         + RULES['rec_yard'] * sl.rec_yards
+         + RULES['reception'] * sl.receptions
+         + RULES['rec_td'] * sl.rec_td)
+    s = s + BONUSES['bonus_300_pass_yards'] * (sl.pass_yards >= 300)
+    s = s + BONUSES['bonus_100_rush_yards'] * (sl.rush_yards >= 100)
+    s = s + BONUSES['bonus_100_rec_yards'] * (sl.rec_yards >= 100)
+    return s
 
 
 def score_kicker(sl: SL.StatLine) -> np.ndarray:
+    """0-39 / 40-49 / 50+ at 3 / 4 / 5, identical banding to DraftKings."""
     b = sl.fg_made_by_bucket
     if b:
         return (RULES['fg_made_under_40'] * (b.get('FG<20', 0)
@@ -105,22 +122,17 @@ def score_kicker(sl: SL.StatLine) -> np.ndarray:
 
 
 def rules_state() -> Outcome:
-    """Are the FanDuel rules verified? Today: no, and the refusal says so."""
     if RULES_ARTIFACT.exists():
         return Outcome.ok(
             'FANDUEL_RULES_VERIFIED', value=VERIFIED,
-            detail=f'{RULES_ARTIFACT.name} present',
-            spec_version=SPEC_VERSION)
+            detail=f'scoring verified against {SOURCE}; the single remaining '
+                   f'difference from DraftKings is '
+                   f'{ONLY_DIFFERENCE_FROM_DRAFTKINGS}',
+            spec_version=SPEC_VERSION, source=SOURCE,
+            corrections=CORRECTIONS_2026_09_18,
+            outbox_item='OUT-022A RESOLVED')
     return Outcome.blocked(
         'FANDUEL_RULES_UNVERIFIED',
-        f'the FanDuel scoring coefficients in this module are '
-        f'{UNVERIFIED}. DraftKings is verified because the engine carries its '
-        f'own implementation to reconcile against; FanDuel has no such anchor '
-        f'here and this environment cannot reach fanduel.com. Half a point per '
-        f'reception moves every pass-catcher on the slate, so the numbers are '
-        f'not allowed to reach a portfolio until {RULES_ARTIFACT.name} exists.',
-        cause=Cause.NETWORK, spec_version=SPEC_VERSION,
-        highest_risk_if_wrong=list(HIGHEST_RISK_IF_WRONG),
-        assigned_to='docs/AGENT_OUTBOX.md OUT-022',
-        arithmetic_is_still_testable='score() has no gate; unit tests with '
-                                     'hand-built stat lines exercise it')
+        f'{RULES_ARTIFACT.name} is absent, so the coefficients in this module '
+        f'carry no recorded source.', cause=Cause.NETWORK,
+        spec_version=SPEC_VERSION)

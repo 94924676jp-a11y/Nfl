@@ -23,7 +23,22 @@ from nfl.dfs.scoring import draftkings as DK                         # noqa: E40
 from nfl.dfs.scoring import fanduel as FD                            # noqa: E402
 from nfl.dfs.showdown import universe as U                           # noqa: E402
 
-SPEC_VERSION = 'nfl-dfs-dual-board-1'
+SPEC_VERSION = 'nfl-dfs-dual-board-2'
+
+#: The rules generation this board was scored under. v1 was built on a
+#: FanDuel table that was later shown wrong on all three yardage bonuses, so
+#: the version travels WITH the numbers rather than being inferred from a
+#: filename. The v1 artifact is preserved unmodified; it is superseded, not
+#: corrected in place.
+RULES_VERSION = {
+    'draftkings': 'nfl-dfs-scoring-draftkings-1 (VERIFIED against the engine)',
+    'fanduel': 'nfl-dfs-scoring-fanduel-2 (VERIFIED against the official '
+               'Rules & Scoring page, retrieved 2026-09-17)',
+    'supersedes': 'DUAL_PLATFORM_BOARD.json, built under '
+                  'nfl-dfs-scoring-fanduel-1, whose FanDuel bonuses were all '
+                  'zero and are now all +3',
+}
+OUTPUT_NAME = 'DUAL_PLATFORM_BOARD_v2.json'
 PCT = (10, 25, 50, 75, 90, 95)
 
 
@@ -51,7 +66,12 @@ def build() -> Outcome:
         rows.append({'name': names.get(g, g), 'gsis_id': g,
                      'DRAFTKINGS': _dist(dk), 'FANDUEL': _dist(fd),
                      'fd_minus_dk_mean': float(fd.mean() - dk.mean()),
-                     'receptions_mean': float(sl.receptions.mean())})
+                     'receptions_mean': float(sl.receptions.mean()),
+                     # THE IDENTITY, CHECKED PER PLAYER. With the bonuses now
+                     # agreeing, receptions are the only scored quantity that
+                     # separates the sites, so this residual must be zero.
+                     'identity_residual_max': float(np.abs(
+                         fd - (dk - 0.5 * sl.receptions)).max())})
     if worst > 1e-9:
         return Outcome.fail(
             'DUAL_BOARD_DK_RECONCILIATION_FAILED',
@@ -71,6 +91,9 @@ def build() -> Outcome:
         dk_provenance=DK.PROVENANCE,
         fanduel_rules_state=fdstate.code,
         fanduel_numbers_are_research_only=fdstate.state is not State.PASS,
+        rules_version=RULES_VERSION,
+        identity_fd_equals_dk_minus_half_ppr_max_residual=max(
+            r['identity_residual_max'] for r in rows),
         same_draws_both_platforms=True,
         uses_live_game_outcome_data=False)
 
@@ -89,7 +112,7 @@ def main() -> int:
               f"{d['p_zero']:6.3f} {f['mean']:8.2f} {f['p90']:7.1f} "
               f"{f['p_zero']:6.3f} {r['fd_minus_dk_mean']:+7.2f} "
               f"{r['receptions_mean']:5.2f}")
-    out = _REPO / 'nfl/research/dfs/DET_BUF_2026W2/DUAL_PLATFORM_BOARD.json'
+    out = _REPO / 'nfl/research/dfs/DET_BUF_2026W2' / OUTPUT_NAME
     out.write_text(json.dumps(
         {'spec_version': SPEC_VERSION, 'detail': o.detail,
          'evidence': {k: v for k, v in o.evidence.items() if k != 'cause'},
