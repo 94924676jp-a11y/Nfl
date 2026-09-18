@@ -215,6 +215,28 @@ def get(adjustment_id: str) -> Outcome:
                                                       if k != 'evidence'})
 
 
+def _assumption_gate(calling_layer: str, purpose: str):
+    """The assumption registry's verdict for this layer, or None.
+
+    Imported lazily and failing OPEN on an import error ON PURPOSE. This gate
+    is additive governance over a path that already worked; a broken import
+    here must not silently forbid every adjustment in the system, because a
+    gate that fails closed on its own bug is indistinguishable from a real
+    refusal and would be debugged as one. A missing gate IS reported: the
+    caller sees None and the audit records that it could not run.
+    """
+    if purpose != PRODUCTION:
+        return None
+    try:
+        from sportsplatform.governance import assumption as AS
+        from nfl.production.assumptions import registry as AR
+    except Exception:                                      # noqa: BLE001
+        return None
+    return AS.assert_promotable(AR.all_assumptions(),
+                                consumer=calling_layer,
+                                require_tested=False)
+
+
 def assert_may_apply(adjustment_id: str, *, calling_layer: str,
                      frame_tags=None, distinct_mechanism: str = None,
                      purpose: str = PRODUCTION) -> Outcome:
@@ -274,6 +296,18 @@ def assert_may_apply(adjustment_id: str, *, calling_layer: str,
                 f'{RESEARCH!r} among its permitted consumers, so it may not '
                 f'be applied even under a research purpose.',
                 cause=Cause.GOVERNANCE, **ev)
+    # GOVERNED ASSUMPTIONS. A CRITICAL assumption that the calling layer
+    # depends on, and that measurement has FALSIFIED, blocks the application.
+    # Nothing is rewritten: the layer's output stands exactly as it is and
+    # stays quotable as what it is. What is refused is letting it through.
+    ga = _assumption_gate(calling_layer, purpose)
+    if ga is not None and ga.state is not State.PASS:
+        return Outcome.fail(
+            ga.code, f'{adjustment_id!r}: {ga.detail}',
+            cause=Cause.GOVERNANCE,
+            assumption_evidence={k: v for k, v in ga.evidence.items()
+                                 if k != 'cause'}, **ev)
+
     if calling_layer != a['applied_at']:
         return Outcome.fail(
             OWNER_MISMATCH,

@@ -1,0 +1,374 @@
+{
+ "artifact": "ASSUMPTION_AUDIT",
+ "boundary_audit": {
+  "code": "APPEARANCE_PROBABILITY_AT_BOUNDARY",
+  "detail": "CS2 carries room, 2026 wk2: 90 of 196 row(s) assert certainty \u2014 13 at exactly 1.0, 77 at exactly 0.0, 0 within 1.25e-04 of 1 and 0 within 1.25e-04 of 0. The model output is NOT modified by this finding.",
+  "evidence": {
+   "band": 0.000125,
+   "band_is_derived": "1 / n_draws: the probability below which the other outcome is expected fewer than once across every simulated world",
+   "exactly_one": [
+    "ATL:00-0038542",
+    "BAL:00-0032764",
+    "BUF:00-0037248",
+    "CHI:00-0039918",
+    "CIN:00-0038597",
+    "DET:00-0039139",
+    "IND:00-0036223",
+    "JAX:00-0036971",
+    "LA:00-0037840",
+    "LA:00-0039738",
+    "NE:00-0039851",
+    "SF:00-0033280",
+    "TEN:00-0035261"
+   ],
+   "exactly_zero": [
+    "ATL:00-0035208",
+    "ATL:00-0036970",
+    "ATL:00-0037741",
+    "BAL:00-0032398",
+    "BAL:00-0034798",
+    "BAL:00-0036550",
+    "BAL:00-0040075",
+    "BAL:00-0040870",
+    "BAL:00-0040879",
+    "BUF:00-0034827",
+    "BUF:00-0035689",
+    "BUF:00-0036988",
+    "BUF:00-0038933",
+    "BUF:00-0039901",
+    "CAR:00-0031610",
+    "CAR:00-0037005",
+    "CAR:00-0039491",
+    "CAR:00-0040124",
+    "CHI:00-0032464",
+    "CHI:00-0039919",
+    "CHI:00-0040277",
+    "CIN:00-0034613",
+    "CIN:00-0034829",
+    "CIN:00-0036410",
+    "CLE:00-0038710",
+    "CLE:00-0041037",
+    "DET:00-0036754",
+    "DET:00-0039065",
+    "DET:00-0040669",
+    "HOU:00-0034383",
+    "HOU:00-0034981",
+    "HOU:00-0038608",
+    "HOU:00-0038728",
+    "HOU:00-0041472",
+    "IND:00-0030279",
+    "IND:00-0032951",
+    "IND:00-0037292",
+    "IND:00-0037664",
+    "IND:00-0041125",
+    "JAX:00-0036590",
+    "JAX:00-0038935",
+    "JAX:00-0041100",
+    "JAX:00-0041503",
+    "LA:00-0031381",
+    "LA:00-0033110",
+    "LA:00-0036244",
+    "LA:00-0039074",
+    "LA:00-0040590",
+    "NE:00-0033090",
+    "NE:00-0035676"
+   ],
+   "label": "CS2 carries room, 2026 wk2",
+   "n_at_or_near_boundary": 90,
+   "n_draws": 8000,
+   "n_exactly_one": 13,
+   "n_exactly_zero": 77,
+   "n_near_one": 0,
+   "n_near_zero": 0,
+   "n_rows": 196,
+   "near_one": [],
+   "near_zero": [],
+   "nothing_is_clipped": "this audit counts and lists. It does not floor, clip or adjust a probability. A floor is a modelling decision with a number in it and belongs in a preregistration.",
+   "out_of_range": [],
+   "share_at_or_near_boundary": 0.45918367346938777,
+   "spec_version": "nfl-appearance-boundary-audit-1"
+  },
+  "state": "FAIL"
+ },
+ "cohort_measurement": {
+  "code": "A1_COHORT_MEASURED",
+  "detail": "1585/1702 = 0.931257, 95% Wilson [0.918240, 0.942332]; 117 failure(s)",
+  "evidence": {
+   "appearance_is_a_proxy": "a man who played and was neither handed the ball nor thrown to counts as absent, exactly as in CS2, so this rate is a LOWER bound on true participation -- and it is the quantity CS2 predicts, which is what matters here",
+   "ci95": [
+    0.9182399209276464,
+    0.9423323619853743
+   ],
+   "falsifier_limb_any_observed_failure": true,
+   "falsifier_limb_upper_bound_below_one": true,
+   "falsifies_a1": true,
+   "n_appeared": 1585,
+   "n_cohort_weeks": 1702,
+   "n_distinct_clubs_with_a_failure": 72,
+   "n_failed": 117,
+   "no_clipping_value_is_produced": "the output is a rate and an interval. What floor should follow, if any, is a separate preregistered decision.",
+   "rate": 0.9312573443008225,
+   "seasons": [
+    2022,
+    2023,
+    2024,
+    2025
+   ],
+   "spec_version": "a1-cohort-appearance-certainty-1",
+   "uses_live_game_outcome_data": false
+  },
+  "state": "PASS"
+ },
+ "nothing_is_repaired": "no probability is clipped, floored or adjusted anywhere in this pipeline. A falsified assumption blocks a promotion and leaves the model output exactly as it was.",
+ "promotion": {
+  "CS2_STAGE2_PRODUCTION_ALLOCATION": {
+   "code": "PROMOTION_BLOCKED_BY_FALSIFIED_ASSUMPTION",
+   "detail": "CS2_STAGE2_PRODUCTION_ALLOCATION: 1 CRITICAL assumption(s) falsified \u2014 ['A1_APPEARANCE_CERTAINTY']. The model output is unchanged and stays quotable as what it is; what is refused is promotion.",
+   "falsified_critical": [
+    "A1_APPEARANCE_CERTAINTY"
+   ],
+   "state": "FAIL",
+   "untested_critical": [
+    "A2_PROPORTIONAL_REDISTRIBUTION"
+   ]
+  },
+  "PROP_MARKET_ANYTIME_TD": {
+   "code": "PROMOTION_NOT_BLOCKED_BY_ASSUMPTIONS",
+   "detail": "PROP_MARKET_ANYTIME_TD: 1 assumption(s), 0 falsified at MATERIAL (warning, not a block)",
+   "falsified_critical": [],
+   "state": "PASS",
+   "untested_critical": []
+  },
+  "SHARED_GAME_ENVIRONMENT": {
+   "code": "PROMOTION_NOT_BLOCKED_BY_ASSUMPTIONS",
+   "detail": "SHARED_GAME_ENVIRONMENT: 1 assumption(s), 0 falsified at MATERIAL (warning, not a block)",
+   "falsified_critical": [],
+   "state": "PASS",
+   "untested_critical": [
+    "A4_STATIC_TEAM_VOLUME_SUFFICIENCY"
+   ]
+  },
+  "TEAM_VOLUME_V2": {
+   "code": "PROMOTION_NOT_BLOCKED_BY_ASSUMPTIONS",
+   "detail": "TEAM_VOLUME_V2: 1 assumption(s), 0 falsified at MATERIAL (warning, not a block)",
+   "falsified_critical": [],
+   "state": "PASS",
+   "untested_critical": [
+    "A4_STATIC_TEAM_VOLUME_SUFFICIENCY"
+   ]
+  },
+  "nfl.dfs.scoring.statline": {
+   "code": "PROMOTION_NOT_BLOCKED_BY_ASSUMPTIONS",
+   "detail": "nfl.dfs.scoring.statline: 1 assumption(s), 0 falsified at MATERIAL (warning, not a block)",
+   "falsified_critical": [],
+   "state": "PASS",
+   "untested_critical": []
+  },
+  "nfl.production.nonqb.cs2_state": {
+   "code": "PROMOTION_BLOCKED_BY_FALSIFIED_ASSUMPTION",
+   "detail": "nfl.production.nonqb.cs2_state: 1 CRITICAL assumption(s) falsified \u2014 ['A1_APPEARANCE_CERTAINTY']. The model output is unchanged and stays quotable as what it is; what is refused is promotion.",
+   "falsified_critical": [
+    "A1_APPEARANCE_CERTAINTY"
+   ],
+   "state": "FAIL",
+   "untested_critical": []
+  },
+  "nfl.production.nonqb.cs2_state.state": {
+   "code": "PROMOTION_BLOCKED_BY_FALSIFIED_ASSUMPTION",
+   "detail": "nfl.production.nonqb.cs2_state.state: 1 CRITICAL assumption(s) falsified \u2014 ['A1_APPEARANCE_CERTAINTY']. The model output is unchanged and stays quotable as what it is; what is refused is promotion.",
+   "falsified_critical": [
+    "A1_APPEARANCE_CERTAINTY"
+   ],
+   "state": "FAIL",
+   "untested_critical": []
+  },
+  "nfl.production.nonqb.layers": {
+   "code": "PROMOTION_NOT_BLOCKED_BY_ASSUMPTIONS",
+   "detail": "nfl.production.nonqb.layers: 1 assumption(s), 0 falsified at MATERIAL (warning, not a block)",
+   "falsified_critical": [],
+   "state": "PASS",
+   "untested_critical": [
+    "A4_STATIC_TEAM_VOLUME_SUFFICIENCY"
+   ]
+  },
+  "nfl.production.nonqb.role_prior": {
+   "code": "PROMOTION_NOT_BLOCKED_BY_ASSUMPTIONS",
+   "detail": "nfl.production.nonqb.role_prior: 1 assumption(s), 0 falsified at MATERIAL (warning, not a block)",
+   "falsified_critical": [],
+   "state": "PASS",
+   "untested_critical": []
+  },
+  "nfl.production.nonqb.rushing_a1": {
+   "code": "PROMOTION_NOT_BLOCKED_BY_ASSUMPTIONS",
+   "detail": "nfl.production.nonqb.rushing_a1: 1 assumption(s), 0 falsified at MATERIAL (warning, not a block)",
+   "falsified_critical": [],
+   "state": "PASS",
+   "untested_critical": [
+    "A2_PROPORTIONAL_REDISTRIBUTION"
+   ]
+  },
+  "nfl.production.nonqb.rushing_conversion": {
+   "code": "PROMOTION_NOT_BLOCKED_BY_ASSUMPTIONS",
+   "detail": "nfl.production.nonqb.rushing_conversion: 1 assumption(s), 0 falsified at MATERIAL (warning, not a block)",
+   "falsified_critical": [],
+   "state": "PASS",
+   "untested_critical": []
+  },
+  "nfl.production.nonqb.shared_pass": {
+   "code": "PROMOTION_NOT_BLOCKED_BY_ASSUMPTIONS",
+   "detail": "nfl.production.nonqb.shared_pass: 1 assumption(s), 0 falsified at MATERIAL (warning, not a block)",
+   "falsified_critical": [],
+   "state": "PASS",
+   "untested_critical": [
+    "A2_PROPORTIONAL_REDISTRIBUTION"
+   ]
+  },
+  "nfl.research.oas1.baselines": {
+   "code": "PROMOTION_NOT_BLOCKED_BY_ASSUMPTIONS",
+   "detail": "nfl.research.oas1.baselines: 1 assumption(s), 0 falsified at MATERIAL (warning, not a block)",
+   "falsified_critical": [],
+   "state": "PASS",
+   "untested_critical": []
+  }
+ },
+ "registry": {
+  "assumptions": [
+   {
+    "claim": "A non-QB skill player whose prior-season appearance rate is 1.0, and who has taken opportunity in every current-season week so far, will take opportunity in the next week with probability exactly 1.0.",
+    "criticality": "CRITICAL",
+    "declared_at_utc": "2026-09-18T06:00:00Z",
+    "downstream_dependencies": [
+     "nfl.production.nonqb.cs2_state",
+     "nfl.production.nonqb.cs2_state.state",
+     "CS2_STAGE2_PRODUCTION_ALLOCATION"
+    ],
+    "estimand": "P(carries + targets > 0 in week W | prior-season appearance rate == 1.0 AND opportunity in every week 1..W-1), estimated as a pooled binomial rate over the cohort.",
+    "evidence": {
+     "ci95": [
+      0.9182399209276464,
+      0.9423323619853743
+     ],
+     "failures": 117,
+     "limb_any_observed_failure": true,
+     "limb_upper_bound_below_one": true,
+     "n": 1702,
+     "rate": 0.9312573443008225,
+     "seasons": [
+      2022,
+      2023,
+      2024,
+      2025
+     ],
+     "test": "nfl.research.assumptions.cohort_appearance_certainty.measure"
+    },
+    "falsifier": "the cohort appearance rate is below 1.0 by more than Monte Carlo resolution -- concretely, the upper bound of the 95% Wilson interval is below 1.0, or any member of the cohort is observed not appearing. Either alone falsifies it.",
+    "id": "A1_APPEARANCE_CERTAINTY",
+    "notes": "Surfaced by CS2_APPEARANCE_SATURATES_AT_ONE. A Beta posterior mean is exactly 1.0 for a man who has never missed; on the 2026 week-1 carries room that was 13 rows of 196 at exactly 1.0 and 77 at exactly 0.0. The estimator ASSERTS certainty, so the question is whether football supports certainty.",
+    "population": "non-QB skill players, seasons 2022-2025, weeks 2-18 of the regular season, conditioned on the club having played that week. 2026 is excluded: it is the season the state is applied to.",
+    "spec_version": "governed-assumption-1",
+    "status": "FALSIFIED",
+    "test": "nfl.research.assumptions.cohort_appearance_certainty.measure",
+    "uncertainty": "95% Wilson [0.918240, 0.942332] on n=1702"
+   },
+   {
+    "claim": "When a player is absent, his opportunity is redistributed to the rest of his room in proportion to their existing shares.",
+    "criticality": "CRITICAL",
+    "declared_at_utc": "2026-09-18T06:00:00Z",
+    "downstream_dependencies": [
+     "nfl.production.nonqb.rushing_a1",
+     "nfl.production.nonqb.shared_pass",
+     "CS2_STAGE2_PRODUCTION_ALLOCATION"
+    ],
+    "estimand": "E[share_j | i absent] / E[share_j | i present], for every pair (i, j) in a room, against the proportional prediction share_j / (1 - share_i). A ratio of 1.0 everywhere supports proportionality.",
+    "evidence": {},
+    "falsifier": "the observed redistribution ratio departs from 1.0 systematically by role -- specifically, if the nearest depth-chart neighbour absorbs materially more than his proportional share, with a cluster-robust interval excluding proportionality.",
+    "id": "A2_PROPORTIONAL_REDISTRIBUTION",
+    "notes": "Named in P2_DIAGNOSTIC: Ty Johnson was removed as Out and his share was \"dealt among the remaining players by the A1 multinomial\" rather than reassigned by role. Nobody has measured whether football redistributes that way.",
+    "population": "rooms in 2022-2025 where exactly one player with a non-trivial prior share was absent for a week and present the weeks either side.",
+    "spec_version": "governed-assumption-1",
+    "status": "DECLARED",
+    "test": "NOT_YET_WRITTEN",
+    "uncertainty": ""
+   },
+   {
+    "claim": "A player's role share carries across a regime change -- a new coordinator, a new starting quarterback, or a mid-season trade -- so prior-season share remains the right prior.",
+    "criticality": "MATERIAL",
+    "declared_at_utc": "2026-09-18T06:00:00Z",
+    "downstream_dependencies": [
+     "nfl.production.nonqb.role_prior",
+     "nfl.production.nonqb.cs2_state",
+     "nfl.research.oas1.baselines"
+    ],
+    "estimand": "the ratio of a player's post-change room share to his pre-change share, against 1.0, within the same season, compared with the same ratio in matched player-weeks with no regime change.",
+    "evidence": {},
+    "falsifier": "the post-change share ratio differs from the matched no-change ratio with an interval excluding equality. The continuity assumption is then false for that class of change and the prior must be conditioned on it.",
+    "id": "A3_ROLE_CONTINUITY_ACROSS_REGIME_CHANGE",
+    "notes": "CS2 amendment B1 declared the shrinkage target to be the player's own prior-season share. That choice is only as good as this assumption, and the two must be tested together rather than one justifying the other.",
+    "population": "2022-2025 player-seasons spanning a declared regime change, with the change dated from a governed source and never inferred from the usage it is meant to explain.",
+    "spec_version": "governed-assumption-1",
+    "status": "DECLARED",
+    "test": "NOT_YET_WRITTEN",
+    "uncertainty": ""
+   },
+   {
+    "claim": "A club's game-level offensive volume can be drawn independently of the opponent's and of the evolving score, so a static team-volume layer is sufficient.",
+    "criticality": "CRITICAL",
+    "declared_at_utc": "2026-09-18T06:00:00Z",
+    "downstream_dependencies": [
+     "nfl.production.nonqb.layers",
+     "TEAM_VOLUME_V2",
+     "SHARED_GAME_ENVIRONMENT"
+    ],
+    "estimand": "the correlation between the two clubs' offensive volume in the same game, and the within-game dependence of pass rate on score state, measured historically and in the sealed worlds under the same definition.",
+    "evidence": {},
+    "falsifier": "the simulated club-vs-club coupling lies outside the historical interval, OR the historical within-game pass rate depends on score state while the simulator has no score state to depend on. The second condition alone falsifies sufficiency.",
+    "id": "A4_STATIC_TEAM_VOLUME_SUFFICIENCY",
+    "notes": "Partially measured already: GAME_OFFENSE_COUPLING found historical coupling indistinguishable from zero and simulated coupling at -0.131. The SECOND limb of the falsifier is the live one -- the sealed board emits no score at all, so a score-state dependence cannot even be expressed. Left DECLARED rather than settled because only half the estimand has been measured, and settling on half is the failure this registry exists to stop.",
+    "population": "2024-2025 games; sealed DET_BUF worlds for the simulated side.",
+    "spec_version": "governed-assumption-1",
+    "status": "DECLARED",
+    "test": "nfl.research.coupling.game_offense_coupling.run",
+    "uncertainty": ""
+   },
+   {
+    "claim": "A player's touchdown conversion rate per opportunity is portable: it transfers across seasons and across usage levels, so yardage and touchdowns can be modelled from the same opportunity draw without a separate red-zone role.",
+    "criticality": "MATERIAL",
+    "declared_at_utc": "2026-09-18T06:00:00Z",
+    "downstream_dependencies": [
+     "nfl.production.nonqb.rushing_conversion",
+     "nfl.dfs.scoring.statline",
+     "PROP_MARKET_ANYTIME_TD"
+    ],
+    "estimand": "the season-over-season correlation of TD per opportunity at matched opportunity volume, and the residual dependence of TD rate on red-zone share once total opportunity is controlled.",
+    "evidence": {},
+    "falsifier": "season-over-season correlation of TD rate is indistinguishable from zero at matched volume, OR red-zone share retains explanatory power after total opportunity is controlled. Either means TD conversion is not portable and needs its own role state.",
+    "id": "A5_TD_CONVERSION_PORTABILITY",
+    "notes": "The engine has no red-zone role per player -- the sealed board carries team_rz_carries at CLUB level only. If TD conversion is not portable, every touchdown number in the system rests on a quantity the model does not represent.",
+    "population": "2022-2025 player-seasons with at least a declared minimum opportunity count in both seasons; the minimum is a reporting threshold, declared before the measurement.",
+    "spec_version": "governed-assumption-1",
+    "status": "DECLARED",
+    "test": "NOT_YET_WRITTEN",
+    "uncertainty": ""
+   }
+  ],
+  "by_criticality": {
+   "CRITICAL": 3,
+   "MATERIAL": 2,
+   "MINOR": 0
+  },
+  "by_status": {
+   "DECLARED": 5
+  },
+  "code": "ASSUMPTION_REGISTRY_VALID",
+  "detail": "5 assumption(s): {'DECLARED': 5}",
+  "state": "PASS"
+ },
+ "scope": "v0: one assumption end to end, no source-code scanner",
+ "settlement": {
+  "code": "ASSUMPTION_SETTLED",
+  "detail": "A1_APPEARANCE_CERTAINTY: DECLARED -> FALSIFIED",
+  "falsifier_unchanged": true,
+  "state": "PASS"
+ },
+ "spec_version": "automatic-scientist-v0"
+}
