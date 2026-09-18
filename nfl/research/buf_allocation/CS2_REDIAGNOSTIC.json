@@ -1,0 +1,61 @@
+{
+ "artifact": "BUF_CS2_REDIAGNOSTIC",
+ "conditioning": "BUF 2026 week 1 only, as_of the 2026-09-16 seal",
+ "cs2_inverted": false,
+ "kappa_a": 1.0,
+ "kappa_s": 25.0,
+ "kappa_source": "nfl/research/cs2/CS2_STAGE2_FIT.json, forward chained on 2022-2025; read here, not chosen",
+ "no_monotonicity_imposed": "CS2 does not force RB1 above RB2. If the ordering changed, the evidence changed it.",
+ "nothing_written_back": "CS2 is a state layer. No projection, no sealed artifact and no board is modified by this diagnostic.",
+ "one_week": "the 2026 conditioning set is week 1 alone. This is a single-week update of a prior-season prior and its uncertainty is not small.",
+ "prior_season": 2025,
+ "question": "does the Cook/Davis appearance inversion survive CS2?",
+ "rows": [
+  {
+   "cs2_n_opportunity": 13.0,
+   "cs2_p_appears": 1.0,
+   "cs2_p_zero_opportunity": 0.0,
+   "cs2_share_given_appears": 0.468427580763376,
+   "gsis_id": "00-0037248",
+   "in_cs2_room": true,
+   "name": "James Cook",
+   "sealed_carry_share_unconditional": 0.454,
+   "sealed_p_zero_opportunity": 0.3719
+  },
+  {
+   "cs2_n_opportunity": 1.0,
+   "cs2_p_appears": 0.763157894736842,
+   "cs2_p_zero_opportunity": 0.23684210526315796,
+   "cs2_share_given_appears": 0.05804251000732931,
+   "gsis_id": "00-0039875",
+   "in_cs2_room": true,
+   "name": "Ray Davis",
+   "sealed_carry_share_unconditional": 0.331,
+   "sealed_p_zero_opportunity": 0.1801
+  },
+  {
+   "cs2_n_opportunity": 1.0,
+   "cs2_p_appears": 0.5,
+   "cs2_p_zero_opportunity": 0.5,
+   "cs2_share_given_appears": 0.060086260359700064,
+   "gsis_id": "00-0039471",
+   "in_cs2_room": true,
+   "name": "Frank Gore Jr.",
+   "sealed_carry_share_unconditional": 0.215,
+   "sealed_p_zero_opportunity": 0.397
+  }
+ ],
+ "saturation_limitation": {
+  "blocks": "CS2 stage 2 reaching production allocation",
+  "code": "CS2_APPEARANCE_SATURATES_AT_ONE",
+  "n_p_appears_at_one": 13,
+  "n_p_appears_at_zero": 77,
+  "n_prior_fallbacks": 103,
+  "n_rows": 196,
+  "the_floor_is_a_new_choice": "clipping to [eps, 1-eps] is a modelling decision with a value in it, and it belongs in a preregistration rather than in a diagnostic that noticed it was needed.",
+  "what_it_means": "Cook's CS2 P(zero opportunity) is EXACTLY 0.0000, which says he cannot miss. That is not a plausible football state. A Beta posterior mean saturates for a man who has never missed and for one who has never played, and on this slate that is a large share of the rows. The inversion result stands -- the ORDERING is what was asked about -- but these probabilities must not reach a simulator unfloored."
+ },
+ "sealed_board_inverted": true,
+ "uses_outcome_data": false,
+ "verdict": "INVERSION_RESOLVED"
+}

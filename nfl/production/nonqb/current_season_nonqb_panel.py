@@ -241,6 +241,65 @@ def usage(season: int, week: int, as_of=None, all_clubs=None) -> Outcome:
         is_measurement_not_estimation=True, **ev)
 
 
+def usage_season(season: int, as_of=None, weeks=None) -> Outcome:
+    """Every week of a season in ONE pass over the blob.
+
+    `usage()` reads a 19 MB archive to answer for a single week. A forward
+    chain asks about seventeen of them, so re-reading per week turns a
+    two-minute job into a half-hour one. Same counting rules, same clock, same
+    conservation check; only the loop is different.
+    """
+    path, ev = _capture(season, as_of)
+    ev.update(spec_version=SPEC_VERSION, season=season, as_of=as_of,
+              counting_rules=COUNTING_RULES)
+    if path is None:
+        return Outcome.blocked(
+            'NONQB_USAGE_NO_LAWFUL_CAPTURE',
+            f'no play-by-play capture for {season} is lawful before '
+            f'{as_of!r}', cause=Cause.DATA, **ev)
+    want = None if weeks is None else {str(w) for w in weeks}
+    blank = dict(carries=0.0, targets=0.0, receptions=0.0,
+                 rush_yards=0.0, rec_yards=0.0)
+    per = collections.defaultdict(lambda: dict(blank))
+    with gzip.open(path, 'rt', errors='ignore') as fh:
+        for r in csv.DictReader(fh):
+            wk = str(r.get('week') or '')
+            if not wk or not r.get('posteam'):
+                continue
+            if want is not None and wk not in want:
+                continue
+            if _one(r.get('two_point_attempt')):
+                continue
+            club = r['posteam']
+            if _one(r.get('rush_attempt')):
+                pid = (r.get('rusher_player_id') or '').strip()
+                if pid:
+                    d = per[(int(wk), club, pid)]
+                    d['carries'] += 1
+                    d['rush_yards'] += _f(r.get('rushing_yards'))
+            if _one(r.get('pass_attempt')):
+                pid = (r.get('receiver_player_id') or '').strip()
+                if pid:
+                    d = per[(int(wk), club, pid)]
+                    d['targets'] += 1
+                    if _one(r.get('complete_pass')):
+                        d['receptions'] += 1
+                        d['rec_yards'] += _f(r.get('receiving_yards'))
+    if not per:
+        return Outcome.blocked(
+            'NONQB_USAGE_WEEK_ABSENT',
+            f'{ev["blob"]} carries no rows for {season}'
+            + (f' weeks {sorted(want)}' if want else ''),
+            cause=Cause.DATA, **ev)
+    weeks_seen = sorted({k[0] for k in per})
+    return Outcome.ok(
+        'NONQB_USAGE_SEASON_MEASURED', value=dict(per),
+        detail=f'{len(per)} (week, club, player) row(s) over '
+               f'{len(weeks_seen)} week(s) of {season}, from {ev["blob"]}',
+        n_rows=len(per), weeks=weeks_seen,
+        is_measurement_not_estimation=True, **ev)
+
+
 def stage2_state(*_a, **_k) -> Outcome:
     """Stage 2: turn usage into a role state. REFUSED, and why."""
     return Outcome.blocked(

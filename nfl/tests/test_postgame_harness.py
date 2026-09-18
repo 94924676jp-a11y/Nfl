@@ -310,19 +310,43 @@ def test_H_the_ledger_is_append_only_and_registration_comes_first():
               f'{a.state}[{a.code}] {a.evidence.get("n_blocks")}')
 
 
-def test_I_the_real_det_buf_block_is_registered_and_still_awaiting():
+def test_I_the_registration_came_before_the_grade():
+    """The ordering is the evidence, not the momentary status.
+
+    An earlier version asserted DET_BUF_2026W2 was in `awaiting`, which was
+    true only until it was graded. Waiting is a phase; what makes the block
+    prospective evidence is that the REGISTRATION was written first, with the
+    scope pinned, and that it was never rewritten afterwards.
+    """
     a = LG.audit()
     check('I the live ledger audits clean', a.state is State.PASS,
           f'{a.state}[{a.code}] {a.detail}')
     if a.state is not State.PASS:
         return
-    check('I DET_BUF_2026W2 is registered before its outcome',
-          'DET_BUF_2026W2' in a.evidence['awaiting'],
-          str(a.evidence['awaiting']))
-    blk = next(r for r in a.value if r['block_id'] == 'DET_BUF_2026W2')
+    blocks = [r for r in a.value if r['block_id'] == 'DET_BUF_2026W2']
+    check('I the block is registered', bool(blocks), str(len(blocks)))
+    if not blocks:
+        return
+    reg = [r for r in blocks if r['status'] == LG.AWAITING]
+    check('I exactly one registration exists, and it is the first block',
+          len(reg) == 1 and blocks[0]['status'] == LG.AWAITING,
+          str([r['status'] for r in blocks]))
     check('I the registration carries no result',
-          blk['outcome'] is None and blk['grades'] is None
-          and blk['scope']['declared_before_outcome'] is True, str(blk['status']))
+          reg[0]['outcome'] is None and reg[0]['grades'] is None
+          and reg[0]['scope']['declared_before_outcome'] is True,
+          str(reg[0]['status']))
+    graded = [r for r in blocks if r['status'] == LG.GRADED]
+    if graded:
+        check('I the grade came after the registration, never instead of it',
+              graded[0]['written_at_utc'] >= reg[0]['written_at_utc']
+              and graded[0]['scope'] == reg[0]['scope'],
+              f"{reg[0]['written_at_utc']} -> {graded[0]['written_at_utc']}")
+        check('I and it could not have been written without one',
+              LG.grade_block(block_id='NEVER_REGISTERED', outcome={},
+                             grades={}).code
+              == 'LEDGER_GRADE_WITHOUT_REGISTRATION')
+    else:
+        NOT_EXECUTED.append('I grade-follows-registration (not graded yet)')
 
 
 def test_J_a_sealed_board_can_never_become_training_data():
@@ -446,7 +470,7 @@ if __name__ == '__main__':
                test_F_portfolios_grade_against_the_actual_optimal,
                test_G_the_frozen_pregame_set_is_untouched,
                test_H_the_ledger_is_append_only_and_registration_comes_first,
-               test_I_the_real_det_buf_block_is_registered_and_still_awaiting,
+               test_I_the_registration_came_before_the_grade,
                test_J_a_sealed_board_can_never_become_training_data,
                test_K_a_board_player_who_did_nothing_is_graded_as_nothing,
                test_L_identity_is_normalised_before_anything_is_zeroed,
