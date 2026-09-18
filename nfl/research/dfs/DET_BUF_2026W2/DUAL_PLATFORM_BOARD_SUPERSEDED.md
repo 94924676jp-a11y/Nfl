@@ -1,7 +1,24 @@
 # `DUAL_PLATFORM_BOARD.json` is SUPERSEDED — do not use its FanDuel column
 
 **Superseded by** `DUAL_PLATFORM_BOARD_v2.json` on 2026-09-18.
-**The v1 file is preserved byte-identical and has not been corrected in place.**
+
+## CORRECTION: there is no v1 file, and there never was
+
+This document first said the v1 artifact was "preserved byte-identical". It is
+not preserved, because it was never written. The generating command was run as
+
+    python3.12 nfl/dfs/scoring/dual_board.py | head -22
+
+and `head` closed the pipe after 22 lines, killing the process on SIGPIPE
+before it reached `out.write_text(...)`. The table printed, the file did not
+appear, and the commit message that followed described an artifact that did not
+exist. Nothing downstream consumed it, so nothing is wrong except the claim.
+
+That is this project's most expensive recurring defect in its smallest form: a
+step produced output on screen, and the output was read as evidence the step
+had completed. The v1 NUMBERS below are real -- they are what that run printed,
+under the wrong FanDuel table -- but the FILE is absent and this note exists so
+a later reader does not go looking for it.
 
 ## What was wrong
 
