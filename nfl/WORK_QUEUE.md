@@ -88,7 +88,7 @@ its downstream impact justifies it.
 
 ## ID: P9
 - **priority**: 4
-- **status**: ACTIVE
+- **status**: DONE
 - **dependencies**: none
 - **description**: Resume OAS1 from its amended preregistration state. Pass
   and rush stay separate. `GO_NO_GO` still records NO-GO gates and those stay
@@ -100,7 +100,7 @@ its downstream impact justifies it.
 
 ## ID: A3
 - **priority**: 5
-- **status**: QUEUED
+- **status**: ACTIVE
 - **dependencies**: assumption registry (DONE, A1/A2 settled)
 - **description**: Automatic Scientist — test
   `A3_ROLE_CONTINUITY_ACROSS_REGIME_CHANGES` against measurement.
@@ -110,6 +110,68 @@ its downstream impact justifies it.
   - the settlement moves only along a legal status edge and carries evidence;
   - a falsification blocks only the affected production path and rewrites no
     model output.
+
+## ID: OAS1-TIEBREAK
+- **priority**: 5
+- **status**: BLOCKED
+- **dependencies**: P9
+- **description**: The OAS1 pre-registration declares `garbage_time` as a
+  search axis and declares no tie-break for it, in either the original
+  five-axis order or the amended three-axis one. Executing the selection left
+  all three rules tied after the declared axes. A tie-break must be declared
+  before the Week-2 candidate has a single identity.
+- **blocker**: **owner decision, and it may not be taken by whoever has seen
+  the scores.** The three variants' MAEs are now on the record
+  (pass 1.159614 / 1.159721 / 1.159993 for A / none / B), so any rule written
+  here is a selection rule written after seeing them — the exact thing the
+  one-SE rule and the tie-break exist to prevent. The gap is pre-existing in
+  the pre-registration, not introduced by amendment A1.
+- **acceptance criteria**:
+  - the tie-break is declared by someone who has not read the variant scores,
+    or is declared on a ground that does not reference them;
+  - it is committed before the Week-2 candidate is named;
+  - the existing three-variant artifact is superseded, not rewritten.
+- **classification**: RESEARCH_BLOCKER
+
+## ID: OAS1-HURDLE
+- **priority**: 6
+- **status**: BLOCKED
+- **dependencies**: P9
+- **description**: Evaluate OAS1 against B5 and B4 (pass) and B5 with B3 as
+  `POST_HOC_STRONGEST_BASELINE` (rush), clustered by game and by team.
+- **blocker**: the captured 2026 play-by-play carries **week 1 only** — read
+  from the file, 2,756 rows, zero at ordinal 202602. Scoring needs Week-2
+  plays, which are bytes outside this checkout. **Assigned, not blocked for
+  both agents**: the request is in `docs/AGENT_OUTBOX.md`. The candidate's unit
+  strengths are committed before those bytes arrive, which is the position a
+  hurdle test should be run from.
+- **acceptance criteria**:
+  - the Week-2 plays are captured with URL, retrieval time, `Last-Modified`
+    and sha256;
+  - the committed grader runs unchanged;
+  - a negative result is recorded as a MEASURED NEGATIVE and B5 is used for the
+    early-season opponent layer. No retuning until OAS1 wins.
+- **classification**: RESEARCH_BLOCKER
+
+## ID: OAS1-FLAT-SURFACE
+- **priority**: 7
+- **status**: QUEUED
+- **dependencies**: P9
+- **description**: All 864 configurations fall within one standard error of the
+  best in both classes, so the pre-registered tie-break does 100% of the
+  selecting and the data does none of it. The SE in the one-SE rule is the
+  standard error of the mean ACROSS FOLDS, and fold-to-fold variation swamps
+  configuration-to-configuration variation by roughly twenty to one. A PAIRED
+  comparison — same folds, differenced per configuration — would have a far
+  smaller standard error and might discriminate.
+- **blocker**: none — but changing the rule is a change to the
+  pre-registration and is a new pre-registration, not an edit to the old one.
+- **acceptance criteria**:
+  - the paired-SE alternative is pre-registered before it is run;
+  - the existing result is not reinterpreted under the new rule;
+  - if the surface is still flat under a paired SE, that is the finding and no
+    further rule is tried.
+- **classification**: MEASUREMENT_DEFECT
 
 ## ID: A5
 - **priority**: 6

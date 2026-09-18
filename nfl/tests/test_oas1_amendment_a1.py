@@ -141,15 +141,54 @@ def test_F_the_ground_the_removal_rests_on_is_recorded():
           str(AM.REMOVED['min_plays']['retained_as']))
 
 
-def test_G_the_candidate_is_still_not_fitted():
-    """Resolving the blocker does not fit anything."""
+def test_G_the_candidate_is_fitted_but_promoted_by_nothing():
+    """SUPERSEDES `test_G_the_candidate_is_still_not_fitted`, 2026-09-18.
+
+    The old check asserted that no Week-2 result artifact exists. That was the
+    right guard when it was written: it stopped the A1 amendment commit from
+    quietly fitting a candidate while claiming only to remove two dead axes.
+
+    The candidate has now been fitted deliberately, in its own commit, under
+    P9, by `nfl/research/oas1/week2.py`. So "no artifact exists" is an obsolete
+    contract and is replaced rather than suppressed -- and the replacement is
+    STRONGER, because the thing the old check was really protecting was not
+    the absence of a file. It was that nothing gets promoted and that A1's
+    ground still holds. Both are asserted here against the fit that actually
+    ran, which the old check could not do because there was nothing to read.
+    """
     chain = json.loads(
         (_REPO/'nfl/research/oas1/OAS1_BASELINE_CHAIN.json').read_text())
-    check('G the baseline chain still carries candidate_fitted=False',
+    check('G the baseline chain still carries candidate_fitted=False -- the '
+          'baselines were built BEFORE the candidate and that does not change',
           chain.get('candidate_fitted') is False,
           str(chain.get('candidate_fitted')))
-    check('G no Week-2 result artifact exists',
-          not (_REPO/'nfl/research/oas1/OAS1_WEEK2_RESULT.json').exists())
+    art = _REPO / 'nfl/research/oas1/OAS1_WEEK2_RESULT.json'
+    if not art.exists():
+        check('G the Week-2 artifact is present to be checked', False,
+              str(art))
+        return
+    d = json.loads(art.read_text())
+    check('G the fitted candidate is research-only',
+          d.get('research_only') is True, str(d.get('research_only')))
+    check('G no downstream consumer is authorized',
+          d.get('downstream_authorized') is False)
+    check('G nothing is promoted', d.get('promoted') is False)
+    check('G the hurdle is not evaluated, so nothing can be read as a win',
+          d['scoring']['hurdles_evaluated'] is False
+          and d['scoring']['state'] == 'BLOCKED',
+          str(d['scoring']['state']))
+    # A1 REMOVED half_life ON THE GROUND THAT THE TRAINING SET CARRIES ONE
+    # CURRENT-SEASON WEEK. Now that a fit exists, that ground is checkable
+    # against the fit rather than against the amendment's own note.
+    ords = set()
+    for cls in ('pass', 'rush'):
+        for f in d['selection'][cls]['folds']:
+            ords.add(f['ordinal'])
+    cur = sorted(o for o in ords
+                 if o >= d['forecast']['season'] * 100)
+    check('G the fitted chain reaches exactly one current-season ordinal, '
+          'which is the ground A1 rests on',
+          cur == [d['forecast']['season'] * 100 + 1], str(cur))
 
 
 def test_zz_every_check_passed():
@@ -164,7 +203,7 @@ if __name__ == '__main__':
                test_D_the_frozen_preregistration_is_not_rewritten,
                test_E_an_amendment_that_widened_would_be_refused,
                test_F_the_ground_the_removal_rests_on_is_recorded,
-               test_G_the_candidate_is_still_not_fitted):
+               test_G_the_candidate_is_fitted_but_promoted_by_nothing):
         fn()
     for n in NOT_EXECUTED:
         print(f'  NOT_EXECUTED {n}')

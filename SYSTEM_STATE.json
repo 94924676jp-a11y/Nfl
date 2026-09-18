@@ -64,7 +64,7 @@
    "why_not_measurable": "routines live in a scheduler this executor cannot query. The previous `CURRENT_STATE.md` asserted a routine was DISABLED and recorded, in the same file, that a later firing reported success with no commit ever reaching the branch \u2014 an unresolved contradiction that it presented as state."
   }
  ],
- "generated_at": "2026-09-18T17:30:30.958333+00:00",
+ "generated_at": "2026-09-18T18:48:01.851407+00:00",
  "generated_by": "nfl/tools/system_state.py",
  "measured": {
   "assumptions": {
@@ -151,8 +151,8 @@
   },
   "code": {
    "TOTAL": {
-    "lines": 209209,
-    "modules": 653
+    "lines": 210491,
+    "modules": 656
    },
    "nfl/capture": {
     "lines": 6334,
@@ -183,12 +183,12 @@
     "modules": 18
    },
    "nfl/research": {
-    "lines": 62414,
-    "modules": 266
+    "lines": 63276,
+    "modules": 268
    },
    "nfl/tests": {
-    "lines": 66895,
-    "modules": 181
+    "lines": 67315,
+    "modules": 182
    },
    "nfl/tools": {
     "lines": 13324,
@@ -244,19 +244,19 @@
   "git": {
    "branch": "claude/nfl-greenfield-architecture-stsxmk",
    "dirty_source_files": [],
-   "head": "9bb56108f5be0ca830d95202e8113d127ebab4a4",
-   "head_committed_at": "2026-09-18T17:30:09+00:00",
-   "head_short": "9bb5610",
-   "head_subject": "P7: SYSTEM_STATE.json is generated and CURRENT_STATE.md derives from it",
+   "head": "4bb940dbb2092d0f9f938134d5c99caf087e150f",
+   "head_committed_at": "2026-09-18T17:31:03+00:00",
+   "head_short": "4bb940d",
+   "head_subject": "P8: Contract 4 was already reconciled; what was missing was the check",
    "is_clean": true,
-   "n_commits_on_branch": 877,
+   "n_commits_on_branch": 878,
    "remote_head": "3270829ca46e46f44285c5ae81952c31921bdda5",
    "worktree": {
-    "code_version": "9bb56108f5be0ca830d95202e8113d127ebab4a4+src1[44aa01d03783de18]",
-    "commit": "9bb56108f5be0ca830d95202e8113d127ebab4a4",
+    "code_version": "4bb940dbb2092d0f9f938134d5c99caf087e150f+src1[44aa01d03783de18]",
+    "commit": "4bb940dbb2092d0f9f938134d5c99caf087e150f",
     "dirty_source_files": [],
     "n_dirty_source_files": 0,
-    "n_dirty_tree_entries_observed": 14,
+    "n_dirty_tree_entries_observed": 20,
     "scope_note": "dirty_source_files is SOURCE scope only -- the .py files the identity contract hashes. A changed .md or .json is counted in n_dirty_tree_entries_observed and is not listed.",
     "source_scope_clean": true
    }
@@ -304,40 +304,57 @@
    }
   },
   "suite": {
-   "artifact": "nfl/research/suite_attribution/SUITE_DIFF_p6_p7p8.json",
-   "baseline_commit": "44ff8ed",
+   "artifact": "nfl/research/suite_attribution/SUITE_DIFF_p7p8_p9.json",
+   "baseline_commit": "4bb940d",
    "baseline_totals": {
-    "blocked_functions": 23,
-    "checks": 10335,
-    "failing_checks": 61,
-    "modules": 179,
-    "raised": 21,
-    "test_functions": 1944,
-    "zero_check_functions": 0
-   },
-   "counts_by_classification": {
-    "PRE_EXISTING": 133
-   },
-   "delta_totals": {
-    "blocked_functions": 0,
-    "checks": 112,
-    "failing_checks": 0,
-    "modules": 3,
-    "raised": 0,
-    "test_functions": 27,
-    "zero_check_functions": 0
-   },
-   "is_current_head": false,
-   "measured_at_commit": "WORKING_TREE",
-   "newly_introduced": [],
-   "staleness_note": "measured at WORKING_TREE, HEAD is 9bb5610. This total is not a statement about the tree as it stands.",
-   "totals": {
     "blocked_functions": 23,
     "checks": 10447,
     "failing_checks": 61,
     "modules": 182,
     "raised": 21,
     "test_functions": 1971,
+    "zero_check_functions": 0
+   },
+   "counts_by_classification": {
+    "NEWLY_INTRODUCED": 3,
+    "PRE_EXISTING": 133
+   },
+   "delta_totals": {
+    "blocked_functions": 0,
+    "checks": 136,
+    "failing_checks": 2,
+    "modules": 1,
+    "raised": 0,
+    "test_functions": 16,
+    "zero_check_functions": 0
+   },
+   "is_current_head": false,
+   "measured_at_commit": "WORKING_TREE",
+   "newly_introduced": [
+    {
+     "detail": "FAIL the code inventory matches a live count  {'lines': 210452, 'modules': 656} vs {'modules': 656, 'lines': 210491}; regenerate: python3.12 nfl/tools/system_st",
+     "kind": "FAILING_CHECK",
+     "module": "nfl/tests/test_system_state.py"
+    },
+    {
+     "detail": "FAIL the live suite check count appears",
+     "kind": "FAILING_CHECK",
+     "module": "nfl/tests/test_system_state.py"
+    },
+    {
+     "detail": "2 failing check(s)",
+     "kind": "MODULE_FAILING",
+     "module": "nfl/tests/test_system_state.py"
+    }
+   ],
+   "staleness_note": "measured at WORKING_TREE, HEAD is 4bb940d. This total is not a statement about the tree as it stands.",
+   "totals": {
+    "blocked_functions": 23,
+    "checks": 10583,
+    "failing_checks": 63,
+    "modules": 183,
+    "raised": 21,
+    "test_functions": 1987,
     "zero_check_functions": 0
    },
    "verdict": "SUITE FAIL"
@@ -353,8 +370,8 @@
   "work_queue": {
    "by_status": {
     "ACTIVE": 1,
-    "BLOCKED": 3,
-    "DONE": 3,
+    "BLOCKED": 5,
+    "DONE": 4,
     "QUEUED": 4
    },
    "items": [
@@ -384,13 +401,34 @@
      "description": "Resume OAS1 from its amended preregistration state. Pass and rush stay separate. `GO_NO_GO` still records NO-GO gates and those stay recorded.",
      "id": "P9",
      "priority": "4",
-     "status": "ACTIVE"
+     "status": "DONE"
     },
     {
      "blocker": "none known",
      "description": "Automatic Scientist \u2014 test `A3_ROLE_CONTINUITY_ACROSS_REGIME_CHANGES` against measurement.",
      "id": "A3",
      "priority": "5",
+     "status": "ACTIVE"
+    },
+    {
+     "blocker": "**owner decision, and it may not be taken by whoever has seen the scores.** The three variants' MAEs are now on the record (pass 1.159614 / 1.159721 / 1.159993 for A / none / B), so any rule written here is a selection rule written after seeing them \u2014 the exact thing the one-SE rule and the tie-break exist to prevent. The gap is pre-existing in the pre-registration, not introduced by amendment A1.",
+     "description": "The OAS1 pre-registration declares `garbage_time` as a search axis and declares no tie-break for it, in either the original five-axis order or the amended three-axis one. Executing the selection left all three rules tied after the declared axes. A tie-break must be declared before the Week-2 candidate has a single identity.",
+     "id": "OAS1-TIEBREAK",
+     "priority": "5",
+     "status": "BLOCKED"
+    },
+    {
+     "blocker": "the captured 2026 play-by-play carries **week 1 only** \u2014 read from the file, 2,756 rows, zero at ordinal 202602. Scoring needs Week-2 plays, which are bytes outside this checkout. **Assigned, not blocked for both agents**: the request is in `docs/AGENT_OUTBOX.md`. The candidate's unit strengths are committed before those bytes arrive, which is the position a hurdle test should be run from.",
+     "description": "Evaluate OAS1 against B5 and B4 (pass) and B5 with B3 as `POST_HOC_STRONGEST_BASELINE` (rush), clustered by game and by team.",
+     "id": "OAS1-HURDLE",
+     "priority": "6",
+     "status": "BLOCKED"
+    },
+    {
+     "blocker": "none \u2014 but changing the rule is a change to the pre-registration and is a new pre-registration, not an edit to the old one.",
+     "description": "All 864 configurations fall within one standard error of the best in both classes, so the pre-registered tie-break does 100% of the selecting and the data does none of it. The SE in the one-SE rule is the standard error of the mean ACROSS FOLDS, and fold-to-fold variation swamps configuration-to-configuration variation by roughly twenty to one. A PAIRED comparison \u2014 same folds, differenced per configuration \u2014 would have a far smaller standard error and might discriminate.",
+     "id": "OAS1-FLAT-SURFACE",
+     "priority": "7",
      "status": "QUEUED"
     },
     {
@@ -436,7 +474,7 @@
      "status": "QUEUED"
     }
    ],
-   "n": 11
+   "n": 14
   }
  },
  "reading_rule": "Every value under `measured` was computed by reading this repository at the timestamp above. Every value under `declared` was asserted by somebody and says who, when, and why it cannot be measured here. Do not quote one as the other.",

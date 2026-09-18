@@ -209,3 +209,131 @@ been run and the fitting body is not implemented; the runner raises rather than
 guessing at one. No downstream consumer may read the result when it exists.
 
 **V2 NOT YET EARNED**
+
+---
+
+# The Week-2 fit, executed — 2026-09-18
+
+The runner had raised "the fitting body is not implemented in this pass" since
+it was written. It is implemented, in `nfl/research/oas1/week2.py`, and it has
+run. Artifact: `OAS1_WEEK2_RESULT.json`, 384 unit rows.
+
+**Gates 11 and 12 are still NO and nothing here moves them.** `was_pressure` is
+still 404 for 2026; commercial-use licensing is still an owner decision. Both
+remain out of the research-fit set and neither is counted as passed.
+
+## What the fit established
+
+| | pass | rush |
+|---|---|---|
+| training rows (ordinal < 202602) | 20,645 | 13,672 |
+| design rank / cols | **64 / 66** | **64 / 66** |
+| deficiency | **2 — the structural one** | **2** |
+| identified | **YES** | **YES** |
+| clubs with no prior | 0 | 0 |
+| home term | +0.0154 EPA/play | — |
+
+**This is the advance Week 2 was for.** The 2026 week-1 design alone is rank 32
+of 66 with 32 two-node components — 32 dimensions carrying no information. With
+the prior-season strengths entering as pseudo-observations, the Week-2 design is
+rank 64 of 66 and the only deficiency left is the structural one the
+pre-registration declares. The construction identifies; a week-1 ridge does not.
+
+## The headline is not the fit. It is that the selection selected nothing.
+
+**864 of 864 configurations fall within one standard error of the best, in both
+classes.**
+
+| | best MAE | 1-SE threshold | SE | configs within |
+|---|---|---|---|---|
+| pass | 1.152801 | 1.161867 | 0.009066 | **864 of 864** |
+| rush | 0.657873 | 0.668293 | 0.010419 | **864 of 864** |
+
+Lambda across five orders of magnitude, kappa from 0 to 500, rho from 0.5 to
+1.0, and all three garbage-time rules are indistinguishable at the declared
+precision. The pre-registered tie-break therefore does **one hundred percent**
+of the selecting and the data does none of it. The chosen configuration in both
+classes is the maximum-shrinkage corner — lambda 10000, kappa 500, rho 0.5 —
+because that is what "select the most shrunken" means when everything ties.
+
+**Why, stated mechanically rather than as a verdict.** The SE in the one-SE rule
+is the standard error of the MEAN ACROSS FOLDS, so it measures fold-to-fold
+variation. Fold MAEs differ by far more than configurations differ from each
+other on the same fold, and the fold variation swamps the configuration
+variation by roughly twenty to one. A PAIRED comparison — the same folds,
+differenced per configuration — would have a much smaller standard error and
+might discriminate. **Changing the rule is a change to the pre-registration and
+is not made here.** It is recorded as an observation about the declared
+procedure, not as a proposed amendment.
+
+## An undecided axis, left undecided
+
+`garbage_time` is in the declared search space and in **neither** tie-break
+order — not the original five-axis one and not the amended three. After the
+declared axes are applied, all three rules remain tied.
+
+They are not degenerate: measured on the captured blobs, rule A drops 425 plays
+of 2025 and 13 of 2026, rule B drops 1,393 and 102, against 0 for `none`. They
+train on different rows and score differently:
+
+| | none | A | B |
+|---|---|---|---|
+| pass MAE | 1.159721 | 1.159614 | 1.159993 |
+| rush MAE | 0.658602 | 0.658954 | 0.659568 |
+
+**No rule was invented to break it.** Writing a tie-break now would be a
+selection rule written after seeing those numbers, which is exactly what the
+one-SE rule and the tie-break exist to prevent. All three variants are fitted
+and reported; none is the Week-2 candidate. `candidate_status` reads NOT
+SELECTED and says why.
+
+**How much the undecided axis actually moves.** Maximum absolute difference in
+unit strength across the three variants: **0.00284** (pass, widest at
+CLE/off_pass) and **0.00158** (rush), against fitted strength standard
+deviations of 0.0073 and 0.0026. So the unresolved choice is worth about a
+third of a standard deviation at its widest and a tenth on average. Real, and
+small. That is a measurement of the gap, not a reason to pick.
+
+## A leak the obvious implementation would have had
+
+The natural inner chain hands every fold the committed 2025 prior. That prior is
+fitted on **all** of 2025, so a fold forecasting 2025 week 12 would carry weeks
+12 through 18 inside its own prior — the rest of the season leaking backwards,
+and flattering precisely the `kappa` and `rho` axes being selected.
+
+Each fold now takes the prior of the season before **its own** season: 2024 for
+the seven 2025 folds, 2025 for the 202601 fold. That is the declared carryover
+depth of one prior season applied to every fold instead of only the last one,
+and it is why `prior_season.py` had to exist.
+
+## The committed prior reproduces exactly
+
+`OAS1_PRIOR_2025.json` had no committed builder — a result in the repository
+with nothing in the repository that made it. Checked before anything was built
+on top: rebuilding from `frame.build` + `select_lambda_forward` + `fit_season`
+gives the same chosen lambda in both classes and **all 128 unit strengths to a
+maximum absolute difference of 0.0**. `prior_season.verify_committed` is that
+check and the suite runs it. What is *not* compared is the artifact's
+`stable_content_sha256`: two wrapper fields were never committed either, so a
+wrapper hash would fail for reasons that say nothing about the numbers.
+
+## The hurdle is NOT evaluated, and is assigned
+
+`OAS1_WEEK2_SCORE_NOT_COMPUTABLE_HERE`. The captured 2026 play-by-play carries
+**weeks [1]** and zero rows at ordinal 202602 — read from the file. Scoring
+OAS1 against B5 needs Week-2 plays, which are bytes outside this checkout, so
+this is **assigned rather than blocked** and the request is in
+`docs/AGENT_OUTBOX.md`. `hurdle_status` reads
+`NOT_EVALUATED -- not passed, not failed, not waived`.
+
+The candidate's strengths are committed **before** those bytes arrive, which is
+the position a hurdle test is supposed to be run from.
+
+## Standing constraints honoured
+
+Research-only: `research_only: true`, `downstream_authorized: false`,
+`promoted: false`, and both OAS1 adjustment ids remain RESEARCH_ONLY in the
+registry. No grid expanded. No baseline recalibrated. No gate weakened, no seal
+rewritten, no sportsbook column read.
+
+**V2 NOT YET EARNED**

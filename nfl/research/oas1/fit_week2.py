@@ -294,10 +294,11 @@ def main() -> int:
               'IMMEDIATELY BEFORE MODEL FITTING. No candidate was fitted and '
               'no artifact was written.')
         return 0
-    raise SystemExit(
-        'REFUSING TO FIT: the fitting body is not implemented in this pass. '
-        'Only --dry-run is available until the fit is authorised for '
-        'execution after review.')
+    # THE FITTING BODY EXISTS NOW. It is in `week2.py`, it is research-only,
+    # and it does not score itself: the Week-2 plays are not in this checkout,
+    # so the hurdle comparison returns a named refusal rather than a number.
+    from nfl.research.oas1 import week2 as W2
+    return W2.main()
 
 
 if __name__ == '__main__':

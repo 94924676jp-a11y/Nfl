@@ -1,28 +1,28 @@
 {
  "generated_by": "nfl/tools/agent_state.py",
- "generated_at": "2026-09-18T17:30:30.804003+00:00",
+ "generated_at": "2026-09-18T18:48:35.611521+00:00",
  "git": {
-  "head": "9bb56108f5be0ca830d95202e8113d127ebab4a4",
-  "head_short": "9bb5610",
+  "head": "4bb940dbb2092d0f9f938134d5c99caf087e150f",
+  "head_short": "4bb940d",
   "branch": "claude/nfl-greenfield-architecture-stsxmk",
-  "head_subject": "P7: SYSTEM_STATE.json is generated and CURRENT_STATE.md derives from it",
+  "head_subject": "P8: Contract 4 was already reconciled; what was missing was the check",
   "remote_head": "NO_UPSTREAM",
   "dirty_source_files": [],
   "worktree": {
-   "commit": "9bb56108f5be0ca830d95202e8113d127ebab4a4",
-   "code_version": "9bb56108f5be0ca830d95202e8113d127ebab4a4+src1[44aa01d03783de18]",
+   "commit": "4bb940dbb2092d0f9f938134d5c99caf087e150f",
+   "code_version": "4bb940dbb2092d0f9f938134d5c99caf087e150f+src1[44aa01d03783de18]",
    "source_scope_clean": true,
    "dirty_source_files": [],
    "n_dirty_source_files": 0,
-   "n_dirty_tree_entries_observed": 12,
+   "n_dirty_tree_entries_observed": 20,
    "scope_note": "dirty_source_files is SOURCE scope only -- the .py files the identity contract hashes. A changed .md or .json is counted in n_dirty_tree_entries_observed and is not listed."
   },
   "is_clean": true
  },
- "active_task": "P9",
- "active_task_position": 4,
+ "active_task": "A3",
+ "active_task_position": 5,
  "n_active": 1,
- "last_completed_task": "P8",
+ "last_completed_task": "P9",
  "queue": [
   {
    "id": "P6",
@@ -77,7 +77,7 @@
     "no gate is loosened to obtain a GO."
    ],
    "priority": "4",
-   "status": "ACTIVE",
+   "status": "DONE",
    "dependencies": "none",
    "description": "Resume OAS1 from its amended preregistration state. Pass and rush stay separate. `GO_NO_GO` still records NO-GO gates and those stay recorded.",
    "blocker": "none known",
@@ -91,11 +91,56 @@
     "a falsification blocks only the affected production path and rewrites no model output."
    ],
    "priority": "5",
-   "status": "QUEUED",
+   "status": "ACTIVE",
    "dependencies": "assumption registry (DONE, A1/A2 settled)",
    "description": "Automatic Scientist \u2014 test `A3_ROLE_CONTINUITY_ACROSS_REGIME_CHANGES` against measurement.",
    "blocker": "none known",
    "queue_position": 5
+  },
+  {
+   "id": "OAS1-TIEBREAK",
+   "acceptance_criteria": [
+    "the tie-break is declared by someone who has not read the variant scores, or is declared on a ground that does not reference them",
+    "it is committed before the Week-2 candidate is named",
+    "the existing three-variant artifact is superseded, not rewritten."
+   ],
+   "priority": "5",
+   "status": "BLOCKED",
+   "dependencies": "P9",
+   "description": "The OAS1 pre-registration declares `garbage_time` as a search axis and declares no tie-break for it, in either the original five-axis order or the amended three-axis one. Executing the selection left all three rules tied after the declared axes. A tie-break must be declared before the Week-2 candidate has a single identity.",
+   "blocker": "**owner decision, and it may not be taken by whoever has seen the scores.** The three variants' MAEs are now on the record (pass 1.159614 / 1.159721 / 1.159993 for A / none / B), so any rule written here is a selection rule written after seeing them \u2014 the exact thing the one-SE rule and the tie-break exist to prevent. The gap is pre-existing in the pre-registration, not introduced by amendment A1.",
+   "classification": "RESEARCH_BLOCKER",
+   "queue_position": 6
+  },
+  {
+   "id": "OAS1-HURDLE",
+   "acceptance_criteria": [
+    "the Week-2 plays are captured with URL, retrieval time, `Last-Modified` and sha256",
+    "the committed grader runs unchanged",
+    "a negative result is recorded as a MEASURED NEGATIVE and B5 is used for the early-season opponent layer. No retuning until OAS1 wins."
+   ],
+   "priority": "6",
+   "status": "BLOCKED",
+   "dependencies": "P9",
+   "description": "Evaluate OAS1 against B5 and B4 (pass) and B5 with B3 as `POST_HOC_STRONGEST_BASELINE` (rush), clustered by game and by team.",
+   "blocker": "the captured 2026 play-by-play carries **week 1 only** \u2014 read from the file, 2,756 rows, zero at ordinal 202602. Scoring needs Week-2 plays, which are bytes outside this checkout. **Assigned, not blocked for both agents**: the request is in `docs/AGENT_OUTBOX.md`. The candidate's unit strengths are committed before those bytes arrive, which is the position a hurdle test should be run from.",
+   "classification": "RESEARCH_BLOCKER",
+   "queue_position": 7
+  },
+  {
+   "id": "OAS1-FLAT-SURFACE",
+   "acceptance_criteria": [
+    "the paired-SE alternative is pre-registered before it is run",
+    "the existing result is not reinterpreted under the new rule",
+    "if the surface is still flat under a paired SE, that is the finding and no further rule is tried."
+   ],
+   "priority": "7",
+   "status": "QUEUED",
+   "dependencies": "P9",
+   "description": "All 864 configurations fall within one standard error of the best in both classes, so the pre-registered tie-break does 100% of the selecting and the data does none of it. The SE in the one-SE rule is the standard error of the mean ACROSS FOLDS, and fold-to-fold variation swamps configuration-to-configuration variation by roughly twenty to one. A PAIRED comparison \u2014 same folds, differenced per configuration \u2014 would have a far smaller standard error and might discriminate.",
+   "blocker": "none \u2014 but changing the rule is a change to the pre-registration and is a new pre-registration, not an edit to the old one.",
+   "classification": "MEASUREMENT_DEFECT",
+   "queue_position": 8
   },
   {
    "id": "A5",
@@ -110,7 +155,7 @@
    "dependencies": "assumption registry",
    "description": "Automatic Scientist \u2014 test `A5_TD_CONVERSION_PORTABILITY`.",
    "blocker": "none known",
-   "queue_position": 6
+   "queue_position": 9
   },
   {
    "id": "A4",
@@ -122,7 +167,7 @@
    "dependencies": "an identified estimand",
    "description": "`A4_STATIC_TEAM_VOLUME_SUFFICIENCY` is half-measured and deliberately DECLARED rather than TESTED.",
    "blocker": "the remaining estimand is not yet measurable. Completing it before it is measurable would manufacture a settlement, which is the failure mode the registry exists to prevent.",
-   "queue_position": 7
+   "queue_position": 10
   },
   {
    "id": "GAME_STATE",
@@ -134,7 +179,7 @@
    "dependencies": "P6, P7, and a lawful pregame-only state generator",
    "description": "The score/clock/game-state generative layer.",
    "blocker": "prerequisite work has not made it lawful. The T1-C pregame-only generator exists; what is missing is the evidence that a game-state layer may consume it without a postgame path.",
-   "queue_position": 8
+   "queue_position": 11
   },
   {
    "id": "OUT-022C",
@@ -147,7 +192,7 @@
    "dependencies": "an actual FanDuel slate salary export",
    "description": "FanDuel single-game salaries. Stays open until a real export exists.",
    "blocker": "no FanDuel salary export is in the repository and none can be fetched from here. **This is assigned, not blocked for both agents**: it needs bytes from outside this checkout. FanDuel provenance stays `VERIFIED_RULE_VALUE_RELAYED_SOURCE` and is not upgraded.",
-   "queue_position": 9
+   "queue_position": 12
   },
   {
    "id": "PRE-PORCELAIN",
@@ -161,7 +206,7 @@
    "description": "`sportsplatform/governance/commit_claim.py` calls `git status --porcelain` and is the sole remaining offender of `test_determinism_proof.test_v_only_the_identity_module_reads_working_tree_state`. Pre-existing at `e050090` and at every baseline since. Named here rather than left inside a 61-item failing total, because P7's own generators joined that list for an hour and the only reason it was noticed is that the list is printed.",
    "blocker": "none \u2014 deliberately low priority",
    "classification": "NONBLOCKING_TECH_DEBT",
-   "queue_position": 10
+   "queue_position": 13
   },
   {
    "id": "SUITE-PRE",
@@ -173,31 +218,42 @@
    "dependencies": "none",
    "description": "The 136 PRE_EXISTING suite failures classified at `7d46f39`. Not to be fixed merely to obtain a green suite; to be worked deliberately, by cause, when a cause is on the critical path.",
    "blocker": "none \u2014 deliberately low priority",
-   "queue_position": 11
+   "queue_position": 14
   }
  ],
  "queue_by_status": {
   "DONE": [
    "P6",
    "P7",
-   "P8"
-  ],
-  "ACTIVE": [
+   "P8",
    "P9"
   ],
-  "QUEUED": [
-   "A3",
-   "A5",
-   "PRE-PORCELAIN",
-   "SUITE-PRE"
+  "ACTIVE": [
+   "A3"
   ],
   "BLOCKED": [
+   "OAS1-TIEBREAK",
+   "OAS1-HURDLE",
    "A4",
    "GAME_STATE",
    "OUT-022C"
+  ],
+  "QUEUED": [
+   "OAS1-FLAT-SURFACE",
+   "A5",
+   "PRE-PORCELAIN",
+   "SUITE-PRE"
   ]
  },
  "unresolved_blockers": [
+  {
+   "id": "OAS1-TIEBREAK",
+   "blocker": "**owner decision, and it may not be taken by whoever has seen the scores.** The three variants' MAEs are now on the record (pass 1.159614 / 1.159721 / 1.159993 for A / none / B), so any rule written here is a selection rule written after seeing them \u2014 the exact thing the one-SE rule and the tie-break exist to prevent. The gap is pre-existing in the pre-registration, not introduced by amendment A1."
+  },
+  {
+   "id": "OAS1-HURDLE",
+   "blocker": "the captured 2026 play-by-play carries **week 1 only** \u2014 read from the file, 2,756 rows, zero at ordinal 202602. Scoring needs Week-2 plays, which are bytes outside this checkout. **Assigned, not blocked for both agents**: the request is in `docs/AGENT_OUTBOX.md`. The candidate's unit strengths are committed before those bytes arrive, which is the position a hurdle test should be run from."
+  },
   {
    "id": "A4",
    "blocker": "the remaining estimand is not yet measurable. Completing it before it is measurable would manufacture a settlement, which is the failure mode the registry exists to prevent."
@@ -212,7 +268,7 @@
   }
  ],
  "next_three_eligible": [
-  "A3",
+  "OAS1-FLAT-SURFACE",
   "A5",
   "PRE-PORCELAIN"
  ],

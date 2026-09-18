@@ -1474,3 +1474,43 @@ as such rather than approximated from the pre-kickoff board.
 **Not asked for.** No projections, no ownership, no contest results, no market
 prices as model input. Market data may only evaluate a forecast that was sealed
 before it.
+
+---
+
+## 2026-09-18 — 2026 Week-2 play-by-play, for the OAS1 hurdle
+
+**Assigned, not blocked.** The Week-2 OAS1 candidate is fitted; it cannot be
+scored here, and the reason is one file.
+
+**What is needed.** The nflverse 2026 play-by-play release **including week 2**:
+
+    https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2026.csv.gz
+
+The capture in this repository is `pbp_2026.b69f55a172965e16.csv.gz`, retrieved
+2026-09-17T18:57Z, `Last-Modified: Thu, 17 Sep 2026 14:17:35 GMT`. It carries
+**2,756 rows, all week 1** — verified by reading the file, not inferred. Week-2
+plays are absent, so `oas1_epa_target` has no held-out values at ordinal 202602
+and OAS1 cannot be compared with B5 or B4.
+
+**What must travel with the bytes.** Source URL, retrieval timestamp in UTC,
+`Last-Modified` as sent, and the sha256 of the raw file. The existing capture
+path (`nfl/ingest/pbp_capture.py`) already records all four and is
+content-addressed, so a recapture that returns identical bytes is recognised as
+one vintage rather than two. A capture that still carries only week 1 is a
+useful answer: it means nflverse has not rebuilt yet, and that is a publication
+lag to record rather than a failure to chase.
+
+**What this unblocks, exactly.** `nfl/research/oas1/week2.py` fits the
+candidate today and returns `OAS1_WEEK2_SCORE_NOT_COMPUTABLE_HERE`. With week-2
+plays present, `score_availability` passes and the pre-registered hurdles can
+be evaluated: OAS1 against B5 and B4 for pass, B5 for rush with B3 labelled
+`POST_HOC_STRONGEST_BASELINE`, clustered by game and by team.
+
+**Sequencing that matters.** The candidate's unit strengths are already written
+to `nfl/research/oas1/OAS1_WEEK2_RESULT.json` and committed. The forecast
+therefore exists in the repository **before** the outcome bytes arrive, which
+is the position a hurdle test is supposed to be run from. Please do not send a
+scored comparison — send the plays, and let the committed grader run.
+
+**Not asked for.** No sportsbook price, no projection, no ownership. Market
+data may evaluate a forecast that was sealed before it and may never feed one.
