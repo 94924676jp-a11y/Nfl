@@ -1,0 +1,88 @@
+{
+ "definition": "Pearson r between the two clubs' (passing yards + rushing yards) in the same game, two-point plays excluded, receiving yards NOT added because they are the passing yards again",
+ "detail": "2024: r=-0.0858 (n=285); 2025: r=+0.0178 (n=285); simulated: r=-0.1310 (n=8000)",
+ "evidence": {
+  "definition": "Pearson r between the two clubs' (passing yards + rushing yards) in the same game, two-point plays excluded, receiving yards NOT added because they are the passing yards again",
+  "metric": "GAME_OFFENSE_COUPLING",
+  "nothing_is_injected": "no historical correlation is written into the simulator and no correlation constant is introduced. This is a diagnostic gate.",
+  "points_cannot_be_compared_to_the_simulation": "the sealed board emits NO score and no game total anywhere -- its team layer is snaps, dropbacks, carries, targets and red-zone carries. So the points coupling is measurable on history and NOT on the simulation, and that absence is itself the finding: a simulator with no score cannot produce a shootout, be asked whether it does, or be corrected toward one.",
+  "populations_are_not_the_same_quantity": "history is one observation per GAME and its r carries between-matchup variation as well as within-game coupling; the simulation is 8,000 observations of ONE game and its r is purely within-game. The comparison is legitimate as a SIGN test and not as an equality of estimates.",
+  "sign_mismatch": false,
+  "spec_version": "game-offense-coupling-1",
+  "uses_live_game_outcome_data": false
+ },
+ "historical": {
+  "2024": {
+   "blob": "pbp_2024.23370d5d10f8104d.csv.gz",
+   "mean_club_points": 23.00877192982456,
+   "mean_club_yards": 354.0140350877193,
+   "n_dropped": 0,
+   "n_games": 285,
+   "n_games_points": 285,
+   "r": -0.0858048349618847,
+   "r_ci95": [
+    -0.200000092210196,
+    0.030690311755099522
+   ],
+   "r_club_demeaned": -0.016498252683525377,
+   "r_club_demeaned_ci95": [
+    -0.132433565141479,
+    0.09988239050392199
+   ],
+   "r_points": -0.09123872179286785,
+   "r_points_ci95": [
+    -0.2052520316575556,
+    0.02521778755746244
+   ],
+   "sd_club_yards": 80.66245335943906,
+   "season": 2024
+  },
+  "2025": {
+   "blob": "pbp_2025.2f135887790a013f.csv.gz",
+   "mean_club_points": 22.978947368421053,
+   "mean_club_yards": 342.28771929824563,
+   "n_dropped": 0,
+   "n_games": 285,
+   "n_games_points": 285,
+   "r": 0.01778800095833231,
+   "r_ci95": [
+    -0.09860496994524032,
+    0.13370084842503757
+   ],
+   "r_club_demeaned": -0.02651674932958501,
+   "r_club_demeaned_ci95": [
+    -0.1422676054264547,
+    0.089949558392174
+   ],
+   "r_points": -0.02208932241941408,
+   "r_points_ci95": [
+    -0.13792451041600542,
+    0.09434198687677763
+   ],
+   "sd_club_yards": 81.23209993414352,
+   "season": 2025
+  }
+ },
+ "metric": "GAME_OFFENSE_COUPLING",
+ "simulated": {
+  "clubs": [
+   "BUF",
+   "DET"
+  ],
+  "coverage": {
+   "passing_rows": 4,
+   "rushing_rows": 27
+  },
+  "coverage_caveat": "simulated club yards sum the NAMED rows only; a club's unmodelled rushers are not in the per-player layers, so these are a lower bound",
+  "mean_club_yards": 378.3329162975811,
+  "n_worlds": 8000,
+  "population": "sealed DET_BUF worlds",
+  "r": -0.1309792354386382,
+  "r_ci95": [
+   -0.1524557108719374,
+   -0.10937911778718229
+  ],
+  "sd_club_yards": 92.8445121994697
+ },
+ "spec_version": "game-offense-coupling-1"
+}
