@@ -211,6 +211,43 @@ its downstream impact justifies it.
   x uncertainty LOW x measurability HIGH x EVI MEDIUM-HIGH (prevents the same
   near-miss recurring across ten gaps)
 
+## ID: DFS-FS1
+- **priority**: 8
+- **status**: DONE
+- **dependencies**: none
+- **description**: A canonical, leakage-safe full-slate prediction-time
+  dependence panel: mutually exclusive declared roles, prior-weeks-only
+  labels, certified DK and FD scoring, Pearson and joint-tail dependence
+  reported separately with game-clustered intervals.
+- **blocker**: none
+- **acceptance criteria**:
+  - role labels re-derive from a history truncated strictly before their own
+    week, checked rather than asserted;
+  - no role collisions;
+  - every point estimate carries a game-clustered interval;
+  - DST pairs named NOT_MEASURABLE rather than omitted;
+  - no coefficient reachable from production.
+- **classification**: RESEARCH_BLOCKER
+- **ranking**: impact HIGH (it is the validation target the world generator
+  will be judged against) x uncertainty MEDIUM x measurability HIGH x EVI
+  HIGH
+
+## ID: DFS-FS2
+- **priority**: 9
+- **status**: BLOCKED
+- **dependencies**: DFS-FS1
+- **description**: Compare simulated dependence against the FS1 panel — sign
+  and ordering of Pearson and of tail lift, separately, scored with the same
+  certified adapters.
+- **blocker**: no full-slate joint-world generator exists; the only sealed
+  worlds are one single-game board. This is item A7 of the roadmap and it is
+  football work, not DFS work.
+- **acceptance criteria**:
+  - magnitudes are NOT compared — history is one observation per game and a
+    sealed board is many observations of one fixture;
+  - a disagreement in sign is reported, never tuned away.
+- **classification**: RESEARCH_BLOCKER
+
 ## ID: DISC-4
 - **priority**: 8
 - **status**: QUEUED

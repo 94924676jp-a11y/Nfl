@@ -1,6 +1,6 @@
 # NFL — current state
 
-**Generated** by `nfl/tools/system_state.py` at 2026-09-19T05:24:15.933883+00:00 from `SYSTEM_STATE.json`. Do not hand-edit this file: regenerate it.
+**Generated** by `nfl/tools/system_state.py` at 2026-09-19T15:25:52.377704+00:00 from `SYSTEM_STATE.json`. Do not hand-edit this file: regenerate it.
 
 Every value under `measured` was computed by reading this repository at the timestamp above. Every value under `declared` was asserted by somebody and says who, when, and why it cannot be measured here. Do not quote one as the other.
 
@@ -11,24 +11,24 @@ Every value under `measured` was computed by reading this repository at the time
 |  |  |
 |---|---|
 | branch | `claude/nfl-greenfield-architecture-stsxmk` |
-| HEAD | `e6eeed5` — Correct two suite figures quoted in dc7ceed's message |
-| HEAD committed | 2026-09-18T20:40:52+00:00 |
-| commits on branch | 881 |
+| HEAD | `06bc006` — Adjudicate the full-slate DFS packet: reproduce, disagree, and reconcile |
+| HEAD committed | 2026-09-19T05:24:52+00:00 |
+| commits on branch | 882 |
 | source scope | clean |
-| dirty tree entries (source and not) | 24 |
-| code_version | `e6eeed533b97488fb6a178b2ff1d71d1b5aaa672+src1[44aa01d03783de18]` |
-| python modules | 662 |
-| lines of python | 212,599 |
+| dirty tree entries (source and not) | 18 |
+| code_version | `06bc006856aa5e1c9860ad7450d7715c284f1902+src1[44aa01d03783de18]` |
+| python modules | 664 |
+| lines of python | 213,366 |
 
 ## 2. Test suite
 
-Source: `nfl/research/suite_attribution/SUITE_DIFF_discovery_fullslate.json`. measured at WORKING_TREE, HEAD is e6eeed5. This total is not a statement about the tree as it stands.
+Source: `nfl/research/suite_attribution/SUITE_DIFF_fullslate_fs1.json`. measured at WORKING_TREE, HEAD is 06bc006. This total is not a statement about the tree as it stands.
 
-|  | at WORKING_TREE | baseline e6eeed5 | delta |
+|  | at WORKING_TREE | baseline 06bc006 | delta |
 |---|---|---|---|
-| modules | 185 | 184 | 1 |
-| test functions | 2011 | 1997 | 14 |
-| checks | 10725 | 10632 | 93 |
+| modules | 186 | 185 | 1 |
+| test functions | 2027 | 2011 | 16 |
+| checks | 10800 | 10725 | 75 |
 | failing checks | 61 | 61 | 0 |
 | raised | 21 | 21 | 0 |
 | zero check functions | 0 | 0 | 0 |
@@ -113,6 +113,8 @@ Production readiness (`nfl/production/production_readiness.json`, updated 2026-0
 | DISC-1 | 1 | DONE |  |
 | DISC-2 | 2 | BLOCKED | **measured, not assumed — the conditioning variable has no contrast.** `A1_SUCCESSOR_FEASI |
 | DISC-3 | 3 | ACTIVE |  |
+| DFS-FS1 | 8 | DONE |  |
+| DFS-FS2 | 9 | BLOCKED | no full-slate joint-world generator exists; the only sealed worlds are one single-game boa |
 | DISC-4 | 8 | QUEUED |  |
 | DISC-5 | 13 | QUEUED |  |
 | OAS1-TIEBREAK | 5 | BLOCKED | **owner decision, and it may not be taken by whoever has seen the scores.** The three vari |

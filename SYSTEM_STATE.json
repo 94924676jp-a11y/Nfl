@@ -64,7 +64,7 @@
    "why_not_measurable": "routines live in a scheduler this executor cannot query. The previous `CURRENT_STATE.md` asserted a routine was DISABLED and recorded, in the same file, that a later firing reported success with no commit ever reaching the branch \u2014 an unresolved contradiction that it presented as state."
   }
  ],
- "generated_at": "2026-09-19T05:24:15.933883+00:00",
+ "generated_at": "2026-09-19T15:25:52.377704+00:00",
  "generated_by": "nfl/tools/system_state.py",
  "measured": {
   "assumptions": {
@@ -151,8 +151,8 @@
   },
   "code": {
    "TOTAL": {
-    "lines": 212599,
-    "modules": 662
+    "lines": 213366,
+    "modules": 664
    },
    "nfl/capture": {
     "lines": 6334,
@@ -183,12 +183,12 @@
     "modules": 18
    },
    "nfl/research": {
-    "lines": 64330,
-    "modules": 271
+    "lines": 64748,
+    "modules": 272
    },
    "nfl/tests": {
-    "lines": 67940,
-    "modules": 184
+    "lines": 68289,
+    "modules": 185
    },
    "nfl/tools": {
     "lines": 13753,
@@ -244,19 +244,19 @@
   "git": {
    "branch": "claude/nfl-greenfield-architecture-stsxmk",
    "dirty_source_files": [],
-   "head": "e6eeed533b97488fb6a178b2ff1d71d1b5aaa672",
-   "head_committed_at": "2026-09-18T20:40:52+00:00",
-   "head_short": "e6eeed5",
-   "head_subject": "Correct two suite figures quoted in dc7ceed's message",
+   "head": "06bc006856aa5e1c9860ad7450d7715c284f1902",
+   "head_committed_at": "2026-09-19T05:24:52+00:00",
+   "head_short": "06bc006",
+   "head_subject": "Adjudicate the full-slate DFS packet: reproduce, disagree, and reconcile",
    "is_clean": true,
-   "n_commits_on_branch": 881,
+   "n_commits_on_branch": 882,
    "remote_head": "3270829ca46e46f44285c5ae81952c31921bdda5",
    "worktree": {
-    "code_version": "e6eeed533b97488fb6a178b2ff1d71d1b5aaa672+src1[44aa01d03783de18]",
-    "commit": "e6eeed533b97488fb6a178b2ff1d71d1b5aaa672",
+    "code_version": "06bc006856aa5e1c9860ad7450d7715c284f1902+src1[44aa01d03783de18]",
+    "commit": "06bc006856aa5e1c9860ad7450d7715c284f1902",
     "dirty_source_files": [],
     "n_dirty_source_files": 0,
-    "n_dirty_tree_entries_observed": 24,
+    "n_dirty_tree_entries_observed": 18,
     "scope_note": "dirty_source_files is SOURCE scope only -- the .py files the identity contract hashes. A changed .md or .json is counted in n_dirty_tree_entries_observed and is not listed.",
     "source_scope_clean": true
    }
@@ -304,15 +304,15 @@
    }
   },
   "suite": {
-   "artifact": "nfl/research/suite_attribution/SUITE_DIFF_discovery_fullslate.json",
-   "baseline_commit": "e6eeed5",
+   "artifact": "nfl/research/suite_attribution/SUITE_DIFF_fullslate_fs1.json",
+   "baseline_commit": "06bc006",
    "baseline_totals": {
     "blocked_functions": 23,
-    "checks": 10632,
+    "checks": 10725,
     "failing_checks": 61,
-    "modules": 184,
+    "modules": 185,
     "raised": 21,
-    "test_functions": 1997,
+    "test_functions": 2011,
     "zero_check_functions": 0
    },
    "counts_by_classification": {
@@ -320,24 +320,24 @@
    },
    "delta_totals": {
     "blocked_functions": 0,
-    "checks": 93,
+    "checks": 75,
     "failing_checks": 0,
     "modules": 1,
     "raised": 0,
-    "test_functions": 14,
+    "test_functions": 16,
     "zero_check_functions": 0
    },
    "is_current_head": false,
    "measured_at_commit": "WORKING_TREE",
    "newly_introduced": [],
-   "staleness_note": "measured at WORKING_TREE, HEAD is e6eeed5. This total is not a statement about the tree as it stands.",
+   "staleness_note": "measured at WORKING_TREE, HEAD is 06bc006. This total is not a statement about the tree as it stands.",
    "totals": {
     "blocked_functions": 23,
-    "checks": 10725,
+    "checks": 10800,
     "failing_checks": 61,
-    "modules": 185,
+    "modules": 186,
     "raised": 21,
-    "test_functions": 2011,
+    "test_functions": 2027,
     "zero_check_functions": 0
    },
    "verdict": "SUITE FAIL"
@@ -353,8 +353,8 @@
   "work_queue": {
    "by_status": {
     "ACTIVE": 1,
-    "BLOCKED": 6,
-    "DONE": 5,
+    "BLOCKED": 7,
+    "DONE": 6,
     "QUEUED": 7
    },
    "items": [
@@ -413,6 +413,20 @@
      "id": "DISC-3",
      "priority": "3",
      "status": "ACTIVE"
+    },
+    {
+     "blocker": "none",
+     "description": "A canonical, leakage-safe full-slate prediction-time dependence panel: mutually exclusive declared roles, prior-weeks-only labels, certified DK and FD scoring, Pearson and joint-tail dependence reported separately with game-clustered intervals.",
+     "id": "DFS-FS1",
+     "priority": "8",
+     "status": "DONE"
+    },
+    {
+     "blocker": "no full-slate joint-world generator exists; the only sealed worlds are one single-game board. This is item A7 of the roadmap and it is football work, not DFS work.",
+     "description": "Compare simulated dependence against the FS1 panel \u2014 sign and ordering of Pearson and of tail lift, separately, scored with the same certified adapters.",
+     "id": "DFS-FS2",
+     "priority": "9",
+     "status": "BLOCKED"
     },
     {
      "blocker": "none \u2014 but it needs a new pre-registration, written before it is run, and it is a larger build than DISC-1 through DISC-3.",
@@ -492,7 +506,7 @@
      "status": "QUEUED"
     }
    ],
-   "n": 19
+   "n": 21
   }
  },
  "reading_rule": "Every value under `measured` was computed by reading this repository at the timestamp above. Every value under `declared` was asserted by somebody and says who, when, and why it cannot be measured here. Do not quote one as the other.",

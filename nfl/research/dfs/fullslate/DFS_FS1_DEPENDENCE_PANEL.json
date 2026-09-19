@@ -1,0 +1,1255 @@
+{
+ "FS1_NOT_A_LINEUP_RULE": "These are descriptive validation targets for the simulator. Converting any coefficient here into a lineup rule, an exposure cap or a simulator correlation input is forbidden.",
+ "artifact": "DFS_FS1_DEPENDENCE_PANEL",
+ "dst_pairs": {
+  "code": "FS1_DST_SCORING_ABSENT",
+  "pairs": [
+   "RUSH1|own_DST",
+   "RUSH1|opp_DST",
+   "QB|own_DST",
+   "QB|opp_DST",
+   "PC1|opp_DST"
+  ],
+  "state": "NOT_MEASURABLE",
+  "unblocked_by": "docs/AGENT_OUTBOX.md, the site-rules request",
+  "why": "there is no DST scoring adapter in this repository (statline.NOT_SIMULATED: \"the engine produces no team-defence outputs at all\"), and DraftKings points-allowed tiers cannot be verified without network access. Named rather than omitted."
+ },
+ "generated_at": "2026-09-19T14:37:30.520519+00:00",
+ "n_pearson_tail_disagreements": 4,
+ "panels": {
+  "DK_2024": {
+   "cross_team": {
+    "PC1|opp_PC1": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.04207152721235142,
+     "pearson_ci95": [
+      -0.0683,
+      0.1459
+     ],
+     "tail_lift": 1.3416018866276531,
+     "tail_lift_ci95": [
+      0.7722,
+      1.8935
+     ]
+    },
+    "PC1|opp_PC2": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.08204930918456219,
+     "pearson_ci95": [
+      -0.0133,
+      0.168
+     ],
+     "tail_lift": 1.3007894020506305,
+     "tail_lift_ci95": [
+      0.9846,
+      1.799
+     ]
+    },
+    "PC2|opp_PC2": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.027856024162876098,
+     "pearson_ci95": [
+      -0.1124,
+      0.1801
+     ],
+     "tail_lift": 1.4478273164294466,
+     "tail_lift_ci95": [
+      0.7722,
+      2.027
+     ]
+    },
+    "QB|opp_PC1": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.03186592398980116,
+     "pearson_ci95": [
+      -0.0791,
+      0.1334
+     ],
+     "tail_lift": 1.0685055802558752,
+     "tail_lift_ci95": [
+      0.7026,
+      1.4202
+     ]
+    },
+    "QB|opp_PC2": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.04859753978633171,
+     "pearson_ci95": [
+      -0.0509,
+      0.1501
+     ],
+     "tail_lift": 1.1100009425959092,
+     "tail_lift_ci95": [
+      0.7575,
+      1.4961
+     ]
+    },
+    "QB|opp_PC3": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.055032478514114705,
+     "pearson_ci95": [
+      -0.0311,
+      0.1423
+     ],
+     "tail_lift": 1.3995664058817985,
+     "tail_lift_ci95": [
+      0.9942,
+      1.6891
+     ]
+    },
+    "QB|opp_QB": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.05296580674438616,
+     "pearson_ci95": [
+      -0.0969,
+      0.1896
+     ],
+     "tail_lift": 1.2547836742388538,
+     "tail_lift_ci95": [
+      0.6627,
+      1.7374
+     ]
+    },
+    "RUSH1|opp_RUSH1": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": -0.04091945923615877,
+     "pearson_ci95": [
+      -0.1519,
+      0.0746
+     ],
+     "tail_lift": 0.9652182109529645,
+     "tail_lift_ci95": [
+      0.4826,
+      1.5149
+     ]
+    }
+   },
+   "leakage_check": {
+    "checked": 512,
+    "guarantee": "every role label re-derives from a history truncated strictly before its own week",
+    "mismatches": [],
+    "n_mismatches": 0
+   },
+   "n_team_games": 512,
+   "role_collisions": {},
+   "same_team": {
+    "PC1|PC2": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": -0.013655663937679353,
+     "pearson_ci95": [
+      -0.106,
+      0.0755
+     ],
+     "tail_lift": 1.022048815896924,
+     "tail_lift_ci95": [
+      0.6095,
+      1.3473
+     ]
+    },
+    "PC1|PC3": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": -0.02725849637494998,
+     "pearson_ci95": [
+      -0.1154,
+      0.0628
+     ],
+     "tail_lift": 0.9291352871790218,
+     "tail_lift_ci95": [
+      0.6214,
+      1.3383
+     ]
+    },
+    "PC1|RUSH1": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": -0.014300685966608042,
+     "pearson_ci95": [
+      -0.1089,
+      0.0821
+     ],
+     "tail_lift": 0.9291352871790218,
+     "tail_lift_ci95": [
+      0.5871,
+      1.2548
+     ]
+    },
+    "PC2|PC3": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.002268805443306242,
+     "pearson_ci95": [
+      -0.0887,
+      0.0965
+     ],
+     "tail_lift": 1.1582618531435573,
+     "tail_lift_ci95": [
+      0.7722,
+      1.5623
+     ]
+    },
+    "QB|PC1": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.20749583880950712,
+     "pearson_ci95": [
+      0.1032,
+      0.3037
+     ],
+     "tail_lift": 1.8118138099990926,
+     "tail_lift_ci95": [
+      1.3513,
+      2.1775
+     ]
+    },
+    "QB|PC2": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.25029630466538955,
+     "pearson_ci95": [
+      0.1577,
+      0.338
+     ],
+     "tail_lift": 1.8821755113582808,
+     "tail_lift_ci95": [
+      1.4817,
+      2.2465
+     ]
+    },
+    "QB|PC3": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.10849983505824881,
+     "pearson_ci95": [
+      0.0198,
+      0.1897
+     ],
+     "tail_lift": 1.303044584786502,
+     "tail_lift_ci95": [
+      0.9652,
+      1.6409
+     ]
+    },
+    "QB|RUSH1": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.10350140308962566,
+     "pearson_ci95": [
+      0.021,
+      0.1886
+     ],
+     "tail_lift": 1.2547836742388538,
+     "tail_lift_ci95": [
+      0.8521,
+      1.5926
+     ]
+    },
+    "QB|RUSH2": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.07827920196659321,
+     "pearson_ci95": [
+      -0.0138,
+      0.1762
+     ],
+     "tail_lift": 1.2039796212630973,
+     "tail_lift_ci95": [
+      0.8317,
+      1.6081
+     ]
+    },
+    "RUSH1|RUSH2": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": -0.11832263534624442,
+     "pearson_ci95": [
+      -0.1967,
+      -0.0353
+     ],
+     "tail_lift": 0.6742285879073344,
+     "tail_lift_ci95": [
+      0.3458,
+      0.9882
+     ]
+    }
+   },
+   "season": 2024,
+   "site": "DK",
+   "weeks_present": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18
+   ]
+  },
+  "DK_2025": {
+   "cross_team": {
+    "PC1|opp_PC1": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.061937596669861955,
+     "pearson_ci95": [
+      -0.0697,
+      0.1758
+     ],
+     "tail_lift": 1.4478273164294466,
+     "tail_lift_ci95": [
+      0.846,
+      1.9882
+     ]
+    },
+    "PC1|opp_PC2": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.08495165030987305,
+     "pearson_ci95": [
+      -0.0032,
+      0.1824
+     ],
+     "tail_lift": 1.0617400320482608,
+     "tail_lift_ci95": [
+      0.717,
+      1.5004
+     ]
+    },
+    "PC2|opp_PC2": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": -0.018919578087286483,
+     "pearson_ci95": [
+      -0.1255,
+      0.0893
+     ],
+     "tail_lift": 0.9652182109529645,
+     "tail_lift_ci95": [
+      0.4644,
+      1.4201
+     ]
+    },
+    "QB|opp_PC1": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.14105202754755886,
+     "pearson_ci95": [
+      0.0468,
+      0.2266
+     ],
+     "tail_lift": 1.0515309932785661,
+     "tail_lift_ci95": [
+      0.7031,
+      1.5295
+     ]
+    },
+    "QB|opp_PC2": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.06985251763940761,
+     "pearson_ci95": [
+      -0.0245,
+      0.1605
+     ],
+     "tail_lift": 1.2427184466019416,
+     "tail_lift_ci95": [
+      0.8358,
+      1.5773
+     ]
+    },
+    "QB|opp_PC3": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.06048170945491823,
+     "pearson_ci95": [
+      -0.0282,
+      0.1469
+     ],
+     "tail_lift": 0.9081404032860344,
+     "tail_lift_ci95": [
+      0.6214,
+      1.3513
+     ]
+    },
+    "QB|opp_QB": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.0864351102626888,
+     "pearson_ci95": [
+      -0.0462,
+      0.2106
+     ],
+     "tail_lift": 1.0414201183431953,
+     "tail_lift_ci95": [
+      0.568,
+      1.6409
+     ]
+    },
+    "RUSH1|opp_RUSH1": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": -0.07706480056404931,
+     "pearson_ci95": [
+      -0.1841,
+      0.0428
+     ],
+     "tail_lift": 0.5791309265717787,
+     "tail_lift_ci95": [
+      0.193,
+      1.0617
+     ]
+    }
+   },
+   "leakage_check": {
+    "checked": 512,
+    "guarantee": "every role label re-derives from a history truncated strictly before its own week",
+    "mismatches": [],
+    "n_mismatches": 0
+   },
+   "n_team_games": 512,
+   "role_collisions": {},
+   "same_team": {
+    "PC1|PC2": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.07233429387786847,
+     "pearson_ci95": [
+      -0.0187,
+      0.1678
+     ],
+     "tail_lift": 1.1100009425959092,
+     "tail_lift_ci95": [
+      0.7101,
+      1.4865
+     ]
+    },
+    "PC1|PC3": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.06517480508378343,
+     "pearson_ci95": [
+      -0.0152,
+      0.1489
+     ],
+     "tail_lift": 1.303044584786502,
+     "tail_lift_ci95": [
+      0.917,
+      1.6568
+     ]
+    },
+    "PC1|RUSH1": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": -0.04588054030957882,
+     "pearson_ci95": [
+      -0.1255,
+      0.0297
+     ],
+     "tail_lift": 0.7239136582147233,
+     "tail_lift_ci95": [
+      0.3824,
+      1.0218
+     ]
+    },
+    "PC2|PC3": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.009835316916365687,
+     "pearson_ci95": [
+      -0.0822,
+      0.1042
+     ],
+     "tail_lift": 0.9652182109529645,
+     "tail_lift_ci95": [
+      0.6152,
+      1.3469
+     ]
+    },
+    "QB|PC1": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.16991926487368206,
+     "pearson_ci95": [
+      0.0695,
+      0.2645
+     ],
+     "tail_lift": 1.5772964899178492,
+     "tail_lift_ci95": [
+      1.1583,
+      2.0075
+     ]
+    },
+    "QB|PC2": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.17401490087699586,
+     "pearson_ci95": [
+      0.0832,
+      0.2687
+     ],
+     "tail_lift": 1.4339058999253174,
+     "tail_lift_ci95": [
+      1.0515,
+      1.8339
+     ]
+    },
+    "QB|PC3": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.14539604450657245,
+     "pearson_ci95": [
+      0.0465,
+      0.2468
+     ],
+     "tail_lift": 1.4817027632561612,
+     "tail_lift_ci95": [
+      1.1362,
+      1.9307
+     ]
+    },
+    "QB|RUSH1": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.16844552229727458,
+     "pearson_ci95": [
+      0.093,
+      0.2455
+     ],
+     "tail_lift": 1.2427184466019416,
+     "tail_lift_ci95": [
+      0.8603,
+      1.6251
+     ]
+    },
+    "QB|RUSH2": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.012730906807938105,
+     "pearson_ci95": [
+      -0.0741,
+      0.1028
+     ],
+     "tail_lift": 1.0396039603960394,
+     "tail_lift_ci95": [
+      0.6691,
+      1.4651
+     ]
+    },
+    "RUSH1|RUSH2": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": -0.17897528910962804,
+     "pearson_ci95": [
+      -0.2452,
+      -0.1094
+     ],
+     "tail_lift": 0.7352941176470587,
+     "tail_lift_ci95": [
+      0.3437,
+      1.0213
+     ]
+    }
+   },
+   "season": 2025,
+   "site": "DK",
+   "weeks_present": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18
+   ]
+  },
+  "FD_2024": {
+   "cross_team": {
+    "PC1|opp_PC1": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.046192807583978215,
+     "pearson_ci95": [
+      -0.0638,
+      0.1483
+     ],
+     "tail_lift": 1.2307692307692308,
+     "tail_lift_ci95": [
+      0.7291,
+      1.7374
+     ]
+    },
+    "PC1|opp_PC2": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.08659481806244344,
+     "pearson_ci95": [
+      -0.0087,
+      0.1733
+     ],
+     "tail_lift": 1.4065934065934067,
+     "tail_lift_ci95": [
+      1.0414,
+      1.8163
+     ]
+    },
+    "PC2|opp_PC2": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.021819732208401534,
+     "pearson_ci95": [
+      -0.1243,
+      0.18
+     ],
+     "tail_lift": 1.3003174603174603,
+     "tail_lift_ci95": [
+      0.7574,
+      1.8935
+     ]
+    },
+    "QB|opp_PC1": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.03119425270919873,
+     "pearson_ci95": [
+      -0.0792,
+      0.1332
+     ],
+     "tail_lift": 1.0783882783882783,
+     "tail_lift_ci95": [
+      0.7239,
+      1.4731
+     ]
+    },
+    "QB|opp_PC2": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.04417598775637403,
+     "pearson_ci95": [
+      -0.055,
+      0.1483
+     ],
+     "tail_lift": 1.1145578231292517,
+     "tail_lift_ci95": [
+      0.7647,
+      1.4961
+     ]
+    },
+    "QB|opp_PC3": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.04441166184298418,
+     "pearson_ci95": [
+      -0.0429,
+      0.1341
+     ],
+     "tail_lift": 1.3597069597069598,
+     "tail_lift_ci95": [
+      0.9942,
+      1.7183
+     ]
+    },
+    "QB|opp_QB": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.05412778407964539,
+     "pearson_ci95": [
+      -0.0946,
+      0.191
+     ],
+     "tail_lift": 1.207437641723356,
+     "tail_lift_ci95": [
+      0.6757,
+      1.7041
+     ]
+    },
+    "RUSH1|opp_RUSH1": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": -0.05323086230636475,
+     "pearson_ci95": [
+      -0.1638,
+      0.0657
+     ],
+     "tail_lift": 0.7721745687623716,
+     "tail_lift_ci95": [
+      0.3787,
+      1.4201
+     ]
+    }
+   },
+   "leakage_check": {
+    "checked": 512,
+    "guarantee": "every role label re-derives from a history truncated strictly before its own week",
+    "mismatches": [],
+    "n_mismatches": 0
+   },
+   "n_team_games": 512,
+   "role_collisions": {},
+   "same_team": {
+    "PC1|PC2": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": -0.0021242497678617927,
+     "pearson_ci95": [
+      -0.0964,
+      0.0909
+     ],
+     "tail_lift": 1.0783882783882783,
+     "tail_lift_ci95": [
+      0.6154,
+      1.3996
+     ]
+    },
+    "PC1|PC3": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": -0.029393637385093555,
+     "pearson_ci95": [
+      -0.1144,
+      0.0599
+     ],
+     "tail_lift": 0.9940828402366864,
+     "tail_lift_ci95": [
+      0.6692,
+      1.3597
+     ]
+    },
+    "PC1|RUSH1": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": -0.020099554497304016,
+     "pearson_ci95": [
+      -0.1115,
+      0.0718
+     ],
+     "tail_lift": 0.9559372666168783,
+     "tail_lift_ci95": [
+      0.6274,
+      1.3469
+     ]
+    },
+    "PC2|PC3": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.0069857915856537285,
+     "pearson_ci95": [
+      -0.084,
+      0.0984
+     ],
+     "tail_lift": 1.0315018315018316,
+     "tail_lift_ci95": [
+      0.7101,
+      1.4862
+     ]
+    },
+    "QB|PC1": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.21301517153764885,
+     "pearson_ci95": [
+      0.1062,
+      0.3081
+     ],
+     "tail_lift": 1.8754578754578755,
+     "tail_lift_ci95": [
+      1.3996,
+      2.1987
+     ]
+    },
+    "QB|PC2": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.2655932037019786,
+     "pearson_ci95": [
+      0.1747,
+      0.3518
+     ],
+     "tail_lift": 1.9040362811791383,
+     "tail_lift_ci95": [
+      1.5327,
+      2.3198
+     ]
+    },
+    "QB|PC3": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.11148248140699189,
+     "pearson_ci95": [
+      0.0233,
+      0.1939
+     ],
+     "tail_lift": 1.4065934065934067,
+     "tail_lift_ci95": [
+      1.0381,
+      1.7374
+     ]
+    },
+    "QB|RUSH1": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.10086024783831408,
+     "pearson_ci95": [
+      0.0177,
+      0.1831
+     ],
+     "tail_lift": 1.1361997226074896,
+     "tail_lift_ci95": [
+      0.8045,
+      1.4961
+     ]
+    },
+    "QB|RUSH2": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.07695630041751618,
+     "pearson_ci95": [
+      -0.0144,
+      0.1742
+     ],
+     "tail_lift": 1.24009900990099,
+     "tail_lift_ci95": [
+      0.83,
+      1.5801
+     ]
+    },
+    "RUSH1|RUSH2": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": -0.11609370730275867,
+     "pearson_ci95": [
+      -0.1931,
+      -0.0365
+     ],
+     "tail_lift": 0.7154417364813405,
+     "tail_lift_ci95": [
+      0.3822,
+      1.0331
+     ]
+    }
+   },
+   "season": 2024,
+   "site": "FD",
+   "weeks_present": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18
+   ]
+  },
+  "FD_2025": {
+   "cross_team": {
+    "PC1|opp_PC1": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.06538170671495182,
+     "pearson_ci95": [
+      -0.0671,
+      0.1809
+     ],
+     "tail_lift": 1.514792899408284,
+     "tail_lift_ci95": [
+      0.8687,
+      1.9882
+     ]
+    },
+    "PC1|opp_PC2": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.0874234038899379,
+     "pearson_ci95": [
+      -0.0012,
+      0.1848
+     ],
+     "tail_lift": 1.09932785660941,
+     "tail_lift_ci95": [
+      0.7101,
+      1.4961
+     ]
+    },
+    "PC2|opp_PC2": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": -0.03350390878935877,
+     "pearson_ci95": [
+      -0.1382,
+      0.0748
+     ],
+     "tail_lift": 0.9652182109529645,
+     "tail_lift_ci95": [
+      0.3861,
+      1.3932
+     ]
+    },
+    "QB|opp_PC1": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.13663795930175582,
+     "pearson_ci95": [
+      0.044,
+      0.2234
+     ],
+     "tail_lift": 1.09932785660941,
+     "tail_lift_ci95": [
+      0.6565,
+      1.4818
+     ]
+    },
+    "QB|opp_PC2": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.06234580475316286,
+     "pearson_ci95": [
+      -0.033,
+      0.1519
+     ],
+     "tail_lift": 1.2065227636912055,
+     "tail_lift_ci95": [
+      0.8204,
+      1.5644
+     ]
+    },
+    "QB|opp_PC3": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.0563204472929138,
+     "pearson_ci95": [
+      -0.0315,
+      0.1454
+     ],
+     "tail_lift": 0.9081404032860344,
+     "tail_lift_ci95": [
+      0.6152,
+      1.3383
+     ]
+    },
+    "QB|opp_QB": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.09015733397690562,
+     "pearson_ci95": [
+      -0.0422,
+      0.2142
+     ],
+     "tail_lift": 1.0617400320482608,
+     "tail_lift_ci95": [
+      0.5789,
+      1.6409
+     ]
+    },
+    "RUSH1|opp_RUSH1": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": -0.07939173689219417,
+     "pearson_ci95": [
+      -0.1872,
+      0.0407
+     ],
+     "tail_lift": 0.757396449704142,
+     "tail_lift_ci95": [
+      0.2896,
+      1.1583
+     ]
+    }
+   },
+   "leakage_check": {
+    "checked": 512,
+    "guarantee": "every role label re-derives from a history truncated strictly before its own week",
+    "mismatches": [],
+    "n_mismatches": 0
+   },
+   "n_team_games": 512,
+   "role_collisions": {},
+   "same_team": {
+    "PC1|PC2": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.07471282583053683,
+     "pearson_ci95": [
+      -0.0167,
+      0.1697
+     ],
+     "tail_lift": 0.9559372666168783,
+     "tail_lift_ci95": [
+      0.6214,
+      1.3996
+     ]
+    },
+    "PC1|PC3": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.058194606357283976,
+     "pearson_ci95": [
+      -0.0223,
+      0.1411
+     ],
+     "tail_lift": 1.0887573964497042,
+     "tail_lift_ci95": [
+      0.8056,
+      1.5295
+     ]
+    },
+    "PC1|RUSH1": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": -0.04647840079340615,
+     "pearson_ci95": [
+      -0.1235,
+      0.0281
+     ],
+     "tail_lift": 0.6627218934911243,
+     "tail_lift_ci95": [
+      0.3346,
+      0.9377
+     ]
+    },
+    "PC2|PC3": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.008783314089111325,
+     "pearson_ci95": [
+      -0.0784,
+      0.0994
+     ],
+     "tail_lift": 1.0515309932785661,
+     "tail_lift_ci95": [
+      0.6095,
+      1.3801
+     ]
+    },
+    "QB|PC1": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.17701448955035087,
+     "pearson_ci95": [
+      0.0767,
+      0.2709
+     ],
+     "tail_lift": 1.7206870799103808,
+     "tail_lift_ci95": [
+      1.2782,
+      2.1302
+     ]
+    },
+    "QB|PC2": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.17429807093726285,
+     "pearson_ci95": [
+      0.0834,
+      0.2682
+     ],
+     "tail_lift": 1.3995664058817985,
+     "tail_lift_ci95": [
+      1.0118,
+      1.7685
+     ]
+    },
+    "QB|PC3": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.15194764314110926,
+     "pearson_ci95": [
+      0.0541,
+      0.251
+     ],
+     "tail_lift": 1.5772964899178492,
+     "tail_lift_ci95": [
+      1.1949,
+      2.0075
+     ]
+    },
+    "QB|RUSH1": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.1591994082935923,
+     "pearson_ci95": [
+      0.0824,
+      0.2367
+     ],
+     "tail_lift": 1.2905153099327857,
+     "tail_lift_ci95": [
+      0.8827,
+      1.6251
+     ]
+    },
+    "QB|RUSH2": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": 0.005732691555539122,
+     "pearson_ci95": [
+      -0.0819,
+      0.097
+     ],
+     "tail_lift": 1.0094231867504284,
+     "tail_lift_ci95": [
+      0.6199,
+      1.3807
+     ]
+    },
+    "RUSH1|RUSH2": {
+     "n_games": 256,
+     "n_observations": 512,
+     "pearson": -0.1658955817246469,
+     "pearson_ci95": [
+      -0.2315,
+      -0.0952
+     ],
+     "tail_lift": 0.6796116504854369,
+     "tail_lift_ci95": [
+      0.3307,
+      0.9407
+     ]
+    }
+   },
+   "season": 2025,
+   "site": "FD",
+   "weeks_present": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18
+   ]
+  }
+ },
+ "pearson_and_tail_disagree_on": [
+  {
+   "pair": "PC1|PC2",
+   "panel": "DK_2024",
+   "pearson": -0.013655663937679353,
+   "tail_lift": 1.022048815896924
+  },
+  {
+   "pair": "PC2|PC3",
+   "panel": "DK_2025",
+   "pearson": 0.009835316916365687,
+   "tail_lift": 0.9652182109529645
+  },
+  {
+   "pair": "PC1|PC2",
+   "panel": "FD_2024",
+   "pearson": -0.0021242497678617927,
+   "tail_lift": 1.0783882783882783
+  },
+  {
+   "pair": "PC1|PC2",
+   "panel": "FD_2025",
+   "pearson": 0.07471282583053683,
+   "tail_lift": 0.9559372666168783
+  }
+ ],
+ "simulator_comparison": {
+  "blocked_by": "no full-slate joint-world generator exists; the only sealed worlds are one single-game board",
+  "how_it_will_be_done": "score each simulated world with the same certified adapters, form the same role panel, and compare SIGN and ORDERING of Pearson and tail lift separately. Magnitudes are not comparable: history is one observation per game and carries between-matchup variation, while a sealed board is many observations of one fixture.",
+  "state": "PENDING"
+ },
+ "spec": {
+  "declared_before_measurement": [
+   "cluster bootstrap over games, 2000 resamples, seed 20260919",
+   "tail quantile 80.0",
+   "Pearson and tail dependence reported as separate quantities",
+   "seasons reported separately, never pooled"
+  ],
+  "estimators": {
+   "joint_tail_lift": "P(both >= own 80th percentile) divided by the product of the marginals",
+   "pearson": "linear dependence on fantasy points",
+   "reported_separately": "Pearson and tail dependence are different quantities and are never combined into one ranking"
+  },
+  "forbidden_inputs": [
+   "sportsbook price of any kind",
+   "DFS ownership",
+   "realized current-game usage",
+   "contest results"
+  ],
+  "labels": {
+   "current_game_information": "NONE -- checked by assert_no_current_game_information",
+   "week_1": "absent from the panel; no prior history exists and it is not back-filled",
+   "window": "weeks strictly earlier than the week being labelled, same season"
+  },
+  "not_a_coefficient_store": "no value here may be read into an optimizer, a lineup rule or a simulator correlation matrix",
+  "not_declared_blind": "the role-assignment rule and the pair list were chosen knowing the reproduction results at 06bc006, on these same two seasons",
+  "purpose": "a descriptive validation target for the world generator",
+  "role_assignment": {
+   "mutually_exclusive": true,
+   "order": [
+    "QB",
+    "PC",
+    "RUSH"
+   ],
+   "ranked_by": {
+    "PC": "targets",
+    "QB": "pass_att",
+    "RUSH": "carries"
+   },
+   "rule": "a player already assigned a role is removed from every later ranking"
+  },
+  "scoring": {
+   "coefficients": "imported from the certified adapters; none restated here",
+   "draftkings": "nfl-dfs-scoring-draftkings-1",
+   "fanduel": "nfl-dfs-scoring-fanduel-2"
+  },
+  "seasons": "reported separately and never pooled, so year-to-year instability stays visible",
+  "spec_version": "dfs-fs1-dependence-panel-1",
+  "uncertainty": {
+   "interval": "95 percent",
+   "method": "cluster bootstrap over GAMES",
+   "resamples": 2000,
+   "seed": 20260919,
+   "why": "the two team-games of one game are not independent draws"
+  }
+ }
+}

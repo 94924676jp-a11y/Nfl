@@ -1,11 +1,16 @@
 {
  "artifact": "DFS_RESEARCH_HYPOTHESES",
+ "fs1_panel": {
+  "artifact": "nfl/research/dfs/fullslate/DFS_FS1_DEPENDENCE_PANEL.json",
+  "note": "DFS-FS1 is the canonical leakage-safe panel. Evidence below is appended to each hypothesis; no status was moved, because one panel on the two seasons that motivated these hypotheses is not prospective validation."
+ },
  "hypotheses": [
   {
    "claim": "Prediction-time QB/pass-catcher correlation is materially lower than commonly cited realized-label estimates.",
    "downstream_if_true": "any simulator calibrated to published correlation matrices over-states stack ceilings; the p95 inflation numbers would be upper bounds",
    "evidence_now": "Our reproduction gives QB with PC1 at +0.207 (2024) and +0.170 (2025) under a strictly prior-week window with no role collisions, against the external report's own ex-ante +0.368 and +0.274 and against realized +0.421 and +0.445. The external ex-ante figures themselves appear to carry current-game information, so the gap to the commonly cited values is larger than the report states.",
    "falsifier": "a strictly prediction-time panel, on seasons not used to develop this measurement, giving QB/PC1 within 0.05 of the realized-label value",
+   "fs1_evidence": "FS1 confirms with intervals: QB.PC1 +0.207 [+0.103,+0.304] 2024 and +0.170 [+0.070,+0.264] 2025, against realized-label values near +0.42/+0.45. The prediction-time value is roughly half.",
    "id": "DFS-H1",
    "measurable_here": true,
    "name": "PREDICTION_TIME_QB_PASSCATCHER_CORRELATION",
@@ -15,6 +20,7 @@
    "claim": "Current-game usage labels materially inflate estimated DFS correlations.",
    "evidence_now": "Reproduced independently and in every pair tested: QB.PC1 +0.207 to +0.421 and +0.170 to +0.445; PC1.PC2 -0.014 to +0.206 and +0.072 to +0.174; RUSH1.RUSH2 -0.118 to +0.110 and -0.179 to +0.070. Inflation ranges +0.10 to +0.28.",
    "falsifier": "a labelling scheme with no current-game information reproducing the realized-label correlations within Monte Carlo resolution",
+   "fs1_evidence": "FS1 re-measures the ex-ante side under mutually exclusive roles and a verified leakage check (0 mismatches in 512 of 512 labels, all four panels), so the ex-ante half of the comparison is now checked rather than assumed.",
    "id": "DFS-H2",
    "measurable_here": true,
    "name": "REALIZED_ROLE_LABEL_LEAKAGE",
@@ -26,6 +32,7 @@
    "descriptive_not_predictive": "The tercile analysis cannot become a pre-lock feature. Conditioning on the outcome is how a defect is manufactured for any forecaster.",
    "evidence_now": "Unconditional opposing-QB correlation reproduces positive (+0.053, +0.086). The report's within-tercile negative result is DESCRIPTIVE: it conditions on realized combined game points, which is not knowable before lock.",
    "falsifier": "opposing-QB correlation remaining positive within strata of a prediction-time environment variable, which would locate the effect inside the game rather than between games",
+   "fs1_evidence": "FS1 WEAKENS the premise bring-back reasoning rests on. Opposing QBs: +0.053 [-0.097,+0.190] 2024 and +0.086 [-0.046,+0.211] 2025 -- both intervals contain zero, and both tail-lift intervals contain 1.0. Across all cross-team pairs only 1 of 16 Pearson intervals excludes zero and 0 of 16 tail-lift intervals exclude 1.0. At 256 games per season this panel cannot distinguish cross-team dependence from nothing.",
    "id": "DFS-H3",
    "measurable_here": true,
    "name": "BRINGBACK_GAME_LEVEL_FACTOR",
@@ -36,6 +43,7 @@
    "claim": "Pairwise Pearson correlation is insufficient to rank tournament structures.",
    "evidence_now": "Reproduced in kind: PC1.PC2 has Pearson -0.014 (2024) and joint-tail lift 1.022, while RUSH1.RUSH2 has Pearson -0.118 and tail lift 0.674. Ordering by Pearson and ordering by tail lift are not the same ordering. NOTE the specific external claim that RUSH1.RUSH2 dependence \"largely disappears in the tail\" does NOT reproduce: their 2025 lift is 0.996, ours is 0.735.",
    "falsifier": "a tail-lift ranking that agrees with the Pearson ranking across a pre-registered set of structures",
+   "fs1_evidence": "FS1 SUPPORTS it empirically: Pearson and tail lift fall on opposite sides of their nulls on four pair-panels (DK 2024 PC1.PC2 r=-0.014 lift=1.022; DK 2025 PC2.PC3 r=+0.010 lift=0.965; FD 2024 PC1.PC2 r=-0.002 lift=1.078; FD 2025 PC1.PC2 r=+0.075 lift=0.956). Ranking by Pearson alone orders these wrongly.",
    "id": "DFS-H4",
    "measurable_here": true,
    "name": "TAIL_DEPENDENCE_DIFFERS_FROM_PEARSON",
@@ -46,6 +54,7 @@
    "claim": "DK and FD player dependence structures may be close enough to share football worlds while retaining separate scoring and site optimization.",
    "evidence_now": "Reproduced: maximum absolute DK-minus-FD difference across every same-team pair and both seasons is 0.0153.",
    "falsifier": "any pair whose DK and FD correlations differ by more than a pre-registered margin on unseen seasons",
+   "fs1_evidence": "FS1 confirms on the canonical panel: maximum absolute DK-minus-FD Pearson difference across every pair, both seasons, same-team and cross-team, is 0.0153 at QB.PC2 2024.",
    "id": "DFS-H5",
    "measurable_here": true,
    "name": "DK_FD_DEPENDENCE_SIMILARITY",
@@ -56,6 +65,7 @@
    "claim": "QB+2 may add meaningful joint-tail value over QB+1 while QB+3 shows diminishing marginal dependence value.",
    "evidence_now": "PARTLY CONTRADICTED by our reproduction. p95 inflation over an independent resample: QB+1 +6.08%/+5.77%, QB+2 +6.63%/+6.00%, QB+3 +8.19%/+8.23%. The increment from QB+2 to QB+3 is LARGER than from QB+1 to QB+2 in both seasons, which is the opposite of diminishing.",
    "falsifier": "on unseen seasons, the QB+3 increment exceeding the QB+2 increment again would falsify the diminishing-value form of this hypothesis",
+   "fs1_evidence": "FS1 does not re-test stack size; the p95 inflation result stands from the reproduction, where the QB+3 increment exceeded the QB+2 increment in both seasons, contradicting the diminishing form.",
    "id": "DFS-H6",
    "measurable_here": true,
    "name": "STACK_SIZE_MARGINAL_VALUE",
