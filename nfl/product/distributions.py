@@ -134,16 +134,74 @@ class Forecast:
 
 
 # ---------------------------------------------------------------- summaries
-PCTS = (10, 25, 50, 75, 90)
+#: The quantiles the board shows. p5 and p95 were added 2026-09-19: a reader
+#: asking "how bad is the bad case" was being handed p10, and the tails are
+#: where a prop threshold usually sits.
+PCTS = (5, 10, 25, 50, 75, 90, 95)
+
+
+def _mcse_mean(x) -> float:
+    """Monte Carlo standard error of the mean. sd/sqrt(n), and nothing else.
+
+    Valid because the draws within one metric are iid replicates of the same
+    simulated world. It is NOT a statement about how uncertain the football
+    is -- that is `sd` -- it is how much of the reported mean is simulation
+    noise. Confusing the two is how a run gets tuned against its own seed.
+    """
+    x = np.asarray(x, float)
+    n = x.size
+    if n < 2:
+        return float('nan')
+    return float(x.std(ddof=1) / np.sqrt(n))
+
+
+def _mcse_median_halfwidth95(x) -> float:
+    """Simulation noise on the reported median, distribution-free.
+
+    NOT sd/sqrt(n) and not a normal approximation with a density estimate.
+    The number of draws below the true median is Binomial(n, 0.5), so the
+    order statistics at the 2.5% and 97.5% points of that binomial bracket the
+    median exactly, whatever the shape of the distribution. The half-width of
+    that bracket, in the metric's own units, is what is reported.
+
+    A density-based MCSE would have needed a bandwidth, which is a constant
+    nobody here has a source for.
+    """
+    x = np.sort(np.asarray(x, float))
+    n = x.size
+    if n < 8:
+        return float('nan')
+    # Normal approximation to the Binomial(n, 0.5) ORDER INDEX only -- the
+    # quantity approximated is the integer rank, not the metric, so the
+    # distribution-free property of the bracket survives it.
+    half = 1.959963984540054 * np.sqrt(n * 0.25)
+    lo = int(max(0, np.floor(n * 0.5 - half)))
+    hi = int(min(n - 1, np.ceil(n * 0.5 + half)))
+    return float((x[hi] - x[lo]) / 2.0)
 
 
 def summary(x) -> dict:
-    """Mean, median and the quantiles the board shows. Draws only."""
+    """Mean, median, spread, tails, zero mass and simulation noise. Draws only.
+
+    P(zero) IS ITS OWN NUMBER AND NOT A QUANTILE. For a receiving metric the
+    mass at exactly zero is most of the question a threshold market asks, and
+    it is invisible in p5 whenever the zero mass exceeds five percent -- which
+    for a WR3 it usually does. It is computed as an exact draw fraction, so it
+    is available to answer a sportsbook threshold without any Gaussian step.
+    """
     x = np.asarray(x, float)
     return {'mean': round(float(x.mean()), 2),
             'median': round(float(np.percentile(x, 50)), 2),
             'sd': round(float(x.std(ddof=1)), 2),
+            # UNPADDED, matching every other percentile name in this
+            # codebase. `p05` would read better in a sorted column list and
+            # would break `f'p{p}'`, which is the rule the product layer and
+            # its tests derive these names from. One naming rule beats one
+            # prettier column.
             **{f'p{p}': round(float(np.percentile(x, p)), 2) for p in PCTS},
+            'p_zero': round(float((x == 0).mean()), 4),
+            'mcse_mean': round(_mcse_mean(x), 4),
+            'mcse_median_halfwidth95': round(_mcse_median_halfwidth95(x), 4),
             'n_draws': int(x.size)}
 
 
