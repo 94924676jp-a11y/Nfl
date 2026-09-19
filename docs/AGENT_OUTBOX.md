@@ -1799,3 +1799,75 @@ as closed unfilled rather than let them look covered.
 
 No parsing, no ingestion, no model change. The bytes and the merge, nothing
 else.
+
+---
+
+## 2026-09-19 — OUT-027: three clubs' official injury reports are unfilled, and it costs a game and two halves
+
+**ASSIGNED.** The appearance layer is behaving correctly; the gap is bytes.
+
+### What I measured
+
+The full Week-2 slate rehearsal (`nfl/research/sunday/SUNDAY_REHEARSAL_2026W2.json`)
+shows the appearance layer refusing any club whose official injury report is
+incomplete, on its own stated ground: *"a team with no filed report is NOT a
+team with no injuries."*
+
+| game | effect | players left with no appearance estimate and no projection |
+|---|---|---|
+| JAX @ DEN | `APPEARANCE_TEAM_DEFERRED` — JAX deferred, the layer ran on DEN only | 15 |
+| MIN @ CHI | `APPEARANCE_TEAM_DEFERRED` — CHI deferred, the layer ran on MIN only | 12 |
+| NYG @ LA | `INJURY_REPORT_INCOMPLETE` — **the whole game halts at appearance.** NYG has 7 rows and `report_status` is unfilled on every one | every non-QB player, both clubs |
+
+Twelve of the fourteen Sunday games have both clubs covered. These three clubs
+are the whole gap.
+
+### What I need
+
+For **JAX, CHI and NYG**, Week 2: the official injury report with
+`report_status` populated — the practice-participation and game-status
+designations as filed. Raw document, nothing parsed, with its retrieval
+instant.
+
+If the league genuinely did not publish one for a club, **say that**, because
+"not published" and "we did not fetch it" are different facts and the layer
+should record the first rather than continue to wait on the second.
+
+### Why I cannot clear it myself
+
+No egress. The standing `EGRESS_DENIED` declaration in
+`nfl/STATE_DECLARATIONS.md` applies. The endpoint correction from OUT-016
+applies to whatever is fetched.
+
+### What it unblocks, stated narrowly
+
+Non-QB coverage for those three clubs in a rehearsal. **It does not unblock a
+board** — `artifact_sealing` refuses every game of the season on a separate
+and unrelated cause (no 2026 denominator panel, SUN-5), so a filled report
+buys coverage in the simulation, not a forecast.
+
+### Not asked for
+
+No parsing, no ingestion, no interpretation of a designation. The documents.
+
+---
+
+## 2026-09-19 — OUT-028 (informational): no market snapshot exists for tomorrow, and none is needed yet
+
+Recording this so it is not mistaken for an oversight.
+
+`hardrock_market_snapshot` holds exactly **one** capture: 166 quotes,
+retrieved 2026-09-13T18:13:12Z, marked `immutable`, `never_refresh`,
+`never_restamp`, `role: DOWNSTREAM_COMPARATOR_ONLY`. There are no prices for
+the Week-2 Sunday slate.
+
+**I am not requesting any.** The directive's own ordering is that
+model-vs-market comparison happens only after forecast sealing, and sealing
+refuses every game. Prices fetched tonight would have nothing to compare
+against, and a snapshot taken now would age before it could be used.
+
+When SUN-5 clears and a board seals, the request becomes real. Until then this
+is a BLOCKED item whose blocker is upstream and internal, and it should not be
+counted against the networked agent.
+
+Sportsbook prices remain evaluation data. They never become predictive inputs.
