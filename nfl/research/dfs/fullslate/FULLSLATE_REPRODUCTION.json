@@ -1,0 +1,2206 @@
+{
+ "adapter_schema_divergence": {
+  "consequence": "a caller written against one adapter raises KeyError on the other; no shared accessor exists",
+  "draftkings": {
+   "bonuses_in": "RULES",
+   "two_point_keys": [
+    "two_point"
+   ]
+  },
+  "fanduel": {
+   "bonuses_in": "BONUSES",
+   "two_point_keys": [
+    "two_point_scored",
+    "two_point_thrown"
+   ]
+  },
+  "handled_here_by": "resolve_coefficients, in research code, leaving both certified adapters untouched"
+ },
+ "comparisons": {
+  "ex_ante_DK_cross_team": [
+   {
+    "abs_difference": 0.035,
+    "pair": "QB|opp_QB",
+    "published": 0.088,
+    "reproduced": 0.05296580674438616,
+    "season": 2024,
+    "within_tolerance": false
+   },
+   {
+    "abs_difference": 0.0936,
+    "pair": "QB|opp_QB",
+    "published": 0.18,
+    "reproduced": 0.0864351102626888,
+    "season": 2025,
+    "within_tolerance": false
+   },
+   {
+    "abs_difference": 0.0761,
+    "pair": "QB|opp_PC1",
+    "published": 0.108,
+    "reproduced": 0.03186592398980116,
+    "season": 2024,
+    "within_tolerance": false
+   },
+   {
+    "abs_difference": 0.0361,
+    "pair": "QB|opp_PC1",
+    "published": 0.105,
+    "reproduced": 0.14105202754755886,
+    "season": 2025,
+    "within_tolerance": false
+   },
+   {
+    "abs_difference": 0.0126,
+    "pair": "QB|opp_PC2",
+    "published": 0.036,
+    "reproduced": 0.04859753978633171,
+    "season": 2024,
+    "within_tolerance": true
+   },
+   {
+    "abs_difference": 0.0091,
+    "pair": "QB|opp_PC2",
+    "published": 0.079,
+    "reproduced": 0.06985251763940761,
+    "season": 2025,
+    "within_tolerance": true
+   },
+   {
+    "abs_difference": 0.01,
+    "pair": "QB|opp_PC3",
+    "published": 0.045,
+    "reproduced": 0.055032478514114705,
+    "season": 2024,
+    "within_tolerance": true
+   },
+   {
+    "abs_difference": 0.0665,
+    "pair": "QB|opp_PC3",
+    "published": 0.127,
+    "reproduced": 0.06048170945491823,
+    "season": 2025,
+    "within_tolerance": false
+   },
+   {
+    "abs_difference": 0.0306,
+    "pair": "QB|opp_RUSH1",
+    "published": -0.021,
+    "reproduced": 0.009634585253278524,
+    "season": 2024,
+    "within_tolerance": false
+   },
+   {
+    "abs_difference": 0.121,
+    "pair": "QB|opp_RUSH1",
+    "published": 0.128,
+    "reproduced": 0.007018751848064106,
+    "season": 2025,
+    "within_tolerance": false
+   },
+   {
+    "abs_difference": 0.0519,
+    "pair": "PC1|opp_PC1",
+    "published": 0.094,
+    "reproduced": 0.04207152721235142,
+    "season": 2024,
+    "within_tolerance": false
+   },
+   {
+    "abs_difference": 0.0341,
+    "pair": "PC1|opp_PC1",
+    "published": 0.096,
+    "reproduced": 0.061937596669861955,
+    "season": 2025,
+    "within_tolerance": false
+   },
+   {
+    "abs_difference": 0.031,
+    "pair": "PC1|opp_PC2",
+    "published": 0.051,
+    "reproduced": 0.08204930918456219,
+    "season": 2024,
+    "within_tolerance": false
+   },
+   {
+    "abs_difference": 0.001,
+    "pair": "PC1|opp_PC2",
+    "published": 0.086,
+    "reproduced": 0.08495165030987305,
+    "season": 2025,
+    "within_tolerance": true
+   },
+   {
+    "abs_difference": 0.0821,
+    "pair": "RUSH1|opp_RUSH1",
+    "published": -0.123,
+    "reproduced": -0.04091945923615877,
+    "season": 2024,
+    "within_tolerance": false
+   },
+   {
+    "abs_difference": 0.0101,
+    "pair": "RUSH1|opp_RUSH1",
+    "published": -0.067,
+    "reproduced": -0.07706480056404931,
+    "season": 2025,
+    "within_tolerance": true
+   },
+   {
+    "abs_difference": 0.025,
+    "pair": "OFFENSE|opp_OFFENSE",
+    "published": 0.083,
+    "reproduced": 0.10797921611827166,
+    "season": 2024,
+    "within_tolerance": false
+   },
+   {
+    "abs_difference": 0.0509,
+    "pair": "OFFENSE|opp_OFFENSE",
+    "published": 0.186,
+    "reproduced": 0.13509587999190253,
+    "season": 2025,
+    "within_tolerance": false
+   }
+  ],
+  "ex_ante_DK_same_team": [
+   {
+    "abs_difference": 0.1605,
+    "pair": "QB|PC1",
+    "published": 0.368,
+    "reproduced": 0.20749583880950712,
+    "season": 2024,
+    "within_tolerance": false
+   },
+   {
+    "abs_difference": 0.1041,
+    "pair": "QB|PC1",
+    "published": 0.274,
+    "reproduced": 0.16991926487368206,
+    "season": 2025,
+    "within_tolerance": false
+   },
+   {
+    "abs_difference": 0.0457,
+    "pair": "QB|PC2",
+    "published": 0.296,
+    "reproduced": 0.25029630466538944,
+    "season": 2024,
+    "within_tolerance": false
+   },
+   {
+    "abs_difference": 0.144,
+    "pair": "QB|PC2",
+    "published": 0.318,
+    "reproduced": 0.1740149008769959,
+    "season": 2025,
+    "within_tolerance": false
+   },
+   {
+    "abs_difference": 0.0995,
+    "pair": "QB|PC3",
+    "published": 0.208,
+    "reproduced": 0.10849983505824884,
+    "season": 2024,
+    "within_tolerance": false
+   },
+   {
+    "abs_difference": 0.1136,
+    "pair": "QB|PC3",
+    "published": 0.259,
+    "reproduced": 0.1453960445065724,
+    "season": 2025,
+    "within_tolerance": false
+   },
+   {
+    "abs_difference": 0.0055,
+    "pair": "QB|RUSH1",
+    "published": 0.109,
+    "reproduced": 0.10350140308962577,
+    "season": 2024,
+    "within_tolerance": true
+   },
+   {
+    "abs_difference": 0.1184,
+    "pair": "QB|RUSH1",
+    "published": 0.05,
+    "reproduced": 0.1684455222972745,
+    "season": 2025,
+    "within_tolerance": false
+   },
+   {
+    "abs_difference": 0.0397,
+    "pair": "QB|RUSH2",
+    "published": 0.118,
+    "reproduced": 0.07827920196659321,
+    "season": 2024,
+    "within_tolerance": false
+   },
+   {
+    "abs_difference": 0.1043,
+    "pair": "QB|RUSH2",
+    "published": 0.117,
+    "reproduced": 0.012730906807938118,
+    "season": 2025,
+    "within_tolerance": false
+   },
+   {
+    "abs_difference": 0.0103,
+    "pair": "PC1|PC2",
+    "published": -0.024,
+    "reproduced": -0.013655663937679367,
+    "season": 2024,
+    "within_tolerance": true
+   },
+   {
+    "abs_difference": 0.0477,
+    "pair": "PC1|PC2",
+    "published": 0.12,
+    "reproduced": 0.07233429387786842,
+    "season": 2025,
+    "within_tolerance": false
+   },
+   {
+    "abs_difference": 0.0273,
+    "pair": "PC1|PC3",
+    "published": -0.0,
+    "reproduced": -0.027258496374949995,
+    "season": 2024,
+    "within_tolerance": false
+   },
+   {
+    "abs_difference": 0.0228,
+    "pair": "PC1|PC3",
+    "published": 0.088,
+    "reproduced": 0.06517480508378341,
+    "season": 2025,
+    "within_tolerance": false
+   },
+   {
+    "abs_difference": 0.0337,
+    "pair": "PC2|PC3",
+    "published": 0.036,
+    "reproduced": 0.0022688054433062663,
+    "season": 2024,
+    "within_tolerance": false
+   },
+   {
+    "abs_difference": 0.0098,
+    "pair": "PC2|PC3",
+    "published": -0.0,
+    "reproduced": 0.009835316916365673,
+    "season": 2025,
+    "within_tolerance": true
+   },
+   {
+    "abs_difference": 0.0483,
+    "pair": "PC1|RUSH1",
+    "published": 0.034,
+    "reproduced": -0.014300685966608074,
+    "season": 2024,
+    "within_tolerance": false
+   },
+   {
+    "abs_difference": 0.2079,
+    "pair": "PC1|RUSH1",
+    "published": 0.162,
+    "reproduced": -0.045880540309578784,
+    "season": 2025,
+    "within_tolerance": false
+   },
+   {
+    "abs_difference": 0.2759,
+    "pair": "PC3|RUSH1",
+    "published": 0.238,
+    "reproduced": -0.03785704571594182,
+    "season": 2024,
+    "within_tolerance": false
+   },
+   {
+    "abs_difference": 0.3389,
+    "pair": "PC3|RUSH1",
+    "published": 0.318,
+    "reproduced": -0.020948439351406563,
+    "season": 2025,
+    "within_tolerance": false
+   },
+   {
+    "abs_difference": 0.0027,
+    "pair": "RUSH1|RUSH2",
+    "published": -0.121,
+    "reproduced": -0.11832263534624447,
+    "season": 2024,
+    "within_tolerance": true
+   },
+   {
+    "abs_difference": 0.075,
+    "pair": "RUSH1|RUSH2",
+    "published": -0.104,
+    "reproduced": -0.178975289109628,
+    "season": 2025,
+    "within_tolerance": false
+   }
+  ],
+  "ex_ante_FD_same_team": [
+   {
+    "abs_difference": 0.165,
+    "pair": "QB|PC1",
+    "published": 0.378,
+    "reproduced": 0.21301517153764896,
+    "season": 2024,
+    "within_tolerance": false
+   },
+   {
+    "abs_difference": 0.103,
+    "pair": "QB|PC1",
+    "published": 0.28,
+    "reproduced": 0.17701448955035096,
+    "season": 2025,
+    "within_tolerance": false
+   },
+   {
+    "abs_difference": 0.0414,
+    "pair": "QB|PC2",
+    "published": 0.307,
+    "reproduced": 0.2655932037019785,
+    "season": 2024,
+    "within_tolerance": false
+   },
+   {
+    "abs_difference": 0.1407,
+    "pair": "QB|PC2",
+    "published": 0.315,
+    "reproduced": 0.17429807093726288,
+    "season": 2025,
+    "within_tolerance": false
+   },
+   {
+    "abs_difference": 0.0129,
+    "pair": "PC1|PC2",
+    "published": -0.015,
+    "reproduced": -0.002124249767861783,
+    "season": 2024,
+    "within_tolerance": true
+   },
+   {
+    "abs_difference": 0.0333,
+    "pair": "PC1|PC2",
+    "published": 0.108,
+    "reproduced": 0.07471282583053679,
+    "season": 2025,
+    "within_tolerance": false
+   },
+   {
+    "abs_difference": 0.0039,
+    "pair": "RUSH1|RUSH2",
+    "published": -0.12,
+    "reproduced": -0.11609370730275864,
+    "season": 2024,
+    "within_tolerance": true
+   },
+   {
+    "abs_difference": 0.0839,
+    "pair": "RUSH1|RUSH2",
+    "published": -0.082,
+    "reproduced": -0.16589558172464672,
+    "season": 2025,
+    "within_tolerance": false
+   }
+  ],
+  "realized_DK_cross_team": [
+   {
+    "abs_difference": 0.0252,
+    "pair": "PC1|opp_PC1",
+    "published": 0.161,
+    "reproduced": 0.1357592806531519,
+    "season": 2024,
+    "within_tolerance": false
+   },
+   {
+    "abs_difference": 0.026,
+    "pair": "PC1|opp_PC1",
+    "published": 0.163,
+    "reproduced": 0.13703612160770462,
+    "season": 2025,
+    "within_tolerance": false
+   }
+  ],
+  "realized_DK_same_team": [
+   {
+    "abs_difference": 0.001,
+    "pair": "QB|PC1",
+    "published": 0.42,
+    "reproduced": 0.4210402324644751,
+    "season": 2024,
+    "within_tolerance": true
+   },
+   {
+    "abs_difference": 0.0066,
+    "pair": "QB|PC1",
+    "published": 0.438,
+    "reproduced": 0.44457576904444257,
+    "season": 2025,
+    "within_tolerance": true
+   },
+   {
+    "abs_difference": 0.0192,
+    "pair": "QB|PC2",
+    "published": 0.409,
+    "reproduced": 0.4282195761468749,
+    "season": 2024,
+    "within_tolerance": true
+   },
+   {
+    "abs_difference": 0.0092,
+    "pair": "QB|PC2",
+    "published": 0.352,
+    "reproduced": 0.36115341660137906,
+    "season": 2025,
+    "within_tolerance": true
+   },
+   {
+    "abs_difference": 0.0008,
+    "pair": "PC1|PC2",
+    "published": 0.207,
+    "reproduced": 0.20624326716485655,
+    "season": 2024,
+    "within_tolerance": true
+   },
+   {
+    "abs_difference": 0.0082,
+    "pair": "PC1|PC2",
+    "published": 0.182,
+    "reproduced": 0.17378868076000586,
+    "season": 2025,
+    "within_tolerance": true
+   },
+   {
+    "abs_difference": 0.0936,
+    "pair": "RUSH1|RUSH2",
+    "published": 0.016,
+    "reproduced": 0.10958521800678159,
+    "season": 2024,
+    "within_tolerance": false
+   },
+   {
+    "abs_difference": 0.0998,
+    "pair": "RUSH1|RUSH2",
+    "published": -0.03,
+    "reproduced": 0.06984095025714607,
+    "season": 2025,
+    "within_tolerance": false
+   }
+  ]
+ },
+ "extension_over_production_score": [
+  "fumbles_lost",
+  "two_point",
+  "return_td"
+ ],
+ "extension_reason": "statline.NOT_SIMULATED records that the engine produces none of these, so production score() omits them. History observes them and the external panel includes them, so the same certified constants are applied to them here.",
+ "generated_at": "2026-09-19T04:37:24.908535+00:00",
+ "not_reproduced": {
+  "every DST claim": "no DST scoring adapter exists (statline.NOT_SIMULATED: \"the engine produces no team-defence outputs at all\"), and this executor cannot reach DraftKings to verify points-allowed tiers. Introducing unverified site constants is forbidden by the standing directive."
+ },
+ "panels": {
+  "ex_ante_DK": {
+   "counts": {
+    "2024": {
+     "n_team_games": 512,
+     "role_collisions": {},
+     "variant": "sequential_removal",
+     "weeks": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18
+     ]
+    },
+    "2025": {
+     "n_team_games": 512,
+     "role_collisions": {},
+     "variant": "sequential_removal",
+     "weeks": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18
+     ]
+    }
+   },
+   "cross_team": {
+    "2024": {
+     "OFFENSE|opp_OFFENSE": {
+      "n": 512,
+      "r": 0.10797921611827166
+     },
+     "PC1|opp_PC1": {
+      "n": 512,
+      "r": 0.04207152721235142
+     },
+     "PC1|opp_PC2": {
+      "n": 512,
+      "r": 0.08204930918456219
+     },
+     "QB|opp_PC1": {
+      "n": 512,
+      "r": 0.03186592398980116
+     },
+     "QB|opp_PC2": {
+      "n": 512,
+      "r": 0.04859753978633171
+     },
+     "QB|opp_PC3": {
+      "n": 512,
+      "r": 0.055032478514114705
+     },
+     "QB|opp_QB": {
+      "n": 512,
+      "r": 0.05296580674438616
+     },
+     "QB|opp_RUSH1": {
+      "n": 512,
+      "r": 0.009634585253278524
+     },
+     "RUSH1|opp_RUSH1": {
+      "n": 512,
+      "r": -0.04091945923615877
+     }
+    },
+    "2025": {
+     "OFFENSE|opp_OFFENSE": {
+      "n": 512,
+      "r": 0.13509587999190253
+     },
+     "PC1|opp_PC1": {
+      "n": 512,
+      "r": 0.061937596669861955
+     },
+     "PC1|opp_PC2": {
+      "n": 512,
+      "r": 0.08495165030987305
+     },
+     "QB|opp_PC1": {
+      "n": 512,
+      "r": 0.14105202754755886
+     },
+     "QB|opp_PC2": {
+      "n": 512,
+      "r": 0.06985251763940761
+     },
+     "QB|opp_PC3": {
+      "n": 512,
+      "r": 0.06048170945491823
+     },
+     "QB|opp_QB": {
+      "n": 512,
+      "r": 0.0864351102626888
+     },
+     "QB|opp_RUSH1": {
+      "n": 512,
+      "r": 0.007018751848064106
+     },
+     "RUSH1|opp_RUSH1": {
+      "n": 512,
+      "r": -0.07706480056404931
+     }
+    }
+   },
+   "same_team": {
+    "2024": {
+     "PC1|PC2": {
+      "n": 512,
+      "r": -0.013655663937679367
+     },
+     "PC1|PC3": {
+      "n": 512,
+      "r": -0.027258496374949995
+     },
+     "PC1|RUSH1": {
+      "n": 512,
+      "r": -0.014300685966608074
+     },
+     "PC2|PC3": {
+      "n": 512,
+      "r": 0.0022688054433062663
+     },
+     "PC3|RUSH1": {
+      "n": 512,
+      "r": -0.03785704571594182
+     },
+     "QB|PC1": {
+      "n": 512,
+      "r": 0.20749583880950712
+     },
+     "QB|PC2": {
+      "n": 512,
+      "r": 0.25029630466538944
+     },
+     "QB|PC3": {
+      "n": 512,
+      "r": 0.10849983505824884
+     },
+     "QB|RUSH1": {
+      "n": 512,
+      "r": 0.10350140308962577
+     },
+     "QB|RUSH2": {
+      "n": 501,
+      "r": 0.07827920196659321
+     },
+     "RUSH1|RUSH2": {
+      "n": 501,
+      "r": -0.11832263534624447
+     }
+    },
+    "2025": {
+     "PC1|PC2": {
+      "n": 512,
+      "r": 0.07233429387786842
+     },
+     "PC1|PC3": {
+      "n": 512,
+      "r": 0.06517480508378341
+     },
+     "PC1|RUSH1": {
+      "n": 512,
+      "r": -0.045880540309578784
+     },
+     "PC2|PC3": {
+      "n": 512,
+      "r": 0.009835316916365673
+     },
+     "PC3|RUSH1": {
+      "n": 512,
+      "r": -0.020948439351406563
+     },
+     "QB|PC1": {
+      "n": 512,
+      "r": 0.16991926487368206
+     },
+     "QB|PC2": {
+      "n": 512,
+      "r": 0.1740149008769959
+     },
+     "QB|PC3": {
+      "n": 512,
+      "r": 0.1453960445065724
+     },
+     "QB|RUSH1": {
+      "n": 512,
+      "r": 0.1684455222972745
+     },
+     "QB|RUSH2": {
+      "n": 505,
+      "r": 0.012730906807938118
+     },
+     "RUSH1|RUSH2": {
+      "n": 505,
+      "r": -0.178975289109628
+     }
+    }
+   },
+   "stack_p95": {
+    "2024": {
+     "QB+PC1": {
+      "actual_p95": 56.435,
+      "independent_p95": 53.2,
+      "inflation": 1.0608082706766917,
+      "members": [
+       "QB",
+       "PC1"
+      ],
+      "n": 512,
+      "n_resample_draws": 200000,
+      "seed": 20260919
+     },
+     "QB+PC1+PC2": {
+      "actual_p95": 72.914,
+      "independent_p95": 68.38,
+      "inflation": 1.066305937408599,
+      "members": [
+       "QB",
+       "PC1",
+       "PC2"
+      ],
+      "n": 512,
+      "n_resample_draws": 200000,
+      "seed": 20260919
+     },
+     "QB+PC1+PC2+PC3": {
+      "actual_p95": 85.536,
+      "independent_p95": 79.06,
+      "inflation": 1.081912471540602,
+      "members": [
+       "QB",
+       "PC1",
+       "PC2",
+       "PC3"
+      ],
+      "n": 512,
+      "n_resample_draws": 200000,
+      "seed": 20260919
+     }
+    },
+    "2025": {
+     "QB+PC1": {
+      "actual_p95": 54.176,
+      "independent_p95": 51.22,
+      "inflation": 1.0577118313158922,
+      "members": [
+       "QB",
+       "PC1"
+      ],
+      "n": 512,
+      "n_resample_draws": 200000,
+      "seed": 20260919
+     },
+     "QB+PC1+PC2": {
+      "actual_p95": 68.774,
+      "independent_p95": 64.88,
+      "inflation": 1.0600184956843404,
+      "members": [
+       "QB",
+       "PC1",
+       "PC2"
+      ],
+      "n": 512,
+      "n_resample_draws": 200000,
+      "seed": 20260919
+     },
+     "QB+PC1+PC2+PC3": {
+      "actual_p95": 83.918,
+      "independent_p95": 77.54,
+      "inflation": 1.0822543203507866,
+      "members": [
+       "QB",
+       "PC1",
+       "PC2",
+       "PC3"
+      ],
+      "n": 512,
+      "n_resample_draws": 200000,
+      "seed": 20260919
+     }
+    }
+   },
+   "tail_lift": {
+    "2024": {
+     "PC1|PC2": {
+      "lift": 1.022048815896924,
+      "n": 512,
+      "p_a": 0.208984375,
+      "p_b": 0.201171875,
+      "p_joint": 0.04296875
+     },
+     "QB|PC1": {
+      "lift": 1.8118138099990926,
+      "n": 512,
+      "p_a": 0.201171875,
+      "p_b": 0.208984375,
+      "p_joint": 0.076171875
+     },
+     "QB|PC2": {
+      "lift": 1.8821755113582808,
+      "n": 512,
+      "p_a": 0.201171875,
+      "p_b": 0.201171875,
+      "p_joint": 0.076171875
+     },
+     "QB|PC3": {
+      "lift": 1.303044584786502,
+      "n": 512,
+      "p_a": 0.201171875,
+      "p_b": 0.201171875,
+      "p_joint": 0.052734375
+     },
+     "RUSH1|RUSH2": {
+      "lift": 0.6742285879073344,
+      "n": 501,
+      "p_a": 0.20159680638722555,
+      "p_b": 0.2055888223552894,
+      "p_joint": 0.027944111776447105
+     }
+    },
+    "2025": {
+     "PC1|PC2": {
+      "lift": 1.1100009425959092,
+      "n": 512,
+      "p_a": 0.201171875,
+      "p_b": 0.201171875,
+      "p_joint": 0.044921875
+     },
+     "QB|PC1": {
+      "lift": 1.5772964899178492,
+      "n": 512,
+      "p_a": 0.203125,
+      "p_b": 0.201171875,
+      "p_joint": 0.064453125
+     },
+     "QB|PC2": {
+      "lift": 1.4339058999253174,
+      "n": 512,
+      "p_a": 0.203125,
+      "p_b": 0.201171875,
+      "p_joint": 0.05859375
+     },
+     "QB|PC3": {
+      "lift": 1.4817027632561612,
+      "n": 512,
+      "p_a": 0.203125,
+      "p_b": 0.201171875,
+      "p_joint": 0.060546875
+     },
+     "RUSH1|RUSH2": {
+      "lift": 0.7352941176470587,
+      "n": 505,
+      "p_a": 0.201980198019802,
+      "p_b": 0.2,
+      "p_joint": 0.0297029702970297
+     }
+    }
+   }
+  },
+  "ex_ante_FD": {
+   "counts": {
+    "2024": {
+     "n_team_games": 512,
+     "role_collisions": {},
+     "variant": "sequential_removal",
+     "weeks": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18
+     ]
+    },
+    "2025": {
+     "n_team_games": 512,
+     "role_collisions": {},
+     "variant": "sequential_removal",
+     "weeks": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18
+     ]
+    }
+   },
+   "cross_team": {
+    "2024": {
+     "OFFENSE|opp_OFFENSE": {
+      "n": 512,
+      "r": 0.08217969733057644
+     },
+     "PC1|opp_PC1": {
+      "n": 512,
+      "r": 0.046192807583978215
+     },
+     "PC1|opp_PC2": {
+      "n": 512,
+      "r": 0.08659481806244344
+     },
+     "QB|opp_PC1": {
+      "n": 512,
+      "r": 0.03119425270919873
+     },
+     "QB|opp_PC2": {
+      "n": 512,
+      "r": 0.04417598775637403
+     },
+     "QB|opp_PC3": {
+      "n": 512,
+      "r": 0.04441166184298418
+     },
+     "QB|opp_QB": {
+      "n": 512,
+      "r": 0.05412778407964539
+     },
+     "QB|opp_RUSH1": {
+      "n": 512,
+      "r": -0.0005045060858069981
+     },
+     "RUSH1|opp_RUSH1": {
+      "n": 512,
+      "r": -0.05323086230636475
+     }
+    },
+    "2025": {
+     "OFFENSE|opp_OFFENSE": {
+      "n": 512,
+      "r": 0.11537469054265319
+     },
+     "PC1|opp_PC1": {
+      "n": 512,
+      "r": 0.06538170671495182
+     },
+     "PC1|opp_PC2": {
+      "n": 512,
+      "r": 0.0874234038899379
+     },
+     "QB|opp_PC1": {
+      "n": 512,
+      "r": 0.13663795930175582
+     },
+     "QB|opp_PC2": {
+      "n": 512,
+      "r": 0.06234580475316286
+     },
+     "QB|opp_PC3": {
+      "n": 512,
+      "r": 0.0563204472929138
+     },
+     "QB|opp_QB": {
+      "n": 512,
+      "r": 0.09015733397690562
+     },
+     "QB|opp_RUSH1": {
+      "n": 512,
+      "r": -0.002779075862289398
+     },
+     "RUSH1|opp_RUSH1": {
+      "n": 512,
+      "r": -0.07939173689219417
+     }
+    }
+   },
+   "same_team": {
+    "2024": {
+     "PC1|PC2": {
+      "n": 512,
+      "r": -0.002124249767861783
+     },
+     "PC1|PC3": {
+      "n": 512,
+      "r": -0.029393637385093516
+     },
+     "PC1|RUSH1": {
+      "n": 512,
+      "r": -0.02009955449730407
+     },
+     "PC2|PC3": {
+      "n": 512,
+      "r": 0.006985791585653712
+     },
+     "PC3|RUSH1": {
+      "n": 512,
+      "r": -0.045285514264144934
+     },
+     "QB|PC1": {
+      "n": 512,
+      "r": 0.21301517153764896
+     },
+     "QB|PC2": {
+      "n": 512,
+      "r": 0.2655932037019785
+     },
+     "QB|PC3": {
+      "n": 512,
+      "r": 0.11148248140699181
+     },
+     "QB|RUSH1": {
+      "n": 512,
+      "r": 0.10086024783831417
+     },
+     "QB|RUSH2": {
+      "n": 501,
+      "r": 0.07695630041751615
+     },
+     "RUSH1|RUSH2": {
+      "n": 501,
+      "r": -0.11609370730275864
+     }
+    },
+    "2025": {
+     "PC1|PC2": {
+      "n": 512,
+      "r": 0.07471282583053679
+     },
+     "PC1|PC3": {
+      "n": 512,
+      "r": 0.05819460635728398
+     },
+     "PC1|RUSH1": {
+      "n": 512,
+      "r": -0.04647840079340614
+     },
+     "PC2|PC3": {
+      "n": 512,
+      "r": 0.008783314089111318
+     },
+     "PC3|RUSH1": {
+      "n": 512,
+      "r": -0.01776694189297204
+     },
+     "QB|PC1": {
+      "n": 512,
+      "r": 0.17701448955035096
+     },
+     "QB|PC2": {
+      "n": 512,
+      "r": 0.17429807093726288
+     },
+     "QB|PC3": {
+      "n": 512,
+      "r": 0.15194764314110917
+     },
+     "QB|RUSH1": {
+      "n": 512,
+      "r": 0.15919940829359241
+     },
+     "QB|RUSH2": {
+      "n": 505,
+      "r": 0.005732691555539171
+     },
+     "RUSH1|RUSH2": {
+      "n": 505,
+      "r": -0.16589558172464672
+     }
+    }
+   }
+  },
+  "realized_DK": {
+   "counts": {
+    "2024": {
+     "n_team_games": 544,
+     "role_collisions": {},
+     "variant": "sequential_removal",
+     "weeks": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18
+     ]
+    },
+    "2025": {
+     "n_team_games": 544,
+     "role_collisions": {},
+     "variant": "sequential_removal",
+     "weeks": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18
+     ]
+    }
+   },
+   "cross_team": {
+    "2024": {
+     "OFFENSE|opp_OFFENSE": {
+      "n": 544,
+      "r": 0.14895557591256176
+     },
+     "PC1|opp_PC1": {
+      "n": 544,
+      "r": 0.1357592806531519
+     },
+     "PC1|opp_PC2": {
+      "n": 544,
+      "r": 0.0852394014696392
+     },
+     "QB|opp_PC1": {
+      "n": 544,
+      "r": 0.1182642533419103
+     },
+     "QB|opp_PC2": {
+      "n": 544,
+      "r": 0.12501221823853
+     },
+     "QB|opp_PC3": {
+      "n": 544,
+      "r": 0.04374056683697786
+     },
+     "QB|opp_QB": {
+      "n": 544,
+      "r": 0.1306071070664027
+     },
+     "QB|opp_RUSH1": {
+      "n": 537,
+      "r": 0.05472344508439983
+     },
+     "RUSH1|opp_RUSH1": {
+      "n": 530,
+      "r": -0.07730998007354702
+     }
+    },
+    "2025": {
+     "OFFENSE|opp_OFFENSE": {
+      "n": 544,
+      "r": 0.24041122540294776
+     },
+     "PC1|opp_PC1": {
+      "n": 544,
+      "r": 0.13703612160770462
+     },
+     "PC1|opp_PC2": {
+      "n": 544,
+      "r": 0.07240695144459171
+     },
+     "QB|opp_PC1": {
+      "n": 544,
+      "r": 0.15076588475638134
+     },
+     "QB|opp_PC2": {
+      "n": 544,
+      "r": 0.12703944793170904
+     },
+     "QB|opp_PC3": {
+      "n": 544,
+      "r": 0.09924183449421768
+     },
+     "QB|opp_QB": {
+      "n": 544,
+      "r": 0.17363025847211205
+     },
+     "QB|opp_RUSH1": {
+      "n": 539,
+      "r": 0.12002286393133602
+     },
+     "RUSH1|opp_RUSH1": {
+      "n": 534,
+      "r": -0.036807633927627016
+     }
+    }
+   },
+   "same_team": {
+    "2024": {
+     "PC1|PC2": {
+      "n": 544,
+      "r": 0.20624326716485655
+     },
+     "PC1|PC3": {
+      "n": 544,
+      "r": 0.04386359966103451
+     },
+     "PC1|RUSH1": {
+      "n": 537,
+      "r": 0.027756196627819443
+     },
+     "PC2|PC3": {
+      "n": 544,
+      "r": 0.03929835445074777
+     },
+     "PC3|RUSH1": {
+      "n": 537,
+      "r": -0.16926665981001163
+     },
+     "QB|PC1": {
+      "n": 544,
+      "r": 0.4210402324644751
+     },
+     "QB|PC2": {
+      "n": 544,
+      "r": 0.4282195761468749
+     },
+     "QB|PC3": {
+      "n": 544,
+      "r": 0.18531174485411098
+     },
+     "QB|RUSH1": {
+      "n": 537,
+      "r": 0.11834177250719255
+     },
+     "QB|RUSH2": {
+      "n": 448,
+      "r": 0.13418079520233175
+     },
+     "RUSH1|RUSH2": {
+      "n": 448,
+      "r": 0.10958521800678159
+     }
+    },
+    "2025": {
+     "PC1|PC2": {
+      "n": 544,
+      "r": 0.17378868076000586
+     },
+     "PC1|PC3": {
+      "n": 544,
+      "r": 0.1098186872096227
+     },
+     "PC1|RUSH1": {
+      "n": 539,
+      "r": -0.03177048885454831
+     },
+     "PC2|PC3": {
+      "n": 544,
+      "r": 0.162724896873239
+     },
+     "PC3|RUSH1": {
+      "n": 539,
+      "r": -0.11639086550674922
+     },
+     "QB|PC1": {
+      "n": 544,
+      "r": 0.44457576904444257
+     },
+     "QB|PC2": {
+      "n": 544,
+      "r": 0.36115341660137906
+     },
+     "QB|PC3": {
+      "n": 544,
+      "r": 0.3803425741709799
+     },
+     "QB|RUSH1": {
+      "n": 539,
+      "r": 0.08248135236435229
+     },
+     "QB|RUSH2": {
+      "n": 460,
+      "r": 0.070573446648219
+     },
+     "RUSH1|RUSH2": {
+      "n": 460,
+      "r": 0.06984095025714607
+     }
+    }
+   },
+   "stack_p95": {
+    "2024": {
+     "QB+PC1": {
+      "actual_p95": 60.168,
+      "independent_p95": 56.84,
+      "inflation": 1.0585503166783954,
+      "members": [
+       "QB",
+       "PC1"
+      ],
+      "n": 544,
+      "n_resample_draws": 200000,
+      "seed": 20260919
+     },
+     "QB+PC1+PC2": {
+      "actual_p95": 79.39500000000001,
+      "independent_p95": 73.32,
+      "inflation": 1.082855973813421,
+      "members": [
+       "QB",
+       "PC1",
+       "PC2"
+      ],
+      "n": 544,
+      "n_resample_draws": 200000,
+      "seed": 20260919
+     },
+     "QB+PC1+PC2+PC3": {
+      "actual_p95": 95.88000000000002,
+      "independent_p95": 87.02099999999977,
+      "inflation": 1.1018030130658147,
+      "members": [
+       "QB",
+       "PC1",
+       "PC2",
+       "PC3"
+      ],
+      "n": 544,
+      "n_resample_draws": 200000,
+      "seed": 20260919
+     }
+    },
+    "2025": {
+     "QB+PC1": {
+      "actual_p95": 59.92,
+      "independent_p95": 56.06,
+      "inflation": 1.0688547984302532,
+      "members": [
+       "QB",
+       "PC1"
+      ],
+      "n": 544,
+      "n_resample_draws": 200000,
+      "seed": 20260919
+     },
+     "QB+PC1+PC2": {
+      "actual_p95": 76.79599999999999,
+      "independent_p95": 72.25999999999999,
+      "inflation": 1.062773318571824,
+      "members": [
+       "QB",
+       "PC1",
+       "PC2"
+      ],
+      "n": 544,
+      "n_resample_draws": 200000,
+      "seed": 20260919
+     },
+     "QB+PC1+PC2+PC3": {
+      "actual_p95": 92.961,
+      "independent_p95": 84.2,
+      "inflation": 1.1040498812351542,
+      "members": [
+       "QB",
+       "PC1",
+       "PC2",
+       "PC3"
+      ],
+      "n": 544,
+      "n_resample_draws": 200000,
+      "seed": 20260919
+     }
+    }
+   },
+   "tail_lift": {
+    "2024": {
+     "PC1|PC2": {
+      "lift": 1.3937190082644626,
+      "n": 544,
+      "p_a": 0.20220588235294118,
+      "p_b": 0.20220588235294118,
+      "p_joint": 0.05698529411764706
+     },
+     "QB|PC1": {
+      "lift": 1.8148457047539617,
+      "n": 544,
+      "p_a": 0.20036764705882354,
+      "p_b": 0.20220588235294118,
+      "p_joint": 0.07352941176470588
+     },
+     "QB|PC2": {
+      "lift": 2.223185988323603,
+      "n": 544,
+      "p_a": 0.20036764705882354,
+      "p_b": 0.20220588235294118,
+      "p_joint": 0.0900735294117647
+     },
+     "QB|PC3": {
+      "lift": 1.2589470204149102,
+      "n": 544,
+      "p_a": 0.20036764705882354,
+      "p_b": 0.20404411764705882,
+      "p_joint": 0.051470588235294115
+     },
+     "RUSH1|RUSH2": {
+      "lift": 1.1614814814814813,
+      "n": 448,
+      "p_a": 0.20089285714285715,
+      "p_b": 0.20089285714285715,
+      "p_joint": 0.046875
+     }
+    },
+    "2025": {
+     "PC1|PC2": {
+      "lift": 1.12405983965617,
+      "n": 544,
+      "p_a": 0.20404411764705882,
+      "p_b": 0.20036764705882354,
+      "p_joint": 0.04595588235294118
+     },
+     "QB|PC1": {
+      "lift": 1.9783453177948593,
+      "n": 544,
+      "p_a": 0.20036764705882354,
+      "p_b": 0.20404411764705882,
+      "p_joint": 0.08088235294117647
+     },
+     "QB|PC2": {
+      "lift": 1.9230704486154364,
+      "n": 544,
+      "p_a": 0.20036764705882354,
+      "p_b": 0.20036764705882354,
+      "p_joint": 0.07720588235294118
+     },
+     "QB|PC3": {
+      "lift": 1.7241034195162637,
+      "n": 544,
+      "p_a": 0.20036764705882354,
+      "p_b": 0.20220588235294118,
+      "p_joint": 0.06985294117647059
+     },
+     "RUSH1|RUSH2": {
+      "lift": 1.3157894736842104,
+      "n": 460,
+      "p_a": 0.20652173913043478,
+      "p_b": 0.2,
+      "p_joint": 0.05434782608695652
+     }
+    }
+   }
+  },
+  "realized_FD": {
+   "counts": {
+    "2024": {
+     "n_team_games": 544,
+     "role_collisions": {},
+     "variant": "sequential_removal",
+     "weeks": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18
+     ]
+    },
+    "2025": {
+     "n_team_games": 544,
+     "role_collisions": {},
+     "variant": "sequential_removal",
+     "weeks": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18
+     ]
+    }
+   },
+   "cross_team": {
+    "2024": {
+     "OFFENSE|opp_OFFENSE": {
+      "n": 544,
+      "r": 0.12919489327292383
+     },
+     "PC1|opp_PC1": {
+      "n": 544,
+      "r": 0.12169866380180658
+     },
+     "PC1|opp_PC2": {
+      "n": 544,
+      "r": 0.07442292899063005
+     },
+     "QB|opp_PC1": {
+      "n": 544,
+      "r": 0.11066380000883859
+     },
+     "QB|opp_PC2": {
+      "n": 544,
+      "r": 0.11286552575408618
+     },
+     "QB|opp_PC3": {
+      "n": 544,
+      "r": 0.049375860679526234
+     },
+     "QB|opp_QB": {
+      "n": 544,
+      "r": 0.12859049099968609
+     },
+     "QB|opp_RUSH1": {
+      "n": 537,
+      "r": 0.04257900538763221
+     },
+     "RUSH1|opp_RUSH1": {
+      "n": 530,
+      "r": -0.08204849796619133
+     }
+    },
+    "2025": {
+     "OFFENSE|opp_OFFENSE": {
+      "n": 544,
+      "r": 0.2231992886938795
+     },
+     "PC1|opp_PC1": {
+      "n": 544,
+      "r": 0.13467460002186393
+     },
+     "PC1|opp_PC2": {
+      "n": 544,
+      "r": 0.0636982207721328
+     },
+     "QB|opp_PC1": {
+      "n": 544,
+      "r": 0.14480404488370274
+     },
+     "QB|opp_PC2": {
+      "n": 544,
+      "r": 0.1188890866738516
+     },
+     "QB|opp_PC3": {
+      "n": 544,
+      "r": 0.09480895193505559
+     },
+     "QB|opp_QB": {
+      "n": 544,
+      "r": 0.1780337686719807
+     },
+     "QB|opp_RUSH1": {
+      "n": 539,
+      "r": 0.11274852255921594
+     },
+     "RUSH1|opp_RUSH1": {
+      "n": 534,
+      "r": -0.05719742941356142
+     }
+    }
+   },
+   "same_team": {
+    "2024": {
+     "PC1|PC2": {
+      "n": 544,
+      "r": 0.17505805225207616
+     },
+     "PC1|PC3": {
+      "n": 544,
+      "r": 0.038923588098960626
+     },
+     "PC1|RUSH1": {
+      "n": 537,
+      "r": 0.029841299413508066
+     },
+     "PC2|PC3": {
+      "n": 544,
+      "r": 0.02213454987461262
+     },
+     "PC3|RUSH1": {
+      "n": 537,
+      "r": -0.1771136108051007
+     },
+     "QB|PC1": {
+      "n": 544,
+      "r": 0.43291685160914495
+     },
+     "QB|PC2": {
+      "n": 544,
+      "r": 0.4231830753647099
+     },
+     "QB|PC3": {
+      "n": 544,
+      "r": 0.17711684922899806
+     },
+     "QB|RUSH1": {
+      "n": 537,
+      "r": 0.11463976863295935
+     },
+     "QB|RUSH2": {
+      "n": 448,
+      "r": 0.12647065445872394
+     },
+     "RUSH1|RUSH2": {
+      "n": 448,
+      "r": 0.11488329222629652
+     }
+    },
+    "2025": {
+     "PC1|PC2": {
+      "n": 544,
+      "r": 0.1526724667430341
+     },
+     "PC1|PC3": {
+      "n": 544,
+      "r": 0.08690183588436783
+     },
+     "PC1|RUSH1": {
+      "n": 539,
+      "r": -0.029965121772642874
+     },
+     "PC2|PC3": {
+      "n": 544,
+      "r": 0.1307164359015552
+     },
+     "PC3|RUSH1": {
+      "n": 539,
+      "r": -0.1136272154201411
+     },
+     "QB|PC1": {
+      "n": 544,
+      "r": 0.4443247604738572
+     },
+     "QB|PC2": {
+      "n": 544,
+      "r": 0.3521246791441143
+     },
+     "QB|PC3": {
+      "n": 544,
+      "r": 0.3678999495212203
+     },
+     "QB|RUSH1": {
+      "n": 539,
+      "r": 0.0836220496424121
+     },
+     "QB|RUSH2": {
+      "n": 460,
+      "r": 0.06682240358042404
+     },
+     "RUSH1|RUSH2": {
+      "n": 460,
+      "r": 0.080132664888325
+     }
+    }
+   }
+  }
+ },
+ "role_variant_sensitivity": {
+  "independent": {
+   "2024": {
+    "role_collisions": {
+     "PC1+RUSH1": {
+      "n": 11,
+      "pct": 2.15
+     },
+     "PC1+RUSH2": {
+      "n": 3,
+      "pct": 0.59
+     },
+     "PC2+RUSH1": {
+      "n": 46,
+      "pct": 8.98
+     },
+     "PC3+RUSH1": {
+      "n": 56,
+      "pct": 10.94
+     },
+     "PC3+RUSH2": {
+      "n": 6,
+      "pct": 1.17
+     },
+     "QB+RUSH1": {
+      "n": 2,
+      "pct": 0.39
+     },
+     "QB+RUSH2": {
+      "n": 134,
+      "pct": 26.17
+     }
+    },
+    "same_team": {
+     "PC1|PC2": {
+      "n": 512,
+      "r": -0.013655663937679367
+     },
+     "PC1|PC3": {
+      "n": 512,
+      "r": -0.027258496374949995
+     },
+     "PC1|RUSH1": {
+      "n": 512,
+      "r": 0.015542846711348883
+     },
+     "PC2|PC3": {
+      "n": 512,
+      "r": 0.0022688054433062663
+     },
+     "PC3|RUSH1": {
+      "n": 512,
+      "r": 0.11944610249242268
+     },
+     "QB|PC1": {
+      "n": 512,
+      "r": 0.20749583880950712
+     },
+     "QB|PC2": {
+      "n": 512,
+      "r": 0.25029630466538944
+     },
+     "QB|PC3": {
+      "n": 512,
+      "r": 0.10849983505824884
+     },
+     "QB|RUSH1": {
+      "n": 512,
+      "r": 0.12858172661315512
+     },
+     "QB|RUSH2": {
+      "n": 512,
+      "r": 0.43508021892073157
+     },
+     "RUSH1|RUSH2": {
+      "n": 512,
+      "r": -0.046725810571618814
+     }
+    }
+   },
+   "2025": {
+    "role_collisions": {
+     "PC1+RUSH1": {
+      "n": 18,
+      "pct": 3.52
+     },
+     "PC1+RUSH2": {
+      "n": 1,
+      "pct": 0.2
+     },
+     "PC2+RUSH1": {
+      "n": 22,
+      "pct": 4.3
+     },
+     "PC2+RUSH2": {
+      "n": 8,
+      "pct": 1.56
+     },
+     "PC3+RUSH1": {
+      "n": 76,
+      "pct": 14.84
+     },
+     "PC3+RUSH2": {
+      "n": 9,
+      "pct": 1.76
+     },
+     "QB+RUSH1": {
+      "n": 4,
+      "pct": 0.78
+     },
+     "QB+RUSH2": {
+      "n": 155,
+      "pct": 30.27
+     }
+    },
+    "same_team": {
+     "PC1|PC2": {
+      "n": 512,
+      "r": 0.07233429387786842
+     },
+     "PC1|PC3": {
+      "n": 512,
+      "r": 0.06517480508378341
+     },
+     "PC1|RUSH1": {
+      "n": 512,
+      "r": 0.10275403387164125
+     },
+     "PC2|PC3": {
+      "n": 512,
+      "r": 0.009835316916365673
+     },
+     "PC3|RUSH1": {
+      "n": 512,
+      "r": 0.27372368051579965
+     },
+     "QB|PC1": {
+      "n": 512,
+      "r": 0.16991926487368206
+     },
+     "QB|PC2": {
+      "n": 512,
+      "r": 0.1740149008769959
+     },
+     "QB|PC3": {
+      "n": 512,
+      "r": 0.1453960445065724
+     },
+     "QB|RUSH1": {
+      "n": 512,
+      "r": 0.07571741707621148
+     },
+     "QB|RUSH2": {
+      "n": 512,
+      "r": 0.46197729166066115
+     },
+     "RUSH1|RUSH2": {
+      "n": 512,
+      "r": -0.0480102280254893
+     }
+    }
+   }
+  },
+  "qb_excluded_only": {
+   "2024": {
+    "role_collisions": {
+     "PC1+RUSH1": {
+      "n": 11,
+      "pct": 2.15
+     },
+     "PC1+RUSH2": {
+      "n": 3,
+      "pct": 0.59
+     },
+     "PC2+RUSH1": {
+      "n": 46,
+      "pct": 8.98
+     },
+     "PC2+RUSH2": {
+      "n": 3,
+      "pct": 0.59
+     },
+     "PC3+RUSH1": {
+      "n": 56,
+      "pct": 10.94
+     },
+     "PC3+RUSH2": {
+      "n": 11,
+      "pct": 2.15
+     }
+    },
+    "same_team": {
+     "PC1|PC2": {
+      "n": 512,
+      "r": -0.013655663937679367
+     },
+     "PC1|PC3": {
+      "n": 512,
+      "r": -0.027258496374949995
+     },
+     "PC1|RUSH1": {
+      "n": 512,
+      "r": 0.015430729877600457
+     },
+     "PC2|PC3": {
+      "n": 512,
+      "r": 0.0022688054433062663
+     },
+     "PC3|RUSH1": {
+      "n": 512,
+      "r": 0.11950998499377473
+     },
+     "QB|PC1": {
+      "n": 512,
+      "r": 0.20749583880950712
+     },
+     "QB|PC2": {
+      "n": 512,
+      "r": 0.25029630466538944
+     },
+     "QB|PC3": {
+      "n": 512,
+      "r": 0.10849983505824884
+     },
+     "QB|RUSH1": {
+      "n": 512,
+      "r": 0.12841673692185757
+     },
+     "QB|RUSH2": {
+      "n": 511,
+      "r": 0.07042405595782557
+     },
+     "RUSH1|RUSH2": {
+      "n": 511,
+      "r": -0.1971657861171241
+     }
+    }
+   },
+   "2025": {
+    "role_collisions": {
+     "PC1+RUSH1": {
+      "n": 18,
+      "pct": 3.52
+     },
+     "PC1+RUSH2": {
+      "n": 2,
+      "pct": 0.39
+     },
+     "PC2+RUSH1": {
+      "n": 22,
+      "pct": 4.3
+     },
+     "PC2+RUSH2": {
+      "n": 8,
+      "pct": 1.56
+     },
+     "PC3+RUSH1": {
+      "n": 76,
+      "pct": 14.84
+     },
+     "PC3+RUSH2": {
+      "n": 13,
+      "pct": 2.54
+     }
+    },
+    "same_team": {
+     "PC1|PC2": {
+      "n": 512,
+      "r": 0.07233429387786842
+     },
+     "PC1|PC3": {
+      "n": 512,
+      "r": 0.06517480508378341
+     },
+     "PC1|RUSH1": {
+      "n": 512,
+      "r": 0.10004502653175124
+     },
+     "PC2|PC3": {
+      "n": 512,
+      "r": 0.009835316916365673
+     },
+     "PC3|RUSH1": {
+      "n": 512,
+      "r": 0.26946790825281197
+     },
+     "QB|PC1": {
+      "n": 512,
+      "r": 0.16991926487368206
+     },
+     "QB|PC2": {
+      "n": 512,
+      "r": 0.1740149008769959
+     },
+     "QB|PC3": {
+      "n": 512,
+      "r": 0.1453960445065724
+     },
+     "QB|RUSH1": {
+      "n": 512,
+      "r": 0.06948003218071444
+     },
+     "QB|RUSH2": {
+      "n": 511,
+      "r": 0.09308562322195424
+     },
+     "RUSH1|RUSH2": {
+      "n": 511,
+      "r": -0.19053303358218635
+     }
+    }
+   }
+  },
+  "sequential_removal": {
+   "2024": {
+    "role_collisions": {},
+    "same_team": {
+     "PC1|PC2": {
+      "n": 512,
+      "r": -0.013655663937679367
+     },
+     "PC1|PC3": {
+      "n": 512,
+      "r": -0.027258496374949995
+     },
+     "PC1|RUSH1": {
+      "n": 512,
+      "r": -0.014300685966608074
+     },
+     "PC2|PC3": {
+      "n": 512,
+      "r": 0.0022688054433062663
+     },
+     "PC3|RUSH1": {
+      "n": 512,
+      "r": -0.03785704571594182
+     },
+     "QB|PC1": {
+      "n": 512,
+      "r": 0.20749583880950712
+     },
+     "QB|PC2": {
+      "n": 512,
+      "r": 0.25029630466538944
+     },
+     "QB|PC3": {
+      "n": 512,
+      "r": 0.10849983505824884
+     },
+     "QB|RUSH1": {
+      "n": 512,
+      "r": 0.10350140308962577
+     },
+     "QB|RUSH2": {
+      "n": 501,
+      "r": 0.07827920196659321
+     },
+     "RUSH1|RUSH2": {
+      "n": 501,
+      "r": -0.11832263534624447
+     }
+    }
+   },
+   "2025": {
+    "role_collisions": {},
+    "same_team": {
+     "PC1|PC2": {
+      "n": 512,
+      "r": 0.07233429387786842
+     },
+     "PC1|PC3": {
+      "n": 512,
+      "r": 0.06517480508378341
+     },
+     "PC1|RUSH1": {
+      "n": 512,
+      "r": -0.045880540309578784
+     },
+     "PC2|PC3": {
+      "n": 512,
+      "r": 0.009835316916365673
+     },
+     "PC3|RUSH1": {
+      "n": 512,
+      "r": -0.020948439351406563
+     },
+     "QB|PC1": {
+      "n": 512,
+      "r": 0.16991926487368206
+     },
+     "QB|PC2": {
+      "n": 512,
+      "r": 0.1740149008769959
+     },
+     "QB|PC3": {
+      "n": 512,
+      "r": 0.1453960445065724
+     },
+     "QB|RUSH1": {
+      "n": 512,
+      "r": 0.1684455222972745
+     },
+     "QB|RUSH2": {
+      "n": 505,
+      "r": 0.012730906807938118
+     },
+     "RUSH1|RUSH2": {
+      "n": 505,
+      "r": -0.178975289109628
+     }
+    }
+   }
+  }
+ },
+ "scoring_source": {
+  "draftkings": "nfl-dfs-scoring-draftkings-1",
+  "fanduel": "nfl-dfs-scoring-fanduel-2",
+  "note": "RULES imported from the certified adapters; no coefficient is restated in this module"
+ },
+ "spec_version": "fullslate-external-reproduction-1",
+ "summary": {
+  "max_abs_difference": 0.3389,
+  "n_compared": 58,
+  "n_not_measured": 0,
+  "n_outside_tolerance": 41,
+  "n_within_tolerance": 17,
+  "worst": [
+   {
+    "abs_difference": 0.3389,
+    "pair": "PC3|RUSH1",
+    "published": 0.318,
+    "reproduced": -0.020948439351406563,
+    "season": 2025,
+    "within_tolerance": false
+   },
+   {
+    "abs_difference": 0.2759,
+    "pair": "PC3|RUSH1",
+    "published": 0.238,
+    "reproduced": -0.03785704571594182,
+    "season": 2024,
+    "within_tolerance": false
+   },
+   {
+    "abs_difference": 0.2079,
+    "pair": "PC1|RUSH1",
+    "published": 0.162,
+    "reproduced": -0.045880540309578784,
+    "season": 2025,
+    "within_tolerance": false
+   },
+   {
+    "abs_difference": 0.165,
+    "pair": "QB|PC1",
+    "published": 0.378,
+    "reproduced": 0.21301517153764896,
+    "season": 2024,
+    "within_tolerance": false
+   },
+   {
+    "abs_difference": 0.1605,
+    "pair": "QB|PC1",
+    "published": 0.368,
+    "reproduced": 0.20749583880950712,
+    "season": 2024,
+    "within_tolerance": false
+   },
+   {
+    "abs_difference": 0.144,
+    "pair": "QB|PC2",
+    "published": 0.318,
+    "reproduced": 0.1740149008769959,
+    "season": 2025,
+    "within_tolerance": false
+   }
+  ]
+ },
+ "tolerance": 0.02,
+ "tolerance_declared": "before running, as an absolute difference on a Pearson coefficient"
+}

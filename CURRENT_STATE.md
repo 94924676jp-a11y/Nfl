@@ -1,6 +1,6 @@
 # NFL — current state
 
-**Generated** by `nfl/tools/system_state.py` at 2026-09-18T20:38:52.267682+00:00 from `SYSTEM_STATE.json`. Do not hand-edit this file: regenerate it.
+**Generated** by `nfl/tools/system_state.py` at 2026-09-19T05:24:15.933883+00:00 from `SYSTEM_STATE.json`. Do not hand-edit this file: regenerate it.
 
 Every value under `measured` was computed by reading this repository at the timestamp above. Every value under `declared` was asserted by somebody and says who, when, and why it cannot be measured here. Do not quote one as the other.
 
@@ -11,30 +11,30 @@ Every value under `measured` was computed by reading this repository at the time
 |  |  |
 |---|---|
 | branch | `claude/nfl-greenfield-architecture-stsxmk` |
-| HEAD | `20468a5` — P9: OAS1 Week 2 is fitted, and the selection selected nothing |
-| HEAD committed | 2026-09-18T18:49:44+00:00 |
-| commits on branch | 879 |
-| source scope | 2 dirty source file(s) |
-| dirty tree entries (source and not) | 20 |
-| code_version | `20468a56f6e269ddd93a814e563f5cf0104f5643+src1[63a11d3f20432192]` |
-| python modules | 659 |
-| lines of python | 211,384 |
+| HEAD | `e6eeed5` — Correct two suite figures quoted in dc7ceed's message |
+| HEAD committed | 2026-09-18T20:40:52+00:00 |
+| commits on branch | 881 |
+| source scope | clean |
+| dirty tree entries (source and not) | 24 |
+| code_version | `e6eeed533b97488fb6a178b2ff1d71d1b5aaa672+src1[44aa01d03783de18]` |
+| python modules | 662 |
+| lines of python | 212,599 |
 
 ## 2. Test suite
 
-Source: `nfl/research/suite_attribution/SUITE_DIFF_p9_discovery.json`. measured at WORKING_TREE, HEAD is 20468a5. This total is not a statement about the tree as it stands.
+Source: `nfl/research/suite_attribution/SUITE_DIFF_discovery_fullslate.json`. measured at WORKING_TREE, HEAD is e6eeed5. This total is not a statement about the tree as it stands.
 
-|  | at WORKING_TREE | baseline 20468a5 | delta |
+|  | at WORKING_TREE | baseline e6eeed5 | delta |
 |---|---|---|---|
-| modules | 184 | 183 | 1 |
-| test functions | 1997 | 1987 | 10 |
-| checks | 10632 | 10583 | 49 |
-| failing checks | 61 | 63 | -2 |
+| modules | 185 | 184 | 1 |
+| test functions | 2011 | 1997 | 14 |
+| checks | 10725 | 10632 | 93 |
+| failing checks | 61 | 61 | 0 |
 | raised | 21 | 21 | 0 |
 | zero check functions | 0 | 0 | 0 |
 | blocked functions | 23 | 23 | 0 |
 
-Verdict: **SUITE FAIL**. Classification against the baseline: {'PRE_EXISTING': 133, 'RESOLVED_SINCE_BASELINE': 3}.
+Verdict: **SUITE FAIL**. Classification against the baseline: {'PRE_EXISTING': 133}.
 
 No item is newly introduced since the baseline.
 

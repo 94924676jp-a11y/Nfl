@@ -1550,3 +1550,83 @@ that is a useful result and must be recorded as one. Please send the captures,
 not an opinion about whether they will help.
 
 **Not asked for.** No sportsbook price, no projection, no ownership.
+
+---
+
+## 2026-09-19 — the four companion files of the full-slate DFS packet
+
+**Assigned, not blocked.** The report arrived; its four companion files did not.
+
+**What is needed.** From the same engagement that produced
+`nfl-fullslate-dfs-lineup-construction.pplx.md`:
+
+    measure_dfs_correlations.py
+    measure_tails.py
+    dfs_correlation_results.json
+    dfs_tail_results.json
+
+The report states at line 35 that these are "included alongside this report".
+Only the markdown reached this session. `EXTERNAL_PACKET_PROVENANCE.json`
+records the report's sha256 and the absence.
+
+**Why it matters, specifically.** The method was re-implemented from the
+report's prose and the **realized-label panel reproduces almost exactly** —
+QB with PC1 at 0.421 and 0.445 against their 0.420 and 0.438. The **ex-ante
+panel does not**: 0.207 and 0.170 against their 0.368 and 0.274. Because the
+realized half matches, the stat-line building, the scoring and the correlation
+code are all validated, and the disagreement is isolated to how prior-week role
+labels are formed — which the report's prose under-specifies.
+
+Two candidate causes were measured and both move the number the right way:
+role collisions (26.2% of team-games have the quarterback also ranked as the
+second carrier, which the prose's literal reading permits), and an ex-ante
+window that includes the current game (this closes most of the gap and lands
+QB with PC2 on +0.293 against their +0.296). **The scripts would settle which,
+in minutes.**
+
+**Not asked for.** No conclusions, no re-analysis, no opinion on who is right —
+just the four files as they were written.
+
+---
+
+## 2026-09-19 — official DK and FD Classic rules, for machine-readable site contracts
+
+**Assigned, not blocked.** The directive requires DraftKings Classic and
+FanDuel Classic rules to be **independently verified against the operators' own
+rules pages** and encoded as machine-readable contracts. This executor has no
+egress, so no contract is written in this pass — encoding rules from
+recollection and labelling them verified is the exact defect the FanDuel
+episode already cost, and a relayed value keeps relayed provenance.
+
+**What is needed, per site, from the operator's own page.** Please send the
+page bytes with URL, retrieval timestamp in UTC and sha256 — not a summary.
+
+**DraftKings Classic (NFL main slate).** Roster positions and counts; salary
+cap; FLEX eligibility; minimum games represented; minimum teams represented;
+full scoring for QB/RB/WR/TE/K if applicable; **DST scoring including the
+points-allowed ladder and every tier boundary**; late-swap behaviour.
+
+**FanDuel Classic (NFL main slate).** Roster positions and counts; salary cap;
+FLEX eligibility; minimum teams; **maximum players per team**; full scoring
+including the half-point reception and the fumble penalty; DST scoring in full;
+late-swap behaviour.
+
+**Do not infer one site's rules from the other**, and do not fill a gap from
+memory — an unverified field should come back marked unverified.
+
+**Why the DST ladder specifically.** There is no DST scoring adapter in this
+repository at all (`statline.NOT_SIMULATED`: "the engine produces no
+team-defence outputs at all"). That absence blocked five claims of the
+full-slate packet from being reproduced — every claim involving a defence,
+including QB with opposing DST and RB with DST — and it blocks any Classic
+lineup, which must field one.
+
+**What it unblocks.** Stage A of
+`nfl/research/dfs/fullslate/FULLSLATE_GAP_MAP_AND_ROADMAP.md`: the site
+contracts, the roster universe, the legal solver and the brute-force legality
+fixtures for both sites. Note that A7 — a full-slate joint football-world
+generator — remains the gating item and is football work, not DFS work, so
+these bytes do not by themselves enable an optimizer.
+
+**Not asked for.** No strategy content, no ownership data, no contest results,
+no optimizer settings.

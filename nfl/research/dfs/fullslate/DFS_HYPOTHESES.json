@@ -1,0 +1,76 @@
+{
+ "artifact": "DFS_RESEARCH_HYPOTHESES",
+ "hypotheses": [
+  {
+   "claim": "Prediction-time QB/pass-catcher correlation is materially lower than commonly cited realized-label estimates.",
+   "downstream_if_true": "any simulator calibrated to published correlation matrices over-states stack ceilings; the p95 inflation numbers would be upper bounds",
+   "evidence_now": "Our reproduction gives QB with PC1 at +0.207 (2024) and +0.170 (2025) under a strictly prior-week window with no role collisions, against the external report's own ex-ante +0.368 and +0.274 and against realized +0.421 and +0.445. The external ex-ante figures themselves appear to carry current-game information, so the gap to the commonly cited values is larger than the report states.",
+   "falsifier": "a strictly prediction-time panel, on seasons not used to develop this measurement, giving QB/PC1 within 0.05 of the realized-label value",
+   "id": "DFS-H1",
+   "measurable_here": true,
+   "name": "PREDICTION_TIME_QB_PASSCATCHER_CORRELATION",
+   "status": "REGISTERED"
+  },
+  {
+   "claim": "Current-game usage labels materially inflate estimated DFS correlations.",
+   "evidence_now": "Reproduced independently and in every pair tested: QB.PC1 +0.207 to +0.421 and +0.170 to +0.445; PC1.PC2 -0.014 to +0.206 and +0.072 to +0.174; RUSH1.RUSH2 -0.118 to +0.110 and -0.179 to +0.070. Inflation ranges +0.10 to +0.28.",
+   "falsifier": "a labelling scheme with no current-game information reproducing the realized-label correlations within Monte Carlo resolution",
+   "id": "DFS-H2",
+   "measurable_here": true,
+   "name": "REALIZED_ROLE_LABEL_LEAKAGE",
+   "note": "This is the closest to established of the six. It is still REGISTERED rather than SUPPORTED because it has been measured on the two seasons that motivated it and on no others.",
+   "status": "REGISTERED"
+  },
+  {
+   "claim": "Bring-back value may arise primarily through shared game-environment exposure rather than positive conditional cross-team correlation.",
+   "descriptive_not_predictive": "The tercile analysis cannot become a pre-lock feature. Conditioning on the outcome is how a defect is manufactured for any forecaster.",
+   "evidence_now": "Unconditional opposing-QB correlation reproduces positive (+0.053, +0.086). The report's within-tercile negative result is DESCRIPTIVE: it conditions on realized combined game points, which is not knowable before lock.",
+   "falsifier": "opposing-QB correlation remaining positive within strata of a prediction-time environment variable, which would locate the effect inside the game rather than between games",
+   "id": "DFS-H3",
+   "measurable_here": true,
+   "name": "BRINGBACK_GAME_LEVEL_FACTOR",
+   "prospective_experiment_required": "Re-run the conditioning on PREDICTION-TIME game-environment variables only -- the pregame state generator at nfl/research (T1-C), pace and pass-rate priors, and the team-volume layer. Sportsbook totals are a FORBIDDEN predictive input and may not be used as the conditioning variable, whatever their convenience.",
+   "status": "REGISTERED"
+  },
+  {
+   "claim": "Pairwise Pearson correlation is insufficient to rank tournament structures.",
+   "evidence_now": "Reproduced in kind: PC1.PC2 has Pearson -0.014 (2024) and joint-tail lift 1.022, while RUSH1.RUSH2 has Pearson -0.118 and tail lift 0.674. Ordering by Pearson and ordering by tail lift are not the same ordering. NOTE the specific external claim that RUSH1.RUSH2 dependence \"largely disappears in the tail\" does NOT reproduce: their 2025 lift is 0.996, ours is 0.735.",
+   "falsifier": "a tail-lift ranking that agrees with the Pearson ranking across a pre-registered set of structures",
+   "id": "DFS-H4",
+   "measurable_here": true,
+   "name": "TAIL_DEPENDENCE_DIFFERS_FROM_PEARSON",
+   "status": "REGISTERED"
+  },
+  {
+   "architectural_consequence_if_true": "one world generator feeds both sites; only scoring, roster rules and the optimizer differ. This is the single highest-leverage claim in the packet for build order.",
+   "claim": "DK and FD player dependence structures may be close enough to share football worlds while retaining separate scoring and site optimization.",
+   "evidence_now": "Reproduced: maximum absolute DK-minus-FD difference across every same-team pair and both seasons is 0.0153.",
+   "falsifier": "any pair whose DK and FD correlations differ by more than a pre-registered margin on unseen seasons",
+   "id": "DFS-H5",
+   "measurable_here": true,
+   "name": "DK_FD_DEPENDENCE_SIMILARITY",
+   "status": "REGISTERED"
+  },
+  {
+   "caution": "p95 inflation is not lineup value. It ignores salary, ownership, duplication and the payout curve, all of which penalise a fourth correlated player. A structure can raise a ceiling and lose money.",
+   "claim": "QB+2 may add meaningful joint-tail value over QB+1 while QB+3 shows diminishing marginal dependence value.",
+   "evidence_now": "PARTLY CONTRADICTED by our reproduction. p95 inflation over an independent resample: QB+1 +6.08%/+5.77%, QB+2 +6.63%/+6.00%, QB+3 +8.19%/+8.23%. The increment from QB+2 to QB+3 is LARGER than from QB+1 to QB+2 in both seasons, which is the opposite of diminishing.",
+   "falsifier": "on unseen seasons, the QB+3 increment exceeding the QB+2 increment again would falsify the diminishing-value form of this hypothesis",
+   "id": "DFS-H6",
+   "measurable_here": true,
+   "name": "STACK_SIZE_MARGINAL_VALUE",
+   "status": "REGISTERED"
+  }
+ ],
+ "none_is_policy": "None of these is production policy until prospectively validated. Registration is not endorsement.",
+ "register_scope": "RESEARCH hypotheses, deliberately NOT in nfl/production/assumptions/registry.py. That registry gates promotion of the football model; nothing in production depends on any of these, and adding them there would make the promotion gate answer for DFS research it does not govern.",
+ "registered_at_utc": "2026-09-19T04:43:19.247425+00:00",
+ "spec_version": "dfs-hypotheses-1",
+ "status_vocabulary": [
+  "REGISTERED",
+  "UNDER_TEST",
+  "SUPPORTED",
+  "FALSIFIED",
+  "WITHDRAWN"
+ ]
+}
