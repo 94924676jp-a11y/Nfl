@@ -31,7 +31,44 @@ from nfl.tools.gen_t90_schedule import (ANCHORED_KINDS, STEP_MINUTES,  # noqa: E
                                         WORKFLOW, cron_entries, render)
 from sportsplatform.governance.outcome import State  # noqa: E402
 
-SEASON, WEEK = 2026, 1
+def _upcoming_week(season=2026):
+    """The week the committed workflow must cover, DERIVED not pinned.
+
+    This constant used to read `SEASON, WEEK = 2026, 1` and it was still
+    reading week 1 on 2026-09-19, four days after week 2 began. The drift
+    test therefore regenerated week 1, compared it against a week-1 workflow,
+    and passed -- while the T-90 windows for the whole week-2 Sunday slate
+    did not exist. A drift test that pins the week it checks cannot detect
+    the week going stale, which is the drift that matters most.
+
+    "Upcoming" is the earliest week holding a game with no recorded result.
+    That is a property of the schedule snapshot, so it needs no wall clock
+    and two runs of this test on the same snapshot always agree.
+    """
+    import csv, glob, gzip, io, json, collections
+    rows = [json.loads(l) for l in
+            open(_REPO / 'nfl' / 'vintage_manifest.jsonl') if l.strip()]
+    sc = [r for r in rows if r.get('source') == 'schedules'
+          and r.get('state') == 'PASS'
+          and (r.get('value') or {}).get('blob')]
+    if not sc:
+        return season, None
+    blob = _REPO / sc[-1]['value']['blob']
+    raw = blob.read_bytes()
+    text = (gzip.decompress(raw) if str(blob).endswith('.gz') else raw)
+    unplayed = collections.defaultdict(int)
+    for r in csv.DictReader(io.StringIO(text.decode(errors='replace'))):
+        if str(r.get('season')) != str(season):
+            continue
+        if not str(r.get('result') or '').strip():
+            try:
+                unplayed[int(r['week'])] += 1
+            except (KeyError, ValueError):
+                pass
+    return season, (min(unplayed) if unplayed else None)
+
+
+SEASON, WEEK = _upcoming_week()
 PASSED = FAILED = BLOCKED = 0
 
 

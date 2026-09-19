@@ -1,8 +1,8 @@
 name: NFL T-90 anchored capture
 
 # GENERATED FILE -- do not hand-edit.
-#   nfl/tools/gen_t90_schedule.py --season 2026 --week 1 --write
-#   schedule identity: SCHED-2a2924d4966fbd3d
+#   nfl/tools/gen_t90_schedule.py --season 2026 --week 2 --write
+#   schedule identity: SCHED-5e2e890466c87284
 #
 # That identity is a digest over the (game, window) pairs themselves, not over
 # the snapshot file they were read from. A re-captured schedule with unchanged
@@ -25,28 +25,28 @@ name: NFL T-90 anchored capture
 
 on:
   schedule:
-    # 2026-09-09 22:50Z -> 00:10Z  (1 game: 2026_01_NE_SEA)
-    - cron: '50,55 22 9 9 *'
-    - cron: '*/5 23 9 9 *'
-    - cron: '0,5,10 0 10 9 *'
-    # 2026-09-10 23:05Z -> 00:25Z  (1 game: 2026_01_SF_LA)
-    - cron: '5,10,15,20,25,30,35,40,45,50,55 23 10 9 *'
-    - cron: '0,5,10,15,20,25 0 11 9 *'
-    # 2026-09-13 15:30Z -> 16:50Z  (8 games: 2026_01_ATL_PIT, 2026_01_BAL_IND, 2026_01_BUF_HOU, 2026_01_CHI_CAR, 2026_01_CLE_JAX, 2026_01_NO_DET, 2026_01_NYJ_TEN, 2026_01_TB_CIN)
-    - cron: '30,35,40,45,50,55 15 13 9 *'
-    - cron: '0,5,10,15,20,25,30,35,40,45,50 16 13 9 *'
-    # 2026-09-13 18:55Z -> 20:15Z  (4 games: 2026_01_ARI_LAC, 2026_01_GB_MIN, 2026_01_MIA_LV, 2026_01_WAS_PHI)
-    - cron: '55 18 13 9 *'
-    - cron: '*/5 19 13 9 *'
-    - cron: '0,5,10,15 20 13 9 *'
-    # 2026-09-13 22:50Z -> 00:10Z  (1 game: 2026_01_DAL_NYG)
-    - cron: '50,55 22 13 9 *'
-    - cron: '*/5 23 13 9 *'
-    - cron: '0,5,10 0 14 9 *'
-    # 2026-09-14 22:45Z -> 00:05Z  (1 game: 2026_01_DEN_KC)
-    - cron: '45,50,55 22 14 9 *'
-    - cron: '*/5 23 14 9 *'
-    - cron: '0,5 0 15 9 *'
+    # 2026-09-17 22:45Z -> 00:05Z  (1 game: 2026_02_DET_BUF)
+    - cron: '45,50,55 22 17 9 *'
+    - cron: '*/5 23 17 9 *'
+    - cron: '0,5 0 18 9 *'
+    # 2026-09-20 15:30Z -> 16:50Z  (8 games: 2026_02_CAR_ATL, 2026_02_CIN_HOU, 2026_02_CLE_TB, 2026_02_GB_NYJ, 2026_02_MIN_CHI, 2026_02_NO_BAL, 2026_02_PHI_TEN, 2026_02_PIT_NE)
+    - cron: '30,35,40,45,50,55 15 20 9 *'
+    - cron: '0,5,10,15,20,25,30,35,40,45,50 16 20 9 *'
+    # 2026-09-20 18:35Z -> 19:55Z  (2 games: 2026_02_JAX_DEN, 2026_02_LV_LAC)
+    - cron: '35,40,45,50,55 18 20 9 *'
+    - cron: '*/5 19 20 9 *'
+    # 2026-09-20 18:55Z -> 20:15Z  (3 games: 2026_02_MIA_SF, 2026_02_SEA_ARI, 2026_02_WAS_DAL)
+    - cron: '55 18 20 9 *'
+    - cron: '*/5 19 20 9 *'
+    - cron: '0,5,10,15 20 20 9 *'
+    # 2026-09-20 22:50Z -> 00:10Z  (1 game: 2026_02_IND_KC)
+    - cron: '50,55 22 20 9 *'
+    - cron: '*/5 23 20 9 *'
+    - cron: '0,5,10 0 21 9 *'
+    # 2026-09-21 22:45Z -> 00:05Z  (1 game: 2026_02_NYG_LA)
+    - cron: '45,50,55 22 21 9 *'
+    - cron: '*/5 23 21 9 *'
+    - cron: '0,5 0 22 9 *'
   workflow_dispatch:
 
 permissions:

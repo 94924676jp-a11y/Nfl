@@ -1697,9 +1697,19 @@ def build(args, fixtures: dict = None) -> dict:
                             'rushing_budget', 'carry_other_denominator',
                             'target_counts', 'carry_counts',
                             'rush_category_ownership'),
-        'conversion': ('receiving_conversion',),
+        # SC2's interception reservation is MAPPED HERE, not exempted. It
+        # runs immediately before `receiving_conversion` and feeds it the
+        # reserved picks, and it HALTS the engine when `deal_interceptions`
+        # does not return PASS -- so it is a layer whose failure must reach a
+        # stage. `conversion` is the stage it feeds.
+        'conversion': ('receiving_conversion', 'interception_reservation'),
+        # `events_within_opportunity` is the count-vs-opportunity bound over
+        # five declared pairs, among them `rushing_td <= carries`. It sits in
+        # the same block as `counts_are_counts` and `stat_contract`, it halts
+        # the engine on failure, and the 442 impossible cells it exists to
+        # fence are touchdowns. It belongs to `td_layer`.
         'td_layer': ('receiving_td', 'rushing_td', 'counts_are_counts',
-                     'stat_contract'),
+                     'stat_contract', 'events_within_opportunity'),
     }
     # Engine layers that no declared stage answers for. They are LISTED, not
     # ignored: a layer absent from both this set and STAGE_LAYERS is a layer
