@@ -1737,3 +1737,65 @@ change by weeks.
 
 No vendor data, no trial downloads, no scraped substitutes, and no
 recommendation about whether to license anything.
+
+---
+
+## 2026-09-19 — OUT-026: **TIME-CRITICAL.** The T-90 windows for tomorrow's slate do not exist on the branch that schedules them
+
+**Deadline: 15:30Z Sunday 2026-09-20**, which is the first window. After that the
+evidence for eight games is gone and cannot be reconstructed.
+
+### What I measured
+
+`.github/workflows/nfl-t90.yml` carries sixteen cron entries and every one is
+anchored to a **week-1** kickoff — 2026-09-09, 09-10, 09-13, 09-14. There is
+nothing for 09-17, nothing for 09-20 and nothing for 09-21. Consistent with
+that, `official_inactives` last reached state PASS at **2026-09-15T17:05:12Z**
+and carries 184 DEFERRED records since.
+
+The cause is in the drift test, not the generator: `test_t90_workflow.py` read
+`SEASON, WEEK = 2026, 1`, so it regenerated week 1, compared it to a week-1
+workflow and passed all week. Both are fixed on
+`claude/nfl-greenfield-architecture-stsxmk` at f9148b0 — the workflow is
+regenerated for week 2 and the test now derives the week from the schedule
+snapshot instead of pinning it.
+
+### What I need, and it is the whole request
+
+**Get `.github/workflows/nfl-t90.yml` from f9148b0 onto the branch GitHub
+schedules from** — the repository default branch. A scheduled workflow fires
+from the default branch's copy, so a correct file on a feature branch changes
+nothing about what runs tomorrow. I can commit it; I cannot merge it there.
+
+The six windows it declares:
+
+| window (UTC) | games |
+|---|---|
+| 2026-09-17 22:45 → 00:05 | DET@BUF (already passed) |
+| **2026-09-20 15:30 → 16:50** | **8: CAR@ATL, CIN@HOU, CLE@TB, GB@NYJ, MIN@CHI, NO@BAL, PHI@TEN, PIT@NE** |
+| **2026-09-20 18:35 → 19:55** | **2: JAX@DEN, LV@LAC** |
+| **2026-09-20 18:55 → 20:15** | **3: MIA@SF, SEA@ARI, WAS@DAL** |
+| **2026-09-20 22:50 → 00:10** | **1: IND@KC** |
+| 2026-09-21 22:45 → 00:05 | 1: NYG@LA |
+
+### What I verified before asking, so it is not a blind merge
+
+The regeneration was diffed against the committed file over everything except
+cron lines and their comments. The **only** other change is the two header
+lines (invocation and schedule identity, SCHED-2a2924d4966fbd3d →
+SCHED-5e2e890466c87284). The three D24-R0 safety steps and the capture-prod
+pin — `CAPTURE_BRANCH: capture-prod` and the explicit checkout ref — all
+survive. I checked those specifically because an earlier generator run had
+deleted safety steps once.
+
+### The fallback if the merge cannot happen in time
+
+A manual capture of the official inactives page inside each window, attributed
+to a game_id, is worth more than a missed window. The endpoint correction from
+OUT-016 applies. If neither is possible, say so and I will record the windows
+as closed unfilled rather than let them look covered.
+
+### Not asked for
+
+No parsing, no ingestion, no model change. The bytes and the merge, nothing
+else.

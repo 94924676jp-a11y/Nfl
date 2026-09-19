@@ -363,17 +363,64 @@ def resolve_kicker(doc, team: str, season: int, week: int) -> Outcome:
     from nfl.production.nonqb import participant_class as PC
     graded = [(r, PC.from_roster_status(
         (r.get('status') or '').strip().upper())) for r in rows]
-    eligible = [(r, c) for r, c in graded if PC.eligibility_state(c) == 'ELIGIBLE']
     classes = {(r.get('gsis_id') or ''): c for r, c in graded}
-    if len(eligible) != 1:
+
+    # COUNT PLAYERS, NOT ROWS. `rows` is every position-K row for this club in
+    # the source week ACROSS EVERY ROSTER VINTAGE, and the capture writes a
+    # new vintage whenever the upstream file changes -- eight of them by
+    # 2026-09-19. So one kicker appeared eight times and `len(eligible) != 1`
+    # was true for all 32 clubs, and every board in the 2026 week-2 slate
+    # rehearsal came out with no kicking line at all.
+    #
+    # The failure GREW WITH THE CAPTURE, which is why it was invisible when
+    # written: with one or two vintages committed it resolved correctly. The
+    # refusal message already carried the evidence that this was a counting
+    # error -- "ATL has 7 game-roster kicker(s) ... : {'00-0025565': ...}",
+    # seven kickers and one id -- and nothing read it until a full slate ran.
+    #
+    # The module's stated intent is unchanged and is what is now implemented:
+    # two eligible KICKERS is a fact about the roster and this refuses rather
+    # than choosing. Measured across all 32 clubs at 2026 week 2: exactly one
+    # eligible player each.
+    by_player = {}
+    for r, c in graded:
+        gid = (r.get('gsis_id') or '').strip()
+        if not gid:
+            continue
+        by_player.setdefault(gid, []).append((r, c))
+
+    # A PLAYER WHOSE VINTAGES DISAGREE ABOUT HIS ELIGIBILITY IS NOT
+    # DEDUPLICATED AWAY. Collapsing the vintages would silently pick one side
+    # of a real within-week roster event. It does not happen in the current
+    # data -- the one raw-status conflict at 2026 week 2 is BAL's Jake Moody,
+    # CUT in six vintages and DEV in one, and both grade to NOT_GAME_ROSTER --
+    # so this is a refusal with no live instance, written because the
+    # alternative silently loses the case it exists for.
+    split = {g: sorted({PC.eligibility_state(c) for _, c in v})
+             for g, v in by_player.items()}
+    conflicted = {g: st for g, st in split.items() if len(st) > 1}
+    if conflicted:
+        return Outcome.blocked(
+            'KICKER_ELIGIBILITY_DISAGREES_ACROSS_VINTAGES',
+            f'{team}: {len(conflicted)} position-K player(s) grade to more '
+            f'than one eligibility state within {season} week {src_week} '
+            f'-- {conflicted}. That is a roster event, not a duplicate, and '
+            f'picking a vintage here would bury it.',
+            cause=Cause.DATA, team=team, conflicted=conflicted,
+            roster_source_week=int(src_week))
+
+    eligible_ids = [g for g, st in split.items() if st == ['ELIGIBLE']]
+    if len(eligible_ids) != 1:
         return Outcome.blocked(
             'KICKER_NOT_UNIQUELY_DETERMINED',
-            f'{team} has {len(eligible)} game-roster kicker(s) in {season} '
-            f'week {src_week} out of {len(rows)} position-K row(s): '
+            f'{team} has {len(eligible_ids)} game-roster kicker(s) in '
+            f'{season} week {src_week}, from {len(by_player)} distinct '
+            f'position-K player(s) over {len(rows)} roster-vintage row(s): '
             f'{classes}. One is required and this will not pick one.',
             cause=Cause.DATA, team=team, classes=classes,
+            n_distinct_players=len(by_player), n_rows=len(rows),
             roster_source_week=int(src_week))
-    row, cls = eligible[0]
+    row, cls = by_player[eligible_ids[0]][0]
     gsis = (row.get('gsis_id') or '').strip()
     if not gsis:
         return Outcome.blocked(
