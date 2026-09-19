@@ -742,6 +742,17 @@ EDGES = (
     Edge('nfl/production/nonqb/qb_allocation.py', MANIFEST_PRODUCER,
          ('source', 'blob', 'content_sha256', 'retrieved_at'),
          'clocks the depth-chart blobs it selects among.'),
+    # Declared because the audit caught it on the day it was written. This
+    # module reads the manifest to report how OLD each source is, not to feed
+    # a projection -- but "it is only for reporting" is exactly the exemption
+    # the audit exists to refuse. Adding a reader is a declaration, not a glob.
+    Edge('nfl/production/capture_freshness.py', MANIFEST_PRODUCER,
+         ('source', 'state', 'code', 'capture_id', 'blob', 'sha256',
+          'sha256_is_of', 'retrieved_at', 'source_timestamp_header',
+          'published_at', 'http_status', 'n_bytes', 'effective_scope',
+          'game_id'),
+         'measures per-source capture age against a declared expiry, and '
+         'reports which tree it measured in. It feeds no projection.'),
     Edge('nfl/production/nonqb/vintage_selector.py', MANIFEST_PRODUCER,
          ('source', 'blob', 'content_sha256', 'retrieved_at',
           'effective_scope'),

@@ -1,24 +1,24 @@
 {
  "generated_by": "nfl/tools/agent_state.py",
- "generated_at": "2026-09-19T15:43:07.460683+00:00",
+ "generated_at": "2026-09-19T16:49:43.404251+00:00",
  "git": {
-  "head": "8b8555b1d25f586b1cb896be34a659ad463603f7",
-  "head_short": "8b8555b",
+  "head": "5413e65070c803478d9a50a5c02c6df479ea6092",
+  "head_short": "5413e65",
   "branch": "claude/nfl-greenfield-architecture-stsxmk",
-  "head_subject": "Ingest capture-prod: the capture was never dead, I was reading the wrong tree",
+  "head_subject": "The rehearsal wrote its result somewhere else, and a Sunday runbook",
   "remote_head": "NO_UPSTREAM",
   "dirty_source_files": [
-   "nfl/tools/discovery.py"
+   "nfl/production/pipeline.py"
   ],
   "worktree": {
-   "commit": "8b8555b1d25f586b1cb896be34a659ad463603f7",
-   "code_version": "8b8555b1d25f586b1cb896be34a659ad463603f7+src1[acbe5fcf4e5e461e]",
+   "commit": "5413e65070c803478d9a50a5c02c6df479ea6092",
+   "code_version": "5413e65070c803478d9a50a5c02c6df479ea6092+src1[9705988bea5d9008]",
    "source_scope_clean": false,
    "dirty_source_files": [
-    "nfl/tools/discovery.py"
+    "nfl/production/pipeline.py"
    ],
    "n_dirty_source_files": 1,
-   "n_dirty_tree_entries_observed": 13,
+   "n_dirty_tree_entries_observed": 15,
    "scope_note": "dirty_source_files is SOURCE scope only -- the .py files the identity contract hashes. A changed .md or .json is counted in n_dirty_tree_entries_observed and is not listed."
   },
   "is_clean": false
@@ -187,6 +187,83 @@
    "queue_position": 10
   },
   {
+   "id": "SUN-2",
+   "acceptance_criteria": [
+    "the six week-2 windows exist on the branch Actions schedules from",
+    "`official_inactives` records a PASS with a game_id inside each window."
+   ],
+   "priority": "1",
+   "status": "BLOCKED",
+   "dependencies": "none",
+   "description": "`.github/workflows/nfl-t90.yml` is regenerated for week 2 and correct on this branch. GitHub schedules workflows from the DEFAULT branch, so it changes nothing about what fires. It must be merged there before 2026-09-20T15:30Z.",
+   "blocker": "merging to the default branch is not available to this executor. Raised as OUT-026.",
+   "classification": "PRODUCTION_BLOCKER",
+   "ranking": "impact HIGH (the inactives file cannot be reconstructed after the window closes) x uncertainty LOW x measurability HIGH x EVI HIGH",
+   "queue_position": 11
+  },
+  {
+   "id": "SUN-3",
+   "acceptance_criteria": [
+    "a filled report for the three clubs, or a recorded finding that the league did not publish one",
+    "re-run shows non-QB coverage on all three games, or names why not."
+   ],
+   "priority": "4",
+   "status": "QUEUED",
+   "dependencies": "none",
+   "description": "Three clubs -- JAX, CHI and NYG -- have an incomplete official injury report in our capture, and the appearance layer correctly refuses a club with no filed report. Cost on the week-2 slate: JAX deferred (15 players), CHI deferred (12), and NYG@LA halted entirely at appearance because NYG's 7 rows carry `report_status` unfilled on every one. The layer is right; the gap is the bytes.",
+   "blocker": "the reports are outside this checkout.",
+   "classification": "PRODUCTION_BLOCKER",
+   "ranking": "impact HIGH (it is one whole game and two halves of the slate) x uncertainty LOW x measurability HIGH x EVI MEDIUM",
+   "queue_position": 12
+  },
+  {
+   "id": "SUN-4",
+   "acceptance_criteria": [
+    "the shortfall is attributed to a declared residual or named a leak",
+    "a game closing in 3% of draws is explained rather than averaged away",
+    "no accounting is \"repaired\" by widening a tolerance."
+   ],
+   "priority": "5",
+   "status": "QUEUED",
+   "dependencies": "none",
+   "description": "Opportunity conservation does not close exactly in every draw. Measured over the twelve fully covered week-2 games: targets close exactly in a median 81.2% of draws, carries in 77.5%, and the carry spread runs from 0.935 (PIT@NE) down to 0.030 (MIA@SF) and 0.035 (SEA@ARI). The discrepancy is ALWAYS a shortfall -- over-allocation fraction is exactly 0 across all 14 games and both identities -- so this is unassigned mass, not impossible football.",
+   "blocker": "none",
+   "classification": "MEASUREMENT_DEFECT",
+   "ranking": "impact MEDIUM-HIGH (every player share inherits it) x uncertainty MEDIUM x measurability HIGH x EVI MEDIUM-HIGH",
+   "queue_position": 13
+  },
+  {
+   "id": "SUN-5",
+   "acceptance_criteria": [
+    "a current-season denominator source with a declared clock, additive to the frozen panel exactly as CS1 is -- the frozen bytes are inside every sealed candidate's identity and must not move",
+    "`check_all` returns PASS for all three inputs at 2026 week 2",
+    "no threshold is loosened and `MAX_TRAIL_WEEKS` is not touched."
+   ],
+   "priority": "6",
+   "status": "BLOCKED",
+   "dependencies": "none",
+   "description": "`artifact_sealing` refuses every board of the 2026 season because `denom_panel.csv.gz` holds 3,230 rows from 202001 to 202518 and ZERO rows for 2026. `team_volume_history` reads the same file and is stale at 202518 against a required 202601; `denom_panel` is additionally BLOCKED-BY-DECLARATION on `CURRENT_SEASON_SOURCE_UNVERIFIED`. This is the single reason no Week-2 forecast can be sealed, under either configuration.",
+   "blocker": "no current-season source for the denominator panel has been established. `current_season_panel` did this for `panel_p3` and there is no sibling for the denominators.",
+   "classification": "PRODUCTION_BLOCKER",
+   "ranking": "impact HIGHEST (it is the gate between a simulation and a board) x uncertainty MEDIUM x measurability HIGH x EVI HIGHEST",
+   "queue_position": 14
+  },
+  {
+   "id": "SUN-6",
+   "acceptance_criteria": [
+    "the production implementation reproduces the research baseline on a fixture, checked rather than asserted",
+    "it is not a stub that returns PASS."
+   ],
+   "priority": "7",
+   "status": "QUEUED",
+   "dependencies": "SUN-5",
+   "description": "`feature_build` is DEFERRED[STAGE_DECLARED_UNIMPLEMENTED] on all 15 reachable games: the accepted research baseline \"prior-only, ordinal prefix cut\" has no production implementation. It is declared as debt rather than reported as a forecast, which is right, and it is the second of the two blockers.",
+   "blocker": "none technical; it is unwritten.",
+   "classification": "PRODUCTION_BLOCKER",
+   "ranking": "impact HIGH x uncertainty LOW x measurability HIGH x EVI HIGH",
+   "queue_position": 15
+  },
+  {
    "id": "DFS-FS1",
    "acceptance_criteria": [
     "role labels re-derive from a history truncated strictly before their own week, checked rather than asserted",
@@ -202,7 +279,7 @@
    "blocker": "none",
    "classification": "RESEARCH_BLOCKER",
    "ranking": "impact HIGH (it is the validation target the world generator will be judged against) x uncertainty MEDIUM x measurability HIGH x EVI HIGH",
-   "queue_position": 11
+   "queue_position": 16
   },
   {
    "id": "DFS-FS2",
@@ -216,7 +293,7 @@
    "description": "Compare simulated dependence against the FS1 panel \u2014 sign and ordering of Pearson and of tail lift, separately, scored with the same certified adapters.",
    "blocker": "no full-slate joint-world generator exists; the only sealed worlds are one single-game board. This is item A7 of the roadmap and it is football work, not DFS work.",
    "classification": "RESEARCH_BLOCKER",
-   "queue_position": 12
+   "queue_position": 17
   },
   {
    "id": "DISC-4",
@@ -232,7 +309,7 @@
    "blocker": "none \u2014 but it needs a new pre-registration, written before it is run, and it is a larger build than DISC-1 through DISC-3.",
    "classification": "PRODUCTION_BLOCKER",
    "ranking": "impact HIGH (calibration is the GATE in the two-stage bar) x uncertainty MEDIUM (the defect is characterised) x measurability HIGH x EVI HIGH, but it is ranked below DISC-1..3 because those are cheaper and one of them governs a CRITICAL assumption",
-   "queue_position": 13
+   "queue_position": 18
   },
   {
    "id": "DISC-5",
@@ -247,7 +324,7 @@
    "blocker": "none \u2014 parked as a group deliberately",
    "classification": "NONBLOCKING_TECH_DEBT",
    "ranking": "impact HIGH in aggregate x uncertainty MEDIUM x measurability MEDIUM x EVI MEDIUM. Parked because four items with one entry is not a plan, and splitting them before any is worked would be paperwork.",
-   "queue_position": 14
+   "queue_position": 19
   },
   {
    "id": "OAS1-TIEBREAK",
@@ -262,7 +339,7 @@
    "description": "The OAS1 pre-registration declares `garbage_time` as a search axis and declares no tie-break for it, in either the original five-axis order or the amended three-axis one. Executing the selection left all three rules tied after the declared axes. A tie-break must be declared before the Week-2 candidate has a single identity.",
    "blocker": "**owner decision, and it may not be taken by whoever has seen the scores.** The three variants' MAEs are now on the record (pass 1.159614 / 1.159721 / 1.159993 for A / none / B), so any rule written here is a selection rule written after seeing them \u2014 the exact thing the one-SE rule and the tie-break exist to prevent. The gap is pre-existing in the pre-registration, not introduced by amendment A1.",
    "classification": "RESEARCH_BLOCKER",
-   "queue_position": 15
+   "queue_position": 20
   },
   {
    "id": "OAS1-HURDLE",
@@ -277,7 +354,7 @@
    "description": "Evaluate OAS1 against B5 and B4 (pass) and B5 with B3 as `POST_HOC_STRONGEST_BASELINE` (rush), clustered by game and by team.",
    "blocker": "the captured 2026 play-by-play carries **week 1 only** \u2014 read from the file, 2,756 rows, zero at ordinal 202602. Scoring needs Week-2 plays, which are bytes outside this checkout. **Assigned, not blocked for both agents**: the request is in `docs/AGENT_OUTBOX.md`. The candidate's unit strengths are committed before those bytes arrive, which is the position a hurdle test should be run from.",
    "classification": "RESEARCH_BLOCKER",
-   "queue_position": 16
+   "queue_position": 21
   },
   {
    "id": "OAS1-FLAT-SURFACE",
@@ -292,7 +369,7 @@
    "description": "All 864 configurations fall within one standard error of the best in both classes, so the pre-registered tie-break does 100% of the selecting and the data does none of it. The SE in the one-SE rule is the standard error of the mean ACROSS FOLDS, and fold-to-fold variation swamps configuration-to-configuration variation by roughly twenty to one. A PAIRED comparison \u2014 same folds, differenced per configuration \u2014 would have a far smaller standard error and might discriminate.",
    "blocker": "none \u2014 but changing the rule is a change to the pre-registration and is a new pre-registration, not an edit to the old one.",
    "classification": "MEASUREMENT_DEFECT",
-   "queue_position": 17
+   "queue_position": 22
   },
   {
    "id": "A5",
@@ -307,7 +384,7 @@
    "dependencies": "assumption registry",
    "description": "Automatic Scientist \u2014 test `A5_TD_CONVERSION_PORTABILITY`.",
    "blocker": "none known",
-   "queue_position": 18
+   "queue_position": 23
   },
   {
    "id": "A4",
@@ -319,7 +396,7 @@
    "dependencies": "an identified estimand",
    "description": "`A4_STATIC_TEAM_VOLUME_SUFFICIENCY` is half-measured and deliberately DECLARED rather than TESTED.",
    "blocker": "the remaining estimand is not yet measurable. Completing it before it is measurable would manufacture a settlement, which is the failure mode the registry exists to prevent.",
-   "queue_position": 19
+   "queue_position": 24
   },
   {
    "id": "GAME_STATE",
@@ -331,7 +408,7 @@
    "dependencies": "P6, P7, and a lawful pregame-only state generator",
    "description": "The score/clock/game-state generative layer.",
    "blocker": "prerequisite work has not made it lawful. The T1-C pregame-only generator exists; what is missing is the evidence that a game-state layer may consume it without a postgame path.",
-   "queue_position": 20
+   "queue_position": 25
   },
   {
    "id": "OUT-022C",
@@ -344,7 +421,7 @@
    "dependencies": "an actual FanDuel slate salary export",
    "description": "FanDuel single-game salaries. Stays open until a real export exists.",
    "blocker": "no FanDuel salary export is in the repository and none can be fetched from here. **This is assigned, not blocked for both agents**: it needs bytes from outside this checkout. FanDuel provenance stays `VERIFIED_RULE_VALUE_RELAYED_SOURCE` and is not upgraded.",
-   "queue_position": 21
+   "queue_position": 26
   },
   {
    "id": "PRE-PORCELAIN",
@@ -358,7 +435,7 @@
    "description": "`sportsplatform/governance/commit_claim.py` calls `git status --porcelain` and is the sole remaining offender of `test_determinism_proof.test_v_only_the_identity_module_reads_working_tree_state`. Pre-existing at `e050090` and at every baseline since. Named here rather than left inside a 61-item failing total, because P7's own generators joined that list for an hour and the only reason it was noticed is that the list is printed.",
    "blocker": "none \u2014 deliberately low priority",
    "classification": "NONBLOCKING_TECH_DEBT",
-   "queue_position": 22
+   "queue_position": 27
   },
   {
    "id": "SUITE-PRE",
@@ -370,7 +447,7 @@
    "dependencies": "none",
    "description": "The 136 PRE_EXISTING suite failures classified at `7d46f39`. Not to be fixed merely to obtain a green suite; to be worked deliberately, by cause, when a cause is on the critical path.",
    "blocker": "none \u2014 deliberately low priority",
-   "queue_position": 23
+   "queue_position": 28
   }
  ],
  "queue_by_status": {
@@ -387,6 +464,9 @@
   "QUEUED": [
    "A3",
    "SUN-1",
+   "SUN-3",
+   "SUN-4",
+   "SUN-6",
    "DISC-4",
    "DISC-5",
    "OAS1-FLAT-SURFACE",
@@ -396,6 +476,8 @@
   ],
   "BLOCKED": [
    "DISC-2",
+   "SUN-2",
+   "SUN-5",
    "DFS-FS2",
    "OAS1-TIEBREAK",
    "OAS1-HURDLE",
@@ -408,6 +490,14 @@
   {
    "id": "DISC-2",
    "blocker": "**measured, not assumed \u2014 the conditioning variable has no contrast.** `A1_SUCCESSOR_FEASIBILITY.json`: the A1 cohort at 2026 week 2 is **59 players and none carries an Out, Doubtful or Questionable designation** (13 listed with no status, 46 not listed). The effect of designation is not estimable at any sample size. A second, independent block: the week-2 outcome is not captured either, so even a cohort with contrast could not be graded. Both need bytes from outside this checkout; the request for 2022\u20132025 injury captures is in `docs/AGENT_OUTBOX.md`. **ASSIGNED, not blocked for both agents.**"
+  },
+  {
+   "id": "SUN-2",
+   "blocker": "merging to the default branch is not available to this executor. Raised as OUT-026."
+  },
+  {
+   "id": "SUN-5",
+   "blocker": "no current-season source for the denominator panel has been established. `current_season_panel` did this for `panel_p3` and there is no sibling for the denominators."
   },
   {
    "id": "DFS-FS2",
@@ -436,8 +526,8 @@
  ],
  "next_three_eligible": [
   "SUN-1",
-  "A5",
-  "OAS1-FLAT-SURFACE"
+  "SUN-3",
+  "SUN-4"
  ],
  "most_recent_suite_classification": {
   "artifact": "nfl/research/suite_attribution/SUITE_ATTRIBUTION_e050090_3270829.json",

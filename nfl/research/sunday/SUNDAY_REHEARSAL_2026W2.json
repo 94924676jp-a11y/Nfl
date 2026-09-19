@@ -1,0 +1,1883 @@
+{
+ "artifact": "NFL_SUNDAY_REHEARSAL",
+ "spec_version": "nfl-sunday-rehearsal-1",
+ "generated_at_utc": "2026-09-19",
+ "season": 2026,
+ "week": 2,
+ "written_at": "2026-09-20T12:00:00Z",
+ "configurations_run": {
+  "candidate": "V1_CANDIDATE_R9_W1P_GSVUCY",
+  "baseline": "PRODUCTION_BASELINE"
+ },
+ "roster_source": "weekly_rosters.8bcf6ee6af93cc8b.reduced.csv.gz",
+ "n_roster_rows": 2528,
+ "headline": {
+  "games": 16,
+  "sealed": 0,
+  "refused": 16
+ },
+ "failure_inventory_candidate": [
+  {
+   "stage": "feature_build",
+   "code": "STAGE_DECLARED_UNIMPLEMENTED",
+   "games": 15
+  },
+  {
+   "stage": "artifact_sealing",
+   "code": "ARTIFACT_SEALING_FAILURE",
+   "games": 15
+  },
+  {
+   "stage": "capture_validation",
+   "code": "SOURCE_CHRONOLOGY_FAILURE",
+   "games": 1
+  }
+ ],
+ "failure_inventory_baseline": [
+  {
+   "stage": "feature_build",
+   "code": "STAGE_DECLARED_UNIMPLEMENTED",
+   "games": 15
+  },
+  {
+   "stage": "artifact_sealing",
+   "code": "ARTIFACT_SEALING_FAILURE",
+   "games": 15
+  },
+  {
+   "stage": "capture_validation",
+   "code": "SOURCE_CHRONOLOGY_FAILURE",
+   "games": 1
+  }
+ ],
+ "games": [
+  {
+   "game_id": "2026_02_CAR_ATL",
+   "run_id": "aa6cc2a1d5949d6f",
+   "status": "REFUSED",
+   "n_roster_players": 159,
+   "failures": [
+    {
+     "stage": "feature_build",
+     "code": "STAGE_DECLARED_UNIMPLEMENTED",
+     "category": "OTHER_NAMED"
+    },
+    {
+     "stage": "artifact_sealing",
+     "code": "ARTIFACT_SEALING_FAILURE",
+     "category": "PRODUCTION_ENTRYPOINT"
+    }
+   ],
+   "stages": {
+    "capture_validation": {
+     "state": "PASS",
+     "code": "INPUTS_VALIDATED"
+    },
+    "identity_resolution": {
+     "state": "PASS",
+     "code": "IDENTITY_RESOLVED"
+    },
+    "feature_build": {
+     "state": "DEFERRED",
+     "code": "STAGE_DECLARED_UNIMPLEMENTED"
+    },
+    "team_environment": {
+     "state": "PASS",
+     "code": "TEAM_ENVIRONMENT_OK"
+    },
+    "appearance": {
+     "state": "PASS",
+     "code": "APPEARANCE_OK"
+    },
+    "participation": {
+     "state": "PASS",
+     "code": "PARTICIPATION_OK"
+    },
+    "targets_carries": {
+     "state": "PASS",
+     "code": "TARGETS_CARRIES_OK"
+    },
+    "conversion": {
+     "state": "PASS",
+     "code": "CONVERSION_OK"
+    },
+    "td_layer": {
+     "state": "PASS",
+     "code": "TD_LAYER_OK"
+    },
+    "qb_layer": {
+     "state": "PASS",
+     "code": "QB_LAYER_OK"
+    },
+    "joint_reconciliation": {
+     "state": "PASS",
+     "code": "JOINT_RECONCILED"
+    },
+    "player_draws": {
+     "state": "PASS",
+     "code": "DRAWS_BUILT"
+    },
+    "scoring": {
+     "state": "PASS",
+     "code": "SCORED"
+    },
+    "artifact_sealing": {
+     "state": "BLOCKED",
+     "code": "ARTIFACT_SEALING_FAILURE"
+    }
+   },
+   "modelled_rows": {
+    "receiving": 24,
+    "rushing": 5,
+    "qb": 8,
+    "kicking": 2,
+    "dst": 0
+   },
+   "n_draws": 200,
+   "target_closure": {
+    "exact_frac": 0.86,
+    "over_frac": 0.0,
+    "mean_diff": -0.43,
+    "max_abs": 9.0
+   },
+   "carry_closure": {
+    "exact_frac": 0.925,
+    "over_frac": 0.0,
+    "mean_diff": -0.12,
+    "max_abs": 4.0
+   },
+   "stage_warnings": {
+    "team_environment": [
+     "known limitation: team_volume_is_near_unforecastable"
+    ],
+    "participation": [
+     "participation: known limitation: pass-snap participation is an upper bound on routes run"
+    ],
+    "conversion": [
+     "receiving_conversion: known limitation: RC1 SIGNAL_WEAK",
+     "receiving_conversion: governance: receiving_baseline_calibration CALIBRATION_DEFECT"
+    ],
+    "td_layer": [
+     "receiving_td: known limitation: TD2 pooled positional control, HOLD_TENTATIVE",
+     "rushing_td: known limitation: TD2 pooled positional control, HOLD_TENTATIVE"
+    ],
+    "qb_layer": [
+     "known limitation: multi_qb_over_prediction",
+     "known limitation: int_discrimination",
+     "known limitation: discrete_low_count_intervals"
+    ]
+   }
+  },
+  {
+   "game_id": "2026_02_CIN_HOU",
+   "run_id": "f5b5fe38d517d180",
+   "status": "REFUSED",
+   "n_roster_players": 156,
+   "failures": [
+    {
+     "stage": "feature_build",
+     "code": "STAGE_DECLARED_UNIMPLEMENTED",
+     "category": "OTHER_NAMED"
+    },
+    {
+     "stage": "artifact_sealing",
+     "code": "ARTIFACT_SEALING_FAILURE",
+     "category": "PRODUCTION_ENTRYPOINT"
+    }
+   ],
+   "stages": {
+    "capture_validation": {
+     "state": "PASS",
+     "code": "INPUTS_VALIDATED"
+    },
+    "identity_resolution": {
+     "state": "PASS",
+     "code": "IDENTITY_RESOLVED"
+    },
+    "feature_build": {
+     "state": "DEFERRED",
+     "code": "STAGE_DECLARED_UNIMPLEMENTED"
+    },
+    "team_environment": {
+     "state": "PASS",
+     "code": "TEAM_ENVIRONMENT_OK"
+    },
+    "appearance": {
+     "state": "PASS",
+     "code": "APPEARANCE_OK"
+    },
+    "participation": {
+     "state": "PASS",
+     "code": "PARTICIPATION_OK"
+    },
+    "targets_carries": {
+     "state": "PASS",
+     "code": "TARGETS_CARRIES_OK"
+    },
+    "conversion": {
+     "state": "PASS",
+     "code": "CONVERSION_OK"
+    },
+    "td_layer": {
+     "state": "PASS",
+     "code": "TD_LAYER_OK"
+    },
+    "qb_layer": {
+     "state": "PASS",
+     "code": "QB_LAYER_OK"
+    },
+    "joint_reconciliation": {
+     "state": "PASS",
+     "code": "JOINT_RECONCILED"
+    },
+    "player_draws": {
+     "state": "PASS",
+     "code": "DRAWS_BUILT"
+    },
+    "scoring": {
+     "state": "PASS",
+     "code": "SCORED"
+    },
+    "artifact_sealing": {
+     "state": "BLOCKED",
+     "code": "ARTIFACT_SEALING_FAILURE"
+    }
+   },
+   "modelled_rows": {
+    "receiving": 26,
+    "rushing": 6,
+    "qb": 4,
+    "kicking": 2,
+    "dst": 0
+   },
+   "n_draws": 200,
+   "target_closure": {
+    "exact_frac": 0.84,
+    "over_frac": 0.0,
+    "mean_diff": -0.75,
+    "max_abs": 14.0
+   },
+   "carry_closure": {
+    "exact_frac": 0.605,
+    "over_frac": 0.0,
+    "mean_diff": -0.535,
+    "max_abs": 5.0
+   },
+   "stage_warnings": {
+    "team_environment": [
+     "known limitation: team_volume_is_near_unforecastable"
+    ],
+    "participation": [
+     "participation: known limitation: pass-snap participation is an upper bound on routes run"
+    ],
+    "conversion": [
+     "receiving_conversion: known limitation: RC1 SIGNAL_WEAK",
+     "receiving_conversion: governance: receiving_baseline_calibration CALIBRATION_DEFECT"
+    ],
+    "td_layer": [
+     "receiving_td: known limitation: TD2 pooled positional control, HOLD_TENTATIVE",
+     "rushing_td: known limitation: TD2 pooled positional control, HOLD_TENTATIVE"
+    ],
+    "qb_layer": [
+     "known limitation: multi_qb_over_prediction",
+     "known limitation: int_discrimination",
+     "known limitation: discrete_low_count_intervals"
+    ]
+   }
+  },
+  {
+   "game_id": "2026_02_CLE_TB",
+   "run_id": "848e07dea085b9c2",
+   "status": "REFUSED",
+   "n_roster_players": 158,
+   "failures": [
+    {
+     "stage": "feature_build",
+     "code": "STAGE_DECLARED_UNIMPLEMENTED",
+     "category": "OTHER_NAMED"
+    },
+    {
+     "stage": "artifact_sealing",
+     "code": "ARTIFACT_SEALING_FAILURE",
+     "category": "PRODUCTION_ENTRYPOINT"
+    }
+   ],
+   "stages": {
+    "capture_validation": {
+     "state": "PASS",
+     "code": "INPUTS_VALIDATED"
+    },
+    "identity_resolution": {
+     "state": "PASS",
+     "code": "IDENTITY_RESOLVED"
+    },
+    "feature_build": {
+     "state": "DEFERRED",
+     "code": "STAGE_DECLARED_UNIMPLEMENTED"
+    },
+    "team_environment": {
+     "state": "PASS",
+     "code": "TEAM_ENVIRONMENT_OK"
+    },
+    "appearance": {
+     "state": "PASS",
+     "code": "APPEARANCE_OK"
+    },
+    "participation": {
+     "state": "PASS",
+     "code": "PARTICIPATION_OK"
+    },
+    "targets_carries": {
+     "state": "PASS",
+     "code": "TARGETS_CARRIES_OK"
+    },
+    "conversion": {
+     "state": "PASS",
+     "code": "CONVERSION_OK"
+    },
+    "td_layer": {
+     "state": "PASS",
+     "code": "TD_LAYER_OK"
+    },
+    "qb_layer": {
+     "state": "PASS",
+     "code": "QB_LAYER_OK"
+    },
+    "joint_reconciliation": {
+     "state": "PASS",
+     "code": "JOINT_RECONCILED"
+    },
+    "player_draws": {
+     "state": "PASS",
+     "code": "DRAWS_BUILT"
+    },
+    "scoring": {
+     "state": "PASS",
+     "code": "SCORED"
+    },
+    "artifact_sealing": {
+     "state": "BLOCKED",
+     "code": "ARTIFACT_SEALING_FAILURE"
+    }
+   },
+   "modelled_rows": {
+    "receiving": 27,
+    "rushing": 7,
+    "qb": 5,
+    "kicking": 2,
+    "dst": 0
+   },
+   "n_draws": 200,
+   "target_closure": {
+    "exact_frac": 0.825,
+    "over_frac": 0.0,
+    "mean_diff": -0.67,
+    "max_abs": 14.0
+   },
+   "carry_closure": {
+    "exact_frac": 0.39,
+    "over_frac": 0.0,
+    "mean_diff": -1.235,
+    "max_abs": 6.0
+   },
+   "stage_warnings": {
+    "team_environment": [
+     "known limitation: team_volume_is_near_unforecastable"
+    ],
+    "participation": [
+     "participation: known limitation: pass-snap participation is an upper bound on routes run"
+    ],
+    "conversion": [
+     "receiving_conversion: known limitation: RC1 SIGNAL_WEAK",
+     "receiving_conversion: governance: receiving_baseline_calibration CALIBRATION_DEFECT"
+    ],
+    "td_layer": [
+     "receiving_td: known limitation: TD2 pooled positional control, HOLD_TENTATIVE",
+     "rushing_td: known limitation: TD2 pooled positional control, HOLD_TENTATIVE"
+    ],
+    "qb_layer": [
+     "known limitation: multi_qb_over_prediction",
+     "known limitation: int_discrimination",
+     "known limitation: discrete_low_count_intervals"
+    ]
+   }
+  },
+  {
+   "game_id": "2026_02_DET_BUF",
+   "run_id": "45bf25346cc89fe2",
+   "status": "REFUSED",
+   "n_roster_players": 152,
+   "failures": [
+    {
+     "stage": "capture_validation",
+     "code": "SOURCE_CHRONOLOGY_FAILURE",
+     "category": "CHRONOLOGY"
+    }
+   ],
+   "stages": {
+    "capture_validation": {
+     "state": "BLOCKED",
+     "code": "SOURCE_CHRONOLOGY_FAILURE"
+    },
+    "identity_resolution": {
+     "state": "NOT_APPLICABLE",
+     "code": "STAGE_NOT_REACHED"
+    },
+    "feature_build": {
+     "state": "NOT_APPLICABLE",
+     "code": "STAGE_NOT_REACHED"
+    },
+    "team_environment": {
+     "state": "NOT_APPLICABLE",
+     "code": "STAGE_NOT_REACHED"
+    },
+    "appearance": {
+     "state": "NOT_APPLICABLE",
+     "code": "STAGE_NOT_REACHED"
+    },
+    "participation": {
+     "state": "NOT_APPLICABLE",
+     "code": "STAGE_NOT_REACHED"
+    },
+    "targets_carries": {
+     "state": "NOT_APPLICABLE",
+     "code": "STAGE_NOT_REACHED"
+    },
+    "conversion": {
+     "state": "NOT_APPLICABLE",
+     "code": "STAGE_NOT_REACHED"
+    },
+    "td_layer": {
+     "state": "NOT_APPLICABLE",
+     "code": "STAGE_NOT_REACHED"
+    },
+    "qb_layer": {
+     "state": "NOT_APPLICABLE",
+     "code": "STAGE_NOT_REACHED"
+    },
+    "joint_reconciliation": {
+     "state": "NOT_APPLICABLE",
+     "code": "STAGE_NOT_REACHED"
+    },
+    "player_draws": {
+     "state": "NOT_APPLICABLE",
+     "code": "STAGE_NOT_REACHED"
+    },
+    "scoring": {
+     "state": "NOT_APPLICABLE",
+     "code": "STAGE_NOT_REACHED"
+    },
+    "artifact_sealing": {
+     "state": "NOT_APPLICABLE",
+     "code": "STAGE_NOT_REACHED"
+    }
+   },
+   "modelled_rows": {
+    "error": "FileNotFoundError"
+   },
+   "stage_warnings": {}
+  },
+  {
+   "game_id": "2026_02_GB_NYJ",
+   "run_id": "adda53ed477f2951",
+   "status": "REFUSED",
+   "n_roster_players": 159,
+   "failures": [
+    {
+     "stage": "feature_build",
+     "code": "STAGE_DECLARED_UNIMPLEMENTED",
+     "category": "OTHER_NAMED"
+    },
+    {
+     "stage": "artifact_sealing",
+     "code": "ARTIFACT_SEALING_FAILURE",
+     "category": "PRODUCTION_ENTRYPOINT"
+    }
+   ],
+   "stages": {
+    "capture_validation": {
+     "state": "PASS",
+     "code": "INPUTS_VALIDATED"
+    },
+    "identity_resolution": {
+     "state": "PASS",
+     "code": "IDENTITY_RESOLVED"
+    },
+    "feature_build": {
+     "state": "DEFERRED",
+     "code": "STAGE_DECLARED_UNIMPLEMENTED"
+    },
+    "team_environment": {
+     "state": "PASS",
+     "code": "TEAM_ENVIRONMENT_OK"
+    },
+    "appearance": {
+     "state": "PASS",
+     "code": "APPEARANCE_OK"
+    },
+    "participation": {
+     "state": "PASS",
+     "code": "PARTICIPATION_OK"
+    },
+    "targets_carries": {
+     "state": "PASS",
+     "code": "TARGETS_CARRIES_OK"
+    },
+    "conversion": {
+     "state": "PASS",
+     "code": "CONVERSION_OK"
+    },
+    "td_layer": {
+     "state": "PASS",
+     "code": "TD_LAYER_OK"
+    },
+    "qb_layer": {
+     "state": "PASS",
+     "code": "QB_LAYER_OK"
+    },
+    "joint_reconciliation": {
+     "state": "PASS",
+     "code": "JOINT_RECONCILED"
+    },
+    "player_draws": {
+     "state": "PASS",
+     "code": "DRAWS_BUILT"
+    },
+    "scoring": {
+     "state": "PASS",
+     "code": "SCORED"
+    },
+    "artifact_sealing": {
+     "state": "BLOCKED",
+     "code": "ARTIFACT_SEALING_FAILURE"
+    }
+   },
+   "modelled_rows": {
+    "receiving": 25,
+    "rushing": 7,
+    "qb": 4,
+    "kicking": 2,
+    "dst": 0
+   },
+   "n_draws": 200,
+   "target_closure": {
+    "exact_frac": 0.765,
+    "over_frac": 0.0,
+    "mean_diff": -1.08,
+    "max_abs": 17.0
+   },
+   "carry_closure": {
+    "exact_frac": 0.8,
+    "over_frac": 0.0,
+    "mean_diff": -0.28,
+    "max_abs": 3.0
+   },
+   "stage_warnings": {
+    "identity_resolution": [
+     "1 player(s) excluded: no gsis_id"
+    ],
+    "team_environment": [
+     "known limitation: team_volume_is_near_unforecastable"
+    ],
+    "participation": [
+     "participation: known limitation: pass-snap participation is an upper bound on routes run"
+    ],
+    "conversion": [
+     "receiving_conversion: known limitation: RC1 SIGNAL_WEAK",
+     "receiving_conversion: governance: receiving_baseline_calibration CALIBRATION_DEFECT"
+    ],
+    "td_layer": [
+     "receiving_td: known limitation: TD2 pooled positional control, HOLD_TENTATIVE",
+     "rushing_td: known limitation: TD2 pooled positional control, HOLD_TENTATIVE"
+    ],
+    "qb_layer": [
+     "known limitation: multi_qb_over_prediction",
+     "known limitation: int_discrimination",
+     "known limitation: discrete_low_count_intervals"
+    ]
+   }
+  },
+  {
+   "game_id": "2026_02_IND_KC",
+   "run_id": "5b0d2b1669649b33",
+   "status": "REFUSED",
+   "n_roster_players": 154,
+   "failures": [
+    {
+     "stage": "feature_build",
+     "code": "STAGE_DECLARED_UNIMPLEMENTED",
+     "category": "OTHER_NAMED"
+    },
+    {
+     "stage": "artifact_sealing",
+     "code": "ARTIFACT_SEALING_FAILURE",
+     "category": "PRODUCTION_ENTRYPOINT"
+    }
+   ],
+   "stages": {
+    "capture_validation": {
+     "state": "PASS",
+     "code": "INPUTS_VALIDATED"
+    },
+    "identity_resolution": {
+     "state": "PASS",
+     "code": "IDENTITY_RESOLVED"
+    },
+    "feature_build": {
+     "state": "DEFERRED",
+     "code": "STAGE_DECLARED_UNIMPLEMENTED"
+    },
+    "team_environment": {
+     "state": "PASS",
+     "code": "TEAM_ENVIRONMENT_OK"
+    },
+    "appearance": {
+     "state": "PASS",
+     "code": "APPEARANCE_OK"
+    },
+    "participation": {
+     "state": "PASS",
+     "code": "PARTICIPATION_OK"
+    },
+    "targets_carries": {
+     "state": "PASS",
+     "code": "TARGETS_CARRIES_OK"
+    },
+    "conversion": {
+     "state": "PASS",
+     "code": "CONVERSION_OK"
+    },
+    "td_layer": {
+     "state": "PASS",
+     "code": "TD_LAYER_OK"
+    },
+    "qb_layer": {
+     "state": "PASS",
+     "code": "QB_LAYER_OK"
+    },
+    "joint_reconciliation": {
+     "state": "PASS",
+     "code": "JOINT_RECONCILED"
+    },
+    "player_draws": {
+     "state": "PASS",
+     "code": "DRAWS_BUILT"
+    },
+    "scoring": {
+     "state": "PASS",
+     "code": "SCORED"
+    },
+    "artifact_sealing": {
+     "state": "BLOCKED",
+     "code": "ARTIFACT_SEALING_FAILURE"
+    }
+   },
+   "modelled_rows": {
+    "receiving": 25,
+    "rushing": 7,
+    "qb": 6,
+    "kicking": 2,
+    "dst": 0
+   },
+   "n_draws": 200,
+   "target_closure": {
+    "exact_frac": 0.81,
+    "over_frac": 0.0,
+    "mean_diff": -0.65,
+    "max_abs": 14.0
+   },
+   "carry_closure": {
+    "exact_frac": 0.885,
+    "over_frac": 0.0,
+    "mean_diff": -0.2,
+    "max_abs": 6.0
+   },
+   "stage_warnings": {
+    "team_environment": [
+     "known limitation: team_volume_is_near_unforecastable"
+    ],
+    "participation": [
+     "participation: known limitation: pass-snap participation is an upper bound on routes run"
+    ],
+    "conversion": [
+     "receiving_conversion: known limitation: RC1 SIGNAL_WEAK",
+     "receiving_conversion: governance: receiving_baseline_calibration CALIBRATION_DEFECT"
+    ],
+    "td_layer": [
+     "receiving_td: known limitation: TD2 pooled positional control, HOLD_TENTATIVE",
+     "rushing_td: known limitation: TD2 pooled positional control, HOLD_TENTATIVE"
+    ],
+    "qb_layer": [
+     "known limitation: multi_qb_over_prediction",
+     "known limitation: int_discrimination",
+     "known limitation: discrete_low_count_intervals"
+    ]
+   }
+  },
+  {
+   "game_id": "2026_02_JAX_DEN",
+   "run_id": "3675e218a6d526ae",
+   "status": "REFUSED",
+   "n_roster_players": 158,
+   "failures": [
+    {
+     "stage": "feature_build",
+     "code": "STAGE_DECLARED_UNIMPLEMENTED",
+     "category": "OTHER_NAMED"
+    },
+    {
+     "stage": "artifact_sealing",
+     "code": "ARTIFACT_SEALING_FAILURE",
+     "category": "PRODUCTION_ENTRYPOINT"
+    }
+   ],
+   "stages": {
+    "capture_validation": {
+     "state": "PASS",
+     "code": "INPUTS_VALIDATED"
+    },
+    "identity_resolution": {
+     "state": "PASS",
+     "code": "IDENTITY_RESOLVED"
+    },
+    "feature_build": {
+     "state": "DEFERRED",
+     "code": "STAGE_DECLARED_UNIMPLEMENTED"
+    },
+    "team_environment": {
+     "state": "PASS",
+     "code": "TEAM_ENVIRONMENT_OK"
+    },
+    "appearance": {
+     "state": "PASS",
+     "code": "APPEARANCE_OK"
+    },
+    "participation": {
+     "state": "PASS",
+     "code": "PARTICIPATION_OK"
+    },
+    "targets_carries": {
+     "state": "PASS",
+     "code": "TARGETS_CARRIES_OK"
+    },
+    "conversion": {
+     "state": "PASS",
+     "code": "CONVERSION_OK"
+    },
+    "td_layer": {
+     "state": "PASS",
+     "code": "TD_LAYER_OK"
+    },
+    "qb_layer": {
+     "state": "PASS",
+     "code": "QB_LAYER_OK"
+    },
+    "joint_reconciliation": {
+     "state": "PASS",
+     "code": "JOINT_RECONCILED"
+    },
+    "player_draws": {
+     "state": "PASS",
+     "code": "DRAWS_BUILT"
+    },
+    "scoring": {
+     "state": "PASS",
+     "code": "SCORED"
+    },
+    "artifact_sealing": {
+     "state": "BLOCKED",
+     "code": "ARTIFACT_SEALING_FAILURE"
+    }
+   },
+   "modelled_rows": {
+    "receiving": 13,
+    "rushing": 4,
+    "qb": 5,
+    "kicking": 2,
+    "dst": 0
+   },
+   "n_draws": 200,
+   "target_closure": {
+    "exact_frac": 0.0,
+    "over_frac": 0.0,
+    "mean_diff": -31.209,
+    "max_abs": 49.99482595868663
+   },
+   "carry_closure": {
+    "exact_frac": 0.0,
+    "over_frac": 0.0,
+    "mean_diff": -23.215,
+    "max_abs": 45.0
+   },
+   "appearance_deferred_team": "JAX",
+   "appearance_deferred_players": 15,
+   "appearance_deferred_reason": "INJURY_REPORT_INCOMPLETE",
+   "stage_warnings": {
+    "team_environment": [
+     "known limitation: team_volume_is_near_unforecastable"
+    ],
+    "appearance": [
+     "appearance: APPEARANCE_TEAM_DEFERRED: JAX is INJURY_REPORT_INCOMPLETE and is deferred -- 15 player(s) carry no appearance estimate and no projection. The appearance layer ran on DEN only. a team with no filed report is NOT a team with no injuries. No appearance probability, no allocation and no projection is emitted for any player of a deferred team."
+    ],
+    "participation": [
+     "participation: known limitation: pass-snap participation is an upper bound on routes run"
+    ],
+    "conversion": [
+     "receiving_conversion: known limitation: RC1 SIGNAL_WEAK",
+     "receiving_conversion: governance: receiving_baseline_calibration CALIBRATION_DEFECT"
+    ],
+    "td_layer": [
+     "receiving_td: known limitation: TD2 pooled positional control, HOLD_TENTATIVE",
+     "rushing_td: known limitation: TD2 pooled positional control, HOLD_TENTATIVE"
+    ],
+    "qb_layer": [
+     "known limitation: multi_qb_over_prediction",
+     "known limitation: int_discrimination",
+     "known limitation: discrete_low_count_intervals"
+    ]
+   }
+  },
+  {
+   "game_id": "2026_02_LV_LAC",
+   "run_id": "7738ee1fbe878bcd",
+   "status": "REFUSED",
+   "n_roster_players": 156,
+   "failures": [
+    {
+     "stage": "feature_build",
+     "code": "STAGE_DECLARED_UNIMPLEMENTED",
+     "category": "OTHER_NAMED"
+    },
+    {
+     "stage": "artifact_sealing",
+     "code": "ARTIFACT_SEALING_FAILURE",
+     "category": "PRODUCTION_ENTRYPOINT"
+    }
+   ],
+   "stages": {
+    "capture_validation": {
+     "state": "PASS",
+     "code": "INPUTS_VALIDATED"
+    },
+    "identity_resolution": {
+     "state": "PASS",
+     "code": "IDENTITY_RESOLVED"
+    },
+    "feature_build": {
+     "state": "DEFERRED",
+     "code": "STAGE_DECLARED_UNIMPLEMENTED"
+    },
+    "team_environment": {
+     "state": "PASS",
+     "code": "TEAM_ENVIRONMENT_OK"
+    },
+    "appearance": {
+     "state": "PASS",
+     "code": "APPEARANCE_OK"
+    },
+    "participation": {
+     "state": "PASS",
+     "code": "PARTICIPATION_OK"
+    },
+    "targets_carries": {
+     "state": "PASS",
+     "code": "TARGETS_CARRIES_OK"
+    },
+    "conversion": {
+     "state": "PASS",
+     "code": "CONVERSION_OK"
+    },
+    "td_layer": {
+     "state": "PASS",
+     "code": "TD_LAYER_OK"
+    },
+    "qb_layer": {
+     "state": "PASS",
+     "code": "QB_LAYER_OK"
+    },
+    "joint_reconciliation": {
+     "state": "PASS",
+     "code": "JOINT_RECONCILED"
+    },
+    "player_draws": {
+     "state": "PASS",
+     "code": "DRAWS_BUILT"
+    },
+    "scoring": {
+     "state": "PASS",
+     "code": "SCORED"
+    },
+    "artifact_sealing": {
+     "state": "BLOCKED",
+     "code": "ARTIFACT_SEALING_FAILURE"
+    }
+   },
+   "modelled_rows": {
+    "receiving": 25,
+    "rushing": 8,
+    "qb": 5,
+    "kicking": 2,
+    "dst": 0
+   },
+   "n_draws": 200,
+   "target_closure": {
+    "exact_frac": 0.82,
+    "over_frac": 0.0,
+    "mean_diff": -0.705,
+    "max_abs": 15.0
+   },
+   "carry_closure": {
+    "exact_frac": 0.75,
+    "over_frac": 0.0,
+    "mean_diff": -0.455,
+    "max_abs": 22.0
+   },
+   "stage_warnings": {
+    "team_environment": [
+     "known limitation: team_volume_is_near_unforecastable"
+    ],
+    "participation": [
+     "participation: known limitation: pass-snap participation is an upper bound on routes run"
+    ],
+    "conversion": [
+     "receiving_conversion: known limitation: RC1 SIGNAL_WEAK",
+     "receiving_conversion: governance: receiving_baseline_calibration CALIBRATION_DEFECT"
+    ],
+    "td_layer": [
+     "receiving_td: known limitation: TD2 pooled positional control, HOLD_TENTATIVE",
+     "rushing_td: known limitation: TD2 pooled positional control, HOLD_TENTATIVE"
+    ],
+    "qb_layer": [
+     "known limitation: multi_qb_over_prediction",
+     "known limitation: int_discrimination",
+     "known limitation: discrete_low_count_intervals"
+    ]
+   }
+  },
+  {
+   "game_id": "2026_02_MIA_SF",
+   "run_id": "f7981676f19c23e1",
+   "status": "REFUSED",
+   "n_roster_players": 162,
+   "failures": [
+    {
+     "stage": "feature_build",
+     "code": "STAGE_DECLARED_UNIMPLEMENTED",
+     "category": "OTHER_NAMED"
+    },
+    {
+     "stage": "artifact_sealing",
+     "code": "ARTIFACT_SEALING_FAILURE",
+     "category": "PRODUCTION_ENTRYPOINT"
+    }
+   ],
+   "stages": {
+    "capture_validation": {
+     "state": "PASS",
+     "code": "INPUTS_VALIDATED"
+    },
+    "identity_resolution": {
+     "state": "PASS",
+     "code": "IDENTITY_RESOLVED"
+    },
+    "feature_build": {
+     "state": "DEFERRED",
+     "code": "STAGE_DECLARED_UNIMPLEMENTED"
+    },
+    "team_environment": {
+     "state": "PASS",
+     "code": "TEAM_ENVIRONMENT_OK"
+    },
+    "appearance": {
+     "state": "PASS",
+     "code": "APPEARANCE_OK"
+    },
+    "participation": {
+     "state": "PASS",
+     "code": "PARTICIPATION_OK"
+    },
+    "targets_carries": {
+     "state": "PASS",
+     "code": "TARGETS_CARRIES_OK"
+    },
+    "conversion": {
+     "state": "PASS",
+     "code": "CONVERSION_OK"
+    },
+    "td_layer": {
+     "state": "PASS",
+     "code": "TD_LAYER_OK"
+    },
+    "qb_layer": {
+     "state": "PASS",
+     "code": "QB_LAYER_OK"
+    },
+    "joint_reconciliation": {
+     "state": "PASS",
+     "code": "JOINT_RECONCILED"
+    },
+    "player_draws": {
+     "state": "PASS",
+     "code": "DRAWS_BUILT"
+    },
+    "scoring": {
+     "state": "PASS",
+     "code": "SCORED"
+    },
+    "artifact_sealing": {
+     "state": "BLOCKED",
+     "code": "ARTIFACT_SEALING_FAILURE"
+    }
+   },
+   "modelled_rows": {
+    "receiving": 27,
+    "rushing": 8,
+    "qb": 6,
+    "kicking": 2,
+    "dst": 0
+   },
+   "n_draws": 200,
+   "target_closure": {
+    "exact_frac": 0.815,
+    "over_frac": 0.0,
+    "mean_diff": -0.575,
+    "max_abs": 11.0
+   },
+   "carry_closure": {
+    "exact_frac": 0.03,
+    "over_frac": 0.0,
+    "mean_diff": -4.01,
+    "max_abs": 18.0
+   },
+   "stage_warnings": {
+    "team_environment": [
+     "known limitation: team_volume_is_near_unforecastable"
+    ],
+    "participation": [
+     "participation: known limitation: pass-snap participation is an upper bound on routes run"
+    ],
+    "conversion": [
+     "receiving_conversion: known limitation: RC1 SIGNAL_WEAK",
+     "receiving_conversion: governance: receiving_baseline_calibration CALIBRATION_DEFECT"
+    ],
+    "td_layer": [
+     "receiving_td: known limitation: TD2 pooled positional control, HOLD_TENTATIVE",
+     "rushing_td: known limitation: TD2 pooled positional control, HOLD_TENTATIVE"
+    ],
+    "qb_layer": [
+     "known limitation: multi_qb_over_prediction",
+     "known limitation: int_discrimination",
+     "known limitation: discrete_low_count_intervals"
+    ]
+   }
+  },
+  {
+   "game_id": "2026_02_MIN_CHI",
+   "run_id": "a8b0a819d159673e",
+   "status": "REFUSED",
+   "n_roster_players": 163,
+   "failures": [
+    {
+     "stage": "feature_build",
+     "code": "STAGE_DECLARED_UNIMPLEMENTED",
+     "category": "OTHER_NAMED"
+    },
+    {
+     "stage": "artifact_sealing",
+     "code": "ARTIFACT_SEALING_FAILURE",
+     "category": "PRODUCTION_ENTRYPOINT"
+    }
+   ],
+   "stages": {
+    "capture_validation": {
+     "state": "PASS",
+     "code": "INPUTS_VALIDATED"
+    },
+    "identity_resolution": {
+     "state": "PASS",
+     "code": "IDENTITY_RESOLVED"
+    },
+    "feature_build": {
+     "state": "DEFERRED",
+     "code": "STAGE_DECLARED_UNIMPLEMENTED"
+    },
+    "team_environment": {
+     "state": "PASS",
+     "code": "TEAM_ENVIRONMENT_OK"
+    },
+    "appearance": {
+     "state": "PASS",
+     "code": "APPEARANCE_OK"
+    },
+    "participation": {
+     "state": "PASS",
+     "code": "PARTICIPATION_OK"
+    },
+    "targets_carries": {
+     "state": "PASS",
+     "code": "TARGETS_CARRIES_OK"
+    },
+    "conversion": {
+     "state": "PASS",
+     "code": "CONVERSION_OK"
+    },
+    "td_layer": {
+     "state": "PASS",
+     "code": "TD_LAYER_OK"
+    },
+    "qb_layer": {
+     "state": "PASS",
+     "code": "QB_LAYER_OK"
+    },
+    "joint_reconciliation": {
+     "state": "PASS",
+     "code": "JOINT_RECONCILED"
+    },
+    "player_draws": {
+     "state": "PASS",
+     "code": "DRAWS_BUILT"
+    },
+    "scoring": {
+     "state": "PASS",
+     "code": "SCORED"
+    },
+    "artifact_sealing": {
+     "state": "BLOCKED",
+     "code": "ARTIFACT_SEALING_FAILURE"
+    }
+   },
+   "modelled_rows": {
+    "receiving": 13,
+    "rushing": 5,
+    "qb": 6,
+    "kicking": 2,
+    "dst": 0
+   },
+   "n_draws": 200,
+   "target_closure": {
+    "exact_frac": 0.0,
+    "over_frac": 0.0,
+    "mean_diff": -31.913,
+    "max_abs": 47.40102268108028
+   },
+   "carry_closure": {
+    "exact_frac": 0.0,
+    "over_frac": 0.0,
+    "mean_diff": -24.99,
+    "max_abs": 45.0
+   },
+   "appearance_deferred_team": "CHI",
+   "appearance_deferred_players": 12,
+   "appearance_deferred_reason": "INJURY_REPORT_INCOMPLETE",
+   "stage_warnings": {
+    "team_environment": [
+     "known limitation: team_volume_is_near_unforecastable"
+    ],
+    "appearance": [
+     "appearance: APPEARANCE_TEAM_DEFERRED: CHI is INJURY_REPORT_INCOMPLETE and is deferred -- 12 player(s) carry no appearance estimate and no projection. The appearance layer ran on MIN only. a team with no filed report is NOT a team with no injuries. No appearance probability, no allocation and no projection is emitted for any player of a deferred team."
+    ],
+    "participation": [
+     "participation: known limitation: pass-snap participation is an upper bound on routes run"
+    ],
+    "conversion": [
+     "receiving_conversion: known limitation: RC1 SIGNAL_WEAK",
+     "receiving_conversion: governance: receiving_baseline_calibration CALIBRATION_DEFECT"
+    ],
+    "td_layer": [
+     "receiving_td: known limitation: TD2 pooled positional control, HOLD_TENTATIVE",
+     "rushing_td: known limitation: TD2 pooled positional control, HOLD_TENTATIVE"
+    ],
+    "qb_layer": [
+     "known limitation: multi_qb_over_prediction",
+     "known limitation: int_discrimination",
+     "known limitation: discrete_low_count_intervals"
+    ]
+   }
+  },
+  {
+   "game_id": "2026_02_NO_BAL",
+   "run_id": "84fddc4c2a232ce7",
+   "status": "REFUSED",
+   "n_roster_players": 164,
+   "failures": [
+    {
+     "stage": "feature_build",
+     "code": "STAGE_DECLARED_UNIMPLEMENTED",
+     "category": "OTHER_NAMED"
+    },
+    {
+     "stage": "artifact_sealing",
+     "code": "ARTIFACT_SEALING_FAILURE",
+     "category": "PRODUCTION_ENTRYPOINT"
+    }
+   ],
+   "stages": {
+    "capture_validation": {
+     "state": "PASS",
+     "code": "INPUTS_VALIDATED"
+    },
+    "identity_resolution": {
+     "state": "PASS",
+     "code": "IDENTITY_RESOLVED"
+    },
+    "feature_build": {
+     "state": "DEFERRED",
+     "code": "STAGE_DECLARED_UNIMPLEMENTED"
+    },
+    "team_environment": {
+     "state": "PASS",
+     "code": "TEAM_ENVIRONMENT_OK"
+    },
+    "appearance": {
+     "state": "PASS",
+     "code": "APPEARANCE_OK"
+    },
+    "participation": {
+     "state": "PASS",
+     "code": "PARTICIPATION_OK"
+    },
+    "targets_carries": {
+     "state": "PASS",
+     "code": "TARGETS_CARRIES_OK"
+    },
+    "conversion": {
+     "state": "PASS",
+     "code": "CONVERSION_OK"
+    },
+    "td_layer": {
+     "state": "PASS",
+     "code": "TD_LAYER_OK"
+    },
+    "qb_layer": {
+     "state": "PASS",
+     "code": "QB_LAYER_OK"
+    },
+    "joint_reconciliation": {
+     "state": "PASS",
+     "code": "JOINT_RECONCILED"
+    },
+    "player_draws": {
+     "state": "PASS",
+     "code": "DRAWS_BUILT"
+    },
+    "scoring": {
+     "state": "PASS",
+     "code": "SCORED"
+    },
+    "artifact_sealing": {
+     "state": "BLOCKED",
+     "code": "ARTIFACT_SEALING_FAILURE"
+    }
+   },
+   "modelled_rows": {
+    "receiving": 25,
+    "rushing": 6,
+    "qb": 6,
+    "kicking": 2,
+    "dst": 0
+   },
+   "n_draws": 200,
+   "target_closure": {
+    "exact_frac": 0.785,
+    "over_frac": 0.0,
+    "mean_diff": -0.72,
+    "max_abs": 12.0
+   },
+   "carry_closure": {
+    "exact_frac": 0.185,
+    "over_frac": 0.0,
+    "mean_diff": -1.915,
+    "max_abs": 8.0
+   },
+   "stage_warnings": {
+    "team_environment": [
+     "known limitation: team_volume_is_near_unforecastable"
+    ],
+    "participation": [
+     "participation: known limitation: pass-snap participation is an upper bound on routes run"
+    ],
+    "conversion": [
+     "receiving_conversion: known limitation: RC1 SIGNAL_WEAK",
+     "receiving_conversion: governance: receiving_baseline_calibration CALIBRATION_DEFECT"
+    ],
+    "td_layer": [
+     "receiving_td: known limitation: TD2 pooled positional control, HOLD_TENTATIVE",
+     "rushing_td: known limitation: TD2 pooled positional control, HOLD_TENTATIVE"
+    ],
+    "qb_layer": [
+     "known limitation: multi_qb_over_prediction",
+     "known limitation: int_discrimination",
+     "known limitation: discrete_low_count_intervals"
+    ]
+   }
+  },
+  {
+   "game_id": "2026_02_NYG_LA",
+   "run_id": "e751205b0916b5f4",
+   "status": "REFUSED",
+   "n_roster_players": 156,
+   "failures": [
+    {
+     "stage": "feature_build",
+     "code": "STAGE_DECLARED_UNIMPLEMENTED",
+     "category": "OTHER_NAMED"
+    },
+    {
+     "stage": "artifact_sealing",
+     "code": "ARTIFACT_SEALING_FAILURE",
+     "category": "PRODUCTION_ENTRYPOINT"
+    }
+   ],
+   "stages": {
+    "capture_validation": {
+     "state": "PASS",
+     "code": "INPUTS_VALIDATED"
+    },
+    "identity_resolution": {
+     "state": "PASS",
+     "code": "IDENTITY_RESOLVED"
+    },
+    "feature_build": {
+     "state": "DEFERRED",
+     "code": "STAGE_DECLARED_UNIMPLEMENTED"
+    },
+    "team_environment": {
+     "state": "PASS",
+     "code": "TEAM_ENVIRONMENT_OK"
+    },
+    "appearance": {
+     "state": "NOT_APPLICABLE",
+     "code": "INJURY_REPORT_INCOMPLETE"
+    },
+    "participation": {
+     "state": "NOT_APPLICABLE",
+     "code": "BLOCKED_UPSTREAM_APPEARANCE"
+    },
+    "targets_carries": {
+     "state": "NOT_APPLICABLE",
+     "code": "BLOCKED_UPSTREAM_APPEARANCE"
+    },
+    "conversion": {
+     "state": "NOT_APPLICABLE",
+     "code": "BLOCKED_UPSTREAM_APPEARANCE"
+    },
+    "td_layer": {
+     "state": "NOT_APPLICABLE",
+     "code": "BLOCKED_UPSTREAM_APPEARANCE"
+    },
+    "qb_layer": {
+     "state": "PASS",
+     "code": "QB_LAYER_OK"
+    },
+    "joint_reconciliation": {
+     "state": "PASS",
+     "code": "JOINT_RECONCILED"
+    },
+    "player_draws": {
+     "state": "PASS",
+     "code": "DRAWS_BUILT"
+    },
+    "scoring": {
+     "state": "PASS",
+     "code": "SCORED"
+    },
+    "artifact_sealing": {
+     "state": "BLOCKED",
+     "code": "ARTIFACT_SEALING_FAILURE"
+    }
+   },
+   "modelled_rows": {
+    "receiving": 0,
+    "rushing": 0,
+    "qb": 5,
+    "kicking": 2,
+    "dst": 0
+   },
+   "n_draws": 200,
+   "appearance_halted_whole_game": "appearance: NYG has 7 row(s) but report_status is unfilled on every one. teammate_availability reads it, and an unfiled designation is not an absence of injury.",
+   "stage_warnings": {
+    "team_environment": [
+     "known limitation: team_volume_is_near_unforecastable"
+    ],
+    "qb_layer": [
+     "known limitation: multi_qb_over_prediction",
+     "known limitation: int_discrimination",
+     "known limitation: discrete_low_count_intervals"
+    ]
+   }
+  },
+  {
+   "game_id": "2026_02_PHI_TEN",
+   "run_id": "e324f0228c494382",
+   "status": "REFUSED",
+   "n_roster_players": 157,
+   "failures": [
+    {
+     "stage": "feature_build",
+     "code": "STAGE_DECLARED_UNIMPLEMENTED",
+     "category": "OTHER_NAMED"
+    },
+    {
+     "stage": "artifact_sealing",
+     "code": "ARTIFACT_SEALING_FAILURE",
+     "category": "PRODUCTION_ENTRYPOINT"
+    }
+   ],
+   "stages": {
+    "capture_validation": {
+     "state": "PASS",
+     "code": "INPUTS_VALIDATED"
+    },
+    "identity_resolution": {
+     "state": "PASS",
+     "code": "IDENTITY_RESOLVED"
+    },
+    "feature_build": {
+     "state": "DEFERRED",
+     "code": "STAGE_DECLARED_UNIMPLEMENTED"
+    },
+    "team_environment": {
+     "state": "PASS",
+     "code": "TEAM_ENVIRONMENT_OK"
+    },
+    "appearance": {
+     "state": "PASS",
+     "code": "APPEARANCE_OK"
+    },
+    "participation": {
+     "state": "PASS",
+     "code": "PARTICIPATION_OK"
+    },
+    "targets_carries": {
+     "state": "PASS",
+     "code": "TARGETS_CARRIES_OK"
+    },
+    "conversion": {
+     "state": "PASS",
+     "code": "CONVERSION_OK"
+    },
+    "td_layer": {
+     "state": "PASS",
+     "code": "TD_LAYER_OK"
+    },
+    "qb_layer": {
+     "state": "PASS",
+     "code": "QB_LAYER_OK"
+    },
+    "joint_reconciliation": {
+     "state": "PASS",
+     "code": "JOINT_RECONCILED"
+    },
+    "player_draws": {
+     "state": "PASS",
+     "code": "DRAWS_BUILT"
+    },
+    "scoring": {
+     "state": "PASS",
+     "code": "SCORED"
+    },
+    "artifact_sealing": {
+     "state": "BLOCKED",
+     "code": "ARTIFACT_SEALING_FAILURE"
+    }
+   },
+   "modelled_rows": {
+    "receiving": 26,
+    "rushing": 7,
+    "qb": 6,
+    "kicking": 2,
+    "dst": 0
+   },
+   "n_draws": 200,
+   "target_closure": {
+    "exact_frac": 0.78,
+    "over_frac": 0.0,
+    "mean_diff": -0.765,
+    "max_abs": 20.0
+   },
+   "carry_closure": {
+    "exact_frac": 0.9,
+    "over_frac": 0.0,
+    "mean_diff": -0.17,
+    "max_abs": 5.0
+   },
+   "stage_warnings": {
+    "team_environment": [
+     "known limitation: team_volume_is_near_unforecastable"
+    ],
+    "participation": [
+     "participation: known limitation: pass-snap participation is an upper bound on routes run"
+    ],
+    "conversion": [
+     "receiving_conversion: known limitation: RC1 SIGNAL_WEAK",
+     "receiving_conversion: governance: receiving_baseline_calibration CALIBRATION_DEFECT"
+    ],
+    "td_layer": [
+     "receiving_td: known limitation: TD2 pooled positional control, HOLD_TENTATIVE",
+     "rushing_td: known limitation: TD2 pooled positional control, HOLD_TENTATIVE"
+    ],
+    "qb_layer": [
+     "known limitation: multi_qb_over_prediction",
+     "known limitation: int_discrimination",
+     "known limitation: discrete_low_count_intervals"
+    ]
+   }
+  },
+  {
+   "game_id": "2026_02_PIT_NE",
+   "run_id": "77228188e0d1d992",
+   "status": "REFUSED",
+   "n_roster_players": 157,
+   "failures": [
+    {
+     "stage": "feature_build",
+     "code": "STAGE_DECLARED_UNIMPLEMENTED",
+     "category": "OTHER_NAMED"
+    },
+    {
+     "stage": "artifact_sealing",
+     "code": "ARTIFACT_SEALING_FAILURE",
+     "category": "PRODUCTION_ENTRYPOINT"
+    }
+   ],
+   "stages": {
+    "capture_validation": {
+     "state": "PASS",
+     "code": "INPUTS_VALIDATED"
+    },
+    "identity_resolution": {
+     "state": "PASS",
+     "code": "IDENTITY_RESOLVED"
+    },
+    "feature_build": {
+     "state": "DEFERRED",
+     "code": "STAGE_DECLARED_UNIMPLEMENTED"
+    },
+    "team_environment": {
+     "state": "PASS",
+     "code": "TEAM_ENVIRONMENT_OK"
+    },
+    "appearance": {
+     "state": "PASS",
+     "code": "APPEARANCE_OK"
+    },
+    "participation": {
+     "state": "PASS",
+     "code": "PARTICIPATION_OK"
+    },
+    "targets_carries": {
+     "state": "PASS",
+     "code": "TARGETS_CARRIES_OK"
+    },
+    "conversion": {
+     "state": "PASS",
+     "code": "CONVERSION_OK"
+    },
+    "td_layer": {
+     "state": "PASS",
+     "code": "TD_LAYER_OK"
+    },
+    "qb_layer": {
+     "state": "PASS",
+     "code": "QB_LAYER_OK"
+    },
+    "joint_reconciliation": {
+     "state": "PASS",
+     "code": "JOINT_RECONCILED"
+    },
+    "player_draws": {
+     "state": "PASS",
+     "code": "DRAWS_BUILT"
+    },
+    "scoring": {
+     "state": "PASS",
+     "code": "SCORED"
+    },
+    "artifact_sealing": {
+     "state": "BLOCKED",
+     "code": "ARTIFACT_SEALING_FAILURE"
+    }
+   },
+   "modelled_rows": {
+    "receiving": 26,
+    "rushing": 7,
+    "qb": 7,
+    "kicking": 2,
+    "dst": 0
+   },
+   "n_draws": 200,
+   "target_closure": {
+    "exact_frac": 0.81,
+    "over_frac": 0.0,
+    "mean_diff": -0.65,
+    "max_abs": 11.0
+   },
+   "carry_closure": {
+    "exact_frac": 0.935,
+    "over_frac": 0.0,
+    "mean_diff": -0.145,
+    "max_abs": 6.0
+   },
+   "stage_warnings": {
+    "team_environment": [
+     "known limitation: team_volume_is_near_unforecastable"
+    ],
+    "participation": [
+     "participation: known limitation: pass-snap participation is an upper bound on routes run"
+    ],
+    "conversion": [
+     "receiving_conversion: known limitation: RC1 SIGNAL_WEAK",
+     "receiving_conversion: governance: receiving_baseline_calibration CALIBRATION_DEFECT"
+    ],
+    "td_layer": [
+     "receiving_td: known limitation: TD2 pooled positional control, HOLD_TENTATIVE",
+     "rushing_td: known limitation: TD2 pooled positional control, HOLD_TENTATIVE"
+    ],
+    "qb_layer": [
+     "known limitation: multi_qb_over_prediction",
+     "known limitation: int_discrimination",
+     "known limitation: discrete_low_count_intervals"
+    ]
+   }
+  },
+  {
+   "game_id": "2026_02_SEA_ARI",
+   "run_id": "ff5225bc6f79f0e5",
+   "status": "REFUSED",
+   "n_roster_players": 157,
+   "failures": [
+    {
+     "stage": "feature_build",
+     "code": "STAGE_DECLARED_UNIMPLEMENTED",
+     "category": "OTHER_NAMED"
+    },
+    {
+     "stage": "artifact_sealing",
+     "code": "ARTIFACT_SEALING_FAILURE",
+     "category": "PRODUCTION_ENTRYPOINT"
+    }
+   ],
+   "stages": {
+    "capture_validation": {
+     "state": "PASS",
+     "code": "INPUTS_VALIDATED"
+    },
+    "identity_resolution": {
+     "state": "PASS",
+     "code": "IDENTITY_RESOLVED"
+    },
+    "feature_build": {
+     "state": "DEFERRED",
+     "code": "STAGE_DECLARED_UNIMPLEMENTED"
+    },
+    "team_environment": {
+     "state": "PASS",
+     "code": "TEAM_ENVIRONMENT_OK"
+    },
+    "appearance": {
+     "state": "PASS",
+     "code": "APPEARANCE_OK"
+    },
+    "participation": {
+     "state": "PASS",
+     "code": "PARTICIPATION_OK"
+    },
+    "targets_carries": {
+     "state": "PASS",
+     "code": "TARGETS_CARRIES_OK"
+    },
+    "conversion": {
+     "state": "PASS",
+     "code": "CONVERSION_OK"
+    },
+    "td_layer": {
+     "state": "PASS",
+     "code": "TD_LAYER_OK"
+    },
+    "qb_layer": {
+     "state": "PASS",
+     "code": "QB_LAYER_OK"
+    },
+    "joint_reconciliation": {
+     "state": "PASS",
+     "code": "JOINT_RECONCILED"
+    },
+    "player_draws": {
+     "state": "PASS",
+     "code": "DRAWS_BUILT"
+    },
+    "scoring": {
+     "state": "PASS",
+     "code": "SCORED"
+    },
+    "artifact_sealing": {
+     "state": "BLOCKED",
+     "code": "ARTIFACT_SEALING_FAILURE"
+    }
+   },
+   "modelled_rows": {
+    "receiving": 26,
+    "rushing": 7,
+    "qb": 6,
+    "kicking": 2,
+    "dst": 0
+   },
+   "n_draws": 200,
+   "target_closure": {
+    "exact_frac": 0.855,
+    "over_frac": 0.0,
+    "mean_diff": -0.53,
+    "max_abs": 13.0
+   },
+   "carry_closure": {
+    "exact_frac": 0.035,
+    "over_frac": 0.0,
+    "mean_diff": -3.97,
+    "max_abs": 13.0
+   },
+   "stage_warnings": {
+    "team_environment": [
+     "known limitation: team_volume_is_near_unforecastable"
+    ],
+    "participation": [
+     "participation: known limitation: pass-snap participation is an upper bound on routes run"
+    ],
+    "conversion": [
+     "receiving_conversion: known limitation: RC1 SIGNAL_WEAK",
+     "receiving_conversion: governance: receiving_baseline_calibration CALIBRATION_DEFECT"
+    ],
+    "td_layer": [
+     "receiving_td: known limitation: TD2 pooled positional control, HOLD_TENTATIVE",
+     "rushing_td: known limitation: TD2 pooled positional control, HOLD_TENTATIVE"
+    ],
+    "qb_layer": [
+     "known limitation: multi_qb_over_prediction",
+     "known limitation: int_discrimination",
+     "known limitation: discrete_low_count_intervals"
+    ]
+   }
+  },
+  {
+   "game_id": "2026_02_WAS_DAL",
+   "run_id": "cdb26fec2fb8a678",
+   "status": "REFUSED",
+   "n_roster_players": 160,
+   "failures": [
+    {
+     "stage": "feature_build",
+     "code": "STAGE_DECLARED_UNIMPLEMENTED",
+     "category": "OTHER_NAMED"
+    },
+    {
+     "stage": "artifact_sealing",
+     "code": "ARTIFACT_SEALING_FAILURE",
+     "category": "PRODUCTION_ENTRYPOINT"
+    }
+   ],
+   "stages": {
+    "capture_validation": {
+     "state": "PASS",
+     "code": "INPUTS_VALIDATED"
+    },
+    "identity_resolution": {
+     "state": "PASS",
+     "code": "IDENTITY_RESOLVED"
+    },
+    "feature_build": {
+     "state": "DEFERRED",
+     "code": "STAGE_DECLARED_UNIMPLEMENTED"
+    },
+    "team_environment": {
+     "state": "PASS",
+     "code": "TEAM_ENVIRONMENT_OK"
+    },
+    "appearance": {
+     "state": "PASS",
+     "code": "APPEARANCE_OK"
+    },
+    "participation": {
+     "state": "PASS",
+     "code": "PARTICIPATION_OK"
+    },
+    "targets_carries": {
+     "state": "PASS",
+     "code": "TARGETS_CARRIES_OK"
+    },
+    "conversion": {
+     "state": "PASS",
+     "code": "CONVERSION_OK"
+    },
+    "td_layer": {
+     "state": "PASS",
+     "code": "TD_LAYER_OK"
+    },
+    "qb_layer": {
+     "state": "PASS",
+     "code": "QB_LAYER_OK"
+    },
+    "joint_reconciliation": {
+     "state": "PASS",
+     "code": "JOINT_RECONCILED"
+    },
+    "player_draws": {
+     "state": "PASS",
+     "code": "DRAWS_BUILT"
+    },
+    "scoring": {
+     "state": "PASS",
+     "code": "SCORED"
+    },
+    "artifact_sealing": {
+     "state": "BLOCKED",
+     "code": "ARTIFACT_SEALING_FAILURE"
+    }
+   },
+   "modelled_rows": {
+    "receiving": 27,
+    "rushing": 7,
+    "qb": 5,
+    "kicking": 2,
+    "dst": 0
+   },
+   "n_draws": 200,
+   "target_closure": {
+    "exact_frac": 0.8,
+    "over_frac": 0.0,
+    "mean_diff": -0.915,
+    "max_abs": 17.0
+   },
+   "carry_closure": {
+    "exact_frac": 0.83,
+    "over_frac": 0.0,
+    "mean_diff": -0.235,
+    "max_abs": 3.0
+   },
+   "stage_warnings": {
+    "team_environment": [
+     "known limitation: team_volume_is_near_unforecastable"
+    ],
+    "participation": [
+     "participation: known limitation: pass-snap participation is an upper bound on routes run"
+    ],
+    "conversion": [
+     "receiving_conversion: known limitation: RC1 SIGNAL_WEAK",
+     "receiving_conversion: governance: receiving_baseline_calibration CALIBRATION_DEFECT"
+    ],
+    "td_layer": [
+     "receiving_td: known limitation: TD2 pooled positional control, HOLD_TENTATIVE",
+     "rushing_td: known limitation: TD2 pooled positional control, HOLD_TENTATIVE"
+    ],
+    "qb_layer": [
+     "known limitation: multi_qb_over_prediction",
+     "known limitation: int_discrimination",
+     "known limitation: discrete_low_count_intervals"
+    ]
+   }
+  }
+ ],
+ "injury_report_incomplete_clubs": [
+  "CHI",
+  "JAX",
+  "NYG"
+ ]
+}

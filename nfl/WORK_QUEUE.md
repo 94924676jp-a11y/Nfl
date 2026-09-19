@@ -307,6 +307,102 @@ its downstream impact justifies it.
   postgame files and remain NOT_AUTHORIZED_BY_OWNER) x uncertainty LOW
   x measurability HIGH x EVI MEDIUM
 
+## ID: SUN-2
+- **priority**: 1
+- **status**: BLOCKED
+- **dependencies**: none
+- **description**: `.github/workflows/nfl-t90.yml` is regenerated for week 2
+  and correct on this branch. GitHub schedules workflows from the DEFAULT
+  branch, so it changes nothing about what fires. It must be merged there
+  before 2026-09-20T15:30Z.
+- **blocker**: merging to the default branch is not available to this
+  executor. Raised as OUT-026.
+- **acceptance criteria**:
+  - the six week-2 windows exist on the branch Actions schedules from;
+  - `official_inactives` records a PASS with a game_id inside each window.
+- **classification**: PRODUCTION_BLOCKER
+- **ranking**: impact HIGH (the inactives file cannot be reconstructed after
+  the window closes) x uncertainty LOW x measurability HIGH x EVI HIGH
+
+## ID: SUN-3
+- **priority**: 4
+- **status**: QUEUED
+- **dependencies**: none
+- **description**: Three clubs -- JAX, CHI and NYG -- have an incomplete
+  official injury report in our capture, and the appearance layer correctly
+  refuses a club with no filed report. Cost on the week-2 slate: JAX deferred
+  (15 players), CHI deferred (12), and NYG@LA halted entirely at appearance
+  because NYG's 7 rows carry `report_status` unfilled on every one. The layer
+  is right; the gap is the bytes.
+- **blocker**: the reports are outside this checkout.
+- **acceptance criteria**:
+  - a filled report for the three clubs, or a recorded finding that the
+    league did not publish one;
+  - re-run shows non-QB coverage on all three games, or names why not.
+- **classification**: PRODUCTION_BLOCKER
+- **ranking**: impact HIGH (it is one whole game and two halves of the slate)
+  x uncertainty LOW x measurability HIGH x EVI MEDIUM
+
+## ID: SUN-4
+- **priority**: 5
+- **status**: QUEUED
+- **dependencies**: none
+- **description**: Opportunity conservation does not close exactly in every
+  draw. Measured over the twelve fully covered week-2 games: targets close
+  exactly in a median 81.2% of draws, carries in 77.5%, and the carry spread
+  runs from 0.935 (PIT@NE) down to 0.030 (MIA@SF) and 0.035 (SEA@ARI). The
+  discrepancy is ALWAYS a shortfall -- over-allocation fraction is exactly 0
+  across all 14 games and both identities -- so this is unassigned mass, not
+  impossible football.
+- **blocker**: none
+- **acceptance criteria**:
+  - the shortfall is attributed to a declared residual or named a leak;
+  - a game closing in 3% of draws is explained rather than averaged away;
+  - no accounting is "repaired" by widening a tolerance.
+- **classification**: MEASUREMENT_DEFECT
+- **ranking**: impact MEDIUM-HIGH (every player share inherits it)
+  x uncertainty MEDIUM x measurability HIGH x EVI MEDIUM-HIGH
+
+## ID: SUN-5
+- **priority**: 6
+- **status**: BLOCKED
+- **dependencies**: none
+- **description**: `artifact_sealing` refuses every board of the 2026 season
+  because `denom_panel.csv.gz` holds 3,230 rows from 202001 to 202518 and
+  ZERO rows for 2026. `team_volume_history` reads the same file and is stale
+  at 202518 against a required 202601; `denom_panel` is additionally
+  BLOCKED-BY-DECLARATION on `CURRENT_SEASON_SOURCE_UNVERIFIED`. This is the
+  single reason no Week-2 forecast can be sealed, under either configuration.
+- **blocker**: no current-season source for the denominator panel has been
+  established. `current_season_panel` did this for `panel_p3` and there is no
+  sibling for the denominators.
+- **acceptance criteria**:
+  - a current-season denominator source with a declared clock, additive to
+    the frozen panel exactly as CS1 is -- the frozen bytes are inside every
+    sealed candidate's identity and must not move;
+  - `check_all` returns PASS for all three inputs at 2026 week 2;
+  - no threshold is loosened and `MAX_TRAIL_WEEKS` is not touched.
+- **classification**: PRODUCTION_BLOCKER
+- **ranking**: impact HIGHEST (it is the gate between a simulation and a
+  board) x uncertainty MEDIUM x measurability HIGH x EVI HIGHEST
+
+## ID: SUN-6
+- **priority**: 7
+- **status**: QUEUED
+- **dependencies**: SUN-5
+- **description**: `feature_build` is DEFERRED[STAGE_DECLARED_UNIMPLEMENTED]
+  on all 15 reachable games: the accepted research baseline "prior-only,
+  ordinal prefix cut" has no production implementation. It is declared as
+  debt rather than reported as a forecast, which is right, and it is the
+  second of the two blockers.
+- **blocker**: none technical; it is unwritten.
+- **acceptance criteria**:
+  - the production implementation reproduces the research baseline on a
+    fixture, checked rather than asserted;
+  - it is not a stub that returns PASS.
+- **classification**: PRODUCTION_BLOCKER
+- **ranking**: impact HIGH x uncertainty LOW x measurability HIGH x EVI HIGH
+
 ## ID: DFS-FS1
 - **priority**: 8
 - **status**: DONE

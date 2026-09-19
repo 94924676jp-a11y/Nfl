@@ -64,7 +64,7 @@
    "why_not_measurable": "routines live in a scheduler this executor cannot query. The previous `CURRENT_STATE.md` asserted a routine was DISABLED and recorded, in the same file, that a later firing reported success with no commit ever reaching the branch \u2014 an unresolved contradiction that it presented as state."
   }
  ],
- "generated_at": "2026-09-19T15:42:29.338508+00:00",
+ "generated_at": "2026-09-19T16:49:03.660448+00:00",
  "generated_by": "nfl/tools/system_state.py",
  "measured": {
   "assumptions": {
@@ -151,8 +151,8 @@
   },
   "code": {
    "TOTAL": {
-    "lines": 213590,
-    "modules": 664
+    "lines": 215121,
+    "modules": 669
    },
    "nfl/capture": {
     "lines": 6334,
@@ -171,12 +171,12 @@
     "modules": 8
    },
    "nfl/product": {
-    "lines": 8677,
+    "lines": 8735,
     "modules": 23
    },
    "nfl/production": {
-    "lines": 36763,
-    "modules": 70
+    "lines": 37274,
+    "modules": 71
    },
    "nfl/prospective": {
     "lines": 7398,
@@ -187,8 +187,8 @@
     "modules": 272
    },
    "nfl/tests": {
-    "lines": 68456,
-    "modules": 185
+    "lines": 69418,
+    "modules": 189
    },
    "nfl/tools": {
     "lines": 13810,
@@ -208,7 +208,7 @@
     "nfl/dfs/",
     "nfl/capture/"
    ],
-   "n_edges": 27,
+   "n_edges": 28,
    "n_runtime_keyed": 3,
    "not_implemented": [
     "PHASE_2: a read(node, cut) accessor. Every read below still happens by globbing a directory; the declaration bounds who reads what, it does not mediate the bytes.",
@@ -220,7 +220,7 @@
     "espn_injuries_json": 1,
     "injuries": 2,
     "schedules": 4,
-    "vintage_manifest": 6,
+    "vintage_manifest": 7,
     "weekly_rosters": 11
    },
    "spec_version": "p7-dependency-dag-phase1"
@@ -244,23 +244,23 @@
   "git": {
    "branch": "claude/nfl-greenfield-architecture-stsxmk",
    "dirty_source_files": [
-    "nfl/tools/discovery.py"
+    "nfl/production/pipeline.py"
    ],
-   "head": "8b8555b1d25f586b1cb896be34a659ad463603f7",
-   "head_committed_at": "2026-09-19T15:36:37+00:00",
-   "head_short": "8b8555b",
-   "head_subject": "Ingest capture-prod: the capture was never dead, I was reading the wrong tree",
+   "head": "5413e65070c803478d9a50a5c02c6df479ea6092",
+   "head_committed_at": "2026-09-19T16:24:15+00:00",
+   "head_short": "5413e65",
+   "head_subject": "The rehearsal wrote its result somewhere else, and a Sunday runbook",
    "is_clean": false,
-   "n_commits_on_branch": 1082,
+   "n_commits_on_branch": 1088,
    "remote_head": "3270829ca46e46f44285c5ae81952c31921bdda5",
    "worktree": {
-    "code_version": "8b8555b1d25f586b1cb896be34a659ad463603f7+src1[acbe5fcf4e5e461e]",
-    "commit": "8b8555b1d25f586b1cb896be34a659ad463603f7",
+    "code_version": "5413e65070c803478d9a50a5c02c6df479ea6092+src1[9705988bea5d9008]",
+    "commit": "5413e65070c803478d9a50a5c02c6df479ea6092",
     "dirty_source_files": [
-     "nfl/tools/discovery.py"
+     "nfl/production/pipeline.py"
     ],
     "n_dirty_source_files": 1,
-    "n_dirty_tree_entries_observed": 11,
+    "n_dirty_tree_entries_observed": 15,
     "scope_note": "dirty_source_files is SOURCE scope only -- the .py files the identity contract hashes. A changed .md or .json is counted in n_dirty_tree_entries_observed and is not listed.",
     "source_scope_clean": false
    }
@@ -334,7 +334,7 @@
    "is_current_head": false,
    "measured_at_commit": "WORKING_TREE",
    "newly_introduced": [],
-   "staleness_note": "measured at WORKING_TREE, HEAD is 8b8555b. This total is not a statement about the tree as it stands.",
+   "staleness_note": "measured at WORKING_TREE, HEAD is 5413e65. This total is not a statement about the tree as it stands.",
    "totals": {
     "blocked_functions": 23,
     "checks": 10800,
@@ -356,9 +356,9 @@
   ],
   "work_queue": {
    "by_status": {
-    "BLOCKED": 7,
+    "BLOCKED": 9,
     "DONE": 8,
-    "QUEUED": 8
+    "QUEUED": 11
    },
    "items": [
     {
@@ -429,6 +429,41 @@
      "description": "The participation availability watch (`nfl-availability.yml`) last ran 2026-09-15T06:37:05Z and has not run since. It still pushes to `main` (lines 129-130) while the four capture workflows were moved to `capture-prod` twenty-two minutes after its last successful run. Point it at the governed surface, and get the run history read so \"stopped\" is distinguished from \"failing at the push step\".",
      "id": "SUN-1",
      "priority": "1",
+     "status": "QUEUED"
+    },
+    {
+     "blocker": "merging to the default branch is not available to this executor. Raised as OUT-026.",
+     "description": "`.github/workflows/nfl-t90.yml` is regenerated for week 2 and correct on this branch. GitHub schedules workflows from the DEFAULT branch, so it changes nothing about what fires. It must be merged there before 2026-09-20T15:30Z.",
+     "id": "SUN-2",
+     "priority": "1",
+     "status": "BLOCKED"
+    },
+    {
+     "blocker": "the reports are outside this checkout.",
+     "description": "Three clubs -- JAX, CHI and NYG -- have an incomplete official injury report in our capture, and the appearance layer correctly refuses a club with no filed report. Cost on the week-2 slate: JAX deferred (15 players), CHI deferred (12), and NYG@LA halted entirely at appearance because NYG's 7 rows carry `report_status` unfilled on every one. The layer is right; the gap is the bytes.",
+     "id": "SUN-3",
+     "priority": "4",
+     "status": "QUEUED"
+    },
+    {
+     "blocker": "none",
+     "description": "Opportunity conservation does not close exactly in every draw. Measured over the twelve fully covered week-2 games: targets close exactly in a median 81.2% of draws, carries in 77.5%, and the carry spread runs from 0.935 (PIT@NE) down to 0.030 (MIA@SF) and 0.035 (SEA@ARI). The discrepancy is ALWAYS a shortfall -- over-allocation fraction is exactly 0 across all 14 games and both identities -- so this is unassigned mass, not impossible football.",
+     "id": "SUN-4",
+     "priority": "5",
+     "status": "QUEUED"
+    },
+    {
+     "blocker": "no current-season source for the denominator panel has been established. `current_season_panel` did this for `panel_p3` and there is no sibling for the denominators.",
+     "description": "`artifact_sealing` refuses every board of the 2026 season because `denom_panel.csv.gz` holds 3,230 rows from 202001 to 202518 and ZERO rows for 2026. `team_volume_history` reads the same file and is stale at 202518 against a required 202601; `denom_panel` is additionally BLOCKED-BY-DECLARATION on `CURRENT_SEASON_SOURCE_UNVERIFIED`. This is the single reason no Week-2 forecast can be sealed, under either configuration.",
+     "id": "SUN-5",
+     "priority": "6",
+     "status": "BLOCKED"
+    },
+    {
+     "blocker": "none technical; it is unwritten.",
+     "description": "`feature_build` is DEFERRED[STAGE_DECLARED_UNIMPLEMENTED] on all 15 reachable games: the accepted research baseline \"prior-only, ordinal prefix cut\" has no production implementation. It is declared as debt rather than reported as a forecast, which is right, and it is the second of the two blockers.",
+     "id": "SUN-6",
+     "priority": "7",
      "status": "QUEUED"
     },
     {
@@ -523,7 +558,7 @@
      "status": "QUEUED"
     }
    ],
-   "n": 23
+   "n": 28
   }
  },
  "reading_rule": "Every value under `measured` was computed by reading this repository at the timestamp above. Every value under `declared` was asserted by somebody and says who, when, and why it cannot be measured here. Do not quote one as the other.",

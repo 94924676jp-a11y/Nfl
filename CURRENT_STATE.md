@@ -1,6 +1,6 @@
 # NFL — current state
 
-**Generated** by `nfl/tools/system_state.py` at 2026-09-19T15:42:29.338508+00:00 from `SYSTEM_STATE.json`. Do not hand-edit this file: regenerate it.
+**Generated** by `nfl/tools/system_state.py` at 2026-09-19T16:49:03.660448+00:00 from `SYSTEM_STATE.json`. Do not hand-edit this file: regenerate it.
 
 Every value under `measured` was computed by reading this repository at the timestamp above. Every value under `declared` was asserted by somebody and says who, when, and why it cannot be measured here. Do not quote one as the other.
 
@@ -11,18 +11,18 @@ Every value under `measured` was computed by reading this repository at the time
 |  |  |
 |---|---|
 | branch | `claude/nfl-greenfield-architecture-stsxmk` |
-| HEAD | `8b8555b` — Ingest capture-prod: the capture was never dead, I was reading the wrong tree |
-| HEAD committed | 2026-09-19T15:36:37+00:00 |
-| commits on branch | 1082 |
+| HEAD | `5413e65` — The rehearsal wrote its result somewhere else, and a Sunday runbook |
+| HEAD committed | 2026-09-19T16:24:15+00:00 |
+| commits on branch | 1088 |
 | source scope | 1 dirty source file(s) |
-| dirty tree entries (source and not) | 11 |
-| code_version | `8b8555b1d25f586b1cb896be34a659ad463603f7+src1[acbe5fcf4e5e461e]` |
-| python modules | 664 |
-| lines of python | 213,590 |
+| dirty tree entries (source and not) | 15 |
+| code_version | `5413e65070c803478d9a50a5c02c6df479ea6092+src1[9705988bea5d9008]` |
+| python modules | 669 |
+| lines of python | 215,121 |
 
 ## 2. Test suite
 
-Source: `nfl/research/suite_attribution/SUITE_DIFF_fullslate_fs1.json`. measured at WORKING_TREE, HEAD is 8b8555b. This total is not a statement about the tree as it stands.
+Source: `nfl/research/suite_attribution/SUITE_DIFF_fullslate_fs1.json`. measured at WORKING_TREE, HEAD is 5413e65. This total is not a statement about the tree as it stands.
 
 |  | at WORKING_TREE | baseline 06bc006 | delta |
 |---|---|---|---|
@@ -74,7 +74,7 @@ A FALSIFIED assumption blocks the production path that depends on it and rewrite
 
 ## 5. Dependency DAG (P7 Phase 1)
 
-`PHASE_1_DECLARATION_ONLY`, audit **PASS EVERY_VINTAGE_READ_DECLARED**, 27 declared edges over 4 package(s), 3 runtime-keyed read(s).
+`PHASE_1_DECLARATION_ONLY`, audit **PASS EVERY_VINTAGE_READ_DECLARED**, 28 declared edges over 4 package(s), 3 runtime-keyed read(s).
 
 | producer | declared readers |
 |---|---|
@@ -82,7 +82,7 @@ A FALSIFIED assumption blocks the production path that depends on it and rewrite
 | espn_injuries_json | 1 |
 | injuries | 2 |
 | schedules | 4 |
-| vintage_manifest | 6 |
+| vintage_manifest | 7 |
 | weekly_rosters | 11 |
 
 Not implemented:
@@ -115,6 +115,11 @@ Production readiness (`nfl/production/production_readiness.json`, updated 2026-0
 | DISC-3 | 3 | DONE |  |
 | SUN-0 | 0 | DONE |  |
 | SUN-1 | 1 | QUEUED |  |
+| SUN-2 | 1 | BLOCKED | merging to the default branch is not available to this executor. Raised as OUT-026. |
+| SUN-3 | 4 | QUEUED |  |
+| SUN-4 | 5 | QUEUED |  |
+| SUN-5 | 6 | BLOCKED | no current-season source for the denominator panel has been established. `current_season_p |
+| SUN-6 | 7 | QUEUED |  |
 | DFS-FS1 | 8 | DONE |  |
 | DFS-FS2 | 9 | BLOCKED | no full-slate joint-world generator exists; the only sealed worlds are one single-game boa |
 | DISC-4 | 8 | QUEUED |  |
