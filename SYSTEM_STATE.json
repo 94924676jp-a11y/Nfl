@@ -64,7 +64,7 @@
    "why_not_measurable": "routines live in a scheduler this executor cannot query. The previous `CURRENT_STATE.md` asserted a routine was DISABLED and recorded, in the same file, that a later firing reported success with no commit ever reaching the branch \u2014 an unresolved contradiction that it presented as state."
   }
  ],
- "generated_at": "2026-09-19T15:25:52.377704+00:00",
+ "generated_at": "2026-09-19T15:42:29.338508+00:00",
  "generated_by": "nfl/tools/system_state.py",
  "measured": {
   "assumptions": {
@@ -108,50 +108,50 @@
   },
   "capture": {
    "by_source": {
-    "depth_charts": 471,
-    "espn_injuries_json": 462,
+    "depth_charts": 663,
+    "espn_injuries_json": 654,
     "hardrock_market_snapshot": 1,
-    "injuries": 472,
-    "official_inactives": 483,
-    "official_injury_report": 465,
+    "injuries": 664,
+    "official_inactives": 674,
+    "official_injury_report": 657,
     "official_status_evidence": 1,
-    "official_transactions": 462,
+    "official_transactions": 654,
     "pbp": 4,
-    "pbp_participation": 383,
-    "schedules": 471,
-    "snap_counts": 383,
-    "weekly_rosters": 471
+    "pbp_participation": 575,
+    "schedules": 663,
+    "snap_counts": 575,
+    "weekly_rosters": 663
    },
    "by_state": {
-    "BLOCKED": 567,
-    "DEFERRED": 40,
+    "BLOCKED": 759,
+    "DEFERRED": 224,
     "FAIL": 108,
-    "NOT_APPLICABLE": 766,
-    "PASS": 3048
+    "NOT_APPLICABLE": 1150,
+    "PASS": 4207
    },
-   "manifest_rows": 4529,
+   "manifest_rows": 6448,
    "retrieved_at_earliest": "2026-09-06T18:50:49.540119+00:00",
    "retrieved_at_latest": "2026-09-17T23:42:25.952893+00:00",
    "vintage_store_by_family": {
     "delivered_injury_evidence": 1,
-    "depth_charts": 13,
-    "espn_injuries_json": 428,
+    "depth_charts": 26,
+    "espn_injuries_json": 620,
     "hardrock_market_snapshot": 1,
-    "injuries": 9,
-    "official_inactives": 359,
-    "official_injury_report": 354,
+    "injuries": 12,
+    "official_inactives": 367,
+    "official_injury_report": 546,
     "official_status_evidence": 1,
     "pbp_2024": 1,
     "pbp_2025": 1,
     "pbp_2026": 1,
-    "schedules": 267,
-    "weekly_rosters": 13
+    "schedules": 370,
+    "weekly_rosters": 24
    },
-   "vintage_store_files": 1449
+   "vintage_store_files": 1971
   },
   "code": {
    "TOTAL": {
-    "lines": 213366,
+    "lines": 213590,
     "modules": 664
    },
    "nfl/capture": {
@@ -187,11 +187,11 @@
     "modules": 272
    },
    "nfl/tests": {
-    "lines": 68289,
+    "lines": 68456,
     "modules": 185
    },
    "nfl/tools": {
-    "lines": 13753,
+    "lines": 13810,
     "modules": 37
    },
    "sportsplatform": {
@@ -243,22 +243,26 @@
   },
   "git": {
    "branch": "claude/nfl-greenfield-architecture-stsxmk",
-   "dirty_source_files": [],
-   "head": "06bc006856aa5e1c9860ad7450d7715c284f1902",
-   "head_committed_at": "2026-09-19T05:24:52+00:00",
-   "head_short": "06bc006",
-   "head_subject": "Adjudicate the full-slate DFS packet: reproduce, disagree, and reconcile",
-   "is_clean": true,
-   "n_commits_on_branch": 882,
+   "dirty_source_files": [
+    "nfl/tools/discovery.py"
+   ],
+   "head": "8b8555b1d25f586b1cb896be34a659ad463603f7",
+   "head_committed_at": "2026-09-19T15:36:37+00:00",
+   "head_short": "8b8555b",
+   "head_subject": "Ingest capture-prod: the capture was never dead, I was reading the wrong tree",
+   "is_clean": false,
+   "n_commits_on_branch": 1082,
    "remote_head": "3270829ca46e46f44285c5ae81952c31921bdda5",
    "worktree": {
-    "code_version": "06bc006856aa5e1c9860ad7450d7715c284f1902+src1[44aa01d03783de18]",
-    "commit": "06bc006856aa5e1c9860ad7450d7715c284f1902",
-    "dirty_source_files": [],
-    "n_dirty_source_files": 0,
-    "n_dirty_tree_entries_observed": 18,
+    "code_version": "8b8555b1d25f586b1cb896be34a659ad463603f7+src1[acbe5fcf4e5e461e]",
+    "commit": "8b8555b1d25f586b1cb896be34a659ad463603f7",
+    "dirty_source_files": [
+     "nfl/tools/discovery.py"
+    ],
+    "n_dirty_source_files": 1,
+    "n_dirty_tree_entries_observed": 11,
     "scope_note": "dirty_source_files is SOURCE scope only -- the .py files the identity contract hashes. A changed .md or .json is counted in n_dirty_tree_entries_observed and is not listed.",
-    "source_scope_clean": true
+    "source_scope_clean": false
    }
   },
   "governance": {
@@ -330,7 +334,7 @@
    "is_current_head": false,
    "measured_at_commit": "WORKING_TREE",
    "newly_introduced": [],
-   "staleness_note": "measured at WORKING_TREE, HEAD is 06bc006. This total is not a statement about the tree as it stands.",
+   "staleness_note": "measured at WORKING_TREE, HEAD is 8b8555b. This total is not a statement about the tree as it stands.",
    "totals": {
     "blocked_functions": 23,
     "checks": 10800,
@@ -352,10 +356,9 @@
   ],
   "work_queue": {
    "by_status": {
-    "ACTIVE": 1,
     "BLOCKED": 7,
-    "DONE": 6,
-    "QUEUED": 7
+    "DONE": 8,
+    "QUEUED": 8
    },
    "items": [
     {
@@ -412,7 +415,21 @@
      "description": "The information gap registry has no freshness field and nothing re-reads it. `GAP-2026-PARTICIPATION` still records \"MEASURED: both 404 for 2026 as of 2026-09-08\" while its sibling `injuries` has been publishing since 2026-09-07 -- and nothing in the repository said so. `nfl/tools/discovery.py` now detects this class; the remaining work is to give each gap a `last_rechecked_utc` and a `recheck_horizon_days`, and to re-state the three claims past the horizon from measured evidence. Those three, named rather than counted: `GAP-2026-PARTICIPATION`, `GAP-PREGAME-ROLE` and `GAP-INJURY-VINTAGE`.",
      "id": "DISC-3",
      "priority": "3",
-     "status": "ACTIVE"
+     "status": "DONE"
+    },
+    {
+     "blocker": "none",
+     "description": "**Priority override, owner 2026-09-19: system-wide Sunday readiness.** Before anything else could be measured, establish which tree the capture actually writes to. I reported earlier in this session that no source was fresher than 39.7 hours and that the official status sources were 98.3 hours old, and began writing that up as a readiness blocker. That was a measurement of a branch, not of the system.",
+     "id": "SUN-0",
+     "priority": "0",
+     "status": "DONE"
+    },
+    {
+     "blocker": "the Actions run log is not readable from this executor. Raised as OUT-024.",
+     "description": "The participation availability watch (`nfl-availability.yml`) last ran 2026-09-15T06:37:05Z and has not run since. It still pushes to `main` (lines 129-130) while the four capture workflows were moved to `capture-prod` twenty-two minutes after its last successful run. Point it at the governed surface, and get the run history read so \"stopped\" is distinguished from \"failing at the push step\".",
+     "id": "SUN-1",
+     "priority": "1",
+     "status": "QUEUED"
     },
     {
      "blocker": "none",
@@ -506,7 +523,7 @@
      "status": "QUEUED"
     }
    ],
-   "n": 21
+   "n": 23
   }
  },
  "reading_rule": "Every value under `measured` was computed by reading this repository at the timestamp above. Every value under `declared` was asserted by somebody and says who, when, and why it cannot be measured here. Do not quote one as the other.",

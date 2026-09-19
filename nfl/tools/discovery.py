@@ -185,8 +185,23 @@ def newly_publishing(caps: dict) -> list:
 
 # ---------------------------------------------------------- gap registry
 
-def gaps() -> list:
-    p = _REPO / 'nfl' / 'INFORMATION_GAP_REGISTRY.json'
+def gaps(path=None) -> list:
+    """Per gap: how old its evidence is, against its own declared horizon.
+
+    THE CLOCK RUNS ON THE EVIDENCE, NOT ON THE READING. `last_rechecked_utc`
+    records only that somebody looked; `evidence_as_of_utc` records the newest
+    instant in what they saw. The horizon is measured against the second, so
+    re-opening a file that has not changed cannot reset it. That distinction
+    is the whole defect: "MEASURED: both 404 for 2026 as of 2026-09-08"
+    survived snap_counts publishing on 2026-09-10 and would have survived any
+    number of re-readings of the same sentence.
+
+    A gap whose recheck cannot be performed here is reported as ASSIGNED with
+    the outbox entry that carries it. Assigned is not the same as blocked and
+    neither is the same as current.
+    """
+    p = pathlib.Path(path) if path else (
+        _REPO / 'nfl' / 'INFORMATION_GAP_REGISTRY.json')
     if not p.exists():
         return []
     d = json.loads(p.read_text())
@@ -198,16 +213,40 @@ def gaps() -> list:
             continue
         blob = json.dumps(g)
         dates = sorted(set(_DATE.findall(blob)))
-        newest = dates[-1] if dates else None
+        # The declared field if there is one; the newest date anywhere in the
+        # entry if there is not. The fallback is a PROXY and says so, because
+        # a date in prose may be the date of the thing described rather than
+        # the date the evidence was read.
+        declared = g.get('evidence_as_of_utc')
+        basis = 'evidence_as_of_utc' if declared else 'newest_date_in_prose'
+        stamp = declared or (dates[-1] if dates else None)
+        horizon = g.get('recheck_horizon_days')
+        horizon_basis = 'declared'
+        if not isinstance(horizon, (int, float)):
+            horizon, horizon_basis = GAP_RECHECK_DAYS, 'default'
+        age = _age_days(stamp) if stamp else None
+        executable = g.get('recheck_executable_here')
         out.append({
             'id': g.get('id'),
             'action': g.get('action'),
             'evidence_status': (g.get('evidence_status') or '')[:200],
-            'newest_date_in_claim': newest,
-            'claim_age_days': _age_days(newest) if newest else None,
+            'last_rechecked_utc': g.get('last_rechecked_utc'),
+            'evidence_as_of_utc': declared,
+            'age_basis': basis,
+            'newest_date_in_claim': stamp,
+            'claim_age_days': age,
+            'recheck_horizon_days': horizon,
+            'recheck_horizon_basis': horizon_basis,
             'stale_beyond_recheck_horizon': bool(
-                newest and (_age_days(newest) or 0) > GAP_RECHECK_DAYS),
-            'has_no_date_at_all': not dates,
+                age is not None and age > horizon),
+            'has_no_date_at_all': stamp is None,
+            'recheck_executable_here': executable,
+            'recheck_assignment': g.get('recheck_assignment'),
+            'recheck_state': (
+                'UNDATED' if stamp is None else
+                'CURRENT' if (age or 0) <= horizon else
+                'ASSIGNED_PAST_HORIZON' if executable is False else
+                'PAST_HORIZON'),
         })
     return out
 
@@ -325,17 +364,35 @@ def candidates(sig: dict) -> list:
                                       f'captured in this repository',
             'ranking': 'NOT SCORED HERE -- see nfl/WORK_QUEUE.md'})
     for g in sig['gaps']:
-        if g['stale_beyond_recheck_horizon'] and g['action'] in (
-                'BLOCKED', 'HOLD', 'PROSPECTIVE_ONLY'):
+        if g['has_no_date_at_all']:
             out.append({
-                'trigger': 'GAP_CLAIM_OLDER_THAN_RECHECK_HORIZON',
-                'subject': g['id'],
-                'evidence': g,
-                'impact_evidence': 'the gap is recorded as blocking or held '
-                                   'on a claim nobody has re-read',
-                'measurability_evidence': 'rechecking is a capture attempt, '
-                                          'not a model change',
+                'trigger': 'GAP_CLAIM_CARRIES_NO_DATE',
+                'subject': g['id'], 'evidence': g,
+                'impact_evidence': 'an undated claim cannot go stale and so '
+                                   'can never be surfaced by any horizon',
+                'measurability_evidence': 'dating it is a desk act',
                 'ranking': 'NOT SCORED HERE -- see nfl/WORK_QUEUE.md'})
+            continue
+        if not g['stale_beyond_recheck_horizon']:
+            continue
+        if g['action'] not in ('BLOCKED', 'HOLD', 'PROSPECTIVE_ONLY',
+                               'CHEAP_PROBE', 'INVEST'):
+            continue
+        assigned = g['recheck_state'] == 'ASSIGNED_PAST_HORIZON'
+        out.append({
+            'trigger': ('GAP_RECHECK_ASSIGNED_AND_PAST_HORIZON' if assigned
+                        else 'GAP_CLAIM_OLDER_THAN_RECHECK_HORIZON'),
+            'subject': g['id'],
+            'evidence': g,
+            'impact_evidence': 'the gap is recorded as blocking or held on a '
+                               'claim whose evidence is '
+                               f'{g["claim_age_days"]} days old against a '
+                               f'{g["recheck_horizon_days"]}-day horizon',
+            'measurability_evidence': (
+                'NOT EXECUTABLE HERE -- assigned as '
+                f'{g["recheck_assignment"]}' if assigned else
+                'rechecking is a capture attempt, not a model change'),
+            'ranking': 'NOT SCORED HERE -- see nfl/WORK_QUEUE.md'})
     a = sig['assumptions']
     for r in (a.get('assumptions') or []):
         if r['status'] == 'FALSIFIED' and r['criticality'] == 'CRITICAL' \

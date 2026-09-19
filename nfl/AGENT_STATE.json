@@ -1,27 +1,31 @@
 {
  "generated_by": "nfl/tools/agent_state.py",
- "generated_at": "2026-09-19T15:26:32.068914+00:00",
+ "generated_at": "2026-09-19T15:43:07.460683+00:00",
  "git": {
-  "head": "06bc006856aa5e1c9860ad7450d7715c284f1902",
-  "head_short": "06bc006",
+  "head": "8b8555b1d25f586b1cb896be34a659ad463603f7",
+  "head_short": "8b8555b",
   "branch": "claude/nfl-greenfield-architecture-stsxmk",
-  "head_subject": "Adjudicate the full-slate DFS packet: reproduce, disagree, and reconcile",
+  "head_subject": "Ingest capture-prod: the capture was never dead, I was reading the wrong tree",
   "remote_head": "NO_UPSTREAM",
-  "dirty_source_files": [],
+  "dirty_source_files": [
+   "nfl/tools/discovery.py"
+  ],
   "worktree": {
-   "commit": "06bc006856aa5e1c9860ad7450d7715c284f1902",
-   "code_version": "06bc006856aa5e1c9860ad7450d7715c284f1902+src1[44aa01d03783de18]",
-   "source_scope_clean": true,
-   "dirty_source_files": [],
-   "n_dirty_source_files": 0,
-   "n_dirty_tree_entries_observed": 18,
+   "commit": "8b8555b1d25f586b1cb896be34a659ad463603f7",
+   "code_version": "8b8555b1d25f586b1cb896be34a659ad463603f7+src1[acbe5fcf4e5e461e]",
+   "source_scope_clean": false,
+   "dirty_source_files": [
+    "nfl/tools/discovery.py"
+   ],
+   "n_dirty_source_files": 1,
+   "n_dirty_tree_entries_observed": 13,
    "scope_note": "dirty_source_files is SOURCE scope only -- the .py files the identity contract hashes. A changed .md or .json is counted in n_dirty_tree_entries_observed and is not listed."
   },
-  "is_clean": true
+  "is_clean": false
  },
- "active_task": "DISC-3",
- "active_task_position": 8,
- "n_active": 1,
+ "active_task": null,
+ "active_task_position": null,
+ "n_active": 0,
  "last_completed_task": "DFS-FS1",
  "queue": [
   {
@@ -139,13 +143,48 @@
     "a recheck this executor cannot perform is recorded as ASSIGNED with an outbox entry, never as a standing fact."
    ],
    "priority": "3",
-   "status": "ACTIVE",
+   "status": "DONE",
    "dependencies": "none",
    "description": "The information gap registry has no freshness field and nothing re-reads it. `GAP-2026-PARTICIPATION` still records \"MEASURED: both 404 for 2026 as of 2026-09-08\" while its sibling `injuries` has been publishing since 2026-09-07 -- and nothing in the repository said so. `nfl/tools/discovery.py` now detects this class; the remaining work is to give each gap a `last_rechecked_utc` and a `recheck_horizon_days`, and to re-state the three claims past the horizon from measured evidence. Those three, named rather than counted: `GAP-2026-PARTICIPATION`, `GAP-PREGAME-ROLE` and `GAP-INJURY-VINTAGE`.",
    "blocker": "none",
    "classification": "MEASUREMENT_DEFECT",
    "ranking": "impact MEDIUM (it is how DISC-2's data nearly stayed invisible) x uncertainty LOW x measurability HIGH x EVI MEDIUM-HIGH (prevents the same near-miss recurring across ten gaps)",
+   "result": "all ten gaps carry `last_rechecked_utc`, `evidence_as_of_utc`, `recheck_horizon_days`, `recheck_horizon_basis`, `recheck_method`, `recheck_executable_here` and `recheck_assignment`. The load-bearing design choice is that **the horizon is measured against `evidence_as_of_utc`, not against `last_rechecked_utc`** -- re-reading an unchanged file is not a recheck and must not reset the clock, which is exactly how the 2026-09-08 claim survived snap_counts publishing on 2026-09-10. Horizons are per gap, 2 to 90 days, each with its reason: two days for a weekly-published file because snap_counts flipped inside two days; ninety for `GAP-AIRYARDS-YAC` and `GAP-TD-RECOVERABILITY`, which do not age at all because one is semantic and the other is an unrun experiment. Three claims restated from measured evidence: - `GAP-2026-PARTICIPATION` -- the old claim is **half false**. Measured from `nfl/availability_manifest.jsonl`, 24 probes: snap_counts 404 on 2026-09-08T13:28:42Z, 200 on 2026-09-10T18:31:04Z with 93 rows, 187 rows on 09-11, 1,397 rows on 09-14, one unchanging column-order digest. pbp_participation 404 at all 12 of its probes. Availability is still not predictive eligibility: `NOT_AUTHORIZED_BY_OWNER`, `NO_FORECAST_TO_JUDGE`. - `GAP-PREGAME-ROLE` -- \"capture running since 2026-09-06\" replaced by the yield: 663 depth_charts captures PASS over 19 distinct content blobs, 2026-09-06T18:50:49Z to 2026-09-19T15:05:38Z. Nineteen distinct pregame role states over 12.8 days is not yet enough to test a within-week role change, and now says so. - `GAP-INJURY-VINTAGE` -- 624 `injuries` PASS over 12 blobs; 566 `official_injury_report` PASS over **546** distinct documents. The official report is where the real vintage depth is, because it republishes within the week. One gap surfaces today: `GAP-2026-PARTICIPATION`, as `ASSIGNED_PAST_HORIZON`, 4.4 days against its 2-day horizon, because the availability watch stopped. Assigned as OUT-019 and OUT-024. Tests: `nfl/tests/test_discovery.py`, 100 checks, 0 failing. The four new ones drive synthetic registries so they pin the RULE and not today's state -- including the pair that separates \"looked today at 30-day-old evidence\" (past horizon) from \"looked 60 days ago at one-day-old evidence\" (current). The old test asserted `'GAP-2026-PARTICIPATION' in stale`, which encoded the day rather than the rule, and is replaced.",
+   "commit": "see SUN-0 below; DISC-3 ships with it",
    "queue_position": 8
+  },
+  {
+   "id": "SUN-0",
+   "acceptance_criteria": [
+    "the freshness claim names the tree it was measured from",
+    "capture evidence is ingested append-only with no seal rewritten",
+    "the correction is recorded, not quietly dropped."
+   ],
+   "priority": "0",
+   "status": "DONE",
+   "dependencies": "none",
+   "description": "**Priority override, owner 2026-09-19: system-wide Sunday readiness.** Before anything else could be measured, establish which tree the capture actually writes to. I reported earlier in this session that no source was fresher than 39.7 hours and that the official status sources were 98.3 hours old, and began writing that up as a readiness blocker. That was a measurement of a branch, not of the system.",
+   "blocker": "none",
+   "classification": "MEASUREMENT_DEFECT",
+   "ranking": "impact HIGH (every downstream readiness claim inherits it) x uncertainty LOW x measurability HIGH x EVI HIGH",
+   "result": "the scheduled capture has been healthy throughout, writing to the `capture-prod` branch since 2026-09-15T19:27Z (b9b6ff4). Measured on capture-prod at 763b776, the six core sources were last captured 2026-09-19T15:05:38Z -- half an hour old, not four days. Merged into this branch as 8b8555b: 2,257 manifest lines appended in capture_id order with the common ancestor's 4,191 lines verified intact on BOTH sides first; 2,878 blobs verified against their recorded sha256 with zero mismatches (2,103 before the merge, so 775 added and none broken); the same six pre-existing absent paths before and after; 150 of 150 board seals recompute. **This is the second time a stale ref has been read here as a dead executor** -- 2c0c36b had to withdraw \"main stopped capturing on 09-11\" for the same reason. The generalising rule, now in the registry's own `recheck_rule`: a freshness number means nothing unless it names the tree.",
+   "queue_position": 9
+  },
+  {
+   "id": "SUN-1",
+   "acceptance_criteria": [
+    "the workflow writes to the same branch as the surface it belongs to",
+    "a fresh probe result for both URLs restates `GAP-2026-PARTICIPATION` inside its 2-day horizon",
+    "the watch's own liveness is detectable without reading Actions."
+   ],
+   "priority": "1",
+   "status": "QUEUED",
+   "dependencies": "SUN-0",
+   "description": "The participation availability watch (`nfl-availability.yml`) last ran 2026-09-15T06:37:05Z and has not run since. It still pushes to `main` (lines 129-130) while the four capture workflows were moved to `capture-prod` twenty-two minutes after its last successful run. Point it at the governed surface, and get the run history read so \"stopped\" is distinguished from \"failing at the push step\".",
+   "blocker": "the Actions run log is not readable from this executor. Raised as OUT-024.",
+   "classification": "MEASUREMENT_DEFECT",
+   "ranking": "impact MEDIUM (it buys provenance, not a feature -- these are postgame files and remain NOT_AUTHORIZED_BY_OWNER) x uncertainty LOW x measurability HIGH x EVI MEDIUM",
+   "queue_position": 10
   },
   {
    "id": "DFS-FS1",
@@ -163,7 +202,7 @@
    "blocker": "none",
    "classification": "RESEARCH_BLOCKER",
    "ranking": "impact HIGH (it is the validation target the world generator will be judged against) x uncertainty MEDIUM x measurability HIGH x EVI HIGH",
-   "queue_position": 9
+   "queue_position": 11
   },
   {
    "id": "DFS-FS2",
@@ -177,7 +216,7 @@
    "description": "Compare simulated dependence against the FS1 panel \u2014 sign and ordering of Pearson and of tail lift, separately, scored with the same certified adapters.",
    "blocker": "no full-slate joint-world generator exists; the only sealed worlds are one single-game board. This is item A7 of the roadmap and it is football work, not DFS work.",
    "classification": "RESEARCH_BLOCKER",
-   "queue_position": 10
+   "queue_position": 12
   },
   {
    "id": "DISC-4",
@@ -193,7 +232,7 @@
    "blocker": "none \u2014 but it needs a new pre-registration, written before it is run, and it is a larger build than DISC-1 through DISC-3.",
    "classification": "PRODUCTION_BLOCKER",
    "ranking": "impact HIGH (calibration is the GATE in the two-stage bar) x uncertainty MEDIUM (the defect is characterised) x measurability HIGH x EVI HIGH, but it is ranked below DISC-1..3 because those are cheaper and one of them governs a CRITICAL assumption",
-   "queue_position": 11
+   "queue_position": 13
   },
   {
    "id": "DISC-5",
@@ -208,7 +247,7 @@
    "blocker": "none \u2014 parked as a group deliberately",
    "classification": "NONBLOCKING_TECH_DEBT",
    "ranking": "impact HIGH in aggregate x uncertainty MEDIUM x measurability MEDIUM x EVI MEDIUM. Parked because four items with one entry is not a plan, and splitting them before any is worked would be paperwork.",
-   "queue_position": 12
+   "queue_position": 14
   },
   {
    "id": "OAS1-TIEBREAK",
@@ -223,7 +262,7 @@
    "description": "The OAS1 pre-registration declares `garbage_time` as a search axis and declares no tie-break for it, in either the original five-axis order or the amended three-axis one. Executing the selection left all three rules tied after the declared axes. A tie-break must be declared before the Week-2 candidate has a single identity.",
    "blocker": "**owner decision, and it may not be taken by whoever has seen the scores.** The three variants' MAEs are now on the record (pass 1.159614 / 1.159721 / 1.159993 for A / none / B), so any rule written here is a selection rule written after seeing them \u2014 the exact thing the one-SE rule and the tie-break exist to prevent. The gap is pre-existing in the pre-registration, not introduced by amendment A1.",
    "classification": "RESEARCH_BLOCKER",
-   "queue_position": 13
+   "queue_position": 15
   },
   {
    "id": "OAS1-HURDLE",
@@ -238,7 +277,7 @@
    "description": "Evaluate OAS1 against B5 and B4 (pass) and B5 with B3 as `POST_HOC_STRONGEST_BASELINE` (rush), clustered by game and by team.",
    "blocker": "the captured 2026 play-by-play carries **week 1 only** \u2014 read from the file, 2,756 rows, zero at ordinal 202602. Scoring needs Week-2 plays, which are bytes outside this checkout. **Assigned, not blocked for both agents**: the request is in `docs/AGENT_OUTBOX.md`. The candidate's unit strengths are committed before those bytes arrive, which is the position a hurdle test should be run from.",
    "classification": "RESEARCH_BLOCKER",
-   "queue_position": 14
+   "queue_position": 16
   },
   {
    "id": "OAS1-FLAT-SURFACE",
@@ -253,7 +292,7 @@
    "description": "All 864 configurations fall within one standard error of the best in both classes, so the pre-registered tie-break does 100% of the selecting and the data does none of it. The SE in the one-SE rule is the standard error of the mean ACROSS FOLDS, and fold-to-fold variation swamps configuration-to-configuration variation by roughly twenty to one. A PAIRED comparison \u2014 same folds, differenced per configuration \u2014 would have a far smaller standard error and might discriminate.",
    "blocker": "none \u2014 but changing the rule is a change to the pre-registration and is a new pre-registration, not an edit to the old one.",
    "classification": "MEASUREMENT_DEFECT",
-   "queue_position": 15
+   "queue_position": 17
   },
   {
    "id": "A5",
@@ -268,7 +307,7 @@
    "dependencies": "assumption registry",
    "description": "Automatic Scientist \u2014 test `A5_TD_CONVERSION_PORTABILITY`.",
    "blocker": "none known",
-   "queue_position": 16
+   "queue_position": 18
   },
   {
    "id": "A4",
@@ -280,7 +319,7 @@
    "dependencies": "an identified estimand",
    "description": "`A4_STATIC_TEAM_VOLUME_SUFFICIENCY` is half-measured and deliberately DECLARED rather than TESTED.",
    "blocker": "the remaining estimand is not yet measurable. Completing it before it is measurable would manufacture a settlement, which is the failure mode the registry exists to prevent.",
-   "queue_position": 17
+   "queue_position": 19
   },
   {
    "id": "GAME_STATE",
@@ -292,7 +331,7 @@
    "dependencies": "P6, P7, and a lawful pregame-only state generator",
    "description": "The score/clock/game-state generative layer.",
    "blocker": "prerequisite work has not made it lawful. The T1-C pregame-only generator exists; what is missing is the evidence that a game-state layer may consume it without a postgame path.",
-   "queue_position": 18
+   "queue_position": 20
   },
   {
    "id": "OUT-022C",
@@ -305,7 +344,7 @@
    "dependencies": "an actual FanDuel slate salary export",
    "description": "FanDuel single-game salaries. Stays open until a real export exists.",
    "blocker": "no FanDuel salary export is in the repository and none can be fetched from here. **This is assigned, not blocked for both agents**: it needs bytes from outside this checkout. FanDuel provenance stays `VERIFIED_RULE_VALUE_RELAYED_SOURCE` and is not upgraded.",
-   "queue_position": 19
+   "queue_position": 21
   },
   {
    "id": "PRE-PORCELAIN",
@@ -319,7 +358,7 @@
    "description": "`sportsplatform/governance/commit_claim.py` calls `git status --porcelain` and is the sole remaining offender of `test_determinism_proof.test_v_only_the_identity_module_reads_working_tree_state`. Pre-existing at `e050090` and at every baseline since. Named here rather than left inside a 61-item failing total, because P7's own generators joined that list for an hour and the only reason it was noticed is that the list is printed.",
    "blocker": "none \u2014 deliberately low priority",
    "classification": "NONBLOCKING_TECH_DEBT",
-   "queue_position": 20
+   "queue_position": 22
   },
   {
    "id": "SUITE-PRE",
@@ -331,7 +370,7 @@
    "dependencies": "none",
    "description": "The 136 PRE_EXISTING suite failures classified at `7d46f39`. Not to be fixed merely to obtain a green suite; to be worked deliberately, by cause, when a cause is on the critical path.",
    "blocker": "none \u2014 deliberately low priority",
-   "queue_position": 21
+   "queue_position": 23
   }
  ],
  "queue_by_status": {
@@ -341,10 +380,13 @@
    "P8",
    "P9",
    "DISC-1",
+   "DISC-3",
+   "SUN-0",
    "DFS-FS1"
   ],
   "QUEUED": [
    "A3",
+   "SUN-1",
    "DISC-4",
    "DISC-5",
    "OAS1-FLAT-SURFACE",
@@ -360,9 +402,6 @@
    "A4",
    "GAME_STATE",
    "OUT-022C"
-  ],
-  "ACTIVE": [
-   "DISC-3"
   ]
  },
  "unresolved_blockers": [
@@ -396,9 +435,9 @@
   }
  ],
  "next_three_eligible": [
+  "SUN-1",
   "A5",
-  "OAS1-FLAT-SURFACE",
-  "DISC-4"
+  "OAS1-FLAT-SURFACE"
  ],
  "most_recent_suite_classification": {
   "artifact": "nfl/research/suite_attribution/SUITE_ATTRIBUTION_e050090_3270829.json",

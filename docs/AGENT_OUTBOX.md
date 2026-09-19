@@ -1630,3 +1630,110 @@ these bytes do not by themselves enable an optimizer.
 
 **Not asked for.** No strategy content, no ownership data, no contest results,
 no optimizer settings.
+
+---
+
+## 2026-09-19 — OUT-024: the participation availability watch has been dead for four days, and the vintage capture is not
+
+**ASSIGNED, not blocked.** This is a workflow fault with a named cause, and the
+fix is a one-line change I can make; what I cannot do is confirm it took.
+
+### What I measured
+
+`nfl/availability_manifest.jsonl` holds 24 probe records and its newest is
+**2026-09-15T06:37:05Z** — 4.4 days old at the time of writing. The last
+`nfl-availability[bot]` commit on `main` is 2026-09-15T18:30:34Z. Nothing since.
+
+Over the same period the *vintage* capture has been entirely healthy: on
+`capture-prod` at 763b776 the six core sources — depth_charts,
+espn_injuries_json, injuries, official_injury_report, schedules,
+weekly_rosters — were all last captured **2026-09-19T15:05:38Z**, i.e. half an
+hour old, on a thirty-minute cadence with no gaps.
+
+### The cause, as far as this tree can see it
+
+On 2026-09-15T19:27Z `b9b6ff4` ("Point the scheduled capture at the governed
+capture surface") moved the capture workflows onto the `capture-prod` branch.
+`nfl-availability.yml` was **not** moved: lines 129-130 still read
+
+    git pull --rebase --autostash origin main
+    git push origin HEAD:main
+
+So it writes to `main` while the surface it belongs to writes to
+`capture-prod`. That alone would not stop it from running, which is why this is
+an ASSIGNED question rather than a finding: I can see that it stopped, and I can
+see one change that landed twenty-two minutes before the last run, but I cannot
+read the Actions run log from here to distinguish "disabled", "failing at the
+push step", "scheduled but never fired" or "succeeding and pushing to a branch
+nobody reads".
+
+### What I need
+
+1. The **run history of `NFL participation availability watch`** since
+   2026-09-15 — fired / not fired, and if it fired, the failing step.
+2. If it is failing on the push: confirmation that pointing it at
+   `capture-prod` is the intended fix, since that is what the other four
+   workflows now do.
+3. One **current probe result** for the two URLs, so the claim can be restated
+   without waiting for the workflow:
+   - `https://github.com/nflverse/nflverse-data/releases/download/pbp_participation/pbp_participation_2026.csv`
+   - `https://github.com/nflverse/nflverse-data/releases/download/snap_counts/snap_counts_2026.csv`
+   HTTP status, byte count, and the first line only. Nothing parsed.
+
+### Why this is not cosmetic
+
+`GAP-2026-PARTICIPATION` in `nfl/INFORMATION_GAP_REGISTRY.json` carries a
+two-day recheck horizon, and it has one because **snap_counts went from 404 to
+200 two days after the claim that both files were absent**. The watch is the
+only thing that would notice the same happening to `pbp_participation`. With
+the watch dead, that gap's claim is now 4.4 days old against its own horizon and
+is surfaced by `nfl/tools/discovery.py` as `ASSIGNED_PAST_HORIZON`.
+
+### What it does NOT unblock, stated so it is not misread
+
+Availability is not predictive eligibility. The snap_counts record carries
+`authorization_code: NOT_AUTHORIZED_BY_OWNER` and
+`ordering_code: NO_FORECAST_TO_JUDGE`. These are postgame files. Restarting the
+watch buys provenance, not a feature.
+
+### Not asked for
+
+No parsing, no ingestion, no model change, and no decision about predictive use.
+
+---
+
+## 2026-09-19 — OUT-025: the three information gaps whose recheck is not executable here
+
+**ASSIGNED.** `nfl/INFORMATION_GAP_REGISTRY.json` now carries, per gap, when it
+was last rechecked, the newest instant in the evidence that recheck read, and a
+horizon measured against the evidence rather than the reading. Three gaps have
+`recheck_executable_here: false`, and the project's own rule is that such a
+recheck is recorded as ASSIGNED with an outbox entry rather than left standing
+as a fact. This is that entry. **None of the three is urgent** — all three are
+inside their horizons as of today — so this is a standing request, not a
+Sunday one.
+
+**`GAP-ROUTES`** (action BLOCKED, 30-day horizon). Per-player routes-run from a
+licensed vendor. What is needed is only the **state of the licensing question**,
+not the data: is the FTN agreement still unsigned, and are ML/training rights,
+local retention, derived-output ownership, post-termination rights, `skp_role`
+coverage and the identifier crosswalk still unresolved? Note that identity is
+*not* the blocker — `pff_id` covers 100% of the WR/TE/RB frame (1,126 players,
+47,215 player-games), so a join would be deterministic.
+
+**`GAP-ENDZONE-TARGETS` and `GAP-COVERAGE-MATCHUP`** (action HOLD, 30-day
+horizon). Both want a charting source: target *depth* for the first, receiver-
+specific coverage for the second. What is needed is whether any such source
+exists on terms this project could use. The current proxy for end-zone targets
+is line of scrimmage, which is a different quantity, and it is marked
+UNAVAILABLE in the TD1 pre-registration rather than approximated — that should
+stay true until a real source arrives.
+
+**`GAP-PLAYCALLER`** (action HOLD, 30-day horizon). Whether any structured feed
+of play-caller changes exists. The current proxy is team history, which lags a
+change by weeks.
+
+### Not asked for
+
+No vendor data, no trial downloads, no scraped substitutes, and no
+recommendation about whether to license anything.

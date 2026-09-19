@@ -189,7 +189,7 @@ its downstream impact justifies it.
 
 ## ID: DISC-3
 - **priority**: 3
-- **status**: ACTIVE
+- **status**: DONE
 - **dependencies**: none
 - **description**: The information gap registry has no freshness field and
   nothing re-reads it. `GAP-2026-PARTICIPATION` still records "MEASURED: both
@@ -210,6 +210,102 @@ its downstream impact justifies it.
 - **ranking**: impact MEDIUM (it is how DISC-2's data nearly stayed invisible)
   x uncertainty LOW x measurability HIGH x EVI MEDIUM-HIGH (prevents the same
   near-miss recurring across ten gaps)
+- **result**: all ten gaps carry `last_rechecked_utc`, `evidence_as_of_utc`,
+  `recheck_horizon_days`, `recheck_horizon_basis`, `recheck_method`,
+  `recheck_executable_here` and `recheck_assignment`. The load-bearing design
+  choice is that **the horizon is measured against `evidence_as_of_utc`, not
+  against `last_rechecked_utc`** -- re-reading an unchanged file is not a
+  recheck and must not reset the clock, which is exactly how the 2026-09-08
+  claim survived snap_counts publishing on 2026-09-10.
+
+  Horizons are per gap, 2 to 90 days, each with its reason: two days for a
+  weekly-published file because snap_counts flipped inside two days; ninety
+  for `GAP-AIRYARDS-YAC` and `GAP-TD-RECOVERABILITY`, which do not age at all
+  because one is semantic and the other is an unrun experiment.
+
+  Three claims restated from measured evidence:
+  - `GAP-2026-PARTICIPATION` -- the old claim is **half false**. Measured from
+    `nfl/availability_manifest.jsonl`, 24 probes: snap_counts 404 on
+    2026-09-08T13:28:42Z, 200 on 2026-09-10T18:31:04Z with 93 rows, 187 rows
+    on 09-11, 1,397 rows on 09-14, one unchanging column-order digest.
+    pbp_participation 404 at all 12 of its probes. Availability is still not
+    predictive eligibility: `NOT_AUTHORIZED_BY_OWNER`, `NO_FORECAST_TO_JUDGE`.
+  - `GAP-PREGAME-ROLE` -- "capture running since 2026-09-06" replaced by the
+    yield: 663 depth_charts captures PASS over 19 distinct content blobs,
+    2026-09-06T18:50:49Z to 2026-09-19T15:05:38Z. Nineteen distinct pregame
+    role states over 12.8 days is not yet enough to test a within-week role
+    change, and now says so.
+  - `GAP-INJURY-VINTAGE` -- 624 `injuries` PASS over 12 blobs; 566
+    `official_injury_report` PASS over **546** distinct documents. The
+    official report is where the real vintage depth is, because it
+    republishes within the week.
+
+  One gap surfaces today: `GAP-2026-PARTICIPATION`, as
+  `ASSIGNED_PAST_HORIZON`, 4.4 days against its 2-day horizon, because the
+  availability watch stopped. Assigned as OUT-019 and OUT-024.
+
+  Tests: `nfl/tests/test_discovery.py`, 100 checks, 0 failing. The four new
+  ones drive synthetic registries so they pin the RULE and not today's state
+  -- including the pair that separates "looked today at 30-day-old evidence"
+  (past horizon) from "looked 60 days ago at one-day-old evidence" (current).
+  The old test asserted `'GAP-2026-PARTICIPATION' in stale`, which encoded the
+  day rather than the rule, and is replaced.
+- **commit**: see SUN-0 below; DISC-3 ships with it
+
+## ID: SUN-0
+- **priority**: 0
+- **status**: DONE
+- **dependencies**: none
+- **description**: **Priority override, owner 2026-09-19: system-wide Sunday
+  readiness.** Before anything else could be measured, establish which tree
+  the capture actually writes to. I reported earlier in this session that no
+  source was fresher than 39.7 hours and that the official status sources were
+  98.3 hours old, and began writing that up as a readiness blocker. That was a
+  measurement of a branch, not of the system.
+- **blocker**: none
+- **acceptance criteria**:
+  - the freshness claim names the tree it was measured from;
+  - capture evidence is ingested append-only with no seal rewritten;
+  - the correction is recorded, not quietly dropped.
+- **classification**: MEASUREMENT_DEFECT
+- **ranking**: impact HIGH (every downstream readiness claim inherits it)
+  x uncertainty LOW x measurability HIGH x EVI HIGH
+- **result**: the scheduled capture has been healthy throughout, writing to
+  the `capture-prod` branch since 2026-09-15T19:27Z (b9b6ff4). Measured on
+  capture-prod at 763b776, the six core sources were last captured
+  2026-09-19T15:05:38Z -- half an hour old, not four days. Merged into this
+  branch as 8b8555b: 2,257 manifest lines appended in capture_id order with
+  the common ancestor's 4,191 lines verified intact on BOTH sides first;
+  2,878 blobs verified against their recorded sha256 with zero mismatches
+  (2,103 before the merge, so 775 added and none broken); the same six
+  pre-existing absent paths before and after; 150 of 150 board seals recompute.
+
+  **This is the second time a stale ref has been read here as a dead
+  executor** -- 2c0c36b had to withdraw "main stopped capturing on 09-11" for
+  the same reason. The generalising rule, now in the registry's own
+  `recheck_rule`: a freshness number means nothing unless it names the tree.
+
+## ID: SUN-1
+- **priority**: 1
+- **status**: QUEUED
+- **dependencies**: SUN-0
+- **description**: The participation availability watch
+  (`nfl-availability.yml`) last ran 2026-09-15T06:37:05Z and has not run
+  since. It still pushes to `main` (lines 129-130) while the four capture
+  workflows were moved to `capture-prod` twenty-two minutes after its last
+  successful run. Point it at the governed surface, and get the run history
+  read so "stopped" is distinguished from "failing at the push step".
+- **blocker**: the Actions run log is not readable from this executor. Raised
+  as OUT-024.
+- **acceptance criteria**:
+  - the workflow writes to the same branch as the surface it belongs to;
+  - a fresh probe result for both URLs restates `GAP-2026-PARTICIPATION`
+    inside its 2-day horizon;
+  - the watch's own liveness is detectable without reading Actions.
+- **classification**: MEASUREMENT_DEFECT
+- **ranking**: impact MEDIUM (it buys provenance, not a feature -- these are
+  postgame files and remain NOT_AUTHORIZED_BY_OWNER) x uncertainty LOW
+  x measurability HIGH x EVI MEDIUM
 
 ## ID: DFS-FS1
 - **priority**: 8

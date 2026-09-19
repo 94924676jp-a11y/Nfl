@@ -1,6 +1,6 @@
 # NFL — current state
 
-**Generated** by `nfl/tools/system_state.py` at 2026-09-19T15:25:52.377704+00:00 from `SYSTEM_STATE.json`. Do not hand-edit this file: regenerate it.
+**Generated** by `nfl/tools/system_state.py` at 2026-09-19T15:42:29.338508+00:00 from `SYSTEM_STATE.json`. Do not hand-edit this file: regenerate it.
 
 Every value under `measured` was computed by reading this repository at the timestamp above. Every value under `declared` was asserted by somebody and says who, when, and why it cannot be measured here. Do not quote one as the other.
 
@@ -11,18 +11,18 @@ Every value under `measured` was computed by reading this repository at the time
 |  |  |
 |---|---|
 | branch | `claude/nfl-greenfield-architecture-stsxmk` |
-| HEAD | `06bc006` — Adjudicate the full-slate DFS packet: reproduce, disagree, and reconcile |
-| HEAD committed | 2026-09-19T05:24:52+00:00 |
-| commits on branch | 882 |
-| source scope | clean |
-| dirty tree entries (source and not) | 18 |
-| code_version | `06bc006856aa5e1c9860ad7450d7715c284f1902+src1[44aa01d03783de18]` |
+| HEAD | `8b8555b` — Ingest capture-prod: the capture was never dead, I was reading the wrong tree |
+| HEAD committed | 2026-09-19T15:36:37+00:00 |
+| commits on branch | 1082 |
+| source scope | 1 dirty source file(s) |
+| dirty tree entries (source and not) | 11 |
+| code_version | `8b8555b1d25f586b1cb896be34a659ad463603f7+src1[acbe5fcf4e5e461e]` |
 | python modules | 664 |
-| lines of python | 213,366 |
+| lines of python | 213,590 |
 
 ## 2. Test suite
 
-Source: `nfl/research/suite_attribution/SUITE_DIFF_fullslate_fs1.json`. measured at WORKING_TREE, HEAD is 06bc006. This total is not a statement about the tree as it stands.
+Source: `nfl/research/suite_attribution/SUITE_DIFF_fullslate_fs1.json`. measured at WORKING_TREE, HEAD is 8b8555b. This total is not a statement about the tree as it stands.
 
 |  | at WORKING_TREE | baseline 06bc006 | delta |
 |---|---|---|---|
@@ -40,25 +40,25 @@ No item is newly introduced since the baseline.
 
 ## 3. Captured evidence
 
-`nfl/vintage_manifest.jsonl` carries **4529 rows**; the vintage store holds **1449 files**. Retrieval spans 2026-09-06T18:50:49.540119+00:00 to 2026-09-17T23:42:25.952893+00:00.
+`nfl/vintage_manifest.jsonl` carries **6448 rows**; the vintage store holds **1971 files**. Retrieval spans 2026-09-06T18:50:49.540119+00:00 to 2026-09-17T23:42:25.952893+00:00.
 
 | source | manifest rows |
 |---|---|
-| depth_charts | 471 |
-| espn_injuries_json | 462 |
+| depth_charts | 663 |
+| espn_injuries_json | 654 |
 | hardrock_market_snapshot | 1 |
-| injuries | 472 |
-| official_inactives | 483 |
-| official_injury_report | 465 |
+| injuries | 664 |
+| official_inactives | 674 |
+| official_injury_report | 657 |
 | official_status_evidence | 1 |
-| official_transactions | 462 |
+| official_transactions | 654 |
 | pbp | 4 |
-| pbp_participation | 383 |
-| schedules | 471 |
-| snap_counts | 383 |
-| weekly_rosters | 471 |
+| pbp_participation | 575 |
+| schedules | 663 |
+| snap_counts | 575 |
+| weekly_rosters | 663 |
 
-Manifest row states: {'BLOCKED': 567, 'DEFERRED': 40, 'FAIL': 108, 'NOT_APPLICABLE': 766, 'PASS': 3048}.
+Manifest row states: {'BLOCKED': 759, 'DEFERRED': 224, 'FAIL': 108, 'NOT_APPLICABLE': 1150, 'PASS': 4207}.
 
 ## 4. Governed assumptions
 
@@ -112,7 +112,9 @@ Production readiness (`nfl/production/production_readiness.json`, updated 2026-0
 | A3 | 12 | QUEUED |  |
 | DISC-1 | 1 | DONE |  |
 | DISC-2 | 2 | BLOCKED | **measured, not assumed — the conditioning variable has no contrast.** `A1_SUCCESSOR_FEASI |
-| DISC-3 | 3 | ACTIVE |  |
+| DISC-3 | 3 | DONE |  |
+| SUN-0 | 0 | DONE |  |
+| SUN-1 | 1 | QUEUED |  |
 | DFS-FS1 | 8 | DONE |  |
 | DFS-FS2 | 9 | BLOCKED | no full-slate joint-world generator exists; the only sealed worlds are one single-game boa |
 | DISC-4 | 8 | QUEUED |  |

@@ -23,8 +23,10 @@ lives in WORK_QUEUE.md in words. A number would be a silent constant.
 """
 from __future__ import annotations
 
+import datetime as dt
 import json
 import os
+import re
 import pathlib
 import sys
 import tempfile
@@ -96,22 +98,187 @@ def test_the_real_tree_detects_the_injuries_source():
     check('so the detector fires on it', 'injuries' in fired, str(fired))
 
 
-def test_a_gap_claim_past_its_horizon_is_surfaced():
+def _reg(gaps):
+    """A synthetic gap registry on disk, so the rule is tested, not the day."""
+    fd, name = tempfile.mkstemp(suffix='.json')
+    os.close(fd)
+    pathlib.Path(name).write_text(json.dumps({'gaps': gaps}))
+    return name
+
+
+def _ago(days):
+    return (dt.datetime.now(dt.timezone.utc)
+            - dt.timedelta(days=days)).isoformat()
+
+
+def test_the_horizon_clock_runs_on_the_evidence_not_on_the_reading():
+    """The defect DISC-3 exists to stop.
+
+    "MEASURED: both 404 for 2026 as of 2026-09-08" survived snap_counts
+    publishing on 2026-09-10. Re-reading that sentence a hundred times would
+    not have found it, so a recheck that reads an unchanged file must not
+    reset the clock. `last_rechecked_utc` says somebody looked;
+    `evidence_as_of_utc` says how new what they saw was, and the horizon is
+    measured against the second.
+    """
+    name = _reg([
+        {'id': 'LOOKED-TODAY-AT-OLD-EVIDENCE', 'action': 'HOLD',
+         'last_rechecked_utc': _ago(0), 'evidence_as_of_utc': _ago(30),
+         'recheck_horizon_days': 7, 'recheck_executable_here': True},
+        {'id': 'LOOKED-LONG-AGO-AT-FRESH-EVIDENCE', 'action': 'HOLD',
+         'last_rechecked_utc': _ago(60), 'evidence_as_of_utc': _ago(1),
+         'recheck_horizon_days': 7, 'recheck_executable_here': True},
+    ])
+    try:
+        g = {x['id']: x for x in D.gaps(name)}
+        check('a gap read today whose EVIDENCE is 30 days old is past its '
+              '7-day horizon',
+              g['LOOKED-TODAY-AT-OLD-EVIDENCE']['recheck_state']
+              == 'PAST_HORIZON',
+              g['LOOKED-TODAY-AT-OLD-EVIDENCE']['recheck_state'])
+        check('and a gap nobody has read for 60 days whose EVIDENCE is one '
+              'day old is CURRENT',
+              g['LOOKED-LONG-AGO-AT-FRESH-EVIDENCE']['recheck_state']
+              == 'CURRENT',
+              g['LOOKED-LONG-AGO-AT-FRESH-EVIDENCE']['recheck_state'])
+        check('the age reported is the evidence age, not the reading age',
+              g['LOOKED-TODAY-AT-OLD-EVIDENCE']['claim_age_days'] > 29)
+    finally:
+        os.unlink(name)
+
+
+def test_a_recheck_that_cannot_be_run_here_is_assigned_not_merely_stale():
+    """Blocked for both of us, or assigned to one of us. They are not the same.
+
+    An assigned recheck past its horizon is still past its horizon -- it does
+    not get to be quiet because somebody else owes it -- but it must say who
+    owes it, so it is never left standing as a fact.
+    """
+    name = _reg([
+        {'id': 'MINE', 'action': 'HOLD', 'evidence_as_of_utc': _ago(30),
+         'recheck_horizon_days': 7, 'recheck_executable_here': True},
+        {'id': 'THEIRS', 'action': 'BLOCKED', 'evidence_as_of_utc': _ago(30),
+         'recheck_horizon_days': 7, 'recheck_executable_here': False,
+         'recheck_assignment': 'OUT-999'},
+    ])
+    try:
+        g = {x['id']: x for x in D.gaps(name)}
+        check('a recheck this executor can run is PAST_HORIZON',
+              g['MINE']['recheck_state'] == 'PAST_HORIZON',
+              g['MINE']['recheck_state'])
+        check('one it cannot is ASSIGNED_PAST_HORIZON',
+              g['THEIRS']['recheck_state'] == 'ASSIGNED_PAST_HORIZON',
+              g['THEIRS']['recheck_state'])
+        check('and it carries the assignment rather than a bare status',
+              g['THEIRS']['recheck_assignment'] == 'OUT-999')
+        cands = D.candidates({'newly_publishing': [], 'gaps': list(g.values()),
+                              'assumptions': {}, 'technical_debt': []})
+        trig = {c['subject']: c['trigger'] for c in cands}
+        check('both are surfaced as candidates -- assigned is not silent',
+              set(trig) == {'MINE', 'THEIRS'}, str(trig))
+        check('and the assigned one is surfaced under its own trigger',
+              trig['THEIRS'] == 'GAP_RECHECK_ASSIGNED_AND_PAST_HORIZON',
+              trig['THEIRS'])
+    finally:
+        os.unlink(name)
+
+
+def test_an_undated_gap_cannot_hide_inside_any_horizon():
+    """A claim with no date never ages, so no horizon can ever reach it."""
+    name = _reg([{'id': 'UNDATED', 'action': 'HOLD',
+                  'evidence_status': 'it is known to be so'}])
+    try:
+        g = D.gaps(name)[0]
+        check('an undated gap is flagged', g['has_no_date_at_all'] is True)
+        check('and its state is UNDATED, not CURRENT',
+              g['recheck_state'] == 'UNDATED', g['recheck_state'])
+        cands = D.candidates({'newly_publishing': [], 'gaps': [g],
+                              'assumptions': {}, 'technical_debt': []})
+        check('and it is surfaced under its own trigger',
+              [c['trigger'] for c in cands] == ['GAP_CLAIM_CARRIES_NO_DATE'],
+              str([c['trigger'] for c in cands]))
+    finally:
+        os.unlink(name)
+
+
+def test_a_declared_horizon_overrides_the_default():
+    """Horizons are per gap because the facts move at different speeds.
+
+    Two days for a weekly-published file; ninety for an unrun experiment that
+    does not age at all. A single constant would either spam the short ones or
+    sleep through them.
+    """
+    name = _reg([
+        {'id': 'FAST', 'action': 'HOLD', 'evidence_as_of_utc': _ago(3),
+         'recheck_horizon_days': 2, 'recheck_executable_here': True},
+        {'id': 'SLOW', 'action': 'HOLD', 'evidence_as_of_utc': _ago(3),
+         'recheck_horizon_days': 90, 'recheck_executable_here': True},
+        {'id': 'UNDECLARED', 'action': 'HOLD', 'evidence_as_of_utc': _ago(3),
+         'recheck_executable_here': True},
+    ])
+    try:
+        g = {x['id']: x for x in D.gaps(name)}
+        check('a 2-day horizon catches 3-day-old evidence',
+              g['FAST']['recheck_state'] == 'PAST_HORIZON')
+        check('a 90-day horizon does not', g['SLOW']['recheck_state']
+              == 'CURRENT')
+        check('an undeclared horizon falls back to the declared default and '
+              'says so', g['UNDECLARED']['recheck_horizon_days']
+              == D.GAP_RECHECK_DAYS
+              and g['UNDECLARED']['recheck_horizon_basis'] == 'default')
+        check('the default is declared, not hidden in a comparison',
+              isinstance(D.GAP_RECHECK_DAYS, int) and D.GAP_RECHECK_DAYS > 0,
+              str(D.GAP_RECHECK_DAYS))
+    finally:
+        os.unlink(name)
+
+
+def test_the_real_registry_carries_freshness_on_every_gap():
+    """DISC-3's acceptance criteria, against the registry that ships."""
     gs = D.gaps()
     check('the gap registry parses', len(gs) >= 5, str(len(gs)))
-    dated = [g for g in gs if g['newest_date_in_claim']]
-    check('at least one gap carries a date in its claim', dated, str(len(dated)))
-    check('a claim age is computed for every dated gap',
-          all(g['claim_age_days'] is not None for g in dated))
-    check('the horizon is declared, not hidden in a comparison',
-          isinstance(D.GAP_RECHECK_DAYS, int) and D.GAP_RECHECK_DAYS > 0,
-          str(D.GAP_RECHECK_DAYS))
-    stale = [g['id'] for g in gs if g['stale_beyond_recheck_horizon']]
-    check('the participation gap is among the stale ones',
-          'GAP-2026-PARTICIPATION' in stale, str(stale))
-    check('a gap carrying no date at all is flagged as such rather than '
-          'treated as fresh',
-          all(isinstance(g['has_no_date_at_all'], bool) for g in gs))
+    undated = [g['id'] for g in gs if g['has_no_date_at_all']]
+    check('no gap ships undated', not undated, str(undated))
+    proxy = [g['id'] for g in gs if g['age_basis'] != 'evidence_as_of_utc']
+    check('every gap dates its EVIDENCE explicitly rather than leaving the '
+          'tool to scrape a date out of prose', not proxy, str(proxy))
+    nohz = [g['id'] for g in gs
+            if g['recheck_horizon_basis'] != 'declared']
+    check('every gap declares its own horizon', not nohz, str(nohz))
+    nolook = [g['id'] for g in gs if not g['last_rechecked_utc']]
+    check('every gap records when it was last rechecked', not nolook,
+          str(nolook))
+    reg = json.loads((pathlib.Path(_ROOT) / 'nfl'
+                      / 'INFORMATION_GAP_REGISTRY.json').read_text())
+    for g in reg['gaps']:
+        check(f'{g["id"]} says why its horizon is what it is',
+              bool((g.get('recheck_horizon_basis') or '').strip()))
+        check(f'{g["id"]} names what was read to recheck it',
+              bool((g.get('recheck_method') or '').strip()))
+
+
+def test_an_unrunnable_recheck_names_an_outbox_entry_that_exists():
+    """Never blocked on something outside this repository without asking.
+
+    The project rule is that a recheck needing bytes this executor cannot
+    fetch is ASSIGNED with an outbox entry. An assignment naming an entry
+    nobody wrote is worse than no assignment, because it reads as discharged.
+    """
+    reg = json.loads((pathlib.Path(_ROOT) / 'nfl'
+                      / 'INFORMATION_GAP_REGISTRY.json').read_text())
+    outbox = (pathlib.Path(_ROOT) / 'docs' / 'AGENT_OUTBOX.md').read_text()
+    external = [g for g in reg['gaps']
+                if g.get('recheck_executable_here') is False]
+    check('some gaps are honestly marked not-executable here', external,
+          'if none, either the flag is unused or the claim is too good')
+    for g in external:
+        a = g.get('recheck_assignment') or ''
+        check(f'{g["id"]} names an assignment', bool(a.strip()))
+        ids = re.findall(r'OUT-\d+', a)
+        check(f'{g["id"]} names at least one OUT- identifier', bool(ids), a)
+        for i in ids:
+            check(f'{g["id"]} assignment {i} exists in the outbox',
+                  i in outbox, i)
 
 
 def test_a_critical_falsified_assumption_without_a_successor_is_surfaced():
