@@ -152,6 +152,21 @@ if __name__ == '__main__':
     print('\nFAILURE INVENTORY (category / code / stage -> games):')
     for (c, code, stg), n in cat.most_common():
         print(f'  {c:24s} {code:32s} {stg:22s} {n}')
-    json.dump(r, open(os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                   'slate_inventory.json'), 'w'), indent=1)
-    print('\nwrote slate_inventory.json')
+    # THE INVENTORY GOES WHERE THE RUN WENT, AND THE PATH IS PRINTED.
+    #
+    # This wrote to the MODULE directory and ignored --out-dir, and printed
+    # "wrote slate_inventory.json" with no path. Two consequences, both hit
+    # on 2026-09-19: a baseline slate and a candidate slate with different
+    # --out-dir silently overwrote each other's result, and a reader looking
+    # in --out-dir found nothing and had to go searching for a file the
+    # program said it had written.
+    #
+    # "Do not infer artifact existence from printed output" cuts both ways.
+    # A program that reports a bare filename is asking to be inferred from.
+    out = os.path.join(a.out_dir, 'slate_inventory.json')
+    os.makedirs(a.out_dir, exist_ok=True)
+    with open(out, 'w') as fh:
+        json.dump(r, fh, indent=1)
+    print(f'\nwrote {os.path.abspath(out)} '
+          f'({os.path.getsize(out)} bytes, {len(r["results"])} game(s), '
+          f'configuration {r["model_configuration"]})')
