@@ -3,8 +3,11 @@
 **No.** Zero of the 256 Early Only players has a current usable projection.
 
 229 have **readable distributions, including DraftKings fantasy points**, from
-runs that **refused to seal**. Numbers exist. A forecast does not. That
-distinction is the entire finding and a ready/not-ready flag would destroy it.
+runs that are disqualified three times over: they refused to seal, they are
+flagged `dry_run`/`prospective_eligible=false` by construction, and their
+input-validation stage passed on a **placeholder source hash** rather than on a
+real capture. Numbers exist. A forecast does not. That distinction is the
+entire finding and a ready/not-ready flag would destroy it.
 
 Evidence: `nfl/dfs/salaries/DK_EARLY_ONLY_PROJECTION_AUDIT.json` (451 KB, one
 row per player).
@@ -83,20 +86,31 @@ are kickers and other non-DK-scored rows.)
 Per game: PIT@NE 32, PHI@TEN 31, CLE@TB 30, CAR@ATL 29, CIN@HOU 29, GB@NYJ 29,
 NO@BAL 27, MIN@CHI 22.
 
-**4. Which games are currently refusing? — All eight, at `artifact_sealing`,
-none at the game level.**
+**4. Which games are currently refusing? — All eight, and at TWO different
+stages depending on how they are run.**
 
-Every Early Only game **ran**: the engine completed appearance, participation,
-targets/carries, conversion, TD, QB, joint reconciliation, draws and scoring.
-Each then hit `BLOCKED[ARTIFACT_SEALING_FAILURE]` on
-`current_season_input_freshness` — `denom_panel` is BLOCKED-BY-DECLARATION
-(`CURRENT_SEASON_SOURCE_UNVERIFIED`) and `team_volume_history` is
-`CURRENT_SEASON_INPUT_STALE` at ordinal **202518** against a required
-**202601**. `denom_panel.csv.gz` holds 3,230 rows from 202001 to 202518 and
-**zero rows for 2026**.
+*As the rehearsal driver runs them*, every Early Only game **ran**: the engine
+completed appearance, participation, targets/carries, conversion, TD, QB, joint
+reconciliation, draws and scoring. Each then hit
+`BLOCKED[ARTIFACT_SEALING_FAILURE]` on `current_season_input_freshness` —
+`denom_panel` is BLOCKED-BY-DECLARATION (`CURRENT_SEASON_SOURCE_UNVERIFIED`)
+and `team_volume_history` is `CURRENT_SEASON_INPUT_STALE` at ordinal **202518**
+against a required **202601**. `denom_panel.csv.gz` holds 3,230 rows from
+202001 to 202518 and **zero rows for 2026**.
+
+*As the production entrypoint runs them*, they never get that far. Measured
+just now, all eight at `--written-at 2026-09-20T05:00:00Z`, configuration
+`V1_CANDIDATE_R8`, no `--fixtures`:
+
+    BLOCKED[SOURCE_MISSING] capture_validation
+    "no source captures were supplied"
+
+Not one layer executes. The two results are not in conflict; they are the same
+fact seen from two callers, and the next section is what the difference means.
 
 So the narrow blocker is **`DK_SCORING_CONTRACT_INCOMPLETE`: no — that one is
-fine.** It is `SEALING_REFUSED_NO_2026_DENOMINATOR_PANEL`.
+fine.** It is `SEALING_REFUSED_NO_2026_DENOMINATOR_PANEL` **behind**
+`NO_PRODUCTION_FIXTURE_ASSEMBLER`.
 
 **5. Are existing projections stale? — Yes, all 229, by 13.5 hours.**
 
@@ -114,22 +128,78 @@ never sealed. Both facts are true and the artifact records both.
 
 **6. Smallest step to a preliminary board tonight.**
 
-Not "fix sealing" — that is SUN-5, needs a 2026 denominator panel, and is real
-work. The smallest **honest** step is one governed change:
+**My first answer to this was wrong and I am withdrawing it.** It was: emit the
+refused run's numbers as a `PROVISIONAL_UNSEALED` artifact. That cannot be done
+honestly, for the reason in the next section — those numbers come from a run
+whose input-validation stage was satisfied by a placeholder hash. Publishing
+them under any label would be publishing numbers whose inputs were never
+validated, and the label would not repair that.
 
-> Emit the output of a refused run as an explicitly `PROVISIONAL_UNSEALED`
-> repository artifact, carrying the refusal that produced it.
+The smallest honest step is one bounded piece of repository work:
 
-The pipeline already computes everything. What is missing is a lawful way to
-*publish* it without calling it a forecast. That weakens no gate: sealing still
-refuses, the artifact says so on its face, and nothing may be promoted from it.
+> **Build a production fixture assembler.** Read the vintage manifest, emit
+> true `source_hashes` — real sha256, real `retrieved_at` — for every
+> registered source a slate run consumes, and hand that to
+> `run_forecast.build`. Then `capture_validation` is satisfied by evidence
+> instead of by `'b' * 64`, and the run need not be flagged `dry_run`.
 
-Concretely, and already begun: (a) ingest the fresh capture — **done**, commit
-`7e50eec`; (b) re-run the eight games against it — **running now** at
-`--written-at 2026-09-20T16:00:00Z`; (c) write the draws plus per-player
-percentiles into `nfl/dfs/salaries/` labelled `PROVISIONAL_UNSEALED`.
+That is inside this repository, needs no network, and is mine. It does not
+weaken a gate; it removes a bypass. It also does not produce a board on its
+own: sealing still refuses on the 2026 denominator panel (SUN-5) afterwards.
 
-Estimate: the re-run is ~20 minutes; the artifact writer is small.
+**Therefore there is no honest preliminary Early Only board tonight**, and the
+deadline does not change that. Step (a), ingesting the fresh capture, is done
+(commit `7e50eec`). Steps (b) and (c) as I described them are cancelled.
+
+## The correction this audit needed, and it is the largest finding here
+
+The first version of this document said the 229 reachable rows came from runs
+that refused at `artifact_sealing`, and were 13.5 hours stale. Both true. Both
+understate it, because I read the refusal and did not read the run's own
+status file. It says:
+
+| field | value, all 15 runs |
+|---|---|
+| `dry_run` | **true** |
+| `prospective_eligible` | **false** |
+
+That is not incidental. `nfl/production/rehearsal/run_slate.py` is the **only**
+slate driver in the repository. Its own docstring opens "REHEARSAL ONLY", and
+it passes `dry_run=True` in the call itself — there is no flag to turn off and
+no non-rehearsal path from the vintage manifest to a slate run.
+
+The reason it is declared rehearsal-only sits one line above that call
+(`run_slate.py:96`):
+
+```python
+'source_hashes': {'schedules': {'sha256': 'b' * 64,
+                                'retrieved_at': '2026-09-08T12:00:00Z'}},
+```
+
+Sixty-four `b` characters. And `capture_validation`
+(`run_forecast.py:266-306`) iterates **the set it is handed** and has no
+required-source check, so one synthetic entry passes the entire stage and it
+returns `PASS[INPUTS_VALIDATED]`.
+
+**Two things must be said precisely, because they are different.** The football
+layers below that stage *do* read real captures, through
+`nfl/production/nonqb/vintage_selector.py`, with real capture ids — which is
+how the 13.5-hour figure was measurable at all. So the numbers rest on real
+evidence. What rests on a placeholder is **the stage that certifies the
+inputs**. A number can be computed from real data and still have no valid
+provenance record, and that is exactly the state here.
+
+Two defects, recorded separately:
+
+- **DK-3 (`CRITICAL_CORRECTNESS`)** — `capture_validation` validates only the
+  supplied set. It cannot detect a missing required source, so its PASS is a
+  statement about the caller, not about the captures.
+- **DK-4 (`PRODUCTION_BLOCKER`)** — no production fixture assembler exists. The
+  only driver fabricates one source record; the direct entrypoint refuses
+  `SOURCE_MISSING`. There is no third option today.
+
+Had I stopped at the sealing refusal, this document would have read as *one
+blocker away from a board*. It is not one blocker away.
 
 ## The 11 NOT_MODELED
 
@@ -172,16 +242,20 @@ Blocker code: `DST_DISTRIBUTION_UNAVAILABLE`, and behind it
 
 Objective reasons, narrowest first:
 
-1. `SEALING_REFUSED_NO_2026_DENOMINATOR_PANEL` — 0 of 256 has a sealed
+1. `NO_PRODUCTION_FIXTURE_ASSEMBLER` — the only slate driver is
+   rehearsal-only and satisfies `capture_validation` with a placeholder
+   hash; the direct entrypoint refuses `SOURCE_MISSING`. **New, and it
+   sits upstream of everything below.**
+2. `SEALING_REFUSED_NO_2026_DENOMINATOR_PANEL` — 0 of 256 has a sealed
    projection.
-2. `DST_DISTRIBUTION_UNAVAILABLE` — 16 of 16; no legal Classic lineup exists
+3. `DST_DISTRIBUTION_UNAVAILABLE` — 16 of 16; no legal Classic lineup exists
    without one.
-3. `DK_CLASSIC_CONTRACT_ABSENT` — no salary cap, roster slots, FLEX rule or
+4. `DK_CLASSIC_CONTRACT_ABSENT` — no salary cap, roster slots, FLEX rule or
    DST points-allowed ladder in `site_rules.py`. (The *pool's* roster slots and
    FLEX eligibility ARE now known, from DK's own export; the contest rules are
    not.)
-4. `PROJECTIONS_STALE_BY_13.5_HOURS` — being fixed as this is written.
-5. `OFFICIAL_INACTIVES_NOT_YET_AVAILABLE` — expected, not a defect.
+5. `PROJECTIONS_STALE_BY_13.5_HOURS` — being fixed as this is written.
+6. `OFFICIAL_INACTIVES_NOT_YET_AVAILABLE` — expected, not a defect.
 
 What is **not** blocking: identity (0 unresolved, 0 ambiguous), the slate
 (resolved from DK's own export), DK scoring (implemented, running), the

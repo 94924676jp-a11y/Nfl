@@ -1988,3 +1988,54 @@ this file are `DK_ELIGIBLE_MODEL_UNSUPPORTED`.
 No projections, no ownership, no contest results, no optimizer settings. The
 file's own projection columns are dropped at parse time and are not authorized
 as predictive inputs.
+
+---
+
+## OUT-031 — the Early Only projection audit's first version understated the blocker, and the correction changes the plan
+
+**Raised:** 2026-09-20, ~05:00Z. **Assignment:** informational to the owner;
+DK-3 and DK-4 are mine and need no one else.
+
+I reported earlier tonight that 229 of the 256 Early Only players have readable
+distributions from runs that refused at `artifact_sealing`, 13.5 hours stale.
+Both statements are true and I am not withdrawing them. They were not the whole
+disqualifier and I should have read the runs' own status files before writing.
+
+Every one of those 15 runs carries `dry_run: true` and
+`prospective_eligible: false`. That is structural: `run_slate.py` is the only
+slate driver in the repository, it opens "REHEARSAL ONLY", and it passes
+`dry_run=True` in the call. The reason sits one line above
+(`run_slate.py:96`) — it satisfies `capture_validation` with a source set of
+one entry whose sha256 is `'b' * 64`.
+
+And `capture_validation` accepts it, because it iterates the set it is handed
+and has no required-source check.
+
+**Said precisely, because two things are easy to conflate here.** The football
+layers below that stage read real captures through `vintage_selector`, with
+real capture ids — that is how the 13.5-hour figure was measurable. The numbers
+rest on real evidence. What rests on a placeholder is the stage that certifies
+the inputs. A number computed from real data with no valid provenance record is
+exactly the state we are in.
+
+**What this changes.** My answer to "smallest step to a preliminary board
+tonight" was: emit the refused run's output as `PROVISIONAL_UNSEALED`. I am
+withdrawing that. Those numbers' input validation passed on a placeholder, and
+no label repairs that. The smallest honest step is DK-4 — build a fixture
+assembler that reads the vintage manifest and emits true source hashes — and it
+does not produce a board tonight either, because sealing still refuses on the
+2026 denominator panel (SUN-5) behind it.
+
+**So there is no honest preliminary Early Only board for the 1:00 PM ET lock.**
+The deadline does not change that and I am not routing around it.
+
+Recorded as DK-3 (`CRITICAL_CORRECTNESS`) and DK-4 (`PRODUCTION_BLOCKER`) in
+`nfl/WORK_QUEUE.md`, characterised by
+`nfl/tests/test_capture_validation_provenance.py` (8 checks, all passing
+against the defect as it stands), and amended into
+`nfl/dfs/salaries/DK_EARLY_ONLY_PROJECTION_AUDIT.{json,md}`.
+
+**Nothing requested of the network agent by this item.** OUT-025 (the DK
+Classic contract) and OUT-027 (the CHI injury report) are unchanged and still
+outstanding.
+

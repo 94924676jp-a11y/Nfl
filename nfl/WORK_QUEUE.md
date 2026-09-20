@@ -724,3 +724,57 @@ its downstream impact justifies it.
 - **acceptance criteria**:
   - any failure fixed is traced to its cause and its test is updated rather
     than suppressed.
+
+## ID: DK-3
+- **priority**: 1
+- **status**: QUEUED
+- **dependencies**: none
+- **description**: `run_forecast._capture` (`run_forecast.py:266-306`) iterates
+  the source set it is HANDED. It checks each supplied entry for registry
+  membership, a sha256, a `retrieved_at` no later than `written_at`, and
+  schema. It never asks whether a REQUIRED source is absent. One synthetic
+  entry therefore returns `PASS[INPUTS_VALIDATED]` for the whole stage, and an
+  empty set returns `SOURCE_MISSING` — the two outcomes differ by the caller's
+  declaration, not by the captures. A stage named `capture_validation` whose
+  PASS is a statement about its caller is the project's standing defect class
+  (a partial result read as success) sitting in the gate meant to catch it.
+  Found 2026-09-20 while auditing whether Early Only projections exist; the
+  audit's first version reported the sealing refusal and missed this.
+- **blocker**: none — executable here
+- **acceptance criteria**:
+  - the stage derives its required-source set from `capture.registry` for the
+    season/week/arm being run, and refuses by name when one is absent;
+  - the refusal names the missing sources rather than returning a bare code;
+  - `nfl/tests/test_capture_validation_provenance.py` is updated in the SAME
+    commit, because it currently characterises the defect and will fail;
+  - no source is exempted to make the new check pass.
+- **classification**: CRITICAL_CORRECTNESS
+
+## ID: DK-4
+- **priority**: 1
+- **status**: QUEUED
+- **dependencies**: DK-3
+- **description**: There is no production fixture assembler. The only slate
+  driver, `nfl/production/rehearsal/run_slate.py`, is declared REHEARSAL ONLY,
+  passes `dry_run=True` in the call itself, and satisfies `capture_validation`
+  with `{'schedules': {'sha256': 'b' * 64, 'retrieved_at':
+  '2026-09-08T12:00:00Z'}}` — a placeholder hash for one source
+  (`run_slate.py:96`). `run_forecast.py` invoked directly with no `--fixtures`
+  refuses `SOURCE_MISSING` before any layer runs; measured on all eight Early
+  Only games at `--written-at 2026-09-20T05:00:00Z` under `V1_CANDIDATE_R8`.
+  So there is no path from the vintage manifest to a slate run that is not
+  flagged as rehearsal. Note precisely what this does NOT say: the football
+  layers below the stage read real captures through `vintage_selector`, with
+  real capture ids. The numbers rest on real evidence; the provenance record
+  does not.
+- **blocker**: none — executable here, no network needed
+- **acceptance criteria**:
+  - a module reads `nfl/vintage_manifest.jsonl` and emits true `source_hashes`
+    — real sha256, real `retrieved_at` — for every registered source a slate
+    run consumes;
+  - a slate run built from it passes `capture_validation` on evidence and is
+    NOT flagged `dry_run`;
+  - the placeholder in `run_slate.py` is removed, not left beside the new path;
+  - sealing is expected to refuse afterwards on SUN-5, and that refusal is the
+    correct result rather than a reason to weaken this item.
+- **classification**: PRODUCTION_BLOCKER

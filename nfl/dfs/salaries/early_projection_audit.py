@@ -188,6 +188,79 @@ def verified_distributions(pattern=REHEARSAL_GLOB) -> dict:
             'broken': broken, 'n_broken': len(broken)}
 
 
+#: What `run_slate.py` hands `capture_validation` as its entire source set.
+#: A literal placeholder: sixty-four 'b' characters and a fixed timestamp.
+PLACEHOLDER_SOURCE_SHA = 'b' * 64
+
+
+def run_governance(pattern=REHEARSAL_GLOB) -> dict:
+    """Read each run's OWN status file and report what it says about itself.
+
+    THIS IS THE CHECK THE FIRST VERSION OF THIS AUDIT DID NOT DO, and it
+    changes the answer. The audit reported that these runs refused at
+    `artifact_sealing` and that their evidence was 13.5 hours old. Both true.
+    Neither is the strongest disqualifier. Every one of these runs carries
+    `dry_run: true` and `prospective_eligible: false`, because the only slate
+    driver in the repository -- `nfl/production/rehearsal/run_slate.py` -- is
+    declared REHEARSAL ONLY and sets `dry_run=True` in the call itself. There
+    is no non-rehearsal path from the vintage manifest to a slate run.
+
+    And the reason it is declared rehearsal-only is visible one line above the
+    call: the fixture it builds satisfies `capture_validation` with
+
+        'source_hashes': {'schedules': {'sha256': 'b' * 64,
+                                        'retrieved_at': '2026-09-08T12:00:00Z'}}
+
+    a placeholder hash for one source. `capture_validation` iterates the set it
+    is HANDED and has no required-source check, so one synthetic entry passes
+    the whole stage. The football layers below it do read real captures through
+    `vintage_selector`, with real capture ids -- so the numbers rest on real
+    evidence while the stage that certifies inputs was satisfied by a
+    placeholder. Those are different statements and this function reports both.
+
+    `run_forecast.py` invoked directly, with no `--fixtures`, refuses at
+    `capture_validation[SOURCE_MISSING]` before any layer runs. Measured on all
+    eight Early Only games at 2026-09-20T05:00Z.
+    """
+    out, rows = {}, []
+    for m in sorted(glob.glob(pattern)):
+        sp = pathlib.Path(m).parent / 'run_status.json'
+        if not sp.exists():
+            continue
+        d = json.loads(sp.read_text())
+        ff = d.get('first_failure') or {}
+        rows.append({
+            'run_id': d.get('run_id'),
+            'status': d.get('status'),
+            'dry_run': d.get('dry_run'),
+            'prospective_eligible': d.get('prospective_eligible'),
+            'written_at': d.get('written_at'),
+            'first_failure_stage': (ff.get('stage')
+                                    if isinstance(ff, dict) else ff),
+            'publication_code': (d.get('publication') or {}).get('code'),
+        })
+        out[d.get('run_id')] = rows[-1]
+    n = len(rows)
+    return {
+        'runs': rows,
+        'n_runs': n,
+        'n_dry_run': sum(1 for r in rows if r['dry_run'] is True),
+        'n_prospective_eligible': sum(1 for r in rows
+                                      if r['prospective_eligible'] is True),
+        'by_run_id': out,
+        'only_slate_driver': 'nfl/production/rehearsal/run_slate.py',
+        'driver_hardcodes_dry_run': True,
+        'driver_source_hashes_are_a_placeholder': True,
+        'placeholder_sha256': PLACEHOLDER_SOURCE_SHA,
+        'capture_validation_has_no_required_source_check': True,
+        'direct_entrypoint_without_fixtures':
+            'BLOCKED[SOURCE_MISSING] at capture_validation, all 8 Early '
+            'games, measured 2026-09-20T05:00Z',
+        'football_layers_read_real_captures_via':
+            'nfl/production/nonqb/vintage_selector.py',
+    }
+
+
 def dk_points_available(verified) -> dict:
     """Which verified players carry a DK fantasy-point distribution."""
     have = {pid for pid, r in verified['by_gsis_id'].items()
@@ -195,7 +268,8 @@ def dk_points_available(verified) -> dict:
     return {'n_with_dk_points': len(have), 'gsis_ids': have}
 
 
-def classify(pool_rows, reconciled_rows, verified, sealed, refusing_games):
+def classify(pool_rows, reconciled_rows, verified, sealed, refusing_games,
+             governance=None):
     """One state per Early Only row. Every one established, not inferred."""
     by_name = {(r['dk_name'], r['team']): r for r in reconciled_rows}
     out = []
@@ -213,7 +287,7 @@ def classify(pool_rows, reconciled_rows, verified, sealed, refusing_games):
             'model_vintage': None, 'information_clock': None,
             'football_means': None, 'distribution_fields_available': None,
             'dk_points_mean': None, 'dk_points_percentiles': None,
-            'draws_reference': None,
+            'draws_reference': None, 'run_governance': None,
         }
         if p['dk_pos'] == 'DST':
             rec['state'] = DST
@@ -235,12 +309,22 @@ def classify(pool_rows, reconciled_rows, verified, sealed, refusing_games):
         v = verified['by_gsis_id'].get(rec['gsis_id'])
         if v is not None:
             rec['state'] = REACHABLE
+            g = (governance or {}).get('by_run_id', {}).get(v['run_id'])
+            rec['run_governance'] = g
+            # THREE INDEPENDENT DISQUALIFIERS, AND NAMING ONLY ONE UNDERSTATES
+            # IT. An earlier version of this audit named the sealing refusal
+            # alone, which reads as "one blocker away". It is not.
             rec['why'] = (
                 f'the engine produced readable distributions for him in run '
-                f'{v["run_id"]}, WHICH REFUSED at artifact_sealing on '
-                f'current_season_input_freshness. Numbers exist; a forecast '
-                f'does not. They live in a scratch directory, not a '
-                f'repository artifact.')
+                f'{v["run_id"]}. That run is disqualified three times over: '
+                f'(1) it REFUSED at artifact_sealing on '
+                f'current_season_input_freshness; (2) it carries dry_run=true '
+                f'and prospective_eligible=false, because the only slate '
+                f'driver is declared REHEARSAL ONLY and sets it; (3) its '
+                f'capture_validation stage passed on a placeholder source '
+                f'hash of sixty-four b characters, not on a real capture. '
+                f'Numbers exist; a forecast does not. They live in a scratch '
+                f'directory, not a repository artifact.')
             rec['draws_reference'] = {'run_id': v['run_id'],
                                       'game_id': v['game_id'],
                                       'sealed': False}
@@ -263,3 +347,52 @@ def classify(pool_rows, reconciled_rows, verified, sealed, refusing_games):
                           'him in any layer')
         out.append(rec)
     return out
+
+
+#: The amendment this module was extended for, applied to an artifact already
+#: written. Kept HERE rather than in a throwaway script so the correction is
+#: reproducible and so the `why` text has one definition, not two.
+def amend(doc: dict, governance: dict = None) -> dict:
+    """Add run governance to an audit artifact and restate every `why`.
+
+    The artifact this amends said the 229 reachable rows came from runs that
+    refused at `artifact_sealing`. True, and it was not the whole disqualifier.
+    Amending rather than rewriting keeps the verified distribution counts --
+    established by opening arrays, not by reading `row_ids` -- exactly as
+    measured.
+    """
+    g = governance if governance is not None else run_governance()
+    doc = dict(doc)
+    doc['run_governance'] = g
+    doc['amendment'] = {
+        'spec_version': SPEC_VERSION + '+governance-1',
+        'what_changed': 'every MODEL_REACHABLE row now names three '
+                        'disqualifiers instead of one',
+        'what_did_not_change': 'the verified distribution counts; they were '
+                               'measured by opening the npz and are unmoved',
+        'why': 'naming the sealing refusal alone reads as one blocker away '
+               'from a board. The runs are also dry_run/prospective_eligible='
+               'false by construction, and their capture_validation passed on '
+               'a placeholder source hash. Three, not one.',
+    }
+    n = 0
+    for rec in doc.get('rows', []):
+        ref = rec.get('draws_reference') or {}
+        rid = ref.get('run_id')
+        if rec.get('state') != REACHABLE or not rid:
+            continue
+        rec['run_governance'] = g['by_run_id'].get(rid)
+        rec['why'] = (
+            f'the engine produced readable distributions for him in run '
+            f'{rid}. That run is disqualified three times over: '
+            f'(1) it REFUSED at artifact_sealing on '
+            f'current_season_input_freshness; (2) it carries dry_run=true '
+            f'and prospective_eligible=false, because the only slate '
+            f'driver is declared REHEARSAL ONLY and sets it; (3) its '
+            f'capture_validation stage passed on a placeholder source '
+            f'hash of sixty-four b characters, not on a real capture. '
+            f'Numbers exist; a forecast does not. They live in a scratch '
+            f'directory, not a repository artifact.')
+        n += 1
+    doc['amendment']['n_rows_restated'] = n
+    return doc
