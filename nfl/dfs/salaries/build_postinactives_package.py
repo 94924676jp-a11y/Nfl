@@ -112,6 +112,22 @@ def assert_no_inactive_in_playable(runs, inactive_by_club, roster) -> dict:
         for pid in sorted(emitted & ids):
             survivors.append({'game_id': r['game_id'], 'gsis_id': pid,
                               'name': roster.get(pid, {}).get('full_name')})
+    if not inactive_by_club:
+        # AN EMPTY LIST AND A VERIFIED-EMPTY LIST ARE DIFFERENT FACTS. With no
+        # official declarations ingested, `survivors` is empty because nothing
+        # was compared, not because the board was found clean. Returning PASS
+        # here would certify an unchecked board -- exactly the collapse this
+        # module's docstring forbids. The 1pm slate never reached this branch
+        # because it had real evidence; a slate whose inactives have not been
+        # published yet reaches it on every call.
+        return {'state': 'NOT_CERTIFIED',
+                'code': 'NO_OFFICIAL_INACTIVE_EVIDENCE',
+                'n_inactive_ids_checked': 0,
+                'n_emitted_player_rows': sum(len(r['stats']) for r in runs),
+                'survivors': [],
+                'method': 'no official inactive declarations were supplied '
+                          'for this slate, so no intersection was computed. '
+                          'The board is NOT certified inactive-clean.'}
     return {'state': 'FAIL' if survivors else 'PASS',
             'code': ('OFFICIALLY_INACTIVE_PLAYER_IN_PLAYABLE_BOARD'
                      if survivors
@@ -381,11 +397,26 @@ def prop_rows(runs, roster, market_csv, inactive_ids, delta_csv=None,
                 mcse_over=round(ev['mcse_over'], 6),
                 n_draws=ev['n_draws'],
                 method=ev['method'],
-                novig_p_over=dv.get('p_over'), novig_p_under=dv.get('p_under'),
-                devig_code=dv.get('code'))
-            if dv.get('p_over') is not None:
-                base['edge_over'] = round(ev['p_over'] - dv['p_over'], 6)
-                base['edge_under'] = round(ev['p_under'] - dv['p_under'], 6)
+                # odds.devig returns novig_p_over / novig_p_under /
+                # devig_status. Reading 'p_over'/'p_under'/'code' here
+                # returned None on EVERY row while the market was in fact
+                # two-sided, which reads as 'the book gave no price' when the
+                # truth was 'the key was guessed'. Names taken from the
+                # module, not from memory.
+                novig_p_over=(round(dv['novig_p_over'], 6)
+                              if dv.get('novig_p_over') is not None else None),
+                novig_p_under=(round(dv['novig_p_under'], 6)
+                               if dv.get('novig_p_under') is not None
+                               else None),
+                book_hold=(round(dv['hold'], 6)
+                           if dv.get('hold') is not None else None),
+                devig_code=dv.get('devig_status'),
+                devig_method=dv.get('devig_method'))
+            if dv.get('novig_p_over') is not None:
+                base['edge_over'] = round(
+                    ev['p_over'] - dv['novig_p_over'], 6)
+                base['edge_under'] = round(
+                    ev['p_under'] - dv['novig_p_under'], 6)
                 base['ev_over_per_unit'] = OD.ev_per_unit(
                     ev['p_over'], ev['p_push'], m['over_price'])
                 base['ev_under_per_unit'] = OD.ev_per_unit(

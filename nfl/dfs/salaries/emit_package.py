@@ -30,7 +30,23 @@ if str(_REPO) not in sys.path:
 
 from nfl.dfs.salaries import build_postinactives_package as B  # noqa: E402
 
-RUNS = '/tmp/claude-0/postinact/*/'
+# ---------------------------------------------------------------------------
+# SLATE PARAMETERISATION (added for the 4pm production-speed test).
+#
+# Every value below keeps its 1pm default EXACTLY as it was, so re-emitting
+# the Early Only package is byte-identical work. A different slate overrides
+# them through the environment rather than by editing this file, because two
+# slates running on the same afternoon must not share one mutable constant.
+#
+# The two that are allowed to be ABSENT are the market board and the official
+# inactive state. Absent is not empty: with no market board the prop section
+# is refused by name, and with no inactive state the board is NOT certified
+# inactive-clean. Neither degrades into a reassuring blank.
+# ---------------------------------------------------------------------------
+import os as _os
+
+SLATE = _os.environ.get('SLATE_NAME', 'EARLY_ONLY_1PM')
+RUNS = _os.environ.get('SLATE_RUNS', '/tmp/claude-0/postinact/*/')
 #: PRIMARY comparator: the POST-INACTIVES capture. The 04:52Z board is kept
 #: for chronology and is never overwritten, but it predates the inactive
 #: publication and must not be the board a final edge is computed against.
@@ -45,6 +61,16 @@ STATE = 'nfl/research/sunday/official_inactives_2026W2/OFFICIAL_INACTIVES_STATE.
 EARLY = ('2026_02_CAR_ATL', '2026_02_CIN_HOU', '2026_02_CLE_TB',
          '2026_02_GB_NYJ', '2026_02_MIN_CHI', '2026_02_NO_BAL',
          '2026_02_PHI_TEN', '2026_02_PIT_NE')
+OUT_NAME = _os.environ.get(
+    'SLATE_OUT', 'EARLY_ONLY_POSTINACTIVES_PACKAGE_2026W2.json')
+if _os.environ.get('SLATE_GAMES'):
+    EARLY = tuple(g.strip() for g in _os.environ['SLATE_GAMES'].split(',')
+                  if g.strip())
+for _k, _v in (('SLATE_MARKET', 'MARKET'), ('SLATE_MARKET_PRIOR',
+               'MARKET_PRIOR'), ('SLATE_DELTA', 'DELTA'),
+               ('SLATE_STATE', 'STATE')):
+    if _k in _os.environ:
+        globals()[_v] = _os.environ[_k] or None
 
 
 def roster_map():
@@ -58,7 +84,11 @@ def roster_map():
 
 def build() -> dict:
     ros = roster_map()
-    st = json.loads((_REPO / STATE).read_text())
+    # ABSENT IS NOT EMPTY. With no official inactive state the board is not
+    # inactive-clean and must not be presented as though it had been checked.
+    st_path = (_REPO / STATE) if STATE else None
+    have_state = bool(st_path and st_path.exists())
+    st = json.loads(st_path.read_text()) if have_state else {'resolved': []}
     inact_by_club = {}
     for r in st['resolved']:
         inact_by_club.setdefault(r['club'], []).append(r['gsis_id'])
@@ -79,9 +109,27 @@ def build() -> dict:
     gate = B.assert_no_inactive_in_playable(runs, inact_by_club, ros)
     shared = B.assert_shared_draws(runs)
     cut = runs[0]['written_at'] if runs else None
-    props = B.prop_rows(runs, ros, _REPO / MARKET, inact_ids,
-                        delta_csv=_REPO / DELTA, model_cut=cut) if runs else {
-        'rows': [], 'counts': {}}
+    mkt_path = (_REPO / MARKET) if MARKET else None
+    have_market = bool(mkt_path and mkt_path.exists())
+    dlt_path = (_REPO / DELTA) if DELTA else None
+    if runs and have_market:
+        props = B.prop_rows(
+            runs, ros, mkt_path, inact_ids,
+            delta_csv=(dlt_path if dlt_path and dlt_path.exists() else None),
+            model_cut=cut)
+    else:
+        # Named refusal, not a blank section. A reader must be able to tell
+        # "no sportsbook board was supplied for this slate" apart from "the
+        # book had no prices", and apart from "the model supported nothing".
+        props = {'rows': [], 'counts': {},
+                 'refused': ('NO_MARKET_BOARD_SUPPLIED_FOR_SLATE'
+                             if not have_market else 'NO_COMPLETED_RUNS'),
+                 'why': ('Exact prop probabilities are counted from the '
+                         'frozen draws against a sportsbook board. No board '
+                         'was supplied for this slate, so no prop row is '
+                         'emitted. This is an absent input, NOT a finding '
+                         'that the book offered nothing and NOT a model '
+                         'failure.')}
 
     return {
         'READ_THIS_FIRST': {
@@ -141,8 +189,20 @@ def build() -> dict:
             'information_cut': runs[0]['written_at'] if runs else None,
             'n_draws_per_game': sorted({r['n_draws'] for r in runs}),
             'games_expected': list(EARLY),
+            'slate': SLATE,
+            'official_inactive_evidence_present': have_state,
+            'market_board_present': have_market,
             'games_present': sorted(got),
             'games_missing': missing,
+            'game_completion_labels': {
+                g: ('GAME_COMPLETED' if g in got
+                    else 'GAME_NOT_COMPLETED_BEFORE_LOCK') for g in EARLY},
+            'not_completed_before_lock': missing,
+            'missing_game_fill_policy': (
+                'A game labelled GAME_NOT_COMPLETED_BEFORE_LOCK contributes '
+                'no rows to any board here. It was not filled from a stale '
+                'run, a third-party projection, or an estimate. Absent means '
+                'absent.'),
             'runs': [{'game_id': r['game_id'], 'run_id': r['run_id'],
                       'status': r['status'],
                       'first_failure': r['first_failure'],
@@ -171,7 +231,13 @@ def build() -> dict:
                           'changed': 389, 'unchanged': 218, 'new': 17,
                           'removed': 40},
             },
-            'inactive_evidence': {
+            'inactive_evidence': ({
+                'source': 'NONE_SUPPLIED',
+                'code': 'NO_OFFICIAL_INACTIVE_EVIDENCE',
+                'why': 'No official inactive package was supplied for this '
+                       'slate. No player was excluded on availability '
+                       'grounds and the board is NOT certified '
+                       'inactive-clean.'} if not have_state else {
                 'source': 'OFFICIAL_NFL_AND_TEAM_SITES',
                 'package_sha256': st['provenance']['package_hashes'],
                 'league_published_utc':
@@ -187,7 +253,7 @@ def build() -> dict:
                 'emergency_third_qb_handling':
                     st['emergency_third_qb_handling'],
                 'unresolved': st['unresolved'],
-            },
+            }),
         },
         'audits': {
             'inactive_exclusion': gate,
@@ -202,8 +268,7 @@ def build() -> dict:
 
 def main():
     out = build()
-    p = (_REPO / 'nfl' / 'research' / 'sunday'
-         / 'EARLY_ONLY_POSTINACTIVES_PACKAGE_2026W2.json')
+    p = _REPO / 'nfl' / 'research' / 'sunday' / OUT_NAME
     p.write_text(json.dumps(out, indent=1, sort_keys=True) + '\n')
     print(f'wrote {p}  {p.stat().st_size} bytes')
     print('games present :', len(out['provenance']['games_present']))
