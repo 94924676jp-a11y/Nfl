@@ -231,7 +231,8 @@ def position_support(runs, roster) -> dict:
 
 
 # ===================================================================== PROPS
-def prop_rows(runs, roster, market_csv, inactive_ids) -> dict:
+def prop_rows(runs, roster, market_csv, inactive_ids, delta_csv=None,
+              model_cut=None) -> dict:
     """Exact empirical probability at the exact sportsbook line.
 
     P(over), P(under) and P(push) are COUNTED from the same draws that scored
@@ -261,6 +262,32 @@ def prop_rows(runs, roster, market_csv, inactive_ids) -> dict:
             if v:
                 name_idx[(_norm(v), info.get('team'))].append(pid)
 
+    # MARKET MOVEMENT, 04:52Z -> 16:35Z, so a reader can separate model
+    # disagreement from a book that has already absorbed the news. Keyed on
+    # (game, market, displayed selection) because a LINE can move and the row
+    # is still the same market.
+    moved = {}
+    if delta_csv:
+        with open(delta_csv, newline='') as fh:
+            for d in _csv.DictReader(fh):
+                k = (d['game'], d['market'], d['displayed_selection'])
+                # THE COLUMN IS `delta_status`, NOT `change`. The first
+                # version of this reader asked for 'change', got None on every
+                # row, and still produced a movement block -- a field that is
+                # present and always empty reads as "nothing moved" when in
+                # fact nothing was read. Named explicitly so it cannot recur.
+                moved[k] = {
+                    'delta_status': d.get('delta_status'),
+                    'line_0452Z': d.get('line_0452Z'),
+                    'line_1635Z': d.get('line_1635Z'),
+                    'over_0452Z': d.get('over_0452Z'),
+                    'over_1635Z': d.get('over_1635Z'),
+                    'under_0452Z': d.get('under_0452Z'),
+                    'under_1635Z': d.get('under_1635Z'),
+                    'selection_price_0452Z': d.get('selection_price_0452Z'),
+                    'selection_price_1635Z': d.get('selection_price_1635Z'),
+                }
+
     rows, counts = [], collections.Counter()
     with open(market_csv, newline='') as fh:
         for m in _csv.DictReader(fh):
@@ -278,9 +305,12 @@ def prop_rows(runs, roster, market_csv, inactive_ids) -> dict:
                     'sportsbook': m['book'],
                     'market_snapshot_time': m['retrieved_at_utc'],
                     'book_line_timestamp_utc': m['book_line_timestamp_utc'],
-                    'model_information_cut': runs[0]['written_at'],
-                    'time_alignment': 'MODEL_NEWER_THAN_MARKET',
-                    'market_status': m['market_status']}
+                    'model_information_cut': model_cut,
+                    'time_alignment': _align(model_cut,
+                                             m['retrieved_at_utc']),
+                    'market_status': m['market_status'],
+                    'market_movement': moved.get(
+                        (m['game'], mk, m['displayed_selection']))}
             if pid is None:
                 base.update(support='IDENTITY_UNRESOLVED',
                             why=f'{len(hits)} roster rows answer to this '
@@ -368,3 +398,49 @@ def prop_rows(runs, roster, market_csv, inactive_ids) -> dict:
 def _norm(s):
     from nfl.dfs.salaries import dk_universe as DK
     return DK._norm_name(s)
+
+
+#: The inactive declarations published ~15:30Z. A model cut and a market
+#: capture BOTH after that instant carry the same inactive information, which
+#: is what makes them comparable at all.
+INACTIVES_PUBLISHED_UTC = '2026-09-20T15:30:00Z'
+
+
+def _align(model_cut, market_retrieved):
+    """Two clocks, compared -- never assumed equal.
+
+    TIME_ALIGNED_POST_INACTIVES means both sides are after the inactive
+    publication, so neither is missing that news. It does NOT mean the clocks
+    are identical, and where the book is later the gap is stated in seconds
+    rather than waved away: anything the market learned in that window is
+    information the model does not have.
+    """
+    import datetime as _d
+
+    def _p(t):
+        if not t:
+            return None
+        return _d.datetime.fromisoformat(t.replace('Z', '+00:00'))
+    mc, mr, ia = _p(model_cut), _p(market_retrieved), _p(
+        INACTIVES_PUBLISHED_UTC)
+    if mc is None or mr is None:
+        return 'UNKNOWN_ALIGNMENT'
+    both_post = mc >= ia and mr >= ia
+    gap = int((mr - mc).total_seconds())
+    if both_post:
+        return {'label': 'TIME_ALIGNED_POST_INACTIVES',
+                'model_cut': model_cut, 'market_retrieved': market_retrieved,
+                'market_minus_model_seconds': gap,
+                'note': ('both sides postdate the ~15:30Z inactive '
+                         'publication, so both carry the inactive '
+                         'information. The book was captured '
+                         f'{gap} seconds after the model cut; anything it '
+                         'absorbed in that window is NOT in the model.')
+                if gap > 0 else
+                ('both sides postdate the inactive publication and the model '
+                 'cut is at or after the market capture.')}
+    if mc >= ia > mr:
+        return {'label': 'MODEL_NEWER_THAN_MARKET',
+                'note': 'the market capture predates the inactive '
+                        'publication; the book had not repriced.'}
+    return {'label': 'UNKNOWN_ALIGNMENT'}
