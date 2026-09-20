@@ -504,6 +504,42 @@ DELIVERED: tuple = (
               "nothing. Read by nfl/dfs/salaries/, which is downstream of "
               "every seal."),
     ),
+    DeliveredSpec(
+        name="hardrock_early_1pm_market_board",
+        delivered_at="2026-09-20T05:27:00Z",
+        acquisition="OWNER_SUPPLIED_DELIVERY",
+        role="DOWNSTREAM_COMPARATOR_ONLY",
+        forecast_eligible=False,
+        why_not=("A sportsbook price is forbidden as a predictive input, and "
+                 "not because of what it would do to the numbers: a model "
+                 "that has seen the line is no longer independent evidence "
+                 "about the line. It may be compared against a SEALED "
+                 "forecast and never read before one. No such forecast exists "
+                 "for this slate -- CURRENT_PROJECTION_AVAILABLE is 0 for all "
+                 "256 Early Only players -- so today it may not be compared "
+                 "against anything at all."),
+        blob="nfl/research/market/EARLY_1PM_2026W2/raw/"
+             "NFL_wk2_1pm_hardrock_markets_2026-09-20T0452Z.csv",
+        note=("7,081 rows, 8 games, all kicking off 2026-09-20T17:00:00Z. "
+              "591 main-line player markets over 133 players, 3,969 "
+              "alternates, 2,521 game/team rows. SOURCE QUALIFICATION, which "
+              "must not be flattened: these are Hard Rock Bet PRICES carried "
+              "by the OpticOdds v3 /fixtures/odds feed with "
+              "sportsbook='Hard Rock'. That names the book whose prices they "
+              "are; it does not name who served the bytes. It is a structured "
+              "redistribution, NOT a direct scrape of app.hardrockbet.com, "
+              "and relabelling it as first-party raw bytes is forbidden. The "
+              "bundle also carries a secondary DraftKings touchdown probe, "
+              "because Hard Rock lists no anytime-TD Over 0.5 in any of the "
+              "eight games; the two books are kept apart and were verified "
+              "apart at the bytes -- 11,764 primary odds records all "
+              "sportsbook='Hard Rock', 615 secondary all 'DraftKings', no "
+              "overlap. Validated by nfl/market/early_1pm_hardrock.py; "
+              "artifact nfl/research/market/EARLY_1PM_2026W2/VALIDATION.json. "
+              "DELIVERED, so there is NO recurring capture obligation: the "
+              "owner handed these bytes over once and this project holds no "
+              "endpoint, credential or schedule for them."),
+    ),
 )
 
 DELIVERED_BY_NAME = {d.name: d for d in DELIVERED}
