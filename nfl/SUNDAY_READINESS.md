@@ -133,6 +133,42 @@ night before a slate.
 | distribution fields | p10–p90 | + p5, p95, P(zero), 2 × MCSE |
 | capture freshness | read from whatever tree you happened to be in | refuses to answer without placing the tree against `capture-prod` |
 
+## Suite state at HEAD, attributed
+
+Full run, and every result classified against the 9052d0c baseline rather than
+reported as a bare number (`nfl/research/suite_attribution/SUITE_DIFF_fs1_sunday.json`):
+
+| | baseline 9052d0c | HEAD |
+|---|---|---|
+| modules | 186 | 190 |
+| test functions | 2,027 | 2,065 |
+| checks | 10,800 | 11,007 |
+| failing checks | 61 | 72 |
+| raised | 21 | 26 |
+| zero-check functions | 0 | 0 |
+| blocked functions | 23 | 22 |
+
+PRE_EXISTING 128, NEWLY_INTRODUCED 22, RESOLVED_SINCE_BASELINE 3,
+CHANGED_CLASSIFICATION 2. Of the 22 newly introduced: **17 fixed** (the
+ownership-audit homonym and the two generated-state staleness checks),
+**5 escalated and deliberately left red** (the frozen G0A schedule identity —
+see below), and the `test_inactives_substance` census drift queued as SUN-8.
+
+## One rule I broke, escalated rather than decided
+
+Regenerating `nfl-t90.yml` for week 2 changed
+`SCHED-2a2924d4966fbd3d` → `SCHED-5e2e890466c87284`. That first value is
+pinned in `test_non_g0a_isolation.py:38` as *"Frozen by owner ruling until the
+event"*, and the window it guards carries the outstanding G0A `inactives`
+obligation.
+
+`nfl-t90.yml` is doing two jobs — live scheduler and frozen record of week 1 —
+and they are compatible for exactly one week. I kept the regeneration because
+the week-1 window closed eleven days ago and no cron reopens it, while
+tomorrow's windows are unrecoverable after T-90; `git revert f9148b0` undoes it
+in one command. **I did not touch the frozen constant and did not edit any of
+the five failing checks.** OUT-029, SUN-7.
+
 ## Classification
 
 **READY** — capture freshness (with the tree named), player universe, QB
