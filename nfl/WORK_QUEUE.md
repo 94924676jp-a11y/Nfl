@@ -814,3 +814,158 @@ its downstream impact justifies it.
   now says `DECLARED_BYTES_UNVERIFIED_DRY_RUN` so the exemption is announced
   rather than taken silently. The assembler's manifest read is declared in
   `pipeline.EDGES`; `--audit-reads` is back to PASS.
+
+## ID: DFS-C0
+- **priority**: 6
+- **status**: DONE (2026-09-20)
+- **dependencies**: none
+- **description**: Gap analysis of the owner-delivered
+  `dk-classic-gpp-portfolio-research.md` against this repository, and the
+  provenance collision it rests on. The dossier cites `[file:253][file:254]`
+  as INTERNAL correlation measurements; they are the external packet
+  `reproduce_external_panel.py` exists to adjudicate, and DFS-FS1 disagrees
+  with it in places that matter — QB.PC1 +0.207/+0.170 against the dossier's
+  0.37-0.42, cross-team dependence indistinguishable from zero (1 of 16
+  Pearson intervals excluding zero, 0 of 16 tail-lift intervals excluding
+  1.0) against the dossier's "STRONG_EMPIRICAL_SUPPORT" for bring-backs.
+  Treating the dossier as independent corroboration would double-count one
+  packet.
+- **blocker**: none
+- **acceptance criteria**:
+  - every classification cites a repository path, not a recollection;
+  - the dossier's QB+1 hard-vs-soft self-contradiction is NAMED, not resolved
+    by picking one;
+  - nothing from the dossier is encoded as a rule or a constant.
+- **classification**: RESEARCH_BLOCKER
+- **artifact**: `nfl/research/dfs/classic/CLASSIC_GPP_GAP_ANALYSIS.md`
+
+## ID: DFS-C1
+- **priority**: 6
+- **status**: BLOCKED
+- **dependencies**: DFS-C0, A7 (full-slate joint worlds)
+- **description**: Pre-register DFS-X1 through DFS-X7 as committed documents
+  before any arm runs. Specified in the gap analysis §6.
+- **blocker**: A7. No experiment can run without full-slate joint worlds.
+- **acceptance criteria**:
+  - hypothesis, inputs, metric, leakage safeguards and threshold committed
+    before the first arm;
+  - evaluation blocks on SLATES, never on lineups — 73 entries on one slate
+    are one observation;
+  - no realized-role labels (DFS-H2: +0.10 to +0.28 inflation);
+  - no sportsbook total as a game-environment conditioner.
+- **classification**: RESEARCH_BLOCKER
+
+## ID: DFS-C2
+- **priority**: 5
+- **status**: BLOCKED
+- **dependencies**: OUT-025
+- **description**: `DRAFTKINGS_CLASSIC` in `site_rules.SITES` — salary cap,
+  roster slots, FLEX eligibility, minimum teams, DST points-allowed ladder.
+  Today `SITES` holds only `DRAFTKINGS_SHOWDOWN` and `FANDUEL_SINGLE_GAME`.
+- **blocker**: OUT-025, network. A salary file is not a contract and lineup
+  legality cannot be certified from one.
+- **acceptance criteria**:
+  - `VERIFIED_AGAINST_SITE_FILE`, never `UNVERIFIED_FROM_RECOLLECTION`;
+  - `assert_lineup_legal` extended for positional slots and FLEX, with
+    brute-force fixtures.
+- **classification**: PRODUCTION_BLOCKER
+
+## ID: DFS-C3
+- **priority**: 5
+- **status**: BLOCKED
+- **dependencies**: DFS-C2, A7
+- **description**: DST engine layer and DK scoring adapter. `statline.
+  NOT_SIMULATED` records "the engine produces no team-defence outputs at all",
+  which makes every DST pair in FS1 `FS1_DST_SCORING_ABSENT` and makes the
+  dossier's ONLY hard constraint (QB vs opposing DST) unmeasurable and
+  unenforceable here. A Classic lineup must field one, so this is not
+  optional.
+- **blocker**: DFS-C2 for the ladder; the layer itself is football work and
+  goes through the candidate/pre-registration path, never as a DFS change.
+- **acceptance criteria**:
+  - sacks, interceptions, fumble recoveries, defensive and return TDs,
+    safeties, points-allowed ladder;
+  - `'dst'` leaves `NOT_SIMULATED` only when a real layer exists.
+- **classification**: PRODUCTION_BLOCKER
+
+## ID: DFS-C4
+- **priority**: 6
+- **status**: BLOCKED
+- **dependencies**: A7
+- **description**: The DFS-FS2 gate, restated as a stop condition. Compare
+  simulated dependence against the FS1 panel, sign and ordering only. The draw
+  manifest declares `across_rows: INDEPENDENT_STREAMS_COLUMN_ALIGNED` --
+  player rows are seeded independently -- so a cross-row correlation read off
+  our own worlds measures the generator's lack of coupling, not football. No
+  stack rule may be validated against our worlds until FS2 passes.
+- **blocker**: A7.
+- **acceptance criteria**:
+  - if simulated cross-row structure is still generator artifact, STOP and fix
+    the generator rather than proceeding to a portfolio engine;
+  - magnitudes are never compared, only sign and ordering.
+- **classification**: RESEARCH_BLOCKER
+
+## ID: DFS-C5
+- **priority**: 10
+- **status**: QUEUED
+- **dependencies**: none
+- **description**: Shared scoring interface across the DK and FD adapters
+  (roadmap A2). They do not share a key schema today; a caller written against
+  one raises `KeyError` on the other.
+- **blocker**: none
+- **acceptance criteria**:
+  - equivalence tests on a common stat line (roadmap A5).
+- **classification**: NONBLOCKING_TECH_DEBT
+
+## ID: DFS-C6
+- **priority**: 9
+- **status**: QUEUED
+- **dependencies**: none
+- **description**: The word "ownership" already means two unrelated things in
+  this tree -- `nfl/production/ownership_audit.py` is CODE ownership
+  governance, and `nfl/research/own1..own9` is RUSHING ownership, which player
+  owns a carry. DFS field ownership would be a third. Name it
+  `field_ownership` before it lands, and record why.
+- **blocker**: none
+- **acceptance criteria**:
+  - no module named `ownership.py` under `nfl/dfs/`;
+  - the collision is documented where a reader meets it.
+- **classification**: MEASUREMENT_DEFECT
+
+## ID: DFS-C7
+- **priority**: 6
+- **status**: BLOCKED
+- **dependencies**: DFS-C1, A7
+- **description**: Resolve whether QB+1 is a hard constraint, a soft
+  preference, or simulation-emergent, via DFS-X2. The dossier asserts both: its
+  §40.2 engineering table lists "At least one QB stack (QB+1 pass catcher) per
+  lineup" as a HARD_CONSTRAINT, while its §1.2 prose, its stack-type matrix and
+  its own engineering recommendation all say soft with simulation allowed to
+  override for rushing quarterbacks. Neither reading is adopted by default.
+- **blocker**: A7.
+- **acceptance criteria**:
+  - until resolved, QB+1 is carried as a GENERATOR ARCHETYPE WEIGHT, never a
+    feasibility constraint -- a weight can be set to 1.0 to reproduce the hard
+    rule exactly, while a hard constraint cannot be relaxed without rebuilding
+    the generator;
+  - if the emergent arm converges on QB+1 unprompted, that is the answer and
+    the hard rule is redundant rather than wrong.
+- **classification**: RESEARCH_BLOCKER
+
+## ID: FIX-ROSTER-GLOB
+- **priority**: 4
+- **status**: QUEUED
+- **dependencies**: none
+- **description**: `run_slate.roster()` globs
+  `nfl/vintage/weekly_rosters.*.reduced.csv.gz` and keeps whichever file has
+  the MOST ROWS. Row count and glob order are two of the five inputs
+  `vintage_selector.select` names as FORBIDDEN for vintage selection. The file
+  with the most rows is not the file that was lawful at the cut, and on a week
+  where a later capture is larger the two disagree silently. Found while
+  building `fixture_assembler.assemble_game`, which reads the roster from the
+  blob the run DECLARES instead.
+- **blocker**: none — executable here
+- **acceptance criteria**:
+  - the roster is selected by `vintage_selector` at the run cut;
+  - a test proves the glob path is gone, not merely unused.
+- **classification**: CRITICAL_CORRECTNESS

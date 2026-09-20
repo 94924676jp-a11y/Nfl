@@ -197,6 +197,73 @@ def assemble(written_at: str, sources=None, manifest=None) -> Outcome:
                                  'the manifest record')
 
 
+def assemble_game(written_at: str, season: int, week: int, game_id: str,
+                  kickoff_utc: str = None, manifest=None) -> Outcome:
+    """A COMPLETE per-game fixture: declared captures plus the player universe.
+
+    THE PLAYERS COME OUT OF THE DECLARED CAPTURE, and that is the point rather
+    than a convenience. `run_slate.roster()` globs
+    `nfl/vintage/weekly_rosters.*.reduced.csv.gz` and keeps whichever file has
+    the MOST ROWS. Row count and glob order are two of the five inputs
+    `vintage_selector` names as forbidden for selection, for the obvious
+    reason: the file with the most rows is not the file that was lawful at the
+    cut, and on a week where a later capture is larger the two disagree
+    silently. Here the roster is read from the same blob the run DECLARES, so
+    the captures a run validated and the players it modelled cannot diverge.
+
+    A game whose clubs the roster cannot populate is refused by name. An empty
+    player set reaching the engine produces IDENTITY_UNRESOLVED three stages
+    later, which is a true refusal about the wrong thing.
+    """
+    import csv
+    import gzip
+
+    base = assemble(written_at, manifest=manifest)
+    if base.state is not State.PASS:
+        return base
+    det = (base.evidence or {})['detail_by_source']
+    blob = det['weekly_rosters']['blob']
+    parts = game_id.split('_')
+    if len(parts) < 4:
+        return Outcome.fail('GAME_ID_UNPARSEABLE', Cause.DATA,
+                            f'{game_id!r} is not season_week_away_home')
+    away, home = parts[2], parts[3]
+    by_team = {}
+    with gzip.open(_REPO / blob, 'rt') as f:
+        for r in csv.DictReader(f):
+            if r.get('season') != str(season) or r.get('week') != str(week):
+                continue
+            by_team.setdefault(r.get('team'), []).append(r)
+    players = [{'gsis_id': r['gsis_id'], 'position': r.get('position'),
+                'team': r['team']}
+               for t in (away, home) for r in by_team.get(t, [])]
+    empty = [t for t in (away, home) if not by_team.get(t)]
+    if empty:
+        return Outcome.blocked(
+            'ROSTER_CLUB_ABSENT', cause=Cause.DATA,
+            detail=f'{game_id}: the declared weekly_rosters vintage carries no '
+                   f'{season} week {week} rows for {empty}. A game cannot be '
+                   f'modelled from a roster that does not name its clubs.',
+            spec_version=SPEC_VERSION, blob=blob, clubs_absent=empty,
+            clubs_present=sorted(by_team))
+    fx = {'source_hashes': dict(base.value),
+          'players': players,
+          'team_ids': [away, home],
+          'qb_slate': {'prospective': True},
+          'qb_draws': 8000,
+          'team_volume': True,
+          'distributions': {}}
+    if kickoff_utc:
+        fx['kickoff_utc'] = kickoff_utc
+    return Outcome.ok('GAME_FIXTURE_ASSEMBLED', value=fx,
+                      spec_version=SPEC_VERSION, game_id=game_id,
+                      n_players=len(players),
+                      roster_blob=blob,
+                      roster_selected_by='vintage_selector at the run cut, '
+                                         'NOT by glob order or row count',
+                      detail_by_source=det)
+
+
 def verify_declared(src: dict, manifest=None) -> Outcome:
     """Do the declared hashes belong to captures this repository holds?
 
@@ -271,7 +338,25 @@ def main(argv=None):
     ap.add_argument('--out', default=None,
                     help='write a fixtures JSON here; otherwise print')
     ap.add_argument('--kickoff-utc', default=None)
+    ap.add_argument('--game-id', default=None,
+                    help='emit a COMPLETE per-game fixture, players included')
+    ap.add_argument('--season', type=int, default=2026)
+    ap.add_argument('--week', type=int, default=2)
     a = ap.parse_args(argv)
+    if a.game_id:
+        g = assemble_game(a.written_at, a.season, a.week, a.game_id,
+                          kickoff_utc=a.kickoff_utc)
+        if g.state is not State.PASS:
+            print(f'{g.state.name}[{g.code}] {g.detail}')
+            return 1
+        txt = json.dumps(g.value, indent=1, sort_keys=True)
+        if a.out:
+            pathlib.Path(a.out).write_text(txt + '\n')
+            print(f'wrote {a.out}  {g.evidence["n_players"]} players from '
+                  f'{g.evidence["roster_blob"]}')
+        else:
+            print(txt)
+        return 0
     o = assemble(a.written_at)
     if o.state is not State.PASS:
         print(f'{o.state.name}[{o.code}] {o.detail}')
