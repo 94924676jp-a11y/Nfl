@@ -1,0 +1,561 @@
+{
+ "candidate_status": "CANDIDATE_NOT_ACCEPTED_BASELINE",
+ "canonical_dataset": {
+  "csv": "nfl/research/postgame/week2_postgame_grading.csv",
+  "jsonl": "nfl/research/postgame/week2_postgame_grading.jsonl",
+  "n_rows": 520,
+  "parquet": null,
+  "parquet_note": "pyarrow is not installed in this environment, so the canonical dataset is emitted as CSV and JSONL. Same rows, same columns."
+ },
+ "coverage": {
+  "games_graded": [
+   "2026_02_CAR_ATL",
+   "2026_02_CIN_HOU",
+   "2026_02_GB_NYJ",
+   "2026_02_MIN_CHI",
+   "2026_02_NO_BAL",
+   "2026_02_PHI_TEN",
+   "2026_02_PIT_NE"
+  ],
+  "games_not_published": [
+   "2026_02_CLE_TB"
+  ],
+  "grade_state_counts": {
+   "GAME_RESULT_NOT_PUBLISHED": 67,
+   "GRADED": 409,
+   "PLAYER_ABSENT_FROM_RESULTS": 44
+  }
+ },
+ "governance": {
+  "candidate_promoted": false,
+  "outcomes_used_as_predictive_inputs": false,
+  "pregame_rows_rewritten": false,
+  "production_model_changed": false,
+  "v2_status": "V2 NOT YET EARNED"
+ },
+ "outcome_interpretation": {
+  "basis": "NO_IN_GAME_OR_SNAP_EVIDENCE_AVAILABLE_FOR_THIS_GAME",
+  "filtered_view_state": "NOT_YET_COMPUTABLE",
+  "values_present": {
+   "NORMAL": 520
+  },
+  "why": "Week-2 snap counts cover only 2026_02_DET_BUF, which is not in this board. With no in-game or snap evidence for the seven graded games, no row can be marked EARLY_EXIT_INJURY on evidence. The field and the filter exist; populating them needs the participation feed."
+ },
+ "projection_calibration": {
+  "bias_se_clustered_by_game": 0.3697,
+  "bias_se_naive": 0.4195,
+  "mae": 3.5994,
+  "mean_bias_actual_minus_projected": -0.1088,
+  "n_game_clusters": 7,
+  "n_graded": 133,
+  "pearson_r": 0.6927,
+  "quantile_coverage": {
+   "p50": {
+    "n": 133,
+    "nominal": 0.5,
+    "realized_at_or_below": 0.4511
+   },
+   "p90": {
+    "n": 133,
+    "nominal": 0.9,
+    "realized_at_or_below": 0.9323
+   },
+   "p95": {
+    "n": 133,
+    "nominal": 0.95,
+    "realized_at_or_below": 0.9549
+   }
+  },
+  "rmse": 4.8214,
+  "sd_actual": 6.6304,
+  "sd_projected_mean": 5.3301,
+  "sd_ratio_projected_over_actual": 0.8039,
+  "threshold_probability_calibration": {
+   "P(DK>=10)": {
+    "gap": -0.0243,
+    "mean_predicted": 0.2649,
+    "n": 133,
+    "n_game_clusters": 7,
+    "realized": 0.2406,
+    "se_clustered_by_game": 0.0519
+   },
+   "P(DK>=15)": {
+    "gap": -0.0306,
+    "mean_predicted": 0.1509,
+    "n": 133,
+    "n_game_clusters": 7,
+    "realized": 0.1203,
+    "se_clustered_by_game": 0.041
+   },
+   "P(DK>=20)": {
+    "gap": -0.0238,
+    "mean_predicted": 0.0839,
+    "n": 133,
+    "n_game_clusters": 7,
+    "realized": 0.0602,
+    "se_clustered_by_game": 0.0287
+   },
+   "P(DK>=30)": {
+    "gap": -0.0212,
+    "mean_predicted": 0.0212,
+    "n": 133,
+    "n_game_clusters": 7,
+    "realized": 0.0,
+    "se_clustered_by_game": null
+   }
+  }
+ },
+ "prop_calibration": {
+  "brier_book_novig": 0.246738,
+  "brier_model": 0.249412,
+  "by_market_family": [
+   {
+    "brier": 0.2748,
+    "gap": -0.1087,
+    "market": "Player Receiving Yards",
+    "mean_predicted": 0.6571,
+    "mean_raw_edge": 0.1569,
+    "n": 62,
+    "n_game_clusters": 6,
+    "realized": 0.5484,
+    "se_clustered_by_game": 0.0758
+   },
+   {
+    "brier": 0.2361,
+    "gap": -0.0586,
+    "market": "Player Receptions",
+    "mean_predicted": 0.6586,
+    "mean_raw_edge": 0.1681,
+    "n": 60,
+    "n_game_clusters": 6,
+    "realized": 0.6,
+    "se_clustered_by_game": 0.0927
+   },
+   {
+    "brier": 0.2321,
+    "gap": -0.0774,
+    "market": "Player Rushing Yards",
+    "mean_predicted": 0.6362,
+    "mean_raw_edge": 0.1392,
+    "n": 34,
+    "n_game_clusters": 7,
+    "realized": 0.5588,
+    "se_clustered_by_game": 0.0675
+   },
+   {
+    "brier": 0.241,
+    "gap": -0.0898,
+    "market": "Player Rushing + Receiving Yards",
+    "mean_predicted": 0.6454,
+    "mean_raw_edge": 0.1459,
+    "n": 18,
+    "n_game_clusters": 6,
+    "realized": 0.5556,
+    "se_clustered_by_game": 0.1221
+   },
+   {
+    "brier": 0.2242,
+    "gap": -0.0487,
+    "market": "Player Rushing Attempts",
+    "mean_predicted": 0.6737,
+    "mean_raw_edge": 0.1814,
+    "n": 16,
+    "n_game_clusters": 6,
+    "realized": 0.625,
+    "se_clustered_by_game": 0.0847
+   },
+   {
+    "brier": 0.2312,
+    "gap": -0.1201,
+    "market": "Player Passing Attempts",
+    "mean_predicted": 0.5816,
+    "mean_raw_edge": 0.0824,
+    "n": 13,
+    "n_game_clusters": 7,
+    "realized": 0.4615,
+    "se_clustered_by_game": 0.1713
+   },
+   {
+    "brier": 0.2547,
+    "gap": -0.1835,
+    "market": "Player Field Goals Made",
+    "mean_predicted": 0.5169,
+    "mean_raw_edge": 0.0358,
+    "n": 12,
+    "n_game_clusters": 7,
+    "realized": 0.3333,
+    "se_clustered_by_game": 0.1588
+   },
+   {
+    "brier": 0.259,
+    "gap": 0.1,
+    "market": "Player Interceptions",
+    "mean_predicted": 0.5667,
+    "mean_raw_edge": 0.0711,
+    "n": 12,
+    "n_game_clusters": 7,
+    "realized": 0.6667,
+    "se_clustered_by_game": 0.1588
+   },
+   {
+    "brier": 0.2818,
+    "gap": -0.176,
+    "market": "Player Passing Completions",
+    "mean_predicted": 0.5927,
+    "mean_raw_edge": 0.0952,
+    "n": 12,
+    "n_game_clusters": 7,
+    "realized": 0.4167,
+    "se_clustered_by_game": 0.1419
+   },
+   {
+    "brier": 0.2199,
+    "gap": -0.154,
+    "market": "Player Passing Touchdowns",
+    "mean_predicted": 0.5706,
+    "mean_raw_edge": 0.0905,
+    "n": 12,
+    "n_game_clusters": 7,
+    "realized": 0.4167,
+    "se_clustered_by_game": 0.1419
+   },
+   {
+    "brier": 0.2817,
+    "gap": -0.2724,
+    "market": "Player Passing Yards",
+    "mean_predicted": 0.6057,
+    "mean_raw_edge": 0.1057,
+    "n": 12,
+    "n_game_clusters": 7,
+    "realized": 0.3333,
+    "se_clustered_by_game": 0.0949
+   }
+  ],
+  "edge_vs_outcome": {
+   "high_edge_half": {
+    "hit_rate": 0.5606,
+    "mean_edge": 0.2132,
+    "n": 132
+   },
+   "low_edge_half": {
+    "hit_rate": 0.5115,
+    "mean_edge": 0.0594,
+    "n": 131
+   }
+  },
+  "hit_rate_se_clustered_by_game": 0.041861,
+  "hit_rate_se_naive": 0.030809,
+  "log_loss_book_novig": 0.686519,
+  "log_loss_model": 0.691724,
+  "mean_predicted_probability": 0.631463,
+  "n_game_clusters": 7,
+  "n_graded": 263,
+  "n_push": 0,
+  "probability_buckets": [
+   {
+    "bucket": "0.50-0.55",
+    "gap": -0.0735,
+    "mean_predicted": 0.5281,
+    "n": 44,
+    "n_game_clusters": 7,
+    "realized": 0.4545,
+    "se_clustered_by_game": 0.042,
+    "se_naive": 0.0759
+   },
+   {
+    "bucket": "0.55-0.60",
+    "gap": -0.0149,
+    "mean_predicted": 0.5749,
+    "n": 50,
+    "n_game_clusters": 7,
+    "realized": 0.56,
+    "se_clustered_by_game": 0.0747,
+    "se_naive": 0.0709
+   },
+   {
+    "bucket": "0.60-0.65",
+    "gap": -0.053,
+    "mean_predicted": 0.6244,
+    "n": 49,
+    "n_game_clusters": 7,
+    "realized": 0.5714,
+    "se_clustered_by_game": 0.0771,
+    "se_naive": 0.0714
+   },
+   {
+    "bucket": "0.65-0.70",
+    "gap": -0.1967,
+    "mean_predicted": 0.6729,
+    "n": 42,
+    "n_game_clusters": 6,
+    "realized": 0.4762,
+    "se_clustered_by_game": 0.0515,
+    "se_naive": 0.078
+   },
+   {
+    "bucket": "0.70-0.75",
+    "gap": -0.2441,
+    "mean_predicted": 0.7241,
+    "n": 25,
+    "n_game_clusters": 6,
+    "realized": 0.48,
+    "se_clustered_by_game": 0.1011,
+    "se_naive": 0.102
+   },
+   {
+    "bucket": "0.75-0.80",
+    "gap": -0.1588,
+    "mean_predicted": 0.7699,
+    "n": 18,
+    "n_game_clusters": 6,
+    "realized": 0.6111,
+    "se_clustered_by_game": 0.104,
+    "se_naive": 0.1182
+   },
+   {
+    "bucket": "0.80-1.01",
+    "gap": 0.0506,
+    "mean_predicted": 0.8441,
+    "n": 19,
+    "n_game_clusters": 5,
+    "realized": 0.8947,
+    "se_clustered_by_game": 0.0767,
+    "se_naive": 0.0723
+   }
+  ],
+  "realized_hit_rate": 0.536122,
+  "se_inflation_factor": 1.359,
+  "side_counts": {
+   "OVER": 60,
+   "UNDER": 203
+  }
+ },
+ "spec_version": "nfl-postgame-grading-1",
+ "under_bias_investigation": {
+  "hhi_difference_se": 0.0133,
+  "hhi_mean_difference_actual_minus_projected": 0.0301,
+  "hhi_t_statistic": 2.262,
+  "our_players_actual_targets_total": 347.0,
+  "per_team": [
+   {
+    "game_id": "2026_02_PIT_NE",
+    "n_players": 11,
+    "our_players_actual_targets": 37.0,
+    "player_coverage": 1.0,
+    "projected_targets": 28.69,
+    "team": "PIT",
+    "team_actual_targets": 37.0
+   },
+   {
+    "game_id": "2026_02_CAR_ATL",
+    "n_players": 10,
+    "our_players_actual_targets": 31.0,
+    "player_coverage": 1.0,
+    "projected_targets": 29.88,
+    "team": "ATL",
+    "team_actual_targets": 31.0
+   },
+   {
+    "game_id": "2026_02_NO_BAL",
+    "n_players": 9,
+    "our_players_actual_targets": 29.0,
+    "player_coverage": 1.0,
+    "projected_targets": 22.25,
+    "team": "BAL",
+    "team_actual_targets": 29.0
+   },
+   {
+    "game_id": "2026_02_NO_BAL",
+    "n_players": 11,
+    "our_players_actual_targets": 32.0,
+    "player_coverage": 1.0,
+    "projected_targets": 29.64,
+    "team": "NO",
+    "team_actual_targets": 32.0
+   },
+   {
+    "game_id": "2026_02_MIN_CHI",
+    "n_players": 8,
+    "our_players_actual_targets": 19.0,
+    "player_coverage": 1.0,
+    "projected_targets": 23.51,
+    "team": "MIN",
+    "team_actual_targets": 19.0
+   },
+   {
+    "game_id": "2026_02_GB_NYJ",
+    "n_players": 10,
+    "our_players_actual_targets": 36.0,
+    "player_coverage": 1.0,
+    "projected_targets": 22.87,
+    "team": "NYJ",
+    "team_actual_targets": 36.0
+   },
+   {
+    "game_id": "2026_02_CAR_ATL",
+    "n_players": 12,
+    "our_players_actual_targets": 32.0,
+    "player_coverage": 1.0,
+    "projected_targets": 28.39,
+    "team": "CAR",
+    "team_actual_targets": 32.0
+   },
+   {
+    "game_id": "2026_02_PIT_NE",
+    "n_players": 12,
+    "our_players_actual_targets": 21.0,
+    "player_coverage": 1.0,
+    "projected_targets": 25.96,
+    "team": "NE",
+    "team_actual_targets": 21.0
+   },
+   {
+    "game_id": "2026_02_CIN_HOU",
+    "n_players": 9,
+    "our_players_actual_targets": 50.0,
+    "player_coverage": 1.0,
+    "projected_targets": 23.74,
+    "team": "HOU",
+    "team_actual_targets": 50.0
+   },
+   {
+    "game_id": "2026_02_CIN_HOU",
+    "n_players": 8,
+    "our_players_actual_targets": 31.0,
+    "player_coverage": 1.0,
+    "projected_targets": 29.66,
+    "team": "CIN",
+    "team_actual_targets": 31.0
+   },
+   {
+    "game_id": "2026_02_GB_NYJ",
+    "n_players": 10,
+    "our_players_actual_targets": 29.0,
+    "player_coverage": 1.0,
+    "projected_targets": 24.08,
+    "team": "GB",
+    "team_actual_targets": 29.0
+   }
+  ],
+  "per_team_ratio_mean": 0.881,
+  "per_team_ratio_sd": 0.228,
+  "per_team_ratio_se": 0.0688,
+  "player_coverage_of_team_targets": 1.0,
+  "projected_over_team_actual": 0.8319,
+  "projected_targets_total": 288.67,
+  "reading": {
+   "allocation_too_diffuse": "SUPPORTED",
+   "conversion_efficiency": "NOT_IDENTIFIED_AT_THIS_N",
+   "game_script": "NOT_TESTED_NO_IN_GAME_STATE_INGESTED",
+   "player_role_miss": "NOT_SEPARABLE_FROM_ALLOCATION_HERE",
+   "team_pass_volume_low": "SUGGESTED_NOT_CONCLUSIVE"
+  },
+  "target_share_hhi_actual": 0.1889,
+  "target_share_hhi_projected": 0.1588,
+  "team_actual_targets_total": 347.0,
+  "teams_with_receiving_coverage": 11,
+  "volume_shortfall_pct": 16.81
+ },
+ "workload_calibration": {
+  "att": {
+   "bias_se_clustered_by_game": 1.5507,
+   "mae": 7.8134,
+   "mean_actual": 25.7222,
+   "mean_bias_actual_minus_projected": 2.407,
+   "mean_projected": 23.3152,
+   "n": 18,
+   "n_game_clusters": 7,
+   "rmse": 9.7523
+  },
+  "carries": {
+   "bias_se_clustered_by_game": 0.4715,
+   "mae": 2.7683,
+   "mean_actual": 6.6765,
+   "mean_bias_actual_minus_projected": 0.1478,
+   "mean_projected": 6.5286,
+   "n": 34,
+   "n_game_clusters": 6,
+   "rmse": 3.9092
+  },
+  "cmp": {
+   "bias_se_clustered_by_game": 1.1087,
+   "mae": 5.2808,
+   "mean_actual": 16.0556,
+   "mean_bias_actual_minus_projected": 1.1669,
+   "mean_projected": 14.8887,
+   "n": 18,
+   "n_game_clusters": 7,
+   "rmse": 6.2233
+  },
+  "int": {
+   "bias_se_clustered_by_game": 0.1603,
+   "mae": 0.6012,
+   "mean_actual": 0.5,
+   "mean_bias_actual_minus_projected": 0.0396,
+   "mean_projected": 0.4604,
+   "n": 18,
+   "n_game_clusters": 7,
+   "rmse": 0.7011
+  },
+  "ptd": {
+   "bias_se_clustered_by_game": 0.1891,
+   "mae": 0.7534,
+   "mean_actual": 0.6667,
+   "mean_bias_actual_minus_projected": -0.3374,
+   "mean_projected": 1.004,
+   "n": 18,
+   "n_game_clusters": 7,
+   "rmse": 0.9344
+  },
+  "pyds": {
+   "bias_se_clustered_by_game": 10.2677,
+   "mae": 58.1284,
+   "mean_actual": 169.3333,
+   "mean_bias_actual_minus_projected": 4.4349,
+   "mean_projected": 164.8985,
+   "n": 18,
+   "n_game_clusters": 7,
+   "rmse": 68.5919
+  },
+  "receiving_yards": {
+   "bias_se_clustered_by_game": 1.5632,
+   "mae": 14.6753,
+   "mean_actual": 21.9,
+   "mean_bias_actual_minus_projected": 1.9307,
+   "mean_projected": 19.9693,
+   "n": 110,
+   "n_game_clusters": 6,
+   "rmse": 21.467
+  },
+  "receptions": {
+   "bias_se_clustered_by_game": 0.1686,
+   "mae": 1.117,
+   "mean_actual": 2.0909,
+   "mean_bias_actual_minus_projected": 0.3152,
+   "mean_projected": 1.7757,
+   "n": 110,
+   "n_game_clusters": 6,
+   "rmse": 1.6874
+  },
+  "rushing_yards": {
+   "bias_se_clustered_by_game": 1.1254,
+   "mae": 6.8224,
+   "mean_actual": 9.0333,
+   "mean_bias_actual_minus_projected": -1.3979,
+   "mean_projected": 10.4313,
+   "n": 120,
+   "n_game_clusters": 7,
+   "rmse": 12.4824
+  },
+  "targets": {
+   "bias_se_clustered_by_game": 0.2452,
+   "mae": 1.6943,
+   "mean_actual": 3.1545,
+   "mean_bias_actual_minus_projected": 0.5302,
+   "mean_projected": 2.6243,
+   "n": 110,
+   "n_game_clusters": 6,
+   "rmse": 2.3794
+  }
+ }
+}
