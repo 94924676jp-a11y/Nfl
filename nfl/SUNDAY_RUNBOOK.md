@@ -112,9 +112,22 @@ slate, both under `PRODUCTION_BASELINE` and under
 - DET@BUF → `BLOCKED[SOURCE_CHRONOLOGY_FAILURE]`, correctly: a forecast
   written at 2026-09-20T12:00Z is not before a 2026-09-18T00:15Z kickoff.
 
-`panel_p3` is the one current-season input that is **fresh** — the
+~~`panel_p3` is the one current-season input that is **fresh** — the
 current-season QB panel resolves 30 of 32 clubs from week-1 play-by-play and
-snap counts, missing DEN and KC.
+snap counts, missing DEN and KC.~~
+
+**WITHDRAWN 2026-09-20.** Measured on all 16 games in both of the day's runs,
+`panel_p3` refuses `CURRENT_SEASON_INPUT_STALE`: newest ordinal **202518**
+against a required **202601**, with **zero missing clubs** — both expected
+clubs are present in every game. So it is not a coverage gap and DEN/KC are
+not the issue; it is the same 2026 absence that blocks `denom_panel` and
+`team_volume_history`.
+
+**Three inputs refuse, and they are one root cause.** `denom_panel`
+(BLOCKED-BY-DECLARATION, `CURRENT_SEASON_SOURCE_UNVERIFIED`), `panel_p3` and
+`team_volume_history` all read a panel whose newest ordinal is 202518. That is
+SUN-5: one data absence presenting as three refusals, not three problems.
+Evidence: `nfl/research/sunday/EARLY_ONLY_PRODUCTION_RUN_2026W2.json`.
 
 So the correct Sunday artifact is the refusal itself, sealed with the evidence
 behind it, and that is what `nfl/SUNDAY_READINESS.md` records.

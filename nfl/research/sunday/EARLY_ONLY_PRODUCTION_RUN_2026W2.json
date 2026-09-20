@@ -1,0 +1,564 @@
+{
+ "artifact": "EARLY_ONLY_PRODUCTION_RUN_2026W2",
+ "correction_to_the_runbook": "nfl/SUNDAY_RUNBOOK.md states \"panel_p3 is the one current-season input that is FRESH -- the current-season QB panel resolves 30 of 32 clubs from week-1 play-by-play and snap counts, missing DEN and KC.\" That is stale. Measured on all 16 games in both of today's runs, panel_p3 refuses CURRENT_SEASON_INPUT_STALE with newest ordinal 202518 against required 202601, and it does so with ZERO missing clubs -- both expected clubs are present in every game. It is not a coverage gap; it is the same 2026 absence as the other two.",
+ "generated_at_utc": "2026-09-20T06:32:29Z",
+ "model_configuration": "V1_CANDIDATE_R8",
+ "n_games": 8,
+ "runs": [
+  {
+   "bytes_verified": true,
+   "capture_governance": "DECLARATION_COMPLETE_AND_WELL_FORMED; DECLARED_BYTES_VERIFIED_AGAINST_VINTAGE_MANIFEST",
+   "capture_validation": [
+    "PASS",
+    "INPUTS_VALIDATED"
+   ],
+   "clubs": [
+    "CLE",
+    "TB"
+   ],
+   "code_commit": "3a5f6776c78e4e688f08fd619d726a8be4cf83a4+src1[44aa01d03783de18]",
+   "draw_artifact": {
+    "bytes": 641413,
+    "content_digest": "f9592b1e90d264276764c91a373faede24b21b80e6602a2170a6c92bbeaaf0ff",
+    "n_draw_cells": 856000,
+    "n_draws": 8000,
+    "n_matrices": 34,
+    "sha256": "207d4b41b87d8a2913973185a724575d54d26c3a1253d9b9a2b0c875390e8a25"
+   },
+   "dry_run": false,
+   "elapsed_s": 165.0,
+   "execution_identity": "160aad2236d470c59cd06eb8741253625c8e1063ff631be1ab27845e4475e61a",
+   "first_failure": "artifact_sealing",
+   "n_stages": 14,
+   "n_stages_pass": 7,
+   "publication": "NFL1_NOT_AUTHORIZED",
+   "refusing_current_season_inputs": {
+    "denom_panel": {
+     "code": "CURRENT_SEASON_SOURCE_UNVERIFIED",
+     "consumers": [
+      "team_volume_v1",
+      "nonqb.accounting",
+      "nonqb.eligibility"
+     ],
+     "newest_ordinal": 202518,
+     "required_ordinal": 202601,
+     "state": "BLOCKED"
+    },
+    "panel_p3": {
+     "code": "CURRENT_SEASON_INPUT_STALE",
+     "consumers": [
+      "qb_allocation.previous_primary_detail"
+     ],
+     "newest_ordinal": 202518,
+     "required_ordinal": 202601,
+     "state": "BLOCKED"
+    },
+    "team_volume_history": {
+     "code": "CURRENT_SEASON_INPUT_STALE",
+     "consumers": [
+      "team_volume_v1"
+     ],
+     "newest_ordinal": 202518,
+     "required_ordinal": 202601,
+     "state": "BLOCKED"
+    }
+   },
+   "required_sources": [
+    "depth_charts",
+    "injuries",
+    "schedules",
+    "weekly_rosters"
+   ],
+   "run_id": "160aad2236d470c5",
+   "status": "REFUSED"
+  },
+  {
+   "bytes_verified": true,
+   "capture_governance": "DECLARATION_COMPLETE_AND_WELL_FORMED; DECLARED_BYTES_VERIFIED_AGAINST_VINTAGE_MANIFEST",
+   "capture_validation": [
+    "PASS",
+    "INPUTS_VALIDATED"
+   ],
+   "clubs": [
+    "CHI",
+    "MIN"
+   ],
+   "code_commit": "3a5f6776c78e4e688f08fd619d726a8be4cf83a4+src1[44aa01d03783de18]",
+   "draw_artifact": {
+    "bytes": 598108,
+    "content_digest": "51c665ee6d8ab9f6042886b6531261b52f2441c1bac8f033969498441f3d438a",
+    "n_draw_cells": 960000,
+    "n_draws": 8000,
+    "n_matrices": 34,
+    "sha256": "449fad7acafbb5d3dfa01b93963cdeb8f1c5833001cd8723ac1d23462dd3e93b"
+   },
+   "dry_run": false,
+   "elapsed_s": 156.3,
+   "execution_identity": "32aed558cdedae9028e8141d8f707c192d35e8e8345db8c641c343613ab7581b",
+   "first_failure": "artifact_sealing",
+   "n_stages": 14,
+   "n_stages_pass": 7,
+   "publication": "NFL1_NOT_AUTHORIZED",
+   "refusing_current_season_inputs": {
+    "denom_panel": {
+     "code": "CURRENT_SEASON_SOURCE_UNVERIFIED",
+     "consumers": [
+      "team_volume_v1",
+      "nonqb.accounting",
+      "nonqb.eligibility"
+     ],
+     "newest_ordinal": 202518,
+     "required_ordinal": 202601,
+     "state": "BLOCKED"
+    },
+    "panel_p3": {
+     "code": "CURRENT_SEASON_INPUT_STALE",
+     "consumers": [
+      "qb_allocation.previous_primary_detail"
+     ],
+     "newest_ordinal": 202518,
+     "required_ordinal": 202601,
+     "state": "BLOCKED"
+    },
+    "team_volume_history": {
+     "code": "CURRENT_SEASON_INPUT_STALE",
+     "consumers": [
+      "team_volume_v1"
+     ],
+     "newest_ordinal": 202518,
+     "required_ordinal": 202601,
+     "state": "BLOCKED"
+    }
+   },
+   "required_sources": [
+    "depth_charts",
+    "injuries",
+    "schedules",
+    "weekly_rosters"
+   ],
+   "run_id": "32aed558cdedae90",
+   "status": "REFUSED"
+  },
+  {
+   "bytes_verified": true,
+   "capture_governance": "DECLARATION_COMPLETE_AND_WELL_FORMED; DECLARED_BYTES_VERIFIED_AGAINST_VINTAGE_MANIFEST",
+   "capture_validation": [
+    "PASS",
+    "INPUTS_VALIDATED"
+   ],
+   "clubs": [
+    "NE",
+    "PIT"
+   ],
+   "code_commit": "3a5f6776c78e4e688f08fd619d726a8be4cf83a4+src1[44aa01d03783de18]",
+   "draw_artifact": {
+    "bytes": 610081,
+    "content_digest": "2715a7dedf8dd594c58ef019b5acd65f15ffc2db7fa2fa048d1360fdfcc47e49",
+    "n_draw_cells": 1064000,
+    "n_draws": 8000,
+    "n_matrices": 34,
+    "sha256": "e504fe44db7c90db41fa96de910c456cb0b975be2d917a7fb3a2320818747440"
+   },
+   "dry_run": false,
+   "elapsed_s": 151.1,
+   "execution_identity": "42f83a5ca5a4836090462bb59eb65ff3de783b3a84af0979bb4bac7df43eca40",
+   "first_failure": "artifact_sealing",
+   "n_stages": 14,
+   "n_stages_pass": 7,
+   "publication": "NFL1_NOT_AUTHORIZED",
+   "refusing_current_season_inputs": {
+    "denom_panel": {
+     "code": "CURRENT_SEASON_SOURCE_UNVERIFIED",
+     "consumers": [
+      "team_volume_v1",
+      "nonqb.accounting",
+      "nonqb.eligibility"
+     ],
+     "newest_ordinal": 202518,
+     "required_ordinal": 202601,
+     "state": "BLOCKED"
+    },
+    "panel_p3": {
+     "code": "CURRENT_SEASON_INPUT_STALE",
+     "consumers": [
+      "qb_allocation.previous_primary_detail"
+     ],
+     "newest_ordinal": 202518,
+     "required_ordinal": 202601,
+     "state": "BLOCKED"
+    },
+    "team_volume_history": {
+     "code": "CURRENT_SEASON_INPUT_STALE",
+     "consumers": [
+      "team_volume_v1"
+     ],
+     "newest_ordinal": 202518,
+     "required_ordinal": 202601,
+     "state": "BLOCKED"
+    }
+   },
+   "required_sources": [
+    "depth_charts",
+    "injuries",
+    "schedules",
+    "weekly_rosters"
+   ],
+   "run_id": "42f83a5ca5a48360",
+   "status": "REFUSED"
+  },
+  {
+   "bytes_verified": true,
+   "capture_governance": "DECLARATION_COMPLETE_AND_WELL_FORMED; DECLARED_BYTES_VERIFIED_AGAINST_VINTAGE_MANIFEST",
+   "capture_validation": [
+    "PASS",
+    "INPUTS_VALIDATED"
+   ],
+   "clubs": [
+    "CIN",
+    "HOU"
+   ],
+   "code_commit": "3a5f6776c78e4e688f08fd619d726a8be4cf83a4+src1[44aa01d03783de18]",
+   "draw_artifact": {
+    "bytes": 505339,
+    "content_digest": "9d615c9957be164f39e9056d24b5121bf88eafa973e39a72fbf82b8e862d0698",
+    "n_draw_cells": 752000,
+    "n_draws": 8000,
+    "n_matrices": 34,
+    "sha256": "36a6d7015a5f041c995769e528d6bda2ffc2d4e749d8e56f9eb9df1912503673"
+   },
+   "dry_run": false,
+   "elapsed_s": 169.6,
+   "execution_identity": "939a688030e3592632ae0756a72395402a9ce360e2a3e5e181c104e549c916a0",
+   "first_failure": "artifact_sealing",
+   "n_stages": 14,
+   "n_stages_pass": 7,
+   "publication": "NFL1_NOT_AUTHORIZED",
+   "refusing_current_season_inputs": {
+    "denom_panel": {
+     "code": "CURRENT_SEASON_SOURCE_UNVERIFIED",
+     "consumers": [
+      "team_volume_v1",
+      "nonqb.accounting",
+      "nonqb.eligibility"
+     ],
+     "newest_ordinal": 202518,
+     "required_ordinal": 202601,
+     "state": "BLOCKED"
+    },
+    "panel_p3": {
+     "code": "CURRENT_SEASON_INPUT_STALE",
+     "consumers": [
+      "qb_allocation.previous_primary_detail"
+     ],
+     "newest_ordinal": 202518,
+     "required_ordinal": 202601,
+     "state": "BLOCKED"
+    },
+    "team_volume_history": {
+     "code": "CURRENT_SEASON_INPUT_STALE",
+     "consumers": [
+      "team_volume_v1"
+     ],
+     "newest_ordinal": 202518,
+     "required_ordinal": 202601,
+     "state": "BLOCKED"
+    }
+   },
+   "required_sources": [
+    "depth_charts",
+    "injuries",
+    "schedules",
+    "weekly_rosters"
+   ],
+   "run_id": "939a688030e35926",
+   "status": "REFUSED"
+  },
+  {
+   "bytes_verified": true,
+   "capture_governance": "DECLARATION_COMPLETE_AND_WELL_FORMED; DECLARED_BYTES_VERIFIED_AGAINST_VINTAGE_MANIFEST",
+   "capture_validation": [
+    "PASS",
+    "INPUTS_VALIDATED"
+   ],
+   "clubs": [
+    "PHI",
+    "TEN"
+   ],
+   "code_commit": "3a5f6776c78e4e688f08fd619d726a8be4cf83a4+src1[44aa01d03783de18]",
+   "draw_artifact": {
+    "bytes": 632628,
+    "content_digest": "791d6f20991297cf66c9ce6815b5beb59b65955a19b2aeadbe4335fe049c3e0e",
+    "n_draw_cells": 960000,
+    "n_draws": 8000,
+    "n_matrices": 34,
+    "sha256": "3bf573784435927ae4402c22c972c381a66866bd1a404cc6b0c9fcf241f61689"
+   },
+   "dry_run": false,
+   "elapsed_s": 154.9,
+   "execution_identity": "a99e62369b0e29d12aedd82d9e08b8345006f4a31abe3c7a9e34c27c9f876d24",
+   "first_failure": "artifact_sealing",
+   "n_stages": 14,
+   "n_stages_pass": 7,
+   "publication": "NFL1_NOT_AUTHORIZED",
+   "refusing_current_season_inputs": {
+    "denom_panel": {
+     "code": "CURRENT_SEASON_SOURCE_UNVERIFIED",
+     "consumers": [
+      "team_volume_v1",
+      "nonqb.accounting",
+      "nonqb.eligibility"
+     ],
+     "newest_ordinal": 202518,
+     "required_ordinal": 202601,
+     "state": "BLOCKED"
+    },
+    "panel_p3": {
+     "code": "CURRENT_SEASON_INPUT_STALE",
+     "consumers": [
+      "qb_allocation.previous_primary_detail"
+     ],
+     "newest_ordinal": 202518,
+     "required_ordinal": 202601,
+     "state": "BLOCKED"
+    },
+    "team_volume_history": {
+     "code": "CURRENT_SEASON_INPUT_STALE",
+     "consumers": [
+      "team_volume_v1"
+     ],
+     "newest_ordinal": 202518,
+     "required_ordinal": 202601,
+     "state": "BLOCKED"
+    }
+   },
+   "required_sources": [
+    "depth_charts",
+    "injuries",
+    "schedules",
+    "weekly_rosters"
+   ],
+   "run_id": "a99e62369b0e29d1",
+   "status": "REFUSED"
+  },
+  {
+   "bytes_verified": true,
+   "capture_governance": "DECLARATION_COMPLETE_AND_WELL_FORMED; DECLARED_BYTES_VERIFIED_AGAINST_VINTAGE_MANIFEST",
+   "capture_validation": [
+    "PASS",
+    "INPUTS_VALIDATED"
+   ],
+   "clubs": [
+    "ATL",
+    "CAR"
+   ],
+   "code_commit": "0d5f81b9cac9841f20d71d3b2608aea79ba7d9db+src1[dde577c04e8429ac]",
+   "draw_artifact": {
+    "bytes": 669621,
+    "content_digest": "e4e2aebba06bb297d551f4858f2e3ee6aa9014e852fca1b8c7296d2d57d3c4af",
+    "n_draw_cells": 1168000,
+    "n_draws": 8000,
+    "n_matrices": 34,
+    "sha256": "4959691b49bc61a29ae8531576d787a17745026a95502e5974dca63065b16a8a"
+   },
+   "dry_run": false,
+   "elapsed_s": 168.6,
+   "execution_identity": "b6ac1c0ebbc95fca2e3f74e2f5ad2b97b947976a38062ddd6b692004db3464a4",
+   "first_failure": "artifact_sealing",
+   "n_stages": 14,
+   "n_stages_pass": 7,
+   "publication": "NFL1_NOT_AUTHORIZED",
+   "refusing_current_season_inputs": {
+    "denom_panel": {
+     "code": "CURRENT_SEASON_SOURCE_UNVERIFIED",
+     "consumers": [
+      "team_volume_v1",
+      "nonqb.accounting",
+      "nonqb.eligibility"
+     ],
+     "newest_ordinal": 202518,
+     "required_ordinal": 202601,
+     "state": "BLOCKED"
+    },
+    "panel_p3": {
+     "code": "CURRENT_SEASON_INPUT_STALE",
+     "consumers": [
+      "qb_allocation.previous_primary_detail"
+     ],
+     "newest_ordinal": 202518,
+     "required_ordinal": 202601,
+     "state": "BLOCKED"
+    },
+    "team_volume_history": {
+     "code": "CURRENT_SEASON_INPUT_STALE",
+     "consumers": [
+      "team_volume_v1"
+     ],
+     "newest_ordinal": 202518,
+     "required_ordinal": 202601,
+     "state": "BLOCKED"
+    }
+   },
+   "required_sources": [
+    "depth_charts",
+    "injuries",
+    "schedules",
+    "weekly_rosters"
+   ],
+   "run_id": "b6ac1c0ebbc95fca",
+   "status": "REFUSED"
+  },
+  {
+   "bytes_verified": true,
+   "capture_governance": "DECLARATION_COMPLETE_AND_WELL_FORMED; DECLARED_BYTES_VERIFIED_AGAINST_VINTAGE_MANIFEST",
+   "capture_validation": [
+    "PASS",
+    "INPUTS_VALIDATED"
+   ],
+   "clubs": [
+    "GB",
+    "NYJ"
+   ],
+   "code_commit": "3a5f6776c78e4e688f08fd619d726a8be4cf83a4+src1[44aa01d03783de18]",
+   "draw_artifact": {
+    "bytes": 524847,
+    "content_digest": "ce42c06545ebea365fec425235cde1244e4268117454665a8bc0332ce4c6ff25",
+    "n_draw_cells": 752000,
+    "n_draws": 8000,
+    "n_matrices": 34,
+    "sha256": "b4f6094b196d45dcc6b0b40cdd00b1d1f25e252db59a9a7e14b19e13df94a1c2"
+   },
+   "dry_run": false,
+   "elapsed_s": 163.6,
+   "execution_identity": "ca5a7b38c7b6d751e615b6a3f1db10385f9e67e60ba4d8dda1c309de027708ee",
+   "first_failure": "artifact_sealing",
+   "n_stages": 14,
+   "n_stages_pass": 7,
+   "publication": "NFL1_NOT_AUTHORIZED",
+   "refusing_current_season_inputs": {
+    "denom_panel": {
+     "code": "CURRENT_SEASON_SOURCE_UNVERIFIED",
+     "consumers": [
+      "team_volume_v1",
+      "nonqb.accounting",
+      "nonqb.eligibility"
+     ],
+     "newest_ordinal": 202518,
+     "required_ordinal": 202601,
+     "state": "BLOCKED"
+    },
+    "panel_p3": {
+     "code": "CURRENT_SEASON_INPUT_STALE",
+     "consumers": [
+      "qb_allocation.previous_primary_detail"
+     ],
+     "newest_ordinal": 202518,
+     "required_ordinal": 202601,
+     "state": "BLOCKED"
+    },
+    "team_volume_history": {
+     "code": "CURRENT_SEASON_INPUT_STALE",
+     "consumers": [
+      "team_volume_v1"
+     ],
+     "newest_ordinal": 202518,
+     "required_ordinal": 202601,
+     "state": "BLOCKED"
+    }
+   },
+   "required_sources": [
+    "depth_charts",
+    "injuries",
+    "schedules",
+    "weekly_rosters"
+   ],
+   "run_id": "ca5a7b38c7b6d751",
+   "status": "REFUSED"
+  },
+  {
+   "bytes_verified": true,
+   "capture_governance": "DECLARATION_COMPLETE_AND_WELL_FORMED; DECLARED_BYTES_VERIFIED_AGAINST_VINTAGE_MANIFEST",
+   "capture_validation": [
+    "PASS",
+    "INPUTS_VALIDATED"
+   ],
+   "clubs": [
+    "BAL",
+    "NO"
+   ],
+   "code_commit": "3a5f6776c78e4e688f08fd619d726a8be4cf83a4+src1[44aa01d03783de18]",
+   "draw_artifact": {
+    "bytes": 639703,
+    "content_digest": "4f2c8aa3e0d32213bda3c411ce4835647cb2e677f813f1aa78d68b391a76275c",
+    "n_draw_cells": 960000,
+    "n_draws": 8000,
+    "n_matrices": 34,
+    "sha256": "2315fb249e762ea6d7e9e6efbbbac603e2a7ee60951d64af28adbe062e8601c8"
+   },
+   "dry_run": false,
+   "elapsed_s": 156.2,
+   "execution_identity": "ec71e090fe9ad528b60449ff6152d0f14a2ad7663e2b4f314807e69429420d43",
+   "first_failure": "artifact_sealing",
+   "n_stages": 14,
+   "n_stages_pass": 7,
+   "publication": "NFL1_NOT_AUTHORIZED",
+   "refusing_current_season_inputs": {
+    "denom_panel": {
+     "code": "CURRENT_SEASON_SOURCE_UNVERIFIED",
+     "consumers": [
+      "team_volume_v1",
+      "nonqb.accounting",
+      "nonqb.eligibility"
+     ],
+     "newest_ordinal": 202518,
+     "required_ordinal": 202601,
+     "state": "BLOCKED"
+    },
+    "panel_p3": {
+     "code": "CURRENT_SEASON_INPUT_STALE",
+     "consumers": [
+      "qb_allocation.previous_primary_detail"
+     ],
+     "newest_ordinal": 202518,
+     "required_ordinal": 202601,
+     "state": "BLOCKED"
+    },
+    "team_volume_history": {
+     "code": "CURRENT_SEASON_INPUT_STALE",
+     "consumers": [
+      "team_volume_v1"
+     ],
+     "newest_ordinal": 202518,
+     "required_ordinal": 202601,
+     "state": "BLOCKED"
+    }
+   },
+   "required_sources": [
+    "depth_charts",
+    "injuries",
+    "schedules",
+    "weekly_rosters"
+   ],
+   "run_id": "ec71e090fe9ad528",
+   "status": "REFUSED"
+  }
+ ],
+ "spec_version": "early-only-production-run-1",
+ "status": {
+  "REFUSED": 8
+ },
+ "the_blocker": {
+  "also": "feature_build is DEFERRED[STAGE_DECLARED_UNIMPLEMENTED] on all eight -- SUN-6. The accepted research baseline has no production implementation and is declared as debt rather than reported as a forecast.",
+  "code": "ARTIFACT_SEALING_FAILURE",
+  "inputs": [
+   "denom_panel",
+   "panel_p3",
+   "team_volume_history"
+  ],
+  "invariant": "current_season_input_freshness",
+  "n_inputs_refusing": 3,
+  "one_root_cause": "All three read a panel whose newest ordinal is 202518 against a required 202601. There are zero 2026 rows. This is SUN-5, and it is one data absence presenting as three refusals, not three problems.",
+  "stage": "artifact_sealing"
+ },
+ "what_is_new": "This is the first slate run in this repository whose capture_validation passed against REAL, REHASHED bytes. Every one of the eight carries dry_run=false and DECLARED_BYTES_VERIFIED_AGAINST_VINTAGE_MANIFEST. Before DK-3 and DK-4 the only slate driver satisfied that stage with a placeholder hash and quarantined itself as a rehearsal.",
+ "written_at": "2026-09-20T06:00:00Z"
+}
