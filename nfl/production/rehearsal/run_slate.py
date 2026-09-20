@@ -59,21 +59,39 @@ CODE_CAT = {
 }
 
 
-def roster(season, week):
+def roster(season, week, written_at=None):
     """The player set for an UPCOMING week comes from the roster, not history.
 
     This is the whole point: a live forecast must be able to name players for a
     season that has not been played. Sourcing the player set from a historical
     panel can only ever 'forecast' the past.
+
+    FIX-ROSTER-GLOB. THE VINTAGE IS SELECTED, NOT GUESSED. This function used
+    to glob `nfl/vintage/weekly_rosters.*.reduced.csv.gz` and keep whichever
+    file held the MOST ROWS. Row count, glob order, filename order, file size
+    and filesystem mtime are the five inputs `vintage_selector.select` names
+    as FORBIDDEN for choosing a vintage, and this used two of them. The file
+    with the most rows is not the file that was lawful at the run cut: on a
+    week where a later capture is larger, "most rows" and "lawful at the cut"
+    pick different files and nothing says so.
+
+    The roster now comes from `fixture_assembler.assemble_game`, which reads
+    the blob the run DECLARES, selected by `vintage_selector` at the cut. A
+    caller with no cut is REFUSED rather than silently handed a glob: there is
+    no lawful vintage without an instant to be lawful at.
     """
-    best, rows = None, []
-    for f in sorted(glob.glob(os.path.join(
-            _ROOT, 'nfl', 'vintage', 'weekly_rosters.*.reduced.csv.gz'))):
-        r = [x for x in csv.DictReader(gzip.open(f, 'rt'))
-             if x['season'] == str(season) and x['week'] == str(week)]
-        if len(r) > len(rows):
-            best, rows = f, r
-    return os.path.basename(best) if best else None, rows
+    if not written_at:
+        raise ValueError(
+            'ROSTER_CUT_REQUIRED: a roster vintage cannot be chosen without '
+            'a run cut. Pass written_at; do not fall back to a glob.')
+    o = FA.assemble(written_at)
+    if o.state is not State.PASS:
+        raise ValueError(f'ROSTER_VINTAGE_UNAVAILABLE: {o.code}: {o.detail}')
+    blob = (o.evidence or {})['detail_by_source']['weekly_rosters']['blob']
+    with gzip.open(os.path.join(_ROOT, blob), 'rt') as fh:
+        rows = [x for x in csv.DictReader(fh)
+                if x['season'] == str(season) and x['week'] == str(week)]
+    return os.path.basename(blob), rows
 
 
 def build(season, week, out_dir, written_at,
@@ -83,7 +101,7 @@ def build(season, week, out_dir, written_at,
         return {'fatal': f'{plan.code}: {plan.detail}'}
     games = sorted({c.game_id: c for c in plan.value}.items())
     ko = {c.game_id: c.kickoff_utc for c in plan.value}
-    src_file, rrows = roster(season, week)
+    src_file, rrows = roster(season, week, written_at=written_at)
     by_team = collections.defaultdict(list)
     for r in rrows:
         by_team[r['team']].append(r)

@@ -96,10 +96,24 @@ def test_B_the_clock_is_enforced_by_moving_it():
           f"snap {early.evidence['snap_counts']['dropped_by_clock']}")
     CSP.cache_clear()
     late = CSP.rows_for(2026, 1, as_of=AS_OF, all_clubs=_clubs())
+    # ASSERTS THE PROPERTY, NOT AN INCIDENTAL COUNT. This used to require
+    # `dropped_by_clock == 0`, which held only while ONE play-by-play store
+    # existed. Two are considered now -- the research postgame store and the
+    # governed vintage capture -- and at this AS_OF the vintage captures
+    # (retrieved 2026-09-17) are LATER than the clock and are correctly
+    # dropped. Demanding zero drops would demand that the clock stop working
+    # whenever a newer capture lands, which is the opposite of the guarantee.
+    # What the step means is: moving the clock forward admits evidence that
+    # was refused before, and the panel answers from it.
     check('  moving the clock forward admits them again',
           late.state is State.PASS
-          and late.evidence['play_by_play']['dropped_by_clock'] == 0,
-          f'{late.state}[{late.code}]')
+          and late.evidence['play_by_play'].get('blob')
+          and late.evidence['play_by_play']['dropped_by_clock']
+          < early.evidence['play_by_play']['dropped_by_clock'],
+          f"{late.state}[{late.code}] store="
+          f"{late.evidence['play_by_play'].get('store')} dropped "
+          f"{early.evidence['play_by_play']['dropped_by_clock']} -> "
+          f"{late.evidence['play_by_play']['dropped_by_clock']}")
     CSP.cache_clear()
     # STRICTLY before: a capture taken AT the instant is not prior evidence.
     exact = CSP.rows_for(2026, 1,

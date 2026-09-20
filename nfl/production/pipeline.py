@@ -746,6 +746,15 @@ EDGES = (
     # module reads the manifest to report how OLD each source is, not to feed
     # a projection -- but "it is only for reporting" is exactly the exemption
     # the audit exists to refuse. Adding a reader is a declaration, not a glob.
+    Edge('nfl/production/nonqb/current_season_panel.py', MANIFEST_PRODUCER,
+         ('source', 'state', 'season', 'capture_id', 'blob', 'provenance'),
+         'FIX-CSP-STORE. Finds the governed play-by-play captures for the '
+         'current season so the widest LAWFUL one can be chosen. It reads '
+         '`provenance.retrieved_at` only to apply the clock -- a capture not '
+         'strictly before the forecast instant is dropped and counted -- and '
+         '`n_games` only to prefer the wider of two lawful captures. It '
+         'projects no column into a forecast; the football columns come from '
+         'the blob, under the same clock this read enforces.'),
     Edge('nfl/production/fixture_assembler.py', MANIFEST_PRODUCER,
          ('source', 'state', 'blob', 'blob_file_sha256'),
          'DK-4. Builds a run\'s `source_hashes` from the manifest: which blob '

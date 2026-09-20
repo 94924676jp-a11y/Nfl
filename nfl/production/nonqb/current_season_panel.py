@@ -90,27 +90,106 @@ def _lawful(retrieved, as_of):
     return r is not None and r < _parse(as_of)
 
 
+#: The GOVERNED play-by-play capture, in the vintage manifest.
+VINTAGE_MANIFEST = 'nfl/vintage_manifest.jsonl'
+
+
+def _vintage_pbp_candidates(season):
+    """PASS `pbp` captures for `season`, from the manifest.
+
+    WHY THIS EXISTS, AND IT IS A REPAIR RATHER THAN AN EXTENSION.
+
+    This module looked only at `nfl/research/postgame/pbp_*.csv.gz`, and a
+    file there is considered only when a sidecar `.csv.provenance.json` sits
+    beside it. Measured 2026-09-20: that store held 2026 captures of TEN and
+    TWO games, while the governed vintage capture
+    `nfl/vintage/pbp_2026.b69f55a172965e16.csv.gz` -- SIXTEEN games, all 32
+    clubs, in the manifest with a PASS state and a retrieval instant -- was
+    never considered, because its provenance lives in the manifest and not in
+    a sidecar.
+
+    The visible consequence was that DEN and KC came back in `missing_clubs`
+    and were reported as clubs with no current-season evidence. They have 32
+    and 29 dropbacks respectively in the governed capture. The evidence was
+    never absent; this module was looking in the smaller of two stores.
+
+    Nothing about the SOURCE changes: the declared source is play-by-play and
+    this is play-by-play, captured under `oas1-pbp-capture-1` with a recorded
+    `retrieved_at`. The clock is enforced identically. This materialises
+    evidence the repository already holds; it does not admit a new kind.
+    """
+    out = []
+    mf = _REPO / VINTAGE_MANIFEST
+    if not mf.exists():
+        return out
+    with open(mf) as fh:
+        for ln in fh:
+            try:
+                r = json.loads(ln)
+            except ValueError:
+                continue
+            if r.get('source') != 'pbp' or r.get('state') != 'PASS':
+                continue
+            if int(r.get('season') or 0) != int(season):
+                continue
+            v = r.get('value') or {}
+            blob = v.get('blob')
+            if not blob:
+                continue
+            # The manifest carries an absolute path for this family.
+            fp = pathlib.Path(blob)
+            if not fp.is_absolute():
+                fp = _REPO / blob
+            if not fp.exists():
+                continue
+            prov = v.get('provenance') or {}
+            out.append({
+                'path': str(fp),
+                'retrieved_at': prov.get('retrieved_at'),
+                'n_games': int(v.get('n_games') or 0),
+                'capture_id': r.get('capture_id'),
+                'store': 'vintage_manifest',
+            })
+    return out
+
+
 def _pbp_rows(season, week, as_of):
-    """(team -> Counter(passer -> dropbacks), evidence). Widest LAWFUL capture."""
+    """(team -> Counter(passer -> dropbacks), evidence). Widest LAWFUL capture.
+
+    BOTH STORES ARE CONSIDERED and the widest lawful capture wins, whichever
+    store it came from. `store` is recorded on the evidence so a reader can
+    see which one answered rather than inferring it from a filename.
+    """
     best, ev = None, {'considered': 0, 'dropped_by_clock': 0, 'blob': None,
-                      'retrieved_at': None, 'games': []}
+                      'retrieved_at': None, 'games': [], 'store': None,
+                      'n_games': None, 'stores_considered': []}
+    cands = []
     for f in sorted(glob.glob(str(_REPO / (PBP_GLOB % season)))):
         prov = pathlib.Path(str(f).replace('.csv.gz', '.csv.provenance.json'))
         if not prov.exists():
             continue
-        p = json.loads(prov.read_text())
+        pj = json.loads(prov.read_text())
+        cands.append({'path': f, 'retrieved_at': pj.get('retrieved_at'),
+                      'n_games': len(pj.get('games') or []),
+                      'games': list(pj.get('games') or []),
+                      'store': 'research_postgame'})
+    cands.extend(_vintage_pbp_candidates(season))
+    for c in cands:
         ev['considered'] += 1
-        if not _lawful(p.get('retrieved_at'), as_of):
+        ev['stores_considered'].append(
+            {'store': c['store'], 'n_games': c['n_games'],
+             'retrieved_at': c['retrieved_at']})
+        if not _lawful(c.get('retrieved_at'), as_of):
             ev['dropped_by_clock'] += 1
             continue
-        n = len(p.get('games') or [])
-        if best is None or n > best[0]:
-            best = (n, f, p)
+        if best is None or c['n_games'] > best[0]:
+            best = (c['n_games'], c['path'], c)
     if best is None:
         return {}, ev
-    _, f, p = best
-    ev.update(blob=pathlib.Path(f).name, retrieved_at=p.get('retrieved_at'),
-              games=list(p.get('games') or []))
+    _, f, c = best
+    ev.update(blob=pathlib.Path(f).name, retrieved_at=c.get('retrieved_at'),
+              games=list(c.get('games') or []), store=c.get('store'),
+              n_games=c.get('n_games'), capture_id=c.get('capture_id'))
     db = collections.defaultdict(collections.Counter)
     with gzip.open(f, 'rt', errors='ignore') as fh:
         for r in csv.DictReader(fh):
