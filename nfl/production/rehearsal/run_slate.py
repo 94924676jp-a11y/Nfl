@@ -23,7 +23,9 @@ for _q in (_ROOT, os.path.join(_ROOT, 'nfl', 'research', 'qb2'),
         sys.path.insert(0, _q)
 
 from nfl.capture import coverage as C                             # noqa: E402
+from nfl.production import fixture_assembler as FA                # noqa: E402
 from nfl.production import run_forecast as RUN                    # noqa: E402
+from sportsplatform.governance.outcome import State              # noqa: E402
 
 # Failure taxonomy, per s.D. Every failure gets one of these; "error" is not a
 # category.
@@ -86,6 +88,12 @@ def build(season, week, out_dir, written_at,
     for r in rrows:
         by_team[r['team']].append(r)
 
+    # ASSEMBLED ONCE FOR THE SLATE, at the run's own cut. Every game in a
+    # slate is written at the same instant, so selecting the vintages once is
+    # not a shortcut -- it is the statement that all sixteen games read the
+    # same evidence, which is what makes them comparable.
+    fixture_sources = FA.assemble(written_at)
+
     results = []
     for gid, _ in games:
         parts = gid.split('_')
@@ -93,9 +101,32 @@ def build(season, week, out_dir, written_at,
         players = [{'gsis_id': r['gsis_id'], 'position': r['position'],
                     'team': r['team']}
                    for t in (away, home) for r in by_team.get(t, [])]
+        # DK-4. THE PLACEHOLDER IS GONE. This used to read
+        #     'source_hashes': {'schedules': {'sha256': 'b' * 64, ...}}
+        # -- one source, a fabricated hash -- which is why this module was
+        # declared REHEARSAL ONLY and why it still sets dry_run below. The
+        # fixture is now assembled from the vintage manifest by
+        # `fixture_assembler`, which selects each capture with the SAME call
+        # the football layers make and hashes the blob bytes itself.
+        #
+        # `dry_run` is deliberately UNCHANGED here. Removing the placeholder
+        # makes this driver honest about its inputs; it does not make a module
+        # whose own docstring says REHEARSAL ONLY into the production path,
+        # and promoting it by side effect of a data fix is not a decision this
+        # commit gets to take quietly.
+        if fixture_sources.state is not State.PASS:
+            results.append({'game_id': gid, 'status': 'REFUSED',
+                            'n_players': len(players),
+                            'failures': [{'stage': 'fixture_assembly',
+                                          'code': fixture_sources.code,
+                                          'category': 'DATA_MISSING',
+                                          'detail': (fixture_sources.detail
+                                                     or '')[:200]}],
+                            'stages': [], 'publication': None,
+                            'run_id': None})
+            continue
         fx = {'kickoff_utc': ko[gid].isoformat().replace('+00:00', 'Z'),
-              'source_hashes': {'schedules': {
-                  'sha256': 'b' * 64, 'retrieved_at': '2026-09-08T12:00:00Z'}},
+              'source_hashes': dict(fixture_sources.value),
               'players': players, 'team_ids': [away, home],
               'qb_slate': {'prospective': True}, 'qb_draws': 200,
               'team_volume': True,
@@ -125,6 +156,14 @@ def build(season, week, out_dir, written_at,
                         'run_id': s['run_id']})
     return {'season': season, 'week': week, 'n_games': len(games),
             'model_configuration': model_configuration or 'PRODUCTION_BASELINE',
+            'fixture_sources': {
+                'state': fixture_sources.state.name,
+                'code': fixture_sources.code,
+                'sources': sorted(fixture_sources.value or {}),
+                'detail_by_source': (fixture_sources.evidence or {}).get(
+                    'detail_by_source'),
+                'refusals': (fixture_sources.evidence or {}).get('refusals'),
+            },
             'roster_source': src_file, 'n_roster_rows': len(rrows),
             'results': results}
 

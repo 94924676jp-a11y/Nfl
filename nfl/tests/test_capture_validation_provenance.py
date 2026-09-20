@@ -1,45 +1,49 @@
 """capture_validation's PASS must mean the captures were validated.
 
-Today it does not, and these tests pin exactly that so the gap cannot close by
-accident or widen unnoticed.
+It did not, in two independent ways. Both are now closed and these tests hold
+them closed.
 
-TWO DEFECTS, AND THEY ARE DIFFERENT. ONE IS NOW FIXED.
-
-DK-3 -- FIXED in the same commit that rewrote this file. `capture_validation`
-used to iterate the source set it was HANDED and never ask whether a source
-the run actually reads was ABSENT, so one synthetic entry returned
+DK-3 -- the stage iterated the source set it was HANDED and never asked
+whether a source the run actually reads was ABSENT, so one entry returned
 PASS[INPUTS_VALIDATED] for the whole stage. It now derives its required set
 from `vintage_selector.FAMILIES` -- the existing "DECLARED, NOT DISCOVERED"
 list of every perishable source the production layers select a vintage from --
-intersected with the fetched-source registry, and refuses
-REQUIRED_SOURCE_NOT_DECLARED naming each missing one. The basis is derived
-rather than hand-written precisely because a hand-written list goes stale the
-moment a family is added, and goes stale silently.
+and refuses REQUIRED_SOURCE_NOT_DECLARED naming each missing one. Derived
+rather than hand-written, because a hand-written list goes stale the moment a
+family is added, and goes stale silently.
 
-DK-4 -- STILL OPEN, and these tests still characterise it. The only slate
-driver in the repository, `nfl/production/rehearsal/run_slate.py`, supplies
-one entry whose sha256 is 'b' * 64. DK-3's fix now refuses that run for
-declaring only `schedules`, which is progress and is not the whole defect: a
-caller that declared all four sources with four fabricated hashes would still
-pass. This stage checks that every required source was DECLARED and that each
-declaration is WELL FORMED. It does not check that the declared bytes exist.
-Until a production fixture assembler reads the vintage manifest and emits true
-hashes, no caller can satisfy this stage with evidence.
+DK-4 -- nothing asked whether the declared BYTES existed. Four fabricated
+hashes for the four required sources passed everything. Every declared sha256
+must now match a PASS capture in the vintage manifest, and the blob is
+reopened and rehashed rather than trusted. `fixture_assembler` builds a real
+fixture from the same selector call the football layers make, so the validated
+set and the consumed set are finally the same set; they were disjoint before,
+which is why nothing ever complained.
 
-WHAT THESE TESTS DO NOT CLAIM. The football layers below the stage read real
-captures through `vintage_selector`, with real capture ids. The numbers rest
-on real evidence; the PROVENANCE RECORD does not. A test that conflated those
-would be measuring the wrong thing.
+WHAT THESE TESTS ASSERT THAT IS EASY TO GET WRONG
 
-The DK-4 tests are CHARACTERISATION tests: they assert the defect as it
-stands. When the fixture assembler lands they fail, and that failure is the
-signal to update them, deliberately, in the same commit that fixes the
-behaviour.
+A DECLARED DRY RUN MAY STILL USE SYNTHETIC CAPTURES, and that is not a bypass
+left open for convenience. `--dry-run` already means "historical fixture run;
+NEVER prospective evidence"; such a run is stamped prospective_eligible=false
+and refused publication. A run that wants to feed the engine synthetic inputs
+IS a dry run, and saying so out loud is the honest form of it. What is no
+longer possible is a run that consumes fabricated captures WITHOUT carrying
+that label -- and `test_a_dry_run_says_so_on_the_record` checks that the
+exemption is announced on the stage record rather than taken silently.
+
+THE PLACEHOLDER IS GONE FROM `run_slate.py` and the AST test proves it rather
+than grepping: `'b' * 64` never appears literally in a file, so a text search
+for sixty-four b's finds nothing and would have reported the placeholder
+absent while it sat there. An earlier version of this very test used
+`ast.literal_eval` on that BinOp, which accepts only + and - between numbers,
+raised, and was swallowed by an except-continue -- it reported the absence of
+a placeholder that was plainly there. The multiplication is evaluated by hand.
 """
 from __future__ import annotations
 
 import argparse
 import ast
+import json
 import pathlib
 import sys
 
@@ -47,7 +51,14 @@ _REPO = pathlib.Path(__file__).resolve().parents[2]
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
+from nfl.production import fixture_assembler as FA                 # noqa: E402
+from nfl.production import run_forecast as RUN                     # noqa: E402
+from sportsplatform.governance.outcome import State                # noqa: E402
+
 _P, _F = 0, 0
+_CACHE = {}
+
+CUT = '2026-09-20T05:00:00Z'
 
 
 def ok(cond, what):
@@ -62,26 +73,47 @@ def ok(cond, what):
 
 def _args(**kw):
     base = dict(season=2026, week=2, game_id='2026_02_CAR_ATL', arm='A',
-                written_at='2026-09-20T05:00:00Z', seed=20260908,
+                written_at=CUT, seed=20260908,
                 dry_run=False, fixtures=None,
+                out_dir='/tmp/claude-0/cvtest',
                 model_configuration='PRODUCTION_BASELINE')
     base.update(kw)
     return argparse.Namespace(**base)
 
 
-def test_driver_supplies_a_placeholder_hash():
-    """The literal is READ OUT OF THE SOURCE, not recalled."""
-    p = _REPO / 'nfl' / 'production' / 'rehearsal' / 'run_slate.py'
-    tree = ast.parse(p.read_text())
+def _base_fx(**over):
+    f = {'kickoff_utc': '2026-09-20T17:00:00Z',
+         'players': [], 'team_ids': ['CAR', 'ATL'],
+         'qb_slate': {'prospective': True}, 'qb_draws': 8,
+         'team_volume': True, 'distributions': {}}
+    f.update(over)
+    return f
+
+
+def _fake_hashes():
+    return {n: {'sha256': 'b' * 64, 'retrieved_at': '2026-09-08T12:00:00Z'}
+            for n in RUN.required_capture_sources()['required']}
+
+
+def _assembled():
+    if 'asm' not in _CACHE:
+        _CACHE['asm'] = FA.assemble(CUT)
+    return _CACHE['asm']
+
+
+def _cv(args, fx):
+    s = RUN.build(args, dict(fx))
+    return {r['stage']: r for r in s['stages']}.get('capture_validation'), s
+
+
+def _long_placeholders(path):
+    """Single-character string constants of length 64, built by multiplication.
+
+    NOT ast.literal_eval: it accepts only + and - between numbers, so it raises
+    on `'b' * 64` and an except-continue around it silently finds nothing.
+    """
     found = []
-    for node in ast.walk(tree):
-        # `'b' * 64` is a BinOp over a constant, so the string never appears
-        # literally in the file and a grep for sixty-four b's finds nothing.
-        # NOT ast.literal_eval: it accepts only + and - between numbers, so
-        # it raises on `'b' * 64` and an `except: continue` around it silently
-        # finds NOTHING -- which is what the first version of this test did,
-        # and it reported the absence of a placeholder that is plainly there.
-        # The multiplication is evaluated by hand instead.
+    for node in ast.walk(ast.parse(pathlib.Path(path).read_text())):
         if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Mult):
             l, r = node.left, node.right
             if not (isinstance(l, ast.Constant) and isinstance(r, ast.Constant)):
@@ -90,28 +122,133 @@ def test_driver_supplies_a_placeholder_hash():
                 continue
             v = l.value * r.value
             if len(v) == 64 and len(set(v)) == 1:
-                found.append(v)
-    ok(found == ['b' * 64],
-       "run_slate.py builds its source sha256 as 'b' * 64 -- a placeholder, "
-       'and the ONLY source it declares')
+                found.append((v, node.lineno))
+    return found
 
-    ok("REHEARSAL ONLY" in (ast.get_docstring(tree) or ''),
-       'and the module says REHEARSAL ONLY in its own docstring, so the '
-       'placeholder and the quarantine are one decision')
+
+# ======================================================================= DK-4
+def test_the_placeholder_is_gone_from_the_slate_driver():
+    p = _REPO / 'nfl' / 'production' / 'rehearsal' / 'run_slate.py'
+    ok(_long_placeholders(p) == [],
+       f'run_slate.py contains no 64-character placeholder hash: '
+       f'{_long_placeholders(p)}')
+
+    tree = ast.parse(p.read_text())
+    # `from nfl.production import fixture_assembler as FA` puts the package
+    # in `n.module` and the module in `a.name`, so collecting only `n.module`
+    # reports the import absent when it is right there.
+    imports = {a.name for n in ast.walk(tree) if isinstance(n, ast.Import)
+               for a in n.names}
+    for n in ast.walk(tree):
+        if isinstance(n, ast.ImportFrom) and n.module:
+            imports.add(n.module)
+            imports |= {f'{n.module}.{a.name}' for a in n.names}
+    ok('nfl.production.fixture_assembler' in imports,
+       f'and it imports the fixture assembler instead: '
+       f'{sorted(i for i in imports if "fixture" in i) or imports}')
 
     sets_dry = any(
         isinstance(n, ast.keyword) and n.arg == 'dry_run'
         and isinstance(n.value, ast.Constant) and n.value.value is True
         for n in ast.walk(tree))
     ok(sets_dry,
-       'and it passes dry_run=True in the call itself: there is no flag a '
-       'caller can clear')
+       'and it STILL sets dry_run=True. Removing the placeholder makes this '
+       'driver honest about its inputs; it does not promote a module whose '
+       'own docstring says REHEARSAL ONLY into the production path')
 
 
+def test_the_assembler_measures_hashes_rather_than_copying_them():
+    o = _assembled()
+    ok(o.state is State.PASS,
+       f'the fixture assembles at {CUT}: {o.state.name}[{o.code}]')
+    if o.state is not State.PASS:
+        return
+    det = (o.evidence or {})['detail_by_source']
+    ok(sorted(o.value) == RUN.required_capture_sources()['required'],
+       f'covering exactly the required sources: {sorted(o.value)}')
+    for name, d in sorted(det.items()):
+        ok(d['hash_measured_here'] and d['manifest_agrees'] is True,
+           f'{name}: {d["blob"]} reopened and hashed here, and the manifest '
+           f'record agrees')
+        ok(pathlib.Path(_REPO / d['blob']).exists(),
+           f'{name}: the blob it names is on disk')
+    ok(all(len(v['sha256']) == 64 for v in o.value.values()),
+       'every emitted hash is a full sha256, not a content-address prefix')
+
+
+def test_fabricated_hashes_are_refused_on_a_real_run():
+    cv, s = _cv(_args(), _base_fx(source_hashes=_fake_hashes()))
+    ok(cv and cv['state'] == 'BLOCKED'
+       and cv['code'] == 'DECLARED_CAPTURES_UNVERIFIED',
+       f'four fabricated hashes for the four required sources are REFUSED: '
+       f"{cv and cv['state']} {cv and cv['code']}")
+    for n in RUN.required_capture_sources()['required']:
+        ok(cv and n in cv['detail'],
+           f'and the refusal names {n} rather than returning a bare code')
+    ok(s['status'] == 'REFUSED',
+       'and the run as a whole refuses, so no layer reads anything')
+
+
+def test_a_dry_run_says_so_on_the_record():
+    """The exemption is announced, not taken silently."""
+    cv, s = _cv(_args(dry_run=True), _base_fx(source_hashes=_fake_hashes()))
+    ok(cv and cv['state'] == 'PASS',
+       f'a DECLARED dry run may still use synthetic captures: '
+       f"{cv and cv['state']}")
+    gov = [g for g in (cv or {}).get('governance') or []
+           if g.get('layer') == 'capture_validation']
+    ok(len(gov) == 1 and gov[0].get('bytes_verified') is False,
+       f'and the stage record says the bytes were NOT verified: '
+       f'{gov and gov[0].get("bytes_verified")}')
+    ok(gov and 'DRY_RUN' in gov[0]['governance'],
+       f'naming the reason: {gov and gov[0]["governance"]!r}')
+    ok(s.get('prospective_eligible') is False,
+       f'and the run is stamped prospective_eligible=false, which is what '
+       f'makes the exemption safe: {s.get("prospective_eligible")}')
+
+
+def test_an_assembled_fixture_passes_and_the_pass_says_why():
+    o = _assembled()
+    if o.state is not State.PASS:
+        ok(False, 'the fixture must assemble for this test to mean anything')
+        return
+    cv, _s = _cv(_args(), _base_fx(source_hashes=dict(o.value)))
+    ok(cv and cv['state'] == 'PASS' and cv['code'] == 'INPUTS_VALIDATED',
+       f'a fixture built from the vintage manifest passes: '
+       f"{cv and cv['state']} {cv and cv['code']}")
+    gov = [g for g in (cv or {}).get('governance') or []
+           if g.get('layer') == 'capture_validation']
+    ok(len(gov) == 1 and gov[0].get('bytes_verified') is True,
+       'and the PASS records that the declared bytes WERE verified')
+    ok(gov and 'VINTAGE_MANIFEST' in gov[0]['governance'],
+       f'against the vintage manifest, named: {gov and gov[0]["governance"]!r}')
+    ok(gov and gov[0].get('required') == RUN.required_capture_sources()[
+        'required'],
+       'and it names the required set it checked, so a reader need not '
+       'recompute it')
+
+
+def test_one_tampered_byte_is_caught():
+    """The hash is checked against the BYTES, not against another record."""
+    o = _assembled()
+    if o.state is not State.PASS:
+        ok(False, 'need an assembled fixture')
+        return
+    src = {k: dict(v) for k, v in o.value.items()}
+    victim = sorted(src)[0]
+    h = src[victim]['sha256']
+    src[victim]['sha256'] = ('0' if h[0] != '0' else '1') + h[1:]
+    cv, _s = _cv(_args(), _base_fx(source_hashes=src))
+    ok(cv and cv['state'] == 'BLOCKED'
+       and cv['code'] == 'DECLARED_CAPTURES_UNVERIFIED',
+       f'flipping one character of one real hash is refused: '
+       f"{cv and cv['state']} {cv and cv['code']}")
+    ok(cv and victim in cv['detail'],
+       f'and the refusal names {victim}, the one that was altered')
+
+
+# ======================================================================= DK-3
 def test_capture_validation_requires_the_sources_the_layers_select():
-    """DK-3, fixed. One fabricated entry no longer passes the stage."""
-    from nfl.production import run_forecast as RUN
-
     req = RUN.required_capture_sources()
     ok(req['required'] == ['depth_charts', 'injuries', 'schedules',
                            'weekly_rosters'],
@@ -125,125 +262,78 @@ def test_capture_validation_requires_the_sources_the_layers_select():
         ok(req['not_required_and_why'].get(name),
            f'{name} is excluded WITH A STATED REASON rather than by omission')
 
-    fx = {'kickoff_utc': '2026-09-20T17:00:00Z',
-          'source_hashes': {'schedules': {
-              'sha256': 'b' * 64,
-              'retrieved_at': '2026-09-08T12:00:00Z'}},
-          'players': [], 'team_ids': ['CAR', 'ATL'],
-          'qb_slate': {'prospective': True}, 'qb_draws': 8,
-          'team_volume': True, 'distributions': {}}
-    s = RUN.build(_args(out_dir='/tmp/claude-0/cvtest'), dict(fx))
-    st = {r['stage']: r for r in s['stages']}
-    cv = st.get('capture_validation')
+    one = {'schedules': {'sha256': 'b' * 64,
+                         'retrieved_at': '2026-09-08T12:00:00Z'}}
+    cv, _s = _cv(_args(), _base_fx(source_hashes=one))
     ok(cv and cv['state'] == 'BLOCKED'
        and cv['code'] == 'REQUIRED_SOURCE_NOT_DECLARED',
-       f'the exact source set run_slate supplies is now REFUSED: '
-       f"state={cv and cv['state']} code={cv and cv['code']}")
+       f'declaring one of four required sources is refused BEFORE the bytes '
+       f"are even looked at: {cv and cv['state']} {cv and cv['code']}")
     for name in ('depth_charts', 'injuries', 'weekly_rosters'):
         ok(cv and name in cv['detail'],
            f'and the refusal NAMES {name} rather than returning a bare code')
 
 
-def test_a_pass_says_what_it_did_not_check():
-    """The half DK-3 does not fix, stated on the PASS and not only in prose.
-
-    Four fabricated hashes for the four required sources still pass. That is
-    DK-4, and a PASS that did not say so would be read as more than it is.
-    """
-    from nfl.production import run_forecast as RUN
-
-    fx = {'kickoff_utc': '2026-09-20T17:00:00Z',
-          'source_hashes': {n: {'sha256': 'b' * 64,
-                                'retrieved_at': '2026-09-08T12:00:00Z'}
-                            for n in RUN.required_capture_sources()['required']},
-          'players': [], 'team_ids': ['CAR', 'ATL'],
-          'qb_slate': {'prospective': True}, 'qb_draws': 8,
-          'team_volume': True, 'distributions': {}}
-    s = RUN.build(_args(out_dir='/tmp/claude-0/cvtest'), dict(fx))
-    st = {r['stage']: r for r in s['stages']}
-    cv = st.get('capture_validation')
-    ok(cv and cv['state'] == 'PASS',
-       f'four fabricated hashes for the four required sources still pass: '
-       f"{cv and cv['state']} {cv and cv['code']}. DK-3 closed the "
-       f'missing-source hole and did not close this one')
-    # READ OFF THE STAGE RECORD, with no fallback. An earlier draft of this
-    # test substituted the expected string when the record did not carry one,
-    # which made the assertion unfailable and would have hidden the very gap
-    # it is here to prove -- evidence the pipeline does not copy into the
-    # record dies silently.
-    gov = [g for g in (cv or {}).get('governance') or []
-           if g.get('layer') == 'capture_validation']
-    ok(len(gov) == 1,
-       f'the PASS carries exactly one capture_validation governance record: '
-       f'{len(gov)}')
-    txt = gov[0]['governance'] if gov else ''
-    ok('NOT checked' in txt and 'DK-4' in txt,
-       f'and it declares its own scope -- declaration completeness and '
-       f'well-formedness, NOT the existence of the declared bytes: {txt!r}')
-    ok(gov and gov[0].get('required') == RUN.required_capture_sources()[
-        'required'],
-       'and it names the required set it checked, so a reader need not '
-       'recompute it')
-
-
 def test_direct_entrypoint_without_fixtures_refuses():
-    """DK-4's other half: with no fixtures there is nothing to validate."""
-    from nfl.production import run_forecast as RUN
-
-    s = RUN.build(_args(out_dir='/tmp/claude-0/cvtest'), {})
-    st = {r['stage']: r for r in s['stages']}
-    cv = st.get('capture_validation')
+    cv, s = _cv(_args(), {})
     ok(cv and cv['state'] == 'BLOCKED' and cv['code'] == 'SOURCE_MISSING',
-       'run_forecast.build with no fixtures refuses SOURCE_MISSING at '
-       f"capture_validation: state={cv and cv['state']} "
-       f"code={cv and cv['code']}")
-    ok(s['status'] == 'REFUSED',
-       'and the run as a whole is REFUSED, so no layer below it executes')
+       f'no fixtures at all refuses SOURCE_MISSING: '
+       f"{cv and cv['state']} {cv and cv['code']}")
+    ok(cv and 'depth_charts' in cv['detail'],
+       'and names what the run must declare, so a caller is told the '
+       'requirement rather than left to guess it')
+    ok(s['status'] == 'REFUSED', 'and the run as a whole is REFUSED')
 
 
-def test_both_callers_now_refuse_and_for_different_reasons():
-    """What DK-3 changed, stated as the comparison it replaces.
+def test_well_formedness_is_checked_before_completeness():
+    """Order matters: every per-entry refusal must stay reachable.
 
-    This test used to assert the defect: the same captures on disk yielded
-    PASS or BLOCKED depending only on what the caller declared, which made the
-    stage a statement about its caller. Both callers now refuse, and the two
-    refusals say DIFFERENT things -- nothing declared, versus three of four
-    required sources undeclared. A refusal that distinguishes those is
-    diagnostic; one that flattened them would not be.
+    Completeness first would have masked SOURCE_TOO_LATE, SCHEMA_DRIFT,
+    RAW_HASH_MISMATCH and UNAUTHORIZED_INPUT behind one code.
     """
-    from nfl.production import run_forecast as RUN
+    late = {'schedules': {'sha256': 'b' * 64,
+                          'retrieved_at': '2026-09-21T00:00:00Z'}}
+    cv, _s = _cv(_args(), _base_fx(source_hashes=late))
+    ok(cv and cv['code'] == 'SOURCE_TOO_LATE',
+       f'one entry retrieved after written_at still reports SOURCE_TOO_LATE, '
+       f'not the completeness code: {cv and cv["code"]}')
 
-    fx = {'kickoff_utc': '2026-09-20T17:00:00Z',
-          'source_hashes': {'schedules': {
-              'sha256': 'b' * 64,
-              'retrieved_at': '2026-09-08T12:00:00Z'}},
-          'players': [], 'team_ids': ['CAR', 'ATL'],
-          'qb_slate': {'prospective': True}, 'qb_draws': 8,
-          'team_volume': True, 'distributions': {}}
-    a = RUN.build(_args(out_dir='/tmp/claude-0/cvtest'), dict(fx))
-    b = RUN.build(_args(out_dir='/tmp/claude-0/cvtest'), {})
-    ca = {r['stage']: r for r in a['stages']}['capture_validation']
-    cb = {r['stage']: r for r in b['stages']}['capture_validation']
-    ok(ca['state'] == cb['state'] == 'BLOCKED',
-       f'both callers refuse: {ca["state"]} and {cb["state"]}')
-    ok(ca['code'] == 'REQUIRED_SOURCE_NOT_DECLARED'
-       and cb['code'] == 'SOURCE_MISSING',
-       f'and the codes distinguish what each got wrong: {ca["code"]} vs '
-       f'{cb["code"]}')
-    ok('depth_charts' in cb['detail'],
-       'the empty-set refusal also names what the run must declare, so a '
-       'caller is told the requirement rather than left to guess it')
+    unauth = {'some_vendor_feed': {'sha256': 'b' * 64,
+                                   'retrieved_at': '2026-09-08T12:00:00Z'}}
+    cv, _s = _cv(_args(), _base_fx(source_hashes=unauth))
+    ok(cv and cv['code'] == 'UNAUTHORIZED_INPUT',
+       f'and an unregistered source still reports UNAUTHORIZED_INPUT: '
+       f'{cv and cv["code"]}')
+
+
+def test_the_two_refusals_say_different_things():
+    one = {'schedules': {'sha256': 'b' * 64,
+                         'retrieved_at': '2026-09-08T12:00:00Z'}}
+    a, _ = _cv(_args(), _base_fx(source_hashes=one))
+    b, _ = _cv(_args(), {})
+    ok(a['state'] == b['state'] == 'BLOCKED',
+       f'both callers refuse: {a["state"]} and {b["state"]}')
+    ok(a['code'] == 'REQUIRED_SOURCE_NOT_DECLARED'
+       and b['code'] == 'SOURCE_MISSING',
+       f'and the codes distinguish what each got wrong: {a["code"]} vs '
+       f'{b["code"]}. A stage that flattened them would be less diagnostic, '
+       f'not more strict')
 
 
 def main():
-    for t in (test_driver_supplies_a_placeholder_hash,
+    for t in (test_the_placeholder_is_gone_from_the_slate_driver,
+              test_the_assembler_measures_hashes_rather_than_copying_them,
+              test_fabricated_hashes_are_refused_on_a_real_run,
+              test_a_dry_run_says_so_on_the_record,
+              test_an_assembled_fixture_passes_and_the_pass_says_why,
+              test_one_tampered_byte_is_caught,
               test_capture_validation_requires_the_sources_the_layers_select,
-              test_a_pass_says_what_it_did_not_check,
               test_direct_entrypoint_without_fixtures_refuses,
-              test_both_callers_now_refuse_and_for_different_reasons):
+              test_well_formedness_is_checked_before_completeness,
+              test_the_two_refusals_say_different_things):
         print(f'== {t.__name__}')
         t()
-    print(f'\n{_P} passed, {_F} failed')
+    print(f'\nPASSED {_P} FAILED {_F}')
     return 1 if _F else 0
 
 

@@ -40,6 +40,8 @@ REFUSALS = {
                                'distributions at all',
     'REQUIRED_SOURCE_NOT_DECLARED': 'the run declared no capture for a source '
                                     'its own layers select from',
+    'DECLARED_CAPTURES_UNVERIFIED': 'a declared capture hash names no capture '
+                                    'this repository holds',
 }
 
 

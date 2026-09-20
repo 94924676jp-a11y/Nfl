@@ -244,6 +244,9 @@ def code_commit() -> str:
     return f'UNRESOLVED[{o.code}]'
 
 
+from nfl.production import fixture_assembler as FA  # noqa: E402
+
+
 def required_capture_sources() -> dict:
     """Which captures a run MUST declare, DERIVED rather than hand-written.
 
@@ -379,6 +382,37 @@ def build(args, fixtures: dict = None) -> dict:
                 f'it, whatever the layers below then read.', run_id,
                 declared=sorted(src), required=_req['required'],
                 missing=missing, basis=_req['basis'])
+        # DK-4. THE HALF DK-3 DID NOT CLOSE. Up to here the stage has checked
+        # that the declaration is COMPLETE and WELL FORMED. Nothing has asked
+        # whether the declared bytes exist. Four fabricated hashes for the
+        # four required sources pass everything above.
+        #
+        # So every declared sha256 must name a PASS capture in the vintage
+        # manifest AND the blob is reopened and rehashed. A recorded hash is
+        # not taken on trust; the bytes are measured.
+        #
+        # A DECLARED DRY RUN IS EXEMPT, AND THAT IS NOT A BYPASS. `--dry-run`
+        # already means "historical fixture run; NEVER prospective evidence",
+        # and such a run is stamped prospective_eligible=false and refused
+        # publication. A run that wants to feed the engine synthetic captures
+        # is a dry run by definition, and saying so out loud is the honest
+        # form of it. What is no longer possible is a run that consumes
+        # fabricated captures WITHOUT carrying that label.
+        if not bool(getattr(args, 'dry_run', False)):
+            ver = FA.verify_declared(src)
+            if ver.state is not State.PASS:
+                names = ', '.join(
+                    f'{b["source"]}[{b["code"]}]'
+                    for b in (ver.evidence or {}).get('unverified', []))
+                return RF.refuse(
+                    'DECLARED_CAPTURES_UNVERIFIED', 'capture_validation',
+                    f'{names}. A hash that names no capture this repository '
+                    f'holds is a claim, not an input. Build the fixture with '
+                    f'nfl/production/fixture_assembler.py, or declare the run '
+                    f'--dry-run and accept that it is not prospective '
+                    f'evidence.', run_id,
+                    unverified=(ver.evidence or {}).get('unverified'),
+                    verified=(ver.evidence or {}).get('verified'))
         if kickoff and not wrote < _parse(kickoff):
             return RF.refuse('SOURCE_CHRONOLOGY_FAILURE', 'capture_validation',
                              f'written_at {args.written_at} is not before '
@@ -407,12 +441,17 @@ def build(args, fixtures: dict = None) -> dict:
                           # say so would be read as more than it is.
                           governance=[{
                               'layer': 'capture_validation',
-                              'governance':
-                                  'DECLARATION_COMPLETE_AND_WELL_FORMED -- '
-                                  'the EXISTENCE of the declared bytes is '
-                                  'NOT checked here (DK-4)',
+                              'governance': (
+                                  'DECLARATION_COMPLETE_AND_WELL_FORMED; '
+                                  'DECLARED_BYTES_UNVERIFIED_DRY_RUN'
+                                  if bool(getattr(args, 'dry_run', False))
+                                  else 'DECLARATION_COMPLETE_AND_WELL_FORMED; '
+                                       'DECLARED_BYTES_VERIFIED_AGAINST_'
+                                       'VINTAGE_MANIFEST'),
                               'required': _req['required'],
                               'basis': _req['basis'],
+                              'bytes_verified':
+                                  not bool(getattr(args, 'dry_run', False)),
                           }])
     def _appearance_spec(flags):
         """Which appearance mechanism this configuration names. Exactly one.

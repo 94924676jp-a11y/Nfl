@@ -746,6 +746,17 @@ EDGES = (
     # module reads the manifest to report how OLD each source is, not to feed
     # a projection -- but "it is only for reporting" is exactly the exemption
     # the audit exists to refuse. Adding a reader is a declaration, not a glob.
+    Edge('nfl/production/fixture_assembler.py', MANIFEST_PRODUCER,
+         ('source', 'state', 'blob', 'blob_file_sha256'),
+         'DK-4. Builds a run\'s `source_hashes` from the manifest: which blob '
+         'a PASS capture of each source names, and the hash that capture '
+         'recorded for it. It reads the recorded hash only to CROSS-CHECK its '
+         'own measurement -- the blob is opened and rehashed here -- and '
+         'refuses when the two disagree rather than preferring either. '
+         'Projects nothing into a forecast; it decides which bytes the run '
+         'declares, and `vintage_selector` independently decides which bytes '
+         'the layers read. That those two now agree is the point of the '
+         'module.'),
     Edge('nfl/production/capture_freshness.py', MANIFEST_PRODUCER,
          ('source', 'state', 'code', 'capture_id', 'blob', 'sha256',
           'sha256_is_of', 'retrieved_at', 'source_timestamp_header',

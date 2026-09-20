@@ -767,7 +767,7 @@ its downstream impact justifies it.
 
 ## ID: DK-4
 - **priority**: 1
-- **status**: QUEUED
+- **status**: DONE (2026-09-20)
 - **dependencies**: DK-3
 - **description**: There is no production fixture assembler. The only slate
   driver, `nfl/production/rehearsal/run_slate.py`, is declared REHEARSAL ONLY,
@@ -793,3 +793,24 @@ its downstream impact justifies it.
   - sealing is expected to refuse afterwards on SUN-5, and that refusal is the
     correct result rather than a reason to weaken this item.
 - **classification**: PRODUCTION_BLOCKER
+- **resolution**: `nfl/production/fixture_assembler.py`. `assemble(written_at)`
+  calls `vintage_selector.select(family, as_of=cut)` -- the SAME call the
+  football layers make -- for every required source, opens the blob, hashes
+  the bytes itself, and cross-checks its measurement against the manifest's
+  recorded `blob_file_sha256`, refusing `VINTAGE_BLOB_HASH_DISAGREES` rather
+  than preferring either. The validated set and the consumed set are now the
+  same set; they were disjoint before, which is why nothing ever complained.
+  `verify_declared(src)` is called by `capture_validation` on every
+  non-dry-run: each declared sha256 must match a PASS capture in the manifest
+  AND the blob is reopened and rehashed. Four fabricated hashes now refuse
+  `DECLARED_CAPTURES_UNVERIFIED`; flipping one character of one real hash
+  refuses and names that source. The placeholder is REMOVED from
+  `run_slate.py`, which now calls the assembler once per slate. `dry_run=True`
+  is deliberately left in place there: removing the placeholder makes the
+  driver honest about its inputs and does not promote a module whose own
+  docstring reads REHEARSAL ONLY into the production path. A declared
+  `--dry-run` may still use synthetic captures -- it is already stamped
+  `prospective_eligible=false` and refused publication -- and the stage record
+  now says `DECLARED_BYTES_UNVERIFIED_DRY_RUN` so the exemption is announced
+  rather than taken silently. The assembler's manifest read is declared in
+  `pipeline.EDGES`; `--audit-reads` is back to PASS.
