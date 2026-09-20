@@ -45,16 +45,16 @@ def main():
                      f"`{f['state']}` |")
         L += ['', 'An optimiser starting from that template would carry this '
               'player forward with nothing behind him.', '']
-    if g['identity']['unresolved']:
-        L += ['### Identity unresolved (no edit-distance matching permitted)',
-              '', '| DK name | team | why |', '|---|---|---|']
-        seen = set()
-        for u in g['identity']['unresolved']:
-            if u['name'] in seen:
-                continue
-            seen.add(u['name'])
-            L.append(f"| {u['name']} | {u['team']} | {u['why']} |")
-        L.append('')
+    for c in (g.get('alias_policy') or {}).get('open_cases', []):
+        L += [f"### Alias left unresolved — {c['dk_name']} ({c['team']})", '',
+              f"State: `{c['state']}` · blocking: **{c['blocking']}**", '',
+              c['verification'], '',
+              f"**Materiality: {c['materiality']}**", '',
+              'Note the distinction this package now keeps: an unresolved '
+              'DraftKings salary row is NOT a missing forecast. The model '
+              "carries this player under the club-declared name; what is "
+              'missing is the link to his DK price, and for a non-core '
+              'player that changes no decision.', '']
     L += ['## Coverage audit', '',
           '| club | QB | RB | WR | TE | K |', '|---|---|---|---|---|---|']
     for club, v in d['position_support_per_club'].items():

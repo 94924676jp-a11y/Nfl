@@ -10,6 +10,21 @@
  },
  "USABLE_FOR_PREINACTIVES_SAFE_SHOWDOWN_CONSTRUCTION": "YES",
  "gates": {
+  "alias_policy": {
+   "open_cases": [
+    {
+     "blocking": false,
+     "club_declared_name": "Andrew Ogletree",
+     "dk_name": "Drew Ogletree",
+     "gsis_id_if_same_person": "00-0037292",
+     "materiality": "NON_CORE. The model does emit a row for 00-0037292: DK mean 1.0965, p95 6.6, third among IND tight ends behind Tyler Warren (9.05 / 22.7) and Mo Alie-Cox (2.47 / 10.5). That is not a meaningful ceiling, so the unresolved salary link changes no Showdown decision.",
+     "state": "LEFT_UNRESOLVED_BY_OWNER_RULING",
+     "team": "IND",
+     "verification": "The roster vintage carries full_name \"Andrew Ogletree\" and football_name \"Andrew\". Neither field contains \"Drew\", so the alias CANNOT be verified cleanly from the authoritative source held here and was not assumed."
+    }
+   ],
+   "rule": "An alias is accepted only when the roster vintage's own name fields carry it. No edit-distance, nickname table or resemblance matching is permitted."
+  },
   "dk_universe_vs_emitted": {
    "dk_skill_rows": 52,
    "n_missing": 18,
@@ -17,8 +32,9 @@
     {
      "name": "Drew Ogletree",
      "position": "TE",
-     "state": "IDENTITY_UNRESOLVED",
-     "team": "IND"
+     "state": "DK_SALARY_ROW_IDENTITY_UNRESOLVED",
+     "team": "IND",
+     "why": "the DraftKings display name matches no roster row on this club by exact normalised name. The model may still carry a projection for this person under the club-declared name; what is missing is the link to his DK salary row, not necessarily the forecast."
     },
     {
      "gsis_id": "00-0041486",
@@ -314,19 +330,19 @@
    },
    {
     "depth_chart_position": "FB",
-    "depth_chart_rb1": "Emmett Johnson",
+    "depth_chart_rb1": "Brashard Smith",
     "flag": "NON_RB_PROJECTED_ABOVE_DEPTH_CHART_RB1",
     "gsis_id": "00-0038489",
     "player": "Ben VanSumeren",
     "projected_carries_mean": 9.384,
-    "rb1_carries_mean": 2.65,
+    "rb1_carries_mean": 1.218,
     "team": "KC",
     "why": "a player the club does not list as its lead back is projected for more carries than the one it does. Role assumption, not usage evidence."
    }
   ],
   "skill_layer_gate": "ALL_SKILL_POSITIONS_HAVE_ROWS"
  },
- "generated_at_utc": "2026-09-20T22:59:13Z",
+ "generated_at_utc": "2026-09-20T23:01:30Z",
  "players": [
   {
    "correlation_with_qb": {
@@ -5162,12 +5178,12 @@
   },
   {
    "depth_chart_position": "FB",
-   "depth_chart_rb1": "Emmett Johnson",
+   "depth_chart_rb1": "Brashard Smith",
    "flag": "NON_RB_PROJECTED_ABOVE_DEPTH_CHART_RB1",
    "gsis_id": "00-0038489",
    "player": "Ben VanSumeren",
    "projected_carries_mean": 9.384,
-   "rb1_carries_mean": 2.65,
+   "rb1_carries_mean": 1.218,
    "team": "KC",
    "why": "a player the club does not list as its lead back is projected for more carries than the one it does. Role assumption, not usage evidence."
   }

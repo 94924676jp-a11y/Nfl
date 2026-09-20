@@ -191,12 +191,29 @@ def build(run_dir) -> Outcome:
                 if u['roster_position'] == 'FLEX'
                 and u['position'] in REQUIRED_POS]
     missing = []
+    # AN UNRESOLVED SALARY ROW IS NOT A MISSING FORECAST. Collapsing the two
+    # reads as "the model has nothing for this player" when the truth may be
+    # "the model has him, we just could not attach his DraftKings price".
+    # Those call for different downstream handling, so they are separate
+    # states. An alias is resolved here ONLY from the roster vintage's own
+    # name fields; where it is not, the row stays unresolved rather than
+    # being matched by resemblance.
+    emitted_names = {(ros.get(q) or {}).get('team'):
+                     None for q in emitted}
+    del emitted_names
     for u in dk_skill:
         pid = gid_by_dk.get(u['dk_id'])
         if pid is None:
             missing.append({'name': u['name'], 'team': u['team'],
                             'position': u['position'],
-                            'state': 'IDENTITY_UNRESOLVED'})
+                            'state': 'DK_SALARY_ROW_IDENTITY_UNRESOLVED',
+                            'why': 'the DraftKings display name matches no '
+                                   'roster row on this club by exact '
+                                   'normalised name. The model may still '
+                                   'carry a projection for this person under '
+                                   'the club-declared name; what is missing '
+                                   'is the link to his DK salary row, not '
+                                   'necessarily the forecast.'})
         elif pid not in emitted:
             missing.append({'name': u['name'], 'team': u['team'],
                             'position': u['position'], 'gsis_id': pid,
@@ -320,6 +337,29 @@ def build(run_dir) -> Outcome:
             'dk_skill_rows': len(dk_skill),
             'not_emitted_or_unresolved': missing,
             'n_missing': len(missing)},
+        'alias_policy': {
+            'rule': 'An alias is accepted only when the roster vintage\'s '
+                    'own name fields carry it. No edit-distance, nickname '
+                    'table or resemblance matching is permitted.',
+            'open_cases': [
+                {'dk_name': 'Drew Ogletree', 'team': 'IND',
+                 'club_declared_name': 'Andrew Ogletree',
+                 'gsis_id_if_same_person': '00-0037292',
+                 'state': 'LEFT_UNRESOLVED_BY_OWNER_RULING',
+                 'verification': 'The roster vintage carries full_name '
+                                 '"Andrew Ogletree" and football_name '
+                                 '"Andrew". Neither field contains "Drew", '
+                                 'so the alias CANNOT be verified cleanly '
+                                 'from the authoritative source held here '
+                                 'and was not assumed.',
+                 'materiality': 'NON_CORE. The model does emit a row for '
+                                '00-0037292: DK mean 1.0965, p95 6.6, third '
+                                'among IND tight ends behind Tyler Warren '
+                                '(9.05 / 22.7) and Mo Alie-Cox (2.47 / '
+                                '10.5). That is not a meaningful ceiling, so '
+                                'the unresolved salary link changes no '
+                                'Showdown decision.',
+                 'blocking': False}]},
         'identity': {'n_resolved': ident.evidence['n_resolved'],
                      'n_unresolved': ident.evidence['n_unresolved'],
                      'unresolved': ident.evidence['unresolved'],

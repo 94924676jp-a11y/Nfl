@@ -2,7 +2,7 @@
 
 **USABLE FOR PREINACTIVES SAFE SHOWDOWN CONSTRUCTION: YES**
 
-Run `44fccb9d9f0458a6` · 8,000 draws · information cut `2026-09-20T22:35:00Z` · generated 2026-09-20T22:59:13Z
+Run `44fccb9d9f0458a6` · 8,000 draws · information cut `2026-09-20T22:35:00Z` · generated 2026-09-20T23:01:30Z
 
 Inactive gate: **PREINACTIVES_NOT_CERTIFIED**. Official inactives are not available at this information cut. No player was excluded on availability grounds. Presence in a DraftKings salary file is NOT evidence of activity and absence from one is NOT evidence of inactivity.
 
@@ -27,11 +27,15 @@ These are MODEL ROLE ASSUMPTIONS, not usage forecasts. The engine carries no dep
 
 An optimiser starting from that template would carry this player forward with nothing behind him.
 
-### Identity unresolved (no edit-distance matching permitted)
+### Alias left unresolved — Drew Ogletree (IND)
 
-| DK name | team | why |
-|---|---|---|
-| Drew Ogletree | IND | no roster row on this club answers to this displayed name; no edit-distance fallback is permitted |
+State: `LEFT_UNRESOLVED_BY_OWNER_RULING` · blocking: **False**
+
+The roster vintage carries full_name "Andrew Ogletree" and football_name "Andrew". Neither field contains "Drew", so the alias CANNOT be verified cleanly from the authoritative source held here and was not assumed.
+
+**Materiality: NON_CORE. The model does emit a row for 00-0037292: DK mean 1.0965, p95 6.6, third among IND tight ends behind Tyler Warren (9.05 / 22.7) and Mo Alie-Cox (2.47 / 10.5). That is not a meaningful ceiling, so the unresolved salary link changes no Showdown decision.**
+
+Note the distinction this package now keeps: an unresolved DraftKings salary row is NOT a missing forecast. The model carries this player under the club-declared name; what is missing is the link to his DK price, and for a non-core player that changes no decision.
 
 ## Coverage audit
 
