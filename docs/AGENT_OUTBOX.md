@@ -2039,3 +2039,68 @@ against the defect as it stands), and amended into
 Classic contract) and OUT-027 (the CHI injury report) are unchanged and still
 outstanding.
 
+---
+
+## OUT-032 — three byte requests that decide the 1 PM Early Only slate
+
+**Raised:** 2026-09-20, ~08:10Z. Lock 17:00Z. **Assignment:** network agent.
+All three are refreshes or captures of sources ALREADY REGISTERED. None is a
+new source and none needs a decision.
+
+### 1. `pbp_participation` for 2026 week 1 — THE ONE THAT MATTERS
+
+This is the single named missing input behind the entire non-QB chain.
+`participation_prior` refuses `PARTICIPATION_HISTORY_STALE`, which propagates
+to appearance, participation, targets_carries, conversion and td_layer, and the
+board therefore carries **no receiving layer and no per-player rushing layer at
+all** — 8 QB rows and 2 kicker rows per game, and nothing for RB, WR or TE.
+Seven of the nine DraftKings Classic roster slots have no modelled player.
+
+`offense_players`, `offense_personnel`, `defense_players` and `n_offense` are
+all absent from the play-by-play — checked, not assumed — so per-play on-field
+presence exists only in `pbp_participation`. `panel_2026w1.py` can approximate
+`pass_snaps` without it and says of itself that the approximation is
+"systematically wrong for exactly the players it matters for".
+
+**Exactly what I need:** `pbp_participation` for season 2026, week 1.
+
+### 2. `snap_counts_2026` refreshed — one game short
+
+The held capture (`4da350a50d0bb39b`, first retrieved 2026-09-14T18:33:36Z)
+carries **15 of 16 games and 30 of 32 clubs**. Missing: `2026_01_DEN_KC`. That
+one absence is why `denom_panel`'s completeness and coverage properties cannot
+be established, which is why its `declared_blocked` stands.
+
+This is a STALE WATCH, not a missing source: `snap_counts` is registered,
+REACHABLE, and `watch_only=True`, so the vintage capture path skips it by
+design (602 manifest rows, all `NOT_APPLICABLE[WATCH_ONLY_SOURCE_NOT_CAPTURED_
+HERE]`).
+
+**Exactly what I need:** a `snap_counts_2026` capture taken after
+`2026_01_DEN_KC` was finalised.
+
+### 3. Official inactives for the eight 1 PM games
+
+PHI@TEN, PIT@NE, MIN@CHI, CAR@ATL, GB@NYJ, NO@BAL, CIN@HOU, CLE@TB. Newest
+`official_inactives` PASS is `20260917T234100Z`, Thursday's DET@BUF. Publish
+around T-90, ~15:30Z.
+
+**Requirements, unchanged:** authoritative NFL/club evidence, retrieval clock,
+publication clock where available, both teams, raw bytes preserved, and no
+ACTIVE inferred from omission.
+
+### What I am NOT asking for
+
+No projections. No ownership. No DST ratings. No sportsbook data — the Hard
+Rock board delivered earlier today is a comparator and is not to be joined to
+anything until a sealed board exists.
+
+### What does not unblock even with all three
+
+`denom_panel` and `team_volume_history` would still need the panel rebuilt and
+the `declared_blocked` lifted, and lifting it is a governance decision with a
+stated precondition. And CS1 and the 2026 week-1 panel are candidate
+components not present in R8, the accepted baseline; moving them in is an owner
+ruling about a frozen specification. Neither is a thing to decide against a
+clock, and I am not proposing either today.
+
