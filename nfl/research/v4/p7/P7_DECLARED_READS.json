@@ -5,10 +5,10 @@
   "state": "PASS",
   "value": {
    "edges_not_exercised": [],
-   "n_edges": 28,
-   "n_reads": 29,
+   "n_edges": 31,
+   "n_reads": 34,
    "n_runtime_keyed": 3,
-   "n_sites": 32,
+   "n_sites": 37,
    "n_writes": 3,
    "runtime_keyed": [
     {
@@ -72,6 +72,23 @@
     "why": "joins retained raw files to the manifest by content hash."
    }
   ],
+  "dk_salaries": [
+   {
+    "basis": "LITERAL_SCAN",
+    "consumer": "nfl/dfs/salaries/dk_universe.py",
+    "fields": [
+     "Player",
+     "Pos",
+     "Salary",
+     "Team",
+     "Opp",
+     "Inj",
+     "pDepth"
+    ],
+    "kind": "COLUMNS",
+    "why": "the owner-supplied DraftKings Week-2 salary file, pinned by sha256. ONLY these seven columns leave the loader; the other seventeen are dropped at parse time and are listed in FORBIDDEN_COLUMNS with the family each belongs to."
+   }
+  ],
   "espn_injuries_json": [
    {
     "basis": "READ_BY_HAND",
@@ -90,6 +107,24 @@
    }
   ],
   "injuries": [
+   {
+    "basis": "LITERAL_SCAN",
+    "consumer": "nfl/dfs/salaries/build_artifacts.py",
+    "fields": [
+     "season",
+     "week",
+     "gsis_id",
+     "full_name",
+     "team",
+     "position",
+     "report_status",
+     "practice_status",
+     "report_primary_injury",
+     "practice_primary_injury"
+    ],
+    "kind": "COLUMNS",
+    "why": "reconciles DraftKings' single `!` flag against the governed designation. The governed row is the evidence and the flag is the claim being checked; neither overwrites the other."
+   },
    {
     "basis": "READ_BY_HAND",
     "consumer": "nfl/production/nonqb/availability_feed.py",
@@ -249,6 +284,21 @@
    }
   ],
   "weekly_rosters": [
+   {
+    "basis": "LITERAL_SCAN",
+    "consumer": "nfl/dfs/salaries/identity.py",
+    "fields": [
+     "season",
+     "week",
+     "team",
+     "gsis_id",
+     "full_name",
+     "position",
+     "status"
+    ],
+    "kind": "COLUMNS",
+    "why": "the canonical player universe a DK salary row is joined to. Read for identity only -- no status drives a projection here."
+   },
    {
     "basis": "READ_BY_HAND",
     "consumer": "nfl/dfs/showdown/kicker_identity.py",

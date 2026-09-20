@@ -777,6 +777,35 @@ EDGES = (
          'declared so the audit is not satisfied by a coincidence.',
          kind='BLOB_SELECTION'),
 
+    # --- the DraftKings salary/eligibility package.
+    #
+    # It sits DOWNSTREAM of every forecast and feeds nothing back: its own
+    # module docstring states the order, and its loader drops seventeen
+    # projection, market and optimizer columns at parse time so they cannot
+    # reach a football layer even by accident. The reads are declared anyway,
+    # because "it is downstream" is exactly the exemption this audit refuses.
+    Edge('nfl/dfs/salaries/identity.py', 'weekly_rosters',
+         ('season', 'week', 'team', 'gsis_id', 'full_name', 'position',
+          'status'),
+         'the canonical player universe a DK salary row is joined to. Read '
+         'for identity only -- no status drives a projection here.',
+         basis='LITERAL_SCAN'),
+    Edge('nfl/dfs/salaries/build_artifacts.py', 'injuries',
+         ('season', 'week', 'gsis_id', 'full_name', 'team', 'position',
+          'report_status', 'practice_status', 'report_primary_injury',
+          'practice_primary_injury'),
+         "reconciles DraftKings' single `!` flag against the governed "
+         'designation. The governed row is the evidence and the flag is the '
+         'claim being checked; neither overwrites the other.',
+         basis='LITERAL_SCAN'),
+    Edge('nfl/dfs/salaries/dk_universe.py', 'dk_salaries',
+         ('Player', 'Pos', 'Salary', 'Team', 'Opp', 'Inj', 'pDepth'),
+         'the owner-supplied DraftKings Week-2 salary file, pinned by '
+         'sha256. ONLY these seven columns leave the loader; the other '
+         'seventeen are dropped at parse time and are listed in '
+         'FORBIDDEN_COLUMNS with the family each belongs to.',
+         basis='LITERAL_SCAN'),
+
     # --- a rehearsal path, declared because it reads the same store
     Edge('nfl/production/rehearsal/run_slate.py', 'weekly_rosters',
          ('season', 'week', 'team', 'gsis_id', 'position'),

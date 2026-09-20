@@ -544,12 +544,31 @@ def test_e2_the_registry_does_not_yet_declare_every_stored_source():
     check('every source with a stored capture is declared somewhere',
           not undeclared,
           f'{undeclared} have manifest rows and no declaration at all.')
+    # DERIVED, NOT LISTED. This read
+    #     fetched_only == ['hardrock_market_snapshot',
+    #                      'official_status_evidence']
+    # and was therefore asserting a COUNT of delivered sources rather than the
+    # rule the count stood for. It had already gone stale before anyone added
+    # a third: `pbp` has manifest rows and appears in neither registry, so the
+    # literal pair stopped matching the moment that happened, and the failure
+    # then reported the wrong reason -- a stale list rather than an undeclared
+    # source. Adding `dk_salaries` in 2026-09-20 would have broken it again.
+    #
+    # The property is: every stored source outside the FETCH registry is a
+    # DELIVERED one, so no capture obligation is manufactured for an artifact
+    # that has no endpoint to poll. `pbp` still fails it, which is correct and
+    # is the defect E2 exists to report.
     fetched_only = sorted(stored - set(REG.BY_NAME))
-    check('the two delivered sources are declared OUTSIDE the fetch registry, '
-          'so no capture obligation is manufactured for an artifact with no '
-          'endpoint',
-          fetched_only == ['hardrock_market_snapshot',
-                           'official_status_evidence'], str(fetched_only))
+    delivered = sorted(set(REG.DELIVERED_BY_NAME))
+    check('every stored source outside the fetch registry is a DELIVERED '
+          'one, so no capture obligation is manufactured for an artifact '
+          'with no endpoint',
+          set(fetched_only) <= set(delivered),
+          f'outside both registries: {sorted(set(fetched_only) - set(delivered))}')
+    check('  and every delivered source does have a stored capture, so the '
+          'declaration is not describing an artifact nobody has',
+          set(delivered) <= stored,
+          f'declared but never stored: {sorted(set(delivered) - stored)}')
     o = REG.forecast_eligible('hardrock_market_snapshot')
     check('the book snapshot is declared FORBIDDEN as a predictive input',
           o.state is State.BLOCKED

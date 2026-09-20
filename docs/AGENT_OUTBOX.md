@@ -1933,3 +1933,58 @@ Queued as SUN-7 with the same content.
 
 No change to the G0A accounting, no discharge of the outstanding obligation,
 and no edit to the tests.
+
+---
+
+## 2026-09-20 — OUT-030: the DraftKings Classic contest game set, and one player we cannot identify
+
+Two small asks against the owner-supplied Week-2 salary file
+(sha256 `c143c94f…b28b2bec`, 537 rows, preserved at
+`nfl/vintage/dk_salaries.c143c94f152a7d6b.csv.gz`).
+
+### 1. The contest game set — blocks main-slate eligibility
+
+The file holds **all 32 clubs and all 16 Week-2 games**. Which of them the DK
+Classic main slate covers is a fact about a contest, not about this file, so
+`DK_WEEK2_MAIN_SLATE_ELIGIBLE_UNIVERSE` is `DEFERRED
+[DK_MAIN_SLATE_GAME_SET_NOT_SUPPLIED]` rather than guessed. I did not fall
+back on "the Sunday 1pm and 4pm games": that is a convention about how slates
+are usually built, and the directive says to leave eligibility unresolved
+rather than infer it.
+
+**What I need:** the game list of the specific DK Classic main-slate contest —
+away/home pairs, nothing else.
+
+One game is already excluded without it, on the clock rather than on any DK
+rule: **BUF–DET (44 rows)** kicked off 2026-09-18T00:15Z and is played.
+
+### 2. `Ed Williams`, JAC, WR, $3,000 — unmatched
+
+One of 537 rows does not join to a canonical identity. No `Ed Williams` exists
+in any club in the 2026 week-2 roster capture (8 vintages, 2,527 distinct
+players). Jacksonville carries `C.J. Williams` (WR) and `Wesley Williams` (DL);
+neither is Ed.
+
+**Not guessed** — there is no edit distance anywhere in this package, by
+design. Either DK lists a player our roster vintage does not carry (a practice
+squad or a very recent signing, consistent with the near-minimum salary), or a
+name is wrong on one side.
+
+**What I need:** confirmation of who this is, or that DK has him wrong.
+
+### 3. Still outstanding from OUT-025, and this file does not touch it
+
+The DK **Classic** site contract. `site_rules.py` holds
+`DRAFTKINGS_SHOWDOWN` and `FANDUEL_SINGLE_GAME` and no Classic entry at all —
+no salary cap, no roster slots, no FLEX rule, no minimum-teams rule. A salary
+file is not a contract, and lineup legality cannot be certified from one.
+
+Note the harder half is not a bytes problem: a Classic lineup must field a
+DST and the engine produces no team-defence outputs at all, so all 32 DSTs in
+this file are `DK_ELIGIBLE_MODEL_UNSUPPORTED`.
+
+### Not asked for
+
+No projections, no ownership, no contest results, no optimizer settings. The
+file's own projection columns are dropped at parse time and are not authorized
+as predictive inputs.

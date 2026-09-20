@@ -64,7 +64,7 @@
    "why_not_measurable": "routines live in a scheduler this executor cannot query. The previous `CURRENT_STATE.md` asserted a routine was DISABLED and recorded, in the same file, that a later firing reported success with no commit ever reaching the branch \u2014 an unresolved contradiction that it presented as state."
   }
  ],
- "generated_at": "2026-09-20T00:12:56.255857+00:00",
+ "generated_at": "2026-09-20T03:31:04.282460+00:00",
  "generated_by": "nfl/tools/system_state.py",
  "measured": {
   "assumptions": {
@@ -109,6 +109,7 @@
   "capture": {
    "by_source": {
     "depth_charts": 663,
+    "dk_salaries": 1,
     "espn_injuries_json": 654,
     "hardrock_market_snapshot": 1,
     "injuries": 664,
@@ -127,14 +128,15 @@
     "DEFERRED": 224,
     "FAIL": 108,
     "NOT_APPLICABLE": 1150,
-    "PASS": 4207
+    "PASS": 4208
    },
-   "manifest_rows": 6448,
+   "manifest_rows": 6449,
    "retrieved_at_earliest": "2026-09-06T18:50:49.540119+00:00",
    "retrieved_at_latest": "2026-09-17T23:42:25.952893+00:00",
    "vintage_store_by_family": {
     "delivered_injury_evidence": 1,
     "depth_charts": 26,
+    "dk_salaries": 1,
     "espn_injuries_json": 620,
     "hardrock_market_snapshot": 1,
     "injuries": 12,
@@ -147,20 +149,20 @@
     "schedules": 370,
     "weekly_rosters": 24
    },
-   "vintage_store_files": 1971
+   "vintage_store_files": 1972
   },
   "code": {
    "TOTAL": {
-    "lines": 215155,
-    "modules": 669
+    "lines": 216510,
+    "modules": 674
    },
    "nfl/capture": {
-    "lines": 6334,
+    "lines": 6362,
     "modules": 16
    },
    "nfl/dfs": {
-    "lines": 2377,
-    "modules": 17
+    "lines": 3250,
+    "modules": 21
    },
    "nfl/identity": {
     "lines": 1084,
@@ -175,7 +177,7 @@
     "modules": 23
    },
    "nfl/production": {
-    "lines": 37308,
+    "lines": 37337,
     "modules": 71
    },
    "nfl/prospective": {
@@ -187,8 +189,8 @@
     "modules": 272
    },
    "nfl/tests": {
-    "lines": 69418,
-    "modules": 189
+    "lines": 69843,
+    "modules": 190
    },
    "nfl/tools": {
     "lines": 13810,
@@ -208,7 +210,7 @@
     "nfl/dfs/",
     "nfl/capture/"
    ],
-   "n_edges": 28,
+   "n_edges": 31,
    "n_runtime_keyed": 3,
    "not_implemented": [
     "PHASE_2: a read(node, cut) accessor. Every read below still happens by globbing a directory; the declaration bounds who reads what, it does not mediate the bytes.",
@@ -217,11 +219,12 @@
    "phase": "PHASE_1_DECLARATION_ONLY",
    "readers_per_producer": {
     "depth_charts": 3,
+    "dk_salaries": 1,
     "espn_injuries_json": 1,
-    "injuries": 2,
+    "injuries": 3,
     "schedules": 4,
     "vintage_manifest": 7,
-    "weekly_rosters": 11
+    "weekly_rosters": 12
    },
    "spec_version": "p7-dependency-dag-phase1"
   },
@@ -244,23 +247,23 @@
   "git": {
    "branch": "claude/nfl-greenfield-architecture-stsxmk",
    "dirty_source_files": [
-    "nfl/production/ownership_audit.py"
+    "nfl/production/pipeline.py"
    ],
-   "head": "1a4eb45d0d475ff86b652134b677ee89e98e70a2",
-   "head_committed_at": "2026-09-19T16:57:15+00:00",
-   "head_short": "1a4eb45",
-   "head_subject": "OUT-027 and OUT-028: the injury reports that are missing, and the prices that are not",
+   "head": "effdd6e53c1f94179f6d8ac43949183f2a6604a4",
+   "head_committed_at": "2026-09-20T00:14:38+00:00",
+   "head_short": "effdd6e",
+   "head_subject": "Readiness: add the attributed suite state and the freeze I broke",
    "is_clean": false,
-   "n_commits_on_branch": 1090,
+   "n_commits_on_branch": 1092,
    "remote_head": "3270829ca46e46f44285c5ae81952c31921bdda5",
    "worktree": {
-    "code_version": "1a4eb45d0d475ff86b652134b677ee89e98e70a2+src1[0e0b7ef5600df04e]",
-    "commit": "1a4eb45d0d475ff86b652134b677ee89e98e70a2",
+    "code_version": "effdd6e53c1f94179f6d8ac43949183f2a6604a4+src1[2ee55ed39491ff38]",
+    "commit": "effdd6e53c1f94179f6d8ac43949183f2a6604a4",
     "dirty_source_files": [
-     "nfl/production/ownership_audit.py"
+     "nfl/production/pipeline.py"
     ],
     "n_dirty_source_files": 1,
-    "n_dirty_tree_entries_observed": 13,
+    "n_dirty_tree_entries_observed": 24,
     "scope_note": "dirty_source_files is SOURCE scope only -- the .py files the identity contract hashes. A changed .md or .json is counted in n_dirty_tree_entries_observed and is not listed.",
     "source_scope_clean": false
    }
@@ -334,7 +337,7 @@
     "test_functions": 38,
     "zero_check_functions": 0
    },
-   "is_current_head": true,
+   "is_current_head": false,
    "measured_at_commit": "1a4eb45",
    "newly_introduced": [
     {
@@ -448,7 +451,7 @@
      "module": "nfl/tests/test_ownership_audit.py"
     }
    ],
-   "staleness_note": "measured at HEAD",
+   "staleness_note": "measured at 1a4eb45, HEAD is effdd6e. This total is not a statement about the tree as it stands.",
    "totals": {
     "blocked_functions": 22,
     "checks": 11007,
@@ -470,9 +473,9 @@
   ],
   "work_queue": {
    "by_status": {
-    "BLOCKED": 10,
+    "BLOCKED": 11,
     "DONE": 8,
-    "QUEUED": 12
+    "QUEUED": 13
    },
    "items": [
     {
@@ -595,6 +598,20 @@
      "status": "QUEUED"
     },
     {
+     "blocker": "OUT-030 for the first two; OUT-025's DK half for the third. Independently, a Classic lineup must field a DST and the engine produces no team-defence outputs at all, so all 32 DSTs are `DK_ELIGIBLE_MODEL_UNSUPPORTED` and no bytes fix that.",
+     "description": "The owner-supplied DraftKings Week-2 salary file is ingested, normalized, identity-reconciled and validated (`nfl/dfs/salaries/`). Two things it cannot supply and one it cannot reach: the **contest game set** (so `DK_WEEK2_MAIN_SLATE_ELIGIBLE_UNIVERSE` is DEFERRED rather than guessed), the identity of **`Ed Williams`, JAC, WR, $3,000** (no such player in 2,527 canonical rows), and the **DK Classic site contract**, which `site_rules.py` still does not carry in any form.",
+     "id": "DK-1",
+     "priority": "3",
+     "status": "BLOCKED"
+    },
+    {
+     "blocker": "none",
+     "description": "`pbp` has rows in `nfl/vintage_manifest.jsonl` and is declared in NEITHER `registry.REGISTRY` nor `registry.DELIVERED`. It is the one genuine finding behind `test_p7_data_plane`'s E2 section, and it predates the DK ingest -- it was already there and was being masked by a hardcoded list of two delivered-source names that had gone stale.",
+     "id": "DK-2",
+     "priority": "10",
+     "status": "QUEUED"
+    },
+    {
      "blocker": "none",
      "description": "A canonical, leakage-safe full-slate prediction-time dependence panel: mutually exclusive declared roles, prior-weeks-only labels, certified DK and FD scoring, Pearson and joint-tail dependence reported separately with game-clustered intervals.",
      "id": "DFS-FS1",
@@ -686,7 +703,7 @@
      "status": "QUEUED"
     }
    ],
-   "n": 30
+   "n": 32
   }
  },
  "reading_rule": "Every value under `measured` was computed by reading this repository at the timestamp above. Every value under `declared` was asserted by somebody and says who, when, and why it cannot be measured here. Do not quote one as the other.",

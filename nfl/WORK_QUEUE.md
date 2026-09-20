@@ -459,6 +459,50 @@ its downstream impact justifies it.
 - **ranking**: impact LOW-MEDIUM x uncertainty MEDIUM (the two odd pages)
   x measurability HIGH x EVI MEDIUM
 
+## ID: DK-1
+- **priority**: 3
+- **status**: BLOCKED
+- **dependencies**: none
+- **description**: The owner-supplied DraftKings Week-2 salary file is
+  ingested, normalized, identity-reconciled and validated
+  (`nfl/dfs/salaries/`). Two things it cannot supply and one it cannot reach:
+  the **contest game set** (so `DK_WEEK2_MAIN_SLATE_ELIGIBLE_UNIVERSE` is
+  DEFERRED rather than guessed), the identity of **`Ed Williams`, JAC, WR,
+  $3,000** (no such player in 2,527 canonical rows), and the **DK Classic
+  site contract**, which `site_rules.py` still does not carry in any form.
+- **blocker**: OUT-030 for the first two; OUT-025's DK half for the third.
+  Independently, a Classic lineup must field a DST and the engine produces no
+  team-defence outputs at all, so all 32 DSTs are
+  `DK_ELIGIBLE_MODEL_UNSUPPORTED` and no bytes fix that.
+- **acceptance criteria**:
+  - the main-slate universe is built from a supplied contest game list, never
+    from the file's team set nor from the usual shape of a slate;
+  - `Ed Williams` is identified or recorded as a DK error -- never matched by
+    similarity;
+  - no projection column ever leaves `dk_universe.load()`.
+- **classification**: PRODUCTION_BLOCKER
+- **ranking**: impact MEDIUM (it is the fourth arrow of a chain whose first
+  three are blocked) x uncertainty LOW x measurability HIGH x EVI MEDIUM
+
+## ID: DK-2
+- **priority**: 10
+- **status**: QUEUED
+- **dependencies**: none
+- **description**: `pbp` has rows in `nfl/vintage_manifest.jsonl` and is
+  declared in NEITHER `registry.REGISTRY` nor `registry.DELIVERED`. It is the
+  one genuine finding behind `test_p7_data_plane`'s E2 section, and it
+  predates the DK ingest -- it was already there and was being masked by a
+  hardcoded list of two delivered-source names that had gone stale.
+- **blocker**: none
+- **acceptance criteria**:
+  - `pbp` is declared in whichever registry describes how it actually
+    arrives, with its role and forecast eligibility stated;
+  - E2 passes for the right reason, or names the next real gap.
+- **classification**: MEASUREMENT_DEFECT
+- **ranking**: impact MEDIUM (an undeclared stored source is the state the
+  delivered-source machinery exists to prevent) x uncertainty LOW
+  x measurability HIGH x EVI MEDIUM
+
 ## ID: DFS-FS1
 - **priority**: 8
 - **status**: DONE

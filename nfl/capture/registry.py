@@ -476,6 +476,34 @@ DELIVERED: tuple = (
         blob="nfl/vintage/official_status_evidence.22b3b1c5e26e69ac.csv.gz",
         note="19 rows, 3 clubs (MIA, MIN, WAS), practice DNP 1 / LP 5 / FP 13.",
     ),
+    DeliveredSpec(
+        name="dk_salaries",
+        delivered_at="2026-09-20T03:01:58Z",
+        acquisition="OWNER_SUPPLIED_DELIVERY",
+        role="DOWNSTREAM_SALARY_AND_UNIVERSE_ONLY",
+        forecast_eligible=False,
+        why_not=("It is a price list and a roster of who may be selected, and "
+                 "it also carries seventeen columns of third-party "
+                 "projection, sportsbook-derived team total, ownership "
+                 "estimate and optimizer metric. The owner's directive is "
+                 "explicit -- \"Do not treat this file as a predictive "
+                 "football input\" -- and the reason is the same one that "
+                 "keeps a sportsbook line out: a model that has seen another "
+                 "party's projection is no longer independent evidence about "
+                 "the thing projected. `dk_universe.load()` therefore DROPS "
+                 "those seventeen columns at parse time rather than carrying "
+                 "them behind a flag, and `column_disposition()` raises "
+                 "`ForbiddenColumn` if anyone asks for one."),
+        blob="nfl/vintage/dk_salaries.c143c94f152a7d6b.csv.gz",
+        note=("537 rows, 24 columns, 32 clubs, 16 Week-2 matchups, salaries "
+              "$2,000-$8,500, no duplicate names. Seven columns leave the "
+              "loader: Player, Pos, Salary, Team, Opp, and Inj/pDepth for "
+              "reconciliation only. THE HEADER IS ON LINE 2 -- line 1 is "
+              "twenty-three commas -- so a DictReader over the delivered "
+              "bytes yields 537 rows keyed by the empty string and raises "
+              "nothing. Read by nfl/dfs/salaries/, which is downstream of "
+              "every seal."),
+    ),
 )
 
 DELIVERED_BY_NAME = {d.name: d for d in DELIVERED}

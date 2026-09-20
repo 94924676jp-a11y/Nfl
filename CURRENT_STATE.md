@@ -1,6 +1,6 @@
 # NFL — current state
 
-**Generated** by `nfl/tools/system_state.py` at 2026-09-20T00:12:56.255857+00:00 from `SYSTEM_STATE.json`. Do not hand-edit this file: regenerate it.
+**Generated** by `nfl/tools/system_state.py` at 2026-09-20T03:31:04.282460+00:00 from `SYSTEM_STATE.json`. Do not hand-edit this file: regenerate it.
 
 Every value under `measured` was computed by reading this repository at the timestamp above. Every value under `declared` was asserted by somebody and says who, when, and why it cannot be measured here. Do not quote one as the other.
 
@@ -11,18 +11,18 @@ Every value under `measured` was computed by reading this repository at the time
 |  |  |
 |---|---|
 | branch | `claude/nfl-greenfield-architecture-stsxmk` |
-| HEAD | `1a4eb45` — OUT-027 and OUT-028: the injury reports that are missing, and the prices that are not |
-| HEAD committed | 2026-09-19T16:57:15+00:00 |
-| commits on branch | 1090 |
+| HEAD | `effdd6e` — Readiness: add the attributed suite state and the freeze I broke |
+| HEAD committed | 2026-09-20T00:14:38+00:00 |
+| commits on branch | 1092 |
 | source scope | 1 dirty source file(s) |
-| dirty tree entries (source and not) | 13 |
-| code_version | `1a4eb45d0d475ff86b652134b677ee89e98e70a2+src1[0e0b7ef5600df04e]` |
-| python modules | 669 |
-| lines of python | 215,155 |
+| dirty tree entries (source and not) | 24 |
+| code_version | `effdd6e53c1f94179f6d8ac43949183f2a6604a4+src1[2ee55ed39491ff38]` |
+| python modules | 674 |
+| lines of python | 216,510 |
 
 ## 2. Test suite
 
-Source: `nfl/research/suite_attribution/SUITE_DIFF_fs1_sunday.json`. measured at HEAD
+Source: `nfl/research/suite_attribution/SUITE_DIFF_fs1_sunday.json`. measured at 1a4eb45, HEAD is effdd6e. This total is not a statement about the tree as it stands.
 
 |  | at 1a4eb45 | baseline 9052d0c | delta |
 |---|---|---|---|
@@ -63,11 +63,12 @@ Newly introduced since the baseline:
 
 ## 3. Captured evidence
 
-`nfl/vintage_manifest.jsonl` carries **6448 rows**; the vintage store holds **1971 files**. Retrieval spans 2026-09-06T18:50:49.540119+00:00 to 2026-09-17T23:42:25.952893+00:00.
+`nfl/vintage_manifest.jsonl` carries **6449 rows**; the vintage store holds **1972 files**. Retrieval spans 2026-09-06T18:50:49.540119+00:00 to 2026-09-17T23:42:25.952893+00:00.
 
 | source | manifest rows |
 |---|---|
 | depth_charts | 663 |
+| dk_salaries | 1 |
 | espn_injuries_json | 654 |
 | hardrock_market_snapshot | 1 |
 | injuries | 664 |
@@ -81,7 +82,7 @@ Newly introduced since the baseline:
 | snap_counts | 575 |
 | weekly_rosters | 663 |
 
-Manifest row states: {'BLOCKED': 759, 'DEFERRED': 224, 'FAIL': 108, 'NOT_APPLICABLE': 1150, 'PASS': 4207}.
+Manifest row states: {'BLOCKED': 759, 'DEFERRED': 224, 'FAIL': 108, 'NOT_APPLICABLE': 1150, 'PASS': 4208}.
 
 ## 4. Governed assumptions
 
@@ -97,16 +98,17 @@ A FALSIFIED assumption blocks the production path that depends on it and rewrite
 
 ## 5. Dependency DAG (P7 Phase 1)
 
-`PHASE_1_DECLARATION_ONLY`, audit **PASS EVERY_VINTAGE_READ_DECLARED**, 28 declared edges over 4 package(s), 3 runtime-keyed read(s).
+`PHASE_1_DECLARATION_ONLY`, audit **PASS EVERY_VINTAGE_READ_DECLARED**, 31 declared edges over 4 package(s), 3 runtime-keyed read(s).
 
 | producer | declared readers |
 |---|---|
 | depth_charts | 3 |
+| dk_salaries | 1 |
 | espn_injuries_json | 1 |
-| injuries | 2 |
+| injuries | 3 |
 | schedules | 4 |
 | vintage_manifest | 7 |
-| weekly_rosters | 11 |
+| weekly_rosters | 12 |
 
 Not implemented:
 
@@ -145,6 +147,8 @@ Production readiness (`nfl/production/production_readiness.json`, updated 2026-0
 | SUN-6 | 7 | QUEUED |  |
 | SUN-7 | 2 | BLOCKED | OWNER DECISION. Changing a frozen identity is not this executor's to make. The week-2 rege |
 | SUN-8 | 9 | QUEUED |  |
+| DK-1 | 3 | BLOCKED | OUT-030 for the first two; OUT-025's DK half for the third. Independently, a Classic lineu |
+| DK-2 | 10 | QUEUED |  |
 | DFS-FS1 | 8 | DONE |  |
 | DFS-FS2 | 9 | BLOCKED | no full-slate joint-world generator exists; the only sealed worlds are one single-game boa |
 | DISC-4 | 8 | QUEUED |  |
