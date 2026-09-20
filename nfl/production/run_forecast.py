@@ -244,6 +244,70 @@ def code_commit() -> str:
     return f'UNRESOLVED[{o.code}]'
 
 
+def required_capture_sources() -> dict:
+    """Which captures a run MUST declare, DERIVED rather than hand-written.
+
+    DK-3. `capture_validation` used to iterate the source set it was HANDED
+    and check each entry for registry membership, a sha256, a `retrieved_at`
+    no later than `written_at`, and schema. It never asked whether a source
+    the run actually reads was ABSENT. One entry therefore returned
+    PASS[INPUTS_VALIDATED] for the whole stage, and an empty set returned
+    SOURCE_MISSING -- the two outcomes differed by the caller's declaration,
+    not by the captures. A stage whose PASS is a statement about its caller is
+    this project's standing defect class (a partial result read as success)
+    sitting inside the gate meant to catch it.
+
+    THE BASIS IS `vintage_selector.FAMILIES`, AND THAT CHOICE IS THE WHOLE
+    FIX. A hand-written list is what goes stale the moment a family is added,
+    and it would go stale silently. `FAMILIES` is the existing declaration of
+    every perishable source the production layers select a vintage from -- its
+    own comment reads "DECLARED, NOT DISCOVERED" -- so a new family joins this
+    requirement by existing, and cannot be forgotten here. It is intersected
+    with the fetched-source registry so that a family which is not an
+    authorized capture cannot become a requirement.
+
+    WHAT IS DELIBERATELY NOT REQUIRED, and each for a stated reason rather
+    than by omission:
+
+    * `official_inactives` -- it does not exist until roughly T-90 and is
+      final once it does. Requiring its presence would refuse every pregame
+      run, including the ones this system is built to write. Its absence is
+      handled where it belongs, in the readiness and eligibility layers, which
+      can say "not yet published" instead of "missing".
+    * `official_injury_report` and `espn_injuries_json` -- read, but not
+      through `vintage_selector`, and the second is corroboration that never
+      overrides the first. Neither is a family today. If either becomes one,
+      it joins this set automatically, which is the point.
+
+    This function does NOT check that the declared captures are real. A
+    declared source carrying a fabricated hash still passes here. That is
+    DK-4's half of the defect and it is not silently covered by this one.
+    """
+    from nfl.production.nonqb import vintage_selector as _VS
+    families = set(_VS.FAMILIES)
+    registered = families & set(REG.BY_NAME)
+    return {
+        'required': sorted(registered),
+        'basis': 'nfl/production/nonqb/vintage_selector.FAMILIES intersected '
+                 'with nfl/capture/registry.REGISTRY',
+        'families_declared': sorted(families),
+        'families_not_registered_sources': sorted(families - registered),
+        'not_required_and_why': {
+            'official_inactives':
+                'does not exist until ~T-90; requiring its presence would '
+                'refuse every pregame run. Handled by the readiness and '
+                'eligibility layers, which distinguish not-yet-published '
+                'from missing.',
+            'official_injury_report':
+                'read, but not through vintage_selector, so it is not a '
+                'family today. It joins this set automatically if it '
+                'becomes one.',
+            'espn_injuries_json':
+                'corroboration only; it never overrides the official report.',
+        },
+    }
+
+
 def build(args, fixtures: dict = None) -> dict:
     """Run the pipeline. `fixtures` supplies inputs for a historical dry run."""
     fx = fixtures or {}
@@ -264,9 +328,16 @@ def build(args, fixtures: dict = None) -> dict:
 
     # --- 1. capture / input validation ---------------------------------
     def _capture():
+        # DK-3. What this stage REQUIRES, before anything about what it was
+        # handed. Derived from vintage_selector.FAMILIES so a new family
+        # cannot be forgotten here; see `required_capture_sources`.
+        _req = required_capture_sources()
         if not src:
             return RF.refuse('SOURCE_MISSING', 'capture_validation',
-                             'no source captures were supplied', run_id)
+                             'no source captures were supplied. This run '
+                             'must declare: '
+                             + ', '.join(_req['required']), run_id,
+                             required=_req['required'], basis=_req['basis'])
         for name, meta in src.items():
             if name not in REG.BY_NAME:
                 return RF.refuse('UNAUTHORIZED_INPUT', 'capture_validation',
@@ -291,6 +362,23 @@ def build(args, fixtures: dict = None) -> dict:
             if meta.get('schema_ok') is False:
                 return RF.refuse('SCHEMA_DRIFT', 'capture_validation',
                                  f'{name} schema does not match', run_id)
+        # COMPLETENESS IS CHECKED AFTER WELL-FORMEDNESS, and the order is
+        # deliberate. They are independent questions -- "is what you declared
+        # valid?" and "did you declare everything your layers read?" -- and a
+        # caller with one malformed entry is better told which entry than told
+        # it is also missing three others. Every per-entry refusal above stays
+        # reachable this way; putting completeness first would mask all of
+        # them behind one code.
+        missing = [n for n in _req['required'] if n not in src]
+        if missing:
+            return RF.refuse(
+                'REQUIRED_SOURCE_NOT_DECLARED', 'capture_validation',
+                f'the run declared {sorted(src)} and its own layers select '
+                f'vintages of {_req["required"]}. Undeclared: {missing}. A '
+                f'capture this stage never saw cannot have been validated by '
+                f'it, whatever the layers below then read.', run_id,
+                declared=sorted(src), required=_req['required'],
+                missing=missing, basis=_req['basis'])
         if kickoff and not wrote < _parse(kickoff):
             return RF.refuse('SOURCE_CHRONOLOGY_FAILURE', 'capture_validation',
                              f'written_at {args.written_at} is not before '
@@ -304,7 +392,28 @@ def build(args, fixtures: dict = None) -> dict:
                              'the cold-start freeze identity does not match',
                              run_id)
         return Outcome.ok('INPUTS_VALIDATED', value=src,
-                          input_hashes={k: v['sha256'] for k, v in src.items()})
+                          input_hashes={k: v['sha256']
+                                        for k, v in src.items()},
+                          required=_req['required'],
+                          required_basis=_req['basis'],
+                          # SAID OUT LOUD ON THE PASS, not only on a refusal,
+                          # and carried as GOVERNANCE so it reaches the stage
+                          # record rather than dying in evidence the pipeline
+                          # does not copy. This stage checks that every
+                          # required source was DECLARED and that each
+                          # declaration is well formed. It does NOT verify
+                          # that the declared bytes exist or hash to anything
+                          # real -- that is DK-4 -- and a PASS that did not
+                          # say so would be read as more than it is.
+                          governance=[{
+                              'layer': 'capture_validation',
+                              'governance':
+                                  'DECLARATION_COMPLETE_AND_WELL_FORMED -- '
+                                  'the EXISTENCE of the declared bytes is '
+                                  'NOT checked here (DK-4)',
+                              'required': _req['required'],
+                              'basis': _req['basis'],
+                          }])
     def _appearance_spec(flags):
         """Which appearance mechanism this configuration names. Exactly one.
 

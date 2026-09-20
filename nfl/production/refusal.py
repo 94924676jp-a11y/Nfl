@@ -38,6 +38,8 @@ REFUSALS = {
     'STAGE_NOT_IMPLEMENTED': 'a pipeline stage has no production model yet',
     'EMPTY_FORECAST_ARTIFACT': 'the artifact would seal carrying no player '
                                'distributions at all',
+    'REQUIRED_SOURCE_NOT_DECLARED': 'the run declared no capture for a source '
+                                    'its own layers select from',
 }
 
 
@@ -53,7 +55,17 @@ class Refusal:
         return dataclasses.asdict(self)
 
 
-def refuse(code: str, stage: str, detail: str, run_id: str) -> Outcome:
+def refuse(code: str, stage: str, detail: str, run_id: str,
+           **evidence) -> Outcome:
+    """A named refusal, optionally carrying STRUCTURED evidence beside prose.
+
+    `**evidence` reaches the Outcome only. The persisted `Refusal` record keeps
+    its existing five fields, so nothing that reads `refusals.jsonl` has to
+    learn a new shape -- and nothing is lost, because a caller passing
+    structured evidence is expected to have said the same thing in `detail`.
+    A refusal a machine can filter on is better than one only a person can
+    read; a refusal whose file format changed under its readers is not.
+    """
     if code not in REFUSALS:
         return Outcome.fail(
             'UNKNOWN_REFUSAL_CODE',
@@ -63,7 +75,7 @@ def refuse(code: str, stage: str, detail: str, run_id: str) -> Outcome:
     r = Refusal(code=code, stage=stage, detail=detail, run_id=run_id,
                 at=_dt.datetime.now(_dt.timezone.utc).isoformat())
     return Outcome.blocked(code, f'{stage}: {detail}', cause=Cause.GOVERNANCE,
-                           refusal=r.as_dict())
+                           refusal=r.as_dict(), **evidence)
 
 
 def persist(refusals: list, out_dir: pathlib.Path) -> Outcome:

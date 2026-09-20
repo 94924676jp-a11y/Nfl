@@ -39,11 +39,22 @@ def args(**over):
 def fx(**over):
     f = {
         'kickoff_utc': '2026-09-10T00:20:00Z',
+        # DK-3. A run must declare a capture for every source its own layers
+        # select a vintage of. This fixture used to declare two, which passed
+        # only because capture_validation never asked what was MISSING. Two of
+        # four is not a "normal complete run", so the fixture is corrected
+        # rather than the check relaxed.
         'source_hashes': {
             'official_inactives': {'sha256': 'a' * 64,
                                    'retrieved_at': '2026-09-09T21:00:00Z'},
             'schedules': {'sha256': 'b' * 64,
-                          'retrieved_at': '2026-09-09T20:00:00Z'}},
+                          'retrieved_at': '2026-09-09T20:00:00Z'},
+            'injuries': {'sha256': 'c' * 64,
+                         'retrieved_at': '2026-09-09T20:00:00Z'},
+            'depth_charts': {'sha256': 'd' * 64,
+                             'retrieved_at': '2026-09-09T20:00:00Z'},
+            'weekly_rosters': {'sha256': 'e' * 64,
+                               'retrieved_at': '2026-09-09T20:00:00Z'}},
         'players': [{'gsis_id': '00-0000001'}, {'gsis_id': '00-0000002'}],
         'team_ids': ['NE', 'SEA'],
         'distributions': {'00-0000001': {'targets': {'mean': 5.0}}},

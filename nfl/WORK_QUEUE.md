@@ -727,7 +727,7 @@ its downstream impact justifies it.
 
 ## ID: DK-3
 - **priority**: 1
-- **status**: QUEUED
+- **status**: DONE (2026-09-20)
 - **dependencies**: none
 - **description**: `run_forecast._capture` (`run_forecast.py:266-306`) iterates
   the source set it is HANDED. It checks each supplied entry for registry
@@ -749,6 +749,21 @@ its downstream impact justifies it.
     commit, because it currently characterises the defect and will fail;
   - no source is exempted to make the new check pass.
 - **classification**: CRITICAL_CORRECTNESS
+- **resolution**: `run_forecast.required_capture_sources()` derives the set
+  from `vintage_selector.FAMILIES` intersected with `registry.REGISTRY` --
+  `{depth_charts, injuries, schedules, weekly_rosters}` today. Derived, not
+  hand-written, because a hand-written list goes stale silently the moment a
+  family is added. `capture_validation` refuses
+  `REQUIRED_SOURCE_NOT_DECLARED` naming each missing source. Completeness is
+  checked AFTER per-entry well-formedness so every existing refusal
+  (`SOURCE_TOO_LATE`, `SCHEMA_DRIFT`, `RAW_HASH_MISMATCH`,
+  `UNAUTHORIZED_INPUT`) stays reachable. Three sources are excluded with
+  stated reasons rather than by omission: `official_inactives` (does not
+  exist until ~T-90; requiring it would refuse every pregame run),
+  `official_injury_report` and `espn_injuries_json` (not families today; they
+  join automatically if they become ones). Nothing was exempted to make the
+  check pass. The PASS now carries a governance record declaring its own
+  scope, so it cannot be read as more than it is.
 
 ## ID: DK-4
 - **priority**: 1

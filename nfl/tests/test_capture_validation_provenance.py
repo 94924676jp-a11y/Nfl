@@ -3,30 +3,38 @@
 Today it does not, and these tests pin exactly that so the gap cannot close by
 accident or widen unnoticed.
 
-TWO DEFECTS, AND THEY ARE DIFFERENT
+TWO DEFECTS, AND THEY ARE DIFFERENT. ONE IS NOW FIXED.
 
-DK-3 -- `capture_validation` iterates the source set it is HANDED. It checks
-each supplied entry for a sha256, a `retrieved_at` no later than `written_at`,
-registry membership and schema. It never asks whether a REQUIRED source is
-absent. So a caller supplying one synthetic entry gets PASS[INPUTS_VALIDATED]
-for the whole stage, and a caller supplying nothing gets SOURCE_MISSING -- the
-two outcomes differ by the caller's choice, not by the captures.
+DK-3 -- FIXED in the same commit that rewrote this file. `capture_validation`
+used to iterate the source set it was HANDED and never ask whether a source
+the run actually reads was ABSENT, so one synthetic entry returned
+PASS[INPUTS_VALIDATED] for the whole stage. It now derives its required set
+from `vintage_selector.FAMILIES` -- the existing "DECLARED, NOT DISCOVERED"
+list of every perishable source the production layers select a vintage from --
+intersected with the fetched-source registry, and refuses
+REQUIRED_SOURCE_NOT_DECLARED naming each missing one. The basis is derived
+rather than hand-written precisely because a hand-written list goes stale the
+moment a family is added, and goes stale silently.
 
-DK-4 -- the only slate driver in the repository,
-`nfl/production/rehearsal/run_slate.py`, supplies exactly that one synthetic
-entry: sha256 = 'b' * 64, retrieved_at fixed. It is declared REHEARSAL ONLY and
-sets `dry_run=True` in the call, which is the honest consequence of the
-placeholder rather than an unrelated choice. There is no production fixture
-assembler, so there is no caller that can satisfy this stage with evidence.
+DK-4 -- STILL OPEN, and these tests still characterise it. The only slate
+driver in the repository, `nfl/production/rehearsal/run_slate.py`, supplies
+one entry whose sha256 is 'b' * 64. DK-3's fix now refuses that run for
+declaring only `schedules`, which is progress and is not the whole defect: a
+caller that declared all four sources with four fabricated hashes would still
+pass. This stage checks that every required source was DECLARED and that each
+declaration is WELL FORMED. It does not check that the declared bytes exist.
+Until a production fixture assembler reads the vintage manifest and emits true
+hashes, no caller can satisfy this stage with evidence.
 
 WHAT THESE TESTS DO NOT CLAIM. The football layers below the stage read real
-captures through `vintage_selector`, with real capture ids. The numbers rest on
-real evidence; the PROVENANCE RECORD does not. A test that conflated those
+captures through `vintage_selector`, with real capture ids. The numbers rest
+on real evidence; the PROVENANCE RECORD does not. A test that conflated those
 would be measuring the wrong thing.
 
-These are CHARACTERISATION tests. They assert the defect as it stands. When the
-fixture assembler lands, they fail -- and that failure is the signal to update
-them, deliberately, in the same commit that fixes the behaviour.
+The DK-4 tests are CHARACTERISATION tests: they assert the defect as it
+stands. When the fixture assembler lands they fail, and that failure is the
+signal to update them, deliberately, in the same commit that fixes the
+behaviour.
 """
 from __future__ import annotations
 
@@ -100,9 +108,22 @@ def test_driver_supplies_a_placeholder_hash():
        'caller can clear')
 
 
-def test_capture_validation_has_no_required_source_check():
-    """PASS on a set of one fabricated entry. This is DK-3, demonstrated."""
+def test_capture_validation_requires_the_sources_the_layers_select():
+    """DK-3, fixed. One fabricated entry no longer passes the stage."""
     from nfl.production import run_forecast as RUN
+
+    req = RUN.required_capture_sources()
+    ok(req['required'] == ['depth_charts', 'injuries', 'schedules',
+                           'weekly_rosters'],
+       f'the required set is {req["required"]}, derived from '
+       f'vintage_selector.FAMILIES rather than written by hand')
+    ok(req['families_not_registered_sources'] == [],
+       'and every declared family is an authorized capture source, so '
+       'nothing in the requirement is unfetchable')
+    for name in ('official_inactives', 'official_injury_report',
+                 'espn_injuries_json'):
+        ok(req['not_required_and_why'].get(name),
+           f'{name} is excluded WITH A STATED REASON rather than by omission')
 
     fx = {'kickoff_utc': '2026-09-20T17:00:00Z',
           'source_hashes': {'schedules': {
@@ -114,11 +135,55 @@ def test_capture_validation_has_no_required_source_check():
     s = RUN.build(_args(out_dir='/tmp/claude-0/cvtest'), dict(fx))
     st = {r['stage']: r for r in s['stages']}
     cv = st.get('capture_validation')
-    ok(cv is not None, 'the run reports a capture_validation stage')
-    ok(cv and cv['state'] == 'PASS' and cv['code'] == 'INPUTS_VALIDATED',
-       'ONE fabricated source entry passes capture_validation outright: '
-       f"state={cv and cv['state']} code={cv and cv['code']}. The stage "
-       'validates what it is handed and never asks what is missing')
+    ok(cv and cv['state'] == 'BLOCKED'
+       and cv['code'] == 'REQUIRED_SOURCE_NOT_DECLARED',
+       f'the exact source set run_slate supplies is now REFUSED: '
+       f"state={cv and cv['state']} code={cv and cv['code']}")
+    for name in ('depth_charts', 'injuries', 'weekly_rosters'):
+        ok(cv and name in cv['detail'],
+           f'and the refusal NAMES {name} rather than returning a bare code')
+
+
+def test_a_pass_says_what_it_did_not_check():
+    """The half DK-3 does not fix, stated on the PASS and not only in prose.
+
+    Four fabricated hashes for the four required sources still pass. That is
+    DK-4, and a PASS that did not say so would be read as more than it is.
+    """
+    from nfl.production import run_forecast as RUN
+
+    fx = {'kickoff_utc': '2026-09-20T17:00:00Z',
+          'source_hashes': {n: {'sha256': 'b' * 64,
+                                'retrieved_at': '2026-09-08T12:00:00Z'}
+                            for n in RUN.required_capture_sources()['required']},
+          'players': [], 'team_ids': ['CAR', 'ATL'],
+          'qb_slate': {'prospective': True}, 'qb_draws': 8,
+          'team_volume': True, 'distributions': {}}
+    s = RUN.build(_args(out_dir='/tmp/claude-0/cvtest'), dict(fx))
+    st = {r['stage']: r for r in s['stages']}
+    cv = st.get('capture_validation')
+    ok(cv and cv['state'] == 'PASS',
+       f'four fabricated hashes for the four required sources still pass: '
+       f"{cv and cv['state']} {cv and cv['code']}. DK-3 closed the "
+       f'missing-source hole and did not close this one')
+    # READ OFF THE STAGE RECORD, with no fallback. An earlier draft of this
+    # test substituted the expected string when the record did not carry one,
+    # which made the assertion unfailable and would have hidden the very gap
+    # it is here to prove -- evidence the pipeline does not copy into the
+    # record dies silently.
+    gov = [g for g in (cv or {}).get('governance') or []
+           if g.get('layer') == 'capture_validation']
+    ok(len(gov) == 1,
+       f'the PASS carries exactly one capture_validation governance record: '
+       f'{len(gov)}')
+    txt = gov[0]['governance'] if gov else ''
+    ok('NOT checked' in txt and 'DK-4' in txt,
+       f'and it declares its own scope -- declaration completeness and '
+       f'well-formedness, NOT the existence of the declared bytes: {txt!r}')
+    ok(gov and gov[0].get('required') == RUN.required_capture_sources()[
+        'required'],
+       'and it names the required set it checked, so a reader need not '
+       'recompute it')
 
 
 def test_direct_entrypoint_without_fixtures_refuses():
@@ -136,11 +201,15 @@ def test_direct_entrypoint_without_fixtures_refuses():
        'and the run as a whole is REFUSED, so no layer below it executes')
 
 
-def test_the_two_outcomes_differ_only_by_the_caller():
-    """The point of DK-3 stated as a single comparison.
+def test_both_callers_now_refuse_and_for_different_reasons():
+    """What DK-3 changed, stated as the comparison it replaces.
 
-    Same captures on disk, same week, same clock. One caller passes, one
-    refuses. Nothing about the CAPTURES distinguishes them.
+    This test used to assert the defect: the same captures on disk yielded
+    PASS or BLOCKED depending only on what the caller declared, which made the
+    stage a statement about its caller. Both callers now refuse, and the two
+    refusals say DIFFERENT things -- nothing declared, versus three of four
+    required sources undeclared. A refusal that distinguishes those is
+    diagnostic; one that flattened them would not be.
     """
     from nfl.production import run_forecast as RUN
 
@@ -155,17 +224,23 @@ def test_the_two_outcomes_differ_only_by_the_caller():
     b = RUN.build(_args(out_dir='/tmp/claude-0/cvtest'), {})
     ca = {r['stage']: r for r in a['stages']}['capture_validation']
     cb = {r['stage']: r for r in b['stages']}['capture_validation']
-    ok(ca['state'] != cb['state'],
-       f"the same captures yield {ca['state']} and {cb['state']} depending "
-       'only on what the caller declares -- which is what makes this stage a '
-       'statement about the caller rather than about the captures')
+    ok(ca['state'] == cb['state'] == 'BLOCKED',
+       f'both callers refuse: {ca["state"]} and {cb["state"]}')
+    ok(ca['code'] == 'REQUIRED_SOURCE_NOT_DECLARED'
+       and cb['code'] == 'SOURCE_MISSING',
+       f'and the codes distinguish what each got wrong: {ca["code"]} vs '
+       f'{cb["code"]}')
+    ok('depth_charts' in cb['detail'],
+       'the empty-set refusal also names what the run must declare, so a '
+       'caller is told the requirement rather than left to guess it')
 
 
 def main():
     for t in (test_driver_supplies_a_placeholder_hash,
-              test_capture_validation_has_no_required_source_check,
+              test_capture_validation_requires_the_sources_the_layers_select,
+              test_a_pass_says_what_it_did_not_check,
               test_direct_entrypoint_without_fixtures_refuses,
-              test_the_two_outcomes_differ_only_by_the_caller):
+              test_both_callers_now_refuse_and_for_different_reasons):
         print(f'== {t.__name__}')
         t()
     print(f'\n{_P} passed, {_F} failed')
