@@ -403,6 +403,62 @@ its downstream impact justifies it.
 - **classification**: PRODUCTION_BLOCKER
 - **ranking**: impact HIGH x uncertainty LOW x measurability HIGH x EVI HIGH
 
+## ID: SUN-7
+- **priority**: 2
+- **status**: BLOCKED
+- **dependencies**: none
+- **description**: **A rule the owner set was changed and this item exists to
+  say so.** `nfl/tests/test_non_g0a_isolation.py` pins
+  `G0A_IDENTITY = "SCHED-2a2924d4966fbd3d"` with the comment "Frozen by owner
+  ruling until the event" -- it is the week-1 `nfl-t90.yml` schedule, and the
+  window it protects carries the outstanding G0A `inactives` obligation, "the
+  single item standing between G0A 11/12 and 12/12". Regenerating the workflow
+  for week 2 (f9148b0) changed that identity to SCHED-5e2e890466c87284 and
+  removed the week-1 crons, so five checks across three modules now fail:
+  the two identity checks, and two in `test_capture_obligations` asserting
+  that entries still exist inside the 2026-09-14 DEN@KC window and the
+  2026-09-13 Sunday slate.
+
+  The conflict is structural, not accidental: `nfl-t90.yml` is being used at
+  once as a LIVE SCHEDULER and as a FROZEN RECORD of what was scheduled for
+  week 1, and those two roles become incompatible the moment a second week
+  arrives.
+- **blocker**: OWNER DECISION. Changing a frozen identity is not this
+  executor's to make. The week-2 regeneration is retained meanwhile because
+  the alternative loses the 2026-09-20 inactives windows, which cannot be
+  reconstructed, while the week-1 window it displaced closed eleven days ago
+  and no cron can reopen it.
+- **acceptance criteria**:
+  - the owner rules on whether the freeze survives its event;
+  - if it does, the record and the scheduler are separated so one file stops
+    doing both jobs -- the frozen week-1 schedule preserved as an artifact,
+    the live workflow free to advance;
+  - **the five failing checks are NOT edited to match.** They are correctly
+    reporting that a frozen value moved.
+- **classification**: CRITICAL_CORRECTNESS
+- **ranking**: impact HIGH (it is a governance freeze) x uncertainty LOW
+  (the facts are unambiguous) x measurability HIGH x EVI HIGH
+
+## ID: SUN-8
+- **priority**: 9
+- **status**: QUEUED
+- **dependencies**: none
+- **description**: Ingesting capture-prod moved two evidence censuses that
+  `nfl/tests/test_inactives_substance.py` pins: uncredited game-anchored rows
+  18 -> 20, and excluded landing pages 374 -> 382. The test says what to do --
+  "if this drifts, D20 needs updating, not this test". Separately and more
+  interesting: **48 of 50** captured pages carry the page's own empty-state
+  sentence, so two do not. That is a content question about newly captured
+  bytes, not a count.
+- **blocker**: none
+- **acceptance criteria**:
+  - D20's census is updated from the manifest, not from the test;
+  - the two pages without the empty-state sentence are read and classified
+    before any count is adjusted around them.
+- **classification**: MEASUREMENT_DEFECT
+- **ranking**: impact LOW-MEDIUM x uncertainty MEDIUM (the two odd pages)
+  x measurability HIGH x EVI MEDIUM
+
 ## ID: DFS-FS1
 - **priority**: 8
 - **status**: DONE

@@ -64,7 +64,7 @@
    "why_not_measurable": "routines live in a scheduler this executor cannot query. The previous `CURRENT_STATE.md` asserted a routine was DISABLED and recorded, in the same file, that a later firing reported success with no commit ever reaching the branch \u2014 an unresolved contradiction that it presented as state."
   }
  ],
- "generated_at": "2026-09-19T16:49:03.660448+00:00",
+ "generated_at": "2026-09-20T00:12:56.255857+00:00",
  "generated_by": "nfl/tools/system_state.py",
  "measured": {
   "assumptions": {
@@ -151,7 +151,7 @@
   },
   "code": {
    "TOTAL": {
-    "lines": 215121,
+    "lines": 215155,
     "modules": 669
    },
    "nfl/capture": {
@@ -175,7 +175,7 @@
     "modules": 23
    },
    "nfl/production": {
-    "lines": 37274,
+    "lines": 37308,
     "modules": 71
    },
    "nfl/prospective": {
@@ -244,23 +244,23 @@
   "git": {
    "branch": "claude/nfl-greenfield-architecture-stsxmk",
    "dirty_source_files": [
-    "nfl/production/pipeline.py"
+    "nfl/production/ownership_audit.py"
    ],
-   "head": "5413e65070c803478d9a50a5c02c6df479ea6092",
-   "head_committed_at": "2026-09-19T16:24:15+00:00",
-   "head_short": "5413e65",
-   "head_subject": "The rehearsal wrote its result somewhere else, and a Sunday runbook",
+   "head": "1a4eb45d0d475ff86b652134b677ee89e98e70a2",
+   "head_committed_at": "2026-09-19T16:57:15+00:00",
+   "head_short": "1a4eb45",
+   "head_subject": "OUT-027 and OUT-028: the injury reports that are missing, and the prices that are not",
    "is_clean": false,
-   "n_commits_on_branch": 1088,
+   "n_commits_on_branch": 1090,
    "remote_head": "3270829ca46e46f44285c5ae81952c31921bdda5",
    "worktree": {
-    "code_version": "5413e65070c803478d9a50a5c02c6df479ea6092+src1[9705988bea5d9008]",
-    "commit": "5413e65070c803478d9a50a5c02c6df479ea6092",
+    "code_version": "1a4eb45d0d475ff86b652134b677ee89e98e70a2+src1[0e0b7ef5600df04e]",
+    "commit": "1a4eb45d0d475ff86b652134b677ee89e98e70a2",
     "dirty_source_files": [
-     "nfl/production/pipeline.py"
+     "nfl/production/ownership_audit.py"
     ],
     "n_dirty_source_files": 1,
-    "n_dirty_tree_entries_observed": 15,
+    "n_dirty_tree_entries_observed": 13,
     "scope_note": "dirty_source_files is SOURCE scope only -- the .py files the identity contract hashes. A changed .md or .json is counted in n_dirty_tree_entries_observed and is not listed.",
     "source_scope_clean": false
    }
@@ -308,40 +308,154 @@
    }
   },
   "suite": {
-   "artifact": "nfl/research/suite_attribution/SUITE_DIFF_fullslate_fs1.json",
-   "baseline_commit": "06bc006",
+   "artifact": "nfl/research/suite_attribution/SUITE_DIFF_fs1_sunday.json",
+   "baseline_commit": "9052d0c",
    "baseline_totals": {
-    "blocked_functions": 23,
-    "checks": 10725,
-    "failing_checks": 61,
-    "modules": 185,
-    "raised": 21,
-    "test_functions": 2011,
-    "zero_check_functions": 0
-   },
-   "counts_by_classification": {
-    "PRE_EXISTING": 133
-   },
-   "delta_totals": {
-    "blocked_functions": 0,
-    "checks": 75,
-    "failing_checks": 0,
-    "modules": 1,
-    "raised": 0,
-    "test_functions": 16,
-    "zero_check_functions": 0
-   },
-   "is_current_head": false,
-   "measured_at_commit": "WORKING_TREE",
-   "newly_introduced": [],
-   "staleness_note": "measured at WORKING_TREE, HEAD is 5413e65. This total is not a statement about the tree as it stands.",
-   "totals": {
     "blocked_functions": 23,
     "checks": 10800,
     "failing_checks": 61,
     "modules": 186,
     "raised": 21,
     "test_functions": 2027,
+    "zero_check_functions": 0
+   },
+   "counts_by_classification": {
+    "CHANGED_CLASSIFICATION": 2,
+    "NEWLY_INTRODUCED": 22,
+    "PRE_EXISTING": 128,
+    "RESOLVED_SINCE_BASELINE": 3
+   },
+   "delta_totals": {
+    "blocked_functions": -1,
+    "checks": 207,
+    "failing_checks": 11,
+    "modules": 4,
+    "raised": 5,
+    "test_functions": 38,
+    "zero_check_functions": 0
+   },
+   "is_current_head": true,
+   "measured_at_commit": "1a4eb45",
+   "newly_introduced": [
+    {
+     "detail": "FAIL it names the current HEAD  ef3a631",
+     "kind": "FAILING_CHECK",
+     "module": "nfl/tests/test_agent_state.py"
+    },
+    {
+     "detail": "FAIL   and entries existed for the Sunday 13:00 ET slate too, so the crons were correct and simply never fired",
+     "kind": "FAILING_CHECK",
+     "module": "nfl/tests/test_capture_obligations.py"
+    },
+    {
+     "detail": "FAIL at least one fires inside the DEN@KC T-90 window -- the last open week-1 obligation  []",
+     "kind": "FAILING_CHECK",
+     "module": "nfl/tests/test_capture_obligations.py"
+    },
+    {
+     "detail": "FAIL and exactly the 374 landing pages are excluded, not 392  382",
+     "kind": "FAILING_CHECK",
+     "module": "nfl/tests/test_inactives_substance.py"
+    },
+    {
+     "detail": "FAIL and the count matches what D20 records  382 -- if this drifts, D20 needs updating, not this test",
+     "kind": "FAILING_CHECK",
+     "module": "nfl/tests/test_inactives_substance.py"
+    },
+    {
+     "detail": "FAIL   the G0A workflow declares the frozen identity  SCHED-5e2e890466c87284",
+     "kind": "FAILING_CHECK",
+     "module": "nfl/tests/test_non_g0a_isolation.py"
+    },
+    {
+     "detail": "FAIL   the G0A workflow still carries its frozen identity  identity changed",
+     "kind": "FAILING_CHECK",
+     "module": "nfl/tests/test_non_g0a_isolation.py"
+    },
+    {
+     "detail": "FAIL   and passes again once the disposition is restored: State.FAIL[OWNERSHIP_AUDIT_UNREVIEWED_SITE]",
+     "kind": "FAILING_CHECK",
+     "module": "nfl/tests/test_ownership_audit.py"
+    },
+    {
+     "detail": "FAIL the audit completes: State.FAIL[OWNERSHIP_AUDIT_UNREVIEWED_SITE]",
+     "kind": "FAILING_CHECK",
+     "module": "nfl/tests/test_ownership_audit.py"
+    },
+    {
+     "detail": "FAIL and restoring it clears the check",
+     "kind": "FAILING_CHECK",
+     "module": "nfl/tests/test_preflight.py"
+    },
+    {
+     "detail": "FAIL no check fails for a reason other than the week being over  [('anchored workflow matches the current schedule', 'WORKFLOW_STALE')]",
+     "kind": "FAILING_CHECK",
+     "module": "nfl/tests/test_preflight.py"
+    },
+    {
+     "detail": "FAIL the live HEAD appears",
+     "kind": "FAILING_CHECK",
+     "module": "nfl/tests/test_system_state.py"
+    },
+    {
+     "detail": "1 failing check(s)",
+     "kind": "MODULE_FAILING",
+     "module": "nfl/tests/test_agent_state.py"
+    },
+    {
+     "detail": "2 failing check(s)",
+     "kind": "MODULE_FAILING",
+     "module": "nfl/tests/test_non_g0a_isolation.py"
+    },
+    {
+     "detail": "2 failing check(s)",
+     "kind": "MODULE_FAILING",
+     "module": "nfl/tests/test_ownership_audit.py"
+    },
+    {
+     "detail": "2 failing check(s)",
+     "kind": "MODULE_FAILING",
+     "module": "nfl/tests/test_preflight.py"
+    },
+    {
+     "detail": "1 failing check(s)",
+     "kind": "MODULE_FAILING",
+     "module": "nfl/tests/test_system_state.py"
+    },
+    {
+     "detail": "KeyError: 'single_adjustment_ownership_verified'",
+     "kind": "RAISED",
+     "module": "nfl/tests/test_gate_ids.py"
+    },
+    {
+     "detail": "AssertionError: 2 check(s) failed in this module",
+     "kind": "RAISED",
+     "module": "nfl/tests/test_non_g0a_isolation.py"
+    },
+    {
+     "detail": "KeyError: 'n_files_scanned'",
+     "kind": "RAISED",
+     "module": "nfl/tests/test_ownership_audit.py"
+    },
+    {
+     "detail": "KeyError: 'single_adjustment_ownership_verified'",
+     "kind": "RAISED",
+     "module": "nfl/tests/test_ownership_audit.py"
+    },
+    {
+     "detail": "AssertionError: 2 check(s) failed in this module",
+     "kind": "RAISED",
+     "module": "nfl/tests/test_ownership_audit.py"
+    }
+   ],
+   "staleness_note": "measured at HEAD",
+   "totals": {
+    "blocked_functions": 22,
+    "checks": 11007,
+    "failing_checks": 72,
+    "modules": 190,
+    "raised": 26,
+    "test_functions": 2065,
     "zero_check_functions": 0
    },
    "verdict": "SUITE FAIL"
@@ -356,9 +470,9 @@
   ],
   "work_queue": {
    "by_status": {
-    "BLOCKED": 9,
+    "BLOCKED": 10,
     "DONE": 8,
-    "QUEUED": 11
+    "QUEUED": 12
    },
    "items": [
     {
@@ -467,6 +581,20 @@
      "status": "QUEUED"
     },
     {
+     "blocker": "OWNER DECISION. Changing a frozen identity is not this executor's to make. The week-2 regeneration is retained meanwhile because the alternative loses the 2026-09-20 inactives windows, which cannot be reconstructed, while the week-1 window it displaced closed eleven days ago and no cron can reopen it.",
+     "description": "**A rule the owner set was changed and this item exists to say so.** `nfl/tests/test_non_g0a_isolation.py` pins `G0A_IDENTITY = \"SCHED-2a2924d4966fbd3d\"` with the comment \"Frozen by owner ruling until the event\" -- it is the week-1 `nfl-t90.yml` schedule, and the window it protects carries the outstanding G0A `inactives` obligation, \"the single item standing between G0A 11/12 and 12/12\". Regenerating the workflow for week 2 (f9148b0) changed that identity to SCHED-5e2e890466c87284 and removed the week-1 crons, so five checks across three modules now fail: the two identity checks, and two in `test_capture_obligations` asserting that entries still exist inside the 2026-09-14 DEN@KC window and the 2026-09-13 Sunday slate. The conflict is structural, not accidental: `nfl-t90.yml` is being used at once as a LIVE SCHEDULER and as a FROZEN RECORD of what was scheduled for week 1, and those two roles become incompatible the moment a second week arrives.",
+     "id": "SUN-7",
+     "priority": "2",
+     "status": "BLOCKED"
+    },
+    {
+     "blocker": "none",
+     "description": "Ingesting capture-prod moved two evidence censuses that `nfl/tests/test_inactives_substance.py` pins: uncredited game-anchored rows 18 -> 20, and excluded landing pages 374 -> 382. The test says what to do -- \"if this drifts, D20 needs updating, not this test\". Separately and more interesting: **48 of 50** captured pages carry the page's own empty-state sentence, so two do not. That is a content question about newly captured bytes, not a count.",
+     "id": "SUN-8",
+     "priority": "9",
+     "status": "QUEUED"
+    },
+    {
      "blocker": "none",
      "description": "A canonical, leakage-safe full-slate prediction-time dependence panel: mutually exclusive declared roles, prior-weeks-only labels, certified DK and FD scoring, Pearson and joint-tail dependence reported separately with game-clustered intervals.",
      "id": "DFS-FS1",
@@ -558,7 +686,7 @@
      "status": "QUEUED"
     }
    ],
-   "n": 28
+   "n": 30
   }
  },
  "reading_rule": "Every value under `measured` was computed by reading this repository at the timestamp above. Every value under `declared` was asserted by somebody and says who, when, and why it cannot be measured here. Do not quote one as the other.",

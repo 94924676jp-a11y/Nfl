@@ -1,6 +1,6 @@
 # NFL — current state
 
-**Generated** by `nfl/tools/system_state.py` at 2026-09-19T16:49:03.660448+00:00 from `SYSTEM_STATE.json`. Do not hand-edit this file: regenerate it.
+**Generated** by `nfl/tools/system_state.py` at 2026-09-20T00:12:56.255857+00:00 from `SYSTEM_STATE.json`. Do not hand-edit this file: regenerate it.
 
 Every value under `measured` was computed by reading this repository at the timestamp above. Every value under `declared` was asserted by somebody and says who, when, and why it cannot be measured here. Do not quote one as the other.
 
@@ -11,32 +11,55 @@ Every value under `measured` was computed by reading this repository at the time
 |  |  |
 |---|---|
 | branch | `claude/nfl-greenfield-architecture-stsxmk` |
-| HEAD | `5413e65` — The rehearsal wrote its result somewhere else, and a Sunday runbook |
-| HEAD committed | 2026-09-19T16:24:15+00:00 |
-| commits on branch | 1088 |
+| HEAD | `1a4eb45` — OUT-027 and OUT-028: the injury reports that are missing, and the prices that are not |
+| HEAD committed | 2026-09-19T16:57:15+00:00 |
+| commits on branch | 1090 |
 | source scope | 1 dirty source file(s) |
-| dirty tree entries (source and not) | 15 |
-| code_version | `5413e65070c803478d9a50a5c02c6df479ea6092+src1[9705988bea5d9008]` |
+| dirty tree entries (source and not) | 13 |
+| code_version | `1a4eb45d0d475ff86b652134b677ee89e98e70a2+src1[0e0b7ef5600df04e]` |
 | python modules | 669 |
-| lines of python | 215,121 |
+| lines of python | 215,155 |
 
 ## 2. Test suite
 
-Source: `nfl/research/suite_attribution/SUITE_DIFF_fullslate_fs1.json`. measured at WORKING_TREE, HEAD is 5413e65. This total is not a statement about the tree as it stands.
+Source: `nfl/research/suite_attribution/SUITE_DIFF_fs1_sunday.json`. measured at HEAD
 
-|  | at WORKING_TREE | baseline 06bc006 | delta |
+|  | at 1a4eb45 | baseline 9052d0c | delta |
 |---|---|---|---|
-| modules | 186 | 185 | 1 |
-| test functions | 2027 | 2011 | 16 |
-| checks | 10800 | 10725 | 75 |
-| failing checks | 61 | 61 | 0 |
-| raised | 21 | 21 | 0 |
+| modules | 190 | 186 | 4 |
+| test functions | 2065 | 2027 | 38 |
+| checks | 11007 | 10800 | 207 |
+| failing checks | 72 | 61 | 11 |
+| raised | 26 | 21 | 5 |
 | zero check functions | 0 | 0 | 0 |
-| blocked functions | 23 | 23 | 0 |
+| blocked functions | 22 | 23 | -1 |
 
-Verdict: **SUITE FAIL**. Classification against the baseline: {'PRE_EXISTING': 133}.
+Verdict: **SUITE FAIL**. Classification against the baseline: {'CHANGED_CLASSIFICATION': 2, 'NEWLY_INTRODUCED': 22, 'PRE_EXISTING': 128, 'RESOLVED_SINCE_BASELINE': 3}.
 
-No item is newly introduced since the baseline.
+Newly introduced since the baseline:
+
+- `nfl/tests/test_agent_state.py` [FAILING_CHECK] FAIL it names the current HEAD  ef3a631
+- `nfl/tests/test_capture_obligations.py` [FAILING_CHECK] FAIL   and entries existed for the Sunday 13:00 ET slate too, so the crons were correct and simply never fired
+- `nfl/tests/test_capture_obligations.py` [FAILING_CHECK] FAIL at least one fires inside the DEN@KC T-90 window -- the last open week-1 obligation  []
+- `nfl/tests/test_inactives_substance.py` [FAILING_CHECK] FAIL and exactly the 374 landing pages are excluded, not 392  382
+- `nfl/tests/test_inactives_substance.py` [FAILING_CHECK] FAIL and the count matches what D20 records  382 -- if this drifts, D20 needs updating, not this test
+- `nfl/tests/test_non_g0a_isolation.py` [FAILING_CHECK] FAIL   the G0A workflow declares the frozen identity  SCHED-5e2e890466c87284
+- `nfl/tests/test_non_g0a_isolation.py` [FAILING_CHECK] FAIL   the G0A workflow still carries its frozen identity  identity changed
+- `nfl/tests/test_ownership_audit.py` [FAILING_CHECK] FAIL   and passes again once the disposition is restored: State.FAIL[OWNERSHIP_AUDIT_UNREVIEWED_SITE]
+- `nfl/tests/test_ownership_audit.py` [FAILING_CHECK] FAIL the audit completes: State.FAIL[OWNERSHIP_AUDIT_UNREVIEWED_SITE]
+- `nfl/tests/test_preflight.py` [FAILING_CHECK] FAIL and restoring it clears the check
+- `nfl/tests/test_preflight.py` [FAILING_CHECK] FAIL no check fails for a reason other than the week being over  [('anchored workflow matches the current schedule', 'WORKFLOW_STALE')]
+- `nfl/tests/test_system_state.py` [FAILING_CHECK] FAIL the live HEAD appears
+- `nfl/tests/test_agent_state.py` [MODULE_FAILING] 1 failing check(s)
+- `nfl/tests/test_non_g0a_isolation.py` [MODULE_FAILING] 2 failing check(s)
+- `nfl/tests/test_ownership_audit.py` [MODULE_FAILING] 2 failing check(s)
+- `nfl/tests/test_preflight.py` [MODULE_FAILING] 2 failing check(s)
+- `nfl/tests/test_system_state.py` [MODULE_FAILING] 1 failing check(s)
+- `nfl/tests/test_gate_ids.py` [RAISED] KeyError: 'single_adjustment_ownership_verified'
+- `nfl/tests/test_non_g0a_isolation.py` [RAISED] AssertionError: 2 check(s) failed in this module
+- `nfl/tests/test_ownership_audit.py` [RAISED] KeyError: 'n_files_scanned'
+- `nfl/tests/test_ownership_audit.py` [RAISED] KeyError: 'single_adjustment_ownership_verified'
+- `nfl/tests/test_ownership_audit.py` [RAISED] AssertionError: 2 check(s) failed in this module
 
 ## 3. Captured evidence
 
@@ -120,6 +143,8 @@ Production readiness (`nfl/production/production_readiness.json`, updated 2026-0
 | SUN-4 | 5 | QUEUED |  |
 | SUN-5 | 6 | BLOCKED | no current-season source for the denominator panel has been established. `current_season_p |
 | SUN-6 | 7 | QUEUED |  |
+| SUN-7 | 2 | BLOCKED | OWNER DECISION. Changing a frozen identity is not this executor's to make. The week-2 rege |
+| SUN-8 | 9 | QUEUED |  |
 | DFS-FS1 | 8 | DONE |  |
 | DFS-FS2 | 9 | BLOCKED | no full-slate joint-world generator exists; the only sealed worlds are one single-game boa |
 | DISC-4 | 8 | QUEUED |  |

@@ -1871,3 +1871,65 @@ is a BLOCKED item whose blocker is upstream and internal, and it should not be
 counted against the networked agent.
 
 Sportsbook prices remain evaluation data. They never become predictive inputs.
+
+---
+
+## 2026-09-19 — OUT-029: **OWNER DECISION.** I changed a value your ruling froze
+
+Escalating rather than deciding, because this changes a rule you set.
+
+### What I did and what it broke
+
+To give tomorrow's slate T-90 capture windows (OUT-026), I regenerated
+`.github/workflows/nfl-t90.yml` for week 2. That changed its schedule identity:
+
+    SCHED-2a2924d4966fbd3d  ->  SCHED-5e2e890466c87284
+
+`nfl/tests/test_non_g0a_isolation.py:38` pins the first value with the comment
+**"The accepted, repaired G0A workflow. Frozen by owner ruling until the
+event."** The window it guards — 2026-09-09 22:50Z — carries the outstanding
+G0A `inactives` obligation, described in that file as *"the single item
+standing between G0A 11/12 and 12/12."*
+
+Five checks across three modules now fail, correctly:
+
+- `test_non_g0a_isolation`: the frozen identity is gone (×2)
+- `test_capture_obligations`: no cron fires inside the DEN@KC T-90 window
+- `test_capture_obligations`: no cron covers the 2026-09-13 Sunday slate
+
+### The conflict is structural, and worth seeing clearly
+
+`nfl-t90.yml` is doing two jobs at once: it is the **live scheduler** and it
+is the **frozen record of what was scheduled for week 1**. Those roles are
+compatible for exactly one week. A second week makes them contradictory: you
+cannot schedule tomorrow and preserve last week's schedule in the same sixteen
+cron lines.
+
+### Why I kept the change rather than reverting, and why it is reversible
+
+The week-1 window closed eleven days ago. No arrangement of cron entries
+reopens it, so reverting recovers nothing — it only removes tomorrow's
+windows, and tomorrow's inactives cannot be reconstructed after T-90 either.
+So one side of the trade is unrecoverable-and-future, the other is
+already-lost-and-past.
+
+Reverting is one `git revert f9148b0` if you disagree. **I have not touched
+the frozen constant and I have not edited any of the five checks.** They are
+red, and they are red for the right reason — a frozen value moved. Making them
+green would be the defect.
+
+### What I need
+
+1. Does the freeze survive its event? It says "until the event", and the event
+   has passed.
+2. If the record matters independently of the scheduler — and I think it does —
+   the week-1 schedule should be preserved as its own artifact so the live
+   workflow can advance each week without breaking a freeze. I have not built
+   that, because the shape of it is your call, not mine.
+
+Queued as SUN-7 with the same content.
+
+### Not asked for
+
+No change to the G0A accounting, no discharge of the outstanding obligation,
+and no edit to the tests.

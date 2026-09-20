@@ -301,6 +301,40 @@ for _aid in ('opponent_pass_strength_v1', 'opponent_rush_strength_v1',
                     'and IN_SEASON_PRESSURE_DATA. No arithmetic, no estimate, '
                     'no frame: the module imports only Outcome.',
     }
+# AND A THIRD TIME, 2026-09-19, on `capture_freshness.py` -- written that
+# morning, caught the same afternoon. The matched tokens are the ordinary
+# English words `roof` and `surface`:
+#
+#   roof     appears once, inside the string "kickoff times, venue, roof,
+#            surface, coaches", which is the REGISTRY DESCRIPTION of what the
+#            captured `schedules` file contains. It is documentation of a
+#            source's columns, not a read of them.
+#   surface  appears throughout meaning A GIT BRANCH -- CAPTURE_SURFACE,
+#            `--verify-surface`, `surface_state`, `behind_surface_commits`,
+#            CAPTURE_TREE_BEHIND_SURFACE. The capture surface is
+#            `capture-prod`. It has nothing to do with the playing surface.
+#
+# Recorded rather than excluded by a rule. A rule that skipped the word
+# "surface" would skip a real playing-surface adjustment the next time one is
+# written, and this audit has now demanded three readings in three days, each
+# of which took a minute. That is the trade it is supposed to make.
+DISPOSITIONS[('game_environment_v1',
+              'nfl/production/capture_freshness.py')] = {
+    'verdict': 'HOMONYM_NOT_APPLICATION',
+    'evidence': 'the module measures how old each captured source is, in '
+                'wall-clock hours, against a declared per-source expiry, and '
+                'reports which git tree it measured in. It reads '
+                'nfl/vintage_manifest.jsonl and nothing else, holds no frame, '
+                'computes no projection and touches no player or team row -- '
+                'its declared DAG edge (pipeline.py) carries the reason "it '
+                'feeds no projection". `roof` occurs once as prose inside a '
+                "registry entry's `what` string describing the schedules "
+                'file\'s columns. Every `surface` is the CAPTURE SURFACE, '
+                'i.e. the branch `capture-prod`, never a playing surface. No '
+                'weather, dome, altitude or field value is read, multiplied '
+                'or added anywhere in it.',
+    'read_on': '2026-09-19',
+}
 del _aid
 
 
