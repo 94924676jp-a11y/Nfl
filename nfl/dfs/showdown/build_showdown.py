@@ -35,8 +35,17 @@ from nfl.dfs.salaries import build_postinactives_package as B  # noqa: E402
 from nfl.dfs.showdown import dk_universe_showdown as U  # noqa: E402
 from sportsplatform.governance.outcome import Cause, Outcome  # noqa: E402
 
+import os as _os
+
 SPEC_VERSION = 'nfl-showdown-preinactives-1'
-LABEL = 'PREINACTIVES_SAFE_CANDIDATE'
+#: One builder serves both phases. The pre-inactives defaults are unchanged,
+#: so re-emitting that board is the same work; the post-inactives phase
+#: overrides these through the environment rather than by editing the file.
+LABEL = _os.environ.get('SHOWDOWN_LABEL', 'PREINACTIVES_SAFE_CANDIDATE')
+RUNS_GLOB = _os.environ.get('SHOWDOWN_RUNS', '/tmp/claude-0/indkc/*/')
+OUT_NAME = _os.environ.get(
+    'SHOWDOWN_OUT', 'IND_KC_SHOWDOWN_PREINACTIVES_2026W2.json')
+INACTIVE_STATE = _os.environ.get('SHOWDOWN_INACTIVE_STATE', '')
 #: A kicker's DK distribution does NOT live in `dk_scoring`. It lives in the
 #: `kicking` layer under its own `dk_points`. Reading only the first key
 #: dropped both kickers from a Showdown board silently -- and a kicker is a
@@ -319,13 +328,43 @@ def build(run_dir) -> Outcome:
     empty = [f'{c}/{p}' for c, d in support.items() for p, n in d.items()
              if p in REQUIRED_POS and n == 0]
 
-    gates = {
-        'inactive_gate': 'PREINACTIVES_NOT_CERTIFIED',
-        'inactive_gate_why':
+    # THE GATE IS COMPUTED FROM THE EMITTED ROWS, NOT FROM INTENT. A fixture
+    # can declare a player excluded and a layer still emit him; the check
+    # that matters is the intersection of declared ids with the ids the run
+    # actually wrote.
+    inact = {}
+    if INACTIVE_STATE and pathlib.Path(INACTIVE_STATE).exists():
+        inact = json.loads(pathlib.Path(INACTIVE_STATE).read_text())
+    if inact:
+        declared = {x['gsis_id'] for x in inact['resolved']}
+        survivors = sorted(declared & emitted)
+        gate = ('OFFICIALLY_INACTIVE_PLAYER_IN_PLAYABLE_BOARD' if survivors
+                else '0_OFFICIALLY_INACTIVE_PLAYERS_IN_PLAYABLE_BOARD')
+        gate_why = (
+            f'{len(declared)} declared inactive ids were intersected with '
+            f'the {len(emitted)} gsis_id rows the run actually emitted. '
+            f'{len(survivors)} survived.')
+        inactive_block = {
+            'n_declared': len(declared),
+            'n_survivors_in_playable_board': len(survivors),
+            'survivors': [{'gsis_id': q,
+                           'player': (ros.get(q) or {}).get('full_name')}
+                          for q in survivors],
+            'provenance': inact.get('provenance'),
+            'resolved': inact['resolved'],
+            'unresolved': inact.get('unresolved') or []}
+    else:
+        gate = 'PREINACTIVES_NOT_CERTIFIED'
+        gate_why = (
             'Official inactives are not available at this information cut. '
             'No player was excluded on availability grounds. Presence in a '
             'DraftKings salary file is NOT evidence of activity and absence '
-            'from one is NOT evidence of inactivity.',
+            'from one is NOT evidence of inactivity.')
+        inactive_block = None
+    gates = {
+        'inactive_gate': gate,
+        'inactive_gate_why': gate_why,
+        'inactive_evidence': inactive_block,
         'skill_layer_gate': ('FAIL_EMPTY_SKILL_POSITION' if empty
                              else 'ALL_SKILL_POSITIONS_HAVE_ROWS'),
         'empty_skill_positions': empty,
@@ -424,7 +463,7 @@ def build(run_dir) -> Outcome:
 
 def main():
     import glob
-    dirs = sorted(glob.glob('/tmp/claude-0/indkc/*/'))
+    dirs = sorted(glob.glob(RUNS_GLOB))
     if not dirs:
         print('BLOCKED[NO_RUN_DIRECTORY] /tmp/claude-0/indkc/*/ is empty')
         return 1
@@ -432,8 +471,7 @@ def main():
     if o.state.name != 'PASS':
         print(f'{o.state.name}[{o.code}] {o.detail}')
         return 1
-    p = (_REPO / 'nfl' / 'research' / 'sunday'
-         / 'IND_KC_SHOWDOWN_PREINACTIVES_2026W2.json')
+    p = _REPO / 'nfl' / 'research' / 'sunday' / OUT_NAME
     p.write_text(json.dumps(o.value, indent=1, sort_keys=True) + '\n')
     g = o.value['gates']
     print(f'wrote {p.name}  {p.stat().st_size} bytes')

@@ -2,7 +2,7 @@
 
 **USABLE FOR PREINACTIVES SAFE SHOWDOWN CONSTRUCTION: YES**
 
-Run `44fccb9d9f0458a6` · 8,000 draws · information cut `2026-09-20T22:35:00Z` · generated 2026-09-20T23:01:30Z
+Run `44fccb9d9f0458a6` · 8,000 draws · information cut `2026-09-20T22:35:00Z` · generated 2026-09-20T23:06:01Z
 
 Inactive gate: **PREINACTIVES_NOT_CERTIFIED**. Official inactives are not available at this information cut. No player was excluded on availability grounds. Presence in a DraftKings salary file is NOT evidence of activity and absence from one is NOT evidence of inactivity.
 

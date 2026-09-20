@@ -10,7 +10,10 @@ P = _REPO / 'nfl' / 'research' / 'sunday'
 
 
 def main():
-    d = json.loads((P / 'IND_KC_SHOWDOWN_PREINACTIVES_2026W2.json').read_text())
+    import os
+    src = os.environ.get('SHOWDOWN_OUT',
+                         'IND_KC_SHOWDOWN_PREINACTIVES_2026W2.json')
+    d = json.loads((P / src).read_text())
     g, pv = d['gates'], d['provenance']
     ps = d['players']
     L = [f"# IND@KC Showdown — {d['LABEL']}", '',
@@ -126,8 +129,9 @@ def main():
           'already-built candidate lineup universe can be rescored rather '
           'than rebuilt.']
     t = '\n'.join(L) + '\n'
-    (P / 'IND_KC_SHOWDOWN_PREINACTIVES_2026W2.md').write_text(t)
-    print(f'wrote IND_KC_SHOWDOWN_PREINACTIVES_2026W2.md {len(t)} bytes')
+    out = src.replace('.json', '.md')
+    (P / out).write_text(t)
+    print(f'wrote {out} {len(t)} bytes')
     return 0
 
 

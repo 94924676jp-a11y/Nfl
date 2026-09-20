@@ -1,0 +1,4630 @@
+{
+ "LABEL": "POSTINACTIVES_CURRENT",
+ "READ_THIS_FIRST": {
+  "board_is_unsealed": "The run stops at artifact_sealing on two stale registered inputs (denom_panel, team_volume_history). Every football layer upstream of that stop passed.",
+  "candidate_status": "CANDIDATE_NOT_ACCEPTED_BASELINE",
+  "dst": "DST_UNSUPPORTED: the engine emits no team-defence outputs, so the two DST salary rows have no projection here and none was invented.",
+  "forbidden_inputs_confirmed": "No sportsbook price, DraftKings salary, ownership estimate, optimiser metric or third-party projection entered the football model. The third-party sheet supplied with this request carries VegasPts, FC Proj, My Proj, Floor, Ceiling and an exposure column; it is preserved as evidence and is never parsed by this pipeline.",
+  "v2_status": "V2 NOT YET EARNED",
+  "what_this_is": "A PRE-INACTIVES Showdown decision board for IND@KC, built from one set of 8,000 simulated games. It is a CANDIDATE board and it is not certified against official inactives."
+ },
+ "USABLE_FOR_PREINACTIVES_SAFE_SHOWDOWN_CONSTRUCTION": "YES",
+ "gates": {
+  "alias_policy": {
+   "open_cases": [
+    {
+     "blocking": false,
+     "club_declared_name": "Andrew Ogletree",
+     "dk_name": "Drew Ogletree",
+     "gsis_id_if_same_person": "00-0037292",
+     "materiality": "NON_CORE. The model does emit a row for 00-0037292: DK mean 1.0965, p95 6.6, third among IND tight ends behind Tyler Warren (9.05 / 22.7) and Mo Alie-Cox (2.47 / 10.5). That is not a meaningful ceiling, so the unresolved salary link changes no Showdown decision.",
+     "state": "LEFT_UNRESOLVED_BY_OWNER_RULING",
+     "team": "IND",
+     "verification": "The roster vintage carries full_name \"Andrew Ogletree\" and football_name \"Andrew\". Neither field contains \"Drew\", so the alias CANNOT be verified cleanly from the authoritative source held here and was not assumed."
+    }
+   ],
+   "rule": "An alias is accepted only when the roster vintage's own name fields carry it. No edit-distance, nickname table or resemblance matching is permitted."
+  },
+  "dk_universe_vs_emitted": {
+   "dk_skill_rows": 52,
+   "n_missing": 23,
+   "not_emitted_or_unresolved": [
+    {
+     "gsis_id": "00-0040906",
+     "name": "Garrett Nussmeier",
+     "position": "QB",
+     "state": "NO_EMITTED_ROW",
+     "team": "KC"
+    },
+    {
+     "gsis_id": "00-0040206",
+     "name": "Riley Leonard",
+     "position": "QB",
+     "state": "NO_EMITTED_ROW",
+     "team": "IND"
+    },
+    {
+     "gsis_id": "00-0040179",
+     "name": "DJ Giddens",
+     "position": "RB",
+     "state": "NO_EMITTED_ROW",
+     "team": "IND"
+    },
+    {
+     "name": "Drew Ogletree",
+     "position": "TE",
+     "state": "DK_SALARY_ROW_IDENTITY_UNRESOLVED",
+     "team": "IND",
+     "why": "the DraftKings display name matches no roster row on this club by exact normalised name. The model may still carry a projection for this person under the club-declared name; what is missing is the link to his DK salary row, not necessarily the forecast."
+    },
+    {
+     "gsis_id": "00-0041486",
+     "name": "Anderson Castle",
+     "position": "RB",
+     "state": "NO_EMITTED_ROW",
+     "team": "IND"
+    },
+    {
+     "gsis_id": "00-0041277",
+     "name": "Davon Booth",
+     "position": "RB",
+     "state": "NO_EMITTED_ROW",
+     "team": "IND"
+    },
+    {
+     "gsis_id": "00-0040959",
+     "name": "Jaydn Ott",
+     "position": "RB",
+     "state": "NO_EMITTED_ROW",
+     "team": "KC"
+    },
+    {
+     "gsis_id": "00-0040547",
+     "name": "Nate Carter",
+     "position": "RB",
+     "state": "NO_EMITTED_ROW",
+     "team": "KC"
+    },
+    {
+     "gsis_id": "00-0036182",
+     "name": "Nick Westbrook-Ikhine",
+     "position": "WR",
+     "state": "NO_EMITTED_ROW",
+     "team": "IND"
+    },
+    {
+     "gsis_id": "00-0040120",
+     "name": "Jimmy Holiday",
+     "position": "WR",
+     "state": "NO_EMITTED_ROW",
+     "team": "KC"
+    },
+    {
+     "gsis_id": "00-0035045",
+     "name": "D.J. Montgomery",
+     "position": "WR",
+     "state": "NO_EMITTED_ROW",
+     "team": "IND"
+    },
+    {
+     "gsis_id": "00-0035021",
+     "name": "Ashton Dulin",
+     "position": "WR",
+     "state": "NO_EMITTED_ROW",
+     "team": "IND"
+    },
+    {
+     "gsis_id": "00-0040953",
+     "name": "Jeff Caldwell",
+     "position": "WR",
+     "state": "NO_EMITTED_ROW",
+     "team": "KC"
+    },
+    {
+     "gsis_id": "00-0040954",
+     "name": "Omari Evans",
+     "position": "WR",
+     "state": "NO_EMITTED_ROW",
+     "team": "KC"
+    },
+    {
+     "gsis_id": "00-0040298",
+     "name": "Andrew Armstrong",
+     "position": "WR",
+     "state": "NO_EMITTED_ROW",
+     "team": "KC"
+    },
+    {
+     "gsis_id": "00-0040853",
+     "name": "Carson Towt",
+     "position": "TE",
+     "state": "NO_EMITTED_ROW",
+     "team": "IND"
+    },
+    {
+     "gsis_id": "00-0038394",
+     "name": "Will Mallory",
+     "position": "TE",
+     "state": "NO_EMITTED_ROW",
+     "team": "IND"
+    },
+    {
+     "gsis_id": "00-0040955",
+     "name": "John Michael Gyllenborg",
+     "position": "TE",
+     "state": "NO_EMITTED_ROW",
+     "team": "KC"
+    },
+    {
+     "gsis_id": "00-0041252",
+     "name": "Kenny Fletcher Jr.",
+     "position": "TE",
+     "state": "NO_EMITTED_ROW",
+     "team": "IND"
+    },
+    {
+     "gsis_id": "00-0030615",
+     "name": "James Winchester",
+     "position": "TE",
+     "state": "NO_EMITTED_ROW",
+     "team": "KC"
+    },
+    {
+     "gsis_id": "00-0038145",
+     "name": "Thomas Odukoya",
+     "position": "TE",
+     "state": "NO_EMITTED_ROW",
+     "team": "KC"
+    },
+    {
+     "gsis_id": "00-0033439",
+     "name": "Pharaoh Brown",
+     "position": "TE",
+     "state": "NO_EMITTED_ROW",
+     "team": "IND"
+    },
+    {
+     "gsis_id": "00-0039824",
+     "name": "Jared Wiley",
+     "position": "TE",
+     "state": "NO_EMITTED_ROW",
+     "team": "KC"
+    }
+   ]
+  },
+  "empty_skill_positions": [],
+  "identity": {
+   "ambiguous": [],
+   "n_resolved": 102,
+   "n_unresolved": 2,
+   "unresolved": [
+    {
+     "dk_id": "44191099",
+     "name": "Drew Ogletree",
+     "team": "IND",
+     "why": "no roster row on this club answers to this displayed name; no edit-distance fallback is permitted"
+    },
+    {
+     "dk_id": "44191045",
+     "name": "Drew Ogletree",
+     "team": "IND",
+     "why": "no roster row on this club answers to this displayed name; no edit-distance fallback is permitted"
+    }
+   ]
+  },
+  "inactive_evidence": {
+   "n_declared": 13,
+   "n_survivors_in_playable_board": 0,
+   "provenance": {
+    "clubs_declared": [
+     "IND",
+     "KC"
+    ],
+    "governing": true,
+    "is_official_nfl_bytes": false,
+    "n_declared": 13,
+    "source": "OWNER_SUPPLIED_SCREENSHOT_OF_GAME_PAGE",
+    "why": "The owner declared these authoritative. What was received is a screenshot image, not official NFL or club bytes, and it is labelled as such rather than upgraded to a byte-level source."
+   },
+   "resolved": [
+    {
+     "club": "IND",
+     "declared_position": "LB",
+     "displayed_name": "A. Ajiake",
+     "gsis_id": "00-0039178",
+     "match_rule": "FIRST_INITIAL_PLUS_SURNAME",
+     "roster_name": "Austin Ajiake",
+     "roster_position": "LB"
+    },
+    {
+     "club": "IND",
+     "declared_position": "WR",
+     "displayed_name": "Ashton Dulin",
+     "gsis_id": "00-0035021",
+     "match_rule": "EXACT_FULL_NAME",
+     "roster_name": "Ashton Dulin",
+     "roster_position": "WR"
+    },
+    {
+     "club": "IND",
+     "declared_position": "RB",
+     "displayed_name": "DJ Giddens",
+     "gsis_id": "00-0040179",
+     "match_rule": "EXACT_FULL_NAME",
+     "roster_name": "DJ Giddens",
+     "roster_position": "RB"
+    },
+    {
+     "club": "IND",
+     "declared_position": "DE",
+     "displayed_name": "George Gumbs",
+     "gsis_id": "00-0041080",
+     "match_rule": "EXACT_FULL_NAME",
+     "roster_name": "George Gumbs Jr.",
+     "roster_position": "DL"
+    },
+    {
+     "club": "IND",
+     "declared_position": "QB",
+     "displayed_name": "R. Leonard",
+     "gsis_id": "00-0040206",
+     "match_rule": "FIRST_INITIAL_PLUS_SURNAME",
+     "roster_name": "Riley Leonard",
+     "roster_position": "QB"
+    },
+    {
+     "club": "IND",
+     "declared_position": "OG",
+     "displayed_name": "D. Tucker",
+     "gsis_id": "00-0039578",
+     "match_rule": "FIRST_INITIAL_PLUS_SURNAME",
+     "roster_name": "Dalton Tucker",
+     "roster_position": "OL"
+    },
+    {
+     "club": "KC",
+     "declared_position": "S",
+     "displayed_name": "C. Conner",
+     "gsis_id": "00-0038982",
+     "match_rule": "FIRST_INITIAL_PLUS_SURNAME",
+     "roster_name": "Chamarri Conner",
+     "roster_position": "DB"
+    },
+    {
+     "club": "KC",
+     "declared_position": "DT",
+     "displayed_name": "Bryson Eason",
+     "gsis_id": "00-0041358",
+     "match_rule": "EXACT_FULL_NAME",
+     "roster_name": "Bryson Eason",
+     "roster_position": "DL"
+    },
+    {
+     "club": "KC",
+     "declared_position": "QB",
+     "displayed_name": "G. Nussmeier",
+     "gsis_id": "00-0040906",
+     "match_rule": "FIRST_INITIAL_PLUS_SURNAME",
+     "roster_name": "Garrett Nussmeier",
+     "roster_position": "QB"
+    },
+    {
+     "club": "KC",
+     "declared_position": "OT",
+     "displayed_name": "Diego Pounds",
+     "gsis_id": "00-0040987",
+     "match_rule": "EXACT_FULL_NAME",
+     "roster_name": "Diego Pounds",
+     "roster_position": "OL"
+    },
+    {
+     "club": "KC",
+     "declared_position": "LB",
+     "displayed_name": "Jack Pyburn",
+     "gsis_id": "00-0041256",
+     "match_rule": "EXACT_FULL_NAME",
+     "roster_name": "Jack Pyburn",
+     "roster_position": "LB"
+    },
+    {
+     "club": "KC",
+     "declared_position": "OT",
+     "displayed_name": "Josh Simmons",
+     "gsis_id": "00-0040116",
+     "match_rule": "EXACT_FULL_NAME",
+     "roster_name": "Josh Simmons",
+     "roster_position": "OL"
+    },
+    {
+     "club": "KC",
+     "declared_position": "TE",
+     "displayed_name": "Jared Wiley",
+     "gsis_id": "00-0039824",
+     "match_rule": "EXACT_FULL_NAME",
+     "roster_name": "Jared Wiley",
+     "roster_position": "TE"
+    }
+   ],
+   "survivors": [],
+   "unresolved": []
+  },
+  "inactive_gate": "0_OFFICIALLY_INACTIVE_PLAYERS_IN_PLAYABLE_BOARD",
+  "inactive_gate_why": "13 declared inactive ids were intersected with the 30 gsis_id rows the run actually emitted. 0 survived.",
+  "players_in_owner_entry_template_without_a_projection": [
+   {
+    "dk_id": "44191048",
+    "name": "Davon Booth",
+    "position": "RB",
+    "state": "NO_EMITTED_ROW",
+    "team": "IND"
+   }
+  ],
+  "projected_usage_order_vs_depth_chart": {
+   "IND": {
+    "projected_carry_order": [
+     {
+      "carries_mean": 15.456,
+      "depth_chart_position": "RB",
+      "player": "Jonathan Taylor"
+     },
+     {
+      "carries_mean": 5.963,
+      "depth_chart_position": "RB",
+      "player": "Seth McGowan"
+     }
+    ],
+    "projected_target_order": [
+     {
+      "depth_chart_position": "TE",
+      "player": "Tyler Warren",
+      "targets_mean": 5.256
+     },
+     {
+      "depth_chart_position": "WR",
+      "player": "Keenan Allen",
+      "targets_mean": 5.112
+     },
+     {
+      "depth_chart_position": "WR",
+      "player": "Josh Downs",
+      "targets_mean": 4.07
+     },
+     {
+      "depth_chart_position": "WR",
+      "player": "Alec Pierce",
+      "targets_mean": 4.055
+     },
+     {
+      "depth_chart_position": "RB",
+      "player": "Jonathan Taylor",
+      "targets_mean": 2.615
+     },
+     {
+      "depth_chart_position": "RB",
+      "player": "Seth McGowan",
+      "targets_mean": 1.652
+     },
+     {
+      "depth_chart_position": "WR",
+      "player": "Deion Burks",
+      "targets_mean": 1.477
+     },
+     {
+      "depth_chart_position": "TE",
+      "player": "Mo Alie-Cox",
+      "targets_mean": 1.435
+     }
+    ]
+   },
+   "KC": {
+    "projected_carry_order": [
+     {
+      "carries_mean": 9.41,
+      "depth_chart_position": "FB",
+      "player": "Ben VanSumeren"
+     },
+     {
+      "carries_mean": 6.612,
+      "depth_chart_position": "RB",
+      "player": "Kenneth Walker III"
+     },
+     {
+      "carries_mean": 2.641,
+      "depth_chart_position": "RB",
+      "player": "Emmett Johnson"
+     },
+     {
+      "carries_mean": 1.236,
+      "depth_chart_position": "RB",
+      "player": "Brashard Smith"
+     }
+    ],
+    "projected_target_order": [
+     {
+      "depth_chart_position": "WR",
+      "player": "Rashee Rice",
+      "targets_mean": 7.628
+     },
+     {
+      "depth_chart_position": "TE",
+      "player": "Travis Kelce",
+      "targets_mean": 6.148
+     },
+     {
+      "depth_chart_position": "WR",
+      "player": "Xavier Worthy",
+      "targets_mean": 3.691
+     },
+     {
+      "depth_chart_position": "WR",
+      "player": "Cyrus Allen",
+      "targets_mean": 3.568
+     },
+     {
+      "depth_chart_position": "FB",
+      "player": "Ben VanSumeren",
+      "targets_mean": 2.953
+     },
+     {
+      "depth_chart_position": "RB",
+      "player": "Kenneth Walker III",
+      "targets_mean": 2.411
+     },
+     {
+      "depth_chart_position": "TE",
+      "player": "Noah Gray",
+      "targets_mean": 1.974
+     },
+     {
+      "depth_chart_position": "WR",
+      "player": "Tyquan Thornton",
+      "targets_mean": 1.693
+     }
+    ]
+   }
+  },
+  "role_plausibility_flags": [
+   {
+    "depth_chart_position": "FB",
+    "flag": "FULLBACK_GIVEN_RUSHING_WORKLOAD",
+    "gsis_id": "00-0038489",
+    "player": "Ben VanSumeren",
+    "projected_carries_mean": 9.41,
+    "projected_rushing_yards_mean": 40.578,
+    "team": "KC",
+    "why": "the club's declared depth chart lists this player as a fullback, and the engine carries no depth-chart prior. Treat the workload as a MODEL ROLE ASSUMPTION, not a forecast of usage."
+   },
+   {
+    "depth_chart_position": "FB",
+    "depth_chart_rb1": "Brashard Smith",
+    "flag": "NON_RB_PROJECTED_ABOVE_DEPTH_CHART_RB1",
+    "gsis_id": "00-0038489",
+    "player": "Ben VanSumeren",
+    "projected_carries_mean": 9.41,
+    "rb1_carries_mean": 1.236,
+    "team": "KC",
+    "why": "a player the club does not list as its lead back is projected for more carries than the one it does. Role assumption, not usage evidence."
+   }
+  ],
+  "skill_layer_gate": "ALL_SKILL_POSITIONS_HAVE_ROWS"
+ },
+ "generated_at_utc": "2026-09-20T23:11:56Z",
+ "players": [
+  {
+   "correlation_with_qb": {
+    "Anthony Richardson": 0.0183,
+    "Daniel Jones": -0.0635,
+    "Justin Fields": -0.4881,
+    "Patrick Mahomes": 1.0
+   },
+   "dk_cpt": {
+    "ceiling_max_draw": 102.06,
+    "mean": 27.8765,
+    "median": 27.15,
+    "p75": 36.7603,
+    "p80": 39.36,
+    "p90": 46.35,
+    "p95": 52.47,
+    "p_ge_10": 0.9069,
+    "p_ge_15": 0.8347,
+    "p_ge_20": 0.7086,
+    "p_ge_25": 0.5639,
+    "p_ge_30": 0.4204,
+    "p_zero": 0.0454,
+    "sd": 14.2567
+   },
+   "dk_cpt_definition": "1.5x the FLEX draw, applied per simulated world",
+   "dk_draw_source": "dk_scoring/dk_points",
+   "dk_flex": {
+    "ceiling_max_draw": 68.04,
+    "mean": 18.5844,
+    "median": 18.1,
+    "p75": 24.5069,
+    "p80": 26.24,
+    "p90": 30.9,
+    "p95": 34.98,
+    "p_ge_10": 0.8347,
+    "p_ge_15": 0.64,
+    "p_ge_20": 0.4204,
+    "p_ge_25": 0.2365,
+    "p_ge_30": 0.1129,
+    "p_zero": 0.0454,
+    "sd": 9.5045
+   },
+   "downstream_metadata_not_a_model_input": {
+    "cpt_value_ceiling_per_1k": 3.498,
+    "cpt_value_mean_per_1k": 1.8584,
+    "dk_salary_cpt": 15000,
+    "dk_salary_flex": 10000,
+    "flex_value_ceiling_per_1k": 3.498,
+    "flex_value_mean_per_1k": 1.8584,
+    "note": "salary is used ONLY here, for downstream pricing. It did not enter any projection."
+   },
+   "gsis_id": "00-0033873",
+   "n_draws": 8000,
+   "opponent": "IND",
+   "opposing_team_correlation": {
+    "max": 0.0183,
+    "mean": -0.0216,
+    "min": -0.0635,
+    "n": 14
+   },
+   "player": "Patrick Mahomes",
+   "position": "QB",
+   "role_opportunity": {
+    "gadget_rush/kneel": {
+     "mean": 0.3483,
+     "median": 0.0,
+     "p90": 1.0,
+     "sd": 0.8648
+    },
+    "gadget_rush/kneel_yards": {
+     "mean": -0.3794,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.9989
+    },
+    "gadget_rush/te": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/te_yards": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/wr": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/wr_yards": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "qb/att": {
+     "mean": 33.4031,
+     "median": 35.0,
+     "p90": 45.0,
+     "sd": 11.5818
+    },
+    "qb/cmp": {
+     "mean": 22.2994,
+     "median": 23.0,
+     "p90": 31.0,
+     "sd": 8.2697
+    },
+    "qb/db": {
+     "mean": 37.5637,
+     "median": 40.0,
+     "p90": 50.0,
+     "sd": 12.8675
+    },
+    "qb/int": {
+     "mean": 0.632,
+     "median": 0.0,
+     "p90": 2.0,
+     "sd": 0.823
+    },
+    "qb/ptd": {
+     "mean": 1.4956,
+     "median": 1.0,
+     "p90": 3.0,
+     "sd": 1.322
+    },
+    "qb/pyds": {
+     "mean": 236.5526,
+     "median": 239.0,
+     "p90": 356.0,
+     "sd": 98.8228
+    },
+    "qb/rtd": {
+     "mean": 0.1596,
+     "median": 0.0,
+     "p90": 1.0,
+     "sd": 0.3993
+    },
+    "qb/rush_opp": {
+     "mean": 2.8243,
+     "median": 3.0,
+     "p90": 5.0,
+     "sd": 1.9186
+    },
+    "qb/ryds": {
+     "mean": 21.1244,
+     "median": 18.0,
+     "p90": 45.0,
+     "sd": 17.9106
+    },
+    "qb/sacks": {
+     "mean": 1.6439,
+     "median": 1.0,
+     "p90": 3.0,
+     "sd": 1.3812
+    },
+    "qb/scr": {
+     "mean": 2.5168,
+     "median": 2.0,
+     "p90": 5.0,
+     "sd": 1.7658
+    },
+    "rushing_total/rushing_yards": {
+     "mean": 20.745,
+     "median": 17.5,
+     "p90": 45.0,
+     "sd": 17.9125
+    }
+   },
+   "same_team_correlation": {
+    "max": 0.3705,
+    "mean": 0.1099,
+    "min": -0.4881,
+    "n": 15
+   },
+   "team": "KC"
+  },
+  {
+   "correlation_with_qb": {
+    "Anthony Richardson": -0.4001,
+    "Daniel Jones": 1.0,
+    "Justin Fields": -0.0139,
+    "Patrick Mahomes": -0.0635
+   },
+   "dk_cpt": {
+    "ceiling_max_draw": 107.73,
+    "mean": 24.0175,
+    "median": 22.62,
+    "p75": 32.1301,
+    "p80": 34.862,
+    "p90": 42.4955,
+    "p95": 49.6811,
+    "p_ge_10": 0.8566,
+    "p_ge_15": 0.737,
+    "p_ge_20": 0.5824,
+    "p_ge_25": 0.4264,
+    "p_ge_30": 0.2949,
+    "p_zero": 0.044,
+    "sd": 13.9716
+   },
+   "dk_cpt_definition": "1.5x the FLEX draw, applied per simulated world",
+   "dk_draw_source": "dk_scoring/dk_points",
+   "dk_flex": {
+    "ceiling_max_draw": 71.82,
+    "mean": 16.0117,
+    "median": 15.08,
+    "p75": 21.4201,
+    "p80": 23.2413,
+    "p90": 28.3303,
+    "p95": 33.1207,
+    "p_ge_10": 0.737,
+    "p_ge_15": 0.5041,
+    "p_ge_20": 0.2949,
+    "p_ge_25": 0.1589,
+    "p_ge_30": 0.0774,
+    "p_zero": 0.044,
+    "sd": 9.3144
+   },
+   "downstream_metadata_not_a_model_input": {
+    "cpt_value_ceiling_per_1k": 3.6001,
+    "cpt_value_mean_per_1k": 1.7404,
+    "dk_salary_cpt": 13800,
+    "dk_salary_flex": 9200,
+    "flex_value_ceiling_per_1k": 3.6001,
+    "flex_value_mean_per_1k": 1.7404,
+    "note": "salary is used ONLY here, for downstream pricing. It did not enter any projection."
+   },
+   "gsis_id": "00-0035710",
+   "n_draws": 8000,
+   "opponent": "KC",
+   "opposing_team_correlation": {
+    "max": 0.0136,
+    "mean": -0.0234,
+    "min": -0.0635,
+    "n": 16
+   },
+   "player": "Daniel Jones",
+   "position": "QB",
+   "role_opportunity": {
+    "gadget_rush/kneel": {
+     "mean": 0.4552,
+     "median": 0.0,
+     "p90": 2.0,
+     "sd": 0.9963
+    },
+    "gadget_rush/kneel_yards": {
+     "mean": -0.498,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 1.1671
+    },
+    "gadget_rush/te": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/te_yards": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/wr": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/wr_yards": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "qb/att": {
+     "mean": 26.9225,
+     "median": 28.0,
+     "p90": 39.0,
+     "sd": 10.4257
+    },
+    "qb/cmp": {
+     "mean": 17.1384,
+     "median": 17.0,
+     "p90": 26.0,
+     "sd": 7.1412
+    },
+    "qb/db": {
+     "mean": 31.1946,
+     "median": 33.0,
+     "p90": 44.0,
+     "sd": 11.8948
+    },
+    "qb/int": {
+     "mean": 0.5513,
+     "median": 0.0,
+     "p90": 2.0,
+     "sd": 0.7581
+    },
+    "qb/ptd": {
+     "mean": 1.1931,
+     "median": 1.0,
+     "p90": 3.0,
+     "sd": 1.1707
+    },
+    "qb/pyds": {
+     "mean": 193.4284,
+     "median": 192.0,
+     "p90": 308.0,
+     "sd": 91.0055
+    },
+    "qb/rtd": {
+     "mean": 0.2214,
+     "median": 0.0,
+     "p90": 1.0,
+     "sd": 0.4771
+    },
+    "qb/rush_opp": {
+     "mean": 4.2488,
+     "median": 4.0,
+     "p90": 8.0,
+     "sd": 2.5983
+    },
+    "qb/ryds": {
+     "mean": 23.7921,
+     "median": 18.0,
+     "p90": 51.2,
+     "sd": 26.7884
+    },
+    "qb/sacks": {
+     "mean": 2.3668,
+     "median": 2.0,
+     "p90": 5.0,
+     "sd": 1.7172
+    },
+    "qb/scr": {
+     "mean": 1.9054,
+     "median": 2.0,
+     "p90": 4.0,
+     "sd": 1.5503
+    },
+    "rushing_total/rushing_yards": {
+     "mean": 23.2941,
+     "median": 17.5,
+     "p90": 50.4302,
+     "sd": 26.8132
+    }
+   },
+   "same_team_correlation": {
+    "max": 0.3255,
+    "mean": 0.1126,
+    "min": -0.4001,
+    "n": 13
+   },
+   "team": "IND"
+  },
+  {
+   "correlation_with_qb": {
+    "Anthony Richardson": -0.0047,
+    "Daniel Jones": -0.0386,
+    "Justin Fields": 0.0028,
+    "Patrick Mahomes": 0.3705
+   },
+   "dk_cpt": {
+    "ceiling_max_draw": 135.45,
+    "mean": 23.0818,
+    "median": 20.4,
+    "p75": 31.8,
+    "p80": 34.95,
+    "p90": 43.95,
+    "p95": 51.6075,
+    "p_ge_10": 0.8047,
+    "p_ge_15": 0.6666,
+    "p_ge_20": 0.5118,
+    "p_ge_25": 0.3781,
+    "p_ge_30": 0.2864,
+    "p_zero": 0.0406,
+    "sd": 15.169
+   },
+   "dk_cpt_definition": "1.5x the FLEX draw, applied per simulated world",
+   "dk_draw_source": "dk_scoring/dk_points",
+   "dk_flex": {
+    "ceiling_max_draw": 90.3,
+    "mean": 15.3879,
+    "median": 13.6,
+    "p75": 21.2,
+    "p80": 23.3,
+    "p90": 29.3,
+    "p95": 34.405,
+    "p_ge_10": 0.6666,
+    "p_ge_15": 0.44,
+    "p_ge_20": 0.2864,
+    "p_ge_25": 0.1669,
+    "p_ge_30": 0.091,
+    "p_zero": 0.0406,
+    "sd": 10.1127
+   },
+   "downstream_metadata_not_a_model_input": {
+    "cpt_value_ceiling_per_1k": 3.6601,
+    "cpt_value_mean_per_1k": 1.637,
+    "dk_salary_cpt": 14100,
+    "dk_salary_flex": 9400,
+    "flex_value_ceiling_per_1k": 3.6601,
+    "flex_value_mean_per_1k": 1.637,
+    "note": "salary is used ONLY here, for downstream pricing. It did not enter any projection."
+   },
+   "gsis_id": "00-0039067",
+   "n_draws": 8000,
+   "opponent": "IND",
+   "opposing_team_correlation": {
+    "max": 0.0092,
+    "mean": -0.0168,
+    "min": -0.0461,
+    "n": 14
+   },
+   "player": "Rashee Rice",
+   "position": "WR",
+   "role_opportunity": {
+    "gadget_rush/kneel": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/kneel_yards": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/te": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/te_yards": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/wr": {
+     "mean": 0.1706,
+     "median": 0.0,
+     "p90": 1.0,
+     "sd": 0.452
+    },
+    "gadget_rush/wr_yards": {
+     "mean": 0.8911,
+     "median": 0.0,
+     "p90": 2.0,
+     "sd": 3.9131
+    },
+    "receiving/receiving_td": {
+     "mean": 0.4344,
+     "median": 0.0,
+     "p90": 1.0,
+     "sd": 0.6749
+    },
+    "receiving/receiving_yards": {
+     "mean": 65.2728,
+     "median": 59.0,
+     "p90": 124.0,
+     "sd": 43.6942
+    },
+    "receiving/receptions": {
+     "mean": 5.5892,
+     "median": 5.0,
+     "p90": 10.0,
+     "sd": 3.088
+    },
+    "receiving/targets": {
+     "mean": 7.6276,
+     "median": 7.0,
+     "p90": 13.0,
+     "sd": 3.8831
+    },
+    "rushing_total/rushing_yards": {
+     "mean": 0.8911,
+     "median": 0.0,
+     "p90": 2.0,
+     "sd": 3.9131
+    }
+   },
+   "same_team_correlation": {
+    "max": 0.3705,
+    "mean": 0.0094,
+    "min": -0.0441,
+    "n": 15
+   },
+   "team": "KC"
+  },
+  {
+   "correlation_with_qb": {
+    "Anthony Richardson": -0.0645,
+    "Daniel Jones": -0.0339,
+    "Justin Fields": -0.0114,
+    "Patrick Mahomes": -0.0114
+   },
+   "dk_cpt": {
+    "ceiling_max_draw": 88.8,
+    "mean": 21.3464,
+    "median": 19.95,
+    "p75": 29.1,
+    "p80": 31.68,
+    "p90": 38.55,
+    "p95": 44.4,
+    "p_ge_10": 0.8167,
+    "p_ge_15": 0.6495,
+    "p_ge_20": 0.4959,
+    "p_ge_25": 0.3443,
+    "p_ge_30": 0.2334,
+    "p_zero": 0.0436,
+    "sd": 12.6985
+   },
+   "dk_cpt_definition": "1.5x the FLEX draw, applied per simulated world",
+   "dk_draw_source": "dk_scoring/dk_points",
+   "dk_flex": {
+    "ceiling_max_draw": 59.2,
+    "mean": 14.2309,
+    "median": 13.3,
+    "p75": 19.4,
+    "p80": 21.12,
+    "p90": 25.7,
+    "p95": 29.6,
+    "p_ge_10": 0.6495,
+    "p_ge_15": 0.4176,
+    "p_ge_20": 0.2334,
+    "p_ge_25": 0.1118,
+    "p_ge_30": 0.0478,
+    "p_zero": 0.0436,
+    "sd": 8.4656
+   },
+   "downstream_metadata_not_a_model_input": {
+    "cpt_value_ceiling_per_1k": 2.6909,
+    "cpt_value_mean_per_1k": 1.2937,
+    "dk_salary_cpt": 16500,
+    "dk_salary_flex": 11000,
+    "flex_value_ceiling_per_1k": 2.6909,
+    "flex_value_mean_per_1k": 1.2937,
+    "note": "salary is used ONLY here, for downstream pricing. It did not enter any projection."
+   },
+   "gsis_id": "00-0036223",
+   "n_draws": 8000,
+   "opponent": "KC",
+   "opposing_team_correlation": {
+    "max": 0.0124,
+    "mean": -0.0071,
+    "min": -0.0271,
+    "n": 16
+   },
+   "player": "Jonathan Taylor",
+   "position": "RB",
+   "role_opportunity": {
+    "receiving/receiving_td": {
+     "mean": 0.0828,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.291
+    },
+    "receiving/receiving_yards": {
+     "mean": 15.9301,
+     "median": 9.0,
+     "p90": 42.0,
+     "sd": 19.8537
+    },
+    "receiving/receptions": {
+     "mean": 2.0489,
+     "median": 2.0,
+     "p90": 5.0,
+     "sd": 1.8378
+    },
+    "receiving/targets": {
+     "mean": 2.6153,
+     "median": 2.0,
+     "p90": 6.0,
+     "sd": 2.2072
+    },
+    "rushing/carries": {
+     "mean": 15.4555,
+     "median": 15.0,
+     "p90": 25.0,
+     "sd": 7.5623
+    },
+    "rushing/rushing_td": {
+     "mean": 0.4794,
+     "median": 0.0,
+     "p90": 1.0,
+     "sd": 0.7217
+    },
+    "rushing/rushing_yards": {
+     "mean": 66.3356,
+     "median": 61.0,
+     "p90": 120.1,
+     "sd": 40.1327
+    },
+    "rushing_total/rushing_yards": {
+     "mean": 66.3356,
+     "median": 61.0,
+     "p90": 120.1,
+     "sd": 40.1327
+    }
+   },
+   "same_team_correlation": {
+    "max": 0.0414,
+    "mean": -0.0562,
+    "min": -0.1713,
+    "n": 13
+   },
+   "team": "IND"
+  },
+  {
+   "correlation_with_qb": {
+    "Anthony Richardson": 0.0082,
+    "Daniel Jones": -0.0458,
+    "Justin Fields": 0.0028,
+    "Patrick Mahomes": 0.336
+   },
+   "dk_cpt": {
+    "ceiling_max_draw": 99.45,
+    "mean": 17.8333,
+    "median": 15.45,
+    "p75": 24.0,
+    "p80": 26.7,
+    "p90": 34.95,
+    "p95": 42.6,
+    "p_ge_10": 0.699,
+    "p_ge_15": 0.5176,
+    "p_ge_20": 0.3505,
+    "p_ge_25": 0.2298,
+    "p_ge_30": 0.1555,
+    "p_zero": 0.0294,
+    "sd": 12.428
+   },
+   "dk_cpt_definition": "1.5x the FLEX draw, applied per simulated world",
+   "dk_draw_source": "dk_scoring/dk_points",
+   "dk_flex": {
+    "ceiling_max_draw": 66.3,
+    "mean": 11.8888,
+    "median": 10.3,
+    "p75": 16.0,
+    "p80": 17.8,
+    "p90": 23.3,
+    "p95": 28.4,
+    "p_ge_10": 0.5176,
+    "p_ge_15": 0.2866,
+    "p_ge_20": 0.1555,
+    "p_ge_25": 0.0798,
+    "p_ge_30": 0.0371,
+    "p_zero": 0.0294,
+    "sd": 8.2853
+   },
+   "downstream_metadata_not_a_model_input": {
+    "cpt_value_ceiling_per_1k": 4.5806,
+    "cpt_value_mean_per_1k": 1.9176,
+    "dk_salary_cpt": 9300,
+    "dk_salary_flex": 6200,
+    "flex_value_ceiling_per_1k": 4.5806,
+    "flex_value_mean_per_1k": 1.9175,
+    "note": "salary is used ONLY here, for downstream pricing. It did not enter any projection."
+   },
+   "gsis_id": "00-0030506",
+   "n_draws": 8000,
+   "opponent": "IND",
+   "opposing_team_correlation": {
+    "max": 0.0082,
+    "mean": -0.0176,
+    "min": -0.0458,
+    "n": 14
+   },
+   "player": "Travis Kelce",
+   "position": "TE",
+   "role_opportunity": {
+    "gadget_rush/kneel": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/kneel_yards": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/te": {
+     "mean": 0.0379,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.2285
+    },
+    "gadget_rush/te_yards": {
+     "mean": 0.0949,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 1.0527
+    },
+    "gadget_rush/wr": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/wr_yards": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "receiving/receiving_td": {
+     "mean": 0.3354,
+     "median": 0.0,
+     "p90": 1.0,
+     "sd": 0.585
+    },
+    "receiving/receiving_yards": {
+     "mean": 51.1272,
+     "median": 45.0,
+     "p90": 99.0,
+     "sd": 35.1766
+    },
+    "receiving/receptions": {
+     "mean": 4.4619,
+     "median": 4.0,
+     "p90": 8.0,
+     "sd": 2.5736
+    },
+    "receiving/targets": {
+     "mean": 6.1481,
+     "median": 6.0,
+     "p90": 10.0,
+     "sd": 3.1877
+    },
+    "rushing_total/rushing_yards": {
+     "mean": 0.0949,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 1.0527
+    }
+   },
+   "same_team_correlation": {
+    "max": 0.336,
+    "mean": 0.0191,
+    "min": -0.0246,
+    "n": 15
+   },
+   "team": "KC"
+  },
+  {
+   "correlation_with_qb": {
+    "Anthony Richardson": 0.0048,
+    "Daniel Jones": -0.04,
+    "Justin Fields": -0.0859,
+    "Patrick Mahomes": 0.1234
+   },
+   "dk_cpt": {
+    "ceiling_max_draw": 79.65,
+    "mean": 15.7878,
+    "median": 13.8,
+    "p75": 21.3,
+    "p80": 23.4,
+    "p90": 29.565,
+    "p95": 35.4,
+    "p_ge_10": 0.6679,
+    "p_ge_15": 0.4561,
+    "p_ge_20": 0.2863,
+    "p_ge_25": 0.169,
+    "p_ge_30": 0.0964,
+    "p_zero": 0.0067,
+    "sd": 10.3027
+   },
+   "dk_cpt_definition": "1.5x the FLEX draw, applied per simulated world",
+   "dk_draw_source": "dk_scoring/dk_points",
+   "dk_flex": {
+    "ceiling_max_draw": 53.1,
+    "mean": 10.5252,
+    "median": 9.2,
+    "p75": 14.2,
+    "p80": 15.6,
+    "p90": 19.71,
+    "p95": 23.6,
+    "p_ge_10": 0.4561,
+    "p_ge_15": 0.2225,
+    "p_ge_20": 0.0964,
+    "p_ge_25": 0.039,
+    "p_ge_30": 0.0146,
+    "p_zero": 0.0067,
+    "sd": 6.8685
+   },
+   "downstream_metadata_not_a_model_input": {
+    "cpt_value_ceiling_per_1k": 118.0,
+    "cpt_value_mean_per_1k": 52.626,
+    "dk_salary_cpt": 300,
+    "dk_salary_flex": 200,
+    "flex_value_ceiling_per_1k": 118.0,
+    "flex_value_mean_per_1k": 52.626,
+    "note": "salary is used ONLY here, for downstream pricing. It did not enter any projection."
+   },
+   "gsis_id": "00-0038489",
+   "n_draws": 8000,
+   "opponent": "IND",
+   "opposing_team_correlation": {
+    "max": 0.0048,
+    "mean": -0.0175,
+    "min": -0.04,
+    "n": 14
+   },
+   "player": "Ben VanSumeren",
+   "position": "RB",
+   "role_opportunity": {
+    "receiving/receiving_td": {
+     "mean": 0.0885,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.3015
+    },
+    "receiving/receiving_yards": {
+     "mean": 17.0911,
+     "median": 12.0,
+     "p90": 42.0,
+     "sd": 18.4903
+    },
+    "receiving/receptions": {
+     "mean": 2.2994,
+     "median": 2.0,
+     "p90": 5.0,
+     "sd": 1.9438
+    },
+    "receiving/targets": {
+     "mean": 2.9531,
+     "median": 3.0,
+     "p90": 6.0,
+     "sd": 2.3189
+    },
+    "rushing/carries": {
+     "mean": 9.41,
+     "median": 9.0,
+     "p90": 16.0,
+     "sd": 5.2467
+    },
+    "rushing/rushing_td": {
+     "mean": 0.2976,
+     "median": 0.0,
+     "p90": 1.0,
+     "sd": 0.5553
+    },
+    "rushing/rushing_yards": {
+     "mean": 40.5785,
+     "median": 34.5,
+     "p90": 80.0,
+     "sd": 29.4015
+    },
+    "rushing_total/rushing_yards": {
+     "mean": 40.5785,
+     "median": 34.5,
+     "p90": 80.0,
+     "sd": 29.4015
+    }
+   },
+   "same_team_correlation": {
+    "max": 0.1234,
+    "mean": -0.0051,
+    "min": -0.0859,
+    "n": 15
+   },
+   "team": "KC"
+  },
+  {
+   "correlation_with_qb": {
+    "Anthony Richardson": 0.0342,
+    "Daniel Jones": 0.3255,
+    "Justin Fields": 0.0011,
+    "Patrick Mahomes": -0.0453
+   },
+   "dk_cpt": {
+    "ceiling_max_draw": 88.2,
+    "mean": 13.8176,
+    "median": 11.85,
+    "p75": 19.35,
+    "p80": 21.45,
+    "p90": 27.615,
+    "p95": 33.75,
+    "p_ge_10": 0.5783,
+    "p_ge_15": 0.386,
+    "p_ge_20": 0.2319,
+    "p_ge_25": 0.1356,
+    "p_ge_30": 0.0789,
+    "p_zero": 0.069,
+    "sd": 10.6442
+   },
+   "dk_cpt_definition": "1.5x the FLEX draw, applied per simulated world",
+   "dk_draw_source": "dk_scoring/dk_points",
+   "dk_flex": {
+    "ceiling_max_draw": 58.8,
+    "mean": 9.2117,
+    "median": 7.9,
+    "p75": 12.9,
+    "p80": 14.3,
+    "p90": 18.41,
+    "p95": 22.5,
+    "p_ge_10": 0.386,
+    "p_ge_15": 0.1795,
+    "p_ge_20": 0.0789,
+    "p_ge_25": 0.0324,
+    "p_ge_30": 0.0136,
+    "p_zero": 0.069,
+    "sd": 7.0962
+   },
+   "downstream_metadata_not_a_model_input": {
+    "cpt_value_ceiling_per_1k": 3.125,
+    "cpt_value_mean_per_1k": 1.2794,
+    "dk_salary_cpt": 10800,
+    "dk_salary_flex": 7200,
+    "flex_value_ceiling_per_1k": 3.125,
+    "flex_value_mean_per_1k": 1.2794,
+    "note": "salary is used ONLY here, for downstream pricing. It did not enter any projection."
+   },
+   "gsis_id": "00-0040128",
+   "n_draws": 8000,
+   "opponent": "KC",
+   "opposing_team_correlation": {
+    "max": 0.0031,
+    "mean": -0.0141,
+    "min": -0.0461,
+    "n": 16
+   },
+   "player": "Tyler Warren",
+   "position": "TE",
+   "role_opportunity": {
+    "gadget_rush/kneel": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/kneel_yards": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/te": {
+     "mean": 0.111,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.3898
+    },
+    "gadget_rush/te_yards": {
+     "mean": 0.2829,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 2.001
+    },
+    "gadget_rush/wr": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/wr_yards": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "receiving/receiving_td": {
+     "mean": 0.2752,
+     "median": 0.0,
+     "p90": 1.0,
+     "sd": 0.5289
+    },
+    "receiving/receiving_yards": {
+     "mean": 38.2657,
+     "median": 34.0,
+     "p90": 77.0,
+     "sd": 29.1905
+    },
+    "receiving/receptions": {
+     "mean": 3.5932,
+     "median": 3.0,
+     "p90": 7.0,
+     "sd": 2.383
+    },
+    "receiving/targets": {
+     "mean": 5.256,
+     "median": 5.0,
+     "p90": 9.0,
+     "sd": 3.1103
+    },
+    "rushing_total/rushing_yards": {
+     "mean": 0.2829,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 2.001
+    }
+   },
+   "same_team_correlation": {
+    "max": 0.3255,
+    "mean": 0.0255,
+    "min": -0.0694,
+    "n": 13
+   },
+   "team": "IND"
+  },
+  {
+   "correlation_with_qb": {
+    "Anthony Richardson": 0.0651,
+    "Daniel Jones": 0.2802,
+    "Justin Fields": -0.0092,
+    "Patrick Mahomes": -0.0437
+   },
+   "dk_cpt": {
+    "ceiling_max_draw": 92.85,
+    "mean": 13.3176,
+    "median": 11.1,
+    "p75": 19.05,
+    "p80": 21.15,
+    "p90": 27.75,
+    "p95": 34.2,
+    "p_ge_10": 0.549,
+    "p_ge_15": 0.3645,
+    "p_ge_20": 0.2248,
+    "p_ge_25": 0.1344,
+    "p_ge_30": 0.0803,
+    "p_zero": 0.0944,
+    "sd": 10.9168
+   },
+   "dk_cpt_definition": "1.5x the FLEX draw, applied per simulated world",
+   "dk_draw_source": "dk_scoring/dk_points",
+   "dk_flex": {
+    "ceiling_max_draw": 61.9,
+    "mean": 8.8784,
+    "median": 7.4,
+    "p75": 12.7,
+    "p80": 14.1,
+    "p90": 18.5,
+    "p95": 22.8,
+    "p_ge_10": 0.3645,
+    "p_ge_15": 0.1701,
+    "p_ge_20": 0.0803,
+    "p_ge_25": 0.0343,
+    "p_ge_30": 0.015,
+    "p_zero": 0.0944,
+    "sd": 7.2778
+   },
+   "downstream_metadata_not_a_model_input": {
+    "cpt_value_ceiling_per_1k": 4.0714,
+    "cpt_value_mean_per_1k": 1.5854,
+    "dk_salary_cpt": 8400,
+    "dk_salary_flex": 5600,
+    "flex_value_ceiling_per_1k": 4.0714,
+    "flex_value_mean_per_1k": 1.5854,
+    "note": "salary is used ONLY here, for downstream pricing. It did not enter any projection."
+   },
+   "gsis_id": "00-0030279",
+   "n_draws": 8000,
+   "opponent": "KC",
+   "opposing_team_correlation": {
+    "max": 0.0136,
+    "mean": -0.0162,
+    "min": -0.0437,
+    "n": 16
+   },
+   "player": "Keenan Allen",
+   "position": "WR",
+   "role_opportunity": {
+    "gadget_rush/kneel": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/kneel_yards": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/te": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/te_yards": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/wr": {
+     "mean": 0.0694,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.2938
+    },
+    "gadget_rush/wr_yards": {
+     "mean": 0.3799,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 2.5264
+    },
+    "receiving/receiving_td": {
+     "mean": 0.2626,
+     "median": 0.0,
+     "p90": 1.0,
+     "sd": 0.5289
+    },
+    "receiving/receiving_yards": {
+     "mean": 36.924,
+     "median": 32.0,
+     "p90": 78.0,
+     "sd": 30.0704
+    },
+    "receiving/receptions": {
+     "mean": 3.4624,
+     "median": 3.0,
+     "p90": 7.0,
+     "sd": 2.4283
+    },
+    "receiving/targets": {
+     "mean": 5.1121,
+     "median": 5.0,
+     "p90": 9.0,
+     "sd": 3.2299
+    },
+    "rushing_total/rushing_yards": {
+     "mean": 0.3799,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 2.5264
+    }
+   },
+   "same_team_correlation": {
+    "max": 0.2802,
+    "mean": 0.0194,
+    "min": -0.0806,
+    "n": 13
+   },
+   "team": "IND"
+  },
+  {
+   "correlation_with_qb": {
+    "Anthony Richardson": 0.0371,
+    "Daniel Jones": -0.0243,
+    "Justin Fields": -0.0029,
+    "Patrick Mahomes": 0.0506
+   },
+   "dk_cpt": {
+    "ceiling_max_draw": 45.0,
+    "mean": 12.1719,
+    "median": 12.0,
+    "p75": 16.5,
+    "p80": 18.0,
+    "p90": 21.0,
+    "p95": 24.0,
+    "p_ge_10": 0.6074,
+    "p_ge_15": 0.3448,
+    "p_ge_20": 0.1212,
+    "p_ge_25": 0.0413,
+    "p_ge_30": 0.0136,
+    "p_zero": 0.0199,
+    "sd": 6.6395
+   },
+   "dk_cpt_definition": "1.5x the FLEX draw, applied per simulated world",
+   "dk_draw_source": "kicking/dk_points",
+   "dk_flex": {
+    "ceiling_max_draw": 30.0,
+    "mean": 8.1146,
+    "median": 8.0,
+    "p75": 11.0,
+    "p80": 12.0,
+    "p90": 14.0,
+    "p95": 16.0,
+    "p_ge_10": 0.3448,
+    "p_ge_15": 0.0896,
+    "p_ge_20": 0.0136,
+    "p_ge_25": 0.0013,
+    "p_ge_30": 0.0001,
+    "p_zero": 0.0199,
+    "sd": 4.4263
+   },
+   "downstream_metadata_not_a_model_input": {
+    "cpt_value_ceiling_per_1k": 3.2,
+    "cpt_value_mean_per_1k": 1.6229,
+    "dk_salary_cpt": 7500,
+    "dk_salary_flex": 5000,
+    "flex_value_ceiling_per_1k": 3.2,
+    "flex_value_mean_per_1k": 1.6229,
+    "note": "salary is used ONLY here, for downstream pricing. It did not enter any projection."
+   },
+   "gsis_id": "00-0033303",
+   "n_draws": 8000,
+   "opponent": "IND",
+   "opposing_team_correlation": {
+    "max": 0.1535,
+    "mean": 0.012,
+    "min": -0.0243,
+    "n": 14
+   },
+   "player": "Harrison Butker",
+   "position": "K",
+   "role_opportunity": {
+    "kicking/att_FG20s": {
+     "mean": 0.424,
+     "median": 0.0,
+     "p90": 1.0,
+     "sd": 0.6401
+    },
+    "kicking/att_FG30s": {
+     "mean": 0.532,
+     "median": 0.0,
+     "p90": 1.0,
+     "sd": 0.708
+    },
+    "kicking/att_FG40s": {
+     "mean": 0.5429,
+     "median": 0.0,
+     "p90": 2.0,
+     "sd": 0.722
+    },
+    "kicking/att_FG50+": {
+     "mean": 0.4249,
+     "median": 0.0,
+     "p90": 1.0,
+     "sd": 0.6365
+    },
+    "kicking/att_FG<20": {
+     "mean": 0.0034,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.058
+    },
+    "kicking/dk_points": {
+     "mean": 8.1146,
+     "median": 8.0,
+     "p90": 14.0,
+     "sd": 4.4263
+    },
+    "kicking/fga": {
+     "mean": 1.9271,
+     "median": 2.0,
+     "p90": 4.0,
+     "sd": 1.2937
+    },
+    "kicking/fgm": {
+     "mean": 1.6567,
+     "median": 2.0,
+     "p90": 3.0,
+     "sd": 1.2075
+    },
+    "kicking/made_FG20s": {
+     "mean": 0.4153,
+     "median": 0.0,
+     "p90": 1.0,
+     "sd": 0.6343
+    },
+    "kicking/made_FG30s": {
+     "mean": 0.4991,
+     "median": 0.0,
+     "p90": 1.0,
+     "sd": 0.6872
+    },
+    "kicking/made_FG40s": {
+     "mean": 0.4452,
+     "median": 0.0,
+     "p90": 1.0,
+     "sd": 0.6564
+    },
+    "kicking/made_FG50+": {
+     "mean": 0.294,
+     "median": 0.0,
+     "p90": 1.0,
+     "sd": 0.5318
+    },
+    "kicking/made_FG<20": {
+     "mean": 0.0031,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0558
+    },
+    "kicking/offensive_td": {
+     "mean": 2.4571,
+     "median": 2.0,
+     "p90": 5.0,
+     "sd": 1.5882
+    },
+    "kicking/xpa": {
+     "mean": 2.2207,
+     "median": 2.0,
+     "p90": 4.0,
+     "sd": 1.5487
+    },
+    "kicking/xpm": {
+     "mean": 2.1111,
+     "median": 2.0,
+     "p90": 4.0,
+     "sd": 1.5136
+    }
+   },
+   "same_team_correlation": {
+    "max": 0.0506,
+    "mean": 0.0135,
+    "min": -0.0049,
+    "n": 15
+   },
+   "team": "KC"
+  },
+  {
+   "correlation_with_qb": {
+    "Anthony Richardson": -0.003,
+    "Daniel Jones": 0.0497,
+    "Justin Fields": -0.0079,
+    "Patrick Mahomes": -0.0013
+   },
+   "dk_cpt": {
+    "ceiling_max_draw": 40.5,
+    "mean": 12.1314,
+    "median": 12.0,
+    "p75": 16.5,
+    "p80": 18.0,
+    "p90": 21.0,
+    "p95": 24.0,
+    "p_ge_10": 0.601,
+    "p_ge_15": 0.3436,
+    "p_ge_20": 0.1197,
+    "p_ge_25": 0.0446,
+    "p_ge_30": 0.0156,
+    "p_zero": 0.0206,
+    "sd": 6.7746
+   },
+   "dk_cpt_definition": "1.5x the FLEX draw, applied per simulated world",
+   "dk_draw_source": "kicking/dk_points",
+   "dk_flex": {
+    "ceiling_max_draw": 27.0,
+    "mean": 8.0876,
+    "median": 8.0,
+    "p75": 11.0,
+    "p80": 12.0,
+    "p90": 14.0,
+    "p95": 16.0,
+    "p_ge_10": 0.3436,
+    "p_ge_15": 0.086,
+    "p_ge_20": 0.0156,
+    "p_ge_25": 0.0014,
+    "p_ge_30": 0.0,
+    "p_zero": 0.0206,
+    "sd": 4.5164
+   },
+   "downstream_metadata_not_a_model_input": {
+    "cpt_value_ceiling_per_1k": 3.4783,
+    "cpt_value_mean_per_1k": 1.7582,
+    "dk_salary_cpt": 6900,
+    "dk_salary_flex": 4600,
+    "flex_value_ceiling_per_1k": 3.4783,
+    "flex_value_mean_per_1k": 1.7582,
+    "note": "salary is used ONLY here, for downstream pricing. It did not enter any projection."
+   },
+   "gsis_id": "00-0039576",
+   "n_draws": 8000,
+   "opponent": "KC",
+   "opposing_team_correlation": {
+    "max": 0.1535,
+    "mean": 0.0083,
+    "min": -0.0197,
+    "n": 16
+   },
+   "player": "Spencer Shrader",
+   "position": "K",
+   "role_opportunity": {
+    "kicking/att_FG20s": {
+     "mean": 0.4289,
+     "median": 0.0,
+     "p90": 1.0,
+     "sd": 0.6506
+    },
+    "kicking/att_FG30s": {
+     "mean": 0.5476,
+     "median": 0.0,
+     "p90": 2.0,
+     "sd": 0.7232
+    },
+    "kicking/att_FG40s": {
+     "mean": 0.5636,
+     "median": 0.0,
+     "p90": 2.0,
+     "sd": 0.7345
+    },
+    "kicking/att_FG50+": {
+     "mean": 0.4477,
+     "median": 0.0,
+     "p90": 1.0,
+     "sd": 0.6594
+    },
+    "kicking/att_FG<20": {
+     "mean": 0.0041,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0641
+    },
+    "kicking/dk_points": {
+     "mean": 8.0876,
+     "median": 8.0,
+     "p90": 14.0,
+     "sd": 4.5164
+    },
+    "kicking/fga": {
+     "mean": 1.992,
+     "median": 2.0,
+     "p90": 4.0,
+     "sd": 1.3191
+    },
+    "kicking/fgm": {
+     "mean": 1.6923,
+     "median": 2.0,
+     "p90": 3.0,
+     "sd": 1.2304
+    },
+    "kicking/made_FG20s": {
+     "mean": 0.4199,
+     "median": 0.0,
+     "p90": 1.0,
+     "sd": 0.6451
+    },
+    "kicking/made_FG30s": {
+     "mean": 0.5111,
+     "median": 0.0,
+     "p90": 1.0,
+     "sd": 0.7026
+    },
+    "kicking/made_FG40s": {
+     "mean": 0.454,
+     "median": 0.0,
+     "p90": 1.0,
+     "sd": 0.6612
+    },
+    "kicking/made_FG50+": {
+     "mean": 0.3035,
+     "median": 0.0,
+     "p90": 1.0,
+     "sd": 0.5467
+    },
+    "kicking/made_FG<20": {
+     "mean": 0.0037,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0611
+    },
+    "kicking/offensive_td": {
+     "mean": 2.263,
+     "median": 2.0,
+     "p90": 4.0,
+     "sd": 1.5054
+    },
+    "kicking/xpa": {
+     "mean": 2.0479,
+     "median": 2.0,
+     "p90": 4.0,
+     "sd": 1.4757
+    },
+    "kicking/xpm": {
+     "mean": 1.9499,
+     "median": 2.0,
+     "p90": 4.0,
+     "sd": 1.4342
+    }
+   },
+   "same_team_correlation": {
+    "max": 0.0497,
+    "mean": 0.0143,
+    "min": -0.0042,
+    "n": 13
+   },
+   "team": "IND"
+  },
+  {
+   "correlation_with_qb": {
+    "Anthony Richardson": 0.0055,
+    "Daniel Jones": -0.0236,
+    "Justin Fields": -0.0702,
+    "Patrick Mahomes": 0.1152
+   },
+   "dk_cpt": {
+    "ceiling_max_draw": 68.55,
+    "mean": 12.0803,
+    "median": 10.35,
+    "p75": 17.7,
+    "p80": 19.65,
+    "p90": 25.2,
+    "p95": 30.45,
+    "p_ge_10": 0.5132,
+    "p_ge_15": 0.331,
+    "p_ge_20": 0.1923,
+    "p_ge_25": 0.103,
+    "p_ge_30": 0.0536,
+    "p_zero": 0.1138,
+    "sd": 9.8069
+   },
+   "dk_cpt_definition": "1.5x the FLEX draw, applied per simulated world",
+   "dk_draw_source": "dk_scoring/dk_points",
+   "dk_flex": {
+    "ceiling_max_draw": 45.7,
+    "mean": 8.0535,
+    "median": 6.9,
+    "p75": 11.8,
+    "p80": 13.1,
+    "p90": 16.8,
+    "p95": 20.3,
+    "p_ge_10": 0.331,
+    "p_ge_15": 0.1447,
+    "p_ge_20": 0.0536,
+    "p_ge_25": 0.0196,
+    "p_ge_30": 0.0059,
+    "p_zero": 0.1138,
+    "sd": 6.5379
+   },
+   "downstream_metadata_not_a_model_input": {
+    "cpt_value_ceiling_per_1k": 1.9151,
+    "cpt_value_mean_per_1k": 0.7598,
+    "dk_salary_cpt": 15900,
+    "dk_salary_flex": 10600,
+    "flex_value_ceiling_per_1k": 1.9151,
+    "flex_value_mean_per_1k": 0.7598,
+    "note": "salary is used ONLY here, for downstream pricing. It did not enter any projection."
+   },
+   "gsis_id": "00-0038134",
+   "n_draws": 8000,
+   "opponent": "IND",
+   "opposing_team_correlation": {
+    "max": 0.0155,
+    "mean": -0.0083,
+    "min": -0.0381,
+    "n": 14
+   },
+   "player": "Kenneth Walker III",
+   "position": "RB",
+   "role_opportunity": {
+    "receiving/receiving_td": {
+     "mean": 0.0769,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.2824
+    },
+    "receiving/receiving_yards": {
+     "mean": 14.8347,
+     "median": 8.0,
+     "p90": 42.0,
+     "sd": 19.6873
+    },
+    "receiving/receptions": {
+     "mean": 1.9908,
+     "median": 2.0,
+     "p90": 5.0,
+     "sd": 1.9391
+    },
+    "receiving/targets": {
+     "mean": 2.4108,
+     "median": 2.0,
+     "p90": 5.0,
+     "sd": 2.2403
+    },
+    "rushing/carries": {
+     "mean": 6.6116,
+     "median": 6.0,
+     "p90": 13.0,
+     "sd": 4.59
+    },
+    "rushing/rushing_td": {
+     "mean": 0.2051,
+     "median": 0.0,
+     "p90": 1.0,
+     "sd": 0.4776
+    },
+    "rushing/rushing_yards": {
+     "mean": 28.2991,
+     "median": 23.0,
+     "p90": 62.0,
+     "sd": 25.0839
+    },
+    "rushing_total/rushing_yards": {
+     "mean": 28.2991,
+     "median": 23.0,
+     "p90": 62.0,
+     "sd": 25.0839
+    }
+   },
+   "same_team_correlation": {
+    "max": 0.1152,
+    "mean": -0.0121,
+    "min": -0.0702,
+    "n": 15
+   },
+   "team": "KC"
+  },
+  {
+   "correlation_with_qb": {
+    "Anthony Richardson": 0.0475,
+    "Daniel Jones": 0.3026,
+    "Justin Fields": -0.0078,
+    "Patrick Mahomes": -0.0286
+   },
+   "dk_cpt": {
+    "ceiling_max_draw": 82.05,
+    "mean": 11.2737,
+    "median": 8.25,
+    "p75": 16.2,
+    "p80": 18.6,
+    "p90": 27.15,
+    "p95": 34.8,
+    "p_ge_10": 0.4402,
+    "p_ge_15": 0.2855,
+    "p_ge_20": 0.1764,
+    "p_ge_25": 0.1234,
+    "p_ge_30": 0.0755,
+    "p_zero": 0.1794,
+    "sd": 11.1585
+   },
+   "dk_cpt_definition": "1.5x the FLEX draw, applied per simulated world",
+   "dk_draw_source": "dk_scoring/dk_points",
+   "dk_flex": {
+    "ceiling_max_draw": 54.7,
+    "mean": 7.5158,
+    "median": 5.5,
+    "p75": 10.8,
+    "p80": 12.4,
+    "p90": 18.1,
+    "p95": 23.2,
+    "p_ge_10": 0.2855,
+    "p_ge_15": 0.1454,
+    "p_ge_20": 0.0755,
+    "p_ge_25": 0.0401,
+    "p_ge_30": 0.0145,
+    "p_zero": 0.1794,
+    "sd": 7.439
+   },
+   "downstream_metadata_not_a_model_input": {
+    "cpt_value_ceiling_per_1k": 3.0526,
+    "cpt_value_mean_per_1k": 0.9889,
+    "dk_salary_cpt": 11400,
+    "dk_salary_flex": 7600,
+    "flex_value_ceiling_per_1k": 3.0526,
+    "flex_value_mean_per_1k": 0.9889,
+    "note": "salary is used ONLY here, for downstream pricing. It did not enter any projection."
+   },
+   "gsis_id": "00-0037664",
+   "n_draws": 8000,
+   "opponent": "KC",
+   "opposing_team_correlation": {
+    "max": 0.0132,
+    "mean": -0.0119,
+    "min": -0.0286,
+    "n": 16
+   },
+   "player": "Alec Pierce",
+   "position": "WR",
+   "role_opportunity": {
+    "gadget_rush/kneel": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/kneel_yards": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/te": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/te_yards": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/wr": {
+     "mean": 0.0645,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.2657
+    },
+    "gadget_rush/wr_yards": {
+     "mean": 0.3125,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 2.2559
+    },
+    "receiving/receiving_td": {
+     "mean": 0.1644,
+     "median": 0.0,
+     "p90": 1.0,
+     "sd": 0.4116
+    },
+    "receiving/receiving_yards": {
+     "mean": 40.4258,
+     "median": 30.0,
+     "p90": 96.0,
+     "sd": 40.1878
+    },
+    "receiving/receptions": {
+     "mean": 2.1858,
+     "median": 2.0,
+     "p90": 5.0,
+     "sd": 1.8413
+    },
+    "receiving/targets": {
+     "mean": 4.0548,
+     "median": 4.0,
+     "p90": 8.0,
+     "sd": 2.8537
+    },
+    "rushing_total/rushing_yards": {
+     "mean": 0.3125,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 2.2559
+    }
+   },
+   "same_team_correlation": {
+    "max": 0.3026,
+    "mean": 0.0209,
+    "min": -0.0648,
+    "n": 13
+   },
+   "team": "IND"
+  },
+  {
+   "correlation_with_qb": {
+    "Anthony Richardson": 0.0251,
+    "Daniel Jones": 0.2812,
+    "Justin Fields": -0.0008,
+    "Patrick Mahomes": -0.0372
+   },
+   "dk_cpt": {
+    "ceiling_max_draw": 72.75,
+    "mean": 10.8985,
+    "median": 8.55,
+    "p75": 16.2,
+    "p80": 18.15,
+    "p90": 23.85,
+    "p95": 29.85,
+    "p_ge_10": 0.4469,
+    "p_ge_15": 0.2838,
+    "p_ge_20": 0.1596,
+    "p_ge_25": 0.0867,
+    "p_ge_30": 0.0499,
+    "p_zero": 0.1361,
+    "sd": 10.0089
+   },
+   "dk_cpt_definition": "1.5x the FLEX draw, applied per simulated world",
+   "dk_draw_source": "dk_scoring/dk_points",
+   "dk_flex": {
+    "ceiling_max_draw": 48.5,
+    "mean": 7.2657,
+    "median": 5.7,
+    "p75": 10.8,
+    "p80": 12.1,
+    "p90": 15.9,
+    "p95": 19.9,
+    "p_ge_10": 0.2838,
+    "p_ge_15": 0.1189,
+    "p_ge_20": 0.0499,
+    "p_ge_25": 0.0226,
+    "p_ge_30": 0.0114,
+    "p_zero": 0.1361,
+    "sd": 6.6726
+   },
+   "downstream_metadata_not_a_model_input": {
+    "cpt_value_ceiling_per_1k": 3.0152,
+    "cpt_value_mean_per_1k": 1.1009,
+    "dk_salary_cpt": 9900,
+    "dk_salary_flex": 6600,
+    "flex_value_ceiling_per_1k": 3.0152,
+    "flex_value_mean_per_1k": 1.1009,
+    "note": "salary is used ONLY here, for downstream pricing. It did not enter any projection."
+   },
+   "gsis_id": "00-0038997",
+   "n_draws": 8000,
+   "opponent": "KC",
+   "opposing_team_correlation": {
+    "max": 0.0096,
+    "mean": -0.0097,
+    "min": -0.0372,
+    "n": 16
+   },
+   "player": "Josh Downs",
+   "position": "WR",
+   "role_opportunity": {
+    "gadget_rush/kneel": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/kneel_yards": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/te": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/te_yards": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/wr": {
+     "mean": 0.3255,
+     "median": 0.0,
+     "p90": 1.0,
+     "sd": 0.7821
+    },
+    "gadget_rush/wr_yards": {
+     "mean": 1.751,
+     "median": 0.0,
+     "p90": 6.0,
+     "sd": 6.0345
+    },
+    "receiving/receiving_td": {
+     "mean": 0.2104,
+     "median": 0.0,
+     "p90": 1.0,
+     "sd": 0.4684
+    },
+    "receiving/receiving_yards": {
+     "mean": 29.9007,
+     "median": 23.0,
+     "p90": 69.0,
+     "sd": 28.9443
+    },
+    "receiving/receptions": {
+     "mean": 2.7513,
+     "median": 2.0,
+     "p90": 6.0,
+     "sd": 2.2217
+    },
+    "receiving/targets": {
+     "mean": 4.0699,
+     "median": 4.0,
+     "p90": 8.0,
+     "sd": 2.963
+    },
+    "rushing_total/rushing_yards": {
+     "mean": 1.751,
+     "median": 0.0,
+     "p90": 6.0,
+     "sd": 6.0345
+    }
+   },
+   "same_team_correlation": {
+    "max": 0.2812,
+    "mean": 0.0173,
+    "min": -0.0753,
+    "n": 13
+   },
+   "team": "IND"
+  },
+  {
+   "correlation_with_qb": {
+    "Anthony Richardson": 0.0175,
+    "Daniel Jones": -0.0362,
+    "Justin Fields": 0.0143,
+    "Patrick Mahomes": 0.2389
+   },
+   "dk_cpt": {
+    "ceiling_max_draw": 72.0,
+    "mean": 9.484,
+    "median": 6.75,
+    "p75": 14.1,
+    "p80": 16.2,
+    "p90": 22.05,
+    "p95": 28.65,
+    "p_ge_10": 0.374,
+    "p_ge_15": 0.2319,
+    "p_ge_20": 0.1276,
+    "p_ge_25": 0.0746,
+    "p_ge_30": 0.0431,
+    "p_zero": 0.1999,
+    "sd": 9.7063
+   },
+   "dk_cpt_definition": "1.5x the FLEX draw, applied per simulated world",
+   "dk_draw_source": "dk_scoring/dk_points",
+   "dk_flex": {
+    "ceiling_max_draw": 48.0,
+    "mean": 6.3227,
+    "median": 4.5,
+    "p75": 9.4,
+    "p80": 10.8,
+    "p90": 14.7,
+    "p95": 19.1,
+    "p_ge_10": 0.2319,
+    "p_ge_15": 0.0966,
+    "p_ge_20": 0.0431,
+    "p_ge_25": 0.0203,
+    "p_ge_30": 0.0088,
+    "p_zero": 0.1999,
+    "sd": 6.4709
+   },
+   "downstream_metadata_not_a_model_input": {
+    "cpt_value_ceiling_per_1k": 6.8214,
+    "cpt_value_mean_per_1k": 2.2581,
+    "dk_salary_cpt": 4200,
+    "dk_salary_flex": 2800,
+    "flex_value_ceiling_per_1k": 6.8214,
+    "flex_value_mean_per_1k": 2.2581,
+    "note": "salary is used ONLY here, for downstream pricing. It did not enter any projection."
+   },
+   "gsis_id": "00-0040890",
+   "n_draws": 8000,
+   "opponent": "IND",
+   "opposing_team_correlation": {
+    "max": 0.0175,
+    "mean": -0.0112,
+    "min": -0.0362,
+    "n": 14
+   },
+   "player": "Cyrus Allen",
+   "position": "WR",
+   "role_opportunity": {
+    "receiving/receiving_td": {
+     "mean": 0.1772,
+     "median": 0.0,
+     "p90": 1.0,
+     "sd": 0.4282
+    },
+    "receiving/receiving_yards": {
+     "mean": 28.8065,
+     "median": 20.0,
+     "p90": 69.0,
+     "sd": 30.2204
+    },
+    "receiving/receptions": {
+     "mean": 2.2769,
+     "median": 2.0,
+     "p90": 5.0,
+     "sd": 2.0129
+    },
+    "receiving/targets": {
+     "mean": 3.5684,
+     "median": 3.0,
+     "p90": 7.0,
+     "sd": 2.7844
+    }
+   },
+   "same_team_correlation": {
+    "max": 0.2389,
+    "mean": 0.0079,
+    "min": -0.0426,
+    "n": 15
+   },
+   "team": "KC"
+  },
+  {
+   "correlation_with_qb": {
+    "Anthony Richardson": -0.0216,
+    "Daniel Jones": 0.0251,
+    "Justin Fields": 0.0011,
+    "Patrick Mahomes": -0.0269
+   },
+   "dk_cpt": {
+    "ceiling_max_draw": 82.5,
+    "mean": 9.453,
+    "median": 7.05,
+    "p75": 13.2,
+    "p80": 15.0,
+    "p90": 20.4,
+    "p95": 25.65,
+    "p_ge_10": 0.366,
+    "p_ge_15": 0.2014,
+    "p_ge_20": 0.1072,
+    "p_ge_25": 0.0545,
+    "p_ge_30": 0.0309,
+    "p_zero": 0.0459,
+    "sd": 8.6743
+   },
+   "dk_cpt_definition": "1.5x the FLEX draw, applied per simulated world",
+   "dk_draw_source": "dk_scoring/dk_points",
+   "dk_flex": {
+    "ceiling_max_draw": 55.0,
+    "mean": 6.302,
+    "median": 4.7,
+    "p75": 8.8,
+    "p80": 10.0,
+    "p90": 13.6,
+    "p95": 17.1,
+    "p_ge_10": 0.2014,
+    "p_ge_15": 0.0769,
+    "p_ge_20": 0.0309,
+    "p_ge_25": 0.013,
+    "p_ge_30": 0.006,
+    "p_zero": 0.0459,
+    "sd": 5.7828
+   },
+   "downstream_metadata_not_a_model_input": {
+    "cpt_value_ceiling_per_1k": 5.0294,
+    "cpt_value_mean_per_1k": 1.8535,
+    "dk_salary_cpt": 5100,
+    "dk_salary_flex": 3400,
+    "flex_value_ceiling_per_1k": 5.0294,
+    "flex_value_mean_per_1k": 1.8535,
+    "note": "salary is used ONLY here, for downstream pricing. It did not enter any projection."
+   },
+   "gsis_id": "00-0041125",
+   "n_draws": 8000,
+   "opponent": "KC",
+   "opposing_team_correlation": {
+    "max": 0.0081,
+    "mean": -0.0081,
+    "min": -0.0269,
+    "n": 16
+   },
+   "player": "Seth McGowan",
+   "position": "RB",
+   "role_opportunity": {
+    "receiving/receiving_td": {
+     "mean": 0.0501,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.2272
+    },
+    "receiving/receiving_yards": {
+     "mean": 9.4871,
+     "median": 4.0,
+     "p90": 28.0,
+     "sd": 14.4893
+    },
+    "receiving/receptions": {
+     "mean": 1.2769,
+     "median": 1.0,
+     "p90": 3.0,
+     "sd": 1.5154
+    },
+    "receiving/targets": {
+     "mean": 1.652,
+     "median": 1.0,
+     "p90": 4.0,
+     "sd": 1.8315
+    },
+    "rushing/carries": {
+     "mean": 5.9635,
+     "median": 5.0,
+     "p90": 12.0,
+     "sd": 5.2648
+    },
+    "rushing/rushing_td": {
+     "mean": 0.1869,
+     "median": 0.0,
+     "p90": 1.0,
+     "sd": 0.4642
+    },
+    "rushing/rushing_yards": {
+     "mean": 25.7419,
+     "median": 19.0,
+     "p90": 58.0,
+     "sd": 27.1433
+    },
+    "rushing_total/rushing_yards": {
+     "mean": 25.7419,
+     "median": 19.0,
+     "p90": 58.0,
+     "sd": 27.1433
+    }
+   },
+   "same_team_correlation": {
+    "max": 0.0251,
+    "mean": -0.0264,
+    "min": -0.1713,
+    "n": 13
+   },
+   "team": "IND"
+  },
+  {
+   "correlation_with_qb": {
+    "Anthony Richardson": -0.0178,
+    "Daniel Jones": 0.0008,
+    "Justin Fields": -0.0137,
+    "Patrick Mahomes": 0.2203
+   },
+   "dk_cpt": {
+    "ceiling_max_draw": 85.65,
+    "mean": 9.3687,
+    "median": 6.9,
+    "p75": 13.95,
+    "p80": 15.9,
+    "p90": 21.9,
+    "p95": 28.05,
+    "p_ge_10": 0.375,
+    "p_ge_15": 0.2241,
+    "p_ge_20": 0.1261,
+    "p_ge_25": 0.0709,
+    "p_ge_30": 0.0411,
+    "p_zero": 0.1718,
+    "sd": 9.571
+   },
+   "dk_cpt_definition": "1.5x the FLEX draw, applied per simulated world",
+   "dk_draw_source": "dk_scoring/dk_points",
+   "dk_flex": {
+    "ceiling_max_draw": 57.1,
+    "mean": 6.2458,
+    "median": 4.6,
+    "p75": 9.3,
+    "p80": 10.6,
+    "p90": 14.6,
+    "p95": 18.7,
+    "p_ge_10": 0.2241,
+    "p_ge_15": 0.0945,
+    "p_ge_20": 0.0411,
+    "p_ge_25": 0.018,
+    "p_ge_30": 0.007,
+    "p_zero": 0.1718,
+    "sd": 6.3807
+   },
+   "downstream_metadata_not_a_model_input": {
+    "cpt_value_ceiling_per_1k": 3.463,
+    "cpt_value_mean_per_1k": 1.1566,
+    "dk_salary_cpt": 8100,
+    "dk_salary_flex": 5400,
+    "flex_value_ceiling_per_1k": 3.463,
+    "flex_value_mean_per_1k": 1.1566,
+    "note": "salary is used ONLY here, for downstream pricing. It did not enter any projection."
+   },
+   "gsis_id": "00-0039894",
+   "n_draws": 8000,
+   "opponent": "IND",
+   "opposing_team_correlation": {
+    "max": 0.0207,
+    "mean": -0.0043,
+    "min": -0.0216,
+    "n": 14
+   },
+   "player": "Xavier Worthy",
+   "position": "WR",
+   "role_opportunity": {
+    "gadget_rush/kneel": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/kneel_yards": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/te": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/te_yards": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/wr": {
+     "mean": 0.6118,
+     "median": 0.0,
+     "p90": 2.0,
+     "sd": 1.008
+    },
+    "gadget_rush/wr_yards": {
+     "mean": 3.4009,
+     "median": 0.0,
+     "p90": 12.0,
+     "sd": 8.2481
+    },
+    "receiving/receiving_td": {
+     "mean": 0.167,
+     "median": 0.0,
+     "p90": 1.0,
+     "sd": 0.4241
+    },
+    "receiving/receiving_yards": {
+     "mean": 26.1219,
+     "median": 18.0,
+     "p90": 66.0,
+     "sd": 28.2446
+    },
+    "receiving/receptions": {
+     "mean": 2.221,
+     "median": 2.0,
+     "p90": 5.0,
+     "sd": 2.0705
+    },
+    "receiving/targets": {
+     "mean": 3.6909,
+     "median": 3.0,
+     "p90": 8.0,
+     "sd": 3.0704
+    },
+    "rushing_total/rushing_yards": {
+     "mean": 3.4009,
+     "median": 0.0,
+     "p90": 12.0,
+     "sd": 8.2481
+    }
+   },
+   "same_team_correlation": {
+    "max": 0.2203,
+    "mean": -0.0059,
+    "min": -0.0489,
+    "n": 15
+   },
+   "team": "KC"
+  },
+  {
+   "correlation_with_qb": {
+    "Anthony Richardson": -0.0016,
+    "Daniel Jones": -0.0326,
+    "Justin Fields": 0.0228,
+    "Patrick Mahomes": 0.149
+   },
+   "dk_cpt": {
+    "ceiling_max_draw": 67.95,
+    "mean": 5.3194,
+    "median": 3.0,
+    "p75": 7.95,
+    "p80": 9.75,
+    "p90": 14.4,
+    "p95": 18.9,
+    "p_ge_10": 0.1951,
+    "p_ge_15": 0.092,
+    "p_ge_20": 0.0425,
+    "p_ge_25": 0.0169,
+    "p_ge_30": 0.0085,
+    "p_zero": 0.3643,
+    "sd": 6.7098
+   },
+   "dk_cpt_definition": "1.5x the FLEX draw, applied per simulated world",
+   "dk_draw_source": "dk_scoring/dk_points",
+   "dk_flex": {
+    "ceiling_max_draw": 45.3,
+    "mean": 3.5463,
+    "median": 2.0,
+    "p75": 5.3,
+    "p80": 6.5,
+    "p90": 9.6,
+    "p95": 12.6,
+    "p_ge_10": 0.092,
+    "p_ge_15": 0.029,
+    "p_ge_20": 0.0085,
+    "p_ge_25": 0.0024,
+    "p_ge_30": 0.0004,
+    "p_zero": 0.3643,
+    "sd": 4.4732
+   },
+   "downstream_metadata_not_a_model_input": {
+    "cpt_value_ceiling_per_1k": 4.2,
+    "cpt_value_mean_per_1k": 1.1821,
+    "dk_salary_cpt": 4500,
+    "dk_salary_flex": 3000,
+    "flex_value_ceiling_per_1k": 4.2,
+    "flex_value_mean_per_1k": 1.1821,
+    "note": "salary is used ONLY here, for downstream pricing. It did not enter any projection."
+   },
+   "gsis_id": "00-0036637",
+   "n_draws": 8000,
+   "opponent": "IND",
+   "opposing_team_correlation": {
+    "max": 0.0074,
+    "mean": -0.0101,
+    "min": -0.0326,
+    "n": 14
+   },
+   "player": "Noah Gray",
+   "position": "TE",
+   "role_opportunity": {
+    "gadget_rush/kneel": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/kneel_yards": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/te": {
+     "mean": 0.0205,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.1615
+    },
+    "gadget_rush/te_yards": {
+     "mean": 0.0461,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.718
+    },
+    "gadget_rush/wr": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/wr_yards": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "receiving/receiving_td": {
+     "mean": 0.1072,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.3336
+    },
+    "receiving/receiving_yards": {
+     "mean": 14.4779,
+     "median": 8.0,
+     "p90": 40.0,
+     "sd": 18.4759
+    },
+    "receiving/receptions": {
+     "mean": 1.4429,
+     "median": 1.0,
+     "p90": 4.0,
+     "sd": 1.6134
+    },
+    "receiving/targets": {
+     "mean": 1.9744,
+     "median": 1.0,
+     "p90": 5.0,
+     "sd": 2.0504
+    },
+    "rushing_total/rushing_yards": {
+     "mean": 0.0461,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.718
+    }
+   },
+   "same_team_correlation": {
+    "max": 0.149,
+    "mean": 0.0031,
+    "min": -0.0489,
+    "n": 15
+   },
+   "team": "KC"
+  },
+  {
+   "correlation_with_qb": {
+    "Anthony Richardson": 0.0044,
+    "Daniel Jones": -0.0119,
+    "Justin Fields": -0.0528,
+    "Patrick Mahomes": 0.0736
+   },
+   "dk_cpt": {
+    "ceiling_max_draw": 55.8,
+    "mean": 5.0887,
+    "median": 3.0,
+    "p75": 7.35,
+    "p80": 9.15,
+    "p90": 13.2,
+    "p95": 16.95,
+    "p_ge_10": 0.1751,
+    "p_ge_15": 0.0731,
+    "p_ge_20": 0.031,
+    "p_ge_25": 0.0125,
+    "p_ge_30": 0.0057,
+    "p_zero": 0.1864,
+    "sd": 6.0341
+   },
+   "dk_cpt_definition": "1.5x the FLEX draw, applied per simulated world",
+   "dk_draw_source": "dk_scoring/dk_points",
+   "dk_flex": {
+    "ceiling_max_draw": 37.2,
+    "mean": 3.3925,
+    "median": 2.0,
+    "p75": 4.9,
+    "p80": 6.1,
+    "p90": 8.8,
+    "p95": 11.3,
+    "p_ge_10": 0.0731,
+    "p_ge_15": 0.0196,
+    "p_ge_20": 0.0057,
+    "p_ge_25": 0.0015,
+    "p_ge_30": 0.0005,
+    "p_zero": 0.1864,
+    "sd": 4.0228
+   },
+   "downstream_metadata_not_a_model_input": {
+    "cpt_value_ceiling_per_1k": 3.1389,
+    "cpt_value_mean_per_1k": 0.9424,
+    "dk_salary_cpt": 5400,
+    "dk_salary_flex": 3600,
+    "flex_value_ceiling_per_1k": 3.1389,
+    "flex_value_mean_per_1k": 0.9424,
+    "note": "salary is used ONLY here, for downstream pricing. It did not enter any projection."
+   },
+   "gsis_id": "00-0041013",
+   "n_draws": 8000,
+   "opponent": "IND",
+   "opposing_team_correlation": {
+    "max": 0.0083,
+    "mean": -0.0045,
+    "min": -0.0141,
+    "n": 14
+   },
+   "player": "Emmett Johnson",
+   "position": "RB",
+   "role_opportunity": {
+    "receiving/receiving_td": {
+     "mean": 0.0344,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.1883
+    },
+    "receiving/receiving_yards": {
+     "mean": 6.6268,
+     "median": 0.0,
+     "p90": 22.0,
+     "sd": 12.4651
+    },
+    "receiving/receptions": {
+     "mean": 0.8785,
+     "median": 0.0,
+     "p90": 3.0,
+     "sd": 1.328
+    },
+    "receiving/targets": {
+     "mean": 1.1304,
+     "median": 0.0,
+     "p90": 3.0,
+     "sd": 1.617
+    },
+    "rushing/carries": {
+     "mean": 2.6414,
+     "median": 2.0,
+     "p90": 6.0,
+     "sd": 2.8746
+    },
+    "rushing/rushing_td": {
+     "mean": 0.0833,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.2972
+    },
+    "rushing/rushing_yards": {
+     "mean": 11.3881,
+     "median": 6.0,
+     "p90": 31.0,
+     "sd": 15.8078
+    },
+    "rushing_total/rushing_yards": {
+     "mean": 11.3881,
+     "median": 6.0,
+     "p90": 31.0,
+     "sd": 15.8078
+    }
+   },
+   "same_team_correlation": {
+    "max": 0.0736,
+    "mean": -0.0079,
+    "min": -0.0528,
+    "n": 15
+   },
+   "team": "KC"
+  },
+  {
+   "correlation_with_qb": {
+    "Anthony Richardson": 0.016,
+    "Daniel Jones": -0.0205,
+    "Justin Fields": -0.0022,
+    "Patrick Mahomes": 0.1435
+   },
+   "dk_cpt": {
+    "ceiling_max_draw": 66.15,
+    "mean": 3.8733,
+    "median": 0.0,
+    "p75": 5.4,
+    "p80": 7.2,
+    "p90": 12.45,
+    "p95": 17.1,
+    "p_ge_10": 0.1431,
+    "p_ge_15": 0.0675,
+    "p_ge_20": 0.0316,
+    "p_ge_25": 0.0181,
+    "p_ge_30": 0.009,
+    "p_zero": 0.5451,
+    "sd": 6.5047
+   },
+   "dk_cpt_definition": "1.5x the FLEX draw, applied per simulated world",
+   "dk_draw_source": "dk_scoring/dk_points",
+   "dk_flex": {
+    "ceiling_max_draw": 44.1,
+    "mean": 2.5822,
+    "median": 0.0,
+    "p75": 3.6,
+    "p80": 4.8,
+    "p90": 8.3,
+    "p95": 11.4,
+    "p_ge_10": 0.0675,
+    "p_ge_15": 0.0227,
+    "p_ge_20": 0.009,
+    "p_ge_25": 0.0043,
+    "p_ge_30": 0.0011,
+    "p_zero": 0.5451,
+    "sd": 4.3365
+   },
+   "downstream_metadata_not_a_model_input": {
+    "cpt_value_ceiling_per_1k": 3.0,
+    "cpt_value_mean_per_1k": 0.6795,
+    "dk_salary_cpt": 5700,
+    "dk_salary_flex": 3800,
+    "flex_value_ceiling_per_1k": 3.0,
+    "flex_value_mean_per_1k": 0.6795,
+    "note": "salary is used ONLY here, for downstream pricing. It did not enter any projection."
+   },
+   "gsis_id": "00-0038104",
+   "n_draws": 8000,
+   "opponent": "IND",
+   "opposing_team_correlation": {
+    "max": 0.026,
+    "mean": -0.0023,
+    "min": -0.0252,
+    "n": 14
+   },
+   "player": "Tyquan Thornton",
+   "position": "WR",
+   "role_opportunity": {
+    "gadget_rush/kneel": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/kneel_yards": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/te": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/te_yards": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/wr": {
+     "mean": 0.014,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.1267
+    },
+    "gadget_rush/wr_yards": {
+     "mean": 0.0683,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 1.0346
+    },
+    "receiving/receiving_td": {
+     "mean": 0.0696,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.2707
+    },
+    "receiving/receiving_yards": {
+     "mean": 12.345,
+     "median": 0.0,
+     "p90": 42.0,
+     "sd": 21.4979
+    },
+    "receiving/receptions": {
+     "mean": 0.8984,
+     "median": 0.0,
+     "p90": 3.0,
+     "sd": 1.3249
+    },
+    "receiving/targets": {
+     "mean": 1.6932,
+     "median": 1.0,
+     "p90": 5.0,
+     "sd": 2.1801
+    },
+    "rushing_total/rushing_yards": {
+     "mean": 0.0683,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 1.0346
+    }
+   },
+   "same_team_correlation": {
+    "max": 0.1435,
+    "mean": -0.0049,
+    "min": -0.037,
+    "n": 15
+   },
+   "team": "KC"
+  },
+  {
+   "correlation_with_qb": {
+    "Anthony Richardson": 0.049,
+    "Daniel Jones": 0.1493,
+    "Justin Fields": -0.0014,
+    "Patrick Mahomes": -0.0236
+   },
+   "dk_cpt": {
+    "ceiling_max_draw": 64.35,
+    "mean": 3.8129,
+    "median": 0.0,
+    "p75": 5.25,
+    "p80": 6.9,
+    "p90": 12.165,
+    "p95": 17.1,
+    "p_ge_10": 0.1353,
+    "p_ge_15": 0.0683,
+    "p_ge_20": 0.0329,
+    "p_ge_25": 0.0168,
+    "p_ge_30": 0.0083,
+    "p_zero": 0.544,
+    "sd": 6.4107
+   },
+   "dk_cpt_definition": "1.5x the FLEX draw, applied per simulated world",
+   "dk_draw_source": "dk_scoring/dk_points",
+   "dk_flex": {
+    "ceiling_max_draw": 42.9,
+    "mean": 2.542,
+    "median": 0.0,
+    "p75": 3.5,
+    "p80": 4.6,
+    "p90": 8.11,
+    "p95": 11.4,
+    "p_ge_10": 0.0683,
+    "p_ge_15": 0.0234,
+    "p_ge_20": 0.0083,
+    "p_ge_25": 0.0034,
+    "p_ge_30": 0.0013,
+    "p_zero": 0.544,
+    "sd": 4.2738
+   },
+   "downstream_metadata_not_a_model_input": {
+    "cpt_value_ceiling_per_1k": 11.4,
+    "cpt_value_mean_per_1k": 2.5419,
+    "dk_salary_cpt": 1500,
+    "dk_salary_flex": 1000,
+    "flex_value_ceiling_per_1k": 11.4,
+    "flex_value_mean_per_1k": 2.542,
+    "note": "salary is used ONLY here, for downstream pricing. It did not enter any projection."
+   },
+   "gsis_id": "00-0041132",
+   "n_draws": 8000,
+   "opponent": "KC",
+   "opposing_team_correlation": {
+    "max": 0.0147,
+    "mean": -0.0101,
+    "min": -0.0288,
+    "n": 16
+   },
+   "player": "Deion Burks",
+   "position": "WR",
+   "role_opportunity": {
+    "receiving/receiving_td": {
+     "mean": 0.071,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.2747
+    },
+    "receiving/receiving_yards": {
+     "mean": 11.6121,
+     "median": 0.0,
+     "p90": 38.0,
+     "sd": 20.3038
+    },
+    "receiving/receptions": {
+     "mean": 0.9353,
+     "median": 0.0,
+     "p90": 3.0,
+     "sd": 1.3743
+    },
+    "receiving/targets": {
+     "mean": 1.4774,
+     "median": 1.0,
+     "p90": 4.0,
+     "sd": 1.947
+    }
+   },
+   "same_team_correlation": {
+    "max": 0.1493,
+    "mean": 0.0053,
+    "min": -0.0593,
+    "n": 13
+   },
+   "team": "IND"
+  },
+  {
+   "correlation_with_qb": {
+    "Anthony Richardson": 0.0316,
+    "Daniel Jones": 0.1533,
+    "Justin Fields": -0.0172,
+    "Patrick Mahomes": 0.0023
+   },
+   "dk_cpt": {
+    "ceiling_max_draw": 69.0,
+    "mean": 3.6329,
+    "median": 0.0,
+    "p75": 5.1,
+    "p80": 6.6,
+    "p90": 11.7,
+    "p95": 15.75,
+    "p_ge_10": 0.1258,
+    "p_ge_15": 0.0573,
+    "p_ge_20": 0.0216,
+    "p_ge_25": 0.009,
+    "p_ge_30": 0.0034,
+    "p_zero": 0.5161,
+    "sd": 5.6616
+   },
+   "dk_cpt_definition": "1.5x the FLEX draw, applied per simulated world",
+   "dk_draw_source": "dk_scoring/dk_points",
+   "dk_flex": {
+    "ceiling_max_draw": 46.0,
+    "mean": 2.4219,
+    "median": 0.0,
+    "p75": 3.4,
+    "p80": 4.4,
+    "p90": 7.8,
+    "p95": 10.5,
+    "p_ge_10": 0.0573,
+    "p_ge_15": 0.0143,
+    "p_ge_20": 0.0034,
+    "p_ge_25": 0.0009,
+    "p_ge_30": 0.0003,
+    "p_zero": 0.5161,
+    "sd": 3.7744
+   },
+   "downstream_metadata_not_a_model_input": {
+    "cpt_value_ceiling_per_1k": 4.375,
+    "cpt_value_mean_per_1k": 1.0091,
+    "dk_salary_cpt": 3600,
+    "dk_salary_flex": 2400,
+    "flex_value_ceiling_per_1k": 4.375,
+    "flex_value_mean_per_1k": 1.0091,
+    "note": "salary is used ONLY here, for downstream pricing. It did not enter any projection."
+   },
+   "gsis_id": "00-0033217",
+   "n_draws": 8000,
+   "opponent": "KC",
+   "opposing_team_correlation": {
+    "max": 0.005,
+    "mean": -0.0029,
+    "min": -0.0172,
+    "n": 16
+   },
+   "player": "Mo Alie-Cox",
+   "position": "TE",
+   "role_opportunity": {
+    "gadget_rush/kneel": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/kneel_yards": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/te": {
+     "mean": 0.0018,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0418
+    },
+    "gadget_rush/te_yards": {
+     "mean": 0.0036,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.184
+    },
+    "gadget_rush/wr": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/wr_yards": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "receiving/receiving_td": {
+     "mean": 0.071,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.2738
+    },
+    "receiving/receiving_yards": {
+     "mean": 10.8219,
+     "median": 0.0,
+     "p90": 35.0,
+     "sd": 17.0179
+    },
+    "receiving/receptions": {
+     "mean": 0.9096,
+     "median": 0.0,
+     "p90": 3.0,
+     "sd": 1.2495
+    },
+    "receiving/targets": {
+     "mean": 1.4347,
+     "median": 1.0,
+     "p90": 4.0,
+     "sd": 1.8004
+    },
+    "rushing_total/rushing_yards": {
+     "mean": 0.0036,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.184
+    }
+   },
+   "same_team_correlation": {
+    "max": 0.1533,
+    "mean": 0.0091,
+    "min": -0.0492,
+    "n": 13
+   },
+   "team": "IND"
+  },
+  {
+   "correlation_with_qb": {
+    "Anthony Richardson": -0.0102,
+    "Daniel Jones": -0.0139,
+    "Justin Fields": 1.0,
+    "Patrick Mahomes": -0.4881
+   },
+   "dk_cpt": {
+    "ceiling_max_draw": 104.4433,
+    "mean": 3.3521,
+    "median": 0.0,
+    "p75": 0.0,
+    "p80": 0.75,
+    "p90": 10.6108,
+    "p95": 27.227,
+    "p_ge_10": 0.1032,
+    "p_ge_15": 0.0821,
+    "p_ge_20": 0.0691,
+    "p_ge_25": 0.055,
+    "p_ge_30": 0.0428,
+    "p_zero": 0.7598,
+    "sd": 10.1863
+   },
+   "dk_cpt_definition": "1.5x the FLEX draw, applied per simulated world",
+   "dk_draw_source": "dk_scoring/dk_points",
+   "dk_flex": {
+    "ceiling_max_draw": 69.6289,
+    "mean": 2.2348,
+    "median": 0.0,
+    "p75": 0.0,
+    "p80": 0.5,
+    "p90": 7.0738,
+    "p95": 18.1514,
+    "p_ge_10": 0.0821,
+    "p_ge_15": 0.0611,
+    "p_ge_20": 0.0428,
+    "p_ge_25": 0.0274,
+    "p_ge_30": 0.0165,
+    "p_zero": 0.7598,
+    "sd": 6.7909
+   },
+   "downstream_metadata_not_a_model_input": {
+    "cpt_value_ceiling_per_1k": 3.0252,
+    "cpt_value_mean_per_1k": 0.3725,
+    "dk_salary_cpt": 9000,
+    "dk_salary_flex": 6000,
+    "flex_value_ceiling_per_1k": 3.0252,
+    "flex_value_mean_per_1k": 0.3725,
+    "note": "salary is used ONLY here, for downstream pricing. It did not enter any projection."
+   },
+   "gsis_id": "00-0036945",
+   "n_draws": 8000,
+   "opponent": "IND",
+   "opposing_team_correlation": {
+    "max": 0.0196,
+    "mean": -0.005,
+    "min": -0.0172,
+    "n": 14
+   },
+   "player": "Justin Fields",
+   "position": "QB",
+   "role_opportunity": {
+    "gadget_rush/kneel": {
+     "mean": 0.0245,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.2577
+    },
+    "gadget_rush/kneel_yards": {
+     "mean": -0.0261,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.2876
+    },
+    "gadget_rush/te": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/te_yards": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/wr": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/wr_yards": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "qb/att": {
+     "mean": 3.0074,
+     "median": 0.0,
+     "p90": 10.0,
+     "sd": 8.4106
+    },
+    "qb/cmp": {
+     "mean": 2.0001,
+     "median": 0.0,
+     "p90": 6.1,
+     "sd": 5.6649
+    },
+    "qb/db": {
+     "mean": 3.8262,
+     "median": 0.0,
+     "p90": 13.0,
+     "sd": 10.6576
+    },
+    "qb/int": {
+     "mean": 0.069,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.3286
+    },
+    "qb/ptd": {
+     "mean": 0.1353,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.5296
+    },
+    "qb/pyds": {
+     "mean": 21.3197,
+     "median": 0.0,
+     "p90": 66.1,
+     "sd": 62.1067
+    },
+    "qb/rtd": {
+     "mean": 0.044,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.2481
+    },
+    "qb/rush_opp": {
+     "mean": 0.973,
+     "median": 0.0,
+     "p90": 3.0,
+     "sd": 2.854
+    },
+    "qb/ryds": {
+     "mean": 5.8896,
+     "median": 0.0,
+     "p90": 14.4,
+     "sd": 19.5388
+    },
+    "qb/sacks": {
+     "mean": 0.3937,
+     "median": 0.0,
+     "p90": 1.0,
+     "sd": 1.249
+    },
+    "qb/scr": {
+     "mean": 0.4251,
+     "median": 0.0,
+     "p90": 1.0,
+     "sd": 1.3248
+    },
+    "rushing_total/rushing_yards": {
+     "mean": 5.8634,
+     "median": 0.0,
+     "p90": 14.4,
+     "sd": 19.4792
+    }
+   },
+   "same_team_correlation": {
+    "max": 0.0228,
+    "mean": -0.0483,
+    "min": -0.4881,
+    "n": 15
+   },
+   "team": "KC"
+  },
+  {
+   "correlation_with_qb": {
+    "Anthony Richardson": -0.0115,
+    "Daniel Jones": -0.0202,
+    "Justin Fields": -0.0286,
+    "Patrick Mahomes": 0.0472
+   },
+   "dk_cpt": {
+    "ceiling_max_draw": 47.55,
+    "mean": 3.3125,
+    "median": 0.0,
+    "p75": 4.8,
+    "p80": 6.15,
+    "p90": 11.25,
+    "p95": 15.45,
+    "p_ge_10": 0.117,
+    "p_ge_15": 0.0564,
+    "p_ge_20": 0.0243,
+    "p_ge_25": 0.0105,
+    "p_ge_30": 0.0037,
+    "p_zero": 0.561,
+    "sd": 5.7043
+   },
+   "dk_cpt_definition": "1.5x the FLEX draw, applied per simulated world",
+   "dk_draw_source": "dk_scoring/dk_points",
+   "dk_flex": {
+    "ceiling_max_draw": 31.7,
+    "mean": 2.2083,
+    "median": 0.0,
+    "p75": 3.2,
+    "p80": 4.1,
+    "p90": 7.5,
+    "p95": 10.3,
+    "p_ge_10": 0.0564,
+    "p_ge_15": 0.0155,
+    "p_ge_20": 0.0037,
+    "p_ge_25": 0.0009,
+    "p_ge_30": 0.0004,
+    "p_zero": 0.561,
+    "sd": 3.8029
+   },
+   "downstream_metadata_not_a_model_input": {
+    "cpt_value_ceiling_per_1k": 25.75,
+    "cpt_value_mean_per_1k": 5.5208,
+    "dk_salary_cpt": 600,
+    "dk_salary_flex": 400,
+    "flex_value_ceiling_per_1k": 25.75,
+    "flex_value_mean_per_1k": 5.5207,
+    "note": "salary is used ONLY here, for downstream pricing. It did not enter any projection."
+   },
+   "gsis_id": "00-0040078",
+   "n_draws": 8000,
+   "opponent": "IND",
+   "opposing_team_correlation": {
+    "max": 0.0074,
+    "mean": -0.008,
+    "min": -0.0425,
+    "n": 14
+   },
+   "player": "Brashard Smith",
+   "position": "RB",
+   "role_opportunity": {
+    "receiving/receiving_td": {
+     "mean": 0.029,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.1772
+    },
+    "receiving/receiving_yards": {
+     "mean": 5.253,
+     "median": 0.0,
+     "p90": 20.0,
+     "sd": 10.6746
+    },
+    "receiving/receptions": {
+     "mean": 0.7639,
+     "median": 0.0,
+     "p90": 3.0,
+     "sd": 1.3583
+    },
+    "receiving/targets": {
+     "mean": 1.0299,
+     "median": 0.0,
+     "p90": 3.0,
+     "sd": 1.7387
+    },
+    "rushing/carries": {
+     "mean": 1.2364,
+     "median": 0.0,
+     "p90": 4.0,
+     "sd": 2.2886
+    },
+    "rushing/rushing_td": {
+     "mean": 0.0366,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.2026
+    },
+    "rushing/rushing_yards": {
+     "mean": 5.2166,
+     "median": 0.0,
+     "p90": 18.0,
+     "sd": 11.8089
+    },
+    "rushing_total/rushing_yards": {
+     "mean": 5.2166,
+     "median": 0.0,
+     "p90": 18.0,
+     "sd": 11.8089
+    }
+   },
+   "same_team_correlation": {
+    "max": 0.0472,
+    "mean": -0.0231,
+    "min": -0.0684,
+    "n": 15
+   },
+   "team": "KC"
+  },
+  {
+   "correlation_with_qb": {
+    "Anthony Richardson": 0.0473,
+    "Daniel Jones": 0.1412,
+    "Justin Fields": -0.0096,
+    "Patrick Mahomes": -0.0194
+   },
+   "dk_cpt": {
+    "ceiling_max_draw": 73.8,
+    "mean": 3.1217,
+    "median": 0.0,
+    "p75": 3.9,
+    "p80": 4.95,
+    "p90": 10.95,
+    "p95": 16.65,
+    "p_ge_10": 0.1116,
+    "p_ge_15": 0.0602,
+    "p_ge_20": 0.0309,
+    "p_ge_25": 0.0166,
+    "p_ge_30": 0.0095,
+    "p_zero": 0.6502,
+    "sd": 6.4375
+   },
+   "dk_cpt_definition": "1.5x the FLEX draw, applied per simulated world",
+   "dk_draw_source": "dk_scoring/dk_points",
+   "dk_flex": {
+    "ceiling_max_draw": 49.2,
+    "mean": 2.0811,
+    "median": 0.0,
+    "p75": 2.6,
+    "p80": 3.3,
+    "p90": 7.3,
+    "p95": 11.1,
+    "p_ge_10": 0.0602,
+    "p_ge_15": 0.0234,
+    "p_ge_20": 0.0095,
+    "p_ge_25": 0.0045,
+    "p_ge_30": 0.0021,
+    "p_zero": 0.6502,
+    "sd": 4.2917
+   },
+   "downstream_metadata_not_a_model_input": {
+    "cpt_value_ceiling_per_1k": 55.5,
+    "cpt_value_mean_per_1k": 10.4057,
+    "dk_salary_cpt": 300,
+    "dk_salary_flex": 200,
+    "flex_value_ceiling_per_1k": 55.5,
+    "flex_value_mean_per_1k": 10.4055,
+    "note": "salary is used ONLY here, for downstream pricing. It did not enter any projection."
+   },
+   "gsis_id": "00-0039816",
+   "n_draws": 8000,
+   "opponent": "KC",
+   "opposing_team_correlation": {
+    "max": 0.0161,
+    "mean": -0.0045,
+    "min": -0.033,
+    "n": 16
+   },
+   "player": "Anthony Gould",
+   "position": "WR",
+   "role_opportunity": {
+    "receiving/receiving_td": {
+     "mean": 0.0678,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.2818
+    },
+    "receiving/receiving_yards": {
+     "mean": 8.591,
+     "median": 0.0,
+     "p90": 29.0,
+     "sd": 18.1853
+    },
+    "receiving/receptions": {
+     "mean": 0.8016,
+     "median": 0.0,
+     "p90": 3.0,
+     "sd": 1.4811
+    },
+    "receiving/targets": {
+     "mean": 0.93,
+     "median": 0.0,
+     "p90": 3.0,
+     "sd": 1.6659
+    }
+   },
+   "same_team_correlation": {
+    "max": 0.1412,
+    "mean": 0.0045,
+    "min": -0.0423,
+    "n": 13
+   },
+   "team": "IND"
+  },
+  {
+   "correlation_with_qb": {
+    "Anthony Richardson": 0.0188,
+    "Daniel Jones": -0.0083,
+    "Justin Fields": -0.0161,
+    "Patrick Mahomes": 0.1247
+   },
+   "dk_cpt": {
+    "ceiling_max_draw": 49.65,
+    "mean": 3.0829,
+    "median": 0.0,
+    "p75": 4.2,
+    "p80": 5.55,
+    "p90": 10.05,
+    "p95": 14.25,
+    "p_ge_10": 0.1014,
+    "p_ge_15": 0.045,
+    "p_ge_20": 0.018,
+    "p_ge_25": 0.0089,
+    "p_ge_30": 0.0034,
+    "p_zero": 0.5724,
+    "sd": 5.3139
+   },
+   "dk_cpt_definition": "1.5x the FLEX draw, applied per simulated world",
+   "dk_draw_source": "dk_scoring/dk_points",
+   "dk_flex": {
+    "ceiling_max_draw": 33.1,
+    "mean": 2.0553,
+    "median": 0.0,
+    "p75": 2.8,
+    "p80": 3.7,
+    "p90": 6.7,
+    "p95": 9.5,
+    "p_ge_10": 0.045,
+    "p_ge_15": 0.013,
+    "p_ge_20": 0.0034,
+    "p_ge_25": 0.0009,
+    "p_ge_30": 0.0004,
+    "p_zero": 0.5724,
+    "sd": 3.5426
+   },
+   "downstream_metadata_not_a_model_input": {
+    "cpt_value_ceiling_per_1k": 5.9375,
+    "cpt_value_mean_per_1k": 1.2845,
+    "dk_salary_cpt": 2400,
+    "dk_salary_flex": 1600,
+    "flex_value_ceiling_per_1k": 5.9375,
+    "flex_value_mean_per_1k": 1.2846,
+    "note": "salary is used ONLY here, for downstream pricing. It did not enter any projection."
+   },
+   "gsis_id": "00-0040081",
+   "n_draws": 8000,
+   "opponent": "IND",
+   "opposing_team_correlation": {
+    "max": 0.0188,
+    "mean": -0.0011,
+    "min": -0.0112,
+    "n": 14
+   },
+   "player": "Jake Briningstool",
+   "position": "TE",
+   "role_opportunity": {
+    "receiving/receiving_td": {
+     "mean": 0.0634,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.261
+    },
+    "receiving/receiving_yards": {
+     "mean": 8.4826,
+     "median": 0.0,
+     "p90": 28.0,
+     "sd": 14.7022
+    },
+    "receiving/receptions": {
+     "mean": 0.8237,
+     "median": 0.0,
+     "p90": 3.0,
+     "sd": 1.26
+    },
+    "receiving/targets": {
+     "mean": 1.1695,
+     "median": 0.0,
+     "p90": 3.0,
+     "sd": 1.6678
+    }
+   },
+   "same_team_correlation": {
+    "max": 0.1247,
+    "mean": -0.0041,
+    "min": -0.038,
+    "n": 15
+   },
+   "team": "KC"
+  },
+  {
+   "correlation_with_qb": {
+    "Anthony Richardson": 1.0,
+    "Daniel Jones": -0.4001,
+    "Justin Fields": -0.0102,
+    "Patrick Mahomes": 0.0183
+   },
+   "dk_cpt": {
+    "ceiling_max_draw": 116.82,
+    "mean": 2.9894,
+    "median": 0.0,
+    "p75": 0.0,
+    "p80": 0.6,
+    "p90": 9.2029,
+    "p95": 23.241,
+    "p_ge_10": 0.0964,
+    "p_ge_15": 0.0749,
+    "p_ge_20": 0.06,
+    "p_ge_25": 0.0457,
+    "p_ge_30": 0.0349,
+    "p_zero": 0.7688,
+    "sd": 9.3155
+   },
+   "dk_cpt_definition": "1.5x the FLEX draw, applied per simulated world",
+   "dk_draw_source": "dk_scoring/dk_points",
+   "dk_flex": {
+    "ceiling_max_draw": 77.88,
+    "mean": 1.9929,
+    "median": 0.0,
+    "p75": 0.0,
+    "p80": 0.4,
+    "p90": 6.1353,
+    "p95": 15.494,
+    "p_ge_10": 0.0749,
+    "p_ge_15": 0.0521,
+    "p_ge_20": 0.0349,
+    "p_ge_25": 0.0205,
+    "p_ge_30": 0.0115,
+    "p_zero": 0.7688,
+    "sd": 6.2103
+   },
+   "downstream_metadata_not_a_model_input": {
+    "cpt_value_ceiling_per_1k": 2.5823,
+    "cpt_value_mean_per_1k": 0.3322,
+    "dk_salary_cpt": 9000,
+    "dk_salary_flex": 6000,
+    "flex_value_ceiling_per_1k": 2.5823,
+    "flex_value_mean_per_1k": 0.3321,
+    "note": "salary is used ONLY here, for downstream pricing. It did not enter any projection."
+   },
+   "gsis_id": "00-0039164",
+   "n_draws": 8000,
+   "opponent": "KC",
+   "opposing_team_correlation": {
+    "max": 0.0371,
+    "mean": 0.005,
+    "min": -0.0178,
+    "n": 16
+   },
+   "player": "Anthony Richardson",
+   "position": "QB",
+   "role_opportunity": {
+    "gadget_rush/kneel": {
+     "mean": 0.0382,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.3143
+    },
+    "gadget_rush/kneel_yards": {
+     "mean": -0.042,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.3595
+    },
+    "gadget_rush/te": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/te_yards": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/wr": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/wr_yards": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "qb/att": {
+     "mean": 2.6913,
+     "median": 0.0,
+     "p90": 8.0,
+     "sd": 7.6163
+    },
+    "qb/cmp": {
+     "mean": 1.6844,
+     "median": 0.0,
+     "p90": 5.0,
+     "sd": 4.8377
+    },
+    "qb/db": {
+     "mean": 3.0565,
+     "median": 0.0,
+     "p90": 10.0,
+     "sd": 8.6243
+    },
+    "qb/int": {
+     "mean": 0.0959,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.4101
+    },
+    "qb/ptd": {
+     "mean": 0.1258,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.4967
+    },
+    "qb/pyds": {
+     "mean": 19.0841,
+     "median": 0.0,
+     "p90": 58.0,
+     "sd": 56.646
+    },
+    "qb/rtd": {
+     "mean": 0.0565,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.2772
+    },
+    "qb/rush_opp": {
+     "mean": 0.6917,
+     "median": 0.0,
+     "p90": 2.0,
+     "sd": 2.0875
+    },
+    "qb/ryds": {
+     "mean": 4.5013,
+     "median": 0.0,
+     "p90": 12.0,
+     "sd": 15.1492
+    },
+    "qb/sacks": {
+     "mean": 0.1623,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.6115
+    },
+    "qb/scr": {
+     "mean": 0.203,
+     "median": 0.0,
+     "p90": 1.0,
+     "sd": 0.7193
+    },
+    "rushing_total/rushing_yards": {
+     "mean": 4.4593,
+     "median": 0.0,
+     "p90": 12.0,
+     "sd": 15.0546
+    }
+   },
+   "same_team_correlation": {
+    "max": 0.0651,
+    "mean": -0.0099,
+    "min": -0.4001,
+    "n": 13
+   },
+   "team": "IND"
+  },
+  {
+   "correlation_with_qb": {
+    "Anthony Richardson": 0.0219,
+    "Daniel Jones": 0.092,
+    "Justin Fields": -0.0027,
+    "Patrick Mahomes": -0.002
+   },
+   "dk_cpt": {
+    "ceiling_max_draw": 43.8,
+    "mean": 1.7879,
+    "median": 0.0,
+    "p75": 0.6,
+    "p80": 2.7,
+    "p90": 6.75,
+    "p95": 11.25,
+    "p_ge_10": 0.06,
+    "p_ge_15": 0.0275,
+    "p_ge_20": 0.0114,
+    "p_ge_25": 0.0049,
+    "p_ge_30": 0.0019,
+    "p_zero": 0.7359,
+    "sd": 4.3334
+   },
+   "dk_cpt_definition": "1.5x the FLEX draw, applied per simulated world",
+   "dk_draw_source": "dk_scoring/dk_points",
+   "dk_flex": {
+    "ceiling_max_draw": 29.2,
+    "mean": 1.1919,
+    "median": 0.0,
+    "p75": 0.4,
+    "p80": 1.8,
+    "p90": 4.5,
+    "p95": 7.5,
+    "p_ge_10": 0.0275,
+    "p_ge_15": 0.0075,
+    "p_ge_20": 0.0019,
+    "p_ge_25": 0.0006,
+    "p_ge_30": 0.0,
+    "p_zero": 0.7359,
+    "sd": 2.889
+   },
+   "downstream_metadata_not_a_model_input": {
+    "cpt_value_ceiling_per_1k": 3.75,
+    "cpt_value_mean_per_1k": 0.596,
+    "dk_salary_cpt": 3000,
+    "dk_salary_flex": 2000,
+    "flex_value_ceiling_per_1k": 3.75,
+    "flex_value_mean_per_1k": 0.5959,
+    "note": "salary is used ONLY here, for downstream pricing. It did not enter any projection."
+   },
+   "gsis_id": "00-0032951",
+   "n_draws": 8000,
+   "opponent": "KC",
+   "opposing_team_correlation": {
+    "max": 0.026,
+    "mean": -0.0018,
+    "min": -0.0221,
+    "n": 16
+   },
+   "player": "Laquon Treadwell",
+   "position": "WR",
+   "role_opportunity": {
+    "gadget_rush/kneel": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/kneel_yards": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/te": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/te_yards": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/wr": {
+     "mean": 0.0628,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.2652
+    },
+    "gadget_rush/wr_yards": {
+     "mean": 0.3563,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 2.4403
+    },
+    "receiving/receiving_td": {
+     "mean": 0.0316,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.1847
+    },
+    "receiving/receiving_yards": {
+     "mean": 5.2605,
+     "median": 0.0,
+     "p90": 20.0,
+     "sd": 13.1057
+    },
+    "receiving/receptions": {
+     "mean": 0.4382,
+     "median": 0.0,
+     "p90": 2.0,
+     "sd": 0.9958
+    },
+    "receiving/targets": {
+     "mean": 0.6696,
+     "median": 0.0,
+     "p90": 3.0,
+     "sd": 1.4052
+    },
+    "rushing_total/rushing_yards": {
+     "mean": 0.3563,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 2.4403
+    }
+   },
+   "same_team_correlation": {
+    "max": 0.092,
+    "mean": -0.0003,
+    "min": -0.0256,
+    "n": 13
+   },
+   "team": "IND"
+  },
+  {
+   "correlation_with_qb": {
+    "Anthony Richardson": 0.0394,
+    "Daniel Jones": 0.0976,
+    "Justin Fields": 0.0196,
+    "Patrick Mahomes": -0.02
+   },
+   "dk_cpt": {
+    "ceiling_max_draw": 37.8,
+    "mean": 1.7151,
+    "median": 0.0,
+    "p75": 1.8,
+    "p80": 2.7,
+    "p90": 6.0,
+    "p95": 10.5075,
+    "p_ge_10": 0.0522,
+    "p_ge_15": 0.0216,
+    "p_ge_20": 0.0076,
+    "p_ge_25": 0.0037,
+    "p_ge_30": 0.0015,
+    "p_zero": 0.7419,
+    "sd": 3.9912
+   },
+   "dk_cpt_definition": "1.5x the FLEX draw, applied per simulated world",
+   "dk_draw_source": "dk_scoring/dk_points",
+   "dk_flex": {
+    "ceiling_max_draw": 25.2,
+    "mean": 1.1434,
+    "median": 0.0,
+    "p75": 1.2,
+    "p80": 1.8,
+    "p90": 4.0,
+    "p95": 7.005,
+    "p_ge_10": 0.0216,
+    "p_ge_15": 0.0049,
+    "p_ge_20": 0.0015,
+    "p_ge_25": 0.0003,
+    "p_ge_30": 0.0,
+    "p_zero": 0.7419,
+    "sd": 2.6608
+   },
+   "downstream_metadata_not_a_model_input": {
+    "cpt_value_ceiling_per_1k": null,
+    "cpt_value_mean_per_1k": null,
+    "dk_salary_cpt": null,
+    "dk_salary_flex": null,
+    "flex_value_ceiling_per_1k": null,
+    "flex_value_mean_per_1k": null,
+    "note": "salary is used ONLY here, for downstream pricing. It did not enter any projection."
+   },
+   "gsis_id": "00-0037292",
+   "n_draws": 8000,
+   "opponent": "KC",
+   "opposing_team_correlation": {
+    "max": 0.0196,
+    "mean": -0.005,
+    "min": -0.0293,
+    "n": 16
+   },
+   "player": "Andrew Ogletree",
+   "position": "TE",
+   "role_opportunity": {
+    "gadget_rush/kneel": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/kneel_yards": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/te": {
+     "mean": 0.0015,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0387
+    },
+    "gadget_rush/te_yards": {
+     "mean": 0.0053,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.3316
+    },
+    "gadget_rush/wr": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/wr_yards": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "receiving/receiving_td": {
+     "mean": 0.032,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.185
+    },
+    "receiving/receiving_yards": {
+     "mean": 5.2935,
+     "median": 0.0,
+     "p90": 22.0,
+     "sd": 12.2769
+    },
+    "receiving/receptions": {
+     "mean": 0.4196,
+     "median": 0.0,
+     "p90": 2.0,
+     "sd": 0.8713
+    },
+    "receiving/targets": {
+     "mean": 0.7636,
+     "median": 0.0,
+     "p90": 3.0,
+     "sd": 1.3979
+    },
+    "rushing_total/rushing_yards": {
+     "mean": 0.0053,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.3316
+    }
+   },
+   "same_team_correlation": {
+    "max": 0.0976,
+    "mean": 0.0027,
+    "min": -0.0363,
+    "n": 13
+   },
+   "team": "IND"
+  },
+  {
+   "correlation_with_qb": {
+    "Anthony Richardson": -0.0142,
+    "Daniel Jones": 0.0136,
+    "Justin Fields": -0.002,
+    "Patrick Mahomes": 0.0735
+   },
+   "dk_cpt": {
+    "ceiling_max_draw": 48.45,
+    "mean": 1.4365,
+    "median": 0.0,
+    "p75": 0.0,
+    "p80": 1.8,
+    "p90": 4.95,
+    "p95": 9.6,
+    "p_ge_10": 0.0486,
+    "p_ge_15": 0.0189,
+    "p_ge_20": 0.0083,
+    "p_ge_25": 0.004,
+    "p_ge_30": 0.002,
+    "p_zero": 0.7816,
+    "sd": 3.9606
+   },
+   "dk_cpt_definition": "1.5x the FLEX draw, applied per simulated world",
+   "dk_draw_source": "dk_scoring/dk_points",
+   "dk_flex": {
+    "ceiling_max_draw": 32.3,
+    "mean": 0.9577,
+    "median": 0.0,
+    "p75": 0.0,
+    "p80": 1.2,
+    "p90": 3.3,
+    "p95": 6.4,
+    "p_ge_10": 0.0189,
+    "p_ge_15": 0.0061,
+    "p_ge_20": 0.002,
+    "p_ge_25": 0.0009,
+    "p_ge_30": 0.0003,
+    "p_zero": 0.7816,
+    "sd": 2.6404
+   },
+   "downstream_metadata_not_a_model_input": {
+    "cpt_value_ceiling_per_1k": 5.3333,
+    "cpt_value_mean_per_1k": 0.7981,
+    "dk_salary_cpt": 1800,
+    "dk_salary_flex": 1200,
+    "flex_value_ceiling_per_1k": 5.3333,
+    "flex_value_mean_per_1k": 0.7981,
+    "note": "salary is used ONLY here, for downstream pricing. It did not enter any projection."
+   },
+   "gsis_id": "00-0040646",
+   "n_draws": 8000,
+   "opponent": "IND",
+   "opposing_team_correlation": {
+    "max": 0.0136,
+    "mean": 0.0009,
+    "min": -0.0148,
+    "n": 14
+   },
+   "player": "Jalen Royals",
+   "position": "WR",
+   "role_opportunity": {
+    "gadget_rush/kneel": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/kneel_yards": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/te": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/te_yards": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/wr": {
+     "mean": 0.0135,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.1165
+    },
+    "gadget_rush/wr_yards": {
+     "mean": 0.0615,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.9599
+    },
+    "receiving/receiving_td": {
+     "mean": 0.0328,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.1922
+    },
+    "receiving/receiving_yards": {
+     "mean": 3.1814,
+     "median": 0.0,
+     "p90": 10.0,
+     "sd": 9.7771
+    },
+    "receiving/receptions": {
+     "mean": 0.4354,
+     "median": 0.0,
+     "p90": 2.0,
+     "sd": 1.0539
+    },
+    "receiving/targets": {
+     "mean": 0.6679,
+     "median": 0.0,
+     "p90": 3.0,
+     "sd": 1.5131
+    },
+    "rushing_total/rushing_yards": {
+     "mean": 0.0615,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.9599
+    }
+   },
+   "same_team_correlation": {
+    "max": 0.0735,
+    "mean": -0.0111,
+    "min": -0.0426,
+    "n": 15
+   },
+   "team": "KC"
+  },
+  {
+   "correlation_with_qb": {
+    "Anthony Richardson": 0.0101,
+    "Daniel Jones": -0.0092,
+    "Justin Fields": -0.0047,
+    "Patrick Mahomes": 0.0703
+   },
+   "dk_cpt": {
+    "ceiling_max_draw": 50.7,
+    "mean": 1.1346,
+    "median": 0.0,
+    "p75": 0.0,
+    "p80": 0.0,
+    "p90": 4.65,
+    "p95": 8.25,
+    "p_ge_10": 0.0391,
+    "p_ge_15": 0.0186,
+    "p_ge_20": 0.0095,
+    "p_ge_25": 0.0047,
+    "p_ge_30": 0.0026,
+    "p_zero": 0.8581,
+    "sd": 3.8643
+   },
+   "dk_cpt_definition": "1.5x the FLEX draw, applied per simulated world",
+   "dk_draw_source": "dk_scoring/dk_points",
+   "dk_flex": {
+    "ceiling_max_draw": 33.8,
+    "mean": 0.7564,
+    "median": 0.0,
+    "p75": 0.0,
+    "p80": 0.0,
+    "p90": 3.1,
+    "p95": 5.5,
+    "p_ge_10": 0.0186,
+    "p_ge_15": 0.0064,
+    "p_ge_20": 0.0026,
+    "p_ge_25": 0.0008,
+    "p_ge_30": 0.0004,
+    "p_zero": 0.8581,
+    "sd": 2.5762
+   },
+   "downstream_metadata_not_a_model_input": {
+    "cpt_value_ceiling_per_1k": 6.875,
+    "cpt_value_mean_per_1k": 0.9455,
+    "dk_salary_cpt": 1200,
+    "dk_salary_flex": 800,
+    "flex_value_ceiling_per_1k": 6.875,
+    "flex_value_mean_per_1k": 0.9455,
+    "note": "salary is used ONLY here, for downstream pricing. It did not enter any projection."
+   },
+   "gsis_id": "00-0038519",
+   "n_draws": 8000,
+   "opponent": "IND",
+   "opposing_team_correlation": {
+    "max": 0.015,
+    "mean": -0.0006,
+    "min": -0.0252,
+    "n": 14
+   },
+   "player": "Nikko Remigio",
+   "position": "WR",
+   "role_opportunity": {
+    "gadget_rush/kneel": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/kneel_yards": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/te": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/te_yards": {
+     "mean": 0.0,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.0
+    },
+    "gadget_rush/wr": {
+     "mean": 0.0311,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.1779
+    },
+    "gadget_rush/wr_yards": {
+     "mean": 0.1422,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 1.5779
+    },
+    "receiving/receiving_td": {
+     "mean": 0.0151,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 0.1261
+    },
+    "receiving/receiving_yards": {
+     "mean": 4.2515,
+     "median": 0.0,
+     "p90": 21.0,
+     "sd": 14.2135
+    },
+    "receiving/receptions": {
+     "mean": 0.2176,
+     "median": 0.0,
+     "p90": 1.0,
+     "sd": 0.7027
+    },
+    "receiving/targets": {
+     "mean": 0.432,
+     "median": 0.0,
+     "p90": 2.0,
+     "sd": 1.2636
+    },
+    "rushing_total/rushing_yards": {
+     "mean": 0.1422,
+     "median": 0.0,
+     "p90": 0.0,
+     "sd": 1.5779
+    }
+   },
+   "same_team_correlation": {
+    "max": 0.0703,
+    "mean": -0.006,
+    "min": -0.0299,
+    "n": 15
+   },
+   "team": "KC"
+  }
+ ],
+ "position_support_per_club": {
+  "IND": {
+   "K": 1,
+   "QB": 2,
+   "RB": 2,
+   "TE": 3,
+   "WR": 6
+  },
+  "KC": {
+   "K": 1,
+   "QB": 2,
+   "RB": 4,
+   "TE": 3,
+   "WR": 6
+  }
+ },
+ "provenance": {
+  "code_commit": "b50ca0a193aa29a548cd98ef165150b8f5f47df5+src1[44aa01d03783de18]",
+  "dk_entry_file": "nfl/dfs/salaries/raw/DKEntries_IND_KC_SHOWDOWN_2026W2.csv",
+  "dk_entry_file_sha256": "54601675c68c2b725871d11374e9ec9aad24739dc462c170a1e976d0ccda0523",
+  "draw_content_digest": "01abaf5f381d34aa3484c722c6a9601f8f14f348b7e3394869e0e62cb236b0f1",
+  "execution_identity": "12eda64603a377d7a7c43577d475c4454bebb6ff9267af699a9bec8e8fa439b7",
+  "game_id": "2026_02_IND_KC",
+  "information_cut": "2026-09-20T23:05:00Z",
+  "n_draws": 8000,
+  "run_id": "12eda64603a377d7",
+  "run_status": "REFUSED",
+  "third_party_sheet": "nfl/dfs/salaries/raw/THIRDPARTY_players_IND_KC_2026W2_CONTEXT_ONLY.csv",
+  "third_party_sheet_handling": "PRESERVED_NEVER_PARSED"
+ },
+ "spec_version": "nfl-showdown-preinactives-1",
+ "uncertain_roles": [
+  {
+   "depth_chart_position": "FB",
+   "flag": "FULLBACK_GIVEN_RUSHING_WORKLOAD",
+   "gsis_id": "00-0038489",
+   "player": "Ben VanSumeren",
+   "projected_carries_mean": 9.41,
+   "projected_rushing_yards_mean": 40.578,
+   "team": "KC",
+   "why": "the club's declared depth chart lists this player as a fullback, and the engine carries no depth-chart prior. Treat the workload as a MODEL ROLE ASSUMPTION, not a forecast of usage."
+  },
+  {
+   "depth_chart_position": "FB",
+   "depth_chart_rb1": "Brashard Smith",
+   "flag": "NON_RB_PROJECTED_ABOVE_DEPTH_CHART_RB1",
+   "gsis_id": "00-0038489",
+   "player": "Ben VanSumeren",
+   "projected_carries_mean": 9.41,
+   "rb1_carries_mean": 1.236,
+   "team": "KC",
+   "why": "a player the club does not list as its lead back is projected for more carries than the one it does. Role assumption, not usage evidence."
+  }
+ ]
+}
