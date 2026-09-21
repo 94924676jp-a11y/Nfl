@@ -43,17 +43,22 @@ from nfl.production.contracts import validate as V              # noqa: E402
 from nfl.tests.bypass import assert_guard_is_load_bearing       # noqa: E402
 from sportsplatform.governance.outcome import Outcome, State    # noqa: E402
 
-_P, _F = 0, 0
+# TALLY NAMES THE SUITE RUNNER RECOGNISES. `_P, _F` -- the names this module
+# first used -- are not in run_suite._TALLY, so `tally(mod)` returned None,
+# every check went uncounted and the module was INVISIBLE to the suite: 13
+# functions ran and the summary read `checks 0`. A test module the harness
+# cannot measure is a false green inside the measurement system itself.
+PASSED = FAILED = 0
 RUNS = '/tmp/claude-0/postinact/*/'
 
 
 def ok(cond, what):
-    global _P, _F
+    global PASSED, FAILED
     if cond:
-        _P += 1
+        PASSED += 1
         print(f'  ok     {what}')
     else:
-        _F += 1
+        FAILED += 1
         print(f'  FAIL   {what}')
 
 
@@ -384,6 +389,12 @@ def test_the_production_stage_returns_the_contract_verdict():
        'the stage returns on a failed contract before building its Outcome')
 
 
+def test_zz_every_check_passed():
+    """Tripwire: re-raise the module tally so a bare run turns red too."""
+    if FAILED:
+        raise AssertionError(f'{FAILED} check(s) failed in this module')
+
+
 def main():
     for t in (test_phi_ten_old_path_would_have_passed,
               test_phi_ten_new_path_refuses_by_name,
@@ -400,8 +411,8 @@ def main():
               test_the_production_stage_returns_the_contract_verdict):
         print(f'== {t.__name__}')
         t()
-    print(f'\nPASSED {_P} FAILED {_F}')
-    return 1 if _F else 0
+    print(f'\nPASSED {PASSED} FAILED {FAILED}')
+    return 1 if FAILED else 0
 
 
 if __name__ == '__main__':

@@ -153,7 +153,7 @@ def main(argv=None):
     if only:
         files = [f for f in files if only in f]
     n_fn = n_raise = n_check_fail = n_check_ok = 0
-    n_fn_zero = n_fn_blocked = 0
+    n_fn_zero = n_fn_blocked = n_unrecognised_tally = 0
     zero_fns, blocked_fns = [], []
     problems = []
     for f in files:
@@ -171,6 +171,31 @@ def main(argv=None):
         fns = [n for n in dir(mod)
                if n.startswith('test_') and callable(getattr(mod, n))]
         before = tally(mod)
+        # AN UNRECOGNISED COUNTER IS A REFUSAL, NOT A SKIP.
+        #
+        # `tally` returns None when a module's counters are not one of the
+        # pairs in `_TALLY`. Every per-function accounting branch below is
+        # guarded by `if now is not None`, so such a module ran its tests and
+        # contributed NOTHING: no checks, no failures, no zero-check entry.
+        # Four modules written on 2026-09-21 used `_P, _F` and were invisible
+        # exactly this way -- 177 checks reported to a human as passing that
+        # the suite had never counted, one of which asserted a production
+        # guard was load-bearing. A measurement system that silently ignores
+        # a measurement is the false-green class inside the instrument.
+        #
+        # Refusing by name is what stops the next module repeating it.
+        if fns and before is None:
+            n_unrecognised_tally += 1
+            problems.append(
+                f'UNRECOGNISED_TALLY {f}\n'
+                f'  {len(fns)} test function(s) ran and NOT ONE check could '
+                f'be counted, because the module exposes no counter pair this '
+                f'runner recognises.\n'
+                f'  Every check in it is invisible: if all of them failed the '
+                f'suite would still report PASS.\n'
+                f'  Use one of: '
+                + ', '.join(f'{a}/{b}' for a, b in _TALLY)
+                + ' as MODULE-LEVEL names.')
         # PER-FUNCTION ACCOUNTING. `prev` walks forward one function at a time
         # so the delta is attributable to the function that produced it.
         prev = before
@@ -234,14 +259,14 @@ def main(argv=None):
           f'checks {n_check_ok + n_check_fail}  '
           f'FAILING CHECKS {n_check_fail}  RAISED {n_raise}  '
           f'ZERO-CHECK FUNCTIONS {n_fn_zero}  BLOCKED FUNCTIONS '
-          f'{n_fn_blocked}')
+          f'{n_fn_blocked}  UNRECOGNISED TALLIES {n_unrecognised_tally}')
     if blocked_fns:
         print('blocked (declared, not a pass, not a failure):')
         for b in blocked_fns:
             print(f'  {b}')
     for p in problems:
         print('\n' + p)
-    bad = (n_check_fail + n_raise + n_fn_zero
+    bad = (n_check_fail + n_raise + n_fn_zero + n_unrecognised_tally
            + sum(p.startswith('VACUOUS') for p in problems))
     print('SUITE ' + ('FAIL' if bad else 'PASS'))
     return 1 if bad else 0

@@ -29,9 +29,21 @@ if str(REPO) not in sys.path:
     sys.path.insert(0, str(REPO))
 
 _P, _F = [], []
+# COUNTERS THE SUITE RUNNER RECOGNISES. The lists above carry check NAMES and
+# are what the tripwire re-raises; they are kept. But `_P`/`_F` are not in
+# `run_suite._TALLY`, so `tally(mod)` returned None and all three test
+# functions here contributed ZERO counted checks to every suite run this
+# module has ever been in. The runner now refuses that by name; these two
+# integers are the module's side of the repair.
+PASSED = FAILED = 0
 
 
 def ck(name, cond, detail=''):
+    global PASSED, FAILED
+    if cond:
+        PASSED += 1
+    else:
+        FAILED += 1
     (_P if cond else _F).append(name)
     print(('PASS ' if cond else 'FAIL ') + name
           + ((' :: ' + detail) if detail else ''))
@@ -126,8 +138,14 @@ def test_no_builtin_hash_seeds_an_rng_anywhere_in_production():
 
 
 def test_zz_every_check_passed():
-    if _F:
-        raise AssertionError(f'{len(_F)} check(s) failed in this module')
+    # Reads FAILED, not `_F`: `tally_tripwires` recognises a tripwire by
+    # SHAPE, and one of the shape conditions is that it names a failure
+    # counter the runner knows. Referencing only the local list made this
+    # look like an ordinary zero-check function.
+    # No call but print/AssertionError, by shape rule: `len(_F)` counted as
+    # a third call and disqualified this as a tripwire.
+    if FAILED:
+        raise AssertionError(f'{FAILED} check(s) failed in this module')
 
 
 if __name__ == '__main__':
