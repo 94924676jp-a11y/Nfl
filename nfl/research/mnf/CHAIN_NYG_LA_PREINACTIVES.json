@@ -1,0 +1,1184 @@
+{
+ "spec_version": "nfl-football-chain-1",
+ "game_id": "2026_02_NYG_LA",
+ "season": 2026,
+ "week": 2,
+ "information_cut": "2026-09-21T19:52:00Z",
+ "ran_at": "2026-09-21T18:44:48.547576+00:00",
+ "inactives_supplied": false,
+ "declared_max_unresolved_fraction": 0.25,
+ "layers": {
+  "universe": {
+   "code": "PLAYER_UNIVERSE_BUILT",
+   "state": "PASS",
+   "n_players": 156,
+   "n_unaccounted": 0,
+   "support_state_counts": {
+    "OUTSIDE_SUPPORTED_POSITION": 106,
+    "MODEL_UNSUPPORTED": 35,
+    "ROSTERED_BUT_NOT_EXPECTED_TO_PARTICIPATE": 15
+   },
+   "evidence_missing": false
+  },
+  "freshness_hours": {
+   "weekly_rosters": 1.9804959466666665,
+   "depth_charts": 1.9836019355555554,
+   "injuries": 27.735394953333337
+  },
+  "coverage": {
+   "code": "COVERAGE_INCOMPLETE",
+   "state": "FAIL"
+  },
+  "inactive_application": {
+   "code": "NO_OFFICIAL_INACTIVE_EVIDENCE",
+   "state": "BLOCKED"
+  },
+  "usage_corpus": {
+   "code": "USAGE_MEASURED_WIDEST_LAWFUL",
+   "state": "PASS",
+   "blob": "pbp_2026.b69f55a172965e16.csv.gz",
+   "store": "vintage",
+   "n_games": 16,
+   "accepted_panel_sees_n_games": 10,
+   "games_the_accepted_panel_cannot_see": [
+    "2026_01_ARI_LAC",
+    "2026_01_DAL_NYG",
+    "2026_01_DEN_KC",
+    "2026_01_GB_MIN",
+    "2026_01_MIA_LV",
+    "2026_01_WAS_PHI"
+   ]
+  },
+  "role": {
+   "code": "ROLE_STATE_ASSIGNED",
+   "state": "PASS",
+   "role_counts": {
+    "SPECIALIST": 2,
+    "STARTER": 9,
+    "BACKUP": 5,
+    "ROLE_UNCERTAIN": 7,
+    "SECONDARY_ROTATION": 6,
+    "PRIMARY_ROTATION": 5,
+    "FULLBACK": 1
+   },
+   "support_counts": {
+    "ROLE_SUPPORTED": 25,
+    "ROLE_UNSUPPORTED": 10
+   },
+   "conflict_counts": {
+    "INJURY_CONTRADICTS_ROLE": 1,
+    "USAGE_CHANNEL_MISMATCH": 1,
+    "PARTICIPATION_WITHOUT_LISTING": 1
+   },
+   "boundaries": {
+    "starter_floor": 0.5326840659340659,
+    "primary_floor": 0.37182692307692305,
+    "secondary_floor": 0.2089325842696629
+   }
+  },
+  "role_gate": {
+   "code": "ROLE_STATE_SUPPORTED_FOR_PUBLISHABLE_SET",
+   "state": "PASS"
+  },
+  "participation": {
+   "code": "PARTICIPATION_INCOMPLETE",
+   "state": "BLOCKED",
+   "clubs": {
+    "LA": {
+     "budget": 4.9678125,
+     "budget_sd": 0.04392709691921364,
+     "accounted_nonqb": 4.58,
+     "unresolved_participation_mass": 0.3878124999999999,
+     "unresolved_fraction_of_budget": 0.07806504371894066,
+     "unresolved_means": "full-time players' worth of offensive snaps that measured, role-supported participation does not account for. 1.0 is one player on the field for every snap. It is NOT allocated.",
+     "qb_budget": 1.0003125,
+     "accounted_qb": 1.0,
+     "n_players": 18,
+     "n_resolved": 13,
+     "n_unsupported": 5,
+     "unsupported_players": [
+      {
+       "display_name": "Ty Simpson",
+       "role": "ROLE_UNCERTAIN",
+       "measured_snap_share": null,
+       "why": "no measured offensive participation at this club, and the alternative -- an anchor from his listing -- is the cold start this layer exists to refuse"
+      },
+      {
+       "display_name": "Max Klare",
+       "role": "ROLE_UNCERTAIN",
+       "measured_snap_share": null,
+       "why": "no measured offensive participation at this club, and the alternative -- an anchor from his listing -- is the cold start this layer exists to refuse"
+      },
+      {
+       "display_name": "CJ Daniels",
+       "role": "ROLE_UNCERTAIN",
+       "measured_snap_share": null,
+       "why": "no measured offensive participation at this club, and the alternative -- an anchor from his listing -- is the cold start this layer exists to refuse"
+      },
+      {
+       "display_name": "Jordan Whittington",
+       "role": "PRIMARY_ROTATION",
+       "measured_snap_share": 0.41,
+       "why": "participation was measured (0.4100) but the role it sits in is not established: INJURY_CONTRADICTS_ROLE"
+      },
+      {
+       "display_name": "Tutu Atwell",
+       "role": "ROLE_UNCERTAIN",
+       "measured_snap_share": null,
+       "why": "no measured offensive participation at this club, and the alternative -- an anchor from his listing -- is the cold start this layer exists to refuse"
+      }
+     ],
+     "state": "PARTICIPATION_INCOMPLETE"
+    },
+    "NYG": {
+     "budget": 4.9678125,
+     "budget_sd": 0.04392709691921364,
+     "accounted_nonqb": 3.92,
+     "unresolved_participation_mass": 1.0478125,
+     "unresolved_fraction_of_budget": 0.21092029942756496,
+     "unresolved_means": "full-time players' worth of offensive snaps that measured, role-supported participation does not account for. 1.0 is one player on the field for every snap. It is NOT allocated.",
+     "qb_budget": 1.0003125,
+     "accounted_qb": 1.0,
+     "n_players": 15,
+     "n_resolved": 10,
+     "n_unsupported": 5,
+     "unsupported_players": [
+      {
+       "display_name": "Jameis Winston",
+       "role": "ROLE_UNCERTAIN",
+       "measured_snap_share": null,
+       "why": "no measured offensive participation at this club, and the alternative -- an anchor from his listing -- is the cold start this layer exists to refuse"
+      },
+      {
+       "display_name": "Najee Harris",
+       "role": "ROLE_UNCERTAIN",
+       "measured_snap_share": null,
+       "why": "no measured offensive participation at this club, and the alternative -- an anchor from his listing -- is the cold start this layer exists to refuse"
+      },
+      {
+       "display_name": "Patrick Ricard",
+       "role": "FULLBACK",
+       "measured_snap_share": 0.54,
+       "why": "participation was measured (0.5400) but the role it sits in is not established: USAGE_CHANNEL_MISMATCH"
+      },
+      {
+       "display_name": "Chris Manhertz",
+       "role": "SECONDARY_ROTATION",
+       "measured_snap_share": 0.35,
+       "why": "participation was measured (0.3500) but the role it sits in is not established: PARTICIPATION_WITHOUT_LISTING"
+      },
+      {
+       "display_name": "Thomas Fidone II",
+       "role": "ROLE_UNCERTAIN",
+       "measured_snap_share": null,
+       "why": "no measured offensive participation at this club, and the alternative -- an anchor from his listing -- is the cold start this layer exists to refuse"
+      }
+     ],
+     "state": "PARTICIPATION_INCOMPLETE"
+    }
+   }
+  },
+  "participation_gate": {
+   "code": "PARTICIPATION_SUPPORTS_ALLOCATION",
+   "state": "PASS"
+  },
+  "allocation": {
+   "targets": {
+    "code": "ALLOCATION_COMPOSED",
+    "state": "PASS",
+    "clubs": {
+     "LA": {
+      "room": "targets",
+      "n_participation_resolved": 8,
+      "n_with_measured_share": 7,
+      "n_without_measured_share": 1,
+      "retained_share_mass": 0.8148148148148148,
+      "reassigned_mass": 0.18518518518518523,
+      "renormalisation_assumption": "share_renormalised divides each retained share by the retained total, which gives the survivors the opportunity that went to players no longer in the set, in proportion to what they already had. That is an assumption, not a measurement. share_of_measured carries the unassumed number and reassigned_mass is exactly how much separates them.",
+      "concentration": {
+       "n": 7,
+       "top1": 0.4090909090909091,
+       "top2": 0.6818181818181819,
+       "top3": 0.7727272727272727,
+       "hhi": 0.2644628099173554,
+       "entropy_nats": 1.5774894200113119,
+       "entropy_max_nats": 1.9459101490553132,
+       "entropy_ratio": 0.8106691980496327,
+       "effective_players": 3.78125
+      },
+      "concentration_vs_league": {
+       "top1": {
+        "value": 0.4090909090909091,
+        "league_median": 0.2702702702702703,
+        "league_p10": 0.2222222222222222,
+        "league_p90": 0.35135135135135137,
+        "percentile_in_league": 0.9375
+       },
+       "top3": {
+        "value": 0.7727272727272727,
+        "league_median": 0.6478537360890302,
+        "league_p10": 0.5806451612903225,
+        "league_p90": 0.7407407407407407,
+        "percentile_in_league": 0.90625
+       },
+       "hhi": {
+        "value": 0.2644628099173554,
+        "league_median": 0.17457024221453288,
+        "league_p10": 0.1581450653983353,
+        "league_p90": 0.22717311906501098,
+        "percentile_in_league": 0.96875
+       },
+       "entropy_ratio": {
+        "value": 0.8106691980496327,
+        "league_median": 0.8931980839641029,
+        "league_p10": 0.8355199790037915,
+        "league_p90": 0.93870334069354,
+        "percentile_in_league": 0.0625
+       },
+       "effective_players": {
+        "value": 3.78125,
+        "league_median": 5.728358615678081,
+        "league_p10": 4.121951219512195,
+        "league_p90": 6.223529411764706,
+        "percentile_in_league": 0.03125
+       }
+      }
+     },
+     "NYG": {
+      "room": "targets",
+      "n_participation_resolved": 6,
+      "n_with_measured_share": 5,
+      "n_without_measured_share": 1,
+      "retained_share_mass": 0.8275862068965517,
+      "reassigned_mass": 0.1724137931034483,
+      "renormalisation_assumption": "share_renormalised divides each retained share by the retained total, which gives the survivors the opportunity that went to players no longer in the set, in proportion to what they already had. That is an assumption, not a measurement. share_of_measured carries the unassumed number and reassigned_mass is exactly how much separates them.",
+      "concentration": {
+       "n": 5,
+       "top1": 0.375,
+       "top2": 0.7083333333333333,
+       "top3": 0.875,
+       "hhi": 0.2881944444444444,
+       "entropy_nats": 1.3721361080536074,
+       "entropy_max_nats": 1.6094379124341003,
+       "entropy_ratio": 0.8525560989043687,
+       "effective_players": 3.4698795180722897
+      },
+      "concentration_vs_league": {
+       "top1": {
+        "value": 0.375,
+        "league_median": 0.2702702702702703,
+        "league_p10": 0.2222222222222222,
+        "league_p90": 0.35135135135135137,
+        "percentile_in_league": 0.90625
+       },
+       "top3": {
+        "value": 0.875,
+        "league_median": 0.6478537360890302,
+        "league_p10": 0.5806451612903225,
+        "league_p90": 0.7407407407407407,
+        "percentile_in_league": 0.96875
+       },
+       "hhi": {
+        "value": 0.2881944444444444,
+        "league_median": 0.17457024221453288,
+        "league_p10": 0.1581450653983353,
+        "league_p90": 0.22717311906501098,
+        "percentile_in_league": 0.96875
+       },
+       "entropy_ratio": {
+        "value": 0.8525560989043687,
+        "league_median": 0.8931980839641029,
+        "league_p10": 0.8355199790037915,
+        "league_p90": 0.93870334069354,
+        "percentile_in_league": 0.1875
+       },
+       "effective_players": {
+        "value": 3.4698795180722897,
+        "league_median": 5.728358615678081,
+        "league_p10": 4.121951219512195,
+        "league_p90": 6.223529411764706,
+        "percentile_in_league": 0.03125
+       }
+      }
+     }
+    },
+    "rows": [
+     {
+      "game_id": "2026_02_NYG_LA",
+      "team": "LA",
+      "room": "targets",
+      "gsis_id": "00-0036244",
+      "display_name": "Colby Parkinson",
+      "role": "STARTER",
+      "expected_snap_share": 0.77,
+      "share_of_measured": 0.07407407407407407,
+      "share_renormalised": 0.09090909090909091,
+      "n_observed_games": 1,
+      "allocation_state": "ALLOCATION_RESOLVED",
+      "evidence_is_thin": true
+     },
+     {
+      "game_id": "2026_02_NYG_LA",
+      "team": "LA",
+      "room": "targets",
+      "gsis_id": "00-0039074",
+      "display_name": "Davis Allen",
+      "role": "SECONDARY_ROTATION",
+      "expected_snap_share": 0.34,
+      "share_of_measured": 0.037037037037037035,
+      "share_renormalised": 0.045454545454545456,
+      "n_observed_games": 1,
+      "allocation_state": "ALLOCATION_RESOLVED",
+      "evidence_is_thin": true
+     },
+     {
+      "game_id": "2026_02_NYG_LA",
+      "team": "LA",
+      "room": "targets",
+      "gsis_id": "00-0040737",
+      "display_name": "Terrance Ferguson",
+      "role": "PRIMARY_ROTATION",
+      "expected_snap_share": 0.51,
+      "share_of_measured": 0.037037037037037035,
+      "share_renormalised": 0.045454545454545456,
+      "n_observed_games": 1,
+      "allocation_state": "ALLOCATION_RESOLVED",
+      "evidence_is_thin": true
+     },
+     {
+      "game_id": "2026_02_NYG_LA",
+      "team": "LA",
+      "room": "targets",
+      "gsis_id": "00-0033110",
+      "display_name": "Tyler Higbee",
+      "role": "BACKUP",
+      "expected_snap_share": 0.2,
+      "share_of_measured": 0.07407407407407407,
+      "share_renormalised": 0.09090909090909091,
+      "n_observed_games": 1,
+      "allocation_state": "ALLOCATION_RESOLVED",
+      "evidence_is_thin": true
+     },
+     {
+      "game_id": "2026_02_NYG_LA",
+      "team": "LA",
+      "room": "targets",
+      "gsis_id": "00-0031381",
+      "display_name": "Davante Adams",
+      "role": "STARTER",
+      "expected_snap_share": 0.54,
+      "share_of_measured": 0.2222222222222222,
+      "share_renormalised": 0.2727272727272727,
+      "n_observed_games": 1,
+      "allocation_state": "ALLOCATION_RESOLVED",
+      "evidence_is_thin": true
+     },
+     {
+      "game_id": "2026_02_NYG_LA",
+      "team": "LA",
+      "room": "targets",
+      "gsis_id": "00-0040590",
+      "display_name": "Konata Mumpfield",
+      "role": "SECONDARY_ROTATION",
+      "expected_snap_share": 0.26,
+      "share_of_measured": 0.037037037037037035,
+      "share_renormalised": 0.045454545454545456,
+      "n_observed_games": 1,
+      "allocation_state": "ALLOCATION_RESOLVED",
+      "evidence_is_thin": true
+     },
+     {
+      "game_id": "2026_02_NYG_LA",
+      "team": "LA",
+      "room": "targets",
+      "gsis_id": "00-0039075",
+      "display_name": "Puka Nacua",
+      "role": "STARTER",
+      "expected_snap_share": 0.7,
+      "share_of_measured": 0.3333333333333333,
+      "share_renormalised": 0.4090909090909091,
+      "n_observed_games": 1,
+      "allocation_state": "ALLOCATION_RESOLVED",
+      "evidence_is_thin": true
+     },
+     {
+      "game_id": "2026_02_NYG_LA",
+      "team": "LA",
+      "room": "targets",
+      "gsis_id": "00-0038359",
+      "display_name": "Xavier Smith",
+      "role": "SECONDARY_ROTATION",
+      "expected_snap_share": 0.26,
+      "share_of_measured": null,
+      "share_renormalised": null,
+      "n_observed_games": 0,
+      "allocation_state": "ALLOCATION_NO_MEASURED_SHARE",
+      "why": "participation is established but he took no targets opportunity in any observed week, so his share is unmeasured. It is not set to zero: a player can be on the field without a target and the two are different facts.",
+      "evidence_is_thin": true
+     },
+     {
+      "game_id": "2026_02_NYG_LA",
+      "team": "NYG",
+      "room": "targets",
+      "gsis_id": "00-0037838",
+      "display_name": "Isaiah Likely",
+      "role": "PRIMARY_ROTATION",
+      "expected_snap_share": 0.49,
+      "share_of_measured": 0.27586206896551724,
+      "share_renormalised": 0.3333333333333333,
+      "n_observed_games": 1,
+      "allocation_state": "ALLOCATION_RESOLVED",
+      "evidence_is_thin": true
+     },
+     {
+      "game_id": "2026_02_NYG_LA",
+      "team": "NYG",
+      "room": "targets",
+      "gsis_id": "00-0039847",
+      "display_name": "Theo Johnson",
+      "role": "PRIMARY_ROTATION",
+      "expected_snap_share": 0.46,
+      "share_of_measured": 0.034482758620689655,
+      "share_renormalised": 0.041666666666666664,
+      "n_observed_games": 1,
+      "allocation_state": "ALLOCATION_RESOLVED",
+      "evidence_is_thin": true
+     },
+     {
+      "game_id": "2026_02_NYG_LA",
+      "team": "NYG",
+      "room": "targets",
+      "gsis_id": "00-0036309",
+      "display_name": "Darnell Mooney",
+      "role": "STARTER",
+      "expected_snap_share": 0.57,
+      "share_of_measured": 0.06896551724137931,
+      "share_renormalised": 0.08333333333333333,
+      "n_observed_games": 1,
+      "allocation_state": "ALLOCATION_RESOLVED",
+      "evidence_is_thin": true
+     },
+     {
+      "game_id": "2026_02_NYG_LA",
+      "team": "NYG",
+      "room": "targets",
+      "gsis_id": "00-0041042",
+      "display_name": "Malachi Fields",
+      "role": "STARTER",
+      "expected_snap_share": 0.72,
+      "share_of_measured": 0.13793103448275862,
+      "share_renormalised": 0.16666666666666666,
+      "n_observed_games": 1,
+      "allocation_state": "ALLOCATION_RESOLVED",
+      "evidence_is_thin": true
+     },
+     {
+      "game_id": "2026_02_NYG_LA",
+      "team": "NYG",
+      "room": "targets",
+      "gsis_id": "00-0039337",
+      "display_name": "Malik Nabers",
+      "role": "PRIMARY_ROTATION",
+      "expected_snap_share": 0.52,
+      "share_of_measured": 0.3103448275862069,
+      "share_renormalised": 0.375,
+      "n_observed_games": 1,
+      "allocation_state": "ALLOCATION_RESOLVED",
+      "evidence_is_thin": true
+     },
+     {
+      "game_id": "2026_02_NYG_LA",
+      "team": "NYG",
+      "room": "targets",
+      "gsis_id": "00-0031235",
+      "display_name": "Odell Beckham Jr.",
+      "role": "BACKUP",
+      "expected_snap_share": 0.16,
+      "share_of_measured": null,
+      "share_renormalised": null,
+      "n_observed_games": 0,
+      "allocation_state": "ALLOCATION_NO_MEASURED_SHARE",
+      "why": "participation is established but he took no targets opportunity in any observed week, so his share is unmeasured. It is not set to zero: a player can be on the field without a target and the two are different facts.",
+      "evidence_is_thin": true
+     }
+    ],
+    "gate": {
+     "code": "ALLOCATION_CONSERVES",
+     "state": "PASS"
+    }
+   },
+   "carries": {
+    "code": "ALLOCATION_COMPOSED",
+    "state": "PASS",
+    "clubs": {
+     "LA": {
+      "room": "carries",
+      "n_participation_resolved": 3,
+      "n_with_measured_share": 3,
+      "n_without_measured_share": 0,
+      "retained_share_mass": 0.896551724137931,
+      "reassigned_mass": 0.10344827586206895,
+      "renormalisation_assumption": "share_renormalised divides each retained share by the retained total, which gives the survivors the opportunity that went to players no longer in the set, in proportion to what they already had. That is an assumption, not a measurement. share_of_measured carries the unassumed number and reassigned_mass is exactly how much separates them.",
+      "concentration": {
+       "n": 3,
+       "top1": 0.4230769230769231,
+       "top2": 0.8076923076923077,
+       "top3": 1.0,
+       "hhi": 0.363905325443787,
+       "entropy_nats": 1.0484854421409806,
+       "entropy_max_nats": 1.0986122886681098,
+       "entropy_ratio": 0.9543725779839037,
+       "effective_players": 2.7479674796747964
+      },
+      "concentration_vs_league": {
+       "top1": {
+        "value": 0.4230769230769231,
+        "league_median": 0.5547785547785549,
+        "league_p10": 0.4411764705882353,
+        "league_p90": 0.6486486486486487,
+        "percentile_in_league": 0.09375
+       },
+       "top3": {
+        "value": 1.0,
+        "league_median": 0.9648148148148148,
+        "league_p10": 0.88,
+        "league_p90": 1.0,
+        "percentile_in_league": 1.0
+       },
+       "hhi": {
+        "value": 0.363905325443787,
+        "league_median": 0.4004230035698567,
+        "league_p10": 0.2984542211652794,
+        "league_p90": 0.4876543209876544,
+        "percentile_in_league": 0.34375
+       },
+       "entropy_ratio": {
+        "value": 0.9543725779839037,
+        "league_median": 0.8232740410826864,
+        "league_p10": 0.6686745304777426,
+        "league_p90": 0.8865449229868745,
+        "percentile_in_league": 1.0
+       },
+       "effective_players": {
+        "value": 2.7479674796747964,
+        "league_median": 2.4983218916857357,
+        "league_p10": 2.0136986301369864,
+        "league_p90": 3.315068493150685,
+        "percentile_in_league": 0.65625
+       }
+      }
+     },
+     "NYG": {
+      "room": "carries",
+      "n_participation_resolved": 3,
+      "n_with_measured_share": 3,
+      "n_without_measured_share": 0,
+      "retained_share_mass": 0.7027027027027027,
+      "reassigned_mass": 0.29729729729729726,
+      "renormalisation_assumption": "share_renormalised divides each retained share by the retained total, which gives the survivors the opportunity that went to players no longer in the set, in proportion to what they already had. That is an assumption, not a measurement. share_of_measured carries the unassumed number and reassigned_mass is exactly how much separates them.",
+      "concentration": {
+       "n": 3,
+       "top1": 0.6923076923076923,
+       "top2": 0.9230769230769231,
+       "top3": 1.0,
+       "hhi": 0.5384615384615384,
+       "entropy_nats": 0.7902679680745903,
+       "entropy_max_nats": 1.0986122886681098,
+       "entropy_ratio": 0.7193329040881773,
+       "effective_players": 1.8571428571428572
+      },
+      "concentration_vs_league": {
+       "top1": {
+        "value": 0.6923076923076923,
+        "league_median": 0.5547785547785549,
+        "league_p10": 0.4411764705882353,
+        "league_p90": 0.6486486486486487,
+        "percentile_in_league": 0.9375
+       },
+       "top3": {
+        "value": 1.0,
+        "league_median": 0.9648148148148148,
+        "league_p10": 0.88,
+        "league_p90": 1.0,
+        "percentile_in_league": 1.0
+       },
+       "hhi": {
+        "value": 0.5384615384615384,
+        "league_median": 0.4004230035698567,
+        "league_p10": 0.2984542211652794,
+        "league_p90": 0.4876543209876544,
+        "percentile_in_league": 0.90625
+       },
+       "entropy_ratio": {
+        "value": 0.7193329040881773,
+        "league_median": 0.8232740410826864,
+        "league_p10": 0.6686745304777426,
+        "league_p90": 0.8865449229868745,
+        "percentile_in_league": 0.25
+       },
+       "effective_players": {
+        "value": 1.8571428571428572,
+        "league_median": 2.4983218916857357,
+        "league_p10": 2.0136986301369864,
+        "league_p90": 3.315068493150685,
+        "percentile_in_league": 0.09375
+       }
+      }
+     }
+    },
+    "rows": [
+     {
+      "game_id": "2026_02_NYG_LA",
+      "team": "LA",
+      "room": "carries",
+      "gsis_id": "00-0039738",
+      "display_name": "Blake Corum",
+      "role": "SECONDARY_ROTATION",
+      "expected_snap_share": 0.23,
+      "share_of_measured": 0.3448275862068966,
+      "share_renormalised": 0.38461538461538464,
+      "n_observed_games": 1,
+      "allocation_state": "ALLOCATION_RESOLVED",
+      "evidence_is_thin": true
+     },
+     {
+      "game_id": "2026_02_NYG_LA",
+      "team": "LA",
+      "room": "carries",
+      "gsis_id": "00-0037840",
+      "display_name": "Kyren Williams",
+      "role": "STARTER",
+      "expected_snap_share": 0.64,
+      "share_of_measured": 0.3793103448275862,
+      "share_renormalised": 0.4230769230769231,
+      "n_observed_games": 1,
+      "allocation_state": "ALLOCATION_RESOLVED",
+      "evidence_is_thin": true
+     },
+     {
+      "game_id": "2026_02_NYG_LA",
+      "team": "LA",
+      "room": "carries",
+      "gsis_id": "00-0037557",
+      "display_name": "Ronnie Rivers",
+      "role": "BACKUP",
+      "expected_snap_share": 0.13,
+      "share_of_measured": 0.1724137931034483,
+      "share_renormalised": 0.19230769230769232,
+      "n_observed_games": 1,
+      "allocation_state": "ALLOCATION_RESOLVED",
+      "evidence_is_thin": true
+     },
+     {
+      "game_id": "2026_02_NYG_LA",
+      "team": "NYG",
+      "room": "carries",
+      "gsis_id": "00-0040715",
+      "display_name": "Cam Skattebo",
+      "role": "STARTER",
+      "expected_snap_share": 0.61,
+      "share_of_measured": 0.4864864864864865,
+      "share_renormalised": 0.6923076923076923,
+      "n_observed_games": 1,
+      "allocation_state": "ALLOCATION_RESOLVED",
+      "evidence_is_thin": true
+     },
+     {
+      "game_id": "2026_02_NYG_LA",
+      "team": "NYG",
+      "room": "carries",
+      "gsis_id": "00-0035250",
+      "display_name": "Devin Singletary",
+      "role": "SECONDARY_ROTATION",
+      "expected_snap_share": 0.36,
+      "share_of_measured": 0.16216216216216217,
+      "share_renormalised": 0.23076923076923078,
+      "n_observed_games": 1,
+      "allocation_state": "ALLOCATION_RESOLVED",
+      "evidence_is_thin": true
+     },
+     {
+      "game_id": "2026_02_NYG_LA",
+      "team": "NYG",
+      "room": "carries",
+      "gsis_id": "00-0039384",
+      "display_name": "Tyrone Tracy Jr.",
+      "role": "BACKUP",
+      "expected_snap_share": 0.03,
+      "share_of_measured": 0.05405405405405406,
+      "share_renormalised": 0.07692307692307693,
+      "n_observed_games": 1,
+      "allocation_state": "ALLOCATION_RESOLVED",
+      "evidence_is_thin": true
+     }
+    ],
+    "gate": {
+     "code": "ALLOCATION_CONSERVES",
+     "state": "PASS"
+    }
+   }
+  }
+ },
+ "gates": {
+  "ROSTER_IDENTITY": "PASS",
+  "DATA_FRESHNESS": "PASS",
+  "PLAYER_COVERAGE": "FAIL",
+  "PER_CLUB_POSITION_COVERAGE": "FAIL",
+  "PER_CLUB_LAYER_COVERAGE": "FAIL",
+  "INACTIVE_APPLICATION": "BLOCKED",
+  "CURRENT_SEASON_INPUTS": "PASS",
+  "ROLE_PLAUSIBILITY": "PASS",
+  "PARTICIPATION_COMPLETENESS": "PASS",
+  "OPPORTUNITY_CONSERVATION": "PASS"
+ },
+ "gates_deliberately_absent": [
+  "ARTIFACT_SEALED",
+  "CURRENT_SEASON_INPUTS",
+  "DATA_FRESHNESS",
+  "DFS_FIELD_MODEL_STATUS",
+  "DK_SCORING_PRESENT",
+  "DRAW_ARTIFACT_INTEGRITY",
+  "DST_SUPPORT_STATUS",
+  "GAME_ACCOUNTING_COHERENCE",
+  "INACTIVE_APPLICATION",
+  "MARKET_SNAPSHOT_STATUS",
+  "MODEL_MANIFEST_FROZEN",
+  "OPPORTUNITY_CONSERVATION",
+  "PARTICIPATION_COMPLETENESS",
+  "PER_CLUB_LAYER_COVERAGE",
+  "PER_CLUB_POSITION_COVERAGE",
+  "PLAYER_COVERAGE",
+  "PROMOTION_STATUS_VALID_FOR_SCOPE",
+  "PROP_CALIBRATION_STATUS",
+  "REAL_MONEY_SCOPE_AUTHORIZED",
+  "ROLE_PLAUSIBILITY",
+  "ROSTER_IDENTITY"
+ ],
+ "verdicts": {
+  "football": {
+   "code": "PRODUCT_RESEARCH_ONLY",
+   "state": "BLOCKED",
+   "value": null,
+   "evidence": {
+    "spec_version": "nfl-product-verdict-1",
+    "scope": "football",
+    "scope_chain": [
+     "football"
+    ],
+    "VERDICT": "RESEARCH_ONLY",
+    "why": "a required readiness gate did not pass, so the system is NOT READY to make this claim",
+    "blocking_gates": [
+     {
+      "gate": "DRAW_ARTIFACT_INTEGRITY",
+      "result": "NOT_EVALUATED",
+      "owning_scope": "football",
+      "is_upstream": false
+     },
+     {
+      "gate": "PLAYER_COVERAGE",
+      "result": "FAIL",
+      "owning_scope": "football",
+      "is_upstream": false
+     },
+     {
+      "gate": "PER_CLUB_POSITION_COVERAGE",
+      "result": "FAIL",
+      "owning_scope": "football",
+      "is_upstream": false
+     },
+     {
+      "gate": "PER_CLUB_LAYER_COVERAGE",
+      "result": "FAIL",
+      "owning_scope": "football",
+      "is_upstream": false
+     },
+     {
+      "gate": "INACTIVE_APPLICATION",
+      "result": "BLOCKED",
+      "owning_scope": "football",
+      "is_upstream": false
+     },
+     {
+      "gate": "GAME_ACCOUNTING_COHERENCE",
+      "result": "NOT_EVALUATED",
+      "owning_scope": "football",
+      "is_upstream": false
+     },
+     {
+      "gate": "ARTIFACT_SEALED",
+      "result": "NOT_EVALUATED",
+      "owning_scope": "football",
+      "is_upstream": false
+     },
+     {
+      "gate": "MODEL_MANIFEST_FROZEN",
+      "result": "NOT_EVALUATED",
+      "owning_scope": "football",
+      "is_upstream": false
+     },
+     {
+      "gate": "PROMOTION_STATUS_VALID_FOR_SCOPE",
+      "result": "NOT_EVALUATED",
+      "owning_scope": "football",
+      "is_upstream": false
+     },
+     {
+      "gate": "REAL_MONEY_SCOPE_AUTHORIZED",
+      "result": "NOT_EVALUATED",
+      "owning_scope": "football",
+      "is_upstream": false
+     }
+    ],
+    "first_blocking_gate": "DRAW_ARTIFACT_INTEGRITY",
+    "blocked_by_upstream_scopes": [],
+    "gates": {
+     "DRAW_ARTIFACT_INTEGRITY": "NOT_EVALUATED",
+     "PLAYER_COVERAGE": "FAIL",
+     "PER_CLUB_POSITION_COVERAGE": "FAIL",
+     "PER_CLUB_LAYER_COVERAGE": "FAIL",
+     "INACTIVE_APPLICATION": "BLOCKED",
+     "ROLE_PLAUSIBILITY": "PASS",
+     "PARTICIPATION_COMPLETENESS": "PASS",
+     "OPPORTUNITY_CONSERVATION": "PASS",
+     "GAME_ACCOUNTING_COHERENCE": "NOT_EVALUATED",
+     "DATA_FRESHNESS": "PASS",
+     "ROSTER_IDENTITY": "PASS",
+     "CURRENT_SEASON_INPUTS": "PASS",
+     "ARTIFACT_SEALED": "NOT_EVALUATED",
+     "MODEL_MANIFEST_FROZEN": "NOT_EVALUATED",
+     "PROMOTION_STATUS_VALID_FOR_SCOPE": "NOT_EVALUATED",
+     "REAL_MONEY_SCOPE_AUTHORIZED": "NOT_EVALUATED"
+    },
+    "n_required": 16,
+    "n_passed": 6,
+    "cause": "GOVERNANCE"
+   }
+  },
+  "prop_product": {
+   "code": "PRODUCT_RESEARCH_ONLY",
+   "state": "BLOCKED",
+   "value": null,
+   "evidence": {
+    "spec_version": "nfl-product-verdict-1",
+    "scope": "prop_product",
+    "scope_chain": [
+     "football",
+     "prop_product"
+    ],
+    "VERDICT": "RESEARCH_ONLY",
+    "why": "a required readiness gate did not pass, so the system is NOT READY to make this claim",
+    "blocking_gates": [
+     {
+      "gate": "DRAW_ARTIFACT_INTEGRITY",
+      "result": "NOT_EVALUATED",
+      "owning_scope": "football",
+      "is_upstream": true
+     },
+     {
+      "gate": "PLAYER_COVERAGE",
+      "result": "FAIL",
+      "owning_scope": "football",
+      "is_upstream": true
+     },
+     {
+      "gate": "PER_CLUB_POSITION_COVERAGE",
+      "result": "FAIL",
+      "owning_scope": "football",
+      "is_upstream": true
+     },
+     {
+      "gate": "PER_CLUB_LAYER_COVERAGE",
+      "result": "FAIL",
+      "owning_scope": "football",
+      "is_upstream": true
+     },
+     {
+      "gate": "INACTIVE_APPLICATION",
+      "result": "BLOCKED",
+      "owning_scope": "football",
+      "is_upstream": true
+     },
+     {
+      "gate": "GAME_ACCOUNTING_COHERENCE",
+      "result": "NOT_EVALUATED",
+      "owning_scope": "football",
+      "is_upstream": true
+     },
+     {
+      "gate": "ARTIFACT_SEALED",
+      "result": "NOT_EVALUATED",
+      "owning_scope": "football",
+      "is_upstream": true
+     },
+     {
+      "gate": "MODEL_MANIFEST_FROZEN",
+      "result": "NOT_EVALUATED",
+      "owning_scope": "football",
+      "is_upstream": true
+     },
+     {
+      "gate": "PROMOTION_STATUS_VALID_FOR_SCOPE",
+      "result": "NOT_EVALUATED",
+      "owning_scope": "football",
+      "is_upstream": true
+     },
+     {
+      "gate": "MARKET_SNAPSHOT_STATUS",
+      "result": "NOT_EVALUATED",
+      "owning_scope": "prop_product",
+      "is_upstream": false
+     },
+     {
+      "gate": "REAL_MONEY_SCOPE_AUTHORIZED",
+      "result": "NOT_EVALUATED",
+      "owning_scope": "football",
+      "is_upstream": true
+     }
+    ],
+    "first_blocking_gate": "DRAW_ARTIFACT_INTEGRITY",
+    "blocked_by_upstream_scopes": [
+     "football"
+    ],
+    "gates": {
+     "DRAW_ARTIFACT_INTEGRITY": "NOT_EVALUATED",
+     "PLAYER_COVERAGE": "FAIL",
+     "PER_CLUB_POSITION_COVERAGE": "FAIL",
+     "PER_CLUB_LAYER_COVERAGE": "FAIL",
+     "INACTIVE_APPLICATION": "BLOCKED",
+     "ROLE_PLAUSIBILITY": "PASS",
+     "PARTICIPATION_COMPLETENESS": "PASS",
+     "OPPORTUNITY_CONSERVATION": "PASS",
+     "GAME_ACCOUNTING_COHERENCE": "NOT_EVALUATED",
+     "DATA_FRESHNESS": "PASS",
+     "ROSTER_IDENTITY": "PASS",
+     "CURRENT_SEASON_INPUTS": "PASS",
+     "ARTIFACT_SEALED": "NOT_EVALUATED",
+     "MODEL_MANIFEST_FROZEN": "NOT_EVALUATED",
+     "PROMOTION_STATUS_VALID_FOR_SCOPE": "NOT_EVALUATED",
+     "MARKET_SNAPSHOT_STATUS": "NOT_EVALUATED",
+     "PROP_CALIBRATION_STATUS": "NOT_EVALUATED",
+     "REAL_MONEY_SCOPE_AUTHORIZED": "NOT_EVALUATED"
+    },
+    "n_required": 18,
+    "n_passed": 6,
+    "cause": "GOVERNANCE"
+   }
+  },
+  "dfs_product": {
+   "code": "PRODUCT_RESEARCH_ONLY",
+   "state": "BLOCKED",
+   "value": null,
+   "evidence": {
+    "spec_version": "nfl-product-verdict-1",
+    "scope": "dfs_product",
+    "scope_chain": [
+     "football",
+     "dfs_product"
+    ],
+    "VERDICT": "RESEARCH_ONLY",
+    "why": "a required readiness gate did not pass, so the system is NOT READY to make this claim",
+    "blocking_gates": [
+     {
+      "gate": "DRAW_ARTIFACT_INTEGRITY",
+      "result": "NOT_EVALUATED",
+      "owning_scope": "football",
+      "is_upstream": true
+     },
+     {
+      "gate": "PLAYER_COVERAGE",
+      "result": "FAIL",
+      "owning_scope": "football",
+      "is_upstream": true
+     },
+     {
+      "gate": "PER_CLUB_POSITION_COVERAGE",
+      "result": "FAIL",
+      "owning_scope": "football",
+      "is_upstream": true
+     },
+     {
+      "gate": "PER_CLUB_LAYER_COVERAGE",
+      "result": "FAIL",
+      "owning_scope": "football",
+      "is_upstream": true
+     },
+     {
+      "gate": "INACTIVE_APPLICATION",
+      "result": "BLOCKED",
+      "owning_scope": "football",
+      "is_upstream": true
+     },
+     {
+      "gate": "GAME_ACCOUNTING_COHERENCE",
+      "result": "NOT_EVALUATED",
+      "owning_scope": "football",
+      "is_upstream": true
+     },
+     {
+      "gate": "ARTIFACT_SEALED",
+      "result": "NOT_EVALUATED",
+      "owning_scope": "football",
+      "is_upstream": true
+     },
+     {
+      "gate": "MODEL_MANIFEST_FROZEN",
+      "result": "NOT_EVALUATED",
+      "owning_scope": "football",
+      "is_upstream": true
+     },
+     {
+      "gate": "PROMOTION_STATUS_VALID_FOR_SCOPE",
+      "result": "NOT_EVALUATED",
+      "owning_scope": "football",
+      "is_upstream": true
+     },
+     {
+      "gate": "DK_SCORING_PRESENT",
+      "result": "NOT_EVALUATED",
+      "owning_scope": "dfs_product",
+      "is_upstream": false
+     },
+     {
+      "gate": "DST_SUPPORT_STATUS",
+      "result": "NOT_EVALUATED",
+      "owning_scope": "dfs_product",
+      "is_upstream": false
+     },
+     {
+      "gate": "REAL_MONEY_SCOPE_AUTHORIZED",
+      "result": "NOT_EVALUATED",
+      "owning_scope": "football",
+      "is_upstream": true
+     }
+    ],
+    "first_blocking_gate": "DRAW_ARTIFACT_INTEGRITY",
+    "blocked_by_upstream_scopes": [
+     "football"
+    ],
+    "gates": {
+     "DRAW_ARTIFACT_INTEGRITY": "NOT_EVALUATED",
+     "PLAYER_COVERAGE": "FAIL",
+     "PER_CLUB_POSITION_COVERAGE": "FAIL",
+     "PER_CLUB_LAYER_COVERAGE": "FAIL",
+     "INACTIVE_APPLICATION": "BLOCKED",
+     "ROLE_PLAUSIBILITY": "PASS",
+     "PARTICIPATION_COMPLETENESS": "PASS",
+     "OPPORTUNITY_CONSERVATION": "PASS",
+     "GAME_ACCOUNTING_COHERENCE": "NOT_EVALUATED",
+     "DATA_FRESHNESS": "PASS",
+     "ROSTER_IDENTITY": "PASS",
+     "CURRENT_SEASON_INPUTS": "PASS",
+     "ARTIFACT_SEALED": "NOT_EVALUATED",
+     "MODEL_MANIFEST_FROZEN": "NOT_EVALUATED",
+     "PROMOTION_STATUS_VALID_FOR_SCOPE": "NOT_EVALUATED",
+     "DK_SCORING_PRESENT": "NOT_EVALUATED",
+     "DFS_FIELD_MODEL_STATUS": "NOT_EVALUATED",
+     "DST_SUPPORT_STATUS": "NOT_EVALUATED",
+     "REAL_MONEY_SCOPE_AUTHORIZED": "NOT_EVALUATED"
+    },
+    "n_required": 19,
+    "n_passed": 6,
+    "cause": "GOVERNANCE"
+   }
+  }
+ },
+ "verdict": {
+  "code": "PRODUCT_RESEARCH_ONLY",
+  "state": "BLOCKED",
+  "value": null,
+  "evidence": {
+   "spec_version": "nfl-product-verdict-1",
+   "scope": "football",
+   "scope_chain": [
+    "football"
+   ],
+   "VERDICT": "RESEARCH_ONLY",
+   "why": "a required readiness gate did not pass, so the system is NOT READY to make this claim",
+   "blocking_gates": [
+    {
+     "gate": "DRAW_ARTIFACT_INTEGRITY",
+     "result": "NOT_EVALUATED",
+     "owning_scope": "football",
+     "is_upstream": false
+    },
+    {
+     "gate": "PLAYER_COVERAGE",
+     "result": "FAIL",
+     "owning_scope": "football",
+     "is_upstream": false
+    },
+    {
+     "gate": "PER_CLUB_POSITION_COVERAGE",
+     "result": "FAIL",
+     "owning_scope": "football",
+     "is_upstream": false
+    },
+    {
+     "gate": "PER_CLUB_LAYER_COVERAGE",
+     "result": "FAIL",
+     "owning_scope": "football",
+     "is_upstream": false
+    },
+    {
+     "gate": "INACTIVE_APPLICATION",
+     "result": "BLOCKED",
+     "owning_scope": "football",
+     "is_upstream": false
+    },
+    {
+     "gate": "GAME_ACCOUNTING_COHERENCE",
+     "result": "NOT_EVALUATED",
+     "owning_scope": "football",
+     "is_upstream": false
+    },
+    {
+     "gate": "ARTIFACT_SEALED",
+     "result": "NOT_EVALUATED",
+     "owning_scope": "football",
+     "is_upstream": false
+    },
+    {
+     "gate": "MODEL_MANIFEST_FROZEN",
+     "result": "NOT_EVALUATED",
+     "owning_scope": "football",
+     "is_upstream": false
+    },
+    {
+     "gate": "PROMOTION_STATUS_VALID_FOR_SCOPE",
+     "result": "NOT_EVALUATED",
+     "owning_scope": "football",
+     "is_upstream": false
+    },
+    {
+     "gate": "REAL_MONEY_SCOPE_AUTHORIZED",
+     "result": "NOT_EVALUATED",
+     "owning_scope": "football",
+     "is_upstream": false
+    }
+   ],
+   "first_blocking_gate": "DRAW_ARTIFACT_INTEGRITY",
+   "blocked_by_upstream_scopes": [],
+   "gates": {
+    "DRAW_ARTIFACT_INTEGRITY": "NOT_EVALUATED",
+    "PLAYER_COVERAGE": "FAIL",
+    "PER_CLUB_POSITION_COVERAGE": "FAIL",
+    "PER_CLUB_LAYER_COVERAGE": "FAIL",
+    "INACTIVE_APPLICATION": "BLOCKED",
+    "ROLE_PLAUSIBILITY": "PASS",
+    "PARTICIPATION_COMPLETENESS": "PASS",
+    "OPPORTUNITY_CONSERVATION": "PASS",
+    "GAME_ACCOUNTING_COHERENCE": "NOT_EVALUATED",
+    "DATA_FRESHNESS": "PASS",
+    "ROSTER_IDENTITY": "PASS",
+    "CURRENT_SEASON_INPUTS": "PASS",
+    "ARTIFACT_SEALED": "NOT_EVALUATED",
+    "MODEL_MANIFEST_FROZEN": "NOT_EVALUATED",
+    "PROMOTION_STATUS_VALID_FOR_SCOPE": "NOT_EVALUATED",
+    "REAL_MONEY_SCOPE_AUTHORIZED": "NOT_EVALUATED"
+   },
+   "n_required": 16,
+   "n_passed": 6,
+   "cause": "GOVERNANCE"
+  }
+ }
+}

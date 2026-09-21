@@ -78,6 +78,8 @@ GATE_SCOPE = {
     'PER_CLUB_LAYER_COVERAGE': 'football',
     'INACTIVE_APPLICATION': 'football',
     'ROLE_PLAUSIBILITY': 'football',
+    'PARTICIPATION_COMPLETENESS': 'football',
+    'OPPORTUNITY_CONSERVATION': 'football',
     'GAME_ACCOUNTING_COHERENCE': 'football',
     'DATA_FRESHNESS': 'football',
     'ROSTER_IDENTITY': 'football',
