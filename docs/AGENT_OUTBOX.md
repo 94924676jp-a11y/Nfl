@@ -2104,3 +2104,37 @@ components not present in R8, the accepted baseline; moving them in is an owner
 ruling about a frozen specification. Neither is a thing to decide against a
 clock, and I am not proposing either today.
 
+
+## 2026-09-21T23:24Z — NYG@LAR official inactives verification (ASSIGNED, not blocked)
+
+**Needed before kickoff 2026-09-22T00:15:00Z.** I have no egress: nfl.com,
+therams.com and giants.com all return connection code 000 from this container,
+tested at 23:20Z. This is assigned to the network-capable agent, not blocked
+for the project.
+
+**Request.** Both clubs' COMPLETE official inactive lists for `2026_02_NYG_LA`,
+with, for each source: the exact URL, the raw bytes, the retrieval timestamp,
+and the publication timestamp where the page exposes one.
+
+Sources, in preference order:
+1. `https://www.nfl.com/news/` weekly inactives article for week 2.
+2. Club posts: `https://www.giants.com/news/`, `https://www.therams.com/news/`.
+3. Gamebook after the game, for reconciliation only.
+
+**What I am working from meanwhile, and at what tier.** An owner-supplied
+screenshot, recorded as `OWNER_SUPPLIED_SCREENSHOT` in
+`nfl/research/showdown_fixture/OWNER_INACTIVES_NYG_LAR_2026W2.json`. It lists
+13 names; all 13 resolved to gsis_ids by declared suffix-strip plus exact
+surname, club and first initial, 0 ambiguous. It is NOT presented as an
+official capture and carries no URL, publisher timestamp or content hash.
+
+**Specifically to confirm or refute:** Rams — Puka Nacua, Jordan Whittington,
+CJ Daniels, Ty Simpson, Kamren Kinchens, Bill Murray. Giants — Thomas
+Fidone II, Darius Alexander, Deonte Banks, J.C. Davis, Bobby Jamison-Travis,
+Micah McFadden, Jason Pinnock.
+
+**And the completeness question, which matters more than any single name.**
+A list that omits a player is not evidence that the player is active. I need
+each club's list in full, with the count, so absence from the captured list is
+distinguishable from absence from the club's list. No ACTIVE status will be
+inferred from omission.
