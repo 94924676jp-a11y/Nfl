@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import datetime as _dt
 import json
+import os
 import pathlib
 import sys
 
@@ -28,6 +29,7 @@ if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
 from nfl.production import verdict as V                            # noqa: E402
+from nfl.production.contracts import validate as CONTRACTS         # noqa: E402
 from nfl.production.universe import allocation as AL               # noqa: E402
 from nfl.production.universe import chronology as CH                # noqa: E402
 from nfl.production.universe import coverage as CV                 # noqa: E402
@@ -49,8 +51,39 @@ def _iso(s):
         return None
 
 
+def _draw_rows(draws_dir):
+    """Who the model actually emitted, per layer, read from the draw manifest.
+
+    The coverage gates are meaningless without this: with no emitted set every
+    supported player reads MODEL_UNSUPPORTED and the gates fail for the
+    trivial reason that no forecast ran, which tells a reader nothing about
+    the forecast that did.
+    """
+    d = pathlib.Path(draws_dir)
+    man = d / 'player_draws_manifest.json'
+    if not man.exists():
+        cands = sorted(d.glob('*/player_draws_manifest.json'))
+        if not cands:
+            return None, None, {'why': f'no player_draws_manifest.json under '
+                                       f'{draws_dir}'}
+        man = cands[-1]
+    m = json.loads(man.read_text())
+    by_layer, ids = {}, set()
+    for layer, spec in (m.get('layers') or {}).items():
+        rows = set(spec.get('row_ids') or ())
+        if rows:
+            by_layer[layer] = rows
+            ids |= rows
+    return ids, by_layer, {'manifest': str(man), 'run_id': m.get('run_id'),
+                           'n_draws': m.get('n_draws'),
+                           'content_digest': m.get('content_digest'),
+                           'layers': sorted(by_layer),
+                           'n_emitted': len(ids)}
+
+
 def run(season: int, week: int, game_id: str, cut: str, *,
-        inactive_ids=None, max_unresolved_fraction=None) -> dict:
+        inactive_ids=None, max_unresolved_fraction=None,
+        draws_dir=None) -> dict:
     """Every layer, in order, with each one's outcome kept verbatim."""
     started = _dt.datetime.now(_dt.timezone.utc)
     out = {'spec_version': SPEC_VERSION, 'game_id': game_id, 'season': season,
@@ -110,8 +143,53 @@ def run(season: int, week: int, game_id: str, cut: str, *,
                        'violations': (chrono.evidence or {}).get('violations')}
     G['CHRONOLOGY_CERTIFIED'] = V.from_outcome(chrono)
 
-    cov = CV.assess(uni.value, emitted_ids=None, emitted_by_layer=None)
-    L['coverage'] = {'code': cov.code, 'state': cov.state.name}
+    emitted_ids = emitted_by_layer = None
+    if draws_dir:
+        emitted_ids, emitted_by_layer, dev = _draw_rows(draws_dir)
+        L['draws'] = dev
+        # DRAW INTEGRITY IS THE CONTRACT, NOT THE PRESENCE OF ROWS. A first
+        # version of this greened on `emitted_ids` being non-empty, which is
+        # the same false-green family as the freshness gate: it tested that
+        # something existed rather than that it was right.
+        man = dev.get('manifest')
+        if man:
+            m = json.loads(pathlib.Path(man).read_text())
+            arrays = None
+            npz = pathlib.Path(man).parent / 'player_draws.npz'
+            if npz.exists():
+                try:
+                    import numpy as _np
+                    arrays = _np.load(npz)
+                except Exception as exc:               # noqa: BLE001
+                    L['draws']['arrays_unreadable'] = repr(exc)
+            dc = CONTRACTS.validate_draw_manifest(m, arrays, scope='football')
+            L['draw_contract'] = {'code': dc.code, 'state': dc.state.name,
+                                  'detail': (getattr(dc, 'detail', '')
+                                             or '')[:400]}
+            G['DRAW_ARTIFACT_INTEGRITY'] = V.from_outcome(dc)
+        else:
+            G['DRAW_ARTIFACT_INTEGRITY'] = V.FAIL
+        # AND A DRAW ARTIFACT IS NOT A SEALED ARTIFACT. run_status.json says
+        # whether the run sealed; an unsealed run is not publishable however
+        # complete its matrices are.
+        rs = pathlib.Path(man).parent / 'run_status.json' if man else None
+        if rs is not None and rs.exists():
+            st = json.loads(rs.read_text())
+            L['run_status'] = {
+                'run_id': st.get('run_id'), 'status': st.get('status'),
+                'first_failure': st.get('first_failure'),
+                'publication': (st.get('publication') or {}).get('code'),
+                'stages': [{'stage': x['stage'], 'state': x['state'],
+                            'code': x['code']} for x in st.get('stages', [])]}
+            G['ARTIFACT_SEALED'] = (V.PASS if st.get('status') == 'SEALED'
+                                    else V.FAIL)
+            G['MODEL_MANIFEST_FROZEN'] = (
+                V.PASS if st.get('model_configuration') else V.NOT_EVALUATED)
+    cov = CV.assess(uni.value, emitted_ids=emitted_ids,
+                    emitted_by_layer=emitted_by_layer)
+    L['coverage'] = {'code': cov.code, 'state': cov.state.name,
+                     'evidence': {k: v for k, v in (cov.evidence or {}).items()
+                                  if k != 'value'}}
     G['PLAYER_COVERAGE'] = V.from_outcome(cov)
     G['PER_CLUB_POSITION_COVERAGE'] = V.from_outcome(cov)
     G['PER_CLUB_LAYER_COVERAGE'] = V.from_outcome(cov)
@@ -260,7 +338,9 @@ def main(argv):
     season, week, gid, cut = int(argv[1]), int(argv[2]), argv[3], argv[4]
     tol = float(argv[5]) if len(argv) > 5 and argv[5] not in ('-', '') \
         else None
-    out = run(season, week, gid, cut, max_unresolved_fraction=tol)
+    dd = os.environ.get('CHAIN_DRAWS_DIR') or None
+    out = run(season, week, gid, cut, max_unresolved_fraction=tol,
+              draws_dir=dd)
     print(render(out))
     if len(argv) > 6:
         pathlib.Path(argv[6]).write_text(
