@@ -31,6 +31,7 @@ from sportsplatform.governance.outcome import Cause, Outcome, State   # noqa: E4
 from nfl.production import authorization as AUTH                      # noqa: E402
 from nfl.production import pipeline as PL                             # noqa: E402
 from nfl.production import refusal as RF                              # noqa: E402
+from nfl.production.contracts import validate as CONTRACTS          # noqa: E402
 from nfl.prospective import artifact as ART                           # noqa: E402
 from nfl.capture import registry as REG                               # noqa: E402
 from nfl.production import qb_accounting as QBACC
@@ -3028,10 +3029,24 @@ def build(args, fixtures: dict = None) -> dict:
             return cons
 
         fx['_draw_manifest'] = man
-        # `produced` is filled where each layer is actually added, above. It
-        # used to be topped up here from `fx['receiving_draws']` and two
-        # siblings -- fixture keys nothing in this file ever sets -- so the
-        # layer inventory could only ever have been populated by a fixture.
+        # P0-A. THE CONTRACT DECIDES THE OUTCOME; IT DOES NOT DECORATE ONE.
+        #
+        # This stage used to compute `layers_absent` and attach it as
+        # EVIDENCE to an Outcome.ok. PHI@TEN therefore returned DRAWS_BUILT
+        # while declaring `receiving` and `rushing` missing, and a board with
+        # four quarterbacks, two kickers and no skill position reached a
+        # delivery note described as complete. The information was never
+        # missing -- it was captured and not acted on. The same computation
+        # now returns the verdict.
+        # SCOPE 'football' BY RULING. The football simulation must be valid
+        # on its own terms. A DraftKings transform that did not run blocks a
+        # DK board and says nothing about the simulation beneath it; a DFS
+        # builder asks for the dfs_product scope and gets that answer there.
+        _contract = CONTRACTS.validate_draw_manifest(
+            man, ds.arrays, scope='football')
+        inv['draw_contract'] = _contract
+        if _contract.state is not State.PASS:
+            return _contract
         return Outcome.ok(
             'DRAWS_BUILT', value=out,
             detail=f'{man["n_draw_cells"]} draw cell(s) preserved across '
@@ -3043,9 +3058,14 @@ def build(args, fixtures: dict = None) -> dict:
             draw_content_digest=man['content_digest'],
             n_draw_cells=man['n_draw_cells'],
             draw_bytes=man['file']['bytes'],
-            layers_absent=[k for k in
-                           ('receiving', 'rushing', 'td', 'team_volume')
-                           if k not in produced])
+            draw_contract=_contract.value,
+            # Kept as evidence, no longer as the ONLY place absence was
+            # recorded: the contract above has already refused on any
+            # required layer, so anything named here is a layer the contract
+            # declares optional.
+            optional_layers_absent=[
+                k for k in ('td', 'team_volume', 'kicking', 'gadget_rush')
+                if k not in produced])
     p.run_stage('player_draws', _draws,
                 declared_inputs=['joint'], spec_version='nfl-player-draw-1')
     p.run_stage('scoring', lambda: Outcome.ok(
