@@ -1,0 +1,61 @@
+gate_id,block,component,gate_class,statistic,baseline,evaluation_unit,dependence_handling,pass_rule,reason_code_on_fail
+G-I-1,I,point-in-time state,PROVENANCE,share of Tier 1 facts with raw bytes and sha256,none,fact,n/a,equals 1.0,GATE_FAIL:G-I-1
+G-I-2,I,point-in-time state,PROVENANCE,count of records with published_at_status UNKNOWN used at Tier 1 to 5,none,release,n/a,equals 0,GATE_FAIL:G-I-2
+G-I-3,I,point-in-time state,DIAGNOSTIC,gamebook reconciliation error rate per week,none,player-game,clustered by game,reported with interval; threshold from Section 4.2 procedure,GATE_NOT_EVALUATED:G-I-3
+G-II-1,II,identity resolution,EXACT_CORRECTNESS,football-axis coverage of pbp players at cut,none,game,n/a,equals 1.0 else NO_OUTPUT for the game,NO_OUTPUT
+G-II-2,II,identity resolution,EXACT_CORRECTNESS,salary-axis unresolved count per slate,none,slate,n/a,reported; each unresolved player emits IDENTITY_UNRESOLVED on D scopes only,IDENTITY_UNRESOLVED
+G-III-1,III,participation,STATISTICAL_READINESS,PIT uniformity (Wei-Held discrete) of snap-share predictive distributions per position,none,player-game,clustered by game and week,uniformity test not rejected at declared level over prospective log,GATE_FAIL:G-III-1
+G-III-2,III,participation,STATISTICAL_READINESS,hurdle Brier and reliability per status code,status-code base rate,player-game,clustered by week,Brier interval below baseline; reliability slope interval contains 1,GATE_FAIL:G-III-2
+G-IV-1,IV,cold start priors,PROVENANCE,columns dated after cut used in prior,none,release,n/a,equals 0 (static check),GATE_FAIL:G-IV-1
+G-V-1,V,role state,STATISTICAL_READINESS,role-state log loss,persistence of last observed role,player-game,clustered by week,log loss interval below baseline chronologically,GATE_FAIL:G-V-1
+G-VI-1,VI,team volume,STATISTICAL_READINESS,PIT uniformity of team plays and pass attempts,none,team-game,clustered by game,uniformity not rejected,GATE_FAIL:G-VI-1
+G-VI-2,VI,team volume,PROVENANCE,market columns in feature manifest,none,release,n/a,equals 0 (static check),GATE_FAIL:G-VI-2
+G-VII-1,VII,allocation,STATISTICAL_READINESS,coverage of realized top-1 share and HHI by simulated intervals,nominal coverage,team-game,clustered by game,empirical coverage interval contains nominal,GATE_FAIL:G-VII-1
+G-VII-2,VII,allocation,EXACT_CORRECTNESS,player counts sum to team counts,none,world,n/a,exact in every world,GATE_FAIL:G-VII-2
+G-VIII-1,VIII,redistribution,STATISTICAL_READINESS,out-of-sample redistribution error on absences known before cut,naive proportional redistribution,team-game,clustered by week,error interval not above baseline,GATE_FAIL:G-VIII-1
+G-IX-1,IX,efficiency,STATISTICAL_READINESS,per-opportunity PIT and CRPS,position-mean predictive,opportunity,clustered by player and game,CRPS interval below baseline; PIT not rejected,GATE_FAIL:G-IX-1
+G-X-1,X,simulator,EXACT_CORRECTNESS,accounting invariants (Block XLIV list),none,world,n/a,exact in every world,GATE_FAIL:G-X-1
+G-X-2,X,simulator,STATISTICAL_READINESS,"PIT and CEP of drives per game, plays per drive, drive-outcome frequencies, team totals",none,game,clustered by game,not rejected chronologically,GATE_FAIL:G-X-2
+G-X-3,X,simulator,DIAGNOSTIC,nested Monte Carlo SE present for every exposed output,none,release,nested ANOVA,present for 100 percent of exposed rows,GATE_FAIL:G-X-3
+G-X-4,X,simulator,STATISTICAL_READINESS,"drive-outcome frequency score, play-level engine versus drive-level Markov baseline",drive-level Markov engine,game,clustered by game,play-level not worse (interval),GATE_FAIL:G-X-4
+G-XI-1,XI,weather,PROVENANCE,"weather features carry horizon, run init time and source tag",none,game,n/a,equals 100 percent; missing latency measurement emits WEATHER_PROXY,WEATHER_PROXY
+G-XI-2,XI,weather,PROVENANCE,observed weather columns in pre-kickoff manifest,none,release,n/a,equals 0,GATE_FAIL:G-XI-2
+G-XII-1,XII,matchups,COMPONENT_INCLUSION,incremental CRPS over no-matchup model,no-matchup model,opportunity,clustered by game,improvement interval excludes 0; else the component is excluded from the release and the football scope is unaffected (not a scope failure),COMPONENT_NOT_INCLUDED:G-XII-1
+G-XIII-1,XIII,coaching,COMPONENT_INCLUSION,forward-chain improvement over team-only effects,team-only effects,team-game,clustered by week,improvement interval excludes 0; else the component is excluded from the release and the football scope is unaffected,COMPONENT_NOT_INCLUDED:G-XIII-1
+G-XIV-1,XIV,availability,STATISTICAL_READINESS,reliability of P(active) by status code and practice pattern,status-code base rate,player-game,clustered by week,"slope interval contains 1, intercept contains 0",GATE_FAIL:G-XIV-1
+G-XIV-2,XIV,availability,EXACT_CORRECTNESS,Questionable players represented as two-world mixture,none,release,n/a,equals 100 percent,GATE_FAIL:G-XIV-2
+G-XV-1,XV,uncertainty,EXACT_CORRECTNESS,"PREDICTIVE variance components (parameter, scenario, world) from balanced-nested expected mean squares sum to the predictive variance. This is NOT the Monte Carlo error; see G-XV-2",none,release,nested ANOVA,within numerical tolerance,GATE_FAIL:G-XV-1
+G-XV-2,XV,uncertainty,DIAGNOSTIC,"MC SE of each exposed probability from the CORRECTED nested estimator Var(Y_bar) = s_M^2/M, relative to predictive SD. The Revision 2 formula added s_K^2/(MK) + s_N^2/(MKN) on top, which double-counts: scenario twice, world three times (derivation and synthetic validation in nested_mc.py)",Section 4.2 fraction,output row,nested ANOVA,below fraction for 100 percent of rows,GATE_FAIL:G-XV-2
+G-XV-3,XV,uncertainty,DIAGNOSTIC,relative SE of the parameter variance component sigma_M^2 estimated as (MS_M - MS_K)/(K N); M is increased before N because the parameter component is divided by M alone and no number of worlds reduces it,Section 4.2 fraction,release,nested ANOVA,below declared fraction,GATE_FAIL:G-XV-3
+G-XVI-1,XVI,validation protocol,PROVENANCE,gates evaluated with intervals not point estimates,none,gate,n/a,100 percent of statistical gates report intervals,GATE_FAIL:G-XVI-1
+G-XVII-1,XVII,leakage,PROVENANCE,inputs with availability_proof UNPROVEN,none,release,n/a,equals 0 else RELEASE_UNPROVEN,RELEASE_UNPROVEN
+G-XVII-2,XVII,prospective log,STATISTICAL_READINESS,number of independent prospective weeks with PROVEN releases,Section 4.2 power procedure,scope,weeks as independent units,at least required weeks,PROSPECTIVE_WEEKS_INSUFFICIENT
+G-XVIII-1,XVIII,props,EXACT_CORRECTNESS,"world id set and weight hash identical across props, SGP, DFS",none,release,n/a,identical,GATE_FAIL:G-XVIII-1
+G-XVIII-2,XVIII,props,STATISTICAL_READINESS,per-family PIT and CEP,none,player-game,clustered by game,not rejected chronologically per family,GATE_FAIL:G-XVIII-2
+G-XVIII-3,XVIII,props,EXACT_CORRECTNESS,P_over monotone in line; over plus under plus push equals 1,none,record,n/a,exact,GATE_FAIL:G-XVIII-3
+G-XIX-1,XIX,calibration,STATISTICAL_READINESS,post-hoc diagnostic calibration slope and intercept after reweighting,identity,family,clustered by week,"slope interval contains 1, intercept contains 0",GATE_FAIL:G-XIX-1
+G-XIX-2,XIX,calibration,PROVENANCE,family maps fit only on origins before evaluation origin,none,release,n/a,static check passes,GATE_FAIL:G-XIX-2
+G-XIX-3,XIX,calibration,DIAGNOSTIC,"weight-ratio cap and ESS = (sum w)^2 / sum(w^2) of weighted worlds; post-reweighting MC SE is the self-normalised block estimator, CONDITIONAL on the fitted weight vector (weight-fitting uncertainty is unresolved, Q-3)",Section 4.2 floor,release,n/a,cap respected and ESS above floor else CALIBRATION_INFEASIBLE,CALIBRATION_INFEASIBLE
+G-XIX-4,XIX,calibration,EXACT_CORRECTNESS,accounting identities on weighted aggregates,none,release,n/a,exact,GATE_FAIL:G-XIX-4
+G-XX-1,XX,market evaluation,PROVENANCE,market columns in football manifests,none,release,n/a,equals 0,GATE_FAIL:G-XX-1
+G-XX-2,XX,market evaluation,MARKET_COMPARISON,"model minus de-vig market proper score with interval, per prop family, aggregate and historical. A statement about the MODEL. It does NOT establish positive EV at any particular offered price; that is offer_edge.evaluate_offer, downstream, and cannot promote this gate",de-vig market,prop family,clustered by week,interval excludes 0 favorably for DEPLOYABLE; else NO_SUPPORTED_EDGE,MARKET_INTERVAL_INCLUDES_ZERO
+G-XXI-1,XXI,SGP,DIAGNOSTIC,joint probability MC SE,Section 4.2 fraction,record,nested ANOVA,below fraction,GATE_FAIL:G-XXI-1
+G-XXII-1,XXII,DST,STATISTICAL_READINESS,"PIT of sack, INT, FR, return TD rates",none,team-game,clustered by game,not rejected chronologically,GATE_FAIL:G-XXII-1
+G-XXII-2,XXII,DST,STATISTICAL_READINESS,points-allowed bracket reliability using enumerated-set functional,none,team-game,clustered by week,reliability interval contains identity,GATE_FAIL:G-XXII-2
+G-XXII-3,XXII,DST,EXACT_CORRECTNESS,scoring events carry scoring_unit and conceding_unit_on_field,none,scoring event,n/a,equals 100 percent,GATE_FAIL:G-XXII-3
+G-XXIII-1,XXIII,kicker,STATISTICAL_READINESS,FG make reliability by distance bucket,distance-only logistic,attempt,clustered by game,reliability interval contains identity,GATE_FAIL:G-XXIII-1
+G-XXIV-1,XXIV,DK scoring,EXACT_CORRECTNESS,recomputed DK points versus contest CSV points including DST PA,none,player-contest,n/a,exact to two decimals,GATE_FAIL:G-XXIV-1
+G-XXV-1,XXV,ownership,STATISTICAL_READINESS,ownership calibration by salary tier,salary-tier mean,player-slate,clustered by slate,reliability interval contains identity,GATE_FAIL:G-XXV-1
+G-XXV-2,XXV,ownership,EXACT_CORRECTNESS,salary identity unresolved rate,none,slate,n/a,reported; blocks D scopes only,IDENTITY_UNRESOLVED
+G-XXVI-1,XXVI,field model,STATISTICAL_READINESS,realized stack rates and ownership marginals within simulated intervals,nominal coverage,contest,clustered by slate,coverage interval contains nominal,GATE_FAIL:G-XXVI-1
+G-XXVII-1,XXVII,duplication,STATISTICAL_READINESS,predicted versus realized duplicate counts,none,contest,clustered by slate,PIT not rejected on held-out contests,GATE_FAIL:G-XXVII-1
+G-XXVIII-1,XXVIII,contest simulation,STATISTICAL_READINESS,realized finish percentile PIT,none,entry,clustered by contest,not rejected,GATE_FAIL:G-XXVIII-1
+G-XXIX-1,XXIX,portfolio,EXACT_CORRECTNESS,portfolio evaluated on same weighted worlds hash as props,none,release,n/a,identical hash,GATE_FAIL:G-XXIX-1
+G-XXIX-2,XXIX,portfolio,MARKET_COMPARISON,realized payout PIT and realized ROI interval,top-E individually optimal lineups,contest,clustered by slate,ROI interval excludes 0 favorably for DEPLOYABLE; else NO_SUPPORTED_EDGE,MARKET_INTERVAL_INCLUDES_ZERO
+G-XXX-1,XXX,showdown,EXACT_CORRECTNESS,Showdown captain transform matches DK contest CSV points,none,entry,n/a,exact to two decimals,GATE_FAIL:G-XXX-1
+G-XXXI-1,XXXI,classic,STATISTICAL_READINESS,simulated QB-WR1 and QB-opposing-WR correlations versus REPO measured intervals,REPO measured intervals,slate,clustered by week,inside intervals chronologically,GATE_FAIL:G-XXXI-1
+G-XXXV-1,XXXV,component validation,PROVENANCE,every component has a validation record for the release,none,release,n/a,equals 100 percent,GATE_NOT_EVALUATED:G-XXXV-1
+G-XXXVII-1,XXXVII,re-simulation,EXACT_CORRECTNESS,release id in every output row,none,output row,n/a,equals 100 percent,GATE_FAIL:G-XXXVII-1
+G-XXXVII-2,XXXVII,re-simulation,DIAGNOSTIC,re-simulation latency,budget declared per product,event,n/a,measured and within budget,GATE_FAIL:G-XXXVII-2
+G-XXXVIII-1,XXXVIII,reproducibility,EXACT_CORRECTNESS,re-run with same manifest reproduces outputs,none,release,n/a,bitwise or tolerance-equal,GATE_FAIL:G-XXXVIII-1
+G-XLVI-1,XLVI,UX,EXACT_CORRECTNESS,UX renders verdict and reason codes from engine output only,none,view,n/a,static check passes,GATE_FAIL:G-XLVI-1
