@@ -156,41 +156,101 @@ def test_the_seven_sound_artifacts_still_pass():
        f'{len(passed)} of {len(runs)} real artifacts satisfy the contract')
 
 
-def test_scope_separates_football_from_the_dfs_transform():
-    """Owner ruling: a missing DK transform must not invalidate football."""
-    c = REG.get('player_draws')
-    ok('dk_scoring' not in c.required_layers('football'),
-       'dk_scoring is NOT required for the football scope')
-    ok('dk_scoring' in c.required_layers('dfs_product'),
-       'dk_scoring IS required for the dfs_product scope')
+def test_scopes_are_cumulative_not_independent():
+    """Upstream validity flows DOWN; downstream invalidity does NOT flow UP.
 
-    man, arr = _synthetic()
-    o = V.validate_draw_manifest(man, arr, scope='football')
-    ok(o.state is State.PASS,
+    The first implementation filtered `ls.scope == scope`, which made the
+    scopes independent: `dfs_product` required only `dk_scoring`, so PHI@TEN
+    returned football FAIL and dfs_product PASS. That is the Week-2 defect
+    one layer higher -- a downstream artifact calling itself valid while the
+    model beneath it is broken. These checks pin the corrected semantics.
+    """
+    c = REG.get('player_draws')
+    fb = set(c.required_layers('football'))
+    dfs = set(c.required_layers('dfs_product'))
+    ok(c.ancestors('football') == ('football',),
+       'football is a root scope')
+    ok(c.ancestors('dfs_product') == ('football', 'dfs_product'),
+       f'dfs_product depends on football: {c.ancestors("dfs_product")}')
+    ok(fb < dfs, f'dfs_product requirements STRICTLY contain football: '
+                 f'{sorted(fb)} < {sorted(dfs)}')
+    ok('dk_scoring' not in fb, 'dk_scoring is not a football requirement')
+    ok('dk_scoring' in dfs, 'dk_scoring IS a dfs_product requirement')
+    ok({'receiving', 'rushing', 'qb'} <= dfs,
+       'and dfs_product still requires every football layer')
+
+    # A future prop scope must drop in with no change to the abstraction.
+    ok(isinstance(c.SCOPE_PARENTS, dict) and c.SCOPE_PARENTS['football'] == (),
+       'the scope graph is a dependency map, not a flat list')
+
+
+def test_valid_football_with_no_dk_layer():
+    """football PASS, dfs FAIL -- and the football verdict is untouched."""
+    man, arr = _synthetic()                       # football layers only
+    f = V.validate_draw_manifest(man, arr, scope='football')
+    ok(f.state is State.PASS,
        'a football artifact with no DK layer is VALID football')
-    blocks = [b['layer'] for b in (o.evidence or {}).get(
+    blocks = [b['layer'] for b in (f.evidence or {}).get(
         'blocks_other_scope') or []]
     ok('dk_scoring' in blocks,
-       f'and it says which product that absence blocks: {blocks}')
+       f'and it names which product that absence blocks: {blocks}')
 
     d = V.validate_draw_manifest(man, arr, scope='dfs_product')
-    ok(d.state is State.FAIL,
-       'the same artifact is REFUSED for a DraftKings product')
+    ok(d.state is State.FAIL, 'the same artifact is REFUSED for DFS')
     ok('CONTRACT_DECLARED_LAYER_ABSENT' in set(
         (d.evidence or {}).get('offence_codes') or []),
-       'refused by name, naming the layer')
+       'refused by name')
+    up = (d.evidence or {}).get('blocked_by_upstream_scopes') or []
+    ok(not up,
+       f'and NOT attributed upstream -- the missing layer is DFS\'s own: '
+       f'{up}')
 
-    # And the football verdict is unchanged by the DFS verdict.
+    # THE ISOLATION PROPERTY. Asking the DFS question must not change the
+    # football answer.
+    f2 = V.validate_draw_manifest(man, arr, scope='football')
+    ok(f2.state is State.PASS and f2.code == f.code,
+       'the football verdict is identical before and after the DFS check')
+
+
+def test_invalid_football_blocks_dfs_even_when_dk_bytes_exist():
+    """PHI@TEN: football FAIL, dfs FAIL BY UPSTREAM. DK bytes prove nothing."""
     runs = _real_runs()
-    if '2026_02_PHI_TEN' in runs:
-        m, npz = runs['2026_02_PHI_TEN']
-        z = np.load(npz)
-        fb = V.validate_draw_manifest(m, z, scope='football')
-        df = V.validate_draw_manifest(m, z, scope='dfs_product')
-        ok(fb.state is State.FAIL and df.state is State.PASS,
-           'PHI@TEN: football INVALID, DK transform present -- the two '
-           'scopes answer different questions and neither overrides the '
-           'other')
+    if '2026_02_PHI_TEN' not in runs:
+        ok(True, 'PHI@TEN artifact not in this checkout')
+        return
+    man, npz = runs['2026_02_PHI_TEN']
+    z = np.load(npz)
+    ok('dk_scoring' in (man.get('layers') or {}),
+       'PHI@TEN DID compute DK points -- the transform ran')
+
+    f = V.validate_draw_manifest(man, z, scope='football')
+    ok(f.state is State.FAIL, 'football is INVALID')
+
+    d = V.validate_draw_manifest(man, z, scope='dfs_product')
+    ok(d.state is State.FAIL,
+       'and DFS is BLOCKED despite the DK bytes existing')
+    codes = set((d.evidence or {}).get('offence_codes') or [])
+    ok('CONTRACT_BLOCKED_BY_UPSTREAM_SCOPE' in codes,
+       f'attributed to the upstream scope: {sorted(codes)}')
+    ok((d.evidence or {}).get('blocked_by_upstream_scopes') == ['football'],
+       f'named: {(d.evidence or {}).get("blocked_by_upstream_scopes")}')
+    upstream_layers = sorted({o['layer'] for o in
+                              (d.evidence or {}).get('offences') or []
+                              if o.get('is_upstream')})
+    ok({'receiving', 'rushing'} <= set(upstream_layers),
+       f'and points at the real cause, not the transform: {upstream_layers}')
+
+
+def test_dfs_product_pass_is_not_dfs_deployable():
+    """A transform certificate is not a deployment certificate."""
+    man, arr = _synthetic(layers=['receiving', 'rushing', 'qb', 'dk_scoring'])
+    d = V.validate_draw_manifest(man, arr, scope='dfs_product')
+    ok(d.state is State.PASS,
+       'football plus a DK transform satisfies the dfs_product scope')
+    cert = (d.value or {}).get('certifies', '')
+    ok('NOT a deployment verdict' in cert,
+       'and the artifact says so: field, ownership, duplication, payout, '
+       'market freshness and calibration are later gates')
 
 
 def test_min_chi_passes_p0a_and_that_is_correct():
@@ -328,7 +388,10 @@ def main():
     for t in (test_phi_ten_old_path_would_have_passed,
               test_phi_ten_new_path_refuses_by_name,
               test_the_seven_sound_artifacts_still_pass,
-              test_scope_separates_football_from_the_dfs_transform,
+              test_scopes_are_cumulative_not_independent,
+              test_valid_football_with_no_dk_layer,
+              test_invalid_football_blocks_dfs_even_when_dk_bytes_exist,
+              test_dfs_product_pass_is_not_dfs_deployable,
               test_min_chi_passes_p0a_and_that_is_correct,
               test_each_named_refusal_fires_on_its_own_violation,
               test_zero_row_legality_must_be_declared,

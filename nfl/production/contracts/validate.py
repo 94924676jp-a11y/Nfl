@@ -57,6 +57,7 @@ CODES = (
     'CONTRACT_ROW_AXIS_MISMATCH',
     'CONTRACT_UNDECLARED_EMPTY_OUTPUT',
     'CONTRACT_UNDECLARED_LAYER',
+    'CONTRACT_BLOCKED_BY_UPSTREAM_SCOPE',
     'CONTRACT_MISSING_RUN_IDENTITY',
     'DECLARED_DRAW_ARTIFACT_INCOMPLETE',
 )
@@ -84,17 +85,38 @@ def validate_draw_manifest(manifest: dict, arrays=None,
     declarations are still checked -- which is enough to catch PHI@TEN, since
     there the layer was absent from the manifest itself.
 
-    `scope` names the PRODUCT being certified. The default is `football`,
-    because the football simulation is the thing that must be valid on its
-    own: a DraftKings transform that did not run blocks a DK board and says
-    nothing about the simulation underneath it. A DFS builder asks for
-    `dfs_product` and gets the stricter answer. Whatever the scope, every
-    PRESENT layer is checked for malformation -- an emitted layer with
-    absent bytes, duplicate ids or non-finite values is broken in every
-    scope.
+    `scope` names the PRODUCT being certified, and scopes are CUMULATIVE
+    over their ancestors:
+
+        upstream validity flows DOWNWARD;
+        downstream invalidity does NOT flow upward.
+
+    `football` requires the football layers and nothing else, so a DK
+    transform that did not run blocks a DK board and says nothing about the
+    simulation beneath it. `dfs_product` requires the football layers AND
+    `dk_scoring`, so a DK transform computed on a broken football world is
+    NOT a valid DK transform -- DK point bytes are not evidence of a sound
+    product when the world they were computed from is malformed.
+
+    When a `dfs_product` check fails only because of football layers, the
+    refusal is attributed UPSTREAM rather than reported as a DFS defect, so
+    a reader is sent to the real cause.
+
+    A `dfs_product` PASS certifies the deterministic transform and the
+    football artifact under it. It is NOT DFS_DEPLOYABLE: field model,
+    ownership, duplication, payout structure and contest configuration are
+    later gates that live above the artifact layer.
+
+    Whatever the scope, every PRESENT layer is checked for malformation -- an
+    emitted layer with absent bytes, duplicate ids or non-finite values is
+    broken in every scope.
     """
     c = get(contract_name)
     required = set(c.required_layers(scope))
+    #: layer -> the scope that OWNS its requirement, so an offence can say
+    #: whether it is this product's defect or an inherited one.
+    owner_scope = {ls.name: ls.scope for ls in c.layers}
+    ancestors = c.ancestors(scope)
     declared = manifest.get('layers') or {}
     offences, blocks_other_scope = [], []
 
@@ -206,20 +228,42 @@ def validate_draw_manifest(manifest: dict, arrays=None,
                     'why': 'a non-finite draw cannot be counted, scored or '
                            'compared against a line'})
 
+    for o in offences:
+        own = owner_scope.get(o.get('layer'))
+        if own and own != scope:
+            o['owning_scope'] = own
+            o['is_upstream'] = True
+
+    upstream = sorted({o['owning_scope'] for o in offences
+                       if o.get('is_upstream')})
     if offences:
         codes = sorted({o['code'] for o in offences})
+        if upstream:
+            codes = sorted(set(codes) | {'CONTRACT_BLOCKED_BY_UPSTREAM_SCOPE'})
         return Outcome.fail(
             'DECLARED_DRAW_ARTIFACT_INCOMPLETE',
             f'{len(offences)} contract offence(s) against {c.name} '
-            f'({c.schema_version}): {", ".join(codes)}. A stage may not '
-            f'return PASS while its own output is incomplete.',
+            f'({c.schema_version}) at scope {scope!r}: '
+            f'{", ".join(codes)}. A stage may not return PASS while its own '
+            f'output is incomplete.'
+            + (f' {len(upstream)} upstream scope(s) are invalid '
+               f'({", ".join(upstream)}), so this product is blocked by its '
+               f'own foundation rather than by a defect in its transform.'
+               if upstream else ''),
             contract=c.name, schema_version=c.schema_version, scope=scope,
+            scope_chain=list(ancestors),
             offence_codes=codes, offences=offences[:20],
-            n_offences=len(offences), blocks_other_scope=blocks_other_scope)
+            n_offences=len(offences), blocks_other_scope=blocks_other_scope,
+            blocked_by_upstream_scopes=upstream)
     return Outcome.ok(
         'CONTRACT_SATISFIED',
         value={'contract': c.name, 'schema_version': c.schema_version,
-               'scope': scope, 'layers_checked': sorted(declared),
+               'scope': scope, 'scope_chain': list(ancestors),
+               'certifies': f'the {scope!r} artifact scope and every scope '
+                            f'it depends on. NOT a deployment verdict: '
+                            f'field, ownership, duplication, payout, market '
+                            f'freshness and calibration are later gates.',
+               'layers_checked': sorted(declared),
                'required_layers': list(required),
                'blocks_other_scope': blocks_other_scope,
                'arrays_checked': arrays is not None},

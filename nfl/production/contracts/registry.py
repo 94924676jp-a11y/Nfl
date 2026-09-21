@@ -33,7 +33,7 @@ from __future__ import annotations
 import dataclasses
 import pathlib
 import sys
-from typing import Mapping, Sequence
+from typing import ClassVar
 
 _REPO = pathlib.Path(__file__).resolve().parents[3]
 if str(_REPO) not in sys.path:
@@ -147,23 +147,62 @@ class ArtifactContract:
                 return ls
         return None
 
-    #: Every scope this contract knows about, in dependency order: a DFS
-    #: product is a transform of a football simulation, never the reverse.
-    SCOPES = ('football', 'dfs_product')
+    #: THE SCOPE DEPENDENCY GRAPH. Football is the root truth; everything
+    #: else consumes it.
+    #:
+    #: CORRECTED BY OWNER RULING, SECOND PASS. This was first a flat tuple
+    #: and `required_layers` filtered on `ls.scope == scope`, which made the
+    #: scopes INDEPENDENT. Asking for `dfs_product` then required only
+    #: `dk_scoring`, so PHI@TEN -- no receiving layer, no rushing layer --
+    #: returned football FAIL and dfs_product PASS. That is the Week-2 defect
+    #: recreated one layer higher: a downstream artifact calling itself valid
+    #: while the model beneath it is broken. DK point bytes are not evidence
+    #: that DFS is sound when they were computed from a broken football
+    #: world.
+    #:
+    #: The rule the ruling actually states, and the one enforced here:
+    #:
+    #:     upstream validity flows DOWNWARD;
+    #:     downstream invalidity does NOT flow upward.
+    #:
+    #: A child scope ADDS requirements and can never erase its parent's.
+    SCOPE_PARENTS: ClassVar[dict[str, tuple[str, ...]]] = {
+        'football': (),
+        'dfs_product': ('football',),
+        # `prop_product: ('football',)` drops in here with no change to the
+        # abstraction. Deployment gates -- field model, ownership,
+        # duplication, payout, market freshness, calibration -- build ABOVE
+        # these artifact scopes and are deliberately not artifact layers.
+    }
+
+    def ancestors(self, scope: str) -> tuple[str, ...]:
+        """`scope` and every scope it depends on, roots first."""
+        if scope not in self.SCOPE_PARENTS:
+            raise ContractRegistrationError(
+                f'unknown scope {scope!r}; known '
+                f'{tuple(self.SCOPE_PARENTS)}')
+        seen, order = set(), []
+
+        def walk(s):
+            if s in seen:
+                return
+            seen.add(s)
+            for parent in self.SCOPE_PARENTS.get(s, ()):
+                walk(parent)
+            order.append(s)
+        walk(scope)
+        return tuple(order)
 
     def required_layers(self, scope: str = 'football') -> tuple[str, ...]:
         """Layers an artifact must carry to be complete FOR ONE PRODUCT.
 
-        Scope-aware by ruling: a football certificate, a prop certificate and
-        a DFS certificate answer different questions, and a failure in the
-        DFS transform must not be reported as a failure of the football
-        engine.
+        CUMULATIVE over the scope's ancestors. `dfs_product` requires every
+        football layer AND `dk_scoring`; a DFS transform computed on a broken
+        football world is not a valid DFS transform.
         """
-        if scope not in self.SCOPES:
-            raise ContractRegistrationError(
-                f'unknown scope {scope!r}; known {self.SCOPES}')
+        chain = set(self.ancestors(scope))
         return tuple(ls.name for ls in self.layers
-                     if ls.required and ls.scope == scope)
+                     if ls.required and ls.scope in chain)
 
 
 REGISTRY: dict[str, ArtifactContract] = {}
