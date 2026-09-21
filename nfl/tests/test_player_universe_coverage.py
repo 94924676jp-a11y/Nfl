@@ -262,6 +262,77 @@ def test_walker_and_vansumeren_are_present_and_workload_is_untouched():
            'a universe row -- role allocation is not P0-B\'s to answer')
 
 
+def test_the_two_club_gates_are_independent():
+    """A layer-only failure must not make the POSITION gate read incomplete.
+
+    Both verdicts read one shared `offences` list, so `club_gate` flipped on
+    any offence at all. A fully covered position grid was reported incomplete
+    whenever `receiving` or `rushing` failed, which sends a reader to the
+    wrong defect.
+    """
+    rows = [{'game_id': 'G', 'team': 'AAA', 'gsis_id': f'p{i}',
+             'display_name': 'X', 'roster_position': pos,
+             'support_state': S.PROJECTED, 'support_state_why': 'seeded',
+             'roster_status': 'ACT'}
+            for i, pos in enumerate(('WR', 'QB', 'RB', 'TE'), 1)]
+    ids = {'p1', 'p2', 'p3', 'p4'}
+
+    # Every POSITION covered; only the receiving LAYER is empty.
+    c = CV.assess(rows, emitted_ids=ids,
+                  emitted_by_layer={'receiving': [], 'rushing': ['p3'],
+                                    'qb': ['p2']})
+    e = c.evidence or {}
+    v = e.get('value') or {}
+    ok(e.get('PER_CLUB_POSITION_COVERAGE')
+       == 'PER_CLUB_POSITION_COVERAGE_COMPLETE',
+       f'position gate unaffected by a layer-only failure: '
+       f'{e.get("PER_CLUB_POSITION_COVERAGE")}')
+    ok(e.get('PER_CLUB_LAYER_COVERAGE')
+       == 'PER_CLUB_LAYER_COVERAGE_INCOMPLETE',
+       f'layer gate reports the real failure: '
+       f'{e.get("PER_CLUB_LAYER_COVERAGE")}')
+    ok(not v.get('position_offences') and len(v.get('layer_offences') or []) == 1,
+       f'offence sets are separate: position={len(v.get("position_offences") or [])} '
+       f'layer={len(v.get("layer_offences") or [])}')
+
+    # And the converse: a position-only failure must not blame the layer gate.
+    c2 = CV.assess(rows, emitted_ids={'p1', 'p2', 'p4'},
+                   emitted_by_layer={'receiving': ['p1', 'p4'],
+                                     'rushing': ['p3'], 'qb': ['p2']})
+    e2 = c2.evidence or {}
+    ok(e2.get('PER_CLUB_POSITION_COVERAGE')
+       == 'PER_CLUB_POSITION_COVERAGE_INCOMPLETE',
+       'a position-only failure fails the position gate')
+    ok(e2.get('PER_CLUB_LAYER_COVERAGE')
+       == 'PER_CLUB_LAYER_COVERAGE_COMPLETE',
+       f'and leaves the layer gate complete: '
+       f'{e2.get("PER_CLUB_LAYER_COVERAGE")}')
+
+
+def test_absent_inactive_evidence_is_not_a_pass():
+    """A green state carrying certified=False is the shape we abolished."""
+    rows = [{'game_id': 'G', 'team': 'AAA', 'gsis_id': 'p1',
+             'display_name': 'X', 'roster_position': 'WR',
+             'support_state': S.PROJECTED, 'support_state_why': 'seeded',
+             'roster_status': 'ACT'}]
+    g = CV.assert_no_inactive_survives(rows, emitted_ids={'p1'})
+    ok(g.state is not State.PASS,
+       f'no official inactive evidence does NOT return PASS: {g.state.name}')
+    ok(g.code == 'NO_OFFICIAL_INACTIVE_EVIDENCE',
+       f'and is named: {g.code}')
+    ok(g.evidence.get('certified') is False,
+       'and carries certified=False consistently with its state')
+
+    # A certified board still passes, so the gate discriminates.
+    rows2 = rows + [{'game_id': 'G', 'team': 'AAA', 'gsis_id': 'p9',
+                     'display_name': 'Y', 'roster_position': 'TE',
+                     'support_state': S.OFFICIALLY_INACTIVE,
+                     'support_state_why': 'seeded', 'roster_status': 'ACT'}]
+    g2 = CV.assert_no_inactive_survives(rows2, emitted_ids={'p1'})
+    ok(g2.state is State.PASS and g2.evidence.get('certified') is True,
+       f'a board with real declarations and no survivor passes: {g2.code}')
+
+
 def test_zz_every_check_passed():
     if FAILED:
         raise AssertionError(f'{FAILED} check(s) failed in this module')
@@ -275,7 +346,9 @@ def main():
               test_a_salary_row_player_with_no_football_row_is_named,
               test_football_identity_and_salary_identity_are_separate_axes,
               test_officially_inactive_players_own_nothing_playable,
-              test_walker_and_vansumeren_are_present_and_workload_is_untouched):
+              test_walker_and_vansumeren_are_present_and_workload_is_untouched,
+              test_the_two_club_gates_are_independent,
+              test_absent_inactive_evidence_is_not_a_pass):
         print(f'== {t.__name__}')
         t()
     print(f'\nPASSED {PASSED} FAILED {FAILED}')

@@ -30,7 +30,7 @@ if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
 from nfl.production.universe import support_state as S           # noqa: E402
-from sportsplatform.governance.outcome import Outcome            # noqa: E402
+from sportsplatform.governance.outcome import Cause, Outcome     # noqa: E402
 
 SPEC_VERSION = 'nfl-coverage-contract-1'
 
@@ -90,7 +90,13 @@ def assess(universe_rows, *, emitted_ids=None,
                    if r['support_state'] == S.MODEL_UNSUPPORTED]
 
     # 2. PER CLUB x POSITION. The cell, not the game.
-    grid, offences = {}, []
+    # SEPARATE LISTS, SEPARATE VERDICTS. These were one list, and
+    # `club_gate` read `if not offences`, so a LAYER-only failure made the
+    # POSITION gate report incomplete on a position grid that was fully
+    # covered. A diagnostic that blames the wrong gate sends the reader to
+    # the wrong defect, which is the same class of harm as a missing check.
+    grid = {}
+    position_offences, layer_offences = [], []
     clubs = sorted({r['team'] for r in universe_rows})
     for club in clubs:
         grid[club] = {}
@@ -104,7 +110,7 @@ def assess(universe_rows, *, emitted_ids=None,
                 'n_on_roster': len(cell), 'n_expected_to_play': len(exp),
                 'n_emitted': len(emi), 'by_support_state': dict(by_state)}
             if exp and not emi:
-                offences.append({
+                position_offences.append({
                     'club': club, 'position': pos,
                     'code': 'PER_CLUB_POSITION_NOT_COVERED',
                     'n_expected_to_play': len(exp), 'n_emitted': 0,
@@ -130,7 +136,7 @@ def assess(universe_rows, *, emitted_ids=None,
                 layer_grid[lay][club] = {'n_expected_to_play': len(exp),
                                          'n_emitted_in_layer': len(emi)}
                 if exp and not emi:
-                    offences.append({
+                    layer_offences.append({
                         'club': club, 'layer': lay,
                         'code': 'PER_CLUB_LAYER_NOT_COVERED',
                         'n_expected_to_play': len(exp),
@@ -140,14 +146,15 @@ def assess(universe_rows, *, emitted_ids=None,
                                f'{"/".join(positions)} and NO row in the '
                                f'{lay!r} layer. The other club having rows '
                                f'there does not cover this one.'})
-        layer_gate = ('PER_CLUB_LAYER_COVERAGE_COMPLETE'
-                      if not [o for o in offences if o.get('layer')]
+        layer_gate = ('PER_CLUB_LAYER_COVERAGE_COMPLETE' if not layer_offences
                       else 'PER_CLUB_LAYER_COVERAGE_INCOMPLETE')
 
     player_gate = ('PLAYER_COVERAGE_COMPLETE' if not unaccounted
                    else 'PLAYER_COVERAGE_INCOMPLETE')
-    club_gate = ('PER_CLUB_POSITION_COVERAGE_COMPLETE' if not offences
+    club_gate = ('PER_CLUB_POSITION_COVERAGE_COMPLETE'
+                 if not position_offences
                  else 'PER_CLUB_POSITION_COVERAGE_INCOMPLETE')
+    offences = position_offences + layer_offences
     value = {
         'spec_version': SPEC_VERSION,
         'game_id': universe_rows[0].get('game_id'),
@@ -168,6 +175,8 @@ def assess(universe_rows, *, emitted_ids=None,
              'why': r['support_state_why']} for r in unsupported],
         'grid': grid,
         'offences': offences,
+        'position_offences': position_offences,
+        'layer_offences': layer_offences,
         'support_state_counts': dict(collections.Counter(
             r['support_state'] for r in universe_rows)),
     }
@@ -203,12 +212,20 @@ def assert_no_inactive_survives(universe_rows, *, emitted_ids=None) -> Outcome:
     declared = [r for r in universe_rows
                 if r['support_state'] == S.OFFICIALLY_INACTIVE]
     if not declared:
-        return Outcome.ok(
+        # NOT A PASS. This returned Outcome.ok carrying certified=False --
+        # a green verdict with the disqualifying fact underneath it, which is
+        # the shape this project has sworn off. With no declarations nothing
+        # was compared, so the board is not certified and a caller reading
+        # only the state must not see success. P0-C maps BLOCKED here to
+        # RESEARCH_ONLY until official inactive evidence exists.
+        return Outcome.blocked(
             'NO_OFFICIAL_INACTIVE_EVIDENCE',
+            'no player in this universe carries an official inactive '
+            'declaration, so no intersection was computed. An empty '
+            'inactive list and a verified-empty one are different facts and '
+            'this board is NOT certified inactive-clean.',
+            cause=Cause.DATA,
             value={'n_declared': 0, 'survivors': []},
-            detail='no player in this universe carries an official inactive '
-                   'declaration, so no intersection was computed and the '
-                   'board is NOT certified inactive-clean',
             certified=False)
     survivors = [{'gsis_id': r['gsis_id'], 'player': r['display_name'],
                   'team': r['team']}
