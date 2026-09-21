@@ -30,6 +30,7 @@ _REPO = pathlib.Path(__file__).resolve().parents[2]
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
+from nfl.production.universe import governed_thresholds as GT      # noqa: E402
 from nfl.production.universe import participation as PA            # noqa: E402
 from nfl.production.universe import player_universe as PU          # noqa: E402
 from nfl.production.universe import role_state as RS               # noqa: E402
@@ -178,7 +179,16 @@ def test_dispersion_is_not_manufactured_from_one_week():
        'share, which is a different quantity')
 
 
-def test_the_tolerance_belongs_to_the_allocator_and_is_recorded():
+def test_a_caller_supplied_tolerance_cannot_certify_anything():
+    """The correction of 2026-09-21, pinned as a property.
+
+    The gate previously passed on whatever number the caller handed it, so
+    New York's 21.1% unresolved mass cleared against a 25% figure with no
+    justification of any kind. That reproduced exactly the pattern this
+    project is eliminating: BLOCKED, but below our chosen tolerance,
+    therefore PASS. The number that decides what passes must not be settable
+    at the call site that wants it to pass.
+    """
     ro, po = _game('2026_02_NYG_LA')
     rows = _rows(po)
     alloc = {r['gsis_id'] for r in rows
@@ -187,46 +197,60 @@ def test_the_tolerance_belongs_to_the_allocator_and_is_recorded():
                 for v in po.evidence['clubs'].values())
     ok(worst > 0, f'this game has real unreconstructed mass: {worst:.2%}')
 
-    tight = PA.assert_participation_supports_allocation(
-        po, allocating_ids=alloc, max_unresolved_fraction=worst / 2.0)
-    ok(tight.state is State.FAIL
-       and tight.code == 'PARTICIPATION_DOES_NOT_SUPPORT_ALLOCATION',
-       f'a tolerance below the gap fails: {tight.code}')
-    ok(tight.evidence.get('declared_max_unresolved_fraction') is not None,
-       'and the declaration that failed it is recorded')
-    ok(tight.evidence.get('open_clubs'),
-       'with the offending clubs and their gaps named')
-
+    # A caller tolerance wide enough to swallow the gap must NOT pass.
     loose = PA.assert_participation_supports_allocation(
         po, allocating_ids=alloc, max_unresolved_fraction=worst * 2.0)
-    ok(loose.state is State.PASS,
-       f'a tolerance above the gap passes: {loose.code}')
-    ok(loose.value['declared_max_unresolved_fraction'] == worst * 2.0,
-       'and the tolerance that allowed it travels in the outcome, so a '
-       'reader can see what was accepted rather than inferring it')
+    ok(loose.state is not State.PASS,
+       f'a caller-supplied tolerance twice the gap does not clear the gate: '
+       f'{loose.state.name}[{loose.code}]')
+    ev = loose.evidence or {}
+    ok(ev.get('applied_max_unresolved_fraction')
+       == GT.PARTICIPATION_UNRESOLVED_FRACTION['max_unresolved_fraction'],
+       f'the GOVERNED value is what applied, not the caller\'s: '
+       f'{ev.get("applied_max_unresolved_fraction")}')
+    ok(ev.get('caller_proposed_max_unresolved_fraction') == worst * 2.0,
+       'the caller\'s proposal is recorded as what it was -- a proposal')
+    ok(ev.get('caller_proposal_was_not_applied') is True,
+       'and the record says plainly that it was not applied')
 
-    nod = PA.assert_participation_supports_allocation(po, allocating_ids=alloc)
-    ok(nod.state is State.BLOCKED and nod.code == 'NO_ALLOCATING_DECLARATION',
-       f'no declared tolerance BLOCKS rather than defaulting to one: '
-       f'{nod.code}')
-    ok('max_unresolved_fraction' in nod.evidence['missing_declarations'],
-       'and says which declaration was missing')
+    # The governed value is itself only CANDIDATE, so even a club inside it
+    # cannot clear.
+    ok(GT.PARTICIPATION_UNRESOLVED_FRACTION['certification']
+       == GT.CANDIDATE,
+       'the governed tolerance is CANDIDATE, not PRODUCTION_CERTIFIED')
+    ok(not GT.is_clearing(GT.PARTICIPATION_UNRESOLVED_FRACTION[
+        'certification']),
+       'and a CANDIDATE certification clears nothing')
 
-    nos = PA.assert_participation_supports_allocation(
-        po, max_unresolved_fraction=1.0)
-    ok(nos.state is State.BLOCKED,
-       'no declared allocating set blocks for the same reason')
+    clean = [r for r in rows if r['team'] == min(
+        po.evidence['clubs'],
+        key=lambda c: abs(po.evidence['clubs'][c][
+            'unresolved_fraction_of_budget']))]
+    inside = PA.assert_participation_supports_allocation(
+        po, allocating_ids={r['gsis_id'] for r in clean
+                            if r['participation_state'] == PA.RESOLVED})
+    ok(inside.state is not State.PASS,
+       f'even the better club does not clear, because the standard it would '
+       f'be judged against has not been validated: {inside.code}')
 
-    # An unsupported player in the allocating set fails whatever the tolerance.
+    nos = PA.assert_participation_supports_allocation(po)
+    ok(nos.state is State.BLOCKED
+       and nos.code == 'NO_ALLOCATING_DECLARATION',
+       f'no declared allocating set still blocks: {nos.code}')
+
+    # An unsupported player in the allocating set fails on its own terms.
     uns = [r['gsis_id'] for r in rows
            if r['participation_state'] == PA.UNSUPPORTED]
     if uns:
         g = PA.assert_participation_supports_allocation(
-            po, allocating_ids=alloc | {uns[0]}, max_unresolved_fraction=1.0)
+            po, allocating_ids=alloc | {uns[0]})
         ok(g.state is State.FAIL,
-           'an unestablished player in the allocating set fails even at a '
-           'tolerance of one')
+           f'an unestablished player in the allocating set fails: {g.code}')
         ok(len(g.evidence['offending']) == 1, 'and exactly he is named')
+
+    ok(GT.summary()['n_production_certified'] == 0,
+       'nothing in the system is production-certified today, and the '
+       'registry says so rather than letting a gate imply otherwise')
 
 
 def test_the_layer_produces_no_football_output():
@@ -252,7 +276,7 @@ def main():
               test_an_unmeasured_player_gets_no_share_not_a_zero,
               test_the_unresolved_mass_is_named_and_never_distributed,
               test_dispersion_is_not_manufactured_from_one_week,
-              test_the_tolerance_belongs_to_the_allocator_and_is_recorded,
+              test_a_caller_supplied_tolerance_cannot_certify_anything,
               test_the_layer_produces_no_football_output):
         print(f'== {t.__name__}')
         t()

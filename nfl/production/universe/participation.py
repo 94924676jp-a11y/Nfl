@@ -66,6 +66,7 @@ _REPO = pathlib.Path(__file__).resolve().parents[3]
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
+from nfl.production.universe import governed_thresholds as GT      # noqa: E402
 from nfl.production.universe import role_state as RS               # noqa: E402
 from sportsplatform.governance.outcome import (                    # noqa: E402
     Cause, Outcome)
@@ -300,11 +301,22 @@ def assert_participation_supports_allocation(
     among. None means no consumer declared one, which BLOCKS rather than
     passing, for the same reason the role and coverage gates do.
 
-    `max_unresolved_fraction` is how much of a club's snap budget the
-    ALLOCATOR is willing to carry unreconstructed, stated as a fraction. It
-    is required and it is recorded in the outcome. This file does not supply
-    a default, because a default would be a tolerance nobody chose appearing
-    in the only place where the choice is consequential.
+    `max_unresolved_fraction` is how much of a club's snap budget may be
+    carried unreconstructed. It is NOT the caller's to choose. The caller may
+    pass one, and it is then treated as a CANDIDATE tolerance: the gate
+    computes and reports against it and returns a non-passing state, so the
+    verdict machine reads RESEARCH_ONLY.
+
+    THIS IS THE CORRECTION OF 2026-09-21. The gate previously passed on any
+    number the caller supplied, so New York's 21.1% unresolved mass cleared
+    against a 25% figure with no justification whatsoever. That reproduced the
+    exact pattern this project is eliminating: BLOCKED, but below our chosen
+    tolerance, therefore PASS. A threshold nobody has validated certifies
+    nothing, and the number that decides what passes must not be settable at
+    the call site that wants it to pass.
+
+    Only `governed_thresholds.PARTICIPATION_UNRESOLVED_FRACTION` marked
+    PRODUCTION_CERTIFIED can clear this gate. Today none is.
     """
     rows = part_outcome.value or (part_outcome.evidence or {}).get('value') \
         or []
@@ -313,38 +325,66 @@ def assert_participation_supports_allocation(
     idx = {r['gsis_id']: r for r in rows}
     unsupported = {r['gsis_id'] for r in rows
                    if r['participation_state'] == UNSUPPORTED}
-    if allocating_ids is None or max_unresolved_fraction is None:
-        missing = [n for n, v in (('allocating_ids', allocating_ids),
-                                  ('max_unresolved_fraction',
-                                   max_unresolved_fraction)) if v is None]
+    gov = GT.PARTICIPATION_UNRESOLVED_FRACTION
+    governed = gov['max_unresolved_fraction']
+    certification = gov['certification']
+    # The governed value is what applies. A caller-supplied number is recorded
+    # as what it is -- a proposal -- and never replaces it.
+    applied = governed
+    proposed = max_unresolved_fraction
+    if allocating_ids is None:
+        missing = ['allocating_ids']
         return Outcome.blocked(
             'NO_ALLOCATING_DECLARATION',
             f'{len(rows)} participation row(s) exist and {len(unsupported)} '
-            f'are unsupported, but the allocator declared {missing}. A PASS '
-            f'here would certify a denominator nobody named against a '
-            f'tolerance nobody set.',
+            f'are unsupported, but no allocator declared whom it will divide '
+            f'opportunity among. A PASS here would certify a denominator '
+            f'nobody named.',
             cause=Cause.GOVERNANCE, n_rows=len(rows),
             n_unsupported=len(unsupported), missing_declarations=missing,
             club_unresolved={c: v['unresolved_fraction_of_budget']
                              for c, v in clubs.items()})
     offenders = [idx[p] for p in sorted(set(allocating_ids)) if p in unsupported]
+    in_play = sorted({idx[p]['team'] for p in allocating_ids if p in idx})
     open_clubs = sorted(
-        c for c, v in clubs.items()
-        if abs(v.get('unresolved_fraction_of_budget') or 0.0)
-        > max_unresolved_fraction
-        and any(idx.get(p, {}).get('team') == c for p in allocating_ids))
+        c for c in in_play
+        if abs((clubs.get(c) or {}).get('unresolved_fraction_of_budget') or
+               0.0) > applied)
+    tol_ev = {
+        'governed_max_unresolved_fraction': governed,
+        'governed_certification': certification,
+        'caller_proposed_max_unresolved_fraction': proposed,
+        'applied_max_unresolved_fraction': applied,
+        'caller_proposal_was_not_applied': (
+            proposed is not None and proposed != applied),
+        'club_unresolved_fraction': {
+            c: (clubs.get(c) or {}).get('unresolved_fraction_of_budget')
+            for c in in_play},
+    }
+
+    # A CANDIDATE tolerance cannot clear the gate however wide the margin.
+    if not GT.is_clearing(certification) and not offenders and not open_clubs:
+        return Outcome.blocked(
+            'PARTICIPATION_TOLERANCE_NOT_CERTIFIED',
+            f'every club in the allocating set is within the governed '
+            f'tolerance of {governed:.1%}, but that tolerance is '
+            f'{certification}, not PRODUCTION_CERTIFIED. Passing on it would '
+            f'certify a board against a standard nobody has shown to mean '
+            f'anything. What certification needs: '
+            f'{gov["certification_requires"]}',
+            cause=Cause.GOVERNANCE,
+            certification_requires=gov['certification_requires'], **tol_ev)
     if offenders or open_clubs:
         return Outcome.fail(
             'PARTICIPATION_DOES_NOT_SUPPORT_ALLOCATION',
             f'{len(offenders)} player(s) with unestablished participation '
             f'would receive opportunity, and {len(open_clubs)} club(s) in '
             f'the allocating set carry more unreconstructed snap mass than '
-            f'the declared tolerance of {max_unresolved_fraction:.1%}. '
+            f'the governed tolerance of {applied:.1%}. '
             f'Dividing a total among players whose presence is unknown '
             f'assigns the unknown a number, which is the defect, not the '
             f'workaround.',
-            cause=Cause.DATA, declared_max_unresolved_fraction=(
-                max_unresolved_fraction),
+            cause=Cause.DATA, **tol_ev,
             offending=[{'gsis_id': r['gsis_id'],
                         'display_name': r['display_name'],
                         'team': r['team'], 'role': r['role'],
@@ -360,12 +400,7 @@ def assert_participation_supports_allocation(
     return Outcome.ok(
         'PARTICIPATION_SUPPORTS_ALLOCATION',
         value={'n_allocating': len(set(allocating_ids)),
-               'n_withheld': len(unsupported),
-               'declared_max_unresolved_fraction': max_unresolved_fraction,
-               'club_unresolved_fraction': {
-                   c: v['unresolved_fraction_of_budget']
-                   for c, v in clubs.items()}},
-        certified=True,
-        declared_max_unresolved_fraction=max_unresolved_fraction,
+               'n_withheld': len(unsupported), **tol_ev},
+        certified=True, **tol_ev,
         detail=f'{len(set(allocating_ids))} player(s) may be allocated among; '
                f'{len(unsupported)} withheld for unestablished participation')

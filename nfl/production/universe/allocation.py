@@ -54,6 +54,7 @@ _REPO = pathlib.Path(__file__).resolve().parents[3]
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
+from nfl.production.universe import governed_thresholds as GT      # noqa: E402
 from nfl.production.universe import participation as PA            # noqa: E402
 from nfl.production.universe import role_state as RS               # noqa: E402
 from sportsplatform.governance.outcome import (                    # noqa: E402
@@ -351,3 +352,107 @@ def assert_allocation_conserves(alloc_outcome, *,
         certified=True,
         detail=f'{len(clubs)} composition(s) sum to one; '
                f'{len(set(consuming_ids))} player(s) read from inside them')
+
+
+def assert_redistribution_supported(alloc_outcome, *,
+                                    redistribution_model=None) -> Outcome:
+    """Conservation proves the SUM. This asks where the missing mass went.
+
+    THE DISTINCTION THIS GATE EXISTS FOR, AND IT COST A REAL BOARD
+
+    `assert_allocation_conserves` returns PASS when a room's shares sum to
+    one. They do. That is arithmetic, and a wildly wrong allocation satisfies
+    it perfectly. On 2026-09-21 New York's carries room conserved to 1.0 with
+    29.7% of its mass REASSIGNED -- taking Cam Skattebo from a measured 48.6%
+    of carries to a renormalised 69.2% -- and the conservation gate went
+    green over it.
+
+    Renormalising gives the survivors the departed players' opportunity in
+    proportion to what they already held. That is ONE HYPOTHESIS. The
+    opportunity may instead go to the next man on the listing, to the same
+    position group, or to a personnel grouping that changes the room. This
+    project has measured none of them, so there is no validated destination
+    for the mass and every reassigned point is an unvalidated claim about a
+    player's workload.
+
+    So the gate passes only when the reassigned mass is ZERO, or when a
+    PRODUCTION_CERTIFIED redistribution model says where it went. Zero is not
+    a cautious threshold someone picked; it is the only fraction that
+    involves no unvalidated claim. Today no model exists, so a room that
+    reassigns anything is refused, and the honest output for such a room is
+    the RAW measured share carried with explicit uncertainty -- never the
+    renormalised number presented as a projection.
+    """
+    gov = GT.REDISTRIBUTION_MODEL
+    model = redistribution_model if redistribution_model is not None \
+        else gov['model']
+    certified = (redistribution_model is not None
+                 and GT.is_clearing(gov['certification']))
+    ev = alloc_outcome.evidence or {}
+    clubs = ev.get('clubs') or {}
+    rows = alloc_outcome.value or []
+    room = ev.get('room')
+
+    offenders = []
+    for club, v in sorted(clubs.items()):
+        mass = v.get('reassigned_mass')
+        if mass is None or abs(mass) <= gov[
+                'max_reassigned_fraction_without_a_model']:
+            continue
+        inflated = sorted(
+            ({'gsis_id': r['gsis_id'], 'display_name': r['display_name'],
+              'role': r['role'],
+              'measured_share': r['share_of_measured'],
+              'renormalised_share': r['share_renormalised'],
+              'inflation': r['share_renormalised'] - r['share_of_measured']}
+             for r in rows
+             if r['team'] == club and r['share_renormalised'] is not None),
+            key=lambda x: -x['inflation'])
+        offenders.append({
+            'club': club, 'room': room, 'reassigned_mass': mass,
+            'retained_share_mass': v.get('retained_share_mass'),
+            'n_without_measured_share': v.get('n_without_measured_share'),
+            'players_whose_share_the_assumption_inflates': inflated,
+            'concentration_before_redistribution': v['concentration'],
+        })
+
+    val = {'spec_version': SPEC_VERSION, 'room': room,
+           'redistribution_model': model,
+           'model_certification': gov['certification'],
+           'max_reassigned_fraction_without_a_model': gov[
+               'max_reassigned_fraction_without_a_model'],
+           'n_clubs': len(clubs),
+           'n_clubs_reassigning': len(offenders)}
+
+    if offenders and not certified:
+        worst = max(offenders, key=lambda o: abs(o['reassigned_mass']))
+        top = (worst['players_whose_share_the_assumption_inflates'] or
+               [{}])[0]
+        return Outcome.blocked(
+            'REDISTRIBUTION_UNSUPPORTED',
+            f'{len(offenders)} {room} room(s) reassign opportunity with no '
+            f'validated model of where it goes. Worst: {worst["club"]} at '
+            f'{worst["reassigned_mass"]:+.1%}, which moves '
+            f'{top.get("display_name")} from a measured '
+            f'{(top.get("measured_share") or 0):.1%} to a renormalised '
+            f'{(top.get("renormalised_share") or 0):.1%}. The shares summing '
+            f'to one proves conservation, not correctness: it says the '
+            f'opportunity was not lost, and says nothing about who received '
+            f'it. Until a redistribution model is PRODUCTION_CERTIFIED the '
+            f'raw measured share is the number, and the missing mass stays '
+            f'explicit uncertainty rather than becoming a player edge.',
+            cause=Cause.GOVERNANCE, offending=offenders,
+            certification_requires=gov['certification_requires'],
+            why_zero=gov['why_zero'], **val)
+
+    if offenders and certified:
+        return Outcome.ok(
+            'REDISTRIBUTION_SUPPORTED_BY_CERTIFIED_MODEL',
+            value={**val, 'clubs_reassigning': offenders}, certified=True,
+            detail=f'{len(offenders)} room(s) reassign under a certified '
+                   f'model')
+    return Outcome.ok(
+        'NO_REDISTRIBUTION_REQUIRED',
+        value={**val, 'clubs_reassigning': []}, certified=True,
+        detail=f'every {room} room retains its whole measured mass, so no '
+               f'claim about a destination is made')

@@ -569,14 +569,54 @@ def assign(universe_rows, *, season: int, week: int, usage_rows=None,
                f'{sum(conflict_index.values())} conflict(s)')
 
 
-def assert_role_state_supported(role_rows, *, publishable_ids=None) -> Outcome:
+def downstream_population(universe_rows) -> set:
+    """Whom the football model would otherwise give meaningful opportunity to.
+
+    DEFINED WITHOUT REFERENCE TO ROLE, AND THAT IS THE WHOLE POINT. The gate
+    below previously took its population from players who were already
+    ROLE_SUPPORTED and in a workload-bearing role, then asked whether that
+    population was role-supported. It was, necessarily: the answer had been
+    used to build the question, and every problematic player had been removed
+    from the denominator before the test ran.
+
+    The population is therefore read from the PLAYER UNIVERSE: every player
+    the universe expects to play, at a position that competes for offensive
+    opportunity. A role-unsupported player cannot leave this set, because
+    nothing about his role was consulted to put him in it.
+    """
+    out = set()
+    for r in universe_rows or ():
+        if r.get('support_state') not in S.EXPECTED_TO_PLAY:
+            continue
+        pos = (r.get('roster_position') or '').upper()
+        room = POSITION_ROOM.get(pos)
+        if room in (ROOM_DROPBACKS, ROOM_CARRIES, ROOM_TARGETS):
+            out.add(r['gsis_id'])
+    return out
+
+
+def assert_role_state_supported(role_rows, *, publishable_ids=None,
+                                universe_rows=None) -> Outcome:
     """The blocking gate. A ROLE_UNSUPPORTED player may not carry an edge.
 
-    `publishable_ids` is what the consumer INTENDS to publish. Passing None
-    means no consumer declared an intention, and the gate is then BLOCKED, not
-    PASS: certifying a board nobody described is the same green-with-nothing-
+    THE POPULATION IS NOT THE CALLER'S TO NARROW. When `universe_rows` is
+    given, the set under test is `downstream_population(universe_rows)` --
+    everyone the universe expects to play in an opportunity room -- and any
+    `publishable_ids` the caller also passes is folded IN rather than used
+    instead. A caller cannot shrink the denominator to the players it already
+    knows are fine.
+
+    Passing neither leaves nothing to test against, and the gate BLOCKS:
+    certifying a board nobody described is the same green-with-nothing-
     underneath failure the coverage gate was corrected for.
     """
+    if universe_rows is not None:
+        pop = downstream_population(universe_rows)
+        publishable_ids = (pop | set(publishable_ids or ())
+                           if publishable_ids is not None else pop)
+        population_source = 'player_universe.EXPECTED_TO_PLAY_in_a_room'
+    else:
+        population_source = 'caller_supplied_only'
     unsupported = [r for r in role_rows
                    if r.get('role_support') == ROLE_UNSUPPORTED]
     idx = {r['gsis_id']: r for r in unsupported}
@@ -584,10 +624,12 @@ def assert_role_state_supported(role_rows, *, publishable_ids=None) -> Outcome:
         return Outcome.blocked(
             'NO_PUBLISHABLE_SET_DECLARED',
             f'{len(role_rows)} role row(s) were assigned and '
-            f'{len(unsupported)} are unsupported, but no consumer declared '
-            f'which players it intends to publish. There is nothing to check '
-            f'and a PASS here would certify an unexamined board.',
+            f'{len(unsupported)} are unsupported, but neither a player '
+            f'universe nor a publishable set was supplied, so there is no '
+            f'population to test. A PASS here would certify an unexamined '
+            f'board.',
             cause=Cause.GOVERNANCE, n_rows=len(role_rows),
+            population_source=population_source,
             n_unsupported=len(unsupported),
             unsupported=[{'gsis_id': r['gsis_id'],
                           'display_name': r.get('display_name'),
@@ -611,12 +653,15 @@ def assert_role_state_supported(role_rows, *, publishable_ids=None) -> Outcome:
                         'conflicts': [c['code'] for c in r['conflicts']]}
                        for r in offenders],
             n_publishable=len(set(publishable_ids)),
+            n_in_population=len(set(publishable_ids)),
+            population_source=population_source,
             n_unsupported=len(unsupported))
     return Outcome.ok(
         'ROLE_STATE_SUPPORTED_FOR_PUBLISHABLE_SET',
         value={'n_publishable': len(set(publishable_ids)),
-               'n_unsupported_withheld': len(unsupported)},
-        certified=True,
+               'n_unsupported_withheld': len(unsupported),
+               'population_source': population_source},
+        certified=True, population_source=population_source,
         withheld=[{'gsis_id': r['gsis_id'],
                    'display_name': r.get('display_name'),
                    'team': r['team'], 'role': r['role'],

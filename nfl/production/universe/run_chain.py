@@ -29,6 +29,7 @@ if str(_REPO) not in sys.path:
 
 from nfl.production import verdict as V                            # noqa: E402
 from nfl.production.universe import allocation as AL               # noqa: E402
+from nfl.production.universe import chronology as CH                # noqa: E402
 from nfl.production.universe import coverage as CV                 # noqa: E402
 from nfl.production.universe import participation as PA            # noqa: E402
 from nfl.production.universe import player_universe as PU          # noqa: E402
@@ -51,13 +52,31 @@ def _iso(s):
 def run(season: int, week: int, game_id: str, cut: str, *,
         inactive_ids=None, max_unresolved_fraction=None) -> dict:
     """Every layer, in order, with each one's outcome kept verbatim."""
+    started = _dt.datetime.now(_dt.timezone.utc)
     out = {'spec_version': SPEC_VERSION, 'game_id': game_id, 'season': season,
            'week': week, 'information_cut': cut,
-           'ran_at': _dt.datetime.now(_dt.timezone.utc).isoformat(),
+           'run_started_at': started.isoformat(),
+           'ran_at': started.isoformat(),
            'inactives_supplied': bool(inactive_ids),
-           'declared_max_unresolved_fraction': max_unresolved_fraction,
+           'caller_proposed_max_unresolved_fraction': max_unresolved_fraction,
            'layers': {}, 'gates': {}}
     L, G = out['layers'], out['gates']
+
+    # CHRONOLOGY FIRST, AND IT CAN STOP THE RUN. A cut the run has not
+    # reached is not a tighter cut, it is a fabricated one, and every layer
+    # below would inherit it. The 2026-09-21 artifact claimed a cut
+    # fifty-one minutes after the run that wrote it and nothing objected,
+    # because nothing compared the two fields.
+    pre = CH.certify(cut, out['run_started_at'], sources=None)
+    L['chronology_precheck'] = {'code': pre.code, 'state': pre.state.name}
+    if pre.state is not State.PASS:
+        G['CHRONOLOGY_CERTIFIED'] = V.from_outcome(pre)
+        L['chronology_precheck']['violations'] = (pre.evidence or {}).get(
+            'violations')
+        for scope in ('football', 'prop_product', 'dfs_product'):
+            out.setdefault('verdicts', {})[scope] = V.assess(G, scope=scope)
+        out['verdict'] = out['verdicts']['football']
+        return out
 
     uni = PU.build(season, week, game_id, cut, inactive_ids=inactive_ids)
     L['universe'] = {'code': uni.code, 'state': uni.state.name}
@@ -73,16 +92,23 @@ def run(season: int, week: int, game_id: str, cut: str, *,
     G['ROSTER_IDENTITY'] = (V.PASS if uni.evidence['n_unaccounted'] == 0
                             else V.FAIL)
 
-    # Freshness is a real gate, and it is measured rather than asserted.
-    ages = {}
-    for fam, src in (uni.evidence.get('sources') or {}).items():
-        t = _iso(src.get('retrieved_at'))
-        c = _iso(cut)
-        ages[fam] = ((c - t).total_seconds() / 3600.0
-                     if (t and c) else None)
-    L['freshness_hours'] = ages
-    G['DATA_FRESHNESS'] = (V.PASS if ages and all(
-        a is not None for a in ages.values()) else V.NOT_EVALUATED)
+    # FRESHNESS IS MEASURED AGAINST A GOVERNED REQUIREMENT, NOT AGAINST THE
+    # EXISTENCE OF AN AGE. The previous gate passed whenever every source had
+    # a calculable age, which greens a twenty-eight-hour injury file and a
+    # three-day-old one alike.
+    srcs = uni.evidence.get('sources') or {}
+    fo = CH.check_freshness(cut, srcs)
+    L['freshness'] = {'code': fo.code, 'state': fo.state.name,
+                      'families': (fo.evidence or {}).get('families')}
+    G['DATA_FRESHNESS'] = V.from_outcome(fo)
+
+    # The full chronology certificate, now that the vintages are known.
+    chrono = CH.certify(cut, out['run_started_at'], sources=srcs)
+    L['chronology'] = {'code': chrono.code, 'state': chrono.state.name,
+                       'certificate': chrono.value
+                       or (chrono.evidence or {}).get('value'),
+                       'violations': (chrono.evidence or {}).get('violations')}
+    G['CHRONOLOGY_CERTIFIED'] = V.from_outcome(chrono)
 
     cov = CV.assess(uni.value, emitted_ids=None, emitted_by_layer=None)
     L['coverage'] = {'code': cov.code, 'state': cov.state.name}
@@ -119,11 +145,17 @@ def run(season: int, week: int, game_id: str, cut: str, *,
                      support_counts=ro.evidence['support_counts'],
                      conflict_counts=ro.evidence['conflict_counts'],
                      boundaries=ro.evidence['boundaries'])
-    publishable = {r['gsis_id'] for r in ro.value
-                   if r['role_support'] == RS.ROLE_SUPPORTED
-                   and r['role'] in RS.WORKLOAD_BEARING}
-    rg = RS.assert_role_state_supported(ro.value, publishable_ids=publishable)
-    L['role_gate'] = {'code': rg.code, 'state': rg.state.name}
+    # THE POPULATION COMES FROM THE UNIVERSE, NOT FROM ROLE SUPPORT. Building
+    # it from ROLE_SUPPORTED players and then asking whether they are
+    # role-supported removed every problematic player from the denominator
+    # before the test ran.
+    rg = RS.assert_role_state_supported(ro.value, universe_rows=uni.value)
+    L['role_gate'] = {'code': rg.code, 'state': rg.state.name,
+                      'population_source': (rg.evidence or {}).get(
+                          'population_source'),
+                      'n_in_population': (rg.evidence or {}).get(
+                          'n_in_population'),
+                      'offending': (rg.evidence or {}).get('offending')}
     G['ROLE_PLAUSIBILITY'] = V.from_outcome(rg)
 
     snaps = RS.load_snaps(season, week)
@@ -141,11 +173,22 @@ def run(season: int, week: int, game_id: str, cut: str, *,
     pg = PA.assert_participation_supports_allocation(
         po, allocating_ids=alloc_ids,
         max_unresolved_fraction=max_unresolved_fraction)
-    L['participation_gate'] = {'code': pg.code, 'state': pg.state.name}
+    L['participation_gate'] = {
+        'code': pg.code, 'state': pg.state.name,
+        'governed_max_unresolved_fraction': (pg.evidence or {}).get(
+            'governed_max_unresolved_fraction'),
+        'governed_certification': (pg.evidence or {}).get(
+            'governed_certification'),
+        'caller_proposed_max_unresolved_fraction': (pg.evidence or {}).get(
+            'caller_proposed_max_unresolved_fraction'),
+        'caller_proposal_was_not_applied': (pg.evidence or {}).get(
+            'caller_proposal_was_not_applied'),
+        'club_unresolved_fraction': (pg.evidence or {}).get(
+            'club_unresolved_fraction')}
     G['PARTICIPATION_COMPLETENESS'] = V.from_outcome(pg)
 
     L['allocation'] = {}
-    alloc_states = []
+    alloc_states, redist_states = [], []
     for room in (RS.ROOM_TARGETS, RS.ROOM_CARRIES):
         ao = AL.allocate(po, usage, room=room)
         entry = {'code': ao.code, 'state': ao.state.name}
@@ -157,11 +200,23 @@ def run(season: int, week: int, game_id: str, cut: str, *,
                                    if r['allocation_state'] == AL.ALLOCATED})
             entry['gate'] = {'code': cg.code, 'state': cg.state.name}
             alloc_states.append(cg)
+            # CONSERVATION IS NOT VALIDITY. The sum being one says the
+            # opportunity was not lost; it says nothing about who received
+            # it. That is a separate gate.
+            rd = AL.assert_redistribution_supported(ao)
+            entry['redistribution_gate'] = {
+                'code': rd.code, 'state': rd.state.name,
+                'offending': (rd.evidence or {}).get('offending')}
+            redist_states.append(rd)
         L['allocation'][room] = entry
     G['OPPORTUNITY_CONSERVATION'] = (
         V.PASS if alloc_states and all(o.state is State.PASS
                                        for o in alloc_states)
         else V.FAIL if alloc_states else V.NOT_EVALUATED)
+    G['REDISTRIBUTION_PLAUSIBILITY'] = (
+        V.PASS if redist_states and all(o.state is State.PASS
+                                        for o in redist_states)
+        else V.BLOCKED if redist_states else V.NOT_EVALUATED)
 
     # GATES FOR WORK THAT DOES NOT EXIST ARE LEFT ABSENT, NOT FILLED.
     # verdict.assess resolves them to NOT_EVALUATED, which blocks. Writing

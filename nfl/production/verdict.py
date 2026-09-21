@@ -80,6 +80,8 @@ GATE_SCOPE = {
     'ROLE_PLAUSIBILITY': 'football',
     'PARTICIPATION_COMPLETENESS': 'football',
     'OPPORTUNITY_CONSERVATION': 'football',
+    'REDISTRIBUTION_PLAUSIBILITY': 'football',
+    'CHRONOLOGY_CERTIFIED': 'football',
     'GAME_ACCOUNTING_COHERENCE': 'football',
     'DATA_FRESHNESS': 'football',
     'ROSTER_IDENTITY': 'football',

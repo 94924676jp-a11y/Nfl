@@ -116,6 +116,21 @@ HARD_REFUSING_STATES = ('FAIL', 'BLOCKED')
 
 INVARIANTS = {
     # ---- HARD: internal consistency of the numbers being sealed ----------
+    'draw_contract': {
+        'class': HARD,
+        'evaluator': 'nfl.production.contracts.validate.validate_draw_manifest',
+        'asserts': 'every layer the artifact contract declares REQUIRED for '
+                   'the football scope is present in the draw manifest, its '
+                   'metrics carry bytes, its row ids are unique and finite, '
+                   'and the run carries its identity (run_id and '
+                   'content_digest)',
+        'why_hard': 'P0-A added the emitter in run_forecast without adding '
+                    'this key, so every run reached SCORED and then died at '
+                    'artifact_sealing with INVARIANT_NOT_DECLARED -- a '
+                    'complete 8,000-draw forecast thrown away at the last '
+                    'stage. The check itself is the one that catches a game '
+                    'whose receiving layer is silently absent, which is why '
+                    'it gates rather than diagnoses.'},
     'qb_dropback_identity': {
         'class': HARD, 'evaluator': 'nfl.production.qb_v1.identity_check',
         'asserts': 'attempts + sacks + scrambles == dropbacks, per draw cell',
