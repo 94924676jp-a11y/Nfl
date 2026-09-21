@@ -7,6 +7,10 @@ from nfl.production.universe import (player_universe as PU, role_state as RS,
 import entity_verdicts as EVD, verdict_engine as VE
 
 CUT = sys.argv[1]; RAN = dt.datetime.now(dt.timezone.utc).isoformat()
+TAG = sys.argv[2] if len(sys.argv)>2 else 'PREINACTIVES'
+INACT = set()
+if TAG=='POSTINACTIVES':
+    INACT = set(json.load(open('nfl/research/showdown_fixture/INACTIVE_IDENTITY_RESOLUTION.json'))['resolved'])
 GAME='2026_02_NYG_LA'; KICK='2026-09-22T00:15:00Z'
 SAL='nfl/dfs/salaries/raw/DKEntries_NYG_LAR_SHOWDOWN_2026W2.csv'
 DRAWS='nfl/research/mnf/run_nyg_la/9f2e3d1ae24fc05b/player_draws_manifest.json'
@@ -14,7 +18,8 @@ DRAWS='nfl/research/mnf/run_nyg_la/9f2e3d1ae24fc05b/player_draws_manifest.json'
 # alias, NOT a name similarity match.
 TEAM_ALIAS={'LAR':'LA','LA':'LA','NYG':'NYG'}
 
-out={'spec_version':RF.SPEC_VERSION,'game_id':GAME,'information_cut':CUT,
+out={'spec_version':RF.SPEC_VERSION,'game_id':GAME,'state':TAG,
+     'n_official_inactives_applied':len(INACT),'information_cut':CUT,
      'run_started_at':RAN,'kickoff_utc':KICK,
      'status':'RESEARCH FIXTURE. CANDIDATE_NOT_ACCEPTED_BASELINE. No gate promoted.'}
 
@@ -24,9 +29,9 @@ cands = RF.build_candidates(sal)
 for c in cands: c.team = TEAM_ALIAS.get(c.team, c.team)
 out['n_dk_players']=len(cands)
 
-uni = PU.build(2026,2,GAME,CUT)
+uni = PU.build(2026,2,GAME,CUT, inactive_ids=INACT)
 usage = UV.usage_season(2026, CUT, before_week=2).value
-ro = RS.assign(uni.value, season=2026, week=2, usage_rows=usage)
+ro = RS.assign(uni.value, season=2026, week=2, usage_rows=usage, inactive_ids=INACT)
 snaps = RS.load_snaps(2026,2); bud = PA.measure_budget(snaps.value)
 po = PA.assess(ro.value, budget=bud.value)
 prows = po.value or (po.evidence or {}).get('value') or []
@@ -44,7 +49,15 @@ stats = RF.join_football(cands, uni.value, ro.value, prows)
 out['identity']=stats
 drawev = RF.attach_draw_risk(cands, DRAWS)
 out['draws']=drawev
+for c in cands:
+    if c.gsis_id in INACT:
+        c.support_state='OFFICIALLY_INACTIVE'
+        c.role_support='ROLE_UNSUPPORTED'
+        c.participation_state='PARTICIPATION_UNSUPPORTED'
+        c.why.append('OFFICIALLY_INACTIVE (owner-supplied declaration)')
 RF.mark_credible(cands)
+for c in cands:
+    if c.gsis_id in INACT: c.credible_workload=False
 
 def row(c):
     return {'name':c.name,'team':c.team,'pos':c.position,
@@ -69,7 +82,9 @@ ents=[EVD.Entity(EVD.PLAYER, c.name, game_id=GAME, player_id=c.gsis_id,
                  salary_name=c.name) for c in cands]
 codes=[]
 for c in cands:
-    if c.identity_state!='SALARY_IDENTITY_RESOLVED':
+    if c.gsis_id in INACT:
+        codes.append(f'NO_OUTPUT:{c.gsis_id}')
+    elif c.identity_state!='SALARY_IDENTITY_RESOLVED':
         codes.append(f'IDENTITY_UNRESOLVED:draftkings:{c.name}')
     elif c.role_support=='ROLE_UNSUPPORTED':
         codes.append(f'CONFLICT_UNRESOLVED:{c.gsis_id}')
@@ -81,7 +96,7 @@ out['entity_verdicts']={k:{'verdict':v.verdict,'rollup':v.rollup,
     'n_usable':len(v.usable_entities),'n_blocked':len(v.blocked_entities),
     'scope_level_reasons':v.scope_level_reasons[:3]}
     for k,v in ev.items() if k in ('F1','F2','F3','F4','F5','D2','D3.showdown','D4.showdown','D5.showdown')}
-p=pathlib.Path('nfl/research/showdown_fixture/NYG_LAR_SHOWDOWN_FIXTURE.json')
+p=pathlib.Path(f'nfl/research/showdown_fixture/NYG_LAR_SHOWDOWN_{TAG}.json')
 p.parent.mkdir(parents=True, exist_ok=True)
 p.write_text(json.dumps(out, indent=1, default=str))
 print('WROTE', p)
