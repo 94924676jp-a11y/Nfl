@@ -17,7 +17,8 @@ _REPO = pathlib.Path(__file__).resolve().parents[2]
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
-from nfl.production.board import player_board as PB                 # noqa: E402
+from nfl.production.board import player_board as PB
+from nfl.production.state import availability as AV                 # noqa: E402
 from nfl.production.review import dossier as DOS                    # noqa: E402
 from nfl.production.review import evidence as EV                    # noqa: E402
 
@@ -202,6 +203,57 @@ def test_missing_salary_artifact_refuses_rather_than_pricing_at_zero():
        'no artifact means no prices, by name')
 
 
+def test_not_on_inactive_list_can_never_mean_a_teammate_went_out():
+    """A SUBSTRING test used to decide this, and 'NOT_ON_INACTIVE_LIST'
+    contains 'INACTIVE'. A player whose availability moved from UNKNOWN to
+    NOT_ON_INACTIVE_LIST -- a change that asserts nothing about whether
+    anybody plays -- would have had his projection movement attributed to a
+    teammate going out."""
+    def cause(av, pav):
+        row = {'dk_mean': 10.0, 'availability': av}
+        prev = {'dk_mean': 5.0, 'availability': pav}
+        return PB._cause(row, prev, None)['cause']
+
+    for pav in (AV.UNKNOWN, AV.NOT_ON_INACTIVE_LIST, 'ACTIVE',
+                AV.INJURY_QUESTIONABLE, AV.OFFICIAL_INACTIVE, 'INACTIVE'):
+        if pav == AV.NOT_ON_INACTIVE_LIST:
+            continue
+        c = cause(AV.NOT_ON_INACTIVE_LIST, pav)
+        ok(c != 'TEAMMATE_INACTIVE',
+           f'{pav} -> NOT_ON_INACTIVE_LIST is attributed to {c}, never '
+           f'TEAMMATE_INACTIVE')
+    ok('INACTIVE' in AV.NOT_ON_INACTIVE_LIST,
+       'and the trap is real: the string NOT_ON_INACTIVE_LIST does contain '
+       'INACTIVE, which is why membership replaced containment')
+
+
+def test_every_availability_state_has_a_declared_cause():
+    for st in AV.STATES:
+        if st == AV.GAME_ACTIVE:
+            continue          # never produced; see state/availability.py
+        ok(st in PB.AVAILABILITY_CAUSE,
+           f'{st} has a declared cause: {PB.AVAILABILITY_CAUSE.get(st)}')
+    ok(PB.AVAILABILITY_CAUSE[AV.INJURY_OUT] == 'TEAMMATE_INACTIVE',
+       'a club OUT designation is treated as will-not-play, not as a '
+       'practice note')
+    ok(PB.AVAILABILITY_CAUSE[AV.INJURY_QUESTIONABLE] == 'PRACTICE_OR_INJURY'
+       and PB.AVAILABILITY_CAUSE[AV.INJURY_DOUBTFUL] == 'PRACTICE_OR_INJURY',
+       'while a designation of uncertainty is not')
+    ok(all(c in PB.CAUSES for c in PB.AVAILABILITY_CAUSE.values()),
+       'and every mapped cause is one the board declares')
+
+
+def test_an_unrecognised_availability_value_is_not_guessed_at():
+    row = {'dk_mean': 10.0, 'availability': 'SOMETHING_NOBODY_DECLARED',
+           'offensive_depth': 1, 'role': 'X', 'opportunity_basis': 'Y'}
+    prev = {'dk_mean': 5.0, 'availability': AV.UNKNOWN,
+            'offensive_depth': 1, 'role': 'X', 'opportunity_basis': 'Y'}
+    c = PB._cause(row, prev, None)['cause']
+    ok(c != 'TEAMMATE_INACTIVE' and c != 'PRACTICE_OR_INJURY',
+       f'an undeclared availability value falls through rather than being '
+       f'guessed at, and ends as {c}')
+
+
 def main():
     for t in (test_a_player_with_no_projection_reads_NOT_EMITTED,
               test_no_salary_reads_UNAVAILABLE_and_has_no_value,
@@ -214,7 +266,10 @@ def main():
               test_an_empty_population_is_refused,
               test_write_verifies_the_row_count_on_disk,
               test_salary_loader_names_what_it_could_not_match,
-              test_missing_salary_artifact_refuses_rather_than_pricing_at_zero):
+              test_missing_salary_artifact_refuses_rather_than_pricing_at_zero,
+              test_not_on_inactive_list_can_never_mean_a_teammate_went_out,
+              test_every_availability_state_has_a_declared_cause,
+              test_an_unrecognised_availability_value_is_not_guessed_at):
         print(f'== {t.__name__}')
         t()
     print(f'\nPASSED {PASSED} FAILED {FAILED}')

@@ -42,7 +42,8 @@ _REPO = pathlib.Path(__file__).resolve().parents[3]
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
-from nfl.production.review import evidence as EV                    # noqa: E402
+from nfl.production.review import evidence as EV                     # noqa: E402
+from nfl.production.state import availability as AV                    # noqa: E402
 from sportsplatform.governance.outcome import Cause, Outcome        # noqa: E402
 
 SPEC_VERSION = 'nfl-player-board-1'
@@ -76,6 +77,42 @@ CAUSES = (
     'CURRENT_SEASON_EVIDENCE', 'MODEL_UPDATE', 'REDISTRIBUTION',
     'WEATHER', 'UNCERTAINTY_CHANGE', 'NEW_TO_BOARD', 'UNEXPLAINED',
 )
+
+#: Which cause an availability MOVE is attributed to, by explicit state
+#: membership. Every state the availability vocabulary declares is named
+#: here, and a state that is not named falls through to the next cause test
+#: rather than being guessed at.
+#:
+#: THE DEFECT THIS REPLACES. This was
+#:
+#:     'PRACTICE_OR_INJURY' if 'INACTIVE' not in str(av) else 'TEAMMATE_INACTIVE'
+#:
+#: a SUBSTRING test, written when the only values were 'ACTIVE' and
+#: 'INACTIVE'. The availability vocabulary now contains
+#: 'NOT_ON_INACTIVE_LIST', and that string CONTAINS 'INACTIVE', so a player
+#: who moved from UNKNOWN to NOT_ON_INACTIVE_LIST -- a change that asserts
+#: nothing at all -- would have been attributed to a teammate going out.
+#: Membership in a declared set cannot make that mistake.
+#:
+#: The label TEAMMATE_INACTIVE is a misnomer for the branch it serves: it
+#: fires when THIS player is the one who will not play. It is kept because
+#: renaming a cause is a change to the board's vocabulary and this commit
+#: fixes one bug. Registered.
+AVAILABILITY_CAUSE = {
+    # he will not take the field
+    'INACTIVE': 'TEAMMATE_INACTIVE',
+    AV.OFFICIAL_INACTIVE: 'TEAMMATE_INACTIVE',
+    AV.INJURY_OUT: 'TEAMMATE_INACTIVE',
+    # the club published something about his condition
+    AV.INJURY_DOUBTFUL: 'PRACTICE_OR_INJURY',
+    AV.INJURY_QUESTIONABLE: 'PRACTICE_OR_INJURY',
+    # these assert nothing about whether he plays
+    AV.NOT_ON_INACTIVE_LIST: 'PRACTICE_OR_INJURY',
+    AV.UNKNOWN: 'PRACTICE_OR_INJURY',
+    # pre-availability-slice values, still readable on an older board
+    'ACTIVE': 'PRACTICE_OR_INJURY',
+    'NOT_DECLARED': 'PRACTICE_OR_INJURY',
+}
 
 #: Below this DK-point movement a delta is not worth attributing. Declared
 #: review choice, not fitted: it is roughly one reception and cannot reorder
@@ -217,9 +254,10 @@ def _cause(row, prev, dossier, run_identity=None, prev_identity=None) -> Dict[st
 
     av, pav = row.get('availability'), prev.get('availability')
     if av != pav:
-        return {'cause': 'PRACTICE_OR_INJURY' if 'INACTIVE' not in str(av)
-                else 'TEAMMATE_INACTIVE',
-                'evidence': f'availability {pav} -> {av}'}
+        c = AVAILABILITY_CAUSE.get(str(av))
+        if c is not None:
+            return {'cause': c,
+                    'evidence': f'availability {pav} -> {av}'}
     if row.get('offensive_depth') != prev.get('offensive_depth'):
         return {'cause': 'DEPTH_CHANGE',
                 'evidence': f'offensive depth {prev.get("offensive_depth")} '
