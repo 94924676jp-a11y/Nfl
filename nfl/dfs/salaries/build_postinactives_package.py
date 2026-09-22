@@ -61,11 +61,24 @@ def summarise(v) -> dict:
             'n_draws': int(v.size)}
 
 
-def read_run(run_dir) -> dict:
+def read_run(run_dir, review_dir=None) -> dict:
+    """GATED. This is a publication path -- the package it builds is what a
+    card is written from -- so the draws come through the player-review gate
+    rather than straight off disk. `review_dir` defaults beside the run so an
+    existing caller keeps working; a missing review REFUSES, it does not fall
+    back to an ungated read."""
     run_dir = pathlib.Path(run_dir)
-    m = json.loads((run_dir / 'player_draws_manifest.json').read_text())
+    from nfl.production.review import gated_projection as _GP
+    _rd = pathlib.Path(review_dir) if review_dir else (
+        _REPO / 'nfl/research/player_review' /
+        json.loads((run_dir / 'player_draws_manifest.json').read_text()
+                   ).get('game_id', ''))
+    _g = _GP.load(run_dir, _rd)
+    if _g.state.name != 'PASS':
+        raise SystemExit(f'{_g.code}: {_g.detail}')
+    m = _g.value['manifest']
     s = json.loads((run_dir / 'run_status.json').read_text())
-    z = np.load(run_dir / 'player_draws.npz')
+    z = _g.value['arrays']
     n = int(m.get('n_draws') or 0)
 
     stats = collections.defaultdict(dict)      # pid -> 'layer/metric' -> vec
@@ -76,7 +89,7 @@ def read_run(run_dir) -> dict:
         for metric in (layer.get('metrics') or []):
             arr = None
             for k in (f'{lname}__{metric}', f'{lname}/{metric}'):
-                if k in z.files:
+                if k in z:
                     arr = np.asarray(z[k])
                     break
             if arr is None:

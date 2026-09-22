@@ -1,0 +1,26 @@
+PANEL COVERAGE: ord 202001 -> 202518 | 2026 rows: 0
+
+stage                                  Skattebo          Jr.   Singletary       Harris
+--------------------------------------------------------------------------------------
+1 measured snap share 2026                 0.61         0.03         0.36         None
+2 measured carries 2026                    18.0          2.0          6.0          0.0
+2b measured carry share 2026             0.4865       0.0541       0.1622            0
+3 offensive depth rank (prod)         ('RB', 1)    ('RB', 4)    ('RB', 3)    ('RB', 2)
+4 tier                                        2            1            4            5
+4b tier basis                      shrunk_trail shrunk_trail shrunk_trail shrunk_trail
+5 panel rows (pre-2026 only)                  8           32           98           71
+5b own ewma (2025 and older)             0.3933       0.4751       0.2873       0.3335
+5c tier mean anchor                      0.2645       0.5051        0.111        0.111
+5d shrinkage w                           0.9149       0.9773       0.9925       0.9896
+6 C = opportunity centre               0.382368     0.475779     0.285995     0.331226
+10 final carries (sealed)                6.1444       8.0939       4.3762       5.2494
+
+ABLATIONS on C (stage 6). Same code path, one input removed.
+ablation                           Skattebo          Jr.   Singletary       Harris   inversion?
+as run                             0.382368     0.475779     0.285995     0.331226   TRACY>SKATTEBO
+remove historical prior            0.264512     0.505131     0.110964     0.110964   TRACY>SKATTEBO
+remove depth prior (tier)          0.369304     0.466824     0.285995     0.331226   TRACY>SKATTEBO
+prior-only (no tier)               0.369304     0.466824     0.285995     0.331226   TRACY>SKATTEBO
+tier-only (no history)             0.264512     0.505131     0.110964     0.110964   TRACY>SKATTEBO
+COUNTERFACTUAL measured-only       0.391795     0.246477     0.140322     0.047336   correct order
+COUNTERFACTUAL panel+measured       0.40378     0.390772      0.26038     0.263154   correct order

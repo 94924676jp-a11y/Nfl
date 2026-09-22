@@ -2138,3 +2138,64 @@ A list that omits a player is not evidence that the player is active. I need
 each club's list in full, with the count, so absence from the captured list is
 distinguishable from absence from the club's list. No ACTIVE status will be
 inferred from omission.
+
+---
+
+## REQUEST 2026-09-22 — PARTICIPATION AND PERSONNEL DATA FOR 2026 (GOVERNED, STANDING)
+
+**Status: ASSIGNED, not blocked.** The work inside this repository is done;
+what is missing is bytes from outside it. Registered in code as
+`nfl.production.review.evidence.UNAVAILABLE_SOURCES`, so every player dossier
+on every slate already discloses the gap by name rather than approximating it.
+
+**What is unavailable and why.** `nflverse pbp_participation` returns 404 for
+the 2026 season, and the PFR snap-count file carries `offense_snaps` /
+`offense_pct` / `st_snaps` / `st_pct` with no pass-versus-run split. Measured:
+zero participation columns present for 2026.
+
+**Six axes needed, in priority order.**
+
+1. **Routes run**, per player per game. This is the single highest-value item.
+   Routes are the correct denominator for a receiving role; raw offensive
+   snaps are not, and a tight end who blocks on 60% of his snaps is
+   indistinguishable from one who runs routes on 90% under the data we have.
+2. **Routes per dropback**, or enough to compute it (team dropbacks per game
+   are already available, so routes alone would suffice).
+3. **Pass-blocking snaps** per player per game.
+4. **Run-blocking snaps** per player per game.
+5. **Personnel packages** — 11 / 12 / 13 / 21 usage rates by team and by
+   player.
+6. **Alignment** — slot versus outside versus inline.
+
+**Requirements, because a source that cannot be point-in-time cannot be used.**
+
+- Every row must carry a **publication timestamp**, not just a game date. A
+  feed we cannot prove was published before kickoff cannot enter a pregame
+  projection and will be refused by `chronology.certify`.
+- **Per player per game**, not season aggregates. A season rate computed after
+  week 6 leaks weeks 2 through 6 into a week-2 forecast.
+- Coverage from **2026 week 1 forward**, and for whatever prior seasons the
+  same source can supply on the same schema.
+- A stable **player identifier** that joins to `gsis_id` without edit-distance
+  matching. If the source keys on another id, send the crosswalk.
+
+**Candidate sources to try, in the order we think most likely.** nflverse
+participation for a season that does resolve, to confirm the schema; PFF or
+SIS if either is licensable; the NFL's own Next Gen Stats endpoints; ESPN
+play-level participation.
+
+**What happens until it arrives, and what must not.** TE and WR dossiers
+disclose the evidence ceiling on every slate: 21 receivers on
+2026_02_NYG_LA carry `RECEIVING_ROLE_RESTS_ON_RAW_SNAPS_ONLY`. That is a
+WARNING and does not stop a slate, which is the right disposition for an
+optional source being absent.
+
+**But the contradiction blocks.** If the projection model ever acts as though
+one of these axes was measured while it is UNAVAILABLE, that is
+`UNAVAILABLE_EVIDENCE_CLAIMED_AS_MEASURED` and it BLOCKS publication. An
+absent source is a disclosed limitation; a claim resting on an absent source
+is a false statement about the evidence.
+
+**Not to be worked around.** No synthesis of 2026 route or personnel data from
+snaps, from prior seasons, or from any model. The axes stay UNAVAILABLE until
+real point-in-time bytes exist.

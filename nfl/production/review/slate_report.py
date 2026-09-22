@@ -41,6 +41,7 @@ from nfl.production.review import audit as AUD                     # noqa: E402
 from nfl.production.review import dossier as DOS                   # noqa: E402
 from nfl.production.review import escalation as ESC                # noqa: E402
 from nfl.production.review import evidence as EV                   # noqa: E402
+from nfl.production.review import gate as GATE                     # noqa: E402
 from sportsplatform.governance.outcome import Cause, Outcome       # noqa: E402
 
 SPEC_VERSION = 'slate-review-report-1'
@@ -131,7 +132,7 @@ def write_report(report: Dict[str, Any],
 
     base = pathlib.Path(root or (_REPO / REVIEW_ROOT))
     slate_dir = base / report['slate_key']
-    pdir = slate_dir / 'players'
+    pdir = slate_dir / 'player_dossiers'
     pdir.mkdir(parents=True, exist_ok=True)
 
     written: Dict[str, str] = {}
@@ -144,7 +145,7 @@ def write_report(report: Dict[str, Any],
 
     report = dict(report)
     report['player_files'] = written
-    rp = slate_dir / 'SLATE_REVIEW.json'
+    rp = slate_dir / 'slate_review_report.json'
     body = json.dumps(report, indent=1, sort_keys=True, default=str).encode()
     rp.write_bytes(body)
 
@@ -186,7 +187,7 @@ def assert_player_review_complete(report: Dict[str, Any], *,
         want = set(publishable_ids)
         have = {k.split('/')[-1].removesuffix('.json')
                 for k in (report.get('player_files') or {})
-                if k.startswith('players/')}
+                if k.startswith('player_dossiers/')}
         if have:
             missing = sorted(want - have)
 
@@ -249,6 +250,7 @@ def review_slate(*, slate_key: str, universe_rows, role_rows=(),
                  information_cut=None, deep_research_capacity: int = 12,
                  standard_review_capacity: Optional[int] = None,
                  external_disagreement=None, root=None,
+                 optimizer_pool_ids=None, resolved_conflict_codes=None,
                  notes=None) -> Outcome:
     """The whole stage, end to end, in the fixed order. One call per slate.
 
@@ -305,15 +307,42 @@ def review_slate(*, slate_key: str, universe_rows, role_rows=(),
         return wo
     report['player_files'] = wo.value['player_file_digests']
 
-    gate = assert_player_review_complete(report,
-                                         publishable_ids=publishable_ids)
+    # THE GATE RUNS HERE, inside the stage, so a caller cannot obtain a
+    # review without also obtaining its verdict. A review whose verdict is
+    # optional is a report, and a report does not stop anything.
+    consumed = ((projection or {}).get('digests') or {}).get(
+        'player_draws.npz')
+    gate_o = GATE.evaluate(report, dossiers=dossiers,
+                           projection_digest=consumed,
+                           optimizer_pool_ids=optimizer_pool_ids,
+                           resolved_conflict_codes=resolved_conflict_codes)
+    gate_v = gate_o.value or gate_o.evidence.get('value') or {
+        'verdict': GATE.BLOCKED, 'refusal_code': gate_o.code,
+        'refusal_detail': gate_o.detail, 'spec_version': GATE.SPEC_VERSION}
+    slate_dir = pathlib.Path(root or (_REPO / REVIEW_ROOT)) / slate_key
+    gw = GATE.write_gate(gate_v, slate_dir / 'review_gate.json')
+    if gw.state.name != 'PASS':
+        return gw
+    ap = slate_dir / 'projection_audit.json'
+    ap.write_bytes(json.dumps(
+        {'spec_version': AUD.SPEC_VERSION, 'slate_key': slate_key,
+         'audit_state': ao.state.name, 'audit_code': ao.code,
+         **audit_result}, indent=1, sort_keys=True, default=str).encode())
+
+    complete = assert_player_review_complete(
+        report, publishable_ids=publishable_ids)
     return Outcome.ok(
         'SLATE_REVIEWED',
-        {'report': report, 'dossiers': dossiers,
+        {'report': report, 'dossiers': dossiers, 'gate': gate_v,
          'audit_state': ao.state.name, 'audit_code': ao.code,
-         'gate_state': gate.state.name, 'gate_code': gate.code,
-         'gate_detail': gate.detail,
-         'written': {k: v for k, v in wo.value.items()
-                     if k != 'player_file_digests'}},
+         'verdict': gate_v.get('verdict'),
+         'gate_state': gate_o.state.name, 'gate_code': gate_o.code,
+         'completeness_state': complete.state.name,
+         'completeness_code': complete.code,
+         'written': {**{k: v for k, v in wo.value.items()
+                        if k != 'player_file_digests'},
+                     'gate_path': gw.value['path'],
+                     'gate_sha256': gw.value['sha256'],
+                     'audit_path': str(ap)}},
         detail=f'{len(dossiers)} dossiers; audit {ao.code}; '
-               f'gate {gate.state.name}/{gate.code}')
+               f'verdict {gate_v.get("verdict")}')

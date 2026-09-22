@@ -1473,11 +1473,35 @@ def build(args, fixtures: dict = None) -> dict:
                 args.season, args.week, teams,
                 as_of=_VS.as_of_cut(fx.get('kickoff_utc'), args.written_at))
             if _dro.state is State.PASS:
-                for k, v in _dro.value.items():
-                    dr[k] = v[1]
+                # GUARDED. This was `dr[k] = v[1]`, which kept the rank and
+                # threw the GROUP away -- so a fullback listed FB1, a guard
+                # listed LG2 and a defender listed RDE1 all entered the
+                # backfield and receiver rooms as rank-1 evidence.
+                # `guard_rank_map` keeps a rank only where the depth group and
+                # the model position resolve to the SAME room, and returns
+                # every refusal by name so the narrowing is evidence rather
+                # than a silent filter.
+                #
+                # MEASURED on 2026_02_NYG_LA at cut 2026-09-21T23:05Z, before
+                # wiring: 119 entries in, 36 kept, 83 refused; ZERO kept ranks
+                # changed value; ZERO tier changes in the carries room and
+                # ZERO in the targets room. It is a no-op on this slate's
+                # output and removes 83 cross-room ranks that are not.
+                from nfl.production.universe import depth_role as _DR
+                _guard = _DR.guard_rank_map(
+                    _dro.value,
+                    {q.get('gsis_id'): q.get('position') for q in players})
+                dr = dict(_guard['rank'])
                 dr_ev = {'state': 'PASS', 'code': _dro.code,
                          'n_players': len(dr),
-                         'as_of': _dro.evidence.get('as_of')}
+                         'as_of': _dro.evidence.get('as_of'),
+                         'guard': {'spec_version': _guard['spec_version'],
+                                   'n_in': _guard['n_in'],
+                                   'n_kept': _guard['n_kept'],
+                                   'n_refused': _guard['n_refused'],
+                                   'refused': _guard['refused'],
+                                   'special_teams_role':
+                                       _guard['special_teams_role']}}
             else:
                 dr_ev = {'state': _dro.state.value, 'code': _dro.code,
                          'detail': str(_dro.detail)[:300], 'n_players': 0}

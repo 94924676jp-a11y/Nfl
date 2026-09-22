@@ -405,7 +405,7 @@ def test_the_live_slate_reviews_every_publishable_player():
         ok(cov['n_universe'] > len(emitted),
            f'and the review covers the wider universe too '
            f'({cov["n_universe"]} dossiers)')
-        n = len(list(pathlib.Path(td).glob(f'{GAME}/players/*.json')))
+        n = len(list(pathlib.Path(td).glob(f'{GAME}/player_dossiers/*.json')))
         ok(n == cov['n_universe'],
            f'{n} dossier files are on disk, matching the {cov["n_universe"]} '
            f'built')

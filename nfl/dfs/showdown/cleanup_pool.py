@@ -5,6 +5,7 @@ from nfl.production.universe import player_universe as PU, usage_vintage as UV, 
 
 CUT='2026-09-21T23:20:00Z'
 POST='nfl/research/showdown_fixture/run_post/d90d80c0b4a7f95e'
+REVIEW='nfl/research/player_review/2026_02_NYG_LA'
 SAL='nfl/dfs/salaries/raw/DKEntries_NYG_LAR_SHOWDOWN_2026W2.csv'
 INACT=set(json.load(open('nfl/research/showdown_fixture/INACTIVE_IDENTITY_RESOLUTION.json'))['resolved'])
 DECLARED={'Matthew Stafford','Kyren Williams','Davante Adams','Konata Mumpfield',
@@ -25,8 +26,15 @@ for r in RS.load_snaps(2026,2).value:
 usage=UV.usage_season(2026, CUT, before_week=2).value
 USED={pid for (w,t,pid) in usage}
 
-m=json.loads((pathlib.Path(POST)/'player_draws_manifest.json').read_text())
-a=np.load(pathlib.Path(POST)/'player_draws.npz'); L=m['layers']
+# GATED. This used to np.load the draw artifact directly, so the player
+# review could BLOCK a slate and this selector would build lineups from it
+# anyway. `gated_projection.load` refuses unless the review ran, matches this
+# exact artifact, and returned PASS or PASS_WITH_WARNINGS.
+from nfl.production.review import gated_projection as _GP
+_g = _GP.load(POST, REVIEW)
+if _g.state.name != 'PASS':
+    raise SystemExit(f'{_g.code}: {_g.detail}')
+a = _g.value['arrays']; m = _g.value['manifest']; L = _g.value['layers']
 def rows(l): return {p:i for i,p in enumerate((L.get(l) or {}).get('row_ids') or [])}
 DK=a['dk_scoring__dk_points']; dkr=rows('dk_scoring')
 KP=a['kicking__dk_points']; kr=rows('kicking')
