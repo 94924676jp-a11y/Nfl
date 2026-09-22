@@ -1,0 +1,99 @@
+{
+ "artifact": "CLASSIC_OBJECTIVE_ADDITIVITY",
+ "spec_version": "classic-objective-additivity-1",
+ "question": "score_pool assigns each player a statistic computed across shared simulated worlds, and the search maximises the SUM of those statistics over a lineup. Is that a valid lineup objective?",
+ "method": "enumerate EVERY legal DK Classic lineup from a small correlated pool, score each lineup the correct way -- world by world, lineup_score_j = sum(player_score_pj) -- and compare the resulting ranking against the ranking you get by summing the per-player statistics.",
+ "reproduce": "python3.12 nfl/research/dfs/objective_additivity.py",
+ "fixture": {
+  "players": 18,
+  "worlds": 20000,
+  "lineups": 3375,
+  "teams": [
+   "AAA",
+   "BBB",
+   "CCC"
+  ],
+  "correlation": "each player z = 0.55*team + 0.35*game + 0.75*idiosyncratic; AAA and BBB share a game, CCC does not"
+ },
+ "answer": {
+  "EXPECTED_FANTASY_POINTS": "ADDITIVE AND VALID. max |sum(player mean) - mean(lineup score)| = 2.842e-14, which is float noise. Expectation is linear; correlation does not affect it.",
+  "MEAN_WITHIN_WORLD_PERCENTILE": "NOT ADDITIVE",
+  "TOP_X_PERCENT_FREQUENCY": "NOT ADDITIVE",
+  "EXPECTED_RANK": "NOT ADDITIVE"
+ },
+ "spearman_vs_true_lineup_metric": {
+  "EXPECTED_FANTASY_POINTS": {
+   "lineup_mean": 1.0,
+   "true_top_10pct": 0.5346,
+   "true_top_1pct": 0.4861,
+   "true_p_first": 0.3788
+  },
+  "MEAN_WITHIN_WORLD_PERCENTILE": {
+   "lineup_mean": 0.9861,
+   "true_top_10pct": 0.5278,
+   "true_top_1pct": 0.4781,
+   "true_p_first": 0.3734
+  },
+  "TOP_X_PERCENT_FREQUENCY": {
+   "lineup_mean": 0.9723,
+   "true_top_10pct": 0.5396,
+   "true_top_1pct": 0.4917,
+   "true_p_first": 0.382
+  },
+  "EXPECTED_RANK": {
+   "lineup_mean": 0.9837,
+   "true_top_10pct": 0.5222,
+   "true_top_1pct": 0.4729,
+   "true_p_first": 0.371
+  }
+ },
+ "counterexample": {
+  "what_truth_wants": {
+   "lineup": "AAA-RB0 AAA-WR0 AAA-WR1 BBB-DST0 BBB-QB0 BBB-RB0 BBB-TE0 BBB-WR0 BBB-WR1",
+   "true_top_1pct": 0.0858,
+   "p_first": 0.0071,
+   "lineup_mean": 98.13,
+   "lineup_sd": 34.51
+  },
+  "what_each_proxy_picks": {
+   "EXPECTED_FANTASY_POINTS": {
+    "lineup": "AAA-RB0 AAA-WR0 BBB-DST0 BBB-QB0 BBB-RB0 BBB-TE0 BBB-WR0 CCC-RB0 CCC-WR0",
+    "true_top_1pct": 0.0209,
+    "p_first": 0.0008,
+    "lineup_mean": 100.79,
+    "lineup_sd": 29.47,
+    "rank_it_gives_the_correct_lineup": 828,
+    "of": 3375
+   },
+   "MEAN_WITHIN_WORLD_PERCENTILE": {
+    "lineup": "AAA-RB0 AAA-WR0 BBB-QB0 BBB-RB0 BBB-WR0 CCC-DST0 CCC-RB0 CCC-TE0 CCC-WR0",
+    "true_top_1pct": 0.0109,
+    "p_first": 0.00055,
+    "lineup_mean": 100.7,
+    "lineup_sd": 27.91,
+    "rank_it_gives_the_correct_lineup": 1046,
+    "of": 3375
+   },
+   "TOP_X_PERCENT_FREQUENCY": {
+    "lineup": "AAA-RB0 AAA-WR0 BBB-RB0 BBB-WR0 CCC-DST0 CCC-QB0 CCC-RB0 CCC-TE0 CCC-WR0",
+    "true_top_1pct": 0.0215,
+    "p_first": 0.0008,
+    "lineup_mean": 100.66,
+    "lineup_sd": 28.6,
+    "rank_it_gives_the_correct_lineup": 1203,
+    "of": 3375
+   },
+   "EXPECTED_RANK": {
+    "lineup": "AAA-RB0 AAA-TE0 AAA-WR0 BBB-DST0 BBB-QB0 BBB-RB0 BBB-WR0 CCC-RB0 CCC-WR0",
+    "true_top_1pct": 0.0112,
+    "p_first": 0.0002,
+    "lineup_mean": 100.77,
+    "lineup_sd": 28.85,
+    "rank_it_gives_the_correct_lineup": 867,
+    "of": 3375
+   }
+  }
+ },
+ "reading": "the three world-based objectives are summed per player, and summing destroys exactly the property a tournament pays for. The correct lineup is a full AAA/BBB game stack: lower mean, much higher spread, and the highest probability of a winning score. Every summed proxy prefers a decorrelated lineup with a slightly higher mean and a far worse chance of winning. Note also that summed EXPECTED_FANTASY_POINTS tracks the true tournament metrics AS WELL AS or BETTER THAN the three objectives that were built to beat it, so the non-additive objectives are not merely invalid, they buy nothing.",
+ "production_exposure": "ZERO TODAY, and this was verified rather than assumed. score_pool has no caller outside the test suite; nfl/dfs/classic/pool.py sets Player.value from the board dk_mean and never sets draw_row, so score_pool would refuse a production pool with POOL_NOT_ALIGNED_TO_DRAWS. The three objectives are ORPHANED, exported, and documented as usable. That is the hazard."
+}
