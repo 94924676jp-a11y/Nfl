@@ -133,3 +133,37 @@ cannot produce a submittable lineup here.
 **The arrow is still one-directional and a test enforces it**: no module under
 `nfl/production`, `nfl/research/oas1`, `nfl/capture` or `nfl/ingest` imports
 anything under `nfl.dfs`.
+
+---
+
+## Update 2026-09-22 — the archive is built; layers 4 and 5 are not
+
+`nfl/dfs/history/` now exists. It stores contest evidence. It models nothing.
+
+**Why this and not the ownership model.** DraftKings GameCenter contest
+exports are a *perishable* first-party source: the accepted research for this
+workstream puts their availability at roughly ten days after a contest ends.
+That makes capture and modelling urgent on completely different clocks. A
+model built in December can be built from an archive captured in September;
+an archive not captured in September cannot be built in December at any
+price. So the archive was built first and deliberately alone.
+
+**What was deliberately NOT built**, and remains unbuilt after this change:
+`OwnershipModel`, `FieldSimulator`, `PayoutEV`, `PortfolioOptimizer`. Layers 4
+and 5 of the five above have no implementation. `OWNERSHIP_MODEL_UNAVAILABLE`
+and `FIELD_MODEL_UNAVAILABLE` still hold, and nothing in this package weakens
+them — a stored contest field is a record of what one field did once, not a
+prediction of what the next one will do.
+
+**The one-directional arrow holds and gained a second enforcement.**
+`nfl/tests/test_dfs_history.py` asserts structurally that no module in
+`nfl/dfs/history/` imports any football-model module, so ownership, `%
+Drafted`, duplication, payout structure and contest metadata cannot reach
+player projections, team volume, role, efficiency, appearance, game simulation
+or touchdown probability. The same suite asserts that the package contains no
+browser automation, no scraping, no session or login handling, and no
+scheme-qualified operator endpoint: acquisition is manual by instruction.
+
+The operating procedure for a capture is `nfl/dfs/history/PROCEDURE.md`.
+
+V2 NOT YET EARNED.
