@@ -72,6 +72,7 @@ _REPO = pathlib.Path(__file__).resolve().parents[3]
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
+from nfl.production.universe import depth_role as DR
 from nfl.production.universe import support_state as S            # noqa: E402
 from sportsplatform.governance.outcome import (                   # noqa: E402
     Cause, Outcome)
@@ -349,7 +350,18 @@ def assign(universe_rows, *, season: int, week: int, usage_rows=None,
         room = POSITION_ROOM.get(pos)
         if room:
             room_members[(r['team'], room)].append(r)
-        dpos, drank = (r.get('depth_pos_abb') or '').upper(), _i(r.get('depth_rank'))
+        # ONLY A SAME-ROOM RANK MAY SPEAK TO A WORKLOAD ROOM. This read the
+        # raw listing, so a KR2 return ranking entered the carries room as a
+        # rank-2 backfield listing. The typed accessor refuses it by name.
+        dpos = (r.get('depth_pos_abb') or '').upper()
+        drank = DR.offensive_depth_rank(
+            r.get('roster_position'), r.get('depth_pos_abb'),
+            r.get('depth_rank'))[0]
+        _depth_state = DR.offensive_depth_rank(
+            r.get('roster_position'), r.get('depth_pos_abb'),
+            r.get('depth_rank'))[1]
+        _st_role = DR.special_teams_role(r.get('depth_pos_abb'),
+                                         r.get('depth_rank'))
         if dpos and drank is not None:
             listing_seen[(r['team'], dpos, drank)].append(r['gsis_id'])
     collided = {k: v for k, v in listing_seen.items() if len(v) > 1}
@@ -437,9 +449,12 @@ def assign(universe_rows, *, season: int, week: int, usage_rows=None,
 
         # ---- CONFLICTS ----------------------------------------------------
         conflicts = []
-        ranks = sorted(_i(m.get('depth_rank')) for m in
-                       room_members.get((r['team'], room), ())
-                       if _i(m.get('depth_rank')) is not None) if room else []
+        ranks = sorted(
+            v for v in (DR.offensive_depth_rank(
+                m.get('roster_position'), m.get('depth_pos_abb'),
+                m.get('depth_rank'))[0]
+                for m in room_members.get((r['team'], room), ()))
+            if v is not None) if room else []
         front = ranks[:max(1, len(ranks) // 2)] if ranks else []
         if (drank is not None and front and drank <= max(front)
                 and snap_mean is None):

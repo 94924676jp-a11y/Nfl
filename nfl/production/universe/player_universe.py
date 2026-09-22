@@ -33,6 +33,7 @@ if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
 from nfl.production.nonqb import vintage_selector as VS          # noqa: E402
+from nfl.production.universe import depth_role as DR
 from nfl.production.universe import support_state as S           # noqa: E402
 from sportsplatform.governance.outcome import Cause, Outcome     # noqa: E402
 
@@ -203,6 +204,18 @@ def build(season: int, week: int, game_id: str, written_at: str, *,
             'depth_pos_abb': d.get('pos_abb'),
             'depth_rank': d.get('pos_rank'),
             'depth_dt': d.get('dt'),
+            # SEPARATE EVIDENCE AXES. A depth listing is two different facts
+            # and this row used to carry them as one. `offensive_depth_role`
+            # is a rank that may inform a workload room; `special_teams_role`
+            # is standing on a return or kicking unit and informs no room at
+            # all. A player is KR2 on one axis and OFFENSIVE_DEPTH_UNKNOWN on
+            # the other without either contaminating the other.
+            'offensive_depth_rank': DR.offensive_depth_rank(
+                r.get('position'), d.get('pos_abb'), d.get('pos_rank'))[0],
+            'offensive_depth_state': DR.offensive_depth_rank(
+                r.get('position'), d.get('pos_abb'), d.get('pos_rank'))[1],
+            'special_teams_role': DR.special_teams_role(
+                d.get('pos_abb'), d.get('pos_rank')),
             'injury_report_status': j.get('report_status') or None,
             'injury_practice_status': j.get('practice_status') or None,
             'officially_inactive': pid in inactive_ids,
