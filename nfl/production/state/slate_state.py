@@ -55,6 +55,7 @@ from nfl.production.nonqb import vintage_selector as VS               # noqa: E4
 from nfl.production.review import evidence as EV                      # noqa: E402
 from nfl.production.state import registry as FR                       # noqa: E402
 from nfl.production.universe import player_universe as PU             # noqa: E402
+from nfl.production.universe import role_state as RS                  # noqa: E402
 from sportsplatform.governance.outcome import Cause, Outcome          # noqa: E402
 
 SPEC_VERSION = 'nfl-pregame-slate-state-0'
@@ -76,6 +77,23 @@ POSTGAME_WEATHER_FIELDS = ('temp', 'wind')
 SOURCE_FAMILIES: Tuple[Tuple[str, bool], ...] = (
     ('weekly_rosters', True), ('depth_charts', False),
     ('injuries', False), ('schedules', False))
+
+
+#: The participation axes a PlayerState carries. Named here so every builder
+#: emits the same set and a reader can tell an axis that was not supplied
+#: from one nobody thought of.
+PARTICIPATION_AXES = ('offensive_snaps', 'offensive_snap_share',
+                      'offensive_snap_games', 'special_teams_snap_share',
+                      'routes_run')
+OPPORTUNITY_AXES = ('current_season_carries', 'current_season_targets',
+                    'carry_share', 'target_share', 'club_of_record')
+
+#: What a caller that supplied nothing is told. Distinct from UNAVAILABLE in
+#: the world.
+NOT_GIVEN = ('not supplied to this build. PregameSlateState is a boundary, '
+             'not an ingestion path: usage is passed in by the caller that '
+             'computed it, and an axis nobody passed is UNAVAILABLE, never '
+             'zero.')
 
 
 def _not_supplied(name: str, why: str) -> EV.Axis:
@@ -111,6 +129,10 @@ class PlayerState:
     offensive_depth: EV.Axis = None
     special_teams_depth: EV.Axis = None
     declared_starter: EV.Axis = None
+    #: which workload room the player's position puts him in. Football state,
+    #: so it lives here. It used to be derived inside the dossier, which made
+    #: the dossier a second place that decided what a player is.
+    room: EV.Axis = None
     #: the governed role output, carried as supplied
     role_state: EV.Axis = None
     current_season_participation: Dict[str, EV.Axis] = field(
@@ -142,6 +164,7 @@ class PlayerState:
             'offensive_depth': ax(self.offensive_depth),
             'special_teams_depth': ax(self.special_teams_depth),
             'declared_starter': ax(self.declared_starter),
+            'room': ax(self.room),
             'role_state': ax(self.role_state),
             'roster_status': ax(self.roster_status),
             'current_season_participation': {
@@ -271,6 +294,16 @@ class PregameSlateState:
 
 
 # --------------------------------------------------------------------------
+def _f(v, default=None):
+    """A float, or the default. Never a zero standing in for a blank."""
+    try:
+        if v is None or v == '':
+            return default
+        return float(v)
+    except (TypeError, ValueError):
+        return default
+
+
 def _rows(blob: str) -> List[Dict]:
     p = _REPO / blob
     op = gzip.open if str(p).endswith('.gz') else open
@@ -377,6 +410,267 @@ def _game_state(game_id: str, season: int, week: int, cut: str,
         }), detail=f'{game_id} at {row.get("stadium")}')
 
 
+@dataclass
+class _SourceCtx:
+    """Where each axis's bytes came from, as an axis `source` string.
+
+    ONE place builds a PlayerState. This carries the difference between the
+    two ways of reaching it: `from_verified` when the vintage store was read
+    through the selector, `legacy` when a caller handed over rows it had
+    already built. The second exists only so the old dossier call path keeps
+    working during the migration, and it says so in every axis it stamps.
+    """
+    roster: Optional[str]
+    roster_obs: Optional[str]
+    depth: Optional[str]
+    depth_obs: Optional[str]
+    injury: Optional[str]
+    injury_obs: Optional[str]
+    have_inactives: bool
+    verified: bool
+
+    @staticmethod
+    def from_verified(sources: Dict, cut: str, *,
+                      have_inactives: bool) -> '_SourceCtx':
+        def tag(fam):
+            d = sources.get(fam) or {}
+            if d.get('state') != 'PASS':
+                return None, None
+            return (f"{d['read_blob']}#{d['content_sha256'][:12]}",
+                    d['retrieved_at'])
+        r, ro = tag('weekly_rosters')
+        dp, do = tag('depth_charts')
+        ij, io = tag('injuries')
+        return _SourceCtx(r, ro, dp, do, ij, io, have_inactives, True)
+
+    @staticmethod
+    def legacy(cut: str, *, have_inactives: bool) -> '_SourceCtx':
+        m = ('supplied as already-built universe rows by the legacy call '
+             'path; no vintage capture was read or hashed by this builder')
+        return _SourceCtx(m, cut, m, cut, m, cut, have_inactives, False)
+
+
+def participation_from_snaps(snap_rows: Sequence[dict]) -> Dict[str, Any]:
+    """Offensive and special-teams participation from PFR snap rows.
+
+    MOVED HERE FROM THE DOSSIER. Averaging a player's snap percentages is a
+    statement about football, so it belongs to the state layer; the dossier's
+    job is to explain the number, not to be a second place that computes it.
+    The two shares stay separate because they answer separate questions.
+    """
+    off = [x for x in (_f(r.get('offense_pct')) for r in snap_rows)
+           if x is not None]
+    st = [x for x in (_f(r.get('st_pct')) for r in snap_rows) if x is not None]
+    # A KEY IS OMITTED RATHER THAN SET TO NONE OR ZERO. That is what carries
+    # the difference between "measured at 0%" and "never measured", and the
+    # state layer turns an omitted key into an UNAVAILABLE axis. Note that
+    # `offensive_snap_games` is present whenever ANY snap row exists, even if
+    # none of them carried an offensive percentage: the player was seen, and
+    # that is a different fact from not being seen.
+    out: Dict[str, Any] = {}
+    if off:
+        out['offensive_snap_share'] = sum(off) / len(off)
+    if snap_rows:
+        out['offensive_snap_games'] = len(off)
+    if st:
+        out['special_teams_snap_share'] = sum(st) / len(st)
+    return out
+
+
+def opportunity_from_usage(role_evidence: Dict[str, Any],
+                           usage_totals: Dict[str, float]) -> Dict[str, Any]:
+    """Current-season opportunity, preferring what the role layer measured.
+
+    MOVED HERE FROM THE DOSSIER, for the same reason. `role_evidence` is the
+    `current_season_usage` block role_state emitted; `usage_totals` is the
+    fallback summed from the usage panel. Shares come from the role layer
+    only, because a share without the denominator it was taken against is not
+    a measurement and this function has no denominator.
+    """
+    cu = role_evidence or {}
+    out: Dict[str, Any] = {}
+    for k, name in (('carries', 'current_season_carries'),
+                    ('targets', 'current_season_targets')):
+        v = cu.get(k, (usage_totals or {}).get(k))
+        if v not in (None, ''):
+            out[name] = _f(v)
+    for k in ('carry_share', 'target_share'):
+        if cu.get(k) is not None:
+            out[k] = _f(cu.get(k))
+    if cu.get('club_of_record') is not None:
+        out['club_of_record'] = cu.get('club_of_record')
+    return out
+
+
+def _pack(d: Dict, names: Sequence[str], grade: str, cut: str,
+          reg: FR.Registry, absent_why: str) -> Dict[str, EV.Axis]:
+    """Named axes, every one present, none of them a zero by default."""
+    out: Dict[str, EV.Axis] = {}
+    for n in names:
+        spec = reg.get(n)
+        if n in d:
+            out[n] = EV.Axis(name=n, value=d[n], grade=grade,
+                             source=spec.source_family if spec else None,
+                             observed_at=cut)
+        elif spec is not None and spec.evidence_grade == EV.UNAVAILABLE:
+            out[n] = EV.Axis(name=n, value=None, grade=EV.UNAVAILABLE,
+                             note=spec.note)
+        else:
+            out[n] = _not_supplied(n, absent_why)
+    return out
+
+
+def player_states(universe_rows: Sequence[dict], *, cut: str, game_id: str,
+                  ctx: _SourceCtx, registry: FR.Registry,
+                  role_by_id: Dict[str, Any] = None,
+                  dfs_position_by_id: Dict[str, str] = None,
+                  current_season_by_id: Dict[str, Dict] = None,
+                  historical_by_id: Dict[str, Dict] = None
+                  ) -> List[PlayerState]:
+    """THE one place a PlayerState is constructed. Both entry points use it.
+
+    Every row field is read with `.get`. The governed universe always emits
+    the full key set, but the compatibility shim must accept exactly what the
+    pre-migration dossier accepted, and that was partial rows -- a caller
+    handing over four keys is a caller this must not start crashing on.
+    """
+    reg = registry
+    role_by_id = role_by_id or {}
+    dfs_position_by_id = dfs_position_by_id or {}
+    current_season_by_id = current_season_by_id or {}
+    historical_by_id = historical_by_id or {}
+    out: List[PlayerState] = []
+    for r in universe_rows:
+        pid = r.get('gsis_id')
+        off_rank = r.get('offensive_depth_rank')
+        off_state = r.get('offensive_depth_state')
+        # DECLARED STARTER is derived from the OFFENSIVE rank only, and when
+        # the offensive rank is unknown the answer is UNKNOWN -- not False.
+        # "Not listed first" and "we do not know where he is listed" are
+        # different claims and only one of them is evidence.
+        if off_rank is None:
+            starter = _not_supplied(
+                'declared_starter',
+                f'offensive depth is {off_state}, so whether the club lists '
+                f'him first is unknown. Absence of a first-place listing is '
+                f'not a declaration that he is not the starter.')
+        else:
+            starter = _declared('declared_starter', off_rank == 1, ctx.depth,
+                                ctx.depth_obs,
+                                note=f'offensive depth rank {off_rank}')
+        if ctx.have_inactives:
+            avail = _declared(
+                'availability',
+                'INACTIVE' if r.get('officially_inactive')
+                else 'NOT_ON_INACTIVE_LIST',
+                'official_inactives', cut,
+                note='NOT_ON_INACTIVE_LIST is not ACTIVE. ACTIVE may not be '
+                     'inferred from omission unless the governing source '
+                     'permits it.')
+        else:
+            avail = _not_supplied(
+                'availability',
+                'no official inactive list was supplied to this build. '
+                'Availability is therefore unknown, and it may not be '
+                'inferred from roster status or from DraftKings salary '
+                'presence.')
+        role = role_by_id.get(pid)
+        # ROOM. Position states it; the role layer's own room is preferred
+        # when it has one, so the two agree wherever both exist. This lived
+        # in the dossier and does not any more: which room a player is in is
+        # football state, not an explanation of football state.
+        room_v = (role or {}).get('room') if isinstance(role, dict) else None
+        from_role = room_v is not None
+        if room_v is None:
+            room_v = RS.POSITION_ROOM.get(
+                (r.get('roster_position') or '').strip().upper())
+        room = EV.Axis(
+            'room', room_v, EV.DECLARED if room_v else EV.UNAVAILABLE,
+            source='role_state' if from_role
+            else 'roster football_position -> POSITION_ROOM',
+            observed_at=cut,
+            note=None if from_role else 'derived from the roster position; '
+                                        'the role layer supplied no row for '
+                                        'this player')
+        cs = dict(current_season_by_id.get(pid) or {})
+        hs = dict(historical_by_id.get(pid) or {})
+        out.append(PlayerState(
+            gsis_id=pid, display_name=r.get('display_name'), team=r.get('team'),
+            opponent=r.get('opponent'), game_id=game_id,
+            football_position=_declared('football_position',
+                                        r.get('roster_position'), ctx.roster,
+                                        ctx.roster_obs),
+            dfs_position=(
+                _declared('dfs_position', dfs_position_by_id[pid],
+                          'dk_salaries', cut)
+                if pid in dfs_position_by_id else _not_supplied(
+                    'dfs_position',
+                    'no DraftKings salary export was supplied to this build. '
+                    'Its absence says nothing about whether the player is '
+                    'available.')),
+            availability=avail,
+            injury_report_status=(
+                _declared('injury_report_status', r.get('injury_report_status'),
+                          ctx.injury, ctx.injury_obs,
+                          note='absence of a designation is not a '
+                               'declaration of health')
+                if ctx.injury else _not_supplied(
+                    'injury_report_status',
+                    'no lawful injuries capture at the cut')),
+            injury_practice_status=(
+                _declared('injury_practice_status',
+                          r.get('injury_practice_status'), ctx.injury,
+                          ctx.injury_obs)
+                if ctx.injury else _not_supplied(
+                    'injury_practice_status',
+                    'no lawful injuries capture at the cut')),
+            offensive_depth=EV.Axis(
+                name='offensive_depth_rank', value=off_rank,
+                grade=EV.DECLARED if off_rank is not None else EV.UNAVAILABLE,
+                source=ctx.depth, observed_at=r.get('depth_dt'),
+                note=f'state {off_state}; a special-teams rank is NOT an '
+                     f'answer to this axis'),
+            special_teams_depth=EV.Axis(
+                name='special_teams_role', value=r.get('special_teams_role'),
+                grade=(EV.DECLARED if r.get('special_teams_role') is not None
+                       else EV.UNAVAILABLE),
+                source=ctx.depth, observed_at=r.get('depth_dt'),
+                note='informs no offensive workload room'),
+            declared_starter=starter,
+            room=room,
+            role_state=(
+                EV.Axis(name='role_state', value=role, grade=EV.DECLARED,
+                        source='universe/role_state', observed_at=cut)
+                if role is not None else _not_supplied(
+                    'role_state',
+                    'no governed role output was supplied to this build. v0 '
+                    'carries role as the existing layer emits it; the '
+                    'PlayerRoleProfile ontology is the NEXT migration and is '
+                    'deliberately not coupled to this one.')),
+            roster_status=_declared('roster_status', r.get('roster_status'),
+                                    ctx.roster, ctx.roster_obs),
+            current_season_participation=_pack(
+                cs, PARTICIPATION_AXES, EV.MEASURED, cut, reg, NOT_GIVEN),
+            current_season_opportunity=_pack(
+                cs, OPPORTUNITY_AXES, EV.MEASURED, cut, reg, NOT_GIVEN),
+            historical_participation=_pack(
+                hs, PARTICIPATION_AXES, EV.HISTORICAL, cut, reg, NOT_GIVEN),
+            historical_opportunity=_pack(
+                hs, OPPORTUNITY_AXES, EV.HISTORICAL, cut, reg, NOT_GIVEN),
+            support_state=r.get('support_state'),
+            support_state_why=r.get('support_state_why'),
+            evidence_tier=r.get('evidence_tier'),
+            depth_listings=r.get('depth_listings') or [],
+            extra={k: r[k] for k in (
+                'football_name', 'roster_depth_chart_position',
+                'roster_status_abbr', 'jersey_number', 'years_exp',
+                'rookie_year', 'pfr_id', 'espn_id', 'depth_pos_abb',
+                'depth_rank', 'depth_dt', 'offensive_depth_state',
+                'officially_inactive') if k in r},
+        ))
+    return out
+
+
 def build_one_game(season: int, week: int, game_id: str, cut: str, *,
                    emitted_ids=None, inactive_ids=None, removed_ids=None,
                    salary_resolved_ids=None,
@@ -422,151 +716,14 @@ def build_one_game(season: int, week: int, game_id: str, cut: str, *,
     if uni.state.name != 'PASS':
         return uni
 
-    ros = sources['weekly_rosters']
-    ros_src = f"{ros['read_blob']}#{ros['content_sha256'][:12]}"
-    ros_obs = ros['retrieved_at']
-    dep = sources.get('depth_charts') or {}
-    dep_src = (f"{dep.get('read_blob')}#{(dep.get('content_sha256') or '')[:12]}"
-               if dep.get('state') == 'PASS' else None)
-    dep_obs = dep.get('retrieved_at')
-    inj = sources.get('injuries') or {}
-    inj_src = (f"{inj.get('read_blob')}#{(inj.get('content_sha256') or '')[:12]}"
-               if inj.get('state') == 'PASS' else None)
-    inj_obs = inj.get('retrieved_at')
     have_inactives = inactive_ids is not None
-
-    players: List[PlayerState] = []
-    for r in uni.value:
-        pid = r['gsis_id']
-        off_rank, off_state = r['offensive_depth_rank'], r[
-            'offensive_depth_state']
-        # DECLARED STARTER is derived from the OFFENSIVE rank only, and when
-        # the offensive rank is unknown the answer is UNKNOWN -- not False.
-        # "Not listed first" and "we do not know where he is listed" are
-        # different claims and only one of them is evidence.
-        if off_rank is None:
-            starter = _not_supplied(
-                'declared_starter',
-                f'offensive depth is {off_state}, so whether the club lists '
-                f'him first is unknown. Absence of a first-place listing is '
-                f'not a declaration that he is not the starter.')
-        else:
-            starter = _declared('declared_starter', off_rank == 1, dep_src,
-                                dep_obs,
-                                note=f'offensive depth rank {off_rank}')
-        if have_inactives:
-            avail = _declared(
-                'availability',
-                'INACTIVE' if r['officially_inactive'] else 'NOT_ON_INACTIVE_LIST',
-                'official_inactives', cut,
-                note='NOT_ON_INACTIVE_LIST is not ACTIVE. ACTIVE may not be '
-                     'inferred from omission unless the governing source '
-                     'permits it.')
-        else:
-            avail = _not_supplied(
-                'availability',
-                'no official inactive list was supplied to this build. '
-                'Availability is therefore unknown, and it may not be '
-                'inferred from roster status or from DraftKings salary '
-                'presence.')
-        cs = current_season_by_id.get(pid) or {}
-        hs = historical_by_id.get(pid) or {}
-
-        def _pack(d: Dict, names: Sequence[str], grade: str,
-                  absent_why: str) -> Dict[str, EV.Axis]:
-            out = {}
-            for n in names:
-                spec = reg.get(n)
-                if n in d:
-                    out[n] = EV.Axis(name=n, value=d[n], grade=grade,
-                                     source=spec.source_family if spec else None,
-                                     observed_at=cut)
-                elif spec is not None and spec.evidence_grade == EV.UNAVAILABLE:
-                    out[n] = EV.Axis(name=n, value=None,
-                                     grade=EV.UNAVAILABLE, note=spec.note)
-                else:
-                    out[n] = _not_supplied(n, absent_why)
-            return out
-
-        part_names = ('offensive_snaps', 'routes_run')
-        opp_names = ('current_season_carries', 'current_season_targets')
-        not_given = ('not supplied to this build. PregameSlateState v0 is a '
-                     'boundary, not an ingestion path: usage is passed in by '
-                     'the caller that already computed it, and an axis '
-                     'nobody passed is UNAVAILABLE, never zero.')
-        players.append(PlayerState(
-            gsis_id=pid, display_name=r['display_name'], team=r['team'],
-            opponent=r['opponent'], game_id=game_id,
-            football_position=_declared('football_position',
-                                        r['roster_position'], ros_src,
-                                        ros_obs),
-            dfs_position=(
-                _declared('dfs_position', dfs_position_by_id[pid],
-                          'dk_salaries', cut)
-                if pid in dfs_position_by_id else _not_supplied(
-                    'dfs_position',
-                    'no DraftKings salary export was supplied to this build. '
-                    'Its absence says nothing about whether the player is '
-                    'available.')),
-            availability=avail,
-            injury_report_status=(
-                _declared('injury_report_status', r['injury_report_status'],
-                          inj_src, inj_obs,
-                          note='absence of a designation is not a '
-                               'declaration of health')
-                if inj_src else _not_supplied(
-                    'injury_report_status',
-                    'no lawful injuries capture at the cut')),
-            injury_practice_status=(
-                _declared('injury_practice_status',
-                          r['injury_practice_status'], inj_src, inj_obs)
-                if inj_src else _not_supplied(
-                    'injury_practice_status',
-                    'no lawful injuries capture at the cut')),
-            offensive_depth=EV.Axis(
-                name='offensive_depth_rank', value=off_rank,
-                grade=EV.DECLARED if off_rank is not None else EV.UNAVAILABLE,
-                source=dep_src, observed_at=dep_obs,
-                note=f'state {off_state}; a special-teams rank is NOT an '
-                     f'answer to this axis'),
-            special_teams_depth=EV.Axis(
-                name='special_teams_role', value=r['special_teams_role'],
-                grade=(EV.DECLARED if r['special_teams_role'] is not None
-                       else EV.UNAVAILABLE),
-                source=dep_src, observed_at=dep_obs,
-                note='informs no offensive workload room'),
-            declared_starter=starter,
-            role_state=(
-                EV.Axis(name='role_state', value=role_by_id[pid],
-                        grade=EV.DECLARED, source='universe/role_state',
-                        observed_at=cut)
-                if pid in role_by_id else _not_supplied(
-                    'role_state',
-                    'no governed role output was supplied to this build. v0 '
-                    'carries role as the existing layer emits it; the '
-                    'PlayerRoleProfile ontology is the NEXT migration and is '
-                    'deliberately not coupled to this one.')),
-            roster_status=_declared('roster_status', r['roster_status'],
-                                    ros_src, ros_obs),
-            current_season_participation=_pack(
-                cs, part_names, EV.MEASURED, not_given),
-            current_season_opportunity=_pack(
-                cs, opp_names, EV.MEASURED, not_given),
-            historical_participation=_pack(
-                hs, part_names, EV.HISTORICAL, not_given),
-            historical_opportunity=_pack(
-                hs, opp_names, EV.HISTORICAL, not_given),
-            support_state=r['support_state'],
-            support_state_why=r['support_state_why'],
-            evidence_tier=r['evidence_tier'],
-            depth_listings=r['depth_listings'],
-            extra={k: r[k] for k in (
-                'football_name', 'roster_depth_chart_position',
-                'roster_status_abbr', 'jersey_number', 'years_exp',
-                'rookie_year', 'pfr_id', 'espn_id', 'depth_pos_abb',
-                'depth_rank', 'depth_dt', 'offensive_depth_state',
-                'officially_inactive') if k in r},
-        ))
+    ctx = _SourceCtx.from_verified(sources, cut,
+                                   have_inactives=have_inactives)
+    players = player_states(
+        uni.value, cut=cut, game_id=game_id, ctx=ctx, registry=reg,
+        role_by_id=role_by_id, dfs_position_by_id=dfs_position_by_id,
+        current_season_by_id=current_season_by_id,
+        historical_by_id=historical_by_id)
 
     sched = next((r for r in _rows(sources['schedules']['read_blob'])
                   if r.get('game_id') == game_id), {})
@@ -633,6 +790,112 @@ def build_one_game(season: int, week: int, game_id: str, cut: str, *,
         detail=f'{len(players)} player(s), {len(teams)} club(s), '
                f'registry {reg.identity()}, '
                f'state {state.content_hash()}')
+
+
+def state_from_legacy_rows(universe_rows: Sequence[dict], *,
+                           role_rows: Sequence[dict] = (),
+                           snap_rows: Sequence[dict] = (),
+                           usage_rows=(),
+                           inactive_ids=None,
+                           information_cut: str = None,
+                           registry: FR.Registry = None) -> Outcome:
+    """A PregameSlateState from rows a caller ALREADY built.
+
+    THIS IS A MIGRATION SHIM AND IT SAYS SO IN ITS OWN ARTIFACT. It reads no
+    vintage capture, so it can record no source hash and its freshness
+    verdict is SOURCES_NOT_RECORDED. It exists so the old dossier call path
+    keeps working while its callers are migrated one at a time, and so that
+    there is exactly ONE implementation of a PlayerState rather than two.
+
+    `have_inactives` follows the legacy rule -- a NON-EMPTY set means a board
+    was supplied -- because reproducing that path is the whole point of this
+    function. `build_one_game` uses the stricter `is not None`, and the
+    difference is visible only for an empty set.
+    """
+    if not universe_rows:
+        return Outcome.blocked(
+            'UNIVERSE_EMPTY',
+            'no universe rows were supplied, so there is no state to build. '
+            'An empty state is not a state.', cause=Cause.DATA)
+    reg = registry or FR.PREGAME
+    inactive_ids = set(inactive_ids or ())
+    have = bool(inactive_ids)
+    cut = information_cut or (universe_rows[0] or {}).get('information_cut')
+    game_id = (universe_rows[0] or {}).get('game_id')
+
+    role_by_id = {r.get('gsis_id'): r for r in role_rows if r.get('gsis_id')}
+
+    snaps: Dict[str, List[dict]] = {}
+    for r in snap_rows or ():
+        if r.get('pfr_player_id'):
+            snaps.setdefault(r['pfr_player_id'], []).append(r)
+
+    # The usage panel arrives keyed (week, club, player) from
+    # `usage_vintage.usage_season`, or as a flat sequence. Both are accepted
+    # and the player key is read under either spelling, because guessing a
+    # field name is how an export once wrote 7,926 blank rows.
+    seq = (list(usage_rows.values()) if isinstance(usage_rows, dict)
+           else list(usage_rows or ()))
+    totals: Dict[str, Dict[str, float]] = {}
+    for u in seq:
+        pid = u.get('gsis_id') or u.get('player_id')
+        if not pid:
+            continue
+        t = totals.setdefault(pid, {})
+        for k in ('carries', 'targets'):
+            v = _f(u.get(k))
+            if v is not None:
+                t[k] = t.get(k, 0.0) + v
+
+    rows, current = [], {}
+    for u in universe_rows:
+        pid = u.get('gsis_id') or ''
+        r = dict(u)
+        # The declaration set the caller handed over and the field the
+        # universe builder stamped must agree; either one saying INACTIVE is
+        # enough, because the failure worth preventing is a player read as
+        # available when some source said he is not.
+        r['officially_inactive'] = (bool(u.get('officially_inactive'))
+                                    or pid in inactive_ids)
+        r.setdefault('gsis_id', pid)
+        rows.append(r)
+        role = role_by_id.get(pid, {})
+        rev = role.get('evidence') if isinstance(role.get('evidence'),
+                                                 dict) else {}
+        d = participation_from_snaps(snaps.get(u.get('pfr_id') or '', []))
+        d.update(opportunity_from_usage(
+            (rev or {}).get('current_season_usage', {}), totals.get(pid, {})))
+        current[pid] = d
+
+    ctx = _SourceCtx.legacy(cut, have_inactives=have)
+    players = player_states(rows, cut=cut, game_id=game_id, ctx=ctx,
+                            registry=reg, role_by_id=role_by_id,
+                            current_season_by_id=current)
+    state = PregameSlateState(
+        state_version=SPEC_VERSION, slate_key=game_id or 'UNKNOWN_GAME',
+        season=(universe_rows[0] or {}).get('season'),
+        week=(universe_rows[0] or {}).get('week'),
+        information_cut=cut, registry_identity=reg.identity(),
+        registry_name=reg.name,
+        source_hashes={},
+        freshness={'verdict': 'SOURCES_NOT_RECORDED',
+                   'degraded_families': [],
+                   'note': 'built from rows supplied by a caller, not from '
+                           'the vintage store. No capture was selected, so '
+                           'no content hash can be claimed. This is a '
+                           'migration shim, not a governed state.'},
+        builder_identity=f'{__name__}.state_from_legacy_rows/{SPEC_VERSION}',
+        built_at=_dt.datetime.now(_dt.timezone.utc).strftime(
+            '%Y-%m-%dT%H:%M:%SZ'),
+        games=[], teams=[], players=players,
+        notes=['MIGRATION SHIM: no vintage capture was read and no source '
+               'hash is recorded'])
+    return Outcome.ok(
+        'PREGAME_SLATE_STATE_FROM_LEGACY_ROWS', state,
+        spec_version=SPEC_VERSION, n_players=len(players),
+        registry_identity=reg.identity(),
+        detail=f'{len(players)} player(s) wrapped from supplied rows; no '
+               f'source hashes, verdict SOURCES_NOT_RECORDED')
 
 
 def write(state: PregameSlateState, path) -> Outcome:

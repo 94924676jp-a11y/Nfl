@@ -1,58 +1,15 @@
-"""One saved dossier per player per slate. Built before projections are
-approved, kept afterwards so the number can be explained three weeks later.
+"""FROZEN COPY of review/dossier.py at commit f43c30e. DO NOT EDIT.
 
-WHAT A DOSSIER IS FOR
+This is the accepted pre-migration dossier builder, kept so that the migrated
+one can be proved to produce the same dossiers rather than merely plausible
+ones. It is a separate artifact from the live module for the same reason
+`dfs/classic/reference.py` is: a change to one must not be able to be
+silently a change to both.
 
-The question this artifact exists to answer is "why did the model have this
-guy at 14.8?", asked long after the run directory has stopped being fresh in
-anyone's memory. So the dossier does not store a conclusion. It stores the
-evidence that was available at the information cut, graded, with the axes
-that were NOT available named out loud, and the projection decomposed into
-the components that produced it.
-
-WHERE ITS FOOTBALL FACTS COME FROM, SINCE THE MIGRATION
-
-Every football fact in a dossier now arrives from `PregameSlateState`. The
-dossier no longer decides which room a player is in, no longer averages his
-snap percentages, no longer reads a roster field and no longer interprets a
-depth listing. Those are statements about football and they belong to the
-state layer; this module's job is to EXPLAIN the state, not to be a second
-place that computes it.
-
-What remains this module's own work: the projection decomposition, the
-simulation metadata, the uncertainty classification, and the human-readable
-axis set that makes two dossiers from different weeks comparable.
-
-The axis `source` and `note` strings below are this module's descriptive
-labels and are deliberately stable. The upstream provenance -- the blob, its
-hash, when it was retrieved, what grade the state gave it -- is carried
-separately and completely in `evidence_provenance`, so nothing is flattened.
-
-THE ORDER IS FIXED AND THE STAGES DO NOT MERGE
-
-    raw evidence -> dossier -> reconciliation -> role/opportunity state
-    -> projection -> simulation -> projection audit -> optimizer
-
-This module owns the second stage and reads the others. It does not compute a
-projection, it does not assign a role, and it does not decide anything about a
-lineup. It reads what those stages produced and records what each one rested
-on. A stage that graded its own evidence would be marking its own homework.
-
-WHAT IT REFUSES TO DO
-
-  * It never infers availability from omission. A player absent from the DK
-    salary file, or absent from the snap file, or absent from the depth chart,
-    reads ABSENT on that axis and nothing else follows from it.
-  * It never lets special-teams depth touch an offensive room. The two come
-    from `depth_role` as separate fields and are carried separately here.
-  * It never turns a missing source into a zero. Routes, pass-block snaps and
-    personnel groupings are UNAVAILABLE for 2026 and every dossier says so on
-    every player, whether or not anyone would have looked.
-  * It never admits a sportsbook price, an external projection, an ownership
-    estimate or an optimizer metric as evidence about football. Those may be
-    attached later, by the escalation stage, under a name that says they are
-    review-only.
+Its SPEC_VERSION is rewritten so an artifact can never be confused about
+which builder wrote it.
 """
+
 from __future__ import annotations
 
 import collections
@@ -68,10 +25,11 @@ if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
 from nfl.production.review import evidence as EV                   # noqa: E402
-from nfl.production.state import slate_state as SS                 # noqa: E402
+from nfl.production.universe import depth_role as DR               # noqa: E402
+from nfl.production.universe import role_state as RS               # noqa: E402
 from sportsplatform.governance.outcome import Cause, Outcome       # noqa: E402
 
-SPEC_VERSION = 'player-pregame-dossier-1'
+SPEC_VERSION = 'player-pregame-dossier-reference-f43c30e'
 
 #: Axes every dossier carries, in the order a reader should read them. Naming
 #: them here rather than letting each builder emit its own set is what makes
@@ -234,13 +192,6 @@ class PlayerPregameDossier:
     uncertainty_state: str = EV.EVIDENCE_SUFFICIENT
     uncertainty_why: List[str] = field(default_factory=list)
     conflicts: List[Dict[str, Any]] = field(default_factory=list)
-    #: The upstream PregameSlateState axis behind each football axis above:
-    #: its grade, the blob and hash it came from, when it was retrieved. The
-    #: axes themselves keep this module's stable descriptive labels, so this
-    #: is where the canonical provenance is preserved rather than flattened.
-    evidence_provenance: Dict[str, Any] = field(default_factory=dict)
-    #: Identity of the state this dossier explains.
-    state_identity: Dict[str, Any] = field(default_factory=dict)
 
     # -- reading helpers used by the audit and escalation stages ------------
     def axis(self, name: str) -> EV.Axis:
@@ -282,80 +233,27 @@ class PlayerPregameDossier:
                            for k, v in sorted(self.projection.items())},
             'projection_source': self.projection_source,
             'conflicts': self.conflicts,
-            'evidence_provenance': self.evidence_provenance,
-            'state_identity': self.state_identity,
         }
 
-    def football_body(self) -> Dict[str, Any]:
-        """Everything a dossier SAYS about football, without the canonical
-        metadata the migration added. This is the thing two builders have to
-        agree on exactly; `evidence_provenance` and `state_identity` are new
-        and have no counterpart in the pre-migration builder, so comparing
-        them would be comparing something to nothing."""
-        d = self.as_dict()
-        for k in ('evidence_provenance', 'state_identity'):
-            d.pop(k, None)
-        d['spec_version'] = 'COMPARED_WITHOUT_SPEC_VERSION'
-        return d
 
-    def football_hash(self) -> str:
-        return hashlib.sha256(json.dumps(
-            self.football_body(), sort_keys=True,
-            separators=(',', ':'), default=str).encode()).hexdigest()[:16]
+def _availability_axis(u: Dict[str, Any], have_inactives: bool,
+                       is_inactive: bool) -> EV.Axis:
+    """Official availability, or the honest absence of it.
 
-
-#: dossier axis -> the PregameSlateState axis it is built from. This is the
-#: whole football surface the dossier consumes, in one place, so "what does
-#: the dossier get from canonical state" is a list rather than an audit.
-STATE_AXIS_SOURCE = {
-    'roster_status': 'roster_status',
-    'official_availability': 'availability',
-    'injury_designation': 'injury_report_status',
-    'offensive_depth_rank': 'offensive_depth',
-    'special_teams_role': 'special_teams_depth',
-    'room': 'room',
-    'role': 'role_state',
-    'role_support': 'role_state',
-    'current_season_snap_share': 'current_season_participation.'
-                                 'offensive_snap_share',
-    'current_season_snap_games': 'current_season_participation.'
-                                 'offensive_snap_games',
-    'special_teams_snap_share': 'current_season_participation.'
-                                'special_teams_snap_share',
-    'carries': 'current_season_opportunity.current_season_carries',
-    'targets': 'current_season_opportunity.current_season_targets',
-    'carry_share': 'current_season_opportunity.carry_share',
-    'target_share': 'current_season_opportunity.target_share',
-}
-
-
-def _availability_axis(state_axis: EV.Axis) -> EV.Axis:
-    """Official availability, translated from the canonical availability axis.
-
-    The state says INACTIVE, NOT_ON_INACTIVE_LIST, or nothing. This module
-    has said INACTIVE / ACTIVE / NOT_DECLARED since before the migration, and
-    that mapping is PRESERVED here unchanged so the migration changes no
-    behaviour.
-
-    IT IS ALSO A PENDING QUESTION, recorded rather than quietly fixed. The
-    state deliberately refuses to call an unlisted player ACTIVE, because
-    ACTIVE may not be inferred from omission. This module does make that
-    inference when a board was supplied, on the reading that a complete
-    inactive board makes absence a positive statement -- but "a non-empty set
-    was passed" is not the same as "the board is complete for this game", and
-    nothing checks the difference. Changing it is a behavioural change and
-    belongs to its own slice with its own approval.
+    `officially_inactive` False means one of two very different things and
+    this is the function that refuses to conflate them: with a declaration in
+    hand it means DECLARED ACTIVE; without one it means NOT DECLARED, which
+    is not evidence of activity.
     """
-    v = state_axis.value if state_axis is not None else None
-    if v == 'INACTIVE':
+    if is_inactive:
         return EV.Axis('official_availability', 'INACTIVE', EV.DECLARED,
                        source='official inactive declaration',
-                       observed_at=state_axis.observed_at)
-    if v == 'NOT_ON_INACTIVE_LIST':
+                       observed_at=u.get('information_cut'))
+    if have_inactives:
         return EV.Axis('official_availability', 'ACTIVE', EV.DECLARED,
                        source='official inactive declaration, by exclusion '
                               'within a complete board',
-                       observed_at=state_axis.observed_at,
+                       observed_at=u.get('information_cut'),
                        note='the board is complete for this game, so absence '
                             'from it is a positive statement. Without a '
                             'complete board this axis would read NOT_DECLARED')
@@ -373,163 +271,173 @@ def build_dossiers(*, universe_rows: Sequence[dict],
                    vacated: Optional[Dict[str, dict]] = None,
                    opportunity_attribution: Optional[Dict[str, dict]] = None,
                    information_cut: Optional[str] = None) -> Outcome:
-    """COMPATIBILITY SHIM. The old call path, on the new implementation.
-
-    It wraps the rows it is given into a PregameSlateState and hands that to
-    `build_from_state`. There is exactly one dossier implementation; this
-    function only reaches it by a different door, and the door is temporary.
-    Callers should migrate to `build_from_state`.
-    """
-    st = SS.state_from_legacy_rows(
-        universe_rows, role_rows=role_rows, snap_rows=snap_rows,
-        usage_rows=usage_rows, inactive_ids=inactive_ids,
-        information_cut=information_cut)
-    if st.state.name != 'PASS':
-        return st
-    return build_from_state(
-        st.value, projection=projection, vacated=vacated,
-        opportunity_attribution=opportunity_attribution,
-        information_cut=information_cut,
-        legacy_rows_by_id={r.get('gsis_id'): r for r in universe_rows})
-
-
-def build_from_state(state, *, projection: Optional[dict] = None,
-                     vacated: Optional[Dict[str, dict]] = None,
-                     opportunity_attribution: Optional[Dict[str, dict]] = None,
-                     information_cut: Optional[str] = None,
-                     legacy_rows_by_id: Optional[Dict[str, dict]] = None
-                     ) -> Outcome:
-    """A dossier for EVERY player in the canonical state.
+    """A dossier for EVERY player in the universe, not only the projected ones.
 
     Coverage is the point. A player the model did not emit is exactly the
     player a reviewer needs to see, because "we have no number for him" is a
     finding and an empty row is not.
-
-    `legacy_rows_by_id` supplies only `season` and `week`, which
-    PregameSlateState carries at the top level and not per player. It is a
-    convenience for the shim and nothing football-bearing is read from it.
     """
-    if state is None or not state.players:
+    if not universe_rows:
         return Outcome.blocked(
             'UNIVERSE_EMPTY',
-            'the canonical state carries no players, so there is nobody to '
-            'review. An empty review is not a completed review.',
-            cause=Cause.DATA)
+            'no universe rows were supplied, so there is nobody to review. '
+            'An empty review is not a completed review.', cause=Cause.DATA)
 
+    inactive_ids = set(inactive_ids or ())
+    have_inactives = bool(inactive_ids)
     proj = (projection or {}).get('per_player', {})
     vacated = vacated or {}
-    legacy_rows_by_id = legacy_rows_by_id or {}
-    cut = information_cut or state.information_cut
+
+    role_by_id = {r.get('gsis_id'): r for r in role_rows if r.get('gsis_id')}
+
+    # Measured participation, by pfr_id, from strictly earlier weeks.
+    snaps = collections.defaultdict(list)
+    for s in snap_rows:
+        if s.get('pfr_player_id'):
+            snaps[s['pfr_player_id']].append(s)
+
+    # The usage panel arrives keyed (week, club, player) from
+    # `usage_vintage.usage_season`, or as a flat sequence. Both are accepted
+    # and the player key is read under either of its two spellings, because
+    # guessing a field name is how an export once wrote 7,926 blank rows.
+    usage_seq = (list(usage_rows.values()) if isinstance(usage_rows, dict)
+                 else list(usage_rows or ()))
+    usage = collections.defaultdict(lambda: collections.Counter())
+    for u in usage_seq:
+        pid = u.get('gsis_id') or u.get('player_id')
+        if not pid:
+            continue
+        for k in ('carries', 'targets'):
+            v = _f(u.get(k))
+            if v is not None:
+                usage[pid][k] += v
 
     out: List[PlayerPregameDossier] = []
-    for ps in state.players:
-        pid = ps.gsis_id
-        lr = legacy_rows_by_id.get(pid, {})
-        role = ps.role_state.value if isinstance(ps.role_state.value,
-                                                 dict) else {}
+    for u in universe_rows:
+        pid = u.get('gsis_id') or ''
+        r = role_by_id.get(pid, {})
+        rev = r.get('evidence', {}) if isinstance(r.get('evidence'), dict) \
+            else {}
         d = PlayerPregameDossier(
-            gsis_id=pid, display_name=ps.display_name, team=ps.team,
-            opponent=ps.opponent, game_id=ps.game_id,
-            season=lr.get('season', state.season),
-            week=lr.get('week', state.week),
-            information_cut=cut, support_state=ps.support_state)
+            gsis_id=pid, display_name=u.get('display_name'),
+            team=u.get('team'), opponent=u.get('opponent'),
+            game_id=u.get('game_id'), season=u.get('season'),
+            week=u.get('week'),
+            information_cut=information_cut or u.get('information_cut'),
+            support_state=u.get('support_state'))
 
         A = d.axes
         A['roster_status'] = EV.Axis(
-            'roster_status', ps.roster_status.value,
-            EV.DECLARED if ps.roster_status.value else EV.UNAVAILABLE,
-            source='weekly_rosters vintage', observed_at=cut)
-        A['official_availability'] = _availability_axis(ps.availability)
+            'roster_status', u.get('roster_status'),
+            EV.DECLARED if u.get('roster_status') else EV.UNAVAILABLE,
+            source='weekly_rosters vintage',
+            observed_at=u.get('information_cut'))
+        # The declaration set the caller handed us and the field the
+        # universe builder stamped must agree; either one saying INACTIVE is
+        # enough, because the failure worth preventing is a player read as
+        # available when some source said he is not.
+        A['official_availability'] = _availability_axis(
+            u, have_inactives,
+            bool(u.get('officially_inactive')) or pid in inactive_ids)
 
-        inj = (ps.injury_report_status.value, ps.injury_practice_status.value)
+        inj = (u.get('injury_report_status'), u.get('injury_practice_status'))
         A['injury_designation'] = EV.Axis(
-            'injury_designation', {'report': inj[0], 'practice': inj[1]},
+            'injury_designation',
+            {'report': inj[0], 'practice': inj[1]},
             EV.DECLARED if any(inj) else EV.UNAVAILABLE,
             source='injuries vintage',
             note=None if any(inj) else 'no designation was published for this '
                                        'player; that is not a clean bill')
 
-        # DEPTH: two axes, and they never merge. The state keeps them apart;
-        # this module only relabels them.
-        odr = ps.offensive_depth.value
+        # DEPTH: two axes, and they never merge. `offensive_depth_state` is
+        # carried so a reader can tell "listed nowhere offensive" from
+        # "listed only on a return unit".
+        odr = u.get('offensive_depth_rank')
         A['offensive_depth_rank'] = EV.Axis(
             'offensive_depth_rank', odr,
             EV.DECLARED if odr is not None else EV.UNAVAILABLE,
             source='depth_charts vintage, typed through depth_role',
-            observed_at=ps.extra.get('depth_dt'),
-            note=ps.extra.get('offensive_depth_state'))
-        st_role = ps.special_teams_depth.value
+            observed_at=u.get('depth_dt'),
+            note=u.get('offensive_depth_state'))
+        st = u.get('special_teams_role')
         A['special_teams_role'] = EV.Axis(
-            'special_teams_role', st_role,
-            EV.DECLARED if st_role else EV.UNAVAILABLE,
+            'special_teams_role', st,
+            EV.DECLARED if st else EV.UNAVAILABLE,
             source='depth_charts vintage, special-teams groups only',
-            observed_at=ps.extra.get('depth_dt'),
+            observed_at=u.get('depth_dt'),
             note='a special-teams listing informs no offensive room and must '
                  'never be read as one')
 
-        # ROOM comes from the state now. This module used to derive it from
-        # the roster position, which made it a second place that decided what
-        # a player is.
-        room_from_role = ps.room.source == 'role_state'
-        A['room'] = EV.Axis(
-            'room', ps.room.value,
-            EV.DECLARED if ps.room.value else EV.UNAVAILABLE,
-            source='roster_position -> POSITION_ROOM',
-            note=None if room_from_role else
-            'derived from roster_position; role_state supplied no row for '
-            'this player')
+        # A room comes from position, which the roster states directly. So
+        # it is derived here rather than borrowed from role_state: when
+        # role_state REFUSES a player, the audit still has to know which room
+        # his projection landed in, and that is exactly the player worth
+        # checking. Falling back to role_state's value when it has one keeps
+        # the two in agreement where both exist.
+        room = r.get('room') or RS.POSITION_ROOM.get(
+            (u.get('roster_position') or '').strip().upper())
+        A['room'] = EV.Axis('room', room,
+                            EV.DECLARED if room else EV.UNAVAILABLE,
+                            source='roster_position -> POSITION_ROOM',
+                            note=None if r.get('room') else
+                            'derived from roster_position; role_state '
+                            'supplied no row for this player')
         A['role'] = EV.Axis(
-            'role', role.get('role'),
-            EV.MEASURED if role.get('role_support') == 'ROLE_SUPPORTED'
-            else (EV.PRIOR if role.get('role') else EV.UNAVAILABLE),
-            source='role_state.assign', note=role.get('role_why'))
+            'role', r.get('role'),
+            EV.MEASURED if r.get('role_support') == 'ROLE_SUPPORTED'
+            else (EV.PRIOR if r.get('role') else EV.UNAVAILABLE),
+            source='role_state.assign', note=r.get('role_why'))
         A['role_support'] = EV.Axis(
-            'role_support', role.get('role_support'),
-            EV.MEASURED if role.get('role_support') else EV.UNAVAILABLE,
-            note='; '.join(role.get('role_unsupported_why') or []) or None)
+            'role_support', r.get('role_support'),
+            EV.MEASURED if r.get('role_support') else EV.UNAVAILABLE,
+            note='; '.join(r.get('role_unsupported_why') or []) or None)
 
-        # MEASURED participation, averaged by the state layer.
-        part = ps.current_season_participation
-        share = part['offensive_snap_share'].value
-        games_axis = part['offensive_snap_games']
-        games = games_axis.value or 0
-        st_share = part['special_teams_snap_share'].value
+        # MEASURED participation. Offensive and special-teams shares are
+        # separate numbers because they answer separate questions.
+        mine = snaps.get(u.get('pfr_id') or '__none__', [])
+        offp = [_f(s.get('offense_pct')) for s in mine]
+        offp = [x for x in offp if x is not None]
+        stp = [_f(s.get('st_pct')) for s in mine]
+        stp = [x for x in stp if x is not None]
         A['current_season_snap_share'] = EV.Axis(
-            'current_season_snap_share', share,
-            EV.MEASURED if share is not None else EV.COLD_START,
+            'current_season_snap_share',
+            (sum(offp) / len(offp)) if offp else None,
+            EV.MEASURED if offp else EV.COLD_START,
             source='PFR snap counts, weeks strictly before this one',
-            window=f'{games} game(s)',
-            note=None if share is not None else
-            'no offensive snap has been measured for this player this season')
+            window=f'{len(offp)} game(s)',
+            note=None if offp else 'no offensive snap has been measured for '
+                                   'this player this season')
         A['current_season_snap_games'] = EV.Axis(
-            'current_season_snap_games', games,
-            EV.MEASURED if games_axis.grade == EV.MEASURED else EV.COLD_START,
+            'current_season_snap_games', len(offp),
+            EV.MEASURED if mine else EV.COLD_START,
             source='PFR snap counts')
         A['special_teams_snap_share'] = EV.Axis(
-            'special_teams_snap_share', st_share,
-            EV.MEASURED if st_share is not None else EV.COLD_START,
+            'special_teams_snap_share',
+            (sum(stp) / len(stp)) if stp else None,
+            EV.MEASURED if stp else EV.COLD_START,
             source='PFR snap counts, st_pct',
             note='kept apart from the offensive share on purpose')
 
-        opp = ps.current_season_opportunity
-        for k, canon in (('carries', 'current_season_carries'),
-                         ('targets', 'current_season_targets')):
-            v = opp[canon].value
-            A[k] = EV.Axis(k, v,
-                           EV.MEASURED if v not in (None, '') else
-                           EV.COLD_START,
-                           source='lawful play-by-play usage panel, prior '
-                                  'weeks')
-        cor = opp['club_of_record'].value
+        cu = rev.get('current_season_usage', {}) if rev else {}
+        for k in ('carries', 'targets'):
+            v = cu.get(k, usage.get(pid, {}).get(k))
+            A[k] = EV.Axis(
+                k, _f(v),
+                EV.MEASURED if v not in (None, '') else EV.COLD_START,
+                source='lawful play-by-play usage panel, prior weeks')
         for k in ('carry_share', 'target_share'):
-            v = opp[k].value
-            A[k] = EV.Axis(k, v,
+            v = cu.get(k)
+            A[k] = EV.Axis(k, _f(v),
                            EV.MEASURED if v is not None else EV.COLD_START,
                            source='lawful play-by-play usage panel, prior '
-                                  f'weeks, club of record {cor}')
+                                  'weeks, club of record '
+                                  f'{cu.get("club_of_record")}')
 
-        # STAGE-6 ATTRIBUTION, read rather than reconstructed. Still passed
-        # in: Stage 6 is not migrated in this slice.
+        # STAGE-6 ATTRIBUTION, read rather than reconstructed. The audit used
+        # to say an inversion was "not supported by any axis the review can
+        # read" while the supporting axis -- the prior-season share -- was one
+        # it could not see. This is that axis, emitted by the layer that used
+        # it.
         att = (opportunity_attribution or {}).get(pid)
         A['opportunity_attribution'] = EV.Axis(
             'opportunity_attribution', att,
@@ -589,23 +497,6 @@ def build_from_state(state, *, projection: Optional[dict] = None,
                 'run_id': (projection or {}).get('run_id'),
             }
 
-        # CANONICAL PROVENANCE, kept rather than flattened. Every football
-        # axis above says which state axis produced it, with that axis's own
-        # grade, source and observation time.
-        d.evidence_provenance = {
-            k: _upstream(ps, path) for k, path in
-            sorted(STATE_AXIS_SOURCE.items())}
-        d.state_identity = {
-            'state_version': state.state_version,
-            'registry_identity': state.registry_identity,
-            'information_cut': state.information_cut,
-            'builder_identity': state.builder_identity,
-            'freshness_verdict': (state.freshness or {}).get('verdict'),
-            'source_hashes': {
-                f: (v or {}).get('content_sha256')
-                for f, v in (state.source_hashes or {}).items()},
-        }
-
         d.uncertainty_state, d.uncertainty_why = _uncertainty(d)
         out.append(d)
 
@@ -618,24 +509,6 @@ def build_from_state(state, *, projection: Optional[dict] = None,
          'unavailable_sources': sorted(EV.UNAVAILABLE_SOURCES)},
         detail=f'{len(out)} dossiers, '
                f'{sum(1 for x in out if x.projection)} with a projection')
-
-
-def _upstream(ps, path: str) -> Dict[str, Any]:
-    """The state axis behind a dossier axis, as it stands in the state."""
-    cur = ps
-    for part in path.split('.'):
-        cur = (cur.get(part) if isinstance(cur, dict)
-               else getattr(cur, part, None))
-        if cur is None:
-            return {'state_axis': path, 'present': False}
-    d = cur.as_dict() if isinstance(cur, EV.Axis) else {'value': cur}
-    d['state_axis'] = path
-    d['present'] = True
-    # The role blob is the whole governed role row and is quoted in the axes
-    # above; repeating it here would double the artifact for no new fact.
-    if path == 'role_state' and isinstance(d.get('value'), dict):
-        d['value'] = sorted(d['value'])
-    return d
 
 
 def _uncertainty(d: PlayerPregameDossier):

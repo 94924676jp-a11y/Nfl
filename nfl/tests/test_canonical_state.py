@@ -432,7 +432,7 @@ def test_the_registry_enforces_the_document():
 
 def test_the_seeded_registry_is_only_what_the_chain_reads():
     names = FR.PREGAME.names()
-    ok(len(names) == 18, f'{len(names)} features seeded')
+    ok(len(names) == 25, f'{len(names)} features seeded')
     ok('routes_run' in names
        and FR.PREGAME.get('routes_run').evidence_grade == EV.UNAVAILABLE,
        'routes_run is present and explicitly UNAVAILABLE rather than absent')

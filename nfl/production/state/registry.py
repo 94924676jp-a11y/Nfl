@@ -472,6 +472,95 @@ for _tn, _what in (
         evidence_grade=EV.MEASURED, lifecycle_status=SECONDARY,
         licensing='nflverse, public')
 PREGAME.add(
+    name='room', source_family='weekly_rosters',
+    semantic_definition='which workload room the player\'s football position '
+                        'puts him in (carries, targets, dropbacks). Derived '
+                        'from the roster position, or taken from the role '
+                        'layer when it emitted one. A room is not a role and '
+                        'does not imply a workload.',
+    pit_rule='derived from football_position at the same cut',
+    latest_valid_observation='same capture as football_position',
+    required_level=REQUIRED, freshness_sla='a capture within the game week',
+    missing_action=REFUSE, fallback=NO_FALLBACK,
+    evidence_grade=EV.DECLARED, lifecycle_status=SECONDARY,
+    licensing='nflverse, public',
+    note='this used to be derived inside the dossier, which made the dossier '
+         'a second place that decided what a player is.')
+PREGAME.add(
+    name='offensive_snap_share', source_family='snap_counts',
+    semantic_definition='the mean share of offensive snaps the player took, '
+                        'over the completed games in which he has a snap '
+                        'row. A presence measure, NOT a route measure.',
+    pit_rule='games completed strictly before the forecast week',
+    latest_valid_observation='the last completed week before the forecast '
+                             'week',
+    required_level=DESIRABLE, freshness_sla='the week before the forecast '
+                                            'week must be present',
+    missing_action=WARN_AND_REDUCE_CONFIDENCE, fallback=NO_FALLBACK,
+    evidence_grade=EV.MEASURED, lifecycle_status=SECONDARY,
+    licensing='nflverse / PFR, public',
+    note='no snap row is COLD_START, not a share of zero.')
+PREGAME.add(
+    name='offensive_snap_games', source_family='snap_counts',
+    semantic_definition='how many completed games the offensive snap share '
+                        'was averaged over. The share is uninterpretable '
+                        'without it.',
+    pit_rule='games completed strictly before the forecast week',
+    latest_valid_observation='the last completed week before the forecast '
+                             'week',
+    required_level=DESIRABLE, freshness_sla='the week before the forecast '
+                                            'week must be present',
+    missing_action=WARN_AND_REDUCE_CONFIDENCE, fallback=NO_FALLBACK,
+    evidence_grade=EV.MEASURED, lifecycle_status=DESCRIPTIVE,
+    licensing='nflverse / PFR, public')
+PREGAME.add(
+    name='special_teams_snap_share', source_family='snap_counts',
+    semantic_definition='the mean share of special-teams snaps. Kept apart '
+                        'from the offensive share on purpose: they answer '
+                        'different questions and one may never stand in for '
+                        'the other.',
+    pit_rule='games completed strictly before the forecast week',
+    latest_valid_observation='the last completed week before the forecast '
+                             'week',
+    required_level=OPTIONAL, freshness_sla='the week before the forecast '
+                                           'week must be present',
+    missing_action=PROCEED, fallback=NO_FALLBACK,
+    evidence_grade=EV.MEASURED, lifecycle_status=DESCRIPTIVE,
+    licensing='nflverse / PFR, public')
+for _sn, _num in (('carry_share', 'current_season_carries'),
+                  ('target_share', 'current_season_targets')):
+    PREGAME.add(
+        name=_sn, source_family='usage_vintage',
+        semantic_definition=f'{_num} as a share of the club total over the '
+                            f'same completed games. The share and its '
+                            f'denominator are separate features because a '
+                            f'share quoted without the denominator it was '
+                            f'taken against is not a measurement.',
+        pit_rule='games completed strictly before the forecast week, against '
+                 'the club of record for those games',
+        latest_valid_observation='the last completed week before the '
+                                 'forecast week',
+        required_level=DESIRABLE,
+        freshness_sla='the week before the forecast week must be present',
+        missing_action=WARN_AND_REDUCE_CONFIDENCE, fallback=NO_FALLBACK,
+        evidence_grade=EV.MEASURED, lifecycle_status=SECONDARY,
+        licensing='nflverse, public')
+PREGAME.add(
+    name='club_of_record', source_family='usage_vintage',
+    semantic_definition='the club whose totals the current-season shares '
+                        'were taken against. A share is meaningless without '
+                        'it, and a player who changed clubs has shares that '
+                        'belong to a different denominator.',
+    pit_rule='the club the player accumulated the counted games with, in '
+             'games completed strictly before the forecast week',
+    latest_valid_observation='the last completed week before the forecast '
+                             'week',
+    required_level=DESIRABLE,
+    freshness_sla='the week before the forecast week must be present',
+    missing_action=WARN_AND_REDUCE_CONFIDENCE, fallback=NO_FALLBACK,
+    evidence_grade=EV.MEASURED, lifecycle_status=SECONDARY,
+    licensing='nflverse, public')
+PREGAME.add(
     name='routes_run', source_family='pbp_participation',
     semantic_definition='routes run by the player, the correct denominator '
                         'for a receiving role.',
