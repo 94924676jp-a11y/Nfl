@@ -63,20 +63,29 @@ def test_kr_depth_cannot_become_rb_depth():
     ok(DR.special_teams_role('KR', 2) == 'KR2',
        'while the special-teams standing survives on its own axis')
 
+    # CORRECTED. These four assertions previously pinned the collapse as
+    # though it were the intended behaviour: that the universe row for Tracy
+    # reads KR and that his offensive rank is therefore refused. That is not
+    # correct behaviour, it was the defect. The club lists him RB4 AND KR2 at
+    # the same `dt`; the old one-row-per-player selection dropped whichever
+    # row the file happened to put second, so RB4 vanished and the refusal
+    # below was refusing a listing that should never have been the one under
+    # consideration. `select_listings` now keeps both axes, so the row reads
+    # RB4 on the offensive axis and KR2 on the special-teams axis.
     t = row('Tyrone Tracy Jr.')
     ok(t is not None, 'Tracy is in the universe')
     if t:
-        ok(t.get('depth_pos_abb') == 'KR',
-           f"the candidate layer still reads his raw listing: "
+        ok(t.get('depth_pos_abb') == 'RB' and t.get('depth_rank') == '4',
+           f"the universe row now carries his OFFENSIVE listing: "
            f"{t.get('depth_pos_abb')}{t.get('depth_rank')}")
-        ok(t.get('offensive_depth_rank') is None,
-           f'but his offensive depth rank is refused: '
+        ok(t.get('offensive_depth_rank') == 4,
+           f'and his offensive depth rank is his own RB4, not a refusal: '
            f'{t.get("offensive_depth_rank")}')
         ok(t.get('special_teams_role') == 'KR2',
-           f'and his return role is preserved separately: '
+           f'while his return role stays on the separate axis: '
            f'{t.get("special_teams_role")}')
-        ok(DR.OFFENSIVE_DEPTH_UNKNOWN in (t.get('offensive_depth_state') or ''),
-           f'with the explicit state, not a missing field: '
+        ok(sorted(t.get('depth_listings') or []) == ['KR2', 'RB4'],
+           f'with every listing recorded so neither can be lost again: '
            f'{t.get("offensive_depth_state")}')
 
 
@@ -97,11 +106,17 @@ def test_singletary_kr3_does_not_become_rb3():
     s = row('Devin Singletary')
     ok(s is not None, 'Singletary is in the universe')
     if s:
-        ok(s.get('offensive_depth_rank') is None,
-           f'his KR3 does not enter the backfield: '
-           f'{s.get("offensive_depth_rank")}')
-        ok(s.get('special_teams_role') == 'KR3',
-           f'and is kept as return standing: {s.get("special_teams_role")}')
+        # CORRECTED for the same reason as Tracy above: he is RB3 and KR3,
+        # and the rank he carries is his own RB3. What must never happen is a
+        # KR rank BECOMING a backfield rank, which `offensive_depth_rank`
+        # refuses unconditionally and the unit case above proves.
+        ok(s.get('offensive_depth_rank') == 3 and
+           s.get('special_teams_role') == 'KR3',
+           f'his own RB3 survives and his KR3 stays separate: '
+           f'{s.get("offensive_depth_rank")} / '
+           f'{s.get("special_teams_role")}')
+        ok(DR.offensive_depth_rank('RB', 'KR', 3)[0] is None,
+           'and a KR rank still cannot become a backfield rank on any path')
 
 
 # --- 4. Real offensive depth still works ----------------------------------

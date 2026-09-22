@@ -23,6 +23,7 @@ no state. "Absent from the board" is not a state.
 """
 from __future__ import annotations
 
+import collections
 import csv
 import gzip
 import pathlib
@@ -150,19 +151,20 @@ def build(season: int, week: int, game_id: str, written_at: str, *,
             f'{season} week {week}. An empty universe is not a universe.',
             cause=Cause.DATA)
 
-    depth = {}
+    # EVERY listing is kept, not one per player. A club lists the same man in
+    # several groups at the SAME `dt`, so the newest-wins rule this used to
+    # apply never fired and file order decided which listing survived. On the
+    # 2026-09-21 capture that silently turned RB1/PR2 into PR2 and RB4/KR2
+    # into KR2, after which `offensive_depth_rank` correctly reported
+    # OFFENSIVE_DEPTH_UNKNOWN because the offensive row no longer existed.
+    # `depth_role.select_listings` now picks the offensive row and the
+    # special-teams row independently, under a total ordering.
+    depth_all = collections.defaultdict(list)
     if sources.get('depth_charts', {}).get('state') == 'PASS':
-        best = {}
         for d in _rows(sources['depth_charts']['blob']):
             if d.get('team') not in clubs or not d.get('gsis_id'):
                 continue
-            k = (d['team'], d['gsis_id'])
-            # The vendor `dt` is a real publication clock; the newest slice at
-            # or before the cut is already all the selector returned, so the
-            # max here orders WITHIN that lawful capture.
-            if k not in best or (d.get('dt') or '') > (best[k].get('dt') or ''):
-                best[k] = d
-        depth = best
+            depth_all[(d['team'], d['gsis_id'])].append(d)
 
     inj = {}
     if sources.get('injuries', {}).get('state') == 'PASS':
@@ -176,7 +178,13 @@ def build(season: int, week: int, game_id: str, written_at: str, *,
                                            x.get('position') or '',
                                            x.get('full_name') or '')):
         pid = r.get('gsis_id') or ''
-        d = depth.get((r.get('team'), pid), {})
+        listings = DR.select_listings(depth_all.get((r.get('team'), pid), []),
+                                      r.get('position'))
+        # The legacy pair stays OFFENSIVE-ONLY. A consumer that reads
+        # `depth_rank` is asking a workload question, and a special-teams
+        # rank is not an answer to it.
+        d = listings['offensive_row'] or {}
+        st_row = listings['special_teams_row'] or {}
         j = inj.get(pid, {})
         state, why, tier = classify(
             r, inactive_ids=inactive_ids, emitted_ids=emitted_ids,
@@ -203,7 +211,7 @@ def build(season: int, week: int, game_id: str, written_at: str, *,
             'espn_id': r.get('espn_id') or None,
             'depth_pos_abb': d.get('pos_abb'),
             'depth_rank': d.get('pos_rank'),
-            'depth_dt': d.get('dt'),
+            'depth_dt': d.get('dt') or st_row.get('dt'),
             # SEPARATE EVIDENCE AXES. A depth listing is two different facts
             # and this row used to carry them as one. `offensive_depth_role`
             # is a rank that may inform a workload room; `special_teams_role`
@@ -215,7 +223,8 @@ def build(season: int, week: int, game_id: str, written_at: str, *,
             'offensive_depth_state': DR.offensive_depth_rank(
                 r.get('position'), d.get('pos_abb'), d.get('pos_rank'))[1],
             'special_teams_role': DR.special_teams_role(
-                d.get('pos_abb'), d.get('pos_rank')),
+                st_row.get('pos_abb'), st_row.get('pos_rank')),
+            'depth_listings': listings['listings'],
             'injury_report_status': j.get('report_status') or None,
             'injury_practice_status': j.get('practice_status') or None,
             'officially_inactive': pid in inactive_ids,

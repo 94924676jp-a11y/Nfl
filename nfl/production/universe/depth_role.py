@@ -78,6 +78,11 @@ MODEL_ROOM: Dict[str, str] = {
 }
 
 
+def _neg(text: str):
+    """Sort a string descending inside an ascending multi-key sort."""
+    return tuple(-ord(c) for c in text)
+
+
 def classify_group(depth_group: Optional[str]) -> str:
     """OFFENSIVE, SPECIAL_TEAMS or UNRECOGNISED for one depth position group."""
     g = (depth_group or '').strip().upper()
@@ -134,6 +139,72 @@ def special_teams_role(depth_group: Optional[str], rank) -> Optional[str]:
         return f'{(depth_group or "").strip().upper()}{int(rank)}'
     except (TypeError, ValueError):
         return (depth_group or '').strip().upper() or None
+
+
+def select_listings(rows, model_position: Optional[str]) -> Dict[str, object]:
+    """Pick this player's offensive listing and his special-teams listing.
+
+    ONE ROW PER PLAYER WAS THE DEFECT. A club lists the same man in several
+    groups -- RB1 and PR2, WR5 and KR3 and PR1 -- and a collapse to one row
+    has to discard all but one of them. Worse, every row in a nflverse depth
+    capture carries the SAME `dt`, so a `newest wins` rule never fires and
+    the survivor is decided by the order the rows happen to sit in the file.
+    Measured on the 2026-09-21 capture: Kyren Williams (RB1 / PR2) survived as
+    PR2, Tyrone Tracy Jr. (RB4 / KR2) survived as KR2, Blake Corum (RB2 / KR4)
+    as KR4. Each then read OFFENSIVE_DEPTH_UNKNOWN -- correctly, because by
+    then the offensive row was gone.
+
+    So nothing is collapsed here. The two axes are selected independently and
+    both are returned. Selection within an axis is fully ordered -- newest
+    `dt`, then lowest rank, then group name -- so it does not depend on file
+    order at all.
+    """
+    offensive, special, other = [], [], []
+    for r in rows or ():
+        kind = classify_group(r.get('pos_abb'))
+        if kind == 'OFFENSIVE':
+            offensive.append(r)
+        elif kind == 'SPECIAL_TEAMS':
+            special.append(r)
+        else:
+            other.append(r)
+
+    def _rank(r):
+        try:
+            return int(r.get('pos_rank'))
+        except (TypeError, ValueError):
+            return 10 ** 6
+
+    def _pick(cands):
+        """Newest capture, then the strongest listing, then the group name.
+
+        Fully ordered on every field, so two runs over the same capture pick
+        the same row no matter what order it arrives in. The `dt` tie that
+        caused the defect is broken by rank rather than by position in the
+        file.
+        """
+        if not cands:
+            return None
+        return sorted(cands, key=lambda r: (_neg(r.get('dt') or ''),
+                                            _rank(r),
+                                            (r.get('pos_abb') or '')))[0]
+
+    # A listing in the player's own room beats a listing in another one: an
+    # OL listed LG2 and RG2 stays rankless because neither is a modelled
+    # room, while an RB listed RB1 and KR2 keeps RB1.
+    want = MODEL_ROOM.get((model_position or '').strip().upper())
+    same_room = [r for r in offensive
+                 if OFFENSIVE_DEPTH_GROUPS.get(
+                     (r.get('pos_abb') or '').strip().upper()) == want]
+
+    return {'offensive_row': _pick(same_room or offensive),
+            'special_teams_row': _pick(special),
+            'n_rows': len(rows or ()), 'n_offensive': len(offensive),
+            'n_special_teams': len(special), 'n_unrecognised': len(other),
+            'listings': sorted(
+                f'{(r.get("pos_abb") or "?").upper()}{r.get("pos_rank")}'
+                for r in (rows or ())),
+            'spec_version': SPEC_VERSION}
 
 
 def guard_rank_map(rank_map: Dict[str, Tuple[str, int]],
