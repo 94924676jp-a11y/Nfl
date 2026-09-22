@@ -1,53 +1,17 @@
-"""The projection audit: does the number agree with the evidence behind it?
+"""FROZEN COPY of review/audit.py at commit 5edfc6b. DO NOT EDIT.
 
-This stage runs AFTER simulation and BEFORE the optimizer. It does not change
-a projection. It compares each projection against the dossier that fed it and
-names every place the two disagree.
-
-WHY IT IS A SEPARATE STAGE
-
-The layer that produces a number is the worst possible judge of it. Every
-defect this project has paid for was green in the layer that caused it:
-role_state was satisfied with its role, the allocator was satisfied that it
-conserved, the sealer was satisfied that it sealed. What none of them did was
-ask whether a back listed fourth out-carrying the back listed first is a thing
-that should be published. That question needs a reader that owns no layer.
-
-WHAT A CONFLICT IS AND IS NOT
-
-A conflict is a disagreement between a published number and the evidence
-grade of the axis that number rests on. It is NOT a disagreement with a
-sportsbook, an external projection site or an optimizer's opinion. Those
-comparisons live in `escalation` under names that mark them review-only,
-because a projection corrected toward a market is a projection that has
-stopped being a forecast.
-
-WHERE ITS FOOTBALL FACTS COME FROM
-
-Every football fact this module tests -- availability, room, offensive depth,
-special-teams standing, role, measured participation and measured usage --
-is read from `PregameSlateState.PlayerState`, reached through the dossier's
-own `player_state` reference. The DOSSIER is read for what the dossier owns:
-the projection, the Stage-6 attribution, the redistribution record and the
-uncertainty state.
-
-That split is the point of this stage. The audit challenges canonical
-football truth; it does not reinterpret it. Reading the dossier's relabelled
-copy would have left two vocabularies in play and made a disagreement
-between them invisible.
-
-SEVERITY IS ABOUT PUBLISHABILITY, NOT ABOUT SIZE
-
-    BLOCKING   the number should not reach an optimizer until a human rules
-    REVIEW     a human should read this before the slate is used
-    NOTE       recorded for the audit trail; no action implied
+The accepted pre-migration audit, kept so the migrated one can be proved to
+produce the same conflict set rather than a plausible one. A separate
+artifact for the same reason `dfs/classic/reference.py` and
+`review/dossier_reference.py` are: a change to one must not be able to be
+silently a change to both.
 """
+
 from __future__ import annotations
 
 import collections
 import pathlib
 import sys
-from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Sequence
 
 _REPO = pathlib.Path(__file__).resolve().parents[3]
@@ -56,10 +20,9 @@ if str(_REPO) not in sys.path:
 
 from nfl.production.review import evidence as EV                   # noqa: E402
 from nfl.production.review import dossier as DOS                   # noqa: E402
-from nfl.production.state import availability as AV                # noqa: E402
 from sportsplatform.governance.outcome import Cause, Outcome       # noqa: E402
 
-SPEC_VERSION = 'projection-audit-1'
+SPEC_VERSION = 'projection-audit-reference-5edfc6b'
 
 BLOCKING, REVIEW, NOTE = 'BLOCKING', 'REVIEW', 'NOTE'
 
@@ -103,81 +66,6 @@ MATERIAL_OPPORTUNITY_PROVENANCE = (
     'adjusted to make a slate pass.')
 
 
-#: Availability states under which a player will not take the field. Taken
-#: from the canonical vocabulary rather than restated, plus the dossier's one
-#: alias, so that adding a state to `state/availability.py` cannot leave this
-#: module quietly testing an out-of-date list.
-WILL_NOT_PLAY = frozenset(AV.WILL_NOT_PLAY) | {
-    DOS.AVAILABILITY_ALIAS[AV.OFFICIAL_INACTIVE]}
-
-
-@dataclass
-class _Facts:
-    """The football truth about one player, read from canonical state.
-
-    NOTHING IS INFERRED HERE. Each field is a value the state already
-    decided, or a direct statement about whether a state axis is MEASURED.
-    The audit's job is to find disagreements between those facts and the
-    published number; deriving a football fact of its own would make it a
-    second source of truth and defeat the stage.
-    """
-    availability: Optional[str]
-    room: Optional[str]
-    depth_rank: Optional[float]
-    depth_known: bool
-    special_teams_role: Optional[str]
-    role: Optional[str]
-    role_support: Optional[str]
-    role_unsupported_why: Optional[str]
-    snap_share: Optional[float]
-    snap_measured: bool
-    prior_carries: Optional[float]
-    carries_measured: bool
-    routes_available: bool
-
-    @property
-    def will_not_play(self) -> bool:
-        """He is declared out. OFFICIAL_INACTIVE and INJURY_OUT both count.
-
-        THE CORRECTION THIS PROPERTY CARRIES. Every test in this module used
-        to read `avail.value != 'INACTIVE'`, which treated a player his club
-        had designated OUT as available -- because the string was
-        'INJURY_OUT' and not 'INACTIVE'. The defect predates the availability
-        slice; what that slice did was make OUT visible, because before it
-        the dossier collapsed an OUT player into ACTIVE.
-        """
-        return self.availability in WILL_NOT_PLAY
-
-
-def _facts(d) -> _Facts:
-    ps = getattr(d, 'player_state', None)
-    if ps is None:
-        raise AssertionError(
-            'this dossier carries no PlayerState, so the audit has no '
-            'authoritative football truth to challenge. A dossier built '
-            'outside `build_from_state` is not auditable.')
-    role = ps.role_state.value if isinstance(ps.role_state.value, dict) else {}
-    part = ps.current_season_participation
-    opp = ps.current_season_opportunity
-    snap = part['offensive_snap_share']
-    car = opp['current_season_carries']
-    return _Facts(
-        availability=ps.availability.value,
-        room=ps.room.value,
-        depth_rank=ps.offensive_depth.value,
-        depth_known=ps.offensive_depth.value is not None,
-        special_teams_role=ps.special_teams_depth.value,
-        role=role.get('role'),
-        role_support=role.get('role_support'),
-        role_unsupported_why='; '.join(role.get('role_unsupported_why')
-                                       or []) or None,
-        snap_share=snap.value,
-        snap_measured=snap.grade == EV.MEASURED,
-        prior_carries=car.value,
-        carries_measured=car.grade == EV.MEASURED,
-        routes_available=part['routes_run'].grade != EV.UNAVAILABLE)
-
-
 def _conf(code: str, severity: str, d, detail: str, **ev) -> Dict[str, Any]:
     return {'code': code, 'severity': severity, 'gsis_id': d.gsis_id,
             'display_name': d.display_name, 'team': d.team,
@@ -205,34 +93,35 @@ def audit(dossiers: Sequence[DOS.PlayerPregameDossier], *,
 
     for d in dossiers:
         opp = _opportunity(d)
-        f = _facts(d)
+        avail = d.axis('official_availability')
+        snap = d.axis('current_season_snap_share')
+        role = d.axis('role')
 
-        if f.will_not_play and opp > 0:
+        if avail.value == 'INACTIVE' and opp > 0:
             conflicts.append(_conf(
                 C_INACTIVE_OWNS_OPPORTUNITY, BLOCKING, d,
-                f'declared out ({f.availability}), yet the model gives him '
-                f'{opp:.3f} expected opportunities. A player who will not '
-                f'take the field owns nothing.',
-                opportunity=opp, availability=f.availability))
+                f'officially inactive, yet the model gives him {opp:.3f} '
+                f'expected opportunities. An inactive player owns nothing.',
+                opportunity=opp))
 
-        if d.projection and f.role == 'STARTER' and \
-                not f.will_not_play and opp < material_opportunity:
+        if d.projection and role.value == 'STARTER' and \
+                avail.value != 'INACTIVE' and opp < material_opportunity:
             conflicts.append(_conf(
                 C_DECLARED_STARTER_ZERO, REVIEW, d,
                 f'role_state calls him a STARTER and he is not declared out, '
                 f'yet total expected opportunity is {opp:.3f}.',
-                opportunity=opp, availability=f.availability))
+                opportunity=opp, role_why=role.note))
 
         if d.projection and opp >= material_opportunity and \
-                f.role_support == 'ROLE_UNSUPPORTED':
+                d.axis('role_support').value == 'ROLE_UNSUPPORTED':
             conflicts.append(_conf(
                 C_UNSUPPORTED_ROLE_PUBLISHED, BLOCKING, d,
                 f'{opp:.3f} expected opportunities published on a role '
                 f'role_state itself refused to support.',
-                opportunity=opp, why=f.role_unsupported_why))
+                opportunity=opp, why=d.axis('role_support').note))
 
         if d.projection and opp >= material_opportunity and \
-                not f.snap_measured:
+                snap.grade == EV.COLD_START:
             conflicts.append(_conf(
                 C_COLD_START_MATERIAL, REVIEW, d,
                 f'{opp:.3f} expected opportunities for a player with no '
@@ -242,15 +131,16 @@ def audit(dossiers: Sequence[DOS.PlayerPregameDossier], *,
                 uncertainty_state=d.uncertainty_state))
 
         if d.projection and opp >= material_opportunity and \
-                not f.depth_known and f.special_teams_role:
+                d.axis('offensive_depth_rank').grade == EV.UNAVAILABLE and \
+                d.axis('special_teams_role').value:
             conflicts.append(_conf(
                 C_ST_ONLY_OFFENSIVE_LOAD, BLOCKING, d,
-                f'listed only as {f.special_teams_role} with no '
+                f'listed only as {d.axis("special_teams_role").value} with no '
                 f'offensive depth rank, yet carrying {opp:.3f} expected '
                 f'offensive opportunities. Special-teams standing must never '
                 f'become offensive workload.',
                 opportunity=opp,
-                special_teams_role=f.special_teams_role))
+                special_teams_role=d.axis('special_teams_role').value))
 
         if publishable is not None and d.gsis_id in publishable and \
                 not d.projection:
@@ -275,7 +165,8 @@ def audit(dossiers: Sequence[DOS.PlayerPregameDossier], *,
         # Receiving roles rest on raw snaps because routes do not exist for
         # 2026. Named on every receiver rather than silently assumed away.
         if d.projection and (d.mean('targets') or 0.0) >= \
-                material_opportunity and not f.routes_available:
+                material_opportunity and \
+                d.axis('routes').grade == EV.UNAVAILABLE:
             conflicts.append(_conf(
                 C_RECEIVING_ROLE_ON_SNAPS_ONLY, NOTE, d,
                 f'{d.mean("targets"):.3f} expected targets on a role measured '
@@ -311,19 +202,6 @@ def audit(dossiers: Sequence[DOS.PlayerPregameDossier], *,
                f'{len(dossiers)} players')
 
 
-def _prior_usage(f: '_Facts', d, metric: str) -> float:
-    """Prior-season usage on the room's own metric, from canonical state.
-
-    The reference read `d.value('carries')` or `d.value('targets')` off the
-    dossier. Both are relabels of the same state axes, so the numbers are the
-    same; what changes is that the authoritative copy is the one consulted.
-    """
-    if metric == 'carries' or metric == 'pass_attempts':
-        return f.prior_carries or 0.0
-    ps = d.player_state
-    return ps.current_season_opportunity['current_season_targets'].value or 0.0
-
-
 def _room_order_conflicts(dossiers, material_opportunity) -> List[Dict]:
     """Where the opportunity order inverts the role order inside one room.
 
@@ -338,11 +216,10 @@ def _room_order_conflicts(dossiers, material_opportunity) -> List[Dict]:
     """
     out: List[Dict[str, Any]] = []
     byroom = collections.defaultdict(list)
-    facts = {d.gsis_id: _facts(d) for d in dossiers}
     for d in dossiers:
-        f = facts[d.gsis_id]
-        if f.room and f.depth_rank is not None:
-            byroom[(d.team, f.room)].append(d)
+        room, rank = d.axis('room').value, d.axis('offensive_depth_rank').value
+        if room and rank is not None:
+            byroom[(d.team, room)].append(d)
 
     for (team, room), members in sorted(byroom.items(),
                                         key=lambda kv: (kv[0][0] or '',
@@ -351,12 +228,12 @@ def _room_order_conflicts(dossiers, material_opportunity) -> List[Dict]:
         if metric is None or len(members) < 2:
             continue
         active = [d for d in members
-                  if not facts[d.gsis_id].will_not_play and d.projection]
+                  if d.axis('official_availability').value != 'INACTIVE'
+                  and d.projection]
         for hi in active:
             for lo in active:
-                f_hi, f_lo = facts[hi.gsis_id], facts[lo.gsis_id]
-                rank_hi = f_hi.depth_rank
-                rank_lo = f_lo.depth_rank
+                rank_hi = hi.axis('offensive_depth_rank').value
+                rank_lo = lo.axis('offensive_depth_rank').value
                 if rank_hi is None or rank_lo is None or rank_hi <= rank_lo:
                     continue
                 o_hi = hi.mean(metric) or 0.0
@@ -365,10 +242,12 @@ def _room_order_conflicts(dossiers, material_opportunity) -> List[Dict]:
                     continue
                 # An inversion is only a conflict when the deeper-listed
                 # player has no better evidence on the measured axes either.
-                m_hi = f_hi.snap_share or 0.0
-                m_lo = f_lo.snap_share or 0.0
-                u_hi = _prior_usage(f_hi, hi, metric)
-                u_lo = _prior_usage(f_lo, lo, metric)
+                m_hi = hi.axis('current_season_snap_share').value or 0.0
+                m_lo = lo.axis('current_season_snap_share').value or 0.0
+                u_hi = hi.value(metric.split('_')[0] if metric != 'pass_attempts'
+                                else 'carries') or 0.0
+                u_lo = lo.value(metric.split('_')[0] if metric != 'pass_attempts'
+                                else 'carries') or 0.0
                 if m_hi > m_lo or u_hi > u_lo:
                     continue
                 # An inversion can only be called unsupported when there was
@@ -378,10 +257,12 @@ def _room_order_conflicts(dossiers, material_opportunity) -> List[Dict]:
                 # covered by COLD_START_CARRIES_MATERIAL_PROJECTION. Firing
                 # here would manufacture a finding out of two absences.
                 readable = [ax for ax, a, b in (
-                    ('snap_share', f_hi.snap_measured, f_lo.snap_measured),
-                    ('prior_usage', f_hi.carries_measured,
-                     f_lo.carries_measured))
-                    if a or b]
+                    ('snap_share',
+                     hi.axis('current_season_snap_share').grade,
+                     lo.axis('current_season_snap_share').grade),
+                    ('prior_usage',
+                     hi.axis('carries').grade, lo.axis('carries').grade))
+                    if EV.MEASURED in (a, b)]
                 if not readable:
                     continue
                 # WHAT DOES THE GENERATOR SAY IT USED? Stage 6 emits its own

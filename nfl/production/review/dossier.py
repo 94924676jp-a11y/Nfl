@@ -242,6 +242,13 @@ class PlayerPregameDossier:
     evidence_provenance: Dict[str, Any] = field(default_factory=dict)
     #: Identity of the state this dossier explains.
     state_identity: Dict[str, Any] = field(default_factory=dict)
+    #: The PlayerState this dossier was built from. NOT serialised -- an
+    #: artifact would then carry the same football facts twice, under two
+    #: vocabularies, which is precisely the duplication this migration is
+    #: removing. It is here so that a reader of a dossier can reach the
+    #: AUTHORITATIVE football truth rather than this module's relabelled
+    #: copy of it, which is what the audit now does.
+    player_state: Any = None
 
     # -- reading helpers used by the audit and escalation stages ------------
     def axis(self, name: str) -> EV.Axis:
@@ -441,7 +448,8 @@ def build_from_state(state, *, projection: Optional[dict] = None,
             opponent=ps.opponent, game_id=ps.game_id,
             season=lr.get('season', state.season),
             week=lr.get('week', state.week),
-            information_cut=cut, support_state=ps.support_state)
+            information_cut=cut, support_state=ps.support_state,
+            player_state=ps)
 
         A = d.axes
         A['roster_status'] = EV.Axis(
