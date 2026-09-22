@@ -63,6 +63,7 @@ _REPO = pathlib.Path(__file__).resolve().parents[3]
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
+from nfl.production.integrity import contract as IC               # noqa: E402
 from nfl.production.review import audit as AUD                     # noqa: E402
 from sportsplatform.governance.outcome import Cause, Outcome       # noqa: E402
 
@@ -86,9 +87,95 @@ C_SIM_ROW_MISMATCH = 'SIMULATION_ROW_MISMATCH'
 C_CONSERVATION = 'OPPORTUNITY_CONSERVATION_FAILURE'
 C_FORBIDDEN_INPUT = 'FORBIDDEN_EXTERNAL_INPUT_IN_PREDICTIVE_FEATURES'
 C_UNAVAILABLE_CLAIMED = 'UNAVAILABLE_EVIDENCE_CLAIMED_AS_MEASURED'
+C_INTEGRITY_COVERAGE_MISSING = 'INTEGRITY_COVERAGE_MISSING'
 GATE_CODES = (C_INACTIVE_IN_POOL, C_IDENTITY_UNRESOLVED, C_DUPLICATE_IDENTITY,
               C_MISSING_ROW_IDS, C_SIM_ROW_MISMATCH, C_CONSERVATION,
               C_FORBIDDEN_INPUT, C_UNAVAILABLE_CLAIMED)
+
+#: INTEGRITY CODES THIS GATE ADVERTISES, each with the subsystem that OWNS
+#: the invariant and the producer that proves it. The gate CONSUMES these; it
+#: does not compute them. An invariant belongs to the subsystem that owns the
+#: data it is about, and putting all of them here would make the governance
+#: layer a second implementation of everything it governs.
+ADVERTISED_INTEGRITY: Dict[str, Dict[str, str]] = {
+    C_DUPLICATE_IDENTITY: {
+        'owner': IC.OWNER_STATE,
+        'producer': 'state.identity_integrity.duplicate_player_identity',
+        'invariant': 'no canonical player id appears twice in the governed '
+                     'population'},
+    C_MISSING_ROW_IDS: {
+        'owner': IC.OWNER_SIMULATION,
+        'producer': 'simulation_integrity.missing_row_ids',
+        'invariant': 'every draw layer says whose draws it carries'},
+    C_SIM_ROW_MISMATCH: {
+        'owner': IC.OWNER_SIMULATION,
+        'producer': 'simulation_integrity.simulation_row_mismatch',
+        'invariant': "a layer's row_ids and its arrays agree on the count"},
+    C_UNAVAILABLE_CLAIMED: {
+        'owner': IC.OWNER_PROVENANCE,
+        'producer': 'review.provenance_integrity.'
+                    'unavailable_claimed_as_measured',
+        'invariant': 'a component published as MEASURED rests on at least '
+                     'one MEASURED canonical axis'},
+}
+
+#: CODES THIS GATE HAS RELINQUISHED, and why. Each was declared BLOCKING with
+#: NO PRODUCER ANYWHERE -- the gate advertised a guarantee production never
+#: evaluated, and a clean gate record meant only that nobody had checked.
+#:
+#: Removing a code from BLOCKING_CODES does NOT weaken the gate: `classify`
+#: sends an unregistered code to BLOCKING under `unregistered_code`, so if
+#: one of these ever arrives it still stops the slate. What changes is that
+#: the gate stops CLAIMING a guarantee it cannot consume.
+#:
+#: Three of the four invariants are already enforced in production by their
+#: owning subsystem; what is missing is the wiring that surfaces the verdict
+#: here, and that wiring belongs to those subsystems, not to this one.
+RELINQUISHED_CODES: Dict[str, Dict[str, str]] = {
+    C_INACTIVE_IN_POOL: {
+        'owner': IC.OWNER_ELIGIBILITY,
+        'enforced_today': 'dfs/classic/pool.py excludes a player whose board '
+                          'availability is the literal INACTIVE',
+        'gap': 'that exclusion is an exact string test and does NOT cover '
+               'INJURY_OUT, which the availability slice made reachable. A '
+               'player his club declared OUT currently enters the optimizer '
+               'pool. Detection also differs from exclusion: nothing reports '
+               'when it happens.',
+        'returns_when': 'the DFS eligibility boundary emits an '
+                        'IntegrityFinding for a will-not-play player found '
+                        'in a simulation or optimizer population'},
+    C_IDENTITY_UNRESOLVED: {
+        'owner': IC.OWNER_STATE,
+        'enforced_today': 'player_universe classifies an unresolvable row '
+                          'IDENTITY_UNRESOLVED, and inactives.resolve '
+                          'REFUSES an ambiguous name rather than guessing',
+        'gap': 'neither result is surfaced as an integrity finding, so a '
+               'slate where an inactive could not be applied to a named '
+               'player reads the same as one where every name resolved',
+        'returns_when': 'the identity layer emits a finding for an inactive '
+                        'declaration that could not be attached to a '
+                        'canonical id'},
+    C_CONSERVATION: {
+        'owner': IC.OWNER_ALLOCATION,
+        'enforced_today': 'allocation.assert_allocation_conserves runs in '
+                          'universe/run_chain.py, and '
+                          'draw_coherence.assert_draw_coherence runs in '
+                          'run_forecast.py',
+        'gap': 'both return their own Outcome and neither reaches this '
+               'gate, so the gate cannot say whether conservation held',
+        'returns_when': 'the allocation layer emits its verdict as an '
+                        'IntegrityReport fragment'},
+    C_FORBIDDEN_INPUT: {
+        'owner': IC.OWNER_PROVENANCE,
+        'enforced_today': 'pipeline.assert_no_postgame_inputs runs in '
+                          'pipeline.py and refuses a stage that declares a '
+                          'postgame field; adjustment_registry refuses an '
+                          'undeclared re-application',
+        'gap': 'both check DECLARED reads at the pipeline layer and neither '
+               'reaches this gate',
+        'returns_when': 'the pipeline emits its declaration verdict as an '
+                        'IntegrityReport fragment'},
+}
 
 #: BLOCKING. Each can materially corrupt opportunity, projection ordering,
 #: simulation integrity or optimizer selection. Grouped by the owner's
@@ -118,8 +205,6 @@ WIDENED_CODE_MEANING = {
 BLOCKING_CODES: Dict[str, str] = {
     # availability integrity
     AUD.C_INACTIVE_OWNS_OPPORTUNITY: 'availability_integrity',
-    C_INACTIVE_IN_POOL: 'availability_integrity',
-    C_IDENTITY_UNRESOLVED: 'availability_integrity',
     # unsupported published role
     AUD.C_UNSUPPORTED_ROLE_PUBLISHED: 'unsupported_published_role',
     # role / opportunity inversion
@@ -135,8 +220,8 @@ BLOCKING_CODES: Dict[str, str] = {
     C_DUPLICATE_IDENTITY: 'integrity',
     C_MISSING_ROW_IDS: 'integrity',
     C_SIM_ROW_MISMATCH: 'integrity',
-    C_CONSERVATION: 'integrity',
-    C_FORBIDDEN_INPUT: 'integrity',
+    # the gate's own: an advertised invariant nobody checked
+    C_INTEGRITY_COVERAGE_MISSING: 'integrity',
 }
 
 #: WARNING. Real, recorded, visible in the slate report, never silently
@@ -152,8 +237,8 @@ WARNING_CODES: Dict[str, str] = {
 #: whether THIS row is material is the wrong question.
 MATERIALITY_EXEMPT = frozenset({
     C_DUPLICATE_IDENTITY, C_MISSING_ROW_IDS, C_SIM_ROW_MISMATCH,
-    C_CONSERVATION, C_FORBIDDEN_INPUT, C_IDENTITY_UNRESOLVED,
-    C_INACTIVE_IN_POOL, AUD.C_INACTIVE_OWNS_OPPORTUNITY,
+    C_UNAVAILABLE_CLAIMED, C_INTEGRITY_COVERAGE_MISSING,
+    AUD.C_INACTIVE_OWNS_OPPORTUNITY,
 })
 
 
@@ -345,11 +430,49 @@ def classify(conflict: Dict[str, Any], mat: Dict[str, Any]) -> Dict[str, Any]:
 # --------------------------------------------------------------------------
 # the gate
 # --------------------------------------------------------------------------
+def assert_producer_coverage(integrity_report) -> Outcome:
+    """Every advertised integrity code must have been CHECKED, or say why not.
+
+    THERE IS NO FOURTH STATE. A code this gate advertises as BLOCKING has a
+    producer that ran (passing or failing), or a declared NOT_APPLICABLE with
+    a reason. 'Declared but nobody checks it' is the state this whole slice
+    exists to remove, and it is what this function refuses.
+    """
+    if integrity_report is None:
+        return Outcome.fail(
+            C_INTEGRITY_COVERAGE_MISSING,
+            f'no integrity report was supplied, so all '
+            f'{len(ADVERTISED_INTEGRITY)} advertised invariant(s) are '
+            f'NOT_CHECKED: {sorted(ADVERTISED_INTEGRITY)}. Absence of a '
+            f'finding is not a passing check.',
+            value={'not_checked': sorted(ADVERTISED_INTEGRITY)})
+    missing = sorted(c for c in ADVERTISED_INTEGRITY
+                     if integrity_report.state_of(c) == IC.NOT_CHECKED)
+    if missing:
+        return Outcome.fail(
+            C_INTEGRITY_COVERAGE_MISSING,
+            f'{len(missing)} advertised integrity invariant(s) were not '
+            f'checked: {missing}. The gate declares them BLOCKING, so a '
+            f'verdict issued without them would claim a guarantee nobody '
+            f'evaluated.',
+            value={'not_checked': missing,
+                   'checked': list(integrity_report.codes_checked())})
+    return Outcome.ok(
+        'INTEGRITY_COVERAGE_COMPLETE',
+        {'checked': list(integrity_report.codes_checked()),
+         'coverage': {c: integrity_report.state_of(c)
+                      for c in sorted(ADVERTISED_INTEGRITY)}},
+        detail=f'{len(ADVERTISED_INTEGRITY)} advertised invariant(s), none '
+               f'NOT_CHECKED')
+
+
 def evaluate(report: Optional[Dict[str, Any]], *,
              dossiers: Sequence[Any] = (),
              projection_digest: Optional[str] = None,
              optimizer_pool_ids=None,
              resolved_conflict_codes=None,
+             integrity_report=None,
+             require_integrity_coverage: bool = False,
              extra_conflicts: Sequence[Dict[str, Any]] = ()) -> Outcome:
     """The one call an optimizer makes. PASS / PASS_WITH_WARNINGS / BLOCKED.
 
@@ -389,8 +512,32 @@ def evaluate(report: Optional[Dict[str, Any]], *,
     resolved = set(resolved_conflict_codes or ())
     dby = {d.gsis_id: d for d in dossiers}
 
+    # INTEGRITY FINDINGS ARE CONFLICTS. They arrive from the subsystems that
+    # own the invariants, already coded and severity-tagged, and they join
+    # the audit's rows rather than opening a second classification path.
+    integrity_conflicts = (list(integrity_report.conflicts())
+                           if integrity_report is not None else [])
+    coverage_conflicts: List[Dict[str, Any]] = []
+    icov = assert_producer_coverage(integrity_report)
+    if require_integrity_coverage and icov.state.name != 'PASS':
+        for code in (icov.value or icov.evidence.get('value')
+                     or {}).get('not_checked', []):
+            coverage_conflicts.append({
+                'code': C_INTEGRITY_COVERAGE_MISSING, 'severity': 'BLOCKING',
+                'gsis_id': None, 'display_name': f'invariant {code}',
+                'detail': f'{code} is advertised as a blocking integrity '
+                          f'guarantee and NOTHING CHECKED IT on this run. '
+                          f'{ADVERTISED_INTEGRITY.get(code, {}).get("invariant", "")} '
+                          f'Owner: '
+                          f'{ADVERTISED_INTEGRITY.get(code, {}).get("owner")}.',
+                'evidence': {'uncovered_code': code,
+                             'expected_producer': ADVERTISED_INTEGRITY.get(
+                                 code, {}).get('producer')},
+                'integrity': True})
+
     rows: List[Dict[str, Any]] = []
-    for c in list(report.get('conflicts', [])) + list(extra_conflicts):
+    for c in (list(report.get('conflicts', [])) + integrity_conflicts
+              + coverage_conflicts + list(extra_conflicts)):
         d = dby.get(c.get('gsis_id'))
         if d is None:
             # No dossier for a conflict's subject is itself an integrity
@@ -453,6 +600,25 @@ def evaluate(report: Optional[Dict[str, Any]], *,
             collections.Counter(r['code'] for r in warnings
                                 if r.get('immaterial_blocking_code'))),
         'resolved_by_name': sorted(resolved),
+        'integrity': {
+            'report_supplied': integrity_report is not None,
+            'required': bool(require_integrity_coverage),
+            'coverage_verdict': icov.code,
+            'report_hash': (None if integrity_report is None
+                            else integrity_report.report_hash()),
+            'coverage': ({c: IC.NOT_CHECKED for c in ADVERTISED_INTEGRITY}
+                         if integrity_report is None else
+                         {c: integrity_report.state_of(c)
+                          for c in sorted(ADVERTISED_INTEGRITY)}),
+            'advertised': {c: dict(v) for c, v in
+                           sorted(ADVERTISED_INTEGRITY.items())},
+            'relinquished': {c: dict(v) for c, v in
+                             sorted(RELINQUISHED_CODES.items())},
+            'n_findings': (0 if integrity_report is None
+                           else len(integrity_report.findings)),
+            'producer_versions': ({} if integrity_report is None
+                                  else integrity_report.producer_versions()),
+        },
         'conflicts': rows,
         'materiality_rule': MATERIALITY_RULE,
         'artifact_hashes': (report.get('projection_source') or {}).get(

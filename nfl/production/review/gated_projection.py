@@ -179,7 +179,11 @@ def load(draws_dir, review_dir, *, optimizer_pool_ids=None,
             # artifact. Without them the verdict would depend on who is
             # holding objects in memory, which is the opposite of what
             # re-deriving from disk is for.
-            canonical=DOS.CanonicalFacts.from_dict(j.get('canonical')))
+            canonical=DOS.CanonicalFacts.from_dict(j.get('canonical')),
+            # The canonical grades behind each axis, needed by the
+            # provenance integrity producer. Serialised since slice 2.
+            evidence_provenance=j.get('evidence_provenance') or {},
+            state_identity=j.get('state_identity') or {})
         for name, ax in (j.get('axes') or {}).items():
             dd.axes[name] = EV.Axis(name=name, value=ax.get('value'),
                                     grade=ax.get('grade', EV.UNAVAILABLE),
@@ -197,7 +201,44 @@ def load(draws_dir, review_dir, *, optimizer_pool_ids=None,
             f'dossiers is not a review.', cause=Cause.DATA,
             value={'verdict': GATE.BLOCKED})
 
+    # INTEGRITY, PRODUCED BY THE SUBSYSTEMS THAT OWN THE INVARIANTS.
+    #
+    # This is the production path an optimizer takes, so this is where the
+    # producers must actually run. A code in a registry is not coverage and a
+    # unit test calling a producer directly is not coverage either: the
+    # governed chain has to invoke it, and it does, here.
+    import numpy as _np
+    from nfl.production.integrity import contract as IC
+    from nfl.production.state import identity_integrity as II
+    from nfl.production import simulation_integrity as SI
+    from nfl.production.review import provenance_integrity as PI
+
+    man = json.loads(man_p.read_text())
+    _arrays = {}
+    with _np.load(npz_p) as _z:
+        for _k in _z.files:
+            _arrays[_k] = _np.asarray(_z[_k])
+    _arts = {'player_draws.npz': consumed,
+             'player_draws_manifest.json': _digest(man_p)}
+    _cut = report.get('information_cut')
+    _slate = report.get('slate_key')
+    integrity = IC.IntegrityReport.compose([
+        II.duplicate_player_identity(
+            dossiers, slate_key=_slate, information_cut=_cut,
+            source_artifacts=_arts, what='dossier'),
+        SI.missing_row_ids(man, slate_key=_slate, information_cut=_cut,
+                           source_artifacts=_arts),
+        SI.simulation_row_mismatch(man, _arrays, slate_key=_slate,
+                                   information_cut=_cut,
+                                   source_artifacts=_arts),
+        PI.unavailable_claimed_as_measured(
+            dossiers, slate_key=_slate, information_cut=_cut,
+            source_artifacts=_arts),
+    ], slate_key=_slate, information_cut=_cut)
+
     g = GATE.evaluate(report, dossiers=dossiers, projection_digest=consumed,
+                      integrity_report=integrity,
+                      require_integrity_coverage=True,
                       optimizer_pool_ids=optimizer_pool_ids,
                       resolved_conflict_codes=resolved_conflict_codes)
     # A REFUSAL TO ISSUE A VERDICT IS NOT A VERDICT. `PLAYER_REVIEW_STALE` and
@@ -215,6 +256,12 @@ def load(draws_dir, review_dir, *, optimizer_pool_ids=None,
             permitted.code, permitted.detail,
             value={**(permitted.value or permitted.evidence.get('value') or {}),
                    'gate_code': g.code, 'gate_detail': g.detail,
+                   # Carried on the REFUSAL too: a blocked slate is exactly
+                   # when a reader needs to see which invariant fired.
+                   'integrity': GATE.payload(g).get('integrity'),
+                   'blocking_conflicts': [
+                       r for r in GATE.payload(g).get('conflicts', [])
+                       if r.get('disposition') == 'BLOCKING'],
                    'draws_dir': str(d), 'review_dir': str(rd)})
 
     man = json.loads(man_p.read_text())
@@ -229,6 +276,7 @@ def load(draws_dir, review_dir, *, optimizer_pool_ids=None,
         'GATED_PROJECTION_LOADED',
         {'arrays': arrays, 'manifest': man, 'layers': man.get('layers', {}),
          'verdict': gv.get('verdict'),
+         'integrity': gv.get('integrity'),
          'warning_count': gv.get('warning_count'),
          'warning_players': gv.get('warning_players'),
          'draw_digest': consumed,

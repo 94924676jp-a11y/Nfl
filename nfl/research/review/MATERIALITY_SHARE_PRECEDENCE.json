@@ -1,0 +1,120 @@
+{
+ "artifact": "MATERIALITY_SHARE_PRECEDENCE",
+ "spec_version": "materiality-share-precedence-1",
+ "reproduce": "python3.12 nfl/research/review/share_precedence.py",
+ "question": "gate.materiality weighs `carry_share or target_share or 0.0`. Is that a fallback, or positional precedence?",
+ "finding": "It is POSITIONAL PRECEDENCE. A player with a non-zero carry share is weighed on it and his target share is never seen, however much larger it is.",
+ "why_it_has_never_fired": "Python truthiness. In every saved review artifact this repository holds, whenever a target share exceeds a carry share the carry share is EXACTLY 0.0 -- which is falsy, so the `or` falls through to the target share and happens to be right. The usage panel emits 0.0 for a non-rusher rather than a small positive number, and that is the only reason the bug is latent.",
+ "corpus": {
+  "label": "saved review artifacts",
+  "threshold": 0.05,
+  "n_rows": 312,
+  "n_with_both_shares": 60,
+  "n_where_a_definition_differs": 2,
+  "n_materiality_flips": 0,
+  "flips": [],
+  "shape_of_the_corpus": {
+   "carry_share_exactly_zero_when_both_present": 42,
+   "target_share_greater_than_carry_share": 24,
+   "and_of_those_carry_share_is_exactly_zero": 24
+  }
+ },
+ "corpus_at_cold_start_threshold": {
+  "label": "saved review artifacts, cold-start row",
+  "threshold": 0.025,
+  "n_rows": 312,
+  "n_with_both_shares": 60,
+  "n_where_a_definition_differs": 2,
+  "n_materiality_flips": 2,
+  "flips": [
+   {
+    "slate": "2026_02_NYG_LA",
+    "gsis_id": "00-0033376",
+    "player": "Patrick Ricard",
+    "room": "carries",
+    "carry_share": 0.0,
+    "target_share": 0.034482758620689655,
+    "dk_points": 1.2803125,
+    "current": 0.034482758620689655,
+    "room_appropriate": 0.0,
+    "definition": "room_appropriate"
+   },
+   {
+    "slate": "2026_02_NYG_LA_CS6",
+    "gsis_id": "00-0033376",
+    "player": "Patrick Ricard",
+    "room": "carries",
+    "carry_share": 0.0,
+    "target_share": 0.034482758620689655,
+    "dk_points": 2.844275,
+    "current": 0.034482758620689655,
+    "room_appropriate": 0.0,
+    "definition": "room_appropriate"
+   }
+  ],
+  "shape_of_the_corpus": {
+   "carry_share_exactly_zero_when_both_present": 42,
+   "target_share_greater_than_carry_share": 24,
+   "and_of_those_carry_share_is_exactly_zero": 24
+  }
+ },
+ "constructed_reachable_case": {
+  "label": "constructed, absent from the corpus",
+  "threshold": 0.05,
+  "n_rows": 2,
+  "n_with_both_shares": 2,
+  "n_where_a_definition_differs": 2,
+  "n_materiality_flips": 3,
+  "flips": [
+   {
+    "slate": "CONSTRUCTED",
+    "gsis_id": "PASS_CATCHING_BACK",
+    "player": "a back with a handful of carries and a heavy target share",
+    "room": "carries",
+    "carry_share": 0.04,
+    "target_share": 0.2,
+    "dk_points": 11.0,
+    "current": 0.04,
+    "max": 0.2,
+    "definition": "max"
+   },
+   {
+    "slate": "CONSTRUCTED",
+    "gsis_id": "SLOT_RECEIVER_WITH_JET_SWEEPS",
+    "player": "a receiver with two jet sweeps and a large target share",
+    "room": "targets",
+    "carry_share": 0.02,
+    "target_share": 0.24,
+    "dk_points": 13.0,
+    "current": 0.02,
+    "max": 0.24,
+    "definition": "max"
+   },
+   {
+    "slate": "CONSTRUCTED",
+    "gsis_id": "SLOT_RECEIVER_WITH_JET_SWEEPS",
+    "player": "a receiver with two jet sweeps and a large target share",
+    "room": "targets",
+    "carry_share": 0.02,
+    "target_share": 0.24,
+    "dk_points": 13.0,
+    "current": 0.02,
+    "room_appropriate": 0.24,
+    "definition": "room_appropriate"
+   }
+  ],
+  "shape_of_the_corpus": {
+   "carry_share_exactly_zero_when_both_present": 0,
+   "target_share_greater_than_carry_share": 2,
+   "and_of_those_carry_share_is_exactly_zero": 0
+  }
+ },
+ "candidate_definitions": {
+  "max": "max over the shares that exist, None treated as absent. Materiality asks whether the row can change an outcome AT ALL, so the largest claim the player has on any team resource is the right quantity.",
+  "room_appropriate": "the share of the room the player is in. UNDER-reports exactly the case that matters -- a pass-catching back is in the carries room and his relevance is targets -- so it reproduces the defect under a better name.",
+  "combined": "REJECTED, and not on grounds of taste. carry_share is a share of team carries and target_share is a share of team targets. They have different denominators, so their sum is not a share of anything and cannot be compared against a threshold expressed as one."
+ },
+ "recommendation": "max(carry_share, target_share), with None treated as ABSENT rather than zero. It is the only candidate that is dimensionally coherent and that does not under-report the pass-catching back. It can only ever RAISE a share, so it can only move a row from immaterial to material -- it cannot clear a conflict that blocks today.",
+ "blast_radius_on_held_data": "ZERO. No saved review row changes value or materiality under either candidate.",
+ "status": "MEASURED AND RECOMMENDED, NOT APPLIED. The correction belongs in its own commit."
+}
