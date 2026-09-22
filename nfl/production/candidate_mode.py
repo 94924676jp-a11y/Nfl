@@ -60,6 +60,10 @@ V1_CANDIDATE_R9_W1P_GSVU = 'V1_CANDIDATE_R9_W1P_GSVU'
 V1_CANDIDATE_R9_W1P_GSVUQ = 'V1_CANDIDATE_R9_W1P_GSVUQ'
 V1_CANDIDATE_R9_W1P_GSVUC = 'V1_CANDIDATE_R9_W1P_GSVUC'
 V1_CANDIDATE_R9_W1P_GSVUCY = 'V1_CANDIDATE_R9_W1P_GSVUCY'
+# CS6: GSVUCY plus the Stage-6 current-season opportunity repair. A NEW
+# identity, because the old one must stay reproducible as the baseline half of
+# the before-and-after comparison.
+V1_CANDIDATE_R9_W1P_GSVUCYS = 'V1_CANDIDATE_R9_W1P_GSVUCYS'
 MODES = (PRODUCTION_BASELINE, V1_CANDIDATE, V1_CANDIDATE_R5,
          V1_CANDIDATE_R6, V1_CANDIDATE_R7, V1_CANDIDATE_R8,
          V1_CANDIDATE_R9, V1_CANDIDATE_R10, V1_CANDIDATE_R11,
@@ -68,7 +72,8 @@ MODES = (PRODUCTION_BASELINE, V1_CANDIDATE, V1_CANDIDATE_R5,
          V1_CANDIDATE_R9_W1P_GS, V1_CANDIDATE_R9_W1P_GSV,
          V1_CANDIDATE_R9_W1P_GSP, V1_CANDIDATE_R9_W1P_GSVP,
          V1_CANDIDATE_R9_W1P_GSVU, V1_CANDIDATE_R9_W1P_GSVUQ,
-         V1_CANDIDATE_R9_W1P_GSVUC, V1_CANDIDATE_R9_W1P_GSVUCY)
+         V1_CANDIDATE_R9_W1P_GSVUC, V1_CANDIDATE_R9_W1P_GSVUCY,
+         V1_CANDIDATE_R9_W1P_GSVUCYS)
 
 # Every mode that is a CANDIDATE, derived so a new one cannot escape a guard
 # by not being added to a hand-written list. See `assert_not_promoted`.
@@ -910,6 +915,41 @@ QY1_REPAIR = {
 R9_W1P_GSVUCY_FLAGS = dict(R9_W1P_GSVUC_FLAGS)
 R9_W1P_GSVUCY_FLAGS['qb_yard_atoms'] = True
 
+# CS6. STAGE 6 CONSUMES THE CURRENT SEASON.
+#
+# `p4c_build.load_panel()` spans 202001-202518 and carries ZERO 2026 rows, so
+# the opportunity centre was built from 2025-and-older football for a 2026
+# week-2 forecast. Measured: Tyrone Tracy Jr. carried a centre of 0.4758 (his
+# 2025 lead-back share, 32 rows, shrinkage weight 0.977) while Cam Skattebo's
+# 18 carries and 61% snap share from 2026 week 1 never entered the computation.
+#
+# NO CONSTANT IS CHOSEN. The recency half-life, the season-boundary decay, the
+# team-change discount and the opportunity exponent are all ESTIMATED by
+# forward-chained evaluation on 2022-2025 with the selection rule fixed in
+# advance (nfl/research/cs2/PREREGISTRATION_STAGE2.md, results in
+# STAGE2_FIT.json). The cold-start floor is the MEASURED median first-game
+# share (COLD_START_FLOOR.json). The retention rule that makes a team change
+# shrink harder is DECLARED with its reasoning, not fitted, and says so.
+R9_W1P_GSVUCYS_FLAGS = dict(R9_W1P_GSVUCY_FLAGS)
+R9_W1P_GSVUCYS_FLAGS['current_season_opportunity'] = True
+
+CS6_REPAIR = {
+    'component': 'CS6',
+    'what': 'Stage 6 builds the opportunity centre from evidence that '
+            'includes the current season, and honours the governed role',
+    'replaces': 'a centre computed from a panel ending at 2025 week 18',
+    'defect': 'load_panel() spans 202001-202518 with zero 2026 rows, so a '
+              'current-season forecast consumed no current-season football. '
+              'Tracy centre 0.4758 from 2025 against Skattebo 0.3824, while '
+              "Skattebo's measured 18 carries and 0.61 snap share were absent "
+              'from the computation entirely',
+    'evidence': 'forward-chained on 2022-2025, player-blocked bootstrap, '
+                'selection rule predeclared; see STAGE2_FIT.json',
+    'governance': 'REHEARSAL_ONLY',
+    'introduces_no_constant': True,
+    'inherits': 'GSVUCY',
+}
+
 CS1_REPAIR = {
     'component': 'CS1',
     'what': 'the previous-primary passer and the season-boundary flag are '
@@ -1420,6 +1460,18 @@ def resolve(mode: str) -> Outcome:
                    'candidate': True},
             detail='CS1: GSVU with current-season incumbency state, so a '
                    'week-2 game is not treated as a season opener')
+    if mode == V1_CANDIDATE_R9_W1P_GSVUCYS:
+        base = resolve(V1_CANDIDATE_R9_W1P_GSVUCY)
+        if base.state.name != 'PASS':
+            return base
+        return Outcome.ok(
+            'MODE_V1_CANDIDATE_R9_W1P_GSVUCYS',
+            value={'mode': V1_CANDIDATE_R9_W1P_GSVUCYS,
+                   'flags': dict(R9_W1P_GSVUCYS_FLAGS),
+                   'components': base.value['components'] + [dict(CS6_REPAIR)],
+                   'candidate': True},
+            detail='CS6: GSVUCY with Stage 6 consuming current-season '
+                   'measured opportunity and the governed role')
     if mode == V1_CANDIDATE_R9_W1P_GSVUCY:
         return Outcome.ok(
             'MODE_V1_CANDIDATE_R9_W1P_GSVUCY',

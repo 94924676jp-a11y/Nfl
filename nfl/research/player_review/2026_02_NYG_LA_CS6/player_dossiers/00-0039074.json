@@ -1,0 +1,285 @@
+{
+ "axes": {
+  "alignment_slot_outside": {
+   "grade": "UNAVAILABLE",
+   "note": "requires participation or charting.",
+   "value": null,
+   "why_unavailable": "requires participation or charting."
+  },
+  "carries": {
+   "grade": "MEASURED",
+   "source": "lawful play-by-play usage panel, prior weeks",
+   "value": 0.0
+  },
+  "carry_share": {
+   "grade": "MEASURED",
+   "source": "lawful play-by-play usage panel, prior weeks, club of record LA",
+   "value": 0.0
+  },
+  "coach_news": {
+   "grade": "UNAVAILABLE",
+   "note": "no egress from this container: nfl.com, club sites and the open web all refuse. ASSIGNED to the network-capable agent, see docs/AGENT_OUTBOX.md.",
+   "value": null,
+   "why_unavailable": "no egress from this container: nfl.com, club sites and the open web all refuse. ASSIGNED to the network-capable agent, see docs/AGENT_OUTBOX.md."
+  },
+  "current_season_snap_games": {
+   "grade": "MEASURED",
+   "source": "PFR snap counts",
+   "value": 1
+  },
+  "current_season_snap_share": {
+   "grade": "MEASURED",
+   "source": "PFR snap counts, weeks strictly before this one",
+   "value": 0.34,
+   "window": "1 game(s)"
+  },
+  "injury_designation": {
+   "grade": "UNAVAILABLE",
+   "note": "no designation was published for this player; that is not a clean bill",
+   "source": "injuries vintage",
+   "value": {
+    "practice": null,
+    "report": null
+   }
+  },
+  "offensive_depth_rank": {
+   "grade": "DECLARED",
+   "note": "OFFENSIVE_DEPTH_RANK:TE4",
+   "observed_at": "2026-09-21T13:56:04Z",
+   "source": "depth_charts vintage, typed through depth_role",
+   "value": 4
+  },
+  "official_availability": {
+   "grade": "DECLARED",
+   "note": "the board is complete for this game, so absence from it is a positive statement. Without a complete board this axis would read NOT_DECLARED",
+   "observed_at": "2026-09-21T23:05:00Z",
+   "source": "official inactive declaration, by exclusion within a complete board",
+   "value": "ACTIVE"
+  },
+  "pass_block_snaps": {
+   "grade": "UNAVAILABLE",
+   "note": "no pass/run split exists in the PFR snap file and participation is unavailable.",
+   "value": null,
+   "why_unavailable": "no pass/run split exists in the PFR snap file and participation is unavailable."
+  },
+  "personnel_11": {
+   "grade": "UNAVAILABLE",
+   "note": "offense_personnel lives in pbp_participation, which is 404 for 2026.",
+   "value": null,
+   "why_unavailable": "offense_personnel lives in pbp_participation, which is 404 for 2026."
+  },
+  "personnel_12": {
+   "grade": "UNAVAILABLE",
+   "note": "see personnel_11.",
+   "value": null,
+   "why_unavailable": "see personnel_11."
+  },
+  "personnel_13": {
+   "grade": "UNAVAILABLE",
+   "note": "see personnel_11.",
+   "value": null,
+   "why_unavailable": "see personnel_11."
+  },
+  "personnel_21": {
+   "grade": "UNAVAILABLE",
+   "note": "see personnel_11.",
+   "value": null,
+   "why_unavailable": "see personnel_11."
+  },
+  "role": {
+   "grade": "MEASURED",
+   "note": [
+    "mean offensive snap share 0.3400 over 1 observed game(s) against derived floors 0.5361/0.3735/0.2084"
+   ],
+   "source": "role_state.assign",
+   "value": "SECONDARY_ROTATION"
+  },
+  "role_support": {
+   "grade": "MEASURED",
+   "value": "ROLE_SUPPORTED"
+  },
+  "room": {
+   "grade": "DECLARED",
+   "source": "roster_position -> POSITION_ROOM",
+   "value": "targets"
+  },
+  "roster_status": {
+   "grade": "DECLARED",
+   "observed_at": "2026-09-21T23:05:00Z",
+   "source": "weekly_rosters vintage",
+   "value": "ACT"
+  },
+  "routes": {
+   "grade": "UNAVAILABLE",
+   "note": "nflverse pbp_participation returns 404 for 2026, so no route-level participation exists. Routes are the correct denominator for a receiving role and raw snaps are not.",
+   "value": null,
+   "why_unavailable": "nflverse pbp_participation returns 404 for 2026, so no route-level participation exists. Routes are the correct denominator for a receiving role and raw snaps are not."
+  },
+  "routes_per_dropback": {
+   "grade": "UNAVAILABLE",
+   "note": "requires routes; see routes.",
+   "value": null,
+   "why_unavailable": "requires routes; see routes."
+  },
+  "run_block_snaps": {
+   "grade": "UNAVAILABLE",
+   "note": "same source gap as pass_block_snaps.",
+   "value": null,
+   "why_unavailable": "same source gap as pass_block_snaps."
+  },
+  "special_teams_role": {
+   "grade": "UNAVAILABLE",
+   "note": "a special-teams listing informs no offensive room and must never be read as one",
+   "observed_at": "2026-09-21T13:56:04Z",
+   "source": "depth_charts vintage, special-teams groups only",
+   "value": null
+  },
+  "special_teams_snap_share": {
+   "grade": "MEASURED",
+   "note": "kept apart from the offensive share on purpose",
+   "source": "PFR snap counts, st_pct",
+   "value": 0.45
+  },
+  "target_share": {
+   "grade": "MEASURED",
+   "source": "lawful play-by-play usage panel, prior weeks, club of record LA",
+   "value": 0.037037037037037035
+  },
+  "targets": {
+   "grade": "MEASURED",
+   "source": "lawful play-by-play usage panel, prior weeks",
+   "value": 1.0
+  },
+  "transactions": {
+   "grade": "UNAVAILABLE",
+   "note": "no egress; endpoint not verified. ASSIGNED.",
+   "value": null,
+   "why_unavailable": "no egress; endpoint not verified. ASSIGNED."
+  },
+  "vacated_opportunity": {
+   "grade": "UNAVAILABLE",
+   "note": "no redistribution record was supplied for this player; that is not the same as none occurring",
+   "source": "post-inactives redistribution accounting",
+   "value": null
+  }
+ },
+ "conflicts": [
+  {
+   "code": "RECEIVING_ROLE_RESTS_ON_RAW_SNAPS_ONLY",
+   "detail": "1.942 expected targets on a role measured by raw offensive snaps. Routes are the correct denominator and are UNAVAILABLE for 2026, so this role has not been examined on the axis that would settle it.",
+   "display_name": "Davis Allen",
+   "evidence": {
+    "targets": 1.94175,
+    "why": "nflverse pbp_participation returns 404 for 2026, so no route-level participation exists. Routes are the correct denominator for a receiving role and raw snaps are not."
+   },
+   "gsis_id": "00-0039074",
+   "severity": "NOTE",
+   "team": "LA"
+  },
+  {
+   "code": "ROOM_OPPORTUNITY_ORDER_INVERTS_ROLE_ORDER",
+   "detail": "listed targets rank 4 and projected 1.942 targets, ahead of Terrance Ferguson at rank 3 on 1.733 -- while also measuring no higher on snap share (0.3400 vs 0.5100) or on prior usage (1.000 vs 1.000). The inversion is not supported by any axis the review can read.",
+   "display_name": "Davis Allen",
+   "evidence": {
+    "axes_readable": [
+     "snap_share",
+     "prior_usage"
+    ],
+    "higher": {
+     "gsis_id": "00-0039074",
+     "prior_usage": 1.0,
+     "rank": 4,
+     "snap_share": 0.34,
+     "targets": 1.94175
+    },
+    "lower": {
+     "display_name": "Terrance Ferguson",
+     "gsis_id": "00-0040737",
+     "prior_usage": 1.0,
+     "rank": 3,
+     "snap_share": 0.51,
+     "targets": 1.73325
+    },
+    "metric": "targets",
+    "room": "targets",
+    "team": "LA"
+   },
+   "gsis_id": "00-0039074",
+   "severity": "REVIEW",
+   "team": "LA"
+  }
+ ],
+ "display_name": "Davis Allen",
+ "game_id": "2026_02_NYG_LA",
+ "gsis_id": "00-0039074",
+ "information_cut": "2026-09-21T23:05:00Z",
+ "opponent": "NYG",
+ "projection": {
+  "dk_points": {
+   "derived_from": [
+    "role_state",
+    "usage_panel",
+    "team_volume"
+   ],
+   "grade": "MEASURED",
+   "note": "{\"mean\": 3.1739, \"p05\": 0.0, \"p25\": 0.0, \"p50\": 1.5, \"p75\": 4.6, \"p95\": 12.3, \"p_zero\": 0.4376, \"sd\": 4.5312}",
+   "value": 3.173925
+  },
+  "receiving_td": {
+   "derived_from": [
+    "role_state",
+    "usage_panel",
+    "team_volume"
+   ],
+   "grade": "MEASURED",
+   "note": "{\"mean\": 0.1039, \"p05\": 0.0, \"p25\": 0.0, \"p50\": 0.0, \"p75\": 0.0, \"p95\": 1.0, \"p_zero\": 0.9056, \"sd\": 0.3367}",
+   "value": 0.103875
+  },
+  "receiving_yards": {
+   "derived_from": [
+    "role_state",
+    "usage_panel",
+    "team_volume"
+   ],
+   "grade": "MEASURED",
+   "note": "{\"mean\": 11.8543, \"p05\": 0.0, \"p25\": 0.0, \"p50\": 4.0, \"p75\": 19.0, \"p95\": 46.0, \"p_zero\": 0.4442, \"sd\": 16.6548}",
+   "value": 11.85425
+  },
+  "receptions": {
+   "derived_from": [
+    "role_state",
+    "usage_panel",
+    "team_volume"
+   ],
+   "grade": "MEASURED",
+   "note": "{\"mean\": 1.3598, \"p05\": 0.0, \"p25\": 0.0, \"p50\": 1.0, \"p75\": 2.0, \"p95\": 5.0, \"p_zero\": 0.4392, \"sd\": 1.7674}",
+   "value": 1.35975
+  },
+  "targets": {
+   "derived_from": [
+    "role_state",
+    "usage_panel",
+    "team_volume"
+   ],
+   "grade": "MEASURED",
+   "note": "{\"mean\": 1.9418, \"p05\": 0.0, \"p25\": 0.0, \"p50\": 1.0, \"p75\": 3.0, \"p95\": 7.0, \"p_zero\": 0.3704, \"sd\": 2.351}",
+   "value": 1.94175
+  }
+ },
+ "projection_source": {
+  "digests": {
+   "player_draws.npz": "a243521cea17321e50f55d20f00bdf7e8f289e4e7e38fdd29269a5c5c293e828",
+   "player_draws_manifest.json": "5182d5eb65f14282ce9bac2a5d2940ded00e0736efe77c2457d5273fe9a1c82c"
+  },
+  "metrics_absent": [],
+  "n_draws": 8000,
+  "run_id": "5dd61c7b2f318d3e"
+ },
+ "season": 2026,
+ "spec_version": "player-pregame-dossier-1",
+ "support_state": "PROJECTED",
+ "team": "LA",
+ "uncertainty_state": "EVIDENCE_SUFFICIENT",
+ "uncertainty_why": [],
+ "week": 2
+}

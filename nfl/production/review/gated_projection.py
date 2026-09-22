@@ -48,9 +48,48 @@ def _digest(p: pathlib.Path) -> str:
     return hashlib.sha256(p.read_bytes()).hexdigest()
 
 
+#: A run that refused at any governing stage is not a forecast. These are the
+#: statuses `run_status.json` can carry that mean "do not publish this".
+REFUSED_RUN_STATUSES = ('REFUSED', 'BLOCKED', 'FAILED')
+
+RUN_REFUSED = 'UPSTREAM_RUN_REFUSED'
+
+
+def run_status(draws_dir) -> Outcome:
+    """What the run itself said about whether it succeeded.
+
+    A missing `run_status.json` is BLOCKED, not assumed fine: a draw artifact
+    with no record of how its run ended is indistinguishable from one whose
+    run refused.
+    """
+    p = pathlib.Path(draws_dir) / 'run_status.json'
+    if not p.exists():
+        return Outcome.blocked(
+            'RUN_STATUS_ABSENT',
+            f'{p} does not exist, so there is no record of whether this run '
+            f'succeeded. An artifact without one is not a passing artifact.',
+            cause=Cause.DATA)
+    j = json.loads(p.read_text())
+    st = str(j.get('status') or '').upper()
+    first = j.get('first_failure') or {}
+    if st in REFUSED_RUN_STATUSES:
+        return Outcome.fail(
+            RUN_REFUSED,
+            f'the run ended {st} at stage {first.get("stage")!r} with '
+            f'{first.get("code")!r}. A refused run is not a usable forecast '
+            f'artifact and no downstream consumer may treat it as one.',
+            value={'status': st, 'run_id': j.get('run_id'),
+                   'stage': first.get('stage'), 'code': first.get('code'),
+                   'detail': str(first.get('detail'))[:400],
+                   'n_refusals': j.get('n_refusals')})
+    return Outcome.ok('RUN_STATUS_OK', {'status': st, 'run_id': j.get('run_id')},
+                      detail=f'run status {st}')
+
+
 def load(draws_dir, review_dir, *, optimizer_pool_ids=None,
          allow_warnings: bool = True,
-         resolved_conflict_codes=None) -> Outcome:
+         resolved_conflict_codes=None,
+         inspect_refused_non_publishable: bool = False) -> Outcome:
     """Draw arrays and layer index for a slate, or a named refusal.
 
     `review_dir` is the slate's review directory. The gate is re-evaluated
@@ -70,6 +109,45 @@ def load(draws_dir, review_dir, *, optimizer_pool_ids=None,
                 f'{p} does not exist. An absent artifact is not an empty '
                 f'projection.', cause=Cause.DATA)
 
+    consumed = _digest(npz_p)
+
+    # REFUSAL PROPAGATES. The review gate and the run's own status are
+    # INDEPENDENT reasons to refuse, and a run can fail its own sealing while
+    # its review would have passed. Both are checked; neither substitutes.
+    rs = run_status(d)
+    if rs.state.name != 'PASS':
+        if not inspect_refused_non_publishable:
+            return Outcome.fail(
+                RUN_REFUSED if rs.code == RUN_REFUSED else rs.code,
+                rs.detail,
+                value={**(rs.value or rs.evidence.get('value') or {}),
+                       'verdict': 'BLOCKED',
+                       'publishable': False,
+                       'inspection_hint': 'a measurement or debugging path '
+                                          'may pass '
+                                          'inspect_refused_non_publishable='
+                                          'True to READ this artifact; the '
+                                          'result is marked non-publishable '
+                                          'and carries no verdict'})
+        # DEBUGGING PATH. Explicitly asked for, explicitly marked. A refused
+        # run must be inspectable -- otherwise a blocked slate cannot be
+        # diagnosed -- but what comes back may not be published.
+        man = json.loads(man_p.read_text())
+        arrays = {}
+        with np.load(npz_p) as z:
+            for k in z.files:
+                arrays[k] = np.asarray(z[k])
+                if '__' in k:
+                    arrays[k.replace('__', '/', 1)] = arrays[k]
+        return Outcome.ok(
+            'REFUSED_ARTIFACT_OPENED_FOR_INSPECTION',
+            {'arrays': arrays, 'manifest': man,
+             'layers': man.get('layers', {}),
+             'publishable': False, 'verdict': None,
+             'run_status': rs.value or rs.evidence.get('value'),
+             'draw_digest': consumed, 'spec_version': SPEC_VERSION},
+            detail=f'NON-PUBLISHABLE inspection of a refused run: {rs.code}')
+
     rd = pathlib.Path(review_dir)
     rp = rd / REVIEW_REPORT
     if not rp.exists():
@@ -80,8 +158,6 @@ def load(draws_dir, review_dir, *, optimizer_pool_ids=None,
             f'this one has not been.', cause=Cause.GOVERNANCE,
             value={'verdict': GATE.BLOCKED})
     report = json.loads(rp.read_text())
-
-    consumed = _digest(npz_p)
     # The dossiers are needed for materiality, and they are on disk beside
     # the report. Reading them back rather than accepting them as an argument
     # keeps the verdict a property of the saved artifact.

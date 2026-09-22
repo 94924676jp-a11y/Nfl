@@ -76,8 +76,11 @@ def mk_row(gsis_id, **kw):
     return r
 
 
-def write_draws(d: pathlib.Path, per_player, n=64, seed=20260922):
-    """A minimal but REAL draw artifact: npz plus a manifest that agrees."""
+def write_draws(d: pathlib.Path, per_player, n=64, seed=20260922,
+                run_status='PASS'):
+    """A minimal but REAL draw artifact: npz, a manifest that agrees, and a
+    run status. The status is not optional: an artifact without one is now
+    BLOCKED, because it is indistinguishable from one whose run refused."""
     d.mkdir(parents=True, exist_ok=True)
     rng = np.random.default_rng(seed)
     ids = list(per_player)
@@ -95,6 +98,9 @@ def write_draws(d: pathlib.Path, per_player, n=64, seed=20260922):
                                   'row_ids': ids, 'shape': [len(ids), n]})
         layers[layer]['metrics'].append(comp)
     np.savez(d / 'player_draws.npz', **arrays)
+    if run_status is not None:
+        (d / 'run_status.json').write_text(json.dumps(
+            {'run_id': 'SYNTH', 'status': run_status, 'n_refusals': 0}))
     (d / 'player_draws_manifest.json').write_text(json.dumps(
         {'run_id': 'SYNTH', 'game_id': GAME, 'n_draws': n,
          'n_matrices': len(arrays), 'layers': layers,
@@ -170,12 +176,28 @@ def test_optimizer_refuses_a_stale_review():
 
 
 def test_optimizer_refuses_a_blocking_conflict():
-    o = GP.load(LIVE_DRAWS, LIVE_REVIEW)
-    ok(o.state.name == 'FAIL' and
-       o.code == 'OPTIMIZATION_REFUSED_BY_PLAYER_REVIEW',
-       f'last night\'s real projection set is refused: {o.code}')
-    ok(GATE.verdict_of(o) == GATE.BLOCKED,
-       f'with verdict {GATE.verdict_of(o)}, not an ambiguous green')
+    """A run that SUCCEEDED, whose review found a material contradiction.
+
+    The live artifact cannot serve here any more: its run refused at sealing,
+    which is a more fundamental refusal and is checked first. That ordering is
+    right -- a refused run is not a forecast, so whether its review passed is
+    moot -- so the review block is proved on a clean-status artifact instead,
+    and the live case is proved separately under refusal propagation.
+    """
+    with tempfile.TemporaryDirectory() as td:
+        draws, rdir, _ = clean_slate(td)
+        rep = json.loads((rdir / 'slate_review_report.json').read_text())
+        rep['conflicts'].append({
+            'code': AUD.C_INACTIVE_OWNS_OPPORTUNITY, 'severity': AUD.BLOCKING,
+            'gsis_id': 'CLEAN1', 'display_name': 'CLEAN1', 'team': 'NYG',
+            'detail': 'inactive with opportunity', 'evidence': {}})
+        (rdir / 'slate_review_report.json').write_text(json.dumps(rep))
+        o = GP.load(draws, rdir)
+        ok(o.state.name == 'FAIL' and
+           o.code == 'OPTIMIZATION_REFUSED_BY_PLAYER_REVIEW',
+           f'a material blocking conflict refuses the load: {o.code}')
+        ok(GATE.verdict_of(o) == GATE.BLOCKED,
+           f'with verdict {GATE.verdict_of(o)}, not an ambiguous green')
 
 
 def test_a_clean_slate_passes_review_and_reaches_the_optimizer():
@@ -511,6 +533,52 @@ def test_guard_rank_map_is_wired_into_the_forecast_path():
        'the rank map the forecast uses is the guarded one')
 
 
+# -- 8. refusal propagation -------------------------------------------------
+def test_a_run_that_refused_cannot_reach_the_optimizer():
+    o = GP.load(LIVE_DRAWS, LIVE_REVIEW)
+    ok(o.state.name == 'FAIL' and o.code == GP.RUN_REFUSED,
+       f'the sealed run refused at artifact_sealing and is refused '
+       f'downstream by name: {o.code}')
+    v = GATE.payload(o)
+    ok(v.get('publishable') is False and v.get('verdict') == 'BLOCKED',
+       'marked non-publishable, with no ambiguous green')
+    ok(v.get('stage') == 'artifact_sealing',
+       f'naming the stage that refused: {v.get("stage")}')
+
+
+def test_a_debugging_path_can_still_inspect_a_refused_run():
+    o = GP.load(LIVE_DRAWS, LIVE_REVIEW,
+                inspect_refused_non_publishable=True)
+    ok(o.state.name == 'PASS' and
+       o.code == 'REFUSED_ARTIFACT_OPENED_FOR_INSPECTION',
+       f'an explicitly marked inspection opens it: {o.code}')
+    ok(o.value['publishable'] is False and o.value['verdict'] is None,
+       'but carries publishable=False and no verdict, so nothing can '
+       'mistake it for a forecast')
+    ok(len(o.value['arrays']) > 0,
+       f'while the arrays really are readable: {len(o.value["arrays"])} '
+       f'matrices, so a blocked slate can still be diagnosed')
+
+
+def test_a_missing_run_status_is_not_assumed_fine():
+    with tempfile.TemporaryDirectory() as td:
+        d = pathlib.Path(td) / 'draws'
+        write_draws(d, {'X': {'dk_points': 10.0}}, run_status=None)
+        r = GP.run_status(d)
+        ok(r.state.name == 'BLOCKED' and r.code == 'RUN_STATUS_ABSENT',
+           'an artifact with no run record is BLOCKED, not presumed to have '
+           'passed')
+
+
+def test_freshness_refusal_is_a_named_upstream_state():
+    from nfl.production.nonqb import current_season_evidence as CSE
+    ev = CSE.collect(2026, 2, '2026-09-21T23:05:00Z')
+    f = CSE.assert_fresh(ev, season=2026, week=9)
+    ok(f.state.name == 'BLOCKED' and f.code == CSE.STALE,
+       f'stale current-season input refuses as {CSE.STALE}, before any world '
+       f'is drawn')
+
+
 def main():
     for t in (test_optimizer_refuses_when_review_never_ran,
               test_optimizer_refuses_a_stale_review,
@@ -529,7 +597,11 @@ def main():
               test_equal_timestamps_never_make_file_order_meaningful,
               test_no_publication_path_bypasses_the_gated_loader,
               test_the_live_selectors_actually_call_the_loader,
-              test_guard_rank_map_is_wired_into_the_forecast_path):
+              test_guard_rank_map_is_wired_into_the_forecast_path,
+              test_a_run_that_refused_cannot_reach_the_optimizer,
+              test_a_debugging_path_can_still_inspect_a_refused_run,
+              test_a_missing_run_status_is_not_assumed_fine,
+              test_freshness_refusal_is_a_named_upstream_state):
         print(f'== {t.__name__}')
         t()
     print(f'\nPASSED {PASSED} FAILED {FAILED}')

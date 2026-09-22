@@ -27,6 +27,7 @@ import pathlib
 import subprocess
 import sys
 
+import collections
 import numpy as np
 
 _REPO = pathlib.Path(__file__).resolve().parents[3]
@@ -125,6 +126,101 @@ def _ev(par, cls, season):
 
 def cache_clear():
     _CACHE.clear()
+
+
+def class_point_forecast_cs(cls: str, season: int, week: int, players,
+                           *, current_season, role_prior=None, tiers=None,
+                           role_by_id=None, depth_rank=None,
+                           declared_starters=None) -> Outcome:
+    """`C` from evidence that INCLUDES the current season. Stage 6, repaired.
+
+    The historical-only `class_point_forecast` below is left exactly as it
+    was, so a baseline run remains reproducible and the two can be compared
+    under one change. This is the new path and it is selected explicitly by
+    the caller supplying `current_season`; there is no implicit switch.
+    """
+    a = ensure_artifacts()
+    if a.state is not State.PASS:
+        return a
+    import p4c_build as B
+    import p4c_lib as L
+    if cls not in L.CLASSES:
+        return Outcome.fail('UNKNOWN_CLASS', f'{cls!r} is not a P4C class')
+    from nfl.production.nonqb import opportunity_centre as OC
+    from nfl.production.nonqb import role_prior as RP
+
+    po = OC.load_params(cls)
+    if po.state is not State.PASS:
+        return po
+    B.P4B = str(_DIR)
+    panel = B.load_panel()
+    cut = season * 100 + week
+    skey = L.CLASSES[cls]['share']
+    okey = 'carries' if cls == 'carries' else 'targets'
+
+    hist, posvals = collections.defaultdict(list), collections.defaultdict(list)
+    for r in panel:
+        if r['position'] not in L.CLASSES[cls]['pos'] or r['ord'] >= cut:
+            continue
+        v = r.get(skey)
+        if v is None or not r.get('appeared'):
+            continue
+        hist[r['gsis_id']].append(OC.Observation(
+            season=int(r['season']), week=int(r.get('week') or 0),
+            team=r.get('team'), share=float(v),
+            opportunity=float(r.get(okey) or 0.0),
+            source='historical_panel', ord=r['ord']))
+        posvals[r['position']].append(float(v))
+    if not hist:
+        return Outcome.fail(
+            'CLASS_HISTORY_EMPTY',
+            f'no prior appeared {cls} share earlier than {season} week '
+            f'{week}; a point forecast over nothing is not one')
+    posmean = {k: float(np.mean(v)) for k, v in posvals.items()}
+
+    anchor = {}
+    if role_prior is not None and tiers is not None:
+        for q in players:
+            t = (tiers or {}).get(q.get('gsis_id'), RP.MAX_TIER)
+            tm = role_prior['tier_mean'].get(
+                RP._tier_label(q.get('position'), t))
+            if tm is not None:
+                anchor[q.get('gsis_id')] = float(tm)
+    kk = {k: float(v) for k, v in ((role_prior or {}).get('k') or {}).items()}
+
+    pool = [q for q in players
+            if q.get('position') in L.CLASSES[cls]['pos'] and q.get('gsis_id')]
+    o = OC.build_centres(
+        pool, target=cls, season=season, week=week, params=po.value,
+        historical=hist, current_season=current_season,
+        role_by_id=role_by_id, depth_anchor_by_id=anchor,
+        depth_rank_by_id=depth_rank, positional_mean=posmean,
+        shrinkage_k=kk, declared_starters=declared_starters)
+    if o.state is not State.PASS:
+        return o
+
+    # PARTICIPATION WEIGHTING, unchanged from the historical path: C is a
+    # conditional-on-appearing share and E[share] = P(appears) * E[share|app].
+    out, weighted = dict(o.value['centre']), []
+    for q in pool:
+        pp = q.get('participation_prior')
+        pid = q.get('gsis_id')
+        if pp is not None and pid in out:
+            out[pid] = float(out[pid]) * float(pp)
+            weighted.append(pid)
+    return Outcome.ok(
+        'CLASS_POINT_FORECAST_CURRENT_SEASON_OK', value=out,
+        spec_version=SPEC_VERSION, alloc_class=cls, n_players=len(out),
+        ordinal_cut=cut, stage6='opportunity_centre',
+        opportunity_centre_spec=OC.SPEC_VERSION,
+        n_participation_weighted=len(weighted),
+        n_with_current_season_evidence=o.value[
+            'n_with_current_season_evidence'],
+        by_basis=o.value['by_basis'],
+        stage2_params=o.value['params'],
+        attribution={p: a.as_dict()
+                     for p, a in o.value['attribution'].items()},
+        detail=o.detail)
 
 
 def class_point_forecast(cls: str, season: int, week: int, players,

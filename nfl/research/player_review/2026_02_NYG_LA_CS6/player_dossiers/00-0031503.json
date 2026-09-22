@@ -1,0 +1,279 @@
+{
+ "axes": {
+  "alignment_slot_outside": {
+   "grade": "UNAVAILABLE",
+   "note": "requires participation or charting.",
+   "value": null,
+   "why_unavailable": "requires participation or charting."
+  },
+  "carries": {
+   "grade": "MEASURED",
+   "source": "lawful play-by-play usage panel, prior weeks",
+   "value": 0.0
+  },
+  "carry_share": {
+   "grade": "MEASURED",
+   "source": "lawful play-by-play usage panel, prior weeks, club of record None",
+   "value": 0.0
+  },
+  "coach_news": {
+   "grade": "UNAVAILABLE",
+   "note": "no egress from this container: nfl.com, club sites and the open web all refuse. ASSIGNED to the network-capable agent, see docs/AGENT_OUTBOX.md.",
+   "value": null,
+   "why_unavailable": "no egress from this container: nfl.com, club sites and the open web all refuse. ASSIGNED to the network-capable agent, see docs/AGENT_OUTBOX.md."
+  },
+  "current_season_snap_games": {
+   "grade": "COLD_START",
+   "source": "PFR snap counts",
+   "value": 0
+  },
+  "current_season_snap_share": {
+   "grade": "COLD_START",
+   "note": "no offensive snap has been measured for this player this season",
+   "source": "PFR snap counts, weeks strictly before this one",
+   "value": null,
+   "window": "0 game(s)"
+  },
+  "injury_designation": {
+   "grade": "UNAVAILABLE",
+   "note": "no designation was published for this player; that is not a clean bill",
+   "source": "injuries vintage",
+   "value": {
+    "practice": null,
+    "report": null
+   }
+  },
+  "offensive_depth_rank": {
+   "grade": "DECLARED",
+   "note": "OFFENSIVE_DEPTH_RANK:QB2",
+   "observed_at": "2026-09-21T13:56:04Z",
+   "source": "depth_charts vintage, typed through depth_role",
+   "value": 2
+  },
+  "official_availability": {
+   "grade": "DECLARED",
+   "note": "the board is complete for this game, so absence from it is a positive statement. Without a complete board this axis would read NOT_DECLARED",
+   "observed_at": "2026-09-21T23:05:00Z",
+   "source": "official inactive declaration, by exclusion within a complete board",
+   "value": "ACTIVE"
+  },
+  "pass_block_snaps": {
+   "grade": "UNAVAILABLE",
+   "note": "no pass/run split exists in the PFR snap file and participation is unavailable.",
+   "value": null,
+   "why_unavailable": "no pass/run split exists in the PFR snap file and participation is unavailable."
+  },
+  "personnel_11": {
+   "grade": "UNAVAILABLE",
+   "note": "offense_personnel lives in pbp_participation, which is 404 for 2026.",
+   "value": null,
+   "why_unavailable": "offense_personnel lives in pbp_participation, which is 404 for 2026."
+  },
+  "personnel_12": {
+   "grade": "UNAVAILABLE",
+   "note": "see personnel_11.",
+   "value": null,
+   "why_unavailable": "see personnel_11."
+  },
+  "personnel_13": {
+   "grade": "UNAVAILABLE",
+   "note": "see personnel_11.",
+   "value": null,
+   "why_unavailable": "see personnel_11."
+  },
+  "personnel_21": {
+   "grade": "UNAVAILABLE",
+   "note": "see personnel_11.",
+   "value": null,
+   "why_unavailable": "see personnel_11."
+  },
+  "role": {
+   "grade": "PRIOR",
+   "note": [
+    "no measured offensive participation at this club in any week before this one. A depth listing is a statement of intent and does not establish a role."
+   ],
+   "source": "role_state.assign",
+   "value": "ROLE_UNCERTAIN"
+  },
+  "role_support": {
+   "grade": "MEASURED",
+   "note": "the role itself is unknown; no participation has been measured and nothing else may stand in for it",
+   "value": "ROLE_UNSUPPORTED"
+  },
+  "room": {
+   "grade": "DECLARED",
+   "source": "roster_position -> POSITION_ROOM",
+   "value": "dropbacks"
+  },
+  "roster_status": {
+   "grade": "DECLARED",
+   "observed_at": "2026-09-21T23:05:00Z",
+   "source": "weekly_rosters vintage",
+   "value": "ACT"
+  },
+  "routes": {
+   "grade": "UNAVAILABLE",
+   "note": "nflverse pbp_participation returns 404 for 2026, so no route-level participation exists. Routes are the correct denominator for a receiving role and raw snaps are not.",
+   "value": null,
+   "why_unavailable": "nflverse pbp_participation returns 404 for 2026, so no route-level participation exists. Routes are the correct denominator for a receiving role and raw snaps are not."
+  },
+  "routes_per_dropback": {
+   "grade": "UNAVAILABLE",
+   "note": "requires routes; see routes.",
+   "value": null,
+   "why_unavailable": "requires routes; see routes."
+  },
+  "run_block_snaps": {
+   "grade": "UNAVAILABLE",
+   "note": "same source gap as pass_block_snaps.",
+   "value": null,
+   "why_unavailable": "same source gap as pass_block_snaps."
+  },
+  "special_teams_role": {
+   "grade": "UNAVAILABLE",
+   "note": "a special-teams listing informs no offensive room and must never be read as one",
+   "observed_at": "2026-09-21T13:56:04Z",
+   "source": "depth_charts vintage, special-teams groups only",
+   "value": null
+  },
+  "special_teams_snap_share": {
+   "grade": "COLD_START",
+   "note": "kept apart from the offensive share on purpose",
+   "source": "PFR snap counts, st_pct",
+   "value": null
+  },
+  "target_share": {
+   "grade": "MEASURED",
+   "source": "lawful play-by-play usage panel, prior weeks, club of record None",
+   "value": 0.0
+  },
+  "targets": {
+   "grade": "MEASURED",
+   "source": "lawful play-by-play usage panel, prior weeks",
+   "value": 0.0
+  },
+  "transactions": {
+   "grade": "UNAVAILABLE",
+   "note": "no egress; endpoint not verified. ASSIGNED.",
+   "value": null,
+   "why_unavailable": "no egress; endpoint not verified. ASSIGNED."
+  },
+  "vacated_opportunity": {
+   "grade": "UNAVAILABLE",
+   "note": "no redistribution record was supplied for this player; that is not the same as none occurring",
+   "source": "post-inactives redistribution accounting",
+   "value": null
+  }
+ },
+ "conflicts": [
+  {
+   "code": "UNSUPPORTED_ROLE_PUBLISHED",
+   "detail": "2.428 expected opportunities published on a role role_state itself refused to support.",
+   "display_name": "Jameis Winston",
+   "evidence": {
+    "opportunity": 2.428125,
+    "why": "the role itself is unknown; no participation has been measured and nothing else may stand in for it"
+   },
+   "gsis_id": "00-0031503",
+   "severity": "BLOCKING",
+   "team": "NYG"
+  },
+  {
+   "code": "COLD_START_CARRIES_MATERIAL_PROJECTION",
+   "detail": "2.428 expected opportunities for a player with no measured offensive snap this season. The number comes from a prior, and the prior is what should be reviewed.",
+   "display_name": "Jameis Winston",
+   "evidence": {
+    "opportunity": 2.428125,
+    "uncertainty_state": "CURRENT_ROLE_COLD_START"
+   },
+   "gsis_id": "00-0031503",
+   "severity": "REVIEW",
+   "team": "NYG"
+  }
+ ],
+ "display_name": "Jameis Winston",
+ "game_id": "2026_02_NYG_LA",
+ "gsis_id": "00-0031503",
+ "information_cut": "2026-09-21T23:05:00Z",
+ "opponent": "LA",
+ "projection": {
+  "dk_points": {
+   "derived_from": [
+    "position prior",
+    "depth listing",
+    "team_volume"
+   ],
+   "grade": "COLD_START",
+   "note": "{\"mean\": 1.1174, \"p05\": 0.0, \"p25\": 0.0, \"p50\": 0.0, \"p75\": 0.0, \"p95\": 8.66, \"p_zero\": 0.787, \"sd\": 3.682}",
+   "value": 1.1173617978549228
+  },
+  "interceptions": {
+   "derived_from": [
+    "position prior",
+    "depth listing",
+    "team_volume"
+   ],
+   "grade": "COLD_START",
+   "note": "{\"mean\": 0.082, \"p05\": 0.0, \"p25\": 0.0, \"p50\": 0.0, \"p75\": 0.0, \"p95\": 1.0, \"p_zero\": 0.9425, \"sd\": 0.3799}",
+   "value": 0.082
+  },
+  "pass_attempts": {
+   "derived_from": [
+    "position prior",
+    "depth listing",
+    "team_volume"
+   ],
+   "grade": "COLD_START",
+   "note": "{\"mean\": 2.4281, \"p05\": 0.0, \"p25\": 0.0, \"p50\": 0.0, \"p75\": 0.0, \"p95\": 20.0, \"p_zero\": 0.7501, \"sd\": 7.0908}",
+   "value": 2.428125
+  },
+  "passing_td": {
+   "derived_from": [
+    "position prior",
+    "depth listing",
+    "team_volume"
+   ],
+   "grade": "COLD_START",
+   "note": "{\"mean\": 0.0996, \"p05\": 0.0, \"p25\": 0.0, \"p50\": 0.0, \"p75\": 0.0, \"p95\": 1.0, \"p_zero\": 0.9324, \"sd\": 0.4195}",
+   "value": 0.099625
+  },
+  "passing_yards": {
+   "derived_from": [
+    "position prior",
+    "depth listing",
+    "team_volume"
+   ],
+   "grade": "COLD_START",
+   "note": "{\"mean\": 16.162, \"p05\": 0.0, \"p25\": 0.0, \"p50\": 0.0, \"p75\": 0.0, \"p95\": 130.05, \"p_zero\": 0.7917, \"sd\": 49.2025}",
+   "value": 16.162
+  },
+  "qb_rush_opportunities": {
+   "derived_from": [
+    "position prior",
+    "depth listing",
+    "team_volume"
+   ],
+   "grade": "COLD_START",
+   "note": "{\"mean\": 0.1964, \"p05\": 0.0, \"p25\": 0.0, \"p50\": 0.0, \"p75\": 0.0, \"p95\": 2.0, \"p_zero\": 0.8981, \"sd\": 0.6997}",
+   "value": 0.196375
+  }
+ },
+ "projection_source": {
+  "digests": {
+   "player_draws.npz": "a243521cea17321e50f55d20f00bdf7e8f289e4e7e38fdd29269a5c5c293e828",
+   "player_draws_manifest.json": "5182d5eb65f14282ce9bac2a5d2940ded00e0736efe77c2457d5273fe9a1c82c"
+  },
+  "metrics_absent": [],
+  "n_draws": 8000,
+  "run_id": "5dd61c7b2f318d3e"
+ },
+ "season": 2026,
+ "spec_version": "player-pregame-dossier-1",
+ "support_state": "PROJECTED",
+ "team": "NYG",
+ "uncertainty_state": "CURRENT_ROLE_COLD_START",
+ "uncertainty_why": [
+  "no offensive snap measured this season and the role is not supported by measured participation"
+ ],
+ "week": 2
+}

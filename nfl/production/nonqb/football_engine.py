@@ -455,23 +455,38 @@ def credit_passing_line(att_by_qb, int_by_qb, team_cmp, team_pyds,
         n_draws=int(m))
 
 
-def slate_fits(season, week, players, role_priors=None, tiers=None) -> Outcome:
+def slate_fits(season, week, players, role_priors=None, tiers=None,
+               current_season=None, role_by_id=None, depth_rank=None,
+               declared_starters=None) -> Outcome:
     """Everything that depends only on history, computed once per slate.
 
     `role_priors` is R6's tier-conditional prior, keyed by class. Absent -- the
     V1 and R5 path -- the class point forecast is exactly what it was.
+
+    `current_season` SELECTS STAGE 6. Supplied, the class point forecast is
+    built by `opportunity_centre` from evidence that includes this season and
+    honours the governed role. Absent, it is the historical-only computation,
+    byte-for-byte as before, so a baseline run stays reproducible and the two
+    can be compared under exactly one change.
     """
     rp = role_priors or {}
     fits, states = {}, {}
+
+    def _C(cls):
+        if current_season is None:
+            return P4.class_point_forecast(
+                cls, season, week, players,
+                role_prior=rp.get(cls), tiers=tiers)
+        return P4.class_point_forecast_cs(
+            cls, season, week, players, current_season=current_season,
+            role_prior=rp.get(cls), tiers=tiers, role_by_id=role_by_id,
+            depth_rank=depth_rank, declared_starters=declared_starters)
+
     for name, o in (
             ('p4c_params_targets', P4.params('targets', season)),
             ('p4c_params_carries', P4.params('carries', season)),
-            ('C_targets', P4.class_point_forecast(
-                'targets', season, week, players,
-                role_prior=rp.get('targets'), tiers=tiers)),
-            ('C_carries', P4.class_point_forecast(
-                'carries', season, week, players,
-                role_prior=rp.get('carries'), tiers=tiers)),
+            ('C_targets', _C('targets')),
+            ('C_carries', _C('carries')),
             ('participation_prior', PP.share_prior(season, week, players)),
             ('receiving_priors', FP.receiving_priors(season)),
             ('td_priors_rec', FP.td_priors(season, 'rec')),

@@ -397,6 +397,21 @@ def evaluate(report: Optional[Dict[str, Any]], *,
                f'warning(s) over {cov.get("n_universe")} reviewed players')
 
 
+def payload(outcome) -> Dict[str, Any]:
+    """The value dict on any Outcome, whichever field it landed in.
+
+    `Outcome.ok` puts it on `.value`; `Outcome.fail` and `Outcome.blocked` put
+    it under `.evidence['value']`. A consumer that reads only `.value` gets
+    None on exactly the outcomes it most needs to inspect, and this project
+    has now written that bug twice. One accessor.
+    """
+    v = getattr(outcome, 'value', None)
+    if isinstance(v, dict):
+        return v
+    e = (getattr(outcome, 'evidence', None) or {}).get('value')
+    return e if isinstance(e, dict) else {}
+
+
 def verdict_of(outcome) -> Optional[str]:
     """The verdict on any gate Outcome, PASS or refusal alike.
 
@@ -405,11 +420,7 @@ def verdict_of(outcome) -> Optional[str]:
     outcomes a caller most needs to inspect. Rather than making every consumer
     remember that, this is the one accessor.
     """
-    for src in (getattr(outcome, 'value', None),
-                (getattr(outcome, 'evidence', None) or {}).get('value')):
-        if isinstance(src, dict) and src.get('verdict'):
-            return src['verdict']
-    return None
+    return payload(outcome).get('verdict')
 
 
 def write_gate(gate_value: Dict[str, Any], path) -> Outcome:

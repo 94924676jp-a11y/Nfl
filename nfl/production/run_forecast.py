@@ -1544,9 +1544,83 @@ def build(args, fixtures: dict = None) -> dict:
                          'k_state': f'{_k.state.value}[{_k.code}]'}
             fx['_r8_applied'] = True
 
+        # CS6. CURRENT-SEASON OPPORTUNITY EVIDENCE, AND THE FRESHNESS GATE
+        # MOVED UPSTREAM OF SIMULATION.
+        #
+        # `current_season_input_freshness` already refused the old run -- at
+        # ARTIFACT SEALING, after 318 seconds of worlds nobody could use.
+        # This is the same protection, asked before any world is drawn. A run
+        # that claims to model current-season opportunity and cannot see the
+        # prior week stops here with CURRENT_SEASON_INPUT_STALE.
+        cs_ev = None
+        if fl.get('current_season_opportunity'):
+            from nfl.production.nonqb import current_season_evidence as _CSE
+            _evo = _CSE.collect(args.season, args.week, str(args.written_at))
+            _diag = bool(getattr(args, 'diagnostic_known_stale', False))
+            _fresh = _CSE.assert_fresh(
+                _evo, season=args.season, week=args.week,
+                allow_known_stale_for_diagnostic=_diag)
+            fx['_cs6'] = {
+                'evidence': f'{_evo.state.value}[{_evo.code}]',
+                'freshness': f'{_fresh.state.value}[{_fresh.code}]',
+                'spec_version': _CSE.SPEC_VERSION,
+                'sources': (_evo.value or {}).get('sources'),
+                'weeks_present': (_evo.value or {}).get('weeks_present'),
+                'n_players': (_evo.value or {}).get('n_players'),
+                'diagnostic_known_stale': _diag,
+                'publishable': (_fresh.value or {}).get('publishable', True)
+                if _fresh.state is State.PASS else False}
+            if _fresh.state is not State.PASS:
+                fx['_cs6']['refused_before_simulation'] = True
+                fx['_nonqb'] = {'fatal': _fresh}
+                return fx['_nonqb']
+            cs_ev = (_evo.value or {}).get('by_player') or {}
+            fx['_cs6']['applied'] = True
+
+        # THE GOVERNED ROLE REACHES THE GENERATOR. Without this the two role
+        # systems run in parallel and role_state can refuse a role while the
+        # generator builds a confident workload from the depth rank alone.
+        role_by_id = None
+        if fl.get('current_season_opportunity'):
+            try:
+                from nfl.production.universe import player_universe as _PU
+                from nfl.production.universe import role_state as _RS
+                from nfl.production.universe import usage_vintage as _UV
+                _uo = _PU.build(args.season, args.week, args.game_id,
+                                str(args.written_at))
+                if _uo.state is State.PASS:
+                    _ur = (_uo.value['rows'] if isinstance(_uo.value, dict)
+                           else _uo.value)
+                    _us = _UV.usage_season(args.season, str(args.written_at),
+                                           before_week=args.week)
+                    _ro = _RS.assign(_ur, season=args.season, week=args.week,
+                                     usage_rows=(_us.value if _us.state is
+                                                 State.PASS else {}))
+                    if _ro.state is State.PASS:
+                        _rr = (_ro.value['rows'] if isinstance(_ro.value, dict)
+                               else _ro.value)
+                        role_by_id = {r['gsis_id']: r for r in _rr
+                                      if r.get('gsis_id')}
+                fx['_cs6']['governed_role'] = {
+                    'n': len(role_by_id or {}),
+                    'universe': f'{_uo.state.value}[{_uo.code}]'}
+            except Exception as e:                            # noqa: BLE001
+                # NAMED, and NOT silently degraded to the depth-only path:
+                # running the generator without the governor is the defect
+                # this flag exists to close.
+                fx['_nonqb'] = {'fatal': Outcome.blocked(
+                    'GOVERNED_ROLE_UNAVAILABLE',
+                    f'the governed role could not be built '
+                    f'({type(e).__name__}: {e}), and CS6 may not fall back to '
+                    f'a depth-only generator: that is the defect it closes.',
+                    cause=Cause.DEPENDENCY)}
+                return fx['_nonqb']
+
         try:
             fits = FE.slate_fits(args.season, args.week, players,
-                                 role_priors=role_priors, tiers=tiers)
+                                 role_priors=role_priors, tiers=tiers,
+                                 current_season=cs_ev,
+                                 role_by_id=role_by_id, depth_rank=dr)
         except Exception as e:                                # noqa: BLE001
             fits = Outcome.fail(
                 'SLATE_FITS_RAISED', f'{type(e).__name__}: {e}'[:400])
@@ -3573,6 +3647,12 @@ def main(argv=None) -> int:
     ap.add_argument('--dry-run', action='store_true',
                     help='historical fixture run; NEVER prospective evidence')
     ap.add_argument('--fixtures', default=None)
+    ap.add_argument('--diagnostic-known-stale', dest='diagnostic_known_stale',
+                    action='store_true',
+                    help='proceed past registered current-season inputs that '
+                         'are DECLARED stale, for a measurement run only. '
+                         'What it produces is NOT PUBLISHABLE and the run '
+                         'says so.')
     ap.add_argument('--model-configuration', dest='model_configuration',
                     default=CAND.PRODUCTION_BASELINE,
                     help='PRODUCTION_BASELINE (default) or V1_CANDIDATE. '
