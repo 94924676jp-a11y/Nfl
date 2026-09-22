@@ -84,23 +84,61 @@ RESEARCH = ('accepted DFS-source research for this workstream, owner brief '
             'first-party truth with an approximately ten-day retention '
             'window')
 
+#: DraftKings' OWN support documentation, supplied by the 2026-09-22 data
+#: capability packet, which quotes each article directly.
+#:
+#: WHY THIS RAISES A CONFIDENCE LEVEL AND DOES NOT SETTLE ANYTHING.
+#: A statement by the operator about its own product is a PROVIDER_CLAIM:
+#: better than a practitioner's recollection, and still not something this
+#: repository has observed. It becomes VERIFIED_PRIMARY only when we hold a
+#: real export and the parser reads it. Until then a column spelling here is
+#: documented, not confirmed, and `gamecenter.parse` still matches headers
+#: rather than positions so that being wrong refuses by name.
+KB0010448 = ('DraftKings support KB0010448, "How do I download a CSV to see '
+             'GameCenter standings for a contest?", quoted in the 2026-09-22 '
+             'data capability packet: '
+             'https://support.draftkings.com/dk/en-us/how-do-i-download-a-'
+             'csv-to-see-gamecenter-standings-for-a-contest'
+             '?id=kb_article_view&sysparm_article=KB0010448')
+KB0010720 = ('DraftKings support KB0010720, "How does DraftKings keep Fantasy '
+             'Sports contests transparent?", quoted in the same packet: '
+             'https://support.draftkings.com/dk/en-us/how-does-draftkings-'
+             'keep-fantasy-sports-contests-transparent'
+             '?id=kb_article_view&sysparm_article=KB0010720')
+KB0010392 = ('DraftKings support KB0010392, "GameCenter - Overview", quoted '
+             'in the same packet: '
+             'https://support.draftkings.com/dk/en-us/gamecenter-overview'
+             '?id=kb_article_view&sysparm_article=KB0010392')
+
 DRAFTKINGS_GAMECENTER = SourceCapability('DRAFTKINGS', 'GAMECENTER')
 (DRAFTKINGS_GAMECENTER
  .add('first_party', True, C.PROVIDER_CLAIM,
       'the export is served by the operator that ran the contest, so it is '
-      'the operator\'s own record of its own contest')
- .add('complete_contest_field', True, C.PRACTITIONER_REPORT,
-      RESEARCH + '. NOT verified here: no GameCenter export exists in this '
+      'the operator\'s own record of its own contest. ' + KB0010720
+      + ' -- DraftKings states customers can download CSV files for any '
+      'Fantasy Sports contest, including ones they did not enter.')
+ .add('complete_contest_field', True, C.PROVIDER_CLAIM,
+      KB0010392 + ' -- GameCenter displays the top 500 entries plus the last '
+      'entry of each payout tier, and the CSV is the complete record. '
+      'STILL NOT VERIFIED HERE: no GameCenter export exists in this '
       'checkout, and completeness is established per artifact by '
-      'store.assert_completeness, never by this claim.')
- .add('per_athlete_ownership_published', True, C.PRACTITIONER_REPORT,
-      RESEARCH + '; the `% Drafted` column. Not read first-hand here.')
- .add('retention_window_days', 10, C.PRACTITIONER_REPORT,
-      RESEARCH + '. APPROXIMATE, and it is the whole reason this archive '
-      'exists: it is treated as a floor to plan against, not a deadline to '
-      'rely on.')
- .add('entrant_lineups_available', True, C.PRACTITIONER_REPORT,
-      RESEARCH + '; the lineup column per entry row.')
+      'store.assert_completeness against a field size the operator declared, '
+      'never by this claim.')
+ .add('per_athlete_ownership_published', True, C.PROVIDER_CLAIM,
+      KB0010448 + ' -- the export carries an Athlete Information section '
+      'with Player, Roster Position, %Drafted and FPTS. Not read first-hand '
+      'here.')
+ .add('retention_window_days', 10, C.PROVIDER_CLAIM,
+      KB0010448 + ' -- "CSV downloads are available for 10 days after the '
+      'contest ends". This is DraftKings stating it, not us observing it, '
+      'and it is the whole reason this archive exists. Treat it as a '
+      'deadline to beat rather than a guarantee: if the real window is ever '
+      'shorter, the only thing protecting the data is having captured it '
+      'earlier. PROCEDURE.md therefore asks for capture within 48 hours.')
+ .add('entrant_lineups_available', True, C.PROVIDER_CLAIM,
+      KB0010448 + ' -- the Contest Entrant Information section carries Rank, '
+      'Entry ID, Entry Name (with an "(n)" multiple-entry suffix), '
+      'TimeRemaining, Points and Lineup.')
  .add('athlete_id_column_present', C.UNKNOWN, C.UNKNOWN,
       'not established. The parser reads an athlete id where a column '
       'supplies one and records its absence otherwise; it never assumes one.')
@@ -108,24 +146,52 @@ DRAFTKINGS_GAMECENTER = SourceCapability('DRAFTKINGS', 'GAMECENTER')
       'not established. Salaries come from the SALARY_FILE artifact, which '
       'this repository HAS read first-hand; nothing here assumes the '
       'standings export repeats them.')
- .add('multiple_field_snapshots_available', C.UNKNOWN, C.UNKNOWN,
-      'whether the operator serves a field as it stood BEFORE late swap is '
-      'not established. The archive supports several snapshots per contest '
-      'because it must not assume one immutable field, not because a second '
-      'snapshot is known to be obtainable.')
- .add('payout_structure_in_standings_export', C.UNKNOWN, C.UNKNOWN,
-      'not established; PAYOUT_STRUCTURE is a separate artifact type.')
+ .add('multiple_field_snapshots_available', True, C.PROVIDER_CLAIM,
+      KB0010720 + ' -- a CSV cannot be downloaded until the contest locks; '
+      'downloads taken while it is live are "frozen in time with current '
+      'in-game stats"; and official scoring validation "will provide a '
+      'completed CSV file". So the operator describes at least two obtainable '
+      'snapshots of one contest, which is what POST_INITIAL_LOCK / '
+      'INTERMEDIATE / FINAL exist to distinguish. WHAT IS STILL UNKNOWN is '
+      'whether a live download reflects the field as it stood at initial '
+      'lock or as it stands at the moment of download under late swap; a '
+      'capture is therefore never labelled POST_INITIAL_LOCK by inference.')
+ .add('payout_structure_in_standings_export', False, C.PROVIDER_CLAIM,
+      KB0010448 + ' -- the two documented sections are Contest Entrant '
+      'Information and Athlete Information. Neither carries entry fee, prize '
+      'pool, payout table, max entries or field size, so all of it must be '
+      'captured separately from the contest lobby AT THE TIME OF CAPTURE and '
+      'stored beside the CSV. This is why PAYOUT_STRUCTURE and '
+      'CONTEST_METADATA are their own artifact types and why '
+      'DFSContestIdentity carries field_size: without them a capture is '
+      'permanently COMPLETENESS_UNKNOWN and PayoutEV is not computable at '
+      'all.')
  .add('licensing_for_internal_model_training', C.UNKNOWN, C.UNKNOWN,
       'not established. No model is trained on this data in this slice, so '
       'nothing currently depends on the answer -- but nothing may until it '
       'is answered.')
- .add('bulk_historical_extraction', False, C.PRACTITIONER_REPORT,
-      RESEARCH + '. The retention window is precisely why older complete '
-      'fields cannot be reconstructed from the operator.')
+ .add('bulk_historical_extraction', False, C.PROVIDER_CLAIM,
+      KB0010448 + ' -- exports are per contest, from desktop or mobile web '
+      '(not the app), within the ten-day window. The window is precisely why '
+      'older complete fields cannot be reconstructed from the operator at '
+      'any later price.')
  .add('automated_acquisition_built', False, C.VERIFIED_PRIMARY,
       'read from this repository: no browser automation, scraping, session '
       'handling or unattended download exists, by instruction. Ingestion is '
-      'manual.'))
+      'manual.')
+ .add('scripted_export_permitted', C.UNKNOWN, C.UNKNOWN,
+      'NOT STATED in any DraftKings support article read by the 2026-09-22 '
+      'packet, which routes the question to counsel. A practitioner note '
+      'records a direct export URL pattern; its current validity and its '
+      'permissibility are both UNKNOWN and it is deliberately not written '
+      'down in this package. Owner ruling 2026-09-22: capture stays manual '
+      'until this is resolved. UNKNOWN here does not mean "probably fine".')
+ .add('export_size_or_rate_limit', C.UNKNOWN, C.UNKNOWN,
+      'NOT STATED in any support article read, including for contests with '
+      'six-figure fields. A capture of a very large contest may therefore '
+      'fail or truncate in ways we cannot anticipate, which is a further '
+      'reason store.assert_completeness compares entries held against the '
+      'declared field size instead of trusting the file.'))
 
 #: Commercial historical backfill. A CANDIDATE, not an accepted source, and
 #: it is recorded with nothing claimed so that nobody can mistake the entry

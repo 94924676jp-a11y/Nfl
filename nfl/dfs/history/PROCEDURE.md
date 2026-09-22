@@ -24,12 +24,20 @@ standings export remains downloadable for roughly **ten days** after the
 contest ends, after which the contest page is no longer reachable and the
 field is gone for good from the first-party source.
 
-**That ten-day window is recorded in
-`nfl/dfs/history/capability.py` at `PRACTITIONER_REPORT` confidence, not as a
-verified fact.** It comes from the owner's research brief, not from a
-DraftKings service-level statement we hold. Treat it as a deadline to beat, not
-a guarantee to rely on: if the real window is shorter, the only thing that
+**That ten-day window is DraftKings' own published number**, from support
+article KB0010448: *"CSV downloads are available for 10 days after the contest
+ends."* It is recorded in `nfl/dfs/history/capability.py` at `PROVIDER_CLAIM`
+confidence — the operator describing its own product, which is not the same as
+us having watched an export expire. Treat it as a deadline to beat, not a
+guarantee to rely on: if the real window is ever shorter, the only thing that
 protects the data is having captured it earlier.
+
+Two other things the same article settles, and they change what you do:
+
+- **Exports are available for contests you did not enter**, from the Contest
+  Lobby → Sport → Watch Live → select contest → Export Lineups to CSV. The
+  archive is therefore not limited to contests the owner played.
+- **Desktop or mobile web only. Not the app.**
 
 Practical rule: **capture within 48 hours of the contest ending.** Do not
 batch a week's contests until the following Friday.
@@ -89,9 +97,13 @@ manufactured contest id would look exactly like a real one to a reader in
 - `entry_fee`, `entry_limit`, `contest_type` (GPP, double-up, …),
   `slate_type` (`CLASSIC` or `SHOWDOWN`), `start_time_utc`.
 - `season` and `week`.
-- The **payout** structure if it is on the page and not in a file — capture it
-  as a screenshot or text file and store it as `PAYOUT_STRUCTURE` with
-  `confidence=PRACTITIONER_REPORT`, rather than not at all.
+- The **payout** structure. **It is not in the standings export.** KB0010448
+  documents exactly two sections — Contest Entrant Information and Athlete
+  Information — and neither carries entry fee, prize pool, payout table, max
+  entries or field size. Capture the payout table from the contest lobby as
+  its own file and store it as `PAYOUT_STRUCTURE`. Without it, payout EV is
+  not computable from this capture at all, ever, and no later work recovers
+  it.
 
 Write these into the ingestion call below. Anything you genuinely do not know
 stays `None`. **`None` is a correct answer; a guess is not.** The contracts are
@@ -191,7 +203,8 @@ print(w.code, w.detail)
 
 **Store the bytes even if the parse refuses.** `store_raw` and `G.parse` are
 deliberately independent: a refusal such as `GAMECENTER_ENTRY_TABLE_NOT_FOUND`
-means our column guesses do not match this file, which is a parser problem we
+means the columns DraftKings' support article documents are not the columns in
+this file, which is a parser problem we
 can fix next year from the stored bytes. It is not a reason to discard the
 file. If the parse refuses, store the raw artifact with `row_count=None` and
 `parser_version=None`, put the refusal code in `note`, and move on.

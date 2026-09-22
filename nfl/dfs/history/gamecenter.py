@@ -7,22 +7,27 @@ site, and an archive that depends on beating a bot check is not an archive.
 
 WHAT THE FILE IS SHAPED LIKE, AND HOW SURE WE ARE
 
-Practitioner reports describe a contest-standings CSV carrying an entry
-table -- rank, entry id, entry name, time remaining, points, lineup -- with
-a per-athlete summary table EMBEDDED to its right: athlete, roster position,
-percent drafted, fantasy points. That is the same two-tables-in-one-file
-shape DraftKings uses for its salary export, which this repository has
-already read and verified first-hand in `dfs/classic/dk_identity.py`.
+DraftKings' own support article KB0010448 documents two sections in the
+export: Contest Entrant Information (Rank, Entry ID, Entry Name with an
+"(n)" multiple-entry suffix, TimeRemaining, Points, Lineup) and Athlete
+Information (Player, Roster Position, %Drafted, FPTS). That is the same
+two-tables-in-one-file shape DraftKings uses for its salary export, which
+this repository has already read and verified first-hand in
+`dfs/classic/dk_identity.py`.
 
-WE HAVE NOT READ A REAL GAMECENTER FILE. No such artifact exists in this
-checkout. So the column names below are recorded at PRACTITIONER_REPORT
-confidence, NOT VERIFIED_PRIMARY, and the parser is written to survive being
-wrong about them: it finds each table by HEADER MATCH rather than by column
-index, accepts any of several spellings, records the schema fingerprint of
-what it actually saw, and REFUSES by name when it finds nothing rather than
-returning an empty parse. The first real file either confirms the headers or
-produces a named refusal naming the row it could not read -- and either
-outcome is informative, which a silent empty result would not be.
+WE STILL HAVE NOT READ A REAL GAMECENTER FILE. No such artifact exists in
+this checkout, so the column names below sit at PROVIDER_CLAIM confidence --
+the operator describing its own product -- and NOT at VERIFIED_PRIMARY. The
+operator's documentation and the operator's actual byte output are different
+things, and a support page can be out of date in a way the file is not.
+
+So nothing changes about how the parser is built. It finds each table by
+HEADER MATCH rather than by column index, accepts any of several spellings,
+records the schema fingerprint of what it actually saw, and REFUSES by name
+when it finds nothing rather than returning an empty parse. The first real
+file either confirms the headers or produces a named refusal naming the row
+it could not read -- and either outcome is informative, which a silent empty
+result would not be.
 
 FIELDS THE SOURCE DOES NOT SUPPLY STAY ABSENT. DraftKings athlete ids and
 salaries are not assumed to be in this file. Where a column is missing the
@@ -46,9 +51,11 @@ from sportsplatform.governance.outcome import Cause, Outcome         # noqa: E40
 
 SPEC_VERSION = 'nfl-dfs-gamecenter-parser-0'
 
-#: Header spellings accepted for the ENTRY table, lowercased. Several are
-#: listed per concept because the exact casing and wording are at
-#: PRACTITIONER_REPORT confidence, not verified here.
+#: Header spellings accepted for the ENTRY table, lowercased. The first
+#: spelling of each pair is the one KB0010448 documents; the alternates are
+#: kept because the article's prose spacing ("Entry ID") need not match the
+#: CSV's header cell ("EntryId"), and being wrong about that must not cost
+#: us a capture.
 ENTRY_COLUMNS: Dict[str, Tuple[str, ...]] = {
     'rank': ('rank',),
     'entry_id': ('entryid', 'entry id'),
@@ -222,8 +229,9 @@ def parse(raw: bytes, *, contest: C.DFSContestIdentity = None,
             f'entry id and a lineup, under any of {ENTRY_COLUMNS["entry_id"]} '
             f'and {ENTRY_COLUMNS["lineup"]}. The first row read was '
             f'{rows[0][:8]}. This is a REFUSAL rather than an empty parse '
-            f'because the column names here are at PRACTITIONER_REPORT '
-            f'confidence and being wrong about them must be visible.',
+            f'because the column names here are at PROVIDER_CLAIM confidence '
+            f'-- DraftKings documenting its own export, not us having read '
+            f'one -- and being wrong about them must be visible.',
             value={'first_row': rows[0][:12], 'n_rows': len(rows)})
     if not entries:
         return Outcome.fail(
@@ -248,11 +256,13 @@ def parse(raw: bytes, *, contest: C.DFSContestIdentity = None,
              list(entry_header) + list(athlete_header)),
          'n_lineups_unparsed': unparsed_lineups,
          'parser_version': SPEC_VERSION,
-         'header_confidence': C.PRACTITIONER_REPORT,
+         'header_confidence': C.PROVIDER_CLAIM,
          'header_confidence_why':
-             'no real GameCenter export exists in this checkout, so the '
-             'accepted column spellings are reported, not verified. The '
-             'parser matches headers rather than positions so that a wrong '
-             'guess refuses by name instead of mis-reading.'},
+             'the accepted column spellings come from DraftKings support '
+             'article KB0010448 describing its own export. No real '
+             'GameCenter export exists in this checkout, so they are '
+             'documented, not confirmed. The parser matches headers rather '
+             'than positions so that a wrong guess refuses by name instead '
+             'of mis-reading.'},
         detail=f'{len(entries)} entry row(s), {len(athletes)} athlete '
                f'summary row(s), {unparsed_lineups} lineup(s) unparsed')

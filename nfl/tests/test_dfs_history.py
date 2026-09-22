@@ -294,8 +294,9 @@ def test_the_parser_refuses_rather_than_returning_nothing():
     ok(o.state.name == 'FAIL'
        and o.code == 'GAMECENTER_ENTRY_TABLE_NOT_FOUND',
        f'a file with no entry table refuses by name: {o.code}')
-    ok('PRACTITIONER_REPORT' in o.detail,
-       'and says the column names it looked for are reported, not verified')
+    ok('PROVIDER_CLAIM' in o.detail,
+       'and says the column names it looked for are the operator\'s own '
+       'documentation, not an export we have read')
     o2 = GC.parse(b'')
     ok(o2.code == 'GAMECENTER_FILE_EMPTY', f'empty bytes refuse: {o2.code}')
     o3 = GC.parse(HEADER)
@@ -439,19 +440,35 @@ def test_a_showdown_captain_is_position_sensitive():
 # -- 6. capability ----------------------------------------------------------
 def test_capability_claims_carry_their_confidence():
     dk = CAP.DRAFTKINGS_GAMECENTER
-    ok(dk.claims['complete_contest_field'].confidence
-       == C.PRACTITIONER_REPORT,
-       'the complete-field claim is PRACTITIONER_REPORT, not verified -- no '
-       'GameCenter export exists in this checkout')
-    ok(dk.claims['retention_window_days'].value == 10
-       and dk.claims['retention_window_days'].confidence
-       == C.PRACTITIONER_REPORT,
-       'the ten-day window is reported, and it is why this archive exists')
+    # The 2026-09-22 packet supplied DraftKings' own support articles, which
+    # moved these from a practitioner's recollection to the operator's own
+    # statement. That is one rung up the ladder, not the top of it.
+    for subject in ('complete_contest_field', 'retention_window_days',
+                    'per_athlete_ownership_published',
+                    'entrant_lineups_available'):
+        cl = dk.claims[subject]
+        ok(cl.confidence == C.PROVIDER_CLAIM,
+           f'{subject} is PROVIDER_CLAIM: DraftKings documenting its own '
+           f'product, not us having read an export')
+        ok('KB00' in (cl.evidence or ''),
+           f'and it names the article it stands on')
+    ok(dk.claims['retention_window_days'].value == 10,
+       'the ten-day window is the operator\'s own number, and it is why '
+       'this archive exists')
+    ok(set(dk.at_least([C.VERIFIED_PRIMARY, C.VERIFIED_INDEPENDENTLY]))
+       == {'automated_acquisition_built'},
+       'NOTHING about the export itself is verified: the only claim above '
+       'PROVIDER_CLAIM is one about THIS repository')
     ok(dk.claims['automated_acquisition_built'].confidence
        == C.VERIFIED_PRIMARY
        and dk.claims['automated_acquisition_built'].value is False,
-       'the only VERIFIED_PRIMARY claim is one about THIS repository: no '
-       'automation exists')
+       'that claim being that no automation exists')
+    ok(dk.claims['scripted_export_permitted'].confidence == C.UNKNOWN,
+       'whether scripted export is permitted stays UNKNOWN -- no support '
+       'article read states it, and UNKNOWN does not mean probably fine')
+    ok(dk.claims['payout_structure_in_standings_export'].value is False,
+       'the export is documented NOT to carry the payout table, so contest '
+       'metadata must be captured separately or PayoutEV is not computable')
     ok(len(dk.unknowns()) >= 4,
        f'and unresolved subjects stay UNKNOWN: {dk.unknowns()}')
     cb = CAP.COMMERCIAL_BACKFILL
@@ -493,6 +510,42 @@ def test_the_archive_touches_no_football_model():
 #: domain. `re.DOTALL` is deliberately NOT used -- a URL does not span lines.
 _URL_RE = re.compile(r'\b[a-z][a-z0-9+.-]*://[^\s\'"]*draftkings[^\s\'"]*')
 
+#: Human-readable documentation the archive is allowed to CITE.
+#:
+#: WHY THIS EXEMPTION EXISTS AND WHY IT IS THIS NARROW. The rule being
+#: enforced is "this package does not fetch from the operator", not "this
+#: package may not say where its evidence came from". When DraftKings' own
+#: support articles became the basis for the capability claims, refusing to
+#: write the article URLs down would have left the claims unsourced, which
+#: this project treats as worse than the risk being guarded against.
+#:
+#: The exemption is the support host only. Everything that could actually
+#: serve contest data -- api.draftkings.com, the lobby, the standings export
+#: path -- is still refused, and `test_the_endpoint_guard_still_bites` proves
+#: each of those is caught rather than leaving the exemption unmeasured.
+_DOC_HOSTS = ('https://support.draftkings.com/',)
+
+
+def _endpoints(src: str):
+    return sorted({u for u in _URL_RE.findall(src)
+                   if not u.startswith(_DOC_HOSTS)})
+
+
+def test_the_endpoint_guard_still_bites():
+    """An exemption nobody tested is a hole. These must all be caught."""
+    for bad in ('https://api.draftkings.com/rules-and-scoring/x.json',
+                'https://www.draftkings.com/contest/exportfullstandingscsv/1',
+                'https://www.draftkings.com/lobby',
+                'http://draftkings.com/anything',
+                'https://api.draftkings.com.evil.example/x'):
+        ok(_endpoints(f'URL = "{bad}"') == [bad],
+           f'still refused: {bad}')
+    for fine in ('https://support.draftkings.com/dk/en-us/gamecenter-overview',
+                 'the package does not automate draftkings.com',
+                 'DraftKings GameCenter'):
+        ok(_endpoints(f'x = "{fine}"') == [],
+           f'permitted: {fine[:52]}')
+
 
 def test_no_site_automation_exists():
     pkg = _REPO / 'nfl/dfs/history'
@@ -517,7 +570,7 @@ def test_no_site_automation_exists():
         # time a substring test has caught documentation in this migration,
         # so this one looks for a scheme-qualified endpoint, which is the
         # thing that could actually be fetched.
-        urls = sorted(set(_URL_RE.findall(src)))
+        urls = _endpoints(src)
         ok(not urls, f'{f.name} carries no operator endpoint: {urls}')
 
 
@@ -551,6 +604,7 @@ def main():
               test_capability_claims_carry_their_confidence,
               test_the_archive_touches_no_football_model,
               test_no_site_automation_exists,
+              test_the_endpoint_guard_still_bites,
               test_the_procedure_is_written_down):
         print(f'== {t.__name__}')
         t()
