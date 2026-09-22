@@ -107,8 +107,7 @@ MATERIAL_OPPORTUNITY_PROVENANCE = (
 #: from the canonical vocabulary rather than restated, plus the dossier's one
 #: alias, so that adding a state to `state/availability.py` cannot leave this
 #: module quietly testing an out-of-date list.
-WILL_NOT_PLAY = frozenset(AV.WILL_NOT_PLAY) | {
-    DOS.AVAILABILITY_ALIAS[AV.OFFICIAL_INACTIVE]}
+WILL_NOT_PLAY = frozenset(AV.WILL_NOT_PLAY) | set(AV.SERIALISED_ALIASES)
 
 
 @dataclass
@@ -146,7 +145,7 @@ class _Facts:
         slice; what that slice did was make OUT visible, because before it
         the dossier collapsed an OUT player into ACTIVE.
         """
-        return self.availability in WILL_NOT_PLAY
+        return AV.will_not_play(self.availability)
 
 
 def _facts(d) -> _Facts:

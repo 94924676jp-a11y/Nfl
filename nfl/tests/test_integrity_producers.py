@@ -83,13 +83,21 @@ def test_the_clean_fixture_passes_with_every_invariant_checked():
            f'with complete coverage: {it["coverage_verdict"]}')
         ok(set(it['coverage']) == set(GATE.ADVERTISED_INTEGRITY),
            f'over every advertised invariant: {sorted(it["coverage"])}')
-        ok(all(s == IC.CHECKED_AND_PASSING for s in it['coverage'].values()),
-           f'all CHECKED_AND_PASSING: {it["coverage"]}')
+        ok(all(s != IC.NOT_CHECKED for s in it['coverage'].values()),
+           f'nothing is NOT_CHECKED: {it["coverage"]}')
+        ok(all(s == IC.CHECKED_AND_PASSING for c, s in it['coverage'].items()
+               if c != 'INACTIVE_PLAYER_IN_SIMULATION_OR_OPTIMIZER_POOL'),
+           'every invariant a gated load CAN check reads CHECKED_AND_PASSING')
+        ok(it['coverage']['INACTIVE_PLAYER_IN_SIMULATION_OR_OPTIMIZER_POOL']
+           == IC.NOT_APPLICABLE,
+           'and the DFS eligibility invariant reads NOT_APPLICABLE here, '
+           'because no DFS population exists until the pool is built -- '
+           'not passing, and not silently absent')
         ok(it['n_findings'] == 0 and it['report_hash'].startswith('IR-'),
            f'no findings, report {it["report_hash"]}')
-        ok(len(it['producer_versions']) == 4,
-           f'and every one names the producer version that ran: '
-           f'{it["producer_versions"]}')
+        ok(len(it['producer_versions']) == len(GATE.ADVERTISED_INTEGRITY),
+           f'and every advertised invariant names the producer version that '
+           f'ran: {it["producer_versions"]}')
 
 
 # -- 2. corruption, end to end ---------------------------------------------

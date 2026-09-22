@@ -212,6 +212,7 @@ def load(draws_dir, review_dir, *, optimizer_pool_ids=None,
     from nfl.production.state import identity_integrity as II
     from nfl.production import simulation_integrity as SI
     from nfl.production.review import provenance_integrity as PI
+    from nfl.dfs import eligibility_integrity as EI
 
     man = json.loads(man_p.read_text())
     _arrays = {}
@@ -233,6 +234,13 @@ def load(draws_dir, review_dir, *, optimizer_pool_ids=None,
                                    source_artifacts=_arts),
         PI.unavailable_claimed_as_measured(
             dossiers, slate_key=_slate, information_cut=_cut,
+            source_artifacts=_arts),
+        # NO DFS POPULATION EXISTS HERE. The pool is built after this call,
+        # so the eligibility invariant is NOT_APPLICABLE with a reason -- not
+        # passing, and not silently absent. `pool.build_pool` runs the same
+        # producer against the population it creates.
+        EI.will_not_play_in_dfs_populations(
+            slate_key=_slate, information_cut=_cut,
             source_artifacts=_arts),
     ], slate_key=_slate, information_cut=_cut)
 

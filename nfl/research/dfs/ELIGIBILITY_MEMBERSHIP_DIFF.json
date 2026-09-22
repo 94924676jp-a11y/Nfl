@@ -1,0 +1,35 @@
+{
+ "artifact": "ELIGIBILITY_MEMBERSHIP_DIFF",
+ "spec_version": "eligibility-membership-diff-1",
+ "reproduce": "python3.12 nfl/research/dfs/eligibility_membership_diff.py",
+ "slate": "2026_02_NYG_LA",
+ "information_cut": "2026-09-21T23:05:00Z",
+ "board_rows": 156,
+ "board_availability_distribution": {
+  "NOT_ON_INACTIVE_LIST": 143,
+  "INACTIVE": 13
+ },
+ "old_rule": "availability == 'INACTIVE'",
+ "new_rule": "AV.will_not_play(availability), tied to AV.WILL_NOT_PLAY = {OFFICIAL_INACTIVE, INJURY_OUT} plus the dossier alias",
+ "old_outcome": "UPSTREAM_RUN_REFUSED",
+ "new_outcome": "UPSTREAM_RUN_REFUSED",
+ "old_pool_size": 0,
+ "new_pool_size": 0,
+ "removed_by_the_canonical_rule": [],
+ "added_by_the_canonical_rule": [],
+ "unchanged_members": 0,
+ "fields_that_moved_on_an_unchanged_member": {},
+ "exclusions_new": null,
+ "exclusions_old": null,
+ "gate_verdict_old": null,
+ "gate_verdict_new": null,
+ "integrity_coverage_new": null,
+ "board_level_diff": {
+  "what": "which board rows each rule classifies as will-not-play, answerable even when no pool could be built",
+  "old_rule_excludes": 13,
+  "new_rule_excludes": 13,
+  "newly_excluded_by_the_canonical_rule": [],
+  "no_longer_excluded": []
+ },
+ "caveat": "THIS SLATE CANNOT EXERCISE THE CHANGE. Its board carries no INJURY_OUT row -- by the time an official inactive list exists, a player his club declared OUT is normally ON that list and already reads OFFICIAL_INACTIVE. The window the defect lives in is the one BEFORE inactives publish, when INJURY_OUT is the only availability evidence there is, and this held artifact is from after it. The synthetic fixture in nfl/tests/test_dfs_eligibility.py is what exercises it."
+}

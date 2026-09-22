@@ -425,7 +425,7 @@ STATE_AXIS_SOURCE = {
 #: all key on the literal 'INACTIVE'. Renaming it here would be a silent
 #: behavioural change in three consumers this slice may not touch. Every other
 #: state passes through under its canonical name.
-AVAILABILITY_ALIAS = {AV.OFFICIAL_INACTIVE: 'INACTIVE'}
+AVAILABILITY_ALIAS = {v: k for k, v in AV.SERIALISED_ALIASES.items()}
 
 
 def _availability_axis(state_axis: EV.Axis) -> EV.Axis:

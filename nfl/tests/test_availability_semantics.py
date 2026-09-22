@@ -212,8 +212,10 @@ def test_the_dossier_no_longer_decides_availability():
     ok("'ACTIVE'" not in src.replace("'NOT_ON_INACTIVE_LIST'", 'X')
        .replace('GAME_ACTIVE', 'X'),
        'the literal ACTIVE is gone from the dossier')
-    ok('AVAILABILITY_ALIAS' in src and 'OFFICIAL_INACTIVE' in src,
-       'and the one rename it does make is declared as an alias table')
+    ok('AVAILABILITY_ALIAS' in src and 'SERIALISED_ALIASES' in src,
+       'and the one rename it does make is DERIVED from the canonical '
+       'alias table rather than restated here, so the vocabulary has one '
+       'owner')
     ok(D.AVAILABILITY_ALIAS == {AV.OFFICIAL_INACTIVE: 'INACTIVE'},
        f'exactly one alias, kept because three consumers key on the literal '
        f"'INACTIVE': {D.AVAILABILITY_ALIAS}")

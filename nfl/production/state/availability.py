@@ -100,6 +100,35 @@ WILL_NOT_PLAY = (OFFICIAL_INACTIVE, INJURY_OUT)
 ASSERTS_NOTHING = (NOT_ON_INACTIVE_LIST, UNKNOWN, INJURY_DOUBTFUL,
                    INJURY_QUESTIONABLE)
 
+#: How a downstream artifact SPELLS a canonical state. Exactly one state is
+#: renamed anywhere: the dossier writes OFFICIAL_INACTIVE as 'INACTIVE',
+#: because the audit, the player board and the Classic pool all key on that
+#: literal. The mapping lives HERE, with the vocabulary, so that a consumer
+#: asking "will this player play" gets one answer from one place instead of
+#: each module keeping its own copy of the alias.
+SERIALISED_ALIASES = {'INACTIVE': OFFICIAL_INACTIVE}
+
+
+def canonical(value):
+    """A state as this module names it, whatever a downstream artifact
+    called it. Anything unrecognised passes through unchanged: renaming an
+    unknown value would hide it."""
+    return SERIALISED_ALIASES.get(value, value)
+
+
+def will_not_play(value) -> bool:
+    """Does this availability value assert the player will not take the field?
+
+    THE ONE MEMBERSHIP TEST. Every consumer that used to compare against the
+    string 'INACTIVE' asks this instead, so a state added to WILL_NOT_PLAY is
+    honoured everywhere at once rather than in whichever modules somebody
+    remembered. NOT_ON_INACTIVE_LIST, UNKNOWN, DOUBTFUL and QUESTIONABLE are
+    all False here, and none of them is positive evidence of availability
+    either -- that is a different question this function does not answer.
+    """
+    return canonical(value) in WILL_NOT_PLAY
+
+
 WHY_GAME_ACTIVE_IS_UNREACHABLE = (
     'GAME_ACTIVE requires a source that asserts who IS dressing. The official '
     'inactives publication asserts only who is OUT, and its complement '

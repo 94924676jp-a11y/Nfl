@@ -98,6 +98,14 @@ GATE_CODES = (C_INACTIVE_IN_POOL, C_IDENTITY_UNRESOLVED, C_DUPLICATE_IDENTITY,
 #: data it is about, and putting all of them here would make the governance
 #: layer a second implementation of everything it governs.
 ADVERTISED_INTEGRITY: Dict[str, Dict[str, str]] = {
+    C_INACTIVE_IN_POOL: {
+        'owner': IC.OWNER_ELIGIBILITY,
+        'producer': 'dfs.eligibility_integrity.'
+                    'will_not_play_in_dfs_populations',
+        'invariant': 'no player whose canonical availability is '
+                     'WILL_NOT_PLAY survives into a governed DFS population '
+                     '-- the optimizer pool at all, or the simulation with '
+                     'draws that were never zeroed'},
     C_DUPLICATE_IDENTITY: {
         'owner': IC.OWNER_STATE,
         'producer': 'state.identity_integrity.duplicate_player_identity',
@@ -132,18 +140,6 @@ ADVERTISED_INTEGRITY: Dict[str, Dict[str, str]] = {
 #: owning subsystem; what is missing is the wiring that surfaces the verdict
 #: here, and that wiring belongs to those subsystems, not to this one.
 RELINQUISHED_CODES: Dict[str, Dict[str, str]] = {
-    C_INACTIVE_IN_POOL: {
-        'owner': IC.OWNER_ELIGIBILITY,
-        'enforced_today': 'dfs/classic/pool.py excludes a player whose board '
-                          'availability is the literal INACTIVE',
-        'gap': 'that exclusion is an exact string test and does NOT cover '
-               'INJURY_OUT, which the availability slice made reachable. A '
-               'player his club declared OUT currently enters the optimizer '
-               'pool. Detection also differs from exclusion: nothing reports '
-               'when it happens.',
-        'returns_when': 'the DFS eligibility boundary emits an '
-                        'IntegrityFinding for a will-not-play player found '
-                        'in a simulation or optimizer population'},
     C_IDENTITY_UNRESOLVED: {
         'owner': IC.OWNER_STATE,
         'enforced_today': 'player_universe classifies an unresolvable row '
@@ -220,6 +216,7 @@ BLOCKING_CODES: Dict[str, str] = {
     C_DUPLICATE_IDENTITY: 'integrity',
     C_MISSING_ROW_IDS: 'integrity',
     C_SIM_ROW_MISMATCH: 'integrity',
+    C_INACTIVE_IN_POOL: 'availability_integrity',
     # the gate's own: an advertised invariant nobody checked
     C_INTEGRITY_COVERAGE_MISSING: 'integrity',
 }
@@ -237,7 +234,7 @@ WARNING_CODES: Dict[str, str] = {
 #: whether THIS row is material is the wrong question.
 MATERIALITY_EXEMPT = frozenset({
     C_DUPLICATE_IDENTITY, C_MISSING_ROW_IDS, C_SIM_ROW_MISMATCH,
-    C_UNAVAILABLE_CLAIMED, C_INTEGRITY_COVERAGE_MISSING,
+    C_UNAVAILABLE_CLAIMED, C_INTEGRITY_COVERAGE_MISSING, C_INACTIVE_IN_POOL,
     AUD.C_INACTIVE_OWNS_OPPORTUNITY,
 })
 
