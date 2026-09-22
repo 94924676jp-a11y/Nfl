@@ -106,6 +106,7 @@ def _ref_hash(d, exclude_axes=()):
     which builder wrote it. `exclude_axes` names any axis under a declared
     semantic change."""
     body = dict(d.as_dict(), spec_version='COMPARED_WITHOUT_SPEC_VERSION')
+    body.pop('canonical', None)
     body['axes'] = {k: v for k, v in body['axes'].items()
                     if k not in exclude_axes}
     return hashlib.sha256(json.dumps(
@@ -135,7 +136,7 @@ def test_equivalence_field_by_field():
     example = {}
     for pid in A:
         da, db = A[pid].as_dict(), B[pid].as_dict()
-        for k in ('evidence_provenance', 'state_identity'):
+        for k in ('evidence_provenance', 'state_identity', 'canonical'):
             db.pop(k, None)
         for k in sorted(set(da) | set(db)):
             if k == 'axes':

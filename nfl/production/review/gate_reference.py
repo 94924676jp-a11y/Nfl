@@ -1,54 +1,12 @@
-"""The enforced gate. No projection reaches the optimizer merely because the
-model emitted a number.
+"""FROZEN COPY of review/gate.py at commit 7dadfee. DO NOT EDIT.
 
-THREE VERDICTS, AND NO AMBIGUOUS GREEN
-
-    PASS                 reviewed, nothing material contradicts the numbers
-    PASS_WITH_WARNINGS   reviewed, annotations recorded, publication continues
-    BLOCKED              a material contradiction; publication and
-                         optimization stop
-
-There is no fourth state and no "probably fine". A slate that was not reviewed
-is `PLAYER_REVIEW_NOT_RUN`; a slate whose review does not match the projection
-in front of it is `PLAYER_REVIEW_STALE`. Neither is a verdict -- both are
-refusals to issue one, which is different and reads differently.
-
-WHY MATERIALITY EXISTS AND WHY IT IS NOT A TUNING KNOB
-
-Every conflict is real. Not every conflict can change an outcome. A third-string
-tight end with 0.4 projected targets and an unsupported role is a genuine
-finding and cannot move a lineup, a price or a decision; blocking on it would
-train everyone to clear the gate without reading it, which is worse than not
-having a gate.
-
-So materiality is a SEPARATE, EXPLICIT judgement from severity:
-
-    severity     what kind of wrongness this is        (a property of the code)
-    materiality  whether this instance can change an   (a property of the row)
-                 outcome
-
-A conflict blocks when its code is in `BLOCKING_CODES` **and** the row is
-material. A blocking code on an immaterial row is recorded as a warning with
-`immaterial_blocking_code` set, so it is visible and countable and nobody can
-claim it was hidden. A warning code never blocks however large the row.
-
-WHERE ITS FOOTBALL FACTS COME FROM
-
-The gate decides whether canonical football truth and governed model outputs
-are publishable. It does not create football truth. Exactly ONE input to this
-module is a football fact rather than a model output or review metadata --
-the player's share of his club's opportunity -- and it is read from
-`PregameSlateState.PlayerState`, never rebuilt here and never taken from the
-dossier's relabelled copy. Everything else it weighs is a projection value, a
-contest fact, or a property of a conflict the audit already raised.
-
-MATERIALITY USES FOOTBALL AND CONTEST QUANTITIES ONLY
-
-Owner rule, enforced here: sportsbook prices and external projections may
-raise investigation priority and may not decide whether a football projection
-is valid. `materiality()` therefore takes no market argument at all -- not one
-it ignores, one it cannot be passed. The signature is the enforcement.
+The accepted pre-migration gate, kept so the migrated one can be proved to
+return the same verdict for the same slate rather than a plausible one. A
+separate artifact for the same reason `dfs/classic/reference.py`,
+`review/dossier_reference.py` and `review/audit_reference.py` are: a change
+to one must not be able to be silently a change to both.
 """
+
 from __future__ import annotations
 
 import collections
@@ -66,7 +24,7 @@ if str(_REPO) not in sys.path:
 from nfl.production.review import audit as AUD                     # noqa: E402
 from sportsplatform.governance.outcome import Cause, Outcome       # noqa: E402
 
-SPEC_VERSION = 'player-review-gate-1'
+SPEC_VERSION = 'player-review-gate-reference-7dadfee'
 
 PASS = 'PASS'
 PASS_WITH_WARNINGS = 'PASS_WITH_WARNINGS'
@@ -93,28 +51,6 @@ GATE_CODES = (C_INACTIVE_IN_POOL, C_IDENTITY_UNRESOLVED, C_DUPLICATE_IDENTITY,
 #: BLOCKING. Each can materially corrupt opportunity, projection ordering,
 #: simulation integrity or optimizer selection. Grouped by the owner's
 #: categories so the taxonomy is readable as policy, not as a list.
-#: OWNER RULING: `INACTIVE_PLAYER_OWNS_OPPORTUNITY` KEEPS ITS NAME AND ITS
-#: MEANING IS WIDENED. The code now reads:
-#:
-#:     a player with authoritative WILL_NOT_PLAY evidence still owns material
-#:     projected opportunity
-#:
-#: which covers OFFICIAL_INACTIVE (and the dossier's INACTIVE alias) AND
-#: INJURY_OUT. Before the availability slice the dossier collapsed an OUT
-#: player into ACTIVE, so the code could only ever fire on the first of
-#: those; the rule it encodes did not change, the evidence reaching it did.
-#:
-#: It is NOT renamed. The identifier is already wired into the audit, this
-#: module, the enforcement suite and historical gate artifacts, and renaming
-#: it would be schema churn with no change to the underlying rule. A later
-#: schema-versioning cleanup may rename it.
-WIDENED_CODE_MEANING = {
-    AUD.C_INACTIVE_OWNS_OPPORTUNITY: (
-        'a player with authoritative WILL_NOT_PLAY evidence -- '
-        'OFFICIAL_INACTIVE, the dossier alias INACTIVE, or INJURY_OUT -- '
-        'still owns material projected opportunity'),
-}
-
 BLOCKING_CODES: Dict[str, str] = {
     # availability integrity
     AUD.C_INACTIVE_OWNS_OPPORTUNITY: 'availability_integrity',
@@ -225,39 +161,6 @@ MATERIALITY_RULE: Dict[str, Any] = {
 _COLD = ('PRIOR', 'COLD_START', 'HISTORICAL')
 
 
-def team_opportunity_share(dossier) -> float:
-    """The player's share of his club's opportunity, from CANONICAL STATE.
-
-    THE ONLY FOOTBALL FACT THIS MODULE WEIGHS. Everything else materiality
-    reads is a projection value, a contest fact, or a property of a conflict
-    the audit already raised. It is read from PlayerState rather than from
-    the dossier's relabelled axis so that the gate cannot drift from the
-    truth the audit challenged.
-
-    NO DENOMINATOR IS REBUILT HERE. The share is a registered feature that
-    the state carries whole, taken against `club_of_record`. The gate never
-    sees a club total and must never compute one: a second team-volume
-    denominator inside a governance layer is exactly the fragmentation this
-    migration removes.
-
-    THE `or` CHAIN IS PRESERVED AND IT IS A DEFECT. `carry_share or
-    target_share` is a PRECEDENCE rule wearing a fallback's clothes: a back
-    with carry_share 0.04 and target_share 0.20 is weighed on 0.04, and the
-    larger share is never seen. It is kept EXACTLY as the frozen gate had it
-    because correcting it would change verdicts, and the only verdict change
-    this slice is permitted is the one that follows from INJURY_OUT.
-    Registered and returned, not fixed here.
-    """
-    c = getattr(dossier, 'canonical', None)
-    if c is None:
-        raise AssertionError(
-            'this dossier carries no canonical facts, so the gate has no '
-            'authoritative team share to weigh. A dossier built outside '
-            '`build_from_state`, or rehydrated from an artifact written '
-            'before canonical facts were carried, is not gateable.')
-    return float(c.carry_share or c.target_share or 0.0)
-
-
 def materiality(dossier, conflict: Dict[str, Any], *,
                 in_optimizer_pool: bool = False,
                 rule: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
@@ -284,7 +187,7 @@ def materiality(dossier, conflict: Dict[str, Any], *,
     pts = dossier.headline or 0.0
     opp = sum(dossier.mean(m) or 0.0
               for m in ('carries', 'targets', 'pass_attempts'))
-    share = team_opportunity_share(dossier)
+    share = dossier.value('carry_share') or dossier.value('target_share') or 0.0
     ev = conflict.get('evidence') or {}
     gap = 0.0
     hi, lo = ev.get('higher') or {}, ev.get('lower') or {}
@@ -402,18 +305,7 @@ def evaluate(report: Optional[Dict[str, Any]], *,
                                                 'so the conflict cannot be '
                                                 'assessed'}})
             continue
-        try:
-            mat = materiality(d, c, in_optimizer_pool=c.get('gsis_id') in pool)
-        except AssertionError as e:
-            # A dossier with no canonical state cannot be weighed against
-            # football truth. Fail closed, in the same shape as a conflict
-            # with no dossier at all, rather than raising out of a
-            # governance call.
-            rows.append({**c, 'disposition': 'BLOCKING',
-                         'category': 'integrity',
-                         'materiality': {'material': True, 'exempt': True,
-                                         'why': str(e)}})
-            continue
+        mat = materiality(d, c, in_optimizer_pool=c.get('gsis_id') in pool)
         cls = classify(c, mat)
         row = {**c, **cls, 'materiality': mat}
         if cls['disposition'] == 'BLOCKING' and c.get('code') in resolved:

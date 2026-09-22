@@ -93,7 +93,7 @@ def scenario(name, rows, **kw):
             })
         # every OTHER field of the dossier must be untouched
         da, db = A[pid].as_dict(), B[pid].as_dict()
-        for k in ('evidence_provenance', 'state_identity'):
+        for k in ('evidence_provenance', 'state_identity', 'canonical'):
             db.pop(k, None)
         da.pop('spec_version'), db.pop('spec_version')
         for k in sorted(set(da) | set(db)):

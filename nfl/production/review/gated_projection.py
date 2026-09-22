@@ -174,7 +174,12 @@ def load(draws_dir, review_dir, *, optimizer_pool_ids=None,
             week=j.get('week'), information_cut=j.get('information_cut'),
             support_state=j.get('support_state'),
             uncertainty_state=j.get('uncertainty_state',
-                                    EV.EVIDENCE_SUFFICIENT))
+                                    EV.EVIDENCE_SUFFICIENT),
+            # The canonical facts the gate weighs, read back off the saved
+            # artifact. Without them the verdict would depend on who is
+            # holding objects in memory, which is the opposite of what
+            # re-deriving from disk is for.
+            canonical=DOS.CanonicalFacts.from_dict(j.get('canonical')))
         for name, ax in (j.get('axes') or {}).items():
             dd.axes[name] = EV.Axis(name=name, value=ax.get('value'),
                                     grade=ax.get('grade', EV.UNAVAILABLE),

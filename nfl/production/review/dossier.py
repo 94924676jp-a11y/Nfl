@@ -218,6 +218,76 @@ def read_projection(draws_dir) -> Outcome:
 # --------------------------------------------------------------------------
 # the dossier
 # --------------------------------------------------------------------------
+@dataclass(frozen=True)
+class CanonicalFacts:
+    """The canonical-state values a GOVERNANCE layer weighs, with provenance.
+
+    WHY THIS EXISTS AND WHY IT IS SERIALISED. `player_state` is a live
+    reference and is deliberately not written to disk. But
+    `gated_projection.load` re-derives the gate verdict from the SAVED
+    dossiers, so that the verdict is a property of the artifact rather than
+    of whoever happens to be holding objects in memory. A rehydrated dossier
+    with no canonical facts is one the gate cannot weigh, and the gate then
+    fails closed on a slate that is actually fine.
+
+    So this is the smallest typed canonical-state-derived value that closes
+    that gap: the fields governance actually reads, each with the GRADE the
+    state gave it and the state axis it came from. It is not a second copy of
+    the football evidence -- it is two shares and their provenance, and if a
+    governance layer starts wanting a third field the right move is to add it
+    here rather than to reach past it.
+    """
+    carry_share: Optional[float] = None
+    carry_share_grade: str = EV.UNAVAILABLE
+    target_share: Optional[float] = None
+    target_share_grade: str = EV.UNAVAILABLE
+    club_of_record: Optional[str] = None
+    state_version: Optional[str] = None
+    registry_identity: Optional[str] = None
+    source_axes: Dict[str, str] = field(default_factory=lambda: {
+        'carry_share': 'current_season_opportunity.carry_share',
+        'target_share': 'current_season_opportunity.target_share',
+        'club_of_record': 'current_season_opportunity.club_of_record'})
+
+    def as_dict(self) -> Dict[str, Any]:
+        return {'carry_share': self.carry_share,
+                'carry_share_grade': self.carry_share_grade,
+                'target_share': self.target_share,
+                'target_share_grade': self.target_share_grade,
+                'club_of_record': self.club_of_record,
+                'state_version': self.state_version,
+                'registry_identity': self.registry_identity,
+                'source_axes': dict(self.source_axes)}
+
+    @staticmethod
+    def from_player_state(ps, state=None) -> 'CanonicalFacts':
+        opp = ps.current_season_opportunity
+        return CanonicalFacts(
+            carry_share=opp['carry_share'].value,
+            carry_share_grade=opp['carry_share'].grade,
+            target_share=opp['target_share'].value,
+            target_share_grade=opp['target_share'].grade,
+            club_of_record=opp['club_of_record'].value,
+            state_version=getattr(state, 'state_version', None),
+            registry_identity=getattr(state, 'registry_identity', None))
+
+    @staticmethod
+    def from_dict(j) -> Optional['CanonicalFacts']:
+        """Rehydrate from a saved dossier. None in means None out -- an
+        artifact written before this field existed must not be silently
+        given empty facts, because zero shares are not absent shares."""
+        if not isinstance(j, dict):
+            return None
+        return CanonicalFacts(
+            carry_share=j.get('carry_share'),
+            carry_share_grade=j.get('carry_share_grade', EV.UNAVAILABLE),
+            target_share=j.get('target_share'),
+            target_share_grade=j.get('target_share_grade', EV.UNAVAILABLE),
+            club_of_record=j.get('club_of_record'),
+            state_version=j.get('state_version'),
+            registry_identity=j.get('registry_identity'))
+
+
 @dataclass
 class PlayerPregameDossier:
     gsis_id: str
@@ -249,6 +319,10 @@ class PlayerPregameDossier:
     #: AUTHORITATIVE football truth rather than this module's relabelled
     #: copy of it, which is what the audit now does.
     player_state: Any = None
+    #: Canonical-state values the governance layers weigh. SERIALISED, so a
+    #: verdict re-derived from the saved artifact reads the same football
+    #: truth as one derived live.
+    canonical: Optional[CanonicalFacts] = None
 
     # -- reading helpers used by the audit and escalation stages ------------
     def axis(self, name: str) -> EV.Axis:
@@ -292,6 +366,8 @@ class PlayerPregameDossier:
             'conflicts': self.conflicts,
             'evidence_provenance': self.evidence_provenance,
             'state_identity': self.state_identity,
+            'canonical': (None if self.canonical is None
+                          else self.canonical.as_dict()),
         }
 
     def football_body(self, exclude_axes: Sequence[str] = ()
@@ -302,7 +378,7 @@ class PlayerPregameDossier:
         and have no counterpart in the pre-migration builder, so comparing
         them would be comparing something to nothing."""
         d = self.as_dict()
-        for k in ('evidence_provenance', 'state_identity'):
+        for k in ('evidence_provenance', 'state_identity', 'canonical'):
             d.pop(k, None)
         d['spec_version'] = 'COMPARED_WITHOUT_SPEC_VERSION'
         for a in exclude_axes:
@@ -449,7 +525,8 @@ def build_from_state(state, *, projection: Optional[dict] = None,
             season=lr.get('season', state.season),
             week=lr.get('week', state.week),
             information_cut=cut, support_state=ps.support_state,
-            player_state=ps)
+            player_state=ps,
+            canonical=CanonicalFacts.from_player_state(ps, state))
 
         A = d.axes
         A['roster_status'] = EV.Axis(

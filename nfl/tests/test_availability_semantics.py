@@ -237,7 +237,7 @@ def test_every_availability_change_is_enumerated():
     other = collections.Counter()
     for pid in A:
         da, db = A[pid].as_dict(), B[pid].as_dict()
-        for k in ('evidence_provenance', 'state_identity'):
+        for k in ('evidence_provenance', 'state_identity', 'canonical'):
             db.pop(k, None)
         da.pop('spec_version'), db.pop('spec_version')
         for k in sorted(set(da) | set(db)):
