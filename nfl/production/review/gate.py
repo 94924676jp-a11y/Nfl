@@ -57,6 +57,7 @@ import hashlib
 import json
 import pathlib
 import sys
+from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Sequence
 
 _REPO = pathlib.Path(__file__).resolve().parents[3]
@@ -275,7 +276,14 @@ MATERIALITY_RULE: Dict[str, Any] = {
             'threshold': 0.05,
             'provenance': 'DECLARED REVIEW CHOICE. Five per cent of a club\'s '
                           'touches is about three plays a game; a role that '
-                          'small cannot invert a room.'},
+                          'small cannot invert a room.',
+            'rule': 'the LARGEST share of any relevant team resource: '
+                    'max(carry_share, target_share) where both exist, '
+                    'whichever exists where only one does, and UNAVAILABLE '
+                    'where neither does. Never their sum -- the two have '
+                    'different denominators. The selected resource is '
+                    'reported, because a max over two numbers is not an '
+                    'explanation.'},
         'projection_disagreement': {
             'threshold': 1.5,
             'provenance': 'DECLARED REVIEW CHOICE. The magnitude of the '
@@ -307,28 +315,78 @@ MATERIALITY_RULE: Dict[str, Any] = {
 _COLD = ('PRIOR', 'COLD_START', 'HISTORICAL')
 
 
-def team_opportunity_share(dossier) -> float:
-    """The player's share of his club's opportunity, from CANONICAL STATE.
+#: Which team resource a materiality share was taken from. Carried so the
+#: dimension that triggered materiality is never something a reader has to
+#: infer from two numbers.
+CARRY_SHARE = 'carry_share'
+TARGET_SHARE = 'target_share'
+NO_SHARE = 'none_available'
 
-    THE ONLY FOOTBALL FACT THIS MODULE WEIGHS. Everything else materiality
-    reads is a projection value, a contest fact, or a property of a conflict
-    the audit already raised. It is read from PlayerState rather than from
-    the dossier's relabelled axis so that the gate cannot drift from the
-    truth the audit challenged.
 
-    NO DENOMINATOR IS REBUILT HERE. The share is a registered feature that
-    the state carries whole, taken against `club_of_record`. The gate never
-    sees a club total and must never compute one: a second team-volume
-    denominator inside a governance layer is exactly the fragmentation this
-    migration removes.
+@dataclass(frozen=True)
+class TeamOpportunityMateriality:
+    """The gate's concept of a player's share of his club's opportunity.
 
-    THE `or` CHAIN IS PRESERVED AND IT IS A DEFECT. `carry_share or
-    target_share` is a PRECEDENCE rule wearing a fallback's clothes: a back
-    with carry_share 0.04 and target_share 0.20 is weighed on 0.04, and the
-    larger share is never seen. It is kept EXACTLY as the frozen gate had it
-    because correcting it would change verdicts, and the only verdict change
-    this slice is permitted is the one that follows from INJURY_OUT.
-    Registered and returned, not fixed here.
+    `value` is None when neither share exists -- UNAVAILABLE, not zero. A
+    player nobody measured is not a player measured at nothing, and a caller
+    that wants a number for a threshold comparison asks for `.for_threshold`
+    and gets the 0.0 explicitly rather than by accident.
+    """
+    value: Optional[float]
+    selected_metric: str
+    carry_share: Optional[float]
+    target_share: Optional[float]
+
+    @property
+    def available(self) -> bool:
+        return self.value is not None
+
+    @property
+    def for_threshold(self) -> float:
+        """0.0 stands in for absent ONLY here, where a comparison needs a
+        number, and it is visible in `selected_metric` that it did."""
+        return 0.0 if self.value is None else float(self.value)
+
+    def as_dict(self) -> Dict[str, Any]:
+        return {'value': self.value, 'selected_metric': self.selected_metric,
+                'carry_share': self.carry_share,
+                'target_share': self.target_share,
+                'available': self.available}
+
+
+def team_opportunity_materiality(dossier) -> TeamOpportunityMateriality:
+    """The largest share of any team resource this player owns.
+
+    THE RULE, STATED RATHER THAN IMPLIED
+
+        neither present            -> None, selected_metric none_available
+        only carry_share present   -> carry_share
+        only target_share present  -> target_share
+        both present               -> max(carry_share, target_share)
+
+    They are NEVER summed: carry_share is a share of team carries and
+    target_share a share of team targets, so their sum is not a share of
+    anything and cannot meet a threshold expressed as one.
+
+    WHY MAX. Materiality asks whether this row can change an outcome AT ALL.
+    A player is material through the largest claim he has on any relevant
+    team resource, so a pass-catching back with a fifth of his club's
+    targets is material whether or not he also carries the ball.
+
+    WHAT THIS REPLACES, AND WHY IT WAS NEVER CAUGHT. The rule was
+    `carry_share or target_share or 0.0`, which is positional precedence
+    wearing a fallback's clothes: a back at carry_share 0.04 and
+    target_share 0.20 was weighed on 0.04 and the 0.20 was never seen.
+    Measured over all 312 saved review dossiers it produced ZERO flips --
+    because in every row where the target share was larger, the carry share
+    was EXACTLY 0.0, which is falsy, so the `or` fell through and happened to
+    be right. The correctness rested on Python truthiness and on the usage
+    panel emitting 0.0 rather than a small positive number for a non-rusher.
+    See nfl/research/review/MATERIALITY_SHARE_PRECEDENCE.json.
+
+    NO DENOMINATOR IS REBUILT HERE. Both shares are registered features the
+    state carries whole, taken against `club_of_record`. The gate never sees
+    a club total and must never compute one.
     """
     c = getattr(dossier, 'canonical', None)
     if c is None:
@@ -337,7 +395,22 @@ def team_opportunity_share(dossier) -> float:
             'authoritative team share to weigh. A dossier built outside '
             '`build_from_state`, or rehydrated from an artifact written '
             'before canonical facts were carried, is not gateable.')
-    return float(c.carry_share or c.target_share or 0.0)
+    cs, ts = c.carry_share, c.target_share
+    if cs is None and ts is None:
+        return TeamOpportunityMateriality(None, NO_SHARE, None, None)
+    if ts is None:
+        return TeamOpportunityMateriality(float(cs), CARRY_SHARE, cs, ts)
+    if cs is None:
+        return TeamOpportunityMateriality(float(ts), TARGET_SHARE, cs, ts)
+    if float(cs) >= float(ts):
+        return TeamOpportunityMateriality(float(cs), CARRY_SHARE, cs, ts)
+    return TeamOpportunityMateriality(float(ts), TARGET_SHARE, cs, ts)
+
+
+def team_opportunity_share(dossier) -> float:
+    """The number a threshold comparison uses. See
+    `team_opportunity_materiality` for the rule and for what it replaced."""
+    return team_opportunity_materiality(dossier).for_threshold
 
 
 def materiality(dossier, conflict: Dict[str, Any], *,
@@ -366,7 +439,8 @@ def materiality(dossier, conflict: Dict[str, Any], *,
     pts = dossier.headline or 0.0
     opp = sum(dossier.mean(m) or 0.0
               for m in ('carries', 'targets', 'pass_attempts'))
-    share = team_opportunity_share(dossier)
+    tshare = team_opportunity_materiality(dossier)
+    share = tshare.for_threshold
     ev = conflict.get('evidence') or {}
     gap = 0.0
     hi, lo = ev.get('higher') or {}, ev.get('lower') or {}
@@ -380,7 +454,7 @@ def materiality(dossier, conflict: Dict[str, Any], *,
     tests = {
         'dk_points': pts >= th['dk_points'] * scale,
         'opportunity': opp >= th['opportunity'] * scale,
-        'team_opportunity_share': float(share) >= (
+        'team_opportunity_share': share >= (
             th['team_opportunity_share'] * scale),
         'projection_disagreement': gap >= th['projection_disagreement'] * scale,
         'captain_exposure': bool(in_optimizer_pool) and pts > 0.0,
@@ -391,9 +465,12 @@ def materiality(dossier, conflict: Dict[str, Any], *,
             'cold_start_dominated': cold,
             'measured': {'dk_points': round(pts, 4),
                          'opportunity': round(opp, 4),
-                         'team_opportunity_share': round(float(share), 6),
+                         'team_opportunity_share': round(share, 6),
                          'projection_disagreement': round(gap, 4),
                          'in_optimizer_pool': bool(in_optimizer_pool)},
+            # WHICH RESOURCE TRIGGERED IT. Two numbers and a max is not an
+            # explanation; the selected dimension is.
+            'team_opportunity_share_detail': tshare.as_dict(),
             'tests': tests, 'fired': fired,
             'why': (f'material: {fired}' if fired else
                     'no test fired: this conflict cannot change a projection, '

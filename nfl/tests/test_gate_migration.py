@@ -114,10 +114,21 @@ def test_the_gate_change_alone_changes_nothing():
            f'{name}: same verdict {vb["verdict"]}')
         ok(a.code == b.code, f'{name}: same outcome code {b.code}')
         ia, ib, added, dropped, d = diff_rows(va, vb)
-        ok(not added and not dropped and not d,
+        # ONE DECLARED DIFFERENCE. The frozen gate weighs the team share
+        # with `carry_share or target_share`; the live one takes the larger
+        # of the two. The VALUE moves on a row that owns both; no DECISION
+        # does, which is the claim that matters and is asserted next.
+        decisions = {k: n for k, n in d.items()
+                     if k not in ('materiality.measured',)}
+        ok(not added and not dropped and not decisions,
            f'{name}: {len(ia)} conflict rows, identical in disposition, '
-           f'category, materiality and detail -- added {len(added)}, '
-           f'dropped {len(dropped)}, field diffs {dict(d) or "none"}')
+           f'category, materiality DECISION and detail -- added '
+           f'{len(added)}, dropped {len(dropped)}, field diffs '
+           f'{dict(decisions) or "none"}')
+        if d.get('materiality.measured'):
+            print(f'      (team share VALUE moved on '
+                  f'{d["materiality.measured"]} row(s) under the corrected '
+                  f'share rule; no materiality decision moved)')
         ok(per_player(va) == per_player(vb),
            f'{name}: per-player blocking/warning/material sets identical '
            f'across {len(per_player(vb))} player(s)')
@@ -150,9 +161,12 @@ def test_end_to_end_changes_are_only_the_out_correction():
            and r['category'] == 'availability_integrity',
            f'ADDED {r.get("display_name")}: {code} blocks under '
            f'{r["category"]}, availability {r["evidence"].get("availability")}')
-    ok(set(d) <= {'detail'},
-       f'the only field that moved on a shared row is the audit\'s detail '
-       f'wording: {dict(d)}')
+    ok(set(d) <= {'detail', 'materiality.measured'},
+       f'the only fields that moved on a shared row are the audit\'s detail '
+       f'wording and the team-share VALUE under the corrected share rule: '
+       f'{dict(d)}')
+    ok('materiality.material' not in d and 'disposition' not in d,
+       'and no materiality decision or disposition moved with them')
     old_pp, new_pp = per_player(va), per_player(vb)
     changed = [p for p in set(old_pp) | set(new_pp)
                if old_pp.get(p) != new_pp.get(p)]
@@ -222,13 +236,18 @@ def test_the_team_share_comes_from_canonical_state():
         dict(wr.canonical.as_dict(), carry_share=None))
     ok(G.team_opportunity_share(wr) == 0.12,
        'a player with no carry share falls to his target share')
+    # THIS ASSERTION USED TO PIN THE DEFECT. It read: "a player with BOTH
+    # is weighed on his carry share alone, never the larger of the two --
+    # PRESERVED and REGISTERED". The correction has since been made and
+    # measured, so the test asserts the rule rather than the bug.
     rb4 = next(x for x in ds if x.gsis_id == 'RB4')
-    ok(G.team_opportunity_share(rb4) == 0.08,
-       f'and a player with BOTH is weighed on his carry share alone '
-       f'({G.team_opportunity_share(rb4)}), never the larger of the two -- '
-       f'a precedence rule wearing a fallback\'s clothes. PRESERVED from '
-       f'the frozen gate and REGISTERED, because correcting it would move '
-       f'verdicts and this slice may not.')
+    m = G.team_opportunity_materiality(rb4)
+    ok(m.value == 0.12 and m.selected_metric == G.TARGET_SHARE,
+       f'a player with BOTH is weighed on the LARGER of the two: '
+       f'carry {m.carry_share}, target {m.target_share} -> {m.value} '
+       f'({m.selected_metric})')
+    ok(G.team_opportunity_share(rb4) == 0.12,
+       'and the threshold comparison uses that number')
     src = (_REPO / 'nfl/production/review/gate.py').read_text()
     ok("dossier.value('carry_share')" not in src
        and "dossier.value('target_share')" not in src,

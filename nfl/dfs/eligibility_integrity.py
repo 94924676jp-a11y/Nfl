@@ -10,21 +10,47 @@ and records the removal in its exclusion ledger. This producer DETECTS one
 who got in anyway -- by a bug, a bypass, a hand-built pool, a future caller
 that forgot. A prevention nobody verifies is a prevention nobody can trust.
 
+THE INVARIANT, STATED EXACTLY
+
+    A player whose canonical availability is WILL_NOT_PLAY may not retain
+    any NONZERO simulated football contribution, and may not be eligible for
+    the optimizer population.
+
+That is deliberately not "may not appear in the simulation". Two different
+facts hide under one word, and conflating them would make the system delete
+rows to satisfy a sentence:
+
+  SIMULATION_ROW_PRESENT         he still has a row on the draw axis.
+                                 ACCEPTABLE, and in fact wanted.
+                                 `inactives.apply_to_appearance` zeroes his
+                                 draws IN PLACE and says so -- "Nothing else
+                                 is touched" -- precisely so the row axis
+                                 stays stable. A stable axis is what makes
+                                 two runs comparable and what MISSING_ROW_IDS
+                                 and SIMULATION_ROW_MISMATCH are protecting.
+  SIMULATION_CONTRIBUTION_ACTIVE he still carries nonzero governed football
+                                 output: snaps, opportunity, statistical
+                                 production, fantasy points. A VIOLATION. A
+                                 live projection for somebody who is not
+                                 playing is a live projection whatever the
+                                 reason it survived.
+
+A ZERO ROW IS NOT DELETED TO MAKE A CONFLICT CODE READ BETTER. The code is
+named INACTIVE_PLAYER_IN_SIMULATION_OR_OPTIMIZER_POOL and its name is wider
+than its rule; the rule above is what is enforced, and the name is kept
+because it is already wired into the gate, the tests and historical gate
+records. Renaming is a schema decision, not this file's.
+
 TWO POPULATIONS, AND THEY ARE NOT THE SAME CLAIM
 
-  OPTIMIZER POOL    a will-not-play player here is a VIOLATION. He can be
-                    put in a lineup.
-  SIMULATION        a will-not-play player here is EXPECTED. `inactives
-                    .apply_to_appearance` zeroes his appearance draws IN
-                    PLACE and says so: "Nothing else is touched." The row
-                    stays. What would be a violation is a row that was NOT
-                    zeroed -- a player who will not play still carrying
-                    draws -- and that is reported separately, naming the
-                    population.
+  OPTIMIZER POOL    a will-not-play player here is a VIOLATION on membership
+                    alone. He can be put in a lineup.
+  SIMULATION        membership alone is fine; CONTRIBUTION is the test.
 
 The blocking form of "he still owns opportunity" on the PROJECTION side is
-the audit's `INACTIVE_PLAYER_OWNS_OPPORTUNITY`. This producer does not repeat
-it; it checks membership and the zeroing, which the audit does not see.
+the audit's `INACTIVE_PLAYER_OWNS_OPPORTUNITY`, which weighs projected
+opportunity. This producer weighs the DRAWS, which the audit never reads, and
+so catches the case the audit cannot see: zero opportunity, live DK points.
 """
 from __future__ import annotations
 
@@ -45,6 +71,30 @@ C_INACTIVE_IN_POOL = 'INACTIVE_PLAYER_IN_SIMULATION_OR_OPTIMIZER_POOL'
 
 POP_OPTIMIZER = 'optimizer_pool'
 POP_SIMULATION = 'simulation'
+
+#: The two simulation facts this producer keeps apart. Carried on every
+#: finding and in the coverage detail so a reader never has to infer which
+#: one was meant.
+SIMULATION_ROW_PRESENT = 'SIMULATION_ROW_PRESENT'
+SIMULATION_CONTRIBUTION_ACTIVE = 'SIMULATION_CONTRIBUTION_ACTIVE'
+
+#: What INACTIVE_PLAYER_IN_SIMULATION_OR_OPTIMIZER_POOL actually means. The
+#: code name is wider than the rule; this is the rule.
+CODE_SEMANTICS = {
+    'invariant': 'a player whose canonical availability is WILL_NOT_PLAY may '
+                 'not retain any nonzero simulated football contribution, '
+                 'and may not be eligible for the optimizer population',
+    'acceptable': f'{SIMULATION_ROW_PRESENT}: a retained row whose governed '
+                  f'football outputs are all zero. The row axis is kept '
+                  f'stable on purpose.',
+    'violation': f'{SIMULATION_CONTRIBUTION_ACTIVE}: a retained row carrying '
+                 f'nonzero snaps, opportunity, statistical output or fantasy '
+                 f'output; or membership of the optimizer pool at all',
+    'not_a_remedy': 'deleting a stable zero row to satisfy the wording of '
+                    'the code name. The name is kept because it is wired '
+                    'into the gate and historical records; renaming it is a '
+                    'schema decision, not this producer\'s.',
+}
 
 
 def _availability_by_id(availability_by_id=None, board_rows=None
@@ -140,6 +190,7 @@ def will_not_play_in_dfs_populations(
                    f'put in a lineup.',
             producer=PRODUCER, producer_version=SPEC_VERSION,
             evidence={'population': POP_OPTIMIZER,
+                      'fact': 'OPTIMIZER_POOL_MEMBERSHIP',
                       'availability': v.get('availability'),
                       'canonical': AV.canonical(v.get('availability')),
                       'evidence_grade': v.get('evidence_grade'),
@@ -160,8 +211,10 @@ def will_not_play_in_dfs_populations(
             hot = _rows_not_zeroed(pid, simulation_layers,
                                    simulation_arrays or {})
             if not hot:
-                # EXPECTED. apply_to_appearance zeroes in place and leaves
-                # the row. Membership alone is not the violation.
+                # SIMULATION_ROW_PRESENT and nothing more. Expected, and
+                # wanted: apply_to_appearance zeroes in place precisely so
+                # the row axis stays stable. Membership is not the test;
+                # contribution is.
                 continue
             v = avail[pid]
             findings.append(IC.IntegrityFinding(
@@ -176,6 +229,7 @@ def will_not_play_in_dfs_populations(
                        f'playing.',
                 producer=PRODUCER, producer_version=SPEC_VERSION,
                 evidence={'population': POP_SIMULATION,
+                          'fact': SIMULATION_CONTRIBUTION_ACTIVE,
                           'availability': v.get('availability'),
                           'layers_not_zeroed': hot,
                           'evidence_grade': v.get('evidence_grade'),
@@ -187,8 +241,9 @@ def will_not_play_in_dfs_populations(
     if pool_players is not None:
         pops.append(f'optimizer pool ({len(pool_ids)} player(s))')
     if sim_checked:
-        pops.append(f'simulation ({sim_members} will-not-play row(s) '
-                    f'present, checked for zeroing)')
+        pops.append(f'simulation ({sim_members} '
+                    f'{SIMULATION_ROW_PRESENT} row(s), each checked for '
+                    f'{SIMULATION_CONTRIBUTION_ACTIVE})')
     return IC.finding_report(
         C_INACTIVE_IN_POOL, owner=IC.OWNER_ELIGIBILITY, producer=PRODUCER,
         version=SPEC_VERSION, findings=findings, n_checked=len(out_ids),
