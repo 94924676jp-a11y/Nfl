@@ -1,0 +1,63 @@
+{
+ "artifact": "CONSERVATION_OWNERSHIP",
+ "spec_version": "conservation-ownership-1",
+ "question": "OPPORTUNITY_CONSERVATION_FAILURE names allocation.assert_allocation_conserves AND draw_coherence.assert_draw_coherence as enforcing it. Do they enforce the same invariant?",
+ "answer": "NO. They are different invariants, on different objects, at different points in the chain, and either can pass while the other fails. One integrity code cannot own both.",
+ "assert_allocation_conserves": {
+  "module": "nfl/production/universe/allocation.py",
+  "precise_invariant": "within each club-room composition the renormalised shares of ALLOCATED rows sum to 1.0 within 1e-9; no club carries negative reassigned mass; and every gsis_id the declared downstream consumer intends to read is inside the allocated composition.",
+  "owner": "opportunity allocation",
+  "inputs": "the allocation Outcome -- rows carrying share_renormalised and allocation_state, plus per-club evidence n_with_measured_share and reassigned_mass -- and an explicit consuming_ids set",
+  "execution_point": "nfl/production/universe/run_chain.py:276, inside the governed chain",
+  "before_or_after_simulation": "BEFORE. It is the gate on the composition that FEEDS the generator.",
+  "deterministic_or_simulated": "DETERMINISTIC. Scalar shares, one per player-room, no draws involved.",
+  "failure_semantics": {
+   "ALLOCATION_DOES_NOT_CONSERVE": "FAIL / DATA -- a room whose shares do not sum to one has lost or invented opportunity",
+   "CONSUMER_READS_OUTSIDE_THE_COMPOSITION": "FAIL / DATA -- the consumer intends to read a player the composition does not contain",
+   "NO_CONSUMING_SET_DECLARED": "BLOCKED / GOVERNANCE -- a composition nobody declared a use for cannot be certified against anything"
+  },
+  "note": "THIS FUNCTION CARRIES MORE THAN ONE INVARIANT. Summation-to-one is conservation. CONSUMER_READS_OUTSIDE_THE_COMPOSITION is a SCOPE check -- it asks whether a downstream layer stays inside the set, which is a different question with a different failure mode. NO_CONSUMING_SET_DECLARED is neither; it is a governance refusal to certify. A wiring slice must decide whether one integrity code covers all three or whether scope gets its own."
+ },
+ "assert_draw_coherence": {
+  "module": "nfl/production/draw_coherence.py",
+  "precise_invariant": "on the FINAL PUBLISHED draw matrices, no cell holds a football-impossible state: counts non-negative; completions <= attempts and the QB line internally consistent; receptions <= targets; team targets <= team pass attempts; and where the shared passing event was live, the team passing line closes on the receiving layer cell by cell within tolerance.",
+  "owner": "simulation artifact",
+  "inputs": "the published arrays, a team row map resolved from manifest layers row_ids, and an explicit shared_pass_live flag which is REQUIRED and never inferred",
+  "execution_point": "nfl/production/run_forecast.py:3061, on the matrices about to be sealed",
+  "before_or_after_simulation": "AFTER. Its own docstring exists because earlier QB verdicts were evaluated on INTERMEDIATE draws that football_engine then overwrote.",
+  "deterministic_or_simulated": "SIMULATED. Per-cell over every draw.",
+  "failure_semantics": {
+   "DRAW_COHERENCE_VIOLATED": "FAIL -- one or more components carry an impossible state on the final draws",
+   "DRAW_COHERENCE_NOT_EVALUABLE": "BLOCKED / DATA -- a check that did not run has not passed",
+   "DRAW_COHERENCE_VACUOUS": "BLOCKED / DATA -- zero cells evaluated is an error, not a clean result"
+  },
+  "note": "It already distinguishes HARD from DIAGNOSTIC from DEFERRED, and carries NOT_APPLICABLE and DEFERRED components by name without counting either as a pass -- the same discipline IntegrityReport coverage asks for."
+ },
+ "are_they_identical": {
+  "verdict": "NO",
+  "different_object": "shares versus draws",
+  "different_time": "before the generator versus after it",
+  "different_failure": "a room that does not sum to one versus a cell that is impossible",
+  "allocation_can_pass_while_coherence_fails": "YES, and it has. draw_coherence.py records that 101 of 101 sealed artifacts carried QB_DRAW_ACCOUNTING_HOLDS while 5,278 cells held more completions than attempts. A composition summing to one says nothing about whether a draw cell is possible.",
+  "coherence_can_pass_while_allocation_fails": "YES. A generator fed a composition summing to 0.98 produces draws that are perfectly coherent cell by cell -- they are a faithful simulation of a wrong allocation. And CONSUMER_READS_OUTSIDE_THE_COMPOSITION has no draw-level analogue at all: coherence never looks at who the consumer intends to read."
+ },
+ "proposed_code_ownership": {
+  "OPPORTUNITY_CONSERVATION_FAILURE": {
+   "keeps_the_name": true,
+   "owner": "opportunity allocation",
+   "producer": "universe.allocation.assert_allocation_conserves",
+   "documented_meaning": "a club-room composition does not conserve: its allocated shares do not sum to one, or a club carries negative reassigned mass",
+   "why_not_renamed": "the identifier is already in the gate registry and in historical gate records, and the same ruling was taken on INACTIVE_PLAYER_OWNS_OPPORTUNITY. Renaming is schema churn without changing the rule."
+  },
+  "SIMULATION_DRAW_COHERENCE_VIOLATED": {
+   "new": true,
+   "owner": "simulation artifact",
+   "producer": "draw_coherence.assert_draw_coherence",
+   "documented_meaning": "the final published draw matrices contain a football-impossible cell",
+   "why_this_name": "it is the word the producer ALREADY uses -- its own refusal is DRAW_COHERENCE_VIOLATED -- so the integrity code and the producer's refusal read the same. SIMULATION_DRAW_COHERENCE_FAILURE was suggested and is rejected only because 'failure' is a synonym the code itself does not use; nothing else separates them.",
+   "sits_beside": "MISSING_ROW_IDS and SIMULATION_ROW_MISMATCH, which are already owned by the simulation artifact. Those check the row AXIS; this checks the CELLS. Three codes, one owner, three invariants."
+  },
+  "open_question_for_the_wiring_slice": "whether CONSUMER_READS_OUTSIDE_THE_COMPOSITION gets a third code. It is a SCOPE invariant, not a conservation one, and folding it into OPPORTUNITY_CONSERVATION_FAILURE would make one code mean two things -- which is the defect this audit exists to prevent."
+ },
+ "compose_protection": "IntegrityReport.compose refusing a code claimed by two producers is what surfaced this. It must not be weakened: had it allowed both, whichever producer ran last would have silently decided what the code meant."
+}
