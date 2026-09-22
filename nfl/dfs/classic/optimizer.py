@@ -136,6 +136,22 @@ class Lineup:
     def ids(self) -> FrozenSet[str]:
         return frozenset(p.gsis_id for p in self.players)
 
+    @property
+    def canonical(self) -> Tuple[Player, ...]:
+        """Players in a fixed order, independent of how the search found them.
+
+        The search visits positions in different orders depending on the
+        constraints -- QB first when a stack is required, scarcest-first
+        otherwise -- so selection order is an artifact of the route taken, not
+        a property of the lineup. Two searches that find the SAME roster must
+        describe it the same way, or every downstream diff is noise and an
+        equivalence test cannot tell a real change from a reordering.
+        """
+        rank = {q: i for i, q in enumerate(R.POSITIONS)}
+        return tuple(sorted(self.players,
+                            key=lambda q: (rank.get(q.position, 99),
+                                           -q.value, q.gsis_id)))
+
     def as_dict(self) -> Dict[str, Any]:
         qb = next((p for p in self.players if p.position == 'QB'), None)
         stack = ([p.name for p in self.players
@@ -150,7 +166,7 @@ class Lineup:
             'players': [{'name': p.name, 'gsis_id': p.gsis_id,
                          'dk_id': p.dk_id, 'pos': p.position,
                          'team': p.team, 'salary': p.salary,
-                         'value': round(p.value, 6)} for p in self.players],
+                         'value': round(p.value, 6)} for p in self.canonical],
             'qb': qb.name if qb else None,
             'qb_stack_with': stack, 'bring_back': bring,
             'teams': dict(collections.Counter(p.team for p in self.players)),
@@ -272,211 +288,387 @@ def _check_full(sel: Sequence[Player], c: Constraints) -> Tuple[bool, str]:
     return True, 'ok'
 
 
+def _combos(pool, k, budget_ok):
+    """Every k-subset of a value-sorted pool, best-first, as a generator.
+
+    Yields in descending partial-value order so the first completions found
+    are strong ones, which is what makes the incumbent bite early.
+    """
+    n = len(pool)
+    if k == 0:
+        yield []
+        return
+    if k > n:
+        return
+
+    def rec(j, chosen):
+        if len(chosen) == k:
+            yield list(chosen)
+            return
+        if n - j < k - len(chosen):
+            return
+        for i in range(j, n):
+            if n - i < k - len(chosen):
+                return
+            chosen.append(pool[i])
+            yield from rec(i + 1, chosen)
+            chosen.pop()
+
+    yield from rec(0, [])
+
+
+@dataclass
+class _Pool:
+    """A value-sorted candidate set with its two bound arrays, built ONCE.
+
+    The arrays are the expensive part -- a sort plus two accumulations -- and
+    the stacked decomposition asks for the same set with many different
+    counts. Rebuilding them per combination sorted the same list hundreds of
+    times per QB.
+    """
+    players: List[Player]
+    vpref: List[float] = field(default_factory=list)
+    spref: List[int] = field(default_factory=list)
+
+    @staticmethod
+    def of(players: Sequence[Player]) -> '_Pool':
+        ps = sorted(players, key=lambda p: (-p.value, p.salary, p.gsis_id))
+        return _Pool(ps,
+                     list(itertools.accumulate(p.value for p in ps)),
+                     list(itertools.accumulate(sorted(p.salary for p in ps))))
+
+    def __len__(self):
+        return len(self.players)
+
+
+@dataclass
+class _Task:
+    """Take exactly `k` from a prepared pool."""
+    label: str
+    position: str
+    src: _Pool
+    k: int
+
+    @property
+    def pool(self) -> List[Player]:
+        return self.src.players
+
+    def best_value(self) -> float:
+        v = self.src.vpref
+        return v[self.k - 1] if 0 < self.k <= len(v) else 0.0
+
+    def cheapest(self) -> int:
+        sp = self.src.spref
+        return sp[self.k - 1] if 0 < self.k <= len(sp) else 0
+
+    def best_from(self, j: int, r: int) -> float:
+        if r <= 0:
+            return 0.0
+        v = self.src.vpref
+        if j + r > len(v):
+            return float('-inf')
+        return v[j + r - 1] - (v[j - 1] if j > 0 else 0.0)
+
+
+def _dists(total: int, caps: Sequence[int]):
+    """Every way to split `total` across slots with the given caps."""
+    if not caps:
+        if total == 0:
+            yield ()
+        return
+    head, rest = caps[0], caps[1:]
+    for i in range(min(head, total) + 1):
+        for tail in _dists(total - i, rest):
+            yield (i,) + tail
+
+
+# Shared stand-in for the group-counting arrays when a search has no group
+# minimum to enforce, so the no-group path allocates nothing per node. Never
+# written to: every mutation site is behind `if ngrp`.
+_NO_GROUPS: List[int] = []
+
+
+def _search(tasks: Sequence[_Task], c: Constraints, *,
+            banned: Sequence[Set[str]], best: List[Optional[Lineup]],
+            shape: Dict[str, int], lock_ids: Set[str]):
+    """Branch and bound over a list of independent exact-count choices.
+
+    The bound is the sum, over every task not yet begun, of the best `k`
+    values still available in it. It can only OVER-estimate a completion, so
+    pruning on it cannot discard a better lineup than the incumbent -- which
+    is what makes this exact rather than a heuristic.
+
+    GROUP MINIMUMS PRUNE TOO, AND THIS WAS NOT OPTIONAL. A group minimum was
+    tested only on a finished roster. Correct, but ruinous: a branch that can
+    no longer reach the minimum is searched to exhaustion before anything
+    notices, and on a 4-team fixture with one `min: 2` group that cost 36.62s
+    against the frozen baseline's 0.07s -- a 500x REGRESSION, not a speedup.
+    The arrays below say how many members of each group are still REACHABLE:
+    from the tasks not yet begun, and from the unexamined tail of the current
+    task's pool. Reachability is an upper bound on what any completion can
+    contain, so cutting a branch that cannot reach the minimum cannot discard
+    a feasible lineup.
+    """
+    ntask = len(tasks)
+    suffix_value = [0.0] * (ntask + 1)
+    suffix_salary = [0] * (ntask + 1)
+    for i in range(ntask - 1, -1, -1):
+        suffix_value[i] = suffix_value[i + 1] + tasks[i].best_value()
+        suffix_salary[i] = suffix_salary[i + 1] + tasks[i].cheapest()
+
+    gmins = [(frozenset(g.get('players') or ()), int(g['min']))
+             for g in c.groups if g.get('min')]
+    ngrp = len(gmins)
+    gtail: List[List[List[int]]] = [_NO_GROUPS] * ntask
+    gsuf = [_NO_GROUPS] * (ntask + 1)
+    if ngrp:
+        gtail = []
+        gsuf = [[0] * ngrp for _ in range(ntask + 1)]
+        for tk in tasks:
+            per = []
+            for members, _m in gmins:
+                tail = [0] * (len(tk.pool) + 1)
+                for j in range(len(tk.pool) - 1, -1, -1):
+                    tail[j] = tail[j + 1] + (
+                        1 if tk.pool[j].gsis_id in members else 0)
+                per.append(tail)
+            gtail.append(per)
+        for i in range(ntask - 1, -1, -1):
+            for gi in range(ngrp):
+                gsuf[i][gi] = gsuf[i + 1][gi] + min(tasks[i].k,
+                                                    gtail[i][gi][0])
+
+    sel: List[Player] = []
+
+    def leaf(val, sal):
+        if len(sel) != R.ROSTER_SIZE:
+            return
+        legal, _why = R.assert_roster_legal(
+            [p.position for p in sel], [p.salary for p in sel],
+            cap=c.salary_cap, floor=c.salary_floor)
+        if not legal:
+            return
+        ids = frozenset(p.gsis_id for p in sel)
+        if any(len(ids & b) > R.ROSTER_SIZE - c.min_unique_players
+               for b in banned):
+            return
+        ok_, _w = _check_full(sel, c)
+        if not ok_:
+            return
+        if best[0] is None or val > best[0].value:
+            best[0] = Lineup(tuple(sel), val, sal, dict(shape))
+
+    def rec(t_i, val, sal, teams, games, gc):
+        if t_i == ntask:
+            leaf(val, sal)
+            return
+        if best[0] is not None and val + suffix_value[t_i] <= best[0].value:
+            return
+        if sal + suffix_salary[t_i] > c.salary_cap:
+            return
+        if ngrp:
+            for gi in range(ngrp):
+                if gc[gi] + gsuf[t_i][gi] < gmins[gi][1]:
+                    return
+        task = tasks[t_i]
+        k, pool = task.k, task.pool
+        if k == 0:
+            rec(t_i + 1, val, sal, teams, games, gc)
+            return
+        need_locked = [p for p in pool if p.gsis_id in lock_ids]
+        tails = gtail[t_i]
+
+        def choose(j, chosen, cval, csal, cgc):
+            if len(chosen) == k:
+                if any(p not in chosen for p in need_locked):
+                    return
+                nt = collections.Counter(teams)
+                ng = collections.Counter(games)
+                for p in chosen:
+                    nt[p.team] += 1
+                    ng[p.game] += 1
+                if c.max_from_team and max(nt.values()) > c.max_from_team:
+                    return
+                if c.max_from_game and max(ng.values()) > c.max_from_game:
+                    return
+                sel.extend(chosen)
+                rec(t_i + 1, val + cval, sal + csal, nt, ng,
+                    tuple(gc[gi] + cgc[gi] for gi in range(ngrp))
+                    if ngrp else gc)
+                del sel[-k:]
+                return
+            if j >= len(pool):
+                return
+            r = k - len(chosen)
+            if len(pool) - j < r:
+                return
+            if ngrp:
+                for gi in range(ngrp):
+                    reach = tails[gi][j]
+                    if reach > r:
+                        reach = r
+                    if (gc[gi] + cgc[gi] + reach + gsuf[t_i + 1][gi]
+                            < gmins[gi][1]):
+                        return
+            if best[0] is not None:
+                opt = (val + cval + task.best_from(j, r)
+                       + suffix_value[t_i + 1])
+                if opt <= best[0].value:
+                    return
+            if (sal + csal + task.src.spref[r - 1]
+                    + suffix_salary[t_i + 1] > c.salary_cap):
+                return
+            p = pool[j]
+            chosen.append(p)
+            hit = ([gi for gi in range(ngrp) if p.gsis_id in gmins[gi][0]]
+                   if ngrp else ())
+            for gi in hit:
+                cgc[gi] += 1
+            choose(j + 1, chosen, cval + p.value, csal + p.salary, cgc)
+            for gi in hit:
+                cgc[gi] -= 1
+            chosen.pop()
+            if p not in need_locked:
+                choose(j + 1, chosen, cval, csal, cgc)
+
+        choose(0, [], 0.0, 0, [0] * ngrp if ngrp else _NO_GROUPS)
+
+    rec(0, 0.0, 0, collections.Counter(), collections.Counter(),
+        (0,) * ngrp)
+
+
 def solve_one(players: Sequence[Player], c: Constraints, *,
               banned: Sequence[FrozenSet[str]] = (),
               blocked_ids: Optional[Set[str]] = None) -> Optional[Lineup]:
     """The single best legal lineup under `c`, or None if none exists.
 
-    Branch-and-bound over the three legal shapes. Within a shape, positions
-    are filled scarcest-first and each pool is sorted by value descending, so
-    the optimistic bound (current value + the best remaining per open slot) is
-    both admissible and tight.
+    TWO SEARCH SHAPES, ONE SOLVER.
+
+    Without stack requirements the roster is five independent choices -- one
+    per position -- and the solver runs over those directly.
+
+    WITH them it is decomposed further, and this is the part that made a
+    stacked build practical. Given a QB, the skill pool partitions into three
+    DISJOINT sets: his own team (MATE), the opposing team in his game (OPP),
+    and everyone else (REST). Enumerating EXACT counts from each means the
+    stack and bring-back minimums are satisfied BY CONSTRUCTION rather than
+    tested at the leaf, and because the sets are disjoint and the counts
+    exact, every legal lineup is generated exactly once -- no duplication,
+    nothing missed.
+
+    Before this, stacks were judged only on a complete roster, so the search
+    built whole lineups and threw them away: a 456-player 20-lineup stacked
+    build took 143 seconds.
     """
     blocked_ids = set(blocked_ids or ())
-    pool = [p for p in _eligible(players, c) if p.gsis_id not in blocked_ids
-            or p.gsis_id in c.locks]
+    pool = [p for p in _eligible(players, c)
+            if p.gsis_id not in blocked_ids or p.gsis_id in c.locks]
     by_pos: Dict[str, List[Player]] = collections.defaultdict(list)
     for p in pool:
         by_pos[p.position].append(p)
     for v in by_pos.values():
-        v.sort(key=lambda p: (-p.value, p.salary))
+        v.sort(key=lambda p: (-p.value, p.salary, p.gsis_id))
     if c.candidate_depth:
-        for k in list(by_pos):
-            by_pos[k] = by_pos[k][:max(c.candidate_depth,
-                                       sum(1 for p in by_pos[k]
-                                           if p.gsis_id in c.locks))]
-    locked = {p.gsis_id: p for p in pool if p.gsis_id in c.locks}
-
+        for kpos in list(by_pos):
+            keep = max(c.candidate_depth,
+                       sum(1 for p in by_pos[kpos] if p.gsis_id in c.locks))
+            by_pos[kpos] = by_pos[kpos][:keep]
+    lock_ids = set(c.locks)
+    locked = [p for p in pool if p.gsis_id in lock_ids]
     best: List[Optional[Lineup]] = [None]
-    banned = [set(b) for b in banned]
+    banned_sets = [set(b) for b in banned]
+    stacked = bool(c.qb_stack_min or c.bring_back_min
+                   or c.bring_back_max is not None)
+    SKILL = ('RB', 'WR', 'TE')
 
     for shape in R.LEGAL_SHAPES:
-        # QB FIRST, then scarcest. Not cosmetic: until the QB is chosen there
-        # is no stack or bring-back constraint to prune on, so a scarcest-
-        # first order left both to be judged at the leaf and the search
-        # explored the whole tree before rejecting. Choosing the QB first
-        # turns them into counting constraints that prune as slots fill.
-        need = [('QB', shape['QB'])] + [
-            (pos, n) for pos, n in
-            sorted(((k, v) for k, v in shape.items() if k != 'QB'),
-                   key=lambda kv: len(by_pos.get(kv[0], ())))]
-        # A locked player whose position exceeds the shape's count makes this
-        # shape impossible; skip it rather than searching it.
-        lc = collections.Counter(p.position for p in locked.values())
+        lc = collections.Counter(p.position for p in locked)
         if any(lc[pos] > shape.get(pos, 0) for pos in lc):
             continue
         if any(len(by_pos.get(pos, ())) < n for pos, n in shape.items()):
             continue
 
-        # Best-value prefix sums per position, for the bound.
-        bestv = {pos: [p.value for p in by_pos[pos]] for pos in shape}
-        pref = {pos: list(itertools.accumulate(bestv[pos]))
-                for pos in shape}
-        minsal = {pos: sorted(p.salary for p in by_pos[pos]) for pos in shape}
-        minpref = {pos: list(itertools.accumulate(minsal[pos]))
-                   for pos in shape}
+        if not stacked:
+            tasks = [_Task(pos, pos, _Pool.of(by_pos[pos]), n)
+                     for pos, n in shape.items()]
+            tasks.sort(key=lambda t: (len(t.pool), t.label))
+            _search(tasks, c, banned=banned_sets, best=best, shape=shape,
+                    lock_ids=lock_ids)
+            continue
 
-        order = [pos for pos, _ in need]
-        sel: List[Player] = []
-
-        def bound(idx_by_pos, val, i):
-            """Optimistic remaining value: the best unused at each open slot."""
-            b = val
-            for pos in order[i:]:
-                k = shape[pos] - idx_by_pos.get(pos, 0)
-                if k <= 0:
+        # --- stacked: QB first, then exact counts from disjoint sets -------
+        caps = [shape[p] for p in SKILL]
+        n_skill = sum(caps)
+        pos_pool = {p: _Pool.of(by_pos[p]) for p in ('RB', 'WR', 'TE', 'DST')}
+        for qb in by_pos['QB']:
+            if best[0] is not None:
+                # An upper bound on ANY lineup containing this QB. If it
+                # cannot beat the incumbent, skip the whole QB.
+                ub = qb.value + sum(
+                    _Task(p, p, pos_pool[p], shape[p]).best_value()
+                    for p in ('RB', 'WR', 'TE', 'DST'))
+                if ub <= best[0].value:
                     continue
-                b += pref[pos][k - 1] if k <= len(pref[pos]) else 0.0
-            return b
-
-        def min_remaining_salary(i, filled):
-            s = 0
-            for pos in order[i:]:
-                k = shape[pos] - filled.get(pos, 0)
-                if k > 0:
-                    s += minpref[pos][k - 1]
-            return s
-
-        def rec(i, start, val, sal, filled, teams, games):
-            if best[0] is not None and bound(filled, val, i) <= best[0].value:
-                return
-            if i == len(order):
-                if len(sel) != R.ROSTER_SIZE:
-                    return
-                ok_, _why = R.assert_roster_legal(
-                    [p.position for p in sel], [p.salary for p in sel],
-                    cap=c.salary_cap, floor=c.salary_floor)
-                if not ok_:
-                    return
-                ids = frozenset(p.gsis_id for p in sel)
-                if any(len(ids & b) > R.ROSTER_SIZE - c.min_unique_players
-                       for b in banned):
-                    return
-                ok2, _w2 = _check_full(sel, c)
-                if not ok2:
-                    return
-                if best[0] is None or val > best[0].value:
-                    best[0] = Lineup(tuple(sel), val, sal, dict(shape))
-                return
-
-            pos = order[i]
-            k = shape[pos]
-            cand = by_pos[pos]
-            # Choose k from cand, indices increasing, honouring locks.
-            need_locked = [p for p in locked.values() if p.position == pos]
-
-            # SUFFIX BOUND. `cand` is sorted by value descending, so the
-            # best r players available from index j onward are exactly
-            # cand[j : j+r]. Without this the search only bounded at position
-            # boundaries and enumerated whole k-subsets of a large WR pool
-            # before ever pruning -- 9.4s for five lineups on a 76-player
-            # toy. With it the prune fires on the first bad partial subset.
-            def best_from(j, r):
-                if r <= 0:
-                    return 0.0
-                if j + r > len(cand):
-                    return float('-inf')
-                hi = pref[pos][j + r - 1]
-                lo = pref[pos][j - 1] if j > 0 else 0.0
-                return hi - lo
-
-            # Cheapest r from index j onward, for salary feasibility. Salary
-            # is NOT sorted, so this is a suffix minimum computed once.
-            sal_sorted = sorted((p_.salary for p_ in cand))
-            sal_pref = list(itertools.accumulate(sal_sorted))
-
-            def cheapest(r):
-                return sal_pref[r - 1] if 0 < r <= len(sal_pref) else 0
-
-            def choose(j, chosen):
-                if len(chosen) == k:
-                    if any(p not in chosen for p in need_locked):
-                        return
-                    nsal = sal + sum(p.salary for p in chosen)
-                    nf = dict(filled); nf[pos] = k
-                    if nsal + min_remaining_salary(i + 1, nf) > c.salary_cap:
-                        return
-                    nt = collections.Counter(teams)
-                    ng = collections.Counter(games)
-                    for p in chosen:
-                        nt[p.team] += 1
-                        ng[p.game] += 1
-                    if c.max_from_team and max(nt.values()) > c.max_from_team:
-                        return
-                    if c.max_from_game and max(ng.values()) > c.max_from_game:
-                        return
-                    nval = val + sum(p.value for p in chosen)
-                    if best[0] is not None and \
-                            bound(nf, nval, i + 1) <= best[0].value:
-                        return
-                    # STACK FEASIBILITY, checked as slots fill rather than at
-                    # the leaf. If every remaining stack-eligible slot were
-                    # filled with a teammate and the minimum still could not
-                    # be reached, no completion of this branch is legal. The
-                    # leaf check alone made a stacked 20-lineup build on a
-                    # 456-player pool run past ten minutes.
-                    if c.qb_stack_min or c.bring_back_min:
-                        qb_ = next((p_ for p_ in sel + chosen
-                                    if p_.position == 'QB'), None)
-                        if qb_ is not None:
-                            have = sel + chosen
-                            open_skill = sum(
-                                shape[po] - nf.get(po, 0)
-                                for po in ('RB', 'WR', 'TE'))
-                            if c.qb_stack_min:
-                                n_st = sum(1 for p_ in have
-                                           if p_.team == qb_.team and
-                                           p_.position in ('WR', 'TE', 'RB'))
-                                if n_st + open_skill < c.qb_stack_min:
-                                    return
-                            if c.bring_back_min:
-                                n_bb = sum(1 for p_ in have
-                                           if p_.game == qb_.game and
-                                           p_.team != qb_.team and
-                                           p_.position != 'DST')
-                                if n_bb + open_skill < c.bring_back_min:
-                                    return
-                    sel.extend(chosen)
-                    rec(i + 1, 0, nval, nsal, nf, nt, ng)
-                    del sel[-k:]
-                    return
-                if j >= len(cand):
-                    return
-                remaining = k - len(chosen)
-                if len(cand) - j < remaining:
-                    return
-                if best[0] is not None:
-                    partial = val + sum(p_.value for p_ in chosen)
-                    nf = dict(filled)
-                    nf[pos] = k
-                    optimistic = (partial + best_from(j, remaining)
-                                  + bound(nf, 0.0, i + 1))
-                    if optimistic <= best[0].value:
-                        return
-                psal = sal + sum(p_.salary for p_ in chosen)
-                nf2 = dict(filled); nf2[pos] = k
-                if (psal + cheapest(remaining)
-                        + min_remaining_salary(i + 1, nf2) > c.salary_cap):
-                    return
-                # Take cand[j]
-                choose(j + 1, chosen + [cand[j]])
-                # Skip cand[j], unless it is locked at this position
-                if cand[j] not in need_locked:
-                    choose(j + 1, chosen)
-
-            choose(0, [])
-
-        rec(0, 0, 0.0, 0, {}, collections.Counter(), collections.Counter())
+            if lock_ids and any(p.position == 'QB' and p.gsis_id != qb.gsis_id
+                                for p in locked):
+                continue
+            # Built ONCE per QB, reused across every (t, b) decomposition.
+            mate = {p: _Pool.of([x for x in by_pos[p] if x.team == qb.team])
+                    for p in SKILL}
+            opp = {p: _Pool.of([x for x in by_pos[p]
+                                if x.game == qb.game and x.team != qb.team])
+                   for p in SKILL}
+            rest = {p: _Pool.of([x for x in by_pos[p]
+                                 if x.team != qb.team and x.game != qb.game])
+                    for p in SKILL}
+            qb_pool = _Pool.of([qb])
+            dst_pool = pos_pool['DST']
+            max_t = min(sum(len(mate[p]) for p in SKILL), n_skill)
+            max_b = min(sum(len(opp[p]) for p in SKILL), n_skill)
+            hi_b = max_b if c.bring_back_max is None else min(
+                max_b, c.bring_back_max)
+            for t in range(c.qb_stack_min, max_t + 1):
+                for b in range(c.bring_back_min, hi_b + 1):
+                    if t + b > n_skill:
+                        continue
+                    for td in _dists(t, caps):
+                        if any(td[i] > len(mate[SKILL[i]])
+                               for i in range(3)):
+                            continue
+                        rem = [caps[i] - td[i] for i in range(3)]
+                        for bd in _dists(b, rem):
+                            if any(bd[i] > len(opp[SKILL[i]])
+                                   for i in range(3)):
+                                continue
+                            rd = [rem[i] - bd[i] for i in range(3)]
+                            if any(rd[i] > len(rest[SKILL[i]])
+                                   for i in range(3)):
+                                continue
+                            tasks = [_Task('QB', 'QB', qb_pool, 1),
+                                     _Task('DST', 'DST', dst_pool,
+                                           shape['DST'])]
+                            for i, pos in enumerate(SKILL):
+                                if td[i]:
+                                    tasks.append(_Task(f'MATE_{pos}', pos,
+                                                       mate[pos], td[i]))
+                                if bd[i]:
+                                    tasks.append(_Task(f'OPP_{pos}', pos,
+                                                       opp[pos], bd[i]))
+                                if rd[i]:
+                                    tasks.append(_Task(f'REST_{pos}', pos,
+                                                       rest[pos], rd[i]))
+                            # Locked players must have a task that can hold
+                            # them, or this decomposition cannot produce a
+                            # legal lineup at all.
+                            if lock_ids:
+                                holdable = set()
+                                for tk in tasks:
+                                    holdable |= {x.gsis_id for x in tk.pool}
+                                if not lock_ids <= holdable:
+                                    continue
+                            tasks.sort(key=lambda tk: (len(tk.pool), tk.label))
+                            _search(tasks, c, banned=banned_sets, best=best,
+                                    shape=shape, lock_ids=lock_ids)
 
     return best[0]
 

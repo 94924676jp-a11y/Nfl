@@ -2238,3 +2238,45 @@ opportunity is exactly what the repair this week was for.
 **Also still open, from the 2026-09-22 request above:** routes, routes per
 dropback, pass/run blocking split, personnel packages, alignment. Those are
 WARNING-level and do not block a slate. Week-2 play-by-play is BLOCKING.
+
+---
+
+## 2026-09-22 — DK IDENTITY CROSSWALK NEEDED (not blocking, but on the Sunday path)
+
+Measured today while wiring the Classic optimizer to real DraftKings files.
+
+**What works.** `nfl/dfs/classic/dk_identity.py` parses DraftKings' own salary
+export, including the player table **embedded to the right of the entry rows**
+(header at column 14 in the week-2 file). It reads 409 players, every position
+recognised, no duplicate DK ids, and `Roster Position` confirms DK's own FLEX
+eligibility. DraftKings' file is the only authority on what position DK will
+accept a player at, and the board's modelled ROOM is not that: a pass-catching
+back sits in the targets room and is an RB on DraftKings.
+
+**What does not.** There is no `gsis_id` <-> `dk_id` crosswalk. Resolving by
+EXACT (name, team) across two different DK files resolved only **232 of 393**
+non-DST rows -- 59% -- and the misses include Ja'Marr Chase, Nico Collins, Zay
+Flowers and Josh Jacobs. Different DK exports spell names and team context
+differently, and **no edit-distance matching is permitted**, correctly.
+
+**What is needed.** A durable `dk_id` -> `gsis_id` crosswalk, built once and
+maintained, rather than re-derived by name each week. Either:
+
+- a source that carries both ids, or
+- a one-time reviewed mapping keyed on DK id, which then persists because DK
+  ids are stable for a player across weeks.
+
+**Also measured: DST carries no gsis_id at all** -- 16 of 16 defences in this
+file. They are not modelled players, have no dossier, and cannot come through
+the player board. They enter the DFS pool from the DK file keyed on DK id, and
+`dk_identity.crosswalk` separates and names them so their absence from the
+board is an expected state rather than a defect.
+
+**Consequence if unresolved:** the CSV export REFUSES with `DK_ID_MISSING`
+rather than writing a blank DraftKings would reject or mis-match. So this
+fails safe. But 41% of the pool being unrosterable is not a Sunday-ready state.
+
+**Still the hard blocker, unchanged:** `WEEK2_USAGE_CAPTURE_REQUIRED`. See the
+URGENT entry above. Verified again at cut 2026-09-22T23:00Z: usage_vintage
+sees week [1] only; a week-3 forecast refuses `CURRENT_SEASON_INPUT_STALE` and
+team volume refuses `TEAM_VOLUME_STALE`.

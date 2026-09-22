@@ -1,0 +1,83 @@
+{
+ "artifact": "CLASSIC_OPTIMIZER_BENCHMARK",
+ "spec_version": "classic-optimizer-benchmark-2",
+ "measured_at": "2026-09-22T15:04:37Z",
+ "what": "equivalence and timing of the optimized Classic solver against reference.py, the frozen fe25d98 baseline. Regenerated deliberately, not on every test run, because the reference is the slow implementation by construction.",
+ "reproduce": "python3.12 nfl/dfs/classic/benchmark.py",
+ "fixtures": {
+  "stacked_main_slate": {
+   "pool": 456,
+   "teams": 24,
+   "seed": 11,
+   "spec": "QB2 RB5 WR8 TE3 DST1 per team",
+   "constraints": {
+    "n_lineups": 20,
+    "min_unique_players": 2,
+    "global_max_exposure": 0.5,
+    "qb_stack_min": 2,
+    "bring_back_min": 1,
+    "max_from_team": 4,
+    "max_from_game": 5
+   }
+  },
+  "group_minimum_4_teams": {
+   "pool": 64,
+   "teams": 4,
+   "seed": 3,
+   "spec": "QB2 RB4 WR6 TE3 DST1 per team",
+   "constraints": {
+    "n_lineups": 3,
+    "min_unique_players": 2,
+    "qb_stack_min": 1,
+    "groups": [
+     {
+      "name": "S00",
+      "min": 2,
+      "players": "S00-WR0..WR5"
+     }
+    ]
+   },
+   "why": "the stacked decomposition multiplies a leaf-only group test across every (QB, mate-count, bring-back-count, distribution) cell. Before the group-reachability prune this case took 36.62s here against the reference 0.07s -- a 500x REGRESSION that every correctness test passed, because the answer was right and only the time was wrong."
+  }
+ },
+ "results": {
+  "stacked_main_slate": {
+   "optimized": {
+    "seconds": 4.33,
+    "n_lineups": 20,
+    "mean_overlap": 3.1316,
+    "best_value": 208.457,
+    "code": "CLASSIC_PORTFOLIO_BUILT"
+   },
+   "reference_fe25d98": {
+    "seconds": 157.25,
+    "n_lineups": 20,
+    "mean_overlap": 3.1316,
+    "best_value": 208.457,
+    "code": "CLASSIC_PORTFOLIO_BUILT"
+   },
+   "identical_lineups": true,
+   "speedup": 36.32
+  },
+  "group_minimum_4_teams": {
+   "optimized": {
+    "seconds": 0.18,
+    "n_lineups": 3,
+    "mean_overlap": 7.0,
+    "best_value": 183.663,
+    "code": "CLASSIC_PORTFOLIO_BUILT"
+   },
+   "reference_fe25d98": {
+    "seconds": 0.09,
+    "n_lineups": 3,
+    "mean_overlap": 7.0,
+    "best_value": 183.663,
+    "code": "CLASSIC_PORTFOLIO_BUILT"
+   },
+   "identical_lineups": true,
+   "speedup": 0.5
+  }
+ },
+ "exactness": "each lineup in each portfolio matched the reference on objective AND on player set, compared as a sorted id set in portfolio order. The bounds are admissible -- value and salary bounds can only over-estimate a completion, and group reachability can only over-estimate what a completion can contain -- so no prune can discard a lineup better than the incumbent.",
+ "target": "owner target was 20 lineups on a realistic main-slate pool, exact and deterministic, preferably under 30s"
+}

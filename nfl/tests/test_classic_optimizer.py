@@ -407,6 +407,126 @@ def test_every_stage_declares_its_sources_and_artifacts():
            f'{n} declares required sources, artifacts and a freshness rule')
 
 
+# -- 10. DraftKings identity ------------------------------------------------
+DK_FILE = (_REPO / 'nfl/dfs/salaries/raw/'
+           'DKEntries_EARLY_ONLY_2026W2_51.csv')
+
+
+def test_the_embedded_player_table_is_found_and_parsed():
+    from nfl.dfs.classic import dk_identity as DK
+    if not DK_FILE.exists():
+        ok(True, 'no DK file in this checkout; case skipped')
+        return
+    o = DK.parse_salary_file(DK_FILE)
+    ok(o.state.name == 'PASS', f'the file parses: {o.code}')
+    v = o.value
+    ok(v['header_at_column'] > 0,
+       f'the player table is EMBEDDED at column {v["header_at_column"]}, not '
+       f'at the start -- reading only the first header finds no ids at all')
+    ok(v['n_rows'] > 300, f'{v["n_rows"]} player rows')
+    ok(not v['positions_not_recognised'],
+       f'every DK position is recognised: {v["by_position"]}')
+    ok(not v['duplicate_dk_ids'], 'no duplicate DK ids')
+    ok(all(r['dk_id'].isdigit() for r in v['rows']),
+       'every row carries a numeric DK id')
+
+
+def test_dst_is_named_as_having_no_gsis_id():
+    from nfl.dfs.classic import dk_identity as DK
+    if not DK_FILE.exists():
+        ok(True, 'skipped')
+        return
+    c = DK.crosswalk(DK.parse_salary_file(DK_FILE))
+    ok(c.value['n_dst'] > 0,
+       f'{c.value["n_dst"]} defences are separated out')
+    ok('carry no gsis_id' in c.value['dst_note'],
+       'and the artifact states they have no gsis_id and no dossier, so '
+       'their absence from the board is expected rather than a defect')
+
+
+def test_unresolved_identities_are_counted_and_named():
+    from nfl.dfs.classic import dk_identity as DK
+    if not DK_FILE.exists():
+        ok(True, 'skipped')
+        return
+    c = DK.crosswalk(DK.parse_salary_file(DK_FILE))
+    ok(c.value['n_unresolved'] > 0 and c.value['unresolved'],
+       f'with no crosswalk supplied, all {c.value["n_unresolved"]} non-DST '
+       f'rows are reported unresolved BY NAME rather than silently dropped')
+    ok(c.value['n_resolved'] == 0,
+       'and none is resolved by guessing')
+
+
+def test_a_missing_dk_file_refuses():
+    from nfl.dfs.classic import dk_identity as DK
+    o = DK.parse_salary_file('/nonexistent/DKSalaries.csv')
+    ok(o.state.name == 'BLOCKED' and o.code == 'DK_SALARY_FILE_ABSENT',
+       'no DK file means no authority on DK positions, by name')
+
+
+def test_a_file_without_a_player_table_refuses():
+    from nfl.dfs.classic import dk_identity as DK
+    with tempfile.TemporaryDirectory() as td:
+        f = pathlib.Path(td) / 'x.csv'
+        f.write_text('Entry ID,Contest Name\n1,foo\n')
+        o = DK.parse_salary_file(f)
+        ok(o.state.name == 'FAIL' and o.code == 'DK_PLAYER_TABLE_NOT_FOUND',
+           'a file with entry rows but no player table refuses rather than '
+           'returning an empty roster of ids')
+
+
+def test_a_group_minimum_does_not_blow_up_the_search():
+    """A group minimum must PRUNE, not merely be checked at the leaf.
+
+    This is a regression guard with a wall clock in it, which is normally a
+    bad idea. It is here because the defect it guards is a timing defect and
+    nothing else detects it: the search returned the RIGHT lineup the whole
+    time, so every correctness assertion passed while a 4-team fixture with
+    one `min: 2` group took 36.62 seconds against the frozen baseline's 0.07
+    -- a 500x regression introduced by the stacked decomposition, which
+    multiplies the leaf-only group test across every (QB, mate-count,
+    bring-back-count, distribution) cell.
+
+    The ceiling is deliberately loose. It is not a performance target; it is
+    two orders of magnitude below the broken behaviour and two above the
+    fixed one, so it fires on a reintroduced regression and not on a slow
+    machine.
+    """
+    import time
+    rnd = random.Random(3)
+    spec = [('QB', 2), ('RB', 4), ('WR', 6), ('TE', 3), ('DST', 1)]
+    teams = [f'S{n:02d}' for n in range(4)]
+    players, i = [], 0
+    for ti, t in enumerate(teams):
+        opp = teams[ti ^ 1]
+        for pos, k in spec:
+            for j in range(k):
+                i += 1
+                players.append(O.Player(
+                    gsis_id=f'{t}-{pos}{j}', name=f'{t} {pos}{j}',
+                    position=pos, team=t, opponent=opp,
+                    salary=rnd.randrange(3000, 9500, 100),
+                    dk_id=str(30000 + i),
+                    value=round(rnd.uniform(3, 22), 3), draw_row=i - 1))
+    c = O.Constraints(
+        n_lineups=3, min_unique_players=2, qb_stack_min=1,
+        groups=[{'name': 'S00', 'min': 2,
+                 'players': {f'S00-WR{j}' for j in range(6)}}])
+    t0 = time.time()
+    out = O.build_portfolio(players, c)
+    elapsed = time.time() - t0
+    ok(out.state.name == 'PASS',
+       f'the group-constrained build succeeds: {out.code}')
+    lus = (out.value or {}).get('lineups', [])
+    ok(len(lus) == 3, f'and returns every lineup asked for: {len(lus)}')
+    ok(all(sum(1 for x in lu['players']
+               if x['gsis_id'].startswith('S00-WR')) >= 2 for lu in lus),
+       'every lineup honours the group minimum')
+    ok(elapsed < 5.0,
+       f'and the group minimum prunes rather than being tested at the leaf: '
+       f'{elapsed:.2f}s (broken behaviour was 36.62s on this fixture)')
+
+
 def main():
     for t in (test_every_lineup_is_a_legal_dk_roster,
               test_the_three_shapes_are_the_complete_set,
@@ -440,7 +560,13 @@ def main():
               test_a_research_stage_may_not_build_lineups,
               test_the_sunday_stages_may_optimize,
               test_an_undeclared_stage_has_no_permissions,
-              test_every_stage_declares_its_sources_and_artifacts):
+              test_every_stage_declares_its_sources_and_artifacts,
+              test_the_embedded_player_table_is_found_and_parsed,
+              test_dst_is_named_as_having_no_gsis_id,
+              test_unresolved_identities_are_counted_and_named,
+              test_a_missing_dk_file_refuses,
+              test_a_file_without_a_player_table_refuses,
+              test_a_group_minimum_does_not_blow_up_the_search):
         print(f'== {t.__name__}')
         t()
     print(f'\nPASSED {PASSED} FAILED {FAILED}')
