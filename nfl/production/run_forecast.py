@@ -1557,9 +1557,33 @@ def build(args, fixtures: dict = None) -> dict:
             from nfl.production.nonqb import current_season_evidence as _CSE
             _evo = _CSE.collect(args.season, args.week, str(args.written_at))
             _diag = bool(getattr(args, 'diagnostic_known_stale', False))
+            # CURRENT-SEASON TEAM VOLUME, measured from the SAME lawful
+            # capture as player usage so a share and its denominator cannot
+            # drift. This is what verifies the `denom_panel` declared block
+            # for this run -- it refuses on a partial denominator, because a
+            # denominator missing three clubs is confidently wrong for every
+            # player rather than nameably absent.
+            from nfl.production.nonqb import current_season_team_volume as _TV
+            _tvo = _TV.collect(args.season, args.week, str(args.written_at))
+            _tvp = _TV.assert_publishable(_tvo, season=args.season,
+                                          week=args.week)
+            fx['_cs6_team_volume'] = {
+                'collect': f'{_tvo.state.value}[{_tvo.code}]',
+                'publishable': f'{_tvp.state.value}[{_tvp.code}]',
+                'spec_version': _TV.SPEC_VERSION,
+                'completeness': (_tvo.value or {}).get('completeness'),
+                'n_games': (_tvo.value or {}).get('n_games'),
+                'source': (_tvo.value or {}).get('source')}
+            _verified = ({'denom_panel': _tvp, 'team_volume_history': _tvp}
+                         if _tvp.state is State.PASS else {})
             _fresh = _CSE.assert_fresh(
                 _evo, season=args.season, week=args.week,
-                allow_known_stale_for_diagnostic=_diag)
+                allow_known_stale_for_diagnostic=_diag,
+                verified_inputs=_verified)
+            fx['_cs6_verified_inputs'] = sorted(_verified)
+            # Carried so the SEALING check uses the identical verification.
+            fx['_cs6_tv_outcome'] = (_tvp if _tvp.state is State.PASS
+                                     else None)
             fx['_cs6'] = {
                 'evidence': f'{_evo.state.value}[{_evo.code}]',
                 'freshness': f'{_fresh.state.value}[{_fresh.code}]',
@@ -3326,7 +3350,11 @@ def build(args, fixtures: dict = None) -> dict:
                 # and blocked under the other.
                 'denom_panel': dict(
                     scope=FRESH.LEAGUE_WIDE, expected_clubs=_fteams,
-                    present_clubs=_fteams, newest_ordinal=_tv_ord),
+                    present_clubs=_fteams, newest_ordinal=_tv_ord,
+                    # SAME VERIFICATION THE UPSTREAM GATE USED. If the two
+                    # disagreed, a run could pass early and refuse late -- the
+                    # exact failure the upstream gate was added to remove.
+                    verified_current_season=(fx.get('_cs6_tv_outcome'))),
             })
             _inv['current_season_input_freshness'] = _fresh_all
             # --- P2 draw coherence ----------------------------------------

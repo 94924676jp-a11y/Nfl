@@ -356,11 +356,28 @@ def centre(gsis_id: str, *, position: Optional[str], team: Optional[str],
     a.retention = (tot / raw_tot) if raw_tot > 0 else 1.0
     a.n_effective_adjusted = a.n_effective * a.retention
 
-    # Shrinkage target. The depth-tier anchor is used only where the governor
-    # left it available; otherwise the positional mean, which carries no
-    # claim about this player's place in a depth chart.
+    # Shrinkage target, and the refused case is NOT the positional mean.
+    #
+    # MEASURED DEFECT: shrinking a refused role toward the positional mean
+    # PROMOTED the player it was supposed to withhold support from. Patrick
+    # Ricard -- a blocking fullback whose role role_state refuses -- went from
+    # 0.869 to 2.382 projected carries, because the average RB takes more
+    # carries than he does and the mean pulled him UP. A refusal that makes a
+    # player more prominent is not a refusal.
+    #
+    # A refused role shrinks toward the MEASURED COLD-START FLOOR instead: the
+    # median share of a player nobody has established a role for, which is
+    # what a refused role means. The floor can only pull a player down toward
+    # a debutant's workload, never up toward a starter's.
     if a.depth_anchor_available and depth_anchor is not None:
         tgt, tname = float(depth_anchor), 'depth_tier_mean'
+    elif refused:
+        tgt, tname = floor, 'cold_start_floor_refused_role'
+        a.notes.append(
+            'a refused role shrinks toward the measured cold-start floor, '
+            'not the positional mean: shrinking toward a room average can '
+            'RAISE a player the governor declined to support, which is the '
+            'opposite of withholding support')
     elif positional_mean is not None:
         tgt, tname = float(positional_mean), 'positional_mean'
     else:
@@ -380,7 +397,7 @@ def centre(gsis_id: str, *, position: Optional[str], team: Optional[str],
     for w, o in zip(ws, ordered):
         a.contributions[o.tier(target_season)] += w_ev * (w / tot) * o.share
     a.contributions[E_DEPTH if tname == 'depth_tier_mean'
-                    else (E_COLD_START if tname == 'cold_start_floor'
+                    else (E_COLD_START if tname.startswith('cold_start_floor')
                           else E_CAREER)] += (1.0 - w_ev) * tgt
     a.contributions = {k2: v for k2, v in a.contributions.items() if v}
 

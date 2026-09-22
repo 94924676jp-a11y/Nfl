@@ -289,9 +289,14 @@ def test_a_refused_role_with_history_still_shrinks_toward_no_listing():
     hist = [obs(2025, w, 'PIT', 0.40) for w in range(1, 18)]
     sup = C(hist, depth_anchor=0.45, governed_role_support='ROLE_SUPPORTED')
     ref = C(hist, depth_anchor=0.45, governed_role_support='ROLE_UNSUPPORTED')
-    ok(ref.shrinkage_target_name == 'positional_mean' and
+    # CORRECTED. This previously asserted the refused row shrinks toward the
+    # POSITIONAL MEAN. That was the defect: a room average can be HIGHER than
+    # the player, so the refusal raised him. Measured on Patrick Ricard,
+    # 0.869 -> 2.382 carries. A refused role now shrinks toward the measured
+    # cold-start floor, which can only pull down.
+    ok(ref.shrinkage_target_name == 'cold_start_floor_refused_role' and
        sup.shrinkage_target_name == 'depth_tier_mean',
-       f'the refused row shrinks toward the positional mean rather than the '
+       f'the refused row shrinks toward the cold-start floor rather than the '
        f'tier: {ref.shrinkage_target_name} vs {sup.shrinkage_target_name}')
     ok(ref.centre < sup.centre,
        f'which lowers it: {sup.centre:.4f} -> {ref.centre:.4f}')
@@ -339,6 +344,175 @@ def test_deterministic_replay():
        'never by arrival')
 
 
+# -- 7. serial fixes from the Thursday mandate ------------------------------
+def test_current_season_team_volume_is_measured_and_complete():
+    from nfl.production.nonqb import current_season_team_volume as TV
+    o = TV.collect(2026, 2, '2026-09-22T12:00:00Z')
+    ok(o.state.name == 'PASS' and o.code == 'TEAM_VOLUME_MEASURED',
+       f'team volume is measured from the lawful capture: {o.code}')
+    comp = o.value['completeness']['1']
+    ok(comp['clubs_present'] == 32 and comp['complete'],
+       f'all 32 clubs present in week 1: {comp}')
+    ok(o.value['counting_imported_from'].startswith(
+        'current_season_nonqb_panel'),
+       'counting rules are IMPORTED from the player panel, so a share and '
+       'its denominator cannot drift')
+    p = TV.assert_publishable(o, season=2026, week=2)
+    ok(p.state.name == 'PASS', f'and it is publishable for week 2: {p.code}')
+
+
+def test_team_volume_refuses_a_partial_denominator():
+    from nfl.production.nonqb import current_season_team_volume as TV
+    o = TV.collect(2026, 2, '2026-09-22T12:00:00Z')
+    hacked = dict(o.value)
+    hacked['completeness'] = {'1': {'clubs_present': 29, 'clubs_required': 32,
+                                    'complete': False, 'missing_count': 3}}
+    from sportsplatform.governance.outcome import Outcome
+    p = TV.assert_publishable(
+        Outcome.ok('TEAM_VOLUME_MEASURED', hacked), season=2026, week=2)
+    ok(p.state.name == 'BLOCKED' and p.code == 'TEAM_VOLUME_INCOMPLETE',
+       'a denominator missing 3 clubs is refused -- a partial denominator is '
+       'worse than a missing one because it is confidently wrong')
+
+
+def test_team_volume_is_stale_for_a_week_it_cannot_see():
+    from nfl.production.nonqb import current_season_team_volume as TV
+    p = TV.assert_publishable(TV.collect(2026, 3, '2026-09-22T12:00:00Z'),
+                              season=2026, week=3)
+    ok(p.state.name == 'BLOCKED' and p.code == 'TEAM_VOLUME_STALE',
+       'week-1 volume for a week-3 forecast is refused: this is the live '
+       'Week 3 blocker, and the gate catches it')
+
+
+def test_declared_block_lifts_only_on_a_PASSING_verification():
+    from nfl.production import freshness as F
+    from nfl.production.nonqb import current_season_team_volume as TV
+    from sportsplatform.governance.outcome import Outcome, Cause
+    tv = TV.assert_publishable(TV.collect(2026, 2, '2026-09-22T12:00:00Z'),
+                               season=2026, week=2)
+    clubs = ['NYG', 'LA']
+    base = dict(expected_clubs=clubs, present_clubs=clubs,
+                newest_ordinal=202518)
+    a = F.check_input('denom_panel', 2026, 2, **base)
+    ok(a.state.name == 'BLOCKED' and a.code == 'CURRENT_SEASON_SOURCE_UNVERIFIED',
+       'with no verification the declared block stands')
+    b = F.check_input('denom_panel', 2026, 2, verified_current_season=tv,
+                      **base)
+    ok(b.state.name == 'PASS' and b.code == F.CODE_VERIFIED,
+       f'a PASSING verification lifts it: {b.code}')
+    ok(b.evidence['verification']['n_games'] == 16,
+       'and the evidence is recorded on the outcome, not just asserted')
+    c = F.check_input('denom_panel', 2026, 2,
+                      verified_current_season=Outcome.blocked(
+                          'TEAM_VOLUME_INCOMPLETE', 'x', cause=Cause.DATA),
+                      **base)
+    ok(c.state.name == 'BLOCKED',
+       'a FAILED verification is not a verification and does not lift it')
+
+
+def test_a_refused_role_shrinks_down_not_up():
+    """The measured defect: shrinking a refused role toward the positional
+    mean PROMOTED Patrick Ricard from 0.869 to 2.382 carries."""
+    hist = [obs(2025, w, 'NYG', 0.05) for w in range(1, 18)]
+    sup = C(hist, depth_anchor=0.40, positional_mean=0.30,
+            governed_role_support='ROLE_SUPPORTED')
+    ref = C(hist, depth_anchor=0.40, positional_mean=0.30,
+            governed_role_support='ROLE_UNSUPPORTED')
+    ok(ref.shrinkage_target_name == 'cold_start_floor_refused_role',
+       f'a refused role shrinks toward the floor, not a room average: '
+       f'{ref.shrinkage_target_name}')
+    ok(ref.centre < sup.centre,
+       f'so the refusal LOWERS him: {sup.centre:.4f} -> {ref.centre:.4f}')
+    ok(ref.shrinkage_target_value < 0.30,
+       f'and the target is below the positional mean it used to use '
+       f'({ref.shrinkage_target_value:.4f} vs 0.30), so a refusal can never '
+       f'raise a player again')
+
+
+def test_audit_names_the_prior_season_when_that_is_what_supports_an_inversion():
+    from nfl.production.review import audit as AUD
+    from nfl.production.review import dossier as DOS
+    from nfl.production.review import evidence as EVD
+    rows = [dict(game_id='G', season=2026, week=2, team='NYG', opponent='LA',
+                 gsis_id=p, display_name=p, roster_position='RB',
+                 roster_status='ACT', officially_inactive=False,
+                 support_state='MODEL_SUPPORTED', information_cut=CUT,
+                 offensive_depth_rank=r, offensive_depth_state='x',
+                 special_teams_role=None, pfr_id=p.lower(),
+                 injury_report_status=None, injury_practice_status=None)
+            for p, r in (('HI', 4), ('LO', 1))]
+    role = [{'gsis_id': 'HI', 'room': 'carries', 'role': 'BACKUP',
+             'role_support': 'ROLE_SUPPORTED', 'team': 'NYG',
+             'evidence': {'current_season_usage': {'carries': 2.0,
+                                                   'targets': 0.0}}},
+            {'gsis_id': 'LO', 'room': 'carries', 'role': 'STARTER',
+             'role_support': 'ROLE_SUPPORTED', 'team': 'NYG',
+             'evidence': {'current_season_usage': {'carries': 18.0,
+                                                   'targets': 0.0}}}]
+    snaps = [{'pfr_player_id': 'hi', 'offense_pct': '0.03', 'week': '1',
+              'team': 'NYG'},
+             {'pfr_player_id': 'lo', 'offense_pct': '0.61', 'week': '1',
+              'team': 'NYG'}]
+    att = {'HI': {'contributions': {'PRIOR_SEASON_MEASURED': 0.40,
+                                    'CURRENT_SEASON_MEASURED': 0.05}}}
+    ds = DOS.build_dossiers(universe_rows=rows, role_rows=role,
+                            snap_rows=snaps, information_cut=CUT,
+                            opportunity_attribution=att).value['dossiers']
+    for d in ds:
+        d.projection['carries'] = EVD.ProjectionComponent(
+            'carries', 8.0 if d.gsis_id == 'HI' else 6.0, EVD.MEASURED)
+        d.projection['dk_points'] = EVD.ProjectionComponent(
+            'dk_points', 9.0, EVD.MEASURED)
+    res = AUD.audit(ds).value
+    codes = {c['code'] for c in res['conflicts']}
+    ok(AUD.C_INVERSION_ON_STALE_SEASON in codes,
+       f'the audit names the prior season as what supports the inversion: '
+       f'{sorted(codes)}')
+    ok(AUD.C_ROOM_ORDER_INVERTED not in codes,
+       'and no longer claims "no axis the review can read" supports it')
+    c = next(x for x in res['conflicts']
+             if x['code'] == AUD.C_INVERSION_ON_STALE_SEASON)
+    ok(c['evidence']['dominant_tier'] == 'PRIOR_SEASON_MEASURED',
+       f'naming the tier: {c["evidence"]["dominant_tier"]}')
+
+
+def test_audit_still_fires_plainly_when_no_attribution_supports_it():
+    from nfl.production.review import audit as AUD
+    from nfl.production.review import dossier as DOS
+    from nfl.production.review import evidence as EVD
+    rows = [dict(game_id='G', season=2026, week=2, team='NYG', opponent='LA',
+                 gsis_id=p, display_name=p, roster_position='RB',
+                 roster_status='ACT', officially_inactive=False,
+                 support_state='MODEL_SUPPORTED', information_cut=CUT,
+                 offensive_depth_rank=r, offensive_depth_state='x',
+                 special_teams_role=None, pfr_id=p.lower(),
+                 injury_report_status=None, injury_practice_status=None)
+            for p, r in (('HI', 4), ('LO', 1))]
+    role = [{'gsis_id': 'HI', 'room': 'carries', 'role': 'BACKUP',
+             'role_support': 'ROLE_SUPPORTED', 'team': 'NYG',
+             'evidence': {'current_season_usage': {'carries': 2.0}}},
+            {'gsis_id': 'LO', 'room': 'carries', 'role': 'STARTER',
+             'role_support': 'ROLE_SUPPORTED', 'team': 'NYG',
+             'evidence': {'current_season_usage': {'carries': 18.0}}}]
+    snaps = [{'pfr_player_id': 'hi', 'offense_pct': '0.03', 'week': '1',
+              'team': 'NYG'},
+             {'pfr_player_id': 'lo', 'offense_pct': '0.61', 'week': '1',
+              'team': 'NYG'}]
+    att = {'HI': {'contributions': {'CURRENT_SEASON_MEASURED': 0.40,
+                                    'PRIOR_SEASON_MEASURED': 0.05}}}
+    ds = DOS.build_dossiers(universe_rows=rows, role_rows=role,
+                            snap_rows=snaps, information_cut=CUT,
+                            opportunity_attribution=att).value['dossiers']
+    for d in ds:
+        d.projection['carries'] = EVD.ProjectionComponent(
+            'carries', 8.0 if d.gsis_id == 'HI' else 6.0, EVD.MEASURED)
+    res = AUD.audit(ds).value
+    codes = {c['code'] for c in res['conflicts']}
+    ok(AUD.C_ROOM_ORDER_INVERTED in codes,
+       'when the attribution names no stale tier that outweighs current '
+       'evidence, the plain inversion still fires')
+
+
 def main():
     for t in (test_week_n_cannot_read_week_n_or_later,
               test_week_2_of_2026_actually_reads_week_1_of_2026,
@@ -362,7 +536,14 @@ def main():
               test_stage6_refuses_without_estimated_parameters,
               test_the_parameters_came_from_a_predeclared_fit,
               test_the_new_candidate_mode_is_a_new_identity,
-              test_deterministic_replay):
+              test_deterministic_replay,
+              test_current_season_team_volume_is_measured_and_complete,
+              test_team_volume_refuses_a_partial_denominator,
+              test_team_volume_is_stale_for_a_week_it_cannot_see,
+              test_declared_block_lifts_only_on_a_PASSING_verification,
+              test_a_refused_role_shrinks_down_not_up,
+              test_audit_names_the_prior_season_when_that_is_what_supports_an_inversion,
+              test_audit_still_fires_plainly_when_no_attribution_supports_it):
         print(f'== {t.__name__}')
         t()
     print(f'\nPASSED {PASSED} FAILED {FAILED}')

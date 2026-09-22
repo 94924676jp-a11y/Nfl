@@ -57,12 +57,13 @@ C_ROOM_ORDER_INVERTED = 'ROOM_OPPORTUNITY_ORDER_INVERTS_ROLE_ORDER'
 C_RECEIVING_ROLE_ON_SNAPS_ONLY = 'RECEIVING_ROLE_RESTS_ON_RAW_SNAPS_ONLY'
 C_NOT_EMITTED = 'ACTIVE_PLAYER_NOT_EMITTED_BY_MODEL'
 C_REDISTRIBUTION_DOMINATES = 'REDISTRIBUTED_OPPORTUNITY_DOMINATES_MEASURED'
+C_INVERSION_ON_STALE_SEASON = 'ROOM_ORDER_INVERSION_RESTS_ON_A_PRIOR_SEASON'
 
 CONFLICTS = (C_INACTIVE_OWNS_OPPORTUNITY, C_DECLARED_STARTER_ZERO,
              C_UNSUPPORTED_ROLE_PUBLISHED, C_COLD_START_MATERIAL,
              C_ST_ONLY_OFFENSIVE_LOAD, C_ROOM_ORDER_INVERTED,
              C_RECEIVING_ROLE_ON_SNAPS_ONLY, C_NOT_EMITTED,
-             C_REDISTRIBUTION_DOMINATES)
+             C_REDISTRIBUTION_DOMINATES, C_INVERSION_ON_STALE_SEASON)
 
 #: Opportunity metrics by room. A "material" projection means opportunity,
 #: not fantasy points, because points are a scoring convention and carries
@@ -285,6 +286,43 @@ def _room_order_conflicts(dossiers, material_opportunity) -> List[Dict]:
                     if EV.MEASURED in (a, b)]
                 if not readable:
                     continue
+                # WHAT DOES THE GENERATOR SAY IT USED? Stage 6 emits its own
+                # decomposition, and reading it is the difference between
+                # "nothing supports this" and "something does, and it is
+                # older than the evidence that disagrees". Those are
+                # different findings and only one of them is a defect.
+                att_hi = hi.value('opportunity_attribution') or {}
+                contrib = att_hi.get('contributions') or {}
+                stale_tier = max(
+                    (k for k in ('PRIOR_SEASON_MEASURED', 'CAREER_HISTORY')
+                     if contrib.get(k)),
+                    key=lambda k: contrib.get(k, 0.0), default=None)
+                cur = contrib.get('CURRENT_SEASON_MEASURED', 0.0)
+                if stale_tier and contrib[stale_tier] > cur:
+                    out.append(_conf(
+                        C_INVERSION_ON_STALE_SEASON, REVIEW, hi,
+                        f'listed {room} rank {rank_hi} and projected '
+                        f'{o_hi:.3f} {metric} ahead of '
+                        f'{lo.display_name} at rank {rank_lo} on '
+                        f'{o_lo:.3f}, measuring no higher on any '
+                        f'CURRENT-season axis. Stage 6 says the projection '
+                        f'rests on {stale_tier} '
+                        f'({contrib[stale_tier]:.4f}) over current-season '
+                        f'evidence ({cur:.4f}). Something DOES support the '
+                        f'inversion -- it is just older than the evidence '
+                        f'that contradicts it.',
+                        room=room, metric=metric, team=team,
+                        axes_readable=readable,
+                        dominant_tier=stale_tier,
+                        contributions=contrib,
+                        higher={'gsis_id': hi.gsis_id, 'rank': rank_hi,
+                                metric: o_hi, 'snap_share': m_hi,
+                                'prior_usage': u_hi},
+                        lower={'gsis_id': lo.gsis_id,
+                               'display_name': lo.display_name,
+                               'rank': rank_lo, metric: o_lo,
+                               'snap_share': m_lo, 'prior_usage': u_lo}))
+                    continue
                 out.append(_conf(
                     C_ROOM_ORDER_INVERTED, REVIEW, hi,
                     f'listed {room} rank {rank_hi} and projected '
@@ -292,8 +330,12 @@ def _room_order_conflicts(dossiers, material_opportunity) -> List[Dict]:
                     f'{lo.display_name} at rank {rank_lo} on {o_lo:.3f} -- '
                     f'while also measuring no higher on snap share '
                     f'({m_hi:.4f} vs {m_lo:.4f}) or on prior usage '
-                    f'({u_hi:.3f} vs {u_lo:.3f}). The inversion is not '
-                    f'supported by any axis the review can read.',
+                    f'({u_hi:.3f} vs {u_lo:.3f}). '
+                    + ('Stage 6 emitted no attribution for him, so the '
+                       'review cannot say what it rests on.'
+                       if not att_hi else
+                       'Stage 6\'s own decomposition names no tier that '
+                       'outweighs his current-season evidence either.'),
                     room=room, metric=metric, team=team,
                     axes_readable=readable,
                     higher={'gsis_id': hi.gsis_id, 'rank': rank_hi,

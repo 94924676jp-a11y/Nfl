@@ -199,7 +199,8 @@ def declared_blocked_inputs() -> Dict[str, str]:
 def assert_fresh(ev: Outcome, *, season: int, week: int,
                  claims_current_season: bool = True,
                  check_declared_blocked: bool = True,
-                 allow_known_stale_for_diagnostic: bool = False) -> Outcome:
+                 allow_known_stale_for_diagnostic: bool = False,
+                 verified_inputs=None) -> Outcome:
     """The upstream freshness gate. Refuse BEFORE simulation, not at sealing.
 
     `current_season_input_freshness` already refused the old run -- at
@@ -242,6 +243,12 @@ def assert_fresh(ev: Outcome, *, season: int, week: int,
     # seconds, on `denom_panel` and `team_volume_history`. Those are a
     # property of the registry and knowable now.
     blocked = declared_blocked_inputs() if check_declared_blocked else {}
+    # A declared block that THIS RUN has verified is not a block. The
+    # verification is a passing Outcome from a verifier that measured
+    # completeness, not a flag.
+    verified = {k: v for k, v in (verified_inputs or {}).items()
+                if getattr(getattr(v, 'state', None), 'name', None) == 'PASS'}
+    blocked = {k: v for k, v in blocked.items() if k not in verified}
     if blocked and not allow_known_stale_for_diagnostic:
         return Outcome.blocked(
             STALE,
@@ -260,6 +267,8 @@ def assert_fresh(ev: Outcome, *, season: int, week: int,
          'n_players': ev.value.get('n_players'),
          'sources': ev.value.get('sources'),
          'declared_blocked': blocked,
+         'verified_this_run': {k: getattr(v, 'code', None)
+                               for k, v in verified.items()},
          'publishable': not blocked,
          'diagnostic_override_used': bool(blocked and
                                           allow_known_stale_for_diagnostic)},

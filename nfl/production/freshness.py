@@ -115,9 +115,12 @@ def required_ordinal(season: int, week: int) -> int:
     return int(season) * 100 + (int(week) - MAX_TRAIL_WEEKS)
 
 
+CODE_VERIFIED = 'CURRENT_SEASON_SOURCE_VERIFIED_THIS_RUN'
+
+
 def check_input(input_id: str, season: int, week: int, *, scope=None,
                 newest_ordinal=None, expected_clubs=None, present_clubs=None,
-                provenance=None) -> Outcome:
+                provenance=None, verified_current_season=None) -> Outcome:
     """One registered input, at a declared scope.
 
     `expected_clubs` is REQUIRED at LEAGUE_WIDE and at FIXTURE_LOCAL alike. The
@@ -162,6 +165,41 @@ def check_input(input_id: str, season: int, week: int, *, scope=None,
             f'{input_id}: week {week} crosses a season boundary by definition, '
             f'so there is no current-season prior week to require. This is an '
             f'EXEMPTION and is not a passing freshness check.', **ev)
+
+    # THE DECLARED BLOCK IS A STATEMENT ABOUT VERIFICATION, NOT A VERDICT
+    # FOR ALL TIME. It was written because the 2026 source's vintage,
+    # completeness, coverage, field definitions and identity behaviour were
+    # not established. A caller that HAS established them, for THIS run, on
+    # THIS capture, may say so -- and must pass the evidence, which is
+    # recorded. Nothing is lifted by a flag: `verified_current_season` is the
+    # PASS outcome of a verifier that measured completeness and refused on a
+    # partial denominator.
+    if spec.get('declared_blocked') and verified_current_season is not None:
+        vo = verified_current_season
+        ok_state = getattr(getattr(vo, 'state', None), 'name', None) == 'PASS'
+        if not ok_state:
+            return Outcome.blocked(
+                CODE_UNVERIFIED,
+                f'{input_id} is BLOCKED BY DECLARATION and the verification '
+                f'offered for it did not pass: '
+                f'{getattr(vo, "code", vo)!r}. A failed verification is not a '
+                f'verification.', cause=Cause.DATA, **ev)
+        vv = getattr(vo, 'value', None) or {}
+        ev['verification'] = {
+            'code': getattr(vo, 'code', None),
+            'detail': str(getattr(vo, 'detail', ''))[:300],
+            'max_week_used': vv.get('max_week_used'),
+            'n_games': vv.get('n_games'),
+            'completeness': vv.get('completeness'),
+            'source': vv.get('source'),
+            'supersedes': vv.get('supersedes'),
+            'still_from_this_input': vv.get('still_from_denom_panel')}
+        return Outcome.ok(
+            CODE_VERIFIED,
+            f'{input_id} was blocked by declaration as unverified; this run '
+            f'supplied a passing verification of the current-season source '
+            f'({getattr(vo, "code", "?")}), so the declared block does not '
+            f'apply to it. The evidence is recorded on this outcome.', **ev)
 
     if spec.get('declared_blocked'):
         return Outcome.blocked(

@@ -69,7 +69,8 @@ AXIS_ORDER = (
     'routes', 'routes_per_dropback', 'pass_block_snaps', 'run_block_snaps',
     'personnel_11', 'personnel_12', 'personnel_13', 'personnel_21',
     'alignment_slot_outside',
-    'vacated_opportunity', 'coach_news', 'transactions',
+    'vacated_opportunity', 'opportunity_attribution',
+    'coach_news', 'transactions',
 )
 
 #: Metrics pulled out of the draw store for the projection decomposition, as
@@ -293,6 +294,7 @@ def build_dossiers(*, universe_rows: Sequence[dict],
                    projection: Optional[dict] = None,
                    inactive_ids=None,
                    vacated: Optional[Dict[str, dict]] = None,
+                   opportunity_attribution: Optional[Dict[str, dict]] = None,
                    information_cut: Optional[str] = None) -> Outcome:
     """A dossier for EVERY player in the universe, not only the projected ones.
 
@@ -455,6 +457,20 @@ def build_dossiers(*, universe_rows: Sequence[dict],
                            source='lawful play-by-play usage panel, prior '
                                   'weeks, club of record '
                                   f'{cu.get("club_of_record")}')
+
+        # STAGE-6 ATTRIBUTION, read rather than reconstructed. The audit used
+        # to say an inversion was "not supported by any axis the review can
+        # read" while the supporting axis -- the prior-season share -- was one
+        # it could not see. This is that axis, emitted by the layer that used
+        # it.
+        att = (opportunity_attribution or {}).get(pid)
+        A['opportunity_attribution'] = EV.Axis(
+            'opportunity_attribution', att,
+            EV.MEASURED if att else EV.UNAVAILABLE,
+            source='opportunity_centre (Stage 6)',
+            note=None if att else 'this run emitted no Stage-6 attribution; '
+                                  'the audit must then say so rather than '
+                                  'claiming no axis supports a projection')
 
         vac = vacated.get(pid)
         A['vacated_opportunity'] = EV.Axis(

@@ -2199,3 +2199,42 @@ is a false statement about the evidence.
 **Not to be worked around.** No synthesis of 2026 route or personnel data from
 snaps, from prior seasons, or from any model. The axes stay UNAVAILABLE until
 real point-in-time bytes exist.
+
+---
+
+## URGENT 2026-09-22 — WEEK 2 PLAY-BY-PLAY BLOCKS THE ENTIRE WEEK 3 SLATE
+
+**This is the single highest-priority external dependency and it is on the
+Thursday critical path.**
+
+Measured at cut 2026-09-22T12:00Z:
+
+| source | weeks present | needed for a week-3 forecast |
+|---|---|---|
+| `usage_vintage` play-by-play 2026 | **[1] only** | weeks 1 and 2 |
+| PFR snap counts 2026 | [1, 2] | weeks 1 and 2 |
+
+The two current-season sources are at **different freshness**. Snaps already
+carry week 2; play-by-play does not.
+
+**Consequence, and it is not a soft one.** `current_season_evidence.assert_fresh`
+refuses a week-3 forecast with `CURRENT_SEASON_INPUT_STALE`, because the newest
+usage week available is 1 and a week-3 forecast needs week 2. That is the gate
+working as designed — it will not let a week-3 slate publish off week-1
+opportunity — and it means **no Week 3 projection can be produced until week-2
+play-by-play is captured.**
+
+**What is needed:** the 2026 week-2 play-by-play, all 16 games, into the
+governed vintage store, with a retrieval clock. The same source and shape as
+`pbp_2026.b69f55a172965e16.csv.gz`, which carried week 1 across all 32 clubs.
+
+**Deadline:** before Thursday 2026-09-24. The Sunday main slate (2026-09-27,
+16 games) is the acceptance target and cannot be researched without it.
+
+**What is NOT needed:** nothing is to be synthesised, back-filled from snaps,
+or inferred. Snap counts are not usage. A week-3 forecast built on week-1
+opportunity is exactly what the repair this week was for.
+
+**Also still open, from the 2026-09-22 request above:** routes, routes per
+dropback, pass/run blocking split, personnel packages, alignment. Those are
+WARNING-level and do not block a slate. Week-2 play-by-play is BLOCKING.
