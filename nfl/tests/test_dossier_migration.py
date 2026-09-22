@@ -99,12 +99,15 @@ def fixture():
         information_cut=CUT)
 
 
-def _ref_hash(d):
+def _ref_hash(d, exclude_axes=()):
     """The reference dossier's football body, hashed the same way the
     migrated one hashes its own. spec_version is excluded because the frozen
     copy was deliberately renamed so an artifact can never be confused about
-    which builder wrote it."""
+    which builder wrote it. `exclude_axes` names any axis under a declared
+    semantic change."""
     body = dict(d.as_dict(), spec_version='COMPARED_WITHOUT_SPEC_VERSION')
+    body['axes'] = {k: v for k, v in body['axes'].items()
+                    if k not in exclude_axes}
     return hashlib.sha256(json.dumps(
         body, sort_keys=True, separators=(',', ':'),
         default=str).encode()).hexdigest()[:16]
@@ -146,10 +149,16 @@ def test_equivalence_field_by_field():
                 diffs[k] += 1
                 example.setdefault(k, (pid, da.get(k), db.get(k)))
 
-    # CATEGORY 1 (serialization-only) and CATEGORY 3 (behavioural) must both
-    # be empty. spec_version is the one declared difference and it is neither
-    # -- the frozen copy was renamed on purpose.
-    declared = {'spec_version'}
+    # Two DECLARED differences, and nothing else may differ.
+    #   spec_version          -- the frozen copy was renamed on purpose.
+    #   axes.official_availability -- the availability semantics slice. The
+    #     old builder called every unlisted player ACTIVE once a non-empty
+    #     inactive set had been passed. That was a documented defect, it was
+    #     corrected deliberately, and every changed player is enumerated in
+    #     nfl/research/state/AVAILABILITY_SEMANTICS_CHANGE.json and asserted
+    #     in test_availability_semantics.py. It is NOT a regression of this
+    #     migration and it is not compared here.
+    declared = {'spec_version', 'axes.official_availability'}
     real = {k: v for k, v in diffs.items() if k not in declared}
     ok(not real, f'no behavioural difference in any field of any dossier: '
                  f'{dict(real) or "none"}')
@@ -159,8 +168,12 @@ def test_equivalence_field_by_field():
             print(f'        ref {json.dumps(x, default=str)[:300]}')
             print(f'        new {json.dumps(y, default=str)[:300]}')
     ok(diffs.get('spec_version') == len(A),
-       f'the only difference is spec_version, on all {len(A)} dossiers, '
-       f'because the frozen reference was deliberately renamed')
+       f'spec_version differs on all {len(A)} dossiers, because the frozen '
+       f'reference was deliberately renamed')
+    ok(diffs.get('axes.official_availability', 0) > 0,
+       f'and availability differs on '
+       f'{diffs.get("axes.official_availability", 0)} of {len(A)} -- the '
+       f'declared semantic correction, proved separately')
     n_axes = len(R.AXIS_ORDER)
     print(f'  ---- {len(A)} dossiers x {n_axes} axes compared, '
           f'{sum(real.values())} behavioural difference(s) ----')
@@ -172,10 +185,14 @@ def test_whole_dossier_hashes_match():
     b = D.build_dossiers(**kw)
     A = {d.gsis_id: d for d in a.value['dossiers']}
     B = {d.gsis_id: d for d in b.value['dossiers']}
-    same = sum(1 for pid in A if _ref_hash(A[pid]) == B[pid].football_hash())
+    X = ('official_availability',)
+    same = sum(1 for pid in A
+               if _ref_hash(A[pid], X) == B[pid].football_hash(X))
     ok(same == len(A),
-       f'football-body hash identical for {same}/{len(A)} dossiers')
-    bad = [pid for pid in A if _ref_hash(A[pid]) != B[pid].football_hash()]
+       f'football-body hash identical for {same}/{len(A)} dossiers, with '
+       f'the availability axis excluded by name and proved separately')
+    bad = [pid for pid in A
+           if _ref_hash(A[pid], X) != B[pid].football_hash(X)]
     if bad:
         print(f'      first mismatch: {bad[0]}')
 
@@ -351,25 +368,24 @@ def test_unknown_starter_is_not_false():
        f'and the {len(listed)} who ARE listed carry a real boolean')
 
 
-def test_not_on_inactive_list_is_not_active_in_canonical_state():
-    """The invariant holds where the football truth lives. The dossier's own
-    translation to ACTIVE is a pre-existing behaviour, preserved unchanged by
-    this migration and recorded as an open question -- see
-    `_availability_axis`."""
+def test_not_on_inactive_list_is_not_active_anywhere():
+    """When this test was written the dossier still translated
+    NOT_ON_INACTIVE_LIST to ACTIVE, and it asserted that, calling it an open
+    question. The question has since been answered: absence from a negative
+    list is not affirmative evidence, and ACTIVE is now unreachable in the
+    dossier too."""
     ids = [r['gsis_id'] for r in PU.build(SEASON, WEEK, GAME, CUT).value
            if r['gsis_id']]
     s = SS.build_one_game(SEASON, WEEK, GAME, CUT,
                           inactive_ids=set(ids[:3])).value
     others = [p for p in s.players if p.gsis_id not in set(ids[:3])]
-    ok(all(p.availability.value == 'NOT_ON_INACTIVE_LIST' for p in others),
-       f'canonical state says NOT_ON_INACTIVE_LIST for {len(others)} '
-       f'players, never ACTIVE')
+    ok(not any(p.availability.value == 'ACTIVE' for p in others),
+       f'canonical state calls none of {len(others)} unlisted players ACTIVE')
     d = D.build_from_state(s, information_cut=CUT)
     tr = {pd.axis('official_availability').value
           for pd in d.value['dossiers'] if pd.gsis_id not in set(ids[:3])}
-    ok(tr == {'ACTIVE'},
-       f'the dossier still translates that to {tr} -- unchanged by this '
-       f'migration, and returned as an open question rather than fixed here')
+    ok('ACTIVE' not in tr,
+       f'and neither does the dossier: {sorted(tr)}')
 
 
 def test_missing_optional_evidence_reduces_confidence_without_inventing():
@@ -397,7 +413,7 @@ def main():
               test_provenance_is_preserved_not_flattened,
               test_unavailable_is_not_zero,
               test_unknown_starter_is_not_false,
-              test_not_on_inactive_list_is_not_active_in_canonical_state,
+              test_not_on_inactive_list_is_not_active_anywhere,
               test_missing_optional_evidence_reduces_confidence_without_inventing):
         print(f'== {t.__name__}')
         t()

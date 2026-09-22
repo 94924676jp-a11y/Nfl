@@ -53,6 +53,7 @@ if str(_REPO) not in sys.path:
 
 from nfl.production.nonqb import vintage_selector as VS               # noqa: E402
 from nfl.production.review import evidence as EV                      # noqa: E402
+from nfl.production.state import availability as AV                   # noqa: E402
 from nfl.production.state import registry as FR                       # noqa: E402
 from nfl.production.universe import player_universe as PU             # noqa: E402
 from nfl.production.universe import role_state as RS                  # noqa: E402
@@ -426,12 +427,15 @@ class _SourceCtx:
     depth_obs: Optional[str]
     injury: Optional[str]
     injury_obs: Optional[str]
-    have_inactives: bool
+    #: What is actually known about the official inactive declaration. A
+    #: STRUCTURE, never a boolean derived from a container's shape -- that
+    #: substitution is the defect this field exists to make impossible.
+    inactive_evidence: 'AV.InactiveEvidence'
     verified: bool
 
     @staticmethod
     def from_verified(sources: Dict, cut: str, *,
-                      have_inactives: bool) -> '_SourceCtx':
+                      inactive_evidence) -> '_SourceCtx':
         def tag(fam):
             d = sources.get(fam) or {}
             if d.get('state') != 'PASS':
@@ -441,13 +445,13 @@ class _SourceCtx:
         r, ro = tag('weekly_rosters')
         dp, do = tag('depth_charts')
         ij, io = tag('injuries')
-        return _SourceCtx(r, ro, dp, do, ij, io, have_inactives, True)
+        return _SourceCtx(r, ro, dp, do, ij, io, inactive_evidence, True)
 
     @staticmethod
-    def legacy(cut: str, *, have_inactives: bool) -> '_SourceCtx':
+    def legacy(cut: str, *, inactive_evidence) -> '_SourceCtx':
         m = ('supplied as already-built universe rows by the legacy call '
              'path; no vintage capture was read or hashed by this builder')
-        return _SourceCtx(m, cut, m, cut, m, cut, have_inactives, False)
+        return _SourceCtx(m, cut, m, cut, m, cut, inactive_evidence, False)
 
 
 def participation_from_snaps(snap_rows: Sequence[dict]) -> Dict[str, Any]:
@@ -558,22 +562,14 @@ def player_states(universe_rows: Sequence[dict], *, cut: str, game_id: str,
             starter = _declared('declared_starter', off_rank == 1, ctx.depth,
                                 ctx.depth_obs,
                                 note=f'offensive depth rank {off_rank}')
-        if ctx.have_inactives:
-            avail = _declared(
-                'availability',
-                'INACTIVE' if r.get('officially_inactive')
-                else 'NOT_ON_INACTIVE_LIST',
-                'official_inactives', cut,
-                note='NOT_ON_INACTIVE_LIST is not ACTIVE. ACTIVE may not be '
-                     'inferred from omission unless the governing source '
-                     'permits it.')
-        else:
-            avail = _not_supplied(
-                'availability',
-                'no official inactive list was supplied to this build. '
-                'Availability is therefore unknown, and it may not be '
-                'inferred from roster status or from DraftKings salary '
-                'presence.')
+        # AVAILABILITY IS DECIDED IN ONE PLACE and it is not here. The rules
+        # -- what the inactive publication does and does not assert, what an
+        # injury designation adds, and why GAME_ACTIVE is unreachable from
+        # any source in this checkout -- live in `state/availability.py`.
+        avail = AV.classify(
+            pid, evidence=ctx.inactive_evidence,
+            injury_report_status=r.get('injury_report_status'),
+            already_flagged_inactive=bool(r.get('officially_inactive')))
         role = role_by_id.get(pid)
         # ROOM. Position states it; the role layer's own room is preferred
         # when it has one, so the two agree wherever both exist. This lived
@@ -673,6 +669,7 @@ def player_states(universe_rows: Sequence[dict], *, cut: str, game_id: str,
 
 def build_one_game(season: int, week: int, game_id: str, cut: str, *,
                    emitted_ids=None, inactive_ids=None, removed_ids=None,
+                   inactive_evidence=None,
                    salary_resolved_ids=None,
                    role_by_id: Dict[str, Any] = None,
                    dfs_position_by_id: Dict[str, str] = None,
@@ -716,9 +713,18 @@ def build_one_game(season: int, week: int, game_id: str, cut: str, *,
     if uni.state.name != 'PASS':
         return uni
 
-    have_inactives = inactive_ids is not None
-    ctx = _SourceCtx.from_verified(sources, cut,
-                                   have_inactives=have_inactives)
+    # `inactive_ids` alone becomes PARTIAL evidence, whatever its size.
+    # Claiming COMPLETE requires passing `inactive_evidence` built from the
+    # inactives layer, which decides completeness from both clubs having
+    # published rather than from a set being non-empty.
+    inev = inactive_evidence or (
+        AV.InactiveEvidence.from_ids(inactive_ids, game_id=game_id,
+                                     clubs=(game.away, game.home),
+                                     retrieved_at=cut)
+        if inactive_ids is not None
+        else AV.InactiveEvidence.absent(game_id))
+    have_inactives = inev.usable
+    ctx = _SourceCtx.from_verified(sources, cut, inactive_evidence=inev)
     players = player_states(
         uni.value, cut=cut, game_id=game_id, ctx=ctx, registry=reg,
         role_by_id=role_by_id, dfs_position_by_id=dfs_position_by_id,
@@ -747,9 +753,15 @@ def build_one_game(season: int, week: int, game_id: str, cut: str, *,
                        'until it is migrated deliberately.')
                 for n in ('team_dropbacks', 'team_carries', 'team_targets')},
             availability_verdict={
-                'official_inactives_supplied': have_inactives,
-                'note': 'without an official inactive list no availability '
-                        'claim is made for any player on this club'},
+                'completeness_verdict': inev.completeness_verdict,
+                'clubs_declared': list(inev.clubs_declared),
+                'source': inev.source, 'retrieved_at': inev.retrieved_at,
+                'content_hash': inev.content_hash,
+                'why': inev.why,
+                'note': 'COMPLETE establishes who is OUT. It does not '
+                        'establish who is dressing, and no state here '
+                        'reaches GAME_ACTIVE. ' +
+                        AV.WHY_GAME_ACTIVE_IS_UNREACHABLE},
         ))
 
     fresh = {
@@ -760,6 +772,7 @@ def build_one_game(season: int, week: int, game_id: str, cut: str, *,
                  'it is not the chain-level freshness gate, which stays '
                  'where it is until its consumer is migrated.'),
         'universe_evidence_missing': bool(uni.evidence.get('evidence_missing')),
+        'inactive_completeness': inev.completeness_verdict,
     }
     state = PregameSlateState(
         state_version=SPEC_VERSION,
@@ -797,6 +810,7 @@ def state_from_legacy_rows(universe_rows: Sequence[dict], *,
                            snap_rows: Sequence[dict] = (),
                            usage_rows=(),
                            inactive_ids=None,
+                           inactive_evidence=None,
                            information_cut: str = None,
                            registry: FR.Registry = None) -> Outcome:
     """A PregameSlateState from rows a caller ALREADY built.
@@ -819,7 +833,6 @@ def state_from_legacy_rows(universe_rows: Sequence[dict], *,
             'An empty state is not a state.', cause=Cause.DATA)
     reg = registry or FR.PREGAME
     inactive_ids = set(inactive_ids or ())
-    have = bool(inactive_ids)
     cut = information_cut or (universe_rows[0] or {}).get('information_cut')
     game_id = (universe_rows[0] or {}).get('game_id')
 
@@ -867,7 +880,11 @@ def state_from_legacy_rows(universe_rows: Sequence[dict], *,
             (rev or {}).get('current_season_usage', {}), totals.get(pid, {})))
         current[pid] = d
 
-    ctx = _SourceCtx.legacy(cut, have_inactives=have)
+    inev = inactive_evidence or (
+        AV.InactiveEvidence.from_ids(inactive_ids, game_id=game_id,
+                                     retrieved_at=cut)
+        if inactive_ids else AV.InactiveEvidence.absent(game_id))
+    ctx = _SourceCtx.legacy(cut, inactive_evidence=inev)
     players = player_states(rows, cut=cut, game_id=game_id, ctx=ctx,
                             registry=reg, role_by_id=role_by_id,
                             current_season_by_id=current)
@@ -880,6 +897,7 @@ def state_from_legacy_rows(universe_rows: Sequence[dict], *,
         source_hashes={},
         freshness={'verdict': 'SOURCES_NOT_RECORDED',
                    'degraded_families': [],
+                   'inactive_completeness': inev.completeness_verdict,
                    'note': 'built from rows supplied by a caller, not from '
                            'the vintage store. No capture was selected, so '
                            'no content hash can be claimed. This is a '

@@ -189,17 +189,34 @@ def test_a_cold_start_player_is_not_reported_as_measured_zero():
 def test_availability_without_a_board_is_not_active():
     d = dossiers_from([mk()])[0]
     a = d.axis('official_availability')
-    ok(a.value == 'NOT_DECLARED' and a.grade == EV.UNAVAILABLE,
-       'with no inactive board the axis reads NOT_DECLARED/UNAVAILABLE')
+    ok(a.value == 'UNKNOWN' and a.grade == EV.UNAVAILABLE,
+       'with no inactive evidence the axis reads UNKNOWN/UNAVAILABLE')
 
 
-def test_availability_with_a_board_is_declared_both_ways():
+def test_an_unlisted_player_is_never_active():
+    """THIS TEST USED TO ASSERT THE DEFECT. Its previous form read:
+
+        ok(a['A'].value == 'ACTIVE' ...,
+           'and an unlisted one reads ACTIVE only because the board is
+            complete')
+
+    The board was not established as complete -- a non-empty set had been
+    passed, which is not the same claim -- and even a complete board would
+    not license ACTIVE. The inactives publication asserts who is OUT, and its
+    complement holds players who will dress alongside practice-squad members
+    who were never going to. Owner ruling 2026-09-10 item 4, already
+    implemented in nonqb/inactives.py, which returns no set named `active`.
+    """
     ds = dossiers_from([mk('A'), mk('B')], inactive_ids={'B'})
     a = {d.gsis_id: d.axis('official_availability') for d in ds}
     ok(a['B'].value == 'INACTIVE' and a['B'].grade == EV.DECLARED,
        'a listed player reads INACTIVE/DECLARED')
-    ok(a['A'].value == 'ACTIVE' and a['A'].grade == EV.DECLARED,
-       'and an unlisted one reads ACTIVE only because the board is complete')
+    ok(a['A'].value == 'NOT_ON_INACTIVE_LIST',
+       f'and an unlisted one reads NOT_ON_INACTIVE_LIST, never ACTIVE: '
+       f'{a["A"].value}')
+    ok(a['A'].grade == EV.UNAVAILABLE,
+       'graded UNAVAILABLE, because a bare set of ids does not establish '
+       'that both clubs have published')
 
 
 # -- 4. the audit ------------------------------------------------------------
@@ -455,7 +472,7 @@ def main():
               test_unavailable_sources_are_on_every_dossier,
               test_a_cold_start_player_is_not_reported_as_measured_zero,
               test_availability_without_a_board_is_not_active,
-              test_availability_with_a_board_is_declared_both_ways,
+              test_an_unlisted_player_is_never_active,
               test_inactive_player_owning_opportunity_is_blocking,
               test_special_teams_only_offensive_load_is_blocking,
               test_inversion_is_not_raised_when_measured_usage_supports_it,

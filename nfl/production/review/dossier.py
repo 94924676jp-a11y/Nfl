@@ -68,6 +68,7 @@ if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
 from nfl.production.review import evidence as EV                   # noqa: E402
+from nfl.production.state import availability as AV               # noqa: E402
 from nfl.production.state import slate_state as SS                 # noqa: E402
 from sportsplatform.governance.outcome import Cause, Outcome       # noqa: E402
 
@@ -286,7 +287,8 @@ class PlayerPregameDossier:
             'state_identity': self.state_identity,
         }
 
-    def football_body(self) -> Dict[str, Any]:
+    def football_body(self, exclude_axes: Sequence[str] = ()
+                      ) -> Dict[str, Any]:
         """Everything a dossier SAYS about football, without the canonical
         metadata the migration added. This is the thing two builders have to
         agree on exactly; `evidence_provenance` and `state_identity` are new
@@ -296,11 +298,17 @@ class PlayerPregameDossier:
         for k in ('evidence_provenance', 'state_identity'):
             d.pop(k, None)
         d['spec_version'] = 'COMPARED_WITHOUT_SPEC_VERSION'
+        for a in exclude_axes:
+            d['axes'].pop(a, None)
         return d
 
-    def football_hash(self) -> str:
+    def football_hash(self, exclude_axes: Sequence[str] = ()) -> str:
+        """`exclude_axes` is for comparing across a DECLARED semantic change.
+        Naming the axis at the call site is the point: a caller has to say
+        which field it is choosing not to compare, and why, rather than a
+        difference going unnoticed."""
         return hashlib.sha256(json.dumps(
-            self.football_body(), sort_keys=True,
+            self.football_body(exclude_axes), sort_keys=True,
             separators=(',', ':'), default=str).encode()).hexdigest()[:16]
 
 
@@ -329,39 +337,40 @@ STATE_AXIS_SOURCE = {
 }
 
 
+#: The ONE place this module renames a canonical availability state, and the
+#: only reason it does: `audit.py`, `player_board.py` and `dfs/classic/pool.py`
+#: all key on the literal 'INACTIVE'. Renaming it here would be a silent
+#: behavioural change in three consumers this slice may not touch. Every other
+#: state passes through under its canonical name.
+AVAILABILITY_ALIAS = {AV.OFFICIAL_INACTIVE: 'INACTIVE'}
+
+
 def _availability_axis(state_axis: EV.Axis) -> EV.Axis:
-    """Official availability, translated from the canonical availability axis.
+    """Official availability, taken from the canonical state and not re-decided.
 
-    The state says INACTIVE, NOT_ON_INACTIVE_LIST, or nothing. This module
-    has said INACTIVE / ACTIVE / NOT_DECLARED since before the migration, and
-    that mapping is PRESERVED here unchanged so the migration changes no
-    behaviour.
+    WHAT CHANGED AND WHY. This function used to answer ACTIVE for any player
+    who was not on the inactive list, whenever a non-empty `inactive_ids` set
+    had been supplied. Two errors were stacked there. It read a container's
+    shape as proof that both clubs had published; and even with both clubs
+    published, ACTIVE does not follow. `nonqb/inactives.py` settled the second
+    one under an owner ruling of 2026-09-10: the publication asserts who is
+    OUT, and its complement holds players who will dress alongside
+    practice-squad members who were never going to.
 
-    IT IS ALSO A PENDING QUESTION, recorded rather than quietly fixed. The
-    state deliberately refuses to call an unlisted player ACTIVE, because
-    ACTIVE may not be inferred from omission. This module does make that
-    inference when a board was supplied, on the reading that a complete
-    inactive board makes absence a positive statement -- but "a non-empty set
-    was passed" is not the same as "the board is complete for this game", and
-    nothing checks the difference. Changing it is a behavioural change and
-    belongs to its own slice with its own approval.
+    So this function now RELABELS what `state/availability.py` decided. It
+    makes no availability judgement of its own, and the ACTIVE value it used
+    to emit is no longer reachable from any evidence this checkout holds.
     """
-    v = state_axis.value if state_axis is not None else None
-    if v == 'INACTIVE':
-        return EV.Axis('official_availability', 'INACTIVE', EV.DECLARED,
-                       source='official inactive declaration',
-                       observed_at=state_axis.observed_at)
-    if v == 'NOT_ON_INACTIVE_LIST':
-        return EV.Axis('official_availability', 'ACTIVE', EV.DECLARED,
-                       source='official inactive declaration, by exclusion '
-                              'within a complete board',
-                       observed_at=state_axis.observed_at,
-                       note='the board is complete for this game, so absence '
-                            'from it is a positive statement. Without a '
-                            'complete board this axis would read NOT_DECLARED')
-    return EV.Axis('official_availability', 'NOT_DECLARED', EV.UNAVAILABLE,
-                   note='no official inactive board was supplied for this '
-                        'game. ACTIVE must not be inferred from omission.')
+    if state_axis is None:
+        return EV.Axis('official_availability', AV.UNKNOWN, EV.UNAVAILABLE,
+                       note='no availability axis was present on the '
+                            'canonical state')
+    v = state_axis.value
+    return EV.Axis('official_availability',
+                   AVAILABILITY_ALIAS.get(v, v),
+                   state_axis.grade, source=state_axis.source,
+                   observed_at=state_axis.observed_at,
+                   note=state_axis.note)
 
 
 def build_dossiers(*, universe_rows: Sequence[dict],

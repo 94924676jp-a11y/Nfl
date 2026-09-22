@@ -24,6 +24,7 @@ if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
 from nfl.production.review import evidence as EV                      # noqa: E402
+from nfl.production.state import availability as AV                   # noqa: E402
 from nfl.production.state import registry as FR                       # noqa: E402
 from nfl.production.state import slate_state as SS                    # noqa: E402
 from nfl.production.universe import player_universe as PU             # noqa: E402
@@ -165,13 +166,15 @@ def test_inactive_handling_is_equivalent():
     ok(not bad, f'officially_inactive matches for every player: {len(bad)} '
                 f'mismatch(es)')
     bad2 = [pid for pid in ids
-            if _axis_value(prows[pid].availability) != 'INACTIVE']
-    ok(not bad2, f'and every supplied inactive reads INACTIVE on the '
-                 f'availability axis: {len(bad2)} miss(es)')
+            if _axis_value(prows[pid].availability) != AV.OFFICIAL_INACTIVE]
+    ok(not bad2, f'and every supplied inactive reads OFFICIAL_INACTIVE on '
+                 f'the availability axis: {len(bad2)} miss(es)')
     others = [p for pid, p in prows.items() if pid not in set(ids)]
-    ok(all(_axis_value(p.availability) == 'NOT_ON_INACTIVE_LIST'
-           for p in others),
-       'everyone else reads NOT_ON_INACTIVE_LIST, which is not ACTIVE')
+    ok(all(_axis_value(p.availability) in
+           (AV.NOT_ON_INACTIVE_LIST, AV.INJURY_OUT, AV.INJURY_DOUBTFUL,
+            AV.INJURY_QUESTIONABLE) for p in others),
+       'everyone else reads NOT_ON_INACTIVE_LIST or the club designation '
+       'that applies to him -- never ACTIVE')
     sup = [pid for pid in urows
            if urows[pid]['support_state'] != prows[pid].support_state]
     ok(not sup, f'and the support-state classification is unchanged by the '
@@ -179,14 +182,25 @@ def test_inactive_handling_is_equivalent():
 
 
 def test_availability_is_unknown_when_no_inactive_list_is_given():
+    """Updated for the availability semantics slice. With no inactive list a
+    player reads UNKNOWN unless his club published a designation, which IS
+    affirmative evidence and is used. Nobody reads ACTIVE either way."""
     _, s = _pair()
-    grades = {p.availability.grade for p in s.value.players}
-    ok(grades == {EV.UNAVAILABLE},
-       f'with no inactive list every availability axis is UNAVAILABLE: '
-       f'{grades}')
-    ok(all(p.availability.value is None for p in s.value.players),
-       'and its value is None -- absence of an inactive list is not a '
+    plain = [p for p in s.value.players
+             if p.availability.value == AV.UNKNOWN]
+    ok(plain, f'{len(plain)} players with no designation read UNKNOWN')
+    ok(all(p.availability.grade == EV.UNAVAILABLE for p in plain),
+       'graded UNAVAILABLE -- absence of an inactive list is not a '
        'declaration that everyone is playing')
+    designated = [p for p in s.value.players
+                  if p.availability.value != AV.UNKNOWN]
+    ok(all(p.availability.value in (AV.INJURY_OUT, AV.INJURY_DOUBTFUL,
+                                    AV.INJURY_QUESTIONABLE)
+           for p in designated),
+       f'and the {len(designated)} others carry only a club designation: '
+       f'{sorted({p.availability.value for p in designated})}')
+    ok(not any(p.availability.value == 'ACTIVE' for p in s.value.players),
+       'nobody reads ACTIVE')
 
 
 def test_unavailable_never_becomes_zero():
