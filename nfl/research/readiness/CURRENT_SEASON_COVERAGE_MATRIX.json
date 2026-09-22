@@ -1,0 +1,142 @@
+[
+ {
+  "input": "p4c panel_enriched (player class shares)",
+  "latest": 202518,
+  "required_for_forecast": "YES",
+  "freshness_policy": "historical corpus; not required to be current",
+  "missing": true,
+  "fallback": "none needed - CS6 now supplies 2026 separately",
+  "allowed_to_publish": "YES",
+  "note": "zero 2026 rows; this was the Stage-6 defect and is now COMPLEMENTED, not replaced"
+ },
+ {
+  "input": "denom_panel (team carry/target/dropback denominators)",
+  "latest": 202518,
+  "required_for_forecast": "YES",
+  "freshness_policy": "LEAGUE_WIDE, declared_blocked CURRENT_SEASON_SOURCE_UNVERIFIED",
+  "missing": true,
+  "fallback": "none - blocks at sealing",
+  "allowed_to_publish": "NO",
+  "note": "team_targets is an EWMA whose newest observation is 2025 wk18"
+ },
+ {
+  "input": "team_volume_history",
+  "latest": 202518,
+  "required_for_forecast": "YES",
+  "freshness_policy": "FIXTURE_LOCAL",
+  "missing": true,
+  "fallback": "none - blocks",
+  "allowed_to_publish": "NO",
+  "note": "same file as denom_panel"
+ },
+ {
+  "input": "usage_vintage 2026 pbp (carries/targets/shares)",
+  "latest": 202601,
+  "required_for_forecast": "YES",
+  "freshness_policy": "weeks < N, lawful capture",
+  "missing": false,
+  "fallback": "refuse CURRENT_SEASON_INPUT_STALE",
+  "allowed_to_publish": "YES",
+  "note": "16 games, 32 clubs"
+ },
+ {
+  "input": "PFR snap counts 2026",
+  "latest": 202601,
+  "required_for_forecast": "YES",
+  "freshness_policy": "weeks < N",
+  "missing": false,
+  "fallback": "COLD_START on the axis",
+  "allowed_to_publish": "YES",
+  "note": "1492 rows, 32 clubs"
+ },
+ {
+  "input": "vintage:weekly_rosters",
+  "latest": "2026-09-21T17:53:10.214592+00:00",
+  "required_for_forecast": "YES",
+  "freshness_policy": "clock <= information cut",
+  "missing": false,
+  "fallback": "refuse UNIVERSE_ROSTER_VINTAGE_UNAVAILABLE",
+  "allowed_to_publish": "YES",
+  "note": "VINTAGE_SELECTED"
+ },
+ {
+  "input": "vintage:depth_charts",
+  "latest": "2026-09-21T17:52:59.033032+00:00",
+  "required_for_forecast": "YES",
+  "freshness_policy": "clock <= information cut",
+  "missing": false,
+  "fallback": "evidence_missing flag",
+  "allowed_to_publish": "YES",
+  "note": "VINTAGE_SELECTED"
+ },
+ {
+  "input": "vintage:injuries",
+  "latest": "2026-09-20T16:07:52.578168+00:00",
+  "required_for_forecast": "YES",
+  "freshness_policy": "clock <= information cut",
+  "missing": false,
+  "fallback": "evidence_missing flag",
+  "allowed_to_publish": "YES",
+  "note": "VINTAGE_SELECTED"
+ },
+ {
+  "input": "vintage:schedules",
+  "latest": "2026-09-21T17:52:58.019352+00:00",
+  "required_for_forecast": "YES",
+  "freshness_policy": "clock <= information cut",
+  "missing": false,
+  "fallback": "evidence_missing flag",
+  "allowed_to_publish": "YES",
+  "note": "VINTAGE_SELECTED"
+ },
+ {
+  "input": "appearance_panel_2026",
+  "latest": 202601,
+  "required_for_forecast": "YES",
+  "freshness_policy": "week-1 union frame",
+  "missing": false,
+  "fallback": "R8 historical frame",
+  "allowed_to_publish": "YES",
+  "note": "APPEARANCE_2026_PANEL"
+ },
+ {
+  "input": "participation_prior",
+  "latest": null,
+  "required_for_forecast": "YES",
+  "freshness_policy": "?",
+  "missing": true,
+  "fallback": "uniform",
+  "allowed_to_publish": "YES",
+  "note": "PARTICIPATION_HISTORY_STALE"
+ },
+ {
+  "input": "frozen:receiving_priors",
+  "latest": "FROZEN",
+  "required_for_forecast": "YES",
+  "freshness_policy": "frozen by design",
+  "missing": false,
+  "fallback": "none",
+  "allowed_to_publish": "YES",
+  "note": "RECEIVING_PRIORS_OK"
+ },
+ {
+  "input": "frozen:td_priors_rec",
+  "latest": "FROZEN",
+  "required_for_forecast": "YES",
+  "freshness_policy": "frozen by design",
+  "missing": false,
+  "fallback": "none",
+  "allowed_to_publish": "YES",
+  "note": "TD_PRIORS_OK"
+ },
+ {
+  "input": "frozen:td_priors_rush",
+  "latest": "FROZEN",
+  "required_for_forecast": "YES",
+  "freshness_policy": "frozen by design",
+  "missing": false,
+  "fallback": "none",
+  "allowed_to_publish": "YES",
+  "note": "TD_PRIORS_OK"
+ }
+]
