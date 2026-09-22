@@ -245,30 +245,44 @@ def test_concentration_is_always_reported():
 
 
 # -- 5. objectives ----------------------------------------------------------
-def test_shared_world_objectives_refuse_without_worlds():
-    p = mkpool()
-    for obj in (O.OBJ_PERCENTILE, O.OBJ_TOP_X, O.OBJ_EXPECTED_RANK):
-        o = O.score_pool(p, objective=obj, draws=None)
-        ok(o.state.name == 'BLOCKED' and
-           o.code == 'OBJECTIVE_REQUIRES_SHARED_WORLDS',
-           f'{obj} refuses without shared worlds rather than quietly '
-           f'becoming the mean')
-
-
-def test_shared_world_objectives_reorder_the_pool():
+def test_the_non_additive_objectives_are_blocked_with_or_without_worlds():
+    """These USED to pass. They were wrong, and the tests asserted the wrong
+    thing: `test_shared_world_objectives_reorder_the_pool` proved the pool
+    ordering changed and called that the point, when a changed ordering is
+    only worth having if the new one is better -- and measured over every
+    legal lineup of a correlated pool it is not. See
+    nfl/research/dfs/CLASSIC_OBJECTIVE_ADDITIVITY.json."""
     p = mkpool()
     rng = np.random.default_rng(5)
     M = rng.normal(10, 6, (len(p), 400))
-    base = [x.gsis_id for x in sorted(p, key=lambda x: -x.value)][:10]
-    o = O.score_pool(p, objective=O.OBJ_TOP_X, draws=M, top_x=0.1)
-    ok(o.state.name == 'PASS', f'top-X% scores: {o.code}')
-    new = [x.gsis_id for x in
-           sorted(o.value['players'], key=lambda x: -x.value)][:10]
-    ok(new != base,
-       'a simulation objective produces a different ordering than the mean, '
-       'which is the point of having more than one')
-    ok(o.value['uses_shared_worlds'] and o.value['n_worlds'] == 400,
-       f'and it says it used {o.value["n_worlds"]} shared worlds')
+    for obj in O.NON_ADDITIVE_OBJECTIVES:
+        for label, draws in (('without worlds', None), ('with worlds', M)):
+            o = O.score_pool(p, objective=obj, draws=draws, top_x=0.1)
+            ok(o.state.name == 'FAIL' and o.code == 'OBJECTIVE_NOT_ADDITIVE',
+               f'{obj} is refused {label}: {o.code}')
+    ok(O.OBJECTIVES == (O.OBJ_MEAN,),
+       f'and mean points is the only approved production objective: '
+       f'{O.OBJECTIVES}')
+    ok(all(x not in O.OBJECTIVES for x in O.NON_ADDITIVE_OBJECTIVES),
+       'none of the three is reachable through the public objective list')
+
+
+def test_mean_points_is_exactly_additive():
+    """The positive control. Whatever else is blocked, the approved objective
+    has to be the thing it claims to be."""
+    p = mkpool()
+    rng = np.random.default_rng(7)
+    M = rng.normal(10, 6, (len(p), 300))
+    o = O.score_pool(p, objective=O.OBJ_MEAN, draws=M)
+    ok(o.state.name == 'PASS', f'mean points scores: {o.code}')
+    ok(o.value['uses_shared_worlds'] is False,
+       'and says plainly that it did not need the worlds')
+    rows = [x.draw_row for x in p[:9]]
+    summed = sum(float(M[r].mean()) for r in rows)
+    lineup_mean = float(M[rows, :].sum(axis=0).mean())
+    ok(abs(summed - lineup_mean) < 1e-9,
+       f'sum of player means == mean of lineup score: '
+       f'{abs(summed - lineup_mean):.2e}')
 
 
 def test_an_unknown_objective_is_refused():
@@ -545,8 +559,8 @@ def main():
               test_unmet_minimum_exposure_is_reported_not_hidden,
               test_uniqueness_prevents_near_clones,
               test_concentration_is_always_reported,
-              test_shared_world_objectives_refuse_without_worlds,
-              test_shared_world_objectives_reorder_the_pool,
+              test_the_non_additive_objectives_are_blocked_with_or_without_worlds,
+              test_mean_points_is_exactly_additive,
               test_an_unknown_objective_is_refused,
               test_no_roi_is_claimed,
               test_deterministic_replay,

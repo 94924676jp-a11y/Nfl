@@ -54,7 +54,32 @@ OBJ_MEAN = 'EXPECTED_FANTASY_POINTS'
 OBJ_PERCENTILE = 'MEAN_WITHIN_WORLD_PERCENTILE'
 OBJ_TOP_X = 'TOP_X_PERCENT_FREQUENCY'
 OBJ_EXPECTED_RANK = 'EXPECTED_RANK'
-OBJECTIVES = (OBJ_MEAN, OBJ_PERCENTILE, OBJ_TOP_X, OBJ_EXPECTED_RANK)
+
+#: The only objective a lineup search may optimise. Expectation is LINEAR, so
+#: the sum of nine player means IS the mean of the lineup's score -- measured
+#: at 2.8e-14 maximum error over every legal lineup of a correlated pool.
+OBJECTIVES = (OBJ_MEAN,)
+
+#: Computed per player across shared worlds, and then SUMMED over a lineup by
+#: the search. Summing is what destroys them: a within-world percentile, a
+#: top-X frequency and an expected rank are each a property of a player's
+#: position in a DISTRIBUTION, and adding nine of them is not the same
+#: property of the lineup. Correlation is exactly what the sum throws away,
+#: and correlation is what a tournament pays for.
+#:
+#: MEASURED, not argued -- nfl/research/dfs/CLASSIC_OBJECTIVE_ADDITIVITY.json,
+#: every legal lineup of an 18-player 3-team pool over 20,000 worlds. Spearman
+#: against the true lineup top-1% frequency: percentile 0.478, top-X 0.492,
+#: expected rank 0.473. Summed EXPECTED_FANTASY_POINTS scores 0.486 on the
+#: same target, so these three do not even beat the mean at the job they were
+#: added for. The lineup with the best true top-1% (0.0858, P(first) 0.0071)
+#: is ranked #1046, #1203 and #867 of 3,375 by the three of them.
+#:
+#: They are blocked rather than deleted so that the names stay attached to the
+#: measurement, and so that wiring one up is a refusal with a reason rather
+#: than a KeyError somebody routes around.
+NON_ADDITIVE_OBJECTIVES = (OBJ_PERCENTILE, OBJ_TOP_X, OBJ_EXPECTED_RANK)
+ALL_OBJECTIVE_NAMES = (OBJ_MEAN,) + NON_ADDITIVE_OBJECTIVES
 
 
 @dataclass(frozen=True)
@@ -186,6 +211,23 @@ def score_pool(players: Sequence[Player], *, objective: str,
     silently degrading to the mean -- an optimizer that quietly changes its
     objective is one nobody can reason about.
     """
+    if objective in NON_ADDITIVE_OBJECTIVES:
+        return Outcome.fail(
+            'OBJECTIVE_NOT_ADDITIVE',
+            f'{objective} is computed per player and then SUMMED over a '
+            f'lineup by the search, and it is not additive: a within-world '
+            f'percentile, a top-X frequency and an expected rank are '
+            f'properties of a player\'s place in a distribution, and adding '
+            f'nine of them is not that property of the lineup. Measured over '
+            f'every legal lineup of a correlated pool, it ranks the '
+            f'best-by-true-top-1% lineup around #1000 of 3,375 and does not '
+            f'beat plain mean points at the job it was added for. See '
+            f'nfl/research/dfs/CLASSIC_OBJECTIVE_ADDITIVITY.json. Correct '
+            f'tournament evaluation scores the LINEUP distribution -- '
+            f'lineup_score_j = sum(player_score_pj) per world, then evaluate '
+            f'that -- and needs a field model this project does not have. '
+            f'{OBJ_MEAN} is the only approved production objective.',
+            value=objective, approved=list(OBJECTIVES))
     if objective not in OBJECTIVES:
         return Outcome.fail(
             'UNKNOWN_OBJECTIVE',
