@@ -27,6 +27,7 @@ import datetime as dt
 HERE = pathlib.Path(__file__).resolve().parent
 REPO = HERE.parent
 STATE = HERE / 'PROJECT_STATE.json'
+STATE_REL = 'coordination/PROJECT_STATE.json'
 if str(REPO) not in sys.path:
     sys.path.insert(0, str(REPO))
 
@@ -122,12 +123,45 @@ def apply(doc: dict, m: dict) -> list:
     return moved
 
 
+def state_file_only_commit(recorded: str, head: str) -> bool:
+    """True when HEAD differs from `recorded` ONLY by the state file itself.
+
+    Recording `head_commit` inside the file that records it cannot converge:
+    committing the refresh moves HEAD again, one field, forever. That is a
+    tail-chase, not drift, and an alarm that is always on is an alarm nobody
+    reads -- which is precisely the failure rule 1 of the README describes.
+
+    The narrowness is the point. This returns True only when the recorded
+    commit is an ancestor of HEAD AND the whole diff between them is
+    PROJECT_STATE.json. One other changed path and it is real drift again.
+    """
+    if not recorded or recorded == head:
+        return False
+    try:
+        subprocess.run(['git', 'merge-base', '--is-ancestor', recorded, head],
+                       cwd=REPO, check=True, capture_output=True)
+        names = git('diff', '--name-only', recorded, head).split('\n')
+    except Exception:                                        # noqa: BLE001
+        return False
+    return [n for n in names if n.strip()] == [STATE_REL]
+
+
 def main():
     check = '--check' in sys.argv
     doc = json.loads(STATE.read_text())
+    recorded_head = doc.get('head_commit')
     m = measure()
     moved = apply(doc, m)
     drift = [x for x in moved if x[0] != 'written_at_utc']
+    vacuous = ([x[0] for x in drift] == ['head_commit']
+               and state_file_only_commit(recorded_head, m['head_commit']))
+    if vacuous:
+        drift = []
+        if check:
+            print('STATE_CURRENT: every measured field matches the tree '
+                  f'(head_commit trails by the state-file commit '
+                  f'{m["head_commit"][:7]}, which changed nothing else)')
+            return 0
     if check:
         if drift:
             print(f'STATE_DRIFTED: {len(drift)} field(s)')
