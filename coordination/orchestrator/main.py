@@ -309,6 +309,34 @@ def _delegate_engineering(snap, action, head) -> tuple:
         push=os.environ.get('ORCHESTRATOR_PUSH', '1') == '1')
     if sha:
         _say(f'  committed {sha[:12]}')
+
+    # ---- ring the engineering workflow --------------------------------
+    # ORDER MATTERS AND IS NOT COSMETIC. The dispatch happens AFTER the push,
+    # and only if the push produced a commit. The workflow checks out the
+    # automation branch from the remote; dispatching first would point it at a
+    # tree without the packet, and expected_head would pin it to a commit
+    # GitHub has never seen.
+    if not sha:
+        # NOT A SUCCESS. The packet exists locally and nowhere else, so
+        # nothing can act on it. Saying so beats a dispatch that refuses
+        # HEAD_MOVED a minute later for a reason nobody traces back to here.
+        _say('  NOT dispatching: nothing was pushed, so the remote has no '
+             'packet for the workflow to read.')
+        G.append_log({'actor': 'orchestrator', 'task_id': tid,
+                      'event': 'WORKER_FAILED', 'code': 'DISPATCH_SKIPPED',
+                      'note': 'packet not pushed; engineering workflow not '
+                              'dispatched'})
+        return True, None
+
+    res = G.dispatch_engineering_workflow(
+        tid, head=sha, chain_id=f'orchestrator-{os.environ.get("GITHUB_RUN_ID", "")}')
+    _say(f'  engineering dispatch: {res.get("code")} '
+         f'{"sent" if res.get("sent") else "NOT sent"}')
+    G.append_log({'actor': 'orchestrator', 'task_id': tid,
+                  'event': 'ENGINEERING_DISPATCHED',
+                  'transport': C.Transport.CLAUDE_CODE_ACTION.value,
+                  'dispatch_sent': bool(res.get('sent')),
+                  'note': f'{res.get("code")}: {str(res.get("detail") or "")}'[:400]})
     return True, None
 
 

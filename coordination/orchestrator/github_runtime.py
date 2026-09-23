@@ -456,6 +456,104 @@ def request_continuation(reason, *, chain_depth, head, task_id=None) -> dict:
                 'detail': f'{type(exc).__name__}: {exc}'}
 
 
+ENGINEERING_WORKFLOW = 'claude-engineering-dispatch.yml'
+# The workflow file lives on the DEFAULT branch and is only dispatchable
+# there; the branch it operates on is a constant inside it, not this ref.
+ENGINEERING_WORKFLOW_REF = 'main'
+
+
+def dispatch_engineering_workflow(task_id, *, head, chain_id='') -> dict:
+    """Start the Claude Code engineering workflow for one delegated task.
+
+    THE LINK THAT WAS MISSING. The orchestrator emitted a packet, set the task
+    ACTIVE, committed, and said in its own log that "the claude-engineering
+    workflow executes it" -- and then nothing started that workflow. The loop
+    dead-ended at ACTIVE, which reads like work in progress and is actually a
+    stall. Before the transport moved to the Action, the orchestrator called
+    the model in-process and no dispatch was needed; the migration left the
+    sentence true and the mechanism absent.
+
+    IT IS A DOORBELL, NOT AN AUTHORIZATION. The engineering workflow's
+    pre-flight re-derives the repository, branch, policy, queue membership,
+    authorization, canonical task selection, the exclusive ACTIVE lock and the
+    retry budget from committed state, and refuses on any disagreement. These
+    inputs name a task and a head; they cannot grant anything.
+
+    WHY NO NEW BUDGET. A second rate limit here would be a second thing to
+    reason about and forget to cap. The bounds already applied are
+    max_transitions_per_invocation on delegations within a pass,
+    max_continuations_per_hour on the passes themselves, the workflow's own
+    `concurrency: group: claude-engineering`, and the pre-flight's exclusive
+    ACTIVE lock and retry budget. A dispatch that gets past all of those is a
+    dispatch the system meant to make.
+
+    Never raises: a dispatch that could not be sent is a fact about this run
+    and belongs in the log, not in a traceback.
+    """
+    payload = {
+        'ref': ENGINEERING_WORKFLOW_REF,
+        'inputs': {
+            'task_id': str(task_id),
+            # Pins the worker to the tree the packet describes. If anything
+            # lands in between, the pre-flight refuses HEAD_MOVED rather than
+            # running against a tree the packet does not match.
+            'expected_head': str(head or '')[:12],
+            'chain_id': str(chain_id or '')[:80],
+        },
+    }
+    sink = _dispatch_sink()
+    if sink:
+        d = pathlib.Path(sink)
+        d.mkdir(parents=True, exist_ok=True)
+        f = d / (f'{dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%S%f")}'
+                 f'-engineering.json')
+        f.write_text(json.dumps(
+            {'workflow': ENGINEERING_WORKFLOW, **payload}, indent=1) + '\n')
+        return {'sent': False, 'sink': str(f), 'code': 'DISPATCH_TO_SINK'}
+
+    repo = os.environ.get('GITHUB_REPOSITORY')
+    token = os.environ.get('GITHUB_TOKEN') or os.environ.get('GH_TOKEN')
+    if not repo or not token:
+        return {'sent': False, 'code': 'DISPATCH_UNAVAILABLE',
+                'detail': 'GITHUB_REPOSITORY/GITHUB_TOKEN are unset, so this '
+                          'is not a GitHub Actions run. Nothing was sent.'}
+    import urllib.error
+    import urllib.request
+    req = urllib.request.Request(
+        f'{GITHUB_API}/repos/{repo}/actions/workflows/'
+        f'{ENGINEERING_WORKFLOW}/dispatches',
+        data=json.dumps(payload).encode(), method='POST',
+        headers={'Accept': 'application/vnd.github+json',
+                 'Authorization': f'Bearer {token}',
+                 'X-GitHub-Api-Version': '2022-11-28',
+                 'Content-Type': 'application/json'})
+    try:
+        with urllib.request.urlopen(req, timeout=30) as r:
+            # 204 is the documented success. Anything else 2xx is unexpected
+            # and is reported as itself rather than rounded up to success.
+            return {'sent': r.status == 204, 'code': f'DISPATCH_{r.status}',
+                    'status': r.status}
+    except urllib.error.HTTPError as exc:
+        detail = ''
+        try:
+            detail = exc.read().decode('utf-8', 'replace')[:600]
+        except Exception:                                    # noqa: BLE001
+            pass
+        hint = ''
+        if exc.code == 403:
+            hint = (' -- the workflow needs `actions: write` to dispatch '
+                    'another workflow.')
+        elif exc.code == 404:
+            hint = (f' -- {ENGINEERING_WORKFLOW} must exist on '
+                    f'{ENGINEERING_WORKFLOW_REF}; a workflow_dispatch is only '
+                    f'dispatchable from the default branch.')
+        return {'sent': False, 'code': f'DISPATCH_HTTP_{exc.code}',
+                'detail': detail + hint}
+    except Exception as exc:                                 # noqa: BLE001
+        return {'sent': False, 'code': 'DISPATCH_FAILED',
+                'detail': f'{type(exc).__name__}: {exc}'}
+
+
 def open_escalation_issue(escalation, title, body) -> str:
     """Record an escalation. Returns where it went.
 

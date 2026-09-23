@@ -331,6 +331,71 @@ def test_j_the_workflow_carries_the_same_gate():
           'claude-engineering-dispatch.yml' in wf)
 
 
+def test_k_the_orchestrator_rings_the_engineering_workflow():
+    print('\nK. orchestrator -> Claude')
+    import tempfile as _tf
+
+    main_src = (REPO / 'coordination' / 'orchestrator' / 'main.py').read_text()
+
+    # THE LINK THAT WAS MISSING. _delegate_engineering emitted a packet,
+    # set the task ACTIVE, committed, and logged that "the claude-engineering
+    # workflow executes it" -- while nothing started that workflow. The loop
+    # dead-ended at ACTIVE, which reads like work in progress.
+    check('the delegation path dispatches the engineering workflow',
+          'G.dispatch_engineering_workflow(' in main_src)
+    # ORDER, NOT PRESENCE. Dispatching before the push would point the
+    # workflow at a tree with no packet and pin expected_head to a commit
+    # GitHub has never seen.
+    deleg = main_src[main_src.index('def _delegate_engineering'):
+                     main_src.index('def do_owner_review')]
+    check('  after the commit, not before',
+          deleg.index('G.commit_and_push(')
+          < deleg.index('G.dispatch_engineering_workflow('))
+    check('  and not at all when nothing was pushed',
+          'NOT dispatching' in deleg
+          and deleg.index('if not sha:')
+          < deleg.index('G.dispatch_engineering_workflow('))
+
+    # WHAT WOULD BE SENT, without sending it.
+    with _tf.TemporaryDirectory() as d:
+        os.environ['ORCHESTRATOR_DISPATCH_SINK'] = d
+        try:
+            res = G.dispatch_engineering_workflow(
+                'ENG-001', head='a' * 40, chain_id='orchestrator-123')
+        finally:
+            os.environ.pop('ORCHESTRATOR_DISPATCH_SINK', None)
+        files = sorted(pathlib.Path(d).glob('*-engineering.json'))
+        check('one delegation produces exactly one dispatch', len(files) == 1,
+              str(files))
+        check('  reported as NOT sent, because a sink is not GitHub',
+              res.get('sent') is False
+              and res.get('code') == 'DISPATCH_TO_SINK')
+        payload = json.loads(files[0].read_text())
+        check('  aimed at the engineering workflow',
+              payload['workflow'] == 'claude-engineering-dispatch.yml')
+        check('  dispatched against the default branch, where it must live',
+              payload['ref'] == 'main')
+        check('  naming the task', payload['inputs']['task_id'] == 'ENG-001')
+        check('  pinning the head the packet describes',
+              payload['inputs']['expected_head'] == 'a' * 12)
+        # An input may name a task; it may not authorize one. The pre-flight
+        # re-derives authorization from committed state either way.
+        check('  and carrying no authority',
+              set(payload['inputs']) == {'task_id', 'expected_head',
+                                         'chain_id'})
+
+    # THE TWO DISPATCHES ARE DIFFERENT ENDPOINTS AND MUST STAY SO. One wakes
+    # the orchestrator, one wakes Claude; collapsing them would make the loop
+    # ring itself.
+    gh_src = (REPO / 'coordination' / 'orchestrator'
+              / 'github_runtime.py').read_text()
+    check('the continuation and the engineering dispatch are separate calls',
+          'repos/{repo}/dispatches' in gh_src
+          and 'actions/workflows/' in gh_src)
+    check('  and no new rate limit was invented for the second one',
+          'max_engineering' not in gh_src)
+
+
 TESTS = [v for k, v in sorted(globals().items()) if k.startswith('test_')]
 
 if __name__ == '__main__':
