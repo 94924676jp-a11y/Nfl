@@ -298,10 +298,27 @@ def test_j_the_workflow_carries_the_same_gate():
           f"github.event.issue.user.login == '{B.OWNER_LOGIN}'" in wf)
     check('  and anchors the title with startsWith, not contains',
           f"startsWith(github.event.issue.title, '{B.TITLE_PREFIX}')" in wf)
-    check('the trigger is issues:opened only',
-          'issues:' in wf and 'issue_comment' not in wf.split('jobs:')[0])
-    check('no id-token is granted',
-          'id-token' not in wf.split('jobs:')[0].split('permissions:')[1])
+    # PARSED, NOT GREPPED. The first version of these two checks searched
+    # the raw text and failed on the file's own COMMENTS -- the header says
+    # "NO issue_comment TRIGGER" and explains why id-token is withheld, and
+    # both checks matched the explanation instead of the configuration. That
+    # is the fourth time in this repository a substring has stood in for
+    # structure. A comment naming a trigger is not a trigger.
+    try:
+        import yaml
+    except ImportError:                                   # pragma: no cover
+        print('  NOT_EXECUTED  trigger/permissions shape needs PyYAML')
+    else:
+        w = yaml.safe_load(wf)
+        on = w[True]          # bare `on:` parses as the boolean True
+        check('the trigger is issues:opened and nothing else',
+              on == {'issues': {'types': ['opened']}}, repr(on))
+        check('  so no comment on a public issue can start a run',
+              'issue_comment' not in on)
+        check('no id-token is granted',
+              'id-token' not in w['permissions'], repr(w['permissions']))
+        check('  and contents stays read: the bridge does not commit',
+              w['permissions']['contents'] == 'read')
     check('the Action is given github_token, so no OIDC path',
           'github_token: ${{ secrets.GITHUB_TOKEN }}' in wf)
     check('the gate runs before the Action',
