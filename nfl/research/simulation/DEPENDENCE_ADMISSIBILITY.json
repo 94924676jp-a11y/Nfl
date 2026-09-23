@@ -1,0 +1,106 @@
+{
+ "candidate_targets": {
+  "QB_WITH_OWN_RECEIVER": {
+   "observed": {
+    "QB_PC1": [
+     0.368,
+     0.274
+    ],
+    "QB_PC2": [
+     0.296,
+     0.318
+    ],
+    "QB_PC3": [
+     0.208,
+     0.259
+    ]
+   },
+   "observed_source": "2026-09-22 packet section 8.2, NOT re-derived here",
+   "simulated": 0.1054,
+   "simulated_source": "nfl/research/dfs/DET_BUF_2026W2/CORRELATION.json, by_class mean_r over 36 pairs",
+   "why_a_candidate_not_a_target": "the simulated side comes from an artifact this module classifies INELIGIBLE, and the observed side is an ACROSS_GAMES quantity. The direction is nonetheless informative: the sealed artifact's own caveat says a NEAR-ZERO reading understates coupling, so a positive +0.105 against an observed +0.21 to +0.37 is a floor on the gap rather than a measurement of it."
+  },
+  "SAME_TEAM_BACKS": {
+   "observed": {
+    "RB1_RB2": [
+     -0.121,
+     -0.104
+    ]
+   },
+   "observed_source": "2026-09-22 packet section 8.2, NOT re-derived here",
+   "simulated": -0.2212,
+   "simulated_source": "the same CORRELATION.json, 4 pairs",
+   "why_a_candidate_not_a_target": "the simulated side comes from an artifact this module classifies INELIGIBLE, and the observed side is an ACROSS_GAMES quantity -- the same two problems. Here they bite harder: the caveat says a near-zero reading understates coupling, which gives no bound at all on a reading that is already strongly negative, and n=4 pairs on one game is far too thin to carry a conclusion in either direction."
+  }
+ },
+ "eligibility_states": [
+  "DEPENDENCE_CALIBRATION_ELIGIBLE",
+  "DEPENDENCE_CALIBRATION_INELIGIBLE",
+  "DEPENDENCE_CALIBRATION_SEMANTICS_UNDECLARED"
+ ],
+ "estimands": {
+  "observed_team_vs_opponent_offense_dk": {
+   "aggregation": "one pair per game, pooled over a season",
+   "conditioning": "NOTHING IS HELD FIXED -- game environments vary across the sample and that variation is part of what is measured",
+   "name": "observed_team_vs_opponent_offense_dk",
+   "note": "re-derived from repository bytes on 2026-09-22 from nfl/research/postgame/pbp_2024 and pbp_2025, scored with nfl/dfs/scoring/draftkings.py.",
+   "outcome": "summed DraftKings points of a club's offensive players in a game, against the same for its opponent",
+   "population": "completed NFL games",
+   "random_dimension": "ACROSS_GAMES"
+  },
+  "simulated_team_vs_opponent_offense_dk": {
+   "aggregation": "one pair per world, within one game",
+   "conditioning": "the game and slate state are FIXED -- one matchup, one environment, one information cut",
+   "name": "simulated_team_vs_opponent_offense_dk",
+   "note": "this is a conditional dependence given an environment; the observed estimand pools over environments.",
+   "outcome": "summed DraftKings points of a club's simulated offensive players in a world, against the same for its opponent",
+   "population": "simulated worlds of ONE slate",
+   "random_dimension": "ACROSS_SIMULATION_WORLDS"
+  }
+ },
+ "lane_1_unaffected": "this record changes no projection, no price and no gate verdict. It is the admissibility rule the later SimulationCalibration and HistoricalSlateReplay slices must use.",
+ "rederived_observed": {
+  "estimand": "observed_team_vs_opponent_offense_dk",
+  "n_games": {
+   "2024_REG": 272,
+   "2025_REG": 272
+  },
+  "not_canonical": "the packet's +0.1201 for 2024 did NOT reproduce under any variant. The gap is about 0.03 and is a definitional difference, most likely over which players count as offense. Quote the re-derived values and the reconciliation as open; do not carry +0.1201 forward as canonical.",
+  "rederived_at": "2026-09-22",
+  "scoring": "nfl/dfs/scoring/draftkings.py, the adapter reconciled to the engine's own dk_scoring array",
+  "sensitivity": "four variants each -- symmetric and away-vs-home ordering, with and without fumbles and two-point conversions, REG and REG+POST -- span +0.147 to +0.158 for 2024 and +0.207 to +0.232 for 2025.",
+  "source": "nfl/research/postgame/pbp_2024.23370d5d10f8104d.csv.gz and pbp_2025.2f135887790a013f.csv.gz",
+  "values": {
+   "2024_REG": 0.1471,
+   "2025_REG": 0.2068
+  }
+ },
+ "replay_evidence_states": [
+  "PIT_SAFE",
+  "HISTORICAL_RECONSTRUCTION_ONLY",
+  "UNRECOVERABLE_FOR_CUT"
+ ],
+ "required_shared_latents": [
+  "game_pace",
+  "team_play_volume",
+  "score_script",
+  "dropbacks",
+  "rush_attempts",
+  "drive_outcomes",
+  "touchdown_opportunity",
+  "team_opportunity_allocation"
+ ],
+ "residual_dependence_proposal": "Estimate historical dependence on RESIDUAL outcomes -- actual minus the pregame expected mean -- paired within a game, rather than on raw cross-game DraftKings totals. Conditioning on team expectation, player expectation, role and game environment removes exactly the between-environment variation that the simulator holds fixed, which is what would make an observed number and a within-world number estimands of the same thing. TO BE INVESTIGATED AND RETURNED WITH EVIDENCE BEFORE IMPLEMENTATION -- it is a proposal here, not a decision.",
+ "ruling_source": "owner instruction 2026-09-23, items 1-8, in response to the repository verification returned 2026-09-22",
+ "spec_version": "nfl-dependence-eligibility-0",
+ "unverified": {
+  "simulated_team_vs_opponent_offense_dk = -0.128": {
+   "and_separately": "it was compared against an ACROSS_GAMES observed value. Those are different estimands and their numerical equality is not a target. See Estimand.comparable_to.",
+   "claimed_as": "VERIFIED FACT (project computation) in the 2026-09-22 data-capability packet",
+   "ruling": "it is not a calibration target and not a defect. It may become evidence only when re-derived from an ELIGIBLE artifact under a declared estimand, and until then it is not quoted at all.",
+   "status": "UNVERIFIED",
+   "why_it_would_be_inadmissible_anyway": "every sealed draw artifact here -- 351 of 351 on 2026-09-23 -- declares INDEPENDENT_STREAMS_COLUMN_ALIGNED, which this module classifies INELIGIBLE. A number read off that axis measures the seeding scheme.",
+   "why_unverified": "no re-derivable computation for it exists in this repository. The chain is packet -> external-research/nfl-fullslate-dfs-construction-2026-09-18/nfl-fullslate-dfs-lineup-construction.pplx.md:617 -> \"the prior second-opinion work in this project\", and there the trail ends: no script, no artifact, no JSON."
+  }
+ }
+}
