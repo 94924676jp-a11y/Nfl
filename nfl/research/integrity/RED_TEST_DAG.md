@@ -78,17 +78,47 @@ R14 the seal records an input set nothing can      REAL_PRODUCTION_DEFECT
     consume; replay re-selects
       -> test_replay_pins_its_inputs                 (D23)
 
-R15 order- or state-dependent failures: green      TEST_BUG
-    standalone, red in the full run
-      -> test_agent_state, test_governance_transport,
-         test_product_orchestration, test_v1_rushing_a1
+R15 WITHDRAWN 2026-09-23 -- SEE BELOW. There is no
+    order-dependence cluster. I invoked six modules
+    that have no __main__ block, they executed
+    nothing, exited 0, and I read silence as green.
+
+R16 nfl/WORK_QUEUE.md carries three statuses        REAL_PRODUCTION_DEFECT
+    outside the declared vocabulary
+      -> test_agent_state (5 raises)
+
+R17 layers.py declares HOLD_TENTATIVE three times,  OBSOLETE_CONTRACT
+    the test pins two
+      -> test_governance_transport
 ```
+
+## R15 IS WITHDRAWN, AND THE MISTAKE IS WORTH KEEPING
+
+The first cut of this file claimed four modules were "green standalone, red in
+the full run" and filed them as order-dependence. **That was wrong.**
+
+`test_agent_state`, `test_governance_transport`, `test_product_orchestration`,
+`test_v1_rushing_a1`, `test_r5_active_pool` and `test_readiness_vintage_cut`
+all carry `test_*` functions and **no `main()` and no `__main__` block**.
+Running `python3.12 nfl/tests/test_agent_state.py` therefore imports the
+module, executes nothing, and exits 0. I read the absence of a FAIL line as a
+pass.
+
+It is the exact defect this repository names most often -- a step that
+returned nothing read as success -- committed inside the triage that was
+supposed to be finding it. Re-run through `run_suite --only`, which actually
+invokes the functions, **all six fail**, with the evidence now recorded in the
+table below.
+
+The general lesson for this triage: **`run_suite` is the only valid way to
+ask whether a module passes.** Direct invocation answers a different question
+for roughly half of these files, and answers it silently.
 
 ## Module-by-module
 
 | module | red | category | root | evidence |
 |---|---|---|---|---|
-| test_agent_state | 5 raise | TEST_BUG | R15 | passes standalone at this HEAD |
+| test_agent_state | 5 raise | REAL_PRODUCTION_DEFECT | R16 | `QUEUE_STATUS_UNKNOWN`: `WORK_QUEUE.md:730,770,820` carry `DONE (2026-09-20)`; vocabulary is `QUEUED/ACTIVE/BLOCKED/DONE/SUPERSEDED` |
 | test_appearance_candidate_b | 1+1 | OBSOLETE_CONTRACT | R2 | `b081a5b2` vs pin `481f005f` |
 | test_appearance_team_scope | 1+1 | OBSOLETE_CONTRACT | R2 | same pin |
 | test_c1_denominator | 1+1 | OBSOLETE_CONTRACT | R2 | same pin |
@@ -98,11 +128,11 @@ R15 order- or state-dependent failures: green      TEST_BUG
 | test_conservation | 3 | EXPECTED_GOVERNANCE_FAILURE | R1 | `CONSERVATION_RUN_INCOMPLETE` on the two refused runs |
 | test_determinism_proof | 1 | REAL_PRODUCTION_DEFECT | R12 | names `commit_claim.py` |
 | test_draw_coherence | 1+3 | TEST_BUG | R1 | `FileNotFoundError: …/board.json` on a REFUSED run |
-| test_execution_identity | 1 | TEST_BUG | R15 | the check reads the CURRENT commit sha, so it moves with HEAD |
+| test_execution_identity | 1 | UNKNOWN | — | the check reads the CURRENT commit sha and so moves with HEAD; whether that is the intent is not established |
 | test_football_engine_r4 | 2+1 | HISTORICAL_ARTIFACT_MISSING | R4 | `READY_BY_EARLY_VINTAGE_NO_LEAGUE_REPORT` |
 | test_full_slate_rehearsal | 2+5 | STALE_FIXTURE | R13 | `ROSTER_CUT_REQUIRED` |
 | test_gate_ids | 1 raise | OBSOLETE_CONTRACT | R8 | `KeyError: single_adjustment_ownership_verified` |
-| test_governance_transport | 1 | TEST_BUG | R15 | passes standalone |
+| test_governance_transport | 1 | OBSOLETE_CONTRACT | R17 | `src.count("governance='HOLD_TENTATIVE'") == 2` and `layers.py` now has 3 |
 | test_harness_audit | 1+1 | TEST_BUG | R9 | names 3 vacuous modules; verified |
 | test_inactives_substance | 4 | UNKNOWN | — | `48 of 50`, `382` vs D20; needs its own look |
 | test_kicker_resolution | 1 | REAL_PRODUCTION_DEFECT | — | NYJ `KICKER_ELIGIBILITY_DISAGREES_ACROSS_VINTAGES` |
@@ -116,12 +146,12 @@ R15 order- or state-dependent failures: green      TEST_BUG
 | test_p7_data_plane | 3 | REAL_PRODUCTION_DEFECT | R5 | declaration vs stored-capture mismatch |
 | test_p8_tails_and_counts | 1 raise | TEST_BUG | R1 | `board.json` on a REFUSED run |
 | test_preflight | 2 | REAL_PRODUCTION_DEFECT | R3 | `WORKFLOW_STALE` |
-| test_product_orchestration | 1+1 | TEST_BUG | R15/R1 | passes standalone; in-suite `the reproduction run sealed REFUSED` |
+| test_product_orchestration | 1+1 | EXPECTED_GOVERNANCE_FAILURE | R1 | `the reproduction run sealed  REFUSED` |
 | test_publication_semantics | 1+1 | TEST_BUG | R1 | `FileNotFoundError` on the refused run's board |
 | test_q9_live_feature_builder | 5+1 | UNKNOWN | — | `record 482/0 vs run 481/0`; an off-by-one in a window comparison |
 | test_qb2_production | 13+2 | EXPECTED_GOVERNANCE_FAILURE | R1 | `the run seals [REFUSED]` |
 | test_qb_eligibility_den_kc | 2+1 | OBSOLETE_CONTRACT | R2 | same pin |
-| test_r5_active_pool | 2+1 | UNKNOWN | — | "the R5 branch returns a fatal on a status refusal" |
+| test_r5_active_pool | 2+1 | UNKNOWN | — | `the R5 branch returns a fatal on a status refusal` and `it never falls back to the unfiltered list`, both empty-detail; needs a read of the R5 branch |
 | test_readiness_vintage_cut | 2+1 | HISTORICAL_ARTIFACT_MISSING | R4 | no 2026 wk-1 injuries row in any capture |
 | test_replay_pins_its_inputs | 1 | REAL_PRODUCTION_DEFECT | R14 | `REPLAY_RE_SELECTS` (D23) |
 | test_sc2_interception_reservation | 1+1 | REAL_PRODUCTION_DEFECT | — | fitted 0.5390 vs injected 0.9251 (open task SC2-A) |
@@ -129,13 +159,18 @@ R15 order- or state-dependent failures: green      TEST_BUG
 | test_stat_contract | 2 | REAL_PRODUCTION_DEFECT | R7 | 271,691 non-integer, all week 1 |
 | test_system_state | 5+1 | OBSOLETE_CONTRACT + STALE_FIXTURE | R8 + R10 | `KeyError: items`; `regenerate: system_state.py --write` |
 | test_v1_draw_artifact | 3 | STALE_FIXTURE | R13 | `REQUIRED_SOURCE_NOT_DECLARED`: declares `['schedules']`, selects four |
-| test_v1_rushing_a1 | 3 | TEST_BUG | R15 | passes standalone |
+| test_v1_rushing_a1 | 3 | UNKNOWN | — | clears `PBP_GLOB_ENV` and expects BLOCKED; gets `A1_PBP_SOURCES`. Either the fixture's way of making a source absent stopped working (STALE_FIXTURE) or a fallback path is being taken that should not be (REAL). Not established. |
 
 ## Where this leaves UNKNOWN
 
-**Three modules, down from twenty.** `test_inactives_substance`,
-`test_q9_live_feature_builder`, `test_r5_active_pool`. Each has a specific
-message and needs one focused look; none is hand-waved.
+**Four modules, down from twenty, after R15 was withdrawn put two back.**
+`test_inactives_substance` (48 of 50 carry the empty-state sentence; 382 vs
+what D20 records; 20 game-anchored rows uncredited against an expected 18 --
+the same +2 drift `test_capture_obligations` reports, so these two probably
+share a root), `test_q9_live_feature_builder` (record 482/0 vs run 481/0),
+`test_r5_active_pool`, `test_v1_rushing_a1`, and `test_execution_identity`
+makes five. Each has a specific message and needs one focused look; none is
+hand-waved.
 
 ## What is worth fixing first, by modules-per-fix
 
