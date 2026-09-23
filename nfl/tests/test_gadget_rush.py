@@ -226,5 +226,40 @@ def main():
     return 1 if _F else 0
 
 
+
+# ---------------------------------------------------------------- the runner
+# THIS MODULE'S CHECKS WERE INVISIBLE TO `run_suite`. It records into `_P`/`_F`
+# and runs everything from `main()`, so the runner discovered ZERO `test_*`
+# functions and executed NONE of them. Found 2026-09-23 by
+# `test_harness_audit`'s "no module has zero test functions", which had been
+# failing and telling the truth, and confirmed by invoking this file directly:
+# it reports real numbers the suite had never seen.
+#
+# That is the false-green class INSIDE the measurement system -- the same
+# defect `run_suite.py` was written to end, one level further out.
+#
+# NOTHING BELOW CHANGES WHAT THIS MODULE ASSERTS. It exposes the integer
+# counters the runner reads (`_P`/`_F` are lists and underscore-prefixed, so
+# `tally()` could not see them either) and gives the runner one function to
+# call, in the same shape the other fifty modules use.
+PASSED = FAILED = 0
+blocked_count = 0
+
+
+def test_every_check_in_this_module():
+    global PASSED, FAILED, blocked_count
+    main()
+    PASSED, FAILED = len(_P), len(_F)
+    # `main()` returns early, without recording a check, when its inputs are
+    # absent. Counted as BLOCKED so it is distinguishable from silence: a
+    # module that could not measure said so, and is not a pass.
+    if not _P and not _F:
+        blocked_count = 1
+
+
+def test_zz_every_check_passed():
+    if FAILED:
+        raise AssertionError(f'{FAILED} check(s) failed in this module')
+
 if __name__ == '__main__':
     raise SystemExit(main())

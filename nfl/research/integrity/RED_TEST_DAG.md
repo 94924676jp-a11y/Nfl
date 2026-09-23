@@ -52,11 +52,31 @@ R7  five pre-repair week-1 boards carry            REAL_PRODUCTION_DEFECT
 R8  producers stopped emitting keys tests read     OBSOLETE_CONTRACT
       -> test_gate_ids, test_ownership_audit, test_system_state
 
-R9  three modules expose no test_* function,       TEST_BUG
-    so the runner never runs their checks
+R9  three modules expose no test_* function,       TEST_BUG -- FIXED
+    so the runner never runs their checks            2026-09-23
       -> test_harness_audit reports it;
          test_gadget_rush, test_rushing_survivorship, test_wired_product
          are the three
+
+    REPAIRED, and it immediately surfaced three results the suite had never
+    seen. Each module now exposes the integer counters `tally()` reads and one
+    `test_*` function that calls its existing `main()`. NO assertion changed.
+
+      test_gadget_rush           58 pass, 1 FAIL:
+                                 "BUF Greg Dortch is on the game roster ::
+                                 PRACTICE_SQUAD"
+      test_rushing_survivorship  1 FAIL: audit_total_matches_measured_drop,
+                                 audit=22821 measured=22037. The
+                                 SURVIVORSHIP_AUDIT.json artifact has drifted
+                                 784 carries from the live measurement. NEW.
+      test_wired_product         RAISES before recording a check --
+                                 FileNotFoundError on
+                                 post_inactives_V1_CANDIDATE/fced077d0db6ab41
+                                 /board.json. That is R1, so R1 is EIGHT
+                                 modules, not seven.
+
+    The suite gets redder because of this change. That is the correct
+    direction: these three were always failing and nobody could see it.
 
 R10 regenerable inventories drifted                STALE_FIXTURE
       -> test_system_state, test_p7_dag
