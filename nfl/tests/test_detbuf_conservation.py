@@ -29,6 +29,7 @@ Run standalone:  python3.12 nfl/tests/test_detbuf_conservation.py <run_dir>
 """
 import json
 import os
+import pathlib
 import sys
 
 import numpy as np
@@ -122,6 +123,51 @@ def audit(run_dir):
         check(f'{tm}    team carries are integral, not D1\'s continuous draw',
               bool(np.allclose(tc, np.rint(tc))),
               'a continuous level is not the level a partition consumed')
+
+
+
+# ---------------------------------------------------------------- the runner
+# THIS MODULE'S CHECKS WERE NEVER EXECUTED BY `run_suite`. It takes a run
+# directory as a command-line argument and exposes no `test_*` function, so
+# the runner discovered nothing to call. Found 2026-09-23 by the
+# TEST_MODULE_NOT_EXECUTED guard added the same day -- which is the guard
+# finding a module nobody knew was silent, one hour after it was written.
+#
+# The repair keeps the module usable as a targeted tool (`python3.12
+# test_detbuf_conservation.py <run_dir>` still works) and adds a `test_*`
+# that SELECTS a sealed DET-BUF run itself, so the checks run unattended.
+# When no such run exists it records BLOCKED -- "could not measure" is not
+# "measured and passed".
+def _newest_detbuf_run():
+    """A sealed DET-BUF run carrying the layers these checks read."""
+    # SEALED BOARDS ONLY. The newest DET-BUF manifest is the REFUSED run
+    # `fced077d0db6ab41`, which never produced a board -- picking it by
+    # mtime is how this landed on R1 the moment it became visible.
+    # `sealed_boards()` reads each directory's own declaration.
+    from nfl.research import sealed_index as _SI
+    cands = [p for p in _SI.sealed_boards()
+             if '2026_02_DET_BUF' in str(p)]
+    if not cands:
+        return None
+    cands.sort(key=lambda q: q.stat().st_mtime, reverse=True)
+    return str(cands[0].parent)
+
+
+def test_the_detbuf_board_conserves():
+    global PASSED, FAILED
+    d = _newest_detbuf_run()
+    if d is None:
+        not_executed('detbuf conservation',
+                     'no sealed DET-BUF run carrying a draw manifest exists '
+                     'in this checkout, so the accounting has nothing to be '
+                     'audited on')
+        return
+    audit(d)
+
+
+def test_zz_every_check_passed():
+    if FAILED:
+        raise AssertionError(f'{FAILED} check(s) failed in this module')
 
 
 if __name__ == '__main__':

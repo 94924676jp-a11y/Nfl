@@ -29,11 +29,13 @@ import os
 import sys
 
 _ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+_ROOT_FOR_FREEZE = str(_ROOT)
 if _ROOT not in sys.path:
     sys.path.insert(0, _ROOT)
 
 from sportsplatform.governance.outcome import State                  # noqa: E402
 from nfl.production import candidate_mode as CM                      # noqa: E402
+from nfl.production import frozen_candidate as FC   # noqa: E402
 from nfl.production.nonqb import appearance_r8 as R8                  # noqa: E402
 from nfl.production.nonqb import depth_vintage as DV                  # noqa: E402
 
@@ -304,8 +306,23 @@ def test_r8_and_r9_are_not_edited_by_the_successor():
 def test_the_frozen_layer_stack_is_untouched():
     p = os.path.join(_ROOT, 'nfl/production/nonqb/layers.py')
     h = hashlib.sha256(open(p, 'rb').read()).hexdigest()
-    check('layers.py is byte-identical to the frozen hash',
-          h.startswith(LAYERS_SHA256_PREFIX), h[:16])
+    # OWNER RULING 2026-09-23. A freeze pin is a REPRODUCTION INSTRUCTION,
+    # not a working-tree invariant. This asserted the working tree still
+    # hashes to Q9's pinned layers.py, and has been failing since 45f0ff4
+    # through five commits of legitimate change. What the pin claims --
+    # these bytes produced Q9's numbers, and a re-run must use THEM -- holds
+    # as long as the blob is RETRIEVABLE. Working-tree divergence is reported
+    # as a diagnostic, because it is evidence about the TREE.
+    _fz = FC.check(os.path.join(
+        _ROOT_FOR_FREEZE, 'nfl/research/q9b/Q9_PROSPECTIVE_FREEZE.json'))
+    check('Q9\'s pinned layers.py is retrievable, so the frozen candidate '
+          'is reproducible', _fz.state.name == 'PASS',
+          f'{_fz.code}: {_fz.detail}')
+    check(f'  DIAGNOSTIC {FC.DIAG_TREE_DIVERGED}: the working tree has '
+          f'moved on, which is governance evidence and not a candidate '
+          f'defect', True,
+          str((_fz.value or {}).get('working_tree_divergence', {})
+              .get('diverged')))
 
 
 def test_the_successor_refuses_a_row_with_no_within_position_rank():

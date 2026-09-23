@@ -301,3 +301,102 @@ def _looks_like(game_id, label):
     """`2026_01_NE_SEA` against a label like `g1_ne_sea`."""
     bits = [b.lower() for b in str(game_id).split('_')[2:4] if b]
     return bool(bits) and all(b in label for b in bits)
+
+
+# ==========================================================================
+# ARTIFACT KIND, BY DECLARATION -- OWNER RULING 2026-09-23
+# ==========================================================================
+#
+# A GOVERNED SEALED BOARD IS NOT "a directory containing player_draws.npz".
+#
+# Two DET-BUF directories proved it. `post_inactives_V1_CANDIDATE/
+# fced077d0db6ab41` carries `status: REFUSED` with a named sealing refusal --
+# CURRENT_SEASON_INPUT_STALE on denom_panel, panel_p3 and
+# team_volume_history -- so it never reached board generation. And
+# `post_inactives_V1_CANDIDATE_R9_W1P_GA_OFFICIAL` is not a run directory at
+# all: it is a derived zero-delta artifact whose own ARTIFACT.json says
+#
+#     "Reporting it as a full post-inactives board would be the false green
+#      this project exists to refuse."
+#
+# Nine test modules failed on the ABSENCE of a board.json in those two
+# directories. Nothing was missing. Discovery was calling them boards.
+#
+# So kind is read from the artifact's OWN machine-readable declarations, and
+# a missing or contradictory declaration FAILS CLOSED -- it becomes
+# INDETERMINATE, never a board.
+
+KIND_SEALED_BOARD = 'SEALED_BOARD'
+KIND_REFUSED_RUN = 'REFUSED_RUN'
+KIND_DERIVED_NON_BOARD = 'DERIVED_NON_BOARD'
+KIND_INDETERMINATE = 'INDETERMINATE'
+ARTIFACT_KINDS = (KIND_SEALED_BOARD, KIND_REFUSED_RUN,
+                  KIND_DERIVED_NON_BOARD, KIND_INDETERMINATE)
+
+#: `run_status.json.status` values that mean "this run did not seal".
+NON_SEALING_STATUS = ('REFUSED', 'BLOCKED', 'FAILED', 'ERROR')
+
+#: `ARTIFACT.json.artifact` values known NOT to be a board. Matched exactly;
+#: an unrecognised value is INDETERMINATE, not a board.
+DECLARED_NON_BOARD = ('POST_INACTIVES_BOARD_DRAWS',
+                      'POST_INACTIVES_HARD_ZERO_DELTA')
+
+
+def artifact_kind(run_dir) -> dict:
+    """What this directory declares itself to be, with the evidence."""
+    d = pathlib.Path(run_dir)
+    rs = _read_json(d / 'run_status.json') or {}
+    art = _read_json(d / 'ARTIFACT.json') or {}
+    status = (rs.get('status') or '').upper() or None
+    declared = art.get('artifact') or None
+    markers = [m for m in SEAL_MARKERS if (d / m).exists()]
+    ev = {'status': status, 'declared_artifact': declared,
+          'seal_markers_present': markers,
+          'has_run_status': bool(rs), 'has_artifact_json': bool(art)}
+
+    # A DECLARED NON-BOARD WINS OVER EVERYTHING. It is the artifact speaking
+    # about itself, and it is the strongest evidence available.
+    if declared in DECLARED_NON_BOARD or art.get('WHAT_THIS_IS_NOT'):
+        return {'kind': KIND_DERIVED_NON_BOARD, 'evidence': ev,
+                'why': f'ARTIFACT.json declares {declared!r} and carries its '
+                       f'own statement of what it is not. A derived artifact '
+                       f'is not promoted to a board because it holds draws.'}
+    if status in NON_SEALING_STATUS:
+        return {'kind': KIND_REFUSED_RUN, 'evidence': ev,
+                'why': f'run_status.json declares status {status!r}. A run '
+                       f'that did not seal is not a publishable board; it '
+                       f'stays discoverable as a refused run for audit.'}
+    if status == 'SEALED' and markers:
+        return {'kind': KIND_SEALED_BOARD, 'evidence': ev,
+                'why': f'run_status.json declares SEALED and the directory '
+                       f'carries {markers}.'}
+    if markers and not rs and not art:
+        # An older board with no status file. Its seal marker is the only
+        # declaration available and it is an affirmative one.
+        return {'kind': KIND_SEALED_BOARD, 'evidence': ev,
+                'why': f'no status file, and the directory carries {markers}. '
+                       f'The seal marker is the only declaration present and '
+                       f'it is affirmative.'}
+    return {'kind': KIND_INDETERMINATE, 'evidence': ev,
+            'why': f'status={status!r}, declared_artifact={declared!r}, '
+                   f'seal markers {markers}. Nothing here affirmatively '
+                   f'declares a sealed board, so it is not guessed into one.'}
+
+
+def sealed_boards(exclude=FENCE_EXCLUDED_NAMESPACES):
+    """`live_draw_files()` narrowed to directories that DECLARE a board.
+
+    Callers that mean "every sealed board" want this. `live_draw_files`
+    remains what it says -- every draw file -- because an audit of refused
+    runs needs them too.
+    """
+    return [p for p in live_draw_files(exclude)
+            if artifact_kind(p.parent)['kind'] == KIND_SEALED_BOARD]
+
+
+def classify_live(exclude=FENCE_EXCLUDED_NAMESPACES) -> dict:
+    """Every discovered draw directory, grouped by what it declares."""
+    out = {k: [] for k in ARTIFACT_KINDS}
+    for p in live_draw_files(exclude):
+        out[artifact_kind(p.parent)['kind']].append(str(p.parent))
+    return out

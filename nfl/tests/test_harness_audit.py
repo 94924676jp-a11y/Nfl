@@ -148,6 +148,8 @@ def test_C_every_module_is_observed():
             continue
         fns = [n for n in dir(mod)
                if n.startswith('test_') and callable(getattr(mod, n))]
+        if fns:
+            _executed.add(f)
         # READ THE RUNNER'S OWN LIST, never a copy of it. A hardcoded copy
         # here would drift from the runner and this audit would then certify a
         # capability the runner does not have -- the same defect one level up.
@@ -170,6 +172,22 @@ def test_C_every_module_is_observed():
           'that combination is the one that prints green while failing',
           not unobserved, str(unobserved))
     check('  and no module has zero test functions', vacuous == 0, str(vacuous))
+    # OWNER RULING 2026-09-23. The count above says HOW MANY measured
+    # nothing. This says WHICH, and only for modules that plainly contain
+    # assertions -- a helper with no checks is not a test module that failed
+    # to run, and conflating the two would make the guard noisy enough to
+    # ignore. `nfl/tests/governed_draws.py` is exactly that case and must not
+    # appear here.
+    not_executed = [f for f in files
+                    if f not in _executed and rs_mod._has_checks(f)]
+    check('  and NO module contains checks that the runner never executes '
+          f'({rs_mod.__name__} is the authoritative execution path)',
+          not not_executed, str(not_executed))
+
+
+#: Filled by test_C as it walks the tree, so the guard below reports the same
+#: modules the runner would.
+_executed = set()
 
 
 def test_D_the_runner_refuses_a_vacuous_module():

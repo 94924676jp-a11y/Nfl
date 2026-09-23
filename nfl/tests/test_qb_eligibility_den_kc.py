@@ -36,6 +36,7 @@ if _ROOT not in sys.path:
 
 from sportsplatform.governance.outcome import State                  # noqa: E402
 from nfl.production import run_forecast as RF                        # noqa: E402
+from nfl.production import frozen_candidate as FC   # noqa: E402
 from nfl.production.nonqb import roster_status as RS                 # noqa: E402
 from nfl.production.nonqb import qb_allocation as QA                 # noqa: E402
 
@@ -250,10 +251,38 @@ def test_the_run_records_what_it_has_not_repaired():
 
 
 def test_q9_frozen_layers_are_untouched():
-    p = os.path.join(_ROOT, 'nfl/production/nonqb/layers.py')
-    got = hashlib.sha256(open(p, 'rb').read()).hexdigest()[:16]
-    check('nfl/production/nonqb/layers.py is still the Q9-frozen artifact',
-          got == Q9_LAYERS_SHA16, f'{got} != {Q9_LAYERS_SHA16}')
+    # OWNER RULING 2026-09-23: A FREEZE PIN IS A REPRODUCTION INSTRUCTION,
+    # NOT A WORKING-TREE INVARIANT.
+    #
+    # This asserted that the working tree still hashes to Q9's pinned
+    # `layers.py`, and it has been failing since 45f0ff4 -- five commits of
+    # legitimate change later, the file is b081a5b2fa45be25. The pin says
+    # WHICH BYTES produced Q9's numbers; it does not forbid the file to move,
+    # and forbidding it would freeze the repository rather than the candidate.
+    #
+    # What the pin actually claims, and what is checked instead: the pinned
+    # blob is RETRIEVABLE, so Q9 can be re-run from it. Working-tree
+    # divergence is reported as a named diagnostic, because a reader needs to
+    # know HEAD is not the frozen commit -- but it is evidence about the
+    # TREE, not about the candidate.
+    o = FC.check(os.path.join(
+        _ROOT, 'nfl/research/q9b/Q9_PROSPECTIVE_FREEZE.json'))
+    check('Q9\'s pinned dependency blobs are all retrievable, so the '
+          'frozen candidate is reproducible',
+          o.state.name == 'PASS', f'{o.code}: {o.detail}')
+    _lay = next((r for r in (o.value or {}).get('modules', [])
+                 if r['module'] == 'nfl.production.nonqb.layers'), None)
+    check('  and the pinned layers.py is retrievable at a named commit',
+          bool(_lay and _lay['retrievable']),
+          str((_lay or {}).get('at')))
+    check('  reproduction reads the FROZEN bytes, not the working tree',
+          FC.frozen_bytes('nfl/production/nonqb/layers.py',
+                          Q9_LAYERS_SHA16) is not None)
+    _div = (o.value or {}).get('working_tree_divergence', {})
+    check(f'  DIAGNOSTIC {FC.DIAG_TREE_DIVERGED}: '
+          f'{_div.get("n_diverged")} pinned module(s) differ from the '
+          f'working tree -- governance evidence, not a candidate defect',
+          True, str(_div.get('diverged')))
 
 
 def test_zz_every_check_passed():

@@ -70,6 +70,24 @@ _TALLY = (('PASSED', 'FAILED'), ('passed', 'failed'), ('OK', 'BAD'),
 _BLOCKED = ('BLOCKED', 'blocked_count', 'SKIPPED')
 
 
+#: Names a module uses to record one check. Read from the SOURCE, because a
+#: module that exposes no test function never runs and so can never be asked
+#: at runtime what it would have measured.
+_CHECK_CALLS = ('check(', 'ck(', 'ok(', 'expect(')
+
+
+def _has_checks(path) -> bool:
+    """Does this file plainly contain assertions nobody is executing?"""
+    try:
+        src = open(path, encoding='utf-8').read()
+    except Exception:                                        # noqa: BLE001
+        return False
+    # a definition is not a call
+    body = '\n'.join(ln for ln in src.splitlines()
+                      if not ln.lstrip().startswith(('def ', '#')))
+    return any(c in body for c in _CHECK_CALLS)
+
+
 def tally(mod):
     for p, f in _TALLY:
         if hasattr(mod, p) and hasattr(mod, f):
@@ -153,6 +171,7 @@ def main(argv=None):
     if only:
         files = [f for f in files if only in f]
     n_fn = n_raise = n_check_fail = n_check_ok = 0
+    n_not_executed = []
     n_fn_zero = n_fn_blocked = n_unrecognised_tally = 0
     zero_fns, blocked_fns = [], []
     problems = []
@@ -246,6 +265,23 @@ def main(argv=None):
             problems.append(f'VACUOUS {f}: {len(fns)} test function(s) ran '
                             f'and recorded ZERO checks. A module that '
                             f'measured nothing has not passed.')
+        elif not fns and _has_checks(f):
+            # TEST_MODULE_NOT_EXECUTED. OWNER RULING 2026-09-23.
+            #
+            # The module contains check calls and exposes NO `test_*`
+            # function, so this runner discovers nothing to call and executes
+            # NONE of them. Three modules sat in that state until
+            # 2026-09-23; one of them was failing, and the suite had never
+            # seen it. Silence from a module that plainly has assertions is
+            # the false-green class inside the measurement system, so it is
+            # named and it fails the suite.
+            n_not_executed.append(f)
+            problems.append(
+                f'TEST_MODULE_NOT_EXECUTED {f}: the module contains check '
+                f'calls and exposes no test_* function, so this runner '
+                f'executed NONE of them. Direct `python3.12 {f}` is not the '
+                f'authoritative execution path and its exit code is not a '
+                f'test result.')
         if verbose:
             print(f'  {f}: {len(fns)} function(s), {ok} check(s), {bad} failing')
     if zero_fns:
@@ -267,6 +303,7 @@ def main(argv=None):
     for p in problems:
         print('\n' + p)
     bad = (n_check_fail + n_raise + n_fn_zero + n_unrecognised_tally
+           + len(n_not_executed)
            + sum(p.startswith('VACUOUS') for p in problems))
     print('SUITE ' + ('FAIL' if bad else 'PASS'))
     return 1 if bad else 0

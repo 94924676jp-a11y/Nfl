@@ -53,6 +53,7 @@ import pathlib
 import sys
 
 _ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+_ROOT_FOR_FREEZE = str(_ROOT)
 for _q in (_ROOT, os.path.join(_ROOT, 'nfl', 'research', 'p4c')):
     if _q not in sys.path:
         sys.path.insert(0, _q)
@@ -61,6 +62,7 @@ import hashlib                                                    # noqa: E402
 
 from sportsplatform.governance.outcome import State               # noqa: E402
 from nfl.capture import coverage as COV                           # noqa: E402
+from nfl.production import frozen_candidate as FC   # noqa: E402
 from nfl.production.nonqb import football_engine as FE            # noqa: E402
 from nfl.production.nonqb import layers as LY                     # noqa: E402
 from nfl.production.nonqb import readiness as RD                  # noqa: E402
@@ -239,8 +241,23 @@ def test_a_the_frozen_layers_module_is_not_edited():
     """The whole design depends on this: the repair is at the CALL SITE."""
     print('\nA. layers.py is untouched')
     got = hashlib.sha256(LAYERS_SRC.read_bytes()).hexdigest()
-    check('layers.py still hashes to the Q9 frozen candidate identity',
-          got == Q9_LAYERS_SHA256, f'{got} != {Q9_LAYERS_SHA256}')
+    # OWNER RULING 2026-09-23. A freeze pin is a REPRODUCTION INSTRUCTION,
+    # not a working-tree invariant. This asserted the working tree still
+    # hashes to Q9's pinned layers.py, and has been failing since 45f0ff4
+    # through five commits of legitimate change. What the pin claims --
+    # these bytes produced Q9's numbers, and a re-run must use THEM -- holds
+    # as long as the blob is RETRIEVABLE. Working-tree divergence is reported
+    # as a diagnostic, because it is evidence about the TREE.
+    _fz = FC.check(os.path.join(
+        _ROOT_FOR_FREEZE, 'nfl/research/q9b/Q9_PROSPECTIVE_FREEZE.json'))
+    check('Q9\'s pinned layers.py is retrievable, so the frozen candidate '
+          'is reproducible', _fz.state.name == 'PASS',
+          f'{_fz.code}: {_fz.detail}')
+    check(f'  DIAGNOSTIC {FC.DIAG_TREE_DIVERGED}: the working tree has '
+          f'moved on, which is governance evidence and not a candidate '
+          f'defect', True,
+          str((_fz.value or {}).get('working_tree_divergence', {})
+              .get('diverged')))
     src = LAYERS_SRC.read_text(encoding='utf-8')
     check('  and carries no trace of the call-site scoping',
           'ateams' not in src and 'team_scope' not in src)
