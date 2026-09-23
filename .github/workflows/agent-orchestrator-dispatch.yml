@@ -23,6 +23,21 @@ name: agent-orchestrator-dispatch
 # queue. It validates the branch, checks out the automation branch, and runs
 # the orchestrator from that checkout. Every fact the orchestrator acts on is
 # re-read from that branch; nothing in the event payload is authoritative.
+#
+# WHERE THE AUTHORITY TO SPEND MONEY LIVES. Not here, and NOT in the payload.
+# An earlier version let a human pick LIVE at startup and then downgraded
+# every continuation to MOCK, because trusting the payload would let anyone
+# who can open a dispatch spend money. The refusal was right; the location was
+# wrong -- it also meant LIVE could never survive its own first continuation.
+#
+# LIVE now requires TWO fields in AUTOMATION_POLICY.json on the allowlisted
+# automation branch: `autonomous_operation_enabled: true` AND
+# `execution_mode: "LIVE"`. Both are on a protected path no worker may write.
+# So the mode is resolved AFTER checkout, by reading that file -- which is why
+# the steps below are ordered validate -> checkout -> resolve, and not the
+# other way round. The payload is tracing only. The orchestrator then re-
+# derives the same decision in-process before any provider call, so bypassing
+# this workflow does not bypass the control.
 
 on:
   repository_dispatch:
@@ -34,7 +49,7 @@ on:
         required: false
         default: 'claude/nfl-greenfield-architecture-stsxmk'
       mode:
-        description: 'MOCK (free, fixtures) | PROOF (event-chain proof) | LIVE (real API calls)'
+        description: 'MOCK (free, fixtures) | PROOF (event-chain proof) | LIVE (requires the protected policy to authorize it)'
         required: false
         default: 'MOCK'
         type: choice
@@ -64,7 +79,7 @@ jobs:
           # Read through env rather than interpolated into the script body, so
           # a payload value is data to bash and never becomes shell syntax.
           REQUESTED: ${{ github.event.client_payload.branch || github.event.inputs.branch || 'claude/nfl-greenfield-architecture-stsxmk' }}
-          REQUESTED_MODE: ${{ github.event.client_payload.mode || github.event.inputs.mode || 'MOCK' }}
+          REQUESTED_MODE: ${{ github.event.inputs.mode || 'MOCK' }}
           EVENT: ${{ github.event_name }}
         run: |
           set -euo pipefail
@@ -89,26 +104,24 @@ jobs:
             exit 1
           fi
 
-          # MODE CAN ONLY BE RESTRICTED BY A PAYLOAD, NEVER ESCALATED.
-          # LIVE spends money, so it may only come from a human pressing Run
-          # workflow. A dispatch asking for LIVE is downgraded to MOCK and
-          # says so, loudly.
-          MODE="$REQUESTED_MODE"
-          if [ "$EVENT" = "repository_dispatch" ] && [ "$MODE" = "LIVE" ]; then
-            echo "::warning::A repository_dispatch asked for LIVE. Downgraded"
-            echo "::warning::to MOCK. Only a human workflow_dispatch may select LIVE."
-            MODE="MOCK"
+          # A PAYLOAD NEVER CARRIES A MODE. Not downgraded -- ignored. The
+          # effective mode is resolved after checkout from the protected
+          # policy, so there is nothing here for a payload to influence.
+          if [ "$EVENT" = "repository_dispatch" ]; then
+            REQ="CONTINUATION"
+          else
+            REQ="$REQUESTED_MODE"
+            case "$REQ" in
+              MOCK|PROOF|LIVE) ;;
+              *) echo "::error::MODE_UNKNOWN: '$REQ'"; exit 1 ;;
+            esac
           fi
-          case "$MODE" in
-            MOCK|PROOF|LIVE) ;;
-            *) echo "::error::MODE_UNKNOWN: '$MODE'"; exit 1 ;;
-          esac
 
-          echo "branch=$REQUESTED" >> "$GITHUB_OUTPUT"
-          echo "mode=$MODE"        >> "$GITHUB_OUTPUT"
-          echo "Branch  $REQUESTED  (allowlisted)"
-          echo "Mode    $MODE"
-          echo "Trigger $EVENT"
+          echo "branch=$REQUESTED"  >> "$GITHUB_OUTPUT"
+          echo "requested=$REQ"     >> "$GITHUB_OUTPUT"
+          echo "Branch     $REQUESTED  (allowlisted)"
+          echo "Requested  $REQ  (a request, not an authorization)"
+          echo "Trigger    $EVENT"
 
       # ---------------------------------------------------------------- 2
       - name: Checkout the automation branch
@@ -141,10 +154,91 @@ jobs:
       - name: Validate coordination state
         run: python3.12 coordination/validate_coordination.py
 
+      # ---------------------------------------------------------------- 4
+      # THE MODE DECISION, taken here and nowhere else, from the protected
+      # policy file on the branch that was just checked out.
+      - name: Resolve the execution mode from the protected policy
+        id: mode
+        env:
+          REQUESTED: ${{ steps.target.outputs.requested }}
+        run: |
+          set -euo pipefail
+          # Read the two protected fields. `python3.12 -c` rather than a
+          # heredoc: a heredoc terminator cannot be indented, and indenting it
+          # inside a YAML block is a silent syntax break waiting to happen.
+          # An absent or unrecognised execution_mode reads as MOCK -- a
+          # missing field must never be the permissive case.
+          read -r ENABLED POLICY_MODE <<< "$(python3.12 -c 'import json; p=json.load(open("coordination/AUTOMATION_POLICY.json")); print("yes" if p.get("autonomous_operation_enabled") else "no", "LIVE" if str(p.get("execution_mode") or "MOCK").upper()=="LIVE" else "MOCK")')"
+          # AN UNREADABLE POLICY IS A STOP, NOT A DEFAULT. `set -e` does not
+          # fire on a failed command substitution inside `<<<`, so a missing
+          # or malformed file would leave both variables EMPTY and fall
+          # through the case below. Checked explicitly.
+          case "$ENABLED:$POLICY_MODE" in
+            yes:LIVE|yes:MOCK|no:LIVE|no:MOCK) ;;
+            *) echo "::error::POLICY_UNREADABLE: could not read"
+               echo "::error::autonomous_operation_enabled / execution_mode from"
+               echo "::error::coordination/AUTOMATION_POLICY.json (got"
+               echo "::error::'$ENABLED' / '$POLICY_MODE'). Refusing to guess."
+               exit 1 ;;
+          esac
+          echo "policy: autonomous_operation_enabled=$ENABLED execution_mode=$POLICY_MODE"
+
+          if [ "$ENABLED" != "yes" ]; then
+            echo "::notice::Autonomy is disabled in the protected policy. The"
+            echo "::notice::orchestrator will stop on its own; nothing is spent."
+          fi
+
+          case "$REQUESTED" in
+            PROOF)
+              # The event-chain proof never calls a provider, whatever the
+              # policy says, so it is its own mode and cannot become LIVE.
+              EFFECTIVE=MOCK; PROOF=1 ;;
+            CONTINUATION)
+              # A continuation inherits the POLICY, which is exactly what
+              # makes an owner-armed LIVE survive without another human click.
+              # BOTH fields are required: execution_mode=LIVE with autonomy
+              # disabled is NOT live. The first cut of this line read the mode
+              # alone and handed LIVE to a disabled system. The orchestrator's
+              # in-process check would still have refused -- resolve_mode tests
+              # the enable flag first -- so nothing would have been spent, but
+              # two layers that disagree mean one of them is wrong, and it was
+              # this one.
+              if [ "$ENABLED" = "yes" ]; then
+                EFFECTIVE="$POLICY_MODE"
+              else
+                EFFECTIVE=MOCK
+              fi
+              PROOF= ;;
+            LIVE)
+              if [ "$ENABLED" = "yes" ] && [ "$POLICY_MODE" = "LIVE" ]; then
+                EFFECTIVE=LIVE
+              else
+                # REFUSE, rather than quietly running MOCK. An operator who
+                # asked for LIVE and silently got MOCK finds out from a bill
+                # that never arrives, which is the worst way to learn it.
+                echo "::error::LIVE_NOT_AUTHORIZED: the protected policy says"
+                echo "::error::autonomous_operation_enabled=$ENABLED and"
+                echo "::error::execution_mode=$POLICY_MODE. Set BOTH"
+                echo "::error::autonomous_operation_enabled=true and"
+                echo "::error::execution_mode=LIVE in AUTOMATION_POLICY.json"
+                echo "::error::on the automation branch, then re-run."
+                exit 1
+              fi
+              PROOF= ;;
+            *)
+              EFFECTIVE=MOCK; PROOF= ;;
+          esac
+
+          echo "effective=$EFFECTIVE"     >> "$GITHUB_OUTPUT"
+          echo "proof=$PROOF"             >> "$GITHUB_OUTPUT"
+          echo "policy_mode=$POLICY_MODE" >> "$GITHUB_OUTPUT"
+          echo "enabled=$ENABLED"         >> "$GITHUB_OUTPUT"
+          echo "EFFECTIVE MODE: $EFFECTIVE  (proof=${PROOF:-no})"
+
       - name: Orchestrate
         env:
-          AUTONOMY_MODE: ${{ steps.target.outputs.mode == 'LIVE' && 'LIVE' || 'MOCK' }}
-          PROOF_CHAIN: ${{ steps.target.outputs.mode == 'PROOF' && '1' || '' }}
+          AUTONOMY_MODE: ${{ steps.mode.outputs.effective }}
+          PROOF_CHAIN: ${{ steps.mode.outputs.proof }}
           PROOF_PASS: ${{ github.event.client_payload.proof_pass || '1' }}
           PROOF_CHAIN_ID: ${{ github.event.client_payload.chain_id || '' }}
           AUTOMATION_BRANCH: ${{ steps.target.outputs.branch }}
@@ -200,11 +294,16 @@ jobs:
             echo "|---|---|"
             echo "| trigger | \`${{ github.event_name }}\` |"
             echo "| branch | \`${{ steps.target.outputs.branch }}\` |"
-            echo "| mode | \`${{ steps.target.outputs.mode }}\` |"
+            echo "| requested | \`${{ steps.target.outputs.requested }}\` |"
+            echo "| policy enabled | \`${{ steps.mode.outputs.enabled }}\` |"
+            echo "| policy execution_mode | \`${{ steps.mode.outputs.policy_mode }}\` |"
+            echo "| **effective mode** | \`${{ steps.mode.outputs.effective }}\` |"
             echo "| chain depth | \`${{ github.event.client_payload.chain_depth || '0' }}\` |"
             echo "| proof pass | \`${{ github.event.client_payload.proof_pass || 'n/a' }}\` |"
             echo "| exit | \`${ORCH_RC:-n/a}\` |"
             echo ""
-            echo "Autonomy is armed in \`coordination/AUTOMATION_POLICY.json\` on the automation branch."
-            echo "To stop it, set \`autonomous_operation_enabled\` to false and push."
+            echo "LIVE requires BOTH \`autonomous_operation_enabled: true\` and"
+            echo "\`execution_mode: \\\"LIVE\\\"\` in \`coordination/AUTOMATION_POLICY.json\`"
+            echo "on the automation branch. A dispatch payload cannot grant it."
+            echo "Either field set back stops spending on the next pass."
           } >> "$GITHUB_STEP_SUMMARY"
