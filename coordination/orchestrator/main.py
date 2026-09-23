@@ -108,7 +108,7 @@ def _escalate(esc, title, body, *, commit=True, head=None):
 # --------------------------------------------------------------- one call
 def _call(snap, worker, task, system, user, attempt, head):
     """Build, guard, make and preserve one provider call."""
-    cfg = snap.models[MODEL_KEY[worker]]
+    cfg = P.worker_config(snap.models, MODEL_KEY[worker])
     call = C.WorkerCall(worker=worker, model=cfg['model'],
                         task_id=task['task_id'],
                         prompt_sha256=C.prompt_hash(system + user),
@@ -174,6 +174,16 @@ def do_execute(snap, action, head) -> tuple:
             escalation=C.Escalation.STATE_CONTRADICTORY)
     mod = WORKER_MODULE[worker]
     attempt = snap.attempts(task['task_id'])
+
+    # ---- DELEGATED TRANSPORT --------------------------------------------
+    # CLAUDE_CODE_ACTION is not an HTTP call this process makes; it is a
+    # separate GitHub job. So this pass does the part it owns -- claim the
+    # task, build and commit the bounded packet -- and hands off. The return
+    # comes back through `ingest_engineering_return.py`, which is what moves
+    # the task to RETURNED and thereby wakes the owner review.
+    if worker is C.Worker.ENGINEER and P.engineering_transport(
+            snap.models) == C.Transport.CLAUDE_CODE_ACTION.value:
+        return _delegate_engineering(snap, action, head)
 
     if worker is C.Worker.ENGINEER:
         user = mod.build_prompt(
@@ -245,6 +255,59 @@ def do_execute(snap, action, head) -> tuple:
         push=os.environ.get('ORCHESTRATOR_PUSH', '1') == '1')
     if sha:
         G.update_task(qname, task['task_id'], commit_sha=sha)
+        _say(f'  committed {sha[:12]}')
+    return True, None
+
+
+def _delegate_engineering(snap, action, head) -> tuple:
+    """Claim the task and emit the packet. The Action runs elsewhere.
+
+    Returns (ok, escalation) like any other execution, so the caller does not
+    need to know which transport ran. What differs is that this pass ends with
+    the task ACTIVE and a packet committed, rather than RETURNED -- the work
+    has been handed off, not finished, and saying otherwise would be the
+    empty-success defect wearing a new hat.
+    """
+    from coordination.orchestrator import claude_code_transport as T
+    task, qname = action.task, action.queue_name
+    tid = task['task_id']
+    _say(f'  transport {C.Transport.CLAUDE_CODE_ACTION.value}: delegating '
+         f'{tid} to the claude-engineering workflow')
+
+    try:
+        packet = T.build_packet(task, queue_name=qname, head=head, snap=snap,
+                                attempt=snap.attempts(tid),
+                                run_id=os.environ.get('GITHUB_RUN_ID'))
+    except T.PacketRefusal as r:
+        _say(f'  REFUSED {r.code}: {r.detail[:300]}')
+        G.append_log({'actor': 'orchestrator', 'task_id': tid,
+                      'event': 'WORKER_FAILED', 'code': r.code,
+                      'note': r.detail[:400]})
+        return False, C.Escalation.STATE_CONTRADICTORY
+
+    if task.get('status') != 'ACTIVE':
+        G.update_task(qname, tid, status='ACTIVE')
+    T.write_packet(packet)
+    (S.REPO / T.PACKET_DIR / f'{tid}.prompt.md').write_text(
+        T.render_prompt(packet))
+    (S.REPO / T.PACKET_DIR / f'{tid}.schema.json').write_text(
+        json.dumps(T.json_schema(), indent=1) + '\n')
+
+    G.append_log({'actor': 'orchestrator', 'task_id': tid,
+                  'from_status': task.get('status'), 'to_status': 'ACTIVE',
+                  'event': 'DELEGATED',
+                  'transport': C.Transport.CLAUDE_CODE_ACTION.value,
+                  'artifact_path': T.packet_path(tid),
+                  'note': f'packet {packet["packet_sha256"][:16]} emitted; '
+                          f'the claude-engineering workflow executes it'})
+    sha = G.commit_and_push(
+        f'{tid}: emit engineering packet for the Claude Code Action\n\n'
+        f'packet {packet["packet_sha256"][:16]}, base {head[:12]}\n\n'
+        f'The task is ACTIVE and handed off, not finished. The Action runs in '
+        f'the claude-engineering workflow; its return is ingested and checked '
+        f'before the task moves to RETURNED.', head,
+        push=os.environ.get('ORCHESTRATOR_PUSH', '1') == '1')
+    if sha:
         _say(f'  committed {sha[:12]}')
     return True, None
 

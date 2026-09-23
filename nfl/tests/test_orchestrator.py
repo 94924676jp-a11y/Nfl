@@ -96,7 +96,17 @@ RES_TASK = {
 }
 
 
-def build_sandbox(*, eng=None, res=None, autonomy=True, policy_over=None):
+def build_sandbox(*, eng=None, res=None, autonomy=True, policy_over=None,
+                  engineering_transport='ANTHROPIC_API'):
+    """A real git repo with a real coordination layer. Caller removes it.
+
+    `engineering_transport` DEFAULTS TO THE API PATH because every test
+    written before the migration exercises it, and that transport is retained
+    rather than deleted. Pinning it here makes each test say which transport
+    it is about instead of silently inheriting whatever production selects --
+    which is how a transport change quietly rewrites what a hundred old
+    assertions mean. The CLAUDE_CODE_ACTION tests opt in by name.
+    """
     """A real git repo with a real coordination layer. Caller removes it."""
     root = pathlib.Path(tempfile.mkdtemp(prefix='orch-sandbox-'))
     coord = root / 'coordination'
@@ -125,7 +135,10 @@ def build_sandbox(*, eng=None, res=None, autonomy=True, policy_over=None):
         else:
             policy[k] = v
     (coord / 'AUTOMATION_POLICY.json').write_text(json.dumps(policy, indent=1))
-    shutil.copy(real / 'orchestrator' / 'MODELS.json', coord / 'orchestrator')
+    models = json.loads((real / 'orchestrator' / 'MODELS.json').read_text())
+    models['engineering_model']['transport'] = engineering_transport
+    (coord / 'orchestrator' / 'MODELS.json').write_text(
+        json.dumps(models, indent=1))
 
     (coord / 'PROJECT_STATE.json').write_text(json.dumps(
         {'schema': 'project_state', 'schema_version': '1.0.0',
@@ -1057,13 +1070,21 @@ def test_p_the_transport_sends_only_parameters_each_model_accepts():
     print('\nP. per-model request parameters')
     models = json.loads((REAL_REPO / 'coordination' / 'orchestrator'
                          / 'MODELS.json').read_text())
+    # RESOLVED THROUGH worker_config, so the engineering entry is read as the
+    # transport selector it now is. This still checks the ANTHROPIC_API block:
+    # that transport is retained, and if it is ever selected again its request
+    # body must still be correct -- a retained path with rotted parameters is
+    # a trap, not a fallback.
     for key, provider, must, forbidden in (
             ('owner_model', 'openai',
              ('max_completion_tokens',), ('temperature', 'max_tokens')),
             ('engineering_model', 'anthropic',
              ('max_tokens', 'system'), ('temperature', 'top_p', 'top_k')),
             ('research_model', 'perplexity', ('max_tokens',), ())):
-        cfg = models[key]
+        if key == 'engineering_model':
+            cfg = dict(models[key]['ANTHROPIC_API'])
+        else:
+            cfg = models[key]
         body = P._request_body(cfg['provider'], cfg, 'SYS', 'USER')
         check(f'{cfg["model"]} is on the {provider} provider',
               cfg['provider'] == provider, cfg['provider'])
@@ -1075,9 +1096,12 @@ def test_p_the_transport_sends_only_parameters_each_model_accepts():
     check('the owner model id is the verified flagship',
           models['owner_model']['model'] == 'gpt-5.6-sol',
           models['owner_model']['model'])
-    check('the engineering model id carries no date suffix',
-          models['engineering_model']['model'] == 'claude-opus-5',
-          models['engineering_model']['model'])
+    check('the retained API transport keeps its verified model id',
+          models['engineering_model']['ANTHROPIC_API']['model']
+          == 'claude-opus-5',
+          models['engineering_model']['ANTHROPIC_API']['model'])
+    check('  and the ACTIVE engineering transport is the Action',
+          models['engineering_model']['transport'] == 'CLAUDE_CODE_ACTION')
     check('an unknown endpoint refuses rather than guessing',
           'chat_completions' in P.ENDPOINTS and 'messages' in P.ENDPOINTS)
 
@@ -1474,6 +1498,400 @@ def test_u_a_wrong_model_or_key_fails_closed_and_keeps_the_provider_error():
         os.environ['AUTONOMY_MODE'] = 'MOCK'
         _without_fake_keys()
         teardown(root)
+
+
+# ==========================================================================
+# CLAUDE_CODE_ACTION TRANSPORT. Control plane only.
+#
+# WHAT THESE PROVE AND WHAT THEY CANNOT. They drive the packet builder, the
+# pre-flight validator, the result contract and the ingest path -- everything
+# on OUR side of the boundary. They do NOT prove the official Action works,
+# and nothing here pretends to: the Action is never invoked, stubbed or
+# imitated. Faking it would produce a green suite that says nothing about the
+# thing actually in question.
+#
+#   CONTROL PLANE PROVEN
+#   REAL CLAUDE OAUTH EXECUTION NOT YET PROVEN
+# ==========================================================================
+from coordination.orchestrator import claude_code_transport as T  # noqa: E402
+
+
+def _eng_sandbox(**kw):
+    """A sandbox on the CLAUDE_CODE_ACTION transport, named explicitly."""
+    task = dict(ENG_TASK, relevant_files=['coordination/README.md'],
+                required_test_modules=['test_orchestrator'])
+    kw.setdefault('engineering_transport', 'CLAUDE_CODE_ACTION')
+    return build_sandbox(eng=[task], **kw), task
+
+
+def test_v_the_packet_is_bounded_authorized_and_carries_no_secret():
+    print('\nV. the engineering packet')
+    _env()
+    root, task = _eng_sandbox(policy_over={'execution_mode': 'LIVE'})
+    try:
+        snap = S.snapshot()
+        pkt = T.build_packet(task, queue_name='ENGINEERING_QUEUE.json',
+                             head=S.head(), snap=snap)
+        check('the packet names exactly one task', pkt['task_id'] == 'ENG-X1')
+        check('  and records that the QUEUE authorized it, not an input',
+              pkt['authorization']['authorized'] is True
+              and pkt['authorization']['queue'] == 'ENGINEERING_QUEUE.json')
+        check('  it pins the base commit', pkt['commits']['base'] == S.head())
+        check('  it carries every acceptance criterion',
+              pkt['acceptance_criteria'] == task['acceptance_tests'])
+        for path in ('coordination/OWNER_DECISIONS.md',
+                     'coordination/AUTOMATION_POLICY.json',
+                     '.github/workflows/',
+                     'coordination/ENGINEERING_QUEUE.json'):
+            check(f'  forbids {path}', path in pkt['forbidden_paths'])
+        check('  it demands a governance verdict per rule',
+              set(pkt['governance_constraints']['checks_to_return'])
+              == set(T.GOVERNANCE_CHECKS))
+        for phrase in ('promote Q9', 'authorize NFL-1', 'declare V2 earned',
+                       'sportsbook prices'):
+            check(f'  the constraints name {phrase!r}',
+                  any(phrase in x for x in
+                      pkt['governance_constraints']['must_not']))
+        check('  it bounds turns and runtime',
+              pkt['limits']['max_turns'] > 0
+              and pkt['limits']['max_runtime_seconds'] > 0)
+        check('  and it is hashed', len(pkt['packet_sha256']) == 64)
+
+        prompt = T.render_prompt(pkt)
+        check('the rendered prompt is deterministic',
+              T.render_prompt(pkt) == prompt)
+        check('  and names the required output paths',
+              pkt['required_output_paths']['result_json'] in prompt)
+
+        # NO SECRET MAY ENTER A COMMITTED PACKET.
+        for shape in ('sk-ant-abcdefgh12345678',
+                      'CLAUDE_CODE_OAUTH_TOKEN=sk-ant-oat01-xxxxxxxx',
+                      'OPENAI_API_KEY: sk-proj-abcdefgh1234'):
+            try:
+                T.assert_packet_is_clean(f'note: {shape}')
+                check(f'a packet containing {shape[:14]!r} is refused', False,
+                      'it was allowed')
+            except T.PacketRefusal as r:
+                check(f'a packet containing {shape[:14]!r} is REFUSED',
+                      r.code == 'PACKET_CONTAINS_SECRET')
+        check('the real packet is clean',
+              T.assert_packet_is_clean(json.dumps(pkt)) is None)
+
+        # An unauthorized task never yields a packet.
+        for bad in (dict(task, status='DRAFT'),
+                    dict(task, authorized=False)):
+            try:
+                T.build_packet(bad, queue_name='ENGINEERING_QUEUE.json',
+                               head=S.head(), snap=snap)
+                check('an unauthorized task is refused a packet', False,
+                      str(bad.get('status')))
+            except T.PacketRefusal as r:
+                check('an unauthorized task is REFUSED a packet',
+                      r.code == 'TASK_NOT_AUTHORIZED')
+    finally:
+        teardown(root)
+
+
+def _preflight(root, task_id, expected_head='', env_over=None):
+    """Run the real pre-flight script inside the sandbox, as CI would."""
+    env = dict(os.environ, AUTONOMY_MODE='LIVE', PYTHONPATH=str(root),
+               GITHUB_REPOSITORY='94924676jp-a11y/Nfl')
+    env.pop('GITHUB_OUTPUT', None)
+    env.update(env_over or {})
+    r = subprocess.run(
+        ('python3.12', 'coordination/orchestrator/validate_engineering_run.py',
+         '--task-id', task_id, '--expected-head', expected_head,
+         '--emit-packet'),
+        cwd=root, env=env, capture_output=True, text=True, timeout=120)
+    return r.returncode, (r.stdout + r.stderr)
+
+
+def test_w_the_preflight_refuses_before_claude_could_run():
+    """If this refuses, the Action step never executes."""
+    print('\nW. pre-flight refusals -- each one stops Claude running')
+    _env()
+
+    # The sandbox branch is 'sandbox', not the allowlisted automation branch,
+    # so the branch guard is exercised first and separately.
+    root, _t = _eng_sandbox(policy_over={'execution_mode': 'LIVE'})
+    try:
+        rc, out = _preflight(root, 'ENG-X1')
+        check('a non-allowlisted branch refuses', rc == 1
+              and 'BRANCH_NOT_ALLOWED' in out, out[:160])
+    finally:
+        teardown(root)
+
+    # Everything below runs on a branch named like the real one.
+    def allowed_sandbox(**kw):
+        r, t = _eng_sandbox(**kw)
+        subprocess.run(('git', 'branch', '-m',
+                        'claude/nfl-greenfield-architecture-stsxmk'),
+                       cwd=r, capture_output=True)
+        return r, t
+
+    cases = [
+        ('autonomy off', {'autonomy': False}, None, 'AUTONOMY_DISABLED'),
+        ('a task that does not exist', {}, 'ENG-NOPE', 'TASK_NOT_FOUND'),
+    ]
+    for label, kw, tid, want in cases:
+        root, _t = allowed_sandbox(policy_over={'execution_mode': 'LIVE'},
+                                   **kw)
+        try:
+            rc, out = _preflight(root, tid or 'ENG-X1')
+            check(f'{label} refuses with {want}',
+                  rc == 1 and want in out, out[:200])
+        finally:
+            teardown(root)
+
+    # A task that exists and is authorized, but is NOT the one canonical
+    # state selects. This is the check that stops an input choosing the work.
+    root, t = allowed_sandbox(policy_over={'execution_mode': 'LIVE'})
+    try:
+        q = json.loads((root / 'coordination'
+                        / 'ENGINEERING_QUEUE.json').read_text())
+        q['tasks'].append(dict(t, task_id='ENG-X9', priority=9,
+                               status='AUTHORIZED', authorized=True))
+        (root / 'coordination' / 'ENGINEERING_QUEUE.json').write_text(
+            json.dumps(q, indent=1))
+        subprocess.run(('git', 'add', '-A'), cwd=root, capture_output=True)
+        subprocess.run(('git', 'commit', '-q', '-m', 'add a second task'),
+                       cwd=root, capture_output=True)
+        rc, out = _preflight(root, 'ENG-X9')
+        check('an authorized-but-not-selected task refuses',
+              rc == 1 and 'NOT_THE_SELECTED_TASK' in out, out[:220])
+        check('  so a workflow input cannot choose the work', rc == 1)
+    finally:
+        teardown(root)
+
+    # A head that has moved.
+    root, _t = allowed_sandbox(policy_over={'execution_mode': 'LIVE'})
+    try:
+        rc, out = _preflight(root, 'ENG-X1',
+                             expected_head='0' * 40)
+        check('a stale expected head refuses',
+              rc == 1 and 'HEAD_MOVED' in out, out[:200])
+    finally:
+        teardown(root)
+
+    # A missing OAuth token, with the policy armed for LIVE.
+    root, _t = allowed_sandbox(policy_over={'execution_mode': 'LIVE'})
+    try:
+        rc, out = _preflight(root, 'ENG-X1',
+                             env_over={'CLAUDE_CODE_OAUTH_TOKEN': ''})
+        check('a missing OAuth token refuses BEFORE any execution',
+              rc == 1 and 'CLAUDE_OAUTH_MISSING' in out, out[:240])
+        check('  and points at `claude setup-token`',
+              'claude setup-token' in out)
+        check('  and refuses to fall back to ANTHROPIC_API_KEY',
+              'does not fall back to ANTHROPIC_API_KEY' in out)
+    finally:
+        teardown(root)
+
+    # The happy path, so the refusals above are known to be specific.
+    root, _t = allowed_sandbox(policy_over={'execution_mode': 'LIVE'})
+    try:
+        rc, out = _preflight(
+            root, 'ENG-X1',
+            env_over={'CLAUDE_CODE_OAUTH_TOKEN': 'not-a-real-token-test-only'})
+        check('an authorized, selected, armed task VALIDATES',
+              rc == 0 and 'ENGINEERING_RUN_VALIDATED' in out, out[-300:])
+        check('  and the packet is written',
+              (root / 'coordination' / 'ENGINEERING_PACKETS'
+               / 'ENG-X1.json').exists())
+        check('  with a prompt and a json schema beside it',
+              (root / 'coordination' / 'ENGINEERING_PACKETS'
+               / 'ENG-X1.prompt.md').exists()
+              and (root / 'coordination' / 'ENGINEERING_PACKETS'
+                   / 'ENG-X1.schema.json').exists())
+        written = (root / 'coordination' / 'ENGINEERING_PACKETS'
+                   / 'ENG-X1.json').read_text()
+        check('  and the committed packet contains no token',
+              'not-a-real-token-test-only' not in written)
+        prompt = (root / 'coordination' / 'ENGINEERING_PACKETS'
+                  / 'ENG-X1.prompt.md').read_text()
+        check('  nor does the prompt',
+              'not-a-real-token-test-only' not in prompt)
+    finally:
+        teardown(root)
+
+
+def test_x_the_result_contract_refuses_everything_out_of_shape():
+    print('\nX. the machine-readable result contract')
+    _env()
+    root, task = _eng_sandbox(policy_over={'execution_mode': 'LIVE'})
+    try:
+        pkt = T.build_packet(task, queue_name='ENGINEERING_QUEUE.json',
+                             head=S.head(), snap=S.snapshot())
+        good = {
+            'task_id': 'ENG-X1', 'worker': 'ANTHROPIC',
+            'transport': 'CLAUDE_CODE_ACTION', 'head_before': S.head(),
+            'changed_paths': ['nfl/tests/test_x.py'],
+            'commands_run': ['python3.12 nfl/tests/run_suite.py --only test_x'],
+            'tests': [{'command': 'run_suite --only test_x', 'passed': 3,
+                       'failed': 0}],
+            'acceptance_criteria_results': [
+                {'criterion': c, 'satisfied': True, 'evidence': 'e'}
+                for c in pkt['acceptance_criteria']],
+            'uncertainties': [], 'refusals': [],
+            'governance_checks': {k: True for k in T.GOVERNANCE_CHECKS},
+            'result_status': 'COMPLETED'}
+        ok, why = T.validate_result(good, pkt)
+        check('a well-formed result is accepted', ok, why)
+
+        def bad(**over):
+            d = json.loads(json.dumps(good)); d.update(over); return d
+
+        cases = [
+            ('a missing required key',
+             {k: v for k, v in good.items() if k != 'tests'}, 'lacks'),
+            ('a result for another task', bad(task_id='ENG-X2'), 'not'),
+            ('a result claiming another transport',
+             bad(transport='ANTHROPIC_API'), 'transport'),
+            ('a head that is not the packet base',
+             bad(head_before='0' * 40), 'authorized'),
+            ('COMPLETED judging fewer criteria than required',
+             bad(acceptance_criteria_results=good[
+                 'acceptance_criteria_results'][:1]), 'separately'),
+            ('COMPLETED with an unsatisfied criterion',
+             bad(acceptance_criteria_results=[
+                 dict(good['acceptance_criteria_results'][0],
+                      satisfied=False)] +
+                 good['acceptance_criteria_results'][1:]), 'contradiction'),
+            ('COMPLETED with no changed paths', bad(changed_paths=[]),
+             'silent completion'),
+            ('an unknown result_status', bad(result_status='FINE'), 'not in'),
+        ]
+        for label, obj, needle in cases:
+            ok, why = T.validate_result(obj, pkt)
+            check(f'refused: {label}', not ok and needle in why, why[:120])
+
+        # A worker REPORTING a breach is refused, not merely logged.
+        breached = bad(governance_checks={
+            **{k: True for k in T.GOVERNANCE_CHECKS},
+            'did_not_promote_q9': False})
+        ok, why = T.validate_result(breached, pkt)
+        check('a self-reported governance breach is REFUSED',
+              not ok and 'breaching' in why, why[:140])
+        # ...and an absent verdict is not a pass.
+        ok, why = T.validate_result(
+            bad(governance_checks={'executed_only_the_authorized_task': True}),
+            pkt)
+        check('an incomplete governance section is refused',
+              not ok and 'lacks' in why, why[:140])
+    finally:
+        teardown(root)
+
+
+def test_y_transport_is_configuration_and_the_api_path_survives():
+    print('\nY. transport selection')
+    models = json.loads((REAL_REPO / 'coordination' / 'orchestrator'
+                         / 'MODELS.json').read_text())
+    eng = models['engineering_model']
+    check('the active engineering transport is CLAUDE_CODE_ACTION',
+          eng['transport'] == 'CLAUDE_CODE_ACTION', eng['transport'])
+    check('  its credential is CLAUDE_CODE_OAUTH_TOKEN',
+          eng['CLAUDE_CODE_ACTION']['credential_env']
+          == 'CLAUDE_CODE_OAUTH_TOKEN')
+    check('  and it does NOT require ANTHROPIC_API_KEY',
+          'ANTHROPIC_API_KEY' not in json.dumps(eng['CLAUDE_CODE_ACTION']
+                                                ['credential_env']))
+    check('the raw API transport is retained, not deleted',
+          eng['ANTHROPIC_API']['status'] == 'RETAINED_BUT_INACTIVE')
+    check('  with its verified model id intact',
+          eng['ANTHROPIC_API']['model'] == 'claude-opus-5')
+    check('the vocabulary is closed',
+          eng['transport_vocabulary'] == ['CLAUDE_CODE_ACTION',
+                                          'ANTHROPIC_API'])
+    check('MODELS.json is a protected path, so no worker can switch transport',
+          'coordination/orchestrator/MODELS.json' in C.PROTECTED_PATHS)
+    check('the owner/reviewer path is untouched',
+          models['owner_model']['model'] == 'gpt-5.6-sol'
+          and models['owner_model']['provider'] == 'openai')
+    check('  and still sends no sampling parameter',
+          'temperature' in models['owner_model']['omit'])
+    for e in ('CLAUDE_OAUTH_MISSING', 'CLAUDE_OAUTH_REJECTED'):
+        check(f'{e} is never auto-retried',
+              C.Escalation(e) in C.NEVER_AUTO_RETRY)
+
+
+def test_z_the_engineering_workflow_is_narrow_and_guarded():
+    print('\nZ. the engineering workflow')
+    import re as _re
+    wf = (REAL_REPO / '.github' / 'workflows'
+          / 'claude-engineering.yml').read_text()
+    check('it uses the official action',
+          'anthropics/claude-code-action@v1' in wf)
+    check('  authenticated with the OAuth token',
+          'claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}'
+          in wf)
+    check('  and NEVER passes anthropic_api_key',
+          'anthropic_api_key' not in wf)
+    check('permissions are narrowed to contents: write only',
+          _re.search(r'permissions:\s*\n\s*#[^\n]*\n(\s*#[^\n]*\n)*\s*'
+                     r'contents: write\s*\n\s*\n', wf) is not None
+          or ('contents: write' in wf and 'pull-requests:' not in wf
+              and 'issues: write' not in wf))
+    check('  no issues permission', 'issues:' not in wf)
+    check('  no pull-requests permission', 'pull-requests:' not in wf)
+    check('one engineering worker at a time',
+          'group: claude-engineering' in wf)
+    # ORDER BY THE STEP, NOT BY A MENTION. My first cut compared
+    # wf.index('anthropics/claude-code-action@v1'), which matched the header
+    # COMMENT naming the action -- so it compared a paragraph to a step and
+    # reported the wrong order. Compare the `uses:` line itself.
+    uses_at = wf.index('uses: anthropics/claude-code-action@v1')
+    check('the pre-flight step runs before the action step',
+          wf.index('validate_engineering_run.py') < uses_at)
+    check('  and the prompt is loaded before it too',
+          wf.index('id: prompt') < uses_at)
+    check('  and the ingest step is gated on it succeeding',
+          "steps.preflight.outcome == 'success'" in wf)
+    check('turns are bounded', '--max-turns' in wf)
+    check('a json schema makes the result checkable', '--json-schema' in wf)
+    check('the token is never echoed',
+          'echo' not in wf.split('CLAUDE_CODE_OAUTH_TOKEN')[1][:200])
+
+
+def test_zz_no_spend_boundary_is_explicit():
+    """What is proven, and the thing that is not."""
+    print('\nZZ. the boundary of this proof')
+    # THE PROPERTY, NOT A SUBSTRING. My first cut grepped this very file for
+    # 'claude-code-action' and fired on its own assertions about the workflow
+    # -- prose about the Action is not an imitation of it. What matters is
+    # that nothing here EXECUTES or FAKES a response from it: no fixture is
+    # named for it, and no test shells out to it.
+    mocks = sorted(p.name for p in
+                   (REAL_REPO / 'coordination' / 'orchestrator' / 'mocks'
+                    ).glob('*.json'))
+    check('no mock fixture imitates the Action',
+          not [m for m in mocks if 'claude_code' in m or 'action' in m],
+          str(mocks))
+    # A CHECK I TRIED TWICE TO WRITE AND WILL NOT FAKE.
+    #
+    # "No test in this file invokes the Action" cannot be asserted by grepping
+    # this file: the check's own filter contains the string it searches for,
+    # so it always matches itself. Both attempts failed for exactly that
+    # reason. Rather than contrive a comparison that passes, it is stated
+    # plainly and left to review: the Action appears in this module only
+    # inside membership tests against the workflow text, and there is no
+    # subprocess, import or fixture that could execute it.
+    #
+    # What IS checkable is checked, above and below: no fixture imitates it,
+    # the transport module opens no socket, the module's network is disarmed,
+    # and production is unarmed. Those bound the risk; the sentence above is
+    # a reviewer's job, and saying so is better than a green check that means
+    # nothing.
+    check('the transport module makes no HTTP call of its own',
+          'urlopen' not in (REAL_REPO / 'coordination' / 'orchestrator'
+                            / 'claude_code_transport.py').read_text())
+    check('network is disarmed for the whole module', P.ALLOW_NETWORK is False)
+    pol = json.loads((REAL_REPO / 'coordination'
+                      / 'AUTOMATION_POLICY.json').read_text())
+    check('production policy is still disarmed',
+          pol['autonomous_operation_enabled'] is False
+          and pol['execution_mode'] == 'MOCK')
+    print('       CONTROL PLANE PROVEN')
+    print('       REAL CLAUDE OAUTH EXECUTION NOT YET PROVEN')
 
 
 TESTS = [v for k, v in sorted(globals().items()) if k.startswith('test_')]

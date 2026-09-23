@@ -1,9 +1,8 @@
 {
  "schema": "model_config",
- "schema_version": "2.0.0",
+ "schema_version": "3.0.0",
  "written_at_utc": "2026-09-23T04:10:00Z",
- "supersedes": "1.0.0 -- owner_model was gpt-5 and every model sent temperature",
-
+ "supersedes": "2.0.0 -- engineering was hard-wired to the raw Anthropic API; transport is now an explicit field",
  "_read_me": [
   "Model ids live HERE and nowhere else in the source. A model id scattered",
   "across four modules is four places to miss when one of them changes, and a",
@@ -22,7 +21,6 @@
   "so a past run is read back against the model that actually produced it",
   "rather than against whatever this file says today."
  ],
-
  "owner_model": {
   "provider": "openai",
   "model": "gpt-5.6-sol",
@@ -30,9 +28,15 @@
   "endpoint": "chat_completions",
   "params": {
    "max_completion_tokens": 8000,
-   "response_format": {"type": "json_object"}
+   "response_format": {
+    "type": "json_object"
+   }
   },
-  "omit": ["temperature", "top_p", "max_tokens"],
+  "omit": [
+   "temperature",
+   "top_p",
+   "max_tokens"
+  ],
   "verified_2026_09_23": [
    "gpt-5.6-sol is the current OpenAI flagship; GA 2026-07-09; the gpt-5.6",
    "alias routes to it. 1,050,000 token context, up to 128,000 completion",
@@ -44,31 +48,57 @@
    "-- reasoning models disable sampling controls categorically."
   ]
  },
-
  "engineering_model": {
-  "provider": "anthropic",
-  "model": "claude-opus-5",
+  "model_family": "claude",
+  "transport": "CLAUDE_CODE_ACTION",
   "role": "implement one authorized engineering task",
-  "endpoint": "messages",
-  "params": {"max_tokens": 16000},
-  "omit": ["temperature", "top_p", "top_k"],
-  "verified_2026_09_23": [
-   "claude-opus-5 is current on the Messages API and the exact id string --",
-   "no date suffix. 1M context, 128K max output, $5/$25 per MTok.",
-   "PARAMETERS: max_tokens is correct and required. temperature, top_p and",
-   "top_k were REMOVED on this model and return a 400; thinking is adaptive",
-   "and ON by default when the thinking parameter is omitted, which is what",
-   "this runtime does. Endpoint /v1/messages with anthropic-version",
-   "2023-06-01 is unchanged."
-  ]
+  "transport_vocabulary": [
+   "CLAUDE_CODE_ACTION",
+   "ANTHROPIC_API"
+  ],
+  "CLAUDE_CODE_ACTION": {
+   "action": "anthropics/claude-code-action@v1",
+   "credential_env": "CLAUDE_CODE_OAUTH_TOKEN",
+   "credential_note": "Subscription-authenticated. Generated on a trusted machine with `claude setup-token` and stored as a GitHub Actions secret. ANTHROPIC_API_KEY is NOT required for this transport and must not be treated as a fallback for it -- a silent fallback would move spending from a subscription to metered billing without anyone deciding to.",
+   "max_turns": 30,
+   "max_runtime_seconds": 1800,
+   "model": null,
+   "model_note": "Left unset on purpose: the subscription decides. Pinning a model id here would be a second source of truth against what the token is entitled to, and a wrong pin fails a run that would otherwise work."
+  },
+  "ANTHROPIC_API": {
+   "provider": "anthropic",
+   "model": "claude-opus-5",
+   "endpoint": "messages",
+   "params": {
+    "max_tokens": 16000
+   },
+   "omit": [
+    "temperature",
+    "top_p",
+    "top_k"
+   ],
+   "status": "RETAINED_BUT_INACTIVE",
+   "status_note": "Kept, not deleted. It is the only engineering transport ever exercised end to end, so it is the fastest way to tell a Claude Code problem from an orchestration problem. Selected only by setting engineering_model.transport back to ANTHROPIC_API.",
+   "verified_2026_09_23": [
+    "claude-opus-5 is current on the Messages API and the exact id string --",
+    "no date suffix. 1M context, 128K max output, $5/$25 per MTok.",
+    "PARAMETERS: max_tokens is correct and required. temperature, top_p and",
+    "top_k were REMOVED on this model and return a 400; thinking is adaptive",
+    "and ON by default when the thinking parameter is omitted, which is what",
+    "this runtime does. Endpoint /v1/messages with anthropic-version",
+    "2023-06-01 is unchanged."
+   ]
+  }
  },
-
  "research_model": {
   "provider": "perplexity",
   "model": "sonar-pro",
   "role": "external research with sources",
   "endpoint": "chat_completions",
-  "params": {"max_tokens": 8000, "temperature": 0},
+  "params": {
+   "max_tokens": 8000,
+   "temperature": 0
+  },
   "omit": [],
   "verified_2026_09_23": [
    "sonar-pro is current in Perplexity's Sonar family -- the Search tier's",
@@ -80,7 +110,6 @@
    "checkout and is a one-time owner check."
   ]
  },
-
  "endpoint_choice_note": [
   "OpenAI stays on chat/completions rather than moving to the Responses API.",
   "gpt-5.6-sol is served on both. The Responses API earns its extra surface",
@@ -92,7 +121,6 @@
   "use. What WOULD force the move: needing reasoning-item continuity across",
   "calls, hosted tool use, or a feature OpenAI ships only on Responses."
  ],
-
  "verification_note": [
   "Verified 2026-09-23 against provider documentation and current reporting.",
   "developers.openai.com, docs.github.com and modelparams.dev are blocked by",
@@ -104,5 +132,12 @@
   "one-time owner step. A wrong id or parameter fails LOUDLY on the first",
   "live call -- a named API_HTTP_400 with the provider's own message",
   "preserved under coordination/runs/ -- and never falls back silently."
+ ],
+ "transport_note": [
+  "THE TRANSPORT DECISION IS CONFIGURATION, NOT A CONDITIONAL. One field --",
+  "engineering_model.transport -- selects it, and MODELS.json is on a",
+  "protected path, so no worker can change the transport it runs under.",
+  "A worker that could pick its own transport could pick the one with the",
+  "weaker controls."
  ]
 }

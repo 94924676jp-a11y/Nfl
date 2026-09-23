@@ -24,6 +24,22 @@ import json
 
 
 # --------------------------------------------------------------- workers
+class Transport(str, enum.Enum):
+    """HOW a worker is reached. Orthogonal to WHO the worker is.
+
+    `ANTHROPIC_API` is a synchronous HTTP call inside this process.
+    `CLAUDE_CODE_ACTION` is a separate GitHub job that edits the working tree
+    and reports through `structured_output`. They are not two branches of one
+    function; they are different shapes of execution, and the second is a
+    delegation rather than a call.
+    """
+
+    ANTHROPIC_API = 'ANTHROPIC_API'
+    CLAUDE_CODE_ACTION = 'CLAUDE_CODE_ACTION'
+    OPENAI_API = 'OPENAI_API'
+    PERPLEXITY_API = 'PERPLEXITY_API'
+
+
 class Worker(str, enum.Enum):
     """Who is allowed to do what. The authority split is the whole design."""
 
@@ -62,6 +78,13 @@ class Escalation(str, enum.Enum):
     #: entitlement, and calling it REPEATED_AGENT_FAILURE would send the owner
     #: looking at the worker instead of at their provider console.
     PROVIDER_ACCESS_DENIED = 'PROVIDER_ACCESS_DENIED'
+    #: CLAUDE_CODE_OAUTH_TOKEN is not set. Distinct from SECRET_MISSING so the
+    #: owner is sent to `claude setup-token` rather than to an API console.
+    CLAUDE_OAUTH_MISSING = 'CLAUDE_OAUTH_MISSING'
+    #: The token is present and the Action rejected it -- expired, revoked, or
+    #: issued for a different account. Retrying a rejected token is how a
+    #: subscription gets locked, so this never auto-retries.
+    CLAUDE_OAUTH_REJECTED = 'CLAUDE_OAUTH_REJECTED'
     REPEATED_AGENT_FAILURE = 'REPEATED_AGENT_FAILURE'
     DESTRUCTIVE_ACTION_REQUIRED = 'DESTRUCTIVE_ACTION_REQUIRED'
     STATE_CONTRADICTORY = 'STATE_CONTRADICTORY'
@@ -74,6 +97,8 @@ class Escalation(str, enum.Enum):
 #: argue with a decision, which is exactly the token-burn the owner called out.
 NEVER_AUTO_RETRY = frozenset({
     Escalation.PROVIDER_ACCESS_DENIED,
+    Escalation.CLAUDE_OAUTH_MISSING,
+    Escalation.CLAUDE_OAUTH_REJECTED,
     Escalation.OWNER_DECISION_REQUIRED,
     Escalation.RIGHTS_DECISION_REQUIRED,
     Escalation.PURCHASE_REQUIRED,

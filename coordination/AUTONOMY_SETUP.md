@@ -10,7 +10,41 @@ switch. Merging this work changes nothing until you do step 3.
 
 ---
 
-## Step 1 — add three secrets
+## Step 1 — add the secrets
+
+**Engineering now runs on your Claude subscription, not metered API billing.**
+The engineering worker is the official `anthropics/claude-code-action@v1`,
+authenticated with `CLAUDE_CODE_OAUTH_TOKEN`. `ANTHROPIC_API_KEY` is **not
+required** and is deliberately never passed to that workflow — a silent
+fallback to it would move spending from your subscription to metered billing
+with nobody deciding to.
+
+| Secret | Worker | Required? |
+|---|---|---|
+| `CLAUDE_CODE_OAUTH_TOKEN` | engineering (Claude Code Action) | **yes** |
+| `OPENAI_API_KEY` | owner / reviewer (`gpt-5.6-sol`) | **yes** |
+| `PERPLEXITY_API_KEY` | research (`sonar-pro`) | optional — see below |
+| `ANTHROPIC_API_KEY` | the retained raw-API transport | **not needed** |
+
+**Generating the OAuth token.** On a trusted machine with Claude Code logged
+into the subscription you intend to use:
+
+```
+claude setup-token
+```
+
+Add its value in GitHub → Settings → Secrets and variables → Actions → New
+repository secret, named exactly `CLAUDE_CODE_OAUTH_TOKEN`. Do not paste it
+into a chat, a file, or a prompt.
+
+**Perplexity stays optional.** It is only used by `RES-*` tasks. Without it,
+`ENG-001` and its owner review run normally; the first research task will
+refuse by name rather than silently routing to another model.
+
+<details>
+<summary>Superseded: the original three-API-key setup</summary>
+
+## Step 1 (old) — add three secrets
 
 GitHub repository → **Settings** → **Secrets and variables** → **Actions** →
 *New repository secret*. Add these three names:
@@ -31,17 +65,20 @@ like a real one.
 You can add only some of them. A worker whose key is absent stops the loop the
 first time it is needed, and the other two keep working until then.
 
-## Step 2 — confirm the three models are available on *your* accounts
+</details>
+
+## Step 2 — confirm the models are available on *your* accounts
 
 `coordination/orchestrator/MODELS.json` names one model per worker. The ids
 and their parameter rules were **verified against provider documentation on
 2026-09-23** and each entry carries its evidence inline:
 
-| Worker | Model | Endpoint | Sends | Must NOT send |
-|---|---|---|---|---|
-| owner | `gpt-5.6-sol` | `/v1/chat/completions` | `max_completion_tokens`, `response_format` | `temperature`, `max_tokens` |
-| engineering | `claude-opus-5` | `/v1/messages` | `max_tokens`, `system` | `temperature`, `top_p`, `top_k` |
-| research | `sonar-pro` | `/v1/chat/completions` | `max_tokens`, `temperature` | — |
+| Worker | Transport | Model | Notes |
+|---|---|---|---|
+| engineering | `CLAUDE_CODE_ACTION` | chosen by the subscription | no model id is pinned — pinning one would be a second source of truth against what the token is entitled to |
+| owner | `OPENAI_API` | `gpt-5.6-sol` | sends `max_completion_tokens` + `response_format`; **must not** send `temperature` or `max_tokens` |
+| research | `PERPLEXITY_API` | `sonar-pro` | sends `max_tokens`, `temperature` |
+| *(retained)* | `ANTHROPIC_API` | `claude-opus-5` | inactive; kept so a Claude Code failure can be told apart from an orchestration failure |
 
 **The "must not send" column is not style, it is the difference between
 working and a guaranteed 400.** Both current flagship reasoning models reject

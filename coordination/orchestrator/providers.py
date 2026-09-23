@@ -77,6 +77,39 @@ SECRET_ENV = {
 SPY = None
 
 
+def engineering_transport(models) -> str:
+    """Which transport MODELS.json selects for engineering. Config, not code."""
+    return str((models.get('engineering_model') or {}).get(
+        'transport') or 'ANTHROPIC_API')
+
+
+def worker_config(models, model_key) -> dict:
+    """The flat config for a worker, resolving the engineering transport.
+
+    Owner and research are single-transport and pass straight through. The
+    engineering entry is a transport selector with a block per transport, so
+    it is flattened HERE rather than at every call site -- one place that
+    knows the shape, which is what "configuration, not scattered conditionals"
+    has to mean in practice.
+    """
+    cfg = dict(models[model_key])
+    if model_key != 'engineering_model':
+        return cfg
+    t = engineering_transport(models)
+    block = dict(cfg.get(t) or {})
+    block['transport'] = t
+    block['model_family'] = cfg.get('model_family')
+    block['role'] = cfg.get('role')
+    # A delegated transport has no model id of its own: the subscription picks
+    # it. A placeholder keeps the evidence record honest rather than crashing
+    # a caller that expects a string.
+    # `setdefault` is wrong here: MODELS.json sets model to null EXPLICITLY
+    # for the delegated transport, and setdefault does not replace a null.
+    if not block.get('model'):
+        block['model'] = f'{t.lower()}/subscription-selected'
+    return block
+
+
 def requested_mode(env=None) -> str:
     """What the RUNTIME was asked for. A request, not an authorization."""
     env = env if env is not None else os.environ
