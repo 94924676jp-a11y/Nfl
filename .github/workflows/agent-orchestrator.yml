@@ -39,11 +39,21 @@ name: agent-orchestrator
 # carries NO project state. The next pass re-reads everything from the
 # repository and trusts nothing that arrived with the event.
 
+# CONTINUATION IS RECEIVED ON THE DEFAULT BRANCH, NOT HERE.
+#
+# `repository_dispatch` was listed here and it could never have fired: GitHub
+# starts a workflow from a repository_dispatch only when the workflow
+# DEFINITION EXISTS ON THE DEFAULT BRANCH, and this file lives on the
+# automation branch. Leaving the trigger in place would have been a claim the
+# repository could not honour -- the second assumption in a row that looked
+# right in every test that never crossed a workflow boundary.
+#
+# The continuation is received by `.github/workflows/agent-orchestrator-
+# dispatch.yml` on `main`, which validates the branch against an allowlist,
+# checks this branch out, and runs the orchestrator from that checkout. This
+# workflow remains for direct runs on the automation branch: a human push of
+# coordination state, or a manual Run workflow.
 on:
-  # The continuation event. This is the one that makes the loop self-
-  # sustaining, and it works from GITHUB_TOKEN where a push does not.
-  repository_dispatch:
-    types: [agent-orchestrator-continue]
   push:
     branches: [claude/nfl-greenfield-architecture-stsxmk]
     paths:
