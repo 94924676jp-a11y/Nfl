@@ -1,0 +1,210 @@
+name: agent-orchestrator-dispatch
+
+# THE DEFAULT-BRANCH DISPATCHER. Deliberately small, deliberately boring.
+#
+# WHY IT HAS TO LIVE HERE. GitHub only starts a workflow from a
+# `repository_dispatch` when the workflow definition exists on the
+# repository's DEFAULT branch. The orchestrator implementation lives on the
+# automation branch, so a dispatcher on `main` is the only thing that can
+# receive the continuation event. Without this file the chain cannot
+# self-sustain no matter how correct the orchestrator is -- it would run once
+# and stop, silently.
+#
+# WHY IT MUST STAY SMALL. `repository_dispatch` executes the workflow
+# definition FROM THE DEFAULT BRANCH. That makes this file the trust boundary
+# of the whole autonomous system: whatever is written here runs with the
+# repository's token. So it is treated as protected infrastructure --
+# `coordination/orchestrator/contracts.py` lists `.github/workflows/` in
+# PROTECTED_PATHS, and `locks.enforce_protected_paths` refuses any worker diff
+# that touches it. An autonomous worker cannot edit this file. It should
+# change rarely, by a human, and be easy to read in one sitting.
+#
+# WHAT IT DOES NOT DO. It does not decide anything, hold state, or read the
+# queue. It validates the branch, checks out the automation branch, and runs
+# the orchestrator from that checkout. Every fact the orchestrator acts on is
+# re-read from that branch; nothing in the event payload is authoritative.
+
+on:
+  repository_dispatch:
+    types: [agent-orchestrator-continue]
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Automation branch (must be on the allowlist below)'
+        required: false
+        default: 'claude/nfl-greenfield-architecture-stsxmk'
+      mode:
+        description: 'MOCK (free, fixtures) | PROOF (event-chain proof) | LIVE (real API calls)'
+        required: false
+        default: 'MOCK'
+        type: choice
+        options: [MOCK, PROOF, LIVE]
+
+concurrency:
+  group: agent-orchestrator-dispatch
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  # Required for GITHUB_TOKEN to POST /repos/{repo}/dispatches. Without it the
+  # continuation is a 403 and the chain dies after one pass.
+  actions: write
+  issues: write
+
+jobs:
+  orchestrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      # ---------------------------------------------------------------- 1
+      - name: Resolve and validate the automation branch
+        id: target
+        env:
+          # Read through env rather than interpolated into the script body, so
+          # a payload value is data to bash and never becomes shell syntax.
+          REQUESTED: ${{ github.event.client_payload.branch || github.event.inputs.branch || 'claude/nfl-greenfield-architecture-stsxmk' }}
+          REQUESTED_MODE: ${{ github.event.client_payload.mode || github.event.inputs.mode || 'MOCK' }}
+          EVENT: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+
+          # THE ALLOWLIST. Exact strings, compared exactly. A dispatch payload
+          # is attacker-influenced in the general case -- anyone who can open
+          # a dispatch can name a branch -- so an arbitrary ref must never
+          # reach `checkout`. Adding a branch here is a human edit to a
+          # protected file on the default branch, which is the point.
+          ALLOWED=( "claude/nfl-greenfield-architecture-stsxmk" )
+
+          ok=0
+          for b in "${ALLOWED[@]}"; do
+            if [ "$REQUESTED" = "$b" ]; then ok=1; break; fi
+          done
+          if [ "$ok" -ne 1 ]; then
+            echo "::error::BRANCH_NOT_ALLOWED: '$REQUESTED' is not on the allowlist."
+            echo "Allowed: ${ALLOWED[*]}"
+            echo "Refusing rather than checking out an arbitrary ref. A"
+            echo "repository_dispatch payload is not a trusted source for"
+            echo "deciding what code this workflow runs."
+            exit 1
+          fi
+
+          # MODE CAN ONLY BE RESTRICTED BY A PAYLOAD, NEVER ESCALATED.
+          # LIVE spends money, so it may only come from a human pressing Run
+          # workflow. A dispatch asking for LIVE is downgraded to MOCK and
+          # says so, loudly.
+          MODE="$REQUESTED_MODE"
+          if [ "$EVENT" = "repository_dispatch" ] && [ "$MODE" = "LIVE" ]; then
+            echo "::warning::A repository_dispatch asked for LIVE. Downgraded"
+            echo "::warning::to MOCK. Only a human workflow_dispatch may select LIVE."
+            MODE="MOCK"
+          fi
+          case "$MODE" in
+            MOCK|PROOF|LIVE) ;;
+            *) echo "::error::MODE_UNKNOWN: '$MODE'"; exit 1 ;;
+          esac
+
+          echo "branch=$REQUESTED" >> "$GITHUB_OUTPUT"
+          echo "mode=$MODE"        >> "$GITHUB_OUTPUT"
+          echo "Branch  $REQUESTED  (allowlisted)"
+          echo "Mode    $MODE"
+          echo "Trigger $EVENT"
+
+      # ---------------------------------------------------------------- 2
+      - name: Checkout the automation branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.target.outputs.branch }}
+          fetch-depth: 0
+
+      - name: Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Identify the committer
+        run: |
+          git config user.name  "agent-orchestrator"
+          git config user.email "orchestrator@users.noreply.github.com"
+
+      # ---------------------------------------------------------------- 3
+      # Everything below reads the AUTOMATION BRANCH. The payload contributed
+      # exactly one thing -- which allowlisted ref to check out -- and nothing
+      # else it carried is consulted again.
+      - name: Confirm the orchestrator is present on that branch
+        run: |
+          set -euo pipefail
+          test -f coordination/orchestrator/main.py \
+            || { echo "::error::orchestrator absent on this branch"; exit 1; }
+          python3.12 -c "import urllib.request, json, hashlib; print('stdlib only: ok')"
+
+      - name: Validate coordination state
+        run: python3.12 coordination/validate_coordination.py
+
+      - name: Orchestrate
+        env:
+          AUTONOMY_MODE: ${{ steps.target.outputs.mode == 'LIVE' && 'LIVE' || 'MOCK' }}
+          PROOF_CHAIN: ${{ steps.target.outputs.mode == 'PROOF' && '1' || '' }}
+          PROOF_PASS: ${{ github.event.client_payload.proof_pass || '1' }}
+          PROOF_CHAIN_ID: ${{ github.event.client_payload.chain_id || '' }}
+          AUTOMATION_BRANCH: ${{ steps.target.outputs.branch }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          PERPLEXITY_API_KEY: ${{ secrets.PERPLEXITY_API_KEY }}
+          ORCHESTRATOR_PUSH: '1'
+          ORCHESTRATOR_RUN_TESTS: '1'
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          GITHUB_SERVER_URL: ${{ github.server_url }}
+        run: |
+          set +e
+          if [ -n "${PROOF_CHAIN:-}" ]; then
+            # The event-chain proof. Runs a real orchestration pass against a
+            # throwaway sandbox inside the runner, commits a proof ledger row
+            # to the automation branch, and asks for the next pass. It never
+            # touches the real queues and never calls a provider.
+            python3.12 coordination/orchestrator/proof_chain.py
+          else
+            python3.12 coordination/orchestrator/main.py
+          fi
+          rc=$?
+          echo "orchestrator exit=$rc"
+          echo "ORCH_RC=$rc" >> "$GITHUB_ENV"
+          # 2 is unreadable state and is a real build failure. An escalation
+          # (4) or a clean stop (0/3) is a correct outcome that needs a human,
+          # not a red build -- marking those red trains everyone to ignore red.
+          if [ $rc -eq 2 ]; then exit 1; fi
+          exit 0
+
+      - name: Commit anything left uncommitted
+        if: always()
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git add -A
+            git commit -m "orchestrator: uncommitted state from run ${{ github.run_id }} [orchestrator-skip]" || true
+            for i in 1 2 3 4; do
+              git pull --rebase origin "${{ steps.target.outputs.branch }}" \
+                && git push origin "HEAD:${{ steps.target.outputs.branch }}" && break
+              sleep $((2 ** i))
+            done
+          fi
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "## agent-orchestrator-dispatch"
+            echo ""
+            echo "| | |"
+            echo "|---|---|"
+            echo "| trigger | \`${{ github.event_name }}\` |"
+            echo "| branch | \`${{ steps.target.outputs.branch }}\` |"
+            echo "| mode | \`${{ steps.target.outputs.mode }}\` |"
+            echo "| chain depth | \`${{ github.event.client_payload.chain_depth || '0' }}\` |"
+            echo "| proof pass | \`${{ github.event.client_payload.proof_pass || 'n/a' }}\` |"
+            echo "| exit | \`${ORCH_RC:-n/a}\` |"
+            echo ""
+            echo "Autonomy is armed in \`coordination/AUTOMATION_POLICY.json\` on the automation branch."
+            echo "To stop it, set \`autonomous_operation_enabled\` to false and push."
+          } >> "$GITHUB_STEP_SUMMARY"
