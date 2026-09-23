@@ -144,7 +144,13 @@ def _record_failure(snap, rid, task, result, head):
                   'event': 'WORKER_FAILED', 'code': result.code,
                   'note': result.detail[:500]})
     esc = result.escalation
-    if snap.attempts(task['task_id']) > (
+    # A SPECIFIC DIAGNOSIS OUTRANKS THE GENERIC ONE. The retry budget being
+    # spent says "this keeps failing"; PROVIDER_ACCESS_DENIED says "and here
+    # is exactly why, and retrying will not help". Overwriting the second with
+    # the first loses the only actionable fact in the failure.
+    if esc in C.NEVER_AUTO_RETRY:
+        pass
+    elif snap.attempts(task['task_id']) > (
             snap.policy.get('limits') or {}).get('max_retries_per_task', 0):
         esc = C.Escalation.REPEATED_AGENT_FAILURE
     if esc:

@@ -47,6 +47,13 @@ from coordination.orchestrator import openai_owner as OWN       # noqa: E402
 from coordination.orchestrator import providers as P            # noqa: E402
 from coordination.orchestrator import state as S                # noqa: E402
 
+# NO TEST IN THIS MODULE MAY REACH A PROVIDER. Set before any test runs, at
+# import, so it cannot be forgotten per-test. One of these tests did call
+# api.anthropic.com for real -- it ran in LIVE mode with a `simulate_failure`
+# fixture, and fixtures are only read on the MOCK branch, so the call went to
+# the socket. The guard is structural for that reason.
+P.ALLOW_NETWORK = False
+
 PASSED = FAILED = 0
 NOT_EXECUTED = []
 REAL_REPO = pathlib.Path(__file__).resolve().parents[2]
@@ -1348,6 +1355,125 @@ def test_t_the_committed_policy_is_off_and_mock():
     check('the vocabulary is closed',
           pol.get('execution_mode_vocabulary') == ['MOCK', 'LIVE'],
           str(pol.get('execution_mode_vocabulary')))
+
+
+def test_u_a_wrong_model_or_key_fails_closed_and_keeps_the_provider_error():
+    """The first LIVE chain's most likely failure, and it is a CONFIG error.
+
+    The orchestration logic is proven; what is not is whether the owner's
+    accounts can actually call gpt-5.6-sol, claude-opus-5 and sonar-pro. A
+    wrong id or a missing entitlement comes back as 401, 403 or 404, and the
+    behaviour that matters is: stop, keep the provider's own words, advance
+    nothing, and say which of the three it was.
+
+    THE DEFECT THIS FOUND. All three used to return escalation=None, so the
+    loop retried -- pointlessly, since no retry fixes an entitlement -- and
+    then reported REPEATED_AGENT_FAILURE. That is a wrong diagnosis with a
+    real cost: it sends the owner to read worker logs when the answer is in
+    their provider console.
+
+    Driven through the REAL HTTPError path by stubbing the socket, not through
+    a fixture that merely claims to be an error. A fixture would prove only
+    that the fixture loader works.
+    """
+    print('\nU. a rejected key or unknown model stops the chain, with reasons')
+    import io
+    import urllib.error
+
+    bodies = {
+        401: '{"error":{"message":"Incorrect API key provided.",'
+             '"type":"invalid_request_error"}}',
+        403: '{"error":{"message":"Your account is not authorized to use '
+             'this model.","type":"permission_error"}}',
+        404: '{"error":{"message":"The model `gpt-5.6-sol` does not exist or '
+             'you do not have access to it.","type":"invalid_request_error"}}',
+    }
+    real_post = P._post
+    for code, body in bodies.items():
+        try:
+            def boom(url, headers, b, timeout, _c=code, _b=body):
+                raise urllib.error.HTTPError(
+                    url, _c, 'err', {}, io.BytesIO(_b.encode()))
+            P._post = boom
+            call = C.WorkerCall(worker=C.Worker.ENGINEER, model='claude-opus-5',
+                                task_id='ENG-X1', prompt_sha256='p',
+                                head_before='h', attempt=0)
+            res = P.call_worker(
+                call, C.Worker.ENGINEER,
+                {'provider': 'anthropic', 'model': 'claude-opus-5',
+                 'endpoint': 'messages', 'params': {'max_tokens': 16000}},
+                'SYS', 'USER', task_id='ENG-X1',
+                env={'ANTHROPIC_API_KEY': 'not-a-real-key-test-only'},
+                effective_mode=P.MODE_LIVE)
+        finally:
+            P._post = real_post
+
+        check(f'HTTP {code} is a failure, never a result', not res.ok)
+        check(f'  coded API_HTTP_{code}', res.code == f'API_HTTP_{code}',
+              res.code)
+        check('  escalated as PROVIDER_ACCESS_DENIED, not agent flakiness',
+              res.escalation is C.Escalation.PROVIDER_ACCESS_DENIED,
+              str(res.escalation))
+        check('  and never auto-retried',
+              res.escalation in C.NEVER_AUTO_RETRY)
+        # THE PROVIDER'S OWN WORDS, VERBATIM. Paraphrasing an API error is how
+        # "does not exist or you do not have access" -- two very different
+        # fixes -- becomes "the call failed".
+        check('  the provider\'s message is preserved verbatim',
+              body in res.detail or body in str(res.raw.get('body')),
+              res.detail[:160])
+        check('  and the model id that was rejected is named',
+              'claude-opus-5' in res.detail, res.detail[:160])
+
+    # And end to end: the task does not advance, nothing chains onward, and
+    # the raw response is on disk for the owner to read.
+    _env()
+    root = build_sandbox(eng=[ENG_TASK],
+                         policy_over={'execution_mode': 'LIVE'})
+    try:
+        P.MOCKS = root / 'coordination' / 'orchestrator' / 'mocks'
+        # STUB THE TRANSPORT. A `simulate_failure` fixture would NOT be read
+        # here: this runs in LIVE mode, and fixtures live on the MOCK branch
+        # only. Assuming otherwise is what sent a real request to Anthropic.
+        def denied(url, headers, b, timeout):
+            raise urllib.error.HTTPError(
+                url, 404, 'err', {},
+                io.BytesIO(bodies[404].encode()))
+        P._post = denied
+        _with_fake_keys()
+        os.environ['AUTONOMY_MODE'] = 'LIVE'
+        snap = S.snapshot()
+        try:
+            ok, esc = M.do_execute(snap, D.next_action(snap), S.head())
+        finally:
+            P._post = real_post
+        check('the pass reports failure', not ok)
+        check('  with PROVIDER_ACCESS_DENIED',
+              esc is C.Escalation.PROVIDER_ACCESS_DENIED, str(esc))
+        q = json.loads((root / 'coordination'
+                        / 'ENGINEERING_QUEUE.json').read_text())
+        check('  the task did NOT advance to RETURNED',
+              q['tasks'][0]['status'] != 'RETURNED', q['tasks'][0]['status'])
+        check('  no return artifact was written',
+              not (root / 'coordination' / 'CLAUDE_RETURNS'
+                   / 'ENG-X1.md').exists())
+        runs = list((root / 'coordination' / 'runs').glob('*'))
+        check('  the failed call is preserved on disk', len(runs) == 1)
+        if runs:
+            meta = json.loads((runs[0] / 'metadata.json').read_text())
+            check('    metadata records the escalation',
+                  meta.get('escalation') == 'PROVIDER_ACCESS_DENIED',
+                  str(meta.get('escalation')))
+            check('    and the provider error text, verbatim',
+                  'does not exist or you do not have access'
+                  in str(meta.get('detail')), str(meta.get('detail'))[:120])
+        esc_dir = root / 'coordination' / 'ESCALATIONS'
+        check('  an escalation file was written for the owner',
+              esc_dir.exists() and list(esc_dir.glob('*.md')))
+    finally:
+        os.environ['AUTONOMY_MODE'] = 'MOCK'
+        _without_fake_keys()
+        teardown(root)
 
 
 TESTS = [v for k, v in sorted(globals().items()) if k.startswith('test_')]

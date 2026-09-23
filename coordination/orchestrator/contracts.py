@@ -57,6 +57,11 @@ class Escalation(str, enum.Enum):
     GOVERNANCE_CONFLICT = 'GOVERNANCE_CONFLICT'
     UNKNOWN_BLOCKING_EVIDENCE = 'UNKNOWN_BLOCKING_EVIDENCE'
     COST_LIMIT_REACHED = 'COST_LIMIT_REACHED'
+    #: A key is present but rejected, or the model id is not one this account
+    #: may call. NOT an agent failure: no number of retries fixes an
+    #: entitlement, and calling it REPEATED_AGENT_FAILURE would send the owner
+    #: looking at the worker instead of at their provider console.
+    PROVIDER_ACCESS_DENIED = 'PROVIDER_ACCESS_DENIED'
     REPEATED_AGENT_FAILURE = 'REPEATED_AGENT_FAILURE'
     DESTRUCTIVE_ACTION_REQUIRED = 'DESTRUCTIVE_ACTION_REQUIRED'
     STATE_CONTRADICTORY = 'STATE_CONTRADICTORY'
@@ -68,6 +73,7 @@ class Escalation(str, enum.Enum):
 #: until a human changes the repository. A retry here is the loop trying to
 #: argue with a decision, which is exactly the token-burn the owner called out.
 NEVER_AUTO_RETRY = frozenset({
+    Escalation.PROVIDER_ACCESS_DENIED,
     Escalation.OWNER_DECISION_REQUIRED,
     Escalation.RIGHTS_DECISION_REQUIRED,
     Escalation.PURCHASE_REQUIRED,

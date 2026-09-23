@@ -133,8 +133,32 @@ def mode(env=None) -> str:
 
 
 # ------------------------------------------------------------ the wire
+#: The last line between a test and a real provider. Production leaves it
+#: True; `nfl/tests/test_orchestrator.py` sets it False at import, so no test
+#: in that module can reach a socket however it is configured.
+#:
+#: THIS EXISTS BECAUSE A TEST OF MINE CALLED api.anthropic.com FOR REAL. It set
+#: effective_mode=LIVE and supplied a `simulate_failure` fixture, on the
+#: assumption the fixture would be consulted. Fixtures live on the MOCK branch
+#: only -- LIVE goes to the socket by definition -- so the request was sent and
+#: Anthropic answered 401 with a genuine request_id. Nothing was charged and no
+#: real credential exists in this environment, but the instruction was "do not
+#: make real provider calls" and I made one. A comment saying "tests must not
+#: do this" would not have stopped it; a guard that refuses does.
+ALLOW_NETWORK = True
+
+
+class NetworkBlocked(RuntimeError):
+    """Raised instead of opening a socket when ALLOW_NETWORK is False."""
+
+
 def _post(url, headers, body, timeout) -> tuple:
     """(status, bytes) or raises. No retry here -- policy owns retries."""
+    if not ALLOW_NETWORK:
+        raise NetworkBlocked(
+            f'providers.ALLOW_NETWORK is False; refusing to POST to {url}. '
+            f'A test reached the live transport -- use providers.SPY to '
+            f'record an intended LIVE call, or stub _post.')
     req = urllib.request.Request(
         url, data=json.dumps(body).encode('utf-8'), method='POST',
         headers={'Content-Type': 'application/json', **headers})
@@ -324,11 +348,25 @@ def call_worker(call, worker, model_cfg, system, user, *, task_id,
             detail = exc.read().decode('utf-8', 'replace')[:2000]
         except Exception:                                    # noqa: BLE001
             pass
-        esc = (C.Escalation.COST_LIMIT_REACHED if exc.code == 429 else None)
+        # 401 bad key, 403 not entitled, 404 no such model for this account.
+        # All three are CONFIGURATION, not flakiness, and retrying cannot fix
+        # any of them -- so they escalate immediately and by their own name
+        # rather than being retried into REPEATED_AGENT_FAILURE, which would
+        # send the owner looking at the worker instead of at their provider
+        # console. The provider's own message is preserved verbatim, because
+        # it is the one thing that says WHICH of the three it is.
+        if exc.code in (401, 403, 404):
+            esc = C.Escalation.PROVIDER_ACCESS_DENIED
+        elif exc.code == 429:
+            esc = C.Escalation.COST_LIMIT_REACHED
+        else:
+            esc = None
         return C.WorkerResult.failure(
             call, f'API_HTTP_{exc.code}',
-            f'{provider} returned {exc.code}: {detail}',
-            raw={'status': exc.code, 'body': detail}, escalation=esc)
+            f'{provider} returned {exc.code} for model '
+            f'{model_cfg["model"]!r}: {detail}',
+            raw={'status': exc.code, 'body': detail, 'provider': provider,
+                 'model': model_cfg['model']}, escalation=esc)
     except urllib.error.URLError as exc:
         return C.WorkerResult.failure(
             call, 'API_UNREACHABLE', f'{provider}: {exc.reason}')
@@ -337,6 +375,10 @@ def call_worker(call, worker, model_cfg, system, user, *, task_id,
             call, 'API_TIMEOUT',
             f'{provider} did not answer within {timeout or 600}s. Recorded as '
             f'a failure; a timeout is not a refusal and not a success.')
+    except NetworkBlocked as exc:
+        # Loud and unmistakable. A test that trips this has a bug in the test.
+        return C.WorkerResult.failure(
+            call, 'NETWORK_BLOCKED', str(exc))
     except Exception as exc:                                 # noqa: BLE001
         return C.WorkerResult.failure(
             call, 'API_EXCEPTION', f'{type(exc).__name__}: {exc}')
