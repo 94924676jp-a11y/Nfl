@@ -202,7 +202,72 @@ def main(argv=None) -> int:
         _say(f'  committed {sha[:12]}')
     _say(f'ENGINEERING_RETURN_ACCEPTED {tid} status={parsed["result_status"]}'
          f' -> task RETURNED (owner review decides COMPLETE)')
+
+    # ---- 5. wake the owner reviewer, and ONLY from here ----------------
+    _request_owner_review(rid, tid)
     return 0
+
+
+def _request_owner_review(rid, tid) -> dict:
+    """Ask for one orchestrator pass so the OpenAI owner worker reviews this.
+
+    THE GAP THIS CLOSES. Before this, a successful ingest set the task to
+    RETURNED, committed, and stopped. Nothing dispatched the orchestrator, so
+    the owner-review half of the loop never woke and the chain ended at
+    RETURNED -- which looks like a finished run and is actually a stall. The
+    engineering worker cannot accept its own work, so a return nobody reviews
+    is a return that goes nowhere.
+
+    IT IS REACHED ONLY FROM THE SUCCESS PATH. Every refusal returns through
+    _refuse, which does not come here. A malformed return, a diff touching a
+    protected path, an unreadable state -- none of them may wake a reviewer,
+    because there is nothing lawful to review and the pass would burn a
+    continuation to discover that.
+
+    NOT A SECOND MECHANISM. This calls the same
+    github_runtime.request_continuation the orchestrator calls, carrying the
+    same event type, and it asks locks.require_continuation_budget first so
+    it is bounded by the same limits.max_continuations_per_hour. A separate
+    dispatcher with its own bound would be a second thing to reason about and
+    a second thing to forget to cap.
+    """
+    try:
+        snap = S.snapshot()
+    except S.StateError as exc:
+        # Not fatal. The return is committed; what is lost is the wake-up,
+        # and saying so is better than raising over work already accepted.
+        _say(f'  owner review NOT requested -- state unreadable: {exc}')
+        return {'sent': False, 'code': 'STATE_UNREADABLE'}
+    try:
+        locks.require_continuation_budget(snap)
+    except locks.Refusal as r:
+        _say(f'  owner review NOT requested: {r.code} -- {r.detail}')
+        G.append_log({'actor': 'anthropic', 'run_id': rid, 'task_id': tid,
+                      'event': 'CONTINUATION_REFUSED', 'note': r.code})
+        return {'sent': False, 'code': r.code}
+
+    depth = sum(1 for row in snap.log
+                if row.get('event') == 'CONTINUATION_REQUESTED')
+    why = f'{tid} is RETURNED and awaits owner review'
+    res = G.request_continuation(why, chain_depth=depth + 1, head=snap.head,
+                                 task_id=tid)
+    _say(f'  owner review: {res.get("code")} '
+         f'{"sent" if res.get("sent") else "NOT sent"}')
+    G.append_log({'actor': 'anthropic', 'run_id': rid, 'task_id': tid,
+                  'event': 'CONTINUATION_REQUESTED',
+                  'note': f'{res.get("code")}: {why}'[:400],
+                  'dispatch_sent': bool(res.get('sent'))})
+    try:
+        G.commit_and_push(
+            f'{tid}: request owner review [{res.get("code")}]\n\n'
+            f'The engineering return is committed and the task is RETURNED. '
+            f'This row records the continuation request that wakes the owner '
+            f'reviewer, and it is what the next pass counts against '
+            f'limits.max_continuations_per_hour.',
+            snap.head, push=os.environ.get('ORCHESTRATOR_PUSH', '1') == '1')
+    except Exception as exc:                      # noqa: BLE001
+        _say(f'  continuation log not pushed: {exc}')
+    return res
 
 
 if __name__ == '__main__':
