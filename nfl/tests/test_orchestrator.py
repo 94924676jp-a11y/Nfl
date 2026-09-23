@@ -1075,6 +1075,281 @@ def test_p_the_transport_sends_only_parameters_each_model_accepts():
           'chat_completions' in P.ENDPOINTS and 'messages' in P.ENDPOINTS)
 
 
+#: Obviously-fake placeholders. LIVE checks that a key is PRESENT before it
+#: calls, which is correct -- a missing key must stop a LIVE pass rather than
+#: silently fall back to a fixture. To exercise everything after that gate the
+#: test must satisfy it, so it supplies values that are unmistakably not
+#: credentials. They never leave the process: `providers.SPY` intercepts
+#: before the request is built into a connection, so nothing is ever sent
+#: anywhere, and no real secret exists in this repository to leak.
+FAKE_KEYS = {'ANTHROPIC_API_KEY': 'not-a-real-key-test-only',
+             'OPENAI_API_KEY': 'not-a-real-key-test-only',
+             'PERPLEXITY_API_KEY': 'not-a-real-key-test-only'}
+
+
+def _with_fake_keys():
+    os.environ.update(FAKE_KEYS)
+
+
+def _without_fake_keys():
+    for k in FAKE_KEYS:
+        os.environ.pop(k, None)
+
+
+def _spy_pass(root, which, policy_over=None):
+    """One orchestration pass with provider calls RECORDED, never sent.
+
+    Returns (list of intended LIVE calls, the action string). The policy is
+    re-read from disk each time, exactly as a fresh workflow pass would.
+    """
+    import copy
+    coord = root / 'coordination'
+    if policy_over:
+        pol = json.loads((coord / 'AUTOMATION_POLICY.json').read_text())
+        pol.update(policy_over)
+        (coord / 'AUTOMATION_POLICY.json').write_text(json.dumps(pol, indent=1))
+    snap = S.snapshot()
+    action = D.next_action(snap)
+    P.SPY = []
+    try:
+        if action.kind == D.OWNER_REVIEW:
+            M.do_owner_review(snap, action, S.head())
+        elif action.kind == D.EXECUTE:
+            M.do_execute(snap, action, S.head())
+        spied = copy.deepcopy(P.SPY)
+    finally:
+        P.SPY = None
+    return spied, str(action)
+
+
+def test_q_live_authority_comes_from_protected_policy_not_the_payload():
+    """THE MODE-AUTHORITY PROOF. No money is spent to run it.
+
+    WHAT WAS WRONG. The dispatcher let a human pick LIVE at startup and then
+    downgraded every continuation to MOCK, because trusting the event payload
+    would let anyone who can open a dispatch spend money. The refusal was
+    right and the LOCATION was wrong: it also meant LIVE could not survive its
+    own first continuation, so the system proved autonomous EVENT continuation
+    and not autonomous LIVE continuation.
+
+    Authority now lives in AUTOMATION_POLICY.json on the automation branch --
+    a protected path no worker may write. LIVE requires
+    autonomous_operation_enabled AND execution_mode=LIVE AND a LIVE request;
+    the request can only restrict, never escalate, and no payload field
+    appears anywhere in that decision.
+
+    `providers.SPY` records what WOULD have been sent and returns the fixture,
+    so three passes of real LIVE semantics cost nothing.
+    """
+    print('\nQ. LIVE persists across continuations, and only policy grants it')
+    _env()
+    eng = dict(ENG_TASK)
+    nxt = dict(ENG_TASK, task_id='ENG-X2', title='the one after',
+               status='DRAFT', authorized=False, priority=2)
+    root = build_sandbox(eng=[eng, nxt],
+                         policy_over={'execution_mode': 'LIVE'})
+    try:
+        P.MOCKS = root / 'coordination' / 'orchestrator' / 'mocks'
+        mocks = P.MOCKS
+        (mocks / 'anthropic.ENG-X1.json').write_text(json.dumps({'parsed': {
+            'task_id': 'ENG-X1', 'status': 'COMPLETED',
+            'implementation_summary': 'did it', 'files_changed': ['q.txt'],
+            'patches': [{'path': 'q.txt', 'contents': 'q\n'}],
+            'tests_run': [], 'test_results': 'n/a', 'failures': [],
+            'blockers': [], 'recommended_next_step': 'review'}}))
+        (mocks / 'openai.ENG-X1.json').write_text(json.dumps({'parsed': {
+            'task_id': 'ENG-X1', 'verdict': 'ACCEPT',
+            'reasoning': 'evidenced',
+            'acceptance_test_verdicts': [
+                {'test': t, 'satisfied': True, 'evidence': 'e'}
+                for t in eng['acceptance_tests']],
+            'escalation_reason': None, 'next_task_id': 'ENG-X2',
+            'new_task': None, 'research_request': None,
+            'project_state_updates': {}, 'directive': None}}))
+        (mocks / 'anthropic.ENG-X2.json').write_text(json.dumps({'parsed': {
+            'task_id': 'ENG-X2', 'status': 'COMPLETED',
+            'implementation_summary': 'the one after',
+            'files_changed': ['q2.txt'],
+            'patches': [{'path': 'q2.txt', 'contents': 'q2\n'}],
+            'tests_run': [], 'test_results': 'n/a', 'failures': [],
+            'blockers': [], 'recommended_next_step': 'review'}}))
+
+        # The runtime is asked for LIVE, as the dispatcher would after reading
+        # the policy. No payload is involved anywhere in this test.
+        os.environ['AUTONOMY_MODE'] = 'LIVE'
+
+        # THE SECRET GATE COMES FIRST, and that ordering is itself a property
+        # worth pinning: an armed LIVE policy with no key must stop, not fall
+        # back to a fixture and look like it worked.
+        _without_fake_keys()
+        try:
+            _spy_pass(root, 0)
+            check('armed LIVE with no API key refuses', False, 'it proceeded')
+        except locks.Refusal as r:
+            check('armed LIVE with no API key REFUSES by name',
+                  r.code == 'SECRET_MISSING', r.code)
+        _with_fake_keys()
+
+        expect = [('ANTHROPIC', 'claude-opus-5'),
+                  ('OPENAI', 'gpt-5.6-sol'),
+                  ('ANTHROPIC', 'claude-opus-5')]
+        for i, (want_worker, want_model) in enumerate(expect, 1):
+            spied, action = _spy_pass(root, i)
+            print(f'       pass {i}: {action[:78]}')
+            check(f'pass {i} would make exactly one LIVE provider call',
+                  len(spied) == 1, f'{len(spied)}: {spied}')
+            if not spied:
+                return
+            check(f'  to {want_worker}', spied[0]['worker'] == want_worker,
+                  spied[0]['worker'])
+            check(f'  on {want_model}', spied[0]['model'] == want_model,
+                  spied[0]['model'])
+            check('  recorded as LIVE', spied[0]['mode'] == 'LIVE')
+            print(f'         -> WOULD CALL {spied[0]["worker"]} '
+                  f'{spied[0]["model"]} LIVE, body '
+                  f'{spied[0]["body_keys"]}')
+        check('LIVE survived two continuations with no human action',
+              True)
+    finally:
+        os.environ['AUTONOMY_MODE'] = 'MOCK'
+        _without_fake_keys()
+        teardown(root)
+
+
+def test_r_a_payload_cannot_escalate_mock_or_off_to_live():
+    """The security property, asserted from both directions."""
+    print('\nR. nothing outside the protected policy can grant LIVE')
+    _env()
+
+    # The decision function itself, exhaustively.
+    for pol, env, want, why in (
+            ({'autonomous_operation_enabled': True,
+              'execution_mode': 'LIVE'}, 'LIVE', 'LIVE',
+             'armed and requested'),
+            ({'autonomous_operation_enabled': True,
+              'execution_mode': 'MOCK'}, 'LIVE', 'MOCK',
+             'policy says MOCK -- a LIVE request cannot raise it'),
+            ({'autonomous_operation_enabled': False,
+              'execution_mode': 'LIVE'}, 'LIVE', 'MOCK',
+             'autonomy off -- execution_mode alone is not enough'),
+            ({'autonomous_operation_enabled': True,
+              'execution_mode': 'LIVE'}, 'MOCK', 'MOCK',
+             'the request may restrict'),
+            ({'autonomous_operation_enabled': True}, 'LIVE', 'MOCK',
+             'an absent execution_mode reads as MOCK, never as permissive'),
+            ({}, 'LIVE', 'MOCK', 'an empty policy grants nothing'),
+    ):
+        got = P.resolve_mode(pol, {'AUTONOMY_MODE': env})
+        check(f'{why} -> {want}', got == want, f'got {got}')
+
+    # And end to end: policy MOCK, the runtime asked for LIVE anyway.
+    root = build_sandbox(eng=[ENG_TASK],
+                         policy_over={'execution_mode': 'MOCK'})
+    try:
+        P.MOCKS = root / 'coordination' / 'orchestrator' / 'mocks'
+        (P.MOCKS / 'anthropic.ENG-X1.json').write_text(json.dumps({'parsed': {
+            'task_id': 'ENG-X1', 'status': 'COMPLETED',
+            'implementation_summary': 's', 'files_changed': ['r.txt'],
+            'patches': [{'path': 'r.txt', 'contents': 'r\n'}],
+            'tests_run': [], 'test_results': '', 'failures': [],
+            'blockers': [], 'recommended_next_step': 'n'}}))
+        # KEYS PRESENT ON PURPOSE. If the key were missing, a refusal would
+        # prove nothing about the policy -- the absent credential would be
+        # doing the work. The policy has to be the only thing standing here.
+        _with_fake_keys()
+        os.environ['AUTONOMY_MODE'] = 'LIVE'
+        spied, action = _spy_pass(root, 1)
+        check('a pass ran, with valid-looking keys available', 
+              'EXECUTE' in action, action)
+        check('  and made NO live provider call', spied == [],
+              f'{spied} -- money would have been spent')
+    finally:
+        os.environ['AUTONOMY_MODE'] = 'MOCK'
+        _without_fake_keys()
+        teardown(root)
+
+    # The startup guard refuses by name rather than downgrading in silence.
+    root = build_sandbox(eng=[ENG_TASK], policy_over={'execution_mode': 'MOCK'})
+    try:
+        snap = S.snapshot()
+        try:
+            locks.require_live_authorized(snap, P.MODE_LIVE)
+            check('an unauthorized LIVE startup refuses', False, 'it allowed')
+        except locks.Refusal as r:
+            check('an unauthorized LIVE startup REFUSES by name',
+                  r.code == 'LIVE_NOT_AUTHORIZED', r.code)
+    finally:
+        teardown(root)
+
+
+def test_s_both_kill_switches_stop_spending():
+    print('\nS. either protected field alone stops a paid call')
+    _env()
+
+    # 1. autonomous_operation_enabled = false -> the pass never reaches a
+    #    worker at all.
+    root = build_sandbox(eng=[ENG_TASK], autonomy=False,
+                         policy_over={'execution_mode': 'LIVE'})
+    try:
+        os.environ['AUTONOMY_MODE'] = 'LIVE'
+        snap = S.snapshot()
+        a = D.next_action(snap)
+        check('autonomy off stops the pass before any worker',
+              a.kind == D.STOP, str(a))
+        P.SPY = []
+        try:
+            check('  and no provider call was even attempted', P.SPY == [])
+        finally:
+            P.SPY = None
+        check('  effective mode is MOCK regardless of the request',
+              P.resolve_mode(snap.policy, os.environ) == P.MODE_MOCK)
+    finally:
+        os.environ['AUTONOMY_MODE'] = 'MOCK'
+        teardown(root)
+
+    # 2. execution_mode = MOCK -> the pass RUNS, and pays nothing.
+    root = build_sandbox(eng=[ENG_TASK], policy_over={'execution_mode': 'MOCK'})
+    try:
+        P.MOCKS = root / 'coordination' / 'orchestrator' / 'mocks'
+        (P.MOCKS / 'anthropic.ENG-X1.json').write_text(json.dumps({'parsed': {
+            'task_id': 'ENG-X1', 'status': 'COMPLETED',
+            'implementation_summary': 's', 'files_changed': ['s.txt'],
+            'patches': [{'path': 's.txt', 'contents': 's\n'}],
+            'tests_run': [], 'test_results': '', 'failures': [],
+            'blockers': [], 'recommended_next_step': 'n'}}))
+        _with_fake_keys()
+        os.environ['AUTONOMY_MODE'] = 'LIVE'
+        spied, action = _spy_pass(root, 1)
+        check('execution_mode MOCK still lets the pass do its work',
+              'EXECUTE' in action, action)
+        check('  while making no paid call', spied == [], str(spied))
+        q = json.loads((root / 'coordination'
+                        / 'ENGINEERING_QUEUE.json').read_text())
+        check('  and the transition still happened',
+              q['tasks'][0]['status'] == 'RETURNED', q['tasks'][0]['status'])
+    finally:
+        os.environ['AUTONOMY_MODE'] = 'MOCK'
+        _without_fake_keys()
+        teardown(root)
+
+
+def test_t_the_committed_policy_is_off_and_mock():
+    """The production file itself, not a sandbox copy of it."""
+    print('\nT. the real policy on this branch is disarmed')
+    pol = json.loads((REAL_REPO / 'coordination'
+                      / 'AUTOMATION_POLICY.json').read_text())
+    check('autonomous_operation_enabled is false',
+          pol.get('autonomous_operation_enabled') is False,
+          str(pol.get('autonomous_operation_enabled')))
+    check('execution_mode is MOCK', pol.get('execution_mode') == 'MOCK',
+          str(pol.get('execution_mode')))
+    check('  so nothing on this branch can reach a provider',
+          P.resolve_mode(pol, {'AUTONOMY_MODE': 'LIVE'}) == P.MODE_MOCK)
+    check('the vocabulary is closed',
+          pol.get('execution_mode_vocabulary') == ['MOCK', 'LIVE'],
+          str(pol.get('execution_mode_vocabulary')))
+
+
 TESTS = [v for k, v in sorted(globals().items()) if k.startswith('test_')]
 
 if __name__ == '__main__':

@@ -114,14 +114,22 @@ def _call(snap, worker, task, system, user, attempt, head):
                         prompt_sha256=C.prompt_hash(system + user),
                         head_before=head, attempt=attempt)
     locks.require_not_duplicate(snap, call)
-    if P.mode() == P.MODE_LIVE:
+
+    # THE MODE IS DERIVED FROM THE PROTECTED POLICY IN THE SNAPSHOT, which was
+    # read from the automation branch at the start of this pass. Not from the
+    # event that woke us, and not from the environment alone. The environment
+    # can only restrict.
+    effective = P.resolve_mode(snap.policy, os.environ)
+    if effective == P.MODE_LIVE:
         locks.require_secret(os.environ, P.SECRET_ENV[cfg['provider']], worker)
 
     rid = G.run_id(worker, task['task_id'], call.idempotency_key)
-    _say(f'  calling {worker.value} ({cfg["model"]}) mode={P.mode()} '
-         f'run={rid}')
+    _say(f'  calling {worker.value} ({cfg["model"]}) '
+         f'requested={P.requested_mode()} policy={P.policy_mode(snap.policy)} '
+         f'effective={effective} run={rid}')
     result = P.call_worker(call, worker, cfg, system, user,
-                           task_id=task['task_id'])
+                           task_id=task['task_id'],
+                           effective_mode=effective)
     G.write_run(rid, call=call, result=result, system=system, user=user,
                 head_before=head)
     return rid, call, result, cfg
@@ -347,8 +355,18 @@ def one_pass(*, max_transitions=None, plan_only=False,
     cap = max_transitions if max_transitions is not None else \
         (snap.policy.get('limits') or {}).get(
             'max_transitions_per_invocation', 1)
-    _say(f'orchestrator: head {snap.head[:12]} on {snap.branch}, '
-         f'mode {P.mode()}, up to {cap} transition(s)')
+    effective = P.resolve_mode(snap.policy, os.environ)
+    _say(f'orchestrator: head {snap.head[:12]} on {snap.branch}, up to {cap} '
+         f'transition(s)')
+    _say(f'  mode: requested={P.requested_mode()} '
+         f'policy={P.policy_mode(snap.policy)} -> EFFECTIVE={effective}')
+    if P.requested_mode() == P.MODE_LIVE and effective != P.MODE_LIVE:
+        # Said out loud rather than silently downgraded. An operator who asked
+        # for LIVE and got MOCK must find out from the log, not from noticing
+        # later that nothing was ever charged.
+        _say('  LIVE was requested but the protected policy does not '
+             'authorize it; running MOCK. Set autonomous_operation_enabled '
+             'and execution_mode in AUTOMATION_POLICY.json to arm it.')
 
     used = 0
     committed_a_transition = False

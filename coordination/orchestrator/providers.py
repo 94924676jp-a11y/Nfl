@@ -70,15 +70,66 @@ SECRET_ENV = {
 }
 
 
-def mode(env=None) -> str:
-    """LIVE only when asked for by name. Anything else is MOCK.
+#: A test hook. When set to a list, a LIVE call is RECORDED rather than sent,
+#: and the fixture is returned so the state machine keeps running. It exists so
+#: LIVE semantics can be proven without spending a cent. It is never set by
+#: production code -- only a test assigns it, exactly like MOCKS.
+SPY = None
 
-    The default is the cheap mode. Forgetting to set the variable costs
-    nothing; the expensive mode has to be requested.
-    """
+
+def requested_mode(env=None) -> str:
+    """What the RUNTIME was asked for. A request, not an authorization."""
     env = env if env is not None else os.environ
     return MODE_LIVE if (env.get('AUTONOMY_MODE') or '').upper() == 'LIVE' \
         else MODE_MOCK
+
+
+def policy_mode(policy) -> str:
+    """What the PROTECTED POLICY authorizes. The ceiling.
+
+    Absent or unrecognised reads as MOCK. A missing field must never be the
+    permissive case: the whole point of putting this in a committed file is
+    that spending requires someone to have written the word LIVE into it.
+    """
+    m = str((policy or {}).get('execution_mode') or MODE_MOCK).upper()
+    return MODE_LIVE if m == MODE_LIVE else MODE_MOCK
+
+
+def resolve_mode(policy, env=None) -> str:
+    """The effective mode. LIVE needs the POLICY and the request to agree.
+
+    THE AUTHORITY MODEL, IN ONE FUNCTION.
+
+      policy is the CEILING  -- it can only be set by editing a protected file
+                                on the automation branch, which no worker may
+                                touch, and it is what makes LIVE survive a
+                                continuation without a human clicking again;
+      the env var is a REQUEST -- it can only RESTRICT, never escalate.
+
+    So LIVE happens only when `autonomous_operation_enabled` is true AND
+    `execution_mode` is LIVE AND the runtime was asked for LIVE. Any of the
+    three saying otherwise gives MOCK, and no event payload appears anywhere
+    in that sentence.
+
+    An earlier dispatcher resolved this from the payload and then, correctly,
+    refused to trust it -- which made LIVE unable to survive its own first
+    continuation. The refusal was right; the location was wrong.
+    """
+    if not (policy or {}).get('autonomous_operation_enabled'):
+        return MODE_MOCK
+    if policy_mode(policy) != MODE_LIVE:
+        return MODE_MOCK
+    return requested_mode(env)
+
+
+def mode(env=None) -> str:
+    """Deprecated shorthand: the REQUEST only, with no policy consulted.
+
+    Kept because `write_run` records what the runtime was asked for, which is
+    a different fact from what it was allowed to do. Never use it to decide
+    whether to spend money -- that is `resolve_mode`.
+    """
+    return requested_mode(env)
 
 
 # ------------------------------------------------------------ the wire
@@ -210,7 +261,7 @@ def _mock(call, worker, task_id) -> C.WorkerResult:
 
 # ---------------------------------------------------------------- call
 def call_worker(call, worker, model_cfg, system, user, *, task_id,
-                env=None, timeout=None) -> C.WorkerResult:
+                env=None, timeout=None, effective_mode=None) -> C.WorkerResult:
     """One provider call. Returns a WorkerResult; never raises for API trouble.
 
     Exceptions are for programming errors. An API that is down, slow, angry or
@@ -218,7 +269,19 @@ def call_worker(call, worker, model_cfg, system, user, *, task_id,
     can log -- not in a traceback that loses the request that caused it.
     """
     env = env if env is not None else os.environ
-    if mode(env) == MODE_MOCK:
+
+    # THE SECOND LOCK, AND THE ONE THAT MATTERS MOST.
+    #
+    # The dispatcher already derives the mode from the protected policy. This
+    # check exists so that is not the ONLY thing standing between a malformed
+    # event and a bill. A caller that skipped the dispatcher, or passed the
+    # wrong thing, still cannot reach a provider: `effective_mode` must be
+    # LIVE and it must have been computed by `resolve_mode` from the policy.
+    # Absent, it defaults to the request alone -- which is why every caller in
+    # this runtime passes it explicitly and `main._call` reads the policy.
+    if effective_mode is None:
+        effective_mode = requested_mode(env)
+    if effective_mode != MODE_LIVE:
         return _mock(call, worker, task_id)
 
     provider = model_cfg['provider']
@@ -231,6 +294,18 @@ def call_worker(call, worker, model_cfg, system, user, *, task_id,
             escalation=C.Escalation.SECRET_MISSING)
 
     body = _request_body(provider, model_cfg, system, user)
+    if SPY is not None:
+        # A LIVE call that is recorded instead of sent. The state machine gets
+        # a fixture back so the chain continues, and the test can assert
+        # exactly which provider WOULD have been paid, on which pass.
+        SPY.append({'worker': worker.value, 'provider': provider,
+                    'model': model_cfg['model'], 'task_id': task_id,
+                    'endpoint': model_cfg.get('endpoint'),
+                    'body_keys': sorted(k for k in body if k != 'messages'),
+                    'mode': 'LIVE'})
+        out = _mock(call, worker, task_id)
+        out.detail = f'LIVE call to {provider} RECORDED BY SPY, not sent'
+        return out
     endpoint = ENDPOINTS.get(model_cfg.get('endpoint')
                              or _DEFAULT_ENDPOINT[provider], {}).get(provider)
     if endpoint is None:

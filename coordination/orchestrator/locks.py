@@ -74,6 +74,36 @@ def require_autonomy_enabled(snap) -> None:
             escalation=None)
 
 
+def require_live_authorized(snap, requested) -> None:
+    """LIVE needs the PROTECTED POLICY to say so. Nothing else grants it.
+
+    Called when a human explicitly asks for LIVE at startup, so the refusal
+    arrives immediately and by name instead of being silently downgraded and
+    discovered later from a bill that never came.
+    """
+    from coordination.orchestrator import providers as _P
+    if requested != _P.MODE_LIVE:
+        return
+    if not snap.policy.get('autonomous_operation_enabled'):
+        raise Refusal(
+            'LIVE_NOT_AUTHORIZED',
+            'LIVE was requested but AUTOMATION_POLICY.json has '
+            'autonomous_operation_enabled=false. Arming is a deliberate edit '
+            'to a protected file on the automation branch, not a workflow '
+            'input.',
+            escalation=None)
+    if _P.policy_mode(snap.policy) != _P.MODE_LIVE:
+        raise Refusal(
+            'LIVE_NOT_AUTHORIZED',
+            f'LIVE was requested but AUTOMATION_POLICY.json has '
+            f'execution_mode='
+            f'{snap.policy.get("execution_mode", "(absent)")!r}. Both fields '
+            f'must say so; an absent field reads as MOCK, because the whole '
+            f'point of a committed policy is that spending requires someone '
+            f'to have written the word LIVE into it.',
+            escalation=None)
+
+
 def require_secret(env: dict, name: str, worker) -> str:
     """A missing key STOPS. It is never worked around with a mock.
 

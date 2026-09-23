@@ -61,14 +61,42 @@ silently falls back.
 
 ## Step 3 — arm it
 
-Edit `coordination/AUTOMATION_POLICY.json`:
+**Two fields in `coordination/AUTOMATION_POLICY.json`, on the automation
+branch. Together they are the only authority to spend money.**
 
 ```json
-"autonomous_operation_enabled": true
+"autonomous_operation_enabled": true,
+"execution_mode": "LIVE"
 ```
 
-Commit and push. That push is itself an event the orchestrator listens for, so
-the first pass starts from it.
+Commit and push, then start a pass from the Actions tab.
+
+### Why the authority lives there and not in the event
+
+A `repository_dispatch` payload can be opened by anyone who can reach the
+repository's API. If a payload could say `mode=LIVE`, that is who decides what
+you spend. So the payload carries **no mode at all** — not downgraded,
+ignored — and the dispatcher resolves the mode *after* checkout by reading
+these two protected fields. `.github/workflows/` and
+`AUTOMATION_POLICY.json` are both in `PROTECTED_PATHS`, so no autonomous
+worker can edit either the decision or the file it reads.
+
+The decision, in full:
+
+| `autonomous_operation_enabled` | `execution_mode` | Request | Effective |
+|---|---|---|---|
+| true | `LIVE` | LIVE | **LIVE** |
+| true | `LIVE` | continuation | **LIVE** — survives with no human action |
+| true | `LIVE` | MOCK | MOCK — a request may restrict |
+| true | `MOCK` | LIVE | MOCK, and a human LIVE start is **refused by name** |
+| false | `LIVE` | anything | MOCK — one field is not enough |
+| false | any | continuation | MOCK, and the pass stops before any worker |
+| — | absent/malformed | anything | refused: an absent field is never the permissive case |
+
+It is enforced **twice, independently**: the dispatcher on `main` derives the
+mode from the policy, and the orchestrator re-derives it in-process
+(`providers.resolve_mode`) before any provider call. Bypassing the workflow
+does not bypass the control.
 
 ---
 
@@ -197,18 +225,31 @@ state machine runs against fixtures: queue transitions, commits, returns and
 handoff log entries are all real, and no provider is called. This is worth
 doing once on the real queue before spending anything.
 
-**Live.** Same, mode `LIVE`. Real API calls. After the first pass it is
-self-sustaining: each commit the orchestrator makes is a push event on a
-watched path, which starts the next pass.
+**Live.** Same, mode `LIVE` — and it is **refused** unless the protected
+policy already authorizes it (see below). After the first pass it is
+self-sustaining: each pass asks GitHub for the next with an explicit
+`repository_dispatch`, and each continuation re-reads the policy, so LIVE
+persists without another click. *(An earlier version of this sentence said
+each commit is a push event that starts the next pass. That was wrong twice
+over — `GITHUB_TOKEN` pushes do not start workflows, and the continuation
+mechanism is `repository_dispatch`.)*
 
 ## How to stop autonomy immediately
 
-**The one that always works:**
+**Two switches, either of which works on its own, both in the same protected
+file:**
 
 ```
-edit coordination/AUTOMATION_POLICY.json -> "autonomous_operation_enabled": false
-git commit && git push
+"autonomous_operation_enabled": false   -> the next pass stops before it
+                                           reaches any worker at all
+"execution_mode": "MOCK"                -> passes keep running and making
+                                           queue transitions, but no paid
+                                           provider call is made
 ```
+
+Use the first to halt the system; the second to keep it working while it
+cannot spend. Commit and push either one — every pass re-reads the file before
+acting, so the next pass obeys it.
 
 Every pass re-reads that file before doing anything, so the next pass stops. A
 pass already running finishes its current transition and stops — it will not
@@ -235,7 +276,8 @@ have the owner worker review what comes back, accept or return or block it,
 authorize the next task *that you already drafted*, commit every step, and
 carry on.
 
-**It will not**, ever, whatever a model says:
+**It will not** spend anything unless both protected fields say so — and it
+will not, ever, whatever a model or an event payload says:
 
 - promote Q9, or change its promotion state
 - authorize NFL-1
