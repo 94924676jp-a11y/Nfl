@@ -1,0 +1,147 @@
+{
+ "artifact": "PROJECT_STATE",
+ "spec_version": "coordination-project-state-0",
+ "written_at_utc": "2026-09-23T01:36:10Z",
+ "written_by": "claude",
+ "hub_repository": "94924676jp-a11y/Nfl",
+ "branch": "claude/nfl-greenfield-architecture-stsxmk",
+ "head_commit": "f0f393cf7e58d2da42abee0fbd8be9ef6d344928",
+ "head_commit_short": "f0f393c",
+ "how_to_read_this_file": "Every field is MEASURED from the repository at head_commit unless its name ends in _declared. A field nobody measured is null, never a plausible default. If you are updating this file, re-derive the number rather than editing it: a state file that drifts from the tree is worse than no state file, because it reads like evidence.",
+ "governance": {
+  "may_publish": "BLOCKED",
+  "may_publish_code": "NFL1_NOT_AUTHORIZED",
+  "NFL_1": "NOT AUTHORIZED",
+  "G0A": "11/12",
+  "V2": "NOT YET EARNED",
+  "baseline_marker": "CANDIDATE_NOT_ACCEPTED_BASELINE",
+  "source": "nfl.production.authorization.may_publish(), read at head_commit",
+  "note": "Only an owner authorization record can move NFL-1. No test result, checklist state or caller flag can. Historical reconstruction cannot satisfy an unattended prospective T-90 requirement, however good it becomes."
+ },
+ "q9_frozen_candidate": {
+  "classification": "POST_FREEZE_DEPENDENCY_DRIFT",
+  "reproducible": true,
+  "pinned_blobs_retrievable": 4,
+  "pinned_blobs_total": 4,
+  "working_tree_diverged_modules": [
+   "nfl.production.nonqb.layers"
+  ],
+  "first_divergence_commit": "45f0ff4",
+  "changes_since_freeze": 5,
+  "freeze_commit": "6490c67",
+  "pin_moved": false,
+  "identity_rewritten": false,
+  "layers_reverted": false,
+  "contract": "nfl/production/frozen_candidate.py",
+  "note": "The pin is a REPRODUCTION INSTRUCTION, not a working-tree invariant. WORKING_TREE_DIVERGED_FROM_FROZEN_CANDIDATE is governance evidence about the tree, never about the candidate."
+ },
+ "lanes": {
+  "lane_1_production_integrity": {
+   "status": "IN_PROGRESS",
+   "complete": [
+    "draw-coherence promotion to ADVERTISED",
+    "applicability contract (APPLICABLE_AND_CHECKED / APPLICABLE_BUT_NOT_CHECKED / NOT_APPLICABLE, evidence required)",
+    "conservation/coherence split into three codes, two owners",
+    "chain->review conservation carrier built and wired",
+    "governed fixture repair (no rule weakened)",
+    "R1 declaration-driven discovery",
+    "R9 TEST_MODULE_NOT_EXECUTED guard",
+    "Q9 reproduction contract"
+   ],
+   "remaining": [
+    "R14 REPLAY_RE_SELECTS (blocks HistoricalArtifactManifest)",
+    "orchestration so the conservation bridge is production-reachable",
+    "re-advertise allocation conservation and consumer-scope codes, only after production execution is proven",
+    "forbidden-external-input integrity wiring",
+    "unresolved inactive-identity integrity wiring",
+    "board canonical-state migration",
+    "usage_vintage undeclared-read repair",
+    "FIN-2 survivorship audit drift classification",
+    "three remaining UNKNOWN red modules"
+   ]
+  },
+  "lane_2_historical_recovery": {
+   "status": "QUEUED",
+   "blocked_by": "R14 REPLAY_RE_SELECTS",
+   "scope": "HistoricalArtifactManifest vertical slice, one 2023 game"
+  },
+  "lane_3_scientific": {
+   "status": "NOT_STARTED",
+   "scope": "SimulationCalibration A/B/C/D, then HistoricalSlateReplay",
+   "precondition": "Lane 1 complete enough that the platform can reliably say which artifacts are publishable and why"
+  }
+ },
+ "advertised_integrity_codes": [
+  "DUPLICATE_PLAYER_IDENTITY",
+  "INACTIVE_PLAYER_IN_SIMULATION_OR_OPTIMIZER_POOL",
+  "MISSING_ROW_IDS",
+  "SIMULATION_DRAW_COHERENCE_VIOLATED",
+  "SIMULATION_ROW_MISMATCH",
+  "UNAVAILABLE_EVIDENCE_CLAIMED_AS_MEASURED"
+ ],
+ "relinquished_integrity_codes": [
+  "FORBIDDEN_EXTERNAL_INPUT_IN_PREDICTIVE_FEATURES",
+  "IDENTITY_UNRESOLVED_BLOCKS_INACTIVE_APPLICATION",
+  "OPPORTUNITY_CONSERVATION_FAILURE",
+  "OPPORTUNITY_CONSUMER_OUT_OF_SCOPE"
+ ],
+ "observed_integrity_codes": [],
+ "sealed_corpus": {
+  "draw_directories_discovered": 114,
+  "sealed_boards": 112,
+  "refused_runs": 1,
+  "derived_non_boards": 1,
+  "indeterminate": 0,
+  "measured_by": "nfl.research.sealed_index.classify_live()"
+ },
+ "test_surface": {
+  "last_full_run_commit": "fef1230",
+  "last_full_run_stale": true,
+  "modules": 220,
+  "test_functions": 2483,
+  "checks": 12855,
+  "failing_checks": 108,
+  "raised": 41,
+  "blocked_functions": 22,
+  "red_modules": 42,
+  "root_causes_identified": 19,
+  "unknown_root_causes": 3,
+  "warning": "These totals PREDATE the R1, R9 and Q9 repairs. Re-run `python3.12 nfl/tests/run_suite.py` before quoting them. The measurement repairs make the suite REDDER before greener: five modules that were silently executing zero checks now report real results.",
+  "classification": "nfl/research/integrity/RED_TEST_DAG.md"
+ },
+ "standing_constraints": [
+  "Sportsbook prices must not become predictive inputs into the football model.",
+  "Ownership, %Drafted, field composition, duplication, payout structure and contest metadata must not flow backward into player projections, team volume, role, efficiency, appearance, game simulation or touchdown probability.",
+  "Do not resolve missing evidence by inference. Absence of evidence is not evidence of absence.",
+  "No edit-distance matching.",
+  "Raw bytes are evidence. Preserve them; derive separately.",
+  "A required invariant that nobody evaluated is not a passing invariant.",
+  "run_suite is the authoritative test execution path. A zero exit code from direct module invocation is not a test result.",
+  "An empty card is a valid result and no threshold may be loosened to manufacture a play.",
+  "WEEK2_USAGE_CAPTURE_REQUIRED remains a hard blocker.",
+  "OWNERSHIP_MODEL_UNAVAILABLE and FIELD_MODEL_UNAVAILABLE still hold.",
+  "DraftKings capture is manual until automation permission is resolved."
+ ],
+ "open_escalations": [
+  {
+   "id": "ESC-1",
+   "what": "test_detbuf_conservation reports passing yards != receiving yards in 7,996 of 8,000 draws on a sealed board",
+   "status": "NEWLY_VISIBLE_NOT_VERIFIED",
+   "why_not_verified": "the module's own docstring records two earlier misreads of the row mapping; this needs an independent check before it is called a defect",
+   "owner": "engineering"
+  },
+  {
+   "id": "ESC-2",
+   "what": "SURVIVORSHIP_AUDIT.json records 22,821 dropped carries; the module measures 22,037 today",
+   "status": "UNCLASSIFIED",
+   "why": "FIN-2 is marked completed and its artifact no longer reproduces its own measurement",
+   "owner": "engineering"
+  },
+  {
+   "id": "ESC-3",
+   "what": "external-research/data-implementation-path-2026-09-22 and commit 099c502 are unreachable in this repository",
+   "status": "OPEN",
+   "owner": "research agent -- must push the original three artifacts"
+  }
+ ]
+}

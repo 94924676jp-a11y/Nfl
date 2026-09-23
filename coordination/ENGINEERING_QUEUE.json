@@ -1,0 +1,140 @@
+{
+ "artifact": "ENGINEERING_QUEUE",
+ "spec_version": "coordination-engineering-queue-0",
+ "written_at_utc": "2026-09-23T01:37:35Z",
+ "written_by": "claude",
+ "owner_of_this_queue": "claude (engineering agent)",
+ "state_vocabulary": [
+  "QUEUED",
+  "ACTIVE",
+  "BLOCKED",
+  "DONE",
+  "SUPERSEDED"
+ ],
+ "rules": [
+  "A state outside state_vocabulary is a defect, not a nuance. nfl/WORK_QUEUE.md currently carries three rows reading 'DONE (2026-09-20)' and agent_state raises on them -- do not repeat that here.",
+  "blocked_by names the thing that must finish first, by id or by a code an agent can grep for. 'Blocked' with no cause is not a state.",
+  "DONE requires a commit sha. A task marked done with no artifact is a claim, not a record.",
+  "An item an agent decided for itself goes in with owner and rationale. An item the owner ruled goes in OWNER_DECISIONS.md first and is referenced from here."
+ ],
+ "items": [
+  {
+   "id": "R14",
+   "title": "REPLAY_RE_SELECTS: replay must consume the sealed input set",
+   "state": "QUEUED",
+   "owner": "claude",
+   "priority": 1,
+   "blocks": [
+    "LANE2-MANIFEST"
+   ],
+   "detail": "The seal records an input set and nothing can consume it, so every replay re-selects against today's manifest. Sealed source identities explicit; exact raw artifact hashes consumed; missing sealed inputs fail closed; current availability cannot substitute; sources added after the historical run cannot enter replay.",
+   "acceptance": "negative fixture: historical seal A plus a current manifest containing newer source B -> replay consumes A only",
+   "evidence": "nfl/tests/test_replay_pins_its_inputs.py, D23"
+  },
+  {
+   "id": "L1-ORCH",
+   "title": "Orchestration so the conservation bridge is production-reachable",
+   "state": "QUEUED",
+   "owner": "claude",
+   "priority": 2,
+   "detail": "run_chain.run has NO caller outside its own CLI, so nothing places a bridge artifact beside a forecast review. The carrier exists and is wired; the orchestration does not.",
+   "constraint": "The orchestrator may transport the governed result. The authoritative producer remains the existing conservation owner. Do not create a second authority.",
+   "evidence": "nfl/tests/test_conservation_integrity.py asserts the absence"
+  },
+  {
+   "id": "L1-READVERTISE",
+   "title": "Restore OPPORTUNITY_CONSERVATION_FAILURE and OPPORTUNITY_CONSUMER_OUT_OF_SCOPE to ADVERTISED",
+   "state": "BLOCKED",
+   "owner": "claude",
+   "priority": 3,
+   "blocked_by": "L1-ORCH",
+   "acceptance": "producer exists AND production executes it AND evidence survives transport AND review consumes the stored governed result AND NOT_CHECKED blocks AND a corrupted fixture fails end to end"
+  },
+  {
+   "id": "L1-FORBIDDEN",
+   "title": "Wire forbidden-external-input integrity",
+   "state": "QUEUED",
+   "owner": "claude",
+   "priority": 4,
+   "detail": "pipeline.assert_no_postgame_inputs runs and refuses a stage declaring a postgame field; adjustment_registry refuses an undeclared re-application. Neither reaches the gate."
+  },
+  {
+   "id": "L1-IDENTITY",
+   "title": "Wire unresolved inactive-identity integrity",
+   "state": "QUEUED",
+   "owner": "claude",
+   "priority": 5,
+   "detail": "player_universe classifies an unresolvable row IDENTITY_UNRESOLVED and inactives.resolve refuses an ambiguous name. Neither result is surfaced as a finding, so a slate where an inactive could not be attached to a named player reads the same as one where every name resolved."
+  },
+  {
+   "id": "L1-BOARD",
+   "title": "Board canonical-state migration",
+   "state": "QUEUED",
+   "owner": "claude",
+   "priority": 6
+  },
+  {
+   "id": "USAGE-VINTAGE",
+   "title": "usage_vintage.py reads a vintage it never declared",
+   "state": "QUEUED",
+   "owner": "claude",
+   "priority": 7,
+   "detail": "Leakage-adjacent. Classify exactly: undeclared source read / declaration drift / parser mismatch / manifest mismatch / other. Then ensure every consumed vintage is in the governed declared input set.",
+   "constraint": "Do NOT regenerate the p7 inventory away -- UNDECLARED_VINTAGE_READ is not regenerable and the inventory refresh would erase the evidence."
+  },
+  {
+   "id": "FIN-2-DRIFT",
+   "title": "SURVIVORSHIP_AUDIT.json 22,821 vs measured 22,037",
+   "state": "QUEUED",
+   "owner": "claude",
+   "priority": 8,
+   "detail": "Determine whether the difference is changed corpus, changed measurement, changed eligibility, changed artifact or stale completed-task output. Do not overwrite the old audit. Return whether FIN-2 remains valid, stale, or requires re-sealing.",
+   "note": "A task marked DONE cannot silently retain an audit artifact that no longer reproduces its own measurement."
+  },
+  {
+   "id": "ESC-1-DETBUF",
+   "title": "Verify or refute the detbuf conservation failures",
+   "state": "QUEUED",
+   "owner": "claude",
+   "priority": 9,
+   "detail": "test_detbuf_conservation, newly visible, reports passing yards != receiving yards in 7,996 of 8,000 draws (worst 1.29e+03) and passing TD != receiving TD in 6,103 of 8,000 on pre_inactives_V1_CANDIDATE_R9_W1P_GA/117a78668a0b7a0e.",
+   "caution": "The module's own docstring records TWO earlier misreads of the row mapping. This is not a defect until independently checked."
+  },
+  {
+   "id": "REDS-UNKNOWN",
+   "title": "Three remaining UNKNOWN red modules",
+   "state": "QUEUED",
+   "owner": "claude",
+   "priority": 10,
+   "detail": "test_execution_identity, test_inactives_substance, test_q9_live_feature_builder. inactives_substance and capture_obligations both report 20 game-anchored rows uncredited against an expected 18 -- the same +2 drift, so they probably share a root.",
+   "note": "UNKNOWN may remain UNKNOWN. Do not force a classification."
+  },
+  {
+   "id": "LANE2-MANIFEST",
+   "title": "HistoricalArtifactManifest vertical slice",
+   "state": "BLOCKED",
+   "owner": "claude",
+   "priority": 11,
+   "blocked_by": "R14",
+   "detail": "One 2023 regular-season game. Choose the game and resolve kickoff BEFORE defining cuts -- every cut must precede kickoff, and a Thursday game gets Monday/Tuesday/Wednesday/T-90, not Friday/Sunday. PIT decisions are artifact x cut. first_observed_at stays distinct from source_published_at."
+  },
+  {
+   "id": "LANE3-SIMCAL",
+   "title": "SimulationCalibration A/B/C/D",
+   "state": "BLOCKED",
+   "owner": "claude",
+   "priority": 12,
+   "blocked_by": "LANE2-MANIFEST",
+   "detail": "A independent calibrated marginals, B shared game/team factors, C hierarchical opportunity worlds, D drive-conditioned challenger ONLY if needed.",
+   "registered_requirements": [
+    "first question is whether one simulation column is a coherent shared football world across players",
+    "COLUMN_ALIGNED is not SHARED_FOOTBALL_WORLD",
+    "artifacts declaring INDEPENDENT_STREAMS_COLUMN_ALIGNED are DEPENDENCE_CALIBRATION_INELIGIBLE",
+    "marginal CRPS, randomized PIT, accounting invariants, energy score, variogram score, prespecified joint-exceedance events",
+    "variogram score is a required DIAGNOSTIC, never a standalone promotion criterion",
+    "deterministic hierarchical RNG streams: slate_seed, game_seed(world), team_seed(world, team), component_seed(world, component)",
+    "saved shared-world causal trace"
+   ]
+  }
+ ]
+}
