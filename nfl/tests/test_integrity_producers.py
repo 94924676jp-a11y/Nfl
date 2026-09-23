@@ -95,9 +95,17 @@ def test_the_clean_fixture_passes_with_every_invariant_checked():
            'not passing, and not silently absent')
         ok(it['n_findings'] == 0 and it['report_hash'].startswith('IR-'),
            f'no findings, report {it["report_hash"]}')
-        ok(len(it['producer_versions']) == len(GATE.ADVERTISED_INTEGRITY),
-           f'and every advertised invariant names the producer version that '
-           f'ran: {it["producer_versions"]}')
+        # `producer_versions` covers every code the report carried, which
+        # is the advertised set PLUS the observed one -- the observed
+        # producer ran on this path too, and a version it stamped is
+        # evidence it ran.
+        ok(set(it['producer_versions'])
+           == set(GATE.ADVERTISED_INTEGRITY) | set(GATE.OBSERVED_INTEGRITY),
+           f'and every invariant the report covers names the producer '
+           f'version that ran: {it["producer_versions"]}')
+        ok(it['producer_versions'].get(GATE.C_DRAW_COHERENCE),
+           'including the observed one, so "observed" cannot mean "nobody '
+           'ran it"')
 
 
 # -- 2. corruption, end to end ---------------------------------------------
@@ -249,17 +257,36 @@ def test_an_empty_population_is_not_applicable_not_passing():
 # -- 4. the governance test -------------------------------------------------
 def test_every_advertised_blocking_integrity_code_has_a_producer():
     """A. a reachable production producer, B. explicit NOT_APPLICABLE, or
-    C. removal from the registry. There is no fourth state."""
+    C. removal from the registry.
+
+    OBSERVED IS NOT A FOURTH STATE, IT IS A NARROWER FORM OF A. An observed
+    code has a producer and that producer runs on the production path; what
+    it lacks is the gate GUARANTEEING the invariant was checked, because
+    promoting it changes what counts as a publishable artifact. The test
+    therefore accepts it as a home -- and then holds it to the same evidence
+    requirements as an advertised code, plus a recorded reason for the
+    distinction, so "observed" cannot become a parking space.
+    """
     advertised = set(GATE.ADVERTISED_INTEGRITY)
+    observed = set(GATE.OBSERVED_INTEGRITY)
     relinquished = set(GATE.RELINQUISHED_CODES)
     declared = set(GATE.GATE_CODES)
-    ok(advertised | relinquished == declared - {
+    ok(advertised | observed | relinquished == declared - {
         GATE.C_INTEGRITY_COVERAGE_MISSING},
-       f'every code the gate declares is either advertised with a producer '
-       f'or relinquished with an owner: advertised {len(advertised)}, '
-       f'relinquished {len(relinquished)}')
-    ok(not (advertised & relinquished),
-       'and none is both')
+       f'every code the gate declares has a home: advertised '
+       f'{len(advertised)}, observed {len(observed)}, relinquished '
+       f'{len(relinquished)}')
+    ok(not (advertised & relinquished) and not (advertised & observed)
+       and not (observed & relinquished),
+       'and none is in two of them')
+    for code in observed:
+        spec = GATE.OBSERVED_INTEGRITY[code]
+        for key in ('owner', 'invariant', 'producer', 'runs_on',
+                    'why_not_advertised'):
+            ok(spec.get(key), f'{code} records its {key}')
+        ok(code in GATE.BLOCKING_CODES,
+           f'{code} still BLOCKS on a real finding -- only the '
+           f'nobody-checked case is non-blocking')
     for code in advertised:
         ok(code in GATE.BLOCKING_CODES,
            f'{code} is blocking and advertised')
@@ -283,6 +310,17 @@ def test_every_advertised_blocking_integrity_code_has_a_producer():
            and all(s != IC.NOT_CHECKED for s in it['coverage'].values()),
            'and on the production path every advertised code is actually '
            'checked, not merely declared')
+        # The observed code runs on the same path. On this synthetic
+        # fixture its verdict is NOT_CHECKED -- the fixture carries no
+        # coherence verdict because it is not a governed run -- and that is
+        # reported rather than hidden, which is the whole purpose of the
+        # observed section.
+        ok(set(it['observed_coverage']) == observed,
+           f'the observed producer\'s verdict is carried too: '
+           f'{it["observed_coverage"]}')
+        ok(all(s in IC.COVERAGE_STATES
+               for s in it['observed_coverage'].values()),
+           'as a declared coverage state, never as silence')
 
 
 def test_a_relinquished_code_still_blocks_if_it_ever_arrives():

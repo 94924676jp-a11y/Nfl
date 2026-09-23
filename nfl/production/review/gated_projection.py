@@ -212,9 +212,20 @@ def load(draws_dir, review_dir, *, optimizer_pool_ids=None,
     from nfl.production.state import identity_integrity as II
     from nfl.production import simulation_integrity as SI
     from nfl.production.review import provenance_integrity as PI
+    from nfl.production import conservation_integrity as CI
     from nfl.dfs import eligibility_integrity as EI
 
     man = json.loads(man_p.read_text())
+    # `run_status()` above proved this file exists and did not refuse; it
+    # returns only the status and run id, so the WHOLE document is read here
+    # for the verdicts the run stored in it. A parse failure is not silently
+    # an empty dict: the producer would then report NOT_CHECKED, which
+    # blocks, which is the correct outcome for an unreadable status file.
+    _rs_doc = {}
+    try:
+        _rs_doc = json.loads((d / 'run_status.json').read_text())
+    except Exception:                                          # noqa: BLE001
+        _rs_doc = {}
     _arrays = {}
     with _np.load(npz_p) as _z:
         for _k in _z.files:
@@ -242,6 +253,19 @@ def load(draws_dir, review_dir, *, optimizer_pool_ids=None,
         EI.will_not_play_in_dfs_populations(
             slate_key=_slate, information_cut=_cut,
             source_artifacts=_arts),
+        # THE COHERENCE VERDICT IS CONSUMED, NOT RECOMPUTED. The check needs
+        # shared_pass_live, which the run reads from its applied-component
+        # list and which the draw manifest does not carry; guessing it here
+        # would skip team closure and return a PASS that never looked. The
+        # producer also refuses to treat a stored PASS as passing unless the
+        # coherence certificate verifies the sealed arrays are the certified
+        # ones.
+        CI.draw_coherence(_rs_doc, slate_key=_slate, information_cut=_cut,
+                          source_artifacts={**_arts,
+                                            'run_status.json':
+                                                _digest(d / 'run_status.json')
+                                                if (d / 'run_status.json'
+                                                    ).exists() else ''}),
     ], slate_key=_slate, information_cut=_cut)
 
     g = GATE.evaluate(report, dossiers=dossiers, projection_digest=consumed,

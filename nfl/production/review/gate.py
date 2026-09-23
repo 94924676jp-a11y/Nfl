@@ -86,11 +86,22 @@ C_DUPLICATE_IDENTITY = 'DUPLICATE_PLAYER_IDENTITY'
 C_MISSING_ROW_IDS = 'MISSING_ROW_IDS'
 C_SIM_ROW_MISMATCH = 'SIMULATION_ROW_MISMATCH'
 C_CONSERVATION = 'OPPORTUNITY_CONSERVATION_FAILURE'
+#: RULED 2026-09-23. The conservation audit left open whether the consumer
+#: scope check gets its own code. It does: a room can conserve perfectly
+#: while the layer reading it reaches outside the set, the two failures need
+#: different repairs, and one code meaning two things is the defect the audit
+#: exists to prevent.
+C_CONSUMER_SCOPE = 'OPPORTUNITY_CONSUMER_OUT_OF_SCOPE'
+#: The second half of the split. It takes the word the producer ALREADY uses
+#: -- draw_coherence's own refusal is DRAW_COHERENCE_VIOLATED -- so the
+#: integrity code and the producer's refusal read the same.
+C_DRAW_COHERENCE = 'SIMULATION_DRAW_COHERENCE_VIOLATED'
 C_FORBIDDEN_INPUT = 'FORBIDDEN_EXTERNAL_INPUT_IN_PREDICTIVE_FEATURES'
 C_UNAVAILABLE_CLAIMED = 'UNAVAILABLE_EVIDENCE_CLAIMED_AS_MEASURED'
 C_INTEGRITY_COVERAGE_MISSING = 'INTEGRITY_COVERAGE_MISSING'
 GATE_CODES = (C_INACTIVE_IN_POOL, C_IDENTITY_UNRESOLVED, C_DUPLICATE_IDENTITY,
               C_MISSING_ROW_IDS, C_SIM_ROW_MISMATCH, C_CONSERVATION,
+              C_CONSUMER_SCOPE, C_DRAW_COHERENCE,
               C_FORBIDDEN_INPUT, C_UNAVAILABLE_CLAIMED)
 
 #: INTEGRITY CODES THIS GATE ADVERTISES, each with the subsystem that OWNS
@@ -128,6 +139,44 @@ ADVERTISED_INTEGRITY: Dict[str, Dict[str, str]] = {
                      'one MEASURED canonical axis'},
 }
 
+#: OBSERVED, NOT ADVERTISED. A producer runs on the production path and its
+#: verdict is carried in the gate payload, but the gate does NOT yet claim
+#: the invariant is guaranteed checked, so a NOT_CHECKED here does not block.
+#:
+#: WHY THE DISTINCTION EXISTS, AND WHY IT IS NOT A LOOPHOLE. Advertising a
+#: code changes what counts as a PUBLISHABLE ARTIFACT: an advertised
+#: invariant that is NOT_CHECKED blocks the slate. Measured on 2026-09-23,
+#: advertising SIMULATION_DRAW_COHERENCE_VIOLATED blocks every synthetic
+#: draw artifact in `test_review_enforcement` and `test_dfs_eligibility`,
+#: because the real checker returns DRAW_COHERENCE_NOT_EVALUABLE on a
+#: three-metric fixture with no QB layer -- the fixtures are not governed
+#: artifacts, and production's own sealed runs DO carry the verdict
+#: (confirmed against a real run_status: CHECKED_AND_PASSING over six
+#: components).
+#:
+#: So the blocker is not a missing producer. It is that promoting this code
+#: redefines publishability, which is a deliberate decision with a measured
+#: blast radius and belongs to the owner, not to a wiring slice. Until then
+#: a real VIOLATION still blocks -- the code is in BLOCKING_CODES and
+#: MATERIALITY_EXEMPT -- and only the "nobody checked" case is non-blocking.
+OBSERVED_INTEGRITY: Dict[str, Dict[str, str]] = {
+    C_DRAW_COHERENCE: {
+        'owner': IC.OWNER_SIMULATION,
+        'producer': 'conservation_integrity.draw_coherence',
+        'invariant': 'the final published draw matrices contain no '
+                     'football-impossible cell, AND the coherence '
+                     'certificate verifies that the arrays the check '
+                     'examined are the arrays that were sealed',
+        'runs_on': 'review.gated_projection.load, consuming the verdict the '
+                   'run stored whole in run_status.json',
+        'why_not_advertised': 'promoting it to ADVERTISED makes a run_status '
+                              'without a coherence verdict unpublishable. '
+                              'That is arguably correct and it is a change '
+                              'to publishability, not to wiring. Owner '
+                              'decision, with the blast radius measured '
+                              'above.'},
+}
+
 #: CODES THIS GATE HAS RELINQUISHED, and why. Each was declared BLOCKING with
 #: NO PRODUCER ANYWHERE -- the gate advertised a guarantee production never
 #: evaluated, and a clean gate record meant only that nobody had checked.
@@ -152,16 +201,45 @@ RELINQUISHED_CODES: Dict[str, Dict[str, str]] = {
         'returns_when': 'the identity layer emits a finding for an inactive '
                         'declaration that could not be attached to a '
                         'canonical id'},
+    # SPLIT 2026-09-23. This entry used to name TWO producers enforcing
+    # what were assumed to be one invariant. They are not the same invariant
+    # -- shares before the generator versus cells after it, and either can
+    # pass while the other fails -- so the simulation half is now its own
+    # advertised code above, with a producer that runs on the production
+    # path. What is left here is the allocation half, and it is left here
+    # for a reason that is NOT "nobody wrote the producer".
     C_CONSERVATION: {
         'owner': IC.OWNER_ALLOCATION,
         'enforced_today': 'allocation.assert_allocation_conserves runs in '
-                          'universe/run_chain.py, and '
-                          'draw_coherence.assert_draw_coherence runs in '
-                          'run_forecast.py',
-        'gap': 'both return their own Outcome and neither reaches this '
-               'gate, so the gate cannot say whether conservation held',
-        'returns_when': 'the allocation layer emits its verdict as an '
-                        'IntegrityReport fragment'},
+                          'universe/run_chain.py and its verdict is recorded '
+                          'per club-room in the chain result',
+        'gap': 'run_chain.py and run_forecast.py are SEPARATE ENTRY POINTS. '
+               'The chain\'s gate verdict has no path into run_status.json, '
+               'which is the artifact this gate re-derives its verdict from, '
+               'and the review layer does not hold the allocation rows, so '
+               'the check cannot be recomputed here either. The producer '
+               'EXISTS -- conservation_integrity.allocation_conserves -- and '
+               'reports NOT_CHECKED by name when handed no chain result, '
+               'which is what it is handed today.',
+        'returns_when': 'a chain result reaches the review directory, at '
+                        'which point the producer already consumes it'},
+    C_CONSUMER_SCOPE: {
+        'owner': IC.OWNER_ALLOCATION,
+        'enforced_today': 'the same function checks it, AFTER conservation '
+                          'and only when a consuming set was declared',
+        'gap': 'the same missing path: run_chain.py and run_forecast.py are '
+               'SEPARATE ENTRY POINTS, so the chain\'s gate verdict never '
+               'reaches run_status.json, and the producer '
+               'conservation_integrity.consumer_within_composition reports '
+               'NOT_CHECKED when handed no chain result. '
+               'Note additionally that conservation returns EARLY on '
+               'failure, so a run whose composition did not conserve never '
+               'evaluated scope at all; '
+               'conservation_integrity.consumer_within_composition reports '
+               'that as NOT_CHECKED rather than inferring a pass from a '
+               'different check\'s failure.',
+        'returns_when': 'the same chain result reaches the review '
+                        'directory'},
     C_FORBIDDEN_INPUT: {
         'owner': IC.OWNER_PROVENANCE,
         'enforced_today': 'pipeline.assert_no_postgame_inputs runs in '
@@ -217,6 +295,7 @@ BLOCKING_CODES: Dict[str, str] = {
     C_DUPLICATE_IDENTITY: 'integrity',
     C_MISSING_ROW_IDS: 'integrity',
     C_SIM_ROW_MISMATCH: 'integrity',
+    C_DRAW_COHERENCE: 'integrity',
     C_INACTIVE_IN_POOL: 'availability_integrity',
     # the gate's own: an advertised invariant nobody checked
     C_INTEGRITY_COVERAGE_MISSING: 'integrity',
@@ -237,6 +316,10 @@ MATERIALITY_EXEMPT = frozenset({
     C_DUPLICATE_IDENTITY, C_MISSING_ROW_IDS, C_SIM_ROW_MISMATCH,
     C_UNAVAILABLE_CLAIMED, C_INTEGRITY_COVERAGE_MISSING, C_INACTIVE_IN_POOL,
     AUD.C_INACTIVE_OWNS_OPPORTUNITY,
+    # An impossible draw cell corrupts every number computed off that
+    # matrix, so asking whether THIS component is material is the wrong
+    # question -- the same reason the row-axis codes are exempt.
+    C_DRAW_COHERENCE,
 })
 
 
@@ -684,8 +767,18 @@ def evaluate(report: Optional[Dict[str, Any]], *,
                          if integrity_report is None else
                          {c: integrity_report.state_of(c)
                           for c in sorted(ADVERTISED_INTEGRITY)}),
+            # Carried so a producer that RUNS is not invisible merely
+            # because the gate does not yet guarantee it. A NOT_CHECKED
+            # here does not block; a finding under the code still does.
+            'observed_coverage': (
+                {c: IC.NOT_CHECKED for c in OBSERVED_INTEGRITY}
+                if integrity_report is None else
+                {c: integrity_report.state_of(c)
+                 for c in sorted(OBSERVED_INTEGRITY)}),
             'advertised': {c: dict(v) for c, v in
                            sorted(ADVERTISED_INTEGRITY.items())},
+            'observed': {c: dict(v) for c, v in
+                         sorted(OBSERVED_INTEGRITY.items())},
             'relinquished': {c: dict(v) for c, v in
                              sorted(RELINQUISHED_CODES.items())},
             'n_findings': (0 if integrity_report is None
