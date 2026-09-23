@@ -33,7 +33,23 @@ which is why this file exists as an inventory rather than as a repair.
 
 ## Root causes, and the modules each explains
 
-### 1. Two sealed DET-BUF runs never produced a `board.json` — MISSING_ARTIFACT
+### 1. Two sealed DET-BUF runs never produced a `board.json` — ~~MISSING_ARTIFACT~~ **WRONG, CORRECTED 2026-09-23**
+
+**This classification was wrong and the evidence was in the runs' own status
+files.** See `LANE1_INVESTIGATIONS_2026-09-23.md` for the corrected finding:
+`fced077d0db6ab41` carries `status: REFUSED` with a named sealing refusal, so
+it never reached board generation; and
+`post_inactives_V1_CANDIDATE_R9_W1P_GA_OFFICIAL` is not a run directory at all
+but a derived zero-delta artifact whose own `WHAT_THIS_IS_NOT` field says
+reporting it as a board "would be the false green this project exists to
+refuse". Nothing is missing. The defect is in the discovery contract, which
+treats any directory holding `player_draws.npz` as a sealed board.
+Correct category: **EXPECTED_GOVERNANCE_FAILURE + TEST_BUG.**
+
+The original text follows, struck through, because a wrong classification that
+was acted on should stay visible.
+
+#### ~~Original (wrong)~~
 
 `post_inactives_V1_CANDIDATE/fced077d0db6ab41` and
 `post_inactives_V1_CANDIDATE_R9_W1P_GA_OFFICIAL` carry
@@ -87,7 +103,15 @@ this file."* A red test doing exactly its job.
 **Disposition:** leave red until the reproductions are fixed. Turning it green
 would be the defect.
 
-### 5. `test_stat_contract` — REAL_PRODUCTION_DEFECT, fence out of date
+### 5. `test_stat_contract` — REAL_PRODUCTION_DEFECT, **fence correctly held**
+
+**Refined 2026-09-23** by measurement, in
+`LANE1_INVESTIGATIONS_2026-09-23.md`: the +27,925 is five previously-unscanned
+PRE-REPAIR week-1 boards, not new corruption. All 39 affected runs are 2026
+week 1; every post-repair board has zero non-integer carry cells. The fence
+should NOT be moved — the repair is to the boards. Original text follows.
+
+#### ~~Original (said "move the fence")~~
 
 543,000 carry cells across 114 sealed runs; 243,766 non-integer (50.04%) is
 the fenced size and the measurement now returns **271,691**. The defect is
