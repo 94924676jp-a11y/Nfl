@@ -98,6 +98,39 @@ mode from the policy, and the orchestrator re-derives it in-process
 (`providers.resolve_mode`) before any provider call. Bypassing the workflow
 does not bypass the control.
 
+### Demonstrated, 2026-09-23
+
+**The refusal, at repository level.** A human asked for `LIVE` against the
+disarmed policy —
+[run 35820292738](https://github.com/94924676jp-a11y/Nfl/actions/runs/35820292738):
+
+```
+policy: autonomous_operation_enabled=no execution_mode=MOCK
+##[error]LIVE_NOT_AUTHORIZED: the protected policy says
+##[error]autonomous_operation_enabled=no and execution_mode=MOCK.
+```
+
+The `Orchestrate` step was **skipped**. The run never reached the
+orchestrator, let alone a provider.
+
+**LIVE semantics across three passes**, with `providers.SPY` recording what
+each pass *would* have sent, under an armed policy and with no payload
+supplying anything:
+
+```
+pass 1  WOULD CALL ANTHROPIC claude-opus-5 LIVE  [max_tokens, model, system]
+pass 2  WOULD CALL OPENAI    gpt-5.6-sol   LIVE  [max_completion_tokens, model, response_format]
+pass 3  WOULD CALL ANTHROPIC claude-opus-5 LIVE  [max_tokens, model, system]
+```
+
+**What is *not* yet demonstrated on GitHub**, and cannot be without spending:
+a LIVE continuation chain running on real runners. That needs the policy armed
+and real keys present, which is step 3 of this document. The three things
+separately proven — the event chain runs unattended on real runners, LIVE
+persists across three passes in-process, and an unarmed policy refuses on a
+real runner — are what makes arming it a reasonable next step rather than a
+leap.
+
 ---
 
 ## The two-level design, and the proof it works
