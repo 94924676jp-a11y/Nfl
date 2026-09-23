@@ -1,0 +1,68 @@
+{
+ "type": "object",
+ "required": [
+  "task_id",
+  "worker",
+  "transport",
+  "head_before",
+  "changed_paths",
+  "commands_run",
+  "tests",
+  "acceptance_criteria_results",
+  "uncertainties",
+  "refusals",
+  "governance_checks",
+  "result_status"
+ ],
+ "additionalProperties": true,
+ "properties": {
+  "task_id": {
+   "type": "string"
+  },
+  "worker": {
+   "type": "string"
+  },
+  "transport": {
+   "type": "string"
+  },
+  "head_before": {
+   "type": "string"
+  },
+  "changed_paths": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   }
+  },
+  "commands_run": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   }
+  },
+  "tests": {
+   "type": "array"
+  },
+  "acceptance_criteria_results": {
+   "type": "array"
+  },
+  "uncertainties": {
+   "type": "array"
+  },
+  "refusals": {
+   "type": "array"
+  },
+  "governance_checks": {
+   "type": "object"
+  },
+  "result_status": {
+   "type": "string",
+   "enum": [
+    "COMPLETED",
+    "PARTIAL",
+    "BLOCKED",
+    "REFUSED"
+   ]
+  }
+ }
+}
