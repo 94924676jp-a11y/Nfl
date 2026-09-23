@@ -11,6 +11,7 @@ from __future__ import annotations
 import json
 import pathlib
 import sys
+import tempfile
 
 _REPO = pathlib.Path(__file__).resolve().parents[2]
 if str(_REPO) not in sys.path:
@@ -19,6 +20,7 @@ if str(_REPO) not in sys.path:
 from nfl.production import conservation_integrity as CI               # noqa: E402
 from nfl.production.integrity import contract as IC                   # noqa: E402
 from nfl.production.review import gate as GATE                        # noqa: E402
+from nfl.production.universe import conservation_bridge as CB         # noqa: E402
 
 PASSED = FAILED = 0
 
@@ -230,24 +232,18 @@ def test_it_reads_a_real_sealed_run_status():
 
 # -- 3. the gate registry --------------------------------------------------
 def test_the_gate_advertises_only_what_has_a_producer():
-    ok(GATE.C_DRAW_COHERENCE in GATE.OBSERVED_INTEGRITY
-       and GATE.C_DRAW_COHERENCE not in GATE.ADVERTISED_INTEGRITY,
-       'the simulation half is OBSERVED, not yet ADVERTISED: its producer '
-       'runs on the production path, and promoting it would change what '
-       'counts as a publishable artifact')
-    ok(GATE.OBSERVED_INTEGRITY[GATE.C_DRAW_COHERENCE]['producer']
+    ok(GATE.C_DRAW_COHERENCE in GATE.ADVERTISED_INTEGRITY
+       and GATE.C_DRAW_COHERENCE not in GATE.OBSERVED_INTEGRITY,
+       'PROMOTED 2026-09-23: for a governed publishable simulation artifact '
+       'draw coherence is a required invariant, so it is advertised')
+    ok(GATE.ADVERTISED_INTEGRITY[GATE.C_DRAW_COHERENCE]['producer']
        == CI.PRODUCER_COHERENCE,
        'naming this module')
-    ok('blast radius' in
-       GATE.OBSERVED_INTEGRITY[GATE.C_DRAW_COHERENCE]['why_not_advertised'],
-       'with the reason recorded as an owner decision, not as an absent '
-       'producer')
     ok(not (set(GATE.OBSERVED_INTEGRITY) & set(GATE.ADVERTISED_INTEGRITY)),
-       'and the two registries are disjoint, so no code is both guaranteed '
-       'and merely observed')
+       'the two registries are disjoint, so no code is both guaranteed and '
+       'merely observed')
     ok(GATE.C_DRAW_COHERENCE in GATE.BLOCKING_CODES,
-       'a real VIOLATION still blocks -- only the nobody-checked case is '
-       'non-blocking')
+       'and it blocks')
     ok(GATE.C_DRAW_COHERENCE in GATE.MATERIALITY_EXEMPT,
        'whatever its magnitude -- an impossible cell corrupts every number '
        'computed off that matrix')
@@ -273,7 +269,7 @@ def test_the_gate_no_longer_claims_one_code_for_two_invariants():
     ok('draw_coherence.assert_draw_coherence' not in entry['enforced_today'],
        'OPPORTUNITY_CONSERVATION_FAILURE no longer names the draw-coherence '
        'producer: that invariant has its own code now')
-    ok(GATE.OBSERVED_INTEGRITY[GATE.C_DRAW_COHERENCE]['owner']
+    ok(GATE.ADVERTISED_INTEGRITY[GATE.C_DRAW_COHERENCE]['owner']
        != GATE.RELINQUISHED_CODES[GATE.C_CONSERVATION]['owner'],
        'and the two carry different owners -- simulation artifact against '
        'opportunity allocation')
@@ -292,6 +288,198 @@ def test_compose_still_refuses_a_code_claimed_twice():
            'by name')
 
 
+# -- 4. applicability -------------------------------------------------------
+def test_an_artifact_that_claims_to_be_a_simulation_is_applicable():
+    """The rule the owner ruling turns on: an absent array does not buy
+    NOT_APPLICABLE. A full NFL simulation carrying no quarterback row is a
+    DEFECTIVE simulation, not one the invariant does not apply to."""
+    ap = CI.simulation_applicability({'layers': {'receiving': {}}})
+    ok(ap.state == IC.APPLICABLE_AND_CHECKED,
+       f'an artifact with draw layers but no qb layer is APPLICABLE: '
+       f'{ap.state}')
+    ap2 = CI.simulation_applicability(None)
+    ok(ap2.state == IC.APPLICABLE_AND_CHECKED,
+       f'and so is one that declared nothing at all -- silence fails '
+       f'closed: {ap2.state}')
+    ap3 = CI.simulation_applicability({'layers': {'qb': {}}},
+                                      simulation_artifact_declared=False)
+    ok(ap3.state == IC.APPLICABLE_AND_CHECKED,
+       'a negative declaration CONTRADICTED by draw layers loses -- the '
+       'artifact wins over the claim about it')
+    ok('artifact contradicts the declaration' in ap3.why,
+       'and says so')
+
+
+def test_applicable_but_unchecked_blocks():
+    """RETURN ITEM 4. A governed simulation artifact whose run stored no
+    coherence verdict must block, not pass."""
+    c = cov(CI.draw_coherence({}, manifest={'layers': {'qb': {}}}),
+            CI.C_DRAW_COHERENCE)
+    ok(c.applicability == IC.APPLICABLE_BUT_NOT_CHECKED,
+       f'the applicability is APPLICABLE_BUT_NOT_CHECKED: {c.applicability}')
+    ok(c.state == IC.NOT_CHECKED,
+       f'which maps to the blocking coverage state: {c.state}')
+    ok('APPLIED AND NOBODY EVALUATED IT' in (c.detail or ''),
+       'and says exactly that')
+    rep = IC.IntegrityReport(coverage=[c])
+    o = GATE.assert_producer_coverage(rep)
+    ok(o.state.name == 'FAIL'
+       and o.code == GATE.C_INTEGRITY_COVERAGE_MISSING,
+       f'and the coverage gate REFUSES: {o.code}')
+    ok(GATE.C_DRAW_COHERENCE in str(o.detail),
+       'naming the invariant nobody evaluated')
+
+
+def test_not_applicable_requires_evidence():
+    """RETURN ITEM 5. NOT_APPLICABLE is the only state that buys silence, so
+    it is the only one that has to prove itself."""
+    try:
+        IC.inapplicable('there is no simulation here, trust me')
+        ok(False, 'an unevidenced NOT_APPLICABLE should be refused')
+    except AssertionError as e:
+        ok('requires EVIDENCE' in str(e),
+           'constructing NOT_APPLICABLE without evidence is refused by name')
+    ap = CI.simulation_applicability({'layers': {}},
+                                     simulation_artifact_declared=False)
+    ok(ap.state == IC.NOT_APPLICABLE and ap.evidence.get(
+        'declared_simulation_artifact') is False,
+       f'a negative declaration WITH no contradicting layers is '
+       f'NOT_APPLICABLE, carrying the declaration as its evidence: '
+       f'{ap.evidence}')
+    # and the gate refuses a coverage row that claims it unproven
+    bare = IC.InvariantCoverage(
+        code=GATE.C_DRAW_COHERENCE, owner=IC.OWNER_SIMULATION,
+        state=IC.NOT_APPLICABLE, producer='x', producer_version='y',
+        detail='nothing to see here')
+    o = GATE.assert_producer_coverage(IC.IntegrityReport(coverage=[bare]))
+    ok(o.state.name == 'FAIL',
+       f'and a coverage row claiming NOT_APPLICABLE with no evidence is '
+       f'refused by the gate: {o.code}')
+    ok('absent array is not evidence' in o.detail,
+       'with the rule stated')
+    ok(IC.assert_not_applicable_is_evidenced(
+        IC.IntegrityReport(coverage=[bare]), [GATE.C_DRAW_COHERENCE])
+       == (GATE.C_DRAW_COHERENCE,),
+       'and the unproven code is NAMED, not counted')
+
+
+def test_every_advertised_producer_evidences_its_not_applicable():
+    """The five producers that can report NOT_APPLICABLE all now prove it.
+    Retrofitted with the promotion, because the rule is not about one code."""
+    from nfl.dfs import eligibility_integrity as EI
+    from nfl.production import simulation_integrity as SI
+    from nfl.production.state import identity_integrity as II
+    from nfl.production.review import provenance_integrity as PI
+    for label, rep in (
+            ('dfs eligibility', EI.will_not_play_in_dfs_populations()),
+            ('missing row ids', SI.missing_row_ids({})),
+            ('row mismatch', SI.simulation_row_mismatch({}, {})),
+            ('duplicate identity', II.duplicate_player_identity([])),
+            ('provenance', PI.unavailable_claimed_as_measured([object()]))):
+        c = rep.coverage[0]
+        ok(c.state == IC.NOT_APPLICABLE and bool(c.applicability_evidence),
+           f'{label}: NOT_APPLICABLE carrying evidence '
+           f'{sorted(c.applicability_evidence)}')
+
+
+# -- 5. the chain -> review bridge -----------------------------------------
+def test_the_bridge_transports_the_verdict_with_its_offending_rows():
+    chain = {'game_id': 'G1', 'cut': 'CUT1', 'layers': {'allocation': {
+        'targets': {'gate': {'code': CI.ALLOC_CONSERVES, 'state': 'PASS'}},
+        'carries': {'gate': {'code': CI.ALLOC_FAILS, 'state': 'FAIL',
+                             'offending': [{'club': 'SF',
+                                            'kind': 'COMPOSITION_NOT_UNIT',
+                                            'sum': 0.98}]}}}}}
+    with tempfile.TemporaryDirectory() as td:
+        w = CB.write(chain, td, slate_key='G1')
+        ok(w.state.name == 'PASS' and w.code == CB.CODE_WRITTEN,
+           f'the chain verdict is written: {w.code}')
+        r = CB.read(td, slate_key='G1')
+        ok(r.state.name == 'PASS', f'and read back: {r.code}')
+        rep = CI.allocation_conserves(r.value)
+        c = cov(rep, CI.C_CONSERVATION)
+        ok(c.state == IC.CHECKED_AND_FAILING,
+           f'the producer reads the transported verdict to a real finding: '
+           f'{c.state}')
+        ok(rep.findings[0].subject == 'SF',
+           f'with the offending club carried across the bridge intact: '
+           f'{rep.findings[0].subject}')
+        ok(rep.findings[0].producer_version == CI.SPEC_VERSION
+           and rep.findings[0].producer == CI.PRODUCER_CONSERVATION,
+           'and the producer and version survive the crossing')
+
+
+def test_a_bridge_that_fails_its_own_certificate_blocks():
+    chain = {'game_id': 'G1', 'layers': {'allocation': {
+        'targets': {'gate': {'code': CI.ALLOC_CONSERVES, 'state': 'PASS'}}}}}
+    with tempfile.TemporaryDirectory() as td:
+        CB.write(chain, td, slate_key='G1')
+        p = pathlib.Path(td) / CB.FILENAME
+        doc = json.loads(p.read_text())
+        doc['rooms']['targets']['code'] = CI.ALLOC_FAILS
+        p.write_text(json.dumps(doc))
+        r = CB.read(td, slate_key='G1')
+        ok(r.state.name == 'FAIL'
+           and r.code == CB.CODE_CERTIFICATE_MISMATCH,
+           f'editing the verdict without re-certifying is caught: {r.code}')
+        ok('come apart' in r.detail,
+           'and named as the verdict and its composition having come apart')
+        ok(cov(CI.allocation_conserves(None),
+               CI.C_CONSERVATION).state == IC.NOT_CHECKED,
+           'and a refused bridge means the producer is handed nothing, so '
+           'the invariant is NOT_CHECKED -- never a pass')
+
+
+def test_a_bridge_from_another_slate_certifies_nothing():
+    chain = {'game_id': 'G1', 'layers': {'allocation': {
+        'targets': {'gate': {'code': CI.ALLOC_CONSERVES, 'state': 'PASS'}}}}}
+    with tempfile.TemporaryDirectory() as td:
+        CB.write(chain, td, slate_key='G1')
+        r = CB.read(td, slate_key='G2')
+        ok(r.state.name == 'FAIL' and r.code == CB.CODE_SLATE_MISMATCH,
+           f'a verdict about another slate is refused: {r.code}')
+    with tempfile.TemporaryDirectory() as td:
+        ok(CB.read(td).code == CB.CODE_ABSENT,
+           'and an absent bridge is BLOCKED by name, not silently empty')
+        ok(CB.write({'layers': {'allocation': {}}}, td).code == CB.CODE_EMPTY,
+           'as is a chain result with no club-room verdict to transport')
+
+
+def test_the_bridge_does_not_duplicate_ownership():
+    ok(CB.PRODUCER == 'universe.allocation.assert_allocation_conserves',
+       f'the bridge names the ORIGINAL producer as the owner of the '
+       f'verdict it carries: {CB.PRODUCER}')
+    ok(CB.PRODUCER != CI.PRODUCER_CONSERVATION,
+       'which is not the integrity producer -- the bridge transports a '
+       'verdict, it does not author one')
+    src = pathlib.Path(_REPO / 'nfl/production/universe'
+                       / 'conservation_bridge.py').read_text()
+    for banned in ('share_renormalised', 'assert_allocation_conserves('):
+        ok(banned not in src,
+           f'and it recomputes nothing: no {banned!r} in the carrier')
+
+
+def test_the_allocation_codes_are_still_relinquished_and_why():
+    """The bridge is built and wired. It is not yet production-REACHABLE,
+    and the reason is measurable rather than a matter of opinion."""
+    import subprocess
+    out = subprocess.run(
+        ['grep', '-rln', 'run_chain', '--include=*.py', '--include=*.yml',
+         str(_REPO / 'nfl'), str(_REPO / '.github')],
+        capture_output=True, text=True).stdout.split()
+    callers = [f for f in out
+               if not f.endswith(('run_chain.py', 'conservation_bridge.py',
+                                  'conservation_integrity.py', 'gate.py',
+                                  'test_conservation_integrity.py'))]
+    ok(not callers,
+       f'run_chain.run has no orchestrating caller, so nothing places a '
+       f'bridge artifact beside a forecast review: {callers}')
+    for code in (GATE.C_CONSERVATION, GATE.C_CONSUMER_SCOPE):
+        ok(code in GATE.RELINQUISHED_CODES,
+           f'{code} therefore stays RELINQUISHED -- advertising it would '
+           f'claim a guarantee that depends on a path nothing walks')
+
+
 def main():
     for t in (test_the_two_allocation_invariants_do_not_share_a_code,
               test_a_scope_failure_is_not_a_conservation_failure,
@@ -305,7 +493,16 @@ def main():
               test_it_reads_a_real_sealed_run_status,
               test_the_gate_advertises_only_what_has_a_producer,
               test_the_gate_no_longer_claims_one_code_for_two_invariants,
-              test_compose_still_refuses_a_code_claimed_twice):
+              test_compose_still_refuses_a_code_claimed_twice,
+              test_an_artifact_that_claims_to_be_a_simulation_is_applicable,
+              test_applicable_but_unchecked_blocks,
+              test_not_applicable_requires_evidence,
+              test_every_advertised_producer_evidences_its_not_applicable,
+              test_the_bridge_transports_the_verdict_with_its_offending_rows,
+              test_a_bridge_that_fails_its_own_certificate_blocks,
+              test_a_bridge_from_another_slate_certifies_nothing,
+              test_the_bridge_does_not_duplicate_ownership,
+              test_the_allocation_codes_are_still_relinquished_and_why):
         print(f'== {t.__name__}')
         t()
     print(f'\nPASSED {PASSED} FAILED {FAILED}')

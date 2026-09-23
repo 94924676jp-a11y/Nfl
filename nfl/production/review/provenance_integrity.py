@@ -48,7 +48,9 @@ def unavailable_claimed_as_measured(dossiers: Sequence[Any], *,
             why=f'none of the {len(dossiers)} dossier(s) carries canonical '
                 f'evidence provenance, so there is no grade to compare a '
                 f'claim against. Reporting that as passing would be the hole '
-                f'this producer exists to close.')
+                f'this producer exists to close.',
+            n_dossiers_supplied=len(dossiers),
+            n_with_evidence_provenance=len(usable))
     findings = []
     for d in usable:
         claimed = sorted(c for c, comp in d.projection.items()

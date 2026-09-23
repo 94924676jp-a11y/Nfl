@@ -213,6 +213,7 @@ def load(draws_dir, review_dir, *, optimizer_pool_ids=None,
     from nfl.production import simulation_integrity as SI
     from nfl.production.review import provenance_integrity as PI
     from nfl.production import conservation_integrity as CI
+    from nfl.production.universe import conservation_bridge as CB
     from nfl.dfs import eligibility_integrity as EI
 
     man = json.loads(man_p.read_text())
@@ -234,6 +235,11 @@ def load(draws_dir, review_dir, *, optimizer_pool_ids=None,
              'player_draws_manifest.json': _digest(man_p)}
     _cut = report.get('information_cut')
     _slate = report.get('slate_key')
+    _bridge = CB.read(rd, slate_key=_slate)
+    _chain = _bridge.value if _bridge.state.name == 'PASS' else None
+    _bridge_arts = dict((_chain or {}).get('source_artifacts') or {})
+    if _chain and _chain.get('certificate'):
+        _bridge_arts['CONSERVATION_BRIDGE.json'] = _chain['certificate']
     integrity = IC.IntegrityReport.compose([
         II.duplicate_player_identity(
             dossiers, slate_key=_slate, information_cut=_cut,
@@ -260,7 +266,27 @@ def load(draws_dir, review_dir, *, optimizer_pool_ids=None,
         # producer also refuses to treat a stored PASS as passing unless the
         # coherence certificate verifies the sealed arrays are the certified
         # ones.
-        CI.draw_coherence(_rs_doc, slate_key=_slate, information_cut=_cut,
+        # THE MANIFEST DECIDES APPLICABILITY, NOT THE ABSENCE OF AN ARRAY.
+        # A governed artifact that carries draw layers contains a simulation
+        # population, so a missing coherence verdict is APPLICABLE_BUT_NOT_
+        # CHECKED and blocks. NOT_APPLICABLE needs an explicit negative
+        # declaration, which a gated projection load never makes: it is
+        # loading a simulation artifact by definition.
+        # THE CHAIN'S CONSERVATION VERDICT, TRANSPORTED RATHER THAN
+        # RECOMPUTED. The review layer does not hold the allocation rows,
+        # and a producer that recomputed from partial inputs would be a
+        # second implementation of the invariant. A bridge whose certificate
+        # does not verify is NOT read: `_chain` stays None and both
+        # producers report NOT_CHECKED, which is the honest answer to "a
+        # document arrived and it does not hash to itself".
+        CI.allocation_conserves(_chain, slate_key=_slate,
+                                information_cut=_cut,
+                                source_artifacts=_bridge_arts),
+        CI.consumer_within_composition(_chain, slate_key=_slate,
+                                       information_cut=_cut,
+                                       source_artifacts=_bridge_arts),
+        CI.draw_coherence(_rs_doc, manifest=man,
+                          slate_key=_slate, information_cut=_cut,
                           source_artifacts={**_arts,
                                             'run_status.json':
                                                 _digest(d / 'run_status.json')

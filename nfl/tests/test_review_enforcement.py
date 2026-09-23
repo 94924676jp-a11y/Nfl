@@ -43,6 +43,8 @@ from nfl.production.review import gated_projection as GP           # noqa: E402
 from nfl.production.review import slate_report as SR               # noqa: E402
 from nfl.production.universe import depth_role as DR               # noqa: E402
 
+from nfl.tests import governed_draws as GD   # noqa: E402
+
 PASSED = FAILED = 0
 CUT = '2026-09-21T23:05:00Z'
 GAME = '2026_02_NYG_LA'
@@ -106,6 +108,15 @@ def write_draws(d: pathlib.Path, per_player, n=64, seed=20260922,
          'n_matrices': len(arrays), 'layers': layers,
          'arrays': {k.replace('__', '/', 1): {'shape': list(v.shape)}
                     for k, v in arrays.items()}}, indent=1))
+    # THIS IS A GOVERNED SIMULATION ARTIFACT, SO IT CARRIES A COHERENCE
+    # VERDICT. Before 2026-09-23 it wrote a two-key run_status and no
+    # quarterback layer, and when SIMULATION_DRAW_COHERENCE_VIOLATED became
+    # an advertised invariant every load over it blocked. The owner ruling
+    # was to repair the fixture rather than the rule: `governed_draws.attach`
+    # adds the QB layer the real checker needs and records the REAL verdict
+    # of the REAL checker and certifier. No verdict is asserted here.
+    if run_status is not None:
+        GD.attach(d, seed=seed)
     return hashlib.sha256((d / 'player_draws.npz').read_bytes()).hexdigest()
 
 

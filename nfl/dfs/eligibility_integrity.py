@@ -164,14 +164,22 @@ def will_not_play_in_dfs_populations(
                 'optimizer pool nor a simulation row axis -- so there is no '
                 'membership to check. A gated projection load reaches this '
                 'point before any pool exists, and reporting that as passing '
-                'would claim a check nobody ran.')
+                'would claim a check nobody ran.',
+            pool_players_supplied=pool_players is not None,
+            simulation_layers_supplied=simulation_layers is not None,
+            n_availability_rows=len(avail))
     if not avail:
         return IC.not_applicable(
             C_INACTIVE_IN_POOL, owner=IC.OWNER_ELIGIBILITY, producer=PRODUCER,
             version=SPEC_VERSION,
             why='no canonical availability was supplied for any player, so '
                 'membership cannot be judged against football truth. An '
-                'unjudged population is not a clean one.')
+                'unjudged population is not a clean one.',
+            pool_players_supplied=pool_players is not None,
+            n_pool_players=(len(pool_players)
+                            if pool_players is not None else None),
+            simulation_layers_supplied=simulation_layers is not None,
+            n_with_canonical_availability=0)
 
     out_ids = {pid for pid, v in avail.items()
                if AV.will_not_play(v.get('availability'))}

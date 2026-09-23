@@ -54,6 +54,22 @@ def load(td):
     return draws, rdir
 
 
+def repoint(rdir, npz_sha256):
+    """Point the review report at the artifact as it now stands.
+
+    Corrupting the npz changes its digest, and `PLAYER_REVIEW_STALE` fires
+    FIRST -- correctly, because a review of different bytes is not a review
+    of these. That protection would mask every downstream check, so these
+    tests re-point the report to simulate the case the coherence invariant
+    actually guards: a run that reviewed THIS artifact and sealed it anyway.
+    """
+    rp = pathlib.Path(rdir) / 'slate_review_report.json'
+    rep = json.loads(rp.read_text())
+    rep.setdefault('projection_source', {}).setdefault('digests', {})[
+        'player_draws.npz'] = npz_sha256
+    rp.write_text(json.dumps(rep, indent=1))
+
+
 def corrupt_and_load(corrupt):
     """Build a clean slate, corrupt it, and run the production gate path."""
     with tempfile.TemporaryDirectory() as td:
@@ -255,6 +271,83 @@ def test_an_empty_population_is_not_applicable_not_passing():
 
 
 # -- 4. the governance test -------------------------------------------------
+def test_an_impossible_draw_cell_blocks_end_to_end():
+    """A GOVERNED artifact whose published draws carry a football-impossible
+    cell must stop publication through `gated_projection.load`.
+
+    The corruption is the one that actually happened: more completions than
+    attempts, which 101 sealed artifacts carried in 5,278 cells while
+    reporting QB_DRAW_ACCOUNTING_HOLDS. The fixture runs the REAL checker
+    over the corrupted arrays and records whatever it says, so this test
+    fails if the checker ever stops catching it.
+    """
+    import governed_draws as GD
+    with tempfile.TemporaryDirectory() as td:
+        draws, rdir = load(td)
+        clean = _val(GP.load(draws, rdir))
+        ok(clean['integrity']['coverage'][GATE.C_DRAW_COHERENCE]
+           == IC.CHECKED_AND_PASSING,
+           f'the repaired fixture is a governed artifact and its coherence '
+           f'is CHECKED_AND_PASSING: '
+           f'{clean["integrity"]["coverage"][GATE.C_DRAW_COHERENCE]}')
+        r = GD.attach(draws, seed=5, corrupt=True)
+        ok(r['coherence_code'] == 'DRAW_COHERENCE_VIOLATED',
+           f'the real checker catches the corrupted cell: '
+           f'{r["coherence_code"]}')
+        repoint(rdir, r['npz_sha256'])
+        after = GP.load(draws, rdir)
+        v = _val(after)
+        codes, it = finding_codes(v)
+        ok(after.state.name != 'PASS' or v.get('verdict') == GATE.BLOCKED,
+           f'and publication STOPS: {after.code} / {v.get("verdict")}')
+        ok(it.get('coverage', {}).get(GATE.C_DRAW_COHERENCE)
+           == IC.CHECKED_AND_FAILING,
+           f'with coherence CHECKED_AND_FAILING: '
+           f'{it.get("coverage", {}).get(GATE.C_DRAW_COHERENCE)}')
+        ok(GATE.C_DRAW_COHERENCE in codes,
+           f'and the blocking conflict carries the coherence code: {codes}')
+
+
+def test_a_coherence_pass_on_overwritten_arrays_blocks_end_to_end():
+    """The 8c81079 failure: the guard ran, then the values it guarded were
+    replaced. Coherence HOLDS and the certificate does not verify."""
+    import governed_draws as GD
+    with tempfile.TemporaryDirectory() as td:
+        draws, rdir = load(td)
+        r = GD.attach(draws, seed=5, certificate_valid=False)
+        ok(r['coherence_code'] == 'DRAW_COHERENCE_HOLDS'
+           and r['certificate_code'] != 'COHERENCE_CERTIFICATE_VERIFIED',
+           f'coherence holds and the certificate does NOT verify: '
+           f'{r["coherence_code"]} / {r["certificate_code"]}')
+        repoint(rdir, r['npz_sha256'])
+        v = _val(GP.load(draws, rdir))
+        st = (v.get('integrity') or {}).get('coverage', {}).get(
+            GATE.C_DRAW_COHERENCE)
+        ok(st in (IC.NOT_CHECKED, None),
+           f'and the gate does NOT count that as a passing check: {st}')
+
+
+def test_a_governed_artifact_with_no_verdict_blocks_end_to_end():
+    """RETURN ITEM 4, end to end. Strip the verdict the run stored and the
+    slate must refuse, because the invariant applied and nobody evaluated
+    it."""
+    import governed_draws as GD
+    with tempfile.TemporaryDirectory() as td:
+        draws, rdir = load(td)
+        ok(_val(GP.load(draws, rdir))['verdict'] != GATE.BLOCKED,
+           'the governed fixture publishes before the verdict is removed')
+        r = GD.attach(draws, seed=5, omit_coherence_verdict=True)
+        repoint(rdir, r['npz_sha256'])
+        after = GP.load(draws, rdir)
+        v = _val(after)
+        st = (v.get('integrity') or {}).get('coverage', {}).get(
+            GATE.C_DRAW_COHERENCE)
+        ok(after.state.name != 'PASS' or v.get('verdict') == GATE.BLOCKED
+           or st == IC.NOT_CHECKED,
+           f'removing the stored verdict stops it: {after.code}, coverage '
+           f'{st}')
+
+
 def test_every_advertised_blocking_integrity_code_has_a_producer():
     """A. a reachable production producer, B. explicit NOT_APPLICABLE, or
     C. removal from the registry.
@@ -387,6 +480,9 @@ def main():
               test_a_measured_claim_on_unmeasured_evidence_blocks,
               test_not_checked_is_not_a_pass,
               test_an_empty_population_is_not_applicable_not_passing,
+              test_an_impossible_draw_cell_blocks_end_to_end,
+              test_a_coherence_pass_on_overwritten_arrays_blocks_end_to_end,
+              test_a_governed_artifact_with_no_verdict_blocks_end_to_end,
               test_every_advertised_blocking_integrity_code_has_a_producer,
               test_a_relinquished_code_still_blocks_if_it_ever_arrives,
               test_the_producers_live_with_their_subsystems_not_in_the_gate,

@@ -49,7 +49,9 @@ def duplicate_player_identity(population: Sequence[Any], *,
             why=f'the governed population carries no canonical id at all '
                 f'({len(ids)} {what}(s) supplied), so there is nothing to '
                 f'check for duplication. An empty check is not a passing '
-                f'one.')
+                f'one.',
+            subject_kind=what, n_subjects_supplied=len(ids),
+            n_with_canonical_id=len(named))
     counts = collections.Counter(named)
     dupes = {k: v for k, v in counts.items() if v > 1}
     findings = [

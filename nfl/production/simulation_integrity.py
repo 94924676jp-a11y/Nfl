@@ -60,7 +60,9 @@ def missing_row_ids(manifest: Dict[str, Any], *, slate_key: str = None,
             producer=PRODUCER_ROWS, version=SPEC_VERSION,
             why='the manifest declares no layers, so there is no row axis to '
                 'check. An artifact with no layers is a different failure '
-                'and is not this invariant.')
+                'and is not this invariant.',
+            n_layers_declared=0,
+            manifest_keys=sorted((manifest or {}).keys()))
     findings = []
     for name in sorted(layers):
         ids = (layers[name] or {}).get('row_ids')
@@ -97,7 +99,9 @@ def simulation_row_mismatch(manifest: Dict[str, Any], arrays: Dict[str, Any],
             C_SIM_ROW_MISMATCH, owner=IC.OWNER_SIMULATION,
             producer=PRODUCER_MISMATCH, version=SPEC_VERSION,
             why='no layers or no arrays were supplied, so there are no two '
-                'things to disagree.')
+                'things to disagree.',
+            n_layers_declared=len(layers or {}),
+            n_arrays_supplied=len(arrays or {}))
     findings, checked = [], 0
     for name in sorted(layers):
         ids = (layers[name] or {}).get('row_ids') or []
@@ -126,7 +130,12 @@ def simulation_row_mismatch(manifest: Dict[str, Any], arrays: Dict[str, Any],
             C_SIM_ROW_MISMATCH, owner=IC.OWNER_SIMULATION,
             producer=PRODUCER_MISMATCH, version=SPEC_VERSION,
             why='no layer carried both a row axis and an array, so no pair '
-                'could be compared.')
+                'could be compared.',
+            n_layers_declared=len(layers or {}),
+            layers_with_row_ids=sorted(
+                n for n in (layers or {})
+                if (layers[n] or {}).get('row_ids')),
+            array_keys=sorted(arrays or {}))
     return IC.finding_report(
         C_SIM_ROW_MISMATCH, owner=IC.OWNER_SIMULATION,
         producer=PRODUCER_MISMATCH, version=SPEC_VERSION, findings=findings,

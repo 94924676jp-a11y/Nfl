@@ -137,6 +137,18 @@ ADVERTISED_INTEGRITY: Dict[str, Dict[str, str]] = {
                     'unavailable_claimed_as_measured',
         'invariant': 'a component published as MEASURED rests on at least '
                      'one MEASURED canonical axis'},
+    # PROMOTED 2026-09-23 by owner ruling. For a governed publishable
+    # simulation artifact draw coherence is REQUIRED, and a missing
+    # evaluation may not be treated as equivalent to a pass. Promotion
+    # blocked two synthetic fixtures; both were fixture defects, and both
+    # were repaired rather than grandfathered into publishability.
+    C_DRAW_COHERENCE: {
+        'owner': IC.OWNER_SIMULATION,
+        'producer': 'conservation_integrity.draw_coherence',
+        'invariant': 'the final published draw matrices contain no '
+                     'football-impossible cell, AND the coherence '
+                     'certificate verifies that the arrays the check '
+                     'examined are the arrays that were sealed'},
 }
 
 #: OBSERVED, NOT ADVERTISED. A producer runs on the production path and its
@@ -159,23 +171,18 @@ ADVERTISED_INTEGRITY: Dict[str, Dict[str, str]] = {
 #: blast radius and belongs to the owner, not to a wiring slice. Until then
 #: a real VIOLATION still blocks -- the code is in BLOCKING_CODES and
 #: MATERIALITY_EXEMPT -- and only the "nobody checked" case is non-blocking.
-OBSERVED_INTEGRITY: Dict[str, Dict[str, str]] = {
-    C_DRAW_COHERENCE: {
-        'owner': IC.OWNER_SIMULATION,
-        'producer': 'conservation_integrity.draw_coherence',
-        'invariant': 'the final published draw matrices contain no '
-                     'football-impossible cell, AND the coherence '
-                     'certificate verifies that the arrays the check '
-                     'examined are the arrays that were sealed',
-        'runs_on': 'review.gated_projection.load, consuming the verdict the '
-                   'run stored whole in run_status.json',
-        'why_not_advertised': 'promoting it to ADVERTISED makes a run_status '
-                              'without a coherence verdict unpublishable. '
-                              'That is arguably correct and it is a change '
-                              'to publishability, not to wiring. Owner '
-                              'decision, with the blast radius measured '
-                              'above.'},
-}
+#:
+#: EMPTY AS OF 2026-09-23, AND THAT IS THE POINT. This registry held
+#: SIMULATION_DRAW_COHERENCE_VIOLATED for exactly one commit, while the
+#: question "does promoting this change what counts as publishable?" went to
+#: the owner. It did; the owner promoted it; the two fixtures it blocked were
+#: fixture defects and were repaired rather than grandfathered. The registry
+#: stays so the next such question has an honest place to sit instead of
+#: being settled by whoever happens to be writing the wiring commit. It must
+#: never become a parking space: `test_integrity_producers` holds an observed
+#: code to the same evidence bar as an advertised one, plus a recorded reason
+#: for the distinction.
+OBSERVED_INTEGRITY: Dict[str, Dict[str, str]] = {}
 
 #: CODES THIS GATE HAS RELINQUISHED, and why. Each was declared BLOCKING with
 #: NO PRODUCER ANYWHERE -- the gate advertised a guarantee production never
@@ -221,8 +228,17 @@ RELINQUISHED_CODES: Dict[str, Dict[str, str]] = {
                'EXISTS -- conservation_integrity.allocation_conserves -- and '
                'reports NOT_CHECKED by name when handed no chain result, '
                'which is what it is handed today.',
-        'returns_when': 'a chain result reaches the review directory, at '
-                        'which point the producer already consumes it'},
+        'returns_when': 'an orchestrator runs the chain for the slate the '
+                        'forecast reviewed and writes the bridge beside its '
+                        'review. The CARRIER now exists and is wired: '
+                        'universe.conservation_bridge writes a certified '
+                        'document, gated_projection reads and verifies it, '
+                        'and both producers consume it. What is missing is '
+                        'measurable rather than arguable -- run_chain.run '
+                        'has NO caller in this repository outside its own '
+                        'CLI, so nothing places a bridge beside a forecast '
+                        'review, and test_conservation_integrity asserts '
+                        'that absence rather than describing it.'},
     C_CONSUMER_SCOPE: {
         'owner': IC.OWNER_ALLOCATION,
         'enforced_today': 'the same function checks it, AFTER conservation '
@@ -238,8 +254,9 @@ RELINQUISHED_CODES: Dict[str, Dict[str, str]] = {
                'conservation_integrity.consumer_within_composition reports '
                'that as NOT_CHECKED rather than inferring a pass from a '
                'different check\'s failure.',
-        'returns_when': 'the same chain result reaches the review '
-                        'directory'},
+        'returns_when': 'the same orchestration. The carrier and the '
+                        'producer both exist and run; nothing runs the '
+                        'chain for a forecast slate.'},
     C_FORBIDDEN_INPUT: {
         'owner': IC.OWNER_PROVENANCE,
         'enforced_today': 'pipeline.assert_no_postgame_inputs runs in '
@@ -603,6 +620,21 @@ def assert_producer_coverage(integrity_report) -> Outcome:
             f'NOT_CHECKED: {sorted(ADVERTISED_INTEGRITY)}. Absence of a '
             f'finding is not a passing check.',
             value={'not_checked': sorted(ADVERTISED_INTEGRITY)})
+    # NOT_APPLICABLE WITHOUT EVIDENCE IS A FIFTH STATE PRETENDING TO BE THE
+    # FOURTH. It is the only coverage state that lets a slate publish without
+    # the invariant being evaluated, so it is the only one that has to prove
+    # itself. A producer claiming it unproven has not established anything;
+    # it has declined to be checked.
+    unproven = IC.assert_not_applicable_is_evidenced(
+        integrity_report, sorted(ADVERTISED_INTEGRITY))
+    if unproven:
+        return Outcome.fail(
+            C_INTEGRITY_COVERAGE_MISSING,
+            f'{len(unproven)} advertised invariant(s) claim NOT_APPLICABLE '
+            f'without evidence that the governed artifact lacks the '
+            f'population they are about: {list(unproven)}. An absent array '
+            f'is not evidence; a declaration is.',
+            value={'not_applicable_without_evidence': list(unproven)})
     missing = sorted(c for c in ADVERTISED_INTEGRITY
                      if integrity_report.state_of(c) == IC.NOT_CHECKED)
     if missing:
@@ -767,6 +799,14 @@ def evaluate(report: Optional[Dict[str, Any]], *,
                          if integrity_report is None else
                          {c: integrity_report.state_of(c)
                           for c in sorted(ADVERTISED_INTEGRITY)}),
+            # NOT_APPLICABLE is the only coverage state that buys
+            # silence, so it is the only one that has to prove itself. A
+            # code claiming it without evidence is named here and refused
+            # by `assert_producer_coverage`.
+            'not_applicable_without_evidence': (
+                [] if integrity_report is None else
+                list(IC.assert_not_applicable_is_evidenced(
+                    integrity_report, sorted(ADVERTISED_INTEGRITY)))),
             # Carried so a producer that RUNS is not invisible merely
             # because the gate does not yet guarantee it. A NOT_CHECKED
             # here does not block; a finding under the code still does.

@@ -54,6 +54,88 @@ NOT_APPLICABLE = 'NOT_APPLICABLE'
 COVERAGE_STATES = (CHECKED_AND_PASSING, CHECKED_AND_FAILING, NOT_CHECKED,
                    NOT_APPLICABLE)
 
+#: APPLICABILITY, WHICH IS A DIFFERENT QUESTION FROM COVERAGE.
+#:
+#: Coverage answers "did anybody check?". Applicability answers "was there
+#: anything here to check?". Collapsing them is how "the checker could not
+#: evaluate this" quietly becomes "this passed", which is the evidence-ceiling
+#: defect in its purest form.
+#:
+#:   APPLICABLE_AND_CHECKED       there was a subject, and a producer looked
+#:   APPLICABLE_BUT_NOT_CHECKED   there was a subject and nobody looked. This
+#:                                BLOCKS. It is the state the owner ruling of
+#:                                2026-09-23 exists to make unmissable.
+#:   NOT_APPLICABLE               the governed artifact does not contain the
+#:                                population this invariant is about
+#:
+#: NOT_APPLICABLE CARRIES THE BURDEN OF PROOF. It is the only one of the three
+#: that lets a slate publish without the invariant having been evaluated, so
+#: it is the only one that requires evidence, and `Applicability` refuses to
+#: exist in that state without it. An absent array is not evidence: an
+#: artifact that CLAIMS to be a full NFL simulation and happens to carry no
+#: quarterback row is a defective simulation, not an artifact the invariant
+#: does not apply to.
+APPLICABLE_AND_CHECKED = 'APPLICABLE_AND_CHECKED'
+APPLICABLE_BUT_NOT_CHECKED = 'APPLICABLE_BUT_NOT_CHECKED'
+APPLICABILITY_STATES = (APPLICABLE_AND_CHECKED, APPLICABLE_BUT_NOT_CHECKED,
+                        NOT_APPLICABLE)
+
+
+@dataclass(frozen=True)
+class Applicability:
+    """Whether the invariant had a subject on this artifact, and the proof."""
+    state: str
+    why: str
+    evidence: Dict[str, Any] = field(default_factory=dict)
+
+    def __post_init__(self):
+        if self.state not in APPLICABILITY_STATES:
+            raise AssertionError(
+                f'{self.state!r} is not one of {APPLICABILITY_STATES}.')
+        if not self.why:
+            raise AssertionError(
+                f'an applicability verdict of {self.state} with no reason '
+                f'cannot be argued with, which is what makes it dangerous.')
+        if self.state == NOT_APPLICABLE and not self.evidence:
+            raise AssertionError(
+                'NOT_APPLICABLE requires EVIDENCE that the governed artifact '
+                'does not contain the population this invariant is about. It '
+                'is the only applicability state that lets a slate publish '
+                'without the invariant being evaluated, so it is the only '
+                'one that has to prove itself. An absent array is not '
+                'evidence.')
+
+    @property
+    def blocks_when_unchecked(self) -> bool:
+        return self.state == APPLICABLE_BUT_NOT_CHECKED
+
+    def coverage_state(self, *, has_findings: bool = False) -> str:
+        """The coverage state this applicability implies."""
+        if self.state == NOT_APPLICABLE:
+            return NOT_APPLICABLE
+        if self.state == APPLICABLE_BUT_NOT_CHECKED:
+            # NOT_CHECKED is the blocking state. The mapping is the whole
+            # point: an invariant that applied and was not evaluated must
+            # look exactly like an invariant nobody produced.
+            return NOT_CHECKED
+        return CHECKED_AND_FAILING if has_findings else CHECKED_AND_PASSING
+
+    def as_dict(self) -> Dict[str, Any]:
+        return dataclasses.asdict(self)
+
+
+def applicable(why: str, **evidence) -> Applicability:
+    return Applicability(APPLICABLE_AND_CHECKED, why, dict(evidence))
+
+
+def applicable_but_unchecked(why: str, **evidence) -> Applicability:
+    return Applicability(APPLICABLE_BUT_NOT_CHECKED, why, dict(evidence))
+
+
+def inapplicable(why: str, **evidence) -> Applicability:
+    """NOT_APPLICABLE. Refuses without evidence, by construction."""
+    return Applicability(NOT_APPLICABLE, why, dict(evidence))
+
 # --- owning subsystems ----------------------------------------------------
 OWNER_STATE = 'canonical_state_identity'
 OWNER_SIMULATION = 'simulation_artifact'
@@ -110,6 +192,12 @@ class InvariantCoverage:
     producer_version: Optional[str] = None
     n_subjects_checked: Optional[int] = None
     detail: Optional[str] = None
+    #: Why the invariant did or did not have a subject here, and the proof.
+    #: Optional so existing producers keep working; REQUIRED by
+    #: `assert_not_applicable_is_evidenced` for any code that reports
+    #: NOT_APPLICABLE, which is the only state that buys silence.
+    applicability: Optional[str] = None
+    applicability_evidence: Dict[str, Any] = field(default_factory=dict)
 
     def as_dict(self) -> Dict[str, Any]:
         return dataclasses.asdict(self)
@@ -225,8 +313,59 @@ def finding_report(code: str, *, owner: str, producer: str, version: str,
 
 
 def not_applicable(code: str, *, owner: str, producer: str, version: str,
-                   why: str) -> IntegrityReport:
-    """The invariant cannot apply to this run, and here is why."""
+                   why: str, **evidence) -> IntegrityReport:
+    """The invariant cannot apply to this run, and here is the proof.
+
+    `evidence` is passed through to `Applicability`, which REFUSES a
+    NOT_APPLICABLE with none. Callers that supply nothing get a named
+    failure rather than a silent pass, which is the intended pressure.
+    """
+    ap = inapplicable(why, **evidence)
     return IntegrityReport(coverage=[InvariantCoverage(
         code=code, owner=owner, state=NOT_APPLICABLE, producer=producer,
-        producer_version=version, detail=why)])
+        producer_version=version, detail=why,
+        applicability=ap.state, applicability_evidence=ap.evidence)])
+
+
+def applicability_report(code: str, *, owner: str, producer: str,
+                         version: str, applicability: Applicability,
+                         findings: Sequence[IntegrityFinding] = (),
+                         n_checked: int = None, detail: str = None,
+                         source_artifacts: Dict[str, str] = None,
+                         information_cut: str = None,
+                         slate_key: str = None) -> IntegrityReport:
+    """One producer's result with its APPLICABILITY stated, not implied."""
+    findings = list(findings)
+    if applicability.state != APPLICABLE_AND_CHECKED and findings:
+        raise AssertionError(
+            f'{code}: {len(findings)} finding(s) were produced under '
+            f'applicability {applicability.state}. A producer that found '
+            f'something looked at something.')
+    return IntegrityReport(
+        slate_key=slate_key, information_cut=information_cut,
+        findings=findings,
+        coverage=[InvariantCoverage(
+            code=code, owner=owner,
+            state=applicability.coverage_state(has_findings=bool(findings)),
+            producer=producer, producer_version=version,
+            n_subjects_checked=n_checked,
+            detail=detail or applicability.why,
+            applicability=applicability.state,
+            applicability_evidence=applicability.evidence)],
+        source_artifacts=dict(source_artifacts or {}))
+
+
+def assert_not_applicable_is_evidenced(report: IntegrityReport,
+                                       codes: Sequence[str]) -> Tuple[str, ...]:
+    """Codes that claim NOT_APPLICABLE without proving it.
+
+    Returned rather than raised so a governance layer can decide what to do,
+    and named rather than counted so the reader knows which invariant went
+    quiet.
+    """
+    bad = []
+    for c in report.coverage:
+        if c.code in codes and c.state == NOT_APPLICABLE \
+                and not c.applicability_evidence:
+            bad.append(c.code)
+    return tuple(sorted(bad))

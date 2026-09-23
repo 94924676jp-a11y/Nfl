@@ -276,7 +276,13 @@ def run(season: int, week: int, game_id: str, cut: str, *,
             cg = AL.assert_allocation_conserves(
                 ao, consuming_ids={r['gsis_id'] for r in ao.value
                                    if r['allocation_state'] == AL.ALLOCATED})
-            entry['gate'] = {'code': cg.code, 'state': cg.state.name}
+            # `offending` travels with the verdict, exactly as the
+            # redistribution gate below already does. A FAIL that did not
+            # say which club lost opportunity would force the review layer
+            # to guess, and guessing is what this layer exists to stop.
+            entry['gate'] = {'code': cg.code, 'state': cg.state.name,
+                             'offending': (cg.evidence or {}).get(
+                                 'offending') or []}
             alloc_states.append(cg)
             # CONSERVATION IS NOT VALIDITY. The sum being one says the
             # opportunity was not lost; it says nothing about who received

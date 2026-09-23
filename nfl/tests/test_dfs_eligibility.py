@@ -37,6 +37,8 @@ from nfl.production.state import availability as AV                   # noqa: E4
 
 import test_review_enforcement as TRE                                 # noqa: E402
 
+from nfl.tests import governed_draws as GD   # noqa: E402
+
 PASSED = FAILED = 0
 CUT, GAME = TRE.CUT, TRE.GAME
 OUT_ID = 'OUTMAN'
@@ -93,6 +95,13 @@ def write_draws(d, per_player, zeroed=(), zero_metrics=None,
          'n_matrices': len(arrays), 'layers': layers,
          'arrays': {k.replace('__', '/', 1): {'shape': list(v.shape)}
                     for k, v in arrays.items()}}, indent=1))
+    # A GOVERNED SIMULATION ARTIFACT CARRIES A COHERENCE VERDICT. See the
+    # same note in test_review_enforcement: the QB layer and the real
+    # checker's verdict are attached here rather than the advertised
+    # invariant being weakened. The zeroed rows this fixture cares about are
+    # untouched -- `attach` adds a layer, it does not rewrite one.
+    GD.attach(d, seed=7, zero_row_ids=tuple(zeroed or ())
+              + tuple((zero_metrics or {})))
     return hashlib.sha256((d / 'player_draws.npz').read_bytes()).hexdigest()
 
 

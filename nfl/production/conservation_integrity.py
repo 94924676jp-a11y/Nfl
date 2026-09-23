@@ -87,13 +87,17 @@ COHERENCE_VACUOUS = 'DRAW_COHERENCE_VACUOUS'
 CERTIFICATE_VERIFIED = 'COHERENCE_CERTIFICATE_VERIFIED'
 
 
-def _not_checked(code: str, *, owner: str, producer: str,
-                 why: str) -> IC.IntegrityReport:
+def _not_checked(code: str, *, owner: str, producer: str, why: str,
+                 applicability: 'IC.Applicability' = None
+                 ) -> IC.IntegrityReport:
     """A check that did not run has not passed. It is also not NOT_APPLICABLE:
     the invariant still applies, nobody evaluated it."""
+    ap = applicability or IC.applicable_but_unchecked(why)
     return IC.IntegrityReport(coverage=[IC.InvariantCoverage(
         code=code, owner=owner, state=IC.NOT_CHECKED, producer=producer,
-        producer_version=SPEC_VERSION, detail=why)])
+        producer_version=SPEC_VERSION, detail=why,
+        applicability=IC.APPLICABLE_BUT_NOT_CHECKED,
+        applicability_evidence=dict(ap.evidence))])
 
 
 def _gates(chain: Optional[Dict[str, Any]]) -> Dict[str, Dict[str, Any]]:
@@ -244,23 +248,82 @@ def consumer_within_composition(chain: Optional[Dict[str, Any]] = None, *,
 # --------------------------------------------------------------------------
 # 3. draw coherence
 # --------------------------------------------------------------------------
+def simulation_applicability(manifest: Optional[Dict[str, Any]] = None, *,
+                             simulation_artifact_declared: Optional[bool]
+                             = None) -> IC.Applicability:
+    """Does this governed artifact contain a simulation population at all?
+
+    THE ONE RULE THAT MATTERS HERE. An artifact that CLAIMS to be an NFL
+    simulation is APPLICABLE even if the layer the checker wanted is absent.
+    A full simulation carrying no quarterback row is a DEFECTIVE simulation,
+    not an artifact the coherence invariant does not apply to, and letting an
+    absent array buy NOT_APPLICABLE is exactly how "the checker could not
+    evaluate this" becomes "this passed".
+
+    So NOT_APPLICABLE needs an explicit negative declaration from the caller
+    -- `simulation_artifact_declared=False` -- AND a manifest that carries no
+    draw layers to contradict it. Silence gives APPLICABLE, which fails
+    closed.
+    """
+    layers = sorted((manifest or {}).get('layers') or {})
+    if simulation_artifact_declared is False:
+        if layers:
+            return IC.applicable(
+                'the caller declared no publishable simulation artifact, but '
+                'the manifest carries draw layers, so one exists. The '
+                'artifact contradicts the declaration and the artifact wins.',
+                declared_simulation_artifact=False,
+                layers_present=layers)
+        return IC.inapplicable(
+            'the caller declared that this governed artifact carries no '
+            'publishable simulation population, and the manifest carries no '
+            'draw layers to contradict it.',
+            declared_simulation_artifact=False,
+            layers_present=[],
+            manifest_supplied=manifest is not None)
+    return IC.applicable(
+        f'the governed artifact carries {len(layers)} draw layer(s), so it '
+        f'contains a simulation population this invariant is about'
+        if layers else
+        'no negative declaration was supplied, so the invariant is presumed '
+        'to apply. An artifact that has not said it lacks a simulation '
+        'population is not an artifact that lacks one.',
+        layers_present=layers,
+        declared_simulation_artifact=simulation_artifact_declared)
+
+
 def draw_coherence(run_status: Optional[Dict[str, Any]] = None, *,
+                   manifest: Optional[Dict[str, Any]] = None,
+                   simulation_artifact_declared: Optional[bool] = None,
                    slate_key: str = None, information_cut: str = None,
                    source_artifacts: Dict[str, str] = None
                    ) -> IC.IntegrityReport:
     """No football-impossible cell survives into the published draws."""
+    ap = simulation_applicability(
+        manifest, simulation_artifact_declared=simulation_artifact_declared)
+    if ap.state == IC.NOT_APPLICABLE:
+        return IC.applicability_report(
+            C_DRAW_COHERENCE, owner=IC.OWNER_SIMULATION,
+            producer=PRODUCER_COHERENCE, version=SPEC_VERSION,
+            applicability=ap, n_checked=0,
+            source_artifacts=source_artifacts,
+            information_cut=information_cut, slate_key=slate_key)
+
     rs = run_status or {}
     dc = rs.get('draw_coherence')
     if not isinstance(dc, dict) or not dc.get('code'):
         return _not_checked(
             C_DRAW_COHERENCE, owner=IC.OWNER_SIMULATION,
             producer=PRODUCER_COHERENCE,
-            why='run_status.json carries no draw_coherence verdict. The '
-                'check is NOT re-run here: assert_draw_coherence requires '
-                'shared_pass_live, which run_forecast reads from the run\'s '
-                'applied-component list and which the draw manifest does not '
-                'record. Guessing it False would skip team closure and '
-                'return a PASS that never looked.')
+            why='run_status.json carries no draw_coherence verdict, and this '
+                'artifact contains a simulation population, so the invariant '
+                'APPLIED AND NOBODY EVALUATED IT. The check is NOT re-run '
+                'here: assert_draw_coherence requires shared_pass_live, '
+                'which run_forecast reads from the run\'s applied-component '
+                'list and which the draw manifest does not record. Guessing '
+                'it False would skip team closure and return a PASS that '
+                'never looked.',
+            applicability=ap)
 
     code = dc.get('code')
     comps = dc.get('components') or {}
