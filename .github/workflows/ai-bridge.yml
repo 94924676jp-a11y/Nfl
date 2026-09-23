@@ -1,0 +1,192 @@
+name: ai-bridge
+
+# THE CHATGPT <-> CLAUDE BRIDGE. A GitHub issue is the mailbox: the owner's
+# other assistant opens one, this wakes Claude Code, and the result is written
+# back to the issue where that assistant can read it. The point is that no
+# human carries text between two chat windows.
+#
+# THIS REPOSITORY IS PUBLIC, and that fact shapes the whole file. Anyone can
+# open an issue here, so an issue that can start a Claude Code run is a way
+# for a stranger to spend the owner's subscription. The gate below is not a
+# convenience; it is the only thing between the two.
+#
+# TWO LAYERS, ON PURPOSE. The job-level `if:` stops an unauthorized issue
+# before a runner is allocated. bridge.py then re-checks the same two
+# conditions from the event payload, because a gate in exactly one place is
+# one careless edit from being gone and nothing would notice.
+#
+# NOT A LABEL. A label is repository state anyone with triage rights can
+# apply, and it says nothing about who wrote the request. issue.user.login is
+# GitHub's own statement about the author.
+#
+# A DOORBELL, NOT A SECOND FRONT DOOR. An issue may ask a question, and it may
+# ask for the governed engineering path to run. It cannot authorize a task,
+# select a task canonical state has not selected, enable LIVE, change policy,
+# or name a branch. Engineering requests are handed to
+# claude-engineering-dispatch.yml, whose pre-flight re-derives all of that
+# from committed state and refuses on disagreement.
+
+on:
+  issues:
+    types: [opened]
+
+# NO `issue_comment` TRIGGER. A comment trigger would let anyone who can
+# comment -- on a public repository, everyone -- start a run on the owner's
+# issue, and the author check would still pass, because it reads the ISSUE's
+# author rather than the comment's.
+
+concurrency:
+  group: ai-bridge-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+permissions:
+  # contents is READ. The bridge answers questions; it does not commit. The
+  # governed engineering path does the committing, under its own workflow.
+  contents: read
+  issues: write
+  # Only to hand an engineering request to the existing workflow.
+  actions: write
+
+env:
+  AUTOMATION_BRANCH: claude/nfl-greenfield-architecture-stsxmk
+  ENGINEERING_WORKFLOW: claude-engineering-dispatch.yml
+
+jobs:
+  bridge:
+    # THE GATE. Both conditions, before a runner exists.
+    if: >-
+      github.event.issue.user.login == '94924676jp-a11y' &&
+      startsWith(github.event.issue.title, '[AI-BRIDGE]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout the automation branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.AUTOMATION_BRANCH }}
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # ------------------------------------------------------------------
+      # The same script the tests exercise. It re-checks the author and the
+      # title marker, classifies the request, and consults the SAME policy
+      # fields the rest of the system obeys -- the bridge has no switch of its
+      # own. If it refuses, no Claude step runs and nothing is dispatched.
+      - name: Bridge gate
+        id: gate
+        continue-on-error: true
+        env:
+          AUTONOMY_MODE: LIVE
+        run: |
+          python3.12 coordination/orchestrator/bridge.py \
+            --event "$GITHUB_EVENT_PATH" \
+            --out bridge_status.md \
+            --prompt-out bridge_prompt.md 2>&1 | tee gate_output.txt
+          exit "${PIPESTATUS[0]}"
+
+      # The Action has a `prompt` input and NO `prompt_file` input -- checked
+      # against action.yml at v1, not assumed. So the rendered prompt is
+      # carried through a step output with a random heredoc delimiter, the
+      # same way the engineering workflow does it: nothing in the issue body
+      # can close the heredoc early, and the body never reaches a shell
+      # command line.
+      - name: Load the rendered prompt
+        id: prompt
+        if: steps.gate.outcome == 'success' && steps.gate.outputs.mode == 'CONVERSATION'
+        run: |
+          set -euo pipefail
+          test -s bridge_prompt.md || { echo "::error::prompt absent"; exit 1; }
+          d="BRG_$(openssl rand -hex 12)"
+          { echo "text<<$d"; cat bridge_prompt.md; echo; echo "$d"; } >> "$GITHUB_OUTPUT"
+          echo "loaded $(wc -c < bridge_prompt.md) bytes"
+
+      # ------------------------------------------------------------------
+      # MODE 1: a question. Read-only and bounded.
+      #
+      # NOT YET PROVEN END TO END. No bridge conversation has run against the
+      # subscription, so this step's behaviour is established from the
+      # Action's interface and nothing more.
+      - name: Claude Code — answer the bridge request
+        id: claude
+        if: steps.gate.outcome == 'success' && steps.gate.outputs.mode == 'CONVERSATION'
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          # Same reason as claude-engineering-dispatch.yml: without this the
+          # Action takes the OIDC path, needs `id-token: write`, and mints an
+          # App token whose pushes start workflows. Passing the token skips
+          # that and keeps the repository_dispatch continuation design intact.
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          prompt: ${{ steps.prompt.outputs.text }}
+          # Read tools only. A conversation that can edit is not a
+          # conversation, and edits belong to the governed path.
+          claude_args: |
+            --max-turns 20
+            --allowed-tools Read,Grep,Glob
+
+      # ------------------------------------------------------------------
+      # MODE 2: engineering. The bridge does NOT execute it. It rings the
+      # existing governed workflow, which re-derives authority from committed
+      # state and refuses if the request disagrees with it.
+      - name: Hand off to the governed engineering path
+        id: handoff
+        if: steps.gate.outcome == 'success' && steps.gate.outputs.mode == 'ENGINEERING'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TASK_ID: ${{ steps.gate.outputs.task_id }}
+          HEAD_SHA: ${{ steps.gate.outputs.head }}
+        run: |
+          set -euo pipefail
+          # One line on purpose: a multi-line script at column 0 ends the
+          # YAML block scalar, which is how the first version of this file
+          # failed to parse at all.
+          payload=$(python3.12 -c "import json,os;print(json.dumps({'ref':'main','inputs':{'task_id':os.environ['TASK_ID'],'expected_head':os.environ.get('HEAD_SHA','')[:12],'chain_id':'ai-bridge-'+os.environ.get('GITHUB_RUN_ID','')}}))")
+          code=$(curl -sS -o /tmp/resp.txt -w '%{http_code}' -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/${ENGINEERING_WORKFLOW}/dispatches" \
+            -d "${payload}")
+          echo "dispatch_http=${code}" >> "$GITHUB_OUTPUT"
+          # 204 is the only success. Anything else is reported, not swallowed.
+          if [ "$code" != "204" ]; then
+            echo "::error::engineering dispatch returned ${code}"
+            head -c 500 /tmp/resp.txt || true
+            exit 1
+          fi
+
+      # ------------------------------------------------------------------
+      # THE REPLY. Always written, including on a refusal -- a bridge that
+      # goes quiet when it refuses cannot be told apart from one still
+      # thinking, and the other assistant has no way to ask.
+      - name: Write the result back to the issue
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE: ${{ github.event.issue.number }}
+          GATE_OUTCOME: ${{ steps.gate.outcome }}
+          MODE: ${{ steps.gate.outputs.mode }}
+          TASK_ID: ${{ steps.gate.outputs.task_id }}
+          CLAUDE_CONCLUSION: ${{ steps.claude.outputs.conclusion }}
+          HANDOFF_HTTP: ${{ steps.handoff.outputs.dispatch_http }}
+        run: |
+          set -euo pipefail
+          python3.12 coordination/orchestrator/bridge_reply.py > /tmp/comment.json
+          curl -sS -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${ISSUE}/comments" \
+            -d @/tmp/comment.json > /dev/null
+
+      # The gate's refusal must fail the run. continue-on-error above exists
+      # only so the reply is written first; it is not forgiveness.
+      - name: Fail if the gate refused
+        if: always() && steps.gate.outcome != 'success'
+        run: |
+          echo "::error::bridge gate refused; the reason is on the issue"
+          exit 1
