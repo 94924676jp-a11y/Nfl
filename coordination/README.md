@@ -16,6 +16,10 @@ coordination/
 ├── CLAUDE_RETURNS/            engineering returns in
 ├── PERPLEXITY_RETURNS/        research returns in
 ├── HANDOFF_LOG.jsonl          append-only, one line per handoff
+├── AUTONOMY_SETUP.md          the owner's one-time setup, and the kill switch
+├── orchestrator/              the autonomous runtime
+├── runs/                      raw provider calls, preserved as evidence
+├── ESCALATIONS/               where the loop stopped and asked a human
 ├── refresh_state.py           re-measure PROJECT_STATE.json from the tree
 ├── claude_dispatch.py         hand out exactly one authorized task
 ├── claude_finalize.py         ACTIVE -> RETURNED, with evidence
@@ -90,6 +94,36 @@ Where a session cannot reach the repository at all, the owner pastes into
 `OWNER_INBOX.md` (see that file) or opens a message on the GitHub bus (see
 `GITHUB_FALLBACK.md`). Neither fallback authorizes anything by itself; both
 land as an owner directive that the owner layer then writes into a queue.
+
+## The autonomous runtime
+
+`orchestrator/` turns the direction diagram above into a running loop, so a
+task moves research -> owner review -> engineering -> owner review -> next
+task without anyone copying text between chat windows.
+
+**It is off by default.** `AUTOMATION_POLICY.json` carries
+`autonomous_operation_enabled: false`. Setting it back to false and pushing is
+the kill switch; every pass re-reads it before acting.
+
+One pass does exactly one thing and then exits, leaving a commit behind. The
+commit is a GitHub event, and the event starts the next pass. That costs a
+little latency and buys three things: a runaway cannot exceed its budget
+without a human-visible commit per step, a crashed runner loses at most one
+transition, and the entire history of what the system did to itself is
+`git log`.
+
+The authority split is the design, and it is enforced mechanically rather than
+by instruction:
+
+- the **engineering** worker writes code for one authorized task and cannot
+  touch a queue, the state file, the outbox or the log;
+- the **research** worker reads the outside world and authorizes nothing;
+- the **owner** worker reviews and decides, and a task it creates arrives
+  `DRAFT` — a worker that could create and authorize in one step would be
+  authorizing itself.
+
+Read `AUTONOMY_SETUP.md` before arming it. `nfl/tests/test_orchestrator.py`
+drives the whole state machine on mocks, including every stop condition.
 
 ## Four rules, and each one is here because of a specific failure
 

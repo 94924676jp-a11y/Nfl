@@ -1,0 +1,32 @@
+{
+ "_note": "A well-formed research return, including an UNKNOWN that stays UNKNOWN.",
+ "usage": {"input_tokens": 1800, "output_tokens": 1100, "total_tokens": 2900},
+ "parsed": {
+  "task_id": "MOCK-TASK",
+  "status": "COMPLETED",
+  "findings": [
+   {"claim": "The provider documents a CSV export for completed contests.",
+    "evidence": "Read on the operator's own support site; this is the operator describing its own product.",
+    "classification": "PROVIDER_CLAIM",
+    "sources": ["https://example.invalid/support/exports"]},
+   {"claim": "Whether that export includes per-entry lineups for large-field contests.",
+    "evidence": "Not established. No primary artifact was read and no documentation states it either way.",
+    "classification": "UNKNOWN",
+    "sources": []}
+  ],
+  "sources": [
+   {"url": "https://example.invalid/support/exports",
+    "title": "Exporting contest results",
+    "publisher": "example",
+    "retrieved_at_utc": "2026-09-23T03:00:00Z",
+    "source_published_at": null}
+  ],
+  "unresolved_questions": [
+   "Does the export contain per-entry lineups, or only aggregate results?",
+   "What is the retention window on completed-contest exports?"
+  ],
+  "implications": "If per-entry lineups are absent, an ownership model cannot be built from this source and OWNERSHIP_MODEL_UNAVAILABLE stands.",
+  "recommended_next_action": "Owner decides whether to obtain one real export before any further design work.",
+  "blockers": []
+ }
+}

@@ -1,0 +1,42 @@
+{
+ "schema": "model_config",
+ "schema_version": "1.0.0",
+ "written_at_utc": "2026-09-23T03:10:00Z",
+
+ "_read_me": [
+  "Model ids live HERE and nowhere else in the source. A model id scattered",
+  "across four modules is four places to miss when one of them changes, and a",
+  "silent model change invalidates every comparison made across it -- which",
+  "in this project is the difference between evidence and an anecdote.",
+  "",
+  "A change to this file is a reviewable diff on a protected path. The",
+  "orchestrator records the resolved model id in every run's metadata.json,",
+  "so a past run can be read back against the model that actually produced it",
+  "rather than against whatever this file says today."
+ ],
+
+ "owner_model": {
+  "provider": "openai",
+  "model": "gpt-5",
+  "role": "review, decide, authorize",
+  "max_output_tokens": 8000,
+  "temperature": 0
+ },
+ "engineering_model": {
+  "provider": "anthropic",
+  "model": "claude-opus-5",
+  "role": "implement one authorized engineering task",
+  "max_output_tokens": 16000,
+  "temperature": 0
+ },
+ "research_model": {
+  "provider": "perplexity",
+  "model": "sonar-pro",
+  "role": "external research with sources",
+  "max_output_tokens": 8000,
+  "temperature": 0
+ },
+
+ "temperature_note": "Zero everywhere. These workers are producing evidence and queue transitions, not prose; run-to-run variation buys nothing here and costs reproducibility.",
+ "verification_note": "These ids are NOT verified against the providers' current catalogues from inside this checkout -- there is no network here. AUTONOMY_SETUP.md lists checking them as a one-time owner step, and a wrong id surfaces as a named API failure on the first live call, never as a silent fallback to another model."
+}

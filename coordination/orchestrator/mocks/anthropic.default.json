@@ -1,0 +1,20 @@
+{
+ "_note": "A well-formed engineering return. Writes one harmless file inside a sandbox and runs a command that exits 0.",
+ "usage": {"input_tokens": 4200, "output_tokens": 900, "total_tokens": 5100},
+ "parsed": {
+  "task_id": "MOCK-TASK",
+  "status": "COMPLETED",
+  "implementation_summary": "Mock engineering worker: created the demonstration artifact the task asked for and recorded what it did.",
+  "files_changed": ["mock_artifacts/engineering_demo.txt"],
+  "patches": [
+   {"path": "mock_artifacts/engineering_demo.txt",
+    "contents": "Written by the mocked engineering worker.\nThis file exists so the state machine's apply/commit path is exercised against real bytes rather than stubbed out.\n"}
+  ],
+  "tests_run": ["python3.12 -c \"print('mock check ok')\""],
+  "test_results": "mock check ok",
+  "failures": [],
+  "blockers": [],
+  "recommended_next_step": "Owner review. The worker does not select its own next task.",
+  "confidence_notes": "This is a fixture. It demonstrates transport and state transitions, and says nothing about model quality."
+ }
+}
