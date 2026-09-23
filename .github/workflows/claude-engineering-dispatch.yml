@@ -142,6 +142,28 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          # PASSED EXPLICITLY SO THE ACTION NEVER TAKES THE OIDC PATH.
+          # Without it the Action calls setupGitHubToken -> getOidcToken
+          # and dies with "Could not fetch an OIDC token", because this
+          # workflow deliberately does not grant `id-token: write`. Run
+          # 35897771719 failed there, 15s in, before ever authenticating
+          # to Anthropic.
+          #
+          # The remedy is NOT to grant id-token. Verified in the Action's
+          # own source at v1: action.yml maps this input to
+          # OVERRIDE_GITHUB_TOKEN, and src/github/token.ts returns it
+          # immediately, before getOidcToken() is reached.
+          #
+          # WHY THAT IS ALSO THE RIGHT CHOICE HERE, not just the cheap one.
+          # The OIDC path mints a GitHub App token, and a push made with an
+          # App token DOES start workflows. GITHUB_TOKEN's pushes do not.
+          # This project's continuation design rests on that second fact:
+          # the loop advances by an explicit repository_dispatch bounded by
+          # max_continuations_per_hour, precisely so a worker's own commit
+          # cannot wake the next pass. Granting id-token would hand the
+          # engineering worker a token that reopens push recursion, which
+          # was closed on purpose.
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           prompt: ${{ steps.prompt.outputs.text }}
           # --json-schema is what makes the result CHECKABLE rather than
           # something to be read hopefully: the Action then returns
