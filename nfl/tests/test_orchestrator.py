@@ -1814,11 +1814,67 @@ def test_y_transport_is_configuration_and_the_api_path_survives():
               C.Escalation(e) in C.NEVER_AUTO_RETRY)
 
 
+ENG_WORKFLOW = '.github/workflows/claude-engineering-dispatch.yml'
+
+
+def _workflow_from_default_branch(path):
+    """Read a workflow that lives ONLY on the default branch.
+
+    THIS TEST USED TO READ THE WORKING TREE, and crashed with
+    FileNotFoundError once claude-engineering.yml was deleted from the
+    automation branch and replaced by claude-engineering-dispatch.yml on
+    main. The crash took the whole module down at test Z, so every test
+    after it stopped running too -- a deleted file silently disabled the
+    tail of the suite rather than failing one check.
+
+    The file is not missing and must not be recreated here: a
+    workflow_dispatch workflow is only dispatchable from the default
+    branch, so main is where it belongs. The test follows the file.
+    """
+    for ref in ('origin/main', 'main'):
+        r = subprocess.run(('git', 'show', f'{ref}:{path}'), cwd=REAL_REPO,
+                           capture_output=True, text=True)
+        if r.returncode == 0 and r.stdout.strip():
+            return r.stdout, ref
+    return None, None
+
+
+def _top_level_block(text, key):
+    """The lines under a top-level YAML key, and nothing else.
+
+    WRITTEN BECAUSE THE OBVIOUS CHECK WAS WRONG. `'id-token' not in wf`
+    reads the whole file, so it fired on the COMMENT in the workflow
+    explaining why id-token is deliberately not granted. The check failed
+    while the property it tests was true, which is the same substring-for-
+    structure mistake that has already been made twice in this module.
+
+    A comment naming a permission is not a permission. Only the block
+    counts, so only the block is searched.
+    """
+    out, inside = [], False
+    for line in text.splitlines(keepends=True):
+        if inside:
+            if line.strip() and not line[:1].isspace():
+                break
+            out.append(line)
+        elif line.startswith(f'{key}:'):
+            inside = True
+    return ''.join(out)
+
+
 def test_z_the_engineering_workflow_is_narrow_and_guarded():
     print('\nZ. the engineering workflow')
     import re as _re
-    wf = (REAL_REPO / '.github' / 'workflows'
-          / 'claude-engineering.yml').read_text()
+    wf, ref = _workflow_from_default_branch(ENG_WORKFLOW)
+    if wf is None:
+        # NOT a pass. The guarantees below are unproven when the file cannot
+        # be read, and saying "ok" for checks that never ran is the exact
+        # failure this project keeps paying for.
+        not_executed('Z. the engineering workflow',
+                     f'{ENG_WORKFLOW} unreadable from origin/main or main; '
+                     f'fetch the default branch and re-run')
+        return
+    print(f'       (read from {ref})')
     check('it uses the official action',
           'anthropics/claude-code-action@v1' in wf)
     check('  authenticated with the OAuth token',
@@ -1847,6 +1903,24 @@ def test_z_the_engineering_workflow_is_narrow_and_guarded():
     check('  and the ingest step is gated on it succeeding',
           "steps.preflight.outcome == 'success'" in wf)
     check('turns are bounded', '--max-turns' in wf)
+    # THESE TWO ARE A PAIR, AND THE SECOND IS THE POINT.
+    #
+    # Run 35897771719 died in setupGitHubToken with "Could not fetch an OIDC
+    # token", because the Action mints a GitHub App token by OIDC exchange
+    # unless it is handed a token. The tempting fix is `id-token: write`.
+    #
+    # That fix would pass CI and quietly break the loop bound. An App token's
+    # pushes START workflows; GITHUB_TOKEN's pushes do not, and the whole
+    # continuation design depends on the latter -- the loop advances by an
+    # explicit repository_dispatch under max_continuations_per_hour so a
+    # worker's own commit cannot wake the next pass. So the absence of
+    # id-token is a governance property, not a permissions tidiness nit, and
+    # it is asserted here rather than left to whoever edits the file next.
+    check('github_token is passed, so the OIDC path is never taken',
+          'github_token: ${{ secrets.GITHUB_TOKEN }}' in wf)
+    check('  and id-token is NOT granted, so no App token can be minted',
+          'id-token' not in _top_level_block(wf, 'permissions'),
+          _top_level_block(wf, 'permissions').strip())
     check('a json schema makes the result checkable', '--json-schema' in wf)
     check('the token is never echoed',
           'echo' not in wf.split('CLAUDE_CODE_OAUTH_TOKEN')[1][:200])
