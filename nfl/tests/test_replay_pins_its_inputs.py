@@ -46,8 +46,28 @@ a NEW FORECAST re-runs selection. Re-running selection and calling the result a
 replay produces a different forecast wearing the same clock -- exactly what the
 fingerprint discipline exists to prevent.
 
-SECTION C FAILS ON PURPOSE. It is the defect: no replay path takes recorded
-partition ids as its input. Do not delete it and do not weaken it to green.
+SECTION C USED TO FAIL ON PURPOSE. It was the defect: no replay path took
+recorded partition ids as its input.
+
+CLOSED BY ENG-001. `replay_contract.build_from_partition_ids`,
+`inputs.bundle_from_partition_ids` and `replay_runner.replay` now consume the
+recorded ids; measured on this very seal, the pinned rebuild hashes to
+6477fddd245bcc26 -- the seal's own digest -- where re-selecting at the same
+clock gives 6970cb9b6ea65fa8.
+
+The section's PROBE changed shape and that is worth stating plainly rather
+than leaving the reader to diff it. It asked whether `inputs.bundle` had
+gained a parameter accepting a recorded input set. The repair did not arrive
+that way and should not have: a replay is not a mode of selection, it is the
+absence of one, and merging the two behind one name would have defaulted to
+the dangerous one. So the old assertion is INVERTED and kept -- `inputs.bundle`
+must still have no pinning flag -- and the property it was standing in for is
+now asked directly, structurally and behaviourally. Nothing here was loosened
+to reach green; section C has more checks than it had as a failure.
+
+Sections A and B are unchanged and still measure the live defect: if section
+C's last check ever reads AGREES_TODAY, the manifest has stopped growing and
+D23 has gone dormant, which is not the same as fixed.
 
 Run standalone:  python3.12 nfl/tests/test_replay_pins_its_inputs.py
 """
@@ -175,9 +195,32 @@ def test_b_every_selected_partition_was_lawful_so_the_selector_is_not_at_fault()
     check('  so the drift is NOT a clock violation', not late)
 
 
-def test_c_BUG_no_replay_path_reproduces_from_the_recorded_partitions():
-    """FAILS ON PURPOSE. The seal records the answer and nothing consumes it."""
-    print('\nC. BUG -- the recorded partition ids are written, never read back')
+def test_c_a_replay_path_reproduces_from_the_recorded_partitions():
+    """WAS THE DEFECT. Now the repair, and the probe had to change shape.
+
+    WHAT THIS SECTION USED TO ASSERT, AND WHY IT IS WITHDRAWN
+
+        ~~check('inputs.bundle can be given the partitions to reproduce',
+               bool(pinning))~~
+
+    It asked whether `inputs.bundle` had a parameter accepting a recorded
+    input set. That was a PROXY for the real question -- "can anything consume
+    the partitions the seal recorded?" -- and it was the wrong proxy, because
+    it presumed the repair would arrive as a flag on the selector.
+
+    It did not, and should not have. A replay is not a mode of selection; it
+    is the ABSENCE of selection. Adding `consumed_partition_ids=None` to
+    `bundle` would have put a function that re-selects and a function that
+    refuses to select behind one name, defaulting to the dangerous one. The
+    repair is a separate entry point, `bundle_from_partition_ids`, over
+    `replay_contract.build_from_partition_ids`.
+
+    So the old check is not loosened, it is INVERTED and kept: `inputs.bundle`
+    must STILL not take a pinning parameter, and that is now an invariant
+    rather than a defect. What replaced it is the property the proxy stood
+    for, asked directly and measured end to end.
+    """
+    print('\nC. the recorded partition ids are written AND read back')
     rows = [r for r in _rows() if r.get('consumed_partition_ids')]
     check('the seals DO record which partitions were consumed',
           bool(rows), f'{len(rows)} row(s) carry consumed_partition_ids')
@@ -188,34 +231,75 @@ def test_c_BUG_no_replay_path_reproduces_from_the_recorded_partitions():
     # line containing an `=` a "consumer". It matched
     # `identity={}, consumed_partition_ids=tuple(` -- a CONSTRUCTOR argument --
     # and reported the defect repaired. That is the same textual-heuristic
-    # failure this file is about, committed inside the test for it. The actual
-    # use in dryrun.py reads the field out of an artifact only to build a Seal
-    # for the re-seal REFUSAL test; it never reaches selection.
-    #
-    # So ask the question structurally: does the function that builds an input
-    # set accept recorded partition ids at all? If its signature cannot take
-    # them, no caller can pin a rebuild, whatever the text says.
+    # failure this file is about, committed inside the test for it. So ask the
+    # question structurally: is there a callable that TAKES recorded partition
+    # ids, and does a real caller reach it?
     import inspect
     from nfl.prospective.q9shadow import inputs as INP
-    sig = inspect.signature(INP.bundle)
-    params = list(sig.parameters)
-    print(f'       inputs.bundle{sig}')
-    pinning = [q for q in params
-               if 'partition' in q.lower() or 'pin' in q.lower()
-               or 'consumed' in q.lower()]
-    check('inputs.bundle can be given the partitions to reproduce',
-          bool(pinning),
-          f'REPLAY_RE_SELECTS: its parameters are {params}. None of them '
-          f'accepts a recorded input set, so every call re-runs selection '
-          f'against whatever the manifest holds TODAY. A clock BOUNDS '
-          f'selection; only the recorded partitions DETERMINE it. The seal '
-          f'stores the answer and nothing can consume it. See D23.')
+    from nfl.prospective.q9shadow import replay_runner as RRUN
+    from nfl.research.shadow import replay_contract as RCON
+
+    pinned = getattr(INP, 'bundle_from_partition_ids', None)
+    check('a pinned entry point exists on the module the seal path uses',
+          callable(pinned),
+          'REPLAY_RE_SELECTS: nothing consumes consumed_partition_ids')
+    if callable(pinned):
+        params = list(inspect.signature(pinned).parameters)
+        check('  and its FIRST argument is the recorded input set',
+              params[:1] == ['consumed_partition_ids'], str(params))
+
+    # THE INVERTED CHECK. The selector must stay a selector.
+    sel = list(inspect.signature(INP.bundle).parameters)
+    check('inputs.bundle is still purely a selector, with no pinning flag',
+          not [q for q in sel if 'partition' in q.lower()
+               or 'pin' in q.lower() or 'consumed' in q.lower()],
+          f'{sel} -- a single function that both selects and refuses to '
+          f'select would default to the dangerous one')
+
+    # AND A REAL CALLER REACHES IT. A pinned builder nothing calls is a
+    # document, which is what D23 says about the recorded ids themselves.
+    pinned_branch = inspect.getsource(RRUN.replay).split(
+        '# ---- the unpinned modes')[0]
+    check('the runner\'s ORIGINAL_REPLAY branch calls the pinned builder',
+          'bundle_from_partition_ids' in pinned_branch)
+    check('  and does not call the re-selecting one',
+          'IN.bundle(' not in pinned_branch)
+
+    # THE BEHAVIOURAL HALF, ON THE REAL SEAL D23 WAS MEASURED ON.
+    art = None
+    sealed_path = (ROOT / 'nfl' / 'prospective' / 'q9shadow' / 'dryrun'
+                   / '2024_01_ARI_BUF' / 'ARI' / 'SEALED_FORECAST.json')
+    if sealed_path.exists():
+        art = json.loads(sealed_path.read_text())
+    if art is None:
+        not_executed('no sealed 2024_01_ARI_BUF forecast',
+                     'the structural half above still ran')
+        return
+    from sportsplatform.governance.outcome import State as _S
+    orig = RRUN.replay(sealed_path, RCON.ORIGINAL_REPLAY)
+    retro = RRUN.replay(sealed_path, RCON.RETROSPECTIVE_RECONSTRUCTION)
+    check('ORIGINAL_REPLAY reproduces the seal\'s own input digest',
+          orig.state is _S.PASS
+          and orig.evidence.get('input_identity') == 'IDENTICAL',
+          f'{orig.code}: {orig.detail}')
+    check('  re-selecting at the same clock does NOT -- D23 is still live',
+          retro.state is _S.PASS
+          and retro.evidence.get('input_identity') == 'DIFFERS',
+          f'{retro.code}: {retro.evidence.get("input_identity")} -- if this '
+          f'reads AGREES_TODAY the manifest has stopped growing and the '
+          f'defect is dormant, which is not the same as fixed')
+    if orig.state is _S.PASS and retro.state is _S.PASS:
+        print(f'       sealed   {art.get("input_bundle_sha256", "")[:16]}')
+        print(f'       pinned   '
+              f'{orig.evidence["input_bundle_sha256"][:16]}   IDENTICAL')
+        print(f'       reselect '
+              f'{retro.evidence["input_bundle_sha256"][:16]}   DIFFERS')
 
 
 if __name__ == '__main__':
     test_a_the_same_clock_produced_two_different_input_sets()
     test_b_every_selected_partition_was_lawful_so_the_selector_is_not_at_fault()
-    test_c_BUG_no_replay_path_reproduces_from_the_recorded_partitions()
+    test_c_a_replay_path_reproduces_from_the_recorded_partitions()
     print(f'\n{PASSED} passed, {FAILED} failed, {len(NOT_EXECUTED)} NOT_EXECUTED')
     for label, why in NOT_EXECUTED:
         print(f'  NOT_EXECUTED: {label} -- {why}')
