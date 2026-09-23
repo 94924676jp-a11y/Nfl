@@ -246,6 +246,74 @@ def test_h_exactly_one_continuation_and_only_on_success():
               and 'execution_mode' not in json.dumps(payload))
 
 
+def test_i_the_reply_is_written_on_every_outcome():
+    print('\nI. the reply')
+    from coordination.orchestrator import bridge_reply as R
+    import tempfile as _tf
+
+    with _tf.TemporaryDirectory() as d:
+        (pathlib.Path(d) / R.REASON_FILE).write_text(
+            'BRIDGE_REFUSED BRIDGE_AUTONOMY_DISABLED')
+        (pathlib.Path(d) / R.STATUS_FILE).write_text('{"result_status": "REFUSED"}')
+        body = R.build({'GATE_OUTCOME': 'failure', 'GITHUB_RUN_ID': '1'},
+                       root=d)['body']
+        check('a refusal still produces a comment', bool(body.strip()))
+        check('  naming the refusal code', 'BRIDGE_AUTONOMY_DISABLED' in body)
+        check('  and saying nothing was spent',
+              'no subscription usage was consumed' in body)
+        check('  and carrying the contract', 'REFUSED' in body)
+
+    with _tf.TemporaryDirectory() as d:
+        body = R.build({'GATE_OUTCOME': 'success', 'MODE': 'ENGINEERING',
+                        'TASK_ID': 'ENG-001', 'HANDOFF_HTTP': '204'},
+                       root=d)['body']
+        check('an engineering handoff says it did not authorize anything',
+              'does not authorize anything' in body and 'ENG-001' in body)
+
+    with _tf.TemporaryDirectory() as d:
+        # AN EMPTY CONCLUSION IS NOT SUCCESS. Run 35897771719 produced exactly
+        # this, and the reply must not read as though Claude answered.
+        body = R.build({'GATE_OUTCOME': 'success', 'MODE': 'CONVERSATION',
+                        'CLAUDE_CONCLUSION': ''}, root=d)['body']
+        check('an empty Claude conclusion is reported as empty',
+              '(empty)' in body and 'not the same as success' in body)
+
+    with _tf.TemporaryDirectory() as d:
+        body = R.build({'GATE_OUTCOME': 'failure'}, root=d)['body']
+        check('a gate that printed nothing is called out, not glossed',
+              'itself a defect' in body)
+
+
+def test_j_the_workflow_carries_the_same_gate():
+    print('\nJ. the workflow on the default branch')
+    r = subprocess.run(
+        ('git', 'show', 'origin/main:.github/workflows/ai-bridge.yml'),
+        cwd=REPO, capture_output=True, text=True)
+    if r.returncode != 0 or not r.stdout.strip():
+        print('  NOT_EXECUTED  ai-bridge.yml not on origin/main yet')
+        return
+    wf = r.stdout
+    # THE JOB-LEVEL GATE, which is what stops a runner starting at all.
+    check('the job gate names the owner login',
+          f"github.event.issue.user.login == '{B.OWNER_LOGIN}'" in wf)
+    check('  and anchors the title with startsWith, not contains',
+          f"startsWith(github.event.issue.title, '{B.TITLE_PREFIX}')" in wf)
+    check('the trigger is issues:opened only',
+          'issues:' in wf and 'issue_comment' not in wf.split('jobs:')[0])
+    check('no id-token is granted',
+          'id-token' not in wf.split('jobs:')[0].split('permissions:')[1])
+    check('the Action is given github_token, so no OIDC path',
+          'github_token: ${{ secrets.GITHUB_TOKEN }}' in wf)
+    check('the gate runs before the Action',
+          wf.index('bridge.py') < wf.index('uses: anthropics/claude-code-action@v1'))
+    check('every Claude step is conditioned on the gate succeeding',
+          wf.count("steps.gate.outcome == 'success'") >= 2)
+    check('conversation mode is restricted to read tools',
+          '--allowed-tools Read,Grep,Glob' in wf)
+    check('engineering is handed off, not executed here',
+          'claude-engineering-dispatch.yml' in wf)
+
+
 TESTS = [v for k, v in sorted(globals().items()) if k.startswith('test_')]
 
 if __name__ == '__main__':
