@@ -1,0 +1,199 @@
+name: claude-engineering-dispatch
+
+# THE DEFAULT-BRANCH ENTRY POINT for the Claude Code engineering worker.
+#
+# WHY IT HAS TO LIVE HERE. A `workflow_dispatch` workflow is only dispatchable
+# when its definition exists on the repository's DEFAULT branch — that is what
+# makes the "Run workflow" button appear and what the API dispatches against.
+# The engineering workflow previously lived only on the automation branch, so
+# it could never be started at all. Same shape as the `repository_dispatch`
+# finding before it, and equally invisible from inside the checkout.
+#
+# THIS IS THE ONLY ENGINEERING WORKFLOW. The automation-branch copy was
+# removed rather than kept alongside: a file advertising a trigger it cannot
+# receive is a claim the repository cannot honour, and two engineering
+# workflows would drift apart. The reuse that matters is that every decision
+# below is made by Python living on the automation branch —
+# `validate_engineering_run.py`, `claude_code_transport.py`,
+# `ingest_engineering_return.py`. This file is thin glue, exactly like
+# `agent-orchestrator-dispatch.yml`.
+#
+# MAIN IS NOT THE PROJECT-STATE AUTHORITY. Nothing here reads a queue, a
+# policy or a task record. It checks out the automation branch and asks the
+# scripts there. No project state is duplicated onto the default branch.
+#
+# WHAT AN INPUT CAN AND CANNOT DO. It can name which task the operator *means*
+# and which head they *observed*. It cannot choose a branch (there is no such
+# input — the branch is a constant below), cannot authorize a task, cannot
+# select a task that canonical state has not selected, and cannot enable LIVE.
+# The pre-flight re-derives all of those from committed state and refuses on
+# any disagreement. If it refuses, the Claude step never runs.
+
+on:
+  workflow_dispatch:
+    inputs:
+      task_id:
+        description: 'Engineering task id (must be the task canonical state selects)'
+        required: true
+      expected_head:
+        description: 'Head the orchestrator observed; refuses if it has moved'
+        required: false
+        default: ''
+      chain_id:
+        description: 'Continuation chain id — tracing only, never authority'
+        required: false
+        default: ''
+
+concurrency:
+  # ONE ENGINEERING WORKER. The queue's exclusive-ACTIVE lock is the real
+  # control; this stops two runners racing to discover that.
+  group: claude-engineering
+  cancel-in-progress: false
+
+permissions:
+  # The narrowest set that still lets the governed task happen. The Action
+  # defaults to wanting more; it is constrained here instead. No `issues`, no
+  # `pull-requests`: this worker commits to one branch and writes a return.
+  contents: write
+
+env:
+  # THE AUTOMATION BRANCH IS A CONSTANT, NOT AN INPUT. There is no workflow
+  # input that can change it, so there is nothing for a caller to point
+  # somewhere else. Changing it is an edit to this protected file on the
+  # default branch, reviewed like any other.
+  AUTOMATION_BRANCH: claude/nfl-greenfield-architecture-stsxmk
+
+jobs:
+  engineer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+
+    steps:
+      - name: Checkout the automation branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.AUTOMATION_BRANCH }}
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Identify the committer
+        run: |
+          git config user.name  "claude-engineering[bot]"
+          git config user.email "claude-engineering@users.noreply.github.com"
+
+      - name: Confirm the engineering path is present on that branch
+        run: |
+          set -euo pipefail
+          for f in coordination/orchestrator/validate_engineering_run.py \
+                   coordination/orchestrator/ingest_engineering_return.py \
+                   coordination/orchestrator/claude_code_transport.py; do
+            test -f "$f" || { echo "::error::missing $f"; exit 1; }
+          done
+          echo "checked out $(git rev-parse --short HEAD) on ${AUTOMATION_BRANCH}"
+
+      # ------------------------------------------------------------------
+      # EVERY FACT THE RUN DEPENDS ON IS ESTABLISHED HERE, from committed
+      # state. Queue membership, authorization, whether this is the task
+      # canonical state selects, the exclusive lock, the retry budget, the
+      # policy, the execution mode, the expected head, and the presence of the
+      # OAuth credential. If this step fails, no Claude step runs.
+      - name: Pre-flight against committed state, and emit the packet
+        id: preflight
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          AUTONOMY_MODE: LIVE
+          # Presence only. The validator checks that it is set; it never reads,
+          # prints or writes the value, and nothing downstream echoes it.
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        run: |
+          python3.12 coordination/orchestrator/validate_engineering_run.py \
+            --task-id "${{ github.event.inputs.task_id }}" \
+            --expected-head "${{ github.event.inputs.expected_head }}" \
+            --emit-packet
+
+      - name: Record the head the worker starts from
+        id: before
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      # The rendered packet becomes the Action's `prompt`. Loaded from the file
+      # the pre-flight wrote, with a random delimiter so nothing in the packet
+      # can close the heredoc early — a prompt that ends halfway is a task with
+      # half its constraints.
+      - name: Load the rendered packet as the prompt
+        id: prompt
+        env:
+          TASK_ID: ${{ github.event.inputs.task_id }}
+        run: |
+          set -euo pipefail
+          f="coordination/ENGINEERING_PACKETS/${TASK_ID}.prompt.md"
+          test -s "$f" || { echo "::error::packet prompt absent at $f"; exit 1; }
+          d="PKT_$(openssl rand -hex 12)"
+          { echo "text<<$d"; cat "$f"; echo; echo "$d"; } >> "$GITHUB_OUTPUT"
+          echo "loaded $(wc -c < "$f") bytes"
+
+      # ------------------------------------------------------------------
+      # THE WORKER. Reached only because every check above passed.
+      - name: Claude Code — execute the authorized task
+        id: claude
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: ${{ steps.prompt.outputs.text }}
+          # --json-schema is what makes the result CHECKABLE rather than
+          # something to be read hopefully: the Action then returns
+          # `structured_output` carrying the contract's fields, and a missing
+          # one is a malformed return instead of a judgement call.
+          claude_args: |
+            --max-turns 30
+            --permission-mode acceptEdits
+            --json-schema coordination/ENGINEERING_PACKETS/${{ github.event.inputs.task_id }}.schema.json
+
+      # ------------------------------------------------------------------
+      # The Action's own conclusion is not the verdict. A run can succeed and
+      # still leave a malformed return or a diff touching a forbidden path,
+      # and neither may advance a task.
+      - name: Ingest, check and commit the governed return
+        if: always() && steps.preflight.outcome == 'success'
+        env:
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          CLAUDE_CONCLUSION: ${{ steps.claude.outputs.conclusion }}
+          CLAUDE_SESSION_ID: ${{ steps.claude.outputs.session_id }}
+          CLAUDE_STRUCTURED: ${{ steps.claude.outputs.structured_output }}
+          HEAD_BEFORE: ${{ steps.before.outputs.sha }}
+          TASK_ID: ${{ github.event.inputs.task_id }}
+        run: |
+          set +e
+          python3.12 coordination/orchestrator/ingest_engineering_return.py \
+            --task-id "$TASK_ID" --head-before "$HEAD_BEFORE" \
+            --branch "$AUTOMATION_BRANCH"
+          rc=$?
+          echo "INGEST_RC=$rc" >> "$GITHUB_ENV"
+          # 0 accepted and committed; 3 refused and recorded, task unmoved;
+          # 2 unreadable state, which is a real build failure.
+          if [ $rc -eq 2 ]; then exit 1; fi
+          exit 0
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "## claude-engineering-dispatch"
+            echo ""
+            echo "| | |"
+            echo "|---|---|"
+            echo "| task | \`${{ github.event.inputs.task_id }}\` |"
+            echo "| branch | \`${AUTOMATION_BRANCH}\` (constant, not an input) |"
+            echo "| chain | \`${{ github.event.inputs.chain_id }}\` |"
+            echo "| pre-flight | \`${{ steps.preflight.outcome }}\` |"
+            echo "| claude conclusion | \`${{ steps.claude.outputs.conclusion }}\` |"
+            echo "| ingest | \`${INGEST_RC:-n/a}\` |"
+            echo ""
+            echo "Authority is committed state on the automation branch, not"
+            echo "these inputs. If the pre-flight refused, Claude did not run"
+            echo "and no subscription usage was consumed. The owner reviewer,"
+            echo "not this workflow, decides whether a task is COMPLETE."
+          } >> "$GITHUB_STEP_SUMMARY"
