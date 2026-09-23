@@ -56,4 +56,22 @@ the only transport that has ever been exercised end to end and because the
 comparison is the fastest way to diagnose a Claude Code failure. `MODELS.json`
 selects between them; nothing else in the runtime chooses.
 
+## D. The default-branch entry point
+
+`.github/workflows/claude-engineering.yml` lived only on this branch and was
+therefore **never dispatchable**: a `workflow_dispatch` workflow is only
+startable when its definition exists on the repository's default branch. That
+is the third time a trigger has been advertised where it could not be
+received, and like the other two it was invisible from inside the checkout.
+
+It is **removed from this branch**, not kept alongside a copy on `main`. A
+file claiming a trigger it cannot receive is a lie the repository tells, and
+two engineering workflows would drift.
+
+The single workflow is `.github/workflows/claude-engineering-dispatch.yml` on
+`main`. The reuse that matters is that every decision is made by Python
+living **here**, on the automation branch — `validate_engineering_run.py`,
+`claude_code_transport.py`, `ingest_engineering_return.py`. The default-branch
+file is thin glue, and no project state is duplicated onto it.
+
 **V2 NOT YET EARNED.**
