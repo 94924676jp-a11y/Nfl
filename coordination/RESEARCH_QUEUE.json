@@ -1,81 +1,144 @@
 {
- "artifact": "RESEARCH_QUEUE",
- "spec_version": "coordination-research-queue-0",
- "written_at_utc": "2026-09-23T01:37:35Z",
+ "schema": "RESEARCH_QUEUE",
+ "schema_version": "1.0.0",
+ "written_at_utc": "2026-09-23T01:40:13Z",
  "written_by": "claude",
- "owner_of_this_queue": "the research agent (network-capable)",
- "state_vocabulary": [
-  "QUEUED",
+ "status_vocabulary": [
+  "DRAFT",
+  "AUTHORIZED",
   "ACTIVE",
   "BLOCKED",
-  "DONE",
+  "RETURNED",
+  "COMPLETE",
   "SUPERSEDED"
  ],
- "why_this_queue_exists": "The engineering agent has NO network. Anything needing bytes from outside this checkout is the research agent's. Marking a task blocked on something outside the repository WITHOUT writing the request here is the error that has already cost this project real work twice: blocked means blocked for BOTH agents. If it is only blocked for one, it is not blocked, it is assigned.",
- "items": [
+ "execution_rule": "ONLY a task with authorized=true AND status=AUTHORIZED may be executed automatically.",
+ "exclusive_active": false,
+ "return_contract": "coordination/PERPLEXITY_RETURNS/<task_id>.md",
+ "why_this_queue_exists": "The engineering agent has NO network. Marking a task blocked on something outside this checkout WITHOUT writing it here is the error that has cost this project real work twice. Blocked means blocked for both agents; if it is only blocked for one, it is assigned.",
+ "tasks": [
   {
-   "id": "RES-1",
+   "task_id": "RES-001",
    "title": "Push the 2026-09-22 data-capability packet into this repo",
-   "state": "QUEUED",
-   "owner": "research",
+   "status": "AUTHORIZED",
    "priority": 1,
-   "detail": "The owner treats commit 099c502 and external-research/data-implementation-path-2026-09-22/ as the research baseline. Neither is reachable on any branch of 94924676jp-a11y/Nfl. Push or cherry-pick the ORIGINAL three artifacts preserving their bytes and hashes -- do not let engineering recreate them from excerpts.",
-   "blocks": [
-    "every citation to 099c502"
-   ]
+   "authorized": true,
+   "depends_on": [],
+   "objective": "Commit 099c502 and external-research/data-implementation-path-2026-09-22/ are unreachable on any branch. The owner treats them as the research baseline.",
+   "acceptance_tests": [
+    "the ORIGINAL three artifacts land with their bytes and hashes intact",
+    "engineering does NOT recreate them from excerpts"
+   ],
+   "created_by": "owner",
+   "result_path": null,
+   "commit_sha": null
   },
   {
-   "id": "RES-2",
+   "task_id": "RES-002",
    "title": "Reconcile the 2024 team-vs-opponent definitional gap",
-   "state": "QUEUED",
-   "owner": "research",
+   "status": "AUTHORIZED",
    "priority": 2,
-   "detail": "The packet reports +0.1201 for 2024. Re-derived from repo bytes with the repo's own verified DK adapter, four variants span +0.147 to +0.158 and none reproduces +0.1201. 2025 reproduces (+0.2068 vs +0.2034). The gap is most likely which players count as offense. Name the definition."
+   "authorized": true,
+   "depends_on": [],
+   "objective": "The packet reports +0.1201 for 2024. Four variants re-derived from repo bytes span +0.147 to +0.158; none reproduces it. 2025 reproduces.",
+   "acceptance_tests": [
+    "the offense-player definition behind +0.1201 is named",
+    "or the figure is withdrawn"
+   ],
+   "created_by": "owner",
+   "result_path": null,
+   "commit_sha": null
   },
   {
-   "id": "RES-3",
+   "task_id": "RES-003",
    "title": "Club game-release PDFs for one 2023 regular-season game",
-   "state": "QUEUED",
-   "owner": "research",
+   "status": "DRAFT",
    "priority": 3,
-   "for_task": "LANE2-MANIFEST",
-   "detail": "Raw bytes, source URL, retrieval time. Do NOT infer publication time from document content. If publication or capture evidence is unavailable, leave it NULL."
+   "authorized": false,
+   "depends_on": [
+    "ENG-001"
+   ],
+   "objective": "Raw bytes, source URL, retrieval time, for the ENG-008 slice.",
+   "acceptance_tests": [
+    "publication time is NOT inferred from document content",
+    "absent publication evidence leaves the field NULL and PIT unproved"
+   ],
+   "created_by": "owner",
+   "result_path": null,
+   "commit_sha": null
   },
   {
-   "id": "RES-4",
+   "task_id": "RES-004",
    "title": "Archived HRRR forecast run for the same game",
-   "state": "QUEUED",
-   "owner": "research",
+   "status": "DRAFT",
    "priority": 4,
-   "for_task": "LANE2-MANIFEST",
-   "detail": "An as-issued FORECAST file whose initialization precedes the cut and whose lead reaches kickoff. Temperature, sustained wind, gust, precipitation. Raw GRIB provenance and hashes. NOT analysis, NOT observation, NOT reanalysis, NOT stitched historical weather.",
-   "constraint": "Model initialization alone does NOT establish PIT admission. Return what evidence exists for publication or availability latency."
+   "authorized": false,
+   "depends_on": [
+    "ENG-001"
+   ],
+   "objective": "An as-issued FORECAST whose initialization precedes the cut.",
+   "acceptance_tests": [
+    "it is a forecast, not analysis, observation, reanalysis or stitched historical weather",
+    "the lead reaches kickoff",
+    "temperature, sustained wind, gust, precipitation extracted",
+    "raw GRIB provenance and hashes preserved",
+    "model initialization alone does NOT establish PIT admission"
+   ],
+   "created_by": "owner",
+   "result_path": null,
+   "commit_sha": null
   },
   {
-   "id": "RES-5",
-   "title": "DraftKings rights: scripted export permission",
-   "state": "QUEUED",
-   "owner": "research",
+   "task_id": "RES-005",
+   "title": "DraftKings scripted-export permission",
+   "status": "AUTHORIZED",
    "priority": 5,
-   "detail": "scripted_export_permitted is UNKNOWN and NOT STATED in any support article read. Routed to counsel by the packet. Capture stays MANUAL until resolved.",
-   "note": "UNKNOWN does not mean probably fine."
+   "authorized": true,
+   "depends_on": [],
+   "objective": "NOT STATED in any support article read; routed to counsel.",
+   "acceptance_tests": [
+    "a documented answer, or the UNKNOWN is restated with what was checked"
+   ],
+   "created_by": "owner",
+   "result_path": null,
+   "commit_sha": null,
+   "note": "UNKNOWN does not mean probably fine. Capture stays MANUAL."
   },
   {
-   "id": "RES-6",
+   "task_id": "RES-006",
    "title": "Commercial DFS backfill: trial before any integration",
-   "state": "QUEUED",
-   "owner": "research",
+   "status": "DRAFT",
    "priority": 6,
-   "detail": "stat-api.com and any other vendor: sample/trial -> schema verification -> overlap comparison against our own DK export -> timestamp/PIT verification -> licensing review. Only then a decision.",
-   "constraint": "Provider claims remain provider claims. No integration on the strength of this research alone."
+   "authorized": false,
+   "depends_on": [],
+   "objective": "stat-api.com or any vendor.",
+   "acceptance_tests": [
+    "sample or trial obtained",
+    "schema verified",
+    "overlap compared against our own DK export",
+    "timestamps PIT-verified",
+    "licensing reviewed",
+    "only then a recommendation"
+   ],
+   "created_by": "owner",
+   "result_path": null,
+   "commit_sha": null,
+   "note": "Provider claims remain provider claims."
   },
   {
-   "id": "RES-7",
+   "task_id": "RES-007",
    "title": "Open-Meteo forecast-vintage licensing for production",
-   "state": "QUEUED",
-   "owner": "research",
+   "status": "DRAFT",
    "priority": 7,
-   "detail": "Research-only until production licensing is resolved."
+   "authorized": false,
+   "depends_on": [],
+   "objective": "Research-only until production licensing resolves.",
+   "acceptance_tests": [
+    "a licensing answer for production use"
+   ],
+   "created_by": "owner",
+   "result_path": null,
+   "commit_sha": null
   }
  ]
 }

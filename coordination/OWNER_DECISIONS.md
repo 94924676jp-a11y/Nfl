@@ -1,152 +1,163 @@
 # Owner decisions
 
-**This file is the record of what the owner ruled, not what anyone inferred.**
-An entry appears here only when the owner stated it. Where an agent proposed
-something and the owner did not answer, it belongs in a queue as OPEN, not
-here as a decision.
+**Active rulings. This file is written only by an OWNER task.** No agent edits
+it on its own initiative; `validate_coordination.py` fails if a decision
+heading disappears without a superseding entry.
 
-Each entry carries the date, the ruling in the owner's terms, and where it is
-enforced — because a ruling with no enforcement point is a preference, and a
-preference drifts.
+Each ruling carries the date, the ruling, and **where it is enforced** — a
+ruling with no enforcement point is a preference, and preferences drift.
 
 ---
 
-## 2026-09-23 — Draw coherence is promoted, with applicability that proves itself
+## D-01 · A frozen identity means the frozen bytes reproduce, not that the working tree is current
 
-`SIMULATION_DRAW_COHERENCE_VIOLATED` moves to `ADVERTISED_INTEGRITY`. For a
-governed publishable simulation artifact, draw coherence is a **required**
-invariant, and a missing evaluation may not be treated as equivalent to a
-pass.
+The Q9 pin is a **reproduction contract**. It asserts that these exact bytes
+produced this candidate's numbers and that a re-run must use them. It does not
+assert that the file may never change — forbidding that would freeze the
+repository rather than the candidate.
 
-**Fix the fixtures, not the rule.** A fixture blocked by promotion is repaired
-into a governed artifact, or declares explicitly that it holds no publishable
-simulation population. Not grandfathered, not turned into a hard-coded PASS,
-no fabricated certificate, no weakened checker.
+What must be proved: the pin was correct at freeze time; the exact blob is
+still retrievable; the candidate reproduces from the pinned dependency set;
+reproduction reads the **frozen** bytes, not the working tree.
 
-**Applicability semantics.** `APPLICABLE_AND_CHECKED`,
-`APPLICABLE_BUT_NOT_CHECKED`, `NOT_APPLICABLE`. The middle one BLOCKS.
-`NOT_APPLICABLE` requires evidence that the governed artifact does not contain
-the population being checked — an absent array is not evidence, and an
-artifact that claims to be a full NFL simulation is applicable even without a
-quarterback row.
+Working-tree divergence is a separate, informational diagnostic
+(`WORKING_TREE_DIVERGED_FROM_FROZEN_CANDIDATE`). It is governance evidence
+about the tree, never evidence that the candidate is invalid.
 
-*Enforced by:* `nfl/production/integrity/contract.py` (`Applicability` refuses
-NOT_APPLICABLE without evidence), `review/gate.py::assert_producer_coverage`,
-`nfl/tests/test_conservation_integrity.py`.
+*Do not move the pin. Do not rewrite the Q9 identity. Do not revert
+`layers.py`.*
 
-## 2026-09-23 — One integrity code means one invariant, owned by one producer
+**Enforced by:** `nfl/production/frozen_candidate.py`;
+`nfl/research/q9b/FREEZE_PIN_DIVERGED.md`.
 
-Keep `OPPORTUNITY_CONSERVATION_FAILURE`, `OPPORTUNITY_CONSUMER_OUT_OF_SCOPE`
-and `SIMULATION_DRAW_COHERENCE_VIOLATED` separate. Do not merge them.
+## D-02 · A REFUSED artifact is not a sealed board
 
-*Enforced by:* `IntegrityReport.compose` refusing a code claimed by two
-producers; `nfl/production/conservation_integrity.py`.
+A run whose authoritative status is `REFUSED` did not seal and is not a
+publishable board. It stays discoverable as a refused run for audit.
 
-## 2026-09-23 — The chain→review bridge transports, it does not recompute
+**Enforced by:** `nfl/research/sealed_index.py::artifact_kind`;
+`nfl/tests/test_artifact_kind.py`.
 
-Review consumes a stored governed verdict and its certificate. Review must not
-recompute from partial inputs. A malformed or mismatched certificate blocks; a
-missing verdict is `NOT_CHECKED`. The bridge must not create a second
-authority for conservation — the authoritative producer remains the existing
-owner.
-
-*Enforced by:* `nfl/production/universe/conservation_bridge.py`,
-`review/gated_projection.py`.
-
-## 2026-09-23 — Advertise only what production actually executes
-
-An integrity code is restored from RELINQUISHED to ADVERTISED only after:
-producer exists **AND** the production path executes it **AND** stored evidence
-reaches review **AND** `NOT_CHECKED` blocks **AND** a corrupted fixture fails
-end to end.
-
-*Status:* the allocation codes remain RELINQUISHED. `run_chain.run` has no
-orchestrating caller, so nothing places a bridge beside a forecast review.
-
-## 2026-09-23 — Ruling 1: the Q9 pin is a reproduction contract
-
-Classified `POST_FREEZE_DEPENDENCY_DRIFT`, frozen candidate remains
-reproducible. The assertion must prove the pin was correct at freeze time, the
-blob is still retrievable, the candidate is reproducible from the pinned
-dependency set, and reproduction reads the frozen bytes rather than the
-working tree.
-
-**Do not move the pin. Do not rewrite the Q9 identity. Do not revert
-`layers.py`.** Working-tree divergence is a separate diagnostic and is
-informational governance evidence, not evidence the candidate is invalid.
-
-*Enforced by:* `nfl/production/frozen_candidate.py`;
-`nfl/research/q9b/FREEZE_PIN_DIVERGED.md` corrected in place with the original
-preserved.
-
-## 2026-09-23 — Ruling 2: a sealed board is what the artifact declares
+## D-03 · A non-board artifact is not discovered as a board because draw files exist
 
 A governed sealed board is **not** "a directory containing
 `player_draws.npz`". Discovery honours the artifact's own machine-readable
-declarations. A REFUSED run is not a publishable board and stays discoverable
-for audit. An artifact declaring it is not a board is not promoted because it
-holds draws. Missing or contradictory declarations **fail closed**.
+declarations, a declared non-board wins over a seal marker, overlay and
+zero-delta artifacts are treated by their declared type, and missing or
+contradictory declarations **fail closed** rather than being guessed into a
+board.
 
 This is a truth-model correction, not a test-only exception.
 
-*Enforced by:* `nfl/research/sealed_index.py::artifact_kind`,
-`nfl/tests/test_artifact_kind.py`.
+**Enforced by:** `sealed_index.artifact_kind` / `sealed_boards` /
+`classify_live`; `nfl/tests/test_artifact_kind.py`.
 
-## 2026-09-23 — Ruling 3: `run_suite` is the authoritative execution path
+## D-04 · Recovered historical content is not PIT-admissible content
 
-Direct `python3.12 module.py` execution is **not** a passing test result
-unless the module implements that contract. A module containing checks that
-the runner discovers as zero executable checks is reported
-`TEST_MODULE_NOT_EXECUTED` and fails the suite.
+`CONTENT_RECOVERED` ≠ `AVAILABLE_BY_CUT_PROVEN`. Discovery, acquisition,
+parsing, identity resolution and PIT admission are separate stages, and no
+later stage may be inferred from an earlier one.
 
-*Enforced by:* `nfl/tests/run_suite.py`, `nfl/tests/test_harness_audit.py`.
+A printed "as of" date does not establish publication time. A model
+initialization time does not establish availability. A first-observed time is
+not a first-published time. An artifact recovered after a cut does not become
+admissible retroactively.
 
-## 2026-09-23 — Sequencing
+**Enforced by:** `nfl/production/dependence.py` (replay evidence states);
+to be extended by ENG-008.
 
-1. Finish Lane 1 and resolve the serious UNKNOWN reds and the Q9 mismatch.
-2. Build the HistoricalArtifactManifest vertical slice — **blocked until
-   `REPLAY_RE_SELECTS` is corrected**.
-3. Scale historical recovery only after the slice proves the contracts.
-4. Start SimulationCalibration A/B/C/D.
+## D-05 · `state_at_cut` excludes PIT-unproved historical evidence
 
-Do not start SimulationCalibration. Do not start the manifest until R14 is
-fixed.
+Evidence that was recovered but whose availability by the cut is unproven does
+not enter the state a forecast is built from. It is recorded as
+`RECOVERED_CONTENT_PIT_UNPROVED`, which is truthful historical reconstruction
+evidence and is **not** failure — but it is not admissible input either.
 
-## 2026-09-23 — The red suite acceptance standard
+A cut cannot become `PIT_SAFE` because some subset of its evidence is.
 
-The goal is not "all tests green at any cost". Every red test is either
-repaired because the product was wrong, repaired because the test was wrong,
-or **intentionally red with a documented governance or historical reason**.
-UNKNOWN must trend toward zero, and may remain UNKNOWN where evidence is
-insufficient. Do not force a classification for cosmetic completion.
+**Enforced by:** `dependence.ReplayEvidenceStatus`, `dependence.for_cut`
+(`PIT_SAFE` / `HISTORICAL_RECONSTRUCTION_ONLY` / `UNRECOVERABLE_FOR_CUT`);
+to be extended by ENG-008.
 
-## 2026-09-22 — DFS archival, and what stays unbuilt
+## D-06 · Canonical facts are OBSERVED, DERIVED, PROXY or UNAVAILABLE
 
-Build only the durable historical DFS archival foundation. **Do not build**
-`OwnershipModel`, `FieldSimulator`, `PayoutEV` or `PortfolioOptimizer`.
-Manual acquisition only until automation permission is resolved. Raw bytes are
-evidence; derivatives are generated separately.
+A canonical fact carries which of the four it is. `UNAVAILABLE` is a real
+value and stays one; it is never resolved by inference, and absence of
+evidence is never evidence of absence.
 
-## 2026-09-22 — The sign-error target is retracted
+**Enforced by:** `nfl/production/review/evidence.py` grades;
+`nfl/production/state/` canonical facts.
 
-The simulated team-vs-opponent value of −0.128 is **UNVERIFIED** and is not a
-calibration target. Historical across-game correlation and within-game
-across-world correlation are different estimands and their numerical equality
-is not a target. Every dependence metric must name its population,
-conditioning state, random dimension, outcome definition and aggregation
-level.
+## D-07 · LATENT estimates are model outputs, not canonical historical truth
 
-*Enforced by:* `nfl/production/dependence.py`.
+A latent quantity the model estimates does not enter canonical state. Canonical
+state carries what was observed, derived or proxied from evidence that existed
+at the cut. A model's estimate of an unobserved quantity is an output, and
+writing it back into canonical truth would make the model its own evidence.
 
-## 2026-09-22 — Replay evidence is a cut-level verdict
+**Enforced by:** the canonical-state boundary; `PregameSlateState` is the one
+lawful reader.
 
-`PIT_SAFE` / `HISTORICAL_RECONSTRUCTION_ONLY` / `UNRECOVERABLE_FOR_CUT`. A cut
-carrying an unrecoverable requirement **may not be presented as a backtest**.
+## D-08 · Sportsbook information is downstream diagnostic only
 
-*Enforced by:* `dependence.ReplayEvidenceStatus`, `dependence.for_cut`.
+Sportsbook prices must not become predictive inputs into the football model.
+Ownership, `% Drafted`, field composition, duplication, payout structure,
+optimizer metrics and Vegas-derived fields must not flow backward into player
+projections, team volume, role, efficiency, appearance, game simulation or
+touchdown probability.
 
-## Standing, unchanged
+**Enforced by:** `nfl/tests/test_dfs_history.py` (structural isolation);
+`nfl/production/DFS_ARCHITECTURE.md` (one-directional arrow).
 
-`G0A` 11/12. `NFL-1` NOT AUTHORIZED. `V2` NOT YET EARNED. Q9 promotion state
-untouched. Historical reconstruction, however good, cannot satisfy a genuine
-unattended event-anchored prospective T−90 requirement.
+## D-09 · SimulationCalibration is not authorized for implementation
+
+Registered as the next scientific workstream. Not started, not authorized.
+Recorded requirements: A/B/C/D arms; marginal CRPS; randomized PIT; accounting
+invariants; energy score; variogram score; prespecified joint-exceedance
+events; deterministic hierarchical RNG streams; saved shared-world causal
+trace.
+
+**Variogram score is a required diagnostic, never a standalone promotion
+criterion.** No simulator is promoted because one score improved.
+
+**Enforced by:** `ENGINEERING_QUEUE.json` ENG-012 `authorized=false`;
+`nfl/production/dependence.py`.
+
+## D-10 · HistoricalArtifactManifest waits on replay-selection correctness
+
+The manifest is not begun until `REPLAY_RE_SELECTS` is corrected. Building a
+historical manifest on a replay that re-selects against today's manifest would
+put the contract on top of the defect it exists to prevent.
+
+**Enforced by:** `ENGINEERING_QUEUE.json` ENG-008 `depends_on: [ENG-001]`,
+`authorized=false`.
+
+## D-11 · V2 NOT YET EARNED
+
+`G0A` 11/12. `NFL-1` NOT AUTHORIZED. Accepted baseline **R8**. Q9 candidate
+identity `6310f67ccb8b0edf`, **unpromoted**. Historical reconstruction,
+however good, cannot satisfy a genuine unattended event-anchored prospective
+T−90 requirement.
+
+**Enforced by:** `nfl/production/authorization.py`.
+
+---
+
+## Supporting rulings, same standing
+
+- **A required invariant that nobody evaluated is not a passing invariant.**
+  `NOT_APPLICABLE` requires evidence that the artifact lacks the population
+  being checked; an absent array is not evidence.
+- **One integrity code means one invariant owned by one authoritative
+  producer.**
+- **Advertise only what production executes.** Producer exists AND production
+  executes it AND evidence survives transport AND review consumes the stored
+  result AND `NOT_CHECKED` blocks AND a corrupted fixture fails end to end.
+- **`run_suite` is the authoritative test execution path.** A zero exit code
+  from direct module invocation is not a test result.
+- **The red suite standard is not "green at any cost."** Every red test is
+  repaired because the product was wrong, repaired because the test was wrong,
+  or intentionally red with a documented reason. UNKNOWN trends toward zero and
+  may remain UNKNOWN where evidence is insufficient.
+- **Fix the fixtures, not the rule.** No hard-coded PASS, no fabricated
+  certificate, no weakened checker.

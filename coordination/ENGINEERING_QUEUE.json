@@ -1,140 +1,244 @@
 {
- "artifact": "ENGINEERING_QUEUE",
- "spec_version": "coordination-engineering-queue-0",
- "written_at_utc": "2026-09-23T01:37:35Z",
+ "schema": "ENGINEERING_QUEUE",
+ "schema_version": "1.0.0",
+ "written_at_utc": "2026-09-23T01:40:13Z",
  "written_by": "claude",
- "owner_of_this_queue": "claude (engineering agent)",
- "state_vocabulary": [
-  "QUEUED",
+ "status_vocabulary": [
+  "DRAFT",
+  "AUTHORIZED",
   "ACTIVE",
   "BLOCKED",
-  "DONE",
+  "RETURNED",
+  "COMPLETE",
   "SUPERSEDED"
  ],
- "rules": [
-  "A state outside state_vocabulary is a defect, not a nuance. nfl/WORK_QUEUE.md currently carries three rows reading 'DONE (2026-09-20)' and agent_state raises on them -- do not repeat that here.",
-  "blocked_by names the thing that must finish first, by id or by a code an agent can grep for. 'Blocked' with no cause is not a state.",
-  "DONE requires a commit sha. A task marked done with no artifact is a claim, not a record.",
-  "An item an agent decided for itself goes in with owner and rationale. An item the owner ruled goes in OWNER_DECISIONS.md first and is referenced from here."
- ],
- "items": [
+ "execution_rule": "ONLY a task with authorized=true AND status=AUTHORIZED may be executed automatically. Any other combination requires an owner action first. validate_coordination.py enforces this.",
+ "exclusive_active": true,
+ "exclusive_active_note": "At most ONE engineering task may be ACTIVE. Three partially-implemented foundational workstreams at once is the state this queue exists to prevent.",
+ "return_contract": "coordination/CLAUDE_RETURNS/<task_id>.md",
+ "tasks": [
   {
-   "id": "R14",
-   "title": "REPLAY_RE_SELECTS: replay must consume the sealed input set",
-   "state": "QUEUED",
-   "owner": "claude",
+   "task_id": "ENG-001",
+   "title": "REPLAY_RE_SELECTS: replay consumes the sealed input set",
+   "status": "AUTHORIZED",
    "priority": 1,
-   "blocks": [
-    "LANE2-MANIFEST"
+   "authorized": true,
+   "depends_on": [],
+   "objective": "The seal records an input set and nothing can consume it, so every replay re-selects against today's manifest. Make replay consume the exact historical input manifest the seal references.",
+   "acceptance_tests": [
+    "sealed source identities are explicit",
+    "exact raw artifact identities and hashes are consumed",
+    "missing sealed inputs fail closed",
+    "current source availability cannot substitute for a missing sealed artifact",
+    "sources added after the historical run cannot enter replay",
+    "changed current source-selection logic cannot alter the sealed input set",
+    "NEGATIVE FIXTURE: historical seal A + current manifest containing newer source B -> replay consumes A only"
    ],
-   "detail": "The seal records an input set and nothing can consume it, so every replay re-selects against today's manifest. Sealed source identities explicit; exact raw artifact hashes consumed; missing sealed inputs fail closed; current availability cannot substitute; sources added after the historical run cannot enter replay.",
-   "acceptance": "negative fixture: historical seal A plus a current manifest containing newer source B -> replay consumes A only",
+   "created_by": "owner",
+   "result_path": null,
+   "commit_sha": null,
+   "blocks": [
+    "ENG-008"
+   ],
    "evidence": "nfl/tests/test_replay_pins_its_inputs.py, D23"
   },
   {
-   "id": "L1-ORCH",
-   "title": "Orchestration so the conservation bridge is production-reachable",
-   "state": "QUEUED",
-   "owner": "claude",
+   "task_id": "ENG-002",
+   "title": "Orchestration: make the conservation bridge production-reachable",
+   "status": "AUTHORIZED",
    "priority": 2,
-   "detail": "run_chain.run has NO caller outside its own CLI, so nothing places a bridge artifact beside a forecast review. The carrier exists and is wired; the orchestration does not.",
-   "constraint": "The orchestrator may transport the governed result. The authoritative producer remains the existing conservation owner. Do not create a second authority.",
-   "evidence": "nfl/tests/test_conservation_integrity.py asserts the absence"
+   "authorized": true,
+   "depends_on": [],
+   "objective": "run_chain.run has no caller outside its own CLI, so nothing places a bridge artifact beside a forecast review. The carrier exists and is wired; the orchestration does not.",
+   "acceptance_tests": [
+    "a chain result reaches the review directory on the production path",
+    "the bridge certificate verifies",
+    "conservation_integrity producers report CHECKED rather than NOT_CHECKED",
+    "the orchestrator does NOT create a second authority: the authoritative producer remains universe.allocation.assert_allocation_conserves"
+   ],
+   "created_by": "owner",
+   "result_path": null,
+   "commit_sha": null
   },
   {
-   "id": "L1-READVERTISE",
-   "title": "Restore OPPORTUNITY_CONSERVATION_FAILURE and OPPORTUNITY_CONSUMER_OUT_OF_SCOPE to ADVERTISED",
-   "state": "BLOCKED",
-   "owner": "claude",
+   "task_id": "ENG-003",
+   "title": "Re-advertise the two allocation integrity codes",
+   "status": "BLOCKED",
    "priority": 3,
-   "blocked_by": "L1-ORCH",
-   "acceptance": "producer exists AND production executes it AND evidence survives transport AND review consumes the stored governed result AND NOT_CHECKED blocks AND a corrupted fixture fails end to end"
+   "authorized": false,
+   "depends_on": [
+    "ENG-002"
+   ],
+   "objective": "Restore OPPORTUNITY_CONSERVATION_FAILURE and OPPORTUNITY_CONSUMER_OUT_OF_SCOPE from RELINQUISHED to ADVERTISED.",
+   "acceptance_tests": [
+    "producer exists",
+    "production path executes it",
+    "stored evidence reaches review",
+    "review consumes the stored governed result",
+    "NOT_CHECKED blocks",
+    "corrupted fixture fails end to end"
+   ],
+   "created_by": "owner",
+   "result_path": null,
+   "commit_sha": null
   },
   {
-   "id": "L1-FORBIDDEN",
+   "task_id": "ENG-004",
    "title": "Wire forbidden-external-input integrity",
-   "state": "QUEUED",
-   "owner": "claude",
+   "status": "AUTHORIZED",
    "priority": 4,
-   "detail": "pipeline.assert_no_postgame_inputs runs and refuses a stage declaring a postgame field; adjustment_registry refuses an undeclared re-application. Neither reaches the gate."
+   "authorized": true,
+   "depends_on": [],
+   "objective": "pipeline.assert_no_postgame_inputs and adjustment_registry both refuse today and neither verdict reaches the gate.",
+   "acceptance_tests": [
+    "a producer emits the pipeline declaration verdict as an IntegrityReport",
+    "gated_projection runs it on the production path",
+    "a corrupted fixture declaring a postgame field blocks end to end",
+    "NOT_CHECKED blocks"
+   ],
+   "created_by": "owner",
+   "result_path": null,
+   "commit_sha": null
   },
   {
-   "id": "L1-IDENTITY",
+   "task_id": "ENG-005",
    "title": "Wire unresolved inactive-identity integrity",
-   "state": "QUEUED",
-   "owner": "claude",
+   "status": "AUTHORIZED",
    "priority": 5,
-   "detail": "player_universe classifies an unresolvable row IDENTITY_UNRESOLVED and inactives.resolve refuses an ambiguous name. Neither result is surfaced as a finding, so a slate where an inactive could not be attached to a named player reads the same as one where every name resolved."
+   "authorized": true,
+   "depends_on": [],
+   "objective": "player_universe classifies an unresolvable row IDENTITY_UNRESOLVED and inactives.resolve refuses an ambiguous name; neither is surfaced, so a slate where an inactive could not be attached reads the same as one where every name resolved.",
+   "acceptance_tests": [
+    "a finding is emitted for an inactive declaration with no canonical id",
+    "gated_projection runs it",
+    "a corrupted fixture with an unresolvable inactive blocks end to end"
+   ],
+   "created_by": "owner",
+   "result_path": null,
+   "commit_sha": null
   },
   {
-   "id": "L1-BOARD",
+   "task_id": "ENG-006",
    "title": "Board canonical-state migration",
-   "state": "QUEUED",
-   "owner": "claude",
-   "priority": 6
+   "status": "AUTHORIZED",
+   "priority": 6,
+   "authorized": true,
+   "depends_on": [],
+   "objective": "Migrate the board to PregameSlateState canonical facts.",
+   "acceptance_tests": [
+    "field equivalence against the pre-migration board, declared changes only",
+    "no new football truth is created by the board"
+   ],
+   "created_by": "owner",
+   "result_path": null,
+   "commit_sha": null
   },
   {
-   "id": "USAGE-VINTAGE",
+   "task_id": "ENG-007",
    "title": "usage_vintage.py reads a vintage it never declared",
-   "state": "QUEUED",
-   "owner": "claude",
+   "status": "AUTHORIZED",
    "priority": 7,
-   "detail": "Leakage-adjacent. Classify exactly: undeclared source read / declaration drift / parser mismatch / manifest mismatch / other. Then ensure every consumed vintage is in the governed declared input set.",
-   "constraint": "Do NOT regenerate the p7 inventory away -- UNDECLARED_VINTAGE_READ is not regenerable and the inventory refresh would erase the evidence."
+   "authorized": true,
+   "depends_on": [],
+   "objective": "Leakage-adjacent. Classify exactly, then ensure every consumed vintage is in the governed declared input set.",
+   "acceptance_tests": [
+    "classified as exactly one of: undeclared source read / declaration drift / parser mismatch / manifest mismatch / other",
+    "every consumed vintage present in the declared input set",
+    "the p7 inventory is NOT regenerated away -- UNDECLARED_VINTAGE_READ is not regenerable and a refresh would erase the evidence"
+   ],
+   "created_by": "owner",
+   "result_path": null,
+   "commit_sha": null
   },
   {
-   "id": "FIN-2-DRIFT",
-   "title": "SURVIVORSHIP_AUDIT.json 22,821 vs measured 22,037",
-   "state": "QUEUED",
-   "owner": "claude",
-   "priority": 8,
-   "detail": "Determine whether the difference is changed corpus, changed measurement, changed eligibility, changed artifact or stale completed-task output. Do not overwrite the old audit. Return whether FIN-2 remains valid, stale, or requires re-sealing.",
-   "note": "A task marked DONE cannot silently retain an audit artifact that no longer reproduces its own measurement."
-  },
-  {
-   "id": "ESC-1-DETBUF",
-   "title": "Verify or refute the detbuf conservation failures",
-   "state": "QUEUED",
-   "owner": "claude",
-   "priority": 9,
-   "detail": "test_detbuf_conservation, newly visible, reports passing yards != receiving yards in 7,996 of 8,000 draws (worst 1.29e+03) and passing TD != receiving TD in 6,103 of 8,000 on pre_inactives_V1_CANDIDATE_R9_W1P_GA/117a78668a0b7a0e.",
-   "caution": "The module's own docstring records TWO earlier misreads of the row mapping. This is not a defect until independently checked."
-  },
-  {
-   "id": "REDS-UNKNOWN",
-   "title": "Three remaining UNKNOWN red modules",
-   "state": "QUEUED",
-   "owner": "claude",
-   "priority": 10,
-   "detail": "test_execution_identity, test_inactives_substance, test_q9_live_feature_builder. inactives_substance and capture_obligations both report 20 game-anchored rows uncredited against an expected 18 -- the same +2 drift, so they probably share a root.",
-   "note": "UNKNOWN may remain UNKNOWN. Do not force a classification."
-  },
-  {
-   "id": "LANE2-MANIFEST",
+   "task_id": "ENG-008",
    "title": "HistoricalArtifactManifest vertical slice",
-   "state": "BLOCKED",
-   "owner": "claude",
-   "priority": 11,
-   "blocked_by": "R14",
-   "detail": "One 2023 regular-season game. Choose the game and resolve kickoff BEFORE defining cuts -- every cut must precede kickoff, and a Thursday game gets Monday/Tuesday/Wednesday/T-90, not Friday/Sunday. PIT decisions are artifact x cut. first_observed_at stays distinct from source_published_at."
+   "status": "BLOCKED",
+   "priority": 8,
+   "authorized": false,
+   "depends_on": [
+    "ENG-001"
+   ],
+   "objective": "One 2023 regular-season game. Choose the game and resolve kickoff BEFORE defining cuts. PIT decisions are artifact x cut. first_observed_at stays distinct from source_published_at.",
+   "acceptance_tests": [
+    "every cut precedes kickoff and is derived from the selected game",
+    "CONTENT_RECOVERED and AVAILABLE_BY_CUT_PROVEN are separate states",
+    "no affirmative PIT admission without named evidence",
+    "negative fixtures: as-of date does not imply publication; initialization does not imply availability; first-observed does not imply first-published; post-cut recovery is not retroactively admissible"
+   ],
+   "created_by": "owner",
+   "result_path": null,
+   "commit_sha": null
   },
   {
-   "id": "LANE3-SIMCAL",
+   "task_id": "ENG-009",
+   "title": "FIN-2 survivorship audit drift: 22,821 vs 22,037",
+   "status": "AUTHORIZED",
+   "priority": 9,
+   "authorized": true,
+   "depends_on": [],
+   "objective": "A task marked DONE retains an audit artifact that no longer reproduces its own measurement.",
+   "acceptance_tests": [
+    "classified as changed corpus / changed measurement / changed eligibility / changed artifact / stale completed-task output",
+    "counts grouped by artifact-run, season-week, producer version, source path",
+    "the old audit is NOT overwritten",
+    "returns whether FIN-2 is valid, stale, or requires re-sealing"
+   ],
+   "created_by": "owner",
+   "result_path": null,
+   "commit_sha": null
+  },
+  {
+   "task_id": "ENG-010",
+   "title": "Verify or refute the detbuf conservation failures",
+   "status": "AUTHORIZED",
+   "priority": 10,
+   "authorized": true,
+   "depends_on": [],
+   "objective": "Newly visible after the R9 harness repair: passing yards != receiving yards in 7,996 of 8,000 draws, passing TD != receiving TD in 6,103 of 8,000, on pre_inactives_V1_CANDIDATE_R9_W1P_GA/117a78668a0b7a0e.",
+   "acceptance_tests": [
+    "row mapping independently re-derived through layers[*].row_ids",
+    "float tolerance applied to summed arrays",
+    "verdict is DEFECT or MISREAD, with evidence either way"
+   ],
+   "created_by": "claude",
+   "result_path": null,
+   "commit_sha": null,
+   "caution": "That module's docstring records TWO earlier misreads of its row mapping. Not a defect until independently checked."
+  },
+  {
+   "task_id": "ENG-011",
+   "title": "Three remaining UNKNOWN red modules",
+   "status": "AUTHORIZED",
+   "priority": 11,
+   "authorized": true,
+   "depends_on": [],
+   "objective": "test_execution_identity, test_inactives_substance, test_q9_live_feature_builder.",
+   "acceptance_tests": [
+    "each assigned exactly one category with evidence",
+    "the shared +2 drift between inactives_substance and capture_obligations is investigated as one root",
+    "UNKNOWN may remain UNKNOWN -- do not force a classification"
+   ],
+   "created_by": "claude",
+   "result_path": null,
+   "commit_sha": null
+  },
+  {
+   "task_id": "ENG-012",
    "title": "SimulationCalibration A/B/C/D",
-   "state": "BLOCKED",
-   "owner": "claude",
+   "status": "DRAFT",
    "priority": 12,
-   "blocked_by": "LANE2-MANIFEST",
-   "detail": "A independent calibrated marginals, B shared game/team factors, C hierarchical opportunity worlds, D drive-conditioned challenger ONLY if needed.",
-   "registered_requirements": [
-    "first question is whether one simulation column is a coherent shared football world across players",
-    "COLUMN_ALIGNED is not SHARED_FOOTBALL_WORLD",
-    "artifacts declaring INDEPENDENT_STREAMS_COLUMN_ALIGNED are DEPENDENCE_CALIBRATION_INELIGIBLE",
-    "marginal CRPS, randomized PIT, accounting invariants, energy score, variogram score, prespecified joint-exceedance events",
-    "variogram score is a required DIAGNOSTIC, never a standalone promotion criterion",
-    "deterministic hierarchical RNG streams: slate_seed, game_seed(world), team_seed(world, team), component_seed(world, component)",
-    "saved shared-world causal trace"
-   ]
+   "authorized": false,
+   "depends_on": [
+    "ENG-008"
+   ],
+   "objective": "Registered, NOT authorized for implementation.",
+   "acceptance_tests": [
+    "owner authorization required before any work begins"
+   ],
+   "created_by": "owner",
+   "result_path": null,
+   "commit_sha": null
   }
  ]
 }
