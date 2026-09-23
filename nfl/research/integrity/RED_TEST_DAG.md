@@ -110,7 +110,43 @@ R16 nfl/WORK_QUEUE.md carries three statuses        REAL_PRODUCTION_DEFECT
 R17 layers.py declares HOLD_TENTATIVE three times,  OBSOLETE_CONTRACT
     the test pins two
       -> test_governance_transport
+
+R18 the R5 status refusal was DELIBERATELY changed   OBSOLETE_CONTRACT
+    from fatal to a fallback; the test pins fatal
+      -> test_r5_active_pool
+
+R19 the committed play-by-play corpus is a           OBSOLETE_CONTRACT
+    DECLARED source; the test pins the pre-corpus
+    "absent means BLOCKED" contract
+      -> test_v1_rushing_a1
 ```
+
+## R18 and R19 are the same shape, and it is worth naming
+
+Both are a production behaviour that changed **deliberately, with the reason
+written into the code**, and a test that still pins the old contract.
+
+R18, from `run_forecast.py` inside the R5 branch:
+
+> "This was `fatal`, and on 2026 week 2 it fired: no raw weekly-roster capture
+> carries `status` for week 2, because the vintage reduction drops the column,
+> so `status_map` returned `ROSTER_STATUS_EMPTY` and DET-BUF produced no
+> running back, no receiver and no tight end for either club. Missing evidence
+> about roster STATUS was being read as a claim that the participant UNIVERSE
+> is empty."
+
+Note the root: *the vintage reduction drops the column*. That is the same
+family as **R4**, where no club has a 2026 week-1 injuries row in any capture.
+One capture-reduction defect, two symptoms, several red modules.
+
+R19, from `rushing_a1.pbp_sources`: the docstring still says play-by-play "is
+NOT committed to this repository" and BLOCKS when absent, while the code
+beneath it declares the committed corpus as a source and returns PASS. **The
+docstring now contradicts the function it documents** -- a small real defect,
+and the reason this one took a direct read rather than a grep to settle.
+
+Neither is a case of a guard going missing. Both need the TEST updated to the
+contract production now declares, and R19 needs its docstring corrected.
 
 ## R15 IS WITHDRAWN, AND THE MISTAKE IS WORTH KEEPING
 
@@ -171,7 +207,7 @@ for roughly half of these files, and answers it silently.
 | test_q9_live_feature_builder | 5+1 | UNKNOWN | — | `record 482/0 vs run 481/0`; an off-by-one in a window comparison |
 | test_qb2_production | 13+2 | EXPECTED_GOVERNANCE_FAILURE | R1 | `the run seals [REFUSED]` |
 | test_qb_eligibility_den_kc | 2+1 | OBSOLETE_CONTRACT | R2 | same pin |
-| test_r5_active_pool | 2+1 | UNKNOWN | — | `the R5 branch returns a fatal on a status refusal` and `it never falls back to the unfiltered list`, both empty-detail; needs a read of the R5 branch |
+| test_r5_active_pool | 2+1 | OBSOLETE_CONTRACT (+TEST_BUG) | R18 | `{'fatal': st}` is gone from run_forecast.py ENTIRELY; the branch now documents why it was deliberately removed. Second check `'except' not in window` trips on an unrelated name-lookup fallback inside an 11,634-char window |
 | test_readiness_vintage_cut | 2+1 | HISTORICAL_ARTIFACT_MISSING | R4 | no 2026 wk-1 injuries row in any capture |
 | test_replay_pins_its_inputs | 1 | REAL_PRODUCTION_DEFECT | R14 | `REPLAY_RE_SELECTS` (D23) |
 | test_sc2_interception_reservation | 1+1 | REAL_PRODUCTION_DEFECT | — | fitted 0.5390 vs injected 0.9251 (open task SC2-A) |
@@ -179,18 +215,18 @@ for roughly half of these files, and answers it silently.
 | test_stat_contract | 2 | REAL_PRODUCTION_DEFECT | R7 | 271,691 non-integer, all week 1 |
 | test_system_state | 5+1 | OBSOLETE_CONTRACT + STALE_FIXTURE | R8 + R10 | `KeyError: items`; `regenerate: system_state.py --write` |
 | test_v1_draw_artifact | 3 | STALE_FIXTURE | R13 | `REQUIRED_SOURCE_NOT_DECLARED`: declares `['schedules']`, selects four |
-| test_v1_rushing_a1 | 3 | UNKNOWN | — | clears `PBP_GLOB_ENV` and expects BLOCKED; gets `A1_PBP_SOURCES`. Either the fixture's way of making a source absent stopped working (STALE_FIXTURE) or a fallback path is being taken that should not be (REAL). Not established. |
+| test_v1_rushing_a1 | 3 | OBSOLETE_CONTRACT | R19 | with `PBP_GLOB_ENV` cleared, `pbp_sources()` returns PASS `A1_PBP_SOURCES`, "7 committed play-by-play file(s) from nfl/research/postgame". The committed corpus is a DECLARED source, added deliberately; the test asserts the pre-corpus contract |
 
 ## Where this leaves UNKNOWN
 
-**Four modules, down from twenty, after R15 was withdrawn put two back.**
+**Three modules, after R18 and R19 were settled by direct reads.**
 `test_inactives_substance` (48 of 50 carry the empty-state sentence; 382 vs
 what D20 records; 20 game-anchored rows uncredited against an expected 18 --
 the same +2 drift `test_capture_obligations` reports, so these two probably
 share a root), `test_q9_live_feature_builder` (record 482/0 vs run 481/0),
-`test_r5_active_pool`, `test_v1_rushing_a1`, and `test_execution_identity`
-makes five. Each has a specific message and needs one focused look; none is
-hand-waved.
+and `test_execution_identity` (the check reads the CURRENT commit sha, so it
+moves with HEAD; whether that is the intent is not established). Each has a
+specific message and needs one focused look; none is hand-waved.
 
 ## What is worth fixing first, by modules-per-fix
 
