@@ -72,10 +72,66 @@ the first pass starts from it.
 
 ---
 
+## The two-level design, and the proof it works
+
+```
+main (default branch)
+└── .github/workflows/agent-orchestrator-dispatch.yml   small, stable, protected
+
+claude/nfl-greenfield-architecture-stsxmk (automation branch)
+├── coordination/            queues, returns, decisions, handoff log
+├── coordination/orchestrator/   the implementation
+└── the engineering work itself
+```
+
+**Why the dispatcher has to be on `main`.** GitHub starts a workflow from a
+`repository_dispatch` only when the workflow definition exists on the
+repository's **default** branch. The orchestrator lives on the automation
+branch, so without a dispatcher on `main` the continuation event has nothing
+to run — the chain would execute once and stop, silently, looking healthy.
+
+The dispatcher receives the event, validates the branch against a hard-coded
+allowlist, checks that branch out, and runs the orchestrator **from that
+checkout**. It holds no state, reads no queue and decides nothing. The payload
+contributes exactly one thing — which allowlisted ref to check out — and
+nothing else it carries is consulted again.
+
+**It is protected infrastructure.** `repository_dispatch` executes the
+definition from the default branch, which makes that file the trust boundary
+of the whole system. `.github/workflows/` is in `PROTECTED_PATHS`, so
+`enforce_protected_paths` refuses any worker diff touching it: an autonomous
+worker cannot edit the thing that decides what runs. Two further properties:
+the branch name reaches bash through `env` rather than string interpolation,
+so a payload value is data and never becomes shell syntax; and a payload may
+only **restrict** the mode, never escalate it — a dispatch asking for `LIVE`
+is downgraded to `MOCK`, because spending money stays a decision a human makes
+by pressing a button.
+
+### Demonstrated at repository level, 2026-09-23
+
+Three real Actions runs. One human trigger, then nothing:
+
+| Pass | Run ID | Event | Started by | What ran |
+|---|---|---|---|---|
+| 1 | [35818923998](https://github.com/94924676jp-a11y/Nfl/actions/runs/35818923998) | `workflow_dispatch` | a human | `EXECUTE PROOF-1 via ANTHROPIC` |
+| 2 | [35818980390](https://github.com/94924676jp-a11y/Nfl/actions/runs/35818980390) | `repository_dispatch` | `github-actions[bot]` | `OWNER_REVIEW PROOF-1 via OPENAI` |
+| 3 | [35819031142](https://github.com/94924676jp-a11y/Nfl/actions/runs/35819031142) | `repository_dispatch` | `github-actions[bot]` | `EXECUTE PROOF-2 via ANTHROPIC` |
+
+All three succeeded. Each checked out the automation branch, committed a proof
+row to it, and asked for the next pass; pass 1's log records
+`continuation for pass 2: {'sent': True, 'code': 'DISPATCH_204'}`. The chain
+then **stopped on its own** after pass 3 — exactly two `repository_dispatch`
+runs exist, not three.
+
+**`repository_dispatch` with the default `GITHUB_TOKEN` works.** No PAT, no
+GitHub App, no organization setting change was needed on this repository. The
+rows are committed under `coordination/runs/_proof/`.
+
 ## How the loop keeps itself going
 
 **It does not use push events, and an earlier version of this document was
-wrong to imply it could.** GitHub will not start a workflow from a push made
+wrong to imply it could.** (The `push` trigger on the automation branch's own
+workflow remains useful for a human push; it is not what continues the chain.) GitHub will not start a workflow from a push made
 with `GITHUB_TOKEN` — that is documented behaviour, designed to stop workflows
 recursing. The chain would have run exactly once and stopped, silently,
 looking healthy.
