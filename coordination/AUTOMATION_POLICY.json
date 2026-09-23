@@ -1,7 +1,7 @@
 {
  "schema": "automation_policy",
  "schema_version": "1.0.0",
- "written_at_utc": "2026-09-23T17:20:52Z",
+ "written_at_utc": "2026-09-23T18:06:26Z",
  "written_by": "claude",
  "_read_me": [
   "THE DEFAULT IS OFF. autonomous_operation_enabled is false, so a merged",
@@ -18,9 +18,9 @@
   "",
   "MODE AUTHORITY IS PROTECTED STATE, NOT AN EVENT PAYLOAD. An earlier dispatcher let a human pick LIVE at startup and then downgraded every continuation to MOCK, because trusting the payload would have let anyone who can open a dispatch spend money. That was the right refusal and the wrong place to make the decision: it also meant LIVE could not survive its own first continuation. execution_mode moves the decision here, where it is committed, reviewable, and out of a worker's reach."
  ],
- "autonomous_operation_enabled": true,
+ "autonomous_operation_enabled": false,
  "enabled_note": "Set true to arm the loop. See coordination/AUTONOMY_SETUP.md. The kill switch is setting this back to false and pushing, which takes effect on the next orchestration pass.",
- "execution_mode": "LIVE",
+ "execution_mode": "MOCK",
  "execution_mode_note": "MOCK | LIVE. THE ONLY SOURCE OF AUTHORITY FOR SPENDING MONEY. LIVE requires BOTH autonomous_operation_enabled=true AND execution_mode=LIVE, in this file, on the automation branch. A repository_dispatch payload can never grant it: the dispatcher reads this file after checkout and derives the mode from it, and the orchestrator re-checks in-process before any provider call. Either field is a kill switch on its own -- false stops the pass before a worker is reached, MOCK lets the pass run against fixtures with no paid call.",
  "execution_mode_vocabulary": [
   "MOCK",
