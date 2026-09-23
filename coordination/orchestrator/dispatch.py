@@ -167,6 +167,23 @@ def _prior_return(queue_name, task):
     return p.read_text() if p.exists() else None
 
 
+def more_work_eligible(snap) -> tuple:
+    """(bool, why). Would another pass have something lawful to do?
+
+    Asked by re-deriving the next action from CURRENT state rather than by
+    remembering what this pass intended. That matters: between deciding and
+    asking, the queue has moved -- this pass just moved it -- and the only
+    honest answer comes from the state as it now stands.
+
+    `require_autonomy` is left on. A pass must not chain onward past a kill
+    switch that was flipped while it was running.
+    """
+    action = next_action(snap, transitions_used=0)
+    if action.kind == STOP:
+        return False, action.reason
+    return True, str(action)
+
+
 def task_branch(task_id: str) -> str:
     """The branch name a per-task branch policy would use."""
     return f'agent/{task_id.lower()}'

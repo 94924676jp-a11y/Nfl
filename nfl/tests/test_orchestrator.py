@@ -99,6 +99,13 @@ def build_sandbox(*, eng=None, res=None, autonomy=True, policy_over=None):
 
     real = REAL_REPO / 'coordination'
     shutil.copy(real / 'validate_coordination.py', coord)
+    shutil.copy(real / '__init__.py', coord)
+    # THE WHOLE PACKAGE, not just the fixtures. A subprocess launched inside
+    # the sandbox then resolves every path from its own __file__ and touches
+    # nothing of the real repository -- which is what makes the multi-pass
+    # proof a proof rather than a simulation with shared state.
+    for f in sorted((real / 'orchestrator').glob('*.py')):
+        shutil.copy(f, coord / 'orchestrator')
     shutil.copytree(real / 'orchestrator' / 'mocks',
                     coord / 'orchestrator' / 'mocks')
 
@@ -819,6 +826,253 @@ def test_l_the_full_chain_runs_with_no_human_step():
               f'{n_commits} commit(s)')
     finally:
         teardown(root)
+
+
+def test_m_the_chain_continues_by_explicit_dispatch_across_fresh_passes():
+    """THE LIVE-READINESS PROOF. Three passes, three processes, no human.
+
+    WHY THIS TEST HAD TO EXIST. The runtime originally assumed the loop would
+    sustain itself through push events: commit, push, push event, next run.
+    GitHub does not start a workflow from a push made with GITHUB_TOKEN --
+    documented behaviour, specifically to stop workflows recursing. The chain
+    would have run ONCE and stopped, and every in-process test would still
+    have passed, because in-process tests never cross a workflow boundary.
+
+    So this test crosses one. Each pass is a SEPARATE PYTHON PROCESS launched
+    inside the sandbox checkout, sharing nothing with the last but the
+    repository. Between passes the only thing carried forward is a dispatch
+    request the previous pass wrote -- exactly what repository_dispatch
+    delivers. If a pass does not ask for a successor, the chain stops, and the
+    test would see it stop.
+
+    Pass 1  engineering task executes, commits, asks for a continuation
+    Pass 2  owner review executes, commits, asks for a continuation
+    Pass 3  the next authorized task is selected
+
+    Nothing triggers a pass except the previous pass's request.
+    """
+    print('\nM. multi-pass continuation, one process per pass')
+    _env()
+    eng = dict(ENG_TASK)
+    nxt = dict(ENG_TASK, task_id='ENG-X2', title='the one after',
+               status='DRAFT', authorized=False, priority=2)
+    root = build_sandbox(eng=[eng, nxt])
+    sink = root / '_dispatch'
+    try:
+        mocks = root / 'coordination' / 'orchestrator' / 'mocks'
+        (mocks / 'anthropic.ENG-X1.json').write_text(json.dumps({'parsed': {
+            'task_id': 'ENG-X1', 'status': 'COMPLETED',
+            'implementation_summary': 'implemented it',
+            'files_changed': ['chain.txt'],
+            'patches': [{'path': 'chain.txt', 'contents': 'chain\n'}],
+            'tests_run': [], 'test_results': 'n/a', 'failures': [],
+            'blockers': [], 'recommended_next_step': 'review'}}))
+        (mocks / 'openai.ENG-X1.json').write_text(json.dumps({'parsed': {
+            'task_id': 'ENG-X1', 'verdict': 'ACCEPT',
+            'reasoning': 'both acceptance tests are evidenced in the return',
+            'acceptance_test_verdicts': [
+                {'test': t, 'satisfied': True, 'evidence': 'in the return'}
+                for t in eng['acceptance_tests']],
+            'escalation_reason': None, 'next_task_id': 'ENG-X2',
+            'new_task': None, 'research_request': None,
+            'project_state_updates': {}, 'directive': None}}))
+        (mocks / 'anthropic.ENG-X2.json').write_text(json.dumps({'parsed': {
+            'task_id': 'ENG-X2', 'status': 'COMPLETED',
+            'implementation_summary': 'the one after',
+            'files_changed': ['chain2.txt'],
+            'patches': [{'path': 'chain2.txt', 'contents': 'chain2\n'}],
+            'tests_run': [], 'test_results': 'n/a', 'failures': [],
+            'blockers': [], 'recommended_next_step': 'review'}}))
+
+        env = dict(os.environ,
+                   AUTONOMY_MODE='MOCK', ORCHESTRATOR_PUSH='0',
+                   ORCHESTRATOR_RUN_TESTS='0',
+                   ORCHESTRATOR_DISPATCH_SINK=str(sink),
+                   PYTHONPATH=str(root))
+
+        passes, triggered_by = [], 'the test, once'
+        for n in range(1, 4):
+            before = set(p.name for p in sink.glob('*.json')) \
+                if sink.exists() else set()
+            r = subprocess.run(
+                ('python3.12', 'coordination/orchestrator/main.py', '--max', '1'),
+                cwd=root, env=env, capture_output=True, text=True, timeout=180)
+            out = r.stdout + r.stderr
+            line = [ln for ln in out.splitlines() if ln.startswith('[1/')]
+            passes.append({'n': n, 'rc': r.returncode,
+                           'action': line[0] if line else '(no action line)',
+                           'triggered_by': triggered_by,
+                           'continued': 'continuation:' in out})
+            print(f'       pass {n} (triggered by {triggered_by}): '
+                  f'{passes[-1]["action"][:92]}')
+            new_dispatch = (set(p.name for p in sink.glob('*.json')) - before) \
+                if sink.exists() else set()
+            if not new_dispatch:
+                print(f'       pass {n} requested NO continuation -- '
+                      f'chain ends')
+                break
+            d = json.loads((sink / sorted(new_dispatch)[-1]).read_text())
+            check(f'pass {n} emitted a repository_dispatch',
+                  d['event_type'] == 'agent-orchestrator-continue',
+                  d['event_type'])
+            cp = d['client_payload']
+            check(f'  its payload carries no project state',
+                  set(cp) == {'branch', 'requested_by_run', 'observed_head',
+                              'chain_depth', 'reason', 'task_id', 'note'},
+                  str(sorted(cp)))
+            # THE PROPERTY, STATED PRECISELY. My first cut grepped the
+            # payload for words like "authorized" and fired on the `reason`
+            # sentence -- "the highest-priority authorized executable task" --
+            # which is a human-readable trace string and is meant to be there.
+            # What actually matters is that nothing STRUCTURED rides along:
+            # no task record, no queue fragment, no nested object the next
+            # pass could mistake for state. Every value is a flat scalar.
+            nested = {k: type(v).__name__ for k, v in cp.items()
+                      if isinstance(v, (dict, list))}
+            check(f'  every payload value is a flat scalar -- no record '
+                  f'travels with the event', not nested, str(nested))
+            check(f'  and the reason is a trace string, not a decision',
+                  isinstance(cp.get('reason'), str)
+                  and len(cp['reason']) <= 200)
+            triggered_by = f'pass {n}\'s dispatch'
+
+        for pdata in passes:
+            print(f'       -> {pdata}')
+        check('three passes ran', len(passes) == 3, str(len(passes)))
+        if len(passes) < 3:
+            return
+        check('  pass 1 executed the engineering task via ANTHROPIC',
+              'EXECUTE ENG-X1 via ANTHROPIC' in passes[0]['action'],
+              passes[0]['action'])
+        check('  pass 1 asked for the next pass', passes[0]['continued'])
+        check('  pass 2 was triggered by that dispatch, not by a human',
+              passes[1]['triggered_by'] == "pass 1's dispatch")
+        check('  pass 2 ran the OWNER review',
+              'OWNER_REVIEW ENG-X1 via OPENAI' in passes[1]['action'],
+              passes[1]['action'])
+        check('  pass 2 asked for the next pass', passes[1]['continued'])
+        check('  pass 3 was triggered by that dispatch, not by a human',
+              passes[2]['triggered_by'] == "pass 2's dispatch")
+        check('  pass 3 selected the NEXT authorized task',
+              'ENG-X2' in passes[2]['action'], passes[2]['action'])
+        check('  no manual trigger occurred after the first',
+              [p['triggered_by'] for p in passes[1:]]
+              == ["pass 1's dispatch", "pass 2's dispatch"])
+
+        q = json.loads((root / 'coordination'
+                        / 'ENGINEERING_QUEUE.json').read_text())
+        by = {t['task_id']: t['status'] for t in q['tasks']}
+        check('  ENG-X1 reached COMPLETE through the chain',
+              by.get('ENG-X1') == 'COMPLETE', str(by))
+        check('  and ENG-X2 was authorized by the owner worker, not by itself',
+              by.get('ENG-X2') in ('ACTIVE', 'RETURNED'), str(by))
+    finally:
+        teardown(root)
+
+
+def test_n_a_pass_that_changed_nothing_does_not_ask_for_another():
+    """The condition that stops a dispatch chain spinning on itself."""
+    print('\nN. no committed transition -> no continuation')
+    _env()
+    root = build_sandbox(eng=[dict(ENG_TASK, status='DRAFT',
+                                   authorized=False)])
+    sink = root / '_dispatch'
+    try:
+        env = dict(os.environ, AUTONOMY_MODE='MOCK', ORCHESTRATOR_PUSH='0',
+                   ORCHESTRATOR_RUN_TESTS='0',
+                   ORCHESTRATOR_DISPATCH_SINK=str(sink),
+                   PYTHONPATH=str(root))
+        r = subprocess.run(
+            ('python3.12', 'coordination/orchestrator/main.py'),
+            cwd=root, env=env, capture_output=True, text=True, timeout=120)
+        check('the pass stops on NOTHING_AUTHORIZED',
+              'NOTHING_AUTHORIZED' in (r.stdout + r.stderr), r.stdout[-300:])
+        check('  and emitted no dispatch',
+              not sink.exists() or not list(sink.glob('*.json')))
+
+        # And the kill switch: armed state, but autonomy off.
+        teardown(root)
+        root2 = build_sandbox(eng=[ENG_TASK], autonomy=False)
+        env['PYTHONPATH'] = str(root2)
+        sink2 = root2 / '_dispatch'
+        env['ORCHESTRATOR_DISPATCH_SINK'] = str(sink2)
+        r2 = subprocess.run(
+            ('python3.12', 'coordination/orchestrator/main.py'),
+            cwd=root2, env=env, capture_output=True, text=True, timeout=120)
+        check('a disabled kill switch stops the pass',
+              'autonomous_operation_enabled=false' in (r2.stdout + r2.stderr))
+        check('  and emits no dispatch',
+              not sink2.exists() or not list(sink2.glob('*.json')))
+        teardown(root2)
+        root = None
+    finally:
+        if root is not None:
+            teardown(root)
+
+
+def test_o_the_continuation_budget_ends_the_chain():
+    print('\nO. the continuation chain is bounded from the LOG')
+    _env()
+    root = build_sandbox(eng=[ENG_TASK],
+                         policy_over={'limits':
+                                      {'max_continuations_per_hour': 2}})
+    try:
+        for i in range(2):
+            G.append_log({'actor': 'orchestrator',
+                          'event': 'CONTINUATION_REQUESTED',
+                          'note': f'prior chain link {i}'})
+        snap = S.snapshot()
+        try:
+            locks.require_continuation_budget(snap)
+            check('the continuation budget refuses', False, 'it allowed one')
+        except locks.Refusal as r:
+            check('the continuation budget REFUSES by name',
+                  r.code == 'CONTINUATION_BUDGET_SPENT', r.code)
+            check('  as a cost escalation',
+                  r.escalation is C.Escalation.COST_LIMIT_REACHED)
+            check('  counted from the log, not from a payload',
+                  r.evidence.get('used') == 2, str(r.evidence))
+    finally:
+        teardown(root)
+
+
+def test_p_the_transport_sends_only_parameters_each_model_accepts():
+    """The defect no mock could have found.
+
+    Both current flagship reasoning models REJECT sampling parameters rather
+    than ignoring them: claude-opus-5 removed temperature/top_p/top_k, and
+    gpt-5.6-sol returns 400 "Only the default (1) value is supported". The
+    first transport hard-coded temperature=0 for all three providers and
+    max_tokens for the two chat-completions ones, so every live call would
+    have failed on its first request while the entire mocked suite stayed
+    green. A fixture answers whatever it is told to.
+    """
+    print('\nP. per-model request parameters')
+    models = json.loads((REAL_REPO / 'coordination' / 'orchestrator'
+                         / 'MODELS.json').read_text())
+    for key, provider, must, forbidden in (
+            ('owner_model', 'openai',
+             ('max_completion_tokens',), ('temperature', 'max_tokens')),
+            ('engineering_model', 'anthropic',
+             ('max_tokens', 'system'), ('temperature', 'top_p', 'top_k')),
+            ('research_model', 'perplexity', ('max_tokens',), ())):
+        cfg = models[key]
+        body = P._request_body(cfg['provider'], cfg, 'SYS', 'USER')
+        check(f'{cfg["model"]} is on the {provider} provider',
+              cfg['provider'] == provider, cfg['provider'])
+        for k in must:
+            check(f'  sends {k}', k in body, str(sorted(body)))
+        for k in forbidden:
+            check(f'  does NOT send {k} (the API rejects it)',
+                  k not in body, f'{k} present -> guaranteed HTTP 400')
+    check('the owner model id is the verified flagship',
+          models['owner_model']['model'] == 'gpt-5.6-sol',
+          models['owner_model']['model'])
+    check('the engineering model id carries no date suffix',
+          models['engineering_model']['model'] == 'claude-opus-5',
+          models['engineering_model']['model'])
+    check('an unknown endpoint refuses rather than guessing',
+          'chat_completions' in P.ENDPOINTS and 'messages' in P.ENDPOINTS)
 
 
 TESTS = [v for k, v in sorted(globals().items()) if k.startswith('test_')]

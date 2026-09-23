@@ -174,6 +174,44 @@ def require_head_unmoved(observed_head: str) -> None:
             escalation=None, observed=observed_head, actual=now)
 
 
+def require_continuation_budget(snap) -> None:
+    """Bound the dispatch chain, from the LOG rather than from the payload.
+
+    The continuation payload carries a chain depth, and it would be easier to
+    enforce on that. It would also be wrong: the depth is chosen by the sender,
+    and the sender is the thing being bounded. Counting committed log rows
+    means two runners that race, or a redelivered dispatch, see the same
+    number -- and means the bound survives a payload nobody validated.
+    """
+    import datetime as _dt
+    cap = (snap.policy.get('limits') or {}).get(
+        'max_continuations_per_hour')
+    if cap is None:
+        raise Refusal('POLICY_INCOMPLETE',
+                      'limits.max_continuations_per_hour is absent; an absent '
+                      'limit is not an unlimited one.',
+                      escalation=C.Escalation.STATE_CONTRADICTORY)
+    cut = _dt.datetime.now(_dt.timezone.utc) - _dt.timedelta(hours=1)
+    n = 0
+    for row in snap.log:
+        if row.get('event') != 'CONTINUATION_REQUESTED':
+            continue
+        try:
+            when = _dt.datetime.fromisoformat(
+                str(row.get('timestamp')).replace('Z', '+00:00'))
+        except (ValueError, TypeError):
+            continue
+        if when >= cut:
+            n += 1
+    if n >= cap:
+        raise Refusal(
+            'CONTINUATION_BUDGET_SPENT',
+            f'{n} continuation(s) requested in the last hour against a cap of '
+            f'{cap}. The chain stops here; a human or the next scheduled '
+            f'event restarts it.',
+            escalation=C.Escalation.COST_LIMIT_REACHED, used=n, cap=cap)
+
+
 def require_token_budget(snap, spent: int, per: str) -> None:
     cap = (snap.policy.get('limits') or {}).get(per)
     if cap is not None and spent >= cap:

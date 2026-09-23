@@ -20,7 +20,7 @@
   {
    "task_id": "ENG-001",
    "title": "REPLAY_RE_SELECTS: replay consumes the sealed input set",
-   "status": "ACTIVE",
+   "status": "AUTHORIZED",
    "priority": 1,
    "authorized": true,
    "depends_on": [],
@@ -40,7 +40,18 @@
    "blocks": [
     "ENG-008"
    ],
-   "evidence": "nfl/tests/test_replay_pins_its_inputs.py, D23"
+   "evidence": "nfl/tests/test_replay_pins_its_inputs.py, D23",
+   "prior_evidence": {
+    "kind": "PRE_AUTONOMY_MANUAL_EVIDENCE",
+    "commit": "51bcb45",
+    "return_written_at": "coordination/CLAUDE_RETURNS/ENG-001.prior-manual-evidence.md",
+    "note": "Carried out by hand BEFORE the autonomous runtime existed. Preserved as evidence and NOT deleted, but it is explicitly not the autonomous run. Owner ruling: ENG-001 is reset so the autonomous worker executes it as the first end-to-end engineering demonstration. The point is not the code -- it is proving event -> orchestrator -> engineering worker -> committed return -> owner review -> next transition with no human in the middle."
+   },
+   "relevant_files": [
+    "nfl/research/shadow/replay_contract.py",
+    "nfl/prospective/q9shadow/replay_runner.py",
+    "nfl/tests/test_replay_pins_its_inputs.py"
+   ]
   },
   {
    "task_id": "ENG-002",

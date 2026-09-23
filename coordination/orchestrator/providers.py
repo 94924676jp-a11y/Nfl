@@ -46,11 +46,23 @@ MOCKS = HERE / 'mocks'
 MODE_MOCK = 'MOCK'
 MODE_LIVE = 'LIVE'
 
+#: endpoint name -> provider -> URL. Named rather than positional so
+#: MODELS.json can say which surface a model is served on, and so adding the
+#: OpenAI Responses API later is a row here plus a response parser -- not a
+#: rewrite. See MODELS.json `endpoint_choice_note` for why chat/completions is
+#: the right surface for this runtime today.
 ENDPOINTS = {
-    'openai': 'https://api.openai.com/v1/chat/completions',
-    'anthropic': 'https://api.anthropic.com/v1/messages',
-    'perplexity': 'https://api.perplexity.ai/chat/completions',
+    'chat_completions': {
+        'openai': 'https://api.openai.com/v1/chat/completions',
+        'perplexity': 'https://api.perplexity.ai/chat/completions',
+    },
+    'messages': {
+        'anthropic': 'https://api.anthropic.com/v1/messages',
+    },
 }
+_DEFAULT_ENDPOINT = {'openai': 'chat_completions',
+                     'perplexity': 'chat_completions',
+                     'anthropic': 'messages'}
 SECRET_ENV = {
     'openai': 'OPENAI_API_KEY',
     'anthropic': 'ANTHROPIC_API_KEY',
@@ -80,18 +92,46 @@ def _post(url, headers, body, timeout) -> tuple:
 
 
 def _request_body(provider, model_cfg, system, user):
-    """Each provider's shape, built here so no caller has to know it."""
-    model = model_cfg['model']
-    max_out = model_cfg.get('max_output_tokens', 8000)
-    temp = model_cfg.get('temperature', 0)
+    """Each provider's shape. Which PARAMETERS to send is data, not a branch.
+
+    THE FIRST VERSION OF THIS FUNCTION WOULD HAVE 400ed ON EVERY LIVE CALL.
+    It hard-coded `temperature: 0` for all three providers and `max_tokens`
+    for the two chat-completions ones. Both current flagship reasoning models
+    REJECT sampling parameters rather than ignoring them:
+
+      claude-opus-5   temperature/top_p/top_k removed -> HTTP 400
+      gpt-5.6-sol     temperature -> HTTP 400 "Only the default (1) value is
+                      supported", and it takes max_completion_tokens, not
+                      max_tokens
+
+    Nothing in the mocked suite could have caught that, because a mock answers
+    whatever the fixture says. It took reading the providers' current
+    documentation, which is the one thing a sandbox cannot do for itself.
+
+    So the parameter set now comes from MODELS.json `params`, and `omit` is
+    carried as an explicit refusal list rather than as silence -- a reader can
+    see that temperature was left out ON PURPOSE rather than forgotten. A
+    provider that changes its surface is then a diff in a config file on a
+    protected path, not a rewrite of the transport.
+    """
+    body = {'model': model_cfg['model']}
+    params = dict(model_cfg.get('params') or {})
+    omit = set(model_cfg.get('omit') or ())
+    for k in omit:
+        params.pop(k, None)     # belt and braces: omit wins over params
+    body.update(params)
+
     if provider == 'anthropic':
-        return {'model': model, 'max_tokens': max_out, 'temperature': temp,
-                'system': system,
-                'messages': [{'role': 'user', 'content': user}]}
+        body['system'] = system
+        body['messages'] = [{'role': 'user', 'content': user}]
+        # Thinking is deliberately NOT set. On claude-opus-5 omitting it runs
+        # adaptive thinking, which is what this worker wants; passing
+        # {type: "disabled"} or a budget_tokens would be a 400.
+        return body
     # openai and perplexity are both chat/completions shaped.
-    return {'model': model, 'max_tokens': max_out, 'temperature': temp,
-            'messages': [{'role': 'system', 'content': system},
-                         {'role': 'user', 'content': user}]}
+    body['messages'] = [{'role': 'system', 'content': system},
+                        {'role': 'user', 'content': user}]
+    return body
 
 
 def _headers(provider, key):
@@ -191,9 +231,17 @@ def call_worker(call, worker, model_cfg, system, user, *, task_id,
             escalation=C.Escalation.SECRET_MISSING)
 
     body = _request_body(provider, model_cfg, system, user)
+    endpoint = ENDPOINTS.get(model_cfg.get('endpoint')
+                             or _DEFAULT_ENDPOINT[provider], {}).get(provider)
+    if endpoint is None:
+        return C.WorkerResult.failure(
+            call, 'ENDPOINT_UNKNOWN',
+            f'MODELS.json asks for endpoint '
+            f'{model_cfg.get("endpoint")!r} on {provider}, which this '
+            f'transport does not implement. Refusing rather than guessing.')
     started = time.time()
     try:
-        status, raw = _post(ENDPOINTS[provider], _headers(provider, key),
+        status, raw = _post(endpoint, _headers(provider, key),
                             body, timeout or 600)
     except urllib.error.HTTPError as exc:
         detail = ''

@@ -347,6 +347,115 @@ def run_tests(commands, *, timeout=1800) -> tuple:
     return ok, '\n\n'.join(chunks)
 
 
+# ------------------------------------------------- the continuation event
+#
+# WHY THIS EXISTS, AND WHY THE ORIGINAL DESIGN WAS WRONG.
+#
+# The first cut assumed: orchestrator commits -> git push -> push event ->
+# next orchestrator run. GitHub does not work that way. Its documented
+# behaviour is that "when you use the repository's GITHUB_TOKEN to perform
+# tasks, events triggered by the GITHUB_TOKEN will not create a new workflow
+# run" -- specifically so that a workflow pushing code cannot recurse. So the
+# loop would have run exactly once and stopped, silently, looking fine.
+#
+# The same documentation names the exceptions: workflow_dispatch and
+# repository_dispatch "always create workflow runs", because they are explicit
+# calls rather than side effects. That is the mechanism this uses, and it is
+# better than the accident it replaces: continuation becomes a DELIBERATE act
+# the orchestrator takes only when it has decided more work is eligible,
+# rather than a side effect of having written a file.
+#
+# WHAT THE PAYLOAD MAY CARRY. Branch, the run that asked, an observed HEAD for
+# tracing, a chain depth and a reason. NOT project state, not a task record,
+# not a decision. The next pass re-reads everything from the repository. A
+# payload that carried authoritative state would be a second source of truth
+# that no validator checks and no reviewer sees -- and unlike the repository,
+# it arrives from outside.
+DISPATCH_EVENT = 'agent-orchestrator-continue'
+GITHUB_API = 'https://api.github.com'
+
+
+def _dispatch_sink():
+    """Where a continuation goes when this is not a real Actions run.
+
+    Tests point this at a directory and read what would have been sent. There
+    is deliberately no path where a sink write is reported as a real dispatch.
+    """
+    return os.environ.get('ORCHESTRATOR_DISPATCH_SINK') or ''
+
+
+def request_continuation(reason, *, chain_depth, head, task_id=None) -> dict:
+    """Ask GitHub to start one more orchestrator pass. Returns what happened.
+
+    Never raises for transport trouble: a continuation that could not be sent
+    is a FACT about this run and belongs in the log, not in a traceback. It is
+    also not fatal -- the work is committed, and a human or a schedule can
+    resume the chain.
+    """
+    payload = {
+        'event_type': DISPATCH_EVENT,
+        'client_payload': {
+            'branch': S.branch(),
+            'requested_by_run': os.environ.get('GITHUB_RUN_ID'),
+            'observed_head': head,
+            'chain_depth': chain_depth,
+            'reason': str(reason)[:200],
+            'task_id': task_id,
+            'note': ('tracing only -- the next pass re-reads all state from '
+                     'the repository and trusts nothing in this payload'),
+        },
+    }
+    sink = _dispatch_sink()
+    if sink:
+        d = pathlib.Path(sink)
+        d.mkdir(parents=True, exist_ok=True)
+        f = d / f'{dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%S%f")}.json'
+        f.write_text(json.dumps(payload, indent=1) + '\n')
+        return {'sent': False, 'sink': str(f), 'code': 'DISPATCH_TO_SINK'}
+
+    repo = os.environ.get('GITHUB_REPOSITORY')
+    token = os.environ.get('GITHUB_TOKEN') or os.environ.get('GH_TOKEN')
+    if not repo or not token:
+        # NOT AN ERROR, AND NOT A SUCCESS EITHER. Outside Actions there is
+        # nothing to dispatch to; say so plainly rather than pretending.
+        return {'sent': False, 'code': 'DISPATCH_UNAVAILABLE',
+                'detail': 'GITHUB_REPOSITORY/GITHUB_TOKEN are unset, so this '
+                          'is not a GitHub Actions run. Nothing was sent.'}
+    import urllib.error
+    import urllib.request
+    req = urllib.request.Request(
+        f'{GITHUB_API}/repos/{repo}/dispatches',
+        data=json.dumps(payload).encode(), method='POST',
+        headers={'Accept': 'application/vnd.github+json',
+                 'Authorization': f'Bearer {token}',
+                 'X-GitHub-Api-Version': '2022-11-28',
+                 'Content-Type': 'application/json'})
+    try:
+        with urllib.request.urlopen(req, timeout=30) as r:
+            return {'sent': True, 'code': f'DISPATCH_{r.status}',
+                    'status': r.status}
+    except urllib.error.HTTPError as exc:
+        detail = ''
+        try:
+            detail = exc.read().decode('utf-8', 'replace')[:600]
+        except Exception:                                    # noqa: BLE001
+            pass
+        hint = ''
+        if exc.code == 403:
+            # The one failure worth naming, because the remedy is a one-line
+            # workflow change and the message alone does not say so.
+            hint = (' -- the workflow needs `permissions: contents: write` '
+                    'AND `actions: write` for the GITHUB_TOKEN to create a '
+                    'repository_dispatch. If the org forces read-only '
+                    'workflow permissions, a GitHub App installation token is '
+                    'the next option; see AUTONOMY_SETUP.md.')
+        return {'sent': False, 'code': f'DISPATCH_HTTP_{exc.code}',
+                'detail': detail + hint}
+    except Exception as exc:                                 # noqa: BLE001
+        return {'sent': False, 'code': 'DISPATCH_FAILED',
+                'detail': f'{type(exc).__name__}: {exc}'}
+
+
 def open_escalation_issue(escalation, title, body) -> str:
     """Record an escalation. Returns where it went.
 

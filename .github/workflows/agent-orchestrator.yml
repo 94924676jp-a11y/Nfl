@@ -1,28 +1,49 @@
 name: agent-orchestrator
 
-# The autonomous runtime's clock. Every commit the orchestrator makes is an
-# event, and the event starts the next pass -- so the state machine advances
-# across many short runs rather than inside one long one.
+# The autonomous runtime's clock.
 #
-# THE RECURSION IS DELIBERATE AND IT IS FENCED FOUR WAYS:
+# CONTINUATION IS AN EXPLICIT repository_dispatch, NOT PUSH RECURSION.
 #
-#   1. `paths:` limits the push trigger to coordination state. A code commit
-#      does not wake the orchestrator.
-#   2. `concurrency` allows ONE orchestrator per branch. A second is queued,
-#      not run beside the first.
-#   3. The job exits unless AUTOMATION_POLICY.json says
+# An earlier version of this workflow assumed the loop would sustain itself:
+# orchestrator commits -> git push -> push event -> next run. It would not
+# have. GitHub documents that "when you use the repository's GITHUB_TOKEN to
+# perform tasks, events triggered by the GITHUB_TOKEN will not create a new
+# workflow run" -- precisely so a workflow that pushes cannot recurse. The
+# chain would have run once and stopped, silently, looking healthy.
+#
+# The same documentation names the two exceptions: workflow_dispatch and
+# repository_dispatch "always create workflow runs", because they are explicit
+# calls rather than side effects. So the orchestrator ASKS for the next pass,
+# and only when it has decided more work is eligible. That is better than the
+# accident it replaces -- continuation now has a budget, a log row and a
+# reason attached to it.
+#
+# The push trigger below is KEPT, but only for what it can actually do: wake
+# the orchestrator when a HUMAN pushes coordination state. A human push is not
+# a GITHUB_TOKEN push, so it does start a run.
+#
+# THE CHAIN IS FENCED SIX WAYS, and no single one is trusted:
+#
+#   1. `concurrency` allows ONE orchestrator per branch.
+#   2. The job exits unless AUTOMATION_POLICY.json says
 #      autonomous_operation_enabled -- the kill switch is a committed file,
-#      not a workflow setting, so turning it off is a one-line PR anyone can
-#      review.
-#   4. `max_transitions_per_invocation` caps what one pass may do, and
-#      max_runs_per_hour is counted from the committed handoff log, so two
-#      runners see the same number.
+#      not a workflow setting.
+#   3. `max_transitions_per_invocation` caps what one pass may do.
+#   4. `max_continuations_per_hour` caps the dispatch chain, counted from the
+#      committed handoff log -- NOT from the payload, because the payload's
+#      sender is the thing being bounded.
+#   5. `max_runs_per_hour` caps every pass however it started.
+#   6. A pass that committed nothing, or whose worker failed, does not chain.
 #
-# The belt-and-braces matter because three of the four are things a person can
-# change by accident. The fourth -- the committed policy file -- is the one
-# that is hard to disable without noticing.
+# The payload carries branch, run id, observed head, depth and a reason. It
+# carries NO project state. The next pass re-reads everything from the
+# repository and trusts nothing that arrived with the event.
 
 on:
+  # The continuation event. This is the one that makes the loop self-
+  # sustaining, and it works from GITHUB_TOKEN where a push does not.
+  repository_dispatch:
+    types: [agent-orchestrator-continue]
   push:
     branches: [claude/nfl-greenfield-architecture-stsxmk]
     paths:
@@ -61,6 +82,12 @@ concurrency:
 
 permissions:
   contents: write
+  # REQUIRED FOR THE CONTINUATION, and easy to miss: creating a
+  # repository_dispatch with GITHUB_TOKEN needs write on top of contents.
+  # Without it the POST returns 403 and the chain stops after one pass -- the
+  # exact failure this workflow was rewritten to remove. request_continuation
+  # names this remedy in its own 403 message.
+  actions: write
   issues: write
 
 jobs:
@@ -70,6 +97,7 @@ jobs:
     # inside the same run; the push event it generates does that, once.
     if: >-
       github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'repository_dispatch' ||
       !contains(github.event.head_commit.message, '[orchestrator-skip]')
     timeout-minutes: 45
 
@@ -78,7 +106,11 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: ${{ github.ref_name }}
+          # A repository_dispatch run checks out the default branch unless
+          # told otherwise, so the continuation's branch is used when present.
+          # The payload is trusted for THIS and nothing else -- it selects
+          # which ref to read, and every fact still comes from the ref.
+          ref: ${{ github.event.client_payload.branch || github.ref_name }}
 
       - name: Python 3.12
         uses: actions/setup-python@v5
@@ -118,6 +150,10 @@ jobs:
           PERPLEXITY_API_KEY: ${{ secrets.PERPLEXITY_API_KEY }}
           ORCHESTRATOR_PUSH: '1'
           ORCHESTRATOR_RUN_TESTS: '1'
+          # Used by request_continuation to POST /repos/{repo}/dispatches.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
         run: |
           set +e
           if [ -n "${{ github.event.inputs.max_transitions }}" ]; then
@@ -182,6 +218,8 @@ jobs:
           {
             echo "## Orchestrator"
             echo ""
+            echo "- trigger: \`${{ github.event_name }}\`"
+            echo "- chain depth: \`${{ github.event.client_payload.chain_depth || '0' }}\`"
             echo "- mode: \`${{ github.event.inputs.mode || 'MOCK' }}\`"
             echo "- exit: \`${ORCH_RC:-n/a}\`"
             echo "- head: \`$(git rev-parse --short HEAD)\`"

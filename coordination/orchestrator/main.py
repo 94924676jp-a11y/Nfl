@@ -351,6 +351,7 @@ def one_pass(*, max_transitions=None, plan_only=False,
          f'mode {P.mode()}, up to {cap} transition(s)')
 
     used = 0
+    committed_a_transition = False
     while used < cap:
         try:
             snap = S.snapshot()
@@ -365,6 +366,9 @@ def one_pass(*, max_transitions=None, plan_only=False,
                 _escalate(action.escalation, 'orchestration stopped',
                           action.reason, head=snap.head)
                 return 4
+            # A clean stop ends the chain. NOTHING_AUTHORIZED means the loop
+            # reached the end of the work a human authorized, which is the
+            # correct place to stop asking for more passes.
             return 0
         if plan_only:
             _say('  --plan: deciding only, nothing executed')
@@ -387,10 +391,77 @@ def one_pass(*, max_transitions=None, plan_only=False,
         if esc:
             return 4
         if not ok:
+            # A FAILED WORKER DOES NOT CHAIN. Asking for another pass after a
+            # failure is how one broken task becomes an hour of broken tasks;
+            # the retry budget, not the continuation, is what gives it another
+            # go, and that happens on a pass a human or a schedule starts.
             return 5
-    _say(f'\ntransition budget of {cap} spent; stopping cleanly. The commits '
-         f'above are the events that continue the loop.')
+        committed_a_transition = True
+    _say(f'\ntransition budget of {cap} spent.')
+    _continue_if_eligible(committed_a_transition)
     return 0
+
+
+def _continue_if_eligible(committed_a_transition) -> None:
+    """Ask GitHub for one more pass, if and only if one is warranted.
+
+    THIS REPLACES PUSH RECURSION, WHICH DOES NOT WORK. GitHub will not start a
+    workflow from a push made with GITHUB_TOKEN. repository_dispatch is one of
+    the two documented exceptions, and it is the better mechanism anyway:
+    continuation becomes a decision this pass makes, with its own budget and
+    its own log row, rather than a side effect of having written a file.
+
+    Four conditions, all required:
+      1. this pass actually committed a transition -- otherwise there is
+         nothing new for the next pass to read, and it would re-derive the
+         same action and ask again, forever;
+      2. the state, RE-READ, still offers a lawful next action;
+      3. the continuation budget is not spent;
+      4. autonomy is still enabled -- checked inside (2), so a kill switch
+         flipped mid-pass stops the chain rather than being outrun.
+    """
+    if not committed_a_transition:
+        _say('no transition was committed, so no continuation is requested: '
+             'the next pass would read the same state and decide the same '
+             'thing.')
+        return
+    try:
+        snap = S.snapshot()
+    except S.StateError as exc:
+        _say(f'not continuing -- state unreadable: {exc}')
+        return
+    eligible, why = D.more_work_eligible(snap)
+    if not eligible:
+        _say(f'chain ends here: {why}')
+        return
+    try:
+        locks.require_continuation_budget(snap)
+    except locks.Refusal as r:
+        _say(f'chain ends here: {r.code} -- {r.detail}')
+        G.append_log({'actor': 'orchestrator', 'event': 'CONTINUATION_REFUSED',
+                      'note': r.code})
+        return
+
+    depth = sum(1 for row in snap.log
+                if row.get('event') == 'CONTINUATION_REQUESTED')
+    res = G.request_continuation(why, chain_depth=depth + 1, head=snap.head)
+    _say(f'continuation: {res.get("code")} '
+         f'{"sent" if res.get("sent") else "NOT sent"} -- next: {why}')
+    G.append_log({'actor': 'orchestrator', 'event': 'CONTINUATION_REQUESTED',
+                  'note': f'{res.get("code")}: {why}'[:400],
+                  'dispatch_sent': bool(res.get('sent'))})
+    # The log row is itself a change, and it must reach the repository or the
+    # budget it feeds is invisible to the next pass. Committed with a marker
+    # so the push does not look like a transition to a reader.
+    try:
+        G.commit_and_push(
+            f'orchestrator: request continuation [{res.get("code")}]\n\n'
+            f'next action would be: {why}\n\n'
+            f'Continuation is an explicit repository_dispatch, not push '
+            f'recursion -- GITHUB_TOKEN pushes do not start workflows.',
+            snap.head, push=os.environ.get('ORCHESTRATOR_PUSH', '1') == '1')
+    except locks.Refusal as r:
+        _say(f'  (continuation log not committed: {r.code})')
 
 
 def main(argv=None):

@@ -3,7 +3,6 @@
  "schema_version": "1.0.0",
  "written_at_utc": "2026-09-23T03:10:00Z",
  "written_by": "claude",
-
  "_read_me": [
   "THE DEFAULT IS OFF. autonomous_operation_enabled is false, so a merged",
   "orchestrator does not start spending money because a workflow fired. The",
@@ -13,12 +12,12 @@
   "expensive way to learn where it should have been.",
   "",
   "This file is in PROTECTED_PATHS. No worker may edit it; the orchestrator",
-  "reads it and refuses if it is missing or malformed."
+  "reads it and refuses if it is missing or malformed.",
+  "",
+  "CONTINUATION, not push recursion. GitHub does not start a workflow from a push made with GITHUB_TOKEN, so the loop advances by an explicit repository_dispatch instead. max_continuations_per_hour is the bound on that chain; max_runs_per_hour bounds every pass however it started."
  ],
-
  "autonomous_operation_enabled": false,
  "enabled_note": "Set true to arm the loop. See coordination/AUTONOMY_SETUP.md. The kill switch is setting this back to false and pushing, which takes effect on the next orchestration pass.",
-
  "limits": {
   "max_transitions_per_invocation": 3,
   "max_runs_per_hour": 6,
@@ -28,35 +27,42 @@
   "max_retries_per_task": 1,
   "max_task_runtime_seconds": 1800,
   "max_total_tokens_per_invocation": 400000,
-  "max_total_tokens_per_task": 250000
+  "max_total_tokens_per_task": 250000,
+  "max_continuations_per_hour": 8
  },
-
  "limit_notes": {
   "max_transitions_per_invocation": "One orchestration pass may move the state machine at most this many times, then stops with TRANSITION_BUDGET_SPENT and lets the next GitHub event continue. This is what stops a runaway loop inside a single workflow run.",
   "max_retries_per_task": "A task that has already failed once gets one more attempt. A GOVERNANCE refusal is never retried at all, at any count -- see contracts.NEVER_AUTO_RETRY.",
-  "max_runs_per_hour": "Counted from HANDOFF_LOG.jsonl, not from a wall clock the workflow controls, so two racing runners see the same number."
+  "max_runs_per_hour": "Counted from HANDOFF_LOG.jsonl, not from a wall clock the workflow controls, so two racing runners see the same number.",
+  "max_continuations_per_hour": "A pass that finishes with work still eligible asks GitHub for one more pass via repository_dispatch. This caps how many such requests may be made in an hour, counted from HANDOFF_LOG.jsonl rather than from the payload -- the payload carries a chain depth for tracing, but a number the sender chose is not a number the receiver should enforce on."
  },
-
  "branch_policy": {
   "automation_branch": "claude/nfl-greenfield-architecture-stsxmk",
   "may_push_to_default_branch": false,
   "require_task_branch": false,
   "require_task_branch_note": "Start on the existing working branch so the first autonomous runs are visible in one place. Flip to true to make every task its own branch; dispatch.py already emits the branch name it would use.",
-  "protected_branches": ["main", "master", "capture-prod"]
+  "protected_branches": [
+   "main",
+   "master",
+   "capture-prod"
+  ]
  },
-
  "escalation": {
   "stop_on": [
-   "OWNER_DECISION_REQUIRED", "RIGHTS_DECISION_REQUIRED",
-   "PURCHASE_REQUIRED", "SECRET_MISSING", "GOVERNANCE_CONFLICT",
-   "UNKNOWN_BLOCKING_EVIDENCE", "COST_LIMIT_REACHED",
-   "REPEATED_AGENT_FAILURE", "DESTRUCTIVE_ACTION_REQUIRED",
+   "OWNER_DECISION_REQUIRED",
+   "RIGHTS_DECISION_REQUIRED",
+   "PURCHASE_REQUIRED",
+   "SECRET_MISSING",
+   "GOVERNANCE_CONFLICT",
+   "UNKNOWN_BLOCKING_EVIDENCE",
+   "COST_LIMIT_REACHED",
+   "REPEATED_AGENT_FAILURE",
+   "DESTRUCTIVE_ACTION_REQUIRED",
    "STATE_CONTRADICTORY"
   ],
   "open_github_issue": true,
   "issue_label": "owner-escalation"
  },
-
  "dry_run_default": true,
  "dry_run_note": "MOCK_PROVIDER is the default when AUTONOMY_MODE is unset, so the expensive mode has to be asked for by name rather than arrived at by forgetting a variable."
 }

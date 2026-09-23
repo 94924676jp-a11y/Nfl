@@ -31,17 +31,33 @@ like a real one.
 You can add only some of them. A worker whose key is absent stops the loop the
 first time it is needed, and the other two keep working until then.
 
-## Step 2 — check the three model ids
+## Step 2 — confirm the three models are available on *your* accounts
 
-`coordination/orchestrator/MODELS.json` names one model per worker. **These
-were written from inside a sandbox with no network and are not verified
-against the providers' current catalogues.** Open the file and confirm each id
-against your account's model list.
+`coordination/orchestrator/MODELS.json` names one model per worker. The ids
+and their parameter rules were **verified against provider documentation on
+2026-09-23** and each entry carries its evidence inline:
 
-A wrong id fails loudly on the first live call — a named `API_HTTP_404` with
-the provider's own message preserved under `coordination/runs/`. It never
-silently falls back to a different model, because a silent model substitution
-would invalidate every comparison made across it.
+| Worker | Model | Endpoint | Sends | Must NOT send |
+|---|---|---|---|---|
+| owner | `gpt-5.6-sol` | `/v1/chat/completions` | `max_completion_tokens`, `response_format` | `temperature`, `max_tokens` |
+| engineering | `claude-opus-5` | `/v1/messages` | `max_tokens`, `system` | `temperature`, `top_p`, `top_k` |
+| research | `sonar-pro` | `/v1/chat/completions` | `max_tokens`, `temperature` | — |
+
+**The "must not send" column is not style, it is the difference between
+working and a guaranteed 400.** Both current flagship reasoning models reject
+sampling parameters rather than ignoring them — `claude-opus-5` removed
+`temperature`/`top_p`/`top_k`, and `gpt-5.6-sol` answers `Unsupported value:
+'temperature' does not support 0 with this model. Only the default (1) value
+is supported.` An earlier version of this runtime hard-coded `temperature: 0`
+for all three providers, which would have failed on the very first live call
+while the entire mocked suite stayed green. `test_orchestrator::test_p` now
+asserts each body.
+
+What is **not** verifiable from this checkout is whether *your* accounts and
+tiers can reach these models. That is the one-time check: open each provider's
+model list and confirm. A wrong id fails loudly — a named `API_HTTP_404` with
+the provider's own message preserved under `coordination/runs/` — and never
+silently falls back.
 
 ## Step 3 — arm it
 
@@ -55,6 +71,62 @@ Commit and push. That push is itself an event the orchestrator listens for, so
 the first pass starts from it.
 
 ---
+
+## How the loop keeps itself going
+
+**It does not use push events, and an earlier version of this document was
+wrong to imply it could.** GitHub will not start a workflow from a push made
+with `GITHUB_TOKEN` — that is documented behaviour, designed to stop workflows
+recursing. The chain would have run exactly once and stopped, silently,
+looking healthy.
+
+Continuation is an explicit **`repository_dispatch`** instead, which is one of
+the two documented exceptions that *do* create a run from `GITHUB_TOKEN`:
+
+```
+pass N  →  one governed transition  →  commit + push
+        →  re-read state: is another transition eligible?
+        →  if yes: POST /repos/{owner}/{repo}/dispatches
+                   event_type: agent-orchestrator-continue
+        →  exit
+                    ↓
+pass N+1 starts from a fresh checkout and re-reads everything
+```
+
+This is better than the accident it replaces. Continuation is now a decision
+with a budget, a log row and a stated reason — not a side effect of having
+written a file.
+
+**The payload carries branch, run id, observed head, chain depth and a reason
+string. Nothing else.** No task record, no queue fragment, no decision. The
+next pass re-reads all state from the repository and trusts nothing that
+arrived with the event; `test_orchestrator::test_m` asserts every payload
+value is a flat scalar.
+
+A pass does **not** ask for a successor when it committed nothing, when its
+worker failed, when no further transition is eligible, when the continuation
+budget is spent, or when autonomy was switched off while it was running.
+
+The `push` trigger is kept for the one thing it can still do: wake the
+orchestrator when **a human** pushes coordination state. A human push is not a
+`GITHUB_TOKEN` push, so it does start a run.
+
+### If the dispatch is refused with 403
+
+The workflow grants `contents: write` **and** `actions: write`; both are
+needed for `GITHUB_TOKEN` to create a repository dispatch. If your
+organization forces read-only workflow permissions, that grant is overridden
+and the POST returns 403 — `request_continuation` says exactly this in its own
+error. In that case, in order of preference:
+
+1. Settings → Actions → General → Workflow permissions → **Read and write**.
+2. A **GitHub App installation token** with `contents: write` + `actions:
+   write`, exposed to the workflow as `GH_TOKEN`. The runtime already reads
+   `GH_TOKEN` as a fallback, so this is a secret plus one `env:` line.
+3. A user PAT — **last resort**, because it binds the automation to one
+   person's identity and carries their whole account's scope.
+
+Nothing here requires a PAT.
 
 ## How to start autonomy
 
@@ -151,6 +223,7 @@ rest for the next event.
 | Limit | Default | What it bounds |
 |---|---|---|
 | `max_transitions_per_invocation` | 3 | steps in one pass |
+| `max_continuations_per_hour` | 8 | links in the dispatch chain, counted from the committed log — never from the payload, because the payload's sender is the thing being bounded |
 | `max_runs_per_hour` | 6 | passes per hour, counted from the committed log |
 | `max_openai_calls_per_task` | 2 | review rounds per task |
 | `max_anthropic_calls_per_task` | 2 | implementation attempts |
