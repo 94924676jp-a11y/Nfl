@@ -1,0 +1,281 @@
+{
+ "schema": "nfl_run_input_contract",
+ "schema_version": "run-input-contract/1.0.0",
+ "game_id": "2026_03_ATL_GB",
+ "cutoff_utc": "2026-09-24T15:30:00Z",
+ "capture_commit": "b970749",
+ "capture_manifest_sha256": "3febd83d5d846d28b8ff83955c38464dc9502c65fe29b3e976d9812d7dddde20",
+ "frozen_at_utc": "2026-09-24T15:35:27.157843+00:00",
+ "required_families": [
+  "schedules",
+  "weekly_rosters",
+  "depth_charts",
+  "injuries"
+ ],
+ "optional_families": [
+  "espn_injuries_json",
+  "official_injury_report",
+  "official_inactives"
+ ],
+ "entries": {
+  "depth_charts": {
+   "family": "depth_charts",
+   "capture_id": "20260924T120743Z",
+   "blob": "nfl/vintage/depth_charts.9bbba4b5067b5fe6.reduced.csv.gz",
+   "raw_blob": "nfl/vintage/depth_charts.9bbba4b5067b5fe6.raw.csv.gz",
+   "sha256": "9bbba4b5067b5fe6ade5c6a1b78418181ff8bf1c47c48f47c6ef8b339ec983d8",
+   "blob_file_sha256": "1f7ea523dcf478f5e21cc70a27a72bb7a4effb87846eda21b1495c570a6c9706",
+   "raw_blob_file_sha256": "6c715cf30f49b7c5f9c09d2e92436a2344f3f455152ababfb1726b6c9bbdbafc",
+   "content_kind": "csv",
+   "n_bytes": 52931771,
+   "url": "https://github.com/nflverse/nflverse-data/releases/download/depth_charts/depth_charts_2026.csv",
+   "retrieved_at": "2026-09-24T12:07:44.865113+00:00",
+   "source_timestamp": "2026-09-24T06:01:42+00:00",
+   "effective_scope": {
+    "authority": "SOURCE_PROVIDED",
+    "derivation": null,
+    "game_id": null,
+    "kind": "EXACT_TIMESTAMP",
+    "season": 2026,
+    "source_value": "2026-09-24T06:01:42+00:00",
+    "teams": [],
+    "valid_from": "2026-09-24T06:01:42+00:00",
+    "valid_to": null,
+    "week": null
+   }
+  },
+  "espn_injuries_json": {
+   "family": "espn_injuries_json",
+   "capture_id": "20260924T120743Z",
+   "blob": "nfl/vintage/espn_injuries_json.7291a7378c17df0e.json.gz",
+   "raw_blob": "nfl/vintage/espn_injuries_json.7291a7378c17df0e.json.gz",
+   "sha256": "7291a7378c17df0e480080fb85ca9c3ad24a85c066284fc01caf1bcc04f6f45e",
+   "blob_file_sha256": "26ed9970250c9ab9b053d3466767ad6ef3f67b3d662caec774b8ad5e0093a9c3",
+   "raw_blob_file_sha256": "26ed9970250c9ab9b053d3466767ad6ef3f67b3d662caec774b8ad5e0093a9c3",
+   "content_kind": "json",
+   "n_bytes": 8769101,
+   "url": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/injuries",
+   "retrieved_at": "2026-09-24T12:07:50.368369+00:00",
+   "source_timestamp": "2026-09-24T12:07:50+00:00",
+   "effective_scope": {
+    "authority": "SOURCE_PROVIDED",
+    "derivation": null,
+    "game_id": null,
+    "kind": "SEASON",
+    "season": 2026,
+    "source_value": "2026",
+    "teams": [],
+    "valid_from": null,
+    "valid_to": null,
+    "week": null
+   }
+  },
+  "injuries": {
+   "family": "injuries",
+   "capture_id": "20260924T120743Z",
+   "blob": "nfl/vintage/injuries.b9f0740139d052ff.csv.gz",
+   "raw_blob": "nfl/vintage/injuries.b9f0740139d052ff.csv.gz",
+   "sha256": "b9f0740139d052ffb14bd23930f28cccd06547983a3fc4d2b7cd6192eb6aab01",
+   "blob_file_sha256": "8885346149f9ebf23be1ef5ec1cce8797e39aa88b22f897d70121e4a707f8fec",
+   "raw_blob_file_sha256": "8885346149f9ebf23be1ef5ec1cce8797e39aa88b22f897d70121e4a707f8fec",
+   "content_kind": "csv",
+   "n_bytes": 77347,
+   "url": "https://github.com/nflverse/nflverse-data/releases/download/injuries/injuries_2026.csv",
+   "retrieved_at": "2026-09-24T12:07:44.098438+00:00",
+   "source_timestamp": "2026-09-24T06:01:32+00:00",
+   "effective_scope": {
+    "authority": "DERIVED_DETERMINISTIC",
+    "derivation": {
+     "evidence": "The file is season-scoped and carries per-row season/week, but the 2025+ schema dropped date_modified so no row-level clock survives. The file's own Last-Modified is the only defensible effective boundary and is recorded as DERIVED, not as source-provided.",
+     "method": "valid_from := HTTP Last-Modified of the captured file",
+     "status": "DERIVED"
+    },
+    "game_id": null,
+    "kind": "DATE_INTERVAL",
+    "season": 2026,
+    "source_value": "2026",
+    "teams": [],
+    "valid_from": "2026-09-24T06:01:32+00:00",
+    "valid_to": null,
+    "week": null
+   }
+  },
+  "official_inactives": {
+   "family": "official_inactives",
+   "capture_id": "20260915T170512Z",
+   "blob": "nfl/vintage/official_inactives.e7e975fdfe4a6d52.html.gz",
+   "raw_blob": null,
+   "sha256": "e7e975fdfe4a6d520a43027e7ba54fe143a2e343383375b0394315c8dbb70118",
+   "blob_file_sha256": null,
+   "raw_blob_file_sha256": null,
+   "content_kind": "html",
+   "n_bytes": 378130,
+   "url": "https://www.nfl.com/inactives/",
+   "retrieved_at": "2026-09-15T17:05:15.943309+00:00",
+   "source_timestamp": "2026-09-15T17:05:15+00:00",
+   "effective_scope": {
+    "authority": "SOURCE_PROVIDED",
+    "derivation": null,
+    "game_id": null,
+    "kind": "EXACT_TIMESTAMP",
+    "season": 2026,
+    "source_value": "2026-09-15T17:05:15+00:00",
+    "teams": [],
+    "valid_from": "2026-09-15T17:05:15+00:00",
+    "valid_to": null,
+    "week": null
+   }
+  },
+  "official_injury_report": {
+   "family": "official_injury_report",
+   "capture_id": "20260924T120743Z",
+   "blob": "nfl/vintage/official_injury_report.43040e5a746b8635.html.gz",
+   "raw_blob": "nfl/vintage/official_injury_report.43040e5a746b8635.html.gz",
+   "sha256": "43040e5a746b8635183a1ec102c6038772c8632a938d2e4c0cc7e82f134c23f2",
+   "blob_file_sha256": "f9fba026751ea76d0d4b800cc94778ea8a7ab3170e43413688ad80fb914eca5c",
+   "raw_blob_file_sha256": "f9fba026751ea76d0d4b800cc94778ea8a7ab3170e43413688ad80fb914eca5c",
+   "content_kind": "html",
+   "n_bytes": 386184,
+   "url": "https://www.nfl.com/injuries/",
+   "retrieved_at": "2026-09-24T12:07:49.633985+00:00",
+   "source_timestamp": "2026-09-24T12:07:49+00:00",
+   "effective_scope": {
+    "authority": "SOURCE_PROVIDED",
+    "derivation": null,
+    "game_id": null,
+    "kind": "EXACT_TIMESTAMP",
+    "season": 2026,
+    "source_value": "2026-09-24T12:07:49+00:00",
+    "teams": [],
+    "valid_from": "2026-09-24T12:07:49+00:00",
+    "valid_to": null,
+    "week": null
+   }
+  },
+  "schedules": {
+   "family": "schedules",
+   "capture_id": "20260924T120743Z",
+   "blob": "nfl/vintage/schedules.9d3644487c6021f2.csv.gz",
+   "raw_blob": "nfl/vintage/schedules.9d3644487c6021f2.csv.gz",
+   "sha256": "9d3644487c6021f2825c4a89e8c6712447884a63004fb2e0784e0410187d23fc",
+   "blob_file_sha256": "d424fda65f8af83962dbfcf3d3ca000f3372376bb78df74e5d4e9030815d8627",
+   "raw_blob_file_sha256": "d424fda65f8af83962dbfcf3d3ca000f3372376bb78df74e5d4e9030815d8627",
+   "content_kind": "csv",
+   "n_bytes": 2180807,
+   "url": "https://github.com/nflverse/nflverse-data/releases/download/schedules/games.csv",
+   "retrieved_at": "2026-09-24T12:07:44.371651+00:00",
+   "source_timestamp": "2026-09-24T08:36:38+00:00",
+   "effective_scope": {
+    "authority": "DERIVED_DETERMINISTIC",
+    "derivation": {
+     "evidence": "Reference data with no per-row effective clock.",
+     "method": "valid_from := HTTP Last-Modified of the captured file",
+     "status": "DERIVED"
+    },
+    "game_id": null,
+    "kind": "DATE_INTERVAL",
+    "season": 2026,
+    "source_value": "2026",
+    "teams": [],
+    "valid_from": "2026-09-24T08:36:38+00:00",
+    "valid_to": null,
+    "week": null
+   }
+  },
+  "weekly_rosters": {
+   "family": "weekly_rosters",
+   "capture_id": "20260924T120743Z",
+   "blob": "nfl/vintage/weekly_rosters.0efeaede1505ab6e.reduced.csv.gz",
+   "raw_blob": "nfl/vintage/weekly_rosters.0efeaede1505ab6e.raw.csv.gz",
+   "sha256": "0efeaede1505ab6e2bb72552c71604d6803e160bfb9b52b63204fc0678c1768c",
+   "blob_file_sha256": "bdcb04140749b2d1bc36ea97811f9e6b5cca2fe9e34fef7cad1d953b2be3a36f",
+   "raw_blob_file_sha256": "ab4dcabd84781c817645ff4dbf8c6a8c3fc2a4a124dd27e30a0dd8faedf9781a",
+   "content_kind": "csv",
+   "n_bytes": 2593505,
+   "url": "https://github.com/nflverse/nflverse-data/releases/download/weekly_rosters/roster_weekly_2026.csv",
+   "retrieved_at": "2026-09-24T12:07:49.314119+00:00",
+   "source_timestamp": "2026-09-24T06:02:12+00:00",
+   "effective_scope": {
+    "authority": "DERIVED_DETERMINISTIC",
+    "derivation": {
+     "evidence": "Rows carry season and week, but `status` is a post-hoc gameday outcome (INA -> 0 snaps of 3,438) and is quarantined.",
+     "method": "valid_from := HTTP Last-Modified of the captured file",
+     "status": "DERIVED"
+    },
+    "game_id": null,
+    "kind": "DATE_INTERVAL",
+    "season": 2026,
+    "source_value": "2026",
+    "teams": [],
+    "valid_from": "2026-09-24T06:02:12+00:00",
+    "valid_to": null,
+    "week": null
+   }
+  }
+ },
+ "immutability_note": "These entries are the evidence set for this run. Selection is done once, here. Nothing downstream may rediscover a file from the checkout, and a stale or missing family is a named refusal rather than a substitution.",
+ "freshness_report": {
+  "per_family": {
+   "depth_charts": {
+    "verdict": "FRESH",
+    "age_hours": 3.37,
+    "sha256": "1f7ea523dcf478f5e21cc70a27a72bb7a4effb87846eda21b1495c570a6c9706",
+    "retrieved_at": "2026-09-24T12:07:44.865113+00:00",
+    "path": "/home/user/nfl/nfl/vintage/depth_charts.9bbba4b5067b5fe6.reduced.csv.gz"
+   },
+   "espn_injuries_json": {
+    "verdict": "FRESH",
+    "age_hours": 3.37,
+    "sha256": "26ed9970250c9ab9b053d3466767ad6ef3f67b3d662caec774b8ad5e0093a9c3",
+    "retrieved_at": "2026-09-24T12:07:50.368369+00:00",
+    "path": "/home/user/nfl/nfl/vintage/espn_injuries_json.7291a7378c17df0e.json.gz"
+   },
+   "injuries": {
+    "verdict": "FRESH",
+    "age_hours": 3.37,
+    "sha256": "8885346149f9ebf23be1ef5ec1cce8797e39aa88b22f897d70121e4a707f8fec",
+    "retrieved_at": "2026-09-24T12:07:44.098438+00:00",
+    "path": "/home/user/nfl/nfl/vintage/injuries.b9f0740139d052ff.csv.gz"
+   },
+   "official_inactives": {
+    "verdict": "FRESH",
+    "age_hours": 214.41,
+    "sha256": "c3e4f565a486dbff158f024af9b54d691edc87939bfc3ca01dad9957da21ccf4",
+    "retrieved_at": "2026-09-15T17:05:15.943309+00:00",
+    "path": "/home/user/nfl/nfl/vintage/official_inactives.e7e975fdfe4a6d52.html.gz"
+   },
+   "official_injury_report": {
+    "verdict": "FRESH",
+    "age_hours": 3.37,
+    "sha256": "f9fba026751ea76d0d4b800cc94778ea8a7ab3170e43413688ad80fb914eca5c",
+    "retrieved_at": "2026-09-24T12:07:49.633985+00:00",
+    "path": "/home/user/nfl/nfl/vintage/official_injury_report.43040e5a746b8635.html.gz"
+   },
+   "schedules": {
+    "verdict": "FRESH",
+    "age_hours": 3.37,
+    "sha256": "d424fda65f8af83962dbfcf3d3ca000f3372376bb78df74e5d4e9030815d8627",
+    "retrieved_at": "2026-09-24T12:07:44.371651+00:00",
+    "path": "/home/user/nfl/nfl/vintage/schedules.9d3644487c6021f2.csv.gz"
+   },
+   "weekly_rosters": {
+    "verdict": "FRESH",
+    "age_hours": 3.37,
+    "sha256": "bdcb04140749b2d1bc36ea97811f9e6b5cca2fe9e34fef7cad1d953b2be3a36f",
+    "retrieved_at": "2026-09-24T12:07:49.314119+00:00",
+    "path": "/home/user/nfl/nfl/vintage/weekly_rosters.0efeaede1505ab6e.reduced.csv.gz"
+   }
+  },
+  "verdicts": {
+   "depth_charts": "FRESH",
+   "espn_injuries_json": "FRESH",
+   "injuries": "FRESH",
+   "official_inactives": "FRESH",
+   "official_injury_report": "FRESH",
+   "schedules": "FRESH",
+   "weekly_rosters": "FRESH"
+  },
+  "required_failures": {},
+  "ok": true
+ }
+}

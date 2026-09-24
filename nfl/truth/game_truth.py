@@ -270,9 +270,6 @@ def main(argv=None) -> int:
 
     d = pathlib.Path(a.vintage_dir)
     vintage = {}
-    raw = sorted(d.glob('weekly_rosters.*.raw.csv.gz'))
-    if raw:
-        vintage['weekly_rosters_raw'] = raw[0]
     for src in ('schedules', 'weekly_rosters', 'depth_charts', 'injuries'):
         hits = sorted(d.glob(f'{src}.*.csv.gz'))
         # Prefer the reduced artifact where both exist; raw is 50MB+.
@@ -282,6 +279,21 @@ def main(argv=None) -> int:
             print(f'MISSING_SOURCE: {src} in {d}')
             return 2
         vintage[src] = pick[0]
+
+    # THE RAW MATCHING THE SELECTED REDUCED, NOT JUST ANY RAW. The first
+    # version took sorted(...)[0] and picked f7e970be -- a weeks 1-2 vintage
+    # -- while the reduced artifact in use was 0efeaede, which carries weeks
+    # 1-3. Two vintages of the same family in one snapshot is exactly the
+    # split-clock defect the run-input contract exists to stop, and it left
+    # two ATL players unnamed that the correct vintage names.
+    #
+    # The two blobs share a capture digest, so the reduced name yields the raw
+    # name directly. An unmatched raw is NOT substituted.
+    red = vintage.get('weekly_rosters')
+    if red is not None:
+        cand = d / red.name.replace('.reduced.csv.gz', '.raw.csv.gz')
+        if cand.exists():
+            vintage['weekly_rosters_raw'] = cand
 
     try:
         state = build(a.game_id, vintage)
