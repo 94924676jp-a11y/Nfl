@@ -2355,3 +2355,26 @@ the capture system. Do not modify governance, NFL-1 authorization, V2 status,
 or capture-routing policy.
 
 **The pre-inactive forecast proceeds independently and is not waiting on this.**
+
+### Update 2026-09-24 — in-repo fallbacks are exhausted
+
+Both candidate carriers inside this checkout have now been tested and both
+fail. This is recorded so the networked agent does not re-derive it.
+
+1. `https://www.nfl.com/inactives/` — client-rendered shell. 382 capture
+   PASSes, not one whose preserved bytes contain an inactive list. HTTP 200 is
+   not evidence here; that is the original defect being reported.
+2. **ESPN injuries JSON — closed vocabulary with no inactive concept.**
+   Measured offline on `espn_injuries_json.7291a7378c17df0e.json.gz`
+   (captured `2026-09-24T12:07:44Z`): 800 rows across 32 teams, status values
+   exactly `Active` 585, `Questionable` 161, `Injured Reserve` 25, `Out` 22,
+   `Doubtful` 7, types exactly the matching `INJURY_STATUS_*`. Zero values
+   bear an inactive concept. `Out` is an injury designation and must not be
+   converted; `Active` must not be read as confirmation a player will dress.
+   Full write-up:
+   `nfl/truth/findings/2026-09-24_ESPN_CANNOT_CARRY_OFFICIAL_INACTIVES.md`.
+
+**So this request is not one option among several — it is the only known path
+to official game-day inactives for this game.** `NO_VERIFIED_OFFICIAL_INACTIVES_ARTIFACT`
+remains a preferred answer over a plausible one, and the pre-inactive forecast
+continues to stand on its own regardless.
