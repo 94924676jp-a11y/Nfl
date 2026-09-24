@@ -3,7 +3,8 @@
 **Date:** 2026-09-24
 **Data:** run `2fc4e9599f0889f1` (8,000 draws, ATL @ GB) and the preserved
 play-by-play corpus for 2024, 2025 and 2026 to date. All offline.
-**Status:** EXPLORATORY. Two team-games is not a rate. Nothing here is a
+**Status:** SUPERSEDED on the QB-rate question (see below); the
+conditionality section stands. Two team-games is not a rate. Nothing here is a
 finding about the model's systematic behaviour, and nothing here authorises a
 change to the engine.
 
@@ -36,7 +37,36 @@ Against *any* passer the model is almost exactly right, and the "several
 times too high" reading was wrong. Recorded because being wrong quickly is
 cheaper than defending it.
 
-## Hypothesis 2: the comparison above is not like for like. SURVIVES, weakly.
+## Both hypotheses are SUPERSEDED. The project already measured this.
+
+`nfl/production/qb_v1.py:KNOWN_LIMITATIONS['multi_qb_over_prediction']` holds
+the same question answered on **n = 699 team-games**, with the mechanism
+named rather than left open:
+
+> prior-only dropback shares are not normalised within a team-game
+
+That is exactly the sum-above-one I set out to investigate. Measured 2024:
+multi-QB team-games draw **62.51 team dropbacks against a realised 36.61**,
++25.90, while single-QB team-games draw 34.45 against 36.80, -2.35. Pass-yards
+bias is +79.89 on multi-QB team-games against -13.81 on single-QB, and 90%
+coverage is 0.794 against 0.961. The recorded policy is *"reported on every
+run, never smoothed away"*, which is why `qb_known_limitations` shows FAIL on
+every run including this one.
+
+My evidence was two team-games from one game. Everything below this line about
+the rate is kept only because the withdrawal is more useful than the deletion;
+none of it adds to the existing measurement, and the ticket I opened has been
+withdrawn rather than left to invite a re-measurement on worse data.
+
+**One line is worth carrying forward.** The recorded cause says *"no pregame
+information in this project resolves it"*. Official game-day inactives are
+pregame information that resolves part of it: a quarterback on the inactive
+list cannot be the one who starts and is later pulled. That does not fix the
+within-team normalisation, which is the real mechanism and applies equally to
+two healthy quarterbacks, but it does make tonight's post-inactive rerun the
+one lever this project currently holds on the measured bias.
+
+## Superseded detail: the comparison is not like for like
 
 The model's `qb` layer holds quarterbacks only, while `passer_player_id`
 includes trick-play throws by receivers and backs. Restricting the historical

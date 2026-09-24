@@ -1,68 +1,66 @@
-# Ticket: is the QB room over-hedged, and should it be constrained?
+# WITHDRAWN: the QB over-hedge is already measured, better, elsewhere
 
-**Raised:** 2026-09-24 from run `2fc4e9599f0889f1`.
-**Class:** research, pre-registration required. **Not** a patch.
-**Status:** OPEN. Nothing may change in the engine on the strength of what is
-written here.
+**Raised 2026-09-24. Withdrawn the same day, before anyone worked it.**
 
-## The observation
+## Why this is withdrawn
 
-Two or more quarterbacks throw in 21.8% of ATL's simulated worlds and 21.1%
-of GB's. The historical rate, restricted to QB-position passers and bracketed
-for an incomplete position map, is **13.3% to 16.9%** over 1,142 to 1,172
-team-games across 2024, 2025 and 2026 to date. The model sits above the upper
-bound.
+I opened this ticket proposing a pre-registered study of whether the QB room
+is over-hedged, on the evidence that ATL's play probabilities sum to 1.232 and
+two or more QBs throw in 21.8% of its simulated worlds.
 
-Play probabilities within a room are not constrained to sum to one: ATL sums
-to 1.232 across four quarterbacks, GB to 1.211 across two.
+`nfl/production/qb_v1.py:KNOWN_LIMITATIONS['multi_qb_over_prediction']`
+already measures exactly this, on **n = 699 team-games**, and names the
+mechanism. My evidence was two team-games from one game. The existing record
+is better in every respect and the question it answers is the same one.
 
-## Why this is not yet a finding
+What is already established there:
 
-Two team-games, from one game, on one date. Under this project's own rules
-that is a single cluster and not a rate. The historical bracket is also
-approximate: the position map is built from 2026 roster captures, so a 2024
-passer who is not on a 2026 roster is dropped, and 1,490 passer rows have no
-position at all.
+| | |
+|---|---|
+| measured pass-yards bias, multi-QB team-games | **+79.89** |
+| single-QB bias | -13.81 |
+| 90% coverage, multi-QB | 0.794 |
+| 90% coverage, single-QB | 0.961 |
+| n | 699 |
 
-It is entirely possible that ATL's number is high because ATL genuinely has an
-unsettled quarterback room this week, which is the model being right rather
-than the model being wrong. One game cannot separate those.
+and the 2024 dropback measurement: multi-QB team-games **draw 62.51 team
+dropbacks against a realised 36.61**, +25.90; single-QB team-games draw 34.45
+against 36.80, -2.35.
 
-## What must be settled before any change
+The mechanism is stated, not left open:
 
-1. **Measure across many team-games**, not this one. Clustered by game and by
-   date, or blocked-resampled. A point estimate from one slate is not
-   evidence.
-2. **Rebuild the position map from contemporaneous rosters** so the historical
-   bracket collapses to a usable interval instead of a range that spans the
-   question.
-3. **Decide what the target actually is.** The rate of two QBs *throwing* is
-   not the rate of an uncertain *starter*. A backup entering a decided game in
-   the fourth quarter and a genuine week-long competition produce the same
-   statistic and call for opposite treatments. Separate them before fitting to
-   either.
-4. **Decide whether a sum-to-one constraint is even correct.** Exactly one QB
-   starts, but more than one may throw, so P(throws) summing above one is not
-   by itself an error. The constraint that might be justified is on *starting*,
-   which the artifact does not currently represent as its own quantity.
-5. **Establish what it would cost.** Collapsing the room raises the conditional
-   spread of the starter's projection and could raise discrimination, which is
-   the project's objective. It also removes hedging that may be honest. Both
-   directions need measuring, not asserting.
+> prior-only dropback shares are not normalised within a team-game
 
-## What must not happen
+That is precisely the sum-above-one I observed and proposed to investigate. It
+is not an open question. The cause is recorded too -- *"the prior-only
+dropback share of a QB later pulled is necessarily too high; no pregame
+information in this project resolves it"* -- and the standing policy is
+*"reported on every run, never smoothed away"*, which is why
+`qb_known_limitations` shows FAIL on every run including this one.
 
-* No coefficient may be fitted to make the model's 21% match a historical
-  13-17%. That is tuning to a target derived from the same family of data and
-  it is exactly what the no-silent-constants rule forbids.
-* No change may be justified by "the projections look more reasonable".
-* This ticket may not be closed by the ATL @ GB rerun tonight. One more game
-  is one more cluster.
+**So the honest status is: known, quantified, mechanism identified, policy
+set.** Nothing in my observation adds to it, and leaving this ticket open
+would have invited someone to re-measure on worse data a thing already
+measured on better.
 
-## The cheap part that is not blocked
+## The one line worth carrying forward
 
-The reporting fix in
-`nfl/research/findings/2026-09-24_QB_ALLOCATION_AND_CONDITIONALITY.md` --
-carrying `P(plays)` and the conditional mean beside the unconditional one --
-alters no projection and does not depend on any of the above. It should not
-wait for this ticket.
+The recorded cause says no **pregame** information in this project resolves
+which quarterback is pulled. Official game-day inactives are pregame
+information that resolves part of it: a quarterback on the inactive list
+cannot be the one who starts and is later pulled, and his dropback share
+should go to zero rather than being hedged.
+
+That does not fix the within-team normalisation, which is the real mechanism
+and applies just as much to two healthy quarterbacks. But it does mean the
+post-inactive rerun is the one lever this project currently holds on the
+measured bias, and it is worth watching tonight for that reason rather than
+only for the roster change.
+
+## What survives from the original ticket and has moved
+
+The conditional-versus-unconditional reporting defect is separate, is not
+covered by `KNOWN_LIMITATIONS`, and stands. It is implemented in
+`nfl/research/unsealed/conditionality.py` and written up in
+`nfl/research/findings/2026-09-24_QB_ALLOCATION_AND_CONDITIONALITY.md`.
+It changes no projection.
