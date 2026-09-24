@@ -2408,3 +2408,33 @@ the inactive players for ATL and GB without inference.
 `NO_VERIFIED_OFFICIAL_INACTIVES_ARTIFACT` is a real result and is preferred
 over a plausible one. **The pre-inactive forecast proceeds independently and is
 not waiting on this.**
+
+## ESPN injuries endpoint — can the 25-per-club page cap be lifted?
+
+**Raised 2026-09-24. Small, bounded, and worth a single request.**
+
+Measured offline over the entire preserved history: 648 captures x 32 clubs =
+**20,736 club entries, every one carrying exactly 25 injury items.** Never 24,
+never 26. That is a page size, not a census. The response says
+`"status": "success"` and carries no pagination metadata at all — no `count`,
+`pageIndex`, `pageCount` or `next` — so a truncated answer arrives wearing the
+word "success".
+
+The cap is not spent on injured players. In one capture's 800 items, 585 (73%)
+are `Active`. One club's 25 slots held 16 `Active`, 4 `Questionable`, 4
+`Injured Reserve` and a single `Out`. A genuinely OUT player ordered past the
+25th is invisible to us.
+
+**The question:** does the endpoint honour a `limit`, `page`, `offset`, or
+per-club query that returns the full list? Please try and report what the
+bytes actually contain, not what the status field claims.
+
+* If it does, this is a one-line capture change and a real gain in
+  availability coverage.
+* If it does not, ESPN is permanently a partial secondary source and we will
+  document it as one. **That is a real answer and is preferred over a
+  plausible one.**
+
+Nothing downstream is broken by this: `availability_feed.states()` already
+refuses to read absence as health. What we lose is coverage, not correctness.
+Full write-up: `nfl/research/findings/2026-09-24_ESPN_FEED_TRUNCATED_AT_25.md`.
