@@ -266,6 +266,26 @@ INVARIANTS = {
         'why_not_hard': 'the residual is NAMED and quantified by the layer '
                         'itself rather than clipped; it is a declared property '
                         'of the prior-only share model.'},
+    'unavailable_owns_nothing': {
+        'class': DIAGNOSTIC,
+        'evaluator': 'nfl.research.unsealed.unavailable_owns_nothing.check',
+        'asserts': 'no player the run\'s OWN truth snapshot gives a terminal '
+                   'availability state -- OUT, official game-day inactive, '
+                   'IR, PUP/NFI, suspension -- holds non-zero opportunity in '
+                   'any draw layer. Opportunity, not outcome: a carry for no '
+                   'gain is still a carry. DOUBTFUL and QUESTIONABLE are '
+                   'probabilistic and deliberately do not trigger it.',
+        'why_not_hard': 'ONLY BECAUSE THE PROMOTION IS THE OWNER\'S TO MAKE, '
+                        'not because the property is soft. The QB analogue '
+                        '`qb_inactive_owns_nothing` is HARD, and a board that '
+                        'gives carries to a player his club has ruled out is '
+                        'not self-consistent by any reading. It is registered '
+                        'DIAGNOSTIC so the check runs and is visible from the '
+                        'run it was written against, where Jayden Reed (OUT, '
+                        'neck, did not practise) holds the largest WR gadget '
+                        'share in the game. Promoting it to HARD would gate '
+                        'the board, and changing what gates is a governance '
+                        'decision this file exists to keep deliberate.'},
     'nonqb_layer_availability': {
         'class': DIAGNOSTIC,
         'evaluator': 'nfl.production.run_forecast (non-QB chain states)',
