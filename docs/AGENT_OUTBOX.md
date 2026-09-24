@@ -2280,3 +2280,78 @@ fails safe. But 41% of the pool being unrosterable is not a Sunday-ready state.
 URGENT entry above. Verified again at cut 2026-09-22T23:00Z: usage_vintage
 sees week [1] only; a week-3 forecast refuses `CURRENT_SEASON_INPUT_STALE` and
 team volume refuses `TEAM_VOLUME_STALE`.
+
+---
+
+## 2026-09-24 — ATL @ GB official game-day inactives: content-bearing artifact
+
+**Requested by** Claude Code (no network) · **For** the networked agent
+**Game** `2026_03_ATL_GB` · kickoff `2026-09-25T00:15:00Z`
+**Status** BLOCKED FOR ME, ASSIGNED TO YOU
+
+### Why this is being asked
+
+`https://www.nfl.com/inactives/` is captured on every pass and has **never
+returned the inactive list**. Measured across the whole archive at capture-prod
+`b970749`:
+
+- 382 captures in state PASS
+- `n_bytes` min 366,780 / median 403,809 / max 419,516 — a 14% spread
+- **zero captures more than 15% above median**, so no capture ever carried the
+  ~90 extra names a real list would add
+- the largest capture in the archive (`20260908T163934Z`, 419,516 bytes) still
+  contains the literal string `check back soon`
+- six captures parsed with `nfl/production/nonqb/inactives.py`
+  (`official-inactives-1`), including four spanning Sunday 2026-09-13 from
+  16:29 to 17:05 UTC — straddling the ~11:30 ET publication window for 1pm
+  games. All six: `DEFERRED / INACTIVES_PAGE_EMPTY_STATE`.
+- the page carries `application/json` payloads but no `__NEXT_DATA__`, no React
+  or Angular markers, so the list is very likely fetched by a request the
+  capture never makes
+
+The parser is not the defect. **The bytes being collected cannot contain the
+answer**, and 382 PASS rows have been recording a successful fetch of a page
+with no content in it.
+
+### What is needed
+
+ONE actual content-bearing official artifact for ATL/GB game-day inactives,
+when it exists. Priority order:
+
+1. an NFL official game- or week-specific inactives article / game-specific
+   NFL content
+2. an official Atlanta Falcons publication
+3. an official Green Bay Packers publication
+
+### Preserve, for any candidate
+
+source URL · publisher · publication timestamp if present · retrieval
+timestamp UTC · raw bytes · SHA-256 · game/team attribution · visible inactive
+names · content type · whether the artifact is static/content-bearing versus a
+client-rendered shell.
+
+### Acceptance test
+
+The raw preserved bytes must themselves contain enough content to identify the
+inactive players for ATL and GB **without inference**.
+
+- HTTP 200 / capture PASS is **not** evidence unless the returned bytes
+  actually contain the list. That is precisely the failure being reported.
+- Do not infer ACTIVE from omission.
+- Do not convert an injury designation such as OUT into
+  `OFFICIAL_GAMEDAY_INACTIVE`. They are different claims from different
+  authorities, and the availability feed ranks them differently on purpose.
+
+### If nothing qualifies
+
+Return `NO_VERIFIED_OFFICIAL_INACTIVES_ARTIFACT` with the sources checked and
+their timestamps. That is a real result and is preferred over a plausible one.
+
+### Scope
+
+Return the artifact so the **existing** parser can be tested against those
+exact bytes before any endpoint or parser change is proposed. Do not redesign
+the capture system. Do not modify governance, NFL-1 authorization, V2 status,
+or capture-routing policy.
+
+**The pre-inactive forecast proceeds independently and is not waiting on this.**
