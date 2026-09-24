@@ -85,6 +85,47 @@ def _sha(path: pathlib.Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def names_from_raw_roster(path: pathlib.Path, teams: tuple,
+                          season: int, week: int | None = None) -> dict:
+    """gsis_id -> display name, from the RAW roster blob.
+
+    WHY THE RAW AND NOT THE REDUCED. The reduction keeps
+    `season,week,team,gsis_id,position` and drops the name. That is fine for
+    the capture layer's purpose and fatal for this one: the existing
+    availability feed joins ON DISPLAY NAME and asks the caller for the
+    id -> name map it already trusts, so a snapshot with no names cannot
+    drive it. Measured before this existed: 137 of 159 players had no name.
+
+    ONLY THE NAME IS TAKEN FROM HERE, AND THAT IS A GOVERNANCE LINE, NOT A
+    CONVENIENCE. The same file carries `status` and `status_description_abbr`,
+    and CLAUDE.md records that `weekly_rosters.status` may NOT close
+    PREDICTION_TIME_ELIGIBILITY_UNAVAILABLE because it is post-hoc -- INA
+    resolves to 0 snaps in 3,438 cases, which is the outcome written back
+    into the roster after the game. Reading it here would import a postgame
+    field into a pregame state through the back door. Identity is safe to
+    take; availability is not.
+    """
+    out = {}
+    with gzip.open(path, 'rt', newline='') as fh:
+        for r in csv.DictReader(fh):
+            if r.get('team') not in teams:
+                continue
+            if r.get('season') and r['season'].isdigit() and int(r['season']) != season:
+                continue
+            # NO WEEK FILTER, DELIBERATELY. A display name is an identity
+            # attribute, not a weekly state: it does not change between
+            # week 2 and week 3. The newest retained raw roster blob covers
+            # weeks 1-2 only -- newer captures keep the reduced artifact and
+            # not the raw -- so filtering on the target week resolved zero
+            # names and left 137 of 159 players unnamed. Season and team
+            # still bound it, and nothing else is read from this file.
+            gid = r.get('gsis_id')
+            nm = r.get('full_name') or r.get('football_name')
+            if gid and nm:
+                out[gid] = nm
+    return out
+
+
 def parse_game_id(game_id: str) -> tuple:
     """`2026_03_ATL_GB` -> (2026, 3, 'ATL', 'GB'). Refuses anything else."""
     parts = game_id.split('_')
@@ -115,6 +156,15 @@ def build(game_id: str, vintage: dict) -> dict:
         raise TruthError(f'NO_ROSTER_ROWS: {game_id} week {week}')
 
     depth = [r for r in _rows(vintage['depth_charts']) if r['team'] in teams]
+
+    # Identity names, needed because the downstream availability feed joins on
+    # display name. Absent -> recorded, never silently empty.
+    names = {}
+    name_source = None
+    if vintage.get('weekly_rosters_raw'):
+        names = names_from_raw_roster(vintage['weekly_rosters_raw'], teams,
+                                      season, week)
+        name_source = str(vintage['weekly_rosters_raw'])
     inj = [r for r in _rows(vintage['injuries'])
            if r['team'] in teams and int(r['season']) == season
            and int(r['week']) == week]
@@ -140,7 +190,10 @@ def build(game_id: str, vintage: dict) -> dict:
             'game_id': game_id,
             'team': r['team'],
             'gsis_id': pid,
-            'full_name': (i or {}).get('full_name'),
+            'full_name': names.get(pid) or (i or {}).get('full_name'),
+            'name_source': ('weekly_rosters_raw' if names.get(pid)
+                            else ('injuries' if (i or {}).get('full_name')
+                                  else None)),
             'position': r.get('position'),
             'depth_positions': [{'pos_abb': x.get('pos_abb'),
                                  'pos_rank': x.get('pos_rank')} for x in d],
@@ -178,6 +231,8 @@ def build(game_id: str, vintage: dict) -> dict:
                 sum(1 for p in tp if p['availability'] == DOUBTFUL),
             'unknown_no_designation':
                 sum(1 for p in tp if p['availability'] == UNKNOWN),
+            'with_display_name': sum(1 for p in tp if p['full_name']),
+            'without_display_name': sum(1 for p in tp if not p['full_name']),
         }
 
     return {
@@ -192,6 +247,7 @@ def build(game_id: str, vintage: dict) -> dict:
         'roof': g.get('roof'),
         'surface': g.get('surface'),
         'built_at_utc': dt.datetime.now(dt.timezone.utc).isoformat(),
+        'identity_name_source': name_source,
         'official_inactives_ingested': False,
         'official_inactives_note':
             'Not yet released. Until they are, no player here is INACTIVE and '
@@ -214,6 +270,9 @@ def main(argv=None) -> int:
 
     d = pathlib.Path(a.vintage_dir)
     vintage = {}
+    raw = sorted(d.glob('weekly_rosters.*.raw.csv.gz'))
+    if raw:
+        vintage['weekly_rosters_raw'] = raw[0]
     for src in ('schedules', 'weekly_rosters', 'depth_charts', 'injuries'):
         hits = sorted(d.glob(f'{src}.*.csv.gz'))
         # Prefer the reduced artifact where both exist; raw is 50MB+.
