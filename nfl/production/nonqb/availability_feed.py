@@ -84,6 +84,53 @@ PROBABILISTIC_STATES = ('Doubtful', 'Questionable', 'Day-To-Day', 'Day To Day')
 AVAILABLE_STATES = ('Active',)
 
 #: The five join outcomes the caller must be able to tell apart.
+# THE FEED IS PAGE-CAPPED AT 25 PER CLUB AND DOES NOT SAY SO.
+#
+# Measured 2026-09-24 over the entire preserved capture history: 648 captures
+# x 32 clubs = 20,736 club entries, and every single one carries EXACTLY 25
+# injury items. Not one carries 24 or 26. A live injury census over 32 clubs
+# and six weeks does not produce a one-valued distribution; a page size does.
+#
+# The response says `"status": "success"` and carries no pagination metadata
+# at all -- no count, no pageIndex, no pageCount, no next. So a partial answer
+# arrives wearing the word "success", which is this project's Class A defect.
+#
+# The cap is not even spent on injured players: across one capture's 800 items
+# 585 (73%) are `Active`. A club's 25 slots held 16 Active, 4 Questionable, 4
+# Injured Reserve and one Out. A genuinely OUT player ordered past the 25th is
+# therefore invisible to us.
+#
+# This constant is NOT a tuning knob and nothing is inferred from it. It is
+# recorded so that the condition is visible in the artifact rather than
+# re-derived by whoever next wonders why a designation is missing.
+_ESPN_PAGE_CAP = 25
+
+
+def _truncation(doc) -> dict:
+    """Is this capture cut off at the page cap?
+
+    Reports what was counted, never an estimate of what was lost. How many
+    players were dropped is not knowable from a truncated document and must
+    not be guessed.
+    """
+    counts = {}
+    for club in doc.get('injuries') or []:
+        counts[str(club.get('displayName') or club.get('id'))] = len(
+            club.get('injuries') or [])
+    at_cap = [c for c, n in counts.items() if n == _ESPN_PAGE_CAP]
+    return {
+        'page_cap': _ESPN_PAGE_CAP,
+        'n_clubs': len(counts),
+        'n_clubs_at_cap': len(at_cap),
+        'truncated': bool(counts) and len(at_cap) == len(counts),
+        'per_club_counts': counts,
+        'note': ('every club returned exactly the page cap, so this capture is '
+                 'a truncated view and absence from it is doubly uninformative'
+                 if counts and len(at_cap) == len(counts) else
+                 'at least one club returned fewer than the cap, so the cap is '
+                 'not binding everywhere in this capture'),
+    }
+
 JOIN_STATES = ('NO_ITEM', 'CURRENT_ITEM_MATCHED', 'CURRENT_ITEM_AFTER_CLOCK',
                'AMBIGUOUS', 'UNRESOLVED_IDENTITY')
 
@@ -182,10 +229,12 @@ def newest_lawful(as_of) -> Outcome:
         'AVAILABILITY_FEED_SELECTED',
         value={'items': items, 'timestamp': t.isoformat(),
                'blob': str(f.relative_to(_REPO)),
+               'truncation': _truncation(d),
                'names_only_after_clock': sorted(
                    later_names - {i['name'] for i in items if i['name']})},
         spec_version=SPEC_VERSION, source=SOURCE, authority=AUTHORITY,
         capture_timestamp=t.isoformat(), blob=str(f.relative_to(_REPO)),
+        feed_truncated=_truncation(d)['truncated'],
         n_items=len(items), n_captures_scanned=n,
         n_captures_after_cut=len(after),
         selection_rule='the newest capture whose OWN timestamp field is at or '
@@ -208,6 +257,7 @@ def states(as_of, names_by_id: dict) -> Outcome:
     if not sel.ok:
         return sel
     items = sel.value['items']
+    truncated = bool((sel.value.get('truncation') or {}).get('truncated'))
     after_only = set(sel.value['names_only_after_clock'])
     by_name = {}
     for it in items:
@@ -253,7 +303,13 @@ def states(as_of, names_by_id: dict) -> Outcome:
                         'leakage' if js == 'CURRENT_ITEM_AFTER_CLOCK' else
                         'no item for this player in the newest lawful '
                         'capture. ABSENCE FROM AN INJURY FEED IS NOT '
-                        'EVIDENCE OF HEALTH.')}
+                        'EVIDENCE OF HEALTH.'
+                        + (' This capture is TRUNCATED at the feed\'s page '
+                           'cap of %d per club, so his absence may mean only '
+                           'that the list was cut before reaching him. It is '
+                           'not evidence that the feed had nothing to say '
+                           'about him.' % _ESPN_PAGE_CAP
+                           if truncated else ''))}
                 continue
             counts['CURRENT_ITEM_MATCHED'] += 1
             cls = _classify(it['designation_text'])
