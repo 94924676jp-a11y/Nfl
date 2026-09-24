@@ -2438,3 +2438,48 @@ bytes actually contain, not what the status field claims.
 Nothing downstream is broken by this: `availability_feed.states()` already
 refuses to read absence as health. What we lose is coverage, not correctness.
 Full write-up: `nfl/research/findings/2026-09-24_ESPN_FEED_TRUNCATED_AT_25.md`.
+
+## BLOCKING TONIGHT — refreshed DK Showdown export for ATL @ GB
+
+**Raised 2026-09-24 ~20:10Z. Contest locks 00:15Z.** Two of the owner's five
+pre-lock priorities cannot be executed from inside this checkout, and neither
+is a modelling problem — both need bytes we do not have.
+
+### 1. A refreshed DraftKings ATL @ GB Showdown export
+
+The export we hold was an owner upload captured **13:34:48Z** and it is
+already provably stale against the live contest. `Pierre Strong Jr.` appears
+in the live lobby with a Q flag and is **absent from all 958 rows** of that
+file. He is GB, RB, gsis `00-0038098`, roster status **DEV** — which is what a
+practice-squad elevation looks like.
+
+Needed, per the owner, from the refreshed source directly and **not** by
+inference:
+
+* Pierre Strong: salary, team, roster position, contest eligibility, status
+  flag, and whether he was added after 13:34Z.
+* The exact DK identity row for the Captain the owner entered as
+  **`B. Robinson`**. Atlanta rosters Bijan (CPT $17,700) and Brian (CPT
+  $6,600). Salary arithmetic implies Bijan and the owner has explicitly
+  ruled that out as a resolution method: *"Do not infer identity from salary
+  arithmetic if the refreshed source can identify the player directly."*
+  A contest export carries the player id; please return that row.
+* The full refreshed slate so the playable universe can be rebuilt and diffed
+  against the pinned one (adds, removes, salary moves, by name).
+
+### 2. The official ATL @ GB inactives artifact
+
+Unchanged from the request above, and now on a clock: the list publishes
+around **22:45Z**, roughly 90 minutes before lock. The parser is built and
+tested against real bytes of all three proven shapes, so nothing is needed
+from us but the document. See
+`nfl/research/findings/2026-09-24_OFFICIAL_INACTIVES_CARRIER.md` for the URL
+family that works and the two dead ends.
+
+### What proceeds without either
+
+The research portfolio builder is being built now against the pinned universe
+so it runs the moment refreshed data lands. It is explicitly labelled
+`RESEARCH_DFS_PORTFOLIO_NOT_JOINT-WORLD_VALIDATED` and claims no lineup-level
+win probability. **This request blocks the refresh and the rerun, not the
+build.**
