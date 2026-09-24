@@ -255,17 +255,121 @@ def _team_tokens(team: str):
     return (team,) + tuple(_TEAM_ALIASES.get(team.upper(), ()))
 
 
-def _marks(teams, lines):
-    """First line mentioning each club, under any spelling it may use."""
-    marks = {}
+def _token_hit(tok, line):
+    """Does `line` name this club token?
+
+    Case matters differently for the two token kinds. A club CODE is short
+    and collides with ordinary words -- case-insensitive `\bNO\b` matches
+    every "no" on the page -- so codes are matched exactly as written. A
+    nickname or city does not collide, and the league writes it in caps in
+    article headers (`<h3>PANTHERS</h3>`) and in title case in navigation
+    ("Carolina Panthers"), so those are matched case-insensitively.
+
+    This is not cosmetic. While nicknames were matched case-sensitively, an
+    uppercase `BEARS` header did not bound the preceding club's block, so
+    Carolina's block ran through Chicago's list, read fourteen names against a
+    ceiling of twelve, and the whole document deferred.
+    """
+    if tok.isupper() and tok in _TEAM_ALIASES:
+        return re.search(rf'\b{re.escape(tok)}\b', line) is not None
+    return re.search(rf'\b{re.escape(tok)}\b', line, re.IGNORECASE) is not None
+
+
+def _mentions(team, lines):
+    """EVERY line mentioning a club, under any spelling it may use.
+
+    Not the first. A populated NFL.com article names both clubs in the
+    scoreboard navigation hundreds of lines before the article body, so the
+    first mention anchors inside page furniture and the block that follows it
+    contains no names at all. That is exactly how this parser deferred on two
+    documents that plainly carried the lists.
+    """
+    out = []
     for i, ln in enumerate(lines):
-        for t in teams:
-            if t in marks:
-                continue
-            if any(re.search(rf'\b{re.escape(tok)}\b', ln)
-                   for tok in _team_tokens(t)):
-                marks[t] = i
-    return marks
+        if any(_token_hit(tok, ln) for tok in _team_tokens(team)):
+            out.append(i)
+    return out
+
+
+def _club_anchor_lines(lines):
+    """Line indices naming ANY of the 33 clubs.
+
+    These bound a club's block. A club's inactive list ends where the next
+    club is named -- that is the document's own structure, in the article
+    (`<h3>PANTHERS</h3>` then `<h3>BEARS</h3>`) and in the operator relay
+    (`DET` then `BUF`) alike. Bounding by only the two requested clubs would
+    let one club's block run through every other club's list.
+    """
+    idx = set()
+    for i, ln in enumerate(lines):
+        for code in _TEAM_ALIASES:
+            if any(_token_hit(tok, ln) for tok in _team_tokens(code)):
+                idx.add(i)
+                break
+    return sorted(idx)
+
+
+# THE LEAGUE'S OWN ENTRY GRAMMAR, AND WHY THE PARSER REQUIRES IT.
+#
+# Every inactive entry in every populated document we hold is a position
+# followed by a name: `<li>TE Ja'Tavion Sanders</li>` in the NFL.com article,
+# `* DT Ed Oliver` in the operator relay. Nothing else on either page has that
+# shape.
+#
+# Requiring it is not decoration. An earlier version of this segmentation
+# accepted any block containing a person-shaped name, and on the Week 1
+# article asked for GB and MIN -- two clubs whose lists that capture does not
+# carry -- it returned PASS with GB: ['Justin Jefferson'] and
+# MIN: ['NFC South'], swept out of the navigation, attributing a Vikings
+# receiver to Green Bay. A confident wrong list is far worse than a refusal.
+# The position prefix is what separates a list entry from page furniture.
+_POSITIONS = (r"QB|RB|FB|WR|TE|OL|OT|OG|G|C|DL|DT|DE|EDGE|LB|ILB|OLB|MLB|"
+              r"DB|CB|S|FS|SS|K|P|LS|NT")
+_ENTRY = re.compile(rf"^(?:[*\u2022-]\s*)?({_POSITIONS})\s+(.+?)\s*$")
+
+
+def _names_in(lines):
+    """A block's inactive entries, and the lines rejected as not entries.
+
+    Returns names with the position prefix removed, because downstream
+    identity resolution matches against roster names and would not resolve
+    'QB Tua Tagovailoa'. The parenthetical the article uses for the emergency
+    third quarterback is stripped from the name for the same reason.
+    """
+    names, drops = [], []
+    for ln in lines:
+        m = _ENTRY.match(ln)
+        if not m:
+            if ln not in drops:
+                drops.append(ln)
+            continue
+        name = m.group(2).strip()
+        name = re.sub(r'\s*\([^)]*\)\s*$', '', name).strip()
+        if not name or not _plausible_person(name):
+            if ln not in drops:
+                drops.append(ln)
+            continue
+        if name not in names:
+            names.append(name)
+    return names, drops
+
+
+def _blocks_for(team, lines, bounds):
+    """Every candidate block for `team`, as (anchor, names, rejected).
+
+    Only blocks yielding between one name and the ceiling are returned. A
+    block with no names is page furniture; a block over the ceiling is the
+    document swept rather than parsed. Both are the same refusal the guards
+    below make, applied per candidate instead of once to a guessed anchor.
+    """
+    out = []
+    for anchor in _mentions(team, lines):
+        later = [b for b in bounds if b > anchor]
+        end = later[0] if later else len(lines)
+        names, drops = _names_in(lines[anchor:end])
+        if 1 <= len(names) <= _MAX_PER_TEAM:
+            out.append((anchor, names, drops))
+    return out
 
 
 # The rule the league itself imposes: a club dresses 48 of a 53-man roster, so
@@ -301,9 +405,15 @@ def _plausible_person(name: str) -> bool:
 def parse(html: str, teams) -> Outcome:
     """team -> [name, ...]. Conservative, and every step re-checked downstream.
 
-    THIS PARSER HAS NEVER SEEN A POPULATED PAGE, AND SAYS SO BY REFUSING.
+    THIS PARSER HAS NOW SEEN POPULATED PAGES, AND IS SEGMENTED AGAINST THEM.
 
-    Every captured example in this repository is the empty state. The markup
+    It was written when every captured example was the empty state, and it
+    said so. That premise expired on 2026-09-24: three preserved captures
+    carry real lists -- the NFL.com weekly article, a single-game article,
+    and an operator plain-text relay. Against all three the original
+    first-mention anchoring deferred with INACTIVES_TEAM_HAS_NO_NAMES,
+    because a club is named in the scoreboard navigation long before the
+    article body. Anchoring is now by candidate block. The markup
     of a populated list is therefore unknown, and a segmenter tuned against a
     document I wrote myself would be fitted to my own assumptions rather than
     to the league's HTML. So this reads the plain shape -- tags stripped, the
@@ -333,27 +443,39 @@ def parse(html: str, teams) -> Outcome:
                 f'reading names out of its navigation would manufacture a list',
                 owed={'empty_state_marker': marker, 'n_lines': len(lines)})
 
-    marks = _marks(teams, lines)
-    missing = [t for t in teams if t not in marks]
+    mentions = {t: _mentions(t, lines) for t in teams}
+    missing = [t for t in teams if not mentions[t]]
     if missing:
         return Outcome.deferred(
             'INACTIVES_TEAM_NOT_REPRESENTED',
             f'{missing} do(es) not appear in the captured document, so this '
             f'capture cannot describe both clubs',
-            owed={'teams_missing': missing, 'teams_found': sorted(marks),
+            owed={'teams_missing': missing,
+                  'teams_found': sorted(t for t in teams if mentions[t]),
                   'tokens_tried': {t: list(_team_tokens(t)) for t in teams}})
 
-    order = sorted(marks.items(), key=lambda kv: kv[1])
-    found, rejected = {}, {}
-    for j, (t, start) in enumerate(order):
-        end = order[j + 1][1] if j + 1 < len(order) else len(lines)
-        names, drops = [], []
-        for ln in lines[start:end]:
-            for m in _NAME.finditer(ln):
-                n = m.group(0).strip()
-                if n in names or n in drops:
-                    continue
-                (names if _plausible_person(n) else drops).append(n)
+    bounds = _club_anchor_lines(lines)
+    found, rejected, chosen = {}, {}, {}
+    for t in teams:
+        cands = _blocks_for(t, lines, bounds)
+        if not cands:
+            found[t], rejected[t] = [], []
+            continue
+        distinct = {tuple(names) for _, names, _ in cands}
+        if len(distinct) > 1:
+            # Two different readings of the same club in one document. Picking
+            # one would be a guess, and a guessed inactive list is worse than
+            # no list.
+            return Outcome.deferred(
+                'INACTIVES_AMBIGUOUS_BLOCKS',
+                f'{t} has {len(distinct)} different candidate inactive lists '
+                f'in this document, so no single reading is authoritative',
+                owed={'team': t,
+                      'candidates': [{'anchor_line': a, 'names': n}
+                                     for a, n, _ in cands]})
+        anchor, names, drops = cands[0]
+        later = [b for b in bounds if b > anchor]
+        chosen[t] = [anchor, later[0] if later else len(lines)]
         found[t], rejected[t] = names, drops
 
     # GUARD 2 -- a club with no names is not an answer for that club.
@@ -389,10 +511,7 @@ def parse(html: str, teams) -> Outcome:
                       n_rejected_as_labels={t: len(v)
                                             for t, v in rejected.items()},
                       rejected_sample={t: v[:8] for t, v in rejected.items()},
-                      block_bounds={t: [marks[t], (order[j + 1][1]
-                                                   if j + 1 < len(order)
-                                                   else len(lines))]
-                                    for j, (t, _) in enumerate(order)})
+                      block_bounds=chosen)
 
 
 def verify_supplied_names(html: str, names_by_team) -> Outcome:

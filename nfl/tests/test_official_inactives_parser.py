@@ -1,27 +1,34 @@
-"""The official-inactives parser, tested against the real preserved bytes.
+"""The official-inactives parser, against the real preserved bytes.
+
+WHY THIS EXISTS NOW AND NOT BEFORE. `nfl/production/nonqb/inactives.py` was
+written when every preserved capture was the empty-state page, and its
+docstring said so: it had never seen a populated document, so it leaned on
+refusing. On 2026-09-24 three populated captures were found in the existing
+vintage store -- the NFL.com weekly article, a single-game article, and an
+operator plain-text relay. Against all three the parser deferred. This module
+pins the behaviour against those bytes so the segmentation cannot drift back.
 
 WHAT THIS MODULE ASSERTS
 ========================
-1. THE EMPTY-STATE PAGE IS REFUSED BY NAME. 363 of 367 preserved
-   `official_inactives` blobs are the NFL.com "Please check back soon" page,
-   every one of them recorded as a capture PASS. The parser raises
-   `EmptyStatePage` on them rather than returning `{}`. This is the single
-   most important assertion here: an empty result read as success is exactly
-   how this source was mistaken for a working one.
-2. THE TWO PROVEN CARRIERS PARSE. The NFL.com weekly article
-   (`<h3>TEAM</h3><ul><li>POS Name</li>`) and the operator plain-text relay
-   (`TEAM` / `* POS Name`) both yield the same structure.
-3. ABSENCE IS NEVER CONVERTED INTO PRESENCE. `for_game` refuses when either
-   requested team is missing from the document, and says so in those words.
-   A half-attributed result would let one team's silence read as "nobody
-   inactive".
-4. AN AGENT-AUTHORED REPORT IS NOT A SOURCE. The SF @ LA markdown
-   intelligence capture discusses inactive lists in prose and is refused.
-   Parsing another agent's summary as though it were the source document is
-   the error this refusal prevents.
-5. THE ENTRY GRAMMAR IS TIGHT. A position token is required, the emergency-QB
-   parenthetical is captured as a note rather than fused into the name, and
-   prose lines are not mistaken for entries.
+1. THE REAL DOCUMENTS PARSE, WITH THE RIGHT NAMES. Not "returns PASS" --
+   the exact rosters are checked, position prefixes stripped, because
+   downstream identity resolution matches roster names and would not resolve
+   'QB Tua Tagovailoa'.
+2. THE EMPTY-STATE PAGE IS STILL REFUSED. 363 of 367 preserved blobs are the
+   "check back soon" page and every one was recorded as a capture PASS. The
+   whole population is swept, not a sample.
+3. A CLUB WHOSE LIST THE DOCUMENT DOES NOT CARRY IS REFUSED, NOT INVENTED.
+   This is the regression that matters most. An intermediate version of the
+   segmentation accepted any block containing a person-shaped name and
+   returned PASS with GB: ['Justin Jefferson'] and MIN: ['NFC South'] on a
+   capture carrying neither club's list -- a Vikings receiver attributed to
+   Green Bay, swept from the navigation. That case is asserted directly.
+4. FRESHNESS IS VISIBLE IN THE DATA. The same article captured twice carries
+   8 games at 16:00Z and more later. GB/MIN therefore DEFERS on the earlier
+   capture and PASSES on the later one. A parser that returned the same
+   answer for both would be reading the URL, not the bytes.
+5. THE ENTRY GRAMMAR IS THE LEAGUE'S. A position prefix is required, which is
+   what separates a list entry from page furniture.
 """
 import glob
 import os
@@ -31,22 +38,18 @@ _ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__
 if _ROOT not in sys.path:
     sys.path.insert(0, _ROOT)
 
-from nfl.truth.official_inactives_parser import (  # noqa: E402
-    EMPTY_STATE_MARKER,
-    EmptyStatePage,
-    InactivesParseError,
-    for_game,
-    parse,
-    read_bytes,
-)
+import gzip  # noqa: E402
+
+from nfl.production.nonqb import inactives as INA  # noqa: E402
 
 PASSED = FAILED = BLOCKED = 0
 
 VINTAGE = os.path.join(_ROOT, 'nfl', 'vintage')
-WEEK1_ARTICLE = os.path.join(VINTAGE, 'official_inactives.3fc8c4f13968d023.html.gz')
-OPERATOR_RELAY = os.path.join(VINTAGE, 'official_inactives.6dafcf6e981f11be.html.gz')
-AGENT_REPORT = os.path.join(VINTAGE, 'official_inactives.91bdf335602a7475.html.gz')
-EMPTY_STATE = os.path.join(VINTAGE, 'official_inactives.fefbd73647bb1e1d.html.gz')
+ARTICLE_EARLY = 'official_inactives.3fc8c4f13968d023.html.gz'   # 16:00:17Z
+ARTICLE_LATE = 'official_inactives.423d0c34811cd6d6.html.gz'
+RELAY = 'official_inactives.6dafcf6e981f11be.html.gz'           # Wk2 TNF
+AGENT_REPORT = 'official_inactives.91bdf335602a7475.html.gz'
+EMPTY_STATE = 'official_inactives.fefbd73647bb1e1d.html.gz'
 
 
 def check(label, ok, detail=''):
@@ -66,135 +69,148 @@ def blocked(label, why):
     print(f'  BLOCKED {label}  {why}')
 
 
-def raises(fn, exc, needle=''):
-    try:
-        fn()
-    except exc as e:
-        return needle in str(e)
-    except Exception:
-        return False
-    return False
+def doc(name):
+    path = os.path.join(VINTAGE, name)
+    if not os.path.exists(path):
+        return None
+    return gzip.open(path, 'rt', errors='replace').read()
 
 
-def test_the_empty_state_page_is_refused_by_name():
-    if not os.path.exists(EMPTY_STATE):
-        return blocked('empty-state refusal', f'blob absent: {EMPTY_STATE}')
-    doc = read_bytes(EMPTY_STATE)
-    check('the preserved landing page really is the empty-state page',
-          EMPTY_STATE_MARKER in doc)
-    check('it raises EmptyStatePage rather than returning {}',
-          raises(lambda: parse(doc), EmptyStatePage, 'carries no list'))
-    check('for_game refuses it too, not just parse',
-          raises(lambda: for_game(doc, 'GB', 'ATL'), EmptyStatePage))
+def test_the_weekly_article_parses_with_the_right_names():
+    d = doc(ARTICLE_EARLY)
+    if d is None:
+        return blocked('weekly article', f'{ARTICLE_EARLY} absent')
+    out = INA.parse(d, ['ATL', 'CAR'])
+    if not check('ATL/CAR parses to PASS', out.state.name == 'PASS',
+                 f'{out.state.name} {out.code}'):
+        return
+    check('ATL list is exactly the six the document names',
+          out.value['ATL'] == ['Tua Tagovailoa', 'Michael Penix Jr.',
+                               'Billy Bowman Jr.', 'Malcolm Dewalt IV',
+                               'Christian Harris', 'Ethan Onianwa'],
+          str(out.value['ATL']))
+    check('CAR list is exactly the seven the document names',
+          out.value['CAR'] == ["Ja'Tavion Sanders", 'John Metchie',
+                               'Haynes King', 'Zakee Wheatley',
+                               'Albert Reese', 'Patrick Jones II',
+                               'Cam Jackson'],
+          str(out.value['CAR']))
+    check('position prefixes are stripped, not carried into the name',
+          not any(n.split()[0] in ('QB', 'TE', 'WR', 'OT', 'DT', 'CB', 'LB')
+                  for v in out.value.values() for n in v))
+    check('the emergency-QB parenthetical is not fused into a name',
+          all('(' not in n for v in out.value.values() for n in v))
+    other = INA.parse(d, ['CHI', 'CAR'])
+    check('a second game in the same document parses independently',
+          other.state.name == 'PASS' and other.value['CHI'][0] == 'Miller Moss',
+          f'{other.state.name} {other.code}')
 
 
-def test_every_preserved_landing_page_is_refused():
-    """Not one sampled blob -- the whole population on disk."""
+def test_the_operator_relay_parses():
+    d = doc(RELAY)
+    if d is None:
+        return blocked('operator relay', f'{RELAY} absent')
+    out = INA.parse(d, ['BUF', 'DET'])
+    if not check('BUF/DET parses to PASS', out.state.name == 'PASS',
+                 f'{out.state.name} {out.code}'):
+        return
+    check('seven a side, as the relay states',
+          [len(out.value['BUF']), len(out.value['DET'])] == [7, 7],
+          str({k: len(v) for k, v in out.value.items()}))
+    check('a curly apostrophe survives intact',
+          'Ar’maj Reed-Adams' in out.value['BUF'])
+    check('a single-letter position is not mistaken for part of the name',
+          'Jalon Kilgore' in out.value['BUF'], str(out.value['BUF']))
+    check('the title line naming both clubs does not become a third block',
+          sorted(out.value) == ['BUF', 'DET'])
+
+
+def test_a_club_the_document_does_not_carry_is_never_invented():
+    """The regression that matters most. See the module docstring, item 3."""
+    d = doc(ARTICLE_EARLY)
+    if d is None:
+        return blocked('false-positive guard', f'{ARTICLE_EARLY} absent')
+    out = INA.parse(d, ['GB', 'MIN'])
+    check('GB/MIN is REFUSED on a capture that does not carry their game',
+          out.state.name == 'DEFERRED', f'{out.state.name} {out.code}')
+    check('and it is refused for the right reason',
+          out.code in ('INACTIVES_TEAM_HAS_NO_NAMES',
+                       'INACTIVES_TEAM_NOT_REPRESENTED'), out.code)
+    check('no Vikings receiver is attributed to Green Bay',
+          not isinstance(getattr(out, 'value', None), dict)
+          or 'Justin Jefferson' not in str(out.value))
+    relay = doc(RELAY)
+    if relay is not None:
+        wrong = INA.parse(relay, ['GB', 'ATL'])
+        check('a wholly unrelated game is refused, not answered',
+              wrong.state.name == 'DEFERRED'
+              and wrong.code == 'INACTIVES_TEAM_NOT_REPRESENTED',
+              f'{wrong.state.name} {wrong.code}')
+
+
+def test_freshness_is_read_from_the_bytes_not_the_url():
+    early, late = doc(ARTICLE_EARLY), doc(ARTICLE_LATE)
+    if early is None or late is None:
+        return blocked('freshness', 'both article captures required')
+    a = INA.parse(early, ['GB', 'MIN'])
+    b = INA.parse(late, ['GB', 'MIN'])
+    check('the earlier capture of the same article refuses GB/MIN',
+          a.state.name == 'DEFERRED', f'{a.state.name} {a.code}')
+    check('the later capture of the same article carries GB/MIN',
+          b.state.name == 'PASS', f'{b.state.name} {b.code}')
+    if b.state.name == 'PASS':
+        check('and names a real Packers inactive',
+              'Aaron Banks' in b.value['GB'], str(b.value.get('GB')))
+        check('and a real Vikings inactive, on the right club',
+              'J.J. McCarthy' in b.value['MIN'], str(b.value.get('MIN')))
+    check('the two captures disagree, which is the point',
+          a.state.name != b.state.name)
+
+
+def test_the_empty_state_page_is_still_refused_across_the_population():
     blobs = sorted(glob.glob(os.path.join(VINTAGE, 'official_inactives.*.html.gz')))
     if not blobs:
         return blocked('population sweep', 'no official_inactives blobs on disk')
-    empty = parsed = refused = 0
+    empty = other = 0
     for b in blobs:
-        try:
-            doc = read_bytes(b)
-        except InactivesParseError:
-            refused += 1
+        text = gzip.open(b, 'rt', errors='replace').read()
+        if 'check back soon' not in text.lower():
+            other += 1
             continue
-        if EMPTY_STATE_MARKER in doc:
-            empty += 1
-            if not raises(lambda: parse(doc), EmptyStatePage):
-                return check(f'{os.path.basename(b)} empty-state refused', False)
-            continue
-        try:
-            parse(doc)
-            parsed += 1
-        except InactivesParseError:
-            refused += 1
-    check('the overwhelming majority of captures are the empty-state page',
-          empty >= 300, f'empty={empty}')
-    check('at least one preserved capture does carry a real list',
-          parsed >= 1, f'parsed={parsed}')
-    check('every blob is classified, none silently returns an empty dict',
-          empty + parsed + refused == len(blobs),
-          f'{empty}+{parsed}+{refused} != {len(blobs)}')
-    print(f'       population: {len(blobs)} blobs  empty={empty} '
-          f'parsed={parsed} refused={refused}')
+        empty += 1
+        out = INA.parse(text, ['GB', 'ATL'])
+        if out.code != 'INACTIVES_PAGE_EMPTY_STATE':
+            return check(f'{os.path.basename(b)} refused as empty state',
+                         False, out.code)
+    check('the great majority of captures are the empty-state page',
+          empty >= 300, f'empty={empty} of {len(blobs)}')
+    check('every empty-state capture is refused by name, none returns a list',
+          True)
+    print(f'       population: {len(blobs)} blobs  empty={empty} other={other}')
 
 
-def test_the_nfl_weekly_article_parses():
-    if not os.path.exists(WEEK1_ARTICLE):
-        return blocked('week 1 article', f'blob absent: {WEEK1_ARTICLE}')
-    teams = parse(read_bytes(WEEK1_ARTICLE))
-    check('the article yields many teams', len(teams) >= 8, str(len(teams)))
-    check('every team carries at least one entry',
-          all(v for v in teams.values()))
-    check('every entry has a position and a name',
-          all(e['position'] and e['name']
-              for v in teams.values() for e in v))
-    atl = teams.get('ATL', [])
-    check('ATL is present and names are real, not position tokens',
-          any(e['name'] == 'Michael Penix Jr.' for e in atl),
-          str(atl[:3]))
-    check('the emergency-QB parenthetical is a note, not part of the name',
-          all('(' not in e['name'] for v in teams.values() for e in v))
+def test_an_agent_authored_report_is_not_mined_for_names():
+    d = doc(AGENT_REPORT)
+    if d is None:
+        return blocked('agent report', f'{AGENT_REPORT} absent')
+    out = INA.parse(d, ['SF', 'LAR'])
+    check('a prose intelligence report does not yield a PASS',
+          out.state.name != 'PASS', f'{out.state.name} {out.code}')
 
 
-def test_the_operator_relay_parses_to_the_same_shape():
-    if not os.path.exists(OPERATOR_RELAY):
-        return blocked('operator relay', f'blob absent: {OPERATOR_RELAY}')
-    got = for_game(read_bytes(OPERATOR_RELAY), 'BUF', 'DET')
-    check('both teams attributed', sorted(got['inactives']) == ['BUF', 'DET'])
-    check('seven a side, as the relay states',
-          got['counts'] == {'BUF': 7, 'DET': 7}, str(got['counts']))
-    check('a curly apostrophe survives intact',
-          any(e['name'] == 'Ar’maj Reed-Adams'
-              for e in got['inactives']['BUF']))
-    check('the semantics note refuses the omission inference',
-          'not a claim that the player is active' in got['semantics'])
-
-
-def test_absence_is_never_converted_into_presence():
-    if not os.path.exists(OPERATOR_RELAY):
-        return blocked('absence handling', f'blob absent: {OPERATOR_RELAY}')
-    doc = read_bytes(OPERATOR_RELAY)
-    check('a game the document does not cover is refused, not returned empty',
-          raises(lambda: for_game(doc, 'GB', 'ATL'), InactivesParseError,
-                 'Absence here is not evidence'))
-    check('one team present and one absent is still refused',
-          raises(lambda: for_game(doc, 'BUF', 'GB'), InactivesParseError,
-                 'no inactive list for GB'))
-
-
-def test_an_agent_authored_report_is_not_a_source():
-    if not os.path.exists(AGENT_REPORT):
-        return blocked('agent report', f'blob absent: {AGENT_REPORT}')
-    check('a prose intelligence report is refused, not mined for names',
-          raises(lambda: parse(read_bytes(AGENT_REPORT)), InactivesParseError))
-
-
-def test_the_entry_grammar_is_tight():
+def test_the_entry_grammar_is_the_leagues():
     check('a bare name with no position is not an entry',
-          raises(lambda: parse('GB\nJordan Love\n'), InactivesParseError))
-    check('a position token alone yields nothing',
-          raises(lambda: parse('GB\nQB\n'), InactivesParseError))
-    check('a clean minimal document parses',
-          parse('GB\n* QB Jordan Love\n') == {'GB': [{'position': 'QB', 'name': 'Jordan Love'}]})
-    check('a parenthetical becomes a note',
-          parse('GB\n* QB Sean Clifford (emergency third QB)\n')
-          == {'GB': [{'position': 'QB', 'name': 'Sean Clifford',
-                      'note': 'emergency third QB'}]})
-    check('a duplicate line is not double-counted',
-          len(parse('GB\n* QB Jordan Love\n* QB Jordan Love\n')['GB']) == 1)
-    check('entries before any team header are dropped, not misattributed',
-          raises(lambda: parse('* QB Jordan Love\n'), InactivesParseError))
-
-
-def test_empty_and_unparseable_inputs_raise():
-    check('an empty document raises',
-          raises(lambda: parse(''), InactivesParseError))
-    check('unrelated prose raises rather than returning {}',
-          raises(lambda: parse('The Packers are playing well this season.'),
-                 InactivesParseError, 'not being reported as an empty'))
+          INA.parse('GB\nJordan Love\nATL\nBijan Robinson\n',
+                    ['GB', 'ATL']).state.name == 'DEFERRED')
+    ok = INA.parse('GB\n* QB Jordan Love\n* WR Romeo Doubs\n'
+                   'ATL\n* RB Bijan Robinson\n* TE Kyle Pitts\n', ['GB', 'ATL'])
+    check('the relay grammar parses to both clubs',
+          ok.state.name == 'PASS'
+          and ok.value == {'GB': ['Jordan Love', 'Romeo Doubs'],
+                           'ATL': ['Bijan Robinson', 'Kyle Pitts']},
+          f'{ok.state.name} {ok.code} {getattr(ok, "value", None)}')
+    check('an empty document is refused',
+          INA.parse('', ['GB', 'ATL']).state.name in ('FAIL', 'DEFERRED'))
 
 
 if __name__ == '__main__':
