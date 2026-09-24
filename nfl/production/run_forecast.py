@@ -1425,7 +1425,21 @@ def build(args, fixtures: dict = None) -> dict:
         # R6. THE ROLE-CONDITIONAL PRIOR, built from history strictly earlier
         # than this week and handed to the class point forecast. Absent -- the
         # V1 and R5 path -- slate_fits is called exactly as before.
-        role_priors, tiers = None, None
+        # `dr` JOINS THESE TWO, AND ITS ABSENCE WAS A CRASH RATHER THAN A
+        # PATH. role_priors and tiers were initialised here; the depth rank
+        # was not. It is bound ~40 lines below, INSIDE `if fl.get(
+        # 'role_prior')`, and read unconditionally by the slate_fits call
+        # further down -- so with the flag off every non-QB stage failed with
+        # `UnboundLocalError: cannot access local variable 'dr'`, surfacing as
+        # SLATE_FITS_RAISED on appearance, participation, targets_carries,
+        # conversion and td_layer at once. Five stages reporting the same
+        # Python error is one defect wearing five names.
+        #
+        # None, not {}. slate_fits documents `depth_rank` absent as "the V1
+        # and R5 path", and the flag being off IS that path. An empty dict
+        # would assert a chart was consulted and found empty, which is a
+        # different claim from not having consulted one.
+        role_priors, tiers, dr = None, None, None
         if fl.get('role_prior'):
             from nfl.production.nonqb import role_prior as RP
             import p4c_build as _PB
