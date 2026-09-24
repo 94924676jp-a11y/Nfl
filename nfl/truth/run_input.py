@@ -49,6 +49,17 @@ OPTIONAL_FAMILIES = ('espn_injuries_json', 'official_injury_report',
 
 FRESH = 'FRESH'
 STALE = 'STALE'
+#: No max age is DECLARED for this family, so its age was not checked.
+#:
+#: This verdict exists because the old code returned FRESH in exactly this
+#: case. `required_max_age_h` defaulted to None, the staleness test was
+#: `required_max_age_h is not None and ...`, and so a family with no bound
+#: could never be STALE. Measured 2026-09-24 on the live ATL @ GB contract:
+#: `official_inactives` was pinned to a capture 214.41 hours old -- nine days
+#: -- and verified FRESH with ok=True. A verdict named FRESH that means "the
+#: file exists and hashes" is the exact collapse this layer is supposed to
+#: prevent, and it failed permissive.
+AGE_NOT_BOUNDED = 'AGE_NOT_BOUNDED'
 MISSING = 'MISSING'
 HASH_MISMATCH = 'HASH_MISMATCH'
 AFTER_CUTOFF = 'AFTER_CUTOFF'
@@ -147,6 +158,23 @@ def freeze(game_id, *, cutoff, capture_commit, manifest_rows,
     }
 
 
+def _governed_max_age_h(family: str):
+    """The declared max age for `family`, or None when none is declared.
+
+    Imported lazily so this module keeps working if the production package is
+    not importable; a missing threshold table means UNBOUNDED, never a
+    silently permissive default dressed as a bound.
+    """
+    try:
+        from nfl.production.universe import governed_thresholds as GT
+    except Exception:                                        # noqa: BLE001
+        return None
+    try:
+        return (GT.freshness_requirement(family) or {}).get('max_age_hours')
+    except Exception:                                        # noqa: BLE001
+        return None
+
+
 def verify(pinned: dict, *, root: pathlib.Path, required_max_age_h=None) -> dict:
     """Check every pinned entry against the bytes actually present.
 
@@ -180,11 +208,30 @@ def verify(pinned: dict, *, root: pathlib.Path, required_max_age_h=None) -> dict
         age_h = None
         if got and cut:
             age_h = (cut - got).total_seconds() / 3600.0
-        stale = (required_max_age_h is not None and age_h is not None
-                 and age_h > required_max_age_h)
-        verdicts[fam] = STALE if stale else FRESH
+        # THE BOUND COMES FROM THE GOVERNED TABLE, NOT FROM THE CALLER'S
+        # DEFAULT. `governed_thresholds.FRESHNESS_HOURS` already declares a
+        # per-family max age with its reasoning -- injuries 6h because
+        # designations move on a daily cycle, depth_charts and weekly_rosters
+        # 24h, schedules 168h. This function used to ignore all of it and
+        # apply one scalar that defaulted to None. An explicit
+        # `required_max_age_h` still overrides, and the STRICTER of the two
+        # wins, so a caller can tighten but never loosen a governed bound.
+        bound = _governed_max_age_h(fam)
+        if required_max_age_h is not None:
+            bound = (required_max_age_h if bound is None
+                     else min(bound, required_max_age_h))
+        if age_h is None:
+            verdicts[fam] = AGE_NOT_BOUNDED
+        elif bound is None:
+            # NOT FRESH. Nobody declared how old is too old for this family,
+            # so its age has not been checked and saying FRESH would assert
+            # something no one established.
+            verdicts[fam] = AGE_NOT_BOUNDED
+        else:
+            verdicts[fam] = STALE if age_h > bound else FRESH
         out[fam] = {'verdict': verdicts[fam], 'age_hours': None if age_h is
-                    None else round(age_h, 2), 'sha256': actual,
+                    None else round(age_h, 2), 'max_age_hours': bound,
+                    'sha256': actual,
                     'retrieved_at': e.get('retrieved_at'), 'path': str(p)}
     bad = {f: v for f, v in verdicts.items()
            if f in pinned['required_families'] and v != FRESH}
