@@ -1,0 +1,516 @@
+{
+  "spec_version": "execution-path-trace/1.0.0",
+  "run_dir": "nfl/research/unsealed/2026_03_ATL_GB/2fc4e9599f0889f1",
+  "run_id": "2fc4e9599f0889f1",
+  "game_id": "2026_03_ATL_GB",
+  "cutoff_utc": "2026-09-24T15:30:00Z",
+  "code_commit": "a2605199a8f5677307d3e3cce70e63534c19d187+src1[4495312cd57b663c]",
+  "candidate_identity": {
+    "contract_version": "nfl-code-identity-1",
+    "commit": "a2605199a8f5677307d3e3cce70e63534c19d187",
+    "source_scope_sha256": "4495312cd57b663c29bcd57a8fed94e9784ea669c4c2951ca565bbd60c2300b4",
+    "source_scope_clean": false,
+    "dirty_source_files": [
+      {
+        "path": "nfl/production/run_forecast.py",
+        "state": "PRESENT",
+        "sha256": "08fc21974f9ee21c725403c0876b0713ac0c515300870a181de063307f002b11",
+        "bytes": 215086
+      }
+    ],
+    "n_dirty_source_files": 1,
+    "scope": {
+      "source_roots": [
+        "nfl/production",
+        "nfl/prospective",
+        "nfl/identity",
+        "nfl/product",
+        "nfl/schema",
+        "nfl/tools",
+        "sportsplatform"
+      ],
+      "source_suffixes": [
+        ".py"
+      ],
+      "excluded_subtrees": [
+        "nfl/prospective/q9shadow/dryrun",
+        "nfl/prospective/q9shadow/sealed",
+        "nfl/production/runs",
+        "nfl/derived",
+        "nfl/research",
+        "nfl/vintage"
+      ],
+      "generated_subtrees_excluded": [
+        "nfl/prospective/q9shadow/dryrun",
+        "nfl/prospective/q9shadow/sealed",
+        "nfl/production/runs",
+        "nfl/derived",
+        "nfl/research",
+        "nfl/vintage"
+      ],
+      "research_out_of_scope_why": "causal research modules are hashed by content into module_source_sha16, which is inside spec_sha256 (identity E), which is inside the fingerprint. Adding nfl/research/** to B would move every run id for thousands of non-causal files."
+    },
+    "runtime": {
+      "implementation": "CPython",
+      "python_version": "3.12.3",
+      "numpy_version": "2.5.3",
+      "platform": "Linux-6.18.44-fc-v37-x86_64-with-glibc2.39",
+      "thread_env": {
+        "OMP_NUM_THREADS": null,
+        "MKL_NUM_THREADS": null,
+        "OPENBLAS_NUM_THREADS": null,
+        "NUMEXPR_NUM_THREADS": null,
+        "VECLIB_MAXIMUM_THREADS": null
+      },
+      "hashed_keys": [
+        "implementation",
+        "python_version",
+        "numpy_version"
+      ],
+      "recorded_not_hashed_keys": [
+        "platform",
+        "thread_env"
+      ]
+    },
+    "runtime_token": "implementation=CPython+python_version=3.12.3+numpy_version=2.5.3",
+    "clean_source_sentinel_sha256": "44aa01d03783de1852e326ebdd9231dabf562583de6bdbd89c2a0d660b029a43",
+    "residual_gaps": [
+      "IMPORTED_RESEARCH_MODULES_NOT_IN_B: a research module that the sealing path imports but that is not one of the four in module_source_sha16 -- nfl.research.q7.panel and nfl.research.q8.audit are the live examples -- is in neither B nor E. Remedy: hash each imported module file by content into the candidate identity. That is candidate.py, not this module.",
+      "NON_PY_SOURCE_NOT_IN_B: a frozen parameter file under a source root (nfl/production/nonqb/frozen/*.json.gz) is not source by SOURCE_SUFFIXES. For Q9 these are covered by the candidate parameter hashes in E. Remedy elsewhere: seal the resolved path and sha256, which is WS18 F1.",
+      "THREAD_ENV_RECORDED_NOT_HASHED: promote to RUNTIME_HASHED_KEYS if and when a measured draw difference is attributed to thread count. Not before -- an unmeasured coefficient in an identity is a silent constant.",
+      "STAGING_NOT_DISTINGUISHED: B hashes worktree CONTENT, so a staged and an unstaged edit of identical bytes are the same identity. Deliberate: the bytes the interpreter reads are the bytes that matter."
+    ],
+    "code_version": "a2605199a8f5677307d3e3cce70e63534c19d187+src1[4495312cd57b663c]"
+  },
+  "evidence_families": {
+    "depth_charts": {
+      "capture_id": "20260924T120743Z",
+      "sha256": "9bbba4b5067b5fe6ade5c6a1b78418181ff8bf1c47c48f47c6ef8b339ec983d8",
+      "retrieved_at": "2026-09-24T12:07:44.865113+00:00",
+      "blob": "nfl/vintage/depth_charts.9bbba4b5067b5fe6.reduced.csv.gz"
+    },
+    "espn_injuries_json": {
+      "capture_id": "20260924T120743Z",
+      "sha256": "7291a7378c17df0e480080fb85ca9c3ad24a85c066284fc01caf1bcc04f6f45e",
+      "retrieved_at": "2026-09-24T12:07:50.368369+00:00",
+      "blob": "nfl/vintage/espn_injuries_json.7291a7378c17df0e.json.gz"
+    },
+    "injuries": {
+      "capture_id": "20260924T120743Z",
+      "sha256": "b9f0740139d052ffb14bd23930f28cccd06547983a3fc4d2b7cd6192eb6aab01",
+      "retrieved_at": "2026-09-24T12:07:44.098438+00:00",
+      "blob": "nfl/vintage/injuries.b9f0740139d052ff.csv.gz"
+    },
+    "official_inactives": {
+      "capture_id": "20260915T170512Z",
+      "sha256": "e7e975fdfe4a6d520a43027e7ba54fe143a2e343383375b0394315c8dbb70118",
+      "retrieved_at": "2026-09-15T17:05:15.943309+00:00",
+      "blob": "nfl/vintage/official_inactives.e7e975fdfe4a6d52.html.gz"
+    },
+    "official_injury_report": {
+      "capture_id": "20260924T120743Z",
+      "sha256": "43040e5a746b8635183a1ec102c6038772c8632a938d2e4c0cc7e82f134c23f2",
+      "retrieved_at": "2026-09-24T12:07:49.633985+00:00",
+      "blob": "nfl/vintage/official_injury_report.43040e5a746b8635.html.gz"
+    },
+    "schedules": {
+      "capture_id": "20260924T120743Z",
+      "sha256": "9d3644487c6021f2825c4a89e8c6712447884a63004fb2e0784e0410187d23fc",
+      "retrieved_at": "2026-09-24T12:07:44.371651+00:00",
+      "blob": "nfl/vintage/schedules.9d3644487c6021f2.csv.gz"
+    },
+    "weekly_rosters": {
+      "capture_id": "20260924T120743Z",
+      "sha256": "0efeaede1505ab6e2bb72552c71604d6803e160bfb9b52b63204fc0678c1768c",
+      "retrieved_at": "2026-09-24T12:07:49.314119+00:00",
+      "blob": "nfl/vintage/weekly_rosters.0efeaede1505ab6e.reduced.csv.gz"
+    }
+  },
+  "stages": [
+    {
+      "order": 0,
+      "stage": "capture_validation",
+      "executed": true,
+      "state": "PASS",
+      "code": "INPUTS_VALIDATED",
+      "refusal_code": null,
+      "detail": "",
+      "elapsed_s": 1.505263328552246,
+      "spec_version": "nfl-production-pipeline-1",
+      "spec_versions": {},
+      "input_hashes": {
+        "depth_charts": "1f7ea523dcf478f5e21cc70a27a72bb7a4effb87846eda21b1495c570a6c9706",
+        "injuries": "8885346149f9ebf23be1ef5ec1cce8797e39aa88b22f897d70121e4a707f8fec",
+        "schedules": "d424fda65f8af83962dbfcf3d3ca000f3372376bb78df74e5d4e9030815d8627",
+        "weekly_rosters": "bdcb04140749b2d1bc36ea97811f9e6b5cca2fe9e34fef7cad1d953b2be3a36f"
+      },
+      "input_families": [
+        "depth_charts",
+        "injuries",
+        "schedules",
+        "weekly_rosters"
+      ],
+      "next_consumer": "identity_resolution",
+      "code_searched": "INPUTS_VALIDATED",
+      "code_kind": "SUCCESS_CODE_ONLY",
+      "tested": true,
+      "tested_basis": "SUCCESS_CODE_ONLY 'INPUTS_VALIDATED' appears in ['test_capture_validation_provenance.py']. This stage passed, so only its success code was available to search: the happy path is exercised, the refusal branch is NOT thereby shown to fire.",
+      "governance": [
+        {
+          "layer": "capture_validation",
+          "governance": "DECLARATION_COMPLETE_AND_WELL_FORMED; DECLARED_BYTES_VERIFIED_AGAINST_VINTAGE_MANIFEST",
+          "required": [
+            "depth_charts",
+            "injuries",
+            "schedules",
+            "weekly_rosters"
+          ],
+          "basis": "nfl/production/nonqb/vintage_selector.FAMILIES intersected with nfl/capture/registry.REGISTRY",
+          "bytes_verified": true
+        }
+      ]
+    },
+    {
+      "order": 1,
+      "stage": "identity_resolution",
+      "executed": true,
+      "state": "PASS",
+      "code": "IDENTITY_RESOLVED",
+      "refusal_code": null,
+      "detail": "",
+      "elapsed_s": 5.125999450683594e-05,
+      "spec_version": null,
+      "spec_versions": {},
+      "input_hashes": {},
+      "input_families": [],
+      "next_consumer": "feature_build",
+      "code_searched": "IDENTITY_RESOLVED",
+      "code_kind": "SUCCESS_CODE_ONLY",
+      "tested": true,
+      "tested_basis": "SUCCESS_CODE_ONLY 'IDENTITY_RESOLVED' appears in ['test_p7_dag.py']. This stage passed, so only its success code was available to search: the happy path is exercised, the refusal branch is NOT thereby shown to fire.",
+      "governance": []
+    },
+    {
+      "order": 2,
+      "stage": "feature_build",
+      "executed": false,
+      "state": "DEFERRED",
+      "code": "STAGE_DECLARED_UNIMPLEMENTED",
+      "refusal_code": null,
+      "detail": "feature_build: the accepted research baseline 'prior-only, ordinal prefix cut' has no production implementation. Declared as debt rather than reported as a successful forecast.",
+      "elapsed_s": 2.0503997802734375e-05,
+      "spec_version": "prior-only, ordinal prefix cut",
+      "spec_versions": {},
+      "input_hashes": {},
+      "input_families": [],
+      "next_consumer": "team_environment",
+      "code_searched": "STAGE_DECLARED_UNIMPLEMENTED",
+      "code_kind": "SUCCESS_CODE_ONLY",
+      "tested": true,
+      "tested_basis": "SUCCESS_CODE_ONLY 'STAGE_DECLARED_UNIMPLEMENTED' appears in ['test_full_slate_rehearsal.py', 'test_v1_entrypoint_integration.py', 'test_v1_nonqb_production.py']. This stage passed, so only its success code was available to search: the happy path is exercised, the refusal branch is NOT thereby shown to fire.",
+      "governance": []
+    },
+    {
+      "order": 3,
+      "stage": "team_environment",
+      "executed": true,
+      "state": "PASS",
+      "code": "TEAM_ENVIRONMENT_OK",
+      "refusal_code": null,
+      "detail": "",
+      "elapsed_s": 1.041794776916504,
+      "spec_version": "team-volume-v1-p4b-frozen-1",
+      "spec_versions": {},
+      "input_hashes": {},
+      "input_families": [],
+      "next_consumer": "appearance",
+      "code_searched": "TEAM_ENVIRONMENT_OK",
+      "code_kind": "SUCCESS_CODE_ONLY",
+      "tested": true,
+      "tested_basis": "SUCCESS_CODE_ONLY 'TEAM_ENVIRONMENT_OK' appears in ['test_execution_path_trace.py']. This stage passed, so only its success code was available to search: the happy path is exercised, the refusal branch is NOT thereby shown to fire.",
+      "governance": []
+    },
+    {
+      "order": 4,
+      "stage": "appearance",
+      "executed": true,
+      "state": "PASS",
+      "code": "APPEARANCE_OK",
+      "refusal_code": null,
+      "detail": "",
+      "elapsed_s": 412.0650985240936,
+      "spec_version": "appearance-panel-2026w1-union-1",
+      "spec_versions": {
+        "appearance": "appearance-panel-2026w1-union-1"
+      },
+      "input_hashes": {},
+      "input_families": [],
+      "next_consumer": "participation",
+      "code_searched": "APPEARANCE_OK",
+      "code_kind": "SUCCESS_CODE_ONLY",
+      "tested": true,
+      "tested_basis": "SUCCESS_CODE_ONLY 'APPEARANCE_OK' appears in ['test_eligibility_gate.py', 'test_governance_transport.py', 'test_market_quote_accounting.py', 'test_nonqb_r3.py']. This stage passed, so only its success code was available to search: the happy path is exercised, the refusal branch is NOT thereby shown to fire.",
+      "governance": []
+    },
+    {
+      "order": 5,
+      "stage": "participation",
+      "executed": true,
+      "state": "PASS",
+      "code": "PARTICIPATION_OK",
+      "refusal_code": null,
+      "detail": "",
+      "elapsed_s": 4.9591064453125e-05,
+      "spec_version": "participation=participation-s2-ewma_hl2-frozen; governance INFORMATION_CONSTRAINED",
+      "spec_versions": {
+        "participation": "participation-s2-ewma_hl2-frozen; governance INFORMATION_CONSTRAINED",
+        "participation_frame": null
+      },
+      "input_hashes": {},
+      "input_families": [],
+      "next_consumer": "targets_carries",
+      "code_searched": "PARTICIPATION_OK",
+      "code_kind": "SUCCESS_CODE_ONLY",
+      "tested": true,
+      "tested_basis": "SUCCESS_CODE_ONLY 'PARTICIPATION_OK' appears in ['test_governance_transport.py']. This stage passed, so only its success code was available to search: the happy path is exercised, the refusal branch is NOT thereby shown to fire.",
+      "governance": []
+    },
+    {
+      "order": 6,
+      "stage": "targets_carries",
+      "executed": true,
+      "state": "PASS",
+      "code": "TARGETS_CARRIES_OK",
+      "refusal_code": null,
+      "detail": "",
+      "elapsed_s": 4.076957702636719e-05,
+      "spec_version": "targets_carries=p4c-system-C-frozen; governance DATA_BLOCKED; carries=p4c-system-C-frozen; governance DATA_BLOCKED; rush_category_ownership=rushing-a1-production-v1",
+      "spec_versions": {
+        "targets_carries": "p4c-system-C-frozen; governance DATA_BLOCKED",
+        "carries": "p4c-system-C-frozen; governance DATA_BLOCKED",
+        "rushing_budget": null,
+        "carry_counts": null,
+        "rush_category_ownership": "rushing-a1-production-v1"
+      },
+      "input_hashes": {},
+      "input_families": [],
+      "next_consumer": "conversion",
+      "code_searched": "TARGETS_CARRIES_OK",
+      "code_kind": "SUCCESS_CODE_ONLY",
+      "tested": true,
+      "tested_basis": "SUCCESS_CODE_ONLY 'TARGETS_CARRIES_OK' appears in ['test_football_engine_r4.py']. This stage passed, so only its success code was available to search: the happy path is exercised, the refusal branch is NOT thereby shown to fire.",
+      "governance": []
+    },
+    {
+      "order": 7,
+      "stage": "conversion",
+      "executed": true,
+      "state": "PASS",
+      "code": "CONVERSION_OK",
+      "refusal_code": null,
+      "detail": "",
+      "elapsed_s": 2.9325485229492188e-05,
+      "spec_version": "receiving_conversion=rc1-baseline-frozen; SIGNAL_WEAK; governance HOLD_CHARACTERIZED + CALIBRATION_DEFECT; interception_reservation=sc2-interception-reservation-1",
+      "spec_versions": {
+        "receiving_conversion": "rc1-baseline-frozen; SIGNAL_WEAK; governance HOLD_CHARACTERIZED + CALIBRATION_DEFECT",
+        "interception_reservation": "sc2-interception-reservation-1"
+      },
+      "input_hashes": {},
+      "input_families": [],
+      "next_consumer": "td_layer",
+      "code_searched": "CONVERSION_OK",
+      "code_kind": "SUCCESS_CODE_ONLY",
+      "tested": true,
+      "tested_basis": "SUCCESS_CODE_ONLY 'CONVERSION_OK' appears in ['test_governance_transport.py']. This stage passed, so only its success code was available to search: the happy path is exercised, the refusal branch is NOT thereby shown to fire.",
+      "governance": [
+        {
+          "layer": "receiving_conversion",
+          "governance": "HOLD_CHARACTERIZED + CALIBRATION_DEFECT"
+        }
+      ]
+    },
+    {
+      "order": 8,
+      "stage": "td_layer",
+      "executed": true,
+      "state": "PASS",
+      "code": "TD_LAYER_OK",
+      "refusal_code": null,
+      "detail": "",
+      "elapsed_s": 4.553794860839844e-05,
+      "spec_version": "receiving_td=td2-pooled-positional-control-frozen; governance HOLD_TENTATIVE; rushing_td=td2-rush|carry-pooled-positional-control-frozen; governance HOLD_TENTATIVE",
+      "spec_versions": {
+        "receiving_td": "td2-pooled-positional-control-frozen; governance HOLD_TENTATIVE",
+        "rushing_td": "td2-rush|carry-pooled-positional-control-frozen; governance HOLD_TENTATIVE",
+        "counts_are_counts": null,
+        "stat_contract": null,
+        "events_within_opportunity": null
+      },
+      "input_hashes": {},
+      "input_families": [],
+      "next_consumer": "qb_layer",
+      "code_searched": "TD_LAYER_OK",
+      "code_kind": "SUCCESS_CODE_ONLY",
+      "tested": true,
+      "tested_basis": "SUCCESS_CODE_ONLY 'TD_LAYER_OK' appears in ['test_governance_transport.py']. This stage passed, so only its success code was available to search: the happy path is exercised, the refusal branch is NOT thereby shown to fire.",
+      "governance": [
+        {
+          "layer": "receiving_td",
+          "governance": "HOLD_TENTATIVE"
+        },
+        {
+          "layer": "rushing_td",
+          "governance": "HOLD_TENTATIVE"
+        }
+      ]
+    },
+    {
+      "order": 9,
+      "stage": "qb_layer",
+      "executed": true,
+      "state": "PASS",
+      "code": "QB_LAYER_OK",
+      "refusal_code": null,
+      "detail": "",
+      "elapsed_s": 3.0040740966796875e-05,
+      "spec_version": "qb-v1-aggregate-then-allocate-1",
+      "spec_versions": {},
+      "input_hashes": {},
+      "input_families": [],
+      "next_consumer": "joint_reconciliation",
+      "code_searched": "QB_LAYER_OK",
+      "code_kind": "SUCCESS_CODE_ONLY",
+      "tested": true,
+      "tested_basis": "SUCCESS_CODE_ONLY 'QB_LAYER_OK' appears in ['test_full_slate_rehearsal.py', 'test_nonqb_r3.py']. This stage passed, so only its success code was available to search: the happy path is exercised, the refusal branch is NOT thereby shown to fire.",
+      "governance": []
+    },
+    {
+      "order": 10,
+      "stage": "joint_reconciliation",
+      "executed": true,
+      "state": "PASS",
+      "code": "JOINT_RECONCILED",
+      "refusal_code": null,
+      "detail": "",
+      "elapsed_s": 3.2901763916015625e-05,
+      "spec_version": "minimum-viable production coupling",
+      "spec_versions": {},
+      "input_hashes": {},
+      "input_families": [],
+      "next_consumer": "player_draws",
+      "code_searched": "JOINT_RECONCILED",
+      "code_kind": "SUCCESS_CODE_ONLY",
+      "tested": false,
+      "tested_basis": "NO test file names 'JOINT_RECONCILED'. That is weaker than saying the stage is broken and stronger than assuming it works.",
+      "governance": []
+    },
+    {
+      "order": 11,
+      "stage": "player_draws",
+      "executed": true,
+      "state": "PASS",
+      "code": "DRAWS_BUILT",
+      "refusal_code": null,
+      "detail": "3344000 draw cell(s) preserved across 54 matrix(es) on one draw index of 8000; 29 player quantile view(s) kept",
+      "elapsed_s": 56.98137617111206,
+      "spec_version": "nfl-player-draw-1",
+      "spec_versions": {},
+      "input_hashes": {},
+      "input_families": [],
+      "next_consumer": "scoring",
+      "code_searched": "DRAWS_BUILT",
+      "code_kind": "SUCCESS_CODE_ONLY",
+      "tested": true,
+      "tested_basis": "SUCCESS_CODE_ONLY 'DRAWS_BUILT' appears in ['test_artifact_contracts.py']. This stage passed, so only its success code was available to search: the happy path is exercised, the refusal branch is NOT thereby shown to fire.",
+      "governance": []
+    },
+    {
+      "order": 12,
+      "stage": "scoring",
+      "executed": true,
+      "state": "PASS",
+      "code": "SCORED",
+      "refusal_code": null,
+      "detail": "",
+      "elapsed_s": 2.6464462280273438e-05,
+      "spec_version": "deterministic",
+      "spec_versions": {},
+      "input_hashes": {},
+      "input_families": [],
+      "next_consumer": "artifact_sealing",
+      "code_searched": "SCORED",
+      "code_kind": "SUCCESS_CODE_ONLY",
+      "tested": false,
+      "tested_basis": "NO test file names 'SCORED'. That is weaker than saying the stage is broken and stronger than assuming it works.",
+      "governance": []
+    },
+    {
+      "order": 13,
+      "stage": "artifact_sealing",
+      "executed": true,
+      "state": "BLOCKED",
+      "code": "ARTIFACT_SEALING_FAILURE",
+      "refusal_code": "ARTIFACT_SEALING_FAILURE",
+      "detail": "artifact_sealing: HARD_INVARIANT_FAILED: 1 hard invariant(s) did not hold: current_season_input_freshness=BLOCKED[CURRENT_SEASON_INPUT_STALE] -- 1 registered current-season input(s) refuse: ['team_vol",
+      "elapsed_s": 0.09572815895080566,
+      "spec_version": "nfl-forecast-artifact-1",
+      "spec_versions": {},
+      "input_hashes": {},
+      "input_families": [],
+      "next_consumer": null,
+      "code_searched": "ARTIFACT_SEALING_FAILURE",
+      "code_kind": "REFUSAL_CODE",
+      "tested": true,
+      "tested_basis": "REFUSAL_CODE 'ARTIFACT_SEALING_FAILURE' appears in ['test_production_pipeline.py', 'test_v1_draw_artifact.py']",
+      "governance": []
+    }
+  ],
+  "n_stages": 14,
+  "n_executed": 13,
+  "n_not_executed": 1,
+  "untested_stages": [
+    "joint_reconciliation",
+    "scoring"
+  ],
+  "tested_on_success_code_only": [
+    "capture_validation",
+    "identity_resolution",
+    "feature_build",
+    "team_environment",
+    "appearance",
+    "participation",
+    "targets_carries",
+    "conversion",
+    "td_layer",
+    "qb_layer",
+    "player_draws"
+  ],
+  "publication": {
+    "state": "BLOCKED",
+    "code": "NFL1_NOT_AUTHORIZED",
+    "detail": "NFL-1 is 'NOT AUTHORIZED' and G0A is '11/12'. A forecast may be COMPUTED and SEALED locally, but it may not be published. No test result, checklist state or caller flag can change this -- only an owne"
+  },
+  "prospectively_validated": null,
+  "first_failure": {
+    "stage": "artifact_sealing",
+    "state": "BLOCKED",
+    "code": "ARTIFACT_SEALING_FAILURE",
+    "detail": "artifact_sealing: HARD_INVARIANT_FAILED: 1 hard invariant(s) did not hold: current_season_input_freshness=BLOCKED[CURRENT_SEASON_INPUT_STALE] -- 1 registered current-season input(s) refuse: ['team_volume_history']. The board may not publish.. A forecast whose own accounting does not hold may not be sealed as valid, whatever else in the run succeeded.",
+    "input_hashes": {},
+    "spec_version": "nfl-forecast-artifact-1",
+    "warnings": [],
+    "refusal_code": "ARTIFACT_SEALING_FAILURE",
+    "elapsed_s": 0.09572815895080566,
+    "metrics": {},
+    "governance": [],
+    "spec_versions": {},
+    "warnings_detail": []
+  },
+  "ladder": {
+    "IMPLEMENTED": "every stage below exists in the repository",
+    "EXECUTED": "13 of 14 ran in this attempt",
+    "TESTED": "12 of 14 have their code named somewhere in nfl/tests/, of which only 1 were searched on an actual REFUSAL code; the rest passed and offered only a success code. This is a text search, not a coverage measurement.",
+    "PROSPECTIVELY_VALIDATED": "None",
+    "PROMOTED": "BLOCKED"
+  }
+}
