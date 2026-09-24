@@ -2356,25 +2356,55 @@ or capture-routing policy.
 
 **The pre-inactive forecast proceeds independently and is not waiting on this.**
 
-### Update 2026-09-24 — in-repo fallbacks are exhausted
+### CORRECTION 2026-09-24 — the request is now specific, and my earlier claim was wrong
 
-Both candidate carriers inside this checkout have now been tested and both
-fail. This is recorded so the networked agent does not re-derive it.
+An earlier version of this entry said no source in this repository could
+supply official inactives. **That was wrong** and it is retracted. I searched
+the preserved article HTML for the string `Inactives:` (with a colon), found
+none, and reported absence. The article does not use that string; the lists
+were in the bytes throughout. A probe that finds nothing is evidence about the
+probe until shown otherwise.
 
-1. `https://www.nfl.com/inactives/` — client-rendered shell. 382 capture
-   PASSes, not one whose preserved bytes contain an inactive list. HTTP 200 is
-   not evidence here; that is the original defect being reported.
-2. **ESPN injuries JSON — closed vocabulary with no inactive concept.**
-   Measured offline on `espn_injuries_json.7291a7378c17df0e.json.gz`
-   (captured `2026-09-24T12:07:44Z`): 800 rows across 32 teams, status values
-   exactly `Active` 585, `Questionable` 161, `Injured Reserve` 25, `Out` 22,
-   `Doubtful` 7, types exactly the matching `INJURY_STATUS_*`. Zero values
-   bear an inactive concept. `Out` is an injury designation and must not be
-   converted; `Active` must not be read as confirmation a player will dress.
-   Full write-up:
-   `nfl/truth/findings/2026-09-24_ESPN_CANNOT_CARRY_OFFICIAL_INACTIVES.md`.
+**The carrier is known and is already proven in our own capture history.**
+`https://www.nfl.com/news/inactive-reports-sunday-week-1-2026-nfl-season`
+(captured 2026-09-13T16:00:17Z, 889,811 bytes) is server-rendered and contains
+the full official lists as `<h3>TEAM</h3><ul><li>POS Name</li>…` per game.
 
-**So this request is not one option among several — it is the only known path
-to official game-day inactives for this game.** `NO_VERIFIED_OFFICIAL_INACTIVES_ARTIFACT`
-remains a preferred answer over a plausible one, and the pre-inactive forecast
-continues to stand on its own regardless.
+So this request is no longer "find us something". It is:
+
+> **Retrieve the NFL.com Week 3 Thursday-night inactives article for
+> ATL @ GB**, and preserve its raw bytes.
+
+Three URL shapes have each worked before and any of them is acceptable:
+
+1. Weekly article — `/news/inactive-reports-sunday-week-3-2026-nfl-season`
+   (a Thursday-night equivalent is the likely name for this game).
+2. Single-game article — e.g.
+   `/news/australia-game-inactives-san-francisco-49ers-at-los-angeles-rams`.
+3. Operator plain-text relay, as delivered for Week 2 TNF (DET @ BUF) at
+   `operator-relay://official_inactives_delivery_2026-09-17T2351Z`.
+
+**What is dead, so please do not spend time on it:**
+
+- `https://www.nfl.com/inactives/` — the landing page. 363 of 367 preserved
+  blobs are an explicit empty-state page reading *"Please check back soon for
+  NFL Inactive Reports for this Season"*, every one recorded as a capture
+  PASS. HTTP 200 here is not evidence.
+- The ESPN injuries JSON — closed status vocabulary (`Active` 585,
+  `Questionable` 161, `Injured Reserve` 25, `Out` 22, `Doubtful` 7) with zero
+  inactive-bearing values. `Out` is an injury designation and must not be
+  converted; `Active` must not be read as confirmation a player will dress.
+
+**The parser is already built and tested against real bytes of exactly these
+shapes** — `nfl/truth/official_inactives_parser.py`, 26 checks passing,
+including the whole 367-blob population sweep. It refuses the empty-state page
+by name and refuses to attribute a game unless both teams are present. Nothing
+further is needed from us but the document itself.
+
+Full write-up: `nfl/truth/findings/2026-09-24_OFFICIAL_INACTIVES_CARRIER.md`.
+
+Acceptance test is unchanged: the preserved raw bytes must themselves identify
+the inactive players for ATL and GB without inference.
+`NO_VERIFIED_OFFICIAL_INACTIVES_ARTIFACT` is a real result and is preferred
+over a plausible one. **The pre-inactive forecast proceeds independently and is
+not waiting on this.**
