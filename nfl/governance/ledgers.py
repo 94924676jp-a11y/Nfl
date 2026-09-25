@@ -99,6 +99,22 @@ APPROVED = 'APPROVED'
 REJECTED = 'REJECTED'
 WITHDRAWN = 'WITHDRAWN'
 
+#: OWNER APPROVALS ARE NON-BLOCKING BY DEFAULT. Owner directive 2026-09-25.
+#:
+#: The previous version raised an approval and then told the owner about it,
+#: which made "an approval exists" an interruption event. Three approvals had
+#: accumulated while twenty-six tasks were runnable, and the owner was being
+#: addressed at every one.
+#:
+#: The controlling question is no longer `waiting_owner_count > 0`. It is
+#: `runnable_now == 0 AND waiting_owner_count > 0`. An open approval parks its
+#: own branch and nothing else, and may never on its own set
+#: `owner_interrupt_required`.
+#:
+#: Hours before a deadline within which an approval may interrupt -- and only
+#: when missing it is irreversible or takes production down.
+IMMINENT_H = 24.0
+
 SEVERITIES = ('CRITICAL', 'HIGH', 'MEDIUM', 'LOW')
 
 #: THE SCHEDULER, IN THE OWNER'S ORDER (2026-09-25). A DECLARED FIELD, NOT AN
@@ -133,6 +149,7 @@ APPROVAL_FIELDS = (
     'id', 'date_raised', 'decision_required', 'why_owner_approval',
     'options', 'recommended_default', 'if_approved', 'if_not_approved',
     'work_that_continues_regardless', 'urgency', 'deadline',
+    'irreversible_if_missed',
     'requesting_task', 'status', 'owner_decision', 'decision_timestamp',
     'resulting_commit', 'last_escalated_at', 'blocked_ids_at_last_escalation')
 
@@ -320,41 +337,28 @@ def next_action(rows=None) -> dict | None:
 
 
 def should_escalate(approval: dict, rows=None) -> str | None:
-    """A REASON to interrupt the owner again, or None.
+    """A REASON to interrupt the owner, or None. Raising one is NOT a reason.
 
-    Announced once when raised. After that, only four things earn a second
-    mention, and "it is still open" is not one of them.
+    Under the 2026-09-25 directive an approval is queued, not announced. The
+    only things that earn an interruption are the narrow set below, and "it was
+    created" and "it is still open" are neither.
     """
     if approval['status'] != RAISED:
         return None
-    if not approval.get('last_escalated_at'):
-        return 'first raise'
     rows = defects() if rows is None else rows
-    # ORDER MATTERS AND IS BY CONSEQUENCE, NOT BY CONVENIENCE. Several of
-    # these are true at once in the case that matters most: an approval that
-    # has accumulated blocked work until nothing else can proceed satisfies
-    # both the third rule and the first. Reporting "more work is blocked"
-    # there would bury the fact that the project has actually stopped, so the
-    # strongest reason is checked first.
     if not actionable(rows):
-        return 'it is the last thing standing'
-    if approval.get('urgency') == 'BLOCKING_NOW':
-        return 'urgency is BLOCKING_NOW'
-    if approval.get('deadline'):
+        return 'it is the last thing standing: no authorized work remains'
+    if approval.get('irreversible_if_missed') and approval.get('deadline'):
         try:
-            d = dt.datetime.fromisoformat(approval['deadline'])
+            d = dt.datetime.fromisoformat(str(approval['deadline']))
             if d.tzinfo is None:
                 d = d.replace(tzinfo=dt.timezone.utc)
-            days = (d - dt.datetime.now(dt.timezone.utc)).days
-            if days <= 7:
-                return f'deadline in {days} day(s)'
+            hours = (d - dt.datetime.now(dt.timezone.utc)).total_seconds() / 3600
+            if hours <= IMMINENT_H:
+                return (f'deadline in {hours:.0f}h and missing it is '
+                        f'irreversible or takes production down')
         except ValueError:
             pass
-    now_blocked = blocked_by(approval['id'], rows)
-    was = approval.get('blocked_ids_at_last_escalation') or []
-    if len(now_blocked) > len(was):
-        return (f'more work is now blocked by it: {len(was)} -> '
-                f'{len(now_blocked)}')
     return None
 
 
@@ -404,6 +408,9 @@ def autonomy_state(rows=None, apps=None) -> dict:
         'external_blocked_count': len(external),
         'open_approvals': [a['id'] for a in open_apps],
         'verified_count': len([d for d in rows if d['status'] == VERIFIED]),
+        'runnable_now': len(act),
+        'waiting_owner': [d['id'] for d in waiting],
+        'waiting_external': [d['id'] for d in external],
         'global_stop_required': bool(reasons),
         'global_stop_reasons': reasons,
         'next_action': (act[0]['id'] if act else None),
@@ -419,6 +426,20 @@ def autonomy_state(rows=None, apps=None) -> dict:
     }
     if state['global_stop_required'] and not state['global_stop_reasons']:
         raise LedgerError('refusing to report a stop with no named reason')
+    # OWNER_INTERRUPT_REQUIRED DEFAULTS TO FALSE AND AN OPEN APPROVAL NEVER
+    # SETS IT. It is true only when the project genuinely cannot proceed, or
+    # when a deadline is imminent AND missing it is irreversible.
+    esc = state['escalations_due']
+    state['owner_interrupt_required'] = bool(
+        state['global_stop_required'] or esc)
+    state['owner_interrupt_reason'] = (
+        '; '.join(state['global_stop_reasons'])
+        or '; '.join(f"{e['id']}: {e['reason']}" for e in esc)
+        or None)
+    if state['owner_interrupt_required'] and not \
+            state['owner_interrupt_reason']:
+        raise LedgerError(
+            'refusing to demand an interruption with no named reason')
     return state
 
 

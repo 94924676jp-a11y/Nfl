@@ -1,38 +1,42 @@
 {
- "active_work_count": 26,
- "escalations_due": [
-  {
-   "id": "APPROVAL-004",
-   "reason": "first raise"
-  }
- ],
+ "active_work_count": 29,
+ "escalations_due": [],
  "external_blocked_count": 0,
- "generated_utc": "2026-09-25T16:06:41.193726+00:00",
+ "generated_utc": "2026-09-25T16:39:40.930208+00:00",
  "global_stop_reasons": [],
  "global_stop_required": false,
- "independent_workstreams": 16,
+ "independent_workstreams": 17,
  "next_action": "DEF-011",
  "next_tier": "T1_SAFETY_GOVERNANCE",
  "open_approvals": [
   "APPROVAL-001",
-  "APPROVAL-003",
-  "APPROVAL-004"
+  "APPROVAL-003"
  ],
  "operating_risk_active": [
   "DEF-012",
   "DEF-013",
-  "DEF-014"
+  "DEF-014",
+  "DEF-053"
  ],
- "owner_blocked_branches": 3,
+ "owner_blocked_branches": 2,
+ "owner_interrupt_reason": null,
+ "owner_interrupt_required": false,
  "reading": "global_stop_required is computed from counts. An open approval parks its own branch and nothing else; if valid_next_actions is above zero there is authorized work and stopping is a choice, not a state.",
+ "runnable_now": 29,
  "spec_version": "governance-ledgers/1.0.0",
  "stale_owner_blocks": [],
- "valid_next_actions": 26,
+ "valid_next_actions": 29,
  "verified_count": 10,
- "waiting_owner_count": 3,
+ "waiting_external": [],
+ "waiting_owner": [
+  "DEF-041",
+  "DEF-042"
+ ],
+ "waiting_owner_count": 2,
  "workstreams": {
   "audit-tooling": 1,
   "capture": 4,
+  "deployment": 2,
   "determinism": 1,
   "dfs": 2,
   "dfs-semantics": 1,
@@ -45,7 +49,7 @@
   "postgame": 1,
   "product": 2,
   "prospective": 1,
-  "storage": 1,
+  "storage": 2,
   "testing": 2
  }
 }

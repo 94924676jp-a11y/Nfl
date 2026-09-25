@@ -144,7 +144,8 @@ def test_F_an_approval_the_owner_cannot_act_on_is_refused():
                 why_owner_approval='w', options=['only one'],
                 recommended_default='r', if_approved='y', if_not_approved='n',
                 work_that_continues_regardless='lots', urgency='WHENEVER',
-                deadline=None, requesting_task='D-1', status=L.RAISED,
+                deadline=None, irreversible_if_missed=False,
+                requesting_task='D-1', status=L.RAISED,
                 owner_decision=None, decision_timestamp=None,
                 resulting_commit=None, last_escalated_at=None,
                 blocked_ids_at_last_escalation=[])
@@ -163,24 +164,34 @@ def test_G_escalation_is_event_driven():
             _row(id='D-2', status=L.WAITING_OWNER, owner_approval_needed=True,
                  blocked_by='A-1')]
     a = dict(id='A-1', status=L.RAISED, urgency='WHENEVER', deadline=None,
+             irreversible_if_missed=False,
              last_escalated_at=None, blocked_ids_at_last_escalation=[])
-    check('an unannounced approval escalates once',
-          L.should_escalate(a, rows) == 'first raise')
+    # SUPERSEDED 2026-09-25. Creating an approval used to be an announcement
+    # ('first raise') and accumulating blocked work used to earn a second
+    # mention. Under the non-blocking policy neither interrupts: an approval
+    # is queued, and what matters is only whether OTHER work remains.
+    check('creating an approval is not an announcement',
+          L.should_escalate(a, rows) is None, L.should_escalate(a, rows))
     a2 = dict(a, last_escalated_at='2026-09-25T00:00:00+00:00',
               blocked_ids_at_last_escalation=['D-2'])
-    check('and then goes quiet', L.should_escalate(a2, rows) is None,
+    check('and it stays quiet', L.should_escalate(a2, rows) is None,
           L.should_escalate(a2, rows))
     rows3 = rows + [_row(id='D-3', status=L.WAITING_OWNER,
                          owner_approval_needed=True, blocked_by='A-1')]
-    r = L.should_escalate(a2, rows3)
-    check('more blocked work earns a second mention',
-          r and 'more work is now blocked' in r, r)
+    check('more blocked work does not interrupt while other work runs',
+          L.should_escalate(a2, rows3) is None,
+          L.should_escalate(a2, rows3))
     only_parked = [d for d in rows3 if d['id'] != 'D-1']
     r2 = L.should_escalate(a2, only_parked)
     check('becoming the last blocker earns one',
-          r2 == 'it is the last thing standing', r2)
+          r2 is not None and 'last thing standing' in r2, r2)
+    # SUPERSEDED 2026-09-25. Urgency alone used to escalate. Under the
+    # non-blocking policy an approval may be BLOCKING_NOW and still wait,
+    # because what matters is whether OTHER work remains, not how the
+    # approval was labelled.
     r3 = L.should_escalate(dict(a2, urgency='BLOCKING_NOW'), rows)
-    check('so does urgency', r3 == 'urgency is BLOCKING_NOW', r3)
+    check('urgency alone no longer interrupts while work remains',
+          r3 is None, r3)
     check('a decided approval never escalates',
           L.should_escalate(dict(a2, status=L.APPROVED), rows3) is None)
 
@@ -284,5 +295,81 @@ def test_N_every_verified_row_names_where_it_ran():
           not bad, bad)
     d47 = [d for d in L.defects() if d['id'] == 'DEF-047']
     if d47:
-        check('DEF-047 is FIX_IMPLEMENTED, not VERIFIED',
-              d47[0]['status'] == L.FIX_IMPLEMENTED, d47[0]['status'])
+        check('DEF-047 has not reached VERIFIED without a real run',
+              d47[0]['status'] in (L.FIX_IMPLEMENTED, L.FIX_DEPLOYED,
+                                   L.FIX_EXECUTED), d47[0]['status'])
+
+
+def test_O_an_open_approval_never_demands_an_interruption():
+    print('\nO. approvals are queued, not announced')
+    rows = [_row(id=f'D-{i}') for i in range(5)] + [
+        _row(id='D-blocked', status=L.WAITING_OWNER,
+             owner_approval_needed=True, blocked_by='A-1')]
+    app = dict(id='A-1', status=L.RAISED, urgency='BLOCKING_NOW',
+               deadline=None, irreversible_if_missed=False,
+               last_escalated_at=None, blocked_ids_at_last_escalation=[])
+    s = L.autonomy_state(rows, apps=[app])
+    check('runnable_now is reported', s['runnable_now'] == 5, s['runnable_now'])
+    check('owner_interrupt_required is FALSE with work remaining',
+          s['owner_interrupt_required'] is False, s)
+    check('and carries no reason', s['owner_interrupt_reason'] is None)
+    check('even at BLOCKING_NOW urgency',
+          L.should_escalate(app, rows) is None, L.should_escalate(app, rows))
+    check('the raise itself is not an escalation', s['escalations_due'] == [],
+          s['escalations_due'])
+
+
+def test_P_the_controlling_question_is_runnable_not_waiting():
+    print('\nP. runnable_now == 0 AND waiting_owner > 0')
+    only_parked = [_row(id='D-1', status=L.WAITING_OWNER,
+                        owner_approval_needed=True, blocked_by='A-1')]
+    app = dict(id='A-1', status=L.RAISED, urgency='WHENEVER', deadline=None,
+               irreversible_if_missed=False, last_escalated_at=None,
+               blocked_ids_at_last_escalation=[])
+    s = L.autonomy_state(only_parked, apps=[app])
+    check('with nothing runnable it DOES stop',
+          s['global_stop_required'] is True and s['runnable_now'] == 0, s)
+    check('and only then demands an interruption',
+          s['owner_interrupt_required'] is True)
+    check('naming why', bool(s['owner_interrupt_reason']),
+          s['owner_interrupt_reason'])
+    check('the approval becomes the last thing standing',
+          L.should_escalate(app, only_parked)
+          == 'it is the last thing standing: no authorized work remains')
+
+
+def test_Q_an_imminent_irreversible_deadline_may_interrupt():
+    print('\nQ. the one time-based exception, and its two conditions')
+    rows = [_row(id='D-1')]
+    soon = (dt_now() + __import__('datetime').timedelta(hours=3)).isoformat()
+    far = (dt_now() + __import__('datetime').timedelta(days=40)).isoformat()
+    mk = lambda **k: dict(dict(id='A-1', status=L.RAISED, urgency='DATED',
+                               deadline=soon, irreversible_if_missed=True,
+                               last_escalated_at=None,
+                               blocked_ids_at_last_escalation=[]), **k)
+    r = L.should_escalate(mk(), rows)
+    check('imminent AND irreversible interrupts', r and 'deadline in' in r, r)
+    check('imminent but reversible does NOT',
+          L.should_escalate(mk(irreversible_if_missed=False), rows) is None)
+    check('irreversible but distant does NOT',
+          L.should_escalate(mk(deadline=far), rows) is None)
+
+
+def dt_now():
+    import datetime as _dt
+    return _dt.datetime.now(_dt.timezone.utc)
+
+
+def test_R_the_live_state_under_the_new_policy():
+    print('\nR. the real ledger right now')
+    s = L.autonomy_state()
+    check('there is runnable work', s['runnable_now'] > 0, s['runnable_now'])
+    check('open approvals do not demand an interruption',
+          s['owner_interrupt_required'] is False,
+          (s['open_approvals'], s['owner_interrupt_reason']))
+    check('waiting_owner is a list of ids, not just a count',
+          isinstance(s['waiting_owner'], list), type(s['waiting_owner']))
+    check('waiting_external is reported separately',
+          isinstance(s['waiting_external'], list))
+    check('and breadth is still reported',
+          s['independent_workstreams'] > 1, s['independent_workstreams'])
