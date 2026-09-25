@@ -34,6 +34,8 @@ HB_REL = '.github/workflows/agent-orchestrator-heartbeat.yml'
 RECEIVER_REL = '.github/workflows/agent-orchestrator-dispatch.yml'
 DEFAULT_BRANCH = 'origin/main'
 
+from nfl.tests import remote_ref_freshness as F                  # noqa: E402
+
 PASSED = 0
 FAILED = 0
 
@@ -161,6 +163,11 @@ def test_cold_start_is_deployed_or_explicitly_pending():
     the automation branch is inert, and a green test here would assert a loop
     that cannot start.
     """
+    # A stale origin/main reads as "not deployed", which is the answer you
+    # expect while deploying and therefore the one nobody questions. Establish
+    # the ref is current before believing anything it says.
+    if F.check_freshness(check) != F.FRESH:
+        print('       (deployment verdict below is unverified)')
     on_default = _from_default(HB_REL)
     if on_default.strip():
         sched = _on(_yaml(on_default)).get('schedule')

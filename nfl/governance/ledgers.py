@@ -330,7 +330,16 @@ def raise_approval(**row) -> dict:
     return row
 
 
-def decide(approval_id: str, *, decision: str, resulting_commit=None) -> dict:
+def decide(approval_id: str, *, decision: str, resulting_commit=None,
+           note=None) -> dict:
+    """Record the owner's verdict, and what it actually said.
+
+    `decision` is one of three words. `note` is why, in the owner's terms,
+    plus any condition attached to it -- an approval of one option and not
+    another, a scope limit, a thing deliberately deferred. Without it the
+    ledger keeps the word APPROVED and forgets that LIVE was excluded, which
+    is exactly the detail a later reader would need and could not recover.
+    """
     if decision not in (APPROVED, REJECTED, WITHDRAWN):
         raise LedgerError(f'{decision!r} is not a decision')
     rows = approvals()
@@ -338,7 +347,8 @@ def decide(approval_id: str, *, decision: str, resulting_commit=None) -> dict:
         if r['id'] == approval_id:
             r.update(status=decision, owner_decision=decision,
                      decision_timestamp=_now(),
-                     resulting_commit=resulting_commit)
+                     resulting_commit=resulting_commit,
+                     decision_note=(note or ''))
             _write(APPROVAL_QUEUE, rows)
             return r
     raise LedgerError(f'{approval_id} not in the approval queue')

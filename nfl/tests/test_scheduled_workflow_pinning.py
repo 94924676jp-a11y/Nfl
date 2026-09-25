@@ -46,6 +46,8 @@ INTENTIONALLY_DEFAULT_BRANCH = {
         'thin by design -- reads two policy fields and POSTs; runs no repo code',
 }
 
+from nfl.tests import remote_ref_freshness as F                  # noqa: E402
+
 PASSED = 0
 FAILED = 0
 
@@ -101,6 +103,13 @@ def _checkout_refs(doc):
             if uses.startswith('actions/checkout'):
                 refs.append((step.get('with') or {}).get('ref'))
     return refs
+
+
+def test_the_default_branch_ref_is_current():
+    """Everything else in this file is read from origin/main. If that ref is
+    behind, every verdict here is about a tree that no longer exists -- and it
+    fails in the direction that looks like honest caution."""
+    F.check_freshness(check)
 
 
 def test_every_scheduled_workflow_on_main_pins_its_checkout():
