@@ -31,6 +31,7 @@ from pathlib import Path
 
 import numpy as np
 
+from nfl.dfs import gate_enforcement as GE
 from nfl.production.contracts import completeness as CC
 
 SPEC_VERSION = 'dfs-player-universe/1.0.0'
@@ -97,13 +98,21 @@ def priced(salary_csv: Path) -> list:
 
 
 def build(manifest_path, npz_path, salary_csv, name_by_gsis, consumer,
-          eligible=None, min_salary=0) -> tuple:
+          eligible=None, min_salary=0, gate_verdicts=None) -> tuple:
     """(universe, coverage_report). Raises for a consumer needing completeness.
 
     `eligible` is the availability-resolved set of norm(name) the contest can
     actually field. It is REQUIRED to be supplied explicitly: defaulting it to
     "everyone priced" is how an inactive player stays in a universe.
+
+    `gate_verdicts` is gate id -> state for `gate_enforcement`. A consumer that
+    REQUIRES_COMPLETE cannot build without them: omitting the argument is not
+    treated as "the gates passed", because that substitution is exactly how the
+    2026-09-24 selector consumed a state the board had already refused.
     """
+    pol, _ = CC.policy_for(consumer)
+    if pol == CC.REQUIRES_COMPLETE:
+        GE.assert_may_consume(gate_verdicts or {}, consumer)
     manifest = json.loads(Path(manifest_path).read_text())
     npz = np.load(npz_path, allow_pickle=True)
     sup = modelled(manifest, npz, name_by_gsis)
