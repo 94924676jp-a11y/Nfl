@@ -57,8 +57,11 @@ is in the outbox; until it lands this grading is partial and is labelled so.
 
 ### What the player grades say
 
-* **The Penix conditional was the best call of the day and was made in the
-  wrong place.** Predicted 14.13, actual 13.24. The stored marginal would have
+* **The Penix case shows the conditional/unconditional distinction mattered
+  materially in this game, and the correction was made in the wrong place.** It
+  does NOT validate the estimator prospectively — one game cannot, and this
+  number must not be quoted as evidence the method works. Predicted 14.13,
+  actual 13.24. The stored marginal would have
   said 4.63, because it carried a 69% chance of near-zero for a confirmed
   starter. The correction was right and it was applied by hand in a DFS
   selector instead of being routed through the gate that exists for exactly
@@ -106,19 +109,28 @@ lineup available at lock was:
 > Austin Hooper, Brian Robinson Jr. — $50,000 exactly, **131.4 points**.
 
 Our best verified floor was 102.2, and **we ranked London captain tenth of
-ten.** London was in fact the best captain on the board. The reason is
-structural, not a tuning error: the shape that won was a correlated Atlanta
-blowout — Bijan, London, Penix, Hooper, B. Robinson and Folk all scoring
-together, driven by one shared game state. Independent per-player streams
-cannot represent "Atlanta wins by three scores" as a coherent world, so the
-selector could not see that shape at all. It ranked by marginal means, and
-marginal means are blind to exactly the correlation that decides a Showdown
-contest.
+ten.** Among the verified players used in this reconstruction, London produced
+the strongest CPT result we identified. Whether he was the best captain in the
+live universe is NOT established: eight lineup players still lack complete
+verified lines, both DSTs were unmodelled, and the contest-winning lineup is
+unknown.
 
-This is the dependence limitation showing up as a measured loss rather than as
-a caveat in a doctrine file. It is the strongest argument yet for **B3, the
-minimal shared-football-world candidate**, and I would now rank B3 above every
-other item on the football-research track.
+What scored was a high-scoring realised Atlanta-heavy construction — Bijan,
+London, Penix, Hooper, B. Robinson and Folk together — which the
+independent-stream selector underweighted. Independent per-player streams cannot
+represent "Atlanta wins by three scores" as a coherent world, so the selector
+could not express that construction as a joint pattern at all; it ranked by
+marginal means, and marginal means carry no information about the correlation a
+Showdown is decided by.
+
+**This is the first realised case where the current independent-stream
+architecture could not represent a game-state pattern that materially mattered
+to lineup construction.** The 29-point gap between 131.4 and our best verified
+floor is measured. Its attribution is not: one game cannot show that a
+shared-world simulator would have ranked this construction correctly, and such a
+simulator could still fail on role state, ownership, field model or tail
+calibration. It is the strongest argument yet for **B3**, and it ranks B3 at the
+top of the football-research track rather than above the integrity work.
 
 Our exposure was also the wrong way round for the result: Love 6, Watson 6,
 Lloyd 6 against Bijan 6, Penix 6. Half the portfolio's weight sat on the losing

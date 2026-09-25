@@ -273,10 +273,18 @@ None of these is a correctness defect; all are missing capability.
 ## B-01 · No shared football world (highest value on this track)
 Measured cost, from last night: restricted to the ten players whose actual DK
 score is verified, a legal lineup scoring **131.4** existed at lock, captained by
-Drake London — **ranked tenth of ten** by our objective. The shape that won was
-one correlated Atlanta blowout. Independent per-player streams cannot represent
-it, so the selector never saw it. Same marginals, coupling only: p90 +39.3%, p95
-+51.1%, p99 +67.7%. This is no longer a caveat; it is a measured 29-point gap.
+Drake London — **ranked tenth of ten** by our objective. Among the verified
+players used in this reconstruction, London produced the strongest CPT result
+we identified; that is not established across the whole live universe, where
+eight lineup players lack verified lines and both DSTs were unmodelled.
+
+What scored was a high-scoring realised Atlanta-heavy construction the
+independent-stream selector underweighted. This is the **first realised case**
+where the architecture could not represent a game-state pattern that materially
+mattered to lineup construction. Same marginals, coupling only: p90 +39.3%, p95
++51.1%, p99 +67.7%. The 29-point gap is measured; its attribution to dependence
+alone is not, and one game cannot show a shared-world simulator would have
+ranked this construction correctly.
 **Existing task B3.** Owner approval to prioritise: yes.
 
 ## B-02 · No DST model at all
@@ -323,35 +331,71 @@ Not one of these is taken from a `repaired: true` field; each was re-derived.
 
 ---
 
+# THE INVARIANT (owner ruling, 2026-09-25)
+
+> **No stage may emit an apparently complete artifact unless it can prove
+> coverage of all required upstream families and keys.**
+
+This is now first-class and enforced by `nfl/production/contracts/completeness.py`.
+Every cross-layer join reports `expected_keys`, `present_keys`, `missing_left`,
+`missing_right`, `dropped_rows`, `unmatched_identities`, `coverage`, and whether
+incompleteness is permitted **for the named consumer**. The default for an
+undeclared consumer is refusal; a consumer permitting partial input must record a
+written reason saying what it does about the gap.
+
+`missing_right` and `dropped_rows` are deliberately separate fields. An absence
+is an upstream gap; a drop is a decision this join made. Collapsing them is how a
+discarded row reads as one that never existed.
+
+First application: `nfl/dfs/player_universe.py` discovers DK-bearing layers from
+the manifest by their `dk_points` metric rather than from a constant, so a layer
+added upstream is joined with no edit here. Run against the 2026-09-24 artifact
+and DK export it **refuses** for `dfs.showdown.selector` at 84.6% coverage
+(22 of 26), naming `falcons`, `kedon slovis`, `lenny krieg`, `packers` as
+`missing_right [never produced upstream]`, while `tools.pool_audit` proceeds as
+`PARTIAL_PERMITTED`. Folk and Smack are now inside the universe, which also
+corrects my own claim: two of the six players I called unprojectable were
+modelled all along.
+
 # Priority order A — correctness, integrity, sealing, provenance
 
-1. **A-02** wire the nine orphaned gates to one composition point. Everything
-   else in this ledger was already detectable; nothing was obliged to listen.
-2. **A-01** game-parameterise the DFS/postgame surface. Unblocks A-04, A-09.
-3. **A-08** cut-ledger state field and register refusals. Without it no later
-   evidence is admissible.
-4. **A-10** availability enum with `NOT_ESTABLISHED` as default. *Owner.*
-5. **A-04 / A-05** one joined player universe, and a manifest that says what
-   `dk_scoring` means.
-6. **A-06** convert the 25 discovering modules, one at a time, fingerprinted.
-7. **A-11** refuse cross-player correlation under independent streams.
-8. **A-03** refusal-code ratchet plus the five worst modules.
-9. **A-07** manifest sharding. *Owner — consumer census first.*
-10. **A-12**, **A-13**, **A-14**.
+Reordered per owner ruling 2026-09-25.
+
+1. **A-02 — a fired gate must stop the consumer.** Availability and governance
+   gates block DFS consumption. Everything in this ledger was already
+   detectable; nothing was obliged to listen.
+2. **A-04 / A-05 — enforce the completeness contract everywhere.** The machinery
+   exists and is applied at one join. The remaining 17 PARTIAL_JOIN sites and
+   every future join must go through it. This outranks the rest because a
+   partial join silently contaminates every downstream product.
+3. **A-09 — automatic postgame grading and contest-result ingestion.** Raised
+   from its earlier position: without it these lessons are re-derived by hand
+   and only partially, as the ATL/GB grade was.
+4. **B-02 / B-03 — K and DST completeness for Showdown, explicitly.** If the
+   contest format includes them, the selector models them or declares the search
+   space incomplete. The contract now makes the declaration automatic; the
+   modelling is still absent.
+5. **A-01** game-parameterise the DFS/postgame surface (unblocks 2 and 3).
+6. **A-08** cut-ledger state field; register refusals.
+7. **A-10** availability enum with `NOT_ESTABLISHED` default. *Owner.*
+8. **A-06** convert the 25 discovering modules, one at a time, fingerprinted.
+9. **A-11** refuse cross-player correlation under independent streams.
+10. **A-03** refusal-code ratchet plus the five worst modules.
+11. **A-07** manifest sharding. *Owner — consumer census first.*
+12. **A-12**, **A-13**, **A-14**.
 
 # Priority order B — predictive and product improvement
 
-1. **B-01** minimal shared football world. The only item with a measured cost.
-2. **B-03** refuse a contest the model cannot cover, and surface
-   `POSITION_NOT_MODELLED` to the selector.
+**B3 sits at the top of this track and not above the integrity work.** A system
+whose gates nothing calls cannot report whether B3 succeeded.
+
+1. **B-01** minimal shared football world.
+2. **B-03** surface `POSITION_NOT_MODELLED` to the selector (now partly done by
+   the completeness contract).
 3. **B-02** DST layer.
 4. **B-04** receiving zero mass.
 5. **B-05** ownership and field model.
 6. **B-06** exact CDF at a line.
-
-These two orders are deliberately not merged. A-02 outranks B-01 because a
-system whose gates nothing calls cannot be trusted to report whether B-01
-worked.
 
 # What this audit did not establish
 
