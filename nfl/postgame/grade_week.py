@@ -33,6 +33,7 @@ _REPO = pathlib.Path(__file__).resolve().parents[2]
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
+from nfl.postgame import join_provenance as JP
 from nfl.postgame import actuals as A  # noqa: E402
 from sportsplatform.governance.outcome import Cause, Outcome  # noqa: E402
 
@@ -122,6 +123,17 @@ def build(package_path, season=2026, week=2) -> Outcome:
             'grade_state': ('GRADED' if published and a else
                             'GAME_RESULT_NOT_PUBLISHED' if not published else
                             'PLAYER_ABSENT_FROM_RESULTS'),
+            # This grader joins on gsis_id ONLY -- `by_id` is keyed on the
+            # actuals' player_id and there is no name path to fall back to --
+            # so a miss here is genuinely "not in the results", never a
+            # spelling failure wearing a zero. Stated rather than assumed,
+            # because that is the difference join_provenance.py exists for.
+            'join_provenance': (JP.stamp(JP.MATCHED_BY_IDENTITY,
+                                         key=r['gsis_id'],
+                                         zero_basis=JP.REAL_ZERO)
+                                if published and a else
+                                JP.stamp(JP.PLAYER_NOT_IN_OUTCOME,
+                                         key=r['gsis_id'])),
             'outcome_interpretation': 'NORMAL',
             'outcome_interpretation_basis':
                 'NO_IN_GAME_OR_SNAP_EVIDENCE_AVAILABLE_FOR_THIS_GAME',
@@ -216,6 +228,15 @@ def build(package_path, season=2026, week=2) -> Outcome:
                             'GAME_RESULT_NOT_PUBLISHED' if not published else
                             'MARKET_HAS_NO_MAPPED_ACTUAL' if not cols else
                             'PLAYER_ABSENT_FROM_RESULTS'),
+            # Same identity-only join. `cols` failing is a THIRD thing again:
+            # the market has no mapped actual, which is a coverage gap in the
+            # mapping and not a statement about the player at all.
+            'join_provenance': (JP.stamp(JP.MATCHED_BY_IDENTITY,
+                                         key=r['gsis_id'],
+                                         zero_basis=JP.REAL_ZERO)
+                                if published and a and cols else
+                                JP.stamp(JP.PLAYER_NOT_IN_OUTCOME,
+                                         key=r['gsis_id'])),
             'outcome_interpretation': 'NORMAL',
             'outcome_interpretation_basis':
                 'NO_IN_GAME_OR_SNAP_EVIDENCE_AVAILABLE_FOR_THIS_GAME',

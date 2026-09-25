@@ -28,6 +28,7 @@ if str(_REPO) not in sys.path:
 
 from sportsplatform.governance import artifact_claim as AC             # noqa: E402
 from sportsplatform.governance.outcome import Cause, Outcome, State    # noqa: E402
+from nfl.postgame import join_provenance as JP                        # noqa: E402
 from nfl.postgame import outcome as OC                                 # noqa: E402
 from nfl.dfs.scoring import statline as SL                             # noqa: E402
 import pathlib as _pl
@@ -176,17 +177,65 @@ def grade(outcome_path=None, sl=None) -> Outcome:
                 team_by_gid.setdefault(_g, _tm)
     rows, not_in_outcome, zeroed = [], [], []
     for gid in ids:
+        # EVERY ROW STATES HOW ITS NUMBER ARRIVED. See join_provenance.py.
+        # A zero reached by a failed lookup and a zero the man actually scored
+        # are the same float and opposite facts, and only this block still
+        # knows which one it is -- a later audit cannot recover it.
+        named = gid in names
         nm = names.get(gid, gid)
-        a = actual_by_id.get(gid) or actual.get(UNI.norm(nm))
+        a, prov = actual_by_id.get(gid), None
+        if a is not None:
+            prov = JP.stamp(JP.MATCHED_BY_IDENTITY, key=gid,
+                            zero_basis=JP.REAL_ZERO)
+        elif named and actual.get(UNI.norm(nm)) is not None:
+            # Name fallback, legitimate only because the outcome row carried
+            # no player_id. Never used while an id is available.
+            a = actual[UNI.norm(nm)]
+            prov = JP.stamp(JP.MATCHED_BY_NAME, key=UNI.norm(nm),
+                            zero_basis=JP.REAL_ZERO)
         if a is None:
-            line, code = OC.resolve_absent(
-                nm, team_by_gid.get(gid) or teams.get(UNI.norm(nm)), result)
-            if line is None:
-                not_in_outcome.append({'player': nm, 'reason': code})
+            # WHAT DECIDES A GOVERNED ZERO IS THE CLUB, NOT THE NAME, and the
+            # club is resolved BY IDENTITY from the sealed manifest.
+            #
+            # My first cut here refused any id the name index could not name,
+            # calling it IDENTITY_NOT_ESTABLISHED. That was wrong and the
+            # postgame harness caught it: the two ids with no display name in
+            # `frozen_board_names.json` are the KICKERS, and a gsis_id IS an
+            # identity -- the missing piece is a label for a report, not the
+            # ability to ask the outcome about him. Refusing them would have
+            # re-broken kicker grading from the opposite direction.
+            #
+            # `resolve_absent` ignores the name entirely (it decides on the
+            # club against the outcome's club set), so an unnamed id is safe
+            # to pass through it. Measured on this slate: all 7 absent players
+            # get their club from `team_by_gid` by identity, and the
+            # name-derived club agrees in all 7 -- the name path adds no
+            # coverage here and is kept only for a board row the manifest
+            # happens not to carry.
+            club = team_by_gid.get(gid) or (teams.get(UNI.norm(nm))
+                                           if named else None)
+            if club is None:
+                # NO CLUB AT ALL, so we cannot say WHOSE absence this is.
+                # Not "he recorded nothing" and not "his game is unpublished"
+                # -- we hold an id string that nothing in the sealed run
+                # recognises as a player on either roster. That is the state
+                # a zero used to be invented for.
+                not_in_outcome.append(
+                    {'player': nm, 'reason': JP.IDENTITY_NOT_ESTABLISHED,
+                     'join': JP.IDENTITY_NOT_ESTABLISHED,
+                     'detail': 'no club by identity or by name, so his '
+                               'absence cannot be governed either way'})
                 continue
-            a = {'team': team_by_gid.get(gid) or teams.get(UNI.norm(nm)),
-                 'position': None, **line}
+            line, code = OC.resolve_absent(nm, club, result)
+            if line is None:
+                not_in_outcome.append({'player': nm, 'reason': code,
+                                       'join': JP.PLAYER_NOT_IN_OUTCOME})
+                continue
+            a = {'team': club, 'position': None, **line}
             zeroed.append(nm)
+            # Every zero on this row rests on the absence rule, not on play.
+            prov = JP.stamp(JP.ABSENCE_RESOLVED_TO_ZERO, key=code,
+                            zero_basis=JP.ABSENCE_RESOLVED_TO_ZERO)
         sl = SL.assemble(gid, nm, L, z, n)
         per_stat = {}
         for stat, (layer, metric) in MAP.items():
@@ -268,8 +317,16 @@ def grade(outcome_path=None, sl=None) -> Outcome:
                 'signed_error': float(pred.mean()) - act_pts,
                 'percentile_of_actual': float((pred < act_pts).mean()),
                 'bucket': OC.percentile_bucket(act_pts, q), 'site': site}
-        rows.append({'player': nm, 'team': a.get('team'),
-                     'position': a.get('position'), 'stats': per_stat})
+        row = {'player': nm, 'team': a.get('team'),
+               'position': a.get('position'), 'stats': per_stat,
+               'join_provenance': prov}
+        # Refuse at the point of emission, not in a later sweep. A row that
+        # leaves here unproven is indistinguishable from a correct one.
+        for _stat, _d in per_stat.items():
+            if _d.get('state') == 'GRADED':
+                JP.assert_graded_row(row, actual=_d.get('actual'),
+                                     where=f'{nm}/{_stat}')
+        rows.append(row)
     # AGGREGATE BUCKETS, per stat and overall. Descriptive only.
     buckets = {}
     for r in rows:
@@ -297,6 +354,7 @@ def grade(outcome_path=None, sl=None) -> Outcome:
             'recorded no carry, target or catch. Dropping him instead would '
             'be survivorship: it grades the model only on the players it got '
             'onto the field, and those are exactly the ones it got right.'),
+        join_provenance=JP.audit_rows(rows),
         n_observations=total, nominal_shares=OC.NOMINAL,
         one_game_cannot_estimate_calibration=(
             'roughly thirty players and twelve stats give small bucket counts '
