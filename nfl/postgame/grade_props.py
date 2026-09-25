@@ -112,6 +112,26 @@ def grade(outcome_path=None) -> Outcome:
     if board.state is not State.PASS:
         return board
     actual_by_name = {UNI.norm(k): v for k, v in result['players'].items()}
+    # AND BY IDENTITY, BECAUSE THE BOARD CARRIES ONE.
+    #
+    # MAIN_LINE_BOARD.csv has a `gsis_id` column (29th), and the outcome rows
+    # carry `player_id`. This graded by normalised name anyway, so a player
+    # whose board spelling and stat-feed spelling disagree was reported
+    # PLAYER_NOT_IN_OUTCOME while both artifacts held the same id.
+    #
+    # The refusal was at least honest -- unlike grade_projections, which fell
+    # through to a zero line and called it GRADED (DEF-063) -- but it is a
+    # refusal that need not happen. `actual_dk` in grade_portfolios documents
+    # the exact spellings that bite: 'James Cook III' against 'James Cook',
+    # 'Joshua Palmer' against 'Josh Palmer'.
+    #
+    # grade_portfolios keeps its name join, and that one IS forced: the
+    # PORTFOLIO csv is DraftKings entry format and carries no id at all.
+    actual_by_id = {}
+    for _nm, _v in result['players'].items():
+        _pid = (_v or {}).get('player_id')
+        if _pid:
+            actual_by_id.setdefault(_pid, _v)
 
     graded, not_graded = [], []
     for r in board.value:
@@ -125,9 +145,11 @@ def grade(outcome_path=None) -> Outcome:
         if stats is None:
             not_graded.append({**base, 'reason': 'MARKET_NOT_IN_STAT_MAP'})
             continue
-        a = actual_by_name.get(UNI.norm(r['player']))
+        a = (actual_by_id.get((r.get('gsis_id') or '').strip())
+             or actual_by_name.get(UNI.norm(r['player'])))
         if a is None:
-            not_graded.append({**base, 'reason': 'PLAYER_NOT_IN_OUTCOME'})
+            not_graded.append({**base, 'reason': 'PLAYER_NOT_IN_OUTCOME',
+                               'gsis_id': r.get('gsis_id') or None})
             continue
         missing = [s for s in stats if a.get(s) is None]
         if missing:
