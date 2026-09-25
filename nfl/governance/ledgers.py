@@ -60,10 +60,15 @@ EXTERNAL_BLOCKED = 'EXTERNAL_BLOCKED'
 VERIFIED = 'VERIFIED'
 WONT_FIX = 'WONT_FIX'
 
+#: An active operational risk. NOT owner-blocking and NOT merely open: it can
+#: impair the NEXT game-day cycle if left alone, so the scheduler must reach it
+#: before any research item. A dark capture source is the archetype.
+OPERATING_RISK_ACTIVE = 'OPERATING_RISK_ACTIVE'
+
 #: Statuses from which no further work can be pulled.
 _TERMINAL = frozenset({VERIFIED, WONT_FIX})
 #: Statuses that are open work Claude may act on right now.
-_ACTIONABLE = frozenset({OPEN, IN_PROGRESS})
+_ACTIONABLE = frozenset({OPEN, IN_PROGRESS, OPERATING_RISK_ACTIVE})
 #: Statuses that are open and NOT actionable.
 _PARKED = frozenset({WAITING_OWNER, EXTERNAL_BLOCKED})
 
@@ -73,13 +78,34 @@ REJECTED = 'REJECTED'
 WITHDRAWN = 'WITHDRAWN'
 
 SEVERITIES = ('CRITICAL', 'HIGH', 'MEDIUM', 'LOW')
+
+#: THE SCHEDULER, IN THE OWNER'S ORDER (2026-09-25). A DECLARED FIELD, NOT AN
+#: INFERENCE.
+#:
+#: Tier could be guessed from subsystem and severity, and guessing would be
+#: wrong in the one case that matters: a MEDIUM defect in a capture feed that
+#: goes dark before a slate outranks a CRITICAL refactor. The taxonomy is the
+#: owner's, so each row states its tier and the ledger refuses a row that does
+#: not.
+#:
+#: The purpose is to stop the failure mode where a low-priority research item
+#: gets cheerful attention while a capture source is still dark.
+TIERS = (
+    'T1_SAFETY_GOVERNANCE',      # a refused state could reach a product
+    'T2_OPERATING_RISK',         # impairs the next slate if left alone
+    'T3_PRODUCTION_CORRECTNESS',  # wrong answers on the production path
+    'T4_AUDIT_COMPLETION',       # the audit is not finished
+    'T5_PREDICTIVE_RND',         # might make forecasts better
+    'T6_PRODUCT',                # might make the product better
+    'T7_CLEANUP',                # tidiness
+)
 URGENCIES = ('BLOCKING_NOW', 'DATED', 'WHENEVER')
 
 DEFECT_FIELDS = (
     'id', 'date_discovered', 'subsystem', 'severity', 'defect',
     'reproduction', 'affected', 'impact', 'next_action',
     'owner_approval_needed', 'blocked_by', 'status', 'fix_commit',
-    'verification_test', 'prospective_validation_needed')
+    'verification_test', 'prospective_validation_needed', 'scheduler_tier')
 
 APPROVAL_FIELDS = (
     'id', 'date_raised', 'decision_required', 'why_owner_approval',
@@ -129,6 +155,11 @@ def add_defect(**row) -> dict:
         raise LedgerError(f'defect is missing {missing}. Every field is '
                           f'required; an unknown one is written as null, so '
                           f'that "nobody checked" is visible rather than absent.')
+    if row.get('scheduler_tier') not in TIERS:
+        raise LedgerError(
+            f'{row.get("id")}: scheduler_tier {row.get("scheduler_tier")!r} '
+            f'not in {TIERS}. Declare it; a tier inferred from severity puts a '
+            f'dark capture feed behind a refactor.')
     if row['severity'] not in SEVERITIES:
         raise LedgerError(f'severity {row["severity"]!r} not in {SEVERITIES}')
     if row['status'] not in (_ACTIONABLE | _PARKED | _TERMINAL):
@@ -221,12 +252,34 @@ def blocked_by(approval_id: str, rows=None) -> list:
 
 
 def actionable(rows=None) -> list:
-    """Open work needing no owner decision, severity-ordered."""
+    """Open work needing no owner decision, in scheduler order.
+
+    Tier first, severity second. An OPERATING_RISK_ACTIVE row in T2 therefore
+    outranks a CRITICAL in T3, which is the whole reason the tier exists.
+    """
     rows = defects() if rows is None else rows
     live = [d for d in rows if d['status'] in _ACTIONABLE
             and not d.get('owner_approval_needed')]
-    return sorted(live, key=lambda d: (SEVERITIES.index(d['severity']),
-                                       d['id']))
+    return sorted(live, key=lambda d: (
+        TIERS.index(d['scheduler_tier']) if d.get('scheduler_tier') in TIERS
+        else len(TIERS),
+        SEVERITIES.index(d['severity']), d['id']))
+
+
+def workstreams(rows=None) -> dict:
+    """subsystem -> count, over actionable work only.
+
+    WHY BREADTH AND NOT JUST A COUNT. Owner ruling 2026-09-25: twenty-one tasks
+    could all sit in one subsystem, in which case one bad assumption about that
+    subsystem stalls everything and the count was never evidence of room to
+    work. Distinct subsystems is a crude proxy for independent branches and is
+    honest about being one -- two rows in `capture` may still share a cause.
+    """
+    rows = actionable(rows)
+    out = {}
+    for d in rows:
+        out[d['subsystem']] = out.get(d['subsystem'], 0) + 1
+    return dict(sorted(out.items(), key=lambda kv: (-kv[1], kv[0])))
 
 
 def next_action(rows=None) -> dict | None:
@@ -290,12 +343,21 @@ def autonomy_state(rows=None, apps=None) -> dict:
                            'dependency')
         if not waiting and not external:
             reasons.append('no valid next action remains')
+    ws = workstreams(rows)
+    risks = [d['id'] for d in rows if d['status'] == OPERATING_RISK_ACTIVE]
     state = {
         'spec_version': SPEC_VERSION,
         'generated_utc': _now(),
         'active_work_count': len([d for d in rows
                                   if d['status'] in _ACTIONABLE]),
         'valid_next_actions': len(act),
+        'independent_workstreams': len(ws),
+        'workstreams': ws,
+        'owner_blocked_branches': len({d['blocked_by'] for d in rows
+                                       if d['status'] == WAITING_OWNER
+                                       and d.get('blocked_by')}),
+        'operating_risk_active': risks,
+        'next_tier': (act[0]['scheduler_tier'] if act else None),
         'waiting_owner_count': len(waiting),
         'external_blocked_count': len(external),
         'open_approvals': [a['id'] for a in open_apps],

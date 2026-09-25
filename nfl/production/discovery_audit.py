@@ -34,6 +34,11 @@ automatically a defect:
 So this reports candidates with their line and context, classifies what it
 can, and leaves the judgement legible rather than emitting a number. An
 auditor that graded itself would be the same defect one level up.
+
+LIMITS
+  This is a source-text (or record-level) heuristic, not a behavioural
+  measurement. Every row it emits is a question for a human, the counts are a
+  floor rather than a survey, and it does not know what is deliberate.
 """
 from __future__ import annotations
 

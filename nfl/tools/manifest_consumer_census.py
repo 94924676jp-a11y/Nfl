@@ -29,6 +29,11 @@ the blast radius countable before somebody estimates it from memory.
 HEURISTIC, AND SAID SO
 This reads source text, not behaviour. A row here is a question for a human,
 and the counts are a floor rather than a survey.
+
+LIMITS
+  This is a source-text (or record-level) heuristic, not a behavioural
+  measurement. Every row it emits is a question for a human, the counts are a
+  floor rather than a survey, and it does not know what is deliberate.
 """
 from __future__ import annotations
 

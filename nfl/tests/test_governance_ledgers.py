@@ -47,7 +47,8 @@ def _row(**kw):
                 severity='HIGH', defect='d', reproduction='r', affected='a',
                 impact='i', next_action='n', owner_approval_needed=False,
                 blocked_by=None, status=L.OPEN, fix_commit=None,
-                verification_test=None, prospective_validation_needed=False)
+                verification_test=None, prospective_validation_needed=False,
+                scheduler_tier='T3_PRODUCTION_CORRECTNESS')
     base.update(kw)
     return base
 
@@ -196,3 +197,60 @@ def test_H_the_live_ledger_is_not_stopped():
     check('every VERIFIED row carries a commit and a test',
           all(d.get('fix_commit') and d.get('verification_test')
               for d in L.defects() if d['status'] == L.VERIFIED))
+
+
+def test_I_the_scheduler_puts_operating_risk_above_correctness():
+    print('\nI. a dark feed outranks a refactor')
+    rows = [_row(id='D-crit', severity='CRITICAL',
+                 scheduler_tier='T3_PRODUCTION_CORRECTNESS'),
+            _row(id='D-risk', severity='MEDIUM',
+                 status=L.OPERATING_RISK_ACTIVE,
+                 scheduler_tier='T2_OPERATING_RISK'),
+            _row(id='D-gov', severity='LOW',
+                 scheduler_tier='T1_SAFETY_GOVERNANCE'),
+            _row(id='D-rnd', severity='CRITICAL',
+                 scheduler_tier='T5_PREDICTIVE_RND')]
+    order = [d['id'] for d in L.actionable(rows)]
+    check('tier beats severity', order == ['D-gov', 'D-risk', 'D-crit', 'D-rnd'],
+          order)
+    check('an OPERATING_RISK_ACTIVE row is actionable, not parked',
+          'D-risk' in order, order)
+
+
+def test_J_an_undeclared_tier_is_refused():
+    print('\nJ. tier is declared, never inferred')
+    ok, d = raised(L.LedgerError,
+                   lambda: L.add_defect(**_row(id='Z-1', scheduler_tier=None)),
+                   'Declare it')
+    check('a row with no tier is refused', ok, d)
+    ok2, d2 = raised(L.LedgerError,
+                     lambda: L.add_defect(**_row(id='Z-2',
+                                                 scheduler_tier='T9_VIBES')),
+                     'not in')
+    check('and so is an invented tier', ok2, d2)
+
+
+def test_K_breadth_is_reported_not_just_count():
+    print('\nK. twenty-one tasks in one subsystem is not room to work')
+    narrow = [_row(id=f'D-{i}', subsystem='dfs') for i in range(5)]
+    s = L.autonomy_state(narrow, apps=[])
+    check('five tasks in one subsystem report one workstream',
+          s['independent_workstreams'] == 1, s['workstreams'])
+    check('while the count still reads five', s['valid_next_actions'] == 5)
+    wide = [_row(id=f'D-{i}', subsystem=f'sub{i}') for i in range(5)]
+    check('five subsystems report five',
+          L.autonomy_state(wide, apps=[])['independent_workstreams'] == 5)
+
+
+def test_L_the_live_state_has_breadth_and_named_risk():
+    print('\nL. the real files')
+    s = L.autonomy_state()
+    check('more than one independent workstream',
+          s['independent_workstreams'] > 1, s['independent_workstreams'])
+    check('operating risks are named', len(s['operating_risk_active']) >= 1,
+          s['operating_risk_active'])
+    check('owner_blocked_branches matches the open approvals',
+          s['owner_blocked_branches'] == len(s['open_approvals']),
+          (s['owner_blocked_branches'], s['open_approvals']))
+    check('the next action is the highest tier present',
+          s['next_tier'] == L.actionable()[0]['scheduler_tier'])

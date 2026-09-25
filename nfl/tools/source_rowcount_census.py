@@ -26,6 +26,11 @@ TWO SIGNATURES
 
 A static file legitimately produces one count forever, so a hit is a question,
 not a defect. The tool prints what it measured and leaves the reading to a human.
+
+LIMITS
+  This is a source-text (or record-level) heuristic, not a behavioural
+  measurement. Every row it emits is a question for a human, the counts are a
+  floor rather than a survey, and it does not know what is deliberate.
 """
 from __future__ import annotations
 

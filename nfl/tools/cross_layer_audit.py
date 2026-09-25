@@ -32,6 +32,11 @@ WHAT IT DOES NOT DO
 
 It does not judge severity and does not know what is deliberate. A row here is
 a question that must be answered in writing, not a bug.
+
+LIMITS
+  This is a source-text (or record-level) heuristic, not a behavioural
+  measurement. Every row it emits is a question for a human, the counts are a
+  floor rather than a survey, and it does not know what is deliberate.
 """
 from __future__ import annotations
 
