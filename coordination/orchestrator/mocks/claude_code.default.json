@@ -1,0 +1,11 @@
+{
+ "name": "claude_code.default",
+ "_comment": "What the Claude Code Action would have returned, in the shape the live path parses. Used only when the effective mode is MOCK. A missing fixture is a refusal, never an empty success.",
+ "worker": "ANTHROPIC",
+ "commands_run": ["python3.12 nfl/tests/run_suite.py --only test_orchestrator"],
+ "tests": [{"name": "test_orchestrator", "status": "PASSED", "checks": 274}],
+ "acceptance_criteria_results": [{"criterion": "transport proven end to end in MOCK", "met": true}],
+ "refusals": [],
+ "governance_checks": {"executed_by": "MOCK_WORKER", "model_called": false, "protected_paths_touched": false},
+ "result_status": "COMPLETED"
+}
