@@ -45,8 +45,10 @@ import ast
 import glob
 import importlib.util
 import io
+import json
 import os
 import sys
+import time
 import traceback
 from contextlib import redirect_stdout
 
@@ -153,6 +155,38 @@ def blocked_tally(mod):
     return 0
 
 
+#: WHERE A KILLED RUN LEAVES ITS EVIDENCE.
+#:
+#: Every print in this runner used to happen after the last module finished.
+#: Measured 2026-09-25: nine minutes under `python3.12 -u`, killed at the
+#: timeout, ZERO BYTES of output. Not a buffering problem -- the process simply
+#: had nothing to say yet. A suite that reports only on completion cannot be
+#: used to classify anything inside a working session, and on 2026-09-24 that
+#: made every SUCCESS_TESTED claim in an audit rest on a test file existing
+#: rather than on a green run.
+#:
+#: So progress is emitted per module, as it happens, to stdout AND appended to
+#: this file. A run that dies half way now leaves a readable record of what it
+#: got through and what it was inside when it stopped.
+PROGRESS_PATH = os.environ.get(
+    'NFL_SUITE_PROGRESS', os.path.join(ROOT, 'nfl/tests/_suite_progress.jsonl'))
+
+_T0 = time.time()
+
+
+def _emit(rec: dict, echo: str = '') -> None:
+    """Append one progress record and flush. Never fails the run."""
+    rec = {'t': round(time.time() - _T0, 2), **rec}
+    try:
+        with open(PROGRESS_PATH, 'a') as fh:
+            fh.write(json.dumps(rec, sort_keys=True) + '\n')
+    except OSError:
+        pass
+    if echo:
+        print(echo, flush=True)
+
+
+
 def main(argv=None):
     argv = argv if argv is not None else sys.argv[1:]
     verbose = '-v' in argv
@@ -175,7 +209,15 @@ def main(argv=None):
     n_fn_zero = n_fn_blocked = n_unrecognised_tally = 0
     zero_fns, blocked_fns = [], []
     problems = []
-    for f in files:
+    try:
+        open(PROGRESS_PATH, 'w').close()
+    except OSError:
+        pass
+    _emit({'phase': 'suite_start', 'n_modules': len(files)},
+          f'suite: {len(files)} module(s)')
+    for i, f in enumerate(files, 1):
+        _emit({'phase': 'module_start', 'i': i, 'module': f},
+              f'[{i}/{len(files)}] {f}')
         name = 't_' + f.replace('/', '_')[:-3]
         spec = importlib.util.spec_from_file_location(name, f)
         mod = importlib.util.module_from_spec(spec)
@@ -186,10 +228,31 @@ def main(argv=None):
         except Exception:                                        # noqa: BLE001
             n_raise += 1
             problems.append(f'IMPORT {f}\n{traceback.format_exc(limit=3)}')
+            _emit({'phase': 'module_done', 'i': i, 'module': f,
+                   'result': 'IMPORT_ERROR'},
+                  f'[{i}/{len(files)}] {f}  IMPORT ERROR')
             continue
         fns = [n for n in dir(mod)
                if n.startswith('test_') and callable(getattr(mod, n))]
         before = tally(mod)
+        # A MODULE WITH NEITHER A TEST FUNCTION NOR A RECOGNISED COUNTER USED
+        # TO ESCAPE BOTH GUARDS. Found 2026-09-25 by writing one.
+        #
+        # `UNRECOGNISED_TALLY` below is guarded by `if fns and ...`, so a module
+        # exposing no `test_*` name never reaches it. `TEST_MODULE_NOT_EXECUTED`
+        # used to live further down, AFTER an `if after is None: continue`, so a
+        # module with no counter never reached that either. Two modules holding
+        # 49 checks between them sat in exactly that gap and the suite printed
+        # `0 fn, NO TALLY` and passed. The detection is hoisted here, before any
+        # early exit, because a guard that a defect can walk around is not one.
+        if not fns and _has_checks(f):
+            n_not_executed.append(f)
+            problems.append(
+                f'TEST_MODULE_NOT_EXECUTED {f}: the module contains check '
+                f'calls and exposes no test_* function, so this runner '
+                f'executed NONE of them. Direct `python3.12 {f}` is not the '
+                f'authoritative execution path and its exit code is not a '
+                f'test result.')
         # AN UNRECOGNISED COUNTER IS A REFUSAL, NOT A SKIP.
         #
         # `tally` returns None when a module's counters are not one of the
@@ -248,9 +311,9 @@ def main(argv=None):
         if after is None:
             # A module with no tally is judged only on exceptions; say so
             # rather than implying its checks were read.
-            if verbose:
-                print(f'  {f}: {len(fns)} function(s), NO TALLY (exceptions '
-                      f'only)')
+            _emit({'phase': 'module_done', 'i': i, 'module': f,
+                   'result': 'NO_TALLY', 'n_fn': len(fns)},
+                  f'[{i}/{len(files)}] {f}  {len(fns)} fn, NO TALLY')
             continue
         ok, bad = after
         if before is not None:
@@ -265,25 +328,14 @@ def main(argv=None):
             problems.append(f'VACUOUS {f}: {len(fns)} test function(s) ran '
                             f'and recorded ZERO checks. A module that '
                             f'measured nothing has not passed.')
-        elif not fns and _has_checks(f):
-            # TEST_MODULE_NOT_EXECUTED. OWNER RULING 2026-09-23.
-            #
-            # The module contains check calls and exposes NO `test_*`
-            # function, so this runner discovers nothing to call and executes
-            # NONE of them. Three modules sat in that state until
-            # 2026-09-23; one of them was failing, and the suite had never
-            # seen it. Silence from a module that plainly has assertions is
-            # the false-green class inside the measurement system, so it is
-            # named and it fails the suite.
-            n_not_executed.append(f)
-            problems.append(
-                f'TEST_MODULE_NOT_EXECUTED {f}: the module contains check '
-                f'calls and exposes no test_* function, so this runner '
-                f'executed NONE of them. Direct `python3.12 {f}` is not the '
-                f'authoritative execution path and its exit code is not a '
-                f'test result.')
-        if verbose:
-            print(f'  {f}: {len(fns)} function(s), {ok} check(s), {bad} failing')
+        # TEST_MODULE_NOT_EXECUTED (owner ruling 2026-09-23) is detected
+        # above, before any early exit, so it is not repeated here.
+        _emit({'phase': 'module_done', 'i': i, 'module': f,
+               'result': 'FAIL' if bad else 'OK', 'n_fn': len(fns),
+               'checks_ok': ok, 'checks_failing': bad},
+              f'[{i}/{len(files)}] {f}  {len(fns)} fn, {ok} check(s), '
+              f'{bad} failing')
+    _emit({'phase': 'suite_scan_done', 'n_modules': len(files)})
     if zero_fns:
         problems.append(
             f'ZERO-CHECK FUNCTIONS: {len(zero_fns)} test function(s) ran and '
