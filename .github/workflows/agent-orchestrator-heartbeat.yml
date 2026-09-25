@@ -1,0 +1,99 @@
+name: agent orchestrator heartbeat
+
+# THE PIECE THAT WAS MISSING, AND WHY THE LOOP ALWAYS "WORKED THEN STOPPED".
+#
+# The orchestrator advances on `push` to coordination paths, `workflow_dispatch`
+# and `repository_dispatch`. That is a chain, not a loop: every link is started
+# by the previous one. Break any link -- a failed pre-flight, a 403 on the
+# continuation POST, a spent budget, a runner dying mid-pass -- and NOTHING ever
+# starts it again. There is no timer anywhere in this repository that re-enters
+# the chain.
+#
+# Measured 2026-09-25: seven orchestrator runs exist, all on 2026-09-23, the
+# last two failed, and there has been silence since 18:09 that day. The queue
+# meanwhile holds 9 AUTHORIZED tasks and no ACTIVE lock. The system was not
+# refusing to work; nothing was asking it to.
+#
+# THIS FILE MUST LIVE ON THE DEFAULT BRANCH.
+#
+# GitHub runs `schedule:` only from the default branch. A heartbeat committed to
+# the automation branch would never fire, which is the same lesson the
+# continuation receiver already learned -- repository_dispatch is delivered to
+# the default branch too. So this is deliberately a THIN file with no imports
+# and no dependency on the 599 modules `main` is missing: it reads two fields
+# and asks for a pass. Everything it might otherwise check is re-read by the
+# orchestrator from the automation branch, which is where the system lives.
+#
+# IT CANNOT ARM ANYTHING. The policy read below is advisory: it exists so a
+# disarmed system does not emit a dispatch every hour for no reason. Authority
+# still comes from AUTOMATION_POLICY.json on the automation branch, re-derived
+# by the dispatcher after checkout and again in-process before any provider
+# call. A heartbeat that could grant authority would be a fourth place the
+# mode is decided, and there are already three.
+
+on:
+  schedule:
+    # Hourly, on a jittered minute. The orchestrator's own budget
+    # (max_runs_per_hour, max_continuations_per_hour) is what bounds cost; this
+    # only guarantees the chain is re-entered after it breaks.
+    - cron: '37 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  # Needed to POST a repository_dispatch. Without it the POST is a 403 and this
+  # heartbeat fails exactly the way the continuation it exists to replace did.
+  actions: write
+
+concurrency:
+  group: agent-orchestrator-heartbeat
+  cancel-in-progress: true
+
+env:
+  AUTOMATION_BRANCH: claude/nfl-greenfield-architecture-stsxmk
+
+jobs:
+  heartbeat:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Read the policy from the automation branch
+        id: policy
+        run: |
+          set -euo pipefail
+          # Fetch only the one file, from the branch that owns it. This job
+          # never checks out the automation branch: it has no business running
+          # its code, and a shallow read cannot be confused for a pass.
+          raw="https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/${AUTOMATION_BRANCH}/coordination/AUTOMATION_POLICY.json"
+          if ! curl -fsSL -H "Authorization: Bearer ${{ github.token }}" \
+                 "$raw" -o /tmp/policy.json; then
+            echo "POLICY_UNREADABLE: could not read $raw"
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          enabled=$(python3 -c "import json;print(str(json.load(open('/tmp/policy.json')).get('autonomous_operation_enabled', False)).lower())")
+          mode=$(python3 -c "import json;print(json.load(open('/tmp/policy.json')).get('execution_mode','MOCK'))")
+          echo "enabled=$enabled" >> "$GITHUB_OUTPUT"
+          echo "mode=$mode"       >> "$GITHUB_OUTPUT"
+          echo "policy: enabled=$enabled mode=$mode"
+
+      - name: Re-enter the chain
+        if: steps.policy.outputs.enabled == 'true'
+        run: |
+          set -euo pipefail
+          code=$(curl -sS -o /tmp/resp.json -w '%{http_code}' -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ github.token }}" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
+            -d "{\"event_type\":\"agent-orchestrator-continue\",\"client_payload\":{\"branch\":\"${AUTOMATION_BRANCH}\",\"reason\":\"heartbeat\",\"chain_depth\":0}}")
+          if [ "$code" != "204" ]; then
+            echo "DISPATCH_FAILED http $code"; cat /tmp/resp.json; exit 1
+          fi
+          echo "dispatched: the next pass is requested, not performed here"
+
+      - name: Say why nothing was dispatched
+        if: steps.policy.outputs.enabled != 'true'
+        run: |
+          echo "AUTONOMY_DISARMED: autonomous_operation_enabled is not true on"
+          echo "$AUTOMATION_BRANCH, so no pass was requested. This is the"
+          echo "documented default and not a failure. Arming is one commit to"
+          echo "coordination/AUTOMATION_POLICY.json."
