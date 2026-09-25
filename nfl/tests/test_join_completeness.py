@@ -177,3 +177,28 @@ def test_H_20260924_regression():
     dk = set(man['layers']['dk_scoring']['row_ids'])
     check('kickers are a SEPARATE universe, which is why the join is mandatory',
           not (kick & dk), sorted(kick & dk))
+
+
+def test_I_abbreviated_names_are_refused_not_resolved():
+    print('\nI. the B. Robinson class')
+    check('a bare initial is recognised as abbreviated',
+          PU.abbreviated('B. Robinson') is True)
+    check('a full first name is not',
+          PU.abbreviated('Bijan Robinson') is False)
+    supply = {'ATL': {'bijan robinson', 'brian robinson', 'drake london'}}
+    hits = PU.ambiguous_identities(
+        [{'name': 'B. Robinson', 'team': 'ATL'}], supply)
+    check('an abbreviation matching two rostered players is flagged',
+          len(hits) == 1, hits)
+    check('and names BOTH candidates rather than choosing',
+          'bijan robinson' in hits[0] and 'brian robinson' in hits[0], hits)
+    clean = PU.ambiguous_identities(
+        [{'name': 'D. London', 'team': 'ATL'}], supply)
+    check('an abbreviation matching exactly one is not flagged',
+          clean == [], clean)
+    r = CC.join_report('j', ['a'], ['a'], ['a'], ['a'],
+                       unmatched_identities=['B. Robinson -> two men'])
+    ok, d = raised(CC.JoinIncomplete,
+                   lambda: CC.assert_complete(r, 'dfs.showdown.selector'),
+                   'identity unresolved')
+    check('and it blocks a strict consumer at full coverage', ok, d)

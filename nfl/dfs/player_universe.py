@@ -85,6 +85,43 @@ def modelled(manifest: dict, npz, name_by_gsis: dict) -> dict:
     return sup
 
 
+#: A DK name whose first token is a bare initial, with or without a dot.
+_ABBREV = re.compile(r'^[a-z]\.?$')
+
+
+def abbreviated(name: str) -> bool:
+    """True when the demand side gave us an initial instead of a first name."""
+    parts = norm(name).split()
+    return len(parts) >= 2 and bool(_ABBREV.match(parts[0]))
+
+
+def ambiguous_identities(rows, supply_names_by_team) -> list:
+    """Abbreviated DK names that more than one rostered player could be.
+
+    The owner ruled on 2026-09-24 that identity is never inferred from salary
+    arithmetic when a source can name the player. This is the detector for the
+    case that ruling was about: Atlanta rosters Bijan Robinson and Brian
+    Robinson Jr., and a contest export reading `B. Robinson` resolves to both.
+    Measured on the 2026-09-24 pool, that is the ONLY such pair in 53 rows --
+    which is exactly why nothing caught it by accident.
+
+    A hit is returned for refusal, never resolved. Picking the likelier man is
+    how the wrong player enters a lineup.
+    """
+    out = []
+    for r in rows:
+        if not abbreviated(r['name']):
+            continue
+        surname = norm(r['name']).split()[-1]
+        initial = norm(r['name']).split()[0][0]
+        cands = sorted(
+            n for n in supply_names_by_team.get(r['team'], ())
+            if n.split()[-1] == surname and n.split()[0][0] == initial)
+        if len(cands) > 1:
+            out.append(f"{r['name']} [{r['team']}] -> {', '.join(cands)}")
+    return out
+
+
 def priced(salary_csv: Path) -> list:
     """The contest's own demand side, read from the DK export."""
     rows = []
@@ -128,6 +165,13 @@ def build(manifest_path, npz_path, salary_csv, name_by_gsis, consumer,
             continue
         expected.add(k)
 
+    by_team = {}
+    for k, r in demand.items():
+        if k in sup:
+            by_team.setdefault(r['team'], set()).add(k)
+    unmatched = ambiguous_identities(
+        [demand[k] for k in sorted(expected)], by_team)
+
     present, universe = set(), []
     for k in sorted(expected):
         m = sup.get(k)
@@ -141,7 +185,7 @@ def build(manifest_path, npz_path, salary_csv, name_by_gsis, consumer,
         join_id='dfs.player_universe',
         left_name='dk_priced_contest', right_name='modelled_dk_layers',
         expected_keys=expected, left_keys=set(demand), right_keys=set(sup),
-        present_keys=present)
+        present_keys=present, unmatched_identities=unmatched)
     report['layers_joined'] = dk_bearing_layers(manifest)
     report['spec_version_universe'] = SPEC_VERSION
     return universe, CC.assert_complete(report, consumer)
