@@ -373,3 +373,128 @@ def test_R_the_live_state_under_the_new_policy():
           isinstance(s['waiting_external'], list))
     check('and breadth is still reported',
           s['independent_workstreams'] > 1, s['independent_workstreams'])
+
+
+# ---------------------------------------------------------------------------
+# amend_defect: withdrawing a claim without destroying the evidence it was made
+#
+# This exists because DEF-047 was recorded FIX_DEPLOYED when nothing was
+# deployed -- the board pin sat on a branch no scheduled run reads. A status is
+# a claim, and a claim that turns out to be false has to be withdrawable. But
+# quietly rewriting the row would erase the fact it was ever overclaimed, which
+# is the failure the owner named directly: do not fix a defect in a way that
+# destroys the ability to prove it existed.
+# ---------------------------------------------------------------------------
+
+import contextlib                                              # noqa: E402
+import tempfile                                                # noqa: E402
+
+
+@contextlib.contextmanager
+def _isolated_log(rows=()):
+    """Point the ledger at a scratch file. These tests WRITE."""
+    original = L.DEFECT_LOG
+    with tempfile.TemporaryDirectory() as d:
+        L.DEFECT_LOG = pathlib.Path(d) / 'DEFECT_LOG.jsonl'
+        L.DEFECT_LOG.write_text(''.join(L.json.dumps(r) + '\n' for r in rows))
+        try:
+            yield
+        finally:
+            L.DEFECT_LOG = original
+
+
+def _defect_row(**kw):
+    base = {f: '' for f in L.DEFECT_FIELDS}
+    base.update(id='DEF-TEST', date_discovered='2026-09-25', subsystem='s',
+                severity='HIGH', defect='d', reproduction='r', affected='a',
+                impact='i', next_action='n', owner_approval_needed=False,
+                blocked_by='', status=L.FIX_DEPLOYED, fix_commit='',
+                verification_test='t', prospective_validation_needed=False,
+                scheduler_tier='T2_OPERATING_RISK')
+    base.update(kw)
+    return base
+
+
+def test_amend_defect_demotes_and_keeps_the_history():
+    with _isolated_log([_defect_row()]):
+        r = L.amend_defect('DEF-TEST', reason='not actually deployed',
+                           status=L.FIX_IMPLEMENTED)
+        check('status demoted', r['status'] == L.FIX_IMPLEMENTED, r['status'])
+        check('one amendment recorded', len(r.get('amendments', [])) == 1)
+        a = r['amendments'][0]
+        check('amendment keeps the prior value',
+              a['before']['status'] == L.FIX_DEPLOYED, a['before'])
+        check('amendment keeps the reason',
+              'not actually deployed' in a['reason'])
+        check('amendment is timestamped', a['at'].endswith('Z'), a['at'])
+        check('the demotion survives a reread',
+              [d for d in L.defects() if d['id'] == 'DEF-TEST'
+               ][0]['status'] == L.FIX_IMPLEMENTED)
+
+
+def test_amend_defect_refuses_an_unreasoned_change():
+    """A status that changes with no recorded cause is indistinguishable from
+    one that was never checked."""
+    with _isolated_log([_defect_row()]):
+        for bad in ('', '   ', None):
+            ok, why = raised(L.LedgerError,
+                             lambda b=bad: L.amend_defect('DEF-TEST', reason=b,
+                                                          status=L.OPEN),
+                             'reason')
+            check(f'refuses reason={bad!r}', ok, why)
+
+
+def test_amend_defect_cannot_reach_verified():
+    """VERIFIED demands a commit, a test and the execution lineage. If an
+    amendment could grant it, it would be a way around close()."""
+    with _isolated_log([_defect_row()]):
+        ok, why = raised(L.LedgerError,
+                         lambda: L.amend_defect('DEF-TEST', reason='r',
+                                                status=L.VERIFIED),
+                         'close()')
+        check('refuses VERIFIED by amendment', ok, why)
+
+
+def test_amend_defect_refuses_a_lifecycle_jump():
+    """Each step of IMPLEMENTED -> DEPLOYED -> EXECUTED needs its own evidence.
+    Skipping one is how a fix that never shipped gets called executed."""
+    with _isolated_log([_defect_row(status=L.OPEN)]):
+        ok, why = raised(L.LedgerError,
+                         lambda: L.amend_defect('DEF-TEST', reason='r',
+                                                status=L.FIX_EXECUTED),
+                         'cannot jump')
+        check('refuses OPEN -> FIX_EXECUTED', ok, why)
+    with _isolated_log([_defect_row(status=L.FIX_IMPLEMENTED)]):
+        r = L.amend_defect('DEF-TEST', reason='a run checked out the pinned ref',
+                           status=L.FIX_DEPLOYED)
+        check('allows the single adjacent step', r['status'] == L.FIX_DEPLOYED)
+
+
+def test_amend_defect_refuses_unknown_fields_and_unknown_ids():
+    with _isolated_log([_defect_row()]):
+        ok, why = raised(L.LedgerError,
+                         lambda: L.amend_defect('DEF-TEST', reason='r',
+                                                stauts=L.OPEN), 'unknown field')
+        check('a misspelled field is refused, not silently added', ok, why)
+        ok, why = raised(L.LedgerError,
+                         lambda: L.amend_defect('DEF-NOPE', reason='r',
+                                                status=L.OPEN), 'no such defect')
+        check('an unknown id is refused', ok, why)
+
+
+def test_amend_defect_does_not_disturb_its_neighbours():
+    """The whole file is rewritten, so prove the other rows come back intact."""
+    rows = [_defect_row(id='DEF-A', status=L.OPEN),
+            _defect_row(id='DEF-B', status=L.FIX_DEPLOYED, defect='keep me'),
+            _defect_row(id='DEF-C', status=L.IN_PROGRESS)]
+    with _isolated_log(rows):
+        L.amend_defect('DEF-B', reason='r', status=L.FIX_IMPLEMENTED)
+        after = {d['id']: d for d in L.defects()}
+        check('no row lost', sorted(after) == ['DEF-A', 'DEF-B', 'DEF-C'],
+              sorted(after))
+        check('DEF-A untouched', after['DEF-A']['status'] == L.OPEN)
+        check('DEF-C untouched', after['DEF-C']['status'] == L.IN_PROGRESS)
+        check('amended row keeps its other fields',
+              after['DEF-B']['defect'] == 'keep me')
+        check('neighbours gain no amendment history',
+              'amendments' not in after['DEF-A'])
