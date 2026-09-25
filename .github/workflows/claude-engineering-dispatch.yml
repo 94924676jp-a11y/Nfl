@@ -139,6 +139,20 @@ jobs:
       # THE WORKER. Reached only because every check above passed.
       - name: Claude Code — execute the authorized task
         id: claude
+        # THE SPENDING GATE, AND IT WAS MISSING.
+        #
+        # The pre-flight already resolved the effective mode -- policy is the
+        # ceiling, so enabled=true with execution_mode=MOCK gives MOCK even
+        # though AUTONOMY_MODE above says LIVE -- and wrote it to
+        # `effective_mode`. Nothing read it. This step had no `if:`, so the
+        # paid Action ran on every dispatched task regardless of the mode, and
+        # MOCK restrained the one step that costs money not at all. A value
+        # computed correctly and then consumed by nobody (DEF-058).
+        #
+        # Read the output, do not recompute the mode here. A second place
+        # deciding it is a second place to get it wrong, and this one runs
+        # from the default branch where no worker can be blamed for it.
+        if: steps.preflight.outputs.effective_mode == 'LIVE'
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
@@ -178,13 +192,40 @@ jobs:
       # The Action's own conclusion is not the verdict. A run can succeed and
       # still leave a malformed return or a diff touching a forbidden path,
       # and neither may advance a task.
+      # ------------------------------------------------------------------
+      # THE WORKER THAT COSTS NOTHING. Runs when, and only when, the paid one
+      # did not. It writes a real working-tree change and a schema-valid
+      # structured return, so everything downstream of it stays real: the real
+      # diff, the real protected-path enforcement, the real commit. A mock
+      # that also stubbed ingest would prove nothing about what is being
+      # proven.
+      #
+      # It refuses to run if the effective mode is LIVE, rather than quietly
+      # standing in for the Action -- substituting the cheap thing for the
+      # expensive one would hide a gating bug instead of exposing it.
+      - name: MOCK worker — execute without calling a model
+        id: mockworker
+        if: steps.preflight.outputs.effective_mode != 'LIVE'
+        env:
+          EFFECTIVE_MODE: ${{ steps.preflight.outputs.effective_mode }}
+        run: |
+          set -euo pipefail
+          python3.12 coordination/orchestrator/mock_worker.py \
+            --task-id "${{ github.event.inputs.task_id }}" \
+            --head-before "${{ steps.before.outputs.sha }}" \
+            --mode "${EFFECTIVE_MODE:-MOCK}"
+
       - name: Ingest, check and commit the governed return
         if: always() && steps.preflight.outcome == 'success'
         env:
           GITHUB_RUN_ID: ${{ github.run_id }}
-          CLAUDE_CONCLUSION: ${{ steps.claude.outputs.conclusion }}
-          CLAUDE_SESSION_ID: ${{ steps.claude.outputs.session_id }}
-          CLAUDE_STRUCTURED: ${{ steps.claude.outputs.structured_output }}
+          # Exactly one of the two worker steps ran; the other's outputs are
+          # empty, and an empty string is falsy in a GitHub expression. Ingest
+          # does not care which produced the return -- it checks the diff and
+          # the structured output either way, which is the point.
+          CLAUDE_CONCLUSION: ${{ steps.claude.outputs.conclusion || steps.mockworker.outputs.conclusion }}
+          CLAUDE_SESSION_ID: ${{ steps.claude.outputs.session_id || steps.mockworker.outputs.session_id }}
+          CLAUDE_STRUCTURED: ${{ steps.claude.outputs.structured_output || steps.mockworker.outputs.structured_output }}
           HEAD_BEFORE: ${{ steps.before.outputs.sha }}
           TASK_ID: ${{ github.event.inputs.task_id }}
         run: |
