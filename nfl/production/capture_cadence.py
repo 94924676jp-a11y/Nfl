@@ -83,8 +83,76 @@ ASYMMETRY_H = 12.0
 GLOBAL_FRACTION = 0.8
 
 
+#: The branch captures actually write to. Measured 2026-09-25: the repository
+#: carries three lineages of this manifest -- `capture-prod` (live),
+#: `main` (4,311 rows, last capture 2026-09-15T17:05Z) and the development
+#: branch (6,757 rows). They are not versions of one file; they diverge in both
+#: directions.
+CAPTURE_BRANCH = 'capture-prod'
+
+LINEAGE_NOT_ESTABLISHED = 'LINEAGE_NOT_ESTABLISHED'
+
+
 class CadenceError(RuntimeError):
     """A slate was about to be forecast on a source that stopped."""
+
+
+class LineageError(RuntimeError):
+    """Staleness was about to be measured against the wrong copy of the file."""
+
+
+def current_branch(repo: Path = _REPO) -> str | None:
+    """The checked-out branch, or None when it cannot be determined."""
+    head = Path(repo) / '.git' / 'HEAD'
+    try:
+        txt = head.read_text().strip()
+    except OSError:
+        return None
+    if txt.startswith('ref: refs/heads/'):
+        return txt.split('refs/heads/', 1)[1]
+    return None
+
+
+def lineage_ok(manifest: Path = MANIFEST, repo: Path = _REPO) -> tuple:
+    """(is_live_lineage, why).
+
+    THE MISTAKE THIS EXISTS TO PREVENT, MADE BY THIS MODULE ON THE DAY IT WAS
+    WRITTEN.
+
+    `assess()` read the manifest in the working copy and reported
+    GLOBAL_CAPTURE_STALL: every source 25-31 h behind a half-hourly cadence, so
+    the capture runner must have stopped. The runner had not stopped. `NFL
+    vintage capture` had succeeded eleven minutes earlier and was running every
+    thirty minutes. What was stale was THE CHECKOUT -- captures commit to
+    `capture-prod`, and this branch had never pulled them.
+
+    A liveness check that reads a git working copy measures the working copy.
+    That is the same defect this whole audit is about: a local artifact read as
+    if it were the world. So the lineage is established first, and when it
+    cannot be, staleness is reported as NOT ESTABLISHED rather than as an
+    outage.
+    """
+    br = current_branch(repo)
+    if str(Path(manifest).resolve()) != str((Path(repo) / 'nfl'
+                                             / 'vintage_manifest.jsonl')
+                                            .resolve()):
+        return True, 'an explicit manifest path was supplied'
+    if br is None:
+        return False, 'the checked-out branch could not be determined'
+    if br != CAPTURE_BRANCH:
+        return False, (f'the working copy is on {br!r}, and captures are '
+                       f'written to {CAPTURE_BRANCH!r}, so this file\'s age '
+                       f'is the age of this checkout and not of the system')
+    return True, f'on {CAPTURE_BRANCH}'
+
+
+def assert_live_lineage(manifest: Path = MANIFEST, repo: Path = _REPO) -> None:
+    ok, why = lineage_ok(manifest, repo)
+    if not ok:
+        raise LineageError(
+            f'{LINEAGE_NOT_ESTABLISHED}: {why}. Read the manifest from '
+            f'{CAPTURE_BRANCH} (git show {CAPTURE_BRANCH}:nfl/'
+            f'vintage_manifest.jsonl) and pass that path explicitly.')
 
 
 def _ts(capture_id: str):
@@ -122,8 +190,9 @@ def observations(manifest: Path = MANIFEST) -> dict:
     return out
 
 
-def assess(manifest: Path = MANIFEST, now=None) -> dict:
+def assess(manifest: Path = MANIFEST, now=None, repo: Path = _REPO) -> dict:
     now = now or dt.datetime.now(dt.timezone.utc)
+    live, why = lineage_ok(manifest, repo)
     obs = observations(manifest)
     rows = {}
     for src, rec in sorted(obs.items()):
@@ -167,9 +236,18 @@ def assess(manifest: Path = MANIFEST, now=None) -> dict:
         if r['n_row_bearing'] == 0 and NEVER_SUCCEEDED not in r['verdicts']:
             r['verdicts'].append(NEVER_SUCCEEDED)
     global_stall = bool(polled) and stale >= GLOBAL_FRACTION * len(polled)
+    if not live:
+        # Age against the wrong copy of the file is not evidence of an outage.
+        for r in rows.values():
+            r['verdicts'] = [LINEAGE_NOT_ESTABLISHED] + [
+                v for v in r['verdicts']
+                if v in (NEVER_SUCCEEDED, NOT_ESTABLISHED)]
+        global_stall = None
     return {
         'spec_version': SPEC_VERSION,
         'assessed_utc': now.isoformat(),
+        'lineage_live': live,
+        'lineage_note': why,
         'max_age_h': MAX_AGE_H,
         'peer_median_age_h': peer_median,
         'global_stall': global_stall,
@@ -190,6 +268,11 @@ def assert_ready_for_slate(required, report=None, now=None) -> dict:
     never refuse.
     """
     rep = report or assess(now=now)
+    if rep.get('lineage_live') is False:
+        raise LineageError(
+            f"{LINEAGE_NOT_ESTABLISHED}: {rep.get('lineage_note')}. Refusing "
+            f"to clear or block a slate on a manifest whose lineage is "
+            f"unknown.")
     bad = {}
     for src in required:
         r = rep['sources'].get(src)
