@@ -17,6 +17,13 @@ PATH = os.environ.get('NFL_SUITE_PROGRESS',
 
 
 def runs(path=PATH) -> dict:
+    """run_id -> records, in FILE ORDER.
+
+    Ordering by key was wrong: a stale pre-run-id run groups under '?', which
+    sorts after a numeric run id, so the reader reported the dead run as the
+    current one. Python dicts preserve insertion order, so file order is the
+    honest answer to "which run is latest".
+    """
     out = {}
     p = Path(path)
     if not p.exists():
@@ -56,7 +63,7 @@ def main() -> int:
     if not rs:
         print(f'no progress recorded at {PATH}')
         return 0
-    keys = sorted(rs) if '--all' in sys.argv else [sorted(rs)[-1]]
+    keys = list(rs) if '--all' in sys.argv else [list(rs)[-1]]
     for k in keys:
         print(f'run {k}')
         print(summarise(rs[k]))
