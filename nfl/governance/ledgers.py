@@ -375,6 +375,15 @@ def autonomy_state(rows=None, apps=None) -> dict:
                            'dependency')
         if not waiting and not external:
             reasons.append('no valid next action remains')
+    # A ROW PARKED ON A DECIDED APPROVAL IS AUTHORIZED WORK IN HIDING.
+    # Found 2026-09-25 by a test: APPROVAL-002 was approved and DEF-040 stayed
+    # WAITING_OWNER, so the scheduler could not see work the owner had already
+    # cleared. That is the exact failure this whole separation exists to
+    # prevent, occurring inside it.
+    decided = {a['id'] for a in apps if a['status'] != RAISED}
+    stale_blocks = sorted(d['id'] for d in rows
+                          if d['status'] == WAITING_OWNER
+                          and d.get('blocked_by') in decided)
     ws = workstreams(rows)
     risks = [d['id'] for d in rows if d['status'] == OPERATING_RISK_ACTIVE]
     state = {
@@ -389,6 +398,7 @@ def autonomy_state(rows=None, apps=None) -> dict:
                                        if d['status'] == WAITING_OWNER
                                        and d.get('blocked_by')}),
         'operating_risk_active': risks,
+        'stale_owner_blocks': stale_blocks,
         'next_tier': (act[0]['scheduler_tier'] if act else None),
         'waiting_owner_count': len(waiting),
         'external_blocked_count': len(external),

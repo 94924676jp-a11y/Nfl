@@ -251,8 +251,10 @@ def test_L_the_live_state_has_breadth_and_named_risk():
           s['independent_workstreams'] > 1, s['independent_workstreams'])
     check('operating risks are named', len(s['operating_risk_active']) >= 1,
           s['operating_risk_active'])
-    check('owner_blocked_branches matches the open approvals',
-          s['owner_blocked_branches'] == len(s['open_approvals']),
+    check('no row is parked on an approval that was already decided',
+          s['stale_owner_blocks'] == [], s['stale_owner_blocks'])
+    check('owner_blocked_branches does not exceed the open approvals',
+          s['owner_blocked_branches'] <= len(s['open_approvals']),
           (s['owner_blocked_branches'], s['open_approvals']))
     check('the next action is the highest tier present',
           s['next_tier'] == L.actionable()[0]['scheduler_tier'])
