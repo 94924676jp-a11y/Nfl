@@ -59,6 +59,7 @@ WAITING_OWNER = 'WAITING_OWNER'
 EXTERNAL_BLOCKED = 'EXTERNAL_BLOCKED'
 VERIFIED = 'VERIFIED'
 WONT_FIX = 'WONT_FIX'
+FINDING_WITHDRAWN = 'FINDING_WITHDRAWN'
 
 #: An active operational risk. NOT owner-blocking and NOT merely open: it can
 #: impair the NEXT game-day cycle if left alone, so the scheduler must reach it
@@ -87,7 +88,25 @@ FIX_EXECUTED = 'FIX_EXECUTED'
 
 
 #: Statuses from which no further work can be pulled.
-_TERMINAL = frozenset({VERIFIED, WONT_FIX})
+#: The three ways a row ends, and they are NOT interchangeable.
+#:
+#: VERIFIED   the defect was real and the repair is proven where it runs.
+#: WONT_FIX   the defect is real and we are choosing to live with it.
+#: FINDING_WITHDRAWN  THE DEFECT WAS NOT REAL. The finding was wrong.
+#:
+#: Named FINDING_WITHDRAWN and not WITHDRAWN because WITHDRAWN already
+#: exists in this module as an APPROVAL status -- an approval the owner
+#: withdrew. Those are different events and one word for both would make
+#: the register ambiguous in precisely the place it must not be.
+#:
+#: WITHDRAWN was added because DEF-061 needed it: I recorded an external
+#: blocker -- the outcome feed cannot support kicker actuals -- after reading
+#: the wrong loader, and asked another agent for data the repository already
+#: held. Closing that as WONT_FIX would have filed a false finding as a
+#: tolerated one, and the register would then carry a defect that does not
+#: exist. A withdrawal has to be a different word, and it has to state why the
+#: original reasoning failed, which is why close() demands a reason for it.
+_TERMINAL = frozenset({VERIFIED, WONT_FIX, FINDING_WITHDRAWN})
 #: Statuses that are open work Claude may act on right now.
 _ACTIONABLE = frozenset({OPEN, IN_PROGRESS, OPERATING_RISK_ACTIVE,
                          FIX_IMPLEMENTED, FIX_DEPLOYED, FIX_EXECUTED})
@@ -274,9 +293,9 @@ def amend_defect(defect_id: str, *, reason: str, **changes) -> dict:
     raise LedgerError(f'{defect_id}: no such defect')
 
 
-def close(defect_id: str, *, fix_commit: str, verification_test: str,
+def close(defect_id: str, *, fix_commit: str = '', verification_test: str = '',
           status: str = VERIFIED, execution_lineage: str = None,
-          execution_evidence: str = None) -> dict:
+          execution_evidence: str = None, reason: str = '') -> dict:
     """Close a defect. Refuses without both a commit and a test.
 
     The owner's rule is that a row closes only after evidence proves closure.
@@ -285,6 +304,12 @@ def close(defect_id: str, *, fix_commit: str, verification_test: str,
     """
     if status not in _TERMINAL:
         raise LedgerError(f'{status!r} is not a closing status')
+    if status == FINDING_WITHDRAWN and not (reason or '').strip():
+        raise LedgerError(
+            f'{defect_id}: a withdrawal needs a reason saying why the FINDING '
+            f'was wrong. "No longer an issue" is what a real defect being '
+            f'quietly dropped looks like; a withdrawal is a claim that the '
+            f'original reasoning failed, and the next reader needs to know how.')
     if status == VERIFIED and not (fix_commit and verification_test):
         raise LedgerError(
             f'{defect_id}: VERIFIED needs both a fix_commit and a '
@@ -304,6 +329,12 @@ def close(defect_id: str, *, fix_commit: str, verification_test: str,
                      verification_test=verification_test,
                      execution_lineage=execution_lineage,
                      execution_evidence=execution_evidence)
+            if reason:
+                r.setdefault('amendments', []).append(
+                    {'at': dt.datetime.now(dt.timezone.utc)
+                        .strftime('%Y-%m-%dT%H:%M:%SZ'),
+                     'reason': reason, 'before': {'status': 'open'},
+                     'after': {'status': status}})
             _write(DEFECT_LOG, rows)
             return r
     raise LedgerError(f'{defect_id} not in the defect log')

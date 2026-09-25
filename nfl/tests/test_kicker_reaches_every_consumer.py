@@ -184,30 +184,66 @@ def test_the_projection_audit_counts_a_kicker_as_projected():
           r['by_metric_key'].get('kicking/dk_points') == 1, r['by_metric_key'])
 
 
-def test_grading_enumerates_kickers_and_refuses_to_invent_their_actuals():
-    """Enumerated, and honestly ungraded. See DEF-061."""
-    src = (_REPO / 'nfl/postgame/grade_projections.py').read_text()
-    check('grading takes the union path', 'dk_points_by_id' in src)
-    # AST, NOT TEXT. The first version of this check searched the source and
-    # matched the EXPLANATORY COMMENT in the repaired code, which quotes the
-    # old expression to say what it used to do. A test that cannot tell code
-    # from prose about code fails on correct work -- the third time that shape
-    # has appeared today.
-    import ast as _ast
-    subscripts = [n for n in _ast.walk(_ast.parse(src))
-                  if isinstance(n, _ast.Subscript)
-                  and isinstance(getattr(n, 'slice', None), _ast.Constant)
-                  and n.slice.value == 'dk_scoring']
-    check('grading no longer subscripts the dk_scoring layer in code',
-          not subscripts,
-          f'{len(subscripts)} live subscript(s) of dk_scoring remain')
-    check('a kicker is named as insufficient rather than graded wrong',
-          'KICKER_ACTUALS_INSUFFICIENT' in src)
-    actuals = (_REPO / 'nfl/postgame/actuals.py').read_text()
-    check('the gap is real: the outcome feed carries no xp_made',
-          'xp_made' not in actuals,
-          'if xp_made now exists, kicker DK points may be computable and '
-          'DEF-061 should be re-derived rather than assumed')
+def test_grading_scores_kickers_with_the_kicker_rules_and_exact_actuals():
+    """WITHDRAWN AND REPLACED: DEF-061 was my error, not a feed gap.
+
+    I asserted here that the outcome feed could not support kicker actuals,
+    having read `actuals.NUMERIC` -- a DIFFERENT loader, for the weekly stats
+    CSV. This grader reads OUTCOME.json, where every player carries a `kicking`
+    sub-dict with fg_made, fg_att, xp_made, xp_att AND fg_made_by_bucket.
+    grade_portfolios.py had been reading those three lines all along.
+
+    So the actual is exact, and the numbers check by hand: Tyler Bass 5 extra
+    points = 5.0 DK; Jake Bates one field goal from the 30s plus 4 extra points
+    = 3 + 4 = 7.0 DK.
+
+    A second identity defect surfaced underneath: neither kicker appears in
+    frozen_board_names.json, so the name index could not find them and they
+    were graded against a ZERO line while the outcome held their real lines.
+    The outcome's rows carry `player_id`, so grading now matches by identity
+    first and falls back to the name.
+    """
+    from nfl.postgame import grade_projections as GP
+    g = GP.grade()
+    check('grading runs', g.state.name == 'PASS', g.code)
+    if g.state.name != 'PASS':
+        return
+    kick = {r['player']: (r.get('stats') or {}).get('dk_points') or {}
+            for r in (g.value.get('rows') or [])
+            if ((r.get('stats') or {}).get('dk_points') or {}).get('scored_by')
+            == 'kicker_rules'}
+    check('both kickers were scored by the kicker rules', len(kick) == 2, sorted(kick))
+    check('every kicker is GRADED, not marked insufficient',
+          all(v.get('state') == 'GRADED' for v in kick.values()),
+          {k: v.get('state') for k, v in kick.items()})
+    check('no kicker grades against a zero actual',
+          all(float(v.get('actual') or 0) > 0 for v in kick.values()),
+          {k: v.get('actual') for k, v in kick.items()})
+    by_actual = sorted(float(v['actual']) for v in kick.values())
+    check('the actuals are the hand-computed 5.0 and 7.0',
+          by_actual == [5.0, 7.0], by_actual)
+    for who, v in sorted(kick.items()):
+        print(f'       {who}: actual {v["actual"]:.1f} against projection '
+              f'{v["mean"]:.2f} (error {v["signed_error"]:+.2f})')
+
+
+def test_the_outcome_really_does_carry_kicker_detail():
+    """The premise of the withdrawal, asserted so it cannot rot back."""
+    import json as _json
+    art = (_REPO / 'nfl/research/dfs/DET_BUF_2026W2/POSTGAME_OUTCOME'
+                   '/OUTCOME.json')
+    check('the outcome artifact exists', art.exists(), str(art))
+    if not art.exists():
+        return
+    players = (_json.loads(art.read_text()).get('players') or {})
+    ks = {n: v for n, v in players.items() if (v or {}).get('position') == 'K'}
+    check('it names kickers', len(ks) == 2, sorted(ks))
+    for n, v in sorted(ks.items()):
+        k = v.get('kicking') or {}
+        check(f'{n} carries xp_made', 'xp_made' in k, sorted(k))
+        check(f'{n} carries fg_made_by_bucket', 'fg_made_by_bucket' in k)
+        check(f'{n} carries a player_id for identity matching',
+              bool(v.get('player_id')), v.get('player_id'))
 
 
 def test_live_production_does_not_read_the_frozen_defect():

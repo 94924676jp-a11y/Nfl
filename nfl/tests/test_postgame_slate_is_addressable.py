@@ -65,10 +65,41 @@ def _second_slate(tmp):
     d = json.loads(art.read_text())
     d['game_id'] = '2026_09_XXX_YYY'
     d['final_score'] = {'home': 99, 'away': 3}
-    if isinstance(d.get('players'), dict) and d['players']:
-        first = sorted(d['players'])[0]
-        if isinstance(d['players'][first], dict):
-            d['players'][first]['rush_yards'] = 4242.0
+    # MUTATE A PLAYER WHO IS ON THE BOARD.
+    #
+    # sorted(players)[0] is the EMPTY-STRING key -- the outcome carries one row
+    # with no name and no position -- so the mutation landed somewhere no board
+    # row could ever join to, 4242 appeared in neither grade, and the test
+    # reported them equal. A test that mutates an unreachable row proves
+    # nothing and says it proved something, which is worse than no test.
+    #
+    # Two wrong targets were tried before this one, and both produced a test
+    # that passed while proving nothing. First `sorted(players)[0]`, which is
+    # the EMPTY-NAME row the outcome carries -- unjoinable to any board row.
+    # Then the first named player with a rush_yards figure, which turned out to
+    # be Aidan Hutchinson, a DEFENSIVE END: he is in the outcome and not on the
+    # DFS board, so no grade row exists for him either.
+    #
+    # The target has to come from the BOARD universe, which is the union of the
+    # DK-bearing layers in the slate's own manifest. Anyone outside it is
+    # invisible to the grader by design.
+    import json as _json
+    man = _json.loads(
+        (root / 'frozen' / 'sealed_player_draws_manifest.json').read_text())
+    board = set()
+    for _lay in (man.get('layers') or {}).values():
+        if (_lay or {}).get('row_axis') == 'gsis_id' \
+                and 'dk_points' in ((_lay or {}).get('metrics') or ()):
+            board |= set(_lay.get('row_ids') or [])
+    target = None
+    for nm, v in sorted((d.get('players') or {}).items()):
+        if nm and isinstance(v, dict) and v.get('player_id') in board \
+                and v.get('rush_yards') is not None:
+            target = nm
+            break
+    if target:
+        d['players'][target]['rush_yards'] = 4242.0
+        d['_mutated_player'] = target
     art.write_text(json.dumps(d))
     return root, d
 
@@ -172,3 +203,75 @@ def test_only_one_real_graded_slate_exists_and_that_is_stated():
           f'if this grew, a second REAL slate is now gradeable and the '
           f'mechanical proof below can be upgraded to an evidence one')
     print(f'       {[str(p.relative_to(_REPO)) for p in found]}')
+
+
+def test_the_grader_actually_runs_on_the_second_slate():
+    """END TO END, and the only version of this claim worth making.
+
+    Resolving paths proves the resolver. It does not prove the GRADER follows
+    them -- grade() read OC.PREGAME_FROZEN directly, so whatever outcome_path
+    it was handed, the board it graded was DET_BUF's. A grader that accepts one
+    game's RESULT while reading another game's BOARD does not fail; it reports
+    a catastrophically bad model, and the error looks like the thing we are
+    trying to measure.
+
+    So this runs the real grader against the mutated copy and asserts it
+    returns THAT slate's rows, then asserts the default slate still grades as
+    before.
+    """
+    from nfl.postgame import grade_projections as GP
+    with tempfile.TemporaryDirectory() as tmp:
+        root, mutated = _second_slate(tmp)
+        if root is None:
+            check('the real slate exists to copy', False, '')
+            return
+        sl = OC.slate(root=root)
+        got = GP.grade(outcome_path=str(sl.artifact), sl=sl)
+        check('the grader runs on the second slate',
+              got.state.name == 'PASS', f'{got.code}: {str(got.detail)[:110]}')
+        if got.state.name != 'PASS':
+            return
+        rows = got.value.get('rows') or []
+        check('it graded a non-empty set of players', bool(rows), len(rows))
+
+        base = GP.grade()
+        check('the default slate still grades', base.state.name == 'PASS',
+              f'{base.code}')
+        if base.state.name == 'PASS':
+            nb = len(base.value.get('rows') or [])
+            check('both slates graded the same player count '
+                  '(the copy has the same board)', len(rows) == nb,
+                  f'{len(rows)} vs {nb}')
+
+        # The mutation must be visible in the SECOND slate's grade and absent
+        # from the default's. Same board, different result: the actual moves,
+        # the projection does not.
+        #
+        # Compared as a MULTISET across every row rather than by looking up one
+        # player. A first version of this check indexed rows by 'gsis_id' and
+        # read 'per_stat', neither of which a row carries -- it got None from
+        # both grades and reported them equal, which is a test that would pass
+        # whether or not the grader followed the slate. The shape is
+        # {'player', 'position', 'stats', 'team'}.
+        def _actuals(g, stat):
+            out = []
+            for r in g.value.get('rows') or []:
+                st = (r.get('stats') or {}).get(stat) or {}
+                if st.get('actual') is not None:
+                    out.append(float(st['actual']))
+            return sorted(out)
+
+        second, default = _actuals(got, 'rush_yards'), _actuals(base, 'rush_yards')
+        check('both grades produced rush_yards actuals',
+              bool(second) and bool(default),
+              f'second={len(second)} default={len(default)}')
+        check('the two slates do NOT grade against identical actuals',
+              second != default,
+              'identical actuals from a MUTATED copy means the grader is still '
+              'reading the default outcome, whatever path it was handed')
+        check('and the mutated value is in the second slate only',
+              (4242.0 in second) and (4242.0 not in default),
+              f'4242 in second={4242.0 in second}, in default='
+              f'{4242.0 in default}')
+        print(f'       rush_yards actuals: second slate {len(second)} values, '
+              f'default {len(default)}; mutation present only in the second')

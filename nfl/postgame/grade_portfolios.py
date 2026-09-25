@@ -39,9 +39,13 @@ from nfl.postgame import outcome as OC                                 # noqa: E
 from nfl.dfs.scoring import statline as SL                             # noqa: E402
 from nfl.dfs.scoring import draftkings as DK                           # noqa: E402
 from nfl.dfs.showdown import universe as U                             # noqa: E402
+import pathlib as _pl
 
 SPEC_VERSION = 'nfl-postgame-grade-portfolios-1'
-FIX = _REPO / 'nfl/research/dfs/DET_BUF_2026W2'
+#: The default slate's directory, where its PORTFOLIO_*.csv files live.
+#: Derived from the postgame slate rather than named again here, so the two
+#: cannot drift apart -- naming a path twice is how they come to disagree.
+FIX = OC._DEFAULT.root
 PORTFOLIOS = {'CLAUDE': 'PORTFOLIO_CLAUDE_40.csv',
               'ALTERNATE': 'PORTFOLIO_ALTERNATE_40.csv'}
 
@@ -122,11 +126,33 @@ def optimal_lineup(scores, players):
     return best
 
 
-def grade(outcome_path=None) -> Outcome:
-    got = OC.require(outcome_path)
+def grade(outcome_path=None, sl=None) -> Outcome:
+    """Grade the portfolios for one slate. `sl` selects which.
+
+    FIX below is still the module-level DET_BUF directory and is used for the
+    PORTFOLIO csv files, which are per-slate artifacts; a second slate needs
+    its own, and `sl.root` is where they live. The frozen-set guard now
+    follows the slate too, because checking DET_BUF's frozen directory while
+    grading another game's result proves nothing about either.
+    """
+    # THE SLATE IS NEVER GUESSED FROM THE OUTCOME PATH.
+    #
+    # A first version derived it as outcome_path.parent.parent, which looks
+    # reasonable and is wrong: callers pass a bare fixture outcome with no
+    # slate around it, so the derived root had no frozen/ directory and the
+    # guard failed PREGAME_FROZEN_SET_MUTATED with all three files "missing".
+    # It also silently re-pointed the frozen board for anyone who passed only
+    # an outcome path.
+    #
+    # `sl` defaults to the default slate -- exactly the old behaviour -- and a
+    # caller wanting another slate passes it. Same refusal-to-guess as
+    # outcome.slate(): inferring a directory from a filename is how a grader
+    # reads the wrong game.
+    sl = sl or OC._DEFAULT
+    got = OC.require(outcome_path, sl=sl)
     if got.state is not State.PASS:
         return got
-    intact = OC.assert_pregame_untouched()
+    intact = OC.assert_pregame_untouched(sl)
     if intact.state is not State.PASS:
         return intact
     uni = U.build()

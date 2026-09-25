@@ -2512,7 +2512,36 @@ a forecast cut that was registered before kickoff (`CUT-e3a92fca9dbe8cb7`).
 
 Not blocking anything else. The audit stands as written, labelled partial.
 
-## 2026-09-25 — kicker outcome fields (DEF-061)
+## 2026-09-25 — kicker outcome fields (DEF-061) — **WITHDRAWN, MY ERROR**
+
+**Nothing is needed from you. Please ignore the request below; I have struck it
+through rather than deleting it, because a withdrawn request is worth being able
+to find.**
+
+I asked for `xp_made`, `xp_att` and field-goal distance buckets. **We already
+have all three.** Every player row in `POSTGAME_OUTCOME/OUTCOME.json` carries a
+`kicking` sub-dict with `fg_made`, `fg_att`, `xp_made`, `xp_att` *and*
+`fg_made_by_bucket`. `grade_portfolios.py` has been reading those exact fields
+the whole time.
+
+What I did wrong: I checked `nfl/postgame/actuals.py`'s `NUMERIC` tuple, which
+is a **different loader** for the weekly stats CSV, and concluded the outcome
+feed lacked the fields. The grader does not read that file.
+
+Kickers now grade with exact actuals, and the numbers check by hand: Tyler Bass
+5 extra points = 5.0 DK; Jake Bates one field goal from the 30s plus 4 extra
+points = 7.0 DK.
+
+A real defect did surface underneath, and it was fixed here, not by you:
+neither kicker appears in `frozen_board_names.json`, so the name index could
+not find them and they were graded against a **zero line** while the outcome
+held their real ones. The outcome's rows carry `player_id`, so grading matches
+by identity first now.
+
+---
+
+<details>
+<summary>The withdrawn request, kept for the record</summary>
 
 **Assigned, not blocked.** This needs bytes from outside the checkout, which is
 yours; everything inside the repository is done.
@@ -2545,3 +2574,6 @@ and `00-0040899` Smack), then any week whose board we intend to grade.
 Until it arrives the named state stands and the gap stays countable. Please do
 not stub it: a fabricated kicker actual is worse than an absent one, because it
 enters the prospective ledger as evidence.
+
+
+</details>

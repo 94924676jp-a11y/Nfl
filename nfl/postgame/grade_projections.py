@@ -30,6 +30,8 @@ from sportsplatform.governance import artifact_claim as AC             # noqa: E
 from sportsplatform.governance.outcome import Cause, Outcome, State    # noqa: E402
 from nfl.postgame import outcome as OC                                 # noqa: E402
 from nfl.dfs.scoring import statline as SL                             # noqa: E402
+import pathlib as _pl
+
 from nfl.dfs import player_universe as PU
 from nfl.dfs.scoring import draftkings as DK                           # noqa: E402
 from nfl.dfs.scoring import fanduel as FD                              # noqa: E402
@@ -58,15 +60,38 @@ def _q(v):
     return {f'p{k}': float(np.percentile(v, k)) for k in PCT}
 
 
-def grade(outcome_path=None) -> Outcome:
-    got = OC.require(outcome_path)
+def grade(outcome_path=None, sl=None) -> Outcome:
+    """Grade one slate. `sl` selects WHICH slate; the default is unchanged.
+
+    This read OC.PREGAME_FROZEN and called OC.assert_pregame_untouched() with
+    no argument, so the frozen board it graded was always DET_BUF_2026W2 --
+    whatever outcome_path it was handed. A grader that accepts one game's
+    RESULT while reading another game's BOARD does not fail; it reports a
+    catastrophically bad model. Passing the slate through makes the pair move
+    together, which is the whole reason Slate is one object.
+    """
+    # THE SLATE IS NEVER GUESSED FROM THE OUTCOME PATH.
+    #
+    # A first version derived it as outcome_path.parent.parent, which looks
+    # reasonable and is wrong: callers pass a bare fixture outcome with no
+    # slate around it, so the derived root had no frozen/ directory and the
+    # guard failed PREGAME_FROZEN_SET_MUTATED with all three files "missing".
+    # It also silently re-pointed the frozen board for anyone who passed only
+    # an outcome path.
+    #
+    # `sl` defaults to the default slate -- exactly the old behaviour -- and a
+    # caller wanting another slate passes it. Same refusal-to-guess as
+    # outcome.slate(): inferring a directory from a filename is how a grader
+    # reads the wrong game.
+    sl = sl or OC._DEFAULT
+    got = OC.require(outcome_path, sl=sl)
     if got.state is not State.PASS:
         return got
     result = got.value
-    intact = OC.assert_pregame_untouched()
+    intact = OC.assert_pregame_untouched(sl)
     if intact.state is not State.PASS:
         return intact
-    F = OC.PREGAME_FROZEN
+    F = sl.pregame_frozen
     z = np.load(F / 'sealed_player_draws.npz')
     man = json.loads((F / 'sealed_player_draws_manifest.json').read_text())
     names = json.loads((F.parent / 'frozen_board_names.json').read_text())
@@ -91,6 +116,22 @@ def grade(outcome_path=None) -> Outcome:
     # Identity by normalised name: DraftKings and the stat feed spell the
     # same man differently ('James Cook III' / 'James Cook').
     actual = {UNI.norm(k): v for k, v in result['players'].items()}
+    # AND BY IDENTITY, WHICH IS THE ONLY THING THAT WORKS FOR A KICKER.
+    #
+    # The name index above needs `frozen_board_names.json` to know the player.
+    # It does not know either kicker -- their gsis_ids are absent from it -- so
+    # `nm` fell back to the raw gsis_id, matched nothing, and the kicker was
+    # graded against a ZERO line while the outcome sat right there holding
+    # 'Jake Bates' with 4 extra points and a field goal from the 30s.
+    #
+    # The outcome's own rows carry `player_id`, so identity is available and
+    # exact. Third instance of the same lesson today: prefer the id, fall back
+    # to the name.
+    actual_by_id = {}
+    for _nm, _v in result['players'].items():
+        _pid = (_v or {}).get('player_id')
+        if _pid:
+            actual_by_id.setdefault(_pid, dict(_v, _outcome_name=_nm))
     # Team per board player, so an absent one can be told apart from an
     # uncovered one. A board player with no outcome row whose CLUB is in the
     # outcome recorded nothing, and zero is his measurement -- dropping him
@@ -136,7 +177,7 @@ def grade(outcome_path=None) -> Outcome:
     rows, not_in_outcome, zeroed = [], [], []
     for gid in ids:
         nm = names.get(gid, gid)
-        a = actual.get(UNI.norm(nm))
+        a = actual_by_id.get(gid) or actual.get(UNI.norm(nm))
         if a is None:
             line, code = OC.resolve_absent(
                 nm, team_by_gid.get(gid) or teams.get(UNI.norm(nm)), result)
@@ -182,27 +223,40 @@ def grade(outcome_path=None) -> Outcome:
             pred = (dk_draws[gid] if key == 'dk'
                     else DK.score(sl) - 0.5 * sl.receptions)
             if gid in kicker_ids:
-                # ENUMERATED, DELIBERATELY NOT GRADED. The kicker is now in the
-                # universe, so he is visible and countable -- but `actuals`
-                # pulls only fg_made and fg_att: no xp_made, and no field-goal
-                # distance buckets. score_kicker() without buckets charges
-                # every make at the under-40 rate and every extra point at
-                # zero, so a kicker with two field goals (one from 45) and
-                # three extra points grades 6 against a true 10.
+                # A KICKER IS SCORED BY THE KICKER RULES, EXACTLY.
                 #
-                # Grading him against that would replace a silent omission
-                # with a confident wrong number, which is the worse of the two.
-                # The named state makes the gap countable instead. See DEF-061.
+                # I previously marked this KICKER_ACTUALS_INSUFFICIENT and
+                # filed DEF-061 saying the outcome feed could not support it.
+                # THAT WAS WRONG, and the error is worth recording: I read
+                # `actuals.NUMERIC` -- a DIFFERENT loader, for the weekly stats
+                # CSV -- and concluded the outcome lacked xp_made and the
+                # field-goal distance buckets. This grader does not read that
+                # file. It reads OUTCOME.json, where every player carries a
+                # `kicking` sub-dict with fg_made, fg_att, xp_made, xp_att AND
+                # fg_made_by_bucket. grade_portfolios.py has been reading it
+                # all along, three lines that I had already looked at.
+                #
+                # So the actual is exact: Jake Bates 1 FG from the 30s and 4
+                # extra points, Tyler Bass 5 of 6. Both sites' kicker rules are
+                # identical here, so `fn` is used unchanged.
+                k = a.get('kicking') or {}
+                kick_sl = SL.from_line(
+                    1,
+                    fg_made=k.get('fg_made') or 0, fg_att=k.get('fg_att') or 0,
+                    xp_made=k.get('xp_made') or 0, xp_att=k.get('xp_att') or 0,
+                    fg_made_by_bucket=k.get('fg_made_by_bucket') or {})
+                scorer = (DK.score_kicker if key == 'dk' else FD.score_kicker)
+                act_pts = float(scorer(kick_sl)[0])
+                q = _q(pred)
                 per_stat[f'{key}_points'] = {
-                    'state': 'KICKER_ACTUALS_INSUFFICIENT',
-                    'actual': None, 'mean': float(pred.mean()),
-                    'median': float(np.median(pred)), **_q(pred),
-                    'abs_error': None, 'signed_error': None,
-                    'percentile_of_actual': None, 'bucket': None,
-                    'site': site,
-                    'why': ('outcome feed carries fg_made/fg_att only; '
-                            'xp_made and FG distance buckets are absent, so '
-                            'DK points for a kicker are not computable'),
+                    'state': 'GRADED', 'actual': act_pts,
+                    'mean': float(pred.mean()),
+                    'median': float(np.median(pred)), **q,
+                    'abs_error': abs(act_pts - float(pred.mean())),
+                    'signed_error': float(pred.mean()) - act_pts,
+                    'percentile_of_actual': float((pred < act_pts).mean()),
+                    'bucket': OC.percentile_bucket(act_pts, q),
+                    'site': site, 'scored_by': 'kicker_rules',
                 }
                 continue
             act_pts = float(fn(act_sl)[0])
