@@ -30,6 +30,7 @@ from sportsplatform.governance import artifact_claim as AC             # noqa: E
 from sportsplatform.governance.outcome import Cause, Outcome, State    # noqa: E402
 from nfl.postgame import outcome as OC                                 # noqa: E402
 from nfl.dfs.scoring import statline as SL                             # noqa: E402
+from nfl.dfs import player_universe as PU
 from nfl.dfs.scoring import draftkings as DK                           # noqa: E402
 from nfl.dfs.scoring import fanduel as FD                              # noqa: E402
 from nfl.dfs.showdown import universe as UNI                           # noqa: E402
@@ -70,8 +71,23 @@ def grade(outcome_path=None) -> Outcome:
     man = json.loads((F / 'sealed_player_draws_manifest.json').read_text())
     names = json.loads((F.parent / 'frozen_board_names.json').read_text())
     L = man['layers']
-    ids = L['dk_scoring']['row_ids']
-    n = int(np.asarray(z['dk_scoring__dk_points']).shape[1])
+    # THE UNIVERSE IS THE UNION OF EVERY DK-BEARING LAYER, DISCOVERED.
+    #
+    # This read `L['dk_scoring']['row_ids']`, which is 30 of the 32 players in
+    # the sealed ATL@GB artifact. The missing two are the kickers, whose DK
+    # points live in the `kicking` layer -- so no kicker was ever enumerated
+    # here, and therefore no kicker has ever been graded. That is worse than
+    # the DFS omission it came from: a class of players that never gets graded
+    # makes the prospective ledger look more complete than it is, and the
+    # learning loop never learns it is blind.
+    dk_draws, dk_report = PU.dk_points_by_id(
+        man, z, consumer='nfl.postgame.grade_projections')
+    ids = sorted(dk_draws)
+    kicker_ids = {g for g, layer in
+                  PU.dk_universe(man, consumer='nfl.postgame.grade_projections'
+                                 )['layer_by_id'].items()
+                  if layer == 'kicking'}
+    n = int(next(iter(dk_draws.values())).shape[0]) if dk_draws else 0
     # Identity by normalised name: DraftKings and the stat feed spell the
     # same man differently ('James Cook III' / 'James Cook').
     actual = {UNI.norm(k): v for k, v in result['players'].items()}
@@ -132,9 +148,32 @@ def grade(outcome_path=None) -> Outcome:
             receptions=a.get('receptions') or 0, rec_td=a.get('rec_td') or 0)
         for site, fn, key in (('DRAFTKINGS', DK.score, 'dk'),
                               ('FANDUEL', FD.score, 'fd')):
-            pred = (np.asarray(z['dk_scoring__dk_points'])[ids.index(gid)]
-                    if key == 'dk'
+            pred = (dk_draws[gid] if key == 'dk'
                     else DK.score(sl) - 0.5 * sl.receptions)
+            if gid in kicker_ids:
+                # ENUMERATED, DELIBERATELY NOT GRADED. The kicker is now in the
+                # universe, so he is visible and countable -- but `actuals`
+                # pulls only fg_made and fg_att: no xp_made, and no field-goal
+                # distance buckets. score_kicker() without buckets charges
+                # every make at the under-40 rate and every extra point at
+                # zero, so a kicker with two field goals (one from 45) and
+                # three extra points grades 6 against a true 10.
+                #
+                # Grading him against that would replace a silent omission
+                # with a confident wrong number, which is the worse of the two.
+                # The named state makes the gap countable instead. See DEF-061.
+                per_stat[f'{key}_points'] = {
+                    'state': 'KICKER_ACTUALS_INSUFFICIENT',
+                    'actual': None, 'mean': float(pred.mean()),
+                    'median': float(np.median(pred)), **_q(pred),
+                    'abs_error': None, 'signed_error': None,
+                    'percentile_of_actual': None, 'bucket': None,
+                    'site': site,
+                    'why': ('outcome feed carries fg_made/fg_att only; '
+                            'xp_made and FG distance buckets are absent, so '
+                            'DK points for a kicker are not computable'),
+                }
+                continue
             act_pts = float(fn(act_sl)[0])
             q = _q(pred)
             per_stat[f'{key}_points'] = {

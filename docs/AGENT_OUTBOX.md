@@ -2511,3 +2511,37 @@ scores, and the first real entry in the prospective grading ledger (C1) against
 a forecast cut that was registered before kickoff (`CUT-e3a92fca9dbe8cb7`).
 
 Not blocking anything else. The audit stands as written, labelled partial.
+
+## 2026-09-25 — kicker outcome fields (DEF-061)
+
+**Assigned, not blocked.** This needs bytes from outside the checkout, which is
+yours; everything inside the repository is done.
+
+`nfl/postgame/actuals.py` pulls `fg_made` and `fg_att` for a kicker and nothing
+else. DK and FanDuel both score kickers 3 / 4 / 5 by field-goal distance plus 1
+per extra point, so with neither `xp_made` nor distance detail, `score_kicker()`
+charges every make at the under-40 rate and every extra point at zero. A kicker
+with two field goals — one from 45 — and three extra points scores **6 against a
+true 10**.
+
+The asymmetry is the point: the pregame side is exact. `SL.assemble` already
+reads `fgm`, `fga`, `xpm`, `xpa` and the distance buckets off the `kicking`
+layer, so we project a kicker precisely and cannot score what he actually did.
+Grading him from the fields that do exist would put a confident wrong actual
+into the ledger and attribute the error to the model, so grading currently
+enumerates kickers and marks their DK points `KICKER_ACTUALS_INSUFFICIENT`.
+
+**What is needed, per player-game:**
+
+- `xp_made` and `xp_att`
+- field goals made and attempted **by distance bucket** — `FG<20`, `FG20s`,
+  `FG30s`, `FG40s`, `FG50+` — or per-kick distances from which those derive
+- the same identity key already used elsewhere (`gsis_id`), so this joins
+  without a name match
+
+Games needed first: **2026_03_ATL_GB** (the sealed run, ids `00-0025565` Folk
+and `00-0040899` Smack), then any week whose board we intend to grade.
+
+Until it arrives the named state stands and the gap stays countable. Please do
+not stub it: a fabricated kicker actual is worse than an absent one, because it
+enters the prospective ledger as evidence.

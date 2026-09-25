@@ -58,6 +58,7 @@ from __future__ import annotations
 import collections
 import hashlib
 import json
+from nfl.production.contracts import registry as _reg
 import pathlib
 import sys
 from dataclasses import dataclass, field
@@ -175,7 +176,25 @@ def read_projection(draws_dir) -> Outcome:
     per_player: Dict[str, Dict[str, Dict[str, float]]] = (
         collections.defaultdict(dict))
     metrics_present, metrics_absent = [], []
-    for key, comp in PROJECTION_METRICS:
+    # EVERY DK-BEARING LAYER, DISCOVERED FROM THE ARTIFACT.
+    #
+    # PROJECTION_METRICS names 'dk_scoring/dk_points' and nothing else, so a
+    # kicker -- whose DK points arrive as 'kicking/dk_points' -- got a dossier
+    # with no headline metric in it. HEADLINE_METRIC is described three lines
+    # above as "the one every downstream consumer reads", which is exactly why
+    # its absence for a whole position mattered more than it looked.
+    projection_metrics = list(PROJECTION_METRICS)
+    try:
+        for layer in _reg.dk_bearing_layers(man):
+            pair = (f'{layer}/{_reg.DK_METRIC}', HEADLINE_METRIC)
+            if pair not in projection_metrics:
+                projection_metrics.append(pair)
+    except Exception:                                            # noqa: BLE001
+        # PU raises when no layer declares dk_points at all. That is a real
+        # condition, and the declared list still runs, so the absence shows up
+        # in metrics_absent rather than as a crash.
+        pass
+    for key, comp in projection_metrics:
         layer = key.split('/', 1)[0]
         lay = man.get('layers', {}).get(layer)
         M = arrays.get(key)
@@ -198,7 +217,7 @@ def read_projection(draws_dir) -> Outcome:
     if not per_player:
         return Outcome.fail(
             'DRAW_ARTIFACT_CARRIES_NO_KNOWN_METRIC',
-            f'none of the {len(PROJECTION_METRICS)} declared projection '
+            f'none of the {len(projection_metrics)} declared projection '
             f'metrics is present in {d}. Reporting an empty decomposition as '
             f'success is the failure mode this project pays for most.',
             value={'arrays_found': sorted(arrays)[:20]})

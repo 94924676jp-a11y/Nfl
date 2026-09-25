@@ -318,3 +318,49 @@ PLAYER_DRAWS = register(ArtifactContract(
                                  'to be present with zero rows.'),
     ),
 ))
+
+
+#: The metric name under which DraftKings fantasy points are stored.
+DK_METRIC = 'dk_points'
+
+
+class NoDkBearingLayer(RuntimeError):
+    """The artifact declares no player-keyed layer carrying DK points."""
+
+
+def dk_bearing_layers(manifest: dict) -> list:
+    """Every player-keyed layer in this artifact that carries DK points.
+
+    WHY THIS LIVES WITH THE CONTRACT AND NOT WITH DFS.
+
+    "Which layers carry DK points" is a property of the ARTIFACT, discoverable
+    from its own manifest, so it belongs beside the contract that describes the
+    artifact. It sat in `nfl.dfs.player_universe`, which also reads DK salary
+    CSVs and contest files -- so any module needing the fact had to import a
+    module that reaches into live DK data.
+
+    That mattered immediately. `review/dossier.py` needed this to give a kicker
+    a headline metric, and `test_dossier_migration` forbids the dossier from
+    importing `player_universe` by name: football evidence must arrive through
+    PregameSlateState, while projection and simulation artifacts are the
+    dossier's own to read. The invariant was right and the helper was in the
+    wrong place. Reading a layer list out of a manifest the dossier already
+    holds is not reading a football source.
+
+    DISCOVERED, NEVER LISTED. Six production modules named `dk_scoring` alone
+    and so never saw a kicker -- among them the slate board, the dossier and
+    postgame grading (DEF-060). Seven more name `dk_scoring` AND `kicking` by
+    hand: correct today, silently wrong the day a third DK-bearing layer
+    appears. This reads the artifact instead.
+    """
+    out = []
+    for name, spec in sorted((manifest.get('layers') or {}).items()):
+        if not isinstance(spec, dict) or spec.get('row_axis') != 'gsis_id':
+            continue
+        if DK_METRIC in (spec.get('metrics') or ()):
+            out.append(name)
+    if not out:
+        raise NoDkBearingLayer(
+            'no player-keyed layer declares a dk_points metric; a DK universe '
+            'cannot be built from this artifact and must not be faked')
+    return out

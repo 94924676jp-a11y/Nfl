@@ -20,6 +20,7 @@ if str(_REPO) not in sys.path:
 from sportsplatform.governance import artifact_claim as AC  # noqa: E402
 from sportsplatform.governance.outcome import Cause, Outcome, State  # noqa: E402
 from nfl.dfs.scoring import statline as SL                           # noqa: E402
+from nfl.dfs import player_universe as PU
 from nfl.dfs.scoring import draftkings as DK                         # noqa: E402
 from nfl.dfs.scoring import fanduel as FD                            # noqa: E402
 from nfl.dfs.showdown import universe as U                           # noqa: E402
@@ -55,15 +56,33 @@ def build() -> Outcome:
     man = json.loads((F / 'sealed_player_draws_manifest.json').read_text())
     names = json.loads((F.parent / 'frozen_board_names.json').read_text())
     L = man['layers']
-    ids = L['dk_scoring']['row_ids']
-    stored = np.asarray(z['dk_scoring__dk_points'])
-    n = stored.shape[1]
+    # THE UNION, DISCOVERED. `L['dk_scoring']['row_ids']` is 30 of 32 players
+    # on the sealed artifact: the two kickers carry their DK points in the
+    # `kicking` layer, so a board built from one layer has no kicker row at
+    # all -- and the stored-vs-recomputed identity check below never saw them.
+    stored_by_id, _dk_rep = PU.dk_points_by_id(
+        man, z, consumer='nfl.dfs.scoring.dual_board')
+    ids = sorted(stored_by_id)
+    kicker_ids = {g for g, layer in
+                  PU.dk_universe(man, consumer='nfl.dfs.scoring.dual_board'
+                                 )['layer_by_id'].items()
+                  if layer == 'kicking'}
+    n = int(next(iter(stored_by_id.values())).shape[0]) if stored_by_id else 0
     rows, worst = [], 0.0
-    for i, g in enumerate(ids):
+    for g in ids:
         sl = SL.assemble(g, names.get(g, g), L, z, n)
-        dk = DK.score(sl)
-        worst = max(worst, float(np.abs(dk - stored[i]).max()))
-        fd = FD.score(sl)
+        # A KICKER IS SCORED BY THE KICKER RULES. The offense scorer reads
+        # passing, rushing and receiving, all zero for a kicker, so it would
+        # return ~0 against a stored ~8.26 and blow up the identity residual
+        # below -- which is how a missing position would have shown up as a
+        # scoring bug. Both sites' kicker rules are identical here (3/4/5 by
+        # distance, 1 per extra point), and SL.assemble already carries the
+        # distance buckets off the `kicking` layer, so this is exact rather
+        # than approximate.
+        is_kicker = g in kicker_ids
+        dk = DK.score_kicker(sl) if is_kicker else DK.score(sl)
+        worst = max(worst, float(np.abs(dk - stored_by_id[g]).max()))
+        fd = FD.score_kicker(sl) if is_kicker else FD.score(sl)
         rows.append({'name': names.get(g, g), 'gsis_id': g,
                      'DRAFTKINGS': _dist(dk), 'FANDUEL': _dist(fd),
                      'fd_minus_dk_mean': float(fd.mean() - dk.mean()),

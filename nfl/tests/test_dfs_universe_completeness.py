@@ -58,6 +58,13 @@ DECLARED_NON_UNION = {
         'formats one player row for display',
     'nfl/dfs/showdown/universe_contract.py':
         'declares the contract the universe must satisfy',
+    'nfl/production/review/dossier_reference.py':
+        'FROZEN COPY of review/dossier.py at commit f43c30e, marked DO NOT '
+        'EDIT. It carries the single-layer selection ON PURPOSE: it exists to '
+        'reproduce what the dossier did at that commit, and correcting it '
+        'would destroy the only record of the behaviour the live file has now '
+        'moved away from. Classified as FROZEN HISTORICAL BEHAVIOUR. Live '
+        'production must not read it -- asserted separately below.',
 }
 
 PASSED = 0

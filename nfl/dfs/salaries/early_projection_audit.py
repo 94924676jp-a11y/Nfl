@@ -261,11 +261,36 @@ def run_governance(pattern=REHEARSAL_GLOB) -> dict:
     }
 
 
+#: Any layer's dk_points key counts as "carries a DK distribution".
+#:
+#: THE MOST DANGEROUS INSTANCE OF DEF-060 WAS HERE. This function answers
+#: "which players have a DK projection", and it looked only for
+#: 'dk_scoring/dk_points'. A kicker's distribution arrives as
+#: 'kicking/dk_points', so this audit -- whose entire job is to detect a
+#: MISSING projection -- would have reported a kicker as having none. A real
+#: omission recorded as a known absence is worse than an unnoticed one,
+#: because it closes the question.
+_DK_SUFFIX = '/dk_points'
+
+
+def _dk_metric_key(metrics) -> str:
+    """The dk_points key this player actually carries, whichever layer it is."""
+    for k in sorted(metrics):
+        if k.endswith(_DK_SUFFIX):
+            return k
+    return ''
+
+
 def dk_points_available(verified) -> dict:
     """Which verified players carry a DK fantasy-point distribution."""
-    have = {pid for pid, r in verified['by_gsis_id'].items()
-            if 'dk_scoring/dk_points' in r['metrics']}
-    return {'n_with_dk_points': len(have), 'gsis_ids': have}
+    have, by_layer = set(), {}
+    for pid, r in verified['by_gsis_id'].items():
+        k = _dk_metric_key(r['metrics'])
+        if k:
+            have.add(pid)
+            by_layer[k] = by_layer.get(k, 0) + 1
+    return {'n_with_dk_points': len(have), 'gsis_ids': have,
+            'by_metric_key': by_layer}
 
 
 def classify(pool_rows, reconciled_rows, verified, sealed, refusing_games,
@@ -329,10 +354,12 @@ def classify(pool_rows, reconciled_rows, verified, sealed, refusing_games,
                                       'game_id': v['game_id'],
                                       'sealed': False}
             rec['distribution_fields_available'] = sorted(v['metrics'])
+            _dkk = _dk_metric_key(v['metrics'])
             rec['football_means'] = {k: m['mean']
                                      for k, m in sorted(v['metrics'].items())
-                                     if not k.startswith('dk_scoring/')}
-            dk = v['metrics'].get('dk_scoring/dk_points')
+                                     if not k.endswith(_DK_SUFFIX)}
+            rec['dk_points_metric_key'] = _dkk or None
+            dk = v['metrics'].get(_dkk) if _dkk else None
             if dk:
                 rec['dk_points_mean'] = dk['mean']
                 rec['dk_points_percentiles'] = None

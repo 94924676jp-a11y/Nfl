@@ -45,6 +45,7 @@ if str(_REPO) not in sys.path:
 from nfl.production.review import evidence as EV                     # noqa: E402
 from nfl.production.state import availability as AV                    # noqa: E402
 from sportsplatform.governance.outcome import Cause, Outcome        # noqa: E402
+from nfl.dfs import player_universe as PU
 
 SPEC_VERSION = 'nfl-player-board-1'
 
@@ -156,9 +157,34 @@ DRAW_MAP = {
 }
 
 
+def _dk_extended_map(layers) -> Dict[str, str]:
+    """DRAW_MAP plus every OTHER layer that carries DK points.
+
+    DRAW_MAP names 'dk_scoring/dk_points' and nothing else, so the board's
+    `dk` column existed only for players in that one layer. On the sealed
+    ATL@GB artifact that is 30 of 32: the two kickers carry their points in
+    `kicking`, so the slate board had no DK number for a kicker and therefore
+    no kicker row worth reading.
+
+    Discovered rather than appended by hand. Seven modules elsewhere name
+    dk_scoring AND kicking explicitly, which is right today and silently wrong
+    the day a third DK-bearing layer appears; this reads the artifact instead.
+    """
+    out = dict(DRAW_MAP)
+    try:
+        for layer in PU.dk_bearing_layers({'layers': layers}):
+            out.setdefault(f'{layer}/{PU.DK_METRIC}', 'dk')
+    except Exception:                                            # noqa: BLE001
+        # An artifact with no DK-bearing layer at all is a real condition and
+        # PU raises for it; the board still renders its non-DK columns rather
+        # than failing whole, and the missing `dk` column is visible.
+        pass
+    return out
+
+
 def _draw_table(arrays, layers) -> Dict[str, Dict[str, Any]]:
     out: Dict[str, Dict[str, Any]] = collections.defaultdict(dict)
-    for key, col in DRAW_MAP.items():
+    for key, col in _dk_extended_map(layers).items():
         layer = key.split('/')[0]
         M = arrays.get(key)
         ids = (layers.get(layer) or {}).get('row_ids') or []
