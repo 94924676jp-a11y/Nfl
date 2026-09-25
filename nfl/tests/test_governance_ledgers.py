@@ -48,7 +48,8 @@ def _row(**kw):
                 impact='i', next_action='n', owner_approval_needed=False,
                 blocked_by=None, status=L.OPEN, fix_commit=None,
                 verification_test=None, prospective_validation_needed=False,
-                scheduler_tier='T3_PRODUCTION_CORRECTNESS')
+                scheduler_tier='T3_PRODUCTION_CORRECTNESS',
+                execution_lineage=None, execution_evidence=None)
     base.update(kw)
     return base
 
@@ -202,7 +203,8 @@ def test_H_the_live_ledger_is_not_stopped():
 def test_I_the_scheduler_puts_operating_risk_above_correctness():
     print('\nI. a dark feed outranks a refactor')
     rows = [_row(id='D-crit', severity='CRITICAL',
-                 scheduler_tier='T3_PRODUCTION_CORRECTNESS'),
+                 scheduler_tier='T3_PRODUCTION_CORRECTNESS',
+                execution_lineage=None, execution_evidence=None),
             _row(id='D-risk', severity='MEDIUM',
                  status=L.OPERATING_RISK_ACTIVE,
                  scheduler_tier='T2_OPERATING_RISK'),
@@ -254,3 +256,31 @@ def test_L_the_live_state_has_breadth_and_named_risk():
           (s['owner_blocked_branches'], s['open_approvals']))
     check('the next action is the highest tier present',
           s['next_tier'] == L.actionable()[0]['scheduler_tier'])
+
+
+def test_M_a_repair_is_not_verified_where_it_does_not_run():
+    print('\nM. DEF-047 had thirteen green checks and a dead board')
+    ok, d = raised(L.LedgerError,
+                   lambda: L.close('DEF-052', fix_commit='abc',
+                                   verification_test='t'),
+                   'needs an execution_lineage')
+    check('VERIFIED without an execution lineage is refused', ok, d)
+    check('FIX_IMPLEMENTED is actionable, not closed',
+          L.FIX_IMPLEMENTED in L._ACTIONABLE)
+    check('so is FIX_DEPLOYED', L.FIX_DEPLOYED in L._ACTIONABLE)
+    check('and FIX_EXECUTED', L.FIX_EXECUTED in L._ACTIONABLE)
+    check('none of the three is terminal',
+          not ({L.FIX_IMPLEMENTED, L.FIX_DEPLOYED, L.FIX_EXECUTED}
+               & L._TERMINAL))
+
+
+def test_N_every_verified_row_names_where_it_ran():
+    print('\nN. the live ledger under the new rule')
+    bad = [d['id'] for d in L.defects() if d['status'] == L.VERIFIED
+           and not (d.get('execution_lineage') and d.get('execution_evidence'))]
+    check('no VERIFIED row lacks an execution lineage and evidence',
+          not bad, bad)
+    d47 = [d for d in L.defects() if d['id'] == 'DEF-047']
+    if d47:
+        check('DEF-047 is FIX_IMPLEMENTED, not VERIFIED',
+              d47[0]['status'] == L.FIX_IMPLEMENTED, d47[0]['status'])

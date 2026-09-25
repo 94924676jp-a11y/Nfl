@@ -65,10 +65,32 @@ WONT_FIX = 'WONT_FIX'
 #: before any research item. A dark capture source is the archetype.
 OPERATING_RISK_ACTIVE = 'OPERATING_RISK_ACTIVE'
 
+#: THE REPAIR LIFECYCLE. Owner ruling 2026-09-25, after DEF-047.
+#:
+#: refresh_boards.py had a correct fix, a passing test and thirteen green
+#: checks, on a branch the scheduled workflow does not check out. The board
+#: had been dead since week 1 either way. A repair that never reaches the
+#: executing lineage is operationally identical to no repair, so 'fixed' is
+#: not one state.
+#:
+#:   FIX_IMPLEMENTED   the code is right and tested, somewhere.
+#:   FIX_DEPLOYED      it exists on the lineage the affected workflow reads.
+#:   FIX_EXECUTED      that workflow actually ran it.
+#:   VERIFIED          the run produced the expected artifact, and the old
+#:                     broken path is regression-tested.
+#:
+#: Each is a separate claim about a separate fact, and only the last closes
+#: a row.
+FIX_IMPLEMENTED = 'FIX_IMPLEMENTED'
+FIX_DEPLOYED = 'FIX_DEPLOYED'
+FIX_EXECUTED = 'FIX_EXECUTED'
+
+
 #: Statuses from which no further work can be pulled.
 _TERMINAL = frozenset({VERIFIED, WONT_FIX})
 #: Statuses that are open work Claude may act on right now.
-_ACTIONABLE = frozenset({OPEN, IN_PROGRESS, OPERATING_RISK_ACTIVE})
+_ACTIONABLE = frozenset({OPEN, IN_PROGRESS, OPERATING_RISK_ACTIVE,
+                         FIX_IMPLEMENTED, FIX_DEPLOYED, FIX_EXECUTED})
 #: Statuses that are open and NOT actionable.
 _PARKED = frozenset({WAITING_OWNER, EXTERNAL_BLOCKED})
 
@@ -184,7 +206,8 @@ def add_defect(**row) -> dict:
 
 
 def close(defect_id: str, *, fix_commit: str, verification_test: str,
-          status: str = VERIFIED) -> dict:
+          status: str = VERIFIED, execution_lineage: str = None,
+          execution_evidence: str = None) -> dict:
     """Close a defect. Refuses without both a commit and a test.
 
     The owner's rule is that a row closes only after evidence proves closure.
@@ -198,11 +221,20 @@ def close(defect_id: str, *, fix_commit: str, verification_test: str,
             f'{defect_id}: VERIFIED needs both a fix_commit and a '
             f'verification_test. Use WONT_FIX with a reason if it is not '
             f'being fixed, but do not close it as done with nothing proving it.')
+    if status == VERIFIED and not (execution_lineage and execution_evidence):
+        raise LedgerError(
+            f'{defect_id}: VERIFIED needs an execution_lineage and the '
+            f'evidence the repair ran THERE. A passing test on a branch the '
+            f'affected workflow does not read is FIX_IMPLEMENTED. DEF-047 '
+            f'had thirteen green checks on a branch nothing executes while '
+            f'the board stayed dead.')
     rows = defects()
     for r in rows:
         if r['id'] == defect_id:
             r.update(status=status, fix_commit=fix_commit,
-                     verification_test=verification_test)
+                     verification_test=verification_test,
+                     execution_lineage=execution_lineage,
+                     execution_evidence=execution_evidence)
             _write(DEFECT_LOG, rows)
             return r
     raise LedgerError(f'{defect_id} not in the defect log')
