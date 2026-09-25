@@ -170,6 +170,29 @@ def main(argv=None) -> int:
         return refuse(r.code, r.detail)
 
     if a.emit_packet:
+        # CLEAR THE PREVIOUS ATTEMPT'S RETURN BEFORE THE WORKER STARTS.
+        #
+        # ingest reads coordination/CLAUDE_RETURNS/<task>/result.json IN
+        # PREFERENCE to CLAUDE_STRUCTURED, and it commits whatever the worker
+        # leaves behind -- so a second attempt at the same task checks out the
+        # FIRST attempt's result.json and ingests that instead of the return
+        # just produced. The head_before contract catches it, because the
+        # stale result names the old packet's base, so it fails closed rather
+        # than accepting stale work. But it fails closed FOREVER: every retry
+        # reads the same stale file and refuses RESULT_OUT_OF_CONTRACT with a
+        # message about the tree the work started from, which points at the
+        # worker and not at the leftover file. A retry budget spent entirely
+        # on a deadlock.
+        #
+        # Removing it here rather than teaching ingest to distrust it keeps
+        # the rule simple: after the packet is emitted, anything in the return
+        # directory belongs to this run.
+        stale = (_pl.Path(S.REPO) / 'coordination' / 'CLAUDE_RETURNS' /
+                 a.task_id / 'result.json')
+        if stale.exists():
+            stale.unlink()
+            print(f'  cleared  {stale.relative_to(S.REPO)} '
+                  f'(a previous attempt\'s return)')
         p = T.write_packet(packet)
         prompt = T.render_prompt(packet)
         T.assert_packet_is_clean(prompt)

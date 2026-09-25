@@ -2,10 +2,23 @@
  "name": "claude_code.default",
  "_comment": "What the Claude Code Action would have returned, in the shape the live path parses. Used only when the effective mode is MOCK. A missing fixture is a refusal, never an empty success.",
  "worker": "ANTHROPIC",
- "commands_run": ["python3.12 nfl/tests/run_suite.py --only test_orchestrator"],
- "tests": [{"name": "test_orchestrator", "status": "PASSED", "checks": 274}],
- "acceptance_criteria_results": [{"criterion": "transport proven end to end in MOCK", "met": true}],
+ "commands_run": [
+  "python3.12 nfl/tests/run_suite.py --only test_orchestrator"
+ ],
+ "tests": [
+  {
+   "name": "test_orchestrator",
+   "status": "PASSED",
+   "checks": 274
+  }
+ ],
  "refusals": [],
- "governance_checks": {"executed_by": "MOCK_WORKER", "model_called": false, "protected_paths_touched": false},
- "result_status": "COMPLETED"
+ "governance_checks": {
+  "called_no_model": true,
+  "touched_no_protected_paths": true,
+  "executed_by": "MOCK_WORKER"
+ },
+ "result_status": "COMPLETED",
+ "_acceptance_note": "Omitted on purpose: the worker derives one judgement per criterion from the packet, because the contract refuses COMPLETED unless every criterion is judged separately. A fixture may still override.",
+ "_governance_note": "Positive assertions only. validate_result reads any false value here as the worker confessing a breach and refuses the return, so \"model_called\": false would stall the task. Set one false ON PURPOSE to exercise that refusal path."
 }
