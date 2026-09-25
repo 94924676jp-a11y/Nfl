@@ -32,6 +32,7 @@ import pathlib
 import sys
 
 import numpy as np
+from nfl.production.contracts import registry as _reg
 
 _REPO = pathlib.Path(__file__).resolve().parents[3]
 if str(_REPO) not in sys.path:
@@ -157,7 +158,14 @@ def assert_shared_draws(runs) -> dict:
     bad = []
     for r in runs:
         L = r['manifest'].get('layers') or {}
-        dk = set((L.get('dk_scoring') or {}).get('row_ids') or [])
+        # EVERY DK-BEARING LAYER, DISCOVERED. Reading `dk_scoring` alone made
+        # this check blind to exactly the rows most worth checking: a kicker's
+        # DK row lives in `kicking`, so it was never tested against the
+        # football layers at all. The assertion passed because the rows it
+        # should have examined were not in the set it examined.
+        dk = set()
+        for _dl in _reg.dk_bearing_layers(r['manifest']):
+            dk |= set((L.get(_dl) or {}).get('row_ids') or [])
         foot = set()
         for ln in PLAYER_LAYERS:
             foot |= set((L.get(ln) or {}).get('row_ids') or [])
@@ -182,7 +190,14 @@ def dfs_rows(runs, roster, dk_salary=None) -> list:
     out = []
     for r in runs:
         for pid, met in sorted(r['stats'].items()):
-            v = met.get('dk_scoring/dk_points')
+            # ANY LAYER'S dk_points, NOT dk_scoring's ALONE.
+            #
+            # THIS LINE DROPPED EVERY KICKER FROM THE BOARD. A kicker's
+            # distribution arrives as 'kicking/dk_points', so `met.get` returned
+            # None and the `continue` skipped him -- silently, with no row, no
+            # warning, and a board that simply had no kickers on it.
+            _k = next((k for k in sorted(met) if k.endswith('/dk_points')), None)
+            v = met.get(_k) if _k else None
             if v is None:
                 continue
             info = roster.get(pid, {})

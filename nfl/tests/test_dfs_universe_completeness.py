@@ -58,6 +58,11 @@ DECLARED_NON_UNION = {
         'formats one player row for display',
     'nfl/dfs/showdown/universe_contract.py':
         'declares the contract the universe must satisfy',
+    'nfl/production/run_forecast.py':
+        'the PRODUCER. It records `produced[\'dk_scoring\'] = len(rows)` after '
+        'writing that layer, which is a statement about what it emitted, not a '
+        'selection from a universe it consumes. It also writes the kicking '
+        'layer, from the same sealed events.',
     'nfl/production/review/dossier_reference.py':
         'FROZEN COPY of review/dossier.py at commit f43c30e, marked DO NOT '
         'EDIT. It carries the single-layer selection ON PURPOSE: it exists to '
@@ -202,8 +207,48 @@ def _string_literals(src):
             if isinstance(n, _ast.Constant) and isinstance(n.value, str)}
 
 
+def _dk_selection_sites(src):
+    """Where the module PICKS DK points out of a layer it named itself.
+
+    The heuristic this replaces was "does the module mention `kicking`
+    anywhere?", and it produced a FALSE NEGATIVE, which is worse than the false
+    positives it was tuned to remove. `build_postinactives_package.py` mentions
+    `kicking` only inside a PLAYER_LAYERS tuple listing every player-keyed
+    layer, while its DK selection reads `dk_scoring` alone -- so it was excused
+    as correct while `dfs_rows` did `met.get('dk_scoring/dk_points')` and
+    `continue`, dropping every kicker off the post-inactives board.
+
+    A mention somewhere in a file says nothing about what the DK path does. So
+    this looks at the two code shapes that actually select:
+    `something['dk_scoring']` and `something.get('dk_scoring...')`.
+    """
+    import ast as _ast
+    try:
+        tree = _ast.parse(src)
+    except SyntaxError:
+        return []
+    keys = {'dk_scoring', 'dk_scoring/dk_points', 'dk_scoring__dk_points'}
+    out = []
+    for n in _ast.walk(tree):
+        if isinstance(n, _ast.Subscript) \
+                and isinstance(getattr(n, 'slice', None), _ast.Constant) \
+                and n.slice.value == 'dk_scoring':
+            out.append(getattr(n, 'lineno', 0))
+        if isinstance(n, _ast.Call) and isinstance(n.func, _ast.Attribute) \
+                and n.func.attr == 'get' and n.args \
+                and isinstance(n.args[0], _ast.Constant) \
+                and n.args[0].value in keys:
+            out.append(getattr(n, 'lineno', 0))
+    return sorted(out)
+
+
+def _reads_kicking_dk_in_code(src):
+    """Does it ALSO read kicking's DK points as code, not in a comment?"""
+    return any(v.startswith('kicking') and 'dk_points' in v
+               for v in _string_literals(src))
+
+
 def _selects_dk_layer(lits):
-    """Names the dk_scoring LAYER, i.e. picks players out of it."""
     return any(v == 'dk_scoring' or v.startswith('dk_scoring/') for v in lits)
 
 
@@ -251,9 +296,9 @@ def test_production_universe_selectors_cover_every_dk_bearing_layer():
             continue
         if 'player_universe' in src or 'dk_bearing_layers' in src:
             continue
-        lits = _string_literals(src)
-        if _selects_dk_layer(lits) and not _names_kicking(lits):
-            offenders.append(rel)
+        sites = _dk_selection_sites(src)
+        if sites and not _reads_kicking_dk_in_code(src):
+            offenders.append(f'{rel}:{sites[0]}')
     check('every production universe selector covers all dk-bearing layers',
           not offenders,
           f'{len(offenders)} module(s) select DK points from dk_scoring alone '
