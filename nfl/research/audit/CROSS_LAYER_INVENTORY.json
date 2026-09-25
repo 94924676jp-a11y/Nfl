@@ -1,0 +1,724 @@
+{
+ "families": {
+  "dk_scoring": {
+   "consumers": [
+    "nfl/dfs/salaries/build_postinactives_package.py",
+    "nfl/dfs/salaries/postinactives_board.py",
+    "nfl/dfs/scoring/dual_board.py",
+    "nfl/dfs/showdown/cleanup_pool.py",
+    "nfl/dfs/showdown/select_no_tracy.py",
+    "nfl/dfs/showdown/select_scale_invariant.py",
+    "nfl/dfs/showdown/universe.py",
+    "nfl/postgame/grade_projections.py",
+    "nfl/production/seeds.py",
+    "nfl/research/buf_allocation/run_role_ordering.py",
+    "nfl/research/coupling/game_offense_coupling.py",
+    "nfl/research/diagnostics/fc_diagnostic.py",
+    "nfl/research/diagnostics/scale_sensitivity.py",
+    "nfl/tools/cross_layer_audit.py",
+    "nfl/tools/headline_mcse.py",
+    "nfl/tools/post_inactive_verify.py"
+   ],
+   "metrics": [
+    "dk_points"
+   ],
+   "tests": [
+    "nfl/tests/test_artifact_contracts.py",
+    "nfl/tests/test_conditioning_contract.py",
+    "nfl/tests/test_dfs_lineup_integrity.py",
+    "nfl/tests/test_draw_conditionality.py",
+    "nfl/tests/test_draw_stream_determinism.py",
+    "nfl/tests/test_player_board.py",
+    "nfl/tests/test_publication_semantics.py",
+    "nfl/tests/test_review_enforcement.py",
+    "nfl/tests/test_wired_product.py"
+   ]
+  },
+  "gadget_rush": {
+   "consumers": [
+    "nfl/dfs/salaries/build_postinactives_package.py",
+    "nfl/production/nonqb/gadget_rush.py",
+    "nfl/production/seeds.py",
+    "nfl/research/unsealed/conditionality.py",
+    "nfl/research/unsealed/unavailable_owns_nothing.py",
+    "nfl/tools/availability_audit.py",
+    "nfl/tools/reconcile_external_universe.py"
+   ],
+   "metrics": [
+    "kneel",
+    "te",
+    "wr"
+   ],
+   "tests": [
+    "nfl/tests/test_draw_stream_determinism.py",
+    "nfl/tests/test_gadget_rush.py",
+    "nfl/tests/test_unavailable_owns_nothing.py"
+   ]
+  },
+  "kicking": {
+   "consumers": [
+    "nfl/dfs/classic/pool.py",
+    "nfl/dfs/salaries/build_postinactives_package.py",
+    "nfl/dfs/salaries/postinactives_board.py",
+    "nfl/dfs/scoring/statline.py",
+    "nfl/dfs/showdown/cleanup_pool.py",
+    "nfl/dfs/showdown/eval_props_indkc.py",
+    "nfl/dfs/showdown/kicker_identity.py",
+    "nfl/dfs/showdown/select_no_tracy.py",
+    "nfl/dfs/showdown/select_scale_invariant.py",
+    "nfl/dfs/showdown/universe.py",
+    "nfl/market/evaluate.py",
+    "nfl/postgame/grade_portfolios.py",
+    "nfl/postgame/ingest_outcome.py",
+    "nfl/production/universe/role_state.py",
+    "nfl/research/diagnostics/fc_diagnostic.py",
+    "nfl/research/diagnostics/scale_sensitivity.py",
+    "nfl/research/unsealed/conditionality.py",
+    "nfl/research/unsealed/unavailable_owns_nothing.py",
+    "nfl/tools/availability_audit.py",
+    "nfl/tools/cross_layer_audit.py",
+    "nfl/tools/headline_mcse.py",
+    "nfl/tools/reconcile_external_universe.py"
+   ],
+   "metrics": [
+    "dk_points",
+    "fga",
+    "fgm"
+   ],
+   "tests": [
+    "nfl/tests/test_publication_semantics.py",
+    "nfl/tests/test_wired_product.py"
+   ]
+  },
+  "qb": {
+   "consumers": [
+    "nfl/dfs/classic/optimizer.py",
+    "nfl/dfs/classic/reference.py",
+    "nfl/dfs/salaries/build_postinactives_package.py",
+    "nfl/dfs/salaries/postinactives_board.py",
+    "nfl/dfs/scoring/statline.py",
+    "nfl/market/eval_hardrock.py",
+    "nfl/market/evaluate.py",
+    "nfl/postgame/grade_projections.py",
+    "nfl/product/attribution.py",
+    "nfl/product/board.py",
+    "nfl/product/confidence.py",
+    "nfl/product/conservation.py",
+    "nfl/product/daily_board.py",
+    "nfl/product/decomposition.py",
+    "nfl/product/metrics.py",
+    "nfl/product/quality_gates.py",
+    "nfl/product/render.py",
+    "nfl/product/thresholds.py",
+    "nfl/production/authorization.py",
+    "nfl/production/draw_coherence.py",
+    "nfl/production/nonqb/football_engine.py",
+    "nfl/production/pool_audit.py",
+    "nfl/production/stat_contract.py",
+    "nfl/production/universe/coverage.py",
+    "nfl/production/universe/participation.py",
+    "nfl/research/coupling/game_offense_coupling.py",
+    "nfl/research/forensic_corrected.py",
+    "nfl/research/j1/downstream.py",
+    "nfl/research/j1/j1_lib.py",
+    "nfl/research/j1/run_j1.py",
+    "nfl/research/market_outcome_audit.py",
+    "nfl/research/mkt1/market_diagnostic.py",
+    "nfl/research/own3/run_own3.py",
+    "nfl/research/own6/run_own6.py",
+    "nfl/research/p4/run_p4.py",
+    "nfl/research/postgame.py",
+    "nfl/research/q7/panel.py",
+    "nfl/research/remediation/ws_m/ws_m_probe.py",
+    "nfl/research/same_day_retrospective.py",
+    "nfl/research/shadow/ledger.py",
+    "nfl/research/shadow/score.py",
+    "nfl/research/unsealed/conditionality.py",
+    "nfl/research/unsealed/unavailable_owns_nothing.py",
+    "nfl/research/v2/d7/d7_central_tendency.py",
+    "nfl/research/v2/r1/r1_tonight.py",
+    "nfl/research/v2/u1/u1_blast.py",
+    "nfl/research/v2/u1/u1_build.py",
+    "nfl/research/v2/u1/u1_measure.py",
+    "nfl/research/v4/p3/p3_measure.py",
+    "nfl/research/v4/p8/p8_measure.py",
+    "nfl/research/xl1/diagnose_xl1.py",
+    "nfl/research/xl1/run_xl1.py",
+    "nfl/tools/headline_mcse.py",
+    "nfl/tools/passer_credit_migration.py",
+    "nfl/tools/run_market_diagnostic.py"
+   ],
+   "metrics": [
+    "att",
+    "cmp",
+    "int",
+    "ptd",
+    "pyds"
+   ],
+   "tests": [
+    "nfl/tests/governed_draws.py",
+    "nfl/tests/test_align_geometry.py",
+    "nfl/tests/test_artifact_contracts.py",
+    "nfl/tests/test_artifact_kind.py",
+    "nfl/tests/test_board_row_identity.py",
+    "nfl/tests/test_coherence_certificate.py",
+    "nfl/tests/test_conservation.py",
+    "nfl/tests/test_conservation_integrity.py",
+    "nfl/tests/test_decomposition.py",
+    "nfl/tests/test_detbuf_conservation.py",
+    "nfl/tests/test_determinism_proof.py",
+    "nfl/tests/test_draw_coherence.py",
+    "nfl/tests/test_draw_row_identity.py",
+    "nfl/tests/test_forecast_stage_product.py",
+    "nfl/tests/test_market_quote_accounting.py",
+    "nfl/tests/test_p3_rush_accounting.py",
+    "nfl/tests/test_p9_target_closure.py",
+    "nfl/tests/test_passer_credit_migration.py",
+    "nfl/tests/test_player_universe_coverage.py",
+    "nfl/tests/test_product_attribution.py",
+    "nfl/tests/test_product_layer.py",
+    "nfl/tests/test_product_orchestration.py",
+    "nfl/tests/test_publication_semantics.py",
+    "nfl/tests/test_q7_efficiency_calibration.py",
+    "nfl/tests/test_q7_panel_nondegeneracy.py",
+    "nfl/tests/test_qb_pyds_market_eligibility.py",
+    "nfl/tests/test_qb_room_composition.py",
+    "nfl/tests/test_quality_gates.py",
+    "nfl/tests/test_retrospective_zero_completion.py",
+    "nfl/tests/test_shadow_evaluation.py",
+    "nfl/tests/test_stat_contract.py",
+    "nfl/tests/test_v1_draw_artifact.py",
+    "nfl/tests/test_wired_product.py"
+   ]
+  },
+  "receiving": {
+   "consumers": [
+    "nfl/dfs/salaries/build_postinactives_package.py",
+    "nfl/dfs/salaries/postinactives_board.py",
+    "nfl/dfs/scoring/statline.py",
+    "nfl/dfs/showdown/eval_props_indkc.py",
+    "nfl/market/eval_hardrock.py",
+    "nfl/market/evaluate.py",
+    "nfl/postgame/grade_projections.py",
+    "nfl/product/attribution.py",
+    "nfl/product/board.py",
+    "nfl/product/confidence.py",
+    "nfl/product/conservation.py",
+    "nfl/product/daily_board.py",
+    "nfl/product/decomposition.py",
+    "nfl/product/metrics.py",
+    "nfl/product/quality_gates.py",
+    "nfl/product/render.py",
+    "nfl/product/thresholds.py",
+    "nfl/production/authorization.py",
+    "nfl/production/contracts/validate.py",
+    "nfl/production/draw_coherence.py",
+    "nfl/production/nonqb/football_engine.py",
+    "nfl/production/pool_audit.py",
+    "nfl/production/universe/coverage.py",
+    "nfl/prospective/q9shadow/seal.py",
+    "nfl/research/buf_allocation/run_role_ordering.py",
+    "nfl/research/daily_board.py",
+    "nfl/research/forensic_corrected.py",
+    "nfl/research/mkt1/market_diagnostic.py",
+    "nfl/research/own3/run_own3.py",
+    "nfl/research/parallel_pass/ws08/ws08_recv.py",
+    "nfl/research/postgame.py",
+    "nfl/research/remediation/ws_m/ws_m_probe.py",
+    "nfl/research/same_day_retrospective.py",
+    "nfl/research/unsealed/conditionality.py",
+    "nfl/research/unsealed/unavailable_owns_nothing.py",
+    "nfl/research/v2/d7/d7_central_tendency.py",
+    "nfl/research/v4/p8/p8_measure.py",
+    "nfl/tools/headline_mcse.py",
+    "nfl/tools/passer_credit_migration.py",
+    "nfl/tools/run_market_diagnostic.py"
+   ],
+   "metrics": [
+    "receiving_td",
+    "receiving_yards",
+    "receptions",
+    "targets"
+   ],
+   "tests": [
+    "nfl/tests/governed_draws.py",
+    "nfl/tests/test_adjustment_registry.py",
+    "nfl/tests/test_artifact_contracts.py",
+    "nfl/tests/test_conservation.py",
+    "nfl/tests/test_conservation_integrity.py",
+    "nfl/tests/test_decomposition.py",
+    "nfl/tests/test_detbuf_conservation.py",
+    "nfl/tests/test_draw_coherence.py",
+    "nfl/tests/test_draw_conditionality.py",
+    "nfl/tests/test_eligibility_gate.py",
+    "nfl/tests/test_governance_transport.py",
+    "nfl/tests/test_integrity_producers.py",
+    "nfl/tests/test_market_quote_accounting.py",
+    "nfl/tests/test_oas1_research_only.py",
+    "nfl/tests/test_p9_target_closure.py",
+    "nfl/tests/test_player_universe_coverage.py",
+    "nfl/tests/test_product_attribution.py",
+    "nfl/tests/test_product_layer.py",
+    "nfl/tests/test_publication_semantics.py",
+    "nfl/tests/test_quality_gates.py",
+    "nfl/tests/test_retrospective_zero_completion.py",
+    "nfl/tests/test_unavailable_owns_nothing.py",
+    "nfl/tests/test_wired_product.py"
+   ]
+  },
+  "rush_category": {
+   "consumers": [
+    "nfl/production/nonqb/football_engine.py",
+    "nfl/research/v2/u1/u1_blast.py",
+    "nfl/research/v2/u1/u1_measure.py",
+    "nfl/research/v4/p3/p3_measure.py"
+   ],
+   "metrics": [
+    "designed_qb",
+    "fringe",
+    "kneel",
+    "rb",
+    "te",
+    "wr"
+   ],
+   "tests": [
+    "nfl/tests/test_detbuf_conservation.py",
+    "nfl/tests/test_gadget_rush.py",
+    "nfl/tests/test_p3_rush_accounting.py"
+   ]
+  },
+  "rush_player_pool": {
+   "consumers": [
+    "nfl/research/coupling/game_offense_coupling.py",
+    "nfl/research/v2/u1/u1_measure.py",
+    "nfl/research/v4/p3/p3_measure.py"
+   ],
+   "metrics": [
+    "unmodelled_back_pool"
+   ],
+   "tests": [
+    "nfl/tests/test_detbuf_conservation.py",
+    "nfl/tests/test_gadget_rush.py"
+   ]
+  },
+  "rushing": {
+   "consumers": [
+    "nfl/dfs/salaries/build_postinactives_package.py",
+    "nfl/dfs/salaries/postinactives_board.py",
+    "nfl/dfs/scoring/statline.py",
+    "nfl/dfs/showdown/eval_props_indkc.py",
+    "nfl/market/eval_hardrock.py",
+    "nfl/market/evaluate.py",
+    "nfl/postgame/grade_projections.py",
+    "nfl/product/attribution.py",
+    "nfl/product/board.py",
+    "nfl/product/confidence.py",
+    "nfl/product/conservation.py",
+    "nfl/product/daily_board.py",
+    "nfl/product/decomposition.py",
+    "nfl/product/metrics.py",
+    "nfl/product/quality_gates.py",
+    "nfl/product/render.py",
+    "nfl/product/thresholds.py",
+    "nfl/production/authorization.py",
+    "nfl/production/contracts/validate.py",
+    "nfl/production/draw_coherence.py",
+    "nfl/production/nonqb/football_engine.py",
+    "nfl/production/seeds.py",
+    "nfl/production/universe/coverage.py",
+    "nfl/research/buf_allocation/run_role_ordering.py",
+    "nfl/research/daily_board.py",
+    "nfl/research/forensic_corrected.py",
+    "nfl/research/mkt1/market_diagnostic.py",
+    "nfl/research/own3/run_own3.py",
+    "nfl/research/postgame.py",
+    "nfl/research/remediation/ws_m/ws_m_probe.py",
+    "nfl/research/same_day_retrospective.py",
+    "nfl/research/unsealed/conditionality.py",
+    "nfl/research/unsealed/unavailable_owns_nothing.py",
+    "nfl/research/v2/d7/d7_central_tendency.py",
+    "nfl/research/v2/u1/u1_blast.py",
+    "nfl/research/v2/u1/u1_measure.py",
+    "nfl/research/v4/p3/p3_blast.py",
+    "nfl/research/v4/p3/p3_measure.py",
+    "nfl/research/v4/p8/p8_measure.py",
+    "nfl/tools/headline_mcse.py",
+    "nfl/tools/passer_credit_migration.py",
+    "nfl/tools/run_market_diagnostic.py"
+   ],
+   "metrics": [
+    "carries",
+    "rushing_td",
+    "rushing_yards"
+   ],
+   "tests": [
+    "nfl/tests/test_artifact_contracts.py",
+    "nfl/tests/test_coherence_certificate.py",
+    "nfl/tests/test_conservation.py",
+    "nfl/tests/test_decomposition.py",
+    "nfl/tests/test_detbuf_conservation.py",
+    "nfl/tests/test_draw_coherence.py",
+    "nfl/tests/test_draw_conditionality.py",
+    "nfl/tests/test_draw_stream_determinism.py",
+    "nfl/tests/test_forecast_completeness.py",
+    "nfl/tests/test_governance_transport.py",
+    "nfl/tests/test_integrity_producers.py",
+    "nfl/tests/test_p3_rush_accounting.py",
+    "nfl/tests/test_p8_tails_and_counts.py",
+    "nfl/tests/test_passer_credit_migration.py",
+    "nfl/tests/test_player_universe_coverage.py",
+    "nfl/tests/test_product_attribution.py",
+    "nfl/tests/test_product_layer.py",
+    "nfl/tests/test_product_orchestration.py",
+    "nfl/tests/test_publication_semantics.py",
+    "nfl/tests/test_quality_gates.py",
+    "nfl/tests/test_stat_contract.py",
+    "nfl/tests/test_unavailable_owns_nothing.py",
+    "nfl/tests/test_wired_product.py"
+   ]
+  },
+  "rushing_total": {
+   "consumers": [
+    "nfl/dfs/salaries/build_postinactives_package.py",
+    "nfl/dfs/salaries/postinactives_board.py",
+    "nfl/dfs/scoring/statline.py",
+    "nfl/market/evaluate.py",
+    "nfl/postgame/grade_projections.py",
+    "nfl/research/coupling/game_offense_coupling.py"
+   ],
+   "metrics": [
+    "rushing_yards"
+   ],
+   "tests": [
+    "nfl/tests/test_publication_semantics.py",
+    "nfl/tests/test_wired_product.py"
+   ]
+  },
+  "team_volume": {
+   "consumers": [
+    "nfl/product/attribution.py",
+    "nfl/product/conservation.py",
+    "nfl/product/daily_board.py",
+    "nfl/product/decomposition.py",
+    "nfl/product/distributions.py",
+    "nfl/product/quality_gates.py",
+    "nfl/production/adjustment_registry.py",
+    "nfl/production/draw_coherence.py",
+    "nfl/production/fixture_assembler.py",
+    "nfl/production/nonqb/accounting.py",
+    "nfl/production/nonqb/eligibility.py",
+    "nfl/production/pregame_readiness.py",
+    "nfl/production/rehearsal/run_slate.py",
+    "nfl/production/review/dossier.py",
+    "nfl/production/review/dossier_reference.py",
+    "nfl/production/seeds.py",
+    "nfl/production/team_volume_v1.py",
+    "nfl/prospective/q9shadow/complete.py",
+    "nfl/research/completeness.py",
+    "nfl/research/forensic_corrected.py",
+    "nfl/research/oas1/preregistration.py",
+    "nfl/research/p4c_carry/run_p4cc_diag.py",
+    "nfl/research/postgame.py",
+    "nfl/research/shadow/replay.py",
+    "nfl/research/shadow/score.py",
+    "nfl/research/slate_audit/c1_eval.py",
+    "nfl/research/v2/r1/r1_tonight.py",
+    "nfl/research/v2/u1/u1_blast.py",
+    "nfl/research/v2/u1/u1_measure.py",
+    "nfl/research/v4/p3/p3_measure.py",
+    "nfl/tools/make_board.py",
+    "nfl/tools/market_product_export.py"
+   ],
+   "metrics": [
+    "team_carries",
+    "team_off_snaps",
+    "team_targets"
+   ],
+   "tests": [
+    "nfl/tests/test_adjustment_registry.py",
+    "nfl/tests/test_artifact_contracts.py",
+    "nfl/tests/test_assumption_governance.py",
+    "nfl/tests/test_capture_validation_provenance.py",
+    "nfl/tests/test_coherence_certificate.py",
+    "nfl/tests/test_conservation.py",
+    "nfl/tests/test_decomposition.py",
+    "nfl/tests/test_detbuf_conservation.py",
+    "nfl/tests/test_determinism_proof.py",
+    "nfl/tests/test_draw_coherence.py",
+    "nfl/tests/test_forecast_completeness.py",
+    "nfl/tests/test_gadget_rush.py",
+    "nfl/tests/test_governance_transport.py",
+    "nfl/tests/test_oas1_research_only.py",
+    "nfl/tests/test_ownership_audit.py",
+    "nfl/tests/test_p3_rush_accounting.py",
+    "nfl/tests/test_p9_target_closure.py",
+    "nfl/tests/test_pregame_readiness.py",
+    "nfl/tests/test_product_attribution.py",
+    "nfl/tests/test_q9_live_feature_builder.py",
+    "nfl/tests/test_qb_room_composition.py",
+    "nfl/tests/test_quality_gates.py",
+    "nfl/tests/test_xl1_shared_pass.py"
+   ]
+  }
+ },
+ "generated_utc": "2026-09-25T04:40:00Z",
+ "head": "8d63b6ce37b90fe3fbd2514ea24222e002f1ec51",
+ "relations": [
+  {
+   "from": "kicking",
+   "kind": "UNIVERSE_MISMATCH",
+   "lost_ids": [
+    "00-0025565",
+    "00-0040899"
+   ],
+   "n_lost": 2,
+   "n_total": 2,
+   "to": "dk_scoring"
+  },
+  {
+   "kind": "PARTIAL_JOIN",
+   "module": "nfl/dfs/classic/pool.py",
+   "never_reads": [
+    "dk_scoring"
+   ],
+   "reads": [
+    "kicking"
+   ]
+  },
+  {
+   "kind": "PARTIAL_JOIN",
+   "module": "nfl/dfs/scoring/dual_board.py",
+   "never_reads": [
+    "kicking"
+   ],
+   "reads": [
+    "dk_scoring"
+   ]
+  },
+  {
+   "kind": "PARTIAL_JOIN",
+   "module": "nfl/dfs/scoring/statline.py",
+   "never_reads": [
+    "dk_scoring"
+   ],
+   "reads": [
+    "kicking"
+   ]
+  },
+  {
+   "kind": "PARTIAL_JOIN",
+   "module": "nfl/dfs/showdown/eval_props_indkc.py",
+   "never_reads": [
+    "dk_scoring"
+   ],
+   "reads": [
+    "kicking"
+   ]
+  },
+  {
+   "kind": "PARTIAL_JOIN",
+   "module": "nfl/dfs/showdown/kicker_identity.py",
+   "never_reads": [
+    "dk_scoring"
+   ],
+   "reads": [
+    "kicking"
+   ]
+  },
+  {
+   "kind": "PARTIAL_JOIN",
+   "module": "nfl/market/evaluate.py",
+   "never_reads": [
+    "dk_scoring"
+   ],
+   "reads": [
+    "kicking"
+   ]
+  },
+  {
+   "kind": "PARTIAL_JOIN",
+   "module": "nfl/postgame/grade_portfolios.py",
+   "never_reads": [
+    "dk_scoring"
+   ],
+   "reads": [
+    "kicking"
+   ]
+  },
+  {
+   "kind": "PARTIAL_JOIN",
+   "module": "nfl/postgame/grade_projections.py",
+   "never_reads": [
+    "kicking"
+   ],
+   "reads": [
+    "dk_scoring"
+   ]
+  },
+  {
+   "kind": "PARTIAL_JOIN",
+   "module": "nfl/postgame/ingest_outcome.py",
+   "never_reads": [
+    "dk_scoring"
+   ],
+   "reads": [
+    "kicking"
+   ]
+  },
+  {
+   "kind": "PARTIAL_JOIN",
+   "module": "nfl/production/seeds.py",
+   "never_reads": [
+    "kicking"
+   ],
+   "reads": [
+    "dk_scoring"
+   ]
+  },
+  {
+   "kind": "PARTIAL_JOIN",
+   "module": "nfl/production/universe/role_state.py",
+   "never_reads": [
+    "dk_scoring"
+   ],
+   "reads": [
+    "kicking"
+   ]
+  },
+  {
+   "kind": "PARTIAL_JOIN",
+   "module": "nfl/research/buf_allocation/run_role_ordering.py",
+   "never_reads": [
+    "kicking"
+   ],
+   "reads": [
+    "dk_scoring"
+   ]
+  },
+  {
+   "kind": "PARTIAL_JOIN",
+   "module": "nfl/research/coupling/game_offense_coupling.py",
+   "never_reads": [
+    "kicking"
+   ],
+   "reads": [
+    "dk_scoring"
+   ]
+  },
+  {
+   "kind": "PARTIAL_JOIN",
+   "module": "nfl/research/unsealed/conditionality.py",
+   "never_reads": [
+    "dk_scoring"
+   ],
+   "reads": [
+    "kicking"
+   ]
+  },
+  {
+   "kind": "PARTIAL_JOIN",
+   "module": "nfl/research/unsealed/unavailable_owns_nothing.py",
+   "never_reads": [
+    "dk_scoring"
+   ],
+   "reads": [
+    "kicking"
+   ]
+  },
+  {
+   "kind": "PARTIAL_JOIN",
+   "module": "nfl/tools/availability_audit.py",
+   "never_reads": [
+    "dk_scoring"
+   ],
+   "reads": [
+    "kicking"
+   ]
+  },
+  {
+   "kind": "PARTIAL_JOIN",
+   "module": "nfl/tools/post_inactive_verify.py",
+   "never_reads": [
+    "kicking"
+   ],
+   "reads": [
+    "dk_scoring"
+   ]
+  },
+  {
+   "kind": "PARTIAL_JOIN",
+   "module": "nfl/tools/reconcile_external_universe.py",
+   "never_reads": [
+    "dk_scoring"
+   ],
+   "reads": [
+    "kicking"
+   ]
+  },
+  {
+   "consumers": [
+    "nfl/research/coupling/game_offense_coupling.py",
+    "nfl/research/v2/u1/u1_measure.py",
+    "nfl/research/v4/p3/p3_measure.py"
+   ],
+   "family": "rush_player_pool",
+   "kind": "ORPHANED_OUTPUT",
+   "why": "research-only consumers"
+  },
+  {
+   "kind": "ORPHANED_MODULE",
+   "module": "identity_crosswalk",
+   "n_non_test_consumers": 0,
+   "note": "implemented and unit-tested; nothing on any execution path calls it"
+  },
+  {
+   "kind": "ORPHANED_MODULE",
+   "module": "research_portfolio",
+   "n_non_test_consumers": 0,
+   "note": "implemented and unit-tested; nothing on any execution path calls it"
+  },
+  {
+   "kind": "ORPHANED_MODULE",
+   "module": "lineup_integrity",
+   "n_non_test_consumers": 0,
+   "note": "implemented and unit-tested; nothing on any execution path calls it"
+  },
+  {
+   "kind": "ORPHANED_MODULE",
+   "module": "cut_ledger",
+   "n_non_test_consumers": 0,
+   "note": "implemented and unit-tested; nothing on any execution path calls it"
+  },
+  {
+   "kind": "ORPHANED_MODULE",
+   "module": "source_validity",
+   "n_non_test_consumers": 0,
+   "note": "implemented and unit-tested; nothing on any execution path calls it"
+  },
+  {
+   "kind": "ORPHANED_MODULE",
+   "module": "source_census",
+   "n_non_test_consumers": 0,
+   "note": "implemented and unit-tested; nothing on any execution path calls it"
+  },
+  {
+   "kind": "ORPHANED_MODULE",
+   "module": "pregame_readiness",
+   "n_non_test_consumers": 0,
+   "note": "implemented and unit-tested; nothing on any execution path calls it"
+  },
+  {
+   "kind": "ORPHANED_MODULE",
+   "module": "conditioning_contract",
+   "n_non_test_consumers": 0,
+   "note": "implemented and unit-tested; nothing on any execution path calls it"
+  },
+  {
+   "kind": "ORPHANED_MODULE",
+   "module": "discovery_audit",
+   "n_non_test_consumers": 0,
+   "note": "implemented and unit-tested; nothing on any execution path calls it"
+  }
+ ],
+ "spec_version": "cross-layer-inventory/1.0.0"
+}
