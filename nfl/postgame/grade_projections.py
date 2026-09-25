@@ -102,18 +102,49 @@ def grade(outcome_path=None) -> Outcome:
     # model's number for him is exactly the kind that must not vanish.
     teams = ({UNI.norm(p['name']): p['team'] for p in uni.value['players']}
              if uni.state is State.PASS else {})
+    # THE CLUB OF A PLAYER IN A SEALED RUN IS A PROPERTY OF THE SEALED RUN.
+    #
+    # `teams` above comes from the DFS universe, which is built from the DK
+    # SALARY file -- so a player absent from that file has no club here. That
+    # was invisible while grading enumerated only dk_scoring; the moment
+    # kickers were included they came back CLUB_NOT_COVERED_BY_THE_OUTCOME,
+    # which reads as "the outcome does not cover his team" and was actually
+    # "the salary file does not list him".
+    #
+    # The manifest already answers it, by gsis_id, for every layer: run_forecast
+    # records row_teams when it writes each one. Resolving by IDENTITY from the
+    # artifact is both correct and better than a normalised-name lookup into a
+    # different source.
+    # row_teams appears in BOTH shapes across layers: a dict keyed by gsis_id,
+    # and a list positionally aligned to row_ids. Assuming either one crashes on
+    # the other, so both are read and a mismatched list length is skipped rather
+    # than zipped short -- a truncated zip would attach one player's club to
+    # another, which is worse than having no club at all.
+    team_by_gid = {}
+    for _spec in (man.get('layers') or {}).values():
+        _rt = (_spec or {}).get('row_teams')
+        if isinstance(_rt, dict):
+            pairs = _rt.items()
+        elif isinstance(_rt, (list, tuple)):
+            _ids = (_spec or {}).get('row_ids') or []
+            pairs = zip(_ids, _rt) if len(_ids) == len(_rt) else ()
+        else:
+            pairs = ()
+        for _g, _tm in pairs:
+            if _tm:
+                team_by_gid.setdefault(_g, _tm)
     rows, not_in_outcome, zeroed = [], [], []
     for gid in ids:
         nm = names.get(gid, gid)
         a = actual.get(UNI.norm(nm))
         if a is None:
-            line, code = OC.resolve_absent(nm, teams.get(UNI.norm(nm)),
-                                           result)
+            line, code = OC.resolve_absent(
+                nm, team_by_gid.get(gid) or teams.get(UNI.norm(nm)), result)
             if line is None:
                 not_in_outcome.append({'player': nm, 'reason': code})
                 continue
-            a = {'team': teams.get(UNI.norm(nm)), 'position': None,
-                 **line}
+            a = {'team': team_by_gid.get(gid) or teams.get(UNI.norm(nm)),
+                 'position': None, **line}
             zeroed.append(nm)
         sl = SL.assemble(gid, nm, L, z, n)
         per_stat = {}
