@@ -102,6 +102,59 @@ def consumers(token: str) -> dict:
     return hits
 
 
+def untested_refusal_codes() -> tuple:
+    """(untested, total) refusal codes declared outside research and tests.
+
+    A code is counted as tested when its literal appears ANYWHERE in the test
+    corpus, which is generous: the real coverage is lower than this reports.
+    The ratchet uses it because a generous measure that cannot drift upward is
+    worth more than a precise one nobody maintains.
+    """
+    pat = re.compile(
+        r"(?:Outcome\.(?:fail|blocked|refus\w*)|raise \w*Error)"
+        r"\(\s*'([A-Z][A-Z0-9_]{5,})'")
+    tests = '\n'.join(
+        p.read_text() for p in sorted((PKG / 'tests').glob('*.py')))
+    codes = set()
+    for p in _py_files():
+        rel = str(p.relative_to(REPO))
+        if '/tests/' in rel or '/research/' in rel:
+            continue
+        codes |= set(pat.findall(p.read_text()))
+    return sorted(c for c in codes if c not in tests), len(codes)
+
+
+def relation_counts() -> dict:
+    """kind -> count, for the ratchet. Recomputed, never read from a file."""
+    fam = declared_families()
+    counts = {'ORPHANED_OUTPUT': 0, 'PARTIAL_JOIN': 0, 'FIXTURE_PINNED': 0}
+    census = {}
+    for layer in sorted(fam):
+        a, b = consumers(f"'{layer}'"), consumers(f'{layer}__')
+        real = sorted(set(a['consumers']) | set(b['consumers']))
+        census[layer] = set(real)
+        if not real or all(c.startswith('nfl/research/') for c in real):
+            counts['ORPHANED_OUTPUT'] += 1
+    per = {l: census[l] for l in DK_BEARING if l in census}
+    if len(per) > 1:
+        for f in set().union(*per.values()):
+            miss = [l for l, cs in per.items() if f not in cs]
+            if miss and len(miss) < len(per):
+                counts['PARTIAL_JOIN'] += 1
+    for p in _py_files():
+        rel = str(p.relative_to(REPO))
+        if not any(rel.startswith(t) for t in PRODUCTION_TREES):
+            continue
+        src = p.read_text()
+        for cand in _FIXTURE.finditer(src):
+            lit = cand.group(0)
+            if ' ' in lit or len(lit) > 120:
+                continue
+            counts['FIXTURE_PINNED'] += 1
+            break
+    return counts
+
+
 def main() -> int:
     fam = declared_families()
     findings, census = [], {}

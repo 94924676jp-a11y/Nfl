@@ -173,10 +173,17 @@ PROGRESS_PATH = os.environ.get(
 
 _T0 = time.time()
 
+#: Every record carries the run that wrote it, and the file is APPENDED to,
+#: never truncated. The first version truncated at start, so a `--only` run
+#: launched while a full run was in flight silently destroyed the full run's
+#: evidence -- found 2026-09-25 by doing exactly that. A reader takes the last
+#: `suite_start` and filters on its run_id.
+_RUN_ID = f'{int(_T0)}-{os.getpid()}'
+
 
 def _emit(rec: dict, echo: str = '') -> None:
     """Append one progress record and flush. Never fails the run."""
-    rec = {'t': round(time.time() - _T0, 2), **rec}
+    rec = {'run_id': _RUN_ID, 't': round(time.time() - _T0, 2), **rec}
     try:
         with open(PROGRESS_PATH, 'a') as fh:
             fh.write(json.dumps(rec, sort_keys=True) + '\n')
@@ -209,10 +216,6 @@ def main(argv=None):
     n_fn_zero = n_fn_blocked = n_unrecognised_tally = 0
     zero_fns, blocked_fns = [], []
     problems = []
-    try:
-        open(PROGRESS_PATH, 'w').close()
-    except OSError:
-        pass
     _emit({'phase': 'suite_start', 'n_modules': len(files)},
           f'suite: {len(files)} module(s)')
     for i, f in enumerate(files, 1):
