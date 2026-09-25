@@ -2483,3 +2483,31 @@ so it runs the moment refreshed data lands. It is explicitly labelled
 `RESEARCH_DFS_PORTFOLIO_NOT_JOINT-WORLD_VALIDATED` and claims no lineup-level
 win probability. **This request blocks the refresh and the rerun, not the
 build.**
+
+
+## REQUESTED 2026-09-25 04:15Z — authoritative ATL @ GB box score
+
+The game is final (**ATL 35, GB 14**) and the day audit at
+`nfl/research/audit/2026-09-25_DAY_AUDIT_ATL_GB.md` grades what can be verified.
+Eight of the twenty-six players in the entered lineups still have **no verified
+stat line**: MarShawn Lloyd, Tucker Kraft, Jahan Dotson, Kyle Pitts Sr., Chris
+Brooks, J. Michael Sturdivant, Chris Blair, Jonnu Smith.
+
+**Correcting how this class of request has been worded.** Previous items here
+said the bytes "do not exist for us". That was untested. `WebSearch` is
+reachable from this session and returned a consistent scoring summary from four
+independent outlets. What is NOT reachable is any content-bearing page: ESPN,
+Pro-Football-Reference, CBS, Fox, Yahoo, packers.com and site.api.espn.com all
+return `EGRESS_BLOCKED` or a proxy 403 on CONNECT. So a **secondary relay** is
+available to me and a **provenanced artifact** is not, and the governed pipeline
+is correct to refuse the former.
+
+**What is needed:** the full box score as bytes, with provenance — complete
+passing, rushing, receiving and kicking lines for both clubs, plus the official
+inactive list as published. Any one of the blocked hosts above will do.
+
+**What it unblocks:** completing the portfolio grade from lower bounds to actual
+scores, and the first real entry in the prospective grading ledger (C1) against
+a forecast cut that was registered before kickoff (`CUT-e3a92fca9dbe8cb7`).
+
+Not blocking anything else. The audit stands as written, labelled partial.
