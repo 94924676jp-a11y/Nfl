@@ -38,11 +38,46 @@ def upcoming(season, week):
     return sorted(out)
 
 
+#: Weeks a regular season can hold. A bounded scan, so a broken schedule
+#: cannot spin.
+_MAX_WEEK = 22
+
+
+def current_week(season):
+    """The lowest week that still has a kickoff ahead of now.
+
+    WHY THIS EXISTS. `--week` defaulted to 1 and the scheduled workflow passes
+    no week, so `--all-upcoming` asked for week-1 games with a future kickoff.
+    That was correct for seven days and has been empty ever since. Measured
+    2026-09-25: week 1 yields 0 upcoming, week 3 yields 15, week 4 yields 16.
+    The board refresh had failed on every scheduled run since week 1 closed,
+    reporting a usage error the whole time.
+
+    A default that is right only during the first week of a season is a
+    hardcoded date wearing an argument's clothes.
+    """
+    from nfl.capture import coverage as C
+    now = dt.datetime.now(dt.timezone.utc)
+    for wk in range(1, _MAX_WEEK + 1):
+        p = C.load_week_plan(season, wk)
+        if p.state.name != 'PASS':
+            continue
+        if any(c.kickoff_utc and c.kickoff_utc > now for c in p.value):
+            return wk
+    raise SystemExit(
+        f'NO_WEEK_HAS_A_FUTURE_KICKOFF: scanned weeks 1-{_MAX_WEEK} of '
+        f'{season} and found no game ahead of {now.isoformat()}. That is a '
+        f'schedule problem, not a usage problem.')
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--game-id', action='append', default=[])
     ap.add_argument('--season', type=int, default=2026)
-    ap.add_argument('--week', type=int, default=1)
+    # NOT defaulted. A week default is a date default, and this one silently
+    # expired. When --all-upcoming is asked for without a week, the week is
+    # resolved from the schedule.
+    ap.add_argument('--week', type=int, default=None)
     ap.add_argument('--all-upcoming', action='store_true')
     ap.add_argument('--draws', type=int, default=1000)
     ap.add_argument('--seed', type=int, default=20260908)
@@ -51,9 +86,25 @@ def main():
                     help='report what a run would do and write nothing')
     a = ap.parse_args()
 
+    # RESOLVE THE WEEK ONCE AND WRITE IT BACK. The first version of this fix
+    # resolved it into a local and left `a.week` as None, so the two later
+    # consumers at ORC.plan and ORC.run received None, filtered the snapshot on
+    # the string "None" and refused with NO_GAMES_IN_SNAPSHOT. A value resolved
+    # in one branch and read in three is the same shape as the bug being fixed.
+    if a.week is None:
+        a.week = current_week(a.season)
     games = list(a.game_id)
     if a.all_upcoming:
-        games += [g for g in upcoming(a.season, a.week) if g not in games]
+        found = upcoming(a.season, a.week)
+        games += [g for g in found if g not in games]
+        # AN EMPTY RESULT IS NOT A USAGE ERROR. The old code raised
+        # NO_GAME_SELECTED here, which told an operator to pass a flag they had
+        # just passed. Nine consecutive scheduled runs reported it.
+        if not games:
+            raise SystemExit(
+                f'NO_UPCOMING_GAMES_IN_WINDOW: --all-upcoming resolved season '
+                f'{a.season} week {a.week} and found no game with a kickoff ahead '
+                f'of now. The flag was supplied and matched nothing.')
     if not games:
         raise SystemExit('NO_GAME_SELECTED: pass --game-id or --all-upcoming')
 
