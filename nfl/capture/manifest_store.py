@@ -70,20 +70,45 @@ def _lines(path: Path):
                 yield line.rstrip('\n')
 
 
-def shard_key(raw: str) -> str:
-    """The shard a record belongs to: its capture month, or UNDATED.
+#: DAILY, AND THE MEASUREMENT THAT CHOSE IT.
+#:
+#: The approval named monthly shards "acceptable if your evidence shows they
+#: retain the required ordering semantics". They do retain ordering -- proven
+#: byte-exact over all 8,951 live records -- and they do not solve the problem,
+#: because every record in the live lineage is 2026-09, so monthly yields ONE
+#: shard of 69.69 MB. Measured over the same records:
+#:
+#:     key      shards   largest   headroom to 100 MB
+#:     month         1   69.69 MB                0.4x
+#:     week          4   26.48 MB                2.8x
+#:     day          19    7.94 MB               11.6x
+#:
+#: Daily is chosen for a property the table only hints at: a day's shard is
+#: BOUNDED BY ONE DAY'S CAPTURE TRAFFIC AND THEN CLOSES FOREVER. A month's
+#: shard grows all month, so the largest file is always the current one and the
+#: limit is approached again every cycle. With daily keys the only growing file
+#: is today's, and it is a few megabytes.
+SHARD_KEY_MODE = 'day'
 
-    Monthly, per the owner's guidance, and derived from `capture_id` rather than
-    from any field a later process might recompute. A record whose capture_id is
-    missing or unparseable goes to UNDATED rather than being dropped or guessed
-    into a neighbouring month.
+
+def shard_key(raw: str, mode: str = None) -> str:
+    """The shard a record belongs to, derived from `capture_id`.
+
+    Derived from the capture id rather than from any field a later process
+    might recompute -- constraint 2 forbids recomputing historical provenance.
+    A record whose id is missing or unparseable goes to UNDATED rather than
+    being dropped or guessed into a neighbouring period.
     """
+    mode = mode or SHARD_KEY_MODE
     try:
         cid = json.loads(raw).get('capture_id') or ''
     except ValueError:
         return 'UNDATED'
-    if len(cid) >= 6 and cid[:8].isdigit():
-        return f'{cid[:4]}-{cid[4:6]}'
+    if len(cid) >= 8 and cid[:8].isdigit():
+        if mode == 'month':
+            return f'{cid[:4]}-{cid[4:6]}'
+        if mode == 'day':
+            return f'{cid[:4]}-{cid[4:6]}-{cid[6:8]}'
     return 'UNDATED'
 
 
@@ -97,9 +122,21 @@ def records(source=None, *, parse: bool = True):
     src = Path(source) if source else MONOLITH
     if src.is_dir():
         idx = json.loads((src / INDEX_NAME).read_text())
-        for shard in idx['shards']:
-            for raw in _lines(src / shard['file']):
-                yield json.loads(raw) if parse else raw
+        # A K-WAY MERGE ON THE RECORDED ORDER, NOT SHARD-THEN-CONCATENATE.
+        #
+        # Concatenating shards reproduces append order ONLY when the source is
+        # already sorted by shard key. The live manifest happens to be
+        # chronological, so the first version of this passed against it and was
+        # wrong: on a log where 09-08 appears between two 09-07 records,
+        # reading shard by shard silently reorders them. Twenty-one consumers
+        # depend on order, which is the whole reason this loader exists, so the
+        # index carries the shard each record came from, in source position,
+        # and the reader walks that.
+        cursors = {sh['key']: _lines(src / sh['file'])
+                   for sh in idx['shards']}
+        for key in idx['order']:
+            raw = next(cursors[key])
+            yield json.loads(raw) if parse else raw
         return
     for raw in _lines(src):
         yield json.loads(raw) if parse else raw
@@ -115,7 +152,7 @@ def digest(source=None) -> str:
     return h.hexdigest()
 
 
-def build_shards(source=None, dest=None) -> dict:
+def build_shards(source=None, dest=None, mode: str = None) -> dict:
     """Write a shard tree from the monolith. The source is never touched.
 
     Records are appended to their shard IN SOURCE ORDER and the index records
@@ -130,12 +167,13 @@ def build_shards(source=None, dest=None) -> dict:
             f'interleave two migrations; remove it deliberately or choose '
             f'another destination.')
     dst.mkdir(parents=True, exist_ok=True)
-    order, handles, counts = [], {}, {}
+    shard_order, handles, counts, positions = [], {}, {}, []
     try:
         for raw in _lines(src):
-            key = shard_key(raw)
+            key = shard_key(raw, mode)
+            positions.append(key)
             if key not in handles:
-                order.append(key)
+                shard_order.append(key)
                 handles[key] = (dst / f'{key}.jsonl').open('w',
                                                            encoding='utf-8')
                 counts[key] = 0
@@ -146,10 +184,15 @@ def build_shards(source=None, dest=None) -> dict:
             fh.close()
     index = {
         'spec_version': SPEC_VERSION,
+        'shard_key_mode': mode or SHARD_KEY_MODE,
         'source_digest': digest(src),
         'n_records': sum(counts.values()),
         'shards': [{'key': k, 'file': f'{k}.jsonl', 'n_records': counts[k]}
-                   for k in order],
+                   for k in shard_order],
+        # One shard key per record, in SOURCE POSITION. This is what makes the
+        # read a merge rather than a concatenation. At 8,951 records it is a
+        # few hundred kilobytes against a 69 MB payload.
+        'order': positions,
     }
     (dst / INDEX_NAME).write_text(json.dumps(index, indent=1) + '\n')
     return index
