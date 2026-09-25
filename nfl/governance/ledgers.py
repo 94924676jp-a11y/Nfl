@@ -222,6 +222,58 @@ def add_defect(**row) -> dict:
     return row
 
 
+_LIFECYCLE_RANK = {OPEN: 0, IN_PROGRESS: 1, OPERATING_RISK_ACTIVE: 1,
+                   WAITING_OWNER: 1, EXTERNAL_BLOCKED: 1,
+                   FIX_IMPLEMENTED: 2, FIX_DEPLOYED: 3, FIX_EXECUTED: 4,
+                   VERIFIED: 5}
+
+
+def amend_defect(defect_id: str, *, reason: str, **changes) -> dict:
+    """Correct a row that was recorded wrongly, keeping proof it was.
+
+    Demotion is the case this exists for. A status is a claim, and a claim
+    that turns out to be false has to be withdrawable -- but silently
+    rewriting the row would destroy the evidence it was ever overclaimed,
+    which is exactly the thing the owner told us not to do when fixing
+    defects. So every amendment appends to `amendments` with its reason, and
+    the row carries its own history.
+
+    It cannot be used to promote a row to VERIFIED: that still goes through
+    close(), which demands a commit, a test, and the execution lineage. An
+    amendment may lower a status, or raise it no further than FIX_EXECUTED.
+    """
+    if not reason or not reason.strip():
+        raise LedgerError(f'{defect_id}: an amendment needs a reason. A status '
+                          f'that changes with no recorded cause is indistinguishable '
+                          f'from one that was never checked.')
+    if changes.get('status') == VERIFIED:
+        raise LedgerError(f'{defect_id}: amend_defect cannot mark VERIFIED. '
+                          f'Use close(), which requires the execution lineage.')
+    bad = set(changes) - set(DEFECT_FIELDS) - {'execution_lineage', 'execution_evidence'}
+    if bad:
+        raise LedgerError(f'{defect_id}: unknown field(s) {sorted(bad)}')
+    rows = defects()
+    for r in rows:
+        if r['id'] != defect_id:
+            continue
+        before = {k: r.get(k) for k in changes}
+        if 'status' in changes:
+            old, newst = r.get('status'), changes['status']
+            if newst not in _LIFECYCLE_RANK:
+                raise LedgerError(f'{defect_id}: {newst!r} is not a lifecycle status')
+            if _LIFECYCLE_RANK.get(newst, 0) > _LIFECYCLE_RANK.get(old, 0) + 1:
+                raise LedgerError(
+                    f'{defect_id}: cannot jump {old} -> {newst} by amendment. '
+                    f'Each lifecycle step needs its own evidence.')
+        r.setdefault('amendments', []).append(
+            {'at': dt.datetime.now(dt.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
+             'reason': reason, 'before': before, 'after': dict(changes)})
+        r.update(changes)
+        _write(DEFECT_LOG, rows)
+        return r
+    raise LedgerError(f'{defect_id}: no such defect')
+
+
 def close(defect_id: str, *, fix_commit: str, verification_test: str,
           status: str = VERIFIED, execution_lineage: str = None,
           execution_evidence: str = None) -> dict:
