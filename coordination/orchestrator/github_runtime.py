@@ -281,8 +281,60 @@ def _git(*args, check=True):
 
 
 def changed_paths() -> list:
-    out = _git('status', '--porcelain')
-    return [ln[3:].strip() for ln in out.splitlines() if ln.strip()]
+    """Every path the worker touched, exactly as git names it.
+
+    THIS FUNCTION IS A SECURITY CONTROL, and it silently was not one.
+
+    It used to read `_git('status', '--porcelain')` and take `ln[3:]`. The
+    porcelain format is fixed-width -- two status columns then a space -- so
+    `[3:]` is right only if column one is intact. `_git` strips its whole
+    output, and an UNSTAGED modification has a space in column one (" M path").
+    Stripping ate it, `[3:]` then ate the first character of the path, and the
+    protected-path check compared the wrong string:
+
+        .github/workflows/nfl-capture.yml   ->  github/workflows/nfl-capture.yml
+        coordination/AUTOMATION_POLICY.json ->  oordination/AUTOMATION_POLICY.json
+        nfl/production/authorization.py     ->  fl/production/authorization.py
+
+    None of those match a PROTECTED_PATHS prefix, so `enforce_protected_paths`
+    allowed all of them. Measured 2026-09-25 against a real MOCK pass: every
+    protected path was uncaught, including AUTOMATION_POLICY.json -- the file
+    holding the two flags that authorize spending money.
+
+    And the exposure was not a corner case, it was the designed mode. The
+    engineering packet tells the worker "Do not commit. The workflow commits
+    what you leave in the working tree", so the worker's changes are unstaged
+    by contract. The one arrangement the parser got wrong is the one the
+    system asks for every time.
+
+    So: `-z`, no stripping, no fixed offsets that depend on a leading space
+    surviving. Rename and copy records carry two NUL-separated paths and both
+    are reported -- a rename out of a protected path is still a write to it.
+    """
+    r = subprocess.run(('git', 'status', '--porcelain', '-z'), cwd=S.REPO,
+                       capture_output=True, text=True)
+    if r.returncode != 0:
+        raise locks.Refusal('GIT_FAILED', f'git status: {r.stderr.strip()}')
+    fields = (r.stdout or '').split('\0')
+    out, i = [], 0
+    while i < len(fields):
+        rec = fields[i]
+        i += 1
+        if not rec:
+            continue
+        if len(rec) < 4:
+            # Not a status record we understand. Refusing beats guessing: this
+            # function decides what a worker was allowed to touch.
+            raise locks.Refusal('GIT_STATUS_UNPARSEABLE',
+                                f'unrecognised porcelain record {rec!r}')
+        status, path = rec[:2], rec[3:]
+        out.append(path)
+        if 'R' in status or 'C' in status:
+            # The source path follows as its own NUL-terminated field.
+            if i < len(fields) and fields[i]:
+                out.append(fields[i])
+                i += 1
+    return out
 
 
 def commit_and_push(message, head_before, *, push=True, paths=None) -> str:
