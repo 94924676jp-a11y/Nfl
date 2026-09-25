@@ -26,6 +26,7 @@ A standing report is not a control. These tests make the rule enforceable:
 That third one is a latent defect rather than a live one -- today the layers
 are disjoint -- and it is written down here so it cannot become live quietly.
 """
+import ast
 import json
 import re
 import sys
@@ -144,12 +145,92 @@ def test_the_dk_bearing_layers_are_disjoint_or_declared():
 
 
 def _reads_a_manifest(src):
-    return bool(re.search(r'player_draws_manifest|dk_scoring', src))
+    """Does this module READ the universe, or merely talk about it?
+
+    The first version of this check searched the raw text, and reported 36
+    modules. Most were prose: `contracts/completeness.py` discusses "assembled
+    from dk_scoring alone" in its docstring because that is the defect it
+    exists to prevent, and `production/seeds.py` names the array in a comment.
+    A rule that cries wolf thirty-six times is a rule people learn to skip,
+    which is worse than no rule -- it converts a real finding into noise and
+    then hides inside it.
+
+    So: parse, and count only string literals that survive as CODE. Comments
+    never enter the AST at all, and docstrings are dropped explicitly. What is
+    left is a module actually naming the layer or the artifact while doing
+    something with it.
+    """
+    try:
+        tree = ast.parse(src)
+    except SyntaxError:
+        return False
+    docstrings = set()
+    for node in ast.walk(tree):
+        if isinstance(node, (ast.Module, ast.ClassDef, ast.FunctionDef,
+                             ast.AsyncFunctionDef)):
+            body = getattr(node, 'body', None) or []
+            if body and isinstance(body[0], ast.Expr) \
+                    and isinstance(body[0].value, ast.Constant) \
+                    and isinstance(body[0].value.value, str):
+                docstrings.add(id(body[0].value))
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Constant) or id(node) in docstrings:
+            continue
+        v = node.value
+        if not isinstance(v, str):
+            continue
+        if v == 'dk_scoring' or 'player_draws_manifest' in v \
+                or v.startswith('dk_scoring/'):
+            return True
+    return False
 
 
-def test_production_manifest_readers_go_through_the_union():
-    """THE RULE, not the instance. Eighteen modules were reported PARTIAL_JOIN;
-    a report does not stop the nineteenth."""
+def _string_literals(src):
+    import ast as _ast
+    try:
+        tree = _ast.parse(src)
+    except SyntaxError:
+        return set()
+    return {n.value for n in _ast.walk(tree)
+            if isinstance(n, _ast.Constant) and isinstance(n.value, str)}
+
+
+def _selects_dk_layer(lits):
+    """Names the dk_scoring LAYER, i.e. picks players out of it."""
+    return any(v == 'dk_scoring' or v.startswith('dk_scoring/') for v in lits)
+
+
+def _names_kicking(lits):
+    return any(v == 'kicking' or v.startswith('kicking') or 'kicking__' in v
+               for v in lits)
+
+
+def test_production_universe_selectors_cover_every_dk_bearing_layer():
+    """THE ACTIONABLE RULE, narrowed until it is worth acting on.
+
+    Three passes were needed to get a number anyone should trust. Raw text
+    search said 36, but most were prose -- `contracts/completeness.py`
+    DISCUSSES "assembled from dk_scoring alone" because that is the defect it
+    prevents. Parsing instead of grepping gave 28. Separating modules that
+    SELECT from the dk_scoring layer from those that merely open the manifest
+    file for provenance gave 13. Of those, seven already name `kicking`
+    alongside it.
+
+    Six are left, and they are not obscure:
+
+        postgame/grade_projections.py   -- grading has never graded a kicker
+        production/board/player_board.py -- the slate board itself
+        production/review/dossier.py     -- the per-player dossier
+        dfs/scoring/dual_board.py
+        dfs/salaries/early_projection_audit.py -- an audit that would report a
+            kicker as HAVING NO PROJECTION, which is how a real gap gets
+            written off as a known absence
+
+    Naming both layers by hand is better than naming one, and still not right:
+    the union is DISCOVERED by metric in player_universe.dk_bearing_layers(),
+    so a third dk-bearing layer added tomorrow reaches the discoverers and
+    silently misses the hand-written ones.
+    """
     offenders = []
     for p in sorted(_REPO.rglob('*.py')):
         rel = str(p.relative_to(_REPO))
@@ -161,16 +242,40 @@ def test_production_manifest_readers_go_through_the_union():
             src = p.read_text()
         except Exception:                                        # noqa: BLE001
             continue
-        if not _reads_a_manifest(src):
-            continue
         if 'player_universe' in src or 'dk_bearing_layers' in src:
             continue
-        offenders.append(rel)
-    check('every production manifest reader takes the union path',
+        lits = _string_literals(src)
+        if _selects_dk_layer(lits) and not _names_kicking(lits):
+            offenders.append(rel)
+    check('every production universe selector covers all dk-bearing layers',
           not offenders,
-          f'{len(offenders)} module(s) read the DK universe without '
-          f'player_universe, so each sees whichever layers it happens to name: '
-          f'{offenders[:8]}')
+          f'{len(offenders)} module(s) select DK points from dk_scoring alone '
+          f'and will never see a kicker: {offenders}')
+
+
+def test_hand_written_layer_lists_are_reported_even_when_correct():
+    """Not a gate: a standing count. A module that names dk_scoring AND
+    kicking is right today and brittle tomorrow, and the difference between
+    "right" and "discovered to be right" is the whole lesson of DEF-060."""
+    hand = []
+    for p in sorted(_REPO.rglob('*.py')):
+        rel = str(p.relative_to(_REPO))
+        if not any(rel.startswith(t) for t in PRODUCTION_TREES) or '/tests/' in rel:
+            continue
+        try:
+            src = p.read_text()
+        except Exception:                                        # noqa: BLE001
+            continue
+        if 'dk_bearing_layers' in src:
+            continue
+        lits = _string_literals(src)
+        if _selects_dk_layer(lits) and _names_kicking(lits):
+            hand.append(rel)
+    check('hand-written layer list survey completed', True)
+    print(f'       {len(hand)} module(s) hand-list the dk-bearing layers '
+          f'instead of discovering them:')
+    for rel in hand:
+        print(f'         {rel}')
 
 
 def test_the_exemption_list_names_real_files_and_gives_reasons():
