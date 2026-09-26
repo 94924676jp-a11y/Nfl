@@ -96,15 +96,50 @@ def load_weekly(season: int, week: int) -> Outcome:
             'ACTUALS_WEEK_NOT_PRESENT',
             f'{name} contains no rows for {season} week {week}',
             cause=Cause.DATA)
+    # A BLANK CELL IS MISSING. IT IS NOT A ZERO.
+    #
+    # This loop used to coerce None/''/'NA' straight to 0.0, which is the
+    # repo-wide invariant inverted in the one place it costs most: these ARE
+    # the actuals, so a blank cell became a realised zero and grading scored a
+    # projection against it as though the player had genuinely recorded
+    # nothing. The schema guard above already names this risk for a whole
+    # COLUMN ('reading a renamed column as absent would grade every player at
+    # zero'); the same argument applies cell by cell.
+    #
+    # MEASURED on the pinned snapshot 2026-09-20T2221Z: 0 blank or NA cells
+    # across 1,674 rows and all 18 numeric columns, so refusing here changes
+    # nothing today. It is worth having anyway because the snapshot is
+    # REPLACED each week: the hash pin refuses a file that changed underneath
+    # us, but it cannot object to the new file a human deliberately pins, and
+    # that is exactly when a feed with blanks would arrive unannounced.
+    blanks = {}
+    for r in sel:
+        for c in NUMERIC:
+            if r.get(c) in (None, '', 'NA'):
+                blanks[c] = blanks.get(c, 0) + 1
+    if blanks:
+        return Outcome.blocked(
+            'ACTUALS_NUMERIC_CELL_BLANK',
+            f'{sum(blanks.values())} blank or NA numeric cell(s) across '
+            f'{len(blanks)} column(s) in {name} for {season} week {week}: '
+            f'{dict(sorted(blanks.items()))}. These were previously read as '
+            f'0.0, which grades a player as having recorded nothing when the '
+            f'feed simply did not say. Declare the rule for these cells or '
+            f'fix the feed; no value is invented here.',
+            cause=Cause.DATA, blank_cells_by_column=dict(sorted(blanks.items())))
     by_id = {}
     for r in sel:
         for c in NUMERIC:
-            v = r.get(c)
-            r[c] = float(v) if v not in (None, '', 'NA') else 0.0
+            r[c] = float(r[c])
         by_id[r['player_id']] = r
     games = sorted({r['game_id'] for r in sel})
     return Outcome.ok('ACTUALS_LOADED', value=by_id,
                       games_present=games, n_rows=len(sel),
+                      blank_numeric_cells=0,
+                      blank_numeric_cells_note=(
+                          'checked, not assumed: every numeric cell in every '
+                          'selected row carried a value, so no zero in this '
+                          'result came from an absent one'),
                       snapshot=name, snapshot_sha256=got)
 
 
