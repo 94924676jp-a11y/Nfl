@@ -10,8 +10,8 @@ confidence this census exists to strip out.
 
 | reachability | n | effect on failure | n | classification | n |
 |---|---|---|---|---|---|
-| NO_CALLER_AT_ALL | 4 | STOP | 37 | NOT_ESTABLISHED | 77 |
-| NO_PROD_CALLER | 27 | NO_PRODUCTION_CALLER | 31 | LOAD_BEARING | 7 |
+| NO_CALLER_AT_ALL | 4 | STOP | 37 | NOT_ESTABLISHED | 76 |
+| NO_PROD_CALLER | 27 | NO_PRODUCTION_CALLER | 31 | LOAD_BEARING | 8 |
 | INTERNAL_ONLY | 24 | ANNOTATE | 9 | ORPHANED_CONTROL | 2 |
 | EXTERNALLY_CALLED | 36 | DOWNGRADE | 9 | TEST_NOT_RUNTIME | 1 |
 |  |  | VERDICT_REGISTERED | 5 | ANNOTATE_BY_DESIGN | 1 |
@@ -28,6 +28,7 @@ action demonstrably not happening.
 |---|---|---|---|
 | `assert_coupling_has_joint_index` |  | `test_team_volume_coupling_guards.py` | NOT_ESTABLISHED |
 | `assert_coupling_is_declared` |  | `test_team_volume_coupling_guards.py` | NOT_ESTABLISHED |
+| `assert_frame_closes` | team_carries - scramble == sum(categories), in the DATA, o | `test_a1_frame_closure_guard.py` | NOT_ESTABLISHED |
 | `assert_graded_row` | Every graded row proves how its actual arrived. No excepti | `test_missing_is_not_zero.py` | DETERMINISTIC_MEASURED |
 | `assert_no_inactive_in_playable` | THE GATE. Checks EMITTED rows, not the fixture's intent. | `test_publication_refusal_is_load_bearing.py` | DETERMINISTIC_MEASURED |
 | `assert_pairs_are_usable` | Pairs must exist, be pairs, name teams on the slate, and n | `test_team_volume_coupling_guards.py` | NOT_ESTABLISHED |
@@ -44,6 +45,7 @@ action demonstrably not happening.
 | `assert_shared_draws` | STOP | EXTERNALLY_CALLED | yes | yes | LOAD_BEARING | yes | **no** |
 | `assert_coupling_has_joint_index` | ANNOTATE | INTERNAL_ONLY | **no** | yes | LOAD_BEARING | — | **no** |
 | `assert_coupling_is_declared` | STOP | INTERNAL_ONLY | **no** | yes | LOAD_BEARING | — | **no** |
+| `assert_frame_closes` | STOP | INTERNAL_ONLY | yes | yes | LOAD_BEARING | — | **no** |
 | `assert_pairs_are_usable` | ANNOTATE | INTERNAL_ONLY | **no** | yes | LOAD_BEARING | — | **no** |
 | `assert_allocation_conserves` | VERDICT_REGISTERED | EXTERNALLY_CALLED | yes | — | NOT_ESTABLISHED | yes | **no** |
 | `assert_complete` | STOP | EXTERNALLY_CALLED | yes | — | NOT_ESTABLISHED | — | **no** |
@@ -84,7 +86,6 @@ action demonstrably not happening.
 | `assert_edges_declarable` | STOP | INTERNAL_ONLY | yes | — | NOT_ESTABLISHED | yes | yes |
 | `assert_fallbacks_resolve` | STOP | INTERNAL_ONLY | yes | — | NOT_ESTABLISHED | — | yes |
 | `assert_feature_schema_matches_freeze` | ANNOTATE,NOTHING | INTERNAL_ONLY | yes | — | NOT_ESTABLISHED | yes | **no** |
-| `assert_frame_closes` | STOP | INTERNAL_ONLY | **no** | — | NOT_ESTABLISHED | — | **no** |
 | `assert_no_artifact_claims_12_of_12` | STOP | INTERNAL_ONLY | yes | — | NOT_ESTABLISHED | — | **no** |
 | `assert_no_live_outcome` | STOP | INTERNAL_ONLY | yes | — | NOT_ESTABLISHED | yes | **no** |
 | `assert_no_postgame_inputs` | STOP | INTERNAL_ONLY | yes | — | NOT_ESTABLISHED | yes | yes |

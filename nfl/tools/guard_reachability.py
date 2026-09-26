@@ -105,6 +105,8 @@ LOAD_BEARING_PROOFS = {
         'nfl/tests/test_team_volume_coupling_guards.py',
     'assert_pairs_are_usable':
         'nfl/tests/test_team_volume_coupling_guards.py',
+    'assert_frame_closes':
+        'nfl/tests/test_a1_frame_closure_guard.py',
 }
 
 #: guard -> classification, with the reason. Absent means NOT_ESTABLISHED.
@@ -140,6 +142,18 @@ CLASSIFICATION = {
         'run_forecast returns a fatal outcome before any world is drawn. The '
         'two arms were run and differ, and a non-PASS outcome smuggled in '
         'under the right key is still refused -- a key is not a verification'),
+    'assert_frame_closes': ('LOAD_BEARING',
+        'a carry with no owner (team_carries 11, scramble 2, categories 8) and '
+        'a category inventing a carry (10, 2, 9) both give '
+        'FAIL[A1_FRAME_CATEGORIES_DO_NOT_CLOSE] with n_bad and max_abs, an '
+        'empty frame gives BLOCKED[A1_FRAME_EMPTY] rather than a pass, and '
+        'fit_frozen refuses a caller-supplied non-closing frame so a guard on '
+        'build_frame alone could not be sidestepped. Bypassing it removes the '
+        'closure refusal, which is what makes the coverage proof rather than '
+        'decoration. What it protects is this audit s central failure mode at '
+        'the data layer: per its own docstring, a frame that does not close '
+        'puts a carry with no owner into the residual pool and the downstream '
+        'per-draw counters then report zero violations over a broken ledger'),
     'assert_coupling_is_declared': ('LOAD_BEARING',
         'seeded an undeclared coupling name, got FAIL[GAME_COUPLING_UNKNOWN] '
         'listing the declared names, and bypassing the guard removes the '
