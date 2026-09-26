@@ -511,7 +511,7 @@
    "callers_test": 5,
    "callers_research": 0,
    "effect_on_failure": [
-    "DOWNGRADE"
+    "STOP"
    ],
    "reachability": "EXTERNALLY_CALLED",
    "caller_modules": [
@@ -531,7 +531,7 @@
    "classification": "NOT_ESTABLISHED",
    "classification_reason": "",
    "prod_sites": [
-    "nfl/production/nonqb/football_engine.py:2132:DOWNGRADE"
+    "nfl/production/nonqb/football_engine.py:2132:STOP"
    ]
   },
   {
@@ -1575,7 +1575,7 @@
    "callers_test": 3,
    "callers_research": 0,
    "effect_on_failure": [
-    "ANNOTATE"
+    "DOWNGRADE"
    ],
    "reachability": "EXTERNALLY_CALLED",
    "caller_modules": [
@@ -1602,9 +1602,9 @@
    "prod_sites": [
     "nfl/prospective/q9shadow/inputs.py:228:STOP",
     "nfl/prospective/q9shadow/inputs.py:265:STOP",
-    "nfl/prospective/q9shadow/dryrun.py:183:ANNOTATE",
-    "nfl/prospective/q9shadow/dryrun.py:187:ANNOTATE",
-    "nfl/prospective/q9shadow/dryrun.py:188:ANNOTATE"
+    "nfl/prospective/q9shadow/dryrun.py:183:DOWNGRADE",
+    "nfl/prospective/q9shadow/dryrun.py:187:DOWNGRADE",
+    "nfl/prospective/q9shadow/dryrun.py:188:DOWNGRADE"
    ]
   },
   {
@@ -1777,7 +1777,6 @@
    "callers_test": 2,
    "callers_research": 0,
    "effect_on_failure": [
-    "ANNOTATE",
     "DOWNGRADE"
    ],
    "reachability": "EXTERNALLY_CALLED",
@@ -1799,7 +1798,7 @@
    "classification_reason": "",
    "prod_sites": [
     "nfl/prospective/q9shadow/dryrun.py:324:DOWNGRADE",
-    "nfl/prospective/q9shadow/dryrun.py:328:ANNOTATE"
+    "nfl/prospective/q9shadow/dryrun.py:328:DOWNGRADE"
    ]
   },
   {
@@ -1814,7 +1813,7 @@
    "callers_test": 6,
    "callers_research": 0,
    "effect_on_failure": [
-    "ANNOTATE"
+    "DOWNGRADE"
    ],
    "reachability": "EXTERNALLY_CALLED",
    "caller_modules": [
@@ -1834,8 +1833,8 @@
    "classification": "NOT_ESTABLISHED",
    "classification_reason": "",
    "prod_sites": [
-    "nfl/prospective/q9shadow/dryrun.py:269:ANNOTATE",
-    "nfl/prospective/q9shadow/dryrun.py:273:ANNOTATE"
+    "nfl/prospective/q9shadow/dryrun.py:269:DOWNGRADE",
+    "nfl/prospective/q9shadow/dryrun.py:273:DOWNGRADE"
    ]
   },
   {
@@ -2369,7 +2368,8 @@
    "callers_test": 6,
    "callers_research": 0,
    "effect_on_failure": [
-    "ANNOTATE"
+    "ANNOTATE",
+    "DOWNGRADE"
    ],
    "reachability": "EXTERNALLY_CALLED",
    "caller_modules": [
@@ -2394,7 +2394,7 @@
    "classification": "NOT_ESTABLISHED",
    "classification_reason": "",
    "prod_sites": [
-    "nfl/production/run_forecast.py:1582:ANNOTATE",
+    "nfl/production/run_forecast.py:1582:DOWNGRADE",
     "nfl/production/nonqb/football_engine.py:2062:ANNOTATE"
    ]
   },
@@ -2706,7 +2706,7 @@
    "callers_test": 4,
    "callers_research": 0,
    "effect_on_failure": [
-    "STOP"
+    "DOWNGRADE"
    ],
    "reachability": "INTERNAL_ONLY",
    "caller_modules": [
@@ -2726,7 +2726,7 @@
    "classification": "NOT_ESTABLISHED",
    "classification_reason": "",
    "prod_sites": [
-    "nfl/prospective/q9shadow/complete.py:334:STOP"
+    "nfl/prospective/q9shadow/complete.py:334:DOWNGRADE"
    ]
   },
   {
