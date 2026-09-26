@@ -80,6 +80,79 @@ except Exception:                                            # noqa: BLE001
     REGISTERED_GATES = frozenset()
 
 
+#: DECLARED, NOT DERIVED. Three things in this census are judgements, and a
+#: tool that guessed them would manufacture exactly the false confidence the
+#: census exists to strip out. So they live in version control, defaulting to
+#: NOT_ESTABLISHED, and every entry names its evidence.
+
+#: guard -> the suite that proves `bad state -> guard FAIL -> action does not
+#: happen`. NOT a unit test of the guard: an end-to-end proof that the
+#: PROTECTED ACTION is prevented. A unit test showing the guard returns FAIL is
+#: recorded as direct coverage instead, because DEF-065 was a guard whose unit
+#: tests all passed while publication went ahead anyway.
+LOAD_BEARING_PROOFS = {
+    'assert_no_inactive_in_playable':
+        'nfl/tests/test_publication_refusal_is_load_bearing.py',
+    'assert_shared_draws':
+        'nfl/tests/test_publication_refusal_is_load_bearing.py',
+    'assert_graded_row':
+        'nfl/tests/test_missing_is_not_zero.py',
+}
+
+#: guard -> classification, with the reason. Absent means NOT_ESTABLISHED.
+CLASSIFICATION = {
+    'assert_metric_origin_complete': ('TEST_NOT_RUNTIME',
+        'zero arguments; compares module constants, so its verdict is a '
+        'property of the source and cannot differ between two runs'),
+    'assert_no_inactive_survived': ('SUPERSEDED',
+        'DEF-064; assert_no_inactive_in_playable is wired and STOPs'),
+    'assert_ranking_admissible': ('ORPHANED_CONTROL',
+        'logic proven, nothing calls it; wiring is a product decision about '
+        'what the ranking is for'),
+    'assert_live_lineage': ('ORPHANED_CONTROL',
+        'reads the capture branch; wiring belongs with the open D24 items'),
+    'assert_prospective_matches_frozen': ('CANDIDATE_SCOPED',
+        'guards Candidate B against the accepted walk, and Candidate B has no '
+        'production caller either'),
+    'assert_no_inactive_in_playable': ('LOAD_BEARING',
+        'bad state -> FAIL -> emit_package.main writes no artifact, proven by '
+        'running it and inspecting the disk'),
+    'assert_shared_draws': ('LOAD_BEARING',
+        'same proof; note its kicker coverage is EMPTY because `kicking` is '
+        'both a football layer and DK-bearing, so dk-foot subtracts the row '
+        'from itself'),
+    'assert_graded_row': ('LOAD_BEARING',
+        'raises AnonymousZero at the point a graded row is emitted; a stranger '
+        'id is refused rather than zeroed, proven through the real grader'),
+}
+
+#: test path -> determinism. Absent means NOT_ESTABLISHED: not a claim of
+#: determinism, an absence of one.
+TEST_DETERMINISM = {
+    'nfl/tests/test_publication_refusal_is_load_bearing.py': (
+        'DETERMINISTIC_MEASURED',
+        '16 checks, 8 runs -- 5 idle and 3 under 6 busy loops -- identical. No '
+        'subprocess, no generated artifact, and every assertion checks the '
+        'output path was empty immediately before the call'),
+    'nfl/tests/test_missing_is_not_zero.py': (
+        'DETERMINISTIC_MEASURED',
+        '38 checks, 8 runs across idle and loaded, identical. Reads the sealed '
+        'artifact, which is committed rather than generated'),
+    'nfl/tests/test_artifact_claim.py': (
+        'DETERMINISTIC_SINCE_DEF_070',
+        'the SIGPIPE race is forced by exceeding the pipe buffer; 13 passes '
+        'across idle and loaded conditions that previously gave both verdicts'),
+    'nfl/tests/test_appearance_candidate_b.py': (
+        'ENVIRONMENT_SENSITIVE',
+        'a Q9 frozen blob resolves or not depending on run order; observed '
+        'both 1-failing and 0-failing on unchanged code'),
+    'nfl/tests/test_full_slate_rehearsal.py': (
+        'GENERATED_ARTIFACT_SENSITIVE',
+        'qb_v1 wants the gitignored nfl/research/p4b/panel_enriched.pkl, so it '
+        'raises when run in isolation and not after a full pass'),
+}
+
+
 def kind(path: str) -> str:
     if '/tests/' in path or pathlib.Path(path).name.startswith('test_'):
         return 'test'
@@ -117,11 +190,17 @@ def definitions() -> dict:
                 # a guard that RETURNS something is one whose caller must look
                 returns = any(isinstance(x, ast.Return) and x.value is not None
                               for x in ast.walk(n))
+                doc = (ast.get_docstring(n) or '').strip()
                 out[n.name].append({
                     'file': str(p.relative_to(ROOT)),
                     'lineno': n.lineno,
                     'raises': raises,
-                    'returns_a_value': returns})
+                    'returns_a_value': returns,
+                    # WHAT IT CLAIMS TO PROTECT, in the author's own words. A
+                    # census that summarised this itself would be paraphrasing
+                    # intent, and intent is the one thing the source states
+                    # better than a tool can.
+                    'protects': doc.splitlines()[0] if doc else ''})
     return dict(out)
 
 
@@ -265,6 +344,34 @@ def _traced_effect(tree, stmt, target) -> str:
     return ANNOTATE
 
 
+def entry_points(modules) -> dict:
+    """For each module that calls a guard: is it runnable, and does anything run it?
+
+    A guard reached only from a module nobody invokes is protected by nothing,
+    whatever its call graph says. `__main__` makes a module runnable BY HAND;
+    a workflow or runbook reference is what makes it run without one.
+    """
+    wf_text = ''
+    for d in ('.github', 'docs'):
+        base = ROOT / d
+        if not base.exists():
+            continue
+        for f in base.rglob('*'):
+            if f.is_file() and f.suffix in ('.yml', '.yaml', '.md'):
+                wf_text += f.read_text(errors='replace')
+    for extra in ('COMMANDS.md',):
+        if (ROOT / extra).exists():
+            wf_text += (ROOT / extra).read_text(errors='replace')
+    out = {}
+    for m in sorted(modules):
+        src = (ROOT / m).read_text(errors='replace') if (ROOT / m).exists() else ''
+        stem = m[:-3] if m.endswith('.py') else m
+        out[m] = {'has_main': '__main__' in src,
+                  'referenced_outside_python': stem in wf_text
+                  or pathlib.Path(m).stem in wf_text}
+    return out
+
+
 def census() -> dict:
     defs = definitions()
     sites = call_sites(defs)
@@ -291,8 +398,16 @@ def census() -> dict:
         # to branch, and those are the DEF-065 population.
         if raises and prod:
             effects = [STOP]
+        cls, why = CLASSIFICATION.get(g, ('NOT_ESTABLISHED', ''))
+        proof = LOAD_BEARING_PROOFS.get(g, '')
+        caller_mods = sorted({x['file'] for x in prod})
+        eps = entry_points(caller_mods)
+        det = {}
+        for t in ({proof} if proof else set()):
+            det[t] = TEST_DETERMINISM.get(t, ('NOT_ESTABLISHED', ''))[0]
         rows.append({
             'guard': g,
+            'protects': defs[g][0].get('protects', ''),
             'defined_in': defs[g][0]['file'],
             'line': defs[g][0]['lineno'],
             'n_definitions': len(defs[g]),
@@ -308,7 +423,16 @@ def census() -> dict:
                              'NO_PROD_CALLER' if not prod else
                              'INTERNAL_ONLY' if not ext else
                              'EXTERNALLY_CALLED'),
-            'classification': 'NOT_ESTABLISHED',
+            'caller_modules': caller_mods,
+            'caller_entry_points': eps,
+            'runnable_caller': any(v['has_main'] for v in eps.values()),
+            'caller_referenced_outside_python':
+                any(v['referenced_outside_python'] for v in eps.values()),
+            'direct_test_coverage': bool([x for x in s if x['kind'] == 'test']),
+            'load_bearing_proof': proof or 'NONE',
+            'load_bearing_proof_determinism': det,
+            'classification': cls,
+            'classification_reason': why,
             'prod_sites': [f"{x['file']}:{x['lineno']}:{x['effect']}"
                            for x in prod],
         })

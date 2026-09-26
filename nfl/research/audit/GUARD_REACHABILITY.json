@@ -4,6 +4,7 @@
  "rows": [
   {
    "guard": "assert_allocation_conserves",
+   "protects": "The gate. The composition sums to one and nobody outside the set is in it.",
    "defined_in": "nfl/production/universe/allocation.py",
    "line": 290,
    "n_definitions": 1,
@@ -16,13 +17,29 @@
     "VERDICT_REGISTERED:OPPORTUNITY_CONSERVATION"
    ],
    "reachability": "EXTERNALLY_CALLED",
+   "caller_modules": [
+    "nfl/production/universe/run_chain.py"
+   ],
+   "caller_entry_points": {
+    "nfl/production/universe/run_chain.py": {
+     "has_main": true,
+     "referenced_outside_python": false
+    }
+   },
+   "runnable_caller": true,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/production/universe/run_chain.py:276:VERDICT_REGISTERED:OPPORTUNITY_CONSERVATION"
    ]
   },
   {
    "guard": "assert_arm",
+   "protects": "Does this artifact carry the arm the policy says it should?",
    "defined_in": "nfl/prospective/q9shadow/armpolicy.py",
    "line": 110,
    "n_definitions": 1,
@@ -35,11 +52,20 @@
     "NO_PRODUCTION_CALLER"
    ],
    "reachability": "NO_PROD_CALLER",
+   "caller_modules": [],
+   "caller_entry_points": {},
+   "runnable_caller": false,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": []
   },
   {
    "guard": "assert_arms_not_pooled",
+   "protects": "A and B and C may never be scored together.",
    "defined_in": "nfl/prospective/artifact.py",
    "line": 634,
    "n_definitions": 1,
@@ -52,11 +78,20 @@
     "NO_PRODUCTION_CALLER"
    ],
    "reachability": "NO_PROD_CALLER",
+   "caller_modules": [],
+   "caller_entry_points": {},
+   "runnable_caller": false,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": []
   },
   {
    "guard": "assert_blockers_independent",
+   "protects": "Clearing one blocker must not change any other's computed state.",
    "defined_in": "nfl/prospective/q9shadow/ledger.py",
    "line": 998,
    "n_definitions": 1,
@@ -69,13 +104,29 @@
     "STOP"
    ],
    "reachability": "INTERNAL_ONLY",
+   "caller_modules": [
+    "nfl/prospective/q9shadow/ledger.py"
+   ],
+   "caller_entry_points": {
+    "nfl/prospective/q9shadow/ledger.py": {
+     "has_main": true,
+     "referenced_outside_python": true
+    }
+   },
+   "runnable_caller": true,
+   "caller_referenced_outside_python": true,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/prospective/q9shadow/ledger.py:615:STOP"
    ]
   },
   {
    "guard": "assert_code_matches_policy",
+   "protects": "`seal.MODEL_ARM` must equal the arm the policy demands of new seals.",
    "defined_in": "nfl/prospective/q9shadow/armpolicy.py",
    "line": 145,
    "n_definitions": 1,
@@ -88,11 +139,20 @@
     "NO_PRODUCTION_CALLER"
    ],
    "reachability": "NO_PROD_CALLER",
+   "caller_modules": [],
+   "caller_entry_points": {},
+   "runnable_caller": false,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": []
   },
   {
    "guard": "assert_comparable",
+   "protects": "A P(optimal) may only be set beside another player in the same set.",
    "defined_in": "nfl/dfs/showdown/universe_contract.py",
    "line": 184,
    "n_definitions": 1,
@@ -105,11 +165,20 @@
     "NO_PRODUCTION_CALLER"
    ],
    "reachability": "NO_PROD_CALLER",
+   "caller_modules": [],
+   "caller_entry_points": {},
+   "runnable_caller": false,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": []
   },
   {
    "guard": "assert_complete",
+   "protects": "Return `report`, or raise JoinIncomplete for a consumer that needs all.",
    "defined_in": "nfl/production/contracts/completeness.py",
    "line": 150,
    "n_definitions": 2,
@@ -122,13 +191,29 @@
     "STOP"
    ],
    "reachability": "EXTERNALLY_CALLED",
+   "caller_modules": [
+    "nfl/dfs/player_universe.py"
+   ],
+   "caller_entry_points": {
+    "nfl/dfs/player_universe.py": {
+     "has_main": false,
+     "referenced_outside_python": false
+    }
+   },
+   "runnable_caller": false,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/dfs/player_universe.py:377:STOP"
    ]
   },
   {
    "guard": "assert_completeness",
+   "protects": "COMPLETE only when both numbers exist and agree.",
    "defined_in": "nfl/dfs/history/store.py",
    "line": 126,
    "n_definitions": 1,
@@ -141,11 +226,20 @@
     "NO_PRODUCTION_CALLER"
    ],
    "reachability": "NO_PROD_CALLER",
+   "caller_modules": [],
+   "caller_entry_points": {},
+   "runnable_caller": false,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": []
   },
   {
    "guard": "assert_consumer",
+   "protects": "May `consumer` READ an adjusted quantity? Reading is not re-applying.",
    "defined_in": "nfl/production/adjustment_registry.py",
    "line": 341,
    "n_definitions": 1,
@@ -158,11 +252,20 @@
     "NO_PRODUCTION_CALLER"
    ],
    "reachability": "NO_PROD_CALLER",
+   "caller_modules": [],
+   "caller_entry_points": {},
+   "runnable_caller": false,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": []
   },
   {
    "guard": "assert_counts_are_counts",
+   "protects": "Support validity for every declared count. ASSERTS; never repairs.",
    "defined_in": "nfl/production/stat_contract.py",
    "line": 425,
    "n_definitions": 1,
@@ -175,13 +278,29 @@
     "STOP"
    ],
    "reachability": "EXTERNALLY_CALLED",
+   "caller_modules": [
+    "nfl/production/nonqb/football_engine.py"
+   ],
+   "caller_entry_points": {
+    "nfl/production/nonqb/football_engine.py": {
+     "has_main": false,
+     "referenced_outside_python": false
+    }
+   },
+   "runnable_caller": false,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/production/nonqb/football_engine.py:2091:STOP"
    ]
   },
   {
    "guard": "assert_coupling_has_joint_index",
+   "protects": "",
    "defined_in": "nfl/production/team_volume_v1.py",
    "line": 292,
    "n_definitions": 1,
@@ -194,13 +313,29 @@
     "ANNOTATE"
    ],
    "reachability": "INTERNAL_ONLY",
+   "caller_modules": [
+    "nfl/production/team_volume_v1.py"
+   ],
+   "caller_entry_points": {
+    "nfl/production/team_volume_v1.py": {
+     "has_main": false,
+     "referenced_outside_python": false
+    }
+   },
+   "runnable_caller": false,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": false,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/production/team_volume_v1.py:477:ANNOTATE"
    ]
   },
   {
    "guard": "assert_coupling_is_declared",
+   "protects": "",
    "defined_in": "nfl/production/team_volume_v1.py",
    "line": 281,
    "n_definitions": 1,
@@ -213,13 +348,29 @@
     "STOP"
    ],
    "reachability": "INTERNAL_ONLY",
+   "caller_modules": [
+    "nfl/production/team_volume_v1.py"
+   ],
+   "caller_entry_points": {
+    "nfl/production/team_volume_v1.py": {
+     "has_main": false,
+     "referenced_outside_python": false
+    }
+   },
+   "runnable_caller": false,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": false,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/production/team_volume_v1.py:452:STOP"
    ]
   },
   {
    "guard": "assert_cross_player_eligible",
+   "protects": "PASS only for an artifact that declares a shared football world.",
    "defined_in": "nfl/production/dependence.py",
    "line": 133,
    "n_definitions": 1,
@@ -232,11 +383,20 @@
     "NO_PRODUCTION_CALLER"
    ],
    "reachability": "NO_PROD_CALLER",
+   "caller_modules": [],
+   "caller_entry_points": {},
+   "runnable_caller": false,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": []
   },
   {
    "guard": "assert_currently_admissible",
+   "protects": "Is this artifact admissible as CURRENT prospective evidence?",
    "defined_in": "nfl/prospective/q9shadow/reuse.py",
    "line": 217,
    "n_definitions": 1,
@@ -249,13 +409,29 @@
     "DOWNGRADE"
    ],
    "reachability": "INTERNAL_ONLY",
+   "caller_modules": [
+    "nfl/prospective/q9shadow/reuse.py"
+   ],
+   "caller_entry_points": {
+    "nfl/prospective/q9shadow/reuse.py": {
+     "has_main": true,
+     "referenced_outside_python": false
+    }
+   },
+   "runnable_caller": true,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/prospective/q9shadow/reuse.py:290:DOWNGRADE"
    ]
   },
   {
    "guard": "assert_cut_lawful",
+   "protects": "Spec s.4: every vintage reachable from F has learned_at < cut(F).",
    "defined_in": "nfl/production/pipeline.py",
    "line": 1332,
    "n_definitions": 1,
@@ -268,13 +444,29 @@
     "STOP"
    ],
    "reachability": "INTERNAL_ONLY",
+   "caller_modules": [
+    "nfl/production/pipeline.py"
+   ],
+   "caller_entry_points": {
+    "nfl/production/pipeline.py": {
+     "has_main": true,
+     "referenced_outside_python": true
+    }
+   },
+   "runnable_caller": true,
+   "caller_referenced_outside_python": true,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/production/pipeline.py:350:STOP"
    ]
   },
   {
    "guard": "assert_draw_coherence",
+   "protects": "Every check this file declares, over one run's FINAL published arrays.",
    "defined_in": "nfl/production/draw_coherence.py",
    "line": 633,
    "n_definitions": 1,
@@ -287,13 +479,29 @@
     "STOP"
    ],
    "reachability": "EXTERNALLY_CALLED",
+   "caller_modules": [
+    "nfl/production/run_forecast.py"
+   ],
+   "caller_entry_points": {
+    "nfl/production/run_forecast.py": {
+     "has_main": true,
+     "referenced_outside_python": true
+    }
+   },
+   "runnable_caller": true,
+   "caller_referenced_outside_python": true,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/production/run_forecast.py:3075:STOP"
    ]
   },
   {
    "guard": "assert_dropback_identity",
+   "protects": "`db == att + sacks + scr`, EXACTLY, cell by cell.",
    "defined_in": "nfl/production/stat_contract.py",
    "line": 295,
    "n_definitions": 1,
@@ -306,13 +514,29 @@
     "DOWNGRADE"
    ],
    "reachability": "EXTERNALLY_CALLED",
+   "caller_modules": [
+    "nfl/production/nonqb/football_engine.py"
+   ],
+   "caller_entry_points": {
+    "nfl/production/nonqb/football_engine.py": {
+     "has_main": false,
+     "referenced_outside_python": false
+    }
+   },
+   "runnable_caller": false,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/production/nonqb/football_engine.py:2132:DOWNGRADE"
    ]
   },
   {
    "guard": "assert_edge_fields_are_pregame",
+   "protects": "A declared field may be neither a realised outcome nor a market price.",
    "defined_in": "nfl/production/pipeline.py",
    "line": 904,
    "n_definitions": 1,
@@ -325,13 +549,29 @@
     "DOWNGRADE"
    ],
    "reachability": "INTERNAL_ONLY",
+   "caller_modules": [
+    "nfl/production/pipeline.py"
+   ],
+   "caller_entry_points": {
+    "nfl/production/pipeline.py": {
+     "has_main": true,
+     "referenced_outside_python": true
+    }
+   },
+   "runnable_caller": true,
+   "caller_referenced_outside_python": true,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/production/pipeline.py:950:DOWNGRADE"
    ]
   },
   {
    "guard": "assert_edges_declarable",
+   "protects": "",
    "defined_in": "nfl/production/pipeline.py",
    "line": 947,
    "n_definitions": 1,
@@ -344,13 +584,29 @@
     "STOP"
    ],
    "reachability": "INTERNAL_ONLY",
+   "caller_modules": [
+    "nfl/production/pipeline.py"
+   ],
+   "caller_entry_points": {
+    "nfl/production/pipeline.py": {
+     "has_main": true,
+     "referenced_outside_python": true
+    }
+   },
+   "runnable_caller": true,
+   "caller_referenced_outside_python": true,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/production/pipeline.py:1180:STOP"
    ]
   },
   {
    "guard": "assert_event_named",
+   "protects": "Refuse a record whose conditional number has no named event.",
    "defined_in": "nfl/production/conditioning_contract.py",
    "line": 181,
    "n_definitions": 1,
@@ -363,11 +619,20 @@
     "NO_PRODUCTION_CALLER"
    ],
    "reachability": "NO_PROD_CALLER",
+   "caller_modules": [],
+   "caller_entry_points": {},
+   "runnable_caller": false,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": []
   },
   {
    "guard": "assert_events_within_opportunity",
+   "protects": "Every declared event <= its opportunity, per draw cell. ASSERTS only.",
    "defined_in": "nfl/production/stat_contract.py",
    "line": 511,
    "n_definitions": 1,
@@ -380,13 +645,29 @@
     "STOP"
    ],
    "reachability": "EXTERNALLY_CALLED",
+   "caller_modules": [
+    "nfl/production/nonqb/football_engine.py"
+   ],
+   "caller_entry_points": {
+    "nfl/production/nonqb/football_engine.py": {
+     "has_main": false,
+     "referenced_outside_python": false
+    }
+   },
+   "runnable_caller": false,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/production/nonqb/football_engine.py:2115:STOP"
    ]
   },
   {
    "guard": "assert_every_player_tagged",
+   "protects": "An untagged player is a refusal, not a default of MODEL_SUPPORTED.",
    "defined_in": "nfl/production/dfs/projection_confidence.py",
    "line": 138,
    "n_definitions": 1,
@@ -399,13 +680,29 @@
     "STOP"
    ],
    "reachability": "EXTERNALLY_CALLED",
+   "caller_modules": [
+    "nfl/production/dfs/portfolio_guard.py"
+   ],
+   "caller_entry_points": {
+    "nfl/production/dfs/portfolio_guard.py": {
+     "has_main": false,
+     "referenced_outside_python": true
+    }
+   },
+   "runnable_caller": false,
+   "caller_referenced_outside_python": true,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/production/dfs/portfolio_guard.py:72:STOP"
    ]
   },
   {
    "guard": "assert_fallbacks_resolve",
+   "protects": "Every non-NONE fallback must name a registered feature. Checked",
    "defined_in": "nfl/production/state/registry.py",
    "line": 254,
    "n_definitions": 1,
@@ -418,13 +715,29 @@
     "STOP"
    ],
    "reachability": "INTERNAL_ONLY",
+   "caller_modules": [
+    "nfl/production/state/registry.py"
+   ],
+   "caller_entry_points": {
+    "nfl/production/state/registry.py": {
+     "has_main": false,
+     "referenced_outside_python": true
+    }
+   },
+   "runnable_caller": false,
+   "caller_referenced_outside_python": true,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/production/state/registry.py:576:STOP"
    ]
   },
   {
    "guard": "assert_feature_schema_matches_freeze",
+   "protects": "The 25-feature schema hash must equal the frozen candidate's.",
    "defined_in": "nfl/prospective/q9shadow/live_features.py",
    "line": 192,
    "n_definitions": 1,
@@ -438,7 +751,22 @@
     "NOTHING"
    ],
    "reachability": "INTERNAL_ONLY",
+   "caller_modules": [
+    "nfl/prospective/q9shadow/live_features.py"
+   ],
+   "caller_entry_points": {
+    "nfl/prospective/q9shadow/live_features.py": {
+     "has_main": true,
+     "referenced_outside_python": false
+    }
+   },
+   "runnable_caller": true,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/prospective/q9shadow/live_features.py:593:ANNOTATE",
     "nfl/prospective/q9shadow/live_features.py:944:NOTHING"
@@ -446,6 +774,7 @@
   },
   {
    "guard": "assert_frame_closes",
+   "protects": "team_carries - scramble == sum(categories), in the DATA, or a FAIL.",
    "defined_in": "nfl/production/nonqb/rushing_a1.py",
    "line": 390,
    "n_definitions": 1,
@@ -458,7 +787,22 @@
     "STOP"
    ],
    "reachability": "INTERNAL_ONLY",
+   "caller_modules": [
+    "nfl/production/nonqb/rushing_a1.py"
+   ],
+   "caller_entry_points": {
+    "nfl/production/nonqb/rushing_a1.py": {
+     "has_main": false,
+     "referenced_outside_python": false
+    }
+   },
+   "runnable_caller": false,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": false,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/production/nonqb/rushing_a1.py:426:STOP",
     "nfl/production/nonqb/rushing_a1.py:459:STOP"
@@ -466,6 +810,7 @@
   },
   {
    "guard": "assert_fresh",
+   "protects": "The upstream freshness gate. Refuse BEFORE simulation, not at sealing.",
    "defined_in": "nfl/production/nonqb/current_season_evidence.py",
    "line": 199,
    "n_definitions": 1,
@@ -478,13 +823,29 @@
     "STOP"
    ],
    "reachability": "EXTERNALLY_CALLED",
+   "caller_modules": [
+    "nfl/production/run_forecast.py"
+   ],
+   "caller_entry_points": {
+    "nfl/production/run_forecast.py": {
+     "has_main": true,
+     "referenced_outside_python": true
+    }
+   },
+   "runnable_caller": true,
+   "caller_referenced_outside_python": true,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/production/run_forecast.py:1593:STOP"
    ]
   },
   {
    "guard": "assert_gate",
+   "protects": "The whole rule in one call: load, verify, compare, and carry the hash.",
    "defined_in": "sportsplatform/governance/artifact_reference.py",
    "line": 234,
    "n_definitions": 1,
@@ -497,11 +858,20 @@
     "NO_PRODUCTION_CALLER"
    ],
    "reachability": "NO_PROD_CALLER",
+   "caller_modules": [],
+   "caller_entry_points": {},
+   "runnable_caller": false,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": []
   },
   {
    "guard": "assert_graded_row",
+   "protects": "Every graded row proves how its actual arrived. No exceptions.",
    "defined_in": "nfl/postgame/join_provenance.py",
    "line": 98,
    "n_definitions": 1,
@@ -514,13 +884,31 @@
     "STOP"
    ],
    "reachability": "EXTERNALLY_CALLED",
-   "classification": "NOT_ESTABLISHED",
+   "caller_modules": [
+    "nfl/postgame/grade_projections.py"
+   ],
+   "caller_entry_points": {
+    "nfl/postgame/grade_projections.py": {
+     "has_main": true,
+     "referenced_outside_python": false
+    }
+   },
+   "runnable_caller": true,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "nfl/tests/test_missing_is_not_zero.py",
+   "load_bearing_proof_determinism": {
+    "nfl/tests/test_missing_is_not_zero.py": "DETERMINISTIC_MEASURED"
+   },
+   "classification": "LOAD_BEARING",
+   "classification_reason": "raises AnonymousZero at the point a graded row is emitted; a stranger id is refused rather than zeroed, proven through the real grader",
    "prod_sites": [
     "nfl/postgame/grade_projections.py:327:NOTHING"
    ]
   },
   {
    "guard": "assert_hard_invariants",
+   "protects": "The gate. HARD FAIL or BLOCKED refuses; DIAGNOSTIC never refuses.",
    "defined_in": "nfl/prospective/artifact.py",
    "line": 421,
    "n_definitions": 1,
@@ -533,7 +921,27 @@
     "STOP"
    ],
    "reachability": "EXTERNALLY_CALLED",
+   "caller_modules": [
+    "nfl/production/run_forecast.py",
+    "nfl/prospective/artifact.py"
+   ],
+   "caller_entry_points": {
+    "nfl/production/run_forecast.py": {
+     "has_main": true,
+     "referenced_outside_python": true
+    },
+    "nfl/prospective/artifact.py": {
+     "has_main": false,
+     "referenced_outside_python": true
+    }
+   },
+   "runnable_caller": true,
+   "caller_referenced_outside_python": true,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/production/run_forecast.py:3429:STOP",
     "nfl/prospective/artifact.py:593:STOP"
@@ -541,6 +949,7 @@
   },
   {
    "guard": "assert_identical_to_freeze",
+   "protects": "Refuse if the live identity differs from the frozen one, field by field.",
    "defined_in": "nfl/prospective/q9shadow/candidate.py",
    "line": 196,
    "n_definitions": 1,
@@ -553,7 +962,27 @@
     "STOP"
    ],
    "reachability": "EXTERNALLY_CALLED",
+   "caller_modules": [
+    "nfl/prospective/q9shadow/candidate.py",
+    "nfl/prospective/q9shadow/seal.py"
+   ],
+   "caller_entry_points": {
+    "nfl/prospective/q9shadow/candidate.py": {
+     "has_main": true,
+     "referenced_outside_python": true
+    },
+    "nfl/prospective/q9shadow/seal.py": {
+     "has_main": true,
+     "referenced_outside_python": true
+    }
+   },
+   "runnable_caller": true,
+   "caller_referenced_outside_python": true,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/prospective/q9shadow/candidate.py:257:STOP",
     "nfl/prospective/q9shadow/seal.py:870:STOP"
@@ -561,6 +990,7 @@
   },
   {
    "guard": "assert_implementations_exist",
+   "protects": "A layer claiming IMPLEMENTED must have a module that imports.",
    "defined_in": "nfl/production/nonqb/eligibility.py",
    "line": 196,
    "n_definitions": 1,
@@ -573,11 +1003,20 @@
     "NO_PRODUCTION_CALLER"
    ],
    "reachability": "NO_PROD_CALLER",
+   "caller_modules": [],
+   "caller_entry_points": {},
+   "runnable_caller": false,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": []
   },
   {
    "guard": "assert_inactive_qbs_own_nothing",
+   "protects": "Every officially inactive quarterback owns EXACTLY zero, in every draw.",
    "defined_in": "nfl/production/qb_accounting.py",
    "line": 782,
    "n_definitions": 1,
@@ -590,7 +1029,22 @@
     "STOP"
    ],
    "reachability": "EXTERNALLY_CALLED",
+   "caller_modules": [
+    "nfl/production/run_forecast.py"
+   ],
+   "caller_entry_points": {
+    "nfl/production/run_forecast.py": {
+     "has_main": true,
+     "referenced_outside_python": true
+    }
+   },
+   "runnable_caller": true,
+   "caller_referenced_outside_python": true,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/production/run_forecast.py:969:STOP",
     "nfl/production/run_forecast.py:2198:STOP"
@@ -598,6 +1052,7 @@
   },
   {
    "guard": "assert_lineup_legal",
+   "protects": "Roster shape, cap and team representation, per that site's own config.",
    "defined_in": "nfl/dfs/scoring/site_rules.py",
    "line": 142,
    "n_definitions": 1,
@@ -610,11 +1065,20 @@
     "NO_PRODUCTION_CALLER"
    ],
    "reachability": "NO_PROD_CALLER",
+   "caller_modules": [],
+   "caller_entry_points": {},
+   "runnable_caller": false,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": []
   },
   {
    "guard": "assert_live_lineage",
+   "protects": "",
    "defined_in": "nfl/production/capture_cadence.py",
    "line": 149,
    "n_definitions": 1,
@@ -627,11 +1091,20 @@
     "NO_PRODUCTION_CALLER"
    ],
    "reachability": "NO_CALLER_AT_ALL",
-   "classification": "NOT_ESTABLISHED",
+   "caller_modules": [],
+   "caller_entry_points": {},
+   "runnable_caller": false,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": false,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
+   "classification": "ORPHANED_CONTROL",
+   "classification_reason": "reads the capture branch; wiring belongs with the open D24 items",
    "prod_sites": []
   },
   {
    "guard": "assert_may_apply",
+   "protects": "May `calling_layer` apply `adjustment_id` to a frame carrying `frame_tags`?",
    "defined_in": "nfl/production/adjustment_registry.py",
    "line": 240,
    "n_definitions": 1,
@@ -644,11 +1117,20 @@
     "NO_PRODUCTION_CALLER"
    ],
    "reachability": "NO_PROD_CALLER",
+   "caller_modules": [],
+   "caller_entry_points": {},
+   "runnable_caller": false,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": []
   },
   {
    "guard": "assert_may_consume",
+   "protects": "Return the decision, or refuse. This is the enforcement point.",
    "defined_in": "nfl/dfs/gate_enforcement.py",
    "line": 153,
    "n_definitions": 1,
@@ -661,13 +1143,29 @@
     "STOP"
    ],
    "reachability": "EXTERNALLY_CALLED",
+   "caller_modules": [
+    "nfl/dfs/player_universe.py"
+   ],
+   "caller_entry_points": {
+    "nfl/dfs/player_universe.py": {
+     "has_main": false,
+     "referenced_outside_python": false
+    }
+   },
+   "runnable_caller": false,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/dfs/player_universe.py:338:NOTHING"
    ]
   },
   {
    "guard": "assert_may_optimize",
+   "protects": "The stage gate. Called before any lineup is built.",
    "defined_in": "nfl/production/workflow/stages.py",
    "line": 170,
    "n_definitions": 1,
@@ -680,11 +1178,20 @@
     "NO_PRODUCTION_CALLER"
    ],
    "reachability": "NO_PROD_CALLER",
+   "caller_modules": [],
+   "caller_entry_points": {},
+   "runnable_caller": false,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": []
   },
   {
    "guard": "assert_may_project",
+   "protects": "",
    "defined_in": "nfl/production/workflow/stages.py",
    "line": 187,
    "n_definitions": 1,
@@ -697,11 +1204,20 @@
     "NO_PRODUCTION_CALLER"
    ],
    "reachability": "NO_PROD_CALLER",
+   "caller_modules": [],
+   "caller_entry_points": {},
+   "runnable_caller": false,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": []
   },
   {
    "guard": "assert_may_train",
+   "protects": "May this artifact be an INPUT to a fit evaluated on these games?",
    "defined_in": "nfl/postgame/eligibility.py",
    "line": 114,
    "n_definitions": 1,
@@ -714,11 +1230,20 @@
     "NO_PRODUCTION_CALLER"
    ],
    "reachability": "NO_PROD_CALLER",
+   "caller_modules": [],
+   "caller_entry_points": {},
+   "runnable_caller": false,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": []
   },
   {
    "guard": "assert_metric_origin_complete",
+   "protects": "Every SUPPORTED metric must be placed on a layer, or it has no",
    "defined_in": "nfl/production/authorization.py",
    "line": 1053,
    "n_definitions": 1,
@@ -731,11 +1256,20 @@
     "NO_PRODUCTION_CALLER"
    ],
    "reachability": "NO_PROD_CALLER",
-   "classification": "NOT_ESTABLISHED",
+   "caller_modules": [],
+   "caller_entry_points": {},
+   "runnable_caller": false,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
+   "classification": "TEST_NOT_RUNTIME",
+   "classification_reason": "zero arguments; compares module constants, so its verdict is a property of the source and cannot differ between two runs",
    "prod_sites": []
   },
   {
    "guard": "assert_named_owner_containment",
+   "protects": "Named rush owners <= the PUBLISHED team carry level, DECOMPOSED.",
    "defined_in": "nfl/production/nonqb/rushing_a1.py",
    "line": 1062,
    "n_definitions": 1,
@@ -748,7 +1282,27 @@
     "ANNOTATE"
    ],
    "reachability": "EXTERNALLY_CALLED",
+   "caller_modules": [
+    "nfl/production/nonqb/football_engine.py",
+    "nfl/production/nonqb/rushing_a1.py"
+   ],
+   "caller_entry_points": {
+    "nfl/production/nonqb/football_engine.py": {
+     "has_main": false,
+     "referenced_outside_python": false
+    },
+    "nfl/production/nonqb/rushing_a1.py": {
+     "has_main": false,
+     "referenced_outside_python": false
+    }
+   },
+   "runnable_caller": false,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/production/nonqb/rushing_a1.py:1351:STOP",
     "nfl/production/nonqb/football_engine.py:1725:ANNOTATE"
@@ -756,6 +1310,7 @@
   },
   {
    "guard": "assert_no_artifact_claims_12_of_12",
+   "protects": "No artifact may ASSERT that G0A is currently complete.",
    "defined_in": "nfl/prospective/nfl1_readiness.py",
    "line": 51,
    "n_definitions": 1,
@@ -768,13 +1323,29 @@
     "STOP"
    ],
    "reachability": "INTERNAL_ONLY",
+   "caller_modules": [
+    "nfl/prospective/nfl1_readiness.py"
+   ],
+   "caller_entry_points": {
+    "nfl/prospective/nfl1_readiness.py": {
+     "has_main": false,
+     "referenced_outside_python": false
+    }
+   },
+   "runnable_caller": false,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/prospective/nfl1_readiness.py:177:STOP"
    ]
   },
   {
    "guard": "assert_no_auto_authorization",
+   "protects": "NFL-1 may change status ONLY on an explicit owner decision.",
    "defined_in": "nfl/prospective/nfl1_readiness.py",
    "line": 33,
    "n_definitions": 1,
@@ -787,11 +1358,20 @@
     "NO_PRODUCTION_CALLER"
    ],
    "reachability": "NO_PROD_CALLER",
+   "caller_modules": [],
+   "caller_entry_points": {},
+   "runnable_caller": false,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": []
   },
   {
    "guard": "assert_no_double_counted_qb_carries",
+   "protects": "The sum a consumer must never form.",
    "defined_in": "nfl/production/nonqb/accounting.py",
    "line": 394,
    "n_definitions": 1,
@@ -804,11 +1384,20 @@
     "NO_PRODUCTION_CALLER"
    ],
    "reachability": "NO_PROD_CALLER",
+   "caller_modules": [],
+   "caller_entry_points": {},
+   "runnable_caller": false,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": []
   },
   {
    "guard": "assert_no_inactive_in_playable",
+   "protects": "THE GATE. Checks EMITTED rows, not the fixture's intent.",
    "defined_in": "nfl/dfs/salaries/build_postinactives_package.py",
    "line": 116,
    "n_definitions": 1,
@@ -821,13 +1410,31 @@
     "STOP"
    ],
    "reachability": "EXTERNALLY_CALLED",
-   "classification": "NOT_ESTABLISHED",
+   "caller_modules": [
+    "nfl/dfs/salaries/emit_package.py"
+   ],
+   "caller_entry_points": {
+    "nfl/dfs/salaries/emit_package.py": {
+     "has_main": true,
+     "referenced_outside_python": false
+    }
+   },
+   "runnable_caller": true,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "nfl/tests/test_publication_refusal_is_load_bearing.py",
+   "load_bearing_proof_determinism": {
+    "nfl/tests/test_publication_refusal_is_load_bearing.py": "DETERMINISTIC_MEASURED"
+   },
+   "classification": "LOAD_BEARING",
+   "classification_reason": "bad state -> FAIL -> emit_package.main writes no artifact, proven by running it and inspecting the disk",
    "prod_sites": [
     "nfl/dfs/salaries/emit_package.py:109:STOP"
    ]
   },
   {
    "guard": "assert_no_inactive_survived",
+   "protects": "A GATE. Fails the board; never silently drops a row.",
    "defined_in": "nfl/dfs/salaries/postinactives_board.py",
    "line": 155,
    "n_definitions": 1,
@@ -840,11 +1447,20 @@
     "NO_PRODUCTION_CALLER"
    ],
    "reachability": "NO_CALLER_AT_ALL",
-   "classification": "NOT_ESTABLISHED",
+   "caller_modules": [],
+   "caller_entry_points": {},
+   "runnable_caller": false,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": false,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
+   "classification": "SUPERSEDED",
+   "classification_reason": "DEF-064; assert_no_inactive_in_playable is wired and STOPs",
    "prod_sites": []
   },
   {
    "guard": "assert_no_inactive_survives",
+   "protects": "Officially inactive players must own nothing in the playable output.",
    "defined_in": "nfl/production/universe/coverage.py",
    "line": 205,
    "n_definitions": 1,
@@ -857,13 +1473,29 @@
     "VERDICT_REGISTERED:INACTIVE_APPLICATION"
    ],
    "reachability": "EXTERNALLY_CALLED",
+   "caller_modules": [
+    "nfl/production/universe/run_chain.py"
+   ],
+   "caller_entry_points": {
+    "nfl/production/universe/run_chain.py": {
+     "has_main": true,
+     "referenced_outside_python": false
+    }
+   },
+   "runnable_caller": true,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/production/universe/run_chain.py:196:VERDICT_REGISTERED:INACTIVE_APPLICATION"
    ]
   },
   {
    "guard": "assert_no_live_outcome",
+   "protects": "Every row of the forecast season must carry no realised value.",
    "defined_in": "nfl/prospective/q9shadow/live_features.py",
    "line": 171,
    "n_definitions": 1,
@@ -876,13 +1508,29 @@
     "STOP"
    ],
    "reachability": "INTERNAL_ONLY",
+   "caller_modules": [
+    "nfl/prospective/q9shadow/live_features.py"
+   ],
+   "caller_entry_points": {
+    "nfl/prospective/q9shadow/live_features.py": {
+     "has_main": true,
+     "referenced_outside_python": false
+    }
+   },
+   "runnable_caller": true,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/prospective/q9shadow/live_features.py:644:STOP"
    ]
   },
   {
    "guard": "assert_no_outcome_reader_imported",
+   "protects": "Refuse if an outcome reader is reachable from a sealing module.",
    "defined_in": "nfl/prospective/q9shadow/inputs.py",
    "line": 186,
    "n_definitions": 1,
@@ -895,13 +1543,29 @@
     "DOWNGRADE"
    ],
    "reachability": "EXTERNALLY_CALLED",
+   "caller_modules": [
+    "nfl/prospective/q9shadow/dryrun.py"
+   ],
+   "caller_entry_points": {
+    "nfl/prospective/q9shadow/dryrun.py": {
+     "has_main": true,
+     "referenced_outside_python": false
+    }
+   },
+   "runnable_caller": true,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/prospective/q9shadow/dryrun.py:254:DOWNGRADE"
    ]
   },
   {
    "guard": "assert_no_outcome_shaped_inputs",
+   "protects": "Refuse an input bundle carrying a realised result, by name.",
    "defined_in": "nfl/prospective/q9shadow/inputs.py",
    "line": 155,
    "n_definitions": 1,
@@ -914,7 +1578,27 @@
     "ANNOTATE"
    ],
    "reachability": "EXTERNALLY_CALLED",
+   "caller_modules": [
+    "nfl/prospective/q9shadow/dryrun.py",
+    "nfl/prospective/q9shadow/inputs.py"
+   ],
+   "caller_entry_points": {
+    "nfl/prospective/q9shadow/dryrun.py": {
+     "has_main": true,
+     "referenced_outside_python": false
+    },
+    "nfl/prospective/q9shadow/inputs.py": {
+     "has_main": true,
+     "referenced_outside_python": true
+    }
+   },
+   "runnable_caller": true,
+   "caller_referenced_outside_python": true,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/prospective/q9shadow/inputs.py:228:STOP",
     "nfl/prospective/q9shadow/inputs.py:265:STOP",
@@ -925,6 +1609,7 @@
   },
   {
    "guard": "assert_no_postgame_inputs",
+   "protects": "A stage may not declare a postgame field as an input.",
    "defined_in": "nfl/production/pipeline.py",
    "line": 126,
    "n_definitions": 1,
@@ -937,13 +1622,29 @@
     "STOP"
    ],
    "reachability": "INTERNAL_ONLY",
+   "caller_modules": [
+    "nfl/production/pipeline.py"
+   ],
+   "caller_entry_points": {
+    "nfl/production/pipeline.py": {
+     "has_main": true,
+     "referenced_outside_python": true
+    }
+   },
+   "runnable_caller": true,
+   "caller_referenced_outside_python": true,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/production/pipeline.py:191:STOP"
    ]
   },
   {
    "guard": "assert_no_roster_status",
+   "protects": "No supplied player descriptor may carry a roster-status field.",
    "defined_in": "nfl/prospective/q9shadow/live_features.py",
    "line": 155,
    "n_definitions": 1,
@@ -956,13 +1657,29 @@
     "ANNOTATE"
    ],
    "reachability": "INTERNAL_ONLY",
+   "caller_modules": [
+    "nfl/prospective/q9shadow/live_features.py"
+   ],
+   "caller_entry_points": {
+    "nfl/prospective/q9shadow/live_features.py": {
+     "has_main": true,
+     "referenced_outside_python": false
+    }
+   },
+   "runnable_caller": true,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/prospective/q9shadow/live_features.py:592:ANNOTATE"
    ]
   },
   {
    "guard": "assert_no_stale_labels",
+   "protects": "No production-facing string may call a non-production subsystem",
    "defined_in": "nfl/production/nonqb/eligibility.py",
    "line": 162,
    "n_definitions": 1,
@@ -975,11 +1692,20 @@
     "NO_PRODUCTION_CALLER"
    ],
    "reachability": "NO_PROD_CALLER",
+   "caller_modules": [],
+   "caller_entry_points": {},
+   "runnable_caller": false,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": []
   },
   {
    "guard": "assert_not_a_dropback_column",
+   "protects": "Refuse a column that is att_raw wearing the word \"dropback\".",
    "defined_in": "nfl/production/stat_contract.py",
    "line": 334,
    "n_definitions": 1,
@@ -992,11 +1718,20 @@
     "NO_PRODUCTION_CALLER"
    ],
    "reachability": "NO_PROD_CALLER",
+   "caller_modules": [],
+   "caller_entry_points": {},
+   "runnable_caller": false,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": []
   },
   {
    "guard": "assert_not_applicable_is_evidenced",
+   "protects": "Codes that claim NOT_APPLICABLE without proving it.",
    "defined_in": "nfl/production/integrity/contract.py",
    "line": 358,
    "n_definitions": 1,
@@ -1009,7 +1744,22 @@
     "STOP"
    ],
    "reachability": "EXTERNALLY_CALLED",
+   "caller_modules": [
+    "nfl/production/review/gate.py"
+   ],
+   "caller_entry_points": {
+    "nfl/production/review/gate.py": {
+     "has_main": false,
+     "referenced_outside_python": true
+    }
+   },
+   "runnable_caller": false,
+   "caller_referenced_outside_python": true,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/production/review/gate.py:628:STOP",
     "nfl/production/review/gate.py:808:STOP"
@@ -1017,6 +1767,7 @@
   },
   {
    "guard": "assert_not_dry_run",
+   "protects": "A dry-run artifact may be read, replayed and never counted.",
    "defined_in": "nfl/prospective/q9shadow/ledger.py",
    "line": 222,
    "n_definitions": 1,
@@ -1030,7 +1781,22 @@
     "DOWNGRADE"
    ],
    "reachability": "EXTERNALLY_CALLED",
+   "caller_modules": [
+    "nfl/prospective/q9shadow/dryrun.py"
+   ],
+   "caller_entry_points": {
+    "nfl/prospective/q9shadow/dryrun.py": {
+     "has_main": true,
+     "referenced_outside_python": false
+    }
+   },
+   "runnable_caller": true,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/prospective/q9shadow/dryrun.py:324:DOWNGRADE",
     "nfl/prospective/q9shadow/dryrun.py:328:ANNOTATE"
@@ -1038,6 +1804,7 @@
   },
   {
    "guard": "assert_not_mutated",
+   "protects": "An artifact is immutable after written_at. A correction is a NEW one.",
    "defined_in": "nfl/prospective/artifact.py",
    "line": 614,
    "n_definitions": 1,
@@ -1050,7 +1817,22 @@
     "ANNOTATE"
    ],
    "reachability": "EXTERNALLY_CALLED",
+   "caller_modules": [
+    "nfl/prospective/q9shadow/dryrun.py"
+   ],
+   "caller_entry_points": {
+    "nfl/prospective/q9shadow/dryrun.py": {
+     "has_main": true,
+     "referenced_outside_python": false
+    }
+   },
+   "runnable_caller": true,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/prospective/q9shadow/dryrun.py:269:ANNOTATE",
     "nfl/prospective/q9shadow/dryrun.py:273:ANNOTATE"
@@ -1058,6 +1840,7 @@
   },
   {
    "guard": "assert_not_positional",
+   "protects": "A kicker may never be reached through club and position.",
    "defined_in": "nfl/dfs/showdown/kicker_identity.py",
    "line": 61,
    "n_definitions": 1,
@@ -1070,7 +1853,22 @@
     "ANNOTATE"
    ],
    "reachability": "INTERNAL_ONLY",
+   "caller_modules": [
+    "nfl/dfs/showdown/kicker_identity.py"
+   ],
+   "caller_entry_points": {
+    "nfl/dfs/showdown/kicker_identity.py": {
+     "has_main": true,
+     "referenced_outside_python": false
+    }
+   },
+   "runnable_caller": true,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/dfs/showdown/kicker_identity.py:157:ANNOTATE",
     "nfl/dfs/showdown/kicker_identity.py:159:ANNOTATE"
@@ -1078,6 +1876,7 @@
   },
   {
    "guard": "assert_not_promoted",
+   "protects": "A candidate artifact must say so, in every field that could be read as",
    "defined_in": "nfl/production/candidate_mode.py",
    "line": 1649,
    "n_definitions": 1,
@@ -1090,13 +1889,29 @@
     "STOP"
    ],
    "reachability": "EXTERNALLY_CALLED",
+   "caller_modules": [
+    "nfl/production/run_forecast.py"
+   ],
+   "caller_entry_points": {
+    "nfl/production/run_forecast.py": {
+     "has_main": true,
+     "referenced_outside_python": true
+    }
+   },
+   "runnable_caller": true,
+   "caller_referenced_outside_python": true,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/production/run_forecast.py:3533:STOP"
    ]
   },
   {
    "guard": "assert_packet_is_clean",
+   "protects": "No credential may enter a committed packet. Checked before writing.",
    "defined_in": "coordination/orchestrator/claude_code_transport.py",
    "line": 107,
    "n_definitions": 1,
@@ -1109,7 +1924,27 @@
     "STOP"
    ],
    "reachability": "EXTERNALLY_CALLED",
+   "caller_modules": [
+    "coordination/orchestrator/claude_code_transport.py",
+    "coordination/orchestrator/validate_engineering_run.py"
+   ],
+   "caller_entry_points": {
+    "coordination/orchestrator/claude_code_transport.py": {
+     "has_main": false,
+     "referenced_outside_python": false
+    },
+    "coordination/orchestrator/validate_engineering_run.py": {
+     "has_main": true,
+     "referenced_outside_python": false
+    }
+   },
+   "runnable_caller": true,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "coordination/orchestrator/validate_engineering_run.py:198:NOTHING",
     "coordination/orchestrator/claude_code_transport.py:231:NOTHING",
@@ -1118,6 +1953,7 @@
   },
   {
    "guard": "assert_pairs_are_usable",
+   "protects": "Pairs must exist, be pairs, name teams on the slate, and not repeat.",
    "defined_in": "nfl/production/team_volume_v1.py",
    "line": 302,
    "n_definitions": 1,
@@ -1130,13 +1966,29 @@
     "ANNOTATE"
    ],
    "reachability": "INTERNAL_ONLY",
+   "caller_modules": [
+    "nfl/production/team_volume_v1.py"
+   ],
+   "caller_entry_points": {
+    "nfl/production/team_volume_v1.py": {
+     "has_main": false,
+     "referenced_outside_python": false
+    }
+   },
+   "runnable_caller": false,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": false,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/production/team_volume_v1.py:478:ANNOTATE"
    ]
   },
   {
    "guard": "assert_participation_supports_allocation",
+   "protects": "The gate. Allocation may divide only a denominator that is established.",
    "defined_in": "nfl/production/universe/participation.py",
    "line": 295,
    "n_definitions": 1,
@@ -1149,13 +2001,29 @@
     "VERDICT_REGISTERED:PARTICIPATION_COMPLETENESS"
    ],
    "reachability": "EXTERNALLY_CALLED",
+   "caller_modules": [
+    "nfl/production/universe/run_chain.py"
+   ],
+   "caller_entry_points": {
+    "nfl/production/universe/run_chain.py": {
+     "has_main": true,
+     "referenced_outside_python": false
+    }
+   },
+   "runnable_caller": true,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/production/universe/run_chain.py:251:VERDICT_REGISTERED:PARTICIPATION_COMPLETENESS"
    ]
   },
   {
    "guard": "assert_partition_covers_required",
+   "protects": "SHARED and ARM must exactly cover the nine required layers.",
    "defined_in": "nfl/prospective/q9shadow/complete.py",
    "line": 99,
    "n_definitions": 1,
@@ -1168,13 +2036,29 @@
     "STOP"
    ],
    "reachability": "INTERNAL_ONLY",
+   "caller_modules": [
+    "nfl/prospective/q9shadow/complete.py"
+   ],
+   "caller_entry_points": {
+    "nfl/prospective/q9shadow/complete.py": {
+     "has_main": true,
+     "referenced_outside_python": true
+    }
+   },
+   "runnable_caller": true,
+   "caller_referenced_outside_python": true,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/prospective/q9shadow/complete.py:270:STOP"
    ]
   },
   {
    "guard": "assert_pit",
+   "protects": "Re-derive that nothing at or after the forecast week survived.",
    "defined_in": "nfl/production/nonqb/current_season_evidence.py",
    "line": 62,
    "n_definitions": 1,
@@ -1187,13 +2071,29 @@
     "STOP"
    ],
    "reachability": "INTERNAL_ONLY",
+   "caller_modules": [
+    "nfl/production/nonqb/current_season_evidence.py"
+   ],
+   "caller_entry_points": {
+    "nfl/production/nonqb/current_season_evidence.py": {
+     "has_main": false,
+     "referenced_outside_python": true
+    }
+   },
+   "runnable_caller": false,
+   "caller_referenced_outside_python": true,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/production/nonqb/current_season_evidence.py:104:STOP"
    ]
   },
   {
    "guard": "assert_player_review_complete",
+   "protects": "THE GATE. No slate reaches an optimizer without passing this.",
    "defined_in": "nfl/production/review/slate_report.py",
    "line": 170,
    "n_definitions": 1,
@@ -1206,13 +2106,29 @@
     "STOP"
    ],
    "reachability": "INTERNAL_ONLY",
+   "caller_modules": [
+    "nfl/production/review/slate_report.py"
+   ],
+   "caller_entry_points": {
+    "nfl/production/review/slate_report.py": {
+     "has_main": false,
+     "referenced_outside_python": false
+    }
+   },
+   "runnable_caller": false,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/production/review/slate_report.py:332:STOP"
    ]
   },
   {
    "guard": "assert_pregame_untouched",
+   "protects": "Nothing in the postgame path may write into the frozen pregame set.",
    "defined_in": "nfl/postgame/outcome.py",
    "line": 213,
    "n_definitions": 1,
@@ -1225,7 +2141,27 @@
     "STOP"
    ],
    "reachability": "EXTERNALLY_CALLED",
+   "caller_modules": [
+    "nfl/postgame/grade_portfolios.py",
+    "nfl/postgame/grade_projections.py"
+   ],
+   "caller_entry_points": {
+    "nfl/postgame/grade_portfolios.py": {
+     "has_main": true,
+     "referenced_outside_python": true
+    },
+    "nfl/postgame/grade_projections.py": {
+     "has_main": true,
+     "referenced_outside_python": false
+    }
+   },
+   "runnable_caller": true,
+   "caller_referenced_outside_python": true,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/postgame/grade_portfolios.py:155:STOP",
     "nfl/postgame/grade_projections.py:92:STOP"
@@ -1233,6 +2169,7 @@
   },
   {
    "guard": "assert_producer_coverage",
+   "protects": "Every advertised integrity code must have been CHECKED, or say why not.",
    "defined_in": "nfl/production/review/gate.py",
    "line": 607,
    "n_definitions": 1,
@@ -1245,13 +2182,29 @@
     "DOWNGRADE"
    ],
    "reachability": "INTERNAL_ONLY",
+   "caller_modules": [
+    "nfl/production/review/gate.py"
+   ],
+   "caller_entry_points": {
+    "nfl/production/review/gate.py": {
+     "has_main": false,
+     "referenced_outside_python": true
+    }
+   },
+   "runnable_caller": false,
+   "caller_referenced_outside_python": true,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/production/review/gate.py:710:DOWNGRADE"
    ]
   },
   {
    "guard": "assert_projection_excludes_outcomes",
+   "protects": "No derived feature key may itself be outcome-shaped.",
    "defined_in": "nfl/prospective/q9shadow/inputs.py",
    "line": 137,
    "n_definitions": 1,
@@ -1264,7 +2217,27 @@
     "STOP"
    ],
    "reachability": "EXTERNALLY_CALLED",
+   "caller_modules": [
+    "nfl/prospective/q9shadow/inputs.py",
+    "nfl/prospective/q9shadow/live_features.py"
+   ],
+   "caller_entry_points": {
+    "nfl/prospective/q9shadow/inputs.py": {
+     "has_main": true,
+     "referenced_outside_python": true
+    },
+    "nfl/prospective/q9shadow/live_features.py": {
+     "has_main": true,
+     "referenced_outside_python": false
+    }
+   },
+   "runnable_caller": true,
+   "caller_referenced_outside_python": true,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/prospective/q9shadow/inputs.py:321:NOTHING",
     "nfl/prospective/q9shadow/live_features.py:658:STOP"
@@ -1272,6 +2245,7 @@
   },
   {
    "guard": "assert_promotable",
+   "protects": "May `consumer` be promoted, given the assumptions it depends on?",
    "defined_in": "sportsplatform/governance/assumption.py",
    "line": 188,
    "n_definitions": 1,
@@ -1284,7 +2258,27 @@
     "STOP"
    ],
    "reachability": "EXTERNALLY_CALLED",
+   "caller_modules": [
+    "nfl/production/adjustment_registry.py",
+    "nfl/production/assumptions/run_audit.py"
+   ],
+   "caller_entry_points": {
+    "nfl/production/adjustment_registry.py": {
+     "has_main": false,
+     "referenced_outside_python": false
+    },
+    "nfl/production/assumptions/run_audit.py": {
+     "has_main": true,
+     "referenced_outside_python": false
+    }
+   },
+   "runnable_caller": true,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/production/adjustment_registry.py:235:STOP",
     "nfl/production/assumptions/run_audit.py:181:STOP"
@@ -1292,6 +2286,7 @@
   },
   {
    "guard": "assert_prospective_matches_frozen",
+   "protects": "With the extension off, this walk must reproduce the accepted one exactly.",
    "defined_in": "nfl/production/nonqb/appearance_b.py",
    "line": 461,
    "n_definitions": 1,
@@ -1304,11 +2299,20 @@
     "NO_PRODUCTION_CALLER"
    ],
    "reachability": "NO_CALLER_AT_ALL",
-   "classification": "NOT_ESTABLISHED",
+   "caller_modules": [],
+   "caller_entry_points": {},
+   "runnable_caller": false,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": false,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
+   "classification": "CANDIDATE_SCOPED",
+   "classification_reason": "guards Candidate B against the accepted walk, and Candidate B has no production caller either",
    "prod_sites": []
   },
   {
    "guard": "assert_prospective_order",
+   "protects": "The one ordering, on one basis. retrieved_at may be a list.",
    "defined_in": "nfl/prospective/q9shadow/timebasis.py",
    "line": 162,
    "n_definitions": 1,
@@ -1321,7 +2325,32 @@
     "STOP"
    ],
    "reachability": "EXTERNALLY_CALLED",
+   "caller_modules": [
+    "nfl/prospective/q9shadow/reuse.py",
+    "nfl/prospective/q9shadow/seal.py",
+    "nfl/prospective/q9shadow/timebasis.py"
+   ],
+   "caller_entry_points": {
+    "nfl/prospective/q9shadow/reuse.py": {
+     "has_main": true,
+     "referenced_outside_python": false
+    },
+    "nfl/prospective/q9shadow/seal.py": {
+     "has_main": true,
+     "referenced_outside_python": true
+    },
+    "nfl/prospective/q9shadow/timebasis.py": {
+     "has_main": false,
+     "referenced_outside_python": false
+    }
+   },
+   "runnable_caller": true,
+   "caller_referenced_outside_python": true,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/prospective/q9shadow/timebasis.py:227:STOP",
     "nfl/prospective/q9shadow/reuse.py:147:STOP",
@@ -1330,6 +2359,7 @@
   },
   {
    "guard": "assert_publishable",
+   "protects": "May these denominators be used for a published forecast?",
    "defined_in": "nfl/production/nonqb/current_season_team_volume.py",
    "line": 170,
    "n_definitions": 2,
@@ -1342,7 +2372,27 @@
     "ANNOTATE"
    ],
    "reachability": "EXTERNALLY_CALLED",
+   "caller_modules": [
+    "nfl/production/nonqb/football_engine.py",
+    "nfl/production/run_forecast.py"
+   ],
+   "caller_entry_points": {
+    "nfl/production/nonqb/football_engine.py": {
+     "has_main": false,
+     "referenced_outside_python": false
+    },
+    "nfl/production/run_forecast.py": {
+     "has_main": true,
+     "referenced_outside_python": true
+    }
+   },
+   "runnable_caller": true,
+   "caller_referenced_outside_python": true,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/production/run_forecast.py:1582:ANNOTATE",
     "nfl/production/nonqb/football_engine.py:2062:ANNOTATE"
@@ -1350,6 +2400,7 @@
   },
   {
    "guard": "assert_ranking_admissible",
+   "protects": "Strip from a ranked table any row whose metric is under a warning.",
    "defined_in": "nfl/product/model_health.py",
    "line": 205,
    "n_definitions": 1,
@@ -1362,11 +2413,20 @@
     "NO_PRODUCTION_CALLER"
    ],
    "reachability": "NO_PROD_CALLER",
-   "classification": "NOT_ESTABLISHED",
+   "caller_modules": [],
+   "caller_entry_points": {},
+   "runnable_caller": false,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
+   "classification": "ORPHANED_CONTROL",
+   "classification_reason": "logic proven, nothing calls it; wiring is a product decision about what the ranking is for",
    "prod_sites": []
   },
   {
    "guard": "assert_ready_for_slate",
+   "protects": "Refuse before an expensive simulation if a required source stopped.",
    "defined_in": "nfl/production/capture_cadence.py",
    "line": 263,
    "n_definitions": 1,
@@ -1379,11 +2439,20 @@
     "NO_PRODUCTION_CALLER"
    ],
    "reachability": "NO_PROD_CALLER",
+   "caller_modules": [],
+   "caller_entry_points": {},
+   "runnable_caller": false,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": []
   },
   {
    "guard": "assert_redistribution_supported",
+   "protects": "Conservation proves the SUM. This asks where the missing mass went.",
    "defined_in": "nfl/production/universe/allocation.py",
    "line": 357,
    "n_definitions": 1,
@@ -1396,13 +2465,29 @@
     "VERDICT_REGISTERED:REDISTRIBUTION_PLAUSIBILITY"
    ],
    "reachability": "EXTERNALLY_CALLED",
+   "caller_modules": [
+    "nfl/production/universe/run_chain.py"
+   ],
+   "caller_entry_points": {
+    "nfl/production/universe/run_chain.py": {
+     "has_main": true,
+     "referenced_outside_python": false
+    }
+   },
+   "runnable_caller": true,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/production/universe/run_chain.py:290:VERDICT_REGISTERED:REDISTRIBUTION_PLAUSIBILITY"
    ]
   },
   {
    "guard": "assert_research_tree_unchanged",
+   "protects": "Snapshot, run production, assert the research tree is byte-identical.",
    "defined_in": "nfl/production/derived.py",
    "line": 206,
    "n_definitions": 1,
@@ -1415,11 +2500,20 @@
     "NO_PRODUCTION_CALLER"
    ],
    "reachability": "NO_PROD_CALLER",
+   "caller_modules": [],
+   "caller_entry_points": {},
+   "runnable_caller": false,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": []
   },
   {
    "guard": "assert_role_state_supported",
+   "protects": "The blocking gate. A ROLE_UNSUPPORTED player may not carry an edge.",
    "defined_in": "nfl/production/universe/role_state.py",
    "line": 613,
    "n_definitions": 1,
@@ -1432,13 +2526,29 @@
     "VERDICT_REGISTERED:ROLE_PLAUSIBILITY"
    ],
    "reachability": "EXTERNALLY_CALLED",
+   "caller_modules": [
+    "nfl/production/universe/run_chain.py"
+   ],
+   "caller_entry_points": {
+    "nfl/production/universe/run_chain.py": {
+     "has_main": true,
+     "referenced_outside_python": false
+    }
+   },
+   "runnable_caller": true,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/production/universe/run_chain.py:230:VERDICT_REGISTERED:ROLE_PLAUSIBILITY"
    ]
   },
   {
    "guard": "assert_roster_legal",
+   "protects": "(legal, why). The single place a roster is judged legal.",
    "defined_in": "nfl/dfs/classic/rules.py",
    "line": 53,
    "n_definitions": 1,
@@ -1451,7 +2561,27 @@
     "ANNOTATE"
    ],
    "reachability": "EXTERNALLY_CALLED",
+   "caller_modules": [
+    "nfl/dfs/classic/optimizer.py",
+    "nfl/dfs/classic/reference.py"
+   ],
+   "caller_entry_points": {
+    "nfl/dfs/classic/optimizer.py": {
+     "has_main": false,
+     "referenced_outside_python": true
+    },
+    "nfl/dfs/classic/reference.py": {
+     "has_main": false,
+     "referenced_outside_python": true
+    }
+   },
+   "runnable_caller": false,
+   "caller_referenced_outside_python": true,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/dfs/classic/reference.py:341:ANNOTATE",
     "nfl/dfs/classic/optimizer.py:488:ANNOTATE"
@@ -1459,6 +2589,7 @@
   },
   {
    "guard": "assert_scope_allowed",
+   "protects": "Which gates block this scope right now, and are any of them not YES?",
    "defined_in": "nfl/production/gate_ids.py",
    "line": 196,
    "n_definitions": 1,
@@ -1471,13 +2602,29 @@
     "ANNOTATE"
    ],
    "reachability": "INTERNAL_ONLY",
+   "caller_modules": [
+    "nfl/production/gate_ids.py"
+   ],
+   "caller_entry_points": {
+    "nfl/production/gate_ids.py": {
+     "has_main": true,
+     "referenced_outside_python": false
+    }
+   },
+   "runnable_caller": true,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/production/gate_ids.py:243:ANNOTATE"
    ]
   },
   {
    "guard": "assert_seal_path_governed",
+   "protects": "Refuse an artifact that did not come through the governed appearance",
    "defined_in": "nfl/prospective/q9shadow/ledger.py",
    "line": 886,
    "n_definitions": 1,
@@ -1490,13 +2637,29 @@
     "STOP"
    ],
    "reachability": "INTERNAL_ONLY",
+   "caller_modules": [
+    "nfl/prospective/q9shadow/ledger.py"
+   ],
+   "caller_entry_points": {
+    "nfl/prospective/q9shadow/ledger.py": {
+     "has_main": true,
+     "referenced_outside_python": true
+    }
+   },
+   "runnable_caller": true,
+   "caller_referenced_outside_python": true,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/prospective/q9shadow/ledger.py:291:STOP"
    ]
   },
   {
    "guard": "assert_shared_draws",
+   "protects": "DK-scored players must be players the football layers emitted.",
    "defined_in": "nfl/dfs/salaries/build_postinactives_package.py",
    "line": 156,
    "n_definitions": 1,
@@ -1509,13 +2672,31 @@
     "STOP"
    ],
    "reachability": "EXTERNALLY_CALLED",
-   "classification": "NOT_ESTABLISHED",
+   "caller_modules": [
+    "nfl/dfs/salaries/emit_package.py"
+   ],
+   "caller_entry_points": {
+    "nfl/dfs/salaries/emit_package.py": {
+     "has_main": true,
+     "referenced_outside_python": false
+    }
+   },
+   "runnable_caller": true,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "nfl/tests/test_publication_refusal_is_load_bearing.py",
+   "load_bearing_proof_determinism": {
+    "nfl/tests/test_publication_refusal_is_load_bearing.py": "DETERMINISTIC_MEASURED"
+   },
+   "classification": "LOAD_BEARING",
+   "classification_reason": "same proof; note its kicker coverage is EMPTY because `kicking` is both a football layer and DK-bearing, so dk-foot subtracts the row from itself",
    "prod_sites": [
     "nfl/dfs/salaries/emit_package.py:110:STOP"
    ]
   },
   {
    "guard": "assert_single_divergence",
+   "protects": "Shared layers identical between arms; arm layers actually differing.",
    "defined_in": "nfl/prospective/q9shadow/complete.py",
    "line": 224,
    "n_definitions": 1,
@@ -1528,13 +2709,29 @@
     "STOP"
    ],
    "reachability": "INTERNAL_ONLY",
+   "caller_modules": [
+    "nfl/prospective/q9shadow/complete.py"
+   ],
+   "caller_entry_points": {
+    "nfl/prospective/q9shadow/complete.py": {
+     "has_main": true,
+     "referenced_outside_python": true
+    }
+   },
+   "runnable_caller": true,
+   "caller_referenced_outside_python": true,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/prospective/q9shadow/complete.py:334:STOP"
    ]
   },
   {
    "guard": "assert_sources_permitted",
+   "protects": "Every named source is on the permitted list, or the build refuses.",
    "defined_in": "nfl/prospective/q9shadow/live_features.py",
    "line": 135,
    "n_definitions": 1,
@@ -1547,13 +2744,29 @@
     "ANNOTATE"
    ],
    "reachability": "INTERNAL_ONLY",
+   "caller_modules": [
+    "nfl/prospective/q9shadow/live_features.py"
+   ],
+   "caller_entry_points": {
+    "nfl/prospective/q9shadow/live_features.py": {
+     "has_main": true,
+     "referenced_outside_python": false
+    }
+   },
+   "runnable_caller": true,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/prospective/q9shadow/live_features.py:591:ANNOTATE"
    ]
   },
   {
    "guard": "assert_summary_consistent",
+   "protects": "The stored quantile view must be recomputable from the stored draws.",
    "defined_in": "nfl/production/draws_artifact.py",
    "line": 532,
    "n_definitions": 1,
@@ -1566,13 +2779,29 @@
     "STOP"
    ],
    "reachability": "EXTERNALLY_CALLED",
+   "caller_modules": [
+    "nfl/production/run_forecast.py"
+   ],
+   "caller_entry_points": {
+    "nfl/production/run_forecast.py": {
+     "has_main": true,
+     "referenced_outside_python": true
+    }
+   },
+   "runnable_caller": true,
+   "caller_referenced_outside_python": true,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/production/run_forecast.py:3162:STOP"
    ]
   },
   {
    "guard": "assert_target_ownership_closure",
+   "protects": "Named target owners against the PUBLISHED team target level, DECOMPOSED.",
    "defined_in": "nfl/production/nonqb/shared_pass.py",
    "line": 435,
    "n_definitions": 1,
@@ -1585,11 +2814,20 @@
     "NO_PRODUCTION_CALLER"
    ],
    "reachability": "NO_PROD_CALLER",
+   "caller_modules": [],
+   "caller_entry_points": {},
+   "runnable_caller": false,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": []
   },
   {
    "guard": "assert_usable_for",
+   "protects": "May this record be used for a game on `game_date`?",
    "defined_in": "sportsplatform/governance/provenance.py",
    "line": 125,
    "n_definitions": 1,
@@ -1602,13 +2840,29 @@
     "STOP"
    ],
    "reachability": "EXTERNALLY_CALLED",
+   "caller_modules": [
+    "nfl/prospective/q9shadow/seal.py"
+   ],
+   "caller_entry_points": {
+    "nfl/prospective/q9shadow/seal.py": {
+     "has_main": true,
+     "referenced_outside_python": true
+    }
+   },
+   "runnable_caller": true,
+   "caller_referenced_outside_python": true,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": [
     "nfl/prospective/q9shadow/seal.py:362:STOP"
    ]
   },
   {
    "guard": "assert_verified",
+   "protects": "Gate for anything that builds a real, submittable lineup.",
    "defined_in": "nfl/dfs/scoring/site_rules.py",
    "line": 119,
    "n_definitions": 1,
@@ -1621,11 +2875,20 @@
     "NO_PRODUCTION_CALLER"
    ],
    "reachability": "NO_PROD_CALLER",
+   "caller_modules": [],
+   "caller_entry_points": {},
+   "runnable_caller": false,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": []
   },
   {
    "guard": "assert_walk_matches_research",
+   "protects": "Run both walks over the same historical panel and compare every feature.",
    "defined_in": "nfl/production/nonqb/appearance_model.py",
    "line": 479,
    "n_definitions": 1,
@@ -1638,11 +2901,20 @@
     "NO_PRODUCTION_CALLER"
    ],
    "reachability": "NO_PROD_CALLER",
+   "caller_modules": [],
+   "caller_entry_points": {},
+   "runnable_caller": false,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": []
   },
   {
    "guard": "assert_zero_opportunity_over_draws",
+   "protects": "Every determined-ineligible player holds EXACTLY zero in EVERY draw.",
    "defined_in": "nfl/production/eligibility_gate.py",
    "line": 793,
    "n_definitions": 1,
@@ -1655,7 +2927,15 @@
     "NO_PRODUCTION_CALLER"
    ],
    "reachability": "NO_PROD_CALLER",
+   "caller_modules": [],
+   "caller_entry_points": {},
+   "runnable_caller": false,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
    "prod_sites": []
   }
  ]
