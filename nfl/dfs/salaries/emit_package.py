@@ -266,8 +266,47 @@ def build() -> dict:
     }
 
 
+#: The audits that may REFUSE publication, and the one state that does it.
+#: NOT_CERTIFIED is not in here on purpose: before the league publishes its
+#: inactive declarations there is nothing to check against, and that is the
+#: normal pre-publication state, not a defect.
+BLOCKING_AUDITS = ('inactive_exclusion', 'shared_draws')
+BLOCKING_STATE = 'FAIL'
+
+
+def blocking_failures(out) -> list:
+    """The audits that came back FAIL. Empty is the publishable case."""
+    aud = (out or {}).get('audits') or {}
+    return [{'audit': k, 'code': (aud.get(k) or {}).get('code'),
+             'detail': (aud.get(k) or {}).get('method'),
+             'survivors': (aud.get(k) or {}).get('survivors') or []}
+            for k in BLOCKING_AUDITS
+            if (aud.get(k) or {}).get('state') == BLOCKING_STATE]
+
+
 def main():
     out = build()
+    # A GATE THAT CANNOT REFUSE IS A LABEL.
+    #
+    # `assert_no_inactive_in_playable` calls itself THE GATE and its result
+    # was written to audits.inactive_exclusion, printed, and then ignored:
+    # main() wrote the package and returned 0 whatever it said. So a FAIL --
+    # an officially inactive player carrying a playable DK projection -- got
+    # published with the failure recorded beside it as a field.
+    #
+    # Third instance of the same shape in this repository: DEF-058 computed
+    # `effective_mode` and never branched on it, which would have billed every
+    # MOCK task; the postgame join reported GRADED on a failed lookup. A
+    # computed check that nothing acts on is not a weaker check, it is an
+    # absent one wearing the costume of a present one.
+    failed = blocking_failures(out)
+    if failed:
+        for f in failed:
+            print(f'REFUSED  {f["audit"]}: {f["code"]}')
+            for sv in f['survivors'][:10]:
+                print(f'         {sv}')
+        print('NOTHING WAS WRITTEN. Publication is refused, not annotated.')
+        return 1
     p = _REPO / 'nfl' / 'research' / 'sunday' / OUT_NAME
     p.write_text(json.dumps(out, indent=1, sort_keys=True) + '\n')
     print(f'wrote {p}  {p.stat().st_size} bytes')
