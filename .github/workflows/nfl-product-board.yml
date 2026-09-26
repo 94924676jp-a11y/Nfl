@@ -133,20 +133,16 @@ jobs:
       # anyone. Only a crash or a pipeline refusal is a real failure.
       - name: Judge the pass
         if: always()
-        run: |
-          if grep -q 'Traceback (most recent call last)' /tmp/board.log; then
-            echo "BOARD_REFRESH_RAISED: unhandled exception"
-            grep -A15 'Traceback (most recent call last)' /tmp/board.log | tail -20
-            exit 1
-          fi
-          if grep -qE '^\S+ +(REFUSED|ERROR)' /tmp/board.log; then
-            echo "BOARD_REFRESH_REFUSED: a game could not be rendered"
-            grep -E '^\S+ +(REFUSED|ERROR)' /tmp/board.log
-            exit 1
-          fi
-          if ! grep -qE '^-- [0-9]+ board\(s\) written' /tmp/board.log; then
-            echo "BOARD_REFRESH_WROTE_NO_SUMMARY: the pass did not complete"
-            tail -30 /tmp/board.log
-            exit 1
-          fi
-          tail -5 /tmp/board.log
+        # A refusal is a result. A crash is a defect. This step used to compute
+        # three different outcomes and exit 1 for all of them, so the Actions
+        # history could not tell a system that was correctly declining from one
+        # that was broken. The classifier is nfl/tools/judge_board_pass.py,
+        # which is covered by nfl/tests/test_board_pass_judgement.py -- shell
+        # greps in a workflow file are not testable and this logic has to be.
+        #
+        # Exit 78 is neutral and is the convention nfl-production-forecast.yml
+        # already uses for its authorization gate. It is granted ONLY when every
+        # refusal code is declared debt, the declaration is still present in
+        # SYSTEM_STATE.json, nothing raised, and the pass reached its summary.
+        # Anything else is exit 1. Fail closed.
+        run: python3 nfl/tools/judge_board_pass.py /tmp/board.log
