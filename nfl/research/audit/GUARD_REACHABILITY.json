@@ -362,10 +362,12 @@
    "runnable_caller": false,
    "caller_referenced_outside_python": false,
    "direct_test_coverage": false,
-   "load_bearing_proof": "NONE",
-   "load_bearing_proof_determinism": {},
-   "classification": "NOT_ESTABLISHED",
-   "classification_reason": "",
+   "load_bearing_proof": "nfl/tests/test_team_volume_coupling_guards.py",
+   "load_bearing_proof_determinism": {
+    "nfl/tests/test_team_volume_coupling_guards.py": "NOT_ESTABLISHED"
+   },
+   "classification": "LOAD_BEARING",
+   "classification_reason": "coupling with joint_residuals=False gives FAIL[GAME_COUPLING_WITHOUT_JOINT_INDEX] and the refusal disappears when the guard is stubbed. Effect at the site is ANNOTATE by the census rule, but forecast() returns the Outcome the guard hands back, so the terminal effect is a STOP",
    "prod_sites": [
     "nfl/production/team_volume_v1.py:477:ANNOTATE"
    ],
@@ -398,10 +400,12 @@
    "runnable_caller": false,
    "caller_referenced_outside_python": false,
    "direct_test_coverage": false,
-   "load_bearing_proof": "NONE",
-   "load_bearing_proof_determinism": {},
-   "classification": "NOT_ESTABLISHED",
-   "classification_reason": "",
+   "load_bearing_proof": "nfl/tests/test_team_volume_coupling_guards.py",
+   "load_bearing_proof_determinism": {
+    "nfl/tests/test_team_volume_coupling_guards.py": "NOT_ESTABLISHED"
+   },
+   "classification": "LOAD_BEARING",
+   "classification_reason": "seeded an undeclared coupling name, got FAIL[GAME_COUPLING_UNKNOWN] listing the declared names, and bypassing the guard removes the refusal. It is on the engineering-branch executed closure, so a typo reaching production would have been reported as a run that had coupling on",
    "prod_sites": [
     "nfl/production/team_volume_v1.py:452:STOP"
    ],
@@ -2064,10 +2068,12 @@
    "runnable_caller": false,
    "caller_referenced_outside_python": false,
    "direct_test_coverage": false,
-   "load_bearing_proof": "NONE",
-   "load_bearing_proof_determinism": {},
-   "classification": "NOT_ESTABLISHED",
-   "classification_reason": "",
+   "load_bearing_proof": "nfl/tests/test_team_volume_coupling_guards.py",
+   "load_bearing_proof_determinism": {
+    "nfl/tests/test_team_volume_coupling_guards.py": "NOT_ESTABLISHED"
+   },
+   "classification": "LOAD_BEARING",
+   "classification_reason": "four distinct violations, four distinct codes (GAME_COUPLING_WITHOUT_PAIRS, GAME_PAIR_MALFORMED, GAME_PAIR_SELF, GAME_PAIR_TEAM_NOT_ON_SLATE), each proven against a bypass. The None-pairs case is the strongest evidence of all and also DEF-079: with the guard stubbed the module does not return a different answer, it raises TypeError at line 577, so the guard is the only thing between a None and a crash",
    "prod_sites": [
     "nfl/production/team_volume_v1.py:478:ANNOTATE"
    ],

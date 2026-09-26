@@ -99,6 +99,12 @@ LOAD_BEARING_PROOFS = {
         'nfl/tests/test_missing_is_not_zero.py',
     'nfl/production/nonqb/current_season_team_volume.py::assert_publishable':
         'nfl/tests/test_publishable_guards_are_load_bearing.py',
+    'assert_coupling_is_declared':
+        'nfl/tests/test_team_volume_coupling_guards.py',
+    'assert_coupling_has_joint_index':
+        'nfl/tests/test_team_volume_coupling_guards.py',
+    'assert_pairs_are_usable':
+        'nfl/tests/test_team_volume_coupling_guards.py',
 }
 
 #: guard -> classification, with the reason. Absent means NOT_ESTABLISHED.
@@ -134,6 +140,26 @@ CLASSIFICATION = {
         'run_forecast returns a fatal outcome before any world is drawn. The '
         'two arms were run and differ, and a non-PASS outcome smuggled in '
         'under the right key is still refused -- a key is not a verification'),
+    'assert_coupling_is_declared': ('LOAD_BEARING',
+        'seeded an undeclared coupling name, got FAIL[GAME_COUPLING_UNKNOWN] '
+        'listing the declared names, and bypassing the guard removes the '
+        'refusal. It is on the engineering-branch executed closure, so a typo '
+        'reaching production would have been reported as a run that had '
+        'coupling on'),
+    'assert_coupling_has_joint_index': ('LOAD_BEARING',
+        'coupling with joint_residuals=False gives '
+        'FAIL[GAME_COUPLING_WITHOUT_JOINT_INDEX] and the refusal disappears '
+        'when the guard is stubbed. Effect at the site is ANNOTATE by the '
+        'census rule, but forecast() returns the Outcome the guard hands back, '
+        'so the terminal effect is a STOP'),
+    'assert_pairs_are_usable': ('LOAD_BEARING',
+        'four distinct violations, four distinct codes '
+        '(GAME_COUPLING_WITHOUT_PAIRS, GAME_PAIR_MALFORMED, GAME_PAIR_SELF, '
+        'GAME_PAIR_TEAM_NOT_ON_SLATE), each proven against a bypass. The '
+        'None-pairs case is the strongest evidence of all and also DEF-079: '
+        'with the guard stubbed the module does not return a different answer, '
+        'it raises TypeError at line 577, so the guard is the only thing '
+        'between a None and a crash'),
     'nfl/production/nonqb/rushing_a1.py::assert_named_owner_containment': (
         'ANNOTATE_BY_DESIGN',
         'Its own docstring says so: "It REPAIRS NOTHING. It counts and it '
