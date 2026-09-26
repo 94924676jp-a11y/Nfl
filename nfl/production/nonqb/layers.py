@@ -300,9 +300,41 @@ def participation(appear: Outcome, share_prior: dict, m=200):
                         f'participation needs appearance; upstream is '
                         f'{appear.state.value}[{appear.code}]')
     A = appear.value
+    # A MISSING SHARE PRIOR IS A REFUSAL, NOT A ZERO SHARE. DEF-066.
+    #
+    # This read `share_prior.get(pid, 0.0)`, so a player with no prior got
+    # share 0.0 and the layer could not tell "this position has no pass-snap
+    # share concept" from "this player is missing from the prior". Both are
+    # the same float and different facts, which is the repo-wide invariant
+    # inverted inside the model rather than in grading.
+    #
+    # MEASURED UNREACHABLE ON THE PRODUCTION PATH before changing it, so this
+    # is fail-closed rather than a behaviour change: run_forecast hands the
+    # SAME `players` object to slate_fits (which builds the prior) and to
+    # run_game, run_game filters to RECEIVING_POS before calling appearance,
+    # and RECEIVING_POS == participation_prior.POSITIONS == ('WR','TE','RB').
+    # `players` does contain QBs -- share_prior skips them -- but they are
+    # stripped before they can arrive here. The containment is asserted by
+    # nfl/tests/test_participation_prior_containment.py so a later edit to
+    # either set cannot make the default reachable silently.
+    #
+    # participation_prior itself never invents a value: it names its declared
+    # fallback (the positional mean), refuses PARTICIPATION_IDENTITY_UNRESOLVED
+    # on a missing gsis_id, and refuses PARTICIPATION_PRIOR_EMPTY rather than
+    # returning an empty map. The collapse was here, at the CONSUMER, which
+    # reintroduced by dict-default exactly what the producer refused to invent.
+    absent = sorted(pid for pid in A if pid not in share_prior)
+    if absent:
+        return _blocked(
+            'PARTICIPATION_PRIOR_INCOMPLETE',
+            f'{len(absent)} player(s) carry an appearance draw and no share '
+            f'prior, so their participation would have to be invented: '
+            f'{absent[:8]}{"..." if len(absent) > 8 else ""}. A zero share and '
+            f'an absent prior are the same number and different facts; no '
+            f'value is substituted here.')
     out = {}
     for pid, a in A.items():
-        s = float(share_prior.get(pid, 0.0))
+        s = float(share_prior[pid])
         out[pid] = a * s                      # share only when he appears
     return Outcome.ok('PARTICIPATION_OK', value=out,
                       spec_version=SPEC['participation'],
