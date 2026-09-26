@@ -10,8 +10,8 @@ confidence this census exists to strip out.
 
 | reachability | n | effect on failure | n | classification | n |
 |---|---|---|---|---|---|
-| NO_CALLER_AT_ALL | 4 | STOP | 37 | NOT_ESTABLISHED | 70 |
-| NO_PROD_CALLER | 27 | NO_PRODUCTION_CALLER | 31 | LOAD_BEARING | 12 |
+| NO_CALLER_AT_ALL | 4 | STOP | 37 | NOT_ESTABLISHED | 69 |
+| NO_PROD_CALLER | 27 | NO_PRODUCTION_CALLER | 31 | LOAD_BEARING | 13 |
 | INTERNAL_ONLY | 24 | ANNOTATE | 9 | ORPHANED_CONTROL | 3 |
 | EXTERNALLY_CALLED | 36 | DOWNGRADE | 9 | TEST_NOT_RUNTIME | 1 |
 |  |  | VERDICT_REGISTERED | 5 | ANNOTATE_BY_DESIGN | 1 |
@@ -35,6 +35,7 @@ action demonstrably not happening.
 | `assert_no_inactive_in_playable` | THE GATE. Checks EMITTED rows, not the fixture's intent. | `test_publication_refusal_is_load_bearing.py` | DETERMINISTIC_MEASURED |
 | `assert_no_live_outcome` | Every row of the forecast season must carry no realised va | `test_live_features_leakage_guards.py` | NOT_ESTABLISHED |
 | `assert_no_roster_status` | No supplied player descriptor may carry a roster-status fi | `test_live_features_leakage_guards.py` | NOT_ESTABLISHED |
+| `assert_packet_is_clean` | No credential may enter a committed packet. Checked before | `test_packet_credential_guard.py` | NOT_ESTABLISHED |
 | `assert_pairs_are_usable` | Pairs must exist, be pairs, name teams on the slate, and n | `test_team_volume_coupling_guards.py` | NOT_ESTABLISHED |
 | `assert_publishable` | May these denominators be used for a published forecast? | `test_publishable_guards_are_load_bearing.py` | NOT_ESTABLISHED |
 | `assert_shared_draws` | DK-scored players must be players the football layers emit | `test_publication_refusal_is_load_bearing.py` | DETERMINISTIC_MEASURED |
@@ -46,6 +47,7 @@ action demonstrably not happening.
 |---|---|---|---|---|---|---|---|
 | `assert_graded_row` | STOP | EXTERNALLY_CALLED | yes | yes | LOAD_BEARING | yes | **no** |
 | `assert_no_inactive_in_playable` | STOP | EXTERNALLY_CALLED | yes | yes | LOAD_BEARING | yes | **no** |
+| `assert_packet_is_clean` | STOP | EXTERNALLY_CALLED | yes | yes | LOAD_BEARING | yes | **no** |
 | `assert_publishable` | DOWNGRADE | EXTERNALLY_CALLED | yes | yes | LOAD_BEARING | yes | yes |
 | `assert_shared_draws` | STOP | EXTERNALLY_CALLED | yes | yes | LOAD_BEARING | yes | **no** |
 | `assert_coupling_has_joint_index` | ANNOTATE | INTERNAL_ONLY | **no** | yes | LOAD_BEARING | — | **no** |
@@ -76,7 +78,6 @@ action demonstrably not happening.
 | `assert_not_dry_run` | DOWNGRADE | EXTERNALLY_CALLED | yes | — | NOT_ESTABLISHED | yes | **no** |
 | `assert_not_mutated` | DOWNGRADE | EXTERNALLY_CALLED | yes | — | NOT_ESTABLISHED | yes | **no** |
 | `assert_not_promoted` | STOP | EXTERNALLY_CALLED | yes | — | NOT_ESTABLISHED | yes | yes |
-| `assert_packet_is_clean` | STOP | EXTERNALLY_CALLED | yes | — | NOT_ESTABLISHED | yes | **no** |
 | `assert_participation_supports_allocation` | VERDICT_REGISTERED | EXTERNALLY_CALLED | yes | — | NOT_ESTABLISHED | yes | **no** |
 | `assert_pregame_untouched` | STOP | EXTERNALLY_CALLED | yes | — | NOT_ESTABLISHED | yes | yes |
 | `assert_projection_excludes_outcomes` | STOP | EXTERNALLY_CALLED | yes | — | NOT_ESTABLISHED | yes | yes |

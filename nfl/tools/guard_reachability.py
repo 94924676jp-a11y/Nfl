@@ -115,6 +115,8 @@ LOAD_BEARING_PROOFS = {
         'nfl/tests/test_live_features_leakage_guards.py',
     'assert_no_live_outcome':
         'nfl/tests/test_live_features_leakage_guards.py',
+    'assert_packet_is_clean':
+        'nfl/tests/test_packet_credential_guard.py',
 }
 
 #: guard -> classification, with the reason. Absent means NOT_ESTABLISHED.
@@ -150,6 +152,22 @@ CLASSIFICATION = {
         'run_forecast returns a fatal outcome before any world is drawn. The '
         'two arms were run and differ, and a non-PASS outcome smuggled in '
         'under the right key is still refused -- a key is not a verification'),
+    'assert_packet_is_clean': ('LOAD_BEARING',
+        'the protected action is a FILE and the proof inspects the disk. '
+        'write_packet computes the body, calls this guard, and only then '
+        'p.write_text(body) -- so a dirty packet raises PacketRefusal and '
+        'NOTHING appears on disk, verified by rglob over a redirected repo. '
+        'With the guard bypassed the same packet IS written and the secret is '
+        'in the file, which is what makes the rest proof rather than '
+        'decoration. All seven credential shapes refused; all six benign '
+        'strings that NAME a credential without carrying one pass, including '
+        'ghp_short and "the OPENAI_API_KEY env var", because a matcher that '
+        'refused a docstring would be switched off by whoever it blocked '
+        'first. The refusal truncates the match instead of echoing it, since a '
+        'refusal that reprints the secret republishes it. Both write sites '
+        '(build_packet and write_packet) are asserted guarded. Effect at each '
+        'site reads NOTHING because the call is a bare statement; fails_by is '
+        'RAISE, and the raise IS the stop'),
     'assert_sources_permitted': ('LOAD_BEARING',
         'build() returns the guard Outcome, proven through the real entry point '
         'rather than read: each of the four FORBIDDEN_SOURCES seeded into a '
