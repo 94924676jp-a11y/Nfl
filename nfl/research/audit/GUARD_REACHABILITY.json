@@ -1,0 +1,1662 @@
+{
+ "spec_version": "nfl-guard-reachability-1",
+ "n_guards": 89,
+ "rows": [
+  {
+   "guard": "assert_allocation_conserves",
+   "defined_in": "nfl/production/universe/allocation.py",
+   "line": 290,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 1,
+   "callers_prod_external": 1,
+   "callers_test": 4,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "VERDICT_REGISTERED:OPPORTUNITY_CONSERVATION"
+   ],
+   "reachability": "EXTERNALLY_CALLED",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/production/universe/run_chain.py:276:VERDICT_REGISTERED:OPPORTUNITY_CONSERVATION"
+   ]
+  },
+  {
+   "guard": "assert_arm",
+   "defined_in": "nfl/prospective/q9shadow/armpolicy.py",
+   "line": 110,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 0,
+   "callers_prod_external": 0,
+   "callers_test": 6,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "NO_PRODUCTION_CALLER"
+   ],
+   "reachability": "NO_PROD_CALLER",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": []
+  },
+  {
+   "guard": "assert_arms_not_pooled",
+   "defined_in": "nfl/prospective/artifact.py",
+   "line": 634,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 0,
+   "callers_prod_external": 0,
+   "callers_test": 3,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "NO_PRODUCTION_CALLER"
+   ],
+   "reachability": "NO_PROD_CALLER",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": []
+  },
+  {
+   "guard": "assert_blockers_independent",
+   "defined_in": "nfl/prospective/q9shadow/ledger.py",
+   "line": 998,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 1,
+   "callers_prod_external": 0,
+   "callers_test": 6,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "STOP"
+   ],
+   "reachability": "INTERNAL_ONLY",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/prospective/q9shadow/ledger.py:615:STOP"
+   ]
+  },
+  {
+   "guard": "assert_code_matches_policy",
+   "defined_in": "nfl/prospective/q9shadow/armpolicy.py",
+   "line": 145,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 0,
+   "callers_prod_external": 0,
+   "callers_test": 1,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "NO_PRODUCTION_CALLER"
+   ],
+   "reachability": "NO_PROD_CALLER",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": []
+  },
+  {
+   "guard": "assert_comparable",
+   "defined_in": "nfl/dfs/showdown/universe_contract.py",
+   "line": 184,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 0,
+   "callers_prod_external": 0,
+   "callers_test": 3,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "NO_PRODUCTION_CALLER"
+   ],
+   "reachability": "NO_PROD_CALLER",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": []
+  },
+  {
+   "guard": "assert_complete",
+   "defined_in": "nfl/production/contracts/completeness.py",
+   "line": 150,
+   "n_definitions": 2,
+   "fails_by": "RAISE_OR_RETURN",
+   "callers_prod": 1,
+   "callers_prod_external": 1,
+   "callers_test": 10,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "STOP"
+   ],
+   "reachability": "EXTERNALLY_CALLED",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/dfs/player_universe.py:377:STOP"
+   ]
+  },
+  {
+   "guard": "assert_completeness",
+   "defined_in": "nfl/dfs/history/store.py",
+   "line": 126,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 0,
+   "callers_prod_external": 0,
+   "callers_test": 1,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "NO_PRODUCTION_CALLER"
+   ],
+   "reachability": "NO_PROD_CALLER",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": []
+  },
+  {
+   "guard": "assert_consumer",
+   "defined_in": "nfl/production/adjustment_registry.py",
+   "line": 341,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 0,
+   "callers_prod_external": 0,
+   "callers_test": 8,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "NO_PRODUCTION_CALLER"
+   ],
+   "reachability": "NO_PROD_CALLER",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": []
+  },
+  {
+   "guard": "assert_counts_are_counts",
+   "defined_in": "nfl/production/stat_contract.py",
+   "line": 425,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 1,
+   "callers_prod_external": 1,
+   "callers_test": 6,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "STOP"
+   ],
+   "reachability": "EXTERNALLY_CALLED",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/production/nonqb/football_engine.py:2091:STOP"
+   ]
+  },
+  {
+   "guard": "assert_coupling_has_joint_index",
+   "defined_in": "nfl/production/team_volume_v1.py",
+   "line": 292,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 1,
+   "callers_prod_external": 0,
+   "callers_test": 0,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "ANNOTATE"
+   ],
+   "reachability": "INTERNAL_ONLY",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/production/team_volume_v1.py:477:ANNOTATE"
+   ]
+  },
+  {
+   "guard": "assert_coupling_is_declared",
+   "defined_in": "nfl/production/team_volume_v1.py",
+   "line": 281,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 1,
+   "callers_prod_external": 0,
+   "callers_test": 0,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "STOP"
+   ],
+   "reachability": "INTERNAL_ONLY",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/production/team_volume_v1.py:452:STOP"
+   ]
+  },
+  {
+   "guard": "assert_cross_player_eligible",
+   "defined_in": "nfl/production/dependence.py",
+   "line": 133,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 0,
+   "callers_prod_external": 0,
+   "callers_test": 3,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "NO_PRODUCTION_CALLER"
+   ],
+   "reachability": "NO_PROD_CALLER",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": []
+  },
+  {
+   "guard": "assert_currently_admissible",
+   "defined_in": "nfl/prospective/q9shadow/reuse.py",
+   "line": 217,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 1,
+   "callers_prod_external": 0,
+   "callers_test": 8,
+   "callers_research": 1,
+   "effect_on_failure": [
+    "DOWNGRADE"
+   ],
+   "reachability": "INTERNAL_ONLY",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/prospective/q9shadow/reuse.py:290:DOWNGRADE"
+   ]
+  },
+  {
+   "guard": "assert_cut_lawful",
+   "defined_in": "nfl/production/pipeline.py",
+   "line": 1332,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 1,
+   "callers_prod_external": 0,
+   "callers_test": 3,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "STOP"
+   ],
+   "reachability": "INTERNAL_ONLY",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/production/pipeline.py:350:STOP"
+   ]
+  },
+  {
+   "guard": "assert_draw_coherence",
+   "defined_in": "nfl/production/draw_coherence.py",
+   "line": 633,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 1,
+   "callers_prod_external": 1,
+   "callers_test": 7,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "STOP"
+   ],
+   "reachability": "EXTERNALLY_CALLED",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/production/run_forecast.py:3075:STOP"
+   ]
+  },
+  {
+   "guard": "assert_dropback_identity",
+   "defined_in": "nfl/production/stat_contract.py",
+   "line": 295,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 1,
+   "callers_prod_external": 1,
+   "callers_test": 5,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "DOWNGRADE"
+   ],
+   "reachability": "EXTERNALLY_CALLED",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/production/nonqb/football_engine.py:2132:DOWNGRADE"
+   ]
+  },
+  {
+   "guard": "assert_edge_fields_are_pregame",
+   "defined_in": "nfl/production/pipeline.py",
+   "line": 904,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 1,
+   "callers_prod_external": 0,
+   "callers_test": 4,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "DOWNGRADE"
+   ],
+   "reachability": "INTERNAL_ONLY",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/production/pipeline.py:950:DOWNGRADE"
+   ]
+  },
+  {
+   "guard": "assert_edges_declarable",
+   "defined_in": "nfl/production/pipeline.py",
+   "line": 947,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 1,
+   "callers_prod_external": 0,
+   "callers_test": 1,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "STOP"
+   ],
+   "reachability": "INTERNAL_ONLY",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/production/pipeline.py:1180:STOP"
+   ]
+  },
+  {
+   "guard": "assert_event_named",
+   "defined_in": "nfl/production/conditioning_contract.py",
+   "line": 181,
+   "n_definitions": 1,
+   "fails_by": "RAISE",
+   "callers_prod": 0,
+   "callers_prod_external": 0,
+   "callers_test": 5,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "NO_PRODUCTION_CALLER"
+   ],
+   "reachability": "NO_PROD_CALLER",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": []
+  },
+  {
+   "guard": "assert_events_within_opportunity",
+   "defined_in": "nfl/production/stat_contract.py",
+   "line": 511,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 1,
+   "callers_prod_external": 1,
+   "callers_test": 6,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "STOP"
+   ],
+   "reachability": "EXTERNALLY_CALLED",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/production/nonqb/football_engine.py:2115:STOP"
+   ]
+  },
+  {
+   "guard": "assert_every_player_tagged",
+   "defined_in": "nfl/production/dfs/projection_confidence.py",
+   "line": 138,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 1,
+   "callers_prod_external": 1,
+   "callers_test": 0,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "STOP"
+   ],
+   "reachability": "EXTERNALLY_CALLED",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/production/dfs/portfolio_guard.py:72:STOP"
+   ]
+  },
+  {
+   "guard": "assert_fallbacks_resolve",
+   "defined_in": "nfl/production/state/registry.py",
+   "line": 254,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 1,
+   "callers_prod_external": 0,
+   "callers_test": 1,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "STOP"
+   ],
+   "reachability": "INTERNAL_ONLY",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/production/state/registry.py:576:STOP"
+   ]
+  },
+  {
+   "guard": "assert_feature_schema_matches_freeze",
+   "defined_in": "nfl/prospective/q9shadow/live_features.py",
+   "line": 192,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 2,
+   "callers_prod_external": 0,
+   "callers_test": 1,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "ANNOTATE",
+    "NOTHING"
+   ],
+   "reachability": "INTERNAL_ONLY",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/prospective/q9shadow/live_features.py:593:ANNOTATE",
+    "nfl/prospective/q9shadow/live_features.py:944:NOTHING"
+   ]
+  },
+  {
+   "guard": "assert_frame_closes",
+   "defined_in": "nfl/production/nonqb/rushing_a1.py",
+   "line": 390,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 2,
+   "callers_prod_external": 0,
+   "callers_test": 0,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "STOP"
+   ],
+   "reachability": "INTERNAL_ONLY",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/production/nonqb/rushing_a1.py:426:STOP",
+    "nfl/production/nonqb/rushing_a1.py:459:STOP"
+   ]
+  },
+  {
+   "guard": "assert_fresh",
+   "defined_in": "nfl/production/nonqb/current_season_evidence.py",
+   "line": 199,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 1,
+   "callers_prod_external": 1,
+   "callers_test": 4,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "STOP"
+   ],
+   "reachability": "EXTERNALLY_CALLED",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/production/run_forecast.py:1593:STOP"
+   ]
+  },
+  {
+   "guard": "assert_gate",
+   "defined_in": "sportsplatform/governance/artifact_reference.py",
+   "line": 234,
+   "n_definitions": 1,
+   "fails_by": "RAISE_OR_RETURN",
+   "callers_prod": 0,
+   "callers_prod_external": 0,
+   "callers_test": 5,
+   "callers_research": 6,
+   "effect_on_failure": [
+    "NO_PRODUCTION_CALLER"
+   ],
+   "reachability": "NO_PROD_CALLER",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": []
+  },
+  {
+   "guard": "assert_graded_row",
+   "defined_in": "nfl/postgame/join_provenance.py",
+   "line": 98,
+   "n_definitions": 1,
+   "fails_by": "RAISE_OR_RETURN",
+   "callers_prod": 1,
+   "callers_prod_external": 1,
+   "callers_test": 1,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "STOP"
+   ],
+   "reachability": "EXTERNALLY_CALLED",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/postgame/grade_projections.py:327:NOTHING"
+   ]
+  },
+  {
+   "guard": "assert_hard_invariants",
+   "defined_in": "nfl/prospective/artifact.py",
+   "line": 421,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 2,
+   "callers_prod_external": 1,
+   "callers_test": 11,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "STOP"
+   ],
+   "reachability": "EXTERNALLY_CALLED",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/production/run_forecast.py:3429:STOP",
+    "nfl/prospective/artifact.py:593:STOP"
+   ]
+  },
+  {
+   "guard": "assert_identical_to_freeze",
+   "defined_in": "nfl/prospective/q9shadow/candidate.py",
+   "line": 196,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 2,
+   "callers_prod_external": 1,
+   "callers_test": 2,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "STOP"
+   ],
+   "reachability": "EXTERNALLY_CALLED",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/prospective/q9shadow/candidate.py:257:STOP",
+    "nfl/prospective/q9shadow/seal.py:870:STOP"
+   ]
+  },
+  {
+   "guard": "assert_implementations_exist",
+   "defined_in": "nfl/production/nonqb/eligibility.py",
+   "line": 196,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 0,
+   "callers_prod_external": 0,
+   "callers_test": 2,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "NO_PRODUCTION_CALLER"
+   ],
+   "reachability": "NO_PROD_CALLER",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": []
+  },
+  {
+   "guard": "assert_inactive_qbs_own_nothing",
+   "defined_in": "nfl/production/qb_accounting.py",
+   "line": 782,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 2,
+   "callers_prod_external": 2,
+   "callers_test": 0,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "STOP"
+   ],
+   "reachability": "EXTERNALLY_CALLED",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/production/run_forecast.py:969:STOP",
+    "nfl/production/run_forecast.py:2198:STOP"
+   ]
+  },
+  {
+   "guard": "assert_lineup_legal",
+   "defined_in": "nfl/dfs/scoring/site_rules.py",
+   "line": 142,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 0,
+   "callers_prod_external": 0,
+   "callers_test": 5,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "NO_PRODUCTION_CALLER"
+   ],
+   "reachability": "NO_PROD_CALLER",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": []
+  },
+  {
+   "guard": "assert_live_lineage",
+   "defined_in": "nfl/production/capture_cadence.py",
+   "line": 149,
+   "n_definitions": 1,
+   "fails_by": "RAISE",
+   "callers_prod": 0,
+   "callers_prod_external": 0,
+   "callers_test": 0,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "NO_PRODUCTION_CALLER"
+   ],
+   "reachability": "NO_CALLER_AT_ALL",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": []
+  },
+  {
+   "guard": "assert_may_apply",
+   "defined_in": "nfl/production/adjustment_registry.py",
+   "line": 240,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 0,
+   "callers_prod_external": 0,
+   "callers_test": 10,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "NO_PRODUCTION_CALLER"
+   ],
+   "reachability": "NO_PROD_CALLER",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": []
+  },
+  {
+   "guard": "assert_may_consume",
+   "defined_in": "nfl/dfs/gate_enforcement.py",
+   "line": 153,
+   "n_definitions": 1,
+   "fails_by": "RAISE_OR_RETURN",
+   "callers_prod": 1,
+   "callers_prod_external": 1,
+   "callers_test": 6,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "STOP"
+   ],
+   "reachability": "EXTERNALLY_CALLED",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/dfs/player_universe.py:338:NOTHING"
+   ]
+  },
+  {
+   "guard": "assert_may_optimize",
+   "defined_in": "nfl/production/workflow/stages.py",
+   "line": 170,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 0,
+   "callers_prod_external": 0,
+   "callers_test": 3,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "NO_PRODUCTION_CALLER"
+   ],
+   "reachability": "NO_PROD_CALLER",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": []
+  },
+  {
+   "guard": "assert_may_project",
+   "defined_in": "nfl/production/workflow/stages.py",
+   "line": 187,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 0,
+   "callers_prod_external": 0,
+   "callers_test": 1,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "NO_PRODUCTION_CALLER"
+   ],
+   "reachability": "NO_PROD_CALLER",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": []
+  },
+  {
+   "guard": "assert_may_train",
+   "defined_in": "nfl/postgame/eligibility.py",
+   "line": 114,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 0,
+   "callers_prod_external": 0,
+   "callers_test": 5,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "NO_PRODUCTION_CALLER"
+   ],
+   "reachability": "NO_PROD_CALLER",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": []
+  },
+  {
+   "guard": "assert_metric_origin_complete",
+   "defined_in": "nfl/production/authorization.py",
+   "line": 1053,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 0,
+   "callers_prod_external": 0,
+   "callers_test": 0,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "NO_PRODUCTION_CALLER"
+   ],
+   "reachability": "NO_CALLER_AT_ALL",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": []
+  },
+  {
+   "guard": "assert_named_owner_containment",
+   "defined_in": "nfl/production/nonqb/rushing_a1.py",
+   "line": 1062,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 2,
+   "callers_prod_external": 1,
+   "callers_test": 2,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "ANNOTATE"
+   ],
+   "reachability": "EXTERNALLY_CALLED",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/production/nonqb/rushing_a1.py:1351:STOP",
+    "nfl/production/nonqb/football_engine.py:1725:ANNOTATE"
+   ]
+  },
+  {
+   "guard": "assert_no_artifact_claims_12_of_12",
+   "defined_in": "nfl/prospective/nfl1_readiness.py",
+   "line": 51,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 1,
+   "callers_prod_external": 0,
+   "callers_test": 5,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "STOP"
+   ],
+   "reachability": "INTERNAL_ONLY",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/prospective/nfl1_readiness.py:177:STOP"
+   ]
+  },
+  {
+   "guard": "assert_no_auto_authorization",
+   "defined_in": "nfl/prospective/nfl1_readiness.py",
+   "line": 33,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 0,
+   "callers_prod_external": 0,
+   "callers_test": 4,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "NO_PRODUCTION_CALLER"
+   ],
+   "reachability": "NO_PROD_CALLER",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": []
+  },
+  {
+   "guard": "assert_no_double_counted_qb_carries",
+   "defined_in": "nfl/production/nonqb/accounting.py",
+   "line": 394,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 0,
+   "callers_prod_external": 0,
+   "callers_test": 1,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "NO_PRODUCTION_CALLER"
+   ],
+   "reachability": "NO_PROD_CALLER",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": []
+  },
+  {
+   "guard": "assert_no_inactive_in_playable",
+   "defined_in": "nfl/dfs/salaries/build_postinactives_package.py",
+   "line": 116,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 1,
+   "callers_prod_external": 1,
+   "callers_test": 0,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "STOP"
+   ],
+   "reachability": "EXTERNALLY_CALLED",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/dfs/salaries/emit_package.py:109:STOP"
+   ]
+  },
+  {
+   "guard": "assert_no_inactive_survived",
+   "defined_in": "nfl/dfs/salaries/postinactives_board.py",
+   "line": 155,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 0,
+   "callers_prod_external": 0,
+   "callers_test": 0,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "NO_PRODUCTION_CALLER"
+   ],
+   "reachability": "NO_CALLER_AT_ALL",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": []
+  },
+  {
+   "guard": "assert_no_inactive_survives",
+   "defined_in": "nfl/production/universe/coverage.py",
+   "line": 205,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 1,
+   "callers_prod_external": 1,
+   "callers_test": 5,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "VERDICT_REGISTERED:INACTIVE_APPLICATION"
+   ],
+   "reachability": "EXTERNALLY_CALLED",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/production/universe/run_chain.py:196:VERDICT_REGISTERED:INACTIVE_APPLICATION"
+   ]
+  },
+  {
+   "guard": "assert_no_live_outcome",
+   "defined_in": "nfl/prospective/q9shadow/live_features.py",
+   "line": 171,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 1,
+   "callers_prod_external": 0,
+   "callers_test": 5,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "STOP"
+   ],
+   "reachability": "INTERNAL_ONLY",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/prospective/q9shadow/live_features.py:644:STOP"
+   ]
+  },
+  {
+   "guard": "assert_no_outcome_reader_imported",
+   "defined_in": "nfl/prospective/q9shadow/inputs.py",
+   "line": 186,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 1,
+   "callers_prod_external": 1,
+   "callers_test": 2,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "DOWNGRADE"
+   ],
+   "reachability": "EXTERNALLY_CALLED",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/prospective/q9shadow/dryrun.py:254:DOWNGRADE"
+   ]
+  },
+  {
+   "guard": "assert_no_outcome_shaped_inputs",
+   "defined_in": "nfl/prospective/q9shadow/inputs.py",
+   "line": 155,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 5,
+   "callers_prod_external": 3,
+   "callers_test": 3,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "ANNOTATE"
+   ],
+   "reachability": "EXTERNALLY_CALLED",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/prospective/q9shadow/inputs.py:228:STOP",
+    "nfl/prospective/q9shadow/inputs.py:265:STOP",
+    "nfl/prospective/q9shadow/dryrun.py:183:ANNOTATE",
+    "nfl/prospective/q9shadow/dryrun.py:187:ANNOTATE",
+    "nfl/prospective/q9shadow/dryrun.py:188:ANNOTATE"
+   ]
+  },
+  {
+   "guard": "assert_no_postgame_inputs",
+   "defined_in": "nfl/production/pipeline.py",
+   "line": 126,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 1,
+   "callers_prod_external": 0,
+   "callers_test": 1,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "STOP"
+   ],
+   "reachability": "INTERNAL_ONLY",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/production/pipeline.py:191:STOP"
+   ]
+  },
+  {
+   "guard": "assert_no_roster_status",
+   "defined_in": "nfl/prospective/q9shadow/live_features.py",
+   "line": 155,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 1,
+   "callers_prod_external": 0,
+   "callers_test": 2,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "ANNOTATE"
+   ],
+   "reachability": "INTERNAL_ONLY",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/prospective/q9shadow/live_features.py:592:ANNOTATE"
+   ]
+  },
+  {
+   "guard": "assert_no_stale_labels",
+   "defined_in": "nfl/production/nonqb/eligibility.py",
+   "line": 162,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 0,
+   "callers_prod_external": 0,
+   "callers_test": 2,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "NO_PRODUCTION_CALLER"
+   ],
+   "reachability": "NO_PROD_CALLER",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": []
+  },
+  {
+   "guard": "assert_not_a_dropback_column",
+   "defined_in": "nfl/production/stat_contract.py",
+   "line": 334,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 0,
+   "callers_prod_external": 0,
+   "callers_test": 2,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "NO_PRODUCTION_CALLER"
+   ],
+   "reachability": "NO_PROD_CALLER",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": []
+  },
+  {
+   "guard": "assert_not_applicable_is_evidenced",
+   "defined_in": "nfl/production/integrity/contract.py",
+   "line": 358,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 2,
+   "callers_prod_external": 2,
+   "callers_test": 1,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "STOP"
+   ],
+   "reachability": "EXTERNALLY_CALLED",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/production/review/gate.py:628:STOP",
+    "nfl/production/review/gate.py:808:STOP"
+   ]
+  },
+  {
+   "guard": "assert_not_dry_run",
+   "defined_in": "nfl/prospective/q9shadow/ledger.py",
+   "line": 222,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 2,
+   "callers_prod_external": 2,
+   "callers_test": 2,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "ANNOTATE",
+    "DOWNGRADE"
+   ],
+   "reachability": "EXTERNALLY_CALLED",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/prospective/q9shadow/dryrun.py:324:DOWNGRADE",
+    "nfl/prospective/q9shadow/dryrun.py:328:ANNOTATE"
+   ]
+  },
+  {
+   "guard": "assert_not_mutated",
+   "defined_in": "nfl/prospective/artifact.py",
+   "line": 614,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 2,
+   "callers_prod_external": 2,
+   "callers_test": 6,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "ANNOTATE"
+   ],
+   "reachability": "EXTERNALLY_CALLED",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/prospective/q9shadow/dryrun.py:269:ANNOTATE",
+    "nfl/prospective/q9shadow/dryrun.py:273:ANNOTATE"
+   ]
+  },
+  {
+   "guard": "assert_not_positional",
+   "defined_in": "nfl/dfs/showdown/kicker_identity.py",
+   "line": 61,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 2,
+   "callers_prod_external": 0,
+   "callers_test": 4,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "ANNOTATE"
+   ],
+   "reachability": "INTERNAL_ONLY",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/dfs/showdown/kicker_identity.py:157:ANNOTATE",
+    "nfl/dfs/showdown/kicker_identity.py:159:ANNOTATE"
+   ]
+  },
+  {
+   "guard": "assert_not_promoted",
+   "defined_in": "nfl/production/candidate_mode.py",
+   "line": 1649,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 1,
+   "callers_prod_external": 1,
+   "callers_test": 1,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "STOP"
+   ],
+   "reachability": "EXTERNALLY_CALLED",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/production/run_forecast.py:3533:STOP"
+   ]
+  },
+  {
+   "guard": "assert_packet_is_clean",
+   "defined_in": "coordination/orchestrator/claude_code_transport.py",
+   "line": 107,
+   "n_definitions": 1,
+   "fails_by": "RAISE",
+   "callers_prod": 3,
+   "callers_prod_external": 1,
+   "callers_test": 2,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "STOP"
+   ],
+   "reachability": "EXTERNALLY_CALLED",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "coordination/orchestrator/validate_engineering_run.py:198:NOTHING",
+    "coordination/orchestrator/claude_code_transport.py:231:NOTHING",
+    "coordination/orchestrator/claude_code_transport.py:245:NOTHING"
+   ]
+  },
+  {
+   "guard": "assert_pairs_are_usable",
+   "defined_in": "nfl/production/team_volume_v1.py",
+   "line": 302,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 1,
+   "callers_prod_external": 0,
+   "callers_test": 0,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "ANNOTATE"
+   ],
+   "reachability": "INTERNAL_ONLY",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/production/team_volume_v1.py:478:ANNOTATE"
+   ]
+  },
+  {
+   "guard": "assert_participation_supports_allocation",
+   "defined_in": "nfl/production/universe/participation.py",
+   "line": 295,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 1,
+   "callers_prod_external": 1,
+   "callers_test": 5,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "VERDICT_REGISTERED:PARTICIPATION_COMPLETENESS"
+   ],
+   "reachability": "EXTERNALLY_CALLED",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/production/universe/run_chain.py:251:VERDICT_REGISTERED:PARTICIPATION_COMPLETENESS"
+   ]
+  },
+  {
+   "guard": "assert_partition_covers_required",
+   "defined_in": "nfl/prospective/q9shadow/complete.py",
+   "line": 99,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 1,
+   "callers_prod_external": 0,
+   "callers_test": 3,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "STOP"
+   ],
+   "reachability": "INTERNAL_ONLY",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/prospective/q9shadow/complete.py:270:STOP"
+   ]
+  },
+  {
+   "guard": "assert_pit",
+   "defined_in": "nfl/production/nonqb/current_season_evidence.py",
+   "line": 62,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 1,
+   "callers_prod_external": 0,
+   "callers_test": 3,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "STOP"
+   ],
+   "reachability": "INTERNAL_ONLY",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/production/nonqb/current_season_evidence.py:104:STOP"
+   ]
+  },
+  {
+   "guard": "assert_player_review_complete",
+   "defined_in": "nfl/production/review/slate_report.py",
+   "line": 170,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 1,
+   "callers_prod_external": 0,
+   "callers_test": 5,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "STOP"
+   ],
+   "reachability": "INTERNAL_ONLY",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/production/review/slate_report.py:332:STOP"
+   ]
+  },
+  {
+   "guard": "assert_pregame_untouched",
+   "defined_in": "nfl/postgame/outcome.py",
+   "line": 213,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 2,
+   "callers_prod_external": 2,
+   "callers_test": 4,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "STOP"
+   ],
+   "reachability": "EXTERNALLY_CALLED",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/postgame/grade_portfolios.py:155:STOP",
+    "nfl/postgame/grade_projections.py:92:STOP"
+   ]
+  },
+  {
+   "guard": "assert_producer_coverage",
+   "defined_in": "nfl/production/review/gate.py",
+   "line": 607,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 1,
+   "callers_prod_external": 0,
+   "callers_test": 3,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "DOWNGRADE"
+   ],
+   "reachability": "INTERNAL_ONLY",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/production/review/gate.py:710:DOWNGRADE"
+   ]
+  },
+  {
+   "guard": "assert_projection_excludes_outcomes",
+   "defined_in": "nfl/prospective/q9shadow/inputs.py",
+   "line": 137,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 2,
+   "callers_prod_external": 1,
+   "callers_test": 1,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "STOP"
+   ],
+   "reachability": "EXTERNALLY_CALLED",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/prospective/q9shadow/inputs.py:321:NOTHING",
+    "nfl/prospective/q9shadow/live_features.py:658:STOP"
+   ]
+  },
+  {
+   "guard": "assert_promotable",
+   "defined_in": "sportsplatform/governance/assumption.py",
+   "line": 188,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 2,
+   "callers_prod_external": 2,
+   "callers_test": 5,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "STOP"
+   ],
+   "reachability": "EXTERNALLY_CALLED",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/production/adjustment_registry.py:235:STOP",
+    "nfl/production/assumptions/run_audit.py:181:STOP"
+   ]
+  },
+  {
+   "guard": "assert_prospective_matches_frozen",
+   "defined_in": "nfl/production/nonqb/appearance_b.py",
+   "line": 461,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 0,
+   "callers_prod_external": 0,
+   "callers_test": 0,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "NO_PRODUCTION_CALLER"
+   ],
+   "reachability": "NO_CALLER_AT_ALL",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": []
+  },
+  {
+   "guard": "assert_prospective_order",
+   "defined_in": "nfl/prospective/q9shadow/timebasis.py",
+   "line": 162,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 3,
+   "callers_prod_external": 2,
+   "callers_test": 7,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "STOP"
+   ],
+   "reachability": "EXTERNALLY_CALLED",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/prospective/q9shadow/timebasis.py:227:STOP",
+    "nfl/prospective/q9shadow/reuse.py:147:STOP",
+    "nfl/prospective/q9shadow/seal.py:580:STOP"
+   ]
+  },
+  {
+   "guard": "assert_publishable",
+   "defined_in": "nfl/production/nonqb/current_season_team_volume.py",
+   "line": 170,
+   "n_definitions": 2,
+   "fails_by": "RETURN",
+   "callers_prod": 2,
+   "callers_prod_external": 2,
+   "callers_test": 6,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "ANNOTATE"
+   ],
+   "reachability": "EXTERNALLY_CALLED",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/production/run_forecast.py:1582:ANNOTATE",
+    "nfl/production/nonqb/football_engine.py:2062:ANNOTATE"
+   ]
+  },
+  {
+   "guard": "assert_ranking_admissible",
+   "defined_in": "nfl/product/model_health.py",
+   "line": 205,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 0,
+   "callers_prod_external": 0,
+   "callers_test": 0,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "NO_PRODUCTION_CALLER"
+   ],
+   "reachability": "NO_CALLER_AT_ALL",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": []
+  },
+  {
+   "guard": "assert_ready_for_slate",
+   "defined_in": "nfl/production/capture_cadence.py",
+   "line": 263,
+   "n_definitions": 1,
+   "fails_by": "RAISE_OR_RETURN",
+   "callers_prod": 0,
+   "callers_prod_external": 0,
+   "callers_test": 5,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "NO_PRODUCTION_CALLER"
+   ],
+   "reachability": "NO_PROD_CALLER",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": []
+  },
+  {
+   "guard": "assert_redistribution_supported",
+   "defined_in": "nfl/production/universe/allocation.py",
+   "line": 357,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 1,
+   "callers_prod_external": 1,
+   "callers_test": 1,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "VERDICT_REGISTERED:REDISTRIBUTION_PLAUSIBILITY"
+   ],
+   "reachability": "EXTERNALLY_CALLED",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/production/universe/run_chain.py:290:VERDICT_REGISTERED:REDISTRIBUTION_PLAUSIBILITY"
+   ]
+  },
+  {
+   "guard": "assert_research_tree_unchanged",
+   "defined_in": "nfl/production/derived.py",
+   "line": 206,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 0,
+   "callers_prod_external": 0,
+   "callers_test": 2,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "NO_PRODUCTION_CALLER"
+   ],
+   "reachability": "NO_PROD_CALLER",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": []
+  },
+  {
+   "guard": "assert_role_state_supported",
+   "defined_in": "nfl/production/universe/role_state.py",
+   "line": 613,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 1,
+   "callers_prod_external": 1,
+   "callers_test": 8,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "VERDICT_REGISTERED:ROLE_PLAUSIBILITY"
+   ],
+   "reachability": "EXTERNALLY_CALLED",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/production/universe/run_chain.py:230:VERDICT_REGISTERED:ROLE_PLAUSIBILITY"
+   ]
+  },
+  {
+   "guard": "assert_roster_legal",
+   "defined_in": "nfl/dfs/classic/rules.py",
+   "line": 53,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 2,
+   "callers_prod_external": 2,
+   "callers_test": 1,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "ANNOTATE"
+   ],
+   "reachability": "EXTERNALLY_CALLED",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/dfs/classic/reference.py:341:ANNOTATE",
+    "nfl/dfs/classic/optimizer.py:488:ANNOTATE"
+   ]
+  },
+  {
+   "guard": "assert_scope_allowed",
+   "defined_in": "nfl/production/gate_ids.py",
+   "line": 196,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 1,
+   "callers_prod_external": 0,
+   "callers_test": 2,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "ANNOTATE"
+   ],
+   "reachability": "INTERNAL_ONLY",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/production/gate_ids.py:243:ANNOTATE"
+   ]
+  },
+  {
+   "guard": "assert_seal_path_governed",
+   "defined_in": "nfl/prospective/q9shadow/ledger.py",
+   "line": 886,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 1,
+   "callers_prod_external": 0,
+   "callers_test": 9,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "STOP"
+   ],
+   "reachability": "INTERNAL_ONLY",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/prospective/q9shadow/ledger.py:291:STOP"
+   ]
+  },
+  {
+   "guard": "assert_shared_draws",
+   "defined_in": "nfl/dfs/salaries/build_postinactives_package.py",
+   "line": 156,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 1,
+   "callers_prod_external": 1,
+   "callers_test": 0,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "STOP"
+   ],
+   "reachability": "EXTERNALLY_CALLED",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/dfs/salaries/emit_package.py:110:STOP"
+   ]
+  },
+  {
+   "guard": "assert_single_divergence",
+   "defined_in": "nfl/prospective/q9shadow/complete.py",
+   "line": 224,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 1,
+   "callers_prod_external": 0,
+   "callers_test": 4,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "STOP"
+   ],
+   "reachability": "INTERNAL_ONLY",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/prospective/q9shadow/complete.py:334:STOP"
+   ]
+  },
+  {
+   "guard": "assert_sources_permitted",
+   "defined_in": "nfl/prospective/q9shadow/live_features.py",
+   "line": 135,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 1,
+   "callers_prod_external": 0,
+   "callers_test": 3,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "ANNOTATE"
+   ],
+   "reachability": "INTERNAL_ONLY",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/prospective/q9shadow/live_features.py:591:ANNOTATE"
+   ]
+  },
+  {
+   "guard": "assert_summary_consistent",
+   "defined_in": "nfl/production/draws_artifact.py",
+   "line": 532,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 1,
+   "callers_prod_external": 1,
+   "callers_test": 4,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "STOP"
+   ],
+   "reachability": "EXTERNALLY_CALLED",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/production/run_forecast.py:3162:STOP"
+   ]
+  },
+  {
+   "guard": "assert_target_ownership_closure",
+   "defined_in": "nfl/production/nonqb/shared_pass.py",
+   "line": 435,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 0,
+   "callers_prod_external": 0,
+   "callers_test": 3,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "NO_PRODUCTION_CALLER"
+   ],
+   "reachability": "NO_PROD_CALLER",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": []
+  },
+  {
+   "guard": "assert_usable_for",
+   "defined_in": "sportsplatform/governance/provenance.py",
+   "line": 125,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 1,
+   "callers_prod_external": 1,
+   "callers_test": 8,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "STOP"
+   ],
+   "reachability": "EXTERNALLY_CALLED",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": [
+    "nfl/prospective/q9shadow/seal.py:362:STOP"
+   ]
+  },
+  {
+   "guard": "assert_verified",
+   "defined_in": "nfl/dfs/scoring/site_rules.py",
+   "line": 119,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 0,
+   "callers_prod_external": 0,
+   "callers_test": 2,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "NO_PRODUCTION_CALLER"
+   ],
+   "reachability": "NO_PROD_CALLER",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": []
+  },
+  {
+   "guard": "assert_walk_matches_research",
+   "defined_in": "nfl/production/nonqb/appearance_model.py",
+   "line": 479,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 0,
+   "callers_prod_external": 0,
+   "callers_test": 1,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "NO_PRODUCTION_CALLER"
+   ],
+   "reachability": "NO_PROD_CALLER",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": []
+  },
+  {
+   "guard": "assert_zero_opportunity_over_draws",
+   "defined_in": "nfl/production/eligibility_gate.py",
+   "line": 793,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 0,
+   "callers_prod_external": 0,
+   "callers_test": 6,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "NO_PRODUCTION_CALLER"
+   ],
+   "reachability": "NO_PROD_CALLER",
+   "classification": "NOT_ESTABLISHED",
+   "prod_sites": []
+  }
+ ]
+}
