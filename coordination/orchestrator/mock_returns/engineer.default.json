@@ -1,6 +1,6 @@
 {
- "name": "claude_code.default",
- "_comment": "What the Claude Code Action would have returned, in the shape the live path parses. Used only when the effective mode is MOCK. A missing fixture is a refusal, never an empty success.",
+ "name": "engineer.default",
+ "_comment": "THE MOCK WORKER'S OWN RETURN. Not an imitation of the Claude Code Action, and it must never describe itself as one. It is a declared stand-in emitted by MOCK_WORKER in the engineering-return contract shape, so every artifact it produces carries executed_by MOCK_WORKER and can be told apart from a paid run by reading the return. It previously lived at mocks/claude_code.default.json and said \"what the Claude Code Action would have returned\" -- which is exactly what test_orchestrator forbids, for the reason the guard gives: a fixture that fakes a response from the Action lets a test pass while the Action was never exercised, and nothing in the artifact would say so.",
  "worker": "ANTHROPIC",
  "commands_run": [
   "python3.12 nfl/tests/run_suite.py --only test_orchestrator"

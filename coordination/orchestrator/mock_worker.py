@@ -46,7 +46,12 @@ from coordination.orchestrator import providers as P               # noqa: E402
 from coordination.orchestrator import state as S                   # noqa: E402
 
 MOCK_DIR = 'coordination/MOCK_RUNS'
-FIXTURES = _HERE / 'mocks'
+# ENGINEERING RETURNS, NOT PROVIDER RESPONSES -- a different contract from
+# ../mocks/, which providers._mock owns. Putting this kind of fixture in
+# there, named for the transport, tripped test_orchestrator's guard against
+# a fixture that fakes a response from the Claude Code Action. The guard was
+# right: the MOCK worker is its OWN worker, not an imitation of the paid one.
+FIXTURES = _HERE / 'mock_returns'
 
 
 class MockRefusal(Exception):
@@ -56,13 +61,13 @@ class MockRefusal(Exception):
 
 
 def fixture_for(task_id: str) -> dict:
-    """`claude_code.<task>.json` if present, else `claude_code.default.json`.
+    """`engineer.<task>.json` if present, else `engineer.default.json`.
 
     Absent is a refusal. The mock path is only worth having if it is held to
     the same standard as the live one.
     """
-    specific = FIXTURES / f'claude_code.{task_id}.json'
-    path = specific if specific.exists() else FIXTURES / 'claude_code.default.json'
+    specific = FIXTURES / f'engineer.{task_id}.json'
+    path = specific if specific.exists() else FIXTURES / 'engineer.default.json'
     if not path.exists():
         # Displayed relative when it is inside the repo, absolute otherwise.
         # Building the refusal must never itself raise -- an exception while
@@ -142,7 +147,7 @@ def run(task_id: str, head_before: str, *, mode: str, repo=None) -> dict:
         f'- authorized_base (reported as head_before): {authorized_base}\n'
         f'- effective_mode: {mode}\n'
         f'- written_at_utc: {stamp}\n'
-        f'- fixture: {fx.get("name", "claude_code.default")}\n\n'
+        f'- fixture: {fx.get("name", "engineer.default")}\n\n'
         f'It is inert by design: nothing in the forecast path reads\n'
         f'{MOCK_DIR}/.\n')
     # THE NARRATIVE RETURN, which ingest requires separately from the

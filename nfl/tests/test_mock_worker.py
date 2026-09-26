@@ -164,7 +164,7 @@ def test_a_fixture_may_describe_a_failure():
     original = M.FIXTURES
     try:
         tmp = Path(tempfile.mkdtemp())
-        (tmp / 'claude_code.default.json').write_text(json.dumps(
+        (tmp / 'engineer.default.json').write_text(json.dumps(
             {'simulate_failure': True, 'code': 'API_TIMEOUT', 'detail': 'x'}))
         M.FIXTURES = tmp
         with tempfile.TemporaryDirectory() as d:
@@ -180,7 +180,7 @@ def test_a_fixture_may_describe_a_failure():
 def test_the_shipped_fixture_is_present_and_parses():
     """The workflow depends on it at runtime; an unparseable fixture would
     surface as a confusing worker failure inside Actions."""
-    p = M.FIXTURES / 'claude_code.default.json'
+    p = M.FIXTURES / 'engineer.default.json'
     check('shipped fixture exists', p.exists(), str(p))
     if p.exists():
         try:

@@ -1940,6 +1940,56 @@ def test_zz_no_spend_boundary_is_explicit():
     check('no mock fixture imitates the Action',
           not [m for m in mocks if 'claude_code' in m or 'action' in m],
           str(mocks))
+    # AND NOT BY CLAIMED IDENTITY, which is the half a rename walks through.
+    #
+    # THIS CHECK'S FIRST VERSION REPEATED THE TRAP DOCUMENTED BELOW. I wrote it
+    # as a substring hunt for "Action would have returned" across the fixture
+    # files -- and it fired on the fixture I had just rewritten, because that
+    # file's comment QUOTES the phrase while explaining the history. Prose
+    # about a violation is not a violation, which is the same lesson the note
+    # below records about two earlier attempts. A phrase hunt cannot tell a
+    # claim from a description of one.
+    #
+    # So this tests IDENTITY, structurally. Keys beginning with `_` are this
+    # repository's convention for commentary and are excluded; every
+    # substantive value is checked. And the positive half is required rather
+    # than inferred: an engineering return must STAMP itself MOCK_WORKER, so
+    # an artifact it produces can be told from a paid run by reading it.
+    #
+    # The real violation this pair caught, 2026-09-25: mocks/
+    # claude_code.default.json, an engineering-return fixture named for the
+    # transport, sitting in the provider-mocks directory, describing itself as
+    # the paid worker's output. Added while fixing the MOCK spending gate.
+    def _substantive(o):
+        if isinstance(o, dict):
+            return [v for k, sub in o.items() if not str(k).startswith('_')
+                    for v in _substantive(sub)]
+        if isinstance(o, list):
+            return [v for sub in o for v in _substantive(sub)]
+        return [str(o)]
+
+    impersonators, unstamped = [], []
+    for d in ('mocks', 'mock_returns'):
+        base = REAL_REPO / 'coordination' / 'orchestrator' / d
+        for f in sorted(base.glob('*.json')) if base.exists() else ():
+            try:
+                doc = json.loads(f.read_text())
+            except Exception:                                    # noqa: BLE001
+                continue
+            vals = [v.lower() for v in _substantive(doc)]
+            if any('claude-code-action' in v or 'claude_code' in v
+                   for v in vals):
+                impersonators.append(f'{d}/{f.name}')
+            if d == 'mock_returns':
+                gc = (doc.get('governance_checks') or {})
+                if gc.get('executed_by') != 'MOCK_WORKER':
+                    unstamped.append(f'{d}/{f.name}')
+    check('no fixture claims the Action\'s identity in a substantive field',
+          not impersonators,
+          str(impersonators) or 'checked mocks/ and mock_returns/')
+    check('every engineering return stamps itself MOCK_WORKER',
+          not unstamped,
+          str(unstamped) or 'so no artifact it produces reads as a paid run')
     # A CHECK I TRIED TWICE TO WRITE AND WILL NOT FAKE.
     #
     # "No test in this file invokes the Action" cannot be asserted by grepping
