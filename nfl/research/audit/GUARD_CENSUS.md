@@ -1,4 +1,4 @@
-# Guard census — 89 guards
+# Guard census — 91 guards
 
 Emitted by `nfl/tools/guard_reachability.py --md`. Re-run it rather
 than trusting these counts.
@@ -10,10 +10,10 @@ confidence this census exists to strip out.
 
 | reachability | n | effect on failure | n | classification | n |
 |---|---|---|---|---|---|
-| NO_CALLER_AT_ALL | 3 | STOP | 36 | NOT_ESTABLISHED | 81 |
-| NO_PROD_CALLER | 27 | NO_PRODUCTION_CALLER | 30 | LOAD_BEARING | 3 |
-| INTERNAL_ONLY | 24 | ANNOTATE | 10 | ORPHANED_CONTROL | 2 |
-| EXTERNALLY_CALLED | 35 | DOWNGRADE | 9 | TEST_NOT_RUNTIME | 1 |
+| NO_CALLER_AT_ALL | 4 | STOP | 37 | NOT_ESTABLISHED | 83 |
+| NO_PROD_CALLER | 27 | NO_PRODUCTION_CALLER | 31 | LOAD_BEARING | 3 |
+| INTERNAL_ONLY | 24 | ANNOTATE | 9 | ORPHANED_CONTROL | 2 |
+| EXTERNALLY_CALLED | 36 | DOWNGRADE | 9 | TEST_NOT_RUNTIME | 1 |
 |  |  | VERDICT_REGISTERED | 5 | SUPERSEDED | 1 |
 |  |  | NOTHING | 1 | CANDIDATE_SCOPED | 1 |
 
@@ -61,10 +61,11 @@ action demonstrably not happening.
 | `assert_projection_excludes_outcomes` | STOP | EXTERNALLY_CALLED | yes | — | NOT_ESTABLISHED | yes | yes |
 | `assert_promotable` | STOP | EXTERNALLY_CALLED | yes | — | NOT_ESTABLISHED | yes | **no** |
 | `assert_prospective_order` | STOP | EXTERNALLY_CALLED | yes | — | NOT_ESTABLISHED | yes | yes |
-| `assert_publishable` | ANNOTATE,DOWNGRADE | EXTERNALLY_CALLED | yes | — | NOT_ESTABLISHED | yes | yes |
+| `assert_publishable` | DOWNGRADE | EXTERNALLY_CALLED | yes | — | NOT_ESTABLISHED | yes | yes |
+| `assert_publishable` | ANNOTATE | EXTERNALLY_CALLED | yes | — | NOT_ESTABLISHED | — | **no** |
 | `assert_redistribution_supported` | VERDICT_REGISTERED | EXTERNALLY_CALLED | yes | — | NOT_ESTABLISHED | yes | **no** |
 | `assert_role_state_supported` | VERDICT_REGISTERED | EXTERNALLY_CALLED | yes | — | NOT_ESTABLISHED | yes | **no** |
-| `assert_roster_legal` | ANNOTATE | EXTERNALLY_CALLED | yes | — | NOT_ESTABLISHED | — | yes |
+| `assert_roster_legal` | STOP | EXTERNALLY_CALLED | yes | — | NOT_ESTABLISHED | — | yes |
 | `assert_summary_consistent` | STOP | EXTERNALLY_CALLED | yes | — | NOT_ESTABLISHED | yes | yes |
 | `assert_usable_for` | STOP | EXTERNALLY_CALLED | yes | — | NOT_ESTABLISHED | yes | yes |
 | `assert_blockers_independent` | STOP | INTERNAL_ONLY | yes | — | NOT_ESTABLISHED | yes | yes |
@@ -91,6 +92,7 @@ action demonstrably not happening.
 | `assert_seal_path_governed` | STOP | INTERNAL_ONLY | yes | — | NOT_ESTABLISHED | yes | yes |
 | `assert_single_divergence` | DOWNGRADE | INTERNAL_ONLY | yes | — | NOT_ESTABLISHED | yes | yes |
 | `assert_sources_permitted` | ANNOTATE | INTERNAL_ONLY | yes | — | NOT_ESTABLISHED | yes | **no** |
+| `assert_complete` | NO_PRODUCTION_CALLER | NO_CALLER_AT_ALL | **no** | — | NOT_ESTABLISHED | — | **no** |
 | `assert_live_lineage` | NO_PRODUCTION_CALLER | NO_CALLER_AT_ALL | **no** | — | ORPHANED_CONTROL | — | **no** |
 | `assert_no_inactive_survived` | NO_PRODUCTION_CALLER | NO_CALLER_AT_ALL | **no** | — | SUPERSEDED | — | **no** |
 | `assert_prospective_matches_frozen` | NO_PRODUCTION_CALLER | NO_CALLER_AT_ALL | **no** | — | CANDIDATE_SCOPED | — | **no** |
@@ -124,6 +126,6 @@ action demonstrably not happening.
 
 ## The column that decides VERIFIED
 
-Only **27 of 89** guards have a caller referenced by any workflow,
+Only **27 of 91** guards have a caller referenced by any workflow,
 runbook or doc. A guard reached only from a module nobody invokes is
 protected by nothing, whatever its call graph says.

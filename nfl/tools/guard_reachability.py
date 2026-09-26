@@ -161,6 +161,32 @@ def kind(path: str) -> str:
     return 'prod'
 
 
+def alias_map(tree) -> dict:
+    """alias -> module path, for this file's imports.
+
+    NEEDED BECAUSE TWO GUARDS CAN SHARE A NAME. `assert_publishable` is defined
+    twice -- once in current_season_team_volume (takes a team-volume Outcome)
+    and once in layers (takes eight layer Outcomes) -- and so is
+    `assert_complete`. Keying the census on the bare name merged two different
+    functions into one row, so a call site belonging to one was attributed to
+    the other. `LY.assert_publishable(...)` resolves through `LY` to the file
+    that actually defines it.
+    """
+    out = {}
+    for n in ast.walk(tree):
+        if isinstance(n, ast.ImportFrom) and n.module:
+            for a in n.names:
+                mod = f'{n.module}.{a.name}'.replace('.', '/') + '.py'
+                if (ROOT / mod).exists():
+                    out[a.asname or a.name] = mod
+        elif isinstance(n, ast.Import):
+            for a in n.names:
+                mod = a.name.replace('.', '/') + '.py'
+                if (ROOT / mod).exists():
+                    out[a.asname or a.name] = mod
+    return out
+
+
 def _parse(p: pathlib.Path):
     try:
         return ast.parse(p.read_text(errors='replace'))
@@ -233,6 +259,7 @@ def call_sites(defs: dict) -> dict:
         for node in ast.walk(t):
             for ch in ast.iter_child_nodes(node):
                 parent[ch] = node
+        aliases = alias_map(t)
         for n in ast.walk(t):
             if not isinstance(n, ast.Call):
                 continue
@@ -241,6 +268,14 @@ def call_sites(defs: dict) -> dict:
                   else f.id if isinstance(f, ast.Name) else None)
             if nm not in defs:
                 continue
+            # WHICH definition, when the name is defined more than once.
+            resolved = None
+            if isinstance(f, ast.Attribute) and isinstance(f.value, ast.Name):
+                cand = aliases.get(f.value.id)
+                if cand and any(d['file'] == cand for d in defs[nm]):
+                    resolved = cand
+            elif len(defs[nm]) == 1:
+                resolved = defs[nm][0]['file']
             # walk up to the enclosing statement
             cur, target = n, None
             while cur in parent and not isinstance(parent[cur], ast.stmt):
@@ -248,7 +283,16 @@ def call_sites(defs: dict) -> dict:
             stmt = parent.get(cur)
             if isinstance(stmt, ast.Assign):
                 tg = stmt.targets[0]
-                target = tg.id if isinstance(tg, ast.Name) else ast.unparse(tg)
+                # TUPLE UNPACKING. `legal, _why = assert_roster_legal(...)`
+                # made `target` the literal string 'legal, _why', which matches
+                # no `if` test, so a guard that genuinely STOPs the optimizer
+                # read as ANNOTATE. Any guard returning (ok, why) was misread
+                # the same way. Each bound name is now a candidate.
+                if isinstance(tg, ast.Tuple):
+                    target = [e.id for e in tg.elts if isinstance(e, ast.Name)]
+                else:
+                    target = (tg.id if isinstance(tg, ast.Name)
+                              else ast.unparse(tg))
             eff = _effect(stmt, n, target)
             if eff is None:
                 eff = _traced_effect(t, stmt, target)
@@ -256,7 +300,8 @@ def call_sites(defs: dict) -> dict:
             if gate and eff in (ANNOTATE, NOTHING, None):
                 eff = f'{VERDICT}:{gate}'
             sites[nm].append({'file': rel, 'lineno': n.lineno, 'kind': k,
-                              'effect': eff, 'bound_to': target})
+                              'effect': eff, 'bound_to': target,
+                              'resolves_to': resolved})
     return dict(sites)
 
 
@@ -272,6 +317,12 @@ def _registered_gate(tree, stmt, target):
     Only the second line makes the guard load-bearing, and it is a separate
     statement from the call, so a per-site rule cannot see it.
     """
+    if isinstance(target, list):
+        for t in target:
+            g = _registered_gate(tree, stmt, t)
+            if g:
+                return g
+        return None
     if not target:
         return None
     base = target.split('.')[0].split('[')[0]
@@ -317,7 +368,20 @@ def _registered_gate(tree, stmt, target):
 
 
 def _traced_effect(tree, stmt, target) -> str:
-    """The result was bound to a name. Is that name ever branched on?"""
+    """The result was bound to a name. Is that name ever branched on?
+
+    `target` may be a LIST when the call was tuple-unpacked, in which case the
+    strongest effect over the bound names wins: `legal, why = guard(...)` is a
+    stop if `legal` is branched on, whatever happens to `why`.
+    """
+    if isinstance(target, list):
+        best = None
+        order = {STOP: 3, DOWNGRADE: 2, ANNOTATE: 1}
+        for t in target:
+            e = _traced_effect(tree, stmt, t)
+            if best is None or order.get(e, 0) > order.get(best, 0):
+                best = e
+        return best or ANNOTATE
     if not target:
         return ANNOTATE
     fn = None
@@ -403,7 +467,21 @@ def census() -> dict:
     sites = call_sites(defs)
     rows = []
     for g in sorted(defs):
-        s = sites.get(g, [])
+        all_sites = sites.get(g, [])
+        for _d in defs[g]:
+            if len(defs[g]) > 1:
+                # One row per DEFINITION. A site that could not be resolved to
+                # a file is attributed to neither rather than to both.
+                s = [x for x in all_sites if x.get('resolves_to') == _d['file']]
+            else:
+                s = all_sites
+            rows.append(_row(g, [_d], s, len(defs[g])))
+    return {'spec_version': 'nfl-guard-reachability-2',
+            'n_guards': len(rows), 'rows': rows}
+
+
+def _row(g, dfs_for_this, s, n_defs_of_name) -> dict:
+        defs = {g: dfs_for_this}
         own = {d['file'] for d in defs[g]}
         prod = [x for x in s if x['kind'] == 'prod']
         ext = [x for x in prod if x['file'] not in own]
@@ -431,7 +509,7 @@ def census() -> dict:
         det = {}
         for t in ({proof} if proof else set()):
             det[t] = TEST_DETERMINISM.get(t, ('NOT_ESTABLISHED', ''))[0]
-        rows.append({
+        return {
             'guard': g,
             'protects': defs[g][0].get('protects', ''),
             'defined_in': defs[g][0]['file'],
@@ -461,9 +539,8 @@ def census() -> dict:
             'classification_reason': why,
             'prod_sites': [f"{x['file']}:{x['lineno']}:{x['effect']}"
                            for x in prod],
-        })
-    return {'spec_version': 'nfl-guard-reachability-1',
-            'n_guards': len(rows), 'rows': rows}
+            'n_definitions_of_this_name': n_defs_of_name,
+        }
 
 
 def markdown(c) -> str:

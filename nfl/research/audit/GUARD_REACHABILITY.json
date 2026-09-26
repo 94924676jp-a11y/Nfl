@@ -1,6 +1,6 @@
 {
- "spec_version": "nfl-guard-reachability-1",
- "n_guards": 89,
+ "spec_version": "nfl-guard-reachability-2",
+ "n_guards": 91,
  "rows": [
   {
    "guard": "assert_allocation_conserves",
@@ -35,7 +35,8 @@
    "classification_reason": "",
    "prod_sites": [
     "nfl/production/universe/run_chain.py:276:VERDICT_REGISTERED:OPPORTUNITY_CONSERVATION"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_arm",
@@ -61,7 +62,8 @@
    "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
    "classification_reason": "",
-   "prod_sites": []
+   "prod_sites": [],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_arms_not_pooled",
@@ -87,7 +89,8 @@
    "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
    "classification_reason": "",
-   "prod_sites": []
+   "prod_sites": [],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_blockers_independent",
@@ -122,7 +125,8 @@
    "classification_reason": "",
    "prod_sites": [
     "nfl/prospective/q9shadow/ledger.py:615:STOP"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_code_matches_policy",
@@ -148,7 +152,8 @@
    "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
    "classification_reason": "",
-   "prod_sites": []
+   "prod_sites": [],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_comparable",
@@ -174,18 +179,19 @@
    "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
    "classification_reason": "",
-   "prod_sites": []
+   "prod_sites": [],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_complete",
    "protects": "Return `report`, or raise JoinIncomplete for a consumer that needs all.",
    "defined_in": "nfl/production/contracts/completeness.py",
    "line": 150,
-   "n_definitions": 2,
+   "n_definitions": 1,
    "fails_by": "RAISE_OR_RETURN",
    "callers_prod": 1,
    "callers_prod_external": 1,
-   "callers_test": 10,
+   "callers_test": 4,
    "callers_research": 0,
    "effect_on_failure": [
     "STOP"
@@ -209,7 +215,35 @@
    "classification_reason": "",
    "prod_sites": [
     "nfl/dfs/player_universe.py:377:STOP"
-   ]
+   ],
+   "n_definitions_of_this_name": 2
+  },
+  {
+   "guard": "assert_complete",
+   "protects": "Raise unless every non-DST DK row resolved to exactly one identity.",
+   "defined_in": "nfl/dfs/identity_crosswalk.py",
+   "line": 146,
+   "n_definitions": 1,
+   "fails_by": "RAISE",
+   "callers_prod": 0,
+   "callers_prod_external": 0,
+   "callers_test": 0,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "NO_PRODUCTION_CALLER"
+   ],
+   "reachability": "NO_CALLER_AT_ALL",
+   "caller_modules": [],
+   "caller_entry_points": {},
+   "runnable_caller": false,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": false,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
+   "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
+   "prod_sites": [],
+   "n_definitions_of_this_name": 2
   },
   {
    "guard": "assert_completeness",
@@ -235,7 +269,8 @@
    "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
    "classification_reason": "",
-   "prod_sites": []
+   "prod_sites": [],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_consumer",
@@ -261,7 +296,8 @@
    "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
    "classification_reason": "",
-   "prod_sites": []
+   "prod_sites": [],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_counts_are_counts",
@@ -296,7 +332,8 @@
    "classification_reason": "",
    "prod_sites": [
     "nfl/production/nonqb/football_engine.py:2091:STOP"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_coupling_has_joint_index",
@@ -331,7 +368,8 @@
    "classification_reason": "",
    "prod_sites": [
     "nfl/production/team_volume_v1.py:477:ANNOTATE"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_coupling_is_declared",
@@ -366,7 +404,8 @@
    "classification_reason": "",
    "prod_sites": [
     "nfl/production/team_volume_v1.py:452:STOP"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_cross_player_eligible",
@@ -392,7 +431,8 @@
    "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
    "classification_reason": "",
-   "prod_sites": []
+   "prod_sites": [],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_currently_admissible",
@@ -427,7 +467,8 @@
    "classification_reason": "",
    "prod_sites": [
     "nfl/prospective/q9shadow/reuse.py:290:DOWNGRADE"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_cut_lawful",
@@ -462,7 +503,8 @@
    "classification_reason": "",
    "prod_sites": [
     "nfl/production/pipeline.py:350:STOP"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_draw_coherence",
@@ -497,7 +539,8 @@
    "classification_reason": "",
    "prod_sites": [
     "nfl/production/run_forecast.py:3075:STOP"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_dropback_identity",
@@ -532,7 +575,8 @@
    "classification_reason": "",
    "prod_sites": [
     "nfl/production/nonqb/football_engine.py:2132:STOP"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_edge_fields_are_pregame",
@@ -567,7 +611,8 @@
    "classification_reason": "",
    "prod_sites": [
     "nfl/production/pipeline.py:950:DOWNGRADE"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_edges_declarable",
@@ -602,7 +647,8 @@
    "classification_reason": "",
    "prod_sites": [
     "nfl/production/pipeline.py:1180:STOP"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_event_named",
@@ -628,7 +674,8 @@
    "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
    "classification_reason": "",
-   "prod_sites": []
+   "prod_sites": [],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_events_within_opportunity",
@@ -663,7 +710,8 @@
    "classification_reason": "",
    "prod_sites": [
     "nfl/production/nonqb/football_engine.py:2115:STOP"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_every_player_tagged",
@@ -698,7 +746,8 @@
    "classification_reason": "",
    "prod_sites": [
     "nfl/production/dfs/portfolio_guard.py:72:STOP"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_fallbacks_resolve",
@@ -733,7 +782,8 @@
    "classification_reason": "",
    "prod_sites": [
     "nfl/production/state/registry.py:576:STOP"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_feature_schema_matches_freeze",
@@ -770,7 +820,8 @@
    "prod_sites": [
     "nfl/prospective/q9shadow/live_features.py:593:ANNOTATE",
     "nfl/prospective/q9shadow/live_features.py:944:NOTHING"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_frame_closes",
@@ -806,7 +857,8 @@
    "prod_sites": [
     "nfl/production/nonqb/rushing_a1.py:426:STOP",
     "nfl/production/nonqb/rushing_a1.py:459:STOP"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_fresh",
@@ -841,7 +893,8 @@
    "classification_reason": "",
    "prod_sites": [
     "nfl/production/run_forecast.py:1593:STOP"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_gate",
@@ -867,7 +920,8 @@
    "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
    "classification_reason": "",
-   "prod_sites": []
+   "prod_sites": [],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_graded_row",
@@ -904,7 +958,8 @@
    "classification_reason": "raises AnonymousZero at the point a graded row is emitted; a stranger id is refused rather than zeroed, proven through the real grader",
    "prod_sites": [
     "nfl/postgame/grade_projections.py:327:NOTHING"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_hard_invariants",
@@ -945,7 +1000,8 @@
    "prod_sites": [
     "nfl/production/run_forecast.py:3429:STOP",
     "nfl/prospective/artifact.py:593:STOP"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_identical_to_freeze",
@@ -986,7 +1042,8 @@
    "prod_sites": [
     "nfl/prospective/q9shadow/candidate.py:257:STOP",
     "nfl/prospective/q9shadow/seal.py:870:STOP"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_implementations_exist",
@@ -1012,7 +1069,8 @@
    "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
    "classification_reason": "",
-   "prod_sites": []
+   "prod_sites": [],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_inactive_qbs_own_nothing",
@@ -1048,7 +1106,8 @@
    "prod_sites": [
     "nfl/production/run_forecast.py:969:STOP",
     "nfl/production/run_forecast.py:2198:STOP"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_lineup_legal",
@@ -1074,7 +1133,8 @@
    "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
    "classification_reason": "",
-   "prod_sites": []
+   "prod_sites": [],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_live_lineage",
@@ -1100,7 +1160,8 @@
    "load_bearing_proof_determinism": {},
    "classification": "ORPHANED_CONTROL",
    "classification_reason": "reads the capture branch; wiring belongs with the open D24 items",
-   "prod_sites": []
+   "prod_sites": [],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_may_apply",
@@ -1126,7 +1187,8 @@
    "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
    "classification_reason": "",
-   "prod_sites": []
+   "prod_sites": [],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_may_consume",
@@ -1161,7 +1223,8 @@
    "classification_reason": "",
    "prod_sites": [
     "nfl/dfs/player_universe.py:338:NOTHING"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_may_optimize",
@@ -1187,7 +1250,8 @@
    "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
    "classification_reason": "",
-   "prod_sites": []
+   "prod_sites": [],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_may_project",
@@ -1213,7 +1277,8 @@
    "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
    "classification_reason": "",
-   "prod_sites": []
+   "prod_sites": [],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_may_train",
@@ -1239,7 +1304,8 @@
    "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
    "classification_reason": "",
-   "prod_sites": []
+   "prod_sites": [],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_metric_origin_complete",
@@ -1265,7 +1331,8 @@
    "load_bearing_proof_determinism": {},
    "classification": "TEST_NOT_RUNTIME",
    "classification_reason": "zero arguments; compares module constants, so its verdict is a property of the source and cannot differ between two runs",
-   "prod_sites": []
+   "prod_sites": [],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_named_owner_containment",
@@ -1306,7 +1373,8 @@
    "prod_sites": [
     "nfl/production/nonqb/rushing_a1.py:1351:STOP",
     "nfl/production/nonqb/football_engine.py:1725:ANNOTATE"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_no_artifact_claims_12_of_12",
@@ -1341,7 +1409,8 @@
    "classification_reason": "",
    "prod_sites": [
     "nfl/prospective/nfl1_readiness.py:177:STOP"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_no_auto_authorization",
@@ -1367,7 +1436,8 @@
    "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
    "classification_reason": "",
-   "prod_sites": []
+   "prod_sites": [],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_no_double_counted_qb_carries",
@@ -1393,7 +1463,8 @@
    "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
    "classification_reason": "",
-   "prod_sites": []
+   "prod_sites": [],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_no_inactive_in_playable",
@@ -1430,7 +1501,8 @@
    "classification_reason": "bad state -> FAIL -> emit_package.main writes no artifact, proven by running it and inspecting the disk",
    "prod_sites": [
     "nfl/dfs/salaries/emit_package.py:109:STOP"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_no_inactive_survived",
@@ -1456,7 +1528,8 @@
    "load_bearing_proof_determinism": {},
    "classification": "SUPERSEDED",
    "classification_reason": "DEF-064; assert_no_inactive_in_playable is wired and STOPs",
-   "prod_sites": []
+   "prod_sites": [],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_no_inactive_survives",
@@ -1491,7 +1564,8 @@
    "classification_reason": "",
    "prod_sites": [
     "nfl/production/universe/run_chain.py:196:VERDICT_REGISTERED:INACTIVE_APPLICATION"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_no_live_outcome",
@@ -1526,7 +1600,8 @@
    "classification_reason": "",
    "prod_sites": [
     "nfl/prospective/q9shadow/live_features.py:644:STOP"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_no_outcome_reader_imported",
@@ -1561,7 +1636,8 @@
    "classification_reason": "",
    "prod_sites": [
     "nfl/prospective/q9shadow/dryrun.py:254:DOWNGRADE"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_no_outcome_shaped_inputs",
@@ -1605,7 +1681,8 @@
     "nfl/prospective/q9shadow/dryrun.py:183:DOWNGRADE",
     "nfl/prospective/q9shadow/dryrun.py:187:DOWNGRADE",
     "nfl/prospective/q9shadow/dryrun.py:188:DOWNGRADE"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_no_postgame_inputs",
@@ -1640,7 +1717,8 @@
    "classification_reason": "",
    "prod_sites": [
     "nfl/production/pipeline.py:191:STOP"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_no_roster_status",
@@ -1675,7 +1753,8 @@
    "classification_reason": "",
    "prod_sites": [
     "nfl/prospective/q9shadow/live_features.py:592:ANNOTATE"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_no_stale_labels",
@@ -1701,7 +1780,8 @@
    "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
    "classification_reason": "",
-   "prod_sites": []
+   "prod_sites": [],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_not_a_dropback_column",
@@ -1727,7 +1807,8 @@
    "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
    "classification_reason": "",
-   "prod_sites": []
+   "prod_sites": [],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_not_applicable_is_evidenced",
@@ -1763,7 +1844,8 @@
    "prod_sites": [
     "nfl/production/review/gate.py:628:STOP",
     "nfl/production/review/gate.py:808:STOP"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_not_dry_run",
@@ -1799,7 +1881,8 @@
    "prod_sites": [
     "nfl/prospective/q9shadow/dryrun.py:324:DOWNGRADE",
     "nfl/prospective/q9shadow/dryrun.py:328:DOWNGRADE"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_not_mutated",
@@ -1835,7 +1918,8 @@
    "prod_sites": [
     "nfl/prospective/q9shadow/dryrun.py:269:DOWNGRADE",
     "nfl/prospective/q9shadow/dryrun.py:273:DOWNGRADE"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_not_positional",
@@ -1871,7 +1955,8 @@
    "prod_sites": [
     "nfl/dfs/showdown/kicker_identity.py:157:ANNOTATE",
     "nfl/dfs/showdown/kicker_identity.py:159:ANNOTATE"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_not_promoted",
@@ -1906,7 +1991,8 @@
    "classification_reason": "",
    "prod_sites": [
     "nfl/production/run_forecast.py:3533:STOP"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_packet_is_clean",
@@ -1948,7 +2034,8 @@
     "coordination/orchestrator/validate_engineering_run.py:198:NOTHING",
     "coordination/orchestrator/claude_code_transport.py:231:NOTHING",
     "coordination/orchestrator/claude_code_transport.py:245:NOTHING"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_pairs_are_usable",
@@ -1983,7 +2070,8 @@
    "classification_reason": "",
    "prod_sites": [
     "nfl/production/team_volume_v1.py:478:ANNOTATE"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_participation_supports_allocation",
@@ -2018,7 +2106,8 @@
    "classification_reason": "",
    "prod_sites": [
     "nfl/production/universe/run_chain.py:251:VERDICT_REGISTERED:PARTICIPATION_COMPLETENESS"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_partition_covers_required",
@@ -2053,7 +2142,8 @@
    "classification_reason": "",
    "prod_sites": [
     "nfl/prospective/q9shadow/complete.py:270:STOP"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_pit",
@@ -2088,7 +2178,8 @@
    "classification_reason": "",
    "prod_sites": [
     "nfl/production/nonqb/current_season_evidence.py:104:STOP"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_player_review_complete",
@@ -2123,7 +2214,8 @@
    "classification_reason": "",
    "prod_sites": [
     "nfl/production/review/slate_report.py:332:STOP"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_pregame_untouched",
@@ -2164,7 +2256,8 @@
    "prod_sites": [
     "nfl/postgame/grade_portfolios.py:155:STOP",
     "nfl/postgame/grade_projections.py:92:STOP"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_producer_coverage",
@@ -2199,7 +2292,8 @@
    "classification_reason": "",
    "prod_sites": [
     "nfl/production/review/gate.py:710:DOWNGRADE"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_projection_excludes_outcomes",
@@ -2240,7 +2334,8 @@
    "prod_sites": [
     "nfl/prospective/q9shadow/inputs.py:321:NOTHING",
     "nfl/prospective/q9shadow/live_features.py:658:STOP"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_promotable",
@@ -2281,7 +2376,8 @@
    "prod_sites": [
     "nfl/production/adjustment_registry.py:235:STOP",
     "nfl/production/assumptions/run_audit.py:181:STOP"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_prospective_matches_frozen",
@@ -2307,7 +2403,8 @@
    "load_bearing_proof_determinism": {},
    "classification": "CANDIDATE_SCOPED",
    "classification_reason": "guards Candidate B against the accepted walk, and Candidate B has no production caller either",
-   "prod_sites": []
+   "prod_sites": [],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_prospective_order",
@@ -2354,33 +2451,28 @@
     "nfl/prospective/q9shadow/timebasis.py:227:STOP",
     "nfl/prospective/q9shadow/reuse.py:147:STOP",
     "nfl/prospective/q9shadow/seal.py:580:STOP"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_publishable",
    "protects": "May these denominators be used for a published forecast?",
    "defined_in": "nfl/production/nonqb/current_season_team_volume.py",
    "line": 170,
-   "n_definitions": 2,
+   "n_definitions": 1,
    "fails_by": "RETURN",
-   "callers_prod": 2,
-   "callers_prod_external": 2,
-   "callers_test": 6,
+   "callers_prod": 1,
+   "callers_prod_external": 1,
+   "callers_test": 4,
    "callers_research": 0,
    "effect_on_failure": [
-    "ANNOTATE",
     "DOWNGRADE"
    ],
    "reachability": "EXTERNALLY_CALLED",
    "caller_modules": [
-    "nfl/production/nonqb/football_engine.py",
     "nfl/production/run_forecast.py"
    ],
    "caller_entry_points": {
-    "nfl/production/nonqb/football_engine.py": {
-     "has_main": false,
-     "referenced_outside_python": false
-    },
     "nfl/production/run_forecast.py": {
      "has_main": true,
      "referenced_outside_python": true
@@ -2394,9 +2486,45 @@
    "classification": "NOT_ESTABLISHED",
    "classification_reason": "",
    "prod_sites": [
-    "nfl/production/run_forecast.py:1582:DOWNGRADE",
+    "nfl/production/run_forecast.py:1582:DOWNGRADE"
+   ],
+   "n_definitions_of_this_name": 2
+  },
+  {
+   "guard": "assert_publishable",
+   "protects": "A run touched by a TEST-ONLY fixture can never become an artifact.",
+   "defined_in": "nfl/production/nonqb/layers.py",
+   "line": 864,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 1,
+   "callers_prod_external": 1,
+   "callers_test": 2,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "ANNOTATE"
+   ],
+   "reachability": "EXTERNALLY_CALLED",
+   "caller_modules": [
+    "nfl/production/nonqb/football_engine.py"
+   ],
+   "caller_entry_points": {
+    "nfl/production/nonqb/football_engine.py": {
+     "has_main": false,
+     "referenced_outside_python": false
+    }
+   },
+   "runnable_caller": false,
+   "caller_referenced_outside_python": false,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
+   "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
+   "prod_sites": [
     "nfl/production/nonqb/football_engine.py:2062:ANNOTATE"
-   ]
+   ],
+   "n_definitions_of_this_name": 2
   },
   {
    "guard": "assert_ranking_admissible",
@@ -2422,7 +2550,8 @@
    "load_bearing_proof_determinism": {},
    "classification": "ORPHANED_CONTROL",
    "classification_reason": "logic proven, nothing calls it; wiring is a product decision about what the ranking is for",
-   "prod_sites": []
+   "prod_sites": [],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_ready_for_slate",
@@ -2448,7 +2577,8 @@
    "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
    "classification_reason": "",
-   "prod_sites": []
+   "prod_sites": [],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_redistribution_supported",
@@ -2483,7 +2613,8 @@
    "classification_reason": "",
    "prod_sites": [
     "nfl/production/universe/run_chain.py:290:VERDICT_REGISTERED:REDISTRIBUTION_PLAUSIBILITY"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_research_tree_unchanged",
@@ -2509,7 +2640,8 @@
    "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
    "classification_reason": "",
-   "prod_sites": []
+   "prod_sites": [],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_role_state_supported",
@@ -2544,7 +2676,8 @@
    "classification_reason": "",
    "prod_sites": [
     "nfl/production/universe/run_chain.py:230:VERDICT_REGISTERED:ROLE_PLAUSIBILITY"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_roster_legal",
@@ -2558,7 +2691,7 @@
    "callers_test": 1,
    "callers_research": 0,
    "effect_on_failure": [
-    "ANNOTATE"
+    "STOP"
    ],
    "reachability": "EXTERNALLY_CALLED",
    "caller_modules": [
@@ -2583,9 +2716,10 @@
    "classification": "NOT_ESTABLISHED",
    "classification_reason": "",
    "prod_sites": [
-    "nfl/dfs/classic/reference.py:341:ANNOTATE",
-    "nfl/dfs/classic/optimizer.py:488:ANNOTATE"
-   ]
+    "nfl/dfs/classic/reference.py:341:STOP",
+    "nfl/dfs/classic/optimizer.py:488:STOP"
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_scope_allowed",
@@ -2620,7 +2754,8 @@
    "classification_reason": "",
    "prod_sites": [
     "nfl/production/gate_ids.py:243:ANNOTATE"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_seal_path_governed",
@@ -2655,7 +2790,8 @@
    "classification_reason": "",
    "prod_sites": [
     "nfl/prospective/q9shadow/ledger.py:291:STOP"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_shared_draws",
@@ -2692,7 +2828,8 @@
    "classification_reason": "same proof; note its kicker coverage is EMPTY because `kicking` is both a football layer and DK-bearing, so dk-foot subtracts the row from itself",
    "prod_sites": [
     "nfl/dfs/salaries/emit_package.py:110:STOP"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_single_divergence",
@@ -2727,7 +2864,8 @@
    "classification_reason": "",
    "prod_sites": [
     "nfl/prospective/q9shadow/complete.py:334:DOWNGRADE"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_sources_permitted",
@@ -2762,7 +2900,8 @@
    "classification_reason": "",
    "prod_sites": [
     "nfl/prospective/q9shadow/live_features.py:591:ANNOTATE"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_summary_consistent",
@@ -2797,7 +2936,8 @@
    "classification_reason": "",
    "prod_sites": [
     "nfl/production/run_forecast.py:3162:STOP"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_target_ownership_closure",
@@ -2823,7 +2963,8 @@
    "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
    "classification_reason": "",
-   "prod_sites": []
+   "prod_sites": [],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_usable_for",
@@ -2858,7 +2999,8 @@
    "classification_reason": "",
    "prod_sites": [
     "nfl/prospective/q9shadow/seal.py:362:STOP"
-   ]
+   ],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_verified",
@@ -2884,7 +3026,8 @@
    "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
    "classification_reason": "",
-   "prod_sites": []
+   "prod_sites": [],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_walk_matches_research",
@@ -2910,7 +3053,8 @@
    "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
    "classification_reason": "",
-   "prod_sites": []
+   "prod_sites": [],
+   "n_definitions_of_this_name": 1
   },
   {
    "guard": "assert_zero_opportunity_over_draws",
@@ -2936,7 +3080,8 @@
    "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
    "classification_reason": "",
-   "prod_sites": []
+   "prod_sites": [],
+   "n_definitions_of_this_name": 1
   }
  ]
 }
