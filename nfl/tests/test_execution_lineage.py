@@ -199,6 +199,75 @@ def test_the_default_ref_is_not_stale():
           f"git fetch origin '+refs/heads/*:refs/remotes/origin/*'")
 
 
+def test_a_push_triggered_branch_local_workflow_is_counted_as_executing():
+    """The blind spot this file exists to close.
+
+    An earlier version enumerated workflows from the default branch alone, on
+    the premise that only the default branch can fire one. True for `schedule:`
+    and `repository_dispatch:`; FALSE for `push:`, which GitHub reads from the
+    ref that was pushed.
+
+    `agent-orchestrator.yml` exists only on the engineering branch, fires on
+    push to it, had already run 8 times, and commits back to the branch. Run
+    36268562488 is the evidence, and the inventory did not list it.
+    """
+    wf = inv()['workflows']
+    w = wf.get('agent-orchestrator.yml')
+    check('the branch-local push-triggered orchestrator is enumerated',
+          w is not None, sorted(wf))
+    if not w:
+        return
+    check('  it is attributed to the engineering branch', w['ref'] == ENG,
+          w['ref'])
+    check('  and BRANCH_LOCAL is the stated reason', 'BRANCH_LOCAL' in w['how'],
+          w['how'])
+    check('  push is among its triggers', 'push' in (w['triggers'] or []),
+          w['triggers'])
+    check('  it is NOT on the default branch, which is the whole point',
+          w['defined_on'] == ENG, w['defined_on'])
+    eng = set(inv()['closures'].get(ENG, ()))
+    for m in ('coordination/orchestrator/main.py',
+              'coordination/validate_coordination.py'):
+        check(f'  its closure reaches {m}', m in eng)
+
+
+def test_a_branch_local_workflow_that_can_NOT_fire_is_not_counted_as_executing():
+    """The other half, and it must not be collapsed with the first.
+
+    `nfl-capture-liveness.yml` is also absent from the default branch, but it
+    fires only on `schedule:`, which GitHub reads from the default branch alone.
+    So it has never run. Counting it as executing because it is branch-local
+    would be the mirror-image error of missing the orchestrator.
+    """
+    i = inv()
+    check('the schedule-only branch-local workflow is NOT in the executing set',
+          'nfl-capture-liveness.yml' not in i['workflows'],
+          'a cron absent from the default branch cannot fire')
+    check('  but it IS reported, so it cannot be silently lost',
+          'nfl-capture-liveness.yml'
+          in i['scheduled_workflows_absent_from_default'],
+          sorted(i['scheduled_workflows_absent_from_default']))
+
+
+def test_the_correction_did_not_rescue_any_module_previously_called_unreached():
+    """Honesty check on my own published claims.
+
+    Adding the missed workflow could have invalidated the finding that the
+    audited publication and grading modules are reached by no tree. It did not,
+    and that is asserted rather than asserted-once-and-forgotten.
+    """
+    i = inv()
+    for m in ('nfl/production/verdict.py', 'nfl/postgame/join_provenance.py',
+              'nfl/postgame/grade_projections.py', 'nfl/postgame/actuals.py',
+              'nfl/dfs/salaries/emit_package.py',
+              'nfl/production/universe/run_chain.py',
+              'nfl/dfs/showdown/universe.py',
+              'nfl/production/capture_cadence.py'):
+        check(f'{m} is still reached by no tree',
+              not L.classify(i, m)['executed'],
+              L.classify(i, m)['executed_from'])
+
+
 def main():
     for name, fn in sorted(globals().items()):
         if name.startswith('test_') and callable(fn):

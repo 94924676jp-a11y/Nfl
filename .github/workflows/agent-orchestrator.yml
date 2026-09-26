@@ -234,6 +234,36 @@ jobs:
             echo "- exit: \`${ORCH_RC:-n/a}\`"
             echo "- head: \`$(git rev-parse --short HEAD)\`"
             echo ""
-            echo "Autonomy is armed in \`coordination/AUTOMATION_POLICY.json\`."
-            echo "To stop it immediately, set \`autonomous_operation_enabled\` to false and push."
+            # READ THE FLAG, DO NOT ASSERT IT. These two lines used to be
+            # unconditional echoes claiming "Autonomy is armed", which was false
+            # on every run since the flag defaults to false -- a governance
+            # status string that was a literal rather than a reading of the
+            # state it names. The orchestrator itself reports the truth in its
+            # own output ("STOP: ... autonomous_operation_enabled=false ... the
+            # kill switch"), so the summary contradicted the log above it.
+            python3.12 - <<'PY'
+          import json, pathlib
+          p = pathlib.Path('coordination/AUTOMATION_POLICY.json')
+          try:
+              d = json.loads(p.read_text())
+          except Exception as exc:                                # noqa: BLE001
+              print(f'Arming state NOT ESTABLISHED: {p} unreadable ({exc}).')
+          else:
+              armed = d.get('autonomous_operation_enabled')
+              mode = d.get('execution_mode')
+              if armed is True:
+                  print(f'Autonomy is ARMED in `{p}` (execution_mode '
+                        f'`{mode}`). To stop it immediately, set '
+                        f'`autonomous_operation_enabled` to false and push.')
+              elif armed is False:
+                  print(f'Autonomy is NOT ARMED: `{p}` has '
+                        f'`autonomous_operation_enabled: false` '
+                        f'(execution_mode `{mode}`). The orchestrator stops at '
+                        f'the kill switch and performs no transition. This is '
+                        f'the default, and it is not a failure.')
+              else:
+                  print(f'Arming state NOT ESTABLISHED: '
+                        f'`autonomous_operation_enabled` is {armed!r} in `{p}`, '
+                        f'which is neither true nor false.')
+          PY
           } >> "$GITHUB_STEP_SUMMARY"

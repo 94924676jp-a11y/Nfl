@@ -102,17 +102,73 @@ def resolve_ref(body: str):
     return None, f'RUNTIME_RESOLVED {raw}'
 
 
+#: Events GitHub reads from the DEFAULT branch only. A workflow that fires on
+#: one of these and is absent from the default branch never runs.
+DEFAULT_BRANCH_EVENTS = ('schedule', 'repository_dispatch', 'issues',
+                         'issue_comment', 'workflow_dispatch')
+#: Events scoped to the ref they arrive on. GitHub reads the workflow file FROM
+#: THAT REF, so a branch-local workflow firing on one of these DOES run.
+REF_SCOPED_EVENTS = ('push', 'pull_request', 'pull_request_target', 'create',
+                     'delete')
+OTHER_TREES = (ENGINEERING, 'origin/capture-prod')
+
+
+def triggers(body: str) -> list:
+    m = re.search(r'^on:\s*\n((?:[ \t].*\n|\n)*)', body, re.M)
+    return sorted(set(re.findall(r'^\s{2}(\w+):', m.group(1), re.M))) if m else []
+
+
 def workflows() -> dict:
+    """Every workflow that can actually fire, across every tree.
+
+    ENUMERATING FROM THE DEFAULT BRANCH ALONE IS NOT ENOUGH, and an earlier
+    version of this tool did exactly that on the premise that only the default
+    branch can fire a workflow. That is true for `schedule:` and
+    `repository_dispatch:`. It is FALSE for `push:`: GitHub reads a
+    push-triggered workflow from the ref that was pushed, so a workflow living
+    only on a feature branch fires on every push to it.
+
+    Measured 2026-09-26: `.github/workflows/agent-orchestrator.yml` exists ONLY
+    on the engineering branch, triggers on `push` filtered to that branch, had
+    already run 8 times, and commits back to the branch -- and this tool's
+    inventory listed 11 workflows without it. Run 36268562488 is the evidence.
+    """
     out = {}
-    names = [l.split('/')[-1] for l in
+    names = {l.split('/')[-1] for l in
              _git('ls-tree', '--name-only', DEFAULT_REF,
-                  '.github/workflows/').stdout.split()]
-    for n in names:
+                  '.github/workflows/').stdout.split()}
+    for n in sorted(names):
         body = show(DEFAULT_REF, f'.github/workflows/{n}') or ''
         ref, how = resolve_ref(body)
         out[n] = {'ref': ref, 'how': how, 'entry_points': entry_points(body),
                   'scheduled': bool(re.search(r'^\s*schedule:', body, re.M)),
-                  'crons': re.findall(r"cron: *'([^']+)'", body)}
+                  'crons': re.findall(r"cron: *'([^']+)'", body),
+                  'defined_on': DEFAULT_REF, 'triggers': triggers(body),
+                  'fires_because': 'present on the default branch'}
+    # Now the branch-local ones the default branch has never heard of.
+    for tree in OTHER_TREES:
+        local = {l.split('/')[-1] for l in
+                 _git('ls-tree', '--name-only', tree,
+                      '.github/workflows/').stdout.split()}
+        for n in sorted(local - names):
+            if n in out:
+                continue
+            body = show(tree, f'.github/workflows/{n}') or ''
+            trig = triggers(body)
+            scoped = [t for t in trig if t in REF_SCOPED_EVENTS]
+            if not scoped:
+                # Absent from the default branch and firing only on
+                # default-branch events: it cannot run. Reported separately by
+                # workflows_absent_from_default(), not counted as executing.
+                continue
+            out[n] = {'ref': tree, 'how': f'BRANCH_LOCAL via {scoped}',
+                      'entry_points': entry_points(body),
+                      'scheduled': bool(re.search(r'^\s*schedule:', body, re.M)),
+                      'crons': re.findall(r"cron: *'([^']+)'", body),
+                      'defined_on': tree, 'triggers': trig,
+                      'fires_because': (f'absent from {DEFAULT_REF} but fires on '
+                                        f'{scoped}, which GitHub reads from the '
+                                        f'pushed ref')}
     return out
 
 
