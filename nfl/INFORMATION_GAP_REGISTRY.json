@@ -1,6 +1,6 @@
 {
  "artifact": "NFL_INFORMATION_GAP_REGISTRY",
- "updated_utc": "2026-09-19",
+ "updated_utc": "2026-09-26T19:40:00Z",
  "action_states": [
   "BLOCKED",
   "HOLD",
@@ -42,13 +42,14 @@
    "licensing_status": "CC BY 4.0, clear",
    "pit_status": "PROSPECTIVE ONLY",
    "action": "PROSPECTIVE_ONLY",
-   "last_rechecked_utc": "2026-09-19",
-   "evidence_as_of_utc": "2026-09-19T15:05:38Z",
+   "last_rechecked_utc": "2026-09-26",
+   "evidence_as_of_utc": "2026-09-26T19:35:22Z",
    "recheck_horizon_days": 7,
    "recheck_horizon_basis": "the prospective capture accumulates a new depth-chart vintage roughly daily, so a week is the shortest interval over which the yield can have changed materially",
-   "recheck_method": "nfl/vintage_manifest.jsonl, source=depth_charts, state=PASS, counted by distinct blob",
+   "recheck_method": "nfl/vintage_manifest.jsonl ON origin/capture-prod, source=depth_charts, state=PASS, counted by distinct blob",
    "recheck_executable_here": true,
-   "recheck_assignment": null
+   "recheck_assignment": null,
+   "recheck_evidence": "RECHECKED 2026-09-26 on origin/capture-prod: depth_charts 977 rows, 977 PASS, 31 distinct blobs (was 20 when read off the engineering branch), newest capture 20260926T193522Z."
   },
   {
    "id": "GAP-2026-PARTICIPATION",
@@ -65,7 +66,7 @@
    "evidence_as_of_utc": "2026-09-15T06:37:05Z",
    "recheck_horizon_days": 2,
    "recheck_horizon_basis": "nflverse publishes these files during the week; snap_counts went from 404 to 200 two days after the claim that both were absent, so a horizon longer than two days cannot catch the event it exists to catch",
-   "recheck_method": "nfl/availability_manifest.jsonl, 24 probe records, 2026-09-08T13:28:42Z to 2026-09-15T06:37:05Z",
+   "recheck_method": "nfl/availability_manifest.jsonl ON origin/main (the tree nfl-availability.yml checks out and pushes to -- NOT capture-prod, which holds only 24 of the 70 rows), 24 probe records, 2026-09-08T13:28:42Z to 2026-09-15T06:37:05Z",
    "recheck_executable_here": false,
    "recheck_assignment": "OUT-019 (pbp_participation 2026) and OUT-024 (the availability watch has been dead since 2026-09-15T06:37:05Z)"
   },
@@ -157,13 +158,14 @@
    "pit_status": "HISTORICAL 2020-2025 AND PROSPECTIVE",
    "residual": "the two schemas do not overlap in time, so no measurement here can equate a 2024 rank with a 2026 one: appearance at rank 1 is 0.707-0.812 weekly against 0.895-0.923 daily, consistent with either a vendor difference or a fresher chart",
    "action": "CHEAP_PROBE",
-   "last_rechecked_utc": "2026-09-19",
-   "evidence_as_of_utc": "2026-09-19T15:05:38Z",
+   "last_rechecked_utc": "2026-09-26",
+   "evidence_as_of_utc": "2026-09-26T19:35:22Z",
    "recheck_horizon_days": 7,
    "recheck_horizon_basis": "same capture series as GAP-PREGAME-ROLE",
-   "recheck_method": "nfl/vintage_manifest.jsonl, source=depth_charts",
+   "recheck_method": "nfl/vintage_manifest.jsonl ON origin/capture-prod (the tree nfl-capture.yml checks out and commits to; the engineering branch and main copies lag it by 2 and 11 days), source=depth_charts",
    "recheck_executable_here": true,
-   "recheck_assignment": null
+   "recheck_assignment": null,
+   "recheck_evidence": "RECHECKED 2026-09-26 on origin/capture-prod: depth_charts has 977 manifest rows, all PASS, 31 distinct blobs, newest capture 20260926T193522Z. The prospective dt series is alive and unbroken; nothing here changes the historical/prospective schema non-overlap in `residual`."
   },
   {
    "id": "GAP-INJURY-VINTAGE",
@@ -176,13 +178,14 @@
    "licensing_status": "public",
    "pit_status": "PROSPECTIVE ONLY",
    "action": "PROSPECTIVE_ONLY",
-   "last_rechecked_utc": "2026-09-19",
-   "evidence_as_of_utc": "2026-09-19T15:05:38Z",
+   "last_rechecked_utc": "2026-09-26",
+   "evidence_as_of_utc": "2026-09-26T19:35:22Z",
    "recheck_horizon_days": 7,
    "recheck_horizon_basis": "the official report republishes several times a week; a week is the shortest interval over which the captured cascade can have changed shape",
-   "recheck_method": "nfl/vintage_manifest.jsonl, sources=injuries and official_injury_report, state=PASS, counted by distinct blob",
+   "recheck_method": "nfl/vintage_manifest.jsonl ON origin/capture-prod, sources=injuries and official_injury_report, state=PASS, counted by distinct blob",
    "recheck_executable_here": true,
-   "recheck_assignment": null
+   "recheck_assignment": null,
+   "recheck_evidence": "RECHECKED 2026-09-26 on origin/capture-prod: injuries 977 rows / 937 PASS / 16 distinct blobs; official_injury_report 971 rows / 911 PASS / 891 distinct blobs; newest capture 20260926T193522Z for both."
   },
   {
    "id": "GAP-TD-RECOVERABILITY",
