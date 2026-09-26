@@ -94,8 +94,16 @@ def _roster_index(path=None) -> dict:
     return out
 
 
-def resolve(manifest_path=None, roster_path=None) -> Outcome:
-    """gsis_id -> name for every row of the sealed kicking layer."""
+def resolve(manifest_path=None, roster_path=None, frozen=None) -> Outcome:
+    """gsis_id -> name for every row of the sealed kicking layer.
+
+    `frozen` names the slate's directory. It exists so `universe.build` can
+    hand its own slate down rather than have this module silently reach for
+    DET@BUF's manifest while the caller believes it is reading another game.
+    An explicit `manifest_path` still wins, since it says exactly which file.
+    """
+    if manifest_path is None and frozen is not None:
+        manifest_path = pathlib.Path(frozen) / 'sealed_player_draws_manifest.json'
     mp = pathlib.Path(manifest_path or MANIFEST)
     if not mp.exists():
         return Outcome.blocked('KICKER_MANIFEST_MISSING', str(mp),

@@ -28,19 +28,37 @@ from nfl.dfs.showdown import kicker_identity as KI
 from nfl.production.dfs import projection_confidence as PC           # noqa: E402
 
 SPEC_VERSION = 'nfl-showdown-universe-1'
-FROZEN = _REPO / 'nfl/research/dfs/DET_BUF_2026W2/frozen'
-GAME_ID = '2026_02_DET_BUF'
+
+# THE SLATE IS AN ARGUMENT, NOT A CONSTANT.
+#
+# Three postgame graders import this module, so a module-level pin here binds
+# all of them: `grade_projections`, `grade_props` and `grade_portfolios` could
+# only ever have run DET@BUF, whatever game they were handed. DEF-062.
+#
+# The pins were not only paths. `OFFICIAL_INACTIVE` is who was ruled out on
+# 2026-09-17 and `ROLE_CONCERN` is a Buffalo roster -- one game's football
+# baked into a module three graders depend on. Those travel with the slate.
+#
+# SALARY_CAP, N_FLEX and CPT_MULTIPLIER do NOT: they are DraftKings Showdown
+# rules and they are the same for every game. Parameterising them would be
+# inventing a knob that models nothing.
+DEFAULT_GAME_ID = '2026_02_DET_BUF'
+DEFAULT_FROZEN = _REPO / 'nfl/research/dfs/DET_BUF_2026W2/frozen'
+SLATE_ENV = 'NFL_SHOWDOWN_SLATE'
 SALARY_CAP = 50000
 N_FLEX = 5
 CPT_MULTIPLIER = 1.5
 
 #: Officially inactive on 2026-09-17. Blocked, not capped.
+#: SLATE DATA. Kept as the default slate's value; a different game carries
+#: its own, and an empty tuple is a legitimate value (nobody ruled out).
 OFFICIAL_INACTIVE = ('Skyler Bell', 'Ty Johnson')
 
 #: Buffalo non-quarterback skill players. CS1 is quarterback-only, so none of
 #: these carries current-season role state, and the P2 diagnostic found an
 #: appearance inversion on this roster. The tag is a statement about the MODEL,
 #: never about the player.
+#: SLATE DATA, and the name says so: this is a Buffalo roster.
 BUF_ROLE_CONCERN = (
     'James Cook', 'Ray Davis', 'Frank Gore Jr.', 'DJ Moore', 'Khalil Shakir',
     'Keon Coleman', 'Dalton Kincaid', 'Dawson Knox', 'Josh Palmer',
@@ -71,6 +89,61 @@ KICKER_JOIN_REFUSED = ('the kicking layer is team-keyed; resolving a kicker '
 KICKER_JOIN_REFUSED_SUPERSEDED_BY = 'nfl.dfs.showdown.kicker_identity.resolve'
 
 
+class Slate:
+    """One game's inputs. Immutable, and it never guesses a missing half."""
+
+    __slots__ = ('game_id', 'frozen', 'official_inactive', 'role_concern')
+
+    def __init__(self, game_id, frozen, official_inactive, role_concern):
+        self.game_id = game_id
+        self.frozen = pathlib.Path(frozen)
+        self.official_inactive = tuple(official_inactive)
+        self.role_concern = tuple(role_concern)
+
+    def __repr__(self):
+        return (f'Slate({self.game_id!r}, {str(self.frozen)!r}, '
+                f'{len(self.official_inactive)} inactive, '
+                f'{len(self.role_concern)} role-concern)')
+
+
+def slate(game_id=None, frozen=None, official_inactive=None,
+          role_concern=None) -> Slate:
+    """Build a slate. A game id does NOT imply a directory.
+
+    Handing back the default frozen directory for an unknown game id is how a
+    module reads one game's draws and labels them another's -- the same trap
+    `postgame.outcome.slate` refuses. So: both halves, or neither.
+
+    The inactive and role-concern lists default to the DEFAULT slate's only
+    when the frozen directory is also the default one. For any other game they
+    default to EMPTY, because this module does not know who was ruled out in a
+    game it has never seen, and silently reusing 2026-09-17's Buffalo lists
+    would tag the wrong players in the wrong game.
+    """
+    gid = game_id or DEFAULT_GAME_ID
+    if frozen is None:
+        if game_id and game_id != DEFAULT_GAME_ID:
+            raise ValueError(
+                f'no frozen directory is known for {game_id!r}. Pass one. '
+                f'Guessing it would read {DEFAULT_GAME_ID} and call it '
+                f'{game_id}.')
+        frozen = DEFAULT_FROZEN
+    is_default = pathlib.Path(frozen) == DEFAULT_FROZEN
+    if official_inactive is None:
+        official_inactive = OFFICIAL_INACTIVE if is_default else ()
+    if role_concern is None:
+        role_concern = BUF_ROLE_CONCERN if is_default else ()
+    return Slate(gid, frozen, official_inactive, role_concern)
+
+
+_DEFAULT = slate()
+
+#: Back-compatible module names. They ARE the default slate's values, so a
+#: reader of either sees one thing, not two that can drift.
+FROZEN = _DEFAULT.frozen
+GAME_ID = _DEFAULT.game_id
+
+
 def norm(s: str) -> str:
     s = re.sub(r'\s*\(\d+\)\s*$', '', (s or '').strip())
     s = re.sub(r'\s+(Jr\.|Sr\.|II|III|IV)$', '', s)
@@ -78,11 +151,12 @@ def norm(s: str) -> str:
     return ALIASES.get(k, k)
 
 
-def _tag(name: str) -> str:
+def _tag(name: str, sl: Slate = None) -> str:
+    sl = sl or _DEFAULT
     n = norm(name)
-    if n in {norm(x) for x in OFFICIAL_INACTIVE}:
+    if n in {norm(x) for x in sl.official_inactive}:
         return PC.KNOWN_INACTIVE_STALE
-    if n in {norm(x) for x in BUF_ROLE_CONCERN}:
+    if n in {norm(x) for x in sl.role_concern}:
         return PC.ROLE_STATE_CONCERN
     return PC.MODEL_SUPPORTED
 
@@ -93,8 +167,10 @@ def _tag(name: str) -> str:
 confidence_tag = _tag
 
 
-def load() -> Outcome:
-    """(players, dk draws) for the frozen slate, or a refusal."""
+def load(sl: Slate = None) -> Outcome:
+    """(players, dk draws) for the given slate, or a refusal."""
+    sl = sl or _DEFAULT
+    FROZEN = sl.frozen
     zp = FROZEN / 'sealed_player_draws.npz'
     mp = FROZEN / 'sealed_player_draws_manifest.json'
     sp = FROZEN / 'DKSalaries_showdown.csv'
@@ -140,16 +216,30 @@ def load() -> Outcome:
         spec_version=SPEC_VERSION, n_draws=int(dk.shape[1]))
 
 
-def build() -> Outcome:
+def build(sl: Slate = None) -> Outcome:
     """The joined slate. A DK row the model cannot name is IDENTITY_UNRESOLVED,
     never dropped quietly and never matched by position and team."""
-    raw = load()
+    sl = sl or _DEFAULT
+    FROZEN = sl.frozen
+    raw = load(sl)
     if raw.state is not State.PASS:
         return raw
     v = raw.value
     dk, ids = v['dk'], v['ids']
-    names = json.loads(
-        (FROZEN.parent / 'frozen_board_names.json').read_text())
+    # A MISSING BOARD-NAMES FILE IS A REFUSAL, NOT A TRACEBACK.
+    # `load` above already guards this file; `build` read it unconditionally
+    # and raised FileNotFoundError, which is the one shape this codebase is
+    # trying to stop producing -- a stage that fails without saying what it
+    # needed. Found by the second-slate fixture, which is what a second
+    # fixture is for.
+    bj = FROZEN.parent / 'frozen_board_names.json'
+    if not bj.exists():
+        return Outcome.blocked(
+            'SHOWDOWN_BOARD_NAMES_MISSING',
+            f'{bj} is absent, so no draw row can be given a name and every '
+            f'DK row would come back IDENTITY_UNRESOLVED',
+            cause=Cause.DATA)
+    names = json.loads(bj.read_text())
     idx = {}
     for i, g in enumerate(ids):
         n = norm(names.get(g, ''))
@@ -168,7 +258,7 @@ def build() -> Outcome:
     # Identity comes from `kicker_identity`, which matches on gsis_id and
     # refuses a (team, position) join.
     kick_draws, kick_meta = {}, {}
-    ki = KI.resolve()
+    ki = KI.resolve(frozen=FROZEN)
     if ki.state is State.PASS:
         z2 = np.load(FROZEN / 'sealed_player_draws.npz')
         if 'kicking__dk_points' in z2.files:
@@ -181,7 +271,7 @@ def build() -> Outcome:
     for r in v['salary_rows']:
         n = norm(r['name'])
         row = idx.get(n)
-        tag = _tag(r['name'])
+        tag = _tag(r['name'], sl)
         if r['pos'] == 'DST':
             tag = PC.UNSUPPORTED
         elif row is None and n not in kick_draws:
@@ -218,7 +308,8 @@ def build() -> Outcome:
                                     'n_draws': n_draws},
         detail=f'{len(playable)} playable of {len(flex)} DK FLEX row(s); '
                f'{len(unresolved)} identity-unresolved; {n_draws} draws',
-        spec_version=SPEC_VERSION, game_id=GAME_ID, salary_cap=SALARY_CAP,
+        spec_version=SPEC_VERSION, game_id=sl.game_id,
+        salary_cap=SALARY_CAP,
         n_playable=len(playable), n_draws=n_draws,
         identity_unresolved=sorted(set(unresolved)),
         tag_counts=tagcount,
