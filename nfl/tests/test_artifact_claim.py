@@ -46,10 +46,33 @@ def check(label, ok, detail=''):
 #: A generator with the same shape as the one that failed: print a long table
 #: first, write the artifact last. Nothing about it is contrived -- this is the
 #: ordinary way a reporting script is written.
+#: N_ROWS IS A DETERMINISM REQUIREMENT, NOT A SIZE PREFERENCE. DEF-070.
+#:
+#: This was 40 rows, and at ~20 bytes a line that is ~800 bytes -- which fits
+#: entirely inside the 64 KiB pipe buffer. So the generator normally printed
+#: everything without ever blocking, wrote the artifact, and exited: NO SIGPIPE
+#: AT ALL. It only died mid-print when scheduling happened to let `head` exit
+#: and tear down the read end first, which made the check report either verdict
+#: on identical code. Measured 2026-09-26: 0 failing in one full-suite run, 2
+#: failing in six consecutive isolated runs, 2 under artificial CPU load, 0
+#: immediately after removing it.
+#:
+#: Exceeding the pipe capacity FORCES the block. `head -5` exits after five
+#: lines, the generator's next flush finds no reader, and EPIPE arrives while it
+#: is still inside the print loop -- before the write, every time, by the
+#: kernel's buffering rather than by luck. 20,000 rows is ~400 KiB, a six-fold
+#: margin over the 64 KiB default so the property does not depend on the exact
+#: capacity of any one kernel.
+#:
+#: DO NOT REDUCE THIS to make the test faster. Below the pipe capacity the race
+#: returns and the check stops being evidence of anything.
+SIGPIPE_ROWS = 20000
+
 GENERATOR = '''
 import json, pathlib, sys
 out = pathlib.Path(sys.argv[1])
-rows = [{"player": f"p{i}", "mean": float(i)} for i in range(40)]
+n = int(sys.argv[2]) if len(sys.argv) > 2 else 40
+rows = [{"player": f"p{i}", "mean": float(i)} for i in range(n)]
 for r in rows:
     print(f"{r['player']:10s} {r['mean']:8.2f}")
 print(f"wrote {out}")
@@ -111,13 +134,25 @@ def test_C_the_sigpipe_case_reproduced_not_mocked():
         target = d / 'board.json'
         # EXACTLY THE SHAPE OF THE COMMAND THAT FAILED: generator | head -n.
         proc = subprocess.run(
-            f'{sys.executable} {gen} {target} | head -5',
+            f'{sys.executable} {gen} {target} {SIGPIPE_ROWS} | head -5',
             shell=True, capture_output=True, text=True)
         printed = proc.stdout
         check('the pipeline exits 0, because `head` exits 0',
               proc.returncode == 0, str(proc.returncode))
         check('  stdout looks like a working run', len(printed.splitlines()) == 5,
               repr(printed[:60]))
+        # THE DETERMINISM IS ITSELF CHECKED. If a future edit shrinks
+        # SIGPIPE_ROWS back under the pipe capacity the race returns, the check
+        # starts reporting either verdict, and nothing would say so -- which is
+        # exactly the state DEF-070 found it in. A comment cannot enforce that;
+        # this can.
+        PIPE_CAPACITY = 65536
+        est_bytes = SIGPIPE_ROWS * 20
+        check('  the generator MUST block: output exceeds the pipe buffer',
+              est_bytes > PIPE_CAPACITY * 2,
+              f'~{est_bytes} bytes against a {PIPE_CAPACITY}-byte buffer; '
+              f'below it the SIGPIPE is a race and this check stops being '
+              f'evidence')
         check('  and the file is NOT on disk', not target.exists())
         o = AC.verify(target, schema=['rows'], label='board')
         check('verify REFUSES', o.state is State.FAIL
@@ -128,7 +163,9 @@ def test_C_the_sigpipe_case_reproduced_not_mocked():
               'flushed BEFORE' in o.detail, o.detail[:120])
         # THE CONTROL. The same generator, same target, no pipe.
         target2 = d / 'board2.json'
-        p2 = subprocess.run([sys.executable, str(gen), str(target2)],
+        # THE CONTROL keeps a small count on purpose: no pipe, so nothing
+        # should interrupt it, and 40 rows makes that fast.
+        p2 = subprocess.run([sys.executable, str(gen), str(target2), '40'],
                             capture_output=True, text=True)
         check('CONTROL: unpiped, the same generator writes the file',
               p2.returncode == 0 and target2.exists())
