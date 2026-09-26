@@ -10,8 +10,8 @@ confidence this census exists to strip out.
 
 | reachability | n | effect on failure | n | classification | n |
 |---|---|---|---|---|---|
-| NO_CALLER_AT_ALL | 4 | STOP | 37 | NOT_ESTABLISHED | 74 |
-| NO_PROD_CALLER | 27 | NO_PRODUCTION_CALLER | 31 | LOAD_BEARING | 8 |
+| NO_CALLER_AT_ALL | 4 | STOP | 37 | NOT_ESTABLISHED | 70 |
+| NO_PROD_CALLER | 27 | NO_PRODUCTION_CALLER | 31 | LOAD_BEARING | 12 |
 | INTERNAL_ONLY | 24 | ANNOTATE | 9 | ORPHANED_CONTROL | 3 |
 | EXTERNALLY_CALLED | 36 | DOWNGRADE | 9 | TEST_NOT_RUNTIME | 1 |
 |  |  | VERDICT_REGISTERED | 5 | ANNOTATE_BY_DESIGN | 1 |
@@ -29,12 +29,16 @@ action demonstrably not happening.
 |---|---|---|---|
 | `assert_coupling_has_joint_index` |  | `test_team_volume_coupling_guards.py` | NOT_ESTABLISHED |
 | `assert_coupling_is_declared` |  | `test_team_volume_coupling_guards.py` | NOT_ESTABLISHED |
+| `assert_feature_schema_matches_freeze` | The 25-feature schema hash must equal the frozen candidate | `test_live_features_leakage_guards.py` | NOT_ESTABLISHED |
 | `assert_frame_closes` | team_carries - scramble == sum(categories), in the DATA, o | `test_a1_frame_closure_guard.py` | NOT_ESTABLISHED |
 | `assert_graded_row` | Every graded row proves how its actual arrived. No excepti | `test_missing_is_not_zero.py` | DETERMINISTIC_MEASURED |
 | `assert_no_inactive_in_playable` | THE GATE. Checks EMITTED rows, not the fixture's intent. | `test_publication_refusal_is_load_bearing.py` | DETERMINISTIC_MEASURED |
+| `assert_no_live_outcome` | Every row of the forecast season must carry no realised va | `test_live_features_leakage_guards.py` | NOT_ESTABLISHED |
+| `assert_no_roster_status` | No supplied player descriptor may carry a roster-status fi | `test_live_features_leakage_guards.py` | NOT_ESTABLISHED |
 | `assert_pairs_are_usable` | Pairs must exist, be pairs, name teams on the slate, and n | `test_team_volume_coupling_guards.py` | NOT_ESTABLISHED |
 | `assert_publishable` | May these denominators be used for a published forecast? | `test_publishable_guards_are_load_bearing.py` | NOT_ESTABLISHED |
 | `assert_shared_draws` | DK-scored players must be players the football layers emit | `test_publication_refusal_is_load_bearing.py` | DETERMINISTIC_MEASURED |
+| `assert_sources_permitted` | Every named source is on the permitted list, or the build  | `test_live_features_leakage_guards.py` | NOT_ESTABLISHED |
 
 ## Every guard
 
@@ -46,8 +50,12 @@ action demonstrably not happening.
 | `assert_shared_draws` | STOP | EXTERNALLY_CALLED | yes | yes | LOAD_BEARING | yes | **no** |
 | `assert_coupling_has_joint_index` | ANNOTATE | INTERNAL_ONLY | **no** | yes | LOAD_BEARING | — | **no** |
 | `assert_coupling_is_declared` | STOP | INTERNAL_ONLY | **no** | yes | LOAD_BEARING | — | **no** |
+| `assert_feature_schema_matches_freeze` | ANNOTATE,NOTHING | INTERNAL_ONLY | yes | yes | LOAD_BEARING | yes | **no** |
 | `assert_frame_closes` | STOP | INTERNAL_ONLY | yes | yes | LOAD_BEARING | — | **no** |
+| `assert_no_live_outcome` | STOP | INTERNAL_ONLY | yes | yes | LOAD_BEARING | yes | **no** |
+| `assert_no_roster_status` | ANNOTATE | INTERNAL_ONLY | yes | yes | LOAD_BEARING | yes | **no** |
 | `assert_pairs_are_usable` | ANNOTATE | INTERNAL_ONLY | **no** | yes | LOAD_BEARING | — | **no** |
+| `assert_sources_permitted` | ANNOTATE | INTERNAL_ONLY | yes | yes | LOAD_BEARING | yes | **no** |
 | `assert_allocation_conserves` | VERDICT_REGISTERED | EXTERNALLY_CALLED | yes | — | NOT_ESTABLISHED | yes | **no** |
 | `assert_complete` | STOP | EXTERNALLY_CALLED | yes | — | NOT_ESTABLISHED | — | **no** |
 | `assert_counts_are_counts` | STOP | EXTERNALLY_CALLED | yes | — | NOT_ESTABLISHED | — | **no** |
@@ -86,11 +94,8 @@ action demonstrably not happening.
 | `assert_edge_fields_are_pregame` | DOWNGRADE | INTERNAL_ONLY | yes | — | NOT_ESTABLISHED | yes | yes |
 | `assert_edges_declarable` | STOP | INTERNAL_ONLY | yes | — | NOT_ESTABLISHED | yes | yes |
 | `assert_fallbacks_resolve` | STOP | INTERNAL_ONLY | yes | — | NOT_ESTABLISHED | — | yes |
-| `assert_feature_schema_matches_freeze` | ANNOTATE,NOTHING | INTERNAL_ONLY | yes | — | NOT_ESTABLISHED | yes | **no** |
 | `assert_no_artifact_claims_12_of_12` | STOP | INTERNAL_ONLY | yes | — | NOT_ESTABLISHED | — | **no** |
-| `assert_no_live_outcome` | STOP | INTERNAL_ONLY | yes | — | NOT_ESTABLISHED | yes | **no** |
 | `assert_no_postgame_inputs` | STOP | INTERNAL_ONLY | yes | — | NOT_ESTABLISHED | yes | yes |
-| `assert_no_roster_status` | ANNOTATE | INTERNAL_ONLY | yes | — | NOT_ESTABLISHED | yes | **no** |
 | `assert_not_positional` | ANNOTATE | INTERNAL_ONLY | yes | — | DEMONSTRATED_ONLY | yes | **no** |
 | `assert_partition_covers_required` | STOP | INTERNAL_ONLY | yes | — | NOT_ESTABLISHED | yes | yes |
 | `assert_pit` | STOP | INTERNAL_ONLY | yes | — | NOT_ESTABLISHED | — | yes |
@@ -99,7 +104,6 @@ action demonstrably not happening.
 | `assert_scope_allowed` | ANNOTATE | INTERNAL_ONLY | yes | — | ORPHANED_CONTROL | yes | **no** |
 | `assert_seal_path_governed` | STOP | INTERNAL_ONLY | yes | — | NOT_ESTABLISHED | yes | yes |
 | `assert_single_divergence` | DOWNGRADE | INTERNAL_ONLY | yes | — | NOT_ESTABLISHED | yes | yes |
-| `assert_sources_permitted` | ANNOTATE | INTERNAL_ONLY | yes | — | NOT_ESTABLISHED | yes | **no** |
 | `assert_complete` | NO_PRODUCTION_CALLER | NO_CALLER_AT_ALL | **no** | — | NOT_ESTABLISHED | — | **no** |
 | `assert_live_lineage` | NO_PRODUCTION_CALLER | NO_CALLER_AT_ALL | **no** | — | ORPHANED_CONTROL | — | **no** |
 | `assert_no_inactive_survived` | NO_PRODUCTION_CALLER | NO_CALLER_AT_ALL | **no** | — | SUPERSEDED | — | **no** |

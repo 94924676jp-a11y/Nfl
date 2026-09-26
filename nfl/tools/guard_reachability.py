@@ -107,6 +107,14 @@ LOAD_BEARING_PROOFS = {
         'nfl/tests/test_team_volume_coupling_guards.py',
     'assert_frame_closes':
         'nfl/tests/test_a1_frame_closure_guard.py',
+    'assert_sources_permitted':
+        'nfl/tests/test_live_features_leakage_guards.py',
+    'assert_no_roster_status':
+        'nfl/tests/test_live_features_leakage_guards.py',
+    'assert_feature_schema_matches_freeze':
+        'nfl/tests/test_live_features_leakage_guards.py',
+    'assert_no_live_outcome':
+        'nfl/tests/test_live_features_leakage_guards.py',
 }
 
 #: guard -> classification, with the reason. Absent means NOT_ESTABLISHED.
@@ -142,6 +150,36 @@ CLASSIFICATION = {
         'run_forecast returns a fatal outcome before any world is drawn. The '
         'two arms were run and differ, and a non-PASS outcome smuggled in '
         'under the right key is still refused -- a key is not a verification'),
+    'assert_sources_permitted': ('LOAD_BEARING',
+        'build() returns the guard Outcome, proven through the real entry point '
+        'rather than read: each of the four FORBIDDEN_SOURCES seeded into a '
+        'build gives FAIL[Q9_LIVE_SOURCE_NOT_PERMITTED], every PERMITTED_SOURCES '
+        'entry does not, and bypassing the guard makes the seeded call fall '
+        'through to build own Q9_LIVE_NO_TEAMS -- so the refusal was the '
+        'guard. LINEAGE CAVEAT: live_features.py is in no executing tree, so '
+        'this is LOAD_BEARING in logic and NOT OBSERVED in execution'),
+    'assert_no_roster_status': ('LOAD_BEARING',
+        'all seven ROSTER_STATUS_FIELDS seeded onto a player descriptor give '
+        'FAIL[Q9_LIVE_ROSTER_STATUS_SUPPLIED] out of build(), and bypassing it '
+        'falls through to NO_TEAMS. Roster status is post-decision information, '
+        'so a pregame build that accepted it would be conditioning on the '
+        'answer. Same lineage caveat'),
+    'assert_feature_schema_matches_freeze': ('LOAD_BEARING',
+        'appending one name to Q9.FEATURE_NAMES makes it '
+        'FAIL[Q9_LIVE_FEATURE_SCHEMA_MISMATCH] carrying BOTH hashes, and '
+        'build() then refuses instead of emitting features -- a builder that '
+        'emits a different schema is building for a different candidate. Also '
+        'covered: with freeze_identity() returning None it BLOCKS with '
+        'Q9_FREEZE_ARTIFACT_ABSENT rather than passing, which is the '
+        'NOT_EVALUATED-is-not-PASS discipline. Same lineage caveat'),
+    'assert_no_live_outcome': ('LOAD_BEARING',
+        'the invariant at the leakage boundary, and the ABSENCE case is the '
+        'one that matters: a realised field must be PRESENT and None, because '
+        'omitting it lets a later .get default it to zero, "which is how an '
+        'unplayed game acquires a realised result". Proven on all three shapes '
+        '-- present-and-None clean, populated refused, OMITTED refused -- plus '
+        'the inverted case that a row from an earlier season may carry its '
+        'outcome. Same lineage caveat'),
     'assert_not_positional': ('DEMONSTRATED_ONLY',
         'both production call sites are inside kicker_identity.main(), which '
         'calls it with a bad input and a good one and prints each -- a worked '
