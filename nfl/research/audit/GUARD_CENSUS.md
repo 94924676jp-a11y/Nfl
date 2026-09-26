@@ -10,12 +10,13 @@ confidence this census exists to strip out.
 
 | reachability | n | effect on failure | n | classification | n |
 |---|---|---|---|---|---|
-| NO_CALLER_AT_ALL | 4 | STOP | 37 | NOT_ESTABLISHED | 81 |
+| NO_CALLER_AT_ALL | 4 | STOP | 37 | NOT_ESTABLISHED | 80 |
 | NO_PROD_CALLER | 27 | NO_PRODUCTION_CALLER | 31 | LOAD_BEARING | 4 |
 | INTERNAL_ONLY | 24 | ANNOTATE | 9 | ORPHANED_CONTROL | 2 |
 | EXTERNALLY_CALLED | 36 | DOWNGRADE | 9 | TEST_NOT_RUNTIME | 1 |
-|  |  | VERDICT_REGISTERED | 5 | SUPERSEDED | 1 |
-|  |  | NOTHING | 1 | CANDIDATE_SCOPED | 1 |
+|  |  | VERDICT_REGISTERED | 5 | ANNOTATE_BY_DESIGN | 1 |
+|  |  | NOTHING | 1 | SUPERSEDED | 1 |
+|  |  |  |  | CANDIDATE_SCOPED | 1 |
 |  |  |  |  | ADVISORY | 1 |
 
 ## Guards with a load-bearing proof
@@ -50,7 +51,7 @@ action demonstrably not happening.
 | `assert_identical_to_freeze` | STOP | EXTERNALLY_CALLED | yes | — | NOT_ESTABLISHED | yes | yes |
 | `assert_inactive_qbs_own_nothing` | STOP | EXTERNALLY_CALLED | yes | — | NOT_ESTABLISHED | yes | yes |
 | `assert_may_consume` | STOP | EXTERNALLY_CALLED | yes | — | NOT_ESTABLISHED | — | **no** |
-| `assert_named_owner_containment` | ANNOTATE | EXTERNALLY_CALLED | yes | — | NOT_ESTABLISHED | — | **no** |
+| `assert_named_owner_containment` | ANNOTATE | EXTERNALLY_CALLED | yes | — | ANNOTATE_BY_DESIGN | — | **no** |
 | `assert_no_inactive_survives` | VERDICT_REGISTERED | EXTERNALLY_CALLED | yes | — | NOT_ESTABLISHED | yes | **no** |
 | `assert_no_outcome_reader_imported` | DOWNGRADE | EXTERNALLY_CALLED | yes | — | NOT_ESTABLISHED | yes | **no** |
 | `assert_no_outcome_shaped_inputs` | DOWNGRADE | EXTERNALLY_CALLED | yes | — | NOT_ESTABLISHED | yes | yes |

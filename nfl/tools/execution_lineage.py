@@ -118,6 +118,28 @@ def triggers(body: str) -> list:
     return sorted(set(re.findall(r'^\s{2}(\w+):', m.group(1), re.M))) if m else []
 
 
+def push_paths(body: str) -> list:
+    """The `paths:` filter on a push trigger, if it has one.
+
+    "Fires on push" is not "fires on every push". agent-orchestrator.yml is
+    filtered to six coordination paths, so it fired on the commit that added a
+    CLAUDE_RETURNS file and correctly did not fire on the three commits after
+    it. Recording the trigger without the filter overstates how often a
+    workflow runs, which is the same class of error as reading a closure as
+    execution.
+    """
+    m = re.search(r'^on:\s*\n(?:.*\n)*?\s{2}push:\s*\n((?:\s{4}.*\n)*)',
+                  body, re.M)
+    if not m:
+        return []
+    blk = m.group(1)
+    pm = re.search(r'paths:\s*\n((?:\s{6}-\s*.*\n)*)', blk)
+    if not pm:
+        return []
+    return [l.strip().lstrip('-').strip().strip("'\"")
+            for l in pm.group(1).splitlines() if l.strip()]
+
+
 def workflows() -> dict:
     """Every workflow that can actually fire, across every tree.
 
@@ -144,6 +166,7 @@ def workflows() -> dict:
                   'scheduled': bool(re.search(r'^\s*schedule:', body, re.M)),
                   'crons': re.findall(r"cron: *'([^']+)'", body),
                   'defined_on': DEFAULT_REF, 'triggers': triggers(body),
+                  'push_paths': push_paths(body),
                   'fires_because': 'present on the default branch'}
     # Now the branch-local ones the default branch has never heard of.
     for tree in OTHER_TREES:
@@ -166,6 +189,7 @@ def workflows() -> dict:
                       'scheduled': bool(re.search(r'^\s*schedule:', body, re.M)),
                       'crons': re.findall(r"cron: *'([^']+)'", body),
                       'defined_on': tree, 'triggers': trig,
+                      'push_paths': push_paths(body),
                       'fires_because': (f'absent from {DEFAULT_REF} but fires on '
                                         f'{scoped}, which GitHub reads from the '
                                         f'pushed ref')}
@@ -270,7 +294,21 @@ def inventory() -> dict:
 
 
 def classify(inv: dict, module: str) -> dict:
-    """Which trees execute this module, by the ref each workflow checks out.
+    """Which trees COULD execute this module. Not whether they did.
+
+    THREE LEVELS, AND THIS FUNCTION ANSWERS ONLY THE FIRST:
+
+      REACHABLE  in the transitive import closure of a workflow entry point
+      INVOKED    a run of that workflow started
+      OBSERVED   the relevant STEP ran, and did the work it claims
+
+    They are not synonyms and a closure figure is not evidence of execution.
+    nfl/tests/run_suite.py is in the engineering closure, which says nothing
+    about whether any particular test module ran in the 77-second orchestration
+    job -- it ran ONE module and 276 checks. Observed-step evidence lives in
+    nfl/research/audit/OBSERVED_EXECUTION.json, keyed by run id and step name,
+    and nothing here may be read as a substitute for it.
+
 
     A module can be executed from several trees AT ONCE, and then the same path
     is different code in each, because the trees are hundreds of commits apart.

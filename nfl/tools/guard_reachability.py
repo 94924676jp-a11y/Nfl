@@ -134,6 +134,23 @@ CLASSIFICATION = {
         'run_forecast returns a fatal outcome before any world is drawn. The '
         'two arms were run and differ, and a non-PASS outcome smuggled in '
         'under the right key is still refused -- a key is not a verification'),
+    'nfl/production/nonqb/rushing_a1.py::assert_named_owner_containment': (
+        'ANNOTATE_BY_DESIGN',
+        'Its own docstring says so: "It REPAIRS NOTHING. It counts and it '
+        'names." football_engine.py:1725 stamps the verdict into '
+        'g[accounting][rush_named_owner_containment] and branches on nothing, '
+        'which is the correct shape for a DECOMPOSITION whose job is to say '
+        'WHICH half moved -- RB carries only, or RB plus QB rush opportunity. '
+        'THE ENFORCEMENT IS NAMED AND REAL: quality_gates.gate_rush_accounting '
+        'is a _HARD_GATES member, board_pointer.swap RE-RUNS the hard gates '
+        '(refusing a caller-supplied verdict), treats an unevaluable gate as '
+        'not passed, and on any hard_fired leaves the pointer where it was. '
+        'Proven end to end by test_quality_gates.py '
+        'test_q_the_swap_is_gated_by_both_the_gates_and_authorization, which '
+        'calls the real swap on the real sealed board and asserts the pointer '
+        'did not move. So this is NOT an unenforced control and no defect was '
+        'filed: checking for downstream enforcement first is what kept it from '
+        'being one.'),
     'nfl/production/nonqb/layers.py::assert_publishable': ('ADVISORY',
         'its verdict is written into g[publication_gate] as a string and no '
         'branch, assert or raise consults it, while the same function refuses '

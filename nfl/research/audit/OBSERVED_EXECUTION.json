@@ -1,0 +1,80 @@
+{
+ "artifact": "OBSERVED_EXECUTION",
+ "spec_version": "nfl-observed-execution-1",
+ "updated_utc": "2026-09-26T20:45:00Z",
+ "rule": "A row here requires a GitHub Actions run id AND the name of the step that did the work AND what was read out of that step's log. Reachability in an import closure is NOT evidence of execution and may never be promoted into this file. A job that started is not a step that ran.",
+ "three_levels": {
+  "REACHABLE": "in the transitive import closure of a workflow entry point. Measured by nfl/tools/execution_lineage.py. Says nothing about execution.",
+  "INVOKED": "a run of the workflow started. Visible in the Actions list. Says nothing about which steps did work.",
+  "OBSERVED": "the relevant step ran and the log shows the work or the refusal. Only this level is evidence."
+ },
+ "caution": "nfl/tests/run_suite.py is REACHABLE from the engineering closure. That does not establish that any particular test module ran in a given job: in run 36268562488 the suite step ran ONE module and 276 checks in 7 seconds. A closure is not a test report.",
+ "observations": [
+  {
+   "module": "coordination/orchestrator/main.py",
+   "level": "OBSERVED",
+   "workflow": "agent-orchestrator.yml",
+   "tree": "origin/claude/nfl-greenfield-architecture-stsxmk",
+   "run_id": 36268562488,
+   "job_id": 108477993914,
+   "step": "Orchestrate",
+   "step_seconds": 0,
+   "what_the_log_shows": "[1/3] STOP: AUTOMATION_POLICY.json has autonomous_operation_enabled=false. This is the default and the kill switch; set it true to arm the loop.",
+   "proves": "The arming gate is LOAD_BEARING by the full standard: bad state (unarmed) -> guard fires with a NAMED refusal -> the protected action (a state transition) does not occur. Observed in CI, not inferred.",
+   "does_not_prove": "That the loop works when armed. Runs 6 and 7 (2026-09-23) show it was armed LIVE once, FAILED at the Claude Code Action with 'Could not fetch an OIDC token ... add id-token: write', and was disarmed the same day."
+  },
+  {
+   "module": "coordination/validate_coordination.py",
+   "level": "OBSERVED",
+   "workflow": "agent-orchestrator.yml",
+   "tree": "origin/claude/nfl-greenfield-architecture-stsxmk",
+   "run_id": 36268562488,
+   "job_id": 108477993914,
+   "step": "Validate coordination state",
+   "step_seconds": 0,
+   "what_the_log_shows": "step conclusion success, before any worker is reached",
+   "proves": "The coordination validator executes in CI on a path-filtered push, ahead of the orchestrator.",
+   "does_not_prove": "That it would refuse invalid state in CI. The state was valid, so the refusal path was not exercised there. Locally it reports COORDINATION_VALID."
+  },
+  {
+   "module": "nfl/tests/run_suite.py",
+   "level": "OBSERVED_PARTIAL",
+   "workflow": "agent-orchestrator.yml",
+   "tree": "origin/claude/nfl-greenfield-architecture-stsxmk",
+   "run_id": 36268562488,
+   "job_id": 108477993914,
+   "step": "Prove the state machine on mocks",
+   "step_seconds": 7,
+   "what_the_log_shows": "modules 1  test functions 28  checks 276  FAILING CHECKS 0 ... SUITE PASS",
+   "proves": "A 276-check subset of the suite executes in CI on every path-matched push to the engineering branch.",
+   "does_not_prove": "That the full suite runs in CI. It does not: 276 of 14406 checks, one module of 276, in 7 seconds against a ~66-minute full run. Any claim that CI enforces the suite is false."
+  },
+  {
+   "module": "nfl/tools/refresh_boards.py",
+   "level": "OBSERVED",
+   "workflow": "nfl-product-board.yml",
+   "tree": "origin/claude/nfl-greenfield-architecture-stsxmk",
+   "run_id": 36257140735,
+   "job_id": 108445954650,
+   "step": "Refresh boards",
+   "step_seconds": 46,
+   "what_the_log_shows": "step conclusion success after 46s of work; the pass then refused all 15 Week 3 games with feature_build: STAGE_DECLARED_UNIMPLEMENTED",
+   "proves": "The scheduled board refresh really executes the maintained branch's forecast closure -- run_forecast.py -> football_engine.py -> layers.py -- three times an hour, 1116 runs. The 'missing is not zero' refusal is on an executing path.",
+   "does_not_prove": "That the guards inside that closure fired. The pass refused at feature_build, which is upstream of most of them, so the 22 engineering-closure guards are REACHABLE and INVOKED, not individually OBSERVED."
+  }
+ ],
+ "not_observed": {
+  "note": "Recorded so absence is a state rather than a silence. Every module the audit repaired this session EXCEPT the three engine modules is reachable from no workflow at all, so no observation is possible until something invokes it.",
+  "modules": [
+   "nfl/production/verdict.py",
+   "nfl/postgame/grade_projections.py",
+   "nfl/postgame/join_provenance.py",
+   "nfl/postgame/actuals.py",
+   "nfl/dfs/salaries/emit_package.py",
+   "nfl/production/universe/run_chain.py",
+   "nfl/dfs/showdown/universe.py",
+   "nfl/production/capture_cadence.py",
+   "nfl/dfs/salaries/build_postinactives_package.py"
+  ]
+ }
+}
