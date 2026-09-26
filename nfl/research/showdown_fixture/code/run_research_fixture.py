@@ -1,7 +1,7 @@
 import sys, json, pathlib, datetime as dt
 sys.path.insert(0,'/home/user/nfl')
 sys.path.insert(0,'/home/user/nfl/external-research/engine-full-product-research-mandate-2026-09-21')
-from nfl.dfs.showdown import research_fixture as RF
+from nfl.research.showdown_fixture.code import research_fixture as RF
 from nfl.production.universe import (player_universe as PU, role_state as RS,
     participation as PA, allocation as AL, usage_vintage as UV, chronology as CH)
 import entity_verdicts as EVD, verdict_engine as VE

@@ -32,7 +32,7 @@ if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
 from nfl.dfs.salaries import build_postinactives_package as B  # noqa: E402
-from nfl.dfs.showdown import dk_universe_showdown as U  # noqa: E402
+from nfl.research.dfs.IND_KC import dk_universe_showdown as U  # noqa: E402
 from sportsplatform.governance.outcome import Cause, Outcome  # noqa: E402
 
 import os as _os

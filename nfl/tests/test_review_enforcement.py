@@ -525,7 +525,7 @@ def test_no_publication_path_bypasses_the_gated_loader():
 
 def test_the_live_selectors_actually_call_the_loader():
     for name in ('select_no_tracy', 'select_scale_invariant', 'cleanup_pool'):
-        p = _REPO / f'nfl/dfs/showdown/{name}.py'
+        p = _REPO / f'nfl/research/showdown_fixture/code/{name}.py'
         txt = p.read_text()
         ok('gated_projection' in txt and '_GP.load(' in txt,
            f'{name}.py obtains its projections through the gate')
