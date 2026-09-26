@@ -90,19 +90,30 @@ def test_not_certified_does_not_block():
 
 
 def test_the_refusal_is_wired_into_main_not_just_available():
-    print('\n[4] main() acts on it, which is the whole defect')
-    import inspect
-    src = inspect.getsource(EP.main)
-    check('main calls blocking_failures', 'blocking_failures(' in src)
-    check('main returns non-zero when it refuses', 'return 1' in src)
-    # THE ORDERING IS THE FIX. Writing first and refusing after would still
-    # publish the bad package.
-    check('main refuses BEFORE it writes',
-          src.index('blocking_failures(') < src.index('write_text'),
-          'a refusal after the write is not a refusal')
+    print('\n[4] the declaration; the BEHAVIOUR is proven elsewhere')
+    # WHAT USED TO BE HERE WAS A TAUTOLOGICAL BYPASS PROOF AND IS DELETED.
+    #
+    # It read main()'s source and asserted that `blocking_failures(` appears
+    # before `write_text` in the text. That is a source-order argument about
+    # precisely the thing DEF-065 proved you cannot argue from source: a
+    # control can be present, correctly written, and protect nothing.
+    # test_p6_false_greens independently flags six other functions in this
+    # repository for the same class, TAUTOLOGICAL_BYPASS_PROOF. This was the
+    # seventh, and it sat next to a real defect claiming to have closed it.
+    #
+    # The behaviour is now proven by running it:
+    #   nfl/tests/test_publication_refusal_is_load_bearing.py
+    #   bad state -> guard FAIL -> main() called -> NO ARTIFACT ON DISK
+    # with the positive case proven in the same shape, so a main() that simply
+    # never wrote could not satisfy the suite.
+    #
+    # What remains here is the declaration, which is a fact about intent and
+    # is checkable as one.
     check('both audits are declared blocking',
           set(EP.BLOCKING_AUDITS) == {'inactive_exclusion', 'shared_draws'},
           str(EP.BLOCKING_AUDITS))
+    check('the blocking state is FAIL alone', EP.BLOCKING_STATE == 'FAIL',
+          'NOT_CERTIFIED must not block; see the load-bearing suite')
 
 
 def test_a_missing_audit_block_is_not_read_as_a_pass():
