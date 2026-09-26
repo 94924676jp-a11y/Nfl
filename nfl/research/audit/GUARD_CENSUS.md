@@ -10,12 +10,13 @@ confidence this census exists to strip out.
 
 | reachability | n | effect on failure | n | classification | n |
 |---|---|---|---|---|---|
-| NO_CALLER_AT_ALL | 4 | STOP | 37 | NOT_ESTABLISHED | 76 |
+| NO_CALLER_AT_ALL | 4 | STOP | 37 | NOT_ESTABLISHED | 74 |
 | NO_PROD_CALLER | 27 | NO_PRODUCTION_CALLER | 31 | LOAD_BEARING | 8 |
-| INTERNAL_ONLY | 24 | ANNOTATE | 9 | ORPHANED_CONTROL | 2 |
+| INTERNAL_ONLY | 24 | ANNOTATE | 9 | ORPHANED_CONTROL | 3 |
 | EXTERNALLY_CALLED | 36 | DOWNGRADE | 9 | TEST_NOT_RUNTIME | 1 |
 |  |  | VERDICT_REGISTERED | 5 | ANNOTATE_BY_DESIGN | 1 |
 |  |  | NOTHING | 1 | SUPERSEDED | 1 |
+|  |  |  |  | DEMONSTRATED_ONLY | 1 |
 |  |  |  |  | CANDIDATE_SCOPED | 1 |
 |  |  |  |  | ADVISORY | 1 |
 
@@ -90,12 +91,12 @@ action demonstrably not happening.
 | `assert_no_live_outcome` | STOP | INTERNAL_ONLY | yes | — | NOT_ESTABLISHED | yes | **no** |
 | `assert_no_postgame_inputs` | STOP | INTERNAL_ONLY | yes | — | NOT_ESTABLISHED | yes | yes |
 | `assert_no_roster_status` | ANNOTATE | INTERNAL_ONLY | yes | — | NOT_ESTABLISHED | yes | **no** |
-| `assert_not_positional` | ANNOTATE | INTERNAL_ONLY | yes | — | NOT_ESTABLISHED | yes | **no** |
+| `assert_not_positional` | ANNOTATE | INTERNAL_ONLY | yes | — | DEMONSTRATED_ONLY | yes | **no** |
 | `assert_partition_covers_required` | STOP | INTERNAL_ONLY | yes | — | NOT_ESTABLISHED | yes | yes |
 | `assert_pit` | STOP | INTERNAL_ONLY | yes | — | NOT_ESTABLISHED | — | yes |
 | `assert_player_review_complete` | STOP | INTERNAL_ONLY | yes | — | NOT_ESTABLISHED | — | **no** |
 | `assert_producer_coverage` | DOWNGRADE | INTERNAL_ONLY | yes | — | NOT_ESTABLISHED | — | yes |
-| `assert_scope_allowed` | ANNOTATE | INTERNAL_ONLY | yes | — | NOT_ESTABLISHED | yes | **no** |
+| `assert_scope_allowed` | ANNOTATE | INTERNAL_ONLY | yes | — | ORPHANED_CONTROL | yes | **no** |
 | `assert_seal_path_governed` | STOP | INTERNAL_ONLY | yes | — | NOT_ESTABLISHED | yes | yes |
 | `assert_single_divergence` | DOWNGRADE | INTERNAL_ONLY | yes | — | NOT_ESTABLISHED | yes | yes |
 | `assert_sources_permitted` | ANNOTATE | INTERNAL_ONLY | yes | — | NOT_ESTABLISHED | yes | **no** |

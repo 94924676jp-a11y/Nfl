@@ -142,6 +142,27 @@ CLASSIFICATION = {
         'run_forecast returns a fatal outcome before any world is drawn. The '
         'two arms were run and differ, and a non-PASS outcome smuggled in '
         'under the right key is still refused -- a key is not a verification'),
+    'assert_not_positional': ('DEMONSTRATED_ONLY',
+        'both production call sites are inside kicker_identity.main(), which '
+        'calls it with a bad input and a good one and prints each -- a worked '
+        'example of the rule, not an enforcement point. The rule itself IS '
+        'enforced, structurally: resolve() iterates the sealed layer row_ids '
+        'and looks each up in a gsis_id index, using the club column only to '
+        'REPORT a disagreement and never to match, so a (team, position) join '
+        'is not something it can perform. showdown/universe.py records the '
+        'same thing, declaring KICKER_JOIN_REFUSED superseded by '
+        'kicker_identity.resolve. No defect: the guard states a rule the '
+        'implementation cannot break'),
+    'assert_scope_allowed': ('ORPHANED_CONTROL',
+        'its only call site is inside gate_ids.main(), printing a table, and '
+        'NOTHING in the repository imports gate_ids -- ownership_audit.py only '
+        'names the file in a DISPOSITIONS string. So the gate registry it '
+        'queries (YES/NO/UNDECIDED per scope, with the right discipline inline '
+        'that an UNDECIDED gate blocks exactly as a NO does) decides nothing. '
+        'It is a parallel, unconsumed registry: verdict.EDGE_GATES and '
+        'quality_gates._HARD_GATES are the live mechanisms, so this is '
+        'duplication to consolidate rather than missing enforcement. Counted '
+        'in the 19-module orphaned-guard ratchet added with DEF-080'),
     'assert_frame_closes': ('LOAD_BEARING',
         'a carry with no owner (team_carries 11, scramble 2, categories 8) and '
         'a category inventing a carry (10, 2, 9) both give '
@@ -375,9 +396,26 @@ def call_sites(defs: dict) -> dict:
             gate = _registered_gate(t, stmt, target)
             if gate and eff in (ANNOTATE, NOTHING, None):
                 eff = f'{VERDICT}:{gate}'
+            # A CALL INSIDE main() IS A CLI DEMONSTRATION, NOT AN
+            # ENFORCEMENT SITE. kicker_identity.assert_not_positional is
+            # called twice, both inside main(), with a bad input and a good
+            # one, and both results printed -- that is a worked example of the
+            # rule. gate_ids.assert_scope_allowed likewise prints a table.
+            # Counting those as production callers made two guards look wired
+            # when nothing in a pipeline reaches them, so the enclosing
+            # function is recorded and the row carries the distinction.
+            enc = cur
+            fname = None
+            while enc in parent:
+                enc = parent[enc]
+                if isinstance(enc, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                    fname = enc.name
+                    break
             sites[nm].append({'file': rel, 'lineno': n.lineno, 'kind': k,
                               'effect': eff, 'bound_to': target,
-                              'resolves_to': resolved})
+                              'resolves_to': resolved,
+                              'in_function': fname,
+                              'cli_demo': fname == 'main'})
     return dict(sites)
 
 
@@ -598,6 +636,9 @@ def _row(g, dfs_for_this, s, n_defs_of_name) -> dict:
                 proof = LOAD_BEARING_PROOFS[_k]
                 break
         caller_mods = sorted({x['file'] for x in prod})
+        # Production callers that are NOT a module's own CLI demonstration.
+        prod_real = [x for x in prod if not x.get('cli_demo')]
+        caller_mods_real = sorted({x['file'] for x in prod_real})
         eps = entry_points(caller_mods)
         det = {}
         for t in ({proof} if proof else set()):
@@ -621,6 +662,13 @@ def _row(g, dfs_for_this, s, n_defs_of_name) -> dict:
                              'INTERNAL_ONLY' if not ext else
                              'EXTERNALLY_CALLED'),
             'caller_modules': caller_mods,
+            # A guard whose ONLY production call sites sit in its module's own
+            # main() is demonstrated, not wired. Kept as its own column rather
+            # than folded into caller_modules, because the demonstration is
+            # real and worth knowing about -- it just is not an enforcement
+            # path.
+            'caller_modules_excluding_cli_demo': caller_mods_real,
+            'only_called_in_cli_demo': bool(prod) and not prod_real,
             'caller_entry_points': eps,
             'runnable_caller': any(v['has_main'] for v in eps.values()),
             'caller_referenced_outside_python':
