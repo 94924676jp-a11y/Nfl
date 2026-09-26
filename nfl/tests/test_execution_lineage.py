@@ -155,6 +155,50 @@ def test_the_trees_are_diverged():
           i['default_only_commits'])
 
 
+def test_a_cron_the_default_branch_never_sees_is_reported():
+    """This tool enumerates from the default branch, so a branch-only workflow
+    is invisible to the enumeration -- cron and all. An inventory that cannot
+    see such a timer must not present itself as complete.
+
+    test_scheduled_workflow_pinning.py found this case and is the authority on
+    it: nfl-capture-liveness.yml carries an hourly cron, is absent from the
+    default branch, and has therefore never fired once. A timer on a feature
+    branch is not a timer.
+    """
+    absent = inv()['scheduled_workflows_absent_from_default']
+    check('the branch-only hourly timer is reported',
+          'nfl-capture-liveness.yml' in absent, sorted(absent))
+    d = absent.get('nfl-capture-liveness.yml') or {}
+    check('  with its cron', bool(d.get('crons')), d.get('crons'))
+    check('  and where it was found', bool(d.get('found_on')), d.get('found_on'))
+    wf = inv()['workflows']
+    check('  and it is NOT in the default-branch enumeration, which is the '
+          'whole point', 'nfl-capture-liveness.yml' not in wf)
+
+
+def test_the_default_ref_is_not_stale():
+    """Every claim here about the default branch is read from origin/main, so a
+    stale remote-tracking ref makes the whole measurement wrong.
+
+    MEASURED THE HARD WAY. `git fetch origin capture-prod` moves FETCH_HEAD only
+    and left origin/main pointing at an older commit, and three separate
+    governance tests caught the lineage numbers being read from the stale tree
+    before I noticed. The correct incantation is
+    `git fetch origin '+refs/heads/*:refs/remotes/origin/*'`.
+    """
+    import subprocess
+    local = subprocess.run(['git', 'rev-parse', L.DEFAULT_REF],
+                           cwd=L.ROOT, capture_output=True, text=True).stdout.strip()
+    remote = subprocess.run(['git', 'ls-remote', 'origin', 'refs/heads/main'],
+                            cwd=L.ROOT, capture_output=True, text=True).stdout.split()
+    if not remote:
+        check('remote reachable', False, 'ls-remote returned nothing')
+        return
+    check(f'{L.DEFAULT_REF} matches the remote', local == remote[0],
+          f'local {local[:12]} vs remote {remote[0][:12]} -- run '
+          f"git fetch origin '+refs/heads/*:refs/remotes/origin/*'")
+
+
 def main():
     for name, fn in sorted(globals().items()):
         if name.startswith('test_') and callable(fn):

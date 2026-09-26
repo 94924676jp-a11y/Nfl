@@ -147,6 +147,37 @@ def closure(ref, entries) -> set:
     return seen
 
 
+def workflows_absent_from_default() -> dict:
+    """Workflows carrying a cron that the DEFAULT branch does not have.
+
+    This tool enumerates workflow DEFINITIONS from the default branch, because
+    that is the only place a schedule can fire from -- which means a workflow
+    that exists only on a feature branch is INVISIBLE to the enumeration, cron
+    and all. `test_scheduled_workflow_pinning.py` caught exactly that case
+    (`nfl-capture-liveness.yml` carries a cron, is absent from the default
+    branch, and has therefore never fired once) and is the authority on it. This
+    function exists so that an inventory built here cannot quietly present
+    itself as complete while missing one.
+    """
+    on_default = {l.split('/')[-1] for l in
+                  _git('ls-tree', '--name-only', DEFAULT_REF,
+                       '.github/workflows/').stdout.split()}
+    out = {}
+    for ref in (ENGINEERING, 'origin/capture-prod', None):
+        names = ({p.name for p in (ROOT / '.github/workflows').glob('*.yml')}
+                 if ref is None else
+                 {l.split('/')[-1] for l in
+                  _git('ls-tree', '--name-only', ref,
+                       '.github/workflows/').stdout.split()})
+        for n in sorted(names - on_default):
+            body = read(ref, f'.github/workflows/{n}') or ''
+            crons = re.findall(r"cron: *'([^']+)'", body)
+            if crons:
+                out.setdefault(n, {'crons': crons, 'found_on': []})
+                out[n]['found_on'].append(ref or 'working tree')
+    return out
+
+
 def inventory() -> dict:
     wf = workflows()
     by_ref, unresolved, absent = {}, {}, {}
@@ -176,6 +207,9 @@ def inventory() -> dict:
         'n_by_ref': {r: len(c) for r, c in closures.items()},
         'refs_not_established': unresolved,
         'entry_points_absent_from_the_tree_they_run': absent,
+        # A cron that the default branch never sees is not a schedule.
+        'scheduled_workflows_absent_from_default':
+            workflows_absent_from_default(),
     }
 
 
@@ -216,6 +250,11 @@ def main(argv=None):
             print(f'  {n}: {es}')
     else:
         print('\nevery workflow entry point exists in the tree it checks out')
+    if inv['scheduled_workflows_absent_from_default']:
+        print('\nCARRY A CRON BUT ARE ABSENT FROM THE DEFAULT BRANCH, so '
+              'GitHub never registers them:')
+        for n, d in inv['scheduled_workflows_absent_from_default'].items():
+            print(f"  {n}: {d['crons'][:2]} found on {d['found_on']}")
     print('\nexecuted closure, per tree:')
     for ref, n in sorted(inv['n_by_ref'].items(), key=lambda x: -x[1]):
         print(f'  {ref:50s} {n:4d} modules')

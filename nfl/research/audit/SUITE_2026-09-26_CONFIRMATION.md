@@ -77,3 +77,74 @@ run it, deliberately: DEF-074's neutral-exit decision reads a declaration string
 out of that file, and regenerating a governance snapshot in the same session
 that starts depending on it would make the dependency unauditable. It belongs in
 its own change.
+
+# Second run, at 762008a
+
+**276 modules, 14,406 checks passing, 143 failing.** Both of the failures the
+previous run laid at my door are gone: `test_conservation_integrity` 1 → 0 and
+`test_suite_harness_tally` 1 → 0. Every module this session added or touched is
+at zero.
+
+Four modules moved, and **three of them are one root cause, which was mine.**
+
+| Module | Change | Cause |
+|---|---|---|
+| `test_autonomy_transport.py` | 0 → 1 | stale `origin/main` |
+| `test_spending_gate.py` | 0 → 1 | stale `origin/main` |
+| `test_scheduled_workflow_pinning.py` | 4 → 5 | stale `origin/main` (the other 4 pre-existing) |
+| `test_system_state.py` | 6 → 7 | PRE_EXISTING stale snapshot, drifting further as files are added |
+
+## The stale ref, and why it matters more than three red checks
+
+Three separate tests carry the same self-check and all three fired:
+
+> `STALE: origin/main is a394abde605e but the remote is at e2359ca34b37.`
+> `git fetch origin main` moves FETCH_HEAD ONLY — use
+> `git fetch origin '+refs/heads/*:refs/remotes/origin/*'`. Every claim this
+> test makes about main is being read from the older tree.
+
+I caused it: earlier in the session I ran `git fetch origin capture-prod`, which
+moves `FETCH_HEAD` and leaves `refs/remotes/origin/main` where it was. **And the
+execution-lineage tool reads workflow definitions from `origin/main`** — so the
+entire lineage measurement was, for a while, being read from a stale copy of the
+very branch it was making claims about.
+
+These three checks are LOAD_BEARING in the most direct sense the vocabulary has:
+a bad state occurred, the guard fired, and it stopped a wrong conclusion from
+being published. They caught an error in the measurement process rather than in
+the code, which is the harder thing to catch.
+
+**After `git fetch origin '+refs/heads/*:refs/remotes/origin/*'`:** all three
+return to their pre-existing state (0, 0, and 4). And the lineage figures are
+**unchanged — 95 / 48 / 16** — because main had advanced by exactly one
+availability-watch data commit with no workflow change, and capture-prod's
+closure is still 16. So the committed numbers stand, but they stand on a
+re-measurement rather than on luck.
+
+`test_execution_lineage.py` now carries its own staleness check so the tool
+cannot silently repeat this.
+
+## Independent confirmation of DEF-074's inertness
+
+`test_scheduled_workflow_pinning` reports, without being asked and from a guard
+written before this session:
+
+> `['nfl-product-board.yml', 'nfl-status.yml', 'nfl-t90.yml']` differ between
+> this branch and origin/main. A scheduled run executes the default-branch copy,
+> so these edits are INERT where they sit.
+
+That is my DEF-074 fix, correctly identified as not deployed. A pre-existing
+guard agreeing with a claim I made about my own work is worth more than the
+claim.
+
+## A gap in my own tool, found by that same test
+
+`nfl-capture-liveness.yml` carries `0 * * * *`, exists on the engineering branch
+and on capture-prod, and is **absent from the default branch** — so GitHub never
+registers it and it has never fired once. My lineage tool could not see it,
+because it enumerates workflow definitions from the default branch, which is
+correct for "what can fire" and blind to "what was meant to fire and cannot".
+
+The tool now reports `scheduled_workflows_absent_from_default` so its inventory
+cannot present itself as complete while missing a timer that is not a timer.
+`test_scheduled_workflow_pinning.py` found this and remains the authority on it.
