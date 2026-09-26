@@ -869,7 +869,7 @@
    "fails_by": "RETURN",
    "callers_prod": 1,
    "callers_prod_external": 1,
-   "callers_test": 4,
+   "callers_test": 6,
    "callers_research": 0,
    "effect_on_failure": [
     "STOP"
@@ -1856,7 +1856,7 @@
    "fails_by": "RETURN",
    "callers_prod": 2,
    "callers_prod_external": 2,
-   "callers_test": 2,
+   "callers_test": 4,
    "callers_research": 0,
    "effect_on_failure": [
     "DOWNGRADE"
@@ -2481,10 +2481,12 @@
    "runnable_caller": true,
    "caller_referenced_outside_python": true,
    "direct_test_coverage": true,
-   "load_bearing_proof": "NONE",
-   "load_bearing_proof_determinism": {},
-   "classification": "NOT_ESTABLISHED",
-   "classification_reason": "",
+   "load_bearing_proof": "nfl/tests/test_publishable_guards_are_load_bearing.py",
+   "load_bearing_proof_determinism": {
+    "nfl/tests/test_publishable_guards_are_load_bearing.py": "NOT_ESTABLISHED"
+   },
+   "classification": "LOAD_BEARING",
+   "classification_reason": "the DOWNGRADE at run_forecast.py:1587 CHAINS INTO A STOP: a non-PASS verdict leaves verified_inputs empty, denom_panel stays declared blocked in freshness.REGISTRY, assert_fresh then BLOCKS and run_forecast returns a fatal outcome before any world is drawn. The two arms were run and differ, and a non-PASS outcome smuggled in under the right key is still refused -- a key is not a verification",
    "prod_sites": [
     "nfl/production/run_forecast.py:1582:DOWNGRADE"
    ],
@@ -2499,7 +2501,7 @@
    "fails_by": "RETURN",
    "callers_prod": 1,
    "callers_prod_external": 1,
-   "callers_test": 2,
+   "callers_test": 4,
    "callers_research": 0,
    "effect_on_failure": [
     "ANNOTATE"
@@ -2519,8 +2521,8 @@
    "direct_test_coverage": true,
    "load_bearing_proof": "NONE",
    "load_bearing_proof_determinism": {},
-   "classification": "NOT_ESTABLISHED",
-   "classification_reason": "",
+   "classification": "ADVISORY",
+   "classification_reason": "its verdict is written into g[publication_gate] as a string and no branch, assert or raise consults it, while the same function refuses 25 other ways -- so it does NOT stop the artifact its docstring says can never exist. It is redundant rather than missing: the only production route to test_only is --dry-run, which run_forecast tags and q9shadow.ledger.assert_not_dry_run refuses as evidence. The redundancy is safe only while run_forecast passes injuries_rows=None and keeps tagging the dry run, and both are pinned in the test",
    "prod_sites": [
     "nfl/production/nonqb/football_engine.py:2062:ANNOTATE"
    ],

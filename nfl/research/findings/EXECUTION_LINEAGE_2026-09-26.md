@@ -154,3 +154,102 @@ missing `python3 -m nfl.production.run_forecast`. It returned a non-empty,
 plausible answer that was wrong, and I nearly wrote it up. A pattern that matches
 something is not a pattern that matches everything; the regression is pinned in
 `test_execution_lineage.py`.
+## CORRECTION, 2026-09-26, later the same day
+
+Two figures in the section above were wrong and are withdrawn. Both errors were
+the same error: **a pattern that matched something was taken for a pattern that
+matched everything.**
+
+### There are four trees, not two
+
+The first version of this tool captured a checkout ref of
+`${{ env.CAPTURE_BRANCH }}` as the literal string `${{`, and treated the mere
+presence of a `ref:` as meaning "the maintained engineering branch". It does not.
+Resolved against each workflow's own `env:` block:
+
+| Tree the workflow actually runs | Workflows | Scheduled | Modules in closure |
+|---|---|---|---|
+| `origin/claude/nfl-greenfield-architecture-stsxmk` | `nfl-product-board`, `ai-bridge`, `claude-engineering-dispatch` | product-board, `7,27,47 * * * *` | **95** |
+| `origin/main` | `agent-orchestrator-heartbeat`, `nfl-availability`, `nfl-status`, `nfl-production-forecast`, `egress-probe` | heartbeat, availability, status | **48** |
+| `origin/capture-prod` | `nfl-capture`, `nfl-t90` | both, `*/30 * * * *` | **16** |
+| NOT ESTABLISHED | `agent-orchestrator-dispatch` (`ref: ${{ steps.target.outputs.branch }}`) | no, dispatch only | not statically establishable |
+
+**So "109 branch-executed modules" is withdrawn; the engineering closure is 95.**
+The extra 14 were the capture and T-90 entry points, whose closures the old tool
+resolved against the engineering working tree while those workflows actually
+check out `capture-prod`. The tool now refuses to guess an unresolvable ref and
+reports it NOT_ESTABLISHED instead.
+
+**The corrected guard figure.** 22 of 91 guards was measured against the
+inflated closure. Re-measure against the 95-module engineering closure before
+quoting it; the tool and the census cross-tab are both in the repository and the
+number should be re-derived, not carried over.
+
+### Prior art, and it came first
+
+`nfl/tests/test_capture_deployment_integrity.py` established exactly this for the
+capture surface in **D24 on 2026-09-15** — ref resolution included, plus a
+content comparison of the deployed tree against the validated contract. It
+currently reports `the branch the scheduler checks out (origin/capture-prod) runs
+the VALIDATED capture implementation`. I built the general tool without reading
+it first, and it had the specific answer already. Where the two overlap, that
+test is the authority on the capture surface.
+
+That test's one failing check is section B, `SURFACE_DIFFERS`: this tree's
+capture code sha differs from the validated contract sha. That is open task
+**D24-R1**, pre-existing and declared, not a regression from this session.
+
+### A module can execute from several trees at once, and that is the finding
+
+The same path is different code in each, because the trees are hundreds of
+commits apart:
+
+| Module | Executes from |
+|---|---|
+| `production/run_forecast.py` | engineering **and** main |
+| `production/nonqb/layers.py` | engineering **and** main |
+| `tools/check_retention.py` | **capture-prod and main** |
+| `production/verdict.py` | no tree |
+| `postgame/join_provenance.py` | no tree |
+| `production/capture_cadence.py` | no tree |
+
+`check_retention.py` is the sharpest case: **424 lines on capture-prod and 89
+lines on main.** `nfl-availability.yml` checks out main and runs the 89-line
+copy twice a day; `nfl-capture.yml` checks out capture-prod and runs the
+424-line copy every thirty minutes. Same filename, same invocation, 335 lines of
+difference, and no test compares them.
+
+### DEF-075: the live-lineage control is absent from both executing trees
+
+`nfl/production/capture_cadence.py` exists to prevent one specific misreading,
+and states it in its own words: a manifest read from the wrong checkout means
+"this file's age is the age of this checkout and not of the system".
+`assert_live_lineage` raises `LINEAGE_NOT_ESTABLISHED` when the working copy is
+not on `capture-prod`.
+
+Measured across all three trees:
+
+- `capture_cadence.py` is **present only on the engineering branch**, and is
+  ABSENT from both `main` and `capture-prod`.
+- It is imported by **no** production module on any tree; its only importers are
+  two tests.
+- **No copy of `check_retention.py` on any of the three trees** references
+  `lineage_ok`, `assert_live_lineage`, `CAPTURE_BRANCH` or `current_branch`.
+- There is **no** branch-provenance check anywhere in main's Python, and none on
+  capture-prod outside an unrelated schedule generator.
+
+So the control is not merely orphaned by imports, which is how the census
+recorded it: **it does not exist on either tree that runs the capture pipeline.**
+The census classification ORPHANED_CONTROL was measured on the engineering
+branch and understates this.
+
+**Severity is bounded, and honestly.** `lineage_ok` exempts an explicitly
+supplied manifest path by design, and `nfl-availability.yml` passes
+`--before-manifest /tmp/manifest_before.jsonl` explicitly. So this is a **gap in
+cadence and staleness monitoring**, not a corrupted published number. Nothing
+that runs today reports capture staleness with established lineage, and nothing
+would refuse if it were asked to.
+
+It is adjacent to open task **D24-R2** ("capture workflows must write back to
+capture-prod, not main") and should be resolved with it rather than by wiring an
+absent module into a tree that does not have it.

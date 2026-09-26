@@ -10,12 +10,13 @@ confidence this census exists to strip out.
 
 | reachability | n | effect on failure | n | classification | n |
 |---|---|---|---|---|---|
-| NO_CALLER_AT_ALL | 4 | STOP | 37 | NOT_ESTABLISHED | 83 |
-| NO_PROD_CALLER | 27 | NO_PRODUCTION_CALLER | 31 | LOAD_BEARING | 3 |
+| NO_CALLER_AT_ALL | 4 | STOP | 37 | NOT_ESTABLISHED | 81 |
+| NO_PROD_CALLER | 27 | NO_PRODUCTION_CALLER | 31 | LOAD_BEARING | 4 |
 | INTERNAL_ONLY | 24 | ANNOTATE | 9 | ORPHANED_CONTROL | 2 |
 | EXTERNALLY_CALLED | 36 | DOWNGRADE | 9 | TEST_NOT_RUNTIME | 1 |
 |  |  | VERDICT_REGISTERED | 5 | SUPERSEDED | 1 |
 |  |  | NOTHING | 1 | CANDIDATE_SCOPED | 1 |
+|  |  |  |  | ADVISORY | 1 |
 
 ## Guards with a load-bearing proof
 
@@ -26,6 +27,7 @@ action demonstrably not happening.
 |---|---|---|---|
 | `assert_graded_row` | Every graded row proves how its actual arrived. No excepti | `test_missing_is_not_zero.py` | DETERMINISTIC_MEASURED |
 | `assert_no_inactive_in_playable` | THE GATE. Checks EMITTED rows, not the fixture's intent. | `test_publication_refusal_is_load_bearing.py` | DETERMINISTIC_MEASURED |
+| `assert_publishable` | May these denominators be used for a published forecast? | `test_publishable_guards_are_load_bearing.py` | NOT_ESTABLISHED |
 | `assert_shared_draws` | DK-scored players must be players the football layers emit | `test_publication_refusal_is_load_bearing.py` | DETERMINISTIC_MEASURED |
 
 ## Every guard
@@ -34,6 +36,7 @@ action demonstrably not happening.
 |---|---|---|---|---|---|---|---|
 | `assert_graded_row` | STOP | EXTERNALLY_CALLED | yes | yes | LOAD_BEARING | yes | **no** |
 | `assert_no_inactive_in_playable` | STOP | EXTERNALLY_CALLED | yes | yes | LOAD_BEARING | yes | **no** |
+| `assert_publishable` | DOWNGRADE | EXTERNALLY_CALLED | yes | yes | LOAD_BEARING | yes | yes |
 | `assert_shared_draws` | STOP | EXTERNALLY_CALLED | yes | yes | LOAD_BEARING | yes | **no** |
 | `assert_allocation_conserves` | VERDICT_REGISTERED | EXTERNALLY_CALLED | yes | — | NOT_ESTABLISHED | yes | **no** |
 | `assert_complete` | STOP | EXTERNALLY_CALLED | yes | — | NOT_ESTABLISHED | — | **no** |
@@ -61,8 +64,7 @@ action demonstrably not happening.
 | `assert_projection_excludes_outcomes` | STOP | EXTERNALLY_CALLED | yes | — | NOT_ESTABLISHED | yes | yes |
 | `assert_promotable` | STOP | EXTERNALLY_CALLED | yes | — | NOT_ESTABLISHED | yes | **no** |
 | `assert_prospective_order` | STOP | EXTERNALLY_CALLED | yes | — | NOT_ESTABLISHED | yes | yes |
-| `assert_publishable` | DOWNGRADE | EXTERNALLY_CALLED | yes | — | NOT_ESTABLISHED | yes | yes |
-| `assert_publishable` | ANNOTATE | EXTERNALLY_CALLED | yes | — | NOT_ESTABLISHED | — | **no** |
+| `assert_publishable` | ANNOTATE | EXTERNALLY_CALLED | yes | — | ADVISORY | — | **no** |
 | `assert_redistribution_supported` | VERDICT_REGISTERED | EXTERNALLY_CALLED | yes | — | NOT_ESTABLISHED | yes | **no** |
 | `assert_role_state_supported` | VERDICT_REGISTERED | EXTERNALLY_CALLED | yes | — | NOT_ESTABLISHED | yes | **no** |
 | `assert_roster_legal` | STOP | EXTERNALLY_CALLED | yes | — | NOT_ESTABLISHED | — | yes |

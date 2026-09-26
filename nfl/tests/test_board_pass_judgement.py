@@ -16,15 +16,15 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2]))
 
 from nfl.tools import judge_board_pass as J
 
-ok = fail = 0
+passed = failed = 0
 
 
 def check(label, cond, detail=''):
-    global ok, fail
+    global passed, failed
     if cond:
-        ok += 1
+        passed += 1
     else:
-        fail += 1
+        failed += 1
         print(f'  FAIL {label} {detail}')
 
 
@@ -142,8 +142,8 @@ def main():
     for name, fn in sorted(globals().items()):
         if name.startswith('test_') and callable(fn):
             fn()
-    print(f'test_board_pass_judgement: {ok} ok, {fail} failed')
-    return 1 if fail else 0
+    print(f'test_board_pass_judgement: {passed} ok, {failed} failed')
+    return 1 if failed else 0
 
 
 if __name__ == '__main__':

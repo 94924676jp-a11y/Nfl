@@ -459,18 +459,74 @@ def test_the_bridge_does_not_duplicate_ownership():
            f'and it recomputes nothing: no {banned!r} in the carrier')
 
 
+def _run_chain_callers():
+    """Files that INVOKE run_chain, found by shape rather than by name.
+
+    This used to grep for the string `run_chain` and drop a hand-written list of
+    filenames. That made it wrong in both directions. It counted any module that
+    merely NAMES the symbol -- an audit tool enumerating guard call sites does
+    exactly that, and `nfl/tools/guard_reachability.py` duly turned this check
+    red without a single new caller existing. And the cure would have been worse:
+    appending each new filename to the allowlist turns the allowlist into the
+    hiding place this repository elsewhere refuses to build
+    (`run_suite.tally_tripwires`: "recognised by SHAPE, NOT BY NAME ... so this
+    cannot become a hiding place").
+
+    So a `.py` file is a caller only when it contains a CALL whose target
+    resolves to the module, alias included. That is strictly stronger for real
+    callers, because `import ... as RC; RC.run(...)` is now caught by resolution
+    rather than by the literal string happening to appear.
+
+    A `.yml` file is different and keeps the string match: a workflow that names
+    the module is invoking it, and there is no call node to find.
+    """
+    import ast as _a
+    hits = []
+    for path in sorted((_REPO / 'nfl').rglob('*.py')):
+        if path.name in ('run_chain.py', 'conservation_bridge.py',
+                         'conservation_integrity.py', 'gate.py'):
+            continue
+        try:
+            src = path.read_text(encoding='utf-8', errors='replace')
+        except OSError:
+            continue
+        if 'run_chain' not in src:
+            continue
+        try:
+            tree = _a.parse(src)
+        except SyntaxError:
+            continue
+        # Every local name that refers to the run_chain module.
+        names = {'run_chain'}
+        for n in _a.walk(tree):
+            if isinstance(n, _a.Import):
+                for al in n.names:
+                    if al.name.endswith('run_chain'):
+                        names.add(al.asname or al.name.split('.')[-1])
+            elif isinstance(n, _a.ImportFrom):
+                for al in n.names:
+                    if al.name == 'run_chain':
+                        names.add(al.asname or al.name)
+        for n in _a.walk(tree):
+            if not isinstance(n, _a.Call):
+                continue
+            f = n.func
+            root = f
+            while isinstance(root, _a.Attribute):
+                root = root.value
+            if isinstance(root, _a.Name) and root.id in names:
+                hits.append(f'{path}:{n.lineno}')
+                break
+    for path in sorted((_REPO / '.github').rglob('*.yml')):
+        if 'run_chain' in path.read_text(encoding='utf-8', errors='replace'):
+            hits.append(str(path))
+    return hits
+
+
 def test_the_allocation_codes_are_still_relinquished_and_why():
     """The bridge is built and wired. It is not yet production-REACHABLE,
     and the reason is measurable rather than a matter of opinion."""
-    import subprocess
-    out = subprocess.run(
-        ['grep', '-rln', 'run_chain', '--include=*.py', '--include=*.yml',
-         str(_REPO / 'nfl'), str(_REPO / '.github')],
-        capture_output=True, text=True).stdout.split()
-    callers = [f for f in out
-               if not f.endswith(('run_chain.py', 'conservation_bridge.py',
-                                  'conservation_integrity.py', 'gate.py',
-                                  'test_conservation_integrity.py'))]
+    callers = _run_chain_callers()
     ok(not callers,
        f'run_chain.run has no orchestrating caller, so nothing places a '
        f'bridge artifact beside a forecast review: {callers}')

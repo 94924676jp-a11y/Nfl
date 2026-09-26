@@ -97,6 +97,8 @@ LOAD_BEARING_PROOFS = {
         'nfl/tests/test_publication_refusal_is_load_bearing.py',
     'assert_graded_row':
         'nfl/tests/test_missing_is_not_zero.py',
+    'nfl/production/nonqb/current_season_team_volume.py::assert_publishable':
+        'nfl/tests/test_publishable_guards_are_load_bearing.py',
 }
 
 #: guard -> classification, with the reason. Absent means NOT_ESTABLISHED.
@@ -124,6 +126,23 @@ CLASSIFICATION = {
     'assert_graded_row': ('LOAD_BEARING',
         'raises AnonymousZero at the point a graded row is emitted; a stranger '
         'id is refused rather than zeroed, proven through the real grader'),
+    'nfl/production/nonqb/current_season_team_volume.py::assert_publishable': (
+        'LOAD_BEARING',
+        'the DOWNGRADE at run_forecast.py:1587 CHAINS INTO A STOP: a non-PASS '
+        'verdict leaves verified_inputs empty, denom_panel stays declared '
+        'blocked in freshness.REGISTRY, assert_fresh then BLOCKS and '
+        'run_forecast returns a fatal outcome before any world is drawn. The '
+        'two arms were run and differ, and a non-PASS outcome smuggled in '
+        'under the right key is still refused -- a key is not a verification'),
+    'nfl/production/nonqb/layers.py::assert_publishable': ('ADVISORY',
+        'its verdict is written into g[publication_gate] as a string and no '
+        'branch, assert or raise consults it, while the same function refuses '
+        '25 other ways -- so it does NOT stop the artifact its docstring says '
+        'can never exist. It is redundant rather than missing: the only '
+        'production route to test_only is --dry-run, which run_forecast tags '
+        'and q9shadow.ledger.assert_not_dry_run refuses as evidence. The '
+        'redundancy is safe only while run_forecast passes injuries_rows=None '
+        'and keeps tagging the dry run, and both are pinned in the test'),
 }
 
 #: test path -> determinism. Absent means NOT_ESTABLISHED: not a claim of
@@ -502,8 +521,25 @@ def _row(g, dfs_for_this, s, n_defs_of_name) -> dict:
         # to branch, and those are the DEF-065 population.
         if raises and prod:
             effects = [STOP]
-        cls, why = CLASSIFICATION.get(g, ('NOT_ESTABLISHED', ''))
-        proof = LOAD_BEARING_PROOFS.get(g, '')
+        # A NAME IS NOT AN IDENTITY WHEN TWO MODULES DEFINE IT. There are two
+        # `assert_publishable`, and they classify DIFFERENTLY: the
+        # current_season_team_volume one stops a forecast, the layers one is
+        # advisory. A table keyed on the bare name would give both the same
+        # answer and one of them would be a lie. So a qualified
+        # `module::guard` key wins, and the bare name remains the default for
+        # the single-definition majority.
+        _qual = [f"{d['file']}::{g}" for d in sorted(
+            defs[g], key=lambda d: d['file'])]
+        cls, why = ('NOT_ESTABLISHED', '')
+        for _k in _qual + [g]:
+            if _k in CLASSIFICATION:
+                cls, why = CLASSIFICATION[_k]
+                break
+        proof = ''
+        for _k in _qual + [g]:
+            if _k in LOAD_BEARING_PROOFS:
+                proof = LOAD_BEARING_PROOFS[_k]
+                break
         caller_mods = sorted({x['file'] for x in prod})
         eps = entry_points(caller_mods)
         det = {}
