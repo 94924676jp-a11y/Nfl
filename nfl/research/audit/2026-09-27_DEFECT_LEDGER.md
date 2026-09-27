@@ -321,3 +321,37 @@ across line breaks, since one instance was split over two lines), a check that
 the accessor actually has production callers so the ratchet cannot pass
 vacuously, and the producer-side count held in a band so that a large move
 forces this entry to be updated rather than quietly diverging.
+
+## DEF-085 · Running a test module directly mutates a tracked production artifact
+
+**Status:** OPEN (observed, not fixed). Low consequence, real.
+
+Invoking test modules directly — not through `run_suite.py` — bumped
+`nfl/research/v2/r5/active_board_pointer.json`: `pointer_version` went
+**163 → 166**, one increment per invocation, with `at` and `written_at`
+restamped each time. `nfl/product/board_pointer.py` is what writes it.
+
+**Two consequences, and the second is the one that matters.**
+
+*It dirties the tree.* The churn was swept into a commit and had to be backed
+out. Minor.
+
+*`pointer_version` does not count what its name says.* It is incremented by test
+runs as well as by real board writes, so it is not a count of boards. Anything
+reading it as a monotonic board counter, or diffing two pointer versions to infer
+how many boards were produced between them, is reading test invocations as
+football. I have not found a consumer that does this — which is why this is filed
+OPEN and low rather than as a live defect — but the number is not what it claims
+and the next person to reach for it should know.
+
+**Why `run_suite.py` does not have the problem:** it runs each module in an
+isolated state root and diffs the working tree before and after. Direct
+invocation bypasses that isolation, which is exactly why a direct run is a weaker
+form of evidence than a suite run, and why the concurrent suite run earlier
+tonight was discarded rather than quoted — I was writing to the tree while it was
+measuring the tree.
+
+**Not fixed here** because the fix is a choice between two designs — make the
+pointer write refuse outside a state root, or have the tests that reach it use
+one — and that belongs with A10 / the evidence-storage work rather than being
+decided in a commit about guard proofs.
