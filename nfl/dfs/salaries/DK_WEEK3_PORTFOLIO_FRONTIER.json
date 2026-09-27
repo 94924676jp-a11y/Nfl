@@ -1,0 +1,786 @@
+{
+  "artifact": "DK_WEEK3_PORTFOLIO_FRONTIER",
+  "spec_version": "portfolio-frontier-1",
+  "projection_source": "EXTERNAL_FC_FALLBACK",
+  "NOT_OUR_PROJECTION": "all totals below are sums of FantasyCruncher numbers. They rank portfolios against each other on a common yardstick; they are not our model.",
+  "BEST_KNOWN_NOT_PROVEN_OPTIMAL": "the reference below is the best legal lineup KNOWN from any source. It is a lower bound on the true optimum, so every reported gap understates the real distance to optimal.",
+  "optimum_legal_lineup": {
+    "proj_total": 171.59,
+    "salary": 50000,
+    "players": [
+      "Trevor Lawrence",
+      "Jakobi Meyers",
+      "Rashee Rice",
+      "Bengals",
+      "De'Von Achane",
+      "James Cook III",
+      "Ja'Marr Chase",
+      "Dalton Schultz",
+      "Travis Kelce"
+    ],
+    "method": "hill climbing from the 60 best generated candidates AND from 250 fresh random seeds, taking the best. A near-optimal reference, not a proven global maximum. An earlier version climbed only from fresh seeds, returned 161.06 while candidates reached 169.5, and produced negative gaps -- which is how the local-optimum trap was caught.",
+    "sanity": "no portfolio mean may exceed this value; a negative gap is a bug",
+    "beaten_by_benchmark": {
+      "benchmark_best": 171.59,
+      "search_best": 169.48,
+      "implication": "the search is NOT optimal: a lineup in the owner file scores higher than anything the search found. The reference is therefore a lower bound and every gap below is an UNDERSTATEMENT of the true distance to optimal."
+    },
+    "source": "OWNER_BENCHMARK_LINEUP"
+  },
+  "sim_optimal": {
+    "mode": "SIM_OPTIMAL",
+    "state": "UNAVAILABLE",
+    "requires": [
+      "joint game simulation with within-draw reconciliation",
+      "player outcome distributions, not means",
+      "opponent ownership / field model",
+      "contest payout structure and field size"
+    ],
+    "why": "tournament value is an expectation over a joint distribution against a field. None of the four inputs exists, so this mode is not merely unimplemented -- it is not yet a well-posed problem for us. It stays refused rather than approximated, because an approximation here would be handcrafted optimiser settings wearing the word optimal."
+  },
+  "NO_MODE_IS_BEST": "choosing a point on this frontier requires pricing the benefit of diversification against a field, which needs an ownership model and joint simulation. Neither exists, so the curve is reported and no winner is declared.",
+  "modes": {
+    "PROJECTION_MAX": {
+      "mode": "PROJECTION_MAX",
+      "state": "OK",
+      "n": 48,
+      "intent": "maximise projected total subject only to legality and the structural football rules. The reference point for what diversification costs.",
+      "proj_mean": 163.44,
+      "proj_median": 162.94,
+      "proj_min": 160.98,
+      "proj_max": 169.48,
+      "optimum_reference": 171.59,
+      "gap_to_optimum_mean": 8.15,
+      "gap_to_optimum_pct": 4.75,
+      "qb_exposure": {
+        "Trevor Lawrence": 93.8,
+        "Josh Allen": 4.2,
+        "Patrick Mahomes": 2.1
+      },
+      "n_distinct_qbs": 3,
+      "top_player_exposure": {
+        "Bengals": 97.9,
+        "Trevor Lawrence": 93.8,
+        "De'Von Achane": 87.5,
+        "Dalton Schultz": 79.2,
+        "Rashee Rice": 79.2,
+        "James Cook III": 52.1,
+        "Ja'Marr Chase": 47.9,
+        "Garrett Wilson": 43.8
+      },
+      "max_player_exposure_pct": 97.9,
+      "dst_exposure": {
+        "CIN": 97.9,
+        "HOU": 2.1
+      },
+      "max_pair_exposure": {
+        "pair": [
+          "Bengals",
+          "Trevor Lawrence"
+        ],
+        "pct": 93.8
+      },
+      "max_trio_exposure": {
+        "trio": [
+          "Bengals",
+          "De'Von Achane",
+          "Trevor Lawrence"
+        ],
+        "pct": 81.2
+      },
+      "mean_pairwise_overlap": 5.28,
+      "max_pairwise_overlap": 8,
+      "stack_sizes": {
+        "1": 39,
+        "2": 9
+      },
+      "bring_back_pct": 6.2,
+      "mean_games_represented": 5.54,
+      "salary": {
+        "min": 48400,
+        "max": 50000,
+        "mean": 49852.1
+      },
+      "projection_loss_guard": {
+        "state": "WITHIN_GUARDRAIL",
+        "optimum_legal_lineup": 171.59,
+        "portfolio_mean": 163.44,
+        "portfolio_best": 163.44,
+        "mean_loss_vs_optimum": 0.0475,
+        "best_loss_vs_optimum": 0.0475,
+        "max_loss_guardrail": 0.08,
+        "guardrail_source": "HEURISTIC",
+        "interpretation": "the portfolio gives up 4.7% of the best legal lineup projection on average. Whether that is worth paying is a question for a field model, which does not exist; the guardrail only stops the cost being invisible."
+      },
+      "constraints": {
+        "min_pass_catchers_with_qb": {
+          "name": "min_pass_catchers_with_qb",
+          "value": 1,
+          "reason": "a lineup whose quarterback throws to nobody in it has no correlated scoring path. This is a football requirement, not a diversification target.",
+          "source": "HEURISTIC",
+          "became_binding": false,
+          "binding_detail": null
+        },
+        "max_pass_catchers_with_qb": {
+          "name": "max_pass_catchers_with_qb",
+          "value": 3,
+          "reason": "an upper bound only to keep the candidate pool from degenerating into one team. Not a claim that triple stacks are wrong.",
+          "source": "HEURISTIC",
+          "became_binding": false,
+          "binding_detail": null
+        },
+        "no_dst_against_own_qb": {
+          "name": "no_dst_against_own_qb",
+          "value": true,
+          "reason": "the defence needs our quarterback to fail while the lineup needs him to succeed. Mathematically justified as a contradiction, so it is enforced.",
+          "source": "HEURISTIC",
+          "became_binding": false,
+          "binding_detail": null
+        },
+        "salary_cap": {
+          "name": "salary_cap",
+          "value": 50000,
+          "reason": "DraftKings contest rule",
+          "source": "OWNER",
+          "became_binding": false,
+          "binding_detail": null
+        },
+        "no_duplicate_player": {
+          "name": "no_duplicate_player",
+          "value": true,
+          "reason": "DraftKings contest rule",
+          "source": "OWNER",
+          "became_binding": false,
+          "binding_detail": null
+        },
+        "no_reported_absent_player": {
+          "name": "no_reported_absent_player",
+          "value": true,
+          "reason": "a player reported out cannot score. Availability truth, not preference.",
+          "source": "OWNER",
+          "became_binding": false,
+          "binding_detail": null
+        },
+        "max_player_exposure": {
+          "name": "max_player_exposure",
+          "value": 1.0,
+          "reason": "none. Every lineup may use the same player.",
+          "source": "HEURISTIC",
+          "became_binding": false,
+          "binding_detail": null
+        },
+        "max_qb_exposure": {
+          "name": "max_qb_exposure",
+          "value": 1.0,
+          "reason": "none",
+          "source": "HEURISTIC",
+          "became_binding": false,
+          "binding_detail": null
+        },
+        "max_pairwise_overlap": {
+          "name": "max_pairwise_overlap",
+          "value": 9,
+          "reason": "none beyond exact-duplicate rejection",
+          "source": "HEURISTIC",
+          "became_binding": false,
+          "binding_detail": null
+        },
+        "reject_exact_duplicates": {
+          "name": "reject_exact_duplicates",
+          "value": true,
+          "reason": "two byte-identical lineups in one contest cannot finish differently, so the second one buys nothing. The only constraint no mode switches off.",
+          "source": "HEURISTIC",
+          "became_binding": false,
+          "binding_detail": null
+        }
+      },
+      "binding_constraints": [],
+      "n_candidates": 6000,
+      "rejections_by_constraint": {}
+    },
+    "LIGHT_DIVERSIFICATION": {
+      "mode": "LIGHT_DIVERSIFICATION",
+      "state": "OK",
+      "n": 48,
+      "intent": "allow meaningful concentration; basic anti-clone only.",
+      "proj_mean": 162.84,
+      "proj_median": 162.94,
+      "proj_min": 156.06,
+      "proj_max": 169.48,
+      "optimum_reference": 171.59,
+      "gap_to_optimum_mean": 8.75,
+      "gap_to_optimum_pct": 5.1,
+      "qb_exposure": {
+        "Trevor Lawrence": 70.8,
+        "Josh Allen": 16.7,
+        "Patrick Mahomes": 12.5
+      },
+      "n_distinct_qbs": 3,
+      "top_player_exposure": {
+        "Bengals": 91.7,
+        "De'Von Achane": 87.5,
+        "Dalton Schultz": 81.2,
+        "Rashee Rice": 72.9,
+        "Trevor Lawrence": 70.8,
+        "Ja'Marr Chase": 58.3,
+        "James Cook III": 54.2,
+        "Garrett Wilson": 39.6
+      },
+      "max_player_exposure_pct": 91.7,
+      "dst_exposure": {
+        "CIN": 91.7,
+        "HOU": 4.2,
+        "CAR": 4.2
+      },
+      "max_pair_exposure": {
+        "pair": [
+          "Bengals",
+          "De'Von Achane"
+        ],
+        "pct": 83.3
+      },
+      "max_trio_exposure": {
+        "trio": [
+          "Bengals",
+          "Dalton Schultz",
+          "De'Von Achane"
+        ],
+        "pct": 72.9
+      },
+      "mean_pairwise_overlap": 4.69,
+      "max_pairwise_overlap": 8,
+      "stack_sizes": {
+        "1": 40,
+        "2": 8
+      },
+      "bring_back_pct": 10.4,
+      "mean_games_represented": 5.46,
+      "salary": {
+        "min": 48400,
+        "max": 50000,
+        "mean": 49797.9
+      },
+      "projection_loss_guard": {
+        "state": "WITHIN_GUARDRAIL",
+        "optimum_legal_lineup": 171.59,
+        "portfolio_mean": 162.84,
+        "portfolio_best": 162.84,
+        "mean_loss_vs_optimum": 0.051,
+        "best_loss_vs_optimum": 0.051,
+        "max_loss_guardrail": 0.08,
+        "guardrail_source": "HEURISTIC",
+        "interpretation": "the portfolio gives up 5.1% of the best legal lineup projection on average. Whether that is worth paying is a question for a field model, which does not exist; the guardrail only stops the cost being invisible."
+      },
+      "constraints": {
+        "min_pass_catchers_with_qb": {
+          "name": "min_pass_catchers_with_qb",
+          "value": 1,
+          "reason": "a lineup whose quarterback throws to nobody in it has no correlated scoring path. This is a football requirement, not a diversification target.",
+          "source": "HEURISTIC",
+          "became_binding": false,
+          "binding_detail": null
+        },
+        "max_pass_catchers_with_qb": {
+          "name": "max_pass_catchers_with_qb",
+          "value": 3,
+          "reason": "an upper bound only to keep the candidate pool from degenerating into one team. Not a claim that triple stacks are wrong.",
+          "source": "HEURISTIC",
+          "became_binding": false,
+          "binding_detail": null
+        },
+        "no_dst_against_own_qb": {
+          "name": "no_dst_against_own_qb",
+          "value": true,
+          "reason": "the defence needs our quarterback to fail while the lineup needs him to succeed. Mathematically justified as a contradiction, so it is enforced.",
+          "source": "HEURISTIC",
+          "became_binding": false,
+          "binding_detail": null
+        },
+        "salary_cap": {
+          "name": "salary_cap",
+          "value": 50000,
+          "reason": "DraftKings contest rule",
+          "source": "OWNER",
+          "became_binding": false,
+          "binding_detail": null
+        },
+        "no_duplicate_player": {
+          "name": "no_duplicate_player",
+          "value": true,
+          "reason": "DraftKings contest rule",
+          "source": "OWNER",
+          "became_binding": false,
+          "binding_detail": null
+        },
+        "no_reported_absent_player": {
+          "name": "no_reported_absent_player",
+          "value": true,
+          "reason": "a player reported out cannot score. Availability truth, not preference.",
+          "source": "OWNER",
+          "became_binding": false,
+          "binding_detail": null
+        },
+        "max_player_exposure": {
+          "name": "max_player_exposure",
+          "value": 0.9,
+          "reason": "anti-clone only",
+          "source": "HEURISTIC",
+          "became_binding": true,
+          "binding_detail": "rejected 25 candidate(s)"
+        },
+        "max_qb_exposure": {
+          "name": "max_qb_exposure",
+          "value": 0.7,
+          "reason": "anti-clone only",
+          "source": "HEURISTIC",
+          "became_binding": true,
+          "binding_detail": "rejected 94 candidate(s)"
+        },
+        "max_pairwise_overlap": {
+          "name": "max_pairwise_overlap",
+          "value": 8,
+          "reason": "one differing player minimum",
+          "source": "HEURISTIC",
+          "became_binding": false,
+          "binding_detail": null
+        },
+        "reject_exact_duplicates": {
+          "name": "reject_exact_duplicates",
+          "value": true,
+          "reason": "two byte-identical lineups in one contest cannot finish differently, so the second one buys nothing. The only constraint no mode switches off.",
+          "source": "HEURISTIC",
+          "became_binding": false,
+          "binding_detail": null
+        }
+      },
+      "binding_constraints": [
+        "max_player_exposure",
+        "max_qb_exposure"
+      ],
+      "n_candidates": 6000,
+      "rejections_by_constraint": {
+        "max_qb_exposure": 94,
+        "max_player_exposure": 25
+      }
+    },
+    "BALANCED": {
+      "mode": "BALANCED",
+      "state": "OK",
+      "n": 48,
+      "intent": "moderate concentration limits.",
+      "proj_mean": 161.4,
+      "proj_median": 162.72,
+      "proj_min": 154.74,
+      "proj_max": 169.48,
+      "optimum_reference": 171.59,
+      "gap_to_optimum_mean": 10.19,
+      "gap_to_optimum_pct": 5.94,
+      "qb_exposure": {
+        "Trevor Lawrence": 50.0,
+        "Patrick Mahomes": 22.9,
+        "Josh Allen": 20.8,
+        "Bryce Young": 6.2
+      },
+      "n_distinct_qbs": 4,
+      "top_player_exposure": {
+        "Bengals": 75.0,
+        "Dalton Schultz": 75.0,
+        "De'Von Achane": 75.0,
+        "Rashee Rice": 66.7,
+        "Ja'Marr Chase": 62.5,
+        "James Cook III": 54.2,
+        "Trevor Lawrence": 50.0,
+        "Brenton Strange": 33.3
+      },
+      "max_player_exposure_pct": 75.0,
+      "dst_exposure": {
+        "CIN": 75.0,
+        "HOU": 10.4,
+        "CAR": 10.4,
+        "SEA": 4.2
+      },
+      "max_pair_exposure": {
+        "pair": [
+          "Bengals",
+          "Dalton Schultz"
+        ],
+        "pct": 66.7
+      },
+      "max_trio_exposure": {
+        "trio": [
+          "Bengals",
+          "Dalton Schultz",
+          "De'Von Achane"
+        ],
+        "pct": 60.4
+      },
+      "mean_pairwise_overlap": 3.85,
+      "max_pairwise_overlap": 7,
+      "stack_sizes": {
+        "1": 36,
+        "2": 12
+      },
+      "bring_back_pct": 12.5,
+      "mean_games_represented": 5.5,
+      "salary": {
+        "min": 48800,
+        "max": 50000,
+        "mean": 49802.1
+      },
+      "projection_loss_guard": {
+        "state": "WITHIN_GUARDRAIL",
+        "optimum_legal_lineup": 171.59,
+        "portfolio_mean": 161.4,
+        "portfolio_best": 161.4,
+        "mean_loss_vs_optimum": 0.0594,
+        "best_loss_vs_optimum": 0.0594,
+        "max_loss_guardrail": 0.08,
+        "guardrail_source": "HEURISTIC",
+        "interpretation": "the portfolio gives up 5.9% of the best legal lineup projection on average. Whether that is worth paying is a question for a field model, which does not exist; the guardrail only stops the cost being invisible."
+      },
+      "constraints": {
+        "min_pass_catchers_with_qb": {
+          "name": "min_pass_catchers_with_qb",
+          "value": 1,
+          "reason": "a lineup whose quarterback throws to nobody in it has no correlated scoring path. This is a football requirement, not a diversification target.",
+          "source": "HEURISTIC",
+          "became_binding": false,
+          "binding_detail": null
+        },
+        "max_pass_catchers_with_qb": {
+          "name": "max_pass_catchers_with_qb",
+          "value": 3,
+          "reason": "an upper bound only to keep the candidate pool from degenerating into one team. Not a claim that triple stacks are wrong.",
+          "source": "HEURISTIC",
+          "became_binding": false,
+          "binding_detail": null
+        },
+        "no_dst_against_own_qb": {
+          "name": "no_dst_against_own_qb",
+          "value": true,
+          "reason": "the defence needs our quarterback to fail while the lineup needs him to succeed. Mathematically justified as a contradiction, so it is enforced.",
+          "source": "HEURISTIC",
+          "became_binding": false,
+          "binding_detail": null
+        },
+        "salary_cap": {
+          "name": "salary_cap",
+          "value": 50000,
+          "reason": "DraftKings contest rule",
+          "source": "OWNER",
+          "became_binding": false,
+          "binding_detail": null
+        },
+        "no_duplicate_player": {
+          "name": "no_duplicate_player",
+          "value": true,
+          "reason": "DraftKings contest rule",
+          "source": "OWNER",
+          "became_binding": false,
+          "binding_detail": null
+        },
+        "no_reported_absent_player": {
+          "name": "no_reported_absent_player",
+          "value": true,
+          "reason": "a player reported out cannot score. Availability truth, not preference.",
+          "source": "OWNER",
+          "became_binding": false,
+          "binding_detail": null
+        },
+        "max_player_exposure": {
+          "name": "max_player_exposure",
+          "value": 0.75,
+          "reason": "moderate",
+          "source": "HEURISTIC",
+          "became_binding": true,
+          "binding_detail": "rejected 46 candidate(s)"
+        },
+        "max_qb_exposure": {
+          "name": "max_qb_exposure",
+          "value": 0.5,
+          "reason": "moderate",
+          "source": "HEURISTIC",
+          "became_binding": true,
+          "binding_detail": "rejected 125 candidate(s)"
+        },
+        "max_pairwise_overlap": {
+          "name": "max_pairwise_overlap",
+          "value": 7,
+          "reason": "moderate",
+          "source": "HEURISTIC",
+          "became_binding": true,
+          "binding_detail": "rejected 3 candidate(s)"
+        },
+        "reject_exact_duplicates": {
+          "name": "reject_exact_duplicates",
+          "value": true,
+          "reason": "two byte-identical lineups in one contest cannot finish differently, so the second one buys nothing. The only constraint no mode switches off.",
+          "source": "HEURISTIC",
+          "became_binding": false,
+          "binding_detail": null
+        }
+      },
+      "binding_constraints": [
+        "max_player_exposure",
+        "max_qb_exposure",
+        "max_pairwise_overlap"
+      ],
+      "n_candidates": 6000,
+      "rejections_by_constraint": {
+        "max_pairwise_overlap": 3,
+        "max_qb_exposure": 125,
+        "max_player_exposure": 46
+      }
+    },
+    "HIGH_DIVERSIFICATION": {
+      "mode": "HIGH_DIVERSIFICATION",
+      "state": "OK",
+      "n": 48,
+      "intent": "broad spread. This is the mode the first generator hard-coded, and its projection cost is now measurable rather than asserted.",
+      "proj_mean": 159.04,
+      "proj_median": 158.67,
+      "proj_min": 152.82,
+      "proj_max": 169.48,
+      "optimum_reference": 171.59,
+      "gap_to_optimum_mean": 12.55,
+      "gap_to_optimum_pct": 7.31,
+      "qb_exposure": {
+        "Trevor Lawrence": 35.4,
+        "Patrick Mahomes": 25.0,
+        "Josh Allen": 20.8,
+        "Bryce Young": 14.6,
+        "Deshaun Watson": 2.1,
+        "Joe Burrow": 2.1
+      },
+      "n_distinct_qbs": 6,
+      "top_player_exposure": {
+        "Bengals": 60.4,
+        "De'Von Achane": 60.4,
+        "Ja'Marr Chase": 60.4,
+        "Rashee Rice": 60.4,
+        "Dalton Schultz": 56.2,
+        "James Cook III": 45.8,
+        "Trevor Lawrence": 35.4,
+        "Jahmyr Gibbs": 35.4
+      },
+      "max_player_exposure_pct": 60.4,
+      "dst_exposure": {
+        "CIN": 60.4,
+        "HOU": 18.8,
+        "CAR": 16.7,
+        "SEA": 4.2
+      },
+      "max_pair_exposure": {
+        "pair": [
+          "Bengals",
+          "Dalton Schultz"
+        ],
+        "pct": 43.8
+      },
+      "max_trio_exposure": {
+        "trio": [
+          "Bengals",
+          "Dalton Schultz",
+          "De'Von Achane"
+        ],
+        "pct": 31.2
+      },
+      "mean_pairwise_overlap": 3.09,
+      "max_pairwise_overlap": 6,
+      "stack_sizes": {
+        "1": 33,
+        "2": 15
+      },
+      "bring_back_pct": 18.8,
+      "mean_games_represented": 5.46,
+      "salary": {
+        "min": 48100,
+        "max": 50000,
+        "mean": 49695.8
+      },
+      "projection_loss_guard": {
+        "state": "WITHIN_GUARDRAIL",
+        "optimum_legal_lineup": 171.59,
+        "portfolio_mean": 159.04,
+        "portfolio_best": 159.04,
+        "mean_loss_vs_optimum": 0.0731,
+        "best_loss_vs_optimum": 0.0731,
+        "max_loss_guardrail": 0.08,
+        "guardrail_source": "HEURISTIC",
+        "interpretation": "the portfolio gives up 7.3% of the best legal lineup projection on average. Whether that is worth paying is a question for a field model, which does not exist; the guardrail only stops the cost being invisible."
+      },
+      "constraints": {
+        "min_pass_catchers_with_qb": {
+          "name": "min_pass_catchers_with_qb",
+          "value": 1,
+          "reason": "a lineup whose quarterback throws to nobody in it has no correlated scoring path. This is a football requirement, not a diversification target.",
+          "source": "HEURISTIC",
+          "became_binding": false,
+          "binding_detail": null
+        },
+        "max_pass_catchers_with_qb": {
+          "name": "max_pass_catchers_with_qb",
+          "value": 2,
+          "reason": "an upper bound only to keep the candidate pool from degenerating into one team. Not a claim that triple stacks are wrong.",
+          "source": "HEURISTIC",
+          "became_binding": false,
+          "binding_detail": null
+        },
+        "no_dst_against_own_qb": {
+          "name": "no_dst_against_own_qb",
+          "value": true,
+          "reason": "the defence needs our quarterback to fail while the lineup needs him to succeed. Mathematically justified as a contradiction, so it is enforced.",
+          "source": "HEURISTIC",
+          "became_binding": false,
+          "binding_detail": null
+        },
+        "salary_cap": {
+          "name": "salary_cap",
+          "value": 50000,
+          "reason": "DraftKings contest rule",
+          "source": "OWNER",
+          "became_binding": false,
+          "binding_detail": null
+        },
+        "no_duplicate_player": {
+          "name": "no_duplicate_player",
+          "value": true,
+          "reason": "DraftKings contest rule",
+          "source": "OWNER",
+          "became_binding": false,
+          "binding_detail": null
+        },
+        "no_reported_absent_player": {
+          "name": "no_reported_absent_player",
+          "value": true,
+          "reason": "a player reported out cannot score. Availability truth, not preference.",
+          "source": "OWNER",
+          "became_binding": false,
+          "binding_detail": null
+        },
+        "max_player_exposure": {
+          "name": "max_player_exposure",
+          "value": 0.6,
+          "reason": "broad spread",
+          "source": "HEURISTIC",
+          "became_binding": true,
+          "binding_detail": "rejected 77 candidate(s)"
+        },
+        "max_qb_exposure": {
+          "name": "max_qb_exposure",
+          "value": 0.35,
+          "reason": "broad spread",
+          "source": "HEURISTIC",
+          "became_binding": true,
+          "binding_detail": "rejected 101 candidate(s)"
+        },
+        "max_pairwise_overlap": {
+          "name": "max_pairwise_overlap",
+          "value": 6,
+          "reason": "broad spread",
+          "source": "HEURISTIC",
+          "became_binding": true,
+          "binding_detail": "rejected 65 candidate(s)"
+        },
+        "reject_exact_duplicates": {
+          "name": "reject_exact_duplicates",
+          "value": true,
+          "reason": "two byte-identical lineups in one contest cannot finish differently, so the second one buys nothing. The only constraint no mode switches off.",
+          "source": "HEURISTIC",
+          "became_binding": false,
+          "binding_detail": null
+        }
+      },
+      "binding_constraints": [
+        "max_player_exposure",
+        "max_qb_exposure",
+        "max_pairwise_overlap"
+      ],
+      "n_candidates": 6000,
+      "rejections_by_constraint": {
+        "max_pairwise_overlap": 65,
+        "max_qb_exposure": 101,
+        "max_player_exposure": 77
+      }
+    }
+  },
+  "owner_benchmark": {
+    "mode": "OWNER_FC_PLACEHOLDERS",
+    "state": "OK",
+    "n": 48,
+    "intent": "the owner-built FC-optimised benchmark. Never modified.",
+    "proj_mean": 167.35,
+    "proj_median": 167.25,
+    "proj_min": 165.75,
+    "proj_max": 171.59,
+    "optimum_reference": 171.59,
+    "gap_to_optimum_mean": 4.24,
+    "gap_to_optimum_pct": 2.47,
+    "qb_exposure": {
+      "Deshaun Watson": 54.2,
+      "Patrick Mahomes": 29.2,
+      "Trevor Lawrence": 14.6,
+      "Bryce Young": 2.1
+    },
+    "n_distinct_qbs": 4,
+    "top_player_exposure": {
+      "Dalton Schultz": 97.9,
+      "Ja'Marr Chase": 97.9,
+      "Rashee Rice": 68.8,
+      "De'Von Achane": 64.6,
+      "Deshaun Watson": 54.2,
+      "Bengals": 47.9,
+      "Travis Kelce": 47.9,
+      "Jahmyr Gibbs": 39.6
+    },
+    "max_player_exposure_pct": 97.9,
+    "dst_exposure": {
+      "CIN": 47.9,
+      "CAR": 16.7,
+      "HOU": 14.6,
+      "PIT": 10.4,
+      "CLE": 2.1,
+      "NE": 2.1
+    },
+    "max_pair_exposure": {
+      "pair": [
+        "Dalton Schultz",
+        "Ja'Marr Chase"
+      ],
+      "pct": 95.8
+    },
+    "max_trio_exposure": {
+      "trio": [
+        "Dalton Schultz",
+        "Ja'Marr Chase",
+        "Rashee Rice"
+      ],
+      "pct": 64.6
+    },
+    "mean_pairwise_overlap": 4.51,
+    "max_pairwise_overlap": 7,
+    "stack_sizes": {
+      "1": 34,
+      "2": 14
+    },
+    "bring_back_pct": 41.7,
+    "mean_games_represented": 5.38,
+    "salary": {
+      "min": 49600,
+      "max": 50000,
+      "mean": 49918.8
+    },
+    "projection_loss_guard": {
+      "state": "WITHIN_GUARDRAIL",
+      "optimum_legal_lineup": 171.59,
+      "portfolio_mean": 167.35,
+      "portfolio_best": 171.59,
+      "mean_loss_vs_optimum": 0.0247,
+      "best_loss_vs_optimum": 0.0,
+      "max_loss_guardrail": 0.08,
+      "guardrail_source": "HEURISTIC",
+      "interpretation": "the portfolio gives up 2.5% of the best legal lineup projection on average. Whether that is worth paying is a question for a field model, which does not exist; the guardrail only stops the cost being invisible."
+    },
+    "note": "scored on the same FC numbers and the same optimum reference. Some rostered players have no FC row, so a few totals are sums over fewer than nine scoreable players -- that biases this benchmark DOWN, not up."
+  }
+}
