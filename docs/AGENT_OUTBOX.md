@@ -2791,3 +2791,46 @@ two "are NOT one fact and must stop being recorded as one".
 `snap_counts` is 93 rows against week 1's 1,492. Given the growth pattern above,
 93 is plausibly just an early-week partial that never got re-fetched after the
 watch died on 2026-09-15.
+
+### OUT-034 second correction, 2026-09-27 15:10Z — the re-probe is ANSWERED, and the watch is alive
+
+**Both halves of my previous request were based on a stale claim. `origin/main` has
+the answer and I did not need network to read it.**
+
+**1. The watch is NOT dead.** `origin/main` carries `NFL availability watch`
+commits at `20260925T183106Z`, `20260926T063438Z`, `20260926T183149Z` and
+**`20260927T063457Z` — this morning**. So the registry's "THE WATCH HAS NOT RUN
+SINCE 2026-09-15T06:37:05Z", written 2026-09-19, is stale and now false. SUN-1's
+premise needs revisiting: the watch runs and pushes to main. Whatever stopped it
+between 09-15 and 09-25 has resolved on its own, or was never what it looked
+like.
+
+**2. The re-probe is answered, and the answer is negative.** From
+`origin/main:nfl/availability_manifest.jsonl`:
+
+| retrieved_at | source | status |
+|---|---|---|
+| 2026-09-26T06:34:38Z | pbp_participation | **404** |
+| 2026-09-26T18:31:49Z | pbp_participation | **404** |
+| **2026-09-27T06:34:57Z** | **pbp_participation** | **404** |
+| 2026-09-27T06:34:57Z | snap_counts | 200, 3,086 rows |
+
+`pbp_participation_2026` is **still 404 as of 8.5 hours ago**. So the blocker does
+**not** dissolve, and the branch I flagged is the live one: **the accepted
+`ewma_hl2` arm cannot run for 2026 until nflverse publishes participation**,
+because true `pass_snaps` has no other source. External data availability, not a
+code task and not a ruling.
+
+**3. Week-2 snap coverage is COMPLETE, and my "93 rows" was stale.** Main's
+freshest blob `snap_counts_2026.62419bd0b011368e.csv.gz` (uncompressed sha256
+verified against its name) holds **week 1: 1,492 · week 2: 1,502 · week 3: 92**.
+My local copy had 1,585 rows and I reported week 2 as "93 rows, probably a partial
+never re-fetched". That was true of my checkout and false of the project. Please
+disregard that flag.
+
+**4. What the watch does NOT cover, which is today's actual gap.** It probes
+exactly two sources, `pbp_participation` and `snap_counts`. It does **not** probe
+`official_inactives`. So the inactives capture is a different mechanism — the one
+DEF-086 established cannot fire, because `nfl-t90.yml` on `main` carries crons for
+September 9–15 only. **No official inactives for today have arrived and none will
+arrive automatically.** OUT-033 stands unchanged and is now the only route.

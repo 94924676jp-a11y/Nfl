@@ -1,6 +1,6 @@
 {
  "artifact": "NFL_INFORMATION_GAP_REGISTRY",
- "updated_utc": "2026-09-26T19:40:00Z",
+ "updated_utc": "2026-09-27T15:10:00Z",
  "action_states": [
   "BLOCKED",
   "HOLD",
@@ -57,16 +57,16 @@
    "why_it_matters": "pbp_participation and snap_counts are what the whole P component is built from. They are NOT one fact and must stop being recorded as one: as of the last probe snap_counts EXISTS for 2026 and pbp_participation does not.",
    "current_proxy": "none prospectively",
    "proxy_adequacy": "N/A",
-   "evidence_status": "RESTATED 2026-09-19 from nfl/availability_manifest.jsonl, 24 probes. The previous claim -- \"MEASURED: both 404 for 2026 as of 2026-09-08\" -- was true when written and is now HALF FALSE. snap_counts returned 404 at the 2026-09-08T13:28:42Z probe and 200 at 2026-09-10T18:31:04Z with 93 rows over 16 columns, growing to 187 rows on 2026-09-11 and 1,397 rows on 2026-09-14; column-order digest 197a4d18b268f7927365bd3d6534d25fe79ae78f408126946f518d38fa7d10ca, unchanged across all three. pbp_participation returned 404 at every one of its 12 probes, 2026-09-08T13:28:42Z through 2026-09-15T06:37:05Z. THE WATCH HAS NOT RUN SINCE 2026-09-15T06:37:05Z, so neither half of this sentence is current, and the horizon that would surface that is two days.",
+   "evidence_status": "RESTATED 2026-09-27T15:10Z from origin/main:nfl/availability_manifest.jsonl. The previous restatement (2026-09-19) said \"THE WATCH HAS NOT RUN SINCE 2026-09-15T06:37:05Z\" -- that is now FALSE: main carries availability-watch commits on 2026-09-25, twice on 2026-09-26, and at 2026-09-27T06:34:57Z. MEASURED AT THE MOST RECENT PROBES: pbp_participation returned 404 at 2026-09-26T06:34:38Z, 2026-09-26T18:31:49Z and 2026-09-27T06:34:57Z, so it is still absent upstream as of this morning. snap_counts returned 200 with 3,086 rows -- 2026 week 1 = 1,492, week 2 = 1,502 (COMPLETE; an earlier claim of 93 rows for week 2 was true of a stale local checkout only), week 3 = 92. CONSEQUENCE: the accepted ewma_hl2 arm cannot run for 2026 until nflverse publishes participation, because true pass_snaps has no other source. That is external data availability, not a code task and not a ruling.",
    "source_candidate": "nflverse",
    "licensing_status": "CC BY 4.0, clear",
    "pit_status": "watch running under RET-001 commit_raw; NOT authorized for predictive use. AVAILABILITY IS NOT PREDICTIVE ELIGIBILITY and snap_counts becoming available does not change that: the record carries authorization_code NOT_AUTHORIZED_BY_OWNER and ordering_code NO_FORECAST_TO_JUDGE, so no ordering against a forecast time has been evaluated at all. It is a postgame file and it may not enter a pregame forecast on the strength of existing.",
    "action": "PROSPECTIVE_ONLY",
-   "last_rechecked_utc": "2026-09-19",
-   "evidence_as_of_utc": "2026-09-15T06:37:05Z",
+   "last_rechecked_utc": "2026-09-27T15:10:00Z",
+   "evidence_as_of_utc": "2026-09-27T06:34:57Z",
    "recheck_horizon_days": 2,
    "recheck_horizon_basis": "nflverse publishes these files during the week; snap_counts went from 404 to 200 two days after the claim that both were absent, so a horizon longer than two days cannot catch the event it exists to catch",
-   "recheck_method": "nfl/availability_manifest.jsonl ON origin/main (the tree nfl-availability.yml checks out and pushes to -- NOT capture-prod, which holds only 24 of the 70 rows), 24 probe records, 2026-09-08T13:28:42Z to 2026-09-15T06:37:05Z",
+   "recheck_method": "read origin/main:nfl/availability_manifest.jsonl -- the availability watch pushes to main and probes pbp_participation and snap_counts. It does NOT probe official_inactives; that is nfl-t90.yml, which DEF-086 shows cannot fire. No network is needed to recheck this gap.",
    "recheck_executable_here": false,
    "recheck_assignment": "OUT-019 (pbp_participation 2026) and OUT-024 (the availability watch has been dead since 2026-09-15T06:37:05Z)"
   },
