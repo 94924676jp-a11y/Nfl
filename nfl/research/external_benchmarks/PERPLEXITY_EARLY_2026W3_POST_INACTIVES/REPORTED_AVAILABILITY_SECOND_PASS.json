@@ -1,0 +1,493 @@
+{
+  "artifact": "REPORTED_AVAILABILITY_2026W3_EARLY_SECOND_PASS",
+  "spec_version": "reported-availability-2026w3-1",
+  "pass": "POST_INACTIVES_SECOND_PASS",
+  "snapshot_et": "2026-09-27T12:04:00-04:00",
+  "snapshot_utc": "2026-09-27T16:04:00Z",
+  "kickoff_utc": "2026-09-27T17:00:00Z",
+  "delivery": {
+    "kind": "OPERATOR_RELAYED_RESEARCH_TEXT",
+    "relayed_by": "owner, pasted into the Claude Code session",
+    "what_this_is": "the second-pass research thread's own findings, transcribed into structured form. Every row carries the sentence it came from.",
+    "what_this_is_NOT": "a captured authoritative document. No bytes of any NFL.com or club inactive release are held in this repository for 2026-09-27. See OUT-035.",
+    "bytes_held": false
+  },
+  "evidence_policy_as_stated_by_the_source": {
+    "rotowire_lineup_state": "PREDICTED",
+    "rotowire_inactive_state": "REPORTED_HIGH_CONFIDENCE",
+    "official_team_release_state": "CONFIRMED",
+    "unknown_is_inactive": false,
+    "missing_is_zero": false,
+    "questionable_is_inactive": false,
+    "fantasycruncher_model_input_allowed": false,
+    "draftkings_file_use": "salary_and_player_universe_only",
+    "verbatim_qualifier": "Houston's list was independently verified through the official Texans release; the other RotoWire inactive lists should remain REPORTED_HIGH_CONFIDENCE rather than CONFIRMED_OFFICIAL until matched to an NFL or team release."
+  },
+  "COMPLETENESS": {
+    "lists_populated_per_source": 9,
+    "lists_enumerated_to_this_repository": 0,
+    "why_it_matters": "The source states RotoWire now displays populated inactive lists for all nine games, and it relays the names that matter for football. It does not relay the complete contents of any list. So a DK player who is simply not mentioned is NOT established as not-on-the-list: he is unresolved. Treating silence as activation is the same defect as treating missing as zero, and it would wrongly activate roughly 420 rows.",
+    "consequence": "players named here resolve; every other DK row stays UNKNOWN_NOT_RELAYED."
+  },
+  "reported_inactive": [
+    {
+      "player": "Nico Collins",
+      "club": "HOU",
+      "tier": "OFFICIAL_TEAM_RELEASE_CITED",
+      "cited_source": "https://www.houstontexans.com/news/texans-inactives-week-3-vs-indianapolis-colts",
+      "quote": "Nico Collins is officially inactive, as are guard Ed Ingram and tackle Nate Thomas.",
+      "dk_eligible": true
+    },
+    {
+      "player": "Ed Ingram",
+      "club": "HOU",
+      "tier": "OFFICIAL_TEAM_RELEASE_CITED",
+      "cited_source": "https://www.houstontexans.com/news/texans-inactives-week-3-vs-indianapolis-colts",
+      "quote": "Nico Collins is officially inactive, as are guard Ed Ingram and tackle Nate Thomas.",
+      "dk_eligible": false,
+      "position_group": "OL"
+    },
+    {
+      "player": "Nate Thomas",
+      "club": "HOU",
+      "tier": "OFFICIAL_TEAM_RELEASE_CITED",
+      "cited_source": "https://www.houstontexans.com/news/texans-inactives-week-3-vs-indianapolis-colts",
+      "quote": "Nico Collins is officially inactive, as are guard Ed Ingram and tackle Nate Thomas.",
+      "dk_eligible": false,
+      "position_group": "OL"
+    },
+    {
+      "player": "Xavier Legette",
+      "club": "CAR",
+      "tier": "AGGREGATOR_REPORTED",
+      "cited_source": "https://www.rotowire.com/football/lineups.php",
+      "quote": "Xavier Legette inactive; Jalen Coker active",
+      "dk_eligible": true
+    },
+    {
+      "player": "Darius Slayton",
+      "club": "IND",
+      "tier": "AGGREGATOR_REPORTED",
+      "cited_source": "https://www.rotowire.com/football/lineups.php",
+      "quote": "Darius Slayton and Ashton Dulin inactive; Alec Pierce already unavailable",
+      "dk_eligible": true
+    },
+    {
+      "player": "Ashton Dulin",
+      "club": "IND",
+      "tier": "OFFICIAL_TEAM_RELEASE_CITED",
+      "cited_source": "https://www.colts.com/news/colts-rule-out-wide-receiver-ashton-dulin-for-week-3-game-vs-houston-texans",
+      "quote": "Darius Slayton and Ashton Dulin inactive; Alec Pierce already unavailable",
+      "dk_eligible": true,
+      "note": "IN the DK 457 as IND WR 3200. An earlier draft of this file said otherwise; that was my assumption, not a lookup."
+    },
+    {
+      "player": "Alec Pierce",
+      "club": "IND",
+      "tier": "AGGREGATOR_REPORTED",
+      "cited_source": "https://www.rotowire.com/football/lineups.php",
+      "quote": "Alec Pierce already unavailable",
+      "dk_eligible": true,
+      "note": "IN the DK 457 as IND WR 5600 -- not a fringe salary. An earlier draft of this file said otherwise; that was my assumption, not a lookup."
+    },
+    {
+      "player": "Rico Dowdle",
+      "club": "PIT",
+      "tier": "AGGREGATOR_REPORTED",
+      "cited_source": "https://www.rotowire.com/football/lineups.php",
+      "quote": "Jaylen Warren and Michael Pittman active; Rico Dowdle inactive",
+      "dk_eligible": true
+    },
+    {
+      "player": "Jaylen Wright",
+      "club": "MIA",
+      "tier": "AGGREGATOR_REPORTED",
+      "cited_source": "https://www.rotowire.com/football/lineups.php",
+      "quote": "Jaylen Wright inactive",
+      "dk_eligible": true
+    },
+    {
+      "player": "Adonai Mitchell",
+      "club": "NYJ",
+      "tier": "AGGREGATOR_REPORTED",
+      "cited_source": "https://www.rotowire.com/football/lineups.php",
+      "quote": "Adonai Mitchell inactive; Mason Taylor inactive",
+      "dk_eligible": true
+    },
+    {
+      "player": "Mason Taylor",
+      "club": "NYJ",
+      "tier": "OFFICIAL_TEAM_RELEASE_CITED",
+      "cited_source": "https://www.newyorkjets.com/news/jets-injury-report-week-3-vs-lions-friday-09-25-2026",
+      "quote": "Mason Taylor | Inactive - officially ruled out before game day",
+      "dk_eligible": true,
+      "resolves": "the first pass placed this sentence in the DET paragraph, leaving the club ambiguous. The second pass assigns NYJ and the DK universe carries Mason Taylor as NYJ TE, so the ambiguity is closed on two independent sources."
+    },
+    {
+      "player": "Eli Raridon",
+      "club": "NE",
+      "tier": "AGGREGATOR_REPORTED",
+      "cited_source": "https://www.rotowire.com/football/lineups.php",
+      "quote": "Eli Raridon inactive",
+      "dk_eligible": true
+    },
+    {
+      "player": "Devin Singletary",
+      "club": "NYG",
+      "tier": "AGGREGATOR_REPORTED",
+      "cited_source": "https://www.rotowire.com/football/lineups.php",
+      "quote": "Devin Singletary inactive",
+      "dk_eligible": true
+    },
+    {
+      "player": "Jayden Daniels",
+      "club": "WAS",
+      "tier": "AGGREGATOR_REPORTED",
+      "cited_source": "https://www.rotowire.com/football/lineups.php",
+      "quote": "Jayden Daniels and Chig Okonkwo inactive",
+      "dk_eligible": true
+    },
+    {
+      "player": "Chig Okonkwo",
+      "club": "WAS",
+      "tier": "AGGREGATOR_REPORTED",
+      "cited_source": "https://www.rotowire.com/football/lineups.php",
+      "quote": "Jayden Daniels and Chig Okonkwo inactive",
+      "dk_eligible": true
+    }
+  ],
+  "reported_active_not_on_inactive_list": [
+    {
+      "player": "DJ Moore",
+      "club": "BUF",
+      "tier": "AGGREGATOR_REPORTED",
+      "quote": "Players previously carrying important designations but not appearing on the populated inactive lists include DJ Moore, Keon Coleman, Jaylen Warren, Michael Pittman, Jalen Coker and Tyjae Spears.",
+      "workload_note": null
+    },
+    {
+      "player": "Keon Coleman",
+      "club": "BUF",
+      "tier": "AGGREGATOR_REPORTED",
+      "quote": "Players previously carrying important designations but not appearing on the populated inactive lists include DJ Moore, Keon Coleman, Jaylen Warren, Michael Pittman, Jalen Coker and Tyjae Spears.",
+      "workload_note": null
+    },
+    {
+      "player": "Jalen Coker",
+      "club": "CAR",
+      "tier": "AGGREGATOR_REPORTED",
+      "quote": "Jalen Coker | Active | Retain Coker role; monitor limitation",
+      "workload_note": "WORKLOAD_CONFIDENCE_MEDIUM; the source cites a possible ankle-related limitation. Availability and workload are separate fields and this note never changes availability."
+    },
+    {
+      "player": "Jaylen Warren",
+      "club": "PIT",
+      "tier": "AGGREGATOR_REPORTED",
+      "quote": "Warren's lead-back path strengthens, but his shoulder limitation remains relevant.",
+      "workload_note": "WORKLOAD_CONFIDENCE_MEDIUM; shoulder limitation reported. The source is explicit that the key uncertainty is Warren's effective workload, not his availability."
+    },
+    {
+      "player": "Michael Pittman Jr.",
+      "club": "PIT",
+      "tier": "AGGREGATOR_REPORTED",
+      "quote": "Jaylen Warren and Michael Pittman active; Rico Dowdle inactive",
+      "workload_note": "WORKLOAD_CONFIDENCE_MEDIUM_HIGH"
+    },
+    {
+      "player": "Tyjae Spears",
+      "club": "TEN",
+      "tier": "AGGREGATOR_REPORTED",
+      "quote": "Pollard remains the predicted lead back, but Tyjae Spears is active and prevents the concentrated Spears-out workload branch.",
+      "workload_note": null
+    },
+    {
+      "player": "Brian Burns",
+      "club": "NYG",
+      "tier": "AGGREGATOR_REPORTED",
+      "quote": "Brian Burns' absence from the inactive list preserves New York's pass-rush ceiling against Ward.",
+      "dk_eligible": false,
+      "workload_note": "not in the DK 457. Resolves a DST-distribution branch, not a player row."
+    },
+    {
+      "player": "Sam Darnold",
+      "club": "SEA",
+      "tier": "OFFICIAL_TEAM_RELEASE_CITED",
+      "cited_source": "https://www.seahawks.com/news/seahawks-qb-sam-darnold-ready-to-go-s-julian-love-ruled-out",
+      "quote": "Darnold was cleared to return.",
+      "workload_note": null
+    }
+  ],
+  "identity_conflicts": [
+    {
+      "id": "IDC-01",
+      "subject": "Kenneth Walker III (KC), David Montgomery (HOU), Michael Pittman Jr. (PIT), Carnell Tate (TEN), Jadarian Price (SEA), Malachi Fields (NYG)",
+      "first_pass_claim": "The attached projection export contains visible team/player mapping anomalies, including Kenneth Walker listed with Kansas City and David Montgomery with Houston.",
+      "resolution": "NOT A CONFLICT. The authoritative DK contest file carries the same clubs and the same salaries -- Kenneth Walker III KC 7400, David Montgomery HOU 6000, Michael Pittman Jr. PIT 4700, Carnell Tate TEN 5000, Jadarian Price SEA 5300, Malachi Fields NYG 4400. Three sources agree; there is nothing to reconcile.",
+      "status": "CLOSED_BY_MEASUREMENT",
+      "note": "The first pass called these mapping errors on the strength of their being surprising. They are not errors. Recorded because an unreal conflict left standing costs as much attention as a real one."
+    },
+    {
+      "id": "IDC-02",
+      "subject": "Matthew McClain (NYJ)",
+      "claim": "the second pass names Matthew McClain as a predicted NYJ starter and as a route-access gainer from Mitchell's absence",
+      "resolution": "NO SUCH PLAYER in the DK 457. The universe carries Malik McClain, NYJ WR, 3000. A first-name substitution is the most likely reading but it is not established, so the name is NOT silently rewritten.",
+      "status": "OPEN_RECORDED_NOT_RESOLVED",
+      "handling": "Malik McClain is carried as a redistribution candidate with this conflict attached. No availability state is derived from the misnamed row."
+    },
+    {
+      "id": "IDC-03",
+      "subject": "Brian Burns, Ed Ingram, Nate Thomas, Ashton Dulin, Alec Pierce, Cosmi, Luvu, Minkah Fitzpatrick",
+      "claim": "named in the research as inactive or active",
+      "resolution": "none of these is in the DK 457. They are real football facts with no DK player row, so they enter the team-efficiency and DST layers only.",
+      "status": "CLOSED_BY_MEASUREMENT"
+    }
+  ],
+  "environment_second_pass": {
+    "note": "implied totals in the source are arithmetic from the displayed spread and total, not projections. Recorded as the source's own market reading.",
+    "games": {
+      "CAR@CLE": {
+        "spread": "CAR -1.5",
+        "total": 41.5,
+        "away_implied": 21.5,
+        "home_implied": 20.0,
+        "weather": "Outdoor; 67F, 15 mph north wind"
+      },
+      "CIN@PIT": {
+        "spread": "CIN -3",
+        "total": 42.5,
+        "away_implied": 22.75,
+        "home_implied": 19.75,
+        "weather": "Outdoor; 69F, 15 mph NNW wind"
+      },
+      "HOU@IND": {
+        "spread": "HOU -1.5",
+        "total": 42.5,
+        "away_implied": 22.0,
+        "home_implied": 20.5,
+        "weather": "Dome"
+      },
+      "KC@MIA": {
+        "spread": "KC -9.5",
+        "total": 45.0,
+        "away_implied": 27.25,
+        "home_implied": 17.75,
+        "weather": "Outdoor; 84F, light wind"
+      },
+      "LAC@BUF": {
+        "spread": "BUF -7",
+        "total": 50.5,
+        "away_implied": 21.75,
+        "home_implied": 28.75,
+        "weather": "Outdoor; 67F, 16 mph NNE wind"
+      },
+      "NE@JAX": {
+        "spread": "JAX -3",
+        "total": 46.0,
+        "away_implied": 21.5,
+        "home_implied": 24.5,
+        "weather": "Outdoor; 83F, light wind"
+      },
+      "NYJ@DET": {
+        "spread": "DET -6.5",
+        "total": 48.5,
+        "away_implied": 21.0,
+        "home_implied": 27.5,
+        "weather": "Dome"
+      },
+      "SEA@WAS": {
+        "spread": "SEA -8.5",
+        "total": 40.5,
+        "away_implied": 24.5,
+        "home_implied": 16.0,
+        "weather": "Outdoor; 54% rain, 61F, 16 mph NW wind"
+      },
+      "TEN@NYG": {
+        "spread": "NYG -2.5",
+        "total": 37.5,
+        "away_implied": 17.5,
+        "home_implied": 20.0,
+        "weather": "Outdoor; 53% rain, 64F, 17 mph NE wind"
+      }
+    },
+    "weather_flags": {
+      "SEA@WAS": {
+        "status": "MATERIAL",
+        "precipitation_pct": 54,
+        "wind_mph": 16,
+        "source_confidence": "MEDIUM"
+      },
+      "TEN@NYG": {
+        "status": "MATERIAL",
+        "precipitation_pct": 53,
+        "wind_mph": 17,
+        "source_confidence": "MEDIUM"
+      },
+      "LAC@BUF": {
+        "status": "MONITOR",
+        "precipitation_pct": 2,
+        "wind_mph": 16,
+        "source_confidence": "MEDIUM"
+      }
+    }
+  },
+  "hard_stops_restated_by_the_source": [
+    "DO_NOT_IMPORT_FANTASYCRUNCHER_PROJECTIONS",
+    "DO_NOT_CREATE_PROPRIETARY_WEEK3_PROJECTIONS",
+    "DO_NOT_TREAT_ROTOWIRE_PREDICTED_LINEUPS_AS_CONFIRMED_STARTERS",
+    "DO_NOT_DELETE_VACATED_OPPORTUNITY",
+    "DO_NOT_ASSIGN_ALL_VACATED_WORK_TO_NOMINAL_BACKUP",
+    "DO_NOT_OVERWRITE_PRE_INACTIVES_SNAPSHOT"
+  ],
+  "dk_eligible_field_semantics": "INFORMATIONAL ONLY and not load-bearing. DK eligibility is decided by joining the relayed name to the authoritative DK 457, which availability.reported_index does on every run. This field was wrong for Ashton Dulin and Alec Pierce in the first draft of this file precisely because it was typed rather than derived, and the join caught both. Never branch on it.",
+  "rotowire_predicted_lineups": {
+    "state": "ROTOWIRE_PREDICTED",
+    "NOT_OFFICIAL": "a predicted lineup is a projection of who will start. It is never a confirmed starting declaration, and a player named here gains no availability status from being named.",
+    "source": "https://www.rotowire.com/football/lineups.php",
+    "snapshot_et": "2026-09-27T12:04:00-04:00",
+    "clubs": {
+      "CAR": [
+        "Bryce Young",
+        "Chuba Hubbard",
+        "Tetairoa McMillan",
+        "Jalen Coker",
+        "Brycen Tremayne",
+        "Tommy Tremble"
+      ],
+      "CLE": [
+        "Deshaun Watson",
+        "Quinshon Judkins",
+        "Denzel Boston",
+        "KC Concepcion",
+        "Jerry Jeudy",
+        "Harold Fannin Jr."
+      ],
+      "CIN": [
+        "Joe Burrow",
+        "Chase Brown",
+        "Ja'Marr Chase",
+        "Tee Higgins",
+        "Colbie Young",
+        "Mike Gesicki"
+      ],
+      "PIT": [
+        "Aaron Rodgers",
+        "Jaylen Warren",
+        "DK Metcalf",
+        "Michael Pittman",
+        "Roman Wilson",
+        "Pat Freiermuth"
+      ],
+      "HOU": [
+        "C.J. Stroud",
+        "David Montgomery",
+        "Xavier Hutchinson",
+        "Kayshon Boutte",
+        "Jaylin Noel",
+        "Dalton Schultz"
+      ],
+      "IND": [
+        "Daniel Jones",
+        "Jonathan Taylor",
+        "Josh Downs",
+        "Keenan Allen",
+        "Laquon Treadwell",
+        "Tyler Warren"
+      ],
+      "KC": [
+        "Patrick Mahomes",
+        "Kenneth Walker",
+        "Rashee Rice",
+        "Xavier Worthy",
+        "Tyquan Thornton",
+        "Travis Kelce"
+      ],
+      "MIA": [
+        "Malik Willis",
+        "De'Von Achane",
+        "Malik Washington",
+        "Chris Bell",
+        "Kevin Coleman Jr.",
+        "Greg Dulcich"
+      ],
+      "LAC": [
+        "Justin Herbert",
+        "Omarion Hampton",
+        "Ladd McConkey",
+        "Quentin Johnston",
+        "Tre' Harris",
+        "Oronde Gadsden II"
+      ],
+      "BUF": [
+        "Josh Allen",
+        "James Cook",
+        "DJ Moore",
+        "Khalil Shakir",
+        "Keon Coleman",
+        "Dalton Kincaid"
+      ],
+      "NE": [
+        "Drake Maye",
+        "Rhamondre Stevenson",
+        "Romeo Doubs",
+        "Demario Douglas",
+        "Mack Hollins",
+        "Hunter Henry"
+      ],
+      "JAX": [
+        "Trevor Lawrence",
+        "Bhayshul Tuten",
+        "Parker Washington",
+        "Brian Thomas Jr.",
+        "Jakobi Meyers",
+        "Brenton Strange"
+      ],
+      "NYJ": [
+        "Geno Smith",
+        "Breece Hall",
+        "Garrett Wilson",
+        "Isaiah Williams",
+        "Matthew McClain",
+        "Kenyon Sadiq"
+      ],
+      "DET": [
+        "Jared Goff",
+        "Jahmyr Gibbs",
+        "Amon-Ra St. Brown",
+        "Jameson Williams",
+        "Isaac TeSlaa",
+        "Sam LaPorta"
+      ],
+      "SEA": [
+        "Sam Darnold",
+        "Jadarian Price",
+        "Jaxon Smith-Njigba",
+        "Rashid Shaheed",
+        "Cooper Kupp",
+        "AJ Barner"
+      ],
+      "WAS": [
+        "Marcus Mariota",
+        "Jacory Croskey-Merritt",
+        "Terry McLaurin",
+        "Stefon Diggs",
+        "Antonio Williams",
+        "Ben Sinnott"
+      ],
+      "TEN": [
+        "Cam Ward",
+        "Tony Pollard",
+        "Carnell Tate",
+        "Wan'Dale Robinson",
+        "Calvin Ridley",
+        "Gunnar Helm"
+      ],
+      "NYG": [
+        "Jameis Winston",
+        "Cam Skattebo",
+        "Malik Nabers",
+        "Malachi Fields",
+        "Darnell Mooney",
+        "Isaiah Likely"
+      ]
+    }
+  }
+}

@@ -723,3 +723,107 @@ enforcement was not reached), and now a refusal label that is not the refusal.
 output names the failing stage *and* carries the declared debt alongside it —
 collapsing `feature_build`'s DEFERRED into silence would trade one wrong reading
 for another.
+
+---
+
+## POST-INACTIVES RECONCILIATION — DEF-092 to DEF-097
+
+### DEF-092 — WITHDRAWN CLAIM (mine, same day). OUT-035 asserted a DK identity conflict I had not checked.
+
+**Filed and withdrawn 2026-09-27.** In OUT-035 I wrote that the external
+`player_usage_evidence.csv` carried club assignments that *contradict* the DK contest
+file, and named six. It does not. Measured against the DK 457: Kenneth Walker III KC
+7400, David Montgomery HOU 6000, Michael Pittman Jr. PIT 4700, Carnell Tate TEN 5000,
+Jadarian Price SEA 5300, Malachi Fields NYG 4400 — every club and every salary matches.
+I had relayed the first-pass research thread's own self-flagged "mapping anomalies" as
+though I had verified them. **Cause:** treating a surprising-looking claim as a finding
+without joining it to the authoritative file that settles it. **Status:** corrected in
+place in `docs/AGENT_OUTBOX.md` with the withdrawal left visible.
+
+### DEF-093 — WITHDRAWN CLAIM (mine). I annotated two DK-eligible players as not in the universe.
+
+The first draft of `REPORTED_AVAILABILITY_SECOND_PASS.json` carried
+`dk_eligible: false` and "not in the DK 457" for **Ashton Dulin** and **Alec Pierce**.
+Both are in it: Pierce IND WR **5600** and Dulin IND WR **3200**. Pierce at 5600 is not
+a fringe salary, and marking him ineligible would have dropped a real vacancy from
+Indianapolis's tree. **Caught by** `availability.reported_index`, which resolves every
+relayed name against the DK universe rather than trusting the annotation. **Fix:** rows
+corrected, and the field now carries
+`dk_eligible_field_semantics: INFORMATIONAL ONLY ... Never branch on it`, because a
+stored guess that duplicates a derivable fact will go stale and be believed.
+
+**DEF-092 and DEF-093 share one cause and it is worth naming.** Both were assertions
+about a file that was already in the tree, made without opening it. That is now five
+such corrections in three days. The cheap general defence is the one that caught
+DEF-093: derive the fact at run time from the authoritative artifact and let the join
+refuse, rather than storing a hand-typed copy of it.
+
+### DEF-094 — the redistribution layer collapsed UNKNOWN into zero. FIXED.
+
+`redistribution._obs` read missing count keys with `or 0`, so **Darius Slayton** — who
+has an empty `combined` and empty `weeks`, i.e. no observed 2026 row at all — produced
+`vacated: 0 snaps, 0 carries, 0 targets`. Rendered that way the tree asserts that
+Indianapolis loses nothing by his absence, which is a claim about football manufactured
+out of a missing file. Compounding it, `gl_opportunities` is never present in `combined`
+at all (the observed layer carries it per week only), so **every** player read goal-line
+as zero. **Fix:** three states kept apart — a measured number, a real OBSERVED zero for a
+player who has a row but no count key, and `UNKNOWN_NO_OBSERVED_ROW` for a player with no
+row; goal line summed from weeks. **Proven by** the Phase-10 check that asserts Slayton
+stays UNKNOWN *and* Legette stays a real zero, so the fix cannot be satisfied by making
+everything unknown.
+
+### DEF-095 — "newly relevant players" returned 128 names, which is a roster. FIXED.
+
+A first cut selected any candidate under a 0.35 snap share, which caught every deep
+reserve on any club with an absence. **Fix, two parts.** Entry now requires either being
+named by the source or being top-3 in the vacating position group; and the output is
+split, because two different football things were being lumped. A receiver already
+playing 78% of snaps does not become *newly relevant* when a teammate sits — he gains
+**concentration**. A reserve at 15% who is now third in the room becomes **newly
+relevant**. 13 newly relevant and 24 concentration gainers, and the distinction matters
+for a lineup because one is a known quantity at a known price and the other is a role
+that may not exist.
+
+### DEF-096 — the comparator headline said 457 availability changes when 20 players changed state.
+
+`UNKNOWN` → `UNKNOWN_NOT_RELAYED` is a status **string** improving in specificity while
+the football stands still. Counting those among the transitions put 457 in the headline,
+which is exactly the sort of number that gets quoted later without its qualifier.
+**Fix:** class `RELABEL_STILL_UNRESOLVED_NO_FOOTBALL_CHANGE`, separate counters, and
+`AVAILABILITY_COUNT_SEMANTICS` carried in the artifact saying which number to quote.
+
+### DEF-097 — the environment diff reported a club-code alias as a market move. FIXED.
+
+The first-pass research writes Jacksonville as `JAC` and the second as `JAX`, so a raw
+string compare emitted `spread JAC -3 -> JAX -3` as a change on NE@JAX. Normalised at
+the baseline reader. A report of football changes that contains a non-change teaches the
+reader to skim it, which costs more than the one wrong row. Separately, the comparator
+originally reported nine `NO_PRE_BASELINE_HELD` rows because the PRE artifact carries no
+market block — but the first-pass research does, so the honest baseline is that file and
+the real answer is **five of nine games moved**.
+
+### Not a defect, recorded because it closes a question — the DK universe has not drifted.
+
+`DKEntries (62).csv` appends the DraftKings player pool beneath its entry block.
+Parsed separately (a row is an entry only when `Entry ID` is nonblank) it holds **457
+player IDs matching our frozen 457 exactly** — zero in the pool that we lack, zero of
+ours absent from the pool. The frozen universe is still correct against the newest
+contest file.
+
+### Not a defect — the 48 populated rosters are placeholders, verified rather than assumed.
+
+47 of the 48 entries carry a byte-identical set of nine roster cells and one differs.
+Forty-eight deliberately constructed tournament lineups do not look like that. Recorded
+in `DK_ENTRIES_62_AUDIT.json` as `PLACEHOLDERS_NO_EXPOSURE_AUTHORITY`; they are read as
+carrying no desired exposure and are not modified.
+
+### A semantic correction to the requested status set, and the repository already knew it.
+
+The task asked for `CONFIRMED_ACTIVE`. That state is **not derivable from an inactive
+list** — a list enumerates absences, so a player not on it is
+`ACTIVE_NOT_ON_INACTIVE_LIST`, which the task also asked for and which is correct. This
+is not a new opinion: `ingest_inactives.py` records as its own step 4b that "absence from
+the list carries no positive claim", and its docstring says pregame ACT "stays
+ROSTER_ACTIVE and nothing here promotes it to GAME_ACTIVE". `CONFIRMED_ACTIVE` is kept in
+the set but reachable only from a positive document — observed participation or an
+official active list — never by elimination.

@@ -1,0 +1,100 @@
+{
+  "artifact": "DK_ENTRIES_62_AUDIT",
+  "source_file": "nfl/dfs/salaries/raw/DKEntries_EARLY_ONLY_2026W3_62.csv",
+  "sha256": "82efd7d841d54cf1e1aedcaa0810f1168cf6b9931392d85b92558483b4a6f4f4",
+  "n_lines": 465,
+  "n_entry_rows": 48,
+  "PARSE_RULE": "a row is a portfolio entry only when Entry ID is nonblank. The file also appends the DraftKings player pool beneath the entry block, and counting those rows as entries would invent hundreds of them.",
+  "contests": [
+    {
+      "contest_name": "NFL $1K Dime Package [Just $0.10!] (Early Only)",
+      "contest_id": "195955835",
+      "entry_fee": "$0.10",
+      "n_entries": 2
+    },
+    {
+      "contest_name": "NFL $400 Dime Package [Just $0.10!] (Early Only)",
+      "contest_id": "196110787",
+      "entry_fee": "$0.10",
+      "n_entries": 20
+    },
+    {
+      "contest_name": "NFL $2.5K mini-MAX [150 Entry Max] (Early Only)",
+      "contest_id": "196117165",
+      "entry_fee": "$0.50",
+      "n_entries": 6
+    },
+    {
+      "contest_name": "NFL $625 Quarter Jukebox [Just $0.25!] (Early Only)",
+      "contest_id": "196122720",
+      "entry_fee": "$0.25",
+      "n_entries": 20
+    }
+  ],
+  "entry_ids": [
+    "5271102565",
+    "5271109480",
+    "5272577475",
+    "5272577476",
+    "5272577477",
+    "5272577478",
+    "5272577479",
+    "5272577480",
+    "5272577481",
+    "5272577482",
+    "5272577483",
+    "5272577484",
+    "5272577485",
+    "5272577486",
+    "5272577487",
+    "5272577488",
+    "5272577489",
+    "5272577490",
+    "5272577491",
+    "5272577492",
+    "5272577493",
+    "5272577494",
+    "5272586299",
+    "5272586300",
+    "5272586301",
+    "5272586302",
+    "5272586303",
+    "5272586304",
+    "5272586104",
+    "5272586105",
+    "5272586106",
+    "5272586107",
+    "5272586108",
+    "5272586109",
+    "5272586110",
+    "5272586111",
+    "5272586112",
+    "5272586113",
+    "5272586114",
+    "5272586115",
+    "5272586116",
+    "5272586117",
+    "5272586118",
+    "5272586119",
+    "5272586120",
+    "5272586121",
+    "5272586122",
+    "5272586123"
+  ],
+  "placeholder_finding": {
+    "distinct_rosters_among_48_entries": 2,
+    "most_common_roster_repeat_count": 47,
+    "verdict": "PLACEHOLDERS_NO_EXPOSURE_AUTHORITY",
+    "how_established": "47 of 48 entries carry a byte-identical set of nine roster cells and one differs. Forty-eight deliberately constructed tournament lineups do not look like that. Verified by counting distinct roster signatures rather than by accepting the claim.",
+    "consequence": "these rosters carry no desired player exposure, no stack exposure, no ownership signal and no construction authority. They are not read as owner intent and they are not modified."
+  },
+  "player_pool_section": {
+    "n_rows": 457,
+    "n_ids": 457,
+    "ids_in_pool_not_in_our_457": [],
+    "ids_in_our_457_not_in_pool": [],
+    "n_pool_not_ours": 0,
+    "n_ours_not_pool": 0
+  },
+  "OWNER_ENTRIES_UNTOUCHED": "this audit is read-only. No entry row is modified, no lineup is written, and nothing is uploaded to DraftKings."
+}

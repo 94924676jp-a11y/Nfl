@@ -2834,3 +2834,144 @@ exactly two sources, `pbp_participation` and `snap_counts`. It does **not** prob
 DEF-086 established cannot fire, because `nfl-t90.yml` on `main` carries crons for
 September 9–15 only. **No official inactives for today have arrived and none will
 arrive automatically.** OUT-033 stands unchanged and is now the only route.
+
+---
+
+## OUT-035 — the nine official inactive lists. This is the whole of Phase 2 and it is yours, not blocked.
+
+**Filed 2026-09-27T16:10:04Z by Claude Code. Priority: highest on the board today.**
+
+The owner opened the resumed task with "Official inactives are now available." **They
+are not available to me, and they are not in this repository.** I checked before
+saying so rather than after:
+
+| what I looked for | what I found |
+|---|---|
+| a 2026 week-3 game directory | only `2026_03_ATL_GB` (Thursday). None of the nine. |
+| `*inactive*` anywhere in the tree | every capture is `2026_01_*`, plus two week-2 benchmark files |
+| `2026-09-27` in any json/csv/html | four files, **all four written by me**: the gap registry and my own three DK artifacts |
+| the one `NFL_OFFICIAL_INACTIVES.html` in the upload set | **Week 1.** 889,867 bytes, dated Sep 13, headline "NFL Week 1 inactives: Players ruled out for Sunday's 13 games", 86 occurrences of "Week 1" and zero of any September 27 date |
+
+And the supplied research package says so itself, in its own words, in two places:
+`**State:** PRE-INACTIVES`, and under Limitations, "official inactives were
+unavailable at retrieval". Its `snapshot.type` is `PRE_INACTIVES` and its
+`second_pass.trigger` is `official_inactives_release`. The trigger has not fired
+for me.
+
+**So Phase 2 is assigned, not blocked.** Per CLAUDE.md I am not permitted to call it
+blocked without writing the request, and I am not permitted to route around it. I
+have not stubbed it, not mocked it, and not promoted a single QUESTIONABLE to
+ACTIVE. Everything else in the task ran; only this is parked.
+
+### Exactly what I need
+
+The official game-day inactive list for **all nine** Early Only games, kickoff
+2026-09-27T17:00:00Z. Both clubs per game — one club is not a complete game, and
+`ingest_inactives.py` already refuses a one-club capture.
+
+```
+CAR @ CLE    CIN @ PIT    HOU @ IND
+KC  @ MIA    LAC @ BUF    NE  @ JAX
+NYJ @ DET    SEA @ WAS    TEN @ NYG
+```
+
+Per game, and this is the shape `nfl/tools/ingest_inactives.py` already accepts, so
+no new plumbing is needed:
+
+- `--bytes` the **authoritative document itself**, saved unparsed. NFL.com
+  `/inactives/` or the club's own release. The module's docstring is explicit that
+  it "will not accept a reporter's summary, a sportsbook line, an inferred dress
+  list, or a retrospective INA column", and I am not going to weaken that today.
+- `--source-url`
+- `--retrieved-at` in UTC
+- `--published-at` where the document carries one
+- `--game-id` in the `2026_03_AWAY_HOME` form
+
+A single combined NFL.com inactives page covering all nine is fine and is one
+fetch; per-club releases are equally fine. What I cannot use is a summary of them.
+
+### The eleven branches that actually change football if you can only get some
+
+Ranked by how much of the slate moves, from the internal observed layer rather than
+from the external write-up:
+
+1. **PIT Jaylen Warren** — with Dowdle already out this is the whole Pittsburgh
+   backfield, and observed W1–2 is Warren 21 carries to Dowdle 15, a near-split, so
+   there is no incumbent to promote.
+2. **BUF DJ Moore + Keon Coleman** — joint, and the slate-high 50.0 total.
+3. **CAR Jalen Coker + Xavier Legette** — Coker is 18 targets and 5 red-zone
+   targets over two weeks, which is not a depth profile.
+4. **PIT Michael Pittman** — DK lists him PIT; see the identity conflict below.
+5. **NYJ Adonai Mitchell** — 15 targets, 360 air yards.
+6. **TEN Tyjae Spears** — Pollard's ceiling depends on it.
+7. **NYG Brian Burns** — the only one that moves a DST distribution rather than a
+   skill player.
+8. **NE Eli Raridon**, **MIA Jaylen Wright** (doubtful).
+
+### Two things worth your attention while you are in there
+
+**WITHDRAWN, same day, by measurement.** This paragraph originally claimed the
+external `player_usage_evidence.csv` carried club assignments that *contradict* the DK
+contest file, and listed six. **It does not, and I had not checked when I wrote it.**
+I was relaying the research report's own self-flagged "mapping anomalies" as though I
+had verified them against DK. Measured against the authoritative DK 457:
+`Kenneth Walker III` KC 7400, `David Montgomery` HOU 6000, `Michael Pittman Jr.` PIT
+4700, `Carnell Tate` TEN 5000, `Jadarian Price` SEA 5300, `Malachi Fields` NYG 4400 --
+**every club and every salary matches**. Three sources agree and there was never
+anything to reconcile. Please disregard; nothing is needed from you on it. Recorded
+rather than deleted because this is the fifth time in two days that a claim in this
+project was stale or unchecked rather than wrong-in-substance, and an unreal conflict
+left standing costs the same attention as a real one.
+
+**`pbp_participation_2026` was still 404 at 06:34:57Z today**, so routes remain
+`UNKNOWN_SOURCE_UNAVAILABLE` and I have not estimated them from pass snaps. That is
+OUT-033/OUT-034 and unchanged; noted here only so you do not re-derive it.
+
+### What is already built and waiting
+
+The comparator, the availability resolver and the redistribution layer all ran and
+are committed. They are written against the evidence tier, not against a hardcoded
+list, so the moment you deliver captures the POST state regenerates with
+`CONFIRMED_INACTIVE` / `ACTIVE_NOT_ON_INACTIVE_LIST` filled in and the PRE→POST diff
+becomes a real availability diff instead of the mostly-empty one it honestly is now.
+Nothing is waiting on my side.
+
+### OUT-035 addendum, 2026-09-27T16:16:22Z — the second pass arrived and it narrows the ask
+
+The owner relayed the research thread's **POST_INACTIVES_SECOND_PASS**, snapshot
+2026-09-27 12:04 ET. It changes what I need from you, so read this before acting on the
+request above.
+
+**What it resolved.** Fifteen reported inactives and eight reported actives, by name,
+each with a quoted sentence and a cited URL. Houston's list is cited to
+`houstontexans.com`, Dulin to `colts.com`, Mason Taylor to `newyorkjets.com`, Darnold
+to `seahawks.com`. The rest is RotoWire's populated inactive lists.
+
+**What it explicitly does not claim, in its own words:** "the other RotoWire inactive
+lists should remain `REPORTED_HIGH_CONFIDENCE` rather than `CONFIRMED_OFFICIAL` until
+matched to an NFL or team release." I have honoured that exactly. No player in the POST
+artifact carries `CONFIRMED_INACTIVE`, because that status requires bytes and we hold
+none.
+
+**The gap that remains, and it is the one worth your time.** The source states the nine
+lists are populated and relays the names that matter. It does **not** enumerate any
+list in full. So of 457 DK rows, **23 resolve by name and roughly 420 stay
+`UNKNOWN_NOT_RELAYED`**. I will not read "not mentioned" as "not on the list" -- that
+activates 420 rows on silence, which is the same defect as reading missing as zero.
+
+**So the revised ask, smaller than OUT-035 above:** the *complete* inactive list per
+club, even as plain text, for the nine games. Names only is enough; I do not need the
+HTML if bytes are hard. With complete lists, ~420 rows move from `UNKNOWN_NOT_RELAYED`
+to `ACTIVE_NOT_ON_INACTIVE_LIST` in one run. With captured bytes they additionally
+reach `CONFIRMED_INACTIVE` / `ACTIVE_NOT_ON_INACTIVE_LIST` at document tier, which is
+what `ingest_inactives.py` was built for. Complete-lists-as-text is the high-value,
+low-cost half; get that first.
+
+**One thing you can drop.** The identity conflict in the original OUT-035 is withdrawn
+above -- do not spend a fetch on it.
+
+**One new small conflict, not worth a fetch on its own.** The second pass names
+`Matthew McClain` as a predicted Jets starter. The DK universe has `Malik McClain`, NYJ
+WR, 3000, and no Matthew. Probably a first-name slip, but I have not renamed him; he is
+carried as a redistribution candidate with the conflict attached. If you are already
+reading the Jets list, the name on it settles it.
