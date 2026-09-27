@@ -1,0 +1,7210 @@
+{
+ "artifact": "DK_WEEK3_QB_LAYER",
+ "spec_version": "qb-layer-study-1",
+ "season": 2026,
+ "week": 3,
+ "m_draws": 200,
+ "seed": 20260908,
+ "qb_v1_spec_version": "qb-v1-aggregate-then-allocate-1",
+ "qb_frame_sha256": "e2de51d345502a2717a64e584f5e883a64eb3ed51ff97e5f42e406a0ddba0c54",
+ "qb_frame": {
+  "n_rows": 6388,
+  "min_ord": 202001,
+  "max_ord": 202518,
+  "n_2026_rows": 0,
+  "forecast_ordinal": 202603,
+  "guard": "slate_prospective refuses if any ord >= forecast ordinal, so 202601 and 202602 WOULD be permitted",
+  "reading": "the frame holds zero 2026 rows, so the layer is pre-2026 by DATA ABSENCE and not by policy"
+ },
+ "known_limitations": [
+  "multi_qb_over_prediction",
+  "int_discrimination",
+  "discrete_low_count_intervals"
+ ],
+ "n_dk_qb": 60,
+ "n_with_qb_layer_row": 45,
+ "n_without_qb_layer_row": 15,
+ "metrics_produced": [
+  "att",
+  "cmp",
+  "db",
+  "drush",
+  "int",
+  "ptd",
+  "pyds",
+  "rtd",
+  "rush_opp",
+  "ryds",
+  "sacks",
+  "scr"
+ ],
+ "metrics_in_sealed_contract": [
+  "att",
+  "cmp",
+  "pyds",
+  "ptd",
+  "int"
+ ],
+ "OUTPUT_IS_AN_INTERMEDIATE_NOT_A_PROJECTION": "qb_slate returns draws, a distribution. Downstream apply_r2_level RE-RUNS QB V1 at the level D1 and QB3 own, apportioned from the team budget by largest remainder, so the level here is QB V1 own draw and NOT the level a sealed board would carry. Nothing here is sealed: the run refuses at player_draws before sealing. Quote as \"the QB layer pre-R2 draws\", never as the model projection.",
+ "CONTAINS_NO_2026_INFORMATION": "The frame spans 202001 to 202518 and holds zero 2026 rows, while the guard would permit 202601 and 202602. So this is pre-2026 by DATA ABSENCE, not by policy -- unlike Q9 arm A, which excludes the forecast season by design. It cannot know anything about weeks 1 and 2 or about today. If 2026 QB rows existed the layer would consume them with no code change.",
+ "COLD_START_IS_OFF": "15 of 60 DK quarterbacks have no row. If one of them starts today the layer has nothing for the position that matters most. Listed by name, never dropped.",
+ "team_attempt_sums": {
+  "BUF": {
+   "n_qb_with_a_row": 3,
+   "sum_attempt_mean": 81.7,
+   "sum_dropback_mean": 93.5,
+   "top_qb_share_of_sum": 0.409
+  },
+  "CIN": {
+   "n_qb_with_a_row": 4,
+   "sum_attempt_mean": 110.1,
+   "sum_dropback_mean": 121.2,
+   "top_qb_share_of_sum": 0.308
+  },
+  "DET": {
+   "n_qb_with_a_row": 2,
+   "sum_attempt_mean": 63.6,
+   "sum_dropback_mean": 70.0,
+   "top_qb_share_of_sum": 0.556
+  },
+  "KC": {
+   "n_qb_with_a_row": 2,
+   "sum_attempt_mean": 65.6,
+   "sum_dropback_mean": 78.3,
+   "top_qb_share_of_sum": 0.544
+  },
+  "NE": {
+   "n_qb_with_a_row": 2,
+   "sum_attempt_mean": 47.2,
+   "sum_dropback_mean": 58.2,
+   "top_qb_share_of_sum": 0.561
+  },
+  "WAS": {
+   "n_qb_with_a_row": 2,
+   "sum_attempt_mean": 52.9,
+   "sum_dropback_mean": 63.9,
+   "top_qb_share_of_sum": 0.531
+  },
+  "NYG": {
+   "n_qb_with_a_row": 3,
+   "sum_attempt_mean": 68.9,
+   "sum_dropback_mean": 80.7,
+   "top_qb_share_of_sum": 0.423
+  },
+  "LAC": {
+   "n_qb_with_a_row": 2,
+   "sum_attempt_mean": 54.8,
+   "sum_dropback_mean": 62.6,
+   "top_qb_share_of_sum": 0.648
+  },
+  "JAX": {
+   "n_qb_with_a_row": 3,
+   "sum_attempt_mean": 86.0,
+   "sum_dropback_mean": 95.3,
+   "top_qb_share_of_sum": 0.389
+  },
+  "CAR": {
+   "n_qb_with_a_row": 2,
+   "sum_attempt_mean": 52.3,
+   "sum_dropback_mean": 60.1,
+   "top_qb_share_of_sum": 0.554
+  },
+  "HOU": {
+   "n_qb_with_a_row": 2,
+   "sum_attempt_mean": 57.2,
+   "sum_dropback_mean": 64.2,
+   "top_qb_share_of_sum": 0.559
+  },
+  "SEA": {
+   "n_qb_with_a_row": 2,
+   "sum_attempt_mean": 54.3,
+   "sum_dropback_mean": 61.2,
+   "top_qb_share_of_sum": 0.51
+  },
+  "TEN": {
+   "n_qb_with_a_row": 3,
+   "sum_attempt_mean": 69.0,
+   "sum_dropback_mean": 78.3,
+   "top_qb_share_of_sum": 0.429
+  },
+  "IND": {
+   "n_qb_with_a_row": 3,
+   "sum_attempt_mean": 77.8,
+   "sum_dropback_mean": 88.2,
+   "top_qb_share_of_sum": 0.371
+  },
+  "PIT": {
+   "n_qb_with_a_row": 2,
+   "sum_attempt_mean": 53.3,
+   "sum_dropback_mean": 58.0,
+   "top_qb_share_of_sum": 0.591
+  },
+  "NYJ": {
+   "n_qb_with_a_row": 3,
+   "sum_attempt_mean": 90.5,
+   "sum_dropback_mean": 103.3,
+   "top_qb_share_of_sum": 0.365
+  },
+  "MIA": {
+   "n_qb_with_a_row": 2,
+   "sum_attempt_mean": 45.7,
+   "sum_dropback_mean": 55.0,
+   "top_qb_share_of_sum": 0.647
+  },
+  "CLE": {
+   "n_qb_with_a_row": 3,
+   "sum_attempt_mean": 81.2,
+   "sum_dropback_mean": 95.6,
+   "top_qb_share_of_sum": 0.376
+  }
+ },
+ "mean_team_attempt_sum": 67.3,
+ "READ_THIS_BEFORE_QUOTING_ANY_NUMBER": "These are NOT per-player expectations. Every rostered quarterback is drawn as though he played, with no start-probability weighting, so each row reads only as \"if this man played the whole game\". Measured consequence: the mean team attempt sum is 67.3 against a plausible real team value of roughly 30-35, and it scales with how many quarterbacks DK listed rather than with football -- CIN lists four and sums to 110.1, MIA lists two and sums to 45.7. This is the declared multi_qb_over_prediction limitation, quantified. It is also exactly what apply_r2_level repairs downstream by apportioning the level from the team dropback budget, which is why \"pre-R2\" is the whole story and not a pedantic note.",
+ "implausible_upper_tails": [
+  {
+   "team": "CIN",
+   "name": "Sean Clifford",
+   "salary": 4000,
+   "pyds_mean": 288.0704,
+   "pyds_p95": 1036.0
+  }
+ ],
+ "IMPLAUSIBLE_TAIL_NOTE": "Rows whose p95 passing yards exceed 500 are recorded rather than clipped. A 1,036-yard p95 on a fourth-string passer is the declared discrete_low_count_intervals limitation showing itself on a thin history; clipping it would hide the limitation instead of reporting it.",
+ "quarterbacks": {
+  "44246751": {
+   "dk_id": "44246751",
+   "name": "Josh Allen",
+   "team": "BUF",
+   "opponent": "LAC",
+   "salary": 8000,
+   "gsis_id": "00-0034857",
+   "has_qb_layer_row": true,
+   "db": {
+    "mean": 37.79,
+    "sd": 10.8825,
+    "pctl": {
+     "5": 20.0,
+     "25": 31.0,
+     "50": 36.0,
+     "75": 45.0,
+     "95": 55.25
+    },
+    "in_sealed_contract": false
+   },
+   "att": {
+    "mean": 33.405,
+    "sd": 9.6715,
+    "pctl": {
+     "5": 18.0,
+     "25": 27.0,
+     "50": 32.5,
+     "75": 39.0,
+     "95": 48.2
+    },
+    "in_sealed_contract": true
+   },
+   "sacks": {
+    "mean": 1.7,
+    "sd": 1.3891,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 2.0,
+     "75": 2.0,
+     "95": 4.0
+    },
+    "in_sealed_contract": false
+   },
+   "scr": {
+    "mean": 2.685,
+    "sd": 1.703,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 2.0,
+     "75": 4.0,
+     "95": 6.0
+    },
+    "in_sealed_contract": false
+   },
+   "cmp": {
+    "mean": 21.885,
+    "sd": 6.9363,
+    "pctl": {
+     "5": 12.0,
+     "25": 17.0,
+     "50": 21.0,
+     "75": 26.0,
+     "95": 34.05
+    },
+    "in_sealed_contract": true
+   },
+   "pyds": {
+    "mean": 248.5907,
+    "sd": 91.8473,
+    "pctl": {
+     "5": 128.3904,
+     "25": 183.0417,
+     "50": 239.0208,
+     "75": 294.2188,
+     "95": 426.0238
+    },
+    "in_sealed_contract": true
+   },
+   "ptd": {
+    "mean": 2.13,
+    "sd": 1.6904,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 2.0,
+     "75": 3.0,
+     "95": 5.0
+    },
+    "in_sealed_contract": true
+   },
+   "int": {
+    "mean": 0.855,
+    "sd": 0.9426,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 1.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": true
+   },
+   "drush": {
+    "mean": 3.185,
+    "sd": 1.9775,
+    "pctl": {
+     "5": 0.95,
+     "25": 2.0,
+     "50": 3.0,
+     "75": 4.0,
+     "95": 7.0
+    },
+    "in_sealed_contract": false
+   },
+   "rush_opp": {
+    "mean": 5.87,
+    "sd": 2.9336,
+    "pctl": {
+     "5": 2.0,
+     "25": 4.0,
+     "50": 5.0,
+     "75": 8.0,
+     "95": 11.0
+    },
+    "in_sealed_contract": false
+   },
+   "ryds": {
+    "mean": 35.2176,
+    "sd": 28.1276,
+    "pctl": {
+     "5": 5.7389,
+     "25": 17.4583,
+     "50": 28.9722,
+     "75": 44.5833,
+     "95": 90.15
+    },
+    "in_sealed_contract": false
+   },
+   "rtd": {
+    "mean": 0.52,
+    "sd": 0.7086,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 2.0
+    },
+    "in_sealed_contract": false
+   }
+  },
+  "44246752": {
+   "dk_id": "44246752",
+   "name": "Joe Burrow",
+   "team": "CIN",
+   "opponent": "PIT",
+   "salary": 6600,
+   "gsis_id": "00-0036442",
+   "has_qb_layer_row": true,
+   "db": {
+    "mean": 37.665,
+    "sd": 10.4055,
+    "pctl": {
+     "5": 15.95,
+     "25": 33.0,
+     "50": 39.0,
+     "75": 44.0,
+     "95": 50.0
+    },
+    "in_sealed_contract": false
+   },
+   "att": {
+    "mean": 33.9,
+    "sd": 9.6048,
+    "pctl": {
+     "5": 14.0,
+     "25": 29.75,
+     "50": 35.0,
+     "75": 39.0,
+     "95": 45.05
+    },
+    "in_sealed_contract": true
+   },
+   "sacks": {
+    "mean": 2.555,
+    "sd": 1.7756,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 2.0,
+     "75": 4.0,
+     "95": 6.0
+    },
+    "in_sealed_contract": false
+   },
+   "scr": {
+    "mean": 1.21,
+    "sd": 1.1145,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": false
+   },
+   "cmp": {
+    "mean": 23.165,
+    "sd": 7.1739,
+    "pctl": {
+     "5": 9.0,
+     "25": 19.0,
+     "50": 24.0,
+     "75": 27.25,
+     "95": 33.0
+    },
+    "in_sealed_contract": true
+   },
+   "pyds": {
+    "mean": 250.7026,
+    "sd": 96.9792,
+    "pctl": {
+     "5": 93.5452,
+     "25": 194.6429,
+     "50": 243.5273,
+     "75": 305.97,
+     "95": 401.8
+    },
+    "in_sealed_contract": true
+   },
+   "ptd": {
+    "mean": 1.95,
+    "sd": 1.4275,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 2.0,
+     "75": 3.0,
+     "95": 4.0
+    },
+    "in_sealed_contract": true
+   },
+   "int": {
+    "mean": 0.63,
+    "sd": 0.7456,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 2.0
+    },
+    "in_sealed_contract": true
+   },
+   "drush": {
+    "mean": 0.965,
+    "sd": 0.9893,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 1.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": false
+   },
+   "rush_opp": {
+    "mean": 2.175,
+    "sd": 1.5738,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 2.0,
+     "75": 3.0,
+     "95": 5.0
+    },
+    "in_sealed_contract": false
+   },
+   "ryds": {
+    "mean": 10.2614,
+    "sd": 10.1169,
+    "pctl": {
+     "5": 0.0,
+     "25": 2.9167,
+     "50": 7.0,
+     "75": 15.0,
+     "95": 32.575
+    },
+    "in_sealed_contract": false
+   },
+   "rtd": {
+    "mean": 0.115,
+    "sd": 0.3352,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 1.0
+    },
+    "in_sealed_contract": false
+   }
+  },
+  "44246753": {
+   "dk_id": "44246753",
+   "name": "Jared Goff",
+   "team": "DET",
+   "opponent": "NYJ",
+   "salary": 6300,
+   "gsis_id": "00-0033106",
+   "has_qb_layer_row": true,
+   "db": {
+    "mean": 37.985,
+    "sd": 8.5428,
+    "pctl": {
+     "5": 23.0,
+     "25": 33.75,
+     "50": 38.0,
+     "75": 42.0,
+     "95": 57.0
+    },
+    "in_sealed_contract": false
+   },
+   "att": {
+    "mean": 35.37,
+    "sd": 8.1717,
+    "pctl": {
+     "5": 22.95,
+     "25": 31.0,
+     "50": 35.0,
+     "75": 39.0,
+     "95": 53.05
+    },
+    "in_sealed_contract": true
+   },
+   "sacks": {
+    "mean": 1.79,
+    "sd": 1.2978,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 2.0,
+     "75": 3.0,
+     "95": 4.0
+    },
+    "in_sealed_contract": false
+   },
+   "scr": {
+    "mean": 0.825,
+    "sd": 0.8765,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 1.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": false
+   },
+   "cmp": {
+    "mean": 24.285,
+    "sd": 6.2086,
+    "pctl": {
+     "5": 15.0,
+     "25": 20.0,
+     "50": 23.5,
+     "75": 28.0,
+     "95": 37.0
+    },
+    "in_sealed_contract": true
+   },
+   "pyds": {
+    "mean": 280.1393,
+    "sd": 101.0066,
+    "pctl": {
+     "5": 141.1744,
+     "25": 206.9231,
+     "50": 266.5738,
+     "75": 331.6375,
+     "95": 465.6174
+    },
+    "in_sealed_contract": true
+   },
+   "ptd": {
+    "mean": 1.835,
+    "sd": 1.3177,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 2.0,
+     "75": 3.0,
+     "95": 4.0
+    },
+    "in_sealed_contract": true
+   },
+   "int": {
+    "mean": 0.7,
+    "sd": 0.8854,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 2.0
+    },
+    "in_sealed_contract": true
+   },
+   "drush": {
+    "mean": 0.445,
+    "sd": 0.6395,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 2.0
+    },
+    "in_sealed_contract": false
+   },
+   "rush_opp": {
+    "mean": 1.27,
+    "sd": 1.106,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": false
+   },
+   "ryds": {
+    "mean": 4.8586,
+    "sd": 6.3475,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 3.0,
+     "75": 6.5714,
+     "95": 18.0
+    },
+    "in_sealed_contract": false
+   },
+   "rtd": {
+    "mean": 0.09,
+    "sd": 0.2869,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 1.0
+    },
+    "in_sealed_contract": false
+   }
+  },
+  "44246754": {
+   "dk_id": "44246754",
+   "name": "Patrick Mahomes",
+   "team": "KC",
+   "opponent": "MIA",
+   "salary": 6200,
+   "gsis_id": "00-0033873",
+   "has_qb_layer_row": true,
+   "db": {
+    "mean": 40.105,
+    "sd": 9.0295,
+    "pctl": {
+     "5": 27.95,
+     "25": 33.75,
+     "50": 40.0,
+     "75": 46.0,
+     "95": 52.1
+    },
+    "in_sealed_contract": false
+   },
+   "att": {
+    "mean": 35.66,
+    "sd": 8.1779,
+    "pctl": {
+     "5": 24.95,
+     "25": 30.0,
+     "50": 35.0,
+     "75": 40.0,
+     "95": 47.0
+    },
+    "in_sealed_contract": true
+   },
+   "sacks": {
+    "mean": 1.725,
+    "sd": 1.4211,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 1.0,
+     "75": 3.0,
+     "95": 4.0
+    },
+    "in_sealed_contract": false
+   },
+   "scr": {
+    "mean": 2.72,
+    "sd": 1.8625,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 2.0,
+     "75": 4.0,
+     "95": 6.0
+    },
+    "in_sealed_contract": false
+   },
+   "cmp": {
+    "mean": 23.61,
+    "sd": 5.9401,
+    "pctl": {
+     "5": 15.0,
+     "25": 19.75,
+     "50": 23.0,
+     "75": 27.0,
+     "95": 33.0
+    },
+    "in_sealed_contract": true
+   },
+   "pyds": {
+    "mean": 259.2118,
+    "sd": 79.2135,
+    "pctl": {
+     "5": 147.2219,
+     "25": 205.3,
+     "50": 250.7143,
+     "75": 305.0,
+     "95": 397.1583
+    },
+    "in_sealed_contract": true
+   },
+   "ptd": {
+    "mean": 1.995,
+    "sd": 1.38,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 2.0,
+     "75": 3.0,
+     "95": 4.05
+    },
+    "in_sealed_contract": true
+   },
+   "int": {
+    "mean": 0.67,
+    "sd": 0.8454,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 2.0
+    },
+    "in_sealed_contract": true
+   },
+   "drush": {
+    "mean": 0.31,
+    "sd": 0.6048,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.25,
+     "95": 1.0
+    },
+    "in_sealed_contract": false
+   },
+   "rush_opp": {
+    "mean": 3.03,
+    "sd": 1.9617,
+    "pctl": {
+     "5": 0.0,
+     "25": 2.0,
+     "50": 3.0,
+     "75": 4.0,
+     "95": 6.05
+    },
+    "in_sealed_contract": false
+   },
+   "ryds": {
+    "mean": 22.1548,
+    "sd": 18.0796,
+    "pctl": {
+     "5": 0.0,
+     "25": 9.0,
+     "50": 19.0,
+     "75": 30.125,
+     "95": 50.02
+    },
+    "in_sealed_contract": false
+   },
+   "rtd": {
+    "mean": 0.13,
+    "sd": 0.3657,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 1.0
+    },
+    "in_sealed_contract": false
+   }
+  },
+  "44246755": {
+   "dk_id": "44246755",
+   "name": "Drake Maye",
+   "team": "NE",
+   "opponent": "JAX",
+   "salary": 6100,
+   "gsis_id": "00-0039851",
+   "has_qb_layer_row": true,
+   "db": {
+    "mean": 32.21,
+    "sd": 11.9175,
+    "pctl": {
+     "5": 8.0,
+     "25": 28.0,
+     "50": 33.0,
+     "75": 39.0,
+     "95": 51.1
+    },
+    "in_sealed_contract": false
+   },
+   "att": {
+    "mean": 26.44,
+    "sd": 10.0154,
+    "pctl": {
+     "5": 6.95,
+     "25": 22.0,
+     "50": 27.0,
+     "75": 32.0,
+     "95": 42.0
+    },
+    "in_sealed_contract": true
+   },
+   "sacks": {
+    "mean": 2.475,
+    "sd": 1.8237,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 2.0,
+     "75": 3.0,
+     "95": 6.0
+    },
+    "in_sealed_contract": false
+   },
+   "scr": {
+    "mean": 3.295,
+    "sd": 2.2051,
+    "pctl": {
+     "5": 0.0,
+     "25": 2.0,
+     "50": 3.0,
+     "75": 5.0,
+     "95": 7.0
+    },
+    "in_sealed_contract": false
+   },
+   "cmp": {
+    "mean": 18.245,
+    "sd": 7.3461,
+    "pctl": {
+     "5": 3.95,
+     "25": 14.0,
+     "50": 19.0,
+     "75": 22.25,
+     "95": 30.0
+    },
+    "in_sealed_contract": true
+   },
+   "pyds": {
+    "mean": 208.0693,
+    "sd": 97.3947,
+    "pctl": {
+     "5": 50.0771,
+     "25": 148.1318,
+     "50": 199.0911,
+     "75": 267.2727,
+     "95": 375.35
+    },
+    "in_sealed_contract": true
+   },
+   "ptd": {
+    "mean": 1.39,
+    "sd": 1.1552,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 3.05
+    },
+    "in_sealed_contract": true
+   },
+   "int": {
+    "mean": 0.62,
+    "sd": 0.8598,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 2.0
+    },
+    "in_sealed_contract": true
+   },
+   "drush": {
+    "mean": 0.955,
+    "sd": 0.999,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": false
+   },
+   "rush_opp": {
+    "mean": 4.25,
+    "sd": 2.6176,
+    "pctl": {
+     "5": 0.0,
+     "25": 2.0,
+     "50": 4.0,
+     "75": 6.0,
+     "95": 9.0
+    },
+    "in_sealed_contract": false
+   },
+   "ryds": {
+    "mean": 27.2957,
+    "sd": 22.7442,
+    "pctl": {
+     "5": 0.0,
+     "25": 12.7679,
+     "50": 22.0,
+     "75": 36.6667,
+     "95": 60.0
+    },
+    "in_sealed_contract": false
+   },
+   "rtd": {
+    "mean": 0.22,
+    "sd": 0.4612,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 1.0
+    },
+    "in_sealed_contract": false
+   }
+  },
+  "44246756": {
+   "dk_id": "44246756",
+   "name": "Jayden Daniels",
+   "team": "WAS",
+   "opponent": "SEA",
+   "salary": 6000,
+   "gsis_id": "00-0039910",
+   "has_qb_layer_row": true,
+   "db": {
+    "mean": 34.915,
+    "sd": 12.073,
+    "pctl": {
+     "5": 13.95,
+     "25": 28.0,
+     "50": 35.5,
+     "75": 41.25,
+     "95": 55.0
+    },
+    "in_sealed_contract": false
+   },
+   "att": {
+    "mean": 28.075,
+    "sd": 10.0431,
+    "pctl": {
+     "5": 12.95,
+     "25": 23.0,
+     "50": 28.0,
+     "75": 34.0,
+     "95": 44.0
+    },
+    "in_sealed_contract": true
+   },
+   "sacks": {
+    "mean": 2.78,
+    "sd": 1.7599,
+    "pctl": {
+     "5": 0.0,
+     "25": 2.0,
+     "50": 3.0,
+     "75": 4.0,
+     "95": 6.0
+    },
+    "in_sealed_contract": false
+   },
+   "scr": {
+    "mean": 4.06,
+    "sd": 2.4178,
+    "pctl": {
+     "5": 0.0,
+     "25": 2.0,
+     "50": 4.0,
+     "75": 6.0,
+     "95": 9.0
+    },
+    "in_sealed_contract": false
+   },
+   "cmp": {
+    "mean": 18.82,
+    "sd": 7.3168,
+    "pctl": {
+     "5": 6.0,
+     "25": 15.0,
+     "50": 19.0,
+     "75": 23.25,
+     "95": 31.05
+    },
+    "in_sealed_contract": true
+   },
+   "pyds": {
+    "mean": 200.7525,
+    "sd": 90.7695,
+    "pctl": {
+     "5": 41.8,
+     "25": 143.426,
+     "50": 200.5417,
+     "75": 254.25,
+     "95": 374.15
+    },
+    "in_sealed_contract": true
+   },
+   "ptd": {
+    "mean": 1.375,
+    "sd": 1.2539,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 4.0
+    },
+    "in_sealed_contract": true
+   },
+   "int": {
+    "mean": 0.505,
+    "sd": 0.7435,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 2.0
+    },
+    "in_sealed_contract": true
+   },
+   "drush": {
+    "mean": 3.085,
+    "sd": 2.1356,
+    "pctl": {
+     "5": 0.0,
+     "25": 2.0,
+     "50": 3.0,
+     "75": 4.0,
+     "95": 7.0
+    },
+    "in_sealed_contract": false
+   },
+   "rush_opp": {
+    "mean": 7.145,
+    "sd": 3.569,
+    "pctl": {
+     "5": 1.0,
+     "25": 5.0,
+     "50": 7.0,
+     "75": 10.0,
+     "95": 13.05
+    },
+    "in_sealed_contract": false
+   },
+   "ryds": {
+    "mean": 43.0805,
+    "sd": 30.2377,
+    "pctl": {
+     "5": 4.07,
+     "25": 23.0,
+     "50": 40.2917,
+     "75": 59.0758,
+     "95": 91.45
+    },
+    "in_sealed_contract": false
+   },
+   "rtd": {
+    "mean": 0.295,
+    "sd": 0.5286,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 1.0
+    },
+    "in_sealed_contract": false
+   }
+  },
+  "44246757": {
+   "dk_id": "44246757",
+   "name": "Jaxson Dart",
+   "team": "NYG",
+   "opponent": "TEN",
+   "salary": 5900,
+   "gsis_id": "00-0040691",
+   "has_qb_layer_row": true,
+   "db": {
+    "mean": 34.965,
+    "sd": 11.3724,
+    "pctl": {
+     "5": 13.85,
+     "25": 30.0,
+     "50": 37.0,
+     "75": 42.0,
+     "95": 55.0
+    },
+    "in_sealed_contract": false
+   },
+   "att": {
+    "mean": 29.185,
+    "sd": 9.9244,
+    "pctl": {
+     "5": 11.9,
+     "25": 24.0,
+     "50": 30.0,
+     "75": 35.0,
+     "95": 45.05
+    },
+    "in_sealed_contract": true
+   },
+   "sacks": {
+    "mean": 2.88,
+    "sd": 1.8663,
+    "pctl": {
+     "5": 0.0,
+     "25": 2.0,
+     "50": 3.0,
+     "75": 4.0,
+     "95": 6.0
+    },
+    "in_sealed_contract": false
+   },
+   "scr": {
+    "mean": 2.9,
+    "sd": 1.8513,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.75,
+     "50": 3.0,
+     "75": 4.0,
+     "95": 6.0
+    },
+    "in_sealed_contract": false
+   },
+   "cmp": {
+    "mean": 18.82,
+    "sd": 6.9858,
+    "pctl": {
+     "5": 7.0,
+     "25": 15.0,
+     "50": 19.5,
+     "75": 23.0,
+     "95": 30.05
+    },
+    "in_sealed_contract": true
+   },
+   "pyds": {
+    "mean": 204.2185,
+    "sd": 98.5661,
+    "pctl": {
+     "5": 51.8117,
+     "25": 137.5467,
+     "50": 196.3846,
+     "75": 261.7174,
+     "95": 386.8023
+    },
+    "in_sealed_contract": true
+   },
+   "ptd": {
+    "mean": 1.225,
+    "sd": 1.1048,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": true
+   },
+   "int": {
+    "mean": 0.33,
+    "sd": 0.6349,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 2.0
+    },
+    "in_sealed_contract": true
+   },
+   "drush": {
+    "mean": 3.12,
+    "sd": 1.8254,
+    "pctl": {
+     "5": 0.0,
+     "25": 2.0,
+     "50": 3.0,
+     "75": 4.0,
+     "95": 6.0
+    },
+    "in_sealed_contract": false
+   },
+   "rush_opp": {
+    "mean": 6.02,
+    "sd": 2.8549,
+    "pctl": {
+     "5": 1.0,
+     "25": 4.0,
+     "50": 6.0,
+     "75": 8.0,
+     "95": 11.0
+    },
+    "in_sealed_contract": false
+   },
+   "ryds": {
+    "mean": 35.1435,
+    "sd": 25.734,
+    "pctl": {
+     "5": 5.35,
+     "25": 17.9,
+     "50": 29.4,
+     "75": 48.0,
+     "95": 88.0
+    },
+    "in_sealed_contract": false
+   },
+   "rtd": {
+    "mean": 0.645,
+    "sd": 0.8848,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 2.0
+    },
+    "in_sealed_contract": false
+   }
+  },
+  "44246758": {
+   "dk_id": "44246758",
+   "name": "Justin Herbert",
+   "team": "LAC",
+   "opponent": "BUF",
+   "salary": 5800,
+   "gsis_id": "00-0036355",
+   "has_qb_layer_row": true,
+   "db": {
+    "mean": 39.82,
+    "sd": 9.7876,
+    "pctl": {
+     "5": 25.0,
+     "25": 34.0,
+     "50": 40.0,
+     "75": 46.0,
+     "95": 55.0
+    },
+    "in_sealed_contract": false
+   },
+   "att": {
+    "mean": 35.535,
+    "sd": 8.7528,
+    "pctl": {
+     "5": 22.0,
+     "25": 30.75,
+     "50": 35.0,
+     "75": 41.0,
+     "95": 50.0
+    },
+    "in_sealed_contract": true
+   },
+   "sacks": {
+    "mean": 2.305,
+    "sd": 1.6233,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 2.0,
+     "75": 3.0,
+     "95": 5.0
+    },
+    "in_sealed_contract": false
+   },
+   "scr": {
+    "mean": 1.98,
+    "sd": 1.3781,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 2.0,
+     "75": 3.0,
+     "95": 4.0
+    },
+    "in_sealed_contract": false
+   },
+   "cmp": {
+    "mean": 23.63,
+    "sd": 6.2818,
+    "pctl": {
+     "5": 13.95,
+     "25": 20.0,
+     "50": 23.0,
+     "75": 28.0,
+     "95": 34.0
+    },
+    "in_sealed_contract": true
+   },
+   "pyds": {
+    "mean": 261.2979,
+    "sd": 94.1869,
+    "pctl": {
+     "5": 142.0474,
+     "25": 200.8514,
+     "50": 249.6123,
+     "75": 312.3835,
+     "95": 408.8517
+    },
+    "in_sealed_contract": true
+   },
+   "ptd": {
+    "mean": 1.57,
+    "sd": 1.1276,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 4.0
+    },
+    "in_sealed_contract": true
+   },
+   "int": {
+    "mean": 0.63,
+    "sd": 0.8225,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 2.0
+    },
+    "in_sealed_contract": true
+   },
+   "drush": {
+    "mean": 1.175,
+    "sd": 1.171,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 4.0
+    },
+    "in_sealed_contract": false
+   },
+   "rush_opp": {
+    "mean": 3.155,
+    "sd": 1.8352,
+    "pctl": {
+     "5": 1.0,
+     "25": 2.0,
+     "50": 3.0,
+     "75": 4.0,
+     "95": 6.0
+    },
+    "in_sealed_contract": false
+   },
+   "ryds": {
+    "mean": 16.5402,
+    "sd": 16.2953,
+    "pctl": {
+     "5": 0.0,
+     "25": 6.0,
+     "50": 13.25,
+     "75": 24.0,
+     "95": 44.2
+    },
+    "in_sealed_contract": false
+   },
+   "rtd": {
+    "mean": 0.17,
+    "sd": 0.4147,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 1.0
+    },
+    "in_sealed_contract": false
+   }
+  },
+  "44246759": {
+   "dk_id": "44246759",
+   "name": "Trevor Lawrence",
+   "team": "JAX",
+   "opponent": "NE",
+   "salary": 5700,
+   "gsis_id": "00-0036971",
+   "has_qb_layer_row": true,
+   "db": {
+    "mean": 37.215,
+    "sd": 9.0747,
+    "pctl": {
+     "5": 24.0,
+     "25": 32.0,
+     "50": 35.0,
+     "75": 43.25,
+     "95": 52.0
+    },
+    "in_sealed_contract": false
+   },
+   "att": {
+    "mean": 33.465,
+    "sd": 8.3087,
+    "pctl": {
+     "5": 22.0,
+     "25": 28.0,
+     "50": 32.5,
+     "75": 38.25,
+     "95": 47.05
+    },
+    "in_sealed_contract": true
+   },
+   "sacks": {
+    "mean": 1.85,
+    "sd": 1.5262,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 2.0,
+     "75": 3.0,
+     "95": 5.0
+    },
+    "in_sealed_contract": false
+   },
+   "scr": {
+    "mean": 1.9,
+    "sd": 1.4802,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 2.0,
+     "75": 3.0,
+     "95": 5.0
+    },
+    "in_sealed_contract": false
+   },
+   "cmp": {
+    "mean": 21.075,
+    "sd": 5.8421,
+    "pctl": {
+     "5": 12.95,
+     "25": 17.75,
+     "50": 20.5,
+     "75": 25.0,
+     "95": 31.0
+    },
+    "in_sealed_contract": true
+   },
+   "pyds": {
+    "mean": 230.9508,
+    "sd": 80.1331,
+    "pctl": {
+     "5": 117.2171,
+     "25": 173.6,
+     "50": 220.8,
+     "75": 283.3357,
+     "95": 382.9819
+    },
+    "in_sealed_contract": true
+   },
+   "ptd": {
+    "mean": 1.23,
+    "sd": 1.0737,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": true
+   },
+   "int": {
+    "mean": 0.8,
+    "sd": 0.874,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 1.0,
+     "95": 2.05
+    },
+    "in_sealed_contract": true
+   },
+   "drush": {
+    "mean": 1.525,
+    "sd": 1.3297,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 4.0
+    },
+    "in_sealed_contract": false
+   },
+   "rush_opp": {
+    "mean": 3.425,
+    "sd": 2.0532,
+    "pctl": {
+     "5": 0.0,
+     "25": 2.0,
+     "50": 3.0,
+     "75": 5.0,
+     "95": 8.0
+    },
+    "in_sealed_contract": false
+   },
+   "ryds": {
+    "mean": 19.6323,
+    "sd": 18.1945,
+    "pctl": {
+     "5": 0.0,
+     "25": 6.55,
+     "50": 14.4,
+     "75": 29.0,
+     "95": 51.3875
+    },
+    "in_sealed_contract": false
+   },
+   "rtd": {
+    "mean": 0.275,
+    "sd": 0.5203,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 1.0
+    },
+    "in_sealed_contract": false
+   }
+  },
+  "44246760": {
+   "dk_id": "44246760",
+   "name": "Bryce Young",
+   "team": "CAR",
+   "opponent": "CLE",
+   "salary": 5600,
+   "gsis_id": "00-0039150",
+   "has_qb_layer_row": true,
+   "db": {
+    "mean": 33.625,
+    "sd": 10.265,
+    "pctl": {
+     "5": 17.0,
+     "25": 27.75,
+     "50": 34.5,
+     "75": 40.0,
+     "95": 48.0
+    },
+    "in_sealed_contract": false
+   },
+   "att": {
+    "mean": 28.995,
+    "sd": 9.1665,
+    "pctl": {
+     "5": 13.0,
+     "25": 24.0,
+     "50": 30.0,
+     "75": 34.25,
+     "95": 42.05
+    },
+    "in_sealed_contract": true
+   },
+   "sacks": {
+    "mean": 2.34,
+    "sd": 1.5383,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 2.0,
+     "75": 3.0,
+     "95": 5.0
+    },
+    "in_sealed_contract": false
+   },
+   "scr": {
+    "mean": 2.29,
+    "sd": 1.6183,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 2.0,
+     "75": 3.0,
+     "95": 5.05
+    },
+    "in_sealed_contract": false
+   },
+   "cmp": {
+    "mean": 17.73,
+    "sd": 6.2524,
+    "pctl": {
+     "5": 9.0,
+     "25": 14.0,
+     "50": 18.0,
+     "75": 21.0,
+     "95": 27.0
+    },
+    "in_sealed_contract": true
+   },
+   "pyds": {
+    "mean": 169.4985,
+    "sd": 79.2707,
+    "pctl": {
+     "5": 38.5429,
+     "25": 115.4182,
+     "50": 160.3444,
+     "75": 219.3316,
+     "95": 298.6236
+    },
+    "in_sealed_contract": true
+   },
+   "ptd": {
+    "mean": 1.065,
+    "sd": 1.1167,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": true
+   },
+   "int": {
+    "mean": 0.645,
+    "sd": 0.8076,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 2.0
+    },
+    "in_sealed_contract": true
+   },
+   "drush": {
+    "mean": 0.315,
+    "sd": 0.5722,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 1.0
+    },
+    "in_sealed_contract": false
+   },
+   "rush_opp": {
+    "mean": 2.605,
+    "sd": 1.7648,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 2.0,
+     "75": 4.0,
+     "95": 6.0
+    },
+    "in_sealed_contract": false
+   },
+   "ryds": {
+    "mean": 17.2195,
+    "sd": 18.1677,
+    "pctl": {
+     "5": 0.0,
+     "25": 6.0,
+     "50": 12.0,
+     "75": 25.0,
+     "95": 48.05
+    },
+    "in_sealed_contract": false
+   },
+   "rtd": {
+    "mean": 0.155,
+    "sd": 0.3628,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 1.0
+    },
+    "in_sealed_contract": false
+   }
+  },
+  "44246761": {
+   "dk_id": "44246761",
+   "name": "C.J. Stroud",
+   "team": "HOU",
+   "opponent": "IND",
+   "salary": 5500,
+   "gsis_id": "00-0039163",
+   "has_qb_layer_row": true,
+   "db": {
+    "mean": 36.455,
+    "sd": 9.348,
+    "pctl": {
+     "5": 23.95,
+     "25": 31.0,
+     "50": 37.5,
+     "75": 42.0,
+     "95": 52.0
+    },
+    "in_sealed_contract": false
+   },
+   "att": {
+    "mean": 31.995,
+    "sd": 8.5616,
+    "pctl": {
+     "5": 19.95,
+     "25": 26.75,
+     "50": 32.0,
+     "75": 37.0,
+     "95": 45.0
+    },
+    "in_sealed_contract": true
+   },
+   "sacks": {
+    "mean": 2.475,
+    "sd": 1.5626,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 2.0,
+     "75": 3.0,
+     "95": 5.0
+    },
+    "in_sealed_contract": false
+   },
+   "scr": {
+    "mean": 1.985,
+    "sd": 1.3542,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 2.0,
+     "75": 3.0,
+     "95": 4.05
+    },
+    "in_sealed_contract": false
+   },
+   "cmp": {
+    "mean": 20.46,
+    "sd": 6.2106,
+    "pctl": {
+     "5": 9.95,
+     "25": 16.0,
+     "50": 21.0,
+     "75": 25.0,
+     "95": 30.05
+    },
+    "in_sealed_contract": true
+   },
+   "pyds": {
+    "mean": 236.2947,
+    "sd": 94.6564,
+    "pctl": {
+     "5": 91.3625,
+     "25": 169.7391,
+     "50": 226.6645,
+     "75": 286.2368,
+     "95": 420.8325
+    },
+    "in_sealed_contract": true
+   },
+   "ptd": {
+    "mean": 1.5,
+    "sd": 1.272,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 4.0
+    },
+    "in_sealed_contract": true
+   },
+   "int": {
+    "mean": 0.67,
+    "sd": 0.8973,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 2.05
+    },
+    "in_sealed_contract": true
+   },
+   "drush": {
+    "mean": 0.71,
+    "sd": 0.8716,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": false
+   },
+   "rush_opp": {
+    "mean": 2.695,
+    "sd": 1.69,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 3.0,
+     "75": 4.0,
+     "95": 6.0
+    },
+    "in_sealed_contract": false
+   },
+   "ryds": {
+    "mean": 15.1523,
+    "sd": 19.0095,
+    "pctl": {
+     "5": 0.0,
+     "25": 5.0,
+     "50": 11.75,
+     "75": 20.625,
+     "95": 37.625
+    },
+    "in_sealed_contract": false
+   },
+   "rtd": {
+    "mean": 0.105,
+    "sd": 0.3073,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 1.0
+    },
+    "in_sealed_contract": false
+   }
+  },
+  "44246762": {
+   "dk_id": "44246762",
+   "name": "Sam Darnold",
+   "team": "SEA",
+   "opponent": "WAS",
+   "salary": 5400,
+   "gsis_id": "00-0034869",
+   "has_qb_layer_row": true,
+   "db": {
+    "mean": 31.53,
+    "sd": 11.4843,
+    "pctl": {
+     "5": 3.0,
+     "25": 28.0,
+     "50": 32.5,
+     "75": 38.0,
+     "95": 48.0
+    },
+    "in_sealed_contract": false
+   },
+   "att": {
+    "mean": 27.71,
+    "sd": 10.3582,
+    "pctl": {
+     "5": 3.0,
+     "25": 24.0,
+     "50": 28.0,
+     "75": 34.0,
+     "95": 42.05
+    },
+    "in_sealed_contract": true
+   },
+   "sacks": {
+    "mean": 2.32,
+    "sd": 1.6917,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 2.0,
+     "75": 3.0,
+     "95": 5.0
+    },
+    "in_sealed_contract": false
+   },
+   "scr": {
+    "mean": 1.5,
+    "sd": 1.2237,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 4.0
+    },
+    "in_sealed_contract": false
+   },
+   "cmp": {
+    "mean": 17.79,
+    "sd": 7.222,
+    "pctl": {
+     "5": 2.0,
+     "25": 15.0,
+     "50": 19.0,
+     "75": 22.0,
+     "95": 28.05
+    },
+    "in_sealed_contract": true
+   },
+   "pyds": {
+    "mean": 199.1175,
+    "sd": 94.2686,
+    "pctl": {
+     "5": 21.8143,
+     "25": 148.1364,
+     "50": 191.2194,
+     "75": 266.6667,
+     "95": 353.4618
+    },
+    "in_sealed_contract": true
+   },
+   "ptd": {
+    "mean": 1.34,
+    "sd": 1.2777,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 4.0
+    },
+    "in_sealed_contract": true
+   },
+   "int": {
+    "mean": 0.74,
+    "sd": 0.858,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 1.0,
+     "95": 2.0
+    },
+    "in_sealed_contract": true
+   },
+   "drush": {
+    "mean": 0.87,
+    "sd": 1.0765,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 1.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": false
+   },
+   "rush_opp": {
+    "mean": 2.37,
+    "sd": 1.8385,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 2.0,
+     "75": 4.0,
+     "95": 6.0
+    },
+    "in_sealed_contract": false
+   },
+   "ryds": {
+    "mean": 14.5241,
+    "sd": 18.1132,
+    "pctl": {
+     "5": 0.0,
+     "25": 3.0,
+     "50": 9.0,
+     "75": 19.125,
+     "95": 49.3
+    },
+    "in_sealed_contract": false
+   },
+   "rtd": {
+    "mean": 0.11,
+    "sd": 0.3137,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 1.0
+    },
+    "in_sealed_contract": false
+   }
+  },
+  "44246763": {
+   "dk_id": "44246763",
+   "name": "Drew Lock",
+   "team": "SEA",
+   "opponent": "WAS",
+   "salary": 5200,
+   "gsis_id": "00-0035704",
+   "has_qb_layer_row": true,
+   "db": {
+    "mean": 29.7,
+    "sd": 13.697,
+    "pctl": {
+     "5": 4.0,
+     "25": 27.5,
+     "50": 32.5,
+     "75": 38.0,
+     "95": 48.0
+    },
+    "in_sealed_contract": false
+   },
+   "att": {
+    "mean": 26.595,
+    "sd": 12.3228,
+    "pctl": {
+     "5": 4.0,
+     "25": 23.75,
+     "50": 29.0,
+     "75": 34.0,
+     "95": 44.0
+    },
+    "in_sealed_contract": true
+   },
+   "sacks": {
+    "mean": 1.715,
+    "sd": 1.505,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 1.0,
+     "75": 3.0,
+     "95": 5.0
+    },
+    "in_sealed_contract": false
+   },
+   "scr": {
+    "mean": 1.39,
+    "sd": 1.417,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 4.0
+    },
+    "in_sealed_contract": false
+   },
+   "cmp": {
+    "mean": 15.625,
+    "sd": 7.7001,
+    "pctl": {
+     "5": 2.0,
+     "25": 11.0,
+     "50": 17.0,
+     "75": 21.0,
+     "95": 27.0
+    },
+    "in_sealed_contract": true
+   },
+   "pyds": {
+    "mean": 172.2431,
+    "sd": 116.3331,
+    "pctl": {
+     "5": 14.5606,
+     "25": 75.5182,
+     "50": 166.3043,
+     "75": 253.3333,
+     "95": 344.0545
+    },
+    "in_sealed_contract": true
+   },
+   "ptd": {
+    "mean": 0.88,
+    "sd": 0.9697,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 1.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": true
+   },
+   "int": {
+    "mean": 0.825,
+    "sd": 0.9481,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 1.0,
+     "95": 2.0
+    },
+    "in_sealed_contract": true
+   },
+   "drush": {
+    "mean": 0.845,
+    "sd": 1.0326,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 1.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": false
+   },
+   "rush_opp": {
+    "mean": 2.235,
+    "sd": 1.949,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 2.0,
+     "75": 3.0,
+     "95": 5.0
+    },
+    "in_sealed_contract": false
+   },
+   "ryds": {
+    "mean": 10.1943,
+    "sd": 12.4401,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.6667,
+     "50": 5.5167,
+     "75": 13.6875,
+     "95": 35.02
+    },
+    "in_sealed_contract": false
+   },
+   "rtd": {
+    "mean": 0.27,
+    "sd": 0.5277,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 1.0
+    },
+    "in_sealed_contract": false
+   }
+  },
+  "44246764": {
+   "dk_id": "44246764",
+   "name": "Cam Ward",
+   "team": "TEN",
+   "opponent": "NYG",
+   "salary": 5100,
+   "gsis_id": "00-0040676",
+   "has_qb_layer_row": true,
+   "db": {
+    "mean": 33.775,
+    "sd": 10.6984,
+    "pctl": {
+     "5": 13.9,
+     "25": 29.0,
+     "50": 35.0,
+     "75": 41.0,
+     "95": 48.0
+    },
+    "in_sealed_contract": false
+   },
+   "att": {
+    "mean": 29.6,
+    "sd": 9.5259,
+    "pctl": {
+     "5": 12.0,
+     "25": 25.0,
+     "50": 30.0,
+     "75": 36.0,
+     "95": 42.05
+    },
+    "in_sealed_contract": true
+   },
+   "sacks": {
+    "mean": 2.88,
+    "sd": 1.8501,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 3.0,
+     "75": 4.0,
+     "95": 6.0
+    },
+    "in_sealed_contract": false
+   },
+   "scr": {
+    "mean": 1.295,
+    "sd": 1.2146,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 4.0
+    },
+    "in_sealed_contract": false
+   },
+   "cmp": {
+    "mean": 18.12,
+    "sd": 6.3701,
+    "pctl": {
+     "5": 6.95,
+     "25": 15.0,
+     "50": 18.0,
+     "75": 22.0,
+     "95": 28.0
+    },
+    "in_sealed_contract": true
+   },
+   "pyds": {
+    "mean": 190.5746,
+    "sd": 81.882,
+    "pctl": {
+     "5": 54.758,
+     "25": 137.9726,
+     "50": 182.5692,
+     "75": 241.5417,
+     "95": 336.73
+    },
+    "in_sealed_contract": true
+   },
+   "ptd": {
+    "mean": 0.93,
+    "sd": 0.9432,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 2.05
+    },
+    "in_sealed_contract": true
+   },
+   "int": {
+    "mean": 0.43,
+    "sd": 0.6459,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 2.0
+    },
+    "in_sealed_contract": true
+   },
+   "drush": {
+    "mean": 0.75,
+    "sd": 0.8609,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 1.0,
+     "95": 2.0
+    },
+    "in_sealed_contract": false
+   },
+   "rush_opp": {
+    "mean": 2.045,
+    "sd": 1.5765,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 2.0,
+     "75": 3.0,
+     "95": 5.0
+    },
+    "in_sealed_contract": false
+   },
+   "ryds": {
+    "mean": 10.6689,
+    "sd": 12.7198,
+    "pctl": {
+     "5": 0.0,
+     "25": 2.0,
+     "50": 6.0,
+     "75": 12.0,
+     "95": 33.45
+    },
+    "in_sealed_contract": false
+   },
+   "rtd": {
+    "mean": 0.12,
+    "sd": 0.3692,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 1.0
+    },
+    "in_sealed_contract": false
+   }
+  },
+  "44246765": {
+   "dk_id": "44246765",
+   "name": "Daniel Jones",
+   "team": "IND",
+   "opponent": "HOU",
+   "salary": 5000,
+   "gsis_id": "00-0035710",
+   "has_qb_layer_row": true,
+   "db": {
+    "mean": 33.535,
+    "sd": 9.3867,
+    "pctl": {
+     "5": 14.0,
+     "25": 28.75,
+     "50": 35.0,
+     "75": 39.0,
+     "95": 48.0
+    },
+    "in_sealed_contract": false
+   },
+   "att": {
+    "mean": 28.895,
+    "sd": 8.4547,
+    "pctl": {
+     "5": 12.95,
+     "25": 24.0,
+     "50": 29.5,
+     "75": 34.25,
+     "95": 42.0
+    },
+    "in_sealed_contract": true
+   },
+   "sacks": {
+    "mean": 2.435,
+    "sd": 1.5124,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 2.0,
+     "75": 3.0,
+     "95": 5.0
+    },
+    "in_sealed_contract": false
+   },
+   "scr": {
+    "mean": 2.205,
+    "sd": 1.554,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 2.0,
+     "75": 3.0,
+     "95": 5.0
+    },
+    "in_sealed_contract": false
+   },
+   "cmp": {
+    "mean": 19.075,
+    "sd": 5.8824,
+    "pctl": {
+     "5": 9.9,
+     "25": 15.0,
+     "50": 19.0,
+     "75": 23.0,
+     "95": 28.05
+    },
+    "in_sealed_contract": true
+   },
+   "pyds": {
+    "mean": 195.9106,
+    "sd": 76.2555,
+    "pctl": {
+     "5": 93.2037,
+     "25": 143.6503,
+     "50": 191.9655,
+     "75": 233.3138,
+     "95": 336.9738
+    },
+    "in_sealed_contract": true
+   },
+   "ptd": {
+    "mean": 0.825,
+    "sd": 0.9481,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 1.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": true
+   },
+   "int": {
+    "mean": 0.685,
+    "sd": 0.8422,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 2.0
+    },
+    "in_sealed_contract": true
+   },
+   "drush": {
+    "mean": 2.585,
+    "sd": 1.6017,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.75,
+     "50": 2.0,
+     "75": 3.0,
+     "95": 6.0
+    },
+    "in_sealed_contract": false
+   },
+   "rush_opp": {
+    "mean": 4.79,
+    "sd": 2.3736,
+    "pctl": {
+     "5": 1.0,
+     "25": 3.0,
+     "50": 5.0,
+     "75": 6.0,
+     "95": 9.0
+    },
+    "in_sealed_contract": false
+   },
+   "ryds": {
+    "mean": 29.5765,
+    "sd": 29.8817,
+    "pctl": {
+     "5": 1.3167,
+     "25": 12.0,
+     "50": 21.75,
+     "75": 35.5,
+     "95": 79.3436
+    },
+    "in_sealed_contract": false
+   },
+   "rtd": {
+    "mean": 0.24,
+    "sd": 0.5135,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 1.0
+    },
+    "in_sealed_contract": false
+   }
+  },
+  "44246766": {
+   "dk_id": "44246766",
+   "name": "Aaron Rodgers",
+   "team": "PIT",
+   "opponent": "CIN",
+   "salary": 5000,
+   "gsis_id": "00-0023459",
+   "has_qb_layer_row": true,
+   "db": {
+    "mean": 34.405,
+    "sd": 10.2521,
+    "pctl": {
+     "5": 18.95,
+     "25": 29.0,
+     "50": 34.0,
+     "75": 41.0,
+     "95": 51.0
+    },
+    "in_sealed_contract": false
+   },
+   "att": {
+    "mean": 31.51,
+    "sd": 9.5817,
+    "pctl": {
+     "5": 17.95,
+     "25": 25.0,
+     "50": 31.0,
+     "75": 38.0,
+     "95": 47.05
+    },
+    "in_sealed_contract": true
+   },
+   "sacks": {
+    "mean": 1.88,
+    "sd": 1.4233,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 2.0,
+     "75": 3.0,
+     "95": 5.0
+    },
+    "in_sealed_contract": false
+   },
+   "scr": {
+    "mean": 1.015,
+    "sd": 1.0489,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": false
+   },
+   "cmp": {
+    "mean": 21.195,
+    "sd": 7.0466,
+    "pctl": {
+     "5": 11.0,
+     "25": 17.0,
+     "50": 21.0,
+     "75": 26.0,
+     "95": 33.05
+    },
+    "in_sealed_contract": true
+   },
+   "pyds": {
+    "mean": 232.0863,
+    "sd": 84.1621,
+    "pctl": {
+     "5": 102.8256,
+     "25": 182.4318,
+     "50": 227.0861,
+     "75": 277.8876,
+     "95": 373.8128
+    },
+    "in_sealed_contract": true
+   },
+   "ptd": {
+    "mean": 1.88,
+    "sd": 1.5255,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 2.0,
+     "75": 2.0,
+     "95": 5.0
+    },
+    "in_sealed_contract": true
+   },
+   "int": {
+    "mean": 0.56,
+    "sd": 0.6992,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 2.0
+    },
+    "in_sealed_contract": true
+   },
+   "drush": {
+    "mean": 0.325,
+    "sd": 0.5754,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 1.0
+    },
+    "in_sealed_contract": false
+   },
+   "rush_opp": {
+    "mean": 1.34,
+    "sd": 1.1796,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": false
+   },
+   "ryds": {
+    "mean": 6.9066,
+    "sd": 9.0954,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 4.0,
+     "75": 10.7917,
+     "95": 21.225
+    },
+    "in_sealed_contract": false
+   },
+   "rtd": {
+    "mean": 0.055,
+    "sd": 0.2286,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 1.0
+    },
+    "in_sealed_contract": false
+   }
+  },
+  "44246767": {
+   "dk_id": "44246767",
+   "name": "Geno Smith",
+   "team": "NYJ",
+   "opponent": "DET",
+   "salary": 4900,
+   "gsis_id": "00-0030565",
+   "has_qb_layer_row": true,
+   "db": {
+    "mean": 37.345,
+    "sd": 9.9145,
+    "pctl": {
+     "5": 21.0,
+     "25": 31.0,
+     "50": 39.0,
+     "75": 43.0,
+     "95": 55.0
+    },
+    "in_sealed_contract": false
+   },
+   "att": {
+    "mean": 33.0,
+    "sd": 8.906,
+    "pctl": {
+     "5": 19.0,
+     "25": 28.0,
+     "50": 33.0,
+     "75": 38.0,
+     "95": 49.0
+    },
+    "in_sealed_contract": true
+   },
+   "sacks": {
+    "mean": 2.995,
+    "sd": 1.8929,
+    "pctl": {
+     "5": 0.0,
+     "25": 2.0,
+     "50": 3.0,
+     "75": 4.0,
+     "95": 6.05
+    },
+    "in_sealed_contract": false
+   },
+   "scr": {
+    "mean": 1.35,
+    "sd": 1.0502,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": false
+   },
+   "cmp": {
+    "mean": 22.315,
+    "sd": 6.5514,
+    "pctl": {
+     "5": 13.0,
+     "25": 18.0,
+     "50": 21.5,
+     "75": 27.0,
+     "95": 34.0
+    },
+    "in_sealed_contract": true
+   },
+   "pyds": {
+    "mean": 247.5776,
+    "sd": 90.2698,
+    "pctl": {
+     "5": 125.9679,
+     "25": 184.2609,
+     "50": 234.7,
+     "75": 301.5536,
+     "95": 421.3686
+    },
+    "in_sealed_contract": true
+   },
+   "ptd": {
+    "mean": 1.505,
+    "sd": 1.236,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 4.0
+    },
+    "in_sealed_contract": true
+   },
+   "int": {
+    "mean": 0.845,
+    "sd": 0.9028,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 1.0,
+     "95": 2.05
+    },
+    "in_sealed_contract": true
+   },
+   "drush": {
+    "mean": 1.1,
+    "sd": 1.0751,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": false
+   },
+   "rush_opp": {
+    "mean": 2.45,
+    "sd": 1.5523,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 2.0,
+     "75": 3.0,
+     "95": 5.0
+    },
+    "in_sealed_contract": false
+   },
+   "ryds": {
+    "mean": 14.1503,
+    "sd": 17.3891,
+    "pctl": {
+     "5": 0.0,
+     "25": 3.6,
+     "50": 10.5,
+     "75": 18.5,
+     "95": 45.0833
+    },
+    "in_sealed_contract": false
+   },
+   "rtd": {
+    "mean": 0.08,
+    "sd": 0.2899,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 1.0
+    },
+    "in_sealed_contract": false
+   }
+  },
+  "44246768": {
+   "dk_id": "44246768",
+   "name": "Malik Willis",
+   "team": "MIA",
+   "opponent": "KC",
+   "salary": 4900,
+   "gsis_id": "00-0038128",
+   "has_qb_layer_row": true,
+   "db": {
+    "mean": 20.76,
+    "sd": 16.875,
+    "pctl": {
+     "5": 1.0,
+     "25": 3.0,
+     "50": 18.5,
+     "75": 36.0,
+     "95": 48.0
+    },
+    "in_sealed_contract": false
+   },
+   "att": {
+    "mean": 16.135,
+    "sd": 13.2868,
+    "pctl": {
+     "5": 1.0,
+     "25": 3.0,
+     "50": 14.5,
+     "75": 27.0,
+     "95": 38.0
+    },
+    "in_sealed_contract": true
+   },
+   "sacks": {
+    "mean": 2.13,
+    "sd": 2.1672,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.5,
+     "75": 3.0,
+     "95": 7.0
+    },
+    "in_sealed_contract": false
+   },
+   "scr": {
+    "mean": 2.495,
+    "sd": 2.7782,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 2.0,
+     "75": 4.0,
+     "95": 8.0
+    },
+    "in_sealed_contract": false
+   },
+   "cmp": {
+    "mean": 10.975,
+    "sd": 9.2424,
+    "pctl": {
+     "5": 1.0,
+     "25": 2.0,
+     "50": 9.5,
+     "75": 18.25,
+     "95": 27.0
+    },
+    "in_sealed_contract": true
+   },
+   "pyds": {
+    "mean": 142.5662,
+    "sd": 169.4806,
+    "pctl": {
+     "5": 6.0,
+     "25": 20.25,
+     "50": 84.0,
+     "75": 208.5,
+     "95": 444.925
+    },
+    "in_sealed_contract": true
+   },
+   "ptd": {
+    "mean": 0.7,
+    "sd": 1.0273,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": true
+   },
+   "int": {
+    "mean": 0.295,
+    "sd": 0.6403,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 1.05
+    },
+    "in_sealed_contract": true
+   },
+   "drush": {
+    "mean": 2.89,
+    "sd": 2.7688,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 2.5,
+     "75": 5.0,
+     "95": 8.0
+    },
+    "in_sealed_contract": false
+   },
+   "rush_opp": {
+    "mean": 5.385,
+    "sd": 4.9334,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 4.0,
+     "75": 9.0,
+     "95": 14.05
+    },
+    "in_sealed_contract": false
+   },
+   "ryds": {
+    "mean": 34.9964,
+    "sd": 41.4622,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 22.0,
+     "75": 51.1875,
+     "95": 120.0
+    },
+    "in_sealed_contract": false
+   },
+   "rtd": {
+    "mean": 0.295,
+    "sd": 0.6403,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 2.0
+    },
+    "in_sealed_contract": false
+   }
+  },
+  "44246769": {
+   "dk_id": "44246769",
+   "name": "Deshaun Watson",
+   "team": "CLE",
+   "opponent": "CAR",
+   "salary": 4700,
+   "gsis_id": "00-0033537",
+   "has_qb_layer_row": true,
+   "db": {
+    "mean": 36.33,
+    "sd": 11.7619,
+    "pctl": {
+     "5": 10.9,
+     "25": 31.0,
+     "50": 37.0,
+     "75": 44.25,
+     "95": 55.0
+    },
+    "in_sealed_contract": false
+   },
+   "att": {
+    "mean": 30.19,
+    "sd": 10.0718,
+    "pctl": {
+     "5": 8.95,
+     "25": 25.0,
+     "50": 31.0,
+     "75": 37.0,
+     "95": 46.0
+    },
+    "in_sealed_contract": true
+   },
+   "sacks": {
+    "mean": 3.225,
+    "sd": 1.9112,
+    "pctl": {
+     "5": 0.0,
+     "25": 2.0,
+     "50": 3.0,
+     "75": 4.0,
+     "95": 6.05
+    },
+    "in_sealed_contract": false
+   },
+   "scr": {
+    "mean": 2.915,
+    "sd": 1.8962,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 3.0,
+     "75": 4.0,
+     "95": 6.0
+    },
+    "in_sealed_contract": false
+   },
+   "cmp": {
+    "mean": 19.705,
+    "sd": 7.2596,
+    "pctl": {
+     "5": 4.95,
+     "25": 16.0,
+     "50": 21.0,
+     "75": 24.0,
+     "95": 31.0
+    },
+    "in_sealed_contract": true
+   },
+   "pyds": {
+    "mean": 224.2928,
+    "sd": 102.8118,
+    "pctl": {
+     "5": 58.8071,
+     "25": 152.9605,
+     "50": 221.0536,
+     "75": 284.2788,
+     "95": 405.4056
+    },
+    "in_sealed_contract": true
+   },
+   "ptd": {
+    "mean": 1.545,
+    "sd": 1.333,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 4.0
+    },
+    "in_sealed_contract": true
+   },
+   "int": {
+    "mean": 0.53,
+    "sd": 0.7429,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 2.0
+    },
+    "in_sealed_contract": true
+   },
+   "drush": {
+    "mean": 1.27,
+    "sd": 1.2184,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 3.05
+    },
+    "in_sealed_contract": false
+   },
+   "rush_opp": {
+    "mean": 4.185,
+    "sd": 2.3936,
+    "pctl": {
+     "5": 0.0,
+     "25": 3.0,
+     "50": 4.0,
+     "75": 6.0,
+     "95": 8.0
+    },
+    "in_sealed_contract": false
+   },
+   "ryds": {
+    "mean": 22.8711,
+    "sd": 18.15,
+    "pctl": {
+     "5": 0.0,
+     "25": 10.9643,
+     "50": 20.0,
+     "75": 31.3286,
+     "95": 55.24
+    },
+    "in_sealed_contract": false
+   },
+   "rtd": {
+    "mean": 0.175,
+    "sd": 0.4064,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 1.0
+    },
+    "in_sealed_contract": false
+   }
+  },
+  "44246770": {
+   "dk_id": "44246770",
+   "name": "Marcus Mariota",
+   "team": "WAS",
+   "opponent": "SEA",
+   "salary": 4500,
+   "gsis_id": "00-0032268",
+   "has_qb_layer_row": true,
+   "db": {
+    "mean": 29.01,
+    "sd": 15.7929,
+    "pctl": {
+     "5": 1.0,
+     "25": 21.75,
+     "50": 31.0,
+     "75": 40.0,
+     "95": 53.0
+    },
+    "in_sealed_contract": false
+   },
+   "att": {
+    "mean": 24.8,
+    "sd": 13.73,
+    "pctl": {
+     "5": 1.0,
+     "25": 18.0,
+     "50": 26.0,
+     "75": 34.0,
+     "95": 45.05
+    },
+    "in_sealed_contract": true
+   },
+   "sacks": {
+    "mean": 2.07,
+    "sd": 1.7666,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.75,
+     "50": 2.0,
+     "75": 3.0,
+     "95": 6.0
+    },
+    "in_sealed_contract": false
+   },
+   "scr": {
+    "mean": 2.14,
+    "sd": 1.7509,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 2.0,
+     "75": 3.0,
+     "95": 5.0
+    },
+    "in_sealed_contract": false
+   },
+   "cmp": {
+    "mean": 15.6,
+    "sd": 9.2144,
+    "pctl": {
+     "5": 1.0,
+     "25": 10.0,
+     "50": 17.0,
+     "75": 21.25,
+     "95": 30.1
+    },
+    "in_sealed_contract": true
+   },
+   "pyds": {
+    "mean": 176.1491,
+    "sd": 127.7337,
+    "pctl": {
+     "5": 0.0,
+     "25": 75.375,
+     "50": 181.2173,
+     "75": 244.0538,
+     "95": 394.0725
+    },
+    "in_sealed_contract": true
+   },
+   "ptd": {
+    "mean": 1.225,
+    "sd": 1.3126,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 4.0
+    },
+    "in_sealed_contract": true
+   },
+   "int": {
+    "mean": 0.695,
+    "sd": 0.9308,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": true
+   },
+   "drush": {
+    "mean": 4.005,
+    "sd": 2.7151,
+    "pctl": {
+     "5": 0.0,
+     "25": 2.0,
+     "50": 4.0,
+     "75": 6.0,
+     "95": 8.05
+    },
+    "in_sealed_contract": false
+   },
+   "rush_opp": {
+    "mean": 6.145,
+    "sd": 3.8546,
+    "pctl": {
+     "5": 0.0,
+     "25": 3.0,
+     "50": 6.0,
+     "75": 9.0,
+     "95": 12.0
+    },
+    "in_sealed_contract": false
+   },
+   "ryds": {
+    "mean": 40.0185,
+    "sd": 36.3481,
+    "pctl": {
+     "5": 0.0,
+     "25": 10.8,
+     "50": 34.25,
+     "75": 54.0,
+     "95": 112.0
+    },
+    "in_sealed_contract": false
+   },
+   "rtd": {
+    "mean": 0.36,
+    "sd": 0.6422,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 2.0
+    },
+    "in_sealed_contract": false
+   }
+  },
+  "44246771": {
+   "dk_id": "44246771",
+   "name": "Joe Flacco",
+   "team": "CIN",
+   "opponent": "PIT",
+   "salary": 4400,
+   "gsis_id": "00-0026158",
+   "has_qb_layer_row": true,
+   "db": {
+    "mean": 33.825,
+    "sd": 15.3549,
+    "pctl": {
+     "5": 2.0,
+     "25": 29.75,
+     "50": 37.0,
+     "75": 43.0,
+     "95": 51.05
+    },
+    "in_sealed_contract": false
+   },
+   "att": {
+    "mean": 31.615,
+    "sd": 14.4277,
+    "pctl": {
+     "5": 1.95,
+     "25": 27.75,
+     "50": 34.0,
+     "75": 41.0,
+     "95": 48.05
+    },
+    "in_sealed_contract": true
+   },
+   "sacks": {
+    "mean": 1.69,
+    "sd": 1.3941,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 2.0,
+     "75": 3.0,
+     "95": 4.0
+    },
+    "in_sealed_contract": false
+   },
+   "scr": {
+    "mean": 0.52,
+    "sd": 0.687,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 2.0
+    },
+    "in_sealed_contract": false
+   },
+   "cmp": {
+    "mean": 19.065,
+    "sd": 9.0293,
+    "pctl": {
+     "5": 1.0,
+     "25": 15.0,
+     "50": 21.0,
+     "75": 25.0,
+     "95": 31.0
+    },
+    "in_sealed_contract": true
+   },
+   "pyds": {
+    "mean": 197.3578,
+    "sd": 107.321,
+    "pctl": {
+     "5": 8.4995,
+     "25": 142.375,
+     "50": 210.5359,
+     "75": 271.6935,
+     "95": 346.6976
+    },
+    "in_sealed_contract": true
+   },
+   "ptd": {
+    "mean": 1.415,
+    "sd": 1.4081,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 4.0
+    },
+    "in_sealed_contract": true
+   },
+   "int": {
+    "mean": 0.87,
+    "sd": 1.0671,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 1.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": true
+   },
+   "drush": {
+    "mean": 0.485,
+    "sd": 0.7699,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 2.0
+    },
+    "in_sealed_contract": false
+   },
+   "rush_opp": {
+    "mean": 1.005,
+    "sd": 1.1096,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": false
+   },
+   "ryds": {
+    "mean": 3.6219,
+    "sd": 6.538,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 5.25,
+     "95": 14.05
+    },
+    "in_sealed_contract": false
+   },
+   "rtd": {
+    "mean": 0.045,
+    "sd": 0.2307,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 0.0
+    },
+    "in_sealed_contract": false
+   }
+  },
+  "44246772": {
+   "dk_id": "44246772",
+   "name": "Shedeur Sanders",
+   "team": "CLE",
+   "opponent": "CAR",
+   "salary": 4200,
+   "gsis_id": "00-0040668",
+   "has_qb_layer_row": true,
+   "db": {
+    "mean": 35.715,
+    "sd": 9.9896,
+    "pctl": {
+     "5": 17.95,
+     "25": 30.0,
+     "50": 37.0,
+     "75": 42.0,
+     "95": 51.1
+    },
+    "in_sealed_contract": false
+   },
+   "att": {
+    "mean": 30.515,
+    "sd": 8.8329,
+    "pctl": {
+     "5": 16.0,
+     "25": 25.0,
+     "50": 31.0,
+     "75": 36.0,
+     "95": 44.0
+    },
+    "in_sealed_contract": true
+   },
+   "sacks": {
+    "mean": 2.98,
+    "sd": 1.8941,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.75,
+     "50": 3.0,
+     "75": 4.0,
+     "95": 6.0
+    },
+    "in_sealed_contract": false
+   },
+   "scr": {
+    "mean": 2.22,
+    "sd": 1.4773,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 2.0,
+     "75": 3.0,
+     "95": 5.0
+    },
+    "in_sealed_contract": false
+   },
+   "cmp": {
+    "mean": 18.305,
+    "sd": 5.9926,
+    "pctl": {
+     "5": 9.0,
+     "25": 15.0,
+     "50": 18.0,
+     "75": 22.0,
+     "95": 28.0
+    },
+    "in_sealed_contract": true
+   },
+   "pyds": {
+    "mean": 208.8641,
+    "sd": 94.2461,
+    "pctl": {
+     "5": 83.5784,
+     "25": 149.375,
+     "50": 196.1146,
+     "75": 252.3043,
+     "95": 363.05
+    },
+    "in_sealed_contract": true
+   },
+   "ptd": {
+    "mean": 1.2,
+    "sd": 0.9975,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": true
+   },
+   "int": {
+    "mean": 1.055,
+    "sd": 1.0524,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 1.25,
+     "95": 3.0
+    },
+    "in_sealed_contract": true
+   },
+   "drush": {
+    "mean": 0.625,
+    "sd": 0.8293,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 2.0
+    },
+    "in_sealed_contract": false
+   },
+   "rush_opp": {
+    "mean": 2.845,
+    "sd": 1.7309,
+    "pctl": {
+     "5": 0.0,
+     "25": 2.0,
+     "50": 3.0,
+     "75": 4.0,
+     "95": 6.0
+    },
+    "in_sealed_contract": false
+   },
+   "ryds": {
+    "mean": 20.9719,
+    "sd": 17.1679,
+    "pctl": {
+     "5": 0.0,
+     "25": 8.6667,
+     "50": 18.0,
+     "75": 29.25,
+     "95": 49.0
+    },
+    "in_sealed_contract": false
+   },
+   "rtd": {
+    "mean": 0.14,
+    "sd": 0.3888,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 1.0
+    },
+    "in_sealed_contract": false
+   }
+  },
+  "44246773": {
+   "dk_id": "44246773",
+   "name": "Athan Kaliakmanis",
+   "team": "WAS",
+   "opponent": "SEA",
+   "salary": 4000,
+   "gsis_id": "00-0041117",
+   "has_qb_layer_row": false,
+   "why_absent": "no row in the QB frame: no pre-2026 history and include_cold_start is False. UNKNOWN, not zero."
+  },
+  "44246774": {
+   "dk_id": "44246774",
+   "name": "Sam Hartman",
+   "team": "WAS",
+   "opponent": "SEA",
+   "salary": 4000,
+   "gsis_id": "00-0039677",
+   "has_qb_layer_row": false,
+   "why_absent": "no row in the QB frame: no pre-2026 history and include_cold_start is False. UNKNOWN, not zero."
+  },
+  "44246775": {
+   "dk_id": "44246775",
+   "name": "Jalen Milroe",
+   "team": "SEA",
+   "opponent": "WAS",
+   "salary": 4000,
+   "gsis_id": "00-0040673",
+   "has_qb_layer_row": false,
+   "why_absent": "no row in the QB frame: no pre-2026 history and include_cold_start is False. UNKNOWN, not zero."
+  },
+  "44246776": {
+   "dk_id": "44246776",
+   "name": "Jameis Winston",
+   "team": "NYG",
+   "opponent": "TEN",
+   "salary": 4000,
+   "gsis_id": "00-0031503",
+   "has_qb_layer_row": true,
+   "db": {
+    "mean": 28.82,
+    "sd": 14.6661,
+    "pctl": {
+     "5": 1.0,
+     "25": 16.75,
+     "50": 32.5,
+     "75": 40.0,
+     "95": 48.0
+    },
+    "in_sealed_contract": false
+   },
+   "att": {
+    "mean": 25.635,
+    "sd": 13.05,
+    "pctl": {
+     "5": 1.0,
+     "25": 15.5,
+     "50": 28.0,
+     "75": 35.0,
+     "95": 42.05
+    },
+    "in_sealed_contract": true
+   },
+   "sacks": {
+    "mean": 2.06,
+    "sd": 1.7555,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 2.0,
+     "75": 3.0,
+     "95": 5.0
+    },
+    "in_sealed_contract": false
+   },
+   "scr": {
+    "mean": 1.125,
+    "sd": 1.2069,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 3.05
+    },
+    "in_sealed_contract": false
+   },
+   "cmp": {
+    "mean": 15.825,
+    "sd": 8.561,
+    "pctl": {
+     "5": 1.0,
+     "25": 9.0,
+     "50": 17.0,
+     "75": 22.25,
+     "95": 28.05
+    },
+    "in_sealed_contract": true
+   },
+   "pyds": {
+    "mean": 195.1444,
+    "sd": 128.8004,
+    "pctl": {
+     "5": 10.575,
+     "25": 112.095,
+     "50": 191.2262,
+     "75": 263.5,
+     "95": 410.2194
+    },
+    "in_sealed_contract": true
+   },
+   "ptd": {
+    "mean": 1.265,
+    "sd": 1.3128,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 3.05
+    },
+    "in_sealed_contract": true
+   },
+   "int": {
+    "mean": 0.835,
+    "sd": 0.9708,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 1.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": true
+   },
+   "drush": {
+    "mean": 1.035,
+    "sd": 1.0627,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": false
+   },
+   "rush_opp": {
+    "mean": 2.16,
+    "sd": 1.8002,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 2.0,
+     "75": 3.0,
+     "95": 5.0
+    },
+    "in_sealed_contract": false
+   },
+   "ryds": {
+    "mean": 10.6079,
+    "sd": 12.8124,
+    "pctl": {
+     "5": -1.05,
+     "25": 0.0,
+     "50": 7.1667,
+     "75": 16.725,
+     "95": 37.8
+    },
+    "in_sealed_contract": false
+   },
+   "rtd": {
+    "mean": 0.14,
+    "sd": 0.3756,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 1.0
+    },
+    "in_sealed_contract": false
+   }
+  },
+  "44246777": {
+   "dk_id": "44246777",
+   "name": "Jake Haener",
+   "team": "NYG",
+   "opponent": "TEN",
+   "salary": 4000,
+   "gsis_id": "00-0038998",
+   "has_qb_layer_row": true,
+   "db": {
+    "mean": 16.9,
+    "sd": 15.303,
+    "pctl": {
+     "5": 1.0,
+     "25": 3.0,
+     "50": 13.0,
+     "75": 30.0,
+     "95": 44.0
+    },
+    "in_sealed_contract": false
+   },
+   "att": {
+    "mean": 14.095,
+    "sd": 12.8687,
+    "pctl": {
+     "5": 1.0,
+     "25": 2.0,
+     "50": 10.0,
+     "75": 25.0,
+     "95": 37.0
+    },
+    "in_sealed_contract": true
+   },
+   "sacks": {
+    "mean": 1.55,
+    "sd": 1.7954,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.25,
+     "95": 5.0
+    },
+    "in_sealed_contract": false
+   },
+   "scr": {
+    "mean": 1.255,
+    "sd": 1.4971,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 4.0
+    },
+    "in_sealed_contract": false
+   },
+   "cmp": {
+    "mean": 7.9,
+    "sd": 7.3149,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.75,
+     "50": 5.0,
+     "75": 14.0,
+     "95": 21.0
+    },
+    "in_sealed_contract": true
+   },
+   "pyds": {
+    "mean": 89.7231,
+    "sd": 85.4927,
+    "pctl": {
+     "5": 0.0,
+     "25": 15.1416,
+     "50": 66.9545,
+     "75": 145.5,
+     "95": 265.0038
+    },
+    "in_sealed_contract": true
+   },
+   "ptd": {
+    "mean": 0.47,
+    "sd": 0.8442,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 2.0
+    },
+    "in_sealed_contract": true
+   },
+   "int": {
+    "mean": 0.325,
+    "sd": 0.6093,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 2.0
+    },
+    "in_sealed_contract": true
+   },
+   "drush": {
+    "mean": 0.29,
+    "sd": 0.6146,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 1.05
+    },
+    "in_sealed_contract": false
+   },
+   "rush_opp": {
+    "mean": 1.545,
+    "sd": 1.7984,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 5.0
+    },
+    "in_sealed_contract": false
+   },
+   "ryds": {
+    "mean": 8.6429,
+    "sd": 11.2045,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 5.5,
+     "75": 14.0,
+     "95": 33.1
+    },
+    "in_sealed_contract": false
+   },
+   "rtd": {
+    "mean": 0.025,
+    "sd": 0.1565,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 0.0
+    },
+    "in_sealed_contract": false
+   }
+  },
+  "44246778": {
+   "dk_id": "44246778",
+   "name": "Mitchell Trubisky",
+   "team": "TEN",
+   "opponent": "NYG",
+   "salary": 4000,
+   "gsis_id": "00-0033869",
+   "has_qb_layer_row": true,
+   "db": {
+    "mean": 24.025,
+    "sd": 15.6505,
+    "pctl": {
+     "5": 1.0,
+     "25": 5.75,
+     "50": 29.0,
+     "75": 36.25,
+     "95": 45.0
+    },
+    "in_sealed_contract": false
+   },
+   "att": {
+    "mean": 21.645,
+    "sd": 14.3127,
+    "pctl": {
+     "5": 1.0,
+     "25": 5.0,
+     "50": 25.0,
+     "75": 33.0,
+     "95": 42.0
+    },
+    "in_sealed_contract": true
+   },
+   "sacks": {
+    "mean": 1.215,
+    "sd": 1.3333,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 4.0
+    },
+    "in_sealed_contract": false
+   },
+   "scr": {
+    "mean": 1.165,
+    "sd": 1.2672,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 4.0
+    },
+    "in_sealed_contract": false
+   },
+   "cmp": {
+    "mean": 14.315,
+    "sd": 9.6254,
+    "pctl": {
+     "5": 0.0,
+     "25": 3.0,
+     "50": 16.5,
+     "75": 21.25,
+     "95": 29.0
+    },
+    "in_sealed_contract": true
+   },
+   "pyds": {
+    "mean": 167.6535,
+    "sd": 238.2928,
+    "pctl": {
+     "5": 0.0,
+     "25": 27.45,
+     "50": 143.5,
+     "75": 218.2125,
+     "95": 350.2267
+    },
+    "in_sealed_contract": true
+   },
+   "ptd": {
+    "mean": 1.02,
+    "sd": 1.2112,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 3.05
+    },
+    "in_sealed_contract": true
+   },
+   "int": {
+    "mean": 0.605,
+    "sd": 0.9237,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 2.0
+    },
+    "in_sealed_contract": true
+   },
+   "drush": {
+    "mean": 1.085,
+    "sd": 1.1421,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": false
+   },
+   "rush_opp": {
+    "mean": 2.25,
+    "sd": 1.9792,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 2.0,
+     "75": 4.0,
+     "95": 6.0
+    },
+    "in_sealed_contract": false
+   },
+   "ryds": {
+    "mean": 14.3159,
+    "sd": 29.0805,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 6.0,
+     "75": 17.25,
+     "95": 45.0
+    },
+    "in_sealed_contract": false
+   },
+   "rtd": {
+    "mean": 0.17,
+    "sd": 0.4382,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 1.0
+    },
+    "in_sealed_contract": false
+   }
+  },
+  "44246779": {
+   "dk_id": "44246779",
+   "name": "Hendon Hooker",
+   "team": "TEN",
+   "opponent": "NYG",
+   "salary": 4000,
+   "gsis_id": "00-0038550",
+   "has_qb_layer_row": true,
+   "db": {
+    "mean": 20.5,
+    "sd": 16.9092,
+    "pctl": {
+     "5": 3.0,
+     "25": 4.0,
+     "50": 19.5,
+     "75": 35.0,
+     "95": 48.05
+    },
+    "in_sealed_contract": false
+   },
+   "att": {
+    "mean": 17.76,
+    "sd": 14.5917,
+    "pctl": {
+     "5": 2.0,
+     "25": 4.0,
+     "50": 17.0,
+     "75": 30.0,
+     "95": 41.05
+    },
+    "in_sealed_contract": true
+   },
+   "sacks": {
+    "mean": 1.58,
+    "sd": 1.9057,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 6.0
+    },
+    "in_sealed_contract": false
+   },
+   "scr": {
+    "mean": 1.16,
+    "sd": 1.4817,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 4.0
+    },
+    "in_sealed_contract": false
+   },
+   "cmp": {
+    "mean": 11.265,
+    "sd": 9.4409,
+    "pctl": {
+     "5": 1.0,
+     "25": 2.0,
+     "50": 10.0,
+     "75": 19.0,
+     "95": 27.0
+    },
+    "in_sealed_contract": true
+   },
+   "pyds": {
+    "mean": 126.5202,
+    "sd": 124.3752,
+    "pctl": {
+     "5": 8.9981,
+     "25": 25.475,
+     "50": 72.0,
+     "75": 200.4167,
+     "95": 361.0
+    },
+    "in_sealed_contract": true
+   },
+   "ptd": {
+    "mean": 0.405,
+    "sd": 0.7166,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 2.0
+    },
+    "in_sealed_contract": true
+   },
+   "int": {
+    "mean": 0.26,
+    "sd": 0.5135,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 1.0
+    },
+    "in_sealed_contract": true
+   },
+   "drush": {
+    "mean": 1.215,
+    "sd": 1.5429,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 4.05
+    },
+    "in_sealed_contract": false
+   },
+   "rush_opp": {
+    "mean": 2.375,
+    "sd": 2.6112,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 4.0,
+     "95": 7.05
+    },
+    "in_sealed_contract": false
+   },
+   "ryds": {
+    "mean": 10.2947,
+    "sd": 17.56,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 4.0,
+     "75": 14.25,
+     "95": 38.3767
+    },
+    "in_sealed_contract": false
+   },
+   "rtd": {
+    "mean": 0.05,
+    "sd": 0.2185,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 0.05
+    },
+    "in_sealed_contract": false
+   }
+  },
+  "44246780": {
+   "dk_id": "44246780",
+   "name": "Anthony Richardson Sr.",
+   "team": "IND",
+   "opponent": "HOU",
+   "salary": 4000,
+   "gsis_id": "00-0039164",
+   "has_qb_layer_row": true,
+   "db": {
+    "mean": 30.595,
+    "sd": 14.2141,
+    "pctl": {
+     "5": 2.0,
+     "25": 23.75,
+     "50": 33.0,
+     "75": 39.0,
+     "95": 49.0
+    },
+    "in_sealed_contract": false
+   },
+   "att": {
+    "mean": 26.885,
+    "sd": 12.7343,
+    "pctl": {
+     "5": 2.0,
+     "25": 21.0,
+     "50": 29.0,
+     "75": 35.0,
+     "95": 44.0
+    },
+    "in_sealed_contract": true
+   },
+   "sacks": {
+    "mean": 1.715,
+    "sd": 1.412,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 1.0,
+     "75": 3.0,
+     "95": 4.0
+    },
+    "in_sealed_contract": false
+   },
+   "scr": {
+    "mean": 1.995,
+    "sd": 1.5803,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 2.0,
+     "75": 3.0,
+     "95": 5.0
+    },
+    "in_sealed_contract": false
+   },
+   "cmp": {
+    "mean": 14.305,
+    "sd": 7.246,
+    "pctl": {
+     "5": 1.0,
+     "25": 10.0,
+     "50": 15.5,
+     "75": 19.0,
+     "95": 25.0
+    },
+    "in_sealed_contract": true
+   },
+   "pyds": {
+    "mean": 187.4715,
+    "sd": 124.9159,
+    "pctl": {
+     "5": 10.1176,
+     "25": 103.7292,
+     "50": 168.0,
+     "75": 244.6631,
+     "95": 426.2214
+    },
+    "in_sealed_contract": true
+   },
+   "ptd": {
+    "mean": 0.95,
+    "sd": 1.0211,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": true
+   },
+   "int": {
+    "mean": 0.975,
+    "sd": 1.0677,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": true
+   },
+   "drush": {
+    "mean": 4.895,
+    "sd": 2.9627,
+    "pctl": {
+     "5": 0.0,
+     "25": 3.0,
+     "50": 5.0,
+     "75": 7.0,
+     "95": 10.0
+    },
+    "in_sealed_contract": false
+   },
+   "rush_opp": {
+    "mean": 6.89,
+    "sd": 3.7828,
+    "pctl": {
+     "5": 0.0,
+     "25": 4.0,
+     "50": 7.0,
+     "75": 10.0,
+     "95": 13.0
+    },
+    "in_sealed_contract": false
+   },
+   "ryds": {
+    "mean": 43.3994,
+    "sd": 30.1249,
+    "pctl": {
+     "5": 0.0,
+     "25": 22.475,
+     "50": 38.0,
+     "75": 63.0,
+     "95": 101.2275
+    },
+    "in_sealed_contract": false
+   },
+   "rtd": {
+    "mean": 0.56,
+    "sd": 0.7611,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 2.0
+    },
+    "in_sealed_contract": false
+   }
+  },
+  "44246781": {
+   "dk_id": "44246781",
+   "name": "Riley Leonard",
+   "team": "IND",
+   "opponent": "HOU",
+   "salary": 4000,
+   "gsis_id": "00-0040206",
+   "has_qb_layer_row": true,
+   "db": {
+    "mean": 24.095,
+    "sd": 18.1029,
+    "pctl": {
+     "5": 1.0,
+     "25": 2.0,
+     "50": 29.0,
+     "75": 38.0,
+     "95": 48.0
+    },
+    "in_sealed_contract": false
+   },
+   "att": {
+    "mean": 22.04,
+    "sd": 16.6223,
+    "pctl": {
+     "5": 1.0,
+     "25": 2.0,
+     "50": 28.0,
+     "75": 35.0,
+     "95": 46.0
+    },
+    "in_sealed_contract": true
+   },
+   "sacks": {
+    "mean": 1.085,
+    "sd": 1.2269,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 4.0
+    },
+    "in_sealed_contract": false
+   },
+   "scr": {
+    "mean": 0.97,
+    "sd": 1.19,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": false
+   },
+   "cmp": {
+    "mean": 13.585,
+    "sd": 10.5546,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 16.0,
+     "75": 22.0,
+     "95": 29.05
+    },
+    "in_sealed_contract": true
+   },
+   "pyds": {
+    "mean": 152.5541,
+    "sd": 132.5061,
+    "pctl": {
+     "5": 0.0,
+     "25": 12.8571,
+     "50": 163.8739,
+     "75": 244.2857,
+     "95": 360.0
+    },
+    "in_sealed_contract": true
+   },
+   "ptd": {
+    "mean": 0.825,
+    "sd": 0.9946,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 1.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": true
+   },
+   "int": {
+    "mean": 0.81,
+    "sd": 0.9944,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 1.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": true
+   },
+   "drush": {
+    "mean": 0.865,
+    "sd": 1.146,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 2.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": false
+   },
+   "rush_opp": {
+    "mean": 1.835,
+    "sd": 1.9408,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 3.0,
+     "95": 6.0
+    },
+    "in_sealed_contract": false
+   },
+   "ryds": {
+    "mean": 9.603,
+    "sd": 14.7316,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 3.45,
+     "75": 16.1,
+     "95": 35.05
+    },
+    "in_sealed_contract": false
+   },
+   "rtd": {
+    "mean": 0.425,
+    "sd": 0.7794,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 2.0
+    },
+    "in_sealed_contract": false
+   }
+  },
+  "44246782": {
+   "dk_id": "44246782",
+   "name": "Davis Mills",
+   "team": "HOU",
+   "opponent": "IND",
+   "salary": 4000,
+   "gsis_id": "00-0036898",
+   "has_qb_layer_row": true,
+   "db": {
+    "mean": 27.755,
+    "sd": 14.8248,
+    "pctl": {
+     "5": 1.0,
+     "25": 19.0,
+     "50": 31.0,
+     "75": 38.0,
+     "95": 49.1
+    },
+    "in_sealed_contract": false
+   },
+   "att": {
+    "mean": 25.22,
+    "sd": 13.5747,
+    "pctl": {
+     "5": 1.0,
+     "25": 17.25,
+     "50": 28.0,
+     "75": 34.0,
+     "95": 44.05
+    },
+    "in_sealed_contract": true
+   },
+   "sacks": {
+    "mean": 1.67,
+    "sd": 1.4217,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 1.0,
+     "75": 3.0,
+     "95": 4.0
+    },
+    "in_sealed_contract": false
+   },
+   "scr": {
+    "mean": 0.865,
+    "sd": 1.1677,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": false
+   },
+   "cmp": {
+    "mean": 15.68,
+    "sd": 8.9402,
+    "pctl": {
+     "5": 0.0,
+     "25": 10.0,
+     "50": 17.0,
+     "75": 22.0,
+     "95": 30.0
+    },
+    "in_sealed_contract": true
+   },
+   "pyds": {
+    "mean": 163.561,
+    "sd": 99.4355,
+    "pctl": {
+     "5": 0.0,
+     "25": 100.4944,
+     "50": 168.1008,
+     "75": 230.0093,
+     "95": 317.7834
+    },
+    "in_sealed_contract": true
+   },
+   "ptd": {
+    "mean": 0.975,
+    "sd": 1.0724,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": true
+   },
+   "int": {
+    "mean": 0.555,
+    "sd": 0.8248,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 2.0
+    },
+    "in_sealed_contract": true
+   },
+   "drush": {
+    "mean": 0.4,
+    "sd": 0.6946,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 2.0
+    },
+    "in_sealed_contract": false
+   },
+   "rush_opp": {
+    "mean": 1.265,
+    "sd": 1.451,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 4.0
+    },
+    "in_sealed_contract": false
+   },
+   "ryds": {
+    "mean": 5.6051,
+    "sd": 8.3013,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 2.75,
+     "75": 7.75,
+     "95": 20.0
+    },
+    "in_sealed_contract": false
+   },
+   "rtd": {
+    "mean": 0.05,
+    "sd": 0.2185,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 0.05
+    },
+    "in_sealed_contract": false
+   }
+  },
+  "44246783": {
+   "dk_id": "44246783",
+   "name": "Graham Mertz",
+   "team": "HOU",
+   "opponent": "IND",
+   "salary": 4000,
+   "gsis_id": "00-0040211",
+   "has_qb_layer_row": false,
+   "why_absent": "no row in the QB frame: no pre-2026 history and include_cold_start is False. UNKNOWN, not zero."
+  },
+  "44246784": {
+   "dk_id": "44246784",
+   "name": "Kenny Pickett",
+   "team": "CAR",
+   "opponent": "CLE",
+   "salary": 4000,
+   "gsis_id": "00-0038102",
+   "has_qb_layer_row": true,
+   "db": {
+    "mean": 26.45,
+    "sd": 15.0255,
+    "pctl": {
+     "5": 2.0,
+     "25": 13.0,
+     "50": 30.0,
+     "75": 39.0,
+     "95": 47.05
+    },
+    "in_sealed_contract": false
+   },
+   "att": {
+    "mean": 23.33,
+    "sd": 13.3887,
+    "pctl": {
+     "5": 2.0,
+     "25": 12.0,
+     "50": 26.0,
+     "75": 34.25,
+     "95": 43.0
+    },
+    "in_sealed_contract": true
+   },
+   "sacks": {
+    "mean": 1.75,
+    "sd": 1.7211,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 3.0,
+     "95": 5.0
+    },
+    "in_sealed_contract": false
+   },
+   "scr": {
+    "mean": 1.37,
+    "sd": 1.3866,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 4.0
+    },
+    "in_sealed_contract": false
+   },
+   "cmp": {
+    "mean": 14.865,
+    "sd": 8.6243,
+    "pctl": {
+     "5": 1.0,
+     "25": 7.0,
+     "50": 16.0,
+     "75": 22.0,
+     "95": 27.05
+    },
+    "in_sealed_contract": true
+   },
+   "pyds": {
+    "mean": 142.4867,
+    "sd": 100.3295,
+    "pctl": {
+     "5": 8.985,
+     "25": 62.25,
+     "50": 130.9423,
+     "75": 205.75,
+     "95": 324.0353
+    },
+    "in_sealed_contract": true
+   },
+   "ptd": {
+    "mean": 0.69,
+    "sd": 0.9372,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 2.05
+    },
+    "in_sealed_contract": true
+   },
+   "int": {
+    "mean": 0.53,
+    "sd": 0.7153,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 2.0
+    },
+    "in_sealed_contract": true
+   },
+   "drush": {
+    "mean": 1.015,
+    "sd": 1.082,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": false
+   },
+   "rush_opp": {
+    "mean": 2.385,
+    "sd": 1.872,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 2.0,
+     "75": 4.0,
+     "95": 6.0
+    },
+    "in_sealed_contract": false
+   },
+   "ryds": {
+    "mean": 10.9521,
+    "sd": 14.002,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 7.0,
+     "75": 16.0,
+     "95": 37.9643
+    },
+    "in_sealed_contract": false
+   },
+   "rtd": {
+    "mean": 0.12,
+    "sd": 0.3553,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 1.0
+    },
+    "in_sealed_contract": false
+   }
+  },
+  "44246785": {
+   "dk_id": "44246785",
+   "name": "Haynes King",
+   "team": "CAR",
+   "opponent": "CLE",
+   "salary": 4000,
+   "gsis_id": "00-0041149",
+   "has_qb_layer_row": false,
+   "why_absent": "no row in the QB frame: no pre-2026 history and include_cold_start is False. UNKNOWN, not zero."
+  },
+  "44246786": {
+   "dk_id": "44246786",
+   "name": "Taylen Green",
+   "team": "CLE",
+   "opponent": "CAR",
+   "salary": 4000,
+   "gsis_id": "00-0041092",
+   "has_qb_layer_row": false,
+   "why_absent": "no row in the QB frame: no pre-2026 history and include_cold_start is False. UNKNOWN, not zero."
+  },
+  "44246787": {
+   "dk_id": "44246787",
+   "name": "Dillon Gabriel",
+   "team": "CLE",
+   "opponent": "CAR",
+   "salary": 4000,
+   "gsis_id": "00-0040704",
+   "has_qb_layer_row": true,
+   "db": {
+    "mean": 23.56,
+    "sd": 18.6495,
+    "pctl": {
+     "5": 1.0,
+     "25": 1.0,
+     "50": 30.0,
+     "75": 38.0,
+     "95": 51.1
+    },
+    "in_sealed_contract": false
+   },
+   "att": {
+    "mean": 20.45,
+    "sd": 16.2096,
+    "pctl": {
+     "5": 1.0,
+     "25": 1.0,
+     "50": 25.5,
+     "75": 33.0,
+     "95": 44.05
+    },
+    "in_sealed_contract": true
+   },
+   "sacks": {
+    "mean": 1.875,
+    "sd": 1.9438,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 3.0,
+     "95": 5.05
+    },
+    "in_sealed_contract": false
+   },
+   "scr": {
+    "mean": 1.235,
+    "sd": 1.4665,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 4.0
+    },
+    "in_sealed_contract": false
+   },
+   "cmp": {
+    "mean": 12.515,
+    "sd": 10.2221,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 14.0,
+     "75": 21.0,
+     "95": 28.0
+    },
+    "in_sealed_contract": true
+   },
+   "pyds": {
+    "mean": 101.1338,
+    "sd": 98.1488,
+    "pctl": {
+     "5": 0.0,
+     "25": 6.3333,
+     "50": 98.9524,
+     "75": 180.0,
+     "95": 259.6483
+    },
+    "in_sealed_contract": true
+   },
+   "ptd": {
+    "mean": 0.74,
+    "sd": 1.0574,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": true
+   },
+   "int": {
+    "mean": 0.295,
+    "sd": 0.5828,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 2.0
+    },
+    "in_sealed_contract": true
+   },
+   "drush": {
+    "mean": 0.41,
+    "sd": 0.6813,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 2.0
+    },
+    "in_sealed_contract": false
+   },
+   "rush_opp": {
+    "mean": 1.645,
+    "sd": 1.8209,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 3.0,
+     "95": 5.0
+    },
+    "in_sealed_contract": false
+   },
+   "ryds": {
+    "mean": 8.9997,
+    "sd": 14.7793,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 2.5,
+     "75": 13.0,
+     "95": 34.8
+    },
+    "in_sealed_contract": false
+   },
+   "rtd": {
+    "mean": 0.02,
+    "sd": 0.1404,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 0.0
+    },
+    "in_sealed_contract": false
+   }
+  },
+  "44246788": {
+   "dk_id": "44246788",
+   "name": "Mason Rudolph",
+   "team": "PIT",
+   "opponent": "CIN",
+   "salary": 4000,
+   "gsis_id": "00-0034771",
+   "has_qb_layer_row": true,
+   "db": {
+    "mean": 23.59,
+    "sd": 16.4017,
+    "pctl": {
+     "5": 2.0,
+     "25": 5.0,
+     "50": 25.0,
+     "75": 37.0,
+     "95": 48.05
+    },
+    "in_sealed_contract": false
+   },
+   "att": {
+    "mean": 21.77,
+    "sd": 15.1938,
+    "pctl": {
+     "5": 1.0,
+     "25": 5.0,
+     "50": 23.0,
+     "75": 34.0,
+     "95": 45.0
+    },
+    "in_sealed_contract": true
+   },
+   "sacks": {
+    "mean": 0.955,
+    "sd": 1.2372,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 1.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": false
+   },
+   "scr": {
+    "mean": 0.865,
+    "sd": 1.0208,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 1.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": false
+   },
+   "cmp": {
+    "mean": 14.38,
+    "sd": 9.9413,
+    "pctl": {
+     "5": 1.0,
+     "25": 3.0,
+     "50": 15.0,
+     "75": 22.0,
+     "95": 30.0
+    },
+    "in_sealed_contract": true
+   },
+   "pyds": {
+    "mean": 139.1995,
+    "sd": 116.8157,
+    "pctl": {
+     "5": 5.925,
+     "25": 29.8179,
+     "50": 126.0,
+     "75": 222.9902,
+     "95": 343.7222
+    },
+    "in_sealed_contract": true
+   },
+   "ptd": {
+    "mean": 0.835,
+    "sd": 1.0693,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": true
+   },
+   "int": {
+    "mean": 0.53,
+    "sd": 0.8139,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 2.0
+    },
+    "in_sealed_contract": true
+   },
+   "drush": {
+    "mean": 0.995,
+    "sd": 1.1755,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": false
+   },
+   "rush_opp": {
+    "mean": 1.86,
+    "sd": 1.7538,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 3.0,
+     "95": 5.0
+    },
+    "in_sealed_contract": false
+   },
+   "ryds": {
+    "mean": 9.8273,
+    "sd": 15.4407,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 4.0,
+     "75": 13.8,
+     "95": 35.1
+    },
+    "in_sealed_contract": false
+   },
+   "rtd": {
+    "mean": 0.045,
+    "sd": 0.2307,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 0.0
+    },
+    "in_sealed_contract": false
+   }
+  },
+  "44246789": {
+   "dk_id": "44246789",
+   "name": "Will Howard",
+   "team": "PIT",
+   "opponent": "CIN",
+   "salary": 4000,
+   "gsis_id": "00-0040203",
+   "has_qb_layer_row": false,
+   "why_absent": "no row in the QB frame: no pre-2026 history and include_cold_start is False. UNKNOWN, not zero."
+  },
+  "44246790": {
+   "dk_id": "44246790",
+   "name": "Drew Allar",
+   "team": "PIT",
+   "opponent": "CIN",
+   "salary": 4000,
+   "gsis_id": "00-0041565",
+   "has_qb_layer_row": false,
+   "why_absent": "no row in the QB frame: no pre-2026 history and include_cold_start is False. UNKNOWN, not zero."
+  },
+  "44246791": {
+   "dk_id": "44246791",
+   "name": "Josh Johnson",
+   "team": "CIN",
+   "opponent": "PIT",
+   "salary": 4000,
+   "gsis_id": "00-0026300",
+   "has_qb_layer_row": true,
+   "db": {
+    "mean": 23.905,
+    "sd": 17.4965,
+    "pctl": {
+     "5": 1.0,
+     "25": 4.0,
+     "50": 29.0,
+     "75": 39.0,
+     "95": 49.0
+    },
+    "in_sealed_contract": false
+   },
+   "att": {
+    "mean": 21.115,
+    "sd": 15.5056,
+    "pctl": {
+     "5": 1.0,
+     "25": 4.0,
+     "50": 26.0,
+     "75": 33.25,
+     "95": 44.05
+    },
+    "in_sealed_contract": true
+   },
+   "sacks": {
+    "mean": 1.135,
+    "sd": 1.3624,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 4.0
+    },
+    "in_sealed_contract": false
+   },
+   "scr": {
+    "mean": 1.655,
+    "sd": 1.8283,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 3.0,
+     "95": 5.05
+    },
+    "in_sealed_contract": false
+   },
+   "cmp": {
+    "mean": 14.23,
+    "sd": 10.6066,
+    "pctl": {
+     "5": 1.0,
+     "25": 3.0,
+     "50": 16.5,
+     "75": 23.0,
+     "95": 29.0
+    },
+    "in_sealed_contract": true
+   },
+   "pyds": {
+    "mean": 151.5293,
+    "sd": 130.7112,
+    "pctl": {
+     "5": 2.6333,
+     "25": 23.3611,
+     "50": 141.75,
+     "75": 260.9286,
+     "95": 375.5736
+    },
+    "in_sealed_contract": true
+   },
+   "ptd": {
+    "mean": 0.955,
+    "sd": 1.2533,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 1.0,
+     "95": 4.0
+    },
+    "in_sealed_contract": true
+   },
+   "int": {
+    "mean": 0.52,
+    "sd": 0.7891,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 2.0
+    },
+    "in_sealed_contract": true
+   },
+   "drush": {
+    "mean": 1.17,
+    "sd": 1.2921,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 4.0
+    },
+    "in_sealed_contract": false
+   },
+   "rush_opp": {
+    "mean": 2.825,
+    "sd": 2.5841,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 2.0,
+     "75": 4.0,
+     "95": 8.0
+    },
+    "in_sealed_contract": false
+   },
+   "ryds": {
+    "mean": 11.4664,
+    "sd": 13.2153,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 6.3333,
+     "75": 19.0,
+     "95": 38.0
+    },
+    "in_sealed_contract": false
+   },
+   "rtd": {
+    "mean": 0.1,
+    "sd": 0.317,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 1.0
+    },
+    "in_sealed_contract": false
+   }
+  },
+  "44246792": {
+   "dk_id": "44246792",
+   "name": "Sean Clifford",
+   "team": "CIN",
+   "opponent": "PIT",
+   "salary": 4000,
+   "gsis_id": "00-0038391",
+   "has_qb_layer_row": true,
+   "db": {
+    "mean": 25.845,
+    "sd": 18.2074,
+    "pctl": {
+     "5": 1.0,
+     "25": 1.75,
+     "50": 31.0,
+     "75": 40.0,
+     "95": 50.0
+    },
+    "in_sealed_contract": false
+   },
+   "att": {
+    "mean": 23.44,
+    "sd": 16.5571,
+    "pctl": {
+     "5": 1.0,
+     "25": 1.0,
+     "50": 27.5,
+     "75": 36.0,
+     "95": 46.0
+    },
+    "in_sealed_contract": true
+   },
+   "sacks": {
+    "mean": 1.44,
+    "sd": 1.5871,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 4.05
+    },
+    "in_sealed_contract": false
+   },
+   "scr": {
+    "mean": 0.965,
+    "sd": 1.2129,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": false
+   },
+   "cmp": {
+    "mean": 16.775,
+    "sd": 12.1562,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 20.0,
+     "75": 26.0,
+     "95": 34.05
+    },
+    "in_sealed_contract": true
+   },
+   "pyds": {
+    "mean": 288.0704,
+    "sd": 319.6467,
+    "pctl": {
+     "5": 0.0,
+     "25": 14.4864,
+     "50": 210.1818,
+     "75": 331.8913,
+     "95": 1036.0
+    },
+    "in_sealed_contract": true
+   },
+   "ptd": {
+    "mean": 0.91,
+    "sd": 1.1036,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 1.25,
+     "95": 3.0
+    },
+    "in_sealed_contract": true
+   },
+   "int": {
+    "mean": 0.445,
+    "sd": 0.7278,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 2.0
+    },
+    "in_sealed_contract": true
+   },
+   "drush": {
+    "mean": 0.81,
+    "sd": 1.0144,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.25,
+     "95": 3.0
+    },
+    "in_sealed_contract": false
+   },
+   "rush_opp": {
+    "mean": 1.775,
+    "sd": 1.8224,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 3.0,
+     "95": 5.0
+    },
+    "in_sealed_contract": false
+   },
+   "ryds": {
+    "mean": 8.769,
+    "sd": 13.1809,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 4.0,
+     "75": 12.0625,
+     "95": 40.25
+    },
+    "in_sealed_contract": false
+   },
+   "rtd": {
+    "mean": 0.065,
+    "sd": 0.2667,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 1.0
+    },
+    "in_sealed_contract": false
+   }
+  },
+  "44246793": {
+   "dk_id": "44246793",
+   "name": "Cade Klubnik",
+   "team": "NYJ",
+   "opponent": "DET",
+   "salary": 4000,
+   "gsis_id": "00-0041056",
+   "has_qb_layer_row": false,
+   "why_absent": "no row in the QB frame: no pre-2026 history and include_cold_start is False. UNKNOWN, not zero."
+  },
+  "44246794": {
+   "dk_id": "44246794",
+   "name": "Bailey Zappe",
+   "team": "NYJ",
+   "opponent": "DET",
+   "salary": 4000,
+   "gsis_id": "00-0038108",
+   "has_qb_layer_row": true,
+   "db": {
+    "mean": 30.235,
+    "sd": 15.1349,
+    "pctl": {
+     "5": 8.0,
+     "25": 14.75,
+     "50": 32.0,
+     "75": 40.0,
+     "95": 54.0
+    },
+    "in_sealed_contract": false
+   },
+   "att": {
+    "mean": 26.675,
+    "sd": 13.5702,
+    "pctl": {
+     "5": 6.95,
+     "25": 13.5,
+     "50": 27.5,
+     "75": 37.0,
+     "95": 49.0
+    },
+    "in_sealed_contract": true
+   },
+   "sacks": {
+    "mean": 2.62,
+    "sd": 2.0994,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 2.0,
+     "75": 4.0,
+     "95": 7.0
+    },
+    "in_sealed_contract": false
+   },
+   "scr": {
+    "mean": 0.94,
+    "sd": 1.0353,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 1.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": false
+   },
+   "cmp": {
+    "mean": 17.07,
+    "sd": 9.1567,
+    "pctl": {
+     "5": 3.0,
+     "25": 9.0,
+     "50": 18.0,
+     "75": 23.25,
+     "95": 31.0
+    },
+    "in_sealed_contract": true
+   },
+   "pyds": {
+    "mean": 180.1775,
+    "sd": 110.0952,
+    "pctl": {
+     "5": 31.4293,
+     "25": 91.395,
+     "50": 177.7697,
+     "75": 246.4038,
+     "95": 366.525
+    },
+    "in_sealed_contract": true
+   },
+   "ptd": {
+    "mean": 1.11,
+    "sd": 1.3063,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": true
+   },
+   "int": {
+    "mean": 0.88,
+    "sd": 1.0053,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 1.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": true
+   },
+   "drush": {
+    "mean": 0.755,
+    "sd": 0.9797,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": false
+   },
+   "rush_opp": {
+    "mean": 1.695,
+    "sd": 1.4809,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 1.0,
+     "75": 3.0,
+     "95": 5.0
+    },
+    "in_sealed_contract": false
+   },
+   "ryds": {
+    "mean": 6.8991,
+    "sd": 8.3239,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 4.3333,
+     "75": 9.5,
+     "95": 21.6833
+    },
+    "in_sealed_contract": false
+   },
+   "rtd": {
+    "mean": 0.07,
+    "sd": 0.2558,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 1.0
+    },
+    "in_sealed_contract": false
+   }
+  },
+  "44246795": {
+   "dk_id": "44246795",
+   "name": "Joshua Dobbs",
+   "team": "DET",
+   "opponent": "NYJ",
+   "salary": 4000,
+   "gsis_id": "00-0033949",
+   "has_qb_layer_row": true,
+   "db": {
+    "mean": 31.985,
+    "sd": 15.8648,
+    "pctl": {
+     "5": 2.95,
+     "25": 26.0,
+     "50": 34.0,
+     "75": 42.0,
+     "95": 58.1
+    },
+    "in_sealed_contract": false
+   },
+   "att": {
+    "mean": 28.215,
+    "sd": 14.0061,
+    "pctl": {
+     "5": 2.0,
+     "25": 22.75,
+     "50": 31.0,
+     "75": 36.25,
+     "95": 51.05
+    },
+    "in_sealed_contract": true
+   },
+   "sacks": {
+    "mean": 1.835,
+    "sd": 1.6888,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 2.0,
+     "75": 3.0,
+     "95": 5.0
+    },
+    "in_sealed_contract": false
+   },
+   "scr": {
+    "mean": 1.935,
+    "sd": 1.6414,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 2.0,
+     "75": 3.0,
+     "95": 5.0
+    },
+    "in_sealed_contract": false
+   },
+   "cmp": {
+    "mean": 17.565,
+    "sd": 9.0218,
+    "pctl": {
+     "5": 1.0,
+     "25": 13.0,
+     "50": 19.0,
+     "75": 23.0,
+     "95": 32.0
+    },
+    "in_sealed_contract": true
+   },
+   "pyds": {
+    "mean": 169.9287,
+    "sd": 105.3314,
+    "pctl": {
+     "5": 9.285,
+     "25": 108.0147,
+     "50": 166.3324,
+     "75": 240.4125,
+     "95": 359.7033
+    },
+    "in_sealed_contract": true
+   },
+   "ptd": {
+    "mean": 1.025,
+    "sd": 1.1753,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": true
+   },
+   "int": {
+    "mean": 0.705,
+    "sd": 0.8728,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 2.0
+    },
+    "in_sealed_contract": true
+   },
+   "drush": {
+    "mean": 2.215,
+    "sd": 1.8153,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 2.0,
+     "75": 3.0,
+     "95": 5.05
+    },
+    "in_sealed_contract": false
+   },
+   "rush_opp": {
+    "mean": 4.15,
+    "sd": 2.7796,
+    "pctl": {
+     "5": 0.0,
+     "25": 2.0,
+     "50": 4.0,
+     "75": 6.0,
+     "95": 9.0
+    },
+    "in_sealed_contract": false
+   },
+   "ryds": {
+    "mean": 23.2221,
+    "sd": 24.0968,
+    "pctl": {
+     "5": 0.0,
+     "25": 5.875,
+     "50": 15.4286,
+     "75": 37.05,
+     "95": 70.0625
+    },
+    "in_sealed_contract": false
+   },
+   "rtd": {
+    "mean": 0.36,
+    "sd": 0.6183,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 2.0
+    },
+    "in_sealed_contract": false
+   }
+  },
+  "44246796": {
+   "dk_id": "44246796",
+   "name": "Luke Altmyer",
+   "team": "DET",
+   "opponent": "NYJ",
+   "salary": 4000,
+   "gsis_id": "00-0041453",
+   "has_qb_layer_row": false,
+   "why_absent": "no row in the QB frame: no pre-2026 history and include_cold_start is False. UNKNOWN, not zero."
+  },
+  "44246797": {
+   "dk_id": "44246797",
+   "name": "Quinn Ewers",
+   "team": "JAX",
+   "opponent": "NE",
+   "salary": 4000,
+   "gsis_id": "00-0040234",
+   "has_qb_layer_row": true,
+   "db": {
+    "mean": 32.165,
+    "sd": 14.0057,
+    "pctl": {
+     "5": 6.0,
+     "25": 25.75,
+     "50": 35.0,
+     "75": 41.0,
+     "95": 52.05
+    },
+    "in_sealed_contract": false
+   },
+   "att": {
+    "mean": 28.63,
+    "sd": 12.474,
+    "pctl": {
+     "5": 5.95,
+     "25": 22.0,
+     "50": 31.0,
+     "75": 36.0,
+     "95": 47.0
+    },
+    "in_sealed_contract": true
+   },
+   "sacks": {
+    "mean": 2.21,
+    "sd": 1.741,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 2.0,
+     "75": 3.0,
+     "95": 5.05
+    },
+    "in_sealed_contract": false
+   },
+   "scr": {
+    "mean": 1.325,
+    "sd": 1.3633,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 4.0
+    },
+    "in_sealed_contract": false
+   },
+   "cmp": {
+    "mean": 18.66,
+    "sd": 8.7875,
+    "pctl": {
+     "5": 3.0,
+     "25": 14.0,
+     "50": 20.0,
+     "75": 25.0,
+     "95": 31.0
+    },
+    "in_sealed_contract": true
+   },
+   "pyds": {
+    "mean": 206.0128,
+    "sd": 106.9947,
+    "pctl": {
+     "5": 30.534,
+     "25": 138.0357,
+     "50": 207.5,
+     "75": 270.8658,
+     "95": 382.1771
+    },
+    "in_sealed_contract": true
+   },
+   "ptd": {
+    "mean": 1.175,
+    "sd": 1.1493,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": true
+   },
+   "int": {
+    "mean": 0.915,
+    "sd": 1.0359,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 1.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": true
+   },
+   "drush": {
+    "mean": 1.08,
+    "sd": 1.1314,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": false
+   },
+   "rush_opp": {
+    "mean": 2.405,
+    "sd": 1.9775,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 2.0,
+     "75": 3.0,
+     "95": 6.0
+    },
+    "in_sealed_contract": false
+   },
+   "ryds": {
+    "mean": 11.1952,
+    "sd": 15.3631,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 7.375,
+     "75": 15.1389,
+     "95": 45.0
+    },
+    "in_sealed_contract": false
+   },
+   "rtd": {
+    "mean": 0.095,
+    "sd": 0.294,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 1.0
+    },
+    "in_sealed_contract": false
+   }
+  },
+  "44246798": {
+   "dk_id": "44246798",
+   "name": "Nick Mullens",
+   "team": "JAX",
+   "opponent": "NE",
+   "salary": 4000,
+   "gsis_id": "00-0033319",
+   "has_qb_layer_row": true,
+   "db": {
+    "mean": 25.935,
+    "sd": 16.1756,
+    "pctl": {
+     "5": 1.0,
+     "25": 11.0,
+     "50": 27.5,
+     "75": 38.0,
+     "95": 52.0
+    },
+    "in_sealed_contract": false
+   },
+   "att": {
+    "mean": 23.9,
+    "sd": 14.8997,
+    "pctl": {
+     "5": 1.0,
+     "25": 10.75,
+     "50": 26.0,
+     "75": 34.0,
+     "95": 47.05
+    },
+    "in_sealed_contract": true
+   },
+   "sacks": {
+    "mean": 1.56,
+    "sd": 1.6216,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 3.0,
+     "95": 4.0
+    },
+    "in_sealed_contract": false
+   },
+   "scr": {
+    "mean": 0.475,
+    "sd": 0.7084,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 2.0
+    },
+    "in_sealed_contract": false
+   },
+   "cmp": {
+    "mean": 16.14,
+    "sd": 10.2345,
+    "pctl": {
+     "5": 1.0,
+     "25": 7.0,
+     "50": 18.0,
+     "75": 24.0,
+     "95": 33.0
+    },
+    "in_sealed_contract": true
+   },
+   "pyds": {
+    "mean": 182.4024,
+    "sd": 147.1129,
+    "pctl": {
+     "5": 2.85,
+     "25": 54.1957,
+     "50": 179.6111,
+     "75": 260.5733,
+     "95": 448.3636
+    },
+    "in_sealed_contract": true
+   },
+   "ptd": {
+    "mean": 0.905,
+    "sd": 1.0871,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 1.25,
+     "95": 3.0
+    },
+    "in_sealed_contract": true
+   },
+   "int": {
+    "mean": 0.945,
+    "sd": 1.1172,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": true
+   },
+   "drush": {
+    "mean": 0.58,
+    "sd": 0.876,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": false
+   },
+   "rush_opp": {
+    "mean": 1.055,
+    "sd": 1.2368,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 4.0
+    },
+    "in_sealed_contract": false
+   },
+   "ryds": {
+    "mean": 3.2892,
+    "sd": 5.9823,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 4.0,
+     "95": 14.0
+    },
+    "in_sealed_contract": false
+   },
+   "rtd": {
+    "mean": 0.015,
+    "sd": 0.1219,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 0.0
+    },
+    "in_sealed_contract": false
+   }
+  },
+  "44246799": {
+   "dk_id": "44246799",
+   "name": "Joey Aguilar",
+   "team": "JAX",
+   "opponent": "NE",
+   "salary": 4000,
+   "gsis_id": "00-0041203",
+   "has_qb_layer_row": false,
+   "why_absent": "no row in the QB frame: no pre-2026 history and include_cold_start is False. UNKNOWN, not zero."
+  },
+  "44246800": {
+   "dk_id": "44246800",
+   "name": "Tommy DeVito",
+   "team": "NE",
+   "opponent": "JAX",
+   "salary": 4000,
+   "gsis_id": "00-0038476",
+   "has_qb_layer_row": true,
+   "db": {
+    "mean": 25.99,
+    "sd": 12.6101,
+    "pctl": {
+     "5": 2.0,
+     "25": 17.0,
+     "50": 29.0,
+     "75": 34.0,
+     "95": 46.0
+    },
+    "in_sealed_contract": false
+   },
+   "att": {
+    "mean": 20.715,
+    "sd": 10.2924,
+    "pctl": {
+     "5": 2.0,
+     "25": 13.0,
+     "50": 23.0,
+     "75": 28.0,
+     "95": 36.0
+    },
+    "in_sealed_contract": true
+   },
+   "sacks": {
+    "mean": 3.12,
+    "sd": 2.1677,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 3.0,
+     "75": 5.0,
+     "95": 7.0
+    },
+    "in_sealed_contract": false
+   },
+   "scr": {
+    "mean": 2.155,
+    "sd": 1.6957,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 2.0,
+     "75": 3.0,
+     "95": 5.05
+    },
+    "in_sealed_contract": false
+   },
+   "cmp": {
+    "mean": 13.465,
+    "sd": 6.9484,
+    "pctl": {
+     "5": 1.0,
+     "25": 8.0,
+     "50": 14.0,
+     "75": 19.0,
+     "95": 24.0
+    },
+    "in_sealed_contract": true
+   },
+   "pyds": {
+    "mean": 117.4782,
+    "sd": 84.5945,
+    "pctl": {
+     "5": -4.1,
+     "25": 63.0,
+     "50": 108.0,
+     "75": 168.15,
+     "95": 272.4985
+    },
+    "in_sealed_contract": true
+   },
+   "ptd": {
+    "mean": 0.835,
+    "sd": 0.9339,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 1.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": true
+   },
+   "int": {
+    "mean": 0.3,
+    "sd": 0.5671,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 2.0
+    },
+    "in_sealed_contract": true
+   },
+   "drush": {
+    "mean": 1.385,
+    "sd": 1.3843,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 4.0
+    },
+    "in_sealed_contract": false
+   },
+   "rush_opp": {
+    "mean": 3.54,
+    "sd": 2.6004,
+    "pctl": {
+     "5": 0.0,
+     "25": 2.0,
+     "50": 3.0,
+     "75": 5.0,
+     "95": 8.0
+    },
+    "in_sealed_contract": false
+   },
+   "ryds": {
+    "mean": 19.6015,
+    "sd": 20.6203,
+    "pctl": {
+     "5": 0.0,
+     "25": 5.25,
+     "50": 12.125,
+     "75": 28.6875,
+     "95": 63.0
+    },
+    "in_sealed_contract": false
+   },
+   "rtd": {
+    "mean": 0.12,
+    "sd": 0.3409,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 1.0
+    },
+    "in_sealed_contract": false
+   }
+  },
+  "44246801": {
+   "dk_id": "44246801",
+   "name": "Behren Morton",
+   "team": "NE",
+   "opponent": "JAX",
+   "salary": 4000,
+   "gsis_id": "00-0041123",
+   "has_qb_layer_row": false,
+   "why_absent": "no row in the QB frame: no pre-2026 history and include_cold_start is False. UNKNOWN, not zero."
+  },
+  "44246802": {
+   "dk_id": "44246802",
+   "name": "Kyle McCord",
+   "team": "MIA",
+   "opponent": "KC",
+   "salary": 4000,
+   "gsis_id": "00-0040014",
+   "has_qb_layer_row": false,
+   "why_absent": "no row in the QB frame: no pre-2026 history and include_cold_start is False. UNKNOWN, not zero."
+  },
+  "44246803": {
+   "dk_id": "44246803",
+   "name": "Brady Cook",
+   "team": "MIA",
+   "opponent": "KC",
+   "salary": 4000,
+   "gsis_id": "00-0040398",
+   "has_qb_layer_row": true,
+   "db": {
+    "mean": 34.22,
+    "sd": 12.2746,
+    "pctl": {
+     "5": 5.9,
+     "25": 28.0,
+     "50": 34.0,
+     "75": 42.0,
+     "95": 53.05
+    },
+    "in_sealed_contract": false
+   },
+   "att": {
+    "mean": 29.575,
+    "sd": 10.7649,
+    "pctl": {
+     "5": 4.0,
+     "25": 24.0,
+     "50": 29.0,
+     "75": 36.25,
+     "95": 46.05
+    },
+    "in_sealed_contract": true
+   },
+   "sacks": {
+    "mean": 3.2,
+    "sd": 2.0324,
+    "pctl": {
+     "5": 0.0,
+     "25": 2.0,
+     "50": 3.0,
+     "75": 4.0,
+     "95": 7.0
+    },
+    "in_sealed_contract": false
+   },
+   "scr": {
+    "mean": 1.445,
+    "sd": 1.2748,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 4.0
+    },
+    "in_sealed_contract": false
+   },
+   "cmp": {
+    "mean": 17.995,
+    "sd": 7.0522,
+    "pctl": {
+     "5": 2.95,
+     "25": 14.0,
+     "50": 18.0,
+     "75": 22.0,
+     "95": 30.0
+    },
+    "in_sealed_contract": true
+   },
+   "pyds": {
+    "mean": 168.7774,
+    "sd": 82.6904,
+    "pctl": {
+     "5": 33.637,
+     "25": 118.3636,
+     "50": 160.0,
+     "75": 215.1916,
+     "95": 313.2579
+    },
+    "in_sealed_contract": true
+   },
+   "ptd": {
+    "mean": 0.79,
+    "sd": 0.9542,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 1.0,
+     "95": 2.05
+    },
+    "in_sealed_contract": true
+   },
+   "int": {
+    "mean": 0.905,
+    "sd": 0.9595,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": true
+   },
+   "drush": {
+    "mean": 1.26,
+    "sd": 1.2082,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": false
+   },
+   "rush_opp": {
+    "mean": 2.705,
+    "sd": 1.8371,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 3.0,
+     "75": 4.0,
+     "95": 6.0
+    },
+    "in_sealed_contract": false
+   },
+   "ryds": {
+    "mean": 9.6992,
+    "sd": 11.6366,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 6.0,
+     "75": 14.0,
+     "95": 32.525
+    },
+    "in_sealed_contract": false
+   },
+   "rtd": {
+    "mean": 0.06,
+    "sd": 0.2381,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 1.0
+    },
+    "in_sealed_contract": false
+   }
+  },
+  "44246804": {
+   "dk_id": "44246804",
+   "name": "Justin Fields",
+   "team": "KC",
+   "opponent": "MIA",
+   "salary": 4000,
+   "gsis_id": "00-0036945",
+   "has_qb_layer_row": true,
+   "db": {
+    "mean": 38.225,
+    "sd": 11.2828,
+    "pctl": {
+     "5": 19.85,
+     "25": 33.0,
+     "50": 40.0,
+     "75": 45.0,
+     "95": 51.0
+    },
+    "in_sealed_contract": false
+   },
+   "att": {
+    "mean": 29.915,
+    "sd": 8.8009,
+    "pctl": {
+     "5": 15.95,
+     "25": 26.0,
+     "50": 31.0,
+     "75": 35.0,
+     "95": 41.0
+    },
+    "in_sealed_contract": true
+   },
+   "sacks": {
+    "mean": 3.865,
+    "sd": 2.3072,
+    "pctl": {
+     "5": 0.0,
+     "25": 2.0,
+     "50": 4.0,
+     "75": 5.0,
+     "95": 8.0
+    },
+    "in_sealed_contract": false
+   },
+   "scr": {
+    "mean": 4.445,
+    "sd": 2.4303,
+    "pctl": {
+     "5": 1.0,
+     "25": 3.0,
+     "50": 4.0,
+     "75": 6.0,
+     "95": 8.05
+    },
+    "in_sealed_contract": false
+   },
+   "cmp": {
+    "mean": 18.045,
+    "sd": 5.8938,
+    "pctl": {
+     "5": 8.95,
+     "25": 14.75,
+     "50": 18.0,
+     "75": 22.0,
+     "95": 26.0
+    },
+    "in_sealed_contract": true
+   },
+   "pyds": {
+    "mean": 198.7551,
+    "sd": 88.7103,
+    "pctl": {
+     "5": 74.5059,
+     "25": 139.8,
+     "50": 192.8132,
+     "75": 241.0478,
+     "95": 357.39
+    },
+    "in_sealed_contract": true
+   },
+   "ptd": {
+    "mean": 1.095,
+    "sd": 1.0204,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": true
+   },
+   "int": {
+    "mean": 0.785,
+    "sd": 0.9127,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 1.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": true
+   },
+   "drush": {
+    "mean": 5.6,
+    "sd": 2.5949,
+    "pctl": {
+     "5": 1.0,
+     "25": 4.0,
+     "50": 5.0,
+     "75": 7.0,
+     "95": 10.0
+    },
+    "in_sealed_contract": false
+   },
+   "rush_opp": {
+    "mean": 10.045,
+    "sd": 4.3123,
+    "pctl": {
+     "5": 4.0,
+     "25": 7.0,
+     "50": 10.0,
+     "75": 13.0,
+     "95": 17.0
+    },
+    "in_sealed_contract": false
+   },
+   "ryds": {
+    "mean": 60.3861,
+    "sd": 47.912,
+    "pctl": {
+     "5": 9.7339,
+     "25": 30.0,
+     "50": 52.125,
+     "75": 73.125,
+     "95": 142.4167
+    },
+    "in_sealed_contract": false
+   },
+   "rtd": {
+    "mean": 0.57,
+    "sd": 0.8654,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 2.0
+    },
+    "in_sealed_contract": false
+   }
+  },
+  "44246805": {
+   "dk_id": "44246805",
+   "name": "Garrett Nussmeier",
+   "team": "KC",
+   "opponent": "MIA",
+   "salary": 4000,
+   "gsis_id": "00-0040906",
+   "has_qb_layer_row": false,
+   "why_absent": "no row in the QB frame: no pre-2026 history and include_cold_start is False. UNKNOWN, not zero."
+  },
+  "44246806": {
+   "dk_id": "44246806",
+   "name": "Trey Lance",
+   "team": "LAC",
+   "opponent": "BUF",
+   "salary": 4000,
+   "gsis_id": "00-0037012",
+   "has_qb_layer_row": true,
+   "db": {
+    "mean": 22.815,
+    "sd": 17.0335,
+    "pctl": {
+     "5": 1.95,
+     "25": 5.0,
+     "50": 22.5,
+     "75": 37.0,
+     "95": 50.0
+    },
+    "in_sealed_contract": false
+   },
+   "att": {
+    "mean": 19.27,
+    "sd": 14.4583,
+    "pctl": {
+     "5": 1.0,
+     "25": 5.0,
+     "50": 18.0,
+     "75": 32.0,
+     "95": 43.05
+    },
+    "in_sealed_contract": true
+   },
+   "sacks": {
+    "mean": 1.5,
+    "sd": 1.6412,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 3.0,
+     "95": 5.0
+    },
+    "in_sealed_contract": false
+   },
+   "scr": {
+    "mean": 2.045,
+    "sd": 1.9499,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 2.0,
+     "75": 4.0,
+     "95": 6.0
+    },
+    "in_sealed_contract": false
+   },
+   "cmp": {
+    "mean": 11.12,
+    "sd": 8.6359,
+    "pctl": {
+     "5": 0.0,
+     "25": 3.0,
+     "50": 10.0,
+     "75": 18.0,
+     "95": 25.05
+    },
+    "in_sealed_contract": true
+   },
+   "pyds": {
+    "mean": 119.9053,
+    "sd": 109.7681,
+    "pctl": {
+     "5": 0.0,
+     "25": 25.1731,
+     "50": 95.25,
+     "75": 182.0072,
+     "95": 333.43
+    },
+    "in_sealed_contract": true
+   },
+   "ptd": {
+    "mean": 0.62,
+    "sd": 0.8481,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 2.0
+    },
+    "in_sealed_contract": true
+   },
+   "int": {
+    "mean": 0.39,
+    "sd": 0.7555,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 2.0
+    },
+    "in_sealed_contract": true
+   },
+   "drush": {
+    "mean": 4.06,
+    "sd": 3.5665,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 3.0,
+     "75": 7.0,
+     "95": 11.0
+    },
+    "in_sealed_contract": false
+   },
+   "rush_opp": {
+    "mean": 6.105,
+    "sd": 5.034,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 5.0,
+     "75": 10.0,
+     "95": 14.0
+    },
+    "in_sealed_contract": false
+   },
+   "ryds": {
+    "mean": 28.4224,
+    "sd": 34.4283,
+    "pctl": {
+     "5": 0.0,
+     "25": 3.3333,
+     "50": 15.1667,
+     "75": 45.0833,
+     "95": 99.0333
+    },
+    "in_sealed_contract": false
+   },
+   "rtd": {
+    "mean": 0.09,
+    "sd": 0.32,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 1.0
+    },
+    "in_sealed_contract": false
+   }
+  },
+  "44246807": {
+   "dk_id": "44246807",
+   "name": "DJ Uiagalelei",
+   "team": "LAC",
+   "opponent": "BUF",
+   "salary": 4000,
+   "gsis_id": "00-0040464",
+   "has_qb_layer_row": false,
+   "why_absent": "no row in the QB frame: no pre-2026 history and include_cold_start is False. UNKNOWN, not zero."
+  },
+  "44246808": {
+   "dk_id": "44246808",
+   "name": "Kyle Allen",
+   "team": "BUF",
+   "opponent": "LAC",
+   "salary": 4000,
+   "gsis_id": "00-0034577",
+   "has_qb_layer_row": true,
+   "db": {
+    "mean": 24.285,
+    "sd": 16.2408,
+    "pctl": {
+     "5": 1.0,
+     "25": 10.0,
+     "50": 27.0,
+     "75": 38.0,
+     "95": 51.0
+    },
+    "in_sealed_contract": false
+   },
+   "att": {
+    "mean": 21.765,
+    "sd": 14.6377,
+    "pctl": {
+     "5": 1.0,
+     "25": 8.0,
+     "50": 23.5,
+     "75": 34.0,
+     "95": 46.05
+    },
+    "in_sealed_contract": true
+   },
+   "sacks": {
+    "mean": 1.67,
+    "sd": 1.6688,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 3.0,
+     "95": 5.0
+    },
+    "in_sealed_contract": false
+   },
+   "scr": {
+    "mean": 0.85,
+    "sd": 1.0832,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": false
+   },
+   "cmp": {
+    "mean": 14.26,
+    "sd": 9.8945,
+    "pctl": {
+     "5": 1.0,
+     "25": 5.0,
+     "50": 14.0,
+     "75": 22.0,
+     "95": 31.0
+    },
+    "in_sealed_contract": true
+   },
+   "pyds": {
+    "mean": 165.9854,
+    "sd": 135.1979,
+    "pctl": {
+     "5": 8.9991,
+     "25": 57.8301,
+     "50": 145.75,
+     "75": 240.625,
+     "95": 450.775
+    },
+    "in_sealed_contract": true
+   },
+   "ptd": {
+    "mean": 0.87,
+    "sd": 1.14,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": true
+   },
+   "int": {
+    "mean": 0.435,
+    "sd": 0.7338,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 2.0
+    },
+    "in_sealed_contract": true
+   },
+   "drush": {
+    "mean": 1.005,
+    "sd": 1.1275,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": false
+   },
+   "rush_opp": {
+    "mean": 1.855,
+    "sd": 1.7917,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 2.0,
+     "75": 3.0,
+     "95": 5.0
+    },
+    "in_sealed_contract": false
+   },
+   "ryds": {
+    "mean": 8.5578,
+    "sd": 10.0138,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 5.75,
+     "75": 13.5,
+     "95": 28.0
+    },
+    "in_sealed_contract": false
+   },
+   "rtd": {
+    "mean": 0.12,
+    "sd": 0.3692,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 1.0
+    },
+    "in_sealed_contract": false
+   }
+  },
+  "44246809": {
+   "dk_id": "44246809",
+   "name": "Shane Buechele",
+   "team": "BUF",
+   "opponent": "LAC",
+   "salary": 4000,
+   "gsis_id": "00-0036679",
+   "has_qb_layer_row": true,
+   "db": {
+    "mean": 31.375,
+    "sd": 14.283,
+    "pctl": {
+     "5": 4.0,
+     "25": 21.0,
+     "50": 33.0,
+     "75": 41.0,
+     "95": 54.0
+    },
+    "in_sealed_contract": false
+   },
+   "att": {
+    "mean": 26.55,
+    "sd": 12.228,
+    "pctl": {
+     "5": 3.95,
+     "25": 17.75,
+     "50": 28.0,
+     "75": 34.25,
+     "95": 45.05
+    },
+    "in_sealed_contract": true
+   },
+   "sacks": {
+    "mean": 3.2,
+    "sd": 2.0909,
+    "pctl": {
+     "5": 0.0,
+     "25": 2.0,
+     "50": 3.0,
+     "75": 5.0,
+     "95": 7.0
+    },
+    "in_sealed_contract": false
+   },
+   "scr": {
+    "mean": 1.625,
+    "sd": 1.5119,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 4.0
+    },
+    "in_sealed_contract": false
+   },
+   "cmp": {
+    "mean": 16.44,
+    "sd": 7.9658,
+    "pctl": {
+     "5": 1.95,
+     "25": 11.75,
+     "50": 17.0,
+     "75": 22.0,
+     "95": 27.1
+    },
+    "in_sealed_contract": true
+   },
+   "pyds": {
+    "mean": 190.6143,
+    "sd": 106.2489,
+    "pctl": {
+     "5": 13.52,
+     "25": 123.1786,
+     "50": 183.7419,
+     "75": 253.5,
+     "95": 371.0333
+    },
+    "in_sealed_contract": true
+   },
+   "ptd": {
+    "mean": 1.115,
+    "sd": 1.1482,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": true
+   },
+   "int": {
+    "mean": 0.53,
+    "sd": 0.7496,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 1.0,
+     "95": 2.0
+    },
+    "in_sealed_contract": true
+   },
+   "drush": {
+    "mean": 1.12,
+    "sd": 1.1542,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": false
+   },
+   "rush_opp": {
+    "mean": 2.745,
+    "sd": 2.1478,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 3.0,
+     "75": 4.0,
+     "95": 7.0
+    },
+    "in_sealed_contract": false
+   },
+   "ryds": {
+    "mean": 13.8662,
+    "sd": 16.3962,
+    "pctl": {
+     "5": 0.0,
+     "25": 2.8889,
+     "50": 9.0,
+     "75": 19.125,
+     "95": 46.7333
+    },
+    "in_sealed_contract": false
+   },
+   "rtd": {
+    "mean": 0.12,
+    "sd": 0.3258,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 1.0
+    },
+    "in_sealed_contract": false
+   }
+  },
+  "44270350": {
+   "dk_id": "44270350",
+   "name": "Will Levis",
+   "team": "NYJ",
+   "opponent": "DET",
+   "salary": 4000,
+   "gsis_id": "00-0039152",
+   "has_qb_layer_row": true,
+   "db": {
+    "mean": 35.71,
+    "sd": 12.3876,
+    "pctl": {
+     "5": 10.9,
+     "25": 29.0,
+     "50": 37.0,
+     "75": 43.0,
+     "95": 56.0
+    },
+    "in_sealed_contract": false
+   },
+   "att": {
+    "mean": 30.85,
+    "sd": 11.0065,
+    "pctl": {
+     "5": 8.95,
+     "25": 25.0,
+     "50": 30.0,
+     "75": 38.0,
+     "95": 49.0
+    },
+    "in_sealed_contract": true
+   },
+   "sacks": {
+    "mean": 3.495,
+    "sd": 2.2551,
+    "pctl": {
+     "5": 0.0,
+     "25": 2.0,
+     "50": 3.0,
+     "75": 5.0,
+     "95": 8.0
+    },
+    "in_sealed_contract": false
+   },
+   "scr": {
+    "mean": 1.365,
+    "sd": 1.2962,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.75,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 3.05
+    },
+    "in_sealed_contract": false
+   },
+   "cmp": {
+    "mean": 18.715,
+    "sd": 7.1799,
+    "pctl": {
+     "5": 5.95,
+     "25": 14.0,
+     "50": 18.5,
+     "75": 23.25,
+     "95": 30.05
+    },
+    "in_sealed_contract": true
+   },
+   "pyds": {
+    "mean": 216.7208,
+    "sd": 101.6235,
+    "pctl": {
+     "5": 63.8889,
+     "25": 155.1009,
+     "50": 200.5139,
+     "75": 272.4368,
+     "95": 405.7412
+    },
+    "in_sealed_contract": true
+   },
+   "ptd": {
+    "mean": 1.1,
+    "sd": 1.0751,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": true
+   },
+   "int": {
+    "mean": 0.84,
+    "sd": 0.9157,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 1.0,
+     "75": 1.0,
+     "95": 3.0
+    },
+    "in_sealed_contract": true
+   },
+   "drush": {
+    "mean": 1.625,
+    "sd": 1.3392,
+    "pctl": {
+     "5": 0.0,
+     "25": 1.0,
+     "50": 1.0,
+     "75": 2.0,
+     "95": 4.0
+    },
+    "in_sealed_contract": false
+   },
+   "rush_opp": {
+    "mean": 2.99,
+    "sd": 1.9772,
+    "pctl": {
+     "5": 0.0,
+     "25": 2.0,
+     "50": 3.0,
+     "75": 4.0,
+     "95": 7.0
+    },
+    "in_sealed_contract": false
+   },
+   "ryds": {
+    "mean": 11.893,
+    "sd": 14.3626,
+    "pctl": {
+     "5": -3.0,
+     "25": 2.5,
+     "50": 8.0,
+     "75": 16.875,
+     "95": 37.4667
+    },
+    "in_sealed_contract": false
+   },
+   "rtd": {
+    "mean": 0.08,
+    "sd": 0.2899,
+    "pctl": {
+     "5": 0.0,
+     "25": 0.0,
+     "50": 0.0,
+     "75": 0.0,
+     "95": 1.0
+    },
+    "in_sealed_contract": false
+   }
+  }
+ }
+}
