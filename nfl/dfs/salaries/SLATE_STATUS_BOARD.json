@@ -1,0 +1,1322 @@
+{
+  "artifact": "SLATE_STATUS_BOARD",
+  "spec_version": "slate-to-portfolio-1",
+  "generated_at_utc": "2026-09-27T18:36:03Z",
+  "entry_file": "/home/user/nfl/nfl/dfs/salaries/raw/DKEntries_EARLY_ONLY_2026W3_62.csv",
+  "stages": [
+    {
+      "stage": "ingest_slate",
+      "state": "PASS",
+      "code": "SLATE_INGESTED",
+      "detail": "48 entries",
+      "evidence": {
+        "n": 48,
+        "contests": {
+          "195955835": 2,
+          "196110787": 20,
+          "196117165": 6,
+          "196122720": 20
+        }
+      }
+    },
+    {
+      "stage": "verify_identity",
+      "state": "PASS",
+      "code": "IDENTITY_VERIFIED",
+      "detail": "457 rows, 6 unmatched",
+      "evidence": {
+        "n": 457,
+        "n_unmatched": 6
+      }
+    },
+    {
+      "stage": "availability",
+      "state": "PASS",
+      "code": "AVAILABILITY_RESOLVED",
+      "detail": "13 reported absent, 18 clubs",
+      "evidence": {
+        "n_absent": 13,
+        "n_clubs": 18,
+        "counts": {
+          "UNKNOWN_NOT_RELAYED": 437,
+          "REPORTED_INACTIVE_HIGH_CONFIDENCE": 10,
+          "REPORTED_ACTIVE_NOT_ON_LIST": 7,
+          "REPORTED_INACTIVE_OFFICIAL_RELEASE_CITED": 3
+        }
+      }
+    },
+    {
+      "stage": "current_role",
+      "state": "PASS",
+      "code": "ROLE_RESOLVED",
+      "detail": "107 predicted starters of 457",
+      "evidence": {
+        "n_predicted": 107
+      }
+    },
+    {
+      "stage": "projections",
+      "state": "PASS",
+      "code": "PROJECTIONS_READY",
+      "detail": "172 usable, status FALLBACK",
+      "evidence": {
+        "modes": {
+          "EXTERNAL_FC_FALLBACK": 172,
+          "NOT_PROJECTED_REPORTED_ABSENT": 13,
+          "PROJECTION_UNAVAILABLE": 272
+        },
+        "status": "FALLBACK",
+        "coverage": {
+          "QB": {
+            "rosterable": 60,
+            "projected": 18,
+            "pct": 30.0
+          },
+          "RB": {
+            "rosterable": 107,
+            "projected": 37,
+            "pct": 34.6
+          },
+          "WR": {
+            "rosterable": 172,
+            "projected": 70,
+            "pct": 40.7
+          },
+          "TE": {
+            "rosterable": 100,
+            "projected": 29,
+            "pct": 29.0
+          },
+          "DST": {
+            "rosterable": 18,
+            "projected": 18,
+            "pct": 100.0
+          }
+        },
+        "n_proprietary": 0
+      }
+    },
+    {
+      "stage": "candidate_generation",
+      "state": "PASS",
+      "code": "CANDIDATES_GENERATED",
+      "detail": "4000 candidates",
+      "evidence": {
+        "n": 4000,
+        "attempts": 29487
+      }
+    },
+    {
+      "stage": "portfolio_selection",
+      "state": "PASS",
+      "code": "PORTFOLIO_SELECTED",
+      "detail": "48 lineups",
+      "evidence": {
+        "n": 48
+      }
+    },
+    {
+      "stage": "legality_validation",
+      "state": "PASS",
+      "code": "PORTFOLIO_LEGAL",
+      "detail": "48 lineups, every check clean",
+      "evidence": {}
+    },
+    {
+      "stage": "dk_upload_csv",
+      "state": "PASS",
+      "code": "CSV_WRITTEN",
+      "detail": "48 entry rows",
+      "evidence": {
+        "sha256": "cec09aecb18656026022d8efe359a2ce2122fb43491604098de877340d42c3ab"
+      }
+    }
+  ],
+  "slate_status": "FALLBACK",
+  "CORRELATION_BASIS": "CORRELATION_HEURISTIC_NOT_SIMULATION. Structure comes from declared rules -- a quarterback with 1-2 of his own pass catchers, an optional opposing bring-back, never a team defence against our own quarterback. It does NOT come from simulated football, so ceiling, duplication and expected payout are UNKNOWN rather than estimated.",
+  "unknown_by_design": [
+    "lineup_ceiling",
+    "duplication_probability",
+    "expected_payout",
+    "first_place_probability",
+    "projected_ownership"
+  ],
+  "projection_coverage": {
+    "QB": {
+      "rosterable": 60,
+      "projected": 18,
+      "pct": 30.0
+    },
+    "RB": {
+      "rosterable": 107,
+      "projected": 37,
+      "pct": 34.6
+    },
+    "WR": {
+      "rosterable": 172,
+      "projected": 70,
+      "pct": 40.7
+    },
+    "TE": {
+      "rosterable": 100,
+      "projected": 29,
+      "pct": 29.0
+    },
+    "DST": {
+      "rosterable": 18,
+      "projected": 18,
+      "pct": 100.0
+    }
+  },
+  "portfolio": {
+    "n_lineups": 48,
+    "salary": {
+      "min": 46900,
+      "max": 50000
+    },
+    "proj_total": {
+      "min": 140.37,
+      "max": 150.45
+    },
+    "top_player_exposure": {
+      "Ja'Marr Chase": "43.8%",
+      "De'Von Achane": "39.6%",
+      "Rashee Rice": "37.5%",
+      "Jahmyr Gibbs": "37.5%",
+      "Parker Washington": "33.3%",
+      "Denzel Boston": "25.0%",
+      "Trevor Lawrence": "25.0%",
+      "Breece Hall": "22.9%",
+      "Cam Skattebo": "22.9%",
+      "Dalton Schultz": "20.8%"
+    },
+    "qb_exposure": {
+      "Trevor Lawrence": "25.0%",
+      "Deshaun Watson": "20.8%",
+      "Patrick Mahomes": "16.7%",
+      "C.J. Stroud": "8.3%",
+      "Joe Burrow": "8.3%",
+      "Bryce Young": "6.2%",
+      "Drake Maye": "4.2%",
+      "Josh Allen": "2.1%",
+      "Justin Herbert": "2.1%",
+      "Aaron Rodgers": "2.1%",
+      "Malik Willis": "2.1%",
+      "Geno Smith": "2.1%"
+    },
+    "dst_exposure": {
+      "CIN": "18.8%",
+      "JAX": "12.5%",
+      "HOU": "12.5%",
+      "NE": "8.3%",
+      "BUF": "6.2%",
+      "WAS": "6.2%",
+      "LAC": "6.2%",
+      "TEN": "4.2%",
+      "CAR": "4.2%",
+      "PIT": "4.2%",
+      "NYG": "4.2%",
+      "NYJ": "4.2%",
+      "SEA": "4.2%",
+      "MIA": "2.1%",
+      "DET": "2.1%"
+    },
+    "stack_sizes": {
+      "1": 31,
+      "2": 17
+    },
+    "bring_back_rate": "50.0%",
+    "max_pairwise_overlap": 6,
+    "mean_pairwise_overlap": 1.52,
+    "lineups": [
+      {
+        "qb": "Patrick Mahomes",
+        "stack": [
+          "Rashee Rice"
+        ],
+        "bring_back": null,
+        "dst": "JAX",
+        "salary": 49800,
+        "proj_total": 150.45,
+        "players": [
+          "Patrick Mahomes",
+          "Rashee Rice",
+          "Jaguars",
+          "Jahmyr Gibbs",
+          "Breece Hall",
+          "KC Concepcion Jr.",
+          "Quentin Johnston",
+          "Dalton Schultz",
+          "Jaylen Warren"
+        ]
+      },
+      {
+        "qb": "Patrick Mahomes",
+        "stack": [
+          "Travis Kelce",
+          "Rashee Rice"
+        ],
+        "bring_back": null,
+        "dst": "BUF",
+        "salary": 49800,
+        "proj_total": 148.61,
+        "players": [
+          "Patrick Mahomes",
+          "Travis Kelce",
+          "Rashee Rice",
+          "Bills",
+          "De'Von Achane",
+          "Jahmyr Gibbs",
+          "Denzel Boston",
+          "Jakobi Meyers",
+          "Jadarian Price"
+        ]
+      },
+      {
+        "qb": "Trevor Lawrence",
+        "stack": [
+          "Josh Cameron"
+        ],
+        "bring_back": null,
+        "dst": "MIA",
+        "salary": 50000,
+        "proj_total": 148.38,
+        "players": [
+          "Trevor Lawrence",
+          "Josh Cameron",
+          "Dolphins",
+          "Breece Hall",
+          "Jahmyr Gibbs",
+          "Ja'Marr Chase",
+          "Tee Higgins",
+          "Darren Waller",
+          "De'Von Achane"
+        ]
+      },
+      {
+        "qb": "Trevor Lawrence",
+        "stack": [
+          "Parker Washington"
+        ],
+        "bring_back": [
+          "Romeo Doubs"
+        ],
+        "dst": "CIN",
+        "salary": 49300,
+        "proj_total": 147.14,
+        "players": [
+          "Trevor Lawrence",
+          "Parker Washington",
+          "Romeo Doubs",
+          "Bengals",
+          "Chase Brown",
+          "Jonathan Taylor",
+          "Denzel Boston",
+          "Dawson Knox",
+          "Ja'Marr Chase"
+        ]
+      },
+      {
+        "qb": "Bryce Young",
+        "stack": [
+          "Darren Waller"
+        ],
+        "bring_back": null,
+        "dst": "CIN",
+        "salary": 49300,
+        "proj_total": 147.03,
+        "players": [
+          "Bryce Young",
+          "Darren Waller",
+          "Bengals",
+          "Breece Hall",
+          "Chase Brown",
+          "Khalil Shakir",
+          "Xavier Worthy",
+          "Rashee Rice",
+          "Jahmyr Gibbs"
+        ]
+      },
+      {
+        "qb": "Deshaun Watson",
+        "stack": [
+          "Harold Fannin Jr.",
+          "KC Concepcion Jr."
+        ],
+        "bring_back": [
+          "Tetairoa McMillan"
+        ],
+        "dst": "TEN",
+        "salary": 49200,
+        "proj_total": 146.97,
+        "players": [
+          "Deshaun Watson",
+          "Harold Fannin Jr.",
+          "KC Concepcion Jr.",
+          "Tetairoa McMillan",
+          "Titans",
+          "James Cook III",
+          "Jonathan Taylor",
+          "Wan'Dale Robinson",
+          "Jahmyr Gibbs"
+        ]
+      },
+      {
+        "qb": "Trevor Lawrence",
+        "stack": [
+          "Jakobi Meyers",
+          "Parker Washington"
+        ],
+        "bring_back": null,
+        "dst": "TEN",
+        "salary": 48400,
+        "proj_total": 146.77,
+        "players": [
+          "Trevor Lawrence",
+          "Jakobi Meyers",
+          "Parker Washington",
+          "Titans",
+          "Chase Brown",
+          "De'Von Achane",
+          "Tetairoa McMillan",
+          "Oronde Gadsden II",
+          "James Cook III"
+        ]
+      },
+      {
+        "qb": "Patrick Mahomes",
+        "stack": [
+          "Travis Kelce"
+        ],
+        "bring_back": null,
+        "dst": "CIN",
+        "salary": 49000,
+        "proj_total": 146.58,
+        "players": [
+          "Patrick Mahomes",
+          "Travis Kelce",
+          "Bengals",
+          "De'Von Achane",
+          "Jaylen Warren",
+          "Jameson Williams",
+          "Jalen Coker",
+          "Parker Washington",
+          "Garrett Wilson"
+        ]
+      },
+      {
+        "qb": "Trevor Lawrence",
+        "stack": [
+          "Parker Washington"
+        ],
+        "bring_back": [
+          "TreVeyon Henderson"
+        ],
+        "dst": "CAR",
+        "salary": 49700,
+        "proj_total": 145.58,
+        "players": [
+          "Trevor Lawrence",
+          "Parker Washington",
+          "TreVeyon Henderson",
+          "Panthers",
+          "Jaylen Warren",
+          "Garrett Wilson",
+          "Ja'Marr Chase",
+          "Isaiah Likely",
+          "Woody Marks"
+        ]
+      },
+      {
+        "qb": "Deshaun Watson",
+        "stack": [
+          "Harold Fannin Jr."
+        ],
+        "bring_back": [
+          "Chuba Hubbard"
+        ],
+        "dst": "WAS",
+        "salary": 49900,
+        "proj_total": 145.45,
+        "players": [
+          "Deshaun Watson",
+          "Harold Fannin Jr.",
+          "Chuba Hubbard",
+          "Commanders",
+          "James Cook III",
+          "Garrett Wilson",
+          "Rashee Rice",
+          "Brian Thomas Jr.",
+          "Jaxon Smith-Njigba"
+        ]
+      },
+      {
+        "qb": "C.J. Stroud",
+        "stack": [
+          "Kayshon Boutte"
+        ],
+        "bring_back": [
+          "Jonathan Taylor"
+        ],
+        "dst": "CAR",
+        "salary": 49200,
+        "proj_total": 145.16,
+        "players": [
+          "C.J. Stroud",
+          "Kayshon Boutte",
+          "Jonathan Taylor",
+          "Panthers",
+          "James Cook III",
+          "Brian Thomas Jr.",
+          "Rashee Rice",
+          "Dalton Schultz",
+          "De'Von Achane"
+        ]
+      },
+      {
+        "qb": "Deshaun Watson",
+        "stack": [
+          "Harold Fannin Jr."
+        ],
+        "bring_back": null,
+        "dst": "LAC",
+        "salary": 48100,
+        "proj_total": 145.03,
+        "players": [
+          "Deshaun Watson",
+          "Harold Fannin Jr.",
+          "Chargers",
+          "Cam Skattebo",
+          "Jaylen Warren",
+          "Ja'Marr Chase",
+          "Tetairoa McMillan",
+          "Michael Pittman Jr.",
+          "De'Von Achane"
+        ]
+      },
+      {
+        "qb": "C.J. Stroud",
+        "stack": [
+          "Dalton Schultz"
+        ],
+        "bring_back": [
+          "Keenan Allen"
+        ],
+        "dst": "JAX",
+        "salary": 47900,
+        "proj_total": 144.46,
+        "players": [
+          "C.J. Stroud",
+          "Dalton Schultz",
+          "Keenan Allen",
+          "Jaguars",
+          "De'Von Achane",
+          "Jonathan Taylor",
+          "Germie Bernard",
+          "Garrett Wilson",
+          "Rashee Rice"
+        ]
+      },
+      {
+        "qb": "Trevor Lawrence",
+        "stack": [
+          "Jakobi Meyers",
+          "Brenton Strange"
+        ],
+        "bring_back": [
+          "TreVeyon Henderson"
+        ],
+        "dst": "HOU",
+        "salary": 48000,
+        "proj_total": 144.44,
+        "players": [
+          "Trevor Lawrence",
+          "Jakobi Meyers",
+          "Brenton Strange",
+          "TreVeyon Henderson",
+          "Texans",
+          "Jaylen Warren",
+          "Ja'Marr Chase",
+          "Rashee Rice",
+          "Quinshon Judkins"
+        ]
+      },
+      {
+        "qb": "Patrick Mahomes",
+        "stack": [
+          "Rashee Rice",
+          "Travis Kelce"
+        ],
+        "bring_back": null,
+        "dst": "PIT",
+        "salary": 47900,
+        "proj_total": 144.35,
+        "players": [
+          "Patrick Mahomes",
+          "Rashee Rice",
+          "Travis Kelce",
+          "Steelers",
+          "Woody Marks",
+          "Jonathan Taylor",
+          "Denzel Boston",
+          "Wan'Dale Robinson",
+          "De'Von Achane"
+        ]
+      },
+      {
+        "qb": "Josh Allen",
+        "stack": [
+          "Keon Coleman"
+        ],
+        "bring_back": [
+          "Ladd McConkey"
+        ],
+        "dst": "CIN",
+        "salary": 48800,
+        "proj_total": 143.88,
+        "players": [
+          "Josh Allen",
+          "Keon Coleman",
+          "Ladd McConkey",
+          "Bengals",
+          "Jaylen Warren",
+          "Breece Hall",
+          "Malik McClain",
+          "Travis Kelce",
+          "Ja'Marr Chase"
+        ]
+      },
+      {
+        "qb": "Deshaun Watson",
+        "stack": [
+          "KC Concepcion Jr."
+        ],
+        "bring_back": [
+          "Darren Waller"
+        ],
+        "dst": "NYG",
+        "salary": 49600,
+        "proj_total": 143.8,
+        "players": [
+          "Deshaun Watson",
+          "KC Concepcion Jr.",
+          "Darren Waller",
+          "Giants",
+          "Jahmyr Gibbs",
+          "Raheim Sanders",
+          "Parker Washington",
+          "Ja'Marr Chase",
+          "Breece Hall"
+        ]
+      },
+      {
+        "qb": "Trevor Lawrence",
+        "stack": [
+          "Parker Washington",
+          "Brian Thomas Jr."
+        ],
+        "bring_back": [
+          "Kyle Williams"
+        ],
+        "dst": "JAX",
+        "salary": 49600,
+        "proj_total": 143.38,
+        "players": [
+          "Trevor Lawrence",
+          "Parker Washington",
+          "Brian Thomas Jr.",
+          "Kyle Williams",
+          "Jaguars",
+          "Jahmyr Gibbs",
+          "Jonathan Taylor",
+          "Dalton Schultz",
+          "Breece Hall"
+        ]
+      },
+      {
+        "qb": "Joe Burrow",
+        "stack": [
+          "Ja'Marr Chase",
+          "Mike Gesicki"
+        ],
+        "bring_back": null,
+        "dst": "HOU",
+        "salary": 49700,
+        "proj_total": 143.01,
+        "players": [
+          "Joe Burrow",
+          "Ja'Marr Chase",
+          "Mike Gesicki",
+          "Texans",
+          "Cam Skattebo",
+          "Breece Hall",
+          "Tetairoa McMillan",
+          "Denzel Boston",
+          "Rhamondre Stevenson"
+        ]
+      },
+      {
+        "qb": "Trevor Lawrence",
+        "stack": [
+          "Brian Thomas Jr.",
+          "Parker Washington"
+        ],
+        "bring_back": null,
+        "dst": "WAS",
+        "salary": 50000,
+        "proj_total": 143.0,
+        "players": [
+          "Trevor Lawrence",
+          "Brian Thomas Jr.",
+          "Parker Washington",
+          "Commanders",
+          "Jahmyr Gibbs",
+          "Jonathan Taylor",
+          "Malik McClain",
+          "Brenton Strange",
+          "Jaxon Smith-Njigba"
+        ]
+      },
+      {
+        "qb": "Deshaun Watson",
+        "stack": [
+          "Denzel Boston"
+        ],
+        "bring_back": [
+          "Chuba Hubbard"
+        ],
+        "dst": "NE",
+        "salary": 49500,
+        "proj_total": 142.76,
+        "players": [
+          "Deshaun Watson",
+          "Denzel Boston",
+          "Chuba Hubbard",
+          "Patriots",
+          "Raheim Sanders",
+          "Tee Higgins",
+          "Ja'Marr Chase",
+          "Dalton Schultz",
+          "Jaxon Smith-Njigba"
+        ]
+      },
+      {
+        "qb": "Joe Burrow",
+        "stack": [
+          "Tee Higgins",
+          "Ja'Marr Chase"
+        ],
+        "bring_back": null,
+        "dst": "JAX",
+        "salary": 49600,
+        "proj_total": 142.5,
+        "players": [
+          "Joe Burrow",
+          "Tee Higgins",
+          "Ja'Marr Chase",
+          "Jaguars",
+          "De'Von Achane",
+          "Tony Pollard",
+          "Xavier Worthy",
+          "Darren Waller",
+          "Cam Skattebo"
+        ]
+      },
+      {
+        "qb": "Deshaun Watson",
+        "stack": [
+          "Jerry Jeudy",
+          "Harold Fannin Jr."
+        ],
+        "bring_back": [
+          "Tetairoa McMillan"
+        ],
+        "dst": "JAX",
+        "salary": 48500,
+        "proj_total": 142.5,
+        "players": [
+          "Deshaun Watson",
+          "Jerry Jeudy",
+          "Harold Fannin Jr.",
+          "Tetairoa McMillan",
+          "Jaguars",
+          "Breece Hall",
+          "Jahmyr Gibbs",
+          "Jalen Coker",
+          "Rashee Rice"
+        ]
+      },
+      {
+        "qb": "Patrick Mahomes",
+        "stack": [
+          "Travis Kelce",
+          "Rashee Rice"
+        ],
+        "bring_back": [
+          "De'Von Achane"
+        ],
+        "dst": "CIN",
+        "salary": 48700,
+        "proj_total": 142.43,
+        "players": [
+          "Patrick Mahomes",
+          "Travis Kelce",
+          "Rashee Rice",
+          "De'Von Achane",
+          "Bengals",
+          "Kenneth Walker III",
+          "KC Concepcion Jr.",
+          "Denzel Boston",
+          "David Montgomery"
+        ]
+      },
+      {
+        "qb": "Trevor Lawrence",
+        "stack": [
+          "Parker Washington"
+        ],
+        "bring_back": null,
+        "dst": "NYJ",
+        "salary": 49600,
+        "proj_total": 142.36,
+        "players": [
+          "Trevor Lawrence",
+          "Parker Washington",
+          "Jets",
+          "James Cook III",
+          "De'Von Achane",
+          "Ladd McConkey",
+          "Ja'Marr Chase",
+          "Mike Gesicki",
+          "Rachaad White"
+        ]
+      },
+      {
+        "qb": "Bryce Young",
+        "stack": [
+          "Tetairoa McMillan"
+        ],
+        "bring_back": [
+          "Denzel Boston"
+        ],
+        "dst": "HOU",
+        "salary": 49300,
+        "proj_total": 142.23,
+        "players": [
+          "Bryce Young",
+          "Tetairoa McMillan",
+          "Denzel Boston",
+          "Texans",
+          "Jonathan Taylor",
+          "Jahmyr Gibbs",
+          "KC Concepcion Jr.",
+          "AJ Barner",
+          "Cam Skattebo"
+        ]
+      },
+      {
+        "qb": "Justin Herbert",
+        "stack": [
+          "Quentin Johnston"
+        ],
+        "bring_back": [
+          "James Cook III"
+        ],
+        "dst": "HOU",
+        "salary": 48800,
+        "proj_total": 142.13,
+        "players": [
+          "Justin Herbert",
+          "Quentin Johnston",
+          "James Cook III",
+          "Texans",
+          "Jahmyr Gibbs",
+          "Denzel Boston",
+          "KC Concepcion Jr.",
+          "Hunter Henry",
+          "De'Von Achane"
+        ]
+      },
+      {
+        "qb": "Aaron Rodgers",
+        "stack": [
+          "Darnell Washington"
+        ],
+        "bring_back": [
+          "Ja'Marr Chase"
+        ],
+        "dst": "SEA",
+        "salary": 49100,
+        "proj_total": 142.03,
+        "players": [
+          "Aaron Rodgers",
+          "Darnell Washington",
+          "Ja'Marr Chase",
+          "Seahawks",
+          "TreVeyon Henderson",
+          "James Cook III",
+          "Jakobi Meyers",
+          "Parker Washington",
+          "De'Von Achane"
+        ]
+      },
+      {
+        "qb": "Patrick Mahomes",
+        "stack": [
+          "Rashee Rice"
+        ],
+        "bring_back": null,
+        "dst": "LAC",
+        "salary": 48400,
+        "proj_total": 141.93,
+        "players": [
+          "Patrick Mahomes",
+          "Rashee Rice",
+          "Chargers",
+          "Jadarian Price",
+          "Cam Skattebo",
+          "Terry McLaurin",
+          "Michael Pittman Jr.",
+          "Dalton Schultz",
+          "Ja'Marr Chase"
+        ]
+      },
+      {
+        "qb": "C.J. Stroud",
+        "stack": [
+          "Dalton Schultz"
+        ],
+        "bring_back": null,
+        "dst": "NE",
+        "salary": 48800,
+        "proj_total": 141.79,
+        "players": [
+          "C.J. Stroud",
+          "Dalton Schultz",
+          "Patriots",
+          "Tony Pollard",
+          "Jahmyr Gibbs",
+          "Parker Washington",
+          "Garrett Wilson",
+          "Denzel Boston",
+          "Rhamondre Stevenson"
+        ]
+      },
+      {
+        "qb": "Deshaun Watson",
+        "stack": [
+          "Harold Fannin Jr.",
+          "Denzel Boston"
+        ],
+        "bring_back": null,
+        "dst": "NE",
+        "salary": 49400,
+        "proj_total": 141.72,
+        "players": [
+          "Deshaun Watson",
+          "Harold Fannin Jr.",
+          "Denzel Boston",
+          "Patriots",
+          "Rachaad White",
+          "Jadarian Price",
+          "Jaxon Smith-Njigba",
+          "Ja'Marr Chase",
+          "Rashee Rice"
+        ]
+      },
+      {
+        "qb": "Trevor Lawrence",
+        "stack": [
+          "Jakobi Meyers",
+          "Brenton Strange"
+        ],
+        "bring_back": null,
+        "dst": "SEA",
+        "salary": 49500,
+        "proj_total": 141.68,
+        "players": [
+          "Trevor Lawrence",
+          "Jakobi Meyers",
+          "Brenton Strange",
+          "Seahawks",
+          "De'Von Achane",
+          "Chase Brown",
+          "Jaxon Smith-Njigba",
+          "Romeo Doubs",
+          "Woody Marks"
+        ]
+      },
+      {
+        "qb": "Deshaun Watson",
+        "stack": [
+          "Harold Fannin Jr.",
+          "KC Concepcion Jr."
+        ],
+        "bring_back": null,
+        "dst": "CIN",
+        "salary": 47700,
+        "proj_total": 141.62,
+        "players": [
+          "Deshaun Watson",
+          "Harold Fannin Jr.",
+          "KC Concepcion Jr.",
+          "Bengals",
+          "Rachaad White",
+          "De'Von Achane",
+          "Terry McLaurin",
+          "Garrett Wilson",
+          "Jahmyr Gibbs"
+        ]
+      },
+      {
+        "qb": "C.J. Stroud",
+        "stack": [
+          "Dalton Schultz"
+        ],
+        "bring_back": null,
+        "dst": "CIN",
+        "salary": 48200,
+        "proj_total": 141.61,
+        "players": [
+          "C.J. Stroud",
+          "Dalton Schultz",
+          "Bengals",
+          "Rachaad White",
+          "Rhamondre Stevenson",
+          "Tetairoa McMillan",
+          "Keenan Allen",
+          "Ja'Marr Chase",
+          "Rashee Rice"
+        ]
+      },
+      {
+        "qb": "Patrick Mahomes",
+        "stack": [
+          "Rashee Rice"
+        ],
+        "bring_back": [
+          "Chris Bell"
+        ],
+        "dst": "JAX",
+        "salary": 49400,
+        "proj_total": 141.58,
+        "players": [
+          "Patrick Mahomes",
+          "Rashee Rice",
+          "Chris Bell",
+          "Jaguars",
+          "Jahmyr Gibbs",
+          "Chase Brown",
+          "Quentin Johnston",
+          "Travis Kelce",
+          "Jaylen Warren"
+        ]
+      },
+      {
+        "qb": "Trevor Lawrence",
+        "stack": [
+          "Parker Washington"
+        ],
+        "bring_back": null,
+        "dst": "HOU",
+        "salary": 49800,
+        "proj_total": 141.4,
+        "players": [
+          "Trevor Lawrence",
+          "Parker Washington",
+          "Texans",
+          "Cam Skattebo",
+          "Breece Hall",
+          "Khalil Shakir",
+          "Quentin Johnston",
+          "Harold Fannin Jr.",
+          "Jaxon Smith-Njigba"
+        ]
+      },
+      {
+        "qb": "Joe Burrow",
+        "stack": [
+          "Mike Gesicki",
+          "Ja'Marr Chase"
+        ],
+        "bring_back": null,
+        "dst": "DET",
+        "salary": 49100,
+        "proj_total": 141.24,
+        "players": [
+          "Joe Burrow",
+          "Mike Gesicki",
+          "Ja'Marr Chase",
+          "Lions",
+          "TreVeyon Henderson",
+          "Jaylen Warren",
+          "Parker Washington",
+          "KC Concepcion Jr.",
+          "Rashee Rice"
+        ]
+      },
+      {
+        "qb": "Joe Burrow",
+        "stack": [
+          "Tee Higgins"
+        ],
+        "bring_back": null,
+        "dst": "CIN",
+        "salary": 48200,
+        "proj_total": 141.16,
+        "players": [
+          "Joe Burrow",
+          "Tee Higgins",
+          "Bengals",
+          "De'Von Achane",
+          "Cam Skattebo",
+          "Khalil Shakir",
+          "Quentin Johnston",
+          "Dalton Schultz",
+          "David Montgomery"
+        ]
+      },
+      {
+        "qb": "Deshaun Watson",
+        "stack": [
+          "Harold Fannin Jr."
+        ],
+        "bring_back": [
+          "Chuba Hubbard"
+        ],
+        "dst": "PIT",
+        "salary": 49700,
+        "proj_total": 141.13,
+        "players": [
+          "Deshaun Watson",
+          "Harold Fannin Jr.",
+          "Chuba Hubbard",
+          "Steelers",
+          "Breece Hall",
+          "Jalen Coker",
+          "Parker Washington",
+          "Amon-Ra St. Brown",
+          "Rashee Rice"
+        ]
+      },
+      {
+        "qb": "Drake Maye",
+        "stack": [
+          "Romeo Doubs"
+        ],
+        "bring_back": [
+          "Brenton Strange"
+        ],
+        "dst": "HOU",
+        "salary": 49600,
+        "proj_total": 141.01,
+        "players": [
+          "Drake Maye",
+          "Romeo Doubs",
+          "Brenton Strange",
+          "Texans",
+          "Cam Skattebo",
+          "David Montgomery",
+          "Ja'Marr Chase",
+          "Keenan Allen",
+          "James Cook III"
+        ]
+      },
+      {
+        "qb": "Bryce Young",
+        "stack": [
+          "Tetairoa McMillan"
+        ],
+        "bring_back": [
+          "Harold Fannin Jr."
+        ],
+        "dst": "NYG",
+        "salary": 49100,
+        "proj_total": 141.01,
+        "players": [
+          "Bryce Young",
+          "Tetairoa McMillan",
+          "Harold Fannin Jr.",
+          "Giants",
+          "De'Von Achane",
+          "David Montgomery",
+          "Mack Hollins",
+          "Ja'Marr Chase",
+          "Jadarian Price"
+        ]
+      },
+      {
+        "qb": "Malik Willis",
+        "stack": [
+          "Chris Bell"
+        ],
+        "bring_back": [
+          "Travis Kelce"
+        ],
+        "dst": "NE",
+        "salary": 47700,
+        "proj_total": 140.99,
+        "players": [
+          "Malik Willis",
+          "Chris Bell",
+          "Travis Kelce",
+          "Patriots",
+          "Chase Brown",
+          "De'Von Achane",
+          "Keenan Allen",
+          "Ja'Marr Chase",
+          "Rashee Rice"
+        ]
+      },
+      {
+        "qb": "Patrick Mahomes",
+        "stack": [
+          "Travis Kelce"
+        ],
+        "bring_back": null,
+        "dst": "BUF",
+        "salary": 49600,
+        "proj_total": 140.94,
+        "players": [
+          "Patrick Mahomes",
+          "Travis Kelce",
+          "Bills",
+          "De'Von Achane",
+          "Jahmyr Gibbs",
+          "Josh Downs",
+          "Mack Hollins",
+          "Denzel Boston",
+          "Breece Hall"
+        ]
+      },
+      {
+        "qb": "Trevor Lawrence",
+        "stack": [
+          "Parker Washington",
+          "Brian Thomas Jr."
+        ],
+        "bring_back": null,
+        "dst": "LAC",
+        "salary": 49600,
+        "proj_total": 140.89,
+        "players": [
+          "Trevor Lawrence",
+          "Parker Washington",
+          "Brian Thomas Jr.",
+          "Chargers",
+          "Kenneth Walker III",
+          "Tony Pollard",
+          "Ja'Marr Chase",
+          "Harold Fannin Jr.",
+          "Cam Skattebo"
+        ]
+      },
+      {
+        "qb": "Trevor Lawrence",
+        "stack": [
+          "Parker Washington",
+          "Brian Thomas Jr."
+        ],
+        "bring_back": null,
+        "dst": "BUF",
+        "salary": 48700,
+        "proj_total": 140.77,
+        "players": [
+          "Trevor Lawrence",
+          "Parker Washington",
+          "Brian Thomas Jr.",
+          "Bills",
+          "Cam Skattebo",
+          "Jahmyr Gibbs",
+          "Jakobi Meyers",
+          "Gunnar Helm",
+          "James Cook III"
+        ]
+      },
+      {
+        "qb": "Deshaun Watson",
+        "stack": [
+          "Denzel Boston"
+        ],
+        "bring_back": [
+          "Chuba Hubbard"
+        ],
+        "dst": "NYJ",
+        "salary": 48000,
+        "proj_total": 140.68,
+        "players": [
+          "Deshaun Watson",
+          "Denzel Boston",
+          "Chuba Hubbard",
+          "Jets",
+          "Chase Brown",
+          "Brian Thomas Jr.",
+          "Ja'Marr Chase",
+          "Jackson Meeks",
+          "Jahmyr Gibbs"
+        ]
+      },
+      {
+        "qb": "Geno Smith",
+        "stack": [
+          "Garrett Wilson"
+        ],
+        "bring_back": [
+          "Jahmyr Gibbs"
+        ],
+        "dst": "WAS",
+        "salary": 49500,
+        "proj_total": 140.49,
+        "players": [
+          "Geno Smith",
+          "Garrett Wilson",
+          "Jahmyr Gibbs",
+          "Commanders",
+          "TreVeyon Henderson",
+          "Ladd McConkey",
+          "Parker Washington",
+          "Oronde Gadsden II",
+          "Chase Brown"
+        ]
+      },
+      {
+        "qb": "Drake Maye",
+        "stack": [
+          "Mack Hollins"
+        ],
+        "bring_back": [
+          "Jakobi Meyers"
+        ],
+        "dst": "CIN",
+        "salary": 46900,
+        "proj_total": 140.37,
+        "players": [
+          "Drake Maye",
+          "Mack Hollins",
+          "Jakobi Meyers",
+          "Bengals",
+          "Chase Brown",
+          "Quinshon Judkins",
+          "Rashee Rice",
+          "Dalton Schultz",
+          "Cam Skattebo"
+        ]
+      }
+    ]
+  },
+  "stages_passed": [
+    "ingest_slate",
+    "verify_identity",
+    "availability",
+    "current_role",
+    "projections",
+    "candidate_generation",
+    "portfolio_selection",
+    "legality_validation",
+    "dk_upload_csv"
+  ],
+  "stopped_at": null,
+  "stopped_code": null,
+  "product_delivered": true,
+  "SATURDAY_RULE": "If the system cannot autonomously produce a complete legal lineup portfolio from a slate file by Saturday, it is not production-ready for Sunday. This run DID produce one."
+}
