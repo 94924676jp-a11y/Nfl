@@ -134,6 +134,19 @@ CLASSIFICATION = {
         'property of the source and cannot differ between two runs'),
     'assert_no_inactive_survived': ('SUPERSEDED',
         'DEF-064; assert_no_inactive_in_playable is wired and STOPs'),
+    'assert_promotable': ('ENFORCEMENT_UNREACHABLE',
+        'the guard itself is correct and its logic is proven (falsified '
+        'CRITICAL blocks, DECLARED CRITICAL blocks under require_tested, '
+        'MATERIAL only warns). But it cannot refuse a production action for TWO '
+        'independent reasons, both measured: assert_may_apply, the only thing '
+        'that turns its verdict into a refusal, has NO production caller; and '
+        'the consumer join is cross-namespace -- adjustment layers are short '
+        'names while downstream_dependencies are dotted module paths and '
+        'candidate names, intersection EMPTY, so every adjustment layer passes '
+        'the gate vacuously. Its other caller, run_audit.py, derives consumers '
+        'FROM the assumptions so that join always matches, and only reports. '
+        'The guard is informative exactly where it does not enforce. DEF-090, '
+        'pinned by nfl/tests/test_assumption_gate_cannot_fire.py'),
     'assert_cut_lawful': ('ANNOTATE_BY_DESIGN',
         'pipeline.cut_check records it with enforcement=OBSERVATIONAL_IN_THIS_'
         'SLICE and a stated why_not_enforced: bitemporal.readable_at requires '

@@ -612,3 +612,66 @@ honest next step is **measuring the equality boundary**, not wiring a STOP to
 make a census row look better. Recorded as ANNOTATE_BY_DESIGN with the reason
 carried in the census, per the standing instruction to look for downstream
 enforcement and stated intent before filing anything.
+
+## DEF-090 · `assert_promotable` is correct and cannot refuse anything in production
+
+**Status:** OPEN (measured). Classified `ENFORCEMENT_UNREACHABLE`, a new census
+category, because neither LOAD_BEARING nor NOT_ESTABLISHED describes it.
+
+**The guard is not the problem.** `assert_promotable` is well built and its logic
+is proven against the real registry: a FALSIFIED CRITICAL assumption blocks, a
+still-DECLARED CRITICAL one blocks under `require_tested`, a FALSIFIED MATERIAL
+one only warns, and it rewrites nothing. The census had it as
+`effect_on_failure: STOP`, `EXTERNALLY_CALLED`, 2 production callers — which is
+true of the *shape* and false of the *effect*.
+
+**Two independent reasons it cannot refuse a production action, both measured.**
+
+*1. The enforcing function has no production caller.* The chain is
+`assert_promotable` → `adjustment_registry._assumption_gate` →
+`assert_may_apply`. `_assumption_gate` is called exactly once, inside
+`assert_may_apply`, and `assert_may_apply` is called **only from tests** (2 test
+callers, 0 production). Nothing in production turns the verdict into a refusal.
+
+*2. The consumer join is cross-namespace, so the gate passes vacuously.*
+`_assumption_gate` passes `consumer=calling_layer`, and `assert_promotable`
+selects by `consumer in a.downstream_dependencies`. Measured:
+
+| | values |
+|---|---|
+| adjustment registry `applied_at` (5) | `coverage`, `game_state`, `line_play`, `team_environment`, `team_volume` |
+| assumption `downstream_dependencies` (13) | dotted module paths (`nfl.production.nonqb.cs2_state`, …) and candidate names (`CS2_STAGE2_PRODUCTION_ALLOCATION`, `TEAM_VOLUME_V2`, …) |
+| **intersection** | **EMPTY** |
+
+So `mine` is always empty for every adjustment layer, and each returns PASS with
+`n_assumptions == 0`. **Every one of the five layers passes the gate because it
+selects nothing, not because it is sound.** Fixing reason 1 alone would change
+nothing.
+
+**The asymmetry is why this went unnoticed, and it is the part worth remembering.**
+The guard's other caller, `nfl/production/assumptions/run_audit.py`, derives its
+consumers **from the assumptions themselves** — `{d for a in settled for d in
+a.downstream_dependencies}` — so that join always matches by construction. All 13
+consumers it reports on select at least one assumption, and the promotion report
+looks meaningful and healthy. It writes the verdict into `body['promotion']` and
+refuses nothing.
+
+So the guard is **informative exactly where it only reports, and inert exactly
+where it would enforce.** A reader checking whether the assumption machinery works
+would look at the audit report, find it correct and populated, and conclude the
+gate was live.
+
+**Not repaired here, deliberately.** Which namespace is right — and whether an
+adjustment layer should be a promotion consumer at all — is a design question
+about what the assumption registry is meant to govern, and two falsified CRITICAL
+assumptions currently name production modules (`nfl.production.nonqb.cs2_state`,
+`nfl.production.nonqb.rushing_a1`, `nfl.production.nonqb.shared_pass`). Wiring
+the join tonight could start refusing real layers on my reading of an owner's
+governance model, which is not mine to decide. Filed with the measurement
+attached.
+
+**Pinned by** `nfl/tests/test_assumption_gate_cannot_fire.py`, 17 checks. It
+proves the guard's logic is right, then pins both unreachability reasons with
+failure messages that say explicitly: if the intersection becomes non-empty or a
+production caller appears, that is **good**, and this entry plus the census must
+be updated rather than left asserting the gate cannot fire.

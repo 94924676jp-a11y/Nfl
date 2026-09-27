@@ -2603,7 +2603,7 @@
    "fails_by": "RETURN",
    "callers_prod": 2,
    "callers_prod_external": 2,
-   "callers_test": 5,
+   "callers_test": 12,
    "callers_research": 0,
    "effect_on_failure": [
     "STOP"
@@ -2633,8 +2633,8 @@
    "direct_test_coverage": true,
    "load_bearing_proof": "NONE",
    "load_bearing_proof_determinism": {},
-   "classification": "NOT_ESTABLISHED",
-   "classification_reason": "",
+   "classification": "ENFORCEMENT_UNREACHABLE",
+   "classification_reason": "the guard itself is correct and its logic is proven (falsified CRITICAL blocks, DECLARED CRITICAL blocks under require_tested, MATERIAL only warns). But it cannot refuse a production action for TWO independent reasons, both measured: assert_may_apply, the only thing that turns its verdict into a refusal, has NO production caller; and the consumer join is cross-namespace -- adjustment layers are short names while downstream_dependencies are dotted module paths and candidate names, intersection EMPTY, so every adjustment layer passes the gate vacuously. Its other caller, run_audit.py, derives consumers FROM the assumptions so that join always matches, and only reports. The guard is informative exactly where it does not enforce. DEF-090, pinned by nfl/tests/test_assumption_gate_cannot_fire.py",
    "prod_sites": [
     "nfl/production/adjustment_registry.py:235:STOP",
     "nfl/production/assumptions/run_audit.py:181:STOP"
