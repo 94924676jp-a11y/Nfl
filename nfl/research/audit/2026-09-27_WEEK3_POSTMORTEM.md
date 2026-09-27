@@ -457,3 +457,55 @@ Three things I got wrong today that are mine, not the architecture's:
 The uncomfortable summary: the project has been unusually good at proving that what it
 built works, and unusually bad at asking whether what it built is what the product needs.
 Those are different questions, and only the second one produces a Sunday board.
+
+
+---
+
+## SUPERSEDED — owner ruling on sequencing, 2026-09-27
+
+Section 14 of this postmortem put the ownership/field model ahead of fixing the proprietary
+projections, on the reasoning that it is the only thing that can price diversification.
+**The owner overruled that and the owner is right:**
+
+> "I would not put the ownership/field model ahead of fixing the proprietary projections.
+> The ownership model is important because it tells us what those 4.4 points of
+> diversification are worth. But if the football projections underneath are still bad, then
+> we would be optimizing contest strategy around the wrong player distributions."
+
+That is the decisive argument. A field model built on top of V0-quality player numbers would
+compute leverage against noise, and would do it convincingly enough to be trusted. The
+binding order is now:
+
+1. **V1 projections** — role state, player priors, TD priors, positional completeness, DST
+2. **Search quality** — exact or near-exact solver, and it must recover or beat 171.59
+3. **Ownership / field model** — then duplication and leverage become quantifiable
+4. **Joint simulator** — then heuristic correlation rules are replaced by simulated football
+5. **SIM_OPTIMAL** — only when 1 to 4 are real
+
+This supersedes section 14's ordering. Sections 1 to 13 stand.
+
+### Three distinct problems, no longer one
+
+The other durable outcome of the frontier work is that "the model is bad" has resolved into
+three separable failures with different owners and different fixes:
+
+| problem | evidence | fix |
+|---|---|---|
+| **projection quality** | Chase 7.82 vs FC 27.08; 62 shrinkage violations; 9 zero-TD players; DST absent | V1, item 1 above |
+| **search / optimizer quality** | the optimizer cannot find a lineup that provably EXISTS in a benchmark file on the same pool — 169.48 against 171.59 | item 2 above |
+| **missing field / ownership model** | 4.4 points of diversification cost cannot be priced against duplication protection | item 3 above |
+
+Lumping these together is what produced the wrong diagnosis on 2026-09-27, when a search
+failure was reported as the cost of diversification.
+
+### The benchmark is now a build gate
+
+Owner ruling: *"Claude should treat that file as a minimum search-quality regression target
+going forward. If a new optimizer cannot at least recover that quality on the same pool and
+projections, it should fail the build."*
+
+Implemented as `nfl/tools/search_quality_gate.py`, frozen against the placeholder file's
+digest, comparing **unconstrained** so a deliberate diversification trade-off can never be
+mistaken for a search defect. It is RED today by 2.11 points on the best lineup and 3.91 on
+the portfolio mean, and it says in its own output that being red on the day it was written is
+the point.

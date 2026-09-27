@@ -1,0 +1,39 @@
+{
+  "artifact": "SEARCH_QUALITY_GATE",
+  "spec_version": "search-quality-gate-1",
+  "owner_ruling": "if a new optimizer cannot at least recover the benchmark quality on the same pool and projections, it fails the build",
+  "benchmark": {
+    "source": "nfl/dfs/salaries/raw/OWNER_PLACEHOLDERS_FC_48_2026W3.csv",
+    "source_sha256": "13ce2da14da94f961f8288f46faabeea016394290594338ca77124297f216e53",
+    "frozen_at": "2026-09-27",
+    "best_single_lineup": 171.59,
+    "portfolio_mean": 167.35,
+    "n_lineups": 48,
+    "projection_source": "EXTERNAL_FC_FALLBACK",
+    "scored_by": "the same function that scores the optimizer, with no advantage given",
+    "downward_bias_note": "where the benchmark rosters a player with no FantasyCruncher row, those points are absent from its total. The benchmark is therefore understated and still wins."
+  },
+  "comparison_mode": "PROJECTION_MAX",
+  "checks": [
+    {
+      "check": "best_single_lineup",
+      "benchmark": 171.59,
+      "optimizer": 169.48,
+      "shortfall": 2.11,
+      "pass": false,
+      "why": "the optimizer must find a lineup at least as good as one that provably exists in the benchmark, on the same pool"
+    },
+    {
+      "check": "portfolio_mean",
+      "benchmark": 167.35,
+      "optimizer": 163.44,
+      "shortfall": 3.91,
+      "pass": false,
+      "why": "unconstrained, the optimizer must match the benchmark portfolio mean. A diversified mode may legitimately score lower and is NOT measured here"
+    }
+  ],
+  "state": "RED",
+  "n_failed": 2,
+  "verdict": "SEARCH_NOT_TRUSTWORTHY: 2 of 2 floors unmet. No search change may be called an improvement without moving these numbers.",
+  "DELIBERATELY_RED_TODAY": "this gate is expected to fail until the optimizer improves. A gate that passed on the day it was written would not be measuring anything."
+}

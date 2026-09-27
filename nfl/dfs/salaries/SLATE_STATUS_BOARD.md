@@ -1,7 +1,7 @@
 # Slate status board
 
 **SLATE STATUS: FALLBACK**  
-Generated 2026-09-27T19:20:42Z · entry file `/home/user/nfl/nfl/dfs/salaries/raw/DKEntries_EARLY_ONLY_2026W3_62.csv`
+Generated 2026-09-27T19:43:04Z · entry file `/home/user/nfl/nfl/dfs/salaries/raw/DKEntries_EARLY_ONLY_2026W3_62.csv`
 
 ## Projection coverage
 
