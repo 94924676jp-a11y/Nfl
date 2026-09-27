@@ -675,3 +675,51 @@ proves the guard's logic is right, then pins both unreachability reasons with
 failure messages that say explicitly: if the intersection becomes non-empty or a
 production caller appears, that is **good**, and this entry plus the census must
 be updated rather than left asserting the gate cannot fire.
+
+## DEF-091 · The board refusal names the first non-PASS stage, not the cause — and it has misdirected the project
+
+**Status:** OPEN (reporting defect, no production change made). Highest-value
+finding of this pass.
+
+`nfl/product/orchestrator.py` builds its refusal label as:
+
+```python
+first = next((s for s in summary['stages']
+              if s['state'] not in ('PASS', 'NOT_APPLICABLE')), {})
+... 'refusal': f'{first.get("stage")}: {first.get("code")}'
+```
+
+`DEFERRED` is neither `PASS` nor `NOT_APPLICABLE`, so a **deferred** stage is
+reported as the refusal even when a later stage is the one that actually failed.
+`pipeline.py:284` halts only on `FAIL`/`BLOCKED`, so a DEFERRED stage does not
+stop the run and cannot be the cause.
+
+**Measured on today's slate.** `refresh_boards.py` reports
+`feature_build: STAGE_DECLARED_UNIMPLEMENTED`, while the same summary's
+`first_failure` field correctly reports `player_draws FAIL
+DECLARED_DRAW_ARTIFACT_INCOMPLETE`. The artifact already carries the right answer
+in a field nobody reads, next to a label everybody reads.
+
+**The cost is not cosmetic.** That label was copied into
+`SYSTEM_STATE.json`'s work-queue item 14 ("the second of the two blockers"), into
+`nfl/AGENT_STATE.json`, into my own summaries, and into the owner's brief for
+today. The whole project has been treating an unimplemented feature builder as the
+thing standing between it and a board, when the run reaches a **passing QB layer**
+and a **passing joint reconciliation** and fails five stages later on absent
+`receiving`/`rushing` layers, whose root cause is an uncaptured dataset.
+
+Full trace: `nfl/research/audit/2026-09-27_FEATURE_BUILD_BLOCKER.md`. Capture
+request: OUT-034.
+
+**The fix is one line of selection logic** — prefer `first_failure`, or exclude
+`DEFERRED` from the label and report it separately as owed. I have not made it,
+because this is the reporting surface the whole board pipeline is judged by and
+changing what it says about a live slate a few hours before kickoff is not a
+change to make casually. It is also the third instance tonight of the same
+family: DEF-084 (the accessor that was not reached), DEF-090 (the guard whose
+enforcement was not reached), and now a refusal label that is not the refusal.
+
+**What to preserve if it is fixed:** DEFERRED must stay visible. The correct
+output names the failing stage *and* carries the declared debt alongside it —
+collapsing `feature_build`'s DEFERRED into silence would trade one wrong reading
+for another.

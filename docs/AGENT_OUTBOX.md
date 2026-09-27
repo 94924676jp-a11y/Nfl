@@ -2688,3 +2688,54 @@ byte-identical `.github/workflows/`". That was true when written and is **no
 longer true**. The stale cron on `main` is a *second, independent* reason no T−90
 run can fire. Fixing the Actions-level cause alone would not produce a run, and
 would look like the fix having failed.
+
+---
+
+## 2026-09-27 — OUT-034: `pbp_participation_2026`, the one input blocking every non-QB layer
+
+**This is the blocker for today's board, and it is a capture, not a code change.**
+Full trace in `nfl/research/audit/2026-09-27_FEATURE_BUILD_BLOCKER.md`.
+
+**What has been believed, and is wrong.** The production path reports
+`REFUSED feature_build: STAGE_DECLARED_UNIMPLEMENTED`. That names a bystander —
+the orchestrator labels a refusal with the first stage that is not PASS or
+NOT_APPLICABLE, and DEFERRED qualifies. The run's own `first_failure` says
+`player_draws`, and `feature_build`'s DEFERRED halts nothing.
+
+**The measured chain.** `player_draws` FAILs `DECLARED_DRAW_ARTIFACT_INCOMPLETE`
+because the `receiving` and `rushing` layers are absent; they are absent because
+the five non-QB stages returned `SLATE_FITS_UNAVAILABLE`; that is
+`participation_prior` BLOCKED `PARTICIPATION_HISTORY_STALE` — *the newest
+participation history is ordinal 202518 (2025 week 18) and the forecast is 2026
+week 3*. The QB layer, capture validation, identity resolution, team environment
+and joint reconciliation all **PASS**.
+
+**Request: `pbp_participation_2026` for 2026 weeks 1 and 2**, and thereafter
+weekly. This is the only source of **per-play on-field presence**. A
+field-by-field audit already in the tree (`nfl/production/nonqb/panel_2026w1.py`)
+established that six of the seven panel fields derive **exactly** from evidence we
+already hold, and that `pass_snaps` is the single field that does not, because
+`offense_players`, `offense_personnel`, `defense_players` and `n_offense` are all
+absent from the play-by-play.
+
+**Please do not substitute.** Snap counts are already here and are not the same
+thing: `nfl/availability_raw/snap_counts_2026.271167b454534d6e.csv.gz` carries
+1,492 rows for week 1 and 93 for week 2, and gives `offense_pct`, not per-play
+presence. The approximation we already have —
+`offense_snaps * (team_dropbacks / team_offense_plays)` — is fenced to the
+separately identified candidate `V1_CANDIDATE_R9_W1P` and its own module says it
+*"MUST NEVER BE FED TO"* the accepted `ewma_hl2` arm, which needs TRUE
+`pass_snaps`.
+
+**Also worth flagging: week-2 snap coverage looks thin.** 93 rows against week
+1's 1,492 is roughly one club's worth, not a league week. If week 2 was captured
+incompletely, that is a second gap and it will limit anything built from weeks 1–2
+even once participation arrives.
+
+**What this unblocks, and what it does not.** It unblocks the non-QB chain, hence
+the `receiving` and `rushing` layers, hence the draw contract, hence a board. It
+does **not** implement `feature_build`, which is separately and correctly recorded
+as declared debt — `fx['features']` has no producer anywhere in production. It
+also does not affect G0A item 1, whose root cause is EGRESS (`CONNECT
+www.nfl.com:443 -> 403`, measured) and which the artifact says *"would still fail
+with a perfect scheduler."*
