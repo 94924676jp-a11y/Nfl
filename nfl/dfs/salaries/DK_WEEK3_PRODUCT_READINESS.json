@@ -1,0 +1,268 @@
+{
+  "artifact": "PRODUCT_READINESS",
+  "spec_version": "product-readiness-1",
+  "generated_at_utc": "2026-09-27T18:26:48Z",
+  "WHY_REQUIREMENT_DRIVEN": "the previous gate built one row per declared layer, so a component nobody wrote produced no row and could not be RED. It contains zero occurrences of \"DST\" or \"position\". Here the requirements are declared first and each must prove itself; nothing passes by not being mentioned.",
+  "overall": "RED",
+  "counts": {
+    "GREEN": 4,
+    "AMBER": 5,
+    "RED": 7
+  },
+  "blocking_stages": [
+    "role_consumed_by_projection",
+    "player_prior",
+    "team_volume",
+    "td_allocation",
+    "joint_simulation",
+    "slice_level_checks",
+    "historical_validation"
+  ],
+  "n_required_stages": 16,
+  "n_rows": 16,
+  "rows": [
+    {
+      "stage": "universe_identity",
+      "requirement": "every rosterable player exists and maps correctly",
+      "state": "GREEN",
+      "detail": "457 rosterable rows against an expected 457",
+      "blocks_product": false,
+      "evidence": {
+        "n": 457,
+        "expected": 457
+      }
+    },
+    {
+      "stage": "availability",
+      "requirement": "current availability resolved or explicitly unresolved",
+      "state": "AMBER",
+      "detail": "20 of 457 resolved; 437 explicitly unresolved (a state, not a zero)",
+      "blocks_product": false,
+      "evidence": {
+        "unresolved": 437
+      }
+    },
+    {
+      "stage": "current_role",
+      "requirement": "starter / backup / committee / replacement / returning / cold-start",
+      "state": "GREEN",
+      "detail": "457 of 457 carry a role state",
+      "blocks_product": false,
+      "evidence": {}
+    },
+    {
+      "stage": "role_consumed_by_projection",
+      "requirement": "the projection READS current role, not just records it",
+      "state": "RED",
+      "detail": "19 non-starter(s) projected at starter level behind an available starter, so role state is recorded but not read",
+      "blocks_product": true,
+      "evidence": {
+        "guard": "STALE_REPLACEMENT_ROLE_RETAINED"
+      }
+    },
+    {
+      "stage": "player_prior",
+      "requirement": "multi-season player prior with recency weighting and cold-start path",
+      "state": "RED",
+      "detail": "no multi-season player prior is wired into any projection. The existing V0 shrank toward a positional mean, which is what produced 62 established-role violations",
+      "blocks_product": true,
+      "evidence": {}
+    },
+    {
+      "stage": "current_usage",
+      "requirement": "current-season observations update the prior rather than replace it",
+      "state": "GREEN",
+      "detail": "259 of 457 players carry observed 2026 weeks",
+      "blocks_product": false,
+      "evidence": {
+        "n_observed": 259
+      }
+    },
+    {
+      "stage": "team_volume",
+      "requirement": "plays, dropbacks, attempts, carries, scoring environment",
+      "state": "RED",
+      "detail": "denom_panel / team_volume_history newest ordinal 202518: an EWMA whose most recent observation is 2025 week 18. Flagged RED on 2026-09-22 and unchanged",
+      "blocks_product": true,
+      "evidence": {}
+    },
+    {
+      "stage": "opportunity",
+      "requirement": "carries, targets, receptions, red-zone and goal-line",
+      "state": "AMBER",
+      "detail": "computable from measured shares without routes, at a stated cost in discrimination among same-snap-share receivers",
+      "blocks_product": false,
+      "evidence": {}
+    },
+    {
+      "stage": "efficiency",
+      "requirement": "player/team/opponent efficiency with declared shrinkage",
+      "state": "AMBER",
+      "detail": "fields present for two games; needs declared shrinkage to the existing multi-season panel",
+      "blocks_product": false,
+      "evidence": {}
+    },
+    {
+      "stage": "td_allocation",
+      "requirement": "shrunk rate with a floor, never a raw small-sample count",
+      "state": "RED",
+      "detail": "9 player(s) with real volume carry a zero touchdown expectation",
+      "blocks_product": true,
+      "evidence": {}
+    },
+    {
+      "stage": "positional_completeness",
+      "requirement": "every required position has a pathway",
+      "state": "AMBER",
+      "detail": "QB=GREEN; RB=GREEN; WR=GREEN; TE=GREEN; DST=AMBER",
+      "blocks_product": false,
+      "evidence": {
+        "positions": [
+          {
+            "position": "QB",
+            "rosterable": 60,
+            "proprietary": 25,
+            "fallback": 36,
+            "state": "GREEN",
+            "detail": "proprietary coverage"
+          },
+          {
+            "position": "RB",
+            "rosterable": 107,
+            "proprietary": 65,
+            "fallback": 63,
+            "state": "GREEN",
+            "detail": "proprietary coverage"
+          },
+          {
+            "position": "WR",
+            "rosterable": 172,
+            "proprietary": 96,
+            "fallback": 95,
+            "state": "GREEN",
+            "detail": "proprietary coverage"
+          },
+          {
+            "position": "TE",
+            "rosterable": 100,
+            "proprietary": 61,
+            "fallback": 61,
+            "state": "GREEN",
+            "detail": "proprietary coverage"
+          },
+          {
+            "position": "DST",
+            "rosterable": 18,
+            "proprietary": 0,
+            "fallback": 18,
+            "state": "AMBER",
+            "detail": "fallback only, no proprietary component"
+          },
+          {
+            "position": "K",
+            "rosterable": 0,
+            "proprietary": 0,
+            "fallback": 0,
+            "state": "NOT_REQUIRED_BY_THIS_SURFACE",
+            "detail": "declared in advance so the gap is not discovered on a slate that needs it"
+          }
+        ]
+      }
+    },
+    {
+      "stage": "distribution",
+      "requirement": "quantiles, not a mean alone",
+      "state": "AMBER",
+      "detail": "a declared normal approximation around a mean is not a simulated distribution; quantiles are not calibrated",
+      "blocks_product": false,
+      "evidence": {}
+    },
+    {
+      "stage": "joint_simulation",
+      "requirement": "player outputs reconcile to team football within each draw",
+      "state": "RED",
+      "detail": "nothing built. Player outputs do not reconcile to team football within a draw, so correlation cannot emerge from football",
+      "blocks_product": true,
+      "evidence": {}
+    },
+    {
+      "stage": "fallback",
+      "requirement": "declared external fallback when proprietary coverage fails",
+      "state": "GREEN",
+      "detail": "declared four-mode contract, slate running EXTERNAL_FC_FALLBACK",
+      "blocks_product": false,
+      "evidence": {
+        "mode": "EXTERNAL_FC_FALLBACK"
+      }
+    },
+    {
+      "stage": "slice_level_checks",
+      "requirement": "level validated per position and per salary/projection tier",
+      "state": "RED",
+      "detail": "worst slice top_100_by_external at ratio 0.7395",
+      "blocks_product": true,
+      "evidence": {
+        "guard": "PROJECTION_LEVEL_OUT_OF_BAND"
+      }
+    },
+    {
+      "stage": "historical_validation",
+      "requirement": "forward-chained replay per layer",
+      "state": "RED",
+      "detail": "no forward-chained replay exists for the receiving, rushing or DST layers, because those layers do not exist",
+      "blocks_product": true,
+      "evidence": {}
+    }
+  ],
+  "positions": [
+    {
+      "position": "QB",
+      "rosterable": 60,
+      "proprietary": 25,
+      "fallback": 36,
+      "state": "GREEN",
+      "detail": "proprietary coverage"
+    },
+    {
+      "position": "RB",
+      "rosterable": 107,
+      "proprietary": 65,
+      "fallback": 63,
+      "state": "GREEN",
+      "detail": "proprietary coverage"
+    },
+    {
+      "position": "WR",
+      "rosterable": 172,
+      "proprietary": 96,
+      "fallback": 95,
+      "state": "GREEN",
+      "detail": "proprietary coverage"
+    },
+    {
+      "position": "TE",
+      "rosterable": 100,
+      "proprietary": 61,
+      "fallback": 61,
+      "state": "GREEN",
+      "detail": "proprietary coverage"
+    },
+    {
+      "position": "DST",
+      "rosterable": 18,
+      "proprietary": 0,
+      "fallback": 18,
+      "state": "AMBER",
+      "detail": "fallback only, no proprietary component"
+    },
+    {
+      "position": "K",
+      "rosterable": 0,
+      "proprietary": 0,
+      "fallback": 0,
+      "state": "NOT_REQUIRED_BY_THIS_SURFACE",
+      "detail": "declared in advance so the gap is not discovered on a slate that needs it"
+    }
+  ],
+  "product_verdict": "PRODUCT_NOT_PROPRIETARY_READY. A labelled fallback product is permitted; a proprietary one is not."
+}
