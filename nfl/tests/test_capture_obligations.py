@@ -512,27 +512,80 @@ def test_H3_a_stale_executor_still_reads_SILENT():
 
 
 # ---------------------------------------------------------------- I. the schedule fires
-def test_I_a_cron_entry_fires_inside_the_next_window():
-    print('\nI. the anchored schedule actually covers the window it is for')
-    lo = dt.datetime(2026, 9, 14, 22, 45, tzinfo=dt.timezone.utc)
-    hi = dt.datetime(2026, 9, 15, 0, 5, tzinfo=dt.timezone.utc)
-    entries = re.findall(r"-\s*cron:\s*'([^']+)'",
-                         (WF_DIR / 'nfl-t90.yml').read_text())
+def test_I_a_cron_entry_fires_inside_every_window_the_file_DECLARES():
+    """The schedule covers the windows it says it covers. Stated RELATIVELY.
+
+    WHY THIS WAS REWRITTEN (DEF-087). The previous version hard-coded week-1
+    dates -- 2026-09-14/15 for the DEN@KC window and 2026-09-13 for that
+    Sunday's 13:00 ET slate -- and asserted the CURRENT workflow carried crons
+    firing inside them. But `nfl-t90.yml` is a rolling one-week artifact: it is
+    regenerated per week and only ever covers the current week. So those two
+    checks became permanently unsatisfiable the moment the schedule advanced
+    past week 1, and had been failing ever since.
+
+    That is the exact inverse of DEF-080. There the problem was a test that
+    could not fail; here it was a test that could not pass. Both stop carrying
+    information, and a permanently red check trains people to skim past the
+    module -- which in this case is the capture-obligations guard, the one that
+    most needs to be believed when it goes red.
+
+    The historical fact those checks recorded is NOT lost and was never the
+    test's to hold: week 1's crons existed, were syntactically valid, and the
+    runs never fired. That is written up in docs/AGENT_OUTBOX.md with the run
+    evidence, which is where a finding about a past incident belongs. A live
+    assertion about a rolling file is not a place to store history.
+
+    What is checked now is the standing obligation, which survives every roll:
+    every window the file DECLARES in its own schedule comments must have at
+    least one cron entry firing inside it. Correctness of the windows against
+    the kickoff snapshot is test_t90_workflow.py's job, by regeneration and
+    byte-comparison; this is the self-consistency check beside it.
+    """
+    print('\nI. the anchored schedule covers every window it declares')
+    text = (WF_DIR / 'nfl-t90.yml').read_text()
+    entries = re.findall(r"-\s*cron:\s*'([^']+)'", text)
     check('the T-90 workflow carries cron entries', len(entries) == 16,
           str(len(entries)))
-    hits = [e for e in entries if P.cron_fires_in(e, lo, hi)]
-    check('at least one fires inside the DEN@KC T-90 window -- the last open '
-          'week-1 obligation', len(hits) >= 1, str(hits))
-    past_lo = dt.datetime(2026, 9, 13, 15, 30, tzinfo=dt.timezone.utc)
-    past_hi = dt.datetime(2026, 9, 13, 16, 50, tzinfo=dt.timezone.utc)
-    check('  and entries existed for the Sunday 13:00 ET slate too, so the '
-          'crons were correct and simply never fired',
-          any(P.cron_fires_in(e, past_lo, past_hi) for e in entries))
-    future_lo = dt.datetime(2026, 10, 5, 17, 0, tzinfo=dt.timezone.utc)
-    future_hi = dt.datetime(2026, 10, 5, 18, 20, tzinfo=dt.timezone.utc)
-    check('NO entry fires in a week-5 window -- an absolute-date schedule '
-          'silently expires, and that is now detectable',
-          not any(P.cron_fires_in(e, future_lo, future_hi) for e in entries))
+
+    # `# 2026-09-27 15:30Z -> 16:50Z  (9 games: ...)` -- the file's own claim.
+    decl = re.findall(
+        r'#\s*(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2})Z\s*->\s*'
+        r'(\d{2}):(\d{2})Z', text)
+    check('the file declares its windows in comments', len(decl) >= 1,
+          f'{len(decl)} declared -- if the generator stops emitting these, '
+          f'this check goes vacuous and must be rewritten, not deleted')
+
+    uncovered, last = [], None
+    for (y, mo, d, h1, m1, h2, m2) in decl:
+        lo = dt.datetime(int(y), int(mo), int(d), int(h1), int(m1),
+                         tzinfo=dt.timezone.utc)
+        hi = dt.datetime(int(y), int(mo), int(d), int(h2), int(m2),
+                         tzinfo=dt.timezone.utc)
+        if hi <= lo:                      # the window crosses midnight UTC
+            hi += dt.timedelta(days=1)
+        last = hi if last is None or hi > last else last
+        if not any(P.cron_fires_in(e, lo, hi) for e in entries):
+            uncovered.append(f'{lo:%Y-%m-%d %H:%M}Z->{hi:%H:%M}Z')
+    check('every declared window has a cron entry firing inside it',
+          not uncovered, str(uncovered))
+    # The summary line must not assert success unconditionally. A first version
+    # of it printed "all covered" while `uncovered` held a window, which is the
+    # same shape as DEF-078's "Autonomy is armed" echo -- a log line that says
+    # the good outcome whatever happened. Caught by the perturbation test that
+    # dropped two crons and left the declaration standing.
+    print(f'       {len(decl)} declared window(s), '
+          f'{len(decl) - len(uncovered)} covered, {len(uncovered)} NOT')
+
+    # The check that was always right: an absolute-date schedule expires, and
+    # that must stay detectable. Relative to the file's own last window rather
+    # than a pinned week-5 date, so it does not rot the same way.
+    far_lo = (last or dt.datetime(2026, 1, 1, tzinfo=dt.timezone.utc)) \
+        + dt.timedelta(days=7)
+    far_hi = far_lo + dt.timedelta(hours=1, minutes=20)
+    check('NO entry fires a week past the last declared window -- an '
+          'absolute-date schedule silently expires, and that stays detectable',
+          not any(P.cron_fires_in(e, far_lo, far_hi) for e in entries),
+          f'{far_lo:%Y-%m-%d %H:%M}Z')
 
 
 def test_I2_the_cron_evaluator_is_right():

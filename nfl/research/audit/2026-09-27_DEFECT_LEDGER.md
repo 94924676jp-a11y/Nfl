@@ -416,3 +416,52 @@ exists and is not run by CI, which is the same not-reached pattern as DEF-084.
 D24-R0b already proposes moving the pin into the generator. Whatever the design,
 it has to make a stale schedule loud at the point of deployment rather than
 discoverable only by running the suite.
+
+## DEF-087 · Two checks in the capture-obligations guard could not pass
+
+**Status:** FIX_IMPLEMENTED. Found by reading the suite output rather than the
+headline count.
+
+`test_capture_obligations.py::test_I` hard-coded **week-1 dates** — 2026-09-14/15
+for the DEN@KC window and 2026-09-13 for that Sunday's 13:00 ET slate — and
+asserted the *current* `nfl-t90.yml` carried cron entries firing inside them.
+
+But that workflow is a **rolling one-week artifact**: it is regenerated per week
+and only ever covers the current week. So those two checks became permanently
+unsatisfiable the moment the schedule advanced past week 1, and had been failing
+ever since. They were 2 of the module's 5 failing checks.
+
+**This is the exact inverse of DEF-080.** There the defect was a test that could
+not fail; here it was a test that could not pass. Both stop carrying information.
+The asymmetry is that a permanently red check is worse than merely useless: it
+trains a reader to skim past the module, and this module is the
+capture-obligations guard — the one that most needs to be believed when it goes
+red. It sat beside the genuine DEF-086 finding in the same suite output.
+
+**The historical fact is not lost, and was never this test's to hold.** Week 1's
+crons existed, were syntactically valid, and the runs never fired. That is
+written up in `docs/AGENT_OUTBOX.md` with the run evidence, which is where a
+finding about a past incident belongs. A live assertion about a rolling file is
+not a place to store history.
+
+**Fix:** the check now reads the windows the file **declares in its own schedule
+comments** and requires at least one cron firing inside each — the standing
+obligation, stated relatively so it survives every weekly roll. Correctness of
+the windows against the kickoff snapshot remains `test_t90_workflow.py`'s job by
+regeneration and byte-comparison; this is the self-consistency check beside it.
+The one check in the function that was always right is kept and also made
+relative: no entry may fire a week past the last declared window, so silent
+expiry of an absolute-date schedule stays detectable.
+
+Module goes from **5 failing to 3**. A vacuity guard is included: if the
+generator ever stops emitting the window comments, the declaration count check
+fails rather than the coverage check passing over an empty list.
+
+**Verified able to fail**, and it caught a defect of my own while doing so.
+Dropping the two cron entries for the 2026-09-27 15:30Z window while leaving its
+declaration standing produces a failure naming exactly
+`['2026-09-27 15:30Z->16:50Z']`. That run also revealed that my summary line
+printed "6 declared window(s), all covered" **while a window was uncovered** — a
+log line asserting the good outcome regardless of what happened, which is the
+same shape as DEF-078's unconditional "Autonomy is armed" echo. It now prints
+"5 covered, 1 NOT" when perturbed and "6 covered, 0 NOT" when restored.
