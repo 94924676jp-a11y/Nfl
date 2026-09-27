@@ -1197,7 +1197,7 @@
    "fails_by": "RETURN",
    "callers_prod": 2,
    "callers_prod_external": 2,
-   "callers_test": 3,
+   "callers_test": 13,
    "callers_research": 0,
    "effect_on_failure": [
     "STOP"
@@ -1219,10 +1219,12 @@
    "runnable_caller": true,
    "caller_referenced_outside_python": true,
    "direct_test_coverage": true,
-   "load_bearing_proof": "NONE",
-   "load_bearing_proof_determinism": {},
-   "classification": "NOT_ESTABLISHED",
-   "classification_reason": "",
+   "load_bearing_proof": "nfl/tests/test_qb_inactive_guard_is_load_bearing.py",
+   "load_bearing_proof_determinism": {
+    "nfl/tests/test_qb_inactive_guard_is_load_bearing.py": "NOT_ESTABLISHED"
+   },
+   "classification": "LOAD_BEARING",
+   "classification_reason": "bad state -> FAIL -> RF.refuse and the QB layer returns no draws, at both run_forecast call sites. PROVABLE, NOT OBSERVED: with no inactives feed threaded through, the live path reaches this guard and gets DEFERRED, so the STOP branch is proved against seeded input and has never been taken in a real forecast -- the missing piece is the feed, requested as OUT-033",
    "prod_sites": [
     "nfl/production/run_forecast.py:969:STOP",
     "nfl/production/run_forecast.py:2198:STOP"
@@ -2039,7 +2041,7 @@
    "classification_reason": "",
    "prod_sites": [
     "nfl/production/review/gate.py:628:STOP",
-    "nfl/production/review/gate.py:808:STOP"
+    "nfl/production/review/gate.py:807:STOP"
    ],
    "n_definitions_of_this_name": 1
   },
@@ -2384,7 +2386,7 @@
    "fails_by": "RETURN",
    "callers_prod": 1,
    "callers_prod_external": 0,
-   "callers_test": 3,
+   "callers_test": 9,
    "callers_research": 0,
    "effect_on_failure": [
     "STOP"
@@ -2406,10 +2408,12 @@
    "runnable_caller": false,
    "caller_referenced_outside_python": true,
    "direct_test_coverage": true,
-   "load_bearing_proof": "NONE",
-   "load_bearing_proof_determinism": {},
-   "classification": "NOT_ESTABLISHED",
-   "classification_reason": "",
+   "load_bearing_proof": "nfl/tests/test_pit_guard_is_load_bearing.py",
+   "load_bearing_proof_determinism": {
+    "nfl/tests/test_pit_guard_is_load_bearing.py": "NOT_ESTABLISHED"
+   },
+   "classification": "LOAD_BEARING",
+   "classification_reason": "bad state -> FAIL -> the caller returns the refusal and the usage rows never reach the model. The forecast week ITSELF is tested, not only week+1, because the comparison is >= and a >-bug would survive the easier case; bypassed, the leaked week is handed downstream",
    "prod_sites": [
     "nfl/production/nonqb/current_season_evidence.py:104:STOP"
    ],

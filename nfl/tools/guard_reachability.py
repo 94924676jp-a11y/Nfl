@@ -93,6 +93,10 @@ except Exception:                                            # noqa: BLE001
 LOAD_BEARING_PROOFS = {
     'assert_no_postgame_inputs':
         'nfl/tests/test_leakage_guard_is_load_bearing.py',
+    'assert_pit':
+        'nfl/tests/test_pit_guard_is_load_bearing.py',
+    'assert_inactive_qbs_own_nothing':
+        'nfl/tests/test_qb_inactive_guard_is_load_bearing.py',
     'assert_no_inactive_in_playable':
         'nfl/tests/test_publication_refusal_is_load_bearing.py',
     'assert_shared_draws':
@@ -136,6 +140,18 @@ CLASSIFICATION = {
     'assert_prospective_matches_frozen': ('CANDIDATE_SCOPED',
         'guards Candidate B against the accepted walk, and Candidate B has no '
         'production caller either'),
+    'assert_pit': ('LOAD_BEARING',
+        'bad state -> FAIL -> the caller returns the refusal and the usage '
+        'rows never reach the model. The forecast week ITSELF is tested, not '
+        'only week+1, because the comparison is >= and a >-bug would survive '
+        'the easier case; bypassed, the leaked week is handed downstream'),
+    'assert_inactive_qbs_own_nothing': ('LOAD_BEARING',
+        'bad state -> FAIL -> RF.refuse and the QB layer returns no draws, at '
+        'both run_forecast call sites. PROVABLE, NOT OBSERVED: with no '
+        'inactives feed threaded through, the live path reaches this guard and '
+        'gets DEFERRED, so the STOP branch is proved against seeded input and '
+        'has never been taken in a real forecast -- the missing piece is the '
+        'feed, requested as OUT-033'),
     'assert_no_postgame_inputs': ('LOAD_BEARING',
         'bad state -> FAIL -> Pipeline.run_stage never calls the stage fn, and '
         'halted_by stops every LATER stage fn too. Observed on a canary, not '

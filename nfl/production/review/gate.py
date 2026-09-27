@@ -709,8 +709,7 @@ def evaluate(report: Optional[Dict[str, Any]], *,
     coverage_conflicts: List[Dict[str, Any]] = []
     icov = assert_producer_coverage(integrity_report)
     if require_integrity_coverage and icov.state.name != 'PASS':
-        for code in (icov.value or icov.evidence.get('value')
-                     or {}).get('not_checked', []):
+        for code in payload(icov).get('not_checked', []):
             coverage_conflicts.append({
                 'code': C_INTEGRITY_COVERAGE_MISSING, 'severity': 'BLOCKING',
                 'gsis_id': None, 'display_name': f'invariant {code}',
@@ -898,7 +897,7 @@ def require_pass(gate: Outcome, *, allow_warnings: bool = True) -> Outcome:
     Separate from `evaluate` so the refusal is visible at the optimizer's call
     site rather than buried in the evaluation that produced it.
     """
-    v = (gate.value or gate.evidence.get('value') or {}).get('verdict')
+    v = payload(gate).get('verdict')
     if v == PASS or (v == PASS_WITH_WARNINGS and allow_warnings):
         return Outcome.ok('OPTIMIZATION_PERMITTED',
                           {'verdict': v},

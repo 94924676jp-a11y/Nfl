@@ -51,7 +51,7 @@ def main(argv=None):
                               inactive_ids=inactive, information_cut=CUT,
                               opportunity_attribution=att).value['dossiers']
         a=AUD.audit(ds, publishable_ids=set(po.value['per_player']))
-        res=a.value or a.evidence['value']
+        res=GATE.payload(a)
         e=ESC.escalate(ds,res,deep_research_capacity=15).value
         rep=DOS_report=None
         from nfl.production.review import slate_report as SR

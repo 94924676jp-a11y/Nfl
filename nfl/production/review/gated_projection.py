@@ -120,7 +120,7 @@ def load(draws_dir, review_dir, *, optimizer_pool_ids=None,
             return Outcome.fail(
                 RUN_REFUSED if rs.code == RUN_REFUSED else rs.code,
                 rs.detail,
-                value={**(rs.value or rs.evidence.get('value') or {}),
+                value={**GATE.payload(rs),
                        'verdict': 'BLOCKED',
                        'publishable': False,
                        'inspection_hint': 'a measurement or debugging path '
@@ -144,7 +144,7 @@ def load(draws_dir, review_dir, *, optimizer_pool_ids=None,
             {'arrays': arrays, 'manifest': man,
              'layers': man.get('layers', {}),
              'publishable': False, 'verdict': None,
-             'run_status': rs.value or rs.evidence.get('value'),
+             'run_status': GATE.payload(rs),
              'draw_digest': consumed, 'spec_version': SPEC_VERSION},
             detail=f'NON-PUBLISHABLE inspection of a refused run: {rs.code}')
 
@@ -312,7 +312,7 @@ def load(draws_dir, review_dir, *, optimizer_pool_ids=None,
     if permitted.state.name != 'PASS':
         return Outcome.fail(
             permitted.code, permitted.detail,
-            value={**(permitted.value or permitted.evidence.get('value') or {}),
+            value={**GATE.payload(permitted),
                    'gate_code': g.code, 'gate_detail': g.detail,
                    # Carried on the REFUSAL too: a blocked slate is exactly
                    # when a reader needs to see which invariant fired.

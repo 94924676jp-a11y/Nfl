@@ -316,7 +316,7 @@ def review_slate(*, slate_key: str, universe_rows, role_rows=(),
                            projection_digest=consumed,
                            optimizer_pool_ids=optimizer_pool_ids,
                            resolved_conflict_codes=resolved_conflict_codes)
-    gate_v = gate_o.value or gate_o.evidence.get('value') or {
+    gate_v = GATE.payload(gate_o) or {
         'verdict': GATE.BLOCKED, 'refusal_code': gate_o.code,
         'refusal_detail': gate_o.detail, 'spec_version': GATE.SPEC_VERSION}
     slate_dir = pathlib.Path(root or (_REPO / REVIEW_ROOT)) / slate_key

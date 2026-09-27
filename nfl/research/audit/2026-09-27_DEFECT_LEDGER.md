@@ -250,3 +250,74 @@ is the **protected action**: a canary records whether the stage function ran.
 The stub returns `Outcome.ok('INPUTS_ARE_PREGAME', ...)` because it must match
 the guard's real pass shape; a `None`-returning stub previously broke a caller
 and produced a passing test for the wrong reason.
+
+## DEF-084 · The one accessor that fixes the `.value` asymmetry is used barely half the time
+
+**Status:** FIX_IMPLEMENTED (adoption), asymmetry itself left as declared debt.
+
+`Outcome.ok(code, value, ...)` has `value` as a real parameter. `Outcome.fail`,
+`.blocked`, `.deferred` and `.not_applicable` have the signature
+`(code, detail, **evidence)` — no `value` parameter — so `value={...}` on those
+does not set `.value`, it silently becomes `evidence['value']`.
+
+**Measured at HEAD: 80 call sites** pass `value=` to a non-ok constructor.
+Every one of those authors wrote `value=` expecting `.value`, and on every one a
+consumer reading `.value` gets `None` on exactly the outcome it most needs to
+inspect.
+
+*A first pass here reported 78 across 28 files.* That scan's base-name test used
+a broken fallback expression and dropped two sites. The figure is **80**, from
+the AST scan now pinned in `test_outcome_payload_accessor.py`, which is also
+what a future reader should re-derive rather than quote.
+
+**This is already known, and the correct fix already exists.**
+`nfl/production/review/gate.py:848` defines `payload(outcome)`, whose own
+docstring says "this project has now written that bug twice. One accessor." It
+is correct: it tests `isinstance(v, dict)` rather than truthiness.
+
+**So the defect is not the asymmetry. It is that the fix is not reached.**
+Correct code that is not reached is inert.
+
+| | count |
+|---|---|
+| calls to the canonical `payload()` | **7** |
+| ad-hoc `x.value or x.evidence.get('value')` sites | **8** |
+
+Two of the eight are **inside `gate.py` itself** (lines 712 and 901), in the
+same module that defines the accessor 60 lines further down. And
+`nfl/production/board/run_board.py` uses the accessor at line 60 —
+`gv=GATE.payload(gt)` — while using the ad-hoc idiom at line 54, four lines
+apart, in the same function.
+
+**Why the ad-hoc idiom is not merely uglier, but wrong.** `x.value or
+x.evidence.get('value')` uses `or`, so a `.value` that is legitimately falsy —
+`{}`, `0`, `[]`, an empty result set — is treated as absent and the read falls
+through to `evidence`. That is the project's own recurring defect class: falsy
+is not missing. It is the same shape as DEF-076, where the string `'NONE'`
+tested truthy and a census of proofs read as complete. `payload()` avoids it by
+type-checking; the idiom does not.
+
+`run_board.py:54` is the sharpest instance: `a.value or a.evidence['value']`,
+with no `.get`. A falsy `.value` on an outcome carrying no `value` key raises
+`KeyError` rather than reporting the refusal. A refusal is a valid result; a
+crash is a defect. (Consequence is bounded — `run_board.py` is a pinned
+single-game script, not the production path — so this is filed as a real but
+low-blast-radius instance, not as a production outage.)
+
+**Fix applied:** the 8 ad-hoc sites call `payload()`. Mechanical, no behaviour
+change except where the `or` idiom was wrong, which is the point.
+
+**Not fixed, and deliberately:** the 80 producer sites, and the asymmetry in
+`Outcome` itself. Making the non-ok constructors accept `value` — or reject it
+with a named error — is a change to the governance type every layer depends on,
+with an 80-site blast radius. That belongs in its own change with its own
+before/after, not bundled into an accessor cleanup. Recorded here as debt with
+the measurement attached so the next person does not have to re-derive it.
+
+**Guarded by** `nfl/tests/test_outcome_payload_accessor.py`, 17 checks: the
+accessor's behaviour including the falsy-value case the idiom got wrong, a
+ratchet that the ad-hoc idiom is absent from production (checked per line and
+across line breaks, since one instance was split over two lines), a check that
+the accessor actually has production callers so the ratchet cannot pass
+vacuously, and the producer-side count held in a band so that a large move
+forces this entry to be updated rather than quietly diverging.
