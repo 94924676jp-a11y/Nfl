@@ -180,14 +180,36 @@ def pool(blob=None) -> Outcome:
                       detail=f'{len(out)} pool row(s)', **ev)
 
 
-def slate(pool_rows) -> Outcome:
+def slate(pool_rows, expected_kickoff=None) -> Outcome:
     """The contest's game set, READ from the export rather than supplied.
 
     Every row must name the same kickoff. A row that does not is reported and
     the universe is refused: a pool spanning two windows is not an Early Only
     slate, and filtering it down to the ones that agree would be choosing the
     answer.
+
+    TWO FAILURES THAT WERE ONE CODE, AND THE DIFFERENCE IS THE WHOLE DIAGNOSIS.
+
+    This used to emit `DK_POOL_SPANS_MORE_THAN_ONE_WINDOW` whenever any kickoff
+    differed from the declared constant. Measured on the 2026 Week 3 export:
+    the pool is perfectly clean -- 457 rows, ONE kickoff, 9 games -- and the
+    refusal still read "SPANS MORE THAN ONE WINDOW ... the pool names 1
+    distinct kickoff(s)", which is a code asserting something false about the
+    data in the same breath as a detail contradicting it. A reader at 11:30 on
+    a Sunday would go hunting for cross-window contamination in a pool that has
+    none, instead of seeing that the module is pinned to LAST week.
+
+    So the two conditions are now separate codes:
+
+      DK_POOL_SPANS_MORE_THAN_ONE_WINDOW   the pool really does hold >1 kickoff
+      DK_POOL_WINDOW_IS_NOT_THE_DECLARED   exactly one window, not the declared
+                                           one -- a slate/week mismatch
+
+    `expected_kickoff` exists so a caller working a different week states its
+    own window rather than editing a module constant. The default is unchanged,
+    so every existing caller behaves exactly as before.
     """
+    declared = expected_kickoff or EARLY_KICKOFF
     kicks = collections.Counter(r['kickoff'] for r in pool_rows)
     games = collections.Counter((r['away'], r['home']) for r in pool_rows)
     ev = {'spec_version': SPEC_VERSION,
@@ -197,20 +219,29 @@ def slate(pool_rows) -> Outcome:
           'n_games': len(games),
           'teams': sorted({r['team'] for r in pool_rows}),
           'n_teams': len({r['team'] for r in pool_rows}),
-          'declared_kickoff': EARLY_KICKOFF}
-    odd = sorted(k for k in kicks if k != EARLY_KICKOFF)
-    if odd:
+          'declared_kickoff': declared,
+          'module_default_kickoff': EARLY_KICKOFF}
+    if len(kicks) > 1:
         return Outcome.fail(
             'DK_POOL_SPANS_MORE_THAN_ONE_WINDOW',
-            f'the pool names {len(kicks)} distinct kickoff(s): {odd}. An '
-            f'Early Only universe is one window; filtering the disagreeing '
-            f'rows away would be choosing the answer rather than reading it.',
-            **ev)
+            f'the pool names {len(kicks)} distinct kickoff(s): '
+            f'{sorted(kicks)}. An Early Only universe is one window; '
+            f'filtering the disagreeing rows away would be choosing the '
+            f'answer rather than reading it.', **ev)
+    only = next(iter(kicks), None)
+    if only != declared:
+        return Outcome.fail(
+            'DK_POOL_WINDOW_IS_NOT_THE_DECLARED',
+            f'the pool is internally consistent -- all {len(pool_rows)} rows '
+            f'at {only!r} -- but that is not the declared window {declared!r}. '
+            f'This is a slate mismatch, not a contaminated pool: pass '
+            f'expected_kickoff for the week being worked rather than filtering '
+            f'or editing the constant.', **ev)
     return Outcome.ok(
         'DK_EARLY_SLATE_RESOLVED_FROM_EXPORT',
         value=sorted(games),
         detail=f'{len(games)} game(s), {ev["n_teams"]} club(s), every pool '
-               f'row at {EARLY_KICKOFF}', **ev)
+               f'row at {declared}', **ev)
 
 
 def secondary_salaries(blob=None) -> Outcome:
@@ -236,3 +267,60 @@ if __name__ == '__main__':
     print(f'{s.state.value}[{s.code}] {s.detail}')
     for g in s.evidence['games']:
         print(f"    {g['away']:4s} @ {g['home']:4s}  {g['pool_rows']} players")
+
+def as_identity_rows(pool_rows) -> list:
+    """Pool rows in the shape `identity.reconcile` reads. Nothing invented.
+
+    WHY THIS ADAPTER EXISTS AND WHY IT IS NOT A CONVENIENCE.
+
+    `identity.reconcile` was written against `dk_universe.load()` rows, which
+    come from the THIRD-PARTY FantasyCruncher-style file. Those carry
+    `opponent`, `is_home`, `inj_flag` and `dk_depth` -- and no DK player id.
+    The DraftKings export carries `dk_id`, the official identifier, and is the
+    authority on its own contest. So the reconciliation that exists to establish
+    DK PLAYER ID <-> gsis_id could not consume the only file that holds the DK
+    player id. Measured 2026-09-27 on the Week 3 export: reconcile(pool_rows)
+    raised KeyError: 'opponent'.
+
+    TWO FIELDS ARE DERIVED AND TWO ARE MARKED ABSENT, and the difference is the
+    point:
+
+      opponent, is_home   DERIVED from away/home/team, which the DK export
+                          states outright. This is a real derivation from
+                          primary evidence, not a guess.
+      inj_flag, dk_depth  ABSENT. DraftKings does not publish them in this
+                          export. They are None, never '' and never 0, because
+                          a missing injury flag is not a healthy player and a
+                          missing depth is not a starter.
+
+    `dk_id` is carried through so the identity chain can be stated end to end.
+    """
+    out = []
+    for r in pool_rows:
+        team, away, home = r['team'], r['away'], r['home']
+        if team == home:
+            opponent, is_home = away, True
+        elif team == away:
+            opponent, is_home = home, False
+        else:
+            # The club is not in its own game string. Refuse to guess rather
+            # than pick one side: this would be a real defect in the export.
+            opponent, is_home = None, None
+        out.append({
+            'dk_id': r['dk_id'],
+            'dk_name': r['dk_name'],
+            'dk_pos': r['dk_pos'],
+            'dk_team': r['dk_team'],
+            'team': team,
+            'opponent': opponent,
+            'is_home': is_home,
+            'salary': r['salary'],
+            'inj_flag': None,
+            'dk_depth': None,
+            'roster_position': r['roster_position'],
+            'flex_eligible': r['flex_eligible'],
+            'kickoff': r['kickoff'],
+            'derived_fields': ('opponent', 'is_home'),
+            'absent_fields': ('inj_flag', 'dk_depth'),
+        })
+    return out

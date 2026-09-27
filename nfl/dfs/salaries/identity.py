@@ -110,6 +110,13 @@ def reconcile(dk_rows, roster_rows) -> dict:
     out = []
     for d in dk_rows:
         rec = {
+            # THE OFFICIAL DK IDENTIFIER, CARRIED THROUGH. reconcile() used to
+            # build a fixed key set that dropped it, so the chain this whole
+            # module exists to establish -- DK PLAYER ID <-> gsis_id -- lost its
+            # left-hand side and every output row read dk_id=None. The DK export
+            # is the only file that carries it. Absent from the older
+            # third-party-file shape, where it is None and says so.
+            'dk_id': d.get('dk_id'),
             'dk_name': d['dk_name'], 'dk_pos': d['dk_pos'],
             'dk_team': d['dk_team'], 'team': d['team'],
             'opponent': d['opponent'], 'is_home': d['is_home'],

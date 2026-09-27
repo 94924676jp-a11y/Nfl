@@ -1,0 +1,296 @@
+{
+ "artifact": "DK_WEEK3_EARLY_BASELINE",
+ "spec_version": "dk-week3-early-baseline-1",
+ "label": "PRELIMINARY / PRE-INACTIVES",
+ "not_final_because": "Official inactives for the 2026-09-27 13:00 ET window have not been published, and the football model REFUSES this slate at feature_build. This artifact is the pre-Sunday-news baseline, not a forecast.",
+ "built_at_utc": "2026-09-27T01:25:46Z",
+ "repo_head": "e62d6306326625f080be00744eca278a0712a0ba",
+ "evidence_cutoff_note": "Everything here is derived from the two owner-supplied files and from repository state at the HEAD above. No Sunday-morning news is included.",
+ "owner_inputs": [
+  {
+   "role": "CONTEST_UNIVERSE_AUTHORITY",
+   "original_filename": "DKEntries_59.csv",
+   "preserved_as": "nfl/dfs/salaries/raw/DKEntries_EARLY_ONLY_2026W3_59.csv",
+   "vintage_blob": "nfl/vintage/dk_entries.2c82fe5560677f56.csv.gz",
+   "bytes": 53827,
+   "sha256": "2c82fe5560677f56fa16bf978671701f98f77291297581b0b4c2b7bfd91d357e",
+   "lines": 465,
+   "pool_rows": 457,
+   "pool_header_line": 8
+  },
+  {
+   "role": "THIRD_PARTY_COMPARISON_ONLY",
+   "original_filename": "draftkings_NFL_2026-week-3_players.csv",
+   "preserved_as": "nfl/dfs/salaries/raw/THIRDPARTY_players_EARLY_ONLY_2026W3_CONTEXT_ONLY.csv",
+   "vintage_blob": "nfl/vintage/dk_salaries_early.35f38b43e29d0e89.csv.gz",
+   "bytes": 39727,
+   "sha256": "35f38b43e29d0e890d31bd7401898c043eff3a3ef888034878043fb76befcffd",
+   "lines": 432,
+   "parsed_rows": 431,
+   "projection_columns_dropped_at_parse_time": true,
+   "NOT_A_MODEL_INPUT": "dk_universe.load() drops all third-party projection columns at parse time and reports them by name. No FantasyCruncher number can reach a projection through this path."
+  }
+ ],
+ "slate": {
+  "resolution": "PASS[DK_EARLY_SLATE_RESOLVED_FROM_EXPORT]",
+  "resolved_from": "DraftKings own export, Game Info column, every pool row",
+  "kickoff_et": "09/27/2026 01:00PM ET",
+  "kickoff_utc": "2026-09-27T17:00:00Z",
+  "season": 2026,
+  "week": 3,
+  "n_games": 9,
+  "n_teams": 18,
+  "games": [
+   "CAR@CLE",
+   "CIN@PIT",
+   "HOU@IND",
+   "KC@MIA",
+   "LAC@BUF",
+   "NE@JAX",
+   "NYJ@DET",
+   "SEA@WAS",
+   "TEN@NYG"
+  ],
+  "n_pool_rows": 457,
+  "by_dk_position": {
+   "RB": 107,
+   "WR": 172,
+   "QB": 60,
+   "TE": 100,
+   "DST": 18
+  },
+  "salary_min": 2000,
+  "salary_max": 8800
+ },
+ "owner_entries": {
+  "SEPARATED_FROM_PROJECTION": "Recorded for provenance only. The owner entries must never influence a player projection; projection is football truth -> outcome distribution, lineup construction is a separate downstream layer.",
+  "state": "PASS[DK_ENTRIES_LOADED]",
+  "n_entries": 2,
+  "by_contest": {
+   "NFL $1K Dime Package [Just $0.10!] (Early Only)": 2
+  },
+  "by_fee": {
+   "$0.10": 2
+  },
+  "total_entered_usd": 0.2,
+  "actions_taken": "NONE. No entry was changed, submitted or uploaded."
+ },
+ "identity": {
+  "chain": "DK_PLAYER_ID -> GSIS_ID -> MODEL_PLAYER -> FC_PLAYER",
+  "roster_source": "PASS[CANONICAL_ROSTER_LOADED]",
+  "roster_players": 2541,
+  "roster_vintages": 11,
+  "n_in": 457,
+  "n_out": 457,
+  "nothing_dropped": true,
+  "by_status": {
+   "MATCHED_CANONICAL": 433,
+   "UNMATCHED": 6,
+   "DST": 18
+  },
+  "by_match_method": {
+   "EXACT_NAME_TEAM": 420,
+   "NORMALIZED_NAME_TEAM": 12,
+   "NORMALIZED_NAME_ONLY_TEAM_DISAGREES": 1
+  },
+  "duplicate_gsis_ids": {},
+  "ambiguous": [],
+  "unmatched": [
+   {
+    "dk_id": "44246968",
+    "dk_name": "Al-Jay Henderson",
+    "dk_pos": "RB",
+    "team": "NYJ",
+    "salary": 4000
+   },
+   {
+    "dk_id": "44246912",
+    "dk_name": "Nick Singleton",
+    "dk_pos": "RB",
+    "team": "TEN",
+    "salary": 4000
+   },
+   {
+    "dk_id": "44247126",
+    "dk_name": "Joshua Palmer",
+    "dk_pos": "WR",
+    "team": "BUF",
+    "salary": 3500
+   },
+   {
+    "dk_id": "44247216",
+    "dk_name": "Mitch Tinsley",
+    "dk_pos": "WR",
+    "team": "HOU",
+    "salary": 3000
+   },
+   {
+    "dk_id": "44247168",
+    "dk_name": "River Cracraft",
+    "dk_pos": "WR",
+    "team": "WAS",
+    "salary": 3000
+   },
+   {
+    "dk_id": "44247446",
+    "dk_name": "Drew Ogletree",
+    "dk_pos": "TE",
+    "team": "IND",
+    "salary": 2500
+   }
+  ],
+  "team_disagreements": [
+   {
+    "dk_name": "Cal Adomitis",
+    "dk_team": "MIA",
+    "canonical_team": "NO"
+   }
+  ],
+  "n_position_disagreements": 6,
+  "UNKNOWN_IS_NOT_ZERO": "The 6 UNMATCHED rows are DK-eligible players with no canonical identity at this roster vintage. They are NOT inactive, NOT projected zero, and NOT dropped. They are a coverage defect to chase by dk_id."
+ },
+ "model": {
+  "can_produce_lawful_board": false,
+  "refusal": "feature_build: STAGE_DECLARED_UNIMPLEMENTED",
+  "verified_on": "2026_03_CIN_PIT via nfl/tools/refresh_boards.py, 0 boards written",
+  "applies_to": "all 9 slate games",
+  "corroborating_live_evidence": "GitHub Actions run 36257140735 (nfl-product-board.yml, scheduled) refused all 15 Week 3 games with the identical code.",
+  "declared_debt": "SYSTEM_STATE.json .measured.work_queue.items[14]: feature_build is DEFERRED[STAGE_DECLARED_UNIMPLEMENTED] because the accepted research baseline \"prior-only, ordinal prefix cut\" has no production implementation. It is declared as debt rather than reported as a forecast, which is right.",
+  "fields_not_produced_tonight": [
+   "mean",
+   "median",
+   "quantiles",
+   "sd",
+   "cdf",
+   "carries",
+   "targets",
+   "routes",
+   "red_zone_opportunity",
+   "team_volume",
+   "efficiency",
+   "participation",
+   "dk_points"
+  ],
+  "NOT_SYNTHESIZED": "No projection value is written anywhere in this artifact. A governed refusal is preserved instead of a fabricated number."
+ },
+ "fantasycruncher_comparison": {
+  "status": "UNIVERSE_OVERLAP_ONLY -- NO PROJECTION COMPARISON POSSIBLE YET",
+  "why": "A model-vs-FC projection comparison needs a model projection, and the model refuses this slate. This section therefore carries universe overlap only. No FC projection, floor, ceiling or ownership value is recorded anywhere in this artifact, not even as an unused column, so there is no path by which one could later be misread as ours.",
+  "fc_file_scope": {
+   "parsed_rows": 431,
+   "n_teams": 26,
+   "teams": [
+    "ARI",
+    "BAL",
+    "BUF",
+    "CAR",
+    "CIN",
+    "CLE",
+    "DAL",
+    "DET",
+    "HOU",
+    "IND",
+    "JAX",
+    "KC",
+    "LAC",
+    "LV",
+    "MIA",
+    "MIN",
+    "NE",
+    "NO",
+    "NYG",
+    "NYJ",
+    "PIT",
+    "SEA",
+    "SF",
+    "TB",
+    "TEN",
+    "WAS"
+   ],
+   "teams_not_on_the_1pm_slate": [
+    "ARI",
+    "BAL",
+    "DAL",
+    "LV",
+    "MIN",
+    "NO",
+    "SF",
+    "TB"
+   ],
+   "all_18_slate_clubs_present_in_fc": true,
+   "note": "the FC export is a broad Week-3 file covering 8 clubs that are not on this contest, which is why dk_universe.main_slate() defers on a full-week file rather than inferring a contest from it"
+  },
+  "overlap_is_reported_at_three_join_strengths": "because a single overlap number is a property of the join, not of the two files, and quoting one figure hides that",
+  "join_raw_lowercase_name": {
+   "overlap": 289,
+   "fc_only": 12,
+   "dk_only": 168
+  },
+  "join_normalized_name": {
+   "normalizer": "dk_universe._norm_name -- casefold, strip .'`-, strip jr/sr/ii/iii/iv/v",
+   "overlap": 297,
+   "fc_only": 4,
+   "dk_only": 160,
+   "collapsed_by_normalization_alone": 8
+  },
+  "join_normalized_name_and_team": {
+   "overlap": 297,
+   "fc_only": 4,
+   "dk_only": 160,
+   "team_disagreements": 0,
+   "reading": "zero -- no on-slate name matches under a disagreeing club"
+  },
+  "fc_only_after_normalization": {
+   "n": 4,
+   "names": [
+    "andrew ogletree",
+    "ed williams",
+    "josh palmer",
+    "nick westbrook"
+   ],
+   "diagnosis": "all four are first-name or compound-surname variants that normalization cannot collapse because it never measures distance: Andrew/Drew Ogletree, Josh/Joshua Palmer, Nick Westbrook / Westbrook-Ikhine, Ed Williams. They are almost certainly the same people DK lists, not players absent from the contest.",
+   "and_this_is_evidence_about_our_own_identity_chain": "Andrew Ogletree and Josh Palmer are two of the SIX DK rows our canonical match failed on (44247446 TE Drew Ogletree IND, 44247126 WR Joshua Palmer BUF). The same short-form/long-form problem broke both joins.",
+   "FC_MUST_NOT_RESOLVE_IDENTITY": "Noting the coincidence is not permission to use it. FantasyCruncher is third-party comparison data and may not enter the identity chain any more than it may enter a projection. These six stay UNMATCHED until the canonical roster resolves them. UNRESOLVED is a state, not a fallback to somebody else's spelling."
+  },
+  "dk_only_after_normalization": {
+   "n": 160,
+   "by_position": {
+    "WR": 74,
+    "QB": 14,
+    "RB": 40,
+    "TE": 32
+   },
+   "salary_range": [
+    2500,
+    7000
+   ],
+   "contains_no_dst": true
+  },
+  "COMPLETENESS_FINDING": "FantasyCruncher carries no row for 160 of the 457 DK-eligible players on this slate -- 14 QB, 40 RB, 32 TE, 74 WR -- across the $2500-$7000 salary band. That is 35% of the rosterable pool, and it is concentrated in exactly the depth tail that official inactives promote into relevance on Sunday morning. Anyone treating an FC export as the contest universe would be missing a third of it. The DK export is the authority and this is the measured reason why.",
+  "WITHDRAWN_CLAIM": "An earlier draft of this section said FC omits \"all 18 DST\". FALSE. FC carries all 18 slate DST and every one matches by name at raw strength. The figure was inferred from a by-position table that simply had no DST key, rather than read. Corrected before this artifact was committed."
+ },
+ "tomorrow_refresh_plan": {
+  "what_is_already_frozen": [
+   "the contest universe: 457 rows, 9 games, 18 clubs, resolved from DK own export",
+   "the identity chain: 433 matched to gsis_id, 18 DST, 6 unmatched named",
+   "the owner entries: 2, recorded separately and untouched",
+   "the model state: a named refusal, not a number"
+  ],
+  "what_is_still_unknown_tonight": [
+   "official inactives for the 13:00 ET window",
+   "Sunday-morning injury and news changes",
+   "any projection at all, because feature_build is declared unimplemented"
+  ],
+  "what_must_be_refreshed_when_news_arrives": [
+   "participation per player",
+   "role and depth",
+   "opportunity redistribution to the players who inherit it",
+   "team volume reconciliation",
+   "simulation and the resulting distributions",
+   "DK point projections",
+   "the comparison layer"
+  ],
+  "redistribution_requirement": "An inactive player must not simply be set to zero with everyone else unchanged. The opportunity has to go somewhere through football logic. The engine layer that would do this is nfl/production/nonqb/layers.py participation(), which since DEF-066 REFUSES with PARTICIPATION_PRIOR_INCOMPLETE rather than silently zeroing an absent prior -- so a redistribution it cannot support will be a refusal, not a quiet wrong number.",
+  "inactives_vocabulary": "QUESTIONABLE and DOUBTFUL are NOT inactive. Only an official inactive list entry marks a player inactive. UNRESOLVED identity is not inactive either."
+ }
+}
