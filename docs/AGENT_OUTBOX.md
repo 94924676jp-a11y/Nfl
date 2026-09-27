@@ -2658,3 +2658,33 @@ comparison file happens to carry two of them under short forms ("Josh Palmer",
 "Andrew Ogletree") — **that is not a resolution and I have not used it as one.**
 A third-party file may not enter the identity chain any more than it may enter a
 projection.
+
+### OUT-033 addendum, 2026-09-27 ~03:20Z — the automated capture cannot fire today
+
+**Read this with OUT-033 above; it is why the request is by hand.**
+
+`nfl-t90.yml` on `origin/main` carries 16 cron entries covering **September 9–15
+only**. GitHub reads `schedule:` from the default branch, so the T−90 capture has
+had no cron entry matching any game day for twelve days, and has none for today.
+The window today's nine 1 PM ET games need is **2026-09-27 15:30Z–16:50Z**.
+
+I regenerated the workflow on the engineering branch with the repository's own
+generator (`gen_t90_schedule.py --season 2026 --week 3 --write`); it produces all
+six week-3 windows including that one, and `test_t90_workflow.py` goes from 11
+failing checks to 41 passed. Filed as DEF-086.
+
+**I cannot deploy it.** It has to be on the default branch to be scheduled, and
+pushing to `main` is outside what I am authorised to do. So:
+
+1. **Today:** the inactives bytes have to come by hand, per OUT-033. Nothing
+   automated will collect them.
+2. **Then:** someone who can push to `main` needs to carry the regenerated
+   `.github/workflows/nfl-t90.yml` across, or the same thing happens next week.
+
+**Note for whoever investigates the wider capture stoppage.** The existing entry
+above concluded the four workflows stopping after 2026-09-11 was an Actions- or
+repository-level problem, and recorded that "`main` and the working branch carry
+byte-identical `.github/workflows/`". That was true when written and is **no
+longer true**. The stale cron on `main` is a *second, independent* reason no T−90
+run can fire. Fixing the Actions-level cause alone would not produce a run, and
+would look like the fix having failed.

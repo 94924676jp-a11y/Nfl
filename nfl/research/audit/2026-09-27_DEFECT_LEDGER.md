@@ -331,6 +331,13 @@ Invoking test modules directly — not through `run_suite.py` — bumped
 **163 → 166**, one increment per invocation, with `at` and `written_at`
 restamped each time. `nfl/product/board_pointer.py` is what writes it.
 
+**A second artifact, observed the same way an hour later:**
+`nfl/prospective/q9shadow/Q9_SHADOW_DRYRUN_SEAL_LEDGER.jsonl` also gains rows
+from direct invocation. So this is not one stray writer -- it is a small class,
+and the count of members is not established. `nfl/tests/_suite_progress.jsonl` is
+a third, though that one is the suite's own bookkeeping and arguably belongs to
+it.
+
 **Two consequences, and the second is the one that matters.**
 
 *It dirties the tree.* The churn was swept into a commit and had to be backed
@@ -355,3 +362,57 @@ measuring the tree.
 pointer write refuse outside a state root, or have the tests that reach it use
 one — and that belongs with A10 / the evidence-storage work rather than being
 decided in a commit about guard proofs.
+
+## DEF-086 · The T-90 capture cron on the default branch has covered no game day since 2026-09-15
+
+**Status:** FIX WRITTEN, NOT DEPLOYABLE FROM HERE. Time-critical today.
+
+`nfl-t90.yml` is the event-anchored capture workflow. Its whole purpose is to be
+awake in the T−90 window, which is the only window in which an official inactives
+publication can be captured. Its cron entries are generated from a kickoff
+snapshot and therefore go stale every week.
+
+**Measured 2026-09-27:**
+
+| branch | cron entries | dates covered |
+|---|---|---|
+| `origin/main` (the default branch) | 16 | **September 9–15** |
+| engineering branch, before this change | 16 | September 17–22 |
+| engineering branch, after this change | 16 | September 24–28 |
+
+**GitHub reads `schedule:` from the default branch only.** So the deployed
+schedule has had no cron entry matching any game day for twelve days, and none
+matching today. Today's 1 PM ET slate needs **2026-09-27 15:30Z–16:50Z**, which
+the generator produces for all nine games and which `main` does not have.
+
+**This is a second and independent cause.** `docs/AGENT_OUTBOX.md` already
+records that the four capture workflows stopped producing commits after
+2026-09-11 and concluded the cause was at the Actions or repository level, noting
+at the time that "`main` and the working branch carry byte-identical
+`.github/workflows/`". **That sentence was true on 2026-09-11 and is not true
+now** — the two have diverged. Even if the Actions-level problem were fixed
+today, no T−90 run would fire, because the deployed cron has no matching entry.
+Fixing one cause would not have revealed the other, which is why both belong on
+the record.
+
+**What was done here:** regenerated with
+`python3.12 nfl/tools/gen_t90_schedule.py --season 2026 --week 3 --write`, the
+repository's own documented procedure. `test_t90_workflow.py` goes from **11
+failing checks to 41 passed / 0 failed**, so the guard was working correctly and
+was reporting a real stale schedule rather than crying wolf.
+
+**What was NOT done, and is not mine to do:** deploying it. The workflow must be
+on the default branch to be scheduled, and pushing to `main` is outside what I am
+authorised to do. Escalated in `docs/AGENT_OUTBOX.md` under OUT-033, because the
+inactives request and this are the same deadline: OUT-033 asks for the bytes by
+hand precisely because the mechanism that would capture them automatically cannot
+fire.
+
+**The durable fix is not another regeneration.** This is the second time the
+windows for an upcoming slate did not exist (`f9148b0`, "The T-90 windows for
+tomorrow's slate did not exist"). A weekly manual regeneration that silently
+means zero capture attempts when missed is the defect; the test that catches it
+exists and is not run by CI, which is the same not-reached pattern as DEF-084.
+D24-R0b already proposes moving the pin into the generator. Whatever the design,
+it has to make a stale schedule loud at the point of deployment rather than
+discoverable only by running the suite.
