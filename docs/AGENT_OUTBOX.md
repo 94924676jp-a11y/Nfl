@@ -2577,3 +2577,84 @@ enters the prospective ledger as evidence.
 
 
 </details>
+
+---
+
+## 2026-09-27 — OUT-033: official inactives for today's nine 1 PM ET games
+
+**Status: ASSIGNED, and time-boxed.** Kickoff is **2026-09-27T17:00Z**. The
+publication window this repository models is 80 minutes wide from T−90, so
+roughly **15:30Z–16:50Z today**. After 17:00Z the bytes are still worth having
+for the record, but `inactives.sets()` will refuse them with
+`INACTIVES_POST_KICKOFF` — a list retrieved at or after kickoff is not pregame
+information about who would dress, and the module will not pretend otherwise.
+
+**Why this is not blocked.** Nothing here is blocked for the project. I cannot
+reach the publication (403 on every outbound request), and the parse, resolve
+and propagate path is already built and tested locally against synthetic bytes.
+What is needed is the bytes.
+
+**The nine games**, as resolved from DraftKings' own entries export and frozen
+in `nfl/dfs/salaries/DK_WEEK3_EARLY_BASELINE.json`:
+
+| away | home |
+|---|---|
+| CAR | CLE |
+| CIN | PIT |
+| HOU | IND |
+| KC | MIA |
+| LAC | BUF |
+| NE | JAX |
+| NYJ | DET |
+| SEA | WAS |
+| TEN | NYG |
+
+Eighteen clubs. `sets()` emits `POST_INACTIVES_COMPLETE` only when **both**
+clubs of a game are represented, so a game is covered or it is not — half a
+governed forecast is not a governed forecast.
+
+**What to send, per game.** `inactives.store()` takes bytes, so please send the
+raw document rather than a transcription:
+
+- the **raw bytes** of the publication, unparsed and unedited;
+- `retrieved_at` as an ISO-8601 UTC instant — this is load-bearing, not
+  metadata: `sets()` refuses without a retrieval clock
+  (`INACTIVES_NO_CLOCK`) and refuses a clock at or after kickoff;
+- `source_url`;
+- `published_at` and `http_status` if the response exposes them.
+
+**Please do not** transcribe names into a list for me, do not fill a gap with a
+plausible inactive, and do not send a page whose empty state reads as "no
+inactives" — the module carries `INACTIVES_PAGE_EMPTY_STATE` and
+`INACTIVES_EMPTY_DOCUMENT` precisely because an empty page is not an empty
+inactive list. A fabricated inactive is worse than an absent one: it becomes
+evidence.
+
+**What I will do with it, and what I will not.** Resolve identity
+deterministically against the roster vintage the forecast consumed; an ambiguous
+name is a refusal, not a fuzzy match. Then record availability against the
+frozen 457-row contest universe.
+
+I will **not** be able to turn it into a projection today, and that is a
+separate, already-declared problem: `feature_build` refuses every game of this
+slate with `STAGE_DECLARED_UNIMPLEMENTED` (declared debt at
+`SYSTEM_STATE.json .measured.work_queue.items[14]`, corroborated by scheduled
+run `36257140735` refusing all 15 Week-3 games). So the inactives are being
+requested to establish an **auditable availability record**, not to feed a board
+that does not exist. Worth sending anyway: today's pregame bytes are
+unrecoverable tomorrow, and this project has already had to write off a corpus
+once.
+
+**Six identities I could not resolve** are recorded UNMATCHED in the baseline
+(§3). They are on DraftKings' contest export, so they are rosterable; our
+failure to map them is our defect, not evidence they are not playing:
+
+`44246968` RB Al-Jay Henderson NYJ · `44246912` RB Nick Singleton TEN ·
+`44247126` WR Joshua Palmer BUF · `44247216` WR Mitch Tinsley HOU ·
+`44247168` WR River Cracraft WAS · `44247446` TE Drew Ogletree IND
+
+A canonical `gsis_id` for any of these would help. Note that the third-party
+comparison file happens to carry two of them under short forms ("Josh Palmer",
+"Andrew Ogletree") — **that is not a resolution and I have not used it as one.**
+A third-party file may not enter the identity chain any more than it may enter a
+projection.
