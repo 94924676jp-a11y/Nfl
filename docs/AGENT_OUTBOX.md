@@ -2739,3 +2739,55 @@ as declared debt — `fx['features']` has no producer anywhere in production. It
 also does not affect G0A item 1, whose root cause is EGRESS (`CONNECT
 www.nfl.com:443 -> 403`, measured) and which the artifact says *"would still fail
 with a perfect scheduler."*
+
+### OUT-034 correction, 2026-09-27 — the ask is a RE-PROBE and a revived watch, not a capture
+
+**I got the request wrong an hour ago and am correcting it before anyone acts on
+it.** `nfl/INFORMATION_GAP_REGISTRY.json`'s `GAP-2026-PARTICIPATION` already
+holds the measurement, and it changes what should be asked for:
+
+> `pbp_participation` returned **404 at every one of its 12 probes**,
+> 2026-09-08T13:28:42Z through 2026-09-15T06:37:05Z. … **THE WATCH HAS NOT RUN
+> SINCE 2026-09-15T06:37:05Z**, so neither half of this sentence is current, and
+> the horizon that would surface that is **two days**.
+
+So `pbp_participation_2026` is not a dataset we have failed to capture. On twelve
+consecutive probes over a week it **did not exist upstream**. Asking to "please
+capture it" was the wrong ask.
+
+**What is actually needed, in order:**
+
+1. **Re-probe `pbp_participation_2026`.** The last observation is 12 days old
+   against a stated 2-day horizon, so the 404 is formally not current. Its
+   sibling is the precedent for why this matters: `snap_counts_2026` was 404 on
+   2026-09-08 and **200 on 2026-09-10**, growing 93 → 187 → 1,397 rows. The
+   registry says as much itself — the previous combined claim "both 404" was
+   "true when written and is now HALF FALSE". If participation has started
+   publishing, this whole blocker dissolves without anyone writing code.
+2. **Revive the participation watch — this is already authorized as SUN-1, status
+   QUEUED.** `nfl-availability.yml` last ran 2026-09-15T06:37:05Z. Line 130 is
+   still `git push origin HEAD:main`, while the four capture workflows were moved
+   to `capture-prod` twenty-two minutes after its last successful run. SUN-1's own
+   wording: point it at the governed surface, and read the run history so
+   "stopped" is distinguished from "failing at the push step". I cannot read that
+   history from here.
+
+**If the re-probe still returns 404**, then the conclusion is materially
+different from anything in the queue and worth stating plainly: the accepted
+`ewma_hl2` arm cannot run for 2026 **at all** until nflverse publishes
+participation, because true `pass_snaps` has no other source. That is an external
+data-availability fact — not a code task, not an owner ruling — and the only
+routes would be to wait, to accept an estimator that does not need true
+`pass_snaps`, or for the owner to authorise a candidate-identified board built on
+the bounded approximation already in `panel_2026w1.py`.
+
+**What we already hold and do not need:** `snap_counts_2026` is here and healthy
+(1,492 rows week 1). It supplies `offense_pct`, and six of the seven panel fields
+derive exactly from evidence in the tree. Only `pass_snaps` is missing. Please do
+not send snap counts again as a substitute — the registry is explicit that these
+two "are NOT one fact and must stop being recorded as one".
+
+**One more thing worth a look while you are in the run history:** week-2
+`snap_counts` is 93 rows against week 1's 1,492. Given the growth pattern above,
+93 is plausibly just an early-week partial that never got re-fetched after the
+watch died on 2026-09-15.

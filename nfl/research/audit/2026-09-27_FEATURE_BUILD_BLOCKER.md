@@ -90,12 +90,41 @@ rows for 2026 week 1 and 93 rows for week 2**. `offense_players`,
 `offense_personnel`, `defense_players` and `n_offense` are absent from the
 play-by-play, so per-play presence exists **only** in `pbp_participation`.
 
-## So the work is a capture, not a code change and not a ruling
+## So the work is a re-probe and a revived watch — corrected
 
-**This is a DATA ACQUISITION item.** `pbp_participation_2026` has never been
-captured, capture needs network, and network is the other agent's. Nothing about
-implementing `feature_build` moves it, and no owner ruling is required to want
-it.
+**First framing, and it was wrong:** I wrote this as "a DATA ACQUISITION item —
+`pbp_participation_2026` has never been captured". The tree already holds the
+measurement that corrects it. `nfl/INFORMATION_GAP_REGISTRY.json`'s
+`GAP-2026-PARTICIPATION`:
+
+> `pbp_participation` returned **404 at every one of its 12 probes**,
+> 2026-09-08T13:28:42Z through 2026-09-15T06:37:05Z. … **THE WATCH HAS NOT RUN
+> SINCE 2026-09-15T06:37:05Z**, so neither half of this sentence is current, and
+> the horizon that would surface that is **two days**.
+
+It is not a dataset we failed to capture. On twelve consecutive probes it **did
+not exist upstream**. And the last look was 12 days ago against a 2-day horizon,
+so even the 404 is formally not current.
+
+**There is an already-authorized task for the watch: SUN-1, status QUEUED.**
+`nfl-availability.yml` last ran 2026-09-15T06:37:05Z, and line 130 is still
+`git push origin HEAD:main` while the four capture workflows moved to
+`capture-prod` twenty-two minutes after its last successful run. So the
+participation watch is broken in the same family as DEF-086 but for a different
+reason — wrong push target rather than stale cron.
+
+**Why the re-probe comes first.** The sibling source is the precedent:
+`snap_counts_2026` was 404 on 2026-09-08 and **200 on 2026-09-10**, growing
+93 → 187 → 1,397 rows. The registry states that the earlier combined claim "both
+404" was "true when written and is now HALF FALSE". If participation has begun
+publishing in the last 12 days, this blocker dissolves with no code written.
+
+**And if it is still 404**, the honest conclusion is stronger than anything
+currently in the queue: the accepted `ewma_hl2` arm cannot run for 2026 at all
+until nflverse publishes participation, because true `pass_snaps` has no other
+source. That is external data availability — not a code task and not a ruling.
+
+Requested as OUT-034 plus its correction.
 
 `feature_build` remains genuinely unimplemented — `fx['features']` has no
 producer anywhere in production, which I checked — and that is correctly recorded
