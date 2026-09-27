@@ -551,3 +551,64 @@ its layers select so the run reaches the QB layer, and that is a change to a
 production test fixture that deserves its own before/after rather than being
 folded into a night of guard proofs. Filed so the census is not tempted to count
 `reconcile_team` as proven: it is not.
+
+## Census movement, second pass
+
+`assert_pregame_untouched` NOT_ESTABLISHED → **LOAD_BEARING**, and
+`assert_cut_lawful` NOT_ESTABLISHED → **ANNOTATE_BY_DESIGN**. Census now
+LOAD_BEARING **17**, NOT_ESTABLISHED **64**, ANNOTATE_BY_DESIGN 2,
+ORPHANED_CONTROL 3, of 91.
+
+### `assert_pregame_untouched` — the strongest bypass result so far
+
+`pregame_frozen` holds the thing being graded: the sealed player draws, their
+manifest, the salary file. If the postgame path can write into it, the forecast
+is being marked by a paper it was allowed to edit afterwards — and it would not
+look like a bug, it would look like a good grade.
+
+Coverage already existed and was real:
+`test_postgame_slate_is_addressable.py` seeds a stray file into a second slate
+and checks the guard returns `PREGAME_FROZEN_SET_MUTATED`, also establishing that
+the slate parameterisation is not cosmetic. What it never showed was a **caller**
+refusing.
+
+`nfl/tests/test_pregame_frozen_guard_is_load_bearing.py`, 20 checks, drives the
+two real production entry points — `grade_projections.grade` and
+`grade_portfolios.grade` — against a mutated copy of the slate. Both refuse with
+the guard's own code and return no grade.
+
+**The bypass half is the part worth quoting.** With the guard stubbed to its pass
+shape, on the *same mutated* frozen set:
+
+    grade_projections bypassed on a MUTATED slate: PASS/PROJECTIONS_GRADED
+    grade_portfolios  bypassed on a MUTATED slate: PASS/PORTFOLIOS_GRADED
+
+A complete, passing grade produced against tampered evidence. Nothing downstream
+catches it. That is what makes this guard the thing standing in the way rather
+than an annotation beside it.
+
+Three details that keep the proof honest: **both** call sites are driven, because
+the shape is duplicated at `grade_projections.py:92` and
+`grade_portfolios.py:155` and proving one says nothing about the other; a check
+asserts each grader reaches the guard through `nfl.postgame.outcome` rather than
+holding its own reference, or the bypass would be a silent no-op and the test
+would pass for the wrong reason; and a final check confirms the **real** default
+slate is still intact, since every mutation happens in a temp copy.
+
+Deletion is tested as well as addition — an over-eager cleanup removes files, and
+that direction must refuse too.
+
+### `assert_cut_lawful` — classified, deliberately not filed
+
+`pipeline.cut_check` records it with `enforcement:
+OBSERVATIONAL_IN_THIS_SLICE` and a stated `why_not_enforced`:
+`bitemporal.readable_at` requires `learned_at < cut` strictly, while
+`capture_validation` refuses only `retrieved_at > written_at`, so the DAG is
+stricter at exact equality and that boundary has not been measured against sealed
+runs.
+
+Declared non-enforcement with a named reason is not an unproven guard, and the
+honest next step is **measuring the equality boundary**, not wiring a STOP to
+make a census row look better. Recorded as ANNOTATE_BY_DESIGN with the reason
+carried in the census, per the standing instruction to look for downstream
+enforcement and stated intent before filing anything.

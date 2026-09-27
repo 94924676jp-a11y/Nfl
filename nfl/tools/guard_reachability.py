@@ -93,6 +93,8 @@ except Exception:                                            # noqa: BLE001
 LOAD_BEARING_PROOFS = {
     'assert_no_postgame_inputs':
         'nfl/tests/test_leakage_guard_is_load_bearing.py',
+    'assert_pregame_untouched':
+        'nfl/tests/test_pregame_frozen_guard_is_load_bearing.py',
     'assert_pit':
         'nfl/tests/test_pit_guard_is_load_bearing.py',
     'assert_inactive_qbs_own_nothing':
@@ -132,6 +134,14 @@ CLASSIFICATION = {
         'property of the source and cannot differ between two runs'),
     'assert_no_inactive_survived': ('SUPERSEDED',
         'DEF-064; assert_no_inactive_in_playable is wired and STOPs'),
+    'assert_cut_lawful': ('ANNOTATE_BY_DESIGN',
+        'pipeline.cut_check records it with enforcement=OBSERVATIONAL_IN_THIS_'
+        'SLICE and a stated why_not_enforced: bitemporal.readable_at requires '
+        'learned_at < cut strictly while capture_validation refuses only '
+        'retrieved_at > written_at, so the DAG is stricter at exact equality '
+        'and that boundary has not been measured against sealed runs. Declared '
+        'non-enforcement with a named reason is not an unproven guard, and the '
+        'next step is measuring the equality boundary, not wiring a STOP'),
     'assert_ranking_admissible': ('ORPHANED_CONTROL',
         'logic proven, nothing calls it; wiring is a product decision about '
         'what the ranking is for'),
@@ -140,6 +150,13 @@ CLASSIFICATION = {
     'assert_prospective_matches_frozen': ('CANDIDATE_SCOPED',
         'guards Candidate B against the accepted walk, and Candidate B has no '
         'production caller either'),
+    'assert_pregame_untouched': ('LOAD_BEARING',
+        'bad state -> FAIL -> BOTH graders return the refusal and no grade, '
+        'proven by driving the real grade_projections.grade and '
+        'grade_portfolios.grade against a mutated copy of the slate. Bypassed, '
+        'both return PASS/PROJECTIONS_GRADED and PASS/PORTFOLIOS_GRADED on that '
+        'same mutated set -- a full grade against tampered evidence, which is '
+        'what makes this the guard and not something downstream'),
     'assert_pit': ('LOAD_BEARING',
         'bad state -> FAIL -> the caller returns the refusal and the usage '
         'rows never reach the model. The forecast week ITSELF is tested, not '
