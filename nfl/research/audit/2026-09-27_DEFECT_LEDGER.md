@@ -176,3 +176,77 @@ that produced the four false FC-only rows recorded in
 means an unmatched row is now *identifiable* downstream; it does not resolve it
 to a canonical id. UNMATCHED remains UNMATCHED, and the canonical roster — not
 a third-party file — is what may resolve it.
+
+## DEF-083 · The guard census is read as ground truth and can go stale silently
+
+**Status:** FIX_IMPLEMENTED.
+
+`nfl/research/audit/GUARD_REACHABILITY.json` is not documentation. Other tests
+read it as evidence — `test_uncalled_governance_guards.py` establishes that a
+supersession is real by comparing two rows out of it. So a stale census does not
+merely mislead a reader; it makes those tests assert stale facts and pass.
+
+And it goes stale silently, because `guard_reachability.py --json` **prints** to
+stdout. The committed file is produced by shell redirection, so no step anywhere
+fails when the code and the artifact disagree.
+
+**Observed, not hypothesised.** After adding an entry to `LOAD_BEARING_PROOFS`
+and a classification to `CLASSIFICATION`, the committed JSON still reported
+`load_bearing_proof: NONE` and `classification: NOT_ESTABLISHED` for that
+guard. I read those values back and briefly concluded my edit had not landed —
+the edit was fine; the artifact was two hours and one code change out of date,
+and every test reading it was content.
+
+**Fix:** `nfl/tests/test_guard_census_is_not_stale.py`, 14 checks. It
+regenerates the census in memory and compares field by field and then byte for
+byte, with the regeneration command in the failure message. It deliberately does
+**not** rewrite the file: a test that repairs what it checks converts a
+detectable defect into an invisible one.
+
+Verified able to fail: perturbing one row's `line` by 999 produces two failures
+naming the field; restoring returns it to 14/14. Two further checks close
+adjacent holes — every path in `LOAD_BEARING_PROOFS` must exist, and no guard
+may be classified `LOAD_BEARING` without a named proof file.
+
+**Two things caught while writing it, both mine:**
+
+The first version keyed rows on the guard name alone. Two guards share a name
+(`assert_complete` in `identity_crosswalk.py` and `contracts/completeness.py`;
+likewise `assert_publishable`), so the dict dropped one and compared the
+survivor against the other's row, reporting drift that was not there. It
+disagreed with the byte-level check three lines below it, which is how it
+surfaced. Now keyed on name **and** defining file, with the non-uniqueness
+pinned by its own test so the reason cannot be lost.
+
+The first version also called `census()` up to three times per test, which
+parses the whole tree each time and made the module one of the slowest in the
+suite for no benefit. Memoised, with the determinism test deliberately left
+using two independent censuses.
+
+**What it does not establish:** that the census is *correct*, only that it is
+*current*. A wrong classification committed alongside its own generator output
+passes, as it should — whether a guard is load-bearing is settled by a bypass
+proof, not by a file agreeing with the function that wrote it.
+
+---
+
+## Census movement recorded with these entries
+
+`assert_no_postgame_inputs` moves NOT_ESTABLISHED → **LOAD_BEARING**, taking the
+census from 13 to 14 load-bearing and 69 to 68 not-established of 91.
+
+Its proof is `nfl/tests/test_leakage_guard_is_load_bearing.py`, 23 checks. The
+guard already had a unit test asserting it returns `POSTGAME_INPUT_DECLARED`,
+which establishes a return value and nothing else. What the new file establishes
+is the **protected action**: a canary records whether the stage function ran.
+
+  * the leaking stage's own `fn` never executes;
+  * every **later** stage's `fn` never executes either, because `halted_by` is
+    set — the pipeline previously recorded a refusal and then went on to run the
+    QB model on unresolved players and seal the artifact;
+  * with the guard stubbed to its pass shape, **both** functions run — which is
+    what makes the observation a proof rather than a description.
+
+The stub returns `Outcome.ok('INPUTS_ARE_PREGAME', ...)` because it must match
+the guard's real pass shape; a `None`-returning stub previously broke a caller
+and produced a passing test for the wrong reason.

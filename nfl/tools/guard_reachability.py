@@ -91,6 +91,8 @@ except Exception:                                            # noqa: BLE001
 #: recorded as direct coverage instead, because DEF-065 was a guard whose unit
 #: tests all passed while publication went ahead anyway.
 LOAD_BEARING_PROOFS = {
+    'assert_no_postgame_inputs':
+        'nfl/tests/test_leakage_guard_is_load_bearing.py',
     'assert_no_inactive_in_playable':
         'nfl/tests/test_publication_refusal_is_load_bearing.py',
     'assert_shared_draws':
@@ -134,6 +136,11 @@ CLASSIFICATION = {
     'assert_prospective_matches_frozen': ('CANDIDATE_SCOPED',
         'guards Candidate B against the accepted walk, and Candidate B has no '
         'production caller either'),
+    'assert_no_postgame_inputs': ('LOAD_BEARING',
+        'bad state -> FAIL -> Pipeline.run_stage never calls the stage fn, and '
+        'halted_by stops every LATER stage fn too. Observed on a canary, not '
+        'inferred from the return value; bypassing the guard makes both fns '
+        'run, which is what makes the observation a proof'),
     'assert_no_inactive_in_playable': ('LOAD_BEARING',
         'bad state -> FAIL -> emit_package.main writes no artifact, proven by '
         'running it and inspecting the disk'),
