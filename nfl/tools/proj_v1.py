@@ -219,6 +219,9 @@ def team_volume(panel, env):
 
 # ------------------------------------------------------------------- combine prior + current
 def _combine(prior_value, prior_n, cur_value, cur_n):
+    # The accounting returned here carries the RAW prior and current values and the exact weight,
+    # so an explainability decomposition can be reconstructed arithmetically instead of guessed at.
+    #
     """Prior and current-season evidence, by weight. Returns value and the accounting.
 
     UNKNOWN IS NOT ZERO on either side. A player with no prior and no current observation gets
@@ -227,14 +230,20 @@ def _combine(prior_value, prior_n, cur_value, cur_n):
     pn = min(float(prior_n or 0.0), PRIOR_WEIGHT_CAP)
     cn = float(cur_n or 0.0)
     if prior_value is None and cur_value is None:
-        return None, {'basis': 'NO_EVIDENCE_EITHER_SIDE'}
+        return None, {'basis': 'NO_EVIDENCE_EITHER_SIDE', 'prior_value': None,
+                      'current_value': None, 'prior_weight_fraction': None}
     if prior_value is None:
-        return cur_value, {'basis': 'CURRENT_SEASON_ONLY', 'current_n': cn}
+        return cur_value, {'basis': 'CURRENT_SEASON_ONLY', 'current_n': cn,
+                           'prior_value': None, 'current_value': cur_value,
+                           'prior_weight_fraction': 0.0}
     if cur_value is None or cn <= 0:
-        return prior_value, {'basis': 'PRIOR_ONLY', 'prior_n_capped': round(pn, 2)}
+        return prior_value, {'basis': 'PRIOR_ONLY', 'prior_n_capped': round(pn, 2),
+                             'prior_value': prior_value, 'current_value': None,
+                             'prior_weight_fraction': 1.0}
     tot = pn + cn
     return ((pn * prior_value + cn * cur_value) / tot,
             {'basis': 'PRIOR_AND_CURRENT', 'prior_n_capped': round(pn, 2), 'current_n': cn,
+             'prior_value': prior_value, 'current_value': cur_value,
              'prior_weight_fraction': round(pn / tot, 3)})
 
 
@@ -501,6 +510,8 @@ def project_player(panel, gsis, pos, band, club, tv, rates, cur_shares, cur_n, p
                          'yards_per_attempt': comb('yards_per_attempt'),
                          'completion_rate': comb('completion_rate')}
 
+    pre_role = dict(claims)
+
     # APPEARANCE PROBABILITY, for the one exclusive role. A second quarterback's starter history
     # is real; what is small is the chance he takes the snaps this Sunday. The measured
     # unconditional share for a rank-2 quarterback is about two per cent against ninety-eight for
@@ -549,6 +560,15 @@ def project_player(panel, gsis, pos, band, club, tv, rates, cur_shares, cur_n, p
                      'how much volume he is finally allocated.'}
     out['claims'] = {k: (round(v, 6) if v is not None else None) for k, v in claims.items()}
     out['_claims'] = claims
+    # the claim BEFORE the role-state and appearance adjustments, so that step is separable in the
+    # decomposition rather than folded into the prior
+    out['_claims_pre_role'] = dict(pre_role)
+    out['_claims_prior_only'] = {
+        'targets': _m(prior, 'target_share'), 'carries': _m(prior, 'carry_share'),
+        'pass_attempts': _m(prior, 'pass_attempt_share')}
+    out['_claims_current_only'] = {
+        'targets': cur_shares.get('target_share'), 'carries': cur_shares.get('carry_share'),
+        'pass_attempts': cur_shares.get('pass_attempt_share')}
     return out
 
 
@@ -669,7 +689,9 @@ def allocate_opportunity(crows, tv, depth, groups, blend=None):
             for rank, i in enumerate(idx, start=1):
                 row = dr.get(f'rank_{rank}') or _deepest or {}
                 beyond = f'rank_{rank}' not in dr
-                dvals[i] = gs[pos] * (row.get('unconditional_expected_share') or 0.0)
+                # the depth share is already a share OF THE CLUB, so the group split must NOT be
+                # multiplied in again -- doing so double-counted the positional split
+                dvals[i] = (row.get('unconditional_expected_share') or 0.0)
                 # APPEARANCE PROBABILITY FOR EVERY POSITION, not only quarterback. A claim is
                 # what a player takes WHEN HE PLAYS; expected production is P(plays) times that.
                 # The measured appearance rate by depth rank supplies P(plays).
@@ -690,7 +712,8 @@ def allocate_opportunity(crows, tv, depth, groups, blend=None):
                 if appear[i] is None:
                     appear[i] = 0.0 if beyond else 1.0
                 crows[i].setdefault('allocation', {})[field] = {
-                    'position_group_share_measured': gs[pos], 'depth_rank_in_group': rank,
+                    'position_group_share_measured_NOT_APPLIED': gs.get(pos),
+                    'depth_rank_in_group': rank,
                     'depth_share_in_group_measured': row.get('unconditional_expected_share'),
                     'appearance_rate_measured': appear[i],
                     'rank_beyond_measured_table': beyond,
@@ -1035,8 +1058,22 @@ def build():
                 h = acct.get(half)
                 if isinstance(h, dict) and h.get('scale') is not None:
                     r.setdefault('td', {})[f'{half}_pool_scale'] = h['scale']
+    # EXPLAINABILITY, rebuilt under nested configurations so the contributions are an identity
+    # rather than a label. Runs before the private claim keys are dropped, because it needs them.
+    from nfl.tools import explain
+    import sys as _sys
+    _self = _sys.modules[__name__]
+    td_pool = {c: (a or {}).get('team_expected_td') for c, a in td_acct.items()}
+    decomp = explain.decompose(by_club, tv_all, depth, groups, prates, pass_share, td_pool,
+                               bonus, ip, _self)
+    decomp_check = explain.verify(decomp, rows)
+    for dk, d in decomp.items():
+        if dk in rows:
+            rows[dk]['explanation'] = d
+
     for r in rows.values():
-        r.pop('_claims', None)
+        for k in ('_claims', '_claims_pre_role', '_claims_prior_only', '_claims_current_only'):
+            r.pop(k, None)
     return {'post': post, 'rows': rows, 'team_volume': tv_all, 'td_account': td_acct,
             'allocation_account': alloc_acct, 'group_shares': groups,
             'DEPTH_CLAIM_BLEND': DEPTH_CLAIM_BLEND,
@@ -1053,7 +1090,8 @@ def build():
             'implied': implied, 'league_mean_implied': league_mean,
             'opponent_implied': opponent_implied,
             'dst_residual_spread': {k: v for k, v in (dst_spread or {}).items()
-                                    if k != 'residuals'}}
+                                    if k != 'residuals'},
+            'explanation_check': decomp_check}
 
 
 # ------------------------------------------------------- appearance probability, measured
@@ -1077,9 +1115,14 @@ def depth_shares(panel, pos_of, through=None):
     competition is settled by reconciliation against club totals instead.
     """
     FIELD = {'QB': 'pass_attempts', 'RB': 'carries', 'WR': 'targets', 'TE': 'targets'}
+    #: The team-level field each position's opportunity is a share OF. Using the club's own total
+    #: rather than the position group's total is what makes the curve composable.
+    TEAMFIELD = {'pass_attempts': 'pass_attempts', 'carries': 'rush_attempts',
+                 'targets': 'targets'}
     out = {}
     for pos, fld in FIELD.items():
         cw = collections.defaultdict(list)
+        team_tot = {}
         for g, seasons in panel['players'].items():
             if pos_of.get(g) != pos:
                 continue
@@ -1090,26 +1133,56 @@ def depth_shares(panel, pos_of, through=None):
                     club = d.get('team')
                     if club:
                         cw[(club, s, w)].append(d.get(fld) or 0)
+        for club, seasons in panel['teams'].items():
+            for s, weeks in seasons.items():
+                if int(s) > (THROUGH_SEASON if through is None else through):
+                    continue
+                for w, t in weeks.items():
+                    v = t.get(TEAMFIELD[fld])
+                    if v:
+                        team_tot[(club, s, w)] = v
+        # SHARE OF THE CLUB'S OWN TOTAL, NOT OF THE POSITION GROUP'S TOTAL.
+        #
+        # The first version divided by the position group's total and the caller then multiplied by
+        # a separately measured group split. That composition is invalid: the two were measured on
+        # different denominators over different qualifying samples, and medians do not multiply. It
+        # credited a structural WR1 with 0.565 x 0.58 = 0.328 of a club's targets where a real
+        # first receiver averages about 0.25, which the explainability decomposition exposed by
+        # showing Ja'Marr Chase's own history pulling him DOWN from the structural baseline.
         ranks = collections.defaultdict(list)
+        ranks_group = collections.defaultdict(list)
         n_club_weeks = 0
-        for lst in cw.values():
-            tot = sum(lst)
-            if tot < 15:
+        # THE FILTER IS ON THE DENOMINATOR, NOT ON THE POSITION GROUP.
+        #
+        # Requiring the position GROUP to reach 15 admitted only club-weeks where that room was
+        # busy, which for tight ends means only tight-end-heavy games: it put a structural TE1 at
+        # 0.309 of a club's targets where the real figure is nearer 0.15. The denominator is the
+        # club total, so that is what has to be substantial.
+        MIN_TEAM = 12 if fld == 'carries' else 15
+        for key, lst in cw.items():
+            tt = team_tot.get(key)
+            if not tt or tt < MIN_TEAM:
                 continue
+            grp_tot = sum(lst) or 1
             n_club_weeks += 1
             for i, a in enumerate(sorted(lst, reverse=True)):
-                ranks[i + 1].append(a / tot)
+                ranks[i + 1].append(a / tt)
+                ranks_group[i + 1].append(a / grp_tot)
         rows = {}
         for r in sorted(ranks):
             v = ranks[r]
             n = len(v)
             appear = n / n_club_weeks if n_club_weeks else None
             cond = sum(v) / n
+            vg = ranks_group[r]
             rows[f'rank_{r}'] = {
                 'n_club_weeks_present': n, 'appearance_rate': round(appear, 5),
-                'conditional_mean_share': round(cond, 5),
+                'conditional_mean_share_of_team': round(cond, 5),
                 'unconditional_expected_share': round(appear * cond, 5),
-                'median_conditional': round(sorted(v)[n // 2], 5),
+                'median_conditional_of_team': round(sorted(v)[n // 2], 5),
+                'conditional_mean_share_of_position_group': (round(sum(vg) / len(vg), 5)
+                                                             if vg else None),
+                'SHARE_DENOMINATOR': 'the club own total for this measure, not the position group',
             }
         out[pos] = {'state': 'MEASURED', 'volume_field': fld,
                     'n_club_weeks': n_club_weeks, 'by_rank': rows}

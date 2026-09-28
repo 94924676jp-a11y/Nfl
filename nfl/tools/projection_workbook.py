@@ -39,6 +39,7 @@ from sportsplatform.governance.outcome import Cause, Outcome  # noqa: E402
 
 SPEC_VERSION = 'projection-workbook-1'
 V1 = _REPO / 'nfl/dfs/salaries/DK_WEEK3_PROJ_V1.json'
+POST = _REPO / 'nfl/dfs/salaries/DK_WEEK3_TODAY_STATE_POST_INACTIVES.json'
 ACC = _REPO / 'nfl/dfs/salaries/DK_WEEK3_V1_ACCEPTANCE.json'
 CHAIN = _REPO / 'nfl/derived/FORWARD_CHAIN.json'
 OUT_DIR = _REPO / 'nfl/dfs/salaries'
@@ -290,11 +291,182 @@ def no_projection_rows(v1):
     return R
 
 
+def position_rows(v1, pos):
+    """One position's players, with the columns that position actually uses."""
+    if pos == 'DST':
+        cols = [('name', ''), ('team', ''), ('salary', ''), ('dk_points', ''),
+                ('opponent_implied_total', 'the points-allowed term is driven by this'),
+                ('sack', ''), ('interception', ''), ('fumble_recovery', ''), ('return_td', ''),
+                ('safety', ''), ('blocked_kick', ''), ('points_allowed_expectation', ''),
+                ('state', ''), ('league_rate_substituted', 'implausible-zero substitution')]
+        rows = [[c for c, _ in cols]]
+        for r in sorted((x for x in v1['rows'].values() if x['position'] == 'DST'),
+                        key=lambda x: -(x.get('dk_points') or -1)):
+            d = r.get('dst') or {}
+            it = d.get('event_items') or {}
+            rows.append([r.get('name'), r.get('team'), r.get('salary'), r.get('dk_points'),
+                         r.get('opponent_implied_total'), it.get('sack'), it.get('interception'),
+                         it.get('fumble_recovery'), it.get('return_td'), it.get('safety'),
+                         it.get('blocked_kick'), it.get('points_allowed'), d.get('state'),
+                         ','.join(sorted(d.get('implausible_zeros_substituted') or {}))])
+        return rows, cols
+    if pos == 'QB':
+        fields = [('pass_attempts', ''), ('pass_yards', ''), ('pass_td', ''),
+                  ('carries', ''), ('rush_yards', ''), ('rush_td', ''),
+                  ('interceptions_expected', '')]
+    elif pos == 'RB':
+        fields = [('carries', ''), ('rush_yards', ''), ('rush_td', ''),
+                  ('targets', ''), ('receptions', ''), ('rec_yards', ''), ('rec_td', '')]
+    else:
+        fields = [('targets', ''), ('receptions', ''), ('rec_yards', ''), ('rec_td', ''),
+                  ('carries', ''), ('rush_yards', '')]
+    cols = ([('name', ''), ('team', ''), ('salary', ''), ('dk_points', ''),
+             ('role_band', ''), ('askable_ceiling', ''), ('capped', ''),
+             ('is_predicted_starter', ''), ('depth_rank', 'rank in his own club room'),
+             ('appearance_rate', 'measured P(a player at this rank appears)')]
+            + fields
+            + [('prior_tier', ''), ('prior_confidence', ''), ('projection_state', '')])
+    rows = [[c for c, _ in cols]]
+    for r in sorted((x for x in v1['rows'].values() if x['position'] == pos),
+                    key=lambda x: -(x.get('dk_points') or -1)):
+        td = r.get('td') or {}
+        al = (r.get('allocation') or {})
+        any_al = (al.get('targets') or al.get('carries') or al.get('pass_attempts') or {})
+        vals = []
+        for f, _d in fields:
+            if f in ('pass_td', 'rush_td', 'rec_td'):
+                vals.append(_r(td.get(f)))
+            elif f == 'interceptions_expected':
+                li = r.get('dk_line_items') or {}
+                vals.append(_r(-(li.get('interceptions') or 0.0)))
+            else:
+                vals.append(_r(r.get(f)))
+        rows.append([r.get('name'), r.get('team'), r.get('salary'), r.get('dk_points'),
+                     r.get('role_band'), r.get('askable_ceiling'), r.get('capped'),
+                     r.get('is_predicted_starter'), any_al.get('depth_rank_in_group'),
+                     any_al.get('appearance_rate_measured')]
+                    + vals
+                    + [r.get('prior_tier'), r.get('prior_confidence'),
+                       r.get('projection_state')])
+    return rows, cols
+
+
+def explanation_rows(v1):
+    """One row per player: the additive stage contributions behind his number."""
+    from nfl.tools import explain
+    stage_names = [n for n, _w in explain.STAGES]
+    cols = ['name', 'position', 'team', 'dk_points'] + stage_names + [
+        'sum_of_contributions', 'opponent_adjustment', 'weather_adjustment',
+        'teammate_absence', 'uncertainty']
+    rows = [cols]
+    for r in sorted(v1['rows'].values(), key=lambda x: -(x.get('dk_points') or -1)):
+        e = r.get('explanation')
+        if not e:
+            continue
+        c = e.get('contributions') or {}
+        rows.append([r.get('name'), r.get('position'), r.get('team'), r.get('dk_points')]
+                    + [c.get(n) for n in stage_names]
+                    + [round(sum(v for v in c.values() if v is not None), 4),
+                       'NOT_MODELLED', 'NOT_MODELLED', 'NOT_MODELLED',
+                       'NOT_AVAILABLE_UNTIL_SIMULATOR'])
+    return rows
+
+
+def model_vs_external_rows(v1, players):
+    """Our number beside the external comparison board. A COMPARISON, never an input."""
+    from nfl.tools import fc_context
+    rows = [['name', 'position', 'team', 'salary', 'our_dk_points', 'external_dk_points',
+             'ratio', 'difference', 'COMPARISON_ONLY']]
+    fc = fc_context.load()
+    if getattr(fc, 'state', None) is None or fc.state.name != 'PASS':
+        rows.append(['EXTERNAL BOARD NOT LOADED', '', '', '', '', '', '', '',
+                     getattr(fc, 'code', 'UNKNOWN')])
+        return rows
+    joined, _fo, _do = fc_context.join_to_dk(fc.value, players)
+    ctx = fc_context.CONTEXT_KEY
+    out = []
+    for dk, row in joined.items():
+        ext = (row.get(ctx) or {}).get('FC Proj')
+        r = v1['rows'].get(dk) or {}
+        ours = r.get('dk_points')
+        if ext is None or ours is None:
+            continue
+        out.append((ext, ours, r))
+    out.sort(key=lambda t: -t[0])
+    for ext, ours, r in out:
+        rows.append([r.get('name'), r.get('position'), r.get('team'), r.get('salary'),
+                     round(ours, 3), round(ext, 3),
+                     round(ours / ext, 4) if ext else None, round(ours - ext, 3),
+                     'external is a level tripwire only; not an input and not a target'])
+    return rows
+
+
+def model_vs_market_rows(v1):
+    """Game-level market beside our club aggregates. Player props are NOT held here."""
+    rows = [['club', 'market_total_line', 'market_club_spread', 'market_implied_total',
+             'our_club_expected_td', 'our_sum_player_dk_points', 'note']]
+    tv = v1.get('team_volume') or {}
+    td = v1.get('td_account') or {}
+    agg = {}
+    for r in v1['rows'].values():
+        if r.get('dk_points') is not None and r.get('position') != 'DST':
+            agg[r['team']] = agg.get(r['team'], 0.0) + r['dk_points']
+    for club in sorted(tv):
+        t = tv[club]
+        if t.get('state') != 'OK':
+            continue
+        a = td.get(club) or {}
+        rows.append([club, None, None, t.get('implied_total'), a.get('team_expected_td'),
+                     round(agg.get(club, 0.0), 2),
+                     'player prop markets are NOT in this checkout; see the market gap note'])
+    rows.append(['', '', '', '', '', '', ''])
+    rows.append(['PLAYER PROP MARKETS ABSENT', '', '', '', '', '',
+                 'no archived player prop prices are held, so a per-player model-versus-market '
+                 'comparison cannot be made. Game-level market is shown instead. Filed as a data '
+                 'request rather than approximated.'])
+    return rows
+
+
+def availability_rows(v1):
+    rows = [['name', 'position', 'team', 'salary', 'availability_state', 'role_state',
+             'projection_state', 'reason']]
+    for r in sorted(v1['rows'].values(),
+                    key=lambda x: (str(x.get('availability')), str(x.get('position')),
+                                   str(x.get('name')))):
+        rows.append([r.get('name'), r.get('position'), r.get('team'), r.get('salary'),
+                     r.get('availability'), r.get('role_state'), r.get('projection_state'),
+                     r.get('NOT_ZERO') or r.get('IDENTITY_NOT_GUESSED') or ''])
+    return rows
+
+
+def coverage_rows(v1):
+    """Projection coverage by position: how many got a number, and by which pathway."""
+    import collections as _c
+    by = _c.defaultdict(lambda: _c.Counter())
+    for r in v1['rows'].values():
+        by[r.get('position')][r.get('projection_state')] += 1
+    states = sorted({s for c in by.values() for s in c})
+    rows = [['position', 'total', 'projected', 'no_number'] + states]
+    for pos in sorted(by):
+        c = by[pos]
+        tot = sum(c.values())
+        proj = sum(n for s, n in c.items() if str(s).startswith('PROJECTED'))
+        rows.append([pos, tot, proj, tot - proj] + [c.get(s, 0) for s in states])
+    tot = sum(sum(c.values()) for c in by.values())
+    proj = sum(n for c in by.values() for s, n in c.items() if str(s).startswith('PROJECTED'))
+    rows.append(['ALL', tot, proj, tot - proj] + ['' for _ in states])
+    rows.append(['', '', '', ''] + ['' for _ in states])
+    rows.append(['EVERY ROSTERABLE PLAYER HAS A STATE', '', '', '']
+                + ['' for _ in states])
+    return rows
+
+
 def build():
     from nfl.tools import xlsx_writer
     if not V1.exists():
         return Outcome.blocked('V1_ARTIFACT_ABSENT', f'{V1.name} not built', cause=Cause.DATA)
     v1 = json.loads(V1.read_text())
+    post = json.loads(POST.read_text()) if POST.exists() else {'players': {}}
     acc = json.loads(ACC.read_text()) if ACC.exists() else None
     chain = json.loads(CHAIN.read_text()) if CHAIN.exists() else None
 
@@ -315,9 +487,46 @@ def build():
 
     main = main_rows(v1)
     prov = prov_rows(v1)
-    sheets = [
+    players = {k: {'name': p['name'], 'position': p['position'], 'team': p['team'],
+                   'salary': p.get('salary')} for k, p in post['players'].items()}
+    pos_sheets, pos_cols = [], []
+    for pos in ('QB', 'RB', 'WR', 'TE', 'DST'):
+        r, c = position_rows(v1, pos)
+        if len(r) > 1:
+            pos_sheets.append((pos, r))
+            pos_cols += [[pos, a, b] for a, b in c]
+    # the kicker sheet exists even though this slate does not roster one
+    kick = _REPO / 'nfl/derived/KICKER_RATES.json'
+    k_rows = [['club', 'dk_points_if_rostered', 'fg_0_39_att', 'fg_40_49_att',
+               'fg_50_plus_att', 'pat_att', 'slate_requirement']]
+    if kick.exists():
+        ka = json.loads(kick.read_text())
+        for club, v in sorted((ka.get('projections') or {}).items(),
+                              key=lambda kv: -(kv[1].get('dk_points') or 0)):
+            it = v.get('items') or {}
+            k_rows.append([club, v.get('dk_points'),
+                           (it.get('fg_0_39') or {}).get('attempts'),
+                           (it.get('fg_40_49') or {}).get('attempts'),
+                           (it.get('fg_50_plus') or {}).get('attempts'),
+                           (it.get('pat') or {}).get('attempts'),
+                           v.get('slate_requirement')])
+        k_rows.append(['', '', '', '', '', '', ''])
+        k_rows.append(['league make rates', str({k: v.get('make_rate') for k, v in
+                                                (ka.get('league_make_rates') or {}).items()}),
+                       '', '', '', '', ka.get('WHY_BUILT_NOW')])
+    else:
+        k_rows.append(['KICKER MODEL NOT BUILT', '', '', '', '', '', 'run kicker_model.py'])
+
+    sheets = ([
         ('READ THIS FIRST', readme_rows(v1, acc, chain)),
-        ('Projections', main),
+        ('All Projections', main),
+    ] + pos_sheets + [
+        ('K', k_rows),
+        ('Explanation', explanation_rows(v1)),
+        ('Model vs FC', model_vs_external_rows(v1, players)),
+        ('Model vs Market', model_vs_market_rows(v1)),
+        ('Availability', availability_rows(v1)),
+        ('Projection Coverage', coverage_rows(v1)),
         ('Provenance', prov),
         ('No projection', no_projection_rows(v1)),
         ('Club volume and TD pools', team_rows(v1)),
@@ -325,9 +534,10 @@ def build():
         ('Guards', guards_rows(acc)),
         ('Forward chain', chain_rows(chain)),
         ('Column notes', [['sheet', 'column', 'meaning']]
-         + [['Projections', c, d] for c, d in MAIN_COLS]
-         + [['Provenance', c, d] for c, d in PROV_COLS]),
-    ]
+         + [['All Projections', c, d] for c, d in MAIN_COLS]
+         + [['Provenance', c, d] for c, d in PROV_COLS]
+         + pos_cols),
+    ])
     wrote = xlsx_writer.write(XLSX, sheets)
     ver = xlsx_writer.verify(XLSX, expected_sheets=len(sheets))
 
