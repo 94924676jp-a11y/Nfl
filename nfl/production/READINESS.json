@@ -1,0 +1,270 @@
+{
+  "ARTIFACT": "READINESS",
+  "RULE": "no Sunday decision may rely SILENTLY on stale local data",
+  "checked_at_unix": 1790567610,
+  "FRESHNESS_SEMANTICS": "measured from each artifact's own stated data cutoff where it states one, and from the file modification time otherwise -- labelled as a fallback in age_source, because an unlabelled proxy is how a freshness check becomes decoration. None of the artifacts in this tree currently state a cutoff, so every age below is the fallback, and that is a gap in the artifacts rather than in this check.",
+  "stages": [
+    {
+      "name": "warehouse.team_game",
+      "path": "nfl/warehouse/TEAM_GAME.json",
+      "max_age_hours": 336,
+      "tier": "FOUNDATION",
+      "depends_on": [],
+      "why": "completed club-games; only changes when a new week is added",
+      "size_bytes": 17906007,
+      "age_hours": 2.5,
+      "age_source": "FILE_MTIME_FALLBACK_ARTIFACT_STATES_NO_CUTOFF",
+      "artifact_cutoff": null,
+      "state": "FRESH",
+      "inputs_newer_than_this_artifact": []
+    },
+    {
+      "name": "warehouse.player_game",
+      "path": "nfl/warehouse/PLAYER_GAME.json",
+      "max_age_hours": 336,
+      "tier": "FOUNDATION",
+      "depends_on": [],
+      "why": "completed player-games; same cadence as the club table",
+      "size_bytes": 22753224,
+      "age_hours": 2.38,
+      "age_source": "FILE_MTIME_FALLBACK_ARTIFACT_STATES_NO_CUTOFF",
+      "artifact_cutoff": null,
+      "state": "FRESH",
+      "inputs_newer_than_this_artifact": []
+    },
+    {
+      "name": "warehouse.role_history",
+      "path": "nfl/warehouse/ROLE_HISTORY.json",
+      "max_age_hours": 336,
+      "tier": "FOUNDATION",
+      "depends_on": [
+        "warehouse.player_game"
+      ],
+      "why": "depth ranks and transitions, derived from completed games",
+      "size_bytes": 8075724,
+      "age_hours": 2.36,
+      "age_source": "FILE_MTIME_FALLBACK_ARTIFACT_STATES_NO_CUTOFF",
+      "artifact_cutoff": null,
+      "state": "FRESH",
+      "inputs_newer_than_this_artifact": []
+    },
+    {
+      "name": "warehouse.coverage",
+      "path": "nfl/warehouse/COVERAGE_LEDGER.json",
+      "max_age_hours": 720,
+      "tier": "FOUNDATION",
+      "depends_on": [
+        "warehouse.team_game"
+      ],
+      "why": "what exists per season and source; changes only when a source is acquired",
+      "size_bytes": 459521,
+      "age_hours": 2.31,
+      "age_source": "FILE_MTIME_FALLBACK_ARTIFACT_STATES_NO_CUTOFF",
+      "artifact_cutoff": null,
+      "state": "FRESH",
+      "inputs_newer_than_this_artifact": []
+    },
+    {
+      "name": "sim.shared_state",
+      "path": "nfl/sim/SHARED_STATE.json",
+      "max_age_hours": 336,
+      "tier": "MODEL",
+      "depends_on": [
+        "warehouse.team_game"
+      ],
+      "why": "coefficients over 6,751 games; a week of new games barely moves them",
+      "size_bytes": 165813,
+      "age_hours": 0.57,
+      "age_source": "FILE_MTIME_FALLBACK_ARTIFACT_STATES_NO_CUTOFF",
+      "artifact_cutoff": null,
+      "state": "FRESH",
+      "inputs_newer_than_this_artifact": []
+    },
+    {
+      "name": "sim.efficiency",
+      "path": "nfl/sim/EFFICIENCY.json",
+      "max_age_hours": 336,
+      "tier": "MODEL",
+      "depends_on": [
+        "warehouse.player_game"
+      ],
+      "why": "club-game efficiency spread, same reasoning",
+      "size_bytes": 75559,
+      "age_hours": 0.75,
+      "age_source": "FILE_MTIME_FALLBACK_ARTIFACT_STATES_NO_CUTOFF",
+      "artifact_cutoff": null,
+      "state": "FRESH",
+      "inputs_newer_than_this_artifact": []
+    },
+    {
+      "name": "sim.variance_components",
+      "path": "nfl/sim/VARIANCE_COMPONENTS.json",
+      "max_age_hours": 336,
+      "tier": "MODEL",
+      "depends_on": [
+        "warehouse.player_game"
+      ],
+      "why": "share dispersion and yards-share concentration",
+      "size_bytes": 2812,
+      "age_hours": 0.54,
+      "age_source": "FILE_MTIME_FALLBACK_ARTIFACT_STATES_NO_CUTOFF",
+      "artifact_cutoff": null,
+      "state": "FRESH",
+      "inputs_newer_than_this_artifact": []
+    },
+    {
+      "name": "sim.dst",
+      "path": "nfl/sim/DST_MODEL.json",
+      "max_age_hours": 336,
+      "tier": "MODEL",
+      "depends_on": [
+        "warehouse.team_game"
+      ],
+      "why": "points-allowed bands for defences",
+      "size_bytes": 141256,
+      "age_hours": 0.43,
+      "age_source": "FILE_MTIME_FALLBACK_ARTIFACT_STATES_NO_CUTOFF",
+      "artifact_cutoff": null,
+      "state": "FRESH",
+      "inputs_newer_than_this_artifact": []
+    },
+    {
+      "name": "sim.pair_correlations",
+      "path": "nfl/sim/PAIR_CORRELATIONS.json",
+      "max_age_hours": 720,
+      "tier": "VALIDATION",
+      "depends_on": [
+        "warehouse.player_game"
+      ],
+      "why": "the correlation targets the simulator is held to",
+      "size_bytes": 5633,
+      "age_hours": 0.81,
+      "age_source": "FILE_MTIME_FALLBACK_ARTIFACT_STATES_NO_CUTOFF",
+      "artifact_cutoff": null,
+      "state": "FRESH",
+      "inputs_newer_than_this_artifact": []
+    },
+    {
+      "name": "sim.correlation_check",
+      "path": "nfl/sim/SIM_VS_MEASURED_CORRELATION.json",
+      "max_age_hours": 168,
+      "tier": "VALIDATION",
+      "depends_on": [
+        "sim.pair_correlations",
+        "sim.shared_state"
+      ],
+      "why": "must be re-run after any change to the football model",
+      "size_bytes": 11482,
+      "age_hours": 0.51,
+      "age_source": "FILE_MTIME_FALLBACK_ARTIFACT_STATES_NO_CUTOFF",
+      "artifact_cutoff": null,
+      "state": "FRESH",
+      "inputs_newer_than_this_artifact": []
+    },
+    {
+      "name": "slate.projection",
+      "path": "nfl/dfs/salaries/DK_WEEK3_PROJ_V1.json",
+      "max_age_hours": 36,
+      "tier": "SLATE",
+      "depends_on": [
+        "warehouse.role_history"
+      ],
+      "why": "a projection for a specific slate; 36 hours spans Friday evening to Sunday morning",
+      "size_bytes": 4220825,
+      "age_hours": 1.78,
+      "age_source": "FILE_MTIME_FALLBACK_ARTIFACT_STATES_NO_CUTOFF",
+      "artifact_cutoff": null,
+      "state": "FRESH",
+      "inputs_newer_than_this_artifact": []
+    },
+    {
+      "name": "slate.post_inactives",
+      "path": "nfl/dfs/salaries/DK_WEEK3_TODAY_STATE_POST_INACTIVES.json",
+      "max_age_hours": 6,
+      "tier": "SLATE",
+      "depends_on": [],
+      "why": "availability moves until 90 minutes before kickoff; six hours is already generous",
+      "size_bytes": 3231919,
+      "age_hours": 11.44,
+      "age_source": "FILE_MTIME_FALLBACK_ARTIFACT_STATES_NO_CUTOFF",
+      "artifact_cutoff": null,
+      "state": "STALE",
+      "inputs_newer_than_this_artifact": []
+    },
+    {
+      "name": "field.model",
+      "path": "nfl/dfs/salaries/FIELD_MODEL.json",
+      "max_age_hours": 36,
+      "tier": "SLATE",
+      "depends_on": [
+        "slate.projection"
+      ],
+      "why": "ownership depends on the slate projection",
+      "size_bytes": 36145,
+      "age_hours": 0.85,
+      "age_source": "FILE_MTIME_FALLBACK_ARTIFACT_STATES_NO_CUTOFF",
+      "artifact_cutoff": null,
+      "state": "FRESH",
+      "inputs_newer_than_this_artifact": []
+    },
+    {
+      "name": "portfolio.contest",
+      "path": "nfl/dfs/salaries/CONTEST_PORTFOLIO.json",
+      "max_age_hours": 24,
+      "tier": "DECISION",
+      "depends_on": [
+        "field.model",
+        "sim.dst",
+        "slate.projection"
+      ],
+      "why": "the deliverable; must post-date every input it claims to use",
+      "size_bytes": 9026,
+      "age_hours": 0.12,
+      "age_source": "FILE_MTIME_FALLBACK_ARTIFACT_STATES_NO_CUTOFF",
+      "artifact_cutoff": null,
+      "state": "FRESH",
+      "inputs_newer_than_this_artifact": []
+    }
+  ],
+  "state_counts": {
+    "FRESH": 13,
+    "STALE": 1
+  },
+  "by_tier": {
+    "FOUNDATION": {
+      "FRESH": 4
+    },
+    "MODEL": {
+      "FRESH": 4
+    },
+    "VALIDATION": {
+      "FRESH": 2
+    },
+    "SLATE": {
+      "FRESH": 2,
+      "STALE": 1
+    },
+    "DECISION": {
+      "FRESH": 1
+    }
+  },
+  "saturday_rule": {
+    "state": "PASS",
+    "code": "SATURDAY_RULE_MET",
+    "n_entries": 48,
+    "all_legal": true,
+    "all_distinct": true,
+    "pool_size": 442,
+    "recorded_joint_arm_entries": 48,
+    "MEANING": "a complete legal 48-entry portfolio was produced from the slate file on disk, autonomously, with every entry under the cap in a legal shape and all distinct. This is the permanent rule tested rather than asserted."
+  },
+  "PRODUCT_MODE": "PARTIAL",
+  "PRODUCT_MODE_BECAUSE": "the model layer is intact but slate-level artifacts are not fresh: ['slate.post_inactives']",
+  "PRODUCT_MODES_DEFINED": {
+    "FULL_PROPRIETARY": "every stage fresh, portfolio producible from our own model",
+    "PARTIAL": "model layer intact, slate layer stale or incomplete",
+    "EXTERNAL_FALLBACK": "our projections unusable; governed external source only. NOT reachable from this module, because no external projection is wired as a fallback and none may become a feature input.",
+    "NOT_PRODUCTION_READY": "cannot produce a complete legal portfolio, or the model layer is missing"
+  },
+  "WHAT_THIS_DOES_NOT_DO": "it does not fetch anything, and it cannot refresh a stale stage. It reports. Every acquisition in this tree is the other agent's, and the requests are in docs/AGENT_OUTBOX.md."
+}
