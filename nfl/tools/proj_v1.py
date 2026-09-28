@@ -991,7 +991,14 @@ def build():
             base.update({'projection_state': ('PROJECTED_DST' if d.get('dk_points') is not None
                                               else f"DST_{d['state']}"),
                          'dk_points': d.get('dk_points'), 'dst': d,
-                         'opponent_implied_total': opp_imp})
+                         'opponent_implied_total': opp_imp,
+                         # A DEFENCE ALWAYS PLAYS, so its conditional and unconditional numbers are
+                         # the same. Leaving the conditional field absent removed every defence from
+                         # any pool built on it, which made the optimiser declare the slate
+                         # infeasible -- a missing field is not a neutral omission downstream.
+                         'dk_points_if_plays': d.get('dk_points'),
+                         'p_plays_by_field': ({'team_unit': 1.0}
+                                              if d.get('dk_points') is not None else None)})
             rows[dk_id] = base
             skipped['DST' if d.get('dk_points') is None else 'DST_PROJECTED'] += 1
             continue

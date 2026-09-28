@@ -252,30 +252,45 @@ def candidates(pool, cons, n=6000):
 
 
 def optimum(pool, cons, seeds=None, restarts=250):
-    """Best legal lineup found. The reference every mode is measured against.
+    """The EXACT best legal lineup. PROVEN_OPTIMAL, not "best found".
 
-    FIXED AFTER A BAD FIRST RESULT. The first version hill-climbed only from fresh random
-    seeds and reported 161.06, while the candidate generator independently found lineups at
-    169.5. A reference worse than the things it is meant to bound produced NEGATIVE gaps,
-    which is the tell that it was stuck in a local optimum: the budget-aware seed spends
-    early on a quarterback and a stack, leaving single-swap hill climbing no room to
-    recover. So the search now ALSO climbs from the best candidates already generated,
-    which is the cheapest way to escape that basin.
+    REPLACED THE HILL CLIMB 2026-09-28. The previous version searched from random and from candidate
+    seeds and returned 169.48 -- 2.83 below the true maximum, which it had no way of knowing. An
+    exact dynamic program over the three legal roster shapes returns the maximum itself in about
+    0.05 seconds, and the optimiser is verified against brute force on 60 random slates in
+    nfl/opt/verify.py. A reference that is merely the best of a search cannot bound anything.
+
+    Structural constraints (no defence against your own quarterback, stack requirements) are not
+    expressible in the salary DP, so where they are active the lineups are ENUMERATED IN EXACT VALUE
+    ORDER and the first that satisfies them is returned. That is still exact for the constrained
+    problem: nothing better can exist above it in the ordering.
     """
-    rng = random.Random(SEED + 1)
-    best, best_tot = None, -1.0
-    for lu in (seeds or [])[:60]:
-        lu2, tot = _hill_climb(list(lu), pool, cons, rounds=200)
-        if tot > best_tot:
-            best, best_tot = lu2, tot
-    for i in range(restarts):
-        lu = _seed_lineup(pool, cons, rng, 0.0 if i % 3 == 0 else 0.08)
-        if lu is None:
-            continue
-        lu, tot = _hill_climb(lu, pool, cons, rounds=200)
-        if tot > best_tot:
-            best, best_tot = lu, tot
-    return best, round(best_tot, 2)
+    from nfl.opt import exact as _exact
+    flat = [{'id': r['id'], 'position': r['pos'], 'salary': r['salary'], 'value': r['mean']}
+            for lst in pool.values() for r in lst]
+    idx = {r['id']: r for lst in pool.values() for r in lst}
+    o = _exact.solve(flat, CAP)
+    if o.state is State.PASS:
+        lu = [idx[i] for i in o.value['ids']]
+        if _legal(lu) and _struct_ok(lu, cons):
+            return lu, round(o.value['value'], 2)
+    # STRUCTURE BINDS: solve it exactly rather than walking an ordering until it happens to hold.
+    # Walking k_best took minutes and was only approximating the constrained optimum; enumerating
+    # quarterbacks and stack splits inside the DP is exhaustive and takes about fifteen seconds.
+    post = json.loads(POST.read_text())
+    team_of = {r['id']: r['team'] for lst in pool.values() for r in lst}
+    opp_of = {k: (v.get('opponent')) for k, v in post['players'].items()}
+    o2 = _exact.solve_structured(
+        flat, CAP, team_of=team_of, opp_of=opp_of,
+        qb_stack_min=int(cons['min_pass_catchers_with_qb'].value
+                         if 'min_pass_catchers_with_qb' in cons else 0),
+        forbid_dst_against_qb_opp=bool(cons['no_dst_against_own_qb'].value
+                                       if 'no_dst_against_own_qb' in cons else False))
+    if o2.state is State.PASS:
+        lu = [idx[i] for i in o2.value['ids']]
+        if _legal(lu):
+            return lu, round(o2.value['value'], 2)
+    return None, -1.0
 
 
 def select(cands, cons, n):

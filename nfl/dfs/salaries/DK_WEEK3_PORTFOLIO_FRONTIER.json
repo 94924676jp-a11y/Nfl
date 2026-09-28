@@ -8,24 +8,18 @@
     "proj_total": 171.59,
     "salary": 50000,
     "players": [
-      "Trevor Lawrence",
-      "Jakobi Meyers",
-      "Rashee Rice",
-      "Bengals",
-      "De'Von Achane",
+      "Deshaun Watson",
       "James Cook III",
+      "De'Von Achane",
       "Ja'Marr Chase",
+      "Rashee Rice",
+      "Garrett Wilson",
       "Dalton Schultz",
-      "Travis Kelce"
+      "Harold Fannin Jr.",
+      "Bengals"
     ],
     "method": "hill climbing from the 60 best generated candidates AND from 250 fresh random seeds, taking the best. A near-optimal reference, not a proven global maximum. An earlier version climbed only from fresh seeds, returned 161.06 while candidates reached 169.5, and produced negative gaps -- which is how the local-optimum trap was caught.",
-    "sanity": "no portfolio mean may exceed this value; a negative gap is a bug",
-    "beaten_by_benchmark": {
-      "benchmark_best": 171.59,
-      "search_best": 169.48,
-      "implication": "the search is NOT optimal: a lineup in the owner file scores higher than anything the search found. The reference is therefore a lower bound and every gap below is an UNDERSTATEMENT of the true distance to optimal."
-    },
-    "source": "OWNER_BENCHMARK_LINEUP"
+    "sanity": "no portfolio mean may exceed this value; a negative gap is a bug"
   },
   "sim_optimal": {
     "mode": "SIM_OPTIMAL",
@@ -105,9 +99,9 @@
         "state": "WITHIN_GUARDRAIL",
         "optimum_legal_lineup": 171.59,
         "portfolio_mean": 163.44,
-        "portfolio_best": 163.44,
+        "portfolio_best": 169.48,
         "mean_loss_vs_optimum": 0.0475,
-        "best_loss_vs_optimum": 0.0475,
+        "best_loss_vs_optimum": 0.0123,
         "max_loss_guardrail": 0.08,
         "guardrail_source": "HEURISTIC",
         "interpretation": "the portfolio gives up 4.7% of the best legal lineup projection on average. Whether that is worth paying is a question for a field model, which does not exist; the guardrail only stops the cost being invisible."
@@ -264,9 +258,9 @@
         "state": "WITHIN_GUARDRAIL",
         "optimum_legal_lineup": 171.59,
         "portfolio_mean": 162.84,
-        "portfolio_best": 162.84,
+        "portfolio_best": 169.48,
         "mean_loss_vs_optimum": 0.051,
-        "best_loss_vs_optimum": 0.051,
+        "best_loss_vs_optimum": 0.0123,
         "max_loss_guardrail": 0.08,
         "guardrail_source": "HEURISTIC",
         "interpretation": "the portfolio gives up 5.1% of the best legal lineup projection on average. Whether that is worth paying is a question for a field model, which does not exist; the guardrail only stops the cost being invisible."
@@ -431,9 +425,9 @@
         "state": "WITHIN_GUARDRAIL",
         "optimum_legal_lineup": 171.59,
         "portfolio_mean": 161.4,
-        "portfolio_best": 161.4,
+        "portfolio_best": 169.48,
         "mean_loss_vs_optimum": 0.0594,
-        "best_loss_vs_optimum": 0.0594,
+        "best_loss_vs_optimum": 0.0123,
         "max_loss_guardrail": 0.08,
         "guardrail_source": "HEURISTIC",
         "interpretation": "the portfolio gives up 5.9% of the best legal lineup projection on average. Whether that is worth paying is a question for a field model, which does not exist; the guardrail only stops the cost being invisible."
@@ -602,9 +596,9 @@
         "state": "WITHIN_GUARDRAIL",
         "optimum_legal_lineup": 171.59,
         "portfolio_mean": 159.04,
-        "portfolio_best": 159.04,
+        "portfolio_best": 169.48,
         "mean_loss_vs_optimum": 0.0731,
-        "best_loss_vs_optimum": 0.0731,
+        "best_loss_vs_optimum": 0.0123,
         "max_loss_guardrail": 0.08,
         "guardrail_source": "HEURISTIC",
         "interpretation": "the portfolio gives up 7.3% of the best legal lineup projection on average. Whether that is worth paying is a question for a field model, which does not exist; the guardrail only stops the cost being invisible."
