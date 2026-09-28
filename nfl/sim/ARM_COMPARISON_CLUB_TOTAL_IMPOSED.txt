@@ -1,0 +1,27 @@
+PASS SIM_CORRELATION_COMPARED
+replayed 400 games x 150 sims; tolerance 0.1
+--- same_club
+  QB1~WR1        meas +0.4235  sim +0.3412  gap -0.0823  OK 
+  QB1~WR2        meas +0.3355  sim +0.2687  gap -0.0668  OK 
+  QB1~WR3        meas +0.2439  sim +0.1815  gap -0.0624  OK 
+  QB1~TE1        meas +0.3723  sim +0.2678  gap -0.1045  MISS
+  QB1~RB1        meas +0.0723  sim +0.3735  gap +0.3012  MISS
+  WR1~WR2        meas +0.1700  sim -0.0531  gap -0.2231  MISS
+  WR1~TE1        meas -0.0128  sim +0.0477  gap +0.0605  OK 
+  RB1~WR1        meas +0.0184  sim +0.1165  gap +0.0981  OK 
+  RB1~RB2        meas +0.0003  sim -0.3100  gap -0.3103  MISS
+  RB1~TE1        meas -0.0355  sim +0.0451  gap +0.0806  OK 
+--- cross_club
+  QB1~QB1        meas +0.1534  sim +0.1079  gap -0.0455  OK  inCI
+  QB1~WR1        meas +0.1080  sim +0.0661  gap -0.0419  OK  inCI
+  QB1~RB1        meas +0.0801  sim +0.0874  gap +0.0073  OK  inCI
+  WR1~WR1        meas +0.0926  sim +0.1468  gap +0.0542  OK  inCI
+  RB1~RB1        meas -0.0506  sim +0.1361  gap +0.1867  MISS
+  RB1~WR1        meas +0.0205  sim +0.0914  gap +0.0709  OK 
+reproduced 11, missed 5, not comparable 0
+--- diagnosis: PARTIAL_PASS_WITH_A_NAMED_DEFECT
+  pairs with the lead back:   3/7 missed, mean gap +0.0621
+  pairs without a back:       2/9 missed, mean gap -0.0569
+  quarterback to receivers:   mean gap -0.0716 (under)
+  same club without the QB:   mean gap -0.0588 (over)
+  sign disagreements: 5

@@ -60,6 +60,7 @@ from sportsplatform.governance.outcome import Cause, Outcome  # noqa: E402
 SS = _REPO / 'nfl/sim/SHARED_STATE.json'
 PG = _REPO / 'nfl/warehouse/PLAYER_GAME.json'
 EFF = _REPO / 'nfl/sim/EFFICIENCY.json'
+USAGE = _REPO / 'nfl/sim/USAGE_MODEL.json'
 VC = _REPO / 'nfl/sim/VARIANCE_COMPONENTS.json'
 
 TOL = 1e-6
@@ -148,6 +149,10 @@ class Model:
         # that matched the correlation misses.
         self.share_conc_tgt = None
         self.share_conc_car = None
+        # USAGE-FIRST inputs. 63% of yards-per-carry variance is PLAYER level and 80% of
+        # yards-per-target variance is, so drawing one club efficiency and splitting a fixed club
+        # yardage had the decomposition backwards and made teammates zero-sum.
+        self.usage = None
 
     def attach_concentration(self, vc: dict):
         self.conc_rec = vc['receiving']['concentration']
@@ -155,6 +160,17 @@ class Model:
         dt, dc = vc.get('share_dispersion_targets', {}), vc.get('share_dispersion_carries', {})
         self.share_conc_tgt = dt.get('concentration') if dt.get('state') == 'ESTIMATED' else None
         self.share_conc_car = dc.get('concentration') if dc.get('state') == 'ESTIMATED' else None
+        return self
+
+    def attach_usage(self, usage: dict | None):
+        self.usage = usage
+        if usage:
+            tb = usage.get('teammate_backs') or {}
+            a = tb.get('implied_dirichlet_concentration')
+            if a:
+                # measured from the teammate covariance itself rather than from share spread, which
+                # is the quantity the old concentration was failing to reproduce
+                self.share_conc_car = a
         return self
 
     @classmethod
@@ -184,6 +200,7 @@ class Model:
         if d.state.value != 'PASS':
             return d
         m.dst = d.value
+        m.attach_usage(json.loads(USAGE.read_text()) if USAGE.exists() else None)
         return Outcome.ok('MODEL_LOADED', value=m)
 
 
@@ -230,7 +247,12 @@ def _dirichlet_split(total: float, weights, rng, conc: float) -> list[float]:
     return [total * d / s for d in draws]
 
 
-def simulate_game(model: Model, game, n_sims: int = 2000, seed: int = 23) -> Outcome:
+CLUB_TOTAL_IMPOSED = 'CLUB_TOTAL_IMPOSED'
+USAGE_FIRST = 'USAGE_FIRST'
+
+
+def simulate_game(model: Model, game, n_sims: int = 2000, seed: int = 23,
+                  allocation_mode: str = CLUB_TOTAL_IMPOSED) -> Outcome:
     """Simulate one game n_sims times and return per-player DK point draws.
 
     `game` needs: total_line, home_spread, and for each of two clubs a list of players with
@@ -301,6 +323,7 @@ def simulate_game(model: Model, game, n_sims: int = 2000, seed: int = 23) -> Out
             ypc = model.ypc[rng.randrange(len(model.ypc))]
             club_pass_yards = pa * ypa
             club_rush_yards = ra * ypc
+            # (under USAGE_FIRST both are overwritten below by the sum of player yards)
 
             ps = c['players']
             qb_ix = [i for i, p in enumerate(ps) if p['position'] == 'QB']
@@ -348,21 +371,53 @@ def simulate_game(model: Model, game, n_sims: int = 2000, seed: int = 23) -> Out
 
             club_pass_yards = pa * ypa
             club_rush_yards = ra * ypc
+            # (under USAGE_FIRST both are overwritten below by the sum of player yards)
+            if allocation_mode == USAGE_FIRST:
+                # USAGE FIRST. Each player's yards are HIS opportunities times HIS efficiency, and
+                # the club's yardage is whatever those add up to. The club total is derived, not
+                # imposed, so two backs can both gain when the club runs more instead of taking
+                # carries off each other. A quarterback's passing yards become the sum of his
+                # receivers' receiving yards, which is what they are in football.
+                ru = model.usage['rushing_efficiency']
+                re_ = model.usage['receiving_efficiency']
+                club_ypc_draw = ru['empirical_club'][rng.randrange(len(ru['empirical_club']))]
+                club_ypt_draw = re_['empirical_club'][rng.randrange(len(re_['empirical_club']))]
+                rdev = ru['empirical_player_deviation']
+                tdev = re_['empirical_player_deviation']
+                rush_yards = [max(0.0, car_all[j] * (club_ypc_draw
+                                                     + rdev[rng.randrange(len(rdev))]))
+                              for j in range(len(ps))]
+                rec_yards = [max(0.0, tgt_r[j] * (club_ypt_draw
+                                                  + tdev[rng.randrange(len(tdev))]))
+                             for j in range(len(rec_ix))]
+                club_pass_yards = sum(rec_yards)
+                club_rush_yards = sum(rush_yards)
+                # the quarterbacks share the club passing yards their receivers produced, in
+                # proportion to the attempts each of them threw
+                tot_att = sum(qb_att) or 1
+                qb_yards = [club_pass_yards * (a / tot_att) for a in qb_att]
+                qb_yd_ghost = rec_yd_ghost = rush_yd_ghost = 0.0
+                if abs(sum(qb_yards) - club_pass_yards) > 1e-6:
+                    violations.append(('YARDS', si))
+            else:
+                yards_block = True
+
             # yards follow the attempts, with the unallocated attempts carrying their own share
             def split(total, weights, ghost, conc):
                 out = _dirichlet_split(total, [max(1e-9, w) for w in list(weights) + [ghost]],
                                        rng, conc)
                 return out[:-1], out[-1]
 
-            qb_yards, qb_yd_ghost = split(club_pass_yards, qb_att, qb_ghost, model.conc_rec)
-            rec_yards, rec_yd_ghost = split(club_pass_yards, tgt_r, tgt_ghost, model.conc_rec)
-            rush_yards, rush_yd_ghost = split(club_rush_yards, car_all, car_ghost,
-                                              model.conc_rush)
-            for got, ghost, want in ((qb_yards, qb_yd_ghost, club_pass_yards),
-                                     (rec_yards, rec_yd_ghost, club_pass_yards),
-                                     (rush_yards, rush_yd_ghost, club_rush_yards)):
-                if abs(sum(got) + ghost - want) > 1e-3:
-                    violations.append(('YARDS', si))
+            if allocation_mode != USAGE_FIRST:
+                qb_yards, qb_yd_ghost = split(club_pass_yards, qb_att, qb_ghost, model.conc_rec)
+                rec_yards, rec_yd_ghost = split(club_pass_yards, tgt_r, tgt_ghost, model.conc_rec)
+                rush_yards, rush_yd_ghost = split(club_rush_yards, car_all, car_ghost,
+                                                  model.conc_rush)
+                for got, ghost, want in ((qb_yards, qb_yd_ghost, club_pass_yards),
+                                         (rec_yards, rec_yd_ghost, club_pass_yards),
+                                         (rush_yards, rush_yd_ghost, club_rush_yards)):
+                    if abs(sum(got) + ghost - want) > 1e-3:
+                        violations.append(('YARDS', si))
 
             # ---- touchdowns: split pass and rush, then over players. A passing touchdown scores
             # for BOTH the thrower and the catcher, which is how DK scores it.
@@ -416,6 +471,13 @@ def simulate_game(model: Model, game, n_sims: int = 2000, seed: int = 23) -> Out
         'DST_SOURCE': ('drawn from the opponent\'s simulated points in the same world; EXCLUDES '
                        'defensive and return touchdowns, so a defence\'s score is a FLOOR. See '
                        'DST_MODEL.EXCLUDED.'),
+        'allocation_mode': allocation_mode,
+        'ALLOCATION_MODE_MEANING': {
+            CLUB_TOTAL_IMPOSED: ('club yardage drawn first and split across players, which makes '
+                                 'teammates zero-sum by construction'),
+            USAGE_FIRST: ('each player\'s yards are his own opportunities times his own '
+                          'efficiency; club yardage is the sum, so teammates can co-benefit'),
+        }[allocation_mode],
         'concentration_used': {'yards_share_receiving': model.conc_rec,
                                'yards_share_rushing': model.conc_rush,
                                'opportunity_share_targets': model.share_conc_tgt,

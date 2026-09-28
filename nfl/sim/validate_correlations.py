@@ -177,7 +177,8 @@ def diagnose(comparison) -> dict:
     }
 
 
-def build(n_games: int = N_GAMES, n_sims: int = N_SIMS, seed: int = 31) -> Outcome:
+def build(n_games: int = N_GAMES, n_sims: int = N_SIMS, seed: int = 31,
+          allocation_mode: str = sim_game.CLUB_TOTAL_IMPOSED) -> Outcome:
     for f in (PG, RH, TG, PC):
         if not f.exists():
             return Outcome.blocked('VALIDATION_INPUT_ABSENT', f'{f.name} missing',
@@ -204,6 +205,24 @@ def build(n_games: int = N_GAMES, n_sims: int = N_SIMS, seed: int = 31) -> Outco
             catch[p][1] += float(t)
     catch_rate = {p: (v[0] / v[1]) for p, v in catch.items() if v[1] >= 200}
 
+    # SCALE ROLE_HISTORY SHARES TO SHARES OF THE CLUB.
+    # share_of_club in the role table is, for carries and targets, a share of the RANKED GROUP. Fed
+    # in raw it gave the two ranked backs 97% of the club's carries between them, which forces them
+    # to be zero-sum and was the main cause of the simulated -0.24 teammate correlation.
+    usage_art = _REPO / 'nfl/sim/USAGE_MODEL.json'
+    group_scale = {}
+    if usage_art.exists():
+        g = (json.loads(usage_art.read_text()).get('ranked_group_share_of_club') or {})
+        for key, d in g.items():
+            if d.get('state') == 'MEASURED':
+                group_scale[key.split('_')[0]] = d['mean']
+    if not group_scale:
+        return Outcome.blocked(
+            'GROUP_SCALE_UNMEASURED', 'USAGE_MODEL has no ranked_group_share_of_club',
+            cause=Cause.DATA,
+            note=('without it the replay would feed group shares as club shares, which is the '
+                  'denominator defect this check exists to avoid'))
+
     # pregame shares: (season, week, player_id) -> {'share': x, 'position': p, 'rank': k}
     share = {}
     for r in rh:
@@ -214,7 +233,8 @@ def build(n_games: int = N_GAMES, n_sims: int = N_SIMS, seed: int = 31) -> Outco
         if not isinstance(sh, (int, float)):
             continue
         share[(int(r['season']), int(r['week']), r['player_id'])] = {
-            'share': float(sh), 'position': pos,
+            'share': float(sh) * group_scale.get(pos, 1.0), 'position': pos,
+            'raw_group_share': float(sh),
             'rank': int(r['depth_rank']) if isinstance(r.get('depth_rank'), (int, float)) else None}
 
     market = {}
@@ -287,7 +307,8 @@ def build(n_games: int = N_GAMES, n_sims: int = N_SIMS, seed: int = 31) -> Outco
             spec['clubs'].append({'club': club, 'players': players})
         if any(not c['players'] for c in spec['clubs']):
             continue
-        o = sim_game.simulate_game(model, spec, n_sims=n_sims, seed=seed + gi)
+        o = sim_game.simulate_game(model, spec, n_sims=n_sims, seed=seed + gi,
+                                   allocation_mode=allocation_mode)
         if o.state.value != 'PASS':
             n_failed += 1
             if n_failed <= 3:
@@ -372,6 +393,10 @@ def build(n_games: int = N_GAMES, n_sims: int = N_SIMS, seed: int = 31) -> Outco
         'QUESTION': ('does drawing both clubs from one football world reproduce the same-game '
                      'correlations measured from history, with nothing added by hand?'),
         'TOLERANCE_DECLARED_BEFORE_RUNNING': TOLERANCE,
+        'allocation_mode': allocation_mode,
+        'ranked_group_share_scale_applied': group_scale,
+        'WHY_SCALED': ('ROLE_HISTORY share_of_club is a share of the ranked group for carries and '
+                       'targets. Unscaled it gave two backs 97% of the club carry pool.'),
         'n_games_replayed': len(usable), 'n_games_available': n_available,
         'n_sims_per_game': n_sims,
         'n_pairs_reproduced': reproduced, 'n_pairs_missed': missed,
@@ -392,7 +417,10 @@ def build(n_games: int = N_GAMES, n_sims: int = N_SIMS, seed: int = 31) -> Outco
 if __name__ == '__main__':
     ng = int(sys.argv[1]) if len(sys.argv) > 1 else N_GAMES
     ns = int(sys.argv[2]) if len(sys.argv) > 2 else N_SIMS
-    o = build(ng, ns)
+    mode = sys.argv[3] if len(sys.argv) > 3 else sim_game.CLUB_TOTAL_IMPOSED
+    o = build(ng, ns, allocation_mode=mode)
+    OUT.with_name(f'SIM_VS_MEASURED_CORRELATION_{mode}.json').write_text(
+        json.dumps(o.value if o.value else o.evidence, indent=2, default=str))
     print(o.state.value, o.code)
     if o.state.value != 'PASS':
         print(json.dumps(o.evidence, indent=2, default=str)[:1800])
