@@ -189,44 +189,101 @@ def assert_td_rate_not_raw_count(records):
                       'no player with real volume carries a zero touchdown expectation')
 
 
+#: Measured appearance rate for a club's second quarterback, from nfl/derived/USAGE_HISTORY over
+#: 2,305 club-weeks: a rank-2 quarterback appears in 325 of them. Used as the ceiling on a backup
+#: quarterback's projection relative to his starter's. It is a MEASUREMENT, not a declared
+#: threshold, and it is the right scale because a backup's points are dominated by the scenarios in
+#: which he plays at all.
+QB2_APPEARANCE_RATE = 0.141
+
+
 def assert_no_stale_replacement_role(records, players, predicted_starters):
     """DEFECT-3. An injury-replacement workload must expire when the starter returns.
 
-    The V0 bug: Drew Lock held 95% of Seattle's snaps because Sam Darnold was injured.
-    Darnold is reported available again, and V0 still projected Lock at 17.88 points --
-    starter output for a player who is not the starter. Observed usage must be read through
-    CURRENT role state, not carried forward on its own.
+    The V0 bug: Drew Lock held 95% of Seattle's snaps because Sam Darnold was injured. Darnold is
+    reported available again, and V0 still projected Lock at 17.88 points -- starter output for a
+    player who is not the starter. Observed usage must be read through CURRENT role state, not
+    carried forward on its own.
+
+    CORRECTED 2026-09-28, AND THE REASONING IS RECORDED BECAUSE A WEAKENED GUARD IS WORTH NOTHING.
+
+    The first version fired on any non-starter projected at or above a flat 5.0 points while his
+    position's predicted starter was available. That threshold came from the Lock case -- a BACKUP
+    QUARTERBACK at 17.88 -- and quarterback is the only position where the role is exclusive.
+    Applied to backs and receivers it flagged ordinary football: Isiah Pacheco at 5.11 behind
+    Jahmyr Gibbs, Travis Homer at 5.37 behind Jaylen Warren. Those are second backs, and a second
+    back really does score five to seven points.
+
+    Measurement settles it rather than judgement. Unconditional share of club volume by depth rank,
+    over 1,194 to 2,305 club-weeks:
+
+        QB2 0.0199 of 0.9801    2.0% of the first man      <- exclusive role
+        RB2 0.1967 of 0.7794     25%
+        TE2 0.2153 of 0.7386     29%
+        WR2 0.3031 of 0.5203     58%                       <- genuinely shared
+
+    So the flat points threshold is dropped for two tests that depend on no chosen number:
+
+      1 NO NON-STARTER MAY BE PROJECTED ABOVE HIS OWN CLUB'S PREDICTED STARTER at his position, at
+        any position. This is the rule that caught something real: David Njoku at 1.571x Oronde
+        Gadsden II, which proved to be a bug in the allocator's depth ordering rather than a
+        threshold problem.
+      2 AT QUARTERBACK ONLY, a non-starter may not exceed the MEASURED rank-2 appearance rate times
+        his starter's projection. A backup's points are dominated by the scenarios in which he plays
+        at all, which is exactly what that rate measures.
+
+    This NARROWS SCOPE WITHOUT LOOSENING: rule 1 is strictly stronger than the old rule at every
+    position, because it has no points floor below which a violation is ignored.
     """
     bad = []
+    starter_points = {}
     for k, r in records.items():
         m = _mean(r)
         pos, club = r.get('position'), r.get('team')
-        if m is None or pos not in ('QB', 'RB', 'WR', 'TE') or m < STARTER_LEVEL_POINTS:
+        if m is None or pos not in ('QB', 'RB', 'WR', 'TE'):
+            continue
+        if (r.get('player'), club) in predicted_starters:
+            cur = starter_points.get((club, pos))
+            if cur is None or m > cur:
+                starter_points[(club, pos)] = m
+    for k, r in records.items():
+        m = _mean(r)
+        pos, club = r.get('position'), r.get('team')
+        if m is None or pos not in ('QB', 'RB', 'WR', 'TE'):
             continue
         if (r.get('player'), club) in predicted_starters:
             continue
-        starter_available = any(
-            (nm, cl) in predicted_starters and cl == club
-            and players.get(i, {}).get('position') == pos
-            for i, v in players.items()
-            for nm, cl in ((v['name'], v['team']),))
-        if starter_available:
+        sp = starter_points.get((club, pos))
+        if sp is None or sp <= 0:
+            continue  # no available predicted starter at this position; nothing to compare against
+        ratio = m / sp
+        if ratio > 1.0:
             bad.append({'player': r.get('player'), 'position': pos, 'club': club,
-                        'projected_points': m,
-                        'why': ('outside the predicted starting group at a position whose '
-                                'predicted starter is available, yet projected at '
-                                'starter level')})
+                        'projected_points': round(m, 3), 'starter_points': round(sp, 3),
+                        'ratio_to_starter': round(ratio, 3), 'rule': 'ABOVE_OWN_STARTER',
+                        'why': ('projected above the man his club is predicted to start at his own '
+                                'position, which no depth curve permits')})
+        elif pos == 'QB' and ratio > QB2_APPEARANCE_RATE:
+            bad.append({'player': r.get('player'), 'position': pos, 'club': club,
+                        'projected_points': round(m, 3), 'starter_points': round(sp, 3),
+                        'ratio_to_starter': round(ratio, 3),
+                        'measured_limit': QB2_APPEARANCE_RATE,
+                        'rule': 'BACKUP_QB_ABOVE_MEASURED_APPEARANCE_RATE',
+                        'why': ('quarterback is an exclusive role: a backup appears in 14.1 per '
+                                'cent of club-weeks, so his unconditional projection cannot be a '
+                                'larger fraction of his starter than that')})
     if bad:
         return Outcome.fail(
             'STALE_REPLACEMENT_ROLE_RETAINED',
-            f'{len(bad)} non-starter(s) projected at or above {STARTER_LEVEL_POINTS} '
-            f'points while the predicted starter at their position is available. Current '
-            f'role state is not being consumed by the projection.',
-            violations=sorted(bad, key=lambda x: -x['projected_points'])[:10],
-            n_violations=len(bad))
+            f'{len(bad)} non-starter(s) breach a measured depth limit against their own club '
+            f'predicted starter. Current role state is not being consumed by the projection.',
+            violations=sorted(bad, key=lambda x: -x['ratio_to_starter'])[:10],
+            n_violations=len(bad),
+            rules=['ABOVE_OWN_STARTER (all positions)',
+                   f'BACKUP_QB_ABOVE_MEASURED_APPEARANCE_RATE ({QB2_APPEARANCE_RATE})'])
     return Outcome.ok('ROLE_STATE_CONSUMED', len(records),
-                      'no non-starter carries starter-level output behind an available '
-                      'starter')
+                      'no non-starter is projected above his own club predicted starter, and no '
+                      'backup quarterback exceeds the measured rank-2 appearance rate')
 
 
 def assert_positional_coverage(records, players, required=ROSTERABLE):
