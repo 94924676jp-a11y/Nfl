@@ -107,6 +107,24 @@ chosen over 0 on MAE and top-30 margins of 0.018 and 0.006 against week-blocked 
 between any two arms**. Recorded at the constant's definition. Changing it is a production decision
 on its own commit.
 
+**The role-state cap and the weekly band (owner item 4) — MEASURED 2026-09-28, and it reverses a
+recorded verdict.** `forward_chain.historical_band` said a historical role state was not
+reconstructible, so the starter cap was asserted in production and measured nowhere; and it assigned
+ONE band per player per season, which is **not** what production runs. Reconstructing a point-in-time
+weekly band — proved point-in-time by rebuilding it from a panel with the scored week and every later
+week deleted — decomposes cleanly: **updating the band weekly is worth +0.047 to +0.056 rho**, the
+**cap adds +0.004 to +0.014**, and **knowing who is out adds +0.067 to +0.072 more than everything
+else combined**. Against the current-season-only baseline, the season-constant band loses by
+−0.0364 rho (reproducing `FORWARD_CHAIN_VERDICT.md`) and the weekly capped band **wins** by +0.0151
+selection and +0.0336 confirmation. The negative verdict measured a configuration production does not
+run, and is marked superseded on that claim. See `nfl/research/rolestate/VERDICT.md`.
+
+**The highest-value outstanding item is now known by measurement, not intuition.** The gap between
+the pregame arm and an oracle that knows who actually played is **+0.067 to +0.072 rho and −0.33
+MAE** — larger than every other effect measured on 2026-09-28 combined, including the whole shrinkage
+study. That gap is exactly what an injury report buys, so **official inactives (A7) and historical
+injury reports (OUT-038) outrank the research work they were queued behind.**
+
 ## The confidence statement, kept separate on purpose
 
 | layer | standing |
@@ -115,7 +133,7 @@ on its own commit.
 | contest portfolio | method **promising**, specific entries **not determined** |
 | joint simulator | **partially** trusted — 11 of 16 correlations, one named open question |
 | role / prior pipeline | **improving** — four unit defects removed, effects measured; the cohort prior is now measured as costing ranking, and the weight cap's own evidence does not support it |
-| **proprietary projections** | **NOT yet validated.** No out-of-sample ranking skill above a current-season baseline has been demonstrated. |
+| **proprietary projections** | **NOT yet validated** — but ranking skill above a current-season baseline **is now demonstrated**, forward-chained, once the harness uses the weekly role band production actually runs: +0.0151 rho (z 3.2) on selection and +0.0336 (z 3.7) on confirmation, and better MAE on both. One cell of a three-part scoreboard; no economic metric is tested. |
 
 The last line is the one that gates everything downstream, and it is not closed by any amount of
 machinery quality upstream of it.

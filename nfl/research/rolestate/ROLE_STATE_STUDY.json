@@ -1,0 +1,490 @@
+{
+  "ARTIFACT": "ROLE_STATE_STUDY",
+  "SPEC_VERSION": "rolestate-1",
+  "QUESTION": "does capping a player's role band by his pregame depth rank improve forward-chained ranking, and how much of the answer depends on knowing who is out",
+  "PREREGISTERED": {
+    "arms": [
+      "CURRENT_SEASON_ONLY",
+      "SEASON_CONSTANT",
+      "WEEKLY_NO_CAP",
+      "WEEKLY_CAPPED_PREGAME",
+      "WEEKLY_CAPPED_ORACLE"
+    ],
+    "selection_seasons": [
+      2023,
+      2024,
+      2025
+    ],
+    "confirmation_seasons": [
+      2022
+    ],
+    "void_seasons": {
+      "2021": "panel begins in 2021; no prior season exists so no arm can differ"
+    },
+    "primary_outcome": "within-slate-week Spearman rho, week-blocked SE",
+    "reference_arm": "SEASON_CONSTANT"
+  },
+  "ORACLE_ARM_IS_NOT_LIVE_PERFORMANCE": "WEEKLY_CAPPED_ORACLE is fed the set of players who actually appeared in the scored week so the cap falls on the right player. That is an oracle condition, the same kind as feeding a simulator the actual batting order, and it must never be quoted as live performance. The gap between it and WEEKLY_CAPPED_PREGAME is what an injury report would be worth, and no injury report exists in this checkout for a past Sunday (OUT-038).",
+  "LEAKAGE_PROOF": "role_state_history.assert_no_leakage rebuilds the state from a panel with the scored week and every later week removed and requires every band and rank to be identical. It is run per season in the test suite.",
+  "PROJECTION_SYSTEM_STATE": "NOT_VALIDATED",
+  "THE_COMPARISON_THAT_MATTERS": "FORWARD_CHAIN_VERDICT.md concluded that the multi-season prior loses to CURRENT_SEASON_ONLY on ranking, by -0.0181 rho from week 5. That was measured with the SEASON_CONSTANT band -- one band per player per season, from the previous season -- which is NOT the band production uses: the live path rebuilds role state weekly. The band fix alone is worth more rho than the gap the verdict rested on, so paired_vs_current_season_only below is the comparison that decides whether the verdict survives. Both arms are measured in ONE harness here, so the comparison is internally like-for-like; the absolute numbers are not comparable with the verdict document's, whose week sets and metric definition differ.",
+  "arms": {
+    "CURRENT_SEASON_ONLY": {
+      "selection": {
+        "rho": {
+          "mean": 0.478,
+          "week_blocked_se": 0.0123,
+          "n_weeks": 42
+        },
+        "mae": {
+          "mean": 4.8295,
+          "week_blocked_se": 0.0679,
+          "n_weeks": 42
+        },
+        "level": {
+          "mean": 1.0241,
+          "week_blocked_se": 0.0141,
+          "n_weeks": 42
+        },
+        "sep_pred": {
+          "mean": 9.4035,
+          "week_blocked_se": 0.4678,
+          "n_weeks": 42
+        }
+      },
+      "confirmation": {
+        "rho": {
+          "mean": 0.4541,
+          "week_blocked_se": 0.019,
+          "n_weeks": 14
+        },
+        "mae": {
+          "mean": 5.2457,
+          "week_blocked_se": 0.0716,
+          "n_weeks": 14
+        },
+        "level": {
+          "mean": 1.0052,
+          "week_blocked_se": 0.0266,
+          "n_weeks": 14
+        },
+        "sep_pred": {
+          "mean": 7.1281,
+          "week_blocked_se": 0.3472,
+          "n_weeks": 14
+        }
+      },
+      "n_weeks_selection": 42,
+      "n_weeks_confirmation": 14
+    },
+    "SEASON_CONSTANT": {
+      "selection": {
+        "rho": {
+          "mean": 0.4417,
+          "week_blocked_se": 0.0123,
+          "n_weeks": 42
+        },
+        "mae": {
+          "mean": 4.9429,
+          "week_blocked_se": 0.0648,
+          "n_weeks": 42
+        },
+        "level": {
+          "mean": 1.0098,
+          "week_blocked_se": 0.0147,
+          "n_weeks": 42
+        },
+        "sep_pred": {
+          "mean": 7.3177,
+          "week_blocked_se": 0.2906,
+          "n_weeks": 42
+        }
+      },
+      "confirmation": {
+        "rho": {
+          "mean": 0.4173,
+          "week_blocked_se": 0.0184,
+          "n_weeks": 14
+        },
+        "mae": {
+          "mean": 5.3318,
+          "week_blocked_se": 0.0647,
+          "n_weeks": 14
+        },
+        "level": {
+          "mean": 1.0121,
+          "week_blocked_se": 0.0271,
+          "n_weeks": 14
+        },
+        "sep_pred": {
+          "mean": 5.5147,
+          "week_blocked_se": 0.1812,
+          "n_weeks": 14
+        }
+      },
+      "n_weeks_selection": 42,
+      "n_weeks_confirmation": 14
+    },
+    "WEEKLY_NO_CAP": {
+      "selection": {
+        "rho": {
+          "mean": 0.4889,
+          "week_blocked_se": 0.0117,
+          "n_weeks": 42
+        },
+        "mae": {
+          "mean": 4.7548,
+          "week_blocked_se": 0.0625,
+          "n_weeks": 42
+        },
+        "level": {
+          "mean": 0.9819,
+          "week_blocked_se": 0.014,
+          "n_weeks": 42
+        },
+        "sep_pred": {
+          "mean": 6.6096,
+          "week_blocked_se": 0.3004,
+          "n_weeks": 42
+        }
+      },
+      "confirmation": {
+        "rho": {
+          "mean": 0.4737,
+          "week_blocked_se": 0.0181,
+          "n_weeks": 14
+        },
+        "mae": {
+          "mean": 5.1234,
+          "week_blocked_se": 0.0672,
+          "n_weeks": 14
+        },
+        "level": {
+          "mean": 0.9765,
+          "week_blocked_se": 0.0258,
+          "n_weeks": 14
+        },
+        "sep_pred": {
+          "mean": 4.2852,
+          "week_blocked_se": 0.1271,
+          "n_weeks": 14
+        }
+      },
+      "n_weeks_selection": 42,
+      "n_weeks_confirmation": 14
+    },
+    "WEEKLY_CAPPED_PREGAME": {
+      "selection": {
+        "rho": {
+          "mean": 0.4931,
+          "week_blocked_se": 0.0123,
+          "n_weeks": 42
+        },
+        "mae": {
+          "mean": 4.7442,
+          "week_blocked_se": 0.0628,
+          "n_weeks": 42
+        },
+        "level": {
+          "mean": 0.9775,
+          "week_blocked_se": 0.0143,
+          "n_weeks": 42
+        },
+        "sep_pred": {
+          "mean": 6.7589,
+          "week_blocked_se": 0.286,
+          "n_weeks": 42
+        }
+      },
+      "confirmation": {
+        "rho": {
+          "mean": 0.4877,
+          "week_blocked_se": 0.0172,
+          "n_weeks": 14
+        },
+        "mae": {
+          "mean": 5.1168,
+          "week_blocked_se": 0.0692,
+          "n_weeks": 14
+        },
+        "level": {
+          "mean": 0.9603,
+          "week_blocked_se": 0.0251,
+          "n_weeks": 14
+        },
+        "sep_pred": {
+          "mean": 4.3906,
+          "week_blocked_se": 0.1271,
+          "n_weeks": 14
+        }
+      },
+      "n_weeks_selection": 42,
+      "n_weeks_confirmation": 14
+    },
+    "WEEKLY_CAPPED_ORACLE": {
+      "selection": {
+        "rho": {
+          "mean": 0.5635,
+          "week_blocked_se": 0.0102,
+          "n_weeks": 42
+        },
+        "mae": {
+          "mean": 4.4108,
+          "week_blocked_se": 0.0533,
+          "n_weeks": 42
+        },
+        "level": {
+          "mean": 0.9894,
+          "week_blocked_se": 0.014,
+          "n_weeks": 42
+        },
+        "sep_pred": {
+          "mean": 6.7598,
+          "week_blocked_se": 0.2959,
+          "n_weeks": 42
+        }
+      },
+      "confirmation": {
+        "rho": {
+          "mean": 0.5549,
+          "week_blocked_se": 0.0174,
+          "n_weeks": 14
+        },
+        "mae": {
+          "mean": 4.7897,
+          "week_blocked_se": 0.0649,
+          "n_weeks": 14
+        },
+        "level": {
+          "mean": 0.9765,
+          "week_blocked_se": 0.0236,
+          "n_weeks": 14
+        },
+        "sep_pred": {
+          "mean": 4.5915,
+          "week_blocked_se": 0.1426,
+          "n_weeks": 14
+        }
+      },
+      "n_weeks_selection": 42,
+      "n_weeks_confirmation": 14
+    }
+  },
+  "paired_vs_season_constant": {
+    "CURRENT_SEASON_ONLY": {
+      "selection.rho": {
+        "mean_diff_vs_season_constant": 0.0364,
+        "week_blocked_se": 0.0017,
+        "z": 21.71,
+        "n_paired_weeks": 42
+      },
+      "selection.mae": {
+        "mean_diff_vs_season_constant": -0.1134,
+        "week_blocked_se": 0.0092,
+        "z": -12.29,
+        "n_paired_weeks": 42
+      },
+      "confirmation.rho": {
+        "mean_diff_vs_season_constant": 0.0369,
+        "week_blocked_se": 0.0023,
+        "z": 15.74,
+        "n_paired_weeks": 14
+      },
+      "confirmation.mae": {
+        "mean_diff_vs_season_constant": -0.0861,
+        "week_blocked_se": 0.0185,
+        "z": -4.65,
+        "n_paired_weeks": 14
+      }
+    },
+    "WEEKLY_NO_CAP": {
+      "selection.rho": {
+        "mean_diff_vs_season_constant": 0.0472,
+        "week_blocked_se": 0.0029,
+        "z": 16.46,
+        "n_paired_weeks": 42
+      },
+      "selection.mae": {
+        "mean_diff_vs_season_constant": -0.1881,
+        "week_blocked_se": 0.0143,
+        "z": -13.17,
+        "n_paired_weeks": 42
+      },
+      "confirmation.rho": {
+        "mean_diff_vs_season_constant": 0.0564,
+        "week_blocked_se": 0.0056,
+        "z": 10.1,
+        "n_paired_weeks": 14
+      },
+      "confirmation.mae": {
+        "mean_diff_vs_season_constant": -0.2084,
+        "week_blocked_se": 0.0193,
+        "z": -10.77,
+        "n_paired_weeks": 14
+      }
+    },
+    "WEEKLY_CAPPED_PREGAME": {
+      "selection.rho": {
+        "mean_diff_vs_season_constant": 0.0515,
+        "week_blocked_se": 0.0043,
+        "z": 12.06,
+        "n_paired_weeks": 42
+      },
+      "selection.mae": {
+        "mean_diff_vs_season_constant": -0.1987,
+        "week_blocked_se": 0.0222,
+        "z": -8.93,
+        "n_paired_weeks": 42
+      },
+      "confirmation.rho": {
+        "mean_diff_vs_season_constant": 0.0704,
+        "week_blocked_se": 0.0087,
+        "z": 8.13,
+        "n_paired_weeks": 14
+      },
+      "confirmation.mae": {
+        "mean_diff_vs_season_constant": -0.215,
+        "week_blocked_se": 0.0453,
+        "z": -4.75,
+        "n_paired_weeks": 14
+      }
+    },
+    "WEEKLY_CAPPED_ORACLE": {
+      "selection.rho": {
+        "mean_diff_vs_season_constant": 0.1218,
+        "week_blocked_se": 0.0055,
+        "z": 21.98,
+        "n_paired_weeks": 42
+      },
+      "selection.mae": {
+        "mean_diff_vs_season_constant": -0.5321,
+        "week_blocked_se": 0.0289,
+        "z": -18.43,
+        "n_paired_weeks": 42
+      },
+      "confirmation.rho": {
+        "mean_diff_vs_season_constant": 0.1376,
+        "week_blocked_se": 0.0075,
+        "z": 18.26,
+        "n_paired_weeks": 14
+      },
+      "confirmation.mae": {
+        "mean_diff_vs_season_constant": -0.5421,
+        "week_blocked_se": 0.0371,
+        "z": -14.62,
+        "n_paired_weeks": 14
+      }
+    }
+  },
+  "paired_vs_current_season_only": {
+    "SEASON_CONSTANT": {
+      "selection.rho": {
+        "mean_diff_vs_current_season_only": -0.0364,
+        "week_blocked_se": 0.0017,
+        "z": -21.71,
+        "n_paired_weeks": 42
+      },
+      "selection.mae": {
+        "mean_diff_vs_current_season_only": 0.1134,
+        "week_blocked_se": 0.0092,
+        "z": 12.29,
+        "n_paired_weeks": 42
+      },
+      "confirmation.rho": {
+        "mean_diff_vs_current_season_only": -0.0369,
+        "week_blocked_se": 0.0023,
+        "z": -15.74,
+        "n_paired_weeks": 14
+      },
+      "confirmation.mae": {
+        "mean_diff_vs_current_season_only": 0.0861,
+        "week_blocked_se": 0.0185,
+        "z": 4.65,
+        "n_paired_weeks": 14
+      }
+    },
+    "WEEKLY_NO_CAP": {
+      "selection.rho": {
+        "mean_diff_vs_current_season_only": 0.0108,
+        "week_blocked_se": 0.0035,
+        "z": 3.07,
+        "n_paired_weeks": 42
+      },
+      "selection.mae": {
+        "mean_diff_vs_current_season_only": -0.0747,
+        "week_blocked_se": 0.0175,
+        "z": -4.26,
+        "n_paired_weeks": 42
+      },
+      "confirmation.rho": {
+        "mean_diff_vs_current_season_only": 0.0196,
+        "week_blocked_se": 0.006,
+        "z": 3.24,
+        "n_paired_weeks": 14
+      },
+      "confirmation.mae": {
+        "mean_diff_vs_current_season_only": -0.1222,
+        "week_blocked_se": 0.0292,
+        "z": -4.19,
+        "n_paired_weeks": 14
+      }
+    },
+    "WEEKLY_CAPPED_PREGAME": {
+      "selection.rho": {
+        "mean_diff_vs_current_season_only": 0.0151,
+        "week_blocked_se": 0.0048,
+        "z": 3.15,
+        "n_paired_weeks": 42
+      },
+      "selection.mae": {
+        "mean_diff_vs_current_season_only": -0.0853,
+        "week_blocked_se": 0.0255,
+        "z": -3.34,
+        "n_paired_weeks": 42
+      },
+      "confirmation.rho": {
+        "mean_diff_vs_current_season_only": 0.0336,
+        "week_blocked_se": 0.009,
+        "z": 3.74,
+        "n_paired_weeks": 14
+      },
+      "confirmation.mae": {
+        "mean_diff_vs_current_season_only": -0.1288,
+        "week_blocked_se": 0.0493,
+        "z": -2.61,
+        "n_paired_weeks": 14
+      }
+    },
+    "WEEKLY_CAPPED_ORACLE": {
+      "selection.rho": {
+        "mean_diff_vs_current_season_only": 0.0854,
+        "week_blocked_se": 0.0059,
+        "z": 14.55,
+        "n_paired_weeks": 42
+      },
+      "selection.mae": {
+        "mean_diff_vs_current_season_only": -0.4187,
+        "week_blocked_se": 0.0326,
+        "z": -12.85,
+        "n_paired_weeks": 42
+      },
+      "confirmation.rho": {
+        "mean_diff_vs_current_season_only": 0.1007,
+        "week_blocked_se": 0.0073,
+        "z": 13.71,
+        "n_paired_weeks": 14
+      },
+      "confirmation.mae": {
+        "mean_diff_vs_current_season_only": -0.456,
+        "week_blocked_se": 0.0411,
+        "z": -11.1,
+        "n_paired_weeks": 14
+      }
+    }
+  },
+  "n_bands_changed_from_season_constant": {
+    "WEEKLY_NO_CAP:band_changed": 5260,
+    "WEEKLY_CAPPED_PREGAME:band_changed": 13183,
+    "WEEKLY_CAPPED_ORACLE:band_changed": 13771
+  }
+}

@@ -1,5 +1,29 @@
 # Forward-chained verdict: what the multi-season prior actually earns
 
+> **SUPERSEDED 2026-09-28 ON ITS CENTRAL CLAIM. Do not quote the ranking conclusion below.**
+>
+> Everything here was measured with `forward_chain.historical_band`, which assigns ONE role band per
+> player per season from the previous season. **Production does not do that** -- the live path
+> rebuilds role state weekly. Reconstructing a point-in-time weekly band (proved point-in-time by
+> rebuilding it from a panel with the scored week deleted) and re-running the same comparison flips
+> the sign: the season-constant band loses to `CURRENT_SEASON_ONLY` by -0.0364 rho, reproducing the
+> finding below, and a **production-matching weekly capped band beats it by +0.0151 (z 3.2) on
+> selection and +0.0336 (z 3.7) on confirmation**, and on MAE as well.
+>
+> So "the prior costs ordering" was a fact about the harness, not about the prior. The magnitude of
+> the harness defect (-0.036 rho) is twice the gap this document rested on. See
+> `nfl/research/rolestate/VERDICT.md`.
+>
+> **What still stands:** the split between early-season and week-5-plus regimes, the observation that
+> the prior buys level, and the monotone ordering across `DEPTH_CLAIM_BLEND` arms showing that
+> player-specific information beats the depth curve. Those were not about the band. The
+> re-measurement has not been run in the arm and week-split structure used below, so those rows are
+> unconfirmed rather than withdrawn.
+>
+> **What this does NOT mean:** the projection system is not validated. One cell of the scoreboard
+> moved. `PROJECTION_SYSTEM_STATE` remains `NOT_VALIDATED`.
+
+
 Run after the role-state, prior-weight, share-denominator and allocation changes. Point-in-time:
 for evaluation week W of season S the hierarchical prior sees seasons ≤ S−1 only, current-season
 evidence is restricted to weeks strictly before W, and club volume likewise. Nothing from week W or
