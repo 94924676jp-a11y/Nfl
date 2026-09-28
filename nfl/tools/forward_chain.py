@@ -343,6 +343,7 @@ def project_week(panel, pos_of, season, week, priors, depth, groups, bonus, ip, 
         w = ((panel['players'][gsis].get(str(season)) or {}).get(str(week))) or {}
         universe.append((gsis, pos, club, w))
     POOL[0] = set(pool_club)
+    POOL_CLUB[0] = dict(pool_club)
 
     # PREDICTED-STARTER PROXY, and it fixes a specification error in this harness rather than
     # helping V1 along. Production applies the appearance adjustment to any quarterback who is not
@@ -431,6 +432,9 @@ TRANSITION = [set()]
 #: The allocation pool for the week being scored, so the metric block can restrict the scored set
 #: to pool members and never credit or blame a projection for a player who was not a candidate.
 POOL = [set()]
+
+#: The pool's club per player, so a consumer can score a candidate who did not appear.
+POOL_CLUB = [{}]
 
 
 #: Positional touchdown rates, loaded once. Held in a one-element list so project_week can see

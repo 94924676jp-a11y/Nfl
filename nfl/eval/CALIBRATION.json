@@ -1,0 +1,1282 @@
+{
+ "CHAIN": "every input comes from strictly earlier football: the prior sees seasons up to the previous one, current-season evidence stops the week before, and the baselines read the same boundary.",
+ "DISTRIBUTION_DISCIPLINE": "residual pools are fitted on FIT_SEASONS and every coverage, PIT, CRPS and ceiling figure is measured on HELDOUT_SEASONS. A distribution fitted and scored on the same games reports whatever coverage it was given.",
+ "FIT_SEASONS": [
+  2021,
+  2022,
+  2023
+ ],
+ "HELDOUT_SEASONS": [
+  2024,
+  2025
+ ],
+ "SCORING": "unconditional DFS payoff -- every candidate in the club plausible roster is scored and one who did not appear scores exactly zero. For usage an absent row is UNKNOWN; for DK points it is nothing.",
+ "artifact": "CALIBRATION",
+ "evaluation": {
+  "distribution": {
+   "ceiling": {
+    "p85": {
+     "READING": "a tournament needs the high tail right. Exceeding a nominal 90th percentile should happen 10 per cent of the time; more often means the ceiling is too low, less means it is fantasy.",
+     "binomial_se": 0.003027,
+     "empirical_exceedance": 0.12677,
+     "n": 12085,
+     "nominal_exceedance": 0.15,
+     "rate_is_degenerate": false,
+     "state": "OK"
+    },
+    "p90": {
+     "READING": "a tournament needs the high tail right. Exceeding a nominal 90th percentile should happen 10 per cent of the time; more often means the ceiling is too low, less means it is fantasy.",
+     "binomial_se": 0.002556,
+     "empirical_exceedance": 0.08639,
+     "n": 12085,
+     "nominal_exceedance": 0.1,
+     "rate_is_degenerate": false,
+     "state": "OK"
+    },
+    "p95": {
+     "READING": "a tournament needs the high tail right. Exceeding a nominal 90th percentile should happen 10 per cent of the time; more often means the ceiling is too low, less means it is fantasy.",
+     "binomial_se": 0.001853,
+     "empirical_exceedance": 0.04336,
+     "n": 12085,
+     "nominal_exceedance": 0.05,
+     "rate_is_degenerate": false,
+     "state": "OK"
+    }
+   },
+   "coverage": {
+    "50%": {
+     "NAIVE_SE_WARNING": "this binomial error treats player-weeks as independent. They are not -- players share games -- so the true error is larger. Read a gap of one or two of these as suggestive, never as a result.",
+     "binomial_se": 0.004543,
+     "empirical": 0.52412,
+     "gap_in_se": 5.309,
+     "n": 12085,
+     "nominal": 0.5,
+     "rate_is_degenerate": false,
+     "state": "OK"
+    },
+    "80%": {
+     "NAIVE_SE_WARNING": "this binomial error treats player-weeks as independent. They are not -- players share games -- so the true error is larger. Read a gap of one or two of these as suggestive, never as a result.",
+     "binomial_se": 0.003525,
+     "empirical": 0.81597,
+     "gap_in_se": 4.531,
+     "n": 12085,
+     "nominal": 0.8,
+     "rate_is_degenerate": false,
+     "state": "OK"
+    },
+    "90%": {
+     "NAIVE_SE_WARNING": "this binomial error treats player-weeks as independent. They are not -- players share games -- so the true error is larger. Read a gap of one or two of these as suggestive, never as a result.",
+     "binomial_se": 0.002633,
+     "empirical": 0.90774,
+     "gap_in_se": 2.939,
+     "n": 12085,
+     "nominal": 0.9,
+     "rate_is_degenerate": false,
+     "state": "OK"
+    }
+   },
+   "crps_mean": 3.35591,
+   "events": {
+    "10+": {
+     "brier": {
+      "base_rate": 0.22284,
+      "brier": 0.138942,
+      "brier_skill_vs_base_rate": 0.19771,
+      "n": 12085,
+      "state": "OK"
+     },
+     "log_loss": {
+      "WHY_BOTH": "log loss punishes a confident wrong call far harder than Brier. They disagree when a model is overconfident, which is exactly when it matters.",
+      "log_loss": 0.438095,
+      "log_loss_of_base_rate": 0.530477,
+      "n": 12085,
+      "skill_vs_base_rate": 0.17415,
+      "state": "OK"
+     }
+    },
+    "20+": {
+     "brier": {
+      "base_rate": 0.07679,
+      "brier": 0.06199,
+      "brier_skill_vs_base_rate": 0.12558,
+      "n": 12085,
+      "state": "OK"
+     },
+     "log_loss": {
+      "WHY_BOTH": "log loss punishes a confident wrong call far harder than Brier. They disagree when a model is overconfident, which is exactly when it matters.",
+      "log_loss": 0.218942,
+      "log_loss_of_base_rate": 0.270857,
+      "n": 12085,
+      "skill_vs_base_rate": 0.19167,
+      "state": "OK"
+     }
+    },
+    "30+": {
+     "brier": {
+      "base_rate": 0.01738,
+      "brier": 0.0165,
+      "brier_skill_vs_base_rate": 0.03366,
+      "n": 12085,
+      "state": "OK"
+     },
+     "log_loss": {
+      "WHY_BOTH": "log loss punishes a confident wrong call far harder than Brier. They disagree when a model is overconfident, which is exactly when it matters.",
+      "log_loss": 0.079104,
+      "log_loss_of_base_rate": 0.087647,
+      "n": 12085,
+      "skill_vs_base_rate": 0.09747,
+      "state": "OK"
+     }
+    }
+   },
+   "n_with_distribution": 12085,
+   "n_without_distribution": 0,
+   "pit": {
+    "READING": "if the predictive distribution is right, these are uniform. A mean above 0.5 means outcomes land high in the distribution, so the model is projecting low. Deciles piled at the ends mean the distribution is too narrow.",
+    "chi2_vs_uniform": 290.463,
+    "decile_counts": [
+     1180,
+     1320,
+     1226,
+     1650,
+     984,
+     1300,
+     1159,
+     1243,
+     976,
+     1047
+    ],
+    "ks_critical_95": 0.01237,
+    "ks_distance_from_uniform": 0.0508,
+    "mean_pit": 0.48124,
+    "n": 12085,
+    "state": "OK",
+    "uniform_rejected_at_95": true
+   }
+  },
+  "n_heldout": 12085,
+  "overall": {
+   "CAREER_MEAN": {
+    "SD_RATIO_READING": "this is the spread of PREDICTED means against the spread of realised outcomes. It is NOT evidence about predictive interval width, and a low value is not by itself a correlation ceiling.",
+    "bias": 2.50768,
+    "bias_pct_of_actual": 0.44704,
+    "calibration_intercept": -0.37383,
+    "calibration_slope": 0.73712,
+    "mae": 5.75746,
+    "mean_actual": 5.60951,
+    "mean_pred": 8.11719,
+    "n": 12076,
+    "n_with_prediction": 12076,
+    "pearson_r": 0.50302,
+    "rmse": 7.6262,
+    "sd_actual": 8.15921,
+    "sd_pred": 5.56793,
+    "sd_ratio_pred_over_actual": 0.68241,
+    "spearman_rho": 0.45771,
+    "state": "OK"
+   },
+   "EXTERNAL_BOARD": {
+    "n": 0,
+    "reason": "no ARCHIVED third-party projections for past weeks are held; only a current-week export. Using it would leak present information into a past evaluation, so the baseline is reported unavailable.",
+    "state": "UNAVAILABLE"
+   },
+   "LAST_GAME": {
+    "SD_RATIO_READING": "this is the spread of PREDICTED means against the spread of realised outcomes. It is NOT evidence about predictive interval width, and a low value is not by itself a correlation ceiling.",
+    "bias": 1.87228,
+    "bias_pct_of_actual": 0.33377,
+    "calibration_intercept": 2.0253,
+    "calibration_slope": 0.47906,
+    "mae": 5.74484,
+    "mean_actual": 5.60951,
+    "mean_pred": 7.48179,
+    "n": 12076,
+    "n_with_prediction": 12076,
+    "pearson_r": 0.47666,
+    "rmse": 8.53455,
+    "sd_actual": 8.15921,
+    "sd_pred": 8.11844,
+    "sd_ratio_pred_over_actual": 0.995,
+    "spearman_rho": 0.47285,
+    "state": "OK"
+   },
+   "MEAN_3_GAME": {
+    "SD_RATIO_READING": "this is the spread of PREDICTED means against the spread of realised outcomes. It is NOT evidence about predictive interval width, and a low value is not by itself a correlation ceiling.",
+    "bias": 2.28328,
+    "bias_pct_of_actual": 0.40704,
+    "calibration_intercept": 0.60887,
+    "calibration_slope": 0.63357,
+    "mae": 5.57534,
+    "mean_actual": 5.60951,
+    "mean_pred": 7.89279,
+    "n": 12076,
+    "n_with_prediction": 12076,
+    "pearson_r": 0.51718,
+    "rmse": 7.74181,
+    "sd_actual": 8.15921,
+    "sd_pred": 6.66034,
+    "sd_ratio_pred_over_actual": 0.8163,
+    "spearman_rho": 0.48079,
+    "state": "OK"
+   },
+   "MODEL_V1": {
+    "SD_RATIO_READING": "this is the spread of PREDICTED means against the spread of realised outcomes. It is NOT evidence about predictive interval width, and a low value is not by itself a correlation ceiling.",
+    "bias": 0.01205,
+    "bias_pct_of_actual": 0.00215,
+    "calibration_intercept": 2.08727,
+    "calibration_slope": 0.62628,
+    "mae": 4.82358,
+    "mean_actual": 5.60534,
+    "mean_pred": 5.61739,
+    "n": 12085,
+    "n_with_prediction": 12085,
+    "pearson_r": 0.4963,
+    "rmse": 7.48277,
+    "sd_actual": 8.15761,
+    "sd_pred": 6.4646,
+    "sd_ratio_pred_over_actual": 0.79246,
+    "spearman_rho": 0.44576,
+    "state": "OK"
+   },
+   "POSITIONAL_MEAN": {
+    "SD_RATIO_READING": "this is the spread of PREDICTED means against the spread of realised outcomes. It is NOT evidence about predictive interval width, and a low value is not by itself a correlation ceiling.",
+    "bias": 4.30631,
+    "bias_pct_of_actual": 0.76825,
+    "calibration_intercept": 0.90697,
+    "calibration_slope": 0.47403,
+    "mae": 7.9437,
+    "mean_actual": 5.60534,
+    "mean_pred": 9.91164,
+    "n": 12085,
+    "n_with_prediction": 12085,
+    "pearson_r": 0.16212,
+    "rmse": 9.24636,
+    "sd_actual": 8.15761,
+    "sd_pred": 2.79003,
+    "sd_ratio_pred_over_actual": 0.34202,
+    "spearman_rho": 0.07541,
+    "state": "OK"
+   },
+   "SEASON_MEAN": {
+    "SD_RATIO_READING": "this is the spread of PREDICTED means against the spread of realised outcomes. It is NOT evidence about predictive interval width, and a low value is not by itself a correlation ceiling.",
+    "bias": 1.92918,
+    "bias_pct_of_actual": 0.34168,
+    "calibration_intercept": 0.16387,
+    "calibration_slope": 0.7237,
+    "mae": 5.2587,
+    "mean_actual": 5.64623,
+    "mean_pred": 7.5754,
+    "n": 11993,
+    "n_with_prediction": 11993,
+    "pearson_r": 0.54003,
+    "rmse": 7.34121,
+    "sd_actual": 8.17422,
+    "sd_pred": 6.09966,
+    "sd_ratio_pred_over_actual": 0.74621,
+    "spearman_rho": 0.51201,
+    "state": "OK"
+   },
+   "VEGAS_ONLY": {
+    "SD_RATIO_READING": "this is the spread of PREDICTED means against the spread of realised outcomes. It is NOT evidence about predictive interval width, and a low value is not by itself a correlation ceiling.",
+    "bias": 4.58306,
+    "bias_pct_of_actual": 0.76088,
+    "calibration_intercept": 0.78827,
+    "calibration_slope": 0.49358,
+    "mae": 8.08867,
+    "mean_actual": 6.02334,
+    "mean_pred": 10.6064,
+    "n": 11246,
+    "n_with_prediction": 11246,
+    "pearson_r": 0.20393,
+    "rmse": 9.49473,
+    "sd_actual": 8.30627,
+    "sd_pred": 3.43182,
+    "sd_ratio_pred_over_actual": 0.41316,
+    "spearman_rho": 0.11204,
+    "state": "OK"
+   }
+  },
+  "paired_vs_baselines_blocked_by_week": {
+   "CAREER_MEAN": {
+    "mae": {
+     "beyond_2se": true,
+     "mean_difference": -0.91584,
+     "model_better": true,
+     "n_weeks": 28,
+     "week_blocked_se": 0.05218
+    },
+    "pearson_r": {
+     "beyond_2se": false,
+     "mean_difference": -0.00729,
+     "model_better": false,
+     "n_weeks": 28,
+     "week_blocked_se": 0.00592
+    },
+    "rmse": {
+     "beyond_2se": true,
+     "mean_difference": -0.13621,
+     "model_better": true,
+     "n_weeks": 28,
+     "week_blocked_se": 0.05485
+    },
+    "spearman_rho": {
+     "beyond_2se": true,
+     "mean_difference": -0.01357,
+     "model_better": false,
+     "n_weeks": 28,
+     "week_blocked_se": 0.00581
+    }
+   },
+   "EXTERNAL_BOARD": {
+    "state": "NOT_COMPARABLE"
+   },
+   "LAST_GAME": {
+    "mae": {
+     "beyond_2se": true,
+     "mean_difference": -0.9251,
+     "model_better": true,
+     "n_weeks": 28,
+     "week_blocked_se": 0.06969
+    },
+    "pearson_r": {
+     "beyond_2se": false,
+     "mean_difference": 0.02157,
+     "model_better": true,
+     "n_weeks": 28,
+     "week_blocked_se": 0.0129
+    },
+    "rmse": {
+     "beyond_2se": true,
+     "mean_difference": -1.0567,
+     "model_better": true,
+     "n_weeks": 28,
+     "week_blocked_se": 0.09739
+    },
+    "spearman_rho": {
+     "beyond_2se": true,
+     "mean_difference": -0.02724,
+     "model_better": false,
+     "n_weeks": 28,
+     "week_blocked_se": 0.01028
+    }
+   },
+   "MEAN_3_GAME": {
+    "mae": {
+     "beyond_2se": true,
+     "mean_difference": -0.74852,
+     "model_better": true,
+     "n_weeks": 28,
+     "week_blocked_se": 0.04938
+    },
+    "pearson_r": {
+     "beyond_2se": true,
+     "mean_difference": -0.01997,
+     "model_better": false,
+     "n_weeks": 28,
+     "week_blocked_se": 0.00852
+    },
+    "rmse": {
+     "beyond_2se": true,
+     "mean_difference": -0.26539,
+     "model_better": true,
+     "n_weeks": 28,
+     "week_blocked_se": 0.06639
+    },
+    "spearman_rho": {
+     "beyond_2se": true,
+     "mean_difference": -0.035,
+     "model_better": false,
+     "n_weeks": 28,
+     "week_blocked_se": 0.00786
+    }
+   },
+   "POSITIONAL_MEAN": {
+    "mae": {
+     "beyond_2se": true,
+     "mean_difference": -3.09713,
+     "model_better": true,
+     "n_weeks": 28,
+     "week_blocked_se": 0.07898
+    },
+    "pearson_r": {
+     "beyond_2se": true,
+     "mean_difference": 0.33216,
+     "model_better": true,
+     "n_weeks": 28,
+     "week_blocked_se": 0.0119
+    },
+    "rmse": {
+     "beyond_2se": true,
+     "mean_difference": -1.7584,
+     "model_better": true,
+     "n_weeks": 28,
+     "week_blocked_se": 0.07753
+    },
+    "spearman_rho": {
+     "beyond_2se": true,
+     "mean_difference": 0.36349,
+     "model_better": true,
+     "n_weeks": 28,
+     "week_blocked_se": 0.01322
+    }
+   },
+   "SEASON_MEAN": {
+    "mae": {
+     "beyond_2se": true,
+     "mean_difference": -0.39945,
+     "model_better": true,
+     "n_weeks": 28,
+     "week_blocked_se": 0.03716
+    },
+    "pearson_r": {
+     "beyond_2se": true,
+     "mean_difference": -0.04506,
+     "model_better": false,
+     "n_weeks": 28,
+     "week_blocked_se": 0.00605
+    },
+    "rmse": {
+     "beyond_2se": true,
+     "mean_difference": 0.15845,
+     "model_better": false,
+     "n_weeks": 28,
+     "week_blocked_se": 0.05239
+    },
+    "spearman_rho": {
+     "beyond_2se": true,
+     "mean_difference": -0.06899,
+     "model_better": false,
+     "n_weeks": 28,
+     "week_blocked_se": 0.0058
+    }
+   },
+   "VEGAS_ONLY": {
+    "mae": {
+     "beyond_2se": true,
+     "mean_difference": -3.31279,
+     "model_better": true,
+     "n_weeks": 28,
+     "week_blocked_se": 0.09368
+    },
+    "pearson_r": {
+     "beyond_2se": true,
+     "mean_difference": 0.32027,
+     "model_better": true,
+     "n_weeks": 28,
+     "week_blocked_se": 0.01531
+    },
+    "rmse": {
+     "beyond_2se": true,
+     "mean_difference": -2.10921,
+     "model_better": true,
+     "n_weeks": 28,
+     "week_blocked_se": 0.09563
+    },
+    "spearman_rho": {
+     "beyond_2se": true,
+     "mean_difference": 0.37567,
+     "model_better": true,
+     "n_weeks": 28,
+     "week_blocked_se": 0.01658
+    }
+   }
+  },
+  "slices": {
+   "all": {
+    "all": {
+     "best_baseline": "SEASON_MEAN",
+     "best_baseline_mae": 5.2587,
+     "best_baseline_rho": 0.51201,
+     "bias": 0.01205,
+     "bias_pct_of_actual": 0.00215,
+     "calibration_slope": 0.62628,
+     "mae": 4.82358,
+     "mean_actual": 5.60534,
+     "mean_pred": 5.61739,
+     "model_beats_best_baseline_mae": true,
+     "n": 12085,
+     "pearson_r": 0.4963,
+     "rmse": 7.48277,
+     "spearman_rho": 0.44576
+    }
+   },
+   "appeared": {
+    "APPEARED": {
+     "best_baseline": "SEASON_MEAN",
+     "best_baseline_mae": 5.20852,
+     "best_baseline_rho": 0.60453,
+     "bias": -2.4411,
+     "bias_pct_of_actual": -0.25694,
+     "calibration_slope": 0.67115,
+     "mae": 5.71422,
+     "mean_actual": 9.50077,
+     "mean_pred": 7.05967,
+     "model_beats_best_baseline_mae": false,
+     "n": 7130,
+     "pearson_r": 0.52108,
+     "rmse": 8.13054,
+     "spearman_rho": 0.50991
+    },
+    "DID_NOT_APPEAR": {
+     "best_baseline": "LAST_GAME",
+     "best_baseline_mae": 4.60526,
+     "best_baseline_rho": null,
+     "bias": 3.54201,
+     "bias_pct_of_actual": null,
+     "calibration_slope": 0.0,
+     "mae": 3.54201,
+     "mean_actual": 0.0,
+     "mean_pred": 3.54201,
+     "model_beats_best_baseline_mae": true,
+     "n": 4955,
+     "pearson_r": null,
+     "rmse": 6.43727,
+     "spearman_rho": null
+    }
+   },
+   "archetype": {
+    "ALPHA_RECEIVER": {
+     "best_baseline": "SEASON_MEAN",
+     "best_baseline_mae": 7.07706,
+     "best_baseline_rho": 0.39622,
+     "bias": -6.56794,
+     "bias_pct_of_actual": -0.41032,
+     "calibration_slope": 0.52944,
+     "mae": 8.36607,
+     "mean_actual": 16.0067,
+     "mean_pred": 9.43876,
+     "model_beats_best_baseline_mae": false,
+     "n": 525,
+     "pearson_r": 0.30759,
+     "rmse": 11.23256,
+     "spearman_rho": 0.31609
+    },
+    "BALANCED_DOWN_USAGE": {
+     "best_baseline": "CAREER_MEAN",
+     "best_baseline_mae": 4.38784,
+     "best_baseline_rho": 0.31061,
+     "bias": -2.76565,
+     "bias_pct_of_actual": -0.31347,
+     "calibration_slope": 0.35539,
+     "mae": 5.8782,
+     "mean_actual": 8.82273,
+     "mean_pred": 6.05708,
+     "model_beats_best_baseline_mae": false,
+     "n": 66,
+     "pearson_r": 0.30136,
+     "rmse": 7.81061,
+     "spearman_rho": 0.12116
+    },
+    "EARLY_DOWN_BACK": {
+     "best_baseline": "CAREER_MEAN",
+     "best_baseline_mae": 6.3481,
+     "best_baseline_rho": 0.42895,
+     "bias": -3.34226,
+     "bias_pct_of_actual": -0.25317,
+     "calibration_slope": 0.51273,
+     "mae": 7.12153,
+     "mean_actual": 13.2018,
+     "mean_pred": 9.85953,
+     "model_beats_best_baseline_mae": false,
+     "n": 1114,
+     "pearson_r": 0.39251,
+     "rmse": 9.50964,
+     "spearman_rho": 0.42005
+    },
+    "GOAL_LINE_BACK": {
+     "best_baseline": "SEASON_MEAN",
+     "best_baseline_mae": 6.9797,
+     "best_baseline_rho": 0.42956,
+     "bias": -5.6184,
+     "bias_pct_of_actual": -0.35008,
+     "calibration_slope": 0.49607,
+     "mae": 8.30384,
+     "mean_actual": 16.04899,
+     "mean_pred": 10.43058,
+     "model_beats_best_baseline_mae": false,
+     "n": 445,
+     "pearson_r": 0.38365,
+     "rmse": 10.73886,
+     "spearman_rho": 0.38557
+    },
+    "PASSING_DOWN_TARGETS": {
+     "best_baseline": "CAREER_MEAN",
+     "best_baseline_mae": 6.60732,
+     "best_baseline_rho": 0.5924,
+     "bias": -5.27352,
+     "bias_pct_of_actual": -0.35868,
+     "calibration_slope": 0.76011,
+     "mae": 7.5747,
+     "mean_actual": 14.70256,
+     "mean_pred": 9.42905,
+     "model_beats_best_baseline_mae": false,
+     "n": 195,
+     "pearson_r": 0.54632,
+     "rmse": 10.18959,
+     "spearman_rho": 0.55661
+    },
+    "SECONDARY_RECEIVER": {
+     "best_baseline": "SEASON_MEAN",
+     "best_baseline_mae": 5.13831,
+     "best_baseline_rho": 0.49317,
+     "bias": -2.76793,
+     "bias_pct_of_actual": -0.28751,
+     "calibration_slope": 0.53269,
+     "mae": 5.81345,
+     "mean_actual": 9.62717,
+     "mean_pred": 6.85924,
+     "model_beats_best_baseline_mae": false,
+     "n": 2187,
+     "pearson_r": 0.3933,
+     "rmse": 7.98625,
+     "spearman_rho": 0.40138
+    },
+    "TE_TARGET_RATE_HIGH": {
+     "best_baseline": "CAREER_MEAN",
+     "best_baseline_mae": 5.50196,
+     "best_baseline_rho": 0.29024,
+     "bias": -4.90882,
+     "bias_pct_of_actual": -0.40937,
+     "calibration_slope": 0.40293,
+     "mae": 6.5647,
+     "mean_actual": 11.99119,
+     "mean_pred": 7.08237,
+     "model_beats_best_baseline_mae": false,
+     "n": 636,
+     "pearson_r": 0.25351,
+     "rmse": 8.64409,
+     "spearman_rho": 0.24843
+    },
+    "TE_TARGET_RATE_LOW": {
+     "best_baseline": "SEASON_MEAN",
+     "best_baseline_mae": 2.8294,
+     "best_baseline_rho": 0.21995,
+     "bias": -0.59557,
+     "bias_pct_of_actual": -0.19206,
+     "calibration_slope": 0.25032,
+     "mae": 2.65126,
+     "mean_actual": 3.10096,
+     "mean_pred": 2.50539,
+     "model_beats_best_baseline_mae": true,
+     "n": 626,
+     "pearson_r": 0.25273,
+     "rmse": 3.67247,
+     "spearman_rho": 0.18132
+    }
+   },
+   "experience": {
+    "ROOKIE_OR_FIRST_SEASON_IN_TABLE": {
+     "best_baseline": "SEASON_MEAN",
+     "best_baseline_mae": 4.17655,
+     "best_baseline_rho": 0.51851,
+     "bias": -3.03244,
+     "bias_pct_of_actual": -0.71461,
+     "calibration_slope": 0.7922,
+     "mae": 3.81774,
+     "mean_actual": 4.24348,
+     "mean_pred": 1.21104,
+     "model_beats_best_baseline_mae": true,
+     "n": 2246,
+     "pearson_r": 0.38127,
+     "rmse": 7.08229,
+     "spearman_rho": 0.34806
+    },
+    "SECOND_SEASON": {
+     "best_baseline": "SEASON_MEAN",
+     "best_baseline_mae": 4.87951,
+     "best_baseline_rho": 0.43409,
+     "bias": 0.26814,
+     "bias_pct_of_actual": 0.05953,
+     "calibration_slope": 0.58667,
+     "mae": 4.33238,
+     "mean_actual": 4.50397,
+     "mean_pred": 4.77211,
+     "model_beats_best_baseline_mae": true,
+     "n": 2262,
+     "pearson_r": 0.45378,
+     "rmse": 6.85095,
+     "spearman_rho": 0.39414
+    },
+    "VETERAN_3_PLUS": {
+     "best_baseline": "SEASON_MEAN",
+     "best_baseline_mae": 5.69445,
+     "best_baseline_rho": 0.51743,
+     "bias": 0.83806,
+     "bias_pct_of_actual": 0.13223,
+     "calibration_slope": 0.66769,
+     "mae": 5.26838,
+     "mean_actual": 6.33782,
+     "mean_pred": 7.17587,
+     "model_beats_best_baseline_mae": true,
+     "n": 7577,
+     "pearson_r": 0.52088,
+     "rmse": 7.77332,
+     "spearman_rho": 0.49551
+    }
+   },
+   "favourite_or_underdog": {
+    "FAVOURITE": {
+     "best_baseline": "SEASON_MEAN",
+     "best_baseline_mae": 4.98846,
+     "best_baseline_rho": 0.61398,
+     "bias": -0.55249,
+     "bias_pct_of_actual": -0.08536,
+     "calibration_slope": 0.77571,
+     "mae": 4.55883,
+     "mean_actual": 6.47245,
+     "mean_pred": 5.91996,
+     "model_beats_best_baseline_mae": true,
+     "n": 5628,
+     "pearson_r": 0.60274,
+     "rmse": 7.14515,
+     "spearman_rho": 0.57109
+    },
+    "UNDERDOG": {
+     "best_baseline": "SEASON_MEAN",
+     "best_baseline_mae": 5.16883,
+     "best_baseline_rho": 0.49517,
+     "bias": -0.2871,
+     "bias_pct_of_actual": -0.05151,
+     "calibration_slope": 0.54817,
+     "mae": 4.94246,
+     "mean_actual": 5.57343,
+     "mean_pred": 5.28634,
+     "model_beats_best_baseline_mae": true,
+     "n": 5618,
+     "pearson_r": 0.42741,
+     "rmse": 7.61427,
+     "spearman_rho": 0.39588
+    }
+   },
+   "game_total": {
+    "HIGH_48_PLUS": {
+     "best_baseline": "SEASON_MEAN",
+     "best_baseline_mae": 5.19949,
+     "best_baseline_rho": 0.63309,
+     "bias": -0.77912,
+     "bias_pct_of_actual": -0.11452,
+     "calibration_slope": 0.81297,
+     "mae": 4.77737,
+     "mean_actual": 6.80332,
+     "mean_pred": 6.02419,
+     "model_beats_best_baseline_mae": true,
+     "n": 2648,
+     "pearson_r": 0.60376,
+     "rmse": 7.5956,
+     "spearman_rho": 0.5745
+    },
+    "LOW_UNDER_43": {
+     "best_baseline": "SEASON_MEAN",
+     "best_baseline_mae": 5.09689,
+     "best_baseline_rho": 0.47238,
+     "bias": -0.19527,
+     "bias_pct_of_actual": -0.03605,
+     "calibration_slope": 0.49054,
+     "mae": 4.98479,
+     "mean_actual": 5.41637,
+     "mean_pred": 5.2211,
+     "model_beats_best_baseline_mae": true,
+     "n": 3794,
+     "pearson_r": 0.39267,
+     "rmse": 7.60771,
+     "spearman_rho": 0.36702
+    },
+    "MID_43_48": {
+     "best_baseline": "SEASON_MEAN",
+     "best_baseline_mae": 4.99756,
+     "best_baseline_rho": 0.57523,
+     "bias": -0.39932,
+     "bias_pct_of_actual": -0.06576,
+     "calibration_slope": 0.71075,
+     "mae": 4.55059,
+     "mean_actual": 6.07277,
+     "mean_pred": 5.67345,
+     "model_beats_best_baseline_mae": true,
+     "n": 4804,
+     "pearson_r": 0.56065,
+     "rmse": 7.0782,
+     "spearman_rho": 0.52453
+    }
+   },
+   "home_or_road": {
+    "HOME": {
+     "best_baseline": "SEASON_MEAN",
+     "best_baseline_mae": 5.03626,
+     "best_baseline_rho": 0.55872,
+     "bias": -0.50329,
+     "bias_pct_of_actual": -0.08265,
+     "calibration_slope": 0.68564,
+     "mae": 4.75657,
+     "mean_actual": 6.08909,
+     "mean_pred": 5.5858,
+     "model_beats_best_baseline_mae": true,
+     "n": 5629,
+     "pearson_r": 0.52806,
+     "rmse": 7.40496,
+     "spearman_rho": 0.48522
+    },
+    "ROAD": {
+     "best_baseline": "SEASON_MEAN",
+     "best_baseline_mae": 5.12107,
+     "best_baseline_rho": 0.55685,
+     "bias": -0.33636,
+     "bias_pct_of_actual": -0.05646,
+     "calibration_slope": 0.66552,
+     "mae": 4.74436,
+     "mean_actual": 5.95745,
+     "mean_pred": 5.6211,
+     "model_beats_best_baseline_mae": true,
+     "n": 5617,
+     "pearson_r": 0.52314,
+     "rmse": 7.36139,
+     "spearman_rho": 0.48802
+    }
+   },
+   "position": {
+    "QB": {
+     "best_baseline": "SEASON_MEAN",
+     "best_baseline_mae": 7.4722,
+     "best_baseline_rho": 0.53155,
+     "bias": 0.81016,
+     "bias_pct_of_actual": 0.09529,
+     "calibration_slope": 0.56032,
+     "mae": 6.61773,
+     "mean_actual": 8.50167,
+     "mean_pred": 9.31184,
+     "model_beats_best_baseline_mae": true,
+     "n": 1709,
+     "pearson_r": 0.49375,
+     "rmse": 10.13955,
+     "spearman_rho": 0.47911
+    },
+    "RB": {
+     "best_baseline": "SEASON_MEAN",
+     "best_baseline_mae": 4.99601,
+     "best_baseline_rho": 0.55578,
+     "bias": -0.077,
+     "bias_pct_of_actual": -0.01356,
+     "calibration_slope": 0.68653,
+     "mae": 4.71714,
+     "mean_actual": 5.67879,
+     "mean_pred": 5.60179,
+     "model_beats_best_baseline_mae": true,
+     "n": 3060,
+     "pearson_r": 0.53009,
+     "rmse": 7.26273,
+     "spearman_rho": 0.48388
+    },
+    "TE": {
+     "best_baseline": "SEASON_MEAN",
+     "best_baseline_mae": 4.04763,
+     "best_baseline_rho": 0.47718,
+     "bias": -0.10069,
+     "bias_pct_of_actual": -0.02521,
+     "calibration_slope": 0.66692,
+     "mae": 3.67279,
+     "mean_actual": 3.99363,
+     "mean_pred": 3.89294,
+     "model_beats_best_baseline_mae": true,
+     "n": 2668,
+     "pearson_r": 0.45138,
+     "rmse": 5.57702,
+     "spearman_rho": 0.41409
+    },
+    "WR": {
+     "best_baseline": "SEASON_MEAN",
+     "best_baseline_mae": 5.34542,
+     "best_baseline_rho": 0.48917,
+     "bias": -0.15807,
+     "bias_pct_of_actual": -0.02918,
+     "calibration_slope": 0.59098,
+     "mae": 4.89454,
+     "mean_actual": 5.41717,
+     "mean_pred": 5.2591,
+     "model_beats_best_baseline_mae": true,
+     "n": 4648,
+     "pearson_r": 0.43612,
+     "rmse": 7.42965,
+     "spearman_rho": 0.40489
+    }
+   },
+   "projected_opportunity": {
+    "HIGH_14_PLUS": {
+     "best_baseline": "VEGAS_ONLY",
+     "best_baseline_mae": 8.35032,
+     "best_baseline_rho": 0.22136,
+     "bias": 4.34974,
+     "bias_pct_of_actual": 0.32791,
+     "calibration_slope": 0.8317,
+     "mae": 9.47932,
+     "mean_actual": 13.26519,
+     "mean_pred": 17.61493,
+     "model_beats_best_baseline_mae": false,
+     "n": 1896,
+     "pearson_r": 0.20407,
+     "rmse": 11.55296,
+     "spearman_rho": 0.19068
+    },
+    "LOW_UNDER_5": {
+     "best_baseline": "SEASON_MEAN",
+     "best_baseline_mae": 3.70418,
+     "best_baseline_rho": 0.36881,
+     "bias": -1.74203,
+     "bias_pct_of_actual": -0.60263,
+     "calibration_slope": 0.54054,
+     "mae": 2.97052,
+     "mean_actual": 2.89071,
+     "mean_pred": 1.14868,
+     "model_beats_best_baseline_mae": true,
+     "n": 7392,
+     "pearson_r": 0.13802,
+     "rmse": 5.69606,
+     "spearman_rho": 0.2032
+    },
+    "MID_5_14": {
+     "best_baseline": "SEASON_MEAN",
+     "best_baseline_mae": 6.5005,
+     "best_baseline_rho": 0.26747,
+     "bias": 1.7074,
+     "bias_pct_of_actual": 0.22504,
+     "calibration_slope": 0.68902,
+     "mae": 6.56494,
+     "mean_actual": 7.58726,
+     "mean_pred": 9.29466,
+     "model_beats_best_baseline_mae": false,
+     "n": 2797,
+     "pearson_r": 0.22118,
+     "rmse": 8.10564,
+     "spearman_rho": 0.19674
+    }
+   },
+   "promoted_backup": {
+    "YES": {
+     "n": 34,
+     "state": "TOO_FEW"
+    }
+   },
+   "role_depth": {
+    "RESERVE": {
+     "best_baseline": "SEASON_MEAN",
+     "best_baseline_mae": 3.62516,
+     "best_baseline_rho": 0.24931,
+     "bias": -0.93125,
+     "bias_pct_of_actual": -0.25192,
+     "calibration_slope": 0.22315,
+     "mae": 3.47958,
+     "mean_actual": 3.69659,
+     "mean_pred": 2.76534,
+     "model_beats_best_baseline_mae": true,
+     "n": 1677,
+     "pearson_r": 0.20682,
+     "rmse": 5.02511,
+     "spearman_rho": 0.16617
+    },
+    "SECOND": {
+     "best_baseline": "SEASON_MEAN",
+     "best_baseline_mae": 4.51502,
+     "best_baseline_rho": 0.42693,
+     "bias": -1.45607,
+     "bias_pct_of_actual": -0.2228,
+     "calibration_slope": 0.42154,
+     "mae": 4.75746,
+     "mean_actual": 6.5352,
+     "mean_pred": 5.07913,
+     "model_beats_best_baseline_mae": false,
+     "n": 2080,
+     "pearson_r": 0.35034,
+     "rmse": 6.7231,
+     "spearman_rho": 0.35772
+    },
+    "STARTER": {
+     "best_baseline": "CAREER_MEAN",
+     "best_baseline_mae": 6.6934,
+     "best_baseline_rho": 0.36663,
+     "bias": -4.33438,
+     "bias_pct_of_actual": -0.28021,
+     "calibration_slope": 0.37049,
+     "mae": 7.88383,
+     "mean_actual": 15.46848,
+     "mean_pred": 11.13409,
+     "model_beats_best_baseline_mae": false,
+     "n": 3020,
+     "pearson_r": 0.29565,
+     "rmse": 10.41497,
+     "spearman_rho": 0.31503
+    }
+   },
+   "role_transition": {
+    "COLD_START_NO_PRIOR_SEASON_IN_TABLE": {
+     "n": 36,
+     "state": "TOO_FEW"
+    },
+    "CONTINUING": {
+     "best_baseline": "SEASON_MEAN",
+     "best_baseline_mae": 5.15678,
+     "best_baseline_rho": 0.63696,
+     "bias": -2.26293,
+     "bias_pct_of_actual": -0.23377,
+     "calibration_slope": 0.69229,
+     "mae": 5.63959,
+     "mean_actual": 9.67998,
+     "mean_pred": 7.41705,
+     "model_beats_best_baseline_mae": false,
+     "n": 6368,
+     "pearson_r": 0.54328,
+     "rmse": 8.00944,
+     "spearman_rho": 0.53988
+    },
+    "INJURY_REPLACEMENT": {
+     "n": 32,
+     "state": "TOO_FEW"
+    },
+    "OVERTOOK_INCUMBENT": {
+     "best_baseline": "VEGAS_ONLY",
+     "best_baseline_mae": 5.80605,
+     "best_baseline_rho": 0.23186,
+     "bias": -6.9442,
+     "bias_pct_of_actual": -0.57651,
+     "calibration_slope": 0.37293,
+     "mae": 8.29859,
+     "mean_actual": 12.04532,
+     "mean_pred": 5.10112,
+     "model_beats_best_baseline_mae": false,
+     "n": 248,
+     "pearson_r": 0.22693,
+     "rmse": 10.64288,
+     "spearman_rho": 0.21449
+    },
+    "PROMOTED_RESERVE": {
+     "n": 2,
+     "state": "TOO_FEW"
+    },
+    "RETURNING_STARTER": {
+     "best_baseline": "VEGAS_ONLY",
+     "best_baseline_mae": 7.16075,
+     "best_baseline_rho": 0.27457,
+     "bias": -11.72973,
+     "bias_pct_of_actual": -0.78735,
+     "calibration_slope": 0.37705,
+     "mae": 11.92118,
+     "mean_actual": 14.8978,
+     "mean_pred": 3.16807,
+     "model_beats_best_baseline_mae": false,
+     "n": 91,
+     "pearson_r": 0.20091,
+     "rmse": 14.785,
+     "spearman_rho": 0.19884
+    }
+   },
+   "spread_bucket": {
+    "BIG_FAVOURITE": {
+     "best_baseline": "SEASON_MEAN",
+     "best_baseline_mae": 4.90909,
+     "best_baseline_rho": 0.62768,
+     "bias": -0.57691,
+     "bias_pct_of_actual": -0.08604,
+     "calibration_slope": 0.78257,
+     "mae": 4.58901,
+     "mean_actual": 6.70519,
+     "mean_pred": 6.12828,
+     "model_beats_best_baseline_mae": true,
+     "n": 1711,
+     "pearson_r": 0.61959,
+     "rmse": 7.15194,
+     "spearman_rho": 0.58571
+    },
+    "BIG_UNDERDOG": {
+     "best_baseline": "SEASON_MEAN",
+     "best_baseline_mae": 5.23676,
+     "best_baseline_rho": 0.39919,
+     "bias": 0.09469,
+     "bias_pct_of_actual": 0.01971,
+     "calibration_slope": 0.38785,
+     "mae": 4.94048,
+     "mean_actual": 4.80536,
+     "mean_pred": 4.90005,
+     "model_beats_best_baseline_mae": true,
+     "n": 1721,
+     "pearson_r": 0.31839,
+     "rmse": 7.5855,
+     "spearman_rho": 0.29253
+    },
+    "FAVOURITE": {
+     "best_baseline": "SEASON_MEAN",
+     "best_baseline_mae": 5.0231,
+     "best_baseline_rho": 0.60777,
+     "bias": -0.54182,
+     "bias_pct_of_actual": -0.08505,
+     "calibration_slope": 0.77217,
+     "mae": 4.54564,
+     "mean_actual": 6.37078,
+     "mean_pred": 5.82896,
+     "model_beats_best_baseline_mae": true,
+     "n": 3917,
+     "pearson_r": 0.59466,
+     "rmse": 7.14218,
+     "spearman_rho": 0.5648
+    },
+    "UNDERDOG": {
+     "best_baseline": "SEASON_MEAN",
+     "best_baseline_mae": 5.13881,
+     "best_baseline_rho": 0.53385,
+     "bias": -0.4557,
+     "bias_pct_of_actual": -0.07707,
+     "calibration_slope": 0.60591,
+     "mae": 4.94333,
+     "mean_actual": 5.91263,
+     "mean_pred": 5.45693,
+     "model_beats_best_baseline_mae": true,
+     "n": 3897,
+     "pearson_r": 0.4646,
+     "rmse": 7.62694,
+     "spearman_rho": 0.43778
+    }
+   },
+   "usage_derived_return": {
+    "YES": {
+     "best_baseline": "VEGAS_ONLY",
+     "best_baseline_mae": 7.16075,
+     "best_baseline_rho": 0.27457,
+     "bias": -11.72973,
+     "bias_pct_of_actual": -0.78735,
+     "calibration_slope": 0.37705,
+     "mae": 11.92118,
+     "mean_actual": 14.8978,
+     "mean_pred": 3.16807,
+     "model_beats_best_baseline_mae": false,
+     "n": 91,
+     "pearson_r": 0.20091,
+     "rmse": 14.785,
+     "spearman_rho": 0.19884
+    }
+   },
+   "weather": {
+    "COLD_35_OR_BELOW": {
+     "best_baseline": "SEASON_MEAN",
+     "best_baseline_mae": 5.1466,
+     "best_baseline_rho": 0.48365,
+     "bias": -0.27214,
+     "bias_pct_of_actual": -0.04833,
+     "calibration_slope": 0.60834,
+     "mae": 4.67121,
+     "mean_actual": 5.63123,
+     "mean_pred": 5.3591,
+     "model_beats_best_baseline_mae": true,
+     "n": 997,
+     "pearson_r": 0.5032,
+     "rmse": 7.24607,
+     "spearman_rho": 0.45323
+    },
+    "INDOORS": {
+     "best_baseline": "SEASON_MEAN",
+     "best_baseline_mae": 4.99521,
+     "best_baseline_rho": 0.58013,
+     "bias": -0.44587,
+     "bias_pct_of_actual": -0.07319,
+     "calibration_slope": 0.7038,
+     "mae": 4.7973,
+     "mean_actual": 6.09196,
+     "mean_pred": 5.64609,
+     "model_beats_best_baseline_mae": true,
+     "n": 3802,
+     "pearson_r": 0.53781,
+     "rmse": 7.44631,
+     "spearman_rho": 0.49086
+    },
+    "OUTDOORS_MILD": {
+     "best_baseline": "SEASON_MEAN",
+     "best_baseline_mae": 5.13835,
+     "best_baseline_rho": 0.56061,
+     "bias": -0.56267,
+     "bias_pct_of_actual": -0.09062,
+     "calibration_slope": 0.68994,
+     "mae": 4.73156,
+     "mean_actual": 6.20875,
+     "mean_pred": 5.64608,
+     "model_beats_best_baseline_mae": true,
+     "n": 5410,
+     "pearson_r": 0.53108,
+     "rmse": 7.36882,
+     "spearman_rho": 0.49937
+    },
+    "OUTDOORS_UNMEASURED": {
+     "best_baseline": "LAST_GAME",
+     "best_baseline_mae": 7.01725,
+     "best_baseline_rho": 0.11892,
+     "bias": 4.49114,
+     "bias_pct_of_actual": 3.66513,
+     "calibration_slope": 0.11107,
+     "mae": 5.69442,
+     "mean_actual": 1.22537,
+     "mean_pred": 5.71651,
+     "model_beats_best_baseline_mae": true,
+     "n": 1069,
+     "pearson_r": 0.16048,
+     "rmse": 8.57643,
+     "spearman_rho": 0.07823
+    },
+    "WINDY_15_PLUS": {
+     "best_baseline": "SEASON_MEAN",
+     "best_baseline_mae": 5.03536,
+     "best_baseline_rho": 0.50879,
+     "bias": 0.44007,
+     "bias_pct_of_actual": 0.08736,
+     "calibration_slope": 0.55947,
+     "mae": 4.59903,
+     "mean_actual": 5.0375,
+     "mean_pred": 5.47757,
+     "model_beats_best_baseline_mae": true,
+     "n": 807,
+     "pearson_r": 0.48152,
+     "rmse": 7.13743,
+     "spearman_rho": 0.4555
+    }
+   }
+  },
+  "state": "OK",
+  "unavailable_slices": {
+   "injury_return_from_report": "historical injury reports are not held. The role-history RETURNING_STARTER transition is used instead and is labelled as a usage-derived proxy, not a medical one.",
+   "salary_tier": "no historical DraftKings salaries are held in this checkout, so a salary-tier slice cannot be built. Not approximated: a proxy for money is not money."
+  }
+ },
+ "n_records": 22925,
+ "residual_pools": {
+  "METHOD": "empirical residuals, not a parametric family. DK points are bounded below at roughly zero, heavily right-skewed and have an atom at zero for players who did not appear; no normal or gamma fits that, and an empirical pool reproduces all three features for free.",
+  "n_pools": 21,
+  "n_position_fallbacks": 4,
+  "thin_buckets": [
+   {
+    "bucket": "20-28",
+    "n": 18,
+    "position": "RB"
+   },
+   {
+    "bucket": "14-20",
+    "n": 23,
+    "position": "TE"
+   },
+   {
+    "bucket": "28+",
+    "n": 13,
+    "position": "QB"
+   },
+   {
+    "bucket": "28-999",
+    "n": 6,
+    "position": "QB"
+   },
+   {
+    "bucket": "20-28",
+    "n": 13,
+    "position": "TE"
+   }
+  ]
+ },
+ "seasons_collected": [
+  2021,
+  2022,
+  2023,
+  2024,
+  2025
+ ],
+ "spec_version": "calibration-1"
+}

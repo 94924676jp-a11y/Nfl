@@ -627,7 +627,8 @@ CONSTANTS_PROVENANCE['DEPTH_CLAIM_BLEND'] = (
 BANDS_ORDER = {'ALPHA': 5, 'PRIMARY': 4, 'SECONDARY': 3, 'ROTATIONAL': 2, 'FRINGE': 1}
 
 
-def allocate_opportunity(crows, tv, depth, groups, blend=None):
+def allocate_opportunity(crows, tv, depth, groups, blend=None, apply_appearance=True,
+                         force_appearance_for=None):
     """Turn share claims into volume, satisfying every club identity by construction.
 
     ONE POOL PER FIELD, NOT ONE POOL PER POSITION GROUP. Two measured ingredients and one
@@ -720,8 +721,21 @@ def allocate_opportunity(crows, tv, depth, groups, blend=None):
                     'APPEARANCE_SEMANTICS': 'claim is share GIVEN he plays; this is P(he plays) '
                                             'at his depth rank, so the product is unconditional.',
                 }
-        # claims become unconditional before they are normalised against each other
-        claims = [c * appear[i] for i, c in enumerate(claims)]
+        # CLAIMS BECOME UNCONDITIONAL BEFORE NORMALISATION -- unless the caller wants the
+        # conditional world. With apply_appearance False every candidate is treated as playing, and
+        # the result is each player's share GIVEN he plays alongside others who play. That is the
+        # coherent conditional object, and it needs no division: dividing an unconditional
+        # projection by a near-zero P(plays) produced 4,342 DK points for a third-string back.
+        if apply_appearance:
+            # THE CONDITIONAL IS PER PLAYER, NOT GLOBAL. Forcing everyone to play dilutes the
+            # starter -- Josh Allen fell from 26.17 to 23.33 in an "everyone plays" world, which is
+            # not the question a lineup asks. The question is: given THIS player plays, with his
+            # teammates at their normal appearance rates, what does he do. So exactly one player's
+            # probability is set to 1 and the rest keep theirs.
+            claims = [c * (1.0 if (force_appearance_for is not None
+                                   and crows[i].get('_dk') == force_appearance_for
+                                   ) else appear[i])
+                      for i, c in enumerate(claims)]
         sp, sd = sum(claims), sum(dvals)
         w = []
         for i in range(len(crows)):
@@ -742,6 +756,13 @@ def allocate_opportunity(crows, tv, depth, groups, blend=None):
                            'club_total': round(team_total, 4)}
             continue
         for i, r in enumerate(crows):
+            # P(PLAYS) IS KEPT SEPARATELY, because one number cannot serve two purposes. The
+            # unconditional projection is right on average and WRONG FOR BOTH SUBGROUPS: measured
+            # out of sample it runs 2.44 DK points LOW on players who appeared and 3.54 HIGH on
+            # players who did not, while the pooled bias is +0.012. A lineup consumes the
+            # conditional number -- you roster players you believe will play -- and an expected
+            # value consumes the product. Both are emitted.
+            r.setdefault('p_plays', {})[field] = appear[i]
             r[field] = team_total * w[i] / sw
             a = r.setdefault('allocation', {}).setdefault(field, {})
             a.update({'claim_normalised': round((claims[i] / sp) if sp else 0.0, 5),
@@ -1018,6 +1039,25 @@ def build():
         alloc_acct[club] = allocate_opportunity(crows, tv_all.get(club) or {}, depth, groups)
         for r in crows:
             finalize(r)
+    # SECOND PASS, CONDITIONAL. Every candidate treated as playing, so each player's share is what
+    # he takes among others who also play. Stored beside the unconditional volume, not instead of it.
+    cond_rows = {}
+    for club, crows in by_club.items():
+        keep = []
+        for target in crows:
+            work = []
+            for r in crows:
+                work.append({'position': r['position'], 'role_band': r.get('role_band'),
+                             'is_predicted_starter': r.get('is_predicted_starter'),
+                             'efficiency': r.get('efficiency'),
+                             'rz_intensity': r.get('rz_intensity'),
+                             '_claims': dict(r.get('_claims') or {}), '_dk': r['dk_id']})
+            allocate_opportunity(work, tv_all.get(club) or {}, depth, groups,
+                                 force_appearance_for=target['dk_id'])
+            for w in work:
+                finalize(w)
+            keep.append([w for w in work if w['_dk'] == target['dk_id']][0])
+        cond_rows[club] = keep
 
     # club touchdown pools
     td_acct = {}
@@ -1029,6 +1069,45 @@ def build():
         td_acct[club]['team_expected_td'] = (round(team_td, 4) if team_td is not None else None)
         td_acct[club]['V0_WOULD_HAVE_SAID'] = (round(imp / 7.0, 4) if imp else None)
 
+    # conditional touchdown allocation and scoring
+    for club, work in cond_rows.items():
+        a = td_acct.get(club) or {}
+        # THE CLUB'S TOUCHDOWN POOL SCALE IS REUSED, NOT RECOMPUTED. Conditioning on one player
+        # playing does not change how many touchdowns his club is expected to score, and
+        # re-normalising across rows drawn from different per-player allocations moved every
+        # starter by about a point for no football reason.
+        scales = {h: ((a.get(h) or {}).get('scale')) for h in ('rec', 'rush')}
+        for w in work:
+            td = {}
+            for half in ('rec', 'rush'):
+                k = scales.get(half)
+                rt = prates.get(w['position']) or {}
+                brz = rt.get('td_per_rz_opportunity')
+                bfar = rt.get('td_per_non_rz_opportunity')
+                if k is None or brz is None:
+                    continue
+                rz = w.get(f'{half}_rz_opps')
+                far = w.get(f'{half}_far_opps')
+                if rz is None and far is None:
+                    continue
+                td[f'{half}_td'] = round((brz * (rz or 0.0)
+                                          + (bfar or 0.0) * (far or 0.0)) * k, 5)
+            if w['position'] == 'QB':
+                td['pass_td'] = (a.get('qb_pass_td_pool') or 0.0)
+            w['td'] = td
+        for w in work:
+            cpts, citems = dk_points(w, w.get('td'), bonus, ip)
+            r = rows.get(w['_dk'])
+            if r is not None:
+                r['dk_points_if_plays'] = cpts
+                r['dk_points_if_plays_line_items'] = citems
+                r['conditional_volume'] = {k: w.get(k) for k in
+                                           ('targets', 'receptions', 'rec_yards', 'carries',
+                                            'rush_yards', 'pass_attempts', 'pass_yards')}
+                pp = r.get('p_plays') or {}
+                r['p_plays_by_field'] = {k: (round(v, 5) if isinstance(v, (int, float)) else v)
+                                         for k, v in pp.items()}
+
     for r in rows.values():
         # 'PROJECTED_DST' also starts with 'PROJECTED', and this loop scored it with the skill
         # scorer -- no yards, no touchdowns -- overwriting every defence with 0.00. An explicit
@@ -1037,6 +1116,13 @@ def build():
             pts, items = dk_points(r, r.get('td'), bonus, ip)
             r['dk_points'] = pts
             r['dk_line_items'] = items
+            r['TWO_PART_SEMANTICS'] = (
+                'dk_points is UNCONDITIONAL: P(plays) times what he does if he plays. It is the '
+                'right object for an expected value and it is wrong for both subgroups -- measured '
+                'out of sample it is 2.44 low on players who appeared and 3.54 high on players who '
+                'did not. dk_points_if_plays is CONDITIONAL, computed by a second allocation in '
+                'which every candidate is treated as playing, and is what a lineup consumes. '
+                'Neither replaces the other.')
             if pts == 0.0:
                 # a genuine computed zero: every component is zero, which is a STATEMENT about
                 # this player rather than a gap in the evidence, and it is labelled as such

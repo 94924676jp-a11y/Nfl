@@ -53,7 +53,13 @@ MAIN_COLS = [
     ('position', 'DK position'),
     ('team', 'club'),
     ('salary', 'DK salary'),
-    ('dk_points', 'projected DK points, or BLANK where there is no projection'),
+    ('dk_points', 'UNCONDITIONAL projected DK points = P(plays) x what he does if he plays. The '
+                  'right object for an expected value. BLANK where there is no projection.'),
+    ('dk_points_if_plays', 'CONDITIONAL on him playing. This is what a lineup consumes, because '
+                           'you roster players you believe will play. Measured out of sample the '
+                           'unconditional number is 2.44 low on players who appeared and 3.54 high '
+                           'on players who did not.'),
+    ('p_plays', 'measured P(a player at his depth rank appears)'),
     ('projection_state', 'PROJECTED / PROJECTED_COLD_START / PROJECTED_DST / a named refusal'),
     ('role_band', 'the band the prior was asked about'),
     ('askable_ceiling', 'the strongest band current evidence permitted'),
@@ -111,7 +117,10 @@ def main_rows(v1):
         td = r.get('td') or {}
         rows.append([
             dk_id, r.get('name'), r.get('position'), r.get('team'), r.get('salary'),
-            r.get('dk_points'), r.get('projection_state'), r.get('role_band'),
+            r.get('dk_points'), r.get('dk_points_if_plays'),
+            (min((v for v in (r.get('p_plays_by_field') or {}).values() if v is not None),
+                 default=None)),
+            r.get('projection_state'), r.get('role_band'),
             r.get('askable_ceiling'), r.get('capped'), r.get('is_predicted_starter'),
             r.get('availability'),
             _r(r.get('pass_attempts')), _r(r.get('pass_yards')),
