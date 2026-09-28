@@ -84,7 +84,42 @@ DK = {'pass_yd': 0.04, 'pass_td': 4.0, 'int': -1.0, 'rush_yd': 0.1, 'rush_td': 6
 #: 2 is chosen over 0 on best MAE and best top-30 realised points in BOTH sets, and a confirmation
 #: level nearest 1.0, at a cost of 0.006 rho. It also keeps a real, small prior contribution rather
 #: than the degenerate fallback-only case.
+#:
+#: THE EVIDENCE ABOVE DOES NOT SUPPORT THIS VALUE, and that is recorded here rather than quietly
+#: re-tuned. Two defects, both measured in nfl/research/shrinkage/ (#99):
+#:
+#: 1. The margins it was chosen on are far below their own noise. MAE 5.410 against 5.428 and
+#:    top-30 points 18.651 against 18.645 are differences of 0.018 and 0.006, against week-blocked
+#:    standard errors of 0.106 and 0.50 for those same statistics -- about a sixth and an eightieth
+#:    of one SE. The 0.006 rho it paid for them is the difference that reproduces.
+#: 2. Half of the "28 untouched weeks" could not respond to the cap at all. The usage panel begins
+#:    in 2021, so a 2021 forecast reads through_season=2020, which is empty: every prior comes back
+#:    PRIOR_UNAVAILABLE and 0 of 2698 projections in 2021 differ between a cap of 0 and a cap of 2,
+#:    against 3617 of 3627 in 2022. Any difference on that set was halved toward zero before it was
+#:    read, which is why the sweep saw a near-tie.
+#:
+#: The value is LEFT AS IT IS because changing it is a production decision on its own commit with
+#: its own baseline, not a side effect of finding the defect. See nfl/research/shrinkage/VERDICT.md
+#: for the arm that is recommended instead and for what it rests on.
 PRIOR_WEIGHT_CAP = 2.0
+
+#: PER-TIER OVERRIDE of the cap above, keyed by `player_prior` tier name. EMPTY BY DEFAULT, so
+#: production behaviour is exactly the single-cap behaviour the sweep selected.
+#:
+#: It exists because the sweep above swept ONE scalar over a prior that is not one thing. On the
+#: Week 3 slate 63.5% of skill players receive a COHORT prior -- ROLE_GROUP, ARCHETYPE or
+#: POSITIONAL_BROAD -- which is a constant shared by everyone in that cohort: 46 tight ends at
+#: ARCHETYPE hold ONE distinct prior value between them. The other 36.5% receive a prior built from
+#: their own games. A single cap cannot tell "the player's own history does not help" apart from
+#: "a cohort constant actively hurts", because cap=0 switches off both at once.
+#:
+#: Nothing here is fitted. A study that wants to separate them sets this dict explicitly.
+PRIOR_WEIGHT_CAP_BY_TIER: dict = {}
+
+
+def prior_cap_for(tier):
+    """The cap in force for one prior tier. Defaults to the single global cap."""
+    return PRIOR_WEIGHT_CAP_BY_TIER.get(tier, PRIOR_WEIGHT_CAP)
 
 #: DECLARED reporting threshold, in DK points. Below this a projection is flagged
 #: `effectively_zero` for downstream consumers, while keeping its value. It is a labelling
@@ -98,7 +133,10 @@ TEAM_VOLUME_PRIOR_GAMES = 4.0
 CONSTANTS_PROVENANCE = {
     'PRIOR_WEIGHT_CAP': (PRIOR_WEIGHT_CAP,
                          'SELECTED on out-of-sample skill over 42 weeks and CONFIRMED on 28 '
-                         'untouched weeks. See the note at the definition. Not declared.'),
+                         'weeks of which 14 could not respond to it at all. The evidence recorded '
+                         'for this value does not support it; see the note at the definition and '
+                         'nfl/research/shrinkage/VERDICT.md. Left unchanged pending a production '
+                         'decision. Not declared.'),
     'TEAM_VOLUME_PRIOR_GAMES': (TEAM_VOLUME_PRIOR_GAMES,
                                 'DECLARED pseudo-games of prior-season club volume.'),
     'THROUGH_SEASON': (THROUGH_SEASON,
@@ -218,7 +256,7 @@ def team_volume(panel, env):
 
 
 # ------------------------------------------------------------------- combine prior + current
-def _combine(prior_value, prior_n, cur_value, cur_n):
+def _combine(prior_value, prior_n, cur_value, cur_n, cap=None):
     # The accounting returned here carries the RAW prior and current values and the exact weight,
     # so an explainability decomposition can be reconstructed arithmetically instead of guessed at.
     #
@@ -227,7 +265,7 @@ def _combine(prior_value, prior_n, cur_value, cur_n):
     UNKNOWN IS NOT ZERO on either side. A player with no prior and no current observation gets
     None and a reason, never 0.0.
     """
-    pn = min(float(prior_n or 0.0), PRIOR_WEIGHT_CAP)
+    pn = min(float(prior_n or 0.0), PRIOR_WEIGHT_CAP if cap is None else float(cap))
     cn = float(cur_n or 0.0)
     if prior_value is None and cur_value is None:
         return None, {'basis': 'NO_EVIDENCE_EITHER_SIDE', 'prior_value': None,
@@ -503,7 +541,8 @@ def project_player(panel, gsis, pos, band, club, tv, rates, cur_shares, cur_n, p
         w = prior.get('effective_obs_for_prior')
         if w is None:
             w = prior.get('effective_obs_at_role')
-        v, acct = _combine(_m(prior, key), w, cur_shares.get(key), cur_n)
+        v, acct = _combine(_m(prior, key), w, cur_shares.get(key), cur_n,
+                           cap=prior_cap_for(prior.get('tier')))
         out['basis'][key] = acct
         return v
 

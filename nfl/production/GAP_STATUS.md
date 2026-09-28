@@ -75,6 +75,27 @@ field-goal split remain unmeasured; neither affects DK defensive scoring.
 **Play-by-play 2000–2020 (OUT-039) and historical rosters (OUT-038).** Play detail before 2021
 reads `UNKNOWN_PENDING_ACQUISITION`, never zero.
 
+**Where the between-player variance goes (#99) — MEASURED 2026-09-28, nothing adopted.** V1's
+projections separate players less than realised points do, and the hierarchical prior is part of the
+cause but not most of it. 63.5% of skill players on the Week 3 slate get a COHORT prior, which is a
+constant shared by everyone in that cohort: 46 tight ends hold **one** prior value between them and
+it takes 96% of their blend. Splitting the prior's weight cap by tier and forward-chaining six arms
+separates what a single scalar could not: turning the **own-history** prior off moves rank
+correlation by **+0.0000** against production, and turning the **cohort** prior off moves it by
+**+0.0256** (z 18.0, confirmation season). Essentially all the ranking loss is the cohort constant,
+which is the owner's hypothesis and it holds. But removing the prior entirely closes only about a
+**quarter** of the separation gap (7.32 → 9.21 against a realised 15.33), so three quarters of the
+missing spread is elsewhere and this study does not say where. Compression is also mildest where the
+money is: predicted-to-realised SD ratio is 0.71-0.74 for ALPHA/PRIMARY/SECONDARY against 0.38 for
+ROTATIONAL. See `nfl/research/shrinkage/VERDICT.md`. **No production change was made.**
+
+**`PRIOR_WEIGHT_CAP = 2.0` rests on evidence that does not support it, and is LEFT AS IT IS.** It was
+chosen over 0 on MAE and top-30 margins of 0.018 and 0.006 against week-blocked standard errors of
+0.106 and 0.50 for those same statistics, and its confirmation set was "28 untouched weeks" of which
+14 were 2021 — a season where the panel has no prior at all, so **0 of 2,698 projections differ
+between any two arms**. Recorded at the constant's definition. Changing it is a production decision
+on its own commit.
+
 ## The confidence statement, kept separate on purpose
 
 | layer | standing |
@@ -82,7 +103,7 @@ reads `UNKNOWN_PENDING_ACQUISITION`, never zero.
 | exact optimiser | **trusted** — proven against brute force, every constraint compiled and verified |
 | contest portfolio | method **promising**, specific entries **not determined** |
 | joint simulator | **partially** trusted — 11 of 16 correlations, one named open question |
-| role / prior pipeline | **improving** — four unit defects removed, effects measured |
+| role / prior pipeline | **improving** — four unit defects removed, effects measured; the cohort prior is now measured as costing ranking, and the weight cap's own evidence does not support it |
 | **proprietary projections** | **NOT yet validated.** No out-of-sample ranking skill above a current-season baseline has been demonstrated. |
 
 The last line is the one that gates everything downstream, and it is not closed by any amount of

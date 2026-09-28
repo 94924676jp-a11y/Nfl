@@ -1,0 +1,2029 @@
+{
+  "ARTIFACT": "SHRINKAGE_STUDY",
+  "SPEC_VERSION": "shrinkage-99-1",
+  "QUESTION": "#99 -- where the between-player variance goes, and whether the prior is what destroys it.",
+  "WHY_THE_EXISTING_SWEEP_CANNOT_ANSWER_IT": "PRIOR_WEIGHT_CAP is one scalar over a prior that is two different objects. A player-own prior differs for every player; a cohort prior is a constant shared by everyone in the cohort. Setting the cap to 0 switches off both, so the sweep cannot separate \"his own history does not help\" from \"a shared constant hurts\".",
+  "PREREGISTERED": {
+    "selection_seasons": [
+      2023,
+      2024,
+      2025
+    ],
+    "confirmation_seasons": [
+      2022
+    ],
+    "confirmation_seasons_as_preregistered": [
+      2021,
+      2022
+    ],
+    "confirmation_seasons_dropped": {
+      "2021": "panel begins in 2021 so through_season=2020 is empty; every prior is PRIOR_UNAVAILABLE and every arm produces identical projections"
+    },
+    "arms": [
+      {
+        "name": "OWN_OFF_COHORT_OFF",
+        "own_cap": 0.0,
+        "cohort_cap": 0.0
+      },
+      {
+        "name": "PRODUCTION",
+        "own_cap": 2.0,
+        "cohort_cap": 2.0
+      },
+      {
+        "name": "OWN_ON_COHORT_OFF",
+        "own_cap": 2.0,
+        "cohort_cap": 0.0
+      },
+      {
+        "name": "OWN_HIGH_COHORT_OFF",
+        "own_cap": 8.0,
+        "cohort_cap": 0.0
+      },
+      {
+        "name": "OWN_ON_COHORT_LOW",
+        "own_cap": 2.0,
+        "cohort_cap": 0.5
+      },
+      {
+        "name": "COHORT_ONLY",
+        "own_cap": 0.0,
+        "cohort_cap": 2.0
+      }
+    ],
+    "primary_outcome": "within-slate-week Spearman rank correlation between projection and realised DK points, averaged over weeks, week-blocked SE",
+    "own_tiers": [
+      "PLAYER_OWN_ROLE",
+      "PLAYER_OWN_OFF_ROLE"
+    ],
+    "cohort_tiers": [
+      "ROLE_GROUP",
+      "ARCHETYPE",
+      "TEAM_CONTEXT",
+      "POSITIONAL_BROAD"
+    ]
+  },
+  "VOID_SEASON_2021": {
+    "state": "VOID",
+    "why": "panel begins in 2021 so through_season=2020 is empty; every prior is PRIOR_UNAVAILABLE and every arm produces identical projections",
+    "measured": "0 of 2698 projections differ between the cap-0 and cap-2 arms in 2021, against 3617 of 3627 in 2022",
+    "CONSEQUENCE_FOR_THE_EXISTING_CONSTANT": "PRIOR_WEIGHT_CAP=2.0 was CONFIRMED on \"untouched 2021-2022\". Half of that confirmation set cannot respond to the cap at all, so any difference measured on it was mechanically halved toward zero before it was read. The sweep concluded that cap 2 and cap 0 were near-tied on MAE and top-30 points on exactly that set. That near-tie is partly an artefact of the split. This does not show the constant is wrong; it shows the evidence recorded for it does not support it."
+  },
+  "MULTIPLICITY_COST": "the confirmation season 2022 was already read once, to confirm PRIOR_WEIGHT_CAP=2. This study reads it a second time for a related question, so it is NOT an untouched holdout here, and after 2021 was voided it is ONE season of 14 weeks. Six arms are compared, and no multiplicity correction is applied to the paired z values below; they are descriptive. A genuinely confirmatory result needs a season this question has never seen.",
+  "DFS_RELEVANCE_IS_A_PROXY": "no historical DraftKings salaries or rosters exist in this checkout, so the DFS-relevant slice is pregame role band in ('ALPHA', 'PRIMARY', 'SECONDARY'). It is neither a prediction nor an outcome, which the alternatives would have been.",
+  "PROJECTION_SYSTEM_STATE": "NOT_VALIDATED",
+  "WHAT_THIS_DOES_NOT_DO": "it does not validate the projection system, it does not measure 2026, and no arm here is adopted by running it. Adoption is a separate decision on a separate commit.",
+  "TIERS_THE_HISTORY_CANNOT_TEST": {
+    "observed_in_the_forward_chain": [
+      "PLAYER_OWN_ROLE",
+      "PLAYER_OWN_OFF_ROLE",
+      "ROLE_GROUP"
+    ],
+    "observed_on_the_live_week_3_slate": [
+      "PLAYER_OWN_ROLE",
+      "PLAYER_OWN_OFF_ROLE",
+      "ROLE_GROUP",
+      "ARCHETYPE"
+    ],
+    "why_they_differ": "a forward-chained season builds its priors from a complete previous season, so a player usually has enough of his own history to reach ROLE_GROUP at worst. Week 3 of 2026 is three games into a panel that thins at its live edge, so 98 players fall all the way to ARCHETYPE.",
+    "CONSEQUENCE": "ARCHETYPE is where the collapse is most extreme -- 46 tight ends hold ONE distinct prior value between them, 17 receivers hold one, and the prior takes 95-96% of their blend. The arm comparison below CANNOT measure the harm from that tier, because it barely fires in the seasons being scored. The live slate is therefore MORE compressed than anything measured here, and the arm differences below are a LOWER BOUND on what the same change would do to the Week 3 slate. That is a reason not to extrapolate, not a reason to assume the effect is larger."
+  },
+  "prior_anatomy": {
+    "2021": [],
+    "2022": [
+      {
+        "position": "QB",
+        "tier": "PLAYER_OWN_OFF_ROLE",
+        "n_players": 7,
+        "n_distinct_prior_values": 7,
+        "collapse_fraction": 0.0,
+        "sd_of_prior_values": 0.042833,
+        "median_effective_obs": 4.02,
+        "effective_obs_at_or_above_cap": 1.0
+      },
+      {
+        "position": "QB",
+        "tier": "PLAYER_OWN_ROLE",
+        "n_players": 30,
+        "n_distinct_prior_values": 30,
+        "collapse_fraction": 0.0,
+        "sd_of_prior_values": 0.015562,
+        "median_effective_obs": 11.09,
+        "effective_obs_at_or_above_cap": 1.0
+      },
+      {
+        "position": "QB",
+        "tier": "ROLE_GROUP",
+        "n_players": 76,
+        "n_distinct_prior_values": 4,
+        "collapse_fraction": 0.9474,
+        "sd_of_prior_values": 0.335644,
+        "median_effective_obs": 7.52,
+        "effective_obs_at_or_above_cap": 1.0
+      },
+      {
+        "position": "RB",
+        "tier": "PLAYER_OWN_OFF_ROLE",
+        "n_players": 32,
+        "n_distinct_prior_values": 32,
+        "collapse_fraction": 0.0,
+        "sd_of_prior_values": 0.189269,
+        "median_effective_obs": 4.04,
+        "effective_obs_at_or_above_cap": 1.0
+      },
+      {
+        "position": "RB",
+        "tier": "PLAYER_OWN_ROLE",
+        "n_players": 43,
+        "n_distinct_prior_values": 43,
+        "collapse_fraction": 0.0,
+        "sd_of_prior_values": 0.144216,
+        "median_effective_obs": 8.33,
+        "effective_obs_at_or_above_cap": 1.0
+      },
+      {
+        "position": "RB",
+        "tier": "ROLE_GROUP",
+        "n_players": 192,
+        "n_distinct_prior_values": 4,
+        "collapse_fraction": 0.9792,
+        "sd_of_prior_values": 0.075221,
+        "median_effective_obs": 70.57,
+        "effective_obs_at_or_above_cap": 1.0
+      },
+      {
+        "position": "TE",
+        "tier": "PLAYER_OWN_OFF_ROLE",
+        "n_players": 13,
+        "n_distinct_prior_values": 13,
+        "collapse_fraction": 0.0,
+        "sd_of_prior_values": 0.043169,
+        "median_effective_obs": 4.25,
+        "effective_obs_at_or_above_cap": 1.0
+      },
+      {
+        "position": "TE",
+        "tier": "PLAYER_OWN_ROLE",
+        "n_players": 9,
+        "n_distinct_prior_values": 9,
+        "collapse_fraction": 0.0,
+        "sd_of_prior_values": 0.022401,
+        "median_effective_obs": 7.66,
+        "effective_obs_at_or_above_cap": 1.0
+      },
+      {
+        "position": "TE",
+        "tier": "ROLE_GROUP",
+        "n_players": 115,
+        "n_distinct_prior_values": 5,
+        "collapse_fraction": 0.9565,
+        "sd_of_prior_values": 0.05106,
+        "median_effective_obs": 10.63,
+        "effective_obs_at_or_above_cap": 1.0
+      },
+      {
+        "position": "WR",
+        "tier": "PLAYER_OWN_OFF_ROLE",
+        "n_players": 70,
+        "n_distinct_prior_values": 70,
+        "collapse_fraction": 0.0,
+        "sd_of_prior_values": 0.051194,
+        "median_effective_obs": 3.98,
+        "effective_obs_at_or_above_cap": 1.0
+      },
+      {
+        "position": "WR",
+        "tier": "PLAYER_OWN_ROLE",
+        "n_players": 32,
+        "n_distinct_prior_values": 32,
+        "collapse_fraction": 0.0,
+        "sd_of_prior_values": 0.040734,
+        "median_effective_obs": 8.32,
+        "effective_obs_at_or_above_cap": 1.0
+      },
+      {
+        "position": "WR",
+        "tier": "ROLE_GROUP",
+        "n_players": 341,
+        "n_distinct_prior_values": 5,
+        "collapse_fraction": 0.9853,
+        "sd_of_prior_values": 0.063821,
+        "median_effective_obs": 21.57,
+        "effective_obs_at_or_above_cap": 1.0
+      }
+    ],
+    "2023": [
+      {
+        "position": "QB",
+        "tier": "PLAYER_OWN_OFF_ROLE",
+        "n_players": 9,
+        "n_distinct_prior_values": 9,
+        "collapse_fraction": 0.0,
+        "sd_of_prior_values": 0.062027,
+        "median_effective_obs": 4.24,
+        "effective_obs_at_or_above_cap": 1.0
+      },
+      {
+        "position": "QB",
+        "tier": "PLAYER_OWN_ROLE",
+        "n_players": 33,
+        "n_distinct_prior_values": 32,
+        "collapse_fraction": 0.0303,
+        "sd_of_prior_values": 0.022911,
+        "median_effective_obs": 15.45,
+        "effective_obs_at_or_above_cap": 1.0
+      },
+      {
+        "position": "QB",
+        "tier": "ROLE_GROUP",
+        "n_players": 64,
+        "n_distinct_prior_values": 3,
+        "collapse_fraction": 0.9531,
+        "sd_of_prior_values": 0.399167,
+        "median_effective_obs": 11.5,
+        "effective_obs_at_or_above_cap": 1.0
+      },
+      {
+        "position": "RB",
+        "tier": "PLAYER_OWN_OFF_ROLE",
+        "n_players": 22,
+        "n_distinct_prior_values": 22,
+        "collapse_fraction": 0.0,
+        "sd_of_prior_values": 0.169964,
+        "median_effective_obs": 4.49,
+        "effective_obs_at_or_above_cap": 1.0
+      },
+      {
+        "position": "RB",
+        "tier": "PLAYER_OWN_ROLE",
+        "n_players": 61,
+        "n_distinct_prior_values": 61,
+        "collapse_fraction": 0.0,
+        "sd_of_prior_values": 0.176896,
+        "median_effective_obs": 11.84,
+        "effective_obs_at_or_above_cap": 1.0
+      },
+      {
+        "position": "RB",
+        "tier": "ROLE_GROUP",
+        "n_players": 152,
+        "n_distinct_prior_values": 4,
+        "collapse_fraction": 0.9737,
+        "sd_of_prior_values": 0.085477,
+        "median_effective_obs": 148.73,
+        "effective_obs_at_or_above_cap": 1.0
+      },
+      {
+        "position": "TE",
+        "tier": "PLAYER_OWN_OFF_ROLE",
+        "n_players": 19,
+        "n_distinct_prior_values": 19,
+        "collapse_fraction": 0.0,
+        "sd_of_prior_values": 0.040786,
+        "median_effective_obs": 3.21,
+        "effective_obs_at_or_above_cap": 1.0
+      },
+      {
+        "position": "TE",
+        "tier": "PLAYER_OWN_ROLE",
+        "n_players": 18,
+        "n_distinct_prior_values": 18,
+        "collapse_fraction": 0.0,
+        "sd_of_prior_values": 0.025605,
+        "median_effective_obs": 9.88,
+        "effective_obs_at_or_above_cap": 1.0
+      },
+      {
+        "position": "TE",
+        "tier": "ROLE_GROUP",
+        "n_players": 100,
+        "n_distinct_prior_values": 5,
+        "collapse_fraction": 0.95,
+        "sd_of_prior_values": 0.052194,
+        "median_effective_obs": 24.33,
+        "effective_obs_at_or_above_cap": 1.0
+      },
+      {
+        "position": "WR",
+        "tier": "PLAYER_OWN_OFF_ROLE",
+        "n_players": 60,
+        "n_distinct_prior_values": 60,
+        "collapse_fraction": 0.0,
+        "sd_of_prior_values": 0.042973,
+        "median_effective_obs": 4.21,
+        "effective_obs_at_or_above_cap": 1.0
+      },
+      {
+        "position": "WR",
+        "tier": "PLAYER_OWN_ROLE",
+        "n_players": 62,
+        "n_distinct_prior_values": 61,
+        "collapse_fraction": 0.0161,
+        "sd_of_prior_values": 0.058145,
+        "median_effective_obs": 9.86,
+        "effective_obs_at_or_above_cap": 1.0
+      },
+      {
+        "position": "WR",
+        "tier": "ROLE_GROUP",
+        "n_players": 256,
+        "n_distinct_prior_values": 5,
+        "collapse_fraction": 0.9805,
+        "sd_of_prior_values": 0.061299,
+        "median_effective_obs": 41.22,
+        "effective_obs_at_or_above_cap": 1.0
+      }
+    ],
+    "2024": [
+      {
+        "position": "QB",
+        "tier": "PLAYER_OWN_OFF_ROLE",
+        "n_players": 14,
+        "n_distinct_prior_values": 14,
+        "collapse_fraction": 0.0,
+        "sd_of_prior_values": 0.061265,
+        "median_effective_obs": 4.7,
+        "effective_obs_at_or_above_cap": 1.0
+      },
+      {
+        "position": "QB",
+        "tier": "PLAYER_OWN_ROLE",
+        "n_players": 41,
+        "n_distinct_prior_values": 41,
+        "collapse_fraction": 0.0,
+        "sd_of_prior_values": 0.015361,
+        "median_effective_obs": 14.84,
+        "effective_obs_at_or_above_cap": 1.0
+      },
+      {
+        "position": "QB",
+        "tier": "ROLE_GROUP",
+        "n_players": 41,
+        "n_distinct_prior_values": 3,
+        "collapse_fraction": 0.9268,
+        "sd_of_prior_values": 0.422657,
+        "median_effective_obs": 16.04,
+        "effective_obs_at_or_above_cap": 1.0
+      },
+      {
+        "position": "RB",
+        "tier": "PLAYER_OWN_OFF_ROLE",
+        "n_players": 27,
+        "n_distinct_prior_values": 27,
+        "collapse_fraction": 0.0,
+        "sd_of_prior_values": 0.149436,
+        "median_effective_obs": 4.12,
+        "effective_obs_at_or_above_cap": 1.0
+      },
+      {
+        "position": "RB",
+        "tier": "PLAYER_OWN_ROLE",
+        "n_players": 67,
+        "n_distinct_prior_values": 67,
+        "collapse_fraction": 0.0,
+        "sd_of_prior_values": 0.173785,
+        "median_effective_obs": 14.11,
+        "effective_obs_at_or_above_cap": 1.0
+      },
+      {
+        "position": "RB",
+        "tier": "ROLE_GROUP",
+        "n_players": 122,
+        "n_distinct_prior_values": 3,
+        "collapse_fraction": 0.9754,
+        "sd_of_prior_values": 0.090147,
+        "median_effective_obs": 230.86,
+        "effective_obs_at_or_above_cap": 1.0
+      },
+      {
+        "position": "TE",
+        "tier": "PLAYER_OWN_OFF_ROLE",
+        "n_players": 20,
+        "n_distinct_prior_values": 20,
+        "collapse_fraction": 0.0,
+        "sd_of_prior_values": 0.033761,
+        "median_effective_obs": 4.46,
+        "effective_obs_at_or_above_cap": 1.0
+      },
+      {
+        "position": "TE",
+        "tier": "PLAYER_OWN_ROLE",
+        "n_players": 25,
+        "n_distinct_prior_values": 25,
+        "collapse_fraction": 0.0,
+        "sd_of_prior_values": 0.028313,
+        "median_effective_obs": 10.61,
+        "effective_obs_at_or_above_cap": 1.0
+      },
+      {
+        "position": "TE",
+        "tier": "ROLE_GROUP",
+        "n_players": 92,
+        "n_distinct_prior_values": 5,
+        "collapse_fraction": 0.9457,
+        "sd_of_prior_values": 0.055721,
+        "median_effective_obs": 84.44,
+        "effective_obs_at_or_above_cap": 1.0
+      },
+      {
+        "position": "WR",
+        "tier": "PLAYER_OWN_OFF_ROLE",
+        "n_players": 52,
+        "n_distinct_prior_values": 52,
+        "collapse_fraction": 0.0,
+        "sd_of_prior_values": 0.048701,
+        "median_effective_obs": 4.38,
+        "effective_obs_at_or_above_cap": 1.0
+      },
+      {
+        "position": "WR",
+        "tier": "PLAYER_OWN_ROLE",
+        "n_players": 73,
+        "n_distinct_prior_values": 73,
+        "collapse_fraction": 0.0,
+        "sd_of_prior_values": 0.054762,
+        "median_effective_obs": 11.08,
+        "effective_obs_at_or_above_cap": 1.0
+      },
+      {
+        "position": "WR",
+        "tier": "ROLE_GROUP",
+        "n_players": 208,
+        "n_distinct_prior_values": 5,
+        "collapse_fraction": 0.976,
+        "sd_of_prior_values": 0.059731,
+        "median_effective_obs": 76.45,
+        "effective_obs_at_or_above_cap": 1.0
+      }
+    ],
+    "2025": [
+      {
+        "position": "QB",
+        "tier": "PLAYER_OWN_OFF_ROLE",
+        "n_players": 9,
+        "n_distinct_prior_values": 9,
+        "collapse_fraction": 0.0,
+        "sd_of_prior_values": 0.058953,
+        "median_effective_obs": 4.39,
+        "effective_obs_at_or_above_cap": 1.0
+      },
+      {
+        "position": "QB",
+        "tier": "PLAYER_OWN_ROLE",
+        "n_players": 48,
+        "n_distinct_prior_values": 48,
+        "collapse_fraction": 0.0,
+        "sd_of_prior_values": 0.021088,
+        "median_effective_obs": 16.98,
+        "effective_obs_at_or_above_cap": 1.0
+      },
+      {
+        "position": "QB",
+        "tier": "ROLE_GROUP",
+        "n_players": 36,
+        "n_distinct_prior_values": 5,
+        "collapse_fraction": 0.8611,
+        "sd_of_prior_values": 0.438403,
+        "median_effective_obs": 51.55,
+        "effective_obs_at_or_above_cap": 1.0
+      },
+      {
+        "position": "RB",
+        "tier": "PLAYER_OWN_OFF_ROLE",
+        "n_players": 26,
+        "n_distinct_prior_values": 26,
+        "collapse_fraction": 0.0,
+        "sd_of_prior_values": 0.112772,
+        "median_effective_obs": 4.2,
+        "effective_obs_at_or_above_cap": 1.0
+      },
+      {
+        "position": "RB",
+        "tier": "PLAYER_OWN_ROLE",
+        "n_players": 69,
+        "n_distinct_prior_values": 69,
+        "collapse_fraction": 0.0,
+        "sd_of_prior_values": 0.167367,
+        "median_effective_obs": 15.21,
+        "effective_obs_at_or_above_cap": 1.0
+      },
+      {
+        "position": "RB",
+        "tier": "ROLE_GROUP",
+        "n_players": 90,
+        "n_distinct_prior_values": 3,
+        "collapse_fraction": 0.9667,
+        "sd_of_prior_values": 0.084341,
+        "median_effective_obs": 334.69,
+        "effective_obs_at_or_above_cap": 1.0
+      },
+      {
+        "position": "TE",
+        "tier": "PLAYER_OWN_OFF_ROLE",
+        "n_players": 17,
+        "n_distinct_prior_values": 17,
+        "collapse_fraction": 0.0,
+        "sd_of_prior_values": 0.036427,
+        "median_effective_obs": 3.85,
+        "effective_obs_at_or_above_cap": 1.0
+      },
+      {
+        "position": "TE",
+        "tier": "PLAYER_OWN_ROLE",
+        "n_players": 30,
+        "n_distinct_prior_values": 30,
+        "collapse_fraction": 0.0,
+        "sd_of_prior_values": 0.033933,
+        "median_effective_obs": 11.84,
+        "effective_obs_at_or_above_cap": 1.0
+      },
+      {
+        "position": "TE",
+        "tier": "ROLE_GROUP",
+        "n_players": 90,
+        "n_distinct_prior_values": 5,
+        "collapse_fraction": 0.9444,
+        "sd_of_prior_values": 0.061115,
+        "median_effective_obs": 308.07,
+        "effective_obs_at_or_above_cap": 1.0
+      },
+      {
+        "position": "WR",
+        "tier": "PLAYER_OWN_OFF_ROLE",
+        "n_players": 52,
+        "n_distinct_prior_values": 52,
+        "collapse_fraction": 0.0,
+        "sd_of_prior_values": 0.04681,
+        "median_effective_obs": 3.97,
+        "effective_obs_at_or_above_cap": 1.0
+      },
+      {
+        "position": "WR",
+        "tier": "PLAYER_OWN_ROLE",
+        "n_players": 84,
+        "n_distinct_prior_values": 84,
+        "collapse_fraction": 0.0,
+        "sd_of_prior_values": 0.060367,
+        "median_effective_obs": 10.95,
+        "effective_obs_at_or_above_cap": 1.0
+      },
+      {
+        "position": "WR",
+        "tier": "ROLE_GROUP",
+        "n_players": 152,
+        "n_distinct_prior_values": 5,
+        "collapse_fraction": 0.9671,
+        "sd_of_prior_values": 0.062954,
+        "median_effective_obs": 101.07,
+        "effective_obs_at_or_above_cap": 1.0
+      }
+    ]
+  },
+  "arms": {
+    "OWN_OFF_COHORT_OFF": {
+      "own_cap": 0.0,
+      "cohort_cap": 0.0,
+      "selection": {
+        "rho": {
+          "mean": 0.4671,
+          "week_blocked_se": 0.0125,
+          "n_weeks": 42
+        },
+        "mae": {
+          "mean": 4.8461,
+          "week_blocked_se": 0.0679,
+          "n_weeks": 42
+        },
+        "level": {
+          "mean": 1.0185,
+          "week_blocked_se": 0.0141,
+          "n_weeks": 42
+        },
+        "top30_actual": {
+          "mean": 15.3657,
+          "week_blocked_se": 0.3892,
+          "n_weeks": 42
+        },
+        "sd_pred": {
+          "mean": 6.7647,
+          "week_blocked_se": 0.0256,
+          "n_weeks": 42
+        },
+        "sd_actual": {
+          "mean": 8.1971,
+          "week_blocked_se": 0.0821,
+          "n_weeks": 42
+        },
+        "sep_pred_top_decile_over_median": {
+          "mean": 9.2057,
+          "week_blocked_se": 0.4392,
+          "n_weeks": 42
+        },
+        "sep_actual_top_decile_over_median": {
+          "mean": 15.3312,
+          "week_blocked_se": 1.3906,
+          "n_weeks": 37
+        },
+        "rho_dfs_relevant": {
+          "mean": 0.4902,
+          "week_blocked_se": 0.0138,
+          "n_weeks": 42
+        },
+        "sd_ratio_pred_over_actual": 0.8253
+      },
+      "confirmation": {
+        "rho": {
+          "mean": 0.4456,
+          "week_blocked_se": 0.0191,
+          "n_weeks": 14
+        },
+        "mae": {
+          "mean": 5.2628,
+          "week_blocked_se": 0.0716,
+          "n_weeks": 14
+        },
+        "level": {
+          "mean": 1.0006,
+          "week_blocked_se": 0.0266,
+          "n_weeks": 14
+        },
+        "top30_actual": {
+          "mean": 15.5383,
+          "week_blocked_se": 0.7115,
+          "n_weeks": 14
+        },
+        "sd_pred": {
+          "mean": 7.0583,
+          "week_blocked_se": 0.0233,
+          "n_weeks": 14
+        },
+        "sd_actual": {
+          "mean": 8.5446,
+          "week_blocked_se": 0.1681,
+          "n_weeks": 14
+        },
+        "sep_pred_top_decile_over_median": {
+          "mean": 6.9469,
+          "week_blocked_se": 0.3206,
+          "n_weeks": 14
+        },
+        "sep_actual_top_decile_over_median": {
+          "mean": 11.2051,
+          "week_blocked_se": 0.8552,
+          "n_weeks": 13
+        },
+        "rho_dfs_relevant": {
+          "mean": 0.4758,
+          "week_blocked_se": 0.0236,
+          "n_weeks": 14
+        },
+        "sd_ratio_pred_over_actual": 0.8261
+      },
+      "n_weeks_selection": 42,
+      "n_weeks_confirmation": 14
+    },
+    "PRODUCTION": {
+      "own_cap": 2.0,
+      "cohort_cap": 2.0,
+      "selection": {
+        "rho": {
+          "mean": 0.4417,
+          "week_blocked_se": 0.0123,
+          "n_weeks": 42
+        },
+        "mae": {
+          "mean": 4.9429,
+          "week_blocked_se": 0.0648,
+          "n_weeks": 42
+        },
+        "level": {
+          "mean": 1.0098,
+          "week_blocked_se": 0.0147,
+          "n_weeks": 42
+        },
+        "top30_actual": {
+          "mean": 15.1657,
+          "week_blocked_se": 0.3657,
+          "n_weeks": 42
+        },
+        "sd_pred": {
+          "mean": 6.5157,
+          "week_blocked_se": 0.0172,
+          "n_weeks": 42
+        },
+        "sd_actual": {
+          "mean": 8.1971,
+          "week_blocked_se": 0.0821,
+          "n_weeks": 42
+        },
+        "sep_pred_top_decile_over_median": {
+          "mean": 7.3177,
+          "week_blocked_se": 0.2906,
+          "n_weeks": 42
+        },
+        "sep_actual_top_decile_over_median": {
+          "mean": 15.3312,
+          "week_blocked_se": 1.3906,
+          "n_weeks": 37
+        },
+        "rho_dfs_relevant": {
+          "mean": 0.4728,
+          "week_blocked_se": 0.0139,
+          "n_weeks": 42
+        },
+        "sd_ratio_pred_over_actual": 0.7949
+      },
+      "confirmation": {
+        "rho": {
+          "mean": 0.4173,
+          "week_blocked_se": 0.0184,
+          "n_weeks": 14
+        },
+        "mae": {
+          "mean": 5.3318,
+          "week_blocked_se": 0.0647,
+          "n_weeks": 14
+        },
+        "level": {
+          "mean": 1.0121,
+          "week_blocked_se": 0.0271,
+          "n_weeks": 14
+        },
+        "top30_actual": {
+          "mean": 15.14,
+          "week_blocked_se": 0.7693,
+          "n_weeks": 14
+        },
+        "sd_pred": {
+          "mean": 6.7326,
+          "week_blocked_se": 0.0107,
+          "n_weeks": 14
+        },
+        "sd_actual": {
+          "mean": 8.5446,
+          "week_blocked_se": 0.1681,
+          "n_weeks": 14
+        },
+        "sep_pred_top_decile_over_median": {
+          "mean": 5.5147,
+          "week_blocked_se": 0.1812,
+          "n_weeks": 14
+        },
+        "sep_actual_top_decile_over_median": {
+          "mean": 11.2051,
+          "week_blocked_se": 0.8552,
+          "n_weeks": 13
+        },
+        "rho_dfs_relevant": {
+          "mean": 0.4541,
+          "week_blocked_se": 0.0227,
+          "n_weeks": 14
+        },
+        "sd_ratio_pred_over_actual": 0.7879
+      },
+      "n_weeks_selection": 42,
+      "n_weeks_confirmation": 14
+    },
+    "OWN_ON_COHORT_OFF": {
+      "own_cap": 2.0,
+      "cohort_cap": 0.0,
+      "selection": {
+        "rho": {
+          "mean": 0.4586,
+          "week_blocked_se": 0.0124,
+          "n_weeks": 42
+        },
+        "mae": {
+          "mean": 4.902,
+          "week_blocked_se": 0.066,
+          "n_weeks": 42
+        },
+        "level": {
+          "mean": 1.0048,
+          "week_blocked_se": 0.0144,
+          "n_weeks": 42
+        },
+        "top30_actual": {
+          "mean": 15.3092,
+          "week_blocked_se": 0.3739,
+          "n_weeks": 42
+        },
+        "sd_pred": {
+          "mean": 6.6661,
+          "week_blocked_se": 0.0176,
+          "n_weeks": 42
+        },
+        "sd_actual": {
+          "mean": 8.1971,
+          "week_blocked_se": 0.0821,
+          "n_weeks": 42
+        },
+        "sep_pred_top_decile_over_median": {
+          "mean": 8.0771,
+          "week_blocked_se": 0.3829,
+          "n_weeks": 42
+        },
+        "sep_actual_top_decile_over_median": {
+          "mean": 15.3312,
+          "week_blocked_se": 1.3906,
+          "n_weeks": 37
+        },
+        "rho_dfs_relevant": {
+          "mean": 0.4823,
+          "week_blocked_se": 0.0138,
+          "n_weeks": 42
+        },
+        "sd_ratio_pred_over_actual": 0.8132
+      },
+      "confirmation": {
+        "rho": {
+          "mean": 0.4428,
+          "week_blocked_se": 0.0187,
+          "n_weeks": 14
+        },
+        "mae": {
+          "mean": 5.2663,
+          "week_blocked_se": 0.0677,
+          "n_weeks": 14
+        },
+        "level": {
+          "mean": 1.0017,
+          "week_blocked_se": 0.0267,
+          "n_weeks": 14
+        },
+        "top30_actual": {
+          "mean": 15.5396,
+          "week_blocked_se": 0.7631,
+          "n_weeks": 14
+        },
+        "sd_pred": {
+          "mean": 6.9522,
+          "week_blocked_se": 0.0117,
+          "n_weeks": 14
+        },
+        "sd_actual": {
+          "mean": 8.5446,
+          "week_blocked_se": 0.1681,
+          "n_weeks": 14
+        },
+        "sep_pred_top_decile_over_median": {
+          "mean": 6.4363,
+          "week_blocked_se": 0.3603,
+          "n_weeks": 14
+        },
+        "sep_actual_top_decile_over_median": {
+          "mean": 11.2051,
+          "week_blocked_se": 0.8552,
+          "n_weeks": 13
+        },
+        "rho_dfs_relevant": {
+          "mean": 0.4726,
+          "week_blocked_se": 0.0229,
+          "n_weeks": 14
+        },
+        "sd_ratio_pred_over_actual": 0.8136
+      },
+      "n_weeks_selection": 42,
+      "n_weeks_confirmation": 14
+    },
+    "OWN_HIGH_COHORT_OFF": {
+      "own_cap": 8.0,
+      "cohort_cap": 0.0,
+      "selection": {
+        "rho": {
+          "mean": 0.454,
+          "week_blocked_se": 0.0123,
+          "n_weeks": 42
+        },
+        "mae": {
+          "mean": 4.913,
+          "week_blocked_se": 0.0643,
+          "n_weeks": 42
+        },
+        "level": {
+          "mean": 1.0154,
+          "week_blocked_se": 0.0149,
+          "n_weeks": 42
+        },
+        "top30_actual": {
+          "mean": 15.2644,
+          "week_blocked_se": 0.3833,
+          "n_weeks": 42
+        },
+        "sd_pred": {
+          "mean": 6.5233,
+          "week_blocked_se": 0.0152,
+          "n_weeks": 42
+        },
+        "sd_actual": {
+          "mean": 8.1971,
+          "week_blocked_se": 0.0821,
+          "n_weeks": 42
+        },
+        "sep_pred_top_decile_over_median": {
+          "mean": 7.8182,
+          "week_blocked_se": 0.3672,
+          "n_weeks": 42
+        },
+        "sep_actual_top_decile_over_median": {
+          "mean": 15.3312,
+          "week_blocked_se": 1.3906,
+          "n_weeks": 37
+        },
+        "rho_dfs_relevant": {
+          "mean": 0.4763,
+          "week_blocked_se": 0.0137,
+          "n_weeks": 42
+        },
+        "sd_ratio_pred_over_actual": 0.7958
+      },
+      "confirmation": {
+        "rho": {
+          "mean": 0.4413,
+          "week_blocked_se": 0.0185,
+          "n_weeks": 14
+        },
+        "mae": {
+          "mean": 5.2675,
+          "week_blocked_se": 0.0684,
+          "n_weeks": 14
+        },
+        "level": {
+          "mean": 1.0105,
+          "week_blocked_se": 0.027,
+          "n_weeks": 14
+        },
+        "top30_actual": {
+          "mean": 14.9549,
+          "week_blocked_se": 0.7011,
+          "n_weeks": 14
+        },
+        "sd_pred": {
+          "mean": 6.8568,
+          "week_blocked_se": 0.0105,
+          "n_weeks": 14
+        },
+        "sd_actual": {
+          "mean": 8.5446,
+          "week_blocked_se": 0.1681,
+          "n_weeks": 14
+        },
+        "sep_pred_top_decile_over_median": {
+          "mean": 6.243,
+          "week_blocked_se": 0.3442,
+          "n_weeks": 14
+        },
+        "sep_actual_top_decile_over_median": {
+          "mean": 11.2051,
+          "week_blocked_se": 0.8552,
+          "n_weeks": 13
+        },
+        "rho_dfs_relevant": {
+          "mean": 0.4703,
+          "week_blocked_se": 0.0226,
+          "n_weeks": 14
+        },
+        "sd_ratio_pred_over_actual": 0.8025
+      },
+      "n_weeks_selection": 42,
+      "n_weeks_confirmation": 14
+    },
+    "OWN_ON_COHORT_LOW": {
+      "own_cap": 2.0,
+      "cohort_cap": 0.5,
+      "selection": {
+        "rho": {
+          "mean": 0.4524,
+          "week_blocked_se": 0.0124,
+          "n_weeks": 42
+        },
+        "mae": {
+          "mean": 4.9211,
+          "week_blocked_se": 0.0661,
+          "n_weeks": 42
+        },
+        "level": {
+          "mean": 1.0031,
+          "week_blocked_se": 0.0145,
+          "n_weeks": 42
+        },
+        "top30_actual": {
+          "mean": 15.2054,
+          "week_blocked_se": 0.3603,
+          "n_weeks": 42
+        },
+        "sd_pred": {
+          "mean": 6.6314,
+          "week_blocked_se": 0.0176,
+          "n_weeks": 42
+        },
+        "sd_actual": {
+          "mean": 8.1971,
+          "week_blocked_se": 0.0821,
+          "n_weeks": 42
+        },
+        "sep_pred_top_decile_over_median": {
+          "mean": 7.7642,
+          "week_blocked_se": 0.3478,
+          "n_weeks": 42
+        },
+        "sep_actual_top_decile_over_median": {
+          "mean": 15.3312,
+          "week_blocked_se": 1.3906,
+          "n_weeks": 37
+        },
+        "rho_dfs_relevant": {
+          "mean": 0.4791,
+          "week_blocked_se": 0.0138,
+          "n_weeks": 42
+        },
+        "sd_ratio_pred_over_actual": 0.809
+      },
+      "confirmation": {
+        "rho": {
+          "mean": 0.4322,
+          "week_blocked_se": 0.0188,
+          "n_weeks": 14
+        },
+        "mae": {
+          "mean": 5.2894,
+          "week_blocked_se": 0.0674,
+          "n_weeks": 14
+        },
+        "level": {
+          "mean": 0.9989,
+          "week_blocked_se": 0.0268,
+          "n_weeks": 14
+        },
+        "top30_actual": {
+          "mean": 15.4796,
+          "week_blocked_se": 0.7735,
+          "n_weeks": 14
+        },
+        "sd_pred": {
+          "mean": 6.9073,
+          "week_blocked_se": 0.0118,
+          "n_weeks": 14
+        },
+        "sd_actual": {
+          "mean": 8.5446,
+          "week_blocked_se": 0.1681,
+          "n_weeks": 14
+        },
+        "sep_pred_top_decile_over_median": {
+          "mean": 6.034,
+          "week_blocked_se": 0.2436,
+          "n_weeks": 14
+        },
+        "sep_actual_top_decile_over_median": {
+          "mean": 11.2051,
+          "week_blocked_se": 0.8552,
+          "n_weeks": 13
+        },
+        "rho_dfs_relevant": {
+          "mean": 0.4688,
+          "week_blocked_se": 0.0232,
+          "n_weeks": 14
+        },
+        "sd_ratio_pred_over_actual": 0.8084
+      },
+      "n_weeks_selection": 42,
+      "n_weeks_confirmation": 14
+    },
+    "COHORT_ONLY": {
+      "own_cap": 0.0,
+      "cohort_cap": 2.0,
+      "selection": {
+        "rho": {
+          "mean": 0.4489,
+          "week_blocked_se": 0.0123,
+          "n_weeks": 42
+        },
+        "mae": {
+          "mean": 4.8926,
+          "week_blocked_se": 0.0661,
+          "n_weeks": 42
+        },
+        "level": {
+          "mean": 1.0246,
+          "week_blocked_se": 0.0144,
+          "n_weeks": 42
+        },
+        "top30_actual": {
+          "mean": 15.3214,
+          "week_blocked_se": 0.3557,
+          "n_weeks": 42
+        },
+        "sd_pred": {
+          "mean": 6.6002,
+          "week_blocked_se": 0.0237,
+          "n_weeks": 42
+        },
+        "sd_actual": {
+          "mean": 8.1971,
+          "week_blocked_se": 0.0821,
+          "n_weeks": 42
+        },
+        "sep_pred_top_decile_over_median": {
+          "mean": 8.2336,
+          "week_blocked_se": 0.3403,
+          "n_weeks": 42
+        },
+        "sep_actual_top_decile_over_median": {
+          "mean": 15.3312,
+          "week_blocked_se": 1.3906,
+          "n_weeks": 37
+        },
+        "rho_dfs_relevant": {
+          "mean": 0.4781,
+          "week_blocked_se": 0.0138,
+          "n_weeks": 42
+        },
+        "sd_ratio_pred_over_actual": 0.8052
+      },
+      "confirmation": {
+        "rho": {
+          "mean": 0.4173,
+          "week_blocked_se": 0.0186,
+          "n_weeks": 14
+        },
+        "mae": {
+          "mean": 5.343,
+          "week_blocked_se": 0.0681,
+          "n_weeks": 14
+        },
+        "level": {
+          "mean": 1.0117,
+          "week_blocked_se": 0.0269,
+          "n_weeks": 14
+        },
+        "top30_actual": {
+          "mean": 15.19,
+          "week_blocked_se": 0.7905,
+          "n_weeks": 14
+        },
+        "sd_pred": {
+          "mean": 6.8359,
+          "week_blocked_se": 0.0215,
+          "n_weeks": 14
+        },
+        "sd_actual": {
+          "mean": 8.5446,
+          "week_blocked_se": 0.1681,
+          "n_weeks": 14
+        },
+        "sep_pred_top_decile_over_median": {
+          "mean": 5.8359,
+          "week_blocked_se": 0.1739,
+          "n_weeks": 14
+        },
+        "sep_actual_top_decile_over_median": {
+          "mean": 11.2051,
+          "week_blocked_se": 0.8552,
+          "n_weeks": 13
+        },
+        "rho_dfs_relevant": {
+          "mean": 0.4524,
+          "week_blocked_se": 0.0234,
+          "n_weeks": 14
+        },
+        "sd_ratio_pred_over_actual": 0.8
+      },
+      "n_weeks_selection": 42,
+      "n_weeks_confirmation": 14
+    }
+  },
+  "paired_vs_production": {
+    "OWN_OFF_COHORT_OFF": {
+      "selection.rho": {
+        "mean_diff_vs_production": 0.0254,
+        "week_blocked_se": 0.0013,
+        "n_paired_weeks": 42,
+        "z": 20.11
+      },
+      "selection.rho_dfs_relevant": {
+        "mean_diff_vs_production": 0.0174,
+        "week_blocked_se": 0.0016,
+        "n_paired_weeks": 42,
+        "z": 10.77
+      },
+      "selection.mae": {
+        "mean_diff_vs_production": -0.0968,
+        "week_blocked_se": 0.0092,
+        "n_paired_weeks": 42,
+        "z": -10.52
+      },
+      "selection.top30_actual": {
+        "mean_diff_vs_production": 0.2,
+        "week_blocked_se": 0.1624,
+        "n_paired_weeks": 42,
+        "z": 1.23
+      },
+      "confirmation.rho": {
+        "mean_diff_vs_production": 0.0284,
+        "week_blocked_se": 0.0018,
+        "n_paired_weeks": 14,
+        "z": 16.18
+      },
+      "confirmation.rho_dfs_relevant": {
+        "mean_diff_vs_production": 0.0217,
+        "week_blocked_se": 0.0029,
+        "n_paired_weeks": 14,
+        "z": 7.41
+      },
+      "confirmation.mae": {
+        "mean_diff_vs_production": -0.069,
+        "week_blocked_se": 0.0185,
+        "n_paired_weeks": 14,
+        "z": -3.74
+      },
+      "confirmation.top30_actual": {
+        "mean_diff_vs_production": 0.3983,
+        "week_blocked_se": 0.2302,
+        "n_paired_weeks": 14,
+        "z": 1.73
+      }
+    },
+    "OWN_ON_COHORT_OFF": {
+      "selection.rho": {
+        "mean_diff_vs_production": 0.0169,
+        "week_blocked_se": 0.001,
+        "n_paired_weeks": 42,
+        "z": 17.16
+      },
+      "selection.rho_dfs_relevant": {
+        "mean_diff_vs_production": 0.0095,
+        "week_blocked_se": 0.0011,
+        "n_paired_weeks": 42,
+        "z": 8.59
+      },
+      "selection.mae": {
+        "mean_diff_vs_production": -0.0409,
+        "week_blocked_se": 0.0048,
+        "n_paired_weeks": 42,
+        "z": -8.55
+      },
+      "selection.top30_actual": {
+        "mean_diff_vs_production": 0.1435,
+        "week_blocked_se": 0.0956,
+        "n_paired_weeks": 42,
+        "z": 1.5
+      },
+      "confirmation.rho": {
+        "mean_diff_vs_production": 0.0256,
+        "week_blocked_se": 0.0014,
+        "n_paired_weeks": 14,
+        "z": 17.98
+      },
+      "confirmation.rho_dfs_relevant": {
+        "mean_diff_vs_production": 0.0185,
+        "week_blocked_se": 0.0023,
+        "n_paired_weeks": 14,
+        "z": 8.12
+      },
+      "confirmation.mae": {
+        "mean_diff_vs_production": -0.0656,
+        "week_blocked_se": 0.0088,
+        "n_paired_weeks": 14,
+        "z": -7.47
+      },
+      "confirmation.top30_actual": {
+        "mean_diff_vs_production": 0.3996,
+        "week_blocked_se": 0.1575,
+        "n_paired_weeks": 14,
+        "z": 2.54
+      }
+    },
+    "OWN_HIGH_COHORT_OFF": {
+      "selection.rho": {
+        "mean_diff_vs_production": 0.0123,
+        "week_blocked_se": 0.0011,
+        "n_paired_weeks": 42,
+        "z": 10.88
+      },
+      "selection.rho_dfs_relevant": {
+        "mean_diff_vs_production": 0.0035,
+        "week_blocked_se": 0.0014,
+        "n_paired_weeks": 42,
+        "z": 2.46
+      },
+      "selection.mae": {
+        "mean_diff_vs_production": -0.0299,
+        "week_blocked_se": 0.0067,
+        "n_paired_weeks": 42,
+        "z": -4.46
+      },
+      "selection.top30_actual": {
+        "mean_diff_vs_production": 0.0987,
+        "week_blocked_se": 0.1415,
+        "n_paired_weeks": 42,
+        "z": 0.7
+      },
+      "confirmation.rho": {
+        "mean_diff_vs_production": 0.024,
+        "week_blocked_se": 0.0017,
+        "n_paired_weeks": 14,
+        "z": 14.4
+      },
+      "confirmation.rho_dfs_relevant": {
+        "mean_diff_vs_production": 0.0162,
+        "week_blocked_se": 0.0028,
+        "n_paired_weeks": 14,
+        "z": 5.83
+      },
+      "confirmation.mae": {
+        "mean_diff_vs_production": -0.0643,
+        "week_blocked_se": 0.0074,
+        "n_paired_weeks": 14,
+        "z": -8.71
+      },
+      "confirmation.top30_actual": {
+        "mean_diff_vs_production": -0.1851,
+        "week_blocked_se": 0.2391,
+        "n_paired_weeks": 14,
+        "z": -0.77
+      }
+    },
+    "OWN_ON_COHORT_LOW": {
+      "selection.rho": {
+        "mean_diff_vs_production": 0.0107,
+        "week_blocked_se": 0.0006,
+        "n_paired_weeks": 42,
+        "z": 18.39
+      },
+      "selection.rho_dfs_relevant": {
+        "mean_diff_vs_production": 0.0063,
+        "week_blocked_se": 0.0006,
+        "n_paired_weeks": 42,
+        "z": 9.95
+      },
+      "selection.mae": {
+        "mean_diff_vs_production": -0.0218,
+        "week_blocked_se": 0.0037,
+        "n_paired_weeks": 42,
+        "z": -5.88
+      },
+      "selection.top30_actual": {
+        "mean_diff_vs_production": 0.0398,
+        "week_blocked_se": 0.0782,
+        "n_paired_weeks": 42,
+        "z": 0.51
+      },
+      "confirmation.rho": {
+        "mean_diff_vs_production": 0.0149,
+        "week_blocked_se": 0.0012,
+        "n_paired_weeks": 14,
+        "z": 12.45
+      },
+      "confirmation.rho_dfs_relevant": {
+        "mean_diff_vs_production": 0.0147,
+        "week_blocked_se": 0.0016,
+        "n_paired_weeks": 14,
+        "z": 9.33
+      },
+      "confirmation.mae": {
+        "mean_diff_vs_production": -0.0424,
+        "week_blocked_se": 0.0085,
+        "n_paired_weeks": 14,
+        "z": -5.01
+      },
+      "confirmation.top30_actual": {
+        "mean_diff_vs_production": 0.3396,
+        "week_blocked_se": 0.0885,
+        "n_paired_weeks": 14,
+        "z": 3.84
+      }
+    },
+    "COHORT_ONLY": {
+      "selection.rho": {
+        "mean_diff_vs_production": 0.0073,
+        "week_blocked_se": 0.0006,
+        "n_paired_weeks": 42,
+        "z": 11.9
+      },
+      "selection.rho_dfs_relevant": {
+        "mean_diff_vs_production": 0.0053,
+        "week_blocked_se": 0.001,
+        "n_paired_weeks": 42,
+        "z": 5.12
+      },
+      "selection.mae": {
+        "mean_diff_vs_production": -0.0503,
+        "week_blocked_se": 0.0063,
+        "n_paired_weeks": 42,
+        "z": -7.94
+      },
+      "selection.top30_actual": {
+        "mean_diff_vs_production": 0.1557,
+        "week_blocked_se": 0.1156,
+        "n_paired_weeks": 42,
+        "z": 1.35
+      },
+      "confirmation.rho": {
+        "mean_diff_vs_production": 0.0,
+        "week_blocked_se": 0.0011,
+        "n_paired_weeks": 14,
+        "z": 0.02
+      },
+      "confirmation.rho_dfs_relevant": {
+        "mean_diff_vs_production": -0.0016,
+        "week_blocked_se": 0.0016,
+        "n_paired_weeks": 14,
+        "z": -1.02
+      },
+      "confirmation.mae": {
+        "mean_diff_vs_production": 0.0112,
+        "week_blocked_se": 0.0095,
+        "n_paired_weeks": 14,
+        "z": 1.18
+      },
+      "confirmation.top30_actual": {
+        "mean_diff_vs_production": 0.05,
+        "week_blocked_se": 0.2188,
+        "n_paired_weeks": 14,
+        "z": 0.23
+      }
+    }
+  },
+  "slices_selection_seasons": {
+    "OWN_OFF_COHORT_OFF": {
+      "SALARY_SLICE": "UNAVAILABLE. No historical DraftKings salaries exist in this checkout. Not approximated -- a proxy for money is not money.",
+      "by_position": {
+        "QB": {
+          "n": 2383,
+          "sd_pred": 9.5002,
+          "sd_actual": 10.5936,
+          "sep_pred": 1.804,
+          "sep_actual": 21.994,
+          "rho_within_slice": 0.4909
+        },
+        "RB": {
+          "n": 4195,
+          "sd_pred": 6.5219,
+          "sd_actual": 8.2132,
+          "sep_pred": 9.591,
+          "sep_actual": 13.928,
+          "rho_within_slice": 0.513
+        },
+        "TE": {
+          "n": 3728,
+          "sd_pred": 4.2567,
+          "sd_actual": 6.0541,
+          "sep_pred": 6.183,
+          "sep_actual": 13.211,
+          "rho_within_slice": 0.4394
+        },
+        "WR": {
+          "n": 6294,
+          "sd_pred": 6.2112,
+          "sd_actual": 7.9799,
+          "sep_pred": 7.683,
+          "sep_actual": 12.241,
+          "rho_within_slice": 0.4266
+        }
+      },
+      "by_pregame_role_band": {
+        "ALPHA": {
+          "n": 5839,
+          "sd_pred": 7.0795,
+          "sd_actual": 9.5542,
+          "sep_pred": 2.158,
+          "sep_actual": 5.336,
+          "rho_within_slice": 0.4267
+        },
+        "FRINGE": {
+          "n": 3767,
+          "sd_pred": 3.3848,
+          "sd_actual": 6.6226,
+          "sep_pred": null,
+          "sep_actual": null,
+          "rho_within_slice": 0.3492
+        },
+        "PRIMARY": {
+          "n": 2433,
+          "sd_pred": 6.2877,
+          "sd_actual": 8.2166,
+          "sep_pred": 5.017,
+          "sep_actual": 12.649,
+          "rho_within_slice": 0.5055
+        },
+        "ROTATIONAL": {
+          "n": 1776,
+          "sd_pred": 2.1349,
+          "sd_actual": 5.2278,
+          "sep_pred": null,
+          "sep_actual": null,
+          "rho_within_slice": 0.4585
+        },
+        "SECONDARY": {
+          "n": 2785,
+          "sd_pred": 5.4877,
+          "sd_actual": 6.9849,
+          "sep_pred": 8.19,
+          "sep_actual": 17.854,
+          "rho_within_slice": 0.4445
+        }
+      },
+      "by_prior_tier": {
+        "PLAYER_OWN_OFF_ROLE": {
+          "n": 3133,
+          "sd_pred": 4.7914,
+          "sd_actual": 6.3984,
+          "sep_pred": 7.988,
+          "sep_actual": 28.082,
+          "rho_within_slice": 0.3254
+        },
+        "PLAYER_OWN_ROLE": {
+          "n": 6334,
+          "sd_pred": 6.7001,
+          "sd_actual": 9.7704,
+          "sep_pred": 1.928,
+          "sep_actual": 4.213,
+          "rho_within_slice": 0.4087
+        },
+        "ROLE_GROUP": {
+          "n": 7133,
+          "sd_pred": 3.265,
+          "sd_actual": 5.8895,
+          "sep_pred": null,
+          "sep_actual": null,
+          "rho_within_slice": 0.292
+        }
+      },
+      "rank_error_by_prior_weight": {
+        "0.0-0.2": {
+          "n": 16600,
+          "mean_normalised_rank_error": 0.2203
+        }
+      },
+      "RANK_ERROR_CAVEAT": "the prior-weight bins are OBSERVATIONAL, not an experiment. A player receives a high prior weight BECAUSE he has little current-season evidence, and a player with little current-season evidence is a different kind of player -- typically a reserve. So a higher rank error in a high-prior-weight bin is confounded with who lands there and must not be read as the prior causing the error. The ARMS above are the experiment; this table is a description of where the weight falls.",
+      "by_week_index": {
+        "5": {
+          "mean_rho": 0.4763,
+          "mean_prior_weight_fraction": 0.0,
+          "n_season_weeks": 3
+        },
+        "6": {
+          "mean_rho": 0.5217,
+          "mean_prior_weight_fraction": 0.0,
+          "n_season_weeks": 3
+        },
+        "7": {
+          "mean_rho": 0.4753,
+          "mean_prior_weight_fraction": 0.0,
+          "n_season_weeks": 3
+        },
+        "8": {
+          "mean_rho": 0.5006,
+          "mean_prior_weight_fraction": 0.0,
+          "n_season_weeks": 3
+        },
+        "9": {
+          "mean_rho": 0.486,
+          "mean_prior_weight_fraction": 0.0,
+          "n_season_weeks": 3
+        },
+        "10": {
+          "mean_rho": 0.4528,
+          "mean_prior_weight_fraction": 0.0,
+          "n_season_weeks": 3
+        },
+        "11": {
+          "mean_rho": 0.4923,
+          "mean_prior_weight_fraction": 0.0,
+          "n_season_weeks": 3
+        },
+        "12": {
+          "mean_rho": 0.482,
+          "mean_prior_weight_fraction": 0.0,
+          "n_season_weeks": 3
+        },
+        "13": {
+          "mean_rho": 0.5257,
+          "mean_prior_weight_fraction": 0.0,
+          "n_season_weeks": 3
+        },
+        "14": {
+          "mean_rho": 0.4525,
+          "mean_prior_weight_fraction": 0.0,
+          "n_season_weeks": 3
+        },
+        "15": {
+          "mean_rho": 0.5009,
+          "mean_prior_weight_fraction": 0.0,
+          "n_season_weeks": 3
+        },
+        "16": {
+          "mean_rho": 0.4773,
+          "mean_prior_weight_fraction": 0.0,
+          "n_season_weeks": 3
+        },
+        "17": {
+          "mean_rho": 0.4191,
+          "mean_prior_weight_fraction": 0.0,
+          "n_season_weeks": 3
+        },
+        "18": {
+          "mean_rho": 0.2768,
+          "mean_prior_weight_fraction": 0.0,
+          "n_season_weeks": 3
+        }
+      },
+      "SEASON_PHASE_NOT_HARD_CODED": "week index is reported continuously rather than cut into early/mid/late. A boundary drawn because it sounds intuitive would be a fitted constant wearing a name. If a phase effect exists it has to show as a pattern across this series first."
+    },
+    "PRODUCTION": {
+      "SALARY_SLICE": "UNAVAILABLE. No historical DraftKings salaries exist in this checkout. Not approximated -- a proxy for money is not money.",
+      "by_position": {
+        "QB": {
+          "n": 2383,
+          "sd_pred": 9.3584,
+          "sd_actual": 10.5936,
+          "sep_pred": 1.792,
+          "sep_actual": 21.994,
+          "rho_within_slice": 0.4794
+        },
+        "RB": {
+          "n": 4195,
+          "sd_pred": 6.2783,
+          "sd_actual": 8.2132,
+          "sep_pred": 6.679,
+          "sep_actual": 13.928,
+          "rho_within_slice": 0.4789
+        },
+        "TE": {
+          "n": 3728,
+          "sd_pred": 4.1295,
+          "sd_actual": 6.0541,
+          "sep_pred": 5.193,
+          "sep_actual": 13.211,
+          "rho_within_slice": 0.3988
+        },
+        "WR": {
+          "n": 6294,
+          "sd_pred": 5.9032,
+          "sd_actual": 7.9799,
+          "sep_pred": 6.141,
+          "sep_actual": 12.241,
+          "rho_within_slice": 0.4002
+        }
+      },
+      "by_pregame_role_band": {
+        "ALPHA": {
+          "n": 5839,
+          "sd_pred": 6.7494,
+          "sd_actual": 9.5542,
+          "sep_pred": 2.098,
+          "sep_actual": 5.336,
+          "rho_within_slice": 0.42
+        },
+        "FRINGE": {
+          "n": 3767,
+          "sd_pred": 3.0248,
+          "sd_actual": 6.6226,
+          "sep_pred": null,
+          "sep_actual": null,
+          "rho_within_slice": 0.3122
+        },
+        "PRIMARY": {
+          "n": 2433,
+          "sd_pred": 5.9595,
+          "sd_actual": 8.2166,
+          "sep_pred": 4.284,
+          "sep_actual": 12.649,
+          "rho_within_slice": 0.4429
+        },
+        "ROTATIONAL": {
+          "n": 1776,
+          "sd_pred": 1.9728,
+          "sd_actual": 5.2278,
+          "sep_pred": 8.689,
+          "sep_actual": null,
+          "rho_within_slice": 0.3894
+        },
+        "SECONDARY": {
+          "n": 2785,
+          "sd_pred": 5.1497,
+          "sd_actual": 6.9849,
+          "sep_pred": 6.379,
+          "sep_actual": 17.854,
+          "rho_within_slice": 0.4038
+        }
+      },
+      "by_prior_tier": {
+        "PLAYER_OWN_OFF_ROLE": {
+          "n": 3133,
+          "sd_pred": 4.468,
+          "sd_actual": 6.3984,
+          "sep_pred": 6.342,
+          "sep_actual": 28.082,
+          "rho_within_slice": 0.2851
+        },
+        "PLAYER_OWN_ROLE": {
+          "n": 6334,
+          "sd_pred": 6.3814,
+          "sd_actual": 9.7704,
+          "sep_pred": 1.876,
+          "sep_actual": 4.213,
+          "rho_within_slice": 0.3959
+        },
+        "ROLE_GROUP": {
+          "n": 7133,
+          "sd_pred": 3.1767,
+          "sd_actual": 5.8895,
+          "sep_pred": null,
+          "sep_actual": null,
+          "rho_within_slice": 0.2249
+        }
+      },
+      "rank_error_by_prior_weight": {
+        "0.0-0.2": {
+          "n": 5177,
+          "mean_normalised_rank_error": 0.2303
+        },
+        "0.2-0.4": {
+          "n": 7047,
+          "mean_normalised_rank_error": 0.2356
+        },
+        "0.4-0.6": {
+          "n": 2719,
+          "mean_normalised_rank_error": 0.2232
+        },
+        "0.6-0.8": {
+          "n": 1657,
+          "mean_normalised_rank_error": 0.1829
+        }
+      },
+      "RANK_ERROR_CAVEAT": "the prior-weight bins are OBSERVATIONAL, not an experiment. A player receives a high prior weight BECAUSE he has little current-season evidence, and a player with little current-season evidence is a different kind of player -- typically a reserve. So a higher rank error in a high-prior-weight bin is confounded with who lands there and must not be read as the prior causing the error. The ARMS above are the experiment; this table is a description of where the weight falls.",
+      "by_week_index": {
+        "5": {
+          "mean_rho": 0.4455,
+          "mean_prior_weight_fraction": 0.4214,
+          "n_season_weeks": 3
+        },
+        "6": {
+          "mean_rho": 0.5049,
+          "mean_prior_weight_fraction": 0.3901,
+          "n_season_weeks": 3
+        },
+        "7": {
+          "mean_rho": 0.4478,
+          "mean_prior_weight_fraction": 0.3643,
+          "n_season_weeks": 3
+        },
+        "8": {
+          "mean_rho": 0.4724,
+          "mean_prior_weight_fraction": 0.3411,
+          "n_season_weeks": 3
+        },
+        "9": {
+          "mean_rho": 0.4648,
+          "mean_prior_weight_fraction": 0.3205,
+          "n_season_weeks": 3
+        },
+        "10": {
+          "mean_rho": 0.4281,
+          "mean_prior_weight_fraction": 0.3059,
+          "n_season_weeks": 3
+        },
+        "11": {
+          "mean_rho": 0.4654,
+          "mean_prior_weight_fraction": 0.2941,
+          "n_season_weeks": 3
+        },
+        "12": {
+          "mean_rho": 0.4557,
+          "mean_prior_weight_fraction": 0.2834,
+          "n_season_weeks": 3
+        },
+        "13": {
+          "mean_rho": 0.4994,
+          "mean_prior_weight_fraction": 0.2723,
+          "n_season_weeks": 3
+        },
+        "14": {
+          "mean_rho": 0.4289,
+          "mean_prior_weight_fraction": 0.2627,
+          "n_season_weeks": 3
+        },
+        "15": {
+          "mean_rho": 0.476,
+          "mean_prior_weight_fraction": 0.2536,
+          "n_season_weeks": 3
+        },
+        "16": {
+          "mean_rho": 0.4509,
+          "mean_prior_weight_fraction": 0.2472,
+          "n_season_weeks": 3
+        },
+        "17": {
+          "mean_rho": 0.3926,
+          "mean_prior_weight_fraction": 0.2393,
+          "n_season_weeks": 3
+        },
+        "18": {
+          "mean_rho": 0.2509,
+          "mean_prior_weight_fraction": 0.2319,
+          "n_season_weeks": 3
+        }
+      },
+      "SEASON_PHASE_NOT_HARD_CODED": "week index is reported continuously rather than cut into early/mid/late. A boundary drawn because it sounds intuitive would be a fitted constant wearing a name. If a phase effect exists it has to show as a pattern across this series first."
+    },
+    "OWN_ON_COHORT_OFF": {
+      "SALARY_SLICE": "UNAVAILABLE. No historical DraftKings salaries exist in this checkout. Not approximated -- a proxy for money is not money.",
+      "by_position": {
+        "QB": {
+          "n": 2383,
+          "sd_pred": 9.4382,
+          "sd_actual": 10.5936,
+          "sep_pred": 1.755,
+          "sep_actual": 21.994,
+          "rho_within_slice": 0.4807
+        },
+        "RB": {
+          "n": 4195,
+          "sd_pred": 6.4075,
+          "sd_actual": 8.2132,
+          "sep_pred": 7.367,
+          "sep_actual": 13.928,
+          "rho_within_slice": 0.4952
+        },
+        "TE": {
+          "n": 3728,
+          "sd_pred": 4.2951,
+          "sd_actual": 6.0541,
+          "sep_pred": 5.963,
+          "sep_actual": 13.211,
+          "rho_within_slice": 0.4288
+        },
+        "WR": {
+          "n": 6294,
+          "sd_pred": 6.0924,
+          "sd_actual": 7.9799,
+          "sep_pred": 6.344,
+          "sep_actual": 12.241,
+          "rho_within_slice": 0.419
+        }
+      },
+      "by_pregame_role_band": {
+        "ALPHA": {
+          "n": 5839,
+          "sd_pred": 6.867,
+          "sd_actual": 9.5542,
+          "sep_pred": 2.061,
+          "sep_actual": 5.336,
+          "rho_within_slice": 0.4211
+        },
+        "FRINGE": {
+          "n": 3767,
+          "sd_pred": 3.3762,
+          "sd_actual": 6.6226,
+          "sep_pred": null,
+          "sep_actual": null,
+          "rho_within_slice": 0.3482
+        },
+        "PRIMARY": {
+          "n": 2433,
+          "sd_pred": 6.1782,
+          "sd_actual": 8.2166,
+          "sep_pred": 4.602,
+          "sep_actual": 12.649,
+          "rho_within_slice": 0.4808
+        },
+        "ROTATIONAL": {
+          "n": 1776,
+          "sd_pred": 2.0119,
+          "sd_actual": 5.2278,
+          "sep_pred": 10.337,
+          "sep_actual": null,
+          "rho_within_slice": 0.4325
+        },
+        "SECONDARY": {
+          "n": 2785,
+          "sd_pred": 5.276,
+          "sd_actual": 6.9849,
+          "sep_pred": 7.179,
+          "sep_actual": 17.854,
+          "rho_within_slice": 0.4339
+        }
+      },
+      "by_prior_tier": {
+        "PLAYER_OWN_OFF_ROLE": {
+          "n": 3133,
+          "sd_pred": 4.5179,
+          "sd_actual": 6.3984,
+          "sep_pred": 6.053,
+          "sep_actual": 28.082,
+          "rho_within_slice": 0.2815
+        },
+        "PLAYER_OWN_ROLE": {
+          "n": 6334,
+          "sd_pred": 6.407,
+          "sd_actual": 9.7704,
+          "sep_pred": 1.842,
+          "sep_actual": 4.213,
+          "rho_within_slice": 0.3951
+        },
+        "ROLE_GROUP": {
+          "n": 7133,
+          "sd_pred": 3.2309,
+          "sd_actual": 5.8895,
+          "sep_pred": null,
+          "sep_actual": null,
+          "rho_within_slice": 0.2945
+        }
+      },
+      "rank_error_by_prior_weight": {
+        "0.0-0.2": {
+          "n": 10809,
+          "mean_normalised_rank_error": 0.2191
+        },
+        "0.2-0.4": {
+          "n": 4340,
+          "mean_normalised_rank_error": 0.2273
+        },
+        "0.4-0.6": {
+          "n": 1101,
+          "mean_normalised_rank_error": 0.2383
+        },
+        "0.6-0.8": {
+          "n": 350,
+          "mean_normalised_rank_error": 0.2263
+        }
+      },
+      "RANK_ERROR_CAVEAT": "the prior-weight bins are OBSERVATIONAL, not an experiment. A player receives a high prior weight BECAUSE he has little current-season evidence, and a player with little current-season evidence is a different kind of player -- typically a reserve. So a higher rank error in a high-prior-weight bin is confounded with who lands there and must not be read as the prior causing the error. The ARMS above are the experiment; this table is a description of where the weight falls.",
+      "by_week_index": {
+        "5": {
+          "mean_rho": 0.4654,
+          "mean_prior_weight_fraction": 0.2392,
+          "n_season_weeks": 3
+        },
+        "6": {
+          "mean_rho": 0.5177,
+          "mean_prior_weight_fraction": 0.2143,
+          "n_season_weeks": 3
+        },
+        "7": {
+          "mean_rho": 0.4628,
+          "mean_prior_weight_fraction": 0.1941,
+          "n_season_weeks": 3
+        },
+        "8": {
+          "mean_rho": 0.4903,
+          "mean_prior_weight_fraction": 0.1776,
+          "n_season_weeks": 3
+        },
+        "9": {
+          "mean_rho": 0.4767,
+          "mean_prior_weight_fraction": 0.1609,
+          "n_season_weeks": 3
+        },
+        "10": {
+          "mean_rho": 0.4421,
+          "mean_prior_weight_fraction": 0.1493,
+          "n_season_weeks": 3
+        },
+        "11": {
+          "mean_rho": 0.4835,
+          "mean_prior_weight_fraction": 0.1393,
+          "n_season_weeks": 3
+        },
+        "12": {
+          "mean_rho": 0.4721,
+          "mean_prior_weight_fraction": 0.1323,
+          "n_season_weeks": 3
+        },
+        "13": {
+          "mean_rho": 0.5169,
+          "mean_prior_weight_fraction": 0.1237,
+          "n_season_weeks": 3
+        },
+        "14": {
+          "mean_rho": 0.4455,
+          "mean_prior_weight_fraction": 0.1172,
+          "n_season_weeks": 3
+        },
+        "15": {
+          "mean_rho": 0.4934,
+          "mean_prior_weight_fraction": 0.1103,
+          "n_season_weeks": 3
+        },
+        "16": {
+          "mean_rho": 0.4701,
+          "mean_prior_weight_fraction": 0.1051,
+          "n_season_weeks": 3
+        },
+        "17": {
+          "mean_rho": 0.412,
+          "mean_prior_weight_fraction": 0.1003,
+          "n_season_weeks": 3
+        },
+        "18": {
+          "mean_rho": 0.2715,
+          "mean_prior_weight_fraction": 0.0954,
+          "n_season_weeks": 3
+        }
+      },
+      "SEASON_PHASE_NOT_HARD_CODED": "week index is reported continuously rather than cut into early/mid/late. A boundary drawn because it sounds intuitive would be a fitted constant wearing a name. If a phase effect exists it has to show as a pattern across this series first."
+    }
+  }
+}
