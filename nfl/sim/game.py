@@ -54,6 +54,7 @@ _REPO = pathlib.Path(__file__).resolve().parents[2]
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
+from nfl.sim import dst as dst_mod  # noqa: E402
 from sportsplatform.governance.outcome import Cause, Outcome  # noqa: E402
 
 SS = _REPO / 'nfl/sim/SHARED_STATE.json'
@@ -132,6 +133,7 @@ class Model:
         pf = shared.get('volume_response_plays_and_pass_share') or {}
         self.plays_v = pf.get('plays')
         self.share_v = pf.get('pass_share')
+        self.dst = None
         self.scoring = shared['scoring']
         self.ypa = eff['yards_per_pass_attempt']['empirical']
         self.ypc = eff['yards_per_carry']['empirical']
@@ -177,8 +179,12 @@ class Model:
         if 'state' in shared['scoring']:
             return Outcome.blocked('MODEL_SCORING_NOT_IDENTIFIED',
                                    shared['scoring']['state'], cause=Cause.DATA)
-        return Outcome.ok('MODEL_LOADED',
-                          value=cls(shared, json.loads(EFF.read_text())).attach_concentration(vc))
+        m = cls(shared, json.loads(EFF.read_text())).attach_concentration(vc)
+        d = dst_mod.DstModel.load()
+        if d.state.value != 'PASS':
+            return d
+        m.dst = d.value
+        return Outcome.ok('MODEL_LOADED', value=m)
 
 
 def _multinomial(n: int, weights, rng) -> list[int]:
@@ -237,6 +243,9 @@ def simulate_game(model: Model, game, n_sims: int = 2000, seed: int = 23) -> Out
                                cause=Cause.DATA)
     home, away = clubs[0], clubs[1]
     draws: dict = {p['id']: [] for c in clubs for p in c['players']}
+    for c in clubs:
+        if c.get('dst_id'):
+            draws[c['dst_id']] = []
     identities = collections.Counter()
     unalloc: collections.Counter = collections.Counter()
     violations = []
@@ -260,6 +269,13 @@ def simulate_game(model: Model, game, n_sims: int = 2000, seed: int = 23) -> Out
             violations.append(('TOTAL', si))
         if abs((pts[home['club']] - pts[away['club']]) - margin) > 1e-6 and min(pts.values()) > 0:
             violations.append(('MARGIN', si))
+
+        # defences first: a defence is scored off what its OPPONENT scores in this same world,
+        # which is where its negative correlation with that offence comes from. Nothing is added
+        # to produce it.
+        for c, other in ((home, away), (away, home)):
+            if c.get('dst_id'):
+                draws[c['dst_id']].append(model.dst.draw(pts[other['club']], rng))
 
         for c, other in ((home, away), (away, home)):
             own = pts[c['club']]
@@ -397,6 +413,9 @@ def simulate_game(model: Model, game, n_sims: int = 2000, seed: int = 23) -> Out
         'n_sims': n_sims, 'draws': draws,
         'club_checks': dict(identities),
         'IDENTITIES_HELD': ['total', 'margin', 'volume', 'yards', 'touchdowns'],
+        'DST_SOURCE': ('drawn from the opponent\'s simulated points in the same world; EXCLUDES '
+                       'defensive and return touchdowns, so a defence\'s score is a FLOOR. See '
+                       'DST_MODEL.EXCLUDED.'),
         'concentration_used': {'yards_share_receiving': model.conc_rec,
                                'yards_share_rushing': model.conc_rush,
                                'opportunity_share_targets': model.share_conc_tgt,

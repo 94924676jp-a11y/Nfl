@@ -1,0 +1,341 @@
+{
+  "ARTIFACT": "CONTEST_PORTFOLIO",
+  "OBJECTIVE": "P(at least one of 48 entries above the field top 1%)",
+  "THRESHOLD_IS_PER_WORLD": "recomputed from the field's own scores in each simulated world, because a winning score depends on the slate",
+  "n_sims": 400,
+  "n_games": 9,
+  "n_candidates_scored": 328,
+  "candidate_provenance": {
+    "VALUE_FRONTIER": 200,
+    "BEST_WITH_QB": 53,
+    "BEST_WITH_RB": 25,
+    "BEST_WITH_WR": 20,
+    "BEST_WITH_TE": 22,
+    "BEST_WITH_DST": 8
+  },
+  "n_candidates_unscorable": 0,
+  "n_field_lineups_scored": 8000,
+  "arms": [
+    {
+      "label": "INDEPENDENT_TOP_48_BY_PROJECTION",
+      "n_entries": 48,
+      "p_at_least_one_in_top_1pct": 0.4775,
+      "mean_projected": 164.7832,
+      "mean_simulated": 152.6214,
+      "n_distinct_players": 28,
+      "max_player_exposure": 1.0
+    },
+    {
+      "label": "CONTEST_AWARE_JOINT",
+      "n_entries": 48,
+      "p_at_least_one_in_top_1pct": 0.7575,
+      "mean_projected": 162.7496,
+      "mean_simulated": 152.1739,
+      "n_distinct_players": 41,
+      "max_player_exposure": 1.0
+    }
+  ],
+  "decision_sensitivity": {
+    "settings": [
+      {
+        "setting": "value_beta=0.6",
+        "p_joint": 0.9025,
+        "p_independent": 0.7175,
+        "joint_still_wins": true,
+        "portfolio_overlap_with_base": 0.4792
+      },
+      {
+        "setting": "value_beta=2.2",
+        "p_joint": 0.7175,
+        "p_independent": 0.4025,
+        "joint_still_wins": true,
+        "portfolio_overlap_with_base": 0.5208
+      },
+      {
+        "setting": "budget=47000",
+        "p_joint": 0.8575,
+        "p_independent": 0.605,
+        "joint_still_wins": true,
+        "portfolio_overlap_with_base": 0.4583
+      },
+      {
+        "setting": "budget=49900",
+        "p_joint": 0.755,
+        "p_independent": 0.49,
+        "joint_still_wins": true,
+        "portfolio_overlap_with_base": 0.625
+      }
+    ],
+    "joint_beats_independent_at_every_setting": true,
+    "lowest_portfolio_overlap_with_base": 0.4583,
+    "READING": "the CONCLUSION -- pick jointly, not independently -- is what survives or fails here, and it is separate from whether the specific 48 lineups are stable. A robust conclusion with an unstable selection means the method is usable and the exact entries are not yet.",
+    "VERDICT": "METHOD_ROBUST_SELECTION_PARAMETER_DEPENDENT"
+  },
+  "improvement": {
+    "p_at_least_one_absolute": 0.28,
+    "p_at_least_one_relative": 1.5864,
+    "mean_projection_given_up": 2.0336
+  },
+  "marginal_history": [
+    {
+      "n_entries": 1,
+      "p_at_least_one": 0.12,
+      "marginal_worlds_added": 48
+    },
+    {
+      "n_entries": 2,
+      "p_at_least_one": 0.2125,
+      "marginal_worlds_added": 37
+    },
+    {
+      "n_entries": 3,
+      "p_at_least_one": 0.275,
+      "marginal_worlds_added": 25
+    },
+    {
+      "n_entries": 4,
+      "p_at_least_one": 0.3225,
+      "marginal_worlds_added": 19
+    },
+    {
+      "n_entries": 5,
+      "p_at_least_one": 0.36,
+      "marginal_worlds_added": 15
+    },
+    {
+      "n_entries": 6,
+      "p_at_least_one": 0.395,
+      "marginal_worlds_added": 14
+    },
+    {
+      "n_entries": 7,
+      "p_at_least_one": 0.4225,
+      "marginal_worlds_added": 11
+    },
+    {
+      "n_entries": 8,
+      "p_at_least_one": 0.4475,
+      "marginal_worlds_added": 10
+    },
+    {
+      "n_entries": 9,
+      "p_at_least_one": 0.4725,
+      "marginal_worlds_added": 10
+    },
+    {
+      "n_entries": 10,
+      "p_at_least_one": 0.495,
+      "marginal_worlds_added": 9
+    },
+    {
+      "n_entries": 11,
+      "p_at_least_one": 0.515,
+      "marginal_worlds_added": 8
+    },
+    {
+      "n_entries": 12,
+      "p_at_least_one": 0.5325,
+      "marginal_worlds_added": 7
+    },
+    {
+      "n_entries": 13,
+      "p_at_least_one": 0.55,
+      "marginal_worlds_added": 7
+    },
+    {
+      "n_entries": 14,
+      "p_at_least_one": 0.565,
+      "marginal_worlds_added": 6
+    },
+    {
+      "n_entries": 15,
+      "p_at_least_one": 0.5775,
+      "marginal_worlds_added": 5
+    },
+    {
+      "n_entries": 16,
+      "p_at_least_one": 0.59,
+      "marginal_worlds_added": 5
+    },
+    {
+      "n_entries": 17,
+      "p_at_least_one": 0.6025,
+      "marginal_worlds_added": 5
+    },
+    {
+      "n_entries": 18,
+      "p_at_least_one": 0.6125,
+      "marginal_worlds_added": 4
+    },
+    {
+      "n_entries": 19,
+      "p_at_least_one": 0.6225,
+      "marginal_worlds_added": 4
+    },
+    {
+      "n_entries": 20,
+      "p_at_least_one": 0.6325,
+      "marginal_worlds_added": 4
+    },
+    {
+      "n_entries": 21,
+      "p_at_least_one": 0.64,
+      "marginal_worlds_added": 3
+    },
+    {
+      "n_entries": 22,
+      "p_at_least_one": 0.6475,
+      "marginal_worlds_added": 3
+    },
+    {
+      "n_entries": 23,
+      "p_at_least_one": 0.655,
+      "marginal_worlds_added": 3
+    },
+    {
+      "n_entries": 24,
+      "p_at_least_one": 0.6625,
+      "marginal_worlds_added": 3
+    },
+    {
+      "n_entries": 25,
+      "p_at_least_one": 0.67,
+      "marginal_worlds_added": 3
+    },
+    {
+      "n_entries": 26,
+      "p_at_least_one": 0.6775,
+      "marginal_worlds_added": 3
+    },
+    {
+      "n_entries": 27,
+      "p_at_least_one": 0.685,
+      "marginal_worlds_added": 3
+    },
+    {
+      "n_entries": 28,
+      "p_at_least_one": 0.69,
+      "marginal_worlds_added": 2
+    },
+    {
+      "n_entries": 29,
+      "p_at_least_one": 0.695,
+      "marginal_worlds_added": 2
+    },
+    {
+      "n_entries": 30,
+      "p_at_least_one": 0.7,
+      "marginal_worlds_added": 2
+    },
+    {
+      "n_entries": 31,
+      "p_at_least_one": 0.705,
+      "marginal_worlds_added": 2
+    },
+    {
+      "n_entries": 32,
+      "p_at_least_one": 0.71,
+      "marginal_worlds_added": 2
+    },
+    {
+      "n_entries": 33,
+      "p_at_least_one": 0.715,
+      "marginal_worlds_added": 2
+    },
+    {
+      "n_entries": 34,
+      "p_at_least_one": 0.72,
+      "marginal_worlds_added": 2
+    },
+    {
+      "n_entries": 35,
+      "p_at_least_one": 0.725,
+      "marginal_worlds_added": 2
+    },
+    {
+      "n_entries": 36,
+      "p_at_least_one": 0.7275,
+      "marginal_worlds_added": 1
+    },
+    {
+      "n_entries": 37,
+      "p_at_least_one": 0.73,
+      "marginal_worlds_added": 1
+    },
+    {
+      "n_entries": 38,
+      "p_at_least_one": 0.7325,
+      "marginal_worlds_added": 1
+    },
+    {
+      "n_entries": 39,
+      "p_at_least_one": 0.735,
+      "marginal_worlds_added": 1
+    },
+    {
+      "n_entries": 40,
+      "p_at_least_one": 0.7375,
+      "marginal_worlds_added": 1
+    },
+    {
+      "n_entries": 41,
+      "p_at_least_one": 0.74,
+      "marginal_worlds_added": 1
+    },
+    {
+      "n_entries": 42,
+      "p_at_least_one": 0.7425,
+      "marginal_worlds_added": 1
+    },
+    {
+      "n_entries": 43,
+      "p_at_least_one": 0.745,
+      "marginal_worlds_added": 1
+    },
+    {
+      "n_entries": 44,
+      "p_at_least_one": 0.7475,
+      "marginal_worlds_added": 1
+    },
+    {
+      "n_entries": 45,
+      "p_at_least_one": 0.75,
+      "marginal_worlds_added": 1
+    },
+    {
+      "n_entries": 46,
+      "p_at_least_one": 0.7525,
+      "marginal_worlds_added": 1
+    },
+    {
+      "n_entries": 47,
+      "p_at_least_one": 0.755,
+      "marginal_worlds_added": 1
+    },
+    {
+      "n_entries": 48,
+      "p_at_least_one": 0.7575,
+      "marginal_worlds_added": 1
+    }
+  ],
+  "simulation_coverage": {
+    "n_sims": 400,
+    "n_games": 9,
+    "n_players_with_draws": 442,
+    "n_players_without_draws": 0,
+    "WITHOUT_DRAWS_MEANING": "players the joint simulator does not model -- defences above all, whose distributional model is a separate gap. They are excluded from contest scoring rather than scored as zero, and any lineup needing one is reported as unscorable.",
+    "missing_ids": []
+  },
+  "GOVERNANCE": {
+    "field_calibration": "NOT_CALIBRATED_NO_ARCHIVED_CONTEST_OWNERSHIP",
+    "entries_submitted": "NONE. Nothing is uploaded and no wager is recommended.",
+    "sim_optimal": "NOT_CLAIMED",
+    "supersedes": "FIELD_MODEL.STAGE_READINESS said contest-aware decisions were BLOCKED_PENDING_ARCHIVED_OWNERSHIP. That verdict rested on the stability of a value-over-ownership ratio, which is a poor proxy: it is dominated by its denominator and is labelled DIAGNOSTIC_NOT_AN_ORDERING in the field model itself. decision_sensitivity above asks the question directly, of the decision, and splits it in two.",
+    "refined_state": {
+      "method_pick_jointly_not_independently": "USABLE -- it wins at every field setting tested, by 0.18 to 0.32 absolute",
+      "the_specific_48_entries": "NOT_DETERMINED -- overlap with the base selection is 0.46 to 0.62 across the same settings, so which lineups you enter still depends on uncalibrated parameters",
+      "what_closes_it": "archived contest ownership, OUT-040"
+    },
+    "dst_floor_warning": "defensive and return touchdowns are excluded from the defence model, so every lineup score here is a slight floor and the understatement is concentrated in defensive upside. See DST_MODEL.EXCLUDED and OUT-041."
+  }
+}

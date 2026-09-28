@@ -3191,3 +3191,33 @@ files would close that.
 **If it does not exist,** say so and it will be recorded as permanently unavailable, with the
 field model staying structural and the GAP 6 portfolio work restricted to what survives the
 sensitivity grid. Do not synthesise ownership to unblock it.
+
+## OUT-041 — defensive and return touchdowns, per club-game
+
+**Status:** OPEN. **Raised:** 2026-09-28. **Affects:** every defensive projection, which is
+currently a FLOOR.
+
+**What is needed.** Per club-game, for 2000 onward: defensive touchdowns (interception and fumble
+returns), kick and punt return touchdowns, safeties, and blocked kicks. Field goals made and
+attempted, and extra points, would also let the non-offensive points remainder be decomposed
+properly instead of carried as one number.
+
+**Why the repository cannot answer it.** `TEAM_GAME` records `points`, `offensive_td`, `pass_td` and
+`rush_td`. A club's points decompose into offensive touchdowns, kicks, defensive and return scores
+and safeties, and only the first is present, so the rest are not separable from the total. The
+measured non-touchdown remainder is 7.4945 points per club-game and that single figure contains all
+of them.
+
+**What was built without it, and the bias it leaves.** `nfl/sim/dst.py` models a defence off the
+opponent's simulated points — the DK tier table plus sacks and takeaways drawn from the empirical
+pairs within the relevant points-allowed band, measured over 2,782 club-games. Sacks fall from 3.675
+to 1.638 and takeaways from 1.850 to 0.825 as points allowed rise, so the conditioning is doing real
+work and a defence comes out correctly short the offence it faces: holding a club to 3 averages
+14.36 DK points against −0.72 when allowing 38.
+
+Defensive and return touchdowns are EXCLUDED, not estimated. No plausible rate was substituted. So
+every defensive projection is a floor, and the understatement is concentrated in the upside tail —
+which is exactly the part a tournament portfolio is selected on, so this is not a rounding concern.
+
+**If it does not exist,** say so and it will be recorded as permanently unavailable, with the
+defensive projections staying explicitly labelled as floors wherever they are consumed.
