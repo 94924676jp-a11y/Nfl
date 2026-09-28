@@ -1,0 +1,1246 @@
+{
+  "BUILD": "GAP4_FIELD_MODEL",
+  "slate": "DK_WEEK3_2026",
+  "n_pool": 442,
+  "CALIBRATION_STATE": "NOT_CALIBRATED_NO_ARCHIVED_CONTEST_OWNERSHIP",
+  "DATA_REQUEST": "OUT-040",
+  "READ_THIS_FIRST": "This is a STRUCTURAL field model. No archived contest ownership exists in this checkout, so nothing here is a measurement of ownership. What is earned is the accounting identity, the generator reproducing its own target marginals, and the sensitivity result that says which decisions survive the uncalibrated range.",
+  "MUST_NOT": "no projection may read any field quantity; the field is downstream",
+  "shape_mix": {
+    "selected_mix": [
+      0.06,
+      0.1333,
+      0.8067
+    ],
+    "selected_because": "value frontier at depth 150, the deepest measured",
+    "state": "DECLARED_PRIOR_NOT_IDENTIFIED",
+    "candidate_1_tool_lineups": {
+      "mix": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "verdict": "DEGENERATE_SINGLE_SHAPE",
+      "why": "48 of 48 lineups share one shape, so this measures one tool setting rather than a field distribution",
+      "rejected_as_field_mix": true
+    },
+    "candidate_2_value_frontier": {
+      "mix_shallow": [
+        0.0,
+        0.06,
+        0.94
+      ],
+      "mix_deep": [
+        0.06,
+        0.13333333333333333,
+        0.8066666666666666
+      ],
+      "leading_shape_drift_between_depths": 0.1333,
+      "verdict": "DEPTH_DEPENDENT_NOT_AN_IDENTIFICATION"
+    },
+    "CONSEQUENCE": "every quantity depending on the mix carries a sensitivity result, and any decision that is not stable across the grid is BLOCKED",
+    "DATA_REQUEST": "OUT-040",
+    "tool_lineups_raw": {
+      "mix": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "n_lineups_read": 48,
+      "n_legal": 48,
+      "n_unrecognised_composition": 0,
+      "unmatched_tokens": [],
+      "SOURCE": "positional composition of 48 placeholder lineups, structure only",
+      "NOT": "not the contest field, and not that tool's projections"
+    },
+    "mix_used": [
+      0.06,
+      0.13333333333333333,
+      0.8066666666666666
+    ]
+  },
+  "ownership": {
+    "by_position": {
+      "QB": {
+        "n": 59,
+        "slots": 1.0,
+        "n_at_cap": 0,
+        "scale_k": 0.004043,
+        "max_share": 0.1883
+      },
+      "RB": {
+        "n": 103,
+        "slots": 2.06,
+        "n_at_cap": 0,
+        "scale_k": 0.002528,
+        "max_share": 0.4144
+      },
+      "WR": {
+        "n": 165,
+        "slots": 3.1333,
+        "n_at_cap": 0,
+        "scale_k": 0.003021,
+        "max_share": 0.3721
+      },
+      "TE": {
+        "n": 97,
+        "slots": 1.8067,
+        "n_at_cap": 0,
+        "scale_k": 0.002017,
+        "max_share": 0.5186
+      },
+      "DST": {
+        "n": 18,
+        "slots": 1.0,
+        "n_at_cap": 0,
+        "scale_k": 0.023932,
+        "max_share": 0.3639
+      }
+    },
+    "sum_of_shares": 9.0,
+    "expected_entry_salary": 49200.0,
+    "salary_tilt_solved": 0.48984,
+    "expected_slots": {
+      "QB": 1.0,
+      "RB": 2.06,
+      "WR": 3.1333,
+      "TE": 1.8067,
+      "DST": 1.0
+    },
+    "parameters_used": {
+      "value_beta": 1.25,
+      "field_salary_usage": 49200,
+      "max_ownership": 1.0,
+      "shape_mix": [
+        0.06,
+        0.13333333333333333,
+        0.8066666666666666
+      ],
+      "salary_tilt": 0.48984
+    },
+    "IDENTITIES_ENFORCED": [
+      "sum of shares == 9 slots per entry",
+      "no share > 100%",
+      "sum of share*salary == declared field spend (this is what solves the tilt)"
+    ],
+    "CALIBRATION_STATE": "NOT_CALIBRATED_NO_ARCHIVED_CONTEST_OWNERSHIP",
+    "MEANING": "expected fraction of entries rostering the player, under a declared functional form. NOT a measurement of ownership.",
+    "DATA_REQUEST": "OUT-040",
+    "top_15": [
+      {
+        "name": "Dalton Schultz",
+        "share": 0.5186
+      },
+      {
+        "name": "Kenneth Walker III",
+        "share": 0.4144
+      },
+      {
+        "name": "Jaxon Smith-Njigba",
+        "share": 0.3721
+      },
+      {
+        "name": "Steelers",
+        "share": 0.3639
+      },
+      {
+        "name": "Amon-Ra St. Brown",
+        "share": 0.3528
+      },
+      {
+        "name": "Garrett Wilson",
+        "share": 0.3041
+      },
+      {
+        "name": "Jahmyr Gibbs",
+        "share": 0.2986
+      },
+      {
+        "name": "Travis Kelce",
+        "share": 0.2783
+      },
+      {
+        "name": "Ladd McConkey",
+        "share": 0.2123
+      },
+      {
+        "name": "Breece Hall",
+        "share": 0.1931
+      },
+      {
+        "name": "Josh Allen",
+        "share": 0.1883
+      },
+      {
+        "name": "Dalton Kincaid",
+        "share": 0.1725
+      },
+      {
+        "name": "Parker Washington",
+        "share": 0.1628
+      },
+      {
+        "name": "Rashee Rice",
+        "share": 0.1594
+      },
+      {
+        "name": "Jonathan Taylor",
+        "share": 0.1549
+      }
+    ]
+  },
+  "parameters": {
+    "value_beta": {
+      "state": "DECLARED_PRIOR_NOT_FITTED",
+      "basis": "Steepness of ownership in position-standardised points per $1,000. No archived contest ownership exists here to fit it. 1.25 places a +2SD value player near 12x the entry rate of a -1SD player, which reproduces the order of magnitude every public field description implies without claiming a measurement.",
+      "sensitivity_range": [
+        0.6,
+        2.2
+      ],
+      "value": 1.25
+    },
+    "salary_tilt": {
+      "state": "DERIVED_NOT_DECLARED",
+      "basis": "Originally declared at zero because \"the field over-rosters expensive players\" is a real regularity with no coefficient available. It turned out not to need one. Expected lineup salary is an identity -- the ownership-weighted salary sum -- so the tilt is SOLVED by bisection to hit the field salary usage below. That makes it a derivation rather than a guess, and it is what caught the contradiction described in field_salary_usage.",
+      "sensitivity_range": "not a free parameter; moves only with field_salary_usage",
+      "value": "SOLVED_FROM_BUDGET_IDENTITY"
+    },
+    "field_salary_usage": {
+      "state": "DECLARED_PRIOR_NOT_FITTED",
+      "basis": "Target expected salary of a field entry. Field entries are built by optimisers, which spend the cap, so the mean lands just under it. Declared, because measuring it needs contest CSVs.\nTHIS PARAMETER EXISTS BECAUSE OF A CONTRADICTION THE BUILD FOUND. A pure value logit implied E[lineup salary] = 42,618 against a generator that was told field entries spend at least 48,500. Those two statements cannot both hold, and the symptom was the fitting DIVERGING -- residual climbing 0.353 to 0.518 over eight rounds while the acceptance rate fell from 0.71 to 0.07. The generator was being asked to reproduce marginals that describe a cheaper field than the one it was required to build.",
+      "sensitivity_range": [
+        47000,
+        49900
+      ],
+      "value": 49200
+    },
+    "max_ownership": {
+      "state": "STRUCTURAL_CEILING",
+      "basis": "A player cannot appear in more than 100% of entries. This is arithmetic, not a preference, and it is what makes the within-position scaling a capped water-filling problem rather than a normalisation.",
+      "sensitivity_range": [
+        0.75,
+        1.0
+      ],
+      "value": 1.0
+    },
+    "shape_mix": {
+      "state": "MEASURED_FROM_48_TOOL_LINEUPS",
+      "basis": "Per-position expected slots depend on the FLEX split. Measured from the positional composition of the 48 placeholder lineups for this slate. STRUCTURE ONLY -- which positions were rostered. The external tool's projections are not read here and must never reach a projection.",
+      "sensitivity_range": "uniform over the three shapes, and each shape pure",
+      "value": null
+    }
+  },
+  "generator_parameters": {
+    "salary_floor": {
+      "value": 44000,
+      "state": "REALISM_BOUND_NOT_A_TARGET",
+      "basis": "A wide left-tail trim, not a spending target. The MEAN spend is already pinned by the budget identity in ownership.py, so a tight floor here would fight the marginals instead of adding information -- which is exactly what it did at 48,500: the fitting diverged and the acceptance rate fell to 7%. The floor now only excludes lineups no optimiser would submit.",
+      "sensitivity_range": [
+        0,
+        48000
+      ]
+    },
+    "mean_marginal_tolerance": {
+      "value": 0.008,
+      "state": "ACCEPTANCE_THRESHOLD_DECLARED",
+      "basis": "Mean absolute gap allowed between the field's realised marginals and the marginal-form target. The MEAN is the acceptance test and the MAXIMUM is not, for a measured reason recorded in JOINT_FEASIBILITY_FINDING: some individual targets are not jointly achievable at all, so failing on the worst one would be failing on arithmetic rather than on fit quality.",
+      "sensitivity_range": "not a model parameter"
+    },
+    "stack_propensity": {
+      "value": 0.0,
+      "state": "DECLARED_NEUTRAL_DELIBERATELY",
+      "basis": "Log-odds bonus applied to a pass catcher sharing a club with the rostered QB. Real entrants stack far more than independence implies, but the size of that effect is exactly what contest CSVs would tell us and nothing here does. Held at zero so the generated field is the independence benchmark; sensitivity moves it.",
+      "sensitivity_range": [
+        0.0,
+        1.5
+      ]
+    },
+    "ipf_rounds": {
+      "value": 8,
+      "state": "CONVERGENCE_SETTING",
+      "basis": "Iterations of proportional fitting; convergence is reported, not assumed.",
+      "sensitivity_range": [
+        1,
+        16
+      ]
+    }
+  },
+  "sensitivity": {
+    "one_parameter_at_a_time": {
+      "value_beta_alone": 0.475,
+      "budget_alone": 0.825,
+      "shape_mix_alone": 0.725
+    },
+    "DOMINANT_PARAMETER": "value_beta_alone",
+    "DOMINANT_MEANING": "moving value_beta alone, with everything else at its declared value, already drops the top-40 leverage overlap to 0.475. That is the parameter archived contest ownership would pin down first.",
+    "n_settings": 60,
+    "n_settings_that_refused": 0,
+    "grid": [
+      {
+        "beta": 0.6,
+        "budget": 47000,
+        "mix": "declared",
+        "top_leverage_overlap": 0.575,
+        "max_ownership_change": 0.3112
+      },
+      {
+        "beta": 0.6,
+        "budget": 47000,
+        "mix": "uniform",
+        "top_leverage_overlap": 0.55,
+        "max_ownership_change": 0.3679
+      },
+      {
+        "beta": 0.6,
+        "budget": 47000,
+        "mix": "pure_3RB",
+        "top_leverage_overlap": 0.5,
+        "max_ownership_change": 0.4083
+      },
+      {
+        "beta": 0.6,
+        "budget": 47000,
+        "mix": "pure_4WR",
+        "top_leverage_overlap": 0.475,
+        "max_ownership_change": 0.4061
+      },
+      {
+        "beta": 0.6,
+        "budget": 47000,
+        "mix": "pure_2TE",
+        "top_leverage_overlap": 0.575,
+        "max_ownership_change": 0.288
+      },
+      {
+        "beta": 0.6,
+        "budget": 48500,
+        "mix": "declared",
+        "top_leverage_overlap": 0.65,
+        "max_ownership_change": 0.3085
+      },
+      {
+        "beta": 0.6,
+        "budget": 48500,
+        "mix": "uniform",
+        "top_leverage_overlap": 0.6,
+        "max_ownership_change": 0.3646
+      },
+      {
+        "beta": 0.6,
+        "budget": 48500,
+        "mix": "pure_3RB",
+        "top_leverage_overlap": 0.55,
+        "max_ownership_change": 0.4046
+      },
+      {
+        "beta": 0.6,
+        "budget": 48500,
+        "mix": "pure_4WR",
+        "top_leverage_overlap": 0.525,
+        "max_ownership_change": 0.4034
+      },
+      {
+        "beta": 0.6,
+        "budget": 48500,
+        "mix": "pure_2TE",
+        "top_leverage_overlap": 0.625,
+        "max_ownership_change": 0.2858
+      },
+      {
+        "beta": 0.6,
+        "budget": 49200,
+        "mix": "declared",
+        "top_leverage_overlap": 0.675,
+        "max_ownership_change": 0.3083
+      },
+      {
+        "beta": 0.6,
+        "budget": 49200,
+        "mix": "uniform",
+        "top_leverage_overlap": 0.6,
+        "max_ownership_change": 0.3638
+      },
+      {
+        "beta": 0.6,
+        "budget": 49200,
+        "mix": "pure_3RB",
+        "top_leverage_overlap": 0.55,
+        "max_ownership_change": 0.4035
+      },
+      {
+        "beta": 0.6,
+        "budget": 49200,
+        "mix": "pure_4WR",
+        "top_leverage_overlap": 0.55,
+        "max_ownership_change": 0.4027
+      },
+      {
+        "beta": 0.6,
+        "budget": 49200,
+        "mix": "pure_2TE",
+        "top_leverage_overlap": 0.625,
+        "max_ownership_change": 0.286
+      },
+      {
+        "beta": 0.6,
+        "budget": 49900,
+        "mix": "declared",
+        "top_leverage_overlap": 0.625,
+        "max_ownership_change": 0.3088
+      },
+      {
+        "beta": 0.6,
+        "budget": 49900,
+        "mix": "uniform",
+        "top_leverage_overlap": 0.575,
+        "max_ownership_change": 0.3634
+      },
+      {
+        "beta": 0.6,
+        "budget": 49900,
+        "mix": "pure_3RB",
+        "top_leverage_overlap": 0.575,
+        "max_ownership_change": 0.4027
+      },
+      {
+        "beta": 0.6,
+        "budget": 49900,
+        "mix": "pure_4WR",
+        "top_leverage_overlap": 0.575,
+        "max_ownership_change": 0.4023
+      },
+      {
+        "beta": 0.6,
+        "budget": 49900,
+        "mix": "pure_2TE",
+        "top_leverage_overlap": 0.7,
+        "max_ownership_change": 0.287
+      },
+      {
+        "beta": 1.25,
+        "budget": 47000,
+        "mix": "declared",
+        "top_leverage_overlap": 0.825,
+        "max_ownership_change": 0.1228
+      },
+      {
+        "beta": 1.25,
+        "budget": 47000,
+        "mix": "uniform",
+        "top_leverage_overlap": 0.625,
+        "max_ownership_change": 0.154
+      },
+      {
+        "beta": 1.25,
+        "budget": 47000,
+        "mix": "pure_3RB",
+        "top_leverage_overlap": 0.5,
+        "max_ownership_change": 0.2501
+      },
+      {
+        "beta": 1.25,
+        "budget": 47000,
+        "mix": "pure_4WR",
+        "top_leverage_overlap": 0.625,
+        "max_ownership_change": 0.2426
+      },
+      {
+        "beta": 1.25,
+        "budget": 47000,
+        "mix": "pure_2TE",
+        "top_leverage_overlap": 0.875,
+        "max_ownership_change": 0.116
+      },
+      {
+        "beta": 1.25,
+        "budget": 48500,
+        "mix": "declared",
+        "top_leverage_overlap": 0.95,
+        "max_ownership_change": 0.0423
+      },
+      {
+        "beta": 1.25,
+        "budget": 48500,
+        "mix": "uniform",
+        "top_leverage_overlap": 0.8,
+        "max_ownership_change": 0.1397
+      },
+      {
+        "beta": 1.25,
+        "budget": 48500,
+        "mix": "pure_3RB",
+        "top_leverage_overlap": 0.625,
+        "max_ownership_change": 0.2394
+      },
+      {
+        "beta": 1.25,
+        "budget": 48500,
+        "mix": "pure_4WR",
+        "top_leverage_overlap": 0.7,
+        "max_ownership_change": 0.2352
+      },
+      {
+        "beta": 1.25,
+        "budget": 48500,
+        "mix": "pure_2TE",
+        "top_leverage_overlap": 0.975,
+        "max_ownership_change": 0.0553
+      },
+      {
+        "beta": 1.25,
+        "budget": 49200,
+        "mix": "declared",
+        "top_leverage_overlap": 1.0,
+        "max_ownership_change": 0.0
+      },
+      {
+        "beta": 1.25,
+        "budget": 49200,
+        "mix": "uniform",
+        "top_leverage_overlap": 0.9,
+        "max_ownership_change": 0.1373
+      },
+      {
+        "beta": 1.25,
+        "budget": 49200,
+        "mix": "pure_3RB",
+        "top_leverage_overlap": 0.725,
+        "max_ownership_change": 0.236
+      },
+      {
+        "beta": 1.25,
+        "budget": 49200,
+        "mix": "pure_4WR",
+        "top_leverage_overlap": 0.725,
+        "max_ownership_change": 0.2332
+      },
+      {
+        "beta": 1.25,
+        "budget": 49200,
+        "mix": "pure_2TE",
+        "top_leverage_overlap": 0.95,
+        "max_ownership_change": 0.0552
+      },
+      {
+        "beta": 1.25,
+        "budget": 49900,
+        "mix": "declared",
+        "top_leverage_overlap": 0.95,
+        "max_ownership_change": 0.0452
+      },
+      {
+        "beta": 1.25,
+        "budget": 49900,
+        "mix": "uniform",
+        "top_leverage_overlap": 0.95,
+        "max_ownership_change": 0.136
+      },
+      {
+        "beta": 1.25,
+        "budget": 49900,
+        "mix": "pure_3RB",
+        "top_leverage_overlap": 0.775,
+        "max_ownership_change": 0.2336
+      },
+      {
+        "beta": 1.25,
+        "budget": 49900,
+        "mix": "pure_4WR",
+        "top_leverage_overlap": 0.75,
+        "max_ownership_change": 0.232
+      },
+      {
+        "beta": 1.25,
+        "budget": 49900,
+        "mix": "pure_2TE",
+        "top_leverage_overlap": 0.9,
+        "max_ownership_change": 0.0544
+      },
+      {
+        "beta": 2.2,
+        "budget": 47000,
+        "mix": "declared",
+        "top_leverage_overlap": 0.525,
+        "max_ownership_change": 0.4814
+      },
+      {
+        "beta": 2.2,
+        "budget": 47000,
+        "mix": "uniform",
+        "top_leverage_overlap": 0.525,
+        "max_ownership_change": 0.3902
+      },
+      {
+        "beta": 2.2,
+        "budget": 47000,
+        "mix": "pure_3RB",
+        "top_leverage_overlap": 0.475,
+        "max_ownership_change": 0.3998
+      },
+      {
+        "beta": 2.2,
+        "budget": 47000,
+        "mix": "pure_4WR",
+        "top_leverage_overlap": 0.525,
+        "max_ownership_change": 0.3903
+      },
+      {
+        "beta": 2.2,
+        "budget": 47000,
+        "mix": "pure_2TE",
+        "top_leverage_overlap": 0.525,
+        "max_ownership_change": 0.4814
+      },
+      {
+        "beta": 2.2,
+        "budget": 48500,
+        "mix": "declared",
+        "top_leverage_overlap": 0.525,
+        "max_ownership_change": 0.4814
+      },
+      {
+        "beta": 2.2,
+        "budget": 48500,
+        "mix": "uniform",
+        "top_leverage_overlap": 0.5,
+        "max_ownership_change": 0.3774
+      },
+      {
+        "beta": 2.2,
+        "budget": 48500,
+        "mix": "pure_3RB",
+        "top_leverage_overlap": 0.5,
+        "max_ownership_change": 0.4241
+      },
+      {
+        "beta": 2.2,
+        "budget": 48500,
+        "mix": "pure_4WR",
+        "top_leverage_overlap": 0.55,
+        "max_ownership_change": 0.3786
+      },
+      {
+        "beta": 2.2,
+        "budget": 48500,
+        "mix": "pure_2TE",
+        "top_leverage_overlap": 0.475,
+        "max_ownership_change": 0.4814
+      },
+      {
+        "beta": 2.2,
+        "budget": 49200,
+        "mix": "declared",
+        "top_leverage_overlap": 0.475,
+        "max_ownership_change": 0.4814
+      },
+      {
+        "beta": 2.2,
+        "budget": 49200,
+        "mix": "uniform",
+        "top_leverage_overlap": 0.525,
+        "max_ownership_change": 0.371
+      },
+      {
+        "beta": 2.2,
+        "budget": 49200,
+        "mix": "pure_3RB",
+        "top_leverage_overlap": 0.45,
+        "max_ownership_change": 0.4707
+      },
+      {
+        "beta": 2.2,
+        "budget": 49200,
+        "mix": "pure_4WR",
+        "top_leverage_overlap": 0.55,
+        "max_ownership_change": 0.3727
+      },
+      {
+        "beta": 2.2,
+        "budget": 49200,
+        "mix": "pure_2TE",
+        "top_leverage_overlap": 0.5,
+        "max_ownership_change": 0.4814
+      },
+      {
+        "beta": 2.2,
+        "budget": 49900,
+        "mix": "declared",
+        "top_leverage_overlap": 0.5,
+        "max_ownership_change": 0.4814
+      },
+      {
+        "beta": 2.2,
+        "budget": 49900,
+        "mix": "uniform",
+        "top_leverage_overlap": 0.5,
+        "max_ownership_change": 0.3642
+      },
+      {
+        "beta": 2.2,
+        "budget": 49900,
+        "mix": "pure_3RB",
+        "top_leverage_overlap": 0.45,
+        "max_ownership_change": 0.5145
+      },
+      {
+        "beta": 2.2,
+        "budget": 49900,
+        "mix": "pure_4WR",
+        "top_leverage_overlap": 0.475,
+        "max_ownership_change": 0.3745
+      },
+      {
+        "beta": 2.2,
+        "budget": 49900,
+        "mix": "pure_2TE",
+        "top_leverage_overlap": 0.475,
+        "max_ownership_change": 0.4814
+      }
+    ],
+    "worst_top_leverage_overlap": 0.45,
+    "worst_setting": "beta=2.2 budget=49200 mix=pure_3RB",
+    "max_ownership_change_anywhere": 0.5145,
+    "VERDICT": "DECISION_SENSITIVE_TO_UNCALIBRATED_PARAMETERS",
+    "THEREFORE": "no contest-aware decision may rely on this field until archived contest ownership exists; see OUT-040",
+    "threshold": {
+      "top_n": 40,
+      "overlap_required": 0.8,
+      "declared_before_running": true
+    }
+  },
+  "field": {
+    "mean_entry_salary": 49039.9,
+    "OPERATIVE_OWNERSHIP": "field_ownership, not the marginal-form target. The field's own marginals are achievable by construction; the target vector is not (see JOINT_FEASIBILITY_FINDING).",
+    "JOINT_FEASIBILITY_FINDING": {
+      "claim": "the marginal-form ownership vector is NOT jointly achievable under the salary cap, and the gap is systematic rather than noise",
+      "mean_signed_gap_at_minimum_salary": 0.01679,
+      "mean_signed_gap_everyone_else": -4e-05,
+      "n_at_minimum_salary": 1,
+      "minimum_salary": 2000,
+      "why": "nine slots must be filled inside the cap, so a field spending near the cap on its expensive players is FORCED into minimum-priced players more often than a value logit implies. The logit prices players one at a time and cannot see the budget the other eight slots consume.",
+      "consequence": "punt-priced players are under-owned by the marginal form and over-owned in any achievable field. Downstream leverage must use field_ownership or it will systematically overrate punts.",
+      "largest_gaps": [
+        {
+          "id": "44247571",
+          "salary": 2000,
+          "target": 0.00256,
+          "realised": 0.01935,
+          "gap": 0.01679
+        },
+        {
+          "id": "44247570",
+          "salary": 2100,
+          "target": 0.0085,
+          "realised": 0.02075,
+          "gap": 0.01225
+        },
+        {
+          "id": "44247559",
+          "salary": 3000,
+          "target": 0.11554,
+          "realised": 0.10415,
+          "gap": -0.01139
+        },
+        {
+          "id": "44246824",
+          "salary": 6400,
+          "target": 0.19311,
+          "realised": 0.18535,
+          "gap": -0.00776
+        },
+        {
+          "id": "44247554",
+          "salary": 3800,
+          "target": 0.11782,
+          "realised": 0.1112,
+          "gap": -0.00662
+        },
+        {
+          "id": "44247034",
+          "salary": 6400,
+          "target": 0.15937,
+          "realised": 0.1528,
+          "gap": -0.00657
+        },
+        {
+          "id": "44247568",
+          "salary": 2300,
+          "target": 0.0037,
+          "realised": 0.009,
+          "gap": 0.0053
+        },
+        {
+          "id": "44247372",
+          "salary": 4200,
+          "target": 0.51858,
+          "realised": 0.51355,
+          "gap": -0.00503
+        },
+        {
+          "id": "44247563",
+          "salary": 2700,
+          "target": 0.36386,
+          "realised": 0.35885,
+          "gap": -0.00501
+        },
+        {
+          "id": "44246832",
+          "salary": 5700,
+          "target": 0.1101,
+          "realised": 0.10515,
+          "gap": -0.00495
+        },
+        {
+          "id": "44246812",
+          "salary": 7600,
+          "target": 0.15494,
+          "realised": 0.15,
+          "gap": -0.00494
+        },
+        {
+          "id": "44247048",
+          "salary": 5700,
+          "target": 0.07143,
+          "realised": 0.07635,
+          "gap": 0.00492
+        }
+      ]
+    },
+    "n_entries": 20000,
+    "n_distinct_lineups": 19999,
+    "max_multiplicity": 2,
+    "share_of_entries_that_are_unique": 0.9999,
+    "realised_vs_target": {
+      "mean_abs_deviation": 0.000789,
+      "tolerance_on_the_mean": 0.008,
+      "CONVERGED": true,
+      "fit_diverged": false,
+      "max_abs_deviation": 0.01679,
+      "worst_player": "44247571",
+      "WHY_THE_MEAN_AND_NOT_THE_MAX": "the largest single gap is joint infeasibility, not fit quality: some target shares cannot be achieved by ANY distribution over legal lineups. See JOINT_FEASIBILITY_FINDING. Divergence is still a failure, and is tested separately."
+    },
+    "ipf_history": [
+      {
+        "round": 0,
+        "max_abs_deviation": 0.07553,
+        "worst_player": "44247372",
+        "mean_abs_deviation": 0.001758,
+        "accept_rate": 0.9103
+      },
+      {
+        "round": 1,
+        "max_abs_deviation": 0.02588,
+        "worst_player": "44247372",
+        "mean_abs_deviation": 0.001338,
+        "accept_rate": 0.9464
+      },
+      {
+        "round": 2,
+        "max_abs_deviation": 0.02483,
+        "worst_player": "44247372",
+        "mean_abs_deviation": 0.00111,
+        "accept_rate": 0.9649
+      },
+      {
+        "round": 3,
+        "max_abs_deviation": 0.01617,
+        "worst_player": "44246814",
+        "mean_abs_deviation": 0.001062,
+        "accept_rate": 0.9723
+      },
+      {
+        "round": 4,
+        "max_abs_deviation": 0.01399,
+        "worst_player": "44246810",
+        "mean_abs_deviation": 0.000917,
+        "accept_rate": 0.9775
+      },
+      {
+        "round": 5,
+        "max_abs_deviation": 0.01472,
+        "worst_player": "44246814",
+        "mean_abs_deviation": 0.000843,
+        "accept_rate": 0.9788
+      },
+      {
+        "round": 6,
+        "max_abs_deviation": 0.01355,
+        "worst_player": "44247570",
+        "mean_abs_deviation": 0.000829,
+        "accept_rate": 0.9829
+      },
+      {
+        "round": 7,
+        "max_abs_deviation": 0.01414,
+        "worst_player": "44247571",
+        "mean_abs_deviation": 0.000848,
+        "accept_rate": 0.9855
+      },
+      {
+        "round": 8,
+        "max_abs_deviation": 0.02096,
+        "worst_player": "44247563",
+        "mean_abs_deviation": 0.00084,
+        "accept_rate": 0.9847
+      },
+      {
+        "round": 9,
+        "max_abs_deviation": 0.01259,
+        "worst_player": "44247571",
+        "mean_abs_deviation": 0.000837,
+        "accept_rate": 0.985
+      },
+      {
+        "round": 10,
+        "max_abs_deviation": 0.01701,
+        "worst_player": "44247563",
+        "mean_abs_deviation": 0.000801,
+        "accept_rate": 0.9858
+      },
+      {
+        "round": 11,
+        "max_abs_deviation": 0.01906,
+        "worst_player": "44247563",
+        "mean_abs_deviation": 0.000838,
+        "accept_rate": 0.987
+      },
+      {
+        "round": 12,
+        "max_abs_deviation": 0.01611,
+        "worst_player": "44247563",
+        "mean_abs_deviation": 0.000814,
+        "accept_rate": 0.9869
+      },
+      {
+        "round": 13,
+        "max_abs_deviation": 0.01679,
+        "worst_player": "44247571",
+        "mean_abs_deviation": 0.000789,
+        "accept_rate": 0.9874
+      }
+    ],
+    "parameters_used": {
+      "salary_floor": 44000,
+      "stack_propensity": 0.0,
+      "ipf_rounds": 14,
+      "seed": 11,
+      "shape_mix": [
+        0.06,
+        0.13333333333333333,
+        0.8066666666666666
+      ]
+    },
+    "KNOWN_BIASES": [
+      {
+        "bias": "ENTRIES_SAMPLED_INDEPENDENTLY",
+        "direction": "understates duplication among chalk lineups and overstates the breadth of lineup space the field covers",
+        "why": "real fields are many entries from few entrants, who diversify within their own set"
+      },
+      {
+        "bias": "NO_LEARNED_CORRELATION_BEYOND_MARGINALS_AND_SHAPE",
+        "direction": "understates stacked and game-concentrated lineups at neutral propensity",
+        "why": "stacking propensity is a behavioural parameter with no in-repo evidence"
+      }
+    ],
+    "CALIBRATION_STATE": "NOT_CALIBRATED_NO_ARCHIVED_CONTEST_OWNERSHIP",
+    "field_ownership_top_15": [
+      {
+        "name": "Dalton Schultz",
+        "share": 0.5135,
+        "marginal_form_target": 0.5186
+      },
+      {
+        "name": "Kenneth Walker III",
+        "share": 0.4158,
+        "marginal_form_target": 0.4144
+      },
+      {
+        "name": "Jaxon Smith-Njigba",
+        "share": 0.3686,
+        "marginal_form_target": 0.3721
+      },
+      {
+        "name": "Steelers",
+        "share": 0.3589,
+        "marginal_form_target": 0.3639
+      },
+      {
+        "name": "Amon-Ra St. Brown",
+        "share": 0.3552,
+        "marginal_form_target": 0.3528
+      },
+      {
+        "name": "Garrett Wilson",
+        "share": 0.3002,
+        "marginal_form_target": 0.3041
+      },
+      {
+        "name": "Jahmyr Gibbs",
+        "share": 0.2949,
+        "marginal_form_target": 0.2986
+      },
+      {
+        "name": "Travis Kelce",
+        "share": 0.2783,
+        "marginal_form_target": 0.2783
+      },
+      {
+        "name": "Ladd McConkey",
+        "share": 0.2111,
+        "marginal_form_target": 0.2123
+      },
+      {
+        "name": "Josh Allen",
+        "share": 0.1867,
+        "marginal_form_target": 0.1883
+      },
+      {
+        "name": "Breece Hall",
+        "share": 0.1853,
+        "marginal_form_target": 0.1931
+      },
+      {
+        "name": "Dalton Kincaid",
+        "share": 0.1731,
+        "marginal_form_target": 0.1725
+      },
+      {
+        "name": "Parker Washington",
+        "share": 0.166,
+        "marginal_form_target": 0.1628
+      },
+      {
+        "name": "Rashee Rice",
+        "share": 0.1528,
+        "marginal_form_target": 0.1594
+      },
+      {
+        "name": "Jonathan Taylor",
+        "share": 0.15,
+        "marginal_form_target": 0.1549
+      }
+    ]
+  },
+  "duplication": {
+    "exact_optimal_lineup": {
+      "value": 166.6295,
+      "optimality": "PROVEN_OPTIMAL",
+      "p_an_entry_is_this_lineup": 0.0,
+      "expected_other_entries_identical": 0.0,
+      "field_sample_hits": 0,
+      "ZERO_MEANS": "not seen in a field of this size, which is an upper bound of roughly 3.0 entries at 95%, NOT zero duplication",
+      "multiplicity_profile": {
+        "1": 19998,
+        "2": 1
+      }
+    }
+  },
+  "leverage_top_25": [
+    {
+      "name": "Colts",
+      "position": "DST",
+      "projected": 5.1852,
+      "ownership": 0.01175,
+      "leverage_ratio": 176.517
+    },
+    {
+      "name": "AJ Barner",
+      "position": "TE",
+      "projected": 6.0008,
+      "ownership": 0.01135,
+      "leverage_ratio": 170.55
+    },
+    {
+      "name": "Laquon Treadwell",
+      "position": "WR",
+      "projected": 5.2008,
+      "ownership": 0.0111,
+      "leverage_ratio": 151.142
+    },
+    {
+      "name": "Chiefs",
+      "position": "DST",
+      "projected": 5.6965,
+      "ownership": 0.01025,
+      "leverage_ratio": 150.204
+    },
+    {
+      "name": "Calvin Ridley",
+      "position": "WR",
+      "projected": 5.9694,
+      "ownership": 0.01115,
+      "leverage_ratio": 133.843
+    },
+    {
+      "name": "Jameis Winston",
+      "position": "QB",
+      "projected": 13.92,
+      "ownership": 0.0262,
+      "leverage_ratio": 132.824
+    },
+    {
+      "name": "Rashid Shaheed",
+      "position": "WR",
+      "projected": 6.0944,
+      "ownership": 0.011,
+      "leverage_ratio": 131.913
+    },
+    {
+      "name": "Kenyon Sadiq",
+      "position": "TE",
+      "projected": 6.5311,
+      "ownership": 0.0144,
+      "leverage_ratio": 129.585
+    },
+    {
+      "name": "Mack Hollins",
+      "position": "WR",
+      "projected": 5.9877,
+      "ownership": 0.01175,
+      "leverage_ratio": 121.331
+    },
+    {
+      "name": "Aaron Rodgers",
+      "position": "QB",
+      "projected": 13.6024,
+      "ownership": 0.0227,
+      "leverage_ratio": 119.845
+    },
+    {
+      "name": "Gunnar Helm",
+      "position": "TE",
+      "projected": 7.6626,
+      "ownership": 0.0231,
+      "leverage_ratio": 114.384
+    },
+    {
+      "name": "Jerry Jeudy",
+      "position": "WR",
+      "projected": 6.8727,
+      "ownership": 0.016,
+      "leverage_ratio": 113.038
+    },
+    {
+      "name": "Daniel Jones",
+      "position": "QB",
+      "projected": 15.0544,
+      "ownership": 0.0269,
+      "leverage_ratio": 111.929
+    },
+    {
+      "name": "Cam Ward",
+      "position": "QB",
+      "projected": 13.9132,
+      "ownership": 0.0244,
+      "leverage_ratio": 111.806
+    },
+    {
+      "name": "KC Concepcion Jr.",
+      "position": "WR",
+      "projected": 6.1655,
+      "ownership": 0.01295,
+      "leverage_ratio": 110.721
+    },
+    {
+      "name": "Bills",
+      "position": "DST",
+      "projected": 5.9793,
+      "ownership": 0.01945,
+      "leverage_ratio": 109.793
+    },
+    {
+      "name": "Lions",
+      "position": "DST",
+      "projected": 6.7052,
+      "ownership": 0.01755,
+      "leverage_ratio": 109.161
+    },
+    {
+      "name": "DeMario Douglas",
+      "position": "WR",
+      "projected": 6.9217,
+      "ownership": 0.0175,
+      "leverage_ratio": 106.899
+    },
+    {
+      "name": "Greg Dulcich",
+      "position": "TE",
+      "projected": 8.2459,
+      "ownership": 0.0265,
+      "leverage_ratio": 103.722
+    },
+    {
+      "name": "Kayshon Boutte",
+      "position": "WR",
+      "projected": 6.4159,
+      "ownership": 0.014,
+      "leverage_ratio": 101.84
+    },
+    {
+      "name": "Wan'Dale Robinson",
+      "position": "WR",
+      "projected": 7.4532,
+      "ownership": 0.01635,
+      "leverage_ratio": 101.301
+    },
+    {
+      "name": "Malachi Fields",
+      "position": "WR",
+      "projected": 6.5778,
+      "ownership": 0.015,
+      "leverage_ratio": 99.664
+    },
+    {
+      "name": "Marcus Mariota",
+      "position": "QB",
+      "projected": 16.5303,
+      "ownership": 0.037,
+      "leverage_ratio": 99.281
+    },
+    {
+      "name": "Jets",
+      "position": "DST",
+      "projected": 4.2964,
+      "ownership": 0.02075,
+      "leverage_ratio": 98.598
+    },
+    {
+      "name": "Geno Smith",
+      "position": "QB",
+      "projected": 16.4548,
+      "ownership": 0.0359,
+      "leverage_ratio": 93.541
+    }
+  ],
+  "leverage_MEANING": "value per $1k divided by field share; high means underowned for the value",
+  "leverage_STATUS": "DIAGNOSTIC_NOT_AN_ORDERING",
+  "leverage_WHY_NOT_AN_ORDERING": "the ratio is dominated by its denominator at ANY floor. Raising the floor from 0 to 1% moved the top three from players owned 0.03-0.15% to players owned 1.11-1.18% -- the same failure one notch up, because dividing by a small number is what the ranking is mostly doing. A usable ordering needs a contest objective, the probability that one of our entries wins given this field, which is GAP 6 work and needs the field as an input rather than a ratio as a substitute.",
+  "leverage_n_ranked": 108,
+  "leverage_n_excluded_below_floor": 334,
+  "DUPLICATION_USABLE": {
+    "state": "NO",
+    "measured": "0.9999 of entries are unique at max multiplicity 2",
+    "why": "real large-field contests duplicate heavily, and this field barely duplicates at all. The cause is recorded in KNOWN_BIASES: entries are sampled independently, whereas a real field is many entries from few entrants who diversify within their own set. So the duplication numbers here are a floor, not an estimate, and no decision may rest on them.",
+    "what_would_fix_it": "entrant-level generation with a within-entrant diversification rule, calibrated against archived contest entry lists"
+  },
+  "STAGE_READINESS": {
+    "gap_4_field_model": "PARTIAL",
+    "what_is_built": [
+      "ownership marginals with enforced identities",
+      "a generated field of legal lineups reproducing its marginals",
+      "duplication estimates from whole lineups",
+      "leverage against the operative field ownership",
+      "a sensitivity result standing in for absent calibration"
+    ],
+    "what_is_not": [
+      "any calibration of the ownership LEVEL against real contest data",
+      "stacking propensity beyond the independence benchmark",
+      "within-entrant diversification, so duplication is a floor not an estimate and is marked DUPLICATION_USABLE: NO",
+      "a usable leverage ORDERING -- the value-over-ownership ratio is a diagnostic only, for the reason in leverage_WHY_NOT_AN_ORDERING"
+    ],
+    "contest_aware_portfolio_decisions": "BLOCKED_PENDING_ARCHIVED_OWNERSHIP",
+    "because": "no contest-aware decision may rely on this field until archived contest ownership exists; see OUT-040",
+    "data_request": "OUT-040"
+  },
+  "elapsed_seconds": 201.8
+}

@@ -3155,3 +3155,39 @@ times the sample. The study already contradicts an assumption worth contradictin
 receiver's absence makes a club pass LESS, not more -- and that finding rests on 111 events.
 
 **Assigned, not blocked**: every warehouse table builds today on what is here.
+
+## OUT-040 — archived DFS contest ownership, for the field model
+
+**Status:** OPEN. **Raised:** 2026-09-28. **Blocks:** GAP 4 calibration, and therefore every
+contest-aware portfolio decision (GAP 6) that depends on the ownership LEVEL rather than its
+ordering.
+
+**What is needed.** Post-contest ownership for DraftKings NFL Classic contests. Per contest:
+contest name and id, entry fee, field size, entry date, and for every player their `%Drafted`
+(or the raw entry list, which is strictly better because whole lineups give duplication and
+correlation, not just marginals). Weeks 1–3 of 2026 at minimum; 2024–2025 if any were kept.
+
+**Why the repository cannot answer it.** I searched for it before asking. There is no archived
+contest ownership anywhere in the checkout — no `%Drafted` column in any CSV, no contest
+standings export, nothing in `nfl/dfs/salaries/raw/`. The only lineup file present is
+`OWNER_PLACEHOLDERS_FC_48_AUDIT_2026W3.csv`, which is the owner's 48 placeholder entries, not
+the field. The external research packet says the same thing from the other direction: field
+labels come "from self-archived contest CSVs", and none were archived. Published work
+(Haugh & Singal) gives the problem shape but no coefficients, and the commercial pOWN products
+state that their formulas are unpublished.
+
+**What was built without it, and what it cost.** The field model ships STRUCTURAL and declared
+`NOT_CALIBRATED_NO_ARCHIVED_CONTEST_OWNERSHIP`. Three things are earned without the data: the
+accounting identities (shares sum to nine slots, nobody exceeds 100%, and the ownership-weighted
+salary equals the field's expected spend, which SOLVES the salary tilt rather than declaring it),
+the generator reproducing its own marginals, and a sensitivity grid standing in for calibration.
+
+The sensitivity result is the reason this request matters rather than being a nicety. Across the
+plausible parameter range the top-40 leverage set is **not** stable — worst overlap 0.4 against a
+predeclared 0.80 threshold. So the field can order players for a given parameter setting and
+cannot yet support a contest-aware decision that depends on the level. Two or three real contest
+files would close that.
+
+**If it does not exist,** say so and it will be recorded as permanently unavailable, with the
+field model staying structural and the GAP 6 portfolio work restricted to what survives the
+sensitivity grid. Do not synthesise ownership to unblock it.
