@@ -3158,14 +3158,59 @@ receiver's absence makes a club pass LESS, not more -- and that finding rests on
 
 ## OUT-040 — archived DFS contest ownership, for the field model
 
-**Status:** OPEN. **Raised:** 2026-09-28. **Blocks:** GAP 4 calibration, and therefore every
-contest-aware portfolio decision (GAP 6) that depends on the ownership LEVEL rather than its
-ordering.
+**Status:** OPEN, and **SHARPENED 2026-09-28 into an exact list**. **Raised:** 2026-09-28.
+**Blocks:** GAP 4 calibration, and therefore every contest-aware portfolio decision (GAP 6) that
+depends on the ownership LEVEL rather than its ordering.
 
-**What is needed.** Post-contest ownership for DraftKings NFL Classic contests. Per contest:
-contest name and id, entry fee, field size, entry date, and for every player their `%Drafted`
-(or the raw entry list, which is strictly better because whole lineups give duplication and
-correlation, not just marginals). Weeks 1–3 of 2026 at minimum; 2024–2025 if any were kept.
+**THIS IS TIME-SENSITIVE AND IT IS THE ONLY ITEM ON THIS LIST THAT CAN EXPIRE.** The source registry
+records access as *"contests the account entered or can view"* and historical vintage support as
+*"final only unless downloaded during contest"*. If DraftKings stops serving a finished contest page,
+that week's ownership is gone and cannot be reconstructed from anywhere. Everything else in this
+outbox will still be there next month.
+
+**What is needed — the exact contests, read out of the entry files on disk.** The owner entered
+these, so this is not "find ownership somewhere", it is fourteen authenticated downloads by the
+entering account. For each one: the DraftKings contest standings CSV, whose ownership block carries
+`Player, Roster Position, %Drafted, FPTS`. The raw entry list is strictly better where it is
+offered, because whole lineups carry duplication and pairwise correlation and `%Drafted` carries
+neither.
+
+| contest id | game type | fee | our entries | contest name |
+|---|---|---|---|---|
+| `195700995` | CLASSIC | $0.50 | 33 | NFL $15K mini-MAX [150 Entry Max] (Early Only) |
+| `195700996` | CLASSIC | $0.25 | 20 | NFL $3K Quarter Jukebox [Just $0.25!] (Early Only) |
+| `195700997` | CLASSIC | $0.10 | 20 | NFL $1K Dime Package [Just $0.10!] (Early Only) |
+| `195955835` | CLASSIC | $0.10 | 4 | NFL $1K Dime Package [Just $0.10!] (Early Only) |
+| `196110787` | CLASSIC | $0.10 | 20 | NFL $400 Dime Package [Just $0.10!] (Early Only) |
+| `196117165` | CLASSIC | $0.50 | 6 | NFL $2.5K mini-MAX [150 Entry Max] (Early Only) |
+| `196122720` | CLASSIC | $0.25 | 20 | NFL $625 Quarter Jukebox [Just $0.25!] (Early Only) |
+| `195785338` | SHOWDOWN | $0.10 | 20 | NFL Showdown $200 Dime Package [Just $0.10!] (DET @ BUF) |
+| `195785364` | SHOWDOWN | $0.25 | 20 | NFL Showdown $250 Quarter Jukebox [Just $0.25!] (DET @ BUF) |
+| `195785966` | SHOWDOWN | $0.50 | 36 | NFL Showdown $50K mini-MAX [150 Entry Max] (IND @ KC) |
+| `195785967` | SHOWDOWN | $0.25 | 20 | NFL Showdown $6K Quarter Jukebox [Just $0.25!] (IND @ KC) |
+| `195785968` | SHOWDOWN | $0.10 | 20 | NFL Showdown $3K Dime Package [Just $0.10!] (IND @ KC) |
+| `195786074` | SHOWDOWN | $0.10 | 20 | NFL Showdown $5K Dime Package [Just $0.10!]  (NYG @ LAR) |
+| `195943240` | SHOWDOWN | $0.10 | 10 | NFL Showdown $4K Dime Package [Just $0.10!] (ATL @ GB) |
+
+**The seven CLASSIC ids are the ones that matter most** — the Classic field model cannot be
+calibrated on Showdown ownership, because it is a different game with a different lineup shape.
+
+**Where to put them:** `nfl/dfs/contest_results/`. `nfl/field/contest_ownership.py` reads that
+directory, validates every file against the real export schema, and refuses a partial or malformed
+one by name rather than reading around it. Run `python3.12 nfl/field/contest_ownership.py` after
+dropping files in; it reports what loaded and what it refused, and rewrites
+`nfl/field/OWNERSHIP_ACQUISITION_MANIFEST.json`.
+
+**What is NOT a substitute, and it is an easy mistake to make.** `nfl/dfs/vintage/*.slice.csv`
+carries FantasyCruncher `Exp.`, `EXP+` and `Used`. Those are a *projected* exposure from another
+model, not realised ownership. Calibrating our field model against them would be fitting our
+forecast to somebody else's forecast — the same category error as tuning a projection toward a
+sportsbook line — and FantasyCruncher is context-only and may never become a feature input. The
+ingest module has no code path to those columns, which is checked by a test rather than promised in
+a comment.
+
+**Also still wanted, and not urgent:** 2024–2025 contests if any were archived, and field size and
+entry date per contest.
 
 **Why the repository cannot answer it.** I searched for it before asking. There is no archived
 contest ownership anywhere in the checkout — no `%Drafted` column in any CSV, no contest

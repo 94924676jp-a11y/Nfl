@@ -72,6 +72,17 @@ sacks and takeaways inside each points-allowed band. The 99th percentile of a de
 moved 15 to 20 DK points. **Defensive projections are no longer floors.** Blocked kicks and the
 field-goal split remain unmeasured; neither affects DK defensive scoring.
 
+**Archived contest ownership (OUT-040) — still absent, now an exact and EXPIRING list.** The field
+model stays `NOT_CALIBRATED_NO_ARCHIVED_CONTEST_OWNERSHIP`. What changed is that the request is no
+longer open-ended: the fourteen contests the owner actually entered are read out of the `DKEntries`
+files, seven of them Classic, and the data is a per-contest DraftKings standings CSV that the
+entering account can download. **This is the only outstanding request that can expire** — access is
+to contests the account can still view, so if DraftKings stops serving a finished contest page that
+week's ownership is unrecoverable. `nfl/field/contest_ownership.py` is the single door: it validates
+against the real export schema, refuses a partial file whole, and returns BLOCKED-on-DATA naming the
+missing contest ids instead of a number. FantasyCruncher `Exp.`/`EXP+` is **not** a substitute and
+the module has no code path to it.
+
 **Play-by-play 2000–2020 (OUT-039) and historical rosters (OUT-038).** Play detail before 2021
 reads `UNKNOWN_PENDING_ACQUISITION`, never zero.
 
