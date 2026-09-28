@@ -1,0 +1,189 @@
+{
+  "ARTIFACT": "DFS_STUDIES",
+  "INSTRUCTION_HONOURED": "no conclusion here is hard-coded into a model. Each study is a measurement the simulator is checked against, never a bonus applied to a lineup.",
+  "INTERVALS": "bootstrap over whole games; players inside a game are not independent",
+  "stack_studies": {
+    "QB1+WR1_same_club": {
+      "state": "MEASURED",
+      "n_pairs": 2251,
+      "n_games": 1313,
+      "threshold_a_p80": 24.92,
+      "threshold_b_p80": 23.1,
+      "joint_top20_lift_over_independence": 2.0252,
+      "ci95_game_blocked": [
+        1.8293,
+        2.218
+      ],
+      "MEANING": "how many times more often both players clear their own 80th percentile together than two independent players would. 1.0 is independence.",
+      "DOES_NOT_SUPPORT": "any bonus added to a lineup for containing this pair. The simulator either reproduces this lift or it does not, and that is what SIM_VS_MEASURED_CORRELATION checks."
+    },
+    "QB1+TE1_same_club": {
+      "state": "MEASURED",
+      "n_pairs": 1523,
+      "n_games": 1089,
+      "threshold_a_p80": 25.0,
+      "threshold_b_p80": 16.3,
+      "joint_top20_lift_over_independence": 1.9681,
+      "ci95_game_blocked": [
+        1.7231,
+        2.2234
+      ],
+      "MEANING": "how many times more often both players clear their own 80th percentile together than two independent players would. 1.0 is independence.",
+      "DOES_NOT_SUPPORT": "any bonus added to a lineup for containing this pair. The simulator either reproduces this lift or it does not, and that is what SIM_VS_MEASURED_CORRELATION checks."
+    },
+    "QB1+RB1_same_club": {
+      "state": "MEASURED",
+      "n_pairs": 1949,
+      "n_games": 1201,
+      "threshold_a_p80": 24.5,
+      "threshold_b_p80": 21.8,
+      "joint_top20_lift_over_independence": 1.0736,
+      "ci95_game_blocked": [
+        0.8881,
+        1.2411
+      ],
+      "MEANING": "how many times more often both players clear their own 80th percentile together than two independent players would. 1.0 is independence.",
+      "DOES_NOT_SUPPORT": "any bonus added to a lineup for containing this pair. The simulator either reproduces this lift or it does not, and that is what SIM_VS_MEASURED_CORRELATION checks."
+    },
+    "WR1+WR2_same_club": {
+      "state": "MEASURED",
+      "n_pairs": 2289,
+      "n_games": 1294,
+      "threshold_a_p80": 23.2,
+      "threshold_b_p80": 13.2,
+      "joint_top20_lift_over_independence": 1.4187,
+      "ci95_game_blocked": [
+        1.2399,
+        1.5978
+      ],
+      "MEANING": "how many times more often both players clear their own 80th percentile together than two independent players would. 1.0 is independence.",
+      "DOES_NOT_SUPPORT": "any bonus added to a lineup for containing this pair. The simulator either reproduces this lift or it does not, and that is what SIM_VS_MEASURED_CORRELATION checks."
+    },
+    "bring_back_QB1+opposing_WR1": {
+      "state": "MEASURED",
+      "n_pairs": 2224,
+      "n_games": 1286,
+      "threshold_a_p80": 24.8,
+      "threshold_b_p80": 23.1,
+      "joint_top20_lift_over_independence": 1.1343,
+      "ci95_game_blocked": [
+        0.9574,
+        1.2994
+      ],
+      "MEANING": "how many times more often both players clear their own 80th percentile together than two independent players would. 1.0 is independence.",
+      "DOES_NOT_SUPPORT": "any bonus added to a lineup for containing this pair. The simulator either reproduces this lift or it does not, and that is what SIM_VS_MEASURED_CORRELATION checks."
+    },
+    "bring_back_WR1+opposing_WR1": {
+      "state": "MEASURED",
+      "n_pairs": 2406,
+      "n_games": 1203,
+      "threshold_a_p80": 22.9,
+      "threshold_b_p80": 22.9,
+      "joint_top20_lift_over_independence": 1.4585,
+      "ci95_game_blocked": [
+        1.1914,
+        1.699
+      ],
+      "MEANING": "how many times more often both players clear their own 80th percentile together than two independent players would. 1.0 is independence.",
+      "DOES_NOT_SUPPORT": "any bonus added to a lineup for containing this pair. The simulator either reproduces this lift or it does not, and that is what SIM_VS_MEASURED_CORRELATION checks."
+    }
+  },
+  "conditional_correlation": {
+    "QB1~WR1_by_total": {
+      "under_44": {
+        "r": 0.424,
+        "n_pairs": 954,
+        "n_games": 563
+      },
+      "44_to_49": {
+        "r": 0.4216,
+        "n_pairs": 942,
+        "n_games": 544
+      },
+      "49_plus": {
+        "r": 0.3323,
+        "n_pairs": 355,
+        "n_games": 206
+      }
+    },
+    "QB1~WR1_by_spread": {
+      "underdog_by_4+": {
+        "r": 0.4718,
+        "n_pairs": 517,
+        "n_games": 517
+      },
+      "close": {
+        "r": 0.4209,
+        "n_pairs": 1137,
+        "n_games": 682
+      },
+      "favoured_by_4+": {
+        "r": 0.348,
+        "n_pairs": 597,
+        "n_games": 597
+      }
+    },
+    "QB1~RB1_by_spread": {
+      "underdog_by_4+": {
+        "r": 0.137,
+        "n_pairs": 458,
+        "n_games": 458
+      },
+      "close": {
+        "r": 0.0444,
+        "n_pairs": 976,
+        "n_games": 613
+      },
+      "favoured_by_4+": {
+        "r": -0.0173,
+        "n_pairs": 515,
+        "n_games": 515
+      }
+    },
+    "bring_back_by_total": {
+      "under_44": {
+        "r": 0.0333,
+        "n_pairs": 942,
+        "n_games": 551
+      },
+      "44_to_49": {
+        "r": 0.0849,
+        "n_pairs": 928,
+        "n_games": 530
+      },
+      "49_plus": {
+        "r": 0.1518,
+        "n_pairs": 354,
+        "n_games": 205
+      }
+    }
+  },
+  "market_anchoring": {
+    "state": "MEASURED",
+    "n_club_games": 13502,
+    "market_implied_total_vs_actual": {
+      "r": 0.3949,
+      "r2": 0.156,
+      "mae": 7.4851,
+      "bias_actual_minus_implied": 0.3271,
+      "sd_of_implied": 3.9988,
+      "sd_of_actual": 10.2286
+    },
+    "WHAT_THIS_MEANS_FOR_US": "the joint simulator draws each game total around the market line, so its view of how many points a club scores IS this view. We are not competing with the market at club level; we are inheriting it. Any edge therefore has to come from ALLOCATION inside a club -- who gets the targets, carries and scores -- and from the joint structure, not from disagreeing about team totals.",
+    "WHAT_IT_DOES_NOT_MEAN": "it is not evidence the market is unbiased or efficient, and it is not a reason to anchor on the market permanently. An independent team-total model is a legitimate future experiment; it simply does not exist yet and no current number should be read as though it did."
+  },
+  "blocked_studies": {
+    "duplication_rates": {
+      "state": "BLOCKED",
+      "needs": "archived contest entry lists",
+      "request": "OUT-040",
+      "why_not_approximated": "the field model generates 19,999 distinct lineups out of 20,000 because entries are sampled independently, so its duplication figure is a floor and is already marked DUPLICATION_USABLE: NO. Studying duplication from it would be studying the sampler."
+    },
+    "chalk_failure_rates": {
+      "state": "BLOCKED",
+      "needs": "archived contest ownership per player-week",
+      "request": "OUT-040",
+      "why_not_approximated": "chalk is defined by ownership, and the only ownership here is a structural model whose level is uncalibrated. Measuring how often chalk fails against modelled ownership would measure the model."
+    }
+  }
+}
