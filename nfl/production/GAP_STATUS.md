@@ -14,7 +14,7 @@ means it cannot be done here and says what would unblock it.
 |---|---|---|---|
 | 1 | Historical warehouse from 2000 | BUILT | 13,982 club-games 2000–2026; 27,577 player-games; 17,721 role rows; 945 statistic-seasons in the coverage ledger |
 | 2 | V1 complete projections | BUILT | 457 rosterable players, every one with a state; no player silently absent |
-| 3 | Forward-chained calibration | BUILT | MAE 4.824, bias +0.012, rank correlation 0.446 on held-out 2024–25 |
+| 3 | Forward-chained calibration | BUILT, **VERDICT NEGATIVE** | the multi-season prior buys level and costs ordering; it does NOT beat a current-season baseline on rank. See FORWARD_CHAIN_VERDICT.md |
 | 4 | Optimiser / search quality | BUILT, PROVEN | exact 172.31 against a 171.59 floor; verified against brute force on value and roster |
 | 5 | Ownership / field model | PARTIAL | identities exact, generator reproduces its marginals to 0.00079; ownership LEVEL uncalibrated |
 | 6 | Joint game simulation | PARTIAL | **11 of 16** pair correlations reproduced inside a predeclared tolerance, 4 inside the measured interval (was 7 of 16) |
@@ -70,6 +70,19 @@ understatement sits in the upside tail, which is the part a tournament portfolio
 **Play-by-play 2000–2020 (OUT-039) and historical rosters (OUT-038).** Play detail before 2021
 reads `UNKNOWN_PENDING_ACQUISITION`, never zero.
 
+## The confidence statement, kept separate on purpose
+
+| layer | standing |
+|---|---|
+| exact optimiser | **trusted** — proven against brute force, every constraint compiled and verified |
+| contest portfolio | method **promising**, specific entries **not determined** |
+| joint simulator | **partially** trusted — 11 of 16 correlations, one named open question |
+| role / prior pipeline | **improving** — four unit defects removed, effects measured |
+| **proprietary projections** | **NOT yet validated.** No out-of-sample ranking skill above a current-season baseline has been demonstrated. |
+
+The last line is the one that gates everything downstream, and it is not closed by any amount of
+machinery quality upstream of it.
+
 ## The findings a future session should not re-derive
 
 - **Same-club receivers are positively correlated**, +0.170. Cannibalisation does not dominate at
@@ -90,6 +103,16 @@ reads `UNKNOWN_PENDING_ACQUISITION`, never zero.
   has to come from allocation inside a club, not from disagreeing about team totals.
 - **Carry shares are far more volatile than target shares**, 2.78× the multinomial variance against
   1.21×. A backfield is not a receiver rotation.
+- **The multi-season prior buys level and costs ordering.** Weeks 2–4 it improves MAE 5.870 → 5.678
+  and the level ratio 0.846 → 0.880; in both regimes it reduces rank correlation, every paired
+  week-blocked difference beyond two standard errors. The more the *depth curve* decides the worse
+  it gets; the more the *player's own* history decides the better.
+- **A Dirichlet cannot represent co-moving teammates.** Measured in centred-log-ratio space, 10 of
+  56 off-diagonal target-share correlations are positive. Logistic-normal fixes WR1~WR2 and breaks
+  four passing pairs, so it is rejected as default — the marginal covariance double-counts the
+  game-state channel the simulator already models.
+- **Recency is not provenance.** An artifact 0.00 seconds old whose builder has since changed is
+  stale, and lineage catches it where a timestamp cannot.
 
 ## Rejected by its own comparison
 
