@@ -132,14 +132,25 @@ def stamp(artifact_path, *, inputs=(), code=()) -> Outcome:
             'artifact built just before its builder was edited is not current.'),
     }
     p.write_text(json.dumps(art, indent=2))
-    return Outcome.ok('LINEAGE_STAMPED', value={'path': str(p.relative_to(_REPO)),
+    return Outcome.ok('LINEAGE_STAMPED', value={'path': _rel(p),
                                                 'lineage_id': lid,
                                                 'n_inputs': len(in_rows), 'n_code': len(code_rows)})
+
+
+def _rel(p: pathlib.Path) -> str:
+    try:
+        return str(p.relative_to(_REPO))
+    except ValueError:
+        return str(p)
 
 
 def verify(artifact_path) -> Outcome:
     """Recompute the recorded hashes against what is on disk now."""
     p = pathlib.Path(artifact_path)
+    # a repo-relative path is a legitimate way to name an artifact and must not raise out of a
+    # governed function -- the caller gets an Outcome either way.
+    if not p.is_absolute():
+        p = _REPO / p
     if not p.exists():
         return Outcome.blocked(ABSENT, f'{p} does not exist', cause=Cause.DATA)
     try:
@@ -165,11 +176,11 @@ def verify(artifact_path) -> Outcome:
         return Outcome.fail(
             STALE_DEPENDENCY,
             f'{len(moved)} input or code file changed since {p.name} was built',
-            artifact=str(p.relative_to(_REPO)), moved=moved,
+            artifact=_rel(p), moved=moved,
             lineage_id=lin.get('lineage_id'),
             note=('this artifact was produced from content that no longer exists, so nothing '
                   'downstream of it may report full readiness. Rebuild it.'))
-    return Outcome.ok(FRESH, value={'artifact': str(p.relative_to(_REPO)),
+    return Outcome.ok(FRESH, value={'artifact': _rel(p),
                                     'lineage_id': lin.get('lineage_id'),
                                     'n_inputs': len(lin.get('inputs', [])),
                                     'n_code': len(lin.get('code', []))})

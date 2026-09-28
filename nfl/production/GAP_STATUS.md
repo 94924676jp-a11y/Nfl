@@ -64,8 +64,13 @@ returns BEST_KNOWN or refuses; it never returns a proof it has not earned.
 study, and which specific 48 entries to entER. Does **not** block the method: joint selection beats
 independent selection at every field setting tested, by 0.18 to 0.32 absolute.
 
-**Defensive and return touchdowns (OUT-041).** Every defensive projection is a **floor**, and the
-understatement sits in the upside tail, which is the part a tournament portfolio is selected on.
+**Defensive and return touchdowns (OUT-041) — CLOSED 2026-09-28, and no outside data was needed.**
+It was raised as a data request because `TEAM_GAME` carries only offensive touchdowns. Play-by-play
+carries `td_team`, `return_touchdown` and `safety`, so the tail is measured, not excluded: 0.1197
+defensive or return touchdowns per club-game and 0.0237 safeties over 2021-2026, drawn jointly with
+sacks and takeaways inside each points-allowed band. The 99th percentile of a defence allowing 20
+moved 15 to 20 DK points. **Defensive projections are no longer floors.** Blocked kicks and the
+field-goal split remain unmeasured; neither affects DK defensive scoring.
 
 **Play-by-play 2000–2020 (OUT-039) and historical rosters (OUT-038).** Play detail before 2021
 reads `UNKNOWN_PENDING_ACQUISITION`, never zero.

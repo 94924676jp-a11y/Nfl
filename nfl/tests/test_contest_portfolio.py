@@ -54,23 +54,56 @@ def t_dst_model():
     o = dst_mod.DstModel.load()
     assert o.state is State.PASS, o
     art = json.loads(dst_mod.OUT.read_text())
-    ex = art['EXCLUDED']
-    assert ex['state'] == 'NOT_AVAILABLE_FROM_THIS_WAREHOUSE'
-    assert 'FLOOR' in ex['bias_direction']
-    assert ex['not_done'] == 'no plausible rate was substituted'
+    tail = art['scoring_tail']
+    assert tail['state'] == 'MEASURED_FROM_PLAY_BY_PLAY', tail
+    assert tail['closes'] == 'OUT-041'
+    assert tail['seasons_read'], 'no play-by-play season was read'
+    assert tail['known_omission'], 'the rare omission must stay named, not absorbed'
     # sacks and takeaways must fall as points allowed rise, or the conditioning is inverted
     means = [b['mean_sacks'] for b in art['bands'].values()]
     assert means == sorted(means, reverse=True), means
     takes = [b['mean_takeaways'] for b in art['bands'].values()]
     assert takes == sorted(takes, reverse=True), takes
+    # THE TOURNAMENT TAIL. A defence that holds a club down also scores more often, so the good
+    # outcomes must arrive together rather than being sprinkled on independently.
+    tds = [b['mean_defensive_td'] for b in art['bands'].values()]
+    assert tds[0] > tds[-1], (
+        f'defensive scores do not fall as points allowed rise: {tds}. Either the conditioning is '
+        f'inverted or the tail is being drawn independently of the tier.')
+    assert tds[0] > 0.15, tds[0]
     import random
     rng = random.Random(3)
     m = o.value
-    lo = sum(m.draw(3, rng) for _ in range(2000)) / 2000
-    hi = sum(m.draw(38, rng) for _ in range(2000)) / 2000
+    lo_s = sorted(m.draw(3, rng) for _ in range(6000))
+    hi_s = sorted(m.draw(38, rng) for _ in range(6000))
+    lo = sum(lo_s) / len(lo_s)
+    hi = sum(hi_s) / len(hi_s)
     assert lo > hi + 5, f'holding a club to 3 scored {lo:.2f} against {hi:.2f} allowing 38'
-    return (f'sacks {means[0]:.2f} down to {means[-1]:.2f} as points allowed rise; a defence '
-            f'holding 3 averages {lo:.2f} against {hi:.2f} allowing 38')
+    # THE CLAIM IS ABOUT THE TAIL, so it is tested against the same model WITHOUT the tail rather
+    # than against an absolute number -- an absolute threshold silently encodes which tier was used
+    # to pick it, and the first version of this check did exactly that.
+    def _no_tail(pa, n=6000):
+        r2 = random.Random(11)
+        out = []
+        for _ in range(n):
+            pool = next((t for lo, hi, t in m.bands if lo <= pa < hi), m.bands[-1][2])
+            sk, tk, _td, _sf = pool[r2.randrange(len(pool))]
+            out.append(dst_mod.tier(pa) + m.sack_pts * sk + m.take_pts * tk)
+        return sorted(out)
+    for pa in (3, 20, 38):
+        with_tail = sorted(m.draw(pa, rng) for _ in range(6000))
+        without = _no_tail(pa)
+        q = lambda x, f: x[int(f * len(x))]
+        assert q(with_tail, 0.99) > q(without, 0.99), (
+            f'at {pa} points allowed the 99th percentile did not rise when the scoring tail was '
+            f'included ({q(without, 0.99)} -> {q(with_tail, 0.99)}), so the tail is not reaching '
+            f'the distribution where a tournament looks')
+        assert max(with_tail) > max(without), pa
+    gain = (q(sorted(m.draw(38, rng) for _ in range(6000)), 0.99)
+            - q(_no_tail(38), 0.99))
+    return (f'sacks {means[0]:.2f} down to {means[-1]:.2f}; holding 3 averages {lo:.2f} against '
+            f'{hi:.2f} allowing 38; the scoring tail lifts the 99th percentile at every tier, by '
+            f'{gain:.0f} points even for a defence allowing 38')
 
 
 @check('LOAD-BEARING: a lineup with an unmodelled player is unscorable, never scored on the rest')

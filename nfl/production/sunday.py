@@ -198,7 +198,8 @@ def supplement() -> Outcome:
         ['generated_at_unix', int(time.time())],
         ['slate', 'DK NFL Week 3 2026'],
         ['WHAT_THIS_IS_NOT', 'not a recommendation, not a wager, not an upload'],
-        ['dst_scores_are_floors', 'defensive and return touchdowns are excluded; see OUT-041'],
+        ['dst_scoring_tail', 'defensive and return touchdowns and safeties are MEASURED from '
+                             'play-by-play, not excluded; OUT-041 closed 2026-09-28'],
         ['field_is_uncalibrated', 'no archived contest ownership exists; see OUT-040'],
         ['projection_inputs', 'proprietary only. No external projection is a feature input.'],
     ]

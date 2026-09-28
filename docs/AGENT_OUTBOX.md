@@ -3194,8 +3194,41 @@ sensitivity grid. Do not synthesise ownership to unblock it.
 
 ## OUT-041 — defensive and return touchdowns, per club-game
 
-**Status:** OPEN. **Raised:** 2026-09-28. **Affects:** every defensive projection, which is
-currently a FLOOR.
+**Status:** CLOSED IN REPOSITORY, 2026-09-28, no outside data needed. **Raised:** 2026-09-28.
+
+**How it closed, and the mistake worth keeping.** This was written as a request for data because
+`TEAM_GAME` cannot answer it. That is true of `TEAM_GAME` and false of the repository. Play-by-play
+carries `td_team`, `return_touchdown` and `safety` on every row, so a touchdown scored by the club
+that was NOT on offence is directly identifiable, which is exactly what DK credits to a defence. The
+tail is now MEASURED over 2021-2026 regular-season play-by-play rather than excluded. The general
+lesson is the one already in the briefing: *the repository is not the whole world, and neither is
+any one table in it.* One table lacking a field is not the same as the field being unavailable, and
+the second question — which other table already holds it — had not been asked.
+
+**What was measured.** 0.1197 defensive or return touchdowns per club-game, 11.2% of club-games with
+at least one, maximum 3; safeties 0.0237 per club-game. Together 0.766 DK points per club-game on
+average, which is small in the mean and is not where it matters. Conditioned on points allowed the
+rate falls with the score, 0.188 per club-game holding a club to 0-10 against 0.099-0.102 allowing
+24 or more, so the tail is drawn jointly with sacks and takeaways from the same empirical 4-tuple
+inside each points-allowed band and keeps its dependence on the game.
+
+**The effect is in the tail, which is the point.** The 99th percentile moved 22 → 30 DK points for a
+defence allowing 6, 15 → 20 allowing 20, and 10 → 15 allowing 34; the maximum draw allowing 34 moved
+12 → 24. The mean barely moves. Defensive projections are therefore no longer floors.
+
+**Known omission, named rather than absorbed.** A muffed kick recovered in the end zone by the
+KICKING team is not counted. It is rare, and it is recorded in the artifact under
+`scoring_tail.known_omission` instead of being folded into the rate.
+
+**What is still outstanding and is NOT closed by this.** Blocked kicks, and field goals and extra
+points per club-game. Those would let the 7.4945-point non-touchdown remainder be decomposed
+properly. They do not affect DST scoring under DK rules, so they are a data-quality item rather than
+a projection defect, and the request below stands at lower priority.
+
+---
+
+**Original request, preserved.** **Affects:** every defensive projection, which was
+a FLOOR until this was measured.
 
 **What is needed.** Per club-game, for 2000 onward: defensive touchdowns (interception and fumble
 returns), kick and punt return touchdowns, safeties, and blocked kicks. Field goals made and
@@ -3221,6 +3254,9 @@ which is exactly the part a tournament portfolio is selected on, so this is not 
 
 **If it does not exist,** say so and it will be recorded as permanently unavailable, with the
 defensive projections staying explicitly labelled as floors wherever they are consumed.
+
+*(That last paragraph is why refusing to synthesise a rate was right, and the close above is why
+refusing was not the end of it. The rate was measured, not invented.)*
 
 ## OUT-042 — verify the depth ordering for 82 players whose history says a higher role
 

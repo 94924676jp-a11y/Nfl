@@ -69,7 +69,8 @@ STAGES = [
      'why': 'share dispersion and yards-share concentration'},
     {'name': 'sim.dst', 'path': 'nfl/sim/DST_MODEL.json',
      'max_age_hours': 24 * 14, 'tier': 'MODEL', 'depends_on': ['warehouse.team_game'],
-     'why': 'points-allowed bands for defences'},
+     'why': ('points-allowed bands for defences, plus the defensive/return touchdown and safety '
+             'tail measured from play-by-play')},
     {'name': 'sim.pair_correlations', 'path': 'nfl/sim/PAIR_CORRELATIONS.json',
      'max_age_hours': 24 * 30, 'tier': 'VALIDATION', 'depends_on': ['warehouse.player_game'],
      'why': 'the correlation targets the simulator is held to'},

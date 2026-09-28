@@ -493,9 +493,11 @@ def simulate_game(model: Model, game, n_sims: int = 2000, seed: int = 23,
         'n_sims': n_sims, 'draws': draws,
         'club_checks': dict(identities),
         'IDENTITIES_HELD': ['total', 'margin', 'volume', 'yards', 'touchdowns'],
-        'DST_SOURCE': ('drawn from the opponent\'s simulated points in the same world; EXCLUDES '
-                       'defensive and return touchdowns, so a defence\'s score is a FLOOR. See '
-                       'DST_MODEL.EXCLUDED.'),
+        'DST_SOURCE': ('drawn from the opponent\'s simulated points in the same world. Sacks, '
+                       'takeaways, defensive and return touchdowns and safeties come from the '
+                       'empirical joint tuple within that points-allowed band, so the tail is '
+                       'measured and a defence\'s score is no longer a floor. See '
+                       'DST_MODEL.scoring_tail.'),
         'allocation_mode': allocation_mode,
         'share_family': share_family,
         'ALLOCATION_MODE_MEANING': {

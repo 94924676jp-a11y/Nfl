@@ -468,10 +468,12 @@ def build(n_sims=N_SIMS, n_candidates=N_CANDIDATES, field_sample=FIELD_SAMPLE,
                                            'parameters',
                 'what_closes_it': 'archived contest ownership, OUT-040',
             },
-            'dst_floor_warning': ('defensive and return touchdowns are excluded from the defence '
-                                 'model, so every lineup score here is a slight floor and the '
-                                 'understatement is concentrated in defensive upside. See '
-                                 'DST_MODEL.EXCLUDED and OUT-041.'),
+            'dst_scoring_tail': ('defensive and return touchdowns and safeties are drawn from '
+                                 'play-by-play measurements inside each points-allowed band, so a '
+                                 'defence here carries its real upside tail rather than a floor. '
+                                 'See DST_MODEL.scoring_tail; OUT-041 closed 2026-09-28. Blocked '
+                                 'kicks, and a muffed kick recovered by the kicking team, are '
+                                 'still not counted and are named in the artifact.'),
         },
     }
     OUT.write_text(json.dumps(art, indent=2))
