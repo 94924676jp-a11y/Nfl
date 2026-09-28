@@ -45,7 +45,13 @@ CLAIMED_WINDOWS = {
     # ---- market and environment. The repository's own schedules file settles these.
     'spread': (1952, None, PFR, 'PFR states spreads back to 1952; this checkout holds 1999+'),
     'total_line': (1952, None, PFR, 'as spread'),
-    'moneyline': (1999, None, REPO, 'present in the schedules capture from 1999'),
+    # CORRECTED 2026-09-28. The first version claimed 1999 on the strength of the column existing
+    # in the capture, without measuring it per season. Measured: zero coverage 1999-2005, 0.82 in
+    # 2006, and effectively complete from 2007 with dips to 0.73 in 2008 and 0.95 in 2009. A column
+    # that exists is not a column that is populated, and the coverage ledger caught the difference.
+    'moneyline': (2006, None, REPO,
+                  'MEASURED per season in nfl/vintage/schedules: none before 2006, 0.82 in 2006, '
+                  'complete from 2007 with dips in 2008 (0.73) and 2009 (0.95)'),
     'weather_temp': (1960, None, PFR,
                      'PFR states weather back to 1960. Null for domes, where roof carries the '
                      'information instead -- a null here is NOT a missing measurement.'),

@@ -3098,3 +3098,60 @@ and excluded from every scored metric.
 `team`. Position per player-season is the minimum; per player-week is better.
 
 This is **assigned, not blocked**: the chain runs today with inferred positions.
+
+## OUT-039 — player-game and play-by-play for 2000-2020 (the warehouse's one real gap)
+
+**Requested by:** Claude (no network). **Status:** OPEN. **Filed:** 2026-09-28.
+**Priority:** this is the critical-path input for the forward-chained calibration the owner ordered
+(train ≤2018 → test 2019, and so on back). Everything else in the warehouse is built.
+
+### What is already here, so this request is narrow
+
+| table | coverage held | rows |
+|---|---|---|
+| **team-game: market + environment** | **2000-2026 complete** | 13,982 club-games |
+| team-game: play detail | 2021-2026 only | 2,782 club-games |
+| **player-game** | **2021-2026 only** | 27,577 player-games |
+| role history | 2021-2026 only | 17,721 player-club-weeks |
+
+The coverage ledger (`nfl/warehouse/COVERAGE_LEDGER.json`, 945 statistic-seasons) reads **384
+AVAILABLE, 531 UNKNOWN_PENDING_ACQUISITION, 30 NOT_AVAILABLE_FOR_ERA**. Nearly all of the 531 are
+one thing: **no play-by-play or player-game data before 2021.**
+
+### What is needed
+
+Season-level play-by-play, **2000 through 2020**, in the same schema as the captures already here
+(`nfl/research/postgame/pbp_YYYY.<digest>.csv.gz` plus a `.provenance.json` sidecar carrying
+`sha256`, `source_url`, `retrieved_at`, `games`). nflverse/nflfastR release assets are the obvious
+route and match the existing schema exactly, so nothing downstream needs changing — `sources.py`
+will pick them up by pattern and verify the digest.
+
+Required columns are those the current builders read: `game_id`, `season_type`, `week`, `posteam`,
+`defteam`, `play_type`, `passer_player_id`, `rusher_player_id`, `receiver_player_id`,
+`pass_attempt`, `rush_attempt`, `complete_pass`, `passing_yards`, `rushing_yards`,
+`receiving_yards`, `air_yards`, `pass_touchdown`, `rush_touchdown`, `interception`, `sack`,
+`qb_scramble`, `fumble_lost`, `fumbled_1_player_id`, `fumbled_1_team`, `fumble_recovery_1_team`,
+`return_touchdown`, `td_team`, `safety`, `punt_blocked`, `yardline_100`, `down`, `qtr`,
+`score_differential`, `game_seconds_remaining`, `drive`, `two_point_attempt`,
+`two_point_conv_result`, `home_score`, `away_score`, `home_team`, `away_team`.
+
+**Secondary, and separable:** weekly rosters for 2000-2025 with `season`, `week`, `gsis_id`,
+`position`, `team` — this is OUT-038, still open, and it is what forces the chain to infer position
+from usage today.
+
+### What must NOT happen
+
+Do not synthesise, interpolate or zero-fill any of it. A season that does not arrive stays
+`UNKNOWN_PENDING_ACQUISITION` and the warehouse says so per statistic per season. Snap counts are a
+separate matter: they do not exist before 2012 at any price, and that is
+`NOT_AVAILABLE_FOR_ERA` rather than a gap to fill.
+
+### Why it is worth the fetch
+
+With 2000-2020 present, the forward chain runs 19 train/test folds instead of 4, the cold-start and
+promoted-player cohorts grow from a few hundred events to thousands, and the redistribution study
+(currently 180 quarterback, 158 back, 111 receiver, 159 tight-end absence events) gains roughly four
+times the sample. The study already contradicts an assumption worth contradicting -- a lead
+receiver's absence makes a club pass LESS, not more -- and that finding rests on 111 events.
+
+**Assigned, not blocked**: every warehouse table builds today on what is here.
