@@ -1,18 +1,31 @@
 {
   "ARTIFACT": "RUN_SEAL",
-  "run_id": "DK_NFL_WEEK3_2026__20260928T233409Z__9de8bf17771f",
+  "run_id": "DK_NFL_WEEK3_2026__20260928T233618Z__56a24b3d29d8",
   "slate": "DK_NFL_WEEK3_2026",
-  "sealed_at_utc": "2026-09-28T23:34:09.468460+00:00",
-  "code_version": "1a7896440728b3b2afa9f13d7644af2a57092f19+src1[44aa01d03783de18]",
-  "code_version_short": "9de8bf17771f",
+  "sealed_at_utc": "2026-09-28T23:36:19.108221+00:00",
+  "code_version": "3665694f5a0b327cf09c9ad7b3c255eb06be38f8+src1[571a8a8271ad6827]",
+  "code_version_short": "56a24b3d29d8",
   "CODE_VERSION_IS_HASHED_INTO_THE_ID": "the run id carries sha256(code_version)[:12], not a truncation of the version string. The commit sha alone is 40 characters, so a fixed-width truncation dropped the dirty-working-tree marker and let a dirty and a clean tree share an id.",
   "code_identity": {
     "contract_version": "nfl-code-identity-1",
-    "commit": "1a7896440728b3b2afa9f13d7644af2a57092f19",
-    "source_scope_sha256": "44aa01d03783de1852e326ebdd9231dabf562583de6bdbd89c2a0d660b029a43",
-    "source_scope_clean": true,
-    "dirty_source_files": [],
-    "n_dirty_source_files": 0,
+    "commit": "3665694f5a0b327cf09c9ad7b3c255eb06be38f8",
+    "source_scope_sha256": "571a8a8271ad6827064f518f69ec017e89e05ea8bb4ec54ea0db6b208a8b819d",
+    "source_scope_clean": false,
+    "dirty_source_files": [
+      {
+        "path": "nfl/production/run_archive.py",
+        "state": "PRESENT",
+        "sha256": "11cb373815290bffd7ff983cc676d613a01b3916d2f803d5b99fd7a75c439240",
+        "bytes": 14882
+      },
+      {
+        "path": "nfl/production/sunday.py",
+        "state": "PRESENT",
+        "sha256": "f3b65b76f1c536bfa93b5414ab8ac79ee0205f56937f2607a561e065462d4e46",
+        "bytes": 17617
+      }
+    ],
+    "n_dirty_source_files": 2,
     "scope": {
       "source_roots": [
         "nfl/production",
@@ -74,9 +87,9 @@
       "THREAD_ENV_RECORDED_NOT_HASHED: promote to RUNTIME_HASHED_KEYS if and when a measured draw difference is attributed to thread count. Not before -- an unmeasured coefficient in an identity is a silent constant.",
       "STAGING_NOT_DISTINGUISHED: B hashes worktree CONTENT, so a staged and an unstaged edit of identical bytes are the same identity. Deliberate: the bytes the interpreter reads are the bytes that matter."
     ],
-    "code_version": "1a7896440728b3b2afa9f13d7644af2a57092f19+src1[44aa01d03783de18]"
+    "code_version": "3665694f5a0b327cf09c9ad7b3c255eb06be38f8+src1[571a8a8271ad6827]"
   },
-  "note": "archived by sunday.run()",
+  "note": "archived by sunday.run(archive=True)",
   "n_files": 9,
   "files": {
     "DK_WEEK3_PROJ_V1.json.gz": {
@@ -121,15 +134,15 @@
     },
     "READINESS.json.gz": {
       "source_path": "nfl/production/READINESS.json",
-      "sha256": "703f62a7337d1bad47f4b4734f26d2adb639e753986b62f3186106c998474c38",
+      "sha256": "fe9670f60c28881823d12eaf2e903f499dfb35a5d4b7baa578e79e8e5ae44480",
       "SHA256_IS_OF": "the uncompressed content, so it compares to the live output path directly",
-      "bytes_uncompressed": 15140,
-      "bytes_stored_gzip": 3118,
+      "bytes_uncompressed": 15142,
+      "bytes_stored_gzip": 3119,
       "required": true
     },
     "SUNDAY_RUN_REPORT.json.gz": {
       "source_path": "nfl/production/SUNDAY_RUN_REPORT.json",
-      "sha256": "9c80706cb9d573389b99480173028b9e4a13986b28b5fbd7ad95c1a5bc9241e1",
+      "sha256": "ab252ea5a5d54dab2e6083d1beed507646fc671ac927ac74d9c92a169ac573b9",
       "SHA256_IS_OF": "the uncompressed content, so it compares to the live output path directly",
       "bytes_uncompressed": 3535,
       "bytes_stored_gzip": 1563,
@@ -145,10 +158,10 @@
     },
     "DK_WEEK3_DELIVERABLE_SUPPLEMENT.xlsx.gz": {
       "source_path": "nfl/dfs/salaries/DK_WEEK3_DELIVERABLE_SUPPLEMENT.xlsx",
-      "sha256": "c2c04dc4b10cb396da8b4159514bdbf335bbc90850a3a8badf8f9d12cf57dcff",
+      "sha256": "ef91aa3e86ec73d4a066954d13279aaa1aa996d6070063e3124a7b0b28369820",
       "SHA256_IS_OF": "the uncompressed content, so it compares to the live output path directly",
-      "bytes_uncompressed": 9013,
-      "bytes_stored_gzip": 8357,
+      "bytes_uncompressed": 9015,
+      "bytes_stored_gzip": 8361,
       "required": false
     }
   },

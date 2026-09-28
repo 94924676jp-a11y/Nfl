@@ -36,7 +36,25 @@ def check(name):
 
 @check('the run delivers, and every step passes')
 def t_run():
-    o = sunday.run()
+    # ARCHIVE INTO A TEMPORARY DIRECTORY. run(archive=True) is the production path and has to be
+    # exercised, but archiving into nfl/production/runs from a test filled the permanent record with
+    # directories indistinguishable from delivered slates -- nine of them before this was caught. So
+    # the archive root is redirected for the duration.
+    import shutil
+    import tempfile
+    from nfl.production import run_archive
+    tmp = pathlib.Path(tempfile.mkdtemp())
+    saved = (run_archive.RUNS, run_archive.CURRENT)
+    try:
+        run_archive.RUNS = tmp / 'runs'
+        run_archive.CURRENT = run_archive.RUNS / 'CURRENT.json'
+        o = sunday.run(archive=True)
+        archived = sorted(x.name for x in (tmp / 'runs').iterdir()) if (tmp / 'runs').exists() else []
+    finally:
+        run_archive.RUNS, run_archive.CURRENT = saved
+        shutil.rmtree(tmp, ignore_errors=True)
+    assert any(n.startswith('DK_NFL_WEEK3') for n in archived), (
+        f'archive=True produced no sealed directory: {archived}')
     assert o.state is State.PASS, o
     v = o.value
     assert v['RESULT'] == 'DELIVERED', v['RESULT']

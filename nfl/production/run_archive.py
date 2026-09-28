@@ -40,6 +40,7 @@ import datetime as dt
 import gzip
 import hashlib
 import json
+import os
 import pathlib
 import sys
 
@@ -49,7 +50,11 @@ if str(_REPO) not in sys.path:
 
 from sportsplatform.governance.outcome import Cause, Outcome  # noqa: E402
 
-RUNS = _REPO / 'nfl/production/runs'
+#: The archive root. Overridable by NFL_RUN_ARCHIVE_DIR so a test that exercises the production run
+#: cannot write into the permanent record. It had to be: every suite run calls sunday.run(), and each
+#: call was sealing a new directory into nfl/production/runs, so the archive filled with test
+#: artifacts that looked exactly like delivered slates.
+RUNS = pathlib.Path(os.environ.get('NFL_RUN_ARCHIVE_DIR') or (_REPO / 'nfl/production/runs'))
 CURRENT = RUNS / 'CURRENT.json'
 SEAL_NAME = 'SEAL.json'
 
@@ -70,6 +75,19 @@ RUN_OUTPUTS_OPTIONAL = (
     'nfl/dfs/salaries/DK_WEEK3_PROJECTIONS_V1.xlsx',
     'nfl/dfs/salaries/DK_WEEK3_DELIVERABLE_SUPPLEMENT.xlsx',
 )
+
+
+def _rel(p: pathlib.Path) -> str:
+    """A repo-relative display path, or the absolute one. NEVER raises.
+
+    pathlib.relative_to() raises when the path is outside the repo, which happens the moment the
+    archive root is redirected -- exactly what a test must do to avoid writing into the permanent
+    record. A governed function returning an Outcome must not raise out of its own display string.
+    """
+    try:
+        return str(p.relative_to(_REPO))
+    except ValueError:
+        return str(p)
 
 
 def digest(p: pathlib.Path):
@@ -139,7 +157,7 @@ def archive(slate: str, *, when=None, note: str | None = None,
             'RUN_ALREADY_SEALED',
             f'{rid} is already sealed. An immutable record that can be rewritten is not a record; '
             f'archive under a new run id instead.',
-            run_id=rid, directory=str(d.relative_to(_REPO)))
+            run_id=rid, directory=_rel(d))
     d.mkdir(parents=True, exist_ok=True)
 
     files = {}
@@ -192,7 +210,7 @@ def archive(slate: str, *, when=None, note: str | None = None,
     CURRENT.write_text(json.dumps({
         'ARTIFACT': 'CURRENT_RUN',
         'run_id': rid,
-        'directory': str(d.relative_to(_REPO)),
+        'directory': _rel(d),
         'sealed_at_utc': seal['sealed_at_utc'],
         'POINTER_SEMANTICS': (
             'the fixed paths under nfl/dfs/salaries are the CURRENT run and are overwritten by the '
@@ -201,7 +219,7 @@ def archive(slate: str, *, when=None, note: str | None = None,
             'verify_current() detects.'),
     }, indent=2))
     return Outcome.ok('RUN_ARCHIVED', value={
-        'run_id': rid, 'directory': str(d.relative_to(_REPO)), 'n_files': len(files),
+        'run_id': rid, 'directory': _rel(d), 'n_files': len(files),
         'code_version': cv})
 
 
@@ -272,7 +290,7 @@ def verify_current() -> Outcome:
 
 def list_runs() -> Outcome:
     if not RUNS.exists():
-        return Outcome.blocked('NO_RUNS_DIRECTORY', f'{RUNS.relative_to(_REPO)} does not exist',
+        return Outcome.blocked('NO_RUNS_DIRECTORY', f"{_rel(RUNS)} does not exist",
                                cause=Cause.DATA)
     rows = []
     for d in sorted(p for p in RUNS.iterdir() if p.is_dir()):

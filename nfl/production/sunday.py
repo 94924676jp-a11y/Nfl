@@ -222,7 +222,14 @@ def supplement() -> Outcome:
         'verify': ver})
 
 
-def run() -> Outcome:
+def run(*, archive: bool = False) -> Outcome:
+    """The Sunday deliverable.
+
+    `archive` is OPT-IN and defaults to False. The suite calls run() many times, and with archiving
+    on by default each call sealed a new directory into the permanent record, so the archive filled
+    with test artifacts indistinguishable from delivered slates. The production entry points --
+    main() below, and anything driving a real Sunday -- pass archive=True.
+    """
     t0 = time.time()
     steps = []
 
@@ -258,7 +265,15 @@ def run() -> Outcome:
     # deliverable -- the deliverable exists either way -- but it is recorded as its own step so an
     # unarchived run is visible rather than assumed.
     from nfl.production import run_archive
-    arch = run_archive.archive(SLATE_ID, note='archived by sunday.run()')
+    if archive:
+        arch = run_archive.archive(SLATE_ID, note='archived by sunday.run(archive=True)')
+    else:
+        arch = Outcome.deferred(
+            'RUN_NOT_ARCHIVED',
+            'run() was called with archive=False, so this run was not sealed into the record',
+            owed='call run(archive=True) from a production entry point, or archive explicitly',
+            note=('the default is off because the test suite calls run() repeatedly and each '
+                  'archive would be indistinguishable from a delivered slate'))
     steps.append({'step': 'run_archive', 'state': arch.state.value, 'code': arch.code,
                   'run_id': (arch.value or {}).get('run_id')})
 
@@ -309,7 +324,9 @@ def run() -> Outcome:
 
 
 if __name__ == '__main__':
-    o = run()
+    # THE PRODUCTION ENTRY POINT ARCHIVES. Running this file is a real Sunday run, so it seals
+    # itself into the record; run() called from a test does not.
+    o = run(archive=True)
     print(o.state.value, o.code)
     v = o.value if o.value else o.evidence
     for s in (v.get('steps') or []):
