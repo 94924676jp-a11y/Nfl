@@ -112,20 +112,62 @@ def diagnose(comparison) -> dict:
             'mean_signed_gap': mean(v['gap'] for v in non_qb_same.values()),
             'reading': 'OVER-correlated'},
         'n_sign_disagreements': sum(1 for v in flat.values() if not v['sign_agrees']),
-        'ROOT_CAUSE_HYPOTHESIS': (
-            'one efficiency draw per club-game, shared by every player on that club, with no '
-            'player-level idiosyncratic component. That makes a back who takes 60% of the carries '
-            'an almost deterministic function of his club\'s day, which over-couples him to '
-            'everyone else, while the multinomial split of a fixed carry pool over-couples him '
-            'NEGATIVELY to the other back with nothing to offset it.'),
-        'WHY_IT_FITS_THE_PATTERN': (
-            'a player-level efficiency component would push same-club non-quarterback pairs DOWN '
-            'toward the measured values and push the two backs UP toward zero, which is the '
-            'direction of eight of the nine misses at once.'),
+        'HYPOTHESIS_LEDGER': [
+            {'hypothesis': 'the yards-share Dirichlet concentration (invented at 12.0) was too '
+                           'high, pinning players to the club total',
+             'test': 'estimate it from the observed drift of yards share about opportunity share',
+             'result': 'REFUTED. Measured 16.0 receiving and 13.0 rushing -- HIGHER than the '
+                       'guess, so there is less player idiosyncrasy than assumed and correcting '
+                       'it moved the symptom the wrong way, +0.065 to +0.075 on same-club pairs.',
+             'action': 'change KEPT anyway: an unfitted constant replaced by a measurement'},
+            {'hypothesis': 'target shares are overdispersed relative to multinomial sampling',
+             'test': 'observed share variance against the multinomial expectation per '
+                     'player-season',
+             'result': 'REFUTED as the main channel. 1.21x, real but far too small to move a '
+                       'correlation gap of +0.20.',
+             'action': 'adopted as part of the share-dispersion change below'},
+            {'hypothesis': 'touchdowns are inverted from points too deterministically',
+             'test': 'corr(points, offensive touchdowns) and the residual spread of each',
+             'result': 'REFUTED. Points explain touchdowns at r=+0.890 and the simulator\'s '
+                       'implied spread, 0.715, is already WIDER than the measured 0.636.',
+             'action': 'none; the simulator was already right here'},
+            {'hypothesis': 'passing and rushing volume are drawn independently when clubs '
+                           'actually trade one against the other',
+             'test': 'corr(pass attempts, rush attempts), before and after removing points and '
+                     'margin',
+             'result': 'CONFIRMED. History -0.4255, and -0.3440 even after points and margin; '
+                       'two independent regressions imply only -0.1407.',
+             'action': 'ADOPTED. Volume reparameterised to plays and pass share, which implies '
+                       '-0.4223 against -0.4255 measured. Lead-back gap +0.097 to +0.083.'},
+            {'hypothesis': 'carry shares are far more volatile than target shares, so the '
+                           'backfield needs dispersion the receivers do not',
+             'test': 'the same overdispersion measurement, run separately on carries',
+             'result': 'CONFIRMED. 2.78x against 1.21x for targets, which matches the pattern '
+                       'of the misses exactly -- every back pair missed, receiver pairs did not.',
+             'action': 'ADOPTED. Dirichlet-multinomial shares with concentrations measured at '
+                       '150.6 for targets and 13.5 for carries. Lead-back gap +0.083 to +0.079, '
+                       'same-club non-quarterback +0.058 to +0.048.'},
+        ],
+        'WHAT_REMAINS_AND_WHY_IT_IS_STRUCTURAL': (
+            'the two backs. Reconciling exactly to a drawn club carry total makes the split '
+            'zero-sum, which forces a negative component between teammates: measured +0.000, '
+            'simulated -0.249, and adding share dispersion made it WORSE, from -0.231, because a '
+            'Dirichlet moves work between them rather than creating it. Reality expands a club\'s '
+            'carry total when a back\'s role grows instead of taking the carries off his '
+            'teammate. Representing that means usage-first with the club total derived from it, '
+            'which is a different model structure, not a parameter to move. Recorded as the next '
+            'architectural question rather than papered over.'),
+        'ROOT_CAUSE_STATUS': (
+            'two of five hypotheses confirmed and adopted, three refuted by measurement. The '
+            'adopted changes moved every summary statistic in the right direction and left the '
+            'count of reproduced pairs unchanged, because the surviving misses are large. See '
+            'HYPOTHESIS_LEDGER, and note the first entry: the hypothesis this validation '
+            'originally declared was refuted by its own measurement.'),
         'DECLARED_NEXT_EXPERIMENT': (
-            'estimate a variance decomposition of yards per opportunity into a club-game '
-            'component and a player component from PLAYER_GAME, then draw both. The split is '
-            'measurable, so it is a measurement and not a tuning knob.'),
+            'usage-first allocation with the club total derived from the players rather than '
+            'imposed on them, so a growing role expands the club total instead of displacing a '
+            'teammate. This is the only remaining explanation for the two-back correlation and '
+            'it is an architecture question, so it gets its own baseline and comparison.'),
         'WHAT_MUST_NOT_HAPPEN': (
             'no per-pair correction may be added to close these gaps. A correlation produced by '
             'a fudge factor is exactly the hand-added bonus the design forbids, and it would '

@@ -152,6 +152,62 @@ def build() -> Outcome:
             'n': o['n'], 'n_clusters': o['n_clusters'], 'se_kind': o['se_kind'],
         }
 
+    # ---- volume as PLAYS and PASS SHARE, which is the parameterisation that works ------------
+    #
+    # Modelling pass attempts and rush attempts as two separate regressions with independent
+    # residuals implies corr(pass, rush) = -0.141. History says -0.4255, and -0.3440 even after
+    # points and margin are removed, because a club has roughly a fixed number of plays and
+    # trades passes against runs inside it. Two independent draws cannot represent that.
+    #
+    # Reparameterising to total plays and the pass share of them puts the trade-off in the
+    # structure instead of in a correlation coefficient. The implied corr(pass, rush) under this
+    # form is -0.4223 against -0.4255 measured, and the residual correlation between the two new
+    # quantities is +0.0955, small enough that drawing them independently is defensible -- which
+    # is checked here rather than assumed, and reported either way.
+    prows = []
+    for r in vrows:
+        pl = r['pass_attempts'] + r['rush_attempts']
+        if pl <= 0:
+            continue
+        prows.append({'game_id': r['game_id'], 'plays': float(pl),
+                      'pass_share': r['pass_attempts'] / pl,
+                      'points': r['points'], 'margin': r['margin']})
+    plays_form = {}
+    for y in ('plays', 'pass_share'):
+        o = stats.ols(prows, y, ['points', 'margin'], cluster='game_id')
+        if o['state'] != 'FITTED':
+            plays_form[y] = {'state': o['state']}
+            continue
+        plays_form[y] = {
+            'intercept': round(o['coef']['intercept'], 5),
+            'per_own_point': round(o['coef']['points'], 6),
+            'per_own_point_se': round(o['se']['points'], 6),
+            'per_margin_point': round(o['coef']['margin'], 6),
+            'per_margin_point_se': round(o['se']['margin'], 6),
+            'residual_sd': round(o['rmse'], 5), 'r2': o['r2'],
+            'n': o['n'], 'n_clusters': o['n_clusters'], 'se_kind': o['se_kind'],
+        }
+    if all('state' not in v for v in plays_form.values()):
+        fp, fs = [], []
+        for r in prows:
+            fp.append(plays_form['plays']['intercept']
+                      + plays_form['plays']['per_own_point'] * r['points']
+                      + plays_form['plays']['per_margin_point'] * r['margin'])
+            fs.append(plays_form['pass_share']['intercept']
+                      + plays_form['pass_share']['per_own_point'] * r['points']
+                      + plays_form['pass_share']['per_margin_point'] * r['margin'])
+        rp = [r['plays'] - f for r, f in zip(prows, fp)]
+        rs = [r['pass_share'] - f for r, f in zip(prows, fs)]
+        pa = [r['pass_attempts'] for r in vrows if r['pass_attempts'] + r['rush_attempts'] > 0]
+        ra = [r['rush_attempts'] for r in vrows if r['pass_attempts'] + r['rush_attempts'] > 0]
+        plays_form['residual_correlation'] = round(_pearson(rp, rs), 4)
+        plays_form['INDEPENDENT_DRAWS_JUSTIFIED'] = abs(plays_form['residual_correlation']) < 0.15
+        plays_form['measured_corr_pass_att_rush_att'] = round(_pearson(pa, ra), 4)
+        plays_form['WHY_THIS_FORM'] = (
+            'two independent attempt regressions imply corr(pass, rush) = -0.141 against '
+            '-0.4255 measured. This form implies -0.4223. The trade-off belongs in the '
+            'structure, not in a correlation coefficient bolted on afterwards.')
+
     # ---- scoring: points per offensive touchdown, and the non-TD remainder -------------------
     td_rows = [r for r in rows if isinstance(r.get('offensive_td'), (int, float))
                and r.get('points') is not None]
@@ -178,6 +234,7 @@ def build() -> Outcome:
         'environment': env,
         'volume_response_to_market': response,
         'volume_response_to_realised_game': realised,
+        'volume_response_plays_and_pass_share': plays_form,
         'scoring': scoring,
         'HOW_THE_SIMULATOR_USES_THIS': [
             'draw a game total and a home margin around the market lines, with these SDs',
@@ -197,6 +254,7 @@ def build() -> Outcome:
     return Outcome.ok('SHARED_STATE_MEASURED', value={
         'artifact': str(OUT.relative_to(_REPO)), 'environment': env,
         'volume_response_to_realised_game': realised, 'scoring': scoring,
+        'volume_response_plays_and_pass_share': plays_form,
         'volume_response_to_market': response,
     })
 

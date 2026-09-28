@@ -59,6 +59,7 @@ from sportsplatform.governance.outcome import Cause, Outcome  # noqa: E402
 SS = _REPO / 'nfl/sim/SHARED_STATE.json'
 PG = _REPO / 'nfl/warehouse/PLAYER_GAME.json'
 EFF = _REPO / 'nfl/sim/EFFICIENCY.json'
+VC = _REPO / 'nfl/sim/VARIANCE_COMPONENTS.json'
 
 TOL = 1e-6
 
@@ -127,24 +128,57 @@ class Model:
         v = shared['volume_response_to_realised_game']
         self.pass_v = v['pass_attempts']
         self.rush_v = v['rush_attempts']
+        # the parameterisation that actually reproduces the pass/rush trade-off
+        pf = shared.get('volume_response_plays_and_pass_share') or {}
+        self.plays_v = pf.get('plays')
+        self.share_v = pf.get('pass_share')
         self.scoring = shared['scoring']
         self.ypa = eff['yards_per_pass_attempt']['empirical']
         self.ypc = eff['yards_per_carry']['empirical']
+        # how far a player's share of club yards drifts from his share of club opportunities.
+        # MEASURED (VARIANCE_COMPONENTS), not set. It replaced an invented 12.0, and the
+        # measurement came back HIGHER than the guess for both -- see CONCENTRATION_PROVENANCE.
+        self.conc_rec = None
+        self.conc_rush = None
+
+        # how volatile a player's SHARE of club opportunity is, over and above sampling noise.
+        # Measured: targets 1.21x the multinomial variance, carries 2.78x. This is the channel
+        # that matched the correlation misses.
+        self.share_conc_tgt = None
+        self.share_conc_car = None
+
+    def attach_concentration(self, vc: dict):
+        self.conc_rec = vc['receiving']['concentration']
+        self.conc_rush = vc['rushing']['concentration']
+        dt, dc = vc.get('share_dispersion_targets', {}), vc.get('share_dispersion_carries', {})
+        self.share_conc_tgt = dt.get('concentration') if dt.get('state') == 'ESTIMATED' else None
+        self.share_conc_car = dc.get('concentration') if dc.get('state') == 'ESTIMATED' else None
+        return self
 
     @classmethod
     def load(cls) -> Outcome:
-        if not SS.exists() or not EFF.exists():
+        if not SS.exists() or not EFF.exists() or not VC.exists():
             return Outcome.blocked('MODEL_INPUTS_ABSENT',
-                                   'shared state or efficiency artifact missing', cause=Cause.DATA,
-                                   shared_state=SS.exists(), efficiency=EFF.exists())
+                                   'shared state, efficiency or variance components missing',
+                                   cause=Cause.DATA, shared_state=SS.exists(),
+                                   efficiency=EFF.exists(), variance_components=VC.exists())
+        vc = json.loads(VC.read_text())
+        if vc['receiving'].get('state') != 'ESTIMATED' or vc['rushing'].get('state') != 'ESTIMATED':
+            return Outcome.blocked('MODEL_CONCENTRATION_NOT_ESTIMATED',
+                                   'the share-drift concentration was not estimated',
+                                   cause=Cause.DATA, receiving=vc['receiving'],
+                                   rushing=vc['rushing'])
         shared = json.loads(SS.read_text())
-        if 'state' in shared['volume_response_to_realised_game'].get('pass_attempts', {}):
+        pf = shared.get('volume_response_plays_and_pass_share') or {}
+        if any('state' in (pf.get(k) or {'state': 'ABSENT'}) for k in ('plays', 'pass_share')):
             return Outcome.blocked('MODEL_VOLUME_RESPONSE_NOT_IDENTIFIED',
-                                   'the volume response was not identified', cause=Cause.DATA)
+                                   'the plays / pass-share volume response was not identified',
+                                   cause=Cause.DATA, plays_form=pf)
         if 'state' in shared['scoring']:
             return Outcome.blocked('MODEL_SCORING_NOT_IDENTIFIED',
                                    shared['scoring']['state'], cause=Cause.DATA)
-        return Outcome.ok('MODEL_LOADED', value=cls(shared, json.loads(EFF.read_text())))
+        return Outcome.ok('MODEL_LOADED',
+                          value=cls(shared, json.loads(EFF.read_text())).attach_concentration(vc))
 
 
 def _multinomial(n: int, weights, rng) -> list[int]:
@@ -177,7 +211,7 @@ def _binom(n, p, rng):
     return max(0, min(n, int(round(rng.gauss(mu, sd)))))
 
 
-def _dirichlet_split(total: float, weights, rng, conc: float = 12.0) -> list[float]:
+def _dirichlet_split(total: float, weights, rng, conc: float) -> list[float]:
     """Split a continuous club total over players. Sums to the total exactly."""
     tot = sum(weights)
     if total <= 0 or tot <= 0:
@@ -230,13 +264,20 @@ def simulate_game(model: Model, game, n_sims: int = 2000, seed: int = 23) -> Out
         for c, other in ((home, away), (away, home)):
             own = pts[c['club']]
             own_margin = own - pts[other['club']]
-            pa = (model.pass_v['intercept'] + model.pass_v['per_own_point'] * own
-                  + model.pass_v['per_margin_point'] * own_margin
-                  + rng.gauss(0, model.pass_v['residual_sd']))
-            ra = (model.rush_v['intercept'] + model.rush_v['per_own_point'] * own
-                  + model.rush_v['per_margin_point'] * own_margin
-                  + rng.gauss(0, model.rush_v['residual_sd']))
-            pa, ra = max(0, int(round(pa))), max(0, int(round(ra)))
+            # PLAYS and PASS SHARE, not two independent attempt draws. A club trades passes
+            # against runs inside a roughly fixed play count, and two independent draws cannot
+            # represent that: they imply corr(pass, rush) = -0.14 against -0.43 measured. This
+            # form implies -0.42. See volume_response_plays_and_pass_share in SHARED_STATE.
+            plays = (model.plays_v['intercept'] + model.plays_v['per_own_point'] * own
+                     + model.plays_v['per_margin_point'] * own_margin
+                     + rng.gauss(0, model.plays_v['residual_sd']))
+            pshare = (model.share_v['intercept'] + model.share_v['per_own_point'] * own
+                      + model.share_v['per_margin_point'] * own_margin
+                      + rng.gauss(0, model.share_v['residual_sd']))
+            plays = max(1.0, plays)
+            pshare = min(0.95, max(0.05, pshare))
+            pa = max(0, int(round(plays * pshare)))
+            ra = max(0, int(round(plays * (1.0 - pshare))))
             td = (own - rem - rng.gauss(0, rem_sd)) / ppt
             td = max(0, int(round(td)))
 
@@ -258,14 +299,27 @@ def simulate_game(model: Model, game, n_sims: int = 2000, seed: int = 23) -> Out
             # away: renormalising would hand a backup's carries to the starter and inflate every
             # projection in the pool. The bucket is measured and reported, and it is also what
             # keeps the reconciliation exact when a club has, say, no ranked back at all.
-            def alloc(total, weights):
+            def alloc(total, weights, conc=None):
                 ghost = max(0.0, 1.0 - sum(weights))
-                got = _multinomial(total, list(weights) + [ghost], rng)
+                w = list(weights) + [ghost]
+                if conc:
+                    # DIRICHLET-MULTINOMIAL, not multinomial. A plain multinomial over pregame
+                    # shares admits sampling noise only; real shares move 1.21x that for targets
+                    # and 2.78x for carries. The concentration is measured, so this adds the
+                    # missing dispersion without adding a knob.
+                    g = [rng.gammavariate(max(1e-6, conc * x), 1.0) if x > 0 else 0.0 for x in w]
+                    tot = sum(g)
+                    if tot > 0:
+                        w = [x / tot for x in g]
+                got = _multinomial(total, w, rng)
                 return got[:-1], got[-1]
 
-            qb_att, qb_ghost = alloc(pa, [ps[i].get('pass_att_share', 0.0) for i in qb_ix])
-            tgt_r, tgt_ghost = alloc(pa, [max(0.0, ps[i]['target_share']) for i in rec_ix])
-            car_all, car_ghost = alloc(ra, [max(0.0, p['carry_share']) for p in ps])
+            qb_att, qb_ghost = alloc(pa, [ps[i].get('pass_att_share', 0.0) for i in qb_ix],
+                                    model.share_conc_tgt)
+            tgt_r, tgt_ghost = alloc(pa, [max(0.0, ps[i]['target_share']) for i in rec_ix],
+                                     model.share_conc_tgt)
+            car_all, car_ghost = alloc(ra, [max(0.0, p['carry_share']) for p in ps],
+                                       model.share_conc_car)
             if (sum(qb_att) + qb_ghost != pa or sum(tgt_r) + tgt_ghost != pa
                     or sum(car_all) + car_ghost != ra):
                 violations.append(('VOLUME', si))
@@ -279,13 +333,15 @@ def simulate_game(model: Model, game, n_sims: int = 2000, seed: int = 23) -> Out
             club_pass_yards = pa * ypa
             club_rush_yards = ra * ypc
             # yards follow the attempts, with the unallocated attempts carrying their own share
-            def split(total, weights, ghost):
-                out = _dirichlet_split(total, [max(1e-9, w) for w in list(weights) + [ghost]], rng)
+            def split(total, weights, ghost, conc):
+                out = _dirichlet_split(total, [max(1e-9, w) for w in list(weights) + [ghost]],
+                                       rng, conc)
                 return out[:-1], out[-1]
 
-            qb_yards, qb_yd_ghost = split(club_pass_yards, qb_att, qb_ghost)
-            rec_yards, rec_yd_ghost = split(club_pass_yards, tgt_r, tgt_ghost)
-            rush_yards, rush_yd_ghost = split(club_rush_yards, car_all, car_ghost)
+            qb_yards, qb_yd_ghost = split(club_pass_yards, qb_att, qb_ghost, model.conc_rec)
+            rec_yards, rec_yd_ghost = split(club_pass_yards, tgt_r, tgt_ghost, model.conc_rec)
+            rush_yards, rush_yd_ghost = split(club_rush_yards, car_all, car_ghost,
+                                              model.conc_rush)
             for got, ghost, want in ((qb_yards, qb_yd_ghost, club_pass_yards),
                                      (rec_yards, rec_yd_ghost, club_pass_yards),
                                      (rush_yards, rush_yd_ghost, club_rush_yards)):
@@ -341,6 +397,16 @@ def simulate_game(model: Model, game, n_sims: int = 2000, seed: int = 23) -> Out
         'n_sims': n_sims, 'draws': draws,
         'club_checks': dict(identities),
         'IDENTITIES_HELD': ['total', 'margin', 'volume', 'yards', 'touchdowns'],
+        'concentration_used': {'yards_share_receiving': model.conc_rec,
+                               'yards_share_rushing': model.conc_rush,
+                               'opportunity_share_targets': model.share_conc_tgt,
+                               'opportunity_share_carries': model.share_conc_car},
+        'CONCENTRATION_PROVENANCE': (
+            'measured in VARIANCE_COMPONENTS, replacing an invented 12.0. The measurement '
+            'refuted the hypothesis it was built to test: at 16.0 receiving and 13.0 rushing '
+            'there is LESS player idiosyncrasy than the guess assumed, so correcting it makes '
+            'same-club over-coupling slightly worse rather than better. The constant was still '
+            'wrong and is still corrected; the root cause of the over-coupling lies elsewhere.'),
         'unallocated_fraction': frac,
         'UNALLOCATED_MEANING': ('share of club volume belonging to players not in the supplied '
                                 'pool. Reported rather than renormalised away, because '

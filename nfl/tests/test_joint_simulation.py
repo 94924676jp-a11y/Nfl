@@ -130,8 +130,11 @@ def t_correlation_is_earned():
     frozen = copy.copy(m)
     frozen.total_res = [0.0]
     frozen.margin_res = [0.0]
-    frozen.pass_v = dict(m.pass_v, residual_sd=0.0)
-    frozen.rush_v = dict(m.rush_v, residual_sd=0.0)
+    # freeze the volume draw too. This froze pass_v/rush_v until the volume model was
+    # reparameterised to plays and pass share; the stale freeze left the volume noise running and
+    # the test correctly refused to call the correlation earned.
+    frozen.plays_v = dict(m.plays_v, residual_sd=0.0)
+    frozen.share_v = dict(m.share_v, residual_sd=0.0)
     f = sim_game.simulate_game(frozen, _spec(), n_sims=1500, seed=11)
     held = _corr(f.value['draws']['HOME_QB'], f.value['draws']['HOME_WR1'])
     assert live is not None and held is not None
