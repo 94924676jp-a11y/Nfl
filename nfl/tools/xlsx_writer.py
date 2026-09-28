@@ -210,7 +210,33 @@ def verify(path, expected_sheets=None):
            'VERIFICATION_SCOPE': ('well-formed XML, all required parts present, no dangling '
                                   'relationship. Does NOT prove a spreadsheet application will '
                                   'open the file; nothing here can test that.')}
-    if expected_sheets is not None and len(sheets) != expected_sheets:
-        out['ok'] = False
-        out['reason'] = f'expected {expected_sheets} sheets, archive holds {len(sheets)}'
+    # expected_sheets accepts a COUNT or a LIST OF NAMES. It used to compare len(sheets) against
+    # whatever was passed, so handing it the names it is named after always failed with a message
+    # about counts -- a parameter quietly meaning something other than what it says. Names are now
+    # checked as names, read from workbook.xml where they actually live, because the worksheet part
+    # filenames are sheet1.xml, sheet2.xml and carry no name at all.
+    if expected_sheets is not None:
+        if isinstance(expected_sheets, int):
+            if len(sheets) != expected_sheets:
+                out['ok'] = False
+                out['reason'] = f'expected {expected_sheets} sheets, archive holds {len(sheets)}'
+        else:
+            want = list(expected_sheets)
+            with zipfile.ZipFile(path) as z:
+                wb = ET.fromstring(z.read('xl/workbook.xml'))
+            ns = '{http://schemas.openxmlformats.org/spreadsheetml/2006/main}'
+            got = [el.get('name') for el in wb.findall(f'.//{ns}sheet')]
+            out['sheet_names'] = got
+            # names are truncated and sanitised on write, so compare against what write would make
+            names_seen = set()
+            expect = []
+            for n in want:
+                nm = _safe_name(n, names_seen)
+                names_seen.add(nm)
+                expect.append(nm)
+            missing = [n for n in expect if n not in got]
+            if missing:
+                out['ok'] = False
+                out['reason'] = f'sheets missing from the archive: {missing}'
+                out['expected_sheet_names'] = expect
     return out

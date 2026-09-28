@@ -435,6 +435,17 @@ def build(n_sims=N_SIMS, n_candidates=N_CANDIDATES, field_sample=FIELD_SAMPLE,
             'mean_projection_given_up': round(a['mean_projected'] - b['mean_projected'], 4),
         },
         'marginal_history': history,
+        'entries': [
+            {'entry': i + 1, 'provenance': c['provenance'],
+             'projected': c['projected'], 'simulated_mean': round(c['sim_mean'], 4),
+             'ids': c['ids'],
+             'names': [next((r['name'] for r in pool if r['id'] == x), x) for x in c['ids']],
+             'salary': sum(next(r['salary'] for r in pool if r['id'] == x) for x in c['ids'])}
+            for i, c in enumerate(joint)],
+        'ENTRIES_ARE_NOT_SUBMITTED': ('the rosters are recorded so the deliverable can show what '
+                                      'the method selected and so legality can be checked. '
+                                      'Nothing is uploaded to DraftKings and no contest is '
+                                      'entered.'),
         'simulation_coverage': {k: v for k, v in sim.value.items() if k != 'draws'},
         'GOVERNANCE': {
             'field_calibration': own_mod.CALIBRATION_STATE,

@@ -1,0 +1,114 @@
+{
+  "ARTIFACT": "SUNDAY_RUN_REPORT",
+  "RESULT": "DELIVERED",
+  "product_mode": "PARTIAL",
+  "stale_stages": [
+    "slate.post_inactives"
+  ],
+  "steps": [
+    {
+      "step": "readiness",
+      "state": "PASS",
+      "code": "READINESS_ASSESSED",
+      "product_mode": "PARTIAL"
+    },
+    {
+      "step": "output_contract",
+      "state": "PASS",
+      "code": "CONTRACT_MET",
+      "n_problems": 0
+    },
+    {
+      "step": "supplement",
+      "state": "PASS",
+      "code": "SUPPLEMENT_WRITTEN",
+      "sheets": 5
+    }
+  ],
+  "output_contract": {
+    "n_csv_rows": 457,
+    "n_universe": 457,
+    "rows_by_position": {
+      "QB": 60,
+      "RB": 107,
+      "WR": 172,
+      "TE": 100,
+      "DST": 18
+    },
+    "sheets_present": [
+      "READ THIS FIRST",
+      "All Projections",
+      "QB",
+      "RB",
+      "WR",
+      "TE",
+      "DST",
+      "K",
+      "Explanation",
+      "Model vs FC",
+      "Model vs Market",
+      "Availability",
+      "Projection Coverage",
+      "Provenance",
+      "No projection",
+      "Club volume and TD pools",
+      "Constants",
+      "Guards",
+      "Forward chain",
+      "Column notes"
+    ],
+    "n_sheets": 20,
+    "extra_in_csv_not_in_universe": [],
+    "clauses_checked": [
+      "REQUIRED_COLUMNS",
+      "EXACTLY_ONCE",
+      "NO_SILENTLY_MISSING_PLAYER",
+      "EVERY_PLAYER_HAS_A_STATE",
+      "NO_NUMBER_MEANS_A_REASON",
+      "REQUIRED_SHEETS",
+      "NO_FORGOTTEN_POSITION"
+    ],
+    "problems": []
+  },
+  "supplement": {
+    "path": "nfl/dfs/salaries/DK_WEEK3_DELIVERABLE_SUPPLEMENT.xlsx",
+    "sheets": [
+      "Field Ownership",
+      "Portfolio",
+      "Portfolio Method",
+      "Readiness",
+      "Metadata"
+    ],
+    "n_sheets": 5,
+    "verify": {
+      "ok": true,
+      "n_sheets": 5,
+      "n_rows": 111,
+      "n_cells": 511,
+      "malformed_parts": [],
+      "dangling_relationships": [],
+      "bytes": 8932,
+      "VERIFICATION_SCOPE": "well-formed XML, all required parts present, no dangling relationship. Does NOT prove a spreadsheet application will open the file; nothing here can test that.",
+      "sheet_names": [
+        "Field Ownership",
+        "Portfolio",
+        "Portfolio Method",
+        "Readiness",
+        "Metadata"
+      ]
+    }
+  },
+  "elapsed_seconds": 55.15,
+  "FOUR_CLAUSES": {
+    "no_forgotten_position": "checked: every DK position has a sheet",
+    "no_silently_missing_player": "checked: CSV vs availability universe, both directions",
+    "no_stale_source_surprise": "reported: 1 stale stage(s) named above",
+    "no_late_model_development": "by construction: this module consumes artifacts and cannot fit anything"
+  },
+  "GOVERNANCE": {
+    "submitted": "NOTHING",
+    "contest_entered": "NONE",
+    "wager_recommended": "NONE",
+    "external_projection_as_input": "NONE"
+  }
+}
