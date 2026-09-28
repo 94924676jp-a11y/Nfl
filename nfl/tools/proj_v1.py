@@ -85,6 +85,11 @@ DK = {'pass_yd': 0.04, 'pass_td': 4.0, 'int': -1.0, 'rush_yd': 0.1, 'rush_td': 6
 #: than the degenerate fallback-only case.
 PRIOR_WEIGHT_CAP = 2.0
 
+#: DECLARED reporting threshold, in DK points. Below this a projection is flagged
+#: `effectively_zero` for downstream consumers, while keeping its value. It is a labelling
+#: threshold only: nothing is rounded, clipped or dropped because of it.
+EFFECTIVELY_ZERO = 0.05
+
 #: Pseudo-games of last season's team volume mixed into this season's measured volume. DECLARED:
 #: two games of pace is a thin estimate and a club's offence does not reset in September.
 TEAM_VOLUME_PRIOR_GAMES = 4.0
@@ -748,7 +753,16 @@ def dk_points(row, td_row, bonus, ip):
     items['bonus_100_rec'] = (bp_rec or 0.0) * DK['bonus_100_rec']
     items['bonus_100_rush'] = (bp_rush or 0.0) * DK['bonus_100_rush']
     items['bonus_300_pass'] = (bp_pass or 0.0) * DK['bonus_300_pass']
-    return round(sum(items.values()), 4), {k: round(v, 4) for k, v in items.items()}
+    total = sum(items.values())
+    # A PROJECTED ROW MUST NEVER READ EXACTLY 0.00. Not because a tiny number is wrong -- a third
+    # quarterback beyond the measured depth table really does project to about 3e-05 -- but because
+    # downstream, and on a spreadsheet handed to a person, 0.00 is indistinguishable from a row we
+    # REFUSED to project. Those are different claims and the artifact has to keep saying which.
+    # A positive total that would round away keeps its precision instead.
+    rounded = round(total, 4)
+    if rounded == 0.0 and total > 0.0:
+        rounded = total
+    return rounded, {k: round(v, 4) for k, v in items.items()}
 
 
 def allocate_club_td(team_expected_td, pass_share, rows, rates):
@@ -938,6 +952,7 @@ def build():
         base.update(pr)
         base['projection_state'] = ('PROJECTED' if gsis else 'PROJECTED_COLD_START')
         base['gsis_id'] = gsis
+        base['identity_matched_by'] = (idr or {}).get('matched_by') or 'UNRESOLVED'
         rows[dk_id] = base
         by_club[club].append(base)
 
@@ -967,6 +982,27 @@ def build():
             pts, items = dk_points(r, r.get('td'), bonus, ip)
             r['dk_points'] = pts
             r['dk_line_items'] = items
+            if pts == 0.0:
+                # a genuine computed zero: every component is zero, which is a STATEMENT about
+                # this player rather than a gap in the evidence, and it is labelled as such
+                r['projection_state'] = 'PROJECTED_COMPUTED_ZERO'
+                r['COMPUTED_NOT_MISSING'] = (
+                    'every scoring component evaluated to zero for this row. This is a computed '
+                    'zero, not a withheld projection and not missing evidence -- the distinction '
+                    'is the whole reason the state is named.')
+            elif pts < EFFECTIVELY_ZERO:
+                r['effectively_zero'] = True
+                r['EFFECTIVELY_ZERO_NOTE'] = (
+                    f'below {EFFECTIVELY_ZERO} DK points, which is not distinguishable from zero '
+                    f'for lineup purposes. The value is kept at full precision so it cannot be '
+                    f'confused with a refusal.')
+    # carry the club pool scale onto each row so the workbook can show it per player
+    for club, acct in td_acct.items():
+        for r in by_club.get(club, ()):
+            for half in ('rec', 'rush'):
+                h = acct.get(half)
+                if isinstance(h, dict) and h.get('scale') is not None:
+                    r.setdefault('td', {})[f'{half}_pool_scale'] = h['scale']
     for r in rows.values():
         r.pop('_claims', None)
     return {'post': post, 'rows': rows, 'team_volume': tv_all, 'td_account': td_acct,
