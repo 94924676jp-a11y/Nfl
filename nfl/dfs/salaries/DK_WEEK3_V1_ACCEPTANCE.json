@@ -16,13 +16,13 @@
   },
   "level_within_band": {
    "code": "PROJECTION_LEVEL_OUT_OF_BAND",
-   "detail": "3 of 5 slices fall outside the declared band 0.85-1.15. Worst: top_50_by_external at ratio 0.8223 (ours 14.25 vs external 17.33 over 50 players). The flat all-players ratio is 0.8906 and would have hidden this -- read the slices.",
+   "detail": "3 of 5 slices fall outside the declared band 0.85-1.15. Worst: top_50_by_external at ratio 0.8223 (ours 14.25 vs external 17.33 over 50 players). The flat all-players ratio is 0.8995 and would have hidden this -- read the slices.",
    "evidence": {
     "band": [
      0.85,
      1.15
     ],
-    "flat_ratio": 0.8906,
+    "flat_ratio": 0.8995,
     "worst": {
      "external_mean": 17.33,
      "in_band": false,
@@ -36,17 +36,17 @@
     {
      "external_mean": 6.07,
      "in_band": true,
-     "n": 253,
-     "ours_mean": 5.41,
-     "ratio": 0.8906,
+     "n": 271,
+     "ours_mean": 5.46,
+     "ratio": 0.8995,
      "slice": "all_joined"
     },
     {
-     "external_mean": 13.31,
+     "external_mean": 13.43,
      "in_band": false,
      "n": 100,
-     "ours_mean": 10.95,
-     "ratio": 0.8228,
+     "ours_mean": 11.19,
+     "ratio": 0.8333,
      "slice": "top_100_by_external"
     },
     {
@@ -101,20 +101,10 @@
    "state": "FAIL"
   },
   "positional_coverage": {
-   "code": "POSITION_HAS_NO_PROPRIETARY_COVERAGE",
-   "detail": "['DST'] are rosterable on this slate and carry zero proprietary projections. A position with no component is a hole in the product, not a slate property.",
-   "evidence": {
-    "counts": {
-     "QB": 59,
-     "RB": 103,
-     "TE": 97,
-     "WR": 165
-    },
-    "missing": [
-     "DST"
-    ]
-   },
-   "state": "FAIL"
+   "code": "ALL_POSITIONS_COVERED",
+   "detail": "every rosterable position has proprietary coverage: {'QB': 59, 'RB': 103, 'WR': 165, 'TE': 97, 'DST': 18}",
+   "evidence": {},
+   "state": "PASS"
   },
   "td_rate_not_raw_count": {
    "code": "TD_RATE_HAS_A_FLOOR",
@@ -144,21 +134,21 @@
     "n": 165
    }
   },
-  "mean_dk_points": 3.5491,
-  "median": 0.935,
+  "mean_dk_points": 3.6567,
+  "median": 1.047,
   "n_exactly_zero": 0,
-  "n_projected": 424,
-  "n_unavailable": 33,
+  "n_projected": 442,
+  "n_unavailable": 15,
   "n_universe": 457,
   "states": {
    "NOT_PLAYING_REPORTED_INACTIVE": 12,
    "PROJECTED": 415,
    "PROJECTED_COLD_START": 9,
-   "PROJECTION_UNAVAILABLE_DST_NOT_IMPLEMENTED": 18,
+   "PROJECTED_DST": 18,
    "WITHHELD_IDENTITY_CONFLICT_OPEN": 3
   },
   "top_1": 22.169,
-  "top_100_mean": 11.454,
+  "top_100_mean": 11.681,
   "top_10_mean": 18.826
  }
 }

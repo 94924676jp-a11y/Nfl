@@ -3001,3 +3001,33 @@ so the coefficient cannot be estimated here. It is **not invented** in the meant
 
 This is **assigned, not blocked**: V1 is complete and runs without it. The coefficient would
 improve the volume layer; its absence does not stop anything.
+
+## OUT-037 — the 2025 capture credits the Jets defence with ZERO interceptions
+
+**Requested by:** Claude (no network). **Status:** OPEN. **Filed:** 2026-09-28.
+**Severity:** a whole scoring term silently deleted from one club.
+
+Measured in `nfl/research/postgame/pbp_2025.2f135887790a013f.csv.gz`, regular season:
+
+* New York Jets defensive plays: **1,419**. Interceptions credited with `defteam == NYJ`: **0**.
+* **31 of 32** clubs recorded interceptions. The next-lowest are TEN, DAL and SF on **six**.
+* All **13** interceptions occurring in Jets games have `posteam == NYJ` — every one was thrown
+  *by* the Jets, none caught by them. So opposing quarterbacks threw none against them all year.
+* No interception row anywhere in the season has a blank `defteam`, so these are not
+  misfiled-to-empty; they are absent.
+
+Against the measured league rate of **0.75341** interceptions per club-game, the expectation over
+the 19 club-weeks used is **14.3**, and P(observing zero) is **6.07e-07**. This is a defect in the
+capture, not a property of the defence.
+
+**Handled here, but only as a floor.** `dst_model.py` now runs a Poisson plausibility test on
+every club-measure and substitutes the measured league rate when a zero is this improbable,
+labelling the row `PROJECTED_WITH_LEAGUE_RATE_SUBSTITUTION`. It fires on exactly one of 192
+club-measure combinations and correctly leaves safeties and blocked kicks alone, where a zero over
+19 games is ordinary. A substituted league rate is still not the Jets' own rate.
+
+**What is needed:** a re-pull of 2025 play-by-play, verified by the check that every club records
+at least one defensive interception, and a reason why this capture lost them. If other event
+classes are affected the same way for other clubs the substitution is masking more than it says.
+
+This is **assigned, not blocked**: DST projects for all 18 clubs today.

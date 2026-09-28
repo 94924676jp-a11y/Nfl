@@ -886,6 +886,13 @@
    "volume_field": "targets"
   }
  },
+ "dst_residual_spread": {
+  "SPREAD_IS_UNCONDITIONAL_AND_THEREFORE_TOO_WIDE": "these residuals are around the LEAGUE mean, not around each club-game own market expectation, because no line history is held. Part of this spread is predictable and already priced. Using it as the conditional spread pulls the points-allowed expectation toward the middle buckets, so the term is conservative: it understates a strong defence facing a weak offence and overstates the reverse. OUT-036 would fix it.",
+  "league_mean_points": 22.5118,
+  "n_club_games": 2718,
+  "sd": 9.8971,
+  "state": "MEASURED"
+ },
  "group_shares": {
   "carries": {
    "QB": 0.1897,
@@ -1657,6 +1664,26 @@
  "int_rate": 0.02054,
  "label": "PROPRIETARY_V1",
  "league_mean_implied": 21.916666666666668,
+ "opponent_implied": {
+  "BUF": 21.75,
+  "CAR": 20.0,
+  "CIN": 19.75,
+  "CLE": 21.5,
+  "DET": 21.0,
+  "HOU": 20.5,
+  "IND": 22.0,
+  "JAX": 21.5,
+  "KC": 17.75,
+  "LAC": 28.75,
+  "MIA": 27.25,
+  "NE": 24.5,
+  "NYG": 17.5,
+  "NYJ": 27.5,
+  "PIT": 22.75,
+  "SEA": 16.0,
+  "TEN": 20.0,
+  "WAS": 24.5
+ },
  "rates_artifact": {
   "pass_share": 0.6156,
   "points_to_td": {
@@ -60947,288 +60974,937 @@
    "team": "BUF"
   },
   "44247554": {
-   "NOT_ZERO": "no defence/special-teams layer exists. UNAVAILABLE is a state, never 0.00.",
    "askable_ceiling": "ALPHA",
    "availability": "UNKNOWN_NOT_RELAYED",
    "capped": null,
    "dk_id": "44247554",
-   "dk_points": null,
+   "dk_points": 9.3668,
+   "dst": {
+    "NOT_MODELLED": [
+     "opponent-specific matchup adjustment",
+     "two-point conversion return"
+    ],
+    "dk_points": 9.3668,
+    "event_items": {
+     "blocked_kick": 0.0784,
+     "fumble_recovery": 0.549,
+     "interception": 2.7451,
+     "points_allowed": 2.1413,
+     "return_td": 1.1765,
+     "sack": 2.6765,
+     "safety": 0.0
+    },
+    "games_2025": 17,
+    "games_2026": 2,
+    "implausible_zeros_substituted": {},
+    "measures_missing": [],
+    "points_allowed_account": {
+     "NOT_THE_BUCKET_THE_MEAN_FALLS_IN": "a defence facing an opponent implied for 20 does not score the 14-20 bucket; it scores the expectation over everything that opponent might score. Reading the mean bucket alone would be a different and wrong quantity.",
+     "bucket_probabilities": {
+      "0-0": 0.01582,
+      "1-6": 0.12509,
+      "14-20": 0.25754,
+      "21-27": 0.18249,
+      "28-34": 0.07726,
+      "35-plus": 0.03127,
+      "7-13": 0.26306
+     },
+     "centre_implied_allowed": 16.0,
+     "n_residuals": 2718,
+     "state": "COMPUTED"
+    },
+    "state": "PROJECTED"
+   },
    "is_predicted_starter": false,
    "name": "Seahawks",
+   "opponent_implied_total": 16.0,
    "position": "DST",
-   "projection_state": "PROJECTION_UNAVAILABLE_DST_NOT_IMPLEMENTED",
+   "projection_state": "PROJECTED_DST",
    "role_band": "ALPHA",
    "role_state": "TEAM_UNIT",
    "salary": 3800,
    "team": "SEA"
   },
   "44247555": {
-   "NOT_ZERO": "no defence/special-teams layer exists. UNAVAILABLE is a state, never 0.00.",
    "askable_ceiling": "ALPHA",
    "availability": "UNKNOWN_NOT_RELAYED",
    "capped": null,
    "dk_id": "44247555",
-   "dk_points": null,
+   "dk_points": 5.6965,
+   "dst": {
+    "NOT_MODELLED": [
+     "opponent-specific matchup adjustment",
+     "two-point conversion return"
+    ],
+    "dk_points": 5.6965,
+    "event_items": {
+     "blocked_kick": 0.0,
+     "fumble_recovery": 0.6471,
+     "interception": 1.451,
+     "points_allowed": 1.5592,
+     "return_td": 0.0,
+     "sack": 2.0392,
+     "safety": 0.0
+    },
+    "games_2025": 17,
+    "games_2026": 2,
+    "implausible_zeros_substituted": {},
+    "measures_missing": [],
+    "points_allowed_account": {
+     "NOT_THE_BUCKET_THE_MEAN_FALLS_IN": "a defence facing an opponent implied for 20 does not score the 14-20 bucket; it scores the expectation over everything that opponent might score. Reading the mean bucket alone would be a different and wrong quantity.",
+     "bucket_probabilities": {
+      "0-0": 0.00037,
+      "1-6": 0.10964,
+      "14-20": 0.28035,
+      "21-27": 0.21634,
+      "28-34": 0.10596,
+      "35-plus": 0.05261,
+      "7-13": 0.20603
+     },
+     "centre_implied_allowed": 17.75,
+     "n_residuals": 2718,
+     "state": "COMPUTED"
+    },
+    "state": "PROJECTED"
+   },
    "is_predicted_starter": false,
    "name": "Chiefs",
+   "opponent_implied_total": 17.75,
    "position": "DST",
-   "projection_state": "PROJECTION_UNAVAILABLE_DST_NOT_IMPLEMENTED",
+   "projection_state": "PROJECTED_DST",
    "role_band": "ALPHA",
    "role_state": "TEAM_UNIT",
    "salary": 3700,
    "team": "KC"
   },
   "44247556": {
-   "NOT_ZERO": "no defence/special-teams layer exists. UNAVAILABLE is a state, never 0.00.",
    "askable_ceiling": "ALPHA",
    "availability": "UNKNOWN_NOT_RELAYED",
    "capped": null,
    "dk_id": "44247556",
-   "dk_points": null,
+   "dk_points": 6.7052,
+   "dst": {
+    "NOT_MODELLED": [
+     "opponent-specific matchup adjustment",
+     "two-point conversion return"
+    ],
+    "dk_points": 6.7052,
+    "event_items": {
+     "blocked_kick": 0.0,
+     "fumble_recovery": 0.8039,
+     "interception": 1.6863,
+     "points_allowed": 0.8131,
+     "return_td": 0.2353,
+     "sack": 3.0882,
+     "safety": 0.0784
+    },
+    "games_2025": 17,
+    "games_2026": 2,
+    "implausible_zeros_substituted": {},
+    "measures_missing": [],
+    "points_allowed_account": {
+     "NOT_THE_BUCKET_THE_MEAN_FALLS_IN": "a defence facing an opponent implied for 20 does not score the 14-20 bucket; it scores the expectation over everything that opponent might score. Reading the mean bucket alone would be a different and wrong quantity.",
+     "bucket_probabilities": {
+      "0-0": 0.00037,
+      "1-6": 0.05482,
+      "14-20": 0.28072,
+      "21-27": 0.24614,
+      "28-34": 0.15379,
+      "35-plus": 0.0894,
+      "7-13": 0.16409
+     },
+     "centre_implied_allowed": 21.0,
+     "n_residuals": 2718,
+     "state": "COMPUTED"
+    },
+    "state": "PROJECTED"
+   },
    "is_predicted_starter": false,
    "name": "Lions",
+   "opponent_implied_total": 21.0,
    "position": "DST",
-   "projection_state": "PROJECTION_UNAVAILABLE_DST_NOT_IMPLEMENTED",
+   "projection_state": "PROJECTED_DST",
    "role_band": "ALPHA",
    "role_state": "TEAM_UNIT",
    "salary": 3500,
    "team": "DET"
   },
   "44247557": {
-   "NOT_ZERO": "no defence/special-teams layer exists. UNAVAILABLE is a state, never 0.00.",
    "askable_ceiling": "ALPHA",
    "availability": "UNKNOWN_NOT_RELAYED",
    "capped": null,
    "dk_id": "44247557",
-   "dk_points": null,
+   "dk_points": 5.667,
+   "dst": {
+    "NOT_MODELLED": [
+     "opponent-specific matchup adjustment",
+     "two-point conversion return"
+    ],
+    "dk_points": 5.667,
+    "event_items": {
+     "blocked_kick": 0.0,
+     "fumble_recovery": 0.8039,
+     "interception": 1.3725,
+     "points_allowed": 1.5592,
+     "return_td": 0.2353,
+     "sack": 1.6961,
+     "safety": 0.0
+    },
+    "games_2025": 17,
+    "games_2026": 2,
+    "implausible_zeros_substituted": {},
+    "measures_missing": [],
+    "points_allowed_account": {
+     "NOT_THE_BUCKET_THE_MEAN_FALLS_IN": "a defence facing an opponent implied for 20 does not score the 14-20 bucket; it scores the expectation over everything that opponent might score. Reading the mean bucket alone would be a different and wrong quantity.",
+     "bucket_probabilities": {
+      "0-0": 0.00037,
+      "1-6": 0.10964,
+      "14-20": 0.28035,
+      "21-27": 0.21634,
+      "28-34": 0.10596,
+      "35-plus": 0.05261,
+      "7-13": 0.20603
+     },
+     "centre_implied_allowed": 17.5,
+     "n_residuals": 2718,
+     "state": "COMPUTED"
+    },
+    "state": "PROJECTED"
+   },
    "is_predicted_starter": false,
    "name": "Giants",
+   "opponent_implied_total": 17.5,
    "position": "DST",
-   "projection_state": "PROJECTION_UNAVAILABLE_DST_NOT_IMPLEMENTED",
+   "projection_state": "PROJECTED_DST",
    "role_band": "ALPHA",
    "role_state": "TEAM_UNIT",
    "salary": 3400,
    "team": "NYG"
   },
   "44247558": {
-   "NOT_ZERO": "no defence/special-teams layer exists. UNAVAILABLE is a state, never 0.00.",
    "askable_ceiling": "ALPHA",
    "availability": "UNKNOWN_NOT_RELAYED",
    "capped": null,
    "dk_id": "44247558",
-   "dk_points": null,
+   "dk_points": 7.117,
+   "dst": {
+    "NOT_MODELLED": [
+     "opponent-specific matchup adjustment",
+     "two-point conversion return"
+    ],
+    "dk_points": 7.117,
+    "event_items": {
+     "blocked_kick": 0.0784,
+     "fumble_recovery": 0.7843,
+     "interception": 1.4902,
+     "points_allowed": 0.8131,
+     "return_td": 0.9412,
+     "sack": 3.0098,
+     "safety": 0.0
+    },
+    "games_2025": 17,
+    "games_2026": 2,
+    "implausible_zeros_substituted": {},
+    "measures_missing": [],
+    "points_allowed_account": {
+     "NOT_THE_BUCKET_THE_MEAN_FALLS_IN": "a defence facing an opponent implied for 20 does not score the 14-20 bucket; it scores the expectation over everything that opponent might score. Reading the mean bucket alone would be a different and wrong quantity.",
+     "bucket_probabilities": {
+      "0-0": 0.00037,
+      "1-6": 0.05482,
+      "14-20": 0.28072,
+      "21-27": 0.24614,
+      "28-34": 0.15379,
+      "35-plus": 0.0894,
+      "7-13": 0.16409
+     },
+     "centre_implied_allowed": 20.5,
+     "n_residuals": 2718,
+     "state": "COMPUTED"
+    },
+    "state": "PROJECTED"
+   },
    "is_predicted_starter": false,
    "name": "Texans",
+   "opponent_implied_total": 20.5,
    "position": "DST",
-   "projection_state": "PROJECTION_UNAVAILABLE_DST_NOT_IMPLEMENTED",
+   "projection_state": "PROJECTED_DST",
    "role_band": "ALPHA",
    "role_state": "TEAM_UNIT",
    "salary": 3200,
    "team": "HOU"
   },
   "44247559": {
-   "NOT_ZERO": "no defence/special-teams layer exists. UNAVAILABLE is a state, never 0.00.",
    "askable_ceiling": "ALPHA",
    "availability": "UNKNOWN_NOT_RELAYED",
    "capped": null,
    "dk_id": "44247559",
-   "dk_points": null,
+   "dk_points": 8.2073,
+   "dst": {
+    "NOT_MODELLED": [
+     "opponent-specific matchup adjustment",
+     "two-point conversion return"
+    ],
+    "dk_points": 8.2073,
+    "event_items": {
+     "blocked_kick": 0.0,
+     "fumble_recovery": 1.3922,
+     "interception": 2.1765,
+     "points_allowed": 1.1582,
+     "return_td": 1.4706,
+     "sack": 2.0098,
+     "safety": 0.0
+    },
+    "games_2025": 17,
+    "games_2026": 2,
+    "implausible_zeros_substituted": {},
+    "measures_missing": [],
+    "points_allowed_account": {
+     "NOT_THE_BUCKET_THE_MEAN_FALLS_IN": "a defence facing an opponent implied for 20 does not score the 14-20 bucket; it scores the expectation over everything that opponent might score. Reading the mean bucket alone would be a different and wrong quantity.",
+     "bucket_probabilities": {
+      "0-0": 0.01766,
+      "1-6": 0.05445,
+      "14-20": 0.28072,
+      "21-27": 0.24356,
+      "28-34": 0.13355,
+      "35-plus": 0.07285,
+      "7-13": 0.18617
+     },
+     "centre_implied_allowed": 20.0,
+     "n_residuals": 2718,
+     "state": "COMPUTED"
+    },
+    "state": "PROJECTED"
+   },
    "is_predicted_starter": false,
    "name": "Panthers",
+   "opponent_implied_total": 20.0,
    "position": "DST",
-   "projection_state": "PROJECTION_UNAVAILABLE_DST_NOT_IMPLEMENTED",
+   "projection_state": "PROJECTED_DST",
    "role_band": "ALPHA",
    "role_state": "TEAM_UNIT",
    "salary": 3000,
    "team": "CAR"
   },
   "44247560": {
-   "NOT_ZERO": "no defence/special-teams layer exists. UNAVAILABLE is a state, never 0.00.",
    "askable_ceiling": "ALPHA",
    "availability": "UNKNOWN_NOT_RELAYED",
    "capped": null,
    "dk_id": "44247560",
-   "dk_points": null,
+   "dk_points": 8.0014,
+   "dst": {
+    "NOT_MODELLED": [
+     "opponent-specific matchup adjustment",
+     "two-point conversion return"
+    ],
+    "dk_points": 8.0014,
+    "event_items": {
+     "blocked_kick": 0.0,
+     "fumble_recovery": 1.8824,
+     "interception": 1.0196,
+     "points_allowed": 1.1582,
+     "return_td": 1.2353,
+     "sack": 2.7059,
+     "safety": 0.0
+    },
+    "games_2025": 17,
+    "games_2026": 2,
+    "implausible_zeros_substituted": {},
+    "measures_missing": [],
+    "points_allowed_account": {
+     "NOT_THE_BUCKET_THE_MEAN_FALLS_IN": "a defence facing an opponent implied for 20 does not score the 14-20 bucket; it scores the expectation over everything that opponent might score. Reading the mean bucket alone would be a different and wrong quantity.",
+     "bucket_probabilities": {
+      "0-0": 0.01766,
+      "1-6": 0.05445,
+      "14-20": 0.28072,
+      "21-27": 0.24356,
+      "28-34": 0.13355,
+      "35-plus": 0.07285,
+      "7-13": 0.18617
+     },
+     "centre_implied_allowed": 19.75,
+     "n_residuals": 2718,
+     "state": "COMPUTED"
+    },
+    "state": "PROJECTED"
+   },
    "is_predicted_starter": false,
    "name": "Bengals",
+   "opponent_implied_total": 19.75,
    "position": "DST",
-   "projection_state": "PROJECTION_UNAVAILABLE_DST_NOT_IMPLEMENTED",
+   "projection_state": "PROJECTED_DST",
    "role_band": "ALPHA",
    "role_state": "TEAM_UNIT",
    "salary": 2900,
    "team": "CIN"
   },
   "44247561": {
-   "NOT_ZERO": "no defence/special-teams layer exists. UNAVAILABLE is a state, never 0.00.",
    "askable_ceiling": "ALPHA",
    "availability": "UNKNOWN_NOT_RELAYED",
    "capped": null,
    "dk_id": "44247561",
-   "dk_points": null,
+   "dk_points": 7.2342,
+   "dst": {
+    "NOT_MODELLED": [
+     "opponent-specific matchup adjustment",
+     "two-point conversion return"
+    ],
+    "dk_points": 7.2342,
+    "event_items": {
+     "blocked_kick": 0.0,
+     "fumble_recovery": 1.0392,
+     "interception": 2.3922,
+     "points_allowed": 0.695,
+     "return_td": 0.9412,
+     "sack": 2.0882,
+     "safety": 0.0784
+    },
+    "games_2025": 17,
+    "games_2026": 2,
+    "implausible_zeros_substituted": {},
+    "measures_missing": [],
+    "points_allowed_account": {
+     "NOT_THE_BUCKET_THE_MEAN_FALLS_IN": "a defence facing an opponent implied for 20 does not score the 14-20 bucket; it scores the expectation over everything that opponent might score. Reading the mean bucket alone would be a different and wrong quantity.",
+     "bucket_probabilities": {
+      "1-6": 0.05261,
+      "14-20": 0.26821,
+      "21-27": 0.25239,
+      "28-34": 0.16519,
+      "35-plus": 0.0975,
+      "7-13": 0.15342
+     },
+     "centre_implied_allowed": 21.5,
+     "n_residuals": 2718,
+     "state": "COMPUTED"
+    },
+    "state": "PROJECTED"
+   },
    "is_predicted_starter": false,
    "name": "Jaguars",
+   "opponent_implied_total": 21.5,
    "position": "DST",
-   "projection_state": "PROJECTION_UNAVAILABLE_DST_NOT_IMPLEMENTED",
+   "projection_state": "PROJECTED_DST",
    "role_band": "ALPHA",
    "role_state": "TEAM_UNIT",
    "salary": 2900,
    "team": "JAX"
   },
   "44247562": {
-   "NOT_ZERO": "no defence/special-teams layer exists. UNAVAILABLE is a state, never 0.00.",
    "askable_ceiling": "ALPHA",
    "availability": "UNKNOWN_NOT_RELAYED",
    "capped": null,
    "dk_id": "44247562",
-   "dk_points": null,
+   "dk_points": 5.9793,
+   "dst": {
+    "NOT_MODELLED": [
+     "opponent-specific matchup adjustment",
+     "two-point conversion return"
+    ],
+    "dk_points": 5.9793,
+    "event_items": {
+     "blocked_kick": 0.0,
+     "fumble_recovery": 1.2157,
+     "interception": 1.0196,
+     "points_allowed": 0.695,
+     "return_td": 0.4706,
+     "sack": 2.5784,
+     "safety": 0.0
+    },
+    "games_2025": 17,
+    "games_2026": 2,
+    "implausible_zeros_substituted": {},
+    "measures_missing": [],
+    "points_allowed_account": {
+     "NOT_THE_BUCKET_THE_MEAN_FALLS_IN": "a defence facing an opponent implied for 20 does not score the 14-20 bucket; it scores the expectation over everything that opponent might score. Reading the mean bucket alone would be a different and wrong quantity.",
+     "bucket_probabilities": {
+      "1-6": 0.05261,
+      "14-20": 0.26821,
+      "21-27": 0.25239,
+      "28-34": 0.16519,
+      "35-plus": 0.0975,
+      "7-13": 0.15342
+     },
+     "centre_implied_allowed": 21.75,
+     "n_residuals": 2718,
+     "state": "COMPUTED"
+    },
+    "state": "PROJECTED"
+   },
    "is_predicted_starter": false,
    "name": "Bills",
+   "opponent_implied_total": 21.75,
    "position": "DST",
-   "projection_state": "PROJECTION_UNAVAILABLE_DST_NOT_IMPLEMENTED",
+   "projection_state": "PROJECTED_DST",
    "role_band": "ALPHA",
    "role_state": "TEAM_UNIT",
    "salary": 2800,
    "team": "BUF"
   },
   "44247563": {
-   "NOT_ZERO": "no defence/special-teams layer exists. UNAVAILABLE is a state, never 0.00.",
    "askable_ceiling": "ALPHA",
    "availability": "UNKNOWN_NOT_RELAYED",
    "capped": null,
    "dk_id": "44247563",
-   "dk_points": null,
+   "dk_points": 8.8586,
+   "dst": {
+    "NOT_MODELLED": [
+     "opponent-specific matchup adjustment",
+     "two-point conversion return"
+    ],
+    "dk_points": 8.8586,
+    "event_items": {
+     "blocked_kick": 0.0,
+     "fumble_recovery": 1.2745,
+     "interception": 2.1765,
+     "points_allowed": 0.5743,
+     "return_td": 1.7059,
+     "sack": 3.049,
+     "safety": 0.0784
+    },
+    "games_2025": 17,
+    "games_2026": 2,
+    "implausible_zeros_substituted": {},
+    "measures_missing": [],
+    "points_allowed_account": {
+     "NOT_THE_BUCKET_THE_MEAN_FALLS_IN": "a defence facing an opponent implied for 20 does not score the 14-20 bucket; it scores the expectation over everything that opponent might score. Reading the mean bucket alone would be a different and wrong quantity.",
+     "bucket_probabilities": {
+      "0-0": 0.01067,
+      "1-6": 0.03679,
+      "14-20": 0.26306,
+      "21-27": 0.25754,
+      "28-34": 0.18249,
+      "35-plus": 0.10854,
+      "7-13": 0.14091
+     },
+     "centre_implied_allowed": 22.75,
+     "n_residuals": 2718,
+     "state": "COMPUTED"
+    },
+    "state": "PROJECTED"
+   },
    "is_predicted_starter": false,
    "name": "Steelers",
+   "opponent_implied_total": 22.75,
    "position": "DST",
-   "projection_state": "PROJECTION_UNAVAILABLE_DST_NOT_IMPLEMENTED",
+   "projection_state": "PROJECTED_DST",
    "role_band": "ALPHA",
    "role_state": "TEAM_UNIT",
    "salary": 2700,
    "team": "PIT"
   },
   "44247564": {
-   "NOT_ZERO": "no defence/special-teams layer exists. UNAVAILABLE is a state, never 0.00.",
    "askable_ceiling": "ALPHA",
    "availability": "UNKNOWN_NOT_RELAYED",
    "capped": null,
    "dk_id": "44247564",
-   "dk_points": null,
+   "dk_points": 6.5452,
+   "dst": {
+    "NOT_MODELLED": [
+     "opponent-specific matchup adjustment",
+     "two-point conversion return"
+    ],
+    "dk_points": 6.5452,
+    "event_items": {
+     "blocked_kick": 0.0,
+     "fumble_recovery": 1.0392,
+     "interception": 1.1176,
+     "points_allowed": -0.0037,
+     "return_td": 1.9412,
+     "sack": 2.3725,
+     "safety": 0.0784
+    },
+    "games_2025": 17,
+    "games_2026": 2,
+    "implausible_zeros_substituted": {},
+    "measures_missing": [],
+    "points_allowed_account": {
+     "NOT_THE_BUCKET_THE_MEAN_FALLS_IN": "a defence facing an opponent implied for 20 does not score the 14-20 bucket; it scores the expectation over everything that opponent might score. Reading the mean bucket alone would be a different and wrong quantity.",
+     "bucket_probabilities": {
+      "1-6": 0.0287,
+      "14-20": 0.20603,
+      "21-27": 0.28035,
+      "28-34": 0.21634,
+      "35-plus": 0.15857,
+      "7-13": 0.11001
+     },
+     "centre_implied_allowed": 24.5,
+     "n_residuals": 2718,
+     "state": "COMPUTED"
+    },
+    "state": "PROJECTED"
+   },
    "is_predicted_starter": false,
    "name": "Patriots",
+   "opponent_implied_total": 24.5,
    "position": "DST",
-   "projection_state": "PROJECTION_UNAVAILABLE_DST_NOT_IMPLEMENTED",
+   "projection_state": "PROJECTED_DST",
    "role_band": "ALPHA",
    "role_state": "TEAM_UNIT",
    "salary": 2700,
    "team": "NE"
   },
   "44247565": {
-   "NOT_ZERO": "no defence/special-teams layer exists. UNAVAILABLE is a state, never 0.00.",
    "askable_ceiling": "ALPHA",
    "availability": "UNKNOWN_NOT_RELAYED",
    "capped": null,
    "dk_id": "44247565",
-   "dk_points": null,
+   "dk_points": 5.1852,
+   "dst": {
+    "NOT_MODELLED": [
+     "opponent-specific matchup adjustment",
+     "two-point conversion return"
+    ],
+    "dk_points": 5.1852,
+    "event_items": {
+     "blocked_kick": 0.0784,
+     "fumble_recovery": 0.8824,
+     "interception": 1.098,
+     "points_allowed": 0.695,
+     "return_td": 0.2353,
+     "sack": 2.1961,
+     "safety": 0.0
+    },
+    "games_2025": 17,
+    "games_2026": 2,
+    "implausible_zeros_substituted": {},
+    "measures_missing": [],
+    "points_allowed_account": {
+     "NOT_THE_BUCKET_THE_MEAN_FALLS_IN": "a defence facing an opponent implied for 20 does not score the 14-20 bucket; it scores the expectation over everything that opponent might score. Reading the mean bucket alone would be a different and wrong quantity.",
+     "bucket_probabilities": {
+      "1-6": 0.05261,
+      "14-20": 0.26821,
+      "21-27": 0.25239,
+      "28-34": 0.16519,
+      "35-plus": 0.0975,
+      "7-13": 0.15342
+     },
+     "centre_implied_allowed": 22.0,
+     "n_residuals": 2718,
+     "state": "COMPUTED"
+    },
+    "state": "PROJECTED"
+   },
    "is_predicted_starter": false,
    "name": "Colts",
+   "opponent_implied_total": 22.0,
    "position": "DST",
-   "projection_state": "PROJECTION_UNAVAILABLE_DST_NOT_IMPLEMENTED",
+   "projection_state": "PROJECTED_DST",
    "role_band": "ALPHA",
    "role_state": "TEAM_UNIT",
    "salary": 2500,
    "team": "IND"
   },
   "44247566": {
-   "NOT_ZERO": "no defence/special-teams layer exists. UNAVAILABLE is a state, never 0.00.",
    "askable_ceiling": "ALPHA",
    "availability": "UNKNOWN_NOT_RELAYED",
    "capped": null,
    "dk_id": "44247566",
-   "dk_points": null,
+   "dk_points": 6.1264,
+   "dst": {
+    "NOT_MODELLED": [
+     "opponent-specific matchup adjustment",
+     "two-point conversion return"
+    ],
+    "dk_points": 6.1264,
+    "event_items": {
+     "blocked_kick": 0.0,
+     "fumble_recovery": 0.549,
+     "interception": 1.1961,
+     "points_allowed": 0.695,
+     "return_td": 0.9412,
+     "sack": 2.7451,
+     "safety": 0.0
+    },
+    "games_2025": 17,
+    "games_2026": 2,
+    "implausible_zeros_substituted": {},
+    "measures_missing": [],
+    "points_allowed_account": {
+     "NOT_THE_BUCKET_THE_MEAN_FALLS_IN": "a defence facing an opponent implied for 20 does not score the 14-20 bucket; it scores the expectation over everything that opponent might score. Reading the mean bucket alone would be a different and wrong quantity.",
+     "bucket_probabilities": {
+      "1-6": 0.05261,
+      "14-20": 0.26821,
+      "21-27": 0.25239,
+      "28-34": 0.16519,
+      "35-plus": 0.0975,
+      "7-13": 0.15342
+     },
+     "centre_implied_allowed": 21.5,
+     "n_residuals": 2718,
+     "state": "COMPUTED"
+    },
+    "state": "PROJECTED"
+   },
    "is_predicted_starter": false,
    "name": "Browns",
+   "opponent_implied_total": 21.5,
    "position": "DST",
-   "projection_state": "PROJECTION_UNAVAILABLE_DST_NOT_IMPLEMENTED",
+   "projection_state": "PROJECTED_DST",
    "role_band": "ALPHA",
    "role_state": "TEAM_UNIT",
    "salary": 2500,
    "team": "CLE"
   },
   "44247567": {
-   "NOT_ZERO": "no defence/special-teams layer exists. UNAVAILABLE is a state, never 0.00.",
    "askable_ceiling": "ALPHA",
    "availability": "UNKNOWN_NOT_RELAYED",
    "capped": null,
    "dk_id": "44247567",
-   "dk_points": null,
+   "dk_points": 5.8543,
+   "dst": {
+    "NOT_MODELLED": [
+     "opponent-specific matchup adjustment",
+     "two-point conversion return"
+    ],
+    "dk_points": 5.8543,
+    "event_items": {
+     "blocked_kick": 0.0784,
+     "fumble_recovery": 0.549,
+     "interception": 1.1373,
+     "points_allowed": 1.1582,
+     "return_td": 0.7059,
+     "sack": 2.1471,
+     "safety": 0.0784
+    },
+    "games_2025": 17,
+    "games_2026": 2,
+    "implausible_zeros_substituted": {},
+    "measures_missing": [],
+    "points_allowed_account": {
+     "NOT_THE_BUCKET_THE_MEAN_FALLS_IN": "a defence facing an opponent implied for 20 does not score the 14-20 bucket; it scores the expectation over everything that opponent might score. Reading the mean bucket alone would be a different and wrong quantity.",
+     "bucket_probabilities": {
+      "0-0": 0.01766,
+      "1-6": 0.05445,
+      "14-20": 0.28072,
+      "21-27": 0.24356,
+      "28-34": 0.13355,
+      "35-plus": 0.07285,
+      "7-13": 0.18617
+     },
+     "centre_implied_allowed": 20.0,
+     "n_residuals": 2718,
+     "state": "COMPUTED"
+    },
+    "state": "PROJECTED"
+   },
    "is_predicted_starter": false,
    "name": "Titans",
+   "opponent_implied_total": 20.0,
    "position": "DST",
-   "projection_state": "PROJECTION_UNAVAILABLE_DST_NOT_IMPLEMENTED",
+   "projection_state": "PROJECTED_DST",
    "role_band": "ALPHA",
    "role_state": "TEAM_UNIT",
    "salary": 2400,
    "team": "TEN"
   },
   "44247568": {
-   "NOT_ZERO": "no defence/special-teams layer exists. UNAVAILABLE is a state, never 0.00.",
    "askable_ceiling": "ALPHA",
    "availability": "UNKNOWN_NOT_RELAYED",
    "capped": null,
    "dk_id": "44247568",
-   "dk_points": null,
+   "dk_points": 3.8101,
+   "dst": {
+    "NOT_MODELLED": [
+     "opponent-specific matchup adjustment",
+     "two-point conversion return"
+    ],
+    "dk_points": 3.8101,
+    "event_items": {
+     "blocked_kick": 0.0,
+     "fumble_recovery": 0.1569,
+     "interception": 0.6275,
+     "points_allowed": -0.0037,
+     "return_td": 0.4706,
+     "sack": 2.4804,
+     "safety": 0.0784
+    },
+    "games_2025": 17,
+    "games_2026": 2,
+    "implausible_zeros_substituted": {},
+    "measures_missing": [],
+    "points_allowed_account": {
+     "NOT_THE_BUCKET_THE_MEAN_FALLS_IN": "a defence facing an opponent implied for 20 does not score the 14-20 bucket; it scores the expectation over everything that opponent might score. Reading the mean bucket alone would be a different and wrong quantity.",
+     "bucket_probabilities": {
+      "1-6": 0.0287,
+      "14-20": 0.20603,
+      "21-27": 0.28035,
+      "28-34": 0.21634,
+      "35-plus": 0.15857,
+      "7-13": 0.11001
+     },
+     "centre_implied_allowed": 24.5,
+     "n_residuals": 2718,
+     "state": "COMPUTED"
+    },
+    "state": "PROJECTED"
+   },
    "is_predicted_starter": false,
    "name": "Commanders",
+   "opponent_implied_total": 24.5,
    "position": "DST",
-   "projection_state": "PROJECTION_UNAVAILABLE_DST_NOT_IMPLEMENTED",
+   "projection_state": "PROJECTED_DST",
    "role_band": "ALPHA",
    "role_state": "TEAM_UNIT",
    "salary": 2300,
    "team": "WAS"
   },
   "44247569": {
-   "NOT_ZERO": "no defence/special-teams layer exists. UNAVAILABLE is a state, never 0.00.",
    "askable_ceiling": "ALPHA",
    "availability": "UNKNOWN_NOT_RELAYED",
    "capped": null,
    "dk_id": "44247569",
-   "dk_points": null,
+   "dk_points": 3.5373,
+   "dst": {
+    "NOT_MODELLED": [
+     "opponent-specific matchup adjustment",
+     "two-point conversion return"
+    ],
+    "dk_points": 3.5373,
+    "event_items": {
+     "blocked_kick": 0.0,
+     "fumble_recovery": 0.2353,
+     "interception": 1.8235,
+     "points_allowed": -0.8646,
+     "return_td": 0.0,
+     "sack": 2.2647,
+     "safety": 0.0784
+    },
+    "games_2025": 17,
+    "games_2026": 2,
+    "implausible_zeros_substituted": {},
+    "measures_missing": [],
+    "points_allowed_account": {
+     "NOT_THE_BUCKET_THE_MEAN_FALLS_IN": "a defence facing an opponent implied for 20 does not score the 14-20 bucket; it scores the expectation over everything that opponent might score. Reading the mean bucket alone would be a different and wrong quantity.",
+     "bucket_probabilities": {
+      "1-6": 0.01067,
+      "14-20": 0.15342,
+      "21-27": 0.26821,
+      "28-34": 0.25239,
+      "35-plus": 0.26269,
+      "7-13": 0.05261
+     },
+     "centre_implied_allowed": 28.75,
+     "n_residuals": 2718,
+     "state": "COMPUTED"
+    },
+    "state": "PROJECTED"
+   },
    "is_predicted_starter": false,
    "name": "Chargers",
+   "opponent_implied_total": 28.75,
    "position": "DST",
-   "projection_state": "PROJECTION_UNAVAILABLE_DST_NOT_IMPLEMENTED",
+   "projection_state": "PROJECTED_DST",
    "role_band": "ALPHA",
    "role_state": "TEAM_UNIT",
    "salary": 2200,
    "team": "LAC"
   },
   "44247570": {
-   "NOT_ZERO": "no defence/special-teams layer exists. UNAVAILABLE is a state, never 0.00.",
    "askable_ceiling": "ALPHA",
    "availability": "UNKNOWN_NOT_RELAYED",
    "capped": null,
    "dk_id": "44247570",
-   "dk_points": null,
+   "dk_points": 4.2964,
+   "dst": {
+    "NOT_MODELLED": [
+     "opponent-specific matchup adjustment",
+     "two-point conversion return"
+    ],
+    "dk_points": 4.2964,
+    "event_items": {
+     "blocked_kick": 0.0,
+     "fumble_recovery": 0.9804,
+     "interception": 1.5068,
+     "points_allowed": -0.7594,
+     "return_td": 0.4706,
+     "sack": 2.0196,
+     "safety": 0.0784
+    },
+    "games_2025": 17,
+    "games_2026": 2,
+    "implausible_zeros_substituted": {
+     "interception": {
+      "WHY": "a zero this improbable is a defect in the capture, not a property of the defence. Reporting it would have deleted a whole scoring term from this club silently.",
+      "action": "LEAGUE_RATE_SUBSTITUTED",
+      "club_games": 19,
+      "expected_under_league_rate": 14.315,
+      "league_rate_per_game": 0.75341,
+      "observed_events": 0,
+      "p_of_observing_zero": "6.07e-07"
+     }
+    },
+    "measures_missing": [],
+    "points_allowed_account": {
+     "NOT_THE_BUCKET_THE_MEAN_FALLS_IN": "a defence facing an opponent implied for 20 does not score the 14-20 bucket; it scores the expectation over everything that opponent might score. Reading the mean bucket alone would be a different and wrong quantity.",
+     "bucket_probabilities": {
+      "1-6": 0.01067,
+      "14-20": 0.16409,
+      "21-27": 0.28072,
+      "28-34": 0.24614,
+      "35-plus": 0.24319,
+      "7-13": 0.05519
+     },
+     "centre_implied_allowed": 27.5,
+     "n_residuals": 2718,
+     "state": "COMPUTED"
+    },
+    "state": "PROJECTED_WITH_LEAGUE_RATE_SUBSTITUTION"
+   },
    "is_predicted_starter": false,
    "name": "Jets",
+   "opponent_implied_total": 27.5,
    "position": "DST",
-   "projection_state": "PROJECTION_UNAVAILABLE_DST_NOT_IMPLEMENTED",
+   "projection_state": "PROJECTED_DST",
    "role_band": "ALPHA",
    "role_state": "TEAM_UNIT",
    "salary": 2100,
    "team": "NYJ"
   },
   "44247571": {
-   "NOT_ZERO": "no defence/special-teams layer exists. UNAVAILABLE is a state, never 0.00.",
    "askable_ceiling": "ALPHA",
    "availability": "UNKNOWN_NOT_RELAYED",
    "capped": null,
    "dk_id": "44247571",
-   "dk_points": null,
+   "dk_points": 3.2405,
+   "dst": {
+    "NOT_MODELLED": [
+     "opponent-specific matchup adjustment",
+     "two-point conversion return"
+    ],
+    "dk_points": 3.2405,
+    "event_items": {
+     "blocked_kick": 0.0,
+     "fumble_recovery": 0.8627,
+     "interception": 1.3725,
+     "points_allowed": -0.7594,
+     "return_td": 0.2353,
+     "sack": 1.5294,
+     "safety": 0.0
+    },
+    "games_2025": 17,
+    "games_2026": 2,
+    "implausible_zeros_substituted": {},
+    "measures_missing": [],
+    "points_allowed_account": {
+     "NOT_THE_BUCKET_THE_MEAN_FALLS_IN": "a defence facing an opponent implied for 20 does not score the 14-20 bucket; it scores the expectation over everything that opponent might score. Reading the mean bucket alone would be a different and wrong quantity.",
+     "bucket_probabilities": {
+      "1-6": 0.01067,
+      "14-20": 0.16409,
+      "21-27": 0.28072,
+      "28-34": 0.24614,
+      "35-plus": 0.24319,
+      "7-13": 0.05519
+     },
+     "centre_implied_allowed": 27.25,
+     "n_residuals": 2718,
+     "state": "COMPUTED"
+    },
+    "state": "PROJECTED"
+   },
    "is_predicted_starter": false,
    "name": "Dolphins",
+   "opponent_implied_total": 27.25,
    "position": "DST",
-   "projection_state": "PROJECTION_UNAVAILABLE_DST_NOT_IMPLEMENTED",
+   "projection_state": "PROJECTED_DST",
    "role_band": "ALPHA",
    "role_state": "TEAM_UNIT",
    "salary": 2000,
@@ -62203,7 +62879,7 @@
   }
  },
  "skipped": {
-  "DST": 18,
+  "DST_PROJECTED": 18,
   "IDENTITY_CONFLICT_OPEN": 3,
   "NOT_PLAYING": 12
  },
@@ -62227,21 +62903,21 @@
     "n": 165
    }
   },
-  "mean_dk_points": 3.5491,
-  "median": 0.935,
+  "mean_dk_points": 3.6567,
+  "median": 1.047,
   "n_exactly_zero": 0,
-  "n_projected": 424,
-  "n_unavailable": 33,
+  "n_projected": 442,
+  "n_unavailable": 15,
   "n_universe": 457,
   "states": {
    "NOT_PLAYING_REPORTED_INACTIVE": 12,
    "PROJECTED": 415,
    "PROJECTED_COLD_START": 9,
-   "PROJECTION_UNAVAILABLE_DST_NOT_IMPLEMENTED": 18,
+   "PROJECTED_DST": 18,
    "WITHHELD_IDENTITY_CONFLICT_OPEN": 3
   },
   "top_1": 22.169,
-  "top_100_mean": 11.454,
+  "top_100_mean": 11.681,
   "top_10_mean": 18.826
  },
  "td_account": {

@@ -747,7 +747,7 @@ def allocate_club_td(team_expected_td, pass_share, rows, rates):
 
 # --------------------------------------------------------------------------------- assembly
 def build():
-    from nfl.tools import player_prior, td_rates
+    from nfl.tools import dst_model, player_prior, td_rates
     for f, nm in ((POST, 'post-inactives state'), (ROLE, 'role state'), (RATES, 'td rates')):
         if not f.exists():
             return Outcome.blocked('V1_INPUT_ABSENT', f'{nm} missing at {f.name}',
@@ -770,6 +770,20 @@ def build():
     depth = depth_shares(panel, pos_of)
     ip = int_rate(panel, pos_of)['int_per_attempt']
     tv_all, implied, league_mean = team_volume(panel, post['environment'].get('games') or {})
+
+    # opponent implied total, for the defence/special-teams points-allowed term
+    opponent_implied = {}
+    for game, e in (post['environment'].get('games') or {}).items():
+        if '@' not in game:
+            continue
+        away, home = game.split('@')
+        opponent_implied[away] = e.get('home_implied')
+        opponent_implied[home] = e.get('away_implied')
+    dst_built = dst_model.build()
+    if isinstance(dst_built, tuple):
+        _dst_art, dst_spread, dst_rates = dst_built
+    else:
+        _dst_art, dst_spread, dst_rates = None, {'state': 'NOT_ESTIMATED'}, {}
 
     # OPEN IDENTITY CONFLICTS ARE NOT PROJECTED. A declared rule, applied here rather than
     # detected afterwards: projecting a name whose football identity is unsettled assigns
@@ -816,12 +830,14 @@ def build():
             skipped['NOT_PLAYING'] += 1
             continue
         if pos == 'DST' or state == 'TEAM_UNIT':
-            base.update({'projection_state': 'PROJECTION_UNAVAILABLE_DST_NOT_IMPLEMENTED',
-                         'dk_points': None,
-                         'NOT_ZERO': 'no defence/special-teams layer exists. UNAVAILABLE is a '
-                                     'state, never 0.00.'})
+            opp_imp = opponent_implied.get(club)
+            d = dst_model.project(club, opp_imp, dst_rates, dst_spread)
+            base.update({'projection_state': ('PROJECTED_DST' if d.get('dk_points') is not None
+                                              else f"DST_{d['state']}"),
+                         'dk_points': d.get('dk_points'), 'dst': d,
+                         'opponent_implied_total': opp_imp})
             rows[dk_id] = base
-            skipped['DST'] += 1
+            skipped['DST' if d.get('dk_points') is None else 'DST_PROJECTED'] += 1
             continue
         if pos not in SKILL:
             base.update({'projection_state': f'POSITION_PATHWAY_UNDEFINED_{pos}',
@@ -878,7 +894,10 @@ def build():
         td_acct[club]['V0_WOULD_HAVE_SAID'] = (round(imp / 7.0, 4) if imp else None)
 
     for r in rows.values():
-        if r.get('projection_state', '').startswith('PROJECTED'):
+        # 'PROJECTED_DST' also starts with 'PROJECTED', and this loop scored it with the skill
+        # scorer -- no yards, no touchdowns -- overwriting every defence with 0.00. An explicit
+        # membership test, not a prefix.
+        if r.get('projection_state') in ('PROJECTED', 'PROJECTED_COLD_START'):
             pts, items = dk_points(r, r.get('td'), bonus, ip)
             r['dk_points'] = pts
             r['dk_line_items'] = items
@@ -897,7 +916,10 @@ def build():
             'bonus_rates': bonus, 'int_rate': ip, 'skipped': dict(skipped),
             'depth_shares': depth,
             'rates_artifact': {'points_to_td': pto, 'pass_share': pass_share},
-            'implied': implied, 'league_mean_implied': league_mean}
+            'implied': implied, 'league_mean_implied': league_mean,
+            'opponent_implied': opponent_implied,
+            'dst_residual_spread': {k: v for k, v in (dst_spread or {}).items()
+                                    if k != 'residuals'}}
 
 
 # ------------------------------------------------------- appearance probability, measured
