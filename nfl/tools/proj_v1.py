@@ -65,11 +65,25 @@ DK = {'pass_yd': 0.04, 'pass_td': 4.0, 'int': -1.0, 'rush_yd': 0.1, 'rush_td': 6
       'rec': 1.0, 'rec_yd': 0.1, 'rec_td': 6.0, 'fumble_lost': -1.0,
       'bonus_100_rush': 3.0, 'bonus_100_rec': 3.0, 'bonus_300_pass': 3.0}
 
-#: How much contrary evidence from the current season it takes to move a settled prior.
-#: DECLARED: a five-season veteran's prior is capped at twelve effective observations, so
-#: roughly a third of a season of genuinely different usage will move it materially. Without a
-#: cap a long career could not be moved at all; without a prior two games would be everything.
-PRIOR_WEIGHT_CAP = 12.0
+#: SELECTED ON OUT-OF-SAMPLE SKILL, not declared. Cap on the effective observations the
+#: multi-season prior may contribute against the current season's evidence. Swept over
+#: {0, 2, 4, 8, 12, 24}, chosen on 2023-2025 and CONFIRMED on untouched 2021-2022:
+#:
+#:      cap    rho(sel)  rho(conf)  MAE(sel)  MAE(conf)  top30act(conf)  level(conf)
+#:        0      0.6361     0.6281     5.046      5.428          18.645        1.012
+#:        2      0.6298     0.6232     5.050      5.410          18.651        0.996
+#:       12      0.5848     0.6027     5.239      5.490          18.574        0.981
+#:     base      0.5838     0.5927     5.564      5.816          18.433        1.027
+#:
+#: THE DECLARED 12 THREW AWAY THE WHOLE ADVANTAGE: at 12 the model only ties a current-season-only
+#: baseline on rank correlation. The finding underneath is that the multi-season prior earns its
+#: place as a FALLBACK WHERE THE CURRENT SEASON IS SILENT, not as a shrinkage target for evidence
+#: that exists. Blending it into a measure the current season already covers destroys information.
+#:
+#: 2 is chosen over 0 on best MAE and best top-30 realised points in BOTH sets, and a confirmation
+#: level nearest 1.0, at a cost of 0.006 rho. It also keeps a real, small prior contribution rather
+#: than the degenerate fallback-only case.
+PRIOR_WEIGHT_CAP = 2.0
 
 #: Pseudo-games of last season's team volume mixed into this season's measured volume. DECLARED:
 #: two games of pace is a thin estimate and a club's offence does not reset in September.
@@ -77,9 +91,8 @@ TEAM_VOLUME_PRIOR_GAMES = 4.0
 
 CONSTANTS_PROVENANCE = {
     'PRIOR_WEIGHT_CAP': (PRIOR_WEIGHT_CAP,
-                         'DECLARED. Caps prior evidence at twelve effective observations so a '
-                         'long career remains movable by about a third of a season of '
-                         'contrary usage. Not fitted.'),
+                         'SELECTED on out-of-sample skill over 42 weeks and CONFIRMED on 28 '
+                         'untouched weeks. See the note at the definition. Not declared.'),
     'TEAM_VOLUME_PRIOR_GAMES': (TEAM_VOLUME_PRIOR_GAMES,
                                 'DECLARED pseudo-games of prior-season club volume.'),
     'THROUGH_SEASON': (THROUGH_SEASON,
@@ -239,7 +252,7 @@ def current_season_shares(panel, gsis, club, pos):
 
 
 # --------------------------------------------------------------- DK yardage bonus, measured
-def bonus_rates(panel, pos_of):
+def bonus_rates(panel, pos_of, through=None):
     """P(100+ yards) and P(300+ passing) as a function of a player's own mean, MEASURED.
 
     WHY THIS IS NOT A CONSTANT AND NOT OMITTED. DraftKings pays three points for a hundred
@@ -266,7 +279,7 @@ def bonus_rates(panel, pos_of):
         if pos_of.get(gsis) not in ('QB', 'RB', 'WR', 'TE'):
             continue
         for season, weeks in seasons.items():
-            if int(season) > THROUGH_SEASON:
+            if int(season) > (THROUGH_SEASON if through is None else through):
                 continue
             wk = list(weeks.values())
             if len(wk) < 4:
@@ -324,14 +337,14 @@ def bonus_p(rates, kind, mean):
     return None
 
 
-def int_rate(panel, pos_of):
+def int_rate(panel, pos_of, through=None):
     """League interceptions per pass attempt, measured through the holdout boundary."""
     a = i = 0
     for gsis, seasons in panel['players'].items():
         if pos_of.get(gsis) != 'QB':
             continue
         for season, weeks in seasons.items():
-            if int(season) > THROUGH_SEASON:
+            if int(season) > (THROUGH_SEASON if through is None else through):
                 continue
             for w in weeks.values():
                 a += (w.get('pass_attempts') or 0)
@@ -505,7 +518,7 @@ def project_player(panel, gsis, pos, band, club, tv, rates, cur_shares, cur_n, p
     return out
 
 
-def group_shares(panel, pos_of):
+def group_shares(panel, pos_of, through=None):
     """Share of club targets and carries taken by each position group. MEASURED.
 
     Club targets do not belong to receivers alone -- tight ends take a quarter of them and backs
@@ -518,7 +531,7 @@ def group_shares(panel, pos_of):
         if pos not in SKILL:
             continue
         for season, weeks in seasons.items():
-            if int(season) > THROUGH_SEASON:
+            if int(season) > (THROUGH_SEASON if through is None else through):
                 continue
             for w in weeks.values():
                 if not w.get('team'):
@@ -534,17 +547,33 @@ def group_shares(panel, pos_of):
     return out
 
 
-#: How the measured depth concentration and the player's own claim are combined. DECLARED as a
-#: geometric mean: it is scale-free and leans toward the smaller of the two, which is the
-#: conservative direction when claims over-sum. THIS IS THE MOST CONSEQUENTIAL DECLARED CHOICE
-#: IN V1 and the first thing that should be replaced by a measured conditional allocation model.
-DEPTH_CLAIM_BLEND = 0.5
+#: SELECTED ON OUT-OF-SAMPLE SKILL, not declared. Weight on the player's own claim against the
+#: measured depth curve for his rank, as a geometric mean. Swept over {0, 0.25, 0.5, 0.75, 1.0} by
+#: forward_chain.py, chosen on 2023-2025 (42 weeks) and CONFIRMED on untouched 2021-2022 (28
+#: weeks), paired by week:
+#:
+#:      blend   rho(sel)  rho(conf)  MAE(sel)  MAE(conf)  level(conf)
+#:      0.00     0.5142     0.5551     6.125      6.176        1.032
+#:      0.50     0.5659     0.5860     5.539      5.782        1.020
+#:      1.00     0.6298     0.6232     5.050      5.410        0.996
+#:
+#: Monotone on every metric in both sets. The declared 0.5 was measurably worse: using the depth
+#: curve as a SHRINKAGE TARGET for evidence that exists destroys discrimination, which is the same
+#: error V0 made by shrinking toward a positional mean. At 1.0 the measured depth and group-split
+#: curves still do their work, but only through the thin-evidence branch below, where a player has
+#: a claim on one side and nothing on the other.
+DEPTH_CLAIM_BLEND = 1.0
+
+CONSTANTS_PROVENANCE['DEPTH_CLAIM_BLEND'] = (
+    DEPTH_CLAIM_BLEND,
+    'SELECTED on out-of-sample skill over 42 weeks and CONFIRMED on 28 untouched weeks. See the '
+    'note at the definition. Not declared.')
 
 #: Role bands, strongest first, for ordering depth rank. Mirrors role_state's ladder.
 BANDS_ORDER = {'ALPHA': 5, 'PRIMARY': 4, 'SECONDARY': 3, 'ROTATIONAL': 2, 'FRINGE': 1}
 
 
-def allocate_opportunity(crows, tv, depth, groups):
+def allocate_opportunity(crows, tv, depth, groups, blend=None):
     """Turn share claims into volume, satisfying every club identity by construction.
 
     ONE POOL PER FIELD, NOT ONE POOL PER POSITION GROUP. Two measured ingredients and one
@@ -577,6 +606,7 @@ def allocate_opportunity(crows, tv, depth, groups):
         dvals, claims = [0.0] * len(crows), []
         for i, r in enumerate(crows):
             claims.append(max(0.0, (r.get('_claims') or {}).get(field) or 0.0))
+        appear = [1.0] * len(crows)
         for pos in SKILL:
             idx = [i for i, r in enumerate(crows) if r['position'] == pos]
             if not idx or not gs.get(pos):
@@ -593,13 +623,48 @@ def allocate_opportunity(crows, tv, depth, groups):
                                     -BANDS_ORDER.get(crows[i].get('role_band'), 0),
                                     -claims[i]))
             dr = ((depth.get(pos) or {}).get('by_rank') or {})
+            # A RANK DEEPER THAN THE MEASURED TABLE INHERITS THE DEEPEST MEASURED RANK, NEVER 1.0.
+            # The depth table is measured over players who appeared, so it runs a handful of ranks
+            # deep. A DraftKings roster runs to twenty-five, and defaulting a missing rank's
+            # appearance probability to 1.0 declared a club's eighth receiver certain to play and
+            # let him take volume from the starters -- it drove the scored level down to 0.79.
+            # Falling back to the deepest measured rank is the conservative direction and the only
+            # one consistent with the curve's shape.
+            _ranks = sorted(int(k.split('_')[1]) for k in dr)
+            _deepest = dr.get(f'rank_{_ranks[-1]}') if _ranks else {}
             for rank, i in enumerate(idx, start=1):
-                row = dr.get(f'rank_{rank}') or {}
+                row = dr.get(f'rank_{rank}') or _deepest or {}
+                beyond = f'rank_{rank}' not in dr
                 dvals[i] = gs[pos] * (row.get('unconditional_expected_share') or 0.0)
+                # APPEARANCE PROBABILITY FOR EVERY POSITION, not only quarterback. A claim is
+                # what a player takes WHEN HE PLAYS; expected production is P(plays) times that.
+                # The measured appearance rate by depth rank supplies P(plays).
+                #
+                # WHY THIS WAS MISSING AND WHY THE FORWARD CHAIN COULD NOT FIND IT. The chain's
+                # universe is players who APPEARED in the scored week -- about ten per club -- so
+                # every appearance probability there is 1 and the term is invisible. A DraftKings
+                # roster carries about twenty-five per club, most of whom will not play. Dividing
+                # a club's targets among twenty-five claims instead of among the ten who play
+                # collapsed every star: Ja'Marr Chase came out at 10.57 DK points against an
+                # external 27.08, while quarterbacks were unaffected because a starter's
+                # pass-attempt claim is near 1.0 and the allocation barely touches him.
+                #
+                # The depth curve at a mid blend was MASKING this by concentrating volume on the
+                # first two ranks. That is a blunt mask, not a fix, and it cost discrimination
+                # everywhere. This is the mechanism it was standing in for.
+                appear[i] = row.get('appearance_rate')
+                if appear[i] is None:
+                    appear[i] = 0.0 if beyond else 1.0
                 crows[i].setdefault('allocation', {})[field] = {
                     'position_group_share_measured': gs[pos], 'depth_rank_in_group': rank,
                     'depth_share_in_group_measured': row.get('unconditional_expected_share'),
+                    'appearance_rate_measured': appear[i],
+                    'rank_beyond_measured_table': beyond,
+                    'APPEARANCE_SEMANTICS': 'claim is share GIVEN he plays; this is P(he plays) '
+                                            'at his depth rank, so the product is unconditional.',
                 }
+        # claims become unconditional before they are normalised against each other
+        claims = [c * appear[i] for i, c in enumerate(claims)]
         sp, sd = sum(claims), sum(dvals)
         w = []
         for i in range(len(crows)):
@@ -612,7 +677,8 @@ def allocate_opportunity(crows, tv, depth, groups):
                 # player is never silently removed from a club's offence by a missing measure
                 w.append(max(pn, dn) * 0.5)
             else:
-                w.append((pn ** DEPTH_CLAIM_BLEND) * (dn ** (1.0 - DEPTH_CLAIM_BLEND)))
+                b = DEPTH_CLAIM_BLEND if blend is None else blend
+                w.append((pn ** b) * (dn ** (1.0 - b)))
         sw = sum(w)
         if not sw:
             acct[field] = {'state': 'NO_CLAIM_AND_NO_DEPTH_ANYWHERE',
@@ -923,7 +989,7 @@ def build():
 
 
 # ------------------------------------------------------- appearance probability, measured
-def depth_shares(panel, pos_of):
+def depth_shares(panel, pos_of, through=None):
     """Share of club volume by depth rank, and how often each rank appears at all. MEASURED.
 
     THIS IS THE FIX FOR A BACKUP INHERITING A STARTER'S WORKLOAD, and it is a decomposition
@@ -950,7 +1016,7 @@ def depth_shares(panel, pos_of):
             if pos_of.get(g) != pos:
                 continue
             for s, weeks in seasons.items():
-                if int(s) > THROUGH_SEASON:
+                if int(s) > (THROUGH_SEASON if through is None else through):
                     continue
                 for w, d in weeks.items():
                     club = d.get('team')

@@ -15,85 +15,113 @@
    "state": "PASS"
   },
   "level_within_band": {
-   "code": "PROJECTION_LEVEL_OUT_OF_BAND",
-   "detail": "3 of 5 slices fall outside the declared band 0.85-1.15. Worst: top_50_by_external at ratio 0.8223 (ours 14.25 vs external 17.33 over 50 players). The flat all-players ratio is 0.8995 and would have hidden this -- read the slices.",
-   "evidence": {
-    "band": [
-     0.85,
-     1.15
-    ],
-    "flat_ratio": 0.8995,
-    "worst": {
-     "external_mean": 17.33,
-     "in_band": false,
-     "n": 50,
-     "ours_mean": 14.25,
-     "ratio": 0.8223,
-     "slice": "top_50_by_external"
-    }
-   },
+   "code": "PROJECTION_LEVEL_IN_BAND",
+   "detail": "5 slices all within 0.85-1.15",
+   "evidence": {},
    "slices": [
     {
      "external_mean": 6.07,
      "in_band": true,
      "n": 271,
-     "ours_mean": 5.46,
-     "ratio": 0.8995,
+     "ours_mean": 5.75,
+     "ratio": 0.9468,
      "slice": "all_joined"
     },
     {
      "external_mean": 13.43,
-     "in_band": false,
+     "in_band": true,
      "n": 100,
-     "ours_mean": 11.19,
-     "ratio": 0.8333,
+     "ours_mean": 12.22,
+     "ratio": 0.9096,
      "slice": "top_100_by_external"
     },
     {
      "external_mean": 17.33,
-     "in_band": false,
+     "in_band": true,
      "n": 50,
-     "ours_mean": 14.25,
-     "ratio": 0.8223,
+     "ours_mean": 15.64,
+     "ratio": 0.9024,
      "slice": "top_50_by_external"
     },
     {
      "external_mean": 8.69,
      "in_band": true,
      "n": 145,
-     "ours_mean": 7.63,
-     "ratio": 0.8785,
+     "ours_mean": 8.28,
+     "ratio": 0.953,
      "slice": "salary_ge_4000"
     },
     {
      "external_mean": 14.1,
-     "in_band": false,
+     "in_band": true,
      "n": 77,
-     "ours_mean": 11.91,
-     "ratio": 0.8447,
+     "ours_mean": 12.97,
+     "ratio": 0.9199,
      "slice": "salary_ge_4500"
     }
    ],
-   "state": "FAIL"
+   "state": "PASS"
   },
   "no_stale_replacement_role": {
    "code": "STALE_REPLACEMENT_ROLE_RETAINED",
-   "detail": "2 non-starter(s) projected at or above 5.0 points while the predicted starter at their position is available. Current role state is not being consumed by the projection.",
+   "detail": "8 non-starter(s) projected at or above 5.0 points while the predicted starter at their position is available. Current role state is not being consumed by the projection.",
    "evidence": {
-    "n_violations": 2,
+    "n_violations": 8,
     "violations": [
+     {
+      "club": "WAS",
+      "player": "Rachaad White",
+      "position": "RB",
+      "projected_points": 7.4614,
+      "why": "outside the predicted starting group at a position whose predicted starter is available, yet projected at starter level"
+     },
+     {
+      "club": "HOU",
+      "player": "Woody Marks",
+      "position": "RB",
+      "projected_points": 7.4328,
+      "why": "outside the predicted starting group at a position whose predicted starter is available, yet projected at starter level"
+     },
      {
       "club": "PIT",
       "player": "Travis Homer",
       "position": "RB",
-      "projected_points": 5.349,
+      "projected_points": 6.343,
       "why": "outside the predicted starting group at a position whose predicted starter is available, yet projected at starter level"
      },
      {
       "club": "DET",
       "player": "Isiah Pacheco",
       "position": "RB",
-      "projected_points": 5.1146,
+      "projected_points": 6.2985,
+      "why": "outside the predicted starting group at a position whose predicted starter is available, yet projected at starter level"
+     },
+     {
+      "club": "NE",
+      "player": "TreVeyon Henderson",
+      "position": "RB",
+      "projected_points": 5.8213,
+      "why": "outside the predicted starting group at a position whose predicted starter is available, yet projected at starter level"
+     },
+     {
+      "club": "DET",
+      "player": "Tyler Conklin",
+      "position": "TE",
+      "projected_points": 5.7074,
+      "why": "outside the predicted starting group at a position whose predicted starter is available, yet projected at starter level"
+     },
+     {
+      "club": "CLE",
+      "player": "Dylan Sampson",
+      "position": "RB",
+      "projected_points": 5.2261,
+      "why": "outside the predicted starting group at a position whose predicted starter is available, yet projected at starter level"
+     },
+     {
+      "club": "NYJ",
+      "player": "Sterling Shepard",
+      "position": "WR",
+      "projected_points": 5.1805,
       "why": "outside the predicted starting group at a position whose predicted starter is available, yet projected at starter level"
      }
     ]
@@ -118,25 +146,25 @@
  "summary": {
   "by_position": {
    "QB": {
-    "mean": 5.343,
+    "mean": 5.366,
     "n": 59
    },
    "RB": {
-    "mean": 3.813,
+    "mean": 3.868,
     "n": 103
    },
    "TE": {
-    "mean": 2.377,
+    "mean": 2.484,
     "n": 97
    },
    "WR": {
-    "mean": 3.432,
+    "mean": 3.456,
     "n": 165
    }
   },
-  "mean_dk_points": 3.6567,
-  "median": 1.047,
-  "n_exactly_zero": 0,
+  "mean_dk_points": 3.705,
+  "median": 0.798,
+  "n_exactly_zero": 1,
   "n_projected": 442,
   "n_unavailable": 15,
   "n_universe": 457,
@@ -147,8 +175,8 @@
    "PROJECTED_DST": 18,
    "WITHHELD_IDENTITY_CONFLICT_OPEN": 3
   },
-  "top_1": 22.169,
-  "top_100_mean": 11.681,
-  "top_10_mean": 18.826
+  "top_1": 25.536,
+  "top_100_mean": 12.601,
+  "top_10_mean": 20.597
  }
 }

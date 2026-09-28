@@ -3031,3 +3031,38 @@ at least one defensive interception, and a reason why this capture lost them. If
 classes are affected the same way for other clubs the substitution is masking more than it says.
 
 This is **assigned, not blocked**: DST projects for all 18 clubs today.
+
+## OUT-038 — historical weekly rosters, 2021-2025
+
+**Requested by:** Claude (no network). **Status:** OPEN. **Filed:** 2026-09-28.
+**Severity:** caused survivorship bias in the forward-chained evaluation harness.
+
+Every roster blob in `nfl/vintage/weekly_rosters.*` is **2026** — 11 files, 60,331 rows, one
+season. So `player_prior.position_index()` can only classify players who are on a 2026 roster, and
+any historical evaluation silently restricted itself to **players who survived to 2026**:
+
+| season | players in panel | classifiable as QB/RB/WR/TE |
+|---|---|---|
+| 2021 | 703 | **208** |
+| 2022 | 675 | 284 |
+| 2023 | 645 | 356 |
+| 2024 | 648 | 442 |
+| 2025 | 652 | 528 |
+
+That is not merely a smaller sample. Club totals are counted from the play rows and include
+everybody, so every unclassified player's volume was redistributed among the survivors. It
+inflated the projected level by **67 per cent** in 2021-2022, and it selects for better players,
+who are the ones still employed. It reversed the sign of a real finding: the multi-season prior
+appeared to LOSE to a current-season-only baseline on role-transition weeks, and after the bias was
+removed it WINS there.
+
+**Handled here, but only as a floor.** `forward_chain.positions_for_chain()` infers position from
+usage where the roster is silent. QB and RB are reliable from usage. **WR and TE are not
+distinguishable from usage**, so an inferred receiver is assigned WR, which misplaces some tight
+ends into the receiver group split and depth curve. Inferred players are included in allocation
+and excluded from every scored metric.
+
+**What is needed:** weekly rosters for 2021-2025 with `season`, `week`, `gsis_id`, `position`,
+`team`. Position per player-season is the minimum; per player-week is better.
+
+This is **assigned, not blocked**: the chain runs today with inferred positions.
