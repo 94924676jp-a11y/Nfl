@@ -111,18 +111,38 @@ def _prefix_max(tab):
     return out
 
 
-def solve(pool, cap=SALARY_CAP, exclude_lineups=(), banned_players=(), required_players=()):
-    """The exact best lineup. pool: [{'id','position','salary','value'}].
+def _solve_core(pool, cap, banned, req):
+    """The exact DP, honouring required players by fixing them and solving the remainder.
 
-    exclude_lineups: iterable of frozensets of ids that must NOT be reproduced exactly. Used by
-    k_best to enumerate distinct lineups while keeping every individual solve exact.
+    REQUIREMENTS WERE SILENTLY DROPPED HERE. solve() accepted required_players, passed them down,
+    and the enumerator took the argument and never read it -- so a constrained solve returned the
+    UNCONSTRAINED lineup and still labelled it PROVEN_OPTIMAL. Asking for the best lineup
+    containing a specific quarterback returned one without him. That is the worst shape a defect
+    can take in this module, because the answer looks authoritative and is to a different
+    question, and the GAP 5 verification never exercised the argument.
+
+    Fixing the required players is exact: their positions reduce the shape's remaining counts and
+    their salaries reduce the remaining cap, and the DP then solves that smaller problem exactly.
     """
-    nb = cap // SALARY_STEP
-    banned = set(banned_players)
-    req = set(required_players)
+    nb_full = cap // SALARY_STEP
+    req_rows = [p for p in pool if p['id'] in req]
+    if len(req_rows) != len(req):
+        missing = sorted(set(req) - {p['id'] for p in req_rows})
+        return Outcome.fail('REQUIRED_PLAYER_NOT_IN_POOL',
+                            f'required ids absent from the pool: {missing}',
+                            missing=missing)
+    if req & set(banned):
+        return Outcome.fail('REQUIRED_PLAYER_ALSO_BANNED',
+                            f'ids both required and banned: {sorted(req & set(banned))}')
+    req_salary = sum(p['salary'] for p in req_rows)
+    req_value = sum(float(p['value']) for p in req_rows)
+    req_by_pos = {}
+    for p in req_rows:
+        req_by_pos[p['position']] = req_by_pos.get(p['position'], 0) + 1
+
     by_pos = {}
     for p in pool:
-        if p['id'] in banned:
+        if p['id'] in banned or p['id'] in req:
             continue
         if not p.get('salary') or p.get('value') is None:
             continue
@@ -132,50 +152,83 @@ def solve(pool, cap=SALARY_CAP, exclude_lineups=(), banned_players=(), required_
                                 f"{SALARY_STEP}; the exact DP assumes the grid")
         by_pos.setdefault(p['position'], []).append(
             (p['salary'] // SALARY_STEP, float(p['value']), p['id']))
-    excluded = {frozenset(x) for x in exclude_lineups}
 
-    best = None
-    per_shape = {}
+    best, best_shape, per_shape = None, None, {}
     for shape in SHAPES:
-        # a required player forces at least that many of his position
-        tabs, ok = [], True
+        need = {}
+        ok = True
         for pos, k in shape.items():
-            items = by_pos.get(pos) or []
-            if len(items) < k:
+            k2 = k - req_by_pos.get(pos, 0)
+            if k2 < 0:
                 ok = False
                 break
-            t = _position_table(items, k, nb)
-            tabs.append(t[k])
-        if not ok:
-            per_shape[str(shape)] = {'state': 'INFEASIBLE_POOL_TOO_THIN'}
+            need[pos] = k2
+        if not ok or any(v > 0 and len(by_pos.get(pos) or []) < v for pos, v in need.items()):
+            per_shape[str(shape)] = {'state': 'INFEASIBLE_UNDER_REQUIREMENTS'
+                                     if not ok else 'INFEASIBLE_POOL_TOO_THIN'}
             continue
-        acc = tabs[0]
-        for t in tabs[1:]:
-            acc = _combine(acc, t, nb)
-        pm = _prefix_max(acc)
-        cand = pm[nb]
-        per_shape[str(shape)] = {'state': 'SOLVED',
-                                 'best_value': (round(cand[0], 4) if cand else None)}
-        if cand and (best is None or cand[0] > best[0]):
-            best = cand
+        rem_buckets = (cap - req_salary) // SALARY_STEP
+        if rem_buckets < 0:
+            per_shape[str(shape)] = {'state': 'INFEASIBLE_REQUIRED_SALARY_OVER_CAP'}
+            continue
+        tabs = []
+        for pos, k2 in need.items():
+            if k2 == 0:
+                continue
+            tabs.append(_position_table(by_pos.get(pos) or [], k2, rem_buckets)[k2])
+        if tabs:
+            acc = tabs[0]
+            for t in tabs[1:]:
+                acc = _combine(acc, t, rem_buckets)
+            cand = _prefix_max(acc)[rem_buckets]
+        else:
+            cand = (0.0, ()) if rem_buckets >= 0 else None
+        if cand is None:
+            per_shape[str(shape)] = {'state': 'INFEASIBLE_NO_FILL'}
+            continue
+        total = cand[0] + req_value
+        per_shape[str(shape)] = {'state': 'SOLVED', 'best_value': round(total, 4)}
+        if best is None or total > best[0]:
+            best = (total, tuple(cand[1]) + tuple(sorted(req)))
             best_shape = shape
     if best is None:
         return Outcome.blocked('NO_FEASIBLE_LINEUP', 'no shape admitted a legal lineup',
-                               cause=Cause.DATA, per_shape=per_shape)
-    # exclusion and requirement handling: fall back to exact k-best filtering
-    if excluded or req:
-        return _solve_with_constraints(pool, cap, excluded, req, banned)
+                               cause=Cause.DATA, per_shape=per_shape,
+                               required=sorted(req))
     ids = set(best[1])
     sal = sum(p['salary'] for p in pool if p['id'] in ids)
+    if sal > cap:
+        return Outcome.fail('SOLVE_OVER_CAP', f'{sal} exceeds {cap}', ids=sorted(ids))
+    if req - ids:
+        return Outcome.fail('REQUIREMENT_NOT_HONOURED',
+                            f'required ids missing from the solution: {sorted(req - ids)}',
+                            note='this check exists because that is exactly what used to happen')
     return Outcome.ok(PROVEN_OPTIMAL,
                       {'value': round(best[0], 4), 'ids': sorted(ids), 'salary': sal,
                        'shape': best_shape, 'per_shape': per_shape,
                        'optimality': PROVEN_OPTIMAL,
+                       'required_players': sorted(req),
                        'PROOF': ('exhaustive over the three legal shapes; within each shape the '
                                  'position tables are exact 0/1 knapsacks with an exact-count '
-                                 'constraint and the salary convolution is exact. No sampling, no '
+                                 'constraint and the salary convolution is exact. Required '
+                                 'players are fixed, which reduces the counts and the cap and '
+                                 'leaves the remainder an exact subproblem. No sampling, no '
                                  'greedy step, no seed.')},
                       f'{round(best[0], 2)} points at {sal}')
+
+
+def solve(pool, cap=SALARY_CAP, exclude_lineups=(), banned_players=(), required_players=()):
+    """The exact best lineup. pool: [{'id','position','salary','value'}].
+
+    exclude_lineups: iterable of frozensets of ids that must NOT be reproduced exactly. Used by
+    k_best to enumerate distinct lineups while keeping every individual solve exact.
+    required_players: ids that MUST appear. Honoured exactly by _solve_core.
+    """
+    excluded = {frozenset(x) for x in exclude_lineups}
+    req = set(required_players)
+    if excluded:
+        return _solve_with_constraints(pool, cap, excluded, req, set(banned_players))
+    return _solve_core(pool, cap, set(banned_players), req)
 
 
 def _solve_with_constraints(pool, cap, excluded, req, banned):
@@ -205,7 +258,7 @@ def _enumerate_in_value_order(pool, cap, banned, req, limit):
     """
     seen = set()
     frontier = []
-    base = solve(pool, cap, banned_players=banned)
+    base = _solve_core(pool, cap, set(banned), set(req))
     if base.state.name != 'PASS':
         return
     first = base.value
@@ -222,8 +275,10 @@ def _enumerate_in_value_order(pool, cap, banned, req, limit):
         yield {'value': round(-negv, 4), 'ids': list(ids), 'salary': sal}
         produced += 1
         for drop in ids:
+            if drop in req:
+                continue  # a required player cannot be banned to generate the next candidate
             nb = frozenset(set(bans) | {drop})
-            o = solve(pool, cap, banned_players=nb)
+            o = _solve_core(pool, cap, set(nb), set(req))
             if o.state.name == 'PASS':
                 v = o.value
                 t = tuple(sorted(v['ids']))

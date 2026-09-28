@@ -65,6 +65,69 @@ def t_verify_can_fail():
     return 'a deliberately crippled DP is refused by the verification'
 
 
+@check('LOAD-BEARING: required players are honoured, and the requirement is checked not assumed')
+def t_required():
+    import random
+    rng = random.Random(21)
+    pool = []
+    for pos, n in (('QB', 6), ('RB', 10), ('WR', 14), ('TE', 8), ('DST', 6)):
+        for i in range(n):
+            pool.append({'id': f'{pos}{i}', 'position': pos,
+                         'salary': rng.randrange(30, 90) * 100,
+                         'value': round(rng.uniform(2, 26), 3)})
+    free = exact.solve(pool)
+    assert free.state is State.PASS
+
+    # this argument was ACCEPTED AND IGNORED: solve() passed it to an enumerator that took the
+    # parameter and never read it, so a constrained solve returned the unconstrained lineup and
+    # still called itself PROVEN_OPTIMAL. Nothing in the suite exercised it.
+    worst_qb = min((p for p in pool if p['position'] == 'QB'), key=lambda p: p['value'])
+    con = exact.solve(pool, required_players=[worst_qb['id']])
+    assert con.state is State.PASS, con
+    assert worst_qb['id'] in con.value['ids'], (
+        'the required player is absent from the solution, which is the original defect')
+    assert con.value['value'] <= free.value['value'] + 1e-9, (
+        'a requirement RAISED the optimum, which is impossible: a constraint cannot enlarge the '
+        'feasible set')
+
+    # brute force the constrained problem, on value AND on the roster
+    best = None
+    for shape in exact.SHAPES:
+        import itertools
+        groups = []
+        for pos, k in shape.items():
+            cands = [p for p in pool if p['position'] == pos]
+            groups.append([c for c in itertools.combinations(cands, k)])
+        for combo in itertools.product(*groups):
+            flat = [p for g in combo for p in g]
+            if worst_qb['id'] not in {p['id'] for p in flat}:
+                continue
+            if sum(p['salary'] for p in flat) > exact.SALARY_CAP:
+                continue
+            v = sum(p['value'] for p in flat)
+            if best is None or v > best[0]:
+                best = (v, sorted(p['id'] for p in flat))
+    assert best is not None
+    assert abs(best[0] - con.value['value']) < 1e-6, (
+        f'brute force found {best[0]:.4f} under the requirement, solver returned '
+        f'{con.value["value"]:.4f}')
+    assert sorted(con.value['ids']) == best[1], (
+        f'value matches but the roster differs: {sorted(con.value["ids"])} vs {best[1]}')
+
+    # an impossible requirement must block, not quietly drop the constraint
+    rich = sorted(pool, key=lambda p: -p['salary'])[:7]
+    imp = exact.solve(pool, required_players=[r['id'] for r in rich])
+    assert imp.state is State.BLOCKED, imp
+    absent = exact.solve(pool, required_players=['NOT_A_PLAYER'])
+    assert absent.state is State.FAIL and absent.code == 'REQUIRED_PLAYER_NOT_IN_POOL', absent
+    clash = exact.solve(pool, required_players=[worst_qb['id']],
+                        banned_players=[worst_qb['id']])
+    assert clash.state is State.FAIL and clash.code == 'REQUIRED_PLAYER_ALSO_BANNED', clash
+    return (f'forcing the weakest quarterback gives {con.value["value"]:.3f} against '
+            f'{free.value["value"]:.3f} free, matching brute force on value and roster; '
+            f'impossible, absent and contradictory requirements each refuse')
+
+
 @check('the optimiser refuses a salary off the DK grid rather than rounding it')
 def t_grid():
     pool = [{'id': 'x', 'position': 'QB', 'salary': 5050, 'value': 10.0}]
