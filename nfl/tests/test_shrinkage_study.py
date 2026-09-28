@@ -25,6 +25,8 @@ from nfl.research.shrinkage import study as S  # noqa: E402
 from nfl.tools import proj_v1 as V  # noqa: E402
 
 ART = _REPO / 'nfl/research/shrinkage/SHRINKAGE_STUDY.json'
+from nfl.tests import _registry  # noqa: E402
+
 RESULTS = []
 
 
@@ -164,22 +166,27 @@ def t_decomposition_holds():
             f'confirmation season')
 
 
+# EXPOSE EVERY CHECK TO run_suite, which is the authoritative execution path. Without this the
+# runner reports `0 fn, NO TALLY` and executes NONE of them, while a direct run of this file prints
+# a confident pass. See nfl/tests/_registry.py.
+_EMITTED = _registry.emit(globals(), RESULTS)
+
+
+def test_zz_every_check_passed():
+    # The tally tripwire, in this module's own source because run_suite recognises it by shape.
+    if FAILED:
+        raise AssertionError(f'{FAILED} check(s) failed in this module')
+
+
 def main() -> int:
-    ok = fail = 0
-    for name, fn in RESULTS:
+    for fname in _EMITTED:
         try:
-            detail = fn()
-        except AssertionError as e:
-            print(f'FAIL  {name}\n        {e}')
-            fail += 1
-        except Exception as e:  # noqa: BLE001
-            print(f'ERROR {name}\n        {type(e).__name__}: {e}')
-            fail += 1
-        else:
-            print(f'pass  {name}\n        {detail}')
-            ok += 1
-    print(f'\n{ok} passed, {fail} failed, {len(RESULTS)} checks')
-    return 1 if fail else 0
+            globals()[fname]()
+        except Exception:  # noqa: BLE001  -- already printed and counted by the wrapper
+            pass
+    test_zz_every_check_passed.__doc__
+    print(f'\n{PASSED} passed, {FAILED} failed, {len(RESULTS)} checks')
+    return 1 if FAILED else 0
 
 
 if __name__ == '__main__':

@@ -21,6 +21,8 @@ from nfl.sim import dst as dst_mod  # noqa: E402
 from sportsplatform.governance.outcome import State  # noqa: E402
 
 ART = _REPO / 'nfl/dfs/salaries/CONTEST_PORTFOLIO.json'
+from nfl.tests import _registry  # noqa: E402
+
 RESULTS = []
 
 
@@ -187,22 +189,26 @@ def t_sensitivity():
             f"{ds['lowest_portfolio_overlap_with_base']} -- method usable, entries not determined")
 
 
+# EXPOSE EVERY CHECK TO run_suite, the authoritative execution path. Before this the runner
+# reported `0 fn, NO TALLY` for this module and executed NONE of its checks, while a direct run of
+# the file printed a confident pass. See nfl/tests/_registry.py.
+_EMITTED = _registry.emit(globals(), RESULTS)
+
+
+def test_zz_every_check_passed():
+    # The tally tripwire, in this module's own source because run_suite recognises it by shape.
+    if FAILED:
+        raise AssertionError(f'{FAILED} check(s) failed in this module')
+
+
 def main() -> int:
-    ok = fail = 0
-    for name, fn in RESULTS:
+    for fname in _EMITTED:
         try:
-            detail = fn()
-        except AssertionError as e:
-            print(f'FAIL  {name}\n        {e}')
-            fail += 1
-        except Exception as e:  # noqa: BLE001
-            print(f'ERROR {name}\n        {type(e).__name__}: {e}')
-            fail += 1
-        else:
-            print(f'pass  {name}\n        {detail}')
-            ok += 1
-    print(f'\n{ok} passed, {fail} failed, {len(RESULTS)} checks')
-    return 1 if fail else 0
+            globals()[fname]()
+        except Exception:  # noqa: BLE001  -- already printed and counted by the wrapper
+            pass
+    print(f'\n{PASSED} passed, {FAILED} failed, {len(RESULTS)} checks')
+    return 1 if FAILED else 0
 
 
 if __name__ == '__main__':

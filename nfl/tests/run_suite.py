@@ -91,9 +91,23 @@ def _has_checks(path) -> bool:
 
 
 def tally(mod):
+    """The module's own pass/fail counters, or None.
+
+    A NAME MATCH IS NOT A COUNTER. `('P', 'F')` is a real convention in this tree and it is also
+    two of the commonest module aliases anybody writes, so a test file doing `import x as P` matched
+    by name and handed this function a module. `int(<module>)` raised TypeError out of the runner and
+    aborted a 316-suite run at suite 261, losing every result -- the runner failing in exactly the
+    way it exists to catch. A candidate pair whose values are not integers is now SKIPPED, and the
+    next pair is tried.
+    """
     for p, f in _TALLY:
-        if hasattr(mod, p) and hasattr(mod, f):
-            return int(getattr(mod, p)), int(getattr(mod, f))
+        if not (hasattr(mod, p) and hasattr(mod, f)):
+            continue
+        a, b = getattr(mod, p), getattr(mod, f)
+        if isinstance(a, bool) or isinstance(b, bool) or not (
+                isinstance(a, int) and isinstance(b, int)):
+            continue
+        return int(a), int(b)
     return None
 
 

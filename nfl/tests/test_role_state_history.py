@@ -21,9 +21,13 @@ _REPO = pathlib.Path(__file__).resolve().parents[2]
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
-from nfl.tools import forward_chain as F  # noqa: E402
-from nfl.tools import player_prior as P  # noqa: E402
+# NOT `as F`/`as P`: run_suite.tally() treats module-level names P and F as a
+# pass/fail counter pair, so single-letter module aliases here crashed the runner.
+from nfl.tools import forward_chain as FC  # noqa: E402
+from nfl.tools import player_prior as PP  # noqa: E402
 from nfl.tools import role_state_history as RH  # noqa: E402
+
+from nfl.tests import _registry  # noqa: E402
 
 RESULTS = []
 _CACHE = {}
@@ -38,12 +42,12 @@ def check(name):
 
 def _ctx(season):
     if season not in _CACHE:
-        po = P.load_panel()
+        po = PP.load_panel()
         assert po.state.name == 'PASS', po.detail
         panel = po.value
-        roster_pos = P.position_index()
-        pos_map, _inf = F.positions_for_chain(panel, roster_pos)
-        _CACHE[season] = (panel, F._SeasonPos(pos_map, season, roster_pos))
+        roster_pos = PP.position_index()
+        pos_map, _inf = FC.positions_for_chain(panel, roster_pos)
+        _CACHE[season] = (panel, FC._SeasonPos(pos_map, season, roster_pos))
     return _CACHE[season]
 
 
@@ -52,7 +56,7 @@ def t_no_leakage():
     checked = []
     for season, week in ((2023, 6), (2024, 8), (2024, 15), (2025, 5)):
         panel, sp = _ctx(season)
-        o = RH.assert_no_leakage(panel, sp, season, week, F.historical_band)
+        o = RH.assert_no_leakage(panel, sp, season, week, FC.historical_band)
         assert o.state.name == 'PASS', (
             f'{season} week {week}: {o.code} {o.detail} {o.evidence.get("moved", "")[:3]}')
         checked.append(f'{season}w{week}:{o.value["n_players_checked"]}')
@@ -80,7 +84,7 @@ def t_lookback_bounded():
 @check('the oracle arm refuses to run without its oracle')
 def t_oracle_needs_oracle():
     panel, sp = _ctx(2024)
-    o = RH.role_state_for_week(panel, sp, 2024, 8, F.historical_band, arm=RH.ARM_ORACLE)
+    o = RH.role_state_for_week(panel, sp, 2024, 8, FC.historical_band, arm=RH.ARM_ORACLE)
     assert o.state.name == 'FAIL' and o.code == 'ORACLE_ARM_WITHOUT_ORACLE', o.code
     return 'asking for the oracle arm with no appearance set FAILs rather than quietly going pregame'
 
@@ -88,7 +92,7 @@ def t_oracle_needs_oracle():
 @check('the pregame arm refuses to be handed the outcome')
 def t_pregame_refuses_outcome():
     panel, sp = _ctx(2024)
-    o = RH.role_state_for_week(panel, sp, 2024, 8, F.historical_band, arm=RH.ARM_PREGAME,
+    o = RH.role_state_for_week(panel, sp, 2024, 8, FC.historical_band, arm=RH.ARM_PREGAME,
                                appeared={'00-0000001'})
     assert o.state.name == 'FAIL' and o.code == 'PREGAME_ARM_GIVEN_THE_OUTCOME', o.code
     return 'handing the appearance set to the pregame arm FAILs instead of being ignored'
@@ -101,8 +105,8 @@ def t_arms_differ():
     pg = _j.loads((_REPO / 'nfl/warehouse/PLAYER_GAME.json').read_text())['rows']
     appeared = {r['player_id'] for r in pg.values()
                 if r['season'] == 2024 and int(r['week']) == 8}
-    a = RH.role_state_for_week(panel, sp, 2024, 8, F.historical_band)
-    b = RH.role_state_for_week(panel, sp, 2024, 8, F.historical_band, arm=RH.ARM_ORACLE,
+    a = RH.role_state_for_week(panel, sp, 2024, 8, FC.historical_band)
+    b = RH.role_state_for_week(panel, sp, 2024, 8, FC.historical_band, arm=RH.ARM_ORACLE,
                                appeared=appeared)
     assert a.state.name == b.state.name == 'PASS'
     diff = [g for g in set(a.value['rows']) & set(b.value['rows'])
@@ -119,7 +123,7 @@ def t_arms_differ():
 @check('the cap only ever lowers a band, never raises one')
 def t_cap_direction():
     panel, sp = _ctx(2024)
-    o = RH.role_state_for_week(panel, sp, 2024, 8, F.historical_band)
+    o = RH.role_state_for_week(panel, sp, 2024, 8, FC.historical_band)
     raised = [g for g, r in o.value['rows'].items()
               if RH.TIER_ORDER.index(r['role_band']) > RH.TIER_ORDER.index(r['band_before_cap'])]
     assert not raised, (
@@ -183,22 +187,27 @@ def t_supersede_is_backed():
             f'{wk["selection.rho"][k]:+.4f} wins, z {wk["selection.rho"]["z"]}')
 
 
+# EXPOSE EVERY CHECK TO run_suite, which is the authoritative execution path. Without this the
+# runner reports `0 fn, NO TALLY` and executes NONE of them, while a direct run of this file prints
+# a confident pass. See nfl/tests/_registry.py.
+_EMITTED = _registry.emit(globals(), RESULTS)
+
+
+def test_zz_every_check_passed():
+    # The tally tripwire, in this module's own source because run_suite recognises it by shape.
+    if FAILED:
+        raise AssertionError(f'{FAILED} check(s) failed in this module')
+
+
 def main() -> int:
-    ok = fail = 0
-    for name, fn in RESULTS:
+    for fname in _EMITTED:
         try:
-            detail = fn()
-        except AssertionError as e:
-            print(f'FAIL  {name}\n        {e}')
-            fail += 1
-        except Exception as e:  # noqa: BLE001
-            print(f'ERROR {name}\n        {type(e).__name__}: {e}')
-            fail += 1
-        else:
-            print(f'pass  {name}\n        {detail}')
-            ok += 1
-    print(f'\n{ok} passed, {fail} failed, {len(RESULTS)} checks')
-    return 1 if fail else 0
+            globals()[fname]()
+        except Exception:  # noqa: BLE001  -- already printed and counted by the wrapper
+            pass
+    test_zz_every_check_passed.__doc__
+    print(f'\n{PASSED} passed, {FAILED} failed, {len(RESULTS)} checks')
+    return 1 if FAILED else 0
 
 
 if __name__ == '__main__':
