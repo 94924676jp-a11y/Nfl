@@ -490,13 +490,20 @@ def project_player(panel, gsis, pos, band, club, tv, rates, cur_shares, cur_n, p
     """
     out = {'position': pos, 'role_band': band, 'prior_tier': prior.get('tier'),
            'prior_confidence': prior.get('confidence'),
-           'prior_effective_obs': prior.get('effective_obs_at_role'),
+           'prior_effective_obs': (prior.get('effective_obs_for_prior')
+                                   if prior.get('effective_obs_for_prior') is not None
+                                   else prior.get('effective_obs_at_role')),
+           'prior_effective_obs_at_role': prior.get('effective_obs_at_role'),
            'prior_seasons_used': prior.get('seasons_used'),
            'current_season_weeks': cur_n, 'basis': {}}
 
     def comb(key):
-        v, acct = _combine(_m(prior, key), prior.get('effective_obs_at_role'),
-                           cur_shares.get(key), cur_n)
+        # the weight must come from the rows the prior value was built from; see
+        # player_prior.WEIGHT_SEMANTICS
+        w = prior.get('effective_obs_for_prior')
+        if w is None:
+            w = prior.get('effective_obs_at_role')
+        v, acct = _combine(_m(prior, key), w, cur_shares.get(key), cur_n)
         out['basis'][key] = acct
         return v
 
@@ -965,6 +972,7 @@ def build():
         state, band = rs.get('state'), rs.get('role_band')
         base = {'dk_id': dk_id, 'name': nm, 'position': pos, 'team': club,
                 'salary': p.get('salary'), 'role_state': state, 'role_band': band,
+                'role_evidence_conflict': rs.get('role_evidence_conflict'),
                 'askable_ceiling': rs.get('askable_ceiling'), 'capped': rs.get('capped'),
                 'is_predicted_starter': bool(rs.get('in_predicted_group')),
                 'availability': rs.get('availability')}

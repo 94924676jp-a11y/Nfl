@@ -304,10 +304,39 @@ def estimate(panel, gsis, pos, current_role_band, forecast_season, through_seaso
         return {'tier': None, 'effective_obs_at_role': round(eff_role, 2),
                 'effective_obs_any_role': round(eff_all, 2), 'n_raw_obs': len(obs),
                 'measures': {}}
+    # THE WEIGHT MUST BE COUNTED OVER THE ROWS THE VALUE WAS BUILT FROM.
+    #
+    # For PLAYER_OWN_OFF_ROLE the prior VALUE is a weighted mean over the player's whole history --
+    # rows = weighted, all of it -- but the weight handed to the blender was effective_obs_at_role,
+    # which counts only the AT-ROLE subset and is tiny by definition, since being small is why the
+    # tier fell through to off-role in the first place. Value from one sample, weight from another.
+    #
+    # A.J. Brown: a correct prior target share of 0.31024 built from 76 games, weighted at 0.14
+    # effective observations, so ONE week of current data at 0.129 took 88% of the blend and his
+    # projected touchdowns came out at 0.0329 against a career 0.487 per game. That is the flat
+    # shrinkage error the hierarchy exists to avoid, arriving through the weight rather than the
+    # value.
+    #
+    # Off-role history is genuinely worth less than at-role history, so it is DISCOUNTED by the mean
+    # role similarity of the rows used rather than restored in full. That keeps the second tier of
+    # the hierarchy -- "the same player's broader history" -- actually present.
+    used_sim = [_role_similarity(o['role_band'], current_role_band) for _w, o in rows]
+    mean_sim = (sum(used_sim) / len(used_sim)) if used_sim else 0.0
+    # FLOORED AT THE AT-ROLE COUNT. The at-role rows are a subset of the wider set at HIGHER
+    # similarity, so a similarity-discounted wider count can come out below them -- Malik Willis did,
+    # with eff_role above eff_all * mean_sim. Widening the evidence must never reduce the weight.
+    obs_for_prior = (eff_role if tier == 'PLAYER_OWN_ROLE'
+                     else max(eff_role, eff_all * mean_sim))
     return {
         'tier': tier,
         'effective_obs_at_role': round(eff_role, 2),
         'effective_obs_any_role': round(eff_all, 2),
+        'effective_obs_for_prior': round(obs_for_prior, 2),
+        'mean_role_similarity_of_rows_used': round(mean_sim, 3),
+        'WEIGHT_SEMANTICS': ('effective_obs_for_prior is counted over the SAME rows the prior value '
+                            'was built from, discounted by role similarity when those rows are '
+                            'off-role. Blending on effective_obs_at_role instead let a single '
+                            'current week outvote five seasons.'),
         'n_raw_obs': len(obs),
         'n_seasons': len({o['season'] for _w, o in rows}),
         'seasons_used': sorted({o['season'] for _w, o in rows}),

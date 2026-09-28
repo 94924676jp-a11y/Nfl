@@ -3221,3 +3221,39 @@ which is exactly the part a tournament portfolio is selected on, so this is not 
 
 **If it does not exist,** say so and it will be recorded as permanently unavailable, with the
 defensive projections staying explicitly labelled as floors wherever they are consumed.
+
+## OUT-042 — verify the depth ordering for 82 players whose history says a higher role
+
+**Status:** OPEN. **Raised:** 2026-09-28. **Affects:** projection quality for 82 players on the Week 3
+slate (50 WR, 21 TE, 11 RB).
+
+**What is needed.** Confirmation of the current depth/usage position for the flagged players, or a
+refreshed depth ordering. The list is in `DK_WEEK3_PROJ_V1.json` under `role_evidence_conflict`; the
+largest by projected points are Najee Harris, Darren Waller, Sterling Shepard, A.J. Brown and Kimani
+Vidal.
+
+**What the flag means.** Each of these players has held a role at least two bands above what the
+supplied depth evidence allows. A.J. Brown sits at within-position depth rank 6 with ALPHA history;
+the ordering may be stale, or his role may genuinely have changed, and this checkout cannot tell
+which. The consequence is quantified rather than hidden: a low evidence ceiling makes a player's own
+history count as off-role, which discounts it toward the role-similarity floor, which leaves the
+hierarchical prior little weight and lets the current fortnight decide the projection. A.J. Brown
+comes out at 2.7 DK points with 0.06 expected touchdowns against a career 0.487 per game.
+
+**What was fixed here first, so this is not a request to paper over a bug.** Two unit mismatches were
+found and repaired. The supplied `depth_rank` is CLUB-WIDE and was being read as position depth —
+Buffalo's rows run (1, WR), (3, RB), (4, TE), (6, TE), (7, WR) — so every club's second receiver and
+beyond was capped at FRINGE; it is now re-indexed within club and position, which moved 124 players
+out of rank 4-plus and corrected 49 role bands. And the hierarchical prior's WEIGHT was counted over
+the at-role subset while its VALUE was built from the player's whole history, so a correct prior took
+12% of the blend; the weight is now counted over the rows the value came from, discounted by role
+similarity and floored at the at-role count.
+
+After both fixes 82 conflicts remain, and they are data disagreements rather than code defects.
+Quarterbacks are deliberately excluded: a backup passer genuinely has alpha history and a fringe role
+today, which the appearance-probability model already handles.
+
+**What is NOT wanted.** Do not send a depth chart inferred from our own projections, and do not ask us
+to override the evidence with history — that would discard current role state, which is the one thing
+this layer exists to consume. If the ordering is correct and these players really are buried, say so
+and the flags will be recorded as confirmed rather than pending.

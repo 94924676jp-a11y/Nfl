@@ -122,14 +122,46 @@ def _historical_band(panel, gsis, pos, club):
     return w.most_common(1)[0][0]
 
 
+def _position_scoped_ranks(players):
+    """Re-rank the supplied depth order WITHIN club and position.
+
+    A UNIT MISMATCH WITH LARGE CONSEQUENCES. The supplied `depth_rank` is CLUB-WIDE: Buffalo's rows
+    run (1, WR), (3, RB), (4, TE), (6, TE), (7, WR), so a club's second receiver sits at club rank 7
+    and its third at 10. CEILING_BY_EVIDENCE reads that number as POSITION depth -- rank 1 is an
+    alpha, rank 4 or worse is a fringe player -- so every club's WR2 and beyond was capped at
+    FRINGE, and only one player per club could clear rank 3 at all.
+
+    The damage compounds downstream rather than stopping at the label. A FRINGE cap makes a player's
+    own ALPHA history count as off-role, which discounts it to the role-similarity floor, which
+    leaves the hierarchical prior almost no weight, which lets one current week decide the
+    projection. A.J. Brown came out of that chain at 2.7 DK points with 0.06 expected touchdowns
+    against a career 0.487 per game, at club-wide rank 19.
+
+    The ordering in the source is real information; only its scope was wrong. So it is preserved and
+    re-indexed within each club and position.
+    """
+    buckets = {}
+    for dk_id, row in players.items():
+        r = row.get('depth_rank')
+        if isinstance(r, int):
+            buckets.setdefault((row.get('team'), row.get('position')), []).append((r, dk_id))
+    scoped = {}
+    for key, rows in buckets.items():
+        for i, (_r, dk_id) in enumerate(sorted(rows), start=1):
+            scoped[dk_id] = i
+    return scoped
+
+
 def assign(players, panel=None):
     out = {}
+    scoped_rank = _position_scoped_ranks(players)
     for dk_id, row in players.items():
         pos, club = row['position'], row['team']
         av = row['current_availability']['status']
         pred = bool((row.get('predicted_lineup_context') or {})
                     .get('in_predicted_starting_group'))
-        rank = row.get('depth_rank')
+        club_wide_rank = row.get('depth_rank')
+        rank = scoped_rank.get(dk_id)
         obs_band, obs_share = _observed_band(row, pos)
 
         if av in AV.ABSENT_STATUSES:
@@ -167,12 +199,47 @@ def assign(players, panel=None):
         proposed = (max(cands, key=BANDS.index) if cands else
                     ('SECONDARY' if ev == 'PREDICTED_STARTER' else 'FRINGE'))
         band = _cap(proposed, ceiling)
+        # NEVER SILENTLY CAP AN ESTABLISHED ROLE AWAY.
+        #
+        # When a player's own history says ALPHA and the supplied evidence says FRINGE, the system
+        # does NOT know his role -- and a confident low projection is the worst of the three
+        # available answers. Inventing the historical role would override current state, which this
+        # layer exists to consume; hiding the disagreement is how A.J. Brown reached 2.7 DK points
+        # in silence. So the evidence still governs the band, and the disagreement is NAMED so it
+        # reaches the board and the outbox instead of only the number.
+        # The flag is NOT raised for quarterbacks. A backup quarterback genuinely has ALPHA history
+        # -- he was a starter when he played -- and a FRINGE role today, and that is not a data
+        # problem: it is the exclusive-role case the appearance-probability model already handles
+        # explicitly. Raising it here would bury the informative cases under 40 backup passers.
+        conflict = None
+        if pos != 'QB' and hist_band and BANDS.index(hist_band) - BANDS.index(band) >= 2:
+            conflict = {
+                'kind': 'HISTORY_ABOVE_EVIDENCE_CEILING',
+                'history_band': hist_band,
+                'assigned_band': band,
+                'evidence': ev, 'ceiling': ceiling,
+                'depth_rank_club_wide': club_wide_rank,
+                'depth_rank_within_position': rank,
+                'MEANING': ('this player has held a materially higher role than the supplied depth '
+                            'evidence allows. Either the depth ordering is stale or his role has '
+                            'genuinely changed, and this checkout cannot tell which.'),
+                'CONSEQUENCE': ('his own history is discounted as off-role, so the projection rests '
+                                'mostly on current-season data and should be read as low '
+                                'confidence, not as a verdict.'),
+            }
         out[dk_id] = {
             'dk_id': dk_id, 'name': row['name'], 'position': pos, 'team': club,
             'role_band': band, 'askable_ceiling': ceiling, 'state': 'PLAYING_ROLE_ASSIGNED',
             'evidence': ev, 'availability': av,
             'observed_band': obs_band, 'observed_share': obs_share,
+            'depth_rank_club_wide': club_wide_rank,
+            'depth_rank_within_position': rank,
+            'RANK_SEMANTICS': ('the supplied depth_rank is club-wide; the ceiling table reads '
+                              'position depth, so it is re-indexed within club and position. '
+                              'Reading the club-wide number directly capped every WR2 and beyond '
+                              'at FRINGE.'),
             'historical_band': hist_band,
+            'role_evidence_conflict': conflict,
             'band_basis': ('HISTORY' if hist_band and proposed == hist_band
                            and hist_band != obs_band else
                            'OBSERVED' if obs_band and proposed == obs_band
