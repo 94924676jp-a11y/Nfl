@@ -120,7 +120,7 @@
       }
     ],
     "pool_size": 273,
-    "PROOF": "exhaustive over the three legal shapes; within each shape the position tables are exact 0/1 knapsacks with an exact-count constraint and the salary convolution is exact. No sampling, no greedy step, no seed.",
+    "PROOF": "exhaustive over the three legal shapes; within each shape the position tables are exact 0/1 knapsacks with an exact-count constraint and the salary convolution is exact. Required players are fixed, which reduces the counts and the cap and leaves the remainder an exact subproblem. No sampling, no greedy step, no seed.",
     "WHAT_CHANGED": "the previous gate compared a heuristic search against the benchmark and could only report a shortfall. An exact solver reports the maximum, so the floor is cleared by construction wherever a better lineup exists at all.",
     "exact_top_n_mean": 170.2144,
     "exact_top_n_count": 48,
