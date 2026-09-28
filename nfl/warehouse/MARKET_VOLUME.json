@@ -1,0 +1,870 @@
+{
+ "BOTH_WRONG": "the first double-counted the market, which also enters the touchdown pool; the second declared a gap after searching one directory while 27 seasons of closing lines sat in nfl/vintage/schedules",
+ "FAVOURED_BY_SEMANTICS": "positive when this club is FAVOURED, which under the empirically verified SPREAD_LINE_IS_HOME_MARGIN convention is club_spread itself. An earlier version negated it and reported that favourites score fewer points, which is how the sign error was caught.",
+ "V0_DID": "multiplied all volume by implied_total / league_mean_implied",
+ "V1_DID": "applied no market scaling at all and said it was unmeasurable here",
+ "artifact": "MARKET_VOLUME",
+ "coverage": {
+  "drives": 2782,
+  "dropbacks": 2782,
+  "neutral_pass_rate": 2606,
+  "offensive_td": 2782,
+  "pass_attempts": 2782,
+  "plays": 2782,
+  "points": 13502,
+  "rush_attempts": 2782,
+  "rz_drives": 2782,
+  "rz_trips": 2782,
+  "seconds_per_play": 2782,
+  "targets": 2782
+ },
+ "favoured_hypothesis": {
+  "claim": "a favoured club runs MORE and throws LESS",
+  "pass_attempts_per_point_favoured": -0.046837,
+  "pass_effect_beyond_2se": false,
+  "pass_se": 0.026235,
+  "passing_half": "DIRECTIONAL_ONLY",
+  "passing_se_multiple": 1.79,
+  "reading": "a favoured club runs more: +0.1868 rush attempts per point of spread, 7.53 standard errors. It throws less only directionally: -0.0468 pass attempts per point, 1.79 standard errors, which does not clear the two-error bar. The volume response to the market is real and it is SMALL -- V0 scaled all volume by implied/league_mean, about +31 per cent for a 28.75-point club, where the measured pass-attempt response is about +8 per cent per TEN points of game total and slightly NEGATIVE in the spread.",
+  "rush_attempts_per_point_favoured": 0.18677,
+  "rush_effect_beyond_2se": true,
+  "rush_se": 0.024809,
+  "rushing_half": "SUPPORTED",
+  "rushing_se_multiple": 7.53,
+  "signs_oppose": true,
+  "state": "TESTED",
+  "verdict": "PARTIALLY_SUPPORTED"
+ },
+ "fits": {
+  "drives": {
+   "implied_total_only": {
+    "SE_SEMANTICS": "a naive standard error treats club-games in the same game as independent and understates uncertainty; measured at roughly threefold elsewhere in this project. Quote the cluster-robust figure.",
+    "coef": {
+     "implied_total": -0.034564,
+     "intercept": 11.628794
+    },
+    "n": 2782,
+    "n_clusters": 1391,
+    "n_dropped": 0,
+    "r2": 0.0066,
+    "rmse": 1.61668,
+    "se": {
+     "implied_total": 0.006932,
+     "intercept": 0.165545
+    },
+    "se_kind": "CLUSTER_ROBUST_BY_game_id",
+    "state": "FITTED",
+    "t": {
+     "implied_total": -4.986,
+     "intercept": 70.245
+    }
+   },
+   "interpretation": {
+    "pct_change_per_7_point_favourite": 0.023,
+    "pct_change_per_extra_10_total": -5.06,
+    "per_point_favoured": 0.000359,
+    "per_point_of_game_total": -0.054942,
+    "spread_effect_significant": false,
+    "total_effect_significant": true
+   },
+   "mean": 10.8587,
+   "n_club_games": 2782,
+   "seasons": [
+    2021,
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+   ],
+   "two_factor": {
+    "SE_SEMANTICS": "a naive standard error treats club-games in the same game as independent and understates uncertainty; measured at roughly threefold elsewhere in this project. Quote the cluster-robust figure.",
+    "coef": {
+     "favoured_by": 0.000359,
+     "intercept": 13.306889,
+     "total_line": -0.054942
+    },
+    "n": 2782,
+    "n_clusters": 1391,
+    "n_dropped": 0,
+    "r2": 0.02128,
+    "rmse": 1.60469,
+    "se": {
+     "favoured_by": 0.001928,
+     "intercept": 0.445368,
+     "total_line": 0.009829
+    },
+    "se_kind": "CLUSTER_ROBUST_BY_game_id",
+    "state": "FITTED",
+    "t": {
+     "favoured_by": 0.186,
+     "intercept": 29.878,
+     "total_line": -5.59
+    }
+   }
+  },
+  "dropbacks": {
+   "implied_total_only": {
+    "SE_SEMANTICS": "a naive standard error treats club-games in the same game as independent and understates uncertainty; measured at roughly threefold elsewhere in this project. Quote the cluster-robust figure.",
+    "coef": {
+     "implied_total": 0.124708,
+     "intercept": 34.851366
+    },
+    "n": 2782,
+    "n_clusters": 1391,
+    "n_dropped": 0,
+    "r2": 0.00309,
+    "rmse": 8.53588,
+    "se": {
+     "implied_total": 0.043993,
+     "intercept": 0.993662
+    },
+    "se_kind": "CLUSTER_ROBUST_BY_game_id",
+    "state": "FITTED",
+    "t": {
+     "implied_total": 2.835,
+     "intercept": 35.074
+    }
+   },
+   "interpretation": {
+    "pct_change_per_7_point_favourite": -0.835,
+    "pct_change_per_extra_10_total": 7.743,
+    "per_point_favoured": -0.044912,
+    "per_point_of_game_total": 0.291352,
+    "spread_effect_significant": false,
+    "total_effect_significant": true
+   },
+   "mean": 37.6298,
+   "n_club_games": 2782,
+   "seasons": [
+    2021,
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+   ],
+   "two_factor": {
+    "SE_SEMANTICS": "a naive standard error treats club-games in the same game as independent and understates uncertainty; measured at roughly threefold elsewhere in this project. Quote the cluster-robust figure.",
+    "coef": {
+     "favoured_by": -0.044912,
+     "intercept": 24.647516,
+     "total_line": 0.291352
+    },
+    "n": 2782,
+    "n_clusters": 1391,
+    "n_dropped": 0,
+    "r2": 0.02263,
+    "rmse": 8.45182,
+    "se": {
+     "favoured_by": 0.027299,
+     "intercept": 1.473131,
+     "total_line": 0.032799
+    },
+    "se_kind": "CLUSTER_ROBUST_BY_game_id",
+    "state": "FITTED",
+    "t": {
+     "favoured_by": -1.645,
+     "intercept": 16.731,
+     "total_line": 8.883
+    }
+   }
+  },
+  "neutral_pass_rate": {
+   "implied_total_only": {
+    "SE_SEMANTICS": "a naive standard error treats club-games in the same game as independent and understates uncertainty; measured at roughly threefold elsewhere in this project. Quote the cluster-robust figure.",
+    "coef": {
+     "implied_total": 0.003538,
+     "intercept": 0.482788
+    },
+    "n": 2606,
+    "n_clusters": 1376,
+    "n_dropped": 0,
+    "r2": 0.01616,
+    "rmse": 0.10482,
+    "se": {
+     "implied_total": 0.000549,
+     "intercept": 0.01253
+    },
+    "se_kind": "CLUSTER_ROBUST_BY_game_id",
+    "state": "FITTED",
+    "t": {
+     "implied_total": 6.449,
+     "intercept": 38.529
+    }
+   },
+   "interpretation": {
+    "pct_change_per_7_point_favourite": 1.134,
+    "pct_change_per_extra_10_total": 6.391,
+    "per_point_favoured": 0.00091,
+    "per_point_of_game_total": 0.003591,
+    "spread_effect_significant": true,
+    "total_effect_significant": true
+   },
+   "mean": 0.5619,
+   "n_club_games": 2606,
+   "seasons": [
+    2021,
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+   ],
+   "two_factor": {
+    "SE_SEMANTICS": "a naive standard error treats club-games in the same game as independent and understates uncertainty; measured at roughly threefold elsewhere in this project. Quote the cluster-robust figure.",
+    "coef": {
+     "favoured_by": 0.00091,
+     "intercept": 0.401718,
+     "total_line": 0.003591
+    },
+    "n": 2606,
+    "n_clusters": 1376,
+    "n_dropped": 0,
+    "r2": 0.0243,
+    "rmse": 0.10438,
+    "se": {
+     "favoured_by": 0.000328,
+     "intercept": 0.021083,
+     "total_line": 0.000468
+    },
+    "se_kind": "CLUSTER_ROBUST_BY_game_id",
+    "state": "FITTED",
+    "t": {
+     "favoured_by": 2.772,
+     "intercept": 19.054,
+     "total_line": 7.669
+    }
+   }
+  },
+  "offensive_td": {
+   "implied_total_only": {
+    "SE_SEMANTICS": "a naive standard error treats club-games in the same game as independent and understates uncertainty; measured at roughly threefold elsewhere in this project. Quote the cluster-robust figure.",
+    "coef": {
+     "implied_total": 0.139927,
+     "intercept": -0.743647
+    },
+    "n": 2782,
+    "n_clusters": 1391,
+    "n_dropped": 0,
+    "r2": 0.14581,
+    "rmse": 1.29112,
+    "se": {
+     "implied_total": 0.006394,
+     "intercept": 0.140672
+    },
+    "se_kind": "CLUSTER_ROBUST_BY_game_id",
+    "state": "FITTED",
+    "t": {
+     "implied_total": 21.883,
+     "intercept": -5.286
+    }
+   },
+   "interpretation": {
+    "pct_change_per_7_point_favourite": 20.042,
+    "pct_change_per_extra_10_total": 31.271,
+    "per_point_favoured": 0.067965,
+    "per_point_of_game_total": 0.074231,
+    "spread_effect_significant": true,
+    "total_effect_significant": true
+   },
+   "mean": 2.3738,
+   "n_club_games": 2782,
+   "seasons": [
+    2021,
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+   ],
+   "two_factor": {
+    "SE_SEMANTICS": "a naive standard error treats club-games in the same game as independent and understates uncertainty; measured at roughly threefold elsewhere in this project. Quote the cluster-robust figure.",
+    "coef": {
+     "favoured_by": 0.067965,
+     "intercept": -0.93379,
+     "total_line": 0.074231
+    },
+    "n": 2782,
+    "n_clusters": 1391,
+    "n_dropped": 0,
+    "r2": 0.14607,
+    "rmse": 1.29093,
+    "se": {
+     "favoured_by": 0.003651,
+     "intercept": 0.281594,
+     "total_line": 0.006332
+    },
+    "se_kind": "CLUSTER_ROBUST_BY_game_id",
+    "state": "FITTED",
+    "t": {
+     "favoured_by": 18.617,
+     "intercept": -3.316,
+     "total_line": 11.723
+    }
+   }
+  },
+  "pass_attempts": {
+   "implied_total_only": {
+    "SE_SEMANTICS": "a naive standard error treats club-games in the same game as independent and understates uncertainty; measured at roughly threefold elsewhere in this project. Quote the cluster-robust figure.",
+    "coef": {
+     "implied_total": 0.116665,
+     "intercept": 33.051034
+    },
+    "n": 2782,
+    "n_clusters": 1391,
+    "n_dropped": 0,
+    "r2": 0.00282,
+    "rmse": 8.36128,
+    "se": {
+     "implied_total": 0.042698,
+     "intercept": 0.965353
+    },
+    "se_kind": "CLUSTER_ROBUST_BY_game_id",
+    "state": "FITTED",
+    "t": {
+     "implied_total": 2.732,
+     "intercept": 34.237
+    }
+   },
+   "interpretation": {
+    "pct_change_per_7_point_favourite": -0.92,
+    "pct_change_per_extra_10_total": 7.934,
+    "per_point_favoured": -0.046837,
+    "per_point_of_game_total": 0.282856,
+    "spread_effect_significant": false,
+    "total_effect_significant": true
+   },
+   "mean": 35.6503,
+   "n_club_games": 2782,
+   "seasons": [
+    2021,
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+   ],
+   "two_factor": {
+    "SE_SEMANTICS": "a naive standard error treats club-games in the same game as independent and understates uncertainty; measured at roughly threefold elsewhere in this project. Quote the cluster-robust figure.",
+    "coef": {
+     "favoured_by": -0.046837,
+     "intercept": 23.046602,
+     "total_line": 0.282856
+    },
+    "n": 2782,
+    "n_clusters": 1391,
+    "n_dropped": 0,
+    "r2": 0.0224,
+    "rmse": 8.27879,
+    "se": {
+     "favoured_by": 0.026235,
+     "intercept": 1.45945,
+     "total_line": 0.032526
+    },
+    "se_kind": "CLUSTER_ROBUST_BY_game_id",
+    "state": "FITTED",
+    "t": {
+     "favoured_by": -1.785,
+     "intercept": 15.791,
+     "total_line": 8.696
+    }
+   }
+  },
+  "plays": {
+   "implied_total_only": {
+    "SE_SEMANTICS": "a naive standard error treats club-games in the same game as independent and understates uncertainty; measured at roughly threefold elsewhere in this project. Quote the cluster-robust figure.",
+    "coef": {
+     "implied_total": 0.337421,
+     "intercept": 55.245268
+    },
+    "n": 2782,
+    "n_clusters": 1391,
+    "n_dropped": 0,
+    "r2": 0.02303,
+    "rmse": 8.37871,
+    "se": {
+     "implied_total": 0.046827,
+     "intercept": 1.05756
+    },
+    "se_kind": "CLUSTER_ROBUST_BY_game_id",
+    "state": "FITTED",
+    "t": {
+     "implied_total": 7.206,
+     "intercept": 52.238
+    }
+   },
+   "interpretation": {
+    "pct_change_per_7_point_favourite": 1.971,
+    "pct_change_per_extra_10_total": 2.416,
+    "per_point_favoured": 0.176719,
+    "per_point_of_game_total": 0.151612,
+    "spread_effect_significant": true,
+    "total_effect_significant": true
+   },
+   "mean": 62.7628,
+   "n_club_games": 2782,
+   "seasons": [
+    2021,
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+   ],
+   "two_factor": {
+    "SE_SEMANTICS": "a naive standard error treats club-games in the same game as independent and understates uncertainty; measured at roughly threefold elsewhere in this project. Quote the cluster-robust figure.",
+    "coef": {
+     "favoured_by": 0.176719,
+     "intercept": 56.007131,
+     "total_line": 0.151612
+    },
+    "n": 2782,
+    "n_clusters": 1391,
+    "n_dropped": 0,
+    "r2": 0.02314,
+    "rmse": 8.37823,
+    "se": {
+     "favoured_by": 0.031911,
+     "intercept": 1.123998,
+     "total_line": 0.025104
+    },
+    "se_kind": "CLUSTER_ROBUST_BY_game_id",
+    "state": "FITTED",
+    "t": {
+     "favoured_by": 5.538,
+     "intercept": 49.829,
+     "total_line": 6.039
+    }
+   }
+  },
+  "points": {
+   "implied_total_only": {
+    "SE_SEMANTICS": "a naive standard error treats club-games in the same game as independent and understates uncertainty; measured at roughly threefold elsewhere in this project. Quote the cluster-robust figure.",
+    "coef": {
+     "implied_total": 1.010198,
+     "intercept": 0.104712
+    },
+    "n": 13502,
+    "n_clusters": 6751,
+    "n_dropped": 0,
+    "r2": 0.15597,
+    "rmse": 9.39675,
+    "se": {
+     "implied_total": 0.020502,
+     "intercept": 0.449013
+    },
+    "se_kind": "CLUSTER_ROBUST_BY_game_id",
+    "state": "FITTED",
+    "t": {
+     "implied_total": 49.274,
+     "intercept": 0.233
+    }
+   },
+   "interpretation": {
+    "pct_change_per_7_point_favourite": 16.626,
+    "pct_change_per_extra_10_total": 21.221,
+    "per_point_favoured": 0.525605,
+    "per_point_of_game_total": 0.469617,
+    "spread_effect_significant": true,
+    "total_effect_significant": true
+   },
+   "mean": 22.1299,
+   "n_club_games": 13502,
+   "seasons": [
+    2000,
+    2001,
+    2002,
+    2003,
+    2004,
+    2005,
+    2006,
+    2007,
+    2008,
+    2009,
+    2010,
+    2011,
+    2012,
+    2013,
+    2014,
+    2015,
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+   ],
+   "two_factor": {
+    "SE_SEMANTICS": "a naive standard error treats club-games in the same game as independent and understates uncertainty; measured at roughly threefold elsewhere in this project. Quote the cluster-robust figure.",
+    "coef": {
+     "favoured_by": 0.525605,
+     "intercept": 1.65193,
+     "total_line": 0.469617
+    },
+    "n": 13502,
+    "n_clusters": 6751,
+    "n_dropped": 0,
+    "r2": 0.15641,
+    "rmse": 9.39427,
+    "se": {
+     "favoured_by": 0.012705,
+     "intercept": 0.757008,
+     "total_line": 0.017306
+    },
+    "se_kind": "CLUSTER_ROBUST_BY_game_id",
+    "state": "FITTED",
+    "t": {
+     "favoured_by": 41.371,
+     "intercept": 2.182,
+     "total_line": 27.136
+    }
+   }
+  },
+  "rush_attempts": {
+   "implied_total_only": {
+    "SE_SEMANTICS": "a naive standard error treats club-games in the same game as independent and understates uncertainty; measured at roughly threefold elsewhere in this project. Quote the cluster-robust figure.",
+    "coef": {
+     "implied_total": 0.169195,
+     "intercept": 22.446484
+    },
+    "n": 2782,
+    "n_clusters": 1391,
+    "n_dropped": 0,
+    "r2": 0.00781,
+    "rmse": 7.26923,
+    "se": {
+     "implied_total": 0.038159,
+     "intercept": 0.855571
+    },
+    "se_kind": "CLUSTER_ROBUST_BY_game_id",
+    "state": "FITTED",
+    "t": {
+     "implied_total": 4.434,
+     "intercept": 26.236
+    }
+   },
+   "interpretation": {
+    "pct_change_per_7_point_favourite": 4.987,
+    "pct_change_per_extra_10_total": -5.093,
+    "per_point_favoured": 0.18677,
+    "per_point_of_game_total": -0.133528,
+    "spread_effect_significant": true,
+    "total_effect_significant": true
+   },
+   "mean": 26.216,
+   "n_club_games": 2782,
+   "seasons": [
+    2021,
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+   ],
+   "two_factor": {
+    "SE_SEMANTICS": "a naive standard error treats club-games in the same game as independent and understates uncertainty; measured at roughly threefold elsewhere in this project. Quote the cluster-robust figure.",
+    "coef": {
+     "favoured_by": 0.18677,
+     "intercept": 32.16586,
+     "total_line": -0.133528
+    },
+    "n": 2782,
+    "n_clusters": 1391,
+    "n_dropped": 0,
+    "r2": 0.03214,
+    "rmse": 7.17956,
+    "se": {
+     "favoured_by": 0.024809,
+     "intercept": 0.994567,
+     "total_line": 0.022194
+    },
+    "se_kind": "CLUSTER_ROBUST_BY_game_id",
+    "state": "FITTED",
+    "t": {
+     "favoured_by": 7.528,
+     "intercept": 32.342,
+     "total_line": -6.016
+    }
+   }
+  },
+  "rz_drives": {
+   "implied_total_only": {
+    "SE_SEMANTICS": "a naive standard error treats club-games in the same game as independent and understates uncertainty; measured at roughly threefold elsewhere in this project. Quote the cluster-robust figure.",
+    "coef": {
+     "implied_total": 0.150636,
+     "intercept": 0.511647
+    },
+    "n": 2782,
+    "n_clusters": 1391,
+    "n_dropped": 0,
+    "r2": 0.13214,
+    "rmse": 1.47174,
+    "se": {
+     "implied_total": 0.007219,
+     "intercept": 0.161977
+    },
+    "se_kind": "CLUSTER_ROBUST_BY_game_id",
+    "state": "FITTED",
+    "t": {
+     "implied_total": 20.866,
+     "intercept": 3.159
+    }
+   },
+   "interpretation": {
+    "pct_change_per_7_point_favourite": 13.738,
+    "pct_change_per_extra_10_total": 19.15,
+    "per_point_favoured": 0.075905,
+    "per_point_of_game_total": 0.074066,
+    "spread_effect_significant": true,
+    "total_effect_significant": true
+   },
+   "mean": 3.8677,
+   "n_club_games": 2782,
+   "seasons": [
+    2021,
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+   ],
+   "two_factor": {
+    "SE_SEMANTICS": "a naive standard error treats club-games in the same game as independent and understates uncertainty; measured at roughly threefold elsewhere in this project. Quote the cluster-robust figure.",
+    "coef": {
+     "favoured_by": 0.075905,
+     "intercept": 0.567444,
+     "total_line": 0.074066
+    },
+    "n": 2782,
+    "n_clusters": 1391,
+    "n_dropped": 0,
+    "r2": 0.13215,
+    "rmse": 1.47173,
+    "se": {
+     "favoured_by": 0.004496,
+     "intercept": 0.277992,
+     "total_line": 0.006248
+    },
+    "se_kind": "CLUSTER_ROBUST_BY_game_id",
+    "state": "FITTED",
+    "t": {
+     "favoured_by": 16.882,
+     "intercept": 2.041,
+     "total_line": 11.855
+    }
+   }
+  },
+  "rz_trips": {
+   "implied_total_only": {
+    "SE_SEMANTICS": "a naive standard error treats club-games in the same game as independent and understates uncertainty; measured at roughly threefold elsewhere in this project. Quote the cluster-robust figure.",
+    "coef": {
+     "implied_total": 0.349175,
+     "intercept": 1.79324
+    },
+    "n": 2782,
+    "n_clusters": 1391,
+    "n_dropped": 0,
+    "r2": 0.07255,
+    "rmse": 4.75954,
+    "se": {
+     "implied_total": 0.024014,
+     "intercept": 0.538758
+    },
+    "se_kind": "CLUSTER_ROBUST_BY_game_id",
+    "state": "FITTED",
+    "t": {
+     "implied_total": 14.541,
+     "intercept": 3.328
+    }
+   },
+   "interpretation": {
+    "pct_change_per_7_point_favourite": 12.449,
+    "pct_change_per_extra_10_total": 19.209,
+    "per_point_favoured": 0.170236,
+    "per_point_of_game_total": 0.183876,
+    "spread_effect_significant": true,
+    "total_effect_significant": true
+   },
+   "mean": 9.5726,
+   "n_club_games": 2782,
+   "seasons": [
+    2021,
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+   ],
+   "two_factor": {
+    "SE_SEMANTICS": "a naive standard error treats club-games in the same game as independent and understates uncertainty; measured at roughly threefold elsewhere in this project. Quote the cluster-robust figure.",
+    "coef": {
+     "favoured_by": 0.170236,
+     "intercept": 1.379345,
+     "total_line": 0.183876
+    },
+    "n": 2782,
+    "n_clusters": 1391,
+    "n_dropped": 0,
+    "r2": 0.07264,
+    "rmse": 4.75929,
+    "se": {
+     "favoured_by": 0.015417,
+     "intercept": 0.869209,
+     "total_line": 0.019398
+    },
+    "se_kind": "CLUSTER_ROBUST_BY_game_id",
+    "state": "FITTED",
+    "t": {
+     "favoured_by": 11.042,
+     "intercept": 1.587,
+     "total_line": 9.479
+    }
+   }
+  },
+  "seconds_per_play": {
+   "implied_total_only": {
+    "SE_SEMANTICS": "a naive standard error treats club-games in the same game as independent and understates uncertainty; measured at roughly threefold elsewhere in this project. Quote the cluster-robust figure.",
+    "coef": {
+     "implied_total": -0.329327,
+     "intercept": 64.010078
+    },
+    "n": 2782,
+    "n_clusters": 1391,
+    "n_dropped": 0,
+    "r2": 0.02434,
+    "rmse": 7.94956,
+    "se": {
+     "implied_total": 0.045703,
+     "intercept": 1.042963
+    },
+    "se_kind": "CLUSTER_ROBUST_BY_game_id",
+    "state": "FITTED",
+    "t": {
+     "implied_total": -7.206,
+     "intercept": 61.373
+    }
+   },
+   "interpretation": {
+    "pct_change_per_7_point_favourite": -2.113,
+    "pct_change_per_extra_10_total": -2.665,
+    "per_point_favoured": -0.171038,
+    "per_point_of_game_total": -0.151055,
+    "spread_effect_significant": true,
+    "total_effect_significant": true
+   },
+   "mean": 56.6729,
+   "n_club_games": 2782,
+   "seasons": [
+    2021,
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+   ],
+   "two_factor": {
+    "SE_SEMANTICS": "a naive standard error treats club-games in the same game as independent and understates uncertainty; measured at roughly threefold elsewhere in this project. Quote the cluster-robust figure.",
+    "coef": {
+     "favoured_by": -0.171038,
+     "intercept": 63.403685,
+     "total_line": -0.151055
+    },
+    "n": 2782,
+    "n_clusters": 1391,
+    "n_dropped": 0,
+    "r2": 0.02441,
+    "rmse": 7.94925,
+    "se": {
+     "favoured_by": 0.031017,
+     "intercept": 1.061,
+     "total_line": 0.023575
+    },
+    "se_kind": "CLUSTER_ROBUST_BY_game_id",
+    "state": "FITTED",
+    "t": {
+     "favoured_by": -5.514,
+     "intercept": 59.758,
+     "total_line": -6.407
+    }
+   }
+  },
+  "targets": {
+   "implied_total_only": {
+    "SE_SEMANTICS": "a naive standard error treats club-games in the same game as independent and understates uncertainty; measured at roughly threefold elsewhere in this project. Quote the cluster-robust figure.",
+    "coef": {
+     "implied_total": 0.224714,
+     "intercept": 26.921278
+    },
+    "n": 2782,
+    "n_clusters": 1391,
+    "n_dropped": 0,
+    "r2": 0.01171,
+    "rmse": 7.87161,
+    "se": {
+     "implied_total": 0.040482,
+     "intercept": 0.916886
+    },
+    "se_kind": "CLUSTER_ROBUST_BY_game_id",
+    "state": "FITTED",
+    "t": {
+     "implied_total": 5.551,
+     "intercept": 29.362
+    }
+   },
+   "interpretation": {
+    "pct_change_per_7_point_favourite": 0.276,
+    "pct_change_per_extra_10_total": 10.189,
+    "per_point_favoured": 0.012602,
+    "per_point_of_game_total": 0.325321,
+    "spread_effect_significant": false,
+    "total_effect_significant": true
+   },
+   "mean": 31.9277,
+   "n_club_games": 2782,
+   "seasons": [
+    2021,
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+   ],
+   "two_factor": {
+    "SE_SEMANTICS": "a naive standard error treats club-games in the same game as independent and understates uncertainty; measured at roughly threefold elsewhere in this project. Quote the cluster-robust figure.",
+    "coef": {
+     "favoured_by": 0.012602,
+     "intercept": 17.431919,
+     "total_line": 0.325321
+    },
+    "n": 2782,
+    "n_clusters": 1391,
+    "n_dropped": 0,
+    "r2": 0.0314,
+    "rmse": 7.79277,
+    "se": {
+     "favoured_by": 0.024831,
+     "intercept": 1.395992,
+     "total_line": 0.031125
+    },
+    "se_kind": "CLUSTER_ROBUST_BY_game_id",
+    "state": "FITTED",
+    "t": {
+     "favoured_by": 0.508,
+     "intercept": 12.487,
+     "total_line": 10.452
+    }
+   }
+  }
+ },
+ "regressors": [
+  "total_line",
+  "favoured_by"
+ ],
+ "spec_version": "market-volume-1"
+}

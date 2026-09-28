@@ -2976,7 +2976,39 @@ WR, 3000, and no Matthew. Probably a first-name slip, but I have not renamed him
 carried as a redistribution candidate with the conflict attached. If you are already
 reading the Jets list, the name on it settles it.
 
-## OUT-036 — historical closing lines, to estimate the volume/market relationship
+## OUT-036 — WITHDRAWN 2026-09-28. The lines were already in this repository.
+
+**Status: WITHDRAWN BY MEASUREMENT.** The request below is struck. It is left visible rather than
+deleted because the mistake is more instructive than the request was.
+
+I wrote "This repository holds no line history -- `nfl/research/postgame/` carries play-by-play
+only". I checked one directory and declared a gap. `nfl/vintage/schedules.*.csv.gz` carries
+**7,548 games over 1999-2026** with `spread_line`, `total_line`, `away_moneyline`,
+`home_moneyline`, `over_odds`, `under_odds`, `temp`, `wind`, `roof`, `surface`, `away_rest`,
+`home_rest`, `overtime`, both scores, and PFR/PFF/ESPN cross-reference ids.
+
+Measured coverage of the two fields I said were absent:
+
+| season | games | spread_line | total_line | temp/wind |
+|---|---|---|---|---|
+| 1999 | 259 | **1.00** | **1.00** | 0.76 |
+| 2000 | 259 | **1.00** | **1.00** | 0.80 |
+| 2012 | 267 | **1.00** | **1.00** | 0.72 |
+| 2025 | 285 | **1.00** | **1.00** | 0.67 |
+| 2026 | 272 | 0.24 | 0.24 | 0.07 |
+
+Twenty-seven complete seasons of closing lines, one hundred per cent covered. The temp/wind gap is
+not missing data: it is domes, and `roof` says which.
+
+This is the exact failure the project briefing names -- marking something unavailable because it
+was not in the first place looked, when the repository is not the whole world and in this case the
+repository was not even fully searched. It cost a real capability: `proj_v1.team_volume()` currently
+applies NO market scaling to play volume and says the coefficient "cannot be estimated here", which
+is false. It can be estimated on 27 seasons, and now will be.
+
+The original request follows, struck.
+
+## ~~OUT-036 — historical closing lines, to estimate the volume/market relationship~~ (WITHDRAWN)
 
 **Requested by:** Claude (no network). **Status:** OPEN. **Filed:** 2026-09-28.
 

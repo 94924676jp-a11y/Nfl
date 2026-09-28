@@ -46,6 +46,7 @@ _REPO = pathlib.Path(__file__).resolve().parents[2]
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
+from nfl.tools import market_response  # noqa: E402
 from sportsplatform.governance.outcome import Cause, Outcome  # noqa: E402
 
 SPEC_VERSION = 'proj-v1-1'
@@ -108,6 +109,14 @@ CONSTANTS_PROVENANCE = {
 
 
 # --------------------------------------------------------------------------- team volume
+#: The slate week. Read from the post-inactives artifact where it carries one; otherwise declared
+#: here so that a market join can never silently use the wrong week's line.
+SLATE_WEEK = 3
+
+#: Loaded once: the measured market-to-volume response and the team-game warehouse.
+_MR = None
+
+
 def team_volume(panel, env):
     """Per-game club volume, blended across seasons and scaled by the market implied total.
 
@@ -152,7 +161,16 @@ def team_volume(panel, env):
             else:
                 blend[f] = (wc * per_cur + wp * per_prv) / (wc + wp)
         imp = implied.get(club)
-        # THE MARKET IS NOT APPLIED TO VOLUME, and V0 applied it twice. V0 multiplied every club's
+        # THE MARKET IS APPLIED TO VOLUME AS A MEASURED DEVIATION -- see market_response.py. The
+        # note below is kept because it records why V1 first applied nothing, and why that was also
+        # wrong.
+        #
+        # SUPERSEDED 2026-09-28. The claim "this repository holds no line history" was false: 27
+        # complete seasons of closing lines sit in nfl/vintage/schedules, which I failed to search
+        # before filing OUT-036. The response is now measured over 2,782 club-games and applied to
+        # the DEVIATION of this week's market from the market the club's baseline was measured
+        # under, so an average line moves nothing and the market is not counted twice.
+        # V0 APPLIED THE MARKET TO THE LEVEL, and it counted it twice. V0 multiplied every club's
         # plays, attempts, carries and targets by implied_total / league_mean, so Buffalo at a
         # 28.75 implied total had its pass attempts lifted from a measured 31.6 to 41.5 -- a
         # claim that a club expected to score thirty-one per cent more runs thirty-one per cent
@@ -171,6 +189,8 @@ def team_volume(panel, env):
         # figure V0 would have used is recorded alongside it for comparison.
         scale = 1.0
         would_have = (imp / league_mean) if (imp and league_mean) else None
+        cm = (market_response.club_market(_MR['team_game'], club, FORECAST_SEASON, SLATE_WEEK)
+              if _MR else None)
         row = {'state': 'OK', 'weeks_observed_2026': n_cur,
                'weeks_observed_prior_season': len(prv),
                'implied_total': imp,
@@ -181,9 +201,18 @@ def team_volume(panel, env):
                                  'team_volume(). Coefficient unmeasurable here: OUT-036.',
                'blend_weights': {'current_season_games': n_cur,
                                  'prior_season_pseudo_games': TEAM_VOLUME_PRIOR_GAMES}}
+        mkt_acct = {}
         for f in FIELDS:
             row[f'{f}_pg'] = round(blend[f], 4) if blend[f] is not None else None
-            row[f'proj_{f}'] = (round(blend[f] * scale, 4) if blend[f] is not None else None)
+            base = (blend[f] * scale) if blend[f] is not None else None
+            if _MR and base is not None:
+                adj, acct = market_response.adjust(f, base, cm, _MR['coef'])
+                row[f'proj_{f}'] = round(adj, 4)
+                mkt_acct[f] = acct
+            else:
+                row[f'proj_{f}'] = round(base, 4) if base is not None else None
+        row['market_response'] = mkt_acct
+        row['market_response_state'] = ('APPLIED' if mkt_acct else 'NOT_AVAILABLE')
         out[club] = row
     return out, implied, league_mean
 
@@ -839,6 +868,9 @@ def build():
     pto = rates_art['points_to_td']
     pass_share = (rates_art['pass_rush_split'] or {}).get('mean_pass_share_of_offensive_td')
 
+    global _MR
+    if _MR is None:
+        _MR = market_response.load()
     po = player_prior.load_panel()
     if po.state.name != 'PASS':
         return po
