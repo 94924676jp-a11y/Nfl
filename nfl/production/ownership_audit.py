@@ -454,6 +454,176 @@ def _files():
     return out
 
 
+
+# THE GATE FIRED TWENTY-THREE TIMES AT ONCE, 2026-09-28, and that is what a
+# reachability audit looks like when the adjustment FAMILIES grow faster than the
+# readings. pace_v1, game_environment_v1, score_state_v1, weather_v1 and
+# ol_pass_protection_v1 matched twelve modules between them. Every one was read
+# and none applies an adjustment. Grouping the evidence BY FILE below is not a
+# blanket classification: the reading is genuinely a property of the file -- what
+# era.py is, is a table -- and where two adjustments hit one file for different
+# reasons they get different entries and different evidence, as slate_state.py
+# does.
+_READ = '2026-09-28'
+
+# era.py: a coverage DECLARATION table. It imports only __future__, holds
+# CLAIMED_WINDOWS (:44) mapping a statistic to (first_season, last_season,
+# source, note), ERA_PROXIES (:126), and three functions -- available() (:150),
+# era_weight() (:174) and summary() (:190). Every matched token is a KEY in that
+# table: weather_temp :55, weather_wind :58, roof :59, surface :60,
+# game_script :93, pace :94, pressure_time_to_throw :114. era_weight computes a
+# recency weight on SEASON DISTANCE alone and reads none of them. Nothing here
+# estimates, multiplies or adjusts anything.
+for _aid in ('pace_v1', 'game_environment_v1', 'score_state_v1', 'weather_v1',
+             'ol_pass_protection_v1'):
+    DISPOSITIONS[(_aid, 'nfl/warehouse/era.py')] = {
+        'verdict': 'DECLARATION_NOT_APPLICATION',
+        'evidence': ('the token is a KEY in the era-availability table, saying which seasons the '
+                     'statistic can mean anything in. The module imports only __future__, holds no '
+                     'frame and computes no estimate; era_weight() is a function of season '
+                     'distance and reads none of these fields.'),
+        'read_on': _READ,
+    }
+
+# team_game.py: the warehouse BUILDER for completed club-games. seconds_per_play
+# is computed at :221 and game_script at :224 from play-by-play; roof, surface,
+# temp and wind are copied from the schedules source at :285-:287; and :294-:299
+# derives temp_semantics so that a null is INDOORS_NO_TEMPERATURE_APPLIES rather
+# than OUTDOORS_TEMPERATURE_NOT_CAPTURED rather than a zero. These are REALISED
+# values for games already played. That is exactly why the pregame path refuses
+# to read them -- see slate_state.py below -- and the leakage guard lives there,
+# not here. A warehouse recording what happened is not an adjustment applied to a
+# forecast.
+for _aid in ('pace_v1', 'game_environment_v1', 'score_state_v1', 'weather_v1'):
+    DISPOSITIONS[(_aid, 'nfl/warehouse/team_game.py')] = {
+        'verdict': 'MEASURED_REALISED_NOT_APPLIED',
+        'evidence': ('a completed-game fact measured into the warehouse table, not a coefficient '
+                     'applied to a projection. seconds_per_play :221 and game_script :224 are '
+                     'computed from play-by-play; roof/surface/temp/wind are copied from schedules '
+                     'at :285-:287; temp_semantics at :294-:299 keeps INDOORS distinct from '
+                     'UNCAPTURED rather than coercing either to zero. Being realised is why the '
+                     'pregame state refuses them.'),
+        'read_on': _READ,
+    }
+
+# coverage.py: the completeness CENSUS. :41-:42 lists the field names whose
+# completeness is counted, and :52-:54 is an alias map from census name to
+# warehouse column (weather_temp -> temp, pace -> seconds_per_play). Counting how
+# complete a column is does not apply it.
+for _aid in ('pace_v1', 'game_environment_v1', 'weather_v1'):
+    DISPOSITIONS[(_aid, 'nfl/warehouse/coverage.py')] = {
+        'verdict': 'DECLARATION_NOT_APPLICATION',
+        'evidence': ('the token is a field NAME in the completeness census at :41-:42, or a key in '
+                     'the census-to-column alias map at :52-:54. The module measures how complete '
+                     'a column is per season and source; it applies nothing to any projection.'),
+        'read_on': _READ,
+    }
+
+DISPOSITIONS[('pace_v1', 'nfl/warehouse/market_volume.py')] = {
+    'verdict': 'CARRIED_NOT_CONSUMED',
+    'evidence': ('seconds_per_play occurs exactly once, at :40, inside the tuple of TEAM_GAME '
+                 'columns the module reads. Grep for it and for any pace variable returns that one '
+                 'line: no later line reads it, no arithmetic uses it, and it reaches no estimate. '
+                 'It is carried in the column list and dropped.'),
+    'read_on': _READ,
+}
+
+DISPOSITIONS[('pace_v1', 'nfl/production/dependence.py')] = {
+    'verdict': 'DECLARATION_NOT_APPLICATION',
+    'evidence': ('game_pace at :82 is a member of REQUIRED_SHARED_LATENTS (:81), the named set of '
+                 'latent causes a simulated world must SHARE before a shared-world declaration is '
+                 'earned. It is a condition on a CLAIM, inspected by the SimulationCalibration '
+                 'slice, and the opposite of an applied coefficient: naming pace as something that '
+                 'must be shared does not set a pace anywhere.'),
+    'read_on': _READ,
+}
+
+DISPOSITIONS[('game_environment_v1', 'nfl/dfs/history/capability.py')] = {
+    'verdict': 'HOMONYM_NOT_APPLICATION',
+    'evidence': ('`surface` at :51 is a field of the SourceCapability dataclass, beside `provider` '
+                 'and `sport`, and it means a DATA PROVIDER\'S API SURFACE. :71 returns it in '
+                 'as_dict alongside provider and spec_version. It has nothing to do with a playing '
+                 'surface, and the module describes what a source claims to offer -- it holds no '
+                 'game row.'),
+    'read_on': _READ,
+}
+
+# calibration.py: weather is read AFTER the prediction exists, to LABEL it.
+# :143-:155 store temp, wind and roof on the evaluation record, and :219-:231
+# turn them into a slice label -- INDOORS, WINDY_15_PLUS, COLD_35_OR_BELOW,
+# OUTDOORS_MILD, OUTDOORS_UNMEASURED. The prediction itself comes from
+# F.project_week(panel, season_pos, season, week, priors, depth, groups, bonus,
+# ip, 1.0), whose signature takes no weather at all, so nothing here can reach a
+# projection. Slicing results by conditions the model never saw is the point of a
+# slice.
+for _aid in ('game_environment_v1', 'weather_v1'):
+    DISPOSITIONS[(_aid, 'nfl/eval/calibration.py')] = {
+        'verdict': 'EVALUATION_SLICE_NOT_A_FEATURE',
+        'evidence': ('read after the prediction exists, only to label it. :143-:155 attach temp, '
+                     'wind and roof to the evaluation record and :219-:231 bucket them into a '
+                     'weather slice. The projection is produced by project_week(), whose signature '
+                     'accepts no weather argument, so no value here can enter a forecast.'),
+        'read_on': _READ,
+    }
+
+DISPOSITIONS[('game_environment_v1', 'nfl/production/state/slate_state.py')] = {
+    'verdict': 'CARRIED_NOT_CONSUMED',
+    'evidence': ('roof and surface are declared AXES of the pregame state, set at :395-:396 by '
+                 '_declared() from a lawful schedules capture and returned in as_dict at :236. '
+                 'They are venue facts known before kickoff and are carried as state, not applied: '
+                 'and when no lawful capture exists, :375-:376 refuses outright -- "kickoff, venue, '
+                 'roof and surface cannot be stated. Inventing them is the defect."'),
+    'read_on': _READ,
+}
+
+DISPOSITIONS[('weather_v1', 'nfl/production/state/slate_state.py')] = {
+    'verdict': 'REFUSAL_NOT_APPLICATION',
+    'evidence': ('the matched text IS the refusal. weather is set by _not_supplied() at :397-:398, '
+                 'and the module docstring at :32 states why: temp and wind in the schedules '
+                 'vintage are REALISED weather, filled in for a completed game, so a pregame state '
+                 'that read them would carry the outcome of the thing it is forecasting. No '
+                 'pregame forecast source is wired in, so weather is UNAVAILABLE by refusal rather '
+                 'than by absence. This site is the guard, not a use.'),
+    'read_on': _READ,
+}
+
+DISPOSITIONS[('game_environment_v1', 'nfl/truth/game_truth.py')] = {
+    'verdict': 'CARRIED_NOT_CONSUMED',
+    'evidence': ('roof (:247) and surface (:248) are copied into the game-truth record beside '
+                 'game_id, teams and kickoff_local as venue metadata. The record is a description '
+                 'of one game; the module computes no projection and no later line reads either '
+                 'field. Same shape as the seal.py disposition above.'),
+    'read_on': _READ,
+}
+
+DISPOSITIONS[('score_state_v1', 'nfl/postgame/run_week2.py')] = {
+    'verdict': 'REFUSAL_NOT_APPLICATION',
+    'evidence': ('the only occurrence, at :94, is the literal value '
+                 '"game_script": "NOT_TESTED_NO_IN_GAME_STATE_INGESTED". The token appears in order '
+                 'to record that in-game state was never ingested and so the family was not '
+                 'tested. A declared absence is the opposite of an application.'),
+    'read_on': _READ,
+}
+
+DISPOSITIONS[('weather_v1', 'nfl/production/board/player_board.py')] = {
+    'verdict': 'DECLARATION_NOT_APPLICATION',
+    'evidence': ('WEATHER at :79 is one member of CAUSES (:75), the closed taxonomy of reasons a '
+                 'projection MOVEMENT may be attributed to, ending in UNEXPLAINED -- which the '
+                 'comment at :73-:74 calls a finding. It labels why a number changed between '
+                 'boards; it does not change one.'),
+    'read_on': _READ,
+}
+
+DISPOSITIONS[('weather_v1', 'nfl/production/workflow/stages.py')] = {
+    'verdict': 'DECLARATION_NOT_APPLICATION',
+    'evidence': ('every occurrence is inside a Stage record\'s `optional_sources` tuple -- the '
+                 'fifth field of the dataclass at :36-:46, after required_sources. It declares '
+                 'that a stage would use weather if it had it. The module holds frozen stage '
+                 'descriptions and computes nothing; no weather value is fetched, stored or '
+                 'multiplied here.'),
+    'read_on': _READ,
+}
+
 def audit() -> Outcome:
     files = _files()
     if not files:
