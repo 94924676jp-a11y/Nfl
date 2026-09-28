@@ -54,8 +54,8 @@ _REPO = pathlib.Path(__file__).resolve().parents[2]
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
-from nfl.sim import dst as dst_mod  # noqa: E402
-from sportsplatform.governance.outcome import Cause, Outcome  # noqa: E402
+from nfl.sim import dst as dst_mod, share_model as share_mod  # noqa: E402
+from sportsplatform.governance.outcome import Cause, Outcome, State  # noqa: E402
 
 SS = _REPO / 'nfl/sim/SHARED_STATE.json'
 PG = _REPO / 'nfl/warehouse/PLAYER_GAME.json'
@@ -153,6 +153,7 @@ class Model:
         # yards-per-target variance is, so drawing one club efficiency and splitting a fixed club
         # yardage had the decomposition backwards and made teammates zero-sum.
         self.usage = None
+        self.share = None
 
     def attach_concentration(self, vc: dict):
         self.conc_rec = vc['receiving']['concentration']
@@ -201,6 +202,9 @@ class Model:
             return d
         m.dst = d.value
         m.attach_usage(json.loads(USAGE.read_text()) if USAGE.exists() else None)
+        sm = share_mod.ShareModel.load()
+        if sm.state is State.PASS:
+            m.share = sm.value
         return Outcome.ok('MODEL_LOADED', value=m)
 
 
@@ -249,10 +253,13 @@ def _dirichlet_split(total: float, weights, rng, conc: float) -> list[float]:
 
 CLUB_TOTAL_IMPOSED = 'CLUB_TOTAL_IMPOSED'
 USAGE_FIRST = 'USAGE_FIRST'
+DIRICHLET = 'DIRICHLET'
+LOGISTIC_NORMAL = 'LOGISTIC_NORMAL'
 
 
 def simulate_game(model: Model, game, n_sims: int = 2000, seed: int = 23,
-                  allocation_mode: str = CLUB_TOTAL_IMPOSED) -> Outcome:
+                  allocation_mode: str = CLUB_TOTAL_IMPOSED,
+                  share_family: str = DIRICHLET) -> Outcome:
     """Simulate one game n_sims times and return per-player DK point draws.
 
     `game` needs: total_line, home_spread, and for each of two clubs a list of players with
@@ -338,10 +345,21 @@ def simulate_game(model: Model, game, n_sims: int = 2000, seed: int = 23,
             # away: renormalising would hand a backup's carries to the starter and inflate every
             # projection in the pool. The bucket is measured and reported, and it is also what
             # keeps the reconciliation exact when a club has, say, no ranked back at all.
-            def alloc(total, weights, conc=None):
+            def alloc(total, weights, conc=None, shock=None, slots=None):
                 ghost = max(0.0, 1.0 - sum(weights))
                 w = list(weights) + [ghost]
-                if conc:
+                if share_family == LOGISTIC_NORMAL and shock is not None:
+                    # LOGISTIC-NORMAL. One correlated multiplicative shock per depth SLOT, shared by
+                    # every player in that slot, then renormalised by the multinomial. The softmax
+                    # keeps the shares summing to one while the covariance is unrestricted, so
+                    # teammates can co-move -- which a Dirichlet cannot express at any concentration.
+                    sl = list(slots or []) + ['OTHER']
+                    w = [x * shock.get(sl[i] if i < len(sl) else 'OTHER', 1.0)
+                         for i, x in enumerate(w)]
+                    tot = sum(w)
+                    if tot > 0:
+                        w = [x / tot for x in w]
+                elif conc:
                     # DIRICHLET-MULTINOMIAL, not multinomial. A plain multinomial over pregame
                     # shares admits sampling noise only; real shares move 1.21x that for targets
                     # and 2.78x for carries. The concentration is measured, so this adds the
@@ -353,12 +371,19 @@ def simulate_game(model: Model, game, n_sims: int = 2000, seed: int = 23,
                 got = _multinomial(total, w, rng)
                 return got[:-1], got[-1]
 
+            tgt_shock = car_shock = None
+            if share_family == LOGISTIC_NORMAL and model.share is not None:
+                tgt_shock = model.share.shock('targets', rng)
+                car_shock = model.share.shock('carries', rng)
             qb_att, qb_ghost = alloc(pa, [ps[i].get('pass_att_share', 0.0) for i in qb_ix],
-                                    model.share_conc_tgt)
+                                     model.share_conc_tgt, tgt_shock,
+                                     [ps[i].get('slot', 'OTHER') for i in qb_ix])
             tgt_r, tgt_ghost = alloc(pa, [max(0.0, ps[i]['target_share']) for i in rec_ix],
-                                     model.share_conc_tgt)
+                                     model.share_conc_tgt, tgt_shock,
+                                     [ps[i].get('slot', 'OTHER') for i in rec_ix])
             car_all, car_ghost = alloc(ra, [max(0.0, p['carry_share']) for p in ps],
-                                       model.share_conc_car)
+                                       model.share_conc_car, car_shock,
+                                       [p.get('slot', 'OTHER') for p in ps])
             if (sum(qb_att) + qb_ghost != pa or sum(tgt_r) + tgt_ghost != pa
                     or sum(car_all) + car_ghost != ra):
                 violations.append(('VOLUME', si))
@@ -472,6 +497,7 @@ def simulate_game(model: Model, game, n_sims: int = 2000, seed: int = 23,
                        'defensive and return touchdowns, so a defence\'s score is a FLOOR. See '
                        'DST_MODEL.EXCLUDED.'),
         'allocation_mode': allocation_mode,
+        'share_family': share_family,
         'ALLOCATION_MODE_MEANING': {
             CLUB_TOTAL_IMPOSED: ('club yardage drawn first and split across players, which makes '
                                  'teammates zero-sum by construction'),

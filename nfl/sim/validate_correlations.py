@@ -31,7 +31,7 @@ _REPO = pathlib.Path(__file__).resolve().parents[2]
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
-from nfl.sim import game as sim_game  # noqa: E402
+from nfl.sim import game as sim_game, share_model as share_mod  # noqa: E402
 from sportsplatform.governance.outcome import Cause, Outcome  # noqa: E402
 
 PG = _REPO / 'nfl/warehouse/PLAYER_GAME.json'
@@ -178,7 +178,8 @@ def diagnose(comparison) -> dict:
 
 
 def build(n_games: int = N_GAMES, n_sims: int = N_SIMS, seed: int = 31,
-          allocation_mode: str = sim_game.CLUB_TOTAL_IMPOSED) -> Outcome:
+          allocation_mode: str = sim_game.CLUB_TOTAL_IMPOSED,
+          share_family: str = sim_game.DIRICHLET) -> Outcome:
     for f in (PG, RH, TG, PC):
         if not f.exists():
             return Outcome.blocked('VALIDATION_INPUT_ABSENT', f'{f.name} missing',
@@ -301,6 +302,9 @@ def build(n_games: int = N_GAMES, n_sims: int = N_SIMS, seed: int = 31,
                     'pass_td_share': p['share'] if pos in ('WR', 'TE', 'RB') else 0.0,
                     'rush_td_share': p['share'] if pos == 'RB' else 0.0,
                     'catch_rate': catch_rate.get(pos, 0.65),
+                    'slot': (f'{pos}{p["rank"]}'
+                             if p.get('rank') and f'{pos}{p["rank"]}' in
+                             (share_mod.TARGET_SLOTS + share_mod.CARRY_SLOTS) else 'OTHER'),
                 })
             if not any(p['position'] == 'QB' for p in players):
                 players = []
@@ -308,7 +312,8 @@ def build(n_games: int = N_GAMES, n_sims: int = N_SIMS, seed: int = 31,
         if any(not c['players'] for c in spec['clubs']):
             continue
         o = sim_game.simulate_game(model, spec, n_sims=n_sims, seed=seed + gi,
-                                   allocation_mode=allocation_mode)
+                                   allocation_mode=allocation_mode,
+                                   share_family=share_family)
         if o.state.value != 'PASS':
             n_failed += 1
             if n_failed <= 3:
@@ -393,7 +398,7 @@ def build(n_games: int = N_GAMES, n_sims: int = N_SIMS, seed: int = 31,
         'QUESTION': ('does drawing both clubs from one football world reproduce the same-game '
                      'correlations measured from history, with nothing added by hand?'),
         'TOLERANCE_DECLARED_BEFORE_RUNNING': TOLERANCE,
-        'allocation_mode': allocation_mode,
+        'allocation_mode': allocation_mode, 'share_family': share_family,
         'ranked_group_share_scale_applied': group_scale,
         'WHY_SCALED': ('ROLE_HISTORY share_of_club is a share of the ranked group for carries and '
                        'targets. Unscaled it gave two backs 97% of the club carry pool.'),
@@ -418,8 +423,9 @@ if __name__ == '__main__':
     ng = int(sys.argv[1]) if len(sys.argv) > 1 else N_GAMES
     ns = int(sys.argv[2]) if len(sys.argv) > 2 else N_SIMS
     mode = sys.argv[3] if len(sys.argv) > 3 else sim_game.CLUB_TOTAL_IMPOSED
-    o = build(ng, ns, allocation_mode=mode)
-    OUT.with_name(f'SIM_VS_MEASURED_CORRELATION_{mode}.json').write_text(
+    fam = sys.argv[4] if len(sys.argv) > 4 else sim_game.DIRICHLET
+    o = build(ng, ns, allocation_mode=mode, share_family=fam)
+    OUT.with_name(f'SIM_VS_MEASURED_CORRELATION_{mode}_{fam}.json').write_text(
         json.dumps(o.value if o.value else o.evidence, indent=2, default=str))
     print(o.state.value, o.code)
     if o.state.value != 'PASS':

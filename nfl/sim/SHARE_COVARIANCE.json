@@ -1,0 +1,377 @@
+{
+  "ARTIFACT": "SHARE_COVARIANCE",
+  "FAMILY": "logistic-normal: s = softmax(log w + e), e ~ MVN(0, Sigma)",
+  "WHY_NOT_DIRICHLET": "a Dirichlet forces cov(s_i, s_j) negative for every pair, with only the magnitude free. Measured target shares co-move positively for receivers, so no concentration fits them.",
+  "CHART": "covariance estimated in centred-log-ratio space, the standard chart for compositional data, then applied as a multiplicative slot shock",
+  "RANKS_ARE_PREGAME": "slots come from the role table, never from the stat line measured",
+  "fields": {
+    "targets": {
+      "state": "MEASURED",
+      "n_compositions": 2650,
+      "slots": [
+        "WR1",
+        "WR2",
+        "WR3",
+        "TE1",
+        "TE2",
+        "RB1",
+        "RB2",
+        "OTHER"
+      ],
+      "clr_mean": [
+        1.09178,
+        0.24162,
+        -0.63234,
+        0.04773,
+        -0.89387,
+        -0.17516,
+        -0.9288,
+        1.24903
+      ],
+      "clr_covariance": [
+        [
+          0.405418,
+          0.221394,
+          0.043185,
+          -0.264827,
+          -0.102142,
+          -0.083835,
+          -0.046337,
+          -0.049806
+        ],
+        [
+          0.221394,
+          0.429317,
+          0.278873,
+          -0.253561,
+          -0.121538,
+          -0.13092,
+          -0.101487,
+          -0.3256
+        ],
+        [
+          0.043185,
+          0.278873,
+          0.012384,
+          -0.181793,
+          -0.096888,
+          -0.07059,
+          -0.049853,
+          -0.257657
+        ],
+        [
+          -0.264827,
+          -0.253561,
+          -0.181793,
+          0.979724,
+          0.284222,
+          -0.156429,
+          -0.122724,
+          -0.282572
+        ],
+        [
+          -0.102142,
+          -0.121538,
+          -0.096888,
+          0.284222,
+          1e-06,
+          -0.095916,
+          -0.029961,
+          -0.035174
+        ],
+        [
+          -0.083835,
+          -0.13092,
+          -0.07059,
+          -0.156429,
+          -0.095916,
+          0.475268,
+          0.040358,
+          -0.083038
+        ],
+        [
+          -0.046337,
+          -0.101487,
+          -0.049853,
+          -0.122724,
+          -0.029961,
+          0.040358,
+          1e-06,
+          0.010755
+        ],
+        [
+          -0.049806,
+          -0.3256,
+          -0.257657,
+          -0.282572,
+          -0.035174,
+          -0.083038,
+          0.010755,
+          1.176982
+        ]
+      ],
+      "clr_correlation": [
+        [
+          1.0,
+          0.5307,
+          0.6095,
+          -0.4202,
+          -160.4179,
+          -0.191,
+          -72.7743,
+          -0.0721
+        ],
+        [
+          0.5307,
+          1.0,
+          3.8246,
+          -0.391,
+          -185.4917,
+          -0.2898,
+          -154.8886,
+          -0.458
+        ],
+        [
+          0.6095,
+          3.8246,
+          1.0,
+          -1.6504,
+          -870.6359,
+          -0.9201,
+          -447.9858,
+          -2.1342
+        ],
+        [
+          -0.4202,
+          -0.391,
+          -1.6504,
+          1.0,
+          287.1476,
+          -0.2292,
+          -123.9878,
+          -0.2631
+        ],
+        [
+          -160.4179,
+          -185.4917,
+          -870.6359,
+          287.1476,
+          1.0,
+          -139.1297,
+          -29960.7436,
+          -32.4218
+        ],
+        [
+          -0.191,
+          -0.2898,
+          -0.9201,
+          -0.2292,
+          -139.1297,
+          1.0,
+          58.5411,
+          -0.111
+        ],
+        [
+          -72.7743,
+          -154.8886,
+          -447.9858,
+          -123.9878,
+          -29960.7436,
+          58.5411,
+          1.0,
+          9.9131
+        ],
+        [
+          -0.0721,
+          -0.458,
+          -2.1342,
+          -0.2631,
+          -32.4218,
+          -0.111,
+          9.9131,
+          1.0
+        ]
+      ],
+      "positive_pairs": [
+        [
+          "TE1",
+          "TE2",
+          287.1476
+        ],
+        [
+          "RB1",
+          "RB2",
+          58.5411
+        ],
+        [
+          "RB2",
+          "OTHER",
+          9.9131
+        ],
+        [
+          "WR2",
+          "WR3",
+          3.8246
+        ],
+        [
+          "WR1",
+          "WR3",
+          0.6095
+        ],
+        [
+          "WR1",
+          "WR2",
+          0.5307
+        ]
+      ],
+      "n_positive_off_diagonal": 6,
+      "n_off_diagonal": 28,
+      "sampling_noise_deconvolved": true,
+      "n_diagonals_floored_after_deconvolution": 2,
+      "identified_slots": [
+        "WR1",
+        "WR2",
+        "TE1",
+        "RB1",
+        "OTHER"
+      ],
+      "unidentified_slots": [
+        "WR3",
+        "TE2",
+        "RB2"
+      ],
+      "IDENTIFIABILITY_RULE": "a slot is modelled only where its observed CLR variance exceeds 2.0x the multinomial sampling variance. Below that the latent covariance is not identified at this sample and the slot is left to the unmodelled remainder.",
+      "DIRICHLET_WOULD_FORCE": "every one of these off-diagonals to be negative, so the positive pairs listed above are not representable by any concentration"
+    },
+    "carries": {
+      "state": "MEASURED",
+      "n_compositions": 2236,
+      "slots": [
+        "RB1",
+        "RB2",
+        "RB3",
+        "QB1",
+        "OTHER"
+      ],
+      "clr_mean": [
+        1.03702,
+        -0.53264,
+        -1.32958,
+        -0.16681,
+        0.99201
+      ],
+      "clr_covariance": [
+        [
+          1.412544,
+          0.27265,
+          -0.155019,
+          -0.334517,
+          -1.098931
+        ],
+        [
+          0.27265,
+          0.565498,
+          0.025131,
+          -0.273584,
+          -0.786516
+        ],
+        [
+          -0.155019,
+          0.025131,
+          1e-06,
+          -0.072004,
+          0.138833
+        ],
+        [
+          -0.334517,
+          -0.273584,
+          -0.072004,
+          0.49198,
+          0.038184
+        ],
+        [
+          -1.098931,
+          -0.786516,
+          0.138833,
+          0.038184,
+          1.798285
+        ]
+      ],
+      "clr_correlation": [
+        [
+          1.0,
+          0.3051,
+          -130.432,
+          -0.4013,
+          -0.6895
+        ],
+        [
+          0.3051,
+          1.0,
+          33.4192,
+          -0.5187,
+          -0.7799
+        ],
+        [
+          -130.432,
+          33.4192,
+          1.0,
+          -102.655,
+          103.5291
+        ],
+        [
+          -0.4013,
+          -0.5187,
+          -102.655,
+          1.0,
+          0.0406
+        ],
+        [
+          -0.6895,
+          -0.7799,
+          103.5291,
+          0.0406,
+          1.0
+        ]
+      ],
+      "positive_pairs": [
+        [
+          "RB3",
+          "OTHER",
+          103.5291
+        ],
+        [
+          "RB2",
+          "RB3",
+          33.4192
+        ],
+        [
+          "RB1",
+          "RB2",
+          0.3051
+        ],
+        [
+          "QB1",
+          "OTHER",
+          0.0406
+        ]
+      ],
+      "n_positive_off_diagonal": 4,
+      "n_off_diagonal": 10,
+      "sampling_noise_deconvolved": true,
+      "n_diagonals_floored_after_deconvolution": 1,
+      "identified_slots": [
+        "RB1",
+        "RB2",
+        "QB1",
+        "OTHER"
+      ],
+      "unidentified_slots": [
+        "RB3"
+      ],
+      "IDENTIFIABILITY_RULE": "a slot is modelled only where its observed CLR variance exceeds 2.0x the multinomial sampling variance. Below that the latent covariance is not identified at this sample and the slot is left to the unmodelled remainder.",
+      "DIRICHLET_WOULD_FORCE": "every one of these off-diagonals to be negative, so the positive pairs listed above are not representable by any concentration"
+    }
+  },
+  "refused": {}
+}

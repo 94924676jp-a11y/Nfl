@@ -2,29 +2,29 @@
   "ARTIFACT": "SIM_VS_MEASURED_CORRELATION",
   "DIAGNOSIS": {
     "n_pairs": 16,
-    "n_missed": 8,
+    "n_missed": 5,
     "pairs_involving_the_lead_back": {
       "n": 7,
-      "n_missed": 5,
-      "mean_signed_gap": -0.0178
+      "n_missed": 3,
+      "mean_signed_gap": 0.0621
     },
     "pairs_not_involving_a_back": {
       "n": 9,
-      "n_missed": 3,
-      "mean_signed_gap": -0.0797
+      "n_missed": 2,
+      "mean_signed_gap": -0.0569
     },
     "quarterback_to_his_receivers": {
       "n": 5,
-      "n_missed": 2,
-      "mean_signed_gap": -0.0966,
+      "n_missed": 1,
+      "mean_signed_gap": -0.0716,
       "reading": "slightly UNDER-correlated, the opposite direction to everything else"
     },
     "same_club_pairs_without_the_quarterback": {
       "n": 5,
-      "mean_signed_gap": -0.1367,
+      "mean_signed_gap": -0.0588,
       "reading": "OVER-correlated"
     },
-    "n_sign_disagreements": 3,
+    "n_sign_disagreements": 5,
     "HYPOTHESIS_LEDGER": [
       {
         "hypothesis": "the yards-share Dirichlet concentration (invented at 12.0) was too high, pinning players to the club total",
@@ -66,7 +66,7 @@
   "QUESTION": "does drawing both clubs from one football world reproduce the same-game correlations measured from history, with nothing added by hand?",
   "TOLERANCE_DECLARED_BEFORE_RUNNING": 0.1,
   "allocation_mode": "CLUB_TOTAL_IMPOSED",
-  "share_family": "LOGISTIC_NORMAL",
+  "share_family": "DIRICHLET",
   "ranked_group_share_scale_applied": {
     "RB": 0.5644,
     "WR": 0.4346,
@@ -77,16 +77,16 @@
   "n_games_replayed": 400,
   "n_games_available": 1384,
   "n_sims_per_game": 150,
-  "n_pairs_reproduced": 8,
-  "n_pairs_missed": 8,
+  "n_pairs_reproduced": 11,
+  "n_pairs_missed": 5,
   "n_pairs_not_comparable": 0,
   "comparison": {
     "same_club": {
       "QB1~WR1": {
         "measured_r": 0.4235,
-        "simulated_r": 0.2678,
-        "gap": -0.1557,
-        "within_tolerance": false,
+        "simulated_r": 0.3412,
+        "gap": -0.0823,
+        "within_tolerance": true,
         "inside_measured_ci": false,
         "measured_ci": {
           "lo": 0.3877,
@@ -98,8 +98,8 @@
       },
       "QB1~WR2": {
         "measured_r": 0.3355,
-        "simulated_r": 0.2899,
-        "gap": -0.0456,
+        "simulated_r": 0.2687,
+        "gap": -0.0668,
         "within_tolerance": true,
         "inside_measured_ci": false,
         "measured_ci": {
@@ -112,8 +112,8 @@
       },
       "QB1~WR3": {
         "measured_r": 0.2439,
-        "simulated_r": 0.1547,
-        "gap": -0.0892,
+        "simulated_r": 0.1815,
+        "gap": -0.0624,
         "within_tolerance": true,
         "inside_measured_ci": false,
         "measured_ci": {
@@ -126,8 +126,8 @@
       },
       "QB1~TE1": {
         "measured_r": 0.3723,
-        "simulated_r": 0.2357,
-        "gap": -0.1366,
+        "simulated_r": 0.2678,
+        "gap": -0.1045,
         "within_tolerance": false,
         "inside_measured_ci": false,
         "measured_ci": {
@@ -140,8 +140,8 @@
       },
       "QB1~RB1": {
         "measured_r": 0.0723,
-        "simulated_r": 0.2797,
-        "gap": 0.2074,
+        "simulated_r": 0.3735,
+        "gap": 0.3012,
         "within_tolerance": false,
         "inside_measured_ci": false,
         "measured_ci": {
@@ -154,9 +154,9 @@
       },
       "WR1~WR2": {
         "measured_r": 0.17,
-        "simulated_r": 0.1101,
-        "gap": -0.0599,
-        "within_tolerance": true,
+        "simulated_r": -0.0531,
+        "gap": -0.2231,
+        "within_tolerance": false,
         "inside_measured_ci": false,
         "measured_ci": {
           "lo": 0.125,
@@ -164,13 +164,13 @@
           "n_reps": 600
         },
         "n_sim_pairs": 77850,
-        "sign_agrees": true
+        "sign_agrees": false
       },
       "WR1~TE1": {
         "measured_r": -0.0128,
-        "simulated_r": -0.134,
-        "gap": -0.1212,
-        "within_tolerance": false,
+        "simulated_r": 0.0477,
+        "gap": 0.0605,
+        "within_tolerance": true,
         "inside_measured_ci": false,
         "measured_ci": {
           "lo": -0.0588,
@@ -178,13 +178,13 @@
           "n_reps": 600
         },
         "n_sim_pairs": 58350,
-        "sign_agrees": true
+        "sign_agrees": false
       },
       "RB1~WR1": {
         "measured_r": 0.0184,
-        "simulated_r": -0.1413,
-        "gap": -0.1597,
-        "within_tolerance": false,
+        "simulated_r": 0.1165,
+        "gap": 0.0981,
+        "within_tolerance": true,
         "inside_measured_ci": false,
         "measured_ci": {
           "lo": -0.0231,
@@ -192,12 +192,12 @@
           "n_reps": 600
         },
         "n_sim_pairs": 72600,
-        "sign_agrees": false
+        "sign_agrees": true
       },
       "RB1~RB2": {
         "measured_r": 0.0003,
-        "simulated_r": -0.222,
-        "gap": -0.2223,
+        "simulated_r": -0.31,
+        "gap": -0.3103,
         "within_tolerance": false,
         "inside_measured_ci": false,
         "measured_ci": {
@@ -210,9 +210,9 @@
       },
       "RB1~TE1": {
         "measured_r": -0.0355,
-        "simulated_r": -0.156,
-        "gap": -0.1205,
-        "within_tolerance": false,
+        "simulated_r": 0.0451,
+        "gap": 0.0806,
+        "within_tolerance": true,
         "inside_measured_ci": false,
         "measured_ci": {
           "lo": -0.0838,
@@ -220,14 +220,14 @@
           "n_reps": 600
         },
         "n_sim_pairs": 53250,
-        "sign_agrees": true
+        "sign_agrees": false
       }
     },
     "cross_club": {
       "QB1~QB1": {
         "measured_r": 0.1534,
-        "simulated_r": 0.0954,
-        "gap": -0.058,
+        "simulated_r": 0.1079,
+        "gap": -0.0455,
         "within_tolerance": true,
         "inside_measured_ci": true,
         "measured_ci": {
@@ -240,10 +240,10 @@
       },
       "QB1~WR1": {
         "measured_r": 0.108,
-        "simulated_r": 0.0521,
-        "gap": -0.0559,
+        "simulated_r": 0.0661,
+        "gap": -0.0419,
         "within_tolerance": true,
-        "inside_measured_ci": false,
+        "inside_measured_ci": true,
         "measured_ci": {
           "lo": 0.063,
           "hi": 0.1529,
@@ -254,8 +254,8 @@
       },
       "QB1~RB1": {
         "measured_r": 0.0801,
-        "simulated_r": 0.0713,
-        "gap": -0.0088,
+        "simulated_r": 0.0874,
+        "gap": 0.0073,
         "within_tolerance": true,
         "inside_measured_ci": true,
         "measured_ci": {
@@ -268,8 +268,8 @@
       },
       "WR1~WR1": {
         "measured_r": 0.0926,
-        "simulated_r": 0.0978,
-        "gap": 0.0052,
+        "simulated_r": 0.1468,
+        "gap": 0.0542,
         "within_tolerance": true,
         "inside_measured_ci": true,
         "measured_ci": {
@@ -282,8 +282,8 @@
       },
       "RB1~RB1": {
         "measured_r": -0.0506,
-        "simulated_r": 0.0917,
-        "gap": 0.1423,
+        "simulated_r": 0.1361,
+        "gap": 0.1867,
         "within_tolerance": false,
         "inside_measured_ci": false,
         "measured_ci": {
@@ -296,10 +296,10 @@
       },
       "RB1~WR1": {
         "measured_r": 0.0205,
-        "simulated_r": 0.0576,
-        "gap": 0.0371,
+        "simulated_r": 0.0914,
+        "gap": 0.0709,
         "within_tolerance": true,
-        "inside_measured_ci": true,
+        "inside_measured_ci": false,
         "measured_ci": {
           "lo": -0.0243,
           "hi": 0.0675,
