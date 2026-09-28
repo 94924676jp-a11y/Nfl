@@ -1,0 +1,170 @@
+{
+  "ARTIFACT": "RUN_SEAL",
+  "run_id": "DK_NFL_WEEK3_2026__20260928T200826Z__3c3581afcd54",
+  "slate": "DK_NFL_WEEK3_2026",
+  "sealed_at_utc": "2026-09-28T20:08:26.470190+00:00",
+  "code_version": "042fad488280d6529622bbe96fa6c07deaa01001+src1[7e56615898bf31e9]",
+  "code_version_short": "3c3581afcd54",
+  "CODE_VERSION_IS_HASHED_INTO_THE_ID": "the run id carries sha256(code_version)[:12], not a truncation of the version string. The commit sha alone is 40 characters, so a fixed-width truncation dropped the dirty-working-tree marker and let a dirty and a clean tree share an id.",
+  "code_identity": {
+    "contract_version": "nfl-code-identity-1",
+    "commit": "042fad488280d6529622bbe96fa6c07deaa01001",
+    "source_scope_sha256": "7e56615898bf31e9e2333013336aa5619120a9e6a9356747f55418432c2856e2",
+    "source_scope_clean": false,
+    "dirty_source_files": [
+      {
+        "path": "nfl/production/run_archive.py",
+        "state": "PRESENT",
+        "sha256": "3fb771a2b8dc5d3d8b71d2fa98ce1bc6c4eefbe9a5ba18db52c1694001925996",
+        "bytes": 14463
+      },
+      {
+        "path": "nfl/production/sunday.py",
+        "state": "PRESENT",
+        "sha256": "6ed043c7ae64fdcc0d8db9a4e64341cbb29f0c8865cc0107d37decffc2ca3a4f",
+        "bytes": 16537
+      }
+    ],
+    "n_dirty_source_files": 2,
+    "scope": {
+      "source_roots": [
+        "nfl/production",
+        "nfl/prospective",
+        "nfl/identity",
+        "nfl/product",
+        "nfl/schema",
+        "nfl/tools",
+        "sportsplatform"
+      ],
+      "source_suffixes": [
+        ".py"
+      ],
+      "excluded_subtrees": [
+        "nfl/prospective/q9shadow/dryrun",
+        "nfl/prospective/q9shadow/sealed",
+        "nfl/production/runs",
+        "nfl/derived",
+        "nfl/research",
+        "nfl/vintage"
+      ],
+      "generated_subtrees_excluded": [
+        "nfl/prospective/q9shadow/dryrun",
+        "nfl/prospective/q9shadow/sealed",
+        "nfl/production/runs",
+        "nfl/derived",
+        "nfl/research",
+        "nfl/vintage"
+      ],
+      "research_out_of_scope_why": "causal research modules are hashed by content into module_source_sha16, which is inside spec_sha256 (identity E), which is inside the fingerprint. Adding nfl/research/** to B would move every run id for thousands of non-causal files."
+    },
+    "runtime": {
+      "implementation": "CPython",
+      "python_version": "3.12.3",
+      "numpy_version": "2.5.3",
+      "platform": "Linux-6.18.44-fc-v37-x86_64-with-glibc2.39",
+      "thread_env": {
+        "OMP_NUM_THREADS": null,
+        "MKL_NUM_THREADS": null,
+        "OPENBLAS_NUM_THREADS": null,
+        "NUMEXPR_NUM_THREADS": null,
+        "VECLIB_MAXIMUM_THREADS": null
+      },
+      "hashed_keys": [
+        "implementation",
+        "python_version",
+        "numpy_version"
+      ],
+      "recorded_not_hashed_keys": [
+        "platform",
+        "thread_env"
+      ]
+    },
+    "runtime_token": "implementation=CPython+python_version=3.12.3+numpy_version=2.5.3",
+    "clean_source_sentinel_sha256": "44aa01d03783de1852e326ebdd9231dabf562583de6bdbd89c2a0d660b029a43",
+    "residual_gaps": [
+      "IMPORTED_RESEARCH_MODULES_NOT_IN_B: a research module that the sealing path imports but that is not one of the four in module_source_sha16 -- nfl.research.q7.panel and nfl.research.q8.audit are the live examples -- is in neither B nor E. Remedy: hash each imported module file by content into the candidate identity. That is candidate.py, not this module.",
+      "NON_PY_SOURCE_NOT_IN_B: a frozen parameter file under a source root (nfl/production/nonqb/frozen/*.json.gz) is not source by SOURCE_SUFFIXES. For Q9 these are covered by the candidate parameter hashes in E. Remedy elsewhere: seal the resolved path and sha256, which is WS18 F1.",
+      "THREAD_ENV_RECORDED_NOT_HASHED: promote to RUNTIME_HASHED_KEYS if and when a measured draw difference is attributed to thread count. Not before -- an unmeasured coefficient in an identity is a silent constant.",
+      "STAGING_NOT_DISTINGUISHED: B hashes worktree CONTENT, so a staged and an unstaged edit of identical bytes are the same identity. Deliberate: the bytes the interpreter reads are the bytes that matter."
+    ],
+    "code_version": "042fad488280d6529622bbe96fa6c07deaa01001+src1[7e56615898bf31e9]"
+  },
+  "note": "archived by sunday.run()",
+  "n_files": 9,
+  "files": {
+    "DK_WEEK3_PROJ_V1.json.gz": {
+      "source_path": "nfl/dfs/salaries/DK_WEEK3_PROJ_V1.json",
+      "sha256": "323bdf96598911b100e3040374d34cf75d4a0c49380b8488029b644f06f6d7af",
+      "SHA256_IS_OF": "the uncompressed content, so it compares to the live output path directly",
+      "bytes_uncompressed": 4306186,
+      "bytes_stored_gzip": 252205,
+      "required": true
+    },
+    "DK_WEEK3_PROJECTIONS_V1.csv.gz": {
+      "source_path": "nfl/dfs/salaries/DK_WEEK3_PROJECTIONS_V1.csv",
+      "sha256": "a27d9308fd17bc8ca59e039377c801c36562ed7653431d45f9f2606f83c9381e",
+      "SHA256_IS_OF": "the uncompressed content, so it compares to the live output path directly",
+      "bytes_uncompressed": 74260,
+      "bytes_stored_gzip": 16887,
+      "required": true
+    },
+    "DK_WEEK3_TODAY_STATE_POST_INACTIVES.json.gz": {
+      "source_path": "nfl/dfs/salaries/DK_WEEK3_TODAY_STATE_POST_INACTIVES.json",
+      "sha256": "9b412d49c773400bbd7b98c1af259f43495daa60db390c8a1dbc8705773d33fd",
+      "SHA256_IS_OF": "the uncompressed content, so it compares to the live output path directly",
+      "bytes_uncompressed": 3231919,
+      "bytes_stored_gzip": 143957,
+      "required": true
+    },
+    "FIELD_MODEL.json.gz": {
+      "source_path": "nfl/dfs/salaries/FIELD_MODEL.json",
+      "sha256": "828740006b1115a563a8102d6c31b0e35905d7b42e8b6a7ca54fd1769ef6010d",
+      "SHA256_IS_OF": "the uncompressed content, so it compares to the live output path directly",
+      "bytes_uncompressed": 36163,
+      "bytes_stored_gzip": 8045,
+      "required": true
+    },
+    "CONTEST_PORTFOLIO.json.gz": {
+      "source_path": "nfl/dfs/salaries/CONTEST_PORTFOLIO.json",
+      "sha256": "efb86f18d69afcf50bf8b9fe4c7ef669a670581128881fcd78d3357ec706afa6",
+      "SHA256_IS_OF": "the uncompressed content, so it compares to the live output path directly",
+      "bytes_uncompressed": 38619,
+      "bytes_stored_gzip": 4604,
+      "required": true
+    },
+    "READINESS.json.gz": {
+      "source_path": "nfl/production/READINESS.json",
+      "sha256": "06e7e27d7196a4e62623fcabeee97c816232a4c229412a3c049465ae9b26be3f",
+      "SHA256_IS_OF": "the uncompressed content, so it compares to the live output path directly",
+      "bytes_uncompressed": 15141,
+      "bytes_stored_gzip": 3119,
+      "required": true
+    },
+    "SUNDAY_RUN_REPORT.json.gz": {
+      "source_path": "nfl/production/SUNDAY_RUN_REPORT.json",
+      "sha256": "e90eff28b6dda462b9bcbdee86da73d28af87c7a891d277163b1a6de02bfb908",
+      "SHA256_IS_OF": "the uncompressed content, so it compares to the live output path directly",
+      "bytes_uncompressed": 3535,
+      "bytes_stored_gzip": 1565,
+      "required": true
+    },
+    "DK_WEEK3_PROJECTIONS_V1.xlsx.gz": {
+      "source_path": "nfl/dfs/salaries/DK_WEEK3_PROJECTIONS_V1.xlsx",
+      "sha256": "c9e51d6d724db5780000f5ea0d76064393a91c3406d65347c871c79102ef3aa3",
+      "SHA256_IS_OF": "the uncompressed content, so it compares to the live output path directly",
+      "bytes_uncompressed": 269124,
+      "bytes_stored_gzip": 254407,
+      "required": false
+    },
+    "DK_WEEK3_DELIVERABLE_SUPPLEMENT.xlsx.gz": {
+      "source_path": "nfl/dfs/salaries/DK_WEEK3_DELIVERABLE_SUPPLEMENT.xlsx",
+      "sha256": "71d9b44b0d5e8a76fee5d4d006f2ded9dfe5375b03f1a3fa706941db775c10b1",
+      "SHA256_IS_OF": "the uncompressed content, so it compares to the live output path directly",
+      "bytes_uncompressed": 9017,
+      "bytes_stored_gzip": 8366,
+      "required": false
+    }
+  },
+  "IMMUTABLE": "this directory is a record of one run. Nothing in it may be edited. A rerun produces a NEW run id; it does not update this one.",
+  "WHAT_A_SEAL_PROVES_AND_DOES_NOT": "it proves these bytes are the bytes this run produced, and that they have not moved since. It does NOT prove the run was correct, and it does NOT make the run reproducible on its own -- reproduction also needs the inputs, which the lineage block inside each artifact names."
+}

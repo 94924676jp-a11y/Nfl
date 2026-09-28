@@ -54,6 +54,10 @@ FIELD = OUT_DIR / 'FIELD_MODEL.json'
 PORT = OUT_DIR / 'CONTEST_PORTFOLIO.json'
 REPORT = _REPO / 'nfl/production/SUNDAY_RUN_REPORT.json'
 
+#: Names the sealed run directory. DECLARED here so a run can never be archived under a slate label
+#: guessed from a filename.
+SLATE_ID = 'DK_NFL_WEEK3_2026'
+
 REQUIRED_SHEETS = ('All Projections', 'QB', 'RB', 'WR', 'TE', 'DST', 'K', 'Model vs FC',
                    'Model vs Market', 'Availability', 'Projection Coverage')
 REQUIRED_COLUMNS = ('dk_id', 'name', 'position', 'team', 'salary', 'dk_points',
@@ -247,6 +251,17 @@ def run() -> Outcome:
                   'sheets': (sup.value or {}).get('n_sheets')})
 
     stale = [r['name'] for r in rd.value['stages'] if r['state'] != 'FRESH']
+
+    # ARCHIVE THE RUN INTO A SEALED DIRECTORY. The fixed output paths are overwritten by the next
+    # run, so without this the slate actually delivered on a given Sunday exists only until the next
+    # one. Archiving alters no number; it copies and seals. A failure here does NOT downgrade the
+    # deliverable -- the deliverable exists either way -- but it is recorded as its own step so an
+    # unarchived run is visible rather than assumed.
+    from nfl.production import run_archive
+    arch = run_archive.archive(SLATE_ID, note='archived by sunday.run()')
+    steps.append({'step': 'run_archive', 'state': arch.state.value, 'code': arch.code,
+                  'run_id': (arch.value or {}).get('run_id')})
+
     report = {
         'ARTIFACT': 'SUNDAY_RUN_REPORT',
         'RESULT': ('DELIVERED' if con.state.value == 'PASS' and sup.state.value == 'PASS'
@@ -254,6 +269,13 @@ def run() -> Outcome:
         'product_mode': mode,
         'stale_stages': stale,
         'steps': steps,
+        'run_archive': (arch.value if arch.state.value == 'PASS'
+                        else {'state': arch.state.value, 'code': arch.code,
+                              'detail': arch.detail}),
+        'ARCHIVE_MEANING': (
+            'the fixed output paths are the CURRENT run and the next run overwrites them. The '
+            'sealed directory named here is the immutable copy of THIS run. Reproduction needs its '
+            'inputs too, which the lineage block inside each artifact names.'),
         'output_contract': con.value if con.state.value == 'PASS' else con.evidence,
         'supplement': sup.value if sup.value else {},
         'elapsed_seconds': round(time.time() - t0, 2),

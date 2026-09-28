@@ -60,6 +60,20 @@ returns BEST_KNOWN or refuses; it never returns a proof it has not earned.
 
 ## What is genuinely blocked, and on what
 
+**Versioned run directories (owner item 6) — BUILT AND WIRED 2026-09-28.** Production wrote to fixed
+paths, so a rerun destroyed the slate actually delivered: every other guarantee here — seals, lineage,
+execution identity — described a run the next run overwrote. `nfl/production/run_archive.py` now copies
+each run's nine outputs into `nfl/production/runs/<slate>__<utc>__<12 hex of sha256(code_version)>/`
+and seals it with a SHA-256 per file. `sunday.run()` archives as a recorded step. Files are gzipped —
+7.7MB per run becomes about 700KB — and the digest is of the **uncompressed** content so a sealed
+digest compares directly against the live output path. Archiving over a sealed run is refused, a
+missing or empty required output refuses the whole archive, and a changed, removed, added or
+un-gunzippable file breaks the seal and is named. Live paths newer than the newest archive read
+`DEFERRED / CURRENT_PATHS_AHEAD_OF_ARCHIVE`, which is the normal state between a rebuild and the next
+archive and is now an outstanding debt rather than silently fine. Verified byte-identical: 457 rows
+before and after, 0 dk_points differing. The seal states what it does not prove — not correctness, and
+not reproducibility on its own, since reproduction also needs the inputs the lineage blocks name.
+
 **Hard Rock price history (OUT-043) — one board, one pass, so no closing line exists.** The book
 governance was already right: `capture/registry.py` declares the snapshot
 `DOWNSTREAM_COMPARATOR_ONLY` and not forecast-eligible, because a model that has seen the line is no
