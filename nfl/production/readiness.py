@@ -77,8 +77,14 @@ STAGES = [
      'max_age_hours': 24 * 7, 'tier': 'VALIDATION',
      'depends_on': ['sim.pair_correlations', 'sim.shared_state'],
      'why': 'must be re-run after any change to the football model'},
+    {'name': 'derived.role_state', 'path': 'nfl/derived/ROLE_STATE.json',
+     'max_age_hours': 36, 'tier': 'MODEL', 'depends_on': ['slate.post_inactives'],
+     'why': ('the role band every projection is built on. This is the artifact whose staleness was '
+             'invisible: the module was corrected and the projection kept producing the old numbers '
+             'because the artifact had not been rebuilt.')},
     {'name': 'slate.projection', 'path': 'nfl/dfs/salaries/DK_WEEK3_PROJ_V1.json',
-     'max_age_hours': 36, 'tier': 'SLATE', 'depends_on': ['warehouse.role_history'],
+     'max_age_hours': 36, 'tier': 'SLATE',
+     'depends_on': ['warehouse.role_history', 'derived.role_state'],
      'why': 'a projection for a specific slate; 36 hours spans Friday evening to Sunday morning'},
     {'name': 'slate.post_inactives', 'path':
      'nfl/dfs/salaries/DK_WEEK3_TODAY_STATE_POST_INACTIVES.json',
@@ -222,13 +228,31 @@ def build() -> Outcome:
     for r in stages:
         by_tier[r['tier']][r['state']] += 1
 
+    # LINEAGE, WHICH DECIDES STALENESS WHERE TIME CANNOT.
+    # An artifact rebuilt from unchanged inputs has a fresh timestamp and no new information; one
+    # built just before its builder was edited looks current and is not. Content hashes settle both.
+    from nfl.production import lineage
+    lin = lineage.audit([(r['name'], r['path']) for r in stages])
+    by_stage = {r['stage']: r for r in lin['rows']}
+    for row in stages:
+        l = by_stage.get(row['name'], {})
+        row['lineage_state'] = l.get('lineage_state')
+        row['lineage_moved'] = l.get('detail')
+        if row['lineage_state'] == lineage.STALE_DEPENDENCY:
+            row['state'] = lineage.STALE_DEPENDENCY
+
     sat = saturday_rule()
     slate_bad = [r['name'] for r in stages
                  if r['tier'] in ('SLATE', 'DECISION') and r['state'] != 'FRESH']
     model_bad = [r['name'] for r in stages
                  if r['tier'] in ('FOUNDATION', 'MODEL') and r['state'] in ('MISSING', 'EMPTY')]
 
-    if model_bad:
+    stale_dep = [r['name'] for r in stages if r.get('lineage_state') == lineage.STALE_DEPENDENCY]
+    if stale_dep:
+        mode, why = ('NOT_PRODUCTION_READY',
+                     f'these artifacts were built from content that no longer exists: {stale_dep}. '
+                     f'Nothing downstream of a stale dependency may report readiness.')
+    elif model_bad:
         mode, why = 'NOT_PRODUCTION_READY', f'foundation or model artifacts absent: {model_bad}'
     elif sat.state.value != 'PASS':
         mode, why = 'NOT_PRODUCTION_READY', f'the Saturday rule is not met: {sat.code}'
@@ -252,6 +276,13 @@ def build() -> Outcome:
         'stages': stages,
         'state_counts': dict(counts),
         'by_tier': {k: dict(v) for k, v in by_tier.items()},
+        'lineage': lin,
+        'stale_dependencies': stale_dep,
+        'LINEAGE_SEMANTICS': (
+            'staleness is decided by comparing the CONTENT HASHES of each artifact\'s inputs and of '
+            'its builder\'s source against what is on disk now. Editing a builder invalidates its '
+            'artifact immediately, without anyone remembering to bump a version. An UNSTAMPED '
+            'artifact is a recorded debt, not a pass.'),
         'saturday_rule': {'state': sat.state.value, 'code': sat.code,
                           **(sat.value if sat.value else sat.evidence)},
         'PRODUCT_MODE': mode,
@@ -285,6 +316,8 @@ if __name__ == '__main__':
         print(f"  {r['tier']:10s} {r['name']:28s} {r['state']:30s} age {age} "
               f"(tol {r['max_age_hours']}h){flag}")
     print(f"  state counts {v['state_counts']}")
+    print(f"  lineage {v['lineage']['counts']}"
+          + (f"  STALE DEPENDENCIES: {v['stale_dependencies']}" if v['stale_dependencies'] else ''))
     s = v['saturday_rule']
     print(f"  SATURDAY RULE: {s['state']} {s['code']}")
     print(f"  PRODUCT MODE: {v['PRODUCT_MODE']} -- {v['PRODUCT_MODE_BECAUSE']}")

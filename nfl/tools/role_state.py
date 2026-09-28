@@ -49,7 +49,7 @@ if str(_REPO) not in sys.path:
 
 from nfl.tools import availability as AV  # noqa: E402
 from nfl.tools import player_prior as PP  # noqa: E402
-from sportsplatform.governance.outcome import Outcome  # noqa: E402
+from sportsplatform.governance.outcome import Outcome, State  # noqa: E402
 
 SPEC_VERSION = 'role-state-1'
 POST = _REPO / 'nfl/dfs/salaries/DK_WEEK3_TODAY_STATE_POST_INACTIVES.json'
@@ -309,8 +309,29 @@ def run():
     }
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(art, indent=2) + '\n')
+    st = _stamp_output(OUT, POST)
+    if st.state is not State.PASS:
+        return Outcome.fail('ROLE_STATE_NOT_STAMPED',
+                            'the artifact was written but could not be stamped with its lineage',
+                            stamp_code=st.code, stamp_evidence=st.evidence,
+                            note=('an unstamped artifact cannot be proven current downstream, so '
+                                  'this fails rather than leaving a silent gap in the chain.'))
     return Outcome.ok('ROLE_STATE_ASSIGNED', art, f'{len(states)} players',
                       n=len(states), counts=dict(c), n_capped=len(capped))
+
+
+def _stamp_output(out_path, post_path):
+    """Record what produced this artifact, by content hash.
+
+    This is the artifact whose staleness was invisible: role_state.py was corrected and the
+    projection kept producing the old numbers because ROLE_STATE.json had not been rebuilt.
+    Stamping it means the next edit to this module invalidates the artifact immediately.
+    """
+    from nfl.production import lineage
+    return lineage.stamp(out_path,
+                         inputs=[post_path],
+                         code=[pathlib.Path(__file__).resolve(),
+                               pathlib.Path(__file__).resolve().with_name('player_prior.py')])
 
 
 def main() -> int:
