@@ -1,0 +1,164 @@
+{
+ "EXTERNAL_IS_COMPARISON_ONLY": "FantasyCruncher is a comparison baseline for the level tripwire. It is not an input to any projection and no V1 constant was selected by looking at it.",
+ "artifact": "DK_WEEK3_V1_ACCEPTANCE",
+ "guards": {
+  "cold_start_identity_resolved": {
+   "code": "IDENTITY_RESOLVED_BEFORE_PROJECTION",
+   "detail": "1 unresolved identity/identities, none projected",
+   "evidence": {},
+   "state": "PASS"
+  },
+  "established_role_not_shrunk_down": {
+   "code": "ESTABLISHED_ROLE_PRESERVED",
+   "detail": "no established role was projected below its observed share",
+   "evidence": {},
+   "state": "PASS"
+  },
+  "level_within_band": {
+   "code": "PROJECTION_LEVEL_OUT_OF_BAND",
+   "detail": "3 of 5 slices fall outside the declared band 0.85-1.15. Worst: top_50_by_external at ratio 0.8223 (ours 14.25 vs external 17.33 over 50 players). The flat all-players ratio is 0.8906 and would have hidden this -- read the slices.",
+   "evidence": {
+    "band": [
+     0.85,
+     1.15
+    ],
+    "flat_ratio": 0.8906,
+    "worst": {
+     "external_mean": 17.33,
+     "in_band": false,
+     "n": 50,
+     "ours_mean": 14.25,
+     "ratio": 0.8223,
+     "slice": "top_50_by_external"
+    }
+   },
+   "slices": [
+    {
+     "external_mean": 6.07,
+     "in_band": true,
+     "n": 253,
+     "ours_mean": 5.41,
+     "ratio": 0.8906,
+     "slice": "all_joined"
+    },
+    {
+     "external_mean": 13.31,
+     "in_band": false,
+     "n": 100,
+     "ours_mean": 10.95,
+     "ratio": 0.8228,
+     "slice": "top_100_by_external"
+    },
+    {
+     "external_mean": 17.33,
+     "in_band": false,
+     "n": 50,
+     "ours_mean": 14.25,
+     "ratio": 0.8223,
+     "slice": "top_50_by_external"
+    },
+    {
+     "external_mean": 8.69,
+     "in_band": true,
+     "n": 145,
+     "ours_mean": 7.63,
+     "ratio": 0.8785,
+     "slice": "salary_ge_4000"
+    },
+    {
+     "external_mean": 14.1,
+     "in_band": false,
+     "n": 77,
+     "ours_mean": 11.91,
+     "ratio": 0.8447,
+     "slice": "salary_ge_4500"
+    }
+   ],
+   "state": "FAIL"
+  },
+  "no_stale_replacement_role": {
+   "code": "STALE_REPLACEMENT_ROLE_RETAINED",
+   "detail": "2 non-starter(s) projected at or above 5.0 points while the predicted starter at their position is available. Current role state is not being consumed by the projection.",
+   "evidence": {
+    "n_violations": 2,
+    "violations": [
+     {
+      "club": "PIT",
+      "player": "Travis Homer",
+      "position": "RB",
+      "projected_points": 5.349,
+      "why": "outside the predicted starting group at a position whose predicted starter is available, yet projected at starter level"
+     },
+     {
+      "club": "DET",
+      "player": "Isiah Pacheco",
+      "position": "RB",
+      "projected_points": 5.1146,
+      "why": "outside the predicted starting group at a position whose predicted starter is available, yet projected at starter level"
+     }
+    ]
+   },
+   "state": "FAIL"
+  },
+  "positional_coverage": {
+   "code": "POSITION_HAS_NO_PROPRIETARY_COVERAGE",
+   "detail": "['DST'] are rosterable on this slate and carry zero proprietary projections. A position with no component is a hole in the product, not a slate property.",
+   "evidence": {
+    "counts": {
+     "QB": 59,
+     "RB": 103,
+     "TE": 97,
+     "WR": 165
+    },
+    "missing": [
+     "DST"
+    ]
+   },
+   "state": "FAIL"
+  },
+  "td_rate_not_raw_count": {
+   "code": "TD_RATE_HAS_A_FLOOR",
+   "detail": "no player with real volume carries a zero touchdown expectation",
+   "evidence": {},
+   "state": "PASS"
+  }
+ },
+ "identity_failures": 0,
+ "n_external_joined": 273,
+ "summary": {
+  "by_position": {
+   "QB": {
+    "mean": 5.343,
+    "n": 59
+   },
+   "RB": {
+    "mean": 3.813,
+    "n": 103
+   },
+   "TE": {
+    "mean": 2.377,
+    "n": 97
+   },
+   "WR": {
+    "mean": 3.432,
+    "n": 165
+   }
+  },
+  "mean_dk_points": 3.5491,
+  "median": 0.935,
+  "n_exactly_zero": 0,
+  "n_projected": 424,
+  "n_unavailable": 33,
+  "n_universe": 457,
+  "states": {
+   "NOT_PLAYING_REPORTED_INACTIVE": 12,
+   "PROJECTED": 415,
+   "PROJECTED_COLD_START": 9,
+   "PROJECTION_UNAVAILABLE_DST_NOT_IMPLEMENTED": 18,
+   "WITHHELD_IDENTITY_CONFLICT_OPEN": 3
+  },
+  "top_1": 22.169,
+  "top_100_mean": 11.454,
+  "top_10_mean": 18.826
+ }
+}

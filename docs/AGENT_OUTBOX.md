@@ -2975,3 +2975,29 @@ above -- do not spend a fetch on it.
 WR, 3000, and no Matthew. Probably a first-name slip, but I have not renamed him; he is
 carried as a redistribution candidate with the conflict attached. If you are already
 reading the Jets list, the name on it settles it.
+
+## OUT-036 — historical closing lines, to estimate the volume/market relationship
+
+**Requested by:** Claude (no network). **Status:** OPEN. **Filed:** 2026-09-28.
+
+V0 multiplied every club's plays, pass attempts, carries and targets by
+`implied_total / league_mean_implied`. Buffalo at a 28.75 implied total therefore had its
+measured 31.6 pass attempts per game lifted to 41.5 — an assertion that a club expected to
+score 31 per cent more runs 31 per cent more plays. That is not how scoring more works: it
+comes largely from efficiency, and a favoured club tends to run *more* and throw *less* as it
+protects a lead, so even the sign of the effect on pass volume is not obvious.
+
+V1 therefore applies **no market scaling to volume at all** (`scale = 1.0`), and lets the
+market enter exactly once, where it is measured: the club touchdown pool, from a regression of
+offensive touchdowns on club points over 2,689 club-games (`nfl/derived/TD_RATES.json`).
+
+**What is needed to do better:** historical **pregame closing totals and spreads** joined to
+historical games, 2021–2025, so the relationship between market expectation and each of
+plays / dropbacks / pass attempts / rush attempts / red-zone plays can be estimated rather
+than declared. Team-level per-game is sufficient; no player detail needed.
+
+This repository holds no line history — `nfl/research/postgame/` carries play-by-play only —
+so the coefficient cannot be estimated here. It is **not invented** in the meantime.
+
+This is **assigned, not blocked**: V1 is complete and runs without it. The coefficient would
+improve the volume layer; its absence does not stop anything.

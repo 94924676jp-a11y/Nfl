@@ -215,6 +215,60 @@ def resolve_identity(name_wanted):
     return {'gsis_id': None, 'name': name_wanted, 'state': (
         'AMBIGUOUS' if hits else 'NOT_FOUND'), 'candidates': list(hits)[:5]}
 
+def name_index():
+    """name -> {gsis_id: (position, team, latest_season)} from the roster blobs.
+
+    Returned as a mapping rather than a single answer because two players share a name often
+    enough that collapsing them silently is how a quarterback gets scored as a receiver. The
+    caller disambiguates on position and club and records what it could not resolve.
+    """
+    import csv
+    import glob
+    import gzip
+    out = {}
+    for f in sorted(glob.glob(str(_REPO / ROSTERS))):
+        with gzip.open(f, 'rt', newline='') as fh:
+            for r in csv.DictReader(fh):
+                nm = (r.get('full_name') or r.get('player_name') or '').strip()
+                g = (r.get('gsis_id') or '').strip()
+                if not nm or not g:
+                    continue
+                try:
+                    yr = int(r.get('season') or 0)
+                except ValueError:
+                    yr = 0
+                cur = out.setdefault(nm, {}).get(g)
+                if cur is None or yr >= cur[2]:
+                    out[nm][g] = ((r.get('position') or '').strip(),
+                                  (r.get('team') or '').strip(), yr)
+    return out
+
+
+def position_index():
+    """gsis_id -> position, read from the roster blobs. Latest season seen wins.
+
+    A player who changes position between seasons is recorded at his most recent one; the
+    alternative is indexing by player-season, which none of the current consumers need.
+    """
+    import csv
+    import glob
+    import gzip
+    out, seen_season = {}, {}
+    for f in sorted(glob.glob(str(_REPO / ROSTERS))):
+        with gzip.open(f, 'rt', newline='') as fh:
+            for r in csv.DictReader(fh):
+                g = (r.get('gsis_id') or '').strip()
+                pos = (r.get('position') or '').strip()
+                if not g or not pos:
+                    continue
+                try:
+                    yr = int(r.get('season') or 0)
+                except ValueError:
+                    yr = 0
+                if yr >= seen_season.get(g, -1):
+                    seen_season[g], out[g] = yr, pos
+    return out
+
 
 def estimate(panel, gsis, pos, current_role_band, forecast_season, through_season):
     obs = _observations(panel, gsis, pos, forecast_season, through_season)
@@ -279,9 +333,19 @@ def _cohort(panel, pos, role_band, forecast_season, through_season,
     so the mean described a reserve. Here a cohort is always restricted to observations AT THE
     ROLE BEING ASKED ABOUT, so a starter is compared with starters.
     """
+    # POSITION FILTER. Without it this loop called _observations with the position being asked
+    # about rather than the player's own, so a quarterback's weeks were pooled into a receiver
+    # cohort with his role share computed as a receiver's -- zero targets, so FRINGE -- and his
+    # 0.98 pass-attempt share averaged into the receiver mean. Every cold-start receiver then
+    # claimed a 41 per cent share of his club's throws, which collapsed Josh Allen's normalised
+    # claim from 0.99 to 0.21 and cut him to 22 pass attempts. The leak affected EVERY measure
+    # at tiers 3 to 6, so every cold start and thin-history player, not only this one.
+    pos_of = position_index()
     rows = []
     for gsis, seasons in panel['players'].items():
         if exclude and gsis == exclude:
+            continue
+        if pos_of.get(gsis) != pos:
             continue
         for o in _observations(panel, gsis, pos, forecast_season, through_season):
             if club and o['club'] != club:
