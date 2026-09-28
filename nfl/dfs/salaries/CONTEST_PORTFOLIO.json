@@ -4,14 +4,14 @@
   "THRESHOLD_IS_PER_WORLD": "recomputed from the field's own scores in each simulated world, because a winning score depends on the slate",
   "n_sims": 400,
   "n_games": 9,
-  "n_candidates_scored": 328,
+  "n_candidates_scored": 333,
   "candidate_provenance": {
     "VALUE_FRONTIER": 200,
-    "BEST_WITH_QB": 53,
-    "BEST_WITH_RB": 25,
+    "BEST_WITH_QB": 54,
+    "BEST_WITH_RB": 24,
     "BEST_WITH_WR": 20,
-    "BEST_WITH_TE": 22,
-    "BEST_WITH_DST": 8
+    "BEST_WITH_TE": 26,
+    "BEST_WITH_DST": 9
   },
   "n_candidates_unscorable": 0,
   "n_field_lineups_scored": 8000,
@@ -19,19 +19,19 @@
     {
       "label": "INDEPENDENT_TOP_48_BY_PROJECTION",
       "n_entries": 48,
-      "p_at_least_one_in_top_1pct": 0.4775,
-      "mean_projected": 164.7832,
-      "mean_simulated": 152.6214,
-      "n_distinct_players": 28,
+      "p_at_least_one_in_top_1pct": 0.5,
+      "mean_projected": 162.7486,
+      "mean_simulated": 151.9056,
+      "n_distinct_players": 26,
       "max_player_exposure": 1.0
     },
     {
       "label": "CONTEST_AWARE_JOINT",
       "n_entries": 48,
-      "p_at_least_one_in_top_1pct": 0.7575,
-      "mean_projected": 162.7496,
-      "mean_simulated": 152.1739,
-      "n_distinct_players": 41,
+      "p_at_least_one_in_top_1pct": 0.77,
+      "mean_projected": 161.0701,
+      "mean_simulated": 151.5476,
+      "n_distinct_players": 37,
       "max_player_exposure": 1.0
     }
   ],
@@ -39,282 +39,282 @@
     "settings": [
       {
         "setting": "value_beta=0.6",
-        "p_joint": 0.9025,
-        "p_independent": 0.7175,
+        "p_joint": 0.8875,
+        "p_independent": 0.7225,
         "joint_still_wins": true,
         "portfolio_overlap_with_base": 0.4792
       },
       {
         "setting": "value_beta=2.2",
-        "p_joint": 0.7175,
-        "p_independent": 0.4025,
+        "p_joint": 0.7025,
+        "p_independent": 0.3625,
         "joint_still_wins": true,
-        "portfolio_overlap_with_base": 0.5208
+        "portfolio_overlap_with_base": 0.5
       },
       {
         "setting": "budget=47000",
-        "p_joint": 0.8575,
-        "p_independent": 0.605,
+        "p_joint": 0.8775,
+        "p_independent": 0.635,
         "joint_still_wins": true,
-        "portfolio_overlap_with_base": 0.4583
+        "portfolio_overlap_with_base": 0.5833
       },
       {
         "setting": "budget=49900",
-        "p_joint": 0.755,
-        "p_independent": 0.49,
+        "p_joint": 0.73,
+        "p_independent": 0.4975,
         "joint_still_wins": true,
-        "portfolio_overlap_with_base": 0.625
+        "portfolio_overlap_with_base": 0.5625
       }
     ],
     "joint_beats_independent_at_every_setting": true,
-    "lowest_portfolio_overlap_with_base": 0.4583,
+    "lowest_portfolio_overlap_with_base": 0.4792,
     "READING": "the CONCLUSION -- pick jointly, not independently -- is what survives or fails here, and it is separate from whether the specific 48 lineups are stable. A robust conclusion with an unstable selection means the method is usable and the exact entries are not yet.",
     "VERDICT": "METHOD_ROBUST_SELECTION_PARAMETER_DEPENDENT"
   },
   "improvement": {
-    "p_at_least_one_absolute": 0.28,
-    "p_at_least_one_relative": 1.5864,
-    "mean_projection_given_up": 2.0336
+    "p_at_least_one_absolute": 0.27,
+    "p_at_least_one_relative": 1.54,
+    "mean_projection_given_up": 1.6785
   },
   "marginal_history": [
     {
       "n_entries": 1,
-      "p_at_least_one": 0.12,
-      "marginal_worlds_added": 48
+      "p_at_least_one": 0.145,
+      "marginal_worlds_added": 58
     },
     {
       "n_entries": 2,
-      "p_at_least_one": 0.2125,
-      "marginal_worlds_added": 37
+      "p_at_least_one": 0.24,
+      "marginal_worlds_added": 38
     },
     {
       "n_entries": 3,
-      "p_at_least_one": 0.275,
-      "marginal_worlds_added": 25
+      "p_at_least_one": 0.2975,
+      "marginal_worlds_added": 23
     },
     {
       "n_entries": 4,
-      "p_at_least_one": 0.3225,
-      "marginal_worlds_added": 19
+      "p_at_least_one": 0.3425,
+      "marginal_worlds_added": 18
     },
     {
       "n_entries": 5,
-      "p_at_least_one": 0.36,
-      "marginal_worlds_added": 15
+      "p_at_least_one": 0.3825,
+      "marginal_worlds_added": 16
     },
     {
       "n_entries": 6,
-      "p_at_least_one": 0.395,
-      "marginal_worlds_added": 14
+      "p_at_least_one": 0.42,
+      "marginal_worlds_added": 15
     },
     {
       "n_entries": 7,
-      "p_at_least_one": 0.4225,
-      "marginal_worlds_added": 11
+      "p_at_least_one": 0.45,
+      "marginal_worlds_added": 12
     },
     {
       "n_entries": 8,
-      "p_at_least_one": 0.4475,
+      "p_at_least_one": 0.475,
       "marginal_worlds_added": 10
     },
     {
       "n_entries": 9,
-      "p_at_least_one": 0.4725,
-      "marginal_worlds_added": 10
+      "p_at_least_one": 0.4975,
+      "marginal_worlds_added": 9
     },
     {
       "n_entries": 10,
-      "p_at_least_one": 0.495,
+      "p_at_least_one": 0.52,
       "marginal_worlds_added": 9
     },
     {
       "n_entries": 11,
-      "p_at_least_one": 0.515,
-      "marginal_worlds_added": 8
+      "p_at_least_one": 0.5375,
+      "marginal_worlds_added": 7
     },
     {
       "n_entries": 12,
-      "p_at_least_one": 0.5325,
+      "p_at_least_one": 0.555,
       "marginal_worlds_added": 7
     },
     {
       "n_entries": 13,
-      "p_at_least_one": 0.55,
-      "marginal_worlds_added": 7
+      "p_at_least_one": 0.57,
+      "marginal_worlds_added": 6
     },
     {
       "n_entries": 14,
-      "p_at_least_one": 0.565,
+      "p_at_least_one": 0.585,
       "marginal_worlds_added": 6
     },
     {
       "n_entries": 15,
-      "p_at_least_one": 0.5775,
+      "p_at_least_one": 0.5975,
       "marginal_worlds_added": 5
     },
     {
       "n_entries": 16,
-      "p_at_least_one": 0.59,
+      "p_at_least_one": 0.61,
       "marginal_worlds_added": 5
     },
     {
       "n_entries": 17,
-      "p_at_least_one": 0.6025,
+      "p_at_least_one": 0.6225,
       "marginal_worlds_added": 5
     },
     {
       "n_entries": 18,
-      "p_at_least_one": 0.6125,
-      "marginal_worlds_added": 4
+      "p_at_least_one": 0.635,
+      "marginal_worlds_added": 5
     },
     {
       "n_entries": 19,
-      "p_at_least_one": 0.6225,
+      "p_at_least_one": 0.645,
       "marginal_worlds_added": 4
     },
     {
       "n_entries": 20,
-      "p_at_least_one": 0.6325,
+      "p_at_least_one": 0.655,
       "marginal_worlds_added": 4
     },
     {
       "n_entries": 21,
-      "p_at_least_one": 0.64,
-      "marginal_worlds_added": 3
-    },
-    {
-      "n_entries": 22,
-      "p_at_least_one": 0.6475,
-      "marginal_worlds_added": 3
-    },
-    {
-      "n_entries": 23,
-      "p_at_least_one": 0.655,
-      "marginal_worlds_added": 3
-    },
-    {
-      "n_entries": 24,
       "p_at_least_one": 0.6625,
       "marginal_worlds_added": 3
     },
     {
-      "n_entries": 25,
+      "n_entries": 22,
       "p_at_least_one": 0.67,
       "marginal_worlds_added": 3
     },
     {
-      "n_entries": 26,
+      "n_entries": 23,
       "p_at_least_one": 0.6775,
       "marginal_worlds_added": 3
     },
     {
-      "n_entries": 27,
+      "n_entries": 24,
       "p_at_least_one": 0.685,
       "marginal_worlds_added": 3
     },
     {
+      "n_entries": 25,
+      "p_at_least_one": 0.6925,
+      "marginal_worlds_added": 3
+    },
+    {
+      "n_entries": 26,
+      "p_at_least_one": 0.6975,
+      "marginal_worlds_added": 2
+    },
+    {
+      "n_entries": 27,
+      "p_at_least_one": 0.7025,
+      "marginal_worlds_added": 2
+    },
+    {
       "n_entries": 28,
-      "p_at_least_one": 0.69,
+      "p_at_least_one": 0.7075,
       "marginal_worlds_added": 2
     },
     {
       "n_entries": 29,
-      "p_at_least_one": 0.695,
+      "p_at_least_one": 0.7125,
       "marginal_worlds_added": 2
     },
     {
       "n_entries": 30,
-      "p_at_least_one": 0.7,
+      "p_at_least_one": 0.7175,
       "marginal_worlds_added": 2
     },
     {
       "n_entries": 31,
-      "p_at_least_one": 0.705,
+      "p_at_least_one": 0.7225,
       "marginal_worlds_added": 2
     },
     {
       "n_entries": 32,
-      "p_at_least_one": 0.71,
+      "p_at_least_one": 0.7275,
       "marginal_worlds_added": 2
     },
     {
       "n_entries": 33,
-      "p_at_least_one": 0.715,
+      "p_at_least_one": 0.7325,
       "marginal_worlds_added": 2
     },
     {
       "n_entries": 34,
-      "p_at_least_one": 0.72,
-      "marginal_worlds_added": 2
-    },
-    {
-      "n_entries": 35,
-      "p_at_least_one": 0.725,
-      "marginal_worlds_added": 2
-    },
-    {
-      "n_entries": 36,
-      "p_at_least_one": 0.7275,
-      "marginal_worlds_added": 1
-    },
-    {
-      "n_entries": 37,
-      "p_at_least_one": 0.73,
-      "marginal_worlds_added": 1
-    },
-    {
-      "n_entries": 38,
-      "p_at_least_one": 0.7325,
-      "marginal_worlds_added": 1
-    },
-    {
-      "n_entries": 39,
       "p_at_least_one": 0.735,
       "marginal_worlds_added": 1
     },
     {
-      "n_entries": 40,
+      "n_entries": 35,
       "p_at_least_one": 0.7375,
       "marginal_worlds_added": 1
     },
     {
-      "n_entries": 41,
+      "n_entries": 36,
       "p_at_least_one": 0.74,
       "marginal_worlds_added": 1
     },
     {
-      "n_entries": 42,
+      "n_entries": 37,
       "p_at_least_one": 0.7425,
       "marginal_worlds_added": 1
     },
     {
-      "n_entries": 43,
+      "n_entries": 38,
       "p_at_least_one": 0.745,
       "marginal_worlds_added": 1
     },
     {
-      "n_entries": 44,
+      "n_entries": 39,
       "p_at_least_one": 0.7475,
       "marginal_worlds_added": 1
     },
     {
-      "n_entries": 45,
+      "n_entries": 40,
       "p_at_least_one": 0.75,
       "marginal_worlds_added": 1
     },
     {
-      "n_entries": 46,
+      "n_entries": 41,
       "p_at_least_one": 0.7525,
       "marginal_worlds_added": 1
     },
     {
-      "n_entries": 47,
+      "n_entries": 42,
       "p_at_least_one": 0.755,
       "marginal_worlds_added": 1
     },
     {
-      "n_entries": 48,
+      "n_entries": 43,
       "p_at_least_one": 0.7575,
+      "marginal_worlds_added": 1
+    },
+    {
+      "n_entries": 44,
+      "p_at_least_one": 0.76,
+      "marginal_worlds_added": 1
+    },
+    {
+      "n_entries": 45,
+      "p_at_least_one": 0.7625,
+      "marginal_worlds_added": 1
+    },
+    {
+      "n_entries": 46,
+      "p_at_least_one": 0.765,
+      "marginal_worlds_added": 1
+    },
+    {
+      "n_entries": 47,
+      "p_at_least_one": 0.7675,
+      "marginal_worlds_added": 1
+    },
+    {
+      "n_entries": 48,
+      "p_at_least_one": 0.77,
       "marginal_worlds_added": 1
     }
   ],
@@ -322,15 +322,44 @@
     {
       "entry": 1,
       "provenance": "VALUE_FRONTIER",
-      "projected": 162.5363,
-      "simulated_mean": 158.8048,
+      "projected": 160.3805,
+      "simulated_mean": 157.5746,
+      "ids": [
+        "44246754",
+        "44246814",
+        "44246824",
+        "44246832",
+        "44247036",
+        "44247042",
+        "44247114",
+        "44247372",
+        "44247554"
+      ],
+      "names": [
+        "Patrick Mahomes",
+        "Kenneth Walker III",
+        "Breece Hall",
+        "Jaylen Warren",
+        "Garrett Wilson",
+        "Parker Washington",
+        "Tre' Harris",
+        "Dalton Schultz",
+        "Seahawks"
+      ],
+      "salary": 49900
+    },
+    {
+      "entry": 2,
+      "provenance": "BEST_WITH_RB",
+      "projected": 161.6316,
+      "simulated_mean": 155.5882,
       "ids": [
         "44246754",
         "44246814",
         "44246822",
+        "44247028",
         "44247036",
-        "44247042",
-        "44247044",
+        "44247114",
         "44247368",
         "44247372",
         "44247563"
@@ -339,238 +368,6 @@
         "Patrick Mahomes",
         "Kenneth Walker III",
         "De'Von Achane",
-        "Garrett Wilson",
-        "Parker Washington",
-        "Ladd McConkey",
-        "Travis Kelce",
-        "Dalton Schultz",
-        "Steelers"
-      ],
-      "salary": 49700
-    },
-    {
-      "entry": 2,
-      "provenance": "VALUE_FRONTIER",
-      "projected": 163.4631,
-      "simulated_mean": 157.3381,
-      "ids": [
-        "44246754",
-        "44246814",
-        "44246824",
-        "44246832",
-        "44247036",
-        "44247044",
-        "44247114",
-        "44247372",
-        "44247554"
-      ],
-      "names": [
-        "Patrick Mahomes",
-        "Kenneth Walker III",
-        "Breece Hall",
-        "Jaylen Warren",
-        "Garrett Wilson",
-        "Ladd McConkey",
-        "Tre' Harris",
-        "Dalton Schultz",
-        "Seahawks"
-      ],
-      "salary": 49800
-    },
-    {
-      "entry": 3,
-      "provenance": "VALUE_FRONTIER",
-      "projected": 163.3098,
-      "simulated_mean": 155.7187,
-      "ids": [
-        "44246770",
-        "44246814",
-        "44246824",
-        "44247028",
-        "44247036",
-        "44247044",
-        "44247368",
-        "44247372",
-        "44247560"
-      ],
-      "names": [
-        "Marcus Mariota",
-        "Kenneth Walker III",
-        "Breece Hall",
-        "Amon-Ra St. Brown",
-        "Garrett Wilson",
-        "Ladd McConkey",
-        "Travis Kelce",
-        "Dalton Schultz",
-        "Bengals"
-      ],
-      "salary": 50000
-    },
-    {
-      "entry": 4,
-      "provenance": "VALUE_FRONTIER",
-      "projected": 162.1901,
-      "simulated_mean": 151.855,
-      "ids": [
-        "44246769",
-        "44246814",
-        "44246824",
-        "44247024",
-        "44247036",
-        "44247072",
-        "44247368",
-        "44247372",
-        "44247563"
-      ],
-      "names": [
-        "Deshaun Watson",
-        "Kenneth Walker III",
-        "Breece Hall",
-        "Jaxon Smith-Njigba",
-        "Garrett Wilson",
-        "Michael Pittman Jr.",
-        "Travis Kelce",
-        "Dalton Schultz",
-        "Steelers"
-      ],
-      "salary": 49500
-    },
-    {
-      "entry": 5,
-      "provenance": "BEST_WITH_TE",
-      "projected": 162.6074,
-      "simulated_mean": 153.5436,
-      "ids": [
-        "44246754",
-        "44246814",
-        "44246824",
-        "44247028",
-        "44247036",
-        "44247114",
-        "44247366",
-        "44247372",
-        "44247563"
-      ],
-      "names": [
-        "Patrick Mahomes",
-        "Kenneth Walker III",
-        "Breece Hall",
-        "Amon-Ra St. Brown",
-        "Garrett Wilson",
-        "Tre' Harris",
-        "Isaiah Likely",
-        "Dalton Schultz",
-        "Steelers"
-      ],
-      "salary": 49700
-    },
-    {
-      "entry": 6,
-      "provenance": "VALUE_FRONTIER",
-      "projected": 162.7914,
-      "simulated_mean": 155.0343,
-      "ids": [
-        "44246751",
-        "44246814",
-        "44246832",
-        "44247036",
-        "44247042",
-        "44247114",
-        "44247368",
-        "44247372",
-        "44247554"
-      ],
-      "names": [
-        "Josh Allen",
-        "Kenneth Walker III",
-        "Jaylen Warren",
-        "Garrett Wilson",
-        "Parker Washington",
-        "Tre' Harris",
-        "Travis Kelce",
-        "Dalton Schultz",
-        "Seahawks"
-      ],
-      "salary": 49800
-    },
-    {
-      "entry": 7,
-      "provenance": "VALUE_FRONTIER",
-      "projected": 163.2173,
-      "simulated_mean": 149.7265,
-      "ids": [
-        "44246751",
-        "44246810",
-        "44246814",
-        "44247036",
-        "44247114",
-        "44247120",
-        "44247368",
-        "44247372",
-        "44247559"
-      ],
-      "names": [
-        "Josh Allen",
-        "Jahmyr Gibbs",
-        "Kenneth Walker III",
-        "Garrett Wilson",
-        "Tre' Harris",
-        "Jaylin Noel",
-        "Travis Kelce",
-        "Dalton Schultz",
-        "Panthers"
-      ],
-      "salary": 49700
-    },
-    {
-      "entry": 8,
-      "provenance": "VALUE_FRONTIER",
-      "projected": 162.8921,
-      "simulated_mean": 150.2944,
-      "ids": [
-        "44246754",
-        "44246814",
-        "44246824",
-        "44247028",
-        "44247042",
-        "44247120",
-        "44247368",
-        "44247372",
-        "44247554"
-      ],
-      "names": [
-        "Patrick Mahomes",
-        "Kenneth Walker III",
-        "Breece Hall",
-        "Amon-Ra St. Brown",
-        "Parker Washington",
-        "Jaylin Noel",
-        "Travis Kelce",
-        "Dalton Schultz",
-        "Seahawks"
-      ],
-      "salary": 50000
-    },
-    {
-      "entry": 9,
-      "provenance": "BEST_WITH_QB",
-      "projected": 162.7671,
-      "simulated_mean": 151.4148,
-      "ids": [
-        "44246753",
-        "44246814",
-        "44246824",
-        "44247028",
-        "44247036",
-        "44247114",
-        "44247368",
-        "44247372",
-        "44247563"
-      ],
-      "names": [
-        "Jared Goff",
-        "Kenneth Walker III",
-        "Breece Hall",
         "Amon-Ra St. Brown",
         "Garrett Wilson",
         "Tre' Harris",
@@ -581,192 +378,76 @@
       "salary": 49600
     },
     {
-      "entry": 10,
-      "provenance": "BEST_WITH_RB",
-      "projected": 159.1739,
-      "simulated_mean": 150.5445,
-      "ids": [
-        "44246751",
-        "44246814",
-        "44246824",
-        "44246836",
-        "44247036",
-        "44247044",
-        "44247120",
-        "44247372",
-        "44247563"
-      ],
-      "names": [
-        "Josh Allen",
-        "Kenneth Walker III",
-        "Breece Hall",
-        "Quinshon Judkins",
-        "Garrett Wilson",
-        "Ladd McConkey",
-        "Jaylin Noel",
-        "Dalton Schultz",
-        "Steelers"
-      ],
-      "salary": 50000
-    },
-    {
-      "entry": 11,
-      "provenance": "BEST_WITH_QB",
-      "projected": 161.8097,
-      "simulated_mean": 155.6203,
-      "ids": [
-        "44246776",
-        "44246814",
-        "44246824",
-        "44247024",
-        "44247036",
-        "44247044",
-        "44247368",
-        "44247372",
-        "44247563"
-      ],
-      "names": [
-        "Jameis Winston",
-        "Kenneth Walker III",
-        "Breece Hall",
-        "Jaxon Smith-Njigba",
-        "Garrett Wilson",
-        "Ladd McConkey",
-        "Travis Kelce",
-        "Dalton Schultz",
-        "Steelers"
-      ],
-      "salary": 50000
-    },
-    {
-      "entry": 12,
+      "entry": 3,
       "provenance": "VALUE_FRONTIER",
-      "projected": 162.6742,
-      "simulated_mean": 150.9844,
+      "projected": 161.9198,
+      "simulated_mean": 154.3331,
       "ids": [
         "44246751",
         "44246814",
-        "44246816",
+        "44246824",
         "44247036",
-        "44247042",
+        "44247044",
         "44247114",
         "44247368",
         "44247372",
-        "44247563"
+        "44247558"
       ],
       "names": [
         "Josh Allen",
         "Kenneth Walker III",
-        "James Cook III",
+        "Breece Hall",
         "Garrett Wilson",
-        "Parker Washington",
+        "Ladd McConkey",
         "Tre' Harris",
         "Travis Kelce",
         "Dalton Schultz",
-        "Steelers"
+        "Texans"
       ],
-      "salary": 49900
+      "salary": 49800
     },
     {
-      "entry": 13,
+      "entry": 4,
       "provenance": "VALUE_FRONTIER",
-      "projected": 162.6667,
-      "simulated_mean": 150.5654,
+      "projected": 160.7034,
+      "simulated_mean": 154.6852,
       "ids": [
-        "44246751",
-        "44246814",
-        "44246824",
-        "44247042",
-        "44247044",
-        "44247072",
-        "44247368",
-        "44247372",
-        "44247560"
-      ],
-      "names": [
-        "Josh Allen",
-        "Kenneth Walker III",
-        "Breece Hall",
-        "Parker Washington",
-        "Ladd McConkey",
-        "Michael Pittman Jr.",
-        "Travis Kelce",
-        "Dalton Schultz",
-        "Bengals"
-      ],
-      "salary": 50000
-    },
-    {
-      "entry": 14,
-      "provenance": "VALUE_FRONTIER",
-      "projected": 162.3385,
-      "simulated_mean": 150.4268,
-      "ids": [
-        "44246754",
+        "44246761",
         "44246814",
         "44246824",
         "44246832",
-        "44247034",
+        "44247028",
         "44247036",
-        "44247072",
+        "44247114",
         "44247372",
         "44247563"
       ],
       "names": [
-        "Patrick Mahomes",
+        "C.J. Stroud",
         "Kenneth Walker III",
         "Breece Hall",
         "Jaylen Warren",
-        "Rashee Rice",
+        "Amon-Ra St. Brown",
         "Garrett Wilson",
-        "Michael Pittman Jr.",
+        "Tre' Harris",
         "Dalton Schultz",
         "Steelers"
       ],
       "salary": 50000
     },
     {
-      "entry": 15,
+      "entry": 5,
       "provenance": "VALUE_FRONTIER",
-      "projected": 162.9604,
-      "simulated_mean": 151.6086,
-      "ids": [
-        "44246751",
-        "44246814",
-        "44246832",
-        "44247028",
-        "44247036",
-        "44247120",
-        "44247368",
-        "44247372",
-        "44247567"
-      ],
-      "names": [
-        "Josh Allen",
-        "Kenneth Walker III",
-        "Jaylen Warren",
-        "Amon-Ra St. Brown",
-        "Garrett Wilson",
-        "Jaylin Noel",
-        "Travis Kelce",
-        "Dalton Schultz",
-        "Titans"
-      ],
-      "salary": 50000
-    },
-    {
-      "entry": 16,
-      "provenance": "VALUE_FRONTIER",
-      "projected": 162.8204,
-      "simulated_mean": 152.8991,
+      "projected": 162.0642,
+      "simulated_mean": 151.6626,
       "ids": [
         "44246754",
         "44246810",
         "44246814",
-        "44246824",
         "44247036",
-        "44247114",
+        "44247042",
         "44247120",
+        "44247368",
         "44247372",
         "44247559"
       ],
@@ -774,24 +455,140 @@
         "Patrick Mahomes",
         "Jahmyr Gibbs",
         "Kenneth Walker III",
-        "Breece Hall",
         "Garrett Wilson",
-        "Tre' Harris",
+        "Parker Washington",
         "Jaylin Noel",
+        "Travis Kelce",
         "Dalton Schultz",
         "Panthers"
+      ],
+      "salary": 50000
+    },
+    {
+      "entry": 6,
+      "provenance": "VALUE_FRONTIER",
+      "projected": 161.0842,
+      "simulated_mean": 152.555,
+      "ids": [
+        "44246754",
+        "44246810",
+        "44246814",
+        "44247042",
+        "44247044",
+        "44247114",
+        "44247368",
+        "44247372",
+        "44247560"
+      ],
+      "names": [
+        "Patrick Mahomes",
+        "Jahmyr Gibbs",
+        "Kenneth Walker III",
+        "Parker Washington",
+        "Ladd McConkey",
+        "Tre' Harris",
+        "Travis Kelce",
+        "Dalton Schultz",
+        "Bengals"
       ],
       "salary": 49800
     },
     {
-      "entry": 17,
-      "provenance": "BEST_WITH_RB",
-      "projected": 162.5353,
-      "simulated_mean": 153.6231,
+      "entry": 7,
+      "provenance": "VALUE_FRONTIER",
+      "projected": 160.8528,
+      "simulated_mean": 151.2266,
       "ids": [
-        "44246754",
+        "44246751",
         "44246814",
-        "44246820",
+        "44246824",
+        "44247036",
+        "44247044",
+        "44247072",
+        "44247368",
+        "44247372",
+        "44247567"
+      ],
+      "names": [
+        "Josh Allen",
+        "Kenneth Walker III",
+        "Breece Hall",
+        "Garrett Wilson",
+        "Ladd McConkey",
+        "Michael Pittman Jr.",
+        "Travis Kelce",
+        "Dalton Schultz",
+        "Titans"
+      ],
+      "salary": 49800
+    },
+    {
+      "entry": 8,
+      "provenance": "VALUE_FRONTIER",
+      "projected": 160.9235,
+      "simulated_mean": 151.1031,
+      "ids": [
+        "44246751",
+        "44246810",
+        "44246832",
+        "44247036",
+        "44247044",
+        "44247114",
+        "44247368",
+        "44247372",
+        "44247563"
+      ],
+      "names": [
+        "Josh Allen",
+        "Jahmyr Gibbs",
+        "Jaylen Warren",
+        "Garrett Wilson",
+        "Ladd McConkey",
+        "Tre' Harris",
+        "Travis Kelce",
+        "Dalton Schultz",
+        "Steelers"
+      ],
+      "salary": 50000
+    },
+    {
+      "entry": 9,
+      "provenance": "VALUE_FRONTIER",
+      "projected": 160.7435,
+      "simulated_mean": 155.5758,
+      "ids": [
+        "44246769",
+        "44246814",
+        "44246824",
+        "44247028",
+        "44247036",
+        "44247042",
+        "44247368",
+        "44247372",
+        "44247566"
+      ],
+      "names": [
+        "Deshaun Watson",
+        "Kenneth Walker III",
+        "Breece Hall",
+        "Amon-Ra St. Brown",
+        "Garrett Wilson",
+        "Parker Washington",
+        "Travis Kelce",
+        "Dalton Schultz",
+        "Browns"
+      ],
+      "salary": 49900
+    },
+    {
+      "entry": 10,
+      "provenance": "BEST_WITH_QB",
+      "projected": 159.9127,
+      "simulated_mean": 153.1904,
+      "ids": [
+        "44246776",
+        "44246810",
+        "44246814",
         "44247028",
         "44247036",
         "44247114",
@@ -800,9 +597,9 @@
         "44247563"
       ],
       "names": [
-        "Patrick Mahomes",
+        "Jameis Winston",
+        "Jahmyr Gibbs",
         "Kenneth Walker III",
-        "Chase Brown",
         "Amon-Ra St. Brown",
         "Garrett Wilson",
         "Tre' Harris",
@@ -813,39 +610,97 @@
       "salary": 49700
     },
     {
-      "entry": 18,
+      "entry": 11,
       "provenance": "VALUE_FRONTIER",
-      "projected": 162.4472,
-      "simulated_mean": 153.469,
+      "projected": 160.7878,
+      "simulated_mean": 152.3818,
       "ids": [
-        "44246769",
-        "44246814",
+        "44246751",
         "44246824",
+        "44246832",
         "44247028",
         "44247036",
-        "44247072",
+        "44247114",
         "44247368",
         "44247372",
-        "44247554"
+        "44247559"
       ],
       "names": [
-        "Deshaun Watson",
-        "Kenneth Walker III",
+        "Josh Allen",
         "Breece Hall",
+        "Jaylen Warren",
         "Amon-Ra St. Brown",
         "Garrett Wilson",
-        "Michael Pittman Jr.",
+        "Tre' Harris",
         "Travis Kelce",
         "Dalton Schultz",
-        "Seahawks"
+        "Panthers"
       ],
       "salary": 49900
     },
     {
-      "entry": 19,
+      "entry": 12,
       "provenance": "VALUE_FRONTIER",
-      "projected": 162.2927,
-      "simulated_mean": 154.1282,
+      "projected": 160.3729,
+      "simulated_mean": 150.551,
+      "ids": [
+        "44246754",
+        "44246814",
+        "44246824",
+        "44247024",
+        "44247044",
+        "44247114",
+        "44247368",
+        "44247372",
+        "44247561"
+      ],
+      "names": [
+        "Patrick Mahomes",
+        "Kenneth Walker III",
+        "Breece Hall",
+        "Jaxon Smith-Njigba",
+        "Ladd McConkey",
+        "Tre' Harris",
+        "Travis Kelce",
+        "Dalton Schultz",
+        "Jaguars"
+      ],
+      "salary": 50000
+    },
+    {
+      "entry": 13,
+      "provenance": "VALUE_FRONTIER",
+      "projected": 160.802,
+      "simulated_mean": 152.0121,
+      "ids": [
+        "44246769",
+        "44246810",
+        "44246814",
+        "44246824",
+        "44247036",
+        "44247044",
+        "44247120",
+        "44247372",
+        "44247563"
+      ],
+      "names": [
+        "Deshaun Watson",
+        "Jahmyr Gibbs",
+        "Kenneth Walker III",
+        "Breece Hall",
+        "Garrett Wilson",
+        "Ladd McConkey",
+        "Jaylin Noel",
+        "Dalton Schultz",
+        "Steelers"
+      ],
+      "salary": 50000
+    },
+    {
+      "entry": 14,
+      "provenance": "BEST_WITH_TE",
+      "projected": 160.0912,
+      "simulated_mean": 152.9676,
       "ids": [
         "44246754",
         "44246814",
@@ -871,57 +726,86 @@
       "salary": 50000
     },
     {
-      "entry": 20,
+      "entry": 15,
       "provenance": "VALUE_FRONTIER",
-      "projected": 162.1768,
-      "simulated_mean": 150.1345,
+      "projected": 160.9309,
+      "simulated_mean": 147.9515,
       "ids": [
         "44246751",
         "44246814",
         "44246824",
-        "44246832",
-        "44247042",
-        "44247044",
-        "44247120",
+        "44247028",
+        "44247072",
+        "44247114",
+        "44247368",
         "44247372",
-        "44247563"
+        "44247561"
       ],
       "names": [
         "Josh Allen",
         "Kenneth Walker III",
         "Breece Hall",
-        "Jaylen Warren",
-        "Parker Washington",
-        "Ladd McConkey",
-        "Jaylin Noel",
+        "Amon-Ra St. Brown",
+        "Michael Pittman Jr.",
+        "Tre' Harris",
+        "Travis Kelce",
         "Dalton Schultz",
-        "Steelers"
+        "Jaguars"
       ],
       "salary": 49900
     },
     {
-      "entry": 21,
+      "entry": 16,
       "provenance": "VALUE_FRONTIER",
-      "projected": 164.1895,
-      "simulated_mean": 154.3442,
+      "projected": 160.4449,
+      "simulated_mean": 150.4551,
       "ids": [
         "44246754",
-        "44246810",
         "44246814",
+        "44246824",
+        "44247024",
         "44247036",
-        "44247042",
         "44247114",
+        "44247370",
+        "44247372",
+        "44247563"
+      ],
+      "names": [
+        "Patrick Mahomes",
+        "Kenneth Walker III",
+        "Breece Hall",
+        "Jaxon Smith-Njigba",
+        "Garrett Wilson",
+        "Tre' Harris",
+        "Sam LaPorta",
+        "Dalton Schultz",
+        "Steelers"
+      ],
+      "salary": 50000
+    },
+    {
+      "entry": 17,
+      "provenance": "BEST_WITH_RB",
+      "projected": 158.4838,
+      "simulated_mean": 143.3149,
+      "ids": [
+        "44246754",
+        "44246812",
+        "44246814",
+        "44247028",
+        "44247044",
+        "44247120",
         "44247368",
         "44247372",
         "44247563"
       ],
       "names": [
         "Patrick Mahomes",
-        "Jahmyr Gibbs",
+        "Jonathan Taylor",
         "Kenneth Walker III",
-        "Garrett Wilson",
-        "Parker Washington",
-        "Tre' Harris",
+        "Amon-Ra St. Brown",
+        "Ladd McConkey",
+        "Jaylin Noel",
         "Travis Kelce",
         "Dalton Schultz",
         "Steelers"
@@ -929,39 +813,10 @@
       "salary": 50000
     },
     {
-      "entry": 22,
-      "provenance": "VALUE_FRONTIER",
-      "projected": 163.0641,
-      "simulated_mean": 152.6097,
-      "ids": [
-        "44246754",
-        "44246814",
-        "44246832",
-        "44247028",
-        "44247036",
-        "44247072",
-        "44247368",
-        "44247372",
-        "44247560"
-      ],
-      "names": [
-        "Patrick Mahomes",
-        "Kenneth Walker III",
-        "Jaylen Warren",
-        "Amon-Ra St. Brown",
-        "Garrett Wilson",
-        "Michael Pittman Jr.",
-        "Travis Kelce",
-        "Dalton Schultz",
-        "Bengals"
-      ],
-      "salary": 49800
-    },
-    {
-      "entry": 23,
-      "provenance": "VALUE_FRONTIER",
-      "projected": 162.8801,
-      "simulated_mean": 148.4065,
+      "entry": 18,
+      "provenance": "BEST_WITH_TE",
+      "projected": 159.621,
+      "simulated_mean": 147.3436,
       "ids": [
         "44246751",
         "44246814",
@@ -987,39 +842,213 @@
       "salary": 50000
     },
     {
-      "entry": 24,
+      "entry": 19,
       "provenance": "VALUE_FRONTIER",
-      "projected": 162.5717,
-      "simulated_mean": 153.3608,
+      "projected": 160.6504,
+      "simulated_mean": 146.8705,
+      "ids": [
+        "44246754",
+        "44246810",
+        "44246824",
+        "44247036",
+        "44247042",
+        "44247072",
+        "44247368",
+        "44247372",
+        "44247563"
+      ],
+      "names": [
+        "Patrick Mahomes",
+        "Jahmyr Gibbs",
+        "Breece Hall",
+        "Garrett Wilson",
+        "Parker Washington",
+        "Michael Pittman Jr.",
+        "Travis Kelce",
+        "Dalton Schultz",
+        "Steelers"
+      ],
+      "salary": 49800
+    },
+    {
+      "entry": 20,
+      "provenance": "BEST_WITH_WR",
+      "projected": 159.8654,
+      "simulated_mean": 151.7472,
+      "ids": [
+        "44246754",
+        "44246814",
+        "44246832",
+        "44247028",
+        "44247036",
+        "44247062",
+        "44247368",
+        "44247372",
+        "44247563"
+      ],
+      "names": [
+        "Patrick Mahomes",
+        "Kenneth Walker III",
+        "Jaylen Warren",
+        "Amon-Ra St. Brown",
+        "Garrett Wilson",
+        "Romeo Doubs",
+        "Travis Kelce",
+        "Dalton Schultz",
+        "Steelers"
+      ],
+      "salary": 50000
+    },
+    {
+      "entry": 21,
+      "provenance": "VALUE_FRONTIER",
+      "projected": 162.0308,
+      "simulated_mean": 156.1281,
+      "ids": [
+        "44246751",
+        "44246814",
+        "44246824",
+        "44247036",
+        "44247042",
+        "44247114",
+        "44247368",
+        "44247372",
+        "44247561"
+      ],
+      "names": [
+        "Josh Allen",
+        "Kenneth Walker III",
+        "Breece Hall",
+        "Garrett Wilson",
+        "Parker Washington",
+        "Tre' Harris",
+        "Travis Kelce",
+        "Dalton Schultz",
+        "Jaguars"
+      ],
+      "salary": 49600
+    },
+    {
+      "entry": 22,
+      "provenance": "VALUE_FRONTIER",
+      "projected": 161.187,
+      "simulated_mean": 155.0313,
+      "ids": [
+        "44246754",
+        "44246814",
+        "44246832",
+        "44247036",
+        "44247042",
+        "44247044",
+        "44247368",
+        "44247372",
+        "44247554"
+      ],
+      "names": [
+        "Patrick Mahomes",
+        "Kenneth Walker III",
+        "Jaylen Warren",
+        "Garrett Wilson",
+        "Parker Washington",
+        "Ladd McConkey",
+        "Travis Kelce",
+        "Dalton Schultz",
+        "Seahawks"
+      ],
+      "salary": 50000
+    },
+    {
+      "entry": 23,
+      "provenance": "VALUE_FRONTIER",
+      "projected": 160.6156,
+      "simulated_mean": 154.5692,
       "ids": [
         "44246761",
         "44246814",
         "44246824",
-        "44247024",
         "44247036",
-        "44247114",
+        "44247042",
+        "44247044",
         "44247368",
         "44247372",
-        "44247559"
+        "44247554"
       ],
       "names": [
         "C.J. Stroud",
         "Kenneth Walker III",
         "Breece Hall",
-        "Jaxon Smith-Njigba",
         "Garrett Wilson",
-        "Tre' Harris",
+        "Parker Washington",
+        "Ladd McConkey",
         "Travis Kelce",
         "Dalton Schultz",
-        "Panthers"
+        "Seahawks"
       ],
-      "salary": 49800
+      "salary": 50000
+    },
+    {
+      "entry": 24,
+      "provenance": "VALUE_FRONTIER",
+      "projected": 160.3564,
+      "simulated_mean": 145.7147,
+      "ids": [
+        "44246769",
+        "44246814",
+        "44246824",
+        "44247024",
+        "44247028",
+        "44247120",
+        "44247368",
+        "44247372",
+        "44247563"
+      ],
+      "names": [
+        "Deshaun Watson",
+        "Kenneth Walker III",
+        "Breece Hall",
+        "Jaxon Smith-Njigba",
+        "Amon-Ra St. Brown",
+        "Jaylin Noel",
+        "Travis Kelce",
+        "Dalton Schultz",
+        "Steelers"
+      ],
+      "salary": 50000
     },
     {
       "entry": 25,
+      "provenance": "BEST_WITH_WR",
+      "projected": 160.095,
+      "simulated_mean": 152.2921,
+      "ids": [
+        "44246754",
+        "44246810",
+        "44246814",
+        "44247036",
+        "44247040",
+        "44247114",
+        "44247368",
+        "44247372",
+        "44247563"
+      ],
+      "names": [
+        "Patrick Mahomes",
+        "Jahmyr Gibbs",
+        "Kenneth Walker III",
+        "Garrett Wilson",
+        "Tetairoa McMillan",
+        "Tre' Harris",
+        "Travis Kelce",
+        "Dalton Schultz",
+        "Steelers"
+      ],
+      "salary": 50000
+    },
+    {
+      "entry": 26,
       "provenance": "VALUE_FRONTIER",
-      "projected": 162.495,
-      "simulated_mean": 151.2777,
+      "projected": 161.8645,
+      "simulated_mean": 150.3276,
       "ids": [
         "44246754",
         "44246810",
@@ -1029,7 +1058,7 @@
         "44247120",
         "44247368",
         "44247372",
-        "44247561"
+        "44247560"
       ],
       "names": [
         "Patrick Mahomes",
@@ -1040,50 +1069,21 @@
         "Jaylin Noel",
         "Travis Kelce",
         "Dalton Schultz",
-        "Jaguars"
+        "Bengals"
       ],
       "salary": 49800
     },
     {
-      "entry": 26,
-      "provenance": "VALUE_FRONTIER",
-      "projected": 162.1987,
-      "simulated_mean": 146.7805,
-      "ids": [
-        "44246751",
-        "44246814",
-        "44246824",
-        "44247034",
-        "44247036",
-        "44247114",
-        "44247120",
-        "44247372",
-        "44247554"
-      ],
-      "names": [
-        "Josh Allen",
-        "Kenneth Walker III",
-        "Breece Hall",
-        "Rashee Rice",
-        "Garrett Wilson",
-        "Tre' Harris",
-        "Jaylin Noel",
-        "Dalton Schultz",
-        "Seahawks"
-      ],
-      "salary": 50000
-    },
-    {
       "entry": 27,
-      "provenance": "BEST_WITH_RB",
-      "projected": 162.5502,
-      "simulated_mean": 149.0815,
+      "provenance": "VALUE_FRONTIER",
+      "projected": 161.5618,
+      "simulated_mean": 148.019,
       "ids": [
         "44246751",
         "44246814",
-        "44246840",
+        "44246832",
         "44247028",
-        "44247036",
+        "44247042",
         "44247120",
         "44247368",
         "44247372",
@@ -1092,9 +1092,9 @@
       "names": [
         "Josh Allen",
         "Kenneth Walker III",
-        "Rhamondre Stevenson",
+        "Jaylen Warren",
         "Amon-Ra St. Brown",
-        "Garrett Wilson",
+        "Parker Washington",
         "Jaylin Noel",
         "Travis Kelce",
         "Dalton Schultz",
@@ -1105,26 +1105,26 @@
     {
       "entry": 28,
       "provenance": "VALUE_FRONTIER",
-      "projected": 163.7737,
-      "simulated_mean": 151.7581,
+      "projected": 160.954,
+      "simulated_mean": 145.3573,
       "ids": [
         "44246754",
+        "44246810",
         "44246814",
-        "44246824",
         "44247024",
-        "44247042",
         "44247114",
+        "44247120",
         "44247368",
         "44247372",
         "44247563"
       ],
       "names": [
         "Patrick Mahomes",
+        "Jahmyr Gibbs",
         "Kenneth Walker III",
-        "Breece Hall",
         "Jaxon Smith-Njigba",
-        "Parker Washington",
         "Tre' Harris",
+        "Jaylin Noel",
         "Travis Kelce",
         "Dalton Schultz",
         "Steelers"
@@ -1134,15 +1134,15 @@
     {
       "entry": 29,
       "provenance": "VALUE_FRONTIER",
-      "projected": 162.5956,
-      "simulated_mean": 147.2054,
+      "projected": 160.8618,
+      "simulated_mean": 149.4332,
       "ids": [
         "44246751",
         "44246814",
         "44246824",
-        "44247024",
-        "44247114",
-        "44247120",
+        "44247042",
+        "44247044",
+        "44247072",
         "44247368",
         "44247372",
         "44247560"
@@ -1151,223 +1151,165 @@
         "Josh Allen",
         "Kenneth Walker III",
         "Breece Hall",
-        "Jaxon Smith-Njigba",
-        "Tre' Harris",
-        "Jaylin Noel",
+        "Parker Washington",
+        "Ladd McConkey",
+        "Michael Pittman Jr.",
         "Travis Kelce",
         "Dalton Schultz",
         "Bengals"
       ],
-      "salary": 49500
+      "salary": 50000
     },
     {
       "entry": 30,
       "provenance": "VALUE_FRONTIER",
-      "projected": 162.3945,
-      "simulated_mean": 158.207,
+      "projected": 160.6238,
+      "simulated_mean": 147.9297,
       "ids": [
-        "44246754",
+        "44246761",
+        "44246810",
         "44246814",
-        "44246824",
-        "44246832",
         "44247036",
-        "44247042",
-        "44247114",
+        "44247044",
+        "44247072",
+        "44247368",
         "44247372",
-        "44247554"
+        "44247563"
       ],
       "names": [
-        "Patrick Mahomes",
+        "C.J. Stroud",
+        "Jahmyr Gibbs",
         "Kenneth Walker III",
-        "Breece Hall",
-        "Jaylen Warren",
         "Garrett Wilson",
-        "Parker Washington",
-        "Tre' Harris",
+        "Ladd McConkey",
+        "Michael Pittman Jr.",
+        "Travis Kelce",
         "Dalton Schultz",
-        "Seahawks"
+        "Steelers"
       ],
-      "salary": 49900
+      "salary": 50000
     },
     {
       "entry": 31,
       "provenance": "VALUE_FRONTIER",
-      "projected": 162.3658,
-      "simulated_mean": 153.4258,
+      "projected": 160.6028,
+      "simulated_mean": 151.7811,
       "ids": [
-        "44246761",
-        "44246814",
+        "44246751",
         "44246824",
-        "44247024",
+        "44246832",
         "44247036",
-        "44247114",
+        "44247042",
+        "44247044",
         "44247368",
         "44247372",
-        "44247560"
+        "44247563"
       ],
       "names": [
-        "C.J. Stroud",
-        "Kenneth Walker III",
+        "Josh Allen",
         "Breece Hall",
-        "Jaxon Smith-Njigba",
+        "Jaylen Warren",
         "Garrett Wilson",
-        "Tre' Harris",
+        "Parker Washington",
+        "Ladd McConkey",
         "Travis Kelce",
         "Dalton Schultz",
-        "Bengals"
+        "Steelers"
       ],
       "salary": 49700
     },
     {
       "entry": 32,
       "provenance": "VALUE_FRONTIER",
-      "projected": 162.2794,
-      "simulated_mean": 154.1558,
+      "projected": 160.5819,
+      "simulated_mean": 152.3193,
       "ids": [
         "44246751",
-        "44246814",
         "44246824",
         "44246832",
+        "44247028",
         "44247036",
-        "44247044",
-        "44247120",
+        "44247114",
+        "44247368",
         "44247372",
-        "44247567"
+        "44247560"
       ],
       "names": [
         "Josh Allen",
-        "Kenneth Walker III",
         "Breece Hall",
         "Jaylen Warren",
+        "Amon-Ra St. Brown",
         "Garrett Wilson",
-        "Ladd McConkey",
-        "Jaylin Noel",
+        "Tre' Harris",
+        "Travis Kelce",
         "Dalton Schultz",
-        "Titans"
+        "Bengals"
       ],
-      "salary": 49900
+      "salary": 49800
     },
     {
       "entry": 33,
-      "provenance": "BEST_WITH_QB",
-      "projected": 160.7397,
-      "simulated_mean": 153.1707,
+      "provenance": "VALUE_FRONTIER",
+      "projected": 160.553,
+      "simulated_mean": 146.5198,
       "ids": [
-        "44246762",
-        "44246814",
-        "44246832",
-        "44247028",
+        "44246751",
+        "44246810",
+        "44246824",
         "44247036",
-        "44247044",
+        "44247072",
+        "44247114",
         "44247368",
         "44247372",
         "44247563"
       ],
       "names": [
-        "Sam Darnold",
-        "Kenneth Walker III",
-        "Jaylen Warren",
-        "Amon-Ra St. Brown",
+        "Josh Allen",
+        "Jahmyr Gibbs",
+        "Breece Hall",
         "Garrett Wilson",
-        "Ladd McConkey",
+        "Michael Pittman Jr.",
+        "Tre' Harris",
         "Travis Kelce",
         "Dalton Schultz",
         "Steelers"
       ],
-      "salary": 50000
+      "salary": 49500
     },
     {
       "entry": 34,
-      "provenance": "BEST_WITH_QB",
-      "projected": 158.6256,
-      "simulated_mean": 151.0406,
-      "ids": [
-        "44246766",
-        "44246814",
-        "44246824",
-        "44247028",
-        "44247036",
-        "44247044",
-        "44247114",
-        "44247372",
-        "44247563"
-      ],
-      "names": [
-        "Aaron Rodgers",
-        "Kenneth Walker III",
-        "Breece Hall",
-        "Amon-Ra St. Brown",
-        "Garrett Wilson",
-        "Ladd McConkey",
-        "Tre' Harris",
-        "Dalton Schultz",
-        "Steelers"
-      ],
-      "salary": 49700
-    },
-    {
-      "entry": 35,
-      "provenance": "BEST_WITH_DST",
-      "projected": 162.0446,
-      "simulated_mean": 152.4128,
+      "provenance": "VALUE_FRONTIER",
+      "projected": 162.798,
+      "simulated_mean": 156.5606,
       "ids": [
         "44246751",
         "44246814",
         "44246824",
         "44247036",
-        "44247044",
-        "44247120",
+        "44247042",
+        "44247114",
         "44247368",
         "44247372",
-        "44247555"
+        "44247560"
       ],
       "names": [
         "Josh Allen",
         "Kenneth Walker III",
         "Breece Hall",
         "Garrett Wilson",
-        "Ladd McConkey",
-        "Jaylin Noel",
-        "Travis Kelce",
-        "Dalton Schultz",
-        "Chiefs"
-      ],
-      "salary": 50000
-    },
-    {
-      "entry": 36,
-      "provenance": "VALUE_FRONTIER",
-      "projected": 165.0051,
-      "simulated_mean": 155.1735,
-      "ids": [
-        "44246754",
-        "44246814",
-        "44246824",
-        "44247028",
-        "44247036",
-        "44247114",
-        "44247368",
-        "44247372",
-        "44247561"
-      ],
-      "names": [
-        "Patrick Mahomes",
-        "Kenneth Walker III",
-        "Breece Hall",
-        "Amon-Ra St. Brown",
-        "Garrett Wilson",
+        "Parker Washington",
         "Tre' Harris",
         "Travis Kelce",
         "Dalton Schultz",
-        "Jaguars"
+        "Bengals"
       ],
-      "salary": 49700
+      "salary": 49600
     },
     {
-      "entry": 37,
+      "entry": 35,
       "provenance": "VALUE_FRONTIER",
-      "projected": 164.8395,
-      "simulated_mean": 152.5408,
+      "projected": 162.586,
+      "simulated_mean": 150.0189,
       "ids": [
         "44246754",
         "44246814",
@@ -1393,39 +1335,184 @@
       "salary": 49500
     },
     {
-      "entry": 38,
+      "entry": 36,
       "provenance": "VALUE_FRONTIER",
-      "projected": 164.1484,
-      "simulated_mean": 155.292,
+      "projected": 162.3068,
+      "simulated_mean": 151.4813,
       "ids": [
-        "44246754",
+        "44246751",
         "44246814",
         "44246824",
-        "44247024",
+        "44247034",
         "44247036",
         "44247114",
         "44247368",
         "44247372",
-        "44247566"
+        "44247560"
+      ],
+      "names": [
+        "Josh Allen",
+        "Kenneth Walker III",
+        "Breece Hall",
+        "Rashee Rice",
+        "Garrett Wilson",
+        "Tre' Harris",
+        "Travis Kelce",
+        "Dalton Schultz",
+        "Bengals"
+      ],
+      "salary": 50000
+    },
+    {
+      "entry": 37,
+      "provenance": "VALUE_FRONTIER",
+      "projected": 162.2817,
+      "simulated_mean": 152.7547,
+      "ids": [
+        "44246754",
+        "44246814",
+        "44246824",
+        "44247028",
+        "44247036",
+        "44247114",
+        "44247368",
+        "44247372",
+        "44247564"
       ],
       "names": [
         "Patrick Mahomes",
         "Kenneth Walker III",
         "Breece Hall",
-        "Jaxon Smith-Njigba",
+        "Amon-Ra St. Brown",
         "Garrett Wilson",
         "Tre' Harris",
         "Travis Kelce",
         "Dalton Schultz",
-        "Browns"
+        "Patriots"
       ],
-      "salary": 50000
+      "salary": 49500
+    },
+    {
+      "entry": 38,
+      "provenance": "VALUE_FRONTIER",
+      "projected": 162.0233,
+      "simulated_mean": 153.9821,
+      "ids": [
+        "44246754",
+        "44246814",
+        "44246832",
+        "44247028",
+        "44247036",
+        "44247114",
+        "44247368",
+        "44247372",
+        "44247554"
+      ],
+      "names": [
+        "Patrick Mahomes",
+        "Kenneth Walker III",
+        "Jaylen Warren",
+        "Amon-Ra St. Brown",
+        "Garrett Wilson",
+        "Tre' Harris",
+        "Travis Kelce",
+        "Dalton Schultz",
+        "Seahawks"
+      ],
+      "salary": 49900
     },
     {
       "entry": 39,
       "provenance": "VALUE_FRONTIER",
-      "projected": 163.9745,
-      "simulated_mean": 148.2609,
+      "projected": 161.9668,
+      "simulated_mean": 151.3119,
+      "ids": [
+        "44246751",
+        "44246810",
+        "44246814",
+        "44247036",
+        "44247114",
+        "44247120",
+        "44247368",
+        "44247372",
+        "44247559"
+      ],
+      "names": [
+        "Josh Allen",
+        "Jahmyr Gibbs",
+        "Kenneth Walker III",
+        "Garrett Wilson",
+        "Tre' Harris",
+        "Jaylin Noel",
+        "Travis Kelce",
+        "Dalton Schultz",
+        "Panthers"
+      ],
+      "salary": 49700
+    },
+    {
+      "entry": 40,
+      "provenance": "VALUE_FRONTIER",
+      "projected": 161.7661,
+      "simulated_mean": 153.1259,
+      "ids": [
+        "44246754",
+        "44246810",
+        "44246814",
+        "44247036",
+        "44247044",
+        "44247114",
+        "44247368",
+        "44247372",
+        "44247564"
+      ],
+      "names": [
+        "Patrick Mahomes",
+        "Jahmyr Gibbs",
+        "Kenneth Walker III",
+        "Garrett Wilson",
+        "Ladd McConkey",
+        "Tre' Harris",
+        "Travis Kelce",
+        "Dalton Schultz",
+        "Patriots"
+      ],
+      "salary": 49900
+    },
+    {
+      "entry": 41,
+      "provenance": "VALUE_FRONTIER",
+      "projected": 161.7567,
+      "simulated_mean": 153.9868,
+      "ids": [
+        "44246770",
+        "44246814",
+        "44246824",
+        "44247028",
+        "44247036",
+        "44247042",
+        "44247368",
+        "44247372",
+        "44247563"
+      ],
+      "names": [
+        "Marcus Mariota",
+        "Kenneth Walker III",
+        "Breece Hall",
+        "Amon-Ra St. Brown",
+        "Garrett Wilson",
+        "Parker Washington",
+        "Travis Kelce",
+        "Dalton Schultz",
+        "Steelers"
+      ],
+      "salary": 49900
+    },
+    {
+      "entry": 42,
+      "provenance": "VALUE_FRONTIER",
+      "projected": 161.6981,
+      "simulated_mean": 148.384,
       "ids": [
         "44246751",
         "44246814",
@@ -1435,7 +1522,7 @@
         "44247114",
         "44247368",
         "44247372",
-        "44247559"
+        "44247560"
       ],
       "names": [
         "Josh Allen",
@@ -1446,51 +1533,138 @@
         "Tre' Harris",
         "Travis Kelce",
         "Dalton Schultz",
-        "Panthers"
+        "Bengals"
       ],
-      "salary": 50000
+      "salary": 49900
     },
     {
-      "entry": 40,
+      "entry": 43,
       "provenance": "VALUE_FRONTIER",
-      "projected": 163.9213,
-      "simulated_mean": 151.2197,
+      "projected": 161.5427,
+      "simulated_mean": 149.8101,
       "ids": [
         "44246754",
-        "44246814",
+        "44246824",
         "44246832",
         "44247028",
         "44247036",
-        "44247072",
+        "44247044",
         "44247368",
         "44247372",
         "44247563"
       ],
       "names": [
         "Patrick Mahomes",
-        "Kenneth Walker III",
+        "Breece Hall",
         "Jaylen Warren",
         "Amon-Ra St. Brown",
         "Garrett Wilson",
-        "Michael Pittman Jr.",
+        "Ladd McConkey",
         "Travis Kelce",
         "Dalton Schultz",
         "Steelers"
       ],
-      "salary": 49600
+      "salary": 49800
     },
     {
-      "entry": 41,
+      "entry": 44,
       "provenance": "VALUE_FRONTIER",
-      "projected": 163.9106,
-      "simulated_mean": 153.8223,
+      "projected": 161.5365,
+      "simulated_mean": 151.0826,
+      "ids": [
+        "44246754",
+        "44246824",
+        "44246832",
+        "44247028",
+        "44247036",
+        "44247042",
+        "44247368",
+        "44247372",
+        "44247563"
+      ],
+      "names": [
+        "Patrick Mahomes",
+        "Breece Hall",
+        "Jaylen Warren",
+        "Amon-Ra St. Brown",
+        "Garrett Wilson",
+        "Parker Washington",
+        "Travis Kelce",
+        "Dalton Schultz",
+        "Steelers"
+      ],
+      "salary": 49900
+    },
+    {
+      "entry": 45,
+      "provenance": "VALUE_FRONTIER",
+      "projected": 161.4464,
+      "simulated_mean": 150.6548,
+      "ids": [
+        "44246751",
+        "44246814",
+        "44246824",
+        "44247036",
+        "44247044",
+        "44247120",
+        "44247368",
+        "44247372",
+        "44247560"
+      ],
+      "names": [
+        "Josh Allen",
+        "Kenneth Walker III",
+        "Breece Hall",
+        "Garrett Wilson",
+        "Ladd McConkey",
+        "Jaylin Noel",
+        "Travis Kelce",
+        "Dalton Schultz",
+        "Bengals"
+      ],
+      "salary": 49200
+    },
+    {
+      "entry": 46,
+      "provenance": "VALUE_FRONTIER",
+      "projected": 161.2901,
+      "simulated_mean": 152.6175,
+      "ids": [
+        "44246754",
+        "44246810",
+        "44246814",
+        "44247042",
+        "44247044",
+        "44247114",
+        "44247368",
+        "44247372",
+        "44247559"
+      ],
+      "names": [
+        "Patrick Mahomes",
+        "Jahmyr Gibbs",
+        "Kenneth Walker III",
+        "Parker Washington",
+        "Ladd McConkey",
+        "Tre' Harris",
+        "Travis Kelce",
+        "Dalton Schultz",
+        "Panthers"
+      ],
+      "salary": 49900
+    },
+    {
+      "entry": 47,
+      "provenance": "VALUE_FRONTIER",
+      "projected": 161.1249,
+      "simulated_mean": 154.0495,
       "ids": [
         "44246754",
         "44246814",
         "44246824",
-        "44247028",
+        "44247024",
         "44247036",
-        "44247072",
+        "44247114",
         "44247368",
         "44247372",
         "44247567"
@@ -1499,172 +1673,27 @@
         "Patrick Mahomes",
         "Kenneth Walker III",
         "Breece Hall",
-        "Amon-Ra St. Brown",
+        "Jaxon Smith-Njigba",
         "Garrett Wilson",
-        "Michael Pittman Jr.",
+        "Tre' Harris",
         "Travis Kelce",
         "Dalton Schultz",
         "Titans"
       ],
-      "salary": 50000
+      "salary": 49900
     },
     {
-      "entry": 42,
+      "entry": 48,
       "provenance": "VALUE_FRONTIER",
-      "projected": 163.6372,
-      "simulated_mean": 150.5943,
+      "projected": 161.0834,
+      "simulated_mean": 155.953,
       "ids": [
         "44246751",
         "44246814",
         "44246832",
         "44247036",
-        "44247044",
-        "44247072",
-        "44247368",
-        "44247372",
-        "44247563"
-      ],
-      "names": [
-        "Josh Allen",
-        "Kenneth Walker III",
-        "Jaylen Warren",
-        "Garrett Wilson",
-        "Ladd McConkey",
-        "Michael Pittman Jr.",
-        "Travis Kelce",
-        "Dalton Schultz",
-        "Steelers"
-      ],
-      "salary": 49400
-    },
-    {
-      "entry": 43,
-      "provenance": "VALUE_FRONTIER",
-      "projected": 163.5295,
-      "simulated_mean": 149.8911,
-      "ids": [
-        "44246754",
-        "44246814",
-        "44246824",
-        "44246832",
-        "44247028",
-        "44247044",
-        "44247120",
-        "44247372",
-        "44247563"
-      ],
-      "names": [
-        "Patrick Mahomes",
-        "Kenneth Walker III",
-        "Breece Hall",
-        "Jaylen Warren",
-        "Amon-Ra St. Brown",
-        "Ladd McConkey",
-        "Jaylin Noel",
-        "Dalton Schultz",
-        "Steelers"
-      ],
-      "salary": 50000
-    },
-    {
-      "entry": 44,
-      "provenance": "VALUE_FRONTIER",
-      "projected": 163.5239,
-      "simulated_mean": 149.1754,
-      "ids": [
-        "44246751",
-        "44246814",
-        "44246824",
         "44247042",
-        "44247044",
-        "44247072",
-        "44247368",
-        "44247372",
-        "44247563"
-      ],
-      "names": [
-        "Josh Allen",
-        "Kenneth Walker III",
-        "Breece Hall",
-        "Parker Washington",
-        "Ladd McConkey",
-        "Michael Pittman Jr.",
-        "Travis Kelce",
-        "Dalton Schultz",
-        "Steelers"
-      ],
-      "salary": 49800
-    },
-    {
-      "entry": 45,
-      "provenance": "VALUE_FRONTIER",
-      "projected": 163.2179,
-      "simulated_mean": 151.7693,
-      "ids": [
-        "44246754",
-        "44246814",
-        "44246824",
-        "44247024",
-        "44247044",
         "44247114",
-        "44247368",
-        "44247372",
-        "44247561"
-      ],
-      "names": [
-        "Patrick Mahomes",
-        "Kenneth Walker III",
-        "Breece Hall",
-        "Jaxon Smith-Njigba",
-        "Ladd McConkey",
-        "Tre' Harris",
-        "Travis Kelce",
-        "Dalton Schultz",
-        "Jaguars"
-      ],
-      "salary": 50000
-    },
-    {
-      "entry": 46,
-      "provenance": "VALUE_FRONTIER",
-      "projected": 162.6831,
-      "simulated_mean": 149.135,
-      "ids": [
-        "44246751",
-        "44246824",
-        "44246832",
-        "44247028",
-        "44247036",
-        "44247114",
-        "44247368",
-        "44247372",
-        "44247563"
-      ],
-      "names": [
-        "Josh Allen",
-        "Breece Hall",
-        "Jaylen Warren",
-        "Amon-Ra St. Brown",
-        "Garrett Wilson",
-        "Tre' Harris",
-        "Travis Kelce",
-        "Dalton Schultz",
-        "Steelers"
-      ],
-      "salary": 49600
-    },
-    {
-      "entry": 47,
-      "provenance": "VALUE_FRONTIER",
-      "projected": 162.608,
-      "simulated_mean": 149.669,
-      "ids": [
-        "44246751",
-        "44246814",
-        "44246824",
-        "44247042",
-        "44247044",
-        "44247120",
         "44247368",
         "44247372",
         "44247554"
@@ -1672,44 +1701,15 @@
       "names": [
         "Josh Allen",
         "Kenneth Walker III",
-        "Breece Hall",
+        "Jaylen Warren",
+        "Garrett Wilson",
         "Parker Washington",
-        "Ladd McConkey",
-        "Jaylin Noel",
+        "Tre' Harris",
         "Travis Kelce",
         "Dalton Schultz",
         "Seahawks"
       ],
       "salary": 49800
-    },
-    {
-      "entry": 48,
-      "provenance": "VALUE_FRONTIER",
-      "projected": 162.5412,
-      "simulated_mean": 152.8313,
-      "ids": [
-        "44246751",
-        "44246814",
-        "44246832",
-        "44247028",
-        "44247036",
-        "44247114",
-        "44247368",
-        "44247372",
-        "44247570"
-      ],
-      "names": [
-        "Josh Allen",
-        "Kenneth Walker III",
-        "Jaylen Warren",
-        "Amon-Ra St. Brown",
-        "Garrett Wilson",
-        "Tre' Harris",
-        "Travis Kelce",
-        "Dalton Schultz",
-        "Jets"
-      ],
-      "salary": 50000
     }
   ],
   "ENTRIES_ARE_NOT_SUBMITTED": "the rosters are recorded so the deliverable can show what the method selected and so legality can be checked. Nothing is uploaded to DraftKings and no contest is entered.",
