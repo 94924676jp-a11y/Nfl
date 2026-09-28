@@ -1,0 +1,256 @@
+{
+  "ARTIFACT": "PAIR_CORRELATIONS",
+  "PURPOSE": "the correlation structure a joint game simulator must reproduce. Measured from history, so that correlation is never hand-added as a bonus.",
+  "n_player_games": 27577,
+  "n_games": 1391,
+  "n_player_games_without_pregame_rank": 9856,
+  "RANKS_ARE_PREGAME": "depth rank comes from ROLE_HISTORY for that season and week, not from the stat line being measured. Ranking by realised targets would manufacture correlation by construction.",
+  "INTERVALS": "block bootstrap over whole games, 600 reps, players within a game are not independent observations",
+  "same_club": {
+    "QB1~WR1": {
+      "r": 0.4235,
+      "n_pairs": 2251,
+      "n_games": 1313,
+      "ci95_game_blocked": {
+        "lo": 0.3877,
+        "hi": 0.461,
+        "n_reps": 600
+      },
+      "SIGN_ESTABLISHED": true
+    },
+    "QB1~WR2": {
+      "r": 0.3355,
+      "n_pairs": 2025,
+      "n_games": 1214,
+      "ci95_game_blocked": {
+        "lo": 0.2943,
+        "hi": 0.3772,
+        "n_reps": 600
+      },
+      "SIGN_ESTABLISHED": true
+    },
+    "QB1~WR3": {
+      "r": 0.2439,
+      "n_pairs": 1415,
+      "n_games": 915,
+      "ci95_game_blocked": {
+        "lo": 0.1958,
+        "hi": 0.2908,
+        "n_reps": 600
+      },
+      "SIGN_ESTABLISHED": true
+    },
+    "QB1~TE1": {
+      "r": 0.3723,
+      "n_pairs": 1523,
+      "n_games": 1089,
+      "ci95_game_blocked": {
+        "lo": 0.3256,
+        "hi": 0.4144,
+        "n_reps": 600
+      },
+      "SIGN_ESTABLISHED": true
+    },
+    "QB1~RB1": {
+      "r": 0.0723,
+      "n_pairs": 1949,
+      "n_games": 1201,
+      "ci95_game_blocked": {
+        "lo": 0.0282,
+        "hi": 0.1163,
+        "n_reps": 600
+      },
+      "SIGN_ESTABLISHED": true
+    },
+    "WR1~WR2": {
+      "r": 0.17,
+      "n_pairs": 2289,
+      "n_games": 1294,
+      "ci95_game_blocked": {
+        "lo": 0.125,
+        "hi": 0.2155,
+        "n_reps": 600
+      },
+      "SIGN_ESTABLISHED": true
+    },
+    "WR1~TE1": {
+      "r": -0.0128,
+      "n_pairs": 1598,
+      "n_games": 1109,
+      "ci95_game_blocked": {
+        "lo": -0.0588,
+        "hi": 0.0348,
+        "n_reps": 600
+      },
+      "SIGN_ESTABLISHED": false
+    },
+    "RB1~WR1": {
+      "r": 0.0184,
+      "n_pairs": 2099,
+      "n_games": 1243,
+      "ci95_game_blocked": {
+        "lo": -0.0231,
+        "hi": 0.0573,
+        "n_reps": 600
+      },
+      "SIGN_ESTABLISHED": false
+    },
+    "RB1~RB2": {
+      "r": 0.0003,
+      "n_pairs": 1574,
+      "n_games": 1017,
+      "ci95_game_blocked": {
+        "lo": -0.0461,
+        "hi": 0.0496,
+        "n_reps": 600
+      },
+      "SIGN_ESTABLISHED": false
+    },
+    "RB1~TE1": {
+      "r": -0.0355,
+      "n_pairs": 1421,
+      "n_games": 1025,
+      "ci95_game_blocked": {
+        "lo": -0.0838,
+        "hi": 0.0215,
+        "n_reps": 600
+      },
+      "SIGN_ESTABLISHED": false
+    }
+  },
+  "cross_club": {
+    "QB1~QB1": {
+      "r": 0.1534,
+      "n_pairs": 1049,
+      "n_games": 1049,
+      "ci95_game_blocked": {
+        "lo": 0.087,
+        "hi": 0.22,
+        "n_reps": 600
+      },
+      "SIGN_ESTABLISHED": true
+    },
+    "QB1~WR1": {
+      "r": 0.108,
+      "n_pairs": 2224,
+      "n_games": 1286,
+      "ci95_game_blocked": {
+        "lo": 0.063,
+        "hi": 0.1529,
+        "n_reps": 600
+      },
+      "SIGN_ESTABLISHED": true
+    },
+    "QB1~RB1": {
+      "r": 0.0801,
+      "n_pairs": 1951,
+      "n_games": 1203,
+      "ci95_game_blocked": {
+        "lo": 0.0326,
+        "hi": 0.1288,
+        "n_reps": 600
+      },
+      "SIGN_ESTABLISHED": true
+    },
+    "WR1~WR1": {
+      "r": 0.0926,
+      "n_pairs": 1203,
+      "n_games": 1203,
+      "ci95_game_blocked": {
+        "lo": 0.0395,
+        "hi": 0.1508,
+        "n_reps": 600
+      },
+      "SIGN_ESTABLISHED": true
+    },
+    "RB1~RB1": {
+      "r": -0.0506,
+      "n_pairs": 922,
+      "n_games": 922,
+      "ci95_game_blocked": {
+        "lo": -0.1065,
+        "hi": 0.0098,
+        "n_reps": 600
+      },
+      "SIGN_ESTABLISHED": false
+    },
+    "RB1~WR1": {
+      "r": 0.0205,
+      "n_pairs": 2092,
+      "n_games": 1236,
+      "ci95_game_blocked": {
+        "lo": -0.0243,
+        "hi": 0.0675,
+        "n_reps": 600
+      },
+      "SIGN_ESTABLISHED": false
+    }
+  },
+  "conditional_on_total": {
+    "QB1~WR1": {
+      "total_under_44": {
+        "r": 0.424,
+        "n_pairs": 954,
+        "n_games": 563,
+        "ci95_game_blocked": {
+          "lo": 0.3697,
+          "hi": 0.4833,
+          "n_reps": 600
+        }
+      },
+      "total_44_to_49": {
+        "r": 0.4216,
+        "n_pairs": 942,
+        "n_games": 544,
+        "ci95_game_blocked": {
+          "lo": 0.365,
+          "hi": 0.4718,
+          "n_reps": 600
+        }
+      },
+      "total_49_plus": {
+        "r": 0.3323,
+        "n_pairs": 355,
+        "n_games": 206,
+        "ci95_game_blocked": {
+          "lo": 0.2507,
+          "hi": 0.4114,
+          "n_reps": 600
+        }
+      }
+    },
+    "QB1~QB1_opp": {
+      "total_under_44": {
+        "r": 0.0854,
+        "n_pairs": 862,
+        "n_games": 431,
+        "ci95_game_blocked": {
+          "lo": -0.0187,
+          "hi": 0.1842,
+          "n_reps": 600
+        }
+      },
+      "total_44_to_49": {
+        "r": 0.104,
+        "n_pairs": 890,
+        "n_games": 445,
+        "ci95_game_blocked": {
+          "lo": 0.0063,
+          "hi": 0.2042,
+          "n_reps": 600
+        }
+      },
+      "total_49_plus": {
+        "r": 0.1883,
+        "n_pairs": 346,
+        "n_games": 173,
+        "ci95_game_blocked": {
+          "lo": 0.0325,
+          "hi": 0.3124,
+          "n_reps": 600
+        }
+      }
+    }
+  },
+  "MIN_PAIRS": 60
+}

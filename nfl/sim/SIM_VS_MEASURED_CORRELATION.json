@@ -1,0 +1,278 @@
+{
+  "ARTIFACT": "SIM_VS_MEASURED_CORRELATION",
+  "DIAGNOSIS": {
+    "n_pairs": 16,
+    "n_missed": 9,
+    "pairs_involving_the_lead_back": {
+      "n": 7,
+      "n_missed": 6,
+      "mean_signed_gap": 0.0907
+    },
+    "pairs_not_involving_a_back": {
+      "n": 9,
+      "n_missed": 3,
+      "mean_signed_gap": 0.0042
+    },
+    "quarterback_to_his_receivers": {
+      "n": 5,
+      "n_missed": 1,
+      "mean_signed_gap": -0.0515,
+      "reading": "slightly UNDER-correlated, the opposite direction to everything else"
+    },
+    "same_club_pairs_without_the_quarterback": {
+      "n": 5,
+      "mean_signed_gap": 0.0645,
+      "reading": "OVER-correlated"
+    },
+    "n_sign_disagreements": 4,
+    "ROOT_CAUSE_HYPOTHESIS": "one efficiency draw per club-game, shared by every player on that club, with no player-level idiosyncratic component. That makes a back who takes 60% of the carries an almost deterministic function of his club's day, which over-couples him to everyone else, while the multinomial split of a fixed carry pool over-couples him NEGATIVELY to the other back with nothing to offset it.",
+    "WHY_IT_FITS_THE_PATTERN": "a player-level efficiency component would push same-club non-quarterback pairs DOWN toward the measured values and push the two backs UP toward zero, which is the direction of eight of the nine misses at once.",
+    "DECLARED_NEXT_EXPERIMENT": "estimate a variance decomposition of yards per opportunity into a club-game component and a player component from PLAYER_GAME, then draw both. The split is measurable, so it is a measurement and not a tuning knob.",
+    "WHAT_MUST_NOT_HAPPEN": "no per-pair correction may be added to close these gaps. A correlation produced by a fudge factor is exactly the hand-added bonus the design forbids, and it would also destroy the one property worth having here, that the correlations are consequences of the football model rather than inputs to it.",
+    "VERDICT": "PARTIAL_PASS_WITH_A_NAMED_DEFECT"
+  },
+  "QUESTION": "does drawing both clubs from one football world reproduce the same-game correlations measured from history, with nothing added by hand?",
+  "TOLERANCE_DECLARED_BEFORE_RUNNING": 0.1,
+  "n_games_replayed": 400,
+  "n_games_available": 1384,
+  "n_sims_per_game": 150,
+  "n_pairs_reproduced": 7,
+  "n_pairs_missed": 9,
+  "n_pairs_not_comparable": 0,
+  "comparison": {
+    "same_club": {
+      "QB1~WR1": {
+        "measured_r": 0.4235,
+        "simulated_r": 0.3181,
+        "gap": -0.1054,
+        "within_tolerance": false,
+        "inside_measured_ci": false,
+        "measured_ci": {
+          "lo": 0.3877,
+          "hi": 0.461,
+          "n_reps": 600
+        },
+        "n_sim_pairs": 85350,
+        "sign_agrees": true
+      },
+      "QB1~WR2": {
+        "measured_r": 0.3355,
+        "simulated_r": 0.2754,
+        "gap": -0.0601,
+        "within_tolerance": true,
+        "inside_measured_ci": false,
+        "measured_ci": {
+          "lo": 0.2943,
+          "hi": 0.3772,
+          "n_reps": 600
+        },
+        "n_sim_pairs": 77850,
+        "sign_agrees": true
+      },
+      "QB1~WR3": {
+        "measured_r": 0.2439,
+        "simulated_r": 0.1925,
+        "gap": -0.0514,
+        "within_tolerance": true,
+        "inside_measured_ci": false,
+        "measured_ci": {
+          "lo": 0.1958,
+          "hi": 0.2908,
+          "n_reps": 600
+        },
+        "n_sim_pairs": 54600,
+        "sign_agrees": true
+      },
+      "QB1~TE1": {
+        "measured_r": 0.3723,
+        "simulated_r": 0.3646,
+        "gap": -0.0077,
+        "within_tolerance": true,
+        "inside_measured_ci": true,
+        "measured_ci": {
+          "lo": 0.3256,
+          "hi": 0.4144,
+          "n_reps": 600
+        },
+        "n_sim_pairs": 62250,
+        "sign_agrees": true
+      },
+      "QB1~RB1": {
+        "measured_r": 0.0723,
+        "simulated_r": 0.3128,
+        "gap": 0.2405,
+        "within_tolerance": false,
+        "inside_measured_ci": false,
+        "measured_ci": {
+          "lo": 0.0282,
+          "hi": 0.1163,
+          "n_reps": 600
+        },
+        "n_sim_pairs": 75300,
+        "sign_agrees": true
+      },
+      "WR1~WR2": {
+        "measured_r": 0.17,
+        "simulated_r": 0.2214,
+        "gap": 0.0514,
+        "within_tolerance": true,
+        "inside_measured_ci": false,
+        "measured_ci": {
+          "lo": 0.125,
+          "hi": 0.2155,
+          "n_reps": 600
+        },
+        "n_sim_pairs": 77850,
+        "sign_agrees": true
+      },
+      "WR1~TE1": {
+        "measured_r": -0.0128,
+        "simulated_r": 0.1513,
+        "gap": 0.1641,
+        "within_tolerance": false,
+        "inside_measured_ci": false,
+        "measured_ci": {
+          "lo": -0.0588,
+          "hi": 0.0348,
+          "n_reps": 600
+        },
+        "n_sim_pairs": 58350,
+        "sign_agrees": false
+      },
+      "RB1~WR1": {
+        "measured_r": 0.0184,
+        "simulated_r": 0.2019,
+        "gap": 0.1835,
+        "within_tolerance": false,
+        "inside_measured_ci": false,
+        "measured_ci": {
+          "lo": -0.0231,
+          "hi": 0.0573,
+          "n_reps": 600
+        },
+        "n_sim_pairs": 72600,
+        "sign_agrees": true
+      },
+      "RB1~RB2": {
+        "measured_r": 0.0003,
+        "simulated_r": -0.21,
+        "gap": -0.2103,
+        "within_tolerance": false,
+        "inside_measured_ci": false,
+        "measured_ci": {
+          "lo": -0.0461,
+          "hi": 0.0496,
+          "n_reps": 600
+        },
+        "n_sim_pairs": 57900,
+        "sign_agrees": false
+      },
+      "RB1~TE1": {
+        "measured_r": -0.0355,
+        "simulated_r": 0.0984,
+        "gap": 0.1339,
+        "within_tolerance": false,
+        "inside_measured_ci": false,
+        "measured_ci": {
+          "lo": -0.0838,
+          "hi": 0.0215,
+          "n_reps": 600
+        },
+        "n_sim_pairs": 53250,
+        "sign_agrees": false
+      }
+    },
+    "cross_club": {
+      "QB1~QB1": {
+        "measured_r": 0.1534,
+        "simulated_r": 0.1307,
+        "gap": -0.0227,
+        "within_tolerance": true,
+        "inside_measured_ci": true,
+        "measured_ci": {
+          "lo": 0.087,
+          "hi": 0.22,
+          "n_reps": 600
+        },
+        "n_sim_pairs": 45600,
+        "sign_agrees": true
+      },
+      "QB1~WR1": {
+        "measured_r": 0.108,
+        "simulated_r": 0.0751,
+        "gap": -0.0329,
+        "within_tolerance": true,
+        "inside_measured_ci": true,
+        "measured_ci": {
+          "lo": 0.063,
+          "hi": 0.1529,
+          "n_reps": 600
+        },
+        "n_sim_pairs": 85350,
+        "sign_agrees": true
+      },
+      "QB1~RB1": {
+        "measured_r": 0.0801,
+        "simulated_r": 0.0678,
+        "gap": -0.0123,
+        "within_tolerance": true,
+        "inside_measured_ci": true,
+        "measured_ci": {
+          "lo": 0.0326,
+          "hi": 0.1288,
+          "n_reps": 600
+        },
+        "n_sim_pairs": 75300,
+        "sign_agrees": true
+      },
+      "WR1~WR1": {
+        "measured_r": 0.0926,
+        "simulated_r": 0.1949,
+        "gap": 0.1023,
+        "within_tolerance": false,
+        "inside_measured_ci": false,
+        "measured_ci": {
+          "lo": 0.0395,
+          "hi": 0.1508,
+          "n_reps": 600
+        },
+        "n_sim_pairs": 40350,
+        "sign_agrees": true
+      },
+      "RB1~RB1": {
+        "measured_r": -0.0506,
+        "simulated_r": 0.1298,
+        "gap": 0.1804,
+        "within_tolerance": false,
+        "inside_measured_ci": false,
+        "measured_ci": {
+          "lo": -0.1065,
+          "hi": 0.0098,
+          "n_reps": 600
+        },
+        "n_sim_pairs": 31950,
+        "sign_agrees": false
+      },
+      "RB1~WR1": {
+        "measured_r": 0.0205,
+        "simulated_r": 0.1397,
+        "gap": 0.1192,
+        "within_tolerance": false,
+        "inside_measured_ci": false,
+        "measured_ci": {
+          "lo": -0.0243,
+          "hi": 0.0675,
+          "n_reps": 600
+        },
+        "n_sim_pairs": 71400,
+        "sign_agrees": true
+      }
+    }
+  },
+  "WHAT_THIS_DOES_NOT_TEST": "shares are same-season, so this is not an out-of-sample forecast test and is not offered as one",
+  "DECLARED_SIMPLIFICATIONS": [
+    "touchdown share proportional to opportunity share, not measured red-zone share",
+    "one efficiency draw per club-game shared across that club's players",
+    "no play-by-play sequencing or clock model beyond the game-script coefficients"
+  ]
+}
