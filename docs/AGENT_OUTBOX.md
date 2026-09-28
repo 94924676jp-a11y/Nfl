@@ -3338,3 +3338,44 @@ today, which the appearance-probability model already handles.
 to override the evidence with history — that would discard current role state, which is the one thing
 this layer exists to consume. If the ordering is correct and these players really are buried, say so
 and the flags will be recorded as confirmed rather than pending.
+## OUT-043 — repeated Hard Rock board snapshots, so a line has a history
+
+**Status:** OPEN. **Raised:** 2026-09-28. **Blocks:** closing-line comparison, edge-bucket
+calibration, and the TRIGGER stage of the two-stage bar, all of which need a price to have moved.
+
+**What exists, measured rather than assumed.** Exactly one Hard Rock board:
+`nfl/market/raw/HR_NYG_LAR_BOARD_2026-09-21T2320Z.csv`, 969 rows over 12 market types for one game,
+yielding 1,622 priced sides. It carries 74 distinct `ts_utc` values, which looks like a time series
+and is not: the row ages span 0.4 to 8.9 minutes, so those are the per-row capture moments inside a
+single scrape. **One game, one pass.** `nfl/market/price_history.py` reports
+`n_markets_with_movement_measurable: 0` and refuses closing-line value with
+`CLOSING_LINE_VALUE_UNCOMPUTABLE_ONE_PASS` rather than reporting a movement of zero, because a
+movement of zero would be reporting an absence as a measurement.
+
+**What is needed.** The same board export, for the same game, **at several separated times**. The
+existing exporter already produces the right columns; nothing new has to be written, it has to be
+run more than once. Per slate, per game, a pass at each of:
+
+| pass | when | what it establishes |
+|---|---|---|
+| OPEN | as soon as the market posts | the opening line |
+| T−24h | day before kickoff | early movement, and a price we could have acted on |
+| T−3h | after the inactives window | movement attributable to news |
+| T−15m | as close to kickoff as is safe | **the close**, which is what closing-line value needs |
+
+Two passes make movement measurable at all; four make it attributable. Anything is better than one.
+
+**One ordering requirement, and it is not negotiable.** A pass is only useful for comparison if our
+forecast was **sealed before that pass was captured**. `price_history.comparable()` enforces it
+arithmetically and refuses `PRICE_PREDATES_THE_SEAL`, so a board captured before the sealed forecast
+exists is stored but cannot be compared. If a choice has to be made, seal first and capture late.
+
+**Where to put them:** `nfl/market/raw/`, any filename containing `BOARD` and ending `.csv`. Then run
+`python3.12 nfl/market/price_history.py`, which validates each file against the real board schema,
+refuses a partial one by name, and rewrites `nfl/market/PRICE_HISTORY.json`.
+
+**Book scope and direction, restated because both are easy to erode.** Hard Rock Bet only. No
+parlays. And the comparison runs ONE WAY: a sealed forecast is scored against a price, and no
+projection is ever adjusted toward a price. `nfl/market/price_history.py` has no import path to any
+projection module and a test asserts it.
+

@@ -60,6 +60,17 @@ returns BEST_KNOWN or refuses; it never returns a proof it has not earned.
 
 ## What is genuinely blocked, and on what
 
+**Hard Rock price history (OUT-043) — one board, one pass, so no closing line exists.** The book
+governance was already right: `capture/registry.py` declares the snapshot
+`DOWNSTREAM_COMPARATOR_ONLY` and not forecast-eligible, because a model that has seen the line is no
+longer independent evidence about the line. What did not exist was a mechanism. The repository holds
+**one** board — NYG@LAR, 969 rows, 1,622 priced sides — whose 74 timestamps span 8.5 minutes and are
+one scrape, not a time series. `nfl/market/price_history.py` reports
+`n_markets_with_movement_measurable: 0` and refuses closing-line value rather than reporting a
+movement of zero, and `comparable()` refuses any price captured before the forecast was sealed. Two
+passes per game make movement measurable, four make it attributable; the cadence is in OUT-043.
+Comparison runs one way and the module has no import path to any projection.
+
 **Archived contest ownership (OUT-040).** Blocks the ownership *level*, duplication, chalk-failure
 study, and which specific 48 entries to entER. Does **not** block the method: joint selection beats
 independent selection at every field setting tested, by 0.18 to 0.32 absolute.
