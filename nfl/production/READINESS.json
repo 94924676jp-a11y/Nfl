@@ -1,7 +1,7 @@
 {
   "ARTIFACT": "READINESS",
   "RULE": "no Sunday decision may rely SILENTLY on stale local data",
-  "checked_at_unix": 1790643509,
+  "checked_at_unix": 1790713058,
   "FRESHNESS_SEMANTICS": "measured from each artifact's own stated data cutoff where it states one, and from the file modification time otherwise -- labelled as a fallback in age_source, because an unlabelled proxy is how a freshness check becomes decoration. None of the artifacts in this tree currently state a cutoff, so every age below is the fallback, and that is a gap in the artifacts rather than in this check.",
   "stages": [
     {
@@ -12,7 +12,7 @@
       "depends_on": [],
       "why": "completed club-games; only changes when a new week is added",
       "size_bytes": 17906007,
-      "age_hours": 23.58,
+      "age_hours": 42.9,
       "age_source": "FILE_MTIME_FALLBACK_ARTIFACT_STATES_NO_CUTOFF",
       "artifact_cutoff": null,
       "state": "FRESH",
@@ -28,7 +28,7 @@
       "depends_on": [],
       "why": "completed player-games; same cadence as the club table",
       "size_bytes": 22753224,
-      "age_hours": 23.46,
+      "age_hours": 42.78,
       "age_source": "FILE_MTIME_FALLBACK_ARTIFACT_STATES_NO_CUTOFF",
       "artifact_cutoff": null,
       "state": "FRESH",
@@ -46,7 +46,7 @@
       ],
       "why": "depth ranks and transitions, derived from completed games",
       "size_bytes": 8075724,
-      "age_hours": 23.44,
+      "age_hours": 42.76,
       "age_source": "FILE_MTIME_FALLBACK_ARTIFACT_STATES_NO_CUTOFF",
       "artifact_cutoff": null,
       "state": "FRESH",
@@ -64,7 +64,7 @@
       ],
       "why": "what exists per season and source; changes only when a source is acquired",
       "size_bytes": 459521,
-      "age_hours": 23.4,
+      "age_hours": 42.72,
       "age_source": "FILE_MTIME_FALLBACK_ARTIFACT_STATES_NO_CUTOFF",
       "artifact_cutoff": null,
       "state": "FRESH",
@@ -82,7 +82,7 @@
       ],
       "why": "coefficients over 6,751 games; a week of new games barely moves them",
       "size_bytes": 165813,
-      "age_hours": 21.65,
+      "age_hours": 40.97,
       "age_source": "FILE_MTIME_FALLBACK_ARTIFACT_STATES_NO_CUTOFF",
       "artifact_cutoff": null,
       "state": "FRESH",
@@ -100,7 +100,7 @@
       ],
       "why": "club-game efficiency spread, same reasoning",
       "size_bytes": 75559,
-      "age_hours": 21.84,
+      "age_hours": 41.15,
       "age_source": "FILE_MTIME_FALLBACK_ARTIFACT_STATES_NO_CUTOFF",
       "artifact_cutoff": null,
       "state": "FRESH",
@@ -118,7 +118,7 @@
       ],
       "why": "share dispersion and yards-share concentration",
       "size_bytes": 2812,
-      "age_hours": 21.62,
+      "age_hours": 40.94,
       "age_source": "FILE_MTIME_FALLBACK_ARTIFACT_STATES_NO_CUTOFF",
       "artifact_cutoff": null,
       "state": "FRESH",
@@ -136,7 +136,7 @@
       ],
       "why": "points-allowed bands for defences, plus the defensive/return touchdown and safety tail measured from play-by-play",
       "size_bytes": 227333,
-      "age_hours": 6.11,
+      "age_hours": 25.43,
       "age_source": "FILE_MTIME_FALLBACK_ARTIFACT_STATES_NO_CUTOFF",
       "artifact_cutoff": null,
       "state": "FRESH",
@@ -154,7 +154,7 @@
       ],
       "why": "the correlation targets the simulator is held to",
       "size_bytes": 5633,
-      "age_hours": 21.89,
+      "age_hours": 41.21,
       "age_source": "FILE_MTIME_FALLBACK_ARTIFACT_STATES_NO_CUTOFF",
       "artifact_cutoff": null,
       "state": "FRESH",
@@ -173,7 +173,7 @@
       ],
       "why": "must be re-run after any change to the football model",
       "size_bytes": 11840,
-      "age_hours": 7.03,
+      "age_hours": 26.35,
       "age_source": "FILE_MTIME_FALLBACK_ARTIFACT_STATES_NO_CUTOFF",
       "artifact_cutoff": null,
       "state": "FRESH",
@@ -191,7 +191,7 @@
       ],
       "why": "the role band every projection is built on. This is the artifact whose staleness was invisible: the module was corrected and the projection kept producing the old numbers because the artifact had not been rebuilt.",
       "size_bytes": 501722,
-      "age_hours": 6.98,
+      "age_hours": 26.3,
       "age_source": "FILE_MTIME_FALLBACK_ARTIFACT_STATES_NO_CUTOFF",
       "artifact_cutoff": null,
       "state": "FRESH",
@@ -210,7 +210,7 @@
       ],
       "why": "a projection for a specific slate; 36 hours spans Friday evening to Sunday morning",
       "size_bytes": 4306186,
-      "age_hours": 5.61,
+      "age_hours": 24.93,
       "age_source": "FILE_MTIME_FALLBACK_ARTIFACT_STATES_NO_CUTOFF",
       "artifact_cutoff": null,
       "state": "FRESH",
@@ -226,7 +226,7 @@
       "depends_on": [],
       "why": "availability moves until 90 minutes before kickoff; six hours is already generous",
       "size_bytes": 3231919,
-      "age_hours": 32.52,
+      "age_hours": 51.84,
       "age_source": "FILE_MTIME_FALLBACK_ARTIFACT_STATES_NO_CUTOFF",
       "artifact_cutoff": null,
       "state": "STALE",
@@ -244,7 +244,7 @@
       ],
       "why": "ownership depends on the slate projection",
       "size_bytes": 36163,
-      "age_hours": 10.95,
+      "age_hours": 30.27,
       "age_source": "FILE_MTIME_FALLBACK_ARTIFACT_STATES_NO_CUTOFF",
       "artifact_cutoff": null,
       "state": "FRESH_BUT_BEHIND_ITS_INPUTS",
@@ -266,10 +266,10 @@
       ],
       "why": "the deliverable; must post-date every input it claims to use",
       "size_bytes": 38619,
-      "age_hours": 6.01,
+      "age_hours": 25.33,
       "age_source": "FILE_MTIME_FALLBACK_ARTIFACT_STATES_NO_CUTOFF",
       "artifact_cutoff": null,
-      "state": "FRESH_BUT_BEHIND_ITS_INPUTS",
+      "state": "STALE",
       "inputs_newer_than_this_artifact": [
         "slate.projection"
       ],
@@ -279,8 +279,8 @@
   ],
   "state_counts": {
     "FRESH": 12,
-    "STALE": 1,
-    "FRESH_BUT_BEHIND_ITS_INPUTS": 2
+    "STALE": 2,
+    "FRESH_BUT_BEHIND_ITS_INPUTS": 1
   },
   "by_tier": {
     "FOUNDATION": {
@@ -298,7 +298,7 @@
       "FRESH_BUT_BEHIND_ITS_INPUTS": 1
     },
     "DECISION": {
-      "FRESH_BUT_BEHIND_ITS_INPUTS": 1
+      "STALE": 1
     }
   },
   "lineage": {

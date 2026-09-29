@@ -34,7 +34,12 @@ _REPO = pathlib.Path(__file__).resolve().parents[2]
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
-from sportsplatform.governance.outcome import Outcome  # noqa: E402
+# `Cause` is imported because two refusal paths below pass cause=Cause.DEPENDENCY. It was
+# missing, so both raised NameError instead of returning a governed BLOCKED -- and a refusal
+# that crashes is not a refusal. Neither path fires unless the benchmark projection load is
+# itself refused, which only happens once a proprietary module is imported in the same
+# interpreter, so it stayed invisible until the suite ran this module in sequence.
+from sportsplatform.governance.outcome import Cause, Outcome  # noqa: E402
 
 SPEC_VERSION = 'search-quality-gate-1'
 
