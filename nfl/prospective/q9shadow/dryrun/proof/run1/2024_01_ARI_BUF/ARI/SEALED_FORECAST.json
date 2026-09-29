@@ -1,0 +1,1413 @@
+{
+ "contract_version": "nfl-forecast-artifact-1",
+ "game_id": "2024_01_ARI_BUF",
+ "kickoff_utc": "2026-09-13T12:00:00Z",
+ "written_at": "2026-09-12T12:00:00Z",
+ "model_arm": "A",
+ "spec_hash": "778eccceee9253a73a18164b77e2b686f84e13941d0b15ea7f29754134a5ed4f",
+ "code_commit": "512eeb0df7cf4db9e78d6f3c2f2de57ab0787ca8+src1[44aa01d03783de18]",
+ "code_identity": {
+  "contract_version": "nfl-code-identity-1",
+  "commit": "512eeb0df7cf4db9e78d6f3c2f2de57ab0787ca8",
+  "source_scope_sha256": "44aa01d03783de1852e326ebdd9231dabf562583de6bdbd89c2a0d660b029a43",
+  "source_scope_clean": true,
+  "dirty_source_files": [],
+  "n_dirty_source_files": 0,
+  "scope": {
+   "source_roots": [
+    "nfl/production",
+    "nfl/prospective",
+    "nfl/identity",
+    "nfl/product",
+    "nfl/schema",
+    "nfl/tools",
+    "sportsplatform"
+   ],
+   "source_suffixes": [
+    ".py"
+   ],
+   "excluded_subtrees": [
+    "nfl/prospective/q9shadow/dryrun",
+    "nfl/prospective/q9shadow/sealed",
+    "nfl/production/runs",
+    "nfl/derived",
+    "nfl/research",
+    "nfl/vintage"
+   ],
+   "generated_subtrees_excluded": [
+    "nfl/prospective/q9shadow/dryrun",
+    "nfl/prospective/q9shadow/sealed",
+    "nfl/production/runs",
+    "nfl/derived",
+    "nfl/research",
+    "nfl/vintage"
+   ],
+   "research_out_of_scope_why": "causal research modules are hashed by content into module_source_sha16, which is inside spec_sha256 (identity E), which is inside the fingerprint. Adding nfl/research/** to B would move every run id for thousands of non-causal files."
+  },
+  "runtime": {
+   "implementation": "CPython",
+   "python_version": "3.12.3",
+   "numpy_version": "2.5.3",
+   "platform": "Linux-6.18.44-fc-v37-x86_64-with-glibc2.39",
+   "thread_env": {
+    "OMP_NUM_THREADS": null,
+    "MKL_NUM_THREADS": null,
+    "OPENBLAS_NUM_THREADS": null,
+    "NUMEXPR_NUM_THREADS": null,
+    "VECLIB_MAXIMUM_THREADS": null
+   },
+   "hashed_keys": [
+    "implementation",
+    "python_version",
+    "numpy_version"
+   ],
+   "recorded_not_hashed_keys": [
+    "platform",
+    "thread_env"
+   ]
+  },
+  "runtime_token": "implementation=CPython+python_version=3.12.3+numpy_version=2.5.3",
+  "clean_source_sentinel_sha256": "44aa01d03783de1852e326ebdd9231dabf562583de6bdbd89c2a0d660b029a43",
+  "residual_gaps": [
+   "IMPORTED_RESEARCH_MODULES_NOT_IN_B: a research module that the sealing path imports but that is not one of the four in module_source_sha16 -- nfl.research.q7.panel and nfl.research.q8.audit are the live examples -- is in neither B nor E. Remedy: hash each imported module file by content into the candidate identity. That is candidate.py, not this module.",
+   "NON_PY_SOURCE_NOT_IN_B: a frozen parameter file under a source root (nfl/production/nonqb/frozen/*.json.gz) is not source by SOURCE_SUFFIXES. For Q9 these are covered by the candidate parameter hashes in E. Remedy elsewhere: seal the resolved path and sha256, which is WS18 F1.",
+   "THREAD_ENV_RECORDED_NOT_HASHED: promote to RUNTIME_HASHED_KEYS if and when a measured draw difference is attributed to thread count. Not before -- an unmeasured coefficient in an identity is a silent constant.",
+   "STAGING_NOT_DISTINGUISHED: B hashes worktree CONTENT, so a staged and an unstaged edit of identical bytes are the same identity. Deliberate: the bytes the interpreter reads are the bytes that matter."
+  ],
+  "code_version": "512eeb0df7cf4db9e78d6f3c2f2de57ab0787ca8+src1[44aa01d03783de18]"
+ },
+ "seed_protocol": {
+  "seed": 20260912,
+  "n_draws": 120,
+  "policy": "shared upstream; per-arm allocation stream via crc32"
+ },
+ "feature_set_hash": "f620eeed09d0dd6e",
+ "eligibility_verdict": "DRY_RUN -- NOT A PROSPECTIVE FORECAST, NOT EVIDENCE. Frozen historical features, synthetic kickoff, separate ledger.",
+ "player_ids": [
+  "00-0032141",
+  "00-0032398",
+  "00-0033251",
+  "00-0033553",
+  "00-0035500",
+  "00-0035662",
+  "00-0036425",
+  "00-0036924",
+  "00-0036936",
+  "00-0037744",
+  "00-0038456",
+  "00-0038559",
+  "00-0038705",
+  "00-0038710",
+  "00-0039041",
+  "00-0039521",
+  "00-0039737",
+  "00-0039849",
+  "00-0039921"
+ ],
+ "team_ids": [
+  "ARI"
+ ],
+ "source_captures": [
+  {
+   "source": "depth_charts",
+   "sha256": "bd431f6c551c64e4d0cfe8d816fed35c160637e1bcd0d3dba5898adecffc5e78",
+   "retrieved_at": "2026-09-11T12:41:23Z",
+   "partition_id": "depth_charts@bd431f6c551c64e4",
+   "url": "nfl/vintage/depth_charts.bd431f6c551c64e4.reduced.csv.gz"
+  },
+  {
+   "source": "espn_injuries_json",
+   "sha256": "40c51195c26a2865e5a4588896b8bf597219e448c3481000b618fc959014fea0",
+   "retrieved_at": "2026-09-12T11:34:52Z",
+   "partition_id": "espn_injuries_json@40c51195c26a2865",
+   "url": "nfl/vintage/espn_injuries_json.40c51195c26a2865.json.gz"
+  },
+  {
+   "source": "injuries",
+   "sha256": "cd7338473dd852d02c6986663addb31431609946fa8756d0460bf2e98d3501a9",
+   "retrieved_at": "2026-09-11T12:19:21Z",
+   "partition_id": "injuries@cd7338473dd852d0",
+   "url": "nfl/vintage/injuries.cd7338473dd852d0.csv.gz"
+  },
+  {
+   "source": "official_inactives",
+   "sha256": "fefbd73647bb1e1dcad3c0faee018f914cc9a850185305fe0ce618cd08141808",
+   "retrieved_at": "2026-09-12T11:34:52Z",
+   "partition_id": "official_inactives@fefbd73647bb1e1d",
+   "url": "nfl/vintage/official_inactives.fefbd73647bb1e1d.html.gz"
+  },
+  {
+   "source": "official_injury_report",
+   "sha256": "2b6e3d8d1ed7ee6aa89452065ecc85a2d57dfe46d3b5f97013e2bf3679c6aa29",
+   "retrieved_at": "2026-09-12T11:34:52Z",
+   "partition_id": "official_injury_report@2b6e3d8d1ed7ee6a",
+   "url": "nfl/vintage/official_injury_report.2b6e3d8d1ed7ee6a.html.gz"
+  },
+  {
+   "source": "schedules",
+   "sha256": "2261e8a0887d4f43243b69f003cc84032eeaed0a3ca4a53702a01341bd1a66d2",
+   "retrieved_at": "2026-09-12T11:34:52Z",
+   "partition_id": "schedules@2261e8a0887d4f43",
+   "url": "nfl/vintage/schedules.2261e8a0887d4f43.csv.gz"
+  },
+  {
+   "source": "weekly_rosters",
+   "sha256": "fb79560b5c4738a284e4b37f49759cdceaa461eee6f41ea0840e7d0d9eb17026",
+   "retrieved_at": "2026-09-11T12:19:21Z",
+   "partition_id": "weekly_rosters@fb79560b5c4738a2",
+   "url": "nfl/vintage/weekly_rosters.fb79560b5c4738a2.reduced.csv.gz"
+  }
+ ],
+ "distributions": {
+  "00-0032141": {
+   "receiving": {
+    "targets": {
+     "arm": "Q9_HURDLE",
+     "zero_probability": 0.875,
+     "mean_targets": 0.16667,
+     "p50_targets": 0.0,
+     "p90_targets": 1.0,
+     "mean_targets_given_positive": 1.33333,
+     "n_positive_draws": 15
+    }
+   }
+  },
+  "00-0032398": {
+   "receiving": {
+    "targets": {
+     "arm": "Q9_HURDLE",
+     "zero_probability": 0.266667,
+     "mean_targets": 2.34167,
+     "p50_targets": 2.0,
+     "p90_targets": 5.0,
+     "mean_targets_given_positive": 3.19318,
+     "n_positive_draws": 88
+    }
+   }
+  },
+  "00-0033251": {
+   "receiving": {
+    "targets": {
+     "arm": "Q9_HURDLE",
+     "zero_probability": 0.7,
+     "mean_targets": 0.46667,
+     "p50_targets": 0.0,
+     "p90_targets": 2.0,
+     "mean_targets_given_positive": 1.55556,
+     "n_positive_draws": 36
+    }
+   }
+  },
+  "00-0033553": {
+   "receiving": {
+    "targets": {
+     "arm": "Q9_HURDLE",
+     "zero_probability": 0.125,
+     "mean_targets": 2.69167,
+     "p50_targets": 2.5,
+     "p90_targets": 5.0,
+     "mean_targets_given_positive": 3.07619,
+     "n_positive_draws": 105
+    }
+   }
+  },
+  "00-0035500": {
+   "receiving": {
+    "targets": {
+     "arm": "Q9_HURDLE",
+     "zero_probability": 0.075,
+     "mean_targets": 4.1,
+     "p50_targets": 4.0,
+     "p90_targets": 7.0,
+     "mean_targets_given_positive": 4.43243,
+     "n_positive_draws": 111
+    }
+   }
+  },
+  "00-0035662": {
+   "receiving": {
+    "targets": {
+     "arm": "Q9_HURDLE",
+     "zero_probability": 0.8,
+     "mean_targets": 0.91667,
+     "p50_targets": 0.0,
+     "p90_targets": 4.0,
+     "mean_targets_given_positive": 4.58333,
+     "n_positive_draws": 24
+    }
+   }
+  },
+  "00-0036425": {
+   "receiving": {
+    "targets": {
+     "arm": "Q9_HURDLE",
+     "zero_probability": 1.0,
+     "mean_targets": 0.0,
+     "p50_targets": 0.0,
+     "p90_targets": 0.0,
+     "mean_targets_given_positive": null,
+     "n_positive_draws": 0
+    }
+   }
+  },
+  "00-0036924": {
+   "receiving": {
+    "targets": {
+     "arm": "Q9_HURDLE",
+     "zero_probability": 0.983333,
+     "mean_targets": 0.06667,
+     "p50_targets": 0.0,
+     "p90_targets": 0.0,
+     "mean_targets_given_positive": 4.0,
+     "n_positive_draws": 2
+    }
+   }
+  },
+  "00-0036936": {
+   "receiving": {
+    "targets": {
+     "arm": "Q9_HURDLE",
+     "zero_probability": 0.866667,
+     "mean_targets": 0.56667,
+     "p50_targets": 0.0,
+     "p90_targets": 3.0,
+     "mean_targets_given_positive": 4.25,
+     "n_positive_draws": 16
+    }
+   }
+  },
+  "00-0037744": {
+   "receiving": {
+    "targets": {
+     "arm": "Q9_HURDLE",
+     "zero_probability": 0.033333,
+     "mean_targets": 6.9,
+     "p50_targets": 6.0,
+     "p90_targets": 12.0,
+     "mean_targets_given_positive": 7.13793,
+     "n_positive_draws": 116
+    }
+   }
+  },
+  "00-0038456": {
+   "receiving": {
+    "targets": {
+     "arm": "Q9_HURDLE",
+     "zero_probability": 0.641667,
+     "mean_targets": 0.5,
+     "p50_targets": 0.0,
+     "p90_targets": 2.0,
+     "mean_targets_given_positive": 1.39535,
+     "n_positive_draws": 43
+    }
+   }
+  },
+  "00-0038559": {
+   "receiving": {
+    "targets": {
+     "arm": "Q9_HURDLE",
+     "zero_probability": 0.066667,
+     "mean_targets": 4.11667,
+     "p50_targets": 4.0,
+     "p90_targets": 8.0,
+     "mean_targets_given_positive": 4.41071,
+     "n_positive_draws": 112
+    }
+   }
+  },
+  "00-0038705": {
+   "receiving": {
+    "targets": {
+     "arm": "Q9_HURDLE",
+     "zero_probability": 0.6,
+     "mean_targets": 0.90833,
+     "p50_targets": 0.0,
+     "p90_targets": 3.0,
+     "mean_targets_given_positive": 2.27083,
+     "n_positive_draws": 48
+    }
+   }
+  },
+  "00-0038710": {
+   "receiving": {
+    "targets": {
+     "arm": "Q9_HURDLE",
+     "zero_probability": 0.966667,
+     "mean_targets": 0.04167,
+     "p50_targets": 0.0,
+     "p90_targets": 0.0,
+     "mean_targets_given_positive": 1.25,
+     "n_positive_draws": 4
+    }
+   }
+  },
+  "00-0039041": {
+   "receiving": {
+    "targets": {
+     "arm": "Q9_HURDLE",
+     "zero_probability": 0.241667,
+     "mean_targets": 2.03333,
+     "p50_targets": 2.0,
+     "p90_targets": 4.0,
+     "mean_targets_given_positive": 2.68132,
+     "n_positive_draws": 91
+    }
+   }
+  },
+  "00-0039521": {
+   "receiving": {
+    "targets": {
+     "arm": "Q9_HURDLE",
+     "zero_probability": 1.0,
+     "mean_targets": 0.0,
+     "p50_targets": 0.0,
+     "p90_targets": 0.0,
+     "mean_targets_given_positive": null,
+     "n_positive_draws": 0
+    }
+   }
+  },
+  "00-0039737": {
+   "receiving": {
+    "targets": {
+     "arm": "Q9_HURDLE",
+     "zero_probability": 0.491667,
+     "mean_targets": 0.96667,
+     "p50_targets": 1.0,
+     "p90_targets": 2.1000000000000085,
+     "mean_targets_given_positive": 1.90164,
+     "n_positive_draws": 61
+    }
+   }
+  },
+  "00-0039849": {
+   "receiving": {
+    "targets": {
+     "arm": "Q9_HURDLE",
+     "zero_probability": 0.191667,
+     "mean_targets": 4.43333,
+     "p50_targets": 4.0,
+     "p90_targets": 9.0,
+     "mean_targets_given_positive": 5.48454,
+     "n_positive_draws": 97
+    }
+   }
+  },
+  "00-0039921": {
+   "receiving": {
+    "targets": {
+     "arm": "Q9_HURDLE",
+     "zero_probability": 0.491667,
+     "mean_targets": 1.13333,
+     "p50_targets": 1.0,
+     "p90_targets": 3.0,
+     "mean_targets_given_positive": 2.22951,
+     "n_positive_draws": 61
+    }
+   }
+  }
+ },
+ "completeness": "PARTIAL_PLAYER_COVERAGE",
+ "distributions_source": "MODEL",
+ "draw_artifact": "nfl/prospective/q9shadow/dryrun/proof/run1/2024_01_ARI_BUF/ARI/shadow_target_draws.npz",
+ "draw_artifact_sha256": "8f9b13d8e97fb75d26ad946c9494f4fb120022286374bbab588763d8d3aa1455",
+ "draw_content_sha256": "1639aa5f3bdc1406de04d702d43af80b17aa5e8dac8b0b73351b6663606b1719",
+ "accounting_verdicts": [
+  {
+   "invariant": "current_season_input_freshness",
+   "class": "HARD",
+   "state": "NOT_APPLICABLE",
+   "code": "Q9_SHADOW_LAYER_NOT_IN_THIS_ARTIFACT",
+   "detail": "current_season_input_freshness is a quarterback-layer invariant. This artifact allocates receiving targets only, so the check has nothing to evaluate. NOT_APPLICABLE rather than DEFERRED: a debt would claim the check is owed on this artifact, and it is not owed -- there is no QB layer in it.",
+   "evaluator": "nfl.production.freshness.check_all"
+  },
+  {
+   "invariant": "draw_artifact_integrity",
+   "class": "HARD",
+   "state": "PASS",
+   "code": "DRAW_ARTIFACT_INTEGRITY_OK",
+   "detail": "",
+   "evaluator": "nfl.production.draws_artifact.verify"
+  },
+  {
+   "invariant": "draw_contract",
+   "class": "HARD",
+   "state": "NOT_APPLICABLE",
+   "code": "Q9_SHADOW_LAYER_NOT_IN_THIS_ARTIFACT",
+   "detail": "draw_contract is a quarterback-layer invariant. This artifact allocates receiving targets only, so the check has nothing to evaluate. NOT_APPLICABLE rather than DEFERRED: a debt would claim the check is owed on this artifact, and it is not owed -- there is no QB layer in it.",
+   "evaluator": "nfl.production.contracts.validate.validate_draw_manifest"
+  },
+  {
+   "invariant": "draw_encoding_lossless",
+   "class": "HARD",
+   "state": "PASS",
+   "code": "DRAW_ENCODING_LOSSLESS_OK",
+   "detail": "",
+   "evaluator": "nfl.production.draws_artifact.DrawSet.write"
+  },
+  {
+   "invariant": "draw_index_shared",
+   "class": "HARD",
+   "state": "PASS",
+   "code": "DRAW_INDEX_SHARED",
+   "detail": "",
+   "evaluator": "nfl.production.draws_artifact.verify"
+  },
+  {
+   "invariant": "draw_set_non_empty",
+   "class": "HARD",
+   "state": "PASS",
+   "code": "DRAW_SET_NON_EMPTY",
+   "detail": "",
+   "evaluator": "nfl.production.draws_artifact.DrawSet"
+  },
+  {
+   "invariant": "draw_summary_consistency",
+   "class": "HARD",
+   "state": "PASS",
+   "code": "DRAW_SUMMARY_CONSISTENT",
+   "detail": "",
+   "evaluator": "nfl.production.draws_artifact.assert_summary_consistent"
+  },
+  {
+   "invariant": "qb_cross_layer_reconciliation",
+   "class": "HARD",
+   "state": "NOT_APPLICABLE",
+   "code": "Q9_SHADOW_LAYER_NOT_IN_THIS_ARTIFACT",
+   "detail": "qb_cross_layer_reconciliation is a quarterback-layer invariant. This artifact allocates receiving targets only, so the check has nothing to evaluate. NOT_APPLICABLE rather than DEFERRED: a debt would claim the check is owed on this artifact, and it is not owed -- there is no QB layer in it.",
+   "evaluator": "nfl.production.qb_accounting.reconcile_cross_layer"
+  },
+  {
+   "invariant": "qb_dropback_identity",
+   "class": "HARD",
+   "state": "NOT_APPLICABLE",
+   "code": "Q9_SHADOW_LAYER_NOT_IN_THIS_ARTIFACT",
+   "detail": "qb_dropback_identity is a quarterback-layer invariant. This artifact allocates receiving targets only, so the check has nothing to evaluate. NOT_APPLICABLE rather than DEFERRED: a debt would claim the check is owed on this artifact, and it is not owed -- there is no QB layer in it.",
+   "evaluator": "nfl.production.qb_v1.identity_check"
+  },
+  {
+   "invariant": "qb_inactive_owns_nothing",
+   "class": "HARD",
+   "state": "NOT_APPLICABLE",
+   "code": "Q9_SHADOW_LAYER_NOT_IN_THIS_ARTIFACT",
+   "detail": "qb_inactive_owns_nothing is a quarterback-layer invariant. This artifact allocates receiving targets only, so the check has nothing to evaluate. NOT_APPLICABLE rather than DEFERRED: a debt would claim the check is owed on this artifact, and it is not owed -- there is no QB layer in it.",
+   "evaluator": "nfl.production.qb_accounting.assert_inactive_qbs_own_nothing"
+  },
+  {
+   "invariant": "qb_per_draw_accounting",
+   "class": "HARD",
+   "state": "NOT_APPLICABLE",
+   "code": "Q9_SHADOW_LAYER_NOT_IN_THIS_ARTIFACT",
+   "detail": "qb_per_draw_accounting is a quarterback-layer invariant. This artifact allocates receiving targets only, so the check has nothing to evaluate. NOT_APPLICABLE rather than DEFERRED: a debt would claim the check is owed on this artifact, and it is not owed -- there is no QB layer in it.",
+   "evaluator": "nfl.production.qb_accounting.reconcile_draws"
+  },
+  {
+   "invariant": "qb_team_accounting",
+   "class": "HARD",
+   "state": "NOT_APPLICABLE",
+   "code": "Q9_SHADOW_LAYER_NOT_IN_THIS_ARTIFACT",
+   "detail": "qb_team_accounting is a quarterback-layer invariant. This artifact allocates receiving targets only, so the check has nothing to evaluate. NOT_APPLICABLE rather than DEFERRED: a debt would claim the check is owed on this artifact, and it is not owed -- there is no QB layer in it.",
+   "evaluator": "nfl.production.qb_accounting.reconcile_team"
+  },
+  {
+   "invariant": "rushing_single_owner",
+   "class": "HARD",
+   "state": "NOT_APPLICABLE",
+   "code": "Q9_SHADOW_LAYER_NOT_IN_THIS_ARTIFACT",
+   "detail": "rushing_single_owner is a quarterback-layer invariant. This artifact allocates receiving targets only, so the check has nothing to evaluate. NOT_APPLICABLE rather than DEFERRED: a debt would claim the check is owed on this artifact, and it is not owed -- there is no QB layer in it.",
+   "evaluator": "nfl.production.nonqb.rushing_a1.allocate"
+  },
+  {
+   "invariant": "scramble_carry_coherence",
+   "class": "HARD",
+   "state": "NOT_APPLICABLE",
+   "code": "Q9_SHADOW_LAYER_NOT_IN_THIS_ARTIFACT",
+   "detail": "scramble_carry_coherence is a quarterback-layer invariant. This artifact allocates receiving targets only, so the check has nothing to evaluate. NOT_APPLICABLE rather than DEFERRED: a debt would claim the check is owed on this artifact, and it is not owed -- there is no QB layer in it.",
+   "evaluator": "nfl.production.nonqb.scramble_coherence.couple"
+  },
+  {
+   "invariant": "nonqb_layer_availability",
+   "class": "DIAGNOSTIC",
+   "state": "PASS",
+   "code": "Q9_SHADOW_DIAGNOSTIC_RECORDED",
+   "detail": "the diagnostic is recorded; this artifact carries no QB layer and no other non-QB layer",
+   "evaluator": "nfl.production.run_forecast (non-QB chain states)"
+  },
+  {
+   "invariant": "qb_allocation_residual",
+   "class": "DIAGNOSTIC",
+   "state": "PASS",
+   "code": "Q9_SHADOW_DIAGNOSTIC_RECORDED",
+   "detail": "the diagnostic is recorded; this artifact carries no QB layer and no other non-QB layer",
+   "evaluator": "nfl.production.qb_accounting.reconcile_team (warnings)"
+  },
+  {
+   "invariant": "qb_known_limitations",
+   "class": "DIAGNOSTIC",
+   "state": "PASS",
+   "code": "Q9_SHADOW_DIAGNOSTIC_RECORDED",
+   "detail": "the diagnostic is recorded; this artifact carries no QB layer and no other non-QB layer",
+   "evaluator": "nfl.production.qb_v1.KNOWN_LIMITATIONS"
+  },
+  {
+   "invariant": "unavailable_owns_nothing",
+   "class": "DIAGNOSTIC",
+   "state": "PASS",
+   "code": "Q9_SHADOW_DIAGNOSTIC_RECORDED",
+   "detail": "the diagnostic is recorded; this artifact carries no QB layer and no other non-QB layer",
+   "evaluator": "nfl.research.unsealed.unavailable_owns_nothing.check"
+  }
+ ],
+ "dry_run": true,
+ "prospective_evidence": false,
+ "dry_run_declarations": {
+  "kickoff_is_synthetic": true,
+  "synthetic_kickoff_rule": "written_at + 24h",
+  "real_game_date": "2024-09-08",
+  "feature_season": 2024,
+  "freeze_comparison": "NOT_APPLICABLE[Q9_DRY_RUN_IDENTITY_NOT_COMPARED_TO_FREEZE]",
+  "input_leakage_checks_failing": [
+   {
+    "partition_id": "depth_charts@bd431f6c551c64e4",
+    "code": "PROVENANCE_LEAKAGE"
+   },
+   {
+    "partition_id": "espn_injuries_json@40c51195c26a2865",
+    "code": "PROVENANCE_LEAKAGE"
+   },
+   {
+    "partition_id": "injuries@cd7338473dd852d0",
+    "code": "PROVENANCE_LEAKAGE"
+   },
+   {
+    "partition_id": "official_inactives@fefbd73647bb1e1d",
+    "code": "PROVENANCE_LEAKAGE"
+   },
+   {
+    "partition_id": "official_injury_report@2b6e3d8d1ed7ee6a",
+    "code": "PROVENANCE_LEAKAGE"
+   },
+   {
+    "partition_id": "schedules@2261e8a0887d4f43",
+    "code": "PROVENANCE_LEAKAGE"
+   },
+   {
+    "partition_id": "weekly_rosters@fb79560b5c4738a2",
+    "code": "PROVENANCE_LEAKAGE"
+   }
+  ],
+  "why_leakage_is_recorded_not_refused": "the committed historical panel contains the outcomes of the seasons in it -- that is what a panel IS. A dry run on historical features therefore cannot pass the pregame leakage check, and the honest handling is to record the failing check and mark the artifact as not evidence, rather than to suppress the check or to call the artifact a forecast."
+ },
+ "layer_matrix": {
+  "team_volume": "NOT_MODELED",
+  "qb_attempts": "NOT_MODELED",
+  "qb_passing_yards": "NOT_MODELED",
+  "qb_td": "NOT_MODELED",
+  "carries": "NOT_MODELED",
+  "targets": "PASS",
+  "receptions": "BLOCKED:ARM_LAYER_ABSENT:R8_PRODUCTION",
+  "receiving_yards": "BLOCKED:ARM_LAYER_ABSENT:R8_PRODUCTION",
+  "td_allocation": "BLOCKED:ARM_LAYER_ABSENT:R8_PRODUCTION"
+ },
+ "governed_completeness_verdict": "PARTIAL",
+ "governance_notes": {
+  "completeness_vs_protocol_section_2": "OWNER RULING: section 2 stands unchanged. A PARTIAL_PLAYER_COVERAGE artifact may be scored diagnostically, counts toward no section-4 floor, and cannot support promotion. It is NOT relabelled COMPLETE. The route to an eligible forecast is the paired build in nfl/prospective/q9shadow/complete.py, which carries all nine required layers on one set of upstream draws with the target allocation as the only divergence.",
+  "completeness_is_computed_by": "nfl.prospective.q9shadow.complete.completeness_value over nfl.research.completeness.forecast_completeness",
+  "absent_layers": [
+   "carries",
+   "qb_attempts",
+   "qb_passing_yards",
+   "qb_td",
+   "receiving_yards",
+   "receptions",
+   "td_allocation",
+   "team_volume"
+  ],
+  "declared_scope": "RB/WR/TE receiving targets for one team-game",
+  "section_4_credit": "NONE while completeness != COMPLETE"
+ },
+ "time_basis": {
+  "canonical_tz": "UTC",
+  "verdict": "PASS[TIME_BASIS_PROSPECTIVE_ORDER_HOLDS]",
+  "bases": {
+   "written_at": "OFFSET_PRESENT",
+   "kickoff_utc": "OFFSET_PRESENT",
+   "retrieved_at[0]": "OFFSET_PRESENT",
+   "retrieved_at[1]": "OFFSET_PRESENT",
+   "retrieved_at[2]": "OFFSET_PRESENT",
+   "retrieved_at[3]": "OFFSET_PRESENT",
+   "retrieved_at[4]": "OFFSET_PRESENT",
+   "retrieved_at[5]": "OFFSET_PRESENT",
+   "retrieved_at[6]": "OFFSET_PRESENT"
+  },
+  "hours_before_kickoff": 24.0,
+  "newest_retrieved_at": "2026-09-12T11:34:52+00:00",
+  "n_inputs": 7
+ },
+ "forecast_id": "Q9SH-9e3b2f8b398292d9",
+ "artifact_id": "eccd03ab8cc657f25389b1f322b65f59e210037e3c286114a7bd41628bf18fc1",
+ "seal": {
+  "seal_sha256": "2ad15bcb0c89afd8ebe20b6b407fcf7ea3715affe85141d077e54632b40ef8be",
+  "payload_sha256": "9e3b2f8b398292d911b7f63be83f55c3ef3ee90f2906745a7f32b5f8aafa73b6",
+  "payload_excludes": [
+   "draw_artifact",
+   "draw_artifact_sha256"
+  ],
+  "payload_excludes_why": "the output location is a property of the machine that ran the seal, not of the forecast. The draws are identified by draw_content_sha256, which is inside the payload.",
+  "identity_fingerprint": "NFLFP-134cfbe5a732b001",
+  "consumed_partition_ids": [
+   "depth_charts@bd431f6c551c64e4",
+   "espn_injuries_json@40c51195c26a2865",
+   "injuries@cd7338473dd852d0",
+   "official_inactives@fefbd73647bb1e1d",
+   "official_injury_report@2b6e3d8d1ed7ee6a",
+   "schedules@2261e8a0887d4f43",
+   "weekly_rosters@fb79560b5c4738a2"
+  ]
+ },
+ "candidate": {
+  "name": "Q9_TARGET_HURDLE",
+  "promoted": false,
+  "prospective_candidate": true,
+  "shadow_only": true,
+  "identity_sha256": "778eccceee9253a73a18164b77e2b686f84e13941d0b15ea7f29754134a5ed4f",
+  "freeze_artifact": "nfl/research/q9b/Q9_PROSPECTIVE_FREEZE.json",
+  "coefficient_sha16": "ef28b13db8612cb0",
+  "feature_schema_sha16": "f620eeed09d0dd6e",
+  "one_target_floor": true,
+  "named_fallbacks": [
+   "HURDLE_NO_CLEARERS",
+   "HURDLE_MORE_CLEARERS_THAN_BUDGET"
+  ],
+  "production_interface_sha16": "1f1d4a4bdcd6d954",
+  "appearance_artifact": "nfl.production.nonqb.layers.appearance (R8)",
+  "appearance_spec_sha16": "1835bc9f5ac5d06a",
+  "budget_point_sha16": "c61887258e5c4823",
+  "budget_residual_pool_sha16": "7628cc20b8b9b95c",
+  "budget_estimator": "ewma"
+ },
+ "cutoff": {
+  "cutoff_utc": "2026-09-12T12:00:00Z",
+  "cutoff_basis": "information_set.observed_before",
+  "cutoff_basis_note": "the consumed clock: selection of every input was bounded by it",
+  "newest_input_observed_at": "2026-09-12T11:34:52Z"
+ },
+ "arms": {
+  "production": "R8_PRODUCTION",
+  "candidate": "Q9_HURDLE",
+  "shared_upstream": true,
+  "rng_policy": "shared upstream; per-arm allocation stream via crc32"
+ },
+ "fallback_counters": {
+  "R8_PRODUCTION/DRAWS": 120,
+  "Q9_HURDLE/DRAWS": 120,
+  "Q9_HURDLE/HURDLE_MORE_CLEARERS_THAN_BUDGET": 1
+ },
+ "reconciliation": {
+  "R8_PRODUCTION": 0.0,
+  "Q9_HURDLE": 0.0
+ },
+ "seal_path": {
+  "appearance_interface": "nfl.production.nonqb.layers.appearance",
+  "governed_appearance_interface": "nfl.production.nonqb.layers.appearance",
+  "is_governed": true,
+  "validates_inputs_via": "nfl.production.nonqb.inputs.validate_appearance_inputs",
+  "upstream_test_only": true,
+  "readiness_gate": null,
+  "readiness_gate_note": "PER_TEAM is the branch that refuses INJURY_REPORT_INCOMPLETE. layers.appearance reaches it only when `teams` is supplied; without it the slate-wide branch runs and does not refuse."
+ },
+ "input_bundle_sha256": "6970cb9b6ea65fa849263d978967ed61cea515efc95ff4bb68c16ed696b6546e",
+ "absent_input_sources": [
+  "official_transactions",
+  "pbp_participation",
+  "snap_counts"
+ ],
+ "player_summary": [
+  {
+   "arm": "R8_PRODUCTION",
+   "player_id": "00-0032141",
+   "position": "TE",
+   "role_class": "fringe",
+   "appearance_certainty": "doubtful",
+   "p_appear_drawn": 0.291667,
+   "p_hurdle": 0.426915,
+   "prior_depth_bucket": "17+",
+   "base_share": 0.0344797,
+   "zero_probability": 0.8,
+   "mean_targets": 0.28333,
+   "p50_targets": 0.0,
+   "p90_targets": 1.0,
+   "mean_targets_given_positive": 1.41667,
+   "n_positive_draws": 24,
+   "mean_receiving_yards": 2.375
+  },
+  {
+   "arm": "R8_PRODUCTION",
+   "player_id": "00-0032398",
+   "position": "WR",
+   "role_class": "rotational",
+   "appearance_certainty": "near_certain",
+   "p_appear_drawn": 0.9,
+   "p_hurdle": 0.875829,
+   "prior_depth_bucket": "17+",
+   "base_share": 0.09872932,
+   "zero_probability": 0.191667,
+   "mean_targets": 2.23333,
+   "p50_targets": 2.0,
+   "p90_targets": 4.0,
+   "mean_targets_given_positive": 2.76289,
+   "n_positive_draws": 97,
+   "mean_receiving_yards": 17.9
+  },
+  {
+   "arm": "R8_PRODUCTION",
+   "player_id": "00-0033251",
+   "position": "WR",
+   "role_class": "fringe",
+   "appearance_certainty": "likely",
+   "p_appear_drawn": 0.708333,
+   "p_hurdle": 0.484674,
+   "prior_depth_bucket": "17+",
+   "base_share": 0.02739998,
+   "zero_probability": 0.633333,
+   "mean_targets": 0.54167,
+   "p50_targets": 0.0,
+   "p90_targets": 2.0,
+   "mean_targets_given_positive": 1.47727,
+   "n_positive_draws": 44,
+   "mean_receiving_yards": 3.825
+  },
+  {
+   "arm": "R8_PRODUCTION",
+   "player_id": "00-0033553",
+   "position": "RB",
+   "role_class": "starter",
+   "appearance_certainty": "near_certain",
+   "p_appear_drawn": 0.983333,
+   "p_hurdle": 0.909291,
+   "prior_depth_bucket": "17+",
+   "base_share": 0.08627241,
+   "zero_probability": 0.141667,
+   "mean_targets": 2.19167,
+   "p50_targets": 2.0,
+   "p90_targets": 4.0,
+   "mean_targets_given_positive": 2.5534,
+   "n_positive_draws": 103,
+   "mean_receiving_yards": 16.85
+  },
+  {
+   "arm": "R8_PRODUCTION",
+   "player_id": "00-0035500",
+   "position": "WR",
+   "role_class": "rotational",
+   "appearance_certainty": "near_certain",
+   "p_appear_drawn": 0.933333,
+   "p_hurdle": 0.94775,
+   "prior_depth_bucket": "17+",
+   "base_share": 0.14855981,
+   "zero_probability": 0.116667,
+   "mean_targets": 3.55833,
+   "p50_targets": 3.0,
+   "p90_targets": 6.1000000000000085,
+   "mean_targets_given_positive": 4.0283,
+   "n_positive_draws": 106,
+   "mean_receiving_yards": 27.3583
+  },
+  {
+   "arm": "R8_PRODUCTION",
+   "player_id": "00-0035662",
+   "position": "WR",
+   "role_class": "fringe",
+   "appearance_certainty": "doubtful",
+   "p_appear_drawn": 0.216667,
+   "p_hurdle": 0.947871,
+   "prior_depth_bucket": "17+",
+   "base_share": 0.19397623,
+   "zero_probability": 0.791667,
+   "mean_targets": 1.11667,
+   "p50_targets": 0.0,
+   "p90_targets": 5.0,
+   "mean_targets_given_positive": 5.36,
+   "n_positive_draws": 25,
+   "mean_receiving_yards": 7.675
+  },
+  {
+   "arm": "R8_PRODUCTION",
+   "player_id": "00-0036425",
+   "position": "RB",
+   "role_class": "fringe",
+   "appearance_certainty": "doubtful",
+   "p_appear_drawn": 0.0,
+   "p_hurdle": 0.421639,
+   "prior_depth_bucket": "17+",
+   "base_share": 0.02815109,
+   "zero_probability": 1.0,
+   "mean_targets": 0.0,
+   "p50_targets": 0.0,
+   "p90_targets": 0.0,
+   "mean_targets_given_positive": null,
+   "n_positive_draws": 0,
+   "mean_receiving_yards": 0.0
+  },
+  {
+   "arm": "R8_PRODUCTION",
+   "player_id": "00-0036924",
+   "position": "RB",
+   "role_class": "rotational",
+   "appearance_certainty": "doubtful",
+   "p_appear_drawn": 0.041667,
+   "p_hurdle": 0.683466,
+   "prior_depth_bucket": "17+",
+   "base_share": 0.05622801,
+   "zero_probability": 0.966667,
+   "mean_targets": 0.05,
+   "p50_targets": 0.0,
+   "p90_targets": 0.0,
+   "mean_targets_given_positive": 1.5,
+   "n_positive_draws": 4,
+   "mean_receiving_yards": 0.1667
+  },
+  {
+   "arm": "R8_PRODUCTION",
+   "player_id": "00-0036936",
+   "position": "WR",
+   "role_class": "starter",
+   "appearance_certainty": "doubtful",
+   "p_appear_drawn": 0.158333,
+   "p_hurdle": 0.928242,
+   "prior_depth_bucket": "17+",
+   "base_share": 0.11588609,
+   "zero_probability": 0.85,
+   "mean_targets": 0.44167,
+   "p50_targets": 0.0,
+   "p90_targets": 3.0,
+   "mean_targets_given_positive": 2.94444,
+   "n_positive_draws": 18,
+   "mean_receiving_yards": 3.45
+  },
+  {
+   "arm": "R8_PRODUCTION",
+   "player_id": "00-0037744",
+   "position": "TE",
+   "role_class": "starter",
+   "appearance_certainty": "near_certain",
+   "p_appear_drawn": 0.975,
+   "p_hurdle": 0.989955,
+   "prior_depth_bucket": "17+",
+   "base_share": 0.25524124,
+   "zero_probability": 0.033333,
+   "mean_targets": 6.225,
+   "p50_targets": 6.0,
+   "p90_targets": 10.0,
+   "mean_targets_given_positive": 6.43966,
+   "n_positive_draws": 116,
+   "mean_receiving_yards": 48.3917
+  },
+  {
+   "arm": "R8_PRODUCTION",
+   "player_id": "00-0038456",
+   "position": "TE",
+   "role_class": "rotational",
+   "appearance_certainty": "likely",
+   "p_appear_drawn": 0.841667,
+   "p_hurdle": 0.394593,
+   "prior_depth_bucket": "1-3",
+   "base_share": 0.01483071,
+   "zero_probability": 0.6,
+   "mean_targets": 0.475,
+   "p50_targets": 0.0,
+   "p90_targets": 1.0,
+   "mean_targets_given_positive": 1.1875,
+   "n_positive_draws": 48,
+   "mean_receiving_yards": 3.9667
+  },
+  {
+   "arm": "R8_PRODUCTION",
+   "player_id": "00-0038559",
+   "position": "WR",
+   "role_class": "fringe",
+   "appearance_certainty": "near_certain",
+   "p_appear_drawn": 0.991667,
+   "p_hurdle": 0.941521,
+   "prior_depth_bucket": "9-16",
+   "base_share": 0.14535932,
+   "zero_probability": 0.066667,
+   "mean_targets": 3.88333,
+   "p50_targets": 4.0,
+   "p90_targets": 7.0,
+   "mean_targets_given_positive": 4.16071,
+   "n_positive_draws": 112,
+   "mean_receiving_yards": 27.1167
+  },
+  {
+   "arm": "R8_PRODUCTION",
+   "player_id": "00-0038705",
+   "position": "RB",
+   "role_class": "rotational",
+   "appearance_certainty": "uncertain",
+   "p_appear_drawn": 0.533333,
+   "p_hurdle": 0.73086,
+   "prior_depth_bucket": "9-16",
+   "base_share": 0.07043329,
+   "zero_probability": 0.533333,
+   "mean_targets": 1.1,
+   "p50_targets": 0.0,
+   "p90_targets": 3.0,
+   "mean_targets_given_positive": 2.35714,
+   "n_positive_draws": 56,
+   "mean_receiving_yards": 7.9417
+  },
+  {
+   "arm": "R8_PRODUCTION",
+   "player_id": "00-0038710",
+   "position": "TE",
+   "role_class": "fringe",
+   "appearance_certainty": "doubtful",
+   "p_appear_drawn": 0.141667,
+   "p_hurdle": 0.263707,
+   "prior_depth_bucket": "1-3",
+   "base_share": 0.01093901,
+   "zero_probability": 0.958333,
+   "mean_targets": 0.05,
+   "p50_targets": 0.0,
+   "p90_targets": 0.0,
+   "mean_targets_given_positive": 1.2,
+   "n_positive_draws": 5,
+   "mean_receiving_yards": 0.5583
+  },
+  {
+   "arm": "R8_PRODUCTION",
+   "player_id": "00-0039041",
+   "position": "TE",
+   "role_class": "rotational",
+   "appearance_certainty": "near_certain",
+   "p_appear_drawn": 0.958333,
+   "p_hurdle": 0.757123,
+   "prior_depth_bucket": "9-16",
+   "base_share": 0.06785965,
+   "zero_probability": 0.291667,
+   "mean_targets": 1.575,
+   "p50_targets": 1.0,
+   "p90_targets": 4.0,
+   "mean_targets_given_positive": 2.22353,
+   "n_positive_draws": 85,
+   "mean_receiving_yards": 10.35
+  },
+  {
+   "arm": "R8_PRODUCTION",
+   "player_id": "00-0039521",
+   "position": "WR",
+   "role_class": "rotational",
+   "appearance_certainty": "doubtful",
+   "p_appear_drawn": 0.0,
+   "p_hurdle": 0.004271,
+   "prior_depth_bucket": "0",
+   "base_share": 0.14770562,
+   "zero_probability": 1.0,
+   "mean_targets": 0.0,
+   "p50_targets": 0.0,
+   "p90_targets": 0.0,
+   "mean_targets_given_positive": null,
+   "n_positive_draws": 0,
+   "mean_receiving_yards": 0.0
+  },
+  {
+   "arm": "R8_PRODUCTION",
+   "player_id": "00-0039737",
+   "position": "TE",
+   "role_class": "rotational",
+   "appearance_certainty": "near_certain",
+   "p_appear_drawn": 1.0,
+   "p_hurdle": 0.50298,
+   "prior_depth_bucket": "0",
+   "base_share": 0.05040609,
+   "zero_probability": 0.308333,
+   "mean_targets": 1.34167,
+   "p50_targets": 1.0,
+   "p90_targets": 3.0,
+   "mean_targets_given_positive": 1.93976,
+   "n_positive_draws": 83,
+   "mean_receiving_yards": 10.7333
+  },
+  {
+   "arm": "R8_PRODUCTION",
+   "player_id": "00-0039849",
+   "position": "WR",
+   "role_class": "starter",
+   "appearance_certainty": "near_certain",
+   "p_appear_drawn": 1.0,
+   "p_hurdle": 0.818069,
+   "prior_depth_bucket": "0",
+   "base_share": 0.22071437,
+   "zero_probability": 0.016667,
+   "mean_targets": 5.81667,
+   "p50_targets": 6.0,
+   "p90_targets": 10.0,
+   "mean_targets_given_positive": 5.91525,
+   "n_positive_draws": 118,
+   "mean_receiving_yards": 43.3
+  },
+  {
+   "arm": "R8_PRODUCTION",
+   "player_id": "00-0039921",
+   "position": "RB",
+   "role_class": "rotational",
+   "appearance_certainty": "near_certain",
+   "p_appear_drawn": 1.0,
+   "p_hurdle": 0.56262,
+   "prior_depth_bucket": "0",
+   "base_share": 0.05413643,
+   "zero_probability": 0.225,
+   "mean_targets": 1.46667,
+   "p50_targets": 1.0,
+   "p90_targets": 3.0,
+   "mean_targets_given_positive": 1.89247,
+   "n_positive_draws": 93,
+   "mean_receiving_yards": 11.5167
+  },
+  {
+   "arm": "Q9_HURDLE",
+   "player_id": "00-0032141",
+   "position": "TE",
+   "role_class": "fringe",
+   "appearance_certainty": "doubtful",
+   "p_appear_drawn": 0.291667,
+   "p_hurdle": 0.426915,
+   "prior_depth_bucket": "17+",
+   "base_share": 0.0344797,
+   "zero_probability": 0.875,
+   "mean_targets": 0.16667,
+   "p50_targets": 0.0,
+   "p90_targets": 1.0,
+   "mean_targets_given_positive": 1.33333,
+   "n_positive_draws": 15,
+   "mean_receiving_yards": 1.5583
+  },
+  {
+   "arm": "Q9_HURDLE",
+   "player_id": "00-0032398",
+   "position": "WR",
+   "role_class": "rotational",
+   "appearance_certainty": "near_certain",
+   "p_appear_drawn": 0.9,
+   "p_hurdle": 0.875829,
+   "prior_depth_bucket": "17+",
+   "base_share": 0.09872932,
+   "zero_probability": 0.266667,
+   "mean_targets": 2.34167,
+   "p50_targets": 2.0,
+   "p90_targets": 5.0,
+   "mean_targets_given_positive": 3.19318,
+   "n_positive_draws": 88,
+   "mean_receiving_yards": 16.7667
+  },
+  {
+   "arm": "Q9_HURDLE",
+   "player_id": "00-0033251",
+   "position": "WR",
+   "role_class": "fringe",
+   "appearance_certainty": "likely",
+   "p_appear_drawn": 0.708333,
+   "p_hurdle": 0.484674,
+   "prior_depth_bucket": "17+",
+   "base_share": 0.02739998,
+   "zero_probability": 0.7,
+   "mean_targets": 0.46667,
+   "p50_targets": 0.0,
+   "p90_targets": 2.0,
+   "mean_targets_given_positive": 1.55556,
+   "n_positive_draws": 36,
+   "mean_receiving_yards": 3.575
+  },
+  {
+   "arm": "Q9_HURDLE",
+   "player_id": "00-0033553",
+   "position": "RB",
+   "role_class": "starter",
+   "appearance_certainty": "near_certain",
+   "p_appear_drawn": 0.983333,
+   "p_hurdle": 0.909291,
+   "prior_depth_bucket": "17+",
+   "base_share": 0.08627241,
+   "zero_probability": 0.125,
+   "mean_targets": 2.69167,
+   "p50_targets": 2.5,
+   "p90_targets": 5.0,
+   "mean_targets_given_positive": 3.07619,
+   "n_positive_draws": 105,
+   "mean_receiving_yards": 20.9
+  },
+  {
+   "arm": "Q9_HURDLE",
+   "player_id": "00-0035500",
+   "position": "WR",
+   "role_class": "rotational",
+   "appearance_certainty": "near_certain",
+   "p_appear_drawn": 0.933333,
+   "p_hurdle": 0.94775,
+   "prior_depth_bucket": "17+",
+   "base_share": 0.14855981,
+   "zero_probability": 0.075,
+   "mean_targets": 4.1,
+   "p50_targets": 4.0,
+   "p90_targets": 7.0,
+   "mean_targets_given_positive": 4.43243,
+   "n_positive_draws": 111,
+   "mean_receiving_yards": 32.4583
+  },
+  {
+   "arm": "Q9_HURDLE",
+   "player_id": "00-0035662",
+   "position": "WR",
+   "role_class": "fringe",
+   "appearance_certainty": "doubtful",
+   "p_appear_drawn": 0.216667,
+   "p_hurdle": 0.947871,
+   "prior_depth_bucket": "17+",
+   "base_share": 0.19397623,
+   "zero_probability": 0.8,
+   "mean_targets": 0.91667,
+   "p50_targets": 0.0,
+   "p90_targets": 4.0,
+   "mean_targets_given_positive": 4.58333,
+   "n_positive_draws": 24,
+   "mean_receiving_yards": 6.1
+  },
+  {
+   "arm": "Q9_HURDLE",
+   "player_id": "00-0036425",
+   "position": "RB",
+   "role_class": "fringe",
+   "appearance_certainty": "doubtful",
+   "p_appear_drawn": 0.0,
+   "p_hurdle": 0.421639,
+   "prior_depth_bucket": "17+",
+   "base_share": 0.02815109,
+   "zero_probability": 1.0,
+   "mean_targets": 0.0,
+   "p50_targets": 0.0,
+   "p90_targets": 0.0,
+   "mean_targets_given_positive": null,
+   "n_positive_draws": 0,
+   "mean_receiving_yards": 0.0
+  },
+  {
+   "arm": "Q9_HURDLE",
+   "player_id": "00-0036924",
+   "position": "RB",
+   "role_class": "rotational",
+   "appearance_certainty": "doubtful",
+   "p_appear_drawn": 0.041667,
+   "p_hurdle": 0.683466,
+   "prior_depth_bucket": "17+",
+   "base_share": 0.05622801,
+   "zero_probability": 0.983333,
+   "mean_targets": 0.06667,
+   "p50_targets": 0.0,
+   "p90_targets": 0.0,
+   "mean_targets_given_positive": 4.0,
+   "n_positive_draws": 2,
+   "mean_receiving_yards": 0.6333
+  },
+  {
+   "arm": "Q9_HURDLE",
+   "player_id": "00-0036936",
+   "position": "WR",
+   "role_class": "starter",
+   "appearance_certainty": "doubtful",
+   "p_appear_drawn": 0.158333,
+   "p_hurdle": 0.928242,
+   "prior_depth_bucket": "17+",
+   "base_share": 0.11588609,
+   "zero_probability": 0.866667,
+   "mean_targets": 0.56667,
+   "p50_targets": 0.0,
+   "p90_targets": 3.0,
+   "mean_targets_given_positive": 4.25,
+   "n_positive_draws": 16,
+   "mean_receiving_yards": 3.95
+  },
+  {
+   "arm": "Q9_HURDLE",
+   "player_id": "00-0037744",
+   "position": "TE",
+   "role_class": "starter",
+   "appearance_certainty": "near_certain",
+   "p_appear_drawn": 0.975,
+   "p_hurdle": 0.989955,
+   "prior_depth_bucket": "17+",
+   "base_share": 0.25524124,
+   "zero_probability": 0.033333,
+   "mean_targets": 6.9,
+   "p50_targets": 6.0,
+   "p90_targets": 12.0,
+   "mean_targets_given_positive": 7.13793,
+   "n_positive_draws": 116,
+   "mean_receiving_yards": 52.9417
+  },
+  {
+   "arm": "Q9_HURDLE",
+   "player_id": "00-0038456",
+   "position": "TE",
+   "role_class": "rotational",
+   "appearance_certainty": "likely",
+   "p_appear_drawn": 0.841667,
+   "p_hurdle": 0.394593,
+   "prior_depth_bucket": "1-3",
+   "base_share": 0.01483071,
+   "zero_probability": 0.641667,
+   "mean_targets": 0.5,
+   "p50_targets": 0.0,
+   "p90_targets": 2.0,
+   "mean_targets_given_positive": 1.39535,
+   "n_positive_draws": 43,
+   "mean_receiving_yards": 3.3083
+  },
+  {
+   "arm": "Q9_HURDLE",
+   "player_id": "00-0038559",
+   "position": "WR",
+   "role_class": "fringe",
+   "appearance_certainty": "near_certain",
+   "p_appear_drawn": 0.991667,
+   "p_hurdle": 0.941521,
+   "prior_depth_bucket": "9-16",
+   "base_share": 0.14535932,
+   "zero_probability": 0.066667,
+   "mean_targets": 4.11667,
+   "p50_targets": 4.0,
+   "p90_targets": 8.0,
+   "mean_targets_given_positive": 4.41071,
+   "n_positive_draws": 112,
+   "mean_receiving_yards": 33.5417
+  },
+  {
+   "arm": "Q9_HURDLE",
+   "player_id": "00-0038705",
+   "position": "RB",
+   "role_class": "rotational",
+   "appearance_certainty": "uncertain",
+   "p_appear_drawn": 0.533333,
+   "p_hurdle": 0.73086,
+   "prior_depth_bucket": "9-16",
+   "base_share": 0.07043329,
+   "zero_probability": 0.6,
+   "mean_targets": 0.90833,
+   "p50_targets": 0.0,
+   "p90_targets": 3.0,
+   "mean_targets_given_positive": 2.27083,
+   "n_positive_draws": 48,
+   "mean_receiving_yards": 6.875
+  },
+  {
+   "arm": "Q9_HURDLE",
+   "player_id": "00-0038710",
+   "position": "TE",
+   "role_class": "fringe",
+   "appearance_certainty": "doubtful",
+   "p_appear_drawn": 0.141667,
+   "p_hurdle": 0.263707,
+   "prior_depth_bucket": "1-3",
+   "base_share": 0.01093901,
+   "zero_probability": 0.966667,
+   "mean_targets": 0.04167,
+   "p50_targets": 0.0,
+   "p90_targets": 0.0,
+   "mean_targets_given_positive": 1.25,
+   "n_positive_draws": 4,
+   "mean_receiving_yards": 0.1417
+  },
+  {
+   "arm": "Q9_HURDLE",
+   "player_id": "00-0039041",
+   "position": "TE",
+   "role_class": "rotational",
+   "appearance_certainty": "near_certain",
+   "p_appear_drawn": 0.958333,
+   "p_hurdle": 0.757123,
+   "prior_depth_bucket": "9-16",
+   "base_share": 0.06785965,
+   "zero_probability": 0.241667,
+   "mean_targets": 2.03333,
+   "p50_targets": 2.0,
+   "p90_targets": 4.0,
+   "mean_targets_given_positive": 2.68132,
+   "n_positive_draws": 91,
+   "mean_receiving_yards": 16.1667
+  },
+  {
+   "arm": "Q9_HURDLE",
+   "player_id": "00-0039521",
+   "position": "WR",
+   "role_class": "rotational",
+   "appearance_certainty": "doubtful",
+   "p_appear_drawn": 0.0,
+   "p_hurdle": 0.004271,
+   "prior_depth_bucket": "0",
+   "base_share": 0.14770562,
+   "zero_probability": 1.0,
+   "mean_targets": 0.0,
+   "p50_targets": 0.0,
+   "p90_targets": 0.0,
+   "mean_targets_given_positive": null,
+   "n_positive_draws": 0,
+   "mean_receiving_yards": 0.0
+  },
+  {
+   "arm": "Q9_HURDLE",
+   "player_id": "00-0039737",
+   "position": "TE",
+   "role_class": "rotational",
+   "appearance_certainty": "near_certain",
+   "p_appear_drawn": 1.0,
+   "p_hurdle": 0.50298,
+   "prior_depth_bucket": "0",
+   "base_share": 0.05040609,
+   "zero_probability": 0.491667,
+   "mean_targets": 0.96667,
+   "p50_targets": 1.0,
+   "p90_targets": 2.1000000000000085,
+   "mean_targets_given_positive": 1.90164,
+   "n_positive_draws": 61,
+   "mean_receiving_yards": 7.05
+  },
+  {
+   "arm": "Q9_HURDLE",
+   "player_id": "00-0039849",
+   "position": "WR",
+   "role_class": "starter",
+   "appearance_certainty": "near_certain",
+   "p_appear_drawn": 1.0,
+   "p_hurdle": 0.818069,
+   "prior_depth_bucket": "0",
+   "base_share": 0.22071437,
+   "zero_probability": 0.191667,
+   "mean_targets": 4.43333,
+   "p50_targets": 4.0,
+   "p90_targets": 9.0,
+   "mean_targets_given_positive": 5.48454,
+   "n_positive_draws": 97,
+   "mean_receiving_yards": 34.7833
+  },
+  {
+   "arm": "Q9_HURDLE",
+   "player_id": "00-0039921",
+   "position": "RB",
+   "role_class": "rotational",
+   "appearance_certainty": "near_certain",
+   "p_appear_drawn": 1.0,
+   "p_hurdle": 0.56262,
+   "prior_depth_bucket": "0",
+   "base_share": 0.05413643,
+   "zero_probability": 0.491667,
+   "mean_targets": 1.13333,
+   "p50_targets": 1.0,
+   "p90_targets": 3.0,
+   "mean_targets_given_positive": 2.22951,
+   "n_positive_draws": 61,
+   "mean_receiving_yards": 8.2
+  }
+ ],
+ "season": 2024,
+ "team": "ARI"
+}
