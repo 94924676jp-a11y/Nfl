@@ -1,32 +1,28 @@
 {
  "generated_by": "nfl/tools/agent_state.py",
- "generated_at": "2026-09-20T03:31:55.444964+00:00",
+ "generated_at": "2026-09-28T23:55:07.891804+00:00",
  "git": {
-  "head": "effdd6e53c1f94179f6d8ac43949183f2a6604a4",
-  "head_short": "effdd6e",
+  "head": "82a049c45e9c779b04ac3cf483cadddeeb649702",
+  "head_short": "82a049c4",
   "branch": "claude/nfl-greenfield-architecture-stsxmk",
-  "head_subject": "Readiness: add the attributed suite state and the freeze I broke",
+  "head_subject": "Archiving was opt-in the wrong way round: the test suite filled the permanent record",
   "remote_head": "NO_UPSTREAM",
-  "dirty_source_files": [
-   "nfl/production/pipeline.py"
-  ],
+  "dirty_source_files": [],
   "worktree": {
-   "commit": "effdd6e53c1f94179f6d8ac43949183f2a6604a4",
-   "code_version": "effdd6e53c1f94179f6d8ac43949183f2a6604a4+src1[2ee55ed39491ff38]",
-   "source_scope_clean": false,
-   "dirty_source_files": [
-    "nfl/production/pipeline.py"
-   ],
-   "n_dirty_source_files": 1,
-   "n_dirty_tree_entries_observed": 24,
+   "commit": "82a049c45e9c779b04ac3cf483cadddeeb649702",
+   "code_version": "82a049c45e9c779b04ac3cf483cadddeeb649702+src1[44aa01d03783de18]",
+   "source_scope_clean": true,
+   "dirty_source_files": [],
+   "n_dirty_source_files": 0,
+   "n_dirty_tree_entries_observed": 2,
    "scope_note": "dirty_source_files is SOURCE scope only -- the .py files the identity contract hashes. A changed .md or .json is counted in n_dirty_tree_entries_observed and is not listed."
   },
-  "is_clean": false
+  "is_clean": true
  },
  "active_task": null,
  "active_task_position": null,
  "n_active": 0,
- "last_completed_task": "DFS-FS1",
+ "last_completed_task": "DFS-C0",
  "queue": [
   {
    "id": "P6",
@@ -510,6 +506,172 @@
    "description": "The 136 PRE_EXISTING suite failures classified at `7d46f39`. Not to be fixed merely to obtain a green suite; to be worked deliberately, by cause, when a cause is on the critical path.",
    "blocker": "none \u2014 deliberately low priority",
    "queue_position": 32
+  },
+  {
+   "id": "DK-3",
+   "acceptance_criteria": [
+    "the stage derives its required-source set from `capture.registry` for the season/week/arm being run, and refuses by name when one is absent",
+    "the refusal names the missing sources rather than returning a bare code",
+    "`nfl/tests/test_capture_validation_provenance.py` is updated in the SAME commit, because it currently characterises the defect and will fail",
+    "no source is exempted to make the new check pass."
+   ],
+   "priority": "1",
+   "status": "DONE",
+   "completed": "2026-09-20",
+   "dependencies": "none",
+   "description": "`run_forecast._capture` (`run_forecast.py:266-306`) iterates the source set it is HANDED. It checks each supplied entry for registry membership, a sha256, a `retrieved_at` no later than `written_at`, and schema. It never asks whether a REQUIRED source is absent. One synthetic entry therefore returns `PASS[INPUTS_VALIDATED]` for the whole stage, and an empty set returns `SOURCE_MISSING` \u2014 the two outcomes differ by the caller's declaration, not by the captures. A stage named `capture_validation` whose PASS is a statement about its caller is the project's standing defect class (a partial result read as success) sitting in the gate meant to catch it. Found 2026-09-20 while auditing whether Early Only projections exist; the audit's first version reported the sealing refusal and missed this.",
+   "blocker": "none \u2014 executable here",
+   "classification": "CRITICAL_CORRECTNESS",
+   "resolution": "`run_forecast.required_capture_sources()` derives the set from `vintage_selector.FAMILIES` intersected with `registry.REGISTRY` -- `{depth_charts, injuries, schedules, weekly_rosters}` today. Derived, not hand-written, because a hand-written list goes stale silently the moment a family is added. `capture_validation` refuses `REQUIRED_SOURCE_NOT_DECLARED` naming each missing source. Completeness is checked AFTER per-entry well-formedness so every existing refusal (`SOURCE_TOO_LATE`, `SCHEMA_DRIFT`, `RAW_HASH_MISMATCH`, `UNAUTHORIZED_INPUT`) stays reachable. Three sources are excluded with stated reasons rather than by omission: `official_inactives` (does not exist until ~T-90; requiring it would refuse every pregame run), `official_injury_report` and `espn_injuries_json` (not families today; they join automatically if they become ones). Nothing was exempted to make the check pass. The PASS now carries a governance record declaring its own scope, so it cannot be read as more than it is.",
+   "queue_position": 33
+  },
+  {
+   "id": "DK-4",
+   "acceptance_criteria": [
+    "a module reads `nfl/vintage_manifest.jsonl` and emits true `source_hashes` \u2014 real sha256, real `retrieved_at` \u2014 for every registered source a slate run consumes",
+    "a slate run built from it passes `capture_validation` on evidence and is NOT flagged `dry_run`",
+    "the placeholder in `run_slate.py` is removed, not left beside the new path",
+    "sealing is expected to refuse afterwards on SUN-5, and that refusal is the correct result rather than a reason to weaken this item."
+   ],
+   "priority": "1",
+   "status": "DONE",
+   "completed": "2026-09-20",
+   "dependencies": "DK-3",
+   "description": "There is no production fixture assembler. The only slate driver, `nfl/production/rehearsal/run_slate.py`, is declared REHEARSAL ONLY, passes `dry_run=True` in the call itself, and satisfies `capture_validation` with `{'schedules': {'sha256': 'b' * 64, 'retrieved_at': '2026-09-08T12:00:00Z'}}` \u2014 a placeholder hash for one source (`run_slate.py:96`). `run_forecast.py` invoked directly with no `--fixtures` refuses `SOURCE_MISSING` before any layer runs; measured on all eight Early Only games at `--written-at 2026-09-20T05:00:00Z` under `V1_CANDIDATE_R8`. So there is no path from the vintage manifest to a slate run that is not flagged as rehearsal. Note precisely what this does NOT say: the football layers below the stage read real captures through `vintage_selector`, with real capture ids. The numbers rest on real evidence; the provenance record does not.",
+   "blocker": "none \u2014 executable here, no network needed",
+   "classification": "PRODUCTION_BLOCKER",
+   "resolution": "`nfl/production/fixture_assembler.py`. `assemble(written_at)` calls `vintage_selector.select(family, as_of=cut)` -- the SAME call the football layers make -- for every required source, opens the blob, hashes the bytes itself, and cross-checks its measurement against the manifest's recorded `blob_file_sha256`, refusing `VINTAGE_BLOB_HASH_DISAGREES` rather than preferring either. The validated set and the consumed set are now the same set; they were disjoint before, which is why nothing ever complained. `verify_declared(src)` is called by `capture_validation` on every non-dry-run: each declared sha256 must match a PASS capture in the manifest AND the blob is reopened and rehashed. Four fabricated hashes now refuse `DECLARED_CAPTURES_UNVERIFIED`; flipping one character of one real hash refuses and names that source. The placeholder is REMOVED from `run_slate.py`, which now calls the assembler once per slate. `dry_run=True` is deliberately left in place there: removing the placeholder makes the driver honest about its inputs and does not promote a module whose own docstring reads REHEARSAL ONLY into the production path. A declared `--dry-run` may still use synthetic captures -- it is already stamped `prospective_eligible=false` and refused publication -- and the stage record now says `DECLARED_BYTES_UNVERIFIED_DRY_RUN` so the exemption is announced rather than taken silently. The assembler's manifest read is declared in `pipeline.EDGES`; `--audit-reads` is back to PASS.",
+   "queue_position": 34
+  },
+  {
+   "id": "DFS-C0",
+   "acceptance_criteria": [
+    "every classification cites a repository path, not a recollection",
+    "the dossier's QB+1 hard-vs-soft self-contradiction is NAMED, not resolved by picking one",
+    "nothing from the dossier is encoded as a rule or a constant."
+   ],
+   "priority": "6",
+   "status": "DONE",
+   "completed": "2026-09-20",
+   "dependencies": "none",
+   "description": "Gap analysis of the owner-delivered `dk-classic-gpp-portfolio-research.md` against this repository, and the provenance collision it rests on. The dossier cites `[file:253][file:254]` as INTERNAL correlation measurements; they are the external packet `reproduce_external_panel.py` exists to adjudicate, and DFS-FS1 disagrees with it in places that matter \u2014 QB.PC1 +0.207/+0.170 against the dossier's 0.37-0.42, cross-team dependence indistinguishable from zero (1 of 16 Pearson intervals excluding zero, 0 of 16 tail-lift intervals excluding 1.0) against the dossier's \"STRONG_EMPIRICAL_SUPPORT\" for bring-backs. Treating the dossier as independent corroboration would double-count one packet.",
+   "blocker": "none",
+   "classification": "RESEARCH_BLOCKER",
+   "artifact": "`nfl/research/dfs/classic/CLASSIC_GPP_GAP_ANALYSIS.md`",
+   "queue_position": 35
+  },
+  {
+   "id": "DFS-C1",
+   "acceptance_criteria": [
+    "hypothesis, inputs, metric, leakage safeguards and threshold committed before the first arm",
+    "evaluation blocks on SLATES, never on lineups \u2014 73 entries on one slate are one observation",
+    "no realized-role labels (DFS-H2: +0.10 to +0.28 inflation)",
+    "no sportsbook total as a game-environment conditioner."
+   ],
+   "priority": "6",
+   "status": "BLOCKED",
+   "dependencies": "DFS-C0, A7 (full-slate joint worlds)",
+   "description": "Pre-register DFS-X1 through DFS-X7 as committed documents before any arm runs. Specified in the gap analysis \u00a76.",
+   "blocker": "A7. No experiment can run without full-slate joint worlds.",
+   "classification": "RESEARCH_BLOCKER",
+   "queue_position": 36
+  },
+  {
+   "id": "DFS-C2",
+   "acceptance_criteria": [
+    "`VERIFIED_AGAINST_SITE_FILE`, never `UNVERIFIED_FROM_RECOLLECTION`",
+    "`assert_lineup_legal` extended for positional slots and FLEX, with brute-force fixtures."
+   ],
+   "priority": "5",
+   "status": "BLOCKED",
+   "dependencies": "OUT-025",
+   "description": "`DRAFTKINGS_CLASSIC` in `site_rules.SITES` \u2014 salary cap, roster slots, FLEX eligibility, minimum teams, DST points-allowed ladder. Today `SITES` holds only `DRAFTKINGS_SHOWDOWN` and `FANDUEL_SINGLE_GAME`.",
+   "blocker": "OUT-025, network. A salary file is not a contract and lineup legality cannot be certified from one.",
+   "classification": "PRODUCTION_BLOCKER",
+   "queue_position": 37
+  },
+  {
+   "id": "DFS-C3",
+   "acceptance_criteria": [
+    "sacks, interceptions, fumble recoveries, defensive and return TDs, safeties, points-allowed ladder",
+    "`'dst'` leaves `NOT_SIMULATED` only when a real layer exists."
+   ],
+   "priority": "5",
+   "status": "BLOCKED",
+   "dependencies": "DFS-C2, A7",
+   "description": "DST engine layer and DK scoring adapter. `statline. NOT_SIMULATED` records \"the engine produces no team-defence outputs at all\", which makes every DST pair in FS1 `FS1_DST_SCORING_ABSENT` and makes the dossier's ONLY hard constraint (QB vs opposing DST) unmeasurable and unenforceable here. A Classic lineup must field one, so this is not optional.",
+   "blocker": "DFS-C2 for the ladder; the layer itself is football work and goes through the candidate/pre-registration path, never as a DFS change.",
+   "classification": "PRODUCTION_BLOCKER",
+   "queue_position": 38
+  },
+  {
+   "id": "DFS-C4",
+   "acceptance_criteria": [
+    "if simulated cross-row structure is still generator artifact, STOP and fix the generator rather than proceeding to a portfolio engine",
+    "magnitudes are never compared, only sign and ordering."
+   ],
+   "priority": "6",
+   "status": "BLOCKED",
+   "dependencies": "A7",
+   "description": "The DFS-FS2 gate, restated as a stop condition. Compare simulated dependence against the FS1 panel, sign and ordering only. The draw manifest declares `across_rows: INDEPENDENT_STREAMS_COLUMN_ALIGNED` -- player rows are seeded independently -- so a cross-row correlation read off our own worlds measures the generator's lack of coupling, not football. No stack rule may be validated against our worlds until FS2 passes.",
+   "blocker": "A7.",
+   "classification": "RESEARCH_BLOCKER",
+   "queue_position": 39
+  },
+  {
+   "id": "DFS-C5",
+   "acceptance_criteria": [
+    "equivalence tests on a common stat line (roadmap A5)."
+   ],
+   "priority": "10",
+   "status": "QUEUED",
+   "dependencies": "none",
+   "description": "Shared scoring interface across the DK and FD adapters (roadmap A2). They do not share a key schema today; a caller written against one raises `KeyError` on the other.",
+   "blocker": "none",
+   "classification": "NONBLOCKING_TECH_DEBT",
+   "queue_position": 40
+  },
+  {
+   "id": "DFS-C6",
+   "acceptance_criteria": [
+    "no module named `ownership.py` under `nfl/dfs/`",
+    "the collision is documented where a reader meets it."
+   ],
+   "priority": "9",
+   "status": "QUEUED",
+   "dependencies": "none",
+   "description": "The word \"ownership\" already means two unrelated things in this tree -- `nfl/production/ownership_audit.py` is CODE ownership governance, and `nfl/research/own1..own9` is RUSHING ownership, which player owns a carry. DFS field ownership would be a third. Name it `field_ownership` before it lands, and record why.",
+   "blocker": "none",
+   "classification": "MEASUREMENT_DEFECT",
+   "queue_position": 41
+  },
+  {
+   "id": "DFS-C7",
+   "acceptance_criteria": [
+    "until resolved, QB+1 is carried as a GENERATOR ARCHETYPE WEIGHT, never a feasibility constraint -- a weight can be set to 1.0 to reproduce the hard rule exactly, while a hard constraint cannot be relaxed without rebuilding the generator",
+    "if the emergent arm converges on QB+1 unprompted, that is the answer and the hard rule is redundant rather than wrong."
+   ],
+   "priority": "6",
+   "status": "BLOCKED",
+   "dependencies": "DFS-C1, A7",
+   "description": "Resolve whether QB+1 is a hard constraint, a soft preference, or simulation-emergent, via DFS-X2. The dossier asserts both: its \u00a740.2 engineering table lists \"At least one QB stack (QB+1 pass catcher) per lineup\" as a HARD_CONSTRAINT, while its \u00a71.2 prose, its stack-type matrix and its own engineering recommendation all say soft with simulation allowed to override for rushing quarterbacks. Neither reading is adopted by default.",
+   "blocker": "A7.",
+   "classification": "RESEARCH_BLOCKER",
+   "queue_position": 42
+  },
+  {
+   "id": "FIX-ROSTER-GLOB",
+   "acceptance_criteria": [
+    "the roster is selected by `vintage_selector` at the run cut",
+    "a test proves the glob path is gone, not merely unused."
+   ],
+   "priority": "4",
+   "status": "QUEUED",
+   "dependencies": "none",
+   "description": "`run_slate.roster()` globs `nfl/vintage/weekly_rosters.*.reduced.csv.gz` and keeps whichever file has the MOST ROWS. Row count and glob order are two of the five inputs `vintage_selector.select` names as FORBIDDEN for vintage selection. The file with the most rows is not the file that was lawful at the cut, and on a week where a later capture is larger the two disagree silently. Found while building `fixture_assembler.assemble_game`, which reads the roster from the blob the run DECLARES instead.",
+   "blocker": "none \u2014 executable here",
+   "classification": "CRITICAL_CORRECTNESS",
+   "queue_position": 43
   }
  ],
  "queue_by_status": {
@@ -521,7 +683,10 @@
    "DISC-1",
    "DISC-3",
    "SUN-0",
-   "DFS-FS1"
+   "DFS-FS1",
+   "DK-3",
+   "DK-4",
+   "DFS-C0"
   ],
   "QUEUED": [
    "A3",
@@ -536,7 +701,10 @@
    "OAS1-FLAT-SURFACE",
    "A5",
    "PRE-PORCELAIN",
-   "SUITE-PRE"
+   "SUITE-PRE",
+   "DFS-C5",
+   "DFS-C6",
+   "FIX-ROSTER-GLOB"
   ],
   "BLOCKED": [
    "DISC-2",
@@ -549,7 +717,12 @@
    "OAS1-HURDLE",
    "A4",
    "GAME_STATE",
-   "OUT-022C"
+   "OUT-022C",
+   "DFS-C1",
+   "DFS-C2",
+   "DFS-C3",
+   "DFS-C4",
+   "DFS-C7"
   ]
  },
  "unresolved_blockers": [
@@ -596,12 +769,32 @@
   {
    "id": "OUT-022C",
    "blocker": "no FanDuel salary export is in the repository and none can be fetched from here. **This is assigned, not blocked for both agents**: it needs bytes from outside this checkout. FanDuel provenance stays `VERIFIED_RULE_VALUE_RELAYED_SOURCE` and is not upgraded."
+  },
+  {
+   "id": "DFS-C1",
+   "blocker": "A7. No experiment can run without full-slate joint worlds."
+  },
+  {
+   "id": "DFS-C2",
+   "blocker": "OUT-025, network. A salary file is not a contract and lineup legality cannot be certified from one."
+  },
+  {
+   "id": "DFS-C3",
+   "blocker": "DFS-C2 for the ladder; the layer itself is football work and goes through the candidate/pre-registration path, never as a DFS change."
+  },
+  {
+   "id": "DFS-C4",
+   "blocker": "A7."
+  },
+  {
+   "id": "DFS-C7",
+   "blocker": "A7."
   }
  ],
  "next_three_eligible": [
   "SUN-1",
   "SUN-3",
-  "SUN-4"
+  "FIX-ROSTER-GLOB"
  ],
  "most_recent_suite_classification": {
   "artifact": "nfl/research/suite_attribution/SUITE_ATTRIBUTION_e050090_3270829.json",

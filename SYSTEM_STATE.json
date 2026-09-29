@@ -64,7 +64,7 @@
    "why_not_measurable": "routines live in a scheduler this executor cannot query. The previous `CURRENT_STATE.md` asserted a routine was DISABLED and recorded, in the same file, that a later firing reported success with no commit ever reaching the branch \u2014 an unresolved contradiction that it presented as state."
   }
  ],
- "generated_at": "2026-09-20T03:31:04.282460+00:00",
+ "generated_at": "2026-09-28T23:58:58.097606+00:00",
  "generated_by": "nfl/tools/system_state.py",
  "measured": {
   "assumptions": {
@@ -108,93 +108,97 @@
   },
   "capture": {
    "by_source": {
-    "depth_charts": 663,
+    "depth_charts": 694,
+    "dk_entries": 1,
     "dk_salaries": 1,
-    "espn_injuries_json": 654,
+    "dk_salaries_early": 1,
+    "espn_injuries_json": 685,
     "hardrock_market_snapshot": 1,
-    "injuries": 664,
-    "official_inactives": 674,
-    "official_injury_report": 657,
+    "injuries": 695,
+    "official_inactives": 704,
+    "official_injury_report": 688,
     "official_status_evidence": 1,
-    "official_transactions": 654,
+    "official_transactions": 684,
     "pbp": 4,
-    "pbp_participation": 575,
-    "schedules": 663,
-    "snap_counts": 575,
-    "weekly_rosters": 663
+    "pbp_participation": 605,
+    "schedules": 694,
+    "snap_counts": 605,
+    "weekly_rosters": 694
    },
    "by_state": {
-    "BLOCKED": 759,
-    "DEFERRED": 224,
+    "BLOCKED": 798,
+    "DEFERRED": 251,
     "FAIL": 108,
-    "NOT_APPLICABLE": 1150,
-    "PASS": 4208
+    "NOT_APPLICABLE": 1210,
+    "PASS": 4390
    },
-   "manifest_rows": 6449,
+   "manifest_rows": 6757,
    "retrieved_at_earliest": "2026-09-06T18:50:49.540119+00:00",
-   "retrieved_at_latest": "2026-09-17T23:42:25.952893+00:00",
+   "retrieved_at_latest": "2026-09-21T17:53:10.980895+00:00",
    "vintage_store_by_family": {
     "delivered_injury_evidence": 1,
-    "depth_charts": 26,
+    "depth_charts": 32,
+    "dk_entries": 2,
     "dk_salaries": 1,
-    "espn_injuries_json": 620,
+    "dk_salaries_early": 2,
+    "espn_injuries_json": 648,
     "hardrock_market_snapshot": 1,
-    "injuries": 12,
+    "injuries": 14,
     "official_inactives": 367,
-    "official_injury_report": 546,
+    "official_injury_report": 574,
     "official_status_evidence": 1,
     "pbp_2024": 1,
     "pbp_2025": 1,
     "pbp_2026": 1,
-    "schedules": 370,
-    "weekly_rosters": 24
+    "schedules": 393,
+    "weekly_rosters": 30
    },
-   "vintage_store_files": 1972
+   "vintage_store_files": 2069
   },
   "code": {
    "TOTAL": {
-    "lines": 216510,
-    "modules": 674
+    "lines": 302032,
+    "modules": 980
    },
    "nfl/capture": {
-    "lines": 6362,
-    "modules": 16
+    "lines": 7072,
+    "modules": 19
    },
    "nfl/dfs": {
-    "lines": 3250,
-    "modules": 21
+    "lines": 10428,
+    "modules": 48
    },
    "nfl/identity": {
     "lines": 1084,
     "modules": 5
    },
    "nfl/postgame": {
-    "lines": 1488,
-    "modules": 8
+    "lines": 3220,
+    "modules": 15
    },
    "nfl/product": {
     "lines": 8735,
     "modules": 23
    },
    "nfl/production": {
-    "lines": 37337,
-    "modules": 71
+    "lines": 56080,
+    "modules": 131
    },
    "nfl/prospective": {
-    "lines": 7398,
-    "modules": 18
+    "lines": 7642,
+    "modules": 19
    },
    "nfl/research": {
-    "lines": 64748,
-    "modules": 272
+    "lines": 70381,
+    "modules": 305
    },
    "nfl/tests": {
-    "lines": 69843,
-    "modules": 190
+    "lines": 104503,
+    "modules": 318
    },
    "nfl/tools": {
-    "lines": 13810,
-    "modules": 37
+    "lines": 30432,
+    "modules": 84
    },
    "sportsplatform": {
     "lines": 2455,
@@ -202,15 +206,15 @@
    }
   },
   "dependency_dag": {
-   "audit_code": "EVERY_VINTAGE_READ_DECLARED",
-   "audit_state": "PASS",
+   "audit_code": "UNDECLARED_VINTAGE_READ",
+   "audit_state": "FAIL",
    "audited_roots": [
     "nfl/production/",
     "nfl/product/",
     "nfl/dfs/",
     "nfl/capture/"
    ],
-   "n_edges": 31,
+   "n_edges": 33,
    "n_runtime_keyed": 3,
    "not_implemented": [
     "PHASE_2: a read(node, cut) accessor. Every read below still happens by globbing a directory; the declaration bounds who reads what, it does not mediate the bytes.",
@@ -223,7 +227,7 @@
     "espn_injuries_json": 1,
     "injuries": 3,
     "schedules": 4,
-    "vintage_manifest": 7,
+    "vintage_manifest": 9,
     "weekly_rosters": 12
    },
    "spec_version": "p7-dependency-dag-phase1"
@@ -239,33 +243,29 @@
     "2026_01_CLE_JAX"
    ],
    "run_status_by_status": {
-    "REFUSED": 10,
+    "REFUSED": 14,
     "SEALED": 150
    },
-   "sealed_run_status_files": 160
+   "sealed_run_status_files": 164
   },
   "git": {
    "branch": "claude/nfl-greenfield-architecture-stsxmk",
-   "dirty_source_files": [
-    "nfl/production/pipeline.py"
-   ],
-   "head": "effdd6e53c1f94179f6d8ac43949183f2a6604a4",
-   "head_committed_at": "2026-09-20T00:14:38+00:00",
-   "head_short": "effdd6e",
-   "head_subject": "Readiness: add the attributed suite state and the freeze I broke",
-   "is_clean": false,
-   "n_commits_on_branch": 1092,
-   "remote_head": "3270829ca46e46f44285c5ae81952c31921bdda5",
+   "dirty_source_files": [],
+   "head": "82a049c45e9c779b04ac3cf483cadddeeb649702",
+   "head_committed_at": "2026-09-28T23:47:21+00:00",
+   "head_short": "82a049c4",
+   "head_subject": "Archiving was opt-in the wrong way round: the test suite filled the permanent record",
+   "is_clean": true,
+   "n_commits_on_branch": 1408,
+   "remote_head": "a1475f432687c1f4f046b31fb5e497a99e677ce3",
    "worktree": {
-    "code_version": "effdd6e53c1f94179f6d8ac43949183f2a6604a4+src1[2ee55ed39491ff38]",
-    "commit": "effdd6e53c1f94179f6d8ac43949183f2a6604a4",
-    "dirty_source_files": [
-     "nfl/production/pipeline.py"
-    ],
-    "n_dirty_source_files": 1,
-    "n_dirty_tree_entries_observed": 24,
+    "code_version": "82a049c45e9c779b04ac3cf483cadddeeb649702+src1[44aa01d03783de18]",
+    "commit": "82a049c45e9c779b04ac3cf483cadddeeb649702",
+    "dirty_source_files": [],
+    "n_dirty_source_files": 0,
+    "n_dirty_tree_entries_observed": 4,
     "scope_note": "dirty_source_files is SOURCE scope only -- the .py files the identity contract hashes. A changed .md or .json is counted in n_dirty_tree_entries_observed and is not listed.",
-    "source_scope_clean": false
+    "source_scope_clean": true
    }
   },
   "governance": {
@@ -311,154 +311,48 @@
    }
   },
   "suite": {
-   "artifact": "nfl/research/suite_attribution/SUITE_DIFF_fs1_sunday.json",
-   "baseline_commit": "9052d0c",
+   "artifact": "nfl/research/suite_attribution/SUITE_DIFF_p6_p7.json",
+   "baseline_commit": "44ff8ed",
    "baseline_totals": {
     "blocked_functions": 23,
-    "checks": 10800,
+    "checks": 10335,
     "failing_checks": 61,
-    "modules": 186,
+    "modules": 179,
     "raised": 21,
-    "test_functions": 2027,
+    "test_functions": 1944,
     "zero_check_functions": 0
    },
    "counts_by_classification": {
-    "CHANGED_CLASSIFICATION": 2,
-    "NEWLY_INTRODUCED": 22,
-    "PRE_EXISTING": 128,
-    "RESOLVED_SINCE_BASELINE": 3
+    "NEWLY_INTRODUCED": 1,
+    "PRE_EXISTING": 132,
+    "RESOLVED_SINCE_BASELINE": 1
    },
    "delta_totals": {
-    "blocked_functions": -1,
-    "checks": 207,
-    "failing_checks": 11,
-    "modules": 4,
-    "raised": 5,
-    "test_functions": 38,
+    "blocked_functions": 0,
+    "checks": 71,
+    "failing_checks": 0,
+    "modules": 2,
+    "raised": 0,
+    "test_functions": 19,
     "zero_check_functions": 0
    },
    "is_current_head": false,
-   "measured_at_commit": "1a4eb45",
+   "measured_at_commit": "WORKING_TREE",
    "newly_introduced": [
     {
-     "detail": "FAIL it names the current HEAD  ef3a631",
+     "detail": "FAIL  no module outside nfl/identity/ CALLS git for working-tree state -- ['nfl/tools/agent_state.py', 'nfl/tools/system_state.py', 'sportsplatform/governance/c",
      "kind": "FAILING_CHECK",
-     "module": "nfl/tests/test_agent_state.py"
-    },
-    {
-     "detail": "FAIL   and entries existed for the Sunday 13:00 ET slate too, so the crons were correct and simply never fired",
-     "kind": "FAILING_CHECK",
-     "module": "nfl/tests/test_capture_obligations.py"
-    },
-    {
-     "detail": "FAIL at least one fires inside the DEN@KC T-90 window -- the last open week-1 obligation  []",
-     "kind": "FAILING_CHECK",
-     "module": "nfl/tests/test_capture_obligations.py"
-    },
-    {
-     "detail": "FAIL and exactly the 374 landing pages are excluded, not 392  382",
-     "kind": "FAILING_CHECK",
-     "module": "nfl/tests/test_inactives_substance.py"
-    },
-    {
-     "detail": "FAIL and the count matches what D20 records  382 -- if this drifts, D20 needs updating, not this test",
-     "kind": "FAILING_CHECK",
-     "module": "nfl/tests/test_inactives_substance.py"
-    },
-    {
-     "detail": "FAIL   the G0A workflow declares the frozen identity  SCHED-5e2e890466c87284",
-     "kind": "FAILING_CHECK",
-     "module": "nfl/tests/test_non_g0a_isolation.py"
-    },
-    {
-     "detail": "FAIL   the G0A workflow still carries its frozen identity  identity changed",
-     "kind": "FAILING_CHECK",
-     "module": "nfl/tests/test_non_g0a_isolation.py"
-    },
-    {
-     "detail": "FAIL   and passes again once the disposition is restored: State.FAIL[OWNERSHIP_AUDIT_UNREVIEWED_SITE]",
-     "kind": "FAILING_CHECK",
-     "module": "nfl/tests/test_ownership_audit.py"
-    },
-    {
-     "detail": "FAIL the audit completes: State.FAIL[OWNERSHIP_AUDIT_UNREVIEWED_SITE]",
-     "kind": "FAILING_CHECK",
-     "module": "nfl/tests/test_ownership_audit.py"
-    },
-    {
-     "detail": "FAIL and restoring it clears the check",
-     "kind": "FAILING_CHECK",
-     "module": "nfl/tests/test_preflight.py"
-    },
-    {
-     "detail": "FAIL no check fails for a reason other than the week being over  [('anchored workflow matches the current schedule', 'WORKFLOW_STALE')]",
-     "kind": "FAILING_CHECK",
-     "module": "nfl/tests/test_preflight.py"
-    },
-    {
-     "detail": "FAIL the live HEAD appears",
-     "kind": "FAILING_CHECK",
-     "module": "nfl/tests/test_system_state.py"
-    },
-    {
-     "detail": "1 failing check(s)",
-     "kind": "MODULE_FAILING",
-     "module": "nfl/tests/test_agent_state.py"
-    },
-    {
-     "detail": "2 failing check(s)",
-     "kind": "MODULE_FAILING",
-     "module": "nfl/tests/test_non_g0a_isolation.py"
-    },
-    {
-     "detail": "2 failing check(s)",
-     "kind": "MODULE_FAILING",
-     "module": "nfl/tests/test_ownership_audit.py"
-    },
-    {
-     "detail": "2 failing check(s)",
-     "kind": "MODULE_FAILING",
-     "module": "nfl/tests/test_preflight.py"
-    },
-    {
-     "detail": "1 failing check(s)",
-     "kind": "MODULE_FAILING",
-     "module": "nfl/tests/test_system_state.py"
-    },
-    {
-     "detail": "KeyError: 'single_adjustment_ownership_verified'",
-     "kind": "RAISED",
-     "module": "nfl/tests/test_gate_ids.py"
-    },
-    {
-     "detail": "AssertionError: 2 check(s) failed in this module",
-     "kind": "RAISED",
-     "module": "nfl/tests/test_non_g0a_isolation.py"
-    },
-    {
-     "detail": "KeyError: 'n_files_scanned'",
-     "kind": "RAISED",
-     "module": "nfl/tests/test_ownership_audit.py"
-    },
-    {
-     "detail": "KeyError: 'single_adjustment_ownership_verified'",
-     "kind": "RAISED",
-     "module": "nfl/tests/test_ownership_audit.py"
-    },
-    {
-     "detail": "AssertionError: 2 check(s) failed in this module",
-     "kind": "RAISED",
-     "module": "nfl/tests/test_ownership_audit.py"
+     "module": "nfl/tests/test_determinism_proof.py"
     }
    ],
-   "staleness_note": "measured at 1a4eb45, HEAD is effdd6e. This total is not a statement about the tree as it stands.",
+   "staleness_note": "measured at WORKING_TREE, HEAD is 82a049c. This total is not a statement about the tree as it stands.",
    "totals": {
-    "blocked_functions": 22,
-    "checks": 11007,
-    "failing_checks": 72,
-    "modules": 190,
-    "raised": 26,
-    "test_functions": 2065,
+    "blocked_functions": 23,
+    "checks": 10406,
+    "failing_checks": 61,
+    "modules": 181,
+    "raised": 21,
+    "test_functions": 1963,
     "zero_check_functions": 0
    },
    "verdict": "SUITE FAIL"
@@ -473,9 +367,9 @@
   ],
   "work_queue": {
    "by_status": {
-    "BLOCKED": 11,
-    "DONE": 8,
-    "QUEUED": 13
+    "BLOCKED": 16,
+    "DONE": 11,
+    "QUEUED": 16
    },
    "items": [
     {
@@ -701,9 +595,86 @@
      "id": "SUITE-PRE",
      "priority": "10",
      "status": "QUEUED"
+    },
+    {
+     "blocker": "none \u2014 executable here",
+     "description": "`run_forecast._capture` (`run_forecast.py:266-306`) iterates the source set it is HANDED. It checks each supplied entry for registry membership, a sha256, a `retrieved_at` no later than `written_at`, and schema. It never asks whether a REQUIRED source is absent. One synthetic entry therefore returns `PASS[INPUTS_VALIDATED]` for the whole stage, and an empty set returns `SOURCE_MISSING` \u2014 the two outcomes differ by the caller's declaration, not by the captures. A stage named `capture_validation` whose PASS is a statement about its caller is the project's standing defect class (a partial result read as success) sitting in the gate meant to catch it. Found 2026-09-20 while auditing whether Early Only projections exist; the audit's first version reported the sealing refusal and missed this.",
+     "id": "DK-3",
+     "priority": "1",
+     "status": "DONE"
+    },
+    {
+     "blocker": "none \u2014 executable here, no network needed",
+     "description": "There is no production fixture assembler. The only slate driver, `nfl/production/rehearsal/run_slate.py`, is declared REHEARSAL ONLY, passes `dry_run=True` in the call itself, and satisfies `capture_validation` with `{'schedules': {'sha256': 'b' * 64, 'retrieved_at': '2026-09-08T12:00:00Z'}}` \u2014 a placeholder hash for one source (`run_slate.py:96`). `run_forecast.py` invoked directly with no `--fixtures` refuses `SOURCE_MISSING` before any layer runs; measured on all eight Early Only games at `--written-at 2026-09-20T05:00:00Z` under `V1_CANDIDATE_R8`. So there is no path from the vintage manifest to a slate run that is not flagged as rehearsal. Note precisely what this does NOT say: the football layers below the stage read real captures through `vintage_selector`, with real capture ids. The numbers rest on real evidence; the provenance record does not.",
+     "id": "DK-4",
+     "priority": "1",
+     "status": "DONE"
+    },
+    {
+     "blocker": "none",
+     "description": "Gap analysis of the owner-delivered `dk-classic-gpp-portfolio-research.md` against this repository, and the provenance collision it rests on. The dossier cites `[file:253][file:254]` as INTERNAL correlation measurements; they are the external packet `reproduce_external_panel.py` exists to adjudicate, and DFS-FS1 disagrees with it in places that matter \u2014 QB.PC1 +0.207/+0.170 against the dossier's 0.37-0.42, cross-team dependence indistinguishable from zero (1 of 16 Pearson intervals excluding zero, 0 of 16 tail-lift intervals excluding 1.0) against the dossier's \"STRONG_EMPIRICAL_SUPPORT\" for bring-backs. Treating the dossier as independent corroboration would double-count one packet.",
+     "id": "DFS-C0",
+     "priority": "6",
+     "status": "DONE"
+    },
+    {
+     "blocker": "A7. No experiment can run without full-slate joint worlds.",
+     "description": "Pre-register DFS-X1 through DFS-X7 as committed documents before any arm runs. Specified in the gap analysis \u00a76.",
+     "id": "DFS-C1",
+     "priority": "6",
+     "status": "BLOCKED"
+    },
+    {
+     "blocker": "OUT-025, network. A salary file is not a contract and lineup legality cannot be certified from one.",
+     "description": "`DRAFTKINGS_CLASSIC` in `site_rules.SITES` \u2014 salary cap, roster slots, FLEX eligibility, minimum teams, DST points-allowed ladder. Today `SITES` holds only `DRAFTKINGS_SHOWDOWN` and `FANDUEL_SINGLE_GAME`.",
+     "id": "DFS-C2",
+     "priority": "5",
+     "status": "BLOCKED"
+    },
+    {
+     "blocker": "DFS-C2 for the ladder; the layer itself is football work and goes through the candidate/pre-registration path, never as a DFS change.",
+     "description": "DST engine layer and DK scoring adapter. `statline. NOT_SIMULATED` records \"the engine produces no team-defence outputs at all\", which makes every DST pair in FS1 `FS1_DST_SCORING_ABSENT` and makes the dossier's ONLY hard constraint (QB vs opposing DST) unmeasurable and unenforceable here. A Classic lineup must field one, so this is not optional.",
+     "id": "DFS-C3",
+     "priority": "5",
+     "status": "BLOCKED"
+    },
+    {
+     "blocker": "A7.",
+     "description": "The DFS-FS2 gate, restated as a stop condition. Compare simulated dependence against the FS1 panel, sign and ordering only. The draw manifest declares `across_rows: INDEPENDENT_STREAMS_COLUMN_ALIGNED` -- player rows are seeded independently -- so a cross-row correlation read off our own worlds measures the generator's lack of coupling, not football. No stack rule may be validated against our worlds until FS2 passes.",
+     "id": "DFS-C4",
+     "priority": "6",
+     "status": "BLOCKED"
+    },
+    {
+     "blocker": "none",
+     "description": "Shared scoring interface across the DK and FD adapters (roadmap A2). They do not share a key schema today; a caller written against one raises `KeyError` on the other.",
+     "id": "DFS-C5",
+     "priority": "10",
+     "status": "QUEUED"
+    },
+    {
+     "blocker": "none",
+     "description": "The word \"ownership\" already means two unrelated things in this tree -- `nfl/production/ownership_audit.py` is CODE ownership governance, and `nfl/research/own1..own9` is RUSHING ownership, which player owns a carry. DFS field ownership would be a third. Name it `field_ownership` before it lands, and record why.",
+     "id": "DFS-C6",
+     "priority": "9",
+     "status": "QUEUED"
+    },
+    {
+     "blocker": "A7.",
+     "description": "Resolve whether QB+1 is a hard constraint, a soft preference, or simulation-emergent, via DFS-X2. The dossier asserts both: its \u00a740.2 engineering table lists \"At least one QB stack (QB+1 pass catcher) per lineup\" as a HARD_CONSTRAINT, while its \u00a71.2 prose, its stack-type matrix and its own engineering recommendation all say soft with simulation allowed to override for rushing quarterbacks. Neither reading is adopted by default.",
+     "id": "DFS-C7",
+     "priority": "6",
+     "status": "BLOCKED"
+    },
+    {
+     "blocker": "none \u2014 executable here",
+     "description": "`run_slate.roster()` globs `nfl/vintage/weekly_rosters.*.reduced.csv.gz` and keeps whichever file has the MOST ROWS. Row count and glob order are two of the five inputs `vintage_selector.select` names as FORBIDDEN for vintage selection. The file with the most rows is not the file that was lawful at the cut, and on a week where a later capture is larger the two disagree silently. Found while building `fixture_assembler.assemble_game`, which reads the roster from the blob the run DECLARES instead.",
+     "id": "FIX-ROSTER-GLOB",
+     "priority": "4",
+     "status": "QUEUED"
     }
    ],
-   "n": 32
+   "n": 43
   }
  },
  "reading_rule": "Every value under `measured` was computed by reading this repository at the timestamp above. Every value under `declared` was asserted by somebody and says who, when, and why it cannot be measured here. Do not quote one as the other.",

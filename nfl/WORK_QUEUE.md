@@ -727,7 +727,8 @@ its downstream impact justifies it.
 
 ## ID: DK-3
 - **priority**: 1
-- **status**: DONE (2026-09-20)
+- **status**: DONE
+- **completed**: 2026-09-20
 - **dependencies**: none
 - **description**: `run_forecast._capture` (`run_forecast.py:266-306`) iterates
   the source set it is HANDED. It checks each supplied entry for registry
@@ -767,7 +768,8 @@ its downstream impact justifies it.
 
 ## ID: DK-4
 - **priority**: 1
-- **status**: DONE (2026-09-20)
+- **status**: DONE
+- **completed**: 2026-09-20
 - **dependencies**: DK-3
 - **description**: There is no production fixture assembler. The only slate
   driver, `nfl/production/rehearsal/run_slate.py`, is declared REHEARSAL ONLY,
@@ -817,7 +819,8 @@ its downstream impact justifies it.
 
 ## ID: DFS-C0
 - **priority**: 6
-- **status**: DONE (2026-09-20)
+- **status**: DONE
+- **completed**: 2026-09-20
 - **dependencies**: none
 - **description**: Gap analysis of the owner-delivered
   `dk-classic-gpp-portfolio-research.md` against this repository, and the

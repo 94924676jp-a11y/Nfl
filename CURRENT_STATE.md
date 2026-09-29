@@ -1,6 +1,6 @@
 # NFL — current state
 
-**Generated** by `nfl/tools/system_state.py` at 2026-09-20T03:31:04.282460+00:00 from `SYSTEM_STATE.json`. Do not hand-edit this file: regenerate it.
+**Generated** by `nfl/tools/system_state.py` at 2026-09-28T23:58:58.097606+00:00 from `SYSTEM_STATE.json`. Do not hand-edit this file: regenerate it.
 
 Every value under `measured` was computed by reading this repository at the timestamp above. Every value under `declared` was asserted by somebody and says who, when, and why it cannot be measured here. Do not quote one as the other.
 
@@ -11,78 +11,59 @@ Every value under `measured` was computed by reading this repository at the time
 |  |  |
 |---|---|
 | branch | `claude/nfl-greenfield-architecture-stsxmk` |
-| HEAD | `effdd6e` — Readiness: add the attributed suite state and the freeze I broke |
-| HEAD committed | 2026-09-20T00:14:38+00:00 |
-| commits on branch | 1092 |
-| source scope | 1 dirty source file(s) |
-| dirty tree entries (source and not) | 24 |
-| code_version | `effdd6e53c1f94179f6d8ac43949183f2a6604a4+src1[2ee55ed39491ff38]` |
-| python modules | 674 |
-| lines of python | 216,510 |
+| HEAD | `82a049c4` — Archiving was opt-in the wrong way round: the test suite filled the permanent record |
+| HEAD committed | 2026-09-28T23:47:21+00:00 |
+| commits on branch | 1408 |
+| source scope | clean |
+| dirty tree entries (source and not) | 4 |
+| code_version | `82a049c45e9c779b04ac3cf483cadddeeb649702+src1[44aa01d03783de18]` |
+| python modules | 980 |
+| lines of python | 302,032 |
 
 ## 2. Test suite
 
-Source: `nfl/research/suite_attribution/SUITE_DIFF_fs1_sunday.json`. measured at 1a4eb45, HEAD is effdd6e. This total is not a statement about the tree as it stands.
+Source: `nfl/research/suite_attribution/SUITE_DIFF_p6_p7.json`. measured at WORKING_TREE, HEAD is 82a049c. This total is not a statement about the tree as it stands.
 
-|  | at 1a4eb45 | baseline 9052d0c | delta |
+|  | at WORKING_TREE | baseline 44ff8ed | delta |
 |---|---|---|---|
-| modules | 190 | 186 | 4 |
-| test functions | 2065 | 2027 | 38 |
-| checks | 11007 | 10800 | 207 |
-| failing checks | 72 | 61 | 11 |
-| raised | 26 | 21 | 5 |
+| modules | 181 | 179 | 2 |
+| test functions | 1963 | 1944 | 19 |
+| checks | 10406 | 10335 | 71 |
+| failing checks | 61 | 61 | 0 |
+| raised | 21 | 21 | 0 |
 | zero check functions | 0 | 0 | 0 |
-| blocked functions | 22 | 23 | -1 |
+| blocked functions | 23 | 23 | 0 |
 
-Verdict: **SUITE FAIL**. Classification against the baseline: {'CHANGED_CLASSIFICATION': 2, 'NEWLY_INTRODUCED': 22, 'PRE_EXISTING': 128, 'RESOLVED_SINCE_BASELINE': 3}.
+Verdict: **SUITE FAIL**. Classification against the baseline: {'NEWLY_INTRODUCED': 1, 'PRE_EXISTING': 132, 'RESOLVED_SINCE_BASELINE': 1}.
 
 Newly introduced since the baseline:
 
-- `nfl/tests/test_agent_state.py` [FAILING_CHECK] FAIL it names the current HEAD  ef3a631
-- `nfl/tests/test_capture_obligations.py` [FAILING_CHECK] FAIL   and entries existed for the Sunday 13:00 ET slate too, so the crons were correct and simply never fired
-- `nfl/tests/test_capture_obligations.py` [FAILING_CHECK] FAIL at least one fires inside the DEN@KC T-90 window -- the last open week-1 obligation  []
-- `nfl/tests/test_inactives_substance.py` [FAILING_CHECK] FAIL and exactly the 374 landing pages are excluded, not 392  382
-- `nfl/tests/test_inactives_substance.py` [FAILING_CHECK] FAIL and the count matches what D20 records  382 -- if this drifts, D20 needs updating, not this test
-- `nfl/tests/test_non_g0a_isolation.py` [FAILING_CHECK] FAIL   the G0A workflow declares the frozen identity  SCHED-5e2e890466c87284
-- `nfl/tests/test_non_g0a_isolation.py` [FAILING_CHECK] FAIL   the G0A workflow still carries its frozen identity  identity changed
-- `nfl/tests/test_ownership_audit.py` [FAILING_CHECK] FAIL   and passes again once the disposition is restored: State.FAIL[OWNERSHIP_AUDIT_UNREVIEWED_SITE]
-- `nfl/tests/test_ownership_audit.py` [FAILING_CHECK] FAIL the audit completes: State.FAIL[OWNERSHIP_AUDIT_UNREVIEWED_SITE]
-- `nfl/tests/test_preflight.py` [FAILING_CHECK] FAIL and restoring it clears the check
-- `nfl/tests/test_preflight.py` [FAILING_CHECK] FAIL no check fails for a reason other than the week being over  [('anchored workflow matches the current schedule', 'WORKFLOW_STALE')]
-- `nfl/tests/test_system_state.py` [FAILING_CHECK] FAIL the live HEAD appears
-- `nfl/tests/test_agent_state.py` [MODULE_FAILING] 1 failing check(s)
-- `nfl/tests/test_non_g0a_isolation.py` [MODULE_FAILING] 2 failing check(s)
-- `nfl/tests/test_ownership_audit.py` [MODULE_FAILING] 2 failing check(s)
-- `nfl/tests/test_preflight.py` [MODULE_FAILING] 2 failing check(s)
-- `nfl/tests/test_system_state.py` [MODULE_FAILING] 1 failing check(s)
-- `nfl/tests/test_gate_ids.py` [RAISED] KeyError: 'single_adjustment_ownership_verified'
-- `nfl/tests/test_non_g0a_isolation.py` [RAISED] AssertionError: 2 check(s) failed in this module
-- `nfl/tests/test_ownership_audit.py` [RAISED] KeyError: 'n_files_scanned'
-- `nfl/tests/test_ownership_audit.py` [RAISED] KeyError: 'single_adjustment_ownership_verified'
-- `nfl/tests/test_ownership_audit.py` [RAISED] AssertionError: 2 check(s) failed in this module
+- `nfl/tests/test_determinism_proof.py` [FAILING_CHECK] FAIL  no module outside nfl/identity/ CALLS git for working-tree state -- ['nfl/tools/agent_state.py', 'nfl/tools/system_state.py', 'sportsplatform/governance/c
 
 ## 3. Captured evidence
 
-`nfl/vintage_manifest.jsonl` carries **6449 rows**; the vintage store holds **1972 files**. Retrieval spans 2026-09-06T18:50:49.540119+00:00 to 2026-09-17T23:42:25.952893+00:00.
+`nfl/vintage_manifest.jsonl` carries **6757 rows**; the vintage store holds **2069 files**. Retrieval spans 2026-09-06T18:50:49.540119+00:00 to 2026-09-21T17:53:10.980895+00:00.
 
 | source | manifest rows |
 |---|---|
-| depth_charts | 663 |
+| depth_charts | 694 |
+| dk_entries | 1 |
 | dk_salaries | 1 |
-| espn_injuries_json | 654 |
+| dk_salaries_early | 1 |
+| espn_injuries_json | 685 |
 | hardrock_market_snapshot | 1 |
-| injuries | 664 |
-| official_inactives | 674 |
-| official_injury_report | 657 |
+| injuries | 695 |
+| official_inactives | 704 |
+| official_injury_report | 688 |
 | official_status_evidence | 1 |
-| official_transactions | 654 |
+| official_transactions | 684 |
 | pbp | 4 |
-| pbp_participation | 575 |
-| schedules | 663 |
-| snap_counts | 575 |
-| weekly_rosters | 663 |
+| pbp_participation | 605 |
+| schedules | 694 |
+| snap_counts | 605 |
+| weekly_rosters | 694 |
 
-Manifest row states: {'BLOCKED': 759, 'DEFERRED': 224, 'FAIL': 108, 'NOT_APPLICABLE': 1150, 'PASS': 4208}.
+Manifest row states: {'BLOCKED': 798, 'DEFERRED': 251, 'FAIL': 108, 'NOT_APPLICABLE': 1210, 'PASS': 4390}.
 
 ## 4. Governed assumptions
 
@@ -98,7 +79,7 @@ A FALSIFIED assumption blocks the production path that depends on it and rewrite
 
 ## 5. Dependency DAG (P7 Phase 1)
 
-`PHASE_1_DECLARATION_ONLY`, audit **PASS EVERY_VINTAGE_READ_DECLARED**, 31 declared edges over 4 package(s), 3 runtime-keyed read(s).
+`PHASE_1_DECLARATION_ONLY`, audit **FAIL UNDECLARED_VINTAGE_READ**, 33 declared edges over 4 package(s), 3 runtime-keyed read(s).
 
 | producer | declared readers |
 |---|---|
@@ -107,7 +88,7 @@ A FALSIFIED assumption blocks the production path that depends on it and rewrite
 | espn_injuries_json | 1 |
 | injuries | 3 |
 | schedules | 4 |
-| vintage_manifest | 7 |
+| vintage_manifest | 9 |
 | weekly_rosters | 12 |
 
 Not implemented:
@@ -117,7 +98,7 @@ Not implemented:
 
 ## 6. Forecast and postgame artifacts
 
-160 `run_status.json` file(s), by status {'REFUSED': 10, 'SEALED': 150}. 18 live board directory(ies).
+164 `run_status.json` file(s), by status {'REFUSED': 14, 'SEALED': 150}. 18 live board directory(ies).
 
 Prospective evaluation ledger: 2 rows over 1 block(s) ['DET_BUF_2026W2'], by status {'AWAITING_OUTCOME': 1, 'GRADED': 1}. Captured game outcomes: 1 (DET_BUF_2026W2).
 
@@ -162,6 +143,17 @@ Production readiness (`nfl/production/production_readiness.json`, updated 2026-0
 | OUT-022C | 9 | BLOCKED | no FanDuel salary export is in the repository and none can be fetched from here. **This is |
 | PRE-PORCELAIN | 11 | QUEUED |  |
 | SUITE-PRE | 10 | QUEUED |  |
+| DK-3 | 1 | DONE |  |
+| DK-4 | 1 | DONE |  |
+| DFS-C0 | 6 | DONE |  |
+| DFS-C1 | 6 | BLOCKED | A7. No experiment can run without full-slate joint worlds. |
+| DFS-C2 | 5 | BLOCKED | OUT-025, network. A salary file is not a contract and lineup legality cannot be certified  |
+| DFS-C3 | 5 | BLOCKED | DFS-C2 for the ladder; the layer itself is football work and goes through the candidate/pr |
+| DFS-C4 | 6 | BLOCKED | A7. |
+| DFS-C5 | 10 | QUEUED |  |
+| DFS-C6 | 9 | QUEUED |  |
+| DFS-C7 | 6 | BLOCKED | A7. |
+| FIX-ROSTER-GLOB | 4 | QUEUED |  |
 
 Source: `nfl/WORK_QUEUE.md`. Full descriptions and acceptance criteria are there.
 
