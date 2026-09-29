@@ -150,6 +150,33 @@ MAE** — larger than every other effect measured on 2026-09-28 combined, includ
 study. That gap is exactly what an injury report buys, so **official inactives (A7) and historical
 injury reports (OUT-038) outrank the research work they were queued behind.**
 
+**The test harness was not measuring 23 of its own modules, and connecting them found order
+dependence (2026-09-28).** `run_suite.py` discovers `test_*` functions and reads module-level
+PASSED/FAILED counters. Twenty-three modules instead registered checks into a list and ran them from
+`main()`, so the runner reported `0 fn, NO TALLY / TEST_MODULE_NOT_EXECUTED` and executed **none** of
+their checks, while a direct `python3.12 nfl/tests/<file>.py` printed a confident pass. Eighteen were
+already in that state -- most of the DFS product layer, including `test_v1_projection`,
+`test_lineage`, `test_readiness`, `test_sunday_run` -- and `test_harness_audit` was failing and naming
+them. All 23 are now connected, about **217 checks the suite was not running**.
+
+**What that exposed is worse than the invisibility.** Eight of the newly-visible modules pass with
+zero failures in a fresh process and fail under a full run: `test_v1_projection` (5),
+`test_fc_firewall_and_projection_source` (6), `test_slate_to_portfolio` (6),
+`test_search_quality_gate` (5), `test_role_state_history` (7), `test_sunday_run` (3),
+`test_projection_guards_catch_v0` (2), `test_role_and_prior_units` (1). Each was re-run alone to
+confirm. It is **not** the new modules: `test_v1_projection` passes 16/0 both alone and immediately
+after `test_role_state_history` in one process. So an earlier suite leaves shared state behind --
+likely the module-level mutable globals on the forward-chain path
+(`player_prior._COHORT_CACHE`, `forward_chain.PRATES[0]`, `POOL[0]`, `POOL_CLUB[0]`) or an artifact
+one suite rebuilds and another reads. This runner does **not** diff the working tree per suite, so a
+mutating suite leaves no trace. Root cause is open and the bisect recipe is recorded with the task.
+
+**The suite state, measured at two commits rather than asserted.** Clean full runs at `6ca1f56`
+(before this session) and `82a049c4`: **47 modules fail identically at both**, which is pre-existing
+breakage untouched by this work; **2 improved** (`test_harness_audit` and `test_ownership_audit`, both
+2 to 0); and the 8 above went from untallied to counted. No module got worse at HEAD that was being
+measured at baseline.
+
 ## The confidence statement, kept separate on purpose
 
 | layer | standing |
