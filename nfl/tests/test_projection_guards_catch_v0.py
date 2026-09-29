@@ -30,6 +30,10 @@ AUDIT = _REPO / 'nfl/dfs/salaries/DK_WEEK3_PLACEHOLDER_PORTFOLIO_AUDIT.json'
 
 from nfl.tests import _registry  # noqa: E402
 
+#: RUN THIS MODULE IN A FRESH INTERPRETER. run_suite reads this from source and re-runs the
+#: module through itself in a subprocess, so it is judged by identical logic.
+REQUIRES_OWN_PROCESS = 'the level-band guard needs the external baseline from fc_context; in a proprietary interpreter the firewall refuses it and the guard reads LEVEL_BAND_SAMPLE_TOO_SMALL on 0 players'
+
 RESULTS = []
 
 

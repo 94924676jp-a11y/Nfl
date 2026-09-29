@@ -25,6 +25,10 @@ from sportsplatform.governance.outcome import Outcome, State  # noqa: E402
 
 from nfl.tests import _registry  # noqa: E402
 
+#: RUN THIS MODULE IN A FRESH INTERPRETER. run_suite reads this from source and re-runs the
+#: module through itself in a subprocess, so it is judged by identical logic.
+REQUIRES_OWN_PROCESS = 'the benchmark projection set comes from fc_context, which the FantasyCruncher firewall refuses once a proprietary module is imported; without it the gate reads BENCHMARK_PROJECTIONS_ABSENT and measures nothing'
+
 RESULTS = []
 
 

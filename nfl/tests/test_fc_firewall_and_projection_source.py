@@ -23,6 +23,10 @@ from sportsplatform.governance.outcome import State  # noqa: E402
 
 from nfl.tests import _registry  # noqa: E402
 
+#: RUN THIS MODULE IN A FRESH INTERPRETER. run_suite reads this from source and re-runs the
+#: module through itself in a subprocess, so it is judged by identical logic.
+REQUIRES_OWN_PROCESS = 'the FantasyCruncher firewall in dk_universe refuses to return external values if ANY proprietary projection module is imported in this interpreter -- that refusal IS the guarantee that FantasyCruncher cannot become a feature input, so this test is only meaningful in a fresh process'
+
 RESULTS = []
 
 

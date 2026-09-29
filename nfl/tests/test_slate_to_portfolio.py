@@ -29,6 +29,10 @@ OWNER_SHA = '13ce2da14da94f961f8288f46faabeea016394290594338ca77124297f216e53'
 ID = re.compile(r'\((\d+)\)')
 from nfl.tests import _registry  # noqa: E402
 
+#: RUN THIS MODULE IN A FRESH INTERPRETER. run_suite reads this from source and re-runs the
+#: module through itself in a subprocess, so it is judged by identical logic.
+REQUIRES_OWN_PROCESS = 'the end-to-end slate product reads the external FantasyCruncher context, which the firewall refuses in a proprietary interpreter'
+
 RESULTS = []
 
 

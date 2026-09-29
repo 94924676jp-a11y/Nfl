@@ -47,6 +47,8 @@ import importlib.util
 import io
 import json
 import os
+import re
+import subprocess
 import sys
 import time
 import traceback
@@ -88,6 +90,32 @@ def _has_checks(path) -> bool:
     body = '\n'.join(ln for ln in src.splitlines()
                       if not ln.lstrip().startswith(('def ', '#')))
     return any(c in body for c in _CHECK_CALLS)
+
+
+#: A module declaring this at top level is run in its OWN SUBPROCESS.
+#:
+#: WHY THIS IS NOT A LOOPHOLE. Some guarantees here are enforced by PROCESS SCOPE, not by code.
+#: The FantasyCruncher firewall in dk_universe refuses to return external values if ANY proprietary
+#: projection module is imported in the same interpreter -- that refusal IS the guarantee that
+#: FantasyCruncher cannot become a feature input. Under a single-process runner roughly three hundred
+#: modules have imported the proprietary layer before the firewall test runs, so the firewall
+#: correctly refuses and the test cannot pass. Four modules were failing for exactly this reason: it
+#: looked like state leakage and it was the firewall working.
+#:
+#: The declaration is therefore narrow and does NOT mean "this test is order-dependent, excuse it".
+#: It means: this test measures something only true of a fresh interpreter. It is read from SOURCE
+#: before the module is imported, because by the time it could be read as an attribute the process is
+#: already contaminated by everything else.
+_OWN_PROCESS_DECL = re.compile(r"^REQUIRES_OWN_PROCESS\s*=\s*['\"](.+?)['\"]", re.M | re.S)
+
+
+def requires_own_process(path):
+    """The declared reason this module needs a fresh interpreter, or None. Read from SOURCE."""
+    try:
+        m = _OWN_PROCESS_DECL.search(open(path, encoding='utf-8').read())
+    except OSError:
+        return None
+    return m.group(1) if m else None
 
 
 def tally(mod):
@@ -217,6 +245,11 @@ def main(argv=None):
     only = None
     if '--only' in argv:
         only = argv[argv.index('--only') + 1]
+    # `--no-isolate` is how the CHILD runs; it stops the parent's re-spawn recursing. It is NOT a way
+    # to skip isolation for a normal run: a module declaring REQUIRES_OWN_PROCESS reached with
+    # --no-isolate inside a multi-module run is REFUSED below, because judging it in a contaminated
+    # interpreter is the thing the declaration exists to prevent.
+    no_isolate = '--no-isolate' in argv
     os.chdir(ROOT)
     for q in (ROOT, os.path.join(ROOT, 'sportsplatform')):
         if q not in sys.path:
@@ -229,12 +262,57 @@ def main(argv=None):
     n_not_executed = []
     n_fn_zero = n_fn_blocked = n_unrecognised_tally = 0
     zero_fns, blocked_fns = [], []
+    isolated = []
     problems = []
     _emit({'phase': 'suite_start', 'n_modules': len(files)},
           f'suite: {len(files)} module(s)')
     for i, f in enumerate(files, 1):
         _emit({'phase': 'module_start', 'i': i, 'module': f},
               f'[{i}/{len(files)}] {f}')
+        own = requires_own_process(f)
+        if own and not no_isolate:
+            # RUN IT THROUGH THIS SAME RUNNER IN A FRESH INTERPRETER, so it is judged by identical
+            # logic. Anything less makes a process-scoped module a different kind of citizen, which
+            # is how an exemption becomes a hiding place.
+            r = subprocess.run([sys.executable, os.path.abspath(__file__),
+                                '--only', os.path.basename(f), '--no-isolate'],
+                               capture_output=True, text=True, cwd=ROOT)
+            out = r.stdout + r.stderr
+            mt = re.search(r'checks (\d+)\s+FAILING CHECKS (\d+)\s+RAISED (\d+)', out)
+            if mt is None:
+                n_raise += 1
+                problems.append(
+                    f'PROCESS_SCOPED_CHILD_UNREADABLE {f}: the isolated run produced no parsable '
+                    f'tally, so its result is UNKNOWN and is NOT counted as a pass. '
+                    f'exit={r.returncode}\n{out[-1200:]}')
+                _emit({'phase': 'module_done', 'i': i, 'module': f,
+                       'result': 'PROCESS_SCOPED_UNREADABLE'},
+                      f'[{i}/{len(files)}] {f}  OWN PROCESS, tally unreadable')
+                continue
+            sub_checks, sub_fail, sub_raise = (int(mt.group(1)), int(mt.group(2)),
+                                               int(mt.group(3)))
+            n_check_fail += sub_fail
+            n_check_ok += max(sub_checks - sub_fail, 0)
+            n_raise += sub_raise
+            isolated.append({'module': f, 'reason': own, 'checks': sub_checks,
+                             'failing': sub_fail, 'raised': sub_raise})
+            if sub_fail or sub_raise:
+                detail = '\n'.join(ln for ln in out.splitlines()
+                                   if ln.strip().startswith(('FAIL', 'ERROR')))
+                problems.append(f'CHECKS {f} (OWN PROCESS): {sub_fail} failing, '
+                                f'{sub_raise} raised\n{detail[:1500]}')
+            _emit({'phase': 'module_done', 'i': i, 'module': f, 'result': 'OWN_PROCESS',
+                   'checks': sub_checks, 'failing': sub_fail},
+                  f'[{i}/{len(files)}] {f}  OWN PROCESS, {sub_checks} check(s), '
+                  f'{sub_fail} failing')
+            continue
+        if own and no_isolate and len(files) > 1:
+            problems.append(
+                f'PROCESS_SCOPED_RUN_IN_PROCESS {f}: declares REQUIRES_OWN_PROCESS and was reached '
+                f'without isolation inside a {len(files)}-module run, so anything it reports is '
+                f'about a contaminated interpreter. REFUSED rather than counted.')
+            n_raise += 1
+            continue
         name = 't_' + f.replace('/', '_')[:-3]
         spec = importlib.util.spec_from_file_location(name, f)
         mod = importlib.util.module_from_spec(spec)
@@ -365,6 +443,10 @@ def main(argv=None):
           f'FAILING CHECKS {n_check_fail}  RAISED {n_raise}  '
           f'ZERO-CHECK FUNCTIONS {n_fn_zero}  BLOCKED FUNCTIONS '
           f'{n_fn_blocked}  UNRECOGNISED TALLIES {n_unrecognised_tally}')
+    if isolated:
+        print(f'process-scoped, each run in its own interpreter ({len(isolated)}):')
+        for r in isolated:
+            print(f"  {r['module']}  {r['checks']} check(s), {r['failing']} failing")
     if blocked_fns:
         print('blocked (declared, not a pass, not a failure):')
         for b in blocked_fns:
