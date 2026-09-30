@@ -258,6 +258,15 @@ def main(argv=None):
     # permutation it used cannot be reproduced, and an irreproducible failure gets called a flake and
     # then gets ignored -- which is how an order dependence survives a randomised harness.
     reverse = '--reverse' in argv
+    # `--modules a,b,c` runs EXACTLY those modules in EXACTLY that order. It exists because
+    # `--only SUBSTR` cannot express an ordered pair, and an ordered pair is the unit of evidence for
+    # an order dependence: the claim "A poisons B" is tested by running A then B and nothing else.
+    #
+    # It is a bisecting tool, not a way to run a subset and call it a suite. A run made with
+    # --modules is never a suite result, and the summary says so.
+    modules = None
+    if '--modules' in argv:
+        modules = [m.strip() for m in argv[argv.index('--modules') + 1].split(',') if m.strip()]
     shuffle_seed = None
     if '--shuffle' in argv:
         j = argv.index('--shuffle') + 1
@@ -271,7 +280,21 @@ def main(argv=None):
              + sorted(glob.glob('sportsplatform/**/test_*.py', recursive=True)))
     if only:
         files = [f for f in files if only in f]
+    if modules:
+        # Resolve each name against the discovered list rather than trusting it to be a real path, so
+        # a typo is a refusal instead of a silently shorter run that then reports zero failures.
+        by_stem = {os.path.basename(f)[:-3]: f for f in files}
+        unknown = [m for m in modules if m not in by_stem]
+        if unknown:
+            print(f'REFUSED: MODULES_NOT_DISCOVERED {unknown}')
+            print('  --modules names must match discovered module stems exactly, e.g. '
+                  'test_sunday_run. A run that silently dropped an unknown name would report '
+                  'fewer failures than the order it claims to test.')
+            return 2
+        files = [by_stem[m] for m in modules]
     order_note = 'discovered (sorted)'
+    if modules:
+        order_note = f'EXPLICIT --modules ({len(files)} of a full suite; NOT a suite result)'
     if reverse:
         files = list(reversed(files))
         order_note = 'REVERSED'
