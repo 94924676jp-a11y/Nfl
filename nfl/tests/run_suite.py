@@ -43,6 +43,7 @@ from __future__ import annotations
 
 import ast
 import glob
+import hashlib
 import importlib.util
 import io
 import json
@@ -264,6 +265,15 @@ def main(argv=None):
     #
     # It is a bisecting tool, not a way to run a subset and call it a suite. A run made with
     # --modules is never a suite result, and the summary says so.
+    # `--watch a,b,c` hashes those repo-relative paths after every module and names the module that
+    # changed one. It exists because the expensive way to find an order dependence is to bisect --
+    # nine long runs to isolate one pair -- and the cheap way is to watch the state the victim reads
+    # and see who writes it. One instrumented pass replaces the bisect when the contamination is on
+    # disk. It does NOT see in-process contamination (a cached module global), so a clean watch
+    # report narrows the cause rather than clearing it.
+    watch = None
+    if '--watch' in argv:
+        watch = [w.strip() for w in argv[argv.index('--watch') + 1].split(',') if w.strip()]
     modules = None
     if '--modules' in argv:
         modules = [m.strip() for m in argv[argv.index('--modules') + 1].split(',') if m.strip()]
@@ -311,10 +321,50 @@ def main(argv=None):
     zero_fns, blocked_fns = [], []
     isolated = []
     problems = []
+    watch_events = []
+    watch_state = {}
+
+    def _watch_digests():
+        d = {}
+        for w in (watch or ()):
+            q = os.path.join(ROOT, w)
+            try:
+                with open(q, 'rb') as fh:
+                    d[w] = hashlib.sha256(fh.read()).hexdigest()
+            except FileNotFoundError:
+                # ABSENT is a state, not an error: a path appearing or disappearing is exactly the
+                # kind of mutation being hunted, so it has to compare unequal to a digest.
+                d[w] = 'ABSENT'
+            except OSError as e:
+                d[w] = f'UNREADABLE:{e.__class__.__name__}'
+        return d
+
+    def _watch_check(after_module):
+        nonlocal watch_state
+        if not watch:
+            return
+        now = _watch_digests()
+        changed = [w for w in now if now[w] != watch_state.get(w)]
+        for w in changed:
+            watch_events.append({'after_module': after_module, 'path': w,
+                                 'from': watch_state.get(w), 'to': now[w]})
+        if changed:
+            print(f'    WATCH: {after_module} changed {len(changed)} watched path(s): '
+                  + ', '.join(changed))
+            _emit({'phase': 'watch_change', 'after_module': after_module, 'paths': changed})
+        watch_state = now
+
+    if watch:
+        watch_state = _watch_digests()
+        print(f'WATCHING {len(watch)} path(s) after every module: ' + ', '.join(watch))
     _emit({'phase': 'suite_start', 'n_modules': len(files), 'order': order_note,
            'shuffle_seed': shuffle_seed, 'reverse': reverse},
           f'suite: {len(files)} module(s), order {order_note}')
     for i, f in enumerate(files, 1):
+        # Attribute a watched change to the module that just finished. Doing it here rather than at
+        # each module_done covers the branches that `continue`, so no exit path skips the check.
+        if i > 1:
+            _watch_check(files[i - 2])
         _emit({'phase': 'module_start', 'i': i, 'module': f},
               f'[{i}/{len(files)}] {f}')
         own = requires_own_process(f)
@@ -478,6 +528,16 @@ def main(argv=None):
                'checks_ok': ok, 'checks_failing': bad},
               f'[{i}/{len(files)}] {f}  {len(fns)} fn, {ok} check(s), '
               f'{bad} failing')
+    if files:
+        _watch_check(files[-1])
+    if watch:
+        print(f'\nWATCH REPORT: {len(watch_events)} change(s) to watched paths during the run')
+        for ev in watch_events:
+            print(f"  after {ev['after_module']}: {ev['path']} "
+                  f"{str(ev['from'])[:12]} -> {str(ev['to'])[:12]}")
+        if not watch_events:
+            print('  none. The watched paths were byte-identical throughout, so whatever differs '
+                  'between this order and an isolated run is NOT in these files.')
     _emit({'phase': 'suite_scan_done', 'n_modules': len(files)})
     if zero_fns:
         problems.append(
