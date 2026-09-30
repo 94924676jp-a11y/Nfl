@@ -39,6 +39,27 @@ authorised.** Do not build one until the owner says so.
    it away. Fourteen of this project's recorded corrections are to its own
    earlier claims, and that history is load-bearing.
 7. **`python3.12`**, not `python3`.
+8. **A test that is not executed by the authoritative harness does not exist.**
+   Passing under `python3.12 nfl/tests/test_<name>.py` is not evidence. On
+   2026-09-30, 23 test modules (~217 checks) were invisible to
+   `nfl/tests/run_suite.py` because the runner discovers `test_*` functions and
+   reads module-level `PASSED`/`FAILED`, and those modules exposed neither.
+   They had been reported as passing for weeks. Register a module with
+   `nfl/tests/_registry.py:emit()`, then confirm the runner counts it.
+9. **A test that depends on suite order is not a reliable test.** The
+   acceptance criterion for the suite is that a fresh process, normal order,
+   `--reverse`, and `--shuffle` all classify identically for the same commit
+   and controlled seed. Anything else means the suite is measuring leftover
+   state, not the product.
+
+   The one legitimate exception is a **declared** process-scoped guarantee.
+   The FantasyCruncher firewall refuses if any proprietary module has been
+   imported anywhere in the interpreter, so a module verifying it cannot share
+   a process with one that imports it. Such a module declares
+   `REQUIRES_OWN_PROCESS` and the runner gives it a subprocess. That is
+   isolation declared in the module and enforced by the harness; order
+   dependence is undeclared and invisible. The difference is the declaration,
+   not the isolation.
 
 ## Layout
 
@@ -67,8 +88,20 @@ python3.12 nfl/tests/test_<name>.py
 cd sportsplatform/governance && python3.12 test_outcome.py
 ```
 
-**911 assertions, 0 failing.** Every control has a positive test, a
-seeded-violation test, and where critical a load-bearing test.
+**The count in this file was wrong and is withdrawn.** It read "911 assertions,
+0 failing" and was written before the harness was found to be skipping 23 test
+modules, so it counted neither their checks nor their failures. It is also the
+kind of number that goes stale the moment a suite is added. Enumerate from the
+runner, never from prose:
+
+```
+python3.12 nfl/tests/run_suite.py              # normal order
+python3.12 nfl/tests/run_suite.py --reverse    # reverse order
+python3.12 nfl/tests/run_suite.py --shuffle    # random order, seed printed
+```
+
+Every control still has a positive test, a seeded-violation test, and where
+critical a load-bearing test.
 
 ## The two results that matter most
 
