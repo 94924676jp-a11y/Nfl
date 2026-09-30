@@ -250,6 +250,19 @@ def main(argv=None):
     # --no-isolate inside a multi-module run is REFUSED below, because judging it in a contaminated
     # interpreter is the thing the declaration exists to prevent.
     no_isolate = '--no-isolate' in argv
+    # ORDER MODES. A suite whose result depends on the order its modules ran is not a measurement of
+    # the product, so the order has to be variable and the variation has to be reportable. `--reverse`
+    # runs the discovered list backwards; `--shuffle [SEED]` permutes it with an explicit seed.
+    #
+    # THE SEED IS ALWAYS PRINTED AND ALWAYS RECORDED. A randomised run that does not say which
+    # permutation it used cannot be reproduced, and an irreproducible failure gets called a flake and
+    # then gets ignored -- which is how an order dependence survives a randomised harness.
+    reverse = '--reverse' in argv
+    shuffle_seed = None
+    if '--shuffle' in argv:
+        j = argv.index('--shuffle') + 1
+        shuffle_seed = (int(argv[j]) if j < len(argv) and argv[j].isdigit()
+                        else int(time.time()))
     os.chdir(ROOT)
     for q in (ROOT, os.path.join(ROOT, 'sportsplatform')):
         if q not in sys.path:
@@ -258,14 +271,26 @@ def main(argv=None):
              + sorted(glob.glob('sportsplatform/**/test_*.py', recursive=True)))
     if only:
         files = [f for f in files if only in f]
+    order_note = 'discovered (sorted)'
+    if reverse:
+        files = list(reversed(files))
+        order_note = 'REVERSED'
+    if shuffle_seed is not None:
+        import random as _random
+        _random.Random(shuffle_seed).shuffle(files)
+        order_note = f'SHUFFLED seed={shuffle_seed}'
+    if reverse or shuffle_seed is not None:
+        print(f'MODULE ORDER: {order_note} -- reproduce with '
+              + ('--reverse' if reverse else f'--shuffle {shuffle_seed}'))
     n_fn = n_raise = n_check_fail = n_check_ok = 0
     n_not_executed = []
     n_fn_zero = n_fn_blocked = n_unrecognised_tally = 0
     zero_fns, blocked_fns = [], []
     isolated = []
     problems = []
-    _emit({'phase': 'suite_start', 'n_modules': len(files)},
-          f'suite: {len(files)} module(s)')
+    _emit({'phase': 'suite_start', 'n_modules': len(files), 'order': order_note,
+           'shuffle_seed': shuffle_seed, 'reverse': reverse},
+          f'suite: {len(files)} module(s), order {order_note}')
     for i, f in enumerate(files, 1):
         _emit({'phase': 'module_start', 'i': i, 'module': f},
               f'[{i}/{len(files)}] {f}')
@@ -443,6 +468,9 @@ def main(argv=None):
           f'FAILING CHECKS {n_check_fail}  RAISED {n_raise}  '
           f'ZERO-CHECK FUNCTIONS {n_fn_zero}  BLOCKED FUNCTIONS '
           f'{n_fn_blocked}  UNRECOGNISED TALLIES {n_unrecognised_tally}')
+    if reverse or shuffle_seed is not None:
+        print(f'ORDER: {order_note}. A failure here that does not reproduce in sorted order is an '
+              f'ORDER DEPENDENCE, not a flake, and the line above is how to re-run it.')
     if isolated:
         print(f'process-scoped, each run in its own interpreter ({len(isolated)}):')
         for r in isolated:
