@@ -60,8 +60,24 @@ CATEGORIES = (REAL_PRODUCT_DEFECT, STALE_EXPECTATION, ENVIRONMENT_DEPENDENCY,
 #: total, and so a future edit that adds a category has to decide deliberately whether it blocks.
 BLOCKING_CATEGORIES = (REAL_PRODUCT_DEFECT,)
 
+#: THE MODULE KEY IS THE FULL REPO-RELATIVE PATH, not the basename. The runner discovers
+#: `sportsplatform/**/test_*.py` as well as `nfl/tests/test_*.py`, and an earlier version of this
+#: regex was anchored to `nfl/tests/`, so a failing sportsplatform module parsed as no module at all
+#: and vanished from the taxonomy. That is principle 8 -- a test the harness does not count does not
+#: exist -- reappearing one layer up, in the thing that reads the harness.
 _TALLY_LINE = re.compile(
-    r'nfl/tests/(test_[a-z0-9_]+\.py)\s+\d+ fn, \d+ check\(s\), (\d+) failing')
+    r'((?:[\w.-]+/)*test_[a-z0-9_]+\.py)\s+\d+ fn, \d+ check\(s\), (\d+) failing')
+
+#: A module declaring REQUIRES_OWN_PROCESS reports through a different line. It has to be read too,
+#: or the four modules that carry that declaration -- the FantasyCruncher firewall family -- would be
+#: unclassifiable by construction.
+_OWN_PROCESS_LINE = re.compile(
+    r'((?:[\w.-]+/)*test_[a-z0-9_]+\.py)\s+OWN PROCESS, \d+ check\(s\), (\d+) failing')
+
+#: An isolated child whose tally could not be parsed is UNKNOWN, and unknown is not zero. The runner
+#: already refuses to count it as a pass; this reader must not quietly restore it to one.
+_OWN_PROCESS_UNREADABLE = re.compile(
+    r'((?:[\w.-]+/)*test_[a-z0-9_]+\.py)\s+OWN PROCESS, tally unreadable')
 
 
 def failing_from_log(path) -> Outcome:
@@ -71,8 +87,17 @@ def failing_from_log(path) -> Outcome:
         return Outcome.blocked('SUITE_LOG_ABSENT', f'{p} does not exist', cause=Cause.DATA)
     text = p.read_text(errors='replace')
     seen = {}
-    for m in _TALLY_LINE.finditer(text):
-        seen[m.group(1)] = int(m.group(2))
+    for rx in (_TALLY_LINE, _OWN_PROCESS_LINE):
+        for m in rx.finditer(text):
+            seen[m.group(1)] = int(m.group(2))
+    unreadable = sorted({m.group(1) for m in _OWN_PROCESS_UNREADABLE.finditer(text)})
+    if unreadable:
+        return Outcome.fail(
+            'SUITE_LOG_HAS_UNREADABLE_TALLIES',
+            f'{len(unreadable)} isolated module(s) produced no parsable tally, so their result is '
+            f'UNKNOWN. Classifying the rest would report a failure count that silently excludes '
+            f'them, which reads as though they passed.',
+            unreadable=unreadable)
     if not seen:
         return Outcome.fail(
             'SUITE_LOG_UNPARSABLE',
@@ -81,6 +106,7 @@ def failing_from_log(path) -> Outcome:
     failing = {k: v for k, v in seen.items() if v}
     return Outcome.ok('SUITE_LOG_READ', value={
         'log': str(p), 'n_modules_tallied': len(seen), 'n_failing': len(failing),
+        'MODULE_KEY_IS': 'the repo-relative path, so two modules sharing a basename stay distinct',
         'failing': failing})
 
 
