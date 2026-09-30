@@ -18,8 +18,15 @@ print the seed; they become a gate once the dependence is gone.
 
 ## Closed: four of the eight were the firewall working
 
-Four of the eight — the `test_assumption_governance` family — failed with
-`FC_READ_FROM_PROPRIETARY_CONTEXT`. That is the FantasyCruncher firewall
+Four of the eight failed with `FC_READ_FROM_PROPRIETARY_CONTEXT`. They are
+`test_fc_firewall_and_projection_source`, `test_projection_guards_catch_v0`,
+`test_search_quality_gate` and `test_slate_to_portfolio` — the four that now
+carry `REQUIRES_OWN_PROCESS`, each with its own stated reason.
+
+*Corrected.* An earlier draft of this ticket called them "the
+`test_assumption_governance` family". That is wrong and no reader should carry it
+forward: `test_assumption_governance` is a different module and it passes
+in-process (16 functions, 84 checks, 0 failing, measured at `a8cc6183`). That is the FantasyCruncher firewall
 behaving exactly as designed: it refuses if any proprietary module has been
 imported anywhere in the interpreter, so it cannot share a process with a module
 that imports one. They now declare `REQUIRES_OWN_PROCESS`, the runner gives each
