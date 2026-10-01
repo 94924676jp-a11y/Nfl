@@ -139,6 +139,14 @@ def pbp_team_game(season):
     path = _REPO / o.value['selected']
     per = collections.defaultdict(lambda: collections.Counter())
     meta = collections.defaultdict(dict)
+    # FINAL SCORES FROM PLAY-BY-PLAY. The schedules capture is the primary source for `points`, but
+    # nflverse refreshes play-by-play daily while a schedules pull can lag it, so a week can be PLAYED
+    # and present in the pbp while the schedules row still carries blank scores. That is exactly the
+    # state on 2026-10-01: pbp holds all 16 Week 3 games and schedules has no Week 3 result.
+    # Every non-empty value is checked for agreement instead of taking the last one, because two
+    # different finals for one game means the file is not what it is believed to be.
+    finals = {}
+    finals_conflict = []
     drives = collections.defaultdict(set)
     rz_drives = collections.defaultdict(set)
     times = collections.defaultdict(list)
@@ -149,6 +157,17 @@ def pbp_team_game(season):
             gid, pt = r.get('game_id'), r.get('posteam')
             if not gid or not pt:
                 continue
+            hsv, asv = (r.get('home_score') or '').strip(), (r.get('away_score') or '').strip()
+            if hsv and asv:
+                seen = finals.get(gid)
+                cand = {'home_score': _num(hsv), 'away_score': _num(asv),
+                        'home_team': r.get('home_team'), 'away_team': r.get('away_team'),
+                        'week': r.get('week')}
+                if seen is None:
+                    finals[gid] = cand
+                elif (seen['home_score'], seen['away_score']) != (cand['home_score'],
+                                                                  cand['away_score']):
+                    finals_conflict.append({'game_id': gid, 'first': seen, 'then': cand})
             k = (gid, pt)
             c = per[k]
             meta[k].setdefault('week', r.get('week'))
@@ -224,7 +243,8 @@ def pbp_team_game(season):
             'game_script': (round(c['script_sum'] / c['script_n'], 4) if c['script_n'] else None),
         }
     return {'state': 'BUILT', 'source': o.value['selected'], 'n_club_games': len(out),
-            'rows': out, 'selection': o.value}
+            'rows': out, 'selection': o.value, 'finals': finals,
+            'finals_conflict': finals_conflict}
 
 
 def build(seasons=None):
@@ -250,6 +270,19 @@ def build(seasons=None):
     for s in seasons:
         pbp[s] = pbp_team_game(s)
 
+    # A pbp file reporting two different finals for one game is refused, not reconciled. There is no
+    # correct way to pick between them and a silently chosen score would propagate into every layer.
+    conflicts = [c for pb in pbp.values() for c in (pb.get('finals_conflict') or [])]
+    if conflicts:
+        return Outcome.fail(
+            'PLAY_BY_PLAY_FINAL_SCORE_CONFLICT',
+            f'{len(conflicts)} game(s) carry two different final scores inside the play-by-play '
+            f'capture. The file is not what it is believed to be, and choosing one would put an '
+            f'invented score into the foundation table.',
+            examples=conflicts[:5])
+
+    score_from_schedules = 0
+    score_from_pbp = []
     table, coverage = {}, {}
     for r in sched:
         s = int(_num(r['season']))
@@ -260,6 +293,26 @@ def build(seasons=None):
         hi, ai = implied_totals(tl, sp, conv)
         hs, as_ = _num(r.get('home_score')), _num(r.get('away_score'))
         pb = pbp.get(s) or {}
+        # BACKFILL, with the club mapping verified rather than assumed. The pbp row names its own
+        # home_team and away_team, and they must match the schedules row before its scores are used --
+        # otherwise a game_id collision would silently swap a result onto the wrong clubs.
+        if hs is None or as_ is None:
+            fin = (pb.get('finals') or {}).get(gid)
+            if fin and fin['home_score'] is not None and fin['away_score'] is not None:
+                if (fin['home_team'] == r.get('home_team')
+                        and fin['away_team'] == r.get('away_team')):
+                    hs, as_ = fin['home_score'], fin['away_score']
+                    score_from_pbp.append({'game_id': gid, 'season': s,
+                                           'week': int(_num(r.get('week')) or 0),
+                                           'home_team': r.get('home_team'),
+                                           'away_team': r.get('away_team'),
+                                           'home_score': hs, 'away_score': as_})
+                else:
+                    score_from_pbp.append({'game_id': gid, 'REFUSED': 'CLUBS_DISAGREE',
+                                           'schedules': [r.get('away_team'), r.get('home_team')],
+                                           'play_by_play': [fin['away_team'], fin['home_team']]})
+        elif hs is not None:
+            score_from_schedules += 1
         pbrows = pb.get('rows') or {}
         pb_state = pb.get('state')
         for side in ('home', 'away'):
@@ -345,6 +398,22 @@ def build(seasons=None):
            'PBP_FIELDS': list(PBP_FIELDS),
            'NEVER_ZERO': ('a play-detail field for a season without a capture carries the era '
                           'sentinel, never zero. A zero would say that club ran no plays.'),
+           'score_provenance': {
+               'PRIMARY': 'the schedules capture',
+               'FALLBACK': ('final scores read from the play-by-play capture, used ONLY where the '
+                            'schedules row carries no result and the pbp row names the same two '
+                            'clubs. nflverse refreshes play-by-play daily and a schedules pull can '
+                            'lag it, so a played week can be present in one and blank in the other.'),
+               'NOT_A_DERIVATION': ('these are the vendor\'s own final scores, transformed by nothing. '
+                                    'No score is inferred, modelled or filled.'),
+               'n_club_game_sides_from_schedules': score_from_schedules,
+               'n_games_backfilled_from_play_by_play': sum(
+                   1 for x in score_from_pbp if 'REFUSED' not in x),
+               'n_games_refused_on_club_disagreement': sum(
+                   1 for x in score_from_pbp if 'REFUSED' in x),
+               'backfilled': [x for x in score_from_pbp if 'REFUSED' not in x][:40],
+               'refused': [x for x in score_from_pbp if 'REFUSED' in x][:10],
+           },
            'rows': table}
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(art, separators=(',', ':'), sort_keys=True))

@@ -76,42 +76,71 @@ def t_in_progress_not_counted():
 
 @check('the evidence frontier is read from scores actually held, not from a file timestamp')
 def t_evidence_frontier():
+    """Asserts the MECHANISM, not a date.
+
+    The first version of this check hardcoded 2026-09-21, which was true of the stale capture and
+    became false the moment Week 3 was acquired. A test that pins today's data state is a test that
+    has to be edited every time the data is correct, and editing it is indistinguishable from editing
+    it to go green. So the frontier is recomputed here from the warehouse independently and compared.
+    """
+    import json
     rows = _sched()
     o = W.latest_completed_in_evidence(rows)
     assert o.state is State.PASS, o
-    assert o.value['latest_scored_gameday'] == '2026-09-21', o.value
-    assert o.value['latest_scored_week'] == 2, o.value
+    day_of = {r['game_id']: r['gameday'] for r in rows if r.get('gameday')}
+    art = json.loads(W.TEAM_GAME.read_text())
+    tg = art['rows'] if isinstance(art['rows'], list) else list(art['rows'].values())
+    scored = [day_of[r['game_id']] for r in tg
+              if r.get('season') == W.CURRENT_SEASON
+              and isinstance(r.get('points'), (int, float))
+              and r.get('game_id') in day_of]
+    assert scored, 'the warehouse holds no scored current-season game that the schedule also knows'
+    assert o.value['latest_scored_gameday'] == max(scored), (o.value['latest_scored_gameday'],
+                                                            max(scored))
+    assert o.value['n_scored_club_games'] == len(scored), (o.value['n_scored_club_games'],
+                                                           len(scored))
     return (f"through {o.value['latest_scored_gameday']}, week {o.value['latest_scored_week']}, "
-            f"{o.value['n_scored_club_games']} club-games")
+            f"{o.value['n_scored_club_games']} club-games, recomputed independently")
 
 
-@check('LOAD-BEARING: the gate FAILS today, naming the missing week and game count')
-def t_gate_fails_now():
-    o = W.semantic_freshness(as_of='2026-10-01')
+@check('LOAD-BEARING: the gate FAILS when the world runs ahead, at an INJECTED evaluation time')
+def t_gate_fails_when_world_ahead():
+    """Forces the failure direction by moving the clock, not by relying on the data being stale.
+
+    Evaluated far enough forward that a later week has been played while the evidence has not moved,
+    which is the condition the gate exists to catch. This is deterministic: it does not depend on
+    today's date or on which weeks happen to be acquired.
+    """
+    caught_up = W.semantic_freshness(as_of='2026-09-29')
+    assert caught_up.state is State.PASS, caught_up
+    behind_at = '2026-11-15'
+    o = W.semantic_freshness(as_of=behind_at)
     assert o.state is State.FAIL, o
     assert o.code == 'EVIDENCE_BEHIND_THE_WORLD', o.code
     ev = o.evidence
-    assert ev['missing_weeks'] == [3], ev['missing_weeks']
-    assert ev['n_missing_games'] == 16, ev['n_missing_games']
-    assert ev['latest_completed_week_in_world'] == 3
-    assert ev['latest_completed_week_in_evidence'] == 2
-    return f"{o.code}: weeks {ev['missing_weeks']}, {ev['n_missing_games']} games absent"
+    assert ev['missing_weeks'], ev
+    assert ev['n_missing_games'] > 0, ev
+    assert ev['latest_completed_week_in_world'] > ev['latest_completed_week_in_evidence'], ev
+    return (f"PASS at 2026-09-29 and {o.code} at {behind_at}: weeks {ev['missing_weeks'][:4]}, "
+            f"{ev['n_missing_games']} games absent -- same data, two clocks")
 
 
 @check('LOAD-BEARING: the gate PASSES when the evidence does reach the world')
 def t_gate_passes_when_caught_up():
-    # As of 2026-09-22 the world is through 09-21, which is exactly where the evidence stops. The gate
-    # must distinguish "behind" from "level"; a gate that always failed would be useless.
-    o = W.semantic_freshness(as_of='2026-09-22')
+    # At a cutoff where the world's last completed day is one the evidence also holds, the gate must
+    # read level rather than behind. A gate that always failed would be useless, and this is the
+    # direction that proves it does not.
+    o = W.semantic_freshness(as_of='2026-09-29')
     assert o.state is State.PASS, o
     assert o.code == 'EVIDENCE_REACHES_THE_WORLD', o.code
-    assert o.evidence['latest_completed_week_in_world'] == 2
-    return f"{o.code} at a cutoff where world and evidence are both week 2"
+    w = o.evidence['latest_completed_week_in_world']
+    assert w == o.evidence['latest_completed_week_in_evidence'], o.evidence
+    return f"{o.code} at a cutoff where world and evidence are both week {w}"
 
 
 @check('the gate is a FAIL, not a DEFERRED: a missing played week is not an errand to proceed around')
 def t_gate_is_a_fail_not_a_deferral():
-    o = W.semantic_freshness(as_of='2026-10-01')
+    o = W.semantic_freshness(as_of='2026-11-15')
     assert o.state is State.FAIL, f'state is {o.state}, which would let the pipeline continue'
     return 'FAIL, so a product mode cannot read READY through it'
 
