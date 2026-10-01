@@ -3379,3 +3379,84 @@ parlays. And the comparison runs ONE WAY: a sealed forecast is scored against a 
 projection is ever adjusted toward a price. `nfl/market/price_history.py` has no import path to any
 projection module and a test asserts it.
 
+
+---
+
+## REQUEST 2026-10-01 — current-season football results (PRIORITY ZERO)
+
+**Why this is Priority Zero and not a chore.** Every 2026 projection this system makes currently
+rests on two games. `nfl/production/world_clock.py` now refuses on it:
+
+```
+FAIL EVIDENCE_BEHIND_THE_WORLD
+  latest_completed_game_in_world      2026-09-28   (week 3)
+  latest_completed_game_in_evidence   2026-09-21   (week 2)
+  missing_weeks [3]   n_missing_games 16
+```
+
+**Root cause, so nobody re-diagnoses it.** The selected play-by-play capture,
+`nfl/research/postgame/pbp_2026.6643f82adb1158c8.csv.gz`, was pulled **2026-09-24 15:20** and holds
+Weeks 1 and 2 only — 2,756 and 2,733 regular-season plays, 32 games. Week 3 was played
+**2026-09-25 to 09-28**, after that pull. The selected schedules capture,
+`nfl/vintage/schedules.9d3644487c6021f2.csv.gz`, carries scores for Weeks 1–2 and blanks from Week 3
+on. Nothing is broken in `nfl/warehouse/team_game.py`; there is nothing in the source to ingest. This
+is an **acquisition** gap and it needs bytes from outside the checkout.
+
+**What is needed.** Two nflverse pulls, both covering the season to date:
+
+| data | drop it at | tier | required columns |
+|---|---|---|---|
+| 2026 play-by-play | `nfl/research/postgame/pbp_2026.<hash>.csv.gz` | PRIMARY | `game_id, season_type, week, posteam, play_type` |
+| schedules (all seasons) | `nfl/vintage/schedules.<hash>.csv.gz` | PRIMARY | `game_id, season, week, home_team, away_team` |
+
+Weeks 3 and 4 are what is missing today; Week 4 completes 2026-10-05, so a pull after that is worth
+more than two pulls before it. **Do not** hand-edit the existing captures — add new files.
+
+**Nothing has to be rewired.** `sources.select` prefers candidates by
+`('tier', 'weeks', 'completeness', 'rows')` for play-by-play and
+`('tier', 'seasons', 'weeks', 'completeness', 'freshness')` for schedules, so a newer capture with
+more weeks is chosen automatically. Then:
+
+```
+python3.12 nfl/warehouse/team_game.py          # rebuild the club-game table
+python3.12 nfl/production/world_clock.py       # must now print EVIDENCE_REACHES_THE_WORLD
+```
+
+If `world_clock` still reports a gap after the rebuild, the capture did not contain the weeks it was
+believed to contain — read its week histogram before concluding anything else.
+
+**One thing to preserve.** `assert_no_post_cutoff_outcomes` currently PASSES over 223 future games
+across 17 named outcome fields. A capture that populates a score on a game that has not kicked off
+would turn that into `POST_CUTOFF_OUTCOME_PRESENT`, which is leakage. If that fires, the capture is
+wrong and must not be ingested.
+
+## REQUEST 2026-10-01 — tonight's DK Showdown export, PIT at CLE
+
+**The game is identified and the repository already knows it.** From
+`nfl/vintage/schedules.9d3644487c6021f2.csv.gz`: `2026_04_PIT_CLE`, gameday **2026-10-01**, gametime
+**20:15**, the only game on the date.
+
+**What is needed.** The DraftKings **Showdown** entries export for that contest — the file DK serves
+as `DKEntries….csv`, carrying both blocks: the entries block (`Entry ID, Contest Name, Contest ID,
+Entry Fee, CPT, FLEX, FLEX, FLEX, FLEX, FLEX`) and the player-pool block (`Position, Name + ID, Name,
+ID, Roster Position, Salary, Game Info, TeamAbbrev, AvgPointsPerGame`). A salary-only export is not
+enough: the entry rows are what the upload is written against.
+
+**Where to put it:** `nfl/dfs/salaries/raw/`, any filename containing `DKEntries`. Then:
+
+```
+python3.12 nfl/tools/showdown_to_portfolio.py nfl/dfs/salaries/raw/<the file>.csv
+```
+
+The runner takes the matchup and the kickoff from the pool's `Game Info` column, so nothing needs to
+be told which game it is. It will stop at `SHOWDOWN_PROJECTION_DOES_NOT_COVER_THIS_GAME` until a
+projection covering PIT and CLE exists — which is the first request above, since a projection for
+those clubs needs the results that are missing.
+
+**Also useful, separately:** the official inactives for the game once published, as a JSON list of
+names, passed with `--inactives`. Until then the runner reports
+`SHOWDOWN_OFFICIAL_INACTIVES_NOT_SUPPLIED` as DEFERRED and will not treat the absence as "everyone
+plays".
+
+**Not wanted, explicitly.** `AvgPointsPerGame` is in that file and is a third-party projection. It is
+never a model input and never fills a missing projection. Do not strip it, do not use it.
