@@ -397,16 +397,28 @@ def s4_projections(slate, absent, proj_path: pathlib.Path = None) -> Outcome:
             index[player_key(r['name'], r['team'])].append(r)
 
     want = [k for k in slate['players'] if k not in absent]
-    got, missing, ambiguous = {}, [], []
+    got, missing, ambiguous, declared_out = {}, [], [], []
     for k in want:
         v = slate['players'][k]
         hits = index.get(player_key(v['name'], v['team']), [])
         if len(hits) > 1:
             ambiguous.append({'player': k, 'n': len(hits)})
             continue
+        # A ROW THAT DECLINES TO PROJECT ON AVAILABILITY GROUNDS IS AN ANSWER, NOT A GAP.
+        # MISSING is not the same thing as DECLARED NOT PLAYING, and conflating them made the runner
+        # refuse a complete slate: the model had addressed all 51 players and said of two of them
+        # "reported out, so no projection", which is precisely what it should say. A coverage gap is a
+        # player the model is SILENT about.
+        if hits and str(hits[0].get('projection_state') or '').startswith('NOT_PLAYING'):
+            declared_out.append({'player': k, 'name': v['name'], 'club': v['team'],
+                                 'position': v['position'],
+                                 'projection_state': hits[0].get('projection_state')})
+            continue
         if not hits or not isinstance(hits[0].get('dk_points'), (int, float)):
             missing.append({'player': k, 'name': v['name'], 'club': v['team'],
-                            'position': v['position']})
+                            'position': v['position'],
+                            'projection_state': (hits[0].get('projection_state') if hits
+                                                 else 'NO_ROW_IN_THE_PROJECTION')})
             continue
         got[k] = {'dk_points': float(hits[0]['dk_points']),
                   'gsis_id': hits[0].get('gsis_id'),
@@ -425,8 +437,14 @@ def s4_projections(slate, absent, proj_path: pathlib.Path = None) -> Outcome:
             cause=Cause.DATA, n_missing=len(missing), n_wanted=len(want), missing=missing[:12],
             artifact=proj_path.name,
             WOULD_RESOLVE_IT='a proprietary projection covering this game, joinable on (name, club)')
-    return Outcome.ok('SHOWDOWN_PROJECTIONS_READ', got, f'{len(got)} players projected',
-                      n=len(got), artifact=proj_path.name,
+    return Outcome.ok('SHOWDOWN_PROJECTIONS_READ',
+                      {'projected': got, 'declared_not_playing': [d['player'] for d in declared_out]},
+                      f'{len(got)} players projected, {len(declared_out)} declared not playing',
+                      n=len(got), n_declared_not_playing=len(declared_out),
+                      declared_not_playing=declared_out, artifact=proj_path.name,
+                      MISSING_IS_NOT_DECLARED_OUT=(
+                          'a player the model declined to project because he is reported out has been '
+                          'ANSWERED. Only silence is a coverage gap.'),
                       THIRD_PARTY_COLUMNS_NOT_READ=list(THIRD_PARTY_COLUMNS))
 
 
@@ -776,7 +794,8 @@ def s_emit_csv(chosen, entries, slate, out: pathlib.Path = None) -> Outcome:
                                      'owner\'s action, never this runner\'s.'))
 
 
-def run(export, *, official_inactives=None, proj_path=None, draws=None, n_entries=None) -> Outcome:
+def run(export, *, official_inactives=None, proj_path=None, draws=None, n_entries=None,
+        out_csv=None) -> Outcome:
     """Drive the stages. The board is emitted whatever happens."""
     export = pathlib.Path(export)
     stages = []
@@ -827,6 +846,8 @@ def run(export, *, official_inactives=None, proj_path=None, draws=None, n_entrie
             'SHOWDOWN_RUN_BLOCKED', f'projections: {o4.code}', cause=Cause.DATA,
             board=finish('BLOCKED_NO_PROJECTIONS', o4.detail, refused_at='projections'))
 
+    # Players the projection declared out are excluded from selection as well as from coverage.
+    absent = set(absent) | set((o4.value or {}).get('declared_not_playing') or ())
     n = len(entries) if n_entries is None else int(n_entries)
     o5 = s5_candidates_and_selection(slate, absent, draws, n)
     stages.append(_stage('candidates_and_selection', o5, **(o5.evidence or {})))
@@ -854,7 +875,7 @@ def run(export, *, official_inactives=None, proj_path=None, draws=None, n_entrie
                          refused_at='publication_gate', withheld=withheld,
                          n_selected=len(chosen)))
 
-    o6 = s_emit_csv(chosen, entries[:len(chosen)], slate)
+    o6 = s_emit_csv(chosen, entries[:len(chosen)], slate, out=out_csv)
     stages.append(_stage('emit_csv', o6, **(o6.evidence or {})))
     if o6.state.value != 'PASS':
         return Outcome.fail('SHOWDOWN_RUN_REFUSED', f'emit: {o6.code}',

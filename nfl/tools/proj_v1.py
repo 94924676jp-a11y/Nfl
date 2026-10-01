@@ -46,7 +46,7 @@ _REPO = pathlib.Path(__file__).resolve().parents[2]
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
-from nfl.tools import market_response  # noqa: E402
+from nfl.tools import kicker_model, market_response  # noqa: E402
 from sportsplatform.governance.outcome import Cause, Outcome  # noqa: E402
 
 SPEC_VERSION = 'proj-v1-1'
@@ -945,6 +945,21 @@ def allocate_club_td(team_expected_td, pass_share, rows, rates):
 
 
 # --------------------------------------------------------------------------------- assembly
+_KM = None
+
+
+def _kicker_rates():
+    """The measured kicker rate table, loaded once. None if it cannot be measured."""
+    global _KM
+    if _KM is None:
+        try:
+            m = kicker_model.measure()
+        except Exception:                                                   # noqa: BLE001
+            return None
+        _KM = m.value if hasattr(m, 'value') else m
+    return _KM
+
+
 def build():
     from nfl.tools import dst_model, player_prior, td_rates
     for f, nm in ((POST, 'post-inactives state'), (ROLE, 'role state'), (RATES, 'td rates')):
@@ -1048,6 +1063,40 @@ def build():
                                               if d.get('dk_points') is not None else None)})
             rows[dk_id] = base
             skipped['DST' if d.get('dk_points') is None else 'DST_PROJECTED'] += 1
+            continue
+        if pos == 'K':
+            # THE KICKER PATHWAY WAS BUILT AND NEVER CONNECTED. nfl/tools/kicker_model.py measures
+            # per-club attempt rates by distance band and projects DK points from them, and this
+            # function skipped position K as POSITION_PATHWAY_UNDEFINED anyway. On a showdown slate
+            # that is not a rounding error: a kicker is 1 of 6 roster seats, so two unprojected
+            # kickers removed a sixth of the universe from every lineup.
+            km = _kicker_rates()
+            if km is None:
+                base.update({'projection_state': 'KICKER_RATES_ABSENT', 'dk_points': None})
+                rows[dk_id] = base
+                skipped['K_RATES_ABSENT'] += 1
+                continue
+            kp = kicker_model.project(club, km, opponent_implied=opponent_implied.get(club),
+                                      club_implied=(implied or {}).get(club))
+            # THE STATE MUST NOT BE BARE 'PROJECTED'. The recompute loop below re-scores every row
+            # whose state is in ('PROJECTED', 'PROJECTED_COLD_START') with the SKILL scorer, and a
+            # kicker has no passing, rushing or receiving components, so a kicker left at 'PROJECTED'
+            # came back 0.0 and was then labelled PROJECTED_COMPUTED_ZERO -- a confident zero over a
+            # real 8.65. This is the same defect the comment on that loop records for PROJECTED_DST,
+            # reappearing for the position added next, which is what a prefix-shaped contract does.
+            _kstate = kp.get('state') or 'UNKNOWN'
+            base.update({'projection_state': ('PROJECTED_KICKER' if _kstate == 'PROJECTED'
+                                              else f'KICKER_{_kstate}'),
+                         'kicker_model_state': _kstate,
+                         'dk_points': kp.get('dk_points'), 'kicker': kp,
+                         # A kicker on the active roster plays, like a defence, so the conditional and
+                         # unconditional numbers are the same. Omitting the conditional field is what
+                         # removed defences from every pool once and made the slate look infeasible.
+                         'dk_points_if_plays': kp.get('dk_points'),
+                         'p_plays_by_field': ({'team_unit': 1.0}
+                                              if kp.get('dk_points') is not None else None)})
+            rows[dk_id] = base
+            skipped['K_PROJECTED' if kp.get('dk_points') is not None else 'K_NOT_PROJECTED'] += 1
             continue
         if pos not in SKILL:
             base.update({'projection_state': f'POSITION_PATHWAY_UNDEFINED_{pos}',

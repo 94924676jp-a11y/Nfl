@@ -1,0 +1,80 @@
+{
+  "ARTIFACT": "SHOWDOWN_STATUS_BOARD",
+  "spec_version": "showdown-to-portfolio-1",
+  "export": "/home/user/nfl/nfl/dfs/salaries/raw/DKEntries_PIT_CLE_SHOWDOWN_2026W4.csv",
+  "run_at_utc": "2026-10-01T21:51:09.671498+00:00",
+  "stages": [
+    {
+      "stage": "ingest_export",
+      "state": "PASS",
+      "code": "SHOWDOWN_EXPORT_INGESTED",
+      "detail": "78 entries, 102 pool rows",
+      "n_entries": 78,
+      "n_pool_rows": 102
+    },
+    {
+      "stage": "slate_identity",
+      "state": "PASS",
+      "code": "SHOWDOWN_SLATE_IDENTIFIED",
+      "detail": "PIT@CLE at 2026-10-01T20:15:00 ET, 51 players",
+      "away": "PIT",
+      "home": "CLE",
+      "n_players": 51,
+      "positions": {
+        "QB": 8,
+        "RB": 12,
+        "WR": 18,
+        "TE": 9,
+        "K": 2,
+        "DST": 2
+      }
+    },
+    {
+      "stage": "availability",
+      "state": "DEFERRED",
+      "code": "SHOWDOWN_OFFICIAL_INACTIVES_NOT_SUPPLIED",
+      "detail": "no official inactive list was supplied for this game",
+      "note": "DEFERRED and NOT an empty set. UNKNOWN is not NOT PLAYING and MISSING is not INACTIVE. Treating an absent list as \"everybody plays\" is the error that makes a portfolio look complete while holding a scratched player.",
+      "owed": "the official inactives, published about 90 minutes before kickoff"
+    },
+    {
+      "stage": "projections",
+      "state": "BLOCKED",
+      "code": "SHOWDOWN_PROJECTION_DOES_NOT_COVER_THIS_GAME",
+      "detail": "2 of 51 rosterable players have no dk_points in DK_WEEK3_PROJ_V1.json. A projection built for another week does not contain this game, and filling the gap from AvgPointsPerGame would put a third party's opinion inside our portfolio.",
+      "n_missing": 2,
+      "n_wanted": 51,
+      "missing": [
+        {
+          "player": "Chris Boswell|PIT",
+          "name": "Chris Boswell",
+          "club": "PIT",
+          "position": "K",
+          "projection_state": "NO_ROW_IN_THE_PROJECTION"
+        },
+        {
+          "player": "Andre Szmyt|CLE",
+          "name": "Andre Szmyt",
+          "club": "CLE",
+          "position": "K",
+          "projection_state": "NO_ROW_IN_THE_PROJECTION"
+        }
+      ],
+      "artifact": "DK_WEEK3_PROJ_V1.json",
+      "WOULD_RESOLVE_IT": "a proprietary projection covering this game, joinable on (name, club)",
+      "cause": "DATA"
+    }
+  ],
+  "BOARD_SEMANTICS": "this board always exists. A stage that could not run appears here as the reason the product is degraded, rather than as silence.",
+  "game": {
+    "away": "PIT",
+    "home": "CLE",
+    "kickoff_et_naive": "2026-10-01T20:15:00",
+    "n_players": 51,
+    "n_entries": 78
+  },
+  "availability_is_complete": false,
+  "RESULT": "BLOCKED_NO_PROJECTIONS",
+  "RESULT_DETAIL": "2 of 51 rosterable players have no dk_points in DK_WEEK3_PROJ_V1.json. A projection built for another week does not contain this game, and filling the gap from AvgPointsPerGame would put a third party's opinion inside our portfolio.",
+  "refused_at": "projections"
+}

@@ -190,14 +190,16 @@ def t_inv2_join_on_identity():
     proj = _write_projections(tmp)
     o = S.s4_projections(sl, set(), proj)
     assert o.state is State.PASS, o
-    assert set(o.value) == set(sl['players']), 'the join did not cover exactly the slate'
+    # s4 now returns {'projected': ..., 'declared_not_playing': ...} so a player the model
+    # DECLINED to project on availability grounds is not counted as a coverage gap.
+    assert set(o.value['projected']) == set(sl['players']), 'the join did not cover exactly the slate'
     # The projection ids (60000000+) share nothing with the slate's priced-item ids (50000000+), so a
     # dk_id join would have matched nobody. That it matched everybody proves the join is on identity.
     slate_ids = {v['cpt']['dk_id'] for v in sl['players'].values()} | \
                 {v['flex']['dk_id'] for v in sl['players'].values()}
     proj_ids = set(json.loads(proj.read_text())['rows'])
     assert not (slate_ids & proj_ids), 'the id spaces overlap, so this check proves nothing'
-    return f'{len(o.value)} joined across disjoint id spaces'
+    return f"{len(o.value['projected'])} joined across disjoint id spaces"
 
 
 @check('INVARIANTS 3 and 4: CPT seat carries the CPT id, every FLEX seat the FLEX id')
@@ -205,8 +207,12 @@ def t_inv3_4_upload_ids():
     tmp = pathlib.Path(tempfile.mkdtemp())
     export = _write_export(tmp)
     ing, sl = _slate(export)
+    # OUT_CSV REDIRECTED. Without this the test wrote a synthetic 'Showdown Test (AAA @ BBB)' lineup
+    # to nfl/dfs/salaries/DK_SHOWDOWN_UPLOAD_GENERATED.csv -- the real upload path. A fake upload file
+    # sitting where the real one goes is the archive-root defect again, in the one artifact a person
+    # would actually hand to DraftKings.
     o = S.run(export, official_inactives=[], proj_path=_write_projections(tmp),
-              draws=_draws(sl), n_entries=1)
+              draws=_draws(sl), n_entries=1, out_csv=(tmp / 'upload.csv'))
     assert o.state is State.PASS, o
     up = _REPO / o.value['upload'] if not o.value['upload'].startswith('/') else pathlib.Path(o.value['upload'])
     rows = list(csv.reader(up.open(newline='', encoding='utf-8')))
