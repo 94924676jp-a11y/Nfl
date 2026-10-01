@@ -2,7 +2,7 @@
   "artifact": "SHOWDOWN_TONIGHT_STATE",
   "spec_version": "showdown-slate-state-1",
   "state_label": "SHOWDOWN_PREGAME / NO_OFFICIAL_INACTIVE_DOCUMENT_CAPTURED",
-  "built_at_utc": "2026-10-01T21:41:56.561412+00:00",
+  "built_at_utc": "2026-10-01T23:06:52.698876+00:00",
   "game_id": "2026_04_PIT_CLE",
   "season": 2026,
   "week": 4,
@@ -435,8 +435,8 @@
         "ceiling_source": "PREGAME_RANK_2_IN_CLUB_POSITION"
       },
       "current_availability": {
-        "status": "REPORTED_INACTIVE_OFFICIAL_RELEASE_CITED",
-        "tier": "OFFICIAL_TEAM_RELEASE_CITED",
+        "status": "REPORTED_INACTIVE_HIGH_CONFIDENCE",
+        "tier": "AGGREGATOR_REPORTED",
         "designation": "OUT",
         "IS_NOT": "a game-day inactive decision unless the status is CONFIRMED_INACTIVE, which requires a captured official document"
       },
@@ -631,8 +631,8 @@
       "depth_rank": null,
       "depth_detail": {},
       "current_availability": {
-        "status": "UNKNOWN_ACTIVE_STATE",
-        "tier": "NO_EVIDENCE_HELD",
+        "status": "REPORTED_INACTIVE_HIGH_CONFIDENCE",
+        "tier": "AGGREGATOR_REPORTED",
         "designation": null,
         "IS_NOT": "a game-day inactive decision unless the status is CONFIRMED_INACTIVE, which requires a captured official document"
       },
@@ -660,8 +660,8 @@
       "depth_rank": null,
       "depth_detail": {},
       "current_availability": {
-        "status": "UNKNOWN_ACTIVE_STATE",
-        "tier": "NO_EVIDENCE_HELD",
+        "status": "REPORTED_INACTIVE_HIGH_CONFIDENCE",
+        "tier": "AGGREGATOR_REPORTED",
         "designation": null,
         "IS_NOT": "a game-day inactive decision unless the status is CONFIRMED_INACTIVE, which requires a captured official document"
       },
@@ -689,8 +689,8 @@
       "depth_rank": null,
       "depth_detail": {},
       "current_availability": {
-        "status": "UNKNOWN_ACTIVE_STATE",
-        "tier": "NO_EVIDENCE_HELD",
+        "status": "REPORTED_INACTIVE_HIGH_CONFIDENCE",
+        "tier": "AGGREGATOR_REPORTED",
         "designation": null,
         "IS_NOT": "a game-day inactive decision unless the status is CONFIRMED_INACTIVE, which requires a captured official document"
       },
@@ -1140,8 +1140,8 @@
       "depth_rank": null,
       "depth_detail": {},
       "current_availability": {
-        "status": "UNKNOWN_ACTIVE_STATE",
-        "tier": "NO_EVIDENCE_HELD",
+        "status": "REPORTED_INACTIVE_HIGH_CONFIDENCE",
+        "tier": "AGGREGATOR_REPORTED",
         "designation": null,
         "IS_NOT": "a game-day inactive decision unless the status is CONFIRMED_INACTIVE, which requires a captured official document"
       },
@@ -1353,8 +1353,8 @@
       "depth_rank": null,
       "depth_detail": {},
       "current_availability": {
-        "status": "REPORTED_INACTIVE_OFFICIAL_RELEASE_CITED",
-        "tier": "OFFICIAL_TEAM_RELEASE_CITED",
+        "status": "REPORTED_INACTIVE_HIGH_CONFIDENCE",
+        "tier": "AGGREGATOR_REPORTED",
         "designation": "OUT",
         "IS_NOT": "a game-day inactive decision unless the status is CONFIRMED_INACTIVE, which requires a captured official document"
       },
@@ -1958,8 +1958,8 @@
     "n_suffix_matched": 3
   },
   "availability_summary": {
-    "UNKNOWN_ACTIVE_STATE": 49,
-    "REPORTED_INACTIVE_OFFICIAL_RELEASE_CITED": 2
+    "UNKNOWN_ACTIVE_STATE": 45,
+    "REPORTED_INACTIVE_HIGH_CONFIDENCE": 6
   },
   "depth": {
     "source": "role_state_history.pregame_depth",
@@ -1978,11 +1978,24 @@
     "n_players_with_observed_usage": 27,
     "SOURCE": "the refreshed usage panel; shares are club-normalised over those weeks"
   },
+  "official_inactives": {
+    "n_supplied": 11,
+    "n_applied_to_the_slate": 6,
+    "not_in_the_priced_universe": [
+      "Elgton Jenkins",
+      "Gabriel Rubio",
+      "Justin Jefferson",
+      "Kevin Jobity Jr.",
+      "Teven Jenkins"
+    ],
+    "STATUS_APPLIED": "REPORTED_INACTIVE_HIGH_CONFIDENCE",
+    "WHY_NOT_CONFIRMED": "the list reached us relayed by reporters and an aggregator, not as an official document this system captured. CONFIRMED_INACTIVE is reserved for TIER_OFFICIAL_CAPTURED. The applied status is already in ABSENT_STATUSES, so opportunity is redistributed identically."
+  },
   "availability_semantics": {
     "CONFIRMED_INACTIVE_REQUIRES": "OFFICIAL_DOCUMENT_CAPTURED",
     "REACHED_HERE": [
-      "NO_EVIDENCE_HELD",
-      "OFFICIAL_TEAM_RELEASE_CITED"
+      "AGGREGATOR_REPORTED",
+      "NO_EVIDENCE_HELD"
     ],
     "SILENCE_IS_NOT_ACTIVITY": "a player not named on the injury report is UNKNOWN_ACTIVE_STATE, not active. Reading silence as activity would activate the slate on no evidence.",
     "designations_not_matched_to_the_slate": [

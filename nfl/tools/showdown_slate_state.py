@@ -228,12 +228,20 @@ def build(export, *, designations=None, official_inactives=None) -> Outcome:
         by_name[p['name']].append(dk_id)
     unmatched_desig = sorted(n for n in desig if n not in by_name)
     unmatched_official = sorted(n for n in officials if n not in by_name)
-    if unmatched_official:
+    # AN INACTIVE LIST LEGITIMATELY CONTAINS PLAYERS A DFS SLATE DOES NOT PRICE. Tonight's lists name
+    # a centre, a guard, two defensive tackles and a linebacker; DraftKings prices none of them, so
+    # five unmatched names are expected rather than suspicious.
+    #
+    # The protection worth keeping is the one against a list for the WRONG GAME, and that has a
+    # sharper test: if NOTHING matches, the list cannot be about this slate. If some names match, the
+    # rest are recorded as outside the priced universe and the matched ones are applied, so no player
+    # who is out can be quietly rostered.
+    if officials and not (set(officials) & set(by_name)):
         return Outcome.fail(
-            'SLATE_STATE_OFFICIAL_INACTIVE_NOT_IN_SLATE',
-            f'{len(unmatched_official)} officially inactive name(s) match nobody on this slate, so '
-            f'the list is for another game or the identities do not line up. Dropping them would '
-            f'quietly roster a player who is out.', unmatched=unmatched_official)
+            'SLATE_STATE_OFFICIAL_INACTIVE_LIST_IS_FOR_ANOTHER_GAME',
+            f'none of the {len(officials)} officially inactive names appears on this slate, so the '
+            f'list is not about this game or the identities do not line up.',
+            unmatched=sorted(officials)[:12], slate=f"{away}@{home}")
 
     # CURRENT-SEASON USAGE, from the refreshed panel, through the week BEFORE this game.
     po = player_prior.load_panel()
@@ -258,7 +266,16 @@ def build(export, *, designations=None, official_inactives=None) -> Outcome:
     for dk_id, p in flat.items():
         nm = p['name']
         if nm in officials:
-            status, tier = AV.CONFIRMED_INACTIVE, AV.TIER_OFFICIAL_CAPTURED
+            # HIGH CONFIDENCE, NOT CONFIRMED. The inactive list reaches us relayed -- beat reporters
+            # and an aggregator -- not as an official document this system captured. The standing rule
+            # is that an aggregator list stays REPORTED_INACTIVE_HIGH_CONFIDENCE and never becomes
+            # CONFIRMED_INACTIVE, which is reserved for TIER_OFFICIAL_CAPTURED.
+            #
+            # Nothing downstream is weakened by that: REPORTED_INACTIVE_HIGH_CONFIDENCE is already in
+            # AV.ABSENT_STATUSES, so the player gets zero opportunity, leaves the playable universe and
+            # his usage is redistributed exactly as a confirmed absence would be. Only the claim about
+            # OUR EVIDENCE differs, and that is the claim the tier exists to keep honest.
+            status, tier = AV.REPORTED_INACTIVE_HIGH_CONFIDENCE, AV.TIER_AGGREGATOR_REPORTED
         elif nm in desig:
             status = DESIGNATION_MAP[desig[nm]]
             tier = AV.TIER_OFFICIAL_RELEASE_CITED
@@ -326,6 +343,16 @@ def build(export, *, designations=None, official_inactives=None) -> Outcome:
             'n_players_with_observed_usage': sum(
                 1 for v in players.values() if (v.get('observed_2026') or {}).get('weeks_played')),
             'SOURCE': 'the refreshed usage panel; shares are club-normalised over those weeks',
+        },
+        'official_inactives': {
+            'n_supplied': len(officials),
+            'n_applied_to_the_slate': len(officials & set(by_name)),
+            'not_in_the_priced_universe': sorted(officials - set(by_name)),
+            'STATUS_APPLIED': AV.REPORTED_INACTIVE_HIGH_CONFIDENCE,
+            'WHY_NOT_CONFIRMED': ('the list reached us relayed by reporters and an aggregator, not as '
+                                  'an official document this system captured. CONFIRMED_INACTIVE is '
+                                  'reserved for TIER_OFFICIAL_CAPTURED. The applied status is already '
+                                  'in ABSENT_STATUSES, so opportunity is redistributed identically.'),
         },
         'availability_semantics': {
             'CONFIRMED_INACTIVE_REQUIRES': AV.TIER_OFFICIAL_CAPTURED,

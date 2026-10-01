@@ -1,8 +1,8 @@
 {
   "ARTIFACT": "SHOWDOWN_STATUS_BOARD",
   "spec_version": "showdown-to-portfolio-1",
-  "export": "/home/user/nfl/nfl/dfs/salaries/raw/DKEntries_PIT_CLE_SHOWDOWN_2026W4.csv",
-  "run_at_utc": "2026-10-01T21:51:09.671498+00:00",
+  "export": "nfl/dfs/salaries/raw/DKEntries_PIT_CLE_SHOWDOWN_2026W4.csv",
+  "run_at_utc": "2026-10-01T23:08:05.995182+00:00",
   "stages": [
     {
       "stage": "ingest_export",
@@ -31,37 +31,46 @@
     },
     {
       "stage": "availability",
-      "state": "DEFERRED",
-      "code": "SHOWDOWN_OFFICIAL_INACTIVES_NOT_SUPPLIED",
-      "detail": "no official inactive list was supplied for this game",
-      "note": "DEFERRED and NOT an empty set. UNKNOWN is not NOT PLAYING and MISSING is not INACTIVE. Treating an absent list as \"everybody plays\" is the error that makes a portfolio look complete while holding a scratched player.",
-      "owed": "the official inactives, published about 90 minutes before kickoff"
+      "state": "PASS",
+      "code": "SHOWDOWN_AVAILABILITY_RESOLVED",
+      "detail": "6 ruled out of 51",
+      "n_absent": 6
     },
     {
       "stage": "projections",
+      "state": "PASS",
+      "code": "SHOWDOWN_PROJECTIONS_READ",
+      "detail": "45 players projected, 0 declared not playing",
+      "n": 45,
+      "n_declared_not_playing": 0,
+      "declared_not_playing": [],
+      "artifact": "SHOWDOWN_TONIGHT_PROJ.json",
+      "MISSING_IS_NOT_DECLARED_OUT": "a player the model declined to project because he is reported out has been ANSWERED. Only silence is a coverage gap.",
+      "THIRD_PARTY_COLUMNS_NOT_READ": [
+        "AvgPointsPerGame"
+      ]
+    },
+    {
+      "stage": "candidates_and_selection",
       "state": "BLOCKED",
-      "code": "SHOWDOWN_PROJECTION_DOES_NOT_COVER_THIS_GAME",
-      "detail": "2 of 51 rosterable players have no dk_points in DK_WEEK3_PROJ_V1.json. A projection built for another week does not contain this game, and filling the gap from AvgPointsPerGame would put a third party's opinion inside our portfolio.",
-      "n_missing": 2,
-      "n_wanted": 51,
+      "code": "SHOWDOWN_DRAWS_ABSENT",
+      "detail": "45 of 45 rosterable players have no simulated draws. p_optimal is a property of the joint distribution under a cap and cannot be computed from a projected mean; manufacturing draws from one would invent the quantity being measured.",
+      "n_missing": 45,
       "missing": [
-        {
-          "player": "Chris Boswell|PIT",
-          "name": "Chris Boswell",
-          "club": "PIT",
-          "position": "K",
-          "projection_state": "NO_ROW_IN_THE_PROJECTION"
-        },
-        {
-          "player": "Andre Szmyt|CLE",
-          "name": "Andre Szmyt",
-          "club": "CLE",
-          "position": "K",
-          "projection_state": "NO_ROW_IN_THE_PROJECTION"
-        }
+        "Aaron Rodgers|PIT",
+        "Andre Szmyt|CLE",
+        "Ben Skowronek|PIT",
+        "Blake Whiteheart|CLE",
+        "Brandon Johnson|PIT",
+        "Brandon Smith|PIT",
+        "Browns|CLE",
+        "Bub Means|CLE",
+        "Carsen Ryan|CLE",
+        "Chris Boswell|PIT",
+        "Cole Burgess|PIT",
+        "DK Metcalf|PIT"
       ],
-      "artifact": "DK_WEEK3_PROJ_V1.json",
-      "WOULD_RESOLVE_IT": "a proprietary projection covering this game, joinable on (name, club)",
+      "WOULD_RESOLVE_IT": "a sealed simulation producing per-player DK-point draws for this game",
       "cause": "DATA"
     }
   ],
@@ -73,8 +82,8 @@
     "n_players": 51,
     "n_entries": 78
   },
-  "availability_is_complete": false,
-  "RESULT": "BLOCKED_NO_PROJECTIONS",
-  "RESULT_DETAIL": "2 of 51 rosterable players have no dk_points in DK_WEEK3_PROJ_V1.json. A projection built for another week does not contain this game, and filling the gap from AvgPointsPerGame would put a third party's opinion inside our portfolio.",
-  "refused_at": "projections"
+  "availability_is_complete": true,
+  "RESULT": "BLOCKED_NO_PORTFOLIO",
+  "RESULT_DETAIL": "45 of 45 rosterable players have no simulated draws. p_optimal is a property of the joint distribution under a cap and cannot be computed from a projected mean; manufacturing draws from one would invent the quantity being measured.",
+  "refused_at": "candidates_and_selection"
 }
