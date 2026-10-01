@@ -126,3 +126,53 @@ with `--watch` on the artifacts the reported victims read. It answers three
 things at once: whether the four still fail, who mutates a watched artifact if
 anyone, and the true failing set for the P1 taxonomy. Classifying the worktree
 log would have produced a taxonomy of the wrong repository.
+
+---
+
+## 2026-10-01 — `--watch` fired twice, and what it does and does not explain
+
+The reverse-order run reported exactly two mutations of a watched artifact, both to
+`nfl/production/READINESS.json`:
+
+```
+[30/318] nfl/tests/test_sunday_run.py  8 fn, 7 check(s), 0 failing
+    WATCH: nfl/tests/test_sunday_run.py changed 1 watched path(s): nfl/production/READINESS.json
+[75/318] nfl/tests/test_readiness.py   9 fn, 8 check(s), 0 failing
+    WATCH: nfl/tests/test_readiness.py changed 1 watched path(s): nfl/production/READINESS.json
+```
+
+So two test modules do rewrite a production artifact in place, and both pass their own checks while
+doing it. That is worth knowing on its own.
+
+**It is not the order-dependence mechanism, and the diff says why.** Comparing the rewritten file
+against the committed one, 16 leaf fields differ and every one is time-derived: `checked_at_unix` and
+the 15 `age_hours` values computed from it. No stage state changed, no count changed, no lineage
+changed. A later module reading this file sees the same verdicts.
+
+**What it IS, is a time bomb, which is a different defect and arguably a worse one.** Freshness is
+`age <= max_age_hours`, so a stage sitting near its tolerance flips FRESH to STALE with no commit,
+no edit and no reordering — just hours passing. Measured at the current clock:
+
+| margin | stage | state | age / tolerance |
+|---|---|---|---|
+| **+93.0 h** | `sim.correlation_check` | FRESH | 75.0 / 168 |
+| +244.4 h | `warehouse.team_game` | FRESH | 91.6 / 336 |
+| +244.6 h | `warehouse.player_game` | FRESH | 91.5 / 336 |
+| … | … | … | … |
+| −37.6 h | `slate.projection` | STALE | 73.6 / 36 |
+| −94.5 h | `slate.post_inactives` | STALE | 100.5 / 6 |
+
+`sim.correlation_check` is **under four days** from flipping on the clock alone. Any check asserting
+it is FRESH will begin failing then, in isolation and in sequence alike, and will look exactly like a
+regression caused by whatever was committed that day.
+
+**The distinction that matters for this ticket.** A clock-driven flip hits an isolated run and a
+full-suite run identically, so it cannot produce "passes alone, fails in sequence". It is therefore
+ruled OUT as the mechanism for the four remaining victims, and ruled IN as a separate defect with its
+own lifetime. It belongs with task #96 (every artifact states its own data cutoff) and with the new
+`nfl/production/world_clock.py` gate: both are about freshness meaning something other than "this
+file was touched recently".
+
+**Still open.** The watch set covered the six artifacts the reported victims read. It is blind to
+in-process state — a cached module global — and the clean result on the other five paths narrows the
+cause there rather than clearing it.
