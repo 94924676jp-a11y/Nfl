@@ -3506,3 +3506,89 @@ input bytes before and after the run.
 
 Stages 5 to 7 of the owner's plan — optimiser, portfolio, DK-ready export — are built, tested and
 waiting on 1 to 4. Nothing about tonight is usable until (1) lands and the world-clock gate passes.
+
+---
+
+## 2026-10-01 — what the six candidate refreshes actually reach, measured from the code
+
+The owner located six current nflverse assets. Before fetching five more files, here is what each one
+is wired to **today**. Only four data types are registered in `nfl/warehouse/sources.py`:
+`play_by_play`, `schedules`, `weekly_rosters`, `depth_charts`. The other feeds have no registered
+source, so dropping a file in changes nothing until a reader exists.
+
+| feed | registered? | reaches tonight's projection? | verdict |
+|---|---|---|---|
+| **weekly rosters** | YES `nfl/vintage/weekly_rosters.*raw.csv.gz` | **YES, deeply** | **fetch first** |
+| official inactives | separate capture path | YES — flips availability | **fetch when published** |
+| depth charts | YES `nfl/vintage/depth_charts.*.raw.csv.gz` | not yet — see below | useful, needs wiring |
+| snap counts | **NO** | no reader | needs registry + reader |
+| injuries | **NO** | no reader | manual designations cover tonight |
+| weekly player stats | **NO** | redundant | lowest value |
+
+### Weekly rosters are the identity backbone, and that makes them the top of the list
+
+`player_prior.py:54` is `ROSTERS = 'nfl/vintage/weekly_rosters.*raw.csv.gz'`, and both
+`name_index()` and `position_index()` are built from those roster blobs. So a refresh moves four
+things at once:
+
+- **identity resolution** — tonight 49 of 51 DK players resolved and 3 needed suffix stripping. A
+  newly signed or promoted player who is not in a 2026-09-24 roster blob cannot resolve at all.
+- **`position_index()`**, which is `pos_of` in `role_state_history.pregame_depth` — so **depth ranks
+  depend on it**. A player whose listed position is stale is ranked in the wrong group.
+- club membership, for anyone who moved.
+- the two team defences, which resolve as `TEAM_DEFENCE_NOT_A_PLAYER_IDENTITY` by design and are
+  unaffected.
+
+The newest installed roster blob is **2026-09-24**. The owner's is 2026-10-01 14:27.
+
+### Depth charts: registered, but NOT what produced tonight's depth ranks
+
+This is worth being precise about, because the expectation is reasonable and currently wrong.
+Tonight's `depth_rank` came from `role_state_history.pregame_depth`, which ranks players **by measured
+usage in the completed weeks** — carries for RB, targets for WR and TE, pass attempts for QB. It does
+not read `depth_charts` at all. `depth_charts` is consumed by `nfl/identity/effective_scope.py` and by
+research modules, not by `role_state`.
+
+So a fresh depth chart improves identity scope and would be the right **evidence** for role, but it
+will not change a single projection until it is wired into `role_state`. That wiring is a real piece of
+work and it has a known hazard: the published depth chart and measured usage will sometimes disagree,
+and which one wins is a modelling decision, not a plumbing one. The Warren example is the case in
+point — 56 snaps against no other Steelers back above three is a *usage* fact, and usage is what the
+current depth rank already uses, which is why Warren came out ALPHA and 21.84 points tonight.
+
+### Snap counts: a declared slot with no source, and a forbidden shortcut
+
+`era.py` declares `snap_counts` with PFR coverage from 2012 and states plainly that
+*"any fabricated snap count or snap share"* is forbidden, and that before 2012 the column stays
+`NOT_AVAILABLE_FOR_ERA`. `player_game.py` carries a `snap_counts` field that is currently the era
+marker rather than data. There is no registry candidate for it.
+
+It is worth wiring, and the reason is specific: `role_state._observed_band` reads
+`mean_offense_pct` for every position that is not WR, TE or RB — which is exactly **QB and K**. That
+field is unavailable today, so quarterbacks and kickers get no observed band and fall through to
+history. Snap share is the missing input there.
+
+### Weekly player stats: redundant with what is already installed
+
+The usage panel is built from play-by-play, which is current through Week 3 as of this afternoon
+(8,311 plays, 962 player-weeks). A weekly-stats file would be a second route to numbers the panel
+already holds, and a second route to the same quantity is a reconciliation problem rather than new
+evidence. Low value until there is a reason to cross-check.
+
+### Where to put them
+
+```
+weekly rosters   nfl/vintage/weekly_rosters.<hash>raw.csv.gz      (note: no dot before "raw")
+depth charts     nfl/vintage/depth_charts.<hash>.raw.csv.gz
+                 nfl/vintage/depth_charts.<hash>.reduced.csv.gz
+```
+
+`<hash>` is **sha256[:16] of the file's own bytes**, which is the convention the installed files
+follow and which was verified against them before use. Then:
+
+```
+python3.12 nfl/tools/player_prior.py        # rebuilds name_index / position_index
+python3.12 nfl/production/world_clock.py    # must still read EVIDENCE_REACHES_THE_WORLD
+```
+
+and rebuild the slate state, role state and projections from the showdown state artifact.
