@@ -96,6 +96,25 @@ THIRD_PARTY_COLUMNS = ('AvgPointsPerGame',)
 #: team vocabularies is how a projection ends up attached to the wrong club.
 TEAM_ALIAS = {'LAR': 'LA'}
 
+#: PORTFOLIO POLICY, not estimated quantities. These are diversification choices and are labelled as
+#: choices: nothing in this repository has measured an optimal showdown exposure cap, and a number
+#: presented as if it had been measured would be a silent constant. They are deliberately stricter
+#: than the classic path's (0.60 player, 6-of-9 overlap) because a showdown slate is one game and six
+#: seats, so the same nominal cap concentrates far more risk.
+#: solve() labels its reporting rows with a model-confidence `tag`. This runner does not compute one,
+#: so it says so rather than supplying a plausible-looking value that downstream code might believe.
+TAG_NOT_CLAIMED = 'NO_CONFIDENCE_TAG_FROM_THIS_RUNNER'
+
+MAX_PLAYER_EXPOSURE = 0.50      # a person may fill at most half the entries
+MAX_CAPTAIN_EXPOSURE = 0.30     # and captain at most three in ten
+MAX_OVERLAP = 4                 # of 6 seats, between any two entries in the portfolio
+
+#: The stages that must PASS before an upload file may be written. Selection may run for research with
+#: availability unresolved; PUBLISHING with unknown inactives is a different act, and this is the list
+#: that stops it.
+REQUIRED_FOR_PUBLICATION = ('ingest_export', 'slate_identity', 'availability', 'projections',
+                            'candidates_and_selection')
+
 OUT_BOARD = _REPO / 'nfl/dfs/salaries/SHOWDOWN_STATUS_BOARD.json'
 OUT_MD = _REPO / 'nfl/dfs/salaries/SHOWDOWN_STATUS_BOARD.md'
 OUT_CSV = _REPO / 'nfl/dfs/salaries/DK_SHOWDOWN_UPLOAD_GENERATED.csv'
@@ -383,6 +402,132 @@ def s4_projections(slate, absent, proj_path: pathlib.Path = None) -> Outcome:
                       THIRD_PARTY_COLUMNS_NOT_READ=list(THIRD_PARTY_COLUMNS))
 
 
+def s5_candidates_and_selection(slate, absent, draws, n_entries: int) -> Outcome:
+    """Exact lawful optima per world, then a portfolio chosen from them under declared caps.
+
+    KNOWN LIMITATION, measured and reported rather than papered over. The candidate set here is the
+    set of per-world OPTIMA, and optima share a high-value core: once the exposure cap retires that
+    core, often no remaining candidate also respects the overlap cap. On a 26-player synthetic slate
+    over 24 worlds this yields 24 distinct optima and lands one or two entries short at every count
+    tried. The stage reports SHOWDOWN_PORTFOLIO_SHORT_OF_ENTRIES with the partial portfolio attached.
+    Filling reliably needs NEAR-optimal candidates too; that is a selector change, and loosening the
+    caps to fill the file is the move this project forbids.
+
+    `draws` is {player_key: sequence of simulated DK scores}, one sequence per rosterable player, all
+    the same length. THE DISTRIBUTION IS REQUIRED AND IS NOT MANUFACTURED. optimal_worlds.solve
+    measures how often a player belongs in the best possible lineup, which is a statement about the
+    joint distribution under a salary cap and cannot be recovered from a mean. Turning a projected
+    mean into draws here -- by picking a variance, say -- would invent the very quantity being
+    measured, so an absent draws set is a refusal.
+    """
+    import numpy as np
+    from nfl.dfs.showdown import optimal_worlds as OW
+
+    want = [k for k in slate['players'] if k not in absent]
+    if len(want) < ROSTER_SIZE:
+        return Outcome.fail(
+            'SHOWDOWN_TOO_FEW_ROSTERABLE',
+            f'{len(want)} rosterable player(s) cannot fill {ROSTER_SIZE} seats', n=len(want))
+    missing = [k for k in want if k not in (draws or {})]
+    if missing:
+        return Outcome.blocked(
+            'SHOWDOWN_DRAWS_ABSENT',
+            f'{len(missing)} of {len(want)} rosterable players have no simulated draws. p_optimal is '
+            f'a property of the joint distribution under a cap and cannot be computed from a '
+            f'projected mean; manufacturing draws from one would invent the quantity being measured.',
+            cause=Cause.DATA, n_missing=len(missing), missing=missing[:12],
+            WOULD_RESOLVE_IT='a sealed simulation producing per-player DK-point draws for this game')
+    lens = {len(draws[k]) for k in want}
+    if len(lens) != 1:
+        return Outcome.fail(
+            'SHOWDOWN_DRAWS_RAGGED',
+            f'draw sequences have {len(lens)} different lengths {sorted(lens)[:4]}. Worlds must be '
+            f'shared across players or a "world" means a different thing per column, and the joint '
+            f'structure the optimiser measures is destroyed.', lengths=sorted(lens)[:6])
+
+    # THE PLAYER KEY IS PASSED AS `name`. solve() uses `name` only to order indices and to report
+    # them back, so using the (name, club) key makes the index -> person mapping exact instead of
+    # going through a display name that two people could share.
+    # `pos` and `tag` are read by solve() only to label its reporting rows. `tag` in
+    # nfl/dfs/showdown/universe.py is a model-CONFIDENCE statement produced by machinery this runner
+    # does not have, so a value is NOT invented for it: the declared placeholder below says plainly
+    # that no confidence claim is being made, which is the difference between an absent statement and
+    # a false one.
+    players = [{'name': k, 'team': slate['players'][k]['dk_team'],
+                'pos': slate['players'][k]['position'],
+                'tag': TAG_NOT_CLAIMED,
+                'salary': slate['players'][k]['flex']['salary'],
+                'cpt_salary': slate['players'][k]['cpt']['salary'],
+                'draws': np.asarray(draws[k], dtype=float)} for k in want]
+    o = OW.solve(players, cap=SALARY_CAP, n_flex=N_FLEX, require_team_coverage=True)
+    if o.state.value != 'PASS':
+        return o
+    names = o.value['names']
+    seen = {}
+    for ln in o.value['lineups']:
+        if ln is None:
+            continue
+        cpt_i, flex_i = ln
+        key = (names[cpt_i], tuple(sorted(names[i] for i in flex_i)))
+        seen[key] = seen.get(key, 0) + 1
+    if not seen:
+        return Outcome.fail(
+            'SHOWDOWN_NO_FEASIBLE_LINEUP',
+            'the optimiser solved no world feasibly, so there is no candidate set. An empty candidate '
+            'set is an error, not a portfolio of nothing.')
+    ranked = [{'captain': k[0], 'flex': list(k[1]), 'n_worlds_optimal': v}
+              for k, v in sorted(seen.items(), key=lambda kv: (-kv[1], kv[0]))]
+
+    chosen, exposure, cpt_exposure = [], collections.Counter(), collections.Counter()
+    cap_player = max(1, int(MAX_PLAYER_EXPOSURE * n_entries))
+    cap_cpt = max(1, int(MAX_CAPTAIN_EXPOSURE * n_entries))
+    for cand in ranked:
+        if len(chosen) >= n_entries:
+            break
+        seats = [cand['captain']] + cand['flex']
+        if any(exposure[k] + 1 > cap_player for k in seats):
+            continue
+        if cpt_exposure[cand['captain']] + 1 > cap_cpt:
+            continue
+        if any(len(set(seats) & set([c['captain']] + c['flex'])) > MAX_OVERLAP for c in chosen):
+            continue
+        v = validate_lineup(cand, slate, absent)
+        if v.state.value != 'PASS':
+            continue
+        chosen.append(cand)
+        for k in seats:
+            exposure[k] += 1
+        cpt_exposure[cand['captain']] += 1
+
+    if len(chosen) < n_entries:
+        return Outcome.deferred(
+            'SHOWDOWN_PORTFOLIO_SHORT_OF_ENTRIES',
+            f'{len(chosen)} distinct lawful lineups satisfy the declared caps, against {n_entries} '
+            f'entries. The caps are a policy choice and loosening them to fill the file is exactly '
+            f'the move this project forbids, so the shortfall is reported rather than absorbed.',
+            owed='either fewer entries, a wider candidate set, or a deliberate owner decision on '
+                 'the caps',
+            n_chosen=len(chosen), n_entries=n_entries, n_candidates=len(ranked),
+            partial=chosen,
+            WHY_THIS_HAPPENS=(
+                'the candidate set is the set of per-world OPTIMA, and optima share a high-value '
+                'core. Once the exposure cap retires that core there is often no further candidate '
+                'that also respects the overlap cap. Measured on a 26-player synthetic slate over 24 '
+                'worlds: 24 distinct optima, and the selector lands one or two short at every entry '
+                'count tried. Filling a portfolio reliably needs NEAR-optimal candidates as well as '
+                'optimal ones, which is a selector change and not a cap change.'),
+            caps={'player': MAX_PLAYER_EXPOSURE, 'captain': MAX_CAPTAIN_EXPOSURE,
+                  'overlap': MAX_OVERLAP})
+    return Outcome.ok('SHOWDOWN_PORTFOLIO_SELECTED', chosen,
+                      f'{len(chosen)} entries from {len(ranked)} distinct optima',
+                      n_chosen=len(chosen), n_candidates=len(ranked),
+                      n_worlds=o.evidence.get('n_worlds') if o.evidence else None,
+                      tie_share=o.evidence.get('tie_share') if o.evidence else None,
+                      site_legality_enforced=True,
+                      caps={'player': MAX_PLAYER_EXPOSURE, 'captain': MAX_CAPTAIN_EXPOSURE,
+                            'overlap': MAX_OVERLAP})
+
+
 def validate_lineup(lineup, slate, absent=()) -> Outcome:
     """Is this six-player lineup one DK would accept? Each clause separately, with a named code.
 
@@ -461,7 +606,7 @@ def s_emit_csv(chosen, entries, slate, out: pathlib.Path = None) -> Outcome:
                                      'owner\'s action, never this runner\'s.'))
 
 
-def run(export, *, official_inactives=None, proj_path=None) -> Outcome:
+def run(export, *, official_inactives=None, proj_path=None, draws=None, n_entries=None) -> Outcome:
     """Drive the stages. The board is emitted whatever happens."""
     export = pathlib.Path(export)
     stages = []
@@ -512,22 +657,43 @@ def run(export, *, official_inactives=None, proj_path=None) -> Outcome:
             'SHOWDOWN_RUN_BLOCKED', f'projections: {o4.code}', cause=Cause.DATA,
             board=finish('BLOCKED_NO_PROJECTIONS', o4.detail, refused_at='projections'))
 
-    # Candidate generation and portfolio selection are NOT wired yet, and this says so rather than
-    # emitting a lineup from an unwired optimiser. nfl/dfs/showdown/optimal_worlds.solve already
-    # carries the both-teams constraint in its DP state and is the thing to connect; validate_lineup
-    # above is already the legality gate for whatever it returns.
-    o5 = Outcome.deferred(
-        'SHOWDOWN_SELECTION_NOT_WIRED',
-        'projections cover this slate, but candidate generation and portfolio selection are not yet '
-        'connected to optimal_worlds.solve',
-        owed='wire optimal_worlds.solve and a portfolio selector with exposure and overlap caps',
-        note=('DEFERRED with the stages above it PASSING, so the board shows exactly how far the '
-              'product got. Emitting a lineup from an unwired optimiser would be worse.'))
-    stages.append(_stage('candidates_and_selection', o5))
-    return Outcome.deferred('SHOWDOWN_RUN_INCOMPLETE', o5.detail,
-                            owed='wire selection',
-                            board=finish('DEGRADED_NO_SELECTION', o5.detail,
-                                         refused_at='candidates_and_selection'))
+    n = len(entries) if n_entries is None else int(n_entries)
+    o5 = s5_candidates_and_selection(slate, absent, draws, n)
+    stages.append(_stage('candidates_and_selection', o5, **(o5.evidence or {})))
+    if o5.state.value != 'PASS':
+        return Outcome.blocked(
+            'SHOWDOWN_RUN_BLOCKED', f'selection: {o5.code}', cause=Cause.DATA,
+            board=finish('BLOCKED_NO_PORTFOLIO', o5.detail, refused_at='candidates_and_selection'))
+    chosen = o5.value
+
+    # THE PUBLICATION GATE. Selection may run for research with availability unresolved; writing an
+    # upload file is a different act. A portfolio built without the official inactives can hold a
+    # player who is out, and the board records which stage withheld publication rather than writing a
+    # file that looks finished.
+    by_stage = {st['stage']: st['state'] for st in stages}
+    withheld = [nm for nm in REQUIRED_FOR_PUBLICATION if by_stage.get(nm) != 'PASS']
+    if withheld:
+        return Outcome.deferred(
+            'SHOWDOWN_PUBLICATION_WITHHELD',
+            f'a portfolio of {len(chosen)} lineups was selected, but {withheld} did not PASS so no '
+            f'upload file is written. An upload built on an unresolved stage looks finished and is '
+            f'not.',
+            owed=f'resolve {withheld}',
+            board=finish('SELECTED_NOT_PUBLISHED',
+                         f'selected {len(chosen)}; publication withheld on {withheld}',
+                         refused_at='publication_gate', withheld=withheld,
+                         n_selected=len(chosen)))
+
+    o6 = s_emit_csv(chosen, entries[:len(chosen)], slate)
+    stages.append(_stage('emit_csv', o6, **(o6.evidence or {})))
+    if o6.state.value != 'PASS':
+        return Outcome.fail('SHOWDOWN_RUN_REFUSED', f'emit: {o6.code}',
+                            board=finish('REFUSED', o6.detail, refused_at='emit_csv'))
+    return Outcome.ok('SHOWDOWN_PORTFOLIO_DELIVERED',
+                      {'n_entries': len(chosen), 'upload': o6.value['path']},
+                      f'{len(chosen)} entries written',
+                      board=finish('DELIVERED', f'{len(chosen)} entries written',
+                                   n_selected=len(chosen), upload=o6.value['path']))
 
 
 def _render(b) -> str:
