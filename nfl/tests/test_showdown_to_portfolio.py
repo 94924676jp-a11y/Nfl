@@ -30,6 +30,9 @@ from nfl.tests import _registry  # noqa: E402
 
 SHOWDOWN = _REPO / 'nfl/dfs/salaries/raw/DKEntries_NYG_LAR_SHOWDOWN_2026W2.csv'
 CLASSIC = _REPO / 'nfl/dfs/salaries/raw/DKEntries_EARLY_ONLY_2026W3_62.csv'
+#: Tonight's real export, kept as a SECOND real slate so the runner is proven parameterised across two
+#: genuine DK files rather than fitted to one.
+TONIGHT = _REPO / 'nfl/dfs/salaries/raw/DKEntries_PIT_CLE_SHOWDOWN_2026W4.csv'
 
 RESULTS = []
 
@@ -238,6 +241,52 @@ def t_board_always_emitted():
     names = [s['stage'] for s in b['stages']]
     assert names[:2] == ['ingest_export', 'slate_identity'], names
     return f"{b['RESULT']} with stages {names}"
+
+
+@check("tonight's real PIT@CLE export ingests and identifies itself from Game Info alone")
+def t_tonight_real_slate():
+    assert TONIGHT.exists(), f'{TONIGHT} is missing'
+    o = S.s1_ingest(TONIGHT)
+    assert o.state is State.PASS, o
+    i = S.s2_slate_identity(o.value['pool'])
+    assert i.state is State.PASS, i
+    sl = i.value
+    assert {sl['away'], sl['home']} == {'PIT', 'CLE'}, (sl['away'], sl['home'])
+    assert sl['kickoff_et_naive'].startswith('2026-10-01T20:15'), sl['kickoff_et_naive']
+    assert len(sl['players']) == 51, len(sl['players'])
+    assert len(o.value['entries']) == 78, len(o.value['entries'])
+    assert len(o.value['pool']) == 2 * len(sl['players']), (len(o.value['pool']),)
+    return (f"{sl['away']}@{sl['home']} at {sl['kickoff_et_naive']} ET, {len(sl['players'])} people, "
+            f"{len(o.value['pool'])} priced items, {len(o.value['entries'])} entries")
+
+
+@check("every one of tonight's 51 players has distinct slot ids and a 1.5x captain price")
+def t_tonight_slot_ids():
+    o = S.s1_ingest(TONIGHT)
+    sl = S.s2_slate_identity(o.value['pool']).value
+    shared = [k for k, v in sl['players'].items() if v['cpt']['dk_id'] == v['flex']['dk_id']]
+    assert not shared, shared[:3]
+    bad = [k for k, v in sl['players'].items()
+           if v['cpt']['salary'] != round(v['flex']['salary'] * S.CPT_MULTIPLIER)]
+    assert not bad, bad[:3]
+    return f'{len(sl["players"])} people, 0 shared ids, 0 captain-price mismatches'
+
+
+@check("the runner refuses tonight by name, and never writes to the owner's entry file")
+def t_tonight_refuses_and_does_not_touch_input():
+    before = TONIGHT.read_bytes()
+    o = S.run(TONIGHT)
+    assert o.state is State.BLOCKED, o
+    assert o.code == 'SHOWDOWN_RUN_BLOCKED', o.code
+    b = o.evidence['board']
+    assert b['RESULT'] == 'BLOCKED_NO_PROJECTIONS', b['RESULT']
+    st = {x['stage']: x['state'] for x in b['stages']}
+    assert st['ingest_export'] == 'PASS' and st['slate_identity'] == 'PASS', st
+    assert st['projections'] == 'BLOCKED', st
+    # ALL 78 ENTRIES ALREADY CARRY THE OWNER'S LINEUPS. The runner writes its own upload file and must
+    # never modify the input, so the bytes are compared before and after.
+    assert TONIGHT.read_bytes() == before, "the runner modified the owner's entry file"
+    return f"{b['RESULT']}; input file byte-identical after the run"
 
 
 _EMITTED = _registry.emit(globals(), RESULTS)

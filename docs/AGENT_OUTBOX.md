@@ -3460,3 +3460,49 @@ plays".
 
 **Not wanted, explicitly.** `AvgPointsPerGame` is in that file and is a third-party projection. It is
 never a model input and never fills a missing projection. Do not strip it, do not use it.
+
+
+---
+
+## SATISFIED 2026-10-01 — the DK Showdown export for PIT at CLE has arrived
+
+The owner supplied both files. Recorded here so the request is closed rather than left standing.
+
+| file | stored as | measured |
+|---|---|---|
+| DK Showdown entries export | `nfl/dfs/salaries/raw/DKEntries_PIT_CLE_SHOWDOWN_2026W4.csv` | 51 people, **102 priced items** (51 CPT + 51 FLEX), 78 entries across 4 contests, PIT 26 / CLE 25, QB 8 / RB 12 / WR 18 / TE 9 / K 2 / DST 2 |
+| vendor projection sheet | `nfl/dfs/salaries/raw/THIRDPARTY_showdown_PIT_CLE_2026W4_CONTEXT_ONLY.csv` | 74 rows, 37 unique names |
+
+`showdown_to_portfolio.py` reads the game and the kickoff from the pool's `Game Info` alone:
+**PIT@CLE at 2026-10-01T20:15:00 ET**. Ingest and slate identity both PASS, which means all 51 people
+carry distinct CPT and FLEX ids and a captain price at exactly 1.5x flex.
+
+**The vendor sheet is CONTEXT ONLY and is named so it cannot be mistaken.** Its columns include `FC`,
+`My`, `FC Proj`, `My Proj`, `Floor`, `Ceiling` and `Exp.` — third-party projections of the same class
+as FantasyCruncher. They are never a model input, never a blend, and never a fallback for a missing
+projection. Owner's instruction, 2026-10-01, and the firewall already enforced it.
+
+**Two facts about that sheet that matter if anyone is tempted to lean on it.** It covers 37 names
+against DK's 51, and an exact-name join leaves **17 DK people with no vendor row and 3 vendor rows
+matching no DK person**. So it is not even a complete substitute for the thing it is not allowed to
+substitute for.
+
+**All 78 entries already carry the owner's lineups.** The runner writes its own upload file at
+`nfl/dfs/salaries/DK_SHOWDOWN_UPLOAD_GENERATED.csv` and never modifies the input; a test compares the
+input bytes before and after the run.
+
+### What is still blocking tonight, in order
+
+1. **Week 3 (and Week 4) results.** Unchanged and still Priority Zero — see the request above.
+   `world_clock` reports `EVIDENCE_BEHIND_THE_WORLD`, world through 2026-09-28, evidence through
+   2026-09-21, 16 played games absent.
+2. **Projections covering PIT and CLE**, including both kickers and both defences. Blocked by (1):
+   the existing Week 3 artifact covers 18 clubs and neither PIT nor CLE projections exist for Week 4.
+   The runner stops here with `SHOWDOWN_PROJECTION_DOES_NOT_COVER_THIS_GAME`.
+3. **Simulated draws** for those 51 players. `near_optimal_candidates` refuses
+   `SHOWDOWN_DRAWS_ABSENT` without them and will not manufacture a distribution from a projected mean.
+4. **Official inactives** for PIT@CLE when published, as a JSON list of names passed with
+   `--inactives`. Until then availability is DEFERRED and publication is withheld.
+
+Stages 5 to 7 of the owner's plan — optimiser, portfolio, DK-ready export — are built, tested and
+waiting on 1 to 4. Nothing about tonight is usable until (1) lands and the world-clock gate passes.
