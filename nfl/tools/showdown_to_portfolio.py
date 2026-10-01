@@ -910,9 +910,17 @@ def main() -> int:
                     help='projection artifact with a rows map (default: the Week 3 V1 artifact)')
     ap.add_argument('--inactives', default=None,
                     help='JSON file holding a list of official inactive names or "Name|TEAM" keys')
+    ap.add_argument('--draws', default=None,
+                    help='draws artifact from showdown_draws.py')
+    ap.add_argument('--entries', type=int, default=None,
+                    help='how many entries to fill (default: every entry in the export)')
     a = ap.parse_args()
     inact = json.loads(pathlib.Path(a.inactives).read_text()) if a.inactives else None
-    o = run(a.export, official_inactives=inact,
+    draws = None
+    if a.draws:
+        d = json.loads(pathlib.Path(a.draws).read_text())
+        draws = d.get('draws', d)
+    o = run(a.export, official_inactives=inact, draws=draws, n_entries=a.entries,
             proj_path=pathlib.Path(a.projections) if a.projections else None)
     print(o.state.value, o.code)
     print(o.detail or '')

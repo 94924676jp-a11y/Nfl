@@ -1,7 +1,7 @@
-# Showdown status board — BLOCKED_NO_PORTFOLIO
+# Showdown status board — DELIVERED
 
 export `nfl/dfs/salaries/raw/DKEntries_PIT_CLE_SHOWDOWN_2026W4.csv`
-run 2026-10-01T23:08:05.995182+00:00
+run 2026-10-01T23:12:02.162544+00:00
 
 **PIT@CLE** at 2026-10-01T20:15:00 ET — 51 players, 78 entries
 
@@ -11,8 +11,9 @@ run 2026-10-01T23:08:05.995182+00:00
 | slate_identity | PASS | SHOWDOWN_SLATE_IDENTIFIED |
 | availability | PASS | SHOWDOWN_AVAILABILITY_RESOLVED |
 | projections | PASS | SHOWDOWN_PROJECTIONS_READ |
-| candidates_and_selection | BLOCKED | SHOWDOWN_DRAWS_ABSENT |
+| candidates_and_selection | PASS | SHOWDOWN_PORTFOLIO_SELECTED |
+| emit_csv | PASS | SHOWDOWN_CSV_WRITTEN |
 
-**BLOCKED_NO_PORTFOLIO** — 45 of 45 rosterable players have no simulated draws. p_optimal is a property of the joint distribution under a cap and cannot be computed from a projected mean; manufacturing draws from one would invent the quantity being measured.
+**DELIVERED** — 78 entries written
 
 Nothing here is a recommendation to wager, and nothing uploads a lineup.

@@ -2,7 +2,7 @@
   "ARTIFACT": "SHOWDOWN_STATUS_BOARD",
   "spec_version": "showdown-to-portfolio-1",
   "export": "nfl/dfs/salaries/raw/DKEntries_PIT_CLE_SHOWDOWN_2026W4.csv",
-  "run_at_utc": "2026-10-01T23:08:05.995182+00:00",
+  "run_at_utc": "2026-10-01T23:12:02.162544+00:00",
   "stages": [
     {
       "stage": "ingest_export",
@@ -52,26 +52,32 @@
     },
     {
       "stage": "candidates_and_selection",
-      "state": "BLOCKED",
-      "code": "SHOWDOWN_DRAWS_ABSENT",
-      "detail": "45 of 45 rosterable players have no simulated draws. p_optimal is a property of the joint distribution under a cap and cannot be computed from a projected mean; manufacturing draws from one would invent the quantity being measured.",
-      "n_missing": 45,
-      "missing": [
-        "Aaron Rodgers|PIT",
-        "Andre Szmyt|CLE",
-        "Ben Skowronek|PIT",
-        "Blake Whiteheart|CLE",
-        "Brandon Johnson|PIT",
-        "Brandon Smith|PIT",
-        "Browns|CLE",
-        "Bub Means|CLE",
-        "Carsen Ryan|CLE",
-        "Chris Boswell|PIT",
-        "Cole Burgess|PIT",
-        "DK Metcalf|PIT"
-      ],
-      "WOULD_RESOLVE_IT": "a sealed simulation producing per-player DK-point draws for this game",
-      "cause": "DATA"
+      "state": "PASS",
+      "code": "SHOWDOWN_PORTFOLIO_SELECTED",
+      "detail": "78 entries from a pool of 784",
+      "n_chosen": 78,
+      "n_candidates": 784,
+      "caps": {
+        "player": 0.5,
+        "captain": 0.3,
+        "overlap": 4
+      },
+      "pool": {
+        "n_candidates": 784,
+        "n_world_optimal": 371,
+        "loss_band": 0.1
+      },
+      "max_gap_used": 0.050317,
+      "site_legality_enforced": true
+    },
+    {
+      "stage": "emit_csv",
+      "state": "PASS",
+      "code": "SHOWDOWN_CSV_WRITTEN",
+      "detail": "78 rows",
+      "n_rows": 78,
+      "SLOT_SPECIFIC_IDS": "the CPT column carries the captain item id and each FLEX column the flex item id, which are different numbers for the same person",
+      "NOT_SUBMITTED": "written to disk; nothing uploads it. Entering a contest is the owner's action, never this runner's."
     }
   ],
   "BOARD_SEMANTICS": "this board always exists. A stage that could not run appears here as the reason the product is degraded, rather than as silence.",
@@ -83,7 +89,8 @@
     "n_entries": 78
   },
   "availability_is_complete": true,
-  "RESULT": "BLOCKED_NO_PORTFOLIO",
-  "RESULT_DETAIL": "45 of 45 rosterable players have no simulated draws. p_optimal is a property of the joint distribution under a cap and cannot be computed from a projected mean; manufacturing draws from one would invent the quantity being measured.",
-  "refused_at": "candidates_and_selection"
+  "RESULT": "DELIVERED",
+  "RESULT_DETAIL": "78 entries written",
+  "n_selected": 78,
+  "upload": "nfl/dfs/salaries/DK_SHOWDOWN_UPLOAD_GENERATED.csv"
 }
