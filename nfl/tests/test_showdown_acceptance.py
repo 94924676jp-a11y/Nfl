@@ -357,6 +357,98 @@ def t_draws_absent_refused():
     return 'absent draws BLOCK, ragged draws FAIL -- neither is filled in'
 
 
+@check('GENERATOR: the exact per-world optima are always included, with gap zero')
+def t_gen_exact_included():
+    tmp = pathlib.Path(tempfile.mkdtemp())
+    _, sl = _slate(_write_export(tmp))
+    g = S.near_optimal_candidates(sl, set(), _draws(sl))
+    assert g.state is State.PASS, g
+    exact = [c for c in g.value if c['n_worlds_optimal'] > 0]
+    assert exact, 'no candidate is world-optimal'
+    assert all(c['best_gap'] == 0.0 for c in exact), [c['best_gap'] for c in exact[:3]]
+    assert sum(c['n_worlds_optimal'] for c in exact) == g.evidence['n_worlds'], (
+        sum(c['n_worlds_optimal'] for c in exact), g.evidence['n_worlds'])
+    return f"{len(exact)} world-optimal candidates covering all {g.evidence['n_worlds']} worlds"
+
+
+@check('GENERATOR: every candidate is lawful, and every gap is inside the declared band')
+def t_gen_lawful_and_banded():
+    tmp = pathlib.Path(tempfile.mkdtemp())
+    _, sl = _slate(_write_export(tmp))
+    g = S.near_optimal_candidates(sl, set(), _draws(sl))
+    assert g.state is State.PASS, g
+    band = g.evidence['loss_band']
+    for c in g.value:
+        v = S.validate_lineup(c, sl)
+        assert v.state is State.PASS, (c, v.code)
+        assert c['best_gap'] <= band + 1e-9, (c['captain'], c['best_gap'], band)
+        seats = [c['captain']] + c['flex']
+        assert len(set(seats)) == S.ROSTER_SIZE
+        assert {sl['players'][k]['dk_team'] for k in seats} == {AWAY, HOME}
+        assert v.value['salary'] <= S.SALARY_CAP
+    return (f"{len(g.value)} candidates, all lawful, max gap "
+            f"{g.evidence['max_gap']} within band {band}")
+
+
+@check('GENERATOR LOAD-BEARING: a zero band admits ONLY the exact optima')
+def t_gen_zero_band():
+    tmp = pathlib.Path(tempfile.mkdtemp())
+    _, sl = _slate(_write_export(tmp))
+    d = _draws(sl)
+    z = S.near_optimal_candidates(sl, set(), d, loss_band=0.0, rounds=6, drop_rounds=0)
+    assert z.state is State.PASS, z
+    assert all(c['n_worlds_optimal'] > 0 for c in z.value), 'a non-optimal lineup entered at band 0'
+    wide = S.near_optimal_candidates(sl, set(), d)
+    assert len(wide.value) > len(z.value), (len(wide.value), len(z.value))
+    return f'band 0 gives {len(z.value)}; the declared band gives {len(wide.value)}'
+
+
+@check('GENERATOR: flex-core exclusion is what widens the pool, and it is recorded')
+def t_gen_flex_drops_recorded():
+    tmp = pathlib.Path(tempfile.mkdtemp())
+    _, sl = _slate(_write_export(tmp))
+    d = _draws(sl)
+    cpt_only = S.near_optimal_candidates(sl, set(), d, drop_rounds=0)
+    full = S.near_optimal_candidates(sl, set(), d)
+    assert full.state is State.PASS and cpt_only.state is State.PASS
+    assert len(full.value) > len(cpt_only.value), (len(full.value), len(cpt_only.value))
+    assert full.evidence['n_dropped_for_diversity'] > 0, full.evidence
+    assert any('drop_round' in r for r in full.evidence['rounds']), full.evidence['rounds']
+    return (f"captain rounds alone {len(cpt_only.value)}; with "
+            f"{full.evidence['n_dropped_for_diversity']} drops {len(full.value)}")
+
+
+@check('GENERATOR: a wider pool fills portfolio sizes the optima alone could not, caps UNCHANGED')
+def t_gen_improves_fill():
+    tmp = pathlib.Path(tempfile.mkdtemp())
+    _, sl = _slate(_write_export(tmp))
+    d = _draws(sl)
+    before = {'player': S.MAX_PLAYER_EXPOSURE, 'captain': S.MAX_CAPTAIN_EXPOSURE,
+              'overlap': S.MAX_OVERLAP}
+    o12 = S.s5_candidates_and_selection(sl, set(), d, 12)
+    assert o12.state is State.PASS, o12
+    assert o12.evidence['n_chosen'] == 12, o12.evidence
+    after = o12.evidence['caps']
+    assert after == before, f'the caps moved: {before} -> {after}'
+    return f'12/12 filled with caps unchanged at {after}'
+
+
+@check('GENERATOR: ranking uses optimality and gap only -- no ownership or correlation is invented')
+def t_gen_no_ownership():
+    tmp = pathlib.Path(tempfile.mkdtemp())
+    _, sl = _slate(_write_export(tmp))
+    g = S.near_optimal_candidates(sl, set(), _draws(sl))
+    assert g.evidence['RANKED_BY'] == 'world-optimality count then objective gap', g.evidence
+    # No candidate carries an ownership or leverage field, so nothing downstream can read one.
+    banned = {'ownership', 'projected_ownership', 'leverage', 'duplication', 'correlation'}
+    for c in g.value[:5]:
+        assert not (banned & set(c)), set(c) & banned
+    src = pathlib.Path(S.__file__).read_text()
+    assert 'import' not in src.split('def near_optimal_candidates')[1].split('def ')[0].replace(
+        'import numpy as np', '').replace('from nfl.dfs.showdown import optimal_worlds as OW', '')
+    return 'ranked by optimality and gap; no ownership, leverage or correlation field exists'
+
+
 _EMITTED = _registry.emit(globals(), RESULTS)
 
 

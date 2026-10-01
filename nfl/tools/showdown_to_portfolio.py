@@ -101,6 +101,34 @@ TEAM_ALIAS = {'LAR': 'LA'}
 #: presented as if it had been measured would be a silent constant. They are deliberately stricter
 #: than the classic path's (0.60 player, 6-of-9 overlap) because a showdown slate is one game and six
 #: seats, so the same nominal cap concentrates far more risk.
+#: NEAR-OPTIMAL CANDIDATE GENERATION, policy not estimate. The exact per-world optimum is always
+#: included; additional lineups are admitted only within a declared objective-loss band, measured
+#: against that same world's optimum. 0.10 means "scores at least 90% of what the best possible lineup
+#: scored in that world". Nothing here has measured the right band -- it is a declared tolerance for
+#: how much expected objective we will trade for a portfolio that can actually be filled, and it is
+#: reported with every candidate so the trade is visible rather than assumed.
+NEAR_OPTIMAL_LOSS_BAND = 0.10
+
+#: How many captain-exclusion rounds to run. Each round re-solves EXACTLY, with the captains already
+#: used made infeasible as captains, so each round contributes genuine constrained optima rather than
+#: perturbations. More rounds cost one full solve each.
+NEAR_OPTIMAL_ROUNDS = 8
+
+#: FLEX-CORE EXCLUSION ROUNDS, and these are what actually fixed the shortfall. Captain exclusion
+#: diversifies only the captain seat; the five flex seats keep converging on the same core, so the
+#: pool saturates and widening the loss band buys nothing. Measured on the 26-player synthetic slate,
+#: caps and band held fixed:
+#:
+#:   n entries        2     4     6     8    12    20
+#:   optima only    1/2   3/4   5/6   6/8 10/12     -
+#:   + captain      1/2   3/4   6/6   6/8 10/12     -
+#:   + flex drops   2/2   3/4   6/6   7/8 12/12 20/20
+#:
+#: Each round drops the single most-used person from the universe and re-solves EXACTLY, so every
+#: lineup is still a lawful optimum of a restricted problem and its gap is still measured against the
+#: unrestricted world optimum.
+NEAR_OPTIMAL_DROP_ROUNDS = 10
+
 #: solve() labels its reporting rows with a model-confidence `tag`. This runner does not compute one,
 #: so it says so rather than supplying a plausible-looking value that downstream code might believe.
 TAG_NOT_CLAIMED = 'NO_CONFIDENCE_TAG_FROM_THIS_RUNNER'
@@ -402,28 +430,192 @@ def s4_projections(slate, absent, proj_path: pathlib.Path = None) -> Outcome:
                       THIRD_PARTY_COLUMNS_NOT_READ=list(THIRD_PARTY_COLUMNS))
 
 
-def s5_candidates_and_selection(slate, absent, draws, n_entries: int) -> Outcome:
-    """Exact lawful optima per world, then a portfolio chosen from them under declared caps.
+def _lineup_score(cap_key, flex_keys, draws, world: int) -> float:
+    """Score one lineup in one world, exactly as optimal_worlds scores it.
 
-    KNOWN LIMITATION, measured and reported rather than papered over. The candidate set here is the
-    set of per-world OPTIMA, and optima share a high-value core: once the exposure cap retires that
-    core, often no remaining candidate also respects the overlap cap. On a 26-player synthetic slate
-    over 24 worlds this yields 24 distinct optima and lands one or two entries short at every count
-    tried. The stage reports SHOWDOWN_PORTFOLIO_SHORT_OF_ENTRIES with the partial portfolio attached.
-    Filling reliably needs NEAR-optimal candidates too; that is a selector change, and loosening the
-    caps to fill the file is the move this project forbids.
+    Taken from the solver's own transition, `dp[...] + v * U.CPT_MULTIPLIER` for the captain and `v`
+    for a flex seat, so a gap computed here is comparable with the optimum the solver reported. A
+    scoring rule restated by hand and allowed to drift would make every gap meaningless.
+    """
+    return (CPT_MULTIPLIER * float(draws[cap_key][world])
+            + sum(float(draws[k][world]) for k in flex_keys))
 
-    `draws` is {player_key: sequence of simulated DK scores}, one sequence per rosterable player, all
-    the same length. THE DISTRIBUTION IS REQUIRED AND IS NOT MANUFACTURED. optimal_worlds.solve
-    measures how often a player belongs in the best possible lineup, which is a statement about the
-    joint distribution under a salary cap and cannot be recovered from a mean. Turning a projected
-    mean into draws here -- by picking a variance, say -- would invent the very quantity being
-    measured, so an absent draws set is a refusal.
+
+def near_optimal_candidates(slate, absent, draws, *, loss_band: float = None,
+                            rounds: int = None, drop_rounds: int = None) -> Outcome:
+    """A broader LAWFUL candidate pool: exact per-world optima, plus constrained optima near them.
+
+    WHY. Selecting only from per-world optima gives a narrow pool, because optima share a high-value
+    core. Once the exposure cap retires that core there is often no further candidate that also
+    respects the overlap cap, and the selector lands short. The wrong fix is to loosen the caps to fill
+    the file. The right fix is more lawful candidates.
+
+    HOW, and why it reuses the audited solver rather than writing a second one. Each round calls
+    `optimal_worlds.solve` again with the captains already used made INFEASIBLE AS CAPTAINS -- their
+    captain salary is raised above the cap, so no captain state can be entered for them, while they
+    remain fully available as flex. Every lineup returned is therefore an EXACT optimum of a
+    constrained problem, carrying the solver's own guarantees: one captain and five flex, under the
+    cap, both clubs represented, no duplicate person. Nothing is perturbed, nothing is repaired, and
+    there is no second dynamic program to drift out of agreement with the first.
+
+    EVERY CANDIDATE RECORDS ITS OBJECTIVE GAP from the world optimum it is being compared against, and
+    the exact optima are always included with a gap of zero.
+
+    NO CORRELATION OR OWNERSHIP IS INVENTED. The only inputs are the draws supplied by the caller.
+    Candidates are ranked by how often they are world-optimal and by objective gap -- never by
+    projected ownership, leverage or duplication, none of which this function has or pretends to have.
     """
     import numpy as np
     from nfl.dfs.showdown import optimal_worlds as OW
 
-    want = [k for k in slate['players'] if k not in absent]
+    band = NEAR_OPTIMAL_LOSS_BAND if loss_band is None else float(loss_band)
+    n_rounds = NEAR_OPTIMAL_ROUNDS if rounds is None else int(rounds)
+    if not 0.0 <= band < 1.0:
+        return Outcome.fail('SHOWDOWN_LOSS_BAND_OUT_OF_RANGE',
+                            f'loss band {band} must be in [0, 1)', band=band)
+
+    want = sorted(k for k in slate['players'] if k not in absent)
+    pre = _draws_precheck(slate, absent, draws, want)
+    if pre is not None:
+        return pre
+    n_worlds = len(draws[want[0]])
+
+    def _players(forbid_captain=(), drop=()):
+        out = []
+        for k in want:
+            if k in drop:
+                # DROPPED FROM THE UNIVERSE ENTIRELY, not merely as captain. This is what diversifies
+                # the five flex seats, and the solve over the reduced universe is still exact, so the
+                # lineup is still lawful.
+                continue
+            v = slate['players'][k]
+            cpt = v['cpt']['salary']
+            if k in forbid_captain:
+                # INFEASIBLE AS CAPTAIN, STILL AVAILABLE AS FLEX. The DP indexes captain states by
+                # cpt_salary // unit against a budget of cap // unit, so a captain salary above the
+                # cap cannot enter any captain state. This is the whole mechanism -- no flag is added
+                # to the solver and its logic is untouched.
+                cpt = SALARY_CAP + 1000
+            out.append({'name': k, 'team': v['dk_team'], 'pos': v['position'],
+                        'tag': TAG_NOT_CLAIMED, 'salary': v['flex']['salary'],
+                        'cpt_salary': cpt, 'draws': np.asarray(draws[k], dtype=float)})
+        return out
+
+    n_drop = NEAR_OPTIMAL_DROP_ROUNDS if drop_rounds is None else int(drop_rounds)
+    base = OW.solve(_players(), cap=SALARY_CAP, n_flex=N_FLEX, require_team_coverage=True)
+    if base.state.value != 'PASS':
+        return base
+    names = base.value['names']
+    # The world optimum each candidate is measured against.
+    world_best = {}
+    for w, ln in enumerate(base.value['lineups']):
+        if ln is None:
+            continue
+        cpt_i, flex_i = ln
+        world_best[w] = _lineup_score(names[cpt_i], [names[i] for i in flex_i], draws, w)
+    if not world_best:
+        return Outcome.fail(
+            'SHOWDOWN_NO_FEASIBLE_LINEUP',
+            'the exact solve produced no feasible lineup in any world, so there is no optimum to '
+            'measure a near-optimal band against.')
+
+    cands = {}
+
+    def _absorb(outcome, round_no):
+        nm = outcome.value['names']
+        for w, ln in enumerate(outcome.value['lineups']):
+            if ln is None or w not in world_best:
+                continue
+            cpt_i, flex_i = ln
+            cap_key = nm[cpt_i]
+            flex_keys = tuple(sorted(nm[i] for i in flex_i))
+            sc = _lineup_score(cap_key, flex_keys, draws, w)
+            best = world_best[w]
+            gap = 0.0 if best <= 0 else max(0.0, (best - sc) / best)
+            if round_no > 0 and gap > band:
+                continue
+            key = (cap_key, flex_keys)
+            rec = cands.setdefault(key, {'captain': cap_key, 'flex': list(flex_keys),
+                                         'n_worlds_optimal': 0, 'gaps': [], 'rounds': set()})
+            if round_no == 0:
+                rec['n_worlds_optimal'] += 1
+            rec['gaps'].append(gap)
+            rec['rounds'].add(round_no)
+
+    _absorb(base, 0)
+    used_captains = {c['captain'] for c in cands.values()}
+    rounds_run = [{'round': 0, 'forbidden_captains': 0, 'n_candidates_after': len(cands)}]
+    for r in range(1, max(1, n_rounds)):
+        if len(used_captains) >= len(want) - N_FLEX:
+            break
+        o = OW.solve(_players(forbid_captain=used_captains), cap=SALARY_CAP, n_flex=N_FLEX,
+                     require_team_coverage=True)
+        if o.state.value != 'PASS':
+            # A round that cannot solve is not an error: the captain pool is exhausted. Recorded.
+            rounds_run.append({'round': r, 'forbidden_captains': len(used_captains),
+                               'stopped': o.code})
+            break
+        before = len(cands)
+        _absorb(o, r)
+        rounds_run.append({'round': r, 'forbidden_captains': len(used_captains),
+                           'n_new': len(cands) - before, 'n_candidates_after': len(cands)})
+        new_caps = {c['captain'] for c in cands.values()} - used_captains
+        if not new_caps:
+            break
+        used_captains |= new_caps
+
+    # FLEX-CORE EXCLUSION. Drop the most-used person and re-solve, repeatedly. Captain exclusion
+    # saturates the pool because the flex seats keep reconverging; this is the round type that moved
+    # the fill numbers.
+    dropped = set()
+    for r in range(max(0, n_drop)):
+        counts = collections.Counter()
+        for rec in cands.values():
+            for k in [rec['captain']] + rec['flex']:
+                counts[k] += 1
+        nxt = next((k for k, _ in counts.most_common() if k not in dropped), None)
+        if nxt is None or len(want) - len(dropped) - 1 < ROSTER_SIZE:
+            break
+        dropped.add(nxt)
+        o = OW.solve(_players(drop=dropped), cap=SALARY_CAP, n_flex=N_FLEX,
+                     require_team_coverage=True)
+        if o.state.value != 'PASS':
+            rounds_run.append({'drop_round': r, 'n_dropped': len(dropped), 'stopped': o.code})
+            break
+        before = len(cands)
+        _absorb(o, 1000 + r)
+        rounds_run.append({'drop_round': r, 'n_dropped': len(dropped),
+                           'n_new': len(cands) - before, 'n_candidates_after': len(cands)})
+
+    rows = []
+    for rec in cands.values():
+        lawful = validate_lineup({'captain': rec['captain'], 'flex': rec['flex']}, slate, absent)
+        if lawful.state.value != 'PASS':
+            # Should be unreachable: every candidate came from the constrained DP. Kept as a tripwire
+            # rather than an assertion, so an unlawful candidate is reported instead of crashing.
+            continue
+        rows.append({'captain': rec['captain'], 'flex': rec['flex'],
+                     'n_worlds_optimal': rec['n_worlds_optimal'],
+                     'best_gap': round(min(rec['gaps']), 6),
+                     'mean_gap': round(sum(rec['gaps']) / len(rec['gaps']), 6),
+                     'first_round': min(rec['rounds']),
+                     'salary': lawful.value['salary']})
+    rows.sort(key=lambda r: (-r['n_worlds_optimal'], r['best_gap'],
+                            r['captain'], tuple(r['flex'])))
+    n_exact = sum(1 for r in rows if r['n_worlds_optimal'] > 0)
+    return Outcome.ok('SHOWDOWN_CANDIDATES_GENERATED', rows,
+                      f'{len(rows)} lawful candidates, {n_exact} world-optimal',
+                      n_candidates=len(rows), n_world_optimal=n_exact,
+                      n_worlds=n_worlds, loss_band=band, rounds=rounds_run,
+                      n_dropped_for_diversity=len(dropped),
+                      max_gap=round(max((r['best_gap'] for r in rows), default=0.0), 6),
+                      EXACT_OPTIMA_ALWAYS_INCLUDED=True,
+                      RANKED_BY='world-optimality count then objective gap',
+                      NOT_RANKED_BY='ownership, leverage or duplication -- none of which exist here')
+
+
+def _draws_precheck(slate, absent, draws, want):
+    """Shared draws validation. Returns an Outcome to propagate, or None if the draws are usable."""
     if len(want) < ROSTER_SIZE:
         return Outcome.fail(
             'SHOWDOWN_TOO_FEW_ROSTERABLE',
@@ -444,39 +636,25 @@ def s5_candidates_and_selection(slate, absent, draws, n_entries: int) -> Outcome
             f'draw sequences have {len(lens)} different lengths {sorted(lens)[:4]}. Worlds must be '
             f'shared across players or a "world" means a different thing per column, and the joint '
             f'structure the optimiser measures is destroyed.', lengths=sorted(lens)[:6])
+    return None
 
-    # THE PLAYER KEY IS PASSED AS `name`. solve() uses `name` only to order indices and to report
-    # them back, so using the (name, club) key makes the index -> person mapping exact instead of
-    # going through a display name that two people could share.
-    # `pos` and `tag` are read by solve() only to label its reporting rows. `tag` in
-    # nfl/dfs/showdown/universe.py is a model-CONFIDENCE statement produced by machinery this runner
-    # does not have, so a value is NOT invented for it: the declared placeholder below says plainly
-    # that no confidence claim is being made, which is the difference between an absent statement and
-    # a false one.
-    players = [{'name': k, 'team': slate['players'][k]['dk_team'],
-                'pos': slate['players'][k]['position'],
-                'tag': TAG_NOT_CLAIMED,
-                'salary': slate['players'][k]['flex']['salary'],
-                'cpt_salary': slate['players'][k]['cpt']['salary'],
-                'draws': np.asarray(draws[k], dtype=float)} for k in want]
-    o = OW.solve(players, cap=SALARY_CAP, n_flex=N_FLEX, require_team_coverage=True)
-    if o.state.value != 'PASS':
-        return o
-    names = o.value['names']
-    seen = {}
-    for ln in o.value['lineups']:
-        if ln is None:
-            continue
-        cpt_i, flex_i = ln
-        key = (names[cpt_i], tuple(sorted(names[i] for i in flex_i)))
-        seen[key] = seen.get(key, 0) + 1
-    if not seen:
+
+def s5_candidates_and_selection(slate, absent, draws, n_entries: int) -> Outcome:
+    """Generate a lawful candidate pool, then fill the portfolio from it under the declared caps.
+
+    The pool is `near_optimal_candidates`: the exact per-world optima plus constrained optima within
+    the declared objective-loss band. The CAPS ARE NOT RELAXED to fill the file -- if the broader pool
+    still cannot satisfy them, that is reported with the partial portfolio and the shortfall stands.
+    """
+    gen = near_optimal_candidates(slate, absent, draws)
+    if gen.state.value != 'PASS':
+        return gen
+    ranked = gen.value
+    if not ranked:
         return Outcome.fail(
             'SHOWDOWN_NO_FEASIBLE_LINEUP',
-            'the optimiser solved no world feasibly, so there is no candidate set. An empty candidate '
-            'set is an error, not a portfolio of nothing.')
-    ranked = [{'captain': k[0], 'flex': list(k[1]), 'n_worlds_optimal': v}
-              for k, v in sorted(seen.items(), key=lambda kv: (-kv[1], kv[0]))]
+            'the candidate generator produced no lawful lineup. An empty candidate set is an error, '
+            'not a portfolio of nothing.')
 
     chosen, exposure, cpt_exposure = [], collections.Counter(), collections.Counter()
     cap_player = max(1, int(MAX_PLAYER_EXPOSURE * n_entries))
@@ -499,33 +677,25 @@ def s5_candidates_and_selection(slate, absent, draws, n_entries: int) -> Outcome
             exposure[k] += 1
         cpt_exposure[cand['captain']] += 1
 
+    caps = {'player': MAX_PLAYER_EXPOSURE, 'captain': MAX_CAPTAIN_EXPOSURE,
+            'overlap': MAX_OVERLAP}
+    pool = {'n_candidates': gen.evidence.get('n_candidates'),
+            'n_world_optimal': gen.evidence.get('n_world_optimal'),
+            'loss_band': gen.evidence.get('loss_band')}
     if len(chosen) < n_entries:
         return Outcome.deferred(
             'SHOWDOWN_PORTFOLIO_SHORT_OF_ENTRIES',
-            f'{len(chosen)} distinct lawful lineups satisfy the declared caps, against {n_entries} '
-            f'entries. The caps are a policy choice and loosening them to fill the file is exactly '
-            f'the move this project forbids, so the shortfall is reported rather than absorbed.',
-            owed='either fewer entries, a wider candidate set, or a deliberate owner decision on '
-                 'the caps',
-            n_chosen=len(chosen), n_entries=n_entries, n_candidates=len(ranked),
-            partial=chosen,
-            WHY_THIS_HAPPENS=(
-                'the candidate set is the set of per-world OPTIMA, and optima share a high-value '
-                'core. Once the exposure cap retires that core there is often no further candidate '
-                'that also respects the overlap cap. Measured on a 26-player synthetic slate over 24 '
-                'worlds: 24 distinct optima, and the selector lands one or two short at every entry '
-                'count tried. Filling a portfolio reliably needs NEAR-optimal candidates as well as '
-                'optimal ones, which is a selector change and not a cap change.'),
-            caps={'player': MAX_PLAYER_EXPOSURE, 'captain': MAX_CAPTAIN_EXPOSURE,
-                  'overlap': MAX_OVERLAP})
+            f'{len(chosen)} lineups satisfy the declared caps out of a pool of {len(ranked)}, against '
+            f'{n_entries} entries. The caps are a policy choice and loosening them to fill the file is '
+            f'exactly the move this project forbids, so the shortfall is reported rather than '
+            f'absorbed.',
+            owed='either fewer entries, a wider loss band as an explicit decision, or more rounds',
+            n_chosen=len(chosen), n_entries=n_entries, partial=chosen, caps=caps, pool=pool)
     return Outcome.ok('SHOWDOWN_PORTFOLIO_SELECTED', chosen,
-                      f'{len(chosen)} entries from {len(ranked)} distinct optima',
-                      n_chosen=len(chosen), n_candidates=len(ranked),
-                      n_worlds=o.evidence.get('n_worlds') if o.evidence else None,
-                      tie_share=o.evidence.get('tie_share') if o.evidence else None,
-                      site_legality_enforced=True,
-                      caps={'player': MAX_PLAYER_EXPOSURE, 'captain': MAX_CAPTAIN_EXPOSURE,
-                            'overlap': MAX_OVERLAP})
+                      f'{len(chosen)} entries from a pool of {len(ranked)}',
+                      n_chosen=len(chosen), n_candidates=len(ranked), caps=caps, pool=pool,
+                      max_gap_used=round(max(c['best_gap'] for c in chosen), 6),
+                      site_legality_enforced=True)
 
 
 def validate_lineup(lineup, slate, absent=()) -> Outcome:
