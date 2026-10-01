@@ -157,7 +157,51 @@ def observed_current_season(panel, season: int, through_week: int) -> dict:
     return out
 
 
-def build(export, *, designations=None, official_inactives=None) -> Outcome:
+#: Starter evidence had NO INGESTION PATH into a showdown slate state at all. This key was a
+#: hard-coded `{}`, and `role_state.assign` turns that into `in_predicted_group: False`, which
+#: `proj_v1` turns into `is_predicted_starter False`. So "nobody told us who starts" arrived at the
+#: projection as "we know he does not start". The 2026 week 4 PIT@CLE board charged both
+#: depth_rank-1 quarterbacks a backup appearance rate because of it. A missing input must stay
+#: missing; this is where it now enters when it exists.
+STARTER_TIER = 'OWNER_RELAYED_CONFIRMED_STARTER'
+
+
+def _starter_context(name, club, confirmed):
+    """Starter evidence for one player, or an empty context when none was supplied.
+
+    FAILS CLOSED on a club mismatch. Starter evidence names a player AND the club he starts for;
+    if the supplied club disagrees with the slate's club for that name, the evidence is about
+    somebody else or it is stale, and it is recorded as rejected rather than applied. It is never
+    inferred: a player absent from the list gets `{}`, which means UNKNOWN, not NO.
+    """
+    if not confirmed:
+        return {}
+    want = confirmed.get(name) if isinstance(confirmed, dict) else (
+        club if name in set(confirmed) else None)
+    if want is None:
+        return {}
+    if isinstance(confirmed, dict) and str(want).upper() != str(club).upper():
+        return {
+            'state': 'STARTER_EVIDENCE_REJECTED_CLUB_MISMATCH',
+            'in_predicted_starting_group': False,
+            'relayed_club': want, 'slate_club': club,
+            'WHY': ('starter evidence names a player and the club he starts for. This one '
+                    'disagrees with the slate, so it is about another player or it is stale. '
+                    'Rejected rather than applied, and NOT treated as evidence against him '
+                    'either -- the appearance gate requires positive backup evidence.'),
+        }
+    return {
+        'state': STARTER_TIER,
+        'in_predicted_starting_group': True,
+        'relayed_name': name, 'relayed_club': club,
+        'NOT_A_CONFIRMED_INACTIVE_DECISION': (
+            'this says he is expected to take the snaps. It is positive availability evidence for '
+            'him and confers no status on anybody else.'),
+    }
+
+
+def build(export, *, designations=None, official_inactives=None,
+          confirmed_starters=None) -> Outcome:
     """Emit the POST-shaped state for one showdown slate.
 
     `designations` is {player name: 'OUT' | 'DOUBTFUL' | 'QUESTIONABLE' | 'NO_DESIGNATION'} from a team
@@ -308,7 +352,7 @@ def build(export, *, designations=None, official_inactives=None) -> Outcome:
                 'IS_NOT': ('a game-day inactive decision unless the status is CONFIRMED_INACTIVE, '
                            'which requires a captured official document'),
             },
-            'predicted_lineup_context': {},
+            'predicted_lineup_context': _starter_context(nm, p['team'], confirmed_starters),
         }
 
     out = {
@@ -378,10 +422,15 @@ def main() -> int:
     ap.add_argument('export')
     ap.add_argument('--designations', help='JSON {name: OUT|DOUBTFUL|QUESTIONABLE}')
     ap.add_argument('--official-inactives', help='JSON list of names from a CAPTURED official list')
+    ap.add_argument('--confirmed-starters',
+                    help='JSON {name: CLUB} of starters confirmed by a cited source. '
+                         'A club mismatch is rejected, not applied.')
     a = ap.parse_args()
     d = json.loads(pathlib.Path(a.designations).read_text()) if a.designations else None
     o = json.loads(pathlib.Path(a.official_inactives).read_text()) if a.official_inactives else None
-    r = build(a.export, designations=d, official_inactives=o)
+    cs = json.loads(pathlib.Path(a.confirmed_starters).read_text()) \
+        if a.confirmed_starters else None
+    r = build(a.export, designations=d, official_inactives=o, confirmed_starters=cs)
     print(r.state.value, r.code)
     print(' ', r.detail)
     for k, v in (r.evidence or {}).items():

@@ -1,0 +1,265 @@
+# PIT @ CLE Showdown — correctness audit and repair
+
+2026 week 4, game `2026_04_PIT_CLE`. Audit opened against working baseline `6e6c82dd`.
+
+`PROJECTION_SYSTEM_STATE` remains **NOT_VALIDATED**. Nothing below is a claim of predictive edge,
+of promotion, or of superiority over any external model. No wager is recommended.
+
+FantasyCruncher is used here as **external diagnostic evidence only**. It is not blended into any
+projection, not used as a fallback, not averaged against, and no coefficient was tuned toward it.
+Where our number moved, it moved because a state defect was repaired, and it is a separate fact
+that the repaired number happens to sit closer to FC.
+
+---
+
+## 1. Root cause: starter evidence had no ingestion path, and its absence was read as a denial
+
+**Old starter state.** Every quarterback on the slate, all eight of them, carried
+`is_predicted_starter = false`. Watson and Rodgers additionally carried
+`appearance_adjustment.reason = NOT_PREDICTED_STARTER` with `appearance_rate = 0.13789` and
+`measured_rank2_unconditional_share = 0.01939`, which are **rank-2 backup quarterback** quantities.
+
+**Corrected starter state.** Watson and Rodgers now carry
+`appearance_adjustment.reason = DEPTH_RANK_1_IS_THE_STARTER`, `applied: false`, and keep their full
+pass-attempt claim. Mason Rudolph and Shedeur Sanders, both genuinely rank 2, now carry
+`DEPTH_RANK_2` and are charged the rank-2 curve — the protection that gate exists for is intact.
+
+**Exact root cause, three links:**
+
+| Layer | What happened |
+|---|---|
+| starter-source ingestion | `showdown_slate_state.py:311` hard-coded `'predicted_lineup_context': {}`. **There was no ingestion path for starter evidence into a showdown slate state at all.** The confirmed-starter information existed in conversation, never as a machine-readable artifact for this game. The only availability artifact supplied for tonight is `OFFICIAL_INACTIVES_PIT_CLE_2026W4.json`, which names players who are OUT and says nothing about who starts. |
+| role-state propagation | `role_state.assign` computes `pred = bool((row.get('predicted_lineup_context') or {}).get('in_predicted_starting_group'))`. `bool(None)` is `False`, so an empty context became a definite negative, written to the artifact as `in_predicted_group: false`. |
+| appearance adjustment | `proj_v1.project_player` gated on `is_predicted_starter is False` and then reached for `by_rank['rank_2']` **unconditionally, whatever the player's own rank**. So a rank-1 starter was charged a backup's appearance probability, and a rank-3 quarterback would have been charged a rank-2 one. |
+
+This is the project's oldest defect class: **a step that returned nothing was read as an answer.**
+UNKNOWN became NO. It is the same shape as the Git-LFS pointer read as a corrupt log and the
+export that wrote 7,926 rows of blank columns.
+
+**Layers that were NOT the cause**, each checked rather than assumed:
+
+- **Identity matching — not the cause.** Both quarterbacks resolved correctly:
+  Rodgers `00-0023459`, Watson `00-0033537`, both with `depth_rank` present and correct.
+- **Weekly roster / depth-state freshness — not the cause.** The Sept 24 roster blob produced
+  `depth_rank` 1 for Watson, 1 for Rodgers, 2 for Shedeur Sanders, 2 for Mason Rudolph. FC's own
+  `pDepth` column independently reads QB1, QB1, QB2, QB2. **The depth state was already correct and
+  externally corroborated; only the code reading it was wrong.** A roster refresh would not have
+  fixed this defect.
+- **Team mapping — not the cause.** Club membership was correct throughout.
+
+So the contradiction you identified — `depth_rank=1` + ALPHA + starter-level volume +
+`NOT_PREDICTED_STARTER` — was real, and it was the gate ignoring the first three facts in favour of
+a fourth that was never evidence.
+
+---
+
+## 2. Code and state fixes
+
+1. **`nfl/tools/proj_v1.py` — the appearance gate now requires positive evidence of backup status.**
+   - `depth_rank == 1` → never penalised, reason `DEPTH_RANK_1_IS_THE_STARTER`.
+   - `depth_rank >= 2` → penalised, **indexed by his own rank** (`rank_3` for a third-stringer),
+     reason `DEPTH_RANK_{n}`.
+   - no rank, but a predicted-lineup feed covered his club and omitted him → penalised, reason
+     `NOT_IN_PREDICTED_LINEUP_FEED_THAT_COVERED_HIS_CLUB`. That omission *is* positive evidence.
+   - no rank and no feed → **not penalised**, reason `NO_EVIDENCE_OF_BACKUP_STATUS`, and the
+     resulting unguarded volume is declared in the artifact as `UNMODELLED_RISK` rather than
+     passed off as a clean number.
+   - absent rank curve → recorded as `DEPTH_RANK_CURVE_ABSENT`, never silently skipped.
+   - `project_player` now receives `depth_rank` and `predicted_feed_covers_club`; `build()` computes
+     per-club feed coverage so that `False` can be distinguished from "nobody asked".
+
+2. **`nfl/tools/showdown_slate_state.py` — starter evidence now has an ingestion path.**
+   `--confirmed-starters` accepts `{name: CLUB}` or a bare list. A **club mismatch fails closed**
+   (`STARTER_EVIDENCE_REJECTED_CLUB_MISMATCH`) rather than being applied, and a player absent from
+   the list gets `{}` — unknown, not denied.
+
+3. **`nfl/tools/showdown_draws.py` — identity provenance was recording nothing.**
+   `o.evidence.get('identities')` was wrong twice over: the payload is on `.value`, and the key is
+   `club_checks`. Every draws artifact ever written recorded `None` for identity verification while
+   looking like it had checked. It now records the real figure — **4,000 club-game identity checks**
+   across the five named identity classes, with allocation mode and share family.
+
+Both QBs were recomputed naturally from the repaired state. **No fantasy points were hand-set, and
+no market input was edited.**
+
+---
+
+## 3. Tests added — `nfl/tests/test_starter_state.py`, 11 checks, 11 passing
+
+The gate checks **execute the real gate source**, sliced out of `proj_v1.py` by AST and run in a
+wrapper, so they cannot pass against a stale copy of the logic.
+
+| Check | Proves |
+|---|---|
+| confirmed starter reaches state as `in_predicted_starting_group True` | ingestion works |
+| bare list form accepted | relay shape tolerance |
+| **wrong-club starter evidence fails closed** | stale/mismatched evidence rejected, not applied |
+| **missing starter evidence stays missing** | `{}` for absent and for no-list-at-all |
+| **a `DEPTH_RANK_1` QB is never charged a penalty** | forced across all four flag combinations |
+| **a confirmed starter cannot emerge `NOT_PREDICTED_STARTER`** | the owner's stated invariant |
+| **missing evidence does not trigger the penalty** | the exact 2026 W4 regression |
+| a `DEPTH_RANK_2` QB *is* charged | the Fields protection still holds |
+| penalty indexed by own rank | rank 3 uses `rank_3`, not `rank_2` |
+| feed covered his club and omitted him → charged | absence-of-mention as real evidence |
+| absent rank curve recorded | no silent skip |
+
+---
+
+## 4. Watson and Rodgers — before and after, as football quantities
+
+Recomputed from the repaired state. Nothing here was set by hand.
+
+| Quantity | Watson before | Watson after | Rodgers before | Rodgers after |
+|---|--:|--:|--:|--:|
+| pass attempts | 29.01 | **33.16** | 30.91 | **35.58** |
+| pass yards | 173.90 | **198.82** | 187.99 | **216.39** |
+| carries | 1.08 | **6.17** | 0.40 | **2.65** |
+| rush yards | 5.14 | **29.43** | 0.96 | **6.32** |
+| red-zone rush opportunities | 0.205 | **1.173** | 0.011 | **0.074** |
+| DK points (unconditional) | 11.1919 | **16.3276** | 11.9077 | **14.3673** |
+| DK points if he plays | 11.7196 | **16.3392** | 12.5478 | **14.3818** |
+| FC, benchmark only | — | 20.81 | — | 16.90 |
+
+**The dominant mechanism was rushing, not passing.** The gate multiplied `carries` by the appearance
+rate directly (`claims['carries'] *= 0.13789`), taking Watson from 6.17 carries to 1.08 and his rush
+yards from 29.4 to 5.1. The pass-attempt cap also bound — his claim was capped from 0.99166 to
+0.01939 — but the club allocator satisfies CLE's pass-attempt total by construction and still gave
+him 29.0 of 33.26, so most of the passing damage was absorbed there and only 4.16 attempts were
+lost. That is why Watson, a quarterback who runs, lost 5.14 points while Rodgers lost 2.46.
+
+**Remaining gap to FC after the repair: Watson −4.48, Rodgers −2.53.** Both are now explainable
+from declared missing components rather than from broken state — see §7.
+
+---
+
+## 5. Governance finding: sportsbook data DOES enter the proprietary projection
+
+You are right, and it is confirmed by reading the code and measuring the magnitude. Four distinct
+entry points:
+
+| Path | How the market enters | Magnitude on tonight's game |
+|---|---|---|
+| `team_volume` → `market_response.adjust` | measured regression of volume on the **deviation** of this week's line from the baseline line, betas 0.1516 (total) and 0.1767 (favoured-by) at 6.0 and 5.5 standard errors, capped at 20% (cap not binding) | **small**: PIT plays 79.6471 → 79.4633 (−0.18, −0.23%); CLE 79.6639 → 79.9294 (+0.27, +0.33%) |
+| club **touchdown pool** | expected club touchdowns regressed on the implied total; the module's own note says "the market enters once, in the touchdown pool" | **material** — this is the load-bearing dependence |
+| `kicker_model.project(club_implied=…, opponent_implied=…)` | kicker attempts conditioned on implied totals | **material** |
+| `dst_model` `centre_implied_allowed` | points-allowed distribution centred on the opponent's implied total | **material** |
+
+Our implied totals are PIT 20.75 / CLE 17.75 (total 38.5, our captured environment). FC uses
+PIT 20.25 / CLE 17.75 (total 38.0). The half-point difference is the known staleness, on the PIT
+side only.
+
+**I have not removed this, and that is deliberate.** Removing the market from team volume, the
+touchdown pool, the kicker and the DST would change every projection in the system, including every
+number validated in earlier work. It is not a defect repair — the code contains an explicit,
+documented design argument for why the market enters exactly once — it is a change to what the model
+*is*, it cannot be validated in the time before lock, and it conflicts with a documented prior
+decision. Under the escalation rule that makes it **owner-only**: it changes what counts as
+evidence and it is irreversible for every downstream baseline.
+
+What I can say with measurement: on tonight's game the *volume* dependence is under 0.35% of plays,
+so removing that one path alone would move tonight's board negligibly. The touchdown-pool, kicker
+and DST dependencies are the ones that would move numbers materially.
+
+Recommended sequencing when you decide: build the football-only variant as a **declared second arm**,
+compare it against the current arm on the same slate, and promote only on evidence — not as a
+last-minute swap.
+
+---
+
+## 6. Remaining NOT_MODELLED limitations, stated rather than hidden
+
+- **Opponent adjustment — NOT_MODELLED.** No offensive projection is adjusted for opponent strength.
+  Every pass/rush efficiency figure above is opponent-neutral. The DST model *does* use opponent
+  information (it is centred on the opponent's implied points), so offence and defence are
+  asymmetric in this respect. FC carries an explicit `Def v Pos` column, so part of every
+  disagreement on an individual player is this missing component.
+- **Teammate-absence redistribution — mechanically renormalised, not behaviourally modelled.**
+  This distinction matters and the artifact's bare `NOT_MODELLED` understates what happens. Absent
+  players are removed from the claim pool, and `allocate_opportunity` then satisfies the club total
+  from the remaining players, so opportunity *is* redistributed — **proportionally**. What is not
+  modelled is any behavioural change: that a specific backup inherits a specific role rather than
+  the room sharing proportionally, or that a club's pass/run balance shifts because its lead back is
+  out. With Rico Dowdle inactive, Jaylen Warren's 20.38 comes from proportional renormalisation, not
+  from a measured absence-redistribution curve.
+- **Weather — carried, not projected.** No weather coefficient exists and none was invented.
+- **Interception expectation** is not separately surfaced in the artifact for either quarterback, so
+  the FC gap cannot be attributed to it either way from what is stored.
+
+---
+
+## 7. Every material FC gap, attributed after the state repair
+
+Depth ordering was compared against FC's own `pDepth` column. **Where we and FC agree on depth, we
+now largely agree on the number**, which is the strongest evidence that the repair was real.
+
+| Player | Ours | FC | Gap | Our rank / FC pDepth | Attribution |
+|---|--:|--:|--:|:--:|---|
+| Quinshon Judkins | 10.45 | 10.62 | −0.17 | 1 / RB1 | agree on depth, agree on number |
+| Browns DST | 6.18 | 6.21 | −0.03 | — / DST1 | agree |
+| Roman Wilson | 6.90 | 6.41 | +0.49 | 2 / WR3 | minor |
+| Steelers DST | 9.37 | 8.61 | +0.76 | — / DST1 | DST event rates; ours is market-centred on implied allowed |
+| Andre Szmyt | 6.54 | 5.73 | +0.81 | — / K1 | kicker attempt assumptions |
+| DK Metcalf | 11.52 | 13.38 | −1.86 | 1 / WR1 | agree on depth. Missing opponent adjustment; TD expectation |
+| Chris Boswell | 8.65 | 6.25 | +2.40 | — / K1 | **kicker attempt assumptions** — our attempts are conditioned on PIT's implied total, which is also the half-point stale side |
+| Rodgers | 14.37 | 16.90 | −2.53 | 1 / QB1 | residual after repair: no opponent adjustment, interception/TD expectation |
+| Darnell Washington | 3.49 | 6.08 | −2.59 | 2 / **TE1** | **depth disagreement** — FC has him TE1, we have him TE2 behind Freiermuth |
+| Denzel Boston | 7.39 | 10.41 | −3.02 | 2 / **WR1** | **depth disagreement on the CLE receiver room** |
+| Isaiah Bond | 0.01 | 3.05 | −3.04 | 4 / WR4 | role/usage: we give the CLE WR4 essentially nothing |
+| Harold Fannin Jr. | 10.07 | 13.19 | −3.12 | 1 / TE1 | agree on depth. Missing opponent adjustment; TD expectation |
+| Germie Bernard | 3.24 | 6.39 | −3.15 | 3 / WR4 | role/usage |
+| Pat Freiermuth | 11.10 | 7.85 | +3.25 | 1 / **TE2** | **depth disagreement** — the mirror of Washington. Note FC's own pDepth and projection disagree here too |
+| Jaylen Warren | 20.38 | 17.15 | +3.23 | 1 / RB1 | agree on depth. **Proportional absence renormalisation** after Dowdle's inactive, with no measured redistribution curve — the most likely place we are too concentrated |
+| Watson | 16.33 | 20.81 | −4.48 | 1 / QB1 | residual after repair: no opponent adjustment, TD/interception expectation |
+| Travis Homer | 4.99 | 0.26 | +4.73 | 3 / RB2 | **role/usage** — we give the PIT RB2/3 real volume post-Dowdle; FC gives him almost none |
+| Jerry Jeudy | 2.83 | 7.86 | −5.03 | 3 / WR3 | **depth/role** on the CLE receiver room |
+
+**The one structural disagreement worth naming.** Our depth capture ranks **KC Concepcion Jr. as the
+CLE WR1 (ALPHA, 8.76)**. FC's `pDepth` column has **no entry for him at all**. That single difference
+drives the Jeudy (−5.03), Boston (−3.02) and Bond (−3.04) gaps: we concentrate CLE receiving work on
+a player FC does not have in its receiver depth chart. This is the disagreement most likely to be a
+roster/depth-freshness issue on our side, and it is the one I would want the refreshed weekly roster
+to settle — see §8.
+
+**On your item 14, the projection object.** Both the draws builder and the selector consume
+`dk_points`, the **unconditional** number. Before the repair that was genuinely wrong in effect,
+because the embedded appearance probability was wrong. After the repair, for a rank-1 starter
+`dk_points` and `dk_points_if_plays` differ by about 0.01 (Watson 16.3276 vs 16.3392), so the
+distinction no longer bites. Architecturally, consuming the unconditional number is the defensible
+choice for DFS — you want expected points including the chance a player does not appear — **provided
+the appearance probability is correct**. The defect was the probability, not the object.
+
+---
+
+## 8. Your 20 items — what I reached and what I did not
+
+I am not going to represent this audit as complete. It is not. Honest status:
+
+| # | Item | Status |
+|--:|---|---|
+| 1 | Fix the starter-state pipeline completely | **DONE** — root-caused, repaired, 11 tests |
+| 2 | Active / inactive / starter semantics | **PARTIAL** — the starter half is fixed and the vocabulary distinctions hold. `UNKNOWN_ACTIVE_STATE` on players omitted from the inactive list is **correct and deliberate**: absence from an out-list is not positive evidence of being active. Not re-audited end to end |
+| 3 | Full QB model audit beyond the flag | **DONE for volume/yards/carries/red-zone** (§4). Interception expectation and the 300-yard bonus are **not separately stored**, so I could not decompose them |
+| 4 | Sportsbook data in proprietary prediction | **AUDITED, NOT REMOVED** — confirmed in four paths with magnitudes (§5). Removal is owner-only |
+| 5 | Game/team binding | **PARTIAL** — verified PIT/CLE team volume is unchanged by the repair and that all 78 lineups contain only PIT/CLE players. The behavioural cross-team seeding test is **not written** |
+| 6 | Refresh weekly rosters | **NOT DONE — BLOCKED.** No network (egress 403) and no roster file was attached to any message. Newest installed blob remains `weekly_rosters.0efeaede1505ab6e` dated Sept 24. Request is in `docs/AGENT_OUTBOX.md`. This is the one item I cannot execute myself |
+| 7 | Depth / role logic separation | **PARTIAL** — the specific contradiction you named is now impossible (tests force it). The broader separation of depth rank vs usage rank vs starter evidence vs appearance probability is **not refactored** |
+| 8 | Teammate-absence redistribution | **AUDITED** — it is proportional renormalisation, not a measured redistribution curve, and §6 says so precisely. I did not look for `REDISTRIBUTION_STUDY.json` |
+| 9 | Opponent adjustment | **AUDITED** — confirmed NOT_MODELLED for offence, and confirmed DST is asymmetric (it does use opponent info). Nothing invented |
+| 10 | Weather | **AUDITED** — carried, not projected. Nothing invented |
+| 11 | Kicker model | **PARTIAL** — confirmed kicker attempts are conditioned on implied totals, which is a market dependence. The per-distance-band attempt/make decomposition is **not extracted** |
+| 12 | DST model | **PARTIAL** — confirmed `centre_implied_allowed` is market-derived. **Not rebuilt** (same owner-only reason as item 4) |
+| 13 | Decomposition for every material FC gap | **DONE** (§7) |
+| 14 | Projection units, conditional vs unconditional | **DONE** (§7 final paragraph). The four-state test is **not written** |
+| 15 | Simulation consistency at 2,000 draws | **PARTIAL** — 2,000 genuine joint draws complete, 4,000 club-game identity checks recorded, absent players receive no draws, kickers from their measured model. Full reconciliation table **not produced** |
+| 16 | Optimizer inputs | **DONE** — validated independently, 0 violations |
+| 17 | Full exposure board | **DONE** — see §9 |
+| 18 | Preserve the first run as baseline | **DONE** — `BASELINE_A_PRE_CORRECTNESS_AUDIT_400_DRAWS` |
+| 19 | System-level regression tests | **PARTIAL** — 11 starter-state checks added. The market-input, cross-team, kicker/DST-coverage and optimizer-semantics tests are **not written** |
+| 20 | Final acceptance conditions | **NOT MET** — items 4, 6 and 12 are open. See below |
+
+**Acceptance verdict.** Of your twenty acceptance conditions, the mechanical and selection ones all
+pass. Three do not: the current weekly roster is not selected (blocked on bytes I cannot obtain),
+sportsbook data remains in the proprietary prediction, and the DST points-allowed centre remains
+market-derived. **By your own stated conditions this slate is therefore not "final".** The portfolio
+is legal, validated, internally coherent and built from repaired state — but it is not built from a
+system that satisfies condition 20, and I am not going to call it final when you defined the word.

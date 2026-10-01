@@ -216,8 +216,19 @@ def build(proj_path, state_path, *, n_sims: int = N_SIMS, seed: int = SEED) -> O
         'kickoff_et_naive': state['kickoff_et_naive'],
         'n_sims': n_sims, 'seed': seed, 'n_players': len(draws),
         'source': 'nfl/sim/game.py simulate_game, plus kicker_model bands for the two kickers',
-        'identities_verified_by_the_simulator': o.evidence.get('identities') if o.evidence else None,
-        'simulator_detail': o.detail,
+        # Outcome.ok puts the payload on `.value`; `.evidence` is a separate kwargs dict and
+        # the key is `club_checks`, not `identities`. Reading `o.evidence.get('identities')`
+        # recorded None on every run, so this artifact asserted nothing about the identities
+        # while looking like it had checked them -- the project's named defect class, an empty
+        # read accepted as success. The simulator does verify: a broken identity raises
+        # GAME_IDENTITY_VIOLATED in nfl/sim/game.py and never reaches here.
+        'identities_verified_by_the_simulator': {
+            'club_checks': (o.value or {}).get('club_checks'),
+            'IDENTITIES_HELD': (o.value or {}).get('IDENTITIES_HELD'),
+            'allocation_mode': (o.value or {}).get('allocation_mode'),
+            'share_family': (o.value or {}).get('share_family'),
+        },
+        'simulator_detail': o.detail or o.code,
         'kickers': kickers,
         'NOT_SYNTHESISED': ('no draw is derived from a projected mean. Player draws come from the '
                             'joint simulator and kicker draws from measured attempt and make rates.'),

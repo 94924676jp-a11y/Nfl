@@ -516,7 +516,8 @@ def _m(h, key):
 
 
 def project_player(panel, gsis, pos, band, club, tv, rates, cur_shares, cur_n, prior,
-                   is_predicted_starter=None, depth=None):
+                   is_predicted_starter=None, depth=None, depth_rank=None,
+                   predicted_feed_covers_club=None):
     """One player's share CLAIMS and efficiencies. Absolute volume is allocated per club after.
 
     A claim is not a projection. The prior says what fraction of a club's work this player took
@@ -563,16 +564,45 @@ def project_player(panel, gsis, pos, band, club, tv, rates, cur_shares, cur_n, p
     # unconditional share for a rank-2 quarterback is about two per cent against ninety-eight for
     # the starter. Without this, Justin Fields projected 17.71 DK points behind Patrick Mahomes at
     # 20.62, and the pair were allocated more pass attempts than Kansas City throws.
-    if pos == 'QB' and is_predicted_starter is False and depth:
-        qb = ((depth.get('QB') or {}).get('by_rank') or {}).get('rank_2') or {}
-        u = qb.get('unconditional_expected_share')
-        ar = qb.get('appearance_rate') or 0.0
-        if u is not None:
+    # THE GATE REQUIRES POSITIVE EVIDENCE OF STANDING BEHIND SOMEONE, and it did not used to.
+    # It read `is_predicted_starter is False`, where that flag is
+    # bool(role_state['in_predicted_group']) and that in turn is
+    # bool(predicted_lineup_context['in_predicted_starting_group']) -- a RotoWire predicted-lineup
+    # relay. When no predicted-lineup feed is wired for a slate the key is absent, bool(None) is
+    # False, and the ABSENCE OF A FEED became positive evidence of backup status. On the
+    # 2026 week 4 PIT@CLE showdown every one of the eight quarterbacks was charged the rank-2
+    # appearance rate of 0.13789 against a rank-2 unconditional share of 0.01939 -- including
+    # Aaron Rodgers and Deshaun Watson, both at depth_rank 1, both ALPHA, both claiming over
+    # 96 per cent of their club's pass attempts from their own measured usage. UNKNOWN IS NOT NO,
+    # and a missing input must not be read as a confident negative.
+    #
+    # It also always reached for `rank_2` whatever the player's own rank, so a third-string
+    # quarterback was charged a second-stringer's appearance rate. The penalty is now indexed by
+    # HIS OWN rank.
+    if pos == 'QB' and depth:
+        by_rank = ((depth.get('QB') or {}).get('by_rank') or {})
+        rank = depth_rank if isinstance(depth_rank, int) else None
+
+        def _apply(key, reason):
+            # rzc_share is rebound below, so it must be declared nonlocal or Python makes it
+            # local to this helper and the read raises UnboundLocalError.
+            nonlocal rzc_share
+            qb = by_rank.get(key) or {}
+            u = qb.get('unconditional_expected_share')
+            ar = qb.get('appearance_rate') or 0.0
+            if u is None:
+                out['appearance_adjustment'] = {
+                    'applied': False, 'reason': 'DEPTH_RANK_CURVE_ABSENT',
+                    'rank_key_sought': key, 'ranks_available': sorted(by_rank),
+                    'WHY': ('the measured appearance curve has no row for this rank, so there is '
+                            'nothing to apply. Recorded rather than silently skipped.')}
+                return
             out['appearance_adjustment'] = {
-                'applied': True, 'reason': 'NOT_PREDICTED_STARTER',
+                'applied': True, 'reason': reason,
+                'depth_rank': rank, 'rank_curve_used': key,
                 'raw_pass_attempt_claim': (round(claims['pass_attempts'], 5)
                                            if claims['pass_attempts'] is not None else None),
-                'measured_rank2_unconditional_share': u,
+                'measured_unconditional_share': u,
                 'appearance_rate': qb.get('appearance_rate'),
                 'conditional_share_if_he_plays': qb.get('conditional_mean_share'),
                 'DECOMPOSITION': 'expected = P(appears) x E[share | appears]. His role band and '
@@ -584,6 +614,33 @@ def project_player(panel, gsis, pos, band, club, tv, rates, cur_shares, cur_n, p
                 claims['carries'] *= ar
             if rzc_share is not None:
                 rzc_share *= ar
+
+        if rank == 1:
+            out['appearance_adjustment'] = {
+                'applied': False, 'reason': 'DEPTH_RANK_1_IS_THE_STARTER',
+                'depth_rank': rank,
+                'measured_rank1_appearance_rate': (by_rank.get('rank_1') or {})
+                                                  .get('appearance_rate'),
+                'WHY': ('the depth evidence puts him first in his own quarterback room. That is '
+                        'positive evidence that he takes the snaps, so no appearance discount '
+                        'applies. A missing predicted-lineup feed is not evidence against it.')}
+        elif rank is not None and rank >= 2:
+            _apply(f'rank_{rank}' if f'rank_{rank}' in by_rank else 'rank_2',
+                   f'DEPTH_RANK_{rank}')
+        elif is_predicted_starter is False and predicted_feed_covers_club:
+            # The feed ran for this club and did not name him. That IS positive evidence.
+            _apply('rank_2', 'NOT_IN_PREDICTED_LINEUP_FEED_THAT_COVERED_HIS_CLUB')
+        else:
+            out['appearance_adjustment'] = {
+                'applied': False, 'reason': 'NO_EVIDENCE_OF_BACKUP_STATUS',
+                'depth_rank': rank,
+                'is_predicted_starter': is_predicted_starter,
+                'predicted_feed_covers_club': predicted_feed_covers_club,
+                'UNMODELLED_RISK': ('no depth rank and no predicted-lineup feed for his club, so '
+                                    'nothing here establishes whether he starts. The discount is '
+                                    'NOT applied, because absence of evidence is not evidence of '
+                                    'absence -- but his volume is correspondingly unguarded and '
+                                    'this row should be read as low confidence.')}
 
     # Red-zone CONCENTRATION, held as a rate against the player's own volume rather than as a
     # share of the club's red-zone plays. Expressed this way it survives reallocation: whatever
@@ -985,6 +1042,13 @@ def build():
     ident, unresolved, suffixed = resolve_slate_identities(post, name_ix)
     bonus = bonus_rates(panel, pos_of)
     depth = depth_shares(panel, pos_of)
+    #: Whether the predicted-lineup relay actually covered each club. `in_predicted_group` False
+    #: means "the feed ran and did not name him" only where the feed ran at all; where it did not,
+    #: False carries no information and must not be read as evidence of backup status.
+    pred_feed_clubs = collections.Counter()
+    for _row in (post.get('players') or {}).values():
+        if (_row.get('predicted_lineup_context') or {}).get('in_predicted_starting_group'):
+            pred_feed_clubs[_row.get('team')] += 1
     ip = int_rate(panel, pos_of)['int_per_attempt']
     tv_all, implied, league_mean = team_volume(panel, post['environment'].get('games') or {})
 
@@ -1127,7 +1191,8 @@ def build():
         cur, cur_n = (current_season_shares(panel, gsis, club, pos) if gsis else ({}, 0))
         pr = project_player(panel, gsis, pos, band, club, tv, prates, cur, cur_n, prior,
                             is_predicted_starter=bool(rs.get('in_predicted_group')),
-                            depth=depth)
+                            depth=depth, depth_rank=rs.get('depth_rank'),
+                            predicted_feed_covers_club=bool(pred_feed_clubs.get(club)))
         base.update(pr)
         base['projection_state'] = ('PROJECTED' if gsis else 'PROJECTED_COLD_START')
         base['gsis_id'] = gsis
