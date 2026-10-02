@@ -41,9 +41,16 @@ def _upcoming_week(season=2026):
     did not exist. A drift test that pins the week it checks cannot detect
     the week going stale, which is the drift that matters most.
 
-    "Upcoming" is the earliest week holding a game with no recorded result.
-    That is a property of the schedule snapshot, so it needs no wall clock
-    and two runs of this test on the same snapshot always agree.
+    "Upcoming" is the earliest week holding a game with no recorded result
+    AND whose final kickoff has not yet passed on the wall clock. The first
+    clause alone was the rule until 2026-10-02, when the latest schedule
+    snapshot (results through week 2 only, because no capture has landed
+    since mid-September) made this derive week 3 on a Friday eight days
+    after week 3 had been played -- the snapshot being stale is itself the
+    silent-stale failure, and a derivation that cannot see the calendar
+    repeats it. The wall-clock floor is the smallest fix: a week whose last
+    game is in the past cannot be the upcoming one whatever the snapshot
+    says. Two runs on the same snapshot on the same day still agree.
     """
     import csv, glob, gzip, io, json, collections
     rows = [json.loads(l) for l in
@@ -56,16 +63,22 @@ def _upcoming_week(season=2026):
     blob = _REPO / sc[-1]['value']['blob']
     raw = blob.read_bytes()
     text = (gzip.decompress(raw) if str(blob).endswith('.gz') else raw)
+    import datetime as _dt
+    today = _dt.datetime.now(_dt.timezone.utc).date().isoformat()
     unplayed = collections.defaultdict(int)
+    last_gameday = {}
     for r in csv.DictReader(io.StringIO(text.decode(errors='replace'))):
         if str(r.get('season')) != str(season):
             continue
+        try:
+            wk = int(r['week'])
+        except (KeyError, ValueError):
+            continue
+        last_gameday[wk] = max(last_gameday.get(wk, ''), str(r.get('gameday') or ''))
         if not str(r.get('result') or '').strip():
-            try:
-                unplayed[int(r['week'])] += 1
-            except (KeyError, ValueError):
-                pass
-    return season, (min(unplayed) if unplayed else None)
+            unplayed[wk] += 1
+    live = [w for w in unplayed if last_gameday.get(w, '') >= today]
+    return season, (min(live) if live else None)
 
 
 SEASON, WEEK = _upcoming_week()

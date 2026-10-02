@@ -52,6 +52,19 @@ on:
 permissions:
   contents: write
 
+# ONE NAME FOR THE CAPTURE BRANCH, read by the checkout AND the push. Until
+# 2026-10-02 this workflow checked out the default branch and pushed HEAD:main:
+# the availability manifest, first-seen record and raw observations landed on
+# main while every other capture (nfl-capture.yml, nfl-t90.yml) writes to
+# capture-prod. Two capture trees on two branches is the D24 shape -- a
+# surface that is not where the tests look -- and it also meant the module
+# versions this job ran were whatever main carried, not the capture surface.
+# D24-R2. The DEFINITION still has to live on the default branch, because
+# GitHub reads `schedule:` workflows from there only; the SURFACE it runs and
+# writes is capture-prod.
+env:
+  CAPTURE_BRANCH: capture-prod
+
 concurrency:
   # Append-only: a missed run costs one observation, two racing runners cost a
   # push conflict and a confusing history.
@@ -63,6 +76,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.CAPTURE_BRANCH }}
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5
         with:
@@ -126,8 +142,8 @@ jobs:
             -m "NFL availability watch ${WID:-unknown}" \
             -m "Periodic probe by GitHub Actions run ${GITHUB_RUN_ID}." \
             -m "Discharges no G0A item, no T-90 target and no capture kind. Append-only."
-          git pull --rebase --autostash origin main
-          git push origin HEAD:main
+          git pull --rebase --autostash origin "$CAPTURE_BRANCH"
+          git push origin HEAD:"$CAPTURE_BRANCH"
 
       - name: Report first-seen state
         if: always()

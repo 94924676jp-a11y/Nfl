@@ -1,8 +1,8 @@
 name: NFL status anchored capture
 
 # GENERATED FILE -- do not hand-edit.
-#   nfl/tools/gen_status_schedule.py --season 2026 --week 1 --write
-#   schedule identity: SCHEDNG-906facecf4b1f272
+#   nfl/tools/gen_status_schedule.py --season 2026 --week 4 --write
+#   schedule identity: SCHEDNG-cef9f30a540faad6
 #
 # NON-G0A. This workflow serves ('practice', 'final_status') only. It CANNOT discharge the
 # outstanding G0A `inactives` obligation, and that is enforced in
@@ -14,7 +14,7 @@ name: NFL status anchored capture
 # The G0A path is .github/workflows/nfl-t90.yml, schedule identity
 # SCHED-2a2924d4966fbd3d, and nothing here touches it.
 #
-# 5 distinct windows, 47 targets,
+# 5 distinct windows, 48 targets,
 # 10 cron entries at an hourly step. These windows are 20 hours wide;
 # the five-minute step used for the 80-minute inactives window would be 240
 # entries each and would buy nothing.
@@ -26,25 +26,28 @@ name: NFL status anchored capture
 
 on:
   schedule:
-    # 2026-09-07 20:00Z -> 09-08 16:00Z  (2 targets, practice)
-    - cron: '0 20-23 7 9 *'
-    - cron: '0 0-16 8 9 *'
-    # 2026-09-08 20:00Z -> 09-09 16:00Z  (2 targets, final_status/practice)
-    - cron: '0 20-23 8 9 *'
-    - cron: '0 0-16 9 9 *'
-    # 2026-09-09 20:00Z -> 09-10 16:00Z  (15 targets, final_status/practice)
-    - cron: '0 20-23 9 9 *'
-    - cron: '0 0-16 10 9 *'
-    # 2026-09-10 20:00Z -> 09-11 16:00Z  (14 targets, practice)
-    - cron: '0 20-23 10 9 *'
-    - cron: '0 0-16 11 9 *'
-    # 2026-09-11 20:00Z -> 09-12 16:00Z  (14 targets, final_status)
-    - cron: '0 20-23 11 9 *'
-    - cron: '0 0-16 12 9 *'
+    # 2026-09-28 20:00Z -> 09-29 16:00Z  (1 target, practice)
+    - cron: '0 20-23 28 9 *'
+    - cron: '0 0-16 29 9 *'
+    # 2026-09-29 20:00Z -> 09-30 16:00Z  (1 target, practice)
+    - cron: '0 20-23 29 9 *'
+    - cron: '0 0-16 30 9 *'
+    # 2026-09-30 20:00Z -> 10-01 16:00Z  (16 targets, final_status/practice)
+    - cron: '0 20-23 30 9 *'
+    - cron: '0 0-16 1 10 *'
+    # 2026-10-01 20:00Z -> 10-02 16:00Z  (15 targets, practice)
+    - cron: '0 20-23 1 10 *'
+    - cron: '0 0-16 2 10 *'
+    # 2026-10-02 20:00Z -> 10-03 16:00Z  (15 targets, final_status)
+    - cron: '0 20-23 2 10 *'
+    - cron: '0 0-16 3 10 *'
   workflow_dispatch:
 
 permissions:
   contents: write
+
+env:
+  CAPTURE_BRANCH: capture-prod
 
 concurrency:
   group: nfl-vintage-capture      # shared with the baseline: never race it
@@ -54,7 +57,14 @@ jobs:
   capture:
     runs-on: ubuntu-latest
     steps:
+      # THE SURFACE IS capture-prod, THE DEFINITION LIVES ON THE DEFAULT BRANCH. Same split
+      # as nfl-capture.yml: GitHub reads a `schedule:` definition from the default branch
+      # only, and the code that runs and the bytes it writes belong to capture-prod. Until
+      # 2026-10-02 this job checked out the default branch and pushed HEAD:main (D24-R2).
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.CAPTURE_BRANCH }}
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -97,8 +107,8 @@ jobs:
             -m "NFL status anchored capture ${CID:-unknown}" \
             -m "GitHub Actions run ${GITHUB_RUN_ID}, NON-G0A anchored workflow." \
             -m "Append-only: adds manifest rows and content-addressed blobs."
-          git pull --rebase --autostash origin main
-          git push origin HEAD:main
+          git pull --rebase --autostash origin "$CAPTURE_BRANCH"
+          git push origin HEAD:"$CAPTURE_BRANCH"
 
       # THIS WORKFLOW NEVER HAD THE W3 GUARD AT ALL. It was added to
       # nfl-capture.yml and nfl-t90.yml on 2026-09-10 and this file was not

@@ -190,6 +190,9 @@ on:
 permissions:
   contents: write
 
+env:
+  CAPTURE_BRANCH: capture-prod
+
 concurrency:
   group: nfl-vintage-capture      # shared with the baseline: never race it
   cancel-in-progress: false
@@ -198,7 +201,14 @@ jobs:
   capture:
     runs-on: ubuntu-latest
     steps:
+      # THE SURFACE IS capture-prod, THE DEFINITION LIVES ON THE DEFAULT BRANCH. Same split
+      # as nfl-capture.yml: GitHub reads a `schedule:` definition from the default branch
+      # only, and the code that runs and the bytes it writes belong to capture-prod. Until
+      # 2026-10-02 this job checked out the default branch and pushed HEAD:main (D24-R2).
       - uses: actions/checkout@v4
+        with:
+          ref: ${{{{ env.CAPTURE_BRANCH }}}}
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -241,8 +251,8 @@ jobs:
             -m "NFL status anchored capture ${{CID:-unknown}}" \\
             -m "GitHub Actions run ${{GITHUB_RUN_ID}}, NON-G0A anchored workflow." \\
             -m "Append-only: adds manifest rows and content-addressed blobs."
-          git pull --rebase --autostash origin main
-          git push origin HEAD:main
+          git pull --rebase --autostash origin "$CAPTURE_BRANCH"
+          git push origin HEAD:"$CAPTURE_BRANCH"
 
       # THIS WORKFLOW NEVER HAD THE W3 GUARD AT ALL. It was added to
       # nfl-capture.yml and nfl-t90.yml on 2026-09-10 and this file was not

@@ -1,8 +1,8 @@
 name: NFL T-90 anchored capture
 
 # GENERATED FILE -- do not hand-edit.
-#   nfl/tools/gen_t90_schedule.py --season 2026 --week 3 --write
-#   schedule identity: SCHED-9fda553ccbc89b5e
+#   nfl/tools/gen_t90_schedule.py --season 2026 --week 4 --write
+#   schedule identity: SCHED-d07af566f4c375dd
 #
 # That identity is a digest over the (game, window) pairs themselves, not over
 # the snapshot file they were read from. A re-captured schedule with unchanged
@@ -13,7 +13,7 @@ name: NFL T-90 anchored capture
 # capture window there. None is a round-number cadence. That is what makes this
 # event-anchored and the `*/30` baseline in nfl-capture.yml not.
 #
-# 6 distinct windows, 16 games, 16 cron entries, 5-minute step inside each window.
+# 7 distinct windows, 16 games, 18 cron entries, 5-minute step inside each window.
 #
 # WHAT THIS DOES NOT CLAIM. GitHub may delay or drop a scheduled run; no cron
 # arrangement prevents that. This raises the chances inside an 80-minute window
@@ -25,28 +25,31 @@ name: NFL T-90 anchored capture
 
 on:
   schedule:
-    # 2026-09-24 22:45Z -> 00:05Z  (1 game: 2026_03_ATL_GB)
-    - cron: '45,50,55 22 24 9 *'
-    - cron: '*/5 23 24 9 *'
-    - cron: '0,5 0 25 9 *'
-    # 2026-09-27 15:30Z -> 16:50Z  (9 games: 2026_03_CAR_CLE, 2026_03_CIN_PIT, 2026_03_HOU_IND, 2026_03_KC_MIA, 2026_03_LAC_BUF, 2026_03_NE_JAX, 2026_03_NYJ_DET, 2026_03_SEA_WAS, 2026_03_TEN_NYG)
-    - cron: '30,35,40,45,50,55 15 27 9 *'
-    - cron: '0,5,10,15,20,25,30,35,40,45,50 16 27 9 *'
-    # 2026-09-27 18:35Z -> 19:55Z  (2 games: 2026_03_ARI_SF, 2026_03_MIN_TB)
-    - cron: '35,40,45,50,55 18 27 9 *'
-    - cron: '*/5 19 27 9 *'
-    # 2026-09-27 18:55Z -> 20:15Z  (2 games: 2026_03_BAL_DAL, 2026_03_LV_NO)
-    - cron: '55 18 27 9 *'
-    - cron: '*/5 19 27 9 *'
-    - cron: '0,5,10,15 20 27 9 *'
-    # 2026-09-27 22:50Z -> 00:10Z  (1 game: 2026_03_LA_DEN)
-    - cron: '50,55 22 27 9 *'
-    - cron: '*/5 23 27 9 *'
-    - cron: '0,5,10 0 28 9 *'
-    # 2026-09-28 22:45Z -> 00:05Z  (1 game: 2026_03_PHI_CHI)
-    - cron: '45,50,55 22 28 9 *'
-    - cron: '*/5 23 28 9 *'
-    - cron: '0,5 0 29 9 *'
+    # 2026-10-01 22:45Z -> 00:05Z  (1 game: 2026_04_PIT_CLE)
+    - cron: '45,50,55 22 1 10 *'
+    - cron: '*/5 23 1 10 *'
+    - cron: '0,5 0 2 10 *'
+    # 2026-10-04 12:00Z -> 13:20Z  (1 game: 2026_04_IND_WAS)
+    - cron: '*/5 12 4 10 *'
+    - cron: '0,5,10,15,20 13 4 10 *'
+    # 2026-10-04 15:30Z -> 16:50Z  (8 games: 2026_04_ARI_NYG, 2026_04_DAL_HOU, 2026_04_GB_TB, 2026_04_JAX_CIN, 2026_04_LA_PHI, 2026_04_NE_BUF, 2026_04_NYJ_CHI, 2026_04_TEN_BAL)
+    - cron: '30,35,40,45,50,55 15 4 10 *'
+    - cron: '0,5,10,15,20,25,30,35,40,45,50 16 4 10 *'
+    # 2026-10-04 18:35Z -> 19:55Z  (1 game: 2026_04_MIA_MIN)
+    - cron: '35,40,45,50,55 18 4 10 *'
+    - cron: '*/5 19 4 10 *'
+    # 2026-10-04 18:55Z -> 20:15Z  (3 games: 2026_04_DEN_SF, 2026_04_KC_LV, 2026_04_LAC_SEA)
+    - cron: '55 18 4 10 *'
+    - cron: '*/5 19 4 10 *'
+    - cron: '0,5,10,15 20 4 10 *'
+    # 2026-10-04 22:50Z -> 00:10Z  (1 game: 2026_04_DET_CAR)
+    - cron: '50,55 22 4 10 *'
+    - cron: '*/5 23 4 10 *'
+    - cron: '0,5,10 0 5 10 *'
+    # 2026-10-05 22:45Z -> 00:05Z  (1 game: 2026_04_ATL_NO)
+    - cron: '45,50,55 22 5 10 *'
+    - cron: '*/5 23 5 10 *'
+    - cron: '0,5 0 6 10 *'
   workflow_dispatch:
 
 permissions:
