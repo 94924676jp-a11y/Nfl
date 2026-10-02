@@ -101,7 +101,11 @@ def _shares(rows, club):
         out.append({
             'id': S.player_key(nm, club), 'position': pos,
             'target_share': share(r.get('targets'), 'targets') if pos in ('WR', 'TE', 'RB') else 0.0,
-            'carry_share': share(r.get('carries'), 'carries') if pos == 'RB' else 0.0,
+            # EVERY skill position carries what the projection allocated it. This was gated to RB,
+            # so a quarterback's (and a receiver's gadget) carries never reached the joint worlds and
+            # the club's rush attempts were reallocated to backs: Watson drew 0.0 carries against a
+            # 6.17 projection, Judkins 13.9 DK against 10.4. tot['carries'] already sums all four.
+            'carry_share': share(r.get('carries'), 'carries') if pos in ('QB', 'RB', 'WR', 'TE') else 0.0,
             'pass_att_share': share(r.get('pass_attempts'), 'pass_attempts') if pos == 'QB' else 0.0,
             'pass_td_share': share(td.get('rec_td'), 'rec_td') if pos in ('WR', 'TE', 'RB') else 0.0,
             'rush_td_share': share(td.get('rush_td'), 'rush_td') if pos in ('RB', 'QB') else 0.0,
