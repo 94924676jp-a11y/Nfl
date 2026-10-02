@@ -56,7 +56,7 @@ for _q in (str(_REPO), str(_REPO / 'nfl' / 'research' / 'p4b')):
     if _q not in sys.path:
         sys.path.insert(0, _q)
 
-from sportsplatform.governance.outcome import Outcome, State            # noqa: E402
+from sportsplatform.governance.outcome import Cause, Outcome, State  # noqa: E402
 from nfl.production.nonqb import frozen_priors as FP                    # noqa: E402
 from nfl.production.nonqb import layers as PL                           # noqa: E402
 from nfl.prospective.q9shadow import candidate as CAND                  # noqa: E402
@@ -94,6 +94,75 @@ ARM_LAYERS = {
 REQUIRED_LAYERS = CP.LAYER_NAMES
 CONTRACT_COMPLETE = 'COMPLETE'
 CONTRACT_PARTIAL = 'PARTIAL_PLAYER_COVERAGE'
+
+
+# ------------------------------------------------- shared layers FROM A PRODUCTION SEAL
+#
+# THE HARD-CODED GAP THIS CLOSES. The five shared layers were fixed as
+# NOT_MODELED_IN_PAIRED_RESEARCH_SLICE with no way to take them from the production run that owns
+# them, so the paired artifact read PARTIAL forever and COMPLETE_ARTIFACT_LAYERS_ABSENT could never
+# clear. A seal is credited for a shared layer only when BOTH hold: its draw manifest carries the
+# layer's matrices, AND its own eligibility verdict does not list the producing production layer
+# under ABSENT. The second condition is what stops a seal whose non-QB chain never ran to credit
+# (DET_BUF R9: "PRODUCED:qb_layer | ABSENT: appearance, participation, targets_carries, ...") from
+# being read as complete because a matrix happens to exist on disk.
+SHARED_LAYER_REQUIREMENTS = {
+    # completeness layer : (manifest layer, metrics that must be present, production layer whose
+    #                       ABSENT verdict refuses credit)
+    'team_volume':       ('team_volume', ('team_off_snaps', 'team_dropbacks_part'), None),
+    'qb_attempts':       ('qb', ('att',), 'qb_layer'),
+    'qb_passing_yards':  ('qb', ('pyds',), 'qb_layer'),
+    'qb_td':             ('qb', ('ptd',), 'qb_layer'),
+    'carries':           ('rushing', ('carries',), 'targets_carries'),
+}
+
+
+def _verdict_absent(art) -> set:
+    """Production layers the seal's own verdict lists as ABSENT."""
+    v = str((art or {}).get('eligibility_verdict') or '')
+    for part in v.split('|'):
+        part = part.strip()
+        if part.startswith('ABSENT:'):
+            return {x.strip() for x in part[len('ABSENT:'):].split(',') if x.strip()}
+    return set()
+
+
+def shared_layers_from_seal(seal_dir) -> Outcome:
+    """The five shared layers' states, read from one production seal. Never credits silently."""
+    d = pathlib.Path(seal_dir)
+    man_p, art_p = d / 'player_draws_manifest.json', d / 'forecast_artifact.json'
+    if not man_p.exists() or not art_p.exists():
+        return Outcome.blocked(
+            'SHARED_SEAL_INCOMPLETE',
+            f'{d} lacks player_draws_manifest.json or forecast_artifact.json',
+            cause=Cause.DATA)
+    man = json.loads(man_p.read_text())
+    art = json.loads(art_p.read_text())
+    layers = man.get('layers') or {}
+    absent = _verdict_absent(art)
+    states, basis = {}, {}
+    for layer, (mlayer, metrics, prod) in SHARED_LAYER_REQUIREMENTS.items():
+        have = set((layers.get(mlayer) or {}).get('metrics') or [])
+        missing = [m for m in metrics if m not in have]
+        if mlayer not in layers:
+            states[layer] = f'BLOCKED:SEAL_LAYER_ABSENT:{mlayer}'
+        elif missing:
+            states[layer] = f'BLOCKED:SEAL_METRIC_ABSENT:{mlayer}/{missing[0]}'
+        elif prod and prod in absent:
+            states[layer] = f'BLOCKED:PRODUCTION_LAYER_ABSENT:{prod}'
+        else:
+            states[layer] = 'PASS'
+        basis[layer] = {'manifest_layer': mlayer, 'metrics': list(metrics),
+                        'production_layer': prod, 'state': states[layer]}
+    n_pass = sum(1 for v in states.values() if v == 'PASS')
+    return Outcome.ok(
+        'SHARED_LAYERS_READ_FROM_SEAL',
+        value={'states': states, 'basis': basis, 'seal_dir': str(d),
+               'verdict_absent': sorted(absent),
+               'seal_game_id': art.get('game_id'),
+               'manifest_digest': man.get('content_digest')},
+        detail=f'{n_pass} of {len(states)} shared layer(s) credited from {d.name}',
+        n_pass=n_pass, verdict_absent=sorted(absent))
 
 
 def assert_partition_covers_required() -> Outcome:
@@ -266,7 +335,7 @@ def assert_single_divergence(arms_out, shared_draws=None) -> Outcome:
 
 
 # ----------------------------------------------------------------- the run
-def run(season=2024, n_team_games=4, n_draws=200, seed=CAND.SEED):
+def run(season=2024, n_team_games=4, n_draws=200, seed=CAND.SEED, shared_from_seal=None):
     part = assert_partition_covers_required()
     fr = SH.feature_rows(SH.HISTORICAL_FRAME, season=season)
     if fr.state is not State.PASS:
@@ -299,6 +368,17 @@ def run(season=2024, n_team_games=4, n_draws=200, seed=CAND.SEED):
         'qb_td': 'NOT_MODELED_IN_PAIRED_RESEARCH_SLICE',
         'carries': 'NOT_MODELED_IN_PAIRED_RESEARCH_SLICE',
     }
+    shared_source = {'basis': 'NOT_SUPPLIED', 'seal_dir': None}
+    if shared_from_seal:
+        sh = shared_layers_from_seal(shared_from_seal)
+        if sh.state is not State.PASS:
+            return sh
+        shared_states = dict(sh.value['states'])
+        shared_source = {'basis': 'PRODUCTION_SEAL', 'seal_dir': sh.value['seal_dir'],
+                         'seal_game_id': sh.value['seal_game_id'],
+                         'manifest_digest': sh.value['manifest_digest'],
+                         'verdict_absent': sh.value['verdict_absent'],
+                         'per_layer': sh.value['basis']}
 
     built, problems = [], []
     for gkey in sorted(groups)[:n_team_games]:
@@ -405,6 +485,7 @@ def run(season=2024, n_team_games=4, n_draws=200, seed=CAND.SEED):
         },
 
         'shared_layers_not_run_here': shared_states,
+        'shared_layers_source': shared_source,
         'arm_chain_blocker': {
             'code': sorted({b['receiving_chain_blocked_by'] for b in built
                             if b.get('receiving_chain_blocked_by')}) or None,
@@ -454,8 +535,12 @@ def main(argv=None):
     ap.add_argument('--season', type=int, default=2024)
     ap.add_argument('--team-games', type=int, default=4)
     ap.add_argument('--draws', type=int, default=200)
+    ap.add_argument('--shared-from-seal', default=None,
+                    help='a production seal dir whose draw manifest supplies the five shared '
+                         'layers; credited only where its own verdict does not list the producing '
+                         'layer ABSENT')
     a = ap.parse_args(argv)
-    out = run(a.season, a.team_games, a.draws)
+    out = run(a.season, a.team_games, a.draws, shared_from_seal=a.shared_from_seal)
     OUT.write_text(json.dumps(out, indent=1, default=str) + '\n')
     print(f"status              : {out['status']}")
     print(f"partition           : "
