@@ -427,3 +427,21 @@ refuse — but refusing it blocks the pipeline on an unanswered design question,
   validating the wrong object, and the board's point projections should be the draw means.
 
 Until ruled, the board carries both numbers and names the gap.
+
+---
+
+## 12. Pre-existing fence-suite failures, measured as unrelated to this work
+
+Adding the `showdown_live` namespace and sealing tonight into it was followed by a runner pass over
+the six suites that enumerate sealed artifacts. Four reported failures: `test_stat_contract` 13,
+`test_p6_false_greens` 18, `test_sealed_corpus_census` 1, `test_draw_coherence` 1
+(`test_xl1_shared_pass` 0, `test_qb_room_composition` 0).
+
+**Attributed by A/B, not assumed.** With the Showdown seal directory moved aside (and its namespace
+root therefore absent to `discover_all()`), `test_sealed_corpus_census` still fails 1 and
+`test_p6_false_greens` still fails 18 — identical counts. `live_draw_files()`, which
+`test_stat_contract` and `test_draw_coherence` enumerate through, walks `nfl/research/live` only; the
+new namespace is a sibling directory it never visits. The runner log contains no reference to any
+artifact introduced here. These four are pre-existing failures at HEAD and belong to the suite
+classification work (tasks #58 / #105), not to this program. They are recorded here so the next
+reader does not re-derive the attribution.
