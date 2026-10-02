@@ -3592,3 +3592,20 @@ python3.12 nfl/production/world_clock.py    # must still read EVIDENCE_REACHES_T
 ```
 
 and rebuild the slate state, role state and projections from the showdown state artifact.
+
+### 2026-10-02 — capture definitions on this branch take effect only on the default branch
+
+GitHub reads a `schedule:` workflow definition from the default branch only. Four definitions
+changed on `claude/nfl-greenfield-architecture-stsxmk` and are inert until merged to `main`:
+
+- `.github/workflows/nfl-t90.yml` — regenerated for 2026 week 4 (the deployed pin is September's,
+  so no T-90 window exists for any October kickoff on the deployed surface);
+- `.github/workflows/nfl-status.yml` — regenerated for week 4 and now checks out / pushes
+  `capture-prod` instead of `main`;
+- `.github/workflows/nfl-availability.yml` — now checks out / pushes `capture-prod` (it has been
+  writing the availability manifest to `main`, which is where `origin/main`'s recent commits come from);
+- the generators behind the first two (`nfl/tools/gen_t90_schedule.py`, `gen_status_schedule.py`).
+
+Merging to `main` is the owner's call. Until then the baseline `nfl-capture.yml` keeps running every
+30 minutes (confirmed: run 1197 at 04:56Z today, success) and `nfl/tools/sync_captures.py` brings its
+captures into this branch verified. Nothing here needs network from this agent.
