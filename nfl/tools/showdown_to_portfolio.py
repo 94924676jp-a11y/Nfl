@@ -141,7 +141,7 @@ MAX_OVERLAP = 4                 # of 6 seats, between any two entries in the por
 #: availability unresolved; PUBLISHING with unknown inactives is a different act, and this is the list
 #: that stops it.
 REQUIRED_FOR_PUBLICATION = ('ingest_export', 'slate_identity', 'availability', 'projections',
-                            'candidates_and_selection')
+                            'football_sanity', 'candidates_and_selection')
 
 OUT_BOARD = _REPO / 'nfl/dfs/salaries/SHOWDOWN_STATUS_BOARD.json'
 OUT_MD = _REPO / 'nfl/dfs/salaries/SHOWDOWN_STATUS_BOARD.md'
@@ -848,6 +848,33 @@ def run(export, *, official_inactives=None, proj_path=None, draws=None, n_entrie
 
     # Players the projection declared out are excluded from selection as well as from coverage.
     absent = set(absent) | set((o4.value or {}).get('declared_not_playing') or ())
+
+    # FOOTBALL SANITY, BETWEEN PROJECTION AND SELECTION, AND IT CANNOT BE SKIPPED.
+    #
+    # On 2026 week 4 this runner reported PASS at every stage and emitted a legal, validated
+    # portfolio in which both starting quarterbacks carried a backup's appearance rate. Every
+    # mechanical gate was green; nothing here could tell the number was football-wrong. This
+    # stage reads the same artifact s4 read and refuses, by name, the contradictions a football
+    # reader would catch -- a starter charged a backup penalty, a club total that does not
+    # reconcile with its players, an absent player carrying opportunity, a zero with no named
+    # state. It is in REQUIRED_FOR_PUBLICATION so a run that skips it cannot publish.
+    from nfl.tools import football_sanity as FS
+    _pp = DEFAULT_PROJ if proj_path is None else pathlib.Path(proj_path)
+    try:
+        _art = json.loads(_pp.read_text())
+    except (OSError, ValueError) as e:
+        o4b = Outcome.fail('FOOTBALL_SANITY_ARTIFACT_UNREADABLE', f'{_pp}: {e}',
+                           cause=Cause.DATA)
+    else:
+        o4b = FS.assess(_art, absent=absent)
+    stages.append(_stage('football_sanity', o4b, **{
+        k: v for k, v in (o4b.evidence or {}).items() if k != 'problems'},
+        problems=(o4b.evidence or {}).get('problems')))
+    if o4b.state.value != 'PASS':
+        return Outcome.fail(
+            'SHOWDOWN_RUN_REFUSED', f'football sanity: {o4b.code} -- {o4b.detail}',
+            cause=Cause.DATA, stages=stages,
+            problems=(o4b.evidence or {}).get('problems'))
     n = len(entries) if n_entries is None else int(n_entries)
     o5 = s5_candidates_and_selection(slate, absent, draws, n)
     stages.append(_stage('candidates_and_selection', o5, **(o5.evidence or {})))
