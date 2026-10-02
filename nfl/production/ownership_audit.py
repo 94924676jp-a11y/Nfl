@@ -624,6 +624,42 @@ DISPOSITIONS[('weather_v1', 'nfl/production/workflow/stages.py')] = {
     'read_on': _READ,
 }
 
+# nfl/sim/football_points.py (PROGRAM-4 football-only arm, 2026-10-02). Read 2026-10-02 while
+# repairing the regression this module caused in the ownership audit: four application-candidate
+# hits, none an application.
+DISPOSITIONS[('opponent_pass_strength_v1', 'nfl/sim/football_points.py')] = {
+    'verdict': 'DECLARATION_NOT_APPLICATION',
+    'evidence': ("the only occurrence is the literal string key 'OPPONENT_ADJUSTMENT' inside the "
+                 "artifact's `centre` provenance dict at :133, whose value is the literal "
+                 "'NOT_MODELLED (owner item 9)'. It records that no opponent adjustment exists. "
+                 "The centre at :70-:83 reads only the club's own points per game; no opponent "
+                 "field is fetched, stored or multiplied anywhere in the module."),
+    'read_on': '2026-10-02',
+}
+DISPOSITIONS[('opponent_rush_strength_v1', 'nfl/sim/football_points.py')] = {
+    'verdict': 'DECLARATION_NOT_APPLICATION',
+    'evidence': ("same single site as opponent_pass_strength_v1: the 'OPPONENT_ADJUSTMENT' key at "
+                 ":133 with the literal value 'NOT_MODELLED (owner item 9)'. Nothing rush-specific "
+                 "and nothing opponent-specific is computed."),
+    'read_on': '2026-10-02',
+}
+DISPOSITIONS[('score_state_v1', 'nfl/sim/football_points.py')] = {
+    'verdict': 'HOMONYM_NOT_APPLICATION',
+    'evidence': ("`wp` at :81-:83 is the PRIOR-SEASON WEIGHT in the two-season blend "
+                 "(`wc, wp = float(n_cur), PRIOR_GAMES`), paired with `wc` for the current-season "
+                 "weight; it is a count of pseudo-games, not a win probability. No score, margin or "
+                 "game-state value enters the centre."),
+    'read_on': '2026-10-02',
+}
+DISPOSITIONS[('weather_v1', 'nfl/sim/football_points.py')] = {
+    'verdict': 'DECLARATION_NOT_APPLICATION',
+    'evidence': ("the only occurrence is the literal key 'WEATHER' at :133 in the provenance "
+                 "dict with the literal value 'NOT_MODELLED'. No weather value is read; the "
+                 "module's NO_MARKET_INPUT line at :129 lists the eight fields it reads and "
+                 "weather is not among them."),
+    'read_on': '2026-10-02',
+}
+
 def audit() -> Outcome:
     files = _files()
     if not files:
@@ -727,6 +763,23 @@ def audit() -> Outcome:
               'a scanner sees syntax. An adjustment applied through an opaque '
               'variable, a runtime config or a fitted coefficient is invisible '
               'to it, so a clean scan SUPPORTS the claim and never proves it.')}
+    if not implemented:
+        # OWNER RULE 1 (2026-10-02): the question this audit answers is whether every adjustment
+        # applied in production is singly owned. With zero applying sites the question has no
+        # subject; the scan ran, the thing under audit is absent. That is EMPTY_INPUT, not a pass.
+        return Outcome.blocked(
+            'OWNERSHIP_AUDIT_NO_APPLICATIONS',
+            f'{len(files)} module(s) scanned and no adjustment family is applied in production, '
+            f'so single-adjustment ownership has nothing to verify. Reported as nothing measured, '
+            f'not as verified.', cause=Cause.EMPTY_INPUT, **ev)
+    if not ownership_verified:
+        return Outcome.fail(
+            'OWNERSHIP_NOT_VERIFIED',
+            f'{len(files)} module(s) scanned; single-adjustment ownership is '
+            f'NOT verified: implemented={bool(implemented)}, '
+            f'uncovered={uncovered}, unreviewed={len(unreviewed)}. An audit '
+            f'that completes with its own verdict False is not a pass.',
+            cause=Cause.GOVERNANCE, value=rows, **ev)
     return Outcome.ok(
         'OWNERSHIP_AUDIT_COMPLETE', value=rows,
         detail=f'{len(files)} production module(s); {len(implemented)} of '

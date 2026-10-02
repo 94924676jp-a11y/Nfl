@@ -48,6 +48,7 @@ import importlib.util
 import io
 import json
 import os
+import pathlib
 import re
 import subprocess
 import sys
@@ -357,6 +358,11 @@ def main(argv=None):
     if watch:
         watch_state = _watch_digests()
         print(f'WATCHING {len(watch)} path(s) after every module: ' + ', '.join(watch))
+    # OWNER RULE 2 (2026-10-02): every positive control a test records (nfl/tests/_controls)
+    # is stamped with THIS run's id, in this process and in own-process children, so the
+    # validation at the end of the run counts only controls that ran in it.
+    os.environ['NFL_SUITE_RUN_ID'] = _RUN_ID
+    os.environ.setdefault('NFL_CONTROL_HITS', os.path.join(ROOT, 'nfl/tests/_control_hits.jsonl'))
     _emit({'phase': 'suite_start', 'n_modules': len(files), 'order': order_note,
            'shuffle_seed': shuffle_seed, 'reverse': reverse},
           f'suite: {len(files)} module(s), order {order_note}')
@@ -377,6 +383,13 @@ def main(argv=None):
                                capture_output=True, text=True, cwd=ROOT)
             out = r.stdout + r.stderr
             mt = re.search(r'checks (\d+)\s+FAILING CHECKS (\d+)\s+RAISED (\d+)', out)
+            # OWNER RULE 1 (2026-10-02): a child that executed zero-check functions or was
+            # VACUOUS used to be read by the parent as its failing/raised counts alone, so a
+            # child that measured nothing propagated as clean. Its zero-check count and any
+            # VACUOUS line now count against the parent exactly as an in-process module would.
+            mz = re.search(r'ZERO-CHECK FUNCTIONS (\d+)', out)
+            sub_zero = int(mz.group(1)) if mz else 0
+            sub_vacuous = [ln for ln in out.splitlines() if ln.strip().startswith('VACUOUS')]
             if mt is None:
                 n_raise += 1
                 problems.append(
@@ -392,6 +405,13 @@ def main(argv=None):
             n_check_fail += sub_fail
             n_check_ok += max(sub_checks - sub_fail, 0)
             n_raise += sub_raise
+            if sub_zero:
+                n_fn_zero += sub_zero
+                zero_fns.append(f'{f}::<own-process child reported {sub_zero} zero-check function(s)>')
+            for ln in sub_vacuous:
+                problems.append(f'{ln.strip()} (OWN PROCESS {f})')
+            if sub_checks == 0 and not sub_vacuous:
+                problems.append(f'VACUOUS {f} (OWN PROCESS): the child executed 0 checks')
             isolated.append({'module': f, 'reason': own, 'checks': sub_checks,
                              'failing': sub_fail, 'raised': sub_raise})
             if sub_fail or sub_raise:
@@ -564,11 +584,87 @@ def main(argv=None):
             print(f'  {b}')
     for p in problems:
         print('\n' + p)
+    # OWNER RULE 2 (2026-10-02): a detector in nfl/tests/DETECTORS.json with no positive control
+    # that ran AND tripped in this run is UNVALIDATED, and the suite fails on it. A partial run
+    # (--only / --modules) validates what it ran; detectors whose controls live elsewhere are
+    # NOT_IN_THIS_RUN, which is reported and is not a pass. The child of an own-process module
+    # never validates (its parent does, over the whole run).
+    det = None
+    if not no_isolate:
+        det = _validate_detectors(files, full_run=(only is None and not modules))
+        unval = [r for r in det['rows'] if r['status'].startswith('UNVALIDATED')]
+        if unval:
+            problems.append(
+                f'DETECTORS UNVALIDATED ({len(unval)} of {det["n_detectors"]}): a detector '
+                f'without a control that ran and tripped in this run is not validated. '
+                f'See nfl/tests/DETECTOR_VALIDATION.json.\n  '
+                + '\n  '.join(f"{r['status']:<36} {r['detector']}" for r in unval[:60])
+                + ('\n  ...' if len(unval) > 60 else ''))
+        print(f"detectors: {det['n_detectors']} listed, "
+              + ', '.join(f'{k} {v}' for k, v in sorted(det['counts'].items()))
+              + f"  -> {det['verdict']}")
     bad = (n_check_fail + n_raise + n_fn_zero + n_unrecognised_tally
            + len(n_not_executed)
-           + sum(p.startswith('VACUOUS') for p in problems))
-    print('SUITE ' + ('FAIL' if bad else 'PASS'))
-    return 1 if bad else 0
+           + sum(p.startswith('VACUOUS') for p in problems)
+           + sum(p.startswith('DETECTORS UNVALIDATED') for p in problems))
+    # OWNER RULE 1 (2026-10-02). A run that executed nothing has not passed. Before this, an
+    # `--only` pattern matching no module printed SUITE PASS on 0 modules and 0 checks, and the
+    # log holds three such runs. NOT_EXECUTED is its own verdict with its own exit code (3), so
+    # a caller cannot read it as either a pass or a failure of the code under test.
+    n_executed = n_check_ok + n_check_fail
+    if len(files) == 0 or n_executed == 0:
+        verdict, rc = 'NOT_EXECUTED', 3
+    else:
+        verdict, rc = ('FAIL', 1) if bad else ('PASS', 0)
+    _emit({'phase': 'suite_done', 'verdict': verdict, 'n_modules': len(files),
+           'n_checks_executed': n_executed, 'n_failing': n_check_fail, 'n_raised': n_raise,
+           'n_zero_check_fns': n_fn_zero, 'n_not_executed_modules': len(n_not_executed),
+           'detectors': ({'verdict': det['verdict'], **det['counts']} if det else None),
+           'mode': _project_mode(), 'head': _head_commit()})
+    if verdict == 'NOT_EXECUTED':
+        print(f'SUITE NOT_EXECUTED  ({len(files)} module(s), {n_executed} check(s) executed): '
+              f'nothing ran, so nothing passed and nothing failed.')
+    else:
+        print('SUITE ' + verdict)
+    return rc
+
+
+def _validate_detectors(files, full_run: bool) -> dict:
+    """Rule 2 at the end of the run. Never raises out of the runner: an error is itself a row."""
+    try:
+        from nfl.tests import _controls as C
+        ran = []
+        for f in files:
+            try:
+                ran.append(str(pathlib.Path(f).resolve().relative_to(ROOT)))
+            except ValueError:
+                ran.append(os.path.relpath(f, ROOT))
+        return C.validate(_RUN_ID, ran, full_run)
+    except Exception as e:  # noqa: BLE001
+        return {'n_detectors': 0, 'counts': {'VALIDATION_NOT_EXECUTED': 1},
+                'verdict': 'VALIDATION_NOT_EXECUTED',
+                'rows': [{'detector': '<validator>', 'status': 'UNVALIDATED_VALIDATOR_RAISED',
+                          'error': f'{type(e).__name__}: {e}'}]}
+
+
+def _project_mode():
+    """The operating mode declared in coordination/PROJECT_STATE.json, or None. Recorded on the
+    verdict so a VERIFY-mode run is distinguishable from a BUILD-mode self-certification."""
+    try:
+        with open(os.path.join(ROOT, 'coordination', 'PROJECT_STATE.json'), encoding='utf-8') as fh:
+            st = json.load(fh)
+        m = st.get('mode_declared') or st.get('mode') or {}
+        return m.get('mode') if isinstance(m, dict) else m
+    except (OSError, ValueError):
+        return None
+
+
+def _head_commit():
+    try:
+        return subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=ROOT, capture_output=True,
+                              text=True).stdout.strip() or None
+    except OSError:
+        return None
 
 
 if __name__ == '__main__':

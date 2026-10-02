@@ -225,7 +225,7 @@ def assemble_game(written_at: str, season: int, week: int, game_id: str,
     blob = det['weekly_rosters']['blob']
     parts = game_id.split('_')
     if len(parts) < 4:
-        return Outcome.fail('GAME_ID_UNPARSEABLE', Cause.DATA,
+        return Outcome.fail('GAME_ID_UNPARSEABLE',
                             f'{game_id!r} is not season_week_away_home')
     away, home = parts[2], parts[3]
     by_team = {}
@@ -323,7 +323,9 @@ def verify_declared(src: dict, manifest=None) -> Outcome:
             'DECLARED_CAPTURES_UNVERIFIED', cause=Cause.DATA,
             detail='; '.join(f'{b["source"]}: {b["code"]}' for b in bad),
             spec_version=SPEC_VERSION, unverified=bad, verified=sorted(seen))
-    return Outcome.ok('DECLARED_CAPTURES_VERIFIED', value=seen,
+    return Outcome.measured('DECLARED_CAPTURES_VERIFIED', seen,
+                      n_measured=len(seen),
+                      what='declared capture hashes rehashed against blobs',
                       spec_version=SPEC_VERSION,
                       n_verified=len(seen),
                       method='each declared sha256 matched a PASS capture in '

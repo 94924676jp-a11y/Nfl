@@ -199,11 +199,17 @@ def assert_scope_allowed(scope: str) -> Outcome:
         return Outcome.fail('UNKNOWN_SCOPE', f'{scope!r} is not one of '
                                              f'{list(SCOPES)}',
                             cause=Cause.GOVERNANCE)
-    blocking = {g: v['state'] for g, v in GATES.items()
-                if scope in v['blocks'] and v['state'] != YES}
+    mapped = {g: v['state'] for g, v in GATES.items() if scope in v['blocks']}
+    if not mapped:
+        return Outcome.blocked(
+            'SCOPE_HAS_NO_GATES', f'{scope}: no gate in the registry blocks '
+            f'this scope, so nothing was checked. Ungated is not clear.',
+            cause=Cause.EMPTY_INPUT, spec_version=SPEC_VERSION, scope=scope,
+            n_mapped=0)
+    blocking = {g: s for g, s in mapped.items() if s != YES}
     ev = {'spec_version': SPEC_VERSION, 'scope': scope,
           'blocking_gates': dict(sorted(blocking.items())),
-          'n_blocking': len(blocking)}
+          'n_blocking': len(blocking), 'n_mapped': len(mapped)}
     if blocking:
         return Outcome.fail(
             'SCOPE_BLOCKED_BY_GATE',

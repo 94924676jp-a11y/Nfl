@@ -1215,9 +1215,9 @@ def audit_declared_reads(repo=None, roots=AUDITED_ROOTS,
             f'declaration, not a glob.',
             undeclared=undeclared, unattributable=unknown,
             runtime_keyed=runtime_keyed, n_sites=len(sites))
-    return Outcome.ok(
+    return Outcome.measured(
         'EVERY_VINTAGE_READ_DECLARED',
-        value={'n_sites': len(sites),
+        {'n_sites': len(sites),
                'n_reads': sum(1 for s in sites if s['kind'] == 'READ'),
                'n_writes': sum(1 for s in sites if s['kind'] == 'WRITE'),
                'n_edges': len(edges),
@@ -1226,6 +1226,8 @@ def audit_declared_reads(repo=None, roots=AUDITED_ROOTS,
                    {'module': x['module'], 'function': x['function'],
                     'line': x['line']} for x in runtime_keyed],
                'edges_not_exercised': [list(x) for x in stale]},
+        n_measured=len(sites),
+        what=f'vintage read/write sites scanned in {len(roots)} package(s)',
         detail=f'{len(sites)} vintage read/write site(s) in '
                f'{len(roots)} package(s); every read declared.')
 

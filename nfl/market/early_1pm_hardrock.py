@@ -116,7 +116,7 @@ def delivered_files() -> Outcome:
         if h != pin:
             bad.append(f'{p.name}: {h} != pinned {pin}')
     if bad:
-        return Outcome.fail('DELIVERED_FILE_HASH_MISMATCH', Cause.DATA,
+        return Outcome.fail('DELIVERED_FILE_HASH_MISMATCH',
                             '; '.join(bad), files=got)
     return Outcome.ok('DELIVERED_FILES_VERIFIED', value=got)
 
@@ -137,14 +137,14 @@ def bundle_integrity() -> Outcome:
     guessed at.
     """
     if not BUNDLE_ZIP.exists():
-        return Outcome.fail('BUNDLE_ABSENT', Cause.DATA,
+        return Outcome.fail('BUNDLE_ABSENT',
                             f'{BUNDLE_ZIP} does not exist')
     with zipfile.ZipFile(BUNDLE_ZIP) as z:
         names = z.namelist()
         root = 'ev/'
         sums = [n for n in names if n.endswith('SHA256SUMS.txt')]
         if not sums:
-            return Outcome.fail('BUNDLE_MANIFEST_ABSENT', Cause.DATA,
+            return Outcome.fail('BUNDLE_MANIFEST_ABSENT',
                                 'the bundle carries no SHA256SUMS.txt')
         man = z.read(sums[0]).decode()
         listed = {}
@@ -182,7 +182,7 @@ def bundle_integrity() -> Outcome:
             'self_referential_entry': self_ref,
         }
         if bad or absent or unlisted:
-            return Outcome.fail('BUNDLE_INTEGRITY_FAILED', Cause.DATA,
+            return Outcome.fail('BUNDLE_INTEGRITY_FAILED',
                                 f'{len(bad)} mismatched, {len(absent)} '
                                 f'listed-but-absent, {len(unlisted)} '
                                 f'unlisted', **res)

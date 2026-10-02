@@ -188,6 +188,13 @@ def verify(artifact_path) -> Outcome:
 
 def audit(stages) -> dict:
     """Verify a list of (name, path) and summarise, for the readiness board."""
+    stages = list(stages or [])
+    if not stages:
+        return {'rows': [], 'counts': {}, 'any_stale_dependency': None,
+                'state': 'LINEAGE_AUDIT_NOT_EXECUTED', 'cause': 'EMPTY_INPUT',
+                'RULE': ('an audit handed no stages examined nothing. '
+                         'any_stale_dependency is None, not False: absence of a '
+                         'finding is not a finding of absence.')}
     rows, counts = [], {}
     for name, path in stages:
         o = verify(_REPO / path)
@@ -197,7 +204,8 @@ def audit(stages) -> dict:
                      'detail': (o.evidence or {}).get('moved') if state == STALE_DEPENDENCY else None,
                      'lineage_id': ((o.value or {}) or (o.evidence or {})).get('lineage_id')})
     return {
-        'rows': rows, 'counts': counts,
+        'rows': rows, 'counts': counts, 'state': 'LINEAGE_AUDIT_MEASURED',
+        'n_stages': len(rows),
         'any_stale_dependency': any(r['lineage_state'] == STALE_DEPENDENCY for r in rows),
         'RULE': ('nothing downstream of a STALE_DEPENDENCY artifact may report full readiness. '
                  'An UNSTAMPED artifact is a recorded debt, not a pass.'),

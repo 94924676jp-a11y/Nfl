@@ -32,6 +32,7 @@ ET = ZoneInfo('America/New_York')
 
 COMPLETE = 'COMPLETE'
 INCOMPLETE_BOTH_BLANK = 'INCOMPLETE_BOTH_STATUSES_BLANK'
+INCOMPLETE_NO_ROWS = 'INCOMPLETE_NO_INJURY_ROWS_FOR_SEASON'
 INCOMPLETE_PREDATES = 'INCOMPLETE_CAPTURE_PREDATES_FINAL_DESIGNATIONS'
 INCOMPLETE_NO_KICKOFF = 'INCOMPLETE_WEEK_KICKOFFS_UNKNOWN'
 INCOMPLETE_STATES = (INCOMPLETE_BOTH_BLANK, INCOMPLETE_PREDATES, INCOMPLETE_NO_KICKOFF)
@@ -85,6 +86,13 @@ def assess(rows, observed_at, schedule_rows, season) -> dict:
         if str(r.get('season')) == str(season):
             byw[str(r.get('week'))].append(r)
     out = {}
+    if not byw:
+        # OWNER RULE 1 (2026-10-02): no rows for the season produced an empty incomplete list,
+        # which every consumer read as "all weeks complete". No rows is the strongest
+        # incompleteness there is, and it is named as such with the count.
+        return {'by_week': {}, 'incomplete_weeks': ['*'], 'complete_weeks': [],
+                'observed_at': obs.isoformat(), 'state': INCOMPLETE_NO_ROWS, 'cause': 'EMPTY_INPUT',
+                'n_rows': 0, 'n_rows_total': len(list(rows)) if hasattr(rows, '__len__') else None}
     for week, wrows in sorted(byw.items(), key=lambda kv: int(kv[0]) if kv[0].isdigit() else 0):
         both = sum(1 for r in wrows if row_is_unfilled(r))
         half = sum(1 for r in wrows

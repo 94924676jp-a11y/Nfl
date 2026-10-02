@@ -100,16 +100,26 @@ def _kickoff_tz():
 def _real_vintage():
     from nfl.prospective.q9shadow import live_features as LF
     from nfl.production import world_clock as W
-    o = LF.injury_rows(2026, dt.datetime.now(dt.timezone.utc).isoformat())
-    assert o.state.name == 'PASS', o
+    # THE RULING'S CASE IS PINNED TO ITS CAPTURE. Ruling 1 (2026-10-02) said the 24 September
+    # week-3 capture must remain INCOMPLETE. Reading "the latest capture" drifted the moment the
+    # capture sync brought the 2 October capture in, so the ruling's case is selected by an
+    # as-of clock before any later capture, and the latest capture is a second, separate case.
     s = W.schedule(); sched = s.value if hasattr(s, 'value') else s
+    o = LF.injury_rows(2026, '2026-09-25T00:00:00Z')
+    assert o.state.name == 'PASS', o
     a = IC.assess(o.value, o.evidence['retrieved_at'], sched, 2026)
     st = {w: v['state'] for w, v in a['by_week'].items()}
+    assert str(o.evidence['retrieved_at']).startswith('2026-09-24'), o.evidence['retrieved_at']
     assert st['1'] == IC.COMPLETE and st['2'] == IC.COMPLETE, st
     assert st['3'] == IC.INCOMPLETE_PREDATES, st
     assert a['by_week']['3']['n_both_blank'] == 0
-    return (f"observed {a['observed_at']}; {st}; week-3 final kickoff "
-            f"{a['by_week']['3']['final_kickoff_utc']}")
+    o2 = LF.injury_rows(2026, dt.datetime.now(dt.timezone.utc).isoformat())
+    assert o2.state.name == 'PASS', o2
+    a2 = IC.assess(o2.value, o2.evidence['retrieved_at'], sched, 2026)
+    st2 = {w: v['state'] for w, v in a2['by_week'].items()}
+    assert all(st2.get(w) == IC.COMPLETE for w in ('1', '2', '3')), st2      # the Oct 2 capture clears week 3
+    assert any(v != IC.COMPLETE for v in st2.values()), st2                   # and the live week stays incomplete
+    return (f"Sep-24 capture: {st}; latest ({str(o2.evidence['retrieved_at'])[:10]}): {st2}")
 
 
 @check('THE GATE CONSUMES THE RULE: _eval_injury_report names the incomplete weeks, not a blank count')

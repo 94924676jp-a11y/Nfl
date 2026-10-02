@@ -158,6 +158,13 @@ def assess(gate_results: dict, scope: str = 'football') -> Outcome:
     nobody ran is not a gate that passed.
     """
     req = required_gates(scope)
+    if not req:
+        return Outcome.blocked(
+            'PRODUCT_VERDICT_EMPTY_INPUT',
+            f'{scope}: no required gates are registered for this scope, so '
+            f'nothing was assessed. A scope nothing gates is not DEPLOYABLE; '
+            f'it is unexamined.', cause=Cause.EMPTY_INPUT, scope=scope,
+            n_required=0)
     resolved, blocking = {}, []
     for g in req:
         r = gate_results.get(g)

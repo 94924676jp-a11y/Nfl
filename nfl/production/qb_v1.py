@@ -324,6 +324,7 @@ def identity_check(D) -> Outcome:
             f'{bad} draw cell(s) where attempts + sacks + scrambles != '
             f'dropbacks. This is the identity the whole layer rests on.',
             n_bad=bad)
-    return Outcome.ok('QB_DROPBACK_IDENTITY_HOLDS',
-                      value=int(D['db'].size),
-                      detail=f'holds on all {D["db"].size} draw cells')
+    return Outcome.measured('QB_DROPBACK_IDENTITY_HOLDS', int(D['db'].size),
+                            n_measured=int(D['db'].size),
+                            what='QB dropback identity draw cells',
+                            detail=f'holds on all {D["db"].size} draw cells')

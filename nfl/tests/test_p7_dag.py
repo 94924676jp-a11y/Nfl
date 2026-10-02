@@ -208,9 +208,15 @@ def test_a_parameter_is_not_expanded_as_a_constant():
         "def unrelated(p):\n"
         "    return open(p, 'rb').read()\n")})
     o = PL.audit_declared_reads(repo=d)
+    # OWNER RULE 1 (2026-10-02): a tree with no vintage site is not a PASS over nothing. The
+    # claim this test makes is that the parameter is NOT seen as a read -- so no undeclared
+    # read is named -- and the audit says so by refusing on zero sites, not by passing.
     check('a function parameter shadowing a module constant is not a read',
-          o.state is State.PASS,
+          o.code != 'UNDECLARED_VINTAGE_READ' and not o.evidence.get('undeclared'),
           f'{o.code}: {str(o.evidence)[:200]}')
+    check('  and zero sites scanned is EMPTY_INPUT, never a clean audit',
+          o.state is State.BLOCKED and o.evidence.get('cause') == 'EMPTY_INPUT'
+          and o.evidence.get('n_measured') == 0, f'{o.code}: {str(o.evidence)[:200]}')
 
 
 def test_the_detector_is_not_satisfied_by_a_neighbouring_declaration():

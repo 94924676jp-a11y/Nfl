@@ -133,8 +133,15 @@ def test_written_at_binds_as_well_as_kickoff():
 def test_no_eligible_vintage_defers_honestly():
     RD.cache_clear()
     d = RD.team_readiness(2026, 1, 'NE', written_at='2026-01-01T00:00:00Z')
-    check('a clock before every capture reports ABSENCE',
-          d['state'] == 'INJURY_REPORT_NOT_YET_FILED', d['state'])
+    # OWNER RULE 1 (2026-10-02). Until then this asserted INJURY_REPORT_NOT_YET_FILED while the
+    # code returned READY_BY_EARLY_VINTAGE_NO_LEAGUE_REPORT: the check was red, and the code was
+    # READY on zero rows. The state is now NOT_READY_NO_LEAGUE_REPORT with cause EMPTY_INPUT, and
+    # this check is the positive control for that site.
+    check('a clock before every capture reports ABSENCE as NOT READY (rule 1 control)',
+          d['state'] == 'NOT_READY_NO_LEAGUE_REPORT' and d.get('cause') == 'EMPTY_INPUT',
+          f"{d['state']} cause={d.get('cause')}")
+    check('  and nothing downstream may read it as READY',
+          not d['state'].startswith('READY'), d['state'])
     check('  with no rows claimed', d['n_rows'] == 0, str(d['n_rows']))
     check('  and it says which cut produced the absence',
           str(d.get('as_of', '')).startswith('2026-01-01'),

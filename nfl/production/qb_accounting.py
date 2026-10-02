@@ -365,6 +365,22 @@ def reconcile_team(D, rows, team_rush_draws=None,
                 f'sum of QB dropbacks does not equal team dropbacks in '
                 f'{bad} of {cells} draw cell(s); worst deviation {worst:.6f}. '
                 f'See ALLOCATION_RESIDUAL.')
+    if closure['status'] == 'DOES_NOT_CLOSE':
+        return Outcome.fail(
+            'QB_TEAM_DROPBACKS_DO_NOT_CLOSE',
+            f'sum of QB dropbacks does not match the team dropback draw in '
+            f'{closure["violating_cells"]} of {closure["draw_cells"]} draw '
+            f'cell(s); worst deviation '
+            f'{closure["worst_absolute_deviation"]}. A measured closure '
+            f'failure is a FAIL, not a PASS with a warning.',
+            per_team_dropback_closure=closure, n_team_games=len(keys),
+            warnings=warnings, named_residual=ALLOCATION_RESIDUAL)
+    if closure['status'] == 'NOT_MEASURED' and team_dropback_draws is not None:
+        return Outcome.not_executed(
+            'QB_TEAM_DROPBACK_CLOSURE_NOT_EXECUTED',
+            'a team dropback draw was supplied and closure was still not '
+            'examined; that is a defect in this function, not a pass.',
+            per_team_dropback_closure=closure)
     return Outcome.ok(
         'QB_TEAM_ACCOUNTING_MEASURED',
         value={'n_team_games': len(keys),
@@ -571,7 +587,9 @@ def reconcile_team_volume(D, rows, team_dropback_draws=None,
             violations=[{'identity': k, 'cells': c, 'of': n}
                         for k, c, n in viol],
             research_gap=QB_PRIMARY_PASSER_GAP, **ev)
-    return Outcome.ok('QB_TEAM_VOLUME_COHERENT', value=ev, **ev)
+    n_cells = sum(int(v) for k, v in ev.items() if k.endswith('_cells'))
+    return Outcome.measured('QB_TEAM_VOLUME_COHERENT', ev, n_measured=n_cells,
+                            what='QB-vs-team volume draw cells checked', **ev)
 
 
 # --------------------------------------------------------------- XL1 / OWN-1

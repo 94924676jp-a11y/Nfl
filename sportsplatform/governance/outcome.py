@@ -83,6 +83,33 @@ class Cause(str, enum.Enum):
     DEPENDENCY = 'DEPENDENCY'
     DATA = 'DATA'
     GOVERNANCE = 'GOVERNANCE'
+    # OWNER RULE 1 (2026-10-02). A consequential check may never PASS on input that is not
+    # evidence, and the refusal must say WHICH non-evidence it met, apart from a true FAIL:
+    #   EMPTY_INPUT   the required measured input was absent, empty, unparsed or zero-count
+    #   NOT_EXECUTED  the check (or the suite that would have run it) did not run at all
+    #   INCOMPLETE    it ran on part of what it needed and the rest is missing
+    # They ride on BLOCKED -- "could not run, and this is what is missing" -- so FAIL keeps
+    # meaning "ran on evidence and the evidence was bad". That difference decides what a
+    # reader does next: fix the model, or go and get the input.
+    EMPTY_INPUT = 'EMPTY_INPUT'
+    NOT_EXECUTED = 'NOT_EXECUTED'
+    INCOMPLETE = 'INCOMPLETE'
+
+
+#: The causes that mean "this verdict is not evidence about the thing checked". A consumer
+#: asking "did the gate find the input bad?" must treat these as "the gate never saw it".
+NON_EVIDENTIARY = frozenset({Cause.EMPTY_INPUT, Cause.NOT_EXECUTED, Cause.INCOMPLETE})
+
+
+def _is_empty(value) -> bool:
+    if value is None:
+        return True
+    if isinstance(value, (int, float, bool)):
+        return False
+    try:
+        return len(value) == 0
+    except TypeError:
+        return False
 
 
 _SENTINEL = object()
@@ -156,6 +183,52 @@ class Outcome:
         ev = dict(evidence)
         ev['cause'] = cause.value
         return cls(State.BLOCKED, code, detail, ev)
+
+    # -- OWNER RULE 1: the only way to PASS a measurement, and three ways to say it was not one
+    @classmethod
+    def measured(cls, code: str, value: Any, *, n_measured: int, what: str,
+                 detail: str = '', **evidence) -> 'Outcome':
+        """PASS only when something was actually measured.
+
+        `n_measured` is the count of items the check genuinely examined. Zero is not a quiet
+        success: a sealed run verified against an empty file set, a checklist of zero rows,
+        a readiness computed from no injury report were all "PASS" before 2026-10-02, and
+        every one of them was a gate that had seen nothing. Here they are BLOCKED with cause
+        EMPTY_INPUT and the count in evidence, so the next reader knows the gate never looked.
+        """
+        try:
+            n = int(n_measured)
+        except (TypeError, ValueError):
+            raise OutcomeError(f'MEASURED_COUNT_INVALID: {code} reported n_measured={n_measured!r}')
+        if n <= 0 or _is_empty(value):
+            return cls.blocked(
+                f'{code}_EMPTY_INPUT' if not code.endswith('_EMPTY_INPUT') else code,
+                f'{what}: nothing was measured (n_measured={n}'
+                f'{", value empty" if _is_empty(value) else ""}). A check that saw no input '
+                f'has not passed; it has not run on evidence.',
+                cause=Cause.EMPTY_INPUT, n_measured=n, what=what, **evidence)
+        ev = dict(evidence); ev['n_measured'] = n; ev['what'] = what
+        return cls(State.PASS, code, detail or f'{what}: {n} measured', ev, value)
+
+    @classmethod
+    def not_executed(cls, code: str, detail: str, **evidence) -> 'Outcome':
+        """The check did not run. Distinct from FAIL (it ran and refused) and from
+        EMPTY_INPUT (it ran and found nothing to measure)."""
+        return cls.blocked(code, detail, cause=Cause.NOT_EXECUTED, **evidence)
+
+    @classmethod
+    def incomplete(cls, code: str, detail: str, *, expected: Any, got: Any,
+                   **evidence) -> 'Outcome':
+        """It ran on part of its input. `expected` and `got` are recorded so the gap is
+        a number, not an adjective."""
+        return cls.blocked(code, detail, cause=Cause.INCOMPLETE, expected=expected, got=got,
+                           **evidence)
+
+    @property
+    def non_evidentiary(self) -> bool:
+        """True when this verdict says nothing about the thing checked."""
+        c = (self.evidence or {}).get('cause')
+        return self.state is State.BLOCKED and c in {x.value for x in NON_EVIDENTIARY}
 
     @classmethod
     def deferred(cls, code: str, detail: str, owed: Any = None,
@@ -277,5 +350,11 @@ def combine(outcomes: Mapping[str, Outcome], code: str) -> Outcome:
         return Outcome.deferred(
             code, f'{len(owed)} of {len(outcomes)} deferred and still owed: '
                   f'{sorted(owed)}', owed=sorted(owed), census=census)
+    # OWNER RULE 1. A census in which NOTHING applied is not an all-clear: it is the honest
+    # statement that nothing was checked, and it keeps that state rather than becoming PASS.
+    if all(o.state is State.NOT_APPLICABLE for o in outcomes.values()):
+        return Outcome.not_applicable(
+            code, f'all {len(outcomes)} stage(s) reported NOT_APPLICABLE; nothing was '
+                  f'measured, so nothing passed', census=census)
     return Outcome.ok(code, census, detail=f'all {len(outcomes)} accounted for',
                       census=census)

@@ -46,8 +46,16 @@ def summarise(rows: list) -> str:
     bad = [r for r in done if r.get('result') in ('FAIL', 'IMPORT_ERROR')]
     notally = [r for r in done if r.get('result') == 'NO_TALLY']
     fin = any(r.get('phase') == 'suite_scan_done' for r in rows)
-    lines = [f'  modules done {len(done)} of {n}   elapsed {rows[-1]["t"]}s'
-             f'   {"COMPLETE" if fin else "IN FLIGHT / STOPPED EARLY"}',
+    verdict_row = next((r for r in rows if r.get('phase') == 'suite_done'), None)
+    # OWNER RULE 1: a 0-module run used to summarise as COMPLETE. The runner's own verdict row
+    # (suite_done) decides, and a run that executed nothing says NOT_EXECUTED.
+    if verdict_row:
+        status = f"{verdict_row['verdict']} (verdict row: {verdict_row.get('n_checks_executed')} checks executed, mode {verdict_row.get('mode')})"
+    elif fin and (n in (0, '?') or not done):
+        status = 'NOT_EXECUTED (scan finished with no modules; no verdict row)'
+    else:
+        status = 'COMPLETE (no verdict row: pre-2026-10-02 runner)' if fin else 'IN FLIGHT / STOPPED EARLY'
+    lines = [f'  modules done {len(done)} of {n}   elapsed {rows[-1]["t"]}s   {status}',
              f'  failing or import-error: {len(bad)}   NO_TALLY: '
              f'{len(notally)}']
     for r in bad[:20]:

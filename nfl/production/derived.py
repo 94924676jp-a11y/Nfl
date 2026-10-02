@@ -73,6 +73,11 @@ def expected() -> dict:
 def verify(d: pathlib.Path) -> Outcome:
     """Are all artifacts present in `d` and byte-identical to the frozen set?"""
     want = expected()
+    if not want:
+        return Outcome.blocked(
+            'DERIVED_SPEC_EMPTY', f'{SPEC.name} declares no derived artifact '
+            f'hashes, so there is nothing to verify against.',
+            cause=Cause.EMPTY_INPUT)
     got, bad = {}, []
     for a in ARTIFACTS:
         p = d / a
@@ -88,8 +93,9 @@ def verify(d: pathlib.Path) -> Outcome:
         return Outcome.fail('DERIVED_ARTIFACTS_UNVERIFIED',
                             f'{len(bad)} artifact(s) missing or wrong',
                             problems=bad)
-    return Outcome.ok('DERIVED_ARTIFACTS_VERIFIED', value=str(d),
-                      hashes={k: v[:16] for k, v in got.items()})
+    return Outcome.measured('DERIVED_ARTIFACTS_VERIFIED', str(d),
+                            n_measured=len(got), what='derived artifacts rehashed',
+                            hashes={k: v[:16] for k, v in got.items()})
 
 
 def _point_research_at_cache(d):

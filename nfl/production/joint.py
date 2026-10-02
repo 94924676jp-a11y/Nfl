@@ -57,6 +57,10 @@ def reconcile_team_total(draws: np.ndarray, team_total: np.ndarray,
         return Outcome.fail(
             'JOINT_SHAPE_MISMATCH',
             f'draws {D.shape} against team totals {T.shape}')
+    if D.size == 0:
+        return Outcome.blocked(
+            'JOINT_EMPTY_INPUT', f'draws {D.shape}: nothing to reconcile',
+            cause=Cause.EMPTY_INPUT)
     s = D.sum(0)
     before = float(np.abs(s - T).mean())
     scale = np.where(s > tol, T / np.maximum(s, tol), 0.0)
@@ -66,6 +70,15 @@ def reconcile_team_total(draws: np.ndarray, team_total: np.ndarray,
     m0, m1 = D.mean(1), R.mean(1)
     shift = float(np.abs(m1 - m0).mean())
     rel = float(np.abs(m1 - m0).sum() / max(np.abs(m0).sum(), 1e-9))
+    if not np.isfinite(after) or after > max(tol * 1e3, 1e-6):
+        return Outcome.fail(
+            'TEAM_TOTAL_NOT_RECONCILED',
+            f'residual after scaling is {after:.6g} (before {before:.6g}); '
+            f'a draw index whose players sum to zero cannot be scaled onto a '
+            f'non-zero team total, and reporting it reconciled would be a '
+            f'claim the numbers contradict.',
+            residual_before=before, residual_after=after,
+            n_zero_sum_draws=int((s <= tol).sum()))
     return Outcome.ok(
         'TEAM_TOTAL_RECONCILED', value=R,
         detail=f'residual {before:.4f} -> {after:.4f}; mean marginal shift '

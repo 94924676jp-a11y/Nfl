@@ -230,6 +230,10 @@ def verify(rid: str) -> Outcome:
     if not sp.exists():
         return Outcome.blocked('RUN_NOT_SEALED', f'{rid} has no {SEAL_NAME}', cause=Cause.DATA)
     seal = json.loads(sp.read_text())
+    if not (seal.get('files') or {}):
+        # OWNER RULE 1 (2026-10-02): a seal naming no files verified as INTACT against an
+        # empty directory. A record of nothing is not a record.
+        return Outcome.measured('SEALED_RUN_INTACT', {}, n_measured=0, what=f'files sealed in {rid}')
     moved, absent, unreadable = [], [], []
     for name, rec in (seal.get('files') or {}).items():
         f = d / name
@@ -253,9 +257,10 @@ def verify(rid: str) -> Outcome:
             f'{len(unreadable)} unreadable since the seal. A sealed run is a record, and a record '
             f'that changed is not one.',
             moved=moved, absent=absent, added=extra, unreadable=unreadable)
-    return Outcome.ok('SEALED_RUN_INTACT', value={
+    return Outcome.measured('SEALED_RUN_INTACT', {
         'run_id': rid, 'n_files': len(seal.get('files') or {}),
-        'code_version': seal.get('code_version'), 'sealed_at_utc': seal.get('sealed_at_utc')})
+        'code_version': seal.get('code_version'), 'sealed_at_utc': seal.get('sealed_at_utc')},
+        n_measured=len(seal.get('files') or {}), what=f'files sealed in {rid}')
 
 
 def verify_current() -> Outcome:
@@ -285,7 +290,10 @@ def verify_current() -> Outcome:
             note=('this is DEFERRED, not a failure: the live paths being newer than the archive is '
                   'the normal state between a rebuild and the next archive. It is visible as an '
                   'outstanding debt rather than silently fine.'))
-    return Outcome.ok('CURRENT_MATCHES_ARCHIVE', value={'run_id': rid, 'n_files': len(seal['files'])})
+    return Outcome.measured('CURRENT_MATCHES_ARCHIVE',
+                            {'run_id': rid, 'n_files': len(seal['files'])},
+                            n_measured=len(seal['files']),
+                            what=f'live output paths compared against sealed run {rid}')
 
 
 def list_runs() -> Outcome:

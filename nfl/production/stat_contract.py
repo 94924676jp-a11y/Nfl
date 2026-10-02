@@ -416,8 +416,9 @@ def reconcile_with_product_registry(supported) -> Outcome:
             f'does not; this contract calls {only_mine} counts and the '
             f'product layer does not. One quantity, two answers.',
             only_in_product=only_theirs, only_in_contract=only_mine)
-    return Outcome.ok(
-        'COUNT_REGISTRY_AGREES', value=sorted(mine),
+    return Outcome.measured(
+        'COUNT_REGISTRY_AGREES', sorted(mine), n_measured=len(mine),
+        what='count metrics compared across the two registries',
         detail=f'{len(mine)} metric(s) declared count by both layers',
         contract_version=CONTRACT_VERSION)
 

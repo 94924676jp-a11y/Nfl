@@ -458,14 +458,18 @@ def test_F_chronology_and_staleness_are_separate_states():
     """
     o = RD.team_readiness(2026, 1, 'NE',
                           kickoff_utc='2026-09-01T00:00:00Z')
+    # OWNER RULE 1 (2026-10-02): the absence of a report is EMPTY_INPUT, and nothing
+    # is READY on it. The state names the absence and carries the cause.
     check('a clock that excludes every capture reports ABSENCE, not a '
           'chronology failure',
-          o['state'] == 'INJURY_REPORT_NOT_YET_FILED', o['state'])
+          o['state'] == 'NOT_READY_NO_LEAGUE_REPORT' and o.get('cause') == 'EMPTY_INPUT',
+          f"{o['state']} cause={o.get('cause')}")
     check('  and it names the cut it applied',
           o.get('as_of', '').startswith('2026-08-31'), str(o.get('as_of')))
     o2 = RD.team_readiness(2026, 1, 'NE', written_at='2026-09-01T00:00:00Z')
     check('  the same holds for a written_at cut',
-          o2['state'] == 'INJURY_REPORT_NOT_YET_FILED', o2['state'])
+          o2['state'] == 'NOT_READY_NO_LEAGUE_REPORT' and o2.get('cause') == 'EMPTY_INPUT',
+          o2['state'])
     check('  the chronology state is still declared and still reachable',
           'INJURY_REPORT_CHRONOLOGY_FAILURE' in RD.GAME_STATES)
     check('  staleness is a different state with a declared bound',

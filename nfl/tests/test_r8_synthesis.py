@@ -83,9 +83,15 @@ def test_a_real_shortfall_is_caught():
         team_dropback_draws={'SF': np.array([18.0, 17.0]),   # SF is one short
                              'LA': np.array([21.0, 21.0])},
         integer_level=True)
-    c = (o.value or {}).get('per_team_dropback_closure') or {}
+    c = ((o.value or {}).get('per_team_dropback_closure')
+         or o.evidence.get('per_team_dropback_closure') or {})
     check('a one-dropback shortfall is caught',
           c.get('status') == 'DOES_NOT_CLOSE', str(c)[:200])
+    # OWNER RULE 1 (2026-10-02): a measured closure failure is a FAIL outcome, not a
+    # PASS[QB_TEAM_ACCOUNTING_MEASURED] carrying a warning nobody reads.
+    check('  and the Outcome itself is a FAIL, not a measured pass with a warning',
+          o.state is State.FAIL and o.code == 'QB_TEAM_DROPBACKS_DO_NOT_CLOSE',
+          f'{o.state}[{o.code}]')
     check('  exactly one cell violates', c.get('violating_cells') == 1, str(c))
     check('  and the warning is raised',
           bool(o.evidence.get('warnings')), str(o.evidence.get('warnings')))
@@ -100,9 +106,10 @@ def test_cross_team_compensation_can_never_hide_a_defect():
         team_dropback_draws={'SF': np.array([17.0, 17.0]),
                              'LA': np.array([21.0, 21.0])},
         integer_level=True)
-    c = (o.value or {}).get('per_team_dropback_closure') or {}
+    c = ((o.value or {}).get('per_team_dropback_closure')
+         or o.evidence.get('per_team_dropback_closure') or {})
     check('a matched surplus and shortfall still fail',
-          c.get('status') == 'DOES_NOT_CLOSE', str(c)[:200])
+          c.get('status') == 'DOES_NOT_CLOSE' and o.state is State.FAIL, str(c)[:200])
     check('  and both teams are counted as violating',
           c.get('violating_cells') == 4, str(c.get('violating_cells')))
     tot = sum(v['qb_sum_mean'] for v in (c.get('per_team') or {}).values())

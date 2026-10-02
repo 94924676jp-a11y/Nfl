@@ -160,14 +160,21 @@ def test_F_an_unreviewed_candidate_site_REFUSES():
         OA.DISPOSITIONS.clear()
         OA.DISPOSITIONS.update(saved)
     o = OA.audit()
-    check('  and passes again once the disposition is restored',
-          o.state is State.PASS, f'{o.state}[{o.code}]')
+    # OWNER RULE 1 (2026-10-02): with every site dispositioned the audit is no longer a PASS over
+    # zero applying sites; it is BLOCKED/EMPTY_INPUT, because nothing applies an adjustment yet.
+    check('  and is no longer REFUSED once the disposition is restored',
+          o.code != 'OWNERSHIP_AUDIT_UNREVIEWED_SITE', f'{o.state}[{o.code}]')
+    check('  but does not PASS either: zero applying sites is nothing measured, not ownership',
+          o.state is State.BLOCKED and o.code == 'OWNERSHIP_AUDIT_NO_APPLICATIONS'
+          and o.evidence.get('cause') == 'EMPTY_INPUT', f'{o.state}[{o.code}]')
 
 
 def test_G_the_audit_over_the_real_tree():
     print('\nG. the audit itself')
     o = OA.audit()
-    check('the audit completes', o.state is State.PASS, f'{o.state}[{o.code}]')
+    check('the audit completes its scan and refuses to call it a pass over zero applications',
+          o.state is State.BLOCKED and o.code == 'OWNERSHIP_AUDIT_NO_APPLICATIONS',
+          f'{o.state}[{o.code}]')
     n = o.evidence['n_files_scanned']
     check(f'  it scanned the whole production path ({n} modules)', n >= 120,
           str(n))
@@ -178,12 +185,13 @@ def test_G_the_audit_over_the_real_tree():
     check('  every registered adjustment is covered by a family',
           not o.evidence['adjustments_not_covered_by_this_audit'],
           str(o.evidence['adjustments_not_covered_by_this_audit']))
+    rows = o.value or o.evidence.get('rows') or {}
     for aid in AR.ADJUSTMENTS:
         check(f'  {aid} has a verdict',
-              o.value.get(aid, {}).get('audit_state') in (
+              rows.get(aid, {}).get('audit_state') in (
                   OA.REGISTERED_AND_ENFORCED, OA.REGISTERED_BUT_BYPASSED,
                   OA.NOT_REGISTERED, OA.NOT_IMPLEMENTED),
-              str(o.value.get(aid, {}).get('audit_state')))
+              str(rows.get(aid, {}).get('audit_state')))
 
 
 def test_H_ownership_is_not_asserted():

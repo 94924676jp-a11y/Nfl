@@ -134,8 +134,7 @@ def measure_shape_mix(v1_rows: Mapping[str, Mapping[str, Any]] | None = None) ->
     it is the owner's entry record and is a placeholder set, not a recommendation.
     """
     if not FC48.exists():
-        return Outcome.blocked('SHAPE_MIX_SOURCE_ABSENT', cause=Cause.MISSING_INPUT,
-                               evidence={'path': str(FC48)})
+        return Outcome.blocked('SHAPE_MIX_SOURCE_ABSENT', cause=Cause.EMPTY_INPUT, path=str(FC48))
     if v1_rows is None:
         art = json.loads((_REPO / 'nfl/dfs/salaries/DK_WEEK3_PROJ_V1.json').read_text())
         v1_rows = art['rows']

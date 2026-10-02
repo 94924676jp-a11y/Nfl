@@ -216,8 +216,16 @@ def build():
 def check() -> Outcome:
     """PASS only when nothing is outstanding. Today it is BLOCKED."""
     d = build()
+    # OWNER RULE 1 (2026-10-02): "nothing failing" over zero parsed rows was ALL_TWELVE_PASS.
+    # Twelve items are required to have been read, or the verdict is INCOMPLETE by count.
+    n_req = int(d.get('n_requirements') or 0)
+    if n_req != 12:
+        return Outcome.incomplete('G0A_CHECKLIST_INCOMPLETE',
+                                  f'the checklist parsed to {n_req} requirement(s); the gate needs '
+                                  f'all twelve read before any of them can pass',
+                                  expected=12, got=n_req, gate=d.get('gate_reads'))
     if not d['failing_item_numbers']:
-        return Outcome.ok('G0A_ALL_TWELVE_PASS', value=d['gate_reads'])
+        return Outcome.measured('G0A_ALL_TWELVE_PASS', d['gate_reads'], n_measured=n_req, what='G0A requirements')
     return Outcome.blocked(
         'G0A_ITEM_NOT_CLEARED',
         f'G0A reads {d["gate_reads"]}; item {d["remaining_item"]["number"]} '

@@ -395,6 +395,8 @@ def audit_frame(tags, *, label: str = 'frame') -> Outcome:
             ALREADY_APPLIED,
             f'{label}: {dupes} appear more than once in the lineage.',
             cause=Cause.GOVERNANCE, **ev)
-    return Outcome.ok('ADJUSTMENT_LINEAGE_CLEAN', value=dict(ev),
-                      detail=f'{label}: {len(t)} adjustment(s), all registered, '
-                             f'none duplicated', **ev)
+    return Outcome.measured('ADJUSTMENT_LINEAGE_CLEAN', dict(ev),
+                            n_measured=len(t),
+                            what=f'{label}: adjustment tags in the lineage',
+                            detail=f'{label}: {len(t)} adjustment(s), all '
+                                   f'registered, none duplicated', **ev)

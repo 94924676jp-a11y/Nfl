@@ -1,0 +1,878 @@
+{
+ "ARTIFACT": "DETECTORS",
+ "RULE": "OWNER RULE 2 (2026-10-02): every detector listed here must have at least one positive control (nfl/tests/_controls.observe / positive_control) that ran and tripped under nfl/tests/run_suite.py. Unlisted refusal codes are reported by the census in DETECTOR_VALIDATION.json, never ignored.",
+ "detectors": [
+  {
+   "detector": "nfl.dfs.lineup_integrity:check:LINEUP_CAPTAIN_COUNT",
+   "kind": "raised",
+   "where": "nfl/dfs/lineup_integrity.py"
+  },
+  {
+   "detector": "nfl.dfs.lineup_integrity:check:LINEUP_EMPTY",
+   "kind": "raised",
+   "where": "nfl/dfs/lineup_integrity.py"
+  },
+  {
+   "detector": "nfl.dfs.lineup_integrity:check:LINEUP_WRONG_SIZE",
+   "kind": "raised",
+   "where": "nfl/dfs/lineup_integrity.py"
+  },
+  {
+   "detector": "nfl.product.quality_gates:evaluate:QUALITY_GATES_EVALUATED_NOTHING",
+   "kind": "outcome-code",
+   "where": "nfl/product/quality_gates.py:976"
+  },
+  {
+   "detector": "nfl.product.quality_gates:evaluate:QUALITY_GATES_INPUT_MISSING",
+   "kind": "outcome-code",
+   "where": "nfl/product/quality_gates.py:963"
+  },
+  {
+   "detector": "nfl.production.adjustment_registry:assert_consumer:ADJUSTMENT_CONSUMER_NOT_PERMITTED",
+   "kind": "outcome-code",
+   "where": "nfl/production/adjustment_registry.py:369"
+  },
+  {
+   "detector": "nfl.production.adjustment_registry:assert_consumer:ADJUSTMENT_NOT_PRODUCTION_APPROVED",
+   "kind": "outcome-code",
+   "where": "nfl/production/adjustment_registry.py:348"
+  },
+  {
+   "detector": "nfl.production.adjustment_registry:assert_may_apply:ADJUSTMENT_ALREADY_APPLIED",
+   "kind": "outcome-code",
+   "where": "nfl/production/adjustment_registry.py:321"
+  },
+  {
+   "detector": "nfl.production.adjustment_registry:assert_may_apply:ADJUSTMENT_LINEAGE_UNKNOWN",
+   "kind": "outcome-code",
+   "where": "nfl/production/adjustment_registry.py:267"
+  },
+  {
+   "detector": "nfl.production.adjustment_registry:assert_may_apply:ADJUSTMENT_NOT_PRODUCTION_APPROVED",
+   "kind": "outcome-code",
+   "where": "nfl/production/adjustment_registry.py:276"
+  },
+  {
+   "detector": "nfl.production.adjustment_registry:assert_may_apply:ADJUSTMENT_OWNER_MISMATCH",
+   "kind": "outcome-code",
+   "where": "nfl/production/adjustment_registry.py:312"
+  },
+  {
+   "detector": "nfl.production.adjustment_registry:audit_frame:ADJUSTMENT_ALREADY_APPLIED",
+   "kind": "outcome-code",
+   "where": "nfl/production/adjustment_registry.py:394"
+  },
+  {
+   "detector": "nfl.production.adjustment_registry:audit_frame:ADJUSTMENT_LINEAGE_CLEAN_EMPTY_INPUT",
+   "kind": "measured-suffix",
+   "where": "nfl/production/adjustment_registry.py"
+  },
+  {
+   "detector": "nfl.production.adjustment_registry:audit_frame:UNREGISTERED_ADJUSTMENT",
+   "kind": "outcome-code",
+   "where": "nfl/production/adjustment_registry.py:388"
+  },
+  {
+   "detector": "nfl.production.adjustment_registry:get:UNREGISTERED_ADJUSTMENT",
+   "kind": "outcome-code",
+   "where": "nfl/production/adjustment_registry.py:204"
+  },
+  {
+   "detector": "nfl.production.authorization:assert_metric_origin_complete:METRIC_ORIGIN_INCOMPLETE",
+   "kind": "outcome-code",
+   "where": "nfl/production/authorization.py:1063"
+  },
+  {
+   "detector": "nfl.production.authorization:may_publish:NFL1_NOT_AUTHORIZED",
+   "kind": "outcome-code",
+   "where": "nfl/production/authorization.py:946"
+  },
+  {
+   "detector": "nfl.production.authorization:may_publish:PUBLICATION_CONTEXT_MALFORMED",
+   "kind": "outcome-code",
+   "where": "nfl/production/authorization.py:950"
+  },
+  {
+   "detector": "nfl.production.authorization:may_publish:PUBLICATION_FACTS_NOT_SUPPLIED",
+   "kind": "outcome-code",
+   "where": "nfl/production/authorization.py:979"
+  },
+  {
+   "detector": "nfl.production.authorization:may_publish:PUBLICATION_RULE_UNDECIDED",
+   "kind": "outcome-code",
+   "where": "nfl/production/authorization.py:986"
+  },
+  {
+   "detector": "nfl.production.coherence_certificate:certify:COHERENCE_CERTIFICATE_EMPTY",
+   "kind": "outcome-code",
+   "where": "nfl/production/coherence_certificate.py:79"
+  },
+  {
+   "detector": "nfl.production.coherence_certificate:verify:COHERENCE_CERTIFICATE_BROKEN",
+   "kind": "outcome-code",
+   "where": "nfl/production/coherence_certificate.py:136"
+  },
+  {
+   "detector": "nfl.production.coherence_certificate:verify:COHERENCE_CERTIFICATE_MISSING",
+   "kind": "outcome-code",
+   "where": "nfl/production/coherence_certificate.py:105"
+  },
+  {
+   "detector": "nfl.production.derived:artifacts:DERIVED_ARTIFACTS_NOT_BUILT",
+   "kind": "outcome-code",
+   "where": "nfl/production/derived.py:140"
+  },
+  {
+   "detector": "nfl.production.derived:artifacts:DERIVED_CACHE_ABSENT",
+   "kind": "outcome-code",
+   "where": "nfl/production/derived.py:132"
+  },
+  {
+   "detector": "nfl.production.derived:assert_research_tree_unchanged:RESEARCH_TREE_MUTATED",
+   "kind": "outcome-code",
+   "where": "nfl/production/derived.py:229"
+  },
+  {
+   "detector": "nfl.production.derived:assert_research_tree_unchanged:RESEARCH_TREE_SNAPSHOT_EMPTY",
+   "kind": "outcome-code",
+   "where": "nfl/production/derived.py:225"
+  },
+  {
+   "detector": "nfl.production.derived:build:DERIVED_ARTIFACT_HASH_MISMATCH",
+   "kind": "outcome-code",
+   "where": "nfl/production/derived.py:174"
+  },
+  {
+   "detector": "nfl.production.derived:build:DERIVED_BUILD_FAILED",
+   "kind": "outcome-code",
+   "where": "nfl/production/derived.py:182"
+  },
+  {
+   "detector": "nfl.production.derived:verify:DERIVED_ARTIFACTS_UNVERIFIED",
+   "kind": "outcome-code",
+   "where": "nfl/production/derived.py:93"
+  },
+  {
+   "detector": "nfl.production.derived:verify:DERIVED_ARTIFACTS_VERIFIED_EMPTY_INPUT",
+   "kind": "measured-suffix",
+   "where": "nfl/production/derived.py"
+  },
+  {
+   "detector": "nfl.production.derived:verify:DERIVED_SPEC_EMPTY",
+   "kind": "outcome-code",
+   "where": "nfl/production/derived.py:77"
+  },
+  {
+   "detector": "nfl.production.dfs.portfolio_guard:audit:PORTFOLIO_CONTAINS_BLOCKED_PLAYER",
+   "kind": "outcome-code",
+   "where": "nfl/production/dfs/portfolio_guard.py:122"
+  },
+  {
+   "detector": "nfl.production.dfs.portfolio_guard:audit:PORTFOLIO_CONTAINS_UNTAGGED_PLAYER",
+   "kind": "outcome-code",
+   "where": "nfl/production/dfs/portfolio_guard.py:77"
+  },
+  {
+   "detector": "nfl.production.dfs.portfolio_guard:audit:PORTFOLIO_EMPTY",
+   "kind": "outcome-code",
+   "where": "nfl/production/dfs/portfolio_guard.py:66"
+  },
+  {
+   "detector": "nfl.production.dfs.portfolio_guard:audit:PORTFOLIO_EXPOSURE_DRIVEN_BY_KNOWN_DEFECT",
+   "kind": "outcome-code",
+   "where": "nfl/production/dfs/portfolio_guard.py:128"
+  },
+  {
+   "detector": "nfl.production.dfs.portfolio_guard:audit:PORTFOLIO_OVERRIDE_CARRIES_NO_EVIDENCE",
+   "kind": "outcome-code",
+   "where": "nfl/production/dfs/portfolio_guard.py:108"
+  },
+  {
+   "detector": "nfl.production.eligibility_gate:assert_zero_opportunity_over_draws:ZERO_OPPORTUNITY_MATRIX_MISSING",
+   "kind": "outcome-code",
+   "where": "nfl/production/eligibility_gate.py:848"
+  },
+  {
+   "detector": "nfl.production.eligibility_gate:assert_zero_opportunity_over_draws:ZERO_OPPORTUNITY_NOTHING_TO_CHECK",
+   "kind": "outcome-code",
+   "where": "nfl/production/eligibility_gate.py:814"
+  },
+  {
+   "detector": "nfl.production.eligibility_gate:assert_zero_opportunity_over_draws:ZERO_OPPORTUNITY_NO_LAYERS",
+   "kind": "outcome-code",
+   "where": "nfl/production/eligibility_gate.py:820"
+  },
+  {
+   "detector": "nfl.production.eligibility_gate:assert_zero_opportunity_over_draws:ZERO_OPPORTUNITY_NO_PLAYER_AXIS",
+   "kind": "outcome-code",
+   "where": "nfl/production/eligibility_gate.py:829"
+  },
+  {
+   "detector": "nfl.production.eligibility_gate:assert_zero_opportunity_over_draws:ZERO_OPPORTUNITY_SHAPE_MISMATCH",
+   "kind": "outcome-code",
+   "where": "nfl/production/eligibility_gate.py:857"
+  },
+  {
+   "detector": "nfl.production.eligibility_gate:assert_zero_opportunity_over_draws:ZERO_OPPORTUNITY_VIOLATED",
+   "kind": "outcome-code",
+   "where": "nfl/production/eligibility_gate.py:879"
+  },
+  {
+   "detector": "nfl.production.eligibility_gate:choice_set:BLOCKED_UPSTREAM_ELIGIBILITY",
+   "kind": "outcome-code",
+   "where": "nfl/production/eligibility_gate.py:649"
+  },
+  {
+   "detector": "nfl.production.eligibility_gate:choice_set:CHOICE_SET_EMPTY",
+   "kind": "outcome-code",
+   "where": "nfl/production/eligibility_gate.py:683"
+  },
+  {
+   "detector": "nfl.production.eligibility_gate:choice_set:CHOICE_SET_PLAYER_NOT_IN_SNAPSHOT",
+   "kind": "outcome-code",
+   "where": "nfl/production/eligibility_gate.py:659"
+  },
+  {
+   "detector": "nfl.production.eligibility_gate:first_seen:ELIGIBILITY_NO_CLOCK",
+   "kind": "outcome-code",
+   "where": "nfl/production/eligibility_gate.py:319"
+  },
+  {
+   "detector": "nfl.production.eligibility_gate:first_seen:ELIGIBILITY_NO_LAWFUL_INJURY_VINTAGE",
+   "kind": "outcome-code",
+   "where": "nfl/production/eligibility_gate.py:326"
+  },
+  {
+   "detector": "nfl.production.eligibility_gate:first_seen:ELIGIBILITY_NO_READABLE_INJURY_VINTAGE",
+   "kind": "outcome-code",
+   "where": "nfl/production/eligibility_gate.py:379"
+  },
+  {
+   "detector": "nfl.production.eligibility_gate:injury_designations:ELIGIBILITY_INJURY_BLOB_MISSING",
+   "kind": "outcome-code",
+   "where": "nfl/production/eligibility_gate.py:216"
+  },
+  {
+   "detector": "nfl.production.eligibility_gate:injury_designations:ELIGIBILITY_INJURY_SLICE_EMPTY",
+   "kind": "outcome-code",
+   "where": "nfl/production/eligibility_gate.py:249"
+  },
+  {
+   "detector": "nfl.production.eligibility_gate:injury_designations:ELIGIBILITY_NO_CLOCK",
+   "kind": "outcome-code",
+   "where": "nfl/production/eligibility_gate.py:204"
+  },
+  {
+   "detector": "nfl.production.eligibility_gate:scenarios:BLOCKED_UPSTREAM_ELIGIBILITY",
+   "kind": "outcome-code",
+   "where": "nfl/production/eligibility_gate.py:718"
+  },
+  {
+   "detector": "nfl.production.eligibility_gate:scenarios:SCENARIO_UNKNOWN_PLAYER",
+   "kind": "outcome-code",
+   "where": "nfl/production/eligibility_gate.py:745"
+  },
+  {
+   "detector": "nfl.production.eligibility_gate:scenarios:SCENARIO_WEIGHTS_A_DETERMINATION",
+   "kind": "outcome-code",
+   "where": "nfl/production/eligibility_gate.py:751"
+  },
+  {
+   "detector": "nfl.production.eligibility_gate:scenarios:SCENARIO_WEIGHT_OUT_OF_RANGE",
+   "kind": "outcome-code",
+   "where": "nfl/production/eligibility_gate.py:767"
+  },
+  {
+   "detector": "nfl.production.eligibility_gate:snapshot:ELIGIBILITY_AUTHORITY_CONFLICT",
+   "kind": "outcome-code",
+   "where": "nfl/production/eligibility_gate.py:597"
+  },
+  {
+   "detector": "nfl.production.eligibility_gate:snapshot:ELIGIBILITY_DUPLICATE_PLAYER",
+   "kind": "outcome-code",
+   "where": "nfl/production/eligibility_gate.py:421"
+  },
+  {
+   "detector": "nfl.production.eligibility_gate:snapshot:ELIGIBILITY_IDENTITY_UNRESOLVED",
+   "kind": "outcome-code",
+   "where": "nfl/production/eligibility_gate.py:413"
+  },
+  {
+   "detector": "nfl.production.eligibility_gate:snapshot:ELIGIBILITY_NO_PLAYERS",
+   "kind": "outcome-code",
+   "where": "nfl/production/eligibility_gate.py:406"
+  },
+  {
+   "detector": "nfl.production.eligibility_gate:snapshot:ELIGIBILITY_POSTHOC_STATUS",
+   "kind": "outcome-code",
+   "where": "nfl/production/eligibility_gate.py:526"
+  },
+  {
+   "detector": "nfl.production.fixture_assembler:assemble:FIXTURE_SOURCES_UNAVAILABLE",
+   "kind": "outcome-code",
+   "where": "nfl/production/fixture_assembler.py:181"
+  },
+  {
+   "detector": "nfl.production.fixture_assembler:assemble_game:GAME_ID_UNPARSEABLE",
+   "kind": "outcome-code",
+   "where": "nfl/production/fixture_assembler.py:228"
+  },
+  {
+   "detector": "nfl.production.fixture_assembler:assemble_game:ROSTER_CLUB_ABSENT",
+   "kind": "outcome-code",
+   "where": "nfl/production/fixture_assembler.py:242"
+  },
+  {
+   "detector": "nfl.production.fixture_assembler:verify_declared:DECLARED_CAPTURES_UNVERIFIED",
+   "kind": "outcome-code",
+   "where": "nfl/production/fixture_assembler.py:322"
+  },
+  {
+   "detector": "nfl.production.fixture_assembler:verify_declared:DECLARED_CAPTURES_VERIFIED_EMPTY_INPUT",
+   "kind": "measured-suffix",
+   "where": "nfl/production/fixture_assembler.py"
+  },
+  {
+   "detector": "nfl.production.gate_ids:assert_scope_allowed:SCOPE_BLOCKED_BY_GATE",
+   "kind": "outcome-code",
+   "where": "nfl/production/gate_ids.py:214"
+  },
+  {
+   "detector": "nfl.production.gate_ids:assert_scope_allowed:SCOPE_HAS_NO_GATES",
+   "kind": "outcome-code",
+   "where": "nfl/production/gate_ids.py:204"
+  },
+  {
+   "detector": "nfl.production.gate_ids:assert_scope_allowed:UNKNOWN_SCOPE",
+   "kind": "outcome-code",
+   "where": "nfl/production/gate_ids.py:199"
+  },
+  {
+   "detector": "nfl.production.gate_ids:get:UNKNOWN_GATE_ID",
+   "kind": "outcome-code",
+   "where": "nfl/production/gate_ids.py:185"
+  },
+  {
+   "detector": "nfl.production.gate_ids:readiness:READINESS_STATE_WITHDRAWN",
+   "kind": "outcome-code",
+   "where": "nfl/production/gate_ids.py:229"
+  },
+  {
+   "detector": "nfl.production.gate_ids:readiness:UNKNOWN_READINESS_STATE",
+   "kind": "outcome-code",
+   "where": "nfl/production/gate_ids.py:233"
+  },
+  {
+   "detector": "nfl.production.joint:couple_through_volume:JOINT_SHAPE_MISMATCH",
+   "kind": "outcome-code",
+   "where": "nfl/production/joint.py:123"
+  },
+  {
+   "detector": "nfl.production.joint:reconcile_team_total:JOINT_EMPTY_INPUT",
+   "kind": "outcome-code",
+   "where": "nfl/production/joint.py:61"
+  },
+  {
+   "detector": "nfl.production.joint:reconcile_team_total:JOINT_SHAPE_MISMATCH",
+   "kind": "outcome-code",
+   "where": "nfl/production/joint.py:57"
+  },
+  {
+   "detector": "nfl.production.joint:reconcile_team_total:TEAM_TOTAL_NOT_RECONCILED",
+   "kind": "outcome-code",
+   "where": "nfl/production/joint.py:74"
+  },
+  {
+   "detector": "nfl.production.lineage:audit:LINEAGE_AUDIT_NOT_EXECUTED",
+   "kind": "dict-state",
+   "where": "nfl/production/lineage.py"
+  },
+  {
+   "detector": "nfl.production.nonqb.readiness:lawful_injuries_rows:INJURIES_NO_LAWFUL_ROWS",
+   "kind": "outcome-code",
+   "where": "nfl/production/nonqb/readiness.py:189"
+  },
+  {
+   "detector": "nfl.production.nonqb.readiness:team_readiness:INJURY_REPORT_CHRONOLOGY_FAILURE",
+   "kind": "dict-state",
+   "where": "nfl/production/nonqb/readiness.py"
+  },
+  {
+   "detector": "nfl.production.nonqb.readiness:team_readiness:INJURY_REPORT_INCOMPLETE",
+   "kind": "dict-state",
+   "where": "nfl/production/nonqb/readiness.py"
+  },
+  {
+   "detector": "nfl.production.nonqb.readiness:team_readiness:INJURY_REPORT_NOT_YET_FILED",
+   "kind": "dict-state",
+   "where": "nfl/production/nonqb/readiness.py"
+  },
+  {
+   "detector": "nfl.production.nonqb.readiness:team_readiness:INJURY_REPORT_STALE",
+   "kind": "dict-state",
+   "where": "nfl/production/nonqb/readiness.py"
+  },
+  {
+   "detector": "nfl.production.nonqb.readiness:team_readiness:NOT_READY_NO_LEAGUE_REPORT",
+   "kind": "dict-state",
+   "where": "nfl/production/nonqb/readiness.py"
+  },
+  {
+   "detector": "nfl.production.nonqb.readiness:team_readiness:READINESS_CLOCK_UNRESOLVED",
+   "kind": "dict-state",
+   "where": "nfl/production/nonqb/readiness.py"
+  },
+  {
+   "detector": "nfl.production.ownership_audit:audit:OWNERSHIP_AUDIT_NO_APPLICATIONS",
+   "kind": "outcome-code",
+   "where": "nfl/production/ownership_audit.py:770"
+  },
+  {
+   "detector": "nfl.production.ownership_audit:audit:OWNERSHIP_AUDIT_NO_FILES",
+   "kind": "outcome-code",
+   "where": "nfl/production/ownership_audit.py:666"
+  },
+  {
+   "detector": "nfl.production.ownership_audit:audit:OWNERSHIP_AUDIT_UNPARSEABLE",
+   "kind": "outcome-code",
+   "where": "nfl/production/ownership_audit.py:676"
+  },
+  {
+   "detector": "nfl.production.ownership_audit:audit:OWNERSHIP_AUDIT_UNREVIEWED_SITE",
+   "kind": "outcome-code",
+   "where": "nfl/production/ownership_audit.py:743"
+  },
+  {
+   "detector": "nfl.production.ownership_audit:audit:OWNERSHIP_NOT_VERIFIED",
+   "kind": "outcome-code",
+   "where": "nfl/production/ownership_audit.py:776"
+  },
+  {
+   "detector": "nfl.production.pipeline:audit_declared_reads:EVERY_VINTAGE_READ_DECLARED_EMPTY_INPUT",
+   "kind": "measured-suffix",
+   "where": "nfl/production/pipeline.py"
+  },
+  {
+   "detector": "nfl.production.qb_accounting:apportion_dropbacks:APPORTION_DOES_NOT_CLOSE",
+   "kind": "outcome-code",
+   "where": "nfl/production/qb_accounting.py:952"
+  },
+  {
+   "detector": "nfl.production.qb_accounting:apportion_dropbacks:APPORTION_NEGATIVE_SHARE",
+   "kind": "outcome-code",
+   "where": "nfl/production/qb_accounting.py:907"
+  },
+  {
+   "detector": "nfl.production.qb_accounting:apportion_dropbacks:APPORTION_NO_QUARTERBACK",
+   "kind": "outcome-code",
+   "where": "nfl/production/qb_accounting.py:900"
+  },
+  {
+   "detector": "nfl.production.qb_accounting:apportion_dropbacks:APPORTION_PID_MISMATCH",
+   "kind": "outcome-code",
+   "where": "nfl/production/qb_accounting.py:896"
+  },
+  {
+   "detector": "nfl.production.qb_accounting:apportion_dropbacks:APPORTION_SHAPE_MISMATCH",
+   "kind": "outcome-code",
+   "where": "nfl/production/qb_accounting.py:891"
+  },
+  {
+   "detector": "nfl.production.qb_accounting:apportion_dropbacks:APPORTION_SHARE_DOES_NOT_COVER_BUDGET",
+   "kind": "outcome-code",
+   "where": "nfl/production/qb_accounting.py:920"
+  },
+  {
+   "detector": "nfl.production.qb_accounting:assert_inactive_qbs_own_nothing:QB_INACTIVE_OWNERSHIP_NOT_ESTABLISHED",
+   "kind": "outcome-code",
+   "where": "nfl/production/qb_accounting.py:823"
+  },
+  {
+   "detector": "nfl.production.qb_accounting:assert_inactive_qbs_own_nothing:QB_INACTIVE_STILL_OWNS_DROPBACKS",
+   "kind": "outcome-code",
+   "where": "nfl/production/qb_accounting.py:845"
+  },
+  {
+   "detector": "nfl.production.qb_accounting:conserve_allocated_mass:MASS_CONSERVATION_SHAPE_MISMATCH",
+   "kind": "outcome-code",
+   "where": "nfl/production/qb_accounting.py:697"
+  },
+  {
+   "detector": "nfl.production.qb_accounting:conserve_allocated_mass:QB_COMPOSITION_NO_DONOR_DRAW",
+   "kind": "outcome-code",
+   "where": "nfl/production/qb_accounting.py:716"
+  },
+  {
+   "detector": "nfl.production.qb_accounting:measure_composition_amplification:AMPLIFICATION_SHAPE_MISMATCH",
+   "kind": "outcome-code",
+   "where": "nfl/production/qb_accounting.py:763"
+  },
+  {
+   "detector": "nfl.production.qb_accounting:measure_composition_amplification:QB_COMPOSITION_RATE_FIDELITY_UNVERIFIED",
+   "kind": "outcome-code",
+   "where": "nfl/production/qb_accounting.py:789"
+  },
+  {
+   "detector": "nfl.production.qb_accounting:reconcile_allocation_share:QB_ALLOCATION_SHAPE_MISMATCH",
+   "kind": "outcome-code",
+   "where": "nfl/production/qb_accounting.py:632"
+  },
+  {
+   "detector": "nfl.production.qb_accounting:reconcile_allocation_share:QB_ALLOCATION_SHARE_UNCONSUMED",
+   "kind": "outcome-code",
+   "where": "nfl/production/qb_accounting.py:655"
+  },
+  {
+   "detector": "nfl.production.qb_accounting:reconcile_cross_layer:CROSS_LAYER_RECONCILIATION_NOT_RUN",
+   "kind": "outcome-code",
+   "where": "nfl/production/qb_accounting.py:403"
+  },
+  {
+   "detector": "nfl.production.qb_accounting:reconcile_cross_layer:CROSS_LAYER_SHAPE_MISMATCH",
+   "kind": "outcome-code",
+   "where": "nfl/production/qb_accounting.py:417"
+  },
+  {
+   "detector": "nfl.production.qb_accounting:reconcile_cross_layer:PASSING_TD_RECEIVING_TD_MISMATCH",
+   "kind": "outcome-code",
+   "where": "nfl/production/qb_accounting.py:431"
+  },
+  {
+   "detector": "nfl.production.qb_accounting:reconcile_cross_layer:PASSING_YARDS_RECEIVING_YARDS_MISMATCH",
+   "kind": "outcome-code",
+   "where": "nfl/production/qb_accounting.py:437"
+  },
+  {
+   "detector": "nfl.production.qb_accounting:reconcile_draws:QB_ACCOUNTING_EMPTY",
+   "kind": "outcome-code",
+   "where": "nfl/production/qb_accounting.py:98"
+  },
+  {
+   "detector": "nfl.production.qb_accounting:reconcile_draws:QB_ACCOUNTING_INPUT_INCOMPLETE",
+   "kind": "outcome-code",
+   "where": "nfl/production/qb_accounting.py:91"
+  },
+  {
+   "detector": "nfl.production.qb_accounting:reconcile_draws:QB_DRAW_ACCOUNTING_VIOLATED",
+   "kind": "outcome-code",
+   "where": "nfl/production/qb_accounting.py:112"
+  },
+  {
+   "detector": "nfl.production.qb_accounting:reconcile_team:CROSS_DRAW_INDEX_MISMATCH",
+   "kind": "outcome-code",
+   "where": "nfl/production/qb_accounting.py:326"
+  },
+  {
+   "detector": "nfl.production.qb_accounting:reconcile_team:QB_ACCOUNTING_EMPTY",
+   "kind": "outcome-code",
+   "where": "nfl/production/qb_accounting.py:209"
+  },
+  {
+   "detector": "nfl.production.qb_accounting:reconcile_team:QB_ACCOUNTING_SHAPE_MISMATCH",
+   "kind": "outcome-code",
+   "where": "nfl/production/qb_accounting.py:200"
+  },
+  {
+   "detector": "nfl.production.qb_accounting:reconcile_team:QB_RUSHES_EXCEED_TEAM_RUSH_DRAWS",
+   "kind": "outcome-code",
+   "where": "nfl/production/qb_accounting.py:259"
+  },
+  {
+   "detector": "nfl.production.qb_accounting:reconcile_team:QB_TEAM_DROPBACKS_DO_NOT_CLOSE",
+   "kind": "outcome-code",
+   "where": "nfl/production/qb_accounting.py:369"
+  },
+  {
+   "detector": "nfl.production.qb_accounting:reconcile_team:QB_TEAM_DROPBACK_BUDGET_KEY_MISMATCH",
+   "kind": "outcome-code",
+   "where": "nfl/production/qb_accounting.py:342"
+  },
+  {
+   "detector": "nfl.production.qb_accounting:reconcile_team:QB_TEAM_DROPBACK_CLOSURE_NOT_EXECUTED",
+   "kind": "outcome-code",
+   "where": "nfl/production/qb_accounting.py:379"
+  },
+  {
+   "detector": "nfl.production.qb_accounting:reconcile_team:QB_TEAM_RUSH_BUDGET_KEY_MISMATCH",
+   "kind": "outcome-code",
+   "where": "nfl/production/qb_accounting.py:238"
+  },
+  {
+   "detector": "nfl.production.qb_accounting:reconcile_team_volume:CROSS_DRAW_INDEX_MISMATCH",
+   "kind": "outcome-code",
+   "where": "nfl/production/qb_accounting.py:553"
+  },
+  {
+   "detector": "nfl.production.qb_accounting:reconcile_team_volume:QB_ACCOUNTING_EMPTY",
+   "kind": "outcome-code",
+   "where": "nfl/production/qb_accounting.py:529"
+  },
+  {
+   "detector": "nfl.production.qb_accounting:reconcile_team_volume:QB_ACCOUNTING_SHAPE_MISMATCH",
+   "kind": "outcome-code",
+   "where": "nfl/production/qb_accounting.py:515"
+  },
+  {
+   "detector": "nfl.production.qb_accounting:reconcile_team_volume:QB_TEAM_VOLUME_COHERENT_EMPTY_INPUT",
+   "kind": "measured-suffix",
+   "where": "nfl/production/qb_accounting.py"
+  },
+  {
+   "detector": "nfl.production.qb_accounting:reconcile_team_volume:QB_TEAM_VOLUME_INCOHERENT",
+   "kind": "outcome-code",
+   "where": "nfl/production/qb_accounting.py:583"
+  },
+  {
+   "detector": "nfl.production.qb_v1:identity_check:QB_DROPBACK_IDENTITY_HOLDS_EMPTY_INPUT",
+   "kind": "measured-suffix",
+   "where": "nfl/production/qb_v1.py"
+  },
+  {
+   "detector": "nfl.production.run_archive:archive:ARCHIVED_NAME_COLLISION",
+   "kind": "outcome-code",
+   "where": "nfl/production/run_archive.py:170"
+  },
+  {
+   "detector": "nfl.production.run_archive:archive:RUN_ALREADY_SEALED",
+   "kind": "outcome-code",
+   "where": "nfl/production/run_archive.py:156"
+  },
+  {
+   "detector": "nfl.production.run_archive:archive:RUN_OUTPUT_MISSING_OR_EMPTY",
+   "kind": "outcome-code",
+   "where": "nfl/production/run_archive.py:145"
+  },
+  {
+   "detector": "nfl.production.run_archive:list_runs:NO_RUNS_DIRECTORY",
+   "kind": "outcome-code",
+   "where": "nfl/production/run_archive.py:301"
+  },
+  {
+   "detector": "nfl.production.run_archive:verify:RUN_NOT_SEALED",
+   "kind": "outcome-code",
+   "where": "nfl/production/run_archive.py:231"
+  },
+  {
+   "detector": "nfl.production.run_archive:verify:SEALED_RUN_HAS_CHANGED",
+   "kind": "outcome-code",
+   "where": "nfl/production/run_archive.py:254"
+  },
+  {
+   "detector": "nfl.production.run_archive:verify:SEALED_RUN_INTACT_EMPTY_INPUT",
+   "kind": "measured-suffix",
+   "where": "nfl/production/run_archive.py"
+  },
+  {
+   "detector": "nfl.production.run_archive:verify_current:CURRENT_MATCHES_ARCHIVE_EMPTY_INPUT",
+   "kind": "measured-suffix",
+   "where": "nfl/production/run_archive.py"
+  },
+  {
+   "detector": "nfl.production.run_archive:verify_current:CURRENT_PATHS_AHEAD_OF_ARCHIVE",
+   "kind": "outcome-code",
+   "where": "nfl/production/run_archive.py:285"
+  },
+  {
+   "detector": "nfl.production.run_archive:verify_current:NO_CURRENT_RUN",
+   "kind": "outcome-code",
+   "where": "nfl/production/run_archive.py:269"
+  },
+  {
+   "detector": "nfl.production.stat_contract:reconcile_with_product_registry:COUNT_REGISTRY_AGREES_EMPTY_INPUT",
+   "kind": "measured-suffix",
+   "where": "nfl/production/stat_contract.py"
+  },
+  {
+   "detector": "nfl.production.verdict:assess:PRODUCT_VERDICT_EMPTY_INPUT",
+   "kind": "outcome-code",
+   "where": "nfl/production/verdict.py:162"
+  },
+  {
+   "detector": "nfl.production.world_clock:assert_no_post_cutoff_outcomes:LEAKAGE_CHECK_VACUOUS",
+   "kind": "outcome-code",
+   "where": "nfl/production/world_clock.py:237"
+  },
+  {
+   "detector": "nfl.production.world_clock:assert_no_post_cutoff_outcomes:POST_CUTOFF_OUTCOME_PRESENT",
+   "kind": "outcome-code",
+   "where": "nfl/production/world_clock.py:277"
+  },
+  {
+   "detector": "nfl.production.world_clock:latest_completed_in_evidence:WORLD_CLOCK_NO_SCORED_EVIDENCE",
+   "kind": "outcome-code",
+   "where": "nfl/production/world_clock.py:155"
+  },
+  {
+   "detector": "nfl.production.world_clock:latest_completed_in_evidence:WORLD_CLOCK_NO_TEAM_GAME",
+   "kind": "outcome-code",
+   "where": "nfl/production/world_clock.py:139"
+  },
+  {
+   "detector": "nfl.production.world_clock:latest_completed_in_world:WORLD_CLOCK_NO_COMPLETED_GAME",
+   "kind": "outcome-code",
+   "where": "nfl/production/world_clock.py:121"
+  },
+  {
+   "detector": "nfl.production.world_clock:schedule:WORLD_CLOCK_SCHEDULE_EMPTY",
+   "kind": "outcome-code",
+   "where": "nfl/production/world_clock.py:98"
+  },
+  {
+   "detector": "nfl.production.world_clock:semantic_freshness:EVIDENCE_BEHIND_THE_WORLD",
+   "kind": "outcome-code",
+   "where": "nfl/production/world_clock.py:211"
+  },
+  {
+   "detector": "nfl.prospective.q9shadow.g0a:check:G0A_CHECKLIST_INCOMPLETE",
+   "kind": "outcome-code",
+   "where": "nfl/prospective/q9shadow/g0a.py:223"
+  },
+  {
+   "detector": "nfl.prospective.q9shadow.g0a:check:G0A_ITEM_NOT_CLEARED",
+   "kind": "outcome-code",
+   "where": "nfl/prospective/q9shadow/g0a.py:229"
+  },
+  {
+   "detector": "nfl.prospective.q9shadow.injury_completeness:assess:INCOMPLETE_NO_INJURY_ROWS_FOR_SEASON",
+   "kind": "dict-state",
+   "where": "nfl/prospective/q9shadow/injury_completeness.py"
+  },
+  {
+   "detector": "nfl.tests.run_suite:main:NOT_EXECUTED",
+   "kind": "harness-verdict",
+   "where": "nfl/tests/run_suite.py"
+  },
+  {
+   "detector": "nfl.tools.football_sanity:assess:CLUB_CARRIES_NOT_RECONCILED",
+   "kind": "flag",
+   "where": "nfl/tools/football_sanity.py"
+  },
+  {
+   "detector": "nfl.tools.football_sanity:assess:CLUB_PASS_ATTEMPTS_NOT_RECONCILED",
+   "kind": "flag",
+   "where": "nfl/tools/football_sanity.py"
+  },
+  {
+   "detector": "nfl.tools.football_sanity:assess:CLUB_TARGETS_NOT_RECONCILED",
+   "kind": "flag",
+   "where": "nfl/tools/football_sanity.py"
+  },
+  {
+   "detector": "nfl.tools.football_sanity:assess:FOOTBALL_SANITY_NO_ROWS",
+   "kind": "flag",
+   "where": "nfl/tools/football_sanity.py"
+  },
+  {
+   "detector": "nfl.tools.football_sanity:assess:INACTIVE_PLAYER_HAS_OPPORTUNITY",
+   "kind": "flag",
+   "where": "nfl/tools/football_sanity.py"
+  },
+  {
+   "detector": "nfl.tools.football_sanity:assess:KICKER_OR_DST_MISSING",
+   "kind": "flag",
+   "where": "nfl/tools/football_sanity.py"
+  },
+  {
+   "detector": "nfl.tools.football_sanity:assess:MISSING_INPUT_READ_AS_ZERO",
+   "kind": "flag",
+   "where": "nfl/tools/football_sanity.py"
+  },
+  {
+   "detector": "nfl.tools.football_sanity:assess:NON_QB_PASS_ATTEMPTS_ABOVE_CEILING",
+   "kind": "flag",
+   "where": "nfl/tools/football_sanity.py"
+  },
+  {
+   "detector": "nfl.tools.football_sanity:assess:QB_TARGETS_ABOVE_CEILING_WITHOUT_REASON",
+   "kind": "flag",
+   "where": "nfl/tools/football_sanity.py"
+  },
+  {
+   "detector": "nfl.tools.football_sanity:assess:RANK1_QB_NOT_PREDICTED_STARTER",
+   "kind": "flag",
+   "where": "nfl/tools/football_sanity.py"
+  },
+  {
+   "detector": "nfl.tools.football_sanity:assess:ROLE_ABOVE_CEILING_WITHOUT_REASON",
+   "kind": "flag",
+   "where": "nfl/tools/football_sanity.py"
+  },
+  {
+   "detector": "nfl.tools.football_sanity:assess:STARTER_CARRIES_APPEARANCE_PENALTY",
+   "kind": "flag",
+   "where": "nfl/tools/football_sanity.py"
+  },
+  {
+   "detector": "nfl.tools.football_sanity:assess:ZERO_WITHOUT_NAMED_STATE",
+   "kind": "flag",
+   "where": "nfl/tools/football_sanity.py"
+  },
+  {
+   "detector": "nfl.tools.football_sanity:measure_draws:DRAWS_DOC_NOT_SUPPLIED",
+   "kind": "dict-state",
+   "where": "nfl/tools/football_sanity.py"
+  },
+  {
+   "detector": "nfl.tools.football_sanity:measure_draws:SIMULATOR_OWN_REGRESSION",
+   "kind": "dict-state",
+   "where": "nfl/tools/football_sanity.py"
+  },
+  {
+   "detector": "nfl.tools.suite_progress:summarise:NOT_EXECUTED",
+   "kind": "summary-text",
+   "where": "nfl/tools/suite_progress.py"
+  },
+  {
+   "detector": "nfl.tools.sync_captures:plan:SYNC_BLOB_CONFLICT_ACROSS_FORK",
+   "kind": "outcome-code",
+   "where": "nfl/tools/sync_captures.py:91"
+  },
+  {
+   "detector": "nfl.tools.sync_captures:plan:SYNC_MANIFEST_ROW_UNPARSEABLE",
+   "kind": "outcome-code",
+   "where": "nfl/tools/sync_captures.py:101"
+  },
+  {
+   "detector": "nfl.tools.sync_captures:run:SYNC_BLOB_ABSENT_ON_REMOTE",
+   "kind": "outcome-code",
+   "where": "nfl/tools/sync_captures.py:165"
+  },
+  {
+   "detector": "nfl.tools.sync_captures:run:SYNC_BLOB_HASH_MISMATCH",
+   "kind": "outcome-code",
+   "where": "nfl/tools/sync_captures.py:169"
+  },
+  {
+   "detector": "nfl.tools.sync_captures:run:SYNC_FETCH_FAILED",
+   "kind": "outcome-code",
+   "where": "nfl/tools/sync_captures.py:138"
+  },
+  {
+   "detector": "nfl.tools.sync_captures:run:SYNC_LOCAL_BLOB_CONFLICTS",
+   "kind": "outcome-code",
+   "where": "nfl/tools/sync_captures.py:161"
+  },
+  {
+   "detector": "nfl.tools.sync_captures:run:SYNC_REMOTE_MANIFEST_ABSENT",
+   "kind": "outcome-code",
+   "where": "nfl/tools/sync_captures.py:142"
+  },
+  {
+   "detector": "nfl.tools.sync_captures:verify_blob:SYNC_BLOB_HASH_MISMATCH",
+   "kind": "outcome-code",
+   "where": "nfl/tools/sync_captures.py:116"
+  },
+  {
+   "detector": "sportsplatform.governance.outcome:Outcome.measured:X_EMPTY_INPUT",
+   "kind": "measured-suffix",
+   "where": "sportsplatform/governance/outcome.py"
+  },
+  {
+   "detector": "sportsplatform.governance.outcome:combine:NOT_APPLICABLE",
+   "kind": "state",
+   "where": "sportsplatform/governance/outcome.py"
+  }
+ ],
+ "n_detectors": 174,
+ "spec_version": "detectors-1"
+}

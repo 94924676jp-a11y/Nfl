@@ -216,6 +216,60 @@ def test_blocked_must_say_why():
           all(isinstance(c.value, str) for c in Cause))
 
 
+def test_rule1_nothing_measured_cannot_pass():
+    """OWNER RULE 1, POSITIVE CONTROLS: empty, None and zero-count inputs are refused by name.
+
+    Each of these was a real PASS before 2026-10-02: a sealed run verified against files={},
+    a G0A checklist of zero rows, a readiness computed from no injury report, a draws gate that
+    measured an empty document.
+    """
+    for label, value, n in (('empty list', [], 0), ('None', None, 0), ('empty dict', {}, 0),
+                            ('zero count with a value', {'rows': 3}, 0), ('value but count 0', [1, 2], 0)):
+        o = Outcome.measured('SEALED_RUN_INTACT', value, n_measured=n, what='sealed files')
+        check(f'{label}: not PASS', o.state is not State.PASS, o.state)
+        check(f'{label}: BLOCKED with cause EMPTY_INPUT', o.state is State.BLOCKED
+              and o.evidence.get('cause') == Cause.EMPTY_INPUT.value, o.evidence)
+        check(f'{label}: the count is recorded', o.evidence.get('n_measured') == n, o.evidence)
+        check(f'{label}: non_evidentiary', o.non_evidentiary)
+    # a numeric 0 as the VALUE of a real measurement is still a measurement (n > 0)
+    o = Outcome.measured('RESIDUAL', 0.0, n_measured=12, what='residual after scaling')
+    check('a zero-valued measurement over 12 items PASSES (zero is a number)', o.state is State.PASS)
+
+
+def test_rule1_a_real_measurement_still_passes():
+    """NEGATIVE CONTROL: valid non-empty input still passes, with the count on it."""
+    o = Outcome.measured('SEALED_RUN_INTACT', {'a.json': 'sha'}, n_measured=1, what='sealed files')
+    check('one verified file PASSES', o.state is State.PASS and o.code == 'SEALED_RUN_INTACT')
+    check('n_measured rides on the PASS', o.evidence.get('n_measured') == 1)
+    check('not non_evidentiary', not o.non_evidentiary)
+    check('value is returned', o.unwrap() == {'a.json': 'sha'})
+
+
+def test_rule1_three_non_evidentiary_causes_are_distinct_from_fail():
+    a = Outcome.not_executed('SUITE_NOT_EXECUTED', 'zero modules matched')
+    b = Outcome.incomplete('G0A_CHECKLIST_INCOMPLETE', 'parsed 7 of 12 rows', expected=12, got=7)
+    c = Outcome.measured('X', [], n_measured=0, what='rows')
+    f = Outcome.fail('X_BAD', 'ran on evidence and the evidence was bad')
+    check('NOT_EXECUTED is BLOCKED/NOT_EXECUTED', a.state is State.BLOCKED and a.evidence['cause'] == 'NOT_EXECUTED')
+    check('INCOMPLETE is BLOCKED/INCOMPLETE with expected and got', b.state is State.BLOCKED
+          and b.evidence['cause'] == 'INCOMPLETE' and (b.evidence['expected'], b.evidence['got']) == (12, 7))
+    check('EMPTY_INPUT is BLOCKED/EMPTY_INPUT', c.evidence['cause'] == 'EMPTY_INPUT')
+    check('all three are non_evidentiary', a.non_evidentiary and b.non_evidentiary and c.non_evidentiary)
+    check('a true FAIL is NOT non_evidentiary', not f.non_evidentiary and f.state is State.FAIL)
+    check('a DATA block is NOT non_evidentiary either (the input existed and was bad)',
+          not Outcome.blocked('Y', 'malformed', cause=Cause.DATA).non_evidentiary)
+
+
+def test_rule1_all_not_applicable_is_not_a_pass():
+    """POSITIVE CONTROL: a census in which nothing applied used to roll up to PASS."""
+    o = combine({'a': Outcome.not_applicable('A', 'no games'), 'b': Outcome.not_applicable('B', 'no games')}, 'ROLLUP')
+    check('all-NOT_APPLICABLE rolls up to NOT_APPLICABLE, never PASS', o.state is State.NOT_APPLICABLE, o.state)
+    check('the census is carried', o.evidence.get('census') == {'a': 'NOT_APPLICABLE', 'b': 'NOT_APPLICABLE'})
+    # NEGATIVE CONTROL: one real PASS among N/A still rolls up to PASS
+    o2 = combine({'a': Outcome.not_applicable('A', 'no games'), 'b': Outcome.ok('B', 1)}, 'ROLLUP')
+    check('one PASS plus N/A is still PASS', o2.state is State.PASS)
+
+
 if __name__ == '__main__':
     test_no_state_without_a_name()
     test_pass_must_carry_a_value()
@@ -228,5 +282,9 @@ if __name__ == '__main__':
     test_a_bare_return_cannot_reach_a_consumer()
     test_rollup_never_averages_away_a_failure()
     test_blocked_must_say_why()
+    test_rule1_nothing_measured_cannot_pass()
+    test_rule1_a_real_measurement_still_passes()
+    test_rule1_three_non_evidentiary_causes_are_distinct_from_fail()
+    test_rule1_all_not_applicable_is_not_a_pass()
     print(f'\n{PASSED} passed, {FAILED} failed')
     sys.exit(1 if FAILED else 0)
