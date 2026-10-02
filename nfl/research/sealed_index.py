@@ -49,6 +49,9 @@ NAMESPACES = (
     ('live', _REPO / 'nfl' / 'research' / 'live'),
     ('shadow', _REPO / 'nfl' / 'research' / 'shadow'),
     ('product', _REPO / 'nfl' / 'product' / 'boards'),
+    # Owner ruling 2, 2026-10-02: the Showdown family seals into its own namespace and is judged
+    # by its own admissibility lane (nfl.prospective.showdown_family), discovered here like any seal.
+    ('showdown_live', _REPO / 'nfl' / 'research' / 'showdown_live'),
 )
 
 # Any one of these marks a directory as a sealed forecast.

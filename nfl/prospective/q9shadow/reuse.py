@@ -222,7 +222,14 @@ def assert_currently_admissible(art) -> Outcome:
     REFUSED makes the artifact inadmissible; absent a REFUSED, a single
     LEGACY_UNVERIFIED makes it legacy.
     """
-    missing = sorted(set(MANDATORY_CONTROLS) - set(CONTROL_EVALUATORS))
+    # OWNER RULING 2 (2026-10-02): the Showdown family does not borrow Q9's identity. A seal that
+    # declares model_family SHOWDOWN_PROJ_V1_JOINT_SIM is judged by its own control set, through
+    # this same disposition loop. Q9's MANDATORY_CONTROLS are untouched.
+    from nfl.prospective import showdown_family as SF
+    controls, evaluators = MANDATORY_CONTROLS, CONTROL_EVALUATORS
+    if SF.is_showdown(art):
+        controls, evaluators = SF.MANDATORY_CONTROLS, SF.CONTROL_EVALUATORS
+    missing = sorted(set(controls) - set(evaluators))
     if missing:
         return Outcome.fail(
             'REUSE_CONTROL_NOT_EVALUATED',
@@ -230,9 +237,9 @@ def assert_currently_admissible(art) -> Outcome:
             f'that is declared and not run has not been satisfied.',
             missing=missing)
     per = {}
-    for name in MANDATORY_CONTROLS:
+    for name in controls:
         try:
-            disp, code, detail = CONTROL_EVALUATORS[name](art)
+            disp, code, detail = evaluators[name](art)
         except Exception as exc:                              # noqa: BLE001
             disp, code, detail = (REFUSED, 'CONTROL_EVALUATOR_ERROR',
                                   f'{type(exc).__name__}: {exc}'[:200])

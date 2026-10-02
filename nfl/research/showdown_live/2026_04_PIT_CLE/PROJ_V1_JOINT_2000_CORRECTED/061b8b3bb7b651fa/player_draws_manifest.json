@@ -1,0 +1,187 @@
+{
+ "arrays": {
+  "dk_scoring/dk_points": {
+   "dtype": "float64",
+   "sha256": "e19b265379c6d65b40027c64def29df88925a95648c41e70fe65be5ac6f9c695",
+   "shape": [
+    41,
+    2000
+   ]
+  },
+  "dst/dk_points": {
+   "dtype": "int16",
+   "sha256": "f39c0fe0857befdd962ea0639a1aaca338854dc7ade952f57fed5a4fd7d29544",
+   "shape": [
+    2,
+    2000
+   ]
+  },
+  "kicking/dk_points": {
+   "dtype": "int16",
+   "sha256": "9dbe44e2b3eb2047f231a687b515b53ea8639dc395f631bbd1fde967cfe4dfac",
+   "shape": [
+    2,
+    2000
+   ]
+  }
+ },
+ "content_digest": "2a35780fe66e4475b2d54e9f6df5140709a4c00917754a5528471af3800a84b8",
+ "draw_artifact_version": "nfl-draw-artifact-1",
+ "draw_index_semantics": {
+  "across_rows": "INDEPENDENT_STREAMS_COLUMN_ALIGNED",
+  "note": "column j is the same iteration of one row's stream for every metric of that row, so cross-metric dependence on this axis is real. Rows are seeded independently, so a CROSS-ROW correlation read off the same axis measures the generator's lack of coupling, not a football quantity.",
+  "within_row_across_metrics": "SAME_SIMULATED_WORLD"
+ },
+ "file": {
+  "bytes": 301074,
+  "name": "player_draws.npz",
+  "sha256": "5d79f984c0764d6d2925d77870d7f61afb4e81e84ade1579808db22987cc3002"
+ },
+ "game_id": "2026_04_PIT_CLE",
+ "layers": {
+  "dk_scoring": {
+   "metrics": [
+    "dk_points"
+   ],
+   "rng_stream": "joint",
+   "row_axis": "gsis_id",
+   "row_ids": [
+    "00-0023459",
+    "00-0036862",
+    "00-0038710",
+    "00-0037382",
+    "00-0036775",
+    "00-0039386",
+    "00-0041131",
+    "00-0039626",
+    "00-0035640",
+    "00-0038558",
+    "00-0041037",
+    "00-0033537",
+    "00-0040704",
+    "00-0040162",
+    "00-0038396",
+    "00-0041489",
+    "00-0040663",
+    "00-0040782",
+    "00-0036165",
+    "00-0038794",
+    "00-0037228",
+    "00-0036407",
+    "00-0040218",
+    "00-0041087",
+    "00-0041547",
+    "00-0041397",
+    "00-0041263",
+    "00-0038409",
+    "00-0039920",
+    "00-0034771",
+    "00-0039275",
+    "00-0031595",
+    "00-0036252",
+    "00-0036894",
+    "00-0040784",
+    "00-0040466",
+    "00-0041398",
+    "00-0033757",
+    "00-0039739",
+    "00-0040668",
+    "00-0035594"
+   ],
+   "row_teams": [
+    "PIT",
+    "PIT",
+    "CLE",
+    "PIT",
+    "PIT",
+    "CLE",
+    "CLE",
+    "PIT",
+    "PIT",
+    "PIT",
+    "CLE",
+    "CLE",
+    "CLE",
+    "CLE",
+    "CLE",
+    "PIT",
+    "CLE",
+    "CLE",
+    "PIT",
+    "CLE",
+    "PIT",
+    "CLE",
+    "CLE",
+    "CLE",
+    "CLE",
+    "PIT",
+    "PIT",
+    "PIT",
+    "CLE",
+    "PIT",
+    "CLE",
+    "CLE",
+    "PIT",
+    "PIT",
+    "CLE",
+    "CLE",
+    "PIT",
+    "PIT",
+    "PIT",
+    "CLE",
+    "PIT"
+   ],
+   "shape": [
+    41,
+    2000
+   ],
+   "spec_version": "showdown-family-1"
+  },
+  "dst": {
+   "metrics": [
+    "dk_points"
+   ],
+   "rng_stream": "joint",
+   "row_axis": "team",
+   "row_ids": [
+    "CLE",
+    "PIT"
+   ],
+   "shape": [
+    2,
+    2000
+   ],
+   "spec_version": "showdown-family-1"
+  },
+  "kicking": {
+   "metrics": [
+    "dk_points"
+   ],
+   "rng_stream": "kicker",
+   "row_axis": "gsis_id",
+   "row_ids": [
+    "00-0038428",
+    "00-0031136"
+   ],
+   "row_teams": [
+    "CLE",
+    "PIT"
+   ],
+   "shape": [
+    2,
+    2000
+   ],
+   "spec_version": "showdown-family-1"
+  }
+ },
+ "n_draw_cells": 90000,
+ "n_draws": 2000,
+ "n_layers": 3,
+ "n_matrices": 3,
+ "rng": {
+  "generator": "numpy.random.default_rng (PCG64)",
+  "seed": 20261001,
+  "seed_protocol": "showdown_draws.SEED, one stream"
+ },
+ "run_id": "2026_04_PIT_CLE:PROJ_V1_JOINT_2000_CORRECTED"
+}
