@@ -244,6 +244,10 @@ def _dirichlet_split(total: float, weights, rng, conc: float) -> list[float]:
     if total <= 0 or tot <= 0:
         return [0.0] * len(weights)
     draws = []
+    # Per-world stat lines, kept ONLY when asked: the DK number is a collapse of these and the
+    # grader needs the parts. Column order is STAT_FIELDS. Completions and interceptions are not
+    # drawn by this simulator and are NOT here; a grader must report them NOT_IN_DRAWS, never 0.
+    stat_draws = collections.defaultdict(list)
     for w in weights:
         a = max(1e-6, conc * w / tot)
         draws.append(rng.gammavariate(a, 1.0))
@@ -257,9 +261,14 @@ DIRICHLET = 'DIRICHLET'
 LOGISTIC_NORMAL = 'LOGISTIC_NORMAL'
 
 
+#: Column order of the per-world stat tuple retained by simulate_game(retain_stats=True).
+#: Declared once so no consumer guesses a column; the layered draw artifact names each from this.
+STAT_FIELDS = ('pass_att', 'pass_yards', 'pass_td', 'carries', 'rush_yards', 'rush_td',
+               'targets', 'receptions', 'rec_yards', 'rec_td')
+
 def simulate_game(model: Model, game, n_sims: int = 2000, seed: int = 23,
                   allocation_mode: str = CLUB_TOTAL_IMPOSED,
-                  share_family: str = DIRICHLET) -> Outcome:
+                  share_family: str = DIRICHLET, retain_stats: bool = False) -> Outcome:
     """Simulate one game n_sims times and return per-player DK point draws.
 
     `game` needs: total_line, home_spread, and for each of two clubs a list of players with
@@ -468,6 +477,9 @@ def simulate_game(model: Model, game, n_sims: int = 2000, seed: int = 23,
                       + rush_yards[i] * 0.1 + rtd_all[i] * 6.0
                       + (3.0 if rush_yards[i] >= 100 else 0.0))
                 draws[p['id']].append(dk)
+                if retain_stats:
+                    stat_draws[p['id']].append((qb_att[j], qb_yards[j], qb_ptd[j], car_all[i],
+                                                rush_yards[i], rtd_all[i], 0.0, 0.0, 0.0, 0.0))
             for j, i in enumerate(rec_ix):
                 p = ps[i]
                 rec = _binom(tgt_r[j], p.get('catch_rate', 0.65), rng)
@@ -476,6 +488,10 @@ def simulate_game(model: Model, game, n_sims: int = 2000, seed: int = 23,
                       + rush_yards[i] * 0.1 + rtd_all[i] * 6.0
                       + (3.0 if rush_yards[i] >= 100 else 0.0))
                 draws[p['id']].append(dk)
+                if retain_stats:
+                    stat_draws[p['id']].append((0.0, 0.0, 0.0, car_all[i], rush_yards[i],
+                                                rtd_all[i], tgt_r[j], rec, rec_yards[j],
+                                                rec_ptd[j]))
 
     if violations:
         kinds = collections.Counter(k for k, _ in violations)
@@ -491,6 +507,9 @@ def simulate_game(model: Model, game, n_sims: int = 2000, seed: int = 23,
         frac[k] = round(unalloc[k] / tot, 5) if tot else None
     return Outcome.ok('GAME_SIMULATED', value={
         'n_sims': n_sims, 'draws': draws,
+        'stat_draws': ({k: v for k, v in stat_draws.items()} if retain_stats else None),
+        'STAT_FIELDS': STAT_FIELDS if retain_stats else None,
+        'STATS_NOT_DRAWN': ('pass_cmp', 'interceptions') if retain_stats else None,
         'club_checks': dict(identities),
         'IDENTITIES_HELD': ['total', 'margin', 'volume', 'yards', 'touchdowns'],
         'DST_SOURCE': ('drawn from the opponent\'s simulated points in the same world. Sacks, '
