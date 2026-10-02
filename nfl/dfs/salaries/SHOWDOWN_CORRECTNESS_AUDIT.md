@@ -445,3 +445,134 @@ new namespace is a sibling directory it never visits. The runner log contains no
 artifact introduced here. These four are pre-existing failures at HEAD and belong to the suite
 classification work (tasks #58 / #105), not to this program. They are recorded here so the next
 reader does not re-derive the attribution.
+
+---
+
+## 13. Owner ruling 2026-10-02: the projection is the expected-value centre of the simulator
+
+**Built as a declared arm, not a swap.** `nfl/sim/game.py:simulate_game_centred` keeps the incumbent
+simulator intact and adds, per club, two level offsets (plays intercept, pass-share intercept) solved
+in three calibration passes so that the Monte Carlo means of pass attempts, carries and targets land on
+the projection's `team_volume`. Nothing else moves: the regression slopes on implied points and
+margin, both residual SDs, the share families, the touchdown and yardage machinery are the measured
+values. Throwaways are now explicit per world, with a new exact identity
+`pass_attempts == targets + throwaways` checked in every club-world; the throwaway rate is
+`1 - proj_targets / proj_pass_attempts`, not a constant. `proj_plays` is deliberately NOT reconciled: it
+counts snaps including sacks, penalties and kneels, which is a different quantity from pass+rush
+attempts, and the artifact says so.
+
+**The tolerance is error propagation, not a margin.** The reconciliation gap carries two independent
+Monte Carlo errors, the final pass's mean and the offsets estimated on the last calibration pass, so
+the tolerance is `3 x sd x sqrt(1/n_sims + 1/n_calib)`. The first version counted only the first term
+and refused a correct run; that was a defect in the gate, fixed before anything was measured.
+
+**The hard gate is armed only for the arm.** A draws artifact declaring `volume_centre.mode ==
+PROJECTION` whose sidecar means fall outside that tolerance is refused by `football_sanity.measure_draws`
+with `DRAWS_NOT_RECONCILED_TO_PROJECTION`, and `showdown_to_portfolio.run` refuses the run. The
+incumbent arm is measured and reported, never refused, because for it the divergence is the finding
+that motivated the ruling. `showdown_draws.py --volume-centre projection` selects the arm; the default
+is the incumbent and the artifact records which ran.
+
+**Tests** (`nfl/tests/test_volume_centre_arm.py`, 6/6): the incumbent arm is byte-identical with no
+offsets; the centred arm reconciles within tolerance; every identity holds in every world including
+the new one; dispersion of club pass attempts is unchanged (ratio 0.98 / 1.10 on the fixture);
+within-world pass-share spread survives under a 13-point favourite and a 13-point underdog; an
+incoherent centre (targets above attempts) is refused by name.
+
+### 13.1 What reconciling exposed: a quarterback with five projected targets
+
+Reconciling CLE's targets succeeded at the club level (28.77 simulated against 28.85) and failed at the
+player level: the slate players summed to 23.7. The missing 5.04 targets per world belonged to
+**Deshaun Watson**, to whom the projection had assigned 5.04 targets. The simulator gives quarterbacks
+a zero target share, so in every joint world, in the delivered portfolio as much as in the arm, those
+targets reached nobody.
+
+**Mechanism, read from the code.** Each position's depth table is measured on ONE field
+(`DEPTH_TABLE_FIELD`: QB on pass attempts, RB on carries, WR/TE on targets) and
+`allocate_opportunity` read that one share as the prior for EVERY field. A quarterback's 0.95 share of
+pass attempts therefore stood in as his share of club targets; normalised against the receivers'
+genuine target shares it came to 0.42, his measured target claim was exactly zero, and the
+"one side has no evidence, take half the other" rule turned a measured zero into 0.17 of the club's
+targets. Systemic: nine of sixty main-slate quarterbacks in `DK_WEEK3_PROJ_V1.json` carried 4.4 to 5.7
+targets (Burrow, Watson, Lawrence, Young, Allen, Ward, Willis, Mariota, Darnold), exactly the nine whose
+target claim was 0.0 rather than a trace. Logged as DEFECT-QBTGT.
+
+**Repair.** When the table's field differs from the field being allocated, the prior is the measured
+group split for that field times the within-group concentration the table gives; when they match, the
+table's share is the club share as before. `CROSS_FIELD_PRIOR_SCOPE` fixes where this applies, and the
+reason it is scoped is the measurement in 13.2. The gate now refuses a quarterback above one projected
+target a game without a recorded reason (`QB_TARGETS_ABOVE_CEILING_WITHOUT_REASON`; measured basis: the
+quarterback group takes 0.05 per cent of club targets, about 0.02 a game) and bounds non-quarterback
+pass attempts the same way (`NON_QB_PASS_ATTEMPTS_ABOVE_CEILING`). Both the delivered artifact and the
+pre-repair baseline-A artifact are now refused on exactly the classes that describe them, and the test
+that asserted "the delivered artifact passes" says so instead of being deleted.
+
+**A false mechanism withdrawn.** `test_football_sanity` asserted that the baseline-A artifact's club
+pass attempts did not reconcile *because* the capped starters' attempts left the club total. Measured:
+the residual (CLE 0.247, PIT 0.515) is the ordinary trick-play mass on receivers' rows, present in every
+artifact, which a quarterbacks-only sum under a 0.1 per cent tolerance reads as unreconciled; the week-3
+slate "failed" eight clubs the same way. The gate now sums the pool the allocator keeps and bounds where
+the attempts sit. The real consequence of the cap was on the quarterback rows themselves: Shedeur Sanders
+4.00 and Mason Rudolph 4.26 attempts.
+
+### 13.2 The repair measured on held-out weeks, and what it says
+
+Three forward-chained runs on the same 28 held-out weeks (seasons 2024 and 2025, identical week sets
+asserted), paired by week with week-blocked SEs, in
+`nfl/research/depth_prior_repair/PAIRED_DEPTH_PRIOR_REPAIR.json`. Exploratory, because the forward
+chain is development data.
+
+| Arm 1.0 | legacy | QB_ONLY | ALL |
+|---|---|---|---|
+| MAE | 5.861 | 5.938 (+0.076, SE 0.010) | 5.943 (+0.082, SE 0.010) |
+| Spearman | 0.5166 | 0.5145 (−0.002, SE 0.001) | 0.5147 (−0.002, SE 0.001) |
+| level ratio | 0.753 | 0.802 | 0.805 |
+| QB MAE | 7.659 | 7.658 | 7.660 |
+| WR MAE / level | 6.126 / 0.704 | 6.230 / 0.778 | 6.231 / 0.778 |
+| TE MAE / level | 4.428 / 0.786 | 4.537 / 0.879 | 4.535 / 0.878 |
+| RB MAE / level | 5.795 / 0.759 | 5.841 / 0.788 | 5.861 / 0.799 |
+
+**Read that honestly.** Removing an impossible allocation made held-out absolute error *worse* at every
+non-quarterback position, by more than two SEs, while the level ratio moved from about 0.70 toward 0.78
+and ranking stayed flat. Quarterback error did not move. The arithmetic is simple: the ghost targets
+were roughly a sixth of a club's targets, so removing them scales every other receiver on the club up by
+about a fifth. That moves the level toward honest and lands mass on low-scoring rows too. **The legacy
+ghost was acting as an undeclared shrinkage on receiver projections**, which is a fitted constant by
+accident, and the project's rule on fitted constants is that they are logged as bugs. So:
+
+- The quarterback repair ships (`CROSS_FIELD_PRIOR_SCOPE = 'QB_ONLY'`): a passer is not a receiving
+  target, and the gate would refuse the artifact otherwise.
+- The wider repair of backs' target priors and receivers' carry priors (`'ALL'`) is a declared
+  candidate arm, not promoted: its form is right and its score is not better.
+- The receiver mass the repair exposed is logged as DEFECT-RECVMASS (task #112): the next question is
+  where the extra error sits (rows with zero actual, depth rank), and the candidate repairs are the
+  appearance and zero-mass programs (B5, B8), not a return to the impossible allocation.
+- **Escalated to the owner**, because it changes what counts as better: a correctness repair that
+  worsens MAE on development data while improving level calibration. My decision is reversible in one
+  line (`LEGACY_CROSS_FIELD_PRIOR`, measurement only), and nothing here is validation.
+
+### 13.3 Delivered artifacts preserved; what the system now produces for PIT@CLE
+
+The delivered projection and draws (`SHOWDOWN_TONIGHT_PROJ.json`, `SHOWDOWN_TONIGHT_DRAWS.json`) are
+unchanged and sealed (retro seal `061b8b3bb7b651fa`, `prospective_evidence False`). Two things about
+them are now on the record. The delivered draws were written at 23:39Z on 2026-10-01 and the
+quarterback carry-share fix landed at 02:54Z, so **the delivered portfolio ran on draws in which
+Watson carried 0.0 rushes** (the rerun under current code differs on 43 of 45 players for that reason).
+And the delivered projection is refused by the gate on Watson's 5.04 targets.
+
+The post-game, descriptive rebuild under the repaired allocator is
+`SHOWDOWN_TONIGHT_PROJ_QBTGT_FIXED.json` (gate: PASS, identities 0 failures). Watson 5.04 → 0.01 targets;
+the five targets return to Fannin (+1.26), Concepcion (+1.34), Boston (+0.77), Judkins (+0.53), Sanders,
+Jeudy. The main-slate `DK_WEEK3_PROJ_V1.json` was likewise regenerated (delivered copy preserved in the
+sealed run `DK_NFL_WEEK3_2026__20260928T233618Z__56a24b3d29d8`, sha 323bdf96…), and
+`sunday.run()` now carries the football-sanity step and passes it.
+
+### 13.4 Capture surface, done without waiting
+
+`nfl-t90.yml` and `nfl-status.yml` regenerated for 2026 week 4 from snapshot `9d3644487c6021f2`
+(the pins were September's). The drift test's "upcoming week" now also requires the week's final
+kickoff to be ahead on the wall clock, because the snapshot stopped recording results after week 2 and
+the old derivation pointed at week 3 eight days after it was played. `nfl-availability.yml` and the
+status generator checked out the default branch and pushed `HEAD:main`; both now check out and push
+`capture-prod` (D24-R2). The definitions still have to live on the default branch, which this branch is
+not: **they take effect only once merged.**

@@ -162,7 +162,8 @@ def kicker_draws(club, n_sims, rng) -> Outcome:
                       PAT_MAKE_RATE_NOTE='0.96 is the long-run league PAT rate carried in the model')
 
 
-def build(proj_path, state_path, *, n_sims: int = N_SIMS, seed: int = SEED) -> Outcome:
+def build(proj_path, state_path, *, n_sims: int = N_SIMS, seed: int = SEED,
+          volume_centre: str = None) -> Outcome:
     proj = json.loads(pathlib.Path(proj_path).read_text())
     state = json.loads(pathlib.Path(state_path).read_text())
     rows = list(proj['rows'].values())
@@ -190,7 +191,28 @@ def build(proj_path, state_path, *, n_sims: int = N_SIMS, seed: int = SEED) -> O
             'dst_id': (S.player_key(dst['name'], club) if dst else None),
         })
 
-    o = sim_game.simulate_game(model, spec, n_sims=n_sims, seed=seed, retain_stats=True)
+    # DECLARED ARM, NOT A SWAP (owner ruling 2026-10-02). Default: the incumbent simulator with its
+    # own volume regression. 'projection': the simulator is centred on the projection's
+    # team_volume per club; only the two intercepts move, dispersion and game-state response are
+    # the measured ones, and the run REFUSES if the simulated means do not reconcile.
+    if volume_centre == sim_game.VOLUME_CENTRE_PROJECTION:
+        tv = proj.get('team_volume') or {}
+        centre = {}
+        for club in (home, away):
+            t = tv.get(club) or {}
+            try:
+                centre[club] = {'pass_attempts': float(t['proj_pass_attempts']),
+                                'rush_attempts': float(t['proj_rush_attempts']),
+                                'targets': float(t['proj_targets'])}
+            except (KeyError, TypeError, ValueError):
+                return Outcome.fail('VOLUME_CENTRE_PROJECTION_ABSENT',
+                                    f'{club}: team_volume lacks proj_pass_attempts/'
+                                    f'proj_rush_attempts/proj_targets', club=club)
+        o = sim_game.simulate_game_centred(model, spec, centre, n_sims=n_sims, seed=seed)
+    elif volume_centre in (None, sim_game.VOLUME_CENTRE_INCUMBENT):
+        o = sim_game.simulate_game(model, spec, n_sims=n_sims, seed=seed, retain_stats=True)
+    else:
+        return Outcome.fail('VOLUME_CENTRE_UNKNOWN', f'{volume_centre!r} is not an arm')
     if o.state.value != 'PASS':
         return o
     draws = {k: list(v) for k, v in o.value['draws'].items()}
@@ -233,6 +255,10 @@ def build(proj_path, state_path, *, n_sims: int = N_SIMS, seed: int = SEED) -> O
             'share_family': (o.value or {}).get('share_family'),
         },
         'simulator_detail': o.detail or o.code,
+        'volume_centre': (o.value.get('volume_centre')
+                          or {'mode': sim_game.VOLUME_CENTRE_INCUMBENT,
+                              'MEANING': 'the simulator drew its own club volume from its '
+                                         'measured regression on implied points'}),
         'kickers': kickers,
         'NOT_SYNTHESISED': ('no draw is derived from a projected mean. Player draws come from the '
                             'joint simulator and kicker draws from measured attempt and make rates.'),
@@ -266,6 +292,9 @@ def main() -> int:
     ap.add_argument('--projections', default='nfl/dfs/salaries/SHOWDOWN_TONIGHT_PROJ.json')
     ap.add_argument('--state', default='nfl/dfs/salaries/SHOWDOWN_TONIGHT_STATE.json')
     ap.add_argument('--n-sims', type=int, default=N_SIMS)
+    ap.add_argument('--volume-centre', default=None, choices=['projection', 'incumbent'],
+                    help="'projection' centres each club's expected volume on the projection's "
+                         "team_volume (declared arm); default is the incumbent regression")
     ap.add_argument('--seal', action='store_true',
                     help='after building, seal projection + draws into the Showdown family lane '
                          '(nfl/research/showdown_live) with a LIVE clock; refused if kickoff has passed')
@@ -273,7 +302,8 @@ def main() -> int:
     ap.add_argument('--inactives', default='nfl/dfs/salaries/raw/OFFICIAL_INACTIVES_PIT_CLE_2026W4.json')
     ap.add_argument('--model-configuration', default='PROJ_V1_JOINT')
     a = ap.parse_args()
-    o = build(a.projections, a.state, n_sims=a.n_sims)
+    vc = {'projection': sim_game.VOLUME_CENTRE_PROJECTION, 'incumbent': None}.get(a.volume_centre)
+    o = build(a.projections, a.state, n_sims=a.n_sims, volume_centre=vc)
     if o.state.value == 'PASS' and a.seal:
         import datetime as _dt
         from nfl.prospective import showdown_family as SF
@@ -285,7 +315,7 @@ def main() -> int:
                          export_path=a.export, inactives_path=a.inactives,
                          kickoff_utc=ko.isoformat().replace('+00:00', 'Z'),
                          written_at=now.isoformat().replace('+00:00', 'Z'), written_at_basis='LIVE_CLOCK',
-                         prospective_evidence=(now < ko), model_configuration=f'{a.model_configuration}_{a.n_sims}',
+                         prospective_evidence=(now < ko), model_configuration=f"{a.model_configuration}_{'CENTRED_' if vc else ''}{a.n_sims}",
                          reason=('' if now < ko else 'sealed after kickoff: descriptive only'))
         print('SEAL', sealed.state.value, sealed.code, (sealed.detail or '')[:120])
     print(o.state.value, o.code)

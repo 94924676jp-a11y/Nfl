@@ -264,7 +264,8 @@ STAT_FIELDS = ('pass_att', 'pass_yards', 'pass_td', 'carries', 'rush_yards', 'ru
 
 def simulate_game(model: Model, game, n_sims: int = 2000, seed: int = 23,
                   allocation_mode: str = CLUB_TOTAL_IMPOSED,
-                  share_family: str = DIRICHLET, retain_stats: bool = False) -> Outcome:
+                  share_family: str = DIRICHLET, retain_stats: bool = False,
+                  _level_offsets=None, _throwaway_rates=None) -> Outcome:
     """Simulate one game n_sims times and return per-player DK point draws.
 
     `game` needs: total_line, home_spread, and for each of two clubs a list of players with
@@ -281,6 +282,7 @@ def simulate_game(model: Model, game, n_sims: int = 2000, seed: int = 23,
     # grader needs the parts. Column order is STAT_FIELDS. Completions and interceptions are not
     # drawn by this simulator and are NOT here; a grader must report them NOT_IN_DRAWS, never 0.
     stat_draws = collections.defaultdict(list)
+    club_worlds = collections.defaultdict(list)   # (pa, ra, targets, throwaways) per club per world
     for c in clubs:
         if c.get('dst_id'):
             draws[c['dst_id']] = []
@@ -322,16 +324,31 @@ def simulate_game(model: Model, game, n_sims: int = 2000, seed: int = 23,
             # against runs inside a roughly fixed play count, and two independent draws cannot
             # represent that: they imply corr(pass, rush) = -0.14 against -0.43 measured. This
             # form implies -0.42. See volume_response_plays_and_pass_share in SHARED_STATE.
-            plays = (model.plays_v['intercept'] + model.plays_v['per_own_point'] * own
+            # THE LEVEL MAY BE STEERED; THE DISPERSION AND THE GAME-STATE RESPONSE MAY NOT.
+            # `_level_offsets` shifts only the two intercepts, per club, and is set by
+            # simulate_game_centred so that the simulated club means land on the projection's
+            # team_volume (owner ruling 2026-10-02). per_own_point, per_margin_point and both
+            # residual_sd are exactly the measured ones in every world.
+            _lo = (_level_offsets or {}).get(c['club']) or {}
+            plays = (model.plays_v['intercept'] + _lo.get('plays', 0.0)
+                     + model.plays_v['per_own_point'] * own
                      + model.plays_v['per_margin_point'] * own_margin
                      + rng.gauss(0, model.plays_v['residual_sd']))
-            pshare = (model.share_v['intercept'] + model.share_v['per_own_point'] * own
+            pshare = (model.share_v['intercept'] + _lo.get('share', 0.0)
+                      + model.share_v['per_own_point'] * own
                       + model.share_v['per_margin_point'] * own_margin
                       + rng.gauss(0, model.share_v['residual_sd']))
             plays = max(1.0, plays)
             pshare = min(0.95, max(0.05, pshare))
             pa = max(0, int(round(plays * pshare)))
             ra = max(0, int(round(plays * (1.0 - pshare))))
+            # A throw is not always a target (throwaways, spikes, batted balls). The projection
+            # carries targets BELOW pass attempts; the simulator allocated targets from every
+            # attempt. With a club rate supplied, throwaways are drawn per world and the identity
+            # pass_attempts == targets + throwaways holds exactly, checked below like the others.
+            _tr = (_throwaway_rates or {}).get(c['club'])
+            throwaways = max(0, min(pa, int(round(pa * _tr)))) if _tr else 0
+            tg_total = pa - throwaways
             td = (own - rem - rng.gauss(0, rem_sd)) / ppt
             td = max(0, int(round(td)))
 
@@ -387,14 +404,14 @@ def simulate_game(model: Model, game, n_sims: int = 2000, seed: int = 23,
             qb_att, qb_ghost = alloc(pa, [ps[i].get('pass_att_share', 0.0) for i in qb_ix],
                                      model.share_conc_tgt, tgt_shock,
                                      [ps[i].get('slot', 'OTHER') for i in qb_ix])
-            tgt_r, tgt_ghost = alloc(pa, [max(0.0, ps[i]['target_share']) for i in rec_ix],
+            tgt_r, tgt_ghost = alloc(tg_total, [max(0.0, ps[i]['target_share']) for i in rec_ix],
                                      model.share_conc_tgt, tgt_shock,
                                      [ps[i].get('slot', 'OTHER') for i in rec_ix])
             car_all, car_ghost = alloc(ra, [max(0.0, p['carry_share']) for p in ps],
                                        model.share_conc_car, car_shock,
                                        [p.get('slot', 'OTHER') for p in ps])
-            if (sum(qb_att) + qb_ghost != pa or sum(tgt_r) + tgt_ghost != pa
-                    or sum(car_all) + car_ghost != ra):
+            if (sum(qb_att) + qb_ghost != pa or sum(tgt_r) + tgt_ghost != tg_total
+                    or sum(car_all) + car_ghost != ra or tg_total + throwaways != pa):
                 violations.append(('VOLUME', si))
             unalloc['pass_attempts'] += qb_ghost
             unalloc['targets'] += tgt_ghost
@@ -468,6 +485,10 @@ def simulate_game(model: Model, game, n_sims: int = 2000, seed: int = 23,
                     or sum(rtd_all) + rush_td_ghost != n_rush_td):
                 violations.append(('TD', si))
             identities['club_games_checked'] += 1
+            if _tr:
+                identities['throwaway_identity_checked'] += 1
+            if retain_stats:
+                club_worlds[c['club']].append((pa, ra, tg_total, throwaways))
 
             # ---- DK scoring, current rules
             for j, i in enumerate(qb_ix):
@@ -511,7 +532,10 @@ def simulate_game(model: Model, game, n_sims: int = 2000, seed: int = 23,
         'STAT_FIELDS': STAT_FIELDS if retain_stats else None,
         'STATS_NOT_DRAWN': ('pass_cmp', 'interceptions') if retain_stats else None,
         'club_checks': dict(identities),
-        'IDENTITIES_HELD': ['total', 'margin', 'volume', 'yards', 'touchdowns'],
+        'IDENTITIES_HELD': ['total', 'margin', 'volume', 'yards', 'touchdowns']
+                           + (['pass_attempts_eq_targets_plus_throwaways'] if _throwaway_rates else []),
+        'club_worlds': ({k: v for k, v in club_worlds.items()} if retain_stats else None),
+        'level_offsets': dict(_level_offsets or {}), 'throwaway_rates': dict(_throwaway_rates or {}),
         'DST_SOURCE': ('drawn from the opponent\'s simulated points in the same world. Sacks, '
                        'takeaways, defensive and return touchdowns and safeties come from the '
                        'empirical joint tuple within that points-allowed band, so the tail is '
@@ -547,3 +571,119 @@ if __name__ == '__main__':
     o = fit_efficiency()
     print(o.state.value, o.code, o.value if o.state.value == 'PASS' else o.evidence)
     raise SystemExit(0 if o.state.value == 'PASS' else 1)
+
+# ====================================================================== PROJECTION-CENTRED ARM
+#
+# OWNER RULING 2026-10-02: the projection layer's team_volume is the authoritative expected-value
+# centre; the simulator adds dispersion, covariance, game-script variation, allocation uncertainty
+# and scoring-world uncertainty -- it does not keep a second expected team-volume model that
+# materially disagrees. Measured before this: PIT carries +9.8% and targets +11.7%, CLE pass
+# attempts +7.1% against the projection. Built as a DECLARED ARM: the default simulate_game is
+# unchanged, and this wrapper steers only the two intercepts per club.
+#
+# WHAT IS RECONCILED. pass_attempts, rush_attempts (carries) and targets, per club, in expectation.
+# NOT proj_plays: that counts offensive snaps including sacks, penalties and kneels, while the
+# simulator's plays regression models pass+rush attempts (intercept 57, ~61 at 20 points against
+# a proj_plays of 79). Scoring one against the other's definition is the exact error the postgame
+# scorer refuses by name; it is reported as a different quantity, never forced.
+#
+# HOW. Fixed-point on the two per-club intercept offsets: simulate, measure mean plays (= pa+ra)
+# and mean pass share (= pa/(pa+ra)) over the worlds, shift the intercepts by the gap, repeat.
+# Targets get their own centre through a per-club throwaway rate taken from the projection's own
+# two numbers, 1 - proj_targets/proj_pass_attempts; the identity pa == targets + throwaways then
+# holds exactly in every world. Calibration passes use their own seed stream so the final worlds
+# are drawn from the base seed exactly as the incumbent arm draws them.
+VOLUME_CENTRE_PROJECTION = 'PROJECTION'
+VOLUME_CENTRE_INCUMBENT = 'SIMULATOR_OWN_REGRESSION'
+RECONCILE_TOL_SE_MULTIPLE = 3.0      # |mean - target| must be within this many Monte Carlo SEs
+CALIBRATION_PASSES = 3
+
+
+def simulate_game_centred(model: Model, game, volume_centre: dict, n_sims: int = 2000,
+                          seed: int = 23, n_calib: int = None, **kw) -> Outcome:
+    """simulate_game with each club's expected volume centred on `volume_centre`.
+
+    volume_centre = {club: {'pass_attempts': x, 'rush_attempts': y, 'targets': z}}. Returns the
+    final pass's Outcome with value['volume_centre'] describing mode, offsets, throwaway rates and
+    the per-club reconciliation (target, simulated mean, SE, gap, within_tol).
+    """
+    import statistics as _st
+    clubs = [c['club'] for c in game['clubs']]
+    missing = [c for c in clubs if not volume_centre.get(c)]
+    if missing:
+        return Outcome.fail('VOLUME_CENTRE_MISSING_CLUB', f'no centre for {missing}',
+                            cause=Cause.DATA, missing=missing)
+    tgt, thr = {}, {}
+    for c in clubs:
+        v = volume_centre[c]
+        pa, ra, tg = float(v['pass_attempts']), float(v['rush_attempts']), float(v['targets'])
+        if pa <= 0 or ra < 0 or tg < 0 or tg > pa:
+            return Outcome.fail('VOLUME_CENTRE_INCOHERENT',
+                                f'{c}: pass {pa}, rush {ra}, targets {tg} -- targets must be '
+                                f'0..pass_attempts and attempts positive', cause=Cause.DATA, club=c)
+        tgt[c] = {'plays': pa + ra, 'share': pa / (pa + ra), 'pass_attempts': pa,
+                  'rush_attempts': ra, 'targets': tg}
+        thr[c] = 1.0 - tg / pa
+    offsets = {c: {'plays': 0.0, 'share': 0.0} for c in clubs}
+    n_cal = int(n_calib or min(n_sims, 1000))
+    history = []
+    for k in range(CALIBRATION_PASSES):
+        o = simulate_game(model, game, n_sims=n_cal, seed=seed + 100_003 * (k + 1),
+                          retain_stats=True, _level_offsets=offsets, _throwaway_rates=thr, **kw)
+        if o.state is not State.PASS:
+            return o
+        cw = o.value['club_worlds']
+        step = {}
+        for c in clubs:
+            pa_m = _st.mean(w[0] for w in cw[c]); ra_m = _st.mean(w[1] for w in cw[c])
+            plays_m = pa_m + ra_m; share_m = pa_m / plays_m if plays_m else 0.0
+            d_plays = tgt[c]['plays'] - plays_m
+            d_share = tgt[c]['share'] - share_m
+            offsets[c]['plays'] += d_plays
+            offsets[c]['share'] += d_share
+            step[c] = {'mean_plays': round(plays_m, 3), 'mean_share': round(share_m, 4),
+                       'd_plays': round(d_plays, 3), 'd_share': round(d_share, 4)}
+        history.append({'pass': k + 1, 'n': n_cal, 'step': step,
+                        'offsets_after': {c: dict(offsets[c]) for c in clubs}})
+    final = simulate_game(model, game, n_sims=n_sims, seed=seed, retain_stats=True,
+                          _level_offsets=offsets, _throwaway_rates=thr, **kw)
+    if final.state is not State.PASS:
+        return final
+    cw = final.value['club_worlds']
+    recon, all_ok = {}, True
+    for c in clubs:
+        recon[c] = {}
+        for name, i in (('pass_attempts', 0), ('rush_attempts', 1), ('targets', 2)):
+            xs = [w[i] for w in cw[c]]
+            m = _st.mean(xs); sd = _st.pstdev(xs)
+            # The gap carries TWO independent Monte Carlo errors: the final pass's mean (n_sims
+            # draws) and the offsets, which were estimated from the last calibration pass (n_cal
+            # draws, a different seed). Both propagate; counting only the first understates the
+            # SE and refuses correct runs. This is error propagation, not a loosened margin.
+            se = sd * (1.0 / len(xs) + 1.0 / n_cal) ** 0.5 if xs else 0.0
+            gap = m - tgt[c][name]; tol = RECONCILE_TOL_SE_MULTIPLE * se
+            ok = abs(gap) <= tol
+            all_ok = all_ok and ok
+            recon[c][name] = {'target': round(tgt[c][name], 4), 'simulated_mean': round(m, 4),
+                              'sd': round(sd, 4), 'se': round(se, 4), 'gap': round(gap, 4),
+                              'tolerance': round(tol, 4), 'within_tol': ok}
+    final.value['volume_centre'] = {
+        'mode': VOLUME_CENTRE_PROJECTION, 'level_offsets': offsets, 'throwaway_rates': thr,
+        'calibration': history, 'n_sims': n_sims,
+        'tolerance_rule': (f'{RECONCILE_TOL_SE_MULTIPLE} x Monte Carlo SE of (simulated mean - '
+                           f'target) = sd * sqrt(1/n_sims + 1/n_calib), n_calib={n_cal}'),
+        'n_calib': n_cal,
+        'reconciliation': recon, 'all_within_tol': all_ok,
+        'NOT_RECONCILED_BY_DESIGN': {'proj_plays': ('offensive snaps incl. sacks, penalties, '
+                                                    'kneels; the simulator models pass+rush '
+                                                    'attempts -- a different quantity')},
+        'DISPERSION_UNTOUCHED': ('per_own_point, per_margin_point and both residual_sd are the '
+                                 'measured values; only the two intercepts moved, per club'),
+    }
+    if not all_ok:
+        bad = {c: [n for n, v in r.items() if not v['within_tol']] for c, r in recon.items()}
+        return Outcome.fail('VOLUME_CENTRE_NOT_RECONCILED',
+                            f'simulated means outside {RECONCILE_TOL_SE_MULTIPLE}xSE of the '
+                            f'projection centre: {bad}', cause=Cause.DATA, value=final.value,
+                            reconciliation=recon)
+    return final

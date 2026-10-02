@@ -794,7 +794,7 @@ def s_emit_csv(chosen, entries, slate, out: pathlib.Path = None) -> Outcome:
                                      'owner\'s action, never this runner\'s.'))
 
 
-def run(export, *, official_inactives=None, proj_path=None, draws=None, n_entries=None,
+def run(export, *, official_inactives=None, proj_path=None, draws=None, draws_doc=None, n_entries=None,
         out_csv=None, out_board=None) -> Outcome:
     """Drive the stages. The board is emitted whatever happens."""
     export = pathlib.Path(export)
@@ -879,13 +879,29 @@ def run(export, *, official_inactives=None, proj_path=None, draws=None, n_entrie
     o5 = s5_candidates_and_selection(slate, absent, draws, n)
     # Draws-level consistency, MEASURED on every run and carried on the board: the optimizer ranks
     # on draws, the gate validated the projection, and the two can carry different club volumes.
-    try:
-        _dd = json.loads(pathlib.Path(draws).read_text()) if draws else {}
-    except (OSError, ValueError, TypeError):
+    # THE DOCUMENT MEASURED IS THE DOCUMENT RANKED ON. `draws` is the per-player map the optimizer
+    # consumes; the gate needs the whole artifact (sidecar, volume_centre). Until 2026-10-02 this
+    # tried to read the map as a file path, swallowed the TypeError and measured an empty document,
+    # so the armed refusal could never fire from the real entry point and every board read
+    # DRAWS_SIDECAR_ABSENT. A measurement that cannot find its input is reported as such, never
+    # swallowed: the caller passes the artifact, or a path to it, and anything else is named.
+    if draws_doc is not None:
+        _dd = draws_doc
+    elif isinstance(draws, (str, pathlib.Path)):
+        _dd = json.loads(pathlib.Path(draws).read_text())
+    elif draws is None:
         _dd = {}
+    else:
+        _dd = {'DRAWS_DOC_NOT_SUPPLIED': 'run() received the draws map without the artifact; '
+                                        'pass draws_doc=<the loaded draws artifact>'}
     _dm = FS.measure_draws(_art, _dd)
     stages.append(_stage('candidates_and_selection', o5, **(o5.evidence or {}),
                          draws_consistency=_dm))
+    if _dm.get('state') == FS.DRAWS_NOT_RECONCILED:
+        return Outcome.fail(
+            'SHOWDOWN_RUN_REFUSED',
+            f"draws consistency: {FS.DRAWS_NOT_RECONCILED} -- {_dm.get('outside_tolerance')}",
+            cause=Cause.DATA, stages=stages, draws_consistency=_dm)
     if o5.state.value != 'PASS':
         return Outcome.blocked(
             'SHOWDOWN_RUN_BLOCKED', f'selection: {o5.code}', cause=Cause.DATA,
@@ -951,11 +967,11 @@ def main() -> int:
                     help='how many entries to fill (default: every entry in the export)')
     a = ap.parse_args()
     inact = json.loads(pathlib.Path(a.inactives).read_text()) if a.inactives else None
-    draws = None
+    draws, d = None, None
     if a.draws:
         d = json.loads(pathlib.Path(a.draws).read_text())
         draws = d.get('draws', d)
-    o = run(a.export, official_inactives=inact, draws=draws, n_entries=a.entries,
+    o = run(a.export, official_inactives=inact, draws=draws, draws_doc=d, n_entries=a.entries,
             proj_path=pathlib.Path(a.projections) if a.projections else None)
     print(o.state.value, o.code)
     print(o.detail or '')
