@@ -250,6 +250,29 @@ def run(*, archive: bool = False) -> Outcome:
                                rd.value['PRODUCT_MODE_BECAUSE'], cause=Cause.DEPENDENCY,
                                steps=steps)
 
+    # FOOTBALL SANITY BEFORE ANY DELIVERABLE (owner ruling 2026-10-02). The slate projection the
+    # readiness board found FRESH is read and refused on a football contradiction -- a starter
+    # charged a backup penalty, a club's attempts not reconciling with its quarterback, an inactive
+    # player with opportunity, a quarterback with receiver volume, a missing input read as zero.
+    # Green mechanics downstream cannot repair a wrong football state upstream, so this step is a
+    # step like the others: it FAILS the run, it never degrades it.
+    from nfl.tools import football_sanity
+    _proj_stage = next((r for r in rd.value['stages'] if r['name'] == 'slate.projection'), None)
+    _proj_path = _REPO / _proj_stage['path'] if _proj_stage else None
+    if _proj_path is not None and _proj_path.exists():
+        try:
+            # kickers are projected by the kicking layer and checked by the output contract's K
+            # sheet; the projection artifact carries skill rows and the defence.
+            fs = football_sanity.assess(json.loads(_proj_path.read_text()), units=('DST',))
+        except Exception as e:  # noqa: BLE001 -- a gate that crashes is a gate that failed
+            fs = Outcome.fail('FOOTBALL_SANITY_CRASHED', f'{type(e).__name__}: {e}')
+    else:
+        fs = Outcome.fail('FOOTBALL_SANITY_NO_PROJECTION', 'the slate projection is absent, so '
+                          'football sanity cannot be assessed; a missing input is not a pass')
+    steps.append({'step': 'football_sanity', 'state': fs.state.value, 'code': fs.code,
+                  'problems': (fs.evidence or {}).get('problems') or {},
+                  'projection': str(_proj_path.relative_to(_REPO)) if _proj_path else None})
+
     con = verify_contract()
     steps.append({'step': 'output_contract', 'state': con.state.value, 'code': con.code,
                   'n_problems': len((con.value or con.evidence or {}).get('problems') or [])})
@@ -280,7 +303,9 @@ def run(*, archive: bool = False) -> Outcome:
     report = {
         'ARTIFACT': 'SUNDAY_RUN_REPORT',
         'RESULT': ('DELIVERED' if con.state.value == 'PASS' and sup.state.value == 'PASS'
-                   else 'DELIVERED_WITH_PROBLEMS'),
+                   and fs.state.value == 'PASS' else 'DELIVERED_WITH_PROBLEMS'),
+        'football_sanity': {'state': fs.state.value, 'code': fs.code,
+                            'problems': (fs.evidence or {}).get('problems') or {}},
         'product_mode': mode,
         'stale_stages': stale,
         'steps': steps,
@@ -300,6 +325,7 @@ def run(*, archive: bool = False) -> Outcome:
             'no_stale_source_surprise': f'reported: {len(stale)} stale stage(s) named above',
             'no_late_model_development': ('by construction: this module consumes artifacts and '
                                           'cannot fit anything'),
+            'no_football_contradiction': f'checked: football_sanity {fs.code}',
         },
         'GOVERNANCE': {
             'submitted': 'NOTHING',
