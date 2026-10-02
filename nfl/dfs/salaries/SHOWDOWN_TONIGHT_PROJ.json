@@ -1,6 +1,6 @@
 {
  "ARTIFACT": "SHOWDOWN_TONIGHT_PROJ",
- "built_at_utc": "2026-10-01T23:07:51.194992+00:00",
+ "built_at_utc": "2026-10-01T23:38:56.360160+00:00",
  "game_id": "2026_04_PIT_CLE",
  "season": 2026,
  "week": 4,
@@ -6049,23 +6049,21 @@
     "completion_rate": 0.5732327272727272
    },
    "appearance_adjustment": {
-    "applied": true,
-    "reason": "NOT_PREDICTED_STARTER",
-    "raw_pass_attempt_claim": 0.97686,
-    "measured_rank2_unconditional_share": 0.01939,
-    "appearance_rate": 0.13789,
-    "conditional_share_if_he_plays": null,
-    "DECOMPOSITION": "expected = P(appears) x E[share | appears]. His role band and his efficiency are NOT shrunk -- they are what he does when he plays. Only the probability he plays is small."
+    "applied": false,
+    "reason": "DEPTH_RANK_1_IS_THE_STARTER",
+    "depth_rank": 1,
+    "measured_rank1_appearance_rate": 1.0,
+    "WHY": "the depth evidence puts him first in his own quarterback room. That is positive evidence that he takes the snaps, so no appearance discount applies. A missing predicted-lineup feed is not evidence against it."
    },
    "rz_intensity": {
     "rec": 0.11534079555155702,
-    "rush": 0.027879056819067008,
+    "rush": 0.027879056819067004,
     "SEMANTICS": "red-zone opportunities per unit of his own volume, so it is invariant to how much volume he is finally allocated."
    },
    "claims": {
     "targets": 0.000412,
-    "carries": 0.012,
-    "pass_attempts": 0.01939
+    "carries": 0.087027,
+    "pass_attempts": 0.976864
    },
    "projection_state": "PROJECTED",
    "gsis_id": "00-0023459",
@@ -6089,9 +6087,9 @@
      "appearance_rate_measured": 1.0,
      "rank_beyond_measured_table": false,
      "APPEARANCE_SEMANTICS": "claim is share GIVEN he plays; this is P(he plays) at his depth rank, so the product is unconditional.",
-     "claim_normalised": 0.01661,
+     "claim_normalised": 0.10914,
      "prior_expected_share_normalised": 0.42487,
-     "final_share": 0.01648
+     "final_share": 0.10824
     },
     "pass_attempts": {
      "position_group_share_measured_NOT_APPLIED": 1.0,
@@ -6100,9 +6098,9 @@
      "appearance_rate_measured": 1.0,
      "rank_beyond_measured_table": false,
      "APPEARANCE_SEMANTICS": "claim is share GIVEN he plays; this is P(he plays) at his depth rank, so the product is unconditional.",
-     "claim_normalised": 0.8538,
+     "claim_normalised": 0.99661,
      "prior_expected_share_normalised": 0.98001,
-     "final_share": 0.86613
+     "final_share": 0.99694
     }
    },
    "p_plays": {
@@ -6111,82 +6109,82 @@
     "pass_attempts": 1.0
    },
    "targets": 0.014369822351721944,
-   "carries": 0.40408566138526114,
-   "pass_attempts": 30.909123260087615,
+   "carries": 2.654763394403534,
+   "pass_attempts": 35.57744831642977,
    "receptions": null,
    "rec_yards": null,
-   "rush_yards": 0.9622958284873508,
-   "pass_yards": 187.994801242369,
+   "rush_yards": 6.322094506639232,
+   "pass_yards": 216.38838697163717,
    "rec_rz_opps": null,
-   "rush_rz_opps": 0.011265527113529966,
+   "rush_rz_opps": 0.0740122995137553,
    "rec_far_opps": null,
-   "rush_far_opps": 0.3928201342717312,
+   "rush_far_opps": 2.5807510948897785,
    "td": {
-    "rush_td": 0.0041,
-    "pass_td": 1.16028,
+    "rush_td": 0.02884,
+    "pass_td": 1.31667,
     "rec_pool_scale": 1.0493,
-    "rush_pool_scale": 1.4219
+    "rush_pool_scale": 1.522
    },
-   "dk_points_if_plays": 12.5478,
+   "dk_points_if_plays": 14.3818,
    "dk_points_if_plays_line_items": {
-    "pass_yards": 7.5198,
+    "pass_yards": 8.6555,
     "pass_td": 5.2812,
-    "interceptions": -0.6349,
-    "rush_yards": 0.0962,
-    "rush_td": 0.0246,
+    "interceptions": -0.7308,
+    "rush_yards": 0.6322,
+    "rush_td": 0.173,
     "receptions": 0.0,
     "rec_yards": 0.0,
     "rec_td": 0.0,
     "bonus_100_rec": 0.0,
     "bonus_100_rush": 0.0,
-    "bonus_300_pass": 0.2609
+    "bonus_300_pass": 0.3706
    },
    "conditional_volume": {
     "targets": 0.014369822351721944,
     "receptions": null,
     "rec_yards": null,
-    "carries": 0.40408566138526114,
-    "rush_yards": 0.9622958284873508,
-    "pass_attempts": 30.909123260087615,
-    "pass_yards": 187.994801242369
+    "carries": 2.654763394403534,
+    "rush_yards": 6.322094506639232,
+    "pass_attempts": 35.57744831642977,
+    "pass_yards": 216.38838697163717
    },
    "p_plays_by_field": {
     "targets": 1.0,
     "carries": 1.0,
     "pass_attempts": 1.0
    },
-   "dk_points": 11.9077,
+   "dk_points": 14.3673,
    "dk_line_items": {
-    "pass_yards": 7.5198,
-    "pass_td": 4.6411,
-    "interceptions": -0.6349,
-    "rush_yards": 0.0962,
-    "rush_td": 0.0246,
+    "pass_yards": 8.6555,
+    "pass_td": 5.2667,
+    "interceptions": -0.7308,
+    "rush_yards": 0.6322,
+    "rush_td": 0.173,
     "receptions": 0.0,
     "rec_yards": 0.0,
     "rec_td": 0.0,
     "bonus_100_rec": 0.0,
     "bonus_100_rush": 0.0,
-    "bonus_300_pass": 0.2609
+    "bonus_300_pass": 0.3706
    },
    "TWO_PART_SEMANTICS": "dk_points is UNCONDITIONAL: P(plays) times what he does if he plays. It is the right object for an expected value and it is wrong for both subgroups -- measured out of sample it is 2.44 low on players who appeared and 3.54 high on players who did not. dk_points_if_plays is CONDITIONAL, computed by a second allocation in which every candidate is treated as playing, and is what a lineup consumes. Neither replaces the other.",
    "explanation": {
     "name": "Aaron Rodgers",
     "position": "QB",
     "team": "PIT",
-    "final_dk_points_from_decomposition": 11.9078,
+    "final_dk_points_from_decomposition": 14.3673,
     "stages": [
      {
       "stage": "S0_STRUCTURAL_BASELINE",
       "why": "the Nth man at your position on an average club",
-      "dk_points_after": 16.2204,
-      "contribution": 16.2204
+      "dk_points_after": 16.3241,
+      "contribution": 16.3241
      },
      {
       "stage": "S1_PLAYER_HISTORY",
       "why": "your own multi-season prior",
       "dk_points_after": 12.7308,
-      "contribution": -3.4896
+      "contribution": -3.5933
      },
      {
       "stage": "S2_CURRENT_SEASON_USAGE",
@@ -6197,42 +6195,42 @@
      {
       "stage": "S3_ROLE_STATE_AND_APPEARANCE",
       "why": "evidence ceiling, duplicate-alpha demotion, P(appears)",
-      "dk_points_after": 11.7183,
-      "contribution": -1.6404
+      "dk_points_after": 14.1966,
+      "contribution": 0.8379
      },
      {
       "stage": "S4_CLUB_VOLUME",
       "why": "the club's own measured volume instead of the league average",
-      "dk_points_after": 12.1756,
-      "contribution": 0.4573
+      "dk_points_after": 14.7065,
+      "contribution": 0.5099
      },
      {
       "stage": "S5_MARKET_RESPONSE",
       "why": "the measured response to this week's line",
-      "dk_points_after": 11.9078,
-      "contribution": -0.2678
+      "dk_points_after": 14.3673,
+      "contribution": -0.3392
      }
     ],
     "contributions": {
-     "S0_STRUCTURAL_BASELINE": 16.2204,
-     "S1_PLAYER_HISTORY": -3.4896,
+     "S0_STRUCTURAL_BASELINE": 16.3241,
+     "S1_PLAYER_HISTORY": -3.5933,
      "S2_CURRENT_SEASON_USAGE": 0.6279,
-     "S3_ROLE_STATE_AND_APPEARANCE": -1.6404,
-     "S4_CLUB_VOLUME": 0.4573,
-     "S5_MARKET_RESPONSE": -0.2678
+     "S3_ROLE_STATE_AND_APPEARANCE": 0.8379,
+     "S4_CLUB_VOLUME": 0.5099,
+     "S5_MARKET_RESPONSE": -0.3392
     },
     "line_items": {
-     "pass_yards": 7.5198,
-     "pass_td": 4.6411,
-     "interceptions": -0.6349,
-     "rush_yards": 0.0962,
-     "rush_td": 0.0246,
+     "pass_yards": 8.6555,
+     "pass_td": 5.2667,
+     "interceptions": -0.7308,
+     "rush_yards": 0.6322,
+     "rush_td": 0.173,
      "receptions": 0.0,
      "rec_yards": 0.0,
      "rec_td": 0.0,
      "bonus_100_rec": 0.0,
      "bonus_100_rush": 0.0,
-     "bonus_300_pass": 0.2609
+     "bonus_300_pass": 0.3706
     },
     "not_modelled": {
      "opponent_adjustment": "opponent strength is not yet a model input. Reported as NOT_MODELLED rather than 0.0, because a zero would assert that the opponent does not matter.",
@@ -6392,9 +6390,9 @@
      "appearance_rate_measured": 1.0,
      "rank_beyond_measured_table": false,
      "APPEARANCE_SEMANTICS": "claim is share GIVEN he plays; this is P(he plays) at his depth rank, so the product is unconditional.",
-     "claim_normalised": 0.72494,
+     "claim_normalised": 0.65673,
      "prior_expected_share_normalised": 0.21931,
-     "final_share": 0.71897
+     "final_share": 0.65132
     },
     "pass_attempts": {
      "claim_normalised": 0.0,
@@ -6408,42 +6406,42 @@
     "pass_attempts": 1.0
    },
    "targets": 4.506543704906041,
-   "carries": 17.63397613606555,
+   "carries": 15.974798941241836,
    "pass_attempts": 0.0,
    "receptions": 3.4795538979145815,
    "rec_yards": 33.14136447165517,
-   "rush_yards": 92.86239310261566,
+   "rush_yards": 84.12498959794064,
    "pass_yards": null,
    "rec_rz_opps": 1.0581474487886358,
-   "rush_rz_opps": 1.7077730201138765,
+   "rush_rz_opps": 1.5470890072148795,
    "rec_far_opps": 3.4483962561174053,
-   "rush_far_opps": 15.926203115951672,
+   "rush_far_opps": 14.427709934026957,
    "td": {
     "rec_td": 0.21753,
-    "rush_td": 0.51087,
+    "rush_td": 0.49537,
     "rec_pool_scale": 1.0493,
-    "rush_pool_scale": 1.4219
+    "rush_pool_scale": 1.522
    },
-   "dk_points_if_plays": 21.8532,
+   "dk_points_if_plays": 20.3776,
    "dk_points_if_plays_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
-    "rush_yards": 9.2862,
-    "rush_td": 3.0652,
+    "rush_yards": 8.4125,
+    "rush_td": 2.9723,
     "receptions": 3.4796,
     "rec_yards": 3.3141,
     "rec_td": 1.3052,
     "bonus_100_rec": 0.0636,
-    "bonus_100_rush": 1.3393,
+    "bonus_100_rush": 0.8304,
     "bonus_300_pass": 0.0
    },
    "conditional_volume": {
     "targets": 4.506543704906041,
     "receptions": 3.4795538979145815,
     "rec_yards": 33.14136447165517,
-    "carries": 17.63397613606555,
-    "rush_yards": 92.86239310261566,
+    "carries": 15.974798941241836,
+    "rush_yards": 84.12498959794064,
     "pass_attempts": 0.0,
     "pass_yards": null
    },
@@ -6452,18 +6450,18 @@
     "carries": 1.0,
     "pass_attempts": 1.0
    },
-   "dk_points": 21.8532,
+   "dk_points": 20.3776,
    "dk_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
-    "rush_yards": 9.2862,
-    "rush_td": 3.0652,
+    "rush_yards": 8.4125,
+    "rush_td": 2.9722,
     "receptions": 3.4796,
     "rec_yards": 3.3141,
     "rec_td": 1.3052,
     "bonus_100_rec": 0.0636,
-    "bonus_100_rush": 1.3393,
+    "bonus_100_rush": 0.8304,
     "bonus_300_pass": 0.0
    },
    "TWO_PART_SEMANTICS": "dk_points is UNCONDITIONAL: P(plays) times what he does if he plays. It is the right object for an expected value and it is wrong for both subgroups -- measured out of sample it is 2.44 low on players who appeared and 3.54 high on players who did not. dk_points_if_plays is CONDITIONAL, computed by a second allocation in which every candidate is treated as playing, and is what a lineup consumes. Neither replaces the other.",
@@ -6471,7 +6469,7 @@
     "name": "Jaylen Warren",
     "position": "RB",
     "team": "PIT",
-    "final_dk_points_from_decomposition": 21.8532,
+    "final_dk_points_from_decomposition": 20.3776,
     "stages": [
      {
       "stage": "S0_STRUCTURAL_BASELINE",
@@ -6494,41 +6492,41 @@
      {
       "stage": "S3_ROLE_STATE_AND_APPEARANCE",
       "why": "evidence ceiling, duplicate-alpha demotion, P(appears)",
-      "dk_points_after": 23.0715,
-      "contribution": 1.5697
+      "dk_points_after": 21.6227,
+      "contribution": 0.1209
      },
      {
       "stage": "S4_CLUB_VOLUME",
       "why": "the club's own measured volume instead of the league average",
-      "dk_points_after": 21.2191,
-      "contribution": -1.8524
+      "dk_points_after": 20.0519,
+      "contribution": -1.5708
      },
      {
       "stage": "S5_MARKET_RESPONSE",
       "why": "the measured response to this week's line",
-      "dk_points_after": 21.8532,
-      "contribution": 0.6341
+      "dk_points_after": 20.3776,
+      "contribution": 0.3257
      }
     ],
     "contributions": {
      "S0_STRUCTURAL_BASELINE": 17.6575,
      "S1_PLAYER_HISTORY": -0.0405,
      "S2_CURRENT_SEASON_USAGE": 3.8848,
-     "S3_ROLE_STATE_AND_APPEARANCE": 1.5697,
-     "S4_CLUB_VOLUME": -1.8524,
-     "S5_MARKET_RESPONSE": 0.6341
+     "S3_ROLE_STATE_AND_APPEARANCE": 0.1209,
+     "S4_CLUB_VOLUME": -1.5708,
+     "S5_MARKET_RESPONSE": 0.3257
     },
     "line_items": {
      "pass_yards": 0.0,
      "pass_td": 0.0,
      "interceptions": -0.0,
-     "rush_yards": 9.2862,
-     "rush_td": 3.0652,
+     "rush_yards": 8.4125,
+     "rush_td": 2.9722,
      "receptions": 3.4796,
      "rec_yards": 3.3141,
      "rec_td": 1.3052,
      "bonus_100_rec": 0.0636,
-     "bonus_100_rush": 1.3393,
+     "bonus_100_rush": 0.8304,
      "bonus_300_pass": 0.0
     },
     "not_modelled": {
@@ -6657,13 +6655,11 @@
     "completion_rate": 0.5860587692307693
    },
    "appearance_adjustment": {
-    "applied": true,
-    "reason": "NOT_PREDICTED_STARTER",
-    "raw_pass_attempt_claim": 0.99166,
-    "measured_rank2_unconditional_share": 0.01939,
-    "appearance_rate": 0.13789,
-    "conditional_share_if_he_plays": null,
-    "DECOMPOSITION": "expected = P(appears) x E[share | appears]. His role band and his efficiency are NOT shrunk -- they are what he does when he plays. Only the probability he plays is small."
+    "applied": false,
+    "reason": "DEPTH_RANK_1_IS_THE_STARTER",
+    "depth_rank": 1,
+    "measured_rank1_appearance_rate": 1.0,
+    "WHY": "the depth evidence puts him first in his own quarterback room. That is positive evidence that he takes the snaps, so no appearance discount applies. A missing predicted-lineup feed is not evidence against it."
    },
    "rz_intensity": {
     "rec": null,
@@ -6672,8 +6668,8 @@
    },
    "claims": {
     "targets": 0.0,
-    "carries": 0.037209,
-    "pass_attempts": 0.01939
+    "carries": 0.269848,
+    "pass_attempts": 0.991658
    },
    "projection_state": "PROJECTED",
    "gsis_id": "00-0033537",
@@ -6697,9 +6693,9 @@
      "appearance_rate_measured": 1.0,
      "rank_beyond_measured_table": false,
      "APPEARANCE_SEMANTICS": "claim is share GIVEN he plays; this is P(he plays) at his depth rank, so the product is unconditional.",
-     "claim_normalised": 0.0426,
+     "claim_normalised": 0.24398,
      "prior_expected_share_normalised": 0.42489,
-     "final_share": 0.04226
+     "final_share": 0.24198
     },
     "pass_attempts": {
      "position_group_share_measured_NOT_APPLIED": 1.0,
@@ -6708,9 +6704,9 @@
      "appearance_rate_measured": 1.0,
      "rank_beyond_measured_table": false,
      "APPEARANCE_SEMANTICS": "claim is share GIVEN he plays; this is P(he plays) at his depth rank, so the product is unconditional.",
-     "claim_normalised": 0.86555,
+     "claim_normalised": 0.99696,
      "prior_expected_share_normalised": 0.98001,
-     "final_share": 0.87214
+     "final_share": 0.99713
     }
    },
    "p_plays": {
@@ -6719,82 +6715,82 @@
     "pass_attempts": 1.0
    },
    "targets": 5.037868420007004,
-   "carries": 1.078082688746892,
-   "pass_attempts": 29.007171849431735,
+   "carries": 6.173763656580642,
+   "pass_attempts": 33.16458823221981,
    "receptions": null,
    "rec_yards": null,
-   "rush_yards": 5.139815278900622,
-   "pass_yards": 173.8950269430107,
+   "rush_yards": 29.433739268458357,
+   "pass_yards": 198.81831273077734,
    "rec_rz_opps": null,
-   "rush_rz_opps": 0.2049129238906132,
+   "rush_rz_opps": 1.1734572639785281,
    "rec_far_opps": null,
-   "rush_far_opps": 0.8731697648562787,
+   "rush_far_opps": 5.0003063926021145,
    "td": {
-    "rush_td": 0.05047,
-    "pass_td": 0.95539,
+    "rush_td": 0.24981,
+    "pass_td": 1.08439,
     "rec_pool_scale": 1.1737,
-    "rush_pool_scale": 0.9621
+    "rush_pool_scale": 0.8316
    },
-   "dk_points_if_plays": 11.7196,
+   "dk_points_if_plays": 16.3392,
    "dk_points_if_plays_line_items": {
-    "pass_yards": 6.9558,
+    "pass_yards": 7.9527,
     "pass_td": 4.3492,
-    "interceptions": -0.5958,
-    "rush_yards": 0.514,
-    "rush_td": 0.3028,
+    "interceptions": -0.6812,
+    "rush_yards": 2.9434,
+    "rush_td": 1.4988,
     "receptions": 0.0,
     "rec_yards": 0.0,
     "rec_td": 0.0,
     "bonus_100_rec": 0.0,
-    "bonus_100_rush": 0.0,
-    "bonus_300_pass": 0.1936
+    "bonus_100_rush": 0.0154,
+    "bonus_300_pass": 0.2609
    },
    "conditional_volume": {
     "targets": 5.037868420007004,
     "receptions": null,
     "rec_yards": null,
-    "carries": 1.078082688746892,
-    "rush_yards": 5.139815278900622,
-    "pass_attempts": 29.007171849431735,
-    "pass_yards": 173.8950269430107
+    "carries": 6.173763656580642,
+    "rush_yards": 29.433739268458357,
+    "pass_attempts": 33.16458823221981,
+    "pass_yards": 198.81831273077734
    },
    "p_plays_by_field": {
     "targets": 1.0,
     "carries": 1.0,
     "pass_attempts": 1.0
    },
-   "dk_points": 11.1919,
+   "dk_points": 16.3276,
    "dk_line_items": {
-    "pass_yards": 6.9558,
-    "pass_td": 3.8216,
-    "interceptions": -0.5958,
-    "rush_yards": 0.514,
-    "rush_td": 0.3028,
+    "pass_yards": 7.9527,
+    "pass_td": 4.3376,
+    "interceptions": -0.6812,
+    "rush_yards": 2.9434,
+    "rush_td": 1.4989,
     "receptions": 0.0,
     "rec_yards": 0.0,
     "rec_td": 0.0,
     "bonus_100_rec": 0.0,
-    "bonus_100_rush": 0.0,
-    "bonus_300_pass": 0.1936
+    "bonus_100_rush": 0.0154,
+    "bonus_300_pass": 0.2609
    },
    "TWO_PART_SEMANTICS": "dk_points is UNCONDITIONAL: P(plays) times what he does if he plays. It is the right object for an expected value and it is wrong for both subgroups -- measured out of sample it is 2.44 low on players who appeared and 3.54 high on players who did not. dk_points_if_plays is CONDITIONAL, computed by a second allocation in which every candidate is treated as playing, and is what a lineup consumes. Neither replaces the other.",
    "explanation": {
     "name": "Deshaun Watson",
     "position": "QB",
     "team": "CLE",
-    "final_dk_points_from_decomposition": 11.1919,
+    "final_dk_points_from_decomposition": 16.3277,
     "stages": [
      {
       "stage": "S0_STRUCTURAL_BASELINE",
       "why": "the Nth man at your position on an average club",
-      "dk_points_after": 19.9436,
-      "contribution": 19.9436
+      "dk_points_after": 19.9988,
+      "contribution": 19.9988
      },
      {
       "stage": "S1_PLAYER_HISTORY",
       "why": "your own multi-season prior",
       "dk_points_after": 14.671,
-      "contribution": -5.2726
+      "contribution": -5.3278
      },
      {
       "stage": "S2_CURRENT_SEASON_USAGE",
@@ -6805,42 +6801,42 @@
      {
       "stage": "S3_ROLE_STATE_AND_APPEARANCE",
       "why": "evidence ceiling, duplicate-alpha demotion, P(appears)",
-      "dk_points_after": 11.5518,
-      "contribution": -5.0474
+      "dk_points_after": 16.9456,
+      "contribution": 0.3464
      },
      {
       "stage": "S4_CLUB_VOLUME",
       "why": "the club's own measured volume instead of the league average",
-      "dk_points_after": 11.2465,
-      "contribution": -0.3053
+      "dk_points_after": 16.4399,
+      "contribution": -0.5057
      },
      {
       "stage": "S5_MARKET_RESPONSE",
       "why": "the measured response to this week's line",
-      "dk_points_after": 11.1919,
-      "contribution": -0.0546
+      "dk_points_after": 16.3277,
+      "contribution": -0.1122
      }
     ],
     "contributions": {
-     "S0_STRUCTURAL_BASELINE": 19.9436,
-     "S1_PLAYER_HISTORY": -5.2726,
+     "S0_STRUCTURAL_BASELINE": 19.9988,
+     "S1_PLAYER_HISTORY": -5.3278,
      "S2_CURRENT_SEASON_USAGE": 1.9282,
-     "S3_ROLE_STATE_AND_APPEARANCE": -5.0474,
-     "S4_CLUB_VOLUME": -0.3053,
-     "S5_MARKET_RESPONSE": -0.0546
+     "S3_ROLE_STATE_AND_APPEARANCE": 0.3464,
+     "S4_CLUB_VOLUME": -0.5057,
+     "S5_MARKET_RESPONSE": -0.1122
     },
     "line_items": {
-     "pass_yards": 6.9558,
-     "pass_td": 3.8216,
-     "interceptions": -0.5958,
-     "rush_yards": 0.514,
-     "rush_td": 0.3028,
+     "pass_yards": 7.9527,
+     "pass_td": 4.3376,
+     "interceptions": -0.6812,
+     "rush_yards": 2.9434,
+     "rush_td": 1.4989,
      "receptions": 0.0,
      "rec_yards": 0.0,
      "rec_td": 0.0,
      "bonus_100_rec": 0.0,
-     "bonus_100_rush": 0.0,
-     "bonus_300_pass": 0.1936
+     "bonus_100_rush": 0.0154,
+     "bonus_300_pass": 0.2609
     },
     "not_modelled": {
      "opponent_adjustment": "opponent strength is not yet a model input. Reported as NOT_MODELLED rather than 0.0, because a zero would assert that the opponent does not matter.",
@@ -6999,9 +6995,9 @@
      "appearance_rate_measured": 1.0,
      "rank_beyond_measured_table": false,
      "APPEARANCE_SEMANTICS": "claim is share GIVEN he plays; this is P(he plays) at his depth rank, so the product is unconditional.",
-     "claim_normalised": 0.00113,
+     "claim_normalised": 0.00102,
      "prior_expected_share_normalised": 0.11566,
-     "final_share": 0.00112
+     "final_share": 0.00101
     },
     "pass_attempts": {
      "claim_normalised": 0.0,
@@ -7015,29 +7011,29 @@
     "pass_attempts": 1.0
    },
    "targets": 8.378822185788225,
-   "carries": 0.02747761122982443,
+   "carries": 0.02489224842968351,
    "pass_attempts": 0.0,
    "receptions": 4.274640472167951,
    "rec_yards": 49.2619109145034,
    "rush_yards": null,
    "pass_yards": null,
    "rec_rz_opps": 0.7565754657258635,
-   "rush_rz_opps": 0.013868721427711393,
+   "rush_rz_opps": 0.012563816275483159,
    "rec_far_opps": 7.622246720062361,
-   "rush_far_opps": 0.013608889802113036,
+   "rush_far_opps": 0.01232843215420035,
    "td": {
     "rec_td": 0.35594,
-    "rush_td": 0.0059,
+    "rush_td": 0.00572,
     "rec_pool_scale": 1.0493,
-    "rush_pool_scale": 1.4219
+    "rush_pool_scale": 1.522
    },
-   "dk_points_if_plays": 11.525,
+   "dk_points_if_plays": 11.5239,
    "dk_points_if_plays_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
     "rush_yards": 0.0,
-    "rush_td": 0.0354,
+    "rush_td": 0.0343,
     "receptions": 4.2746,
     "rec_yards": 4.9262,
     "rec_td": 2.1355,
@@ -7049,7 +7045,7 @@
     "targets": 8.378822185788225,
     "receptions": 4.274640472167951,
     "rec_yards": 49.2619109145034,
-    "carries": 0.02747761122982443,
+    "carries": 0.02489224842968351,
     "rush_yards": null,
     "pass_attempts": 0.0,
     "pass_yards": null
@@ -7059,13 +7055,13 @@
     "carries": 1.0,
     "pass_attempts": 1.0
    },
-   "dk_points": 11.5251,
+   "dk_points": 11.524,
    "dk_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
     "rush_yards": 0.0,
-    "rush_td": 0.0354,
+    "rush_td": 0.0343,
     "receptions": 4.2746,
     "rec_yards": 4.9262,
     "rec_td": 2.1356,
@@ -7078,7 +7074,7 @@
     "name": "DK Metcalf",
     "position": "WR",
     "team": "PIT",
-    "final_dk_points_from_decomposition": 11.5251,
+    "final_dk_points_from_decomposition": 11.524,
     "stages": [
      {
       "stage": "S0_STRUCTURAL_BASELINE",
@@ -7101,36 +7097,36 @@
      {
       "stage": "S3_ROLE_STATE_AND_APPEARANCE",
       "why": "evidence ceiling, duplicate-alpha demotion, P(appears)",
-      "dk_points_after": 11.4861,
-      "contribution": 0.0015
+      "dk_points_after": 11.485,
+      "contribution": 0.0004
      },
      {
       "stage": "S4_CLUB_VOLUME",
       "why": "the club's own measured volume instead of the league average",
-      "dk_points_after": 12.1564,
-      "contribution": 0.6703
+      "dk_points_after": 12.1554,
+      "contribution": 0.6704
      },
      {
       "stage": "S5_MARKET_RESPONSE",
       "why": "the measured response to this week's line",
-      "dk_points_after": 11.5251,
-      "contribution": -0.6313
+      "dk_points_after": 11.524,
+      "contribution": -0.6314
      }
     ],
     "contributions": {
      "S0_STRUCTURAL_BASELINE": 8.2295,
      "S1_PLAYER_HISTORY": 2.9161,
      "S2_CURRENT_SEASON_USAGE": 0.339,
-     "S3_ROLE_STATE_AND_APPEARANCE": 0.0015,
-     "S4_CLUB_VOLUME": 0.6703,
-     "S5_MARKET_RESPONSE": -0.6313
+     "S3_ROLE_STATE_AND_APPEARANCE": 0.0004,
+     "S4_CLUB_VOLUME": 0.6704,
+     "S5_MARKET_RESPONSE": -0.6314
     },
     "line_items": {
      "pass_yards": 0.0,
      "pass_td": 0.0,
      "interceptions": -0.0,
      "rush_yards": 0.0,
-     "rush_td": 0.0354,
+     "rush_td": 0.0343,
      "receptions": 4.2746,
      "rec_yards": 4.9262,
      "rec_td": 2.1356,
@@ -7293,9 +7289,9 @@
      "appearance_rate_measured": 1.0,
      "rank_beyond_measured_table": false,
      "APPEARANCE_SEMANTICS": "claim is share GIVEN he plays; this is P(he plays) at his depth rank, so the product is unconditional.",
-     "claim_normalised": 0.70107,
+     "claim_normalised": 0.55359,
      "prior_expected_share_normalised": 0.21932,
-     "final_share": 0.69533
+     "final_share": 0.54906
     },
     "pass_attempts": {
      "claim_normalised": 0.0,
@@ -7309,42 +7305,42 @@
     "pass_attempts": 1.0
    },
    "targets": 2.4693823843824774,
-   "carries": 17.740206971831885,
+   "carries": 14.008427325068466,
    "pass_attempts": 0.0,
    "receptions": 2.1373294739193343,
    "rec_yards": 13.381141944649302,
-   "rush_yards": 57.04052337875952,
+   "rush_yards": 45.04164058536406,
    "pass_yards": null,
    "rec_rz_opps": 0.1856483649355882,
-   "rush_rz_opps": 2.5543212790905896,
+   "rush_rz_opps": 2.017001496083534,
    "rec_far_opps": 2.2837340194468894,
-   "rush_far_opps": 15.185885692741294,
+   "rush_far_opps": 11.991425828984932,
    "td": {
     "rec_td": 0.04739,
-    "rush_td": 0.49723,
+    "rush_td": 0.33937,
     "rec_pool_scale": 1.1737,
-    "rush_pool_scale": 0.9621
+    "rush_pool_scale": 0.8316
    },
-   "dk_points_if_plays": 12.7405,
+   "dk_points_if_plays": 10.4479,
    "dk_points_if_plays_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
-    "rush_yards": 5.7041,
-    "rush_td": 2.9832,
+    "rush_yards": 4.5042,
+    "rush_td": 2.0362,
     "receptions": 2.1373,
     "rec_yards": 1.3381,
     "rec_td": 0.2843,
     "bonus_100_rec": 0.0008,
-    "bonus_100_rush": 0.2927,
+    "bonus_100_rush": 0.147,
     "bonus_300_pass": 0.0
    },
    "conditional_volume": {
     "targets": 2.4693823843824774,
     "receptions": 2.1373294739193343,
     "rec_yards": 13.381141944649302,
-    "carries": 17.740206971831885,
-    "rush_yards": 57.04052337875952,
+    "carries": 14.008427325068466,
+    "rush_yards": 45.04164058536406,
     "pass_attempts": 0.0,
     "pass_yards": null
    },
@@ -7353,18 +7349,18 @@
     "carries": 1.0,
     "pass_attempts": 1.0
    },
-   "dk_points": 12.7407,
+   "dk_points": 10.4479,
    "dk_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
-    "rush_yards": 5.7041,
-    "rush_td": 2.9834,
+    "rush_yards": 4.5042,
+    "rush_td": 2.0362,
     "receptions": 2.1373,
     "rec_yards": 1.3381,
     "rec_td": 0.2843,
     "bonus_100_rec": 0.0008,
-    "bonus_100_rush": 0.2927,
+    "bonus_100_rush": 0.147,
     "bonus_300_pass": 0.0
    },
    "TWO_PART_SEMANTICS": "dk_points is UNCONDITIONAL: P(plays) times what he does if he plays. It is the right object for an expected value and it is wrong for both subgroups -- measured out of sample it is 2.44 low on players who appeared and 3.54 high on players who did not. dk_points_if_plays is CONDITIONAL, computed by a second allocation in which every candidate is treated as playing, and is what a lineup consumes. Neither replaces the other.",
@@ -7372,7 +7368,7 @@
     "name": "Quinshon Judkins",
     "position": "RB",
     "team": "CLE",
-    "final_dk_points_from_decomposition": 12.7407,
+    "final_dk_points_from_decomposition": 10.448,
     "stages": [
      {
       "stage": "S0_STRUCTURAL_BASELINE",
@@ -7395,41 +7391,41 @@
      {
       "stage": "S3_ROLE_STATE_AND_APPEARANCE",
       "why": "evidence ceiling, duplicate-alpha demotion, P(appears)",
-      "dk_points_after": 13.2517,
-      "contribution": 2.3689
+      "dk_points_after": 10.9006,
+      "contribution": 0.0178
      },
      {
       "stage": "S4_CLUB_VOLUME",
       "why": "the club's own measured volume instead of the league average",
-      "dk_points_after": 12.6448,
-      "contribution": -0.6069
+      "dk_points_after": 10.3826,
+      "contribution": -0.518
      },
      {
       "stage": "S5_MARKET_RESPONSE",
       "why": "the measured response to this week's line",
-      "dk_points_after": 12.7407,
-      "contribution": 0.0959
+      "dk_points_after": 10.448,
+      "contribution": 0.0654
      }
     ],
     "contributions": {
      "S0_STRUCTURAL_BASELINE": 16.1965,
      "S1_PLAYER_HISTORY": -5.9868,
      "S2_CURRENT_SEASON_USAGE": 0.6731,
-     "S3_ROLE_STATE_AND_APPEARANCE": 2.3689,
-     "S4_CLUB_VOLUME": -0.6069,
-     "S5_MARKET_RESPONSE": 0.0959
+     "S3_ROLE_STATE_AND_APPEARANCE": 0.0178,
+     "S4_CLUB_VOLUME": -0.518,
+     "S5_MARKET_RESPONSE": 0.0654
     },
     "line_items": {
      "pass_yards": 0.0,
      "pass_td": 0.0,
      "interceptions": -0.0,
-     "rush_yards": 5.7041,
-     "rush_td": 2.9834,
+     "rush_yards": 4.5042,
+     "rush_td": 2.0362,
      "receptions": 2.1373,
      "rec_yards": 1.3381,
      "rec_td": 0.2843,
      "bonus_100_rec": 0.0008,
-     "bonus_100_rush": 0.2927,
+     "bonus_100_rush": 0.147,
      "bonus_300_pass": 0.0
     },
     "not_modelled": {
@@ -7589,9 +7585,9 @@
      "appearance_rate_measured": 0.85556,
      "rank_beyond_measured_table": false,
      "APPEARANCE_SEMANTICS": "claim is share GIVEN he plays; this is P(he plays) at his depth rank, so the product is unconditional.",
-     "claim_normalised": 0.00301,
+     "claim_normalised": 0.00238,
      "prior_expected_share_normalised": 0.05598,
-     "final_share": 0.00299
+     "final_share": 0.00236
     },
     "pass_attempts": {
      "claim_normalised": 0.0,
@@ -7605,29 +7601,29 @@
     "pass_attempts": 1.0
    },
    "targets": 3.566366670736847,
-   "carries": 0.0762494824408939,
+   "carries": 0.06020985747479409,
    "pass_attempts": 0.0,
    "receptions": 2.0572372158145256,
    "rec_yards": 36.739168771529236,
-   "rush_yards": 0.6354120995091743,
+   "rush_yards": 0.5017486115904258,
    "pass_yards": null,
    "rec_rz_opps": 0.5899012804911834,
-   "rush_rz_opps": 0.01859156520201325,
+   "rush_rz_opps": 0.01468069625147001,
    "rec_far_opps": 2.9764653902456635,
-   "rush_far_opps": 0.05765791723888065,
+   "rush_far_opps": 0.04552916122332408,
    "td": {
     "rec_td": 0.25331,
-    "rush_td": 0.00597,
+    "rush_td": 0.00408,
     "rec_pool_scale": 1.1737,
-    "rush_pool_scale": 0.9621
+    "rush_pool_scale": 0.8316
    },
-   "dk_points_if_plays": 8.5346,
+   "dk_points_if_plays": 8.5057,
    "dk_points_if_plays_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
-    "rush_yards": 0.0742,
-    "rush_td": 0.0419,
+    "rush_yards": 0.0586,
+    "rush_td": 0.0286,
     "receptions": 2.345,
     "rec_yards": 4.1878,
     "rec_td": 1.7324,
@@ -7639,8 +7635,8 @@
     "targets": 4.065240774200944,
     "receptions": 2.34500974915317,
     "rec_yards": 41.87835427180367,
-    "carries": 0.08907699137147394,
-    "rush_yards": 0.742307964505645,
+    "carries": 0.07034653249735648,
+    "rush_yards": 0.5862208696561957,
     "pass_attempts": 0.0,
     "pass_yards": null
    },
@@ -7649,13 +7645,13 @@
     "carries": 0.85556,
     "pass_attempts": 1.0
    },
-   "dk_points": 7.414,
+   "dk_points": 7.3893,
    "dk_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
-    "rush_yards": 0.0635,
-    "rush_td": 0.0358,
+    "rush_yards": 0.0502,
+    "rush_td": 0.0245,
     "receptions": 2.0572,
     "rec_yards": 3.6739,
     "rec_td": 1.5199,
@@ -7668,7 +7664,7 @@
     "name": "Denzel Boston",
     "position": "WR",
     "team": "CLE",
-    "final_dk_points_from_decomposition": 7.414,
+    "final_dk_points_from_decomposition": 7.3893,
     "stages": [
      {
       "stage": "S0_STRUCTURAL_BASELINE",
@@ -7691,36 +7687,36 @@
      {
       "stage": "S3_ROLE_STATE_AND_APPEARANCE",
       "why": "evidence ceiling, duplicate-alpha demotion, P(appears)",
-      "dk_points_after": 7.8014,
-      "contribution": 0.0256
+      "dk_points_after": 7.776,
+      "contribution": 0.0002
      },
      {
       "stage": "S4_CLUB_VOLUME",
       "why": "the club's own measured volume instead of the league average",
-      "dk_points_after": 7.4931,
-      "contribution": -0.3083
+      "dk_points_after": 7.4688,
+      "contribution": -0.3072
      },
      {
       "stage": "S5_MARKET_RESPONSE",
       "why": "the measured response to this week's line",
-      "dk_points_after": 7.414,
-      "contribution": -0.0791
+      "dk_points_after": 7.3893,
+      "contribution": -0.0795
      }
     ],
     "contributions": {
      "S0_STRUCTURAL_BASELINE": 6.5579,
      "S1_PLAYER_HISTORY": -0.0232,
      "S2_CURRENT_SEASON_USAGE": 1.2411,
-     "S3_ROLE_STATE_AND_APPEARANCE": 0.0256,
-     "S4_CLUB_VOLUME": -0.3083,
-     "S5_MARKET_RESPONSE": -0.0791
+     "S3_ROLE_STATE_AND_APPEARANCE": 0.0002,
+     "S4_CLUB_VOLUME": -0.3072,
+     "S5_MARKET_RESPONSE": -0.0795
     },
     "line_items": {
      "pass_yards": 0.0,
      "pass_td": 0.0,
      "interceptions": -0.0,
-     "rush_yards": 0.0635,
-     "rush_td": 0.0358,
+     "rush_yards": 0.0502,
+     "rush_td": 0.0245,
      "receptions": 2.0572,
      "rec_yards": 3.6739,
      "rec_td": 1.5199,
@@ -7881,9 +7877,9 @@
      "appearance_rate_measured": 1.0,
      "rank_beyond_measured_table": false,
      "APPEARANCE_SEMANTICS": "claim is share GIVEN he plays; this is P(he plays) at his depth rank, so the product is unconditional.",
-     "claim_normalised": 0.01106,
+     "claim_normalised": 0.00873,
      "prior_expected_share_normalised": 0.07198,
-     "final_share": 0.01097
+     "final_share": 0.00866
     },
     "pass_attempts": {
      "claim_normalised": 0.0,
@@ -7897,29 +7893,29 @@
     "pass_attempts": 1.0
    },
    "targets": 5.847492538232595,
-   "carries": 0.2798834532345613,
+   "carries": 0.22100796345560836,
    "pass_attempts": 0.0,
    "receptions": 4.286110673987164,
    "rec_yards": 40.4262186436083,
    "rush_yards": null,
    "pass_yards": null,
    "rec_rz_opps": 0.6286882462384051,
-   "rush_rz_opps": 0.042855664344302664,
+   "rush_rz_opps": 0.033840668284644,
    "rec_far_opps": 5.21880429199419,
-   "rush_far_opps": 0.23702778889025866,
+   "rush_far_opps": 0.18716729517096437,
    "td": {
     "rec_td": 0.25501,
-    "rush_td": 0.01369,
+    "rush_td": 0.00935,
     "rec_pool_scale": 1.1737,
-    "rush_pool_scale": 0.9621
+    "rush_pool_scale": 0.8316
    },
-   "dk_points_if_plays": 10.0941,
+   "dk_points_if_plays": 10.0681,
    "dk_points_if_plays_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
     "rush_yards": 0.0,
-    "rush_td": 0.0821,
+    "rush_td": 0.0561,
     "receptions": 4.2861,
     "rec_yards": 4.0426,
     "rec_td": 1.5301,
@@ -7931,7 +7927,7 @@
     "targets": 5.847492538232595,
     "receptions": 4.286110673987164,
     "rec_yards": 40.4262186436083,
-    "carries": 0.2798834532345613,
+    "carries": 0.22100796345560836,
     "rush_yards": null,
     "pass_attempts": 0.0,
     "pass_yards": null
@@ -7941,13 +7937,13 @@
     "carries": 1.0,
     "pass_attempts": 1.0
    },
-   "dk_points": 10.0941,
+   "dk_points": 10.0681,
    "dk_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
     "rush_yards": 0.0,
-    "rush_td": 0.0821,
+    "rush_td": 0.0561,
     "receptions": 4.2861,
     "rec_yards": 4.0426,
     "rec_td": 1.5301,
@@ -7960,7 +7956,7 @@
     "name": "Harold Fannin Jr.",
     "position": "TE",
     "team": "CLE",
-    "final_dk_points_from_decomposition": 10.0941,
+    "final_dk_points_from_decomposition": 10.0681,
     "stages": [
      {
       "stage": "S0_STRUCTURAL_BASELINE",
@@ -7983,19 +7979,19 @@
      {
       "stage": "S3_ROLE_STATE_AND_APPEARANCE",
       "why": "evidence ceiling, duplicate-alpha demotion, P(appears)",
-      "dk_points_after": 10.6526,
-      "contribution": 0.026
+      "dk_points_after": 10.6266,
+      "contribution": 0.0
      },
      {
       "stage": "S4_CLUB_VOLUME",
       "why": "the club's own measured volume instead of the league average",
-      "dk_points_after": 10.2115,
+      "dk_points_after": 10.1855,
       "contribution": -0.4411
      },
      {
       "stage": "S5_MARKET_RESPONSE",
       "why": "the measured response to this week's line",
-      "dk_points_after": 10.0941,
+      "dk_points_after": 10.0681,
       "contribution": -0.1174
      }
     ],
@@ -8003,7 +7999,7 @@
      "S0_STRUCTURAL_BASELINE": 5.4106,
      "S1_PLAYER_HISTORY": 5.9949,
      "S2_CURRENT_SEASON_USAGE": -0.7789,
-     "S3_ROLE_STATE_AND_APPEARANCE": 0.026,
+     "S3_ROLE_STATE_AND_APPEARANCE": 0.0,
      "S4_CLUB_VOLUME": -0.4411,
      "S5_MARKET_RESPONSE": -0.1174
     },
@@ -8012,7 +8008,7 @@
      "pass_td": 0.0,
      "interceptions": -0.0,
      "rush_yards": 0.0,
-     "rush_td": 0.0821,
+     "rush_td": 0.0561,
      "receptions": 4.2861,
      "rec_yards": 4.0426,
      "rec_td": 1.5301,
@@ -8203,29 +8199,29 @@
     "pass_attempts": 1.0
    },
    "targets": 1.392535349162006,
-   "carries": 0.00010022946902537142,
+   "carries": 9.07988988594026e-05,
    "pass_attempts": 0.0,
    "receptions": 0.8933191572886536,
    "rec_yards": 12.041919053794143,
    "rush_yards": null,
    "pass_yards": null,
    "rec_rz_opps": 0.06344102397116248,
-   "rush_rz_opps": 6.106555980239007e-06,
+   "rush_rz_opps": 5.531991381583068e-06,
    "rec_far_opps": 1.3290943251908436,
-   "rush_far_opps": 9.412291304513241e-05,
+   "rush_far_opps": 8.526690747781954e-05,
    "td": {
     "rec_td": 0.04172,
     "rush_td": 0.0,
     "rec_pool_scale": 1.0493,
-    "rush_pool_scale": 1.4219
+    "rush_pool_scale": 1.522
    },
-   "dk_points_if_plays": 8.2022,
+   "dk_points_if_plays": 8.202,
    "dk_points_if_plays_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
     "rush_yards": 0.0,
-    "rush_td": 0.0046,
+    "rush_td": 0.0044,
     "receptions": 3.0608,
     "rec_yards": 4.1259,
     "rec_td": 0.8576,
@@ -8237,7 +8233,7 @@
     "targets": 4.771269703693128,
     "receptions": 3.060796003106821,
     "rec_yards": 41.259450677692435,
-    "carries": 0.016393180640961003,
+    "carries": 0.014851685635220921,
     "rush_yards": null,
     "pass_attempts": 0.0,
     "pass_yards": null
@@ -8501,9 +8497,9 @@
      "appearance_rate_measured": 1.0,
      "rank_beyond_measured_table": false,
      "APPEARANCE_SEMANTICS": "claim is share GIVEN he plays; this is P(he plays) at his depth rank, so the product is unconditional.",
-     "claim_normalised": 0.03947,
+     "claim_normalised": 0.03117,
      "prior_expected_share_normalised": 0.11566,
-     "final_share": 0.03915
+     "final_share": 0.03092
     },
     "pass_attempts": {
      "claim_normalised": 0.0,
@@ -8517,29 +8513,29 @@
     "pass_attempts": 1.0
    },
    "targets": 6.189325778662503,
-   "carries": 0.9988883989352727,
+   "carries": 0.788765067090637,
    "pass_attempts": 0.0,
    "receptions": 3.584411859545258,
    "rec_yards": 31.330045246649092,
-   "rush_yards": 1.2153155505557802,
+   "rush_yards": 0.959665216647031,
    "pass_yards": null,
    "rec_rz_opps": 0.5881216945648514,
    "rush_rz_opps": null,
    "rec_far_opps": 5.601204084097652,
-   "rush_far_opps": 0.9988883989352727,
+   "rush_far_opps": 0.788765067090637,
    "td": {
     "rec_td": 0.30324,
-    "rush_td": 0.01576,
+    "rush_td": 0.01076,
     "rec_pool_scale": 1.1737,
-    "rush_pool_scale": 0.9621
+    "rush_pool_scale": 0.8316
    },
-   "dk_points_if_plays": 8.8165,
+   "dk_points_if_plays": 8.761,
    "dk_points_if_plays_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
-    "rush_yards": 0.1215,
-    "rush_td": 0.0946,
+    "rush_yards": 0.096,
+    "rush_td": 0.0646,
     "receptions": 3.5844,
     "rec_yards": 3.133,
     "rec_td": 1.8194,
@@ -8551,8 +8547,8 @@
     "targets": 6.189325778662503,
     "receptions": 3.584411859545258,
     "rec_yards": 31.330045246649092,
-    "carries": 0.9988883989352727,
-    "rush_yards": 1.2153155505557802,
+    "carries": 0.788765067090637,
+    "rush_yards": 0.959665216647031,
     "pass_attempts": 0.0,
     "pass_yards": null
    },
@@ -8561,13 +8557,13 @@
     "carries": 1.0,
     "pass_attempts": 1.0
    },
-   "dk_points": 8.8165,
+   "dk_points": 8.761,
    "dk_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
-    "rush_yards": 0.1215,
-    "rush_td": 0.0946,
+    "rush_yards": 0.096,
+    "rush_td": 0.0646,
     "receptions": 3.5844,
     "rec_yards": 3.133,
     "rec_td": 1.8194,
@@ -8580,7 +8576,7 @@
     "name": "KC Concepcion Jr.",
     "position": "WR",
     "team": "CLE",
-    "final_dk_points_from_decomposition": 8.8165,
+    "final_dk_points_from_decomposition": 8.761,
     "stages": [
      {
       "stage": "S0_STRUCTURAL_BASELINE",
@@ -8603,36 +8599,36 @@
      {
       "stage": "S3_ROLE_STATE_AND_APPEARANCE",
       "why": "evidence ceiling, duplicate-alpha demotion, P(appears)",
-      "dk_points_after": 9.2729,
-      "contribution": 0.0572
+      "dk_points_after": 9.2161,
+      "contribution": 0.0004
      },
      {
       "stage": "S4_CLUB_VOLUME",
       "why": "the club's own measured volume instead of the league average",
-      "dk_points_after": 8.9081,
-      "contribution": -0.3648
+      "dk_points_after": 8.8532,
+      "contribution": -0.3629
      },
      {
       "stage": "S5_MARKET_RESPONSE",
       "why": "the measured response to this week's line",
-      "dk_points_after": 8.8165,
-      "contribution": -0.0916
+      "dk_points_after": 8.761,
+      "contribution": -0.0922
      }
     ],
     "contributions": {
      "S0_STRUCTURAL_BASELINE": 7.3342,
      "S1_PLAYER_HISTORY": 1.7068,
      "S2_CURRENT_SEASON_USAGE": 0.1747,
-     "S3_ROLE_STATE_AND_APPEARANCE": 0.0572,
-     "S4_CLUB_VOLUME": -0.3648,
-     "S5_MARKET_RESPONSE": -0.0916
+     "S3_ROLE_STATE_AND_APPEARANCE": 0.0004,
+     "S4_CLUB_VOLUME": -0.3629,
+     "S5_MARKET_RESPONSE": -0.0922
     },
     "line_items": {
      "pass_yards": 0.0,
      "pass_td": 0.0,
      "interceptions": -0.0,
-     "rush_yards": 0.1215,
-     "rush_td": 0.0946,
+     "rush_yards": 0.096,
+     "rush_td": 0.0646,
      "receptions": 3.5844,
      "rec_yards": 3.133,
      "rec_td": 1.8194,
@@ -8766,9 +8762,11 @@
    },
    "appearance_adjustment": {
     "applied": true,
-    "reason": "NOT_PREDICTED_STARTER",
+    "reason": "DEPTH_RANK_2",
+    "depth_rank": 2,
+    "rank_curve_used": "rank_2",
     "raw_pass_attempt_claim": 0.22789,
-    "measured_rank2_unconditional_share": 0.01939,
+    "measured_unconditional_share": 0.01939,
     "appearance_rate": 0.13789,
     "conditional_share_if_he_plays": null,
     "DECOMPOSITION": "expected = P(appears) x E[share | appears]. His role band and his efficiency are NOT shrunk -- they are what he does when he plays. Only the probability he plays is small."
@@ -8805,9 +8803,9 @@
      "appearance_rate_measured": 0.13789,
      "rank_beyond_measured_table": false,
      "APPEARANCE_SEMANTICS": "claim is share GIVEN he plays; this is P(he plays) at his depth rank, so the product is unconditional.",
-     "claim_normalised": 0.00076,
+     "claim_normalised": 0.0006,
      "prior_expected_share_normalised": 0.00867,
-     "final_share": 0.00076
+     "final_share": 0.0006
     },
     "pass_attempts": {
      "position_group_share_measured_NOT_APPLIED": 1.0,
@@ -8816,9 +8814,9 @@
      "appearance_rate_measured": 0.13789,
      "rank_beyond_measured_table": false,
      "APPEARANCE_SEMANTICS": "claim is share GIVEN he plays; this is P(he plays) at his depth rank, so the product is unconditional.",
-     "claim_normalised": 0.11935,
+     "claim_normalised": 0.00269,
      "prior_expected_share_normalised": 0.01999,
-     "final_share": 0.12026
+     "final_share": 0.00269
     }
    },
    "p_plays": {
@@ -8827,28 +8825,28 @@
     "pass_attempts": 0.13789
    },
    "targets": 0.10274875478740711,
-   "carries": 0.019321582033486422,
-   "pass_attempts": 3.9997989263181424,
+   "carries": 0.015257148811804067,
+   "pass_attempts": 0.08941763027874489,
    "receptions": null,
    "rec_yards": null,
-   "rush_yards": 0.10304837310665414,
-   "pass_yards": 20.146627209961114,
+   "rush_yards": 0.08137140947245898,
+   "pass_yards": 0.4503885561273129,
    "rec_rz_opps": null,
    "rush_rz_opps": null,
    "rec_far_opps": null,
-   "rush_far_opps": 0.019321582033486422,
+   "rush_far_opps": 0.015257148811804067,
    "td": {
     "rush_td": 0.0,
-    "pass_td": 0.13174,
+    "pass_td": 0.00292,
     "rec_pool_scale": 1.1737,
-    "rush_pool_scale": 0.9621
+    "rush_pool_scale": 0.8316
    },
-   "dk_points_if_plays": 7.4195,
+   "dk_points_if_plays": 4.5234,
    "dk_points_if_plays_line_items": {
-    "pass_yards": 3.336,
+    "pass_yards": 0.1285,
     "pass_td": 4.3492,
-    "interceptions": -0.3401,
-    "rush_yards": 0.0744,
+    "interceptions": -0.0131,
+    "rush_yards": 0.0588,
     "rush_td": 0.0,
     "receptions": 0.0,
     "rec_yards": 0.0,
@@ -8861,22 +8859,22 @@
     "targets": 0.10274875478740711,
     "receptions": null,
     "rec_yards": null,
-    "carries": 0.13945736372026454,
-    "rush_yards": 0.7437721416501986,
-    "pass_attempts": 16.557761957865807,
-    "pass_yards": 83.39995678319386
+    "carries": 0.11023168552049067,
+    "rush_yards": 0.5879019553369985,
+    "pass_attempts": 0.6377510232558227,
+    "pass_yards": 3.2122945065474857
    },
    "p_plays_by_field": {
     "targets": 0.13789,
     "carries": 0.13789,
     "pass_attempts": 0.13789
    },
-   "dk_points": 1.261,
+   "dk_points": 0.036,
    "dk_line_items": {
-    "pass_yards": 0.8059,
-    "pass_td": 0.527,
-    "interceptions": -0.0822,
-    "rush_yards": 0.0103,
+    "pass_yards": 0.018,
+    "pass_td": 0.0117,
+    "interceptions": -0.0018,
+    "rush_yards": 0.0081,
     "rush_td": 0.0,
     "receptions": 0.0,
     "rec_yards": 0.0,
@@ -8886,23 +8884,25 @@
     "bonus_300_pass": 0.0
    },
    "TWO_PART_SEMANTICS": "dk_points is UNCONDITIONAL: P(plays) times what he does if he plays. It is the right object for an expected value and it is wrong for both subgroups -- measured out of sample it is 2.44 low on players who appeared and 3.54 high on players who did not. dk_points_if_plays is CONDITIONAL, computed by a second allocation in which every candidate is treated as playing, and is what a lineup consumes. Neither replaces the other.",
+   "effectively_zero": true,
+   "EFFECTIVELY_ZERO_NOTE": "below 0.05 DK points, which is not distinguishable from zero for lineup purposes. The value is kept at full precision so it cannot be confused with a refusal.",
    "explanation": {
     "name": "Shedeur Sanders",
     "position": "QB",
     "team": "CLE",
-    "final_dk_points_from_decomposition": 1.261,
+    "final_dk_points_from_decomposition": 0.036,
     "stages": [
      {
       "stage": "S0_STRUCTURAL_BASELINE",
       "why": "the Nth man at your position on an average club",
-      "dk_points_after": 0.336,
-      "contribution": 0.336
+      "dk_points_after": 0.3369,
+      "contribution": 0.3369
      },
      {
       "stage": "S1_PLAYER_HISTORY",
       "why": "your own multi-season prior",
       "dk_points_after": 0.5413,
-      "contribution": 0.2053
+      "contribution": 0.2044
      },
      {
       "stage": "S2_CURRENT_SEASON_USAGE",
@@ -8913,35 +8913,35 @@
      {
       "stage": "S3_ROLE_STATE_AND_APPEARANCE",
       "why": "evidence ceiling, duplicate-alpha demotion, P(appears)",
-      "dk_points_after": 1.2919,
-      "contribution": 0.9041
+      "dk_points_after": 0.0371,
+      "contribution": -0.3507
      },
      {
       "stage": "S4_CLUB_VOLUME",
       "why": "the club's own measured volume instead of the league average",
-      "dk_points_after": 1.2684,
-      "contribution": -0.0235
+      "dk_points_after": 0.036,
+      "contribution": -0.0011
      },
      {
       "stage": "S5_MARKET_RESPONSE",
       "why": "the measured response to this week's line",
-      "dk_points_after": 1.261,
-      "contribution": -0.0074
+      "dk_points_after": 0.036,
+      "contribution": 0.0
      }
     ],
     "contributions": {
-     "S0_STRUCTURAL_BASELINE": 0.336,
-     "S1_PLAYER_HISTORY": 0.2053,
+     "S0_STRUCTURAL_BASELINE": 0.3369,
+     "S1_PLAYER_HISTORY": 0.2044,
      "S2_CURRENT_SEASON_USAGE": -0.1535,
-     "S3_ROLE_STATE_AND_APPEARANCE": 0.9041,
-     "S4_CLUB_VOLUME": -0.0235,
-     "S5_MARKET_RESPONSE": -0.0074
+     "S3_ROLE_STATE_AND_APPEARANCE": -0.3507,
+     "S4_CLUB_VOLUME": -0.0011,
+     "S5_MARKET_RESPONSE": 0.0
     },
     "line_items": {
-     "pass_yards": 0.8059,
-     "pass_td": 0.527,
-     "interceptions": -0.0822,
-     "rush_yards": 0.0103,
+     "pass_yards": 0.018,
+     "pass_td": 0.0117,
+     "interceptions": -0.0018,
+     "rush_yards": 0.0081,
      "rush_td": 0.0,
      "receptions": 0.0,
      "rec_yards": 0.0,
@@ -9070,23 +9070,22 @@
     "completion_rate": 0.50608
    },
    "appearance_adjustment": {
-    "applied": true,
-    "reason": "NOT_PREDICTED_STARTER",
-    "raw_pass_attempt_claim": 0.05353,
-    "measured_rank2_unconditional_share": 0.01939,
-    "appearance_rate": 0.13789,
-    "conditional_share_if_he_plays": null,
-    "DECOMPOSITION": "expected = P(appears) x E[share | appears]. His role band and his efficiency are NOT shrunk -- they are what he does when he plays. Only the probability he plays is small."
+    "applied": false,
+    "reason": "NO_EVIDENCE_OF_BACKUP_STATUS",
+    "depth_rank": null,
+    "is_predicted_starter": false,
+    "predicted_feed_covers_club": false,
+    "UNMODELLED_RISK": "no depth rank and no predicted-lineup feed for his club, so nothing here establishes whether he starts. The discount is NOT applied, because absence of evidence is not evidence of absence -- but his volume is correspondingly unguarded and this row should be read as low confidence."
    },
    "rz_intensity": {
     "rec": null,
-    "rush": 0.08138569048718225,
+    "rush": 0.08138569048718226,
     "SEMANTICS": "red-zone opportunities per unit of his own volume, so it is invariant to how much volume he is finally allocated."
    },
    "claims": {
     "targets": 0.0002,
-    "carries": 0.007959,
-    "pass_attempts": 0.01939
+    "carries": 0.05772,
+    "pass_attempts": 0.05353
    },
    "projection_state": "PROJECTED",
    "gsis_id": "00-0040704",
@@ -9110,9 +9109,9 @@
      "appearance_rate_measured": 0.00042,
      "rank_beyond_measured_table": false,
      "APPEARANCE_SEMANTICS": "claim is share GIVEN he plays; this is P(he plays) at his depth rank, so the product is unconditional.",
-     "claim_normalised": 0.0,
+     "claim_normalised": 2e-05,
      "prior_expected_share_normalised": 0.0,
-     "final_share": 0.0
+     "final_share": 1e-05
     },
     "pass_attempts": {
      "position_group_share_measured_NOT_APPLIED": 1.0,
@@ -9121,9 +9120,9 @@
      "appearance_rate_measured": 0.00042,
      "rank_beyond_measured_table": false,
      "APPEARANCE_SEMANTICS": "claim is share GIVEN he plays; this is P(he plays) at his depth rank, so the product is unconditional.",
-     "claim_normalised": 0.00036,
+     "claim_normalised": 2e-05,
      "prior_expected_share_normalised": 0.0,
-     "final_share": 0.00018
+     "final_share": 1e-05
     }
    },
    "p_plays": {
@@ -9132,29 +9131,29 @@
     "pass_attempts": 0.00042
    },
    "targets": 1.069331119512522e-06,
-   "carries": 4.8425987544242804e-05,
-   "pass_attempts": 0.006091506088380665,
+   "carries": 0.00027731694892734165,
+   "pass_attempts": 0.0003759491554761418,
    "receptions": null,
    "rec_yards": null,
-   "rush_yards": 4.418193399586536e-05,
-   "pass_yards": 0.02890748580265398,
+   "rush_yards": 0.0002530128915233494,
+   "pass_yards": 0.0017840817552782502,
    "rec_rz_opps": null,
-   "rush_rz_opps": 3.941182433811888e-06,
+   "rush_rz_opps": 2.256963137225036e-05,
    "rec_far_opps": null,
-   "rush_far_opps": 4.4484805110430916e-05,
+   "rush_far_opps": 0.0002547473175550913,
    "td": {
     "rush_td": 0.0,
-    "pass_td": 0.0002,
+    "pass_td": 1e-05,
     "rec_pool_scale": 1.1737,
-    "rush_pool_scale": 0.9621
+    "rush_pool_scale": 0.8316
    },
-   "dk_points_if_plays": 6.0834,
+   "dk_points_if_plays": 4.6224,
    "dk_points_if_plays_line_items": {
-    "pass_yards": 1.9173,
+    "pass_yards": 0.1655,
     "pass_td": 4.3492,
-    "interceptions": -0.2075,
-    "rush_yards": 0.0105,
-    "rush_td": 0.0138,
+    "interceptions": -0.0179,
+    "rush_yards": 0.0587,
+    "rush_td": 0.0669,
     "receptions": 0.0,
     "rec_yards": 0.0,
     "rec_td": 0.0,
@@ -9166,21 +9165,21 @@
     "targets": 0.0025457045919242824,
     "receptions": null,
     "rec_yards": null,
-    "carries": 0.11477289239292988,
-    "rush_yards": 0.1047141961036135,
-    "pass_attempts": 10.100798491412354,
-    "pass_yards": 47.93374327293698
+    "carries": 0.6433589774764918,
+    "rush_yards": 0.586974996690452,
+    "pass_attempts": 0.8716678666720765,
+    "pass_yards": 4.136534728007006
    },
    "p_plays_by_field": {
     "targets": 0.00042,
     "carries": 0.00042,
     "pass_attempts": 0.00042
    },
-   "dk_points": 0.0018,
+   "dk_points": 0.0001,
    "dk_line_items": {
-    "pass_yards": 0.0012,
-    "pass_td": 0.0008,
-    "interceptions": -0.0001,
+    "pass_yards": 0.0001,
+    "pass_td": 0.0,
+    "interceptions": -0.0,
     "rush_yards": 0.0,
     "rush_td": 0.0,
     "receptions": 0.0,
@@ -9197,19 +9196,19 @@
     "name": "Dillon Gabriel",
     "position": "QB",
     "team": "CLE",
-    "final_dk_points_from_decomposition": 0.0018,
+    "final_dk_points_from_decomposition": 0.0001,
     "stages": [
      {
       "stage": "S0_STRUCTURAL_BASELINE",
       "why": "the Nth man at your position on an average club",
-      "dk_points_after": 0.0019,
-      "contribution": 0.0019
+      "dk_points_after": 0.0001,
+      "contribution": 0.0001
      },
      {
       "stage": "S1_PLAYER_HISTORY",
       "why": "your own multi-season prior",
       "dk_points_after": 0.0001,
-      "contribution": -0.0018
+      "contribution": 0.0
      },
      {
       "stage": "S2_CURRENT_SEASON_USAGE",
@@ -9220,34 +9219,34 @@
      {
       "stage": "S3_ROLE_STATE_AND_APPEARANCE",
       "why": "evidence ceiling, duplicate-alpha demotion, P(appears)",
-      "dk_points_after": 0.0019,
-      "contribution": 0.0018
+      "dk_points_after": 0.0001,
+      "contribution": 0.0
      },
      {
       "stage": "S4_CLUB_VOLUME",
       "why": "the club's own measured volume instead of the league average",
-      "dk_points_after": 0.0018,
-      "contribution": -0.0001
+      "dk_points_after": 0.0001,
+      "contribution": 0.0
      },
      {
       "stage": "S5_MARKET_RESPONSE",
       "why": "the measured response to this week's line",
-      "dk_points_after": 0.0018,
+      "dk_points_after": 0.0001,
       "contribution": 0.0
      }
     ],
     "contributions": {
-     "S0_STRUCTURAL_BASELINE": 0.0019,
-     "S1_PLAYER_HISTORY": -0.0018,
+     "S0_STRUCTURAL_BASELINE": 0.0001,
+     "S1_PLAYER_HISTORY": 0.0,
      "S2_CURRENT_SEASON_USAGE": 0.0,
-     "S3_ROLE_STATE_AND_APPEARANCE": 0.0018,
-     "S4_CLUB_VOLUME": -0.0001,
+     "S3_ROLE_STATE_AND_APPEARANCE": 0.0,
+     "S4_CLUB_VOLUME": 0.0,
      "S5_MARKET_RESPONSE": 0.0
     },
     "line_items": {
-     "pass_yards": 0.0012,
-     "pass_td": 0.0008,
-     "interceptions": -0.0001,
+     "pass_yards": 0.0001,
+     "pass_td": 0.0,
+     "interceptions": -0.0,
      "rush_yards": 0.0,
      "rush_td": 0.0,
      "receptions": 0.0,
@@ -9382,9 +9381,11 @@
    },
    "appearance_adjustment": {
     "applied": true,
-    "reason": "NOT_PREDICTED_STARTER",
+    "reason": "DEPTH_RANK_2",
+    "depth_rank": 2,
+    "rank_curve_used": "rank_2",
     "raw_pass_attempt_claim": 0.43706,
-    "measured_rank2_unconditional_share": 0.01939,
+    "measured_unconditional_share": 0.01939,
     "appearance_rate": 0.13789,
     "conditional_share_if_he_plays": null,
     "DECOMPOSITION": "expected = P(appears) x E[share | appears]. His role band and his efficiency are NOT shrunk -- they are what he does when he plays. Only the probability he plays is small."
@@ -9421,9 +9422,9 @@
      "appearance_rate_measured": 0.13789,
      "rank_beyond_measured_table": false,
      "APPEARANCE_SEMANTICS": "claim is share GIVEN he plays; this is P(he plays) at his depth rank, so the product is unconditional.",
-     "claim_normalised": 0.00166,
+     "claim_normalised": 0.00151,
      "prior_expected_share_normalised": 0.00867,
-     "final_share": 0.00165
+     "final_share": 0.0015
     },
     "pass_attempts": {
      "position_group_share_measured_NOT_APPLIED": 1.0,
@@ -9432,9 +9433,9 @@
      "appearance_rate_measured": 0.13789,
      "rank_beyond_measured_table": false,
      "APPEARANCE_SEMANTICS": "claim is share GIVEN he plays; this is P(he plays) at his depth rank, so the product is unconditional.",
-     "claim_normalised": 0.11773,
+     "claim_normalised": 0.00273,
      "prior_expected_share_normalised": 0.01999,
-     "final_share": 0.11943
+     "final_share": 0.00273
     }
    },
    "p_plays": {
@@ -9443,57 +9444,57 @@
     "pass_attempts": 0.13789
    },
    "targets": 0.13338651697892404,
-   "carries": 0.04047867453233136,
-   "pass_attempts": 4.262059006333482,
+   "carries": 0.03667004435485396,
+   "pass_attempts": 0.09737586205924174,
    "receptions": null,
    "rec_yards": null,
-   "rush_yards": 0.13663333716341258,
-   "pass_yards": 29.34947597059375,
+   "rush_yards": 0.12377753451714825,
+   "pass_yards": 0.6705516088295916,
    "rec_rz_opps": null,
-   "rush_rz_opps": 0.004462777702008878,
+   "rush_rz_opps": 0.00404287586412463,
    "rec_far_opps": null,
-   "rush_far_opps": 0.03601589683032248,
+   "rush_far_opps": 0.03262716849072933,
    "td": {
-    "rush_td": 0.00162,
-    "pass_td": 0.15999,
+    "rush_td": 0.00158,
+    "pass_td": 0.0036,
     "rec_pool_scale": 1.0493,
-    "rush_pool_scale": 1.4219
+    "rush_pool_scale": 1.522
    },
-   "dk_points_if_plays": 10.1536,
+   "dk_points_if_plays": 5.615,
    "dk_points_if_plays_line_items": {
-    "pass_yards": 4.8743,
+    "pass_yards": 0.1913,
     "pass_td": 5.2812,
-    "interceptions": -0.3635,
-    "rush_yards": 0.0981,
-    "rush_td": 0.07,
+    "interceptions": -0.0143,
+    "rush_yards": 0.0889,
+    "rush_td": 0.0679,
     "receptions": 0.0,
     "rec_yards": 0.0,
     "rec_td": 0.0,
     "bonus_100_rec": 0.0,
     "bonus_100_rush": 0.0,
-    "bonus_300_pass": 0.1936
+    "bonus_300_pass": 0.0
    },
    "conditional_volume": {
     "targets": 0.13338651697892404,
     "receptions": null,
     "rec_yards": null,
-    "carries": 0.29053492968811073,
-    "rush_yards": 0.9806832230664365,
-    "pass_attempts": 17.69575928735828,
-    "pass_yards": 121.85689151979231
+    "carries": 0.263453805618849,
+    "rush_yards": 0.8892725136380878,
+    "pass_attempts": 0.6943397352074988,
+    "pass_yards": 4.7813761713805825
    },
    "p_plays_by_field": {
     "targets": 0.13789,
     "carries": 0.13789,
     "pass_attempts": 0.13789
    },
-   "dk_points": 1.7498,
+   "dk_points": 0.0611,
    "dk_line_items": {
-    "pass_yards": 1.174,
-    "pass_td": 0.64,
-    "interceptions": -0.0875,
-    "rush_yards": 0.0137,
-    "rush_td": 0.0097,
+    "pass_yards": 0.0268,
+    "pass_td": 0.0144,
+    "interceptions": -0.002,
+    "rush_yards": 0.0124,
+    "rush_td": 0.0095,
     "receptions": 0.0,
     "rec_yards": 0.0,
     "rec_td": 0.0,
@@ -9506,19 +9507,19 @@
     "name": "Mason Rudolph",
     "position": "QB",
     "team": "PIT",
-    "final_dk_points_from_decomposition": 1.7498,
+    "final_dk_points_from_decomposition": 0.0611,
     "stages": [
      {
       "stage": "S0_STRUCTURAL_BASELINE",
       "why": "the Nth man at your position on an average club",
-      "dk_points_after": 0.3964,
-      "contribution": 0.3964
+      "dk_points_after": 0.3989,
+      "contribution": 0.3989
      },
      {
       "stage": "S1_PLAYER_HISTORY",
       "why": "your own multi-season prior",
       "dk_points_after": 1.378,
-      "contribution": 0.9816
+      "contribution": 0.9791
      },
      {
       "stage": "S2_CURRENT_SEASON_USAGE",
@@ -9529,36 +9530,36 @@
      {
       "stage": "S3_ROLE_STATE_AND_APPEARANCE",
       "why": "evidence ceiling, duplicate-alpha demotion, P(appears)",
-      "dk_points_after": 1.7197,
-      "contribution": 0.7348
+      "dk_points_after": 0.0615,
+      "contribution": -0.9234
      },
      {
       "stage": "S4_CLUB_VOLUME",
       "why": "the club's own measured volume instead of the league average",
-      "dk_points_after": 1.7921,
-      "contribution": 0.0724
+      "dk_points_after": 0.0614,
+      "contribution": -0.0001
      },
      {
       "stage": "S5_MARKET_RESPONSE",
       "why": "the measured response to this week's line",
-      "dk_points_after": 1.7498,
-      "contribution": -0.0423
+      "dk_points_after": 0.0611,
+      "contribution": -0.0003
      }
     ],
     "contributions": {
-     "S0_STRUCTURAL_BASELINE": 0.3964,
-     "S1_PLAYER_HISTORY": 0.9816,
+     "S0_STRUCTURAL_BASELINE": 0.3989,
+     "S1_PLAYER_HISTORY": 0.9791,
      "S2_CURRENT_SEASON_USAGE": -0.3931,
-     "S3_ROLE_STATE_AND_APPEARANCE": 0.7348,
-     "S4_CLUB_VOLUME": 0.0724,
-     "S5_MARKET_RESPONSE": -0.0423
+     "S3_ROLE_STATE_AND_APPEARANCE": -0.9234,
+     "S4_CLUB_VOLUME": -0.0001,
+     "S5_MARKET_RESPONSE": -0.0003
     },
     "line_items": {
-     "pass_yards": 1.174,
-     "pass_td": 0.64,
-     "interceptions": -0.0875,
-     "rush_yards": 0.0137,
-     "rush_td": 0.0097,
+     "pass_yards": 0.0268,
+     "pass_td": 0.0144,
+     "interceptions": -0.002,
+     "rush_yards": 0.0124,
+     "rush_td": 0.0095,
      "receptions": 0.0,
      "rec_yards": 0.0,
      "rec_td": 0.0,
@@ -9774,9 +9775,9 @@
      "appearance_rate_measured": 1.0,
      "rank_beyond_measured_table": false,
      "APPEARANCE_SEMANTICS": "claim is share GIVEN he plays; this is P(he plays) at his depth rank, so the product is unconditional.",
-     "claim_normalised": 0.02479,
+     "claim_normalised": 0.02246,
      "prior_expected_share_normalised": 0.07197,
-     "final_share": 0.02459
+     "final_share": 0.02228
     },
     "pass_attempts": {
      "claim_normalised": 0.0,
@@ -9790,7 +9791,7 @@
     "pass_attempts": 1.0
    },
    "targets": 5.765786583999654,
-   "carries": 0.6031082359487362,
+   "carries": 0.5463619058315079,
    "pass_attempts": 0.0,
    "receptions": 4.369408620675473,
    "rec_yards": 45.221153136159444,
@@ -9799,20 +9800,20 @@
    "rec_rz_opps": 0.9810651526897687,
    "rush_rz_opps": null,
    "rec_far_opps": 4.784721431309886,
-   "rush_far_opps": 0.6031082359487362,
+   "rush_far_opps": 0.5463619058315079,
    "td": {
     "rec_td": 0.33864,
-    "rush_td": 0.00417,
+    "rush_td": 0.00404,
     "rec_pool_scale": 1.0493,
-    "rush_pool_scale": 1.4219
+    "rush_pool_scale": 1.522
    },
-   "dk_points_if_plays": 11.1015,
+   "dk_points_if_plays": 11.1008,
    "dk_points_if_plays_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
     "rush_yards": 0.0,
-    "rush_td": 0.025,
+    "rush_td": 0.0242,
     "receptions": 4.3694,
     "rec_yards": 4.5221,
     "rec_td": 2.0318,
@@ -9824,7 +9825,7 @@
     "targets": 5.765786583999654,
     "receptions": 4.369408620675473,
     "rec_yards": 45.221153136159444,
-    "carries": 0.6031082359487362,
+    "carries": 0.5463619058315079,
     "rush_yards": null,
     "pass_attempts": 0.0,
     "pass_yards": null
@@ -9834,13 +9835,13 @@
     "carries": 1.0,
     "pass_attempts": 1.0
    },
-   "dk_points": 11.1016,
+   "dk_points": 11.1008,
    "dk_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
     "rush_yards": 0.0,
-    "rush_td": 0.025,
+    "rush_td": 0.0242,
     "receptions": 4.3694,
     "rec_yards": 4.5221,
     "rec_td": 2.0318,
@@ -9853,7 +9854,7 @@
     "name": "Pat Freiermuth",
     "position": "TE",
     "team": "PIT",
-    "final_dk_points_from_decomposition": 11.1016,
+    "final_dk_points_from_decomposition": 11.1008,
     "stages": [
      {
       "stage": "S0_STRUCTURAL_BASELINE",
@@ -9876,19 +9877,19 @@
      {
       "stage": "S3_ROLE_STATE_AND_APPEARANCE",
       "why": "evidence ceiling, duplicate-alpha demotion, P(appears)",
-      "dk_points_after": 11.0639,
-      "contribution": 0.001
+      "dk_points_after": 11.0632,
+      "contribution": 0.0003
      },
      {
       "stage": "S4_CLUB_VOLUME",
       "why": "the club's own measured volume instead of the league average",
-      "dk_points_after": 11.5694,
-      "contribution": 0.5055
+      "dk_points_after": 11.5686,
+      "contribution": 0.5054
      },
      {
       "stage": "S5_MARKET_RESPONSE",
       "why": "the measured response to this week's line",
-      "dk_points_after": 11.1016,
+      "dk_points_after": 11.1008,
       "contribution": -0.4678
      }
     ],
@@ -9896,8 +9897,8 @@
      "S0_STRUCTURAL_BASELINE": 4.8445,
      "S1_PLAYER_HISTORY": 8.1412,
      "S2_CURRENT_SEASON_USAGE": -1.9228,
-     "S3_ROLE_STATE_AND_APPEARANCE": 0.001,
-     "S4_CLUB_VOLUME": 0.5055,
+     "S3_ROLE_STATE_AND_APPEARANCE": 0.0003,
+     "S4_CLUB_VOLUME": 0.5054,
      "S5_MARKET_RESPONSE": -0.4678
     },
     "line_items": {
@@ -9905,7 +9906,7 @@
      "pass_td": 0.0,
      "interceptions": -0.0,
      "rush_yards": 0.0,
-     "rush_td": 0.025,
+     "rush_td": 0.0242,
      "receptions": 4.3694,
      "rec_yards": 4.5221,
      "rec_td": 2.0318,
@@ -10291,9 +10292,9 @@
      "appearance_rate_measured": 0.64523,
      "rank_beyond_measured_table": false,
      "APPEARANCE_SEMANTICS": "claim is share GIVEN he plays; this is P(he plays) at his depth rank, so the product is unconditional.",
-     "claim_normalised": 0.14418,
+     "claim_normalised": 0.11385,
      "prior_expected_share_normalised": 0.04979,
-     "final_share": 0.143
+     "final_share": 0.11292
     },
     "pass_attempts": {
      "claim_normalised": 0.0,
@@ -10307,29 +10308,29 @@
     "pass_attempts": 1.0
    },
    "targets": 1.7193531145408392,
-   "carries": 3.648500075811752,
+   "carries": 2.881011943021205,
    "pass_attempts": 0.0,
    "receptions": 1.4425739426328743,
    "rec_yards": 11.377551016388136,
-   "rush_yards": 17.659397096942527,
+   "rush_yards": 13.944616386372378,
    "pass_yards": null,
    "rec_rz_opps": 0.05323600133966021,
-   "rush_rz_opps": 0.3218833031797595,
+   "rush_rz_opps": 0.2541728440319896,
    "rec_far_opps": 1.666117113201179,
-   "rush_far_opps": 3.326616772631992,
+   "rush_far_opps": 2.6268390989892154,
    "td": {
     "rec_td": 0.01642,
-    "rush_td": 0.0659,
+    "rush_td": 0.04498,
     "rec_pool_scale": 1.1737,
-    "rush_pool_scale": 0.9621
+    "rush_pool_scale": 0.8316
    },
-   "dk_points_if_plays": 7.1124,
+   "dk_points_if_plays": 6.4362,
    "dk_points_if_plays_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
-    "rush_yards": 2.5359,
-    "rush_td": 0.5678,
+    "rush_yards": 2.0339,
+    "rush_td": 0.3936,
     "receptions": 2.15,
     "rec_yards": 1.6957,
     "rec_td": 0.1468,
@@ -10341,8 +10342,8 @@
     "targets": 2.5625544295450746,
     "receptions": 2.150037834216148,
     "rec_yards": 16.957304179023524,
-    "carries": 5.2392013580492325,
-    "rush_yards": 25.358677629202734,
+    "carries": 4.202028992276326,
+    "rush_yards": 20.33857668783603,
     "pass_attempts": 0.0,
     "pass_yards": null
    },
@@ -10351,13 +10352,13 @@
     "carries": 0.64523,
     "pass_attempts": 1.0
    },
-   "dk_points": 4.8431,
+   "dk_points": 4.3461,
    "dk_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
-    "rush_yards": 1.7659,
-    "rush_td": 0.3954,
+    "rush_yards": 1.3945,
+    "rush_td": 0.2699,
     "receptions": 1.4426,
     "rec_yards": 1.1378,
     "rec_td": 0.0985,
@@ -10370,7 +10371,7 @@
     "name": "Raheim Sanders",
     "position": "RB",
     "team": "CLE",
-    "final_dk_points_from_decomposition": 4.8431,
+    "final_dk_points_from_decomposition": 4.3461,
     "stages": [
      {
       "stage": "S0_STRUCTURAL_BASELINE",
@@ -10393,36 +10394,36 @@
      {
       "stage": "S3_ROLE_STATE_AND_APPEARANCE",
       "why": "evidence ceiling, duplicate-alpha demotion, P(appears)",
-      "dk_points_after": 5.1022,
-      "contribution": 0.5206
+      "dk_points_after": 4.5871,
+      "contribution": 0.0055
      },
      {
       "stage": "S4_CLUB_VOLUME",
       "why": "the club's own measured volume instead of the league average",
-      "dk_points_after": 4.8346,
-      "contribution": -0.2676
+      "dk_points_after": 4.3471,
+      "contribution": -0.24
      },
      {
       "stage": "S5_MARKET_RESPONSE",
       "why": "the measured response to this week's line",
-      "dk_points_after": 4.8431,
-      "contribution": 0.0085
+      "dk_points_after": 4.3461,
+      "contribution": -0.001
      }
     ],
     "contributions": {
      "S0_STRUCTURAL_BASELINE": 3.8371,
      "S1_PLAYER_HISTORY": 2.0454,
      "S2_CURRENT_SEASON_USAGE": -1.3009,
-     "S3_ROLE_STATE_AND_APPEARANCE": 0.5206,
-     "S4_CLUB_VOLUME": -0.2676,
-     "S5_MARKET_RESPONSE": 0.0085
+     "S3_ROLE_STATE_AND_APPEARANCE": 0.0055,
+     "S4_CLUB_VOLUME": -0.24,
+     "S5_MARKET_RESPONSE": -0.001
     },
     "line_items": {
      "pass_yards": 0.0,
      "pass_td": 0.0,
      "interceptions": -0.0,
-     "rush_yards": 1.7659,
-     "rush_td": 0.3954,
+     "rush_yards": 1.3945,
+     "rush_td": 0.2699,
      "receptions": 1.4426,
      "rec_yards": 1.1378,
      "rec_td": 0.0985,
@@ -10587,9 +10588,9 @@
      "appearance_rate_measured": 0.85556,
      "rank_beyond_measured_table": false,
      "APPEARANCE_SEMANTICS": "claim is share GIVEN he plays; this is P(he plays) at his depth rank, so the product is unconditional.",
-     "claim_normalised": 0.00118,
+     "claim_normalised": 0.00107,
      "prior_expected_share_normalised": 0.05597,
-     "final_share": 0.00117
+     "final_share": 0.00106
     },
     "pass_attempts": {
      "claim_normalised": 0.0,
@@ -10603,29 +10604,29 @@
     "pass_attempts": 1.0
    },
    "targets": 4.677099194162007,
-   "carries": 0.028694497651389,
+   "carries": 0.025994638257639723,
    "pass_attempts": 0.0,
    "receptions": 2.849469676919002,
    "rec_yards": 31.79035547309982,
    "rush_yards": null,
    "pass_yards": null,
    "rec_rz_opps": 0.18833184685386165,
-   "rush_rz_opps": 0.00426080155032149,
+   "rush_rz_opps": 0.0038599036070888046,
    "rec_far_opps": 4.488767347308145,
-   "rush_far_opps": 0.024433696101067513,
+   "rush_far_opps": 0.02213473465055092,
    "td": {
     "rec_td": 0.1332,
-    "rush_td": 0.00228,
+    "rush_td": 0.00222,
     "rec_pool_scale": 1.0493,
-    "rush_pool_scale": 1.4219
+    "rush_pool_scale": 1.522
    },
-   "dk_points_if_plays": 7.8604,
+   "dk_points_if_plays": 7.8599,
    "dk_points_if_plays_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
     "rush_yards": 0.0,
-    "rush_td": 0.016,
+    "rush_td": 0.0155,
     "receptions": 3.2472,
     "rec_yards": 3.6228,
     "rec_td": 0.9107,
@@ -10637,7 +10638,7 @@
     "targets": 5.330005733924699,
     "receptions": 3.247245586661972,
     "rec_yards": 36.2281768936238,
-    "carries": 0.03353217092563725,
+    "carries": 0.03037770496237722,
     "rush_yards": null,
     "pass_attempts": 0.0,
     "pass_yards": null
@@ -10647,13 +10648,13 @@
     "carries": 0.85556,
     "pass_attempts": 1.0
    },
-   "dk_points": 6.905,
+   "dk_points": 6.9046,
    "dk_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
     "rush_yards": 0.0,
-    "rush_td": 0.0137,
+    "rush_td": 0.0133,
     "receptions": 2.8495,
     "rec_yards": 3.179,
     "rec_td": 0.7992,
@@ -10666,7 +10667,7 @@
     "name": "Roman Wilson",
     "position": "WR",
     "team": "PIT",
-    "final_dk_points_from_decomposition": 6.905,
+    "final_dk_points_from_decomposition": 6.9046,
     "stages": [
      {
       "stage": "S0_STRUCTURAL_BASELINE",
@@ -10689,36 +10690,36 @@
      {
       "stage": "S3_ROLE_STATE_AND_APPEARANCE",
       "why": "evidence ceiling, duplicate-alpha demotion, P(appears)",
-      "dk_points_after": 6.8794,
-      "contribution": 0.0005
+      "dk_points_after": 6.8791,
+      "contribution": 0.0002
      },
      {
       "stage": "S4_CLUB_VOLUME",
       "why": "the club's own measured volume instead of the league average",
-      "dk_points_after": 7.2221,
+      "dk_points_after": 7.2218,
       "contribution": 0.3427
      },
      {
       "stage": "S5_MARKET_RESPONSE",
       "why": "the measured response to this week's line",
-      "dk_points_after": 6.905,
-      "contribution": -0.3171
+      "dk_points_after": 6.9046,
+      "contribution": -0.3172
      }
     ],
     "contributions": {
      "S0_STRUCTURAL_BASELINE": 3.2287,
      "S1_PLAYER_HISTORY": 2.0842,
      "S2_CURRENT_SEASON_USAGE": 1.566,
-     "S3_ROLE_STATE_AND_APPEARANCE": 0.0005,
+     "S3_ROLE_STATE_AND_APPEARANCE": 0.0002,
      "S4_CLUB_VOLUME": 0.3427,
-     "S5_MARKET_RESPONSE": -0.3171
+     "S5_MARKET_RESPONSE": -0.3172
     },
     "line_items": {
      "pass_yards": 0.0,
      "pass_td": 0.0,
      "interceptions": -0.0,
      "rush_yards": 0.0,
-     "rush_td": 0.0137,
+     "rush_td": 0.0133,
      "receptions": 2.8495,
      "rec_yards": 3.179,
      "rec_td": 0.7992,
@@ -10897,7 +10898,7 @@
     "pass_attempts": 1.0
    },
    "targets": 1.8514135257924709,
-   "carries": 0.20208459782647237,
+   "carries": 0.2020845978264724,
    "pass_attempts": 0.0,
    "receptions": 1.357952575935952,
    "rec_yards": 18.573802613033948,
@@ -10906,20 +10907,20 @@
    "rec_rz_opps": 0.10861000177267063,
    "rush_rz_opps": null,
    "rec_far_opps": 1.7428035240198003,
-   "rush_far_opps": 0.20208459782647237,
+   "rush_far_opps": 0.2020845978264724,
    "td": {
     "rec_td": 0.04368,
-    "rush_td": 0.0014,
+    "rush_td": 0.0015,
     "rec_pool_scale": 1.0493,
-    "rush_pool_scale": 1.4219
+    "rush_pool_scale": 1.522
    },
-   "dk_points_if_plays": 5.8511,
+   "dk_points_if_plays": 5.8517,
    "dk_points_if_plays_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
     "rush_yards": 0.0,
-    "rush_td": 0.0084,
+    "rush_td": 0.009,
     "receptions": 2.2568,
     "rec_yards": 3.0868,
     "rec_td": 0.4355,
@@ -10931,7 +10932,7 @@
     "targets": 3.0768485428761285,
     "receptions": 2.2567699470462683,
     "rec_yards": 30.867646103601096,
-    "carries": 0.20208459782647237,
+    "carries": 0.2020845978264724,
     "rush_yards": null,
     "pass_attempts": 0.0,
     "pass_yards": null
@@ -10941,13 +10942,13 @@
     "carries": 0.57624,
     "pass_attempts": 1.0
    },
-   "dk_points": 3.4866,
+   "dk_points": 3.4872,
    "dk_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
     "rush_yards": 0.0,
-    "rush_td": 0.0084,
+    "rush_td": 0.009,
     "receptions": 1.358,
     "rec_yards": 1.8574,
     "rec_td": 0.2621,
@@ -10960,7 +10961,7 @@
     "name": "Darnell Washington",
     "position": "TE",
     "team": "PIT",
-    "final_dk_points_from_decomposition": 3.4866,
+    "final_dk_points_from_decomposition": 3.4872,
     "stages": [
      {
       "stage": "S0_STRUCTURAL_BASELINE",
@@ -10983,19 +10984,19 @@
      {
       "stage": "S3_ROLE_STATE_AND_APPEARANCE",
       "why": "evidence ceiling, duplicate-alpha demotion, P(appears)",
-      "dk_points_after": 3.473,
-      "contribution": -0.0005
+      "dk_points_after": 3.4736,
+      "contribution": 0.0001
      },
      {
       "stage": "S4_CLUB_VOLUME",
       "why": "the club's own measured volume instead of the league average",
-      "dk_points_after": 3.6557,
+      "dk_points_after": 3.6563,
       "contribution": 0.1827
      },
      {
       "stage": "S5_MARKET_RESPONSE",
       "why": "the measured response to this week's line",
-      "dk_points_after": 3.4866,
+      "dk_points_after": 3.4872,
       "contribution": -0.1691
      }
     ],
@@ -11003,7 +11004,7 @@
      "S0_STRUCTURAL_BASELINE": 1.0244,
      "S1_PLAYER_HISTORY": 2.9304,
      "S2_CURRENT_SEASON_USAGE": -0.4813,
-     "S3_ROLE_STATE_AND_APPEARANCE": -0.0005,
+     "S3_ROLE_STATE_AND_APPEARANCE": 0.0001,
      "S4_CLUB_VOLUME": 0.1827,
      "S5_MARKET_RESPONSE": -0.1691
     },
@@ -11012,7 +11013,7 @@
      "pass_td": 0.0,
      "interceptions": -0.0,
      "rush_yards": 0.0,
-     "rush_td": 0.0084,
+     "rush_td": 0.009,
      "receptions": 1.358,
      "rec_yards": 1.8574,
      "rec_td": 0.2621,
@@ -11177,9 +11178,9 @@
      "appearance_rate_measured": 0.56209,
      "rank_beyond_measured_table": false,
      "APPEARANCE_SEMANTICS": "claim is share GIVEN he plays; this is P(he plays) at his depth rank, so the product is unconditional.",
-     "claim_normalised": 0.00193,
+     "claim_normalised": 0.00175,
      "prior_expected_share_normalised": 0.02156,
-     "final_share": 0.00191
+     "final_share": 0.00173
     },
     "pass_attempts": {
      "claim_normalised": 0.0,
@@ -11193,29 +11194,29 @@
     "pass_attempts": 1.0
    },
    "targets": 2.0929278134245703,
-   "carries": 0.04694035346875807,
+   "carries": 0.042523745246574984,
    "pass_attempts": 0.0,
    "receptions": 1.2176502862606515,
    "rec_yards": 13.00278960060886,
    "rush_yards": null,
    "pass_yards": null,
    "rec_rz_opps": 0.2933649136782879,
-   "rush_rz_opps": 0.0030118859923667965,
+   "rush_rz_opps": 0.0027284982576106266,
    "rec_far_opps": 1.7995628997462825,
-   "rush_far_opps": 0.04392846747639127,
+   "rush_far_opps": 0.03979524698896436,
    "td": {
     "rec_td": 0.11812,
-    "rush_td": 0.00224,
+    "rush_td": 0.00217,
     "rec_pool_scale": 1.0493,
-    "rush_pool_scale": 1.4219
+    "rush_pool_scale": 1.522
    },
-   "dk_points_if_plays": 5.497,
+   "dk_points_if_plays": 5.4963,
    "dk_points_if_plays_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
     "rush_yards": 0.0,
-    "rush_td": 0.0238,
+    "rush_td": 0.0231,
     "receptions": 2.0573,
     "rec_yards": 2.1969,
     "rec_td": 1.1974,
@@ -11227,7 +11228,7 @@
     "targets": 3.5361856580861195,
     "receptions": 2.0573272767558626,
     "rec_yards": 21.96935690082344,
-    "carries": 0.08338502463046832,
+    "carries": 0.07555001575289313,
     "rush_yards": null,
     "pass_attempts": 0.0,
     "pass_yards": null
@@ -11237,13 +11238,13 @@
     "carries": 0.56209,
     "pass_attempts": 1.0
    },
-   "dk_points": 3.2409,
+   "dk_points": 3.2404,
    "dk_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
     "rush_yards": 0.0,
-    "rush_td": 0.0134,
+    "rush_td": 0.013,
     "receptions": 1.2177,
     "rec_yards": 1.3003,
     "rec_td": 0.7087,
@@ -11256,7 +11257,7 @@
     "name": "Germie Bernard",
     "position": "WR",
     "team": "PIT",
-    "final_dk_points_from_decomposition": 3.2409,
+    "final_dk_points_from_decomposition": 3.2404,
     "stages": [
      {
       "stage": "S0_STRUCTURAL_BASELINE",
@@ -11279,36 +11280,36 @@
      {
       "stage": "S3_ROLE_STATE_AND_APPEARANCE",
       "why": "evidence ceiling, duplicate-alpha demotion, P(appears)",
-      "dk_points_after": 3.2302,
-      "contribution": 0.0006
+      "dk_points_after": 3.2298,
+      "contribution": 0.0002
      },
      {
       "stage": "S4_CLUB_VOLUME",
       "why": "the club's own measured volume instead of the league average",
-      "dk_points_after": 3.3733,
+      "dk_points_after": 3.3729,
       "contribution": 0.1431
      },
      {
       "stage": "S5_MARKET_RESPONSE",
       "why": "the measured response to this week's line",
-      "dk_points_after": 3.2409,
-      "contribution": -0.1324
+      "dk_points_after": 3.2404,
+      "contribution": -0.1325
      }
     ],
     "contributions": {
      "S0_STRUCTURAL_BASELINE": 1.3048,
      "S1_PLAYER_HISTORY": 0.9207,
      "S2_CURRENT_SEASON_USAGE": 1.0041,
-     "S3_ROLE_STATE_AND_APPEARANCE": 0.0006,
+     "S3_ROLE_STATE_AND_APPEARANCE": 0.0002,
      "S4_CLUB_VOLUME": 0.1431,
-     "S5_MARKET_RESPONSE": -0.1324
+     "S5_MARKET_RESPONSE": -0.1325
     },
     "line_items": {
      "pass_yards": 0.0,
      "pass_td": 0.0,
      "interceptions": -0.0,
      "rush_yards": 0.0,
-     "rush_td": 0.0134,
+     "rush_td": 0.013,
      "receptions": 1.2177,
      "rec_yards": 1.3003,
      "rec_td": 0.7087,
@@ -11484,9 +11485,9 @@
      "appearance_rate_measured": 0.56209,
      "rank_beyond_measured_table": false,
      "APPEARANCE_SEMANTICS": "claim is share GIVEN he plays; this is P(he plays) at his depth rank, so the product is unconditional.",
-     "claim_normalised": 0.00059,
+     "claim_normalised": 0.00046,
      "prior_expected_share_normalised": 0.02156,
-     "final_share": 0.00058
+     "final_share": 0.00046
     },
     "pass_attempts": {
      "claim_normalised": 0.0,
@@ -11500,29 +11501,29 @@
     "pass_attempts": 1.0
    },
    "targets": 2.062952435852649,
-   "carries": 0.014819970818637602,
+   "carries": 0.011702483770463172,
    "pass_attempts": 0.0,
    "receptions": 0.9829968356837874,
    "rec_yards": 13.170043071916002,
-   "rush_yards": 0.19265962064228884,
+   "rush_yards": 0.15213228901602124,
    "pass_yards": null,
    "rec_rz_opps": 0.14777132628855094,
    "rush_rz_opps": null,
    "rec_far_opps": 1.9151811095640983,
-   "rush_far_opps": 0.014819970818637602,
+   "rush_far_opps": 0.011702483770463172,
    "td": {
     "rec_td": 0.08597,
-    "rush_td": 0.00023,
+    "rush_td": 0.00016,
     "rec_pool_scale": 1.1737,
-    "rush_pool_scale": 0.9621
+    "rush_pool_scale": 0.8316
    },
-   "dk_points_if_plays": 4.7498,
+   "dk_points_if_plays": 4.7417,
    "dk_points_if_plays_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
-    "rush_yards": 0.0343,
-    "rush_td": 0.0025,
+    "rush_yards": 0.0271,
+    "rush_td": 0.0017,
     "receptions": 1.6378,
     "rec_yards": 2.1943,
     "rec_td": 0.8594,
@@ -11534,8 +11535,8 @@
     "targets": 3.4371878940118474,
     "receptions": 1.6378200314966453,
     "rec_yards": 21.943265304463687,
-    "carries": 0.026353807285499624,
-    "rush_yards": 0.3425994947114951,
+    "carries": 0.020812091857172466,
+    "rush_yards": 0.2705571941432421,
     "pass_attempts": 0.0,
     "pass_yards": null
    },
@@ -11544,13 +11545,13 @@
     "carries": 0.56209,
     "pass_attempts": 1.0
    },
-   "dk_points": 2.8372,
+   "dk_points": 2.8328,
    "dk_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
-    "rush_yards": 0.0193,
-    "rush_td": 0.0014,
+    "rush_yards": 0.0152,
+    "rush_td": 0.001,
     "receptions": 0.983,
     "rec_yards": 1.317,
     "rec_td": 0.5158,
@@ -11563,7 +11564,7 @@
     "name": "Jerry Jeudy",
     "position": "WR",
     "team": "CLE",
-    "final_dk_points_from_decomposition": 2.8372,
+    "final_dk_points_from_decomposition": 2.8328,
     "stages": [
      {
       "stage": "S0_STRUCTURAL_BASELINE",
@@ -11586,19 +11587,19 @@
      {
       "stage": "S3_ROLE_STATE_AND_APPEARANCE",
       "why": "evidence ceiling, duplicate-alpha demotion, P(appears)",
-      "dk_points_after": 2.9924,
-      "contribution": 0.0047
+      "dk_points_after": 2.9877,
+      "contribution": 0.0
      },
      {
       "stage": "S4_CLUB_VOLUME",
       "why": "the club's own measured volume instead of the league average",
-      "dk_points_after": 2.8692,
-      "contribution": -0.1232
+      "dk_points_after": 2.8648,
+      "contribution": -0.1229
      },
      {
       "stage": "S5_MARKET_RESPONSE",
       "why": "the measured response to this week's line",
-      "dk_points_after": 2.8372,
+      "dk_points_after": 2.8328,
       "contribution": -0.032
      }
     ],
@@ -11606,16 +11607,16 @@
      "S0_STRUCTURAL_BASELINE": 2.0238,
      "S1_PLAYER_HISTORY": 1.9695,
      "S2_CURRENT_SEASON_USAGE": -1.0056,
-     "S3_ROLE_STATE_AND_APPEARANCE": 0.0047,
-     "S4_CLUB_VOLUME": -0.1232,
+     "S3_ROLE_STATE_AND_APPEARANCE": 0.0,
+     "S4_CLUB_VOLUME": -0.1229,
      "S5_MARKET_RESPONSE": -0.032
     },
     "line_items": {
      "pass_yards": 0.0,
      "pass_td": 0.0,
      "interceptions": -0.0,
-     "rush_yards": 0.0193,
-     "rush_td": 0.0014,
+     "rush_yards": 0.0152,
+     "rush_td": 0.001,
      "receptions": 0.983,
      "rec_yards": 1.317,
      "rec_td": 0.5158,
@@ -11780,14 +11781,14 @@
      "appearance_rate_measured": 0.64523,
      "rank_beyond_measured_table": false,
      "APPEARANCE_SEMANTICS": "claim is share GIVEN he plays; this is P(he plays) at his depth rank, so the product is unconditional.",
-     "claim_normalised": 0.17525,
+     "claim_normalised": 0.15876,
      "prior_expected_share_normalised": 0.04979,
-     "final_share": 0.17381
+     "final_share": 0.15746
     },
     "pass_attempts": {
-     "claim_normalised": 0.00308,
+     "claim_normalised": 7e-05,
      "prior_expected_share_normalised": 0.0,
-     "final_share": 0.00156
+     "final_share": 4e-05
     }
    },
    "p_plays": {
@@ -11796,29 +11797,29 @@
     "pass_attempts": 1.0
    },
    "targets": 1.1319746988904802,
-   "carries": 4.262953063512008,
-   "pass_attempts": 0.05579264126369604,
+   "carries": 3.8618526848448784,
+   "pass_attempts": 0.0012747023285086202,
    "receptions": 0.9356336873679264,
    "rec_yards": 6.627836379220639,
-   "rush_yards": 19.996283669468184,
+   "rush_yards": 18.114837443749863,
    "pass_yards": null,
    "rec_rz_opps": 0.11905668561242441,
-   "rush_rz_opps": 0.8717863560432239,
+   "rush_rz_opps": 0.7897601567592709,
    "rec_far_opps": 1.0129180132780558,
-   "rush_far_opps": 3.3911667074687837,
+   "rush_far_opps": 3.0720925280856077,
    "td": {
     "rec_td": 0.02604,
-    "rush_td": 0.24472,
+    "rush_td": 0.2373,
     "rec_pool_scale": 1.0493,
-    "rush_pool_scale": 1.4219
+    "rush_pool_scale": 1.522
    },
-   "dk_points_if_plays": 7.583,
+   "dk_points_if_plays": 7.2933,
    "dk_points_if_plays_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
-    "interceptions": -0.0011,
-    "rush_yards": 2.8267,
-    "rush_td": 2.0756,
+    "interceptions": -0.0,
+    "rush_yards": 2.5821,
+    "rush_td": 2.0295,
     "receptions": 1.4213,
     "rec_yards": 1.0068,
     "rec_td": 0.2374,
@@ -11830,9 +11831,9 @@
     "targets": 1.719608923566464,
     "receptions": 1.421342755773861,
     "rec_yards": 10.068499404463239,
-    "carries": 6.026189814115352,
-    "rush_yards": 28.267118866618713,
-    "pass_attempts": 0.05579264126369604,
+    "carries": 5.504708772580845,
+    "rush_yards": 25.821001661147317,
+    "pass_attempts": 0.0012747023285086202,
     "pass_yards": null
    },
    "p_plays_by_field": {
@@ -11840,13 +11841,13 @@
     "carries": 0.64523,
     "pass_attempts": 1.0
    },
-   "dk_points": 5.2236,
+   "dk_points": 4.9921,
    "dk_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
-    "interceptions": -0.0011,
-    "rush_yards": 1.9996,
-    "rush_td": 1.4683,
+    "interceptions": -0.0,
+    "rush_yards": 1.8115,
+    "rush_td": 1.4238,
     "receptions": 0.9356,
     "rec_yards": 0.6628,
     "rec_td": 0.1562,
@@ -11859,19 +11860,19 @@
     "name": "Travis Homer",
     "position": "RB",
     "team": "PIT",
-    "final_dk_points_from_decomposition": 5.2236,
+    "final_dk_points_from_decomposition": 4.9921,
     "stages": [
      {
       "stage": "S0_STRUCTURAL_BASELINE",
       "why": "the Nth man at your position on an average club",
-      "dk_points_after": 3.482,
-      "contribution": 3.482
+      "dk_points_after": 3.483,
+      "contribution": 3.483
      },
      {
       "stage": "S1_PLAYER_HISTORY",
       "why": "your own multi-season prior",
       "dk_points_after": 8.4795,
-      "contribution": 4.9975
+      "contribution": 4.9965
      },
      {
       "stage": "S2_CURRENT_SEASON_USAGE",
@@ -11882,36 +11883,36 @@
      {
       "stage": "S3_ROLE_STATE_AND_APPEARANCE",
       "why": "evidence ceiling, duplicate-alpha demotion, P(appears)",
-      "dk_points_after": 5.412,
-      "contribution": 0.2973
+      "dk_points_after": 5.15,
+      "contribution": 0.0353
      },
      {
       "stage": "S4_CLUB_VOLUME",
       "why": "the club's own measured volume instead of the league average",
-      "dk_points_after": 5.2037,
-      "contribution": -0.2083
+      "dk_points_after": 4.982,
+      "contribution": -0.168
      },
      {
       "stage": "S5_MARKET_RESPONSE",
       "why": "the measured response to this week's line",
-      "dk_points_after": 5.2236,
-      "contribution": 0.0199
+      "dk_points_after": 4.9921,
+      "contribution": 0.0101
      }
     ],
     "contributions": {
-     "S0_STRUCTURAL_BASELINE": 3.482,
-     "S1_PLAYER_HISTORY": 4.9975,
+     "S0_STRUCTURAL_BASELINE": 3.483,
+     "S1_PLAYER_HISTORY": 4.9965,
      "S2_CURRENT_SEASON_USAGE": -3.3648,
-     "S3_ROLE_STATE_AND_APPEARANCE": 0.2973,
-     "S4_CLUB_VOLUME": -0.2083,
-     "S5_MARKET_RESPONSE": 0.0199
+     "S3_ROLE_STATE_AND_APPEARANCE": 0.0353,
+     "S4_CLUB_VOLUME": -0.168,
+     "S5_MARKET_RESPONSE": 0.0101
     },
     "line_items": {
      "pass_yards": 0.0,
      "pass_td": 0.0,
-     "interceptions": -0.0011,
-     "rush_yards": 1.9996,
-     "rush_td": 1.4683,
+     "interceptions": -0.0,
+     "rush_yards": 1.8115,
+     "rush_td": 1.4238,
      "receptions": 0.9356,
      "rec_yards": 0.6628,
      "rec_td": 0.1562,
@@ -12100,9 +12101,9 @@
      "appearance_rate_measured": 0.00611,
      "rank_beyond_measured_table": false,
      "APPEARANCE_SEMANTICS": "claim is share GIVEN he plays; this is P(he plays) at his depth rank, so the product is unconditional.",
-     "claim_normalised": 6e-05,
+     "claim_normalised": 5e-05,
      "prior_expected_share_normalised": 6e-05,
-     "final_share": 6e-05
+     "final_share": 5e-05
     },
     "pass_attempts": {
      "claim_normalised": 0.0,
@@ -12116,29 +12117,29 @@
     "pass_attempts": 1.0
    },
    "targets": 0.006328962400591289,
-   "carries": 0.0016203938479560605,
+   "carries": 0.001279532391765357,
    "pass_attempts": 0.0,
    "receptions": 0.0031257479504040258,
    "rec_yards": 0.02467826993012959,
    "rush_yards": null,
    "pass_yards": null,
    "rec_rz_opps": 0.0008383555156889031,
-   "rush_rz_opps": 8.576639115998509e-05,
+   "rush_rz_opps": 6.772481625528529e-05,
    "rec_far_opps": 0.005490606884902386,
-   "rush_far_opps": 0.0015346274567960754,
+   "rush_far_opps": 0.0012118075755100717,
    "td": {
     "rec_td": 0.00038,
-    "rush_td": 5e-05,
+    "rush_td": 3e-05,
     "rec_pool_scale": 1.1737,
-    "rush_pool_scale": 0.9621
+    "rush_pool_scale": 0.8316
    },
-   "dk_points_if_plays": 1.2853,
+   "dk_points_if_plays": 1.2706,
    "dk_points_if_plays_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
     "rush_yards": 0.0,
-    "rush_td": 0.0463,
+    "rush_td": 0.0316,
     "receptions": 0.4903,
     "rec_yards": 0.3871,
     "rec_td": 0.3616,
@@ -12150,7 +12151,7 @@
     "targets": 0.9927373911864178,
     "receptions": 0.490293142759148,
     "rec_yards": 3.8709411999575516,
-    "carries": 0.2624694317572838,
+    "carries": 0.20770756139210192,
     "rush_yards": null,
     "pass_attempts": 0.0,
     "pass_yards": null
@@ -12160,13 +12161,13 @@
     "carries": 0.00611,
     "pass_attempts": 1.0
    },
-   "dk_points": 0.0082,
+   "dk_points": 0.0081,
    "dk_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
     "rush_yards": 0.0,
-    "rush_td": 0.0003,
+    "rush_td": 0.0002,
     "receptions": 0.0031,
     "rec_yards": 0.0025,
     "rec_td": 0.0023,
@@ -12181,7 +12182,7 @@
     "name": "Isaiah Bond",
     "position": "WR",
     "team": "CLE",
-    "final_dk_points_from_decomposition": 0.0082,
+    "final_dk_points_from_decomposition": 0.0081,
     "stages": [
      {
       "stage": "S0_STRUCTURAL_BASELINE",
@@ -12204,36 +12205,36 @@
      {
       "stage": "S3_ROLE_STATE_AND_APPEARANCE",
       "why": "evidence ceiling, duplicate-alpha demotion, P(appears)",
-      "dk_points_after": 0.0085,
-      "contribution": 0.0001
+      "dk_points_after": 0.0084,
+      "contribution": 0.0
      },
      {
       "stage": "S4_CLUB_VOLUME",
       "why": "the club's own measured volume instead of the league average",
-      "dk_points_after": 0.0083,
-      "contribution": -0.0002
+      "dk_points_after": 0.0081,
+      "contribution": -0.0003
      },
      {
       "stage": "S5_MARKET_RESPONSE",
       "why": "the measured response to this week's line",
-      "dk_points_after": 0.0082,
-      "contribution": -0.0001
+      "dk_points_after": 0.0081,
+      "contribution": 0.0
      }
     ],
     "contributions": {
      "S0_STRUCTURAL_BASELINE": 0.0036,
      "S1_PLAYER_HISTORY": 0.3897,
      "S2_CURRENT_SEASON_USAGE": -0.3849,
-     "S3_ROLE_STATE_AND_APPEARANCE": 0.0001,
-     "S4_CLUB_VOLUME": -0.0002,
-     "S5_MARKET_RESPONSE": -0.0001
+     "S3_ROLE_STATE_AND_APPEARANCE": 0.0,
+     "S4_CLUB_VOLUME": -0.0003,
+     "S5_MARKET_RESPONSE": 0.0
     },
     "line_items": {
      "pass_yards": 0.0,
      "pass_td": 0.0,
      "interceptions": -0.0,
      "rush_yards": 0.0,
-     "rush_td": 0.0003,
+     "rush_td": 0.0002,
      "receptions": 0.0031,
      "rec_yards": 0.0025,
      "rec_td": 0.0023,
@@ -12414,7 +12415,7 @@
     "pass_attempts": 1.0
    },
    "targets": 0.9609820321953071,
-   "carries": 0.2102351024988854,
+   "carries": 0.21023467453661684,
    "pass_attempts": 0.0,
    "receptions": 0.6649787450017883,
    "rec_yards": 8.119127375607787,
@@ -12423,20 +12424,20 @@
    "rec_rz_opps": 0.23175539726375388,
    "rush_rz_opps": null,
    "rec_far_opps": 0.7292266349315533,
-   "rush_far_opps": 0.2102351024988854,
+   "rush_far_opps": 0.21023467453661684,
    "td": {
     "rec_td": 0.08719,
-    "rush_td": 0.00098,
+    "rush_td": 0.00085,
     "rec_pool_scale": 1.1737,
-    "rush_pool_scale": 0.9621
+    "rush_pool_scale": 0.8316
    },
-   "dk_points_if_plays": 3.377,
+   "dk_points_if_plays": 3.3762,
    "dk_points_if_plays_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
     "rush_yards": 0.0,
-    "rush_td": 0.0059,
+    "rush_td": 0.0051,
     "receptions": 1.1206,
     "rec_yards": 1.3682,
     "rec_td": 0.8815,
@@ -12448,7 +12449,7 @@
     "targets": 1.619415672121629,
     "receptions": 1.1206005577686047,
     "rec_yards": 13.682089441333899,
-    "carries": 0.2102351024988854,
+    "carries": 0.21023467453661684,
     "rush_yards": null,
     "pass_attempts": 0.0,
     "pass_yards": null
@@ -12458,13 +12459,13 @@
     "carries": 0.57624,
     "pass_attempts": 1.0
    },
-   "dk_points": 2.0059,
+   "dk_points": 2.0051,
    "dk_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
     "rush_yards": 0.0,
-    "rush_td": 0.0059,
+    "rush_td": 0.0051,
     "receptions": 0.665,
     "rec_yards": 0.8119,
     "rec_td": 0.5231,
@@ -12477,7 +12478,7 @@
     "name": "Blake Whiteheart",
     "position": "TE",
     "team": "CLE",
-    "final_dk_points_from_decomposition": 2.0059,
+    "final_dk_points_from_decomposition": 2.0051,
     "stages": [
      {
       "stage": "S0_STRUCTURAL_BASELINE",
@@ -12500,19 +12501,19 @@
      {
       "stage": "S3_ROLE_STATE_AND_APPEARANCE",
       "why": "evidence ceiling, duplicate-alpha demotion, P(appears)",
-      "dk_points_after": 2.1049,
-      "contribution": 0.0007
+      "dk_points_after": 2.1042,
+      "contribution": 0.0
      },
      {
       "stage": "S4_CLUB_VOLUME",
       "why": "the club's own measured volume instead of the league average",
-      "dk_points_after": 2.0267,
-      "contribution": -0.0782
+      "dk_points_after": 2.0259,
+      "contribution": -0.0783
      },
      {
       "stage": "S5_MARKET_RESPONSE",
       "why": "the measured response to this week's line",
-      "dk_points_after": 2.0059,
+      "dk_points_after": 2.0051,
       "contribution": -0.0208
      }
     ],
@@ -12520,8 +12521,8 @@
      "S0_STRUCTURAL_BASELINE": 1.487,
      "S1_PLAYER_HISTORY": 0.8696,
      "S2_CURRENT_SEASON_USAGE": -0.2524,
-     "S3_ROLE_STATE_AND_APPEARANCE": 0.0007,
-     "S4_CLUB_VOLUME": -0.0782,
+     "S3_ROLE_STATE_AND_APPEARANCE": 0.0,
+     "S4_CLUB_VOLUME": -0.0783,
      "S5_MARKET_RESPONSE": -0.0208
     },
     "line_items": {
@@ -12529,7 +12530,7 @@
      "pass_td": 0.0,
      "interceptions": -0.0,
      "rush_yards": 0.0,
-     "rush_td": 0.0059,
+     "rush_td": 0.0051,
      "receptions": 0.665,
      "rec_yards": 0.8119,
      "rec_td": 0.5231,
@@ -12692,14 +12693,14 @@
      "appearance_rate_measured": 0.03029,
      "rank_beyond_measured_table": false,
      "APPEARANCE_SEMANTICS": "claim is share GIVEN he plays; this is P(he plays) at his depth rank, so the product is unconditional.",
-     "claim_normalised": 0.00437,
+     "claim_normalised": 0.00396,
      "prior_expected_share_normalised": 0.00034,
-     "final_share": 0.00434
+     "final_share": 0.00393
     },
     "pass_attempts": {
-     "claim_normalised": 0.00822,
+     "claim_normalised": 0.00019,
      "prior_expected_share_normalised": 0.0,
-     "final_share": 0.00417
+     "final_share": 0.0001
     }
    },
    "p_plays": {
@@ -12708,43 +12709,43 @@
     "pass_attempts": 1.0
    },
    "targets": 0.04373748409707142,
-   "carries": 0.10637564915249667,
-   "pass_attempts": 0.14878037670318944,
+   "carries": 0.09636678616002525,
+   "pass_attempts": 0.003399206209356321,
    "receptions": 0.03439778174298279,
    "rec_yards": 0.2132062389783121,
-   "rush_yards": 0.3618867671473191,
+   "rush_yards": 0.3278369155128211,
    "pass_yards": null,
    "rec_rz_opps": 0.004719647818042929,
-   "rush_rz_opps": 0.021199368948875842,
+   "rush_rz_opps": 0.01920472467618168,
    "rec_far_opps": 0.039017836279028495,
-   "rush_far_opps": 0.08517628020362084,
+   "rush_far_opps": 0.07716206148384358,
    "td": {
     "rec_td": 0.00103,
-    "rush_td": 0.00596,
+    "rush_td": 0.00578,
     "rec_pool_scale": 1.0493,
-    "rush_pool_scale": 1.4219
+    "rush_pool_scale": 1.522
    },
-   "dk_points_if_plays": 4.0373,
+   "dk_points_if_plays": 3.9309,
    "dk_points_if_plays_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
-    "interceptions": -0.0031,
-    "rush_yards": 1.048,
-    "rush_td": 1.0356,
+    "interceptions": -0.0001,
+    "rush_yards": 0.9605,
+    "rush_td": 1.016,
     "receptions": 1.0862,
     "rec_yards": 0.6733,
     "rec_td": 0.1951,
     "bonus_100_rec": 0.0,
-    "bonus_100_rush": 0.0022,
+    "bonus_100_rush": 0.0,
     "bonus_300_pass": 0.0
    },
    "conditional_volume": {
     "targets": 1.3811407512817242,
     "receptions": 1.086211955253025,
     "rec_yards": 6.7326191974579945,
-    "carries": 3.08061035994537,
-    "rush_yards": 10.48014402622335,
-    "pass_attempts": 0.14878037670318944,
+    "carries": 2.8233809233539,
+    "rush_yards": 9.605057199822266,
+    "pass_attempts": 0.003399206209356321,
     "pass_yards": null
    },
    "p_plays_by_field": {
@@ -12752,13 +12753,13 @@
     "carries": 0.03029,
     "pass_attempts": 1.0
    },
-   "dk_points": 0.1308,
+   "dk_points": 0.1293,
    "dk_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
-    "interceptions": -0.0031,
-    "rush_yards": 0.0362,
-    "rush_td": 0.0358,
+    "interceptions": -0.0001,
+    "rush_yards": 0.0328,
+    "rush_td": 0.0347,
     "receptions": 0.0344,
     "rec_yards": 0.0213,
     "rec_td": 0.0062,
@@ -12771,19 +12772,19 @@
     "name": "Lew Nichols",
     "position": "RB",
     "team": "PIT",
-    "final_dk_points_from_decomposition": 0.1308,
+    "final_dk_points_from_decomposition": 0.1293,
     "stages": [
      {
       "stage": "S0_STRUCTURAL_BASELINE",
       "why": "the Nth man at your position on an average club",
-      "dk_points_after": 0.018,
-      "contribution": 0.018
+      "dk_points_after": 0.0208,
+      "contribution": 0.0208
      },
      {
       "stage": "S1_PLAYER_HISTORY",
       "why": "your own multi-season prior",
       "dk_points_after": 1.2681,
-      "contribution": 1.2501
+      "contribution": 1.2473
      },
      {
       "stage": "S2_CURRENT_SEASON_USAGE",
@@ -12794,36 +12795,36 @@
      {
       "stage": "S3_ROLE_STATE_AND_APPEARANCE",
       "why": "evidence ceiling, duplicate-alpha demotion, P(appears)",
-      "dk_points_after": 0.1339,
-      "contribution": 0.0026
+      "dk_points_after": 0.132,
+      "contribution": 0.0007
      },
      {
       "stage": "S4_CLUB_VOLUME",
       "why": "the club's own measured volume instead of the league average",
-      "dk_points_after": 0.1317,
-      "contribution": -0.0022
+      "dk_points_after": 0.1305,
+      "contribution": -0.0015
      },
      {
       "stage": "S5_MARKET_RESPONSE",
       "why": "the measured response to this week's line",
-      "dk_points_after": 0.1308,
-      "contribution": -0.0009
+      "dk_points_after": 0.1293,
+      "contribution": -0.0012
      }
     ],
     "contributions": {
-     "S0_STRUCTURAL_BASELINE": 0.018,
-     "S1_PLAYER_HISTORY": 1.2501,
+     "S0_STRUCTURAL_BASELINE": 0.0208,
+     "S1_PLAYER_HISTORY": 1.2473,
      "S2_CURRENT_SEASON_USAGE": -1.1368,
-     "S3_ROLE_STATE_AND_APPEARANCE": 0.0026,
-     "S4_CLUB_VOLUME": -0.0022,
-     "S5_MARKET_RESPONSE": -0.0009
+     "S3_ROLE_STATE_AND_APPEARANCE": 0.0007,
+     "S4_CLUB_VOLUME": -0.0015,
+     "S5_MARKET_RESPONSE": -0.0012
     },
     "line_items": {
      "pass_yards": 0.0,
      "pass_td": 0.0,
-     "interceptions": -0.0031,
-     "rush_yards": 0.0362,
-     "rush_td": 0.0358,
+     "interceptions": -0.0001,
+     "rush_yards": 0.0328,
+     "rush_td": 0.0347,
      "receptions": 0.0344,
      "rec_yards": 0.0213,
      "rec_td": 0.0062,
@@ -12998,9 +12999,9 @@
      "appearance_rate_measured": 0.00611,
      "rank_beyond_measured_table": true,
      "APPEARANCE_SEMANTICS": "claim is share GIVEN he plays; this is P(he plays) at his depth rank, so the product is unconditional.",
-     "claim_normalised": 4e-05,
+     "claim_normalised": 3e-05,
      "prior_expected_share_normalised": 6e-05,
-     "final_share": 4e-05
+     "final_share": 3e-05
     },
     "pass_attempts": {
      "claim_normalised": 0.0,
@@ -13014,29 +13015,29 @@
     "pass_attempts": 1.0
    },
    "targets": 0.008149356144095909,
-   "carries": 0.0009011646277087197,
+   "carries": 0.0008163742328743922,
    "pass_attempts": 0.0,
    "receptions": 0.006745670295056109,
    "rec_yards": 0.07726388261505043,
    "rush_yards": null,
    "pass_yards": null,
    "rec_rz_opps": 0.0003943944047394699,
-   "rush_rz_opps": 1.203663180728929e-05,
+   "rush_rz_opps": 1.0904107591363933e-05,
    "rec_far_opps": 0.007754961739356439,
-   "rush_far_opps": 0.0008891279959014304,
+   "rush_far_opps": 0.0008054701252830283,
    "td": {
     "rec_td": 0.00025,
-    "rush_td": 3e-05,
+    "rush_td": 2e-05,
     "rec_pool_scale": 1.0493,
-    "rush_pool_scale": 1.4219
+    "rush_pool_scale": 1.522
    },
-   "dk_points_if_plays": 2.5325,
+   "dk_points_if_plays": 2.5317,
    "dk_points_if_plays_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
     "rush_yards": 0.0,
-    "rush_td": 0.025,
+    "rush_td": 0.0242,
     "receptions": 1.0585,
     "rec_yards": 1.2123,
     "rec_td": 0.2359,
@@ -13048,7 +13049,7 @@
     "targets": 1.2787133664385733,
     "receptions": 1.0584613826363611,
     "rec_yards": 12.123455852936784,
-    "carries": 0.14660661447112205,
+    "carries": 0.13288732651512217,
     "rush_yards": null,
     "pass_attempts": 0.0,
     "pass_yards": null
@@ -13058,13 +13059,13 @@
     "carries": 0.00611,
     "pass_attempts": 1.0
    },
-   "dk_points": 0.0162,
+   "dk_points": 0.0161,
    "dk_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
     "rush_yards": 0.0,
-    "rush_td": 0.0002,
+    "rush_td": 0.0001,
     "receptions": 0.0067,
     "rec_yards": 0.0077,
     "rec_td": 0.0015,
@@ -13079,7 +13080,7 @@
     "name": "Ben Skowronek",
     "position": "WR",
     "team": "PIT",
-    "final_dk_points_from_decomposition": 0.0162,
+    "final_dk_points_from_decomposition": 0.0161,
     "stages": [
      {
       "stage": "S0_STRUCTURAL_BASELINE",
@@ -13102,36 +13103,36 @@
      {
       "stage": "S3_ROLE_STATE_AND_APPEARANCE",
       "why": "evidence ceiling, duplicate-alpha demotion, P(appears)",
-      "dk_points_after": 0.0161,
-      "contribution": 0.0001
+      "dk_points_after": 0.016,
+      "contribution": 0.0
      },
      {
       "stage": "S4_CLUB_VOLUME",
       "why": "the club's own measured volume instead of the league average",
       "dk_points_after": 0.0169,
-      "contribution": 0.0008
+      "contribution": 0.0009
      },
      {
       "stage": "S5_MARKET_RESPONSE",
       "why": "the measured response to this week's line",
-      "dk_points_after": 0.0162,
-      "contribution": -0.0007
+      "dk_points_after": 0.0161,
+      "contribution": -0.0008
      }
     ],
     "contributions": {
      "S0_STRUCTURAL_BASELINE": 0.0042,
      "S1_PLAYER_HISTORY": 0.225,
      "S2_CURRENT_SEASON_USAGE": -0.2132,
-     "S3_ROLE_STATE_AND_APPEARANCE": 0.0001,
-     "S4_CLUB_VOLUME": 0.0008,
-     "S5_MARKET_RESPONSE": -0.0007
+     "S3_ROLE_STATE_AND_APPEARANCE": 0.0,
+     "S4_CLUB_VOLUME": 0.0009,
+     "S5_MARKET_RESPONSE": -0.0008
     },
     "line_items": {
      "pass_yards": 0.0,
      "pass_td": 0.0,
      "interceptions": -0.0,
      "rush_yards": 0.0,
-     "rush_td": 0.0002,
+     "rush_td": 0.0001,
      "receptions": 0.0067,
      "rec_yards": 0.0077,
      "rec_td": 0.0015,
@@ -13315,9 +13316,9 @@
      "appearance_rate_measured": 0.25831,
      "rank_beyond_measured_table": false,
      "APPEARANCE_SEMANTICS": "claim is share GIVEN he plays; this is P(he plays) at his depth rank, so the product is unconditional.",
-     "claim_normalised": 0.00406,
+     "claim_normalised": 0.00321,
      "prior_expected_share_normalised": 0.00601,
-     "final_share": 0.00403
+     "final_share": 0.00318
     },
     "pass_attempts": {
      "claim_normalised": 0.0,
@@ -13331,29 +13332,29 @@
     "pass_attempts": 1.0
    },
    "targets": 0.08545171627149524,
-   "carries": 0.10275710348580931,
+   "carries": 0.0811414105033329,
    "pass_attempts": 0.0,
    "receptions": 0.04220289363216607,
    "rec_yards": 0.33319845918879054,
    "rush_yards": null,
    "pass_yards": null,
    "rec_rz_opps": 0.015572007770136434,
-   "rush_rz_opps": 0.005438866571326288,
+   "rush_rz_opps": 0.00429476201806123,
    "rec_far_opps": 0.0698797085013588,
-   "rush_far_opps": 0.09731823691448302,
+   "rush_far_opps": 0.07684664848527167,
    "td": {
     "rec_td": 0.00652,
-    "rush_td": 0.00302,
+    "rush_td": 0.00206,
     "rec_pool_scale": 1.1737,
-    "rush_pool_scale": 0.9621
+    "rush_pool_scale": 0.8316
    },
-   "dk_points_if_plays": 1.5206,
+   "dk_points_if_plays": 1.4987,
    "dk_points_if_plays_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
     "rush_yards": 0.0,
-    "rush_td": 0.0693,
+    "rush_td": 0.0474,
     "receptions": 0.5343,
     "rec_yards": 0.4218,
     "rec_td": 0.4952,
@@ -13365,7 +13366,7 @@
     "targets": 1.081792167430987,
     "receptions": 0.5342755156508158,
     "rec_yards": 4.21818892677695,
-    "carries": 0.3932202104869207,
+    "carries": 0.3112581991144491,
     "rush_yards": null,
     "pass_attempts": 0.0,
     "pass_yards": null
@@ -13375,13 +13376,13 @@
     "carries": 0.25831,
     "pass_attempts": 1.0
    },
-   "dk_points": 0.1328,
+   "dk_points": 0.127,
    "dk_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
     "rush_yards": 0.0,
-    "rush_td": 0.0181,
+    "rush_td": 0.0124,
     "receptions": 0.0422,
     "rec_yards": 0.0333,
     "rec_td": 0.0391,
@@ -13394,7 +13395,7 @@
     "name": "Malachi Corley",
     "position": "WR",
     "team": "CLE",
-    "final_dk_points_from_decomposition": 0.1328,
+    "final_dk_points_from_decomposition": 0.127,
     "stages": [
      {
       "stage": "S0_STRUCTURAL_BASELINE",
@@ -13417,36 +13418,36 @@
      {
       "stage": "S3_ROLE_STATE_AND_APPEARANCE",
       "why": "evidence ceiling, duplicate-alpha demotion, P(appears)",
-      "dk_points_after": 0.1378,
-      "contribution": 0.0057
+      "dk_points_after": 0.1321,
+      "contribution": 0.0
      },
      {
       "stage": "S4_CLUB_VOLUME",
       "why": "the club's own measured volume instead of the league average",
-      "dk_points_after": 0.1338,
+      "dk_points_after": 0.1281,
       "contribution": -0.004
      },
      {
       "stage": "S5_MARKET_RESPONSE",
       "why": "the measured response to this week's line",
-      "dk_points_after": 0.1328,
-      "contribution": -0.001
+      "dk_points_after": 0.127,
+      "contribution": -0.0011
      }
     ],
     "contributions": {
      "S0_STRUCTURAL_BASELINE": 0.0932,
      "S1_PLAYER_HISTORY": 0.03,
      "S2_CURRENT_SEASON_USAGE": 0.0089,
-     "S3_ROLE_STATE_AND_APPEARANCE": 0.0057,
+     "S3_ROLE_STATE_AND_APPEARANCE": 0.0,
      "S4_CLUB_VOLUME": -0.004,
-     "S5_MARKET_RESPONSE": -0.001
+     "S5_MARKET_RESPONSE": -0.0011
     },
     "line_items": {
      "pass_yards": 0.0,
      "pass_td": 0.0,
      "interceptions": -0.0,
      "rush_yards": 0.0,
-     "rush_td": 0.0181,
+     "rush_td": 0.0124,
      "receptions": 0.0422,
      "rec_yards": 0.0333,
      "rec_td": 0.0391,
@@ -13619,9 +13620,9 @@
      "appearance_rate_measured": 0.11517,
      "rank_beyond_measured_table": false,
      "APPEARANCE_SEMANTICS": "claim is share GIVEN he plays; this is P(he plays) at his depth rank, so the product is unconditional.",
-     "claim_normalised": 0.00085,
+     "claim_normalised": 0.00077,
      "prior_expected_share_normalised": 0.00206,
-     "final_share": 0.00084
+     "final_share": 0.00076
     },
     "pass_attempts": {
      "claim_normalised": 0.0,
@@ -13635,29 +13636,29 @@
     "pass_attempts": 1.0
    },
    "targets": 0.24859140783490657,
-   "carries": 0.020657782612628794,
+   "carries": 0.01871409608713785,
    "pass_attempts": 0.0,
    "receptions": 0.18974484977222747,
    "rec_yards": 1.617375473999156,
    "rush_yards": null,
    "pass_yards": null,
    "rec_rz_opps": 0.07669567614444346,
-   "rush_rz_opps": 0.006001827885056382,
+   "rush_rz_opps": 0.00543711713137809,
    "rec_far_opps": 0.17189573169046313,
-   "rush_far_opps": 0.014655954727572413,
+   "rush_far_opps": 0.013276978955759758,
    "td": {
     "rec_td": 0.02544,
-    "rush_td": 0.00271,
+    "rush_td": 0.00262,
     "rec_pool_scale": 1.0493,
-    "rush_pool_scale": 1.4219
+    "rush_pool_scale": 1.522
    },
-   "dk_points_if_plays": 4.2623,
+   "dk_points_if_plays": 4.2582,
    "dk_points_if_plays_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
     "rush_yards": 0.0,
-    "rush_td": 0.14,
+    "rush_td": 0.1359,
     "receptions": 1.5513,
     "rec_yards": 1.3223,
     "rec_td": 1.2479,
@@ -13669,7 +13670,7 @@
     "targets": 2.032390366630447,
     "receptions": 1.5512829190416872,
     "rec_yards": 13.223056907756348,
-    "carries": 0.17820501203642197,
+    "carries": 0.16153626400841423,
     "rush_yards": null,
     "pass_attempts": 0.0,
     "pass_yards": null
@@ -13679,13 +13680,13 @@
     "carries": 0.11517,
     "pass_attempts": 1.0
    },
-   "dk_points": 0.5204,
+   "dk_points": 0.5198,
    "dk_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
     "rush_yards": 0.0,
-    "rush_td": 0.0163,
+    "rush_td": 0.0157,
     "receptions": 0.1897,
     "rec_yards": 0.1617,
     "rec_td": 0.1526,
@@ -13698,7 +13699,7 @@
     "name": "Robert Tonyan",
     "position": "TE",
     "team": "PIT",
-    "final_dk_points_from_decomposition": 0.5204,
+    "final_dk_points_from_decomposition": 0.5198,
     "stages": [
      {
       "stage": "S0_STRUCTURAL_BASELINE",
@@ -13721,19 +13722,19 @@
      {
       "stage": "S3_ROLE_STATE_AND_APPEARANCE",
       "why": "evidence ceiling, duplicate-alpha demotion, P(appears)",
-      "dk_points_after": 0.5189,
-      "contribution": 0.0007
+      "dk_points_after": 0.5184,
+      "contribution": 0.0002
      },
      {
       "stage": "S4_CLUB_VOLUME",
       "why": "the club's own measured volume instead of the league average",
-      "dk_points_after": 0.5389,
-      "contribution": 0.02
+      "dk_points_after": 0.5383,
+      "contribution": 0.0199
      },
      {
       "stage": "S5_MARKET_RESPONSE",
       "why": "the measured response to this week's line",
-      "dk_points_after": 0.5204,
+      "dk_points_after": 0.5198,
       "contribution": -0.0185
      }
     ],
@@ -13741,8 +13742,8 @@
      "S0_STRUCTURAL_BASELINE": 0.1876,
      "S1_PLAYER_HISTORY": 0.3944,
      "S2_CURRENT_SEASON_USAGE": -0.0638,
-     "S3_ROLE_STATE_AND_APPEARANCE": 0.0007,
-     "S4_CLUB_VOLUME": 0.02,
+     "S3_ROLE_STATE_AND_APPEARANCE": 0.0002,
+     "S4_CLUB_VOLUME": 0.0199,
      "S5_MARKET_RESPONSE": -0.0185
     },
     "line_items": {
@@ -13750,7 +13751,7 @@
      "pass_td": 0.0,
      "interceptions": -0.0,
      "rush_yards": 0.0,
-     "rush_td": 0.0163,
+     "rush_td": 0.0157,
      "receptions": 0.1897,
      "rec_yards": 0.1617,
      "rec_td": 0.1526,
@@ -13912,9 +13913,9 @@
      "appearance_rate_measured": 0.23029,
      "rank_beyond_measured_table": false,
      "APPEARANCE_SEMANTICS": "claim is share GIVEN he plays; this is P(he plays) at his depth rank, so the product is unconditional.",
-     "claim_normalised": 0.04507,
+     "claim_normalised": 0.03559,
      "prior_expected_share_normalised": 0.00547,
-     "final_share": 0.0447
+     "final_share": 0.0353
     },
     "pass_attempts": {
      "claim_normalised": 0.0,
@@ -13928,42 +13929,42 @@
     "pass_attempts": 1.0
    },
    "targets": 0.2974879898686922,
-   "carries": 1.1405580755370435,
+   "carries": 0.9006335121427708,
    "pass_attempts": 0.0,
    "receptions": 0.25090732041505237,
    "rec_yards": 1.2635742872074727,
-   "rush_yards": 5.5882441301590315,
+   "rush_yards": 4.412716937089355,
    "pass_yards": null,
    "rec_rz_opps": 0.01842880352577369,
-   "rush_rz_opps": 0.09847799387144034,
+   "rush_rz_opps": 0.07776244225656616,
    "rec_far_opps": 0.2790591863429185,
-   "rush_far_opps": 1.042080081665603,
+   "rush_far_opps": 0.8228710698862046,
    "td": {
     "rec_td": 0.00485,
-    "rush_td": 0.02022,
+    "rush_td": 0.0138,
     "rec_pool_scale": 1.1737,
-    "rush_pool_scale": 0.9621
+    "rush_pool_scale": 0.8316
    },
-   "dk_points_if_plays": 4.2757,
+   "dk_points_if_plays": 3.7295,
    "dk_points_if_plays_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
-    "rush_yards": 2.1089,
-    "rush_td": 0.4577,
+    "rush_yards": 1.7124,
+    "rush_td": 0.3213,
     "receptions": 1.0457,
     "rec_yards": 0.5266,
     "rec_td": 0.1213,
     "bonus_100_rec": 0.0,
-    "bonus_100_rush": 0.0154,
+    "bonus_100_rush": 0.0022,
     "bonus_300_pass": 0.0
    },
    "conditional_volume": {
     "targets": 1.239811573581911,
     "receptions": 1.0456818773904555,
     "rec_yards": 5.266074862557696,
-    "carries": 4.304233000650574,
-    "rush_yards": 21.088890882997532,
+    "carries": 3.495070119053227,
+    "rush_yards": 17.12434070320962,
     "pass_attempts": 0.0,
     "pass_yards": null
    },
@@ -13972,13 +13973,13 @@
     "carries": 0.23029,
     "pass_attempts": 1.0
    },
-   "dk_points": 1.0865,
+   "dk_points": 0.9304,
    "dk_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
-    "rush_yards": 0.5588,
-    "rush_td": 0.1213,
+    "rush_yards": 0.4413,
+    "rush_td": 0.0828,
     "receptions": 0.2509,
     "rec_yards": 0.1264,
     "rec_td": 0.0291,
@@ -13991,7 +13992,7 @@
     "name": "Jaleel McLaughlin",
     "position": "RB",
     "team": "CLE",
-    "final_dk_points_from_decomposition": 1.0865,
+    "final_dk_points_from_decomposition": 0.9304,
     "stages": [
      {
       "stage": "S0_STRUCTURAL_BASELINE",
@@ -14014,36 +14015,36 @@
      {
       "stage": "S3_ROLE_STATE_AND_APPEARANCE",
       "why": "evidence ceiling, duplicate-alpha demotion, P(appears)",
-      "dk_points_after": 1.139,
-      "contribution": 0.1635
+      "dk_points_after": 0.9772,
+      "contribution": 0.0017
      },
      {
       "stage": "S4_CLUB_VOLUME",
       "why": "the club's own measured volume instead of the league average",
-      "dk_points_after": 1.0776,
-      "contribution": -0.0614
+      "dk_points_after": 0.9245,
+      "contribution": -0.0527
      },
      {
       "stage": "S5_MARKET_RESPONSE",
       "why": "the measured response to this week's line",
-      "dk_points_after": 1.0865,
-      "contribution": 0.0089
+      "dk_points_after": 0.9304,
+      "contribution": 0.0059
      }
     ],
     "contributions": {
      "S0_STRUCTURAL_BASELINE": 0.3839,
      "S1_PLAYER_HISTORY": 0.7882,
      "S2_CURRENT_SEASON_USAGE": -0.1966,
-     "S3_ROLE_STATE_AND_APPEARANCE": 0.1635,
-     "S4_CLUB_VOLUME": -0.0614,
-     "S5_MARKET_RESPONSE": 0.0089
+     "S3_ROLE_STATE_AND_APPEARANCE": 0.0017,
+     "S4_CLUB_VOLUME": -0.0527,
+     "S5_MARKET_RESPONSE": 0.0059
     },
     "line_items": {
      "pass_yards": 0.0,
      "pass_td": 0.0,
      "interceptions": -0.0,
-     "rush_yards": 0.5588,
-     "rush_td": 0.1213,
+     "rush_yards": 0.4413,
+     "rush_td": 0.0828,
      "receptions": 0.2509,
      "rec_yards": 0.1264,
      "rec_td": 0.0291,
@@ -14208,9 +14209,9 @@
      "appearance_rate_measured": 0.03029,
      "rank_beyond_measured_table": false,
      "APPEARANCE_SEMANTICS": "claim is share GIVEN he plays; this is P(he plays) at his depth rank, so the product is unconditional.",
-     "claim_normalised": 0.00647,
+     "claim_normalised": 0.00511,
      "prior_expected_share_normalised": 0.00034,
-     "final_share": 0.00642
+     "final_share": 0.00507
     },
     "pass_attempts": {
      "claim_normalised": 0.0,
@@ -14224,42 +14225,42 @@
     "pass_attempts": 1.0
    },
    "targets": 0.07377217116894953,
-   "carries": 0.16369976682293128,
+   "carries": 0.12926434794762087,
    "pass_attempts": 0.0,
    "receptions": 0.06233379602920391,
    "rec_yards": 0.5072987613735516,
-   "rush_yards": 0.44632250324971745,
+   "rush_yards": 0.35243536674874987,
    "pass_yards": null,
    "rec_rz_opps": 0.014735273831847319,
-   "rush_rz_opps": 0.021546877623038255,
+   "rush_rz_opps": 0.017014337529643094,
    "rec_far_opps": 0.05903689733710221,
-   "rush_far_opps": 0.14215288919989302,
+   "rush_far_opps": 0.11225001041797777,
    "td": {
     "rec_td": 0.00342,
-    "rush_td": 0.00423,
+    "rush_td": 0.00288,
     "rec_pool_scale": 1.1737,
-    "rush_pool_scale": 0.9621
+    "rush_pool_scale": 0.8316
    },
-   "dk_points_if_plays": 5.9277,
+   "dk_points_if_plays": 5.5024,
    "dk_points_if_plays_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
-    "rush_yards": 1.2207,
-    "rush_td": 0.6935,
+    "rush_yards": 1.0,
+    "rush_td": 0.4911,
     "receptions": 1.8715,
     "rec_yards": 1.5231,
     "rec_td": 0.616,
     "bonus_100_rec": 0.0008,
-    "bonus_100_rush": 0.0022,
+    "bonus_100_rush": 0.0,
     "bonus_300_pass": 0.0
    },
    "conditional_volume": {
     "targets": 2.2149307636067084,
     "receptions": 1.8715057487094882,
     "rec_yards": 15.231104291787345,
-    "carries": 4.477127299542279,
-    "rush_yards": 12.206753268383038,
+    "carries": 3.6677103465941436,
+    "rush_yards": 9.999902228678534,
     "pass_attempts": 0.0,
     "pass_yards": null
    },
@@ -14268,13 +14269,13 @@
     "carries": 0.03029,
     "pass_attempts": 1.0
    },
-   "dk_points": 0.2036,
+   "dk_points": 0.1861,
    "dk_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
-    "rush_yards": 0.0446,
-    "rush_td": 0.0254,
+    "rush_yards": 0.0352,
+    "rush_td": 0.0173,
     "receptions": 0.0623,
     "rec_yards": 0.0507,
     "rec_td": 0.0205,
@@ -14287,7 +14288,7 @@
     "name": "Dylan Sampson",
     "position": "RB",
     "team": "CLE",
-    "final_dk_points_from_decomposition": 0.2036,
+    "final_dk_points_from_decomposition": 0.1861,
     "stages": [
      {
       "stage": "S0_STRUCTURAL_BASELINE",
@@ -14310,36 +14311,36 @@
      {
       "stage": "S3_ROLE_STATE_AND_APPEARANCE",
       "why": "evidence ceiling, duplicate-alpha demotion, P(appears)",
-      "dk_points_after": 0.2134,
-      "contribution": 0.0181
+      "dk_points_after": 0.1954,
+      "contribution": 0.0001
      },
      {
       "stage": "S4_CLUB_VOLUME",
       "why": "the club's own measured volume instead of the league average",
-      "dk_points_after": 0.2041,
-      "contribution": -0.0093
+      "dk_points_after": 0.1868,
+      "contribution": -0.0086
      },
      {
       "stage": "S5_MARKET_RESPONSE",
       "why": "the measured response to this week's line",
-      "dk_points_after": 0.2036,
-      "contribution": -0.0005
+      "dk_points_after": 0.1861,
+      "contribution": -0.0007
      }
     ],
     "contributions": {
      "S0_STRUCTURAL_BASELINE": 0.0285,
      "S1_PLAYER_HISTORY": 0.1617,
      "S2_CURRENT_SEASON_USAGE": 0.0051,
-     "S3_ROLE_STATE_AND_APPEARANCE": 0.0181,
-     "S4_CLUB_VOLUME": -0.0093,
-     "S5_MARKET_RESPONSE": -0.0005
+     "S3_ROLE_STATE_AND_APPEARANCE": 0.0001,
+     "S4_CLUB_VOLUME": -0.0086,
+     "S5_MARKET_RESPONSE": -0.0007
     },
     "line_items": {
      "pass_yards": 0.0,
      "pass_td": 0.0,
      "interceptions": -0.0,
-     "rush_yards": 0.0446,
-     "rush_td": 0.0254,
+     "rush_yards": 0.0352,
+     "rush_td": 0.0173,
      "receptions": 0.0623,
      "rec_yards": 0.0507,
      "rec_td": 0.0205,
@@ -14497,9 +14498,9 @@
      "appearance_rate_measured": 0.00041,
      "rank_beyond_measured_table": false,
      "APPEARANCE_SEMANTICS": "claim is share GIVEN he plays; this is P(he plays) at his depth rank, so the product is unconditional.",
-     "claim_normalised": 6e-05,
+     "claim_normalised": 5e-05,
      "prior_expected_share_normalised": 0.0,
-     "final_share": 3e-05
+     "final_share": 2e-05
     },
     "pass_attempts": {
      "claim_normalised": 0.0,
@@ -14513,29 +14514,29 @@
     "pass_attempts": 1.0
    },
    "targets": 0.0002863337754612779,
-   "carries": 0.0008010084796230488,
+   "carries": 0.0006325106066338288,
    "pass_attempts": 0.0,
    "receptions": 0.00022149349200807153,
    "rec_yards": 0.001361720399298954,
-   "rush_yards": 0.0034367028515683022,
+   "rush_yards": 0.0027137677824442433,
    "pass_yards": null,
    "rec_rz_opps": 3.6596217934113566e-05,
-   "rush_rz_opps": 6.70591103906534e-05,
+   "rush_rz_opps": 5.295274603519512e-05,
    "rec_far_opps": 0.00024973755752716434,
-   "rush_far_opps": 0.0007339493692323954,
+   "rush_far_opps": 0.0005795578605986337,
    "td": {
     "rec_td": 1e-05,
     "rush_td": 1e-05,
     "rec_pool_scale": 1.1737,
-    "rush_pool_scale": 0.9621
+    "rush_pool_scale": 0.8316
    },
-   "dk_points_if_plays": 1.9327,
+   "dk_points_if_plays": 1.721,
    "dk_points_if_plays_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
-    "rush_yards": 0.7777,
-    "rush_td": 0.1877,
+    "rush_yards": 0.6236,
+    "rush_td": 0.1301,
     "receptions": 0.5221,
     "rec_yards": 0.321,
     "rec_td": 0.1242,
@@ -14547,8 +14548,8 @@
     "targets": 0.6749650512280188,
     "receptions": 0.5221192153774339,
     "rec_yards": 3.2099380437756007,
-    "carries": 1.8126292746417065,
-    "rush_yards": 7.777031523972003,
+    "carries": 1.4534028003683783,
+    "rush_yards": 6.235781112896516,
     "pass_attempts": 0.0,
     "pass_yards": null
    },
@@ -14557,7 +14558,7 @@
     "carries": 0.00041,
     "pass_attempts": 1.0
    },
-   "dk_points": 0.0008,
+   "dk_points": 0.0007,
    "dk_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
@@ -14578,7 +14579,7 @@
     "name": "Eric Gray",
     "position": "RB",
     "team": "CLE",
-    "final_dk_points_from_decomposition": 0.0008,
+    "final_dk_points_from_decomposition": 0.0007,
     "stages": [
      {
       "stage": "S0_STRUCTURAL_BASELINE",
@@ -14601,19 +14602,19 @@
      {
       "stage": "S3_ROLE_STATE_AND_APPEARANCE",
       "why": "evidence ceiling, duplicate-alpha demotion, P(appears)",
-      "dk_points_after": 0.0009,
-      "contribution": 0.0001
+      "dk_points_after": 0.0008,
+      "contribution": 0.0
      },
      {
       "stage": "S4_CLUB_VOLUME",
       "why": "the club's own measured volume instead of the league average",
-      "dk_points_after": 0.0008,
+      "dk_points_after": 0.0007,
       "contribution": -0.0001
      },
      {
       "stage": "S5_MARKET_RESPONSE",
       "why": "the measured response to this week's line",
-      "dk_points_after": 0.0008,
+      "dk_points_after": 0.0007,
       "contribution": 0.0
      }
     ],
@@ -14621,7 +14622,7 @@
      "S0_STRUCTURAL_BASELINE": 0.0011,
      "S1_PLAYER_HISTORY": -0.0003,
      "S2_CURRENT_SEASON_USAGE": 0.0,
-     "S3_ROLE_STATE_AND_APPEARANCE": 0.0001,
+     "S3_ROLE_STATE_AND_APPEARANCE": 0.0,
      "S4_CLUB_VOLUME": -0.0001,
      "S5_MARKET_RESPONSE": 0.0
     },
@@ -14793,7 +14794,7 @@
      "appearance_rate_measured": 0.00041,
      "rank_beyond_measured_table": true,
      "APPEARANCE_SEMANTICS": "claim is share GIVEN he plays; this is P(he plays) at his depth rank, so the product is unconditional.",
-     "claim_normalised": 4e-05,
+     "claim_normalised": 3e-05,
      "prior_expected_share_normalised": 0.0,
      "final_share": 2e-05
     },
@@ -14809,29 +14810,29 @@
     "pass_attempts": 1.0
    },
    "targets": 0.00024888200890542,
-   "carries": 0.0005340056530820326,
+   "carries": 0.00042167373775588586,
    "pass_attempts": 0.0,
    "receptions": 0.00019252267798878763,
    "rec_yards": 0.0011836106585715947,
-   "rush_yards": 0.0022911352343788684,
+   "rush_yards": 0.0018091785216294955,
    "pass_yards": null,
    "rec_rz_opps": 2.4397478622742375e-05,
-   "rush_rz_opps": 4.470607359376893e-05,
+   "rush_rz_opps": 3.530183069013008e-05,
    "rec_far_opps": 0.0002244845302826776,
-   "rush_far_opps": 0.0004892995794882637,
+   "rush_far_opps": 0.0003863719070657558,
    "td": {
     "rec_td": 1e-05,
     "rush_td": 1e-05,
     "rec_pool_scale": 1.1737,
-    "rush_pool_scale": 0.9621
+    "rush_pool_scale": 0.8316
    },
-   "dk_points_if_plays": 1.481,
+   "dk_points_if_plays": 1.3338,
    "dk_points_if_plays_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
-    "rush_yards": 0.5313,
-    "rush_td": 0.1282,
+    "rush_yards": 0.4239,
+    "rush_td": 0.0884,
     "receptions": 0.4558,
     "rec_yards": 0.2802,
     "rec_td": 0.0854,
@@ -14843,8 +14844,8 @@
     "targets": 0.5892648393901069,
     "receptions": 0.45582581651021714,
     "rec_yards": 2.802372689335925,
-    "carries": 1.2382180953144537,
-    "rush_yards": 5.312537591403804,
+    "carries": 0.9880000047325871,
+    "rush_yards": 4.238984380305023,
     "pass_attempts": 0.0,
     "pass_yards": null
    },
@@ -14853,7 +14854,7 @@
     "carries": 0.00041,
     "pass_attempts": 1.0
    },
-   "dk_points": 0.0007,
+   "dk_points": 0.0006,
    "dk_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
@@ -14874,19 +14875,19 @@
     "name": "Michael Burton",
     "position": "RB",
     "team": "CLE",
-    "final_dk_points_from_decomposition": 0.0007,
+    "final_dk_points_from_decomposition": 0.0006,
     "stages": [
      {
       "stage": "S0_STRUCTURAL_BASELINE",
       "why": "the Nth man at your position on an average club",
-      "dk_points_after": 0.0009,
-      "contribution": 0.0009
+      "dk_points_after": 0.0008,
+      "contribution": 0.0008
      },
      {
       "stage": "S1_PLAYER_HISTORY",
       "why": "your own multi-season prior",
       "dk_points_after": 0.0008,
-      "contribution": -0.0001
+      "contribution": 0.0
      },
      {
       "stage": "S2_CURRENT_SEASON_USAGE",
@@ -14897,27 +14898,27 @@
      {
       "stage": "S3_ROLE_STATE_AND_APPEARANCE",
       "why": "evidence ceiling, duplicate-alpha demotion, P(appears)",
-      "dk_points_after": 0.0007,
-      "contribution": 0.0001
+      "dk_points_after": 0.0006,
+      "contribution": 0.0
      },
      {
       "stage": "S4_CLUB_VOLUME",
       "why": "the club's own measured volume instead of the league average",
-      "dk_points_after": 0.0007,
+      "dk_points_after": 0.0006,
       "contribution": 0.0
      },
      {
       "stage": "S5_MARKET_RESPONSE",
       "why": "the measured response to this week's line",
-      "dk_points_after": 0.0007,
+      "dk_points_after": 0.0006,
       "contribution": 0.0
      }
     ],
     "contributions": {
-     "S0_STRUCTURAL_BASELINE": 0.0009,
-     "S1_PLAYER_HISTORY": -0.0001,
+     "S0_STRUCTURAL_BASELINE": 0.0008,
+     "S1_PLAYER_HISTORY": 0.0,
      "S2_CURRENT_SEASON_USAGE": -0.0002,
-     "S3_ROLE_STATE_AND_APPEARANCE": 0.0001,
+     "S3_ROLE_STATE_AND_APPEARANCE": 0.0,
      "S4_CLUB_VOLUME": 0.0,
      "S5_MARKET_RESPONSE": 0.0
     },
@@ -15084,14 +15085,14 @@
      "appearance_rate_measured": 0.23029,
      "rank_beyond_measured_table": false,
      "APPEARANCE_SEMANTICS": "claim is share GIVEN he plays; this is P(he plays) at his depth rank, so the product is unconditional.",
-     "claim_normalised": 0.04294,
+     "claim_normalised": 0.0389,
      "prior_expected_share_normalised": 0.00547,
-     "final_share": 0.04259
+     "final_share": 0.03858
     },
     "pass_attempts": {
-     "claim_normalised": 0.01233,
+     "claim_normalised": 0.00029,
      "prior_expected_share_normalised": 0.0,
-     "final_share": 0.00625
+     "final_share": 0.00014
     }
    },
    "p_plays": {
@@ -15100,29 +15101,29 @@
     "pass_attempts": 1.0
    },
    "targets": 0.49879358927275885,
-   "carries": 1.0445554306846336,
-   "pass_attempts": 0.22317056505478416,
+   "carries": 0.9462734246328839,
+   "pass_attempts": 0.005098809314034481,
    "receptions": 0.39228120621945395,
    "rec_yards": 2.4314591337561318,
-   "rush_yards": 3.553546238526203,
+   "rush_yards": 3.219193802398332,
    "pass_yards": null,
    "rec_rz_opps": 0.05382408530952985,
-   "rush_rz_opps": 0.12078476261422408,
+   "rush_rz_opps": 0.10942014909397295,
    "rec_far_opps": 0.444969503963229,
-   "rush_far_opps": 0.9237706680704095,
+   "rush_far_opps": 0.836853275538911,
    "td": {
     "rec_td": 0.01174,
-    "rush_td": 0.03544,
+    "rush_td": 0.03437,
     "rec_pool_scale": 1.0493,
-    "rush_pool_scale": 1.4219
+    "rush_pool_scale": 1.522
    },
-   "dk_points_if_plays": 5.063,
+   "dk_points_if_plays": 4.94,
    "dk_points_if_plays_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
-    "interceptions": -0.0046,
-    "rush_yards": 1.3494,
-    "rush_td": 0.8076,
+    "interceptions": -0.0001,
+    "rush_yards": 1.237,
+    "rush_td": 0.7924,
     "receptions": 1.6159,
     "rec_yards": 1.0016,
     "rec_td": 0.2902,
@@ -15134,9 +15135,9 @@
     "targets": 2.0546716875550857,
     "receptions": 1.6159170953945727,
     "rec_yards": 10.015866981891024,
-    "carries": 3.966518575017777,
-    "rush_yards": 13.493977196653226,
-    "pass_attempts": 0.22317056505478416,
+    "carries": 3.636252139262501,
+    "rush_yards": 12.37042069020685,
+    "pass_attempts": 0.005098809314034481,
     "pass_yards": null
    },
    "p_plays_by_field": {
@@ -15144,13 +15145,13 @@
     "carries": 0.23029,
     "pass_attempts": 1.0
    },
-   "dk_points": 1.2693,
+   "dk_points": 1.2339,
    "dk_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
-    "interceptions": -0.0046,
-    "rush_yards": 0.3554,
-    "rush_td": 0.2126,
+    "interceptions": -0.0001,
+    "rush_yards": 0.3219,
+    "rush_td": 0.2062,
     "receptions": 0.3923,
     "rec_yards": 0.2431,
     "rec_td": 0.0704,
@@ -15163,19 +15164,19 @@
     "name": "Riley Nowakowski",
     "position": "RB",
     "team": "PIT",
-    "final_dk_points_from_decomposition": 1.2693,
+    "final_dk_points_from_decomposition": 1.2339,
     "stages": [
      {
       "stage": "S0_STRUCTURAL_BASELINE",
       "why": "the Nth man at your position on an average club",
-      "dk_points_after": 0.3229,
-      "contribution": 0.3229
+      "dk_points_after": 0.3271,
+      "contribution": 0.3271
      },
      {
       "stage": "S1_PLAYER_HISTORY",
       "why": "your own multi-season prior",
       "dk_points_after": 0.1516,
-      "contribution": -0.1713
+      "contribution": -0.1755
      },
      {
       "stage": "S2_CURRENT_SEASON_USAGE",
@@ -15186,36 +15187,36 @@
      {
       "stage": "S3_ROLE_STATE_AND_APPEARANCE",
       "why": "evidence ceiling, duplicate-alpha demotion, P(appears)",
-      "dk_points_after": 1.299,
-      "contribution": 0.0442
+      "dk_points_after": 1.2605,
+      "contribution": 0.0057
      },
      {
       "stage": "S4_CLUB_VOLUME",
       "why": "the club's own measured volume instead of the league average",
-      "dk_points_after": 1.2841,
-      "contribution": -0.0149
+      "dk_points_after": 1.2506,
+      "contribution": -0.0099
      },
      {
       "stage": "S5_MARKET_RESPONSE",
       "why": "the measured response to this week's line",
-      "dk_points_after": 1.2693,
-      "contribution": -0.0148
+      "dk_points_after": 1.2339,
+      "contribution": -0.0167
      }
     ],
     "contributions": {
-     "S0_STRUCTURAL_BASELINE": 0.3229,
-     "S1_PLAYER_HISTORY": -0.1713,
+     "S0_STRUCTURAL_BASELINE": 0.3271,
+     "S1_PLAYER_HISTORY": -0.1755,
      "S2_CURRENT_SEASON_USAGE": 1.1032,
-     "S3_ROLE_STATE_AND_APPEARANCE": 0.0442,
-     "S4_CLUB_VOLUME": -0.0149,
-     "S5_MARKET_RESPONSE": -0.0148
+     "S3_ROLE_STATE_AND_APPEARANCE": 0.0057,
+     "S4_CLUB_VOLUME": -0.0099,
+     "S5_MARKET_RESPONSE": -0.0167
     },
     "line_items": {
      "pass_yards": 0.0,
      "pass_td": 0.0,
-     "interceptions": -0.0046,
-     "rush_yards": 0.3554,
-     "rush_td": 0.2126,
+     "interceptions": -0.0001,
+     "rush_yards": 0.3219,
+     "rush_td": 0.2062,
      "receptions": 0.3923,
      "rec_yards": 0.2431,
      "rec_td": 0.0704,
@@ -15373,9 +15374,9 @@
      "appearance_rate_measured": 0.25831,
      "rank_beyond_measured_table": false,
      "APPEARANCE_SEMANTICS": "claim is share GIVEN he plays; this is P(he plays) at his depth rank, so the product is unconditional.",
-     "claim_normalised": 0.00313,
+     "claim_normalised": 0.00284,
      "prior_expected_share_normalised": 0.00601,
-     "final_share": 0.00311
+     "final_share": 0.00281
     },
     "pass_attempts": {
      "claim_normalised": 0.0,
@@ -15389,29 +15390,29 @@
     "pass_attempts": 1.0
    },
    "targets": 0.12421233284541129,
-   "carries": 0.07619634533009473,
+   "carries": 0.06902704683920924,
    "pass_attempts": 0.0,
    "receptions": 0.08142242630349555,
    "rec_yards": 0.802655126353734,
    "rush_yards": null,
    "pass_yards": null,
    "rec_rz_opps": 0.009767555045037086,
-   "rush_rz_opps": 0.0010177356340886731,
+   "rush_rz_opps": 0.0009219770971931971,
    "rec_far_opps": 0.11444477780037421,
-   "rush_far_opps": 0.07517860969600605,
+   "rush_far_opps": 0.06810506974201604,
    "td": {
     "rec_td": 0.00487,
-    "rush_td": 0.00216,
+    "rush_td": 0.0021,
     "rec_pool_scale": 1.0493,
-    "rush_pool_scale": 1.4219
+    "rush_pool_scale": 1.522
    },
-   "dk_points_if_plays": 2.4554,
+   "dk_points_if_plays": 2.4539,
    "dk_points_if_plays_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
     "rush_yards": 0.0,
-    "rush_td": 0.0498,
+    "rush_td": 0.0483,
     "receptions": 1.0256,
     "rec_yards": 1.011,
     "rec_td": 0.3682,
@@ -15423,7 +15424,7 @@
     "targets": 1.5645957321889767,
     "receptions": 1.0256081484071962,
     "rec_yards": 10.11035503757588,
-    "carries": 0.2923507359050431,
+    "carries": 0.2650658343431486,
     "rush_yards": null,
     "pass_attempts": 0.0,
     "pass_yards": null
@@ -15433,13 +15434,13 @@
     "carries": 0.25831,
     "pass_attempts": 1.0
    },
-   "dk_points": 0.2039,
+   "dk_points": 0.2035,
    "dk_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
     "rush_yards": 0.0,
-    "rush_td": 0.013,
+    "rush_td": 0.0126,
     "receptions": 0.0814,
     "rec_yards": 0.0803,
     "rec_td": 0.0292,
@@ -15452,7 +15453,7 @@
     "name": "Cole Burgess",
     "position": "WR",
     "team": "PIT",
-    "final_dk_points_from_decomposition": 0.2039,
+    "final_dk_points_from_decomposition": 0.2035,
     "stages": [
      {
       "stage": "S0_STRUCTURAL_BASELINE",
@@ -15475,19 +15476,19 @@
      {
       "stage": "S3_ROLE_STATE_AND_APPEARANCE",
       "why": "evidence ceiling, duplicate-alpha demotion, P(appears)",
-      "dk_points_after": 0.2032,
-      "contribution": 0.0006
+      "dk_points_after": 0.2028,
+      "contribution": 0.0002
      },
      {
       "stage": "S4_CLUB_VOLUME",
       "why": "the club's own measured volume instead of the league average",
-      "dk_points_after": 0.2124,
+      "dk_points_after": 0.212,
       "contribution": 0.0092
      },
      {
       "stage": "S5_MARKET_RESPONSE",
       "why": "the measured response to this week's line",
-      "dk_points_after": 0.2039,
+      "dk_points_after": 0.2035,
       "contribution": -0.0085
      }
     ],
@@ -15495,7 +15496,7 @@
      "S0_STRUCTURAL_BASELINE": 0.0849,
      "S1_PLAYER_HISTORY": -0.0679,
      "S2_CURRENT_SEASON_USAGE": 0.1856,
-     "S3_ROLE_STATE_AND_APPEARANCE": 0.0006,
+     "S3_ROLE_STATE_AND_APPEARANCE": 0.0002,
      "S4_CLUB_VOLUME": 0.0092,
      "S5_MARKET_RESPONSE": -0.0085
     },
@@ -15504,7 +15505,7 @@
      "pass_td": 0.0,
      "interceptions": -0.0,
      "rush_yards": 0.0,
-     "rush_td": 0.013,
+     "rush_td": 0.0126,
      "receptions": 0.0814,
      "rec_yards": 0.0803,
      "rec_td": 0.0292,
@@ -15676,9 +15677,9 @@
      "appearance_rate_measured": 0.00611,
      "rank_beyond_measured_table": true,
      "APPEARANCE_SEMANTICS": "claim is share GIVEN he plays; this is P(he plays) at his depth rank, so the product is unconditional.",
-     "claim_normalised": 6e-05,
+     "claim_normalised": 5e-05,
      "prior_expected_share_normalised": 6e-05,
-     "final_share": 6e-05
+     "final_share": 5e-05
     },
     "pass_attempts": {
      "claim_normalised": 0.0,
@@ -15692,29 +15693,29 @@
     "pass_attempts": 1.0
    },
    "targets": 0.29413927171186866,
-   "carries": 0.0016203938479560605,
+   "carries": 0.001279532391765357,
    "pass_attempts": 0.0,
    "receptions": 0.14526950351305767,
    "rec_yards": 1.146925496615221,
    "rush_yards": null,
    "pass_yards": null,
    "rec_rz_opps": 0.03544281722710319,
-   "rush_rz_opps": 8.576639115998509e-05,
+   "rush_rz_opps": 6.772481625528529e-05,
    "rec_far_opps": 0.25869645448476547,
-   "rush_far_opps": 0.0015346274567960754,
+   "rush_far_opps": 0.0012118075755100717,
    "td": {
     "rec_td": 0.01676,
-    "rush_td": 5e-05,
+    "rush_td": 3e-05,
     "rec_pool_scale": 1.1737,
-    "rush_pool_scale": 0.9621
+    "rush_pool_scale": 0.8316
    },
-   "dk_points_if_plays": 1.3939,
+   "dk_points_if_plays": 1.3792,
    "dk_points_if_plays_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
     "rush_yards": 0.0,
-    "rush_td": 0.0463,
+    "rush_td": 0.0316,
     "receptions": 0.543,
     "rec_yards": 0.4287,
     "rec_td": 0.3758,
@@ -15726,7 +15727,7 @@
     "targets": 1.099545464909223,
     "receptions": 0.543043514209367,
     "rec_yards": 4.287413649501937,
-    "carries": 0.2624694317572838,
+    "carries": 0.20770756139210192,
     "rush_yards": null,
     "pass_attempts": 0.0,
     "pass_yards": null
@@ -15736,13 +15737,13 @@
     "carries": 0.00611,
     "pass_attempts": 1.0
    },
-   "dk_points": 0.3608,
+   "dk_points": 0.3607,
    "dk_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
     "rush_yards": 0.0,
-    "rush_td": 0.0003,
+    "rush_td": 0.0002,
     "receptions": 0.1453,
     "rec_yards": 0.1147,
     "rec_td": 0.1006,
@@ -15755,7 +15756,7 @@
     "name": "Jimmy Horn Jr.",
     "position": "WR",
     "team": "CLE",
-    "final_dk_points_from_decomposition": 0.3608,
+    "final_dk_points_from_decomposition": 0.3607,
     "stages": [
      {
       "stage": "S0_STRUCTURAL_BASELINE",
@@ -15778,19 +15779,19 @@
      {
       "stage": "S3_ROLE_STATE_AND_APPEARANCE",
       "why": "evidence ceiling, duplicate-alpha demotion, P(appears)",
-      "dk_points_after": 0.3783,
-      "contribution": 0.0002
+      "dk_points_after": 0.3781,
+      "contribution": 0.0
      },
      {
       "stage": "S4_CLUB_VOLUME",
       "why": "the club's own measured volume instead of the league average",
-      "dk_points_after": 0.3645,
-      "contribution": -0.0138
+      "dk_points_after": 0.3644,
+      "contribution": -0.0137
      },
      {
       "stage": "S5_MARKET_RESPONSE",
       "why": "the measured response to this week's line",
-      "dk_points_after": 0.3608,
+      "dk_points_after": 0.3607,
       "contribution": -0.0037
      }
     ],
@@ -15798,8 +15799,8 @@
      "S0_STRUCTURAL_BASELINE": 0.3176,
      "S1_PLAYER_HISTORY": -0.3084,
      "S2_CURRENT_SEASON_USAGE": 0.3689,
-     "S3_ROLE_STATE_AND_APPEARANCE": 0.0002,
-     "S4_CLUB_VOLUME": -0.0138,
+     "S3_ROLE_STATE_AND_APPEARANCE": 0.0,
+     "S4_CLUB_VOLUME": -0.0137,
      "S5_MARKET_RESPONSE": -0.0037
     },
     "line_items": {
@@ -15807,7 +15808,7 @@
      "pass_td": 0.0,
      "interceptions": -0.0,
      "rush_yards": 0.0,
-     "rush_td": 0.0003,
+     "rush_td": 0.0002,
      "receptions": 0.1453,
      "rec_yards": 0.1147,
      "rec_td": 0.1006,
@@ -15974,9 +15975,9 @@
      "appearance_rate_measured": 0.07566,
      "rank_beyond_measured_table": false,
      "APPEARANCE_SEMANTICS": "claim is share GIVEN he plays; this is P(he plays) at his depth rank, so the product is unconditional.",
-     "claim_normalised": 0.00119,
+     "claim_normalised": 0.00094,
      "prior_expected_share_normalised": 0.00126,
-     "final_share": 0.00118
+     "final_share": 0.00093
     },
     "pass_attempts": {
      "claim_normalised": 0.0,
@@ -15990,29 +15991,29 @@
     "pass_attempts": 1.0
    },
    "targets": 0.006900739973814907,
-   "carries": 0.030097953814162578,
+   "carries": 0.02376663357470546,
    "pass_attempts": 0.0,
    "receptions": 0.0034081374582677062,
    "rec_yards": 0.026907779350297513,
    "rush_yards": null,
    "pass_yards": null,
    "rec_rz_opps": 0.0012575332735333545,
-   "rush_rz_opps": 0.0015930650953758937,
+   "rush_rz_opps": 0.0012579524381034907,
    "rec_far_opps": 0.005643206700281552,
-   "rush_far_opps": 0.028504888718786685,
+   "rush_far_opps": 0.02250868113660197,
    "td": {
     "rec_td": 0.00053,
-    "rush_td": 0.00088,
+    "rush_td": 0.0006,
     "rec_pool_scale": 1.1737,
-    "rush_pool_scale": 0.9621
+    "rush_pool_scale": 0.8316
    },
-   "dk_points_if_plays": 1.5158,
+   "dk_points_if_plays": 1.494,
    "dk_points_if_plays_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
     "rush_yards": 0.0,
-    "rush_td": 0.0691,
+    "rush_td": 0.0473,
     "receptions": 0.5326,
     "rec_yards": 0.4205,
     "rec_td": 0.4936,
@@ -16024,7 +16025,7 @@
     "targets": 1.078370674829366,
     "receptions": 0.5325857088847272,
     "rec_yards": 4.204847637535154,
-    "carries": 0.3921072357076215,
+    "carries": 0.3105604303003319,
     "rush_yards": null,
     "pass_attempts": 0.0,
     "pass_yards": null
@@ -16034,13 +16035,13 @@
     "carries": 0.07566,
     "pass_attempts": 1.0
    },
-   "dk_points": 0.0146,
+   "dk_points": 0.0129,
    "dk_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
     "rush_yards": 0.0,
-    "rush_td": 0.0053,
+    "rush_td": 0.0036,
     "receptions": 0.0034,
     "rec_yards": 0.0027,
     "rec_td": 0.0032,
@@ -16055,7 +16056,7 @@
     "name": "Bub Means",
     "position": "WR",
     "team": "CLE",
-    "final_dk_points_from_decomposition": 0.0146,
+    "final_dk_points_from_decomposition": 0.0129,
     "stages": [
      {
       "stage": "S0_STRUCTURAL_BASELINE",
@@ -16078,36 +16079,36 @@
      {
       "stage": "S3_ROLE_STATE_AND_APPEARANCE",
       "why": "evidence ceiling, duplicate-alpha demotion, P(appears)",
-      "dk_points_after": 0.015,
-      "contribution": 0.0017
+      "dk_points_after": 0.0133,
+      "contribution": 0.0
      },
      {
       "stage": "S4_CLUB_VOLUME",
       "why": "the club's own measured volume instead of the league average",
-      "dk_points_after": 0.0146,
-      "contribution": -0.0004
+      "dk_points_after": 0.013,
+      "contribution": -0.0003
      },
      {
       "stage": "S5_MARKET_RESPONSE",
       "why": "the measured response to this week's line",
-      "dk_points_after": 0.0146,
-      "contribution": 0.0
+      "dk_points_after": 0.0129,
+      "contribution": -0.0001
      }
     ],
     "contributions": {
      "S0_STRUCTURAL_BASELINE": 0.0077,
      "S1_PLAYER_HISTORY": 0.0023,
      "S2_CURRENT_SEASON_USAGE": 0.0033,
-     "S3_ROLE_STATE_AND_APPEARANCE": 0.0017,
-     "S4_CLUB_VOLUME": -0.0004,
-     "S5_MARKET_RESPONSE": 0.0
+     "S3_ROLE_STATE_AND_APPEARANCE": 0.0,
+     "S4_CLUB_VOLUME": -0.0003,
+     "S5_MARKET_RESPONSE": -0.0001
     },
     "line_items": {
      "pass_yards": 0.0,
      "pass_td": 0.0,
      "interceptions": -0.0,
      "rush_yards": 0.0,
-     "rush_td": 0.0053,
+     "rush_td": 0.0036,
      "receptions": 0.0034,
      "rec_yards": 0.0027,
      "rec_td": 0.0032,
@@ -16275,9 +16276,9 @@
      "appearance_rate_measured": 0.07566,
      "rank_beyond_measured_table": false,
      "APPEARANCE_SEMANTICS": "claim is share GIVEN he plays; this is P(he plays) at his depth rank, so the product is unconditional.",
-     "claim_normalised": 0.00092,
+     "claim_normalised": 0.00083,
      "prior_expected_share_normalised": 0.00126,
-     "final_share": 0.00091
+     "final_share": 0.00082
     },
     "pass_attempts": {
      "claim_normalised": 0.0,
@@ -16291,29 +16292,29 @@
     "pass_attempts": 1.0
    },
    "targets": 0.010030892858650053,
-   "carries": 0.02231820482240319,
+   "carries": 0.020218289512038138,
    "pass_attempts": 0.0,
    "receptions": 0.006575350577773697,
    "rec_yards": 0.0648192284168823,
    "rush_yards": null,
    "pass_yards": null,
    "rec_rz_opps": 0.0007887888094789399,
-   "rush_rz_opps": 0.0002980987111422284,
+   "rush_rz_opps": 0.0002700506646031408,
    "rec_far_opps": 0.009242104049171113,
-   "rush_far_opps": 0.02202010611126096,
+   "rush_far_opps": 0.019948238847434997,
    "td": {
     "rec_td": 0.00039,
-    "rush_td": 0.00063,
+    "rush_td": 0.00061,
     "rec_pool_scale": 1.0493,
-    "rush_pool_scale": 1.4219
+    "rush_pool_scale": 1.522
    },
-   "dk_points_if_plays": 2.4468,
+   "dk_points_if_plays": 2.4453,
    "dk_points_if_plays_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
     "rush_yards": 0.0,
-    "rush_td": 0.0497,
+    "rush_td": 0.0482,
     "receptions": 1.022,
     "rec_yards": 1.0075,
     "rec_td": 0.3668,
@@ -16325,7 +16326,7 @@
     "targets": 1.5590849559152706,
     "receptions": 1.0219957794520191,
     "rec_yards": 10.074744621726243,
-    "carries": 0.2917103677151941,
+    "carries": 0.26453931095756744,
     "rush_yards": null,
     "pass_attempts": 0.0,
     "pass_yards": null
@@ -16335,13 +16336,13 @@
     "carries": 0.07566,
     "pass_attempts": 1.0
    },
-   "dk_points": 0.0192,
+   "dk_points": 0.0191,
    "dk_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
     "rush_yards": 0.0,
-    "rush_td": 0.0038,
+    "rush_td": 0.0037,
     "receptions": 0.0066,
     "rec_yards": 0.0065,
     "rec_td": 0.0023,
@@ -16356,7 +16357,7 @@
     "name": "Brandon Johnson",
     "position": "WR",
     "team": "PIT",
-    "final_dk_points_from_decomposition": 0.0192,
+    "final_dk_points_from_decomposition": 0.0191,
     "stages": [
      {
       "stage": "S0_STRUCTURAL_BASELINE",
@@ -16379,36 +16380,36 @@
      {
       "stage": "S3_ROLE_STATE_AND_APPEARANCE",
       "why": "evidence ceiling, duplicate-alpha demotion, P(appears)",
-      "dk_points_after": 0.0191,
-      "contribution": 0.0001
+      "dk_points_after": 0.019,
+      "contribution": 0.0
      },
      {
       "stage": "S4_CLUB_VOLUME",
       "why": "the club's own measured volume instead of the league average",
-      "dk_points_after": 0.0199,
-      "contribution": 0.0008
+      "dk_points_after": 0.0197,
+      "contribution": 0.0007
      },
      {
       "stage": "S5_MARKET_RESPONSE",
       "why": "the measured response to this week's line",
-      "dk_points_after": 0.0192,
-      "contribution": -0.0007
+      "dk_points_after": 0.0191,
+      "contribution": -0.0006
      }
     ],
     "contributions": {
      "S0_STRUCTURAL_BASELINE": 0.0072,
      "S1_PLAYER_HISTORY": 0.0069,
      "S2_CURRENT_SEASON_USAGE": 0.0049,
-     "S3_ROLE_STATE_AND_APPEARANCE": 0.0001,
-     "S4_CLUB_VOLUME": 0.0008,
-     "S5_MARKET_RESPONSE": -0.0007
+     "S3_ROLE_STATE_AND_APPEARANCE": 0.0,
+     "S4_CLUB_VOLUME": 0.0007,
+     "S5_MARKET_RESPONSE": -0.0006
     },
     "line_items": {
      "pass_yards": 0.0,
      "pass_td": 0.0,
      "interceptions": -0.0,
      "rush_yards": 0.0,
-     "rush_td": 0.0038,
+     "rush_td": 0.0037,
      "receptions": 0.0066,
      "rec_yards": 0.0065,
      "rec_td": 0.0023,
@@ -16582,29 +16583,29 @@
     "pass_attempts": 1.0
    },
    "targets": 0.010030892858650053,
-   "carries": 0.0018023292554174395,
+   "carries": 0.0016327484657487844,
    "pass_attempts": 0.0,
    "receptions": 0.006575350577773697,
    "rec_yards": 0.0648192284168823,
    "rush_yards": null,
    "pass_yards": null,
    "rec_rz_opps": 0.0007887888094789399,
-   "rush_rz_opps": 2.407326361457858e-05,
+   "rush_rz_opps": 2.1808215182727866e-05,
    "rec_far_opps": 0.009242104049171113,
-   "rush_far_opps": 0.0017782559918028608,
+   "rush_far_opps": 0.0016109402505660566,
    "td": {
     "rec_td": 0.00039,
     "rush_td": 5e-05,
     "rec_pool_scale": 1.0493,
-    "rush_pool_scale": 1.4219
+    "rush_pool_scale": 1.522
    },
-   "dk_points_if_plays": 2.4467,
+   "dk_points_if_plays": 2.4453,
    "dk_points_if_plays_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
     "rush_yards": 0.0,
-    "rush_td": 0.0496,
+    "rush_td": 0.0482,
     "receptions": 1.022,
     "rec_yards": 1.0075,
     "rec_td": 0.3668,
@@ -16616,7 +16617,7 @@
     "targets": 1.5590849559152706,
     "receptions": 1.0219957794520191,
     "rec_yards": 10.074744621726243,
-    "carries": 0.29146726332602285,
+    "carries": 0.26433936933162416,
     "rush_yards": null,
     "pass_attempts": 0.0,
     "pass_yards": null
@@ -16883,29 +16884,29 @@
     "pass_attempts": 1.0
    },
    "targets": 0.010030892858650053,
-   "carries": 0.0018023292554174395,
+   "carries": 0.0016327484657487844,
    "pass_attempts": 0.0,
    "receptions": 0.006575350577773697,
    "rec_yards": 0.0648192284168823,
    "rush_yards": null,
    "pass_yards": null,
    "rec_rz_opps": 0.0007887888094789399,
-   "rush_rz_opps": 2.407326361457858e-05,
+   "rush_rz_opps": 2.1808215182727866e-05,
    "rec_far_opps": 0.009242104049171113,
-   "rush_far_opps": 0.0017782559918028608,
+   "rush_far_opps": 0.0016109402505660566,
    "td": {
     "rec_td": 0.00039,
     "rush_td": 5e-05,
     "rec_pool_scale": 1.0493,
-    "rush_pool_scale": 1.4219
+    "rush_pool_scale": 1.522
    },
-   "dk_points_if_plays": 2.4467,
+   "dk_points_if_plays": 2.4453,
    "dk_points_if_plays_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
     "rush_yards": 0.0,
-    "rush_td": 0.0496,
+    "rush_td": 0.0482,
     "receptions": 1.022,
     "rec_yards": 1.0075,
     "rec_td": 0.3668,
@@ -16917,7 +16918,7 @@
     "targets": 1.5590849559152706,
     "receptions": 1.0219957794520191,
     "rec_yards": 10.074744621726243,
-    "carries": 0.29146726332602285,
+    "carries": 0.26433936933162416,
     "rush_yards": null,
     "pass_attempts": 0.0,
     "pass_yards": null
@@ -17174,29 +17175,29 @@
     "pass_attempts": 1.0
    },
    "targets": 0.010030892858650053,
-   "carries": 0.0018023292554174395,
+   "carries": 0.0016327484657487844,
    "pass_attempts": 0.0,
    "receptions": 0.006575350577773697,
    "rec_yards": 0.0648192284168823,
    "rush_yards": null,
    "pass_yards": null,
    "rec_rz_opps": 0.0007887888094789399,
-   "rush_rz_opps": 2.407326361457858e-05,
+   "rush_rz_opps": 2.1808215182727866e-05,
    "rec_far_opps": 0.009242104049171113,
-   "rush_far_opps": 0.0017782559918028608,
+   "rush_far_opps": 0.0016109402505660566,
    "td": {
     "rec_td": 0.00039,
     "rush_td": 5e-05,
     "rec_pool_scale": 1.0493,
-    "rush_pool_scale": 1.4219
+    "rush_pool_scale": 1.522
    },
-   "dk_points_if_plays": 2.4467,
+   "dk_points_if_plays": 2.4453,
    "dk_points_if_plays_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
     "interceptions": -0.0,
     "rush_yards": 0.0,
-    "rush_td": 0.0496,
+    "rush_td": 0.0482,
     "receptions": 1.022,
     "rec_yards": 1.0075,
     "rec_td": 0.3668,
@@ -17208,7 +17209,7 @@
     "targets": 1.5590849559152706,
     "receptions": 1.0219957794520191,
     "rec_yards": 10.074744621726243,
-    "carries": 0.29146726332602285,
+    "carries": 0.26433936933162416,
     "rush_yards": null,
     "pass_attempts": 0.0,
     "pass_yards": null
@@ -17449,14 +17450,14 @@
      "appearance_rate_measured": 0.11517,
      "rank_beyond_measured_table": false,
      "APPEARANCE_SEMANTICS": "claim is share GIVEN he plays; this is P(he plays) at his depth rank, so the product is unconditional.",
-     "claim_normalised": 0.00019,
+     "claim_normalised": 0.00015,
      "prior_expected_share_normalised": 0.00206,
-     "final_share": 0.00019
+     "final_share": 0.00015
     },
     "pass_attempts": {
-     "claim_normalised": 0.00491,
+     "claim_normalised": 0.00011,
      "prior_expected_share_normalised": 0.0,
-     "final_share": 0.00247
+     "final_share": 6e-05
     }
    },
    "p_plays": {
@@ -17465,29 +17466,29 @@
     "pass_attempts": 1.0
    },
    "targets": 0.11655728297885051,
-   "carries": 0.004805094754140287,
-   "pass_attempts": 0.08227923938724833,
+   "carries": 0.0037943086436545218,
+   "pass_attempts": 0.0018393961153236548,
    "receptions": 0.08383266020970845,
    "rec_yards": 0.8002869672241067,
    "rush_yards": null,
    "pass_yards": null,
    "rec_rz_opps": 0.013907884301116159,
-   "rush_rz_opps": 0.000683279125920739,
+   "rush_rz_opps": 0.0005395464660246063,
    "rec_far_opps": 0.10264939867773436,
-   "rush_far_opps": 0.004121815628219548,
+   "rush_far_opps": 0.0032547621776299156,
    "td": {
     "rec_td": 0.00557,
-    "rush_td": 0.00022,
+    "rush_td": 0.00015,
     "rec_pool_scale": 1.1737,
-    "rush_pool_scale": 0.9621
+    "rush_pool_scale": 0.8316
    },
-   "dk_points_if_plays": 1.6603,
+   "dk_points_if_plays": 1.6583,
    "dk_points_if_plays_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
-    "interceptions": -0.0017,
+    "interceptions": -0.0,
     "rush_yards": 0.0,
-    "rush_td": 0.0115,
+    "rush_td": 0.0078,
     "receptions": 0.7014,
     "rec_yards": 0.6696,
     "rec_td": 0.2795,
@@ -17499,9 +17500,9 @@
     "targets": 0.9752183557882804,
     "receptions": 0.7014160502171628,
     "rec_yards": 6.695888239576565,
-    "carries": 0.04166097474812734,
+    "carries": 0.03290737494665385,
     "rush_yards": null,
-    "pass_attempts": 0.08227923938724833,
+    "pass_attempts": 0.0018393961153236548,
     "pass_yards": null
    },
    "p_plays_by_field": {
@@ -17509,13 +17510,13 @@
     "carries": 0.11517,
     "pass_attempts": 1.0
    },
-   "dk_points": 0.1969,
+   "dk_points": 0.1981,
    "dk_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
-    "interceptions": -0.0017,
+    "interceptions": -0.0,
     "rush_yards": 0.0,
-    "rush_td": 0.0013,
+    "rush_td": 0.0009,
     "receptions": 0.0838,
     "rec_yards": 0.08,
     "rec_td": 0.0334,
@@ -17528,19 +17529,19 @@
     "name": "Carsen Ryan",
     "position": "TE",
     "team": "CLE",
-    "final_dk_points_from_decomposition": 0.1969,
+    "final_dk_points_from_decomposition": 0.1981,
     "stages": [
      {
       "stage": "S0_STRUCTURAL_BASELINE",
       "why": "the Nth man at your position on an average club",
-      "dk_points_after": 0.1539,
-      "contribution": 0.1539
+      "dk_points_after": 0.1556,
+      "contribution": 0.1556
      },
      {
       "stage": "S1_PLAYER_HISTORY",
       "why": "your own multi-season prior",
       "dk_points_after": 0.2093,
-      "contribution": 0.0554
+      "contribution": 0.0537
      },
      {
       "stage": "S2_CURRENT_SEASON_USAGE",
@@ -17551,36 +17552,36 @@
      {
       "stage": "S3_ROLE_STATE_AND_APPEARANCE",
       "why": "evidence ceiling, duplicate-alpha demotion, P(appears)",
-      "dk_points_after": 0.2078,
-      "contribution": -0.0013
+      "dk_points_after": 0.2091,
+      "contribution": 0.0
      },
      {
       "stage": "S4_CLUB_VOLUME",
       "why": "the club's own measured volume instead of the league average",
-      "dk_points_after": 0.1992,
+      "dk_points_after": 0.2005,
       "contribution": -0.0086
      },
      {
       "stage": "S5_MARKET_RESPONSE",
       "why": "the measured response to this week's line",
-      "dk_points_after": 0.1969,
-      "contribution": -0.0023
+      "dk_points_after": 0.1981,
+      "contribution": -0.0024
      }
     ],
     "contributions": {
-     "S0_STRUCTURAL_BASELINE": 0.1539,
-     "S1_PLAYER_HISTORY": 0.0554,
+     "S0_STRUCTURAL_BASELINE": 0.1556,
+     "S1_PLAYER_HISTORY": 0.0537,
      "S2_CURRENT_SEASON_USAGE": -0.0002,
-     "S3_ROLE_STATE_AND_APPEARANCE": -0.0013,
+     "S3_ROLE_STATE_AND_APPEARANCE": 0.0,
      "S4_CLUB_VOLUME": -0.0086,
-     "S5_MARKET_RESPONSE": -0.0023
+     "S5_MARKET_RESPONSE": -0.0024
     },
     "line_items": {
      "pass_yards": 0.0,
      "pass_td": 0.0,
-     "interceptions": -0.0017,
+     "interceptions": -0.0,
      "rush_yards": 0.0,
-     "rush_td": 0.0013,
+     "rush_td": 0.0009,
      "receptions": 0.0838,
      "rec_yards": 0.08,
      "rec_td": 0.0334,
@@ -17743,9 +17744,9 @@
      "final_share": 1e-05
     },
     "pass_attempts": {
-     "claim_normalised": 0.00491,
+     "claim_normalised": 0.00011,
      "prior_expected_share_normalised": 0.0,
-     "final_share": 0.00247
+     "final_share": 6e-05
     }
    },
    "p_plays": {
@@ -17754,29 +17755,29 @@
     "pass_attempts": 1.0
    },
    "targets": 0.00812672555630954,
-   "carries": 0.0003350257087413954,
-   "pass_attempts": 0.08227923938724833,
+   "carries": 0.000264550650417173,
+   "pass_attempts": 0.0018393961153236548,
    "receptions": 0.005845066089120074,
    "rec_yards": 0.05579842273864355,
    "rush_yards": null,
    "pass_yards": null,
    "rec_rz_opps": 0.0009696996695143071,
-   "rush_rz_opps": 4.7640282896097374e-05,
+   "rush_rz_opps": 3.761880804183024e-05,
    "rec_far_opps": 0.007157025886795233,
-   "rush_far_opps": 0.000287385425845298,
+   "rush_far_opps": 0.00022693184237534275,
    "td": {
     "rec_td": 0.00039,
-    "rush_td": 2e-05,
+    "rush_td": 1e-05,
     "rec_pool_scale": 1.1737,
-    "rush_pool_scale": 0.9621
+    "rush_pool_scale": 0.8316
    },
-   "dk_points_if_plays": 1.6531,
+   "dk_points_if_plays": 1.6511,
    "dk_points_if_plays_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
-    "interceptions": -0.0017,
+    "interceptions": -0.0,
     "rush_yards": 0.0,
-    "rush_td": 0.0115,
+    "rush_td": 0.0078,
     "receptions": 0.6983,
     "rec_yards": 0.6667,
     "rec_td": 0.2783,
@@ -17788,9 +17789,9 @@
     "targets": 0.9709402395680862,
     "receptions": 0.6983390579069503,
     "rec_yards": 6.6665145224840625,
-    "carries": 0.04165362692234644,
+    "carries": 0.03290279033482858,
     "rush_yards": null,
-    "pass_attempts": 0.08227923938724833,
+    "pass_attempts": 0.0018393961153236548,
     "pass_yards": null
    },
    "p_plays_by_field": {
@@ -17798,11 +17799,11 @@
     "carries": 0.00803,
     "pass_attempts": 1.0
    },
-   "dk_points": 0.0122,
+   "dk_points": 0.0138,
    "dk_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
-    "interceptions": -0.0017,
+    "interceptions": -0.0,
     "rush_yards": 0.0,
     "rush_td": 0.0001,
     "receptions": 0.0058,
@@ -17819,19 +17820,19 @@
     "name": "Messiah Swinson",
     "position": "TE",
     "team": "CLE",
-    "final_dk_points_from_decomposition": 0.0122,
+    "final_dk_points_from_decomposition": 0.0138,
     "stages": [
      {
       "stage": "S0_STRUCTURAL_BASELINE",
       "why": "the Nth man at your position on an average club",
-      "dk_points_after": 0.009,
-      "contribution": 0.009
+      "dk_points_after": 0.0107,
+      "contribution": 0.0107
      },
      {
       "stage": "S1_PLAYER_HISTORY",
       "why": "your own multi-season prior",
       "dk_points_after": 0.0146,
-      "contribution": 0.0056
+      "contribution": 0.0039
      },
      {
       "stage": "S2_CURRENT_SEASON_USAGE",
@@ -17842,34 +17843,34 @@
      {
       "stage": "S3_ROLE_STATE_AND_APPEARANCE",
       "why": "evidence ceiling, duplicate-alpha demotion, P(appears)",
-      "dk_points_after": 0.0129,
-      "contribution": -0.0017
+      "dk_points_after": 0.0146,
+      "contribution": 0.0
      },
      {
       "stage": "S4_CLUB_VOLUME",
       "why": "the club's own measured volume instead of the league average",
-      "dk_points_after": 0.0123,
-      "contribution": -0.0006
+      "dk_points_after": 0.0139,
+      "contribution": -0.0007
      },
      {
       "stage": "S5_MARKET_RESPONSE",
       "why": "the measured response to this week's line",
-      "dk_points_after": 0.0122,
+      "dk_points_after": 0.0138,
       "contribution": -0.0001
      }
     ],
     "contributions": {
-     "S0_STRUCTURAL_BASELINE": 0.009,
-     "S1_PLAYER_HISTORY": 0.0056,
+     "S0_STRUCTURAL_BASELINE": 0.0107,
+     "S1_PLAYER_HISTORY": 0.0039,
      "S2_CURRENT_SEASON_USAGE": 0.0,
-     "S3_ROLE_STATE_AND_APPEARANCE": -0.0017,
-     "S4_CLUB_VOLUME": -0.0006,
+     "S3_ROLE_STATE_AND_APPEARANCE": 0.0,
+     "S4_CLUB_VOLUME": -0.0007,
      "S5_MARKET_RESPONSE": -0.0001
     },
     "line_items": {
      "pass_yards": 0.0,
      "pass_td": 0.0,
-     "interceptions": -0.0017,
+     "interceptions": -0.0,
      "rush_yards": 0.0,
      "rush_td": 0.0001,
      "receptions": 0.0058,
@@ -18029,14 +18030,14 @@
      "appearance_rate_measured": 0.00803,
      "rank_beyond_measured_table": false,
      "APPEARANCE_SEMANTICS": "claim is share GIVEN he plays; this is P(he plays) at his depth rank, so the product is unconditional.",
-     "claim_normalised": 2e-05,
+     "claim_normalised": 1e-05,
      "prior_expected_share_normalised": 0.00014,
-     "final_share": 2e-05
+     "final_share": 1e-05
     },
     "pass_attempts": {
-     "claim_normalised": 0.00484,
+     "claim_normalised": 0.00011,
      "prior_expected_share_normalised": 0.0,
-     "final_share": 0.00246
+     "final_share": 6e-05
     }
    },
    "p_plays": {
@@ -18045,29 +18046,29 @@
     "pass_attempts": 1.0
    },
    "targets": 0.011132862915053414,
-   "carries": 0.0003893739144273356,
-   "pass_attempts": 0.08767415055723665,
+   "carries": 0.00035273780274769156,
+   "pass_attempts": 0.002003103659084975,
    "receptions": 0.008007200323023017,
    "rec_yards": 0.07643868208927333,
    "rush_yards": null,
    "pass_yards": null,
    "rec_rz_opps": 0.0013891411470409309,
-   "rush_rz_opps": 6.45415623442119e-05,
+   "rush_rz_opps": 5.846885999202974e-05,
    "rec_far_opps": 0.009743721768012482,
-   "rush_far_opps": 0.00032483235208312367,
+   "rush_far_opps": 0.0002942689427556618,
    "td": {
     "rec_td": 0.00049,
     "rush_td": 3e-05,
     "rec_pool_scale": 1.0493,
-    "rush_pool_scale": 1.4219
+    "rush_pool_scale": 1.522
    },
-   "dk_points_if_plays": 2.2402,
+   "dk_points_if_plays": 2.2413,
    "dk_points_if_plays_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
-    "interceptions": -0.0018,
+    "interceptions": -0.0,
     "rush_yards": 0.0,
-    "rush_td": 0.0226,
+    "rush_td": 0.0219,
     "receptions": 0.9545,
     "rec_yards": 0.9112,
     "rec_td": 0.3538,
@@ -18079,9 +18080,9 @@
     "targets": 1.3271238049652538,
     "receptions": 0.9545205254832092,
     "rec_yards": 9.112085129843631,
-    "carries": 0.04839420541181609,
+    "carries": 0.04384894686827067,
     "rush_yards": null,
-    "pass_attempts": 0.08767415055723665,
+    "pass_attempts": 0.002003103659084975,
     "pass_yards": null
    },
    "p_plays_by_field": {
@@ -18089,11 +18090,11 @@
     "carries": 0.00803,
     "pass_attempts": 1.0
    },
-   "dk_points": 0.017,
+   "dk_points": 0.0187,
    "dk_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
-    "interceptions": -0.0018,
+    "interceptions": -0.0,
     "rush_yards": 0.0,
     "rush_td": 0.0002,
     "receptions": 0.008,
@@ -18110,19 +18111,19 @@
     "name": "Lake McRee",
     "position": "TE",
     "team": "PIT",
-    "final_dk_points_from_decomposition": 0.017,
+    "final_dk_points_from_decomposition": 0.0187,
     "stages": [
      {
       "stage": "S0_STRUCTURAL_BASELINE",
       "why": "the Nth man at your position on an average club",
-      "dk_points_after": 0.0078,
-      "contribution": 0.0078
+      "dk_points_after": 0.0094,
+      "contribution": 0.0094
      },
      {
       "stage": "S1_PLAYER_HISTORY",
       "why": "your own multi-season prior",
       "dk_points_after": 0.0169,
-      "contribution": 0.0091
+      "contribution": 0.0075
      },
      {
       "stage": "S2_CURRENT_SEASON_USAGE",
@@ -18133,34 +18134,34 @@
      {
       "stage": "S3_ROLE_STATE_AND_APPEARANCE",
       "why": "evidence ceiling, duplicate-alpha demotion, P(appears)",
-      "dk_points_after": 0.017,
-      "contribution": -0.0017
+      "dk_points_after": 0.0187,
+      "contribution": 0.0
      },
      {
       "stage": "S4_CLUB_VOLUME",
       "why": "the club's own measured volume instead of the league average",
-      "dk_points_after": 0.0177,
-      "contribution": 0.0007
+      "dk_points_after": 0.0196,
+      "contribution": 0.0009
      },
      {
       "stage": "S5_MARKET_RESPONSE",
       "why": "the measured response to this week's line",
-      "dk_points_after": 0.017,
-      "contribution": -0.0007
+      "dk_points_after": 0.0187,
+      "contribution": -0.0009
      }
     ],
     "contributions": {
-     "S0_STRUCTURAL_BASELINE": 0.0078,
-     "S1_PLAYER_HISTORY": 0.0091,
+     "S0_STRUCTURAL_BASELINE": 0.0094,
+     "S1_PLAYER_HISTORY": 0.0075,
      "S2_CURRENT_SEASON_USAGE": 0.0018,
-     "S3_ROLE_STATE_AND_APPEARANCE": -0.0017,
-     "S4_CLUB_VOLUME": 0.0007,
-     "S5_MARKET_RESPONSE": -0.0007
+     "S3_ROLE_STATE_AND_APPEARANCE": 0.0,
+     "S4_CLUB_VOLUME": 0.0009,
+     "S5_MARKET_RESPONSE": -0.0009
     },
     "line_items": {
      "pass_yards": 0.0,
      "pass_td": 0.0,
-     "interceptions": -0.0018,
+     "interceptions": -0.0,
      "rush_yards": 0.0,
      "rush_td": 0.0002,
      "receptions": 0.008,
@@ -18325,9 +18326,9 @@
      "final_share": 1e-05
     },
     "pass_attempts": {
-     "claim_normalised": 0.00491,
+     "claim_normalised": 0.00011,
      "prior_expected_share_normalised": 0.0,
-     "final_share": 0.00247
+     "final_share": 6e-05
     }
    },
    "p_plays": {
@@ -18336,29 +18337,29 @@
     "pass_attempts": 1.0
    },
    "targets": 0.00812672555630954,
-   "carries": 0.0003350257087413954,
-   "pass_attempts": 0.08227923938724833,
+   "carries": 0.000264550650417173,
+   "pass_attempts": 0.0018393961153236548,
    "receptions": 0.005845066089120074,
    "rec_yards": 0.05579842273864355,
    "rush_yards": null,
    "pass_yards": null,
    "rec_rz_opps": 0.0009696996695143071,
-   "rush_rz_opps": 4.7640282896097374e-05,
+   "rush_rz_opps": 3.761880804183024e-05,
    "rec_far_opps": 0.007157025886795233,
-   "rush_far_opps": 0.000287385425845298,
+   "rush_far_opps": 0.00022693184237534275,
    "td": {
     "rec_td": 0.00039,
-    "rush_td": 2e-05,
+    "rush_td": 1e-05,
     "rec_pool_scale": 1.1737,
-    "rush_pool_scale": 0.9621
+    "rush_pool_scale": 0.8316
    },
-   "dk_points_if_plays": 1.6531,
+   "dk_points_if_plays": 1.6511,
    "dk_points_if_plays_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
-    "interceptions": -0.0017,
+    "interceptions": -0.0,
     "rush_yards": 0.0,
-    "rush_td": 0.0115,
+    "rush_td": 0.0078,
     "receptions": 0.6983,
     "rec_yards": 0.6667,
     "rec_td": 0.2783,
@@ -18370,9 +18371,9 @@
     "targets": 0.9709402395680862,
     "receptions": 0.6983390579069503,
     "rec_yards": 6.6665145224840625,
-    "carries": 0.04165362692234644,
+    "carries": 0.03290279033482858,
     "rush_yards": null,
-    "pass_attempts": 0.08227923938724833,
+    "pass_attempts": 0.0018393961153236548,
     "pass_yards": null
    },
    "p_plays_by_field": {
@@ -18380,11 +18381,11 @@
     "carries": 0.00803,
     "pass_attempts": 1.0
    },
-   "dk_points": 0.0122,
+   "dk_points": 0.0138,
    "dk_line_items": {
     "pass_yards": 0.0,
     "pass_td": 0.0,
-    "interceptions": -0.0017,
+    "interceptions": -0.0,
     "rush_yards": 0.0,
     "rush_td": 0.0001,
     "receptions": 0.0058,
@@ -18401,19 +18402,19 @@
     "name": "Joe Royer",
     "position": "TE",
     "team": "CLE",
-    "final_dk_points_from_decomposition": 0.0122,
+    "final_dk_points_from_decomposition": 0.0138,
     "stages": [
      {
       "stage": "S0_STRUCTURAL_BASELINE",
       "why": "the Nth man at your position on an average club",
-      "dk_points_after": 0.009,
-      "contribution": 0.009
+      "dk_points_after": 0.0107,
+      "contribution": 0.0107
      },
      {
       "stage": "S1_PLAYER_HISTORY",
       "why": "your own multi-season prior",
       "dk_points_after": 0.0146,
-      "contribution": 0.0056
+      "contribution": 0.0039
      },
      {
       "stage": "S2_CURRENT_SEASON_USAGE",
@@ -18424,34 +18425,34 @@
      {
       "stage": "S3_ROLE_STATE_AND_APPEARANCE",
       "why": "evidence ceiling, duplicate-alpha demotion, P(appears)",
-      "dk_points_after": 0.0129,
-      "contribution": -0.0017
+      "dk_points_after": 0.0146,
+      "contribution": 0.0
      },
      {
       "stage": "S4_CLUB_VOLUME",
       "why": "the club's own measured volume instead of the league average",
-      "dk_points_after": 0.0123,
-      "contribution": -0.0006
+      "dk_points_after": 0.0139,
+      "contribution": -0.0007
      },
      {
       "stage": "S5_MARKET_RESPONSE",
       "why": "the measured response to this week's line",
-      "dk_points_after": 0.0122,
+      "dk_points_after": 0.0138,
       "contribution": -0.0001
      }
     ],
     "contributions": {
-     "S0_STRUCTURAL_BASELINE": 0.009,
-     "S1_PLAYER_HISTORY": 0.0056,
+     "S0_STRUCTURAL_BASELINE": 0.0107,
+     "S1_PLAYER_HISTORY": 0.0039,
      "S2_CURRENT_SEASON_USAGE": 0.0,
-     "S3_ROLE_STATE_AND_APPEARANCE": -0.0017,
-     "S4_CLUB_VOLUME": -0.0006,
+     "S3_ROLE_STATE_AND_APPEARANCE": 0.0,
+     "S4_CLUB_VOLUME": -0.0007,
      "S5_MARKET_RESPONSE": -0.0001
     },
     "line_items": {
      "pass_yards": 0.0,
      "pass_td": 0.0,
-     "interceptions": -0.0017,
+     "interceptions": -0.0,
      "rush_yards": 0.0,
      "rush_td": 0.0001,
      "receptions": 0.0058,

@@ -1,7 +1,7 @@
 # Showdown status board — DELIVERED
 
 export `nfl/dfs/salaries/raw/DKEntries_PIT_CLE_SHOWDOWN_2026W4.csv`
-run 2026-10-01T23:12:02.162544+00:00
+run 2026-10-01T23:41:34.737041+00:00
 
 **PIT@CLE** at 2026-10-01T20:15:00 ET — 51 players, 78 entries
 

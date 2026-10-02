@@ -263,3 +263,59 @@ sportsbook data remains in the proprietary prediction, and the DST points-allowe
 market-derived. **By your own stated conditions this slate is therefore not "final".** The portfolio
 is legal, validated, internally coherent and built from repaired state — but it is not built from a
 system that satisfies condition 20, and I am not going to call it final when you defined the word.
+
+---
+
+## 9. Full exposure board — corrected run, 2,000 draws, 78 entries
+
+`proj` is the point projection, `draw mean` the mean of the 2,000 joint draws (what the selector uses). Exposure columns are out of 78 entries. BASE-A is the preserved 400-draw pre-audit baseline.
+
+| Player | Pos | Tm | Salary | proj | draw mean | total exp | CPT exp | FLEX exp | BASE-A total | BASE-A CPT |
+|---|:--:|:--:|--:|--:|--:|--:|--:|--:|--:|--:|
+| Jaylen Warren | RB | PIT | 9600 | 20.38 | 20.41 | 39/78 | 20/78 | 19/78 | 39/78 | 6/78 |
+| Deshaun Watson | QB | CLE | 9400 | 16.33 | 16.16 | 39/78 | 7/78 | 32/78 | 39/78 | 3/78 |
+| Aaron Rodgers | QB | PIT | 9800 | 14.37 | 15.72 | 39/78 | 2/78 | 37/78 | 35/78 | 6/78 |
+| DK Metcalf | WR | PIT | 9000 | 11.52 | 13.94 | 39/78 | 12/78 | 27/78 | 39/78 | 12/78 |
+| Quinshon Judkins | RB | CLE | 8800 | 10.45 | 13.85 | 39/78 | 12/78 | 27/78 | 39/78 | 6/78 |
+| Harold Fannin Jr. | TE | CLE | 7400 | 10.07 | 12.14 | 39/78 | 5/78 | 34/78 | 35/78 | 9/78 |
+| Pat Freiermuth | TE | PIT | 5600 | 11.10 | 11.80 | 33/78 | 5/78 | 28/78 | 35/78 | 2/78 |
+| KC Concepcion Jr. | WR | CLE | 6400 | 8.76 | 11.69 | 29/78 | 3/78 | 26/78 | 37/78 | 13/78 |
+| Steelers | DST | PIT | 5000 | 9.37 | 7.96 | 29/78 | 2/78 | 27/78 | 25/78 | 2/78 |
+| Chris Boswell | K | PIT | 5200 | 8.65 | 8.98 | 28/78 | 2/78 | 26/78 | 22/78 | 6/78 |
+| Browns | DST | CLE | 4800 | 6.18 | 6.80 | 27/78 | 4/78 | 23/78 | 24/78 | 8/78 |
+| Andre Szmyt | K | CLE | 4600 | 6.54 | 6.90 | 23/78 | 2/78 | 21/78 | 23/78 | 0/78 |
+| Roman Wilson | WR | PIT | 4000 | 6.90 | 7.72 | 19/78 | 1/78 | 18/78 | 18/78 | 2/78 |
+| Denzel Boston | WR | CLE | 8000 | 7.39 | 6.92 | 15/78 | 0/78 | 15/78 | 14/78 | 2/78 |
+| Travis Homer | RB | PIT | 2600 | 4.99 | 5.62 | 15/78 | 0/78 | 15/78 | 12/78 | 0/78 |
+| Germie Bernard | WR | PIT | 3200 | 3.24 | 3.73 | 4/78 | 1/78 | 3/78 | 4/78 | 0/78 |
+| Raheim Sanders | RB | CLE | 4400 | 4.35 | 4.86 | 3/78 | 0/78 | 3/78 | 10/78 | 0/78 |
+| Michael Pittman Jr. | WR | PIT | 7000 | 2.35 | 2.43 | 3/78 | 0/78 | 3/78 | 1/78 | 0/78 |
+| Blake Whiteheart | TE | CLE | 1600 | 2.01 | 2.15 | 3/78 | 0/78 | 3/78 | 3/78 | 0/78 |
+| Jerry Jeudy | WR | CLE | 3000 | 2.83 | 3.48 | 2/78 | 0/78 | 2/78 | 4/78 | 0/78 |
+| Riley Nowakowski | RB | PIT | 200 | 1.23 | 1.63 | 1/78 | 0/78 | 1/78 | 0/78 | 0/78 |
+| Darnell Washington | TE | PIT | 3600 | 3.49 | 3.07 | 0/78 | 0/78 | 0/78 | 5/78 | 1/78 |
+
+### Turnover and distribution versus BASELINE_A (400 draws, pre-audit)
+
+- identical lineups retained: **1 of 78** (1.3%) — 77 new, 77 dropped
+- distinct captains: 14 -> 14; peak captain 13/78 = 16.7% -> 20/78 = 25.6%
+- peak player exposure: 39/78 = 50.0% -> 39/78 = 50.0% (cap 50%)
+- people used: 25 -> 21; entered ['Riley Nowakowski']; dropped ['Darnell Washington', 'Jaleel McLaughlin', 'Jimmy Horn Jr.', 'Mason Rudolph', 'Shedeur Sanders']
+- salary BASE-A: min 33600 median 47000 max 49800 mean 45508, 0 at cap
+- salary corrected: min 32500 median 49100 max 50000 mean 46295, 7 at cap
+
+### Projection changes versus BASELINE_A: 9 players moved by >= 0.10 DK points
+
+| Player | BASE-A | corrected | delta |
+|---|--:|--:|--:|
+| Deshaun Watson | 11.19 | 16.33 | +5.14 |
+| Aaron Rodgers | 11.91 | 14.37 | +2.46 |
+| Quinshon Judkins | 12.74 | 10.45 | -2.29 |
+| Mason Rudolph | 1.75 | 0.06 | -1.69 |
+| Jaylen Warren | 21.85 | 20.38 | -1.48 |
+| Shedeur Sanders | 1.26 | 0.04 | -1.22 |
+| Raheim Sanders | 4.84 | 4.35 | -0.50 |
+| Travis Homer | 5.22 | 4.99 | -0.23 |
+| Jaleel McLaughlin | 1.09 | 0.93 | -0.16 |
+
+Every other player is unchanged, which is the point: the repair was scoped to the quarterback appearance gate and its mechanical consequences for club rushing allocation, not a general retune. Receivers barely move because receiver targets are allocated from the club target total, not from the quarterback's pass-attempt claim.
