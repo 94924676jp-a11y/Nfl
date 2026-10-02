@@ -167,14 +167,26 @@ def _reports_all():
     return f"classes refused together: {sorted(o.evidence['problems'])}"
 
 
-@check('THE REAL 2026 W4 PIT@CLE ARTIFACT PASSES after the starter repair')
+@check('THE REAL 2026 W4 PIT@CLE ARTIFACT: delivered copy refused on exactly the quarterback-target '
+       'defect found after delivery; the post-fix rebuild PASSES')
 def _real_artifact():
-    p = _REPO / 'nfl/dfs/salaries/SHOWDOWN_TONIGHT_PROJ.json'
-    art = json.loads(p.read_text())
+    # HISTORY, NOT A LOOSENING. This check read "PASSES after the starter repair" until 2026-10-02,
+    # when the centred-arm reconciliation exposed that Deshaun Watson carried 5.04 projected targets
+    # (DEFECT-QBTGT). The delivered artifact is preserved unchanged as the record of what was
+    # delivered, so the gate now refuses it on that one class and nothing else; the rebuild with
+    # the repaired allocator (SHOWDOWN_TONIGHT_PROJ_QBTGT_FIXED.json, post-game, descriptive) passes.
     inact = json.loads((_REPO / 'nfl/dfs/salaries/raw/OFFICIAL_INACTIVES_PIT_CLE_2026W4.json').read_text())
-    o = FS.assess(art, absent=set(inact), clubs=('PIT', 'CLE'))
-    assert o.state.name == 'PASS', (o.code, o.evidence.get('problems'))
-    return f"{o.detail}; reconcile_tol={o.evidence['reconcile_tol']}"
+    delivered = json.loads((_REPO / 'nfl/dfs/salaries/SHOWDOWN_TONIGHT_PROJ.json').read_text())
+    o = FS.assess(delivered, absent=set(inact), clubs=('PIT', 'CLE'))
+    probs = (o.evidence or {}).get('problems') or {}
+    assert o.state.name == 'FAIL' and list(probs) == [FS.QB_RECEIVER_VOLUME], (o.code, probs)
+    assert probs[FS.QB_RECEIVER_VOLUME] == ['Deshaun Watson (CLE QB): 5.04 projected targets above the '
+                                            '1.0 ceiling, no reason'], probs
+    fixed = json.loads((_REPO / 'nfl/dfs/salaries/SHOWDOWN_TONIGHT_PROJ_QBTGT_FIXED.json').read_text())
+    o2 = FS.assess(fixed, absent=set(inact), clubs=('PIT', 'CLE'))
+    assert o2.state.name == 'PASS', (o2.code, o2.evidence.get('problems'))
+    return (f"delivered: {o.code} on {list(probs)}; rebuilt: {o2.detail}; "
+            f"reconcile_tol={o2.evidence['reconcile_tol']}")
 
 
 @check('THE PRE-REPAIR BASELINE-A ARTIFACT IS REFUSED -- the gate would have caught W4')
@@ -190,7 +202,18 @@ def _baseline_a_refused():
     # Both the direct contradiction AND its mechanical consequence must be named: the old
     # artifact capped the starters' pass-attempt claims, so the club total no longer reconciled.
     assert FS.RANK1_NOT_STARTER in probs, sorted(probs)
-    assert FS.PASS_ATT_UNRECONCILED in probs, sorted(probs)
+    # CORRECTED 2026-10-02. This check used to also assert CLUB_PASS_ATTEMPTS_NOT_RECONCILED and
+    # explain it as the capped starters' attempts leaving the club total. Measured, that was false:
+    # the residual (CLE 0.247, PIT 0.515 attempts) is the ordinary trick-play mass on receivers'
+    # rows, present in every artifact, which a quarterbacks-only sum under a 0.1% tolerance reads
+    # as unreconciled. The gate now sums the pool the allocator keeps and bounds that mass. The
+    # REAL consequence of capping Watson's and Rodgers' claims is visible on the quarterback rows
+    # themselves: the backups absorbed the attempts (Shedeur Sanders 4.00, Mason Rudolph 4.26).
+    assert FS.PASS_ATT_UNRECONCILED not in probs, sorted(probs)
+    assert FS.NON_QB_PASS_ATTEMPTS not in probs, sorted(probs)
+    backups = {r['name']: round(r.get('pass_attempts') or 0.0, 2) for r in art['rows'].values()
+               if r.get('position') == 'QB' and r['name'] in ('Shedeur Sanders', 'Mason Rudolph')}
+    assert backups == {'Shedeur Sanders': 4.0, 'Mason Rudolph': 4.26}, backups
     names = ' '.join(probs[FS.RANK1_NOT_STARTER])
     assert 'Deshaun Watson' in names and 'Aaron Rodgers' in names, names
     return f"refused {sorted(probs)}; {probs[FS.RANK1_NOT_STARTER][0][:90]}"

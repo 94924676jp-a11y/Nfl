@@ -730,6 +730,26 @@ CONSTANTS_PROVENANCE['DEPTH_CLAIM_BLEND'] = (
 BANDS_ORDER = {'ALPHA': 5, 'PRIMARY': 4, 'SECONDARY': 3, 'ROTATIONAL': 2, 'FRINGE': 1}
 
 
+#: The ONE team field each position's depth table is measured on (see depth_shares()). A depth
+#: row's `unconditional_expected_share` is a share of the club's total of THAT field and nothing
+#: else. Reusing it as the prior for another field is the defect found 2026-10-02: a quarterback's
+#: 0.95 share of pass attempts stood in as his share of club targets, so Deshaun Watson carried
+#: 5.04 projected targets and nine of sixty main-slate quarterbacks carried 4.4-5.7 each.
+DEPTH_TABLE_FIELD = {'QB': 'pass_attempts', 'RB': 'carries', 'WR': 'targets', 'TE': 'targets'}
+#: MEASUREMENT ONLY. True reproduces the pre-2026-10-02 behaviour (every field read the table's
+#: share as a club share) so the repair can be scored against it on identical weeks. Never set in
+#: production; the artifact records which branch each row took.
+LEGACY_CROSS_FIELD_PRIOR = False
+#: WHERE THE CROSS-FIELD REPAIR APPLIES. Measured 2026-10-02 on 28 identical held-out weeks
+#: (nfl/research/.../FORWARD_CHAIN_PAIRED_DEPTH_PRIOR_REPAIR): applying the group-split prior to
+#: EVERY cross-field case (backs' targets, receivers' carries as well as quarterbacks) was worse on
+#: MAE for every arm by more than two week-blocked SEs, with ranking flat. The quarterback cases are
+#: a football contradiction (a passer is not a receiving target) and are repaired in production;
+#: the back and receiver cases are a change of prior form whose legacy shape scored better, so they
+#: stay as they were and the wider form is a declared candidate arm ('ALL'), not a swap.
+CROSS_FIELD_PRIOR_SCOPE = 'QB_ONLY'     # 'QB_ONLY' (production) | 'ALL' (candidate arm)
+
+
 def allocate_opportunity(crows, tv, depth, groups, blend=None, apply_appearance=True,
                          force_appearance_for=None):
     """Turn share claims into volume, satisfying every club identity by construction.
@@ -790,12 +810,24 @@ def allocate_opportunity(crows, tv, depth, groups, blend=None, apply_appearance=
             # one consistent with the curve's shape.
             _ranks = sorted(int(k.split('_')[1]) for k in dr)
             _deepest = dr.get(f'rank_{_ranks[-1]}') if _ranks else {}
+            # WHICH FIELD THE TABLE MEASURES DECIDES HOW ITS SHARE IS USED. When the table was
+            # measured on this very field, its row share is already a share OF THE CLUB and the
+            # group split must NOT be multiplied in again (that double-counted the split). When it
+            # was measured on another field -- a quarterback's table on pass attempts, a back's on
+            # carries -- the row share says only how the GROUP's volume concentrates by rank, and
+            # the club share of this field is the measured group split times that concentration.
+            # Before 2026-10-02 the first branch was applied to every field.
+            same_field = (LEGACY_CROSS_FIELD_PRIOR or DEPTH_TABLE_FIELD.get(pos) == field
+                          or (CROSS_FIELD_PRIOR_SCOPE == 'QB_ONLY' and pos != 'QB'))
+            _conc = []
             for rank, i in enumerate(idx, start=1):
                 row = dr.get(f'rank_{rank}') or _deepest or {}
                 beyond = f'rank_{rank}' not in dr
-                # the depth share is already a share OF THE CLUB, so the group split must NOT be
-                # multiplied in again -- doing so double-counted the positional split
-                dvals[i] = (row.get('unconditional_expected_share') or 0.0)
+                _ms = (row.get('unconditional_expected_share') or 0.0)
+                if same_field:
+                    dvals[i] = _ms
+                else:
+                    _conc.append((i, _ms))
                 # APPEARANCE PROBABILITY FOR EVERY POSITION, not only quarterback. A claim is
                 # what a player takes WHEN HE PLAYS; expected production is P(plays) times that.
                 # The measured appearance rate by depth rank supplies P(plays).
@@ -816,7 +848,12 @@ def allocate_opportunity(crows, tv, depth, groups, blend=None, apply_appearance=
                 if appear[i] is None:
                     appear[i] = 0.0 if beyond else 1.0
                 crows[i].setdefault('allocation', {})[field] = {
-                    'position_group_share_measured_NOT_APPLIED': gs.get(pos),
+                    'position_group_share_measured': gs.get(pos),
+                    'depth_prior_basis': ('CLUB_SHARE_OF_SAME_FIELD' if DEPTH_TABLE_FIELD.get(pos) == field
+                                          else 'GROUP_SPLIT_X_WITHIN_GROUP_CONCENTRATION' if not same_field
+                                          else 'LEGACY_TABLE_SHARE_READ_AS_CLUB_SHARE'),
+                    'cross_field_prior_scope': CROSS_FIELD_PRIOR_SCOPE,
+                    'depth_table_measured_on': DEPTH_TABLE_FIELD.get(pos),
                     'depth_rank_in_group': rank,
                     'depth_share_in_group_measured': row.get('unconditional_expected_share'),
                     'appearance_rate_measured': appear[i],
@@ -824,6 +861,11 @@ def allocate_opportunity(crows, tv, depth, groups, blend=None, apply_appearance=
                     'APPEARANCE_SEMANTICS': 'claim is share GIVEN he plays; this is P(he plays) '
                                             'at his depth rank, so the product is unconditional.',
                 }
+            if _conc:
+                _tot = sum(m for _, m in _conc)
+                for i, m in _conc:
+                    dvals[i] = (gs.get(pos) or 0.0) * ((m / _tot) if _tot > 0 else 0.0)
+                    crows[i]['allocation'][field]['prior_expected_share_of_club'] = round(dvals[i], 6)
         # CLAIMS BECOME UNCONDITIONAL BEFORE NORMALISATION -- unless the caller wants the
         # conditional world. With apply_appearance False every candidate is treated as playing, and
         # the result is each player's share GIVEN he plays alongside others who play. That is the
@@ -1368,7 +1410,7 @@ def depth_shares(panel, pos_of, through=None):
     adjusted this way. Backs and receivers really do share volume week to week, and their
     competition is settled by reconciliation against club totals instead.
     """
-    FIELD = {'QB': 'pass_attempts', 'RB': 'carries', 'WR': 'targets', 'TE': 'targets'}
+    FIELD = DEPTH_TABLE_FIELD   # one table per position, measured on this field only
     #: The team-level field each position's opportunity is a share OF. Using the club's own total
     #: rather than the position group's total is what makes the curve composable.
     TEAMFIELD = {'pass_attempts': 'pass_attempts', 'carries': 'rush_attempts',
