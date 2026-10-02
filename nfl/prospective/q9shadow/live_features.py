@@ -452,11 +452,16 @@ def injury_rows(season, observed_before) -> Outcome:
             f'error, not a slate with no injuries.', cause=Cause.DATA,
             blob=rec['blob'])
     unfilled = sum(1 for r in rows if not (r.get('report_status') or '').strip())
+    # `unfilled` is kept as the BLANK-REPORT count for existing consumers. It is NOT the
+    # completeness measure: owner ruling 2026-10-02, a row is unfilled only when both statuses
+    # are blank. See injury_completeness.py; the blocker reads that rule, not this count.
+    from nfl.prospective.q9shadow import injury_completeness as IC
+    both_blank = sum(1 for r in rows if IC.row_is_unfilled(r))
     return Outcome.ok(
         'Q9_LIVE_INJURY_ROWS_OK', value=rows,
         detail=f'{len(rows)} row(s) for {season} from {path.name}; '
-               f'{unfilled} carry no report_status',
-        n_rows=len(rows), n_without_report_status=unfilled,
+               f'{unfilled} blank report_status, {both_blank} blank on both statuses',
+        n_rows=len(rows), n_without_report_status=unfilled, n_both_blank=both_blank,
         sha256=rec['sha256'], retrieved_at=rec['observed_at'],
         retrieved_at_basis=rec.get('observed_basis'), blob=rec['blob'])
 

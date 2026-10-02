@@ -955,10 +955,22 @@ def _eval_injury_report():
     o = LF.injury_rows(2026, now)
     if o.state is not State.PASS:
         return 'BLOCKED', f'{o.code}'
-    n = o.evidence.get('n_without_report_status') or 0
-    return (('CLEARED', 'every captured row carries a report_status')
-            if n == 0 else
-            ('BLOCKED', f'{n} captured row(s) carry no report_status'))
+    # OWNER RULING 2026-10-02, applied narrowly. A blank report_status beside a filled
+    # practice_status is the feed saying "no designation", not an unfilled row; only a row blank
+    # on BOTH is unfilled, and a week is judged only once every game in it has kicked off. The
+    # old blank count (518 of 692) could never reach zero and the blocker could never clear.
+    from nfl.prospective.q9shadow import injury_completeness as IC
+    from nfl.production import world_clock as W
+    sch = W.schedule()
+    if sch.state is not State.PASS:
+        return 'BLOCKED', f'schedule unavailable for chronology: {sch.code}'
+    a = IC.assess(o.value, o.evidence['retrieved_at'], sch.value, 2026)
+    if not a['incomplete_weeks']:
+        return 'CLEARED', (f"every captured week is complete under the both-blank rule: "
+                           f"{a['complete_weeks']}")
+    why = {w: a['by_week'][w]['state'] for w in a['incomplete_weeks']}
+    return 'BLOCKED', (f"incomplete week(s) {why}; complete {a['complete_weeks']}; "
+                       f"capture observed {a['observed_at']}")
 
 
 def _eval_g0a():
