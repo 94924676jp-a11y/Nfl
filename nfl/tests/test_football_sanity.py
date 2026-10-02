@@ -196,6 +196,30 @@ def _baseline_a_refused():
     return f"refused {sorted(probs)}; {probs[FS.RANK1_NOT_STARTER][0][:90]}"
 
 
+
+@check('DRAWS CONSISTENCY: absent sidecar is named, present sidecar yields per-club ratios')
+def _draws_measure():
+    import tempfile, shutil, numpy as np
+    art = _clean()
+    assert FS.measure_draws(art, {})['state'] == FS.DRAWS_SIDECAR_ABSENT
+    tmp = pathlib.Path(tempfile.mkdtemp())
+    try:
+        fields = ['pass_att','pass_yards','pass_td','carries','rush_yards','rush_td','targets','receptions','rec_yards','rec_td']
+        q = np.zeros((4, 10)); q[:, 0] = 30.0; q[:, 3] = 3.0
+        r = np.zeros((4, 10)); r[:, 3] = 15.0; r[:, 6] = 4.0
+        w = np.zeros((4, 10)); w[:, 6] = 9.0; w[:, 3] = 0.4
+        np.savez_compressed(tmp / 'S.npz', **{'QB One|AAA': q, 'Back One|AAA': r, 'Wide One|AAA': w})
+        dd = {'stat_draws_sidecar': {'path': 'S.npz', 'STAT_FIELDS': fields}}
+        m = FS.measure_draws(art, dd, repo_root=tmp)
+        assert m['state'] == FS.DRAWS_MEASURED, m
+        aaa = m['per_club']['AAA']
+        assert abs(aaa['pass_attempts']['ratio_minus_one'] - round(30.0 / 30.5 - 1, 4)) < 1e-6, aaa
+        assert abs(aaa['carries']['simulated_mean'] - 18.4) < 1e-9, aaa
+        assert m['worst_abs_ratio_minus_one'] is not None
+        return f"absent -> {FS.DRAWS_SIDECAR_ABSENT}; present -> AAA pass {aaa['pass_attempts']}"
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
 _EMITTED = _registry.emit(globals(), RESULTS)
 
 

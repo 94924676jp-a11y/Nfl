@@ -34,6 +34,8 @@ CLASSIC = _REPO / 'nfl/dfs/salaries/raw/DKEntries_EARLY_ONLY_2026W3_62.csv'
 #: genuine DK files rather than fitted to one.
 TONIGHT = _REPO / 'nfl/dfs/salaries/raw/DKEntries_PIT_CLE_SHOWDOWN_2026W4.csv'
 
+import tempfile as _tf
+_SCRATCH_BOARD = pathlib.Path(_tf.mkdtemp(prefix='showdown_board_')) / 'SHOWDOWN_STATUS_BOARD.json'
 RESULTS = []
 
 
@@ -231,7 +233,7 @@ def t_third_party_not_an_input():
 
 @check('the run always emits a status board, including when it refuses')
 def t_board_always_emitted():
-    o = S.run(SHOWDOWN)
+    o = S.run(SHOWDOWN, out_board=_SCRATCH_BOARD)
     # Week 3 projections do not cover a Week 2 game, so this is expected to block rather than pass.
     assert o.state in (State.BLOCKED, State.DEFERRED, State.PASS), o
     b = (o.evidence or {}).get('board') or {}
@@ -275,7 +277,7 @@ def t_tonight_slot_ids():
 @check("the runner refuses tonight by name, and never writes to the owner's entry file")
 def t_tonight_refuses_and_does_not_touch_input():
     before = TONIGHT.read_bytes()
-    o = S.run(TONIGHT)
+    o = S.run(TONIGHT, out_board=_SCRATCH_BOARD)
     assert o.state is State.BLOCKED, o
     assert o.code == 'SHOWDOWN_RUN_BLOCKED', o.code
     b = o.evidence['board']

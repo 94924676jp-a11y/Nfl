@@ -160,3 +160,69 @@ def assess(artifact: dict, absent=(), clubs=None) -> Outcome:
                       f'{len(rows)} rows, {len(clubs)} clubs, no football contradiction',
                       spec_version=SPEC_VERSION, n_rows=len(rows), clubs=clubs,
                       n_absent=len(absent), reconcile_tol=RECONCILE_TOL)
+
+# ----------------------------------------------------------- draws-level consistency (MEASURED)
+#
+# The gate above validates the PROJECTION against its own club totals. The optimizer does not
+# consume the projection; it consumes the DRAWS. Retaining per-world stat lines showed the joint
+# simulator draws its own club volume from its market-response model, not the projection's
+# team_volume: on 2026 W4, PIT carries +9.8% and targets +11.7% above the projection's club totals,
+# CLE pass attempts +7.1%. So the numbers the optimizer ranks on do not reconcile to the numbers
+# the gate just passed. Which club volume is authoritative is a design decision (escalated); until
+# it is ruled, this is MEASURED AND REPORTED on every run, never silently absent -- and never a
+# refusal that would block the pipeline on a question nobody has answered yet.
+DRAWS_SIDECAR_ABSENT = 'DRAWS_SIDECAR_ABSENT'
+DRAWS_MEASURED = 'DRAWS_CLUB_VOLUME_MEASURED'
+DRAWS_FIELDS = {'pass_attempts': ('pass_att', 'proj_pass_attempts'),
+                'carries': ('carries', 'proj_rush_attempts'),
+                'targets': ('targets', 'proj_targets')}
+
+
+def measure_draws(artifact: dict, draws_doc: dict, repo_root=None) -> dict:
+    """Mean simulated club volume per club vs the projection's team_volume, from the sidecar.
+
+    Returns a plain evidence dict with a `state` of DRAWS_SIDECAR_ABSENT or
+    DRAWS_CLUB_VOLUME_MEASURED. Absence is named, not read as agreement.
+    """
+    import numpy as np
+    sc = (draws_doc or {}).get('stat_draws_sidecar') or {}
+    root = pathlib.Path(repo_root or _REPO)
+    path = root / sc['path'] if sc.get('path') else None
+    if not path or not path.exists():
+        return {'state': DRAWS_SIDECAR_ABSENT,
+                'WHY': 'the draws artifact names no per-stat sidecar (or it is missing), so the '
+                       'simulated club volume cannot be compared with the projection. Absent, '
+                       'not agreeing.'}
+    fields = list(sc.get('STAT_FIELDS') or ())
+    idx = {f: fields.index(f) for f, _ in DRAWS_FIELDS.values() if f in fields}
+    z = np.load(path)
+    tv = (artifact or {}).get('team_volume') or {}
+    rows = (artifact or {}).get('rows') or {}
+    club_of = {f"{v.get('name')}|{v.get('team')}": v.get('team') for v in rows.values()}
+    out = {}
+    for key in z.files:
+        club = club_of.get(key) or key.rsplit('|', 1)[-1]
+        a = z[key]
+        d = out.setdefault(club, {k: 0.0 for k in DRAWS_FIELDS})
+        for name, (f, _) in DRAWS_FIELDS.items():
+            if f in idx:
+                d[name] += float(a[:, idx[f]].mean())
+    per_club = {}
+    for club, sim in out.items():
+        t = tv.get(club) or {}
+        per_club[club] = {}
+        for name, (_, tkey) in DRAWS_FIELDS.items():
+            proj = t.get(tkey)
+            per_club[club][name] = {
+                'simulated_mean': round(sim[name], 3),
+                'projection_club_total': (round(proj, 3) if _num(proj) else None),
+                'ratio_minus_one': (round(sim[name] / proj - 1.0, 4)
+                                    if _num(proj) and proj else None)}
+    worst = max((abs(v['ratio_minus_one']) for c in per_club.values() for v in c.values()
+                 if v['ratio_minus_one'] is not None), default=None)
+    return {'state': DRAWS_MEASURED, 'per_club': per_club, 'worst_abs_ratio_minus_one': worst,
+            'sidecar': sc.get('path'),
+            'n_draws_per_player': int(z[z.files[0]].shape[0]) if z.files else None,
+            'MEANING': ('the optimizer consumes draws, the gate validated the projection; a non-zero '
+                        'ratio means the two carry different club volumes. Reported for the '
+                        'authoritative-volume decision; not a refusal.')}

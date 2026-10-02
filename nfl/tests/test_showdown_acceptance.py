@@ -39,6 +39,8 @@ from sportsplatform.governance.outcome import State  # noqa: E402
 
 from nfl.tests import _registry  # noqa: E402
 
+import tempfile as _tf
+_SCRATCH_BOARD = pathlib.Path(_tf.mkdtemp(prefix='showdown_board_')) / 'SHOWDOWN_STATUS_BOARD.json'
 RESULTS = []
 
 #: Two clubs that are NOT in the declared team-alias map, so the synthetic slate exercises the
@@ -212,7 +214,7 @@ def t_inv3_4_upload_ids():
     # sitting where the real one goes is the archive-root defect again, in the one artifact a person
     # would actually hand to DraftKings.
     o = S.run(export, official_inactives=[], proj_path=_write_projections(tmp),
-              draws=_draws(sl), n_entries=1, out_csv=(tmp / 'upload.csv'))
+              draws=_draws(sl), n_entries=1, out_csv=(tmp / 'upload.csv'), out_board=_SCRATCH_BOARD)
     assert o.state is State.PASS, o
     up = _REPO / o.value['upload'] if not o.value['upload'].startswith('/') else pathlib.Path(o.value['upload'])
     rows = list(csv.reader(up.open(newline='', encoding='utf-8')))
@@ -285,7 +287,7 @@ def t_inv8_unresolved_availability_blocks_publication():
     # official_inactives=None leaves availability DEFERRED. Selection may still run; the upload may
     # not be written, because a portfolio chosen without the inactives can hold a player who is out.
     o = S.run(export, official_inactives=None, proj_path=_write_projections(tmp),
-              draws=_draws(sl), n_entries=1)
+              draws=_draws(sl), n_entries=1, out_board=_SCRATCH_BOARD)
     assert o.state is State.DEFERRED, o
     assert o.code == 'SHOWDOWN_PUBLICATION_WITHHELD', o.code
     b = o.evidence['board']

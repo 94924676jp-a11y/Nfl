@@ -795,7 +795,7 @@ def s_emit_csv(chosen, entries, slate, out: pathlib.Path = None) -> Outcome:
 
 
 def run(export, *, official_inactives=None, proj_path=None, draws=None, n_entries=None,
-        out_csv=None) -> Outcome:
+        out_csv=None, out_board=None) -> Outcome:
     """Drive the stages. The board is emitted whatever happens."""
     export = pathlib.Path(export)
     stages = []
@@ -810,8 +810,8 @@ def run(export, *, official_inactives=None, proj_path=None, draws=None, n_entrie
         board['RESULT_DETAIL'] = detail
         board.update(extra)
         OUT_BOARD.parent.mkdir(parents=True, exist_ok=True)
-        OUT_BOARD.write_text(json.dumps(board, indent=2, default=str))
-        OUT_MD.write_text(_render(board))
+        (pathlib.Path(out_board) if out_board else OUT_BOARD).write_text(json.dumps(board, indent=2, default=str))
+        ((pathlib.Path(out_board).with_suffix('.md')) if out_board else OUT_MD).write_text(_render(board))
         return board
 
     o1 = s1_ingest(export)
@@ -877,7 +877,15 @@ def run(export, *, official_inactives=None, proj_path=None, draws=None, n_entrie
             problems=(o4b.evidence or {}).get('problems'))
     n = len(entries) if n_entries is None else int(n_entries)
     o5 = s5_candidates_and_selection(slate, absent, draws, n)
-    stages.append(_stage('candidates_and_selection', o5, **(o5.evidence or {})))
+    # Draws-level consistency, MEASURED on every run and carried on the board: the optimizer ranks
+    # on draws, the gate validated the projection, and the two can carry different club volumes.
+    try:
+        _dd = json.loads(pathlib.Path(draws).read_text()) if draws else {}
+    except (OSError, ValueError, TypeError):
+        _dd = {}
+    _dm = FS.measure_draws(_art, _dd)
+    stages.append(_stage('candidates_and_selection', o5, **(o5.evidence or {}),
+                         draws_consistency=_dm))
     if o5.state.value != 'PASS':
         return Outcome.blocked(
             'SHOWDOWN_RUN_BLOCKED', f'selection: {o5.code}', cause=Cause.DATA,
