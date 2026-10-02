@@ -327,3 +327,58 @@ system that satisfies condition 20, and I am not going to call it final when you
 | Jaleel McLaughlin | 1.09 | 0.93 | -0.16 |
 
 Every other player is unchanged, which is the point: the repair was scoped to the quarterback appearance gate and its mechanical consequences for club rushing allocation, not a general retune. Receivers barely move because receiver targets are allocated from the club target total, not from the quarterback's pass-attempt claim.
+
+---
+
+## 10. Item 8 answered: `REDISTRIBUTION_STUDY.json` exists, and it must NOT be wired
+
+**It exists**, at `nfl/warehouse/REDISTRIBUTION_STUDY.json`, built by
+`nfl/warehouse/redistribution_study.py`, alongside a `nfl/tools/redistribution.py` module.
+
+**It is not in the projection path.** `proj_v1.py` contains **zero** references to redistribution.
+The study and the tool are consumed only by `post_inactives_report.py` and
+`post_inactives_state.py` — a reporting path. So the artifact's bare `teammate_absence = NOT_MODELLED`
+is accurate about the projection.
+
+**It cannot be validly wired, and the study says so itself**, in a field its own authors put there:
+
+> `ASSOCIATION_NOT_CAUSE`: "a leader missing and a club trailing are correlated, so the pass-rate
+> movement is an association. Nothing here identifies a causal effect."
+
+> `NOT_ONE_FOR_ONE`: "the next man does NOT absorb the leader share. Read the mean against
+> leader_share_when_present: the difference is what goes elsewhere, to deeper backs, to other
+> positions, or is simply not run."
+
+Using `to_next_man_r1` as a redistribution coefficient would be fitting a constant from
+associational data and calling it causal — which is exactly what the governance rule on silent
+constants forbids. **It stays NOT_MODELLED.** The limitation is quantified instead:
+
+| Position | measure | leader share when present | next man absorbs | as % of vacated | n events |
+|---|---|--:|--:|--:|--:|
+| RB | carries | 0.45136 | 0.25385 (se 0.0205) | **56.2%** | 158 |
+| WR | targets | 0.24652 | 0.06140 (se 0.0087) | 24.9% | 111 |
+| TE | targets | 0.15812 | 0.06014 (se 0.0070) | 38.0% | 159 |
+
+Club volume totals barely move on an absence — RB carries −0.28 (se 0.58), indistinguishable from
+zero — so an absence reshuffles who gets the work rather than changing how much there is. That is
+consistent with what `allocate_opportunity` does, and it is the part of the picture our proportional
+renormalisation gets right.
+
+### Does this say our Jaylen Warren 20.38 is too high? Suggestive, not conclusive — and I checked
+
+Our allocation gives Warren **15.97 of PIT's 24.53 rush attempts, a 0.651 share**, against a
+historical lead-back norm of **0.451 when his backup is present**. Homer 3.86, Nowakowski 0.95,
+Nichols 0.10.
+
+**But the study's frame does not match tonight's event.** `REDISTRIBUTION_STUDY` measures a *leader*
+being absent and the next man stepping up. Rico Dowdle's `depth_rank` is **2** and Warren's is **1**,
+so what happened tonight is a **rank-2 back being ruled out while the leader plays** — the opposite
+direction. The `to_next_man_r1` coefficient therefore does **not** bound Warren, and I am not going to
+use it as though it did.
+
+What does carry over, and is worth stating: absorption is not one-for-one in any position measured,
+so some of Dowdle's vacated carries should land on Homer and the deeper backs rather than
+concentrating on the leader. A 0.651 share is high against the 0.451 norm, though a lead back whose
+primary backup is out would legitimately sit above that norm. So this remains the **most likely place
+tonight's board is over-concentrated**, the direction agrees with FC's 17.15, and it is not
+demonstrated. Establishing it would need a study framed on rank-2 absences, which does not exist.
